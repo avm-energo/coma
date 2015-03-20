@@ -9,7 +9,6 @@ class SerialThread : public QObject
     Q_OBJECT
 public:
     explicit SerialThread(QSerialPort *, QObject *parent = 0);
-    void run();
     QSerialPort *port;
 
 signals:
@@ -17,6 +16,7 @@ signals:
     void datawritten(int);
 
 public slots:
+    void run();
     void WriteData(QByteArray);
 
 private slots:

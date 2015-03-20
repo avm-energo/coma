@@ -19,6 +19,9 @@
 ConSet::ConSet(QWidget *parent)
     : QMainWindow(parent)
 {
+    TimeoutTimer = new QTimer;
+    TimeoutTimer->setInterval(400);
+    connect(TimeoutTimer, SIGNAL(timeout()),this,SLOT(Timeout()));
     setMinimumSize(QSize(800, 550));
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -188,12 +191,21 @@ void ConSet::GetBsi()
     QThread *thread = new QThread;
     SThread = new SerialThread(&pc.serial);
     SThread->moveToThread(thread);
+    connect(thread, SIGNAL(started()), SThread, SLOT(run()));
+    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
+    if (MainTE != 0)
+    {
+        MainTE->show();
+        connect(SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+    }
 
     thread->start();
 //    QByteArray tmpba = ">GBsi";
     QByteArray tmpba = "00";
     connect(SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(CheckBsi(QByteArray)));
     SThread->WriteData(tmpba);
+    TimeoutTimer->start();
+    UpdateMainTE(tmpba);
 }
 
 void ConSet::CheckBsi(QByteArray ba)
@@ -227,8 +239,23 @@ void ConSet::AllIsOk()
     MainTW->addTab(FwUpDialog, "Загрузка ВПО");
     MainTW->repaint();
     MainTW->show();
+    emit portopened();
+}
+
+void ConSet::UpdateMainTE(QByteArray ba)
+{
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
-        MainTE->show();
-    emit portopened();
+    {
+        MainTE->append(QString::fromLocal8Bit(ba));
+        QString tmpString = MainTE->toPlainText();
+        if (tmpString.size() > 10000)
+            MainTE->setPlainText(tmpString.right(tmpString.size()-10000));
+    }
+}
+
+void ConSet::Timeout()
+{
+    QMessageBox::warning(this,"warning!","Произошёл таймаут ожидания данных");
+    TimeoutTimer->stop();
 }

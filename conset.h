@@ -2,6 +2,7 @@
 #define CONSET_H
 
 #include <QMainWindow>
+#include <QTimer>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtSerialPort/QSerialPort>
 #include "checkdialog.h"
@@ -33,6 +34,8 @@ private:
     downloaddialog *DownDialog;
     SerialThread *SThread;
 
+    QTimer *TimeoutTimer;
+
 private slots:
     void Exit();
     void Connect();
@@ -46,6 +49,8 @@ private slots:
     void GetBsi();
     void CheckBsi(QByteArray);
     void AllIsOk();
+    void UpdateMainTE(QByteArray);
+    void Timeout();
 };
 
 #endif // CONSET_H

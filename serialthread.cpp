@@ -5,7 +5,7 @@
 SerialThread::SerialThread(QSerialPort *port, QObject *parent) :
     QObject(parent)
 {
-    port = new QSerialPort;
+    this->port = new QSerialPort;
     this->port = port;
 }
 
@@ -13,6 +13,7 @@ void SerialThread::run()
 {
     QTimer *timer = new QTimer;
     timer->setInterval(100);
+    timer->start();
     connect(timer,SIGNAL(timeout()),this,SLOT(CheckForData()));
 }
 
@@ -28,7 +29,7 @@ void SerialThread::WriteData(QByteArray outbuf)
     qint64 res = port->write(outbuf);
     if (res == -1)
         emit datawritten(1); // ошибка
-    if (port->waitForBytesWritten(1000))
+//    if (port->waitForBytesWritten(1000))
         emit datawritten(0); // всё гут
-    emit datawritten(2); // произошёл тайм-аут или ошибка
+//    emit datawritten(2); // произошёл тайм-аут или ошибка
 }
