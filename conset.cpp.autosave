@@ -188,6 +188,9 @@ void ConSet::GetBsi()
     QThread *thread = new QThread;
     SThread = new SerialThread(&pc.serial);
     SThread->moveToThread(thread);
+    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
+    if (MainTE != 0)
+        connect(SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
 
     thread->start();
 //    QByteArray tmpba = ">GBsi";
@@ -231,4 +234,13 @@ void ConSet::AllIsOk()
     if (MainTE != 0)
         MainTE->show();
     emit portopened();
+}
+
+void ConSet::UpdateMainTE(QByteArray ba)
+{
+    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
+    if (MainTE != 0)
+    {
+        
+    }
 }
