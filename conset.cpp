@@ -22,6 +22,9 @@ ConSet::ConSet(QWidget *parent)
     TimeoutTimer = new QTimer;
     TimeoutTimer->setInterval(400);
     connect(TimeoutTimer, SIGNAL(timeout()),this,SLOT(Timeout()));
+//    ReadPortTimer = new QTimer;
+//    ReadPortTimer->setInterval(2000); // таймер вычисления таймаута по приходу буфера данных
+//    connect(ReadPortTimer, SIGNAL(timeout()),this,SLOT(ReadPortTimeout()));
     setMinimumSize(QSize(800, 550));
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -30,6 +33,8 @@ ConSet::ConSet(QWidget *parent)
     font.setBold(true);
     font.setPointSize(24);
     lbl1->setFont(font);
+    lbl1->setObjectName("lbl1");
+    lyout->addWidget(lbl1);
 
     QMenuBar *MainMenuBar = new QMenuBar;
     QMenu *MainMenu = new QMenu;
@@ -143,7 +148,20 @@ void ConSet::Next()
     pc.serial.setFlowControl(QSerialPort::NoFlowControl);
     pc.serial.setStopBits(QSerialPort::OneStop);
     if (pc.serial.open(QIODevice::ReadWrite))
+    {
+        QThread *thread = new QThread;
+        SThread = new SerialThread(&pc.serial);
+        SThread->moveToThread(thread);
+        connect(thread, SIGNAL(started()), SThread, SLOT(run()));
+        QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
+        if (MainTE != 0)
+        {
+            MainTE->show();
+            connect(SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+        }
+        thread->start();
         GetBsi();
+    }
     else
         QMessageBox::critical(this,"error!","Ошибка открытия порта " + QString::number(pc.serial.error()));
 }
@@ -188,37 +206,34 @@ void ConSet::SetBaud(QString str)
 
 void ConSet::GetBsi()
 {
-    QThread *thread = new QThread;
-    SThread = new SerialThread(&pc.serial);
-    SThread->moveToThread(thread);
-    connect(thread, SIGNAL(started()), SThread, SLOT(run()));
-    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
-    if (MainTE != 0)
-    {
-        MainTE->show();
-        connect(SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-    }
-
-    thread->start();
-//    QByteArray tmpba = ">GBsi";
-    QByteArray tmpba = "00";
-    connect(SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(CheckBsi(QByteArray)));
-    SThread->WriteData(tmpba);
-    TimeoutTimer->start();
-    UpdateMainTE(tmpba);
+    QByteArray tmpba = ">GBsi";
+//    QByteArray tmpba = "00";
+    connect(this,SIGNAL(receivecompleted()),this,SLOT(CheckBsi()));
+    InitiateWriteDataToPort(tmpba);
 }
 
-void ConSet::CheckBsi(QByteArray ba)
+void ConSet::CheckBsi()
 {
-    QByteArray cmpba;
-    cmpba.resize(4);
-    cmpba[0] = cmpba[1] = cmpba[2] = 0x00;
-    cmpba[3] = 0x03;
-    for (int i = 0; i < 4; i++)
+    // раскидаем принятый inbuf по полочкам
+    unsigned char *Bsipos;
+    Bsi *Bsi_block;
+    Bsi_block = new Bsi;
+    Bsipos = reinterpret_cast<unsigned char *>(Bsi_block);
+    for (int i = 1; i < inbuf.size(); i++) // пропускаем "<", поэтому не от 0
     {
-        if (cmpba.at(i) != ba.at(i))
-            QMessageBox::critical(this,"error!","Модуль не распознан");
+        *Bsipos = inbuf.at(i);
+        Bsipos++;
     }
+
+    QLabel *lbl1 = this->findChild<QLabel *>("lbl1");
+    if (lbl1 == 0)
+        return;
+    lbl1->setText(QString::number(Bsi_block->MType));
+/*    for (int i = 0; i < 4; i++)
+    {
+        if (cmpba.at(i) != inbuf.at(i))
+            QMessageBox::critical(this,"error!","Модуль не распознан");
+    } */
     emit moduleisok();
 }
 
@@ -245,17 +260,51 @@ void ConSet::AllIsOk()
 void ConSet::UpdateMainTE(QByteArray ba)
 {
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
+    QString tmpString;
     if (MainTE != 0)
     {
-        MainTE->append(QString::fromLocal8Bit(ba));
+        for (int i = 0; i < ba.size(); i++)
+        {
+            qint8 halfbyte = ba.at(i) & 0xF0;
+            halfbyte >>= 4;
+            tmpString.append(HalfByteToChar(halfbyte));
+            halfbyte = ba.at(i) & 0x0F;
+            tmpString.append(HalfByteToChar(halfbyte));
+        }
+        MainTE->append(tmpString);
         QString tmpString = MainTE->toPlainText();
         if (tmpString.size() > 10000)
             MainTE->setPlainText(tmpString.right(tmpString.size()-10000));
     }
 }
 
+QString ConSet::HalfByteToChar(qint8 hb)
+{
+    return QString::number(hb, 16);
+}
+
 void ConSet::Timeout()
 {
-    QMessageBox::warning(this,"warning!","Произошёл таймаут ожидания данных");
+    if (NothingReceived)
+        QMessageBox::warning(this,"warning!","Произошёл таймаут ожидания данных");
     TimeoutTimer->stop();
+}
+
+void ConSet::InitiateWriteDataToPort(QByteArray ba)
+{
+    connect(SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateReadBuf(QByteArray)));
+    connect(TimeoutTimer,SIGNAL(timeout()),this,SIGNAL(receivecompleted()));
+    inbuf.clear();
+    SThread->WriteData(ba);
+    NothingReceived = true;
+    TimeoutTimer->start();
+    UpdateMainTE(ba);
+}
+
+void ConSet::UpdateReadBuf(QByteArray ba)
+{
+    NothingReceived = false;
+    TimeoutTimer->start();
+    UpdateMainTE(ba);
+    inbuf.append(ba);
 }

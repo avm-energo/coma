@@ -23,6 +23,7 @@ public:
 signals:
     void portopened();
     void moduleisok();
+    void receivecompleted();
 
 private:
     int baud;
@@ -33,8 +34,22 @@ private:
     tunedialog *TuneDialog;
     downloaddialog *DownDialog;
     SerialThread *SThread;
+    QByteArray inbuf;
+    QTimer *TimeoutTimer, *ReadPortTimer;
+    bool NothingReceived;
 
-    QTimer *TimeoutTimer;
+    struct Bsi
+    {
+        qint32 MType;
+        qint32 HWver;
+        qint32 FWver;
+        qint32 Cfcrc;
+        qint32 Rst;
+        qint32 Hth;
+    };
+
+    void InitiateWriteDataToPort(QByteArray ba);
+    QString HalfByteToChar(qint8);
 
 private slots:
     void Exit();
@@ -47,10 +62,11 @@ private slots:
     void SetBaud(QString);
     void SetPort(QString);
     void GetBsi();
-    void CheckBsi(QByteArray);
+    void CheckBsi();
     void AllIsOk();
     void UpdateMainTE(QByteArray);
     void Timeout();
+    void UpdateReadBuf(QByteArray);
 };
 
 #endif // CONSET_H

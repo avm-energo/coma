@@ -19,7 +19,8 @@ void SerialThread::run()
 
 void SerialThread::CheckForData()
 {
-    QByteArray ba = port->readAll();
+    QByteArray ba;
+    ba.append(port->readAll());
     if (ba.size() > 0)
         emit newdataarrived(ba);
 }
@@ -30,6 +31,6 @@ void SerialThread::WriteData(QByteArray outbuf)
     if (res == -1)
         emit datawritten(1); // ошибка
 //    if (port->waitForBytesWritten(1000))
-        emit datawritten(0); // всё гут
+    emit datawritten(0); // всё гут
 //    emit datawritten(2); // произошёл тайм-аут или ошибка
 }
