@@ -1,4 +1,5 @@
 #include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QComboBox>
 #include <QStringListModel>
@@ -19,22 +20,65 @@
 ConSet::ConSet(QWidget *parent)
     : QMainWindow(parent)
 {
+    setWindowTitle("КАВТУК");
     TimeoutTimer = new QTimer;
     TimeoutTimer->setInterval(400);
     connect(TimeoutTimer, SIGNAL(timeout()),this,SLOT(Timeout()));
-//    ReadPortTimer = new QTimer;
-//    ReadPortTimer->setInterval(2000); // таймер вычисления таймаута по приходу буфера данных
-//    connect(ReadPortTimer, SIGNAL(timeout()),this,SLOT(ReadPortTimeout()));
     setMinimumSize(QSize(800, 550));
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl1 = new QLabel("КАВТУК");
-    QFont font;
-    font.setBold(true);
-    font.setPointSize(24);
-    lbl1->setFont(font);
-    lbl1->setObjectName("lbl1");
-    lyout->addWidget(lbl1);
+
+    QHBoxLayout *uplyout = new QHBoxLayout;
+    QLabel *uplbl1 = new QLabel("Модуль:");
+    QLineEdit *uple1 = new QLineEdit("");
+    uple1->setObjectName("mtypele");
+    uple1->setEnabled(false);
+    uple1->setMaximumWidth(55);
+    uple1->setTextMargins(0,0,0,0);
+    QLabel *uplbl2 = new QLabel("Аппаратная версия:");
+    QLineEdit *uple2 = new QLineEdit("");
+    uple2->setObjectName("hwverle");
+    uple2->setEnabled(false);
+    uple2->setMaximumWidth(55);
+    uple2->setTextMargins(0,0,0,0);
+    QLabel *uplbl3 = new QLabel("Версия ПО:");
+    QLineEdit *uple3 = new QLineEdit("");
+    uple3->setObjectName("fwverle");
+    uple3->setEnabled(false);
+    uple3->setMaximumWidth(55);
+    uple3->setTextMargins(0,0,0,0);
+    QLabel *uplbl4 = new QLabel("КС конфигурации:");
+    QLineEdit *uple4 = new QLineEdit("");
+    uple4->setObjectName("cfcrcle");
+    uple4->setEnabled(false);
+    uple4->setMaximumWidth(55);
+    uple4->setTextMargins(0,0,0,0);
+    QLabel *uplbl5 = new QLabel("Сброс:");
+    QLineEdit *uple5 = new QLineEdit("");
+    uple5->setObjectName("rstle");
+    uple5->setEnabled(false);
+    uple5->setMaximumWidth(55);
+    uple5->setTextMargins(0,0,0,0);
+    QLabel *uplbl6 = new QLabel("Неисправности (01=OK):");
+    QLineEdit *uple6 = new QLineEdit("");
+    uple6->setObjectName("hthle");
+    uple6->setEnabled(false);
+    uple6->setMaximumWidth(55);
+    uple6->setTextMargins(0,0,0,0);
+
+    uplyout->addWidget(uplbl1);
+    uplyout->addWidget(uple1);
+    uplyout->addWidget(uplbl2);
+    uplyout->addWidget(uple2);
+    uplyout->addWidget(uplbl3);
+    uplyout->addWidget(uple3);
+    uplyout->addWidget(uplbl4);
+    uplyout->addWidget(uple4);
+    uplyout->addWidget(uplbl5);
+    uplyout->addWidget(uple5);
+    uplyout->addWidget(uplbl6);
+    uplyout->addWidget(uple6);
+    lyout->addLayout(uplyout);
 
     QMenuBar *MainMenuBar = new QMenuBar;
     QMenu *MainMenu = new QMenu;
@@ -96,6 +140,7 @@ void ConSet::Connect()
     QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
     for (i = 0; i < info.size(); i++)
         tmpsl << info.at(i).portName();
+    SetPort(tmpsl.at(0));
     tmpmodel->setStringList(tmpsl);
     portscb->setModel(tmpmodel);
     lyout->addWidget(portscb);
@@ -108,6 +153,7 @@ void ConSet::Connect()
     QList<qint32> bauds = QSerialPortInfo::standardBaudRates();
     for (i = 0; i < bauds.size(); i++)
         tmpsl << QString::number(bauds.at(i));
+    SetBaud(tmpsl.at(0));
     tmpmodel->setStringList(tmpsl);
     baudscb->setModel(tmpmodel);
     lyout->addWidget(baudscb);
@@ -117,7 +163,6 @@ void ConSet::Connect()
     lyout->addWidget(nextL);
     dlg->setLayout(lyout);
     connect(this,SIGNAL(portopened()),dlg,SLOT(close()));
-    connect(this,SIGNAL(portopened()),this,SLOT(GetBsi()));
     dlg->exec();
 }
 
@@ -135,7 +180,10 @@ void ConSet::Disconnect()
     }
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
+    {
+        MainTE->clear();
         MainTE->hide();
+    }
     MainTW->hide();
 }
 
@@ -155,35 +203,13 @@ void ConSet::Next()
         connect(thread, SIGNAL(started()), SThread, SLOT(run()));
         QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
         if (MainTE != 0)
-        {
             MainTE->show();
-            connect(SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-        }
         thread->start();
+        emit portopened();
         GetBsi();
     }
     else
         QMessageBox::critical(this,"error!","Ошибка открытия порта " + QString::number(pc.serial.error()));
-}
-
-void ConSet::DownloadArchives()
-{
-
-}
-
-void ConSet::DownloadWaveforms()
-{
-
-}
-
-void ConSet::GetAbout()
-{
-
-}
-
-void ConSet::Exit()
-{
-    this->close();
 }
 
 void ConSet::SetPort(QString str)
@@ -207,7 +233,6 @@ void ConSet::SetBaud(QString str)
 void ConSet::GetBsi()
 {
     QByteArray tmpba = ">GBsi";
-//    QByteArray tmpba = "00";
     connect(this,SIGNAL(receivecompleted()),this,SLOT(CheckBsi()));
     InitiateWriteDataToPort(tmpba);
 }
@@ -225,16 +250,16 @@ void ConSet::CheckBsi()
         Bsipos++;
     }
 
-    QLabel *lbl1 = this->findChild<QLabel *>("lbl1");
-    if (lbl1 == 0)
+    QLineEdit *le = this->findChild<QLineEdit *>("mtypele");
+    if (le == 0)
         return;
-    lbl1->setText(QString::number(Bsi_block->MType));
-/*    for (int i = 0; i < 4; i++)
-    {
-        if (cmpba.at(i) != inbuf.at(i))
-            QMessageBox::critical(this,"error!","Модуль не распознан");
-    } */
-    emit moduleisok();
+    le->setText(QString::number(Bsi_block->MType));
+    le = this->findChild<QLineEdit *>("hwverle");
+    if (le == 0)
+        return;
+    le->setText(QString::number(Bsi_block->HWver));
+
+    AllIsOk();
 }
 
 void ConSet::AllIsOk()
@@ -254,7 +279,6 @@ void ConSet::AllIsOk()
     MainTW->addTab(FwUpDialog, "Загрузка ВПО");
     MainTW->repaint();
     MainTW->show();
-    emit portopened();
 }
 
 void ConSet::UpdateMainTE(QByteArray ba)
@@ -286,13 +310,16 @@ QString ConSet::HalfByteToChar(qint8 hb)
 void ConSet::Timeout()
 {
     if (NothingReceived)
+    {
         QMessageBox::warning(this,"warning!","Произошёл таймаут ожидания данных");
+        Disconnect();
+    }
     TimeoutTimer->stop();
 }
 
 void ConSet::InitiateWriteDataToPort(QByteArray ba)
 {
-    connect(SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateReadBuf(QByteArray)));
+    connect(SThread,SIGNAL(newdataarrived()),this,SLOT(UpdateReadBuf()));
     connect(TimeoutTimer,SIGNAL(timeout()),this,SIGNAL(receivecompleted()));
     inbuf.clear();
     SThread->WriteData(ba);
@@ -301,10 +328,21 @@ void ConSet::InitiateWriteDataToPort(QByteArray ba)
     UpdateMainTE(ba);
 }
 
-void ConSet::UpdateReadBuf(QByteArray ba)
+void ConSet::UpdateReadBuf()
 {
+    QByteArray ba = SThread->data();
     NothingReceived = false;
     TimeoutTimer->start();
     UpdateMainTE(ba);
     inbuf.append(ba);
+}
+
+void ConSet::GetAbout()
+{
+
+}
+
+void ConSet::Exit()
+{
+    this->close();
 }

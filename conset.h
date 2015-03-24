@@ -22,7 +22,6 @@ public:
 
 signals:
     void portopened();
-    void moduleisok();
     void receivecompleted();
 
 private:
@@ -50,23 +49,21 @@ private:
 
     void InitiateWriteDataToPort(QByteArray ba);
     QString HalfByteToChar(qint8);
+    void AllIsOk();
 
 private slots:
     void Exit();
     void Connect();
     void Disconnect();
     void Next();
-    void DownloadArchives();
-    void DownloadWaveforms();
     void GetAbout();
     void SetBaud(QString);
     void SetPort(QString);
     void GetBsi();
     void CheckBsi();
-    void AllIsOk();
     void UpdateMainTE(QByteArray);
     void Timeout();
-    void UpdateReadBuf(QByteArray);
+    void UpdateReadBuf();
 };
 
 #endif // CONSET_H

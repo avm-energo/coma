@@ -7,12 +7,18 @@
 class SerialThread : public QObject
 {
     Q_OBJECT
+
 public:
     explicit SerialThread(QSerialPort *, QObject *parent = 0);
     QSerialPort *port;
 
+    QByteArray data();
+
+private:
+    QByteArray ReadData;
+
 signals:
-    void newdataarrived(QByteArray);
+    void newdataarrived();
     void datawritten(int);
 
 public slots:
