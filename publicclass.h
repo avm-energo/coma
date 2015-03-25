@@ -7,6 +7,8 @@
 #define MT_E    4
 
 #include <QtSerialPort/QSerialPort>
+#include <QStringList>
+#include "serialthread.h"
 
 class publicclass
 {
@@ -14,7 +16,17 @@ public:
     publicclass();
 
     QSerialPort serial;
-    int MType;
+    qint32 MType, MType1;
+    QStringList MTypes;
+    SerialThread *SThread;
+
+    QString VerToStr(qint32);
+    qint32 ANumD();
+    qint32 ANumCh1();
+    qint32 ANumCh2();
+    qint32 ATyp1();
+    qint32 ATyp2();
+    qint32 AMdf();
 };
 
 extern publicclass pc;

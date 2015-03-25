@@ -10,7 +10,6 @@
 #include "fwupdialog.h"
 #include "tunedialog.h"
 #include "downloaddialog.h"
-#include "serialthread.h"
 
 class ConSet : public QMainWindow
 {
@@ -32,7 +31,6 @@ private:
     fwupdialog *FwUpDialog;
     tunedialog *TuneDialog;
     downloaddialog *DownDialog;
-    SerialThread *SThread;
     QByteArray inbuf;
     QTimer *TimeoutTimer, *ReadPortTimer;
     bool NothingReceived;
@@ -40,6 +38,7 @@ private:
     struct Bsi
     {
         qint32 MType;
+        qint32 MType1;
         qint32 HWver;
         qint32 FWver;
         qint32 Cfcrc;
@@ -48,7 +47,7 @@ private:
     };
 
     void InitiateWriteDataToPort(QByteArray ba);
-    QString HalfByteToChar(qint8);
+    QString ByteToHex(qint8);
     void AllIsOk();
 
 private slots:
@@ -63,7 +62,6 @@ private slots:
     void CheckBsi();
     void UpdateMainTE(QByteArray);
     void Timeout();
-    void UpdateReadBuf();
 };
 
 #endif // CONSET_H

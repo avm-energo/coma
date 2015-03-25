@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QtSerialPort/QSerialPort>
+#include <QTimer>
 
 class SerialThread : public QObject
 {
@@ -13,13 +14,17 @@ public:
     QSerialPort *port;
 
     QByteArray data();
-
+    void InitiateWriteDataToPort(QByteArray ba);
 private:
     QByteArray ReadData;
+    QTimer *TimeoutTimer;
+    bool NothingReceived;
 
 signals:
-    void newdataarrived();
-    void datawritten(int);
+    void newdataarrived(QByteArray);
+    void datawritten(QByteArray);
+    void timeout();
+    void receivecompleted();
 
 public slots:
     void run();
@@ -27,6 +32,7 @@ public slots:
 
 private slots:
     void CheckForData();
+    void Timeout();
 };
 
 #endif // SERIALTHREAD_H

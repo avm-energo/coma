@@ -21,15 +21,12 @@ ConSet::ConSet(QWidget *parent)
     : QMainWindow(parent)
 {
     setWindowTitle("КАВТУК");
-    TimeoutTimer = new QTimer;
-    TimeoutTimer->setInterval(400);
-    connect(TimeoutTimer, SIGNAL(timeout()),this,SLOT(Timeout()));
     setMinimumSize(QSize(800, 550));
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
 
     QHBoxLayout *uplyout = new QHBoxLayout;
-    QLabel *uplbl1 = new QLabel("Модуль:");
+    QLabel *uplbl1 = new QLabel("Модуль: АВТУК-");
     QLineEdit *uple1 = new QLineEdit("");
     uple1->setObjectName("mtypele");
     uple1->setEnabled(false);
@@ -39,31 +36,31 @@ ConSet::ConSet(QWidget *parent)
     QLineEdit *uple2 = new QLineEdit("");
     uple2->setObjectName("hwverle");
     uple2->setEnabled(false);
-    uple2->setMaximumWidth(55);
+    uple2->setMaximumWidth(70);
     uple2->setTextMargins(0,0,0,0);
     QLabel *uplbl3 = new QLabel("Версия ПО:");
     QLineEdit *uple3 = new QLineEdit("");
     uple3->setObjectName("fwverle");
     uple3->setEnabled(false);
-    uple3->setMaximumWidth(55);
+    uple3->setMaximumWidth(70);
     uple3->setTextMargins(0,0,0,0);
     QLabel *uplbl4 = new QLabel("КС конфигурации:");
     QLineEdit *uple4 = new QLineEdit("");
     uple4->setObjectName("cfcrcle");
     uple4->setEnabled(false);
-    uple4->setMaximumWidth(55);
+    uple4->setMaximumWidth(60);
     uple4->setTextMargins(0,0,0,0);
     QLabel *uplbl5 = new QLabel("Сброс:");
     QLineEdit *uple5 = new QLineEdit("");
     uple5->setObjectName("rstle");
     uple5->setEnabled(false);
-    uple5->setMaximumWidth(55);
+    uple5->setMaximumWidth(60);
     uple5->setTextMargins(0,0,0,0);
     QLabel *uplbl6 = new QLabel("Неисправности (01=OK):");
     QLineEdit *uple6 = new QLineEdit("");
     uple6->setObjectName("hthle");
     uple6->setEnabled(false);
-    uple6->setMaximumWidth(55);
+    uple6->setMaximumWidth(60);
     uple6->setTextMargins(0,0,0,0);
 
     uplyout->addWidget(uplbl1);
@@ -79,6 +76,7 @@ ConSet::ConSet(QWidget *parent)
     uplyout->addWidget(uplbl6);
     uplyout->addWidget(uple6);
     lyout->addLayout(uplyout);
+    lyout->addStretch(1);
 
     QMenuBar *MainMenuBar = new QMenuBar;
     QMenu *MainMenu = new QMenu;
@@ -108,13 +106,13 @@ ConSet::ConSet(QWidget *parent)
     MainTW->setObjectName("maintw");
     MainTW->setTabPosition(QTabWidget::West);
     MainTW->hide();
-    inlyout->addWidget(MainTW, 75);
+    inlyout->addWidget(MainTW, 60);
 
     QTextEdit *MainTE = new QTextEdit;
     MainTE->setObjectName("mainte");
     MainTE->hide();
-    inlyout->addWidget(MainTE, 25);
-    lyout->addLayout(inlyout);
+    inlyout->addWidget(MainTE, 40);
+    lyout->addLayout(inlyout, 90);
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
 }
@@ -198,9 +196,10 @@ void ConSet::Next()
     if (pc.serial.open(QIODevice::ReadWrite))
     {
         QThread *thread = new QThread;
-        SThread = new SerialThread(&pc.serial);
-        SThread->moveToThread(thread);
-        connect(thread, SIGNAL(started()), SThread, SLOT(run()));
+        pc.SThread = new SerialThread(&pc.serial);
+        pc.SThread->moveToThread(thread);
+        connect(thread, SIGNAL(started()), pc.SThread, SLOT(run()));
+        connect(pc.SThread,SIGNAL(timeout()),this,SLOT(Timeout())); // таймаут по отсутствию принятых данных
         QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
         if (MainTE != 0)
             MainTE->show();
@@ -233,8 +232,10 @@ void ConSet::SetBaud(QString str)
 void ConSet::GetBsi()
 {
     QByteArray tmpba = ">GBsi";
-    connect(this,SIGNAL(receivecompleted()),this,SLOT(CheckBsi()));
-    InitiateWriteDataToPort(tmpba);
+//    QByteArray tmpba = ">GBda";
+    connect(pc.SThread,SIGNAL(receivecompleted()),this,SLOT(CheckBsi()));
+    connect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+    pc.SThread->InitiateWriteDataToPort(tmpba);
 }
 
 void ConSet::CheckBsi()
@@ -250,20 +251,74 @@ void ConSet::CheckBsi()
         Bsipos++;
     }
 
+    pc.MType = Bsi_block->MType;
+    pc.MType1 = Bsi_block->MType1;
+
     QLineEdit *le = this->findChild<QLineEdit *>("mtypele");
     if (le == 0)
         return;
-    le->setText(QString::number(Bsi_block->MType));
+    QString MType;
+    qint32 tmpint;
+    switch (Bsi_block->MType)
+    {
+    case MT_A:
+    {
+        MType.append("А");
+        MType.append(QString::number(pc.ANumD()));
+        MType.append(QString::number(pc.ANumCh1()));
+        MType.append(pc.MTypes.at(pc.ATyp1()));
+        tmpint = pc.ANumCh2();
+        if (tmpint != 0)
+        {
+            MType.append(QString::number(tmpint));
+            MType.append(pc.MTypes.at(pc.ATyp2()));
+        }
+        MType.append(QString("%1").arg(pc.AMdf(), 3, 10, QChar('0')));
+        break;
+    }
+    case MT_C: // разборка подтипа модуля Ц
+    {
+        break;
+    }
+    case MT_D: // разборка подтипа модуля Д
+    {
+        break;
+    }
+    case MT_E: // разборка подтипа модуля Э
+    {
+        break;
+    }
+    default:
+        break;
+    }
+    le->setText(MType);
     le = this->findChild<QLineEdit *>("hwverle");
     if (le == 0)
         return;
-    le->setText(QString::number(Bsi_block->HWver));
+    le->setText(pc.VerToStr(Bsi_block->HWver));
+    le = this->findChild<QLineEdit *>("fwverle");
+    if (le == 0)
+        return;
+    le->setText(pc.VerToStr(Bsi_block->FWver));
+    le = this->findChild<QLineEdit *>("cfcrcle");
+    if (le == 0)
+        return;
+    le->setText(QString::number(Bsi_block->Cfcrc, 16));
+    le = this->findChild<QLineEdit *>("rstle");
+    if (le == 0)
+        return;
+    le->setText(QString::number(Bsi_block->Rst, 16));
+    le = this->findChild<QLineEdit *>("hthle");
+    if (le == 0)
+        return;
+    le->setText(QString::number(Bsi_block->Hth, 16));
 
     AllIsOk();
 }
 
 void ConSet::AllIsOk()
 {
+
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
@@ -288,13 +343,7 @@ void ConSet::UpdateMainTE(QByteArray ba)
     if (MainTE != 0)
     {
         for (int i = 0; i < ba.size(); i++)
-        {
-            qint8 halfbyte = ba.at(i) & 0xF0;
-            halfbyte >>= 4;
-            tmpString.append(HalfByteToChar(halfbyte));
-            halfbyte = ba.at(i) & 0x0F;
-            tmpString.append(HalfByteToChar(halfbyte));
-        }
+            tmpString.append(ByteToHex(ba.at(i)));
         MainTE->append(tmpString);
         QString tmpString = MainTE->toPlainText();
         if (tmpString.size() > 10000)
@@ -302,40 +351,48 @@ void ConSet::UpdateMainTE(QByteArray ba)
     }
 }
 
-QString ConSet::HalfByteToChar(qint8 hb)
+QString ConSet::ByteToHex(qint8 hb)
 {
-    return QString::number(hb, 16);
+    QString tmpString;
+    qint8 halfbyte = hb & 0xF0;
+    halfbyte >>= 4;
+    tmpString.append(QString::number(halfbyte, 16));
+    halfbyte = hb & 0x0F;
+    tmpString.append(QString::number(halfbyte, 16));
+    return tmpString;
 }
 
-void ConSet::Timeout()
+/*void ConSet::Timeout()
 {
     if (NothingReceived)
     {
         QMessageBox::warning(this,"warning!","Произошёл таймаут ожидания данных");
-        Disconnect();
+//        Disconnect();
     }
     TimeoutTimer->stop();
+} */
+
+void ConSet::Timeout()
+{
+    QMessageBox::warning(this,"warning!","Произошёл таймаут ожидания данных");
+    Disconnect();
 }
 
-void ConSet::InitiateWriteDataToPort(QByteArray ba)
+/*void ConSet::InitiateWriteDataToPort(QByteArray ba)
 {
-    connect(SThread,SIGNAL(newdataarrived()),this,SLOT(UpdateReadBuf()));
+    connect(pc.SThread,SIGNAL(newdataarrived()),this,SLOT(UpdateReadBuf()));
     connect(TimeoutTimer,SIGNAL(timeout()),this,SIGNAL(receivecompleted()));
     inbuf.clear();
-    SThread->WriteData(ba);
+    pc.SThread->WriteData(ba);
     NothingReceived = true;
     TimeoutTimer->start();
     UpdateMainTE(ba);
-}
+} */
 
-void ConSet::UpdateReadBuf()
+/*void ConSet::UpdateReadBuf(QByteArray ba)
 {
-    QByteArray ba = SThread->data();
-    NothingReceived = false;
-    TimeoutTimer->start();
     UpdateMainTE(ba);
-    inbuf.append(ba);
-}
+}*/
 
 void ConSet::GetAbout()
 {

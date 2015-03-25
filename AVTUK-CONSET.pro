@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     mytabwidget.cpp \
     publicclass.cpp \
     downloaddialog.cpp \
-    serialthread.cpp
+    serialthread.cpp \
+    s_tqcombobox.cpp
 
 HEADERS  += conset.h \
     confdialog.h \
@@ -33,4 +34,5 @@ HEADERS  += conset.h \
     mytabwidget.h \
     publicclass.h \
     downloaddialog.h \
-    serialthread.h
+    serialthread.h \
+    s_tqcombobox.h
