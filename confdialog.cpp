@@ -9,14 +9,19 @@
 #include <QVBoxLayout>
 #include <QMessageBox>
 
-#include "publicclass.h"
 #include "confdialog.h"
 
 confdialog::confdialog(QWidget *parent) :
     QDialog(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
     Bci_block = new Bci;
+    publicclass::DataRec Config[] =
+    {
+        //id            data_type		elem_size		num_elem                                thedata
+        { BCI_INTYPE,   u8_TYPE,		sizeof(qint8),  sizeof(confdialog::Bci)/sizeof(qint8),  &Bci_block->in_type},
+        { 0xFFFF, }
+    };
+    setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
@@ -115,10 +120,12 @@ void confdialog::FillConfData()
 
 int confdialog::BciPack()
 {
+
     return 0;
 }
 
 int confdialog::BciUnpack()
 {
+
     return 0;
 }

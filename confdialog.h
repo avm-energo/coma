@@ -4,6 +4,26 @@
 #include <QDialog>
 
 #include "s_tqcombobox.h"
+#include "publicclass.h"
+
+// Описание блока Bci
+#define BCI_INTYPE      1
+#define BCI_INMIN       2
+#define BCI_INMAX       3
+#define BCI_INVMIN      4
+#define BCI_INVMAX      5
+#define BCI_SETMINMIN   6
+#define BCI_SETMIN      7
+#define BCI_SETMAX      8
+#define BCI_SETMAXMAX   9
+#define BCI_DISCOSC     10
+#define BCI_CTYPE       11
+#define BCI_ABS_104     12
+#define BCI_CYCLE_104   13
+#define BCI_T1_104      14
+#define BCI_T2_104      15
+#define BCI_T3_104      16
+#define BCI_K_104       17
 
 class confdialog : public QDialog
 {
@@ -34,6 +54,7 @@ private:
     };
 
     Bci *Bci_block;
+//    publicclass::DataRec Config[];
 
     void GetBci();
     int BciUnpack();
