@@ -1,10 +1,10 @@
-#ifndef CONFDIALOG_H
-#define CONFDIALOG_H
+#ifndef A_CONFDIALOG_H
+#define A_CONFDIALOG_H
 
 #include <QDialog>
 
-#include "s_tqcombobox.h"
-#include "publicclass.h"
+#include "../s_tqcombobox.h"
+#include "../publicclass.h"
 
 // Описание блока Bci
 #define BCI_INTYPE      1
@@ -25,14 +25,14 @@
 #define BCI_T3_104      16
 #define BCI_K_104       17
 
-class confdialog : public QDialog
+class a_confdialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit confdialog(QWidget *parent = 0);
+    explicit a_confdialog(QWidget *parent = 0);
 
 private:
-    struct Bci
+    typedef struct
     {
         qint8 in_type[16];	// Тип входа №0…15 (см. ниже)
         float in_min[16]; 	// Минимальное значение диапазона изменения сигнала
@@ -51,13 +51,13 @@ private:
         qint32 T2_104;		// тайм-аут Т2 для протокола 104
         qint32 T3_104;		// тайм-аут Т3 для протокола 104
         qint32 k_104;		// макс. кол-во неподтв. сообщений
-    };
+    } Bci;
 
-    Bci *Bci_block;
-//    publicclass::DataRec Config[];
+    Bci Bci_block;
+    publicclass::DataRec *Config;
 
     void GetBci();
-    int BciUnpack();
+    int BciUnpack(QByteArray);
     int BciPack();
 
 signals:
@@ -69,4 +69,4 @@ private slots:
     void FillConfData();
 };
 
-#endif // CONFDIALOG_H
+#endif // A_CONFDIALOG_H

@@ -1,3 +1,4 @@
+#include <QtTest/QTest>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
@@ -164,27 +165,6 @@ void ConSet::Connect()
     dlg->exec();
 }
 
-void ConSet::Disconnect()
-{
-    pc.serial.close();
-    MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
-    if (MainTW == 0)
-        return;
-    while (MainTW->count())
-    {
-        QWidget *wdgt = MainTW->widget(0);
-        MainTW->removeTab(0);
-        delete wdgt;
-    }
-    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
-    if (MainTE != 0)
-    {
-        MainTE->clear();
-        MainTE->hide();
-    }
-    MainTW->hide();
-}
-
 void ConSet::Next()
 {
     pc.serial.setPort(port);
@@ -234,6 +214,7 @@ void ConSet::GetBsi()
     QByteArray tmpba = ">GBsi";
 //    QByteArray tmpba = ">GBda";
     connect(pc.SThread,SIGNAL(receivecompleted()),this,SLOT(CheckBsi()));
+    connect(pc.SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     pc.SThread->InitiateWriteDataToPort(tmpba);
 }
@@ -242,36 +223,37 @@ void ConSet::CheckBsi()
 {
     // раскидаем принятый inbuf по полочкам
     unsigned char *Bsipos;
-    Bsi *Bsi_block;
-    Bsi_block = new Bsi;
-    Bsipos = reinterpret_cast<unsigned char *>(Bsi_block);
+    disconnect(pc.SThread,SIGNAL(receivecompleted()),this,SLOT(CheckBsi()));
+    Bsi Bsi_block;
+    inbuf = pc.SThread->data();
+    Bsipos = reinterpret_cast<unsigned char *>(&Bsi_block);
     for (int i = 1; i < inbuf.size(); i++) // пропускаем "<", поэтому не от 0
     {
         *Bsipos = inbuf.at(i);
         Bsipos++;
     }
 
-    pc.MType = Bsi_block->MType;
-    pc.MType1 = Bsi_block->MType1;
+    pc.MType = Bsi_block.MType;
+    pc.MType1 = Bsi_block.MType1;
 
     QLineEdit *le = this->findChild<QLineEdit *>("mtypele");
     if (le == 0)
         return;
     QString MType;
     qint32 tmpint;
-    switch (Bsi_block->MType)
+    switch (Bsi_block.MType)
     {
     case MT_A:
     {
         MType.append("А");
         MType.append(QString::number(pc.ANumD()));
         MType.append(QString::number(pc.ANumCh1()));
-        MType.append(pc.MTypes.at(pc.ATyp1()));
+        MType.append(pc.AMTypes.at(pc.ATyp1()));
         tmpint = pc.ANumCh2();
         if (tmpint != 0)
         {
             MType.append(QString::number(tmpint));
-            MType.append(pc.MTypes.at(pc.ATyp2()));
+            MType.append(pc.AMTypes.at(pc.ATyp2()));
         }
         MType.append(QString("%1").arg(pc.AMdf(), 3, 10, QChar('0')));
         break;
@@ -295,24 +277,28 @@ void ConSet::CheckBsi()
     le = this->findChild<QLineEdit *>("hwverle");
     if (le == 0)
         return;
-    le->setText(pc.VerToStr(Bsi_block->HWver));
+    le->setText(pc.VerToStr(Bsi_block.HWver));
     le = this->findChild<QLineEdit *>("fwverle");
     if (le == 0)
         return;
-    le->setText(pc.VerToStr(Bsi_block->FWver));
+    le->setText(pc.VerToStr(Bsi_block.FWver));
     le = this->findChild<QLineEdit *>("cfcrcle");
     if (le == 0)
         return;
-    le->setText(QString::number(Bsi_block->Cfcrc, 16));
+    le->setText(QString::number(Bsi_block.Cfcrc, 16));
     le = this->findChild<QLineEdit *>("rstle");
     if (le == 0)
         return;
-    le->setText(QString::number(Bsi_block->Rst, 16));
+    le->setText(QString::number(Bsi_block.Rst, 16));
     le = this->findChild<QLineEdit *>("hthle");
     if (le == 0)
         return;
-    le->setText(QString::number(Bsi_block->Hth, 16));
+    le->setText(QString::number(Bsi_block.Hth, 16));
 
+/*    while (1)
+    {
+        QTest::qWait(100);
+    } */
     AllIsOk();
 }
 
@@ -322,17 +308,18 @@ void ConSet::AllIsOk()
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
-    ConfDialog = new confdialog;
-    TuneDialog = new tunedialog;
-    CheckDialog = new checkdialog;
+    AConfDialog = new a_confdialog;
+    ATuneDialog = new a_tunedialog;
+    ACheckDialog = new a_checkdialog;
     DownDialog = new downloaddialog;
     FwUpDialog = new fwupdialog;
-    MainTW->addTab(ConfDialog, "Конфигурирование");
-    MainTW->addTab(TuneDialog, "Настройка");
-    MainTW->addTab(CheckDialog, "Проверка");
+    MainTW->addTab(AConfDialog, "Конфигурирование");
+    MainTW->addTab(ATuneDialog, "Настройка");
+    MainTW->addTab(ACheckDialog, "Проверка");
     MainTW->addTab(DownDialog, "Скачать");
     MainTW->addTab(FwUpDialog, "Загрузка ВПО");
     MainTW->repaint();
+
     MainTW->show();
 }
 
@@ -375,7 +362,28 @@ QString ConSet::ByteToHex(qint8 hb)
 void ConSet::Timeout()
 {
     QMessageBox::warning(this,"warning!","Произошёл таймаут ожидания данных");
-    Disconnect();
+//    Disconnect();
+}
+
+void ConSet::Disconnect()
+{
+    pc.serial.close();
+    MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
+    if (MainTW == 0)
+        return;
+    while (MainTW->count())
+    {
+        QWidget *wdgt = MainTW->widget(0);
+        MainTW->removeTab(0);
+        delete wdgt;
+    }
+    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
+    if (MainTE != 0)
+    {
+        MainTE->clear();
+        MainTE->hide();
+    }
+//    MainTW->hide();
 }
 
 /*void ConSet::InitiateWriteDataToPort(QByteArray ba)

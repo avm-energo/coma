@@ -1,6 +1,6 @@
 #include "tunedialog.h"
 
-tunedialog::tunedialog(QWidget *parent) :
+a_tunedialog::a_tunedialog(QWidget *parent) :
     QDialog(parent)
 {
 }

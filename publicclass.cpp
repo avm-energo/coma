@@ -75,10 +75,11 @@ unsigned long  _crc32_t[256]=
 
 publicclass::publicclass()
 {
-    MTypes.append("Ц");
-    MTypes.append("Д");
-    MTypes.append("А");
-    MTypes.append("Э");
+    AMTypes.append("Z"); // фиктивный тип, типы начинаются с 1
+    AMTypes.append("А");
+    AMTypes.append("Р");
+    AMTypes.append("И");
+    AMTypes.append("С");
     MType = MType1 = 0xFFFFFFFF;
 }
 
@@ -91,15 +92,16 @@ QString publicclass::VerToStr(qint32 num)
     return tmpString;
 }
 
-int publicclass::StoreDataMem(void *mem, DataHeader *dh, DataRec *dr) //0 - успешно, иначе код ошибки
+int publicclass::StoreDataMem(void *mem, DataRec *dr) //0 - успешно, иначе код ошибки
 {
   qint32 crc=0xFFFFFFFF;
-  DataHeader *D=dh;
+  DataHeader *D;
+  D = new DataHeader;
   DataRec *R;
   qint32 i;
   char *m=(char *)mem;
   m+=sizeof(DataHeader);
-  dh->size=0;
+  D->size=0;
   for(R=dr;;R++)
   {
     for(i=0;i<(sizeof(DataRec)-sizeof(void *));i++)
@@ -121,9 +123,9 @@ int publicclass::StoreDataMem(void *mem, DataHeader *dh, DataRec *dr) //0 - ус
     }
     if(R->id==0xFFFF) break;
   }
-  dh->crc32=crc;
-  dh->thetime=getTime32();
-  memcpy(mem,dh,sizeof(*dh));
+  D->crc32=crc;
+  D->thetime=getTime32();
+  memcpy(mem,D,sizeof(*D));
   return 0;
 }
 
@@ -153,16 +155,17 @@ publicclass::DataRec *publicclass::FindElem(DataRec *dr, qint16 id)
   return NULL;
 }
 
-int publicclass::RestoreDataMem(void *mem, DataHeader *dh, DataRec *dr)
+int publicclass::RestoreDataMem(void *mem, DataRec *dr)
 {
   qint32 crc;
   qint32 sz=0;
-  char *m=(char *)mem;
+  char *m=static_cast<char *>(mem);
   DataRec R,*r;
+  DataHeader dh;
   qint32 i;
 
   crc=0xFFFFFFFF;
-  memcpy(dh,m,sizeof(DataHeader));
+  memcpy(&dh,m,sizeof(DataHeader));
   m+=sizeof(DataHeader);
   for(;;)
   {
@@ -195,11 +198,11 @@ int publicclass::RestoreDataMem(void *mem, DataHeader *dh, DataRec *dr)
     }
     if(R.id==0xFFFF) break;
   }
-  if(dh->crc32!=crc)
+  if(dh.crc32!=crc)
   {
     return -3;	//с кодами ошибок разберёмся позже;
   }
-  if(dh->size!=sz)
+  if(dh.size!=sz)
   {
     return -3;	//с кодами ошибок разберёмся позже;
   }

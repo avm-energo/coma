@@ -31,7 +31,7 @@ public:
 
     QSerialPort serial;
     qint32 MType, MType1;
-    QStringList MTypes;
+    QStringList AMTypes, DMTypes, EMTypes;
     SerialThread *SThread;
 
     // S2: Определение типа заголовка
@@ -62,13 +62,13 @@ public:
     qint32 AMdf();
 
     // S2: Сборщик в память:
-    int StoreDataMem(void *, DataHeader *, DataRec *); //0 - успешно, иначе код ошибки
+    int StoreDataMem(void *, DataRec *); //0 - успешно, иначе код ошибки
     // S2: получение размера:
     int StoreDataSize(DataHeader *, DataRec *); //>0 - успешно, иначе код ошибки
     // S2: Разборщик из памяти:
-    int RestoreDataMem(void *, DataHeader *, DataRec *); //0 - успешно, иначе код ошибки
+    int RestoreDataMem(void *, DataRec *); //0 - успешно, иначе код ошибки
     // S2: Поиск элемента в массиве описаний
-    DataRec *FindElem(DataRec *dr, qint16 id);
+    DataRec *FindElem(DataRec *, qint16);
 
     qint32 GetCRC32(char *, qint32);
 

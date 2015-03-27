@@ -5,11 +5,11 @@
 #include <QTimer>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtSerialPort/QSerialPort>
-#include "checkdialog.h"
-#include "confdialog.h"
 #include "fwupdialog.h"
-#include "tunedialog.h"
 #include "downloaddialog.h"
+#include "A/checkdialog.h"
+#include "A/confdialog.h"
+#include "A/tunedialog.h"
 
 class ConSet : public QMainWindow
 {
@@ -26,10 +26,10 @@ signals:
 private:
     int baud;
     QSerialPortInfo port;
-    checkdialog *CheckDialog;
-    confdialog *ConfDialog;
+    a_checkdialog *ACheckDialog;
+    a_confdialog *AConfDialog;
+    a_tunedialog *ATuneDialog;
     fwupdialog *FwUpDialog;
-    tunedialog *TuneDialog;
     downloaddialog *DownDialog;
     QByteArray inbuf;
     QTimer *TimeoutTimer, *ReadPortTimer;

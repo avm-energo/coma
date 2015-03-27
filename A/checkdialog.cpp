@@ -1,6 +1,6 @@
 #include "checkdialog.h"
 
-checkdialog::checkdialog(QWidget *parent) :
+a_checkdialog::a_checkdialog(QWidget *parent) :
     QDialog(parent)
 {
 }

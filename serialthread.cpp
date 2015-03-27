@@ -9,7 +9,7 @@ SerialThread::SerialThread(QSerialPort *port, QObject *parent) :
     this->port = port;
     TimeoutTimer = new QTimer;
     TimeoutTimer->setInterval(400);
-    connect(TimeoutTimer, SIGNAL(timeout()),this,SLOT(Timeout()));
+//    connect(TimeoutTimer, SIGNAL(timeout()),this,SLOT(Timeout())); // temporary
 }
 
 void SerialThread::run()
@@ -23,6 +23,7 @@ void SerialThread::CheckForData()
     NothingReceived = false;
     ReadData.append(ba);
     emit newdataarrived(ba);
+    emit receivecompleted(); // temporary
     if (TimeoutTimer->isActive())
         TimeoutTimer->start();
 }
