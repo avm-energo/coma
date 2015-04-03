@@ -116,6 +116,8 @@ ConSet::ConSet(QWidget *parent)
     lyout->addLayout(inlyout, 90);
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
+    pc.SThread = new SerialThread();
+    connect(pc.SThread,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
 }
 
 ConSet::~ConSet()
@@ -133,26 +135,25 @@ void ConSet::Connect()
     QVBoxLayout *lyout = new QVBoxLayout;
     QComboBox *portscb = new QComboBox;
     portscb->setObjectName("connectportscb");
-    connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPort(QString)));
+    connect(portscb,SIGNAL(currentIndexChanged(QString)),pc.SThread,SLOT(SetPort(QString)));
     QStringListModel *tmpmodel = new QStringListModel;
     QStringList tmpsl;
     QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
     for (i = 0; i < info.size(); i++)
         tmpsl << info.at(i).portName();
-    SetPort(tmpsl.at(0));
+    pc.SThread->SetPort(tmpsl.at(0));
     tmpmodel->setStringList(tmpsl);
     portscb->setModel(tmpmodel);
     lyout->addWidget(portscb);
-
     QComboBox *baudscb = new QComboBox;
     baudscb->setObjectName("connectbaudscb");
-    connect(baudscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetBaud(QString)));
+    connect(baudscb,SIGNAL(currentIndexChanged(QString)),pc.SThread,SLOT(SetBaud(QString)));
     tmpmodel = new QStringListModel;
     tmpsl.clear();
     QList<qint32> bauds = QSerialPortInfo::standardBaudRates();
     for (i = 0; i < bauds.size(); i++)
         tmpsl << QString::number(bauds.at(i));
-    SetBaud(tmpsl.at(0));
+    pc.SThread->SetBaud(tmpsl.at(0));
     tmpmodel->setStringList(tmpsl);
     baudscb->setModel(tmpmodel);
     lyout->addWidget(baudscb);
@@ -167,46 +168,21 @@ void ConSet::Connect()
 
 void ConSet::Next()
 {
-    pc.serial.setPort(port);
-    pc.serial.setBaudRate(baud);
-    pc.serial.setParity(QSerialPort::NoParity);
-    pc.serial.setDataBits(QSerialPort::Data8);
-    pc.serial.setFlowControl(QSerialPort::NoFlowControl);
-    pc.serial.setStopBits(QSerialPort::OneStop);
-    if (pc.serial.open(QIODevice::ReadWrite))
-    {
-        QThread *thread = new QThread;
-        pc.SThread = new SerialThread(&pc.serial);
-        pc.SThread->moveToThread(thread);
-        connect(thread, SIGNAL(started()), pc.SThread, SLOT(run()));
-        connect(pc.SThread,SIGNAL(timeout()),this,SLOT(Timeout())); // таймаут по отсутствию принятых данных
-        QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
-        if (MainTE != 0)
-            MainTE->show();
-        thread->start();
-        emit portopened();
-        GetBsi();
-    }
-    else
-        QMessageBox::critical(this,"error!","Ошибка открытия порта " + QString::number(pc.serial.error()));
+    QThread *thread = new QThread;
+    pc.SThread->moveToThread(thread);
+    connect(thread, SIGNAL(started()), pc.SThread, SLOT(run()));
+    connect(pc.SThread,SIGNAL(timeout()),this,SLOT(Timeout())); // таймаут по отсутствию принятых данных
+    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
+    if (MainTE != 0)
+        MainTE->show();
+    thread->start();
+    emit portopened();
+    GetBsi();
 }
 
-void ConSet::SetPort(QString str)
+void ConSet::ShowErrMsg(int ermsg)
 {
-    QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
-    for (int i = 0; i < info.size(); i++)
-    {
-        if (info.at(i).portName() == str)
-        {
-            port = info.at(i);
-            return;
-        }
-    }
-}
-
-void ConSet::SetBaud(QString str)
-{
-    baud = str.toInt();
+    QMessageBox::critical(this,"error!","Ошибка открытия порта");
 }
 
 void ConSet::GetBsi()
@@ -217,6 +193,7 @@ void ConSet::GetBsi()
     connect(pc.SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     pc.SThread->InitiateWriteDataToPort(tmpba);
+//    CheckBsi(); // temporary
 }
 
 void ConSet::CheckBsi()
@@ -229,6 +206,8 @@ void ConSet::CheckBsi()
     Bsipos = reinterpret_cast<unsigned char *>(&Bsi_block);
     for (int i = 1; i < inbuf.size(); i++) // пропускаем "<", поэтому не от 0
     {
+        if (i > (sizeof(Bsi)-1))
+            break;
         *Bsipos = inbuf.at(i);
         Bsipos++;
     }
@@ -332,32 +311,22 @@ void ConSet::UpdateMainTE(QByteArray ba)
         for (int i = 0; i < ba.size(); i++)
             tmpString.append(ByteToHex(ba.at(i)));
         MainTE->append(tmpString);
-        QString tmpString = MainTE->toPlainText();
+        tmpString = MainTE->toPlainText();
         if (tmpString.size() > 10000)
             MainTE->setPlainText(tmpString.right(tmpString.size()-10000));
     }
 }
 
-QString ConSet::ByteToHex(qint8 hb)
+QString ConSet::ByteToHex(quint8 hb)
 {
     QString tmpString;
-    qint8 halfbyte = hb & 0xF0;
+    quint8 halfbyte = hb & 0xF0;
     halfbyte >>= 4;
     tmpString.append(QString::number(halfbyte, 16));
     halfbyte = hb & 0x0F;
     tmpString.append(QString::number(halfbyte, 16));
     return tmpString;
 }
-
-/*void ConSet::Timeout()
-{
-    if (NothingReceived)
-    {
-        QMessageBox::warning(this,"warning!","Произошёл таймаут ожидания данных");
-//        Disconnect();
-    }
-    TimeoutTimer->stop();
-} */
 
 void ConSet::Timeout()
 {
@@ -385,22 +354,6 @@ void ConSet::Disconnect()
     }
 //    MainTW->hide();
 }
-
-/*void ConSet::InitiateWriteDataToPort(QByteArray ba)
-{
-    connect(pc.SThread,SIGNAL(newdataarrived()),this,SLOT(UpdateReadBuf()));
-    connect(TimeoutTimer,SIGNAL(timeout()),this,SIGNAL(receivecompleted()));
-    inbuf.clear();
-    pc.SThread->WriteData(ba);
-    NothingReceived = true;
-    TimeoutTimer->start();
-    UpdateMainTE(ba);
-} */
-
-/*void ConSet::UpdateReadBuf(QByteArray ba)
-{
-    UpdateMainTE(ba);
-}*/
 
 void ConSet::GetAbout()
 {

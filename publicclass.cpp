@@ -150,7 +150,7 @@ publicclass::DataRec *publicclass::FindElem(DataRec *dr, qint16 id)
   for(;;dr++)
   {
     if(dr->id==id) return dr;
-    if(dr->id==0xFFFF) break;
+    if(dr->id==static_cast<qint16>(0xFFFF)) break;
   }
   return NULL;
 }

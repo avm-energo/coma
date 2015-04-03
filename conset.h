@@ -24,8 +24,6 @@ signals:
     void receivecompleted();
 
 private:
-    int baud;
-    QSerialPortInfo port;
     a_checkdialog *ACheckDialog;
     a_confdialog *AConfDialog;
     a_tunedialog *ATuneDialog;
@@ -47,7 +45,7 @@ private:
     };
 
     void InitiateWriteDataToPort(QByteArray ba);
-    QString ByteToHex(qint8);
+    QString ByteToHex(quint8);
     void AllIsOk();
 
 private slots:
@@ -56,8 +54,7 @@ private slots:
     void Disconnect();
     void Next();
     void GetAbout();
-    void SetBaud(QString);
-    void SetPort(QString);
+    void ShowErrMsg(int);
     void GetBsi();
     void CheckBsi();
     void UpdateMainTE(QByteArray);

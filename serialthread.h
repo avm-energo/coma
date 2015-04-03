@@ -2,16 +2,20 @@
 #define SERIALTHREAD_H
 
 #include <QObject>
-#include <QtSerialPort/QSerialPort>
 #include <QTimer>
+#include <QtSerialPort/QSerialPort>
+#include <QtSerialPort/QSerialPortInfo>
 
 class SerialThread : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit SerialThread(QSerialPort *, QObject *parent = 0);
+    explicit SerialThread(QObject *parent = 0);
+    QSerialPortInfo portinfo;
     QSerialPort *port;
+    int baud;
+    QByteArray OutDataBuf;
 
     QByteArray data();
     void InitiateWriteDataToPort(QByteArray ba);
@@ -25,10 +29,14 @@ signals:
     void datawritten(QByteArray);
     void timeout();
     void receivecompleted();
+    void finished();
+    void error(int);
 
 public slots:
     void run();
-    void WriteData(QByteArray);
+    void WriteData();
+    void SetPort(QString str);
+    void SetBaud(QString str);
 
 private slots:
     void CheckForData();

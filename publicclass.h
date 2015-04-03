@@ -44,7 +44,7 @@ public:
 
     // S2: Определение типа записи
 
-    typedef struct
+    typedef struct DataRec
     {
       qint16 id;
       qint16 data_type;

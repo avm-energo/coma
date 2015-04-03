@@ -24,6 +24,7 @@
 #define BCI_T2_104      15
 #define BCI_T3_104      16
 #define BCI_K_104       17
+#define ACONF_NUM       18
 
 class a_confdialog : public QDialog
 {
@@ -53,11 +54,11 @@ private:
         qint32 k_104;		// макс. кол-во неподтв. сообщений
     } Bci;
 
+    QByteArray confba;
     Bci Bci_block;
-    publicclass::DataRec *Config;
+    publicclass::DataRec Config[ACONF_NUM];
 
     void GetBci();
-    int BciUnpack(QByteArray);
     int BciPack();
 
 signals:
