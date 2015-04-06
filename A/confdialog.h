@@ -59,7 +59,6 @@ private:
     publicclass::DataRec Config[ACONF_NUM];
 
     void GetBci();
-    int BciPack();
 
 signals:
 

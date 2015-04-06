@@ -43,11 +43,6 @@ a_confdialog::a_confdialog(QWidget *parent) :
     GetBci();
 }
 
-void a_confdialog::SetChTypData(int num, s_tqComboBox *cb)
-{
-    Bci_block.in_type[cb->getAData().toInt()] = num;
-}
-
 void a_confdialog::GetBci()
 {
     QByteArray tmpba = ">GF";
@@ -77,69 +72,84 @@ void a_confdialog::FillConfData()
     {
     case MT_A:
     {
+        int res;
         QByteArray *ba = new QByteArray(pc.SThread->data());
-//        ba = pc.SThread->data();
-//        char *bap = ba->data();
         if ((ba->at(0) != 0x3c) && (ba->at(1) != 0x01))
             return;
         ba->remove(0, 2);
-        if (!pc.RestoreDataMem(ba->data(), Config))
+        if (!(res = pc.RestoreDataMem(ba->data(), ba->size(), Config)))
         {
+            ConfTW->addTab(cp1,"Каналы");
+            ConfTW->addTab(cp2,"Уставки");
+            ConfTW->addTab(cp3,"Общие");
+            QGroupBox *gb = new QGroupBox("Типы каналов");
+            QVBoxLayout *gblyout = new QVBoxLayout;
+            QHBoxLayout *gb2lyout = new QHBoxLayout;
+            QStringList ChTypSl = QStringList() << "Не исп." << "мА" << "В";
+            QStringListModel *ChTypSlM = new QStringListModel;
+            ChTypSlM->setStringList(ChTypSl);
+// temporary            for (i = 0; i < pc.ANumCh1(); i++)
+            for (i = 0; i < 16; i++)
+            {
+                QLabel *ChTypL = new QLabel(QString::number(i)+":");
+                s_tqComboBox *ChTypCB = new s_tqComboBox;
+                ChTypCB->setModel(ChTypSlM);
+                ChTypCB->setAData(QVariant(i));
+                ChTypCB->setObjectName("chtypcb"+QString::number(i));
+// temporary                ChTypCB->setCurrentIndex(Bci_block.in_type[i]);
+                ChTypCB->setCurrentIndex(0); // temporary
+                connect(ChTypCB,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetChTypData(int,s_tqComboBox*)));
+                gb2lyout->addWidget(ChTypL);
+                gb2lyout->addWidget(ChTypCB, 1);
+                if ((i>1)&&!((i+1)%4))
+                {
+                    gblyout->addLayout(gb2lyout);
+                    gb2lyout = new QHBoxLayout;
+                }
+            }
+/* temporary            for (j = 0; j < pc.ANumCh2(); j++)
+            {
+                QLabel *ChTypL = new QLabel("к"+QString::number(j)+":");
+                s_tqComboBox *ChTypCB = new s_tqComboBox;
+                ChTypCB->setModel(ChTypSlM);
+                ChTypCB->setAData(QVariant(j));
+                ChTypCB->setObjectName("chtypcb"+QString::number(j));
+                ChTypCB->setCurrentIndex(Bci_block.in_type[j]);
+                connect(ChTypCB,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetChTypData(int,s_tqComboBox*)));
+                gb2lyout->addWidget(ChTypL);
+                gb2lyout->addWidget(ChTypCB, 1);
+                if ((j>1)&&!((j+1)%4))
+                    gblyout->addLayout(gb2lyout);
+            } */
+            for (i = 0; i < 16; i++)
+            {
+                QLabel *ChTypL = new QLabel(QString::number(i)+":");
+                s_tqComboBox *ChTypCB = new s_tqComboBox;
+                ChTypCB->setModel(ChTypSlM);
+                ChTypCB->setAData(QVariant(i));
+                ChTypCB->setObjectName("chtypcb"+QString::number(i));
+// temporary                ChTypCB->setCurrentIndex(Bci_block.in_type[i]);
+                ChTypCB->setCurrentIndex(0); // temporary
+                connect(ChTypCB,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetChTypData(int,s_tqComboBox*)));
+                gb2lyout->addWidget(ChTypL);
+                gb2lyout->addWidget(ChTypCB, 1);
+                if ((i>1)&&!((i+1)%4))
+                {
+                    gblyout->addLayout(gb2lyout);
+                    gb2lyout = new QHBoxLayout;
+                }
+            }
+
+            gb->setLayout(gblyout);
+            lyout1->addWidget(gb, 0, 0, 1, 1);
         }
         else
         {
-//                QMessageBox::warning(this,"warning!","Принят неправильный блок конфигурации Bciu");
+            QMessageBox::warning(this,"warning!","Принят неправильный блок конфигурации Bciu, ошибка "+QString::number(res));
         }
     }
-    default:
-    {
-        ConfTW->addTab(cp1,"Каналы");
-        ConfTW->addTab(cp2,"Уставки");
-        ConfTW->addTab(cp3,"Общие");
-        QGroupBox *gb = new QGroupBox("Типы каналов");
-        QVBoxLayout *gblyout = new QVBoxLayout;
-        QHBoxLayout *gb2lyout = new QHBoxLayout;
-        QStringList ChTypSl = QStringList() << "Не исп." << "мА" << "В";
-        QStringListModel *ChTypSlM = new QStringListModel;
-        ChTypSlM->setStringList(ChTypSl);
-//            for (i = 0; i < pc.ANumCh1(); i++) // temporary
-        for (i = 0; i < 16; i++) // temporary
-        {
-            QLabel *ChTypL = new QLabel(QString::number(i)+":");
-            s_tqComboBox *ChTypCB = new s_tqComboBox;
-            ChTypCB->setModel(ChTypSlM);
-            ChTypCB->setAData(QVariant(i));
-            ChTypCB->setObjectName("chtypcb"+QString::number(i));
-//                ChTypCB->setCurrentIndex(Bci_block.in_type[i]); // temporary
-            ChTypCB->setCurrentIndex(0); // temporary
-            connect(ChTypCB,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetChTypData(int,s_tqComboBox*)));
-            gb2lyout->addWidget(ChTypL);
-            gb2lyout->addWidget(ChTypCB, 1);
-            if ((i>1)&&!((i+1)%4))
-            {
-                gblyout->addLayout(gb2lyout);
-                gb2lyout = new QHBoxLayout;
-            }
-        }
-        /*for (j = 0; j < pc.ANumCh2(); j++)
-        {
-            QLabel *ChTypL = new QLabel("к"+QString::number(j)+":");
-            s_tqComboBox *ChTypCB = new s_tqComboBox;
-            ChTypCB->setModel(ChTypSlM);
-            ChTypCB->setAData(QVariant(j));
-            ChTypCB->setObjectName("chtypcb"+QString::number(j));
-            ChTypCB->setCurrentIndex(Bci_block.in_type[j]);
-            connect(ChTypCB,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetChTypData(int,s_tqComboBox*)));
-            gb2lyout->addWidget(ChTypL);
-            gb2lyout->addWidget(ChTypCB, 1);
-            if ((j>1)&&!((j+1)%4))
-                gblyout->addLayout(gb2lyout);
-        } temporary */
-        gb->setLayout(gblyout);
-        lyout1->addWidget(gb, 0, 0, 1, 1);
-
-        break;
-    }
+//    default:
+//        break;
     case MT_C:
     {
         break;
@@ -152,14 +162,13 @@ void a_confdialog::FillConfData()
     {
         break;
     }
-//    default:
-//        break;
+    default:
+        break;
     }
     cp1->setLayout(lyout1);
 }
 
-int a_confdialog::BciPack()
+void a_confdialog::SetChTypData(int num, s_tqComboBox *cb)
 {
-
-    return 0;
+    Bci_block.in_type[cb->getAData().toInt()] = num;
 }

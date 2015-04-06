@@ -98,7 +98,7 @@ int publicclass::StoreDataMem(void *mem, DataRec *dr) //0 - успешно, ин
   DataHeader *D;
   D = new DataHeader;
   DataRec *R;
-  qint32 i;
+  quint32 i;
   char *m=(char *)mem;
   m+=sizeof(DataHeader);
   D->size=0;
@@ -145,17 +145,17 @@ qint32 publicclass::GetCRC32(char *data, qint32 len)
   return dwCRC32;
 }
 
-publicclass::DataRec *publicclass::FindElem(DataRec *dr, qint16 id)
+publicclass::DataRec *publicclass::FindElem(DataRec *dr, quint16 id)
 {
   for(;;dr++)
   {
     if(dr->id==id) return dr;
-    if(dr->id==static_cast<qint16>(0xFFFF)) break;
+    if(dr->id==static_cast<quint16>(0xFFFF)) break;
   }
   return NULL;
 }
 
-int publicclass::RestoreDataMem(void *mem, DataRec *dr)
+int publicclass::RestoreDataMem(void *mem, qint32 memsize, DataRec *dr)
 {
   qint32 crc;
   qint32 sz=0;
@@ -165,11 +165,16 @@ int publicclass::RestoreDataMem(void *mem, DataRec *dr)
   qint32 i;
 
   crc=0xFFFFFFFF;
+  qint32 pos = sizeof(DataHeader);
+  if (pos > memsize)
+      return 3; // выход за границу принятых байт
   memcpy(&dh,m,sizeof(DataHeader));
   m+=sizeof(DataHeader);
   for(;;)
   {
-
+    pos += sizeof(DataRec)-sizeof(void*);
+    if (pos > memsize)
+        return 3; // выход за границу принятых байт
     memcpy(&R,m,sizeof(DataRec)-sizeof(void*));
     for(i=0;i<(sizeof(DataRec)-sizeof(void*));i++)
     {
@@ -177,11 +182,15 @@ int publicclass::RestoreDataMem(void *mem, DataRec *dr)
       sz++;
       m++;
     }
+    if(R.id==0xFFFF) break;
     r=FindElem(dr,R.id);
     if(!r)
     {//элемент не найден в описании, пропускаем
-      m+=R.elem_size*R.num_elem;
-      continue;
+        pos += R.elem_size*R.num_elem;
+        if (pos > memsize)
+            return 3; // выход за границу принятых байт
+        m+=R.elem_size*R.num_elem;
+        continue;
     }
     if( (r->data_type!=R.data_type)
     ||  (r->elem_size!=R.elem_size)
@@ -189,6 +198,9 @@ int publicclass::RestoreDataMem(void *mem, DataRec *dr)
     {//несовпадения описания прочитанного элемента с ожидаемым
       return -2;	//с кодами ошибок разберёмся позже;
     }
+    pos += r->elem_size*r->num_elem;
+    if (pos > memsize)
+        return 3; // выход за границу принятых байт
     memcpy(r->thedata,m,r->elem_size*r->num_elem);
     for(i=0;i<(R.elem_size*R.num_elem);i++)
     {
@@ -196,7 +208,6 @@ int publicclass::RestoreDataMem(void *mem, DataRec *dr)
       sz++;
       m++;
     }
-    if(R.id==0xFFFF) break;
   }
   if(dh.crc32!=crc)
   {
