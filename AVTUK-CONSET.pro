@@ -21,10 +21,11 @@ SOURCES += main.cpp\
     publicclass.cpp \
     downloaddialog.cpp \
     serialthread.cpp \
-    s_tqcombobox.cpp \
     A/checkdialog.cpp \
     A/confdialog.cpp \
-    A/tunedialog.cpp
+    A/tunedialog.cpp \
+    widgets/s_tqcheckbox.cpp \
+    widgets/s_tqcombobox.cpp
 
 HEADERS  += conset.h \
     fwupdialog.h \
@@ -32,7 +33,8 @@ HEADERS  += conset.h \
     publicclass.h \
     downloaddialog.h \
     serialthread.h \
-    s_tqcombobox.h \
     A/checkdialog.h \
     A/confdialog.h \
-    A/tunedialog.h
+    A/tunedialog.h \
+    widgets/s_tqcheckbox.h \
+    widgets/s_tqcombobox.h

@@ -136,9 +136,14 @@ void ConSet::Connect()
     QComboBox *portscb = new QComboBox;
     portscb->setObjectName("connectportscb");
     connect(portscb,SIGNAL(currentIndexChanged(QString)),pc.SThread,SLOT(SetPort(QString)));
+    QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
+    if (info.size() == 0)
+    {
+        ShowErrMsg(2);
+        return;
+    }
     QStringListModel *tmpmodel = new QStringListModel;
     QStringList tmpsl;
-    QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
     for (i = 0; i < info.size(); i++)
         tmpsl << info.at(i).portName();
     pc.SThread->SetPort(tmpsl.at(0));
@@ -182,7 +187,8 @@ void ConSet::Next()
 
 void ConSet::ShowErrMsg(int ermsg)
 {
-    QMessageBox::critical(this,"error!","Ошибка открытия порта");
+    const QString errmsgs[] = {"", "Ошибка открытия порта", "В системе нет COM-портов"};
+    QMessageBox::critical(this,"error!",errmsgs[ermsg]);
 }
 
 void ConSet::GetBsi()
@@ -331,12 +337,12 @@ QString ConSet::ByteToHex(quint8 hb)
 void ConSet::Timeout()
 {
     QMessageBox::warning(this,"warning!","Произошёл таймаут ожидания данных");
-//    Disconnect();
+    Disconnect();
 }
 
 void ConSet::Disconnect()
 {
-    pc.serial.close();
+    pc.SThread->ClosePortAndFinishThread = true;
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
@@ -352,7 +358,7 @@ void ConSet::Disconnect()
         MainTE->clear();
         MainTE->hide();
     }
-//    MainTW->hide();
+    MainTW->hide();
 }
 
 void ConSet::GetAbout()

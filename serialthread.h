@@ -16,11 +16,12 @@ public:
     QSerialPort *port;
     int baud;
     QByteArray OutDataBuf;
+    bool ClosePortAndFinishThread;
 
     QByteArray data();
     void InitiateWriteDataToPort(QByteArray ba);
 private:
-    QByteArray ReadData;
+    QByteArray *ReadData;
     QTimer *TimeoutTimer;
     bool NothingReceived;
 

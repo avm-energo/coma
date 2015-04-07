@@ -6,7 +6,10 @@
 SerialThread::SerialThread(QObject *parent) :
     QObject(parent)
 {
+    ReadData = new QByteArray(50000, 0x00);
+    ReadData->clear();
     OutDataBuf.clear();
+    ClosePortAndFinishThread = false;
 }
 
 void SerialThread::run()
@@ -31,6 +34,18 @@ void SerialThread::run()
     {
         if (OutDataBuf.size()>0) // что-то пришло в выходной буфер для записи
             WriteData();
+        if (ClosePortAndFinishThread)
+        {
+            emit finished();
+            if (port->isOpen())
+            {
+                port->close();
+                delete port;
+                TimeoutTimer->stop();
+                delete TimeoutTimer;
+            }
+            break;
+        }
         QTest::qWait(100);
     }
 }
@@ -57,7 +72,7 @@ void SerialThread::CheckForData()
 {
     QByteArray ba = port->read(1000000);
     NothingReceived = false;
-    ReadData.append(ba);
+    ReadData->append(ba);
     emit newdataarrived(ba);
 //    emit receivecompleted(); // temporary
     if (TimeoutTimer->isActive())
@@ -76,14 +91,14 @@ void SerialThread::WriteData()
 
 QByteArray SerialThread::data()
 {
-    QByteArray ba = ReadData;
-    ReadData.clear();
+    QByteArray ba = *ReadData;
+    ReadData->clear();
     return ba;
 }
 
 void SerialThread::InitiateWriteDataToPort(QByteArray ba)
 {
-    ReadData.clear();
+    ReadData->clear();
     NothingReceived = true;
     OutDataBuf = ba;
 }

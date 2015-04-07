@@ -37,19 +37,19 @@ public:
     // S2: Определение типа заголовка
     typedef struct
     {
-      qint32 size;
-      qint32 crc32;
-      qint32 thetime;
+      quint32 size;
+      quint32 crc32;
+      quint32 thetime;
     } DataHeader;
 
     // S2: Определение типа записи
 
     typedef struct DataRec
     {
-      qint16 id;
-      qint16 data_type;
-      qint32 elem_size;
-      qint32 num_elem;
+      quint16 id;
+      quint16 data_type;
+      quint32 elem_size;
+      quint32 num_elem;
       void *thedata;
     } DataRec;
 
@@ -66,9 +66,9 @@ public:
     // S2: получение размера:
     int StoreDataSize(DataHeader *, DataRec *); //>0 - успешно, иначе код ошибки
     // S2: Разборщик из памяти:
-    int RestoreDataMem(void *, DataRec *); //0 - успешно, иначе код ошибки
+    int RestoreDataMem(void *, qint32, DataRec *); //0 - успешно, иначе код ошибки
     // S2: Поиск элемента в массиве описаний
-    DataRec *FindElem(DataRec *, qint16);
+    DataRec *FindElem(DataRec *, quint16);
 
     qint32 GetCRC32(char *, qint32);
 
