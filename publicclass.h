@@ -53,28 +53,28 @@ public:
       void *thedata;
     } DataRec;
 
-    QString VerToStr(qint32);
-    qint32 ANumD();
-    qint32 ANumCh1();
-    qint32 ANumCh2();
-    qint32 ATyp1();
-    qint32 ATyp2();
-    qint32 AMdf();
+    QString VerToStr(quint32);
+    quint32 ANumD();
+    quint32 ANumCh1();
+    quint32 ANumCh2();
+    quint32 ATyp1();
+    quint32 ATyp2();
+    quint32 AMdf();
 
     // S2: Сборщик в память:
     int StoreDataMem(void *, DataRec *); //0 - успешно, иначе код ошибки
     // S2: получение размера:
     int StoreDataSize(DataHeader *, DataRec *); //>0 - успешно, иначе код ошибки
     // S2: Разборщик из памяти:
-    int RestoreDataMem(void *, qint32, DataRec *); //0 - успешно, иначе код ошибки
+    int RestoreDataMem(void *, quint32, DataRec *); //0 - успешно, иначе код ошибки
     // S2: Поиск элемента в массиве описаний
     DataRec *FindElem(DataRec *, quint16);
 
-    qint32 GetCRC32(char *, qint32);
+    quint32 GetCRC32(char *, quint32);
 
-    void updCRC32(const qint8 byte, qint32 *dwCRC32);
+    void updCRC32(const quint8 byte, quint32 *dwCRC32);
 
-    qint32 getTime32();
+    quint32 getTime32();
 private:
 
 };

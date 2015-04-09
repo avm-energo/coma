@@ -19,11 +19,13 @@ public:
     bool ClosePortAndFinishThread;
 
     QByteArray data();
-    void InitiateWriteDataToPort(QByteArray ba);
+    void InitiateWriteDataToPort(QByteArray *);
 private:
     QByteArray *ReadData;
+    QByteArray *DataToSend;
     QTimer *TimeoutTimer;
     bool NothingReceived;
+    bool ThereIsDataToSend;
 
 signals:
     void newdataarrived(QByteArray);
@@ -35,6 +37,7 @@ signals:
 
 public slots:
     void run();
+    void stop();
     void WriteData();
     void SetPort(QString str);
     void SetBaud(QString str);

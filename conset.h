@@ -22,6 +22,7 @@ public:
 signals:
     void portopened();
     void receivecompleted();
+    void stopall();
 
 private:
     a_checkdialog *ACheckDialog;
@@ -47,6 +48,7 @@ private:
     void InitiateWriteDataToPort(QByteArray ba);
     QString ByteToHex(quint8);
     void AllIsOk();
+    void StopThreads();
 
 private slots:
     void Exit();

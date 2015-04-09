@@ -8,6 +8,7 @@ SerialThread::SerialThread(QObject *parent) :
 {
     ReadData = new QByteArray(50000, 0x00);
     ReadData->clear();
+    DataToSend = new QByteArray(1000, 0x00);
     OutDataBuf.clear();
     ClosePortAndFinishThread = false;
 }
@@ -44,7 +45,7 @@ void SerialThread::run()
                 TimeoutTimer->stop();
                 delete TimeoutTimer;
             }
-            break;
+            return;
         }
         QTest::qWait(100);
     }
@@ -96,17 +97,69 @@ QByteArray SerialThread::data()
     return ba;
 }
 
-void SerialThread::InitiateWriteDataToPort(QByteArray ba)
+void SerialThread::InitiateWriteDataToPort(QByteArray *ba)
 {
     ReadData->clear();
     NothingReceived = true;
-    OutDataBuf = ba;
+    if (ba->size() <= 516) // 512 байт + заголовок 4 байта (>WFx)
+    {
+        DataToSend->clear(); // для того, чтобы правильно выйти по таймауту
+        OutDataBuf = ba->data();
+        ThereIsDataToSend = false;
+    }
+    else
+    {
+        OutDataBuf = ba->left(516);
+        ba->remove(0, 516);
+        *DataToSend = ba->data();
+        ThereIsDataToSend = true;
+    }
 }
 
 void SerialThread::Timeout()
 {
     if (NothingReceived)
+    {
         emit timeout();
-    TimeoutTimer->stop();
-    emit receivecompleted();
+        TimeoutTimer->stop();
+        emit receivecompleted();
+    }
+    else
+    {
+        if (QString::fromLocal8Bit(*ReadData) == "RDY")
+        {
+            ReadData->clear();
+            if (ThereIsDataToSend)
+            {
+                if (DataToSend->size() > 512)
+                {
+                    OutDataBuf = DataToSend->left(512);
+                    DataToSend->remove(0, 512);
+                }
+                else if (DataToSend->size())
+                {
+                    OutDataBuf = *DataToSend;
+                    DataToSend->clear();
+                    ThereIsDataToSend = false;
+                }
+                else
+                {
+                    TimeoutTimer->stop();
+                    emit receivecompleted();
+                }
+            }
+        }
+        else
+        {
+            DataToSend->clear();
+            ThereIsDataToSend = false;
+            TimeoutTimer->stop();
+            emit receivecompleted();
+        }
+    }
+}
+
+void SerialThread::stop()
+{
+    ClosePortAndFinishThread = true;
 }

@@ -3,8 +3,9 @@
 
 #include <QDialog>
 
-#include "widgets/s_tqcombobox.h"
-#include "widgets/s_tqcheckbox.h"
+#include "../widgets/s_tqcombobox.h"
+#include "../widgets/s_tqcheckbox.h"
+#include "../widgets/s_tqspinbox.h"
 #include "../publicclass.h"
 
 // Описание блока Bci
@@ -48,7 +49,7 @@ private:
         float setmin[16];       // Значение предупредительной уставки по минимальному значению
         float setmax[16];       // Значение предупредительной уставки по максимальному значению
         float setmaxmax[16];	// Значение аварийной уставки по максимальному значению
-        quint16 discosc;		// Набор признаков необходимости запуска осциллограмм
+        quint32 discosc;		// Набор признаков необходимости запуска осциллограмм
         quint32 oscsrc;         // События-инициаторы запуска осциллографирования
         quint16 oscdly;         // Задержка в мс начала фиксации максимумов
         quint16 Ctype;   		// Тип синхронизации времени от модуля Ц
@@ -75,8 +76,20 @@ private slots:
     void SetChTypData(int, s_tqComboBox *);
     void SetChOsc(int, s_tqCheckBox *);
     void SetChOscSrc(int, s_tqComboBox *);
+    void SetInMin(double, s_tqspinbox *);
+    void SetInMax(double, s_tqspinbox *);
+    void SetInVMin(double, s_tqspinbox *);
+    void SetInVMax(double, s_tqspinbox *);
+    void SetMinMin(double, s_tqspinbox *);
+    void SetMin(double, s_tqspinbox *);
+    void SetMax(double, s_tqspinbox *);
+    void SetMaxMax(double, s_tqspinbox *);
+    void Set104(double, s_tqspinbox *);
+    void SetCType(int);
     void SetOscDly(int);
     void FillConfData();
+    void WriteConfDataToModule();
+    void WriteCompleted();
 };
 
 #endif // A_CONFDIALOG_H

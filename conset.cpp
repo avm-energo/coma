@@ -111,13 +111,13 @@ ConSet::ConSet(QWidget *parent)
 
     QTextEdit *MainTE = new QTextEdit;
     MainTE->setObjectName("mainte");
+    MainTE->setEnabled(false);
+    MainTE->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     MainTE->hide();
     inlyout->addWidget(MainTE, 40);
     lyout->addLayout(inlyout, 90);
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
-    pc.SThread = new SerialThread();
-    connect(pc.SThread,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
 }
 
 ConSet::~ConSet()
@@ -128,6 +128,8 @@ ConSet::~ConSet()
 void ConSet::Connect()
 {
     int i;
+    pc.SThread = new SerialThread();
+    connect(pc.SThread,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
     QDialog *dlg = new QDialog(this);
     dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -177,6 +179,10 @@ void ConSet::Next()
     pc.SThread->moveToThread(thread);
     connect(thread, SIGNAL(started()), pc.SThread, SLOT(run()));
     connect(pc.SThread,SIGNAL(timeout()),this,SLOT(Timeout())); // таймаут по отсутствию принятых данных
+    connect(pc.SThread,SIGNAL(finished()),thread,SLOT(quit()));
+    connect(this,SIGNAL(stopall()),pc.SThread,SLOT(stop()));
+    connect(pc.SThread,SIGNAL(finished()),pc.SThread,SLOT(deleteLater()));
+    connect(thread,SIGNAL(finished()),thread,SLOT(deleteLater()));
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
         MainTE->show();
@@ -193,8 +199,7 @@ void ConSet::ShowErrMsg(int ermsg)
 
 void ConSet::GetBsi()
 {
-    QByteArray tmpba = ">GBsi";
-//    QByteArray tmpba = ">GBda";
+    QByteArray *tmpba = new QByteArray(">GBsi");
     connect(pc.SThread,SIGNAL(receivecompleted()),this,SLOT(CheckBsi()));
     connect(pc.SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
@@ -337,7 +342,7 @@ QString ConSet::ByteToHex(quint8 hb)
 void ConSet::Timeout()
 {
     QMessageBox::warning(this,"warning!","Произошёл таймаут ожидания данных");
-    Disconnect();
+//    Disconnect();
 }
 
 void ConSet::Disconnect()
