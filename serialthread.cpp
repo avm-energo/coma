@@ -11,26 +11,30 @@ SerialThread::SerialThread(QObject *parent) :
     DataToSend = new QByteArray(1000, 0x00);
     OutDataBuf.clear();
     ClosePortAndFinishThread = false;
+
 }
 
 void SerialThread::run()
 {
     TimeoutTimer = new QTimer;
-    TimeoutTimer->setInterval(400);
+    TimeoutTimer->setInterval(4000);
     connect(TimeoutTimer, SIGNAL(timeout()),this,SLOT(Timeout())); // temporary
+//    if (port != 0)
+//        delete port;
     port = new QSerialPort;
     port->setPort(portinfo);
-    port->setBaudRate(baud);
-    port->setParity(QSerialPort::NoParity);
-    port->setDataBits(QSerialPort::Data8);
-    port->setFlowControl(QSerialPort::NoFlowControl);
-    port->setStopBits(QSerialPort::OneStop);
     if (!port->open(QIODevice::ReadWrite))
     {
         emit finished();
         emit error(1);
     }
+    port->setBaudRate(baud);
+    port->setParity(QSerialPort::NoParity);
+    port->setDataBits(QSerialPort::Data8);
+    port->setFlowControl(QSerialPort::NoFlowControl);
+    port->setStopBits(QSerialPort::OneStop);
     connect(port,SIGNAL(readyRead()),this,SLOT(CheckForData()));
+    connect(this,SIGNAL(finished()),port,SLOT(deleteLater()));
     while (1)
     {
         if (OutDataBuf.size()>0) // что-то пришло в выходной буфер для записи
@@ -111,22 +115,23 @@ void SerialThread::InitiateWriteDataToPort(QByteArray *ba)
     {
         OutDataBuf = ba->left(516);
         ba->remove(0, 516);
-        *DataToSend = ba->data();
+        DataToSend->clear();
+        DataToSend->append(*ba);
         ThereIsDataToSend = true;
     }
 }
 
 void SerialThread::Timeout()
 {
-    if (NothingReceived)
+/*    if (NothingReceived)
     {
         emit timeout();
         TimeoutTimer->stop();
         emit receivecompleted();
     }
     else
-    {
-        if (QString::fromLocal8Bit(*ReadData) == "RDY")
+    { temporary */
+        if (QString::fromLocal8Bit(*ReadData) == "<RDY")
         {
             ReadData->clear();
             if (ThereIsDataToSend)
@@ -138,12 +143,13 @@ void SerialThread::Timeout()
                 }
                 else if (DataToSend->size())
                 {
-                    OutDataBuf = *DataToSend;
+                    OutDataBuf = DataToSend->data();
                     DataToSend->clear();
                     ThereIsDataToSend = false;
                 }
                 else
                 {
+                    ThereIsDataToSend = false;
                     TimeoutTimer->stop();
                     emit receivecompleted();
                 }
@@ -156,7 +162,7 @@ void SerialThread::Timeout()
             TimeoutTimer->stop();
             emit receivecompleted();
         }
-    }
+//    }
 }
 
 void SerialThread::stop()

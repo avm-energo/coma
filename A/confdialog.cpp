@@ -524,6 +524,7 @@ void a_confdialog::WriteConfDataToModule()
 {
     QByteArray *tmpba = new QByteArray(">WF");
     tmpba->resize(4+sizeof(Bci_block));
+//    tmpba->resize(4);
     tmpba->data()[3] = 0x02;
     pc.StoreDataMem(static_cast<char *>(tmpba->data())+4,Config);
     connect(pc.SThread,SIGNAL(receivecompleted()),this,SLOT(WriteCompleted()));

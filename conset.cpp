@@ -347,7 +347,8 @@ void ConSet::Timeout()
 
 void ConSet::Disconnect()
 {
-    pc.SThread->ClosePortAndFinishThread = true;
+    if (pc.SThread != 0)
+        pc.SThread->ClosePortAndFinishThread = true;
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
