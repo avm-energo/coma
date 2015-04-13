@@ -24,7 +24,9 @@ private:
     QByteArray *ReadData;
     QByteArray *DataToSend;
     QTimer *TimeoutTimer;
+    quint16 RcvDataLength;
     bool NothingReceived;
+    bool NewReceive; // false => полученные данные в порту являются продолжением предыдущих, true - начало новой порции
     bool ThereIsDataToSend;
 
 signals:

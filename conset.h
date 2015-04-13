@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTimer>
+#include <QCloseEvent>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtSerialPort/QSerialPort>
 #include "fwupdialog.h"
@@ -25,6 +26,7 @@ signals:
     void stopall();
 
 private:
+    QThread *thread;
     a_checkdialog *ACheckDialog;
     a_confdialog *AConfDialog;
     a_tunedialog *ATuneDialog;
@@ -61,6 +63,10 @@ private slots:
     void CheckBsi();
     void UpdateMainTE(QByteArray);
     void Timeout();
+    void KillSThread();
+
+protected:
+    void closeEvent(QCloseEvent *e);
 };
 
 #endif // CONSET_H

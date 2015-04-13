@@ -6,6 +6,7 @@
 SerialThread::SerialThread(QObject *parent) :
     QObject(parent)
 {
+    NewReceive = true;
     ReadData = new QByteArray(50000, 0x00);
     ReadData->clear();
     DataToSend = new QByteArray(1000, 0x00);
@@ -17,10 +18,8 @@ SerialThread::SerialThread(QObject *parent) :
 void SerialThread::run()
 {
     TimeoutTimer = new QTimer;
-    TimeoutTimer->setInterval(4000);
-    connect(TimeoutTimer, SIGNAL(timeout()),this,SLOT(Timeout())); // temporary
-//    if (port != 0)
-//        delete port;
+    TimeoutTimer->setInterval(1000);
+    connect(TimeoutTimer, SIGNAL(timeout()),this,SLOT(Timeout()));
     port = new QSerialPort;
     port->setPort(portinfo);
     if (!port->open(QIODevice::ReadWrite))
@@ -41,7 +40,6 @@ void SerialThread::run()
             WriteData();
         if (ClosePortAndFinishThread)
         {
-            emit finished();
             if (port->isOpen())
             {
                 port->close();
@@ -49,6 +47,7 @@ void SerialThread::run()
                 TimeoutTimer->stop();
                 delete TimeoutTimer;
             }
+            emit finished();
             return;
         }
         QTest::qWait(100);
@@ -76,10 +75,25 @@ void SerialThread::SetBaud(QString str)
 void SerialThread::CheckForData()
 {
     QByteArray ba = port->read(1000000);
+    if (NewReceive)
+    {
+        if (ba.at(0) == "<")
+        {
+            RcvDataLength = ba.at(1)*256+ba.at(2);
+            ba.remove(1, 2); // убираем длину из посылки
+        }
+        else // для посылок - продолжений блоков
+        {
+            RcvDataLength = ba.at(0)*256+ba.at(1);
+            ba.remove(0, 2);
+        }
+        NewReceive = false;
+    }
     NothingReceived = false;
     ReadData->append(ba);
+    if (ReadData->size() > RcvDataLength) // Если приняли больше, чем длина, указанная в начале блока (на самом деле RcvDataLength не учитывает
+        // символ "<" в начале посылки
     emit newdataarrived(ba);
-//    emit receivecompleted(); // temporary
     if (TimeoutTimer->isActive())
         TimeoutTimer->start();
 }
@@ -123,19 +137,19 @@ void SerialThread::InitiateWriteDataToPort(QByteArray *ba)
 
 void SerialThread::Timeout()
 {
-/*    if (NothingReceived)
+    if (NothingReceived)
     {
         emit timeout();
         TimeoutTimer->stop();
         emit receivecompleted();
     }
     else
-    { temporary */
-        if (QString::fromLocal8Bit(*ReadData) == "<RDY")
+    {
+        if (ThereIsDataToSend) // если есть, что ещё послать
         {
-            ReadData->clear();
-            if (ThereIsDataToSend)
+            if (QString::fromLocal8Bit(*ReadData) == "<RDY") // надо проверить, получили ли правильный промежуточный ответ
             {
+                ReadData->clear();
                 if (DataToSend->size() > 512)
                 {
                     OutDataBuf = DataToSend->left(512);
@@ -162,7 +176,8 @@ void SerialThread::Timeout()
             TimeoutTimer->stop();
             emit receivecompleted();
         }
-//    }
+    }
+    NewReceive = true;
 }
 
 void SerialThread::stop()

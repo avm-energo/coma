@@ -23,6 +23,7 @@ ConSet::ConSet(QWidget *parent)
 {
     setWindowTitle("КАВТУК");
     setMinimumSize(QSize(800, 550));
+    thread = new QThread;
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
 
@@ -122,14 +123,22 @@ ConSet::ConSet(QWidget *parent)
 
 ConSet::~ConSet()
 {
+    thread->quit();
+    thread->wait();
+    delete thread;
+}
 
+void ConSet::closeEvent(QCloseEvent *e)
+{
+    emit stopall();
+    thread->wait();
+    e->accept();
 }
 
 void ConSet::Connect()
 {
     int i;
     pc.SThread = new SerialThread();
-    connect(pc.SThread,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
     QDialog *dlg = new QDialog(this);
     dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -175,14 +184,16 @@ void ConSet::Connect()
 
 void ConSet::Next()
 {
-    QThread *thread = new QThread;
     pc.SThread->moveToThread(thread);
     connect(thread, SIGNAL(started()), pc.SThread, SLOT(run()));
-    connect(pc.SThread,SIGNAL(timeout()),this,SLOT(Timeout())); // таймаут по отсутствию принятых данных
-    connect(pc.SThread,SIGNAL(finished()),thread,SLOT(quit()));
     connect(this,SIGNAL(stopall()),pc.SThread,SLOT(stop()));
-    connect(pc.SThread,SIGNAL(finished()),pc.SThread,SLOT(deleteLater()));
-    connect(thread,SIGNAL(finished()),thread,SLOT(deleteLater()));
+    connect(pc.SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+    connect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+    connect(pc.SThread,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
+    connect(pc.SThread,SIGNAL(timeout()),this,SLOT(Timeout())); // таймаут по отсутствию принятых данных
+    connect(pc.SThread,SIGNAL(finished()),this,SLOT(KillSThread()));
+    connect(pc.SThread,SIGNAL(finished()),thread,SLOT(quit()));
+    connect(thread,SIGNAL(finished()),pc.SThread,SLOT(deleteLater()));
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
         MainTE->show();
@@ -201,10 +212,7 @@ void ConSet::GetBsi()
 {
     QByteArray *tmpba = new QByteArray(">GBsi");
     connect(pc.SThread,SIGNAL(receivecompleted()),this,SLOT(CheckBsi()));
-    connect(pc.SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-    connect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     pc.SThread->InitiateWriteDataToPort(tmpba);
-//    CheckBsi(); // temporary
 }
 
 void ConSet::CheckBsi()
@@ -215,7 +223,12 @@ void ConSet::CheckBsi()
     Bsi Bsi_block;
     inbuf = pc.SThread->data();
     Bsipos = reinterpret_cast<unsigned char *>(&Bsi_block);
-    for (int i = 1; i < inbuf.size(); i++) // пропускаем "<", поэтому не от 0
+    if (inbuf.at(0) != "<")
+        return;
+    quint16 length = inbuf.at(1) * 256 + inbuf.at(2);
+    if (length > inbuf.size()-3) // принят неправильный буфер с неправильной длиной
+        return;
+    for (int i = 3; i < length; i++) // пропускаем "<" и длину, поэтому не от 0
     {
         if (i > (sizeof(Bsi)-1))
             break;
@@ -285,10 +298,6 @@ void ConSet::CheckBsi()
         return;
     le->setText(QString::number(Bsi_block.Hth, 16));
 
-/*    while (1)
-    {
-        QTest::qWait(100);
-    } */
     AllIsOk();
 }
 
@@ -347,8 +356,7 @@ void ConSet::Timeout()
 
 void ConSet::Disconnect()
 {
-    if (pc.SThread != 0)
-        pc.SThread->ClosePortAndFinishThread = true;
+    emit stopall();
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
@@ -365,6 +373,11 @@ void ConSet::Disconnect()
         MainTE->hide();
     }
     MainTW->hide();
+}
+
+void ConSet::KillSThread()
+{
+    delete pc.SThread;
 }
 
 void ConSet::GetAbout()
