@@ -210,7 +210,9 @@ void ConSet::ShowErrMsg(int ermsg)
 
 void ConSet::GetBsi()
 {
-    QByteArray *tmpba = new QByteArray(">GBsi");
+    QByteArray *tmpba = new QByteArray(2,0x00);
+    tmpba += GBsi;
+    tmpba += ~GBsi;
     connect(pc.SThread,SIGNAL(receivecompleted()),this,SLOT(CheckBsi()));
     pc.SThread->InitiateWriteDataToPort(tmpba);
 }
@@ -223,7 +225,7 @@ void ConSet::CheckBsi()
     Bsi Bsi_block;
     inbuf = pc.SThread->data();
     Bsipos = reinterpret_cast<unsigned char *>(&Bsi_block);
-    if (inbuf.at(0) != "<")
+    if (inbuf.at(0) != 0x3c)
         return;
     quint16 length = inbuf.at(1) * 256 + inbuf.at(2);
     if (length > inbuf.size()-3) // принят неправильный буфер с неправильной длиной

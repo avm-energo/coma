@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
+#include <QMutex>
 
 class SerialThread : public QObject
 {
@@ -27,7 +28,8 @@ private:
     quint16 RcvDataLength;
     bool NothingReceived;
     bool NewReceive; // false => полученные данные в порту являются продолжением предыдущих, true - начало новой порции
-    bool ThereIsDataToSend;
+    bool ThereIsDataToSend, ThereMustBeDataToReceive;
+    QMutex OutDataBufMtx, ReadDataMtx;
 
 signals:
     void newdataarrived(QByteArray);

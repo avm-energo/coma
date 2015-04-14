@@ -39,4 +39,5 @@ HEADERS  += conset.h \
     A/tunedialog.h \
     widgets/s_tqcheckbox.h \
     widgets/s_tqcombobox.h \
-    widgets/s_tqspinbox.h
+    widgets/s_tqspinbox.h \
+    config.h

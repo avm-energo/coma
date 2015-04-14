@@ -20,6 +20,11 @@
 #define string_TYPE	11 //строка, ограниченная нулём
 #define binary_TYPE	12 //любые двоичные данные
 
+// Канал связи с модулем: определение ошибок
+#define PortOpenError   1 // ошибка открытия порта
+#define NoPortsError    2 // нет портов в системе
+#define SegFaultError   3 // ошибка при приёме сегмента данных на стороне модуля
+
 #include <QtSerialPort/QSerialPort>
 #include <QStringList>
 #include "serialthread.h"

@@ -1,6 +1,8 @@
 #ifndef CONSET_H
 #define CONSET_H
 
+#define GBsi    0x21; // запрос блока стартовой информации
+
 #include <QMainWindow>
 #include <QTimer>
 #include <QCloseEvent>

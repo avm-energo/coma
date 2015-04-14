@@ -2,6 +2,7 @@
 #include "serialthread.h"
 #include "publicclass.h"
 #include <QTimer>
+#include "config.h"
 
 SerialThread::SerialThread(QObject *parent) :
     QObject(parent)
@@ -33,7 +34,7 @@ void SerialThread::run()
     port->setFlowControl(QSerialPort::NoFlowControl);
     port->setStopBits(QSerialPort::OneStop);
     connect(port,SIGNAL(readyRead()),this,SLOT(CheckForData()));
-    connect(this,SIGNAL(finished()),port,SLOT(deleteLater()));
+//    connect(this,SIGNAL(finished()),port,SLOT(deleteLater()));
     while (1)
     {
         if (OutDataBuf.size()>0) // что-то пришло в выходной буфер для записи
@@ -75,51 +76,73 @@ void SerialThread::SetBaud(QString str)
 void SerialThread::CheckForData()
 {
     QByteArray ba = port->read(1000000);
-    if (NewReceive)
-    {
-        if (ba.at(0) == "<")
-        {
-            RcvDataLength = ba.at(1)*256+ba.at(2);
-            ba.remove(1, 2); // убираем длину из посылки
-        }
-        else // для посылок - продолжений блоков
-        {
-            RcvDataLength = ba.at(0)*256+ba.at(1);
-            ba.remove(0, 2);
-        }
-        NewReceive = false;
-    }
     NothingReceived = false;
+    ReadDataMtx.lock();
     ReadData->append(ba);
+    if (NewReceive) // если предыдущие все посылки обработаны, и мы имеем дело с новой посылкой
+    {
+        if (ReadData->size() > 2) // если есть, чего обрабатывать
+        {
+            if ((ReadData->data()[0] == 0x3c) && (!ThereMustBeDataToReceive)) // если это начало посылки, а не следующий сегмент текущей посылки
+            {
+                RcvDataLength = ReadData->at(1)*256+ReadData->at(2);
+                ReadData->remove(1, 2); // убираем длину из посылки
+                NewReceive = false;
+            }
+            else if (ThereMustBeDataToReceive) // для посылок - продолжений блоков длина посылка находится в первых двух байтах
+            {
+                RcvDataLength = ReadData->at(0)*256+ReadData->at(1);
+                ReadData->remove(0, 2);
+                NewReceive = false;
+            }
+            else // посылка не распознана - игнорируем
+                ReadData->clear();
+        }
+    }
     if (ReadData->size() > RcvDataLength) // Если приняли больше, чем длина, указанная в начале блока (на самом деле RcvDataLength не учитывает
-        // символ "<" в начале посылки
+        // символ "<" в начале посылки)
+    {
+        emit receivecompleted(); // очередная посылка принята успешно, надо разбирать
+        TimeoutTimer->stop();
+    }
+    else // если ещё не принято, перезапускаем таймер таймаута
+    {
+        if (TimeoutTimer->isActive())
+            TimeoutTimer->start();
+    }
+    ReadDataMtx.unlock();
     emit newdataarrived(ba);
-    if (TimeoutTimer->isActive())
-        TimeoutTimer->start();
 }
 
 void SerialThread::WriteData()
 {
+    OutDataBufMtx.lock();
     qint64 res = port->write(OutDataBuf);
     if (res == -1)
         emit datawritten(QByteArray()); // ошибка
     TimeoutTimer->start();
     emit datawritten(OutDataBuf); // всё гут
     OutDataBuf.clear();
+    OutDataBufMtx.unlock();
 }
 
 QByteArray SerialThread::data()
 {
+    ReadDataMtx.lock();
     QByteArray ba = *ReadData;
     ReadData->clear();
     return ba;
+    ReadDataMtx.unlock();
 }
 
 void SerialThread::InitiateWriteDataToPort(QByteArray *ba)
 {
+    ReadDataMtx.lock();
+    OutDataBufMtx.lock();
     ReadData->clear();
+    ReadDataMtx.unlock();
     NothingReceived = true;
-    if (ba->size() <= 516) // 512 байт + заголовок 4 байта (>WFx)
+    if (ba->size() <= 519) // 512 байт + заголовок 7 байт (>,32,~32,№,длина)
     {
         DataToSend->clear(); // для того, чтобы правильно выйти по таймауту
         OutDataBuf = ba->data();
@@ -127,12 +150,13 @@ void SerialThread::InitiateWriteDataToPort(QByteArray *ba)
     }
     else
     {
-        OutDataBuf = ba->left(516);
-        ba->remove(0, 516);
+        OutDataBuf = ba->left(519);
+        ba->remove(0, 519);
         DataToSend->clear();
-        DataToSend->append(*ba);
+        DataToSend->append(ba->data());
         ThereIsDataToSend = true;
     }
+    OutDataBufMtx.unlock();
 }
 
 void SerialThread::Timeout()
@@ -141,14 +165,17 @@ void SerialThread::Timeout()
     {
         emit timeout();
         TimeoutTimer->stop();
-        emit receivecompleted();
+//        emit receivecompleted();
     }
     else
     {
         if (ThereIsDataToSend) // если есть, что ещё послать
         {
-            if (QString::fromLocal8Bit(*ReadData) == "<RDY") // надо проверить, получили ли правильный промежуточный ответ
+            // надо проверить, получили ли правильный промежуточный ответ
+            if (ReadData->at(0) == 0x55)
             {
+                ReadDataMtx.lock();
+                OutDataBufMtx.lock();
                 ReadData->clear();
                 if (DataToSend->size() > 512)
                 {
@@ -167,7 +194,11 @@ void SerialThread::Timeout()
                     TimeoutTimer->stop();
                     emit receivecompleted();
                 }
+                ReadDataMtx.unlock();
+                OutDataBufMtx.unlock();
             }
+            else
+                emit error(SegFaultError);
         }
         else
         {
