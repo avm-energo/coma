@@ -24,6 +24,7 @@
 #define PortOpenError   1 // ошибка открытия порта
 #define NoPortsError    2 // нет портов в системе
 #define SegFaultError   3 // ошибка при приёме сегмента данных на стороне модуля
+#define RcvDataError    4 // ошибка при приёме данных (несовпадение длины, неправильный начальный символ и т.п.)
 
 #include <QtSerialPort/QSerialPort>
 #include <QStringList>

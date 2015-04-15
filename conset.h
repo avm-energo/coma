@@ -1,8 +1,6 @@
 #ifndef CONSET_H
 #define CONSET_H
 
-#define GBsi    0x21; // запрос блока стартовой информации
-
 #include <QMainWindow>
 #include <QTimer>
 #include <QCloseEvent>
@@ -13,6 +11,7 @@
 #include "A/checkdialog.h"
 #include "A/confdialog.h"
 #include "A/tunedialog.h"
+#include "canal.h"
 
 class ConSet : public QMainWindow
 {
@@ -28,14 +27,13 @@ signals:
     void stopall();
 
 private:
+    canal *cn;
     QThread *thread;
     a_checkdialog *ACheckDialog;
     a_confdialog *AConfDialog;
     a_tunedialog *ATuneDialog;
     fwupdialog *FwUpDialog;
     downloaddialog *DownDialog;
-    QByteArray inbuf;
-    QTimer *TimeoutTimer, *ReadPortTimer;
     bool NothingReceived;
 
     struct Bsi
@@ -49,6 +47,7 @@ private:
         qint32 Hth;
     };
 
+    Bsi Bsi_block;
     void InitiateWriteDataToPort(QByteArray ba);
     QString ByteToHex(quint8);
     void AllIsOk();
@@ -64,8 +63,9 @@ private slots:
     void GetBsi();
     void CheckBsi();
     void UpdateMainTE(QByteArray);
-    void Timeout();
     void KillSThread();
+    void SetPort(QString str);
+    void SetBaud(QString str);
 
 protected:
     void closeEvent(QCloseEvent *e);

@@ -7,6 +7,7 @@
 #include "../widgets/s_tqcheckbox.h"
 #include "../widgets/s_tqspinbox.h"
 #include "../publicclass.h"
+#include "../canal.h"
 
 // Описание блока Bci
 #define BCI_INTYPE      1
@@ -62,11 +63,10 @@ private:
         quint32 w_104;          // макс. кол-во сообщений, после которых необх. выдать подтверждение
     } Bci;
 
+    canal *cn;
     QByteArray confba;
     Bci Bci_block;
     publicclass::DataRec Config[ACONF_NUM];
-
-    void GetBci();
 
 signals:
 
@@ -87,6 +87,7 @@ private slots:
     void Set104(double, s_tqspinbox *);
     void SetCType(int);
     void SetOscDly(int);
+    void GetBci();
     void FillConfData();
     void WriteConfDataToModule();
     void WriteCompleted();

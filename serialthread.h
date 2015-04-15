@@ -14,21 +14,17 @@ class SerialThread : public QObject
 public:
     explicit SerialThread(QObject *parent = 0);
     QSerialPortInfo portinfo;
-    QSerialPort *port;
     int baud;
     QByteArray OutDataBuf;
     bool ClosePortAndFinishThread;
 
-    QByteArray data();
     void InitiateWriteDataToPort(QByteArray *);
+
 private:
-    QByteArray *ReadData;
+    QSerialPort *port;
     QByteArray *DataToSend;
     QTimer *TimeoutTimer;
     quint16 RcvDataLength;
-    bool NothingReceived;
-    bool NewReceive; // false => полученные данные в порту являются продолжением предыдущих, true - начало новой порции
-    bool ThereIsDataToSend, ThereMustBeDataToReceive;
     QMutex OutDataBufMtx, ReadDataMtx;
 
 signals:
@@ -43,8 +39,6 @@ public slots:
     void run();
     void stop();
     void WriteData();
-    void SetPort(QString str);
-    void SetBaud(QString str);
 
 private slots:
     void CheckForData();

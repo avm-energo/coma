@@ -14,8 +14,8 @@
 #include <QThread>
 #include "mytabwidget.h"
 #include <QDialog>
-
 #include "conset.h"
+#include "config.h"
 #include "publicclass.h"
 
 ConSet::ConSet(QWidget *parent)
@@ -24,6 +24,7 @@ ConSet::ConSet(QWidget *parent)
     setWindowTitle("КАВТУК");
     setMinimumSize(QSize(800, 550));
     thread = new QThread;
+    cn = new canal;
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
 
@@ -146,7 +147,7 @@ void ConSet::Connect()
     QVBoxLayout *lyout = new QVBoxLayout;
     QComboBox *portscb = new QComboBox;
     portscb->setObjectName("connectportscb");
-    connect(portscb,SIGNAL(currentIndexChanged(QString)),pc.SThread,SLOT(SetPort(QString)));
+    connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPort(QString)));
     QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
     if (info.size() == 0)
     {
@@ -157,19 +158,19 @@ void ConSet::Connect()
     QStringList tmpsl;
     for (i = 0; i < info.size(); i++)
         tmpsl << info.at(i).portName();
-    pc.SThread->SetPort(tmpsl.at(0));
+    SetPort(tmpsl.at(0));
     tmpmodel->setStringList(tmpsl);
     portscb->setModel(tmpmodel);
     lyout->addWidget(portscb);
     QComboBox *baudscb = new QComboBox;
     baudscb->setObjectName("connectbaudscb");
-    connect(baudscb,SIGNAL(currentIndexChanged(QString)),pc.SThread,SLOT(SetBaud(QString)));
+    connect(baudscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetBaud(QString)));
     tmpmodel = new QStringListModel;
     tmpsl.clear();
     QList<qint32> bauds = QSerialPortInfo::standardBaudRates();
     for (i = 0; i < bauds.size(); i++)
         tmpsl << QString::number(bauds.at(i));
-    pc.SThread->SetBaud(tmpsl.at(0));
+    SetBaud(tmpsl.at(0));
     tmpmodel->setStringList(tmpsl);
     baudscb->setModel(tmpmodel);
     lyout->addWidget(baudscb);
@@ -190,7 +191,6 @@ void ConSet::Next()
     connect(pc.SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(pc.SThread,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
-    connect(pc.SThread,SIGNAL(timeout()),this,SLOT(Timeout())); // таймаут по отсутствию принятых данных
     connect(pc.SThread,SIGNAL(finished()),this,SLOT(KillSThread()));
     connect(pc.SThread,SIGNAL(finished()),thread,SLOT(quit()));
     connect(thread,SIGNAL(finished()),pc.SThread,SLOT(deleteLater()));
@@ -202,42 +202,45 @@ void ConSet::Next()
     GetBsi();
 }
 
+void ConSet::SetPort(QString str)
+{
+    QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
+    for (int i = 0; i < info.size(); i++)
+    {
+        if (info.at(i).portName() == str)
+        {
+            pc.SThread->portinfo = info.at(i);
+            return;
+        }
+    }
+}
+
+void ConSet::SetBaud(QString str)
+{
+    pc.SThread->baud = str.toInt();
+}
+
 void ConSet::ShowErrMsg(int ermsg)
 {
-    const QString errmsgs[] = {"", "Ошибка открытия порта", "В системе нет COM-портов"};
+    const QString errmsgs[] = {"", "Ошибка открытия порта", "В системе нет COM-портов","Ошибка при приёме сегмента данных на стороне модуля",\
+                              "Ошибка при приёме данных"};
     QMessageBox::critical(this,"error!",errmsgs[ermsg]);
 }
 
 void ConSet::GetBsi()
 {
-    QByteArray *tmpba = new QByteArray(2,0x00);
-    tmpba += GBsi;
-    tmpba += ~GBsi;
-    connect(pc.SThread,SIGNAL(receivecompleted()),this,SLOT(CheckBsi()));
-    pc.SThread->InitiateWriteDataToPort(tmpba);
+    connect(cn,SIGNAL(DataReady()),this,SLOT(CheckBsi()));
+    cn->Send(GBsi, &Bsi_block, sizeof(Bsi_block));
 }
 
 void ConSet::CheckBsi()
 {
-    // раскидаем принятый inbuf по полочкам
-    unsigned char *Bsipos;
-    disconnect(pc.SThread,SIGNAL(receivecompleted()),this,SLOT(CheckBsi()));
-    Bsi Bsi_block;
-    inbuf = pc.SThread->data();
-    Bsipos = reinterpret_cast<unsigned char *>(&Bsi_block);
-    if (inbuf.at(0) != 0x3c)
-        return;
-    quint16 length = inbuf.at(1) * 256 + inbuf.at(2);
-    if (length > inbuf.size()-3) // принят неправильный буфер с неправильной длиной
-        return;
-    for (int i = 3; i < length; i++) // пропускаем "<" и длину, поэтому не от 0
+    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckBsi()));
+    if (cn->result)
     {
-        if (i > (sizeof(Bsi)-1))
-            break;
-        *Bsipos = inbuf.at(i);
-        Bsipos++;
+        ShowErrMsg(RcvDataError);
+        return;
     }
-
     pc.MType = Bsi_block.MType;
     pc.MType1 = Bsi_block.MType1;
 
@@ -305,22 +308,28 @@ void ConSet::CheckBsi()
 
 void ConSet::AllIsOk()
 {
-
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
-    AConfDialog = new a_confdialog;
-    ATuneDialog = new a_tunedialog;
-    ACheckDialog = new a_checkdialog;
-    DownDialog = new downloaddialog;
-    FwUpDialog = new fwupdialog;
-    MainTW->addTab(AConfDialog, "Конфигурирование");
-    MainTW->addTab(ATuneDialog, "Настройка");
-    MainTW->addTab(ACheckDialog, "Проверка");
-    MainTW->addTab(DownDialog, "Скачать");
-    MainTW->addTab(FwUpDialog, "Загрузка ВПО");
+    switch (Bsi_block.MType)
+    {
+    case MT_A:
+    {
+        AConfDialog = new a_confdialog;
+        ATuneDialog = new a_tunedialog;
+        ACheckDialog = new a_checkdialog;
+        DownDialog = new downloaddialog;
+        FwUpDialog = new fwupdialog;
+        MainTW->addTab(AConfDialog, "Конфигурирование");
+        MainTW->addTab(ATuneDialog, "Настройка");
+        MainTW->addTab(ACheckDialog, "Проверка");
+        MainTW->addTab(DownDialog, "Скачать");
+        MainTW->addTab(FwUpDialog, "Загрузка ВПО");
+    }
+    default:
+        break;
+    }
     MainTW->repaint();
-
     MainTW->show();
 }
 
@@ -348,12 +357,6 @@ QString ConSet::ByteToHex(quint8 hb)
     halfbyte = hb & 0x0F;
     tmpString.append(QString::number(halfbyte, 16));
     return tmpString;
-}
-
-void ConSet::Timeout()
-{
-    QMessageBox::warning(this,"warning!","Произошёл таймаут ожидания данных");
-//    Disconnect();
 }
 
 void ConSet::Disconnect()

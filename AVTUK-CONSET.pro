@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     A/tunedialog.cpp \
     widgets/s_tqcheckbox.cpp \
     widgets/s_tqcombobox.cpp \
-    widgets/s_tqspinbox.cpp
+    widgets/s_tqspinbox.cpp \
+    canal.cpp
 
 HEADERS  += conset.h \
     fwupdialog.h \
@@ -40,4 +41,5 @@ HEADERS  += conset.h \
     widgets/s_tqcheckbox.h \
     widgets/s_tqcombobox.h \
     widgets/s_tqspinbox.h \
-    config.h
+    config.h \
+    canal.h
