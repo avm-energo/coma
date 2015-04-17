@@ -68,6 +68,8 @@ private:
     Bci Bci_block;
     publicclass::DataRec Config[ACONF_NUM];
 
+    void ShowErrMsg(int ermsg);
+
 signals:
 
 public slots:
@@ -91,6 +93,7 @@ private slots:
     void FillConfData();
     void WriteConfDataToModule();
     void WriteCompleted();
+    void SetupUI();
 };
 
 #endif // A_CONFDIALOG_H

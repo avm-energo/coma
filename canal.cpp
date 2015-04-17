@@ -4,6 +4,8 @@
 canal::canal(QObject *parent) : QObject(parent)
 {
     ReadData = new QByteArray;
+    SegEnd = 0;
+    SegLeft = 0;
 }
 
 canal::~canal()
@@ -15,15 +17,10 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
 {
     QByteArray *tmpba;
     outdata = static_cast<unsigned char *>(ptr);
-    if (outdata == NULL)
-        ErrorDetected();
-    if (DRptr == NULL)
-        ErrorDetected();
-    if (!ptrsize)
-        ErrorDetected();
     outdatasize = ptrsize; // размер области данных, в которую производить запись
     cmd = command;
     fnum = filenum;
+    DR = DRptr;
     switch (cmd)
     {
     case GBsi:
@@ -45,6 +42,34 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
     }
     case WF: // запись файла
     {
+        tmpba = new QByteArray(7+10000,0x00); // 10000 - предположительная длина файла конфигурации
+        tmpba->data()[0] = Start;
+        tmpba->data()[1] = WF;
+        tmpba->data()[2] = ~WF;
+        tmpba->data()[3] = fnum;
+        if (DR == NULL)
+            ErrorDetected(CN_NULLDATAERROR);
+        pc.StoreDataMem(&(tmpba->data()[7]), DR);
+        DLength = tmpba->data()[9]*65536+tmpba->data()[8]*256+tmpba->data()[7]; // DataHeader.size
+        DLength += 12; // sizeof(DataHeader)
+        int tmpi1 = tmpba->data()[4] = (DLength/65536);
+        int tmpi2 = tmpba->data()[5] = (DLength - tmpi1*65536)/256;
+        tmpba->data()[6] = DLength - tmpi1*65536 - tmpi2*256;
+        tmpba->resize(DLength+7);
+        SetWR(tmpba,7); // 7 - длина заголовка
+        if (SegLeft)
+        {
+            tmpba->truncate(512+7);
+            WriteData->remove(0,512+7);
+        }
+    }
+    case Gda:
+    {
+        tmpba = new QByteArray(3,0x00);
+        tmpba->data()[0] = Start;
+        tmpba->data()[1] = Gda;
+        tmpba->data()[2] = ~Gda;
+        break;
     }
     default:
         break;
@@ -59,7 +84,7 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
 
 void canal::GetSomeData(QByteArray ba)
 {
-    ReadData->resize(ReadData->size()+ba.size()); // расширяем приёмный буфер
+    int res;
     ReadData->append(ba);
     if (ReadData->size()<3) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
         return;
@@ -70,11 +95,15 @@ void canal::GetSomeData(QByteArray ba)
         switch (cmd)
         {
         case GBsi:
+        case Gda:
         {
-            if (ReadData->size()<4) // для приёма ответа на GBsi требуется минимум четыре байта, чтобы перейти к следующему шагу
+            if (ReadData->size()<4) // для приёма ответа требуется минимум четыре байта, чтобы перейти к следующему шагу
                 return;
             if (ReadData->at(0) != MStart)
-                ErrorDetected();
+            {
+                ErrorDetected(CN_RCVDATAERROR);
+                return;
+            }
             SetRDLength(1);
             bStep++;
             break;
@@ -84,78 +113,187 @@ void canal::GetSomeData(QByteArray ba)
             if (ReadData->size()<5) // для приёма файла требуется минимум пять байт, чтобы перейти к следующему шагу
                 return;
             if ((ReadData->at(0) != MStart) || (ReadData->at(1) != fnum)) // если первая не < и вторая - не необходимый нам номер файла
-                ErrorDetected();
+            {
+                ErrorDetected(CN_RCVDATAERROR);
+                return;
+            }
             SetRDLength(2);
             bStep++;
             break;
         }
+        case WF:
+        {
+            if (!SegLeft)
+            {
+                bStep++;
+                break;
+            }
+            if (ReadData->size()<3) // для приема ответа нужно минимум три байта
+                return;
+            if ((ReadData->at(0) == MStart) && (ReadData->at(1) == SegOk) && (ReadData->at(2) == ~SegOk))
+            {
+                ReadData->clear();
+                WRCheckForNextSegment();
+                return;
+            }
+            else
+            {
+                ErrorDetected(CN_RCVDATAERROR);
+                return;
+            }
+            break;
+        }
         default:
         {
-            ErrorDetected();
-            break;
+            ErrorDetected(CN_UNKNOWNCMDERROR);
+            return;
         }
         }
     }
     case 1:
     {
-        if ((ReadData->size() >= SegEnd) && (SegLeft)) // если достигли конца текущего сегмента, и ещё есть, что принимать
-        {
-            SegEnd += 512; // устанавливаем границу следующего сегмента
-            SegLeft--;
-            QByteArray *tmpba = new QByteArray(3, 0x00);
-            tmpba->data()[0] = Start;
-            tmpba->data()[1] = SegOk;
-            tmpba->data()[2] = ~SegOk;
-            pc.SThread->InitiateWriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
-            return;
-        }
         switch (cmd)
         {
         case GBsi:
+        case Gda:
         {
+            if (!RDCheckForNextSegment())
+                return;
             if (ReadData->size() < RDLength)
                 return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
-            NoErrorDetected();
+            if (outdatasize < DLength)
+            {
+                ErrorDetected(CN_NULLDATAERROR);
+                return;
+            }
+            for (int i = 4; i < ReadData->size(); i++)
+            {
+                *outdata = ReadData->at(i);
+                outdata++;
+            }
+            result = 0;
+            emit DataReady();
             break;
         }
         case GF:
         {
+            if (!RDCheckForNextSegment())
+                return;
             if (ReadData->size() < RDLength)
                 return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
-            NoErrorDetected();
+            if (DR == NULL)
+            {
+                ErrorDetected(CN_NULLDATAERROR);
+                return;
+            }
+            ReadData->remove(0, 5); // убираем заголовок с <, номером файла и длиной
+            res = pc.RestoreDataMem(ReadData->data(), ReadData->size(), DR);
+            if (!res)
+            {
+                result = 0;
+                emit DataReady();
+            }
+            else
+            {
+                ErrorDetected(res);
+                return;
+            }
+            break;
+        }
+        case WF:
+        {
+            if (ReadData->size()<3) // для приема ответа нужно минимум три байта
+                return;
+            if ((ReadData->at(0) == MStart) && (ReadData->at(1) == ResOk) && (ReadData->at(2) == ~ResOk))
+            {
+                result = 0;
+                emit DataReady();
+                break;
+            }
+            ErrorDetected(CN_RCVDATAERROR);
             break;
         }
         default:
         {
-            ErrorDetected();
+            ErrorDetected(CN_UNKNOWNCMDERROR);
             break;
         }
         }
     }
     }
+    disconnect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
 }
 
 void canal::SetRDLength(int startpos)
 {
-    RDLength = ReadData->at(startpos)*65536+ReadData->at(startpos+1)*256+ReadData->at(startpos+2); // посчитали длину посылки
-    if (outdatasize<RDLength) // выход за границу допустимой области
-        ErrorDetected();
-    if (RDLength > 512)
+    DLength = ReadData->at(startpos)*65536+ReadData->at(startpos+1)*256+ReadData->at(startpos+2); // посчитали длину посылки
+    if (DLength > 512)
     {
-        SegLeft = RDLength / 512;
+        SegLeft = DLength / 512;
         SegEnd = 512 + startpos + 3; // 512 - длина сегмента, startpos - позиция начала длины, 3 - длина
     }
-    RDLength += startpos + 3;
+    RDLength = DLength + startpos + 3;
+}
+
+// false - есть ещё сегменты для приёма
+// true - последний сегмент
+
+bool canal::RDCheckForNextSegment()
+{
+    if ((ReadData->size() >= SegEnd) && (SegLeft)) // если достигли конца текущего сегмента, и ещё есть, что принимать
+    {
+        SegLeft--;
+        SegEnd += 512; // устанавливаем границу следующего сегмента
+        QByteArray *tmpba = new QByteArray(3, 0x00);
+        tmpba->data()[0] = Start;
+        tmpba->data()[1] = SegOk;
+        tmpba->data()[2] = ~SegOk;
+        pc.SThread->InitiateWriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
+        return false;
+    }
+    return true;
+}
+
+void canal::SetWR(QByteArray *ba, int startpos)
+{
+    WriteData = new QByteArray(*ba);
+    WRLength = WriteData->size();
+    if (WriteData->size()>(512+startpos)) // startpos - заголовок
+    {
+        SegLeft = (WRLength - startpos) / 512;
+        SegEnd = 512 + startpos;
+    }
+}
+
+void canal::WRCheckForNextSegment()
+{
+    if (SegLeft)
+    {
+        SegLeft--;
+        QByteArray *tmpba;
+        if (SegLeft)
+        {
+            SegEnd += 512;
+            tmpba = new QByteArray(WriteData->left(512));
+            WriteData->truncate(512);
+        }
+        else
+        {
+            tmpba = new QByteArray(*WriteData);
+            WriteData->clear();
+        }
+        pc.SThread->InitiateWriteDataToPort(tmpba);
+    }
 }
 
 void canal::Timeout()
 {
-    ErrorDetected();
+    ErrorDetected(CN_TIMEOUTERROR);
 }
 
-void canal::ErrorDetected()
+void canal::ErrorDetected(int ernum)
 {
-    result = -1;
+    result = ernum;
     disconnect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
     emit DataReady();
 }
@@ -163,11 +301,6 @@ void canal::ErrorDetected()
 void canal::NoErrorDetected()
 {
     result = 0;
-    for (int i = 0; i < ReadData->size(); i++)
-    {
-        *outdata = ReadData->at(i);
-        outdata++;
-    }
     QByteArray *tmpba = new QByteArray(3, 0x00);
     tmpba->data()[0] = Start;
     tmpba->data()[1] = ResOk;

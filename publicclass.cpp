@@ -73,6 +73,13 @@ unsigned long  _crc32_t[256]=
 0xB40BBE37,0xC30C8EA1,0x5A05DF1B,0x2D02EF8D
 };
 
+const QStringList errmsgs = QStringList() << "" << "Ошибка открытия порта" << "В системе нет COM-портов" << "Ошибка при приёме сегмента данных на стороне модуля" << \
+           "Ошибка при приёме данных" << "Произошло превышение времени ожидания при приёме данных" << \
+           "Некорректная длина принятого блока" << "Неизвестная команда" << "ошибка длины при работе с форматом S2" \
+           "Несовпадение описания прочитанного элемента с ожидаемым при работе с форматом S2" << \
+           "Несовпадение контрольной суммы при работе с форматом S2" << "некорректная длина в DataHeader при разборе формата S2" << \
+           "В канальную процедуру переданы некорректные данные";
+
 publicclass::publicclass()
 {
     AMTypes.append("Z"); // фиктивный тип, типы начинаются с 1
@@ -103,20 +110,16 @@ int publicclass::StoreDataMem(void *mem, DataRec *dr) //0 - успешно, ин
     D.size=0;
     for(R=dr;;R++)
     {
+        memcpy(m,R,sizeof(DataRec)-sizeof(void*));
+        D.size += sizeof(DataRec)-sizeof(void*);
         if(R->id==0xFFFF)
             break;
         for(i=0;i<(sizeof(DataRec)-sizeof(void *));i++)
-        {
             updCRC32(((unsigned char *)R)[i],&crc);
-            D.size++;
-        }
-        memcpy(m,R,sizeof(DataRec)-sizeof(void*));
         m+=sizeof(DataRec)-sizeof(void*);
         for(i=0;i<(R->elem_size*R->num_elem);i++)
-        {
             updCRC32(((unsigned char *)R->thedata)[i],&crc);
-            D.size++;
-        }
+        D.size += R->elem_size*R->num_elem;
         if(R->thedata)
         {
             memcpy(m,R->thedata,R->elem_size*R->num_elem);
@@ -169,21 +172,21 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
   crc=0xFFFFFFFF;
   quint32 pos = sizeof(DataHeader);
   if (pos > memsize)
-      return 3; // выход за границу принятых байт
+      return CN_S2SIZEERROR; // выход за границу принятых байт
   memcpy(&dh,m,sizeof(DataHeader));
   m+=sizeof(DataHeader);
   for(;;)
   {
       pos += sizeof(DataRec)-sizeof(void*);
       if (pos > memsize)
-          return 3; // выход за границу принятых байт
+          return CN_S2SIZEERROR; // выход за границу принятых байт
       memcpy(&R,m,sizeof(DataRec)-sizeof(void*));
+      sz+=(sizeof(DataRec)-sizeof(void*));
       if(R.id==0xFFFF)
           break;
       for(i=0;i<(sizeof(DataRec)-sizeof(void*));i++)
       {
           updCRC32(((unsigned char *)&R)[i],&crc);
-          sz++;
           m++;
       }
       r=FindElem(dr,R.id);
@@ -197,23 +200,23 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       }
       if((r->data_type!=R.data_type) || (r->elem_size!=R.elem_size) || (r->num_elem!=R.num_elem)) //несовпадения описания прочитанного элемента с ожидаемым
       {
-          return -2;	//с кодами ошибок разберёмся позже;
+          return CN_S2DESCERROR;
       }
       pos += r->elem_size*r->num_elem;
       if (pos > memsize)
-          return 3; // выход за границу принятых байт
+          return CN_S2SIZEERROR; // выход за границу принятых байт
       memcpy(r->thedata,m,r->elem_size*r->num_elem);
+      sz+=(R.elem_size*R.num_elem);
       for(i=0;i<(R.elem_size*R.num_elem);i++)
       {
           updCRC32(((unsigned char *)r->thedata)[i],&crc);
-          sz++;
           m++;
       }
   }
   if(dh.crc32!=crc)
-      return -3;	//с кодами ошибок разберёмся позже;
+      return CN_S2CRCERROR;
   if(dh.size!=sz)
-      return -3;	//с кодами ошибок разберёмся позже;
+      return CN_S2DHSZERROR;
   return 0;
 }
 

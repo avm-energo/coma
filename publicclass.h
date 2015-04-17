@@ -21,10 +21,19 @@
 #define binary_TYPE	12 //любые двоичные данные
 
 // Канал связи с модулем: определение ошибок
-#define PortOpenError   1 // ошибка открытия порта
-#define NoPortsError    2 // нет портов в системе
-#define SegFaultError   3 // ошибка при приёме сегмента данных на стороне модуля
-#define RcvDataError    4 // ошибка при приёме данных (несовпадение длины, неправильный начальный символ и т.п.)
+#define CN_PORTOPENERROR   1 // ошибка открытия порта
+#define CN_NOPORTSERROR    2 // нет портов в системе
+#define CN_SEGFAULTERROR   3 // ошибка при приёме сегмента данных на стороне модуля
+#define CN_RCVDATAERROR    4 // ошибка при приёме данных (несовпадение длины, неправильный начальный символ и т.п.)
+#define CN_TIMEOUTERROR    5 // таймаут при приёме данных
+#define CN_RCVLENGTHERROR  6 // некорректная длина блока (принято больше, чем может вместить в себя приёмная переменная)
+#define CN_UNKNOWNCMDERROR 7 // неизвестная команда
+#define CN_S2SIZEERROR     8 // ошибка длины при работе с форматом S2
+#define CN_S2DESCERROR     9 // несовпадение описания прочитанного элемента с ожидаемым при работе с форматом S2
+#define CN_S2CRCERROR      10 // несовпадение контрольной суммы при работе с форматом S2
+#define CN_S2DHSZERROR     11 // некорректная длина в DataHeader при разборе формата S2
+#define CN_NULLDATAERROR   12 // в канальную процедуру переданы некорректные данные
+
 
 #include <QtSerialPort/QSerialPort>
 #include <QStringList>
@@ -86,5 +95,6 @@ private:
 };
 
 extern publicclass pc;
+extern const QStringList errmsgs;
 
 #endif // PUBLICCLASS_H

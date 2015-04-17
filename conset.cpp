@@ -3,6 +3,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QComboBox>
+#include <QScrollBar>
 #include <QStringListModel>
 #include <QMessageBox>
 #include <QMenu>
@@ -27,6 +28,7 @@ ConSet::ConSet(QWidget *parent)
     cn = new canal;
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
+//    setMinimumHeight(500);
 
     QHBoxLayout *uplyout = new QHBoxLayout;
     QLabel *uplbl1 = new QLabel("Модуль: АВТУК-");
@@ -113,8 +115,8 @@ ConSet::ConSet(QWidget *parent)
 
     QTextEdit *MainTE = new QTextEdit;
     MainTE->setObjectName("mainte");
-    MainTE->setEnabled(false);
-    MainTE->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+//    MainTE->setEnabled(false);
+//    MainTE->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     MainTE->hide();
     inlyout->addWidget(MainTE, 40);
     lyout->addLayout(inlyout, 90);
@@ -132,7 +134,6 @@ ConSet::~ConSet()
 void ConSet::closeEvent(QCloseEvent *e)
 {
     emit stopall();
-    thread->wait();
     e->accept();
 }
 
@@ -222,15 +223,13 @@ void ConSet::SetBaud(QString str)
 
 void ConSet::ShowErrMsg(int ermsg)
 {
-    const QString errmsgs[] = {"", "Ошибка открытия порта", "В системе нет COM-портов","Ошибка при приёме сегмента данных на стороне модуля",\
-                              "Ошибка при приёме данных"};
-    QMessageBox::critical(this,"error!",errmsgs[ermsg]);
+    QMessageBox::critical(this,"error!",errmsgs.at(ermsg));
 }
 
 void ConSet::GetBsi()
 {
     connect(cn,SIGNAL(DataReady()),this,SLOT(CheckBsi()));
-    cn->Send(GBsi, &Bsi_block, sizeof(Bsi_block));
+    cn->Send(GBsi, &Bsi_block, sizeof(Bsi));
 }
 
 void ConSet::CheckBsi()
@@ -238,7 +237,7 @@ void ConSet::CheckBsi()
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckBsi()));
     if (cn->result)
     {
-        ShowErrMsg(RcvDataError);
+        ShowErrMsg(cn->result);
         return;
     }
     pc.MType = Bsi_block.MType;
@@ -346,6 +345,7 @@ void ConSet::UpdateMainTE(QByteArray ba)
         if (tmpString.size() > 10000)
             MainTE->setPlainText(tmpString.right(tmpString.size()-10000));
     }
+    MainTE->verticalScrollBar()->setValue(MainTE->verticalScrollBar()->maximum());
 }
 
 QString ConSet::ByteToHex(quint8 hb)

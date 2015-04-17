@@ -73,7 +73,7 @@ void SerialThread::WriteData()
 void SerialThread::InitiateWriteDataToPort(QByteArray *ba)
 {
     OutDataBufMtx.lock();
-    OutDataBuf = ba->data();
+    OutDataBuf = *ba;
     OutDataBufMtx.unlock();
 }
 
