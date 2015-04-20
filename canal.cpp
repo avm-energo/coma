@@ -24,11 +24,14 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
     switch (cmd)
     {
     case GBsi:
+    case Gda:
+    case Gac:
+    case GBd:
     {
         tmpba = new QByteArray(3,0x00);
         tmpba->data()[0] = Start;
-        tmpba->data()[1] = GBsi;
-        tmpba->data()[2] = ~GBsi;
+        tmpba->data()[1] = cmd;
+        tmpba->data()[2] = ~cmd;
         break;
     }
     case GF: // запрос файла
@@ -63,13 +66,25 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
             WriteData->remove(0,512+7);
         }
     }
-    case Gda:
+    case Wac:
     {
-        tmpba = new QByteArray(3,0x00);
-        tmpba->data()[0] = Start;
-        tmpba->data()[1] = Gda;
-        tmpba->data()[2] = ~Gda;
-        break;
+        tmpba = new QByteArray (QByteArray::fromRawData((const char *)outdata, outdatasize)); // 10000 - предположительная длина блока
+//        *tmpba = outdata;
+        DLength = outdatasize;
+        int tmpi1 = (DLength/65536);
+        int tmpi2 = (DLength - tmpi1*65536)/256;
+        tmpba->insert(0, DLength - tmpi1*65536 - tmpi2*256);
+        tmpba->insert(0, tmpi2);
+        tmpba->insert(0, tmpi1);
+        tmpba->insert(0, ~cmd);
+        tmpba->insert(0, cmd);
+        tmpba->insert(0, Start);
+        SetWR(tmpba,6);
+        if (SegLeft)
+        {
+            tmpba->truncate(512+7);
+            WriteData->remove(0,512+7);
+        }
     }
     default:
         break;
@@ -96,6 +111,8 @@ void canal::GetSomeData(QByteArray ba)
         {
         case GBsi:
         case Gda:
+        case Gac:
+        case GBd:
         {
             if (ReadData->size()<4) // для приёма ответа требуется минимум четыре байта, чтобы перейти к следующему шагу
                 return;
@@ -122,6 +139,7 @@ void canal::GetSomeData(QByteArray ba)
             break;
         }
         case WF:
+        case Wac:
         {
             if (!SegLeft)
             {
@@ -156,6 +174,8 @@ void canal::GetSomeData(QByteArray ba)
         {
         case GBsi:
         case Gda:
+        case Gac:
+        case GBd:
         {
             if (!RDCheckForNextSegment())
                 return;
@@ -201,6 +221,7 @@ void canal::GetSomeData(QByteArray ba)
             break;
         }
         case WF:
+        case Wac:
         {
             if (ReadData->size()<3) // для приема ответа нужно минимум три байта
                 return;

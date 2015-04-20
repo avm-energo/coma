@@ -4,8 +4,6 @@
 #include <QDialog>
 #include "canal.h"
 
-#define Z   64 // количество точек, по которым выдаются значения в блоке Bda
-
 class a_tunedialog : public QDialog
 {
     Q_OBJECT
@@ -49,7 +47,9 @@ private slots:
     void CheckAndShowTune5();
     void CheckAndShowTune20();
     void ReadTuneCoefs();
+    void ReadCompleted();
     void WriteTuneCoefs();
+    void WriteCompleted();
 };
 
 #endif // A_TUNEDIALOG_H

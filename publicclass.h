@@ -1,6 +1,8 @@
 #ifndef PUBLICCLASS_H
 #define PUBLICCLASS_H
 
+#define Z   64 // количество точек, по которым выдаются значения в блоке Bda
+
 #define MT_C    1
 #define MT_D    2
 #define MT_A    3

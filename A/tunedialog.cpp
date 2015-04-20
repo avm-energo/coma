@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include "tunedialog.h"
 #include "config.h"
+#include "publicclass.h"
 
 a_tunedialog::a_tunedialog(QWidget *parent) :
     QDialog(parent)
@@ -280,26 +281,50 @@ void a_tunedialog::CheckAndShowTune20()
 
 void a_tunedialog::ReadTuneCoefs()
 {
+    cn->Send(Gac, &Bac_block, sizeof(Bac_block));
+    connect(cn,SIGNAL(DataReady()),this,SLOT(ReadCompleted()));
+}
 
+void a_tunedialog::ReadCompleted()
+{
+    disconnect(cn,SIGNAL(DataReady()),this,SLOT(ReadCompleted()));
+    if (cn->result)
+    {
+        ShowErrMsg(cn->result);
+        return;
+    }
+    RefreshTuneCoefs();
 }
 
 void a_tunedialog::WriteTuneCoefs()
 {
+    cn->Send(Wac, &Bac_block, sizeof(Bac_block));
+    connect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
+}
 
+void a_tunedialog::WriteCompleted()
+{
+    disconnect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
+    if (cn->result)
+    {
+        ShowErrMsg(cn->result);
+        return;
+    }
+    QMessageBox::information(this,"Успешно!","Записано успешно!");
 }
 
 void a_tunedialog::CalcNewTuneCoefs()
 {
     for (int i = 0; i < 16; i++)
     {
-        Bac_block[i].fbin = 1.25 - (static_cast<float>(Bda0.sin[i])/(Z*4095.0)*2.5);
+        Bac_block[i].fbin = 1.25 - (static_cast<float>(Bda0.sin[i])/(Z*1638.0));
         if ((Bda0.sin[i] == Bda5.sin[i]) || (Bda0.sin[i] == Bda20.sin[i]))
         {
             QMessageBox::warning(this,"Предупреждение","Ошибки в настроечных коэффициентах\nДеление на ноль");
             return;
         }
-        Bac_block[i].fkuin = 1 / (2.5/(Z*4095.0)*static_cast<float>(Bda0.sin[i]-Bda5.sin[i]));
-        Bac_block[i].fkiin = 1 / (2.5/(Z*4095.0)*static_cast<float>(Bda0.sin[i]-Bda20.sin[i]));
+        Bac_block[i].fkuin = Z*1638.0/static_cast<float>(Bda0.sin[i]-Bda5.sin[i]);
+        Bac_block[i].fkiin = Z*1638.0/static_cast<float>(Bda0.sin[i]-Bda20.sin[i]);
     }
 }
 
