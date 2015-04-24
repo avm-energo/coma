@@ -16,7 +16,7 @@ SerialThread::SerialThread(QObject *parent) :
 void SerialThread::run()
 {
     TimeoutTimer = new QTimer;
-    TimeoutTimer->setInterval(1000);
+    TimeoutTimer->setInterval(4000);
     connect(TimeoutTimer, SIGNAL(timeout()),this,SLOT(Timeout()));
     port = new QSerialPort;
     port->setPort(portinfo);

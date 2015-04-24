@@ -34,7 +34,7 @@ private:
     a_tunedialog *ATuneDialog;
     fwupdialog *FwUpDialog;
     downloaddialog *DownDialog;
-    bool NothingReceived;
+    bool DialogsAreReadyAlready;
 
     struct Bsi
     {
@@ -53,6 +53,9 @@ private:
     void AllIsOk();
     void StopThreads();
 
+public slots:
+    void GetBsi();
+
 private slots:
     void Exit();
     void Connect();
@@ -60,7 +63,6 @@ private slots:
     void Next();
     void GetAbout();
     void ShowErrMsg(int);
-    void GetBsi();
     void CheckBsi();
     void UpdateMainTE(QByteArray);
     void KillSThread();

@@ -175,7 +175,7 @@ void a_tunedialog::tune(int tunenum)
                 == QMessageBox::Ok)
         {
             connect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune0()));
-            cn->Send(Gda, &Bda0, sizeof(Bda));
+            cn->Send(CN_Gda, &Bda0, sizeof(Bda));
         }
         break;
     }
@@ -187,7 +187,7 @@ void a_tunedialog::tune(int tunenum)
                 == QMessageBox::Ok)
         {
             connect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune5()));
-            cn->Send(Gda, &Bda5, sizeof(Bda));
+            cn->Send(CN_Gda, &Bda5, sizeof(Bda));
         }
         break;
     }
@@ -198,7 +198,7 @@ void a_tunedialog::tune(int tunenum)
                                      "\nвходах модуля и нажмите OK") == QMessageBox::Ok)
         {
             connect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune20()));
-            cn->Send(Gda, &Bda20, sizeof(Bda));
+            cn->Send(CN_Gda, &Bda20, sizeof(Bda));
         }
         break;
     }
@@ -281,7 +281,7 @@ void a_tunedialog::CheckAndShowTune20()
 
 void a_tunedialog::ReadTuneCoefs()
 {
-    cn->Send(Gac, &Bac_block, sizeof(Bac_block));
+    cn->Send(CN_Gac, &Bac_block, sizeof(Bac_block));
     connect(cn,SIGNAL(DataReady()),this,SLOT(ReadCompleted()));
 }
 
@@ -298,7 +298,7 @@ void a_tunedialog::ReadCompleted()
 
 void a_tunedialog::WriteTuneCoefs()
 {
-    cn->Send(Wac, &Bac_block, sizeof(Bac_block));
+    cn->Send(CN_Wac, &Bac_block, sizeof(Bac_block));
     connect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
 }
 

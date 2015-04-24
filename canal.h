@@ -22,6 +22,7 @@ public slots:
     void Timeout();
 
 private slots:
+    void DataWritten(QByteArray);
 
 private:
     unsigned char *outdata;
@@ -37,6 +38,7 @@ private:
     int SegLeft; // количество оставшихся сегментов
     int SegEnd; // номер последнего байта в ReadData текущего сегмента
     publicclass::DataRec *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
+    bool LongBlock;
 
     void SetRDLength(int startpos);
     void SetWR(QByteArray *, int startpos);
@@ -44,6 +46,8 @@ private:
     void WRCheckForNextSegment();
     void NoErrorDetected();
     void ErrorDetected(int ernum);
+    void SendOk();
+    void SendErr();
 };
 
 #endif // CANAL_H

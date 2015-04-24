@@ -191,7 +191,6 @@ void a_checkdialog::SetupUI()
     lyout->addWidget(gb);
 
     gb = new QGroupBox("Настройки");
-    gb1lyout = new QVBoxLayout;
     gb2lyout = new QHBoxLayout;
     lbl = new QLabel("Период обновления данных измерения:");
     gb2lyout->addWidget(lbl);
@@ -202,7 +201,8 @@ void a_checkdialog::SetupUI()
     spb->setValue(2000);
     connect(spb,SIGNAL(valueChanged(int)),this,SLOT(SetTimerPeriod(int)));
     gb2lyout->addWidget(spb);
-    gb1lyout->addLayout(gb2lyout);
+    gb->setLayout(gb2lyout);
+    lyout->addWidget(gb);
 
     gb = new QGroupBox("Проверки");
     gb1lyout = new QVBoxLayout;
@@ -216,15 +216,6 @@ void a_checkdialog::SetupUI()
     connect(pb,SIGNAL(clicked()),this,SLOT(CheckLEDOff()));
     gb2lyout->addWidget(pb);
     gb1lyout->addLayout(gb2lyout);
-    gb2lyout = new QHBoxLayout;
-    lbl = new QLabel("Проверка программно управляемого светодиода:");
-    gb2lyout->addWidget(lbl);
-    pb = new QPushButton("Включить светодиод");
-    connect(pb,SIGNAL(clicked()),this,SLOT(CheckLEDOn()));
-    gb2lyout->addWidget(pb);
-    pb = new QPushButton("Выключить светодиод");
-    connect(pb,SIGNAL(clicked()),this,SLOT(CheckLEDOff()));
-    gb2lyout->addWidget(pb);
 
     gb2lyout = new QHBoxLayout;
     lbl = new QLabel("Текущий IP-адрес:");
@@ -401,12 +392,12 @@ void a_checkdialog::TimerTimeout()
     if ((BdMeasurementsActive) && (OddTimeout)) // текущие измерения проводим на первом проходе таймера
     {
         connect(cn,SIGNAL(DataReady()),this,SLOT(RefreshBd()));
-        cn->Send(GBd, &Bd_block, sizeof(Bd));
+        cn->Send(CN_GBd, &Bd_block, sizeof(Bd));
     }
     if ((BdaMeasurementsActive) && (!OddTimeout)) // все остальные - на втором
     {
         connect(cn,SIGNAL(DataReady()),this,SLOT(RefreshBda()));
-        cn->Send(Gda, &Bda_block, sizeof(Bda));
+        cn->Send(CN_Gda, &Bda_block, sizeof(Bda));
     }
     OddTimeout = !OddTimeout;
 }

@@ -23,7 +23,8 @@ ConSet::ConSet(QWidget *parent)
     : QMainWindow(parent)
 {
     setWindowTitle("КАВТУК");
-    setMinimumSize(QSize(800, 550));
+    setMinimumSize(QSize(800, 600));
+    DialogsAreReadyAlready = false;
     thread = new QThread;
     cn = new canal;
     QWidget *wdgt = new QWidget;
@@ -229,7 +230,7 @@ void ConSet::ShowErrMsg(int ermsg)
 void ConSet::GetBsi()
 {
     connect(cn,SIGNAL(DataReady()),this,SLOT(CheckBsi()));
-    cn->Send(GBsi, &Bsi_block, sizeof(Bsi));
+    cn->Send(CN_GBsi, &Bsi_block, sizeof(Bsi));
 }
 
 void ConSet::CheckBsi()
@@ -292,7 +293,7 @@ void ConSet::CheckBsi()
     le = this->findChild<QLineEdit *>("cfcrcle");
     if (le == 0)
         return;
-    le->setText(QString::number(Bsi_block.Cfcrc, 16));
+    le->setText(QString::number(static_cast<uint>(Bsi_block.Cfcrc), 16));
     le = this->findChild<QLineEdit *>("rstle");
     if (le == 0)
         return;
@@ -302,7 +303,11 @@ void ConSet::CheckBsi()
         return;
     le->setText(QString::number(Bsi_block.Hth, 16));
 
-    AllIsOk();
+    if (!DialogsAreReadyAlready)
+    {
+        DialogsAreReadyAlready = true;
+        AllIsOk();
+    }
 }
 
 void ConSet::AllIsOk()
@@ -324,6 +329,7 @@ void ConSet::AllIsOk()
         MainTW->addTab(ACheckDialog, "Проверка");
         MainTW->addTab(DownDialog, "Скачать");
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
+        connect(AConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
     }
     default:
         break;
@@ -343,7 +349,7 @@ void ConSet::UpdateMainTE(QByteArray ba)
         MainTE->append(tmpString);
         tmpString = MainTE->toPlainText();
         if (tmpString.size() > 10000)
-            MainTE->setPlainText(tmpString.right(tmpString.size()-10000));
+            MainTE->setPlainText(tmpString.right(10000));
     }
     MainTE->verticalScrollBar()->setValue(MainTE->verticalScrollBar()->maximum());
 }

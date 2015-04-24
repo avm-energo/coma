@@ -51,6 +51,9 @@ a_confdialog::a_confdialog(QWidget *parent) :
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteConfDataToModule()));
     lyout->addWidget(pb1);
     lyout->addWidget(pb);
+    pb = new QPushButton("Перейти на новую конфигурацию");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SetNewConf()));
+    lyout->addWidget(pb);
     setLayout(lyout);
     SetupUI();
 }
@@ -58,7 +61,7 @@ a_confdialog::a_confdialog(QWidget *parent) :
 void a_confdialog::GetBci()
 {
     connect(cn,SIGNAL(DataReady()),this,SLOT(FillConfData()));
-    cn->Send(GF,NULL,0,1,Config);
+    cn->Send(CN_GF,NULL,0,1,Config);
 }
 
 void a_confdialog::FillConfData()
@@ -655,17 +658,29 @@ void a_confdialog::SetCType(int num)
 
 void a_confdialog::WriteConfDataToModule()
 {
-    cn->Send(WF, &Bci_block, sizeof(Bci_block), 2, Config);
     connect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
+    cn->Send(CN_WF, &Bci_block, sizeof(Bci_block), 2, Config);
 }
 
 void a_confdialog::WriteCompleted()
 {
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
     if (!cn->result)
-        QMessageBox::information(this,"Успешно!","Записано успешно!");
+        QMessageBox::information(this,"Успешно!","Операция проведена успешно!");
     else
-        QMessageBox::warning(this,"Ошибка!","Передача не удалась");
+        ShowErrMsg(cn->result);
+}
+
+void a_confdialog::SetNewConf()
+{
+    connect(cn,SIGNAL(DataReady()),this,SLOT(UpdateBsi()));
+    cn->Send(CN_Cnc);
+}
+
+void a_confdialog::UpdateBsi()
+{
+    disconnect(cn,SIGNAL(DataReady()),this,SLOT(UpdateBsi()));
+    emit BsiIsNeedToBeAcquiredAndChecked();
 }
 
 void a_confdialog::ShowErrMsg(int ermsg)

@@ -71,6 +71,7 @@ private:
     void ShowErrMsg(int ermsg);
 
 signals:
+    void BsiIsNeedToBeAcquiredAndChecked();
 
 public slots:
 
@@ -94,6 +95,8 @@ private slots:
     void WriteConfDataToModule();
     void WriteCompleted();
     void SetupUI();
+    void SetNewConf();
+    void UpdateBsi();
 };
 
 #endif // A_CONFDIALOG_H
