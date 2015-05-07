@@ -261,3 +261,28 @@ quint32 publicclass::AMdf()
     quint32 tmpint = (MType1 & 0x000000FF);
     return tmpint;
 }
+
+QString publicclass::ETyp1()
+{
+    switch (MType1)
+    {
+    case 0x0000:
+    {
+        return "2Т0Н";
+        break;
+    }
+    case 0x0000:
+    {
+        return "1Т1Н";
+        break;
+    }
+    case 0x0000:
+    {
+        return "0Т2Н";
+        break;
+    }
+    default:
+        break;
+    }
+    return QString();
+}

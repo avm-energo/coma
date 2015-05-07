@@ -77,115 +77,95 @@ void a_confdialog::FillConfData()
     s_tqspinbox *dspbls;
     s_tqComboBox *ChTypCB;
     s_tqCheckBox *chb;
-    switch (pc.MType)
+    spb = this->findChild<QSpinBox *>("oscdlyspb");
+    if (spb == 0)
+        return;
+    spb->setValue(Bci_block.oscdly);
+    dspbls = this->findChild<s_tqspinbox *>("abs104spb");
+    if (dspbls == 0)
+        return;
+    dspbls->setValue(Bci_block.Abs_104);
+    dspbls = this->findChild<s_tqspinbox *>("cycle104spb");
+    if (dspbls == 0)
+        return;
+    dspbls->setValue(Bci_block.Cycle_104);
+    dspbls = this->findChild<s_tqspinbox *>("t1104spb");
+    if (dspbls == 0)
+        return;
+    dspbls->setValue(Bci_block.T1_104);
+    dspbls = this->findChild<s_tqspinbox *>("t2104spb");
+    if (dspbls == 0)
+        return;
+    dspbls->setValue(Bci_block.T2_104);
+    dspbls = this->findChild<s_tqspinbox *>("t3104spb");
+    if (dspbls == 0)
+        return;
+    dspbls->setValue(Bci_block.T3_104);
+    dspbls = this->findChild<s_tqspinbox *>("k104spb");
+    if (dspbls == 0)
+        return;
+    dspbls->setValue(Bci_block.k_104);
+    dspbls = this->findChild<s_tqspinbox *>("w104spb");
+    if (dspbls == 0)
+        return;
+    dspbls->setValue(Bci_block.w_104);
+    ChTypCB = this->findChild<s_tqComboBox *>("ctypecb");
+    if (ChTypCB == 0)
+        return;
+    ChTypCB->setCurrentIndex(Bci_block.Ctype);
+    for (i = 0; i < 16; i++)
     {
-    case MT_A:
-    {
-        spb = this->findChild<QSpinBox *>("oscdlyspb");
-        if (spb == 0)
-            return;
-        spb->setValue(Bci_block.oscdly);
-        dspbls = this->findChild<s_tqspinbox *>("abs104spb");
-        if (dspbls == 0)
-            return;
-        dspbls->setValue(Bci_block.Abs_104);
-        dspbls = this->findChild<s_tqspinbox *>("cycle104spb");
-        if (dspbls == 0)
-            return;
-        dspbls->setValue(Bci_block.Cycle_104);
-        dspbls = this->findChild<s_tqspinbox *>("t1104spb");
-        if (dspbls == 0)
-            return;
-        dspbls->setValue(Bci_block.T1_104);
-        dspbls = this->findChild<s_tqspinbox *>("t2104spb");
-        if (dspbls == 0)
-            return;
-        dspbls->setValue(Bci_block.T2_104);
-        dspbls = this->findChild<s_tqspinbox *>("t3104spb");
-        if (dspbls == 0)
-            return;
-        dspbls->setValue(Bci_block.T3_104);
-        dspbls = this->findChild<s_tqspinbox *>("k104spb");
-        if (dspbls == 0)
-            return;
-        dspbls->setValue(Bci_block.k_104);
-        dspbls = this->findChild<s_tqspinbox *>("w104spb");
-        if (dspbls == 0)
-            return;
-        dspbls->setValue(Bci_block.w_104);
-        ChTypCB = this->findChild<s_tqComboBox *>("ctypecb");
+        ChTypCB = this->findChild<s_tqComboBox *>("chtypcb"+QString::number(i));
         if (ChTypCB == 0)
             return;
-        ChTypCB->setCurrentIndex(Bci_block.Ctype);
-        for (i = 0; i < 16; i++)
-        {
-            ChTypCB = this->findChild<s_tqComboBox *>("chtypcb"+QString::number(i));
-            if (ChTypCB == 0)
-                return;
-            ChTypCB->setCurrentIndex(Bci_block.in_type[i]);
-            chb = this->findChild<s_tqCheckBox *>("chb"+QString::number(i));
-            if (ChTypCB == 0)
-                return;
-            if (Bci_block.discosc & (0x0001 << i))
-                chb->setChecked(true);
-            else
-                chb->setChecked(false);
-            ChTypCB = this->findChild<s_tqComboBox *>("oscsrccb"+QString::number(i));
-            if (ChTypCB == 0)
-                return;
-            ChTypCB->setCurrentIndex(Bci_block.oscsrc&(0x00000003 << i));
+        ChTypCB->setCurrentIndex(Bci_block.in_type[i]);
+        chb = this->findChild<s_tqCheckBox *>("chb"+QString::number(i));
+        if (ChTypCB == 0)
+            return;
+        if (Bci_block.discosc & (0x0001 << i))
+            chb->setChecked(true);
+        else
+            chb->setChecked(false);
+        ChTypCB = this->findChild<s_tqComboBox *>("oscsrccb"+QString::number(i));
+        if (ChTypCB == 0)
+            return;
+        ChTypCB->setCurrentIndex(Bci_block.oscsrc&(0x00000003 << i));
 
-            dspbls = this->findChild<s_tqspinbox *>("inminspb"+QString::number(i));
-            if (dspbls == 0)
-                return;
-            dspbls->setValue(Bci_block.in_min[i]);
-            dspbls = this->findChild<s_tqspinbox *>("inmaxspb"+QString::number(i));
-            if (dspbls == 0)
-                return;
-            dspbls->setValue(Bci_block.in_max[i]);
-            dspbls = this->findChild<s_tqspinbox *>("invminspb"+QString::number(i));
-            if (dspbls == 0)
-                return;
-            dspbls->setValue(Bci_block.in_vmin[i]);
-            dspbls = this->findChild<s_tqspinbox *>("invmaxspb"+QString::number(i));
-            if (dspbls == 0)
-                return;
-            dspbls->setValue(Bci_block.in_vmax[i]);
+        dspbls = this->findChild<s_tqspinbox *>("inminspb"+QString::number(i));
+        if (dspbls == 0)
+            return;
+        dspbls->setValue(Bci_block.in_min[i]);
+        dspbls = this->findChild<s_tqspinbox *>("inmaxspb"+QString::number(i));
+        if (dspbls == 0)
+            return;
+        dspbls->setValue(Bci_block.in_max[i]);
+        dspbls = this->findChild<s_tqspinbox *>("invminspb"+QString::number(i));
+        if (dspbls == 0)
+            return;
+        dspbls->setValue(Bci_block.in_vmin[i]);
+        dspbls = this->findChild<s_tqspinbox *>("invmaxspb"+QString::number(i));
+        if (dspbls == 0)
+            return;
+        dspbls->setValue(Bci_block.in_vmax[i]);
 
-            dspbls = this->findChild<s_tqspinbox *>("setminminspb"+QString::number(i));
-            if (dspbls == 0)
-                return;
-            dspbls->setValue(Bci_block.setminmin[i]);
-            dspbls = this->findChild<s_tqspinbox *>("setminspb"+QString::number(i));
-            if (dspbls == 0)
-                return;
-            dspbls->setValue(Bci_block.setmin[i]);
-            dspbls = this->findChild<s_tqspinbox *>("setmaxspb"+QString::number(i));
-            if (dspbls == 0)
-                return;
-            dspbls->setValue(Bci_block.setmax[i]);
-            dspbls = this->findChild<s_tqspinbox *>("setmaxmaxspb"+QString::number(i));
-            if (dspbls == 0)
-                return;
-            dspbls->setValue(Bci_block.setmaxmax[i]);
+        dspbls = this->findChild<s_tqspinbox *>("setminminspb"+QString::number(i));
+        if (dspbls == 0)
+            return;
+        dspbls->setValue(Bci_block.setminmin[i]);
+        dspbls = this->findChild<s_tqspinbox *>("setminspb"+QString::number(i));
+        if (dspbls == 0)
+            return;
+        dspbls->setValue(Bci_block.setmin[i]);
+        dspbls = this->findChild<s_tqspinbox *>("setmaxspb"+QString::number(i));
+        if (dspbls == 0)
+            return;
+        dspbls->setValue(Bci_block.setmax[i]);
+        dspbls = this->findChild<s_tqspinbox *>("setmaxmaxspb"+QString::number(i));
+        if (dspbls == 0)
+            return;
+        dspbls->setValue(Bci_block.setmaxmax[i]);
 
-        }
-        case MT_C:
-        {
-            break;
-        }
-        case MT_D:
-        {
-            break;
-        }
-        case MT_E:
-        {
-            break;
-        }
-        default:
-            break;
-        }
-        }
+    }
 }
 
 void a_confdialog::SetupUI()

@@ -157,6 +157,7 @@ void ConSet::closeEvent(QCloseEvent *e)
 
 void ConSet::Connect()
 {
+// !!! /*
     int i;
     pc.SThread = new SerialThread();
     QDialog *dlg = new QDialog(this);
@@ -323,6 +324,8 @@ void ConSet::CheckBsi()
     }
     case MT_E: // разборка подтипа модуля Э
     {
+        MType.append("Э");
+        MType.append(pc.ETyp1());
         break;
     }
     default:

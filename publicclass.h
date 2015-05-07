@@ -93,6 +93,7 @@ public:
     quint32 ATyp1();
     quint32 ATyp2();
     quint32 AMdf();
+    QString ETyp1();
 
     // S2: Сборщик в память:
     int StoreDataMem(void *, DataRec *); //0 - успешно, иначе код ошибки
