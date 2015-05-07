@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QFileDialog>
 #include "tunedialog.h"
 #include "config.h"
 #include "publicclass.h"
@@ -71,6 +72,12 @@ void a_tunedialog::SetupUI()
     gb1lyout->addWidget(pb);
     pb = new QPushButton("Записать настроечные коэффициенты в модуль");
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteTuneCoefs()));
+    gb1lyout->addWidget(pb);
+    pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
+    connect(pb,SIGNAL(clicked()),this,SLOT(LoadFromFile()));
+    gb1lyout->addWidget(pb);
+    pb = new QPushButton("Записать настроечные коэффициенты в файл");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
     gb1lyout->addWidget(pb);
     gb->setLayout(gb1lyout);
     lyout->addWidget(gb);
@@ -345,6 +352,38 @@ void a_tunedialog::RefreshTuneCoefs()
             return;
         lbl->setText(QString::number(Bac_block[i].fkiin, 'f', 5));
     }
+}
+
+void a_tunedialog::LoadFromFile()
+{
+    QString filename = QFileDialog::getOpenFileName(this, "Открыть файл", ".", "Configuration (*.conf)");
+    if (filename.isEmpty())
+        return;
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        ShowErrMsg(ER_FILEOPENERROR);
+        return;
+    }
+    QByteArray *ba = new QByteArray(file.readAll());
+    publicclass::Bsi Bsi_block;
+    if (ba->size() >= (sizeof(publicclass::Bsi)+sizeof(Bac_block)))
+    {
+        memcpy(&Bsi_block,ba,sizeof(publicclass::Bsi));
+        if ((Bsi_block.CpuId != pc.CpuId) || (Bsi_block.SerNum != pc.SerNum))
+        {
+            if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
+                                      QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);
+            else
+                return;
+        }
+        // продолжение загрузки файла
+    }
+}
+
+void a_tunedialog::SaveToFile()
+{
+
 }
 
 void a_tunedialog::ShowErrMsg(int ermsg)

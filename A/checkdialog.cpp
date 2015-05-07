@@ -369,12 +369,12 @@ void a_checkdialog::SetTimerPeriod(int per)
 
 void a_checkdialog::CheckLEDOn()
 {
-
+    cn->Send(CN_Cln);
 }
 
 void a_checkdialog::CheckLEDOff()
 {
-
+    cn->Send(CN_Clf);
 }
 
 void a_checkdialog::Check1PPS()
@@ -384,7 +384,19 @@ void a_checkdialog::Check1PPS()
 
 void a_checkdialog::GetIP()
 {
+    connect(cn,SIGNAL(DataReady()),this,SLOT(CheckIP()));
+    cn->Send(CN_Gip, &Bip_block, sizeof(Bip));
+}
 
+void a_checkdialog::CheckIP()
+{
+    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckIP()));
+    QLabel *lbl = this->findChild<QLabel *>("ipl");
+    if (lbl == 0)
+        return;
+    for (int i = 0; i < 4; i++)
+        lbl->text().append(QString::number(Bip_block.ip[i], 16) + ".");
+    lbl->text().chop(1);
 }
 
 void a_checkdialog::TimerTimeout()

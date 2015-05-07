@@ -23,19 +23,20 @@
 #define binary_TYPE	12 //любые двоичные данные
 
 // Канал связи с модулем: определение ошибок
-#define CN_PORTOPENERROR   1 // ошибка открытия порта
-#define CN_NOPORTSERROR    2 // нет портов в системе
-#define CN_SEGFAULTERROR   3 // ошибка при приёме сегмента данных на стороне модуля
-#define CN_RCVDATAERROR    4 // ошибка при приёме данных (несовпадение длины, неправильный начальный символ и т.п.)
-#define CN_TIMEOUTERROR    5 // таймаут при приёме данных
-#define CN_RCVLENGTHERROR  6 // некорректная длина блока (принято больше, чем может вместить в себя приёмная переменная)
-#define CN_UNKNOWNCMDERROR 7 // неизвестная команда
-#define CN_S2SIZEERROR     8 // ошибка длины при работе с форматом S2
-#define CN_S2DESCERROR     9 // несовпадение описания прочитанного элемента с ожидаемым при работе с форматом S2
-#define CN_S2CRCERROR      10 // несовпадение контрольной суммы при работе с форматом S2
-#define CN_S2DHSZERROR     11 // некорректная длина в DataHeader при разборе формата S2
-#define CN_NULLDATAERROR   12 // в канальную процедуру переданы некорректные данные
+#define CN_PORTOPENERROR    1 // ошибка открытия порта
+#define CN_NOPORTSERROR     2 // нет портов в системе
+#define CN_SEGFAULTERROR    3 // ошибка при приёме сегмента данных на стороне модуля
+#define CN_RCVDATAERROR     4 // ошибка при приёме данных (несовпадение длины, неправильный начальный символ и т.п.)
+#define CN_TIMEOUTERROR     5 // таймаут при приёме данных
+#define CN_RCVLENGTHERROR   6 // некорректная длина блока (принято больше, чем может вместить в себя приёмная переменная)
+#define CN_UNKNOWNCMDERROR  7 // неизвестная команда
+#define CN_S2SIZEERROR      8 // ошибка длины при работе с форматом S2
+#define CN_S2DESCERROR      9 // несовпадение описания прочитанного элемента с ожидаемым при работе с форматом S2
+#define CN_S2CRCERROR       10 // несовпадение контрольной суммы при работе с форматом S2
+#define CN_S2DHSZERROR      11 // некорректная длина в DataHeader при разборе формата S2
+#define CN_NULLDATAERROR    12 // в канальную процедуру переданы некорректные данные
 
+#define ER_FILEOPENERROR    15 // ошибка при открытии файла
 
 #include <QtSerialPort/QSerialPort>
 #include <QStringList>
@@ -47,7 +48,8 @@ public:
     publicclass();
 
     QSerialPort serial;
-    qint32 MType, MType1;
+    qint32 MType, MType1, CpuId, SerNum;
+
     QStringList AMTypes, DMTypes, EMTypes;
     SerialThread *SThread;
 
@@ -69,6 +71,20 @@ public:
       quint32 num_elem;
       void *thedata;
     } DataRec;
+
+    typedef struct
+    {
+        qint32 MType;
+        qint32 MType1;
+        qint32 HWver;
+        qint32 FWver;
+        qint32 Cfcrc;
+        qint32 Rst;
+        qint32 RstCount;
+        qint32 Hth;
+        qint32 CpuId;
+        qint32 SerNum;
+    } Bsi;
 
     QString VerToStr(quint32);
     quint32 ANumD();

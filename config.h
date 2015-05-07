@@ -13,6 +13,7 @@
 #define CN_GBev    0x28 // запрос банка событий
 #define CN_Wac     0x31 // запись настроечных коэффициентов
 #define CN_WF      0x32 // запись файла конфигурации
+#define CN_Wsn     0x33 // запись серийного номера модуля
 #define CN_Start   0x3e // начало посылки
 #define CN_MStart  0x3c // начало посылки модуля
 #define CN_Cln     0x41 // зажечь светодиод

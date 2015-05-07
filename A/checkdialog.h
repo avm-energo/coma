@@ -31,8 +31,14 @@ private:
         quint32 sin[16];
     };
 
+    struct Bip
+    {
+        quint8 ip[4];
+    };
+
     Bd Bd_block;
     Bda Bda_block;
+    Bip Bip_block;
     bool BdMeasurementsActive, BdaMeasurementsActive, OddTimeout;
     QTimer *timer;
 
@@ -48,6 +54,7 @@ private slots:
     void CheckLEDOn();
     void CheckLEDOff();
     void GetIP();
+    void CheckIP();
     void Check1PPS();
     void TimerTimeout();
     void RefreshBd();

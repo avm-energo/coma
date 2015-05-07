@@ -12,6 +12,7 @@
 #include "A/confdialog.h"
 #include "A/tunedialog.h"
 #include "canal.h"
+#include "publicclass.h"
 
 class ConSet : public QMainWindow
 {
@@ -36,27 +37,16 @@ private:
     downloaddialog *DownDialog;
     bool DialogsAreReadyAlready;
 
-    struct Bsi
-    {
-        qint32 MType;
-        qint32 MType1;
-        qint32 HWver;
-        qint32 FWver;
-        qint32 Cfcrc;
-        qint32 Rst;
-        qint32 Hth;
-    };
-
-    Bsi Bsi_block;
+    publicclass::Bsi Bsi_block;
     void InitiateWriteDataToPort(QByteArray ba);
     QString ByteToHex(quint8);
-    void AllIsOk();
     void StopThreads();
 
 public slots:
     void GetBsi();
 
 private slots:
+    void AllIsOk();
     void Exit();
     void Connect();
     void Disconnect();

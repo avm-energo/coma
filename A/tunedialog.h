@@ -4,6 +4,7 @@
 #include <QDialog>
 #include "canal.h"
 
+#define TUNEFILELENGTH  256
 class a_tunedialog : public QDialog
 {
     Q_OBJECT
@@ -50,6 +51,8 @@ private slots:
     void ReadCompleted();
     void WriteTuneCoefs();
     void WriteCompleted();
+    void SaveToFile();
+    void LoadFromFile();
 };
 
 #endif // A_TUNEDIALOG_H

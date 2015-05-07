@@ -13,11 +13,11 @@
 #include <QVBoxLayout>
 #include <QTextEdit>
 #include <QThread>
+#include <QInputDialog>
 #include "mytabwidget.h"
 #include <QDialog>
 #include "conset.h"
 #include "config.h"
-#include "publicclass.h"
 
 ConSet::ConSet(QWidget *parent)
     : QMainWindow(parent)
@@ -29,59 +29,78 @@ ConSet::ConSet(QWidget *parent)
     cn = new canal;
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
-//    setMinimumHeight(500);
+    setMinimumHeight(650);
 
     QHBoxLayout *uplyout = new QHBoxLayout;
-    QLabel *uplbl1 = new QLabel("Модуль: АВТУК-");
+    QLabel *uplbl1 = new QLabel("Модуль АВТУК-");
     QLineEdit *uple1 = new QLineEdit("");
     uple1->setObjectName("mtypele");
     uple1->setEnabled(false);
-    uple1->setMaximumWidth(55);
     uple1->setTextMargins(0,0,0,0);
     QLabel *uplbl2 = new QLabel("Аппаратная версия:");
     QLineEdit *uple2 = new QLineEdit("");
     uple2->setObjectName("hwverle");
     uple2->setEnabled(false);
-    uple2->setMaximumWidth(70);
     uple2->setTextMargins(0,0,0,0);
     QLabel *uplbl3 = new QLabel("Версия ПО:");
     QLineEdit *uple3 = new QLineEdit("");
     uple3->setObjectName("fwverle");
     uple3->setEnabled(false);
-    uple3->setMaximumWidth(70);
     uple3->setTextMargins(0,0,0,0);
     QLabel *uplbl4 = new QLabel("КС конфигурации:");
     QLineEdit *uple4 = new QLineEdit("");
     uple4->setObjectName("cfcrcle");
     uple4->setEnabled(false);
-    uple4->setMaximumWidth(60);
     uple4->setTextMargins(0,0,0,0);
     QLabel *uplbl5 = new QLabel("Сброс:");
     QLineEdit *uple5 = new QLineEdit("");
     uple5->setObjectName("rstle");
     uple5->setEnabled(false);
-    uple5->setMaximumWidth(60);
     uple5->setTextMargins(0,0,0,0);
-    QLabel *uplbl6 = new QLabel("Неисправности (01=OK):");
+    QLabel *uplbl5_2 = new QLabel("Количество сбросов:");
+    QLineEdit *uple5_2 = new QLineEdit("");
+    uple5_2->setObjectName("rstcountle");
+    uple5_2->setEnabled(false);
+    uple5_2->setTextMargins(0,0,0,0);
+    QLabel *uplbl6 = new QLabel("Неиспр (01=OK):");
     QLineEdit *uple6 = new QLineEdit("");
     uple6->setObjectName("hthle");
     uple6->setEnabled(false);
-    uple6->setMaximumWidth(60);
     uple6->setTextMargins(0,0,0,0);
+    QLabel *uplbl7 = new QLabel("Серийный номер:");
+    QLineEdit *uple7 = new QLineEdit("");
+    uple7->setObjectName("snle");
+    uple7->setEnabled(false);
+    uple7->setTextMargins(0,0,0,0);
+    QLabel *uplbl8 = new QLabel("ИД процессора:");
+    QLineEdit *uple8 = new QLineEdit("");
+    uple8->setObjectName("cpuidle");
+    uple8->setEnabled(false);
+    uple8->setTextMargins(0,0,0,0);
 
     uplyout->addWidget(uplbl1);
     uplyout->addWidget(uple1);
-    uplyout->addWidget(uplbl2);
-    uplyout->addWidget(uple2);
-    uplyout->addWidget(uplbl3);
-    uplyout->addWidget(uple3);
     uplyout->addWidget(uplbl4);
     uplyout->addWidget(uple4);
     uplyout->addWidget(uplbl5);
     uplyout->addWidget(uple5);
+    uplyout->addWidget(uplbl5_2);
+    uplyout->addWidget(uple5_2);
     uplyout->addWidget(uplbl6);
     uplyout->addWidget(uple6);
     lyout->addLayout(uplyout);
+
+    uplyout = new QHBoxLayout;
+    uplyout->addWidget(uplbl2);
+    uplyout->addWidget(uple2, 80);
+    uplyout->addWidget(uplbl3);
+    uplyout->addWidget(uple3, 80);
+    uplyout->addWidget(uplbl7);
+    uplyout->addWidget(uple7, 80);
+    uplyout->addWidget(uplbl8);
+    uplyout->addWidget(uple8, 80);
+    lyout->addLayout(uplyout);
+
     lyout->addStretch(1);
 
     QMenuBar *MainMenuBar = new QMenuBar;
@@ -116,8 +135,6 @@ ConSet::ConSet(QWidget *parent)
 
     QTextEdit *MainTE = new QTextEdit;
     MainTE->setObjectName("mainte");
-//    MainTE->setEnabled(false);
-//    MainTE->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     MainTE->hide();
     inlyout->addWidget(MainTE, 40);
     lyout->addLayout(inlyout, 90);
@@ -182,7 +199,12 @@ void ConSet::Connect()
     lyout->addWidget(nextL);
     dlg->setLayout(lyout);
     connect(this,SIGNAL(portopened()),dlg,SLOT(close()));
-    dlg->exec();
+    dlg->exec(); //*/
+//    Bsi_block.MType = pc.MType = MT_A; // !!!
+//    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte"); // !!!
+//    if (MainTE != 0) // !!!
+//        MainTE->show(); // !!!
+//    AllIsOk(); // !!!
 }
 
 void ConSet::Next()
@@ -230,7 +252,7 @@ void ConSet::ShowErrMsg(int ermsg)
 void ConSet::GetBsi()
 {
     connect(cn,SIGNAL(DataReady()),this,SLOT(CheckBsi()));
-    cn->Send(CN_GBsi, &Bsi_block, sizeof(Bsi));
+    cn->Send(CN_GBsi, &Bsi_block, sizeof(publicclass::Bsi));
 }
 
 void ConSet::CheckBsi()
@@ -243,7 +265,32 @@ void ConSet::CheckBsi()
     }
     pc.MType = Bsi_block.MType;
     pc.MType1 = Bsi_block.MType1;
+    pc.CpuId = Bsi_block.CpuId;
 
+    qint32 tmpi = 0x0000000F;
+    bool WrongSN = false;
+
+    for (int i = 0; i < 8; i++)
+    {
+        qint32 tmpi2 = (Bsi_block.SerNum & tmpi) >> (i*4);
+        if (tmpi2 > 0x09)
+            WrongSN = true;
+        tmpi <<= 4;
+    }
+
+    if (WrongSN) // серийный номер не задан, надо задать
+    {
+        bool ok = false;
+        qint32 tmpi = QInputDialog::getInt(this, "Серийный номер", "Серийный номер модуля:", 0, 1, 99999999,\
+                                    1, &ok);
+        if (!ok)
+        {
+            Disconnect();
+            return;
+        }
+        Bsi_block.SerNum = QString::number(tmpi, 10).toInt(0,16);
+    }
+    pc.SerNum = Bsi_block.SerNum;
     QLineEdit *le = this->findChild<QLineEdit *>("mtypele");
     if (le == 0)
         return;
@@ -302,16 +349,39 @@ void ConSet::CheckBsi()
     if (le == 0)
         return;
     le->setText(QString::number(Bsi_block.Hth, 16));
+    le = this->findChild<QLineEdit *>("rstcountle");
+    if (le == 0)
+        return;
+    le->setText(QString::number(Bsi_block.RstCount, 16));
+    le = this->findChild<QLineEdit *>("cpuidle");
+    if (le == 0)
+        return;
+    le->setText(QString::number(Bsi_block.CpuId, 16));
+    le = this->findChild<QLineEdit *>("snle");
+    if (le == 0)
+        return;
+    le->setText(QString::number(Bsi_block.SerNum, 16));
 
     if (!DialogsAreReadyAlready)
     {
         DialogsAreReadyAlready = true;
-        AllIsOk();
+        if (WrongSN)
+        {
+            connect(cn,SIGNAL(DataReady()),this,SLOT(AllIsOk()));
+            cn->Send(CN_Wsn, &(Bsi_block.SerNum), 4);
+        }
+        else
+            AllIsOk();
     }
 }
 
 void ConSet::AllIsOk()
 {
+    if (cn->result)
+    {
+        ShowErrMsg(cn->result);
+        return;
+    }
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;

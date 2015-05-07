@@ -405,8 +405,9 @@ void a_confdialog::SetupUI()
 
         gb = new QGroupBox("Настройки протокола МЭК-60870-5-104");
         gb3lyout = new QGridLayout;
-        gb3lyout->setColumnStretch(1, 90);
-        gb3lyout->setColumnStretch(2, 1);
+//        gb3lyout->setColumnStretch(0, 0);
+//        gb3lyout->setColumnStretch(1, 90);
+        gb3lyout->setColumnStretch(2, 50);
         lbl = new QLabel("Адрес базовой станции:");
         gb3lyout->addWidget(lbl,0,0,1,1,Qt::AlignRight);
         dspbls = new s_tqspinbox;
@@ -502,7 +503,7 @@ void a_confdialog::SetupUI()
         connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
         gb3lyout->addWidget(dspbls, 6, 1, 1, 1, Qt::AlignLeft);
         lbl=new QLabel("c");
-        gb3lyout->addWidget(lbl,6,2,1,1,Qt::AlignLeft);
+        gb3lyout->addWidget(lbl,6,2,1,1);
         lbl = new QLabel("Тип синхр. времени:");
         gb3lyout->addWidget(lbl,7,0,1,1,Qt::AlignRight);
         s_tqComboBox *ChTypCB = new s_tqComboBox;
@@ -514,7 +515,7 @@ void a_confdialog::SetupUI()
         ChTypCB->setCurrentIndex(2);
         ChTypCB->setMinimumWidth(70);
         connect(ChTypCB,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
-        gb3lyout->addWidget(ChTypCB, 7, 1, 1, 1, Qt::AlignLeft);
+        gb3lyout->addWidget(ChTypCB, 7, 1, 1, 2);
         gb->setLayout(gb3lyout);
         lyout4->addWidget(gb, 0, 0, 1, 1);
     }
