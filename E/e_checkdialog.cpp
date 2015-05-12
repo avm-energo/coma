@@ -8,14 +8,14 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QSpinBox>
-#include "checkdialog.h"
+#include "e_checkdialog.h"
 #include "config.h"
 #include "publicclass.h"
 
-a_checkdialog::a_checkdialog(QWidget *parent) :
+e_checkdialog::e_checkdialog(QWidget *parent) :
     QDialog(parent)
 {
-    BdMeasurementsActive = BdaMeasurementsActive = false;
+/*    BdMeasurementsActive = BdaMeasurementsActive = false;
     timer = new QTimer;
     timer->setObjectName("timer");
     timer->setInterval(2000);
@@ -33,10 +33,10 @@ a_checkdialog::a_checkdialog(QWidget *parent) :
         Bd_block.ainx[i] = 0;
     }
     Bd_block.at = 0;
-    SetupUI();
+    SetupUI(); */
 }
-
-void a_checkdialog::SetupUI()
+/*
+void e_checkdialog::SetupUI()
 {
     int i;
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
@@ -294,27 +294,27 @@ void a_checkdialog::SetupUI()
     setLayout(lyout);
 }
 
-void a_checkdialog::StartMeasurements()
+void e_checkdialog::StartMeasurements()
 {
     BdMeasurementsActive = true;
 }
 
-void a_checkdialog::StartBdaMeasurements()
+void e_checkdialog::StartBdaMeasurements()
 {
     BdaMeasurementsActive = true;
 }
 
-void a_checkdialog::StopMeasurements()
+void e_checkdialog::StopMeasurements()
 {
     BdMeasurementsActive = false;
 }
 
-void a_checkdialog::StopBdaMeasurements()
+void e_checkdialog::StopBdaMeasurements()
 {
     BdaMeasurementsActive = false;
 }
 
-void a_checkdialog::RefreshBd()
+void e_checkdialog::RefreshBd()
 {
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(RefreshBd()));
     if (cn->result)
@@ -343,7 +343,7 @@ void a_checkdialog::RefreshBd()
         lbl->setText(QString::number(Bd_block.at,'f',5));
 }
 
-void a_checkdialog::RefreshBda()
+void e_checkdialog::RefreshBda()
 {
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(RefreshBda()));
     if (cn->result)
@@ -360,35 +360,35 @@ void a_checkdialog::RefreshBda()
     }
 }
 
-void a_checkdialog::SetTimerPeriod(int per)
+void e_checkdialog::SetTimerPeriod(int per)
 {
     timer->stop();
     timer->setInterval(per);
     timer->start();
 }
 
-void a_checkdialog::CheckLEDOn()
+void e_checkdialog::CheckLEDOn()
 {
     cn->Send(CN_Cln);
 }
 
-void a_checkdialog::CheckLEDOff()
+void e_checkdialog::CheckLEDOff()
 {
     cn->Send(CN_Clf);
 }
 
-void a_checkdialog::Check1PPS()
+void e_checkdialog::Check1PPS()
 {
 
 }
 
-void a_checkdialog::GetIP()
+void e_checkdialog::GetIP()
 {
     connect(cn,SIGNAL(DataReady()),this,SLOT(CheckIP()));
     cn->Send(CN_Gip, &Bip_block, sizeof(Bip));
 }
 
-void a_checkdialog::CheckIP()
+void e_checkdialog::CheckIP()
 {
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckIP()));
     QLabel *lbl = this->findChild<QLabel *>("ipl");
@@ -399,7 +399,7 @@ void a_checkdialog::CheckIP()
     lbl->text().chop(1);
 }
 
-void a_checkdialog::TimerTimeout()
+void e_checkdialog::TimerTimeout()
 {
     if ((BdMeasurementsActive) && (OddTimeout)) // текущие измерения проводим на первом проходе таймера
     {
@@ -414,7 +414,8 @@ void a_checkdialog::TimerTimeout()
     OddTimeout = !OddTimeout;
 }
 
-void a_checkdialog::ShowErrMsg(int ermsg)
+void e_checkdialog::ShowErrMsg(int ermsg)
 {
     QMessageBox::critical(this,"error!",errmsgs.at(ermsg));
 }
+*/

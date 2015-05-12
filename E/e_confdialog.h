@@ -58,7 +58,7 @@ private:
         float duosc;            // Уставка скачка напряжения для запуска осциллографирования (в % от номинального напряжения ТН)
         float diosc;            // Уставка скачка тока для запуска осциллографирования (в % от номинального тока ТТ)
         float duimin;           // Уставка контроля минимума сигналов (в %)
-        quint16 Ctype;   		// Тип синхронизации времени от модуля Ц
+        quint32 Ctype;   		// Тип синхронизации времени от модуля Ц
         quint32 Abs_104;     	// Адрес базовой станции для протокола 104
         quint32 Cycle_104;      // Интервал циклического опроса по протоколу МЭК 60870-5-104
         quint32 T1_104;         // тайм-аут Т1 для протокола 104
@@ -81,17 +81,17 @@ signals:
 public slots:
 
 private slots:
-    void SetChTypData(int, s_tqComboBox *);
-    void SetChOsc(int, s_tqCheckBox *);
-    void SetChOscSrc(int, s_tqComboBox *);
+    void SetOsc(int, s_tqCheckBox *);
     void SetThreshold(double, s_tqspinbox *);
     void SetCurrent(double, s_tqspinbox *);
-    void SetSecCurrent(int, s_tqComboBox *);
+    void SetSecCurrent(int tmpi, s_tqComboBox *);
     void SetEqType(int);
-    void SetVoltageClass(int, s_tqspinbox *);
+    void SetVoltageClass(int, s_tqComboBox *);
     void Set104(double, s_tqspinbox *);
     void SetCType(int);
-    void SetOscDly(int);
+    void SetNPoints(QString);
+    void SetNFiltr(int);
+    void SetNHFiltr(int);
     void GetBci();
     void FillConfData();
     void WriteConfDataToModule();

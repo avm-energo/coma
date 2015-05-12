@@ -380,6 +380,7 @@ void ConSet::CheckBsi()
 
 void ConSet::AllIsOk()
 {
+    disconnect(cn,SIGNAL(DataReady()),this,SLOT(AllIsOk()));
     if (cn->result)
     {
         ShowErrMsg(cn->result);
@@ -403,6 +404,20 @@ void ConSet::AllIsOk()
         MainTW->addTab(DownDialog, "Скачать");
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
         connect(AConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
+    }
+    case MT_E:
+    {
+        EConfDialog = new e_confdialog;
+        ETuneDialog = new e_tunedialog;
+        ECheckDialog = new e_checkdialog;
+        DownDialog = new downloaddialog;
+        FwUpDialog = new fwupdialog;
+        MainTW->addTab(EConfDialog, "Конфигурирование");
+        MainTW->addTab(ETuneDialog, "Настройка");
+        MainTW->addTab(ECheckDialog, "Проверка");
+        MainTW->addTab(DownDialog, "Скачать");
+        MainTW->addTab(FwUpDialog, "Загрузка ВПО");
+        connect(EConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
     }
     default:
         break;

@@ -69,6 +69,7 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
         break;
     }
     case CN_Wac:
+    case CN_Wsn:
     {
         tmpba = new QByteArray (QByteArray::fromRawData((const char *)outdata, outdatasize)); // 10000 - предположительная длина блока
         DLength = outdatasize;
@@ -137,19 +138,27 @@ void canal::GetSomeData(QByteArray ba)
         }
         case CN_GF:
         {
-            if (ReadData->size()<5) // для приёма файла требуется минимум пять байт, чтобы перейти к следующему шагу
+            if (ReadData->size()<3) // требуется минимум три байта (код ошибки), чтобы перейти к следующему шагу
                 return;
+            if ((ReadData->at(1) == 0xF0) && (ReadData->at(2) == 0x0F))
+            {
+                ErrorDetected(CN_RCVDATAERROR);
+                return;
+            }
             if ((ReadData->at(0) != CN_MStart) || (ReadData->at(1) != fnum)) // если первая не < и вторая - не необходимый нам номер файла
             {
                 ErrorDetected(CN_RCVDATAERROR);
                 return;
             }
+            if (ReadData->size()<5) // ещё не пришла длина, ждём-с
+                return;
             SetRDLength(2);
             bStep++;
             break;
         }
         case CN_WF:
         case CN_Wac:
+        case CN_Wsn:
         {
             if (!SegLeft)
             {
@@ -180,6 +189,7 @@ void canal::GetSomeData(QByteArray ba)
     }
     case 1:
     {
+        quint32 RDSize = static_cast<quint32>(ReadData->size());
         switch (cmd)
         {
         case CN_GBsi:
@@ -189,7 +199,7 @@ void canal::GetSomeData(QByteArray ba)
         {
             if (!RDCheckForNextSegment())
                 return;
-            if (ReadData->size() < RDLength)
+            if (RDSize < RDLength)
                 return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
             disconnect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
             if (outdatasize < DLength)
@@ -213,7 +223,7 @@ void canal::GetSomeData(QByteArray ba)
         {
             if (!RDCheckForNextSegment())
                 return;
-            if (ReadData->size() < RDLength)
+            if (RDSize < RDLength)
                 return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
             disconnect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
             if (DR == NULL)
@@ -242,6 +252,7 @@ void canal::GetSomeData(QByteArray ba)
         case CN_WF:
         case CN_Wac:
         case CN_Cnc:
+        case CN_Wsn:
         {
             if (ReadData->size()<3) // для приема ответа нужно минимум три байта
                 return;
@@ -268,7 +279,10 @@ void canal::GetSomeData(QByteArray ba)
 
 void canal::SetRDLength(int startpos)
 {
-    DLength = ReadData->at(startpos)*65536+ReadData->at(startpos+1)*256+ReadData->at(startpos+2); // посчитали длину посылки
+    DLength = static_cast<quint8>(ReadData->at(startpos))*65536;
+    DLength += static_cast<quint8>(ReadData->at(startpos+1))*256;
+    quint32 tmpi = static_cast<quint8>(ReadData->at(startpos+2));
+    DLength += tmpi; // посчитали длину посылки
     if (DLength > 512)
     {
         LongBlock = true;
@@ -285,7 +299,8 @@ void canal::SetRDLength(int startpos)
 
 bool canal::RDCheckForNextSegment()
 {
-    if ((ReadData->size() >= SegEnd) && (SegLeft)) // если достигли конца текущего сегмента, и ещё есть, что принимать
+    quint32 RDSize = static_cast<quint32>(ReadData->size());
+    if ((RDSize >= SegEnd) && (SegLeft)) // если достигли конца текущего сегмента, и ещё есть, что принимать
     {
         SegLeft--;
         SegEnd += 512; // устанавливаем границу следующего сегмента

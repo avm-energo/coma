@@ -31,12 +31,12 @@ private:
     int bStep;
     int cmd;
     int fnum;
-    int RDLength; // длина всей посылки
-    int DLength; // длина данных
-    int WRLength; // длина всей посылки
-    int outdatasize; // размер приёмной области памяти
-    int SegLeft; // количество оставшихся сегментов
-    int SegEnd; // номер последнего байта в ReadData текущего сегмента
+    quint32 RDLength; // длина всей посылки
+    quint32 DLength; // длина данных
+    quint32 WRLength; // длина всей посылки
+    quint32 outdatasize; // размер приёмной области памяти
+    quint32 SegLeft; // количество оставшихся сегментов
+    quint32 SegEnd; // номер последнего байта в ReadData текущего сегмента
     publicclass::DataRec *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     bool LongBlock;
 

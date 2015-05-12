@@ -1,15 +1,15 @@
-#ifndef A_TUNEDIALOG_H
-#define A_TUNEDIALOG_H
+#ifndef E_TUNEDIALOG_H
+#define E_TUNEDIALOG_H
 
 #include <QDialog>
 #include "canal.h"
 
 #define TUNEFILELENGTH  256
-class a_tunedialog : public QDialog
+class e_tunedialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit a_tunedialog(QWidget *parent = 0);
+    explicit e_tunedialog(QWidget *parent = 0);
 
 signals:
 
@@ -34,14 +34,14 @@ private:
 
     Bac Bac_block[16];
 
-    void SetupUI();
+/*    void SetupUI();
     void tune(int);
     void ShowErrMsg(int);
     void CalcNewTuneCoefs();
-    void RefreshTuneCoefs();
+    void RefreshTuneCoefs(); */
 
 private slots:
-    void tune0();
+/*    void tune0();
     void tune5();
     void tune20();
     void CheckAndShowTune0();
@@ -52,7 +52,7 @@ private slots:
     void WriteTuneCoefs();
     void WriteCompleted();
     void SaveToFile();
-    void LoadFromFile();
+    void LoadFromFile(); */
 };
 
-#endif // A_TUNEDIALOG_H
+#endif // E_TUNEDIALOG_H

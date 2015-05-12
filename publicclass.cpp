@@ -75,7 +75,7 @@ unsigned long  _crc32_t[256]=
 
 const QStringList errmsgs = QStringList() << "" << "Ошибка открытия порта" << "В системе нет COM-портов" << "Ошибка при приёме сегмента данных на стороне модуля" << \
            "Ошибка при приёме данных" << "Произошло превышение времени ожидания при приёме данных" << \
-           "Некорректная длина принятого блока" << "Неизвестная команда" << "Ошибка длины при работе с форматом S2" \
+           "Некорректная длина принятого блока" << "Неизвестная команда" << "Ошибка длины при работе с форматом S2" << \
            "Несовпадение описания прочитанного элемента с ожидаемым при работе с форматом S2" << \
            "Несовпадение контрольной суммы при работе с форматом S2" << "Некорректная длина в DataHeader при разборе формата S2" << \
            "В канальную процедуру переданы некорректные данные" << "" << "" << "Ошибка при открытии файла";
@@ -170,48 +170,46 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
   quint32 i;
 
   crc=0xFFFFFFFF;
-  quint32 pos = sizeof(DataHeader);
+
+  quint32 tmpi = sizeof(DataHeader);
+  quint32 pos = tmpi;
   if (pos > memsize)
       return CN_S2SIZEERROR; // выход за границу принятых байт
-  memcpy(&dh,m,sizeof(DataHeader));
-  m+=sizeof(DataHeader);
+  memcpy(&dh,m,tmpi);
+  m+=tmpi;
   for(;;)
   {
-      pos += sizeof(DataRec)-sizeof(void*);
+      tmpi = sizeof(DataRec)-sizeof(void*);
+      pos += tmpi;
       if (pos > memsize)
           return CN_S2SIZEERROR; // выход за границу принятых байт
-      memcpy(&R,m,sizeof(DataRec)-sizeof(void*));
-      sz+=(sizeof(DataRec)-sizeof(void*));
+      memcpy(&R,m,tmpi);
+      sz+=tmpi;
+      m+=tmpi;
       if(R.id==0xFFFF)
           break;
-      for(i=0;i<(sizeof(DataRec)-sizeof(void*));i++)
-      {
+      for(i=0;i<tmpi;i++)
           updCRC32(((unsigned char *)&R)[i],&crc);
-          m++;
-      }
       r=FindElem(dr,R.id);
       if(!r) //элемент не найден в описании, пропускаем
       {
           pos += R.elem_size*R.num_elem;
           if (pos > memsize)
-              return 3; // выход за границу принятых байт
-          m+=R.elem_size*R.num_elem;
+              return CN_S2SIZEERROR; // выход за границу принятых байт
+          m += R.elem_size*R.num_elem;
           continue;
       }
       if((r->data_type!=R.data_type) || (r->elem_size!=R.elem_size) || (r->num_elem!=R.num_elem)) //несовпадения описания прочитанного элемента с ожидаемым
-      {
           return CN_S2DESCERROR;
-      }
-      pos += r->elem_size*r->num_elem;
+      tmpi = r->elem_size*r->num_elem;
+      pos += tmpi;
       if (pos > memsize)
           return CN_S2SIZEERROR; // выход за границу принятых байт
-      memcpy(r->thedata,m,r->elem_size*r->num_elem);
-      sz+=(R.elem_size*R.num_elem);
-      for(i=0;i<(R.elem_size*R.num_elem);i++)
-      {
+      memcpy(r->thedata,m,tmpi);
+      sz += tmpi;
+      m += tmpi;
+      for(i=0;i<tmpi;i++)
           updCRC32(((unsigned char *)r->thedata)[i],&crc);
-          m++;
-      }
   }
   if(dh.crc32!=crc)
       return CN_S2CRCERROR;
@@ -271,12 +269,12 @@ QString publicclass::ETyp1()
         return "2Т0Н";
         break;
     }
-    case 0x0000:
+    case 0x0001:
     {
         return "1Т1Н";
         break;
     }
-    case 0x0000:
+    case 0x0002:
     {
         return "0Т2Н";
         break;

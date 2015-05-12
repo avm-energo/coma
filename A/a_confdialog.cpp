@@ -10,7 +10,7 @@
 #include <QSpinBox>
 #include <QMessageBox>
 
-#include "confdialog.h"
+#include "a_confdialog.h"
 #include "../config.h"
 
 a_confdialog::a_confdialog(QWidget *parent) :

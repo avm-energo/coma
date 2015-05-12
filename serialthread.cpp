@@ -1,7 +1,9 @@
-#include <QtTest/QTest>
+//#include <QtTest/QTest>
+#include <QCoreApplication>
+#include <QEventLoop>
+#include <QTime>
 #include "serialthread.h"
 #include "publicclass.h"
-#include <QTimer>
 #include "config.h"
 
 SerialThread::SerialThread(QObject *parent) :
@@ -48,7 +50,10 @@ void SerialThread::run()
             emit finished();
             return;
         }
-        QTest::qWait(100);
+        QTime tmr;
+        tmr.start();
+        while (tmr.elapsed() < 100)
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
     }
 }
 

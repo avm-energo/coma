@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui testlib
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -21,16 +21,16 @@ SOURCES += main.cpp\
     publicclass.cpp \
     downloaddialog.cpp \
     serialthread.cpp \
-    A/checkdialog.cpp \
-    A/confdialog.cpp \
-    A/tunedialog.cpp \
+    A/a_checkdialog.cpp \
+    A/a_confdialog.cpp \
+    A/a_tunedialog.cpp \
     widgets/s_tqcheckbox.cpp \
     widgets/s_tqcombobox.cpp \
     widgets/s_tqspinbox.cpp \
     canal.cpp \
-    E/checkdialog.cpp \
-    E/confdialog.cpp \
-    E/tunedialog.cpp
+    E/e_checkdialog.cpp \
+    E/e_confdialog.cpp \
+    E/e_tunedialog.cpp
 
 HEADERS  += conset.h \
     fwupdialog.h \
@@ -38,14 +38,14 @@ HEADERS  += conset.h \
     publicclass.h \
     downloaddialog.h \
     serialthread.h \
-    A/checkdialog.h \
-    A/confdialog.h \
-    A/tunedialog.h \
+    A/a_checkdialog.h \
+    A/a_confdialog.h \
+    A/a_tunedialog.h \
     widgets/s_tqcheckbox.h \
     widgets/s_tqcombobox.h \
     widgets/s_tqspinbox.h \
     config.h \
     canal.h \
-    E/checkdialog.h \
-    E/confdialog.h \
-    E/tunedialog.h
+    E/e_checkdialog.h \
+    E/e_confdialog.h \
+    E/e_tunedialog.h

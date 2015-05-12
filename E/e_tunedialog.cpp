@@ -6,14 +6,14 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QFileDialog>
-#include "tunedialog.h"
+#include "e_tunedialog.h"
 #include "config.h"
 #include "publicclass.h"
 
-a_tunedialog::a_tunedialog(QWidget *parent) :
+e_tunedialog::e_tunedialog(QWidget *parent) :
     QDialog(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
+/*    setAttribute(Qt::WA_DeleteOnClose);
     cn = new canal;
     for (int i = 0; i < 16; i++)
     {
@@ -21,10 +21,10 @@ a_tunedialog::a_tunedialog(QWidget *parent) :
         Bda5.sin[i] = UINT_MAX;
         Bda20.sin[i] = UINT_MAX;
     }
-    SetupUI();
+    SetupUI(); */
 }
-
-void a_tunedialog::SetupUI()
+/*
+void e_tunedialog::SetupUI()
 {
     int i;
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
@@ -170,7 +170,7 @@ void a_tunedialog::SetupUI()
     setLayout(lyout);
 }
 
-void a_tunedialog::tune(int tunenum)
+void e_tunedialog::tune(int tunenum)
 {
     switch (tunenum)
     {
@@ -214,12 +214,12 @@ void a_tunedialog::tune(int tunenum)
     }
 }
 
-void a_tunedialog::tune0()
+void e_tunedialog::tune0()
 {
     tune(0);
 }
 
-void a_tunedialog::CheckAndShowTune0()
+void e_tunedialog::CheckAndShowTune0()
 {
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune0()));
     if (cn->result)
@@ -238,12 +238,12 @@ void a_tunedialog::CheckAndShowTune0()
     RefreshTuneCoefs();
 }
 
-void a_tunedialog::tune5()
+void e_tunedialog::tune5()
 {
     tune(5);
 }
 
-void a_tunedialog::CheckAndShowTune5()
+void e_tunedialog::CheckAndShowTune5()
 {
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune5()));
     if (cn->result)
@@ -262,12 +262,12 @@ void a_tunedialog::CheckAndShowTune5()
     RefreshTuneCoefs();
 }
 
-void a_tunedialog::tune20()
+void e_tunedialog::tune20()
 {
     tune(20);
 }
 
-void a_tunedialog::CheckAndShowTune20()
+void e_tunedialog::CheckAndShowTune20()
 {
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune20()));
     if (cn->result)
@@ -286,13 +286,13 @@ void a_tunedialog::CheckAndShowTune20()
     RefreshTuneCoefs();
 }
 
-void a_tunedialog::ReadTuneCoefs()
+void e_tunedialog::ReadTuneCoefs()
 {
     cn->Send(CN_Gac, &Bac_block, sizeof(Bac_block));
     connect(cn,SIGNAL(DataReady()),this,SLOT(ReadCompleted()));
 }
 
-void a_tunedialog::ReadCompleted()
+void e_tunedialog::ReadCompleted()
 {
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(ReadCompleted()));
     if (cn->result)
@@ -303,13 +303,13 @@ void a_tunedialog::ReadCompleted()
     RefreshTuneCoefs();
 }
 
-void a_tunedialog::WriteTuneCoefs()
+void e_tunedialog::WriteTuneCoefs()
 {
     cn->Send(CN_Wac, &Bac_block, sizeof(Bac_block));
     connect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
 }
 
-void a_tunedialog::WriteCompleted()
+void e_tunedialog::WriteCompleted()
 {
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
     if (cn->result)
@@ -320,7 +320,7 @@ void a_tunedialog::WriteCompleted()
     QMessageBox::information(this,"Успешно!","Записано успешно!");
 }
 
-void a_tunedialog::CalcNewTuneCoefs()
+void e_tunedialog::CalcNewTuneCoefs()
 {
     for (int i = 0; i < 16; i++)
     {
@@ -335,7 +335,7 @@ void a_tunedialog::CalcNewTuneCoefs()
     }
 }
 
-void a_tunedialog::RefreshTuneCoefs()
+void e_tunedialog::RefreshTuneCoefs()
 {
     for (int i = 0; i < 16; i++)
     {
@@ -354,7 +354,7 @@ void a_tunedialog::RefreshTuneCoefs()
     }
 }
 
-void a_tunedialog::LoadFromFile()
+void e_tunedialog::LoadFromFile()
 {
     QString filename = QFileDialog::getOpenFileName(this, "Открыть файл", ".", "Configuration (*.conf)");
     if (filename.isEmpty())
@@ -381,12 +381,13 @@ void a_tunedialog::LoadFromFile()
     }
 }
 
-void a_tunedialog::SaveToFile()
+void e_tunedialog::SaveToFile()
 {
 
 }
 
-void a_tunedialog::ShowErrMsg(int ermsg)
+void e_tunedialog::ShowErrMsg(int ermsg)
 {
     QMessageBox::critical(this,"error!",errmsgs.at(ermsg));
 }
+*/

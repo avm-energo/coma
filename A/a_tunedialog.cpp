@@ -6,7 +6,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QFileDialog>
-#include "tunedialog.h"
+#include "a_tunedialog.h"
 #include "config.h"
 #include "publicclass.h"
 

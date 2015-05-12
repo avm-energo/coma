@@ -8,9 +8,12 @@
 #include <QtSerialPort/QSerialPort>
 #include "fwupdialog.h"
 #include "downloaddialog.h"
-#include "A/checkdialog.h"
-#include "A/confdialog.h"
-#include "A/tunedialog.h"
+#include "A/a_checkdialog.h"
+#include "A/a_confdialog.h"
+#include "A/a_tunedialog.h"
+#include "E/e_checkdialog.h"
+#include "E/e_confdialog.h"
+#include "E/e_tunedialog.h"
 #include "canal.h"
 #include "publicclass.h"
 
@@ -33,6 +36,9 @@ private:
     a_checkdialog *ACheckDialog;
     a_confdialog *AConfDialog;
     a_tunedialog *ATuneDialog;
+    e_checkdialog *ECheckDialog;
+    e_confdialog *EConfDialog;
+    e_tunedialog *ETuneDialog;
     fwupdialog *FwUpDialog;
     downloaddialog *DownDialog;
     bool DialogsAreReadyAlready;

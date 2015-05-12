@@ -1,15 +1,15 @@
-#ifndef A_CHECKDIALOG_H
-#define A_CHECKDIALOG_H
+#ifndef E_CHECKDIALOG_H
+#define E_CHECKDIALOG_H
 
 #include <QDialog>
 #include <QTimer>
 #include "canal.h"
 
-class a_checkdialog : public QDialog
+class e_checkdialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit a_checkdialog(QWidget *parent = 0);
+    explicit e_checkdialog(QWidget *parent = 0);
 
 signals:
 
@@ -42,11 +42,11 @@ private:
     bool BdMeasurementsActive, BdaMeasurementsActive, OddTimeout;
     QTimer *timer;
 
-    void SetupUI();
-    void ShowErrMsg(int);
+//    void SetupUI();
+//    void ShowErrMsg(int);
 
 private slots:
-    void StartMeasurements();
+/*    void StartMeasurements();
     void StartBdaMeasurements();
     void StopMeasurements();
     void StopBdaMeasurements();
@@ -58,7 +58,7 @@ private slots:
     void Check1PPS();
     void TimerTimeout();
     void RefreshBd();
-    void RefreshBda();
+    void RefreshBda(); */
 };
 
-#endif // A_CHECKDIALOG_H
+#endif // E_CHECKDIALOG_H

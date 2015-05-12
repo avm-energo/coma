@@ -8,7 +8,7 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QSpinBox>
-#include "checkdialog.h"
+#include "a_checkdialog.h"
 #include "config.h"
 #include "publicclass.h"
 
