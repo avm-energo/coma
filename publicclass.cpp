@@ -31,7 +31,7 @@ unsigned long  _crc32_t[256]=
 0x6C0695ED,0x1B01A57B,0x8208F4C1,0xF50FC457,
 0x65B0D9C6,0x12B7E950,0x8BBEB8EA,0xFCB9887C,
 0x62DD1DDF,0x15DA2D49,0x8CD37CF3,0xFBD44C65,
--0x4DB26158,0x3AB551CE,0xA3BC0074,0xD4BB30E2,
+0x4DB26158,0x3AB551CE,0xA3BC0074,0xD4BB30E2,
 0x4ADFA541,0x3DD895D7,0xA4D1C46D,0xD3D6F4FB,
 0x4369E96A,0x346ED9FC,0xAD678846,0xDA60B8D0,
 0x44042D73,0x33031DE5,0xAA0A4C5F,0xDD0D7CC9,
@@ -117,11 +117,11 @@ int publicclass::StoreDataMem(void *mem, DataRec *dr) //0 - успешно, ин
         for(i=0;i<(sizeof(DataRec)-sizeof(void *));i++)
             updCRC32(((unsigned char *)R)[i],&crc);
         m+=sizeof(DataRec)-sizeof(void*);
-        for(i=0;i<(R->elem_size*R->num_elem);i++)
-            updCRC32(((unsigned char *)R->thedata)[i],&crc);
-        D.size += R->elem_size*R->num_elem;
         if(R->thedata)
         {
+            for(i=0;i<(R->elem_size*R->num_elem);i++)
+                updCRC32(((unsigned char *)R->thedata)[i],&crc);
+            D.size += R->elem_size*R->num_elem;
             memcpy(m,R->thedata,R->elem_size*R->num_elem);
             m+=R->elem_size*R->num_elem;
         }
@@ -189,14 +189,19 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       if(R.id==0xFFFF)
           break;
       for(i=0;i<tmpi;i++)
-          updCRC32(((unsigned char *)&R)[i],&crc);
+          updCRC32((reinterpret_cast<unsigned char *>(&R))[i],&crc);
       r=FindElem(dr,R.id);
       if(!r) //элемент не найден в описании, пропускаем
       {
-          pos += R.elem_size*R.num_elem;
+          tmpi = R.elem_size*R.num_elem;
+          pos += tmpi;
           if (pos > memsize)
               return CN_S2SIZEERROR; // выход за границу принятых байт
-          m += R.elem_size*R.num_elem;
+          memcpy(R.thedata,m,tmpi);
+          m += tmpi;
+          for(i=0;i<tmpi;i++)
+              updCRC32((static_cast<unsigned char *>(R.thedata))[i],&crc);
+          sz += tmpi;
           continue;
       }
       if((r->data_type!=R.data_type) || (r->elem_size!=R.elem_size) || (r->num_elem!=R.num_elem)) //несовпадения описания прочитанного элемента с ожидаемым
@@ -209,7 +214,7 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       sz += tmpi;
       m += tmpi;
       for(i=0;i<tmpi;i++)
-          updCRC32(((unsigned char *)r->thedata)[i],&crc);
+          updCRC32((static_cast<unsigned char *>(r->thedata))[i],&crc);
   }
   if(dh.crc32!=crc)
       return CN_S2CRCERROR;

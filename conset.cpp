@@ -404,6 +404,7 @@ void ConSet::AllIsOk()
         MainTW->addTab(DownDialog, "Скачать");
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
         connect(AConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
+        break;
     }
     case MT_E:
     {
@@ -418,6 +419,7 @@ void ConSet::AllIsOk()
         MainTW->addTab(DownDialog, "Скачать");
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
         connect(EConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
+        break;
     }
     default:
         break;
@@ -456,6 +458,7 @@ QString ConSet::ByteToHex(quint8 hb)
 void ConSet::Disconnect()
 {
     emit stopall();
+    DialogsAreReadyAlready = false;
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;

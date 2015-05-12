@@ -1,4 +1,3 @@
-//#include <QtTest/QTest>
 #include <QCoreApplication>
 #include <QEventLoop>
 #include <QTime>
@@ -26,6 +25,7 @@ void SerialThread::run()
     {
         emit finished();
         emit error(1);
+        return;
     }
     port->setBaudRate(baud);
     port->setParity(QSerialPort::NoParity);
@@ -36,8 +36,10 @@ void SerialThread::run()
 //    connect(this,SIGNAL(finished()),port,SLOT(deleteLater()));
     while (1)
     {
-        if (OutDataBuf.size()>0) // что-то пришло в выходной буфер для записи
+        OutDataBufMtx.lock();
+        if (!OutDataBuf.isEmpty()) // что-то пришло в выходной буфер для записи
             WriteData();
+        OutDataBufMtx.unlock();
         if (ClosePortAndFinishThread)
         {
             if (port->isOpen())
@@ -65,14 +67,12 @@ void SerialThread::CheckForData()
 
 void SerialThread::WriteData()
 {
-    OutDataBufMtx.lock();
     qint64 res = port->write(OutDataBuf);
     if (res == -1)
         emit datawritten(QByteArray()); // ошибка
     TimeoutTimer->start();
     emit datawritten(OutDataBuf); // всё гут
     OutDataBuf.clear();
-    OutDataBufMtx.unlock();
 }
 
 void SerialThread::InitiateWriteDataToPort(QByteArray *ba)

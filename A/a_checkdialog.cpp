@@ -391,6 +391,11 @@ void a_checkdialog::GetIP()
 void a_checkdialog::CheckIP()
 {
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckIP()));
+    if (cn->result)
+    {
+        ShowErrMsg(cn->result);
+        return;
+    }
     QLabel *lbl = this->findChild<QLabel *>("ipl");
     if (lbl == 0)
         return;
