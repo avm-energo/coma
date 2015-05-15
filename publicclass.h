@@ -48,7 +48,8 @@ public:
     publicclass();
 
     QSerialPort serial;
-    qint32 MType, MType1, CpuId, SerNum;
+    qint32 MType, MType1, SerNum;
+    quint32 CpuIdHigh, CpuIdMid, CpuIdLow;
 
     QStringList AMTypes, DMTypes, EMTypes;
     SerialThread *SThread;
@@ -82,7 +83,9 @@ public:
         qint32 Rst;
         qint32 RstCount;
         qint32 Hth;
-        qint32 CpuId;
+        qint32 CpuIdLow;
+        qint32 CpuIdMid;
+        qint32 CpuIdHigh;
         qint32 SerNum;
     } Bsi;
 

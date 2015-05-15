@@ -370,7 +370,7 @@ void a_tunedialog::LoadFromFile()
     if (ba->size() >= (sizeof(publicclass::Bsi)+sizeof(Bac_block)))
     {
         memcpy(&Bsi_block,ba,sizeof(publicclass::Bsi));
-        if ((Bsi_block.CpuId != pc.CpuId) || (Bsi_block.SerNum != pc.SerNum))
+        if ((Bsi_block.CpuIdHigh != pc.CpuIdHigh) || (Bsi_block.SerNum != pc.SerNum))
         {
             if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
                                       QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);

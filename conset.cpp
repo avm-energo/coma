@@ -266,7 +266,9 @@ void ConSet::CheckBsi()
     }
     pc.MType = Bsi_block.MType;
     pc.MType1 = Bsi_block.MType1;
-    pc.CpuId = Bsi_block.CpuId;
+    pc.CpuIdHigh = Bsi_block.CpuIdHigh;
+    pc.CpuIdMid = Bsi_block.CpuIdMid;
+    pc.CpuIdLow = Bsi_block.CpuIdLow;
 
     qint32 tmpi = 0x0000000F;
     bool WrongSN = false;
@@ -359,7 +361,7 @@ void ConSet::CheckBsi()
     le = this->findChild<QLineEdit *>("cpuidle");
     if (le == 0)
         return;
-    le->setText(QString::number(Bsi_block.CpuId, 16));
+    le->setText(QString::number(Bsi_block.CpuIdHigh, 16)+QString::number(Bsi_block.CpuIdMid, 16)+QString::number(Bsi_block.CpuIdLow, 16));
     le = this->findChild<QLineEdit *>("snle");
     if (le == 0)
         return;
