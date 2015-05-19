@@ -53,7 +53,7 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
         tmpba->data()[2] = ~cmd;
         tmpba->data()[3] = fnum;
         if (DR == NULL)
-            ErrorDetected(CN_NULLDATAERROR);
+            Finish(CN_NULLDATAERROR);
         pc.StoreDataMem(&(tmpba->data()[7]), DR);
         DLength = tmpba->data()[9]*65536+tmpba->data()[8]*256+tmpba->data()[7]; // DataHeader.size
         DLength += 12; // sizeof(DataHeader)
@@ -92,7 +92,7 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
     }
     default:
     {
-        ErrorDetected(CN_UNKNOWNCMDERROR);
+        Finish(CN_UNKNOWNCMDERROR);
         return;
         break;
     }
@@ -121,7 +121,7 @@ void canal::GetSomeData(QByteArray ba)
         return;
     if ((static_cast<quint8>(ReadData->at(1)) == 0xF0) && (static_cast<quint8>(ReadData->at(2)) == 0x0F))
     {
-        ErrorDetected(CN_RCVDATAERROR);
+        Finish(CN_RCVDATAERROR);
         return;
     }
     switch (bStep)
@@ -130,18 +130,24 @@ void canal::GetSomeData(QByteArray ba)
     {
         switch (cmd)
         {
+        case CN_Cnc:
+        {
+            if (RDSize < 3)
+                return;
+            bStep++;
+            break;
+        }
         case CN_GBsi:
         case CN_Gda:
         case CN_Gac:
         case CN_GBd:
-        case CN_Cnc:
         case CN_Gip:
         {
             if (RDSize < 4)
                 return;
             if (ReadData->at(0) != CN_MStart)
             {
-                ErrorDetected(CN_RCVDATAERROR);
+                Finish(CN_RCVDATAERROR);
                 return;
             }
             SetRDLength(1);
@@ -154,7 +160,7 @@ void canal::GetSomeData(QByteArray ba)
                 return;
             if ((ReadData->at(0) != CN_MStart) || (ReadData->at(1) != fnum)) // если первая не < и вторая - не необходимый нам номер файла
             {
-                ErrorDetected(CN_RCVDATAERROR);
+                Finish(CN_RCVDATAERROR);
                 return;
             }
             SetRDLength(2);
@@ -178,14 +184,14 @@ void canal::GetSomeData(QByteArray ba)
             }
             else
             {
-                ErrorDetected(CN_RCVDATAERROR);
+                Finish(CN_RCVDATAERROR);
                 return;
             }
             break;
         }
         default:
         {
-            ErrorDetected(CN_UNKNOWNCMDERROR);
+            Finish(CN_UNKNOWNCMDERROR);
             return;
         }
         }
@@ -207,8 +213,8 @@ void canal::GetSomeData(QByteArray ba)
             if (outdatasize < DLength)
             {
                 SendErr();
-                ErrorDetected(CN_NULLDATAERROR);
-                return;
+                Finish(CN_NULLDATAERROR);
+                break;
             }
             for (quint32 i = 4; i < RDSize; i++)
             {
@@ -217,8 +223,7 @@ void canal::GetSomeData(QByteArray ba)
             }
             if (LongBlock)
                 SendOk();
-            result = 0;
-            emit DataReady();
+            Finish(CN_OK);
             break;
         }
         case CN_GF:
@@ -230,8 +235,8 @@ void canal::GetSomeData(QByteArray ba)
             if (DR == NULL)
             {
                 SendErr();
-                ErrorDetected(CN_NULLDATAERROR);
-                return;
+                Finish(CN_NULLDATAERROR);
+                break;
             }
             ReadData->remove(0, 5); // убираем заголовок с <, номером файла и длиной
             res = pc.RestoreDataMem(ReadData->data(), RDSize, DR);
@@ -239,14 +244,12 @@ void canal::GetSomeData(QByteArray ba)
             {
                 if (LongBlock)
                     SendOk();
-                result = 0;
-                emit DataReady();
+                Finish(CN_OK);
             }
             else
             {
                 SendErr();
-                ErrorDetected(res);
-                return;
+                Finish(res);
             }
             break;
         }
@@ -257,23 +260,20 @@ void canal::GetSomeData(QByteArray ba)
         {
             if ((ReadData->at(0) == CN_MStart) && (ReadData->at(1) == CN_ResOk) && (ReadData->at(2) == ~CN_ResOk))
             {
-                result = 0;
-                emit DataReady();
+                Finish(CN_OK);
                 break;
             }
-            ErrorDetected(CN_RCVDATAERROR);
+            Finish(CN_RCVDATAERROR);
             break;
         }
         default:
         {
-            ErrorDetected(CN_UNKNOWNCMDERROR);
+            Finish(CN_UNKNOWNCMDERROR);
             break;
         }
         }
     }
     }
-    disconnect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
-    disconnect(pc.SThread,SIGNAL(timeout()),this,SLOT(Timeout()));
 }
 
 void canal::SetRDLength(int startpos)
@@ -322,6 +322,11 @@ void canal::SetWR(QByteArray *ba, int startpos)
         SegLeft = (WRLength - startpos) / 512;
         SegEnd = 512 + startpos;
     }
+    else
+    {
+        SegLeft = 0;
+        SegEnd = WRLength;
+    }
 }
 
 void canal::WRCheckForNextSegment()
@@ -365,13 +370,14 @@ void canal::SendErr()
 
 void canal::Timeout()
 {
-    ErrorDetected(CN_TIMEOUTERROR);
+    Finish(CN_TIMEOUTERROR);
 }
 
-void canal::ErrorDetected(int ernum)
+void canal::Finish(int ernum)
 {
     result = ernum;
     disconnect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
+    disconnect(pc.SThread,SIGNAL(timeout()),this,SLOT(Timeout()));
     emit DataReady();
 }
 

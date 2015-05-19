@@ -45,7 +45,7 @@ private:
     bool RDCheckForNextSegment();
     void WRCheckForNextSegment();
     void NoErrorDetected();
-    void ErrorDetected(int ernum);
+    void Finish(int ernum);
     void SendOk();
     void SendErr();
 };

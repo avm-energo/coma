@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     canal.cpp \
     E/e_checkdialog.cpp \
     E/e_confdialog.cpp \
-    E/e_tunedialog.cpp
+    E/e_tunedialog.cpp \
+    iec104/mip02.cpp
 
 HEADERS  += conset.h \
     fwupdialog.h \
@@ -48,4 +49,5 @@ HEADERS  += conset.h \
     canal.h \
     E/e_checkdialog.h \
     E/e_confdialog.h \
-    E/e_tunedialog.h
+    E/e_tunedialog.h \
+    iec104/mip02.h

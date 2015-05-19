@@ -43,17 +43,24 @@ a_confdialog::a_confdialog(QWidget *parent) :
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
     lyout->addWidget(ConfTW);
+    QWidget *wdgt = new QWidget;
+    QGridLayout wdgtlyout = new QGridLayout;
     QPushButton *pb1 = new QPushButton("Прочитать конфигурацию из модуля");
     connect(pb1,SIGNAL(clicked()),this,SLOT(GetBci()));
+    wdgtlyout.addWidget(pb1, 0, 0, 1, 1);
     QPushButton *pb = new QPushButton("Записать конфигурацию в модуль");
     pb->setObjectName("WriteConfPB");
 //    pb->setEnabled(false);
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteConfDataToModule()));
-    lyout->addWidget(pb1);
-    lyout->addWidget(pb);
-    pb = new QPushButton("Перейти на новую конфигурацию");
+    wdgtlyout.addWidget(pb, 1, 0, 1, 1);
+    pb = new QPushButton("Задать конфигурацию по умолчанию");
     connect(pb,SIGNAL(clicked()),this,SLOT(SetNewConf()));
-    lyout->addWidget(pb);
+    wdgtlyout.addWidget(pb, 0, 1, 1, 1);
+    pb = new QPushButton("Перейти на новую конфигурацию");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SetdefConf()));
+    wdgtlyout.addWidget(pb, 1, 1, 1, 1);
+    wdgt->setLayout(wdgtlyout);
+    lyout->addWidget(wdgt);
     setLayout(lyout);
     SetupUI();
 }

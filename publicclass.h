@@ -23,6 +23,7 @@
 #define binary_TYPE	12 //любые двоичные данные
 
 // Канал связи с модулем: определение ошибок
+#define CN_OK               0 // ошибок нет
 #define CN_PORTOPENERROR    1 // ошибка открытия порта
 #define CN_NOPORTSERROR     2 // нет портов в системе
 #define CN_SEGFAULTERROR    3 // ошибка при приёме сегмента данных на стороне модуля
