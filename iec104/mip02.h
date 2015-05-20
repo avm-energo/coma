@@ -1,7 +1,7 @@
 #ifndef MIP02_H
 #define MIP02_H
 
-#include
+#include <QtNetwork/QTcpSocket>
 
 class mip02
 {

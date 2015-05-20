@@ -39,6 +39,13 @@
 
 #define ER_FILEOPENERROR    15 // ошибка при открытии файла
 
+#define HTH_CONFIG          0x00000080 // в модуле нет конфигурации
+#define HTH_REGPARS         0x00000040 // в модуле нет настроечных параметров
+#define HTH_ADC             0x00000020 // проблема с АЦП
+#define HTH_1PPS            0x00000010 // нет сигнала 1PPS
+#define HTH_REL             0x00000008 // неисправность выходных реле
+#define HTH_TUPP            0x00000004 // перегрев модуля
+
 #include <QtSerialPort/QSerialPort>
 #include <QStringList>
 #include "serialthread.h"

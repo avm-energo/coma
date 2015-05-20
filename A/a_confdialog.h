@@ -96,6 +96,7 @@ private slots:
     void WriteCompleted();
     void SetupUI();
     void SetNewConf();
+    void SetDefConf();
     void UpdateBsi();
 };
 
