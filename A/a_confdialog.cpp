@@ -16,27 +16,30 @@
 a_confdialog::a_confdialog(QWidget *parent) :
     QDialog(parent)
 {
-    Config[0] = {BCI_INTYPE, u8_TYPE, sizeof(qint8), sizeof(Bci_block.in_type)/sizeof(qint8), &(Bci_block.in_type)};
-    Config[1] = {BCI_INMIN, float_TYPE, sizeof(float), sizeof(Bci_block.in_min)/sizeof(float), &(Bci_block.in_min)};
-    Config[2] = {BCI_INMAX, float_TYPE, sizeof(float), sizeof(Bci_block.in_max)/sizeof(float), &Bci_block.in_max};
-    Config[3] = {BCI_INVMIN, float_TYPE, sizeof(float), sizeof(Bci_block.in_vmin)/sizeof(float), &Bci_block.in_vmin};
-    Config[4] = {BCI_INVMAX, float_TYPE, sizeof(float), sizeof(Bci_block.in_vmax)/sizeof(float), &Bci_block.in_vmax};
-    Config[5] = {BCI_SETMINMIN, float_TYPE, sizeof(float), sizeof(Bci_block.setminmin)/sizeof(float), &Bci_block.setminmin};
-    Config[6] = {BCI_SETMIN, float_TYPE, sizeof(float), sizeof(Bci_block.setmin)/sizeof(float), &Bci_block.setmin};
-    Config[7] = {BCI_SETMAX, float_TYPE, sizeof(float), sizeof(Bci_block.setmax)/sizeof(float), &Bci_block.setmax};
-    Config[8] = {BCI_SETMAXMAX, float_TYPE, sizeof(float), sizeof(Bci_block.setmaxmax)/sizeof(float), &Bci_block.setmaxmax};
-    Config[9] = {BCI_DISCOSC, u32_TYPE, sizeof(quint32), sizeof(Bci_block.discosc)/sizeof(quint32), &Bci_block.discosc};
-    Config[10] = {BCI_OSCSRC, u32_TYPE, sizeof(quint32), sizeof(Bci_block.oscsrc)/sizeof(quint32), &Bci_block.oscsrc};
-    Config[11] = {BCI_OSCDLY, u16_TYPE, sizeof(quint16), sizeof(Bci_block.oscdly)/sizeof(quint16), &Bci_block.oscdly};
-    Config[12] = {BCI_CTYPE, u16_TYPE, sizeof(quint16), sizeof(Bci_block.Ctype)/sizeof(quint16), &Bci_block.Ctype};
-    Config[13] = {BCI_ABS_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Abs_104)/sizeof(quint32), &Bci_block.Abs_104};
-    Config[14] = {BCI_CYCLE_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Cycle_104)/sizeof(quint32), &Bci_block.Cycle_104};
-    Config[15] = {BCI_T1_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T1_104)/sizeof(quint32), &Bci_block.T1_104};
-    Config[16] = {BCI_T2_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T2_104)/sizeof(quint32), &Bci_block.T2_104};
-    Config[17] = {BCI_T3_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T3_104)/sizeof(quint32), &Bci_block.T3_104};
-    Config[18] = {BCI_K_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.k_104)/sizeof(quint32), &Bci_block.k_104};
-    Config[19] = {BCI_W_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.w_104)/sizeof(quint32), &Bci_block.w_104};
-    Config[20] = {0xFFFF, 0, 0, 0, NULL};
+    NoProperConf = false;
+    Config[0] = {ABCI_MTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.MType)/sizeof(quint32), &(Bci_block.MType)};
+    Config[1] = {ABCI_MTYPE1, u32_TYPE, sizeof(quint32), sizeof(Bci_block.MType1)/sizeof(quint32), &(Bci_block.MType1)};
+    Config[2] = {ABCI_INTYPE, u8_TYPE, sizeof(qint8), sizeof(Bci_block.in_type)/sizeof(qint8), &(Bci_block.in_type)};
+    Config[3] = {ABCI_INMIN, float_TYPE, sizeof(float), sizeof(Bci_block.in_min)/sizeof(float), &(Bci_block.in_min)};
+    Config[4] = {ABCI_INMAX, float_TYPE, sizeof(float), sizeof(Bci_block.in_max)/sizeof(float), &Bci_block.in_max};
+    Config[5] = {ABCI_INVMIN, float_TYPE, sizeof(float), sizeof(Bci_block.in_vmin)/sizeof(float), &Bci_block.in_vmin};
+    Config[6] = {ABCI_INVMAX, float_TYPE, sizeof(float), sizeof(Bci_block.in_vmax)/sizeof(float), &Bci_block.in_vmax};
+    Config[7] = {ABCI_SETMINMIN, float_TYPE, sizeof(float), sizeof(Bci_block.setminmin)/sizeof(float), &Bci_block.setminmin};
+    Config[8] = {ABCI_SETMIN, float_TYPE, sizeof(float), sizeof(Bci_block.setmin)/sizeof(float), &Bci_block.setmin};
+    Config[9] = {ABCI_SETMAX, float_TYPE, sizeof(float), sizeof(Bci_block.setmax)/sizeof(float), &Bci_block.setmax};
+    Config[10] = {ABCI_SETMAXMAX, float_TYPE, sizeof(float), sizeof(Bci_block.setmaxmax)/sizeof(float), &Bci_block.setmaxmax};
+    Config[11] = {ABCI_DISCOSC, u32_TYPE, sizeof(quint32), sizeof(Bci_block.discosc)/sizeof(quint32), &Bci_block.discosc};
+    Config[12] = {ABCI_OSCSRC, u32_TYPE, sizeof(quint32), sizeof(Bci_block.oscsrc)/sizeof(quint32), &Bci_block.oscsrc};
+    Config[13] = {ABCI_OSCDLY, u16_TYPE, sizeof(quint16), sizeof(Bci_block.oscdly)/sizeof(quint16), &Bci_block.oscdly};
+    Config[14] = {ABCI_CTYPE, u16_TYPE, sizeof(quint16), sizeof(Bci_block.Ctype)/sizeof(quint16), &Bci_block.Ctype};
+    Config[15] = {ABCI_ABS_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Abs_104)/sizeof(quint32), &Bci_block.Abs_104};
+    Config[16] = {ABCI_CYCLE_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Cycle_104)/sizeof(quint32), &Bci_block.Cycle_104};
+    Config[17] = {ABCI_T1_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T1_104)/sizeof(quint32), &Bci_block.T1_104};
+    Config[18] = {ABCI_T2_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T2_104)/sizeof(quint32), &Bci_block.T2_104};
+    Config[19] = {ABCI_T3_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T3_104)/sizeof(quint32), &Bci_block.T3_104};
+    Config[20] = {ABCI_K_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.k_104)/sizeof(quint32), &Bci_block.k_104};
+    Config[21] = {ABCI_W_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.w_104)/sizeof(quint32), &Bci_block.w_104};
+    Config[22] = {0xFFFF, 0, 0, 0, NULL};
     setAttribute(Qt::WA_DeleteOnClose);
     cn = new canal;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -54,10 +57,10 @@ a_confdialog::a_confdialog(QWidget *parent) :
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteConfDataToModule()));
     wdgtlyout->addWidget(pb, 1, 0, 1, 1);
     pb = new QPushButton("Задать конфигурацию по умолчанию");
-    connect(pb,SIGNAL(clicked()),this,SLOT(SetNewConf()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(SetDefConf()));
     wdgtlyout->addWidget(pb, 0, 1, 1, 1);
     pb = new QPushButton("Перейти на новую конфигурацию");
-    connect(pb,SIGNAL(clicked()),this,SLOT(SetDefConf()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(SetNewConf()));
     wdgtlyout->addWidget(pb, 1, 1, 1, 1);
     wdgt->setLayout(wdgtlyout);
     lyout->addWidget(wdgt);
@@ -658,6 +661,8 @@ void a_confdialog::SetDefConf()
     s_tqComboBox *ChTypCB;
     s_tqCheckBox *chb;
     int i;
+    Bci_block.MType = 3;
+    Bci_block.MType1 = 0x810001;
     spb = this->findChild<QSpinBox *>("oscdlyspb");
     if (spb == 0)
         return;
@@ -703,6 +708,8 @@ void a_confdialog::SetDefConf()
         return;
     ChTypCB->setCurrentIndex(2);
     Bci_block.Ctype = 2;
+    Bci_block.discosc = 0;
+    Bci_block.oscsrc = 0;
     for (i = 0; i < 16; i++)
     {
         ChTypCB = this->findChild<s_tqComboBox *>("chtypcb"+QString::number(i));
@@ -714,12 +721,10 @@ void a_confdialog::SetDefConf()
         if (ChTypCB == 0)
             return;
         chb->setChecked(false);
-        Bci_block.discosc |= (0x0001 << i);
         ChTypCB = this->findChild<s_tqComboBox *>("oscsrccb"+QString::number(i));
         if (ChTypCB == 0)
             return;
         ChTypCB->setCurrentIndex(0);
-        Bci_block.oscsrc |= (0x00000003 << i);
         dspbls = this->findChild<s_tqspinbox *>("inminspb"+QString::number(i));
         if (dspbls == 0)
             return;
@@ -766,4 +771,9 @@ void a_confdialog::SetDefConf()
 void a_confdialog::ShowErrMsg(int ermsg)
 {
     QMessageBox::critical(this,"error!",errmsgs.at(ermsg));
+}
+
+void a_confdialog::UpdateProper(bool tmpb)
+{
+    NoProperConf = tmpb;
 }

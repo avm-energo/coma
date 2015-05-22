@@ -16,26 +16,26 @@
 e_confdialog::e_confdialog(QWidget *parent) :
     QDialog(parent)
 {
-    Config[0] = {BCI_EQTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.eq_type)/sizeof(quint32), &(Bci_block.eq_type)};
-    Config[1] = {BCI_NPOINTS, u32_TYPE, sizeof(quint32), sizeof(Bci_block.npoints)/sizeof(quint32), &(Bci_block.npoints)};
-    Config[2] = {BCI_NFILTR, u32_TYPE, sizeof(quint32), sizeof(Bci_block.nfiltr)/sizeof(quint32), &Bci_block.nfiltr};
-    Config[3] = {BCI_NHFILTR, u32_TYPE, sizeof(quint32), sizeof(Bci_block.nhfiltr)/sizeof(quint32), &Bci_block.nhfiltr};
-    Config[4] = {BCI_DDOSC, u32_TYPE, sizeof(quint32), sizeof(Bci_block.ddosc)/sizeof(quint32), &Bci_block.ddosc};
-    Config[5] = {BCI_UNOM1, float_TYPE, sizeof(float), sizeof(Bci_block.unom1)/sizeof(float), &Bci_block.unom1};
-    Config[6] = {BCI_UNOM2, float_TYPE, sizeof(float), sizeof(Bci_block.unom2)/sizeof(float), &Bci_block.unom2};
-    Config[7] = {BCI_INOM1, float_TYPE, sizeof(float), sizeof(Bci_block.inom1)/sizeof(float), &Bci_block.inom1};
-    Config[8] = {BCI_INOM2, float_TYPE, sizeof(float), sizeof(Bci_block.inom2)/sizeof(float), &Bci_block.inom2};
-    Config[9] = {BCI_DUOSC, float_TYPE, sizeof(float), sizeof(Bci_block.duosc)/sizeof(float), &Bci_block.duosc};
-    Config[10] = {BCI_DIOSC, float_TYPE, sizeof(float), sizeof(Bci_block.diosc)/sizeof(float), &Bci_block.diosc};
-    Config[11] = {BCI_DUIMIN, float_TYPE, sizeof(float), sizeof(Bci_block.duimin)/sizeof(float), &Bci_block.duimin};
-    Config[12] = {BCI_CTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Ctype)/sizeof(quint32), &Bci_block.Ctype};
-    Config[13] = {BCI_ABS_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Abs_104)/sizeof(quint32), &Bci_block.Abs_104};
-    Config[14] = {BCI_CYCLE_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Cycle_104)/sizeof(quint32), &Bci_block.Cycle_104};
-    Config[15] = {BCI_T1_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T1_104)/sizeof(quint32), &Bci_block.T1_104};
-    Config[16] = {BCI_T2_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T2_104)/sizeof(quint32), &Bci_block.T2_104};
-    Config[17] = {BCI_T3_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T3_104)/sizeof(quint32), &Bci_block.T3_104};
-    Config[18] = {BCI_K_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.k_104)/sizeof(quint32), &Bci_block.k_104};
-    Config[19] = {BCI_W_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.w_104)/sizeof(quint32), &Bci_block.w_104};
+    Config[0] = {EBCI_EQTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.eq_type)/sizeof(quint32), &(Bci_block.eq_type)};
+    Config[1] = {EBCI_NPOINTS, u32_TYPE, sizeof(quint32), sizeof(Bci_block.npoints)/sizeof(quint32), &(Bci_block.npoints)};
+    Config[2] = {EBCI_NFILTR, u32_TYPE, sizeof(quint32), sizeof(Bci_block.nfiltr)/sizeof(quint32), &Bci_block.nfiltr};
+    Config[3] = {EBCI_NHFILTR, u32_TYPE, sizeof(quint32), sizeof(Bci_block.nhfiltr)/sizeof(quint32), &Bci_block.nhfiltr};
+    Config[4] = {EBCI_DDOSC, u32_TYPE, sizeof(quint32), sizeof(Bci_block.ddosc)/sizeof(quint32), &Bci_block.ddosc};
+    Config[5] = {EBCI_UNOM1, float_TYPE, sizeof(float), sizeof(Bci_block.unom1)/sizeof(float), &Bci_block.unom1};
+    Config[6] = {EBCI_UNOM2, float_TYPE, sizeof(float), sizeof(Bci_block.unom2)/sizeof(float), &Bci_block.unom2};
+    Config[7] = {EBCI_INOM1, float_TYPE, sizeof(float), sizeof(Bci_block.inom1)/sizeof(float), &Bci_block.inom1};
+    Config[8] = {EBCI_INOM2, float_TYPE, sizeof(float), sizeof(Bci_block.inom2)/sizeof(float), &Bci_block.inom2};
+    Config[9] = {EBCI_DUOSC, float_TYPE, sizeof(float), sizeof(Bci_block.duosc)/sizeof(float), &Bci_block.duosc};
+    Config[10] = {EBCI_DIOSC, float_TYPE, sizeof(float), sizeof(Bci_block.diosc)/sizeof(float), &Bci_block.diosc};
+    Config[11] = {EBCI_DUIMIN, float_TYPE, sizeof(float), sizeof(Bci_block.duimin)/sizeof(float), &Bci_block.duimin};
+    Config[12] = {EBCI_CTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Ctype)/sizeof(quint32), &Bci_block.Ctype};
+    Config[13] = {EBCI_ABS_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Abs_104)/sizeof(quint32), &Bci_block.Abs_104};
+    Config[14] = {EBCI_CYCLE_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Cycle_104)/sizeof(quint32), &Bci_block.Cycle_104};
+    Config[15] = {EBCI_T1_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T1_104)/sizeof(quint32), &Bci_block.T1_104};
+    Config[16] = {EBCI_T2_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T2_104)/sizeof(quint32), &Bci_block.T2_104};
+    Config[17] = {EBCI_T3_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T3_104)/sizeof(quint32), &Bci_block.T3_104};
+    Config[18] = {EBCI_K_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.k_104)/sizeof(quint32), &Bci_block.k_104};
+    Config[19] = {EBCI_W_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.w_104)/sizeof(quint32), &Bci_block.w_104};
     Config[20] = {0xFFFF, 0, 0, 0, NULL};
     setAttribute(Qt::WA_DeleteOnClose);
     cn = new canal;

@@ -11,9 +11,12 @@ class a_tunedialog : public QDialog
 public:
     explicit a_tunedialog(QWidget *parent = 0);
 
+    bool NoProperCoefs;
+
 signals:
 
 public slots:
+    void UpdateProper(bool);
 
 private:
     canal *cn;

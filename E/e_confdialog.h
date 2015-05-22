@@ -10,26 +10,26 @@
 #include "../canal.h"
 
 // Описание блока Bci
-#define BCI_EQTYPE      1
-#define BCI_NPOINTS     2
-#define BCI_NFILTR      3
-#define BCI_NHFILTR     4
-#define BCI_DDOSC       5
-#define BCI_UNOM1       6
-#define BCI_UNOM2       7
-#define BCI_INOM1       8
-#define BCI_INOM2       9
-#define BCI_DUOSC       10
-#define BCI_DIOSC       11
-#define BCI_DUIMIN      12
-#define BCI_CTYPE       13
-#define BCI_ABS_104     14
-#define BCI_CYCLE_104   15
-#define BCI_T1_104      16
-#define BCI_T2_104      17
-#define BCI_T3_104      18
-#define BCI_K_104       19
-#define BCI_W_104       20
+#define EBCI_EQTYPE      1
+#define EBCI_NPOINTS     2
+#define EBCI_NFILTR      3
+#define EBCI_NHFILTR     4
+#define EBCI_DDOSC       5
+#define EBCI_UNOM1       6
+#define EBCI_UNOM2       7
+#define EBCI_INOM1       8
+#define EBCI_INOM2       9
+#define EBCI_DUOSC       10
+#define EBCI_DIOSC       11
+#define EBCI_DUIMIN      12
+#define EBCI_CTYPE       13
+#define EBCI_ABS_104     14
+#define EBCI_CYCLE_104   15
+#define EBCI_T1_104      16
+#define EBCI_T2_104      17
+#define EBCI_T3_104      18
+#define EBCI_K_104       19
+#define EBCI_W_104       20
 #define ECONF_NUM       21
 
 // Подтипы модуля Э

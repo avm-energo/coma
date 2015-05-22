@@ -10,27 +10,29 @@
 #include "../canal.h"
 
 // Описание блока Bci
-#define BCI_INTYPE      1
-#define BCI_INMIN       2
-#define BCI_INMAX       3
-#define BCI_INVMIN      4
-#define BCI_INVMAX      5
-#define BCI_SETMINMIN   6
-#define BCI_SETMIN      7
-#define BCI_SETMAX      8
-#define BCI_SETMAXMAX   9
-#define BCI_DISCOSC     10
-#define BCI_OSCSRC      11
-#define BCI_OSCDLY      12
-#define BCI_CTYPE       13
-#define BCI_ABS_104     14
-#define BCI_CYCLE_104   15
-#define BCI_T1_104      16
-#define BCI_T2_104      17
-#define BCI_T3_104      18
-#define BCI_K_104       19
-#define BCI_W_104       20
-#define ACONF_NUM       21
+#define ABCI_MTYPE       1
+#define ABCI_MTYPE1      2
+#define ABCI_INTYPE      3
+#define ABCI_INMIN       4
+#define ABCI_INMAX       5
+#define ABCI_INVMIN      6
+#define ABCI_INVMAX      7
+#define ABCI_SETMINMIN   8
+#define ABCI_SETMIN      9
+#define ABCI_SETMAX      10
+#define ABCI_SETMAXMAX   11
+#define ABCI_DISCOSC     12
+#define ABCI_OSCSRC      13
+#define ABCI_OSCDLY      14
+#define ABCI_CTYPE       15
+#define ABCI_ABS_104     16
+#define ABCI_CYCLE_104   17
+#define ABCI_T1_104      18
+#define ABCI_T2_104      19
+#define ABCI_T3_104      20
+#define ABCI_K_104       21
+#define ABCI_W_104       22
+#define ACONF_NUM       23
 
 class a_confdialog : public QDialog
 {
@@ -38,9 +40,13 @@ class a_confdialog : public QDialog
 public:
     explicit a_confdialog(QWidget *parent = 0);
 
+    bool NoProperConf; // в модуле нет нормальной конфигурации
+
 private:
     typedef struct
     {
+        quint32 MType;          // Тип модуля, для которого предназначена конфигурация
+        quint32 MType1;         // Подтип модуля, для которого предназначена конфигурация
         qint8 in_type[16];      // Тип входа №0…15 (см. ниже)
         float in_min[16];       // Минимальное значение диапазона изменения сигнала
         float in_max[16];       // Максимальное значение диапазона
@@ -74,6 +80,7 @@ signals:
     void BsiIsNeedToBeAcquiredAndChecked();
 
 public slots:
+    void UpdateProper(bool);
 
 private slots:
     void SetChTypData(int, s_tqComboBox *);

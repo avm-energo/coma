@@ -38,6 +38,8 @@
 #define CN_NULLDATAERROR    12 // в канальную процедуру переданы некорректные данные
 
 #define ER_FILEOPENERROR    15 // ошибка при открытии файла
+#define ER_NOCONF           20 // нет конфигурации в модуле
+#define ER_NOTUNECOEF       21 // нет настроечных параметров в модуле
 
 #define HTH_CONFIG          0x00000080 // в модуле нет конфигурации
 #define HTH_REGPARS         0x00000040 // в модуле нет настроечных параметров

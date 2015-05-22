@@ -13,6 +13,7 @@
 a_tunedialog::a_tunedialog(QWidget *parent) :
     QDialog(parent)
 {
+    NoProperCoefs = false;
     setAttribute(Qt::WA_DeleteOnClose);
     cn = new canal;
     for (int i = 0; i < 16; i++)
@@ -389,4 +390,9 @@ void a_tunedialog::SaveToFile()
 void a_tunedialog::ShowErrMsg(int ermsg)
 {
     QMessageBox::critical(this,"error!",errmsgs.at(ermsg));
+}
+
+void a_tunedialog::UpdateProper(bool tmpb)
+{
+    NoProperCoefs = tmpb;
 }

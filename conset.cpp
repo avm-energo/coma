@@ -8,7 +8,6 @@
 #include <QMessageBox>
 #include <QMenu>
 #include <QMenuBar>
-#include <QAction>
 #include <QFont>
 #include <QVBoxLayout>
 #include <QTextEdit>
@@ -22,6 +21,7 @@
 ConSet::ConSet(QWidget *parent)
     : QMainWindow(parent)
 {
+    InitiateHth();
     setWindowTitle("КАВТУК");
     setMinimumSize(QSize(800, 600));
     DialogsAreReadyAlready = false;
@@ -62,11 +62,6 @@ ConSet::ConSet(QWidget *parent)
     uple5_2->setObjectName("rstcountle");
     uple5_2->setEnabled(false);
     uple5_2->setTextMargins(0,0,0,0);
-    QLabel *uplbl6 = new QLabel("Неиспр (01=OK):");
-    QLineEdit *uple6 = new QLineEdit("");
-    uple6->setObjectName("hthle");
-    uple6->setEnabled(false);
-    uple6->setTextMargins(0,0,0,0);
     QLabel *uplbl7 = new QLabel("Серийный номер:");
     QLineEdit *uple7 = new QLineEdit("");
     uple7->setObjectName("snle");
@@ -86,8 +81,6 @@ ConSet::ConSet(QWidget *parent)
     uplyout->addWidget(uple5);
     uplyout->addWidget(uplbl5_2);
     uplyout->addWidget(uple5_2);
-    uplyout->addWidget(uplbl6);
-    uplyout->addWidget(uple6);
     lyout->addLayout(uplyout);
 
     uplyout = new QHBoxLayout;
@@ -102,6 +95,16 @@ ConSet::ConSet(QWidget *parent)
     lyout->addLayout(uplyout);
 
     lyout->addStretch(1);
+
+    uplyout = new QHBoxLayout;
+    for (int i = 31; i >= 0; i--)
+    {
+        QLabel *lbl = new QLabel(Hth[i]);
+        lbl->setObjectName("hth"+QString::number(i));
+        lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255)}");
+        uplyout->addWidget(lbl);
+    }
+    lyout->addLayout(uplyout);
 
     QMenuBar *MainMenuBar = new QMenuBar;
     QMenu *MainMenu = new QMenu;
@@ -119,6 +122,15 @@ ConSet::ConSet(QWidget *parent)
     MainMenu->addAction(MainDisconnectAction);
     MainMenu->addAction(MainExitAction);
     MainMenuBar->addMenu(MainMenu);
+
+    QMenu *menu = new QMenu;
+    menu->setTitle("Дополнительно");
+    WriteSNAction = new QAction(this);
+    WriteSNAction->setText("Запись серийного номера");
+    WriteSNAction->setEnabled(false);
+    connect(WriteSNAction,SIGNAL(triggered()),this,SLOT(WriteSN()));
+    menu->addAction(WriteSNAction);
+    MainMenuBar->addMenu(menu);
 
     QAction *HelpAction = new QAction(this);
     HelpAction->setText("О программе");
@@ -149,6 +161,20 @@ ConSet::~ConSet()
     delete thread;
 }
 
+void ConSet::InitiateHth()
+{
+    Hth[0] = "!OK";
+    Hth[1] = "NC";
+    Hth[2] = "TUPP";
+    Hth[3] = "REL";
+    Hth[4] = "1PPS";
+    Hth[5] = "ADC";
+    Hth[6] = "REG";
+    Hth[7] = "CONF";
+    for (int i = 8; i < 32; i++)
+        Hth[i] = "NC";
+}
+
 void ConSet::closeEvent(QCloseEvent *e)
 {
     emit stopall();
@@ -157,7 +183,8 @@ void ConSet::closeEvent(QCloseEvent *e)
 
 void ConSet::Connect()
 {
-// !!! /*
+// !!!
+//    /*
     int i;
     pc.SThread = new SerialThread();
     QDialog *dlg = new QDialog(this);
@@ -200,7 +227,7 @@ void ConSet::Connect()
     lyout->addWidget(nextL);
     dlg->setLayout(lyout);
     connect(this,SIGNAL(portopened()),dlg,SLOT(close()));
-    dlg->exec(); //*/
+    dlg->exec();
 //    Bsi_block.MType = pc.MType = MT_A; // !!!
 //    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte"); // !!!
 //    if (MainTE != 0) // !!!
@@ -224,6 +251,7 @@ void ConSet::Next()
         MainTE->show();
     thread->start();
     emit portopened();
+    WriteSNAction->setEnabled(true);
     GetBsi();
 }
 
@@ -350,10 +378,32 @@ void ConSet::CheckBsi()
     if (le == 0)
         return;
     le->setText(QString::number(Bsi_block.Rst, 16));
-    le = this->findChild<QLineEdit *>("hthle");
-    if (le == 0)
-        return;
-    le->setText(QString::number(Bsi_block.Hth, 16));
+    // расшифровка Hth
+    for (int i = 0; i < 32; i++)
+    {
+        QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
+        if (lbl == 0)
+            return;
+        quint32 tmpui = (0x00000001 << i) & Bsi_block.Hth;
+        if (tmpui)
+            lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,80); color: rgba(220,220,220,255);}");
+        else
+            lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
+    }
+    if (Bsi_block.Hth & HTH_CONFIG)
+    {
+        emit updateconfproper(true);
+        ShowErrMsg(ER_NOCONF);
+    }
+    else
+        emit updateconfproper(false);
+    if (Bsi_block.Hth & HTH_REGPARS)
+    {
+        emit updatetuneproper(true);
+        ShowErrMsg(ER_NOTUNECOEF);
+    }
+    else
+        emit updatetuneproper(false);
     le = this->findChild<QLineEdit *>("rstcountle");
     if (le == 0)
         return;
@@ -382,12 +432,13 @@ void ConSet::CheckBsi()
 
 void ConSet::AllIsOk()
 {
+// !!! /*
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(AllIsOk()));
     if (cn->result)
     {
         ShowErrMsg(cn->result);
         return;
-    }
+    } // !!! */
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
@@ -400,6 +451,18 @@ void ConSet::AllIsOk()
         ACheckDialog = new a_checkdialog;
         DownDialog = new downloaddialog;
         FwUpDialog = new fwupdialog;
+        connect(this,SIGNAL(updateconfproper(bool)),AConfDialog,SLOT(UpdateProper(bool)));
+        connect(this,SIGNAL(updatetuneproper(bool)),ATuneDialog,SLOT(UpdateProper(bool)));
+        if (Bsi_block.Hth & 0x00000080) // нет конфигурации
+        {
+//            ShowErrMsg(ER_NOCONF);
+            emit updateconfproper(true);
+        }
+        if (Bsi_block.Hth & 0x00000040) // нет коэффициентов
+        {
+//            ShowErrMsg(ER_NOTUNECOEF);
+            emit updatetuneproper(true);
+        }
         MainTW->addTab(AConfDialog, "Конфигурирование");
         MainTW->addTab(ATuneDialog, "Настройка");
         MainTW->addTab(ACheckDialog, "Проверка");
@@ -476,6 +539,7 @@ void ConSet::Disconnect()
         MainTE->clear();
         MainTE->hide();
     }
+    WriteSNAction->setEnabled(false);
     MainTW->hide();
 }
 
@@ -492,4 +556,24 @@ void ConSet::GetAbout()
 void ConSet::Exit()
 {
     this->close();
+}
+
+void ConSet::WriteSN()
+{
+    bool ok = false;
+    qint32 tmpi = QInputDialog::getInt(this, "Серийный номер", "Серийный номер модуля:", 0, 1, 99999999,\
+                                1, &ok);
+    if (!ok)
+        return;
+    Bsi_block.SerNum = QString::number(tmpi, 10).toInt(0,16);
+    connect(cn,SIGNAL(DataReady()),this,SLOT(CheckSN()));
+    cn->Send(CN_Wsn, &(Bsi_block.SerNum), 4);
+}
+
+void ConSet::CheckSN()
+{
+    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckSN()));
+    if (cn->result)
+        ShowErrMsg(cn->result);
+    GetBsi();
 }

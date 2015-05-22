@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <QCloseEvent>
+#include <QAction>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtSerialPort/QSerialPort>
 #include "fwupdialog.h"
@@ -29,8 +30,11 @@ signals:
     void portopened();
     void receivecompleted();
     void stopall();
+    void updateconfproper(bool);
+    void updatetuneproper(bool);
 
 private:
+    QString Hth[32];
     canal *cn;
     QThread *thread;
     a_checkdialog *ACheckDialog;
@@ -42,11 +46,13 @@ private:
     fwupdialog *FwUpDialog;
     downloaddialog *DownDialog;
     bool DialogsAreReadyAlready;
+    QAction *WriteSNAction;
 
     publicclass::Bsi Bsi_block;
     void InitiateWriteDataToPort(QByteArray ba);
     QString ByteToHex(quint8);
     void StopThreads();
+    void InitiateHth();
 
 public slots:
     void GetBsi();
@@ -64,6 +70,8 @@ private slots:
     void KillSThread();
     void SetPort(QString str);
     void SetBaud(QString str);
+    void WriteSN();
+    void CheckSN();
 
 protected:
     void closeEvent(QCloseEvent *e);
