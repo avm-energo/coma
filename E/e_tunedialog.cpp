@@ -13,17 +13,11 @@
 e_tunedialog::e_tunedialog(QWidget *parent) :
     QDialog(parent)
 {
-/*    setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_DeleteOnClose);
     cn = new canal;
-    for (int i = 0; i < 16; i++)
-    {
-        Bda0.sin[i] = 0;
-        Bda5.sin[i] = UINT_MAX;
-        Bda20.sin[i] = UINT_MAX;
-    }
-    SetupUI(); */
+    SetupUI();
 }
-/*
+
 void e_tunedialog::SetupUI()
 {
     int i;
@@ -170,7 +164,7 @@ void e_tunedialog::SetupUI()
     setLayout(lyout);
 }
 
-void e_tunedialog::tune(int tunenum)
+/*void e_tunedialog::tune(int tunenum)
 {
     switch (tunenum)
     {

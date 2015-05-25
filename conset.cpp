@@ -13,6 +13,7 @@
 #include <QTextEdit>
 #include <QThread>
 #include <QInputDialog>
+#include <QRegExp>
 #include "mytabwidget.h"
 #include <QDialog>
 #include "conset.h"
@@ -130,6 +131,11 @@ ConSet::ConSet(QWidget *parent)
     WriteSNAction->setEnabled(false);
     connect(WriteSNAction,SIGNAL(triggered()),this,SLOT(WriteSN()));
     menu->addAction(WriteSNAction);
+    QAction *act = new QAction(this);
+    act->setText("Установка параметров связи с МИП");
+    act->setStatusTip("Настройка связи с прибором контроля электр. параметров МИП для регулировки модулей Э");
+    connect(act,SIGNAL(triggered()),this,SLOT(SetMipDlg()));
+    menu->addAction(act);
     MainMenuBar->addMenu(menu);
 
     QAction *HelpAction = new QAction(this);
@@ -576,4 +582,79 @@ void ConSet::CheckSN()
     if (cn->result)
         ShowErrMsg(cn->result);
     GetBsi();
+}
+
+void ConSet::SetMipDlg()
+{
+    QDialog *dlg = new QDialog(this);
+    dlg->setObjectName("setmipdlg");
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QLabel *lbl = new QLabel("IP-адрес МИП:");
+    hlyout->addWidget(lbl);
+    QLineEdit *le = new QLineEdit;
+    QRegExp re;
+    re.setPattern("^[0-2]{0,1}[0-9]{1,2}$");
+    QValidator *val = new QRegExpValidator(re, this);
+    le->setValidator(val);
+    le->setObjectName("mip1");
+    hlyout->addWidget(le);
+    lbl = new QLabel(".");
+    hlyout->addWidget(lbl);
+    le = new QLineEdit;
+    le->setValidator(val);
+    le->setObjectName("mip2");
+    hlyout->addWidget(le);
+    lbl = new QLabel(".");
+    hlyout->addWidget(lbl);
+    le = new QLineEdit;
+    le->setValidator(val);
+    le->setObjectName("mip3");
+    hlyout->addWidget(le);
+    lbl = new QLabel(".");
+    hlyout->addWidget(lbl);
+    le = new QLineEdit;
+    le->setValidator(val);
+    le->setObjectName("mip4");
+    hlyout->addWidget(le);
+    lyout->addLayout(hlyout);
+
+    hlyout = new QHBoxLayout;
+    lbl = new QLabel("ASDU:");
+    hlyout->addWidget(lbl);
+    s_tqspinbox *spb = new s_tqspinbox;
+    spb->setDecimals(0);
+    spb->setMinimum(1);
+    spb->setMaximum(65534);
+    spb->setValue(206);
+    spb->setObjectName("asduspb");
+    hlyout->addWidget(spb);
+    hlyout->addStretch(90);
+    lyout->addLayout(hlyout);
+
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SetMipConPar()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
+void ConSet::SetMipConPar()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        QLineEdit *le = this->findChild<QLineEdit *>("mip"+QString::number(i));
+        if (le == 0)
+            return;
+        pc.MIPIP += le->text()+".";
+    }
+    pc.MIPIP.chop(1); // последнюю точку убираем
+    s_tqspinbox *spb = this->findChild<s_tqspinbox *>("asduspb");
+    if (spb == 0)
+        return;
+    pc.MIPASDU = spb->value();
+    QDialog *dlg = this->findChild<QDialog *>("setmipdlg");
+    if (dlg == 0)
+        return;
+    dlg->close();
 }

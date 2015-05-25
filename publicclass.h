@@ -63,6 +63,8 @@ public:
 
     QStringList AMTypes, DMTypes, EMTypes;
     SerialThread *SThread;
+    quint16 MIPASDU;
+    QString MIPIP;
 
     // S2: Определение типа заголовка
     typedef struct

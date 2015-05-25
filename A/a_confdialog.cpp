@@ -40,6 +40,58 @@ a_confdialog::a_confdialog(QWidget *parent) :
     Config[20] = {ABCI_K_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.k_104)/sizeof(quint32), &Bci_block.k_104};
     Config[21] = {ABCI_W_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.w_104)/sizeof(quint32), &Bci_block.w_104};
     Config[22] = {0xFFFF, 0, 0, 0, NULL};
+
+/*    Bci_defblock = \
+    {
+        3,
+        0x810001,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+        4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+        20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,
+        10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+        50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,
+        950,950,950,950,950,950,950,950,950,950,950,950,950,950,950,950,
+        990,990,990,990,990,990,990,990,990,990,990,990,990,990,990,990,
+        0,
+        0,
+        0,
+        2,
+        205,
+        5,
+        15,
+        10,
+        20,
+        12,
+        8
+    }; */
+    Bci_defblock.MType = 3;
+    Bci_defblock.MType1 = 0x810001;
+    Bci_defblock.Abs_104 = 205;
+    Bci_defblock.Ctype = 2;
+    Bci_defblock.Cycle_104 = 5;
+    Bci_defblock.T1_104 = 15;
+    Bci_defblock.T2_104 = 10;
+    Bci_defblock.T3_104 = 20;
+    Bci_defblock.k_104 = 12;
+    Bci_defblock.w_104 = 8;
+    Bci_defblock.discosc = 0;
+    Bci_defblock.oscsrc = 0;
+    Bci_defblock.oscdly = 0;
+    for (int i = 0; i < 16; i++)
+    {
+        Bci_defblock.in_type[i] = 1;
+        Bci_defblock.in_min[i] = 4;
+        Bci_defblock.in_max[i] = 20;
+        Bci_defblock.in_vmin[i] = 0;
+        Bci_defblock.in_vmax[i] = 1000;
+        Bci_defblock.setminmin[i] = 10;
+        Bci_defblock.setmin[i] = 50;
+        Bci_defblock.setmax[i] = 950;
+        Bci_defblock.setmaxmax[i] = 990;
+    }
+
     setAttribute(Qt::WA_DeleteOnClose);
     cn = new canal;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -77,7 +129,7 @@ void a_confdialog::GetBci()
 void a_confdialog::FillConfData()
 {
     int i;
-    disconnect(cn, SIGNAL(DataReady()),this,SLOT(FillConfData()));
+    disconnect(0,0,this,SLOT(FillConfData()));
     if (cn->result)
     {
         ShowErrMsg(cn->result);
@@ -656,7 +708,9 @@ void a_confdialog::UpdateBsi()
 
 void a_confdialog::SetDefConf()
 {
-    QSpinBox *spb;
+    memcpy(&Bci_block, &Bci_defblock, sizeof(Bci));
+    FillConfData();
+    /*    QSpinBox *spb;
     s_tqspinbox *dspbls;
     s_tqComboBox *ChTypCB;
     s_tqCheckBox *chb;
@@ -765,7 +819,7 @@ void a_confdialog::SetDefConf()
             return;
         dspbls->setValue(990);
         Bci_block.setmaxmax[i] = 990;
-    }
+    } */
 }
 
 void a_confdialog::ShowErrMsg(int ermsg)

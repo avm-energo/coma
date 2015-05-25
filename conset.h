@@ -72,6 +72,8 @@ private slots:
     void SetBaud(QString str);
     void WriteSN();
     void CheckSN();
+    void SetMipConPar();
+    void SetMipDlg();
 
 protected:
     void closeEvent(QCloseEvent *e);
