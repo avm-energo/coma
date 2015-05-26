@@ -34,25 +34,19 @@ private:
 
     Bac Bac_block[16];
 
-/*    void SetupUI();
-    void tune(int);
+    void SetupUI();
     void ShowErrMsg(int);
     void CalcNewTuneCoefs();
-    void RefreshTuneCoefs(); */
+    void RefreshTuneCoefs();
 
 private slots:
-/*    void tune0();
-    void tune5();
-    void tune20();
-    void CheckAndShowTune0();
-    void CheckAndShowTune5();
-    void CheckAndShowTune20();
+    void StartTune();
     void ReadTuneCoefs();
     void ReadCompleted();
     void WriteTuneCoefs();
     void WriteCompleted();
     void SaveToFile();
-    void LoadFromFile(); */
+    void LoadFromFile();
 };
 
 #endif // E_TUNEDIALOG_H

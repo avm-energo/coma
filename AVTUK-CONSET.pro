@@ -51,3 +51,6 @@ HEADERS  += conset.h \
     E/e_confdialog.h \
     E/e_tunedialog.h \
     iec104/mip02.h
+
+RESOURCES += \
+    res.qrc

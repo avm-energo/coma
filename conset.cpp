@@ -190,7 +190,7 @@ void ConSet::closeEvent(QCloseEvent *e)
 void ConSet::Connect()
 {
 // !!!
-//    /*
+    /*
     int i;
     pc.SThread = new SerialThread();
     QDialog *dlg = new QDialog(this);
@@ -234,11 +234,13 @@ void ConSet::Connect()
     dlg->setLayout(lyout);
     connect(this,SIGNAL(portopened()),dlg,SLOT(close()));
     dlg->exec();
-//    Bsi_block.MType = pc.MType = MT_A; // !!!
-//    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte"); // !!!
-//    if (MainTE != 0) // !!!
-//        MainTE->show(); // !!!
-//    AllIsOk(); // !!!
+    */
+    Bsi_block.MType = pc.MType = MT_E; // !!!
+    Bsi_block.MType1 = pc.MType1 = MTE_0T2N; // !!!
+    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte"); // !!!
+    if (MainTE != 0) // !!!
+        MainTE->show(); // !!!
+    AllIsOk(); // !!!
 }
 
 void ConSet::Next()
@@ -438,7 +440,7 @@ void ConSet::CheckBsi()
 
 void ConSet::AllIsOk()
 {
-// !!! /*
+/*
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(AllIsOk()));
     if (cn->result)
     {

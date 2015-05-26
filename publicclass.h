@@ -3,10 +3,16 @@
 
 #define Z   64 // количество точек, по которым выдаются значения в блоке Bda
 
+// определение типов модулей
 #define MT_C    1
 #define MT_D    2
 #define MT_A    3
 #define MT_E    4
+
+// определение подтипов модулей
+#define MTE_2T0N    0
+#define MTE_1T1N    1
+#define MTE_0T2N    2
 
 // S2: Определение типов элементов данных
 #define u8_TYPE		1  //беззнаковый байт

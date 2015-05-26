@@ -26,58 +26,74 @@ void e_tunedialog::SetupUI()
     QWidget *cp2 = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QLabel *lbl;
-    QVBoxLayout *gb1lyout = new QVBoxLayout;
-    QHBoxLayout *gb2lyout = new QHBoxLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
 
     QTabWidget *TuneTW = new QTabWidget;
     TuneTW->addTab(cp1,"Коэффициенты");
     TuneTW->addTab(cp2,"Настройка");
     QGroupBox *gb = new QGroupBox("Настроечные коэффициенты");
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < 6; i++)
     {
-        lbl = new QLabel("b"+QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
+        lbl = new QLabel("KmU"+QString::number(i));
+        glyout->addWidget(lbl,0,i,1,1);
         lbl = new QLabel("");
-        lbl->setObjectName("tunebcoef"+QString::number(i));
+        lbl->setObjectName("kmu"+QString::number(i));
         lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 1);
-        lbl = new QLabel("u"+QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
+        glyout->addWidget(lbl,1,i,1,1);
+        lbl = new QLabel("KmI5"+QString::number(i));
+        glyout->addWidget(lbl,2,i,1,1);
         lbl = new QLabel("");
-        lbl->setObjectName("tunek1coef"+QString::number(i));
+        lbl->setObjectName("kmi5"+QString::number(i));
         lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 1);
-        lbl = new QLabel("i"+QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
+        glyout->addWidget(lbl,3,i,1,1);
+        lbl = new QLabel("KmI1"+QString::number(i));
+        glyout->addWidget(lbl,4,i,1,1);
         lbl = new QLabel("");
-        lbl->setObjectName("tunek2coef"+QString::number(i));
+        lbl->setObjectName("kmi1"+QString::number(i));
         lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 1);
-        if ((i>0)&&!((i+1)%2))
-        {
-            gb1lyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
-        }
+        glyout->addWidget(lbl,5,i,1,1);
+        lbl = new QLabel("DPsi"+QString::number(i));
+        glyout->addWidget(lbl,6,i,1,1);
+        lbl = new QLabel("");
+        lbl->setObjectName("dpsi"+QString::number(i));
+        lbl->setStyleSheet(ValuesFormat);
+        glyout->addWidget(lbl,7,i,1,1);
     }
-    if (gb2lyout->count())
-        gb1lyout->addLayout(gb2lyout);
+    lbl=new QLabel("K_freq:");
+    lbl->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
+    glyout->addWidget(lbl,8,0,1,1);
+    lbl = new QLabel("");
+    lbl->setObjectName("kfreq"+QString::number(i));
+    lbl->setStyleSheet(ValuesFormat);
+    glyout->addWidget(lbl,8,1,1,2);
+    lbl=new QLabel("Kinter:");
+    lbl->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
+    glyout->addWidget(lbl,8,3,1,1);
+    lbl = new QLabel("");
+    lbl->setObjectName("kinter"+QString::number(i));
+    lbl->setStyleSheet(ValuesFormat);
+    glyout->addWidget(lbl,8,4,1,2);
+
     QPushButton *pb = new QPushButton("Прочитать настроечные коэффициенты из модуля");
     connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs()));
-    gb1lyout->addWidget(pb);
+    glyout->addWidget(pb, 9, 0, 1, 6);
     pb = new QPushButton("Записать настроечные коэффициенты в модуль");
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteTuneCoefs()));
-    gb1lyout->addWidget(pb);
+    glyout->addWidget(pb, 10, 0, 1, 6);
     pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadFromFile()));
-    gb1lyout->addWidget(pb);
+    glyout->addWidget(pb, 11, 0, 1, 6);
     pb = new QPushButton("Записать настроечные коэффициенты в файл");
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
-    gb1lyout->addWidget(pb);
-    gb->setLayout(gb1lyout);
+    glyout->addWidget(pb, 12, 0, 1, 6);
+    gb->setLayout(glyout);
     lyout->addWidget(gb);
     cp1->setLayout(lyout);
 
     lyout = new QVBoxLayout;
+    pb = new QPushButton("Начать настройку");
     gb = new QGroupBox("Настройка нуля");
     gb->setStyleSheet("QGroupBox {background-color: #99FFCC;}");
     gb1lyout = new QVBoxLayout;
@@ -158,7 +174,7 @@ void e_tunedialog::SetupUI()
     gb1lyout->addWidget(pb);
     gb->setLayout(gb1lyout);
     lyout->addWidget(gb);
-    cp2->setLayout(lyout);
+    cp2->setLayout(lyout); */
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
@@ -279,7 +295,7 @@ void e_tunedialog::CheckAndShowTune20()
     CalcNewTuneCoefs();
     RefreshTuneCoefs();
 }
-
+*/
 void e_tunedialog::ReadTuneCoefs()
 {
     cn->Send(CN_Gac, &Bac_block, sizeof(Bac_block));
@@ -364,7 +380,7 @@ void e_tunedialog::LoadFromFile()
     if (ba->size() >= (sizeof(publicclass::Bsi)+sizeof(Bac_block)))
     {
         memcpy(&Bsi_block,ba,sizeof(publicclass::Bsi));
-        if ((Bsi_block.CpuId != pc.CpuId) || (Bsi_block.SerNum != pc.SerNum))
+        if ((Bsi_block.CpuIdHigh != pc.CpuIdHigh) || (Bsi_block.SerNum != pc.SerNum))
         {
             if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
                                       QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);
@@ -384,4 +400,3 @@ void e_tunedialog::ShowErrMsg(int ermsg)
 {
     QMessageBox::critical(this,"error!",errmsgs.at(ermsg));
 }
-*/

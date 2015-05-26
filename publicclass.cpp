@@ -273,17 +273,17 @@ QString publicclass::ETyp1()
 {
     switch (MType1)
     {
-    case 0x0000:
+    case MTE_2T0N:
     {
         return "2Т0Н";
         break;
     }
-    case 0x0001:
+    case MTE_1T1N:
     {
         return "1Т1Н";
         break;
     }
-    case 0x0002:
+    case MTE_0T2N:
     {
         return "0Т2Н";
         break;
