@@ -824,7 +824,7 @@ void a_confdialog::SetDefConf()
 
 void a_confdialog::ShowErrMsg(int ermsg)
 {
-    QMessageBox::critical(this,"error!",errmsgs.at(ermsg));
+    QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
 }
 
 void a_confdialog::UpdateProper(bool tmpb)

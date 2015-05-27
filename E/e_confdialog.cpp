@@ -393,7 +393,7 @@ void e_confdialog::SetupUI()
         cb->setEditable(true);
         cb->setCurrentIndex(4);
         cb->setAData(1);
-        connect(cb,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetVoltageClass(int,s_tqspinbox*)));
+        connect(cb,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetVoltageClass(int,s_tqComboBox*)));
         gb2lyout->addWidget(cb);
         gblyout->addLayout(gb2lyout);
 
@@ -867,5 +867,5 @@ void e_confdialog::UpdateBsi()
 
 void e_confdialog::ShowErrMsg(int ermsg)
 {
-    QMessageBox::critical(this,"error!",errmsgs.at(ermsg));
+    QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
 }

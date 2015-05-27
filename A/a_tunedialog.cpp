@@ -389,7 +389,7 @@ void a_tunedialog::SaveToFile()
 
 void a_tunedialog::ShowErrMsg(int ermsg)
 {
-    QMessageBox::critical(this,"error!",errmsgs.at(ermsg));
+    QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
 }
 
 void a_tunedialog::UpdateProper(bool tmpb)

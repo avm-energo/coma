@@ -2,6 +2,7 @@
 #define E_TUNEDIALOG_H
 
 #include <QDialog>
+#include <QCloseEvent>
 #include "canal.h"
 
 #define TUNEFILELENGTH  256
@@ -12,6 +13,7 @@ public:
     explicit e_tunedialog(QWidget *parent = 0);
 
 signals:
+    void stopall();
 
 public slots:
 
@@ -35,11 +37,11 @@ private:
     Bac Bac_block[16];
 
     void SetupUI();
-    void ShowErrMsg(int);
     void CalcNewTuneCoefs();
     void RefreshTuneCoefs();
 
 private slots:
+    void ShowErrMsg(int);
     void StartTune();
     void ReadTuneCoefs();
     void ReadCompleted();
@@ -47,6 +49,11 @@ private slots:
     void WriteCompleted();
     void SaveToFile();
     void LoadFromFile();
+    void StartMip();
+    void MipConnected();
+
+protected:
+    void closeEvent(QCloseEvent *e);
 };
 
 #endif // E_TUNEDIALOG_H

@@ -1,5 +1,9 @@
 #include "publicclass.h"
 #include <QDateTime>
+#include <QSettings>
+#include <QFile>
+#include <QTextStream>
+#include <QDir>
 
 publicclass pc;
 
@@ -73,14 +77,6 @@ unsigned long  _crc32_t[256]=
 0xB40BBE37,0xC30C8EA1,0x5A05DF1B,0x2D02EF8D
 };
 
-const QStringList errmsgs = QStringList() << "" << "Ошибка открытия порта" << "В системе нет COM-портов" << "Ошибка при приёме сегмента данных на стороне модуля" << \
-           "Ошибка при приёме данных" << "Произошло превышение времени ожидания при приёме данных" << \
-           "Некорректная длина принятого блока" << "Неизвестная команда" << "Ошибка длины при работе с форматом S2" << \
-           "Несовпадение описания прочитанного элемента с ожидаемым при работе с форматом S2" << \
-           "Несовпадение контрольной суммы при работе с форматом S2" << "Некорректная длина в DataHeader при разборе формата S2" << \
-           "В канальную процедуру переданы некорректные данные" << "" << "" << "Ошибка при открытии файла" << "" << "" << "" << "" << \
-           "В модуле отсутствует корректная конфигурация" << "В модуле отсутствуют настроечные параметры";
-
 publicclass::publicclass()
 {
     AMTypes.append("Z"); // фиктивный тип, типы начинаются с 1
@@ -89,6 +85,32 @@ publicclass::publicclass()
     AMTypes.append("И");
     AMTypes.append("С");
     MType = MType1 = 0xFFFFFFFF;
+
+    QSettings *sets = new QSettings("EvelSoft","ConSet");
+    QString ermsgspath = sets->value("erpath","errors\\").toString();
+    QFile file;
+    file.setFileName(ermsgspath+"ermsgs.dat");
+    ermsgspath = QDir::currentPath();
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        result = ER_FILEOPENERROR;
+        return;
+    }
+    else
+    {
+        QString tmpString;
+        QTextStream streamfile(&file);
+        streamfile.setCodec("WIN-1251");
+        do
+        {
+            tmpString = streamfile.readLine();
+            if (tmpString.isEmpty())
+                errmsgs << "";
+            else if (tmpString.at(0) != '#')
+                errmsgs << tmpString;
+        } while (!streamfile.atEnd());
+    }
+    result = CN_OK;
 }
 
 QString publicclass::VerToStr(quint32 num)

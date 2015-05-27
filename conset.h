@@ -32,6 +32,7 @@ signals:
     void stopall();
     void updateconfproper(bool);
     void updatetuneproper(bool);
+    void mipparset();
 
 private:
     QString Hth[32];

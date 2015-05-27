@@ -14,6 +14,7 @@
 #include <QThread>
 #include <QInputDialog>
 #include <QRegExp>
+#include <QSettings>
 #include "mytabwidget.h"
 #include <QDialog>
 #include "conset.h"
@@ -158,6 +159,12 @@ ConSet::ConSet(QWidget *parent)
     lyout->addLayout(inlyout, 90);
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
+
+    QSettings *sets = new QSettings ("EvelSoft","ConSet");
+    pc.MIPASDU = sets->value("mip/asdu","206").toInt();
+    pc.MIPIP = sets->value("mip/ip","192.168.1.2").toString();
+    if (pc.result)
+        QMessageBox::warning(this,"ошибка!","Не найден файл с сообщениями об ошибках!");
 }
 
 ConSet::~ConSet()
@@ -283,7 +290,7 @@ void ConSet::SetBaud(QString str)
 
 void ConSet::ShowErrMsg(int ermsg)
 {
-    QMessageBox::critical(this,"error!",errmsgs.at(ermsg));
+    QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
 }
 
 void ConSet::GetBsi()
@@ -592,6 +599,12 @@ void ConSet::SetMipDlg()
     dlg->setObjectName("setmipdlg");
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
+    QStringList tmpsl = pc.MIPIP.split(".");
+    if (tmpsl.size()<4)
+    {
+        for (int i = tmpsl.size(); i < 4; i++)
+            tmpsl.append("");
+    }
     QLabel *lbl = new QLabel("IP-адрес МИП:");
     hlyout->addWidget(lbl);
     QLineEdit *le = new QLineEdit;
@@ -600,24 +613,28 @@ void ConSet::SetMipDlg()
     QValidator *val = new QRegExpValidator(re, this);
     le->setValidator(val);
     le->setObjectName("mip1");
+    le->setText(tmpsl.at(0));
     hlyout->addWidget(le);
     lbl = new QLabel(".");
     hlyout->addWidget(lbl);
     le = new QLineEdit;
     le->setValidator(val);
     le->setObjectName("mip2");
+    le->setText(tmpsl.at(1));
     hlyout->addWidget(le);
     lbl = new QLabel(".");
     hlyout->addWidget(lbl);
     le = new QLineEdit;
     le->setValidator(val);
     le->setObjectName("mip3");
+    le->setText(tmpsl.at(2));
     hlyout->addWidget(le);
     lbl = new QLabel(".");
     hlyout->addWidget(lbl);
     le = new QLineEdit;
     le->setValidator(val);
     le->setObjectName("mip4");
+    le->setText(tmpsl.at(3));
     hlyout->addWidget(le);
     lyout->addLayout(hlyout);
 
@@ -628,22 +645,29 @@ void ConSet::SetMipDlg()
     spb->setDecimals(0);
     spb->setMinimum(1);
     spb->setMaximum(65534);
-    spb->setValue(206);
+    spb->setValue(pc.MIPASDU);
     spb->setObjectName("asduspb");
     hlyout->addWidget(spb);
     hlyout->addStretch(90);
     lyout->addLayout(hlyout);
 
     QPushButton *pb = new QPushButton("Готово");
+    pb->setObjectName("dlgpb");
     connect(pb,SIGNAL(clicked()),this,SLOT(SetMipConPar()));
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
+    connect(this,SIGNAL(mipparset()),dlg,SLOT(close()));
     dlg->exec();
 }
 
 void ConSet::SetMipConPar()
 {
-    for (int i = 0; i < 4; i++)
+//    QPushButton *pb = this->findChild<QPushButton *>("dlgpb");
+//    if (pb == 0)
+//        return;
+//    disconnect(pb,SIGNAL(clicked()),this,SLOT(SetMipConPar()));
+    pc.MIPIP.clear();
+    for (int i = 1; i < 5; i++)
     {
         QLineEdit *le = this->findChild<QLineEdit *>("mip"+QString::number(i));
         if (le == 0)
@@ -655,8 +679,12 @@ void ConSet::SetMipConPar()
     if (spb == 0)
         return;
     pc.MIPASDU = spb->value();
-    QDialog *dlg = this->findChild<QDialog *>("setmipdlg");
+    QSettings *sets = new QSettings ("EvelSoft","ConSet");
+    sets->setValue("mip/asdu",pc.MIPASDU);
+    sets->setValue("mip/ip",pc.MIPIP);
+    emit mipparset();
+/*    QDialog *dlg = this->findChild<QDialog *>("setmipdlg");
     if (dlg == 0)
         return;
-    dlg->close();
+    dlg->close(); */
 }

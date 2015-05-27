@@ -421,5 +421,5 @@ void a_checkdialog::TimerTimeout()
 
 void a_checkdialog::ShowErrMsg(int ermsg)
 {
-    QMessageBox::critical(this,"error!",errmsgs.at(ermsg));
+    QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
 }

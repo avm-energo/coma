@@ -6,9 +6,11 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QFileDialog>
+#include <QThread>
 #include "e_tunedialog.h"
 #include "config.h"
 #include "publicclass.h"
+#include "../iec104/mip02.h"
 
 e_tunedialog::e_tunedialog(QWidget *parent) :
     QDialog(parent)
@@ -88,11 +90,14 @@ void e_tunedialog::SetupUI()
     pb = new QPushButton("Записать настроечные коэффициенты в файл");
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
     glyout->addWidget(pb, 12, 0, 1, 6);
+    pb = new QPushButton("Запустить связь с МИП");
+    connect(pb,SIGNAL(clicked()),this,SLOT(StartMip()));
+    glyout->addWidget(pb, 13, 0, 1, 6);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
     cp1->setLayout(lyout);
 
-    lyout = new QVBoxLayout;
+/*    lyout = new QVBoxLayout;
     pb = new QPushButton("Начать настройку");
     gb = new QGroupBox("Настройка нуля");
     gb->setStyleSheet("QGroupBox {background-color: #99FFCC;}");
@@ -178,6 +183,11 @@ void e_tunedialog::SetupUI()
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
+}
+
+void e_tunedialog::StartTune()
+{
+
 }
 
 /*void e_tunedialog::tune(int tunenum)
@@ -398,5 +408,32 @@ void e_tunedialog::SaveToFile()
 
 void e_tunedialog::ShowErrMsg(int ermsg)
 {
-    QMessageBox::critical(this,"error!",errmsgs.at(ermsg));
+    QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
+}
+
+void e_tunedialog::StartMip()
+{
+    QThread *thr = new QThread;
+    mip02 *mip = new mip02;
+    mip->moveToThread(thr);
+    connect(thr, SIGNAL(started()), mip, SLOT(run()));
+    connect(this,SIGNAL(stopall()),mip,SLOT(stop()));
+    connect(mip,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
+//    connect(mip,SIGNAL(finished()),thr,SLOT(deleteLater()));
+    connect(mip,SIGNAL(finished()),thr,SLOT(quit()));
+    connect(thr,SIGNAL(finished()),mip,SLOT(deleteLater()));
+
+    connect(mip,SIGNAL(connected()),this,SLOT(MipConnected()));
+    thr->start();
+}
+
+void e_tunedialog::MipConnected()
+{
+    QMessageBox::warning(this,"w","Связь с МИП-02 установлена!");
+}
+
+void e_tunedialog::closeEvent(QCloseEvent *e)
+{
+    emit stopall();
+    e->accept();
 }

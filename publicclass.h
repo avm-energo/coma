@@ -47,6 +47,33 @@
 #define ER_NOCONF           20 // нет конфигурации в модуле
 #define ER_NOTUNECOEF       21 // нет настроечных параметров в модуле
 
+// ошибки IP-сокета
+#define SKT_UNKNOWNER       24 // неизвестная ошибка
+#define SKT_REFUSEDER       25 // тайм-аут при открытии сокета
+#define SKT_REMOTECLOSEDER  26 // удалённый узел разорвал соединение
+#define SKT_NOTFOUNDER      27 // узел не найден
+#define SKT_ACCESSER        28 // ошибка доступа к сокету
+#define SKT_RESER           29 // недостаточно памяти для сокета
+#define SKT_TOER            30 // тайм-аут при операции с сокетом
+#define SKT_LARGEER         31 // слишком большой размер датаграммы
+#define SKT_NETWORKER       32 // обрыв связи
+#define SKT_ADDRESSER       33 // адрес уже используется
+#define SKT_BINDER          34 // адрес привязки не принадлежит данному ПК
+#define SKT_UNSUPER         35 // неподдерживаемая операция
+#define SKT_PROXYAUTHER     36 // прокси-сервер требует авторизацию
+#define SKT_SSLER           37 // ошибка при установлении защищённого соединения
+#define SKT_UNFINISHER      38 // есть незавершённая операция
+#define SKT_PROXYREFER      39 // прокси-сервер отклонил соединение
+#define SKT_PROXYCLOSER     40 // прокси-сервер закрыл соединение
+#define SKT_PROXYTOER       41 // произошёл тайм-аут при работе с прокси-сервером
+#define SKT_PROXYNOTFOUNDER 42 // прокси-сервер не найден
+#define SKT_PROXYPROTER     43 // ответ прокси-сервера не распознан
+#define SKT_OPERER          44 // сокет занят
+#define SKT_SSLINTER        45 // ошибка SSL на стороне ПК
+#define SKT_SSLINVDATAER    46 // некорректные данные SSL
+#define SKT_TEMPER          47 // повторите операцию позже
+#define SKT_SENDDATAER      48 // ошибка при отправке данных
+
 #define HTH_CONFIG          0x00000080 // в модуле нет конфигурации
 #define HTH_REGPARS         0x00000040 // в модуле нет настроечных параметров
 #define HTH_ADC             0x00000020 // проблема с АЦП
@@ -71,6 +98,8 @@ public:
     SerialThread *SThread;
     quint16 MIPASDU;
     QString MIPIP;
+    int result;
+    QStringList errmsgs;
 
     // S2: Определение типа заголовка
     typedef struct
@@ -135,6 +164,5 @@ private:
 };
 
 extern publicclass pc;
-extern const QStringList errmsgs;
 
 #endif // PUBLICCLASS_H
