@@ -10,7 +10,8 @@
 #include "e_tunedialog.h"
 #include "config.h"
 #include "publicclass.h"
-#include "../iec104/mip02.h"
+#include "../iec104/ethernet.h"
+#include "../iec104/iec104.h"
 
 e_tunedialog::e_tunedialog(QWidget *parent) :
     QDialog(parent)
@@ -92,6 +93,7 @@ void e_tunedialog::SetupUI()
     glyout->addWidget(pb, 12, 0, 1, 6);
     pb = new QPushButton("Запустить связь с МИП");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartMip()));
+    pb->setEnabled(false);
     glyout->addWidget(pb, 13, 0, 1, 6);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
@@ -414,7 +416,8 @@ void e_tunedialog::ShowErrMsg(int ermsg)
 void e_tunedialog::StartMip()
 {
     QThread *thr = new QThread;
-    mip02 *mip = new mip02;
+    ethernet *mip = new ethernet;
+//    iec104 *mipcanal = new iec104;
     mip->moveToThread(thr);
     connect(thr, SIGNAL(started()), mip, SLOT(run()));
     connect(this,SIGNAL(stopall()),mip,SLOT(stop()));
@@ -422,8 +425,8 @@ void e_tunedialog::StartMip()
 //    connect(mip,SIGNAL(finished()),thr,SLOT(deleteLater()));
     connect(mip,SIGNAL(finished()),thr,SLOT(quit()));
     connect(thr,SIGNAL(finished()),mip,SLOT(deleteLater()));
-
     connect(mip,SIGNAL(connected()),this,SLOT(MipConnected()));
+//    connect(this,SIGNAL(SendMip(QByteArray))
     thr->start();
 }
 

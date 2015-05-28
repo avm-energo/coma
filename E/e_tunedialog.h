@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QCloseEvent>
+#include <QByteArray>
 #include "canal.h"
 
 #define TUNEFILELENGTH  256
@@ -14,6 +15,7 @@ public:
 
 signals:
     void stopall();
+    void SendMip(QByteArray);
 
 public slots:
 

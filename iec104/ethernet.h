@@ -1,5 +1,5 @@
-#ifndef MIP02_H
-#define MIP02_H
+#ifndef ETHERNET_H
+#define ETHERNET_H
 
 #include <QObject>
 #include <QTcpSocket>
@@ -8,12 +8,12 @@
 
 #define PORT104     2404 // порт связи по протоколу МЭК 60870-5-104
 
-class mip02 : public QObject
+class ethernet : public QObject
 {
     Q_OBJECT
 
 public:
-    mip02(QObject *parent = 0);
+    ethernet(QObject *parent = 0);
     quint16 ASDU;
     bool ClosePortAndFinishThread;
 
@@ -27,11 +27,10 @@ signals:
     void error(int);
     void connected();
     void finished();
-    void PacketReadyToParse();
+    void newdataarrived(QByteArray);
 
 private slots:
-    void newdataarrived(QByteArray);
-    void Parse104();
+    void CheckForData();
     void seterr(QAbstractSocket::SocketError);
 
 private:
@@ -42,4 +41,4 @@ private:
     void SendData();
 };
 
-#endif // MIP02_H
+#endif // ETHERNET_H

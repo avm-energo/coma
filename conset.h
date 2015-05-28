@@ -54,6 +54,7 @@ private:
     QString ByteToHex(quint8);
     void StopThreads();
     void InitiateHth();
+    void FillBsi(QString MType, bool clear=false);
 
 public slots:
     void GetBsi();

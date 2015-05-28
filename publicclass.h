@@ -74,11 +74,13 @@
 #define SKT_TEMPER          47 // повторите операцию позже
 #define SKT_SENDDATAER      48 // ошибка при отправке данных
 
+#define HTH_FNC             0x00000200 // частота не в допуске (Э)
+#define HTH_LS              0x00000100 // сигналы малы (Э)
 #define HTH_CONFIG          0x00000080 // в модуле нет конфигурации
 #define HTH_REGPARS         0x00000040 // в модуле нет настроечных параметров
-#define HTH_ADC             0x00000020 // проблема с АЦП
+#define HTH_ADC             0x00000020 // проблема с АЦП (Э)
 #define HTH_1PPS            0x00000010 // нет сигнала 1PPS
-#define HTH_REL             0x00000008 // неисправность выходных реле
+#define HTH_REL             0x00000008 // неисправность выходных реле (Д)
 #define HTH_TUPP            0x00000004 // перегрев модуля
 
 #include <QtSerialPort/QSerialPort>

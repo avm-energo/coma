@@ -184,7 +184,9 @@ void ConSet::InitiateHth()
     Hth[5] = "ADC";
     Hth[6] = "REG";
     Hth[7] = "CONF";
-    for (int i = 8; i < 32; i++)
+    Hth[8] = "LS";
+    Hth[9] = "FNC";
+    for (int i = 10; i < 32; i++)
         Hth[i] = "NC";
 }
 
@@ -196,8 +198,7 @@ void ConSet::closeEvent(QCloseEvent *e)
 
 void ConSet::Connect()
 {
-// !!!
-    /*
+// !!!   /*
     int i;
     pc.SThread = new SerialThread();
     QDialog *dlg = new QDialog(this);
@@ -241,13 +242,13 @@ void ConSet::Connect()
     dlg->setLayout(lyout);
     connect(this,SIGNAL(portopened()),dlg,SLOT(close()));
     dlg->exec();
-    */
-    Bsi_block.MType = pc.MType = MT_E; // !!!
-    Bsi_block.MType1 = pc.MType1 = MTE_0T2N; // !!!
-    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte"); // !!!
-    if (MainTE != 0) // !!!
-        MainTE->show(); // !!!
-    AllIsOk(); // !!!
+// !!!    */
+//    Bsi_block.MType = pc.MType = MT_E; // !!!
+//    Bsi_block.MType1 = pc.MType1 = MTE_0T2N; // !!!
+//    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte"); // !!!
+//    if (MainTE != 0) // !!!
+//        MainTE->show(); // !!!
+//    AllIsOk(); // !!!
 }
 
 void ConSet::Next()
@@ -337,9 +338,6 @@ void ConSet::CheckBsi()
         Bsi_block.SerNum = QString::number(tmpi, 10).toInt(0,16);
     }
     pc.SerNum = Bsi_block.SerNum;
-    QLineEdit *le = this->findChild<QLineEdit *>("mtypele");
-    if (le == 0)
-        return;
     QString MType;
     qint32 tmpint;
     switch (Bsi_block.MType)
@@ -376,61 +374,8 @@ void ConSet::CheckBsi()
     default:
         break;
     }
-    le->setText(MType);
-    le = this->findChild<QLineEdit *>("hwverle");
-    if (le == 0)
-        return;
-    le->setText(pc.VerToStr(Bsi_block.HWver));
-    le = this->findChild<QLineEdit *>("fwverle");
-    if (le == 0)
-        return;
-    le->setText(pc.VerToStr(Bsi_block.FWver));
-    le = this->findChild<QLineEdit *>("cfcrcle");
-    if (le == 0)
-        return;
-    le->setText(QString::number(static_cast<uint>(Bsi_block.Cfcrc), 16));
-    le = this->findChild<QLineEdit *>("rstle");
-    if (le == 0)
-        return;
-    le->setText(QString::number(Bsi_block.Rst, 16));
-    // расшифровка Hth
-    for (int i = 0; i < 32; i++)
-    {
-        QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
-        if (lbl == 0)
-            return;
-        quint32 tmpui = (0x00000001 << i) & Bsi_block.Hth;
-        if (tmpui)
-            lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,80); color: rgba(220,220,220,255);}");
-        else
-            lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
-    }
-    if (Bsi_block.Hth & HTH_CONFIG)
-    {
-        emit updateconfproper(true);
-        ShowErrMsg(ER_NOCONF);
-    }
-    else
-        emit updateconfproper(false);
-    if (Bsi_block.Hth & HTH_REGPARS)
-    {
-        emit updatetuneproper(true);
-        ShowErrMsg(ER_NOTUNECOEF);
-    }
-    else
-        emit updatetuneproper(false);
-    le = this->findChild<QLineEdit *>("rstcountle");
-    if (le == 0)
-        return;
-    le->setText(QString::number(Bsi_block.RstCount, 16));
-    le = this->findChild<QLineEdit *>("cpuidle");
-    if (le == 0)
-        return;
-    le->setText(QString::number(Bsi_block.CpuIdHigh, 16)+QString::number(Bsi_block.CpuIdMid, 16)+QString::number(Bsi_block.CpuIdLow, 16));
-    le = this->findChild<QLineEdit *>("snle");
-    if (le == 0)
-        return;
-    le->setText(QString::number(Bsi_block.SerNum, 16));
+
+    FillBsi(MType);
 
     if (!DialogsAreReadyAlready)
     {
@@ -443,6 +388,71 @@ void ConSet::CheckBsi()
         else
             AllIsOk();
     }
+}
+
+void ConSet::FillBsi(QString MType, bool clear)
+{
+    QLineEdit *le = this->findChild<QLineEdit *>("mtypele");
+    if (le == 0)
+        return;
+    le->setText(MType);
+    le = this->findChild<QLineEdit *>("hwverle");
+    if (le == 0)
+        return;
+    le->setText((clear)?"":pc.VerToStr(Bsi_block.HWver));
+    le = this->findChild<QLineEdit *>("fwverle");
+    if (le == 0)
+        return;
+    le->setText((clear)?"":pc.VerToStr(Bsi_block.FWver));
+    le = this->findChild<QLineEdit *>("cfcrcle");
+    if (le == 0)
+        return;
+    le->setText((clear)?"":QString::number(static_cast<uint>(Bsi_block.Cfcrc), 16));
+    le = this->findChild<QLineEdit *>("rstle");
+    if (le == 0)
+        return;
+    le->setText((clear)?"":QString::number(Bsi_block.Rst, 16));
+    // расшифровка Hth
+    for (int i = 0; i < 32; i++)
+    {
+        QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
+        if (lbl == 0)
+            return;
+        quint32 tmpui = (0x00000001 << i) & Bsi_block.Hth;
+        if ((tmpui) && (!clear))
+            lbl->setStyleSheet("QLabel {background-color: rgba(255,10,10,255); color: rgba(255,255,255,255);}");
+        else
+            lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
+    }
+    if (!clear)
+    {
+        if (Bsi_block.Hth & HTH_CONFIG)
+        {
+            emit updateconfproper(true);
+            ShowErrMsg(ER_NOCONF);
+        }
+        else
+            emit updateconfproper(false);
+        if (Bsi_block.Hth & HTH_REGPARS)
+        {
+            emit updatetuneproper(true);
+            ShowErrMsg(ER_NOTUNECOEF);
+        }
+        else
+            emit updatetuneproper(false);
+    }
+    le = this->findChild<QLineEdit *>("rstcountle");
+    if (le == 0)
+        return;
+    le->setText((clear)?"":QString::number(Bsi_block.RstCount, 16));
+    le = this->findChild<QLineEdit *>("cpuidle");
+    if (le == 0)
+        return;
+    le->setText((clear)?"":(QString::number(Bsi_block.CpuIdHigh, 16)+QString::number(Bsi_block.CpuIdMid, 16)+QString::number(Bsi_block.CpuIdLow, 16)));
+    le = this->findChild<QLineEdit *>("snle");
+    if (le == 0)
+        return;
+    le->setText((clear)?"":QString::number(Bsi_block.SerNum, 16));
 }
 
 void ConSet::AllIsOk()
@@ -538,6 +548,7 @@ QString ConSet::ByteToHex(quint8 hb)
 void ConSet::Disconnect()
 {
     emit stopall();
+    FillBsi("",true);
     DialogsAreReadyAlready = false;
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)

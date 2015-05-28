@@ -1,22 +1,22 @@
 #include <QTime>
 #include <QCoreApplication>
 
-#include "mip02.h"
+#include "ethernet.h"
 #include "../publicclass.h"
 
-mip02::mip02(QObject *parent) :
+ethernet::ethernet(QObject *parent) :
     QObject(parent)
 {
 
 }
 
-void mip02::run()
+void ethernet::run()
 {
     sock = new QTcpSocket(this);
     connect(sock,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(seterr(QAbstractSocket::SocketError)));
     connect(sock,SIGNAL(connected()),this,SIGNAL(connected()));
     sock->connectToHost(pc.MIPIP,PORT104,QIODevice::ReadWrite,QAbstractSocket::IPv4Protocol);
-    connect(sock,SIGNAL(readyRead()),this,SLOT(Parse104()));
+    connect(sock,SIGNAL(readyRead()),this,SLOT(CheckForData()));
     while (1)
     {
         OutDataBufMtx.lock();
@@ -35,12 +35,7 @@ void mip02::run()
     }
 }
 
-void mip02::Parse104()
-{
-
-}
-
-void mip02::stop()
+void ethernet::stop()
 {
     if (sock->isOpen())
     {
@@ -51,12 +46,12 @@ void mip02::stop()
     emit finished();
 }
 
-void mip02::seterr(QAbstractSocket::SocketError err)
+void ethernet::seterr(QAbstractSocket::SocketError err)
 {
     emit error(err+25); // до 24 другие ошибки, err от -1
 }
 
-void mip02::SendData()
+void ethernet::SendData()
 {
     qint64 res = sock->write(OutDataBuf);
     if (res == -1)
@@ -64,9 +59,15 @@ void mip02::SendData()
     OutDataBuf.clear();
 }
 
-void mip02::InitiateWriteDataToPort(QByteArray *ba)
+void ethernet::InitiateWriteDataToPort(QByteArray *ba)
 {
     OutDataBufMtx.lock();
     OutDataBuf = *ba;
     OutDataBufMtx.unlock();
+}
+
+void ethernet::CheckForData()
+{
+    QByteArray ba = sock->readAll();
+    emit newdataarrived(ba);
 }

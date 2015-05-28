@@ -133,20 +133,22 @@ int publicclass::StoreDataMem(void *mem, DataRec *dr) //0 - успешно, ин
     D.size=0;
     for(R=dr;;R++)
     {
-        memcpy(m,R,sizeof(DataRec)-sizeof(void*));
-        D.size += sizeof(DataRec)-sizeof(void*);
+        quint32 tmpi = sizeof(DataRec)-sizeof(void*);
+        memcpy(m,R,tmpi);
+        D.size += tmpi;
         if(R->id==0xFFFF)
             break;
-        for(i=0;i<(sizeof(DataRec)-sizeof(void *));i++)
+        for(i=0;i<tmpi;i++)
             updCRC32(((unsigned char *)R)[i],&crc);
-        m+=sizeof(DataRec)-sizeof(void*);
+        m+=tmpi;
         if(R->thedata)
         {
-            for(i=0;i<(R->elem_size*R->num_elem);i++)
+            tmpi=R->elem_size*R->num_elem;
+            for(i=0;i<tmpi;i++)
                 updCRC32(((unsigned char *)R->thedata)[i],&crc);
-            D.size += R->elem_size*R->num_elem;
-            memcpy(m,R->thedata,R->elem_size*R->num_elem);
-            m+=R->elem_size*R->num_elem;
+            D.size += tmpi;
+            memcpy(m,R->thedata,tmpi);
+            m+=tmpi;
         }
     }
     D.crc32=crc;

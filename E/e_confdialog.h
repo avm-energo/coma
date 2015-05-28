@@ -10,27 +10,29 @@
 #include "../canal.h"
 
 // Описание блока Bci
-#define EBCI_EQTYPE      1
-#define EBCI_NPOINTS     2
-#define EBCI_NFILTR      3
-#define EBCI_NHFILTR     4
-#define EBCI_DDOSC       5
-#define EBCI_UNOM1       6
-#define EBCI_UNOM2       7
-#define EBCI_INOM1       8
-#define EBCI_INOM2       9
-#define EBCI_DUOSC       10
-#define EBCI_DIOSC       11
-#define EBCI_DUIMIN      12
-#define EBCI_CTYPE       13
-#define EBCI_ABS_104     14
-#define EBCI_CYCLE_104   15
-#define EBCI_T1_104      16
-#define EBCI_T2_104      17
-#define EBCI_T3_104      18
-#define EBCI_K_104       19
-#define EBCI_W_104       20
-#define ECONF_NUM       21
+#define EBCI_MTYPE       1
+#define EBCI_MTYPE1      2
+#define EBCI_EQTYPE      3
+#define EBCI_NPOINTS     4
+#define EBCI_NFILTR      5
+#define EBCI_NHFILTR     6
+#define EBCI_DDOSC       7
+#define EBCI_UNOM1       8
+#define EBCI_UNOM2       9
+#define EBCI_INOM1       10
+#define EBCI_INOM2       11
+#define EBCI_DUOSC       12
+#define EBCI_DIOSC       13
+#define EBCI_DUIMIN      14
+#define EBCI_CTYPE       15
+#define EBCI_ABS_104     16
+#define EBCI_CYCLE_104   17
+#define EBCI_T1_104      18
+#define EBCI_T2_104      19
+#define EBCI_T3_104      20
+#define EBCI_K_104       21
+#define EBCI_W_104       22
+#define ECONF_NUM        23
 
 // Подтипы модуля Э
 #define ET_2T0N         0
@@ -46,6 +48,8 @@ public:
 private:
     typedef struct
     {
+        quint32 MType;          // Тип модуля, для которого предназначена конфигурация
+        quint32 MType1;         // Подтип модуля, для которого предназначена конфигурация
         quint32 eq_type;        // Тип контролируемого оборудования: 0 - 1фТАТ, 1 - 3фТАТ, 2 - 1фР, 3 - 3фР
         quint32 npoints;        // Количество точек оцифровки на период (64/80/128/256)
         quint32 nfiltr;         // Интервал усреднения данных (постоянная фильтрации)
@@ -70,10 +74,11 @@ private:
 
     canal *cn;
     QByteArray confba;
-    Bci Bci_block;
+    Bci Bci_block, Bci_defblock;
     publicclass::DataRec Config[ECONF_NUM];
 
     void ShowErrMsg(int ermsg);
+    void FillConfData();
 
 signals:
     void BsiIsNeedToBeAcquiredAndChecked();
@@ -93,10 +98,11 @@ private slots:
     void SetNFiltr(int);
     void SetNHFiltr(int);
     void GetBci();
-    void FillConfData();
+    void CheckConfAndFill();
     void WriteConfDataToModule();
     void WriteCompleted();
     void SetupUI();
+    void SetDefConf();
     void SetNewConf();
     void UpdateBsi();
 };

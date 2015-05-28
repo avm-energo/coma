@@ -55,10 +55,13 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
         if (DR == NULL)
             Finish(CN_NULLDATAERROR);
         pc.StoreDataMem(&(tmpba->data()[7]), DR);
-        DLength = tmpba->data()[9]*65536+tmpba->data()[8]*256+tmpba->data()[7]; // DataHeader.size
+//        DLength = tmpba->data()[9]*65536+tmpba->data()[8]*256+tmpba->data()[7]; // DataHeader.size
+        DLength = static_cast<quint8>(tmpba->data()[9])*65536;
+        DLength += static_cast<quint8>(tmpba->data()[8])*256;
+        DLength += static_cast<quint8>(tmpba->data()[7]);
         DLength += 12; // sizeof(DataHeader)
-        int tmpi1 = tmpba->data()[4] = (DLength/65536);
-        int tmpi2 = tmpba->data()[5] = (DLength - tmpi1*65536)/256;
+        quint32 tmpi1 = tmpba->data()[4] = (DLength/65536);
+        quint32 tmpi2 = tmpba->data()[5] = (DLength - tmpi1*65536)/256;
         tmpba->data()[6] = DLength - tmpi1*65536 - tmpi2*256;
         tmpba->resize(DLength+7);
         SetWR(tmpba,7); // 7 - длина заголовка
@@ -74,8 +77,8 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
     {
         tmpba = new QByteArray (QByteArray::fromRawData((const char *)outdata, outdatasize)); // 10000 - предположительная длина блока
         DLength = outdatasize;
-        int tmpi1 = (DLength/65536);
-        int tmpi2 = (DLength - tmpi1*65536)/256;
+        quint32 tmpi1 = (DLength/65536);
+        quint32 tmpi2 = (DLength - tmpi1*65536)/256;
         tmpba->insert(0, DLength - tmpi1*65536 - tmpi2*256);
         tmpba->insert(0, tmpi2);
         tmpba->insert(0, tmpi1);
@@ -313,11 +316,11 @@ bool canal::RDCheckForNextSegment()
     return true;
 }
 
-void canal::SetWR(QByteArray *ba, int startpos)
+void canal::SetWR(QByteArray *ba, quint32 startpos)
 {
     WriteData = new QByteArray(*ba);
     WRLength = WriteData->size();
-    if (WriteData->size()>(512+startpos)) // startpos - заголовок
+    if (static_cast<quint32>(WriteData->size())>(512+startpos)) // startpos - заголовок
     {
         SegLeft = (WRLength - startpos) / 512;
         SegEnd = 512 + startpos;

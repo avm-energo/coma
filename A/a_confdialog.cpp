@@ -122,19 +122,24 @@ a_confdialog::a_confdialog(QWidget *parent) :
 
 void a_confdialog::GetBci()
 {
-    connect(cn,SIGNAL(DataReady()),this,SLOT(FillConfData()));
+    connect(cn,SIGNAL(DataReady()),this,SLOT(CheckConfAndFill()));
     cn->Send(CN_GF,NULL,0,1,Config);
 }
 
-void a_confdialog::FillConfData()
+void a_confdialog::CheckConfAndFill()
 {
-    int i;
-    disconnect(0,0,this,SLOT(FillConfData()));
+    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckConfAndFill()));
     if (cn->result)
     {
         ShowErrMsg(cn->result);
         return;
     }
+    FillConfData();
+}
+
+void a_confdialog::FillConfData()
+{
+    int i;
     QSpinBox *spb;
     s_tqspinbox *dspbls;
     s_tqComboBox *ChTypCB;
@@ -184,14 +189,18 @@ void a_confdialog::FillConfData()
         chb = this->findChild<s_tqCheckBox *>("chb"+QString::number(i));
         if (ChTypCB == 0)
             return;
-        if (Bci_block.discosc & (0x0001 << i))
+        if (Bci_block.discosc & (static_cast<quint32>(0x0001) << i))
             chb->setChecked(true);
         else
             chb->setChecked(false);
         ChTypCB = this->findChild<s_tqComboBox *>("oscsrccb"+QString::number(i));
         if (ChTypCB == 0)
             return;
-        ChTypCB->setCurrentIndex(Bci_block.oscsrc&(0x00000003 << i));
+        ChTypCB->setCurrentIndex(Bci_block.oscsrc&(static_cast<quint32>(0x00000003) << i));
+        if (chb->isChecked())
+            ChTypCB->setVisible(true);
+        else
+            ChTypCB->setVisible(false);
 
         dspbls = this->findChild<s_tqspinbox *>("inminspb"+QString::number(i));
         if (dspbls == 0)
@@ -576,10 +585,19 @@ void a_confdialog::SetChOsc(int isChecked, s_tqCheckBox *ptr)
 {
     quint16 tmpint = 0x0001;
     tmpint = tmpint << ptr->getAData().toInt();
+    s_tqComboBox *cb = this->findChild<s_tqComboBox *>("oscsrccb"+QString::number(ptr->getAData().toInt()));
     if (isChecked == Qt::Checked)
+    {
         Bci_block.discosc |= tmpint;
+        if (cb != 0)
+            cb->setVisible(true);
+    }
     else
+    {
         Bci_block.discosc &= ~tmpint;
+        if (cb != 0)
+            cb->setVisible(false);
+    }
 }
 
 void a_confdialog::SetChOscSrc(int srctyp, s_tqComboBox *ptr)
@@ -710,116 +728,6 @@ void a_confdialog::SetDefConf()
 {
     memcpy(&Bci_block, &Bci_defblock, sizeof(Bci));
     FillConfData();
-    /*    QSpinBox *spb;
-    s_tqspinbox *dspbls;
-    s_tqComboBox *ChTypCB;
-    s_tqCheckBox *chb;
-    int i;
-    Bci_block.MType = 3;
-    Bci_block.MType1 = 0x810001;
-    spb = this->findChild<QSpinBox *>("oscdlyspb");
-    if (spb == 0)
-        return;
-    spb->setValue(0);
-    Bci_block.oscdly = 0;
-    dspbls = this->findChild<s_tqspinbox *>("abs104spb");
-    if (dspbls == 0)
-        return;
-    dspbls->setValue(205);
-    Bci_block.Abs_104 = 205;
-    dspbls = this->findChild<s_tqspinbox *>("cycle104spb");
-    if (dspbls == 0)
-        return;
-    dspbls->setValue(5);
-    Bci_block.Cycle_104 = 5;
-    dspbls = this->findChild<s_tqspinbox *>("t1104spb");
-    if (dspbls == 0)
-        return;
-    dspbls->setValue(15);
-    Bci_block.T1_104 = 15;
-    dspbls = this->findChild<s_tqspinbox *>("t2104spb");
-    if (dspbls == 0)
-        return;
-    dspbls->setValue(10);
-    Bci_block.T2_104 = 10;
-    dspbls = this->findChild<s_tqspinbox *>("t3104spb");
-    if (dspbls == 0)
-        return;
-    dspbls->setValue(20);
-    Bci_block.T3_104 = 20;
-    dspbls = this->findChild<s_tqspinbox *>("k104spb");
-    if (dspbls == 0)
-        return;
-    dspbls->setValue(12);
-    Bci_block.k_104 = 12;
-    dspbls = this->findChild<s_tqspinbox *>("w104spb");
-    if (dspbls == 0)
-        return;
-    dspbls->setValue(8);
-    Bci_block.w_104 = 8;
-    ChTypCB = this->findChild<s_tqComboBox *>("ctypecb");
-    if (ChTypCB == 0)
-        return;
-    ChTypCB->setCurrentIndex(2);
-    Bci_block.Ctype = 2;
-    Bci_block.discosc = 0;
-    Bci_block.oscsrc = 0;
-    for (i = 0; i < 16; i++)
-    {
-        ChTypCB = this->findChild<s_tqComboBox *>("chtypcb"+QString::number(i));
-        if (ChTypCB == 0)
-            return;
-        ChTypCB->setCurrentIndex(1);
-        Bci_block.in_type[i] = 1;
-        chb = this->findChild<s_tqCheckBox *>("chb"+QString::number(i));
-        if (ChTypCB == 0)
-            return;
-        chb->setChecked(false);
-        ChTypCB = this->findChild<s_tqComboBox *>("oscsrccb"+QString::number(i));
-        if (ChTypCB == 0)
-            return;
-        ChTypCB->setCurrentIndex(0);
-        dspbls = this->findChild<s_tqspinbox *>("inminspb"+QString::number(i));
-        if (dspbls == 0)
-            return;
-        dspbls->setValue(4);
-        Bci_block.in_min[i] = 4;
-        dspbls = this->findChild<s_tqspinbox *>("inmaxspb"+QString::number(i));
-        if (dspbls == 0)
-            return;
-        dspbls->setValue(20);
-        Bci_block.in_max[i] = 20;
-        dspbls = this->findChild<s_tqspinbox *>("invminspb"+QString::number(i));
-        if (dspbls == 0)
-            return;
-        dspbls->setValue(0);
-        Bci_block.in_vmin[i] = 0;
-        dspbls = this->findChild<s_tqspinbox *>("invmaxspb"+QString::number(i));
-        if (dspbls == 0)
-            return;
-        dspbls->setValue(1000);
-        Bci_block.in_vmax[i] = 1000;
-        dspbls = this->findChild<s_tqspinbox *>("setminminspb"+QString::number(i));
-        if (dspbls == 0)
-            return;
-        dspbls->setValue(10);
-        Bci_block.setminmin[i] = 10;
-        dspbls = this->findChild<s_tqspinbox *>("setminspb"+QString::number(i));
-        if (dspbls == 0)
-            return;
-        dspbls->setValue(50);
-        Bci_block.setmin[i] = 50;
-        dspbls = this->findChild<s_tqspinbox *>("setmaxspb"+QString::number(i));
-        if (dspbls == 0)
-            return;
-        dspbls->setValue(950);
-        Bci_block.setmax[i] = 950;
-        dspbls = this->findChild<s_tqspinbox *>("setmaxmaxspb"+QString::number(i));
-        if (dspbls == 0)
-            return;
-        dspbls->setValue(990);
-        Bci_block.setmaxmax[i] = 990;
-    } */
 }
 
 void a_confdialog::ShowErrMsg(int ermsg)

@@ -16,63 +16,106 @@
 e_confdialog::e_confdialog(QWidget *parent) :
     QDialog(parent)
 {
-    Config[0] = {EBCI_EQTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.eq_type)/sizeof(quint32), &(Bci_block.eq_type)};
-    Config[1] = {EBCI_NPOINTS, u32_TYPE, sizeof(quint32), sizeof(Bci_block.npoints)/sizeof(quint32), &(Bci_block.npoints)};
-    Config[2] = {EBCI_NFILTR, u32_TYPE, sizeof(quint32), sizeof(Bci_block.nfiltr)/sizeof(quint32), &Bci_block.nfiltr};
-    Config[3] = {EBCI_NHFILTR, u32_TYPE, sizeof(quint32), sizeof(Bci_block.nhfiltr)/sizeof(quint32), &Bci_block.nhfiltr};
-    Config[4] = {EBCI_DDOSC, u32_TYPE, sizeof(quint32), sizeof(Bci_block.ddosc)/sizeof(quint32), &Bci_block.ddosc};
-    Config[5] = {EBCI_UNOM1, float_TYPE, sizeof(float), sizeof(Bci_block.unom1)/sizeof(float), &Bci_block.unom1};
-    Config[6] = {EBCI_UNOM2, float_TYPE, sizeof(float), sizeof(Bci_block.unom2)/sizeof(float), &Bci_block.unom2};
-    Config[7] = {EBCI_INOM1, float_TYPE, sizeof(float), sizeof(Bci_block.inom1)/sizeof(float), &Bci_block.inom1};
-    Config[8] = {EBCI_INOM2, float_TYPE, sizeof(float), sizeof(Bci_block.inom2)/sizeof(float), &Bci_block.inom2};
-    Config[9] = {EBCI_DUOSC, float_TYPE, sizeof(float), sizeof(Bci_block.duosc)/sizeof(float), &Bci_block.duosc};
-    Config[10] = {EBCI_DIOSC, float_TYPE, sizeof(float), sizeof(Bci_block.diosc)/sizeof(float), &Bci_block.diosc};
-    Config[11] = {EBCI_DUIMIN, float_TYPE, sizeof(float), sizeof(Bci_block.duimin)/sizeof(float), &Bci_block.duimin};
-    Config[12] = {EBCI_CTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Ctype)/sizeof(quint32), &Bci_block.Ctype};
-    Config[13] = {EBCI_ABS_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Abs_104)/sizeof(quint32), &Bci_block.Abs_104};
-    Config[14] = {EBCI_CYCLE_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Cycle_104)/sizeof(quint32), &Bci_block.Cycle_104};
-    Config[15] = {EBCI_T1_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T1_104)/sizeof(quint32), &Bci_block.T1_104};
-    Config[16] = {EBCI_T2_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T2_104)/sizeof(quint32), &Bci_block.T2_104};
-    Config[17] = {EBCI_T3_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T3_104)/sizeof(quint32), &Bci_block.T3_104};
-    Config[18] = {EBCI_K_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.k_104)/sizeof(quint32), &Bci_block.k_104};
-    Config[19] = {EBCI_W_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.w_104)/sizeof(quint32), &Bci_block.w_104};
-    Config[20] = {0xFFFF, 0, 0, 0, NULL};
+    Config[0] = {EBCI_MTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.MType)/sizeof(quint32), &(Bci_block.MType)};
+    Config[1] = {EBCI_MTYPE1, u32_TYPE, sizeof(quint32), sizeof(Bci_block.MType1)/sizeof(quint32), &(Bci_block.MType1)};
+    Config[2] = {EBCI_EQTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.eq_type)/sizeof(quint32), &(Bci_block.eq_type)};
+    Config[3] = {EBCI_NPOINTS, u32_TYPE, sizeof(quint32), sizeof(Bci_block.npoints)/sizeof(quint32), &(Bci_block.npoints)};
+    Config[4] = {EBCI_NFILTR, u32_TYPE, sizeof(quint32), sizeof(Bci_block.nfiltr)/sizeof(quint32), &Bci_block.nfiltr};
+    Config[5] = {EBCI_NHFILTR, u32_TYPE, sizeof(quint32), sizeof(Bci_block.nhfiltr)/sizeof(quint32), &Bci_block.nhfiltr};
+    Config[6] = {EBCI_DDOSC, u32_TYPE, sizeof(quint32), sizeof(Bci_block.ddosc)/sizeof(quint32), &Bci_block.ddosc};
+    Config[7] = {EBCI_UNOM1, float_TYPE, sizeof(float), sizeof(Bci_block.unom1)/sizeof(float), &Bci_block.unom1};
+    Config[8] = {EBCI_UNOM2, float_TYPE, sizeof(float), sizeof(Bci_block.unom2)/sizeof(float), &Bci_block.unom2};
+    Config[9] = {EBCI_INOM1, float_TYPE, sizeof(float), sizeof(Bci_block.inom1)/sizeof(float), &Bci_block.inom1};
+    Config[10] = {EBCI_INOM2, float_TYPE, sizeof(float), sizeof(Bci_block.inom2)/sizeof(float), &Bci_block.inom2};
+    Config[11] = {EBCI_DUOSC, float_TYPE, sizeof(float), sizeof(Bci_block.duosc)/sizeof(float), &Bci_block.duosc};
+    Config[12] = {EBCI_DIOSC, float_TYPE, sizeof(float), sizeof(Bci_block.diosc)/sizeof(float), &Bci_block.diosc};
+    Config[13] = {EBCI_DUIMIN, float_TYPE, sizeof(float), sizeof(Bci_block.duimin)/sizeof(float), &Bci_block.duimin};
+    Config[14] = {EBCI_CTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Ctype)/sizeof(quint32), &Bci_block.Ctype};
+    Config[15] = {EBCI_ABS_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Abs_104)/sizeof(quint32), &Bci_block.Abs_104};
+    Config[16] = {EBCI_CYCLE_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Cycle_104)/sizeof(quint32), &Bci_block.Cycle_104};
+    Config[17] = {EBCI_T1_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T1_104)/sizeof(quint32), &Bci_block.T1_104};
+    Config[18] = {EBCI_T2_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T2_104)/sizeof(quint32), &Bci_block.T2_104};
+    Config[19] = {EBCI_T3_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T3_104)/sizeof(quint32), &Bci_block.T3_104};
+    Config[20] = {EBCI_K_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.k_104)/sizeof(quint32), &Bci_block.k_104};
+    Config[21] = {EBCI_W_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.w_104)/sizeof(quint32), &Bci_block.w_104};
+    Config[22] = {0xFFFF, 0, 0, 0, NULL};
+
+    Bci_defblock.MType = 4;
+    Bci_defblock.MType1 = 0x000001;
+    Bci_defblock.Abs_104 = 205;
+    Bci_defblock.Ctype = 1;
+    Bci_defblock.Cycle_104 = 5;
+    Bci_defblock.T1_104 = 15;
+    Bci_defblock.T2_104 = 10;
+    Bci_defblock.T3_104 = 20;
+    Bci_defblock.k_104 = 12;
+    Bci_defblock.w_104 = 8;
+    Bci_defblock.eq_type = 1;
+    Bci_defblock.npoints = 128;
+    Bci_defblock.nfiltr = 100;
+    Bci_defblock.nhfiltr = 3;
+    Bci_defblock.ddosc = 1;
+    Bci_defblock.unom1 = 500;
+    Bci_defblock.unom2 = 220;
+    Bci_defblock.duosc = 2.0;
+    Bci_defblock.diosc = 2.0;
+    Bci_defblock.duimin = 0.5;
+    for (int i = 0; i < 3; i++)
+    {
+        Bci_defblock.inom1[i] = 600;
+        Bci_defblock.inom1[i+3] = 1000;
+        Bci_defblock.inom2[i] = Bci_defblock.inom2[i+3] = 5;
+    }
+
     setAttribute(Qt::WA_DeleteOnClose);
     cn = new canal;
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
     lyout->addWidget(ConfTW);
+    QWidget *wdgt = new QWidget;
+    QGridLayout *wdgtlyout = new QGridLayout;
     QPushButton *pb1 = new QPushButton("Прочитать конфигурацию из модуля");
     connect(pb1,SIGNAL(clicked()),this,SLOT(GetBci()));
+    wdgtlyout->addWidget(pb1, 0, 0, 1, 1);
     QPushButton *pb = new QPushButton("Записать конфигурацию в модуль");
     pb->setObjectName("WriteConfPB");
 //    pb->setEnabled(false);
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteConfDataToModule()));
-    lyout->addWidget(pb1);
-    lyout->addWidget(pb);
+    wdgtlyout->addWidget(pb, 1, 0, 1, 1);
+    pb = new QPushButton("Задать конфигурацию по умолчанию");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SetDefConf()));
+    wdgtlyout->addWidget(pb, 0, 1, 1, 1);
     pb = new QPushButton("Перейти на новую конфигурацию");
     connect(pb,SIGNAL(clicked()),this,SLOT(SetNewConf()));
-    lyout->addWidget(pb);
+    wdgtlyout->addWidget(pb, 1, 1, 1, 1);
+    wdgt->setLayout(wdgtlyout);
+    lyout->addWidget(wdgt);
     setLayout(lyout);
     SetupUI();
+    SetDefConf();
 }
 
 void e_confdialog::GetBci()
 {
-    connect(cn,SIGNAL(DataReady()),this,SLOT(FillConfData()));
+    connect(cn,SIGNAL(DataReady()),this,SLOT(CheckConfAndFill()));
     cn->Send(CN_GF,NULL,0,1,Config);
 }
 
-void e_confdialog::FillConfData()
+void e_confdialog::CheckConfAndFill()
 {
-    int i;
-    disconnect(cn, SIGNAL(DataReady()),this,SLOT(FillConfData()));
+    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckConfAndFill()));
     if (cn->result)
     {
         ShowErrMsg(cn->result);
         return;
     }
+    FillConfData();
+}
+
+void e_confdialog::FillConfData()
+{
+    int i;
     QSpinBox *spb;
     s_tqspinbox *dspbls;
     s_tqComboBox *cb;
@@ -104,7 +147,7 @@ void e_confdialog::FillConfData()
         cb->setCurrentIndex(Bci_block.Ctype);
     cb = this->findChild<s_tqComboBox *>("eq_typecb");
     if (cb != 0)
-        cb->setCurrentText(QString::number(Bci_block.eq_type));
+        cb->setCurrentIndex(Bci_block.eq_type);
     chb = this->findChild<s_tqCheckBox *>("osc1chb");
     if (chb != 0)
     {
@@ -167,8 +210,10 @@ void e_confdialog::FillConfData()
             if (dspbls != 0)
                 dspbls->setValue(Bci_block.inom1[i]);
             cb = this->findChild<s_tqComboBox *>("inom2"+QString::number(i));
+            QString tmps = cb->currentText();
             if (cb != 0)
                 cb->setCurrentText(QString::number(Bci_block.inom2[i]));
+            tmps = cb->currentText();
         }
         dspbls = this->findChild<s_tqspinbox *>("duosc");
         if (dspbls != 0)
@@ -247,7 +292,6 @@ void e_confdialog::SetupUI()
     dspbls->setDecimals(0);
     dspbls->setMinimum(0);
     dspbls->setMaximum(65535);
-    dspbls->setValue(205);
     dspbls->setAData(0);
     connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
     gb3lyout->addWidget(dspbls, 0, 1, 1, 1, Qt::AlignLeft);
@@ -259,7 +303,6 @@ void e_confdialog::SetupUI()
     dspbls->setDecimals(0);
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
-    dspbls->setValue(5);
     dspbls->setAData(1);
     connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
     gb3lyout->addWidget(dspbls, 1, 1, 1, 1, Qt::AlignLeft);
@@ -273,7 +316,6 @@ void e_confdialog::SetupUI()
     dspbls->setDecimals(0);
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
-    dspbls->setValue(15);
     dspbls->setAData(2);
     connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
     gb3lyout->addWidget(dspbls, 2, 1, 1, 1, Qt::AlignLeft);
@@ -287,7 +329,6 @@ void e_confdialog::SetupUI()
     dspbls->setDecimals(0);
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
-    dspbls->setValue(10);
     dspbls->setAData(3);
     connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
     gb3lyout->addWidget(dspbls, 3, 1, 1, 1, Qt::AlignLeft);
@@ -301,7 +342,6 @@ void e_confdialog::SetupUI()
     dspbls->setDecimals(0);
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
-    dspbls->setValue(20);
     dspbls->setAData(4);
     connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
     gb3lyout->addWidget(dspbls, 4, 1, 1, 1, Qt::AlignLeft);
@@ -315,7 +355,6 @@ void e_confdialog::SetupUI()
     dspbls->setDecimals(0);
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
-    dspbls->setValue(12);
     dspbls->setAData(5);
     connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
     gb3lyout->addWidget(dspbls, 5, 1, 1, 1, Qt::AlignLeft);
@@ -329,7 +368,6 @@ void e_confdialog::SetupUI()
     dspbls->setDecimals(0);
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
-    dspbls->setValue(8);
     dspbls->setAData(6);
     connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
     gb3lyout->addWidget(dspbls, 6, 1, 1, 1, Qt::AlignLeft);
@@ -342,7 +380,6 @@ void e_confdialog::SetupUI()
     cblm = new QStringListModel;
     cblm->setStringList(cbl);
     cb->setModel(cblm);
-    cb->setCurrentIndex(2);
     cb->setMinimumWidth(70);
     connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
     gb3lyout->addWidget(cb, 7, 1, 1, 2);
@@ -357,7 +394,6 @@ void e_confdialog::SetupUI()
     cb = new s_tqComboBox;
     cb->setObjectName("eq_typecb");
     cb->setModel(cblm);
-    cb->setCurrentIndex(1);
     cb->setMinimumWidth(70);
     connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetEqType(int)));
     lyout1->addWidget(cb,0,1,1,1);
@@ -378,7 +414,6 @@ void e_confdialog::SetupUI()
         cb->setObjectName("unom1cb");
         cb->setModel(cblm);
         cb->setEditable(true);
-        cb->setCurrentIndex(2);
         cb->setAData(0);
         connect(cb,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetVoltageClass(int,s_tqComboBox*)));
         gb2lyout->addWidget(cb);
@@ -391,7 +426,6 @@ void e_confdialog::SetupUI()
         cb->setObjectName("unom2cb");
         cb->setModel(cblm);
         cb->setEditable(true);
-        cb->setCurrentIndex(4);
         cb->setAData(1);
         connect(cb,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetVoltageClass(int,s_tqComboBox*)));
         gb2lyout->addWidget(cb);
@@ -405,7 +439,6 @@ void e_confdialog::SetupUI()
         dspbls->setSingleStep(0.1);
         dspbls->setMinimum(0.0);
         dspbls->setMaximum(100.0);
-        dspbls->setValue(2.0);
         dspbls->setAData(0);
         connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetThreshold(double,s_tqspinbox*)));
         gb2lyout->addWidget(dspbls);
@@ -419,7 +452,6 @@ void e_confdialog::SetupUI()
         dspbls->setSingleStep(0.1);
         dspbls->setMinimum(0.0);
         dspbls->setMaximum(100.0);
-        dspbls->setValue(2.0);
         dspbls->setAData(2);
         connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetThreshold(double,s_tqspinbox*)));
         gb2lyout->addWidget(dspbls);
@@ -438,7 +470,6 @@ void e_confdialog::SetupUI()
         cb->setObjectName("unom1cb");
         cb->setModel(cblm);
         cb->setEditable(true);
-        cb->setCurrentIndex(2);
         cb->setAData(0);
         connect(cb,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetVoltageClass(int,s_tqComboBox*)));
         gb2lyout->addWidget(cb);
@@ -447,18 +478,17 @@ void e_confdialog::SetupUI()
         lbl=new QLabel("Номинальные первичные токи ТТ 2-й группы, А:");
         gblyout->addWidget(lbl);
         gb2lyout = new QHBoxLayout;
-        for (i = 0; i < 3; i++)
+        for (i = 3; i < 6; i++)
         {
-            lbl=new QLabel(QString::number(i+10, 16).toUpper() + ":"); // A, B, C
+            lbl=new QLabel(QString::number(i+7, 16).toUpper() + ":"); // A, B, C
             gb2lyout->addWidget(lbl, Qt::AlignRight);
             dspbls = new s_tqspinbox;
-            dspbls->setObjectName("inom1"+QString::number(3+i));
+            dspbls->setObjectName("inom1"+QString::number(i));
             dspbls->setSingleStep(1);
             dspbls->setMinimum(1);
             dspbls->setMaximum(50000);
-            dspbls->setValue(1000);
             dspbls->setDecimals(0);
-            dspbls->setAData(i+3);
+            dspbls->setAData(i);
             connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetCurrent(double,s_tqspinbox*)));
             gb2lyout->addWidget(dspbls);
         }
@@ -467,19 +497,18 @@ void e_confdialog::SetupUI()
         lbl=new QLabel("Номинальные вторичные токи ТТ 2-й группы, А:");
         gblyout->addWidget(lbl);
         gb2lyout = new QHBoxLayout;
-        cbl = QStringList() << "1 А" << "5 А";
+        cbl = QStringList() << "1" << "5";
         cblm = new QStringListModel;
         cblm->setStringList(cbl);
-        for (i = 0; i < 3; i++)
+        for (i = 3; i < 6; i++)
         {
-            lbl=new QLabel(QString::number(i+10, 16).toUpper() + ":"); // A, B, C
+            lbl=new QLabel(QString::number(i+7, 16).toUpper() + ":"); // A, B, C
             gb2lyout->setAlignment(lbl, Qt::AlignRight);
             gb2lyout->addWidget(lbl);
             cb = new s_tqComboBox;
-            cb->setObjectName("inom2"+QString::number(3+i));
+            cb->setObjectName("inom2"+QString::number(i));
             cb->setModel(cblm);
-            cb->setCurrentIndex(1);
-            cb->setAData(3+i);
+            cb->setAData(i);
             connect(cb,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetSecCurrent(int,s_tqComboBox*)));
             gb2lyout->addWidget(cb);
         }
@@ -493,7 +522,6 @@ void e_confdialog::SetupUI()
         dspbls->setSingleStep(0.1);
         dspbls->setMinimum(0.0);
         dspbls->setMaximum(100.0);
-        dspbls->setValue(2.0);
         dspbls->setAData(0);
         connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetThreshold(double,s_tqspinbox*)));
         gb2lyout->addWidget(dspbls);
@@ -507,7 +535,6 @@ void e_confdialog::SetupUI()
         dspbls->setSingleStep(0.1);
         dspbls->setMinimum(0.0);
         dspbls->setMaximum(100.0);
-        dspbls->setValue(2.0);
         dspbls->setAData(1);
         connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetThreshold(double,s_tqspinbox*)));
         gb2lyout->addWidget(dspbls);
@@ -521,7 +548,6 @@ void e_confdialog::SetupUI()
         dspbls->setSingleStep(0.1);
         dspbls->setMinimum(0.0);
         dspbls->setMaximum(100.0);
-        dspbls->setValue(2.0);
         dspbls->setAData(2);
         connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetThreshold(double,s_tqspinbox*)));
         gb2lyout->addWidget(dspbls);
@@ -542,7 +568,6 @@ void e_confdialog::SetupUI()
             dspbls->setSingleStep(1);
             dspbls->setMinimum(1);
             dspbls->setMaximum(50000);
-            dspbls->setValue(600);
             dspbls->setDecimals(0);
             dspbls->setAData(i);
             connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetCurrent(double,s_tqspinbox*)));
@@ -553,7 +578,7 @@ void e_confdialog::SetupUI()
         lbl=new QLabel("Номинальные вторичные токи ТТ 1-й группы, А:");
         gblyout->addWidget(lbl);
         gb2lyout = new QHBoxLayout;
-        cbl = QStringList() << "1 А" << "5 А";
+        cbl = QStringList() << "1" << "5";
         cblm = new QStringListModel;
         cblm->setStringList(cbl);
         for (i = 0; i < 3; i++)
@@ -563,7 +588,6 @@ void e_confdialog::SetupUI()
             cb = new s_tqComboBox;
             cb->setObjectName("inom2"+QString::number(i));
             cb->setModel(cblm);
-            cb->setCurrentIndex(1);
             cb->setAData(i);
             connect(cb,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetSecCurrent(int,s_tqComboBox*)));
             gb2lyout->addWidget(cb);
@@ -573,18 +597,17 @@ void e_confdialog::SetupUI()
         lbl=new QLabel("Номинальные первичные токи ТТ 2-й группы, А:");
         gblyout->addWidget(lbl);
         gb2lyout = new QHBoxLayout;
-        for (i = 0; i < 3; i++)
+        for (i = 3; i < 6; i++)
         {
-            lbl=new QLabel(QString::number(i+10, 16).toUpper() + ":"); // A, B, C
+            lbl=new QLabel(QString::number(i+7, 16).toUpper() + ":"); // A, B, C
             gb2lyout->addWidget(lbl);
             dspbls = new s_tqspinbox;
-            dspbls->setObjectName("inom1"+QString::number(3+i));
+            dspbls->setObjectName("inom1"+QString::number(i));
             dspbls->setSingleStep(1);
             dspbls->setMinimum(1);
             dspbls->setMaximum(50000);
-            dspbls->setValue(1000);
             dspbls->setDecimals(0);
-            dspbls->setAData(i+3);
+            dspbls->setAData(i);
             connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetCurrent(double,s_tqspinbox*)));
             gb2lyout->addWidget(dspbls);
         }
@@ -593,18 +616,17 @@ void e_confdialog::SetupUI()
         lbl=new QLabel("Номинальные вторичные токи ТТ 2-й группы, А:");
         gblyout->addWidget(lbl);
         gb2lyout = new QHBoxLayout;
-        cbl = QStringList() << "1 А" << "5 А";
+        cbl = QStringList() << "1" << "5";
         cblm = new QStringListModel;
         cblm->setStringList(cbl);
-        for (i = 0; i < 3; i++)
+        for (i = 3; i < 6; i++)
         {
-            lbl=new QLabel(QString::number(i+10, 16).toUpper() + ":"); // A, B, C
+            lbl=new QLabel(QString::number(i+7, 16).toUpper() + ":"); // A, B, C
             gb2lyout->addWidget(lbl);
             cb = new s_tqComboBox;
-            cb->setObjectName("inom2"+QString::number(3+i));
+            cb->setObjectName("inom2"+QString::number(i));
             cb->setModel(cblm);
-            cb->setCurrentIndex(1);
-            cb->setAData(3+i);
+            cb->setAData(i);
             connect(cb,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetSecCurrent(int,s_tqComboBox*)));
             gb2lyout->addWidget(cb);
         }
@@ -618,7 +640,6 @@ void e_confdialog::SetupUI()
         dspbls->setSingleStep(0.1);
         dspbls->setMinimum(0.0);
         dspbls->setMaximum(100.0);
-        dspbls->setValue(2.0);
         dspbls->setAData(1);
         connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetThreshold(double,s_tqspinbox*)));
         gb2lyout->addWidget(dspbls);
@@ -632,7 +653,6 @@ void e_confdialog::SetupUI()
         dspbls->setSingleStep(0.1);
         dspbls->setMinimum(0.0);
         dspbls->setMaximum(100.0);
-        dspbls->setValue(2.0);
         dspbls->setAData(2);
         connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetThreshold(double,s_tqspinbox*)));
         gb2lyout->addWidget(dspbls);
@@ -654,21 +674,18 @@ void e_confdialog::SetupUI()
     chb->setObjectName("osc1chb");
     chb->setText("по команде Ц");
     chb->setAData(0);
-    chb->setChecked(true);
     connect(chb,SIGNAL(statechanged(int,s_tqCheckBox*)),this,SLOT(SetOsc(int,s_tqCheckBox*)));
     gb2lyout->addWidget(chb);
     chb = new s_tqCheckBox;
     chb->setObjectName("osc2chb");
     chb->setText("по дискр. входу PD1");
     chb->setAData(1);
-    chb->setChecked(true);
     connect(chb,SIGNAL(statechanged(int,s_tqCheckBox*)),this,SLOT(SetOsc(int,s_tqCheckBox*)));
     gb2lyout->addWidget(chb);
     chb = new s_tqCheckBox;
     chb->setObjectName("osc3chb");
     chb->setText("по резкому изменению");
     chb->setAData(2);
-    chb->setChecked(true);
     connect(chb,SIGNAL(statechanged(int,s_tqCheckBox*)),this,SLOT(SetOsc(int,s_tqCheckBox*)));
     gb2lyout->addWidget(chb);
     gblyout->addLayout(gb2lyout);
@@ -685,7 +702,6 @@ void e_confdialog::SetupUI()
     cb = new s_tqComboBox;
     cb->setObjectName("npointscb");
     cb->setModel(cblm);
-    cb->setCurrentIndex(2);
     connect(cb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetNPoints(QString)));
     gb3lyout->addWidget(cb,0,1,1,1);
     lbl = new QLabel("Постоянная времени фильтрации:");
@@ -694,7 +710,6 @@ void e_confdialog::SetupUI()
     spb->setObjectName("nfiltrspb");
     spb->setMinimum(1);
     spb->setMaximum(1000);
-    spb->setValue(100);
     connect(spb,SIGNAL(valueChanged(int)),this,SLOT(SetNFiltr(int)));
     gb3lyout->addWidget(spb,1,1,1,1);
     lbl = new QLabel("Постоянная времени гармоник:");
@@ -703,7 +718,6 @@ void e_confdialog::SetupUI()
     spb->setObjectName("nhfiltrspb");
     spb->setMinimum(1);
     spb->setMaximum(10);
-    spb->setValue(3);
     connect(spb,SIGNAL(valueChanged(int)),this,SLOT(SetNHFiltr(int)));
     gb3lyout->addWidget(spb,2,1,1,1);
     gb->setLayout(gb3lyout);
@@ -868,4 +882,10 @@ void e_confdialog::UpdateBsi()
 void e_confdialog::ShowErrMsg(int ermsg)
 {
     QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
+}
+
+void e_confdialog::SetDefConf()
+{
+    memcpy(&Bci_block, &Bci_defblock, sizeof(Bci));
+    FillConfData();
 }

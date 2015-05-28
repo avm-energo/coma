@@ -41,7 +41,7 @@ private:
     bool LongBlock;
 
     void SetRDLength(int startpos);
-    void SetWR(QByteArray *, int startpos);
+    void SetWR(QByteArray *, quint32 startpos);
     bool RDCheckForNextSegment();
     void WRCheckForNextSegment();
     void NoErrorDetected();
