@@ -16,6 +16,7 @@ public:
 
 signals:
     void DataReady();
+    void timeout();
 
 public slots:
     void GetSomeData(QByteArray ba);
@@ -23,6 +24,7 @@ public slots:
 
 private slots:
     void DataWritten(QByteArray);
+    void StartReconnect();
 
 private:
     unsigned char *outdata;
@@ -31,6 +33,7 @@ private:
     int bStep;
     int cmd;
     int fnum;
+    quint8 ReconTry;
     quint32 RDLength; // длина всей посылки
     quint32 DLength; // длина данных
     quint32 WRLength; // длина всей посылки

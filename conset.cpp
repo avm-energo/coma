@@ -19,10 +19,12 @@
 #include <QDialog>
 #include "conset.h"
 #include "config.h"
+#include "reconnectdialog.h"
 
 ConSet::ConSet(QWidget *parent)
     : QMainWindow(parent)
 {
+    ReconTry = 0;
     InitiateHth();
     setWindowTitle("КАВТУК");
     setMinimumSize(QSize(800, 600));
@@ -268,7 +270,32 @@ void ConSet::Next()
     thread->start();
     emit portopened();
     WriteSNAction->setEnabled(true);
+
     GetBsi();
+}
+
+
+void ConSet::Reconnect()
+{
+    QSerialPortInfo info = pc.SThread->portinfo;
+    Disconnect();
+    if (cn != 0)
+        delete cn;
+    if (pc.SThread != 0)
+        delete pc.SThread;
+    if (thread != 0)
+        delete thread;
+    thread = new QThread;
+    pc.SThread = new SerialThread();
+    cn = new canal;
+    pc.SThread->portinfo = info;
+    Next();
+}
+
+void ConSet::Timeout()
+{
+    ShowErrMsg(CN_TIMEOUTERROR);
+    Disconnect();
 }
 
 void ConSet::SetPort(QString str)
@@ -308,6 +335,7 @@ void ConSet::CheckBsi()
         ShowErrMsg(cn->result);
         return;
     }
+    emit connectok();
     pc.MType = Bsi_block.MType;
     pc.MType1 = Bsi_block.MType1;
     pc.CpuIdHigh = Bsi_block.CpuIdHigh;

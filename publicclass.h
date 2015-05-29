@@ -83,6 +83,9 @@
 #define HTH_REL             0x00000008 // неисправность выходных реле (Д)
 #define HTH_TUPP            0x00000004 // перегрев модуля
 
+#define CS_MSGTRIG          500 // частота мигания сообщения о попытке восстановить связь с модулем
+#define CS_TIMEOUT          5000 // количество мс ожидания появления связи с модулем
+
 #include <QtSerialPort/QSerialPort>
 #include <QStringList>
 #include "serialthread.h"

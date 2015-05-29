@@ -61,6 +61,7 @@ void SerialThread::run()
 
 void SerialThread::CheckForData()
 {
+    TimeoutTimer->stop();
     QByteArray ba = port->read(1000);
     emit newdataarrived(ba);
 }

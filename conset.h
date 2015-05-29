@@ -33,10 +33,10 @@ signals:
     void updateconfproper(bool);
     void updatetuneproper(bool);
     void mipparset();
+    void connectok();
 
 private:
     QString Hth[32];
-    canal *cn;
     QThread *thread;
     a_checkdialog *ACheckDialog;
     a_confdialog *AConfDialog;
@@ -48,7 +48,8 @@ private:
     downloaddialog *DownDialog;
     bool DialogsAreReadyAlready;
     QAction *WriteSNAction;
-
+    quint8 ReconTry;
+    canal *cn;
     publicclass::Bsi Bsi_block;
     void InitiateWriteDataToPort(QByteArray ba);
     QString ByteToHex(quint8);
@@ -64,6 +65,9 @@ private slots:
     void Exit();
     void Connect();
     void Disconnect();
+    void Reconnect();
+    void StartReconnect();
+    void Timeout();
     void Next();
     void GetAbout();
     void ShowErrMsg(int);

@@ -41,31 +41,6 @@ a_confdialog::a_confdialog(QWidget *parent) :
     Config[21] = {ABCI_W_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.w_104)/sizeof(quint32), &Bci_block.w_104};
     Config[22] = {0xFFFF, 0, 0, 0, NULL};
 
-/*    Bci_defblock = \
-    {
-        3,
-        0x810001,
-        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-        4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
-        20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,
-        10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-        50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,
-        950,950,950,950,950,950,950,950,950,950,950,950,950,950,950,950,
-        990,990,990,990,990,990,990,990,990,990,990,990,990,990,990,990,
-        0,
-        0,
-        0,
-        2,
-        205,
-        5,
-        15,
-        10,
-        20,
-        12,
-        8
-    }; */
     Bci_defblock.MType = 3;
     Bci_defblock.MType1 = 0x810001;
     Bci_defblock.Abs_104 = 205;
@@ -196,12 +171,20 @@ void a_confdialog::FillConfData()
         ChTypCB = this->findChild<s_tqComboBox *>("oscsrccb"+QString::number(i));
         if (ChTypCB == 0)
             return;
+        QLabel *lbl = this->findChild<QLabel *>("oscsrcl"+QString::number(i));
+        if (lbl == 0)
+            return;
         ChTypCB->setCurrentIndex(Bci_block.oscsrc&(static_cast<quint32>(0x00000003) << i));
         if (chb->isChecked())
+        {
             ChTypCB->setVisible(true);
+            lbl->setVisible(true);
+        }
         else
+        {
             ChTypCB->setVisible(false);
-
+            lbl->setVisible(false);
+        }
         dspbls = this->findChild<s_tqspinbox *>("inminspb"+QString::number(i));
         if (dspbls == 0)
             return;
@@ -310,6 +293,7 @@ void a_confdialog::SetupUI()
         for (i = 0; i < 16; i++)
         {
             QLabel *ChTypL = new QLabel(QString::number(i)+":");
+            ChTypL->setObjectName("oscsrcl"+QString::number(i));
             s_tqComboBox *ChTypCB = new s_tqComboBox;
             ChTypCB->setObjectName("oscsrccb"+QString::number(i));
             ChTypCB->setModel(ChTypSlM);
@@ -586,17 +570,22 @@ void a_confdialog::SetChOsc(int isChecked, s_tqCheckBox *ptr)
     quint16 tmpint = 0x0001;
     tmpint = tmpint << ptr->getAData().toInt();
     s_tqComboBox *cb = this->findChild<s_tqComboBox *>("oscsrccb"+QString::number(ptr->getAData().toInt()));
+    QLabel *lbl = this->findChild<QLabel *>("oscsrcl"+QString::number(ptr->getAData().toInt()));
     if (isChecked == Qt::Checked)
     {
         Bci_block.discosc |= tmpint;
         if (cb != 0)
             cb->setVisible(true);
+        if (lbl != 0)
+            lbl->setVisible(true);
     }
     else
     {
         Bci_block.discosc &= ~tmpint;
         if (cb != 0)
             cb->setVisible(false);
+        if (lbl != 0)
+            lbl->setVisible(false);
     }
 }
 

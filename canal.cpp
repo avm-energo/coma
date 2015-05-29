@@ -1,11 +1,13 @@
 #include "canal.h"
 #include "config.h"
+#include "reconnectdialog.h"
 
 canal::canal(QObject *parent) : QObject(parent)
 {
     ReadData = new QByteArray;
     SegEnd = 0;
     SegLeft = 0;
+    ReconTry = 0;
 }
 
 canal::~canal()
@@ -373,7 +375,9 @@ void canal::SendErr()
 
 void canal::Timeout()
 {
-    Finish(CN_TIMEOUTERROR);
+    ReconTry++;
+    StartReconnect();
+    emit timeout();
 }
 
 void canal::Finish(int ernum)
@@ -394,4 +398,26 @@ void canal::NoErrorDetected()
     pc.SThread->InitiateWriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
     disconnect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
     emit DataReady();
+}
+
+void canal::StartReconnect()
+{
+    if (!ReconTry) // первый вызов
+    {
+        ReconnectDialog *rcdlg = new ReconnectDialog;
+        QThread *thr = new QThread;
+        rcdlg->moveToThread(thr);
+        connect(this,SIGNAL(DataReady()),rcdlg,SLOT(stop()));
+        connect(this,SIGNAL(timeout()),rcdlg,SLOT(IncrementTry()));
+        connect(thr, SIGNAL(started()), rcdlg, SLOT(run()));
+        connect(rcdlg,SIGNAL(finished()),thr,SLOT(quit()));
+        connect(thr,SIGNAL(finished()),rcdlg,SLOT(deleteLater()));
+        thr->start();
+    }
+    if (ReconTry == 4)
+    {
+        ReconTry = 0;
+        emit DataReady();
+        Finish(CN_TIMEOUTERROR);
+    }
 }

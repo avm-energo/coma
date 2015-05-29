@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     E/e_confdialog.cpp \
     E/e_tunedialog.cpp \
     iec104/iec104.cpp \
-    iec104/ethernet.cpp
+    iec104/ethernet.cpp \
+    reconnectdialog.cpp
 
 HEADERS  += conset.h \
     fwupdialog.h \
@@ -52,7 +53,8 @@ HEADERS  += conset.h \
     E/e_confdialog.h \
     E/e_tunedialog.h \
     iec104/iec104.h \
-    iec104/ethernet.h
+    iec104/ethernet.h \
+    reconnectdialog.h
 
 RESOURCES += \
     res.qrc
