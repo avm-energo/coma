@@ -1,6 +1,9 @@
 #include "canal.h"
 #include "config.h"
 #include "reconnectdialog.h"
+#include "serialthread.h"
+
+canal *cn;
 
 canal::canal(QObject *parent) : QObject(parent)
 {
@@ -8,11 +11,15 @@ canal::canal(QObject *parent) : QObject(parent)
     SegEnd = 0;
     SegLeft = 0;
     ReconTry = 0;
+    t_t = false;
+    nda_gsd = false;
 }
 
 canal::~canal()
 {
-
+    thread->quit();
+    thread->wait();
+    delete thread;
 }
 
 void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publicclass::DataRec *DRptr)
@@ -106,6 +113,7 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
     bStep = 0;
     RDLength = 0;
     connect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
+    nda_gsd = true;
     pc.SThread->InitiateWriteDataToPort(tmpba);
     connect(pc.SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(DataWritten(QByteArray)));
 }
@@ -115,6 +123,7 @@ void canal::DataWritten(QByteArray data)
     Q_UNUSED(data);
     disconnect(pc.SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(DataWritten(QByteArray)));
     connect(pc.SThread,SIGNAL(timeout()),this,SLOT(Timeout()));
+    t_t = true;
 }
 
 void canal::GetSomeData(QByteArray ba)
@@ -244,6 +253,7 @@ void canal::GetSomeData(QByteArray ba)
                 break;
             }
             ReadData->remove(0, 5); // убираем заголовок с <, номером файла и длиной
+            RDSize -= 5;
             res = pc.RestoreDataMem(ReadData->data(), RDSize, DR);
             if (!res)
             {
@@ -383,9 +393,22 @@ void canal::Timeout()
 void canal::Finish(int ernum)
 {
     result = ernum;
-    disconnect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
-    disconnect(pc.SThread,SIGNAL(timeout()),this,SLOT(Timeout()));
+    if (nda_gsd)
+    {
+        disconnect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
+        nda_gsd = false;
+    }
+    if (t_t)
+    {
+        disconnect(pc.SThread,SIGNAL(timeout()),this,SLOT(Timeout()));
+        t_t = false;
+    }
     emit DataReady();
+}
+
+void canal::CanalReady()
+{
+    Finish(CN_OK);
 }
 
 void canal::NoErrorDetected()
@@ -397,12 +420,63 @@ void canal::NoErrorDetected()
     tmpba->data()[2] = ~CN_ResOk;
     pc.SThread->InitiateWriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
     disconnect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
+    nda_gsd = false;
     emit DataReady();
+}
+
+void canal::Connect()
+{
+    thread = new QThread;
+    pc.SThread = new SerialThread;
+    pc.SThread->portinfo = info;
+    QString tmps = info.portName();
+    pc.SThread->baud = baud;
+    pc.SThread->moveToThread(thread);
+    connect(thread, SIGNAL(started()), pc.SThread, SLOT(run()));
+    connect(this,SIGNAL(stopall()),pc.SThread,SLOT(stop()));
+    connect(pc.SThread,SIGNAL(error(int)),this,SLOT(SetErNum(int)));
+    connect(pc.SThread,SIGNAL(canalisready()),this,SLOT(CanalReady()));
+//    connect(pc.SThread,SIGNAL(finished()),this,SLOT(KillSThread()));
+    connect(pc.SThread,SIGNAL(finished()),thread,SLOT(quit()));
+    connect(thread,SIGNAL(finished()),pc.SThread,SLOT(deleteLater()));
+    thread->start();
+    emit portopened();
+}
+
+void canal::SetErNum(int ernum)
+{
+    this->ernum = ernum;
+}
+
+void canal::CanalError(int ernum)
+{
+    disconnect(pc.SThread,SIGNAL(error(int)),0,0);
+    Q_UNUSED(ernum);
+    ReconTry++;
+    StartReconnect();
+    emit timeout();
+/*
+    Disconnect();
+//    Finish(ernum);
+    thread->quit();
+    thread->wait();
+    if (thread != 0)
+        delete thread; */
+}
+
+void canal::KillSThread()
+{
+//    delete pc.SThread;
+}
+
+void canal::Disconnect()
+{
+    emit stopall();
 }
 
 void canal::StartReconnect()
 {
-    if (!ReconTry) // первый вызов
+    if (ReconTry == 1) // первый вызов
     {
         ReconnectDialog *rcdlg = new ReconnectDialog;
         QThread *thr = new QThread;
@@ -412,12 +486,25 @@ void canal::StartReconnect()
         connect(thr, SIGNAL(started()), rcdlg, SLOT(run()));
         connect(rcdlg,SIGNAL(finished()),thr,SLOT(quit()));
         connect(thr,SIGNAL(finished()),rcdlg,SLOT(deleteLater()));
+        connect(rcdlg,SIGNAL(nextturn()),this,SLOT(Reconnect()));
         thr->start();
     }
     if (ReconTry == 4)
     {
-        ReconTry = 0;
-        emit DataReady();
+        emit error(ernum);
         Finish(CN_TIMEOUTERROR);
+        ReconTry = 0;
     }
+}
+
+void canal::Reconnect()
+{
+    info = pc.SThread->portinfo;
+    emit stopall();
+    thread->quit();
+    thread->wait();
+    if (thread != 0)
+        delete thread;
+    Connect();
+    Send(cmd, outdata, outdatasize, fnum, DR);
 }

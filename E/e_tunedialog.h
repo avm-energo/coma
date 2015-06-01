@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QCloseEvent>
 #include <QByteArray>
-#include "canal.h"
+//#include "canal.h"
 
 #define TUNEFILELENGTH  256
 class e_tunedialog : public QDialog
@@ -20,7 +20,7 @@ signals:
 public slots:
 
 private:
-    canal *cn;
+//    canal *cn;
 
     struct Bda
     {

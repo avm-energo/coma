@@ -12,6 +12,7 @@
 
 #include "a_confdialog.h"
 #include "../config.h"
+#include "../canal.h"
 
 a_confdialog::a_confdialog(QWidget *parent) :
     QDialog(parent)
@@ -68,7 +69,7 @@ a_confdialog::a_confdialog(QWidget *parent) :
     }
 
     setAttribute(Qt::WA_DeleteOnClose);
-    cn = new canal;
+//    cn = new canal;
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
@@ -174,7 +175,9 @@ void a_confdialog::FillConfData()
         QLabel *lbl = this->findChild<QLabel *>("oscsrcl"+QString::number(i));
         if (lbl == 0)
             return;
-        ChTypCB->setCurrentIndex(Bci_block.oscsrc&(static_cast<quint32>(0x00000003) << i));
+//        quint32 tmpi = static_cast<quint32>(0x00000003) << i;
+        quint8 tmpi = i << 1;
+        ChTypCB->setCurrentIndex((Bci_block.oscsrc&(static_cast<quint32>(0x00000003) << tmpi)) >> tmpi);
         if (chb->isChecked())
         {
             ChTypCB->setVisible(true);
@@ -284,7 +287,7 @@ void a_confdialog::SetupUI()
             gb3lyout->addWidget(chb,1,i,1,1,Qt::AlignCenter);
         }
         gblyout->addLayout(gb3lyout);
-        ChTypSl = QStringList() << "Ком. Ц" << "U>" << "DI" << "Любой";
+        ChTypSl = QStringList() << "Ком. Ц" << "Ц+U>" << "Ц+DI" << "Любой";
         ChTypSlM = new QStringListModel;
         ChTypSlM->setStringList(ChTypSl);
         lbl = new QLabel("События-инициаторы запуска осциллограмм:");
@@ -591,8 +594,9 @@ void a_confdialog::SetChOsc(int isChecked, s_tqCheckBox *ptr)
 
 void a_confdialog::SetChOscSrc(int srctyp, s_tqComboBox *ptr)
 {
-    quint32 tmpint = srctyp << ptr->getAData().toInt();
-    quint32 tmpmask = ~(0x00000011 << ptr->getAData().toInt());
+    quint8 tmpi = ptr->getAData().toInt() << 1;
+    quint32 tmpint = srctyp << tmpi;
+    quint32 tmpmask = ~(0x00000003 << tmpi);
     Bci_block.oscsrc &= tmpmask;
     Bci_block.oscsrc |= tmpint;
 }

@@ -27,7 +27,7 @@ public:
     ~ConSet();
 
 signals:
-    void portopened();
+//    void portopened();
     void receivecompleted();
     void stopall();
     void updateconfproper(bool);
@@ -37,7 +37,7 @@ signals:
 
 private:
     QString Hth[32];
-    QThread *thread;
+//    QThread *thread;
     a_checkdialog *ACheckDialog;
     a_confdialog *AConfDialog;
     a_tunedialog *ATuneDialog;
@@ -49,7 +49,7 @@ private:
     bool DialogsAreReadyAlready;
     QAction *WriteSNAction;
     quint8 ReconTry;
-    canal *cn;
+//    canal *cn;
     publicclass::Bsi Bsi_block;
     void InitiateWriteDataToPort(QByteArray ba);
     QString ByteToHex(quint8);
@@ -65,21 +65,19 @@ private slots:
     void Exit();
     void Connect();
     void Disconnect();
-    void Reconnect();
-    void StartReconnect();
     void Timeout();
     void Next();
     void GetAbout();
     void ShowErrMsg(int);
     void CheckBsi();
     void UpdateMainTE(QByteArray);
-    void KillSThread();
     void SetPort(QString str);
     void SetBaud(QString str);
     void WriteSN();
     void CheckSN();
     void SetMipConPar();
     void SetMipDlg();
+    void ConnectSThread();
 
 protected:
     void closeEvent(QCloseEvent *e);

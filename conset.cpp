@@ -29,8 +29,9 @@ ConSet::ConSet(QWidget *parent)
     setWindowTitle("КАВТУК");
     setMinimumSize(QSize(800, 600));
     DialogsAreReadyAlready = false;
-    thread = new QThread;
+//    thread = new QThread;
     cn = new canal;
+    connect(cn,SIGNAL(portopened()),this,SLOT(ConnectSThread()));
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     setMinimumHeight(650);
@@ -171,9 +172,9 @@ ConSet::ConSet(QWidget *parent)
 
 ConSet::~ConSet()
 {
-    thread->quit();
-    thread->wait();
-    delete thread;
+//    thread->quit();
+//    thread->wait();
+//    delete thread;
 }
 
 void ConSet::InitiateHth()
@@ -189,7 +190,7 @@ void ConSet::InitiateHth()
     Hth[8] = "LS";
     Hth[9] = "FNC";
     for (int i = 10; i < 32; i++)
-        Hth[i] = "NC";
+        Hth[i] = "";
 }
 
 void ConSet::closeEvent(QCloseEvent *e)
@@ -202,7 +203,6 @@ void ConSet::Connect()
 {
 // !!!   /*
     int i;
-    pc.SThread = new SerialThread();
     QDialog *dlg = new QDialog(this);
     dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -242,7 +242,7 @@ void ConSet::Connect()
     connect(nextL,SIGNAL(clicked()),this,SLOT(Next()));
     lyout->addWidget(nextL);
     dlg->setLayout(lyout);
-    connect(this,SIGNAL(portopened()),dlg,SLOT(close()));
+    connect(cn,SIGNAL(portopened()),dlg,SLOT(close()));
     dlg->exec();
 // !!!    */
 //    Bsi_block.MType = pc.MType = MT_E; // !!!
@@ -255,41 +255,19 @@ void ConSet::Connect()
 
 void ConSet::Next()
 {
-    pc.SThread->moveToThread(thread);
-    connect(thread, SIGNAL(started()), pc.SThread, SLOT(run()));
-    connect(this,SIGNAL(stopall()),pc.SThread,SLOT(stop()));
-    connect(pc.SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-    connect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-    connect(pc.SThread,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
-    connect(pc.SThread,SIGNAL(finished()),this,SLOT(KillSThread()));
-    connect(pc.SThread,SIGNAL(finished()),thread,SLOT(quit()));
-    connect(thread,SIGNAL(finished()),pc.SThread,SLOT(deleteLater()));
+    cn->Connect();
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
         MainTE->show();
-    thread->start();
-    emit portopened();
     WriteSNAction->setEnabled(true);
-
-    GetBsi();
+    connect(cn,SIGNAL(DataReady()),this,SLOT(GetBsi()));
 }
 
-
-void ConSet::Reconnect()
+void ConSet::ConnectSThread()
 {
-    QSerialPortInfo info = pc.SThread->portinfo;
-    Disconnect();
-    if (cn != 0)
-        delete cn;
-    if (pc.SThread != 0)
-        delete pc.SThread;
-    if (thread != 0)
-        delete thread;
-    thread = new QThread;
-    pc.SThread = new SerialThread();
-    cn = new canal;
-    pc.SThread->portinfo = info;
-    Next();
+    connect(pc.SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+    connect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+    connect(cn,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
 }
 
 void ConSet::Timeout()
@@ -305,7 +283,7 @@ void ConSet::SetPort(QString str)
     {
         if (info.at(i).portName() == str)
         {
-            pc.SThread->portinfo = info.at(i);
+            cn->info = info.at(i);
             return;
         }
     }
@@ -313,7 +291,7 @@ void ConSet::SetPort(QString str)
 
 void ConSet::SetBaud(QString str)
 {
-    pc.SThread->baud = str.toInt();
+    cn->baud = str.toInt();
 }
 
 void ConSet::ShowErrMsg(int ermsg)
@@ -323,6 +301,12 @@ void ConSet::ShowErrMsg(int ermsg)
 
 void ConSet::GetBsi()
 {
+    disconnect(cn,SIGNAL(DataReady()),this,SLOT(GetBsi()));
+    if (cn->result != CN_OK)
+    {
+        ShowErrMsg(cn->result);
+        return;
+    }
     connect(cn,SIGNAL(DataReady()),this,SLOT(CheckBsi()));
     cn->Send(CN_GBsi, &Bsi_block, sizeof(publicclass::Bsi));
 }
@@ -345,6 +329,7 @@ void ConSet::CheckBsi()
     qint32 tmpi = 0x0000000F;
     bool WrongSN = false;
 
+    // серийный модуль проверяется просто - если есть хоть одна не цифра, то серийник некорректный
     for (int i = 0; i < 8; i++)
     {
         qint32 tmpi2 = (Bsi_block.SerNum & tmpi) >> (i*4);
@@ -485,7 +470,7 @@ void ConSet::FillBsi(QString MType, bool clear)
 
 void ConSet::AllIsOk()
 {
-/*
+// /* !!!
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(AllIsOk()));
     if (cn->result)
     {
@@ -575,7 +560,8 @@ QString ConSet::ByteToHex(quint8 hb)
 
 void ConSet::Disconnect()
 {
-    emit stopall();
+//    emit stopall();
+    cn->Disconnect();
     FillBsi("",true);
     DialogsAreReadyAlready = false;
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
@@ -595,11 +581,6 @@ void ConSet::Disconnect()
     }
     WriteSNAction->setEnabled(false);
     MainTW->hide();
-}
-
-void ConSet::KillSThread()
-{
-    delete pc.SThread;
 }
 
 void ConSet::GetAbout()

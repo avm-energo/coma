@@ -8,16 +8,17 @@
 #include <QFileDialog>
 #include <QThread>
 #include "e_tunedialog.h"
-#include "config.h"
-#include "publicclass.h"
+#include "../config.h"
+#include "../publicclass.h"
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
+#include "../canal.h"
 
 e_tunedialog::e_tunedialog(QWidget *parent) :
     QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    cn = new canal;
+//    cn = new canal;
     SetupUI();
 }
 

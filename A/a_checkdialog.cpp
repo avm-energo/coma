@@ -9,8 +9,9 @@
 #include <QLineEdit>
 #include <QSpinBox>
 #include "a_checkdialog.h"
-#include "config.h"
-#include "publicclass.h"
+#include "../config.h"
+#include "../publicclass.h"
+#include "../canal.h"
 
 a_checkdialog::a_checkdialog(QWidget *parent) :
     QDialog(parent)
@@ -23,7 +24,7 @@ a_checkdialog::a_checkdialog(QWidget *parent) :
     connect(timer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));
     timer->start();
     setAttribute(Qt::WA_DeleteOnClose);
-    cn = new canal;
+//    cn = new canal;
     for (int i = 0; i < 16; i++)
     {
         Bda_block.sin[i] = 0;

@@ -28,7 +28,12 @@
 #define string_TYPE	11 //строка, ограниченная нулём
 #define binary_TYPE	12 //любые двоичные данные
 
-// Канал связи с модулем: определение ошибок
+// Канал связи с модулем
+
+#define CN_TIMEOUT  2000 // таймаут по USB в мс
+
+// определение ошибок
+
 #define CN_OK               0 // ошибок нет
 #define CN_PORTOPENERROR    1 // ошибка открытия порта
 #define CN_NOPORTSERROR     2 // нет портов в системе
@@ -73,6 +78,23 @@
 #define SKT_SSLINVDATAER    46 // некорректные данные SSL
 #define SKT_TEMPER          47 // повторите операцию позже
 #define SKT_SENDDATAER      48 // ошибка при отправке данных
+
+// ошибки USB (COM) порта
+#define COM_DEVNOTFOUNDER   51 // устройство не найдено
+#define COM_PERMER          52 // устройство занято другим процессом или недостаточно прав
+#define COM_OPENER          53 // устройство уже открыто
+#define COM_PARITYER        54 // ошибка чётности
+#define COM_FRAMER          55 // ошибка фрейма
+#define COM_BREAKER         56 // передача прервана
+#define COM_WRITEER         57 // ошибка записи
+#define COM_READER          58 // ошибка чтения
+#define COM_RESER           59 // устройство внезапно пропало
+#define COM_UNSUPER         60 // операция не поддерживается Вашей ОС
+#define COM_UNKER           61 // неизвестная ошибка
+#define COM_TIMEOUTER       62 // произошло превышение времени ожидания
+#define COM_NOTOPENER       63 // операция не может быть выполнена, порт закрыт
+
+
 
 #define HTH_FNC             0x00000200 // частота не в допуске (Э)
 #define HTH_LS              0x00000100 // сигналы малы (Э)

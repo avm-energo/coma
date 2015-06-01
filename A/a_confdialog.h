@@ -7,7 +7,7 @@
 #include "../widgets/s_tqcheckbox.h"
 #include "../widgets/s_tqspinbox.h"
 #include "../publicclass.h"
-#include "../canal.h"
+//#include "../canal.h"
 
 // Описание блока Bci
 #define ABCI_MTYPE       1
@@ -69,7 +69,7 @@ private:
         quint32 w_104;          // макс. кол-во сообщений, после которых необх. выдать подтверждение
     } Bci;
 
-    canal *cn;
+//    canal *cn;
     QByteArray confba;
     Bci Bci_block, Bci_defblock;
 /*    static Bci Bci_defblock = {

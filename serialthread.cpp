@@ -17,14 +17,14 @@ SerialThread::SerialThread(QObject *parent) :
 void SerialThread::run()
 {
     TimeoutTimer = new QTimer;
-    TimeoutTimer->setInterval(10000);
+    TimeoutTimer->setInterval(CN_TIMEOUT);
     connect(TimeoutTimer, SIGNAL(timeout()),this,SLOT(Timeout()));
     port = new QSerialPort;
     port->setPort(portinfo);
+    connect(port,SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(Error(QSerialPort::SerialPortError)));
     if (!port->open(QIODevice::ReadWrite))
     {
         emit finished();
-        emit error(1);
         return;
     }
     port->setBaudRate(baud);
@@ -33,7 +33,7 @@ void SerialThread::run()
     port->setFlowControl(QSerialPort::NoFlowControl);
     port->setStopBits(QSerialPort::OneStop);
     connect(port,SIGNAL(readyRead()),this,SLOT(CheckForData()));
-//    connect(this,SIGNAL(finished()),port,SLOT(deleteLater()));
+    emit canalisready();
     while (1)
     {
         OutDataBufMtx.lock();
@@ -92,4 +92,12 @@ void SerialThread::Timeout()
 void SerialThread::stop()
 {
     ClosePortAndFinishThread = true;
+}
+
+void SerialThread::Error(QSerialPort::SerialPortError err)
+{
+    if (!err) // нет ошибок
+        return;
+    quint16 ernum = err + 50;
+    emit error(ernum);
 }

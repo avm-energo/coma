@@ -7,15 +7,16 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include "a_tunedialog.h"
-#include "config.h"
-#include "publicclass.h"
+#include "../config.h"
+#include "../publicclass.h"
+#include "../canal.h"
 
 a_tunedialog::a_tunedialog(QWidget *parent) :
     QDialog(parent)
 {
     NoProperCoefs = false;
     setAttribute(Qt::WA_DeleteOnClose);
-    cn = new canal;
+//    cn = new canal;
     for (int i = 0; i < 16; i++)
     {
         Bda0.sin[i] = 0;

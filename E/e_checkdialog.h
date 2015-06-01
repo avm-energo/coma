@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QTimer>
-#include "canal.h"
+//#include "canal.h"
 
 class e_checkdialog : public QDialog
 {
@@ -16,7 +16,7 @@ signals:
 public slots:
 
 private:
-    canal *cn;
+//    canal *cn;
     struct Bd
     {
         float ain[16];

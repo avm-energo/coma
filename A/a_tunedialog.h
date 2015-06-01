@@ -2,7 +2,7 @@
 #define A_TUNEDIALOG_H
 
 #include <QDialog>
-#include "canal.h"
+//#include "canal.h"
 
 #define TUNEFILELENGTH  256
 class a_tunedialog : public QDialog
@@ -19,7 +19,7 @@ public slots:
     void UpdateProper(bool);
 
 private:
-    canal *cn;
+//    canal *cn;
 
     struct Bda
     {

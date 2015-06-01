@@ -28,6 +28,7 @@ private:
     QMutex OutDataBufMtx, ReadDataMtx;
 
 signals:
+    void canalisready();
     void newdataarrived(QByteArray);
     void datawritten(QByteArray);
     void timeout();
@@ -43,6 +44,7 @@ public slots:
 private slots:
     void CheckForData();
     void Timeout();
+    void Error(QSerialPort::SerialPortError);
 };
 
 #endif // SERIALTHREAD_H

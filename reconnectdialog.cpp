@@ -20,10 +20,12 @@ void ReconnectDialog::run()
     lyout->addWidget(lbl);
     dlg->setLayout(lyout);
     dlg->setVisible(true);
-    ReconTry = 0;
+    ReconTry = 1;
     do
     {
-        lbl->setText(lbl->text().chop(1)+QString::number(ReconTry));
+        QString tmps = lbl->text();
+        tmps.chop(1);
+        lbl->setText(tmps+QString::number(ReconTry));
         quint32 ThrNumOfMs = CS_MSGTRIG;
         QTime tmr;
         tmr.start();
@@ -38,6 +40,7 @@ void ReconnectDialog::run()
             }
             QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
         } while (CurTimeElapsed < CS_TIMEOUT);
+        emit nextturn();
     } while ((!DialogIsAboutToClose));
     emit finished();
     if (!DialogIsAboutToClose)

@@ -12,6 +12,7 @@
 
 #include "e_confdialog.h"
 #include "../config.h"
+#include "../canal.h"
 
 e_confdialog::e_confdialog(QWidget *parent) :
     QDialog(parent)
@@ -68,7 +69,7 @@ e_confdialog::e_confdialog(QWidget *parent) :
     }
 
     setAttribute(Qt::WA_DeleteOnClose);
-    cn = new canal;
+//    cn = new canal;
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
