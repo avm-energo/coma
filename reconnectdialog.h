@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include <QTime>
+
 class ReconnectDialog : public QWidget
 {
     Q_OBJECT
@@ -14,6 +16,7 @@ signals:
     void finished();
     void nextturn();
     void timeout();
+    void changetextlbl(QString);
 
 public slots:
     void run();
@@ -25,6 +28,8 @@ public:
 private:
     bool DialogIsAboutToClose;
     int ReconTry;
+    QTime tmr;
+    QString lbltext;
 };
 
 #endif // RECONNECTDIALOG_H

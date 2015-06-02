@@ -2,6 +2,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QCoreApplication>
+#include <QSplashScreen>
 
 #include "reconnectdialog.h"
 #include "publicclass.h"
@@ -10,12 +11,15 @@ ReconnectDialog::ReconnectDialog(QWidget *parent) :
     QWidget(parent)
 {
     DialogIsAboutToClose = false;
+    ReconTry = 0;
 }
 
 void ReconnectDialog::run()
 {
+    lbltext = "Потеряна связь с модулем!\nПопытка восстановления № 0";
     QWidget *dlg = new QWidget;
-    QLabel *lbl = new QLabel("Потеряна связь с модулем!\nПопытка восстановления № 0");
+    QLabel *lbl = new QLabel(lbltext);
+    connect(this,SIGNAL(changetextlbl(QString)),lbl,SLOT(setText(QString)));
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(lbl);
     dlg->setLayout(lyout);
@@ -23,11 +27,7 @@ void ReconnectDialog::run()
     ReconTry = 1;
     do
     {
-        QString tmps = lbl->text();
-        tmps.chop(1);
-        lbl->setText(tmps+QString::number(ReconTry));
         quint32 ThrNumOfMs = CS_MSGTRIG;
-        QTime tmr;
         tmr.start();
         quint32 CurTimeElapsed;
         do
@@ -39,9 +39,16 @@ void ReconnectDialog::run()
                 lbl->setVisible(!(lbl->isVisible()));
             }
             QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+            if (DialogIsAboutToClose)
+            {
+                dlg->close();
+                delete dlg;
+                emit finished();
+                return;
+            }
         } while (CurTimeElapsed < CS_TIMEOUT);
         emit nextturn();
-    } while ((!DialogIsAboutToClose));
+    } while (1);
     emit finished();
     if (!DialogIsAboutToClose)
         emit timeout(); // если выход по превышению попыток установления соединения
@@ -57,4 +64,8 @@ void ReconnectDialog::stop()
 void ReconnectDialog::IncrementTry()
 {
     ReconTry++;
+    tmr.restart();
+    QString tmps = lbltext;
+    tmps.chop(1);
+    emit changetextlbl(tmps+QString::number(ReconTry));
 }

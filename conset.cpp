@@ -255,6 +255,7 @@ void ConSet::Connect()
 
 void ConSet::Next()
 {
+    cn->FirstRun = true;
     cn->Connect();
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
@@ -268,12 +269,6 @@ void ConSet::ConnectSThread()
     connect(pc.SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(cn,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
-}
-
-void ConSet::Timeout()
-{
-    ShowErrMsg(CN_TIMEOUTERROR);
-    Disconnect();
 }
 
 void ConSet::SetPort(QString str)
@@ -314,12 +309,11 @@ void ConSet::GetBsi()
 void ConSet::CheckBsi()
 {
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckBsi()));
-    if (cn->result)
+    if (cn->result != CN_OK)
     {
         ShowErrMsg(cn->result);
         return;
     }
-    emit connectok();
     pc.MType = Bsi_block.MType;
     pc.MType1 = Bsi_block.MType1;
     pc.CpuIdHigh = Bsi_block.CpuIdHigh;
@@ -472,7 +466,7 @@ void ConSet::AllIsOk()
 {
 // /* !!!
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(AllIsOk()));
-    if (cn->result)
+    if (cn->result != CN_OK)
     {
         ShowErrMsg(cn->result);
         return;
@@ -491,16 +485,6 @@ void ConSet::AllIsOk()
         FwUpDialog = new fwupdialog;
         connect(this,SIGNAL(updateconfproper(bool)),AConfDialog,SLOT(UpdateProper(bool)));
         connect(this,SIGNAL(updatetuneproper(bool)),ATuneDialog,SLOT(UpdateProper(bool)));
-        if (Bsi_block.Hth & 0x00000080) // нет конфигурации
-        {
-//            ShowErrMsg(ER_NOCONF);
-            emit updateconfproper(true);
-        }
-        if (Bsi_block.Hth & 0x00000040) // нет коэффициентов
-        {
-//            ShowErrMsg(ER_NOTUNECOEF);
-            emit updatetuneproper(true);
-        }
         MainTW->addTab(AConfDialog, "Конфигурирование");
         MainTW->addTab(ATuneDialog, "Настройка");
         MainTW->addTab(ACheckDialog, "Проверка");
@@ -527,6 +511,10 @@ void ConSet::AllIsOk()
     default:
         break;
     }
+    if (Bsi_block.Hth & HTH_CONFIG) // нет конфигурации
+        emit updateconfproper(true);
+    if (Bsi_block.Hth & HTH_REGPARS) // нет коэффициентов
+        emit updatetuneproper(true);
     MainTW->repaint();
     MainTW->show();
 }
@@ -560,7 +548,6 @@ QString ConSet::ByteToHex(quint8 hb)
 
 void ConSet::Disconnect()
 {
-//    emit stopall();
     cn->Disconnect();
     FillBsi("",true);
     DialogsAreReadyAlready = false;
@@ -608,7 +595,7 @@ void ConSet::WriteSN()
 void ConSet::CheckSN()
 {
     disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckSN()));
-    if (cn->result)
+    if (cn->result != CN_OK)
         ShowErrMsg(cn->result);
     GetBsi();
 }
@@ -682,10 +669,6 @@ void ConSet::SetMipDlg()
 
 void ConSet::SetMipConPar()
 {
-//    QPushButton *pb = this->findChild<QPushButton *>("dlgpb");
-//    if (pb == 0)
-//        return;
-//    disconnect(pb,SIGNAL(clicked()),this,SLOT(SetMipConPar()));
     pc.MIPIP.clear();
     for (int i = 1; i < 5; i++)
     {
@@ -703,8 +686,4 @@ void ConSet::SetMipConPar()
     sets->setValue("mip/asdu",pc.MIPASDU);
     sets->setValue("mip/ip",pc.MIPIP);
     emit mipparset();
-/*    QDialog *dlg = this->findChild<QDialog *>("setmipdlg");
-    if (dlg == 0)
-        return;
-    dlg->close(); */
 }

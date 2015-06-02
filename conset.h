@@ -27,13 +27,11 @@ public:
     ~ConSet();
 
 signals:
-//    void portopened();
     void receivecompleted();
     void stopall();
     void updateconfproper(bool);
     void updatetuneproper(bool);
     void mipparset();
-    void connectok();
 
 private:
     QString Hth[32];
@@ -65,7 +63,6 @@ private slots:
     void Exit();
     void Connect();
     void Disconnect();
-    void Timeout();
     void Next();
     void GetAbout();
     void ShowErrMsg(int);

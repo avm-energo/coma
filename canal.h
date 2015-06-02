@@ -18,6 +18,7 @@ public:
     QSerialPortInfo info;
     int baud;
     int ernum;
+    bool FirstRun;
 
     void Connect();
     void Disconnect();
@@ -36,6 +37,7 @@ private slots:
     void DataWritten(QByteArray);
     void StartReconnect();
     void Reconnect();
+    void TryOnceMore();
     void CanalReady();
     void CanalError(int);
     void KillSThread();
