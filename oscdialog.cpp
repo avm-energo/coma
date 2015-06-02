@@ -24,7 +24,7 @@ void oscdialog::SetupUI()
     lyout->addWidget(pb);
     lyout->addWidget(tv);
     lyout->addStretch(90);
-    OscInfo = new QByteArray
+    OscInfo = new QByteArray;
 }
 
 void oscdialog::GetOscInfo()

@@ -19,7 +19,6 @@
 #include <QDialog>
 #include "conset.h"
 #include "config.h"
-#include "reconnectdialog.h"
 
 ConSet::ConSet(QWidget *parent)
     : QMainWindow(parent)

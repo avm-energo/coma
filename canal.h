@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QByteArray>
 #include <QThread>
+#include <QTimer>
 
 #include "publicclass.h"
 
@@ -25,7 +26,6 @@ public:
 signals:
     void stopall();
     void DataReady();
-    void timeout();
     void portopened();
     void error(int);
 
@@ -36,6 +36,7 @@ public slots:
 private slots:
     void DataWritten(QByteArray);
     void StartReconnect();
+    void ToggleReconLabel();
     void Reconnect();
     void TryOnceMore();
     void CanalReady();
@@ -47,6 +48,7 @@ private:
     unsigned char *outdata;
     QByteArray *ReadData;
     QByteArray *WriteData;
+    QTimer *tmr, *tmr2;
     QThread *thread;
     int bStep;
     int cmd;

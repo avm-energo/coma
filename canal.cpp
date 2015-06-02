@@ -1,7 +1,10 @@
 #include "canal.h"
 #include "config.h"
-#include "reconnectdialog.h"
 #include "serialthread.h"
+
+#include <QDialog>
+#include <QLabel>
+#include <QVBoxLayout>
 
 canal *cn;
 
@@ -14,13 +17,18 @@ canal::canal(QObject *parent) : QObject(parent)
     t_t = false;
     nda_gsd = false;
     FirstRun = true;
+    tmr = new QTimer;
+    tmr->setInterval(CS_MSGTRIG);
+    tmr2 = new QTimer;
+    tmr2->setInterval(CS_TIMEOUT);
+    connect(tmr,SIGNAL(timeout()),this,SLOT(ToggleReconLabel()));
+    connect(tmr2,SIGNAL(timeout()),this,SLOT(Reconnect()));
 }
 
 canal::~canal()
 {
     thread->quit();
     thread->wait();
-    delete thread;
 }
 
 void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publicclass::DataRec *DRptr)
@@ -401,7 +409,6 @@ void canal::Timeout()
     if (nda_gsd)
     {
         ReconTry++;
-        emit timeout();
         StartReconnect();
     }
 }
@@ -450,12 +457,13 @@ void canal::Connect()
     pc.SThread->baud = baud;
     pc.SThread->moveToThread(thread);
     connect(thread, SIGNAL(started()), pc.SThread, SLOT(run()));
-    connect(this,SIGNAL(stopall()),pc.SThread,SLOT(stop()));
+    connect(thread,SIGNAL(finished()),pc.SThread,SLOT(deleteLater()));
+//    connect(this,SIGNAL(stopall()),pc.SThread,SLOT(stop()));
     connect(pc.SThread,SIGNAL(error(int)),this,SLOT(SetErNum(int)));
     connect(pc.SThread,SIGNAL(error(int)),this,SLOT(CanalError(int)));
     connect(pc.SThread,SIGNAL(canalisready()),this,SLOT(CanalReady()));
-    connect(pc.SThread,SIGNAL(finished()),this,SLOT(KillSThread()));
-    connect(pc.SThread,SIGNAL(finished()),thread,SLOT(quit()));
+//    connect(pc.SThread,SIGNAL(finished()),this,SLOT(KillSThread()));
+//    connect(pc.SThread,SIGNAL(finished()),thread,SLOT(quit()));
 //    connect(thread,SIGNAL(finished()),pc.SThread,SLOT(deleteLater()));
     thread->start();
 }
@@ -472,16 +480,8 @@ void canal::CanalError(int ernum)
     else
     {
         ReconTry++;
-        emit timeout();
         StartReconnect();
     }
-/*
-    Disconnect();
-//    Finish(ernum);
-    thread->quit();
-    thread->wait();
-    if (thread != 0)
-        delete thread; */
 }
 
 void canal::KillSThread()
@@ -497,40 +497,34 @@ void canal::Disconnect()
 void canal::StartReconnect()
 {
     nda_gsd = t_t = false;
-    if (ReconTry == 1) // первый вызов
-    {
-        ReconnectDialog *rcdlg = new ReconnectDialog;
-        QThread *thr = new QThread;
-        rcdlg->moveToThread(thr);
-        connect(this,SIGNAL(DataReady()),rcdlg,SLOT(stop()));
-        connect(this,SIGNAL(timeout()),rcdlg,SLOT(IncrementTry()));
-        connect(thr, SIGNAL(started()), rcdlg, SLOT(run()));
-        connect(rcdlg,SIGNAL(finished()),thr,SLOT(quit()));
-        connect(thr,SIGNAL(finished()),rcdlg,SLOT(deleteLater()));
-        connect(rcdlg,SIGNAL(nextturn()),this,SLOT(Reconnect()));
-        thr->start();
-    }
-    if (ReconTry == 4)
-    {
-        emit error(ernum);
-        Finish(CN_TIMEOUTERROR);
-        ReconTry = 0;
-        emit DataReady();
-    }
+    QDialog *dlg = new QDialog;
+    dlg->setModal(true);
+    QLabel *lbl = new QLabel("Потеряна связь с модулем!\nПопытка восстановления № 0");
+    lbl->setObjectName("tryreconlbl");
+    QVBoxLayout *lyout = new QVBoxLayout;
+    lyout->addWidget(lbl);
+    dlg->setLayout(lyout);
+    dlg->setVisible(true);
+    tmr->start();
+    tmr2->start();
 }
 
 void canal::Reconnect()
 {
     try
     {
-        if (ReconTry)
+        if (ReconTry == 4)
         {
-            Disconnect();
+            tmr->stop();
+            tmr2->stop();
+            emit error(ernum);
+            Finish(CN_TIMEOUTERROR);
+            ReconTry = 0;
+        }
+        else
+        {
             thread->quit();
             thread->wait();
-//            delete pc.SThread;
-            if (thread != 0)
-                delete thread;
             Connect();
             connect(pc.SThread,SIGNAL(canalisready()),this,SLOT(TryOnceMore()));
         }
@@ -538,6 +532,14 @@ void canal::Reconnect()
     catch(int)
     {
     }
+}
+
+void canal::ToggleReconLabel()
+{
+    QLabel *lbl = this->findChild<QLabel *>("tryreconlbl");
+    if (lbl == 0)
+        return;
+    lbl->setVisible(!(lbl->isVisible()));
 }
 
 void canal::TryOnceMore()

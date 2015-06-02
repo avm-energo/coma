@@ -42,7 +42,6 @@ public:
     void fillModel(QList<QStringList> sl);
     QStringList cvalues(int column); // выдать значения по столбцу column в выходной QStringList
     QStringList rvalues(int row); // выдать значения по строке row в выходной QStringList
-    QString value(int row, int column); // взять значение по строке row и столбцу column
 
 signals:
 

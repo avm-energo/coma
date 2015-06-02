@@ -33,7 +33,6 @@ SOURCES += main.cpp\
     E/e_tunedialog.cpp \
     iec104/iec104.cpp \
     iec104/ethernet.cpp \
-    reconnectdialog.cpp \
     widgets/s_tqtableview.cpp \
     oscdialog.cpp \
     widgets/s_tablemodel.cpp \
@@ -58,7 +57,6 @@ HEADERS  += conset.h \
     E/e_tunedialog.h \
     iec104/iec104.h \
     iec104/ethernet.h \
-    reconnectdialog.h \
     widgets/s_tqtableview.h \
     oscdialog.h \
     widgets/s_tableitem.h \

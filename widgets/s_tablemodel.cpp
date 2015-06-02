@@ -226,7 +226,7 @@ QStringList s_tablemodel::cvalues(int column)
     result = 0;
     QStringList tmpsl;
     for (int row=0; row < rowCount(); row++)
-        tmpsl.append(value(row,column));
+        tmpsl.append(data(index(row,column,QModelIndex()),Qt::DisplayRole).toString());
     return tmpsl;
 }
 
@@ -239,7 +239,7 @@ QStringList s_tablemodel::rvalues(int row)
     result = 0;
     QStringList tmpsl;
     for (int column = 0; column<columnCount(); column++)
-        tmpsl.append(value(row,column));
+        tmpsl.append(data(index(row,column,QModelIndex()),Qt::DisplayRole).toString());
     return tmpsl;
 }
 

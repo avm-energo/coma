@@ -1,7 +1,7 @@
 #ifndef OSCDIALOG_H
 #define OSCDIALOG_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QByteArray>
 
 class oscdialog : public QDialog
@@ -18,7 +18,7 @@ private:
 
 private slots:
     void GetOscInfo();
-    void ProcessOscInfo();
+//    void ProcessOscInfo();
 };
 
 #endif // OSCDIALOG_H
