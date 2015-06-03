@@ -1,5 +1,4 @@
 #include "canal.h"
-#include "config.h"
 #include "serialthread.h"
 
 #include <QDialog>
@@ -37,7 +36,7 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
     outdata = static_cast<unsigned char *>(ptr);
     outdatasize = ptrsize; // размер области данных, в которую производить запись
     cmd = command;
-    fnum = filenum;
+    fnum = static_cast<quint32>(filenum);
     DR = DRptr;
     if (!pc.SThread)
     {
@@ -46,13 +45,13 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
     }
     switch (cmd)
     {
-    case CN_GBsi:
+    case CN_GBsi: // запрос блока стартовой информации
     case CN_Gda:
     case CN_Gac:
-    case CN_GBd:
+    case CN_GBd: // запрос блока текущих данных
     case CN_Cnc: // переход на новую конфигурацию
-    case CN_Gip:
-    case CN_GNosc:
+    case CN_Gip: // запрос ip-адреса модуля
+    case CN_GNosc: // запрос блока информации об осциллограммах
     {
         tmpba = new QByteArray(3,0x00);
         tmpba->data()[0] = CN_Start;
@@ -67,6 +66,16 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
         tmpba->data()[1] = cmd;
         tmpba->data()[2] = ~cmd;
         tmpba->data()[3] = fnum;
+        break;
+    }
+    case CN_GBosc: // запрос осциллограммы
+    {
+        tmpba = new QByteArray(5,0x00);
+        tmpba->data()[0] = CN_Start;
+        tmpba->data()[1] = cmd;
+        tmpba->data()[2] = ~cmd;
+        tmpba->data()[3] = fnum/256;
+        tmpba->data()[4] = fnum-(tmpba->data()[3]*256);
         break;
     }
     case CN_WF: // запись файла
@@ -159,6 +168,7 @@ void canal::GetSomeData(QByteArray ba)
         Finish(CN_RCVDATAERROR);
         return;
     }
+    emit bytesreceived(RDSize); // сигнал для прогрессбара
     switch (bStep)
     {
     case 0: // первая порция
@@ -177,6 +187,8 @@ void canal::GetSomeData(QByteArray ba)
         case CN_Gac:
         case CN_GBd:
         case CN_Gip:
+        case CN_GNosc:
+        case CN_GBosc:
         {
             if (RDSize < 4)
                 return;
@@ -289,6 +301,25 @@ void canal::GetSomeData(QByteArray ba)
             }
             break;
         }
+        case CN_GNosc:
+        case CN_GBosc:
+        {
+            if (!RDCheckForNextSegment())
+                return;
+            if (RDSize < RDLength)
+                return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
+            if (RDSize > (RDLength-4))
+            {
+                SendErr();
+                Finish(CN_RCVLENGTHERROR);
+            }
+            ReadData->remove(0, 4); // убираем заголовок с < и длиной
+            RDSize -= 4;
+            if (LongBlock)
+                SendOk();
+            Finish(CN_OK);
+            break;
+        }
         case CN_WF:
         case CN_Wac:
         case CN_Cnc:
@@ -327,6 +358,7 @@ void canal::SetRDLength(int startpos)
     else
         LongBlock = false;
     RDLength = DLength + startpos + 3;
+    emit incomingdatalength(RDLength); // сигнал для прогрессбара
 }
 
 // false - есть ещё сегменты для приёма

@@ -7,7 +7,6 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include "a_tunedialog.h"
-#include "../config.h"
 #include "../publicclass.h"
 #include "../canal.h"
 

@@ -18,7 +18,6 @@
 #include "mytabwidget.h"
 #include <QDialog>
 #include "conset.h"
-#include "config.h"
 
 ConSet::ConSet(QWidget *parent)
     : QMainWindow(parent)

@@ -9,7 +9,6 @@
 #include <QLineEdit>
 #include <QSpinBox>
 #include "e_checkdialog.h"
-#include "../config.h"
 #include "../publicclass.h"
 #include "../canal.h"
 

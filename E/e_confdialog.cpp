@@ -11,7 +11,6 @@
 #include <QMessageBox>
 
 #include "e_confdialog.h"
-#include "../config.h"
 #include "../canal.h"
 
 e_confdialog::e_confdialog(QWidget *parent) :

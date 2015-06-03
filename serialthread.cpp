@@ -3,7 +3,6 @@
 #include <QTime>
 #include "serialthread.h"
 #include "publicclass.h"
-#include "config.h"
 
 SerialThread::SerialThread(QObject *parent) :
     QObject(parent)

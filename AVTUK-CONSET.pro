@@ -50,7 +50,6 @@ HEADERS  += conset.h \
     widgets/s_tqcheckbox.h \
     widgets/s_tqcombobox.h \
     widgets/s_tqspinbox.h \
-    config.h \
     canal.h \
     E/e_checkdialog.h \
     E/e_confdialog.h \

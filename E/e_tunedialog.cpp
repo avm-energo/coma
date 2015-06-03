@@ -8,7 +8,6 @@
 #include <QFileDialog>
 #include <QThread>
 #include "e_tunedialog.h"
-#include "../config.h"
 #include "../publicclass.h"
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"

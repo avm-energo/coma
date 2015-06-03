@@ -28,6 +28,8 @@ signals:
     void DataReady();
     void portopened();
     void error(int);
+    void incomingdatalength(quint32);
+    void bytesreceived(quint32);
 
 public slots:
     void GetSomeData(QByteArray ba);
@@ -52,7 +54,7 @@ private:
     QThread *thread;
     int bStep;
     int cmd;
-    int fnum;
+    quint32 fnum;
     bool nda_gsd, t_t; // признаки наличия связи сигналов newdataarrived|timeout с соотв. слотами GetSomeData|Timeout
     quint8 ReconTry;
     quint32 RDLength; // длина всей посылки
