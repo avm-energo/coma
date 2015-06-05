@@ -27,5 +27,13 @@ void iec104::Send(APCI apci, ASDU asdu)
     QByteArray ba;
     ba.resize(sizeof(apci)+sizeof(asdu));
     void *tempp = &apci;
-    for (int i = 0; i < sizeof(apci);i++);
+    ba.append(static_cast<char *>(tempp),sizeof(apci));
+    tempp = &asdu;
+    ba.append(static_cast<char *>(tempp),sizeof(asdu));
+
+}
+
+void iec104::ParseIncomeData(QByteArray ba)
+{
+
 }

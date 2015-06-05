@@ -24,18 +24,19 @@ public:
     iec104(QObject *parent = 0);
     ~iec104();
 
-    struct APCI
+    typedef struct
     {
         quint8 start;
         quint8 APDUlength;
         quint8 contrfield[4];
-    };
+    } APCI;
 
     typedef QByteArray ASDU;
 
 public slots:
     void Send(APCI, ASDU=QByteArray());
     void Start();
+    void ParseIncomeData(QByteArray);
 
 signals:
     void EtherSend(QByteArray);
