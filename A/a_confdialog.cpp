@@ -9,7 +9,7 @@
 #include <QVBoxLayout>
 #include <QSpinBox>
 #include <QMessageBox>
-
+#include <QCoreApplication>
 #include "a_confdialog.h"
 #include "../canal.h"
 
@@ -97,19 +97,11 @@ a_confdialog::a_confdialog(QWidget *parent) :
 
 void a_confdialog::GetBci()
 {
-    connect(cn,SIGNAL(DataReady()),this,SLOT(CheckConfAndFill()));
     cn->Send(CN_GF,NULL,0,1,Config);
-}
-
-void a_confdialog::CheckConfAndFill()
-{
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckConfAndFill()));
-    if (cn->result)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
-    FillConfData();
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        FillConfData();
 }
 
 void a_confdialog::FillConfData()
@@ -693,38 +685,25 @@ void a_confdialog::WriteConfDataToModule()
 {
     connect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
     cn->Send(CN_WF, &Bci_block, sizeof(Bci_block), 2, Config);
-}
-
-void a_confdialog::WriteCompleted()
-{
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
-    if (!cn->result)
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
         QMessageBox::information(this,"Успешно!","Операция проведена успешно!");
-    else
-        ShowErrMsg(cn->result);
 }
 
 void a_confdialog::SetNewConf()
 {
-    connect(cn,SIGNAL(DataReady()),this,SLOT(UpdateBsi()));
     cn->Send(CN_Cnc);
-}
-
-void a_confdialog::UpdateBsi()
-{
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(UpdateBsi()));
-    emit BsiIsNeedToBeAcquiredAndChecked();
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        emit BsiIsNeedToBeAcquiredAndChecked();
 }
 
 void a_confdialog::SetDefConf()
 {
     memcpy(&Bci_block, &Bci_defblock, sizeof(Bci));
     FillConfData();
-}
-
-void a_confdialog::ShowErrMsg(int ermsg)
-{
-    QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
 }
 
 void a_confdialog::UpdateProper(bool tmpb)

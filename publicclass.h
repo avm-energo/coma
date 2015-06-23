@@ -54,7 +54,7 @@
 #define CN_Cnc     0x51 // команда перехода на новую конфигурацию
 #define CN_SegOk   0x55 // ответ "сегмент принят в порядке"
 #define CN_ResErr  0x0f // ответ "ошибка"
-
+#define CN_Unk     0xff // неизвестная команда
 // определение ошибок
 
 #define CN_OK               0 // ошибок нет
@@ -117,7 +117,13 @@
 #define COM_TIMEOUTER       62 // произошло превышение времени ожидания
 #define COM_NOTOPENER       63 // операция не может быть выполнена, порт закрыт
 
-
+// ошибки в модулях УСО
+#define USO_UNKER           71 // неизвестная ошибка
+#define USO_TIMEOUTER       72 // таймаут
+#define USO_CRCER           73 // ошибка CRC
+#define USO_FLASHER         74 // ошибка доступа к FLASH-памяти
+#define USO_LENGTHER        75 // ошибка длины
+#define USO_CMDER           76 // ошибка команды
 
 #define HTH_FNC             0x00000200 // частота не в допуске (Э)
 #define HTH_LS              0x00000100 // сигналы малы (Э)

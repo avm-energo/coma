@@ -27,9 +27,7 @@ ConSet::ConSet(QWidget *parent)
     setWindowTitle("КАВТУК");
     setMinimumSize(QSize(800, 600));
     DialogsAreReadyAlready = false;
-//    thread = new QThread;
     cn = new canal;
-    connect(cn,SIGNAL(portopened()),this,SLOT(ConnectSThread()));
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     setMinimumHeight(650);
@@ -161,6 +159,10 @@ ConSet::ConSet(QWidget *parent)
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
 
+    connect(cn,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
+    connect(cn,SIGNAL(gotsomedata(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+    connect(cn,SIGNAL(somedatawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+
     QSettings *sets = new QSettings ("EvelSoft","ConSet");
     pc.MIPASDU = sets->value("mip/asdu","206").toInt();
     pc.MIPIP = sets->value("mip/ip","192.168.1.2").toString();
@@ -170,9 +172,6 @@ ConSet::ConSet(QWidget *parent)
 
 ConSet::~ConSet()
 {
-//    thread->quit();
-//    thread->wait();
-//    delete thread;
 }
 
 void ConSet::InitiateHth()
@@ -253,20 +252,17 @@ void ConSet::Connect()
 
 void ConSet::Next()
 {
-    cn->FirstRun = true;
     cn->Connect();
+    if (cn->result != CN_OK)
+    {
+        ShowErrMsg(cn->result);
+        return;
+    }
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
         MainTE->show();
     WriteSNAction->setEnabled(true);
-    connect(cn,SIGNAL(DataReady()),this,SLOT(GetBsi()));
-}
-
-void ConSet::ConnectSThread()
-{
-    connect(pc.SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-    connect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-    connect(cn,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
+    GetBsi();
 }
 
 void ConSet::SetPort(QString str)
@@ -289,29 +285,23 @@ void ConSet::SetBaud(QString str)
 
 void ConSet::ShowErrMsg(int ermsg)
 {
-    QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
+    if (ermsg < pc.errmsgs.size())
+        QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
+    else
+        QMessageBox::critical(this,"error!","Произошла неведомая фигня");
 }
 
 void ConSet::GetBsi()
 {
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(GetBsi()));
-    if (cn->result != CN_OK)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
-    connect(cn,SIGNAL(DataReady()),this,SLOT(CheckBsi()));
     cn->Send(CN_GBsi, &Bsi_block, sizeof(publicclass::Bsi));
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        CheckBsi();
 }
 
 void ConSet::CheckBsi()
 {
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckBsi()));
-    if (cn->result != CN_OK)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
     pc.MType = Bsi_block.MType;
     pc.MType1 = Bsi_block.MType1;
     pc.CpuIdHigh = Bsi_block.CpuIdHigh;
@@ -387,8 +377,11 @@ void ConSet::CheckBsi()
         DialogsAreReadyAlready = true;
         if (WrongSN)
         {
-            connect(cn,SIGNAL(DataReady()),this,SLOT(AllIsOk()));
             cn->Send(CN_Wsn, &(Bsi_block.SerNum), 4);
+            while (cn->Busy)
+                QCoreApplication::processEvents(QEventLoop::AllEvents);
+            if (cn->result == CN_OK)
+                AllIsOk();
         }
         else
             AllIsOk();
@@ -412,11 +405,11 @@ void ConSet::FillBsi(QString MType, bool clear)
     le = this->findChild<QLineEdit *>("cfcrcle");
     if (le == 0)
         return;
-    le->setText((clear)?"":QString::number(static_cast<uint>(Bsi_block.Cfcrc), 16));
+    le->setText((clear)?"":"0x"+QString::number(static_cast<uint>(Bsi_block.Cfcrc), 16));
     le = this->findChild<QLineEdit *>("rstle");
     if (le == 0)
         return;
-    le->setText((clear)?"":QString::number(Bsi_block.Rst, 16));
+    le->setText((clear)?"":"0x"+QString::number(Bsi_block.Rst, 16));
     // расшифровка Hth
     for (int i = 0; i < 32; i++)
     {
@@ -462,16 +455,12 @@ void ConSet::FillBsi(QString MType, bool clear)
 
 void ConSet::AllIsOk()
 {
-// /* !!!
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(AllIsOk()));
-    if (cn->result != CN_OK)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    } // !!! */
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
+    DownDialog = new downloaddialog;
+    FwUpDialog = new fwupdialog;
+    OscDialog = new oscdialog;
     switch (Bsi_block.MType)
     {
     case MT_A:
@@ -479,14 +468,13 @@ void ConSet::AllIsOk()
         AConfDialog = new a_confdialog;
         ATuneDialog = new a_tunedialog;
         ACheckDialog = new a_checkdialog;
-        DownDialog = new downloaddialog;
-        FwUpDialog = new fwupdialog;
         connect(this,SIGNAL(updateconfproper(bool)),AConfDialog,SLOT(UpdateProper(bool)));
         connect(this,SIGNAL(updatetuneproper(bool)),ATuneDialog,SLOT(UpdateProper(bool)));
         MainTW->addTab(AConfDialog, "Конфигурирование");
         MainTW->addTab(ATuneDialog, "Настройка");
         MainTW->addTab(ACheckDialog, "Проверка");
-        MainTW->addTab(DownDialog, "Скачать");
+        MainTW->addTab(OscDialog, "Осциллограммы");
+        MainTW->addTab(DownDialog, "События");
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
         connect(AConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
         break;
@@ -496,12 +484,11 @@ void ConSet::AllIsOk()
         EConfDialog = new e_confdialog;
         ETuneDialog = new e_tunedialog;
         ECheckDialog = new e_checkdialog;
-        DownDialog = new downloaddialog;
-        FwUpDialog = new fwupdialog;
         MainTW->addTab(EConfDialog, "Конфигурирование");
         MainTW->addTab(ETuneDialog, "Настройка");
         MainTW->addTab(ECheckDialog, "Проверка");
-        MainTW->addTab(DownDialog, "Скачать");
+        MainTW->addTab(OscDialog, "Осциллограммы");
+        MainTW->addTab(DownDialog, "События");
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
         connect(EConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
         break;
@@ -586,16 +573,11 @@ void ConSet::WriteSN()
     if (!ok)
         return;
     Bsi_block.SerNum = QString::number(tmpi, 10).toInt(0,16);
-    connect(cn,SIGNAL(DataReady()),this,SLOT(CheckSN()));
     cn->Send(CN_Wsn, &(Bsi_block.SerNum), 4);
-}
-
-void ConSet::CheckSN()
-{
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckSN()));
-    if (cn->result != CN_OK)
-        ShowErrMsg(cn->result);
-    GetBsi();
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        GetBsi();
 }
 
 void ConSet::SetMipDlg()

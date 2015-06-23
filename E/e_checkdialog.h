@@ -43,7 +43,6 @@ private:
     QTimer *timer;
 
 //    void SetupUI();
-//    void ShowErrMsg(int);
 
 private slots:
 /*    void StartMeasurements();

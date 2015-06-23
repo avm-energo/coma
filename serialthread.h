@@ -18,12 +18,9 @@ public:
     QByteArray OutDataBuf;
     bool ClosePortAndFinishThread;
 
-    void InitiateWriteDataToPort(QByteArray *);
-
 private:
     QSerialPort *port;
     QByteArray *DataToSend;
-    QTimer *TimeoutTimer;
     quint16 RcvDataLength;
     QMutex OutDataBufMtx, ReadDataMtx;
 
@@ -31,7 +28,6 @@ signals:
     void canalisready();
     void newdataarrived(QByteArray);
     void datawritten(QByteArray);
-    void timeout();
     void receivecompleted();
     void finished();
     void error(int);
@@ -40,10 +36,10 @@ public slots:
     void run();
     void stop();
     void WriteData();
+    void InitiateWriteDataToPort(QByteArray);
 
 private slots:
     void CheckForData();
-    void Timeout();
     void Error(QSerialPort::SerialPortError);
 };
 

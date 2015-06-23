@@ -414,8 +414,4 @@ void e_checkdialog::TimerTimeout()
     OddTimeout = !OddTimeout;
 }
 
-void e_checkdialog::ShowErrMsg(int ermsg)
-{
-    QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
-}
 */

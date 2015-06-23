@@ -9,7 +9,7 @@
 #include <QVBoxLayout>
 #include <QSpinBox>
 #include <QMessageBox>
-
+#include <QCoreApplication>
 #include "e_confdialog.h"
 #include "../canal.h"
 
@@ -100,17 +100,10 @@ void e_confdialog::GetBci()
 {
     connect(cn,SIGNAL(DataReady()),this,SLOT(CheckConfAndFill()));
     cn->Send(CN_GF,NULL,0,1,Config);
-}
-
-void e_confdialog::CheckConfAndFill()
-{
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckConfAndFill()));
-    if (cn->result)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
-    FillConfData();
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        FillConfData();
 }
 
 void e_confdialog::FillConfData()
@@ -854,34 +847,20 @@ void e_confdialog::SetCType(int num)
 
 void e_confdialog::WriteConfDataToModule()
 {
-    connect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
     cn->Send(CN_WF, &Bci_block, sizeof(Bci_block), 2, Config);
-}
-
-void e_confdialog::WriteCompleted()
-{
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
-    if (!cn->result)
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
         QMessageBox::information(this,"Успешно!","Операция проведена успешно!");
-    else
-        ShowErrMsg(cn->result);
 }
 
 void e_confdialog::SetNewConf()
 {
-    connect(cn,SIGNAL(DataReady()),this,SLOT(UpdateBsi()));
     cn->Send(CN_Cnc);
-}
-
-void e_confdialog::UpdateBsi()
-{
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(UpdateBsi()));
-    emit BsiIsNeedToBeAcquiredAndChecked();
-}
-
-void e_confdialog::ShowErrMsg(int ermsg)
-{
-    QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        emit BsiIsNeedToBeAcquiredAndChecked();
 }
 
 void e_confdialog::SetDefConf()

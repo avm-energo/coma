@@ -42,18 +42,16 @@ private:
     void ShowErrMsg(int);
     void CalcNewTuneCoefs();
     void RefreshTuneCoefs();
+    void CheckAndShowTune0();
+    void CheckAndShowTune5();
+    void CheckAndShowTune20();
 
 private slots:
     void tune0();
     void tune5();
     void tune20();
-    void CheckAndShowTune0();
-    void CheckAndShowTune5();
-    void CheckAndShowTune20();
     void ReadTuneCoefs();
-    void ReadCompleted();
     void WriteTuneCoefs();
-    void WriteCompleted();
     void SaveToFile();
     void LoadFromFile();
 };

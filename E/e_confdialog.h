@@ -77,7 +77,6 @@ private:
     Bci Bci_block, Bci_defblock;
     publicclass::DataRec Config[ECONF_NUM];
 
-    void ShowErrMsg(int ermsg);
     void FillConfData();
 
 signals:
@@ -98,13 +97,10 @@ private slots:
     void SetNFiltr(int);
     void SetNHFiltr(int);
     void GetBci();
-    void CheckConfAndFill();
     void WriteConfDataToModule();
-    void WriteCompleted();
     void SetupUI();
     void SetDefConf();
     void SetNewConf();
-    void UpdateBsi();
 };
 
 #endif // E_CONFDIALOG_H

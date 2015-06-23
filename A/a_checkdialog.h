@@ -16,7 +16,6 @@ signals:
 public slots:
 
 private:
-//    canal *cn;
     struct Bd
     {
         float ain[16];
@@ -43,7 +42,9 @@ private:
     QTimer *timer;
 
     void SetupUI();
-    void ShowErrMsg(int);
+    void RefreshBd();
+    void RefreshBda();
+    void CheckIP();
 
 private slots:
     void StartMeasurements();
@@ -54,11 +55,8 @@ private slots:
     void CheckLEDOn();
     void CheckLEDOff();
     void GetIP();
-    void CheckIP();
     void Check1PPS();
     void TimerTimeout();
-    void RefreshBd();
-    void RefreshBda();
 };
 
 #endif // A_CHECKDIALOG_H

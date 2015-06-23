@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QThread>
+#include <QCoreApplication>
 #include "e_tunedialog.h"
 #include "../publicclass.h"
 #include "../iec104/ethernet.h"
@@ -203,8 +204,11 @@ void e_tunedialog::StartTune()
                                      "на всех\nвходах модуля и нажмите OK")\
                 == QMessageBox::Ok)
         {
-            connect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune0()));
             cn->Send(CN_Gda, &Bda0, sizeof(Bda));
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        CheckAndShowTune0();
         }
         break;
     }
@@ -215,8 +219,11 @@ void e_tunedialog::StartTune()
                                      "5 В на всех\nвходах модуля и нажмите OK")\
                 == QMessageBox::Ok)
         {
-            connect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune5()));
             cn->Send(CN_Gda, &Bda5, sizeof(Bda));
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        CheckAndShowTune5();
         }
         break;
     }
@@ -226,8 +233,11 @@ void e_tunedialog::StartTune()
                                      "Переключите входные переключатели на ток,\nустановите ток 20 мА на всех" \
                                      "\nвходах модуля и нажмите OK") == QMessageBox::Ok)
         {
-            connect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune20()));
             cn->Send(CN_Gda, &Bda20, sizeof(Bda));
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        CheckAndShowTune20();
         }
         break;
     }
@@ -243,12 +253,6 @@ void e_tunedialog::tune0()
 
 void e_tunedialog::CheckAndShowTune0()
 {
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune0()));
-    if (cn->result)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
     for (int i = 0; i < 16; i++)
     {
         QLabel *lbl = this->findChild<QLabel *>("tune0ch"+QString::number(i));
@@ -267,12 +271,6 @@ void e_tunedialog::tune5()
 
 void e_tunedialog::CheckAndShowTune5()
 {
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune5()));
-    if (cn->result)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
     for (int i = 0; i < 16; i++)
     {
         QLabel *lbl = this->findChild<QLabel *>("tune5ch"+QString::number(i));
@@ -291,12 +289,6 @@ void e_tunedialog::tune20()
 
 void e_tunedialog::CheckAndShowTune20()
 {
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune20()));
-    if (cn->result)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
     for (int i = 0; i < 16; i++)
     {
         QLabel *lbl = this->findChild<QLabel *>("tune20ch"+QString::number(i));
@@ -311,35 +303,19 @@ void e_tunedialog::CheckAndShowTune20()
 void e_tunedialog::ReadTuneCoefs()
 {
     cn->Send(CN_Gac, &Bac_block, sizeof(Bac_block));
-    connect(cn,SIGNAL(DataReady()),this,SLOT(ReadCompleted()));
-}
-
-void e_tunedialog::ReadCompleted()
-{
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(ReadCompleted()));
-    if (cn->result)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
-    RefreshTuneCoefs();
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        RefreshTuneCoefs();
 }
 
 void e_tunedialog::WriteTuneCoefs()
 {
     cn->Send(CN_Wac, &Bac_block, sizeof(Bac_block));
-    connect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
-}
-
-void e_tunedialog::WriteCompleted()
-{
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
-    if (cn->result)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
-    QMessageBox::information(this,"Успешно!","Записано успешно!");
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        QMessageBox::information(this,"Успешно!","Записано успешно!");
 }
 
 void e_tunedialog::CalcNewTuneCoefs()

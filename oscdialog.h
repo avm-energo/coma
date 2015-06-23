@@ -17,7 +17,7 @@ private:
     void SetupUI();
 
     s_tablemodel *tm;
-    QByteArray OscInfo;
+    QByteArray *OscInfo;
 
 signals:
     void endprogressbar();

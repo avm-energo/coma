@@ -100,7 +100,6 @@ private:
 
     publicclass::DataRec Config[ACONF_NUM];
 
-    void ShowErrMsg(int ermsg);
     void FillConfData();
 
 signals:
@@ -126,12 +125,9 @@ private slots:
     void SetOscDly(int);
     void GetBci();
     void WriteConfDataToModule();
-    void WriteCompleted();
     void SetupUI();
     void SetNewConf();
     void SetDefConf();
-    void UpdateBsi();
-    void CheckConfAndFill();
 };
 
 #endif // A_CONFDIALOG_H

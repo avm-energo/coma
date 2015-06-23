@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QFileDialog>
+#include <QCoreApplication>
 #include "a_tunedialog.h"
 #include "../publicclass.h"
 #include "../canal.h"
@@ -182,8 +183,11 @@ void a_tunedialog::tune(int tunenum)
                                      "на всех\nвходах модуля и нажмите OK")\
                 == QMessageBox::Ok)
         {
-            connect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune0()));
             cn->Send(CN_Gda, &Bda0, sizeof(Bda));
+            while (cn->Busy)
+                QCoreApplication::processEvents(QEventLoop::AllEvents);
+            if (cn->result == CN_OK)
+                CheckAndShowTune0();
         }
         break;
     }
@@ -194,8 +198,11 @@ void a_tunedialog::tune(int tunenum)
                                      "5 В на всех\nвходах модуля и нажмите OK")\
                 == QMessageBox::Ok)
         {
-            connect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune5()));
             cn->Send(CN_Gda, &Bda5, sizeof(Bda));
+            while (cn->Busy)
+                QCoreApplication::processEvents(QEventLoop::AllEvents);
+            if (cn->result == CN_OK)
+                CheckAndShowTune5();
         }
         break;
     }
@@ -205,8 +212,11 @@ void a_tunedialog::tune(int tunenum)
                                      "Переключите входные переключатели на ток,\nустановите ток 20 мА на всех" \
                                      "\nвходах модуля и нажмите OK") == QMessageBox::Ok)
         {
-            connect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune20()));
             cn->Send(CN_Gda, &Bda20, sizeof(Bda));
+            while (cn->Busy)
+                QCoreApplication::processEvents(QEventLoop::AllEvents);
+            if (cn->result == CN_OK)
+                CheckAndShowTune20();
         }
         break;
     }
@@ -222,12 +232,6 @@ void a_tunedialog::tune0()
 
 void a_tunedialog::CheckAndShowTune0()
 {
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune0()));
-    if (cn->result)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
     for (int i = 0; i < 16; i++)
     {
         QLabel *lbl = this->findChild<QLabel *>("tune0ch"+QString::number(i));
@@ -246,12 +250,6 @@ void a_tunedialog::tune5()
 
 void a_tunedialog::CheckAndShowTune5()
 {
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune5()));
-    if (cn->result)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
     for (int i = 0; i < 16; i++)
     {
         QLabel *lbl = this->findChild<QLabel *>("tune5ch"+QString::number(i));
@@ -270,12 +268,6 @@ void a_tunedialog::tune20()
 
 void a_tunedialog::CheckAndShowTune20()
 {
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckAndShowTune20()));
-    if (cn->result)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
     for (int i = 0; i < 16; i++)
     {
         QLabel *lbl = this->findChild<QLabel *>("tune20ch"+QString::number(i));
@@ -290,35 +282,19 @@ void a_tunedialog::CheckAndShowTune20()
 void a_tunedialog::ReadTuneCoefs()
 {
     cn->Send(CN_Gac, &Bac_block, sizeof(Bac_block));
-    connect(cn,SIGNAL(DataReady()),this,SLOT(ReadCompleted()));
-}
-
-void a_tunedialog::ReadCompleted()
-{
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(ReadCompleted()));
-    if (cn->result)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
-    RefreshTuneCoefs();
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        RefreshTuneCoefs();
 }
 
 void a_tunedialog::WriteTuneCoefs()
 {
     cn->Send(CN_Wac, &Bac_block, sizeof(Bac_block));
-    connect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
-}
-
-void a_tunedialog::WriteCompleted()
-{
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
-    if (cn->result)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
-    QMessageBox::information(this,"Успешно!","Записано успешно!");
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        QMessageBox::information(this,"Успешно!","Записано успешно!");
 }
 
 void a_tunedialog::CalcNewTuneCoefs()

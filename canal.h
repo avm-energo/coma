@@ -5,8 +5,10 @@
 #include <QByteArray>
 #include <QThread>
 #include <QTimer>
+#include <QLabel>
 
 #include "publicclass.h"
+#include "serialthread.h"
 
 class canal : public QObject
 {
@@ -20,9 +22,11 @@ public:
     int baud;
     int ernum;
     bool FirstRun;
-
+    bool Busy;
+    quint32 RDSize;
     void Connect();
     void Disconnect();
+
 signals:
     void stopall();
     void DataReady();
@@ -30,6 +34,9 @@ signals:
     void error(int);
     void incomingdatalength(quint32);
     void bytesreceived(quint32);
+    void writedatatoport(QByteArray);
+    void gotsomedata(QByteArray);
+    void somedatawritten(QByteArray);
 
 public slots:
     void GetSomeData(QByteArray ba);
@@ -43,19 +50,17 @@ private slots:
     void TryOnceMore();
     void CanalReady();
     void CanalError(int);
-    void KillSThread();
-    void SetErNum(int);
 
 private:
-    unsigned char *outdata;
+    char *outdata;
     QByteArray *ReadData;
     QByteArray *WriteData;
-    QTimer *tmr, *tmr2;
+    QTimer *tmr, *tmr2, *TTimer;
     QThread *thread;
     int bStep;
     int cmd;
+    QLabel *lbl;
     quint32 fnum;
-    bool nda_gsd, t_t; // признаки наличия связи сигналов newdataarrived|timeout с соотв. слотами GetSomeData|Timeout
     quint8 ReconTry;
     quint32 RDLength; // длина всей посылки
     quint32 DLength; // длина данных
@@ -64,14 +69,13 @@ private:
     quint32 SegLeft; // количество оставшихся сегментов
     quint32 SegEnd; // номер последнего байта в ReadData текущего сегмента
     publicclass::DataRec *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
-    bool LongBlock;
+    bool LongBlock, ConnectedToPort, PortErrorDetected, ReconModeEnabled, ThreadStarted;
 
     void Finish(int ernum);
     void SetRDLength(int startpos);
-    void SetWR(QByteArray *, quint32 startpos);
+    void SetWR(QByteArray, quint32 startpos);
     bool RDCheckForNextSegment();
     void WRCheckForNextSegment();
-    void NoErrorDetected();
     void SendOk();
     void SendErr();
 };

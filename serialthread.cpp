@@ -15,9 +15,6 @@ SerialThread::SerialThread(QObject *parent) :
 
 void SerialThread::run()
 {
-    TimeoutTimer = new QTimer;
-    TimeoutTimer->setInterval(CN_TIMEOUT);
-    connect(TimeoutTimer, SIGNAL(timeout()),this,SLOT(Timeout()));
     port = new QSerialPort;
     port->setPort(portinfo);
     connect(port,SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(Error(QSerialPort::SerialPortError)));
@@ -45,8 +42,6 @@ void SerialThread::run()
             {
                 port->close();
                 delete port;
-                TimeoutTimer->stop();
-                delete TimeoutTimer;
             }
             emit finished();
             return;
@@ -60,7 +55,6 @@ void SerialThread::run()
 
 void SerialThread::CheckForData()
 {
-    TimeoutTimer->stop();
     QByteArray ba = port->read(1000);
     emit newdataarrived(ba);
 }
@@ -70,22 +64,15 @@ void SerialThread::WriteData()
     qint64 res = port->write(OutDataBuf);
     if (res == -1)
         emit datawritten(QByteArray()); // ошибка
-    TimeoutTimer->start();
     emit datawritten(OutDataBuf); // всё гут
     OutDataBuf.clear();
 }
 
-void SerialThread::InitiateWriteDataToPort(QByteArray *ba)
+void SerialThread::InitiateWriteDataToPort(QByteArray ba)
 {
     OutDataBufMtx.lock();
-    OutDataBuf = *ba;
+    OutDataBuf = ba;
     OutDataBufMtx.unlock();
-}
-
-void SerialThread::Timeout()
-{
-    emit timeout();
-    TimeoutTimer->stop();
 }
 
 void SerialThread::stop()

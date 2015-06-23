@@ -15,6 +15,7 @@
 #include "E/e_checkdialog.h"
 #include "E/e_confdialog.h"
 #include "E/e_tunedialog.h"
+#include "oscdialog.h"
 #include "canal.h"
 #include "publicclass.h"
 
@@ -44,6 +45,7 @@ private:
     e_tunedialog *ETuneDialog;
     fwupdialog *FwUpDialog;
     downloaddialog *DownDialog;
+    oscdialog *OscDialog;
     bool DialogsAreReadyAlready;
     QAction *WriteSNAction;
     quint8 ReconTry;
@@ -71,10 +73,8 @@ private slots:
     void SetPort(QString str);
     void SetBaud(QString str);
     void WriteSN();
-    void CheckSN();
     void SetMipConPar();
     void SetMipDlg();
-    void ConnectSThread();
 
 protected:
     void closeEvent(QCloseEvent *e);

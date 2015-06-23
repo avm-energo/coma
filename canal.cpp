@@ -4,17 +4,20 @@
 #include <QDialog>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QCoreApplication>
 
 canal *cn;
 
 canal::canal(QObject *parent) : QObject(parent)
 {
+    cmd = CN_Unk;
+    ReconModeEnabled = false;
+    ThreadStarted = false;
+    ConnectedToPort = PortErrorDetected = false;
     ReadData = new QByteArray;
     SegEnd = 0;
     SegLeft = 0;
     ReconTry = 0;
-    t_t = false;
-    nda_gsd = false;
     FirstRun = true;
     tmr = new QTimer;
     tmr->setInterval(CS_MSGTRIG);
@@ -22,6 +25,9 @@ canal::canal(QObject *parent) : QObject(parent)
     tmr2->setInterval(CS_TIMEOUT);
     connect(tmr,SIGNAL(timeout()),this,SLOT(ToggleReconLabel()));
     connect(tmr2,SIGNAL(timeout()),this,SLOT(Reconnect()));
+    TTimer = new QTimer;
+    TTimer->setInterval(CN_TIMEOUT);
+    connect(TTimer, SIGNAL(timeout()),this,SLOT(Timeout()));
 }
 
 canal::~canal()
@@ -32,17 +38,13 @@ canal::~canal()
 
 void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publicclass::DataRec *DRptr)
 {
-    QByteArray *tmpba;
-    outdata = static_cast<unsigned char *>(ptr);
+    Busy = true;
+    QByteArray tmpba;
+    outdata = static_cast<char *>(ptr);
     outdatasize = ptrsize; // размер области данных, в которую производить запись
     cmd = command;
     fnum = static_cast<quint32>(filenum);
     DR = DRptr;
-    if (!pc.SThread)
-    {
-        Finish(CN_PORTOPENERROR);
-        return;
-    }
     switch (cmd)
     {
     case CN_GBsi: // запрос блока стартовой информации
@@ -53,54 +55,50 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
     case CN_Gip: // запрос ip-адреса модуля
     case CN_GNosc: // запрос блока информации об осциллограммах
     {
-        tmpba = new QByteArray(3,0x00);
-        tmpba->data()[0] = CN_Start;
-        tmpba->data()[1] = cmd;
-        tmpba->data()[2] = ~cmd;
+        tmpba.append(CN_Start);
+        tmpba.append(cmd);
+        tmpba.append(~cmd);
         break;
     }
     case CN_GF: // запрос файла
     {
-        tmpba = new QByteArray(4,0x00);
-        tmpba->data()[0] = CN_Start;
-        tmpba->data()[1] = cmd;
-        tmpba->data()[2] = ~cmd;
-        tmpba->data()[3] = fnum;
+        tmpba.append(CN_Start);
+        tmpba.append(cmd);
+        tmpba.append(~cmd);
+        tmpba.append(fnum);
         break;
     }
     case CN_GBosc: // запрос осциллограммы
     {
-        tmpba = new QByteArray(5,0x00);
-        tmpba->data()[0] = CN_Start;
-        tmpba->data()[1] = cmd;
-        tmpba->data()[2] = ~cmd;
-        tmpba->data()[3] = fnum/256;
-        tmpba->data()[4] = fnum-(tmpba->data()[3]*256);
+        tmpba.append(CN_Start);
+        tmpba.append(cmd);
+        tmpba.append(~cmd);
+        tmpba.append(fnum/256);
+        tmpba.append(fnum-(tmpba.at(3)*256));
         break;
     }
     case CN_WF: // запись файла
     {
-        tmpba = new QByteArray(7+10000,0x00); // 10000 - предположительная длина файла конфигурации
-        tmpba->data()[0] = CN_Start;
-        tmpba->data()[1] = cmd;
-        tmpba->data()[2] = ~cmd;
-        tmpba->data()[3] = fnum;
+        tmpba.append(CN_Start);
+        tmpba.append(cmd);
+        tmpba.append(~cmd);
+        tmpba.append(fnum);
+        tmpba.resize(30000);
         if (DR == NULL)
             Finish(CN_NULLDATAERROR);
-        pc.StoreDataMem(&(tmpba->data()[7]), DR);
-//        DLength = tmpba->data()[9]*65536+tmpba->data()[8]*256+tmpba->data()[7]; // DataHeader.size
-        DLength = static_cast<quint8>(tmpba->data()[9])*65536;
-        DLength += static_cast<quint8>(tmpba->data()[8])*256;
-        DLength += static_cast<quint8>(tmpba->data()[7]);
+        pc.StoreDataMem(&(tmpba.data()[7]), DR);
+        DLength = static_cast<quint8>(tmpba.at(9))*65536;
+        DLength += static_cast<quint8>(tmpba.at(8))*256;
+        DLength += static_cast<quint8>(tmpba.at(7));
         DLength += 12; // sizeof(DataHeader)
-        quint32 tmpi1 = tmpba->data()[4] = (DLength/65536);
-        quint32 tmpi2 = tmpba->data()[5] = (DLength - tmpi1*65536)/256;
-        tmpba->data()[6] = DLength - tmpi1*65536 - tmpi2*256;
-        tmpba->resize(DLength+7);
+        quint32 tmpi1 = tmpba.data()[4] = (DLength/65536);
+        quint32 tmpi2 = tmpba.data()[5] = (DLength - tmpi1*65536)/256;
+        tmpba.data()[6] = DLength - tmpi1*65536 - tmpi2*256;
+        tmpba.resize(DLength+7);
         SetWR(tmpba,7); // 7 - длина заголовка
         if (SegLeft)
         {
-            tmpba->truncate(512+7);
+            tmpba.truncate(512+7);
             WriteData->remove(0,512+7);
         }
         break;
@@ -108,20 +106,20 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
     case CN_Wac:
     case CN_Wsn:
     {
-        tmpba = new QByteArray (QByteArray::fromRawData((const char *)outdata, outdatasize)); // 10000 - предположительная длина блока
+        tmpba = QByteArray (QByteArray::fromRawData((const char *)outdata, outdatasize)); // 10000 - предположительная длина блока
         DLength = outdatasize;
         quint32 tmpi1 = (DLength/65536);
         quint32 tmpi2 = (DLength - tmpi1*65536)/256;
-        tmpba->insert(0, DLength - tmpi1*65536 - tmpi2*256);
-        tmpba->insert(0, tmpi2);
-        tmpba->insert(0, tmpi1);
-        tmpba->insert(0, ~cmd);
-        tmpba->insert(0, cmd);
-        tmpba->insert(0, CN_Start);
+        tmpba.insert(0, DLength - tmpi1*65536 - tmpi2*256);
+        tmpba.insert(0, tmpi2);
+        tmpba.insert(0, tmpi1);
+        tmpba.insert(0, ~cmd);
+        tmpba.insert(0, cmd);
+        tmpba.insert(0, CN_Start);
         SetWR(tmpba,6);
         if (SegLeft)
         {
-            tmpba->truncate(512+7);
+            tmpba.truncate(512+7);
             WriteData->remove(0,512+7);
         }
         break;
@@ -136,36 +134,31 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
     ReadData->clear();
     bStep = 0;
     RDLength = 0;
-    try
-    {
-        connect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
-        nda_gsd = true;
-        pc.SThread->InitiateWriteDataToPort(tmpba);
-        connect(pc.SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(DataWritten(QByteArray)));
-    }
-    catch (int)
-    {
-    }
+    emit writedatatoport(tmpba);
 }
 
 void canal::DataWritten(QByteArray data)
 {
     Q_UNUSED(data);
-    disconnect(pc.SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(DataWritten(QByteArray)));
-    connect(pc.SThread,SIGNAL(timeout()),this,SLOT(Timeout()));
-    t_t = true;
+    emit somedatawritten(data);
+    if (cmd == CN_Unk) // игнорируем вызовы процедуры без команды
+        return;
+    TTimer->start();
 }
 
 void canal::GetSomeData(QByteArray ba)
 {
+    emit gotsomedata(ba);
+    if (cmd == CN_Unk) // игнорирование вызова процедуры, если не было послано никакой команды
+        return;
     int res;
     ReadData->append(ba);
-    quint32 RDSize = static_cast<quint32>(ReadData->size());
+    RDSize = static_cast<quint32>(ReadData->size());
     if (RDSize<3) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
         return;
     if ((static_cast<quint8>(ReadData->at(1)) == 0xF0) && (static_cast<quint8>(ReadData->at(2)) == 0x0F))
     {
-        Finish(CN_RCVDATAERROR);
+        Finish(71 + ReadData->at(3));
         return;
     }
     emit bytesreceived(RDSize); // сигнал для прогрессбара
@@ -263,11 +256,9 @@ void canal::GetSomeData(QByteArray ba)
                 Finish(CN_NULLDATAERROR);
                 break;
             }
-            for (quint32 i = 4; i < RDSize; i++)
-            {
-                *outdata = ReadData->at(i);
-                outdata++;
-            }
+            ReadData->remove(0, 4); // убираем заголовок с < и длиной
+            RDSize -= 4;
+            memcpy(outdata,ReadData->data(),RDSize);
             if (LongBlock)
                 SendOk();
             Finish(CN_OK);
@@ -308,13 +299,14 @@ void canal::GetSomeData(QByteArray ba)
                 return;
             if (RDSize < RDLength)
                 return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
-            if (RDSize > (RDLength-4))
+            if (RDSize > (RDLength+4))
             {
                 SendErr();
                 Finish(CN_RCVLENGTHERROR);
             }
             ReadData->remove(0, 4); // убираем заголовок с < и длиной
             RDSize -= 4;
+            memcpy(outdata,ReadData->data(),RDSize);
             if (LongBlock)
                 SendOk();
             Finish(CN_OK);
@@ -371,19 +363,19 @@ bool canal::RDCheckForNextSegment()
     {
         SegLeft--;
         SegEnd += 512; // устанавливаем границу следующего сегмента
-        QByteArray *tmpba = new QByteArray(3, 0x00);
-        tmpba->data()[0] = CN_Start;
-        tmpba->data()[1] = CN_SegOk;
-        tmpba->data()[2] = ~CN_SegOk;
-        pc.SThread->InitiateWriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
+        QByteArray tmpba;
+        tmpba.append(CN_Start);
+        tmpba.append(CN_SegOk);
+        tmpba.append(~CN_SegOk);
+        emit writedatatoport(tmpba); // отправляем "ОК" и переходим к следующему сегменту
         return false;
     }
     return true;
 }
 
-void canal::SetWR(QByteArray *ba, quint32 startpos)
+void canal::SetWR(QByteArray ba, quint32 startpos)
 {
-    WriteData = new QByteArray(*ba);
+    WriteData = new QByteArray(ba);
     WRLength = WriteData->size();
     if (static_cast<quint32>(WriteData->size())>(512+startpos)) // startpos - заголовок
     {
@@ -402,180 +394,166 @@ void canal::WRCheckForNextSegment()
     if (SegLeft)
     {
         SegLeft--;
-        QByteArray *tmpba;
+        QByteArray tmpba;
         if (SegLeft)
         {
             SegEnd += 512;
-            tmpba = new QByteArray(WriteData->left(512));
+            tmpba = QByteArray(WriteData->left(512));
             WriteData->truncate(512);
         }
         else
         {
-            tmpba = new QByteArray(*WriteData);
+            tmpba = QByteArray(*WriteData);
             WriteData->clear();
         }
-        pc.SThread->InitiateWriteDataToPort(tmpba);
+        emit writedatatoport(tmpba);
     }
 }
 
 void canal::SendOk()
 {
-    QByteArray *tmpba = new QByteArray(3, 0x00);
-    tmpba->data()[0] = CN_Start;
-    tmpba->data()[1] = CN_ResOk;
-    tmpba->data()[2] = ~CN_ResOk;
-    pc.SThread->InitiateWriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
+    QByteArray tmpba;
+    tmpba.append(CN_Start);
+    tmpba.append(CN_ResOk);
+    tmpba.append(~CN_ResOk);
+    emit writedatatoport(tmpba); // отправляем "ОК" и переходим к следующему сегменту
 }
 
 void canal::SendErr()
 {
-    QByteArray *tmpba = new QByteArray(3, 0x00);
-    tmpba->data()[0] = CN_Start;
-    tmpba->data()[1] = ~CN_ResErr;
-    tmpba->data()[2] = CN_ResErr;
-    pc.SThread->InitiateWriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
+    QByteArray tmpba;
+    tmpba.append(CN_Start);
+    tmpba.append(~CN_ResErr);
+    tmpba.append(CN_ResErr);
+    emit writedatatoport(tmpba); // отправляем "ОК" и переходим к следующему сегменту
 }
 
 void canal::Timeout()
 {
-    if (nda_gsd)
-    {
-        ReconTry++;
-        StartReconnect();
-    }
+    CanalError(CN_TIMEOUTERROR);
 }
 
 void canal::Finish(int ernum)
 {
+    TTimer->stop();
+    cmd = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
+    if (ernum != CN_OK)
+        emit error(ernum);
     result = ernum;
-    if (nda_gsd)
-    {
-        disconnect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
-        nda_gsd = false;
-    }
-    if (t_t)
-    {
-        disconnect(pc.SThread,SIGNAL(timeout()),this,SLOT(Timeout()));
-        t_t = false;
-    }
-    emit DataReady();
-}
-
-void canal::CanalReady()
-{
-    FirstRun = false;
-    Finish(CN_OK);
-    emit portopened();
-}
-
-void canal::NoErrorDetected()
-{
-    result = 0;
-    QByteArray *tmpba = new QByteArray(3, 0x00);
-    tmpba->data()[0] = CN_Start;
-    tmpba->data()[1] = CN_ResOk;
-    tmpba->data()[2] = ~CN_ResOk;
-    pc.SThread->InitiateWriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
-    disconnect(pc.SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
-    nda_gsd = false;
-    emit DataReady();
+    Busy = false;
 }
 
 void canal::Connect()
 {
+    SerialThread *SThread = new SerialThread;
     thread = new QThread;
-    pc.SThread = new SerialThread;
-    pc.SThread->portinfo = info;
-    pc.SThread->baud = baud;
-    pc.SThread->moveToThread(thread);
-    connect(thread, SIGNAL(started()), pc.SThread, SLOT(run()));
-    connect(thread,SIGNAL(finished()),pc.SThread,SLOT(deleteLater()));
-//    connect(this,SIGNAL(stopall()),pc.SThread,SLOT(stop()));
-    connect(pc.SThread,SIGNAL(error(int)),this,SLOT(SetErNum(int)));
-    connect(pc.SThread,SIGNAL(error(int)),this,SLOT(CanalError(int)));
-    connect(pc.SThread,SIGNAL(canalisready()),this,SLOT(CanalReady()));
-//    connect(pc.SThread,SIGNAL(finished()),this,SLOT(KillSThread()));
-//    connect(pc.SThread,SIGNAL(finished()),thread,SLOT(quit()));
-//    connect(thread,SIGNAL(finished()),pc.SThread,SLOT(deleteLater()));
+    SThread->portinfo = info;
+    SThread->baud = baud;
+    SThread->moveToThread(thread);
+    connect(thread, SIGNAL(started()), SThread, SLOT(run()));
+    connect(SThread,SIGNAL(finished()),thread,SLOT(quit()));
+    connect(this,SIGNAL(stopall()),SThread,SLOT(stop()));
+    connect(thread,SIGNAL(finished()), thread,SLOT(deleteLater()));
+    connect(SThread,SIGNAL(finished()), SThread,SLOT(deleteLater()));
+    connect(SThread,SIGNAL(error(int)),this,SLOT(CanalError(int)));
+    connect(SThread,SIGNAL(canalisready()),this,SLOT(CanalReady()));
+    connect(SThread,SIGNAL(canalisready()),this,SLOT(TryOnceMore()));
+    connect(SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(DataWritten(QByteArray)));
+    connect(SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
+    connect(this,SIGNAL(writedatatoport(QByteArray)),SThread,SLOT(InitiateWriteDataToPort(QByteArray)));
+    ConnectedToPort = PortErrorDetected = false;
     thread->start();
+    ThreadStarted = true;
+    while ((!ConnectedToPort) && (!PortErrorDetected))
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (ConnectedToPort)
+    {
+        emit portopened();
+        result = CN_OK;
+    }
+    else
+    {
+        emit stopall();
+        result=CN_PORTOPENERROR;
+    }
 }
 
-void canal::SetErNum(int ernum)
+void canal::Disconnect()
 {
-    this->ernum = ernum;
+    if (ThreadStarted)
+    {
+        emit stopall();
+        ThreadStarted = false;
+    }
+}
+
+void canal::CanalReady()
+{
+    ConnectedToPort = true;
+    FirstRun = false;
+    Finish(CN_OK);
 }
 
 void canal::CanalError(int ernum)
 {
+    this->ernum = ernum;
+    PortErrorDetected = true;
+    ConnectedToPort = false;
     if (FirstRun)
         Finish(ernum);
     else
     {
         ReconTry++;
-        StartReconnect();
+        if (!ReconModeEnabled)
+            StartReconnect();
     }
-}
-
-void canal::KillSThread()
-{
-    delete pc.SThread;
-}
-
-void canal::Disconnect()
-{
-    emit stopall();
 }
 
 void canal::StartReconnect()
 {
-    nda_gsd = t_t = false;
-    QDialog *dlg = new QDialog;
-    dlg->setModal(true);
-    QLabel *lbl = new QLabel("Потеряна связь с модулем!\nПопытка восстановления № 0");
-    lbl->setObjectName("tryreconlbl");
+    ReconModeEnabled = true;
+    QWidget *wdgt = new QWidget;
+    lbl = new QLabel("Потеряна связь с модулем!\nПопытка восстановления № 1");
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(lbl);
-    dlg->setLayout(lyout);
-    dlg->setVisible(true);
+    wdgt->setLayout(lyout);
+    wdgt->setVisible(true);
     tmr->start();
     tmr2->start();
 }
 
 void canal::Reconnect()
 {
-    try
+    if (ReconTry == 4)
     {
-        if (ReconTry == 4)
-        {
-            tmr->stop();
-            tmr2->stop();
-            emit error(ernum);
-            Finish(CN_TIMEOUTERROR);
-            ReconTry = 0;
-        }
-        else
-        {
-            thread->quit();
-            thread->wait();
-            Connect();
-            connect(pc.SThread,SIGNAL(canalisready()),this,SLOT(TryOnceMore()));
-        }
+        tmr->stop();
+        tmr2->stop();
+        emit error(ernum);
+        Finish(CN_TIMEOUTERROR);
+        ReconTry = 0;
+        ReconModeEnabled = false;
     }
-    catch(int)
+    else
     {
+        QString tmps = lbl->text();
+        tmps.chop(1);
+        lbl->setText(tmps+QString::number(ReconTry));
+        if (ThreadStarted)
+        {
+            emit stopall();
+            ThreadStarted = false;
+        }
+        Connect();
     }
 }
 
 void canal::ToggleReconLabel()
 {
-    QLabel *lbl = this->findChild<QLabel *>("tryreconlbl");
-    if (lbl == 0)
-        return;
     lbl->setVisible(!(lbl->isVisible()));
 }
 
 void canal::TryOnceMore()
 {
-    disconnect(pc.SThread,SIGNAL(canalisready()),this,SLOT(TryOnceMore()));
-    Send(cmd, outdata, outdatasize, fnum, DR);
+    if (ReconModeEnabled) // срабатываем только в режиме реконнекта
+        Send(cmd, outdata, outdatasize, fnum, DR);
 }

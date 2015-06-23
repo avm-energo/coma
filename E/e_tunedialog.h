@@ -46,9 +46,7 @@ private slots:
     void ShowErrMsg(int);
     void StartTune();
     void ReadTuneCoefs();
-    void ReadCompleted();
     void WriteTuneCoefs();
-    void WriteCompleted();
     void SaveToFile();
     void LoadFromFile();
     void StartMip();

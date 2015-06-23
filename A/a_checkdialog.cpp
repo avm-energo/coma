@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QSpinBox>
+#include <QCoreApplication>
 #include "a_checkdialog.h"
 #include "../publicclass.h"
 #include "../canal.h"
@@ -316,12 +317,6 @@ void a_checkdialog::StopBdaMeasurements()
 
 void a_checkdialog::RefreshBd()
 {
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(RefreshBd()));
-    if (cn->result)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
     int i;
     for (i = 0; i < 16; i++)
     {
@@ -345,12 +340,6 @@ void a_checkdialog::RefreshBd()
 
 void a_checkdialog::RefreshBda()
 {
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(RefreshBda()));
-    if (cn->result)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
     int i;
     for (i = 0; i < 16; i++)
     {
@@ -384,18 +373,15 @@ void a_checkdialog::Check1PPS()
 
 void a_checkdialog::GetIP()
 {
-    connect(cn,SIGNAL(DataReady()),this,SLOT(CheckIP()));
     cn->Send(CN_Gip, &Bip_block, sizeof(Bip));
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        CheckIP();
 }
 
 void a_checkdialog::CheckIP()
 {
-    disconnect(cn,SIGNAL(DataReady()),this,SLOT(CheckIP()));
-    if (cn->result)
-    {
-        ShowErrMsg(cn->result);
-        return;
-    }
     QLabel *lbl = this->findChild<QLabel *>("ipl");
     if (lbl == 0)
         return;
@@ -408,18 +394,19 @@ void a_checkdialog::TimerTimeout()
 {
     if ((BdMeasurementsActive) && (OddTimeout)) // текущие измерения проводим на первом проходе таймера
     {
-        connect(cn,SIGNAL(DataReady()),this,SLOT(RefreshBd()));
         cn->Send(CN_GBd, &Bd_block, sizeof(Bd));
+        while (cn->Busy)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+        if (cn->result == CN_OK)
+            RefreshBd();
     }
     if ((BdaMeasurementsActive) && (!OddTimeout)) // все остальные - на втором
     {
-        connect(cn,SIGNAL(DataReady()),this,SLOT(RefreshBda()));
         cn->Send(CN_Gda, &Bda_block, sizeof(Bda));
+        while (cn->Busy)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+        if (cn->result == CN_OK)
+            RefreshBda();
     }
     OddTimeout = !OddTimeout;
-}
-
-void a_checkdialog::ShowErrMsg(int ermsg)
-{
-    QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
 }
