@@ -483,6 +483,7 @@ void canal::Disconnect()
     if (ThreadStarted)
     {
         emit stopall();
+        thread->wait(1000);
         ThreadStarted = false;
     }
 }
@@ -513,10 +514,12 @@ void canal::StartReconnect()
 {
     ReconModeEnabled = true;
     QWidget *wdgt = new QWidget;
-    lbl = new QLabel("Потеряна связь с модулем!\nПопытка восстановления № 1");
+    wdgt->setAttribute(Qt::WA_DeleteOnClose);
+    lbl = new QLabel("Потеряна связь с модулем!\nПопытка восстановления №"+QString::number(ReconTry));
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(lbl);
     wdgt->setLayout(lyout);
+    connect(this,SIGNAL(closereconwdgt()),wdgt,SLOT(close()));
     wdgt->setVisible(true);
     tmr->start();
     tmr2->start();
@@ -524,14 +527,14 @@ void canal::StartReconnect()
 
 void canal::Reconnect()
 {
-    if (ReconTry == 4)
+    if (ReconTry >= 4)
     {
         tmr->stop();
         tmr2->stop();
-        emit error(ernum);
         Finish(CN_TIMEOUTERROR);
         ReconTry = 0;
         ReconModeEnabled = false;
+        emit closereconwdgt();
     }
     else
     {
@@ -541,6 +544,7 @@ void canal::Reconnect()
         if (ThreadStarted)
         {
             emit stopall();
+            thread->wait(1000);
             ThreadStarted = false;
         }
         Connect();

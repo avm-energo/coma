@@ -98,7 +98,6 @@ e_confdialog::e_confdialog(QWidget *parent) :
 
 void e_confdialog::GetBci()
 {
-    connect(cn,SIGNAL(DataReady()),this,SLOT(CheckConfAndFill()));
     cn->Send(CN_GF,NULL,0,1,Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);

@@ -37,6 +37,7 @@ signals:
     void writedatatoport(QByteArray);
     void gotsomedata(QByteArray);
     void somedatawritten(QByteArray);
+    void closereconwdgt();
 
 public slots:
     void GetSomeData(QByteArray ba);
