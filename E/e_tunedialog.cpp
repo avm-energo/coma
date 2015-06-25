@@ -10,7 +10,6 @@
 #include <QCoreApplication>
 #include "e_tunedialog.h"
 #include "../publicclass.h"
-#include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
 #include "../canal.h"
 
@@ -391,19 +390,8 @@ void e_tunedialog::ShowErrMsg(int ermsg)
 
 void e_tunedialog::StartMip()
 {
-    QThread *thr = new QThread;
-    ethernet *mip = new ethernet;
-//    iec104 *mipcanal = new iec104;
-    mip->moveToThread(thr);
-    connect(thr, SIGNAL(started()), mip, SLOT(run()));
-    connect(this,SIGNAL(stopall()),mip,SLOT(stop()));
-    connect(mip,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
-//    connect(mip,SIGNAL(finished()),thr,SLOT(deleteLater()));
-    connect(mip,SIGNAL(finished()),thr,SLOT(quit()));
-    connect(thr,SIGNAL(finished()),mip,SLOT(deleteLater()));
-    connect(mip,SIGNAL(connected()),this,SLOT(MipConnected()));
-//    connect(this,SIGNAL(SendMip(QByteArray))
-    thr->start();
+    iec104 *mipcanal = new iec104;
+    connect(mipcanal,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
 }
 
 void e_tunedialog::MipConnected()

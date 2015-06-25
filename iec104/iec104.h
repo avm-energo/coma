@@ -14,7 +14,17 @@
 #define I104_TESTFR_ACT     0x43
 #define I104_TESTFR_CON     0x83
 
+// определения возвращаемого значения функции isIncomeDataValid
+#define I104_RCVNORM        0x00
+#define I104_RCVSMSIZE      0x01
+#define I104_RCVWRONG       0x02
+
+#define I104_CMD_LISTEN  0 // нет текущих команд для МИП, режим ожидания
+#define I104_CMD_START   1 // реализуется команда START_DT
+//#define CMD_
+
 #include <QObject>
+#include <QTimer>
 
 class iec104 : public QObject
 {
@@ -37,9 +47,23 @@ public slots:
     void Send(APCI, ASDU=QByteArray());
     void Start();
     void ParseIncomeData(QByteArray);
+    int isIncomeDataValid(QByteArray);
 
 signals:
-    void EtherSend(QByteArray);
+    void writedatatoeth(QByteArray);
+    void stopall();
+    void error(int);
+
+private:
+    int cmd;
+    quint8 APDULength;
+    quint8 APDUFormat;
+    QTimer *TTimer;
+    quint16 V_S, V_R, Ack;
+    QByteArray ReadData;
+
+private slots:
+    void CanalError(int);
 };
 
 #endif // IEC104_H

@@ -59,10 +59,10 @@ void ethernet::SendData()
     OutDataBuf.clear();
 }
 
-void ethernet::InitiateWriteDataToPort(QByteArray *ba)
+void ethernet::InitiateWriteDataToPort(QByteArray ba)
 {
     OutDataBufMtx.lock();
-    OutDataBuf = *ba;
+    OutDataBuf = ba;
     OutDataBufMtx.unlock();
 }
 

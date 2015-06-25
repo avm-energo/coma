@@ -17,11 +17,10 @@ public:
     quint16 ASDU;
     bool ClosePortAndFinishThread;
 
-    void InitiateWriteDataToPort(QByteArray *);
-
 public slots:
     void run();
     void stop();
+    void InitiateWriteDataToPort(QByteArray);
 
 signals:
     void error(int);
