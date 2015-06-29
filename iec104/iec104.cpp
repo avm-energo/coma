@@ -112,24 +112,32 @@ int iec104::isIncomeDataValid(QByteArray ba)
     {
     case I104_I:
     {
-        quint16 V_Rrcv = static_cast<quint16>(ba.at(3))*256+static_cast<quint16>(ba.at(2)&0xFE);
-        if (V_Rrcv != V_R)
-        {
-            emit error(M104_NUMER);
-            return I104_RCVWRONG;
-        }
-        V_R++;
-        quint16 V_Srcv = static_cast<quint16>(ba.at(5))*256+static_cast<quint16>(ba.at(4)&0xFE);
+        quint16 V_Srcv = static_cast<quint16>(ba.at(3))*256+static_cast<quint16>(ba.at(2)&0xFE);
         if (V_Srcv != V_S)
         {
             emit error(M104_NUMER);
             return I104_RCVWRONG;
         }
+        quint16 V_Rrcv = static_cast<quint16>(ba.at(5))*256+static_cast<quint16>(ba.at(4)&0xFE);
+        if (V_Rrcv != V_S)
+        {
+            emit error(M104_NUMER);
+            return I104_RCVWRONG;
+        }
+        V_R++;
         return I104_RCVNORM;
         break;
     }
     case I104_S:
     {
+        quint16 V_Rrcv = static_cast<quint16>(ba.at(5))*256+static_cast<quint16>(ba.at(4)&0xFE);
+        if (V_Rrcv != V_S)
+        {
+            emit error(M104_NUMER);
+            return I104_RCVWRONG;
+        }
+        V_R++;
+        return I104_RCVNORM;
         break;
     }
     case I104_U:

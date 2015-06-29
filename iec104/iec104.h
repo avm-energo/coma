@@ -53,6 +53,7 @@ signals:
     void writedatatoeth(QByteArray);
     void stopall();
     void error(int);
+    void signalsreceived(QList<int>, QStringList); // первое - номера сигналов, второе - их значения ("" ~ недостоверное значение)
 
 private:
     int cmd;
