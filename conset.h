@@ -70,6 +70,7 @@ private slots:
     void ShowErrMsg(int);
     void CheckBsi();
     void UpdateMainTE(QByteArray);
+    void UpdateMainTE104(QByteArray);
     void SetPort(QString str);
     void SetBaud(QString str);
     void WriteSN();

@@ -4,9 +4,10 @@
 #include <QDialog>
 #include <QCloseEvent>
 #include <QByteArray>
-//#include "canal.h"
+#include "../iec104/iec104.h"
 
 #define TUNEFILELENGTH  256
+
 class e_tunedialog : public QDialog
 {
     Q_OBJECT
@@ -16,11 +17,13 @@ public:
 signals:
     void stopall();
     void SendMip(QByteArray);
+    void dataready(QByteArray);
+    void error(int);
 
 public slots:
 
 private:
-//    canal *cn;
+    iec104 *mipcanal;
 
     struct Bda
     {
@@ -43,14 +46,17 @@ private:
     void RefreshTuneCoefs();
 
 private slots:
-    void ShowErrMsg(int);
     void StartTune();
     void ReadTuneCoefs();
     void WriteTuneCoefs();
     void SaveToFile();
     void LoadFromFile();
     void StartMip();
+    void EthConnected();
     void MipConnected();
+    void MipDataRcv(QByteArray);
+    void MipDataXmit(QByteArray);
+    void MipData();
 
 protected:
     void closeEvent(QCloseEvent *e);

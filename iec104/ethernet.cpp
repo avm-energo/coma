@@ -7,7 +7,8 @@
 ethernet::ethernet(QObject *parent) :
     QObject(parent)
 {
-
+    OutDataBuf.clear();
+    ClosePortAndFinishThread = false;
 }
 
 void ethernet::run()
@@ -25,25 +26,25 @@ void ethernet::run()
         OutDataBufMtx.unlock();
         if (ClosePortAndFinishThread)
         {
-            stop();
-            return;
+            if (sock->isOpen())
+            {
+                sock->close();
+                sock->disconnect();
+                delete sock;
+            }
+            emit finished();
+            break;
         }
         QTime tmr;
         tmr.start();
-        while (tmr.elapsed() < 100)
-            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+        while (tmr.elapsed() < 1000)
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 1000);
     }
 }
 
 void ethernet::stop()
 {
-    if (sock->isOpen())
-    {
-        sock->close();
-        sock->disconnect();
-        delete sock;
-    }
-    emit finished();
+    ClosePortAndFinishThread = true;
 }
 
 void ethernet::seterr(QAbstractSocket::SocketError err)

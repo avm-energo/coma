@@ -10,14 +10,12 @@
 #include <QCoreApplication>
 #include "e_tunedialog.h"
 #include "../publicclass.h"
-#include "../iec104/iec104.h"
 #include "../canal.h"
 
 e_tunedialog::e_tunedialog(QWidget *parent) :
     QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-//    cn = new canal;
     SetupUI();
 }
 
@@ -93,7 +91,7 @@ void e_tunedialog::SetupUI()
     glyout->addWidget(pb, 12, 0, 1, 6);
     pb = new QPushButton("Запустить связь с МИП");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartMip()));
-    pb->setEnabled(false);
+//    pb->setEnabled(false);
     glyout->addWidget(pb, 13, 0, 1, 6);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
@@ -359,7 +357,7 @@ void e_tunedialog::LoadFromFile()
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly))
     {
-        ShowErrMsg(ER_FILEOPENERROR);
+        emit error(ER_FILEOPENERROR);
         return;
     }
     QByteArray *ba = new QByteArray(file.readAll());
@@ -383,20 +381,45 @@ void e_tunedialog::SaveToFile()
 
 }
 
-void e_tunedialog::ShowErrMsg(int ermsg)
-{
-    QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
-}
-
 void e_tunedialog::StartMip()
 {
-    iec104 *mipcanal = new iec104;
-    connect(mipcanal,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
+    mipcanal = new iec104;
+    connect(mipcanal,SIGNAL(error(int)),this,SIGNAL(error(int)));
+    connect(mipcanal,SIGNAL(readdatafrometh(QByteArray)),this,SLOT(MipDataRcv(QByteArray)));
+    connect(mipcanal,SIGNAL(writedatatoeth(QByteArray)),this,SLOT(MipDataXmit(QByteArray)));
+    connect(mipcanal,SIGNAL(signalsreceived()),this,SLOT(MipData()));
+    connect(mipcanal,SIGNAL(ethconnected()),this,SLOT(EthConnected()));
+    connect(mipcanal,SIGNAL(startack()),this,SLOT(MipConnected()));
+}
+
+void e_tunedialog::EthConnected()
+{
+    QByteArray ba;
+    ba.clear();
+    ba.insert(0,0x3A);
+    emit dataready(ba);
 }
 
 void e_tunedialog::MipConnected()
 {
     QMessageBox::warning(this,"w","Связь с МИП-02 установлена!");
+}
+
+void e_tunedialog::MipDataRcv(QByteArray ba)
+{
+//    ba.insert(0,'<');
+//    emit dataready(ba);
+}
+
+void e_tunedialog::MipDataXmit(QByteArray ba)
+{
+//    ba.insert(0,'>');
+//    emit dataready(ba);
+}
+
+void e_tunedialog::MipData()
+{
+    // приём из mipcanal::Signals номеров сигналов (SigNum) и их значений (SigVal) и их дальнейшая обработка
 }
 
 void e_tunedialog::closeEvent(QCloseEvent *e)

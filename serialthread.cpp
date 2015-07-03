@@ -23,7 +23,7 @@ void SerialThread::run()
         emit finished();
         return;
     }
-    port->setBaudRate(baud);
+    port->setBaudRate(115200);
     port->setParity(QSerialPort::NoParity);
     port->setDataBits(QSerialPort::Data8);
     port->setFlowControl(QSerialPort::NoFlowControl);

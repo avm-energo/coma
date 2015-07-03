@@ -222,18 +222,18 @@ void ConSet::Connect()
     tmpmodel->setStringList(tmpsl);
     portscb->setModel(tmpmodel);
     lyout->addWidget(portscb);
-    QComboBox *baudscb = new QComboBox;
+/*    QComboBox *baudscb = new QComboBox;
     baudscb->setObjectName("connectbaudscb");
     connect(baudscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetBaud(QString)));
     tmpmodel = new QStringListModel;
     tmpsl.clear();
     QList<qint32> bauds = QSerialPortInfo::standardBaudRates();
     for (i = 0; i < bauds.size(); i++)
-        tmpsl << QString::number(bauds.at(i));
+ *       tmpsl << QString::number(bauds.at(i));
     SetBaud(tmpsl.at(0));
     tmpmodel->setStringList(tmpsl);
     baudscb->setModel(tmpmodel);
-    lyout->addWidget(baudscb);
+    lyout->addWidget(baudscb); */
 
     QPushButton *nextL = new QPushButton("Далее");
     connect(nextL,SIGNAL(clicked()),this,SLOT(Next()));
@@ -281,14 +281,6 @@ void ConSet::SetPort(QString str)
 void ConSet::SetBaud(QString str)
 {
     cn->baud = str.toInt();
-}
-
-void ConSet::ShowErrMsg(int ermsg)
-{
-    if (ermsg < pc.errmsgs.size())
-        QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
-    else
-        QMessageBox::critical(this,"error!","Произошла неведомая фигня");
 }
 
 void ConSet::GetBsi()
@@ -491,6 +483,8 @@ void ConSet::AllIsOk()
         MainTW->addTab(DownDialog, "События");
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
         connect(EConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
+        connect(ETuneDialog,SIGNAL(dataready(QByteArray)),this,SLOT(UpdateMainTE104(QByteArray)));
+        connect(ETuneDialog,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
         break;
     }
     default:
@@ -502,6 +496,31 @@ void ConSet::AllIsOk()
         emit updatetuneproper(true);
     MainTW->repaint();
     MainTW->show();
+}
+
+void ConSet::UpdateMainTE104(QByteArray ba)
+{
+    QString tmpString;
+    if (ba.at(0) == 0x3A) // ':' - символ установления связи по Ethernet
+    {
+        ba.remove(0,1);
+        tmpString = "Eth connected!";
+    }
+    else if (ba.at(0) == 0x3E) // '>' - символ выдачи
+    {
+        ba.remove(0,1);
+        tmpString = "104->";
+    }
+    else if (ba.at(0) == 0x3C) // '<' - символ приёма
+    {
+        ba.remove(0,1);
+        tmpString = "104<-";
+    }
+    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
+    if (MainTE == 0)
+        return;
+    MainTE->append(tmpString);
+    UpdateMainTE(ba);
 }
 
 void ConSet::UpdateMainTE(QByteArray ba)
@@ -666,4 +685,12 @@ void ConSet::SetMipConPar()
     sets->setValue("mip/asdu",pc.MIPASDU);
     sets->setValue("mip/ip",pc.MIPIP);
     emit mipparset();
+}
+
+void ConSet::ShowErrMsg(int ermsg)
+{
+    if (ermsg < pc.errmsgs.size())
+        QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
+    else
+        QMessageBox::critical(this,"error!","Произошла неведомая фигня #"+QString::number(ermsg,10));
 }
