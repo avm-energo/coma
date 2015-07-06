@@ -25,15 +25,15 @@ void e_tunedialog::SetupUI()
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
     QWidget *cp1 = new QWidget;
     QWidget *cp2 = new QWidget;
+    QWidget *cp3 = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QLabel *lbl;
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
     QGridLayout *glyout = new QGridLayout;
 
     QTabWidget *TuneTW = new QTabWidget;
     TuneTW->addTab(cp1,"Коэффициенты");
     TuneTW->addTab(cp2,"Настройка");
+    TuneTW->addTab(cp3,"Данные МИП");
     QGroupBox *gb = new QGroupBox("Настроечные коэффициенты");
     for (i = 0; i < 6; i++)
     {
@@ -96,6 +96,96 @@ void e_tunedialog::SetupUI()
     gb->setLayout(glyout);
     lyout->addWidget(gb);
     cp1->setLayout(lyout);
+
+
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    gb = new QGroupBox("Измеряемые параметры");
+    QGroupBox *gb2 = new QGroupBox("Частота");
+    for (i = 0; i < 3; i++)
+    {
+        lbl = new QLabel("ф."+QString::number(i+10,36));
+        hlyout->addWidget(lbl);
+        lbl = new QLabel("");
+        lbl->setObjectName("mip"+QString::number(i+1));
+        lbl->setStyleSheet(ValuesFormat);
+        hlyout->addWidget(lbl);
+    }
+    gb2->setLayout(hlyout);
+    vlyout->addWidget(gb2);
+    hlyout = new QHBoxLayout;
+    gb2 = new QGroupBox("Фазное напряжение");
+    for (i = 0; i < 3; i++)
+    {
+        lbl = new QLabel("ф."+QString::number(i+10,36));
+        hlyout->addWidget(lbl);
+        lbl = new QLabel("");
+        lbl->setObjectName("mip"+QString::number(i+4));
+        lbl->setStyleSheet(ValuesFormat);
+        hlyout->addWidget(lbl);
+    }
+    gb2->setLayout(hlyout);
+    vlyout->addWidget(gb2);
+    hlyout = new QHBoxLayout;
+    gb2 = new QGroupBox("Фазный ток");
+    for (i = 0; i < 3; i++)
+    {
+        lbl = new QLabel("ф."+QString::number(i+10,36));
+        hlyout->addWidget(lbl);
+        lbl = new QLabel("");
+        lbl->setObjectName("mip"+QString::number(i+7));
+        lbl->setStyleSheet(ValuesFormat);
+        hlyout->addWidget(lbl);
+    }
+    gb2->setLayout(hlyout);
+    vlyout->addWidget(gb2);
+    hlyout = new QHBoxLayout;
+    gb2 = new QGroupBox("Угол нагрузки");
+    for (i = 0; i < 3; i++)
+    {
+        lbl = new QLabel("ф."+QString::number(i+10,36));
+        hlyout->addWidget(lbl);
+        lbl = new QLabel("");
+        lbl->setObjectName("mip"+QString::number(i+11));
+        lbl->setStyleSheet(ValuesFormat);
+        hlyout->addWidget(lbl);
+    }
+    gb2->setLayout(hlyout);
+    vlyout->addWidget(gb2);
+    hlyout = new QHBoxLayout;
+    gb2 = new QGroupBox("Фазовый угол напряжения");
+    for (i = 0; i < 3; i++)
+    {
+        lbl = new QLabel("ф."+QString::number(i+10,36));
+        hlyout->addWidget(lbl);
+        lbl = new QLabel("");
+        lbl->setObjectName("mip"+QString::number(i+14));
+        lbl->setStyleSheet(ValuesFormat);
+        hlyout->addWidget(lbl);
+    }
+    gb2->setLayout(hlyout);
+    vlyout->addWidget(gb2);
+    hlyout = new QHBoxLayout;
+    gb2 = new QGroupBox("Прочие");
+    lbl = new QLabel("Ток нулевого провода");
+    hlyout->addWidget(lbl);
+    lbl = new QLabel("");
+    lbl->setObjectName("mip10");
+    lbl->setStyleSheet(ValuesFormat);
+    hlyout->addWidget(lbl);
+    lbl = new QLabel("Температура МИП");
+    hlyout->addWidget(lbl);
+    lbl = new QLabel("");
+    lbl->setObjectName("mip17");
+    lbl->setStyleSheet(ValuesFormat);
+    hlyout->addWidget(lbl);
+    gb2->setLayout(hlyout);
+    vlyout->addWidget(gb2);
+    gb->setLayout(vlyout);
+    vlyout = new QVBoxLayout;
+    vlyout->addWidget(gb);
+    cp3->setLayout(vlyout);
+
 
 /*    lyout = new QVBoxLayout;
     pb = new QPushButton("Начать настройку");
@@ -387,9 +477,8 @@ void e_tunedialog::StartMip()
     connect(mipcanal,SIGNAL(error(int)),this,SIGNAL(error(int)));
     connect(mipcanal,SIGNAL(readdatafrometh(QByteArray)),this,SLOT(MipDataRcv(QByteArray)));
     connect(mipcanal,SIGNAL(writedatatoeth(QByteArray)),this,SLOT(MipDataXmit(QByteArray)));
-    connect(mipcanal,SIGNAL(signalsreceived()),this,SLOT(MipData()));
+    connect(mipcanal,SIGNAL(signalsready()),this,SLOT(MipData()));
     connect(mipcanal,SIGNAL(ethconnected()),this,SLOT(EthConnected()));
-    connect(mipcanal,SIGNAL(startack()),this,SLOT(MipConnected()));
 }
 
 void e_tunedialog::EthConnected()
@@ -420,6 +509,16 @@ void e_tunedialog::MipDataXmit(QByteArray ba)
 void e_tunedialog::MipData()
 {
     // приём из mipcanal::Signals номеров сигналов (SigNum) и их значений (SigVal) и их дальнейшая обработка
+    for (int i=1;i<18;i++)
+    {
+        quint32 index = mipcanal->Signals.SigNum.indexOf(i);
+        if (index != -1)
+        {
+            QLabel *lbl = this->findChild<QLabel *>("mip"+QString::number(i));
+            if (lbl != 0)
+                lbl->setText(mipcanal->Signals.SigVal.at(index));
+        }
+    }
 }
 
 void e_tunedialog::closeEvent(QCloseEvent *e)

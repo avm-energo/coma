@@ -51,16 +51,16 @@
 
 // CAUSE OF TRANSMISSION: define causes
 
-#define COT_PERIODIC								1
+#define COT_PERIODIC							1
 #define COT_BACKGROUND							2
 #define COT_SPONTANEOUS							3
 #define COT_INITIALISED							4
-#define COT_REQUEST									5
+#define COT_REQUEST								5
 #define COT_ACTIVATION							6
-#define COT_ACTIVATIONCONFIRM				7
+#define COT_ACTIVATIONCONFIRM               	7
 #define COT_DEACTIVATION						8
-#define COT_DEACTIVATIONCONFIRM			9
-#define COT_ACTIVATIONTERMINATION		10
+#define COT_DEACTIVATIONCONFIRM                 9
+#define COT_ACTIVATIONTERMINATION               10
 #define COT_REMOTECOMMAND						11
 #define COT_LOCALCOMMAND						12
 #define COT_FILETRANSFER						13
@@ -68,23 +68,17 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QMutex>
 
 #include "../publicclass.h"
 
-class iec104 : public QObject
+class Parse104 : public QObject
 {
     Q_OBJECT
 
 public:
-    iec104(QObject *parent = 0);
-    ~iec104();
-
-    typedef struct
-    {
-        quint8 start;
-        quint8 APDUlength;
-        quint8 contrfield[4];
-    } APCI;
+    Parse104(QObject *parent=0);
+    ~Parse104();
 
     typedef struct
     {
@@ -94,24 +88,20 @@ public:
         QList<quint64> CP56Time;
     } Signals104; // первое - номера сигналов, второе - их значения ("" ~ недостоверное значение), третье - метка времени
 
-    typedef QByteArray ASDU;
+    QByteArray ReadData;
     Signals104 Signals;
+    quint16 V_S, V_R, Ack;
+    int cmd;
+    QMutex ReadDataMutex, SignalsMutex;
 
 public slots:
-    void Send(APCI, ASDU=QByteArray());
-    void Start();
-    void ParseIncomeData(QByteArray);
-    int isIncomeDataValid(QByteArray);
-    void SignalsGot();
+    void ParseIncomeData();
+    void stop();
 
 signals:
-    void writedatatoeth(QByteArray);
-    void stopall();
-    void error(int);
     void signalsreceived();
-    void readdatafrometh(QByteArray);
-    void ethconnected();
-    void startack();
+    void finished();
+    void error(int);
 
 private:
     typedef struct
@@ -137,17 +127,53 @@ private:
     } DataUnitIdentifier;
 
     DataUnitIdentifier DUI;
-    int cmd;
+    bool ThreadMustBeFinished;
     quint8 APDULength;
     quint8 APDUFormat;
-    QTimer *TTimer;
-    quint16 V_S, V_R, Ack;
-    QByteArray ReadData;
-    bool Started;
-    bool IncomingDisabled;
 
     void ParseIFormat(QByteArray);
+    int isIncomeDataValid(QByteArray);
+
 private slots:
+};
+
+class iec104 : public QObject
+{
+    Q_OBJECT
+
+public:
+    iec104(QObject *parent = 0);
+    ~iec104();
+
+    typedef struct
+    {
+        quint8 start;
+        quint8 APDUlength;
+        quint8 contrfield[4];
+    } APCI;
+
+    typedef QByteArray ASDU;
+    Parse104 *Parse;
+    Parse104::Signals104 Signals;
+
+public slots:
+    void Send(APCI, ASDU=QByteArray());
+    void Start();
+    void SignalsGot();
+
+signals:
+    void writedatatoeth(QByteArray);
+    void stopall();
+    void error(int);
+    void readdatafrometh(QByteArray);
+    void ethconnected();
+    void signalsready();
+
+private:
+    QTimer *TTimer;
+
+private slots:
+    void GetSomeData(QByteArray);
 };
 
 #endif // IEC104_H

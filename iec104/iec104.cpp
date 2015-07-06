@@ -8,7 +8,6 @@
 
 iec104::iec104(QObject *parent) : QObject(parent)
 {
-    ReadData.clear();
     QThread *thr = new QThread;
     ethernet *eth = new ethernet;
     eth->moveToThread(thr);
@@ -20,19 +19,25 @@ iec104::iec104(QObject *parent) : QObject(parent)
     connect(eth,SIGNAL(connected()),this,SIGNAL(ethconnected()));
     connect(eth,SIGNAL(connected()),this,SLOT(Start()));
     connect(eth,SIGNAL(error(int)),this,SIGNAL(error(int)));
-    connect(eth,SIGNAL(newdataarrived(QByteArray)),this,SLOT(ParseIncomeData(QByteArray)));
+    connect(eth,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
     connect(this,SIGNAL(writedatatoeth(QByteArray)),eth,SLOT(InitiateWriteDataToPort(QByteArray)));
+
+    QThread *ParseThread = new QThread;
+    Parse = new Parse104;
+    Parse->moveToThread(ParseThread);
+    connect(ParseThread,SIGNAL(started()),Parse,SLOT(ParseIncomeData()));
+    connect(Parse,SIGNAL(finished()),ParseThread,SLOT(quit()));
+    connect(this,SIGNAL(stopall()),Parse,SLOT(stop()));
+    connect(Parse,SIGNAL(finished()),Parse,SLOT(deleteLater()));
+    connect(ParseThread,SIGNAL(finished()),ParseThread,SLOT(deleteLater()));
+
+    connect(Parse,SIGNAL(signalsreceived()),this,SLOT(SignalsGot()));
+    ParseThread->start();
     thr->start();
-    Ack = V_S = V_R = 0;
-    APDUFormat = I104_WRONG;
-    Started = false;
-    IncomingDisabled = false;
 }
 
 iec104::~iec104()
 {
-
-
 }
 
 void iec104::Start()
@@ -42,7 +47,7 @@ void iec104::Start()
     StartDT.APDUlength = 4;
     StartDT.contrfield[0] = I104_STARTDT_ACT;
     StartDT.contrfield[1] = StartDT.contrfield[2] = StartDT.contrfield[3] = 0;
-    cmd = I104_STARTDT_ACT;
+    Parse->cmd = I104_STARTDT_ACT;
     Send(StartDT); // ASDU = QByteArray()
 }
 
@@ -57,47 +62,80 @@ void iec104::Send(APCI apci, ASDU asdu)
         tempp = &asdu;
         ba.append(static_cast<char *>(tempp),sizeof(asdu));
     }
-    V_S++;
     emit writedatatoeth(ba);
 }
 
-void iec104::ParseIncomeData(QByteArray ba)
+void iec104::GetSomeData(QByteArray ba)
 {
-    if (!IncomingDisabled)
+    emit readdatafrometh(ba);
+    Parse->ReadDataMutex.lock();
+    Parse->ReadData.append(ba);
+    Parse->ReadDataMutex.unlock();
+}
+
+void iec104::SignalsGot()
+{
+    Parse->SignalsMutex.lock();
+    Signals.SigNum=Parse->Signals.SigNum;
+    Signals.SigQuality=Parse->Signals.SigQuality;
+    Signals.SigVal=Parse->Signals.SigVal;
+    Signals.CP56Time=Parse->Signals.CP56Time;
+    Parse->Signals.SigNum.clear();
+    Parse->Signals.SigVal.clear();
+    Parse->Signals.SigQuality.clear();
+    Parse->Signals.CP56Time.clear();
+    Parse->SignalsMutex.unlock();
+    emit signalsready();
+}
+
+// Класс PARSE104
+
+Parse104::Parse104(QObject *parent) : QObject(parent)
+{
+    ReadData.clear();
+    ThreadMustBeFinished = false;
+    Ack = V_S = V_R = 0;
+    APDUFormat = I104_WRONG;
+}
+
+Parse104::~Parse104()
+{
+}
+
+void Parse104::ParseIncomeData()
+{
+    int stpos=0;
+    while (!ThreadMustBeFinished)
     {
-        IncomingDisabled = true;
-        emit readdatafrometh(ba);
-        ReadData.append(ba);
-        int stpos=0;
-        while ((stpos = ReadData.indexOf(0x68,stpos)) != -1)
+        ReadDataMutex.lock();
+        if ((stpos = ReadData.indexOf(0x68,stpos)) != -1)
         {
-    /*        if (ReadData.size() > stpos) // если после 0х68 есть ещё хоть один символ
-                from = stpos+1; // следующий поиск начинаем со следующего символа */
-            QByteArray tmpba = ReadData.right(ReadData.size()-stpos); // оставляем только нужные для обработки байты
-            stpos++;
-            int tmpi = isIncomeDataValid(tmpba);
+            ReadData.remove(0, stpos); // оставляем только нужные для обработки байты
+            stpos=1; // раз отбросили всё, что было слева до 0х68, то начинать надо будет со следующего после 0х68 байта
+            int tmpi = isIncomeDataValid(ReadData);
             if (tmpi == I104_RCVNORM) // если поймали правильное начало данных, переходим к их обработке
             {
-                ReadData = tmpba.right(tmpba.size()-6); // отбрасываем начальные байты вместе с APCI, ибо уже не нужны
+                stpos=0;
+                ReadData.remove(0,6); // отбрасываем начальные байты вместе с APCI, ибо уже не нужны
                 if (APDUFormat == I104_I)
                     ParseIFormat(ReadData);
             }
             else if (tmpi == I104_RCVSMSIZE) // данных недостаточно, надо подождать и набрать ещё
-            {
-                IncomingDisabled = false;
-                return;
-            }
+                stpos = 0; // возвращаем указатель поиска, чтобы не пропустить посылку
             // в противном случае переход к следующему вхождению 0х68
         }
+        else
+            stpos = 0;
+        ReadDataMutex.unlock();
         QTime tmr;
         tmr.start();
         while (tmr.elapsed() < 100)
             QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-        IncomingDisabled = false;
     }
+    emit finished();
 }
 
-int iec104::isIncomeDataValid(QByteArray ba)
+int Parse104::isIncomeDataValid(QByteArray ba)
 {
     if (ba.size()<6) // нет APCI, рано принимать решение по правильности блока
         return I104_RCVSMSIZE;
@@ -123,12 +161,14 @@ int iec104::isIncomeDataValid(QByteArray ba)
     case I104_I:
     {
         quint16 V_Rrcv = static_cast<quint16>(ba.at(3))*256+static_cast<quint16>(ba.at(2)&0xFE);
+        V_Rrcv >>= 1;
         if (V_Rrcv != V_R)
         {
             emit error(M104_NUMER);
             return I104_RCVWRONG;
         }
         quint16 V_Srcv = static_cast<quint16>(ba.at(5))*256+static_cast<quint16>(ba.at(4)&0xFE);
+        V_Srcv >>= 1;
         if (V_Srcv != V_S)
         {
             emit error(M104_NUMER);
@@ -141,6 +181,7 @@ int iec104::isIncomeDataValid(QByteArray ba)
     case I104_S:
     {
         quint16 V_Srcv = static_cast<quint16>(ba.at(5))*256+static_cast<quint16>(ba.at(4)&0xFE);
+        V_Srcv >>= 1;
         if (V_Srcv != V_S)
         {
             emit error(M104_NUMER);
@@ -153,16 +194,9 @@ int iec104::isIncomeDataValid(QByteArray ba)
     case I104_U:
     {
         if ((ba.at(2) == I104_STARTDT_CON) && (cmd == I104_STARTDT_ACT)) // если пришло подтверждение старта и перед этим мы старт запрашивали
-        {
             cmd = I104_STARTDT_CON;
-            Started = true;
-            emit startack();
-        }
         if ((ba.at(2) == I104_STOPDT_CON) && (cmd == I104_STOPDT_ACT)) // если пришло подтверждение стопа и перед этим мы стоп запрашивали
-        {
             cmd = I104_STOPDT_CON;
-            Started = false;
-        }
         if ((ba.at(2) == I104_TESTFR_CON) && (cmd == I104_TESTFR_ACT)) // если пришло подтверждение теста и перед этим мы тест запрашивали
             cmd = I104_TESTFR_CON;
         return I104_RCVNORM;
@@ -174,19 +208,19 @@ int iec104::isIncomeDataValid(QByteArray ba)
     return I104_RCVWRONG;
 }
 
-void iec104::ParseIFormat(QByteArray ba) // основной разборщик
+void Parse104::ParseIFormat(QByteArray ba) // основной разборщик
 {
+    SignalsMutex.lock();
     DUI.typeIdent = ba.at(0);
     DUI.qualifier.Number = ba.at(1)&0x7f;
     DUI.qualifier.SQ = ba.at(1)>>7;
     DUI.cause.cause = ba.at(2)&0x3F;
     DUI.cause.confirm = (ba.at(2)>>6)&0x01;
     DUI.cause.test = ba.at(2)>>7;
-//    DUI.cause.initiator = ba.at(3);
-//    DUI.commonAdrASDU = ba.at(4) + ba.at(5)*256;
-    DUI.commonAdrASDU = ba.at(3);
+    DUI.cause.initiator = ba.at(3);
+    DUI.commonAdrASDU = ba.at(4) + ba.at(5)*256;
     quint32 ObjectAdr;
-    quint32 index = 4;
+    quint32 index = 6;
     int i;
     for (i = 0; i < DUI.qualifier.Number; i++)
     {
@@ -206,18 +240,23 @@ void iec104::ParseIFormat(QByteArray ba) // основной разборщик
         }
         case M_ME_TF_1: // 36 тип - измеренные данные с плавающей запятой
         {
+            if (ObjectAdr > 17) // для регулировки Э значения сигналов МИПа с индексом более 17 не требуются
+            {
+                index += 12;
+                break;
+            }
             Signals.SigNum.append(ObjectAdr);
             float value;
             memcpy(&value,&ba.data()[index],4);
             index += 4;
-            Signals.SigVal.append(QString::number(value));
+            Signals.SigVal.append(QString::number(value,'g',6));
             quint8 quality;
             memcpy(&quality,&ba.data()[index],1);
             index++;
             Signals.SigQuality.append(quality);
             quint64 time;
             memcpy(&time,&ba.data()[index],7);
-            value += 7;
+            index += 7;
             Signals.CP56Time.append(time);
             break;
         }
@@ -225,10 +264,11 @@ void iec104::ParseIFormat(QByteArray ba) // основной разборщик
             break;
         }
     }
+    SignalsMutex.unlock();
+    emit signalsreceived();
 }
 
-void iec104::SignalsGot()
+void Parse104::stop()
 {
-    Signals.SigNum.clear();
-    Signals.SigVal.clear();
+    ThreadMustBeFinished = true;
 }
