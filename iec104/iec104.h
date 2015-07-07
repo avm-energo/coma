@@ -8,6 +8,8 @@
 #define I104_U              0x03
 #define I104_WRONG          0xFF
 
+#define I104_W              8
+
 #define I104_STARTDT_ACT    0x07
 #define I104_STARTDT_CON    0x0B
 #define I104_STOPDT_ACT     0x13
@@ -89,9 +91,11 @@ public:
     } Signals104; // первое - номера сигналов, второе - их значения ("" ~ недостоверное значение), третье - метка времени
 
     QByteArray ReadData;
+    quint32 ReadDataSize;
     Signals104 Signals;
-    quint16 V_S, V_R, Ack;
+    quint16 V_S, V_R, AckVR;
     int cmd;
+    bool ReceiverBusy, GetNewVR;
     QMutex ReadDataMutex, SignalsMutex;
 
 public slots:
@@ -102,6 +106,7 @@ signals:
     void signalsreceived();
     void finished();
     void error(int);
+    void sendS();
 
 private:
     typedef struct
@@ -173,6 +178,7 @@ private:
     QTimer *TTimer;
 
 private slots:
+    void SendS();
     void GetSomeData(QByteArray);
 };
 

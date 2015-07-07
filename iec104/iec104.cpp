@@ -32,6 +32,7 @@ iec104::iec104(QObject *parent) : QObject(parent)
     connect(ParseThread,SIGNAL(finished()),ParseThread,SLOT(deleteLater()));
 
     connect(Parse,SIGNAL(signalsreceived()),this,SLOT(SignalsGot()));
+    connect(Parse,SIGNAL(sendS()),this,SLOT(SendS()));
     ParseThread->start();
     thr->start();
 }
@@ -68,8 +69,11 @@ void iec104::Send(APCI apci, ASDU asdu)
 void iec104::GetSomeData(QByteArray ba)
 {
     emit readdatafrometh(ba);
+    if (Parse->ReceiverBusy) // выкидываем посылки свыше w
+        return;
     Parse->ReadDataMutex.lock();
     Parse->ReadData.append(ba);
+    Parse->ReadDataSize = Parse->ReadData.size();
     Parse->ReadDataMutex.unlock();
 }
 
@@ -88,14 +92,31 @@ void iec104::SignalsGot()
     emit signalsready();
 }
 
+void iec104::SendS()
+{
+    APCI Confirm;
+    Confirm.start = I104_START;
+    Confirm.APDUlength = 4;
+    Confirm.contrfield[0] = I104_S;
+    Confirm.contrfield[1] = 0x00;
+    quint16 VR = Parse->V_R;
+    Confirm.contrfield[2] = (VR & 0x007F) << 1;
+    Confirm.contrfield[3] = (VR & 0x7F80) >> 7;
+    Parse->cmd = I104_S;
+    Send(Confirm); // ASDU = QByteArray()
+}
+
 // Класс PARSE104
 
 Parse104::Parse104(QObject *parent) : QObject(parent)
 {
     ReadData.clear();
     ThreadMustBeFinished = false;
-    Ack = V_S = V_R = 0;
+    V_S = V_R = 0;
+    AckVR = I104_W;
     APDUFormat = I104_WRONG;
+    ReceiverBusy = false;
+    GetNewVR = false;
 }
 
 Parse104::~Parse104()
@@ -108,6 +129,22 @@ void Parse104::ParseIncomeData()
     while (!ThreadMustBeFinished)
     {
         ReadDataMutex.lock();
+        if (ReadData.size()) // если в буфере есть необработанные данные
+        {
+            if (V_R > AckVR) // принято w и более посылок
+            {
+                ReceiverBusy = true;
+            }
+        }
+        else
+        {
+            if (ReceiverBusy)
+            {
+                ReceiverBusy = false;
+                emit sendS();
+                GetNewVR = true;
+            }
+        }
         if ((stpos = ReadData.indexOf(0x68,stpos)) != -1)
         {
             ReadData.remove(0, stpos); // оставляем только нужные для обработки байты
@@ -125,7 +162,10 @@ void Parse104::ParseIncomeData()
             // в противном случае переход к следующему вхождению 0х68
         }
         else
+        {
+            ReadData.clear();
             stpos = 0;
+        }
         ReadDataMutex.unlock();
         QTime tmr;
         tmr.start();
@@ -162,6 +202,12 @@ int Parse104::isIncomeDataValid(QByteArray ba)
     {
         quint16 V_Rrcv = static_cast<quint16>(ba.at(3))*256+static_cast<quint16>(ba.at(2)&0xFE);
         V_Rrcv >>= 1;
+        if (GetNewVR)
+        {
+            V_R = V_Rrcv;
+            GetNewVR = false;
+            AckVR = V_R + I104_W;
+        }
         if (V_Rrcv != V_R)
         {
             emit error(M104_NUMER);
