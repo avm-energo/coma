@@ -90,12 +90,12 @@ public:
         QList<quint64> CP56Time;
     } Signals104; // первое - номера сигналов, второе - их значения ("" ~ недостоверное значение), третье - метка времени
 
-    QByteArray ReadData;
+    QList<QByteArray> ParseData;
     quint32 ReadDataSize;
     Signals104 Signals;
     quint16 V_S, V_R, AckVR;
     int cmd;
-    bool ReceiverBusy, GetNewVR;
+    bool ReceiverBusy, GetNewVR, NewDataArrived;
     QMutex ReadDataMutex, SignalsMutex;
 
 public slots:
@@ -136,8 +136,8 @@ private:
     quint8 APDULength;
     quint8 APDUFormat;
 
-    void ParseIFormat(QByteArray);
-    int isIncomeDataValid(QByteArray);
+    void ParseIFormat(char *);
+    int isIncomeDataValid(char *);
 
 private slots:
 };
@@ -159,6 +159,7 @@ public:
 
     typedef QByteArray ASDU;
     Parse104 *Parse;
+    QList<QByteArray> ReadData;
     Parse104::Signals104 Signals;
 
 public slots:
@@ -170,12 +171,14 @@ signals:
     void writedatatoeth(QByteArray);
     void stopall();
     void error(int);
-    void readdatafrometh(QByteArray);
     void ethconnected();
     void signalsready();
 
 private:
     QTimer *TTimer;
+    bool GSD;
+    QByteArray cutpckt;
+    void ParseSomeData(QByteArray, bool);
 
 private slots:
     void SendS();

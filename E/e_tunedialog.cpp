@@ -475,7 +475,7 @@ void e_tunedialog::StartMip()
 {
     mipcanal = new iec104;
     connect(mipcanal,SIGNAL(error(int)),this,SIGNAL(error(int)));
-    connect(mipcanal,SIGNAL(readdatafrometh(QByteArray)),this,SLOT(MipDataRcv(QByteArray)));
+//    connect(mipcanal,SIGNAL(readdatafrometh(QByteArray)),this,SLOT(MipDataRcv(QByteArray)));
     connect(mipcanal,SIGNAL(writedatatoeth(QByteArray)),this,SLOT(MipDataXmit(QByteArray)));
     connect(mipcanal,SIGNAL(signalsready()),this,SLOT(MipData()));
     connect(mipcanal,SIGNAL(ethconnected()),this,SLOT(EthConnected()));
