@@ -84,29 +84,29 @@ public:
 
     typedef struct
     {
-        QList<quint32> SigNum;
-        QStringList SigVal;
-        QList<quint8> SigQuality;
-        QList<quint64> CP56Time;
+        quint32 SigNum;
+        QString SigVal;
+        quint8 SigQuality;
+        quint64 CP56Time;
     } Signals104; // первое - номера сигналов, второе - их значения ("" ~ недостоверное значение), третье - метка времени
 
     QList<QByteArray> ParseData;
     quint32 ReadDataSize;
-    Signals104 Signals;
     quint16 V_S, V_R, AckVR;
     int cmd;
-    bool ReceiverBusy, GetNewVR, NewDataArrived;
-    QMutex ReadDataMutex, SignalsMutex;
+    bool GetNewVR, NewDataArrived;
+    QMutex ParseMutex, SignalsMutex;
 
 public slots:
     void ParseIncomeData();
     void stop();
 
 signals:
-    void signalsreceived();
+    void signalsreceived(Parse104::Signals104 &);
     void finished();
     void error(int);
     void sendS();
+    void parsestarted();
 
 private:
     typedef struct
@@ -136,8 +136,8 @@ private:
     quint8 APDULength;
     quint8 APDUFormat;
 
-    void ParseIFormat(char *);
-    int isIncomeDataValid(char *);
+    void ParseIFormat(const char *);
+    int isIncomeDataValid(QByteArray);
 
 private slots:
 };
@@ -160,19 +160,19 @@ public:
     typedef QByteArray ASDU;
     Parse104 *Parse;
     QList<QByteArray> ReadData;
-    Parse104::Signals104 Signals;
+    QList<Parse104::Signals104> Signals;
+    bool ParseStarted;
 
 public slots:
     void Send(APCI, ASDU=QByteArray());
     void Start();
-    void SignalsGot();
 
 signals:
     void writedatatoeth(QByteArray);
     void stopall();
     void error(int);
     void ethconnected();
-    void signalsready();
+    void signalsready(Parse104::Signals104&);
 
 private:
     QTimer *TTimer;
@@ -183,6 +183,7 @@ private:
 private slots:
     void SendS();
     void GetSomeData(QByteArray);
+    void StartParse();
 };
 
 #endif // IEC104_H

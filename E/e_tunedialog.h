@@ -56,7 +56,7 @@ private slots:
     void MipConnected();
     void MipDataRcv(QByteArray);
     void MipDataXmit(QByteArray);
-    void MipData();
+    void MipData(Parse104::Signals104 &);
 
 protected:
     void closeEvent(QCloseEvent *e);

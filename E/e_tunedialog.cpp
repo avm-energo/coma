@@ -477,7 +477,7 @@ void e_tunedialog::StartMip()
     connect(mipcanal,SIGNAL(error(int)),this,SIGNAL(error(int)));
 //    connect(mipcanal,SIGNAL(readdatafrometh(QByteArray)),this,SLOT(MipDataRcv(QByteArray)));
     connect(mipcanal,SIGNAL(writedatatoeth(QByteArray)),this,SLOT(MipDataXmit(QByteArray)));
-    connect(mipcanal,SIGNAL(signalsready()),this,SLOT(MipData()));
+    connect(mipcanal,SIGNAL(signalsready(Parse104::Signals104&)),this,SLOT(MipData(Parse104::Signals104&)));
     connect(mipcanal,SIGNAL(ethconnected()),this,SLOT(EthConnected()));
 }
 
@@ -506,18 +506,15 @@ void e_tunedialog::MipDataXmit(QByteArray ba)
 //    emit dataready(ba);
 }
 
-void e_tunedialog::MipData()
+void e_tunedialog::MipData(Parse104::Signals104 &Signal)
 {
-    // приём из mipcanal::Signals номеров сигналов (SigNum) и их значений (SigVal) и их дальнейшая обработка
-    for (int i=1;i<18;i++)
+    // приём из mipcanal::Signal номера сигнала (SigNum) и его значения (SigVal) и его дальнейшая обработка
+    quint32 index = Signal.SigNum;
+    if (index != -1)
     {
-        quint32 index = mipcanal->Signals.SigNum.indexOf(i);
-        if (index != -1)
-        {
-            QLabel *lbl = this->findChild<QLabel *>("mip"+QString::number(i));
-            if (lbl != 0)
-                lbl->setText(mipcanal->Signals.SigVal.at(index));
-        }
+        QLabel *lbl = this->findChild<QLabel *>("mip"+QString::number(index));
+        if (lbl != 0)
+            lbl->setText(Signal.SigVal);
     }
 }
 

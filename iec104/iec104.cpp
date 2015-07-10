@@ -8,6 +8,7 @@
 
 iec104::iec104(QObject *parent) : QObject(parent)
 {
+    ParseStarted = false;
     GSD = true;
     QThread *thr = new QThread;
     ethernet *eth = new ethernet;
@@ -32,14 +33,21 @@ iec104::iec104(QObject *parent) : QObject(parent)
     connect(Parse,SIGNAL(finished()),Parse,SLOT(deleteLater()));
     connect(ParseThread,SIGNAL(finished()),ParseThread,SLOT(deleteLater()));
 
-    connect(Parse,SIGNAL(signalsreceived()),this,SLOT(SignalsGot()));
+    connect(Parse,SIGNAL(signalsreceived(Parse104::Signals104&)),\
+            this,SIGNAL(signalsready(Parse104::Signals104&)),Qt::BlockingQueuedConnection);
     connect(Parse,SIGNAL(sendS()),this,SLOT(SendS()));
+    connect(Parse,SIGNAL(parsestarted()),this,SLOT(StartParse()));
     ParseThread->start();
     thr->start();
 }
 
 iec104::~iec104()
 {
+}
+
+void iec104::StartParse()
+{
+    ParseStarted = true;
 }
 
 void iec104::Start()
@@ -69,8 +77,9 @@ void iec104::Send(APCI apci, ASDU asdu)
 
 void iec104::GetSomeData(QByteArray ba)
 {
+    Parse->ParseMutex.lock();
     ParseSomeData(ba, true);
-    Parse->NewDataArrived = true;
+    Parse->ParseMutex.unlock();
 }
 
 void iec104::ParseSomeData(QByteArray ba, bool GSD)
@@ -78,18 +87,36 @@ void iec104::ParseSomeData(QByteArray ba, bool GSD)
     quint32 basize = static_cast<quint32>(ba.size());
     if (GSD)
     {
-        if (cutpckt.size()>0)
+        if (cutpckt.size()>1)
         {
-            int missing_num = cutpckt.at(1)+2-cutpckt.size(); // взяли длину остатка от предыдущего пакета
-            QByteArray missing_arr = ba.left(missing_num); // взяли из текущего пакета сами байты
-            ba = ba.right(basize-missing_num);
-            cutpckt.append(missing_arr);
+            quint32 cutpcktlen = static_cast<quint8>(cutpckt.at(1));
+            cutpcktlen += 2;
+            quint32 cutpcktsize = static_cast<quint32>(cutpckt.size());
+            quint32 missing_num = cutpcktlen-cutpcktsize; // взяли длину остатка от предыдущего пакета
+            if (missing_num>basize)
+            {
+                cutpckt.append(ba);
+                return; // если так и не достигли конца пакета, надо брать следующий пакет в cutpckt
+            }
+            cutpckt.append(ba.left(missing_num)); // взяли из текущего пакета сами байты
+            ba.remove(0,missing_num);
             Parse->ParseData.append(cutpckt);
             cutpckt.clear();
+            basize = static_cast<quint32>(ba.size());
         }
     }
-    quint8 BlockLength = static_cast<quint8>(ba.at(1))+2;
-    if (basize == BlockLength)
+    if (basize<1)
+        return;
+    quint32 BlockLength = static_cast<quint8>(ba.at(1))+2;
+    if (BlockLength == 0)
+    {
+        while ((!BlockLength) && (ba.size()>3))
+        {
+            ba.remove(0,2);
+            BlockLength = static_cast<quint8>(ba.at(1))+2;
+        }
+    }
+    if (BlockLength == basize)
         Parse->ParseData.append(ba);
     else if (basize < BlockLength)
         cutpckt = ba;
@@ -98,22 +125,6 @@ void iec104::ParseSomeData(QByteArray ba, bool GSD)
         Parse->ParseData.append(ba.left(BlockLength));
         ParseSomeData(ba.right(basize-BlockLength), false);
     }
-}
-
-void iec104::SignalsGot()
-{
-    Parse->SignalsMutex.lock();
-    Signals=Parse->Signals;
-/*    Signals.SigNum=Parse->Signals.SigNum;
-    Signals.SigQuality=Parse->Signals.SigQuality;
-    Signals.SigVal=Parse->Signals.SigVal;
-    Signals.CP56Time=Parse->Signals.CP56Time;
-    Parse->Signals.SigNum.clear();
-    Parse->Signals.SigVal.clear();
-    Parse->Signals.SigQuality.clear();
-    Parse->Signals.CP56Time.clear(); */
-    Parse->SignalsMutex.unlock();
-    emit signalsready();
 }
 
 void iec104::SendS()
@@ -134,12 +145,13 @@ void iec104::SendS()
 
 Parse104::Parse104(QObject *parent) : QObject(parent)
 {
+    ParseMutex.lock();
     ParseData.clear();
+    ParseMutex.unlock();
     ThreadMustBeFinished = false;
     V_S = V_R = 0;
     AckVR = I104_W;
     APDUFormat = I104_WRONG;
-    ReceiverBusy = false;
     GetNewVR = false;
     NewDataArrived = false;
 }
@@ -152,62 +164,49 @@ void Parse104::ParseIncomeData()
 {
     while (!ThreadMustBeFinished)
     {
-        if (NewDataArrived)
+        // обработка ParseData
+        if (ParseData.size())
         {
-            NewDataArrived = false;
-            // обработка ParseData
-            while (ParseData.size())
+            ParseMutex.lock();
+            QByteArray tmpba = ParseData.at(0);
+            ParseData.removeFirst();
+            ParseMutex.unlock();
+            if (tmpba.isEmpty())
+                continue;
+//                char *ParseDataOne = new char[ParseData.at(0).size()];
+//                memcpy(ParseDataOne,ParseData.at(0).constData(),ParseData.at(0).size());
+            int tmpi = isIncomeDataValid(tmpba);
+            if (tmpi == I104_RCVNORM) // если поймали правильное начало данных, переходим к их обработке
             {
-                if (ParseData.at(0).isEmpty())
-                {
-                    ParseData.removeFirst();
-                    continue;
-                }
-                char *ParseDataOne = new char(ParseData.at(0).size());
-                memcpy(ParseDataOne,ParseData.at(0).constData(),ParseData.at(0).size());
-                ParseData.removeFirst();
-                if (ParseDataOne[0] != 0x68) // первый байт не 0x68 - кривая посылка
-                    continue;
-                else
-                {
-                    int tmpi = isIncomeDataValid(ParseDataOne);
-                    if (tmpi == I104_RCVNORM) // если поймали правильное начало данных, переходим к их обработке
-                    {
-                        if (APDUFormat == I104_I)
-                            ParseIFormat(&(ParseDataOne[6])); // без APCI
-                    }
-                }
-                if (V_R>AckVR)
-                {
-                    emit sendS();
-                    GetNewVR = true;
-                }
+                if (APDUFormat == I104_I)
+                    ParseIFormat(&(tmpba.data()[6])); // без APCI
+            }
+            if (V_R>AckVR)
+            {
+                emit sendS();
+                GetNewVR = true;
             }
         }
-        else
-        {
-            QTime tmr;
-            tmr.start();
-            while (tmr.elapsed() < 100)
-                QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-        }
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
     }
     emit finished();
 }
 
-int Parse104::isIncomeDataValid(char *ba)
+int Parse104::isIncomeDataValid(QByteArray ba)
 {
-    APDULength = ba[1]; // в 1-м байте лежит длина
+    if (ba.at(0) != 0x68)
+        return I104_RCVWRONG;
+    APDULength = static_cast<quint8>(ba.at(1)); // в 1-м байте лежит длина
     if ((APDULength<4) || (APDULength>253))
     {
         emit error(M104_LENGTHER);
         return I104_RCVWRONG;
     }
-    if (!(ba[2]&0x01)) // I
+    if (!(ba.at(2)&0x01)) // I
         APDUFormat = I104_I;
     else
     {
-        if (!(ba[2]&0x02)) // S
+        if (!(ba.at(2)&0x02)) // S
             APDUFormat = I104_S;
         else
             APDUFormat = I104_U;
@@ -216,33 +215,34 @@ int Parse104::isIncomeDataValid(char *ba)
     {
     case I104_I:
     {
-        quint16 V_Rrcv = static_cast<quint16>(ba[3])*256+static_cast<quint16>(ba[2]&0xFE);
+        quint16 V_Rrcv = static_cast<quint8>(ba.at(3))*256+static_cast<quint8>(ba.at(2)&0xFE);
         V_Rrcv >>= 1;
-        if (GetNewVR)
+        if (V_Rrcv != V_R)
+        {
+            emit error(M104_NUMER);
+//            V_R = V_Rrcv+1;
+            return I104_RCVWRONG;
+        }
+/*        if (GetNewVR)
         {
             V_R = V_Rrcv;
             GetNewVR = false;
             AckVR = V_R + I104_W;
-        }
-        if (V_Rrcv != V_R)
-        {
-            emit error(M104_NUMER);
-            return I104_RCVWRONG;
-        }
-        quint16 V_Srcv = static_cast<quint16>(ba[5])*256+static_cast<quint16>(ba[4]&0xFE);
+        } */
+        V_R++;
+        quint16 V_Srcv = static_cast<quint8>(ba.at(5))*256+static_cast<quint8>(ba.at(4)&0xFE);
         V_Srcv >>= 1;
         if (V_Srcv != V_S)
         {
             emit error(M104_NUMER);
             return I104_RCVWRONG;
         }
-        V_R++;
         return I104_RCVNORM;
         break;
     }
     case I104_S:
     {
-        quint16 V_Srcv = static_cast<quint16>(ba[5])*256+static_cast<quint16>(ba[4]&0xFE);
+        quint16 V_Srcv = static_cast<quint8>(ba.at(5))*256+static_cast<quint8>(ba.at(4)&0xFE);
         V_Srcv >>= 1;
         if (V_Srcv != V_S)
         {
@@ -255,11 +255,11 @@ int Parse104::isIncomeDataValid(char *ba)
     }
     case I104_U:
     {
-        if ((ba[2] == I104_STARTDT_CON) && (cmd == I104_STARTDT_ACT)) // если пришло подтверждение старта и перед этим мы старт запрашивали
+        if ((ba.at(2) == I104_STARTDT_CON) && (cmd == I104_STARTDT_ACT)) // если пришло подтверждение старта и перед этим мы старт запрашивали
             cmd = I104_STARTDT_CON;
-        if ((ba[2] == I104_STOPDT_CON) && (cmd == I104_STOPDT_ACT)) // если пришло подтверждение стопа и перед этим мы стоп запрашивали
+        if ((ba.at(2) == I104_STOPDT_CON) && (cmd == I104_STOPDT_ACT)) // если пришло подтверждение стопа и перед этим мы стоп запрашивали
             cmd = I104_STOPDT_CON;
-        if ((ba[2] == I104_TESTFR_CON) && (cmd == I104_TESTFR_ACT)) // если пришло подтверждение теста и перед этим мы тест запрашивали
+        if ((ba.at(2) == I104_TESTFR_CON) && (cmd == I104_TESTFR_ACT)) // если пришло подтверждение теста и перед этим мы тест запрашивали
             cmd = I104_TESTFR_CON;
         return I104_RCVNORM;
         break;
@@ -270,9 +270,8 @@ int Parse104::isIncomeDataValid(char *ba)
     return I104_RCVWRONG;
 }
 
-void Parse104::ParseIFormat(char *ba) // основной разборщик
+void Parse104::ParseIFormat(const char *ba) // основной разборщик
 {
-    SignalsMutex.lock();
     DUI.typeIdent = ba[0];
     DUI.qualifier.Number = ba[1]&0x7f;
     DUI.qualifier.SQ = ba[1]>>7;
@@ -307,27 +306,27 @@ void Parse104::ParseIFormat(char *ba) // основной разборщик
                 index += 12;
                 break;
             }
-            Signals.SigNum.append(ObjectAdr);
+            Signals104 Signal;
+            Signal.SigNum=ObjectAdr;
             float value;
             memcpy(&value,&ba[index],4);
             index += 4;
-            Signals.SigVal.append(QString::number(value,'g',6));
+            Signal.SigVal=QString::number(value,'g',6);
             quint8 quality;
             memcpy(&quality,&ba[index],1);
             index++;
-            Signals.SigQuality.append(quality);
+            Signal.SigQuality=quality;
             quint64 time;
             memcpy(&time,&ba[index],7);
             index += 7;
-            Signals.CP56Time.append(time);
+            Signal.CP56Time=time;
+            emit signalsreceived(Signal);
             break;
         }
         default:
             break;
         }
     }
-    SignalsMutex.unlock();
-    emit signalsreceived();
 }
 
 void Parse104::stop()

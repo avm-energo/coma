@@ -46,10 +46,7 @@ void SerialThread::run()
             emit finished();
             return;
         }
-        QTime tmr;
-        tmr.start();
-        while (tmr.elapsed() < 100)
-            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
     }
 }
 
