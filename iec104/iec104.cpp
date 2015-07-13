@@ -1,5 +1,4 @@
 #include <QThread>
-#include <QTime>
 #include <QCoreApplication>
 
 #include "iec104.h"
@@ -187,7 +186,11 @@ void Parse104::ParseIncomeData()
                 GetNewVR = true;
             }
         }
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+/*        QTime tmr;
+        tmr.start();
+        while (tmr.elapsed() < 10)*/
+        QThread::msleep(10);
+        qApp->processEvents();
     }
     emit finished();
 }

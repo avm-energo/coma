@@ -1,4 +1,4 @@
-#include <QTime>
+#include <QThread>
 #include <QCoreApplication>
 
 #include "ethernet.h"
@@ -35,10 +35,8 @@ void ethernet::run()
             emit finished();
             break;
         }
-        QTime tmr;
-        tmr.start();
-        while (tmr.elapsed() < 1000)
-            QCoreApplication::processEvents(QEventLoop::AllEvents, 1000);
+        QThread::msleep(10);
+        qApp->processEvents();
     }
 }
 

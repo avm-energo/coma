@@ -1,6 +1,5 @@
 #include <QCoreApplication>
-#include <QEventLoop>
-#include <QTime>
+#include <QThread>
 #include "serialthread.h"
 #include "publicclass.h"
 
@@ -15,6 +14,7 @@ SerialThread::SerialThread(QObject *parent) :
 
 void SerialThread::run()
 {
+//    QEventLoop loop;
     port = new QSerialPort;
     port->setPort(portinfo);
     connect(port,SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(Error(QSerialPort::SerialPortError)));
@@ -46,7 +46,8 @@ void SerialThread::run()
             emit finished();
             return;
         }
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+        QThread::msleep(10);
+        qApp->processEvents();
     }
 }
 
