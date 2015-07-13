@@ -506,15 +506,10 @@ void ConSet::UpdateMainTE104(QByteArray ba)
         ba.remove(0,1);
         tmpString = "Eth connected!";
     }
-    else if (ba.at(0) == 0x3E) // '>' - символ выдачи
+    else if (ba.at(0) == 0x3B) // ';' - символ закрытия связи по Ethernet
     {
         ba.remove(0,1);
-        tmpString = "104->";
-    }
-    else if (ba.at(0) == 0x3C) // '<' - символ приёма
-    {
-        ba.remove(0,1);
-        tmpString = "104<-";
+        tmpString = "Eth disconnected!";
     }
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE == 0)

@@ -166,12 +166,15 @@ public:
 public slots:
     void Send(APCI, ASDU=QByteArray());
     void Start();
+    void Stop();
 
 signals:
     void writedatatoeth(QByteArray);
     void stopall();
+    void finished();
     void error(int);
     void ethconnected();
+    void ethdisconnected();
     void signalsready(Parse104::Signals104&);
 
 private:
@@ -184,6 +187,7 @@ private slots:
     void SendS();
     void GetSomeData(QByteArray);
     void StartParse();
+    void EthFinished();
 };
 
 #endif // IEC104_H

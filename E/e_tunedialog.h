@@ -25,25 +25,47 @@ public slots:
 private:
     iec104 *mipcanal;
 
-    struct Bda
-    {
-        quint32 sin[16];
-    };
-
-    Bda Bda0, Bda5, Bda20;
-
     struct Bac
     {
-        float fbin;
-        float fkuin;
-        float fkiin;
+        float KmU[6];
+        float KmI_5[6];
+        float KmI_1[6];
+        float DPsi[6];
+        float K_freq;
+        float Kinter;
     };
 
-    Bac Bac_block[16];
+    Bac Bac_block;
+
+    struct Bda
+    {
+        float Tmk;                  // Температура кристалла микроконтроллера,
+        float Frequency;            // частота сигналов, Гц,
+        float IUefNat_filt[6];      // Истинные действующие значения сигналов
+                                    // в вольтах и амперах,
+        float IUeff_filtered[6];    // Действующие значения сигналов по 1-й гармонике,
+        float phi_next_f[6];        // Углы сдвига между сигналами по 1-й гармонике
+                                    // в 6 каналах в градусах,
+        float PNatf[3];             // Истинная активная мощность, по фазам,
+        float SNatf[3];             // Кажущаяся полная мощность,
+                                    // по эффективным  токам и напряжениям,
+        float QNatf[3];             // Реактивная мощность по кажущейся полной,
+                                    // и истинной активной,
+        float CosPhiNat[3];         // cos phi по истинной активной мощности,
+        float Pf[3];                // Активная мощность по 1-й гармонике,
+        float Qf[3];                // Реактивная мощность по 1-й гармонике,
+        float Sf[3];                // Полная мощность по 1-й гармонике,
+        float CosPhi[3];            // cos phi по 1-й гармонике
+    };
+
+    Bda Bda_block;
 
     void SetupUI();
     void CalcNewTuneCoefs();
     void RefreshTuneCoefs();
+    bool CheckTuneCoefs();
+    bool IsWithinLimits(double number, double base, double threshold);
+    void RefreshAnalogValues();
 
 private slots:
     void StartTune();
@@ -52,10 +74,10 @@ private slots:
     void SaveToFile();
     void LoadFromFile();
     void StartMip();
+    void StopMip();
+    void DeleteMip();
     void EthConnected();
-    void MipConnected();
-    void MipDataRcv(QByteArray);
-    void MipDataXmit(QByteArray);
+    void EthDisconnected();
     void MipData(Parse104::Signals104 &);
 
 protected:

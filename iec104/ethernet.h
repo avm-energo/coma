@@ -25,6 +25,7 @@ public slots:
 signals:
     void error(int);
     void connected();
+    void disconnected();
     void finished();
     void newdataarrived(QByteArray);
 

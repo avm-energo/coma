@@ -26,36 +26,43 @@ void e_tunedialog::SetupUI()
     QWidget *cp1 = new QWidget;
     QWidget *cp2 = new QWidget;
     QWidget *cp3 = new QWidget;
+    QWidget *cp4 = new QWidget;
+    QWidget *cp5 = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QLabel *lbl;
     QGridLayout *glyout = new QGridLayout;
 
     QTabWidget *TuneTW = new QTabWidget;
-    TuneTW->addTab(cp1,"Коэффициенты");
     TuneTW->addTab(cp2,"Настройка");
+    TuneTW->addTab(cp1,"Коэффициенты");
+    TuneTW->addTab(cp4,"Данные модуля");
+    TuneTW->addTab(cp5,"Данные АЦП");
     TuneTW->addTab(cp3,"Данные МИП");
+
+    // CP1 - КОЭФФИЦИЕНТЫ МОДУЛЯ
+
     QGroupBox *gb = new QGroupBox("Настроечные коэффициенты");
     for (i = 0; i < 6; i++)
     {
-        lbl = new QLabel("KmU"+QString::number(i));
+        lbl = new QLabel("KmU["+QString::number(i)+"]");
         glyout->addWidget(lbl,0,i,1,1);
         lbl = new QLabel("");
         lbl->setObjectName("kmu"+QString::number(i));
         lbl->setStyleSheet(ValuesFormat);
         glyout->addWidget(lbl,1,i,1,1);
-        lbl = new QLabel("KmI5"+QString::number(i));
+        lbl = new QLabel("KmI_5["+QString::number(i)+"]");
         glyout->addWidget(lbl,2,i,1,1);
         lbl = new QLabel("");
         lbl->setObjectName("kmi5"+QString::number(i));
         lbl->setStyleSheet(ValuesFormat);
         glyout->addWidget(lbl,3,i,1,1);
-        lbl = new QLabel("KmI1"+QString::number(i));
+        lbl = new QLabel("KmI_1["+QString::number(i)+"]");
         glyout->addWidget(lbl,4,i,1,1);
         lbl = new QLabel("");
         lbl->setObjectName("kmi1"+QString::number(i));
         lbl->setStyleSheet(ValuesFormat);
         glyout->addWidget(lbl,5,i,1,1);
-        lbl = new QLabel("DPsi"+QString::number(i));
+        lbl = new QLabel("DPsi["+QString::number(i)+"]");
         glyout->addWidget(lbl,6,i,1,1);
         lbl = new QLabel("");
         lbl->setObjectName("dpsi"+QString::number(i));
@@ -84,32 +91,33 @@ void e_tunedialog::SetupUI()
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteTuneCoefs()));
     glyout->addWidget(pb, 10, 0, 1, 6);
     pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
+    pb->setEnabled(false);
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadFromFile()));
     glyout->addWidget(pb, 11, 0, 1, 6);
     pb = new QPushButton("Записать настроечные коэффициенты в файл");
+    pb->setEnabled(false);
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
     glyout->addWidget(pb, 12, 0, 1, 6);
-    pb = new QPushButton("Запустить связь с МИП");
-    connect(pb,SIGNAL(clicked()),this,SLOT(StartMip()));
-//    pb->setEnabled(false);
-    glyout->addWidget(pb, 13, 0, 1, 6);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
+    lyout->addStretch(1);
     cp1->setLayout(lyout);
 
+    // CP3 - ПОКАЗАНИЯ МИП-02
 
     QVBoxLayout *vlyout = new QVBoxLayout;
+    QHBoxLayout *hglyout = new QHBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     gb = new QGroupBox("Измеряемые параметры");
     QGroupBox *gb2 = new QGroupBox("Частота");
     for (i = 0; i < 3; i++)
     {
-        lbl = new QLabel("ф."+QString::number(i+10,36));
+        lbl = new QLabel(QString::number(i+10,36).toUpper());
         hlyout->addWidget(lbl);
         lbl = new QLabel("");
         lbl->setObjectName("mip"+QString::number(i+1));
         lbl->setStyleSheet(ValuesFormat);
-        hlyout->addWidget(lbl);
+        hlyout->addWidget(lbl,10);
     }
     gb2->setLayout(hlyout);
     vlyout->addWidget(gb2);
@@ -117,12 +125,12 @@ void e_tunedialog::SetupUI()
     gb2 = new QGroupBox("Фазное напряжение");
     for (i = 0; i < 3; i++)
     {
-        lbl = new QLabel("ф."+QString::number(i+10,36));
+        lbl = new QLabel(QString::number(i+10,36).toUpper());
         hlyout->addWidget(lbl);
         lbl = new QLabel("");
         lbl->setObjectName("mip"+QString::number(i+4));
         lbl->setStyleSheet(ValuesFormat);
-        hlyout->addWidget(lbl);
+        hlyout->addWidget(lbl,10);
     }
     gb2->setLayout(hlyout);
     vlyout->addWidget(gb2);
@@ -130,12 +138,12 @@ void e_tunedialog::SetupUI()
     gb2 = new QGroupBox("Фазный ток");
     for (i = 0; i < 3; i++)
     {
-        lbl = new QLabel("ф."+QString::number(i+10,36));
+        lbl = new QLabel(QString::number(i+10,36).toUpper());
         hlyout->addWidget(lbl);
         lbl = new QLabel("");
         lbl->setObjectName("mip"+QString::number(i+7));
         lbl->setStyleSheet(ValuesFormat);
-        hlyout->addWidget(lbl);
+        hlyout->addWidget(lbl,10);
     }
     gb2->setLayout(hlyout);
     vlyout->addWidget(gb2);
@@ -143,12 +151,12 @@ void e_tunedialog::SetupUI()
     gb2 = new QGroupBox("Угол нагрузки");
     for (i = 0; i < 3; i++)
     {
-        lbl = new QLabel("ф."+QString::number(i+10,36));
+        lbl = new QLabel(QString::number(i+10,36).toUpper());
         hlyout->addWidget(lbl);
         lbl = new QLabel("");
         lbl->setObjectName("mip"+QString::number(i+11));
         lbl->setStyleSheet(ValuesFormat);
-        hlyout->addWidget(lbl);
+        hlyout->addWidget(lbl,10);
     }
     gb2->setLayout(hlyout);
     vlyout->addWidget(gb2);
@@ -156,120 +164,267 @@ void e_tunedialog::SetupUI()
     gb2 = new QGroupBox("Фазовый угол напряжения");
     for (i = 0; i < 3; i++)
     {
-        lbl = new QLabel("ф."+QString::number(i+10,36));
+        lbl = new QLabel(QString::number(i+10,36).toUpper());
         hlyout->addWidget(lbl);
         lbl = new QLabel("");
         lbl->setObjectName("mip"+QString::number(i+14));
         lbl->setStyleSheet(ValuesFormat);
-        hlyout->addWidget(lbl);
+        hlyout->addWidget(lbl,10);
     }
     gb2->setLayout(hlyout);
     vlyout->addWidget(gb2);
     hlyout = new QHBoxLayout;
     gb2 = new QGroupBox("Прочие");
-    lbl = new QLabel("Ток нулевого провода");
+    lbl = new QLabel("Ток N");
     hlyout->addWidget(lbl);
     lbl = new QLabel("");
     lbl->setObjectName("mip10");
     lbl->setStyleSheet(ValuesFormat);
-    hlyout->addWidget(lbl);
-    lbl = new QLabel("Температура МИП");
+    hlyout->addWidget(lbl,10);
+    lbl = new QLabel("Темп.");
     hlyout->addWidget(lbl);
     lbl = new QLabel("");
     lbl->setObjectName("mip17");
     lbl->setStyleSheet(ValuesFormat);
-    hlyout->addWidget(lbl);
+    hlyout->addWidget(lbl,10);
     gb2->setLayout(hlyout);
     vlyout->addWidget(gb2);
     gb->setLayout(vlyout);
+    hglyout->addWidget(gb);
+    gb = new QGroupBox("Вычисляемые параметры");
+    gb2 = new QGroupBox("Активная мощность");
+    hlyout = new QHBoxLayout;
+    for (i = 0; i < 3; i++)
+    {
+        lbl = new QLabel(QString::number(i+10,36).toUpper());
+        hlyout->addWidget(lbl);
+        lbl = new QLabel("");
+        lbl->setObjectName("mip"+QString::number(i+22));
+        lbl->setStyleSheet(ValuesFormat);
+        hlyout->addWidget(lbl,10);
+    }
+    gb2->setLayout(hlyout);
+    QVBoxLayout *gblyout = new QVBoxLayout;
+    gblyout->addWidget(gb2);
+    gb2 = new QGroupBox("Реактивная мощность");
+    hlyout = new QHBoxLayout;
+    for (i = 0; i < 3; i++)
+    {
+        lbl = new QLabel(QString::number(i+10,36).toUpper());
+        hlyout->addWidget(lbl);
+        lbl = new QLabel("");
+        lbl->setObjectName("mip"+QString::number(i+26));
+        lbl->setStyleSheet(ValuesFormat);
+        hlyout->addWidget(lbl,10);
+    }
+    gb2->setLayout(hlyout);
+    gblyout->addWidget(gb2);
+    gb2 = new QGroupBox("Полная мощность");
+    hlyout = new QHBoxLayout;
+    for (i = 0; i < 3; i++)
+    {
+        lbl = new QLabel(QString::number(i+10,36).toUpper());
+        hlyout->addWidget(lbl);
+        lbl = new QLabel("");
+        lbl->setObjectName("mip"+QString::number(i+30));
+        lbl->setStyleSheet(ValuesFormat);
+        hlyout->addWidget(lbl,10);
+    }
+    gb2->setLayout(hlyout);
+    gblyout->addWidget(gb2);
+    gb2 = new QGroupBox("Линейное напряжение");
+    hlyout = new QHBoxLayout;
+    for (i = 0; i < 3; i++)
+    {
+        lbl = new QLabel(QString::number(i+10,36).toUpper());
+        hlyout->addWidget(lbl);
+        lbl = new QLabel("");
+        lbl->setObjectName("mip"+QString::number(i+19));
+        lbl->setStyleSheet(ValuesFormat);
+        hlyout->addWidget(lbl,10);
+    }
+    gb2->setLayout(hlyout);
+    gblyout->addWidget(gb2);
+    hlyout = new QHBoxLayout;
+    vlyout=new QVBoxLayout;
+    gb2 = new QGroupBox("Мощность");
+    lbl = new QLabel("Акт:");
+    hlyout->addWidget(lbl);
+    lbl = new QLabel("");
+    lbl->setObjectName("mip25");
+    lbl->setStyleSheet(ValuesFormat);
+    hlyout->addWidget(lbl,10);
+    lbl = new QLabel("Реакт:");
+    hlyout->addWidget(lbl);
+    lbl = new QLabel("");
+    lbl->setObjectName("mip29");
+    lbl->setStyleSheet(ValuesFormat);
+    hlyout->addWidget(lbl,10);
+    vlyout->addLayout(hlyout);
+    hlyout=new QHBoxLayout;
+    lbl = new QLabel("Полная:");
+    hlyout->addWidget(lbl);
+    lbl = new QLabel("");
+    lbl->setObjectName("mip33");
+    lbl->setStyleSheet(ValuesFormat);
+    hlyout->addWidget(lbl,10);
+    vlyout->addLayout(hlyout);
+    vlyout->addStretch(1);
+    gb2->setLayout(vlyout);
+    gblyout->addWidget(gb2,1);
+    gb->setLayout(gblyout);
+    hglyout->addWidget(gb);
     vlyout = new QVBoxLayout;
-    vlyout->addWidget(gb);
+    vlyout->addLayout(hglyout);
+    pb = new QPushButton("Запустить связь с МИП");
+    connect(pb,SIGNAL(clicked()),this,SLOT(StartMip()));
+    vlyout->addWidget(pb);
+    pb = new QPushButton("Остановить связь с МИП");
+    connect(pb,SIGNAL(clicked()),this,SLOT(StopMip()));
+    vlyout->addWidget(pb);
     cp3->setLayout(vlyout);
 
+    // CP4 - ДАННЫЕ МОДУЛЯ
 
-/*    lyout = new QVBoxLayout;
+    lyout=new QVBoxLayout;
+
+    // CP2 - НАСТРОЙКА МОДУЛЯ
+
+    lyout = new QVBoxLayout;
     pb = new QPushButton("Начать настройку");
-    gb = new QGroupBox("Настройка нуля");
-    gb->setStyleSheet("QGroupBox {background-color: #99FFCC;}");
-    gb1lyout = new QVBoxLayout;
-    gb2lyout = new QHBoxLayout;
-    for (i = 0; i < 16; i++)
-    {
-        lbl = new QLabel(QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
-        lbl = new QLabel("");
-        lbl->setObjectName("tune0ch"+QString::number(i));
-        lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 5);
-        if ((i>1)&&!((i+1)%6))
-        {
-            gb1lyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
-        }
-    }
-    if (gb2lyout->count())
-        gb1lyout->addLayout(gb2lyout);
-    pb = new QPushButton("Запустить настройку нуля");
-    pb->setStyleSheet("QPushButton {background-color: #99FFCC;}");
-    connect(pb,SIGNAL(clicked()),this,SLOT(tune0()));
-    gb1lyout->addWidget(pb);
-    gb->setLayout(gb1lyout);
-    lyout->addWidget(gb);
+    connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
+    lyout->addWidget(pb);
+    hlyout = new QHBoxLayout;
+    lbl=new QLabel("7.3.1. Получение настроечных параметров...");
+    lbl->setVisible(false);
+    lbl->setObjectName("tune1");
+    hlyout->addWidget(lbl);
+    lbl=new QLabel("");
+    lbl->setVisible(false);
+    lbl->setObjectName("tune1res");
+    hlyout->addWidget(lbl);
+    hlyout->addStretch(1);
+    lyout->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
+    lbl=new QLabel("7.3.2. Получение текущих аналоговых данных...");
+    lbl->setVisible(false);
+    lbl->setObjectName("tune2");
+    hlyout->addWidget(lbl);
+    lbl=new QLabel("");
+    lbl->setVisible(false);
+    lbl->setObjectName("tune2res");
+    hlyout->addWidget(lbl);
+    hlyout->addStretch(1);
+    lyout->addLayout(hlyout);
 
-    gb = new QGroupBox("Настройка 5 В");
-    gb->setStyleSheet("QGroupBox {background-color: #FFCC99;}");
-    gb1lyout = new QVBoxLayout;
-    gb2lyout = new QHBoxLayout;
-    for (i = 0; i < 16; i++)
-    {
-        lbl = new QLabel(QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
-        lbl = new QLabel("");
-        lbl->setObjectName("tune5ch"+QString::number(i));
-        lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 5);
-        if ((i>1)&&!((i+1)%6))
-        {
-            gb1lyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
-        }
-    }
-    if (gb2lyout->count())
-        gb1lyout->addLayout(gb2lyout);
-    pb = new QPushButton("Запустить настройку 5 В");
-    pb->setStyleSheet("QPushButton {background-color: #FFCC99;}");
-    connect(pb,SIGNAL(clicked()),this,SLOT(tune5()));
-    gb1lyout->addWidget(pb);
-    gb->setLayout(gb1lyout);
-    lyout->addWidget(gb);
+    lyout->addStretch(1);
+    cp2->setLayout(lyout);
 
-    gb = new QGroupBox("Настройка 20 мА");
-    gb->setStyleSheet("QGroupBox {background-color: #CC99FF;}");
-    gb1lyout = new QVBoxLayout;
-    gb2lyout = new QHBoxLayout;
-    for (i = 0; i < 16; i++)
+    // CP5 - ДАННЫЕ АЦП МОДУЛЯ
+
+    lyout = new QVBoxLayout;
+    hlyout = new QHBoxLayout;
+    lbl = new QLabel("Температура:");
+    hlyout->addWidget(lbl);
+    lbl=new QLabel("");
+    lbl->setObjectName("tmk");
+    lbl->setStyleSheet(ValuesFormat);
+    hlyout->addWidget(lbl,1);
+    lbl = new QLabel("Частота:");
+    hlyout->addWidget(lbl);
+    lbl=new QLabel("");
+    lbl->setObjectName("frequency");
+    lbl->setStyleSheet(ValuesFormat);
+    hlyout->addWidget(lbl,1);
+    lyout->addLayout(hlyout);
+    glyout = new QGridLayout;
+    for (i = 0; i < 6; i++)
     {
-        lbl = new QLabel(QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
+        lbl = new QLabel("IUNF["+QString::number(i)+"]");
+        glyout->addWidget(lbl,0,i,1,1);
         lbl = new QLabel("");
-        lbl->setObjectName("tune20ch"+QString::number(i));
+        lbl->setObjectName("iunf"+QString::number(i));
         lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 5);
-        if ((i>1)&&!((i+1)%6))
-        {
-            gb1lyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
-        }
+        lbl->setToolTip("Истинные действующие значения сигналов");
+        glyout->addWidget(lbl,1,i,1,1);
+        lbl = new QLabel("IUF["+QString::number(i)+"]");
+        glyout->addWidget(lbl,2,i,1,1);
+        lbl = new QLabel("");
+        lbl->setObjectName("iuf"+QString::number(i));
+        lbl->setStyleSheet(ValuesFormat);
+        lbl->setToolTip("Действующие значения сигналов по 1-й гармонике");
+        glyout->addWidget(lbl,3,i,1,1);
+        lbl = new QLabel("PHF["+QString::number(i)+"]");
+        glyout->addWidget(lbl,4,i,1,1);
+        lbl = new QLabel("");
+        lbl->setObjectName("phf"+QString::number(i));
+        lbl->setStyleSheet(ValuesFormat);
+        lbl->setToolTip("Угол сдвига между сигналами по первой гармонике");
+        glyout->addWidget(lbl,5,i,1,1);
     }
-    if (gb2lyout->count())
-        gb1lyout->addLayout(gb2lyout);
-    pb = new QPushButton("Запустить настройку 20 мА");
-    pb->setStyleSheet("QPushButton {background-color: #CC99FF;}");
-    connect(pb,SIGNAL(clicked()),this,SLOT(tune20()));
-    gb1lyout->addWidget(pb);
-    gb->setLayout(gb1lyout);
-    lyout->addWidget(gb);
-    cp2->setLayout(lyout); */
+    for (i = 0; i < 3; i++)
+    {
+        lbl = new QLabel("PNF["+QString::number(i)+"]");
+        glyout->addWidget(lbl,6,i,1,1);
+        lbl = new QLabel("");
+        lbl->setObjectName("pnf"+QString::number(i));
+        lbl->setStyleSheet(ValuesFormat);
+        lbl->setToolTip("Истинная активная мощность");
+        glyout->addWidget(lbl,7,i,1,1);
+        lbl = new QLabel("SNF["+QString::number(i)+"]");
+        glyout->addWidget(lbl,6,i+3,1,1);
+        lbl = new QLabel("");
+        lbl->setObjectName("snf"+QString::number(i));
+        lbl->setStyleSheet(ValuesFormat);
+        lbl->setToolTip("Кажущаяся полная мощность");
+        glyout->addWidget(lbl,7,i+3,1,1);
+        lbl = new QLabel("QNF["+QString::number(i)+"]");
+        glyout->addWidget(lbl,8,i,1,1);
+        lbl = new QLabel("");
+        lbl->setObjectName("qnf"+QString::number(i));
+        lbl->setStyleSheet(ValuesFormat);
+        lbl->setToolTip("Реактивная мощность");
+        glyout->addWidget(lbl,9,i,1,1);
+        lbl = new QLabel("Cos["+QString::number(i)+"]");
+        glyout->addWidget(lbl,8,i+3,1,1);
+        lbl = new QLabel("");
+        lbl->setObjectName("cos"+QString::number(i));
+        lbl->setStyleSheet(ValuesFormat);
+        lbl->setToolTip("Cos phi");
+        glyout->addWidget(lbl,9,i+3,1,1);
+        lbl = new QLabel("PF["+QString::number(i)+"]");
+        glyout->addWidget(lbl,10,i,1,1);
+        lbl = new QLabel("");
+        lbl->setObjectName("pf"+QString::number(i));
+        lbl->setStyleSheet(ValuesFormat);
+        lbl->setToolTip("Активная мощность по 1-й гармонике");
+        glyout->addWidget(lbl,11,i,1,1);
+        lbl = new QLabel("QF["+QString::number(i)+"]");
+        glyout->addWidget(lbl,10,i+3,1,1);
+        lbl = new QLabel("");
+        lbl->setObjectName("qf"+QString::number(i));
+        lbl->setStyleSheet(ValuesFormat);
+        lbl->setToolTip("Реактивная мощность по 1-й гармонике");
+        glyout->addWidget(lbl,11,i+3,1,1);
+        lbl = new QLabel("SF["+QString::number(i)+"]");
+        glyout->addWidget(lbl,12,i,1,1);
+        lbl = new QLabel("");
+        lbl->setObjectName("sf"+QString::number(i));
+        lbl->setStyleSheet(ValuesFormat);
+        lbl->setToolTip("Полная мощность по 1-й гармонике");
+        glyout->addWidget(lbl,13,i,1,1);
+        lbl = new QLabel("CosPhi["+QString::number(i)+"]");
+        glyout->addWidget(lbl,12,i+3,1,1);
+        lbl = new QLabel("");
+        lbl->setObjectName("cosphi"+QString::number(i));
+        lbl->setStyleSheet(ValuesFormat);
+        lbl->setToolTip("Cos phi по 1-й гармонике");
+        glyout->addWidget(lbl,13,i+3,1,1);
+    }
+    lyout->addLayout(glyout);
+    lyout->addStretch(1);
+    cp5->setLayout(lyout);
+
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
@@ -277,7 +432,52 @@ void e_tunedialog::SetupUI()
 
 void e_tunedialog::StartTune()
 {
-
+    // высвечиваем надпись "Получение настроечных коэффициентов"
+    QLabel *lbl = this->findChild<QLabel *>("tune1");
+    if (lbl == 0)
+        return;
+    lbl->setVisible(true);
+    // получение настроечных коэффициентов от модуля
+    cn->Send(CN_Gac, &Bac_block, sizeof(Bac_block));
+    while (cn->Busy)
+        qApp->processEvents();
+    if (cn->result != CN_OK)
+        return;
+    // обновление коэффициентов в соответствующих полях на экране
+    RefreshTuneCoefs();
+    lbl=this->findChild<QLabel *>("tune1res");
+    if (lbl == 0)
+        return;
+    // проверка коэффициентов на правильность в соотв. с п. 7.3.2 "Д2"
+    if (CheckTuneCoefs())
+    {
+        lbl->setVisible(true);
+        lbl->setText("готово!");
+    }
+    else
+    {
+        lbl->setVisible(true);
+        lbl->setStyleSheet("QLabel {color: red};");
+        lbl->setText("ошибка!");
+        return;
+    }
+    // высвечиваем надпись "Получение настроечных коэффициентов"
+    lbl = this->findChild<QLabel *>("tune2");
+    if (lbl == 0)
+        return;
+    lbl->setVisible(true);
+    // получение текущих аналоговых сигналов от модуля
+    cn->Send(CN_Gda, &Bda_block, sizeof(Bda_block));
+    while (cn->Busy)
+        qApp->processEvents();
+    if (cn->result != CN_OK)
+        return;
+    // обновление коэффициентов в соответствующих полях на экране
+    RefreshAnalogValues();
+    lbl=this->findChild<QLabel *>("tune1res");
+    if (lbl == 0)
+        return;
+    // проверка коэффициентов на правильность в соотв. с п. 7.3.2 "Д2"
 }
 
 /*void e_tunedialog::tune(int tunenum)
@@ -336,21 +536,76 @@ void e_tunedialog::StartTune()
 void e_tunedialog::tune0()
 {
     tune(0);
-}
+}*/
 
-void e_tunedialog::CheckAndShowTune0()
+bool e_tunedialog::CheckTuneCoefs()
 {
-    for (int i = 0; i < 16; i++)
+    QLabel *lbl;
+    bool ok = true;
+    for (int i = 0; i < 6; i++)
     {
-        QLabel *lbl = this->findChild<QLabel *>("tune0ch"+QString::number(i));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda0.sin[i]/Z,16));
+        if (!IsWithinLimits(Bac_block.KmU[i],1.0,0.02))
+        {
+            ok=false;
+            lbl = this->findChild<QLabel *>("kmu"+QString::number(i));
+            if (lbl == 0)
+                return false;
+            lbl->setStyleSheet("QLabel {color: red};");
+        }
+        if (!IsWithinLimits(Bac_block.KmI_1[i],1.0,0.02))
+        {
+            ok=false;
+            lbl = this->findChild<QLabel *>("kmi1"+QString::number(i));
+            if (lbl == 0)
+                return false;
+            lbl->setStyleSheet("QLabel {color: red};");
+        }
+        if (!IsWithinLimits(Bac_block.KmI_5[i],1.0,0.02))
+        {
+            ok=false;
+            lbl = this->findChild<QLabel *>("kmi5"+QString::number(i));
+            if (lbl == 0)
+                return false;
+            lbl->setStyleSheet("QLabel {color: red};");
+        }
+        if (!IsWithinLimits(Bac_block.DPsi[i],0.0,1.0))
+        {
+            ok=false;
+            lbl = this->findChild<QLabel *>("dpsi"+QString::number(i));
+            if (lbl == 0)
+                return false;
+            lbl->setStyleSheet("QLabel {color: red};");
+        }
     }
-    CalcNewTuneCoefs();
-    RefreshTuneCoefs();
+    if (!IsWithinLimits(Bac_block.K_freq,1.0,0.02))
+    {
+        ok=false;
+        lbl = this->findChild<QLabel *>("kfreq");
+        if (lbl == 0)
+            return false;
+        lbl->setStyleSheet("QLabel {color: red};");
+    }
+    if (!IsWithinLimits(Bac_block.Kinter,0.0,0.005))
+    {
+        ok=false;
+        lbl = this->findChild<QLabel *>("kinter");
+        if (lbl == 0)
+            return false;
+        lbl->setStyleSheet("QLabel {color: red};");
+    }
+    return ok;
 }
 
+bool e_tunedialog::IsWithinLimits(double number, double base, double threshold)
+{
+    float tmpf = fabs(number-base);
+    if (tmpf<fabs(threshold))
+        return true;
+    else
+        return false;
+}
+
+/*
 void e_tunedialog::tune5()
 {
     tune(5);
@@ -407,7 +662,7 @@ void e_tunedialog::WriteTuneCoefs()
 
 void e_tunedialog::CalcNewTuneCoefs()
 {
-    for (int i = 0; i < 16; i++)
+/*    for (int i = 0; i < 16; i++)
     {
         Bac_block[i].fbin = 1.25 - (static_cast<float>(Bda0.sin[i])/(Z*1638.0));
         if ((Bda0.sin[i] == Bda5.sin[i]) || (Bda0.sin[i] == Bda20.sin[i]))
@@ -417,26 +672,45 @@ void e_tunedialog::CalcNewTuneCoefs()
         }
         Bac_block[i].fkuin = Z*1638.0/static_cast<float>(Bda0.sin[i]-Bda5.sin[i]);
         Bac_block[i].fkiin = Z*1638.0/static_cast<float>(Bda0.sin[i]-Bda20.sin[i]);
-    }
+    }*/
 }
 
 void e_tunedialog::RefreshTuneCoefs()
 {
-    for (int i = 0; i < 16; i++)
+    QLabel *lbl;
+    for (int i = 0; i < 6; i++)
     {
-        QLabel *lbl = this->findChild<QLabel *>("tunebcoef"+QString::number(i));
+        lbl = this->findChild<QLabel *>("kmu"+QString::number(i));
         if (lbl == 0)
             return;
-        lbl->setText(QString::number(Bac_block[i].fbin, 'f', 5));
-        lbl = this->findChild<QLabel *>("tunek1coef"+QString::number(i));
+        lbl->setText(QString::number(Bac_block.KmU[i], 'f', 5));
+        lbl = this->findChild<QLabel *>("kmi5"+QString::number(i));
         if (lbl == 0)
             return;
-        lbl->setText(QString("%1").arg(Bac_block[i].fkuin, 0, 'f', 5));
-        lbl = this->findChild<QLabel *>("tunek2coef"+QString::number(i));
+        lbl->setText(QString("%1").arg(Bac_block.KmI_5[i], 0, 'f', 5));
+        lbl = this->findChild<QLabel *>("kmi1"+QString::number(i));
         if (lbl == 0)
             return;
-        lbl->setText(QString::number(Bac_block[i].fkiin, 'f', 5));
+        lbl->setText(QString::number(Bac_block.KmI_1[i], 'f', 5));
+        lbl = this->findChild<QLabel *>("dpsi"+QString::number(i));
+        if (lbl == 0)
+            return;
+        lbl->setText(QString::number(Bac_block.DPsi[i], 'f', 5));
     }
+    lbl = this->findChild<QLabel *>("kfreq");
+    if (lbl == 0)
+        return;
+    lbl->setText(QString::number(Bac_block.K_freq, 'f', 5));
+    lbl = this->findChild<QLabel *>("kinter");
+    if (lbl == 0)
+        return;
+    lbl->setText(QString::number(Bac_block.Kinter, 'f', 5));
+
+}
+
+void e_tunedialog::RefreshAnalogValues()
+{
+
 }
 
 void e_tunedialog::LoadFromFile()
@@ -475,10 +749,11 @@ void e_tunedialog::StartMip()
 {
     mipcanal = new iec104;
     connect(mipcanal,SIGNAL(error(int)),this,SIGNAL(error(int)));
-//    connect(mipcanal,SIGNAL(readdatafrometh(QByteArray)),this,SLOT(MipDataRcv(QByteArray)));
-    connect(mipcanal,SIGNAL(writedatatoeth(QByteArray)),this,SLOT(MipDataXmit(QByteArray)));
     connect(mipcanal,SIGNAL(signalsready(Parse104::Signals104&)),this,SLOT(MipData(Parse104::Signals104&)));
     connect(mipcanal,SIGNAL(ethconnected()),this,SLOT(EthConnected()));
+    connect(mipcanal,SIGNAL(ethdisconnected()),this,SLOT(EthDisconnected()));
+    connect(this,SIGNAL(stopall()),mipcanal,SLOT(Stop()));
+    connect(mipcanal,SIGNAL(finished()),this,SLOT(DeleteMip()));
 }
 
 void e_tunedialog::EthConnected()
@@ -489,21 +764,12 @@ void e_tunedialog::EthConnected()
     emit dataready(ba);
 }
 
-void e_tunedialog::MipConnected()
+void e_tunedialog::EthDisconnected()
 {
-    QMessageBox::warning(this,"w","Связь с МИП-02 установлена!");
-}
-
-void e_tunedialog::MipDataRcv(QByteArray ba)
-{
-//    ba.insert(0,'<');
-//    emit dataready(ba);
-}
-
-void e_tunedialog::MipDataXmit(QByteArray ba)
-{
-//    ba.insert(0,'>');
-//    emit dataready(ba);
+    QByteArray ba;
+    ba.clear();
+    ba.insert(0,0x3B);
+    emit dataready(ba);
 }
 
 void e_tunedialog::MipData(Parse104::Signals104 &Signal)
@@ -516,6 +782,16 @@ void e_tunedialog::MipData(Parse104::Signals104 &Signal)
         if (lbl != 0)
             lbl->setText(Signal.SigVal);
     }
+}
+
+void e_tunedialog::StopMip()
+{
+    emit stopall();
+}
+
+void e_tunedialog::DeleteMip()
+{
+    delete mipcanal;
 }
 
 void e_tunedialog::closeEvent(QCloseEvent *e)

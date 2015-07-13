@@ -16,6 +16,7 @@ void ethernet::run()
     sock = new QTcpSocket(this);
     connect(sock,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(seterr(QAbstractSocket::SocketError)));
     connect(sock,SIGNAL(connected()),this,SIGNAL(connected()));
+    connect(sock,SIGNAL(disconnected()),this,SIGNAL(disconnected()));
     sock->connectToHost(pc.MIPIP,PORT104,QIODevice::ReadWrite,QAbstractSocket::IPv4Protocol);
     connect(sock,SIGNAL(readyRead()),this,SLOT(CheckForData()));
     while (1)

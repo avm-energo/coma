@@ -18,6 +18,8 @@ iec104::iec104(QObject *parent) : QObject(parent)
     connect(eth,SIGNAL(finished()),eth,SLOT(deleteLater()));
     connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
     connect(eth,SIGNAL(connected()),this,SIGNAL(ethconnected()));
+    connect(eth,SIGNAL(disconnected()),this,SIGNAL(ethdisconnected()));
+    connect(eth,SIGNAL(finished()),this,SLOT(EthFinished()));
     connect(eth,SIGNAL(connected()),this,SLOT(Start()));
     connect(eth,SIGNAL(error(int)),this,SIGNAL(error(int)));
     connect(eth,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
@@ -58,6 +60,16 @@ void iec104::Start()
     StartDT.contrfield[1] = StartDT.contrfield[2] = StartDT.contrfield[3] = 0;
     Parse->cmd = I104_STARTDT_ACT;
     Send(StartDT); // ASDU = QByteArray()
+}
+
+void iec104::Stop()
+{
+    emit stopall();
+}
+
+void iec104::EthFinished()
+{
+    emit finished();
 }
 
 void iec104::Send(APCI apci, ASDU asdu)
@@ -304,7 +316,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
         }
         case M_ME_TF_1: // 36 тип - измеренные данные с плавающей запятой
         {
-            if (ObjectAdr > 17) // для регулировки Э значения сигналов МИПа с индексом более 17 не требуются
+            if (ObjectAdr > 40) // для регулировки Э значения сигналов МИПа с индексом более 17 не требуются
             {
                 index += 12;
                 break;
