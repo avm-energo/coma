@@ -35,8 +35,8 @@ void e_tunedialog::SetupUI()
     QTabWidget *TuneTW = new QTabWidget;
     TuneTW->addTab(cp2,"Настройка");
     TuneTW->addTab(cp1,"Коэффициенты");
-    TuneTW->addTab(cp4,"Данные модуля");
-    TuneTW->addTab(cp5,"Данные АЦП");
+    TuneTW->addTab(cp4,"Данные 104");
+    TuneTW->addTab(cp5,"Данные модуля");
     TuneTW->addTab(cp3,"Данные МИП");
 
     // CP1 - КОЭФФИЦИЕНТЫ МОДУЛЯ
@@ -73,14 +73,14 @@ void e_tunedialog::SetupUI()
     lbl->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
     glyout->addWidget(lbl,8,0,1,1);
     lbl = new QLabel("");
-    lbl->setObjectName("kfreq"+QString::number(i));
+    lbl->setObjectName("kfreq");
     lbl->setStyleSheet(ValuesFormat);
     glyout->addWidget(lbl,8,1,1,2);
     lbl=new QLabel("Kinter:");
     lbl->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
     glyout->addWidget(lbl,8,3,1,1);
     lbl = new QLabel("");
-    lbl->setObjectName("kinter"+QString::number(i));
+    lbl->setObjectName("kinter");
     lbl->setStyleSheet(ValuesFormat);
     glyout->addWidget(lbl,8,4,1,2);
 
@@ -103,11 +103,43 @@ void e_tunedialog::SetupUI()
     lyout->addStretch(1);
     cp1->setLayout(lyout);
 
+    // CP2 - НАСТРОЙКА МОДУЛЯ
+
+    lyout = new QVBoxLayout;
+    pb = new QPushButton("Начать настройку");
+    connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
+    lyout->addWidget(pb);
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    lbl=new QLabel("7.3.1. Получение настроечных параметров...");
+    lbl->setVisible(false);
+    lbl->setObjectName("tune1");
+    hlyout->addWidget(lbl);
+    lbl=new QLabel("");
+    lbl->setVisible(false);
+    lbl->setObjectName("tune1res");
+    hlyout->addWidget(lbl);
+    hlyout->addStretch(1);
+    lyout->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
+    lbl=new QLabel("7.3.2. Получение текущих аналоговых данных...");
+    lbl->setVisible(false);
+    lbl->setObjectName("tune2");
+    hlyout->addWidget(lbl);
+    lbl=new QLabel("");
+    lbl->setVisible(false);
+    lbl->setObjectName("tune2res");
+    hlyout->addWidget(lbl);
+    hlyout->addStretch(1);
+    lyout->addLayout(hlyout);
+
+    lyout->addStretch(1);
+    cp2->setLayout(lyout);
+
     // CP3 - ПОКАЗАНИЯ МИП-02
 
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hglyout = new QHBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout = new QHBoxLayout;
     gb = new QGroupBox("Измеряемые параметры");
     QGroupBox *gb2 = new QGroupBox("Частота");
     for (i = 0; i < 3; i++)
@@ -284,43 +316,11 @@ void e_tunedialog::SetupUI()
     vlyout->addWidget(pb);
     cp3->setLayout(vlyout);
 
-    // CP4 - ДАННЫЕ МОДУЛЯ
+    // CP4 - ДАННЫЕ 104
 
     lyout=new QVBoxLayout;
 
-    // CP2 - НАСТРОЙКА МОДУЛЯ
-
-    lyout = new QVBoxLayout;
-    pb = new QPushButton("Начать настройку");
-    connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
-    lyout->addWidget(pb);
-    hlyout = new QHBoxLayout;
-    lbl=new QLabel("7.3.1. Получение настроечных параметров...");
-    lbl->setVisible(false);
-    lbl->setObjectName("tune1");
-    hlyout->addWidget(lbl);
-    lbl=new QLabel("");
-    lbl->setVisible(false);
-    lbl->setObjectName("tune1res");
-    hlyout->addWidget(lbl);
-    hlyout->addStretch(1);
-    lyout->addLayout(hlyout);
-    hlyout = new QHBoxLayout;
-    lbl=new QLabel("7.3.2. Получение текущих аналоговых данных...");
-    lbl->setVisible(false);
-    lbl->setObjectName("tune2");
-    hlyout->addWidget(lbl);
-    lbl=new QLabel("");
-    lbl->setVisible(false);
-    lbl->setObjectName("tune2res");
-    hlyout->addWidget(lbl);
-    hlyout->addStretch(1);
-    lyout->addLayout(hlyout);
-
-    lyout->addStretch(1);
-    cp2->setLayout(lyout);
-
-    // CP5 - ДАННЫЕ АЦП МОДУЛЯ
+    // CP5 - ДАННЫЕ МОДУЛЯ
 
     lyout = new QVBoxLayout;
     hlyout = new QHBoxLayout;
@@ -432,8 +432,41 @@ void e_tunedialog::SetupUI()
 
 void e_tunedialog::StartTune()
 {
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QPixmap pmp;
+    switch(pc.MType1) // выводим окно с предупреждением о включении РЕТОМ-а по схеме в зависимости от исполнения
+    {
+    case MTE_2T0N:
+    {
+        pmp.load(":/mte_2t0n.png");
+        break;
+    }
+    case MTE_1T1N:
+    {
+        pmp.load(":/mte_1t1n.png");
+        break;
+    }
+    case MTE_0T2N:
+    {
+        pmp.load(":/mte02t2n.png");
+        break;
+    }
+    default:
+        break;
+    }
+    QLabel *lbl = new QLabel("1.Соберите схему подключения по нижеследующей картинке:");
+    QLabel *lblpmp = new QLabel;
+    lblpmp->setPixmap(pmp);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(lbl);
+    lyout->addWidget(lblpmp);
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
     // высвечиваем надпись "Получение настроечных коэффициентов"
-    QLabel *lbl = this->findChild<QLabel *>("tune1");
+    lbl = this->findChild<QLabel *>("tune1");
     if (lbl == 0)
         return;
     lbl->setVisible(true);
@@ -467,7 +500,7 @@ void e_tunedialog::StartTune()
         return;
     lbl->setVisible(true);
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_Gda, &Bda_block, sizeof(Bda_block));
+    cn->Send(CN_GBdi, &Bda_block, sizeof(Bda_block));
     while (cn->Busy)
         qApp->processEvents();
     if (cn->result != CN_OK)
@@ -705,12 +738,69 @@ void e_tunedialog::RefreshTuneCoefs()
     if (lbl == 0)
         return;
     lbl->setText(QString::number(Bac_block.Kinter, 'f', 5));
-
 }
 
 void e_tunedialog::RefreshAnalogValues()
 {
-
+    QLabel *lbl;
+    lbl = this->findChild<QLabel *>("tmk");
+    if (lbl == 0)
+        return;
+    lbl->setText(QString::number(Bda_block.Tmk, 'f', 5));
+    lbl = this->findChild<QLabel *>("frequency");
+    if (lbl == 0)
+        return;
+    lbl->setText(QString::number(Bda_block.Frequency, 'f', 5));
+    for (int i = 0; i < 6; i++)
+    {
+        lbl = this->findChild<QLabel *>("iunf"+QString::number(i));
+        if (lbl == 0)
+            return;
+        lbl->setText(QString::number(Bda_block.IUefNat_filt[i], 'f', 5));
+        lbl = this->findChild<QLabel *>("iuf"+QString::number(i));
+        if (lbl == 0)
+            return;
+        lbl->setText(QString::number(Bda_block.IUeff_filtered[i], 'f', 5));
+        lbl = this->findChild<QLabel *>("phf"+QString::number(i));
+        if (lbl == 0)
+            return;
+        lbl->setText(QString::number(Bda_block.phi_next_f[i], 'f', 5));
+    }
+    for (int i=0; i<3; i++)
+    {
+        lbl = this->findChild<QLabel *>("pnf"+QString::number(i));
+        if (lbl == 0)
+            return;
+        lbl->setText(QString::number(Bda_block.PNatf[i], 'f', 5));
+        lbl = this->findChild<QLabel *>("snf"+QString::number(i));
+        if (lbl == 0)
+            return;
+        lbl->setText(QString::number(Bda_block.SNatf[i], 'f', 5));
+        lbl = this->findChild<QLabel *>("qnf"+QString::number(i));
+        if (lbl == 0)
+            return;
+        lbl->setText(QString::number(Bda_block.QNatf[i], 'f', 5));
+        lbl = this->findChild<QLabel *>("cos"+QString::number(i));
+        if (lbl == 0)
+            return;
+        lbl->setText(QString::number(Bda_block.CosPhiNat[i], 'f', 5));
+        lbl = this->findChild<QLabel *>("pf"+QString::number(i));
+        if (lbl == 0)
+            return;
+        lbl->setText(QString::number(Bda_block.Pf[i], 'f', 5));
+        lbl = this->findChild<QLabel *>("qf"+QString::number(i));
+        if (lbl == 0)
+            return;
+        lbl->setText(QString::number(Bda_block.Qf[i], 'f', 5));
+        lbl = this->findChild<QLabel *>("sf"+QString::number(i));
+        if (lbl == 0)
+            return;
+        lbl->setText(QString::number(Bda_block.Sf[i], 'f', 5));
+        lbl = this->findChild<QLabel *>("cosphi"+QString::number(i));
+        if (lbl == 0)
+            return;
+        lbl->setText(QString::number(Bda_block.CosPhi[i], 'f', 5));
+    }
 }
 
 void e_tunedialog::LoadFromFile()

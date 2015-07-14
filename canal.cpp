@@ -50,7 +50,7 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
     case CN_GBsi: // запрос блока стартовой информации
     case CN_Gda:
     case CN_Gac:
-    case CN_GBd: // запрос блока текущих данных
+    case CN_GBdi:
     case CN_Cnc: // переход на новую конфигурацию
     case CN_Gip: // запрос ip-адреса модуля
     case CN_GNosc: // запрос блока информации об осциллограммах
@@ -61,6 +61,7 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
         break;
     }
     case CN_GF: // запрос файла
+    case CN_GBd: // запрос блока (подблока) текущих данных
     {
         tmpba.append(CN_Start);
         tmpba.append(cmd);
@@ -179,6 +180,7 @@ void canal::GetSomeData(QByteArray ba)
         case CN_Gda:
         case CN_Gac:
         case CN_GBd:
+        case CN_GBdi:
         case CN_Gip:
         case CN_GNosc:
         case CN_GBosc:
@@ -244,6 +246,7 @@ void canal::GetSomeData(QByteArray ba)
         case CN_Gda:
         case CN_Gac:
         case CN_GBd:
+        case CN_GBdi:
         case CN_Gip:
         {
             if (!RDCheckForNextSegment())
