@@ -8,6 +8,10 @@
 
 #define TUNEFILELENGTH  256
 
+#define TUNEMIP 1
+#define TUNERET 2
+#define TUNEMAN 3
+
 class e_tunedialog : public QDialog
 {
     Q_OBJECT
@@ -24,6 +28,8 @@ public slots:
 
 private:
     iec104 *mipcanal;
+    int TuneControlType;
+    bool MipErrNeeded;
 
     struct Bac
     {
@@ -35,7 +41,7 @@ private:
         float Kinter;
     };
 
-    Bac Bac_block;
+    Bac Bac_block, Bac_defblock;
 
     struct Bda
     {
@@ -64,6 +70,8 @@ private:
     void CalcNewTuneCoefs();
     void RefreshTuneCoefs();
     bool CheckTuneCoefs();
+    bool CheckAnalogValues(int ntest);
+    bool CheckMip();
     bool IsWithinLimits(double number, double base, double threshold);
     void RefreshAnalogValues();
 
@@ -79,6 +87,9 @@ private slots:
     void EthConnected();
     void EthDisconnected();
     void MipData(Parse104::Signals104 &);
+    void SetTuneMip();
+    void SetTuneRetom();
+    void SetTuneManual();
 
 protected:
     void closeEvent(QCloseEvent *e);
