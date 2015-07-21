@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QCloseEvent>
 #include <QByteArray>
+#include <QTimer>
 #include "../iec104/iec104.h"
 
 #define TUNEFILELENGTH  256
@@ -11,6 +12,8 @@
 #define TUNEMIP 1
 #define TUNERET 2
 #define TUNEMAN 3
+
+#define ANMEASINT   2000
 
 class e_tunedialog : public QDialog
 {
@@ -30,6 +33,7 @@ private:
     iec104 *mipcanal;
     int TuneControlType;
     bool MipErrNeeded;
+    QTimer *tmr;
 
     struct Bac
     {
@@ -74,6 +78,13 @@ private:
     bool CheckMip();
     bool IsWithinLimits(double number, double base, double threshold);
     void RefreshAnalogValues();
+    void ShowControlChooseDialog();
+    void Show1PhaseScheme();
+    void Show1RetomDialog();
+    bool Start7_2_3();
+    bool Start7_3_1();
+    bool Start7_3_2();
+    bool Start7_3_3();
 
 private slots:
     void StartTune();
@@ -90,6 +101,9 @@ private slots:
     void SetTuneMip();
     void SetTuneRetom();
     void SetTuneManual();
+    void StartAnalogMeasurements();
+    void StopAnalogMeasurements();
+    void ReadAnalogMeasurements();
 
 protected:
     void closeEvent(QCloseEvent *e);
