@@ -36,7 +36,8 @@ SOURCES += main.cpp\
     widgets/s_tqtableview.cpp \
     oscdialog.cpp \
     widgets/s_tablemodel.cpp \
-    widgets/s_tableitem.cpp
+    widgets/s_tableitem.cpp \
+    E/e_config.cpp
 
 HEADERS  += conset.h \
     fwupdialog.h \
@@ -59,7 +60,8 @@ HEADERS  += conset.h \
     widgets/s_tqtableview.h \
     oscdialog.h \
     widgets/s_tableitem.h \
-    widgets/s_tablemodel.h
+    widgets/s_tablemodel.h \
+    E/e_config.h
 
 RESOURCES += \
     res.qrc

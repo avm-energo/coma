@@ -1,3 +1,4 @@
+#include <QTime>
 #include <QThread>
 #include <QCoreApplication>
 
@@ -64,6 +65,17 @@ void iec104::Start()
 
 void iec104::Stop()
 {
+    APCI StopDT;
+    StopDT.start = I104_START;
+    StopDT.APDUlength = 4;
+    StopDT.contrfield[0] = I104_STOPDT_ACT;
+    StopDT.contrfield[1] = StopDT.contrfield[2] = StopDT.contrfield[3] = 0;
+    Parse->cmd = I104_STOPDT_ACT;
+    Send(StopDT); // ASDU = QByteArray()
+    QTime tmr;
+    tmr.start();
+    while (tmr.elapsed() < 1000)
+        qApp->processEvents();
     emit stopall();
 }
 
@@ -316,7 +328,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
         }
         case M_ME_TF_1: // 36 тип - измеренные данные с плавающей запятой
         {
-            if (ObjectAdr > 40) // для регулировки Э значения сигналов МИПа с индексом более 17 не требуются
+            if (ObjectAdr > 40) // для регулировки Э значения сигналов МИПа с индексом более 40 не требуются
             {
                 index += 12;
                 break;

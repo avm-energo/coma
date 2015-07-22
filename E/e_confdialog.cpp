@@ -16,59 +16,8 @@
 e_confdialog::e_confdialog(QWidget *parent) :
     QDialog(parent)
 {
-    Config[0] = {EBCI_MTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.MType)/sizeof(quint32), &(Bci_block.MType)};
-    Config[1] = {EBCI_MTYPE1, u32_TYPE, sizeof(quint32), sizeof(Bci_block.MType1)/sizeof(quint32), &(Bci_block.MType1)};
-    Config[2] = {EBCI_EQTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.eq_type)/sizeof(quint32), &(Bci_block.eq_type)};
-    Config[3] = {EBCI_NPOINTS, u32_TYPE, sizeof(quint32), sizeof(Bci_block.npoints)/sizeof(quint32), &(Bci_block.npoints)};
-    Config[4] = {EBCI_NFILTR, u32_TYPE, sizeof(quint32), sizeof(Bci_block.nfiltr)/sizeof(quint32), &Bci_block.nfiltr};
-    Config[5] = {EBCI_NHFILTR, u32_TYPE, sizeof(quint32), sizeof(Bci_block.nhfiltr)/sizeof(quint32), &Bci_block.nhfiltr};
-    Config[6] = {EBCI_DDOSC, u32_TYPE, sizeof(quint32), sizeof(Bci_block.ddosc)/sizeof(quint32), &Bci_block.ddosc};
-    Config[7] = {EBCI_UNOM1, float_TYPE, sizeof(float), sizeof(Bci_block.unom1)/sizeof(float), &Bci_block.unom1};
-    Config[8] = {EBCI_UNOM2, float_TYPE, sizeof(float), sizeof(Bci_block.unom2)/sizeof(float), &Bci_block.unom2};
-    Config[9] = {EBCI_INOM1, float_TYPE, sizeof(float), sizeof(Bci_block.inom1)/sizeof(float), &Bci_block.inom1};
-    Config[10] = {EBCI_INOM2, float_TYPE, sizeof(float), sizeof(Bci_block.inom2)/sizeof(float), &Bci_block.inom2};
-    Config[11] = {EBCI_DUOSC, float_TYPE, sizeof(float), sizeof(Bci_block.duosc)/sizeof(float), &Bci_block.duosc};
-    Config[12] = {EBCI_DIOSC, float_TYPE, sizeof(float), sizeof(Bci_block.diosc)/sizeof(float), &Bci_block.diosc};
-    Config[13] = {EBCI_DUIMIN, float_TYPE, sizeof(float), sizeof(Bci_block.duimin)/sizeof(float), &Bci_block.duimin};
-    Config[14] = {EBCI_CTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Ctype)/sizeof(quint32), &Bci_block.Ctype};
-    Config[15] = {EBCI_ABS_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Abs_104)/sizeof(quint32), &Bci_block.Abs_104};
-    Config[16] = {EBCI_CYCLE_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Cycle_104)/sizeof(quint32), &Bci_block.Cycle_104};
-    Config[17] = {EBCI_T1_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T1_104)/sizeof(quint32), &Bci_block.T1_104};
-    Config[18] = {EBCI_T2_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T2_104)/sizeof(quint32), &Bci_block.T2_104};
-    Config[19] = {EBCI_T3_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T3_104)/sizeof(quint32), &Bci_block.T3_104};
-    Config[20] = {EBCI_K_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.k_104)/sizeof(quint32), &Bci_block.k_104};
-    Config[21] = {EBCI_W_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.w_104)/sizeof(quint32), &Bci_block.w_104};
-    Config[22] = {0xFFFF, 0, 0, 0, NULL};
-
-    Bci_defblock.MType = 4;
-    Bci_defblock.MType1 = 0x000001;
-    Bci_defblock.Abs_104 = 205;
-    Bci_defblock.Ctype = 1;
-    Bci_defblock.Cycle_104 = 5;
-    Bci_defblock.T1_104 = 15;
-    Bci_defblock.T2_104 = 10;
-    Bci_defblock.T3_104 = 20;
-    Bci_defblock.k_104 = 12;
-    Bci_defblock.w_104 = 8;
-    Bci_defblock.eq_type = 1;
-    Bci_defblock.npoints = 128;
-    Bci_defblock.nfiltr = 100;
-    Bci_defblock.nhfiltr = 3;
-    Bci_defblock.ddosc = 1;
-    Bci_defblock.unom1 = 500;
-    Bci_defblock.unom2 = 220;
-    Bci_defblock.duosc = 2.0;
-    Bci_defblock.diosc = 2.0;
-    Bci_defblock.duimin = 0.5;
-    for (int i = 0; i < 3; i++)
-    {
-        Bci_defblock.inom1[i] = 600;
-        Bci_defblock.inom1[i+3] = 1000;
-        Bci_defblock.inom2[i] = Bci_defblock.inom2[i+3] = 5;
-    }
-
+    econf = new e_config;
     setAttribute(Qt::WA_DeleteOnClose);
-//    cn = new canal;
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
@@ -98,7 +47,7 @@ e_confdialog::e_confdialog(QWidget *parent) :
 
 void e_confdialog::GetBci()
 {
-    cn->Send(CN_GF,NULL,0,1,Config);
+    cn->Send(CN_GF,NULL,0,1,econf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -115,35 +64,35 @@ void e_confdialog::FillConfData()
 
     dspbls = this->findChild<s_tqspinbox *>("abs104spb");
     if (dspbls != 0)
-        dspbls->setValue(Bci_block.Abs_104);
+        dspbls->setValue(econf->Bci_block.Abs_104);
     dspbls = this->findChild<s_tqspinbox *>("cycle104spb");
     if (dspbls != 0)
-        dspbls->setValue(Bci_block.Cycle_104);
+        dspbls->setValue(econf->Bci_block.Cycle_104);
     dspbls = this->findChild<s_tqspinbox *>("t1104spb");
     if (dspbls != 0)
-        dspbls->setValue(Bci_block.T1_104);
+        dspbls->setValue(econf->Bci_block.T1_104);
     dspbls = this->findChild<s_tqspinbox *>("t2104spb");
     if (dspbls != 0)
-        dspbls->setValue(Bci_block.T2_104);
+        dspbls->setValue(econf->Bci_block.T2_104);
     dspbls = this->findChild<s_tqspinbox *>("t3104spb");
     if (dspbls != 0)
-        dspbls->setValue(Bci_block.T3_104);
+        dspbls->setValue(econf->Bci_block.T3_104);
     dspbls = this->findChild<s_tqspinbox *>("k104spb");
     if (dspbls != 0)
-        dspbls->setValue(Bci_block.k_104);
+        dspbls->setValue(econf->Bci_block.k_104);
     dspbls = this->findChild<s_tqspinbox *>("w104spb");
     if (dspbls != 0)
-        dspbls->setValue(Bci_block.w_104);
+        dspbls->setValue(econf->Bci_block.w_104);
     cb = this->findChild<s_tqComboBox *>("ctypecb");
     if (cb != 0)
-        cb->setCurrentIndex(Bci_block.Ctype);
+        cb->setCurrentIndex(econf->Bci_block.Ctype);
     cb = this->findChild<s_tqComboBox *>("eq_typecb");
     if (cb != 0)
-        cb->setCurrentIndex(Bci_block.eq_type);
+        cb->setCurrentIndex(econf->Bci_block.eq_type);
     chb = this->findChild<s_tqCheckBox *>("osc1chb");
     if (chb != 0)
     {
-        if (Bci_block.ddosc & 0x0001)
+        if (econf->Bci_block.ddosc & 0x0001)
             chb->setChecked(true);
         else
             chb->setChecked(false);
@@ -151,7 +100,7 @@ void e_confdialog::FillConfData()
     chb = this->findChild<s_tqCheckBox *>("osc2chb");
     if (chb != 0)
     {
-        if (Bci_block.ddosc & 0x0002)
+        if (econf->Bci_block.ddosc & 0x0002)
             chb->setChecked(true);
         else
             chb->setChecked(false);
@@ -159,63 +108,63 @@ void e_confdialog::FillConfData()
     chb = this->findChild<s_tqCheckBox *>("osc3chb");
     if (chb != 0)
     {
-        if (Bci_block.ddosc & 0x0004)
+        if (econf->Bci_block.ddosc & 0x0004)
             chb->setChecked(true);
         else
             chb->setChecked(false);
     }
     cb = this->findChild<s_tqComboBox *>("npointscb");
     if (cb != 0)
-        cb->setCurrentText(QString::number(Bci_block.npoints));
+        cb->setCurrentText(QString::number(econf->Bci_block.npoints));
     spb = this->findChild<QSpinBox *>("nfiltrspb");
     if (dspbls != 0)
-        spb->setValue(Bci_block.nfiltr);
+        spb->setValue(econf->Bci_block.nfiltr);
     spb = this->findChild<QSpinBox *>("nhfiltrspb");
     if (spb != 0)
-        spb->setValue(Bci_block.nhfiltr);
+        spb->setValue(econf->Bci_block.nhfiltr);
     switch (pc.MType1)
     {
     case ET_0T2N: // 2 напряжения, 0 токов
     {
         cb = this->findChild<s_tqComboBox *>("unom1cb");
         if (cb != 0)
-            cb->setCurrentText(QString::number(Bci_block.unom1));
+            cb->setCurrentText(QString::number(econf->Bci_block.unom1));
         cb = this->findChild<s_tqComboBox *>("unom2cb");
         if (cb != 0)
-            cb->setCurrentText(QString::number(Bci_block.unom2));
+            cb->setCurrentText(QString::number(econf->Bci_block.unom2));
         dspbls = this->findChild<s_tqspinbox *>("duosc");
         if (dspbls != 0)
-            dspbls->setValue(Bci_block.duosc);
+            dspbls->setValue(econf->Bci_block.duosc);
         dspbls = this->findChild<s_tqspinbox *>("duimin");
         if (dspbls != 0)
-            dspbls->setValue(Bci_block.duimin);
+            dspbls->setValue(econf->Bci_block.duimin);
         break;
     }
     case ET_1T1N:
     {
         cb = this->findChild<s_tqComboBox *>("unom1cb");
         if (cb != 0)
-            cb->setCurrentText(QString::number(Bci_block.unom1));
+            cb->setCurrentText(QString::number(econf->Bci_block.unom1));
         for (i = 3; i < 6; i++)
         {
             dspbls = this->findChild<s_tqspinbox *>("inom1"+QString::number(i));
             if (dspbls != 0)
-                dspbls->setValue(Bci_block.inom1[i]);
+                dspbls->setValue(econf->Bci_block.inom1[i]);
             cb = this->findChild<s_tqComboBox *>("inom2"+QString::number(i));
             QString tmps = cb->currentText();
             if (cb != 0)
-                cb->setCurrentText(QString::number(Bci_block.inom2[i]));
+                cb->setCurrentText(QString::number(econf->Bci_block.inom2[i]));
             tmps = cb->currentText();
         }
         dspbls = this->findChild<s_tqspinbox *>("duosc");
         if (dspbls != 0)
-            dspbls->setValue(Bci_block.duosc);
+            dspbls->setValue(econf->Bci_block.duosc);
         dspbls = this->findChild<s_tqspinbox *>("diosc");
         if (dspbls != 0)
-            dspbls->setValue(Bci_block.diosc);
+            dspbls->setValue(econf->Bci_block.diosc);
         dspbls = this->findChild<s_tqspinbox *>("duimin");
         if (dspbls != 0)
-            dspbls->setValue(Bci_block.duimin);
+            dspbls->setValue(econf->Bci_block.duimin);
         break;
     }
     case ET_2T0N:
@@ -224,20 +173,20 @@ void e_confdialog::FillConfData()
         {
             dspbls = this->findChild<s_tqspinbox *>("inom1"+QString::number(i));
             if (dspbls != 0)
-                dspbls->setValue(Bci_block.inom1[i]);
+                dspbls->setValue(econf->Bci_block.inom1[i]);
             cb = this->findChild<s_tqComboBox *>("inom2"+QString::number(i));
             if (cb != 0)
-                cb->setCurrentText(QString::number(Bci_block.inom2[i]));
+                cb->setCurrentText(QString::number(econf->Bci_block.inom2[i]));
         }
         dspbls = this->findChild<s_tqspinbox *>("duosc");
         if (dspbls != 0)
-            dspbls->setValue(Bci_block.duosc);
+            dspbls->setValue(econf->Bci_block.duosc);
         dspbls = this->findChild<s_tqspinbox *>("diosc");
         if (dspbls != 0)
-            dspbls->setValue(Bci_block.diosc);
+            dspbls->setValue(econf->Bci_block.diosc);
         dspbls = this->findChild<s_tqspinbox *>("duimin");
         if (dspbls != 0)
-            dspbls->setValue(Bci_block.duimin);
+            dspbls->setValue(econf->Bci_block.duimin);
         break;
     }
     default:
@@ -726,9 +675,9 @@ void e_confdialog::SetOsc(int isChecked, s_tqCheckBox *ptr)
     quint16 tmpint = 0x0001;
     tmpint = tmpint << ptr->getAData().toInt();
     if (isChecked == Qt::Checked)
-        Bci_block.ddosc |= tmpint;
+        econf->Bci_block.ddosc |= tmpint;
     else
-        Bci_block.ddosc &= ~tmpint;
+        econf->Bci_block.ddosc &= ~tmpint;
 }
 
 void e_confdialog::SetThreshold(double dbl, s_tqspinbox *ptr)
@@ -737,17 +686,17 @@ void e_confdialog::SetThreshold(double dbl, s_tqspinbox *ptr)
     {
     case 0: // % напряжения
     {
-        Bci_block.duosc = dbl;
+        econf->Bci_block.duosc = dbl;
         break;
     }
     case 1:
     {
-        Bci_block.diosc = dbl;
+        econf->Bci_block.diosc = dbl;
         break;
     }
     case 2:
     {
-        Bci_block.duimin = dbl;
+        econf->Bci_block.duimin = dbl;
         break;
     }
     default:
@@ -759,40 +708,40 @@ void e_confdialog::SetVoltageClass(int tmpi, s_tqComboBox *ptr)
 {
     Q_UNUSED(tmpi);
     if (ptr->getAData().toInt())
-        Bci_block.unom2 = ptr->currentText().toInt();
+        econf->Bci_block.unom2 = ptr->currentText().toInt();
     else
-        Bci_block.unom1 = ptr->currentText().toInt();
+        econf->Bci_block.unom1 = ptr->currentText().toInt();
 }
 
 void e_confdialog::SetCurrent(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.inom1[ptr->getAData().toInt()] = dbl;
+    econf->Bci_block.inom1[ptr->getAData().toInt()] = dbl;
 }
 
 void e_confdialog::SetSecCurrent(int tmpi, s_tqComboBox *ptr)
 {
     Q_UNUSED(tmpi);
-    Bci_block.inom2[ptr->getAData().toInt()] = ptr->currentText().toInt();
+    econf->Bci_block.inom2[ptr->getAData().toInt()] = ptr->currentText().toInt();
 }
 
 void e_confdialog::SetEqType(int tmpi)
 {
-    Bci_block.eq_type = tmpi;
+    econf->Bci_block.eq_type = tmpi;
 }
 
 void e_confdialog::SetNPoints(QString tmpi)
 {
-    Bci_block.npoints = tmpi.toInt();
+    econf->Bci_block.npoints = tmpi.toInt();
 }
 
 void e_confdialog::SetNFiltr(int tmpi)
 {
-    Bci_block.nfiltr = tmpi;
+    econf->Bci_block.nfiltr = tmpi;
 }
 
 void e_confdialog::SetNHFiltr(int tmpi)
 {
-    Bci_block.nhfiltr = tmpi;
+    econf->Bci_block.nhfiltr = tmpi;
 }
 
 void e_confdialog::Set104(double dbl, s_tqspinbox *ptr)
@@ -801,37 +750,37 @@ void e_confdialog::Set104(double dbl, s_tqspinbox *ptr)
     {
     case 0:
     {
-        Bci_block.Abs_104=dbl;
+        econf->Bci_block.Abs_104=dbl;
         break;
     }
     case 1:
     {
-        Bci_block.Cycle_104=dbl;
+        econf->Bci_block.Cycle_104=dbl;
         break;
     }
     case 2:
     {
-        Bci_block.T1_104=dbl;
+        econf->Bci_block.T1_104=dbl;
         break;
     }
     case 3:
     {
-        Bci_block.T2_104=dbl;
+        econf->Bci_block.T2_104=dbl;
         break;
     }
     case 4:
     {
-        Bci_block.T3_104=dbl;
+        econf->Bci_block.T3_104=dbl;
         break;
     }
     case 5:
     {
-        Bci_block.k_104=dbl;
+        econf->Bci_block.k_104=dbl;
         break;
     }
     case 6:
     {
-        Bci_block.w_104=dbl;
+        econf->Bci_block.w_104=dbl;
         break;
     }
     default:
@@ -841,12 +790,12 @@ void e_confdialog::Set104(double dbl, s_tqspinbox *ptr)
 
 void e_confdialog::SetCType(int num)
 {
-    Bci_block.Ctype = num;
+    econf->Bci_block.Ctype = num;
 }
 
 void e_confdialog::WriteConfDataToModule()
 {
-    cn->Send(CN_WF, &Bci_block, sizeof(Bci_block), 2, Config);
+    cn->Send(CN_WF, &econf->Bci_block, sizeof(econf->Bci_block), 2, econf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -864,6 +813,6 @@ void e_confdialog::SetNewConf()
 
 void e_confdialog::SetDefConf()
 {
-    memcpy(&Bci_block, &Bci_defblock, sizeof(Bci));
+    memcpy(&econf->Bci_block, &econf->Bci_defblock, sizeof(e_config::Bci));
     FillConfData();
 }

@@ -45,7 +45,7 @@ private:
         float Kinter;
     };
 
-    Bac Bac_block, Bac_defblock;
+    Bac Bac_block, Bac_defblock, Bac_newblock;
 
     struct Bda
     {
@@ -70,6 +70,36 @@ private:
 
     Bda Bda_block;
 
+    typedef struct
+    {
+        quint32 MType;          // Тип модуля, для которого предназначена конфигурация
+        quint32 MType1;         // Подтип модуля, для которого предназначена конфигурация
+        quint32 eq_type;        // Тип контролируемого оборудования: 0 - 1фТАТ, 1 - 3фТАТ, 2 - 1фР, 3 - 3фР
+        quint32 npoints;        // Количество точек оцифровки на период (64/80/128/256)
+        quint32 nfiltr;         // Интервал усреднения данных (постоянная фильтрации)
+        quint32 nhfiltr;        // Постоянная фильтрации гармоник
+        quint32 ddosc;          // События-инициаторы запуска осциллографирования
+        float unom1;            // Класс напряжения 1-й группы
+        float unom2;            // Класс напряжения 2-й группы
+        float inom1[6];         // Номинальный первичный ток внешнего ТТ по каналам
+        float inom2[6];         // Номинальный вторичный ток внешнего ТТ по каналам
+        float duosc;            // Уставка скачка напряжения для запуска осциллографирования (в % от номинального напряжения ТН)
+        float diosc;            // Уставка скачка тока для запуска осциллографирования (в % от номинального тока ТТ)
+        float duimin;           // Уставка контроля минимума сигналов (в %)
+        quint32 Ctype;   		// Тип синхронизации времени от модуля Ц
+        quint32 Abs_104;     	// Адрес базовой станции для протокола 104
+        quint32 Cycle_104;      // Интервал циклического опроса по протоколу МЭК 60870-5-104
+        quint32 T1_104;         // тайм-аут Т1 для протокола 104
+        quint32 T2_104;         // тайм-аут Т2 для протокола 104
+        quint32 T3_104;         // тайм-аут Т3 для протокола 104
+        quint32 k_104;          // макс. кол-во неподтв. сообщений
+        quint32 w_104;          // макс. кол-во сообщений, после которых необх. выдать подтверждение
+    } Bci;
+
+    float IUefNat_filt_old[6];      // для сохранения значений по п. 7.3.2
+    float mipd[13];
+    float MipDat[41];
+
     void SetupUI();
     void CalcNewTuneCoefs();
     void RefreshTuneCoefs();
@@ -80,11 +110,21 @@ private:
     void RefreshAnalogValues();
     void ShowControlChooseDialog();
     void Show1PhaseScheme();
-    void Show1RetomDialog();
+    void Show3PhaseScheme();
+    void Show1RetomDialog(int A);
     bool Start7_2_3();
     bool Start7_3_1();
-    bool Start7_3_2();
+    bool Start7_3_2(int num);
     bool Start7_3_3();
+    bool Start7_3_4();
+    void Start7_3_6_2();
+    bool Start7_3_7_1();
+    bool Start7_3_7_2();
+    bool SetConfA(int i2nom);
+    void GetExternalData(int numexc); // ввод данных в зависимости от выбранного режима и номера опыта
+    void ShowMsg(int msg);
+    void ShowOkMsg(int msg);
+    void ShowErMsg(int msg);
 
 private slots:
     void StartTune();
@@ -104,6 +144,7 @@ private slots:
     void StartAnalogMeasurements();
     void StopAnalogMeasurements();
     void ReadAnalogMeasurements();
+    void SetExtData();
 
 protected:
     void closeEvent(QCloseEvent *e);

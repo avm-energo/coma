@@ -4,5 +4,8 @@
         <file>mte_0t2n.png</file>
         <file>mte_1t1n.png</file>
         <file>mte_2t0n.png</file>
+        <file>mte3-e0t2n.png</file>
+        <file>mte3-e1t1n.png</file>
+        <file>mte3-e2t0n.png</file>
     </qresource>
 </RCC>
