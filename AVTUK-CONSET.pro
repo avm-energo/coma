@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network
+QT       += core gui network xlsx
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -37,7 +37,8 @@ SOURCES += main.cpp\
     oscdialog.cpp \
     widgets/s_tablemodel.cpp \
     widgets/s_tableitem.cpp \
-    E/e_config.cpp
+    E/e_config.cpp \
+    widgets/getoscpbdelegate.cpp
 
 HEADERS  += conset.h \
     fwupdialog.h \
@@ -61,7 +62,11 @@ HEADERS  += conset.h \
     oscdialog.h \
     widgets/s_tableitem.h \
     widgets/s_tablemodel.h \
-    E/e_config.h
+    E/e_config.h \
+    widgets/getoscpbdelegate.h
+
+INCLUDEPATH += $$PWD/../../xlsxwriter/src/xlsx
+DEPENDPATH += $$PWD/../../xlsxwriter/src/xlsx
 
 RESOURCES += \
     res.qrc

@@ -57,6 +57,11 @@ QVariant s_tablemodel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+/*s_tableitem s_tablemodel::item(const QModelIndex &index)
+{
+    return maindata.at(index.row());
+} */
+
 // value должен представлять из себя запись вида: <value>.<links>, где links - вспомогательное поле, определяющее
 // порядок работы с полем - подставляемый делегат, ссылку на списки и формат отображения
 
@@ -253,6 +258,10 @@ void s_tablemodel::setCellAttr(QModelIndex index, int fcset, int icon)
 
 void s_tablemodel::ClearModel()
 {
+    beginResetModel();
+    while (rowCount()>0)
+        removeRows(0, 1);
     hdr.clear();
     maindata.clear();
+    endResetModel();
 }

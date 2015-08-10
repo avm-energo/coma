@@ -42,6 +42,7 @@ public:
     void fillModel(QList<QStringList> sl);
     QStringList cvalues(int column); // выдать значения по столбцу column в выходной QStringList
     QStringList rvalues(int row); // выдать значения по строке row в выходной QStringList
+//    s_tableitem item(const QModelIndex &);
 
 signals:
 

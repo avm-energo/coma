@@ -5,6 +5,7 @@
 #include <QByteArray>
 
 #include "widgets/s_tablemodel.h"
+#include "publicclass.h"
 
 class oscdialog : public QDialog
 {
@@ -18,6 +19,17 @@ private:
 
     s_tablemodel *tm;
     QByteArray *OscInfo;
+    QString GivenFilename;
+    publicclass::DataRec Config[2];
+    typedef struct
+    {
+        quint32 ChNum;
+        quint32 UnixTime;
+        quint32 NsTime;
+        quint32 PtPer;
+    } OscHeader_type;
+
+    OscHeader_type OscHeader;
 
 signals:
     void endprogressbar();
@@ -27,8 +39,8 @@ private slots:
     void ProcessOscInfo();
     void SetProgressBarSize(quint32);
     void SetProgressBar(quint32);
-    void BeginExtractOsc(QModelIndex);
     void EndExtractOsc();
+    void GetOsc(QModelIndex);
 };
 
 #endif // OSCDIALOG_H

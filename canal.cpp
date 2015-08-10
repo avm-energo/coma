@@ -75,7 +75,7 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
         tmpba.append(cmd);
         tmpba.append(~cmd);
         tmpba.append(fnum/256);
-        tmpba.append(fnum-(tmpba.at(3)*256));
+        tmpba.append(fnum-(static_cast<quint8>(tmpba.at(3))*256));
         break;
     }
     case CN_WF: // запись файла
@@ -460,7 +460,7 @@ void canal::Connect()
     connect(SThread,SIGNAL(finished()), SThread,SLOT(deleteLater()));
     connect(SThread,SIGNAL(error(int)),this,SLOT(CanalError(int)));
     connect(SThread,SIGNAL(canalisready()),this,SLOT(CanalReady()));
-    connect(SThread,SIGNAL(canalisready()),this,SLOT(TryOnceMore()));
+//    connect(SThread,SIGNAL(canalisready()),this,SLOT(TryOnceMore()));
     connect(SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(DataWritten(QByteArray)));
     connect(SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
     connect(this,SIGNAL(writedatatoport(QByteArray)),SThread,SLOT(InitiateWriteDataToPort(QByteArray)));
@@ -483,12 +483,12 @@ void canal::Connect()
 
 void canal::Disconnect()
 {
-    if (ThreadStarted)
-    {
+//    if (ThreadStarted)
+//    {
         emit stopall();
-        thread->wait(1000);
-        ThreadStarted = false;
-    }
+//        thread->wait(1000);
+//        ThreadStarted = false;
+//    }
 }
 
 void canal::CanalReady()
@@ -503,14 +503,14 @@ void canal::CanalError(int ernum)
     this->ernum = ernum;
     PortErrorDetected = true;
     ConnectedToPort = false;
-    if (FirstRun)
+ //   if (FirstRun)
         Finish(ernum);
-    else
+ /*   else
     {
         ReconTry++;
         if (!ReconModeEnabled)
             StartReconnect();
-    }
+    } */
 }
 
 void canal::StartReconnect()

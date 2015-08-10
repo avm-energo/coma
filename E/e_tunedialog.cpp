@@ -903,10 +903,10 @@ void e_tunedialog::GetExternalData(int numexc)
     }
     case TUNEMAN:
     {
-        dlg = new QDialog(this);
+        QDialog *dlg = new QDialog(this);
         dlg->setObjectName("dlg7371");
         QGridLayout *glyout = new QGridLayout;
-        lbl = new QLabel("Введите значения сигналов по приборам");
+        QLabel *lbl = new QLabel("Введите значения сигналов по приборам");
         glyout->addWidget(lbl,0,0,1,6);
         for (int i=0; i<3; i++) // for A to C
         {
