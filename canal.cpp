@@ -347,7 +347,7 @@ void canal::SetRDLength(int startpos)
     if (DLength > 512)
     {
         LongBlock = true;
-        SegLeft = DLength / 512;
+        SegLeft = (DLength-1) / 512; // -1, чтобы не делать последний сегмент нулевой длины
         SegEnd = 512 + startpos + 3; // 512 - длина сегмента, startpos - позиция начала длины, 3 - длина
     }
     else
@@ -382,7 +382,7 @@ void canal::SetWR(QByteArray ba, quint32 startpos)
     WRLength = WriteData->size();
     if (static_cast<quint32>(WriteData->size())>(512+startpos)) // startpos - заголовок
     {
-        SegLeft = (WRLength - startpos) / 512;
+        SegLeft = (WRLength - startpos-1) / 512; // -1, чтобы не делать последний сегмент нулевой длины
         SegEnd = 512 + startpos;
     }
     else

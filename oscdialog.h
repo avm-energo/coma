@@ -25,10 +25,12 @@ private:
     publicclass::DataRec Config[2];
     typedef struct
     {
-        quint32 ChNum;
         quint32 UnixTime;
         quint32 NsTime;
         quint32 PtPer;
+        quint32 Len;
+        quint32 Qty;
+        quint32 ChNum;
     } OscHeader_type;
 
     OscHeader_type OscHeader;

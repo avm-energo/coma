@@ -12,6 +12,7 @@
 #include <QDateTime>
 #include <QtXlsx/xlsxdocument.h>
 #include <QFileDialog>
+#include <QMessageBox>
 
 oscdialog::oscdialog(QWidget *parent) :
     QDialog(parent)
@@ -48,9 +49,9 @@ void oscdialog::GetOscInfo()
 
 void oscdialog::ProcessOscInfo()
 {
-    disconnect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
-    disconnect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
-    emit endprogressbar();
+//    disconnect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
+//    disconnect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
+//    emit endprogressbar();
     QList<QStringList> lsl;
     tm->ClearModel();
     tm->addColumn("#");
@@ -104,14 +105,14 @@ void oscdialog::ProcessOscInfo()
 
 void oscdialog::SetProgressBar(quint32 cursize)
 {
-    QProgressBar *prb = this->findChild<QProgressBar *>("oscprb");
+ /*   QProgressBar *prb = this->findChild<QProgressBar *>("oscprb");
     if (prb != 0)
-        prb->setValue(cursize);
+        prb->setValue(cursize); */
 }
 
 void oscdialog::SetProgressBarSize(quint32 size)
 {
-    QDialog *dlg = new QDialog;
+/*    QDialog *dlg = new QDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setWindowModality(Qt::WindowModal);
     connect(this,SIGNAL(endprogressbar()),dlg,SLOT(close()));
@@ -125,7 +126,7 @@ void oscdialog::SetProgressBarSize(quint32 size)
     prb->setMaximum(size);
     lyout->addWidget(prb);
     dlg->setLayout(lyout);
-    dlg->setVisible(true);
+    dlg->setVisible(true); */
 }
 
 void oscdialog::EndExtractOsc()
@@ -134,15 +135,16 @@ void oscdialog::EndExtractOsc()
     OscLength += static_cast<quint8>(OscInfo->at(1))*256;
     OscLength += static_cast<quint8>(OscInfo->at(2))*65536;
     OscLength += static_cast<quint8>(OscInfo->at(3))*16777216;
-    QByteArray *OscData = new QByteArray;
+    QByteArray OscData;
     switch(pc.MType)
     {
     case MT_A:
     {
-        Config[0] = {MT_A_OSCTYPE, float_TYPE, sizeof(float), (OscLength-24)/sizeof(quint8),OscData->data()}; // 24=sizeof(DataHeader)+sizeof(DataRec)
+        OscData.resize(OscLength-24);
+        Config[0] = {MT_A_OSCTYPE, float_TYPE, sizeof(float), (OscLength-24)/sizeof(float),OscData.data()};
+        // 24=sizeof(FFFF-block)+sizeof(FFFF-block DataRec)
         Config[1] = {0xFFFF, 0, 0, 0, NULL};
-        OscData->resize(OscLength);
-        int res = pc.RestoreDataMem(OscInfo->data(),OscLength,Config);
+        int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +DataHeader
         if (res)
             return; // !!! ошибка разбора формата С2
         break;
@@ -155,34 +157,38 @@ void oscdialog::EndExtractOsc()
         break;
     }
     // обработка принятой осциллограммы и запись её в файл
+    int WRow = 2;
+    int WCol = 2;
+    memcpy(&OscHeader,OscData.data(),sizeof(OscHeader)); // скопировали информацию об осциллограмме в структуру
+    OscData.remove(0,sizeof(OscHeader)); // и удалили её из входного буфера, чтобы осталась только сама осциллограмма
+    OscData.chop(12); // последний Datarec долой
+    if (OscHeader.NsTime > 999999999L)
+        OscHeader.NsTime = 0; // !!! ошибка - число наносекунд не может быть больше 999 млн 999 тыс 999
+    GivenFilename.insert(0, QString::number(OscHeader.ChNum)+"  ");
     QString filename = QFileDialog::getSaveFileName(this,"Сохранить осциллограмму",GivenFilename,"Excel files (*.xlsx)");
     if (filename == "")
         return; // !!! ошибка - не задано имя файла
     QXlsx::Document xlsx(filename.toUtf8());
-    int WRow = 2;
-    int WCol = 2;
-    memcpy(&OscHeader,OscData->data(),sizeof(OscHeader)); // скопировали информацию об осциллограмме в структуру
-    OscData->remove(0,sizeof(OscHeader)); // и удалили её из входного буфера, чтобы осталась только сама осциллограмма
-    if (OscHeader.NsTime > 999999999L)
-        OscHeader.NsTime = 0; // !!! ошибка - число наносекунд не может быть больше 999 млн 999 тыс 999
     quint64 StartTime = static_cast<quint64>(OscHeader.UnixTime)*1000000000L + OscHeader.NsTime;
     xlsx.write(1,1,QVariant("Модуль "+pc.ModuleTypeString));
     xlsx.write(1,2,QVariant("Канал "+QString::number(OscHeader.ChNum)));
     xlsx.write(1,3,QVariant("Дата "+pc.NsTimeToString(StartTime).split(" ").at(0)));
     xlsx.write(1,4,QVariant("Время "+pc.NsTimeToString(StartTime).split(" ").at(1)));
     quint32 i = 0; // указатель внутри OscData
-    quint32 OscDataSize = OscData->size();
+    quint32 OscDataSize = OscData.size();
     float tmpf;
-    while (i < (OscDataSize-3)) // минус один отсчёт во float
+    while (i < (OscDataSize-15)) // минус один отсчёт во float минус размер одного последнего DataRec-а
     {
         QString tmps = pc.NsTimeToString(StartTime);
         xlsx.write(WRow,WCol,QVariant(tmps));
-        memcpy(&tmpf,OscData->data(),sizeof(tmpf));
+        memcpy(&tmpf,&(OscData.data()[i]),sizeof(tmpf));
         xlsx.write(WRow,WCol+1,QVariant(tmpf));
         WRow++;
         StartTime += OscHeader.PtPer;
+        i+=4; // отсчёт++
     }
     xlsx.save();
+    QMessageBox::information(this,"Успешно!","Записано успешно!");
 }
 
 void oscdialog::GetOsc(QModelIndex idx)
@@ -192,7 +198,7 @@ void oscdialog::GetOsc(QModelIndex idx)
     QString OscDateTime = tm->data(idx.sibling(idx.row(),2),Qt::DisplayRole).toString(); // дата и время создания осциллограммы
     OscInfo = new QByteArray;
     OscInfo->resize(30000);
-    GivenFilename = QString::number(oscnum)+"-"+OscDateTime;
+    GivenFilename = OscDateTime;
     GivenFilename.replace("/","-");
     GivenFilename.replace(":","_");
     cn->Send(CN_GBosc,&(OscInfo->data()[0]),0,oscnum);
