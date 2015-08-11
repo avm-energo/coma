@@ -222,18 +222,6 @@ void ConSet::Connect()
     tmpmodel->setStringList(tmpsl);
     portscb->setModel(tmpmodel);
     lyout->addWidget(portscb);
-/*    QComboBox *baudscb = new QComboBox;
-    baudscb->setObjectName("connectbaudscb");
-    connect(baudscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetBaud(QString)));
-    tmpmodel = new QStringListModel;
-    tmpsl.clear();
-    QList<qint32> bauds = QSerialPortInfo::standardBaudRates();
-    for (i = 0; i < bauds.size(); i++)
- *       tmpsl << QString::number(bauds.at(i));
-    SetBaud(tmpsl.at(0));
-    tmpmodel->setStringList(tmpsl);
-    baudscb->setModel(tmpmodel);
-    lyout->addWidget(baudscb); */
 
     QPushButton *nextL = new QPushButton("Далее");
     connect(nextL,SIGNAL(clicked()),this,SLOT(Next()));
@@ -325,23 +313,22 @@ void ConSet::CheckBsi()
         Bsi_block.SerNum = QString::number(tmpi, 10).toInt(0,16);
     }
     pc.SerNum = Bsi_block.SerNum;
-    QString MType;
     qint32 tmpint;
     switch (Bsi_block.MType)
     {
     case MT_A:
     {
-        MType.append("А");
-        MType.append(QString::number(pc.ANumD()));
-        MType.append(QString::number(pc.ANumCh1()));
-        MType.append(pc.AMTypes.at(pc.ATyp1()));
+        pc.ModuleTypeString.append("А");
+        pc.ModuleTypeString.append(QString::number(pc.ANumD()));
+        pc.ModuleTypeString.append(QString::number(pc.ANumCh1()));
+        pc.ModuleTypeString.append(pc.AMTypes.at(pc.ATyp1()));
         tmpint = pc.ANumCh2();
         if (tmpint != 0)
         {
-            MType.append(QString::number(tmpint));
-            MType.append(pc.AMTypes.at(pc.ATyp2()));
+            pc.ModuleTypeString.append(QString::number(tmpint));
+            pc.ModuleTypeString.append(pc.AMTypes.at(pc.ATyp2()));
         }
-        MType.append(QString("%1").arg(pc.AMdf(), 3, 10, QChar('0')));
+        pc.ModuleTypeString.append(QString("%1").arg(pc.AMdf(), 3, 10, QChar('0')));
         break;
     }
     case MT_C: // разборка подтипа модуля Ц
@@ -354,15 +341,15 @@ void ConSet::CheckBsi()
     }
     case MT_E: // разборка подтипа модуля Э
     {
-        MType.append("Э");
-        MType.append(pc.ETyp1());
+        pc.ModuleTypeString.append("Э");
+        pc.ModuleTypeString.append(pc.ETyp1());
         break;
     }
     default:
         break;
     }
 
-    FillBsi(MType);
+    FillBsi(pc.ModuleTypeString);
 
     if (!DialogsAreReadyAlready)
     {

@@ -93,7 +93,7 @@ void oscdialog::ProcessOscInfo()
     QApplication::restoreOverrideCursor();
     s_tqTableView *tv = this->findChild<s_tqTableView *>("osctv");
     if (tv == 0)
-        return;
+        return; // !!! системная проблема
     tv->setModel(tm);
     GetOscPBDelegate *dg = new GetOscPBDelegate;
     connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(GetOsc(QModelIndex)));
@@ -124,6 +124,7 @@ void oscdialog::SetProgressBarSize(quint32 size)
     prb->setMinimum(0);
     prb->setMaximum(size);
     lyout->addWidget(prb);
+    dlg->setLayout(lyout);
     dlg->setVisible(true);
 }
 
@@ -138,12 +139,12 @@ void oscdialog::EndExtractOsc()
     {
     case MT_A:
     {
-        Config[0] = {0x3e8, u8_TYPE,sizeof(quint8),(OscLength-24)/sizeof(quint8),OscData->data()}; // 24=sizeof(DataHeader)+sizeof(DataRec)
+        Config[0] = {MT_A_OSCTYPE, float_TYPE, sizeof(float), (OscLength-24)/sizeof(quint8),OscData->data()}; // 24=sizeof(DataHeader)+sizeof(DataRec)
         Config[1] = {0xFFFF, 0, 0, 0, NULL};
         OscData->resize(OscLength);
         int res = pc.RestoreDataMem(OscInfo->data(),OscLength,Config);
         if (res)
-            return;
+            return; // !!! ошибка разбора формата С2
         break;
     }
     case MT_E:
@@ -156,13 +157,32 @@ void oscdialog::EndExtractOsc()
     // обработка принятой осциллограммы и запись её в файл
     QString filename = QFileDialog::getSaveFileName(this,"Сохранить осциллограмму",GivenFilename,"Excel files (*.xlsx)");
     if (filename == "")
-        return;
+        return; // !!! ошибка - не задано имя файла
     QXlsx::Document xlsx(filename.toUtf8());
     int WRow = 2;
     int WCol = 2;
-    memcpy(&OscHeader,&(OscData->data()[0]),sizeof(OscHeader)); // скопировали информацию об осциллограмме в структуру
+    memcpy(&OscHeader,OscData->data(),sizeof(OscHeader)); // скопировали информацию об осциллограмме в структуру
     OscData->remove(0,sizeof(OscHeader)); // и удалили её из входного буфера, чтобы осталась только сама осциллограмма
-
+    if (OscHeader.NsTime > 999999999L)
+        OscHeader.NsTime = 0; // !!! ошибка - число наносекунд не может быть больше 999 млн 999 тыс 999
+    quint64 StartTime = static_cast<quint64>(OscHeader.UnixTime)*1000000000L + OscHeader.NsTime;
+    xlsx.write(1,1,QVariant("Модуль "+pc.ModuleTypeString));
+    xlsx.write(1,2,QVariant("Канал "+QString::number(OscHeader.ChNum)));
+    xlsx.write(1,3,QVariant("Дата "+pc.NsTimeToString(StartTime).split(" ").at(0)));
+    xlsx.write(1,4,QVariant("Время "+pc.NsTimeToString(StartTime).split(" ").at(1)));
+    quint32 i = 0; // указатель внутри OscData
+    quint32 OscDataSize = OscData->size();
+    float tmpf;
+    while (i < (OscDataSize-3)) // минус один отсчёт во float
+    {
+        QString tmps = pc.NsTimeToString(StartTime);
+        xlsx.write(WRow,WCol,QVariant(tmps));
+        memcpy(&tmpf,OscData->data(),sizeof(tmpf));
+        xlsx.write(WRow,WCol+1,QVariant(tmpf));
+        WRow++;
+        StartTime += OscHeader.PtPer;
+    }
+    xlsx.save();
 }
 
 void oscdialog::GetOsc(QModelIndex idx)

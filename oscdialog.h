@@ -7,6 +7,8 @@
 #include "widgets/s_tablemodel.h"
 #include "publicclass.h"
 
+#define MT_A_OSCTYPE    0x3e8
+
 class oscdialog : public QDialog
 {
     Q_OBJECT

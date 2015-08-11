@@ -317,3 +317,16 @@ QString publicclass::ETyp1()
     }
     return QString();
 }
+
+QString publicclass::NsTimeToString(quint64 nstime)
+{
+    quint32 unixtime = nstime / 1000000000L; // unix время
+    QString tmps = QDateTime::fromTime_t(unixtime).toString("dd-MM-yyyy hh:mm:ss");
+    quint32 nst = nstime % 1000000000L; // оставшееся время в нс до секунды
+    tmps += "." + QString("%1").arg((nst/1000000L),3,10,QChar('0'));
+    nst = nst % 1000000L;
+    tmps += "." + QString("%1").arg((nst/1000L),3,10,QChar('0'));
+    nst = nst % 1000L;
+    tmps += "." + QString("%1").arg(nst,3,10,QChar('0'));
+    return tmps;
+}

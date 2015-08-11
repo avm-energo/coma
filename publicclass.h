@@ -161,6 +161,7 @@ public:
     QString MIPIP;
     int result;
     QStringList errmsgs;
+    QString ModuleTypeString;
 
     // S2: Определение типа заголовка
     typedef struct
@@ -216,10 +217,10 @@ public:
     DataRec *FindElem(DataRec *, quint16);
 
     quint32 GetCRC32(char *, quint32);
-
     void updCRC32(const quint8 byte, quint32 *dwCRC32);
-
     quint32 getTime32();
+    QString NsTimeToString (quint64 nstime);
+
 private:
 
 };

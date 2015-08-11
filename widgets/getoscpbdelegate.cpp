@@ -36,6 +36,7 @@ void GetOscPBDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 
 bool GetOscPBDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
+    Q_UNUSED(model);
     if ((event->type() == QEvent::MouseButtonPress) || (event->type() == QEvent::MouseButtonRelease));
     else
     {
