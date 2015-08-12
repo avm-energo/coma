@@ -314,6 +314,7 @@ void ConSet::CheckBsi()
     }
     pc.SerNum = Bsi_block.SerNum;
     qint32 tmpint;
+    pc.ModuleTypeString.clear();
     switch (Bsi_block.MType)
     {
     case MT_A:

@@ -74,7 +74,7 @@ bool s_tablemodel::setData(const QModelIndex &index, QVariant &value, int role)
             if (index.column() < hdr.size())
             {
                 maindata.at(index.row())->setData(index.column(), value.toString()); // пишем само значение
-                emit dataChanged(index, index);
+//                emit dataChanged(index, index);
                 return true;
             }
         }
@@ -197,6 +197,7 @@ void s_tablemodel::addRow()
 
 void s_tablemodel::fillModel(QList<QStringList> lsl)
 {
+//    beginInsertRows(QModelindex(),0,lsl.at(0).size());
     int i;
     int j;
     QString vl;
@@ -220,6 +221,7 @@ void s_tablemodel::fillModel(QList<QStringList> lsl)
             }
         }
     }
+//    endInsertRows();
 }
 
 // выдать значения по столбцу column в выходной QStringList

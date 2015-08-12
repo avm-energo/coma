@@ -20,7 +20,7 @@ private:
     void SetupUI();
 
     s_tablemodel *tm;
-    QByteArray *OscInfo;
+    QByteArray OscInfo;
     QString GivenFilename;
     publicclass::DataRec Config[2];
     typedef struct

@@ -36,11 +36,11 @@ void oscdialog::SetupUI()
 
 void oscdialog::GetOscInfo()
 {
-    connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
-    connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
-    OscInfo = new QByteArray;
-    OscInfo->resize(30000);
-    cn->Send(CN_GNosc,&(OscInfo->data()[0]));
+//    connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
+//    connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
+//    OscInfo = new QByteArray;
+    OscInfo.resize(30000);
+    cn->Send(CN_GNosc,OscInfo.data());
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -63,18 +63,18 @@ void oscdialog::ProcessOscInfo()
     QStringList Num, Cha, Tim, Dwld;
     for (quint32 i = 0; i < OscInfoSize; i+= 16)
     {
-        quint32 oscnum = static_cast<quint8>(OscInfo->at(i));
-        oscnum += static_cast<quint8>(OscInfo->at(i+1))*256;
-        quint32 chnum = static_cast<quint8>(OscInfo->at(i+4));
-        chnum += static_cast<quint8>(OscInfo->at(i+5))*256;
-        quint32 unixtime = static_cast<quint8>(OscInfo->at(i+8));
-        unixtime += static_cast<quint8>(OscInfo->at(i+9))*256;
-        unixtime += static_cast<quint8>(OscInfo->at(i+10))*65536;
-        unixtime += static_cast<quint8>(OscInfo->at(i+11))*16777216;
-        quint32 timens = static_cast<quint8>(OscInfo->at(i+12));
-        timens += static_cast<quint8>(OscInfo->at(i+13))*256;
-        timens += static_cast<quint8>(OscInfo->at(i+14))*65536;
-        timens += static_cast<quint8>(OscInfo->at(i+15))*16777216;
+        quint32 oscnum = static_cast<quint8>(OscInfo.at(i));
+        oscnum += static_cast<quint8>(OscInfo.at(i+1))*256;
+        quint32 chnum = static_cast<quint8>(OscInfo.at(i+4));
+        chnum += static_cast<quint8>(OscInfo.at(i+5))*256;
+        quint32 unixtime = static_cast<quint8>(OscInfo.at(i+8));
+        unixtime += static_cast<quint8>(OscInfo.at(i+9))*256;
+        unixtime += static_cast<quint8>(OscInfo.at(i+10))*65536;
+        unixtime += static_cast<quint8>(OscInfo.at(i+11))*16777216;
+        quint32 timens = static_cast<quint8>(OscInfo.at(i+12));
+        timens += static_cast<quint8>(OscInfo.at(i+13))*256;
+        timens += static_cast<quint8>(OscInfo.at(i+14))*65536;
+        timens += static_cast<quint8>(OscInfo.at(i+15))*16777216;
         QDateTime tme = QDateTime::fromTime_t(unixtime);
         QString ms = QString::number((timens/1000000));
         QString mcs = QString::number(((timens-ms.toInt()*1000000)/1000));
@@ -95,7 +95,9 @@ void oscdialog::ProcessOscInfo()
     s_tqTableView *tv = this->findChild<s_tqTableView *>("osctv");
     if (tv == 0)
         return; // !!! системная проблема
+    QItemSelectionModel *m = tv->selectionModel();
     tv->setModel(tm);
+    delete m;
     GetOscPBDelegate *dg = new GetOscPBDelegate;
     connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(GetOsc(QModelIndex)));
     tv->setItemDelegateForColumn(3,dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
@@ -131,10 +133,10 @@ void oscdialog::SetProgressBarSize(quint32 size)
 
 void oscdialog::EndExtractOsc()
 {
-    quint32 OscLength = static_cast<quint8>(OscInfo->at(0));
-    OscLength += static_cast<quint8>(OscInfo->at(1))*256;
-    OscLength += static_cast<quint8>(OscInfo->at(2))*65536;
-    OscLength += static_cast<quint8>(OscInfo->at(3))*16777216;
+    quint32 OscLength = static_cast<quint8>(OscInfo.at(0));
+    OscLength += static_cast<quint8>(OscInfo.at(1))*256;
+    OscLength += static_cast<quint8>(OscInfo.at(2))*65536;
+    OscLength += static_cast<quint8>(OscInfo.at(3))*16777216;
     QByteArray OscData;
     switch(pc.MType)
     {
@@ -144,7 +146,7 @@ void oscdialog::EndExtractOsc()
         Config[0] = {MT_A_OSCTYPE, float_TYPE, sizeof(float), (OscLength-24)/sizeof(float),OscData.data()};
         // 24=sizeof(FFFF-block)+sizeof(FFFF-block DataRec)
         Config[1] = {0xFFFF, 0, 0, 0, NULL};
-        int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +DataHeader
+        int res = pc.RestoreDataMem(OscInfo.data(),OscLength+12,Config); // 12 = +DataHeader
         if (res)
             return; // !!! ошибка разбора формата С2
         break;
@@ -196,12 +198,12 @@ void oscdialog::GetOsc(QModelIndex idx)
 //    quint32 oscnum = tm->data(index.sibling(index.row(),0),Qt::DisplayRole).toInt();
     quint32 oscnum = tm->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(); // номер осциллограммы
     QString OscDateTime = tm->data(idx.sibling(idx.row(),2),Qt::DisplayRole).toString(); // дата и время создания осциллограммы
-    OscInfo = new QByteArray;
-    OscInfo->resize(30000);
+//    OscInfo = new QByteArray;
+    OscInfo.resize(30000);
     GivenFilename = OscDateTime;
     GivenFilename.replace("/","-");
     GivenFilename.replace(":","_");
-    cn->Send(CN_GBosc,&(OscInfo->data()[0]),0,oscnum);
+    cn->Send(CN_GBosc,OscInfo.data(),0,oscnum);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
