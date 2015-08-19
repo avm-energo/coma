@@ -1,3 +1,4 @@
+#include <QtMath>
 #include <QTime>
 #include <QTabWidget>
 #include <QGridLayout>
@@ -870,15 +871,50 @@ bool e_tunedialog::Start7_3_7_2()
         ShowErMsg(12);
         return false;
     }
-    ShowOkMsg(12);
     // 4. ввести показания (с МИП или вручную)
     GetExternalData(12);
     // 5. рассчитать новые коэффициенты
+    ShowOkMsg(12);
+    ShowMsg(13);
+    for (int i=0; i<3; i++)
+    {
+        if (pc.MType1 == MTE_1T1N)
+        {
+            Bac_newblock.KmU[i] = Bac_block.KmU[i] * mipd[i] / Bda_block.IUefNat_filt[i];
+            Bac_newblock.DPsi[i+3] = Bac_block.DPsi[i+3] + mipd[i+6] - (180*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
+        }
+        else
+            Bac_newblock.KmI_1[i] = Bac_block.KmI_1[i] * mipd[i+3] / Bda_block.IUefNat_filt[i];
+        Bac_newblock.KmI_1[i+3] = Bac_block.KmI_1[i+3] * mipd[i+3] / Bda_block.IUefNat_filt[i+3];
+    }
+    ShowOkMsg(13);
     // 6. установить в конфигурации токи i2nom в 5 А и перезагрузить модуль
+    ShowMsg(14);
+    for (int i=0; i<6; i++)
+        econf->Bci_block.inom2[i] = 5.0;
+    cn->Send(CN_WF, &econf->Bci_block, sizeof(e_config::Bci), 2, econf->Config);
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result != CN_OK)
+        return false;
+    cn->Send(CN_Cnc);
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result != CN_OK)
+        return false;
+    ShowOkMsg(13);
     // 2. выдать сообщение об установке 60 В 5 А
+    ShowMsg(14);
+    Show1RetomDialog(5);
     // 3. получить аналоговые данные
+    if (!Start7_3_2(14))
+    {
+        ShowErMsg(14);
+        return false;
+    }
     // 4. ввести показания (с МИП или вручную)
     // 5. рассчитать новые коэффициенты
+    ShowOkMsg(12);
 }
 
 void e_tunedialog::GetExternalData(int numexc)
@@ -896,8 +932,12 @@ void e_tunedialog::GetExternalData(int numexc)
         StopMip();
         if (CheckMip())
         {
-            for (int i=4; i<7; i++)
-                mipd[i-4] = MipDat[i];
+            for (int i=0; i<3; i++)
+            {
+                mipd[i] = MipDat[i+4];
+                mipd[i+3] = MipDat[i+7];
+                mipd[i+6] = MipDat[i+11];
+            }
         }
         break;
     }
@@ -917,9 +957,6 @@ void e_tunedialog::GetExternalData(int numexc)
             spb->setValue(60.0);
             spb->setObjectName("spb7371"+QString::number(i));
             glyout->addWidget(spb,1,i*2+1,1,1);
-            QPushButton *pb = new QPushButton("Готово");
-            connect(pb,SIGNAL(clicked()),this,SLOT(SetExtData()));
-            glyout->addWidget(pb,2,0,1,6);
         }
         if (numexc == 12) // все параметры для п. 7.3.7.4
         {
@@ -943,10 +980,10 @@ void e_tunedialog::GetExternalData(int numexc)
                 spb->setObjectName("spb7371"+QString::number(i+6));
                 glyout->addWidget(spb,3,i*2+1,1,1);
             }
-            QPushButton *pb = new QPushButton("Готово");
-            connect(pb,SIGNAL(clicked()),this,SLOT(SetExtData()));
-            glyout->addWidget(pb,4,0,1,6);
         }
+        QPushButton *pb = new QPushButton("Готово");
+        connect(pb,SIGNAL(clicked()),this,SLOT(SetExtData()));
+        glyout->addWidget(pb,4,0,1,6);
         dlg->setLayout(glyout);
         dlg->exec();
         ShowOkMsg(numexc);
@@ -956,7 +993,8 @@ void e_tunedialog::GetExternalData(int numexc)
         for (int i=0; i<3; i++)
         {
             mipd[i] = 60.0;
-            mipd[i+3] = 1.0;
+            mipd[i+3] = (numexc == 12) ? 1.0 : 5.0;
+            mipd[i+6] = 0.0;
         }
         ShowOkMsg(numexc);
         break;
@@ -967,10 +1005,11 @@ void e_tunedialog::GetExternalData(int numexc)
 void e_tunedialog::SetExtData()
 {
     QDialog *dlg = this->findChild<QDialog *>("dlg7371");
-    for (int i=0; i<3; i++)
+    for (int i=0; i<9; i++)
     {
         QDoubleSpinBox *spb = this->findChild<QDoubleSpinBox *>("spb7371"+QString::number(i));
-        mipd[i] = spb->value();
+        if (spb != 0)
+            mipd[i] = spb->value();
     }
     dlg->close();
 }
