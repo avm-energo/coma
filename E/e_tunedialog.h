@@ -6,6 +6,7 @@
 #include <QByteArray>
 #include <QTimer>
 #include "../iec104/iec104.h"
+#include "e_confdialog.h"
 
 #define TUNEFILELENGTH  256
 
@@ -30,6 +31,8 @@ signals:
 public slots:
 
 private:
+    e_config *econf;
+    e_config::Bci Bci_block_work;
     iec104 *mipcanal;
     int TuneControlType;
     bool MipErrNeeded;
@@ -101,7 +104,6 @@ private:
     float MipDat[41];
 
     void SetupUI();
-    void CalcNewTuneCoefs();
     void RefreshTuneCoefs();
     bool CheckTuneCoefs();
     bool CheckAnalogValues(int ntest);
@@ -111,7 +113,7 @@ private:
     void ShowControlChooseDialog();
     void Show1PhaseScheme();
     void Show3PhaseScheme();
-    void Show1RetomDialog(int A);
+    void Show1RetomDialog(float U, float A);
     bool Start7_2_3();
     bool Start7_3_1();
     bool Start7_3_2(int num);
@@ -120,6 +122,8 @@ private:
     void Start7_3_6_2();
     bool Start7_3_7_1();
     bool Start7_3_7_2();
+    bool Start7_3_8();
+    bool Start7_3_9();
     bool SetConfA(int i2nom);
     void GetExternalData(int numexc); // ввод данных в зависимости от выбранного режима и номера опыта
     void ShowMsg(int msg);

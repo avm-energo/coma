@@ -432,6 +432,16 @@ void e_tunedialog::SetupUI()
         lbl->setToolTip("Cos phi по 1-й гармонике");
         glyout->addWidget(lbl,13,i+3,1,1);
     }
+    for (i = 0; i < 3; i++)
+    {
+        lbl = new QLabel("PHI["+QString::number(i)+"]");
+        glyout->addWidget(lbl,14,i,1,1);
+        lbl = new QLabel("");
+        lbl->setObjectName("value"+QString::number(i+44));
+        lbl->setStyleSheet(ValuesFormat);
+        lbl->setToolTip("Угол между током и напряжением");
+        glyout->addWidget(lbl,15,i,1,1);
+    }
     lyout->addLayout(glyout);
     pb = new QPushButton("Запустить чтение аналоговых сигналов");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurements()));
@@ -450,69 +460,78 @@ void e_tunedialog::SetupUI()
 
 void e_tunedialog::StartTune()
 {
-    bool res;
-    // показываем диалог с выбором метода контроля
-    ShowControlChooseDialog();
-    // показываем диалог со схемой подключения
-    Show1PhaseScheme();
-    // показываем диалог с требованием установки необходимых сигналов на РЕТОМ
-    Show1RetomDialog(1);
-
-    // 7.2.3. проверка связи РЕТОМ и МИП
-    if (TuneControlType == TUNEMIP)
-        res = Start7_2_3();
-    if (!res)
-        return;
-
-    // 7.3.1. получение настроечных коэффициентов
-    res = Start7_3_1();
-    if (!res)
-        return;
-
-    // 7.3.2. получение аналоговых сигналов
-    res = Start7_3_2(3);
-    if (!res)
-        return;
-    // сохраняем значения по п. 7.3.2 для выполнения п. 7.3.6
-    for (int i=0; i<6; i++)
-        IUefNat_filt_old[i] = Bda_block.IUefNat_filt[i];
-
-    // 7.3.3. расчёт коррекции по фазе и по частоте
-    res = Start7_3_3();
-    if (!res)
-        return;
-
-    // 7.3.4. расчёт коррекции по частоте
-    res = Start7_3_4();
-    if (!res)
-        return;
-
-    // 7.3.5. пересборка схемы
-    Show3PhaseScheme();
-
-    // 7.3.6.1. получение аналоговых данных
-    res = Start7_3_2(7);
-    if (!res)
-        return;
-
-    // 7.3.6.2. расчёт коррекции влияния каналов
-    Start7_3_6_2();
-
-    if (pc.MType1 == MTE_0T2N)
+    bool res, EndTuning=false;
+    while (!EndTuning)
     {
-        // 7.3.7.1. расчёт калибровочных коэффициентов по напряжениям
-        res = Start7_3_7_1();
+        // показываем диалог с выбором метода контроля
+        ShowControlChooseDialog();
+        // показываем диалог со схемой подключения
+        Show1PhaseScheme();
+        // показываем диалог с требованием установки необходимых сигналов на РЕТОМ
+        Show1RetomDialog(60, 1);
+
+        // 7.2.3. проверка связи РЕТОМ и МИП
+        if (TuneControlType == TUNEMIP)
+            res = Start7_2_3();
         if (!res)
             return;
-    }
-    else
-    {
-        // 7.3.7.2. расчёт калибровочных коэффициентов по напряжениям
-        res = Start7_3_7_2();
+
+        // 7.3.1. получение настроечных коэффициентов
+        res = Start7_3_1();
         if (!res)
             return;
-    }
 
+        // 7.3.2. получение аналоговых сигналов
+        res = Start7_3_2(3);
+        if (!res)
+            return;
+        // сохраняем значения по п. 7.3.2 для выполнения п. 7.3.6
+        for (int i=0; i<6; i++)
+            IUefNat_filt_old[i] = Bda_block.IUefNat_filt[i];
+
+        // 7.3.3. расчёт коррекции по фазе и по частоте
+        res = Start7_3_3();
+        if (!res)
+            return;
+
+        // 7.3.4. расчёт коррекции по частоте
+        res = Start7_3_4();
+        if (!res)
+            return;
+
+        // 7.3.5. пересборка схемы
+        Show3PhaseScheme();
+
+        // 7.3.6.1. получение аналоговых данных
+        res = Start7_3_2(7);
+        if (!res)
+            return;
+
+        // 7.3.6.2. расчёт коррекции влияния каналов
+        Start7_3_6_2();
+
+        if (pc.MType1 == MTE_0T2N)
+        {
+            // 7.3.7.1. расчёт калибровочных коэффициентов по напряжениям
+            res = Start7_3_7_1();
+            if (!res)
+                return;
+        }
+        else
+        {
+            // 7.3.7.2. расчёт калибровочных коэффициентов по напряжениям
+            res = Start7_3_7_2();
+            if (!res)
+                return;
+        }
+        res = Start7_3_8();
+        if (!res)
+            return;
+        res = Start7_3_9();
+        if (res)
+            EndTuning = true;
+    }
+    QMessageBox::information(this,"Успешно","Настройка проведена успешно!");
 }
 
 void e_tunedialog::SetTuneManual()
@@ -591,16 +610,17 @@ void e_tunedialog::Show1PhaseScheme()
     dlg->exec();
 }
 
-void e_tunedialog::Show1RetomDialog(int A)
+void e_tunedialog::Show1RetomDialog(float U, float A)
 {
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     QLabel *lbl = new QLabel("2.Вызовите программу управления РЕТОМ и войдите в режим \"Ручное управление выходами\";\n"\
-                              "3.При выключенных выходах РЕТОМ задайте частоту 50,0 Гц, трёхфазные напряжения на уровне 60,0 В с фазой 0 градусов;");
+                              "3.При выключенных выходах РЕТОМ задайте частоту 50,0 Гц, трёхфазные напряжения на уровне " \
+                             + QString::number(U) + ",0 В с фазой 0 градусов;");
     lyout->addWidget(lbl);
     if (pc.MType1!=MTE_0T2N)
     {
-        lbl=new QLabel("4.Задайте трёхфазные токи на уровне "+QString::number(A)+" А с фазой 0 градусов;");
+        lbl=new QLabel("4.Задайте трёхфазные токи на уровне "+QString::number(A)+",0 А с фазой 0 градусов;");
         lyout->addWidget(lbl);
     }
     if (TuneControlType == TUNEMIP)
@@ -724,7 +744,11 @@ bool e_tunedialog::Start7_3_2(int num)
     ShowMsg(num);
     ReadAnalogMeasurements();
     // проверка данных на правильность
-    int maxval = ((num == 3) || (num == 6) || (num == 12)) ? 602 : 572; // 3~7.3.2, 6~7.3.6.1, 12~7.3.7.3, 17~7.3.7.8
+    int maxval;
+    if (num<14) maxval=602; // 3~7.3.2, 6~7.3.6.1, 12~7.3.7.3
+    else if (num == 15) maxval = 607; // 15~7.3.7.5
+    else if (num == 18) maxval = 617; // 18~7.3.8
+    else maxval = 572; // 19~7.3.9
     if (CheckAnalogValues(maxval-pc.MType1)) // MType: 0 = 2T0N, 1 = 1T1N, 2 = 0T2N; NTest: 600 = 0T2N, 601 = 1T1N, 602 = 2T0N
         ShowOkMsg(num);
     else
@@ -839,8 +863,7 @@ bool e_tunedialog::Start7_3_7_2()
 {
     // 1. установить в конфигурации токи i2nom в 1 А и перезагрузить модуль
     ShowMsg(11);
-    e_config *econf = new e_config;
-    e_config::Bci Bci_block_work;
+    econf = new e_config;
 
     cn->Send(CN_GF,NULL,0,1,econf->Config);
     while (cn->Busy)
@@ -864,7 +887,7 @@ bool e_tunedialog::Start7_3_7_2()
     ShowOkMsg(11);
     // 2. выдать сообщение об установке 60 В 1 А
     ShowMsg(12);
-    Show1RetomDialog(1);
+    Show1RetomDialog(60, 1);
     // 3. получить аналоговые данные
     if (!Start7_3_2(12))
     {
@@ -896,25 +919,101 @@ bool e_tunedialog::Start7_3_7_2()
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != CN_OK)
-        return false;
-    cn->Send(CN_Cnc);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result != CN_OK)
-        return false;
-    ShowOkMsg(13);
-    // 2. выдать сообщение об установке 60 В 5 А
-    ShowMsg(14);
-    Show1RetomDialog(5);
-    // 3. получить аналоговые данные
-    if (!Start7_3_2(14))
     {
         ShowErMsg(14);
         return false;
     }
+    cn->Send(CN_Cnc);
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result != CN_OK)
+    {
+        ShowErMsg(14);
+        return false;
+    }
+    ShowOkMsg(14);
+    // 2. выдать сообщение об установке 60 В 5 А
+    ShowMsg(15);
+    Show1RetomDialog(60, 5);
+    // 3. получить аналоговые данные
+    if (!Start7_3_2(15))
+    {
+        ShowErMsg(15);
+        return false;
+    }
     // 4. ввести показания (с МИП или вручную)
+    GetExternalData(15);
     // 5. рассчитать новые коэффициенты
-    ShowOkMsg(12);
+    ShowOkMsg(15);
+    ShowMsg(16);
+    for (int i=0; i<3; i++)
+    {
+        if (pc.MType1 == MTE_2T0N)
+            Bac_newblock.KmI_5[i] = Bac_block.KmI_5[i] * mipd[i+3] / Bda_block.IUefNat_filt[i];
+        Bac_newblock.KmI_5[i+3] = Bac_block.KmI_5[i+3] * mipd[i+3] / Bda_block.IUefNat_filt[i+3];
+    }
+    ShowOkMsg(16);
+    return true;
+}
+
+bool e_tunedialog::Start7_3_8()
+{
+    ShowMsg(17);
+    // 1. Отправляем настроечные параметры в модуль
+    cn->Send(CN_Wac, &Bac_newblock, sizeof(Bac));
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result != CN_OK)
+    {
+        ShowErMsg(17);
+        return false;
+    }
+    ShowOkMsg(17);
+    // 2. Проверяем измеренные напряжения
+    ShowMsg(18);
+    if (!Start7_3_2(18))
+    {
+        ShowErMsg(18);
+        return false;
+    }
+    ShowOkMsg(18);
+    return true;
+}
+
+bool e_tunedialog::Start7_3_9()
+{
+    ShowMsg(19);
+    if (QMessageBox::question(this,"Закончить?","Закончить настройку?",QMessageBox::Yes|QMessageBox::No, QMessageBox::Yes) == \
+            QMessageBox::Yes)
+    {
+        // пишем ранее запомненный конфигурационный блок
+        memcpy(&econf->Bci_block,&Bci_block_work,sizeof(e_config::Bci));
+        cn->Send(CN_WF, &econf->Bci_block, sizeof(econf->Bci_block), 2, econf->Config);
+        while (cn->Busy)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+        if (cn->result != CN_OK)
+        {
+            ShowErMsg(19);
+            return false;
+        }
+        // переходим на прежнюю конфигурацию
+        cn->Send(CN_Cnc);
+        while (cn->Busy)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+        if (cn->result != CN_OK)
+            return false;
+        // измеряем и проверяем
+        Show1RetomDialog(57.74f, econf->Bci_block.inom1[0]);
+        if (!Start7_3_2(19))
+        {
+            ShowErMsg(19);
+            return false;
+        }
+        ShowOkMsg(19);
+    }
+    else
+        return false;
+    return true;
 }
 
 void e_tunedialog::GetExternalData(int numexc)
@@ -1075,12 +1174,13 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
     double ValuesToCheck[44] = {25.0,50.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,\
                                 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,\
                                 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-    double ThresholdsToCheck[44] = {25.0,0.05,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,\
+    double ThresholdsToCheck[44] = {25.0,0.05,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,\
                                     1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,\
                                     1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0};
     switch (ntest)
     {
     case 600: // test 60, 2U
+    case 605: // test 60, 2U, 5A
     {
         break;
     }
@@ -1110,6 +1210,60 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
         }
         break;
     }
+    case 606: // test 60, 1I1U, 5A
+    {
+        for (int i = 2; i<5; i++)
+        {
+            ValuesToCheck[i] = ValuesToCheck[i+3] = ValuesToCheck[i+6] = ValuesToCheck[i+9] = 5.0; // i=1A
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+3] = ThresholdsToCheck[i+6] = ThresholdsToCheck[i+9] = 0.05; // +/- 0.05A
+            ValuesToCheck[i+18] = ValuesToCheck[i+30] = ValuesToCheck[i+24] = \
+                    ValuesToCheck[i+36] = 60.0; // P=S=60Вт
+            ThresholdsToCheck[i+18] = ThresholdsToCheck[i+30] = ThresholdsToCheck[i+24] = \
+                    ThresholdsToCheck[i+36] = 1.5; // 2.5%
+            ValuesToCheck[i+21] = ValuesToCheck[i+33] = 0.0; // Q=0ВАр
+            ThresholdsToCheck[i+21] = ThresholdsToCheck[i+33] = 1.5; // 2.5%
+            ValuesToCheck[i+27] = ValuesToCheck[i+39] = 1.0; // CosPhi=1.0
+            ThresholdsToCheck[i+27] = ThresholdsToCheck[i+39] = 0.01;
+        }
+        break;
+    }
+    case 607: // test 60, 2I, 5A
+    {
+        for (int i = 5; i<8; i++)
+        {
+            ValuesToCheck[i] = ValuesToCheck[i+6] = 5.0; // i=5A
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.05; // +/- 0.05A
+        }
+        break;
+    }
+    case 615: // test 60, 2U, 5A, 0,1%
+    {
+        for (int i = 2; i<8; i++)
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.15; // +/- 0.15В
+        break;
+    }
+    case 616: // test 60, 1I1U, 5A, 0,1%
+    {
+        for (int i = 2; i<5; i++)
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.15; // +/- 0.15В
+        for (int i = 5; i<8; i++)
+        {
+            ValuesToCheck[i] = ValuesToCheck[i+6] = 5.0; // i=5A
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.01; // +/- 0.01A
+        }
+        break;
+    }
+    case 617: // test 60, 2I, 5A, 0,1%
+    {
+        for (int i = 2; i<5; i++)
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.15; // +/- 0.15В
+        for (int i = 5; i<8; i++)
+        {
+            ValuesToCheck[i] = ValuesToCheck[i+6] = 5.0; // i=5A
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.01; // +/- 0.05A
+        }
+        break;
+    }
     case 570:
     {
         for (int i = 2; i<8; i++)
@@ -1123,17 +1277,6 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
     {
         for (int i = 2; i<5; i++)
         {
-            ValuesToCheck[i] = ValuesToCheck[i+6] = 57.74; // u=57,74В
-            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.1; // +/- 0.1В
-            ValuesToCheck[i+3] = ValuesToCheck[i+9] = 1.0; // i=1A
-            ThresholdsToCheck[i+3] = ThresholdsToCheck[i+9] = 0.05; // +/- 0.05A
-        }
-        break;
-    }
-    case 572:
-    {
-        for (int i = 2; i<5; i++)
-        {
             ValuesToCheck[i] = ValuesToCheck[i+3] = ValuesToCheck[i+6] = ValuesToCheck[i+9] = 1.0; // i=1A
             ThresholdsToCheck[i] = ThresholdsToCheck[i+3] = ThresholdsToCheck[i+6] = ThresholdsToCheck[i+9] = 0.05; // +/- 0.05A
             ValuesToCheck[i+18] = ValuesToCheck[i+30] = ValuesToCheck[i+24] = \
@@ -1144,6 +1287,17 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
             ThresholdsToCheck[i+21] = ThresholdsToCheck[i+33] = 1.5; // 2.5%
             ValuesToCheck[i+27] = ValuesToCheck[i+39] = 1.0; // CosPhi=1.0
             ThresholdsToCheck[i+27] = ThresholdsToCheck[i+39] = 0.01;
+        }
+        break;
+    }
+    case 572:
+    {
+        for (int i = 2; i<5; i++)
+        {
+            ValuesToCheck[i] = ValuesToCheck[i+6] = 57.74; // u=57,74В
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.1; // +/- 0.1В
+            ValuesToCheck[i+3] = ValuesToCheck[i+9] = 1.0; // i=1A
+            ThresholdsToCheck[i+3] = ThresholdsToCheck[i+9] = 0.05; // +/- 0.05A
         }
         break;
     }
@@ -1180,21 +1334,6 @@ void e_tunedialog::WriteTuneCoefs()
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
         QMessageBox::information(this,"Успешно!","Записано успешно!");
-}
-
-void e_tunedialog::CalcNewTuneCoefs()
-{
-/*    for (int i = 0; i < 16; i++)
-    {
-        Bac_block[i].fbin = 1.25 - (static_cast<float>(Bda0.sin[i])/(Z*1638.0));
-        if ((Bda0.sin[i] == Bda5.sin[i]) || (Bda0.sin[i] == Bda20.sin[i]))
-        {
-            QMessageBox::warning(this,"Предупреждение","Ошибки в настроечных коэффициентах\nДеление на ноль");
-            return;
-        }
-        Bac_block[i].fkuin = Z*1638.0/static_cast<float>(Bda0.sin[i]-Bda5.sin[i]);
-        Bac_block[i].fkiin = Z*1638.0/static_cast<float>(Bda0.sin[i]-Bda20.sin[i]);
-    }*/
 }
 
 void e_tunedialog::RefreshTuneCoefs()
@@ -1289,6 +1428,14 @@ void e_tunedialog::RefreshAnalogValues()
         if (lbl == 0)
             return;
         lbl->setText(QString::number(Bda_block.CosPhi[i], 'f', 5));
+    }
+    for (int i=0; i<3; i++)
+    {
+        lbl = this->findChild<QLabel *>("value"+QString::number(i+44));
+        if (lbl == 0)
+            return;
+        float PHI = (180*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
+        lbl->setText(QString::number(PHI, 'f', 5));
     }
 }
 
