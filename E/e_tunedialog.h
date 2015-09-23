@@ -126,9 +126,10 @@ private:
     bool Start7_3_9();
     bool SetConfA(int i2nom);
     void GetExternalData(int numexc); // ввод данных в зависимости от выбранного режима и номера опыта
-    void ShowMsg(int msg);
-    void ShowOkMsg(int msg);
-    void ShowErMsg(int msg);
+    void MsgSetVisible(int msg, bool Visible=true);
+    void OkMsgSetVisible(int msg, bool Visible=true);
+    void ErMsgSetVisible(int msg, bool Visible=true);
+    void MsgClear();
 
 private slots:
     void StartTune();

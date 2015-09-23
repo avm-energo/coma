@@ -84,6 +84,7 @@ void e_tunedialog::SetupUI()
 
     // CP2 - КОЭФФИЦИЕНТЫ МОДУЛЯ
 
+    lyout = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox("Настроечные коэффициенты");
     for (i = 0; i < 6; i++)
     {
@@ -463,6 +464,7 @@ void e_tunedialog::StartTune()
     bool res, EndTuning=false;
     while (!EndTuning)
     {
+        MsgClear();
         // показываем диалог с выбором метода контроля
         ShowControlChooseDialog();
         // показываем диалог со схемой подключения
@@ -640,7 +642,7 @@ void e_tunedialog::Show1RetomDialog(float U, float A)
 void e_tunedialog::Show3PhaseScheme()
 {
     // высвечиваем надпись "Проверка связи РЕТОМ и МИП"
-    ShowMsg(6);
+    MsgSetVisible(6);
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     QPixmap pmp;
@@ -679,13 +681,13 @@ void e_tunedialog::Show3PhaseScheme()
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
     dlg->exec();
-    ShowOkMsg(6);
+    OkMsgSetVisible(6);
 }
 
 bool e_tunedialog::Start7_2_3()
 {
     // высвечиваем надпись "Проверка связи РЕТОМ и МИП"
-    ShowMsg(0);
+    MsgSetVisible(0);
     MipErrNeeded = false; // запрещаем вывод сообщений об ошибках связи с МИП
     StartMip();
     QTime tmr;
@@ -694,10 +696,10 @@ bool e_tunedialog::Start7_2_3()
         qApp->processEvents();
     StopMip();
     if (CheckMip())
-        ShowOkMsg(0);
+        OkMsgSetVisible(0);
     else
     {
-        ShowErMsg(0);
+        ErMsgSetVisible(0);
         return false;
     }
     return true;
@@ -706,7 +708,7 @@ bool e_tunedialog::Start7_2_3()
 bool e_tunedialog::Start7_3_1()
 {
     // высвечиваем надпись "Получение настроечных коэффициентов"
-    ShowMsg(1);
+    MsgSetVisible(1);
     // получение настроечных коэффициентов от модуля
     cn->Send(CN_Gac, &Bac_block, sizeof(Bac_block));
     while (cn->Busy)
@@ -717,21 +719,21 @@ bool e_tunedialog::Start7_3_1()
     RefreshTuneCoefs();
     // проверка коэффициентов на правильность в соотв. с п. 7.3.1 "Д2"
     if (CheckTuneCoefs())
-        ShowOkMsg(1);
+        OkMsgSetVisible(1);
     else
     {
-        ShowErMsg(1);
+        ErMsgSetVisible(1);
         // высвечиваем надпись "Запись настроечных коэффициентов по умолчанию"
-        ShowMsg(2);
+        MsgSetVisible(2);
         // запись настроечных коэффициентов в модуль
         cn->Send(CN_Wac, &Bac_defblock, sizeof(Bac));
         while (cn->Busy)
             qApp->processEvents();
         if (cn->result == CN_OK)
-            ShowOkMsg(2);
+            OkMsgSetVisible(2);
         else
         {
-            ShowErMsg(2);
+            ErMsgSetVisible(2);
             return false;
         }
     }
@@ -741,7 +743,7 @@ bool e_tunedialog::Start7_3_1()
 bool e_tunedialog::Start7_3_2(int num)
 {
     // высвечиваем надпись "Получение текущих аналоговых данных"
-    ShowMsg(num);
+    MsgSetVisible(num);
     ReadAnalogMeasurements();
     // проверка данных на правильность
     int maxval;
@@ -750,10 +752,10 @@ bool e_tunedialog::Start7_3_2(int num)
     else if (num == 18) maxval = 617; // 18~7.3.8
     else maxval = 572; // 19~7.3.9
     if (CheckAnalogValues(maxval-pc.MType1)) // MType: 0 = 2T0N, 1 = 1T1N, 2 = 0T2N; NTest: 600 = 0T2N, 601 = 1T1N, 602 = 2T0N
-        ShowOkMsg(num);
+        OkMsgSetVisible(num);
     else
     {
-        ShowErMsg(num);
+        ErMsgSetVisible(num);
         return false;
     }
     return true;
@@ -762,7 +764,7 @@ bool e_tunedialog::Start7_3_2(int num)
 bool e_tunedialog::Start7_3_3()
 {
     // высвечиваем надпись "7.3.3. Расчёт коррекции смещений сигналов по фазе"
-    ShowMsg(4);
+    MsgSetVisible(4);
     double fTmp = Bda_block.phi_next_f[0];
     int k = (pc.MType1 == MTE_1T1N) ? 3 : 6;
     for (int i=1; i<k; i++)
@@ -770,14 +772,14 @@ bool e_tunedialog::Start7_3_3()
         Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - fTmp;
         fTmp += Bda_block.phi_next_f[i];
     }
-    ShowOkMsg(4);
+    OkMsgSetVisible(4);
     return true;
 }
 
 bool e_tunedialog::Start7_3_4()
 {
     // высвечиваем надпись "7.3.4. Расчёт коррекции по частоте"
-    ShowMsg(5);
+    MsgSetVisible(5);
     switch (TuneControlType)
     {
     case TUNEMIP:
@@ -792,11 +794,11 @@ bool e_tunedialog::Start7_3_4()
         {
             double fTmp = MipDat[1]; // частота ф. А
             Bac_newblock.K_freq = Bac_block.K_freq*fTmp/Bda_block.Frequency;
-            ShowOkMsg(5);
+            OkMsgSetVisible(5);
         }
         else
         {
-            ShowErMsg(5);
+            ErMsgSetVisible(5);
             return false;
         }
         break;
@@ -804,14 +806,14 @@ bool e_tunedialog::Start7_3_4()
     case TUNERET:
     {
         Bac_newblock.K_freq = Bac_block.K_freq*50.0/Bda_block.Frequency; // считаем, что частота 50 Гц
-        ShowOkMsg(5);
+        OkMsgSetVisible(5);
         break;
     }
     case TUNEMAN:
     {
         double fTmp = QInputDialog::getDouble(this,"Ввод числа","Введите показания приборов по частоте",50.0,40.0,60.0,5);
         Bac_newblock.K_freq = Bac_block.K_freq*fTmp/Bda_block.Frequency; // считаем, что частота 50 Гц
-        ShowOkMsg(5);
+        OkMsgSetVisible(5);
         break;
     }
     }
@@ -821,19 +823,19 @@ bool e_tunedialog::Start7_3_4()
 void e_tunedialog::Start7_3_6_2()
 {
     // высвечиваем надпись "7.3.6.2. Расчёт коррекции взаимного влияния"
-    ShowMsg(8);
+    MsgSetVisible(8);
     double fTmp = 0.0;
     for (int i=0; i<4; i+=3)
         fTmp += (Bda_block.IUefNat_filt[i]/IUefNat_filt_old[i]);
     fTmp /= 2.0;
     Bac_newblock.Kinter = (fTmp * (1.0 + 6.0*Bac_block.Kinter) -1.0) / 6.0;
-    ShowOkMsg(8);
+    OkMsgSetVisible(8);
 }
 
 bool e_tunedialog::Start7_3_7_1()
 {
     // высвечиваем надпись "7.3.7.1.1"
-    ShowMsg(9);
+    MsgSetVisible(9);
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     QLabel *lbl = new QLabel("1.На выходах РЕТОМ задайте частоту 50,0 Гц, трёхфазные напряжения на уровне 60,0 В с фазой 0 градусов");
@@ -849,20 +851,20 @@ bool e_tunedialog::Start7_3_7_1()
     GetExternalData(9);
 
     // высвечиваем надпись "7.3.7.1.2"
-    ShowMsg(10);
+    MsgSetVisible(10);
     for (int i=0; i<3; i++)
     {
         Bac_newblock.KmU[i] = Bac_block.KmU[i] * mipd[i] / Bda_block.IUefNat_filt[i];
         Bac_newblock.KmU[i+3] = Bac_block.KmU[i+3] * mipd[i] / Bda_block.IUefNat_filt[i+3];
     }
-    ShowOkMsg(10);
+    OkMsgSetVisible(10);
     return true;
 }
 
 bool e_tunedialog::Start7_3_7_2()
 {
     // 1. установить в конфигурации токи i2nom в 1 А и перезагрузить модуль
-    ShowMsg(11);
+    MsgSetVisible(11);
     econf = new e_config;
 
     cn->Send(CN_GF,NULL,0,1,econf->Config);
@@ -884,21 +886,21 @@ bool e_tunedialog::Start7_3_7_2()
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != CN_OK)
         return false;
-    ShowOkMsg(11);
+    OkMsgSetVisible(11);
     // 2. выдать сообщение об установке 60 В 1 А
-    ShowMsg(12);
+    MsgSetVisible(12);
     Show1RetomDialog(60, 1);
     // 3. получить аналоговые данные
     if (!Start7_3_2(12))
     {
-        ShowErMsg(12);
+        ErMsgSetVisible(12);
         return false;
     }
     // 4. ввести показания (с МИП или вручную)
     GetExternalData(12);
     // 5. рассчитать новые коэффициенты
-    ShowOkMsg(12);
-    ShowMsg(13);
+    OkMsgSetVisible(12);
+    MsgSetVisible(13);
     for (int i=0; i<3; i++)
     {
         if (pc.MType1 == MTE_1T1N)
@@ -910,9 +912,9 @@ bool e_tunedialog::Start7_3_7_2()
             Bac_newblock.KmI_1[i] = Bac_block.KmI_1[i] * mipd[i+3] / Bda_block.IUefNat_filt[i];
         Bac_newblock.KmI_1[i+3] = Bac_block.KmI_1[i+3] * mipd[i+3] / Bda_block.IUefNat_filt[i+3];
     }
-    ShowOkMsg(13);
+    OkMsgSetVisible(13);
     // 6. установить в конфигурации токи i2nom в 5 А и перезагрузить модуль
-    ShowMsg(14);
+    MsgSetVisible(14);
     for (int i=0; i<6; i++)
         econf->Bci_block.inom2[i] = 5.0;
     cn->Send(CN_WF, &econf->Bci_block, sizeof(e_config::Bci), 2, econf->Config);
@@ -920,7 +922,7 @@ bool e_tunedialog::Start7_3_7_2()
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != CN_OK)
     {
-        ShowErMsg(14);
+        ErMsgSetVisible(14);
         return false;
     }
     cn->Send(CN_Cnc);
@@ -928,61 +930,61 @@ bool e_tunedialog::Start7_3_7_2()
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != CN_OK)
     {
-        ShowErMsg(14);
+        ErMsgSetVisible(14);
         return false;
     }
-    ShowOkMsg(14);
+    OkMsgSetVisible(14);
     // 2. выдать сообщение об установке 60 В 5 А
-    ShowMsg(15);
+    MsgSetVisible(15);
     Show1RetomDialog(60, 5);
     // 3. получить аналоговые данные
     if (!Start7_3_2(15))
     {
-        ShowErMsg(15);
+        ErMsgSetVisible(15);
         return false;
     }
     // 4. ввести показания (с МИП или вручную)
     GetExternalData(15);
     // 5. рассчитать новые коэффициенты
-    ShowOkMsg(15);
-    ShowMsg(16);
+    OkMsgSetVisible(15);
+    MsgSetVisible(16);
     for (int i=0; i<3; i++)
     {
         if (pc.MType1 == MTE_2T0N)
             Bac_newblock.KmI_5[i] = Bac_block.KmI_5[i] * mipd[i+3] / Bda_block.IUefNat_filt[i];
         Bac_newblock.KmI_5[i+3] = Bac_block.KmI_5[i+3] * mipd[i+3] / Bda_block.IUefNat_filt[i+3];
     }
-    ShowOkMsg(16);
+    OkMsgSetVisible(16);
     return true;
 }
 
 bool e_tunedialog::Start7_3_8()
 {
-    ShowMsg(17);
+    MsgSetVisible(17);
     // 1. Отправляем настроечные параметры в модуль
     cn->Send(CN_Wac, &Bac_newblock, sizeof(Bac));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != CN_OK)
     {
-        ShowErMsg(17);
+        ErMsgSetVisible(17);
         return false;
     }
-    ShowOkMsg(17);
+    OkMsgSetVisible(17);
     // 2. Проверяем измеренные напряжения
-    ShowMsg(18);
+    MsgSetVisible(18);
     if (!Start7_3_2(18))
     {
-        ShowErMsg(18);
+        ErMsgSetVisible(18);
         return false;
     }
-    ShowOkMsg(18);
+    OkMsgSetVisible(18);
     return true;
 }
 
 bool e_tunedialog::Start7_3_9()
 {
-    ShowMsg(19);
+    MsgSetVisible(19);
     if (QMessageBox::question(this,"Закончить?","Закончить настройку?",QMessageBox::Yes|QMessageBox::No, QMessageBox::Yes) == \
             QMessageBox::Yes)
     {
@@ -993,7 +995,7 @@ bool e_tunedialog::Start7_3_9()
             QCoreApplication::processEvents(QEventLoop::AllEvents);
         if (cn->result != CN_OK)
         {
-            ShowErMsg(19);
+            ErMsgSetVisible(19);
             return false;
         }
         // переходим на прежнюю конфигурацию
@@ -1006,10 +1008,10 @@ bool e_tunedialog::Start7_3_9()
         Show1RetomDialog(57.74f, econf->Bci_block.inom1[0]);
         if (!Start7_3_2(19))
         {
-            ShowErMsg(19);
+            ErMsgSetVisible(19);
             return false;
         }
-        ShowOkMsg(19);
+        OkMsgSetVisible(19);
     }
     else
         return false;
@@ -1027,7 +1029,7 @@ void e_tunedialog::GetExternalData(int numexc)
         tmr.start();
         while (tmr.elapsed() < 5000)
             qApp->processEvents();
-        ShowOkMsg(numexc);
+        OkMsgSetVisible(numexc);
         StopMip();
         if (CheckMip())
         {
@@ -1085,7 +1087,7 @@ void e_tunedialog::GetExternalData(int numexc)
         glyout->addWidget(pb,4,0,1,6);
         dlg->setLayout(glyout);
         dlg->exec();
-        ShowOkMsg(numexc);
+        OkMsgSetVisible(numexc);
     }
     case TUNERET:
     {
@@ -1095,7 +1097,7 @@ void e_tunedialog::GetExternalData(int numexc)
             mipd[i+3] = (numexc == 12) ? 1.0 : 5.0;
             mipd[i+6] = 0.0;
         }
-        ShowOkMsg(numexc);
+        OkMsgSetVisible(numexc);
         break;
     }
     }
@@ -1550,29 +1552,38 @@ void e_tunedialog::closeEvent(QCloseEvent *e)
     e->accept();
 }
 
-void e_tunedialog::ShowMsg(int msg)
+void e_tunedialog::MsgClear()
+{
+    for (int i=0; i<20; i++)
+    {
+        MsgSetVisible(i, false);
+        OkMsgSetVisible(i, false);
+    }
+}
+
+void e_tunedialog::MsgSetVisible(int msg, bool Visible)
 {
     QLabel *lbl = this->findChild<QLabel *>("tunemsg"+QString::number(msg));
     if (lbl == 0)
         return;
-    lbl->setVisible(true);
+    lbl->setVisible(Visible);
 }
 
-void e_tunedialog::ShowOkMsg(int msg)
+void e_tunedialog::OkMsgSetVisible(int msg, bool Visible)
 {
     QLabel *lbl=this->findChild<QLabel *>("tunemsgres"+QString::number(msg));
     if (lbl == 0)
         return;
     lbl->setText("готово!");
-    lbl->setVisible(true);
+    lbl->setVisible(Visible);
 }
 
-void e_tunedialog::ShowErMsg(int msg)
+void e_tunedialog::ErMsgSetVisible(int msg, bool Visible)
 {
     QLabel *lbl=this->findChild<QLabel *>("tunemsgres"+QString::number(msg));
     if (lbl == 0)
         return;
     lbl->setStyleSheet("QLabel {color: red};");
     lbl->setText("ошибка!");
-    lbl->setVisible(true);
+    lbl->setVisible(Visible);
 }
