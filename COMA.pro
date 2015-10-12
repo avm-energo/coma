@@ -10,12 +10,12 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 QT += serialport
 
-TARGET = AVTUK-CONSET
+TARGET = COMA
 TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        conset.cpp \
+        coma.cpp \
     fwupdialog.cpp \
     mytabwidget.cpp \
     publicclass.cpp \
@@ -38,9 +38,10 @@ SOURCES += main.cpp\
     widgets/s_tablemodel.cpp \
     widgets/s_tableitem.cpp \
     E/e_config.cpp \
-    widgets/getoscpbdelegate.cpp
+    widgets/getoscpbdelegate.cpp \
+    D/d_confdialog.cpp
 
-HEADERS  += conset.h \
+HEADERS  += coma.h \
     fwupdialog.h \
     mytabwidget.h \
     publicclass.h \
@@ -63,7 +64,8 @@ HEADERS  += conset.h \
     widgets/s_tableitem.h \
     widgets/s_tablemodel.h \
     E/e_config.h \
-    widgets/getoscpbdelegate.h
+    widgets/getoscpbdelegate.h \
+    D/d_confdialog.h
 
 INCLUDEPATH += $$PWD/../../xlsxwriter/src/xlsx
 DEPENDPATH += $$PWD/../../xlsxwriter/src/xlsx

@@ -19,7 +19,8 @@ private:
     struct Bd
     {
         float ain[16];
-        float in[16];
+        float inI[16];
+        float inU[16];
         float at;
         float ainn[16];
         float ainx[16];

@@ -1,10 +1,10 @@
-#include "conset.h"
+#include "coma.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    ConSet w;
+    Coma w;
     w.show();
 
     return a.exec();

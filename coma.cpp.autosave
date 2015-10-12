@@ -17,14 +17,14 @@
 #include <QSettings>
 #include "mytabwidget.h"
 #include <QDialog>
-#include "conset.h"
+#include "coma.h"
 
-ConSet::ConSet(QWidget *parent)
+Coma::Coma(QWidget *parent)
     : QMainWindow(parent)
 {
     ReconTry = 0;
     InitiateHth();
-    setWindowTitle("КАВТУК");
+    setWindowTitle("КОМА 1.0#");
     setMinimumSize(QSize(800, 600));
     DialogsAreReadyAlready = false;
     cn = new canal;
@@ -163,18 +163,18 @@ ConSet::ConSet(QWidget *parent)
     connect(cn,SIGNAL(gotsomedata(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(cn,SIGNAL(somedatawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
 
-    QSettings *sets = new QSettings ("EvelSoft","ConSet");
+    QSettings *sets = new QSettings ("EvelSoft","Coma");
     pc.MIPASDU = sets->value("mip/asdu","206").toInt();
     pc.MIPIP = sets->value("mip/ip","192.168.1.2").toString();
     if (pc.result)
         QMessageBox::warning(this,"ошибка!","Не найден файл с сообщениями об ошибках!");
 }
 
-ConSet::~ConSet()
+Coma::~Coma()
 {
 }
 
-void ConSet::InitiateHth()
+void Coma::InitiateHth()
 {
     Hth[0] = "!OK";
     Hth[1] = "NC";
@@ -190,13 +190,13 @@ void ConSet::InitiateHth()
         Hth[i] = "";
 }
 
-void ConSet::closeEvent(QCloseEvent *e)
+void Coma::closeEvent(QCloseEvent *e)
 {
     emit stopall();
     e->accept();
 }
 
-void ConSet::Connect()
+void Coma::Connect()
 {
 // !!!   /*
     int i;
@@ -238,7 +238,7 @@ void ConSet::Connect()
 //    AllIsOk(); // !!!
 }
 
-void ConSet::Next()
+void Coma::Next()
 {
     cn->Connect();
     if (cn->result != CN_OK)
@@ -253,7 +253,7 @@ void ConSet::Next()
     GetBsi();
 }
 
-void ConSet::SetPort(QString str)
+void Coma::SetPort(QString str)
 {
     QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
     for (int i = 0; i < info.size(); i++)
@@ -266,12 +266,12 @@ void ConSet::SetPort(QString str)
     }
 }
 
-void ConSet::SetBaud(QString str)
+void Coma::SetBaud(QString str)
 {
     cn->baud = str.toInt();
 }
 
-void ConSet::GetBsi()
+void Coma::GetBsi()
 {
     cn->Send(CN_GBsi, &Bsi_block, sizeof(publicclass::Bsi));
     while (cn->Busy)
@@ -280,7 +280,7 @@ void ConSet::GetBsi()
         CheckBsi();
 }
 
-void ConSet::CheckBsi()
+void Coma::CheckBsi()
 {
     pc.MType = Bsi_block.MType;
     pc.MType1 = Bsi_block.MType1;
@@ -368,7 +368,7 @@ void ConSet::CheckBsi()
     }
 }
 
-void ConSet::FillBsi(QString MType, bool clear)
+void Coma::FillBsi(QString MType, bool clear)
 {
     QLineEdit *le = this->findChild<QLineEdit *>("mtypele");
     if (le == 0)
@@ -433,7 +433,7 @@ void ConSet::FillBsi(QString MType, bool clear)
     le->setText((clear)?"":QString::number(Bsi_block.SerNum, 16));
 }
 
-void ConSet::AllIsOk()
+void Coma::AllIsOk()
 {
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
@@ -486,7 +486,7 @@ void ConSet::AllIsOk()
     MainTW->show();
 }
 
-void ConSet::UpdateMainTE104(QByteArray ba)
+void Coma::UpdateMainTE104(QByteArray ba)
 {
     QString tmpString;
     if (ba.at(0) == 0x3A) // ':' - символ установления связи по Ethernet
@@ -506,7 +506,7 @@ void ConSet::UpdateMainTE104(QByteArray ba)
     UpdateMainTE(ba);
 }
 
-void ConSet::UpdateMainTE(QByteArray ba)
+void Coma::UpdateMainTE(QByteArray ba)
 {
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     QString tmpString;
@@ -522,7 +522,7 @@ void ConSet::UpdateMainTE(QByteArray ba)
     MainTE->verticalScrollBar()->setValue(MainTE->verticalScrollBar()->maximum());
 }
 
-QString ConSet::ByteToHex(quint8 hb)
+QString Coma::ByteToHex(quint8 hb)
 {
     QString tmpString;
     quint8 halfbyte = hb & 0xF0;
@@ -533,7 +533,7 @@ QString ConSet::ByteToHex(quint8 hb)
     return tmpString;
 }
 
-void ConSet::Disconnect()
+void Coma::Disconnect()
 {
     cn->Disconnect();
     FillBsi("",true);
@@ -557,17 +557,17 @@ void ConSet::Disconnect()
     MainTW->hide();
 }
 
-void ConSet::GetAbout()
+void Coma::GetAbout()
 {
 
 }
 
-void ConSet::Exit()
+void Coma::Exit()
 {
     this->close();
 }
 
-void ConSet::WriteSN()
+void Coma::WriteSN()
 {
     bool ok = false;
     qint32 tmpi = QInputDialog::getInt(this, "Серийный номер", "Серийный номер модуля:", 0, 1, 99999999,\
@@ -582,7 +582,7 @@ void ConSet::WriteSN()
         GetBsi();
 }
 
-void ConSet::SetMipDlg()
+void Coma::SetMipDlg()
 {
     QDialog *dlg = new QDialog(this);
     dlg->setObjectName("setmipdlg");
@@ -649,7 +649,7 @@ void ConSet::SetMipDlg()
     dlg->exec();
 }
 
-void ConSet::SetMipConPar()
+void Coma::SetMipConPar()
 {
     pc.MIPIP.clear();
     for (int i = 1; i < 5; i++)
@@ -664,13 +664,13 @@ void ConSet::SetMipConPar()
     if (spb == 0)
         return;
     pc.MIPASDU = spb->value();
-    QSettings *sets = new QSettings ("EvelSoft","ConSet");
+    QSettings *sets = new QSettings ("EvelSoft","Coma");
     sets->setValue("mip/asdu",pc.MIPASDU);
     sets->setValue("mip/ip",pc.MIPIP);
     emit mipparset();
 }
 
-void ConSet::ShowErrMsg(int ermsg)
+void Coma::ShowErrMsg(int ermsg)
 {
     if (ermsg < pc.errmsgs.size())
         QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));

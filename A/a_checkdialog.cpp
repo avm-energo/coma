@@ -28,7 +28,8 @@ a_checkdialog::a_checkdialog(QWidget *parent) :
     for (int i = 0; i < 16; i++)
     {
         Bda_block.sin[i] = 0;
-        Bd_block.in[i] = 0;
+        Bd_block.inI[i] = 0;
+        Bd_block.inU[i] = 0;
         Bd_block.ain[i] = 0;
         Bd_block.ainn[i] = 0;
         Bd_block.ainx[i] = 0;
@@ -53,13 +54,21 @@ void a_checkdialog::SetupUI()
     CheckTW->addTab(cp2,"Текущие измерения");
     CheckTW->addTab(cp3,"Прочее");
 
-    QGroupBox *gb = new QGroupBox("Тек. измерения, приведённые ко входу");
+    QFrame *line = new QFrame;
+    line->setFrameShape(QFrame::HLine);
+    line->setFrameShadow(QFrame::Sunken);
+    lbl = new QLabel("Тек. измерения, приведённые ко входу (ток)");
+    gb2lyout->addWidget(lbl,0);
+    gb2lyout->addWidget(line,1);
+    gb1lyout->addLayout(gb2lyout);
+    gb2lyout = new QHBoxLayout;
+//    QGroupBox *gb = new QGroupBox("Тек. измерения, приведённые ко входу");
     for (i = 0; i < 16; i++)
     {
         lbl = new QLabel(QString::number(i)+":");
         gb2lyout->addWidget(lbl);
         lbl = new QLabel("");
-        lbl->setObjectName("bdin"+QString::number(i));
+        lbl->setObjectName("bdinI"+QString::number(i));
         lbl->setStyleSheet(ValuesFormat);
         gb2lyout->addWidget(lbl, 1);
         if ((i>0)&&!((i+1)%6))
@@ -70,12 +79,51 @@ void a_checkdialog::SetupUI()
     }
     if (gb2lyout->count())
         gb1lyout->addLayout(gb2lyout);
-    gb->setLayout(gb1lyout);
+/*    gb->setLayout(gb1lyout);
+    lyout->addWidget(gb);
+
+    gb = new QGroupBox("Тек. измерения, приведённые ко входу (напряжения)");
+    gb1lyout = new QVBoxLayout; */
+    gb2lyout = new QHBoxLayout;
+    line = new QFrame;
+    line->setFrameShape(QFrame::HLine);
+    line->setFrameShadow(QFrame::Sunken);
+    lbl = new QLabel("Тек. измерения, приведённые ко входу (напряжения)");
+    gb2lyout->addWidget(lbl,0);
+    gb2lyout->addWidget(line,1);
+    gb1lyout->addLayout(gb2lyout);
+    gb2lyout = new QHBoxLayout;
+    for (i = 0; i < 16; i++)
+    {
+        lbl = new QLabel(QString::number(i)+":");
+        gb2lyout->addWidget(lbl);
+        lbl = new QLabel("");
+        lbl->setObjectName("bdinU"+QString::number(i));
+        lbl->setStyleSheet(ValuesFormat);
+        gb2lyout->addWidget(lbl, 1);
+        if ((i>0)&&!((i+1)%6))
+        {
+            gb1lyout->addLayout(gb2lyout);
+            gb2lyout = new QHBoxLayout;
+        }
+    }
+    if (gb2lyout->count())
+        gb1lyout->addLayout(gb2lyout);
+/*    gb->setLayout(gb1lyout);
     lyout->addWidget(gb);
 
     gb = new QGroupBox("Тек. измерения в инж. единицах");
-    gb1lyout = new QVBoxLayout;
+    gb1lyout = new QVBoxLayout;*/
     gb2lyout = new QHBoxLayout;
+    line = new QFrame;
+    line->setFrameShape(QFrame::HLine);
+    line->setFrameShadow(QFrame::Sunken);
+    lbl = new QLabel("Тек. измерения в инженерных единицах");
+    gb2lyout->addWidget(lbl,0);
+    gb2lyout->addWidget(line,1);
+    gb1lyout->addLayout(gb2lyout);
+    gb2lyout = new QHBoxLayout;
+
     for (i = 0; i < 16; i++)
     {
         lbl = new QLabel(QString::number(i)+":");
@@ -92,12 +140,21 @@ void a_checkdialog::SetupUI()
     }
     if (gb2lyout->count())
         gb1lyout->addLayout(gb2lyout);
-    gb->setLayout(gb1lyout);
+/*    gb->setLayout(gb1lyout);
     lyout->addWidget(gb);
 
     gb = new QGroupBox("Текущие минимумы по каналам");
-    gb1lyout = new QVBoxLayout;
+    gb1lyout = new QVBoxLayout; */
     gb2lyout = new QHBoxLayout;
+    line = new QFrame;
+    line->setFrameShape(QFrame::HLine);
+    line->setFrameShadow(QFrame::Sunken);
+    lbl = new QLabel("Текущие минимумы по каналам");
+    gb2lyout->addWidget(lbl,0);
+    gb2lyout->addWidget(line,1);
+    gb1lyout->addLayout(gb2lyout);
+    gb2lyout = new QHBoxLayout;
+
     for (i = 0; i < 16; i++)
     {
         lbl = new QLabel(QString::number(i)+":");
@@ -114,12 +171,21 @@ void a_checkdialog::SetupUI()
     }
     if (gb2lyout->count())
         gb1lyout->addLayout(gb2lyout);
-    gb->setLayout(gb1lyout);
+/*    gb->setLayout(gb1lyout);
     lyout->addWidget(gb);
 
     gb = new QGroupBox("Текущие максимумы по каналам");
-    gb1lyout = new QVBoxLayout;
+    gb1lyout = new QVBoxLayout; */
     gb2lyout = new QHBoxLayout;
+    line = new QFrame;
+    line->setFrameShape(QFrame::HLine);
+    line->setFrameShadow(QFrame::Sunken);
+    lbl = new QLabel("Текущие максимумы по каналам");
+    gb2lyout->addWidget(lbl,0);
+    gb2lyout->addWidget(line,1);
+    gb1lyout->addLayout(gb2lyout);
+    gb2lyout = new QHBoxLayout;
+
     for (i = 0; i < 16; i++)
     {
         lbl = new QLabel(QString::number(i)+":");
@@ -136,9 +202,9 @@ void a_checkdialog::SetupUI()
     }
     if (gb2lyout->count())
         gb1lyout->addLayout(gb2lyout);
-    gb->setLayout(gb1lyout);
-    lyout->addWidget(gb);
-
+/*    gb->setLayout(gb1lyout);
+    lyout->addWidget(gb); */
+    lyout->addLayout(gb1lyout);
     lbl = new QLabel("Температура в кристалле:");
     gb2lyout = new QHBoxLayout;
     gb1lyout = new QVBoxLayout;
@@ -160,7 +226,7 @@ void a_checkdialog::SetupUI()
     cp2->setLayout(lyout);
 
     lyout = new QVBoxLayout;
-    gb = new QGroupBox("Данные без подстройки");
+    QGroupBox *gb = new QGroupBox("Данные без подстройки");
     gb1lyout = new QVBoxLayout;
     gb2lyout = new QHBoxLayout;
     for (i = 0; i < 16; i++)
@@ -320,9 +386,12 @@ void a_checkdialog::RefreshBd()
     int i;
     for (i = 0; i < 16; i++)
     {
-        QLabel *lbl = this->findChild<QLabel *>("bdin"+QString::number(i));
+        QLabel *lbl = this->findChild<QLabel *>("bdinI"+QString::number(i));
         if (lbl != 0)
-            lbl->setText(QString::number(Bd_block.in[i],'f',5));
+            lbl->setText(QString::number(Bd_block.inI[i],'f',5));
+        lbl = this->findChild<QLabel *>("bdinU"+QString::number(i));
+        if (lbl != 0)
+            lbl->setText(QString::number(Bd_block.inU[i],'f',5));
         lbl = this->findChild<QLabel *>("bdain"+QString::number(i));
         if (lbl != 0)
             lbl->setText(QString::number(Bd_block.ain[i],'f',5));

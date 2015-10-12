@@ -1,5 +1,5 @@
-#ifndef CONSET_H
-#define CONSET_H
+#ifndef COMA_H
+#define COMA_H
 
 #include <QMainWindow>
 #include <QTimer>
@@ -19,13 +19,13 @@
 #include "canal.h"
 #include "publicclass.h"
 
-class ConSet : public QMainWindow
+class Coma : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    ConSet(QWidget *parent = 0);
-    ~ConSet();
+    Coma(QWidget *parent = 0);
+    ~Coma();
 
 signals:
     void receivecompleted();
@@ -81,4 +81,4 @@ protected:
     void closeEvent(QCloseEvent *e);
 };
 
-#endif // CONSET_H
+#endif // COMA_H
