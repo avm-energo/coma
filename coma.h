@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QCloseEvent>
 #include <QAction>
+#include <QVBoxLayout>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtSerialPort/QSerialPort>
 #include "fwupdialog.h"
@@ -18,6 +19,13 @@
 #include "oscdialog.h"
 #include "canal.h"
 #include "publicclass.h"
+
+#define PROGNAME    "КОМА 1.0 #0062"
+
+#define MAINER(a)       ERMSG(publicclass::ER_MAIN,__LINE__,a)
+#define MAINDBG         DBGMSG(publicclass::ER_MAIN,__LINE__)
+#define MAINWARN        WARNMSG(publicclass::ER_MAIN,__LINE__)
+#define MAININFO(a)     INFOMSG(publicclass::ER_MAIN,__LINE__,a)
 
 class Coma : public QMainWindow
 {
@@ -35,6 +43,8 @@ signals:
     void mipparset();
 
 private:
+    bool mmHide;
+
     QString Hth[32];
 //    QThread *thread;
     a_checkdialog *ACheckDialog;
@@ -56,6 +66,8 @@ private:
     void StopThreads();
     void InitiateHth();
     void FillBsi(QString MType, bool clear=false);
+    void AddLabelAndLineedit (QVBoxLayout *lyout, QString caption, QString lename);
+    void ShowOrHideSlide();
 
 public slots:
     void GetBsi();
@@ -76,9 +88,11 @@ private slots:
     void WriteSN();
     void SetMipConPar();
     void SetMipDlg();
+    void UpdateErrorProtocol();
 
 protected:
     void closeEvent(QCloseEvent *e);
+    void mouseMoveEvent(QMouseEvent *e);
 };
 
 #endif // COMA_H

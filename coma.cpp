@@ -5,26 +5,33 @@
 #include <QComboBox>
 #include <QScrollBar>
 #include <QStringListModel>
+#include <QPropertyAnimation>
 #include <QMessageBox>
 #include <QMenu>
 #include <QMenuBar>
 #include <QFont>
-#include <QVBoxLayout>
 #include <QTextEdit>
+#include <QToolBar>
 #include <QThread>
 #include <QInputDialog>
 #include <QRegExp>
 #include <QSettings>
-#include "mytabwidget.h"
 #include <QDialog>
+#include <QSettings>
 #include "coma.h"
+#include "widgets/mytabwidget.h"
+#include "widgets/errorprotocolwidget.h"
 
 Coma::Coma(QWidget *parent)
     : QMainWindow(parent)
 {
+    QTimer *ErrorProtocolUpdateTimer = new QTimer;
+    ErrorProtocolUpdateTimer->setInterval(1000);
+    connect(ErrorProtocolUpdateTimer,SIGNAL(timeout()),this,SLOT(UpdateErrorProtocol()));
+    ErrorProtocolUpdateTimer->start();
     ReconTry = 0;
     InitiateHth();
-    setWindowTitle("КОМА");
+    setWindowTitle(PROGNAME);
     setMinimumSize(QSize(800, 600));
     DialogsAreReadyAlready = false;
     cn = new canal;
@@ -32,72 +39,42 @@ Coma::Coma(QWidget *parent)
     QVBoxLayout *lyout = new QVBoxLayout;
     setMinimumHeight(650);
 
+    QToolBar *tb = new QToolBar;
+    QAction *ConnectAction = new QAction(this);
+    ConnectAction->setToolTip("Соединение");
+    ConnectAction->setIcon(QIcon(":/play.png"));
+    connect(ConnectAction,SIGNAL(triggered()),this,SLOT(Next()));
+    QAction *DisconnectAction = new QAction(this);
+    DisconnectAction->setToolTip("Разрыв соединения");
+    DisconnectAction->setIcon(QIcon(":/stop.png"));
+    connect(DisconnectAction,SIGNAL(triggered()),this,SLOT(Disconnect()));
+    QAction *SettingsAction = new QAction(this);
+    SettingsAction->setToolTip("Настройки");
+    SettingsAction->setIcon(QIcon(":/settings.png"));
+    connect(SettingsAction,SIGNAL(triggered()),this,SLOT(SetMipDlg()));
+    tb->addAction(ConnectAction);
+    tb->addAction(DisconnectAction);
+    tb->addAction(SettingsAction);
+    lyout->addWidget(tb);
+
+    QWidget *SlideWidget = new QWidget;
+    SlideWidget->setObjectName("slidew");
+    QVBoxLayout *slyout = new QVBoxLayout;
+
+    AddLabelAndLineedit(slyout, "Модуль АВТУК-", "mtypele");
+    AddLabelAndLineedit(slyout, "Аппаратная версия:", "hwverle");
+    AddLabelAndLineedit(slyout, "Версия ПО:", "fwverle");
+    AddLabelAndLineedit(slyout, "КС конфигурации:", "cfcrcle");
+    AddLabelAndLineedit(slyout, "Сброс:", "rstle");
+    AddLabelAndLineedit(slyout, "Количество сбросов:", "rstcountle");
+    AddLabelAndLineedit(slyout, "Серийный номер:", "snle");
+    AddLabelAndLineedit(slyout, "ИД процессора:", "cpuidle");
+
+    SlideWidget->setLayout(slyout);
+    SlideWidget->hide();
+    centralWidget()->setMouseTracking(true);
+
     QHBoxLayout *uplyout = new QHBoxLayout;
-    QLabel *uplbl1 = new QLabel("Модуль АВТУК-");
-    QLineEdit *uple1 = new QLineEdit("");
-    uple1->setObjectName("mtypele");
-    uple1->setEnabled(false);
-    uple1->setTextMargins(0,0,0,0);
-    QLabel *uplbl2 = new QLabel("Аппаратная версия:");
-    QLineEdit *uple2 = new QLineEdit("");
-    uple2->setObjectName("hwverle");
-    uple2->setEnabled(false);
-    uple2->setTextMargins(0,0,0,0);
-    QLabel *uplbl3 = new QLabel("Версия ПО:");
-    QLineEdit *uple3 = new QLineEdit("");
-    uple3->setObjectName("fwverle");
-    uple3->setEnabled(false);
-    uple3->setTextMargins(0,0,0,0);
-    QLabel *uplbl4 = new QLabel("КС конфигурации:");
-    QLineEdit *uple4 = new QLineEdit("");
-    uple4->setObjectName("cfcrcle");
-    uple4->setEnabled(false);
-    uple4->setTextMargins(0,0,0,0);
-    QLabel *uplbl5 = new QLabel("Сброс:");
-    QLineEdit *uple5 = new QLineEdit("");
-    uple5->setObjectName("rstle");
-    uple5->setEnabled(false);
-    uple5->setTextMargins(0,0,0,0);
-    QLabel *uplbl5_2 = new QLabel("Количество сбросов:");
-    QLineEdit *uple5_2 = new QLineEdit("");
-    uple5_2->setObjectName("rstcountle");
-    uple5_2->setEnabled(false);
-    uple5_2->setTextMargins(0,0,0,0);
-    QLabel *uplbl7 = new QLabel("Серийный номер:");
-    QLineEdit *uple7 = new QLineEdit("");
-    uple7->setObjectName("snle");
-    uple7->setEnabled(false);
-    uple7->setTextMargins(0,0,0,0);
-    QLabel *uplbl8 = new QLabel("ИД процессора:");
-    QLineEdit *uple8 = new QLineEdit("");
-    uple8->setObjectName("cpuidle");
-    uple8->setEnabled(false);
-    uple8->setTextMargins(0,0,0,0);
-
-    uplyout->addWidget(uplbl1);
-    uplyout->addWidget(uple1);
-    uplyout->addWidget(uplbl4);
-    uplyout->addWidget(uple4);
-    uplyout->addWidget(uplbl5);
-    uplyout->addWidget(uple5);
-    uplyout->addWidget(uplbl5_2);
-    uplyout->addWidget(uple5_2);
-    lyout->addLayout(uplyout);
-
-    uplyout = new QHBoxLayout;
-    uplyout->addWidget(uplbl2);
-    uplyout->addWidget(uple2, 80);
-    uplyout->addWidget(uplbl3);
-    uplyout->addWidget(uple3, 80);
-    uplyout->addWidget(uplbl7);
-    uplyout->addWidget(uple7, 80);
-    uplyout->addWidget(uplbl8);
-    uplyout->addWidget(uple8, 80);
-    lyout->addLayout(uplyout);
-
-    lyout->addStretch(1);
-
-    uplyout = new QHBoxLayout;
     for (int i = 31; i >= 0; i--)
     {
         QLabel *lbl = new QLabel(Hth[i]);
@@ -115,7 +92,7 @@ Coma::Coma(QWidget *parent)
     connect(MainExitAction,SIGNAL(triggered()),this,SLOT(Exit()));
     QAction *MainConnectAction = new QAction(this);
     MainConnectAction->setText("Соединение");
-    connect(MainConnectAction,SIGNAL(triggered()),this,SLOT(Connect()));
+    connect(MainConnectAction,SIGNAL(triggered()),this,SLOT(Next()));
     QAction *MainDisconnectAction = new QAction(this);
     MainDisconnectAction->setText("Разрыв соединения");
     connect(MainDisconnectAction,SIGNAL(triggered()),this,SLOT(Disconnect()));
@@ -156,6 +133,9 @@ Coma::Coma(QWidget *parent)
     MainTE->hide();
     inlyout->addWidget(MainTE, 40);
     lyout->addLayout(inlyout, 90);
+    ErrorProtocolWidget *ErrorWidget = new ErrorProtocolWidget;
+    ErrorWidget->setObjectName("errorwidget");
+    lyout->addWidget(ErrorWidget);
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
 
@@ -163,15 +143,84 @@ Coma::Coma(QWidget *parent)
     connect(cn,SIGNAL(gotsomedata(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(cn,SIGNAL(somedatawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
 
-    QSettings *sets = new QSettings ("EvelSoft","Coma");
-    pc.MIPASDU = sets->value("mip/asdu","206").toInt();
-    pc.MIPIP = sets->value("mip/ip","192.168.1.2").toString();
     if (pc.result)
-        QMessageBox::warning(this,"ошибка!","Не найден файл с сообщениями об ошибках!");
+        MAININFO("Не найден файл с сообщениями об ошибках!");
 }
+
+void Coma::closeEvent(QCloseEvent *e)
+{
+    emit stopall();
+    e->accept();
+}
+
+/*
+ * Sapronov Alexander sapronov.alexander92@gmail.com
+ * 2013-07-18
+ */
+
+void Coma::mouseMoveEvent(QMouseEvent *e)
+{
+    if (abs(e->pos().x() - width()) < 50)
+    {
+        if (mmHide)
+            ShowOrHideSlide();
+    }
+    else
+    {
+        if (!mmHide)
+            ShowOrHideSlide();
+    }
+}
+
+void Coma::ShowOrHideSlide()
+{
+    QWidget *w = this->findChild<QWidget *>("slidew");
+    if (w == 0)
+        return;
+    if (w->isHidden())
+        w->show();
+    QPropertyAnimation *ani = new QPropertyAnimation(w, "geometry");
+    ani->setDuration(300);
+    QRect startRect(width(), 0, 0, height());
+    QRect endRect(width() - w->width(), 0, w->width(), height());
+    if (mmHide)
+    {
+        ani->setStartValue(startRect);
+        ani->setEndValue(endRect);
+    }
+    else
+    {
+        ani->setStartValue(endRect);
+        ani->setEndValue(startRect);
+    }
+    ani->start();
+    mmHide = !mmHide;
+}
+
+/*
+ * Sapronov Alexander sapronov.alexander92@gmail.com
+ * 2013-07-18
+ */
 
 Coma::~Coma()
 {
+    QSettings *sets = new QSettings ("EvelSoft","Coma");
+    sets->setValue("mip/asdu",pc.MIPASDU);
+    sets->setValue("mip/ip",pc.MIPIP);
+    sets->setValue("Port", pc.Port);
+}
+
+void Coma::AddLabelAndLineedit(QVBoxLayout *lyout, QString caption, QString lename)
+{
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QLabel *lbl = new QLabel(caption);
+    hlyout->addWidget(lbl);
+    QLineEdit *le = new QLineEdit("");
+    le->setObjectName(lename);
+    le->setEnabled(false);
+    le->setTextMargins(0,0,0,0);
+    hlyout->addWidget(le,1);
+    lyout->addLayout(hlyout);
 }
 
 void Coma::InitiateHth()
@@ -190,12 +239,6 @@ void Coma::InitiateHth()
         Hth[i] = "";
 }
 
-void Coma::closeEvent(QCloseEvent *e)
-{
-    emit stopall();
-    e->accept();
-}
-
 void Coma::Connect()
 {
 // !!!   /*
@@ -206,7 +249,6 @@ void Coma::Connect()
     dlg->setObjectName("connectdlg");
     QVBoxLayout *lyout = new QVBoxLayout;
     QComboBox *portscb = new QComboBox;
-    portscb->setObjectName("connectportscb");
     connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPort(QString)));
     QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
     if (info.size() == 0)
@@ -225,6 +267,7 @@ void Coma::Connect()
 
     QPushButton *nextL = new QPushButton("Далее");
     connect(nextL,SIGNAL(clicked()),this,SLOT(Next()));
+    connect(nextL, SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(nextL);
     dlg->setLayout(lyout);
     connect(cn,SIGNAL(portopened()),dlg,SLOT(close()));
@@ -240,10 +283,33 @@ void Coma::Connect()
 
 void Coma::Next()
 {
+    QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
+    if (info.size() == 0)
+    {
+        ShowErrMsg(2);
+        Connect();
+        return;
+    }
+    bool PortFound = false;
+    for (int i = 0; i < info.size(); i++)
+    {
+        if (info.at(i).portName() == pc.Port)
+        {
+            PortFound = true;
+            cn->info = info.at(i);
+        }
+    }
+    if (!PortFound)
+    {
+        ShowErrMsg(2);
+        Connect();
+        return;
+    }
     cn->Connect();
     if (cn->result != CN_OK)
     {
         ShowErrMsg(cn->result);
+        Connect();
         return;
     }
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
@@ -664,16 +730,30 @@ void Coma::SetMipConPar()
     if (spb == 0)
         return;
     pc.MIPASDU = spb->value();
-    QSettings *sets = new QSettings ("EvelSoft","Coma");
-    sets->setValue("mip/asdu",pc.MIPASDU);
-    sets->setValue("mip/ip",pc.MIPIP);
     emit mipparset();
 }
 
 void Coma::ShowErrMsg(int ermsg)
 {
     if (ermsg < pc.errmsgs.size())
-        QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
+        MAINER(pc.errmsgs.at(ermsg));
     else
-        QMessageBox::critical(this,"error!","Произошла неведомая фигня #"+QString::number(ermsg,10));
+        MAINER("Произошла неведомая фигня #"+QString::number(ermsg,10));
+}
+
+void Coma::UpdateErrorProtocol()
+{
+    ErrorProtocolWidget *ErWidget = this->findChild<ErrorProtocolWidget *>("errorwidget");
+    if (ErWidget == 0)
+    {
+        MAINDBG;
+        return;
+    }
+    if (pc.ermsgpool.isEmpty())
+        return;
+    while (!pc.ermsgpool.isEmpty())
+    {
+        ErWidget->AddRowToTree(pc.ermsgpool.first());
+        pc.ermsgpool.removeFirst();
+    }
 }

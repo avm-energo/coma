@@ -7,5 +7,12 @@
         <file>mte3-e0t2n.png</file>
         <file>mte3-e1t1n.png</file>
         <file>mte3-e2t0n.png</file>
+        <file>dbg_msg.png</file>
+        <file>er_msg.png</file>
+        <file>info_msg.png</file>
+        <file>warn_msg.png</file>
+        <file>play.png</file>
+        <file>stop.png</file>
+        <file>settings.png</file>
     </qresource>
 </RCC>

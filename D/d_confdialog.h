@@ -10,29 +10,23 @@
 //#include "../canal.h"
 
 // Описание блока Bci
-#define DBCI_MTYPE       1
-#define DBCI_MTYPE1      2
-#define DBCI_INTYPE      3
-#define DBCI_INMIN       4
-#define DBCI_INMAX       5
-#define DBCI_INVMIN      6
-#define DBCI_INVMAX      7
-#define DBCI_SETMINMIN   8
-#define DBCI_SETMIN      9
-#define DBCI_SETMAX      10
-#define DBCI_SETMAXMAX   11
-#define DBCI_DISCOSC     12
-#define DBCI_OSCSRC      13
-#define DBCI_OSCDLY      14
-#define DBCI_CTYPE       15
-#define DBCI_ABS_104     16
-#define DBCI_CYCLE_104   17
-#define DBCI_T1_104      18
-#define DBCI_T2_104      19
-#define DBCI_T3_104      20
-#define DBCI_K_104       21
-#define DBCI_W_104       22
-#define DCONF_NUM       23
+#define DBCI_MTYPE      1
+#define DBCI_MTYPE1     2
+#define DBCI_CTYPE      3
+#define DBCI_ABS_104    4
+#define DBCI_CYCLE_104  5
+#define DBCI_T1_104     6
+#define DBCI_T2_104     7
+#define DBCI_T3_104     8
+#define DBCI_K_104      9
+#define DBCI_W_104      10
+#define DBCI_INTYPE     11
+#define DBCI_DLY1       12
+#define DBCI_DLY2       13
+#define DBCI_DLY3       14
+#define DBCI_DLY4       15
+#define DBCI_PAIR       16
+#define DCONF_NUM       17
 
 class d_confdialog : public QDialog
 {
@@ -62,43 +56,17 @@ private:
                                 // 4 – неинвертированный сигнал с контролем целостности цепи
                                 // 5 – инвертированный сигнал с контролем целостности цепи
         quint32 dly_time1;      // маска дребезга 0,5 мс
-        quint32 dly_time2;      // маска дребезга 1 мс
-        quint32 dly_time3;      // маска дребезга 3 мс
-        quint32 dly_time4;      // маска дребезга 20 мс
+        quint32 dly_time2;      // маска дребезга 2 мс
+        quint32 dly_time3;      // маска дребезга 8 мс
+        quint32 dly_time4;      // маска дребезга 16 мс
         quint32 pair[16];
 
     } Bci;
 
-//    canal *cn;
     QByteArray confba;
     Bci Bci_block, Bci_defblock;
-/*    static Bci Bci_defblock = {
-        3,
-        0x810001,
-        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-        4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
-        20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,
-        10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-        50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,
-        950,950,950,950,950,950,950,950,950,950,950,950,950,950,950,950,
-        990,990,990,990,990,990,990,990,990,990,990,990,990,990,990,990,
-        0,
-        0,
-        0,
-        2,
-        205,
-        5,
-        15,
-        10,
-        20,
-        12,
-        8
-    }; */
 
-
-    publicclass::DataRec Config[ACONF_NUM];
+    publicclass::DataRec Config[DCONF_NUM];
 
     void FillConfData();
 

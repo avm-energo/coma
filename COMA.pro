@@ -17,7 +17,6 @@ TEMPLATE = app
 SOURCES += main.cpp\
         coma.cpp \
     fwupdialog.cpp \
-    mytabwidget.cpp \
     publicclass.cpp \
     downloaddialog.cpp \
     serialthread.cpp \
@@ -39,11 +38,12 @@ SOURCES += main.cpp\
     widgets/s_tableitem.cpp \
     E/e_config.cpp \
     widgets/getoscpbdelegate.cpp \
-    D/d_confdialog.cpp
+    D/d_confdialog.cpp \
+    widgets/mytabwidget.cpp \
+    widgets/errorprotocolwidget.cpp
 
 HEADERS  += coma.h \
     fwupdialog.h \
-    mytabwidget.h \
     publicclass.h \
     downloaddialog.h \
     serialthread.h \
@@ -65,7 +65,9 @@ HEADERS  += coma.h \
     widgets/s_tablemodel.h \
     E/e_config.h \
     widgets/getoscpbdelegate.h \
-    D/d_confdialog.h
+    D/d_confdialog.h \
+    widgets/mytabwidget.h \
+    widgets/errorprotocolwidget.h
 
 INCLUDEPATH += $$PWD/../../xlsxwriter/src/xlsx
 DEPENDPATH += $$PWD/../../xlsxwriter/src/xlsx

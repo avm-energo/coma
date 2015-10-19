@@ -166,7 +166,6 @@ void a_confdialog::FillConfData()
         QLabel *lbl = this->findChild<QLabel *>("oscsrcl"+QString::number(i));
         if (lbl == 0)
             return;
-//        quint32 tmpi = static_cast<quint32>(0x00000003) << i;
         quint8 tmpi = i << 1;
         ChTypCB->setCurrentIndex((Bci_block.oscsrc&(static_cast<quint32>(0x00000003) << tmpi)) >> tmpi);
         if (chb->isChecked())
@@ -364,6 +363,7 @@ void a_confdialog::SetupUI()
             connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetInVMax(double,s_tqspinbox*)));
             gb3lyout->addWidget(dspbls,i+1,4,1,1,Qt::AlignCenter);
         }
+//        gb
         gb->setLayout(gb3lyout);
         lyout2->addWidget(gb, 0, 0, 1, 1);
 
@@ -552,6 +552,11 @@ void a_confdialog::SetupUI()
 void a_confdialog::SetChTypData(int num, s_tqComboBox *cb)
 {
     Bci_block.in_type[cb->getAData().toInt()] = num;
+/*    s_tqCheckBox *chb = this->findChild<s_tqCheckBox *>("chb"+QString::number(i));
+    if (cb->currentIndex() == 0) // канал не используется
+    {
+
+    } */
 }
 
 void a_confdialog::SetOscDly(int dly)

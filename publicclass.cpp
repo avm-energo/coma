@@ -86,8 +86,11 @@ publicclass::publicclass()
     AMTypes.append("С");
     MType = MType1 = 0xFFFFFFFF;
 
-    QSettings *sets = new QSettings("EvelSoft","ConSet");
+    QSettings *sets = new QSettings("EvelSoft","COMA");
+    Port = sets->value("Port", "COM1").toString();
     QString ermsgspath = sets->value("erpath","errors\\").toString();
+    MIPASDU = sets->value("mip/asdu","206").toInt();
+    MIPIP = sets->value("mip/ip","192.168.1.2").toString();
     QFile file;
     file.setFileName(ermsgspath+"ermsgs.dat");
     ermsgspath = QDir::currentPath();
@@ -329,4 +332,30 @@ QString publicclass::NsTimeToString(quint64 nstime)
     nst = nst % 1000L;
     tmps += "." + QString("%1").arg(nst,3,10,QChar('0'));
     return tmps;
+}
+
+void publicclass::AddErrMsg(ermsgtype msgtype, quint64 ernum, quint64 ersubnum, QString msg)
+{
+    if (ermsgpool.size()>=ER_BUFMAX)
+        ermsgpool.removeFirst();
+    ermsg tmpm;
+    tmpm.type = msgtype;
+    tmpm.ernum = ernum;
+    tmpm.ersubnum = ersubnum;
+    // Разбор кода ошибки
+    QString prefix;
+    if ((msg.isEmpty()) || (msg == " ")) // пробел выдаётся при пустом запросе в БД
+    {
+        switch (msgtype)
+        {
+        case ER_MSG: prefix = "Ошибка "; break;
+        case WARN_MSG: prefix = "Проблема "; break;
+        case INFO_MSG: prefix = "Инфо "; break;
+        case DBG_MSG: prefix = "Отладка "; break;
+        }
+
+        msg = prefix+"в модуле " + ermsgs().value(ernum) + " строка " + QString::number(ersubnum);
+    }
+    tmpm.msg = msg;
+    ermsgpool.append(tmpm);
 }

@@ -19,27 +19,21 @@ d_confdialog::d_confdialog(QWidget *parent) :
     NoProperConf = false;
     Config[0] = {DBCI_MTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.MType)/sizeof(quint32), &(Bci_block.MType)};
     Config[1] = {DBCI_MTYPE1, u32_TYPE, sizeof(quint32), sizeof(Bci_block.MType1)/sizeof(quint32), &(Bci_block.MType1)};
-    Config[2] = {DBCI_INTYPE, u8_TYPE, sizeof(qint8), sizeof(Bci_block.in_type)/sizeof(qint8), &(Bci_block.in_type)};
-    Config[3] = {DBCI_INMIN, float_TYPE, sizeof(float), sizeof(Bci_block.in_min)/sizeof(float), &(Bci_block.in_min)};
-    Config[4] = {DBCI_INMAX, float_TYPE, sizeof(float), sizeof(Bci_block.in_max)/sizeof(float), &Bci_block.in_max};
-    Config[5] = {DBCI_INVMIN, float_TYPE, sizeof(float), sizeof(Bci_block.in_vmin)/sizeof(float), &Bci_block.in_vmin};
-    Config[6] = {DBCI_INVMAX, float_TYPE, sizeof(float), sizeof(Bci_block.in_vmax)/sizeof(float), &Bci_block.in_vmax};
-    Config[7] = {DBCI_SETMINMIN, float_TYPE, sizeof(float), sizeof(Bci_block.setminmin)/sizeof(float), &Bci_block.setminmin};
-    Config[8] = {DBCI_SETMIN, float_TYPE, sizeof(float), sizeof(Bci_block.setmin)/sizeof(float), &Bci_block.setmin};
-    Config[9] = {DBCI_SETMAX, float_TYPE, sizeof(float), sizeof(Bci_block.setmax)/sizeof(float), &Bci_block.setmax};
-    Config[10] = {DBCI_SETMAXMAX, float_TYPE, sizeof(float), sizeof(Bci_block.setmaxmax)/sizeof(float), &Bci_block.setmaxmax};
-    Config[11] = {DBCI_DISCOSC, u32_TYPE, sizeof(quint32), sizeof(Bci_block.discosc)/sizeof(quint32), &Bci_block.discosc};
-    Config[12] = {DBCI_OSCSRC, u32_TYPE, sizeof(quint32), sizeof(Bci_block.oscsrc)/sizeof(quint32), &Bci_block.oscsrc};
-    Config[13] = {DBCI_OSCDLY, u16_TYPE, sizeof(quint16), sizeof(Bci_block.oscdly)/sizeof(quint16), &Bci_block.oscdly};
-    Config[14] = {DBCI_CTYPE, u16_TYPE, sizeof(quint16), sizeof(Bci_block.Ctype)/sizeof(quint16), &Bci_block.Ctype};
-    Config[15] = {DBCI_ABS_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Abs_104)/sizeof(quint32), &Bci_block.Abs_104};
-    Config[16] = {DBCI_CYCLE_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Cycle_104)/sizeof(quint32), &Bci_block.Cycle_104};
-    Config[17] = {DBCI_T1_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T1_104)/sizeof(quint32), &Bci_block.T1_104};
-    Config[18] = {DBCI_T2_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T2_104)/sizeof(quint32), &Bci_block.T2_104};
-    Config[19] = {DBCI_T3_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T3_104)/sizeof(quint32), &Bci_block.T3_104};
-    Config[20] = {DBCI_K_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.k_104)/sizeof(quint32), &Bci_block.k_104};
-    Config[21] = {DBCI_W_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.w_104)/sizeof(quint32), &Bci_block.w_104};
-    Config[22] = {0xFFFF, 0, 0, 0, NULL};
+    Config[2] = {DBCI_CTYPE, u16_TYPE, sizeof(quint16), sizeof(Bci_block.Ctype)/sizeof(quint16), &Bci_block.Ctype};
+    Config[3] = {DBCI_ABS_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Abs_104)/sizeof(quint32), &Bci_block.Abs_104};
+    Config[4] = {DBCI_CYCLE_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Cycle_104)/sizeof(quint32), &Bci_block.Cycle_104};
+    Config[5] = {DBCI_T1_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T1_104)/sizeof(quint32), &Bci_block.T1_104};
+    Config[6] = {DBCI_T2_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T2_104)/sizeof(quint32), &Bci_block.T2_104};
+    Config[7] = {DBCI_T3_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T3_104)/sizeof(quint32), &Bci_block.T3_104};
+    Config[8] = {DBCI_K_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.k_104)/sizeof(quint32), &Bci_block.k_104};
+    Config[9] = {DBCI_W_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.w_104)/sizeof(quint32), &Bci_block.w_104};
+    Config[10] = {DBCI_INTYPE, u8_TYPE, sizeof(quint8), sizeof(Bci_block.in_type)/sizeof(quint8), &Bci_block.in_type};
+    Config[11] = {DBCI_DLY1, u32_TYPE, sizeof(quint32), sizeof(Bci_block.dly_time1)/sizeof(quint32), &Bci_block.dly_time1};
+    Config[12] = {DBCI_DLY2, u32_TYPE, sizeof(quint32), sizeof(Bci_block.dly_time2)/sizeof(quint32), &Bci_block.dly_time2};
+    Config[13] = {DBCI_DLY3, u32_TYPE, sizeof(quint32), sizeof(Bci_block.dly_time3)/sizeof(quint32), &Bci_block.dly_time3};
+    Config[14] = {DBCI_DLY4, u32_TYPE, sizeof(quint32), sizeof(Bci_block.dly_time4)/sizeof(quint32), &Bci_block.dly_time4};
+    Config[15] = {DBCI_PAIR, u32_TYPE, sizeof(quint32), sizeof(Bci_block.pair)/sizeof(quint32), &Bci_block.pair};
+    Config[16] = {0xFFFF, 0, 0, 0, NULL};
 
     Bci_defblock.MType = 3;
     Bci_defblock.MType1 = 0x810001;
@@ -51,20 +45,17 @@ d_confdialog::d_confdialog(QWidget *parent) :
     Bci_defblock.T3_104 = 20;
     Bci_defblock.k_104 = 12;
     Bci_defblock.w_104 = 8;
-    Bci_defblock.discosc = 0;
-    Bci_defblock.oscsrc = 0;
-    Bci_defblock.oscdly = 0;
     for (int i = 0; i < 16; i++)
     {
         Bci_defblock.in_type[i] = 1;
-        Bci_defblock.in_min[i] = 4;
+/*        Bci_defblock.in_min[i] = 4;
         Bci_defblock.in_max[i] = 20;
         Bci_defblock.in_vmin[i] = 0;
         Bci_defblock.in_vmax[i] = 1000;
         Bci_defblock.setminmin[i] = 10;
         Bci_defblock.setmin[i] = 50;
         Bci_defblock.setmax[i] = 950;
-        Bci_defblock.setmaxmax[i] = 990;
+        Bci_defblock.setmaxmax[i] = 990; */
     }
 
     setAttribute(Qt::WA_DeleteOnClose);
@@ -106,7 +97,7 @@ void d_confdialog::GetBci()
 
 void d_confdialog::FillConfData()
 {
-    int i;
+/*    int i;
     QSpinBox *spb;
     s_tqspinbox *dspbls;
     s_tqComboBox *ChTypCB;
@@ -212,7 +203,7 @@ void d_confdialog::FillConfData()
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.setmaxmax[i]);
-    }
+    }*/
 }
 
 void d_confdialog::SetupUI()
@@ -551,17 +542,17 @@ void d_confdialog::SetupUI()
 
 void d_confdialog::SetChTypData(int num, s_tqComboBox *cb)
 {
-    Bci_block.in_type[cb->getAData().toInt()] = num;
+//    Bci_block.in_type[cb->getAData().toInt()] = num;
 }
 
 void d_confdialog::SetOscDly(int dly)
 {
-    Bci_block.oscdly = dly;
+//    Bci_block.oscdly = dly;
 }
 
 void d_confdialog::SetChOsc(int isChecked, s_tqCheckBox *ptr)
 {
-    quint16 tmpint = 0x0001;
+/*    quint16 tmpint = 0x0001;
     tmpint = tmpint << ptr->getAData().toInt();
     s_tqComboBox *cb = this->findChild<s_tqComboBox *>("oscsrccb"+QString::number(ptr->getAData().toInt()));
     QLabel *lbl = this->findChild<QLabel *>("oscsrcl"+QString::number(ptr->getAData().toInt()));
@@ -580,56 +571,56 @@ void d_confdialog::SetChOsc(int isChecked, s_tqCheckBox *ptr)
             cb->setVisible(false);
         if (lbl != 0)
             lbl->setVisible(false);
-    }
+    }*/
 }
 
 void d_confdialog::SetChOscSrc(int srctyp, s_tqComboBox *ptr)
 {
-    quint8 tmpi = ptr->getAData().toInt() << 1;
+/*    quint8 tmpi = ptr->getAData().toInt() << 1;
     quint32 tmpint = srctyp << tmpi;
     quint32 tmpmask = ~(0x00000003 << tmpi);
     Bci_block.oscsrc &= tmpmask;
-    Bci_block.oscsrc |= tmpint;
+    Bci_block.oscsrc |= tmpint;*/
 }
 
 void d_confdialog::SetInMin(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.in_min[ptr->getAData().toInt()] = dbl;
+/*    Bci_block.in_min[ptr->getAData().toInt()] = dbl;*/
 }
 
 void d_confdialog::SetInMax(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.in_max[ptr->getAData().toInt()] = dbl;
+//    Bci_block.in_max[ptr->getAData().toInt()] = dbl;
 }
 
 void d_confdialog::SetInVMin(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.in_vmin[ptr->getAData().toInt()] = dbl;
+ //   Bci_block.in_vmin[ptr->getAData().toInt()] = dbl;
 }
 
 void d_confdialog::SetInVMax(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.in_vmax[ptr->getAData().toInt()] = dbl;
+//    Bci_block.in_vmax[ptr->getAData().toInt()] = dbl;
 }
 
 void d_confdialog::SetMinMin(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.setminmin[ptr->getAData().toInt()] = dbl;
+//    Bci_block.setminmin[ptr->getAData().toInt()] = dbl;
 }
 
 void d_confdialog::SetMin(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.setmin[ptr->getAData().toInt()] = dbl;
+//    Bci_block.setmin[ptr->getAData().toInt()] = dbl;
 }
 
 void d_confdialog::SetMax(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.setmax[ptr->getAData().toInt()] = dbl;
+//    Bci_block.setmax[ptr->getAData().toInt()] = dbl;
 }
 
 void d_confdialog::SetMaxMax(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.setmaxmax[ptr->getAData().toInt()] = dbl;
+//    Bci_block.setmaxmax[ptr->getAData().toInt()] = dbl;
 }
 
 void d_confdialog::Set104(double dbl, s_tqspinbox *ptr)

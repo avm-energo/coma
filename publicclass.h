@@ -3,6 +3,14 @@
 
 #define Z   64 // количество точек, по которым выдаются значения в блоке Bda
 
+// Макросы для выдачи сообщений
+#define ERMSG(...)     pc.AddErrMsg(publicclass::ER_MSG,__VA_ARGS__)
+#define DBGMSG(...)    pc.AddErrMsg(publicclass::DBG_MSG,__VA_ARGS__)
+#define INFOMSG(...)   pc.AddErrMsg(publicclass::INFO_MSG,__VA_ARGS__)
+#define WARNMSG(...)   pc.AddErrMsg(publicclass::WARN_MSG,__VA_ARGS__)
+
+#define MAX_MSG     1000
+#define ER_BUFMAX   16
 // определение типов модулей
 #define MT_C    1
 #define MT_D    2
@@ -144,6 +152,7 @@
 
 #include <QtSerialPort/QSerialPort>
 #include <QStringList>
+#include <QMap>
 #include "serialthread.h"
 
 class publicclass
@@ -159,6 +168,7 @@ public:
     SerialThread *SThread;
     quint16 MIPASDU;
     QString MIPIP;
+    QString Port;
     int result;
     QStringList errmsgs;
     QString ModuleTypeString;
@@ -198,6 +208,36 @@ public:
         qint32 SerNum;
     } Bsi;
 
+    enum ermsgtype
+    {
+        ER_MSG,
+        WARN_MSG,
+        INFO_MSG,
+        DBG_MSG
+    };
+
+    struct ermsg
+    {
+        QString DateTime;
+        ermsgtype type;
+        quint64 ernum;
+        quint64 ersubnum;
+        QString msg;
+    };
+
+    enum errors
+    {
+        ER_MAIN
+    };
+
+    static QMap<int, QString> ermsgs()
+    {
+        QMap<int, QString>map;
+        map.insert(ER_MAIN, "Кома");
+        return map;
+    }
+    QList<ermsg> ermsgpool;
+
     QString VerToStr(quint32);
     quint32 ANumD();
     quint32 ANumCh1();
@@ -220,8 +260,10 @@ public:
     void updCRC32(const quint8 byte, quint32 *dwCRC32);
     quint32 getTime32();
     QString NsTimeToString (quint64 nstime);
+    void AddErrMsg(ermsgtype msgtype, quint64 ernum=0, quint64 ersubnum=0, QString msg="");
 
 private:
+    void addmessage(QStringList &sl, QString mes);
 
 };
 
