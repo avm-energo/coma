@@ -150,6 +150,8 @@
 #define CS_MSGTRIG          500 // частота мигания сообщения о попытке восстановить связь с модулем
 #define CS_TIMEOUT          5000 // количество мс ожидания появления связи с модулем
 
+#define TABCOLOR    "rgba(86,255,71,255)"
+
 #include <QtSerialPort/QSerialPort>
 #include <QStringList>
 #include <QMap>
@@ -171,6 +173,7 @@ public:
     QString Port;
     int result;
     QStringList errmsgs;
+    QString ermsgpath;
     QString ModuleTypeString;
 
     // S2: Определение типа заголовка

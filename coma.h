@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <QCloseEvent>
+#include <QMouseEvent>
+#include <QResizeEvent>
 #include <QAction>
 #include <QVBoxLayout>
 #include <QtSerialPort/QSerialPortInfo>
@@ -20,7 +22,7 @@
 #include "canal.h"
 #include "publicclass.h"
 
-#define PROGNAME    "КОМА 1.0 #0062"
+#define PROGNAME    "КОМА 1.0 #0063"
 
 #define MAINER(a)       ERMSG(publicclass::ER_MAIN,__LINE__,a)
 #define MAINDBG         DBGMSG(publicclass::ER_MAIN,__LINE__)
@@ -44,9 +46,9 @@ signals:
 
 private:
     bool mmHide;
+    QRect WGeometry;
 
     QString Hth[32];
-//    QThread *thread;
     a_checkdialog *ACheckDialog;
     a_confdialog *AConfDialog;
     a_tunedialog *ATuneDialog;
@@ -59,7 +61,6 @@ private:
     bool DialogsAreReadyAlready;
     QAction *WriteSNAction;
     quint8 ReconTry;
-//    canal *cn;
     publicclass::Bsi Bsi_block;
     void InitiateWriteDataToPort(QByteArray ba);
     QString ByteToHex(quint8);
@@ -89,10 +90,12 @@ private slots:
     void SetMipConPar();
     void SetMipDlg();
     void UpdateErrorProtocol();
+    void MouseMove();
 
 protected:
     void closeEvent(QCloseEvent *e);
-    void mouseMoveEvent(QMouseEvent *e);
+//    void mouseMoveEvent(QMouseEvent *e);
+    void resizeEvent(QResizeEvent *e);
 };
 
 #endif // COMA_H

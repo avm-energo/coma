@@ -4,9 +4,9 @@ s_tqComboBox::s_tqComboBox(QWidget *parent) :
     QComboBox(parent)
 {
     setStyleSheet("QComboBox {background-color: rgba(0,0,0,0); border: 1px solid gray; border-radius: 5px;}"
-                              "QComboBox::drop-down {background-color: rgba(0,0,0,0); border: 1px solid gray;}"
+                              "QComboBox::drop-down {background-color: rgba(100,100,100,255); width: 5px; border-style: none;}");
 //                              "QComboBox::drop-down {background-color: rgba(0,0,0,0); width: 0px; border-style: none;}"
-                  "QComboBox::down-arrow {image: url(:/darrowdown.png);}");
+//                  "QComboBox::down-arrow {image: url(:/darrowdown.png);}");
     connect (this, SIGNAL(currentIndexChanged(QString)), this, SLOT(changetext(QString)));
     connect (this, SIGNAL(currentIndexChanged(int)), this, SLOT(changetext(int)));
 }

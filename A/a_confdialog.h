@@ -128,6 +128,8 @@ private slots:
     void SetupUI();
     void SetNewConf();
     void SetDefConf();
+    void SaveConf();
+    void LoadConf();
 };
 
 #endif // A_CONFDIALOG_H

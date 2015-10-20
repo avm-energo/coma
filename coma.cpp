@@ -25,6 +25,9 @@
 Coma::Coma(QWidget *parent)
     : QMainWindow(parent)
 {
+    QTimer *MouseTimer = new QTimer;
+    connect(MouseTimer,SIGNAL(timeout()),this,SLOT(MouseMove()));
+    MouseTimer->start(50);
     QTimer *ErrorProtocolUpdateTimer = new QTimer;
     ErrorProtocolUpdateTimer->setInterval(1000);
     connect(ErrorProtocolUpdateTimer,SIGNAL(timeout()),this,SLOT(UpdateErrorProtocol()));
@@ -39,7 +42,10 @@ Coma::Coma(QWidget *parent)
     QVBoxLayout *lyout = new QVBoxLayout;
     setMinimumHeight(650);
 
+    QHBoxLayout *hlyout = new QHBoxLayout;
     QToolBar *tb = new QToolBar;
+    tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 0; padding: 0px;}");
+    tb->setIconSize(QSize(20,20));
     QAction *ConnectAction = new QAction(this);
     ConnectAction->setToolTip("Соединение");
     ConnectAction->setIcon(QIcon(":/play.png"));
@@ -55,34 +61,17 @@ Coma::Coma(QWidget *parent)
     tb->addAction(ConnectAction);
     tb->addAction(DisconnectAction);
     tb->addAction(SettingsAction);
-    lyout->addWidget(tb);
+    hlyout->addWidget(tb);
 
-    QWidget *SlideWidget = new QWidget;
-    SlideWidget->setObjectName("slidew");
-    QVBoxLayout *slyout = new QVBoxLayout;
-
-    AddLabelAndLineedit(slyout, "Модуль АВТУК-", "mtypele");
-    AddLabelAndLineedit(slyout, "Аппаратная версия:", "hwverle");
-    AddLabelAndLineedit(slyout, "Версия ПО:", "fwverle");
-    AddLabelAndLineedit(slyout, "КС конфигурации:", "cfcrcle");
-    AddLabelAndLineedit(slyout, "Сброс:", "rstle");
-    AddLabelAndLineedit(slyout, "Количество сбросов:", "rstcountle");
-    AddLabelAndLineedit(slyout, "Серийный номер:", "snle");
-    AddLabelAndLineedit(slyout, "ИД процессора:", "cpuidle");
-
-    SlideWidget->setLayout(slyout);
-    SlideWidget->hide();
-    centralWidget()->setMouseTracking(true);
-
-    QHBoxLayout *uplyout = new QHBoxLayout;
     for (int i = 31; i >= 0; i--)
     {
         QLabel *lbl = new QLabel(Hth[i]);
         lbl->setObjectName("hth"+QString::number(i));
-        lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255)}");
-        uplyout->addWidget(lbl);
+        lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);" \
+                           "background: 0px; margin: 0px; spacing: 0; padding: 0px;}");
+        hlyout->addWidget(lbl);
     }
-    lyout->addLayout(uplyout);
+    lyout->addLayout(hlyout);
 
     QMenuBar *MainMenuBar = new QMenuBar;
     QMenu *MainMenu = new QMenu;
@@ -124,14 +113,12 @@ Coma::Coma(QWidget *parent)
     QHBoxLayout *inlyout = new QHBoxLayout;
     MyTabWidget *MainTW = new MyTabWidget;
     MainTW->setObjectName("maintw");
+    QString MainTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLOR)+";}";
+    MainTW->tabBar()->setStyleSheet(MainTWss);
     MainTW->setTabPosition(QTabWidget::West);
     MainTW->hide();
     inlyout->addWidget(MainTW, 60);
 
-    QTextEdit *MainTE = new QTextEdit;
-    MainTE->setObjectName("mainte");
-    MainTE->hide();
-    inlyout->addWidget(MainTE, 40);
     lyout->addLayout(inlyout, 90);
     ErrorProtocolWidget *ErrorWidget = new ErrorProtocolWidget;
     ErrorWidget->setObjectName("errorwidget");
@@ -145,6 +132,32 @@ Coma::Coma(QWidget *parent)
 
     if (pc.result)
         MAININFO("Не найден файл с сообщениями об ошибках!");
+
+    QWidget *SlideWidget = new QWidget(this);
+    SlideWidget->setObjectName("slidew");
+    SlideWidget->setStyleSheet("QWidget {background-color: rgba(110,234,145,255);}");
+    QVBoxLayout *slyout = new QVBoxLayout;
+
+    AddLabelAndLineedit(slyout, "Модуль АВТУК-", "mtypele");
+    AddLabelAndLineedit(slyout, "Аппаратная версия:", "hwverle");
+    AddLabelAndLineedit(slyout, "Версия ПО:", "fwverle");
+    AddLabelAndLineedit(slyout, "КС конфигурации:", "cfcrcle");
+    AddLabelAndLineedit(slyout, "Сброс:", "rstle");
+    AddLabelAndLineedit(slyout, "Количество сбросов:", "rstcountle");
+    AddLabelAndLineedit(slyout, "Серийный номер:", "snle");
+    AddLabelAndLineedit(slyout, "ИД процессора:", "cpuidle");
+    QTextEdit *MainTE = new QTextEdit;
+    MainTE->setObjectName("mainte");
+    slyout->addWidget(MainTE, 40);
+
+    SlideWidget->setLayout(slyout);
+    SlideWidget->setMinimumWidth(250);
+    SlideWidget->hide();
+    WGeometry = SlideWidget->geometry();
+    mmHide = true;
+
+//    setMouseTracking(true);
+//    centralWidget()->setMouseTracking(true);
 }
 
 void Coma::closeEvent(QCloseEvent *e)
@@ -158,9 +171,36 @@ void Coma::closeEvent(QCloseEvent *e)
  * 2013-07-18
  */
 
-void Coma::mouseMoveEvent(QMouseEvent *e)
+void Coma::resizeEvent(QResizeEvent *e)
+{
+    QMainWindow::resizeEvent(e);
+    if (!mmHide)
+    {
+        QWidget *w = this->findChild<QWidget *>("slidew");
+        if (w == 0)
+            return;
+        w->setGeometry(QRect(width()-w->width(), 0, w->width(), height()));
+    }
+}
+
+/*void Coma::mouseMoveEvent(QMouseEvent *e)
 {
     if (abs(e->pos().x() - width()) < 50)
+    {
+        if (mmHide)
+            ShowOrHideSlide();
+    }
+    else
+    {
+        if (!mmHide)
+            ShowOrHideSlide();
+    }
+}*/
+
+void Coma::MouseMove()
+{
+    QPoint curPos = mapFromGlobal(QCursor::pos());
+    if (abs(curPos.x() - width()) < 10)
     {
         if (mmHide)
             ShowOrHideSlide();
@@ -179,8 +219,10 @@ void Coma::ShowOrHideSlide()
         return;
     if (w->isHidden())
         w->show();
+    if (mmHide)
+        w->setGeometry(WGeometry);
     QPropertyAnimation *ani = new QPropertyAnimation(w, "geometry");
-    ani->setDuration(300);
+    ani->setDuration(500);
     QRect startRect(width(), 0, 0, height());
     QRect endRect(width() - w->width(), 0, w->width(), height());
     if (mmHide)
@@ -208,6 +250,7 @@ Coma::~Coma()
     sets->setValue("mip/asdu",pc.MIPASDU);
     sets->setValue("mip/ip",pc.MIPIP);
     sets->setValue("Port", pc.Port);
+    sets->setValue("erpath",pc.ermsgpath);
 }
 
 void Coma::AddLabelAndLineedit(QVBoxLayout *lyout, QString caption, QString lename)
@@ -218,8 +261,8 @@ void Coma::AddLabelAndLineedit(QVBoxLayout *lyout, QString caption, QString lena
     QLineEdit *le = new QLineEdit("");
     le->setObjectName(lename);
     le->setEnabled(false);
-    le->setTextMargins(0,0,0,0);
-    hlyout->addWidget(le,1);
+//    le->setTextMargins(0,0,0,0);
+    hlyout->addWidget(le);
     lyout->addLayout(hlyout);
 }
 
@@ -312,9 +355,9 @@ void Coma::Next()
         Connect();
         return;
     }
-    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
+/*    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
-        MainTE->show();
+        MainTE->show(); */
     WriteSNAction->setEnabled(true);
     GetBsi();
 }
@@ -326,7 +369,7 @@ void Coma::SetPort(QString str)
     {
         if (info.at(i).portName() == str)
         {
-            cn->info = info.at(i);
+            pc.Port = str;
             return;
         }
     }

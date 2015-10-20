@@ -88,12 +88,12 @@ publicclass::publicclass()
 
     QSettings *sets = new QSettings("EvelSoft","COMA");
     Port = sets->value("Port", "COM1").toString();
-    QString ermsgspath = sets->value("erpath","errors\\").toString();
+    ermsgpath = sets->value("erpath","errors/").toString();
     MIPASDU = sets->value("mip/asdu","206").toInt();
     MIPIP = sets->value("mip/ip","192.168.1.2").toString();
     QFile file;
+    QString ermsgspath = QDir::currentPath() + "/" + ermsgpath;
     file.setFileName(ermsgspath+"ermsgs.dat");
-    ermsgspath = QDir::currentPath();
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         result = ER_FILEOPENERROR;
