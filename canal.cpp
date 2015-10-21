@@ -441,7 +441,7 @@ void canal::Finish(int ernum)
     TTimer->stop();
     cmd = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
     if (ernum != CN_OK)
-        emit error(ernum);
+        CANALER(pc.errmsgs.at(ernum));
     result = ernum;
     Busy = false;
 }
@@ -458,9 +458,7 @@ void canal::Connect()
     connect(this,SIGNAL(stopall()),SThread,SLOT(stop()));
     connect(thread,SIGNAL(finished()), thread,SLOT(deleteLater()));
     connect(SThread,SIGNAL(finished()), SThread,SLOT(deleteLater()));
-    connect(SThread,SIGNAL(error(int)),this,SLOT(CanalError(int)));
     connect(SThread,SIGNAL(canalisready()),this,SLOT(CanalReady()));
-//    connect(SThread,SIGNAL(canalisready()),this,SLOT(TryOnceMore()));
     connect(SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(DataWritten(QByteArray)));
     connect(SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
     connect(this,SIGNAL(writedatatoport(QByteArray)),SThread,SLOT(InitiateWriteDataToPort(QByteArray)));

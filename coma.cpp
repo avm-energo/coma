@@ -44,7 +44,7 @@ Coma::Coma(QWidget *parent)
 
     QHBoxLayout *hlyout = new QHBoxLayout;
     QToolBar *tb = new QToolBar;
-    tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 0; padding: 0px;}");
+    tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
     tb->setIconSize(QSize(20,20));
     QAction *ConnectAction = new QAction(this);
     ConnectAction->setToolTip("Соединение");
@@ -120,13 +120,9 @@ Coma::Coma(QWidget *parent)
     inlyout->addWidget(MainTW, 60);
 
     lyout->addLayout(inlyout, 90);
-    ErrorProtocolWidget *ErrorWidget = new ErrorProtocolWidget;
-    ErrorWidget->setObjectName("errorwidget");
-    lyout->addWidget(ErrorWidget);
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
 
-    connect(cn,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
     connect(cn,SIGNAL(gotsomedata(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(cn,SIGNAL(somedatawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
 
@@ -153,11 +149,18 @@ Coma::Coma(QWidget *parent)
     SlideWidget->setLayout(slyout);
     SlideWidget->setMinimumWidth(250);
     SlideWidget->hide();
-    WGeometry = SlideWidget->geometry();
-    mmHide = true;
+    SWGeometry = SlideWidget->geometry();
+    SWHide = true;
 
-//    setMouseTracking(true);
-//    centralWidget()->setMouseTracking(true);
+    ErrorProtocolWidget *ErrorWidget = new ErrorProtocolWidget(this);
+    ErrorWidget->setObjectName("errorwidget");
+    QString ErrWss = "QWidget {background-color: "+QString(ERPROTCLR)+";}";
+    ErrorWidget->setStyleSheet(ErrWss);
+    ErrorWidget->setAutoFillBackground(true);
+    ErrorWidget->setMinimumHeight(150);
+    ErrorWidget->hide();
+    ERGeometry = ErrorWidget->geometry();
+    ERHide = true;
 }
 
 void Coma::closeEvent(QCloseEvent *e)
@@ -166,66 +169,64 @@ void Coma::closeEvent(QCloseEvent *e)
     e->accept();
 }
 
-/*
- * Sapronov Alexander sapronov.alexander92@gmail.com
- * 2013-07-18
- */
-
 void Coma::resizeEvent(QResizeEvent *e)
 {
     QMainWindow::resizeEvent(e);
-    if (!mmHide)
+    if (!SWHide)
     {
-        QWidget *w = this->findChild<QWidget *>("slidew");
-        if (w == 0)
+        QWidget *sww = this->findChild<QWidget *>("slidew");
+        if (sww == 0)
             return;
-        w->setGeometry(QRect(width()-w->width(), 0, w->width(), height()));
+        sww->setGeometry(QRect(width()-sww->width(), 0, sww->width(), height()));
+    }
+    if (!ERHide)
+    {
+        QWidget *erw = this->findChild<QWidget *>("errorwidget");
+        if (erw == 0)
+            return;
+        erw->setGeometry(QRect(0, height()-erw->height(), width(), erw->height()));
     }
 }
-
-/*void Coma::mouseMoveEvent(QMouseEvent *e)
-{
-    if (abs(e->pos().x() - width()) < 50)
-    {
-        if (mmHide)
-            ShowOrHideSlide();
-    }
-    else
-    {
-        if (!mmHide)
-            ShowOrHideSlide();
-    }
-}*/
 
 void Coma::MouseMove()
 {
     QPoint curPos = mapFromGlobal(QCursor::pos());
     if (abs(curPos.x() - width()) < 10)
     {
-        if (mmHide)
-            ShowOrHideSlide();
+        if (SWHide)
+            ShowOrHideSlideSW();
     }
     else
     {
-        if (!mmHide)
-            ShowOrHideSlide();
+        if (!SWHide)
+            ShowOrHideSlideSW();
+    }
+    if (abs(curPos.y() - height()) < 10)
+    {
+        if (ERHide)
+            ShowOrHideSlideER();
+    }
+    else
+    {
+        if (!ERHide)
+            ShowOrHideSlideER();
     }
 }
 
-void Coma::ShowOrHideSlide()
+void Coma::ShowOrHideSlideSW()
 {
     QWidget *w = this->findChild<QWidget *>("slidew");
     if (w == 0)
         return;
     if (w->isHidden())
         w->show();
-    if (mmHide)
-        w->setGeometry(WGeometry);
+    if (SWHide)
+        w->setGeometry(SWGeometry);
     QPropertyAnimation *ani = new QPropertyAnimation(w, "geometry");
     ani->setDuration(500);
     QRect startRect(width(), 0, 0, height());
     QRect endRect(width() - w->width(), 0, w->width(), height());
-    if (mmHide)
+    if (SWHide)
     {
         ani->setStartValue(startRect);
         ani->setEndValue(endRect);
@@ -236,13 +237,35 @@ void Coma::ShowOrHideSlide()
         ani->setEndValue(startRect);
     }
     ani->start();
-    mmHide = !mmHide;
+    SWHide = !SWHide;
 }
 
-/*
- * Sapronov Alexander sapronov.alexander92@gmail.com
- * 2013-07-18
- */
+void Coma::ShowOrHideSlideER()
+{
+    QWidget *w = this->findChild<QWidget *>("errorwidget");
+    if (w == 0)
+        return;
+    if (w->isHidden())
+        w->show();
+    if (ERHide)
+        w->setGeometry(ERGeometry);
+    QPropertyAnimation *ani = new QPropertyAnimation(w, "geometry");
+    ani->setDuration(500);
+    QRect startRect(0, height(), width(), 0);
+    QRect endRect(0, height()-w->height(), width(), w->height());
+    if (ERHide)
+    {
+        ani->setStartValue(startRect);
+        ani->setEndValue(endRect);
+    }
+    else
+    {
+        ani->setStartValue(endRect);
+        ani->setEndValue(startRect);
+    }
+    ani->start();
+    ERHide = !ERHide;
+}
 
 Coma::~Coma()
 {

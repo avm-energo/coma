@@ -83,5 +83,5 @@ void SerialThread::Error(QSerialPort::SerialPortError err)
     if (!err) // нет ошибок
         return;
     quint16 ernum = err + 50;
-    emit error(ernum);
+    SERIALER(pc.errmsgs.at(ernum));
 }

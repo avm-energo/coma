@@ -9,6 +9,9 @@
 ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *lyout = new QVBoxLayout;
+    QWidget *w = new QWidget;
+    QString ErrWss = "QWidget {background-color: "+QString(ERPROTCLR)+";}";
+    w->setStyleSheet(ErrWss);
     s_tqTableView *tv = new s_tqTableView;
     ErrorProtocolModel *erm = new ErrorProtocolModel;
     erm->setHeaderData(0, Qt::Horizontal, "Номер",Qt::EditRole);
@@ -17,6 +20,8 @@ ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
     erm->setHeaderData(3, Qt::Horizontal, "Тип сообщения",Qt::EditRole);
     erm->setHeaderData(4, Qt::Horizontal, "Сообщение",Qt::EditRole);
     tv->setModel(erm);
+    QString Tvss = "QHeaderView::section {background-color: "+QString(ERPROTCLR)+";}";
+    tv->horizontalHeader()->setStyleSheet(Tvss);
     tv->resizeColumnsToContents();
     connect(erm,SIGNAL(dataChanged(QModelIndex,QModelIndex)),tv,SLOT(resizeColumnsToContents()));
     tv->horizontalHeader()->setStretchLastSection(true);
@@ -41,7 +46,10 @@ ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
     upperLayout->addWidget(line,2);
     lyout->addLayout(upperLayout,0);
     lyout->addWidget(tv,5);
-    setLayout(lyout);
+    w->setLayout(lyout);
+    QVBoxLayout *l = new QVBoxLayout;
+    l->addWidget(w);
+    setLayout(l);
 }
 
 ErrorProtocolWidget::~ErrorProtocolWidget()

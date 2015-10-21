@@ -150,7 +150,8 @@
 #define CS_MSGTRIG          500 // частота мигания сообщения о попытке восстановить связь с модулем
 #define CS_TIMEOUT          5000 // количество мс ожидания появления связи с модулем
 
-#define TABCOLOR    "rgba(86,255,71,255)"
+#define TABCOLOR    "rgba(175,255,168,255)"
+#define ERPROTCLR   "rgba(248,214,255,255)"
 
 #include <QtSerialPort/QSerialPort>
 #include <QStringList>
@@ -230,13 +231,17 @@ public:
 
     enum errors
     {
-        ER_MAIN
+        ER_MAIN,
+        ER_CANAL,
+        ER_SERIAL
     };
 
     static QMap<int, QString> ermsgs()
     {
         QMap<int, QString>map;
         map.insert(ER_MAIN, "Кома");
+        map.insert(ER_CANAL, "Канал");
+        map.insert(ER_SERIAL, "Поток USB");
         return map;
     }
     QList<ermsg> ermsgpool;

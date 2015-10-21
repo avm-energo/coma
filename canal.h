@@ -10,6 +10,8 @@
 #include "publicclass.h"
 #include "serialthread.h"
 
+#define CANALER(a)       ERMSG(publicclass::ER_CANAL,__LINE__,a)
+
 class canal : public QObject
 {
     Q_OBJECT

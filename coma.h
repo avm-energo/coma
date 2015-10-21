@@ -45,8 +45,8 @@ signals:
     void mipparset();
 
 private:
-    bool mmHide;
-    QRect WGeometry;
+    bool SWHide,ERHide;
+    QRect SWGeometry, ERGeometry;
 
     QString Hth[32];
     a_checkdialog *ACheckDialog;
@@ -68,7 +68,8 @@ private:
     void InitiateHth();
     void FillBsi(QString MType, bool clear=false);
     void AddLabelAndLineedit (QVBoxLayout *lyout, QString caption, QString lename);
-    void ShowOrHideSlide();
+    void ShowOrHideSlideSW();
+    void ShowOrHideSlideER();
 
 public slots:
     void GetBsi();
