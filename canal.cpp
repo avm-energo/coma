@@ -27,7 +27,7 @@ canal::canal(QObject *parent) : QObject(parent)
     connect(tmr2,SIGNAL(timeout()),this,SLOT(Reconnect()));
     TTimer = new QTimer;
     TTimer->setInterval(CN_TIMEOUT);
-//    connect(TTimer, SIGNAL(timeout()),this,SLOT(Timeout()));
+//    connect(TTimer, SIGNAL(timeout()),this,SLOT(Timeout())); // для отладки закомментарить
 }
 
 canal::~canal()

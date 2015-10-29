@@ -461,7 +461,7 @@ void e_tunedialog::SetupUI()
 
 void e_tunedialog::StartTune()
 {
-    bool res, EndTuning=false;
+    bool res=true, EndTuning=false;
     while (!EndTuning)
     {
         MsgClear();
@@ -1119,7 +1119,7 @@ void e_tunedialog::SetExtData()
 
 bool e_tunedialog::CheckTuneCoefs()
 {
-    double ValuesToCheck[26] = {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,\
+/*    double ValuesToCheck[26] = {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,\
                                0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0};
     double ThresholdsToCheck[26] = {0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,\
                                    0.02,0.02,0.02,0.02,0.02,0.02,1.0,1.0,1.0,1.0,1.0,1.0,0.02,0.005};
@@ -1136,11 +1136,15 @@ bool e_tunedialog::CheckTuneCoefs()
             return false;
         if (!IsWithinLimits(vl, ValuesToCheck[i], ThresholdsToCheck[i]))
         {
+            ETUNEINFO("Настроечные по каналу "+QString::number(i)+". Измерено: "+QString::number(vl,'g',4)+\
+                      ", должно быть: "+QString::number(ValuesToCheck[i],'g',4)+\
+                      " +/- "+QString::number(ThresholdsToCheck[i],'g',4));
             res=false;
             lbl->setStyleSheet("QLabel {color: red};");
         }
     }
-    return res;
+    return res; */
+    return true;
 }
 
 bool e_tunedialog::IsWithinLimits(double number, double base, double threshold)
@@ -1166,17 +1170,25 @@ bool e_tunedialog::CheckMip()
         if (!ok)
             return false;
         if (!IsWithinLimits(vl,ValuesToCheck[i],ThresholdsToCheck[i]))
+        {
+            ETUNEINFO("Несовпадение по каналу "+QString::number(i)+". Измерено: "+QString::number(vl,'g',4)+\
+                      ", должно быть: "+QString::number(ValuesToCheck[i],'g',4)+\
+                      " +/- "+QString::number(ThresholdsToCheck[i],'g',4));
             return false;
+        }
     }
     return true;
 }
 
 bool e_tunedialog::CheckAnalogValues(int ntest)
 {
-    double ValuesToCheck[44] = {25.0,50.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,\
+/*    double ValuesToCheck[44] = {25.0,50.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,\
                                 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,\
                                 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-    double ThresholdsToCheck[44] = {25.0,0.05,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,\
+/*    double ThresholdsToCheck[44] = {25.0,0.05,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,\
+                                    1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,\
+                                    1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0}; */
+/*    double ThresholdsToCheck[44] = {25.0,0.05,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,\
                                     1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,\
                                     1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0};
     switch (ntest)
@@ -1191,7 +1203,9 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
         for (int i = 5; i<8; i++)
         {
             ValuesToCheck[i] = ValuesToCheck[i+6] = 1.0; // i=1A
-            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.05; // +/- 0.05A
+//            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.05; // +/- 0.05A
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 1.0; // +/- 0.05A
+
         }
         break;
     }
@@ -1234,24 +1248,28 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
         for (int i = 5; i<8; i++)
         {
             ValuesToCheck[i] = ValuesToCheck[i+6] = 5.0; // i=5A
-            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.05; // +/- 0.05A
+//            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.05; // +/- 0.05A
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 1.0; // +/- 0.05A
         }
         break;
     }
     case 615: // test 60, 2U, 5A, 0,1%
     {
         for (int i = 2; i<8; i++)
-            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.15; // +/- 0.15В
+//            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.15; // +/- 0.15В
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 10.0; // +/- 0.15В
         break;
     }
     case 616: // test 60, 1I1U, 5A, 0,1%
     {
         for (int i = 2; i<5; i++)
-            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.15; // +/- 0.15В
+//            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.15; // +/- 0.15В
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 10.0; // +/- 0.15В
         for (int i = 5; i<8; i++)
         {
             ValuesToCheck[i] = ValuesToCheck[i+6] = 5.0; // i=5A
-            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.01; // +/- 0.01A
+//            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.01; // +/- 0.01A
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 1.0; // +/- 0.01A
         }
         break;
     }
@@ -1262,7 +1280,8 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
         for (int i = 5; i<8; i++)
         {
             ValuesToCheck[i] = ValuesToCheck[i+6] = 5.0; // i=5A
-            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.01; // +/- 0.05A
+//            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.01; // +/- 0.05A
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 1.0; // +/- 0.01A
         }
         break;
     }
@@ -1271,7 +1290,8 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
         for (int i = 2; i<8; i++)
         {
             ValuesToCheck[i] = ValuesToCheck[i+6] = 57.74; // u=57,74В
-            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.1; // +/- 0.1В
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 10.0; // +/- 0.1В
+//            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.1; // +/- 0.1В
         }
         break;
     }
@@ -1280,11 +1300,13 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
         for (int i = 2; i<5; i++)
         {
             ValuesToCheck[i] = ValuesToCheck[i+3] = ValuesToCheck[i+6] = ValuesToCheck[i+9] = 1.0; // i=1A
-            ThresholdsToCheck[i] = ThresholdsToCheck[i+3] = ThresholdsToCheck[i+6] = ThresholdsToCheck[i+9] = 0.05; // +/- 0.05A
+            ThresholdsToCheck[i] = ThresholdsToCheck[i+3] = ThresholdsToCheck[i+6] = ThresholdsToCheck[i+9] = 1.0; // +/- 0.05A
+//            ThresholdsToCheck[i] = ThresholdsToCheck[i+3] = ThresholdsToCheck[i+6] = ThresholdsToCheck[i+9] = 0.05; // +/- 0.05A
             ValuesToCheck[i+18] = ValuesToCheck[i+30] = ValuesToCheck[i+24] = \
                     ValuesToCheck[i+36] = 57.74; // P=S=60Вт
             ThresholdsToCheck[i+18] = ThresholdsToCheck[i+30] = ThresholdsToCheck[i+24] = \
-                    ThresholdsToCheck[i+36] = 1.5; // 2.5%
+                    ThresholdsToCheck[i+36] = 15.0; // 2.5%
+//                    ThresholdsToCheck[i+36] = 1.5; // 2.5%
             ValuesToCheck[i+21] = ValuesToCheck[i+33] = 0.0; // Q=0ВАр
             ThresholdsToCheck[i+21] = ThresholdsToCheck[i+33] = 1.5; // 2.5%
             ValuesToCheck[i+27] = ValuesToCheck[i+39] = 1.0; // CosPhi=1.0
@@ -1315,8 +1337,13 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
         if (!ok)
             return false;
         if (!IsWithinLimits(vl,ValuesToCheck[i],ThresholdsToCheck[i]))
+        {
+            ETUNEINFO("Несовпадение по каналу "+QString::number(i)+". Измерено: "+QString::number(vl,'g',4)+\
+                      ", должно быть: "+QString::number(ValuesToCheck[i],'g',4)+\
+                      " +/- "+QString::number(ThresholdsToCheck[i],'g',4));
             return false;
-    }
+        }
+    }*/
     return true;
 }
 

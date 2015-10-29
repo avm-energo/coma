@@ -233,7 +233,8 @@ public:
     {
         ER_MAIN,
         ER_CANAL,
-        ER_SERIAL
+        ER_SERIAL,
+        ER_ETUNE
     };
 
     static QMap<int, QString> ermsgs()

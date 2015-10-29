@@ -25,6 +25,10 @@
 Coma::Coma(QWidget *parent)
     : QMainWindow(parent)
 {
+    ERTimer = new QTimer;
+    ERTimer->setInterval(5000);
+    connect(ERTimer,SIGNAL(timeout()),this,SLOT(HideErrorProtocol()));
+    ERTimerIsOn = false;
     QTimer *MouseTimer = new QTimer;
     connect(MouseTimer,SIGNAL(timeout()),this,SLOT(MouseMove()));
     MouseTimer->start(50);
@@ -81,7 +85,7 @@ Coma::Coma(QWidget *parent)
     connect(MainExitAction,SIGNAL(triggered()),this,SLOT(Exit()));
     QAction *MainConnectAction = new QAction(this);
     MainConnectAction->setText("Соединение");
-    connect(MainConnectAction,SIGNAL(triggered()),this,SLOT(Next()));
+    connect(MainConnectAction,SIGNAL(triggered()),this,SLOT(Connect()));
     QAction *MainDisconnectAction = new QAction(this);
     MainDisconnectAction->setText("Разрыв соединения");
     connect(MainDisconnectAction,SIGNAL(triggered()),this,SLOT(Disconnect()));
@@ -113,11 +117,11 @@ Coma::Coma(QWidget *parent)
     QHBoxLayout *inlyout = new QHBoxLayout;
     MyTabWidget *MainTW = new MyTabWidget;
     MainTW->setObjectName("maintw");
-    QString MainTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLOR)+";}";
-    MainTW->tabBar()->setStyleSheet(MainTWss);
+//    QString MainTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLOR)+";}";
+//    MainTW->tabBar()->setStyleSheet(MainTWss);
     MainTW->setTabPosition(QTabWidget::West);
-    MainTW->hide();
     inlyout->addWidget(MainTW, 60);
+    MainTW->hide();
 
     lyout->addLayout(inlyout, 90);
     wdgt->setLayout(lyout);
@@ -191,7 +195,7 @@ void Coma::resizeEvent(QResizeEvent *e)
 void Coma::MouseMove()
 {
     QPoint curPos = mapFromGlobal(QCursor::pos());
-    if (abs(curPos.x() - width()) < 10)
+    if ((abs(curPos.x() - width()) < 20) && (curPos.y() > 0) && (curPos.y() < height()))
     {
         if (SWHide)
             ShowOrHideSlideSW();
@@ -201,14 +205,14 @@ void Coma::MouseMove()
         if (!SWHide)
             ShowOrHideSlideSW();
     }
-    if (abs(curPos.y() - height()) < 10)
+    if ((abs(curPos.y() - height()) < 20) && (curPos.x() > 0) && (curPos.x() < width()))
     {
         if (ERHide)
             ShowOrHideSlideER();
     }
     else
     {
-        if (!ERHide)
+        if ((!ERHide) && (!ERTimerIsOn))
             ShowOrHideSlideER();
     }
 }
@@ -604,7 +608,6 @@ void Coma::AllIsOk()
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
         connect(EConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
         connect(ETuneDialog,SIGNAL(dataready(QByteArray)),this,SLOT(UpdateMainTE104(QByteArray)));
-        connect(ETuneDialog,SIGNAL(error(int)),this,SLOT(ShowErrMsg(int)));
         break;
     }
     default:
@@ -681,10 +684,7 @@ void Coma::Disconnect()
     }
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
-    {
         MainTE->clear();
-        MainTE->hide();
-    }
     WriteSNAction->setEnabled(false);
     MainTW->hide();
 }
@@ -817,9 +817,23 @@ void Coma::UpdateErrorProtocol()
     }
     if (pc.ermsgpool.isEmpty())
         return;
+    if (!ERTimerIsOn)
+    {
+        ERTimerIsOn = true;
+        ERHide = true;
+        ShowOrHideSlideER();
+    }
     while (!pc.ermsgpool.isEmpty())
     {
         ErWidget->AddRowToTree(pc.ermsgpool.first());
         pc.ermsgpool.removeFirst();
     }
+    ERTimer->start();
+}
+
+void Coma::HideErrorProtocol()
+{
+    ERTimer->stop();
+    ERTimerIsOn = false;
+    ShowOrHideSlideER();
 }

@@ -21,6 +21,9 @@ e_confdialog::e_confdialog(QWidget *parent) :
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
+    ConfTW->setObjectName("conftw");
+    QString ConfTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLOR)+";}";
+    ConfTW->tabBar()->setStyleSheet(ConfTWss);
     lyout->addWidget(ConfTW);
     QWidget *wdgt = new QWidget;
     QGridLayout *wdgtlyout = new QGridLayout;

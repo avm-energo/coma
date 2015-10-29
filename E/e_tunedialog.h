@@ -16,6 +16,11 @@
 
 #define ANMEASINT   2000
 
+#define ETUNEER(a)       ERMSG(publicclass::ER_ETUNE,__LINE__,a)
+#define ETUNEDBG         DBGMSG(publicclass::ER_ETUNE,__LINE__)
+#define ETUNEWARN        WARNMSG(publicclass::ER_ETUNE,__LINE__)
+#define ETUNEINFO(a)     INFOMSG(publicclass::ER_ETUNE,__LINE__,a)
+
 class e_tunedialog : public QDialog
 {
     Q_OBJECT

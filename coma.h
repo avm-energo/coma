@@ -45,8 +45,9 @@ signals:
     void mipparset();
 
 private:
-    bool SWHide,ERHide;
+    bool SWHide,ERHide, ERTimerIsOn;
     QRect SWGeometry, ERGeometry;
+    QTimer *ERTimer;
 
     QString Hth[32];
     a_checkdialog *ACheckDialog;
@@ -92,6 +93,7 @@ private slots:
     void SetMipDlg();
     void UpdateErrorProtocol();
     void MouseMove();
+    void HideErrorProtocol();
 
 protected:
     void closeEvent(QCloseEvent *e);

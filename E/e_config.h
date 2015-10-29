@@ -4,26 +4,26 @@
 // Описание блока Bci
 #define EBCI_MTYPE       1
 #define EBCI_MTYPE1      2
-#define EBCI_EQTYPE      3
-#define EBCI_NPOINTS     4
-#define EBCI_NFILTR      5
-#define EBCI_NHFILTR     6
-#define EBCI_DDOSC       7
-#define EBCI_UNOM1       8
-#define EBCI_UNOM2       9
-#define EBCI_INOM1       10
-#define EBCI_INOM2       11
-#define EBCI_DUOSC       12
-#define EBCI_DIOSC       13
-#define EBCI_DUIMIN      14
-#define EBCI_CTYPE       15
-#define EBCI_ABS_104     16
-#define EBCI_CYCLE_104   17
-#define EBCI_T1_104      18
-#define EBCI_T2_104      19
-#define EBCI_T3_104      20
-#define EBCI_K_104       21
-#define EBCI_W_104       22
+#define EBCI_EQTYPE      101
+#define EBCI_NPOINTS     102
+#define EBCI_NFILTR      103
+#define EBCI_NHFILTR     104
+#define EBCI_DDOSC       105
+#define EBCI_UNOM1       106
+#define EBCI_UNOM2       107
+#define EBCI_INOM1       108
+#define EBCI_INOM2       109
+#define EBCI_DUOSC       110
+#define EBCI_DIOSC       111
+#define EBCI_DUIMIN      112
+#define EBCI_CTYPE       3
+#define EBCI_ABS_104     4
+#define EBCI_CYCLE_104   5
+#define EBCI_T1_104      6
+#define EBCI_T2_104      7
+#define EBCI_T3_104      8
+#define EBCI_K_104       9
+#define EBCI_W_104       10
 #define ECONF_NUM        23
 
 #include "../publicclass.h"

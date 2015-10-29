@@ -107,6 +107,7 @@ void oscdialog::ProcessOscInfo()
 
 void oscdialog::SetProgressBar(quint32 cursize)
 {
+    Q_UNUSED(cursize);
  /*   QProgressBar *prb = this->findChild<QProgressBar *>("oscprb");
     if (prb != 0)
         prb->setValue(cursize); */
@@ -114,6 +115,7 @@ void oscdialog::SetProgressBar(quint32 cursize)
 
 void oscdialog::SetProgressBarSize(quint32 size)
 {
+    Q_UNUSED(size);
 /*    QDialog *dlg = new QDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setWindowModality(Qt::WindowModal);

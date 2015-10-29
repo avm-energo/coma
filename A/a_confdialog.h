@@ -12,27 +12,28 @@
 // Описание блока Bci
 #define ABCI_MTYPE       1
 #define ABCI_MTYPE1      2
-#define ABCI_INTYPE      3
-#define ABCI_INMIN       4
-#define ABCI_INMAX       5
-#define ABCI_INVMIN      6
-#define ABCI_INVMAX      7
-#define ABCI_SETMINMIN   8
-#define ABCI_SETMIN      9
-#define ABCI_SETMAX      10
-#define ABCI_SETMAXMAX   11
-#define ABCI_DISCOSC     12
-#define ABCI_OSCSRC      13
-#define ABCI_OSCDLY      14
-#define ABCI_CTYPE       15
-#define ABCI_ABS_104     16
-#define ABCI_CYCLE_104   17
-#define ABCI_T1_104      18
-#define ABCI_T2_104      19
-#define ABCI_T3_104      20
-#define ABCI_K_104       21
-#define ABCI_W_104       22
-#define ACONF_NUM       23
+#define ABCI_INTYPE      101
+#define ABCI_INMIN       102
+#define ABCI_INMAX       103
+#define ABCI_INVMIN      104
+#define ABCI_INVMAX      105
+#define ABCI_SETMINMIN   106
+#define ABCI_SETMIN      107
+#define ABCI_SETMAX      108
+#define ABCI_SETMAXMAX   109
+#define ABCI_DISCOSC     110
+#define ABCI_OSCSRC      111
+#define ABCI_OSCDLY      112
+#define ABCI_HYSTERESIS  113
+#define ABCI_CTYPE       3
+#define ABCI_ABS_104     4
+#define ABCI_CYCLE_104   5
+#define ABCI_T1_104      6
+#define ABCI_T2_104      7
+#define ABCI_T3_104      8
+#define ABCI_K_104       9
+#define ABCI_W_104       10
+#define ACONF_NUM       24
 
 class a_confdialog : public QDialog
 {
@@ -56,6 +57,7 @@ private:
         float setmin[16];       // Значение предупредительной уставки по минимальному значению
         float setmax[16];       // Значение предупредительной уставки по максимальному значению
         float setmaxmax[16];	// Значение аварийной уставки по максимальному значению
+        float hysteresis;       // Значение гистерезиса на сравнение с уставками в % от макс. знач.
         quint32 discosc;		// Набор признаков необходимости запуска осциллограмм
         quint32 oscsrc;         // События-инициаторы запуска осциллографирования
         quint16 oscdly;         // Задержка в мс начала фиксации максимумов
