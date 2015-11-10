@@ -34,7 +34,7 @@ public:
     explicit ErrorProtocolWidget(QWidget *parent = 0);
     ~ErrorProtocolWidget();
 
-    void AddRowToTree(publicclass::ermsg ermsg);
+    void AddRowToProt(publicclass::ermsg ermsg);
 signals:
 
 public slots:

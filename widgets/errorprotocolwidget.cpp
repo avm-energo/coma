@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QHeaderView>
+#include <QDateTime>
 
 ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
 {
@@ -57,7 +58,7 @@ ErrorProtocolWidget::~ErrorProtocolWidget()
 
 }
 
-void ErrorProtocolWidget::AddRowToTree(publicclass::ermsg ermsg)
+void ErrorProtocolWidget::AddRowToProt(publicclass::ermsg ermsg)
 {
     s_tqTableView *tv = this->findChild<s_tqTableView *>("ertv");
     if (tv == 0)
@@ -161,7 +162,7 @@ int ErrorProtocolModel::rowCount(const QModelIndex &index) const
 int ErrorProtocolModel::columnCount(const QModelIndex &index) const
 {
     Q_UNUSED(index);
-    return 4;
+    return 5;
 }
 
 void ErrorProtocolModel::AddRow(publicclass::ermsg msg)
@@ -169,8 +170,8 @@ void ErrorProtocolModel::AddRow(publicclass::ermsg msg)
     beginResetModel();
     if (rowCount()<MAX_MSG)
         insertRows(0,1,QModelIndex());
-    QStringList tmpsl = QStringList() << "#"+QString::number(MsgCount) << "0x"+QString::number(msg.ernum,16) << \
-             "0x"+QString::number(msg.ersubnum,16) << msg.msg;
+    QStringList tmpsl = QStringList() << "#"+QString::number(MsgCount) << QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss") \
+                                      << "0x"+QString::number(msg.ernum,16) << "0x"+QString::number(msg.ersubnum,16) << msg.msg;
     MsgCount++;
     erdata.insert(0,tmpsl);
     if (erdata.size() >= MAX_MSG)

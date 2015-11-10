@@ -21,6 +21,28 @@
 #define ETUNEWARN        WARNMSG(publicclass::ER_ETUNE,__LINE__)
 #define ETUNEINFO(a)     INFOMSG(publicclass::ER_ETUNE,__LINE__,a)
 
+#define MSG_7_2_3       0
+#define MSG_7_3_1       1
+#define MSG_7_3_1_1     2
+#define MSG_7_3_2       3
+#define MSG_7_3_3       4
+#define MSG_7_3_4       5
+#define MSG_7_3_5       6
+#define MSG_7_3_6_1     7
+#define MSG_7_3_6_2     8
+#define MSG_7_3_7_1_1   9
+#define MSG_7_3_7_1_2   10
+#define MSG_7_3_7_2     11
+#define MSG_7_3_7_3     12
+#define MSG_7_3_7_5     13
+#define MSG_7_3_7_6     14
+#define MSG_7_3_7_8     15
+#define MSG_7_3_7_10    16
+#define MSG_7_3_8_1     17
+#define MSG_7_3_8_2     18
+#define MSG_7_3_9       19
+#define MSG_COUNT       20
+
 class e_tunedialog : public QDialog
 {
     Q_OBJECT
@@ -31,16 +53,15 @@ signals:
     void stopall();
     void SendMip(QByteArray);
     void dataready(QByteArray);
-    void error(int);
 
 public slots:
 
 private:
+    bool Cancelled;
     e_config *econf;
     e_config::Bci Bci_block_work;
     iec104 *mipcanal;
     int TuneControlType;
-    bool MipErrNeeded;
     QTimer *tmr;
 
     struct Bac
@@ -155,6 +176,7 @@ private slots:
     void StopAnalogMeasurements();
     void ReadAnalogMeasurements();
     void SetExtData();
+    void CancelTune();
 
 protected:
     void closeEvent(QCloseEvent *e);

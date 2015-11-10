@@ -173,104 +173,6 @@ void Coma::closeEvent(QCloseEvent *e)
     e->accept();
 }
 
-void Coma::resizeEvent(QResizeEvent *e)
-{
-    QMainWindow::resizeEvent(e);
-    if (!SWHide)
-    {
-        QWidget *sww = this->findChild<QWidget *>("slidew");
-        if (sww == 0)
-            return;
-        sww->setGeometry(QRect(width()-sww->width(), 0, sww->width(), height()));
-    }
-    if (!ERHide)
-    {
-        QWidget *erw = this->findChild<QWidget *>("errorwidget");
-        if (erw == 0)
-            return;
-        erw->setGeometry(QRect(0, height()-erw->height(), width(), erw->height()));
-    }
-}
-
-void Coma::MouseMove()
-{
-    QPoint curPos = mapFromGlobal(QCursor::pos());
-    if ((abs(curPos.x() - width()) < 20) && (curPos.y() > 0) && (curPos.y() < height()))
-    {
-        if (SWHide)
-            ShowOrHideSlideSW();
-    }
-    else
-    {
-        if (!SWHide)
-            ShowOrHideSlideSW();
-    }
-    if ((abs(curPos.y() - height()) < 20) && (curPos.x() > 0) && (curPos.x() < width()))
-    {
-        if (ERHide)
-            ShowOrHideSlideER();
-    }
-    else
-    {
-        if ((!ERHide) && (!ERTimerIsOn))
-            ShowOrHideSlideER();
-    }
-}
-
-void Coma::ShowOrHideSlideSW()
-{
-    QWidget *w = this->findChild<QWidget *>("slidew");
-    if (w == 0)
-        return;
-    if (w->isHidden())
-        w->show();
-    if (SWHide)
-        w->setGeometry(SWGeometry);
-    QPropertyAnimation *ani = new QPropertyAnimation(w, "geometry");
-    ani->setDuration(500);
-    QRect startRect(width(), 0, 0, height());
-    QRect endRect(width() - w->width(), 0, w->width(), height());
-    if (SWHide)
-    {
-        ani->setStartValue(startRect);
-        ani->setEndValue(endRect);
-    }
-    else
-    {
-        ani->setStartValue(endRect);
-        ani->setEndValue(startRect);
-    }
-    ani->start();
-    SWHide = !SWHide;
-}
-
-void Coma::ShowOrHideSlideER()
-{
-    QWidget *w = this->findChild<QWidget *>("errorwidget");
-    if (w == 0)
-        return;
-    if (w->isHidden())
-        w->show();
-    if (ERHide)
-        w->setGeometry(ERGeometry);
-    QPropertyAnimation *ani = new QPropertyAnimation(w, "geometry");
-    ani->setDuration(500);
-    QRect startRect(0, height(), width(), 0);
-    QRect endRect(0, height()-w->height(), width(), w->height());
-    if (ERHide)
-    {
-        ani->setStartValue(startRect);
-        ani->setEndValue(endRect);
-    }
-    else
-    {
-        ani->setStartValue(endRect);
-        ani->setEndValue(startRect);
-    }
-    ani->start();
-    ERHide = !ERHide;
-}
-
 Coma::~Coma()
 {
     QSettings *sets = new QSettings ("EvelSoft","Coma");
@@ -799,6 +701,107 @@ void Coma::SetMipConPar()
     emit mipparset();
 }
 
+void Coma::resizeEvent(QResizeEvent *e)
+{
+    QMainWindow::resizeEvent(e);
+    if (!SWHide)
+    {
+        QWidget *sww = this->findChild<QWidget *>("slidew");
+        if (sww == 0)
+            return;
+        sww->setGeometry(QRect(width()-sww->width(), 0, sww->width(), height()));
+    }
+    if (!ERHide)
+    {
+        QWidget *erw = this->findChild<QWidget *>("errorwidget");
+        if (erw == 0)
+            return;
+        erw->setGeometry(QRect(0, height()-erw->height(), width(), erw->height()));
+    }
+}
+
+void Coma::MouseMove()
+{
+    QPoint curPos = mapFromGlobal(QCursor::pos());
+    QWidget *sww = this->findChild<QWidget *>("slidew");
+    if (sww == 0)
+        return;
+    if ((abs(curPos.x() - width()) < 20) && (curPos.y() > 0) && (curPos.y() < height()))
+    {
+        if (SWHide)
+            ShowOrHideSlideSW();
+    }
+    else if ((abs(curPos.x() - width()) > sww->width()) && (curPos.y() > 0) && (curPos.y() < height()))
+    {
+        if (!SWHide)
+            ShowOrHideSlideSW();
+    }
+    if ((abs(curPos.y() - height()) < 20) && (curPos.x() > 0) && (curPos.x() < width()))
+    {
+        if (ERHide)
+            ShowOrHideSlideER();
+    }
+    else if ((abs(curPos.y() - height()) > 120) && (curPos.x() > 0) && (curPos.x() < width()))
+    {
+        if ((!ERHide) && (!ERTimerIsOn))
+            ShowOrHideSlideER();
+    }
+}
+
+void Coma::ShowOrHideSlideSW()
+{
+    QWidget *w = this->findChild<QWidget *>("slidew");
+    if (w == 0)
+        return;
+    if (w->isHidden())
+        w->show();
+    if (SWHide)
+        w->setGeometry(SWGeometry);
+    QPropertyAnimation *ani = new QPropertyAnimation(w, "geometry");
+    ani->setDuration(500);
+    QRect startRect(width(), 0, 0, height());
+    QRect endRect(width() - w->width(), 0, w->width(), height());
+    if (SWHide)
+    {
+        ani->setStartValue(startRect);
+        ani->setEndValue(endRect);
+    }
+    else
+    {
+        ani->setStartValue(endRect);
+        ani->setEndValue(startRect);
+    }
+    ani->start();
+    SWHide = !SWHide;
+}
+
+void Coma::ShowOrHideSlideER()
+{
+    QWidget *w = this->findChild<QWidget *>("errorwidget");
+    if (w == 0)
+        return;
+    if (w->isHidden())
+        w->show();
+    if (ERHide)
+        w->setGeometry(ERGeometry);
+    QPropertyAnimation *ani = new QPropertyAnimation(w, "geometry");
+    ani->setDuration(500);
+    QRect startRect(0, height(), width(), 0);
+    QRect endRect(0, height()-w->height(), width(), w->height());
+    if (ERHide)
+    {
+        ani->setStartValue(startRect);
+        ani->setEndValue(endRect);
+    }
+    else
+    {
+        ani->setStartValue(endRect);
+        ani->setEndValue(startRect);
+    }
+    ani->start();
+    ERHide = !ERHide;
+}
+
 void Coma::ShowErrMsg(int ermsg)
 {
     if (ermsg < pc.errmsgs.size())
@@ -825,7 +828,7 @@ void Coma::UpdateErrorProtocol()
     }
     while (!pc.ermsgpool.isEmpty())
     {
-        ErWidget->AddRowToTree(pc.ermsgpool.first());
+        ErWidget->AddRowToProt(pc.ermsgpool.first());
         pc.ermsgpool.removeFirst();
     }
     ERTimer->start();

@@ -1,6 +1,7 @@
 #include "canal.h"
 #include "serialthread.h"
 
+#include <QtDebug>
 #include <QDialog>
 #include <QLabel>
 #include <QVBoxLayout>
@@ -80,6 +81,7 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
     }
     case CN_WF: // запись файла
     {
+        qDebug() << "cn1";
         tmpba.append(CN_Start);
         tmpba.append(cmd);
         tmpba.append(~cmd);
@@ -88,6 +90,7 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
         if (DR == NULL)
             Finish(CN_NULLDATAERROR);
         pc.StoreDataMem(&(tmpba.data()[7]), DR);
+        qDebug() << "cn1_5";
         DLength = static_cast<quint8>(tmpba.at(9))*65536;
         DLength += static_cast<quint8>(tmpba.at(8))*256;
         DLength += static_cast<quint8>(tmpba.at(7));
@@ -96,12 +99,15 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
         quint32 tmpi2 = tmpba.data()[5] = (DLength - tmpi1*65536)/256;
         tmpba.data()[6] = DLength - tmpi1*65536 - tmpi2*256;
         tmpba.resize(DLength+7);
+        qDebug() << "cn1_7";
         SetWR(tmpba,7); // 7 - длина заголовка
         if (SegLeft)
         {
             tmpba.truncate(512+7);
             WriteData->remove(0,512+7);
         }
+        qDebug() << "cn1_9";
+
         break;
     }
     case CN_Wac:
@@ -320,6 +326,7 @@ void canal::GetSomeData(QByteArray ba)
         case CN_Cnc:
         case CN_Wsn:
         {
+            qDebug() << "cn2";
             if ((ReadData->at(0) == CN_MStart) && (ReadData->at(1) == CN_ResOk) && (ReadData->at(2) == ~CN_ResOk))
             {
                 Finish(CN_OK);
