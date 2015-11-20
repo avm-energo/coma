@@ -176,6 +176,7 @@ public:
     QStringList errmsgs;
     QString ermsgpath;
     QString ModuleTypeString;
+    bool Emul;
 
     // S2: Определение типа заголовка
     typedef struct

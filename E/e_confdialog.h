@@ -49,6 +49,8 @@ private slots:
     void SetupUI();
     void SetDefConf();
     void SetNewConf();
+    void LoadConf();
+    void SaveConf();
 };
 
 #endif // E_CONFDIALOG_H

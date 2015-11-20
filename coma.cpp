@@ -58,12 +58,23 @@ Coma::Coma(QWidget *parent)
     DisconnectAction->setToolTip("Разрыв соединения");
     DisconnectAction->setIcon(QIcon(":/stop.png"));
     connect(DisconnectAction,SIGNAL(triggered()),this,SLOT(Disconnect()));
+    QAction *EmulAAction = new QAction(this);
+    EmulAAction->setToolTip("Запуск в режиме А");
+    EmulAAction->setIcon(QIcon(":/a.png"));
+    connect(EmulAAction,SIGNAL(triggered()),this,SLOT(EmulA()));
+    QAction *EmulEAction = new QAction(this);
+    EmulEAction->setToolTip("Запуск в режиме Э");
+    EmulEAction->setIcon(QIcon(":/e.png"));
+    connect(EmulEAction,SIGNAL(triggered()),this,SLOT(EmulE()));
     QAction *SettingsAction = new QAction(this);
     SettingsAction->setToolTip("Настройки");
     SettingsAction->setIcon(QIcon(":/settings.png"));
     connect(SettingsAction,SIGNAL(triggered()),this,SLOT(SetMipDlg()));
     tb->addAction(ConnectAction);
     tb->addAction(DisconnectAction);
+    tb->addSeparator();
+    tb->addAction(EmulAAction);
+    tb->addSeparator();
     tb->addAction(SettingsAction);
     hlyout->addWidget(tb);
 
@@ -106,6 +117,15 @@ Coma::Coma(QWidget *parent)
     act->setStatusTip("Настройка связи с прибором контроля электр. параметров МИП для регулировки модулей Э");
     connect(act,SIGNAL(triggered()),this,SLOT(SetMipDlg()));
     menu->addAction(act);
+    MainMenuBar->addMenu(menu);
+
+    menu = new QMenu;
+    menu->setTitle("Запуск...");
+    EmulAAction = new QAction(this);
+    EmulAAction->setText("...в режиме А");
+    EmulAAction->setEnabled(false);
+    connect(EmulAAction,SIGNAL(triggered()),this,SLOT(EmulA()));
+    menu->addAction(EmulAAction);
     MainMenuBar->addMenu(menu);
 
     QAction *HelpAction = new QAction(this);
@@ -839,4 +859,70 @@ void Coma::HideErrorProtocol()
     ERTimer->stop();
     ERTimerIsOn = false;
     ShowOrHideSlideER();
+}
+
+void Coma::EmulA()
+{
+    Bsi_block.MType = MT_A;
+    Bsi_block.SerNum = 0x12345678;
+    Bsi_block.Hth = 0x00;
+    pc.Emul = true;
+    AllIsOk();
+}
+
+void Coma::EmulE()
+{
+    Bsi_block.MType = MT_E;
+    QDialog *dlg = new QDialog(this);
+    dlg->setObjectName("emuledlg");
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QLabel *lbl = new QLabel("Выберите тип модуля:");
+    hlyout->addWidget(lbl);
+    QStringListModel *mdl = new QStringListModel;
+    QStringList sl = QStringList() << "Э2Т0Н" << "Э1Т1Н" << "Э0Т2Н";
+    mdl->setStringList(sl);
+    QComboBox *cb = new QComboBox;
+    cb->setModel(mdl);
+    cb->setObjectName("extxn");
+    hlyout->addWidget(cb);
+    lyout->addLayout(hlyout);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked()),this,SLOT(StartEmulE()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
+void Coma::StartEmulE()
+{
+    QDialog *dlg = this->findChild<QDialog *>("emuldlg");
+    QComboBox *cb = this->findChild<QComboBox *>("extxn");
+    if ((dlg == 0) || (cb == 0))
+    {
+        MAINDBG;
+        return;
+    }
+    switch (cb->currentIndex())
+    {
+    case 0:
+        pc.MType1 = MTE_2T0N;
+        break;
+    case 1:
+        pc.MType1 = MTE_1T1N;
+        break;
+    case 2:
+        pc.MType1 = MTE_0T2N;
+        break;
+    default:
+        MAINDBG;
+        return;
+        break;
+    }
+    dlg->close();
+
+    Bsi_block.SerNum = 0x12345678;
+    Bsi_block.Hth = 0x00;
+    pc.Emul = true;
+    AllIsOk();
 }

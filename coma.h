@@ -94,6 +94,9 @@ private slots:
     void UpdateErrorProtocol();
     void MouseMove();
     void HideErrorProtocol();
+    void EmulA();
+    void EmulE();
+    void StartEmulE();
 
 protected:
     void closeEvent(QCloseEvent *e);

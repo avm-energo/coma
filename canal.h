@@ -39,7 +39,6 @@ signals:
     void writedatatoport(QByteArray);
     void gotsomedata(QByteArray);
     void somedatawritten(QByteArray);
-    void closereconwdgt();
 
 public slots:
     void GetSomeData(QByteArray ba);
@@ -47,10 +46,6 @@ public slots:
 
 private slots:
     void DataWritten(QByteArray);
-    void StartReconnect();
-    void ToggleReconLabel();
-    void Reconnect();
-    void TryOnceMore();
     void CanalReady();
     void CanalError(int);
 
@@ -58,7 +53,7 @@ private:
     char *outdata;
     QByteArray *ReadData;
     QByteArray *WriteData;
-    QTimer *tmr, *tmr2, *TTimer;
+    QTimer *TTimer;
     QThread *thread;
     int bStep;
     int cmd;

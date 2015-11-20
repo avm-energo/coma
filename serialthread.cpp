@@ -14,7 +14,6 @@ SerialThread::SerialThread(QObject *parent) :
 
 void SerialThread::run()
 {
-//    QEventLoop loop;
     port = new QSerialPort;
     port->setPort(portinfo);
     connect(port,SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(Error(QSerialPort::SerialPortError)));
@@ -41,6 +40,8 @@ void SerialThread::run()
             if (port->isOpen())
             {
                 port->close();
+                while (port->isOpen())
+                    qApp->processEvents();
                 delete port;
             }
             emit finished();

@@ -53,6 +53,8 @@ void e_tunedialog::SetupUI()
     lyout = new QVBoxLayout;
     QPushButton *pb = new QPushButton("Начать настройку");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     lyout->addWidget(pb);
     QStringList lbls;
     lbls << "7.2.3. Проверка связки РЕТОМ и МИП..." << "7.3.1. Получение настроечных параметров..." << \
@@ -130,9 +132,13 @@ void e_tunedialog::SetupUI()
 
     pb = new QPushButton("Прочитать настроечные коэффициенты из модуля");
     connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     glyout->addWidget(pb, 9, 0, 1, 6);
     pb = new QPushButton("Записать настроечные коэффициенты в модуль");
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteTuneCoefs()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     glyout->addWidget(pb, 10, 0, 1, 6);
     pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
     pb->setEnabled(false);
@@ -446,9 +452,13 @@ void e_tunedialog::SetupUI()
     lyout->addLayout(glyout);
     pb = new QPushButton("Запустить чтение аналоговых сигналов");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurements()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     lyout->addWidget(pb);
     pb = new QPushButton("Остановить чтение аналоговых сигналов");
     connect(pb,SIGNAL(clicked()),this,SLOT(StopAnalogMeasurements()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     lyout->addWidget(pb);
 
     lyout->addStretch(1);
@@ -1582,11 +1592,12 @@ void e_tunedialog::LoadFromFile()
         return;
     }
     QByteArray *ba = new QByteArray(file.readAll());
-    publicclass::Bsi Bsi_block;
-    if (ba->size() >= (sizeof(publicclass::Bsi)+sizeof(Bac_block)))
+    if (ba->size() >= (8+sizeof(Bac_block))) // 8 = sizeof (CpuIdHigh+SerNum)
     {
-        memcpy(&Bsi_block,ba,sizeof(publicclass::Bsi));
-        if ((Bsi_block.CpuIdHigh != pc.CpuIdHigh) || (Bsi_block.SerNum != pc.SerNum))
+        qint32 SerNum, CpuIdHigh;
+        memcpy(&SerNum,ba,sizeof(SerNum));
+        memcpy(&CpuIdHigh, ba, sizeof(CpuIdHigh));
+        if ((CpuIdHigh != pc.CpuIdHigh) || (SerNum != pc.SerNum))
         {
             if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
                                       QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);
@@ -1594,12 +1605,41 @@ void e_tunedialog::LoadFromFile()
                 return;
         }
         // продолжение загрузки файла
+        memcpy(&Bac_block, ba, sizeof(Bac_block));
+        RefreshTuneCoefs();
+        ETUNEINFO("Загрузка прошла успешно");
     }
 }
 
 void e_tunedialog::SaveToFile()
 {
-
+    QString tmps = "./"+QString::number(pc.MType)+QString::number(pc.MType1)+"-"+\
+            QString("%1").arg(pc.SerNum, 8, 10, QChar('0'))+".tune";
+    QString filename = QFileDialog::getSaveFileName(this, "Сохранить конфигурацию", \
+                                                    tmps, "Tune (*.tune)");
+    if (filename.isEmpty())
+    {
+        ETUNEER("Пустое имя файла");
+        return;
+    }
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        ETUNEER("Ошибка открытия файла!");
+        return;
+    }
+    QByteArray ba;
+    int basize = 8+sizeof(Bac_block);
+    ba.resize(basize); // 8 = sizeof (CpuIdHigh+SerNum)
+    memcpy(&ba[0], pc.SerNum, sizeof(pc.SerNum));
+    memcpy(&ba[4], pc.CpuIdHigh, sizeof(pc.CpuIdHigh));
+    memcpy(&ba[8], &Bac_block, sizeof(Bac_block));
+    if (file.write(&ba, basize) == -1)
+    {
+        ETUNEER("Ошибка при записи файла!");
+        return;
+    }
+    ETUNEINFO("Записано успешно!");
 }
 
 void e_tunedialog::StartMip()

@@ -20,12 +20,6 @@ canal::canal(QObject *parent) : QObject(parent)
     SegLeft = 0;
     ReconTry = 0;
     FirstRun = true;
-    tmr = new QTimer;
-    tmr->setInterval(CS_MSGTRIG);
-    tmr2 = new QTimer;
-    tmr2->setInterval(CS_TIMEOUT);
-    connect(tmr,SIGNAL(timeout()),this,SLOT(ToggleReconLabel()));
-    connect(tmr2,SIGNAL(timeout()),this,SLOT(Reconnect()));
     TTimer = new QTimer;
     TTimer->setInterval(CN_TIMEOUT);
 //    connect(TTimer, SIGNAL(timeout()),this,SLOT(Timeout())); // для отладки закомментарить
@@ -488,12 +482,7 @@ void canal::Connect()
 
 void canal::Disconnect()
 {
-//    if (ThreadStarted)
-//    {
-        emit stopall();
-//        thread->wait(1000);
-//        ThreadStarted = false;
-//    }
+    emit stopall();
 }
 
 void canal::CanalReady()
@@ -508,64 +497,5 @@ void canal::CanalError(int ernum)
     this->ernum = ernum;
     PortErrorDetected = true;
     ConnectedToPort = false;
- //   if (FirstRun)
-        Finish(ernum);
- /*   else
-    {
-        ReconTry++;
-        if (!ReconModeEnabled)
-            StartReconnect();
-    } */
-}
-
-void canal::StartReconnect()
-{
-    ReconModeEnabled = true;
-    QWidget *wdgt = new QWidget;
-    wdgt->setAttribute(Qt::WA_DeleteOnClose);
-    lbl = new QLabel("Потеряна связь с модулем!\nПопытка восстановления №"+QString::number(ReconTry));
-    QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(lbl);
-    wdgt->setLayout(lyout);
-    connect(this,SIGNAL(closereconwdgt()),wdgt,SLOT(close()));
-    wdgt->setVisible(true);
-    tmr->start();
-    tmr2->start();
-}
-
-void canal::Reconnect()
-{
-    if (ReconTry >= 4)
-    {
-        tmr->stop();
-        tmr2->stop();
-        Finish(CN_TIMEOUTERROR);
-        ReconTry = 0;
-        ReconModeEnabled = false;
-        emit closereconwdgt();
-    }
-    else
-    {
-        QString tmps = lbl->text();
-        tmps.chop(1);
-        lbl->setText(tmps+QString::number(ReconTry));
-        if (ThreadStarted)
-        {
-            emit stopall();
-            thread->wait(1000);
-            ThreadStarted = false;
-        }
-        Connect();
-    }
-}
-
-void canal::ToggleReconLabel()
-{
-    lbl->setVisible(!(lbl->isVisible()));
-}
-
-void canal::TryOnceMore()
-{
-    if (ReconModeEnabled) // срабатываем только в режиме реконнекта
-        Send(cmd, outdata, outdatasize, fnum, DR);
+    Finish(ernum);
 }

@@ -79,6 +79,7 @@ unsigned long  _crc32_t[256]=
 
 publicclass::publicclass()
 {
+    Emul = false;
     AMTypes.append("Z"); // фиктивный тип, типы начинаются с 1
     AMTypes.append("А");
     AMTypes.append("Р");

@@ -217,6 +217,8 @@ void a_checkdialog::SetupUI()
     gb2lyout = new QHBoxLayout;
     QPushButton *pb = new QPushButton("Запустить измерения");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartMeasurements()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     gb2lyout->addWidget(pb);
     pb = new QPushButton("Остановить измерения");
     connect(pb,SIGNAL(clicked()),this,SLOT(StopMeasurements()));
@@ -252,6 +254,8 @@ void a_checkdialog::SetupUI()
     gb2lyout->addWidget(pb);
     pb = new QPushButton("Остановить измерения");
     connect(pb,SIGNAL(clicked()),this,SLOT(StopBdaMeasurements()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     gb2lyout->addWidget(pb);
     gb1lyout->addLayout(gb2lyout);
     gb->setLayout(gb1lyout);
@@ -278,9 +282,13 @@ void a_checkdialog::SetupUI()
     gb2lyout->addWidget(lbl);
     pb = new QPushButton("Включить светодиод");
     connect(pb,SIGNAL(clicked()),this,SLOT(CheckLEDOn()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     gb2lyout->addWidget(pb);
     pb = new QPushButton("Выключить светодиод");
     connect(pb,SIGNAL(clicked()),this,SLOT(CheckLEDOff()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     gb2lyout->addWidget(pb);
     gb1lyout->addLayout(gb2lyout);
 
@@ -293,6 +301,8 @@ void a_checkdialog::SetupUI()
     gb2lyout->addWidget(lbl);
     pb = new QPushButton("Обновить");
     connect(pb,SIGNAL(clicked()),this,SLOT(GetIP()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     gb2lyout->addWidget(pb);
     gb1lyout->addLayout(gb2lyout);
 
@@ -305,6 +315,8 @@ void a_checkdialog::SetupUI()
     gb2lyout->addWidget(lbl);
     pb = new QPushButton("Обновить");
     connect(pb,SIGNAL(clicked()),this,SLOT(Check1PPS()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     gb2lyout->addWidget(pb);
     gb1lyout->addLayout(gb2lyout);
 

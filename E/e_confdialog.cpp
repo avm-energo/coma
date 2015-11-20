@@ -27,20 +27,32 @@ e_confdialog::e_confdialog(QWidget *parent) :
     lyout->addWidget(ConfTW);
     QWidget *wdgt = new QWidget;
     QGridLayout *wdgtlyout = new QGridLayout;
-    QPushButton *pb1 = new QPushButton("Прочитать конфигурацию из модуля");
+    QPushButton *pb1 = new QPushButton("Прочитать из модуля");
     connect(pb1,SIGNAL(clicked()),this,SLOT(GetBci()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     wdgtlyout->addWidget(pb1, 0, 0, 1, 1);
-    QPushButton *pb = new QPushButton("Записать конфигурацию в модуль");
+    QPushButton *pb = new QPushButton("Записать в модуль");
     pb->setObjectName("WriteConfPB");
 //    pb->setEnabled(false);
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteConfDataToModule()));
-    wdgtlyout->addWidget(pb, 1, 0, 1, 1);
+    if (pc.Emul)
+        pb->setEnabled(false);
+    wdgtlyout->addWidget(pb, 0, 1, 1, 1);
+    pb = new QPushButton("Прочитать из файла");
+    connect(pb,SIGNAL(clicked()),this,SLOT(LoadConf()));
+    wdgtlyout->addWidget(pb, 0, 2, 1, 1);
+    pb = new QPushButton("Записать в файл");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SaveConf()));
+    wdgtlyout->addWidget(pb, 0, 3, 1, 1);
     pb = new QPushButton("Задать конфигурацию по умолчанию");
     connect(pb,SIGNAL(clicked()),this,SLOT(SetDefConf()));
-    wdgtlyout->addWidget(pb, 0, 1, 1, 1);
+    wdgtlyout->addWidget(pb, 1, 0, 1, 2);
     pb = new QPushButton("Перейти на новую конфигурацию");
     connect(pb,SIGNAL(clicked()),this,SLOT(SetNewConf()));
-    wdgtlyout->addWidget(pb, 1, 1, 1, 1);
+    if (pc.Emul)
+        pb->setEnabled(false);
+    wdgtlyout->addWidget(pb, 1, 2, 1, 2);
     wdgt->setLayout(wdgtlyout);
     lyout->addWidget(wdgt);
     setLayout(lyout);
@@ -818,4 +830,66 @@ void e_confdialog::SetDefConf()
 {
     memcpy(&econf->Bci_block, &econf->Bci_defblock, sizeof(e_config::Bci));
     FillConfData();
+}
+
+void e_confdialog::LoadConf()
+{
+    QString filename = QFileDialog::getOpenFileName(this, "Открыть файл", ".", "Configuration (*.conf)");
+    if (filename.isEmpty())
+        return;
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        ETUNEER("Ошибка открытия файла!");
+        return;
+    }
+    QByteArray *ba = new QByteArray(file.readAll());
+    if (ba->size() >= (8+sizeof(Bac_block))) // 8 = sizeof (CpuIdHigh+SerNum)
+    {
+        qint32 SerNum, CpuIdHigh;
+        memcpy(&SerNum,ba,sizeof(SerNum));
+        memcpy(&CpuIdHigh, ba, sizeof(CpuIdHigh));
+        if ((CpuIdHigh != pc.CpuIdHigh) || (SerNum != pc.SerNum))
+        {
+            if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
+                                      QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);
+            else
+                return;
+        }
+        // продолжение загрузки файла
+        memcpy(&Bac_block, ba, sizeof(Bac_block));
+        RefreshTuneCoefs();
+        ETUNEINFO("Загрузка прошла успешно");
+    }
+}
+
+void e_confdialog::SaveConf()
+{
+    QString tmps = "./"+QString::number(pc.MType)+QString::number(pc.MType1)+"-"+\
+            QString("%1").arg(pc.SerNum, 8, 10, QChar('0'))+".tune";
+    QString filename = QFileDialog::getSaveFileName(this, "Сохранить конфигурацию", \
+                                                    tmps, "Tune (*.tune)");
+    if (filename.isEmpty())
+    {
+        ETUNEER("Пустое имя файла");
+        return;
+    }
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        ETUNEER("Ошибка открытия файла!");
+        return;
+    }
+    QByteArray ba;
+    int basize = 8+sizeof(Bac_block);
+    ba.resize(basize); // 8 = sizeof (CpuIdHigh+SerNum)
+    memcpy(&ba[0], pc.SerNum, sizeof(pc.SerNum));
+    memcpy(&ba[4], pc.CpuIdHigh, sizeof(pc.CpuIdHigh));
+    memcpy(&ba[8], &Bac_block, sizeof(Bac_block));
+    if (file.write(&ba, basize) == -1)
+    {
+        ETUNEER("Ошибка при записи файла!");
+        return;
+    }
+    ETUNEINFO("Записано успешно!");
 }

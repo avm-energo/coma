@@ -71,9 +71,13 @@ void a_tunedialog::SetupUI()
         gb1lyout->addLayout(gb2lyout);
     QPushButton *pb = new QPushButton("Прочитать настроечные коэффициенты из модуля");
     connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     gb1lyout->addWidget(pb);
     pb = new QPushButton("Записать настроечные коэффициенты в модуль");
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteTuneCoefs()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     gb1lyout->addWidget(pb);
     pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadFromFile()));
@@ -108,6 +112,8 @@ void a_tunedialog::SetupUI()
         gb1lyout->addLayout(gb2lyout);
     pb = new QPushButton("Запустить настройку нуля");
     pb->setStyleSheet("QPushButton {background-color: #99FFCC;}");
+    if (pc.Emul)
+        pb->setEnabled(false);
     connect(pb,SIGNAL(clicked()),this,SLOT(tune0()));
     gb1lyout->addWidget(pb);
     gb->setLayout(gb1lyout);
@@ -136,6 +142,8 @@ void a_tunedialog::SetupUI()
     pb = new QPushButton("Запустить настройку 5 В");
     pb->setStyleSheet("QPushButton {background-color: #FFCC99;}");
     connect(pb,SIGNAL(clicked()),this,SLOT(tune5()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     gb1lyout->addWidget(pb);
     gb->setLayout(gb1lyout);
     lyout->addWidget(gb);
@@ -163,6 +171,8 @@ void a_tunedialog::SetupUI()
     pb = new QPushButton("Запустить настройку 20 мА");
     pb->setStyleSheet("QPushButton {background-color: #CC99FF;}");
     connect(pb,SIGNAL(clicked()),this,SLOT(tune20()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     gb1lyout->addWidget(pb);
     gb->setLayout(gb1lyout);
     lyout->addWidget(gb);
