@@ -141,11 +141,9 @@ void e_tunedialog::SetupUI()
         pb->setEnabled(false);
     glyout->addWidget(pb, 10, 0, 1, 6);
     pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
-    pb->setEnabled(false);
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadFromFile()));
     glyout->addWidget(pb, 11, 0, 1, 6);
     pb = new QPushButton("Записать настроечные коэффициенты в файл");
-    pb->setEnabled(false);
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
     glyout->addWidget(pb, 12, 0, 1, 6);
     gb->setLayout(glyout);
@@ -1580,68 +1578,6 @@ void e_tunedialog::ReadAnalogMeasurements()
     RefreshAnalogValues();
 }
 
-void e_tunedialog::LoadFromFile()
-{
-    QString filename = QFileDialog::getOpenFileName(this, "Открыть файл", ".", "Configuration (*.conf)");
-    if (filename.isEmpty())
-        return;
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        ETUNEER("Ошибка открытия файла!");
-        return;
-    }
-    QByteArray *ba = new QByteArray(file.readAll());
-    if (ba->size() >= (8+sizeof(Bac_block))) // 8 = sizeof (CpuIdHigh+SerNum)
-    {
-        qint32 SerNum, CpuIdHigh;
-        memcpy(&SerNum,ba,sizeof(SerNum));
-        memcpy(&CpuIdHigh, ba, sizeof(CpuIdHigh));
-        if ((CpuIdHigh != pc.CpuIdHigh) || (SerNum != pc.SerNum))
-        {
-            if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
-                                      QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);
-            else
-                return;
-        }
-        // продолжение загрузки файла
-        memcpy(&Bac_block, ba, sizeof(Bac_block));
-        RefreshTuneCoefs();
-        ETUNEINFO("Загрузка прошла успешно");
-    }
-}
-
-void e_tunedialog::SaveToFile()
-{
-    QString tmps = "./"+QString::number(pc.MType)+QString::number(pc.MType1)+"-"+\
-            QString("%1").arg(pc.SerNum, 8, 10, QChar('0'))+".tune";
-    QString filename = QFileDialog::getSaveFileName(this, "Сохранить конфигурацию", \
-                                                    tmps, "Tune (*.tune)");
-    if (filename.isEmpty())
-    {
-        ETUNEER("Пустое имя файла");
-        return;
-    }
-    QFile file(filename);
-    if (!file.open(QIODevice::WriteOnly))
-    {
-        ETUNEER("Ошибка открытия файла!");
-        return;
-    }
-    QByteArray ba;
-    int basize = 8+sizeof(Bac_block);
-    ba.resize(basize); // 8 = sizeof (CpuIdHigh+SerNum)
-    memcpy(&ba[0], pc.SerNum, sizeof(pc.SerNum));
-    memcpy(&ba[4], pc.CpuIdHigh, sizeof(pc.CpuIdHigh));
-    memcpy(&ba[8], &Bac_block, sizeof(Bac_block));
-    if (file.write(&ba, basize) == -1)
-    {
-        ETUNEER("Ошибка при записи файла!");
-        return;
-    }
-    ETUNEINFO("Записано успешно!");
-}
-
 void e_tunedialog::StartMip()
 {
     mipcanal = new iec104;
@@ -1746,4 +1682,60 @@ void e_tunedialog::ErMsgSetVisible(int msg, bool Visible)
 void e_tunedialog::CancelTune()
 {
     Cancelled = true;
+}
+
+void e_tunedialog::LoadFromFile()
+{
+    int res = pc.LoadFile("Tune files (*.etn)", sizeof(Bac_block));
+    switch (res)
+    {
+    case 0:
+        break;
+    case 1:
+        ETUNEER("Ошибка открытия файла!");
+        return;
+        break;
+    case 2:
+        if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
+                                  QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);
+        else
+            return;
+        break;
+    case 3:
+        ETUNEER("Пустое имя файла!");
+        return;
+        break;
+    case 4:
+        ETUNEER("Ошибка открытия файла!");
+        return;
+        break;
+    default:
+        return;
+        break;
+    }
+    pc.LoadFileToPtr(&Bac_block, sizeof(Bac_block));
+    RefreshTuneCoefs();
+    ETUNEINFO("Загрузка прошла успешно!");
+}
+
+void e_tunedialog::SaveToFile()
+{
+    int res = pc.SaveFile("Tune files (*.etn)", &Bac_block, sizeof(Bac_block));
+    switch (res)
+    {
+    case 0:
+        ETUNEINFO("Записано успешно!");
+        break;
+    case 1:
+        ETUNEER("Ошибка при записи файла!");
+        break;
+    case 2:
+        ETUNEER("Пустое имя файла!");
+        break;
+    case 3:
+        ETUNEER("Ошибка открытия файла!");
+        break;
+    default:
+        break;
+    }
 }

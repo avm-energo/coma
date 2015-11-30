@@ -343,34 +343,58 @@ void a_tunedialog::RefreshTuneCoefs()
 
 void a_tunedialog::LoadFromFile()
 {
-    QString filename = QFileDialog::getOpenFileName(this, "Открыть файл", ".", "Configuration (*.conf)");
-    if (filename.isEmpty())
-        return;
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly))
+    int res = pc.LoadFile("Tune files (*.atn)", sizeof(Bac_block));
+    switch (res)
     {
-        ShowErrMsg(ER_FILEOPENERROR);
+    case 0:
+        break;
+    case 1:
+        ATUNEER("Ошибка открытия файла!");
         return;
+        break;
+    case 2:
+        if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
+                                  QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);
+        else
+            return;
+        break;
+    case 3:
+        ATUNEER("Пустое имя файла!");
+        return;
+        break;
+    case 4:
+        ATUNEER("Ошибка открытия файла!");
+        return;
+        break;
+    default:
+        return;
+        break;
     }
-    QByteArray *ba = new QByteArray(file.readAll());
-    publicclass::Bsi Bsi_block;
-    if (ba->size() >= (sizeof(publicclass::Bsi)+sizeof(Bac_block)))
-    {
-        memcpy(&Bsi_block,ba,sizeof(publicclass::Bsi));
-        if ((Bsi_block.CpuIdHigh != pc.CpuIdHigh) || (Bsi_block.SerNum != pc.SerNum))
-        {
-            if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
-                                      QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);
-            else
-                return;
-        }
-        // продолжение загрузки файла
-    }
+    pc.LoadFileToPtr(&Bac_block, sizeof(Bac_block));
+    RefreshTuneCoefs();
+    ATUNEINFO("Загрузка прошла успешно!");
 }
 
 void a_tunedialog::SaveToFile()
 {
-
+    int res = pc.SaveFile("Tune files (*.atn)", &Bac_block, sizeof(Bac_block));
+    switch (res)
+    {
+    case 0:
+        ATUNEINFO("Записано успешно!");
+        break;
+    case 1:
+        ATUNEER("Ошибка при записи файла!");
+        break;
+    case 2:
+        ATUNEER("Пустое имя файла!");
+        break;
+    case 3:
+        ATUNEER("Ошибка открытия файла!");
+        break;
+    default:
+        break;
+    }
 }
 
 void a_tunedialog::ShowErrMsg(int ermsg)

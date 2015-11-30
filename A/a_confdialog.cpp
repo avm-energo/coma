@@ -712,10 +712,56 @@ void a_confdialog::UpdateProper(bool tmpb)
 
 void a_confdialog::LoadConf()
 {
-
+    int res = pc.LoadFile("Config files (*.acf)", sizeof(Bci_block));
+    switch (res)
+    {
+    case 0:
+        break;
+    case 1:
+        ACONFER("Ошибка открытия файла!");
+        return;
+        break;
+    case 2:
+        if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
+                                  QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);
+        else
+            return;
+        break;
+    case 3:
+        ACONFER("Пустое имя файла!");
+        return;
+        break;
+    case 4:
+        ACONFER("Ошибка открытия файла!");
+        return;
+        break;
+    default:
+        return;
+        break;
+    }
+    pc.LoadFileToPtr(&Bci_block, sizeof(Bci_block));
+    FillConfData();
+    ACONFINFO("Загрузка прошла успешно!");
 }
 
 void a_confdialog::SaveConf()
 {
-
+    int res = pc.SaveFile("Config files (*.acf)", &Bci_block, sizeof(Bci_block));
+    switch (res)
+    {
+    case 0:
+        ACONFINFO("Записано успешно!");
+        break;
+    case 1:
+        ACONFER("Ошибка при записи файла!");
+        break;
+    case 2:
+        ACONFER("Пустое имя файла!");
+        break;
+    case 3:
+        ACONFER("Ошибка открытия файла!");
+        break;
+    default:
+        break;
+    }
 }

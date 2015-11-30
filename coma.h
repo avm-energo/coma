@@ -22,7 +22,7 @@
 #include "canal.h"
 #include "publicclass.h"
 
-#define PROGNAME    "КОМА 1.0 #0063"
+#define PROGNAME    "КОМА 1.0 #0066"
 
 #define MAINER(a)       ERMSG(publicclass::ER_MAIN,__LINE__,a)
 #define MAINDBG         DBGMSG(publicclass::ER_MAIN,__LINE__)
@@ -60,7 +60,7 @@ private:
     downloaddialog *DownDialog;
     oscdialog *OscDialog;
     bool DialogsAreReadyAlready;
-    QAction *WriteSNAction;
+    QAction *WriteSNAction, *WriteHWAction;
     quint8 ReconTry;
     publicclass::Bsi Bsi_block;
     void InitiateWriteDataToPort(QByteArray ba);
@@ -89,6 +89,8 @@ private slots:
     void SetPort(QString str);
     void SetBaud(QString str);
     void WriteSN();
+    void WriteHW();
+    void SendHW();
     void SetMipConPar();
     void SetMipDlg();
     void UpdateErrorProtocol();
@@ -97,6 +99,8 @@ private slots:
     void EmulA();
     void EmulE();
     void StartEmulE();
+    void StartSettingsDialog();
+    void AcceptSettings();
 
 protected:
     void closeEvent(QCloseEvent *e);

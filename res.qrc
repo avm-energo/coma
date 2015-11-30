@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>darrowdown.png</file>
         <file>mte_0t2n.png</file>
         <file>mte_1t1n.png</file>
         <file>mte_2t0n.png</file>

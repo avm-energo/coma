@@ -5,6 +5,12 @@
 //#include "canal.h"
 
 #define TUNEFILELENGTH  256
+
+#define ATUNEER(a)       ERMSG(publicclass::ER_ATUNE,__LINE__,a)
+#define ATUNEDBG         DBGMSG(publicclass::ER_ATUNE,__LINE__)
+#define ATUNEWARN        WARNMSG(publicclass::ER_ATUNE,__LINE__)
+#define ATUNEINFO(a)     INFOMSG(publicclass::ER_ATUNE,__LINE__,a)
+
 class a_tunedialog : public QDialog
 {
     Q_OBJECT

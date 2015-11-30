@@ -54,6 +54,7 @@
 #define CN_Wac     0x31 // запись настроечных коэффициентов
 #define CN_WF      0x32 // запись файла конфигурации
 #define CN_Wsn     0x33 // запись серийного номера модуля
+#define CN_WHv     0x34 // запись версии аппаратуры модуля
 #define CN_Start   0x3e // начало посылки
 #define CN_MStart  0x3c // начало посылки модуля
 #define CN_Cln     0x41 // зажечь светодиод
@@ -177,6 +178,8 @@ public:
     QString ermsgpath;
     QString ModuleTypeString;
     bool Emul;
+    int ErrWindowDelay;
+    bool ShowErrWindow;
 
     // S2: Определение типа заголовка
     typedef struct
@@ -235,7 +238,10 @@ public:
         ER_MAIN,
         ER_CANAL,
         ER_SERIAL,
-        ER_ETUNE
+        ER_ETUNE,
+        ER_ECONF,
+        ER_ATUNE,
+        ER_ACONF
     };
 
     static QMap<int, QString> ermsgs()
@@ -244,6 +250,10 @@ public:
         map.insert(ER_MAIN, "Кома");
         map.insert(ER_CANAL, "Канал");
         map.insert(ER_SERIAL, "Поток USB");
+        map.insert(ER_ETUNE, "Настр. Э");
+        map.insert(ER_ECONF, "Конф. Э");
+        map.insert(ER_ATUNE, "Настр. A");
+        map.insert(ER_ACONF, "Конф. A");
         return map;
     }
     QList<ermsg> ermsgpool;
@@ -271,8 +281,12 @@ public:
     quint32 getTime32();
     QString NsTimeToString (quint64 nstime);
     void AddErrMsg(ermsgtype msgtype, quint64 ernum=0, quint64 ersubnum=0, QString msg="");
+    int LoadFile (QString mask, unsigned int numbytes);
+    void LoadFileToPtr(void *dest, unsigned int numbytes);
+    int SaveFile (QString mask, void *src, unsigned int numbytes);
 
 private:
+    QByteArray *LoadBa, *SaveBa;
     void addmessage(QStringList &sl, QString mes);
 
 };

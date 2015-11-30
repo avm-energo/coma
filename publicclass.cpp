@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDir>
+#include <QFileDialog>
 
 publicclass pc;
 
@@ -92,6 +93,8 @@ publicclass::publicclass()
     ermsgpath = sets->value("erpath","errors/").toString();
     MIPASDU = sets->value("mip/asdu","206").toInt();
     MIPIP = sets->value("mip/ip","192.168.1.2").toString();
+    ErrWindowDelay = sets->value("ErrWindowDelay","5").toInt();
+    ShowErrWindow = sets->value("ShowErrWindow","1").toBool();
     QFile file;
     QString ermsgspath = QDir::currentPath() + "/" + ermsgpath;
     file.setFileName(ermsgspath+"ermsgs.dat");
@@ -359,4 +362,55 @@ void publicclass::AddErrMsg(ermsgtype msgtype, quint64 ernum, quint64 ersubnum, 
     }
     tmpm.msg = msg;
     ermsgpool.append(tmpm);
+}
+
+int publicclass::LoadFile(QString mask, unsigned int numbytes)
+{
+    QString filename = QFileDialog::getOpenFileName(0, "Открыть файл", ".", mask);
+    if (filename.isEmpty())
+        return 3; // Пустое имя файла
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly))
+        return 4; // Ошибка открытия файла
+    LoadBa = new QByteArray(file.readAll());
+    if (LoadBa->size() >= (8+static_cast<int>(numbytes))) // 8 = sizeof (CpuIdHigh+SerNum)
+    {
+        qint32 SN, CIH;
+        memcpy(&SN, &(LoadBa->data()[0]),sizeof(SN));
+        memcpy(&CIH, &(LoadBa->data()[4]), sizeof(CIH));
+        if ((CIH != CpuIdHigh) || (SN != SerNum))
+            return 2; // несовпадение, надо сделать запрос
+        return 0; // нет ошибок
+    }
+    return 1; // ошибка
+}
+
+void publicclass::LoadFileToPtr(void *dest, unsigned int numbytes)
+{
+    memcpy(dest, &(LoadBa->data()[8]), numbytes);
+}
+
+int publicclass::SaveFile(QString mask, void *src, unsigned int numbytes)
+{
+    QString tmps = "./"+QString::number(MType)+QString::number(MType1)+"-"+\
+            QString("%1").arg(SerNum, 8, 10, QChar('0'))+".";
+    QStringList tmpsl = mask.split(".");
+    if (tmpsl.size() > 1)
+        tmps += tmpsl.at(1).left(3); // формирование расширения файла
+    QString filename = QFileDialog::getSaveFileName(0, "Сохранить файл", \
+                                                    tmps, mask);
+    if (filename.isEmpty())
+        return 2; // Пустое имя файла
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly))
+        return 3; // Ошибка открытия файла
+    int basize = 8+numbytes;
+    SaveBa = new QByteArray;
+    SaveBa->resize(basize); // 8 = sizeof (CpuIdHigh+SerNum)
+    memcpy(&(SaveBa->data()[0]), &SerNum, sizeof(SerNum));
+    memcpy(&(SaveBa->data()[4]), &CpuIdHigh, sizeof(CpuIdHigh));
+    memcpy(&(SaveBa->data()[8]), src, numbytes);
+    if (file.write(SaveBa->data(), basize) == -1)
+        return 1; // ошибка записи
+    return 0; // нет ошибок
 }

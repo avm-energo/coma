@@ -14,6 +14,11 @@
 #define ET_1T1N         1
 #define ET_0T2N         2
 
+#define ECONFER(a)       ERMSG(publicclass::ER_ECONF,__LINE__,a)
+#define ECONFDBG         DBGMSG(publicclass::ER_ECONF,__LINE__)
+#define ECONFWARN        WARNMSG(publicclass::ER_ECONF,__LINE__)
+#define ECONFINFO(a)     INFOMSG(publicclass::ER_ECONF,__LINE__,a)
+
 class e_confdialog : public QDialog
 {
     Q_OBJECT

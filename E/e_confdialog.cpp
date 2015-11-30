@@ -10,6 +10,7 @@
 #include <QSpinBox>
 #include <QMessageBox>
 #include <QCoreApplication>
+#include <QFileDialog>
 #include "e_confdialog.h"
 #include "../canal.h"
 
@@ -30,7 +31,7 @@ e_confdialog::e_confdialog(QWidget *parent) :
     QPushButton *pb1 = new QPushButton("Прочитать из модуля");
     connect(pb1,SIGNAL(clicked()),this,SLOT(GetBci()));
     if (pc.Emul)
-        pb->setEnabled(false);
+        pb1->setEnabled(false);
     wdgtlyout->addWidget(pb1, 0, 0, 1, 1);
     QPushButton *pb = new QPushButton("Записать в модуль");
     pb->setObjectName("WriteConfPB");
@@ -834,62 +835,56 @@ void e_confdialog::SetDefConf()
 
 void e_confdialog::LoadConf()
 {
-    QString filename = QFileDialog::getOpenFileName(this, "Открыть файл", ".", "Configuration (*.conf)");
-    if (filename.isEmpty())
-        return;
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly))
+    int res = pc.LoadFile("Config files (*.ecf)", sizeof(econf->Bci_block));
+    switch (res)
     {
-        ETUNEER("Ошибка открытия файла!");
+    case 0:
+        break;
+    case 1:
+        ECONFER("Ошибка открытия файла!");
         return;
+        break;
+    case 2:
+        if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
+                                  QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);
+        else
+            return;
+        break;
+    case 3:
+        ECONFER("Пустое имя файла!");
+        return;
+        break;
+    case 4:
+        ECONFER("Ошибка открытия файла!");
+        return;
+        break;
+    default:
+        return;
+        break;
     }
-    QByteArray *ba = new QByteArray(file.readAll());
-    if (ba->size() >= (8+sizeof(Bac_block))) // 8 = sizeof (CpuIdHigh+SerNum)
-    {
-        qint32 SerNum, CpuIdHigh;
-        memcpy(&SerNum,ba,sizeof(SerNum));
-        memcpy(&CpuIdHigh, ba, sizeof(CpuIdHigh));
-        if ((CpuIdHigh != pc.CpuIdHigh) || (SerNum != pc.SerNum))
-        {
-            if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
-                                      QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);
-            else
-                return;
-        }
-        // продолжение загрузки файла
-        memcpy(&Bac_block, ba, sizeof(Bac_block));
-        RefreshTuneCoefs();
-        ETUNEINFO("Загрузка прошла успешно");
-    }
+    pc.LoadFileToPtr(&(econf->Bci_block), sizeof(econf->Bci_block));
+    FillConfData();
+    ECONFINFO("Загрузка прошла успешно!");
 }
 
 void e_confdialog::SaveConf()
 {
-    QString tmps = "./"+QString::number(pc.MType)+QString::number(pc.MType1)+"-"+\
-            QString("%1").arg(pc.SerNum, 8, 10, QChar('0'))+".tune";
-    QString filename = QFileDialog::getSaveFileName(this, "Сохранить конфигурацию", \
-                                                    tmps, "Tune (*.tune)");
-    if (filename.isEmpty())
+    int res = pc.SaveFile("Config files (*.ecf)", &(econf->Bci_block), sizeof(econf->Bci_block));
+    switch (res)
     {
-        ETUNEER("Пустое имя файла");
-        return;
+    case 0:
+        ECONFINFO("Записано успешно!");
+        break;
+    case 1:
+        ECONFER("Ошибка при записи файла!");
+        break;
+    case 2:
+        ECONFER("Пустое имя файла!");
+        break;
+    case 3:
+        ECONFER("Ошибка открытия файла!");
+        break;
+    default:
+        break;
     }
-    QFile file(filename);
-    if (!file.open(QIODevice::WriteOnly))
-    {
-        ETUNEER("Ошибка открытия файла!");
-        return;
-    }
-    QByteArray ba;
-    int basize = 8+sizeof(Bac_block);
-    ba.resize(basize); // 8 = sizeof (CpuIdHigh+SerNum)
-    memcpy(&ba[0], pc.SerNum, sizeof(pc.SerNum));
-    memcpy(&ba[4], pc.CpuIdHigh, sizeof(pc.CpuIdHigh));
-    memcpy(&ba[8], &Bac_block, sizeof(Bac_block));
-    if (file.write(&ba, basize) == -1)
-    {
-        ETUNEER("Ошибка при записи файла!");
-        return;
-    }
-    ETUNEINFO("Записано успешно!");
 }

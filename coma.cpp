@@ -17,7 +17,7 @@
 #include <QRegExp>
 #include <QSettings>
 #include <QDialog>
-#include <QSettings>
+#include <QSizePolicy>
 #include "coma.h"
 #include "widgets/mytabwidget.h"
 #include "widgets/errorprotocolwidget.h"
@@ -26,7 +26,7 @@ Coma::Coma(QWidget *parent)
     : QMainWindow(parent)
 {
     ERTimer = new QTimer;
-    ERTimer->setInterval(5000);
+    ERTimer->setInterval(pc.ErrWindowDelay*1000);
     connect(ERTimer,SIGNAL(timeout()),this,SLOT(HideErrorProtocol()));
     ERTimerIsOn = false;
     QTimer *MouseTimer = new QTimer;
@@ -69,11 +69,12 @@ Coma::Coma(QWidget *parent)
     QAction *SettingsAction = new QAction(this);
     SettingsAction->setToolTip("Настройки");
     SettingsAction->setIcon(QIcon(":/settings.png"));
-    connect(SettingsAction,SIGNAL(triggered()),this,SLOT(SetMipDlg()));
+    connect(SettingsAction,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
     tb->addAction(ConnectAction);
     tb->addAction(DisconnectAction);
     tb->addSeparator();
     tb->addAction(EmulAAction);
+    tb->addAction(EmulEAction);
     tb->addSeparator();
     tb->addAction(SettingsAction);
     hlyout->addWidget(tb);
@@ -96,9 +97,11 @@ Coma::Coma(QWidget *parent)
     connect(MainExitAction,SIGNAL(triggered()),this,SLOT(Exit()));
     QAction *MainConnectAction = new QAction(this);
     MainConnectAction->setText("Соединение");
+    MainConnectAction->setIcon(QIcon(":/play.png"));
     connect(MainConnectAction,SIGNAL(triggered()),this,SLOT(Connect()));
     QAction *MainDisconnectAction = new QAction(this);
     MainDisconnectAction->setText("Разрыв соединения");
+    MainDisconnectAction->setIcon(QIcon(":/stop.png"));
     connect(MainDisconnectAction,SIGNAL(triggered()),this,SLOT(Disconnect()));
     MainMenu->addAction(MainConnectAction);
     MainMenu->addAction(MainDisconnectAction);
@@ -107,11 +110,6 @@ Coma::Coma(QWidget *parent)
 
     QMenu *menu = new QMenu;
     menu->setTitle("Дополнительно");
-    WriteSNAction = new QAction(this);
-    WriteSNAction->setText("Запись серийного номера");
-    WriteSNAction->setEnabled(false);
-    connect(WriteSNAction,SIGNAL(triggered()),this,SLOT(WriteSN()));
-    menu->addAction(WriteSNAction);
     QAction *act = new QAction(this);
     act->setText("Установка параметров связи с МИП");
     act->setStatusTip("Настройка связи с прибором контроля электр. параметров МИП для регулировки модулей Э");
@@ -123,9 +121,37 @@ Coma::Coma(QWidget *parent)
     menu->setTitle("Запуск...");
     EmulAAction = new QAction(this);
     EmulAAction->setText("...в режиме А");
-    EmulAAction->setEnabled(false);
+    EmulAAction->setIcon(QIcon(":/a.png"));
     connect(EmulAAction,SIGNAL(triggered()),this,SLOT(EmulA()));
     menu->addAction(EmulAAction);
+    EmulEAction = new QAction(this);
+    EmulEAction->setIcon(QIcon(":/e.png"));
+    EmulEAction->setText("...в режиме Э");
+    connect(EmulEAction,SIGNAL(triggered()),this,SLOT(EmulE()));
+    menu->addAction(EmulEAction);
+    MainMenuBar->addMenu(menu);
+
+    menu = new QMenu;
+    menu->setTitle("Разработка");
+    WriteSNAction = new QAction(this);
+    WriteSNAction->setText("Запись серийного номера");
+    WriteSNAction->setEnabled(false);
+    connect(WriteSNAction,SIGNAL(triggered()),this,SLOT(WriteSN()));
+    menu->addAction(WriteSNAction);
+    WriteHWAction = new QAction(this);
+    WriteHWAction->setText("Запись аппаратной версии модуля");
+    WriteHWAction->setEnabled(false);
+    connect(WriteHWAction,SIGNAL(triggered()),this,SLOT(WriteHW()));
+    menu->addAction(WriteHWAction);
+    MainMenuBar->addMenu(menu);
+
+    menu = new QMenu;
+    menu->setTitle("Настройки");
+    QAction *SetAction = new QAction(this);
+    SetAction->setText("Настройки");
+    SetAction->setIcon(QIcon(":/settings.png"));
+    connect(SetAction,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
+    menu->addAction(SetAction);
     MainMenuBar->addMenu(menu);
 
     QAction *HelpAction = new QAction(this);
@@ -137,8 +163,6 @@ Coma::Coma(QWidget *parent)
     QHBoxLayout *inlyout = new QHBoxLayout;
     MyTabWidget *MainTW = new MyTabWidget;
     MainTW->setObjectName("maintw");
-//    QString MainTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLOR)+";}";
-//    MainTW->tabBar()->setStyleSheet(MainTWss);
     MainTW->setTabPosition(QTabWidget::West);
     inlyout->addWidget(MainTW, 60);
     MainTW->hide();
@@ -370,7 +394,6 @@ void Coma::CheckBsi()
         }
         Bsi_block.SerNum = QString::number(tmpi, 10).toInt(0,16);
     }
-    pc.SerNum = Bsi_block.SerNum;
     qint32 tmpint;
     pc.ModuleTypeString.clear();
     switch (Bsi_block.MType)
@@ -539,6 +562,7 @@ void Coma::AllIsOk()
         emit updateconfproper(true);
     if (Bsi_block.Hth & HTH_REGPARS) // нет коэффициентов
         emit updatetuneproper(true);
+    pc.SerNum = Bsi_block.SerNum;
     MainTW->repaint();
     MainTW->show();
 }
@@ -592,7 +616,8 @@ QString Coma::ByteToHex(quint8 hb)
 
 void Coma::Disconnect()
 {
-    cn->Disconnect();
+    if (!pc.Emul)
+        cn->Disconnect();
     FillBsi("",true);
     DialogsAreReadyAlready = false;
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
@@ -619,21 +644,6 @@ void Coma::GetAbout()
 void Coma::Exit()
 {
     this->close();
-}
-
-void Coma::WriteSN()
-{
-    bool ok = false;
-    qint32 tmpi = QInputDialog::getInt(this, "Серийный номер", "Серийный номер модуля:", 0, 1, 99999999,\
-                                1, &ok);
-    if (!ok)
-        return;
-    Bsi_block.SerNum = QString::number(tmpi, 10).toInt(0,16);
-    cn->Send(CN_Wsn, &(Bsi_block.SerNum), 4);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
-        GetBsi();
 }
 
 void Coma::SetMipDlg()
@@ -720,6 +730,231 @@ void Coma::SetMipConPar()
     pc.MIPASDU = spb->value();
     emit mipparset();
 }
+
+void Coma::EmulA()
+{
+    if (pc.Emul) // если уже в режиме эмуляции, выход
+        return;
+    Bsi_block.MType = MT_A;
+    Bsi_block.SerNum = 0x12345678;
+    Bsi_block.Hth = 0x00;
+    pc.Emul = true;
+    AllIsOk();
+}
+
+void Coma::EmulE()
+{
+    if (pc.Emul) // если уже в режиме эмуляции, выход
+        return;
+    Bsi_block.MType = MT_E;
+    QDialog *dlg = new QDialog(this);
+    dlg->setObjectName("emuledlg");
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QLabel *lbl = new QLabel("Выберите тип модуля:");
+    hlyout->addWidget(lbl);
+    QStringListModel *mdl = new QStringListModel;
+    QStringList sl = QStringList() << "Э2Т0Н" << "Э1Т1Н" << "Э0Т2Н";
+    mdl->setStringList(sl);
+    QComboBox *cb = new QComboBox;
+    cb->setModel(mdl);
+    cb->setObjectName("extxn");
+    hlyout->addWidget(cb);
+    lyout->addLayout(hlyout);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked()),this,SLOT(StartEmulE()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    QSizePolicy fixed(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    dlg->setSizePolicy(fixed);
+    dlg->exec();
+}
+
+void Coma::StartEmulE()
+{
+    QDialog *dlg = this->findChild<QDialog *>("emuledlg");
+    QComboBox *cb = this->findChild<QComboBox *>("extxn");
+    if ((dlg == 0) || (cb == 0))
+    {
+        MAINDBG;
+        return;
+    }
+    switch (cb->currentIndex())
+    {
+    case 0:
+        pc.MType1 = MTE_2T0N;
+        break;
+    case 1:
+        pc.MType1 = MTE_1T1N;
+        break;
+    case 2:
+        pc.MType1 = MTE_0T2N;
+        break;
+    default:
+        MAINDBG;
+        return;
+        break;
+    }
+    dlg->close();
+
+    Bsi_block.SerNum = 0x12345678;
+    Bsi_block.Hth = 0x00;
+    pc.Emul = true;
+    AllIsOk();
+}
+
+void Coma::WriteSN()
+{
+    bool ok = false;
+    qint32 tmpi = QInputDialog::getInt(this, "Серийный номер", "Серийный номер модуля:", 0, 1, 99999999,\
+                                1, &ok);
+    if (!ok)
+        return;
+    Bsi_block.SerNum = QString::number(tmpi, 10).toInt(0,16);
+    cn->Send(CN_Wsn, &(Bsi_block.SerNum), 4);
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        GetBsi();
+}
+
+void Coma::WriteHW()
+{
+    QDialog *dlg = new QDialog(this);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setObjectName("hwdlg");
+    dlg->setWindowTitle("Ввод версии аппаратуры");
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QHBoxLayout *lyout = new QHBoxLayout;
+    s_tqspinbox *spb = new s_tqspinbox;
+    spb->setObjectName("hwmv");
+    spb->setDecimals(0);
+    spb->setMinimum(0);
+    spb->setMaximum(15);
+    spb->setValue(1);
+    QLabel *lbl = new QLabel("Версия аппаратуры модуля:");
+    lyout->addWidget(lbl);
+    lyout->addWidget(spb);
+    lbl = new QLabel(".");
+    lyout->addWidget(lbl);
+    spb = new s_tqspinbox;
+    spb->setObjectName("hwlv");
+    spb->setDecimals(0);
+    spb->setMinimum(0);
+    spb->setMaximum(15);
+    spb->setValue(0);
+    lyout->addWidget(spb);
+    lbl = new QLabel("-");
+    lyout->addWidget(lbl);
+    spb = new s_tqspinbox;
+    spb->setObjectName("hwlv");
+    spb->setDecimals(0);
+    spb->setMinimum(0);
+    spb->setMaximum(65535);
+    spb->setValue(0);
+    lyout->addWidget(spb);
+    vlyout->addLayout(lyout);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SendHW()));
+    vlyout->addWidget(pb);
+    dlg->setLayout(vlyout);
+    dlg->exec();
+}
+
+void Coma::SendHW()
+{
+    QDialog *dlg = this->findChild<QDialog *>("hwdlg");
+    if (dlg == 0)
+    {
+        MAINDBG;
+        return;
+    }
+    s_tqspinbox *spbmv = this->findChild<s_tqspinbox *>("hwmv");
+    s_tqspinbox *spblv = this->findChild<s_tqspinbox *>("hwlv");
+    s_tqspinbox *spbsv = this->findChild<s_tqspinbox *>("hwsv");
+    if ((spbmv == 0) || (spblv == 0) || (spbsv == 0))
+    {
+        MAINDBG;
+        return;
+    }
+    quint32 tmpi = spbmv->value();
+    tmpi <<= 24;
+    tmpi &= (static_cast<quint32>(spblv->value()) << 16);
+    tmpi &= static_cast<quint32>(spbsv->value());
+    cn->Send(CN_WHv, &tmpi, 4);
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        GetBsi();
+    else
+    {
+        MAINER("Проблема при записи аппаратуры модуля");
+        return;
+    }
+    dlg->close();
+}
+
+void Coma::StartSettingsDialog()
+{
+    QDialog *dlg = new QDialog(this);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setObjectName("settingsdlg");
+    dlg->setWindowTitle("Настройки");
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QLabel *lbl = new QLabel("Показывать окно ошибок при их появлении");
+    hlyout->addWidget(lbl);
+    QCheckBox *cb = new QCheckBox;
+    QSettings *sets = new QSettings("EvelSoft","COMA");
+    cb->setChecked(sets->value("ShowErrWindow", "1").toBool());
+    cb->setObjectName("showerrcb");
+    hlyout->addWidget(cb);
+    vlyout->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
+    lbl = new QLabel("Задержка появления окна ошибок, с");
+    hlyout->addWidget(lbl);
+    s_tqspinbox *spb = new s_tqspinbox;
+    spb->setObjectName("errdelayspb");
+    spb->setDecimals(0);
+    spb->setMinimum(1);
+    spb->setMaximum(10);
+    spb->setValue(sets->value("ErrWindowDelay", "5").toDouble());
+    hlyout->addWidget(spb);
+    vlyout->addLayout(hlyout);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked()),this,SLOT(AcceptSettings()));
+    vlyout->addWidget(pb);
+    dlg->setLayout(vlyout);
+    dlg->exec();
+}
+
+void Coma::AcceptSettings()
+{
+    QDialog *dlg = this->findChild<QDialog *>("settingsdlg");
+    if (dlg == 0)
+    {
+        MAINDBG;
+        return;
+    }
+    s_tqspinbox *spb = this->findChild<s_tqspinbox *>("errdelayspb");
+    QCheckBox *cb = this->findChild<QCheckBox *>("showerrcb");
+    if ((spb == 0) || (cb == 0))
+    {
+        MAINDBG;
+        return;
+    }
+    QSettings *sets = new QSettings("EvelSoft","COMA");
+    sets->setValue("ErrWindowDelay",spb->value());
+    sets->setValue("ShowErrWindow", cb->isChecked());
+    pc.ErrWindowDelay = spb->value();
+    pc.ShowErrWindow = cb->isChecked();
+    if (ERTimer->isActive())
+        ERTimer->stop();
+    ERTimer->setInterval(pc.ErrWindowDelay*1000);
+    dlg->close();
+}
+
+// ############################## всплывающие окошки ###############################
 
 void Coma::resizeEvent(QResizeEvent *e)
 {
@@ -840,7 +1075,7 @@ void Coma::UpdateErrorProtocol()
     }
     if (pc.ermsgpool.isEmpty())
         return;
-    if (!ERTimerIsOn)
+    if (!ERTimerIsOn && pc.ShowErrWindow)
     {
         ERTimerIsOn = true;
         ERHide = true;
@@ -859,70 +1094,4 @@ void Coma::HideErrorProtocol()
     ERTimer->stop();
     ERTimerIsOn = false;
     ShowOrHideSlideER();
-}
-
-void Coma::EmulA()
-{
-    Bsi_block.MType = MT_A;
-    Bsi_block.SerNum = 0x12345678;
-    Bsi_block.Hth = 0x00;
-    pc.Emul = true;
-    AllIsOk();
-}
-
-void Coma::EmulE()
-{
-    Bsi_block.MType = MT_E;
-    QDialog *dlg = new QDialog(this);
-    dlg->setObjectName("emuledlg");
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QLabel *lbl = new QLabel("Выберите тип модуля:");
-    hlyout->addWidget(lbl);
-    QStringListModel *mdl = new QStringListModel;
-    QStringList sl = QStringList() << "Э2Т0Н" << "Э1Т1Н" << "Э0Т2Н";
-    mdl->setStringList(sl);
-    QComboBox *cb = new QComboBox;
-    cb->setModel(mdl);
-    cb->setObjectName("extxn");
-    hlyout->addWidget(cb);
-    lyout->addLayout(hlyout);
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked()),this,SLOT(StartEmulE()));
-    lyout->addWidget(pb);
-    dlg->setLayout(lyout);
-    dlg->exec();
-}
-
-void Coma::StartEmulE()
-{
-    QDialog *dlg = this->findChild<QDialog *>("emuldlg");
-    QComboBox *cb = this->findChild<QComboBox *>("extxn");
-    if ((dlg == 0) || (cb == 0))
-    {
-        MAINDBG;
-        return;
-    }
-    switch (cb->currentIndex())
-    {
-    case 0:
-        pc.MType1 = MTE_2T0N;
-        break;
-    case 1:
-        pc.MType1 = MTE_1T1N;
-        break;
-    case 2:
-        pc.MType1 = MTE_0T2N;
-        break;
-    default:
-        MAINDBG;
-        return;
-        break;
-    }
-    dlg->close();
-
-    Bsi_block.SerNum = 0x12345678;
-    Bsi_block.Hth = 0x00;
-    pc.Emul = true;
-    AllIsOk();
 }

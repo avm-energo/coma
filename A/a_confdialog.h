@@ -35,6 +35,11 @@
 #define ABCI_W_104       10
 #define ACONF_NUM       24
 
+#define ACONFER(a)       ERMSG(publicclass::ER_ACONF,__LINE__,a)
+#define ACONFDBG         DBGMSG(publicclass::ER_ACONF,__LINE__)
+#define ACONFWARN        WARNMSG(publicclass::ER_ACONF,__LINE__)
+#define ACONFINFO(a)     INFOMSG(publicclass::ER_ACONF,__LINE__,a)
+
 class a_confdialog : public QDialog
 {
     Q_OBJECT
