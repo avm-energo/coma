@@ -22,7 +22,7 @@
 #include "canal.h"
 #include "publicclass.h"
 
-#define PROGNAME    "КОМА 1.0 #0066"
+#define PROGNAME    "КОМА 1.0 #0067"
 
 #define MAINER(a)       ERMSG(publicclass::ER_MAIN,__LINE__,a)
 #define MAINDBG         DBGMSG(publicclass::ER_MAIN,__LINE__)
@@ -48,6 +48,7 @@ private:
     bool SWHide,ERHide, ERTimerIsOn;
     QRect SWGeometry, ERGeometry;
     QTimer *ERTimer;
+    QMetaObject::Connection pbh1, pbh2;
 
     QString Hth[32];
     a_checkdialog *ACheckDialog;
@@ -101,6 +102,8 @@ private slots:
     void StartEmulE();
     void StartSettingsDialog();
     void AcceptSettings();
+    void SetProgressBarSize(quint32);
+    void SetProgressBar(quint32);
 
 protected:
     void closeEvent(QCloseEvent *e);

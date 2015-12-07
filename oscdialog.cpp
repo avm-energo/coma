@@ -18,6 +18,13 @@ oscdialog::oscdialog(QWidget *parent) :
     QDialog(parent)
 {
     SetupUI();
+    OscInfo = 0;
+}
+
+oscdialog::~oscdialog()
+{
+    if (OscInfo != 0)
+        delete OscInfo;
 }
 
 void oscdialog::SetupUI()
@@ -36,11 +43,11 @@ void oscdialog::SetupUI()
 
 void oscdialog::GetOscInfo()
 {
-//    connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
-//    connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
-//    OscInfo = new QByteArray;
-    OscInfo.resize(30000);
-    cn->Send(CN_GNosc,OscInfo.data());
+    if (OscInfo != 0)
+        delete OscInfo;
+    OscInfo = new QByteArray;
+    OscInfo->resize(30000);
+    cn->Send(CN_GNosc,&(OscInfo->data()[0]));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -49,9 +56,6 @@ void oscdialog::GetOscInfo()
 
 void oscdialog::ProcessOscInfo()
 {
-//    disconnect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
-//    disconnect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
-//    emit endprogressbar();
     QList<QStringList> lsl;
     tm->ClearModel();
     tm->addColumn("#");
@@ -63,18 +67,18 @@ void oscdialog::ProcessOscInfo()
     QStringList Num, Cha, Tim, Dwld;
     for (quint32 i = 0; i < OscInfoSize; i+= 16)
     {
-        quint32 oscnum = static_cast<quint8>(OscInfo.at(i));
-        oscnum += static_cast<quint8>(OscInfo.at(i+1))*256;
-        quint32 chnum = static_cast<quint8>(OscInfo.at(i+4));
-        chnum += static_cast<quint8>(OscInfo.at(i+5))*256;
-        quint32 unixtime = static_cast<quint8>(OscInfo.at(i+8));
-        unixtime += static_cast<quint8>(OscInfo.at(i+9))*256;
-        unixtime += static_cast<quint8>(OscInfo.at(i+10))*65536;
-        unixtime += static_cast<quint8>(OscInfo.at(i+11))*16777216;
-        quint32 timens = static_cast<quint8>(OscInfo.at(i+12));
-        timens += static_cast<quint8>(OscInfo.at(i+13))*256;
-        timens += static_cast<quint8>(OscInfo.at(i+14))*65536;
-        timens += static_cast<quint8>(OscInfo.at(i+15))*16777216;
+        quint32 oscnum = static_cast<quint8>(OscInfo->at(i));
+        oscnum += static_cast<quint8>(OscInfo->at(i+1))*256;
+        quint32 chnum = static_cast<quint8>(OscInfo->at(i+4));
+        chnum += static_cast<quint8>(OscInfo->at(i+5))*256;
+        quint32 unixtime = static_cast<quint8>(OscInfo->at(i+8));
+        unixtime += static_cast<quint8>(OscInfo->at(i+9))*256;
+        unixtime += static_cast<quint8>(OscInfo->at(i+10))*65536;
+        unixtime += static_cast<quint8>(OscInfo->at(i+11))*16777216;
+        quint32 timens = static_cast<quint8>(OscInfo->at(i+12));
+        timens += static_cast<quint8>(OscInfo->at(i+13))*256;
+        timens += static_cast<quint8>(OscInfo->at(i+14))*65536;
+        timens += static_cast<quint8>(OscInfo->at(i+15))*16777216;
         QDateTime tme = QDateTime::fromTime_t(unixtime);
         QString ms = QString::number((timens/1000000));
         QString mcs = QString::number(((timens-ms.toInt()*1000000)/1000));
@@ -94,7 +98,10 @@ void oscdialog::ProcessOscInfo()
     QApplication::restoreOverrideCursor();
     s_tqTableView *tv = this->findChild<s_tqTableView *>("osctv");
     if (tv == 0)
+    {
+        OSCDBG;
         return; // !!! системная проблема
+    }
     QItemSelectionModel *m = tv->selectionModel();
     tv->setModel(tm);
     delete m;
@@ -105,40 +112,12 @@ void oscdialog::ProcessOscInfo()
     tv->resizeColumnsToContents();
 }
 
-void oscdialog::SetProgressBar(quint32 cursize)
-{
-    Q_UNUSED(cursize);
- /*   QProgressBar *prb = this->findChild<QProgressBar *>("oscprb");
-    if (prb != 0)
-        prb->setValue(cursize); */
-}
-
-void oscdialog::SetProgressBarSize(quint32 size)
-{
-    Q_UNUSED(size);
-/*    QDialog *dlg = new QDialog;
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setWindowModality(Qt::WindowModal);
-    connect(this,SIGNAL(endprogressbar()),dlg,SLOT(close()));
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("Загрузка данных...");
-    lyout->addWidget(lbl,0,Qt::AlignTop);
-    QProgressBar *prb = new QProgressBar;
-    prb->setObjectName("oscprb");
-    prb->setOrientation(Qt::Vertical);
-    prb->setMinimum(0);
-    prb->setMaximum(size);
-    lyout->addWidget(prb);
-    dlg->setLayout(lyout);
-    dlg->setVisible(true); */
-}
-
 void oscdialog::EndExtractOsc()
 {
-    quint32 OscLength = static_cast<quint8>(OscInfo.at(0));
-    OscLength += static_cast<quint8>(OscInfo.at(1))*256;
-    OscLength += static_cast<quint8>(OscInfo.at(2))*65536;
-    OscLength += static_cast<quint8>(OscInfo.at(3))*16777216;
+    quint32 OscLength = static_cast<quint8>(OscInfo->at(0));
+    OscLength += static_cast<quint8>(OscInfo->at(1))*256;
+    OscLength += static_cast<quint8>(OscInfo->at(2))*65536;
+    OscLength += static_cast<quint8>(OscInfo->at(3))*16777216;
     QByteArray OscData;
     switch(pc.MType)
     {
@@ -148,9 +127,15 @@ void oscdialog::EndExtractOsc()
         Config[0] = {MT_A_OSCTYPE, float_TYPE, sizeof(float), (OscLength-24)/sizeof(float),OscData.data()};
         // 24=sizeof(FFFF-block)+sizeof(FFFF-block DataRec)
         Config[1] = {0xFFFF, 0, 0, 0, NULL};
-        int res = pc.RestoreDataMem(OscInfo.data(),OscLength+12,Config); // 12 = +DataHeader
+        int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +DataHeader
         if (res)
+        {
+            if (res < pc.errmsgs.size())
+                OSCER(pc.errmsgs.at(res));
+            else
+                OSCER("Произошла неведомая фигня #"+QString::number(res,10));
             return; // !!! ошибка разбора формата С2
+        }
         break;
     }
     case MT_E:
@@ -171,7 +156,10 @@ void oscdialog::EndExtractOsc()
     GivenFilename.insert(0, QString::number(OscHeader.ChNum)+"  ");
     QString filename = QFileDialog::getSaveFileName(this,"Сохранить осциллограмму",GivenFilename,"Excel files (*.xlsx)");
     if (filename == "")
+    {
+        OSCER("Не задано имя файла");
         return; // !!! ошибка - не задано имя файла
+    }
     QXlsx::Document xlsx(filename.toUtf8());
     quint64 StartTime = static_cast<quint64>(OscHeader.UnixTime)*1000000000L + OscHeader.NsTime;
     xlsx.write(1,1,QVariant("Модуль "+pc.ModuleTypeString));
@@ -201,11 +189,11 @@ void oscdialog::GetOsc(QModelIndex idx)
     quint32 oscnum = tm->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(); // номер осциллограммы
     QString OscDateTime = tm->data(idx.sibling(idx.row(),2),Qt::DisplayRole).toString(); // дата и время создания осциллограммы
 //    OscInfo = new QByteArray;
-    OscInfo.resize(30000);
+    OscInfo->resize(30000);
     GivenFilename = OscDateTime;
     GivenFilename.replace("/","-");
     GivenFilename.replace(":","_");
-    cn->Send(CN_GBosc,OscInfo.data(),0,oscnum);
+    cn->Send(CN_GBosc,OscInfo->data(),0,oscnum);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)

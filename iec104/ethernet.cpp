@@ -5,10 +5,11 @@
 #include "../publicclass.h"
 
 ethernet::ethernet(QObject *parent) :
-    QObject(parent)
+    QThread(parent)
 {
     OutDataBuf.clear();
     ClosePortAndFinishThread = false;
+    moveToThread(this);
 }
 
 void ethernet::run()

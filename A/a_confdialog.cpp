@@ -682,12 +682,11 @@ void a_confdialog::SetCType(int num)
 
 void a_confdialog::WriteConfDataToModule()
 {
-    connect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
     cn->Send(CN_WF, &Bci_block, sizeof(Bci_block), 2, Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
-        QMessageBox::information(this,"Успешно!","Операция проведена успешно!");
+        ACONFINFO("Операция проведена успешно!");
 }
 
 void a_confdialog::SetNewConf()

@@ -166,7 +166,7 @@ public:
 
     QSerialPort serial;
     qint32 MType, MType1, SerNum;
-    quint32 CpuIdHigh, CpuIdMid, CpuIdLow;
+    quint32 CpuIdHigh, CpuIdMid, CpuIdLow, Health;
 
     QStringList AMTypes, DMTypes, EMTypes;
     SerialThread *SThread;
@@ -241,7 +241,8 @@ public:
         ER_ETUNE,
         ER_ECONF,
         ER_ATUNE,
-        ER_ACONF
+        ER_ACONF,
+        ER_OSC
     };
 
     static QMap<int, QString> ermsgs()
@@ -254,6 +255,7 @@ public:
         map.insert(ER_ECONF, "Конф. Э");
         map.insert(ER_ATUNE, "Настр. A");
         map.insert(ER_ACONF, "Конф. A");
+        map.insert(ER_OSC, "Осциллограммы");
         return map;
     }
     QList<ermsg> ermsgpool;

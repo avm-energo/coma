@@ -7,6 +7,7 @@
 #include <QStringListModel>
 #include <QPropertyAnimation>
 #include <QMessageBox>
+#include <QProgressBar>
 #include <QMenu>
 #include <QMenuBar>
 #include <QFont>
@@ -171,8 +172,12 @@ Coma::Coma(QWidget *parent)
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
 
+    pbh1 = connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
+    pbh2 = connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
     connect(cn,SIGNAL(gotsomedata(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(cn,SIGNAL(somedatawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+    connect(this,SIGNAL(stopall()),cn,SLOT(stop()));
+    connect(cn,SIGNAL(finished()),cn,SLOT(deleteLater())); // падает с этой строкой
 
     if (pc.result)
         MAININFO("Не найден файл с сообщениями об ошибках!");
@@ -209,6 +214,7 @@ Coma::Coma(QWidget *parent)
     ErrorWidget->hide();
     ERGeometry = ErrorWidget->geometry();
     ERHide = true;
+    cn->start();
 }
 
 void Coma::closeEvent(QCloseEvent *e)
@@ -224,6 +230,16 @@ Coma::~Coma()
     sets->setValue("mip/ip",pc.MIPIP);
     sets->setValue("Port", pc.Port);
     sets->setValue("erpath",pc.ermsgpath);
+/*    cn->quit();
+    if (!cn->wait(5000))
+    {
+        cn->terminate();
+        cn->wait();
+    } */
+/*    if (pbh1)
+        disconnect(pbh1);
+    if (pbh2)
+        disconnect(pbh2); */
 }
 
 void Coma::AddLabelAndLineedit(QVBoxLayout *lyout, QString caption, QString lename)
@@ -471,6 +487,7 @@ void Coma::FillBsi(QString MType, bool clear)
     if (le == 0)
         return;
     le->setText((clear)?"":"0x"+QString::number(Bsi_block.Rst, 16));
+    pc.Health = Bsi_block.Hth;
     // расшифровка Hth
     for (int i = 0; i < 32; i++)
     {
@@ -1094,4 +1111,34 @@ void Coma::HideErrorProtocol()
     ERTimer->stop();
     ERTimerIsOn = false;
     ShowOrHideSlideER();
+}
+
+void Coma::SetProgressBar(quint32 cursize)
+{
+//    Q_UNUSED(cursize);
+    QProgressBar *prb = this->findChild<QProgressBar *>("oscprb");
+    if (prb != 0)
+        prb->setValue(cursize);
+}
+
+void Coma::SetProgressBarSize(quint32 size)
+{
+//    Q_UNUSED(size);
+    QDialog *dlg = new QDialog(this);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+//    dlg->setWindowModality(Qt::WindowModal);
+    connect(cn,SIGNAL(SendEnd()),dlg,SLOT(close()));
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QLabel *lbl = new QLabel("Загрузка данных...");
+    lyout->addWidget(lbl,0,Qt::AlignTop);
+    QProgressBar *prb = new QProgressBar;
+    prb->setObjectName("oscprb");
+    prb->setOrientation(Qt::Vertical);
+    prb->setMinimum(0);
+    prb->setMaximum(size);
+    lyout->addWidget(prb);
+    dlg->setLayout(lyout);
+    dlg->setVisible(true);
+    if (!cn->Busy)
+        dlg->close();
 }

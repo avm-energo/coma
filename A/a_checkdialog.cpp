@@ -19,7 +19,7 @@ a_checkdialog::a_checkdialog(QWidget *parent) :
     BdMeasurementsActive = BdaMeasurementsActive = false;
     timer = new QTimer;
     timer->setObjectName("timer");
-    timer->setInterval(2000);
+    timer->setInterval(1000);
     OddTimeout = true;
     connect(timer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));
     timer->start();
@@ -433,7 +433,7 @@ void a_checkdialog::RefreshBda()
 void a_checkdialog::SetTimerPeriod(int per)
 {
     timer->stop();
-    timer->setInterval(per);
+    timer->setInterval(per / 2); // /2, т.к. измерения проводятся за два раза - Bd и Bda
     timer->start();
 }
 

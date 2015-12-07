@@ -399,8 +399,10 @@ void a_tunedialog::SaveToFile()
 
 void a_tunedialog::ShowErrMsg(int ermsg)
 {
-    QMessageBox::critical(this,"error!",pc.errmsgs.at(ermsg));
-}
+    if (ermsg < pc.errmsgs.size())
+        ATUNEER(pc.errmsgs.at(ermsg));
+    else
+        ATUNEER("Произошла неведомая фигня #"+QString::number(ermsg,10));}
 
 void a_tunedialog::UpdateProper(bool tmpb)
 {

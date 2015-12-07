@@ -4,24 +4,22 @@
 #include "publicclass.h"
 
 SerialThread::SerialThread(QObject *parent) :
-    QObject(parent)
+    QThread(parent)
 {
     DataToSend = new QByteArray(1000, 0x00);
     OutDataBuf.clear();
     ClosePortAndFinishThread = false;
-
+    moveToThread(this);
 }
 
 void SerialThread::run()
 {
+    connect(this,SIGNAL(finished()), this,SLOT(deleteLater()));
     port = new QSerialPort;
     port->setPort(portinfo);
     connect(port,SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(Error(QSerialPort::SerialPortError)));
     if (!port->open(QIODevice::ReadWrite))
-    {
-        emit finished();
         return;
-    }
     port->setBaudRate(115200);
     port->setParity(QSerialPort::NoParity);
     port->setDataBits(QSerialPort::Data8);
@@ -44,7 +42,6 @@ void SerialThread::run()
                     qApp->processEvents();
                 delete port;
             }
-            emit finished();
             return;
         }
         QThread::msleep(10);
@@ -84,5 +81,9 @@ void SerialThread::Error(QSerialPort::SerialPortError err)
     if (!err) // нет ошибок
         return;
     quint16 ernum = err + 50;
+    if (ernum < pc.errmsgs.size())
+        SERIALER(pc.errmsgs.at(ernum));
+    else
+        SERIALER("Произошла неведомая фигня #"+QString::number(ernum,10));
     SERIALER(pc.errmsgs.at(ernum));
 }

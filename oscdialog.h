@@ -9,18 +9,24 @@
 
 #define MT_A_OSCTYPE    0x3e8
 
+#define OSCER(a)       ERMSG(publicclass::ER_OSC,__LINE__,a)
+#define OSCDBG         DBGMSG(publicclass::ER_OSC,__LINE__)
+#define OSCWARN        WARNMSG(publicclass::ER_OSC,__LINE__)
+#define OSCINFO(a)     INFOMSG(publicclass::ER_OSC,__LINE__,a)
+
 class oscdialog : public QDialog
 {
     Q_OBJECT
 
 public:
     explicit oscdialog(QWidget *parent=0);
+    ~oscdialog();
 
 private:
     void SetupUI();
 
     s_tablemodel *tm;
-    QByteArray OscInfo;
+    QByteArray *OscInfo;
     QString GivenFilename;
     publicclass::DataRec Config[2];
     typedef struct
@@ -36,13 +42,10 @@ private:
     OscHeader_type OscHeader;
 
 signals:
-    void endprogressbar();
 
 private slots:
     void GetOscInfo();
     void ProcessOscInfo();
-    void SetProgressBarSize(quint32);
-    void SetProgressBar(quint32);
     void EndExtractOsc();
     void GetOsc(QModelIndex);
 };

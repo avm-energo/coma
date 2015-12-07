@@ -59,7 +59,6 @@ d_confdialog::d_confdialog(QWidget *parent) :
     }
 
     setAttribute(Qt::WA_DeleteOnClose);
-//    cn = new canal;
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");

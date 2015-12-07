@@ -143,10 +143,10 @@ int publicclass::StoreDataMem(void *mem, DataRec *dr) //0 - успешно, ин
         quint32 tmpi = sizeof(DataRec)-sizeof(void*);
         memcpy(m,R,tmpi);
         D.size += tmpi;
-        if(R->id==0xFFFF)
-            break;
         for(i=0;i<tmpi;i++)
             updCRC32(((unsigned char *)R)[i],&crc);
+        if(R->id==0xFFFF)
+            break;
         m+=tmpi;
         if(R->thedata)
         {
@@ -209,6 +209,10 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       return CN_S2SIZEERROR; // выход за границу принятых байт
   memcpy(&dh,m,tmpi);
   m+=tmpi;
+  for (i=0; i<memsize; i++)
+      updCRC32(m[i], &crc);
+  if (dh.crc32!=crc)
+      return CN_S2CRCERROR;
   for(;;)
   {
       tmpi = sizeof(DataRec)-sizeof(void*);
@@ -218,10 +222,10 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       memcpy(&R,m,tmpi);
       sz+=tmpi;
       m+=tmpi;
+//      for(i=0;i<tmpi;i++)
+//          updCRC32((reinterpret_cast<unsigned char *>(&R))[i],&crc);
       if(R.id==0xFFFF)
           break;
-      for(i=0;i<tmpi;i++)
-          updCRC32((reinterpret_cast<unsigned char *>(&R))[i],&crc);
       r=FindElem(dr,R.id);
       if(!r) //элемент не найден в описании, пропускаем
       {
@@ -231,11 +235,11 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
               return CN_S2SIZEERROR; // выход за границу принятых байт
 //          memcpy(R.thedata,m,tmpi);
           m += tmpi;
-          for(i=0;i<tmpi;i++)
+/*          for(i=0;i<tmpi;i++)
           {
               unsigned char tmpc = *m;
               updCRC32(tmpc,&crc);
-          }
+          } */
           sz += tmpi;
           continue;
       }
@@ -248,11 +252,9 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       memcpy(r->thedata,m,tmpi);
       sz += tmpi;
       m += tmpi;
-      for(i=0;i<tmpi;i++)
-          updCRC32((static_cast<unsigned char *>(r->thedata))[i],&crc);
+/*      for(i=0;i<tmpi;i++)
+          updCRC32((static_cast<unsigned char *>(r->thedata))[i],&crc); */
   }
-  if(dh.crc32!=crc)
-      return CN_S2CRCERROR;
   if(dh.size!=sz)
       return CN_S2DHSZERROR;
   return 0;
