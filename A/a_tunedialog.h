@@ -4,11 +4,13 @@
 #include <QDialog>
 //#include "canal.h"
 
+#define ATUNENUMPOINTS  64 // количество точек, по которым выдаются значения в блоке Bda
+
 #define TUNEFILELENGTH  256
 
 #define ATUNEER(a)       ERMSG(publicclass::ER_ATUNE,__LINE__,a)
 #define ATUNEDBG         DBGMSG(publicclass::ER_ATUNE,__LINE__)
-#define ATUNEWARN        WARNMSG(publicclass::ER_ATUNE,__LINE__)
+#define ATUNEWARN(a)    WARNMSG(publicclass::ER_ATUNE,__LINE__,a)
 #define ATUNEINFO(a)     INFOMSG(publicclass::ER_ATUNE,__LINE__,a)
 
 class a_tunedialog : public QDialog
@@ -44,18 +46,18 @@ private:
     Bac Bac_block[16];
 
     void SetupUI();
-    void tune(int);
+    bool tune(int Type, int ChNum);
     void ShowErrMsg(int);
-    void CalcNewTuneCoefs();
+    bool CalcNewTuneCoef(int ChNum);
+    bool RefreshTuneCoef(int ChNum);
     void RefreshTuneCoefs();
-    void CheckAndShowTune0();
-    void CheckAndShowTune5();
-    void CheckAndShowTune20();
+    bool CheckAndShowTune0(int ChNum);
+    bool CheckAndShowTune5(int ChNum);
+    bool CheckAndShowTune20(int ChNum);
+    bool CheckTuneCoefs();
 
 private slots:
-    void tune0();
-    void tune5();
-    void tune20();
+    void StartTune();
     void ReadTuneCoefs();
     void WriteTuneCoefs();
     void SaveToFile();

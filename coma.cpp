@@ -42,7 +42,6 @@ Coma::Coma(QWidget *parent)
     setWindowTitle(PROGNAME);
     setMinimumSize(QSize(800, 600));
     DialogsAreReadyAlready = false;
-    cn = new canal;
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     setMinimumHeight(650);
@@ -172,13 +171,6 @@ Coma::Coma(QWidget *parent)
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
 
-    pbh1 = connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
-    pbh2 = connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
-    connect(cn,SIGNAL(gotsomedata(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-    connect(cn,SIGNAL(somedatawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-    connect(this,SIGNAL(stopall()),cn,SLOT(stop()));
-    connect(cn,SIGNAL(finished()),cn,SLOT(deleteLater())); // падает с этой строкой
-
     if (pc.result)
         MAININFO("Не найден файл с сообщениями об ошибках!");
 
@@ -214,12 +206,19 @@ Coma::Coma(QWidget *parent)
     ErrorWidget->hide();
     ERGeometry = ErrorWidget->geometry();
     ERHide = true;
-    cn->start();
 }
 
 void Coma::closeEvent(QCloseEvent *e)
 {
-    emit stopall();
+    if (cn)
+    {
+        QThread *CanalThread = cn->thread();
+        if (CanalThread->isRunning())
+        {
+            CanalThread->quit();
+            CanalThread->wait(1000);
+        }
+    }
     e->accept();
 }
 
@@ -230,16 +229,6 @@ Coma::~Coma()
     sets->setValue("mip/ip",pc.MIPIP);
     sets->setValue("Port", pc.Port);
     sets->setValue("erpath",pc.ermsgpath);
-/*    cn->quit();
-    if (!cn->wait(5000))
-    {
-        cn->terminate();
-        cn->wait();
-    } */
-/*    if (pbh1)
-        disconnect(pbh1);
-    if (pbh2)
-        disconnect(pbh2); */
 }
 
 void Coma::AddLabelAndLineedit(QVBoxLayout *lyout, QString caption, QString lename)
@@ -315,6 +304,18 @@ void Coma::Connect()
 
 void Coma::Next()
 {
+    cn = new canal;
+    QThread *CanalThread = new QThread(this);
+    cn->moveToThread(CanalThread);
+    connect(CanalThread, &QThread::finished, cn, &canal::deleteLater);
+    connect(CanalThread, &QThread::finished, CanalThread, &QThread::deleteLater);
+
+    pbh1 = connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
+    pbh2 = connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
+    connect(cn,SIGNAL(gotsomedata(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+    connect(cn,SIGNAL(somedatawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+    CanalThread->start();
+
     QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
     if (info.size() == 0)
     {
@@ -348,6 +349,7 @@ void Coma::Next()
     if (MainTE != 0)
         MainTE->show(); */
     WriteSNAction->setEnabled(true);
+
     GetBsi();
 }
 
@@ -636,6 +638,7 @@ void Coma::Disconnect()
     if (!pc.Emul)
         cn->Disconnect();
     FillBsi("",true);
+    emit stopall();
     DialogsAreReadyAlready = false;
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)

@@ -545,12 +545,48 @@ void a_confdialog::FillConfData()
 
 void a_confdialog::SetChTypData(int num, s_tqComboBox *cb)
 {
-    Bci_block.in_type[cb->getAData().toInt()] = num;
-/*    s_tqCheckBox *chb = this->findChild<s_tqCheckBox *>("chb"+QString::number(i));
-    if (cb->currentIndex() == 0) // канал не используется
-    {
+    int ChNum = cb->getAData().toInt();
+    Bci_block.in_type[ChNum] = num;
+    DisableChannel(ChNum, (num == 0));
+    emit ChannelDisabled(ChNum, (num == 0));
+}
 
-    } */
+void a_confdialog::DisableChannel(int ChNum, bool Disable)
+{
+    s_tqComboBox *cb;
+    s_tqCheckBox *chb = this->findChild<s_tqCheckBox *>("chb"+QString::number(ChNum));
+    if (chb != 0)
+        chb->setVisible(!Disable);
+    cb = this->findChild<s_tqComboBox *>("oscsrccb"+QString::number(ChNum));
+    if (cb != 0)
+        cb->setVisible(!Disable);
+    QLabel *lbl = this->findChild<QLabel *>("oscsrcl"+QString::number(ChNum));
+    if (lbl != 0)
+        lbl->setVisible(!Disable);
+    s_tqspinbox *dspbls = this->findChild<s_tqspinbox *>("inminspb"+QString::number(ChNum));
+    if (dspbls != 0)
+        dspbls->setVisible(!Disable);
+    dspbls = this->findChild<s_tqspinbox *>("inmaxspb"+QString::number(ChNum));
+    if (dspbls != 0)
+        dspbls->setVisible(!Disable);
+    dspbls = this->findChild<s_tqspinbox *>("invminspb"+QString::number(ChNum));
+    if (dspbls != 0)
+        dspbls->setVisible(!Disable);
+    dspbls = this->findChild<s_tqspinbox *>("invmaxspb"+QString::number(ChNum));
+    if (dspbls != 0)
+        dspbls->setVisible(!Disable);
+    dspbls = this->findChild<s_tqspinbox *>("setminminspb"+QString::number(ChNum));
+    if (dspbls != 0)
+        dspbls->setVisible(!Disable);
+    dspbls = this->findChild<s_tqspinbox *>("setminspb"+QString::number(ChNum));
+    if (dspbls != 0)
+        dspbls->setVisible(!Disable);
+    dspbls = this->findChild<s_tqspinbox *>("setmaxspb"+QString::number(ChNum));
+    if (dspbls != 0)
+        dspbls->setVisible(!Disable);
+    dspbls = this->findChild<s_tqspinbox *>("setmaxmaxspb"+QString::number(ChNum));
+    if (dspbls != 0)
+        dspbls->setVisible(!Disable);
 }
 
 void a_confdialog::SetOscDly(int dly)

@@ -89,107 +89,63 @@ void a_tunedialog::SetupUI()
     lyout->addWidget(gb);
     cp1->setLayout(lyout);
 
-    lyout = new QVBoxLayout;
-    gb = new QGroupBox("Настройка нуля");
-    gb->setStyleSheet("QGroupBox {background-color: #99FFCC;}");
-    gb1lyout = new QVBoxLayout;
-    gb2lyout = new QHBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    lbl = new QLabel("Канал");
+    glyout->addWidget(lbl,0,0,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Значение");
+    glyout->addWidget(lbl,0,1,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Настройка нуля");
+    glyout->addWidget(lbl,0,2,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Настройка 20 мА");
+    glyout->addWidget(lbl,0,3,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Настройка 5 В");
+    glyout->addWidget(lbl,0,4,1,1,Qt::AlignCenter);
+    glyout->setColumnStretch(0, 0);
+    glyout->setColumnStretch(1, 3);
+    glyout->setColumnStretch(2, 1);
+    glyout->setColumnStretch(3, 1);
+    glyout->setColumnStretch(4, 1);
     for (i = 0; i < 16; i++)
     {
-        lbl = new QLabel(QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
+        lbl = new QLabel(QString::number(i));
+        glyout->addWidget(lbl,i+1,0,1,1,Qt::AlignCenter);
         lbl = new QLabel("");
-        lbl->setObjectName("tune0ch"+QString::number(i));
+        lbl->setObjectName("tunech"+QString::number(i));
         lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 5);
-        if ((i>1)&&!((i+1)%6))
-        {
-            gb1lyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
-        }
+        glyout->addWidget(lbl,i+1,1,1,1);
+        pb = new QPushButton("Запуск");
+        pb->setObjectName("0"+QString::number(i));
+        connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
+        if (pc.Emul)
+            pb->setEnabled(false);
+        glyout->addWidget(pb,i+1,2,1,1,Qt::AlignCenter);
+        pb = new QPushButton("Запуск");
+        pb->setObjectName("1"+QString::number(i));
+        connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
+        if (pc.Emul)
+            pb->setEnabled(false);
+        glyout->addWidget(pb,i+1,3,1,1,Qt::AlignCenter);
+        pb = new QPushButton("Запуск");
+        pb->setObjectName("2"+QString::number(i));
+        connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
+        if (pc.Emul)
+            pb->setEnabled(false);
+        glyout->addWidget(pb,i+1,4,1,1,Qt::AlignCenter);
     }
-    if (gb2lyout->count())
-        gb1lyout->addLayout(gb2lyout);
-    pb = new QPushButton("Запустить настройку нуля");
-    pb->setStyleSheet("QPushButton {background-color: #99FFCC;}");
-    if (pc.Emul)
-        pb->setEnabled(false);
-    connect(pb,SIGNAL(clicked()),this,SLOT(tune0()));
-    gb1lyout->addWidget(pb);
-    gb->setLayout(gb1lyout);
-    lyout->addWidget(gb);
-
-    gb = new QGroupBox("Настройка 5 В");
-    gb->setStyleSheet("QGroupBox {background-color: #FFCC99;}");
-    gb1lyout = new QVBoxLayout;
-    gb2lyout = new QHBoxLayout;
-    for (i = 0; i < 16; i++)
-    {
-        lbl = new QLabel(QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
-        lbl = new QLabel("");
-        lbl->setObjectName("tune5ch"+QString::number(i));
-        lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 5);
-        if ((i>1)&&!((i+1)%6))
-        {
-            gb1lyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
-        }
-    }
-    if (gb2lyout->count())
-        gb1lyout->addLayout(gb2lyout);
-    pb = new QPushButton("Запустить настройку 5 В");
-    pb->setStyleSheet("QPushButton {background-color: #FFCC99;}");
-    connect(pb,SIGNAL(clicked()),this,SLOT(tune5()));
-    if (pc.Emul)
-        pb->setEnabled(false);
-    gb1lyout->addWidget(pb);
-    gb->setLayout(gb1lyout);
-    lyout->addWidget(gb);
-
-    gb = new QGroupBox("Настройка 20 мА");
-    gb->setStyleSheet("QGroupBox {background-color: #CC99FF;}");
-    gb1lyout = new QVBoxLayout;
-    gb2lyout = new QHBoxLayout;
-    for (i = 0; i < 16; i++)
-    {
-        lbl = new QLabel(QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
-        lbl = new QLabel("");
-        lbl->setObjectName("tune20ch"+QString::number(i));
-        lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 5);
-        if ((i>1)&&!((i+1)%6))
-        {
-            gb1lyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
-        }
-    }
-    if (gb2lyout->count())
-        gb1lyout->addLayout(gb2lyout);
-    pb = new QPushButton("Запустить настройку 20 мА");
-    pb->setStyleSheet("QPushButton {background-color: #CC99FF;}");
-    connect(pb,SIGNAL(clicked()),this,SLOT(tune20()));
-    if (pc.Emul)
-        pb->setEnabled(false);
-    gb1lyout->addWidget(pb);
-    gb->setLayout(gb1lyout);
-    lyout->addWidget(gb);
-    cp2->setLayout(lyout);
+    cp2->setLayout(glyout);
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
 }
 
-void a_tunedialog::tune(int tunenum)
+bool a_tunedialog::tune(int Type, int ChNum)
 {
-    switch (tunenum)
+    switch (Type)
     {
-    case 0:
+    case 0: // настройка нуля
     {
         if (QMessageBox::information(this,"Настройка",\
-                                     "Переключите входные переключатели на ток,\nустановите напряжение 0 В " \
+                                     "Переключите входные переключатели на напряжение,\nустановите напряжение 0 В " \
                                      "на всех\nвходах модуля и нажмите OK")\
                 == QMessageBox::Ok)
         {
@@ -197,11 +153,45 @@ void a_tunedialog::tune(int tunenum)
             while (cn->Busy)
                 QCoreApplication::processEvents(QEventLoop::AllEvents);
             if (cn->result == CN_OK)
-                CheckAndShowTune0();
+                CheckAndShowTune0(ChNum);
+            else
+            {
+                ATUNEWARN("");
+                return false;
+            }
+        }
+        else
+        {
+            ATUNEWARN("Настройка прервана");
+            return false;
         }
         break;
     }
-    case 5:
+    case 1: // настройка 20 мА
+    {
+        if (QMessageBox::information(this,"Настройка",\
+                                     "Переключите входные переключатели на ток,\nустановите ток 20 мА на всех" \
+                                     "\nвходах модуля и нажмите OK") == QMessageBox::Ok)
+        {
+            cn->Send(CN_Gda, &Bda20, sizeof(Bda));
+            while (cn->Busy)
+                QCoreApplication::processEvents(QEventLoop::AllEvents);
+            if (cn->result == CN_OK)
+                CheckAndShowTune20(ChNum);
+            else
+            {
+                ATUNEWARN("");
+                return false;
+            }
+        }
+        else
+        {
+            ATUNEWARN("Настройка прервана");
+            return false;
+        }
+        break;
+    }
+    case 2: // настройка 5 В
     {
         if (QMessageBox::information(this,"Настройка",\
                                      "Переключите входные переключатели на напряжение,\nустановите напряжение" \
@@ -212,81 +202,156 @@ void a_tunedialog::tune(int tunenum)
             while (cn->Busy)
                 QCoreApplication::processEvents(QEventLoop::AllEvents);
             if (cn->result == CN_OK)
-                CheckAndShowTune5();
+                CheckAndShowTune5(ChNum);
+            else
+            {
+                ATUNEWARN("");
+                return false;
+            }
         }
-        break;
-    }
-    case 20:
-    {
-        if (QMessageBox::information(this,"Настройка",\
-                                     "Переключите входные переключатели на ток,\nустановите ток 20 мА на всех" \
-                                     "\nвходах модуля и нажмите OK") == QMessageBox::Ok)
+        else
         {
-            cn->Send(CN_Gda, &Bda20, sizeof(Bda));
-            while (cn->Busy)
-                QCoreApplication::processEvents(QEventLoop::AllEvents);
-            if (cn->result == CN_OK)
-                CheckAndShowTune20();
+            ATUNEWARN("Настройка прервана");
+            return false;
         }
         break;
     }
     default:
+        return false;
         break;
     }
+    return true;
 }
 
-void a_tunedialog::tune0()
+void a_tunedialog::StartTune()
 {
-    tune(0);
-}
-
-void a_tunedialog::CheckAndShowTune0()
-{
-    for (int i = 0; i < 16; i++)
+    QString AllNum = sender()->objectName();
+    if (!AllNum.isEmpty())
     {
-        QLabel *lbl = this->findChild<QLabel *>("tune0ch"+QString::number(i));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda0.sin[i]/Z,16));
+        int Type = AllNum.at(0).digitValue();
+        if (Type != -1)
+        {
+            int ChNum = AllNum.right(AllNum.size()-1).toInt();
+            if (ChNum != -1)
+            {
+                QPushButton *pb = qobject_cast<QPushButton *>(sender());
+                if (tune(Type, ChNum))
+                {
+                    if (pb != 0)
+                        pb->setStyleSheet("QPushButton {background-color: #FFE0C0;}");
+                    ATUNEINFO("Успешно");
+                }
+                else
+                {
+                    if (pb != 0)
+                        pb->setStyleSheet("QPushButton {background-color: #D0D0D0;}");
+                    ATUNEWARN("Настройка не удалась");
+                }
+            }
+            else
+                ATUNEDBG;
+        }
+        else
+            ATUNEDBG;
     }
-    CalcNewTuneCoefs();
-    RefreshTuneCoefs();
+    else
+        ATUNEDBG;
 }
 
-void a_tunedialog::tune5()
+bool a_tunedialog::CheckAndShowTune0(int ChNum)
 {
-    tune(5);
-}
-
-void a_tunedialog::CheckAndShowTune5()
-{
-    for (int i = 0; i < 16; i++)
+    QLabel *lbl = this->findChild<QLabel *>("tunech"+QString::number(ChNum));
+    if (lbl == 0)
     {
-        QLabel *lbl = this->findChild<QLabel *>("tune5ch"+QString::number(i));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda5.sin[i]/Z,16));
+        ATUNEDBG;
+        return false;
     }
-    CalcNewTuneCoefs();
-    RefreshTuneCoefs();
+    lbl->setText(QString::number(Bda0.sin[ChNum]/ATUNENUMPOINTS,16));
+    if (!CalcNewTuneCoef(ChNum))
+        return false;
+    if (!RefreshTuneCoef(ChNum))
+        return false;
+    return true;
 }
 
-void a_tunedialog::tune20()
+bool a_tunedialog::CheckAndShowTune5(int ChNum)
 {
-    tune(20);
-}
-
-void a_tunedialog::CheckAndShowTune20()
-{
-    for (int i = 0; i < 16; i++)
+    QLabel *lbl = this->findChild<QLabel *>("tunech"+QString::number(ChNum));
+    if (lbl == 0)
     {
-        QLabel *lbl = this->findChild<QLabel *>("tune20ch"+QString::number(i));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda20.sin[i]/Z,16));
+        ATUNEDBG;
+        return false;
     }
-    CalcNewTuneCoefs();
-    RefreshTuneCoefs();
+    lbl->setText(QString::number(Bda5.sin[ChNum]/ATUNENUMPOINTS,16));
+    if (!CalcNewTuneCoef(ChNum))
+        return false;
+    if (!RefreshTuneCoef(ChNum))
+        return false;
+    return true;
+}
+
+bool a_tunedialog::CheckAndShowTune20(int ChNum)
+{
+    QLabel *lbl = this->findChild<QLabel *>("tunech"+QString::number(ChNum));
+    if (lbl == 0)
+    {
+        ATUNEDBG;
+        return false;
+    }
+    lbl->setText(QString::number(Bda20.sin[ChNum]/ATUNENUMPOINTS,16));
+    if (!CalcNewTuneCoef(ChNum))
+        return false;
+    if (!RefreshTuneCoef(ChNum))
+        return false;
+    return true;
+}
+
+bool a_tunedialog::CalcNewTuneCoef(int ChNum)
+{
+    Bac_block[ChNum].fbin = 1.25 - (static_cast<float>(Bda0.sin[ChNum]) / \
+                                        (ATUNENUMPOINTS*1638.0));
+    if ((Bda0.sin[ChNum] == Bda5.sin[ChNum]) || (Bda0.sin[ChNum] == Bda20.sin[ChNum]))
+    {
+        ATUNEWARN("Ошибка в настроечных коэффициентах, деление на ноль");
+        return false;
+    }
+    Bac_block[ChNum].fkuin = ATUNENUMPOINTS*1638.0 / \
+            static_cast<float>(Bda0.sin[ChNum]-Bda5.sin[ChNum]);
+    Bac_block[ChNum].fkiin = ATUNENUMPOINTS*1638.0 / \
+            static_cast<float>(Bda0.sin[ChNum]-Bda20.sin[ChNum]);
+    return true;
+}
+
+bool a_tunedialog::RefreshTuneCoef(int ChNum)
+{
+    QLabel *lbl = this->findChild<QLabel *>("tunebcoef"+QString::number(ChNum));
+    if (lbl == 0)
+    {
+        ATUNEDBG;
+        return false;
+    }
+    lbl->setText(QString::number(Bac_block[ChNum].fbin, 'f', 5));
+    lbl = this->findChild<QLabel *>("tunek1coef"+QString::number(ChNum));
+    if (lbl == 0)
+    {
+        ATUNEDBG;
+        return false;
+    }
+    lbl->setText(QString("%1").arg(Bac_block[ChNum].fkuin, 0, 'f', 5));
+    lbl = this->findChild<QLabel *>("tunek2coef"+QString::number(ChNum));
+    if (lbl == 0)
+    {
+        ATUNEDBG;
+        return false;
+    }
+    lbl->setText(QString::number(Bac_block[ChNum].fkiin, 'f', 5));
+    return true;
+}
+
+void a_tunedialog::RefreshTuneCoefs()
+{
+    for (int i=0; i<16; i++)
+        RefreshTuneCoef(i);
 }
 
 void a_tunedialog::ReadTuneCoefs()
@@ -300,45 +365,53 @@ void a_tunedialog::ReadTuneCoefs()
 
 void a_tunedialog::WriteTuneCoefs()
 {
-    cn->Send(CN_Wac, &Bac_block, sizeof(Bac_block));
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
-        QMessageBox::information(this,"Успешно!","Записано успешно!");
-}
-
-void a_tunedialog::CalcNewTuneCoefs()
-{
-    for (int i = 0; i < 16; i++)
+    if (CheckTuneCoefs())
     {
-        Bac_block[i].fbin = 1.25 - (static_cast<float>(Bda0.sin[i])/(Z*1638.0));
-        if ((Bda0.sin[i] == Bda5.sin[i]) || (Bda0.sin[i] == Bda20.sin[i]))
-        {
-            QMessageBox::warning(this,"Предупреждение","Ошибки в настроечных коэффициентах\nДеление на ноль");
+        cn->Send(CN_Wac, &Bac_block, sizeof(Bac_block));
+        while (cn->Busy)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+        if (cn->result == CN_OK)
+            QMessageBox::information(this,"Успешно!","Записано успешно!");
+        else
             return;
-        }
-        Bac_block[i].fkuin = Z*1638.0/static_cast<float>(Bda0.sin[i]-Bda5.sin[i]);
-        Bac_block[i].fkiin = Z*1638.0/static_cast<float>(Bda0.sin[i]-Bda20.sin[i]);
+    }
+    else
+    {
+        ATUNEWARN("Есть некорректные коэффициенты");
+        return;
     }
 }
 
-void a_tunedialog::RefreshTuneCoefs()
+bool a_tunedialog::CheckTuneCoefs()
 {
-    for (int i = 0; i < 16; i++)
+    for (int i=0; i<16; i++)
     {
         QLabel *lbl = this->findChild<QLabel *>("tunebcoef"+QString::number(i));
         if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bac_block[i].fbin, 'f', 5));
+        {
+            ATUNEDBG;
+            return false;
+        }
+        if (lbl->text().isEmpty() || (lbl->text().toInt() == -1))
+            return false;
         lbl = this->findChild<QLabel *>("tunek1coef"+QString::number(i));
         if (lbl == 0)
-            return;
-        lbl->setText(QString("%1").arg(Bac_block[i].fkuin, 0, 'f', 5));
+        {
+            ATUNEDBG;
+            return false;
+        }
+        if (lbl->text().isEmpty() || (lbl->text().toInt() == -1))
+            return false;
         lbl = this->findChild<QLabel *>("tunek2coef"+QString::number(i));
         if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bac_block[i].fkiin, 'f', 5));
+        {
+            ATUNEDBG;
+            return false;
+        }
+        if (lbl->text().isEmpty() || (lbl->text().toInt() == -1))
+            return false;
     }
+    return true;
 }
 
 void a_tunedialog::LoadFromFile()

@@ -426,7 +426,7 @@ void a_checkdialog::RefreshBda()
     {
         QLabel *lbl = this->findChild<QLabel *>("bda"+QString::number(i));
         if (lbl != 0)
-            lbl->setText(QString::number(Bda_block.sin[i]/Z,16));
+            lbl->setText(QString::number(Bda_block.sin[i]/ACHECKNUMPOINTS,16));
     }
 }
 

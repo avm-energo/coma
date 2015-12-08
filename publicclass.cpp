@@ -209,7 +209,7 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       return CN_S2SIZEERROR; // выход за границу принятых байт
   memcpy(&dh,m,tmpi);
   m+=tmpi;
-  for (i=0; i<memsize; i++)
+  for (i=0; i<(memsize-tmpi); i++)
       updCRC32(m[i], &crc);
   if (dh.crc32!=crc)
       return CN_S2CRCERROR;

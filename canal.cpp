@@ -8,7 +8,7 @@
 
 canal *cn;
 
-canal::canal(QObject *parent) : QThread(parent)
+canal::canal(QObject *parent) : QObject(parent)
 {
     cmd = CN_Unk;
     ConnectedToPort = PortErrorDetected = false;
@@ -19,38 +19,11 @@ canal::canal(QObject *parent) : QThread(parent)
     TTimer = new QTimer(this);
     TTimer->setInterval(CN_TIMEOUT);
     NeedToSend = false;
-    SThreadNewed = false;
 //    connect(TTimer, SIGNAL(timeout()),this,SLOT(Timeout())); // для отладки закомментарить
-    moveToThread(this);
 }
 
 canal::~canal()
 {
-}
-
-void canal::run()
-{
-    NeedToFinish = false;
-    while (!NeedToFinish)
-    {
-        if (NeedToSend)
-        {
-            NeedToSend = false;
-            InitiateSend();
-        }
-        QThread::msleep(10);
-        qApp->processEvents();
-    }
-    if (SThreadNewed)
-    {
-        SThread->quit();
-        if (!SThread->wait(3000))
-        {
-            SThread->terminate();
-            SThread->wait();
-        }
-    }
-    exec();
 }
 
 void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publicclass::DataRec *DRptr)
@@ -61,7 +34,7 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publiccla
     fnum = static_cast<quint32>(filenum);
     DR = DRptr;
     Busy = true;
-    NeedToSend = true;
+    InitiateSend();
 }
 
 void canal::InitiateSend()
@@ -493,17 +466,20 @@ void canal::Finish(int ernum)
 
 void canal::Connect()
 {
+    QThread *thr = new QThread;
     SThread = new SerialThread;
-    SThreadNewed = true;
     SThread->portinfo = info;
     SThread->baud = baud;
-    connect(this,SIGNAL(stopall()),SThread,SLOT(stop()));
+    SThread->moveToThread(thr);
+    connect(thr, &QThread::finished, SThread, &SerialThread::deleteLater);
+    connect(thr, &QThread::finished, thr, &QThread::deleteLater);
+    connect(thr, &QThread::started, SThread, &SerialThread::Run);
     connect(SThread,SIGNAL(canalisready()),this,SLOT(CanalReady()));
     connect(SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(DataWritten(QByteArray)));
     connect(SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
     connect(this,SIGNAL(writedatatoport(QByteArray)),SThread,SLOT(InitiateWriteDataToPort(QByteArray)));
     ConnectedToPort = PortErrorDetected = false;
-    SThread->start();
+    thr->start();
     while ((!ConnectedToPort) && (!PortErrorDetected))
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (ConnectedToPort)
@@ -513,14 +489,14 @@ void canal::Connect()
     }
     else
     {
-        stop();
+        StopSThread();
         result=CN_PORTOPENERROR;
     }
 }
 
 void canal::Disconnect()
 {
-    stop();
+    StopSThread();
 }
 
 void canal::CanalReady()
@@ -538,7 +514,16 @@ void canal::CanalError(int ernum)
     Finish(ernum);
 }
 
-void canal::stop()
+void canal::StopSThread()
 {
-    NeedToFinish = true;
+    SThread->Stop();
+    if (SThread)
+    {
+        QThread *thr = SThread->thread();
+        if (thr->isRunning())
+        {
+            thr->quit();
+            thr->wait(1000);
+        }
+    }
 }

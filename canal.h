@@ -1,7 +1,7 @@
 #ifndef CANAL_H
 #define CANAL_H
 
-#include <QThread>
+#include <QObject>
 #include <QByteArray>
 #include <QThread>
 #include <QTimer>
@@ -12,7 +12,7 @@
 
 #define CANALER(a)       ERMSG(publicclass::ER_CANAL,__LINE__,a)
 
-class canal : public QThread
+class canal : public QObject
 {
     Q_OBJECT
 public:
@@ -29,7 +29,6 @@ public:
     void Connect();
     void Disconnect();
     void Send(int command, void *ptr=NULL, quint32 ptrsize=0, int filenum=0, publicclass::DataRec *DRptr=NULL);
-    void run();
 
 signals:
     void stopall();
@@ -43,7 +42,7 @@ signals:
     void SendEnd();
 
 public slots:
-    void stop();
+    void StopSThread();
     void GetSomeData(QByteArray ba);
     void Timeout();
 
@@ -68,7 +67,7 @@ private:
     quint32 SegLeft; // количество оставшихся сегментов
     quint32 SegEnd; // номер последнего байта в ReadData текущего сегмента
     publicclass::DataRec *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
-    bool LongBlock, ConnectedToPort, PortErrorDetected, SThreadNewed;
+    bool LongBlock, ConnectedToPort, PortErrorDetected;
     SerialThread *SThread;
 
     void InitiateSend();

@@ -1,7 +1,7 @@
 #ifndef SERIALTHREAD_H
 #define SERIALTHREAD_H
 
-#include <QThread>
+#include <QObject>
 #include <QTimer>
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
@@ -12,7 +12,7 @@
 #define SERIALWARN        WARNMSG(publicclass::ER_SERIAL,__LINE__)
 #define SERIALINFO(a)     INFOMSG(publicclass::ER_SERIAL,__LINE__,a)
 
-class SerialThread : public QThread
+class SerialThread : public QObject
 {
     Q_OBJECT
 
@@ -36,7 +36,8 @@ signals:
     void receivecompleted();
 
 public slots:
-    void stop();
+    void Run();
+    void Stop();
     void WriteData();
     void InitiateWriteDataToPort(QByteArray);
 

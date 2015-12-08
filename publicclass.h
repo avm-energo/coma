@@ -1,8 +1,6 @@
 #ifndef PUBLICCLASS_H
 #define PUBLICCLASS_H
 
-#define Z   64 // количество точек, по которым выдаются значения в блоке Bda
-
 // Макросы для выдачи сообщений
 #define ERMSG(...)     pc.AddErrMsg(publicclass::ER_MSG,__VA_ARGS__)
 #define DBGMSG(...)    pc.AddErrMsg(publicclass::DBG_MSG,__VA_ARGS__)

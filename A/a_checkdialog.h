@@ -5,6 +5,8 @@
 #include <QTimer>
 //#include "canal.h"
 
+#define ACHECKNUMPOINTS  64 // количество точек, по которым выдаются значения в блоке Bda
+
 class a_checkdialog : public QDialog
 {
     Q_OBJECT

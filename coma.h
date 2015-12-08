@@ -7,6 +7,7 @@
 #include <QMouseEvent>
 #include <QResizeEvent>
 #include <QAction>
+#include <QThread>
 #include <QVBoxLayout>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtSerialPort/QSerialPort>
@@ -22,7 +23,7 @@
 #include "canal.h"
 #include "publicclass.h"
 
-#define PROGNAME    "КОМА 1.0 #0067"
+#define PROGNAME    "КОМА 1.0 #0068"
 
 #define MAINER(a)       ERMSG(publicclass::ER_MAIN,__LINE__,a)
 #define MAINDBG         DBGMSG(publicclass::ER_MAIN,__LINE__)

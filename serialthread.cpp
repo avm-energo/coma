@@ -1,20 +1,18 @@
 #include <QCoreApplication>
-#include <QThread>
+#include <QTime>
 #include "serialthread.h"
 #include "publicclass.h"
 
 SerialThread::SerialThread(QObject *parent) :
-    QThread(parent)
+    QObject(parent)
 {
     DataToSend = new QByteArray(1000, 0x00);
     OutDataBuf.clear();
     ClosePortAndFinishThread = false;
-    moveToThread(this);
 }
 
-void SerialThread::run()
+void SerialThread::Run()
 {
-    connect(this,SIGNAL(finished()), this,SLOT(deleteLater()));
     port = new QSerialPort;
     port->setPort(portinfo);
     connect(port,SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(Error(QSerialPort::SerialPortError)));
@@ -44,7 +42,9 @@ void SerialThread::run()
             }
             return;
         }
-        QThread::msleep(10);
+        QTime tmr;
+        tmr.start();
+        while (tmr.elapsed() < 10);
         qApp->processEvents();
     }
 }
@@ -71,7 +71,7 @@ void SerialThread::InitiateWriteDataToPort(QByteArray ba)
     OutDataBufMtx.unlock();
 }
 
-void SerialThread::stop()
+void SerialThread::Stop()
 {
     ClosePortAndFinishThread = true;
 }
