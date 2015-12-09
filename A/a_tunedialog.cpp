@@ -3,6 +3,7 @@
 #include <QVBoxLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QLineEdit>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QFileDialog>
@@ -28,10 +29,18 @@ a_tunedialog::a_tunedialog(QWidget *parent) :
 
 void a_tunedialog::SetupUI()
 {
+    QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
+    setStyleSheet(tmps);
     int i;
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
+    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
+            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
+    QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
+            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QWidget *cp1 = new QWidget;
     QWidget *cp2 = new QWidget;
+    tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
+    cp1->setStyleSheet(tmps);
+    cp2->setStyleSheet(tmps);
     QVBoxLayout *lyout = new QVBoxLayout;
     QLabel *lbl;
     QVBoxLayout *gb1lyout = new QVBoxLayout;
@@ -45,22 +54,22 @@ void a_tunedialog::SetupUI()
     {
         lbl = new QLabel("b"+QString::number(i)+":");
         gb2lyout->addWidget(lbl);
-        lbl = new QLabel("");
-        lbl->setObjectName("tunebcoef"+QString::number(i));
-        lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 1);
+        QLineEdit *le = new QLineEdit("");
+        le->setObjectName("tunebcoef"+QString::number(i));
+        le->setStyleSheet(ValuesLEFormat);
+        gb2lyout->addWidget(le, 1);
         lbl = new QLabel("u"+QString::number(i)+":");
         gb2lyout->addWidget(lbl);
-        lbl = new QLabel("");
-        lbl->setObjectName("tunek1coef"+QString::number(i));
-        lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 1);
+        le = new QLineEdit("");
+        le->setObjectName("tunek1coef"+QString::number(i));
+        le->setStyleSheet(ValuesLEFormat);
+        gb2lyout->addWidget(le, 1);
         lbl = new QLabel("i"+QString::number(i)+":");
         gb2lyout->addWidget(lbl);
-        lbl = new QLabel("");
-        lbl->setObjectName("tunek2coef"+QString::number(i));
-        lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 1);
+        le = new QLineEdit("");
+        le->setObjectName("tunek2coef"+QString::number(i));
+        le->setStyleSheet(ValuesLEFormat);
+        gb2lyout->addWidget(le, 1);
         if ((i>0)&&!((i+1)%2))
         {
             gb1lyout->addLayout(gb2lyout);
@@ -80,9 +89,11 @@ void a_tunedialog::SetupUI()
         pb->setEnabled(false);
     gb1lyout->addWidget(pb);
     pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
+    pb->setIcon(QIcon(":/load.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadFromFile()));
     gb1lyout->addWidget(pb);
     pb = new QPushButton("Записать настроечные коэффициенты в файл");
+    pb->setIcon(QIcon(":/save.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
     gb1lyout->addWidget(pb);
     gb->setLayout(gb1lyout);
@@ -324,27 +335,27 @@ bool a_tunedialog::CalcNewTuneCoef(int ChNum)
 
 bool a_tunedialog::RefreshTuneCoef(int ChNum)
 {
-    QLabel *lbl = this->findChild<QLabel *>("tunebcoef"+QString::number(ChNum));
-    if (lbl == 0)
+    QLineEdit *le = this->findChild<QLineEdit *>("tunebcoef"+QString::number(ChNum));
+    if (le == 0)
     {
         ATUNEDBG;
         return false;
     }
-    lbl->setText(QString::number(Bac_block[ChNum].fbin, 'f', 5));
-    lbl = this->findChild<QLabel *>("tunek1coef"+QString::number(ChNum));
-    if (lbl == 0)
+    le->setText(QString::number(Bac_block[ChNum].fbin, 'f', 5));
+    le = this->findChild<QLineEdit *>("tunek1coef"+QString::number(ChNum));
+    if (le == 0)
     {
         ATUNEDBG;
         return false;
     }
-    lbl->setText(QString("%1").arg(Bac_block[ChNum].fkuin, 0, 'f', 5));
-    lbl = this->findChild<QLabel *>("tunek2coef"+QString::number(ChNum));
-    if (lbl == 0)
+    le->setText(QString("%1").arg(Bac_block[ChNum].fkuin, 0, 'f', 5));
+    le = this->findChild<QLineEdit *>("tunek2coef"+QString::number(ChNum));
+    if (le == 0)
     {
         ATUNEDBG;
         return false;
     }
-    lbl->setText(QString::number(Bac_block[ChNum].fkiin, 'f', 5));
+    le->setText(QString::number(Bac_block[ChNum].fkiin, 'f', 5));
     return true;
 }
 

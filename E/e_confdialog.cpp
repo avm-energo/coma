@@ -17,6 +17,8 @@
 e_confdialog::e_confdialog(QWidget *parent) :
     QDialog(parent)
 {
+    QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
+    setStyleSheet(tmps);
     econf = new e_config;
     setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -41,9 +43,11 @@ e_confdialog::e_confdialog(QWidget *parent) :
         pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 1, 1, 1);
     pb = new QPushButton("Прочитать из файла");
+    pb->setIcon(QIcon(":/load.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadConf()));
     wdgtlyout->addWidget(pb, 0, 2, 1, 1);
     pb = new QPushButton("Записать в файл");
+    pb->setIcon(QIcon(":/save.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveConf()));
     wdgtlyout->addWidget(pb, 0, 3, 1, 1);
     pb = new QPushButton("Задать конфигурацию по умолчанию");
@@ -221,6 +225,11 @@ void e_confdialog::SetupUI()
 //    QWidget *cp2 = new QWidget;
 //    QWidget *cp3 = new QWidget;
     QWidget *cp4 = new QWidget;
+    tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
+    cp1->setStyleSheet(tmps);
+//    cp2->setStyleSheet(tmps);
+//    cp3->setStyleSheet(tmps);
+    cp4->setStyleSheet(tmps);
     QTabWidget *ConfTW = this->findChild<QTabWidget *>("conftw");
     if (ConfTW == 0)
         return;
@@ -250,6 +259,8 @@ void e_confdialog::SetupUI()
     dspbls->setMinimum(0);
     dspbls->setMaximum(65535);
     dspbls->setAData(0);
+    tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
+    dspbls->setStyleSheet(tmps);
     connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
     gb3lyout->addWidget(dspbls, 0, 1, 1, 1, Qt::AlignLeft);
     lbl = new QLabel("Интервал циклического опроса:");
@@ -261,6 +272,8 @@ void e_confdialog::SetupUI()
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
     dspbls->setAData(1);
+    tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
+    dspbls->setStyleSheet(tmps);
     connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
     gb3lyout->addWidget(dspbls, 1, 1, 1, 1, Qt::AlignLeft);
     lbl=new QLabel("c");
@@ -274,6 +287,8 @@ void e_confdialog::SetupUI()
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
     dspbls->setAData(2);
+    tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
+    dspbls->setStyleSheet(tmps);
     connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
     gb3lyout->addWidget(dspbls, 2, 1, 1, 1, Qt::AlignLeft);
     lbl=new QLabel("c");
@@ -287,6 +302,8 @@ void e_confdialog::SetupUI()
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
     dspbls->setAData(3);
+    tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
+    dspbls->setStyleSheet(tmps);
     connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
     gb3lyout->addWidget(dspbls, 3, 1, 1, 1, Qt::AlignLeft);
     lbl=new QLabel("c");
@@ -300,6 +317,8 @@ void e_confdialog::SetupUI()
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
     dspbls->setAData(4);
+    tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
+    dspbls->setStyleSheet(tmps);
     connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
     gb3lyout->addWidget(dspbls, 4, 1, 1, 1, Qt::AlignLeft);
     lbl=new QLabel("c");
@@ -313,6 +332,8 @@ void e_confdialog::SetupUI()
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
     dspbls->setAData(5);
+    tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
+    dspbls->setStyleSheet(tmps);
     connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
     gb3lyout->addWidget(dspbls, 5, 1, 1, 1, Qt::AlignLeft);
     lbl=new QLabel("c");
@@ -326,6 +347,8 @@ void e_confdialog::SetupUI()
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
     dspbls->setAData(6);
+    tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
+    dspbls->setStyleSheet(tmps);
     connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
     gb3lyout->addWidget(dspbls, 6, 1, 1, 1, Qt::AlignLeft);
     lbl=new QLabel("c");
@@ -338,6 +361,8 @@ void e_confdialog::SetupUI()
     cblm->setStringList(cbl);
     cb->setModel(cblm);
     cb->setMinimumWidth(70);
+    tmps = "QComboBox {background-color: "+QString(ACONFGCLR)+";}";
+    cb->setStyleSheet(tmps);
     connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
     gb3lyout->addWidget(cb, 7, 1, 1, 2);
     gb->setLayout(gb3lyout);
@@ -352,6 +377,8 @@ void e_confdialog::SetupUI()
     cb->setObjectName("eq_typecb");
     cb->setModel(cblm);
     cb->setMinimumWidth(70);
+    tmps = "QComboBox {background-color: "+QString(ACONFGCLR)+";}";
+    cb->setStyleSheet(tmps);
     connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetEqType(int)));
     lyout1->addWidget(cb,0,1,1,1);
 
@@ -372,6 +399,8 @@ void e_confdialog::SetupUI()
         cb->setModel(cblm);
         cb->setEditable(true);
         cb->setAData(0);
+        tmps = "QComboBox {background-color: "+QString(ACONFGCLR)+";}";
+        cb->setStyleSheet(tmps);
         connect(cb,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetVoltageClass(int,s_tqComboBox*)));
         gb2lyout->addWidget(cb);
         gblyout->addLayout(gb2lyout);
@@ -384,6 +413,8 @@ void e_confdialog::SetupUI()
         cb->setModel(cblm);
         cb->setEditable(true);
         cb->setAData(1);
+        tmps = "QComboBox {background-color: "+QString(ACONFGCLR)+";}";
+        cb->setStyleSheet(tmps);
         connect(cb,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetVoltageClass(int,s_tqComboBox*)));
         gb2lyout->addWidget(cb);
         gblyout->addLayout(gb2lyout);
@@ -397,6 +428,8 @@ void e_confdialog::SetupUI()
         dspbls->setMinimum(0.0);
         dspbls->setMaximum(100.0);
         dspbls->setAData(0);
+        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
+        dspbls->setStyleSheet(tmps);
         connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetThreshold(double,s_tqspinbox*)));
         gb2lyout->addWidget(dspbls);
         gblyout->addLayout(gb2lyout);
@@ -410,6 +443,8 @@ void e_confdialog::SetupUI()
         dspbls->setMinimum(0.0);
         dspbls->setMaximum(100.0);
         dspbls->setAData(2);
+        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
+        dspbls->setStyleSheet(tmps);
         connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetThreshold(double,s_tqspinbox*)));
         gb2lyout->addWidget(dspbls);
         gblyout->addLayout(gb2lyout);

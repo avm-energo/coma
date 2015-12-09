@@ -40,6 +40,8 @@ Coma::Coma(QWidget *parent)
     ReconTry = 0;
     InitiateHth();
     setWindowTitle(PROGNAME);
+    QString tmps = "QMainWindow {background-color: "+QString(MAINWINCLR)+";}";
+    setStyleSheet(tmps);
     setMinimumSize(QSize(800, 600));
     DialogsAreReadyAlready = false;
     QWidget *wdgt = new QWidget;
@@ -90,6 +92,9 @@ Coma::Coma(QWidget *parent)
     lyout->addLayout(hlyout);
 
     QMenuBar *MainMenuBar = new QMenuBar;
+    tmps = "QMenuBar {background-color: "+QString(MAINWINCLR)+";}"\
+            "QMenuBar::item {background-color: "+QString(MAINWINCLR)+";}";
+    MainMenuBar->setStyleSheet(tmps);
     QMenu *MainMenu = new QMenu;
     MainMenu->setTitle("Главное");
     QAction *MainExitAction = new QAction(this);
@@ -239,7 +244,6 @@ void Coma::AddLabelAndLineedit(QVBoxLayout *lyout, QString caption, QString lena
     QLineEdit *le = new QLineEdit("");
     le->setObjectName(lename);
     le->setEnabled(false);
-//    le->setTextMargins(0,0,0,0);
     hlyout->addWidget(le);
     lyout->addLayout(hlyout);
 }
@@ -262,7 +266,6 @@ void Coma::InitiateHth()
 
 void Coma::Connect()
 {
-// !!!   /*
     int i;
     QDialog *dlg = new QDialog(this);
     dlg->setMinimumWidth(150);
@@ -293,13 +296,6 @@ void Coma::Connect()
     dlg->setLayout(lyout);
     connect(cn,SIGNAL(portopened()),dlg,SLOT(close()));
     dlg->exec();
-// !!!    */
-//    Bsi_block.MType = pc.MType = MT_E; // !!!
-//    Bsi_block.MType1 = pc.MType1 = MTE_0T2N; // !!!
-//    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte"); // !!!
-//    if (MainTE != 0) // !!!
-//        MainTE->show(); // !!!
-//    AllIsOk(); // !!!
 }
 
 void Coma::Next()
@@ -345,9 +341,6 @@ void Coma::Next()
         Connect();
         return;
     }
-/*    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
-    if (MainTE != 0)
-        MainTE->show(); */
     WriteSNAction->setEnabled(true);
 
     GetBsi();
@@ -654,6 +647,7 @@ void Coma::Disconnect()
         MainTE->clear();
     WriteSNAction->setEnabled(false);
     MainTW->hide();
+    pc.Emul = false;
 }
 
 void Coma::GetAbout()
@@ -1001,7 +995,7 @@ void Coma::MouseMove()
     QWidget *sww = this->findChild<QWidget *>("slidew");
     if (sww == 0)
         return;
-    if ((abs(curPos.x() - width()) < 20) && (curPos.y() > 0) && (curPos.y() < height()))
+    if ((abs(curPos.x() - width()) < 10) && (curPos.y() > 0) && (curPos.y() < height()))
     {
         if (SWHide)
             ShowOrHideSlideSW();
@@ -1011,7 +1005,7 @@ void Coma::MouseMove()
         if (!SWHide)
             ShowOrHideSlideSW();
     }
-    if ((abs(curPos.y() - height()) < 20) && (curPos.x() > 0) && (curPos.x() < width()))
+    if ((abs(curPos.y() - height()) < 10) && (curPos.x() > 0) && (curPos.x() < width()))
     {
         if (ERHide)
             ShowOrHideSlideER();

@@ -151,6 +151,13 @@
 
 #define TABCOLOR    "rgba(175,255,168,255)"
 #define ERPROTCLR   "rgba(248,214,255,255)"
+#define MAINWINCLR  "#CCCC99"
+#define ACONFCLR    "#DDDDAA"
+#define ACONFWCLR   "#CCFF99"
+#define ACONFGCLR   "#CCCC99"
+#define ACONFRCLR   "#FFCCCC"
+#define ACONFYCLR   "#FFFFCC"
+#define ACONFOCLR   "#FFCC99"
 
 #include <QtSerialPort/QSerialPort>
 #include <QStringList>

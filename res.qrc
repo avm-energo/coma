@@ -15,5 +15,7 @@
         <file>settings.png</file>
         <file>a.png</file>
         <file>e.png</file>
+        <file>load.png</file>
+        <file>save.png</file>
     </qresource>
 </RCC>

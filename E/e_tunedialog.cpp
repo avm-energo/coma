@@ -30,13 +30,24 @@ e_tunedialog::e_tunedialog(QWidget *parent) :
 
 void e_tunedialog::SetupUI()
 {
+    QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
+    setStyleSheet(tmps);
     int i;
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
+    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
+            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
+    QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
+            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QWidget *cp1 = new QWidget;
     QWidget *cp2 = new QWidget;
     QWidget *cp3 = new QWidget;
     QWidget *cp4 = new QWidget;
     QWidget *cp5 = new QWidget;
+    tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
+    cp1->setStyleSheet(tmps);
+    cp2->setStyleSheet(tmps);
+    cp3->setStyleSheet(tmps);
+    cp4->setStyleSheet(tmps);
+    cp5->setStyleSheet(tmps);
     QVBoxLayout *lyout = new QVBoxLayout;
     QLabel *lbl;
     QGridLayout *glyout = new QGridLayout;
@@ -92,43 +103,43 @@ void e_tunedialog::SetupUI()
     {
         lbl = new QLabel("KmU["+QString::number(i)+"]");
         glyout->addWidget(lbl,0,i,1,1);
-        lbl = new QLabel("");
-        lbl->setObjectName("tune"+QString::number(i));
-        lbl->setStyleSheet(ValuesFormat);
-        glyout->addWidget(lbl,1,i,1,1);
+        QLineEdit *le = new QLineEdit("");
+        le->setObjectName("tune"+QString::number(i));
+        le->setStyleSheet(ValuesLEFormat);
+        glyout->addWidget(le,1,i,1,1);
         lbl = new QLabel("KmI_5["+QString::number(i)+"]");
         glyout->addWidget(lbl,2,i,1,1);
-        lbl = new QLabel("");
-        lbl->setObjectName("tune"+QString::number(i+6));
-        lbl->setStyleSheet(ValuesFormat);
-        glyout->addWidget(lbl,3,i,1,1);
+        le = new QLineEdit("");
+        le->setObjectName("tune"+QString::number(i+6));
+        le->setStyleSheet(ValuesLEFormat);
+        glyout->addWidget(le,3,i,1,1);
         lbl = new QLabel("KmI_1["+QString::number(i)+"]");
         glyout->addWidget(lbl,4,i,1,1);
-        lbl = new QLabel("");
-        lbl->setObjectName("tune"+QString::number(i+12));
-        lbl->setStyleSheet(ValuesFormat);
-        glyout->addWidget(lbl,5,i,1,1);
+        le = new QLineEdit("");
+        le->setObjectName("tune"+QString::number(i+12));
+        le->setStyleSheet(ValuesLEFormat);
+        glyout->addWidget(le,5,i,1,1);
         lbl = new QLabel("DPsi["+QString::number(i)+"]");
         glyout->addWidget(lbl,6,i,1,1);
-        lbl = new QLabel("");
-        lbl->setObjectName("tune"+QString::number(i+18));
-        lbl->setStyleSheet(ValuesFormat);
-        glyout->addWidget(lbl,7,i,1,1);
+        le = new QLineEdit("");
+        le->setObjectName("tune"+QString::number(i+18));
+        le->setStyleSheet(ValuesLEFormat);
+        glyout->addWidget(le,7,i,1,1);
     }
     lbl=new QLabel("K_freq:");
     lbl->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
     glyout->addWidget(lbl,8,0,1,1);
-    lbl = new QLabel("");
-    lbl->setObjectName("tune24");
-    lbl->setStyleSheet(ValuesFormat);
-    glyout->addWidget(lbl,8,1,1,2);
+    QLineEdit *le = new QLineEdit("");
+    le->setObjectName("tune24");
+    le->setStyleSheet(ValuesLEFormat);
+    glyout->addWidget(le,8,1,1,2);
     lbl=new QLabel("Kinter:");
     lbl->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
     glyout->addWidget(lbl,8,3,1,1);
-    lbl = new QLabel("");
-    lbl->setObjectName("tune25");
-    lbl->setStyleSheet(ValuesFormat);
-    glyout->addWidget(lbl,8,4,1,2);
+    le = new QLineEdit("");
+    le->setObjectName("tune25");
+    le->setStyleSheet(ValuesLEFormat);
+    glyout->addWidget(le,8,4,1,2);
 
     pb = new QPushButton("Прочитать настроечные коэффициенты из модуля");
     connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs()));
@@ -141,9 +152,11 @@ void e_tunedialog::SetupUI()
         pb->setEnabled(false);
     glyout->addWidget(pb, 10, 0, 1, 6);
     pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
+    pb->setIcon(QIcon(":/load.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadFromFile()));
     glyout->addWidget(pb, 11, 0, 1, 6);
     pb = new QPushButton("Записать настроечные коэффициенты в файл");
+    pb->setIcon(QIcon(":/save.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
     glyout->addWidget(pb, 12, 0, 1, 6);
     gb->setLayout(glyout);
@@ -1452,34 +1465,34 @@ void e_tunedialog::WriteTuneCoefs()
 
 void e_tunedialog::RefreshTuneCoefs()
 {
-    QLabel *lbl;
+    QLineEdit *le;
     for (int i = 0; i < 6; i++)
     {
-        lbl = this->findChild<QLabel *>("tune"+QString::number(i));
-        if (lbl == 0)
+        le = this->findChild<QLineEdit *>("tune"+QString::number(i));
+        if (le == 0)
             return;
-        lbl->setText(QString::number(Bac_block.KmU[i], 'f', 5));
-        lbl = this->findChild<QLabel *>("tune"+QString::number(i+6));
-        if (lbl == 0)
+        le->setText(QString::number(Bac_block.KmU[i], 'f', 5));
+        le = this->findChild<QLineEdit *>("tune"+QString::number(i+6));
+        if (le == 0)
             return;
-        lbl->setText(QString("%1").arg(Bac_block.KmI_5[i], 0, 'f', 5));
-        lbl = this->findChild<QLabel *>("tune"+QString::number(i+12));
-        if (lbl == 0)
+        le->setText(QString("%1").arg(Bac_block.KmI_5[i], 0, 'f', 5));
+        le = this->findChild<QLineEdit *>("tune"+QString::number(i+12));
+        if (le == 0)
             return;
-        lbl->setText(QString::number(Bac_block.KmI_1[i], 'f', 5));
-        lbl = this->findChild<QLabel *>("tune"+QString::number(i+18));
-        if (lbl == 0)
+        le->setText(QString::number(Bac_block.KmI_1[i], 'f', 5));
+        le = this->findChild<QLineEdit *>("tune"+QString::number(i+18));
+        if (le == 0)
             return;
-        lbl->setText(QString::number(Bac_block.DPsi[i], 'f', 5));
+        le->setText(QString::number(Bac_block.DPsi[i], 'f', 5));
     }
-    lbl = this->findChild<QLabel *>("tune24");
-    if (lbl == 0)
+    le = this->findChild<QLineEdit *>("tune24");
+    if (le == 0)
         return;
-    lbl->setText(QString::number(Bac_block.K_freq, 'f', 5));
-    lbl = this->findChild<QLabel *>("tune25");
-    if (lbl == 0)
+    le->setText(QString::number(Bac_block.K_freq, 'f', 5));
+    le = this->findChild<QLineEdit *>("tune25");
+    if (le == 0)
         return;
-    lbl->setText(QString::number(Bac_block.Kinter, 'f', 5));
+    le->setText(QString::number(Bac_block.Kinter, 'f', 5));
 }
 
 void e_tunedialog::RefreshAnalogValues()
