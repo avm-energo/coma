@@ -16,6 +16,7 @@
 a_confdialog::a_confdialog(QWidget *parent) :
     QDialog(parent)
 {
+    ConfigIsLoading = true;
     NoProperConf = false;
     Config[0] = {ABCI_MTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.MType)/sizeof(quint32), &(Bci_block.MType)};
     Config[1] = {ABCI_MTYPE1, u32_TYPE, sizeof(quint32), sizeof(Bci_block.MType1)/sizeof(quint32), &(Bci_block.MType1)};
@@ -239,7 +240,7 @@ void a_confdialog::SetupUI()
         QLabel *ChTypL = new QLabel(QString::number(i));
         gb3lyout->addWidget(ChTypL,i+1,0,1,1,Qt::AlignRight);
         dspbls = new s_tqspinbox;
-        dspbls->setObjectName("inminspb"+QString::number(i));
+        dspbls->setObjectName("inminspb."+QString::number(i));
         dspbls->setSingleStep(0.01);
         dspbls->setMinimum(-20.0);
         dspbls->setMaximum(20.0);
@@ -249,7 +250,7 @@ void a_confdialog::SetupUI()
         connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetInMin(double,s_tqspinbox*)));
         gb3lyout->addWidget(dspbls,i+1,1,1,1,Qt::AlignCenter);
         dspbls = new s_tqspinbox;
-        dspbls->setObjectName("inmaxspb"+QString::number(i));
+        dspbls->setObjectName("inmaxspb."+QString::number(i));
         dspbls->setSingleStep(0.01);
         dspbls->setMinimum(-20.0);
         dspbls->setMaximum(20.0);
@@ -259,7 +260,7 @@ void a_confdialog::SetupUI()
         connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetInMax(double,s_tqspinbox*)));
         gb3lyout->addWidget(dspbls,i+1,2,1,1,Qt::AlignCenter);
         dspbls = new s_tqspinbox;
-        dspbls->setObjectName("invminspb"+QString::number(i));
+        dspbls->setObjectName("invminspb."+QString::number(i));
         dspbls->setSingleStep(0.01);
         dspbls->setMinimum(-100000.0);
         dspbls->setMaximum(100000.0);
@@ -269,7 +270,7 @@ void a_confdialog::SetupUI()
         connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetInVMin(double,s_tqspinbox*)));
         gb3lyout->addWidget(dspbls,i+1,3,1,1,Qt::AlignCenter);
         dspbls = new s_tqspinbox;
-        dspbls->setObjectName("invmaxspb"+QString::number(i));
+        dspbls->setObjectName("invmaxspb."+QString::number(i));
         dspbls->setSingleStep(0.01);
         dspbls->setMinimum(-100000.0);
         dspbls->setMaximum(100000.0);
@@ -300,17 +301,17 @@ void a_confdialog::SetupUI()
         QLabel *ChTypL = new QLabel(QString::number(i));
         gb3lyout->addWidget(ChTypL,i+1,0,1,1,Qt::AlignRight);
         dspbls = new s_tqspinbox;
-        dspbls->setObjectName("setminminspb"+QString::number(i));
+        dspbls->setObjectName("setminmin."+QString::number(i));
         dspbls->setSingleStep(0.01);
         dspbls->setMinimum(-100000.0);
         dspbls->setMaximum(100000.0);
         dspbls->setAData(QVariant(i));
         tmps = "QDoubleSpinBox {background-color: "+QString(ACONFRCLR)+";}";
         dspbls->setStyleSheet(tmps);
-        connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetMinMin(double,s_tqspinbox*)));
+        connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetMinMin()));
         gb3lyout->addWidget(dspbls,i+1,1,1,1,Qt::AlignCenter);
         dspbls = new s_tqspinbox;
-        dspbls->setObjectName("setminspb"+QString::number(i));
+        dspbls->setObjectName("setminspb."+QString::number(i));
         dspbls->setSingleStep(0.01);
         dspbls->setMinimum(-100000.0);
         dspbls->setMaximum(100000.0);
@@ -320,7 +321,7 @@ void a_confdialog::SetupUI()
         connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetMin(double,s_tqspinbox*)));
         gb3lyout->addWidget(dspbls,i+1,2,1,1,Qt::AlignCenter);
         dspbls = new s_tqspinbox;
-        dspbls->setObjectName("setmaxspb"+QString::number(i));
+        dspbls->setObjectName("setmaxspb."+QString::number(i));
         dspbls->setSingleStep(0.01);
         dspbls->setMinimum(-100000.0);
         dspbls->setMaximum(100000.0);
@@ -330,7 +331,7 @@ void a_confdialog::SetupUI()
         connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetMax(double,s_tqspinbox*)));
         gb3lyout->addWidget(dspbls,i+1,3,1,1,Qt::AlignCenter);
         dspbls = new s_tqspinbox;
-        dspbls->setObjectName("setmaxmaxspb"+QString::number(i));
+        dspbls->setObjectName("setmaxmaxspb."+QString::number(i));
         dspbls->setSingleStep(0.01);
         dspbls->setMinimum(-100000.0);
         dspbls->setMaximum(100000.0);
@@ -465,6 +466,7 @@ void a_confdialog::SetupUI()
     cp3->setLayout(lyout3);
     cp4->setLayout(lyout4);
     SetDefConf();
+    ConfigIsLoading = false;
 }
 
 void a_confdialog::GetBci()
@@ -478,6 +480,7 @@ void a_confdialog::GetBci()
 
 void a_confdialog::FillConfData()
 {
+    ConfigIsLoading = true;
     int i;
     QSpinBox *spb;
     s_tqspinbox *dspbls;
@@ -550,40 +553,41 @@ void a_confdialog::FillConfData()
             ChTypCB->setVisible(false);
             lbl->setVisible(false);
         }
-        dspbls = this->findChild<s_tqspinbox *>("inminspb"+QString::number(i));
+        dspbls = this->findChild<s_tqspinbox *>("inminspb."+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.in_min[i]);
-        dspbls = this->findChild<s_tqspinbox *>("inmaxspb"+QString::number(i));
+        dspbls = this->findChild<s_tqspinbox *>("inmaxspb."+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.in_max[i]);
-        dspbls = this->findChild<s_tqspinbox *>("invminspb"+QString::number(i));
+        dspbls = this->findChild<s_tqspinbox *>("invminspb."+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.in_vmin[i]);
-        dspbls = this->findChild<s_tqspinbox *>("invmaxspb"+QString::number(i));
+        dspbls = this->findChild<s_tqspinbox *>("invmaxspb."+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.in_vmax[i]);
 
-        dspbls = this->findChild<s_tqspinbox *>("setminminspb"+QString::number(i));
+        dspbls = this->findChild<s_tqspinbox *>("setminminspb."+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.setminmin[i]);
-        dspbls = this->findChild<s_tqspinbox *>("setminspb"+QString::number(i));
+        dspbls = this->findChild<s_tqspinbox *>("setminspb."+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.setmin[i]);
-        dspbls = this->findChild<s_tqspinbox *>("setmaxspb"+QString::number(i));
+        dspbls = this->findChild<s_tqspinbox *>("setmaxspb."+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.setmax[i]);
-        dspbls = this->findChild<s_tqspinbox *>("setmaxmaxspb"+QString::number(i));
+        dspbls = this->findChild<s_tqspinbox *>("setmaxmaxspb."+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.setmaxmax[i]);
     }
+    ConfigIsLoading = false;
 }
 
 void a_confdialog::SetChTypData(int num, s_tqComboBox *cb)
@@ -606,28 +610,28 @@ void a_confdialog::DisableChannel(int ChNum, bool Disable)
     QLabel *lbl = this->findChild<QLabel *>("oscsrcl"+QString::number(ChNum));
     if (lbl != 0)
         lbl->setVisible(!Disable);
-    s_tqspinbox *dspbls = this->findChild<s_tqspinbox *>("inminspb"+QString::number(ChNum));
+    s_tqspinbox *dspbls = this->findChild<s_tqspinbox *>("inminspb."+QString::number(ChNum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
-    dspbls = this->findChild<s_tqspinbox *>("inmaxspb"+QString::number(ChNum));
+    dspbls = this->findChild<s_tqspinbox *>("inmaxspb."+QString::number(ChNum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
-    dspbls = this->findChild<s_tqspinbox *>("invminspb"+QString::number(ChNum));
+    dspbls = this->findChild<s_tqspinbox *>("invminspb."+QString::number(ChNum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
-    dspbls = this->findChild<s_tqspinbox *>("invmaxspb"+QString::number(ChNum));
+    dspbls = this->findChild<s_tqspinbox *>("invmaxspb."+QString::number(ChNum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
-    dspbls = this->findChild<s_tqspinbox *>("setminminspb"+QString::number(ChNum));
+    dspbls = this->findChild<s_tqspinbox *>("setminminspb."+QString::number(ChNum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
-    dspbls = this->findChild<s_tqspinbox *>("setminspb"+QString::number(ChNum));
+    dspbls = this->findChild<s_tqspinbox *>("setminspb."+QString::number(ChNum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
-    dspbls = this->findChild<s_tqspinbox *>("setmaxspb"+QString::number(ChNum));
+    dspbls = this->findChild<s_tqspinbox *>("setmaxspb."+QString::number(ChNum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
-    dspbls = this->findChild<s_tqspinbox *>("setmaxmaxspb"+QString::number(ChNum));
+    dspbls = this->findChild<s_tqspinbox *>("setmaxmaxspb."+QString::number(ChNum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
 }
@@ -672,42 +676,138 @@ void a_confdialog::SetChOscSrc(int srctyp, s_tqComboBox *ptr)
 
 void a_confdialog::SetInMin(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.in_min[ptr->getAData().toInt()] = dbl;
+    int tmpi = ptr->getAData().toInt();
+    if ((dbl > Bci_block.in_max[tmpi]) && !ConfigIsLoading)
+    {
+        ACONFER("Минимум не может быть больше максимума");
+        ptr->setValue(Bci_block.in_min[tmpi]);
+        return;
+    }
+    Bci_block.in_min[tmpi] = dbl;
 }
 
 void a_confdialog::SetInMax(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.in_max[ptr->getAData().toInt()] = dbl;
+    int tmpi = ptr->getAData().toInt();
+    if ((dbl < Bci_block.in_min[tmpi]) && !ConfigIsLoading)
+    {
+        ACONFER("Максимум не может быть меньше минимума");
+        ptr->setValue(Bci_block.in_max[tmpi]);
+        return;
+    }
+    Bci_block.in_max[tmpi] = dbl;
 }
 
 void a_confdialog::SetInVMin(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.in_vmin[ptr->getAData().toInt()] = dbl;
+    int tmpi = ptr->getAData().toInt();
+    if ((dbl > Bci_block.in_vmax[tmpi]) && !ConfigIsLoading)
+    {
+        ACONFER("Минимум не может быть больше максимума");
+        ptr->setValue(Bci_block.in_vmin[tmpi]);
+        return;
+    }
+    Bci_block.in_vmin[tmpi] = dbl;
 }
 
 void a_confdialog::SetInVMax(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.in_vmax[ptr->getAData().toInt()] = dbl;
+    int tmpi = ptr->getAData().toInt();
+    if ((dbl < Bci_block.in_vmin[tmpi]) && !ConfigIsLoading)
+    {
+        ACONFER("Максимум не может быть меньше минимума");
+        ptr->setValue(Bci_block.in_vmax[tmpi]);
+        return;
+    }
+    Bci_block.in_vmax[tmpi] = dbl;
 }
 
-void a_confdialog::SetMinMin(double dbl, s_tqspinbox *ptr)
+void a_confdialog::SetMinMin()
 {
-    Bci_block.setminmin[ptr->getAData().toInt()] = dbl;
+    QDoubleSpinBox *spb = qobject_cast<QDoubleSpinBox *>(sender());
+    QStringList tmpsl = spb->objectName().split(".");
+    int tmpi;
+    if (tmpsl.size() > 1)
+        tmpi = tmpsl.at(1).toInt();
+    if ((spb->value() > Bci_block.setmin[tmpi]) && !ConfigIsLoading)
+    {
+        ACONFER("Аварийная уставка минимума не может быть больше предупредительной");
+        spb->setValue(Bci_block.setminmin[tmpi]);
+        return;
+    }
+    if ((spb->value() < Bci_block.in_vmin[tmpi]) && !ConfigIsLoading)
+    {
+        ACONFER("Уставка не может быть меньше границы диапазона");
+        spb->setValue(Bci_block.setminmin[tmpi]);
+        return;
+    }
+    Bci_block.setminmin[tmpi] = spb->value();
 }
 
 void a_confdialog::SetMin(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.setmin[ptr->getAData().toInt()] = dbl;
+    int tmpi = ptr->getAData().toInt();
+    if ((dbl > Bci_block.setmax[tmpi]) && !ConfigIsLoading)
+    {
+        ACONFER("Уставка минимума не может быть больше уставки максимума");
+        ptr->setValue(Bci_block.setmin[tmpi]);
+        return;
+    }
+    if ((dbl < Bci_block.setminmin[tmpi]) && !ConfigIsLoading)
+    {
+        ACONFER("Предупредительная уставка минимума не может быть меньше аварийной");
+        ptr->setValue(Bci_block.setmin[tmpi]);
+        return;
+    }
+    if ((dbl < Bci_block.in_vmin[tmpi]) && !ConfigIsLoading)
+    {
+        ACONFER("Уставка не может быть меньше границы диапазона");
+        ptr->setValue(Bci_block.setmin[tmpi]);
+        return;
+    }
+    Bci_block.setmin[tmpi] = dbl;
 }
 
 void a_confdialog::SetMax(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.setmax[ptr->getAData().toInt()] = dbl;
+    int tmpi = ptr->getAData().toInt();
+    if ((dbl > Bci_block.setmaxmax[tmpi]) && !ConfigIsLoading)
+    {
+        ACONFER("Предупредительная уставка максимума не может быть больше аварийной");
+        ptr->setValue(Bci_block.setmax[tmpi]);
+        return;
+    }
+    if ((dbl < Bci_block.setmin[tmpi]) && !ConfigIsLoading)
+    {
+        ACONFER("Уставка максимума не может быть меньше уставки минимума");
+        ptr->setValue(Bci_block.setmax[tmpi]);
+        return;
+    }
+    if ((dbl > Bci_block.in_vmax[tmpi]) && !ConfigIsLoading)
+    {
+        ACONFER("Уставка не может быть больше границы диапазона");
+        ptr->setValue(Bci_block.setmax[tmpi]);
+        return;
+    }
+    Bci_block.setmax[tmpi] = dbl;
 }
 
 void a_confdialog::SetMaxMax(double dbl, s_tqspinbox *ptr)
 {
-    Bci_block.setmaxmax[ptr->getAData().toInt()] = dbl;
+    int tmpi = ptr->getAData().toInt();
+    if ((dbl < Bci_block.setmax[tmpi]) && !ConfigIsLoading)
+    {
+        ACONFER("Аварийная уставка максимума не может быть меньше предупредительной");
+        ptr->setValue(Bci_block.setmaxmax[tmpi]);
+        return;
+    }
+    if ((dbl > Bci_block.in_vmax[tmpi]) && !ConfigIsLoading)
+    {
+        ACONFER("Уставка не может быть больше границы диапазона");
+        ptr->setValue(Bci_block.setmaxmax[tmpi]);
+        return;
+    }
+    Bci_block.setmaxmax[tmpi] = dbl;
 }
 
 void a_confdialog::Set104(double dbl, s_tqspinbox *ptr)

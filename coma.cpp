@@ -308,8 +308,8 @@ void Coma::Next()
 
     pbh1 = connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
     pbh2 = connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
-    connect(cn,SIGNAL(gotsomedata(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-    connect(cn,SIGNAL(somedatawritten(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+    connect(cn,SIGNAL(gotsomedata(QByteArray *)),this,SLOT(ReadUpdateMainTE(QByteArray *)));
+    connect(cn,SIGNAL(somedatawritten(QByteArray *)),this,SLOT(WriteUpdateMainTE(QByteArray *)));
     CanalThread->start();
 
     QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
@@ -342,7 +342,7 @@ void Coma::Next()
         return;
     }
     WriteSNAction->setEnabled(true);
-
+    WriteHWAction->setEnabled(true);
     GetBsi();
 }
 
@@ -596,23 +596,37 @@ void Coma::UpdateMainTE104(QByteArray ba)
     if (MainTE == 0)
         return;
     MainTE->append(tmpString);
-    UpdateMainTE(ba);
+    UpdateMainTE(&ba);
 }
 
-void Coma::UpdateMainTE(QByteArray ba)
+void Coma::ReadUpdateMainTE(QByteArray *ba)
+{
+    cn->ReadDataMtx.lock();
+    UpdateMainTE(ba);
+    cn->ReadDataMtx.unlock();
+}
+
+void Coma::WriteUpdateMainTE(QByteArray *ba)
+{
+    cn->WriteDataMtx.lock();
+    UpdateMainTE(ba);
+    cn->WriteDataMtx.unlock();
+}
+
+void Coma::UpdateMainTE(QByteArray *ba)
 {
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     QString tmpString;
     if (MainTE != 0)
     {
-        for (int i = 0; i < ba.size(); i++)
-            tmpString.append(ByteToHex(ba.at(i)));
+        for (int i = 0; i < ba->size(); i++)
+            tmpString.append(ByteToHex(ba->at(i)));
         MainTE->append(tmpString);
         tmpString = MainTE->toPlainText();
         if (tmpString.size() > 10000)
             MainTE->setPlainText(tmpString.right(10000));
+        MainTE->verticalScrollBar()->setValue(MainTE->verticalScrollBar()->maximum());
     }
-    MainTE->verticalScrollBar()->setValue(MainTE->verticalScrollBar()->maximum());
 }
 
 QString Coma::ByteToHex(quint8 hb)
@@ -646,6 +660,7 @@ void Coma::Disconnect()
     if (MainTE != 0)
         MainTE->clear();
     WriteSNAction->setEnabled(false);
+    WriteHWAction->setEnabled(false);
     MainTW->hide();
     pc.Emul = false;
 }
@@ -861,7 +876,7 @@ void Coma::WriteHW()
     lbl = new QLabel("-");
     lyout->addWidget(lbl);
     spb = new s_tqspinbox;
-    spb->setObjectName("hwlv");
+    spb->setObjectName("hwsv");
     spb->setDecimals(0);
     spb->setMinimum(0);
     spb->setMaximum(65535);
@@ -893,11 +908,12 @@ void Coma::SendHW()
     }
     quint32 tmpi = spbmv->value();
     tmpi <<= 24;
-    tmpi &= (static_cast<quint32>(spblv->value()) << 16);
-    tmpi &= static_cast<quint32>(spbsv->value());
+    tmpi |= (static_cast<quint32>(spblv->value()) << 16);
+    tmpi |= static_cast<quint32>(spbsv->value());
     cn->Send(CN_WHv, &tmpi, 4);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
+    dlg->close();
     if (cn->result == CN_OK)
         GetBsi();
     else

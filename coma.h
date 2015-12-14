@@ -23,7 +23,7 @@
 #include "canal.h"
 #include "publicclass.h"
 
-#define PROGNAME    "КОМА 1.0 #0068"
+#define PROGNAME    "КОМА 1.0 #0069"
 
 #define MAINER(a)       ERMSG(publicclass::ER_MAIN,__LINE__,a)
 #define MAINDBG         DBGMSG(publicclass::ER_MAIN,__LINE__)
@@ -73,6 +73,7 @@ private:
     void AddLabelAndLineedit (QVBoxLayout *lyout, QString caption, QString lename);
     void ShowOrHideSlideSW();
     void ShowOrHideSlideER();
+    void UpdateMainTE(QByteArray *ba);
 
 public slots:
     void GetBsi();
@@ -86,7 +87,8 @@ private slots:
     void GetAbout();
     void ShowErrMsg(int);
     void CheckBsi();
-    void UpdateMainTE(QByteArray);
+    void ReadUpdateMainTE(QByteArray *ba);
+    void WriteUpdateMainTE(QByteArray *ba);
     void UpdateMainTE104(QByteArray);
     void SetPort(QString str);
     void SetBaud(QString str);

@@ -77,6 +77,7 @@ private:
     } Bci;
 
     QByteArray confba;
+    bool ConfigIsLoading;
     Bci Bci_block, Bci_defblock;
     publicclass::DataRec Config[ACONF_NUM];
 
@@ -97,7 +98,8 @@ private slots:
     void SetInMax(double, s_tqspinbox *);
     void SetInVMin(double, s_tqspinbox *);
     void SetInVMax(double, s_tqspinbox *);
-    void SetMinMin(double, s_tqspinbox *);
+//    void SetMinMin(double, s_tqspinbox *);
+    void SetMinMin();
     void SetMin(double, s_tqspinbox *);
     void SetMax(double, s_tqspinbox *);
     void SetMaxMax(double, s_tqspinbox *);

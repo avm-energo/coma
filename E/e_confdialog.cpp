@@ -225,7 +225,7 @@ void e_confdialog::SetupUI()
 //    QWidget *cp2 = new QWidget;
 //    QWidget *cp3 = new QWidget;
     QWidget *cp4 = new QWidget;
-    tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
+    QString tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     cp1->setStyleSheet(tmps);
 //    cp2->setStyleSheet(tmps);
 //    cp3->setStyleSheet(tmps);

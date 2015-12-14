@@ -211,8 +211,8 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
   m+=tmpi;
   for (i=0; i<(memsize-tmpi); i++)
       updCRC32(m[i], &crc);
-  if (dh.crc32!=crc)
-      return CN_S2CRCERROR;
+/*  if (dh.crc32!=crc)
+      return CN_S2CRCERROR; */
   for(;;)
   {
       tmpi = sizeof(DataRec)-sizeof(void*);
@@ -222,8 +222,6 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       memcpy(&R,m,tmpi);
       sz+=tmpi;
       m+=tmpi;
-//      for(i=0;i<tmpi;i++)
-//          updCRC32((reinterpret_cast<unsigned char *>(&R))[i],&crc);
       if(R.id==0xFFFF)
           break;
       r=FindElem(dr,R.id);
@@ -233,13 +231,7 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
           pos += tmpi;
           if (pos > memsize)
               return CN_S2SIZEERROR; // выход за границу принятых байт
-//          memcpy(R.thedata,m,tmpi);
           m += tmpi;
-/*          for(i=0;i<tmpi;i++)
-          {
-              unsigned char tmpc = *m;
-              updCRC32(tmpc,&crc);
-          } */
           sz += tmpi;
           continue;
       }
@@ -252,11 +244,9 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       memcpy(r->thedata,m,tmpi);
       sz += tmpi;
       m += tmpi;
-/*      for(i=0;i<tmpi;i++)
-          updCRC32((static_cast<unsigned char *>(r->thedata))[i],&crc); */
   }
-  if(dh.size!=sz)
-      return CN_S2DHSZERROR;
+/*  if(dh.size!=sz)
+      return CN_S2DHSZERROR; */
   return 0;
 }
 

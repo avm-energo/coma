@@ -6,6 +6,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QLabel>
+#include <QMutex>
 
 #include "publicclass.h"
 #include "serialthread.h"
@@ -26,6 +27,8 @@ public:
     bool FirstRun;
     bool NeedToSend, Busy, NeedToFinish;
     quint32 RDSize;
+    QMutex ReadDataMtx, WriteDataMtx;
+
     void Connect();
     void Disconnect();
     void Send(int command, void *ptr=NULL, quint32 ptrsize=0, int filenum=0, publicclass::DataRec *DRptr=NULL);
@@ -37,8 +40,8 @@ signals:
     void incomingdatalength(quint32);
     void bytesreceived(quint32);
     void writedatatoport(QByteArray);
-    void gotsomedata(QByteArray);
-    void somedatawritten(QByteArray);
+    void gotsomedata(QByteArray *);
+    void somedatawritten(QByteArray *);
     void SendEnd();
 
 public slots:

@@ -107,6 +107,7 @@ void canal::InitiateSend()
     }
     case CN_Wac:
     case CN_Wsn:
+    case CN_WHv:
     {
         qDebug() << "cnWsn_1";
         tmpba = QByteArray (QByteArray::fromRawData((const char *)outdata, outdatasize)); // 10000 - предположительная длина блока
@@ -143,8 +144,10 @@ void canal::InitiateSend()
 
 void canal::DataWritten(QByteArray data)
 {
-    Q_UNUSED(data);
-    emit somedatawritten(data);
+    WriteDataMtx.lock();
+    QByteArray *tmpba = new QByteArray(data);
+    emit gotsomedata(tmpba);
+    WriteDataMtx.unlock();
     if (cmd == CN_Unk) // игнорируем вызовы процедуры без команды
         return;
     TTimer->start();
@@ -152,7 +155,10 @@ void canal::DataWritten(QByteArray data)
 
 void canal::GetSomeData(QByteArray ba)
 {
-    emit gotsomedata(ba);
+    ReadDataMtx.lock();
+    QByteArray *tmpba = new QByteArray(ba);
+    emit gotsomedata(tmpba);
+    ReadDataMtx.unlock();
     if (cmd == CN_Unk) // игнорирование вызова процедуры, если не было послано никакой команды
         return;
     int res;
@@ -217,6 +223,7 @@ void canal::GetSomeData(QByteArray ba)
         case CN_WF:
         case CN_Wac:
         case CN_Wsn:
+        case CN_WHv:
         {
             if (!SegLeft)
             {
@@ -327,6 +334,7 @@ void canal::GetSomeData(QByteArray ba)
         case CN_Wac:
         case CN_Cnc:
         case CN_Wsn:
+        case CN_WHv:
         {
             if ((ReadData->at(0) == CN_MStart) && (ReadData->at(1) == CN_ResOk) && (ReadData->at(2) == ~CN_ResOk))
             {
