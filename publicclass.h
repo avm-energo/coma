@@ -76,9 +76,9 @@
 #define CN_S2SIZEERROR      8 // ошибка длины при работе с форматом S2
 #define CN_S2DESCERROR      9 // несовпадение описания прочитанного элемента с ожидаемым при работе с форматом S2
 #define CN_S2CRCERROR       10 // несовпадение контрольной суммы при работе с форматом S2
-#define CN_S2DHSZERROR      11 // некорректная длина в DataHeader при разборе формата S2
+#define CN_S2DHSZERROR      11 // некорректная длина в FileHeader при разборе формата S2
 #define CN_NULLDATAERROR    12 // в канальную процедуру переданы некорректные данные
-
+#define CN_NOIDS            13 // не найдено ни одного элемента с заданным ID
 #define ER_FILEOPENERROR    15 // ошибка при открытии файла
 #define ER_NOCONF           20 // нет конфигурации в модуле
 #define ER_NOTUNECOEF       21 // нет настроечных параметров в модуле
@@ -132,6 +132,10 @@
 #define USO_FLASHER         74 // ошибка доступа к FLASH-памяти
 #define USO_LENGTHER        75 // ошибка длины
 #define USO_CMDER           76 // ошибка команды
+#define USO_CMDFMTER        77 // ошибка формата команды
+#define USO_GBDER           78 // ошибка в блоке данных команды GBd
+#define USO_RFILER          79 // запрошен неизвестный номер файла
+#define USO_WFILER          80 // передан файл с неизвестным номером
 
 // ошибки протокола МЭК 60870-5-104
 #define M104_LENGTHER       81 // ошибка длины в блоке APDU
@@ -199,7 +203,7 @@ public:
       quint32 size;
       quint32 crc32;
       quint32 thetime;
-    } DataHeader;
+    } FileHeader;
 
     // S2: Определение типа записи
 
@@ -284,7 +288,7 @@ public:
     // S2: Сборщик в память:
     int StoreDataMem(void *, DataRec *); //0 - успешно, иначе код ошибки
     // S2: получение размера:
-    int StoreDataSize(DataHeader *, DataRec *); //>0 - успешно, иначе код ошибки
+    int StoreDataSize(FileHeader *, DataRec *); //>0 - успешно, иначе код ошибки
     // S2: Разборщик из памяти:
     int RestoreDataMem(void *, quint32, DataRec *); //0 - успешно, иначе код ошибки
     // S2: Поиск элемента в массиве описаний

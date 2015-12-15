@@ -89,7 +89,7 @@ void canal::InitiateSend()
         DLength = static_cast<quint8>(tmpba.at(9))*65536;
         DLength += static_cast<quint8>(tmpba.at(8))*256;
         DLength += static_cast<quint8>(tmpba.at(7));
-        DLength += 12; // sizeof(DataHeader)
+        DLength += 12; // sizeof(FileHeader)
         quint32 tmpi1 = tmpba.data()[4] = (DLength/65536);
         quint32 tmpi2 = tmpba.data()[5] = (DLength - tmpi1*65536)/256;
         tmpba.data()[6] = DLength - tmpi1*65536 - tmpi2*256;

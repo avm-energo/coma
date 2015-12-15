@@ -114,37 +114,66 @@ void oscdialog::ProcessOscInfo()
 
 void oscdialog::EndExtractOsc()
 {
+    quint32 j;
     quint32 OscLength = static_cast<quint8>(OscInfo->at(0));
     OscLength += static_cast<quint8>(OscInfo->at(1))*256;
     OscLength += static_cast<quint8>(OscInfo->at(2))*65536;
     OscLength += static_cast<quint8>(OscInfo->at(3))*16777216;
-    QByteArray OscData;
+    if (OscLength > static_cast<quint32>(OscInfo->size()))
+    {
+        OSCER("Передана неверная длина в блоке FileHeader");
+        return;
+    }
+    // считываем шапку - информацию о передаваемом файле осциллограмм - в структуру OscHeader
+    Config[0] = {MT_HEAD_ID, u32_TYPE, sizeof(quint32), sizeof(OscHeader),&OscHeader};
+    Config[1] = {0xFFFF, 0, 0, 0, NULL};
+    int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +FileHeader
+    if (res)
+    {
+        ErMsg(res);
+        return; // !!! ошибка разбора формата С2
+    }
+    QByteArray OscData; // буфер для складирования осциллограмм
+    quint32 OscSize = OscHeader.Len*sizeof(float); // размер одной осциллограммы в байтах
+    quint32 OscNum = (OscLength-12-sizeof(OscHeader_Data)) / OscSize; // рассчитаем количество осциллограмм
+    OscData.resize(OscSize*OscNum); // отведём в буфере место под осциллограммы
+    float tmpf;
+    float StepInMs = OscHeader.Step*1000.0f;
     switch(pc.MType)
     {
     case MT_A:
     {
-        OscData.resize(OscLength-24); // 12 = DataRec(0xFFFF)
-        Config[0] = {MT_A_OSCTYPE, float_TYPE, sizeof(float), (OscLength-24)/sizeof(float),OscData.data()};
-        // 24=sizeof(dataHeader-block)+sizeof(DataRec FFFF-block)
-        Config[1] = {0xFFFF, 0, 0, 0, NULL};
-        int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +DataHeader
-        if (res)
+        quint32 IDFound = 0;
+        for (j=MT_START_OSC; j<MT_END_OSC; j++) // цикл по возможным осциллограммам
         {
-            if (res < pc.errmsgs.size())
-                OSCER(pc.errmsgs.at(res));
+            Config[0] = {j, float_TYPE, sizeof(float), OscHeader.Len, &(OscData.data()[0])};
+            Config[1] = {0xFFFF, 0, 0, 0, NULL};
+            int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +FileHeader
+            if (!res)
+            {
+                IDFound = j;
+                break;
+            }
+            else if (res == CN_NOIDS)
+                continue;
             else
-                OSCER("Произошла неведомая фигня #"+QString::number(res,10));
-            return; // !!! ошибка разбора формата С2
+            {
+                if (res < pc.errmsgs.size())
+                    OSCER(pc.errmsgs.at(res));
+                else
+                    OSCER("Произошла неведомая фигня #"+QString::number(res,10));
+                return; // !!! ошибка разбора формата С2
+            }
+        }
+        if (!IDFound) // так и не найдено ни одного ID
+        {
+            OSCER("Не найдено ни одного известного ID в принятом блоке осциллограмм");
+            return;
         }
         // обработка принятой осциллограммы и запись её в файл
-        int WRow = 6;
-        int WCol = 1;
-        memcpy(&OscHeader,OscData.data(),sizeof(OscHeader)); // скопировали информацию об осциллограмме в структуру
-        OscData.remove(0,sizeof(OscHeader)); // и удалили её из входного буфера, чтобы осталась только сама осциллограмма
-        OscData.chop(12); // последний Datarec (0xFFFF) долой
         if (OscHeader.NsTime > 999999999L)
             OscHeader.NsTime = 0; // !!! ошибка - число наносекунд не может быть больше 999 млн 999 тыс 999
-        GivenFilename.insert(0, pc.ModuleTypeString+" "+QString::number(OscHeader.ChNum)+"-");
+        GivenFilename.insert(0, pc.ModuleTypeString+"-");
         QString filename = QFileDialog::getSaveFileName(this,"Сохранить осциллограмму",GivenFilename,"Excel files (*.xlsx)");
         if (filename == "")
         {
@@ -152,25 +181,25 @@ void oscdialog::EndExtractOsc()
             return; // !!! ошибка - не задано имя файла
         }
         QXlsx::Document xlsx(filename.toUtf8());
-        float StartTime = 0; // нулевое смещение относительно начала записи осциллограммы
         xlsx.write(1,1,QVariant("Модуль: "+pc.ModuleTypeString));
-        xlsx.write(2,1,QVariant("Канал: "+QString::number(OscHeader.ChNum)));
         xlsx.write(3,1,QVariant("Дата: "+OscDateTime.split(" ").at(0)));
         xlsx.write(4,1,QVariant("Время: "+OscDateTime.split(" ").at(1)));
         xlsx.write(5,1,QVariant("Смещение, нс"));
-        xlsx.write(5,2,QVariant("Значение по каналу " + QString::number(OscHeader.ChNum)));
+        xlsx.write(5,2,QVariant("Значение по каналу " + QString::number(IDFound-MT_START_OSC)));
         quint32 i = 0; // указатель внутри OscData
-        quint32 OscDataSize = OscData.size();
         float tmpf;
-        float PtPerInMs = OscHeader.PtPer/1000000.0f;
-        while (i < OscDataSize)
+        float StepInMs = OscHeader.Step*1000.0f;
+        int WRow = 6;
+        int WCol = 1;
+        float StartTime = 0; // нулевое смещение относительно начала записи осциллограммы
+        while (i < OscHeader.Len)
         {
             QString tmps = QString::number(StartTime,'g',6);
             xlsx.write(WRow,WCol,QVariant(tmps));
             memcpy(&tmpf,&(OscData.data()[i]),sizeof(tmpf));
             xlsx.write(WRow,WCol+1,QVariant(tmpf));
             WRow++;
-            StartTime += PtPerInMs;
+            StartTime += StepInMs;
             i+=4; // отсчёт++
         }
         xlsx.save();
@@ -179,28 +208,10 @@ void oscdialog::EndExtractOsc()
     }
     case MT_E:
     {
-        OscData.resize(OscLength-36);
-        Config[0] = {MT_E_OSCTYPE, float_TYPE, sizeof(float), (OscLength-36)/sizeof(float),OscData.data()};
-        // 24=sizeof(dataHeader-block)+sizeof(DataRec FFFF-block)
-        Config[1] = {0xFFFF, 0, 0, 0, NULL};
-        int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +DataHeader
-        if (res)
-        {
-            if (res < pc.errmsgs.size())
-                OSCER(pc.errmsgs.at(res));
-            else
-                OSCER("Произошла неведомая фигня #"+QString::number(res,10));
-            return; // !!! ошибка разбора формата С2
-        }
         // обработка принятой осциллограммы и запись её в файл
-        int WRow = 6;
-        int WCol = 1;
-        memcpy(&OscHeader,OscData.data(),sizeof(OscHeader)); // скопировали информацию об осциллограмме в структуру
-        OscData.remove(0,sizeof(OscHeader)); // и удалили её из входного буфера, чтобы осталась только сама осциллограмма
-        OscData.chop(12); // последний Datarec (0xFFFF) долой
         if (OscHeader.NsTime > 999999999L)
             OscHeader.NsTime = 0; // !!! ошибка - число наносекунд не может быть больше 999 млн 999 тыс 999
-        GivenFilename.insert(0, pc.ModuleTypeString+" "+QString::number(OscHeader.ChNum)+"-");
+        GivenFilename.insert(0, pc.ModuleTypeString+"-");
         QString filename = QFileDialog::getSaveFileName(this,"Сохранить осциллограмму",GivenFilename,"Excel files (*.xlsx)");
         if (filename == "")
         {
@@ -210,30 +221,56 @@ void oscdialog::EndExtractOsc()
         QXlsx::Document xlsx(filename.toUtf8());
         float StartTime = 0; // нулевое смещение относительно начала записи осциллограммы
         xlsx.write(1,1,QVariant("Модуль: "+pc.ModuleTypeString));
-        xlsx.write(2,1,QVariant("Канал: "+QString::number(OscHeader.ChNum)));
         xlsx.write(3,1,QVariant("Дата: "+OscDateTime.split(" ").at(0)));
         xlsx.write(4,1,QVariant("Время: "+OscDateTime.split(" ").at(1)));
         xlsx.write(5,1,QVariant("Смещение, нс"));
-        for (quint32 j=0; j<OscHeader.Qty; j++)
-            xlsx.write(5,j+2,QVariant("Значение по каналу " + QString::number(j)));
         quint32 i = 0; // указатель внутри OscData
-        quint32 OscDataSize = OscData.size();
-        float tmpf;
-        quint32 OneOscLenInBytes = OscHeader.Len*4;
-        float PtPerInMs = OscHeader.PtPer/1000000.0f;
-        quint32 iFinish = OscDataSize / OscHeader.Qty;
-        while (i < iFinish) // минус один отсчёт во float минус размер одного последнего DataRec-а
+        int WRow = 5;
+        int WCol = 1;
+        // подготовим временную шкалу в первом столбце
+        while (i < OscHeader.Len) // минус один отсчёт во float минус размер одного последнего DataRec-а
         {
             QString tmps = QString::number(StartTime,'g',6);
             xlsx.write(WRow,WCol,QVariant(tmps));
-            for (quint32 j=0; j<OscHeader.Qty; j++)
-            {
-                memcpy(&tmpf,&(OscData.data()[i+j*OneOscLenInBytes]),sizeof(tmpf));
-                xlsx.write(WRow,WCol+j+1,QVariant(tmpf));
-            }
             WRow++;
-            StartTime += PtPerInMs;
-            i+=4; // отсчёт++
+            StartTime += StepInMs;
+            i+=4;
+        }
+
+        for (j=0; j<OscNum; j++) // цикл по возможным осциллограммам
+        {
+            Config[0] = {j+MT_START_OSC, float_TYPE, sizeof(float), OscHeader.Len, &(OscData.data()[j*OscSize])};
+            Config[1] = {0xFFFF, 0, 0, 0, NULL};
+            int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +FileHeader
+            if (!res)
+            {
+                int WRow = 5;
+                int WCol = j+2;
+                xlsx.write(WRow,WCol,QVariant("Значение по каналу " + QString::number(j)));
+                WRow++;
+                i = 0;
+                quint32 OscOffset = OscSize * j;
+                while (i < OscHeader.Len)
+                {
+                    memcpy(&tmpf,&(OscData.data()[OscOffset+i]),sizeof(tmpf));
+                    xlsx.write(WRow,WCol,QVariant(tmpf));
+                    WRow++;
+                    i+=4; // отсчёт++
+                }
+            }
+            else if (res == CN_NOIDS)
+            {
+                OSCINFO("Не найден блок с ID = "+QString::number(j+MT_START_OSC));
+                continue;
+            }
+            else
+            {
+                if (res < pc.errmsgs.size())
+                    OSCER(pc.errmsgs.at(res));
+                else
+                    OSCER("Произошла неведомая фигня #"+QString::number(res,10));
+                return; // !!! ошибка разбора формата С2
+            }
         }
         xlsx.save();
         QMessageBox::information(this,"Успешно!","Записано успешно!");
@@ -262,4 +299,12 @@ void oscdialog::GetOsc(QModelIndex idx)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
         EndExtractOsc();
+}
+
+void oscdialog::ErMsg(int ermsg)
+{
+    if (ermsg < pc.errmsgs.size())
+        OSCER(pc.errmsgs.at(ermsg));
+    else
+        OSCER("Произошла неведомая фигня #"+QString::number(ermsg,10));
 }

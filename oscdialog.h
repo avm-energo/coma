@@ -7,8 +7,9 @@
 #include "widgets/s_tablemodel.h"
 #include "publicclass.h"
 
-#define MT_E_OSCTYPE    0x00c9 // ID осциллограммы в модуле Э равен 201
-#define MT_A_OSCTYPE    0x03e8 // ID осциллограммы в модуле А равен 1000
+#define MT_HEAD_ID      1000 // ID шапки осциллограммы равен 1000
+#define MT_START_OSC    1001 // первый ID осциллограммы
+#define MT_END_OSC      1033 // последний ID осциллограммы
 
 #define OSCER(a)       ERMSG(publicclass::ER_OSC,__LINE__,a)
 #define OSCDBG         DBGMSG(publicclass::ER_OSC,__LINE__)
@@ -30,18 +31,17 @@ private:
     QByteArray *OscInfo;
     QString GivenFilename;
     QString OscDateTime;
-    publicclass::DataRec Config[2];
+    publicclass::DataRec Config[32];
+
     typedef struct
     {
         quint32 UnixTime;
         quint32 NsTime;
-        float PtPer;
+        float Step;
         quint32 Len;
-        quint32 Qty;
-        quint32 ChNum;
-    } OscHeader_type;
+    } OscHeader_Data;
 
-    OscHeader_type OscHeader;
+    OscHeader_Data OscHeader;
 
 signals:
 
@@ -50,6 +50,7 @@ private slots:
     void ProcessOscInfo();
     void EndExtractOsc();
     void GetOsc(QModelIndex);
+    void ErMsg(int ermsg);
 };
 
 #endif // OSCDIALOG_H

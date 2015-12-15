@@ -132,11 +132,11 @@ QString publicclass::VerToStr(quint32 num)
 int publicclass::StoreDataMem(void *mem, DataRec *dr) //0 - успешно, иначе код ошибки
 {
     quint32 crc=0xFFFFFFFF;
-    DataHeader D;
+    FileHeader D;
     DataRec *R;
     quint32 i;
     char *m=static_cast<char *>(mem);
-    m+=sizeof(DataHeader);
+    m+=sizeof(FileHeader);
     D.size=0;
     for(R=dr;;R++)
     {
@@ -198,12 +198,13 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
   quint32 sz=0;
   char *m=static_cast<char *>(mem);
   DataRec R,*r;
-  DataHeader dh;
+  FileHeader dh;
   quint32 i;
+  bool NoIDs=true; // признак того, что не встретился ни один из ID в dr
 
   crc=0xFFFFFFFF;
 
-  quint32 tmpi = sizeof(DataHeader);
+  quint32 tmpi = sizeof(FileHeader);
   quint32 pos = tmpi;
   if (pos > memsize)
       return CN_S2SIZEERROR; // выход за границу принятых байт
@@ -211,8 +212,8 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
   m+=tmpi;
   for (i=0; i<(memsize-tmpi); i++)
       updCRC32(m[i], &crc);
-/*  if (dh.crc32!=crc)
-      return CN_S2CRCERROR; */
+  if (dh.crc32!=crc)
+      return CN_S2CRCERROR;
   for(;;)
   {
       tmpi = sizeof(DataRec)-sizeof(void*);
@@ -235,6 +236,7 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
           sz += tmpi;
           continue;
       }
+      NoIDs = false;
       if((r->data_type!=R.data_type) || (r->elem_size!=R.elem_size) || (r->num_elem!=R.num_elem)) //несовпадения описания прочитанного элемента с ожидаемым
           return CN_S2DESCERROR;
       tmpi = r->elem_size*r->num_elem;
@@ -245,8 +247,10 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       sz += tmpi;
       m += tmpi;
   }
-/*  if(dh.size!=sz)
-      return CN_S2DHSZERROR; */
+  if(dh.size!=sz)
+      return CN_S2DHSZERROR;
+  if (NoIDs)
+      return CN_NOIDS;
   return 0;
 }
 
