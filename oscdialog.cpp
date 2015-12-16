@@ -46,7 +46,7 @@ void oscdialog::GetOscInfo()
     if (OscInfo != 0)
         delete OscInfo;
     OscInfo = new QByteArray;
-    OscInfo->resize(30000);
+    OscInfo->resize(MAXOSCBUFSIZE);
     cn->Send(CN_GNosc,&(OscInfo->data()[0]));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -69,8 +69,8 @@ void oscdialog::ProcessOscInfo()
     {
         quint32 oscnum = static_cast<quint8>(OscInfo->at(i));
         oscnum += static_cast<quint8>(OscInfo->at(i+1))*256;
-        quint32 chnum = static_cast<quint8>(OscInfo->at(i+4));
-        chnum += static_cast<quint8>(OscInfo->at(i+5))*256;
+/*        quint32 chnum = static_cast<quint8>(OscInfo->at(i+4));
+        chnum += static_cast<quint8>(OscInfo->at(i+5))*256; */
         quint32 unixtime = static_cast<quint8>(OscInfo->at(i+8));
         unixtime += static_cast<quint8>(OscInfo->at(i+9))*256;
         unixtime += static_cast<quint8>(OscInfo->at(i+10))*65536;
@@ -83,15 +83,13 @@ void oscdialog::ProcessOscInfo()
         QString ms = QString::number((timens/1000000));
         QString mcs = QString::number(((timens-ms.toInt()*1000000)/1000));
         QString ns = QString::number(timens-ms.toInt()*1000000-mcs.toInt()*1000);
-//        QStringList sl = QStringList() << QString::number(oscnum) << QString::number(chnum) << \
-//                                          tme.toString("dd/MM/yyyy hh:mm:ss.")+ms+"."+mcs+"."+ns;
         Num << QString::number(oscnum);
-        Cha << QString::number(chnum);
+//        Cha << QString::number(chnum);
         Tim << tme.toString("dd/MM/yyyy hh:mm:ss.")+ms+"."+mcs+"."+ns;
         Dwld << "Скачать";
     }
     lsl.append(Num);
-    lsl.append(Cha);
+//    lsl.append(Cha);
     lsl.append(Tim);
     lsl.append(Dwld);
     tm->fillModel(lsl);
@@ -107,7 +105,7 @@ void oscdialog::ProcessOscInfo()
     delete m;
     GetOscPBDelegate *dg = new GetOscPBDelegate;
     connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(GetOsc(QModelIndex)));
-    tv->setItemDelegateForColumn(3,dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
+    tv->setItemDelegateForColumn(2,dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
     tv->resizeRowsToContents();
     tv->resizeColumnsToContents();
 }
@@ -125,7 +123,7 @@ void oscdialog::EndExtractOsc()
         return;
     }
     // считываем шапку - информацию о передаваемом файле осциллограмм - в структуру OscHeader
-    Config[0] = {MT_HEAD_ID, u32_TYPE, sizeof(quint32), sizeof(OscHeader),&OscHeader};
+    Config[0] = {MT_HEAD_ID, u32_TYPE, sizeof(quint32), sizeof(OscHeader)/sizeof(quint32),&OscHeader};
     Config[1] = {0xFFFF, 0, 0, 0, NULL};
     int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +FileHeader
     if (res)
@@ -138,7 +136,6 @@ void oscdialog::EndExtractOsc()
     quint32 OscNum = (OscLength-12-sizeof(OscHeader_Data)) / OscSize; // рассчитаем количество осциллограмм
     OscData.resize(OscSize*OscNum); // отведём в буфере место под осциллограммы
     float tmpf;
-    float StepInMs = OscHeader.Step*1000.0f;
     switch(pc.MType)
     {
     case MT_A:
@@ -184,25 +181,24 @@ void oscdialog::EndExtractOsc()
         xlsx.write(1,1,QVariant("Модуль: "+pc.ModuleTypeString));
         xlsx.write(3,1,QVariant("Дата: "+OscDateTime.split(" ").at(0)));
         xlsx.write(4,1,QVariant("Время: "+OscDateTime.split(" ").at(1)));
-        xlsx.write(5,1,QVariant("Смещение, нс"));
+        xlsx.write(5,1,QVariant("Смещение, мс"));
         xlsx.write(5,2,QVariant("Значение по каналу " + QString::number(IDFound-MT_START_OSC)));
         quint32 i = 0; // указатель внутри OscData
         float tmpf;
-        float StepInMs = OscHeader.Step*1000.0f;
         int WRow = 6;
         int WCol = 1;
         float StartTime = 0; // нулевое смещение относительно начала записи осциллограммы
         while (i < OscHeader.Len)
         {
-            QString tmps = QString::number(StartTime,'g',6);
-            xlsx.write(WRow,WCol,QVariant(tmps));
-            memcpy(&tmpf,&(OscData.data()[i]),sizeof(tmpf));
+            xlsx.write(WRow,WCol,QVariant(StartTime));
+            memcpy(&tmpf,&(OscData.data()[i*4]),sizeof(tmpf));
             xlsx.write(WRow,WCol+1,QVariant(tmpf));
             WRow++;
-            StartTime += StepInMs;
-            i+=4; // отсчёт++
+            StartTime += OscHeader.Step;
+            i++; // отсчёт++
         }
-        xlsx.save();
+        xlsx.saveAs(filename.toUtf8());
+//        xlsx.save();
         QMessageBox::information(this,"Успешно!","Записано успешно!");
         break;
     }
@@ -218,23 +214,39 @@ void oscdialog::EndExtractOsc()
             OSCER("Не задано имя файла");
             return; // !!! ошибка - не задано имя файла
         }
-        QXlsx::Document xlsx(filename.toUtf8());
+        QString OpenFileName;
+        switch(pc.MType1)
+        {
+        case MTE_0T2N:
+            OpenFileName = ":/e0t2n.xlsx";
+            break;
+        case MTE_1T1N:
+            OpenFileName = ":/e1t1n.xlsx";
+            break;
+        case MTE_2T0N:
+            OpenFileName = ":/e2t0n.xlsx";
+            break;
+        default:
+            OSCER("Некорректный подтип модуля");
+            return;
+            break;
+        }
+        QXlsx::Document xlsx(OpenFileName.toUtf8());
         float StartTime = 0; // нулевое смещение относительно начала записи осциллограммы
         xlsx.write(1,1,QVariant("Модуль: "+pc.ModuleTypeString));
         xlsx.write(3,1,QVariant("Дата: "+OscDateTime.split(" ").at(0)));
         xlsx.write(4,1,QVariant("Время: "+OscDateTime.split(" ").at(1)));
-        xlsx.write(5,1,QVariant("Смещение, нс"));
+        xlsx.write(5,1,QVariant("Смещение, мс"));
         quint32 i = 0; // указатель внутри OscData
-        int WRow = 5;
+        int WRow = 6;
         int WCol = 1;
         // подготовим временную шкалу в первом столбце
         while (i < OscHeader.Len) // минус один отсчёт во float минус размер одного последнего DataRec-а
         {
-            QString tmps = QString::number(StartTime,'g',6);
-            xlsx.write(WRow,WCol,QVariant(tmps));
+            xlsx.write(WRow,WCol,QVariant(StartTime));
             WRow++;
-            StartTime += StepInMs;
-            i+=4;
+            StartTime += OscHeader.Step;
+            i++;
         }
 
         for (j=0; j<OscNum; j++) // цикл по возможным осциллограммам
@@ -244,18 +256,18 @@ void oscdialog::EndExtractOsc()
             int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +FileHeader
             if (!res)
             {
-                int WRow = 5;
-                int WCol = j+2;
-                xlsx.write(WRow,WCol,QVariant("Значение по каналу " + QString::number(j)));
+                WRow = 5;
+                WCol = j+2;
+                xlsx.write(WRow,WCol,QVariant("Канал " + QString::number(j)));
                 WRow++;
                 i = 0;
                 quint32 OscOffset = OscSize * j;
                 while (i < OscHeader.Len)
                 {
-                    memcpy(&tmpf,&(OscData.data()[OscOffset+i]),sizeof(tmpf));
+                    memcpy(&tmpf,&(OscData.data()[OscOffset+i*sizeof(float)]),sizeof(tmpf));
                     xlsx.write(WRow,WCol,QVariant(tmpf));
                     WRow++;
-                    i+=4; // отсчёт++
+                    i++; // отсчёт++
                 }
             }
             else if (res == CN_NOIDS)
@@ -272,7 +284,7 @@ void oscdialog::EndExtractOsc()
                 return; // !!! ошибка разбора формата С2
             }
         }
-        xlsx.save();
+        xlsx.saveAs(filename.toUtf8());
         QMessageBox::information(this,"Успешно!","Записано успешно!");
         break;
     }
@@ -284,11 +296,9 @@ void oscdialog::EndExtractOsc()
 
 void oscdialog::GetOsc(QModelIndex idx)
 {
-//    quint32 oscnum = tm->data(index.sibling(index.row(),0),Qt::DisplayRole).toInt();
     quint32 oscnum = tm->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(); // номер осциллограммы
-    OscDateTime = tm->data(idx.sibling(idx.row(),2),Qt::DisplayRole).toString(); // дата и время создания осциллограммы
-//    OscInfo = new QByteArray;
-    OscInfo->resize(40000);
+    OscDateTime = tm->data(idx.sibling(idx.row(),1),Qt::DisplayRole).toString(); // дата и время создания осциллограммы
+    OscInfo->resize(MAXOSCBUFSIZE);
     GivenFilename = OscDateTime;
     GivenFilename.replace("/","-");
     GivenFilename.replace(":","_");

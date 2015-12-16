@@ -1,18 +1,18 @@
-#ifndef S_TQSPINBOX_H
-#define S_TQSPINBOX_H
+#ifndef s_tqSpinBox_H
+#define s_tqSpinBox_H
 
 #include <QDoubleSpinBox>
 
-class s_tqspinbox : public QDoubleSpinBox
+class s_tqSpinBox : public QDoubleSpinBox
 {
     Q_OBJECT
 public:
-    explicit s_tqspinbox(QWidget *parent = 0);
+    explicit s_tqSpinBox(QWidget *parent = 0);
     QVariant getAData();
     void setAData(QVariant dat);
 
 signals:
-    void valueChanged(double, s_tqspinbox *);
+    void valueChanged(double, s_tqSpinBox *);
 
 public slots:
 
@@ -23,4 +23,4 @@ private:
     QVariant adata;
 };
 
-#endif // S_TQSPINBOX_H
+#endif // s_tqSpinBox_H

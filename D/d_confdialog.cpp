@@ -98,38 +98,38 @@ void d_confdialog::FillConfData()
 {
 /*    int i;
     QSpinBox *spb;
-    s_tqspinbox *dspbls;
+    s_tqSpinBox *dspbls;
     s_tqComboBox *ChTypCB;
     s_tqCheckBox *chb;
     spb = this->findChild<QSpinBox *>("oscdlyspb");
     if (spb == 0)
         return;
     spb->setValue(Bci_block.oscdly);
-    dspbls = this->findChild<s_tqspinbox *>("abs104spb");
+    dspbls = this->findChild<s_tqSpinBox *>("abs104spb");
     if (dspbls == 0)
         return;
     dspbls->setValue(Bci_block.Abs_104);
-    dspbls = this->findChild<s_tqspinbox *>("cycle104spb");
+    dspbls = this->findChild<s_tqSpinBox *>("cycle104spb");
     if (dspbls == 0)
         return;
     dspbls->setValue(Bci_block.Cycle_104);
-    dspbls = this->findChild<s_tqspinbox *>("t1104spb");
+    dspbls = this->findChild<s_tqSpinBox *>("t1104spb");
     if (dspbls == 0)
         return;
     dspbls->setValue(Bci_block.T1_104);
-    dspbls = this->findChild<s_tqspinbox *>("t2104spb");
+    dspbls = this->findChild<s_tqSpinBox *>("t2104spb");
     if (dspbls == 0)
         return;
     dspbls->setValue(Bci_block.T2_104);
-    dspbls = this->findChild<s_tqspinbox *>("t3104spb");
+    dspbls = this->findChild<s_tqSpinBox *>("t3104spb");
     if (dspbls == 0)
         return;
     dspbls->setValue(Bci_block.T3_104);
-    dspbls = this->findChild<s_tqspinbox *>("k104spb");
+    dspbls = this->findChild<s_tqSpinBox *>("k104spb");
     if (dspbls == 0)
         return;
     dspbls->setValue(Bci_block.k_104);
-    dspbls = this->findChild<s_tqspinbox *>("w104spb");
+    dspbls = this->findChild<s_tqSpinBox *>("w104spb");
     if (dspbls == 0)
         return;
     dspbls->setValue(Bci_block.w_104);
@@ -169,36 +169,36 @@ void d_confdialog::FillConfData()
             ChTypCB->setVisible(false);
             lbl->setVisible(false);
         }
-        dspbls = this->findChild<s_tqspinbox *>("inminspb"+QString::number(i));
+        dspbls = this->findChild<s_tqSpinBox *>("inminspb"+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.in_min[i]);
-        dspbls = this->findChild<s_tqspinbox *>("inmaxspb"+QString::number(i));
+        dspbls = this->findChild<s_tqSpinBox *>("inmaxspb"+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.in_max[i]);
-        dspbls = this->findChild<s_tqspinbox *>("invminspb"+QString::number(i));
+        dspbls = this->findChild<s_tqSpinBox *>("invminspb"+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.in_vmin[i]);
-        dspbls = this->findChild<s_tqspinbox *>("invmaxspb"+QString::number(i));
+        dspbls = this->findChild<s_tqSpinBox *>("invmaxspb"+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.in_vmax[i]);
 
-        dspbls = this->findChild<s_tqspinbox *>("setminminspb"+QString::number(i));
+        dspbls = this->findChild<s_tqSpinBox *>("setminminspb"+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.setminmin[i]);
-        dspbls = this->findChild<s_tqspinbox *>("setminspb"+QString::number(i));
+        dspbls = this->findChild<s_tqSpinBox *>("setminspb"+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.setmin[i]);
-        dspbls = this->findChild<s_tqspinbox *>("setmaxspb"+QString::number(i));
+        dspbls = this->findChild<s_tqSpinBox *>("setmaxspb"+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.setmax[i]);
-        dspbls = this->findChild<s_tqspinbox *>("setmaxmaxspb"+QString::number(i));
+        dspbls = this->findChild<s_tqSpinBox *>("setmaxmaxspb"+QString::number(i));
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.setmaxmax[i]);
@@ -306,7 +306,7 @@ void d_confdialog::SetupUI()
 
         gb = new QGroupBox("Диапазоны сигналов");
         gb3lyout = new QGridLayout;
-        s_tqspinbox *dspbls;
+        s_tqSpinBox *dspbls;
         lbl = new QLabel("№ канала");
         gb3lyout->addWidget(lbl,0,0,1,1,Qt::AlignCenter);
         lbl = new QLabel("Мин. знач.");
@@ -321,37 +321,37 @@ void d_confdialog::SetupUI()
         {
             QLabel *ChTypL = new QLabel(QString::number(i));
             gb3lyout->addWidget(ChTypL,i+1,0,1,1,Qt::AlignRight);
-            dspbls = new s_tqspinbox;
+            dspbls = new s_tqSpinBox;
             dspbls->setObjectName("inminspb"+QString::number(i));
             dspbls->setSingleStep(0.01);
             dspbls->setMinimum(-20.0);
             dspbls->setMaximum(20.0);
             dspbls->setAData(QVariant(i));
-            connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetInMin(double,s_tqspinbox*)));
+            connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(SetInMin(double,s_tqSpinBox*)));
             gb3lyout->addWidget(dspbls,i+1,1,1,1,Qt::AlignCenter);
-            dspbls = new s_tqspinbox;
+            dspbls = new s_tqSpinBox;
             dspbls->setObjectName("inmaxspb"+QString::number(i));
             dspbls->setSingleStep(0.01);
             dspbls->setMinimum(-20.0);
             dspbls->setMaximum(20.0);
             dspbls->setAData(QVariant(i));
-            connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetInMax(double,s_tqspinbox*)));
+            connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(SetInMax(double,s_tqSpinBox*)));
             gb3lyout->addWidget(dspbls,i+1,2,1,1,Qt::AlignCenter);
-            dspbls = new s_tqspinbox;
+            dspbls = new s_tqSpinBox;
             dspbls->setObjectName("invminspb"+QString::number(i));
             dspbls->setSingleStep(0.01);
             dspbls->setMinimum(-100000.0);
             dspbls->setMaximum(100000.0);
             dspbls->setAData(QVariant(i));
-            connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetInVMin(double,s_tqspinbox*)));
+            connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(SetInVMin(double,s_tqSpinBox*)));
             gb3lyout->addWidget(dspbls,i+1,3,1,1,Qt::AlignCenter);
-            dspbls = new s_tqspinbox;
+            dspbls = new s_tqSpinBox;
             dspbls->setObjectName("invmaxspb"+QString::number(i));
             dspbls->setSingleStep(0.01);
             dspbls->setMinimum(-100000.0);
             dspbls->setMaximum(100000.0);
             dspbls->setAData(QVariant(i));
-            connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetInVMax(double,s_tqspinbox*)));
+            connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(SetInVMax(double,s_tqSpinBox*)));
             gb3lyout->addWidget(dspbls,i+1,4,1,1,Qt::AlignCenter);
         }
         gb->setLayout(gb3lyout);
@@ -373,37 +373,37 @@ void d_confdialog::SetupUI()
         {
             QLabel *ChTypL = new QLabel(QString::number(i));
             gb3lyout->addWidget(ChTypL,i+1,0,1,1,Qt::AlignRight);
-            dspbls = new s_tqspinbox;
+            dspbls = new s_tqSpinBox;
             dspbls->setObjectName("setminminspb"+QString::number(i));
             dspbls->setSingleStep(0.01);
             dspbls->setMinimum(-100000.0);
             dspbls->setMaximum(100000.0);
             dspbls->setAData(QVariant(i));
-            connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetMinMin(double,s_tqspinbox*)));
+            connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(SetMinMin(double,s_tqSpinBox*)));
             gb3lyout->addWidget(dspbls,i+1,1,1,1,Qt::AlignCenter);
-            dspbls = new s_tqspinbox;
+            dspbls = new s_tqSpinBox;
             dspbls->setObjectName("setminspb"+QString::number(i));
             dspbls->setSingleStep(0.01);
             dspbls->setMinimum(-100000.0);
             dspbls->setMaximum(100000.0);
             dspbls->setAData(QVariant(i));
-            connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetMin(double,s_tqspinbox*)));
+            connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(SetMin(double,s_tqSpinBox*)));
             gb3lyout->addWidget(dspbls,i+1,2,1,1,Qt::AlignCenter);
-            dspbls = new s_tqspinbox;
+            dspbls = new s_tqSpinBox;
             dspbls->setObjectName("setmaxspb"+QString::number(i));
             dspbls->setSingleStep(0.01);
             dspbls->setMinimum(-100000.0);
             dspbls->setMaximum(100000.0);
             dspbls->setAData(QVariant(i));
-            connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetMax(double,s_tqspinbox*)));
+            connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(SetMax(double,s_tqSpinBox*)));
             gb3lyout->addWidget(dspbls,i+1,3,1,1,Qt::AlignCenter);
-            dspbls = new s_tqspinbox;
+            dspbls = new s_tqSpinBox;
             dspbls->setObjectName("setmaxmaxspb"+QString::number(i));
             dspbls->setSingleStep(0.01);
             dspbls->setMinimum(-100000.0);
             dspbls->setMaximum(100000.0);
             dspbls->setAData(QVariant(i));
-            connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(SetMaxMax(double,s_tqspinbox*)));
+            connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(SetMaxMax(double,s_tqSpinBox*)));
             gb3lyout->addWidget(dspbls,i+1,4,1,1,Qt::AlignCenter);
         }
         gb->setLayout(gb3lyout);
@@ -416,90 +416,90 @@ void d_confdialog::SetupUI()
         gb3lyout->setColumnStretch(2, 50);
         lbl = new QLabel("Адрес базовой станции:");
         gb3lyout->addWidget(lbl,0,0,1,1,Qt::AlignRight);
-        dspbls = new s_tqspinbox;
+        dspbls = new s_tqSpinBox;
         dspbls->setObjectName("abs104spb");
         dspbls->setSingleStep(1);
         dspbls->setDecimals(0);
         dspbls->setMinimum(0);
         dspbls->setMaximum(65535);
         dspbls->setAData(0);
-        connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
+        connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(Set104(double,s_tqSpinBox*)));
         gb3lyout->addWidget(dspbls, 0, 1, 1, 1, Qt::AlignLeft);
         lbl = new QLabel("Интервал циклического опроса:");
         gb3lyout->addWidget(lbl,1,0,1,1,Qt::AlignRight);
-        dspbls = new s_tqspinbox;
+        dspbls = new s_tqSpinBox;
         dspbls->setObjectName("cycle104spb");
         dspbls->setSingleStep(1);
         dspbls->setDecimals(0);
         dspbls->setMinimum(0);
         dspbls->setMaximum(255);
         dspbls->setAData(1);
-        connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
+        connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(Set104(double,s_tqSpinBox*)));
         gb3lyout->addWidget(dspbls, 1, 1, 1, 1, Qt::AlignLeft);
         lbl=new QLabel("c");
         gb3lyout->addWidget(lbl,1,2,1,1,Qt::AlignLeft);
         lbl = new QLabel("Тайм-аут t1:");
         gb3lyout->addWidget(lbl,2,0,1,1,Qt::AlignRight);
-        dspbls = new s_tqspinbox;
+        dspbls = new s_tqSpinBox;
         dspbls->setObjectName("t1104spb");
         dspbls->setSingleStep(1);
         dspbls->setDecimals(0);
         dspbls->setMinimum(0);
         dspbls->setMaximum(255);
         dspbls->setAData(2);
-        connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
+        connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(Set104(double,s_tqSpinBox*)));
         gb3lyout->addWidget(dspbls, 2, 1, 1, 1, Qt::AlignLeft);
         lbl=new QLabel("c");
         gb3lyout->addWidget(lbl,2,2,1,1,Qt::AlignLeft);
         lbl = new QLabel("Тайм-аут t2:");
         gb3lyout->addWidget(lbl,3,0,1,1,Qt::AlignRight);
-        dspbls = new s_tqspinbox;
+        dspbls = new s_tqSpinBox;
         dspbls->setObjectName("t2104spb");
         dspbls->setSingleStep(1);
         dspbls->setDecimals(0);
         dspbls->setMinimum(0);
         dspbls->setMaximum(255);
         dspbls->setAData(3);
-        connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
+        connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(Set104(double,s_tqSpinBox*)));
         gb3lyout->addWidget(dspbls, 3, 1, 1, 1, Qt::AlignLeft);
         lbl=new QLabel("c");
         gb3lyout->addWidget(lbl,3,2,1,1,Qt::AlignLeft);
         lbl = new QLabel("Тайм-аут t3:");
         gb3lyout->addWidget(lbl,4,0,1,1,Qt::AlignRight);
-        dspbls = new s_tqspinbox;
+        dspbls = new s_tqSpinBox;
         dspbls->setObjectName("t3104spb");
         dspbls->setSingleStep(1);
         dspbls->setDecimals(0);
         dspbls->setMinimum(0);
         dspbls->setMaximum(255);
         dspbls->setAData(4);
-        connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
+        connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(Set104(double,s_tqSpinBox*)));
         gb3lyout->addWidget(dspbls, 4, 1, 1, 1, Qt::AlignLeft);
         lbl=new QLabel("c");
         gb3lyout->addWidget(lbl,4,2,1,1,Qt::AlignLeft);
         lbl = new QLabel("Макс. число неподтв. APDU (k):");
         gb3lyout->addWidget(lbl,5,0,1,1,Qt::AlignRight);
-        dspbls = new s_tqspinbox;
+        dspbls = new s_tqSpinBox;
         dspbls->setObjectName("k104spb");
         dspbls->setSingleStep(1);
         dspbls->setDecimals(0);
         dspbls->setMinimum(0);
         dspbls->setMaximum(255);
         dspbls->setAData(5);
-        connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
+        connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(Set104(double,s_tqSpinBox*)));
         gb3lyout->addWidget(dspbls, 5, 1, 1, 1, Qt::AlignLeft);
         lbl=new QLabel("c");
         gb3lyout->addWidget(lbl,5,2,1,1,Qt::AlignLeft);
         lbl = new QLabel("Макс. число посл. подтв. APDU (w):");
         gb3lyout->addWidget(lbl,6,0,1,1,Qt::AlignRight);
-        dspbls = new s_tqspinbox;
+        dspbls = new s_tqSpinBox;
         dspbls->setObjectName("w104spb");
         dspbls->setSingleStep(1);
         dspbls->setDecimals(0);
         dspbls->setMinimum(0);
         dspbls->setMaximum(255);
         dspbls->setAData(6);
-        connect(dspbls,SIGNAL(valueChanged(double,s_tqspinbox*)),this,SLOT(Set104(double,s_tqspinbox*)));
+        connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(Set104(double,s_tqSpinBox*)));
         gb3lyout->addWidget(dspbls, 6, 1, 1, 1, Qt::AlignLeft);
         lbl=new QLabel("c");
         gb3lyout->addWidget(lbl,6,2,1,1);
@@ -582,47 +582,47 @@ void d_confdialog::SetChOscSrc(int srctyp, s_tqComboBox *ptr)
     Bci_block.oscsrc |= tmpint;*/
 }
 
-void d_confdialog::SetInMin(double dbl, s_tqspinbox *ptr)
+void d_confdialog::SetInMin(double dbl, s_tqSpinBox *ptr)
 {
 /*    Bci_block.in_min[ptr->getAData().toInt()] = dbl;*/
 }
 
-void d_confdialog::SetInMax(double dbl, s_tqspinbox *ptr)
+void d_confdialog::SetInMax(double dbl, s_tqSpinBox *ptr)
 {
 //    Bci_block.in_max[ptr->getAData().toInt()] = dbl;
 }
 
-void d_confdialog::SetInVMin(double dbl, s_tqspinbox *ptr)
+void d_confdialog::SetInVMin(double dbl, s_tqSpinBox *ptr)
 {
  //   Bci_block.in_vmin[ptr->getAData().toInt()] = dbl;
 }
 
-void d_confdialog::SetInVMax(double dbl, s_tqspinbox *ptr)
+void d_confdialog::SetInVMax(double dbl, s_tqSpinBox *ptr)
 {
 //    Bci_block.in_vmax[ptr->getAData().toInt()] = dbl;
 }
 
-void d_confdialog::SetMinMin(double dbl, s_tqspinbox *ptr)
+void d_confdialog::SetMinMin(double dbl, s_tqSpinBox *ptr)
 {
 //    Bci_block.setminmin[ptr->getAData().toInt()] = dbl;
 }
 
-void d_confdialog::SetMin(double dbl, s_tqspinbox *ptr)
+void d_confdialog::SetMin(double dbl, s_tqSpinBox *ptr)
 {
 //    Bci_block.setmin[ptr->getAData().toInt()] = dbl;
 }
 
-void d_confdialog::SetMax(double dbl, s_tqspinbox *ptr)
+void d_confdialog::SetMax(double dbl, s_tqSpinBox *ptr)
 {
 //    Bci_block.setmax[ptr->getAData().toInt()] = dbl;
 }
 
-void d_confdialog::SetMaxMax(double dbl, s_tqspinbox *ptr)
+void d_confdialog::SetMaxMax(double dbl, s_tqSpinBox *ptr)
 {
 //    Bci_block.setmaxmax[ptr->getAData().toInt()] = dbl;
 }
 
-void d_confdialog::Set104(double dbl, s_tqspinbox *ptr)
+void d_confdialog::Set104(double dbl, s_tqSpinBox *ptr)
 {
     switch (ptr->getAData().toInt())
     {

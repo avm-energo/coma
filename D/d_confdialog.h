@@ -5,7 +5,7 @@
 
 #include "../widgets/s_tqcombobox.h"
 #include "../widgets/s_tqcheckbox.h"
-#include "../widgets/s_tqspinbox.h"
+#include "../widgets/s_tqSpinBox.h"
 #include "../publicclass.h"
 //#include "../canal.h"
 
@@ -80,15 +80,15 @@ private slots:
     void SetChTypData(int, s_tqComboBox *);
     void SetChOsc(int, s_tqCheckBox *);
     void SetChOscSrc(int, s_tqComboBox *);
-    void SetInMin(double, s_tqspinbox *);
-    void SetInMax(double, s_tqspinbox *);
-    void SetInVMin(double, s_tqspinbox *);
-    void SetInVMax(double, s_tqspinbox *);
-    void SetMinMin(double, s_tqspinbox *);
-    void SetMin(double, s_tqspinbox *);
-    void SetMax(double, s_tqspinbox *);
-    void SetMaxMax(double, s_tqspinbox *);
-    void Set104(double, s_tqspinbox *);
+    void SetInMin(double, s_tqSpinBox *);
+    void SetInMax(double, s_tqSpinBox *);
+    void SetInVMin(double, s_tqSpinBox *);
+    void SetInVMax(double, s_tqSpinBox *);
+    void SetMinMin(double, s_tqSpinBox *);
+    void SetMin(double, s_tqSpinBox *);
+    void SetMax(double, s_tqSpinBox *);
+    void SetMaxMax(double, s_tqSpinBox *);
+    void Set104(double, s_tqSpinBox *);
     void SetCType(int);
     void SetOscDly(int);
     void GetBci();

@@ -77,11 +77,12 @@ private:
     } Bci;
 
     QByteArray confba;
-    bool ConfigIsLoading;
     Bci Bci_block, Bci_defblock;
     publicclass::DataRec Config[ACONF_NUM];
 
     void FillConfData();
+    int GetIndexFromName(QObject *obj);
+    bool CheckConf();
 
 signals:
     void BsiIsNeedToBeAcquiredAndChecked();
@@ -91,19 +92,21 @@ public slots:
     void UpdateProper(bool);
 
 private slots:
-    void SetChTypData(int, s_tqComboBox *);
+    void SetChTypData();
     void SetChOsc(int, s_tqCheckBox *);
     void SetChOscSrc(int, s_tqComboBox *);
-    void SetInMin(double, s_tqspinbox *);
-    void SetInMax(double, s_tqspinbox *);
-    void SetInVMin(double, s_tqspinbox *);
-    void SetInVMax(double, s_tqspinbox *);
-//    void SetMinMin(double, s_tqspinbox *);
+    void SetInMin();
+    void SetInMax();
+    void SetInVMin();
+    void SetInVMax();
     void SetMinMin();
-    void SetMin(double, s_tqspinbox *);
-    void SetMax(double, s_tqspinbox *);
-    void SetMaxMax(double, s_tqspinbox *);
-    void Set104(double, s_tqspinbox *);
+    void SetMin();
+    void SetMax();
+    void SetMaxMax();
+    void SetRangeConf();
+    void SetRangemA();
+    void SetRangeV();
+    void Set104();
     void SetCType(int);
     void SetOscDly(int);
     void GetBci();

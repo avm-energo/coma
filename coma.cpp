@@ -723,7 +723,7 @@ void Coma::SetMipDlg()
     hlyout = new QHBoxLayout;
     lbl = new QLabel("ASDU:");
     hlyout->addWidget(lbl);
-    s_tqspinbox *spb = new s_tqspinbox;
+    s_tqSpinBox *spb = new s_tqSpinBox;
     spb->setDecimals(0);
     spb->setMinimum(1);
     spb->setMaximum(65534);
@@ -753,7 +753,7 @@ void Coma::SetMipConPar()
         pc.MIPIP += le->text()+".";
     }
     pc.MIPIP.chop(1); // последнюю точку убираем
-    s_tqspinbox *spb = this->findChild<s_tqspinbox *>("asduspb");
+    s_tqSpinBox *spb = this->findChild<s_tqSpinBox *>("asduspb");
     if (spb == 0)
         return;
     pc.MIPASDU = spb->value();
@@ -855,7 +855,7 @@ void Coma::WriteHW()
     dlg->setWindowTitle("Ввод версии аппаратуры");
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *lyout = new QHBoxLayout;
-    s_tqspinbox *spb = new s_tqspinbox;
+    s_tqSpinBox *spb = new s_tqSpinBox;
     spb->setObjectName("hwmv");
     spb->setDecimals(0);
     spb->setMinimum(0);
@@ -866,7 +866,7 @@ void Coma::WriteHW()
     lyout->addWidget(spb);
     lbl = new QLabel(".");
     lyout->addWidget(lbl);
-    spb = new s_tqspinbox;
+    spb = new s_tqSpinBox;
     spb->setObjectName("hwlv");
     spb->setDecimals(0);
     spb->setMinimum(0);
@@ -875,7 +875,7 @@ void Coma::WriteHW()
     lyout->addWidget(spb);
     lbl = new QLabel("-");
     lyout->addWidget(lbl);
-    spb = new s_tqspinbox;
+    spb = new s_tqSpinBox;
     spb->setObjectName("hwsv");
     spb->setDecimals(0);
     spb->setMinimum(0);
@@ -898,9 +898,9 @@ void Coma::SendHW()
         MAINDBG;
         return;
     }
-    s_tqspinbox *spbmv = this->findChild<s_tqspinbox *>("hwmv");
-    s_tqspinbox *spblv = this->findChild<s_tqspinbox *>("hwlv");
-    s_tqspinbox *spbsv = this->findChild<s_tqspinbox *>("hwsv");
+    s_tqSpinBox *spbmv = this->findChild<s_tqSpinBox *>("hwmv");
+    s_tqSpinBox *spblv = this->findChild<s_tqSpinBox *>("hwlv");
+    s_tqSpinBox *spbsv = this->findChild<s_tqSpinBox *>("hwsv");
     if ((spbmv == 0) || (spblv == 0) || (spbsv == 0))
     {
         MAINDBG;
@@ -943,7 +943,7 @@ void Coma::StartSettingsDialog()
     hlyout = new QHBoxLayout;
     lbl = new QLabel("Задержка появления окна ошибок, с");
     hlyout->addWidget(lbl);
-    s_tqspinbox *spb = new s_tqspinbox;
+    s_tqSpinBox *spb = new s_tqSpinBox;
     spb->setObjectName("errdelayspb");
     spb->setDecimals(0);
     spb->setMinimum(1);
@@ -966,7 +966,7 @@ void Coma::AcceptSettings()
         MAINDBG;
         return;
     }
-    s_tqspinbox *spb = this->findChild<s_tqspinbox *>("errdelayspb");
+    s_tqSpinBox *spb = this->findChild<s_tqSpinBox *>("errdelayspb");
     QCheckBox *cb = this->findChild<QCheckBox *>("showerrcb");
     if ((spb == 0) || (cb == 0))
     {

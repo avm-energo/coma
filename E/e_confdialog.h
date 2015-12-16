@@ -5,7 +5,7 @@
 
 #include "../widgets/s_tqcombobox.h"
 #include "../widgets/s_tqcheckbox.h"
-#include "../widgets/s_tqspinbox.h"
+#include "../widgets/s_tqSpinBox.h"
 #include "../publicclass.h"
 #include "e_config.h"
 
@@ -39,12 +39,12 @@ public slots:
 
 private slots:
     void SetOsc(int, s_tqCheckBox *);
-    void SetThreshold(double, s_tqspinbox *);
-    void SetCurrent(double, s_tqspinbox *);
+    void SetThreshold(double, s_tqSpinBox *);
+    void SetCurrent(double, s_tqSpinBox *);
     void SetSecCurrent(int tmpi, s_tqComboBox *);
     void SetEqType(int);
     void SetVoltageClass(int, s_tqComboBox *);
-    void Set104(double, s_tqspinbox *);
+    void Set104(double, s_tqSpinBox *);
     void SetCType(int);
     void SetNPoints(QString);
     void SetNFiltr(int);

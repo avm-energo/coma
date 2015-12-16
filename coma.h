@@ -23,7 +23,7 @@
 #include "canal.h"
 #include "publicclass.h"
 
-#define PROGNAME    "КОМА 1.0 #0069"
+#define PROGNAME    "КОМА 1.0 #0070-t"
 
 #define MAINER(a)       ERMSG(publicclass::ER_MAIN,__LINE__,a)
 #define MAINDBG         DBGMSG(publicclass::ER_MAIN,__LINE__)

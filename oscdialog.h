@@ -11,6 +11,8 @@
 #define MT_START_OSC    1001 // первый ID осциллограммы
 #define MT_END_OSC      1033 // последний ID осциллограммы
 
+#define MAXOSCBUFSIZE   40000 // максимальный размер буфера для осциллограмм
+
 #define OSCER(a)       ERMSG(publicclass::ER_OSC,__LINE__,a)
 #define OSCDBG         DBGMSG(publicclass::ER_OSC,__LINE__)
 #define OSCWARN        WARNMSG(publicclass::ER_OSC,__LINE__)
