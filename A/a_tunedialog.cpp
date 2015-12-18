@@ -427,34 +427,8 @@ bool a_tunedialog::CheckTuneCoefs()
 
 void a_tunedialog::LoadFromFile()
 {
-    int res = pc.LoadFile("Tune files (*.atn)", sizeof(Bac_block));
-    switch (res)
-    {
-    case 0:
-        break;
-    case 1:
-        ATUNEER("Ошибка открытия файла!");
-        return;
-        break;
-    case 2:
-        if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
-                                  QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);
-        else
-            return;
-        break;
-    case 3:
-        ATUNEER("Пустое имя файла!");
-        return;
-        break;
-    case 4:
-        ATUNEER("Ошибка открытия файла!");
-        return;
-        break;
-    default:
-        return;
-        break;
-    }
-    pc.LoadFileToPtr(&Bac_block, sizeof(Bac_block));
+    QByteArray ba = pc.LoadFile("Tune files (*.atn)");
+    memcpy(&Bac_block,&(ba.data()[0]),sizeof(Bac_block));
     RefreshTuneCoefs();
     ATUNEINFO("Загрузка прошла успешно!");
 }

@@ -10,7 +10,7 @@
 #include <QSpinBox>
 #include <QMessageBox>
 #include <QCoreApplication>
-#include <QStackedWidget>
+#include "../widgets/mystackedwidget.h"
 #include "a_confdialog.h"
 #include "../canal.h"
 
@@ -223,26 +223,35 @@ void a_confdialog::SetupUI()
     lyout1->addWidget(gb, 1, 0, 1, 1);
 
     gb = new QGroupBox("Диапазоны сигналов");
-    gb3lyout = new QGridLayout;
+/*    gb3lyout = new QGridLayout;
     gb3lyout->setColumnStretch(0,0);
     gb3lyout->setColumnStretch(1,10);
     gb3lyout->setColumnStretch(2,5);
     gb3lyout->setColumnStretch(3,5);
     gb3lyout->setColumnStretch(4,5);
-    gb3lyout->setColumnStretch(5,5);
+    gb3lyout->setColumnStretch(5,5);*/
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
     s_tqSpinBox *dspbls;
     lbl = new QLabel("№ канала");
-    gb3lyout->addWidget(lbl,0,0,1,1);
+//    gb3lyout->addWidget(lbl,0,0,1,1);
+    hlyout->addWidget(lbl,0);
     lbl = new QLabel("Тип диапазона");
-    gb3lyout->addWidget(lbl,0,1,1,1);
+//    gb3lyout->addWidget(lbl,0,1,1,1);
+    hlyout->addWidget(lbl,10);
     lbl = new QLabel("Мин. знач.");
-    gb3lyout->addWidget(lbl,0,2,1,1);
+//    gb3lyout->addWidget(lbl,0,2,1,1);
+    hlyout->addWidget(lbl,5);
     lbl = new QLabel("Макс. знач.");
-    gb3lyout->addWidget(lbl,0,3,1,1);
+//    gb3lyout->addWidget(lbl,0,3,1,1);
+    hlyout->addWidget(lbl,5);
     lbl = new QLabel("Мин. инж.");
-    gb3lyout->addWidget(lbl,0,4,1,1);
+//    gb3lyout->addWidget(lbl,0,4,1,1);
+    hlyout->addWidget(lbl,5);
     lbl = new QLabel("Макс. инж.");
-    gb3lyout->addWidget(lbl,0,5,1,1);
+//    gb3lyout->addWidget(lbl,0,5,1,1);
+    hlyout->addWidget(lbl,5);
+    vlyout->addLayout(hlyout);
     QStringList sl = QStringList() << "Предуст. мА" << "Предуст. В" << "Произвольный";
     QStringListModel *slm = new QStringListModel;
     slm->setStringList(sl);
@@ -254,37 +263,40 @@ void a_confdialog::SetupUI()
     slmv->setStringList(sl);
     for (i = 0; i < 16; i++)
     {
+        hlyout = new QHBoxLayout;
         QLabel *ChTypL = new QLabel(QString::number(i));
-        gb3lyout->addWidget(ChTypL,i+1,0,1,1);
+//        gb3lyout->addWidget(ChTypL,i+1,0,1,1);
+        hlyout->addWidget(ChTypL, 0);
         s_tqComboBox *mcb = new s_tqComboBox;
         mcb->setObjectName("inrange."+QString::number(i));
         mcb->setModel(slm);
-        gb3lyout->addWidget(mcb, i+1,1,1,1);
-/*        QStackedWidget *stw = new QStackedWidget;
+//        gb3lyout->addWidget(mcb, i+1,1,1,1);
+        hlyout->addWidget(mcb, 10);
+        MyStackedWidget *stw = new MyStackedWidget;
         stw->setObjectName("rangeconf."+QString::number(i));
 
         QWidget *wdgt = new QWidget;
-        QHBoxLayout *hlyout = new QHBoxLayout;
+        QHBoxLayout *h2lyout = new QHBoxLayout;
         s_tqComboBox *cb = new s_tqComboBox(this);
         cb->setModel(slma);
         cb->setObjectName("rangemA."+QString::number(i));
         connect(cb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetRangemA()));
-        hlyout->addWidget(cb);
-        wdgt->setLayout(hlyout);
+        h2lyout->addWidget(cb);
+        wdgt->setLayout(h2lyout);
         stw->addWidget(wdgt);
 
         wdgt = new QWidget;
-        hlyout = new QHBoxLayout;
+        h2lyout = new QHBoxLayout;
         cb = new s_tqComboBox(this);
         cb->setModel(slmv);
         cb->setObjectName("rangeV."+QString::number(i));
         connect(cb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetRangeV()));
-        hlyout->addWidget(cb);
-        wdgt->setLayout(hlyout);
-        stw->addWidget(wdgt); */
+        h2lyout->addWidget(cb);
+        wdgt->setLayout(h2lyout);
+        stw->addWidget(wdgt);
 
-//        QWidget *wdgt = new QWidget;
-        QHBoxLayout *hlyout = new QHBoxLayout;
+        wdgt = new QWidget;
+        h2lyout = new QHBoxLayout;
         dspbls = new s_tqSpinBox(this);
         dspbls->setObjectName("inmin."+QString::number(i));
         dspbls->setSingleStep(0.01);
@@ -293,7 +305,7 @@ void a_confdialog::SetupUI()
         tmps = "s_tqSpinBox {background-color: "+QString(ACONFGCLR)+";}";
         dspbls->setStyleSheet(tmps);
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetInMin()));
-        hlyout->addWidget(dspbls);
+        h2lyout->addWidget(dspbls);
         dspbls = new s_tqSpinBox(this);
         dspbls->setObjectName("inmax."+QString::number(i));
         dspbls->setSingleStep(0.01);
@@ -302,14 +314,14 @@ void a_confdialog::SetupUI()
         tmps = "s_tqSpinBox {background-color: "+QString(ACONFGCLR)+";}";
         dspbls->setStyleSheet(tmps);
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetInMax()));
-        hlyout->addWidget(dspbls);
-//        wdgt->setLayout(hlyout);
-//        stw->addWidget(wdgt);
-
+        h2lyout->addWidget(dspbls);
+        wdgt->setLayout(h2lyout);
+        stw->addWidget(wdgt);
 //        gb3lyout->addWidget(wdgt,i+1,2,1,2);
-        gb3lyout->addLayout(hlyout,i+1,2,1,2);
-//        connect(mcb,SIGNAL(currentIndexChanged(int)),stw,SLOT(setCurrentIndex(int)));
-//        mcb->setCurrentIndex(0); // принудительный вызов, чтобы поменять текущий виджет
+//        gb3lyout->addLayout(hlyout,i+1,2,1,2);
+        hlyout->addWidget(stw, 10);
+        connect(mcb,SIGNAL(currentIndexChanged(int)),stw,SLOT(setCurrentIndex(int)));
+        mcb->setCurrentIndex(0); // принудительный вызов, чтобы поменять текущий виджет
 
         dspbls = new s_tqSpinBox;
         dspbls->setObjectName("invmin."+QString::number(i));
@@ -319,7 +331,8 @@ void a_confdialog::SetupUI()
         tmps = "s_tqSpinBox {background-color: "+QString(ACONFGCLR)+";}";
         dspbls->setStyleSheet(tmps);
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetInVMin()));
-        gb3lyout->addWidget(dspbls,i+1,4,1,1);
+//        gb3lyout->addWidget(dspbls,i+1,4,1,1);
+        hlyout->addWidget(dspbls, 5);
         dspbls = new s_tqSpinBox;
         dspbls->setObjectName("invmax."+QString::number(i));
         dspbls->setSingleStep(0.01);
@@ -328,10 +341,13 @@ void a_confdialog::SetupUI()
         tmps = "s_tqSpinBox {background-color: "+QString(ACONFGCLR)+";}";
         dspbls->setStyleSheet(tmps);
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetInVMax()));
-        gb3lyout->addWidget(dspbls,i+1,5,1,1);
+//        gb3lyout->addWidget(dspbls,i+1,5,1,1);
+        hlyout->addWidget(dspbls, 5);
+        vlyout->addLayout(hlyout, 1);
     }
 
-    gb->setLayout(gb3lyout);
+//    gb->setLayout(gb3lyout);
+    gb->setLayout(vlyout);
     lyout2->addWidget(gb, 0, 0, 1, 1);
 
     gb = new QGroupBox("Уставки");
@@ -514,21 +530,6 @@ void a_confdialog::SetupUI()
     cp3->setLayout(lyout3);
     cp4->setLayout(lyout4);
     SetDefConf();
-}
-
-void a_confdialog::SetRangeConf()
-{
-    s_tqComboBox *cb = qobject_cast<s_tqComboBox *>(sender());
-    int tmpi;
-    if ((tmpi=GetIndexFromName(cb)) == -1)
-        return;
-    QStackedWidget *stw = this->findChild<QStackedWidget *>("rangeconf."+QString::number(tmpi));
-    if (stw == 0)
-    {
-        ACONFDBG;
-        return;
-    }
-    stw->setCurrentIndex(cb->currentIndex());
 }
 
 int a_confdialog::GetIndexFromName(QObject *obj)
@@ -1068,41 +1069,28 @@ void a_confdialog::UpdateProper(bool tmpb)
 
 void a_confdialog::LoadConf()
 {
-    int res = pc.LoadFile("Config files (*.acf)", sizeof(Bci_block));
-    switch (res)
+    QByteArray ba;
+    ba = pc.LoadFile("Config files (*.acf)");
+    if (pc.RestoreDataMem(&(ba.data()[0]), ba.size(), Config))
     {
-    case 0:
-        break;
-    case 1:
-        ACONFER("Ошибка открытия файла!");
+        ACONFWARN;
         return;
-        break;
-    case 2:
-        if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
-                                  QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);
-        else
-            return;
-        break;
-    case 3:
-        ACONFER("Пустое имя файла!");
-        return;
-        break;
-    case 4:
-        ACONFER("Ошибка открытия файла!");
-        return;
-        break;
-    default:
-        return;
-        break;
     }
-    pc.LoadFileToPtr(&Bci_block, sizeof(Bci_block));
     FillConfData();
     ACONFINFO("Загрузка прошла успешно!");
 }
 
 void a_confdialog::SaveConf()
 {
-    int res = pc.SaveFile("Config files (*.acf)", &Bci_block, sizeof(Bci_block));
+    QByteArray *ba = new QByteArray;
+    ba->resize(MAXBYTEARRAY);
+    pc.StoreDataMem(&(ba->data()[0]), Config);
+    quint32 BaLength = static_cast<quint8>(ba->data()[0]);
+    BaLength += static_cast<quint8>(ba->data()[1])*256;
+    BaLength += static_cast<quint8>(ba->data()[2])*65536;
+    BaLength += static_cast<quint8>(ba->data()[3])*16777216;
+    BaLength += 12; // FileHeader
+    int res = pc.SaveFile("Config files (*.acf)", &(ba->data()[0]), BaLength);
     switch (res)
     {
     case 0:

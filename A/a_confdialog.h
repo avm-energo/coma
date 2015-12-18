@@ -103,7 +103,6 @@ private slots:
     void SetMin();
     void SetMax();
     void SetMaxMax();
-    void SetRangeConf();
     void SetRangemA();
     void SetRangeV();
     void Set104();

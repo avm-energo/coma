@@ -207,19 +207,28 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
   quint32 tmpi = sizeof(FileHeader);
   quint32 pos = tmpi;
   if (pos > memsize)
-      return CN_S2SIZEERROR; // выход за границу принятых байт
+  {
+      SetErMsg(CN_S2SIZEERROR); // выход за границу принятых байт
+      return 1;
+  }
   memcpy(&dh,m,tmpi);
   m+=tmpi;
   for (i=0; i<(memsize-tmpi); i++)
       updCRC32(m[i], &crc);
   if (dh.crc32!=crc)
-      return CN_S2CRCERROR;
+  {
+      SetErMsg(CN_S2CRCERROR); // выход за границу принятых байт
+      return 1;
+  }
   for(;;)
   {
       tmpi = sizeof(DataRec)-sizeof(void*);
       pos += tmpi;
       if (pos > memsize)
-          return CN_S2SIZEERROR; // выход за границу принятых байт
+      {
+          SetErMsg(CN_S2SIZEERROR); // выход за границу принятых байт
+          return 1;
+      }
       memcpy(&R,m,tmpi);
       sz+=tmpi;
       m+=tmpi;
@@ -231,26 +240,41 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
           tmpi = R.elem_size*R.num_elem;
           pos += tmpi;
           if (pos > memsize)
-              return CN_S2SIZEERROR; // выход за границу принятых байт
+          {
+              SetErMsg(CN_S2SIZEERROR); // выход за границу принятых байт
+              return 1;
+          }
           m += tmpi;
           sz += tmpi;
           continue;
       }
       NoIDs = false;
       if((r->data_type!=R.data_type) || (r->elem_size!=R.elem_size) || (r->num_elem!=R.num_elem)) //несовпадения описания прочитанного элемента с ожидаемым
-          return CN_S2DESCERROR;
+      {
+          SetErMsg(CN_S2DESCERROR); // несовпадение описаний одного и того же блока
+          return 1;
+      }
       tmpi = r->elem_size*r->num_elem;
       pos += tmpi;
       if (pos > memsize)
-          return CN_S2SIZEERROR; // выход за границу принятых байт
+      {
+          SetErMsg(CN_S2SIZEERROR); // выход за границу принятых байт
+          return 1;
+      }
       memcpy(r->thedata,m,tmpi);
       sz += tmpi;
       m += tmpi;
   }
   if(dh.size!=sz)
-      return CN_S2DHSZERROR;
+  {
+      SetErMsg(CN_S2DHSZERROR); // ошибка длины
+      return 1;
+  }
   if (NoIDs)
-      return CN_NOIDS;
+  {
+      SetErMsg(CN_NOIDS); // не найдено ни одного ИД
+      return 1;
+  }
   return 0;
 }
 
@@ -360,30 +384,22 @@ void publicclass::AddErrMsg(ermsgtype msgtype, quint64 ernum, quint64 ersubnum, 
     ermsgpool.append(tmpm);
 }
 
-int publicclass::LoadFile(QString mask, unsigned int numbytes)
+QByteArray publicclass::LoadFile(QString mask)
 {
     QString filename = QFileDialog::getOpenFileName(0, "Открыть файл", ".", mask);
     if (filename.isEmpty())
-        return 3; // Пустое имя файла
+    {
+        PUBER("Пустое имя файла");
+        return QByteArray(); // Пустое имя файла
+    }
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly))
-        return 4; // Ошибка открытия файла
-    LoadBa = new QByteArray(file.readAll());
-    if (LoadBa->size() >= (8+static_cast<int>(numbytes))) // 8 = sizeof (CpuIdHigh+SerNum)
     {
-        qint32 SN, CIH;
-        memcpy(&SN, &(LoadBa->data()[0]),sizeof(SN));
-        memcpy(&CIH, &(LoadBa->data()[4]), sizeof(CIH));
-        if ((CIH != CpuIdHigh) || (SN != SerNum))
-            return 2; // несовпадение, надо сделать запрос
-        return 0; // нет ошибок
+        PUBER("Ошибка открытия файла");
+        return QByteArray(); // Ошибка открытия файла
     }
-    return 1; // ошибка
-}
-
-void publicclass::LoadFileToPtr(void *dest, unsigned int numbytes)
-{
-    memcpy(dest, &(LoadBa->data()[8]), numbytes);
+    QByteArray LoadBa = QByteArray(file.readAll());
+    return LoadBa;
 }
 
 int publicclass::SaveFile(QString mask, void *src, unsigned int numbytes)
@@ -400,13 +416,18 @@ int publicclass::SaveFile(QString mask, void *src, unsigned int numbytes)
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly))
         return 3; // Ошибка открытия файла
-    int basize = 8+numbytes;
     SaveBa = new QByteArray;
-    SaveBa->resize(basize); // 8 = sizeof (CpuIdHigh+SerNum)
-    memcpy(&(SaveBa->data()[0]), &SerNum, sizeof(SerNum));
-    memcpy(&(SaveBa->data()[4]), &CpuIdHigh, sizeof(CpuIdHigh));
-    memcpy(&(SaveBa->data()[8]), src, numbytes);
-    if (file.write(SaveBa->data(), basize) == -1)
+    SaveBa->resize(numbytes);
+    memcpy(&(SaveBa->data()[0]), src, numbytes);
+    if (file.write(SaveBa->data(), numbytes) == -1)
         return 1; // ошибка записи
     return 0; // нет ошибок
+}
+
+void publicclass::SetErMsg(int ernum)
+{
+    if (ernum < pc.errmsgs.size())
+        PUBER(pc.errmsgs.at(ernum));
+    else
+        PUBER("Произошла неведомая фигня #"+QString::number(ernum,10));
 }

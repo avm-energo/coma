@@ -69,8 +69,6 @@ void oscdialog::ProcessOscInfo()
     {
         quint32 oscnum = static_cast<quint8>(OscInfo->at(i));
         oscnum += static_cast<quint8>(OscInfo->at(i+1))*256;
-/*        quint32 chnum = static_cast<quint8>(OscInfo->at(i+4));
-        chnum += static_cast<quint8>(OscInfo->at(i+5))*256; */
         quint32 unixtime = static_cast<quint8>(OscInfo->at(i+8));
         unixtime += static_cast<quint8>(OscInfo->at(i+9))*256;
         unixtime += static_cast<quint8>(OscInfo->at(i+10))*65536;
@@ -84,12 +82,10 @@ void oscdialog::ProcessOscInfo()
         QString mcs = QString::number(((timens-ms.toInt()*1000000)/1000));
         QString ns = QString::number(timens-ms.toInt()*1000000-mcs.toInt()*1000);
         Num << QString::number(oscnum);
-//        Cha << QString::number(chnum);
         Tim << tme.toString("dd/MM/yyyy hh:mm:ss.")+ms+"."+mcs+"."+ns;
         Dwld << "Скачать";
     }
     lsl.append(Num);
-//    lsl.append(Cha);
     lsl.append(Tim);
     lsl.append(Dwld);
     tm->fillModel(lsl);
@@ -197,8 +193,7 @@ void oscdialog::EndExtractOsc()
             StartTime += OscHeader.Step;
             i++; // отсчёт++
         }
-        xlsx.saveAs(filename.toUtf8());
-//        xlsx.save();
+        xlsx.save();
         QMessageBox::information(this,"Успешно!","Записано успешно!");
         break;
     }
@@ -214,7 +209,7 @@ void oscdialog::EndExtractOsc()
             OSCER("Не задано имя файла");
             return; // !!! ошибка - не задано имя файла
         }
-        QString OpenFileName;
+/*        QString OpenFileName;
         switch(pc.MType1)
         {
         case MTE_0T2N:
@@ -231,7 +226,8 @@ void oscdialog::EndExtractOsc()
             return;
             break;
         }
-        QXlsx::Document xlsx(OpenFileName.toUtf8());
+        QXlsx::Document xlsx(OpenFileName.toUtf8()); */
+        QXlsx::Document xlsx(filename.toUtf8());
         float StartTime = 0; // нулевое смещение относительно начала записи осциллограммы
         xlsx.write(1,1,QVariant("Модуль: "+pc.ModuleTypeString));
         xlsx.write(3,1,QVariant("Дата: "+OscDateTime.split(" ").at(0)));
@@ -284,7 +280,8 @@ void oscdialog::EndExtractOsc()
                 return; // !!! ошибка разбора формата С2
             }
         }
-        xlsx.saveAs(filename.toUtf8());
+//        xlsx.saveAs(filename.toUtf8());
+        xlsx.save();
         QMessageBox::information(this,"Успешно!","Записано успешно!");
         break;
     }

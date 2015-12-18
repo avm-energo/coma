@@ -22,6 +22,7 @@ e_tunedialog::e_tunedialog(QWidget *parent) :
     QDialog(parent)
 {
     tmr = new QTimer;
+    tmr->setObjectName("etunetimer");
     tmr->setInterval(ANMEASINT);
     connect(tmr,SIGNAL(timeout()),this,SLOT(ReadAnalogMeasurements()));
     setAttribute(Qt::WA_DeleteOnClose);
@@ -461,6 +462,17 @@ void e_tunedialog::SetupUI()
         glyout->addWidget(lbl,15,i,1,1);
     }
     lyout->addLayout(glyout);
+    hlyout = new QHBoxLayout;
+    lbl = new QLabel("Период обновления данных измерения:");
+    hlyout->addWidget(lbl);
+    QSpinBox *spb = new QSpinBox;
+    spb->setMinimum(500);
+    spb->setMaximum(5000);
+    spb->setSingleStep(250);
+    spb->setValue(2000);
+    connect(spb,SIGNAL(valueChanged(int)),this,SLOT(SetTimerPeriod(int)));
+    hlyout->addWidget(spb);
+
     pb = new QPushButton("Запустить чтение аналоговых сигналов");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurements()));
     if (pc.Emul)
@@ -1699,34 +1711,8 @@ void e_tunedialog::CancelTune()
 
 void e_tunedialog::LoadFromFile()
 {
-    int res = pc.LoadFile("Tune files (*.etn)", sizeof(Bac_block));
-    switch (res)
-    {
-    case 0:
-        break;
-    case 1:
-        ETUNEER("Ошибка открытия файла!");
-        return;
-        break;
-    case 2:
-        if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
-                                  QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);
-        else
-            return;
-        break;
-    case 3:
-        ETUNEER("Пустое имя файла!");
-        return;
-        break;
-    case 4:
-        ETUNEER("Ошибка открытия файла!");
-        return;
-        break;
-    default:
-        return;
-        break;
-    }
-    pc.LoadFileToPtr(&Bac_block, sizeof(Bac_block));
+    QByteArray ba = pc.LoadFile("Tune files (*.etn)");
+    memcpy(&Bac_block,&(ba.data()[0]),sizeof(Bac_block));
     RefreshTuneCoefs();
     ETUNEINFO("Загрузка прошла успешно!");
 }
@@ -1751,4 +1737,13 @@ void e_tunedialog::SaveToFile()
     default:
         break;
     }
+}
+
+void e_tunedialog::SetTimerPeriod(int per)
+{
+    if (tmr->isActive())
+        tmr->stop();
+    tmr->setInterval(per);
+    if (tmr->isActive())
+        tmr->start();
 }

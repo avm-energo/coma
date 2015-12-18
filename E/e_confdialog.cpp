@@ -870,41 +870,28 @@ void e_confdialog::SetDefConf()
 
 void e_confdialog::LoadConf()
 {
-    int res = pc.LoadFile("Config files (*.ecf)", sizeof(econf->Bci_block));
-    switch (res)
+    QByteArray ba;
+    ba = pc.LoadFile("Config files (*.ecf)");
+    if (pc.RestoreDataMem(&(ba.data()[0]), ba.size(), econf->Config))
     {
-    case 0:
-        break;
-    case 1:
-        ECONFER("Ошибка открытия файла!");
+        ECONFWARN;
         return;
-        break;
-    case 2:
-        if (QMessageBox::question(this,"Не тот файл","В файле содержатся данные для модуля с другим CPUID и/или SN.\nПродолжить загрузку?",\
-                                  QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) == QMessageBox::Ok);
-        else
-            return;
-        break;
-    case 3:
-        ECONFER("Пустое имя файла!");
-        return;
-        break;
-    case 4:
-        ECONFER("Ошибка открытия файла!");
-        return;
-        break;
-    default:
-        return;
-        break;
     }
-    pc.LoadFileToPtr(&(econf->Bci_block), sizeof(econf->Bci_block));
     FillConfData();
     ECONFINFO("Загрузка прошла успешно!");
 }
 
 void e_confdialog::SaveConf()
 {
-    int res = pc.SaveFile("Config files (*.ecf)", &(econf->Bci_block), sizeof(econf->Bci_block));
+    QByteArray *ba = new QByteArray;
+    ba->resize(MAXBYTEARRAY);
+    pc.StoreDataMem(&(ba->data()[0]), econf->Config);
+    quint32 BaLength = static_cast<quint8>(ba->data()[0]);
+    BaLength += static_cast<quint8>(ba->data()[1])*256;
+    BaLength += static_cast<quint8>(ba->data()[2])*65536;
+    BaLength += static_cast<quint8>(ba->data()[3])*16777216;
+    BaLength += 12; // FileHeader
+    int res = pc.SaveFile("Config files (*.ecf)", &(ba->data()[0]), BaLength);
     switch (res)
     {
     case 0:

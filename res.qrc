@@ -17,8 +17,5 @@
         <file>e.png</file>
         <file>load.png</file>
         <file>save.png</file>
-        <file>e0t2n.xlsx</file>
-        <file>e1t1n.xlsx</file>
-        <file>e2t0n.xlsx</file>
     </qresource>
 </RCC>

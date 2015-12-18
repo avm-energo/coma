@@ -172,6 +172,7 @@ private slots:
     void SetTuneMip();
     void SetTuneRetom();
     void SetTuneManual();
+    void SetTimerPeriod(int per);
     void StartAnalogMeasurements();
     void StopAnalogMeasurements();
     void ReadAnalogMeasurements();

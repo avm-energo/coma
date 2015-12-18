@@ -7,6 +7,12 @@
 #define INFOMSG(...)   pc.AddErrMsg(publicclass::INFO_MSG,__VA_ARGS__)
 #define WARNMSG(...)   pc.AddErrMsg(publicclass::WARN_MSG,__VA_ARGS__)
 
+#define PUBER(a)       ERMSG(publicclass::ER_PUB,__LINE__,a)
+#define PUBDBG         DBGMSG(publicclass::ER_PUB,__LINE__)
+#define PUBWARN        WARNMSG(publicclass::ER_PUB,__LINE__)
+#define PUBINFO(a)     INFOMSG(publicclass::ER_PUB,__LINE__,a)
+
+#define MAXBYTEARRAY    65535
 #define MAX_MSG     1000
 #define ER_BUFMAX   16
 // определение типов модулей
@@ -258,7 +264,8 @@ public:
         ER_ECONF,
         ER_ATUNE,
         ER_ACONF,
-        ER_OSC
+        ER_OSC,
+        ER_PUB
     };
 
     static QMap<int, QString> ermsgs()
@@ -272,6 +279,7 @@ public:
         map.insert(ER_ATUNE, "Настр. A");
         map.insert(ER_ACONF, "Конф. A");
         map.insert(ER_OSC, "Осциллограммы");
+        map.insert(ER_PUB, "Основное");
         return map;
     }
     QList<ermsg> ermsgpool;
@@ -299,14 +307,13 @@ public:
     quint32 getTime32();
     QString NsTimeToString (quint64 nstime);
     void AddErrMsg(ermsgtype msgtype, quint64 ernum=0, quint64 ersubnum=0, QString msg="");
-    int LoadFile (QString mask, unsigned int numbytes);
-    void LoadFileToPtr(void *dest, unsigned int numbytes);
+    QByteArray LoadFile(QString mask);
     int SaveFile (QString mask, void *src, unsigned int numbytes);
 
 private:
     QByteArray *LoadBa, *SaveBa;
     void addmessage(QStringList &sl, QString mes);
-
+    void SetErMsg(int ernum);
 };
 
 extern publicclass pc;
