@@ -16,9 +16,14 @@ canal::canal(QObject *parent) : QObject(parent)
     SegEnd = 0;
     SegLeft = 0;
     FirstRun = true;
+    OscNum = 0;
     TTimer = new QTimer(this);
     TTimer->setInterval(CN_TIMEOUT);
     NeedToSend = false;
+    OscTimer = new QTimer(this);
+    OscTimer->setInterval(CN_OSCT);
+    OscTimer->setSingleShot(false);
+    connect(OscTimer,SIGNAL(timeout()),this,SLOT(OscTimerTimeout()));
 //    connect(TTimer, SIGNAL(timeout()),this,SLOT(Timeout())); // для отладки закомментарить
 }
 
@@ -49,6 +54,8 @@ void canal::InitiateSend()
     case CN_Cnc: // переход на новую конфигурацию
     case CN_Gip: // запрос ip-адреса модуля
     case CN_GNosc: // запрос блока информации об осциллограммах
+    case CN_OscEr: // команда стирания осциллограмм
+    case CN_OscPg: // запрос количества нестёртых страниц
     {
         tmpba.append(CN_Start);
         tmpba.append(cmd);
@@ -179,6 +186,8 @@ void canal::GetSomeData(QByteArray ba)
         switch (cmd)
         {
         case CN_Cnc:
+        case CN_OscEr:
+        case CN_OscPg: // 3 байта: <, OSCPGst, OSCPGml
         {
             if (RDSize < 3)
                 return;
@@ -342,6 +351,32 @@ void canal::GetSomeData(QByteArray ba)
                 break;
             }
             Finish(CN_RCVDATAERROR);
+            break;
+        }
+        case CN_OscEr:
+        {
+            if ((ReadData->at(0) == CN_MStart) && (ReadData->at(1) == CN_ResOk) && (ReadData->at(2) == ~CN_ResOk))
+            {
+                OscTimer->start();
+                break;
+            }
+            Finish(CN_RCVDATAERROR);
+            break;
+        }
+        case CN_OscPg:
+        {
+            quint16 OscNumRemaining = static_cast<quint8>(ReadData->at(1))*256+static_cast<quint8>(ReadData->at(2));
+            if (OscNumRemaining == 0)
+            {
+                OscNum = 0;
+                emit OscEraseCompleted();
+                Finish(CN_OK);
+                OscTimer->stop();
+                break;
+            }
+            if (OscNum == 0)
+                OscNum = OscNumRemaining; // максимальный диапазон для прогрессбара
+            emit OscEraseRemaining(OscNumRemaining, OscNum);
             break;
         }
         default:
@@ -534,4 +569,9 @@ void canal::StopSThread()
             thr->wait(1000);
         }
     }
+}
+
+void canal::OscTimerTimeout()
+{
+    Send(CN_OscPg);
 }

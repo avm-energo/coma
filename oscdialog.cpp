@@ -35,9 +35,16 @@ void oscdialog::SetupUI()
     tm = new s_tablemodel;
     QPushButton *pb = new QPushButton("Получить данные по осциллограммам в памяти модуля");
     connect(pb,SIGNAL(clicked()),this,SLOT(GetOscInfo()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     lyout->addWidget(pb);
     lyout->addWidget(tv, 89);
-    lyout->addStretch(1);
+//    lyout->addStretch(1);
+    pb = new QPushButton("Стереть все осциллограммы в памяти модуля");
+    connect(pb,SIGNAL(clicked()),this,SLOT(EraseOsc()));
+    if (pc.Emul)
+        pb->setEnabled(false);
+    lyout->addWidget(pb);
     setLayout(lyout);
 }
 
@@ -314,4 +321,9 @@ void oscdialog::ErMsg(int ermsg)
         OSCER(pc.errmsgs.at(ermsg));
     else
         OSCER("Произошла неведомая фигня #"+QString::number(ermsg,10));
+}
+
+void oscdialog::EraseOsc()
+{
+
 }

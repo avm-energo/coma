@@ -53,6 +53,7 @@ private slots:
     void EndExtractOsc();
     void GetOsc(QModelIndex);
     void ErMsg(int ermsg);
+    void EraseOsc();
 };
 
 #endif // OSCDIALOG_H

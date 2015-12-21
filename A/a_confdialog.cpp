@@ -223,59 +223,53 @@ void a_confdialog::SetupUI()
     lyout1->addWidget(gb, 1, 0, 1, 1);
 
     gb = new QGroupBox("Диапазоны сигналов");
-/*    gb3lyout = new QGridLayout;
+    gb3lyout = new QGridLayout;
     gb3lyout->setColumnStretch(0,0);
     gb3lyout->setColumnStretch(1,10);
     gb3lyout->setColumnStretch(2,5);
     gb3lyout->setColumnStretch(3,5);
     gb3lyout->setColumnStretch(4,5);
-    gb3lyout->setColumnStretch(5,5);*/
+    gb3lyout->setColumnStretch(5,5);
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     s_tqSpinBox *dspbls;
     lbl = new QLabel("№ канала");
-//    gb3lyout->addWidget(lbl,0,0,1,1);
-    hlyout->addWidget(lbl,0);
+    gb3lyout->addWidget(lbl,0,0,1,1);
+//    hlyout->addWidget(lbl,0);
     lbl = new QLabel("Тип диапазона");
-//    gb3lyout->addWidget(lbl,0,1,1,1);
-    hlyout->addWidget(lbl,10);
-    lbl = new QLabel("Мин. знач.");
-//    gb3lyout->addWidget(lbl,0,2,1,1);
-    hlyout->addWidget(lbl,5);
-    lbl = new QLabel("Макс. знач.");
+    gb3lyout->addWidget(lbl,0,1,1,1);
+//    hlyout->addWidget(lbl,10);
+    lbl = new QLabel("Диапазон (мин..макс)");
+    gb3lyout->addWidget(lbl,0,2,1,2);
+//    hlyout->addWidget(lbl,5);
+//    lbl = new QLabel("Макс. знач.");
 //    gb3lyout->addWidget(lbl,0,3,1,1);
-    hlyout->addWidget(lbl,5);
+//    hlyout->addWidget(lbl,5);
     lbl = new QLabel("Мин. инж.");
-//    gb3lyout->addWidget(lbl,0,4,1,1);
-    hlyout->addWidget(lbl,5);
+    gb3lyout->addWidget(lbl,0,4,1,1);
+//    hlyout->addWidget(lbl,5);
     lbl = new QLabel("Макс. инж.");
-//    gb3lyout->addWidget(lbl,0,5,1,1);
-    hlyout->addWidget(lbl,5);
-    vlyout->addLayout(hlyout);
+    gb3lyout->addWidget(lbl,0,5,1,1);
+//    hlyout->addWidget(lbl,5);
+//    vlyout->addLayout(hlyout);
     QStringList sl = QStringList() << "Предуст. мА" << "Предуст. В" << "Произвольный";
     QStringListModel *slm = new QStringListModel;
     slm->setStringList(sl);
-    sl = QStringList() << "(4..20) мА" << "(-20..20) мА" << "(0..5) мА";
-    QStringListModel *slma = new QStringListModel;
-    slma->setStringList(sl);
-    sl = QStringList() << "(0..5) В" << "(-5..5) В";
-    QStringListModel *slmv = new QStringListModel;
-    slmv->setStringList(sl);
     for (i = 0; i < 16; i++)
     {
         hlyout = new QHBoxLayout;
         QLabel *ChTypL = new QLabel(QString::number(i));
-//        gb3lyout->addWidget(ChTypL,i+1,0,1,1);
-        hlyout->addWidget(ChTypL, 0);
+        gb3lyout->addWidget(ChTypL,i+1,0,1,1);
+//        hlyout->addWidget(ChTypL, 0);
         s_tqComboBox *mcb = new s_tqComboBox;
         mcb->setObjectName("inrange."+QString::number(i));
         mcb->setModel(slm);
-//        gb3lyout->addWidget(mcb, i+1,1,1,1);
-        hlyout->addWidget(mcb, 10);
-        MyStackedWidget *stw = new MyStackedWidget;
-        stw->setObjectName("rangeconf."+QString::number(i));
+        gb3lyout->addWidget(mcb, i+1,1,1,1);
+//      hlyout->addWidget(mcb, 10);
+        QWidget *w = new QWidget;
+        w->setObjectName("rangeconf."+QString::number(i));
 
-        QWidget *wdgt = new QWidget;
+/*        QWidget *wdgt = new QWidget;
         QHBoxLayout *h2lyout = new QHBoxLayout;
         s_tqComboBox *cb = new s_tqComboBox(this);
         cb->setModel(slma);
@@ -316,11 +310,11 @@ void a_confdialog::SetupUI()
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetInMax()));
         h2lyout->addWidget(dspbls);
         wdgt->setLayout(h2lyout);
-        stw->addWidget(wdgt);
-//        gb3lyout->addWidget(wdgt,i+1,2,1,2);
+        stw->addWidget(wdgt);*/
+        gb3lyout->addWidget(w,i+1,2,1,2);
 //        gb3lyout->addLayout(hlyout,i+1,2,1,2);
-        hlyout->addWidget(stw, 10);
-        connect(mcb,SIGNAL(currentIndexChanged(int)),stw,SLOT(setCurrentIndex(int)));
+//        hlyout->addWidget(stw, 10);
+        connect(mcb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetRangeWidget(int)));
         mcb->setCurrentIndex(0); // принудительный вызов, чтобы поменять текущий виджет
 
         dspbls = new s_tqSpinBox;
@@ -331,8 +325,8 @@ void a_confdialog::SetupUI()
         tmps = "s_tqSpinBox {background-color: "+QString(ACONFGCLR)+";}";
         dspbls->setStyleSheet(tmps);
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetInVMin()));
-//        gb3lyout->addWidget(dspbls,i+1,4,1,1);
-        hlyout->addWidget(dspbls, 5);
+        gb3lyout->addWidget(dspbls,i+1,4,1,1);
+//        hlyout->addWidget(dspbls, 5);
         dspbls = new s_tqSpinBox;
         dspbls->setObjectName("invmax."+QString::number(i));
         dspbls->setSingleStep(0.01);
@@ -341,9 +335,9 @@ void a_confdialog::SetupUI()
         tmps = "s_tqSpinBox {background-color: "+QString(ACONFGCLR)+";}";
         dspbls->setStyleSheet(tmps);
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetInVMax()));
-//        gb3lyout->addWidget(dspbls,i+1,5,1,1);
-        hlyout->addWidget(dspbls, 5);
-        vlyout->addLayout(hlyout, 1);
+        gb3lyout->addWidget(dspbls,i+1,5,1,1);
+//        hlyout->addWidget(dspbls, 5);
+        vlyout->addLayout(gb3lyout, 1);
     }
 
 //    gb->setLayout(gb3lyout);
@@ -1108,4 +1102,78 @@ void a_confdialog::SaveConf()
     default:
         break;
     }
+}
+
+void a_confdialog::SetRangeWidget(int RangeType)
+{
+    QString McbName = sender()->objectName();
+    QStringList McbNameSl = McbName.split(".");
+    int ChNum;
+    if (McbNameSl.size()>1)
+        ChNum = McbNameSl.at(1).toInt();
+    else
+    {
+        ACONFWARN;
+        return;
+    }
+    QWidget *w = this->findChild<QWidget *>("rangeconf."+QString::number(ChNum));
+    if (w == 0)
+    {
+        ACONFDBG;
+        return;
+    }
+    QLayout *l = w->layout();
+    if (l != 0)
+        delete l;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    switch (RangeType)
+    {
+    case RT_420:
+    {
+        s_tqComboBox *cb = new s_tqComboBox(this);
+        cb->addItem("(4..20) мА");
+        cb->addItem("(-20..20) мА");
+        cb->addItem("(0..5) мА");
+        cb->setObjectName("rangemA."+QString::number(ChNum));
+        connect(cb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetRangemA()));
+        hlyout->addWidget(cb);
+        break;
+    }
+    case RT_05:
+    {
+        s_tqComboBox *cb = new s_tqComboBox(this);
+        cb->addItem("(0..5) В");
+        cb->addItem("(-5..5) В");
+        cb->setObjectName("rangeV."+QString::number(ChNum));
+        connect(cb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetRangeV()));
+        hlyout->addWidget(cb);
+        break;
+    }
+    case RT_M:
+    {
+        s_tqSpinBox *dspbls = new s_tqSpinBox(this);
+        dspbls->setObjectName("inmin."+QString::number(ChNum));
+        dspbls->setSingleStep(0.01);
+        dspbls->setMinimum(-20.0);
+        dspbls->setMaximum(20.0);
+        QString tmps = "s_tqSpinBox {background-color: "+QString(ACONFGCLR)+";}";
+        dspbls->setStyleSheet(tmps);
+        connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetInMin()));
+        hlyout->addWidget(dspbls);
+        dspbls = new s_tqSpinBox(this);
+        dspbls->setObjectName("inmax."+QString::number(ChNum));
+        dspbls->setSingleStep(0.01);
+        dspbls->setMinimum(-20.0);
+        dspbls->setMaximum(20.0);
+        tmps = "s_tqSpinBox {background-color: "+QString(ACONFGCLR)+";}";
+        dspbls->setStyleSheet(tmps);
+        connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetInMax()));
+        hlyout->addWidget(dspbls);
+        break;
+    }
+    default:
+        return;
+        break;
+    }
+    w->setLayout(hlyout);
 }

@@ -469,7 +469,7 @@ void e_tunedialog::SetupUI()
     spb->setMinimum(500);
     spb->setMaximum(5000);
     spb->setSingleStep(250);
-    spb->setValue(2000);
+    spb->setValue(ANMEASINT);
     connect(spb,SIGNAL(valueChanged(int)),this,SLOT(SetTimerPeriod(int)));
     hlyout->addWidget(spb);
 

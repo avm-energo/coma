@@ -37,7 +37,6 @@ e_confdialog::e_confdialog(QWidget *parent) :
     wdgtlyout->addWidget(pb1, 0, 0, 1, 1);
     QPushButton *pb = new QPushButton("Записать в модуль");
     pb->setObjectName("WriteConfPB");
-//    pb->setEnabled(false);
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteConfDataToModule()));
     if (pc.Emul)
         pb->setEnabled(false);
@@ -864,6 +863,8 @@ void e_confdialog::SetNewConf()
 
 void e_confdialog::SetDefConf()
 {
+    econf->Bci_defblock.MType = pc.MType; // делаем для того, чтобы типы совпадали
+    econf->Bci_defblock.MType1 = pc.MType1; // делаем для того, чтобы подтипы совпадали
     memcpy(&econf->Bci_block, &econf->Bci_defblock, sizeof(e_config::Bci));
     FillConfData();
 }

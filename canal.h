@@ -43,6 +43,8 @@ signals:
     void gotsomedata(QByteArray *);
     void somedatawritten(QByteArray *);
     void SendEnd();
+    void OscEraseRemaining(quint16, quint16);
+    void OscEraseCompleted();
 
 public slots:
     void StopSThread();
@@ -53,12 +55,14 @@ private slots:
     void DataWritten(QByteArray);
     void CanalReady();
     void CanalError(int);
+    void OscTimerTimeout();
 
 private:
     char *outdata;
     QByteArray *ReadData;
     QByteArray *WriteData;
-    QTimer *TTimer;
+    QTimer *TTimer, *OscTimer;
+    quint16 OscNum;
     int bStep;
     int cmd;
     QLabel *lbl;

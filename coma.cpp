@@ -97,32 +97,23 @@ Coma::Coma(QWidget *parent)
     MainMenuBar->setStyleSheet(tmps);
     QMenu *MainMenu = new QMenu;
     MainMenu->setTitle("Главное");
-    QAction *MainExitAction = new QAction(this);
-    MainExitAction->setText("Выход");
-    connect(MainExitAction,SIGNAL(triggered()),this,SLOT(Exit()));
-    QAction *MainConnectAction = new QAction(this);
-    MainConnectAction->setText("Соединение");
-    MainConnectAction->setIcon(QIcon(":/play.png"));
-    connect(MainConnectAction,SIGNAL(triggered()),this,SLOT(Connect()));
-    QAction *MainDisconnectAction = new QAction(this);
-    MainDisconnectAction->setText("Разрыв соединения");
-    MainDisconnectAction->setIcon(QIcon(":/stop.png"));
-    connect(MainDisconnectAction,SIGNAL(triggered()),this,SLOT(Disconnect()));
-    MainMenu->addAction(MainConnectAction);
-    MainMenu->addAction(MainDisconnectAction);
-    MainMenu->addAction(MainExitAction);
+    QAction *act = new QAction(this);
+    act->setText("Выход");
+    connect(act,SIGNAL(triggered()),this,SLOT(Exit()));
+    MainMenu->addAction(act);
+    act = new QAction(this);
+    act->setText("Соединение");
+    act->setIcon(QIcon(":/play.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(Connect()));
+    MainMenu->addAction(act);
+    act = new QAction(this);
+    act->setText("Разрыв соединения");
+    act->setIcon(QIcon(":/stop.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(Disconnect()));
+    MainMenu->addAction(act);
     MainMenuBar->addMenu(MainMenu);
 
     QMenu *menu = new QMenu;
-    menu->setTitle("Дополнительно");
-    QAction *act = new QAction(this);
-    act->setText("Установка параметров связи с МИП");
-    act->setStatusTip("Настройка связи с прибором контроля электр. параметров МИП для регулировки модулей Э");
-    connect(act,SIGNAL(triggered()),this,SLOT(SetMipDlg()));
-    menu->addAction(act);
-    MainMenuBar->addMenu(menu);
-
-    menu = new QMenu;
     menu->setTitle("Запуск...");
     EmulAAction = new QAction(this);
     EmulAAction->setText("...в режиме А");
@@ -152,17 +143,22 @@ Coma::Coma(QWidget *parent)
 
     menu = new QMenu;
     menu->setTitle("Настройки");
-    QAction *SetAction = new QAction(this);
-    SetAction->setText("Настройки");
-    SetAction->setIcon(QIcon(":/settings.png"));
-    connect(SetAction,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
-    menu->addAction(SetAction);
+    act = new QAction(this);
+    act->setText("Настройки");
+    act->setIcon(QIcon(":/settings.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
+    menu->addAction(act);
+    act = new QAction(this);
+    act->setText("Установка параметров связи с МИП");
+    act->setStatusTip("Настройка связи с прибором контроля электр. параметров МИП для регулировки модулей Э");
+    connect(act,SIGNAL(triggered()),this,SLOT(SetMipDlg()));
+    menu->addAction(act);
     MainMenuBar->addMenu(menu);
 
-    QAction *HelpAction = new QAction(this);
-    HelpAction->setText("О программе");
-    connect(HelpAction,SIGNAL(triggered()),this,SLOT(GetAbout()));
-    MainMenuBar->addAction(HelpAction);
+    act = new QAction(this);
+    act->setText("О программе");
+    connect(act,SIGNAL(triggered()),this,SLOT(GetAbout()));
+    MainMenuBar->addAction(act);
     setMenuBar(MainMenuBar);
 
     QHBoxLayout *inlyout = new QHBoxLayout;
@@ -1128,7 +1124,6 @@ void Coma::HideErrorProtocol()
 
 void Coma::SetProgressBar(quint32 cursize)
 {
-//    Q_UNUSED(cursize);
     QProgressBar *prb = this->findChild<QProgressBar *>("oscprb");
     if (prb != 0)
         prb->setValue(cursize);
@@ -1136,22 +1131,24 @@ void Coma::SetProgressBar(quint32 cursize)
 
 void Coma::SetProgressBarSize(quint32 size)
 {
-//    Q_UNUSED(size);
     QDialog *dlg = new QDialog(this);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
-//    dlg->setWindowModality(Qt::WindowModal);
     connect(cn,SIGNAL(SendEnd()),dlg,SLOT(close()));
     QVBoxLayout *lyout = new QVBoxLayout;
     QLabel *lbl = new QLabel("Загрузка данных...");
     lyout->addWidget(lbl,0,Qt::AlignTop);
     QProgressBar *prb = new QProgressBar;
     prb->setObjectName("oscprb");
-    prb->setOrientation(Qt::Vertical);
+    prb->setOrientation(Qt::Horizontal);
+    prb->setMinimumWidth(500);
     prb->setMinimum(0);
     prb->setMaximum(size);
     lyout->addWidget(prb);
     dlg->setLayout(lyout);
-    dlg->setVisible(true);
     if (!cn->Busy)
         dlg->close();
+    else
+        dlg->setVisible(true);
+/*    if (!cn->Busy)
+        dlg->close(); */
 }
