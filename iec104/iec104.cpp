@@ -10,9 +10,13 @@ iec104::iec104(QObject *parent) : QObject(parent)
 {
     ParseStarted = false;
     GSD = true;
+    QThread *thr = new QThread;
     ethernet *eth = new ethernet;
-    connect(this,SIGNAL(stopall()),eth,SLOT(stop()));
-    connect(eth,SIGNAL(finished()),eth,SLOT(deleteLater()));
+    eth->moveToThread(thr);
+    connect(thr,SIGNAL(finished()),eth,SLOT(deleteLater()));
+    connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
+    connect(thr,SIGNAL(started()),eth,SLOT(Run()));
+    connect(this,SIGNAL(stopall()),eth,SLOT(Stop()));
     connect(eth,SIGNAL(connected()),this,SIGNAL(ethconnected()));
     connect(eth,SIGNAL(disconnected()),this,SIGNAL(ethdisconnected()));
     connect(eth,SIGNAL(finished()),this,SLOT(EthFinished()));
@@ -21,14 +25,18 @@ iec104::iec104(QObject *parent) : QObject(parent)
     connect(this,SIGNAL(writedatatoeth(QByteArray)),eth,SLOT(InitiateWriteDataToPort(QByteArray)));
 
     Parse = new Parse104;
-    connect(this,SIGNAL(stopall()),Parse,SLOT(stop()));
-    connect(Parse,SIGNAL(finished()),Parse,SLOT(deleteLater()));
+    QThread *thr2 = new QThread;
+    Parse->moveToThread(thr2);
+    connect(this,SIGNAL(stopall()),Parse,SLOT(Stop()));
+    connect(thr2,SIGNAL(finished()),Parse,SLOT(deleteLater()));
+    connect(thr2,SIGNAL(finished()),thr2,SLOT(deleteLater()));
+    connect(thr2,SIGNAL(started()),Parse,SLOT(Run()));
     connect(Parse,SIGNAL(signalsreceived(Parse104::Signals104&)),\
             this,SIGNAL(signalsready(Parse104::Signals104&)),Qt::BlockingQueuedConnection);
     connect(Parse,SIGNAL(sendS()),this,SLOT(SendS()));
     connect(Parse,SIGNAL(parsestarted()),this,SLOT(StartParse()));
-    Parse->start();
-    eth->start();
+    thr->start();
+    thr2->start();
 }
 
 iec104::~iec104()
@@ -154,7 +162,7 @@ void iec104::SendS()
 
 // Класс PARSE104
 
-Parse104::Parse104(QObject *parent) : QThread(parent)
+Parse104::Parse104(QObject *parent) : QObject(parent)
 {
     ParseMutex.lock();
     ParseData.clear();
@@ -165,14 +173,13 @@ Parse104::Parse104(QObject *parent) : QThread(parent)
     APDUFormat = I104_WRONG;
     GetNewVR = false;
     NewDataArrived = false;
-    moveToThread(this);
 }
 
 Parse104::~Parse104()
 {
 }
 
-void Parse104::run()
+void Parse104::Run()
 {
     while (!ThreadMustBeFinished)
     {
@@ -345,7 +352,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
     }
 }
 
-void Parse104::stop()
+void Parse104::Stop()
 {
     ThreadMustBeFinished = true;
 }

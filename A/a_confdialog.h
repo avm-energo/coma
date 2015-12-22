@@ -2,6 +2,7 @@
 #define A_CONFDIALOG_H
 
 #include <QDialog>
+#include <QGridLayout>
 
 #include "../widgets/s_tqcombobox.h"
 #include "../widgets/s_tqcheckbox.h"
@@ -35,9 +36,21 @@
 #define ABCI_W_104      10
 #define ACONF_NUM       24
 
-#define RT_420          0
-#define RT_05           1
-#define RT_M            2
+#define RT_mA          0
+#define RT_V           1
+#define RT_M           2
+
+#define INTYPENA    0
+#define INTYPEMA    1
+#define INTYPEV     2
+#define INTYPERES   3
+
+#define RT_mA420    0
+#define RT_mA020    1
+#define RT_mA05     2
+
+#define RT_V05      0
+#define RT_V_55     1
 
 #define ACONFER(a)       ERMSG(publicclass::ER_ACONF,__LINE__,a)
 #define ACONFDBG         DBGMSG(publicclass::ER_ACONF,__LINE__)
@@ -83,10 +96,13 @@ private:
     QByteArray confba;
     Bci Bci_block, Bci_defblock;
     publicclass::DataRec Config[ACONF_NUM];
+    QGridLayout *ConfLayout;
 
     void FillConfData();
     int GetIndexFromName(QObject *obj);
     bool CheckConf();
+    void SetRangeWidget(int ChNum, int RangeType);
+    void SetSpinboxValue(QString name, double value);
 
 signals:
     void BsiIsNeedToBeAcquiredAndChecked();
@@ -120,7 +136,7 @@ private slots:
     void SaveConf();
     void LoadConf();
     void DisableChannel(int ChNum, bool Disable);
-    void SetRangeWidget(int RangeType);
+    void SetRangeWidgetSlot(int RangeType);
 };
 
 #endif // A_CONFDIALOG_H

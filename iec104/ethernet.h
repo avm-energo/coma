@@ -1,14 +1,14 @@
 #ifndef ETHERNET_H
 #define ETHERNET_H
 
-#include <QThread>
+#include <QObject>
 #include <QTcpSocket>
 #include <QMutex>
 #include <QByteArray>
 
 #define PORT104     2404 // порт связи по протоколу МЭК 60870-5-104
 
-class ethernet : public QThread
+class ethernet : public QObject
 {
     Q_OBJECT
 
@@ -18,7 +18,8 @@ public:
     bool ClosePortAndFinishThread;
 
 public slots:
-    void stop();
+    void Run();
+    void Stop();
     void InitiateWriteDataToPort(QByteArray);
 
 signals:
@@ -40,7 +41,6 @@ private:
     void SendData();
 
 protected:
-    void run();
 };
 
 #endif // ETHERNET_H

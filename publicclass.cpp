@@ -431,3 +431,11 @@ void publicclass::SetErMsg(int ernum)
     else
         PUBER("Произошла неведомая фигня #"+QString::number(ernum,10));
 }
+
+bool publicclass::FloatInRange(float var, float value)
+{
+    if ((var > (value-FLOAT_THRESHOLD) && (var < (value+FLOAT_THRESHOLD))))
+        return true;
+    else
+        return false;
+}

@@ -8,7 +8,7 @@ QMAKE_TARGET_COMPANY = EvelSoft
 QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = COMA
 RC_ICONS = coma.ico
-VERSION = 1.0.0.0068
+VERSION = 1.0.0.0071
 
 QT       += core gui network xlsx
 

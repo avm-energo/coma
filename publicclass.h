@@ -179,6 +179,8 @@
 //#define ACONFOCLR   "#FFCC99"
 #define ACONFOCLR   "#FFDDAA"
 
+#define FLOAT_THRESHOLD 0.1
+
 #include <QtSerialPort/QSerialPort>
 #include <QStringList>
 #include <QMap>
@@ -312,6 +314,7 @@ public:
     void AddErrMsg(ermsgtype msgtype, quint64 ernum=0, quint64 ersubnum=0, QString msg="");
     QByteArray LoadFile(QString mask);
     int SaveFile (QString mask, void *src, unsigned int numbytes);
+    bool FloatInRange(float var, float value);
 
 private:
     QByteArray *LoadBa, *SaveBa;

@@ -375,8 +375,12 @@ void canal::GetSomeData(QByteArray ba)
                 break;
             }
             if (OscNum == 0)
+            {
+                emit OscEraseSize(OscNumRemaining);
                 OscNum = OscNumRemaining; // максимальный диапазон для прогрессбара
-            emit OscEraseRemaining(OscNumRemaining, OscNum);
+            }
+            else
+                emit OscEraseRemaining(OscNumRemaining);
             break;
         }
         default:

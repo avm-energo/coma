@@ -5,14 +5,13 @@
 #include "../publicclass.h"
 
 ethernet::ethernet(QObject *parent) :
-    QThread(parent)
+    QObject(parent)
 {
     OutDataBuf.clear();
     ClosePortAndFinishThread = false;
-    moveToThread(this);
 }
 
-void ethernet::run()
+void ethernet::Run()
 {
     sock = new QTcpSocket(this);
     connect(sock,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(seterr(QAbstractSocket::SocketError)));
@@ -42,7 +41,7 @@ void ethernet::run()
     }
 }
 
-void ethernet::stop()
+void ethernet::Stop()
 {
     ClosePortAndFinishThread = true;
 }

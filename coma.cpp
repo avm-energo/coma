@@ -1135,7 +1135,7 @@ void Coma::SetProgressBarSize(quint32 size)
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     connect(cn,SIGNAL(SendEnd()),dlg,SLOT(close()));
     QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("Загрузка данных...");
+    QLabel *lbl = new QLabel("Загрузка и обработка данных...");
     lyout->addWidget(lbl,0,Qt::AlignTop);
     QProgressBar *prb = new QProgressBar;
     prb->setObjectName("oscprb");

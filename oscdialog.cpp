@@ -325,5 +325,50 @@ void oscdialog::ErMsg(int ermsg)
 
 void oscdialog::EraseOsc()
 {
+    QMetaObject::Connection handle1 = connect(cn,SIGNAL(OscEraseSize(quint32)),this,SLOT(SetProgressBarSize(quint32)));
+    QMetaObject::Connection handle2 = connect(cn,SIGNAL(OscEraseRemaining(quint32)),this,SLOT(SetProgressBar(quint32)));
+    cn->Send(CN_OscEr);
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == CN_OK)
+        OSCINFO("Стёрто успешно");
+    else
+        OSCINFO("Ошибка при стирании");
+    disconnect(handle1);
+    disconnect(handle2);
+}
 
+void oscdialog::SetProgressBar(quint32 cursize)
+{
+    QProgressBar *prb = this->findChild<QProgressBar *>("oscprb");
+    if (prb != 0)
+        prb->setValue(cursize);
+    QLabel *lbl = this->findChild<QLabel *>("osclbl");
+    if (lbl != 0)
+        lbl->setText("Осталось стереть "+QString::number(cursize)+" записей...");
+}
+
+void oscdialog::SetProgressBarSize(quint32 size)
+{
+    QDialog *dlg = new QDialog(this);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    connect(cn,SIGNAL(SendEnd()),dlg,SLOT(close()));
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QLabel *lbl = new QLabel("Осталось стереть "+QString::number(size)+" записей...");
+    lbl->setObjectName("osclbl");
+    lyout->addWidget(lbl,0,Qt::AlignTop);
+    QProgressBar *prb = new QProgressBar;
+    prb->setObjectName("oscprb");
+    prb->setOrientation(Qt::Horizontal);
+    prb->setMinimumWidth(500);
+    prb->setMinimum(0);
+    prb->setMaximum(size);
+    lyout->addWidget(prb);
+    dlg->setLayout(lyout);
+    if (!cn->Busy)
+        dlg->close();
+    else
+        dlg->setVisible(true);
+/*    if (!cn->Busy)
+        dlg->close(); */
 }

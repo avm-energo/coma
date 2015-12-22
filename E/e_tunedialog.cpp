@@ -21,6 +21,15 @@
 e_tunedialog::e_tunedialog(QWidget *parent) :
     QDialog(parent)
 {
+    Bac_defblock.Kinter = 0.0;
+    Bac_defblock.K_freq = 1.0;
+    for (int i=0; i<6; i++)
+    {
+        Bac_defblock.DPsi[i] = 0.0;
+        Bac_defblock.KmI_1[i] = 1.0;
+        Bac_defblock.KmI_5[i] = 1.0;
+        Bac_defblock.KmU[i] = 1.0;
+    }
     tmr = new QTimer;
     tmr->setObjectName("etunetimer");
     tmr->setInterval(ANMEASINT);
@@ -499,6 +508,7 @@ void e_tunedialog::StartTune()
     while (!EndTuning)
     {
         StopAnalogMeasurements(); // останавливаем текущие измерения, чтобы не мешали процессу
+        StopMip(); // останавливаем измерения МИП
         MsgClear(); // очистка экрана с сообщениями
         // показываем диалог с выбором метода контроля
         ShowControlChooseDialog();
@@ -1269,6 +1279,23 @@ bool e_tunedialog::CheckMip()
 {
     double ValuesToCheck[10] = {0,50.0,50.0,50.0,60.0,60.0,60.0,1.0,1.0,1.0};
     double ThresholdsToCheck[10] = {0,0.1,0.1,0.1,1.0,1.0,1.0,0.05,0.05,0.05};
+    switch(pc.MType1) //
+    {
+    case MTE_2T0N:
+    {
+        ValuesToCheck[4] = ValuesToCheck[5] = ValuesToCheck[6] = 0;
+        ThresholdsToCheck[4] = ThresholdsToCheck[5] = ThresholdsToCheck[6] = FLT_MAX;
+        break;
+    }
+    case MTE_0T2N:
+    {
+        ValuesToCheck[7] = ValuesToCheck[8] = ValuesToCheck[9] = 0;
+        ThresholdsToCheck[7] = ThresholdsToCheck[8] = ThresholdsToCheck[9] = FLT_MAX;
+        break;
+    }
+    default:
+        break;
+    }
     for (int i = 1; i < 10; i++)
     {
         QLabel *lbl = this->findChild<QLabel *>("mip"+QString::number(i));

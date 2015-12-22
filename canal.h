@@ -43,7 +43,8 @@ signals:
     void gotsomedata(QByteArray *);
     void somedatawritten(QByteArray *);
     void SendEnd();
-    void OscEraseRemaining(quint16, quint16);
+    void OscEraseSize(quint32);
+    void OscEraseRemaining(quint32);
     void OscEraseCompleted();
 
 public slots:

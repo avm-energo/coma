@@ -68,13 +68,13 @@
 #define COT_FILETRANSFER						13
 #define COT_INTERROGATION						20
 
-#include <QThread>
+#include <QObject>
 #include <QTimer>
 #include <QMutex>
 
 #include "../publicclass.h"
 
-class Parse104 : public QThread
+class Parse104 : public QObject
 {
     Q_OBJECT
 
@@ -98,7 +98,8 @@ public:
     QMutex ParseMutex, SignalsMutex;
 
 public slots:
-    void stop();
+    void Stop();
+    void Run();
 
 signals:
     void signalsreceived(Parse104::Signals104 &);
@@ -141,7 +142,6 @@ private:
 private slots:
 
 protected:
-    void run();
 };
 
 class iec104 : public QObject
