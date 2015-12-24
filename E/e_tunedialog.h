@@ -156,6 +156,7 @@ private:
     void OkMsgSetVisible(int msg, bool Visible=true);
     void ErMsgSetVisible(int msg, bool Visible=true);
     void MsgClear();
+    void SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
 
 private slots:
     void StartTune();

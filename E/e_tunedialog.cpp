@@ -507,6 +507,7 @@ void e_tunedialog::StartTune()
     Cancelled = false;
     while (!EndTuning)
     {
+        SetNewTuneCoefs();
         StopAnalogMeasurements(); // останавливаем текущие измерения, чтобы не мешали процессу
         StopMip(); // останавливаем измерения МИП
         MsgClear(); // очистка экрана с сообщениями
@@ -1241,12 +1242,12 @@ bool e_tunedialog::CheckTuneCoefs()
 {
     double ValuesToCheck[26] = {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,\
                                0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0};
-    double ThresholdsToCheck[26] = {0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,0.02,\
-                                   0.02,0.02,0.02,0.02,0.02,0.02,1.0,1.0,1.0,1.0,1.0,1.0,0.02,0.005};
+    double ThresholdsToCheck[26] = {0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,\
+                                   0.5,0.5,0.5,0.5,0.5,0.5,1.0,1.0,1.0,1.0,1.0,1.0,0.5,0.005};
     bool res = true;
     for (int i = 0; i < 26; i++)
     {
-        QLabel *lbl = this->findChild<QLabel *>("tune"+QString::number(i));
+        QLineEdit *lbl = this->findChild<QLineEdit *>("tune"+QString::number(i));
         if (lbl == 0)
             return false;
         bool ok;
@@ -1321,7 +1322,7 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
     double ValuesToCheck[44] = {25.0,50.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,\
                                 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,\
                                 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-    double ThresholdsToCheck[44] = {25.0,0.05,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,\
+    double ThresholdsToCheck[44] = {25.0,0.05,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,\
                                     1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,\
                                     1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0};
 /*    double ThresholdsToCheck[44] = {25.0,0.05,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,\
@@ -1500,6 +1501,19 @@ void e_tunedialog::WriteTuneCoefs()
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
         ETUNEINFO("Записано успешно!");
+}
+
+void e_tunedialog::SetNewTuneCoefs()
+{
+    Bac_newblock.Kinter = 0.0;
+    Bac_newblock.K_freq = 1.0;
+    for (int i=0; i<6; i++)
+    {
+        Bac_newblock.DPsi[i] = 0.0;
+        Bac_newblock.KmI_1[i] = 1.0;
+        Bac_newblock.KmI_5[i] = 1.0;
+        Bac_newblock.KmU[i] = 1.0;
+    }
 }
 
 void e_tunedialog::RefreshTuneCoefs()
