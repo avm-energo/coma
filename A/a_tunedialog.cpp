@@ -15,9 +15,7 @@
 a_tunedialog::a_tunedialog(QWidget *parent) :
     QDialog(parent)
 {
-    NoProperCoefs = false;
     setAttribute(Qt::WA_DeleteOnClose);
-//    cn = new canal;
     for (int i = 0; i < 16; i++)
     {
         Bda0.sin[i] = 0;
@@ -147,6 +145,8 @@ void a_tunedialog::SetupUI()
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
+    if ((!(pc.ModuleBsi.Hth & HTH_REGPARS)) && !pc.Emul) // есть настроечные коэффициенты в памяти модуля
+        ReadTuneCoefs(); // считать их из модуля и показать на экране
 }
 
 bool a_tunedialog::tune(int Type, int ChNum)
@@ -460,9 +460,5 @@ void a_tunedialog::ShowErrMsg(int ermsg)
     if (ermsg < pc.errmsgs.size())
         ATUNEER(pc.errmsgs.at(ermsg));
     else
-        ATUNEER("Произошла неведомая фигня #"+QString::number(ermsg,10));}
-
-void a_tunedialog::UpdateProper(bool tmpb)
-{
-    NoProperCoefs = tmpb;
+        ATUNEER("Произошла неведомая фигня #"+QString::number(ermsg,10));
 }

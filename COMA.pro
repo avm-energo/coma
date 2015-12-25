@@ -47,7 +47,9 @@ SOURCES += main.cpp\
     D/d_confdialog.cpp \
     widgets/mytabwidget.cpp \
     widgets/errorprotocolwidget.cpp \
-    widgets/mystackedwidget.cpp
+    widgets/mystackedwidget.cpp \
+    widgets/waitwidget.cpp \
+    threads/waitthread.cpp
 
 HEADERS  += coma.h \
     fwupdialog.h \
@@ -75,7 +77,9 @@ HEADERS  += coma.h \
     D/d_confdialog.h \
     widgets/mytabwidget.h \
     widgets/errorprotocolwidget.h \
-    widgets/mystackedwidget.h
+    widgets/mystackedwidget.h \
+    widgets/waitwidget.h \
+    threads/waitthread.h
 
 INCLUDEPATH += $$PWD/../../xlsxwriter/src/xlsx
 DEPENDPATH += $$PWD/../../xlsxwriter/src/xlsx

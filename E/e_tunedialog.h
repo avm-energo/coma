@@ -5,6 +5,7 @@
 #include <QCloseEvent>
 #include <QByteArray>
 #include <QTimer>
+#include <QLabel>
 #include "../iec104/iec104.h"
 #include "e_confdialog.h"
 
@@ -28,20 +29,21 @@
 #define MSG_7_3_3       4
 #define MSG_7_3_4       5
 #define MSG_7_3_5       6
-#define MSG_7_3_6_1     7
-#define MSG_7_3_6_2     8
-#define MSG_7_3_7_1_1   9
-#define MSG_7_3_7_1_2   10
-#define MSG_7_3_7_2     11
-#define MSG_7_3_7_3     12
-#define MSG_7_3_7_5     13
-#define MSG_7_3_7_6     14
-#define MSG_7_3_7_8     15
-#define MSG_7_3_7_10    16
-#define MSG_7_3_8_1     17
-#define MSG_7_3_8_2     18
-#define MSG_7_3_9       19
-#define MSG_COUNT       20
+#define MSG_7_3_6_0     7
+#define MSG_7_3_6_1     8
+#define MSG_7_3_6_2     9
+#define MSG_7_3_7_1_1   10
+#define MSG_7_3_7_1_2   11
+#define MSG_7_3_7_2     12
+#define MSG_7_3_7_3     13
+#define MSG_7_3_7_5     14
+#define MSG_7_3_7_6     15
+#define MSG_7_3_7_8     16
+#define MSG_7_3_7_10    17
+#define MSG_7_3_8_1     18
+#define MSG_7_3_8_2     19
+#define MSG_7_3_9       20
+#define MSG_COUNT       21
 
 class e_tunedialog : public QDialog
 {
@@ -53,6 +55,7 @@ signals:
     void stopall();
     void SendMip(QByteArray);
     void dataready(QByteArray);
+    void SecondsRemaining(QString);
 
 public slots:
 
@@ -63,6 +66,8 @@ private:
     iec104 *mipcanal;
     int TuneControlType;
     QTimer *tmr;
+    int SecondsToEnd15SecondsInterval;
+    QLabel *Label15Seconds;
 
     struct Bac
     {
@@ -130,6 +135,7 @@ private:
     float MipDat[41];
 
     void SetupUI();
+    void Tune3p();
     void RefreshTuneCoefs();
     bool CheckTuneCoefs();
     bool CheckAnalogValues(int ntest);
@@ -141,10 +147,11 @@ private:
     void Show3PhaseScheme();
     void Show1RetomDialog(float U, float A);
     bool Start7_2_3();
-    bool Start7_3_1();
+    bool Start7_3_1(bool DefConfig);
     bool Start7_3_2(int num);
     bool Start7_3_3();
     bool Start7_3_4();
+    void Start7_3_5();
     void Start7_3_6_2();
     bool Start7_3_7_1();
     bool Start7_3_7_2();
@@ -157,9 +164,13 @@ private:
     void ErMsgSetVisible(int msg, bool Visible=true);
     void MsgClear();
     void SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
+    void Wait15Seconds();
+    bool SaveWorkConfig();
+    bool LoadWorkConfig();
 
 private slots:
     void StartTune();
+    void StartTune3p(); // начало калибровки с пп. 7.3.6
     void ReadTuneCoefs();
     void WriteTuneCoefs();
     void SaveToFile();
@@ -179,6 +190,7 @@ private slots:
     void ReadAnalogMeasurements();
     void SetExtData();
     void CancelTune();
+    void Update15SecondsWidget();
 
 protected:
     void closeEvent(QCloseEvent *e);

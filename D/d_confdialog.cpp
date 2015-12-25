@@ -219,7 +219,7 @@ void d_confdialog::SetupUI()
     QTabWidget *ConfTW = this->findChild<QTabWidget *>("conftw");
     if (ConfTW == 0)
         return;
-    switch (pc.MType)
+    switch (pc.ModuleBsi.MType)
     {
     case MT_A:
     {

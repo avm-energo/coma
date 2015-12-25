@@ -191,23 +191,6 @@ class publicclass
 public:
     publicclass();
 
-    QSerialPort serial;
-    qint32 MType, MType1, SerNum;
-    quint32 CpuIdHigh, CpuIdMid, CpuIdLow, Health;
-
-    QStringList AMTypes, DMTypes, EMTypes;
-    SerialThread *SThread;
-    quint16 MIPASDU;
-    QString MIPIP;
-    QString Port;
-    int result;
-    QStringList errmsgs;
-    QString ermsgpath;
-    QString ModuleTypeString;
-    bool Emul;
-    int ErrWindowDelay;
-    bool ShowErrWindow;
-
     // S2: Определение типа заголовка
     typedef struct
     {
@@ -287,6 +270,25 @@ public:
         map.insert(ER_PUB, "Основное");
         return map;
     }
+
+    QSerialPort serial;
+//    qint32 MType, MType1, SerNum;
+//    quint32 CpuIdHigh, CpuIdMid, CpuIdLow, Health;
+
+    QStringList AMTypes, DMTypes, EMTypes;
+    SerialThread *SThread;
+    quint16 MIPASDU;
+    QString MIPIP;
+    QString Port;
+    int result;
+    QStringList errmsgs;
+    QString ermsgpath;
+    QString ModuleTypeString;
+    bool Emul;
+    int ErrWindowDelay;
+    bool ShowErrWindow;
+    Bsi ModuleBsi;
+
     QList<ermsg> ermsgpool;
 
     QString VerToStr(quint32);

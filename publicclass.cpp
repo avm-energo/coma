@@ -86,7 +86,7 @@ publicclass::publicclass()
     AMTypes.append("Р");
     AMTypes.append("И");
     AMTypes.append("С");
-    MType = MType1 = 0xFFFFFFFF;
+    ModuleBsi.MType = ModuleBsi.MType1 = 0xFFFFFFFF;
 
     QSettings *sets = new QSettings("EvelSoft","COMA");
     Port = sets->value("Port", "COM1").toString();
@@ -286,43 +286,43 @@ quint32 publicclass::getTime32()
 
 quint32 publicclass::ANumD()
 {
-    quint32 tmpint = (MType1 & 0xF0000000) >> 28;
+    quint32 tmpint = (ModuleBsi.MType1 & 0xF0000000) >> 28;
     return tmpint;
 }
 
 quint32 publicclass::ANumCh1()
 {
-    quint32 tmpint = (MType1 & 0x00F80000) >> 19;
+    quint32 tmpint = (ModuleBsi.MType1 & 0x00F80000) >> 19;
     return tmpint;
 }
 
 quint32 publicclass::ANumCh2()
 {
-    quint32 tmpint = (MType1 & 0x0000F800) >> 11;
+    quint32 tmpint = (ModuleBsi.MType1 & 0x0000F800) >> 11;
     return tmpint;
 }
 
 quint32 publicclass::ATyp1()
 {
-    quint32 tmpint = (MType1 & 0x00070000) >> 16;
+    quint32 tmpint = (ModuleBsi.MType1 & 0x00070000) >> 16;
     return tmpint;
 }
 
 quint32 publicclass::ATyp2()
 {
-    quint32 tmpint = (MType1 & 0x00000700) >> 8;
+    quint32 tmpint = (ModuleBsi.MType1 & 0x00000700) >> 8;
     return tmpint;
 }
 
 quint32 publicclass::AMdf()
 {
-    quint32 tmpint = (MType1 & 0x000000FF);
+    quint32 tmpint = (ModuleBsi.MType1 & 0x000000FF);
     return tmpint;
 }
 
 QString publicclass::ETyp1()
 {
-    switch (MType1)
+    switch (ModuleBsi.MType1)
     {
     case MTE_2T0N:
     {
@@ -404,8 +404,8 @@ QByteArray publicclass::LoadFile(QString mask)
 
 int publicclass::SaveFile(QString mask, void *src, unsigned int numbytes)
 {
-    QString tmps = "./"+QString::number(MType)+QString::number(MType1)+"-"+\
-            QString("%1").arg(SerNum, 8, 10, QChar('0'))+".";
+    QString tmps = "./"+QString::number(ModuleBsi.MType)+QString::number(ModuleBsi.MType1)+"-"+\
+            QString("%1").arg(ModuleBsi.SerNum, 8, 10, QChar('0'))+".";
     QStringList tmpsl = mask.split(".");
     if (tmpsl.size() > 1)
         tmps += tmpsl.at(1).left(3); // формирование расширения файла

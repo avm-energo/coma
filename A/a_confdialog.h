@@ -109,7 +109,6 @@ signals:
     void ChannelDisabled(int, bool);
 
 public slots:
-    void UpdateProper(bool);
 
 private slots:
     void SetChTypData();

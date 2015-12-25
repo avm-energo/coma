@@ -61,7 +61,10 @@ e_confdialog::e_confdialog(QWidget *parent) :
     lyout->addWidget(wdgt);
     setLayout(lyout);
     SetupUI();
-    SetDefConf();
+    if ((pc.ModuleBsi.Hth & HTH_CONFIG) || (pc.Emul)) // если установлен признак отсутствия конфигурации
+        SetDefConf();
+    else
+        GetBci();
 }
 
 void e_confdialog::GetBci()
@@ -141,7 +144,7 @@ void e_confdialog::FillConfData()
     spb = this->findChild<QSpinBox *>("nhfiltrspb");
     if (spb != 0)
         spb->setValue(econf->Bci_block.nhfiltr);
-    switch (pc.MType1)
+    switch (pc.ModuleBsi.MType1)
     {
     case ET_0T2N: // 2 напряжения, 0 токов
     {
@@ -383,7 +386,7 @@ void e_confdialog::SetupUI()
 
     gb = new QGroupBox("Аналоговые");
     gblyout = new QVBoxLayout;
-    switch (pc.MType1)
+    switch (pc.ModuleBsi.MType1)
     {
     case ET_0T2N:
     {
@@ -858,13 +861,16 @@ void e_confdialog::SetNewConf()
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
+    {
+        ECONFINFO("Переведено успешно");
         emit BsiIsNeedToBeAcquiredAndChecked();
+    }
 }
 
 void e_confdialog::SetDefConf()
 {
-    econf->Bci_defblock.MType = pc.MType; // делаем для того, чтобы типы совпадали
-    econf->Bci_defblock.MType1 = pc.MType1; // делаем для того, чтобы подтипы совпадали
+    econf->Bci_defblock.MType = pc.ModuleBsi.MType; // делаем для того, чтобы типы совпадали
+    econf->Bci_defblock.MType1 = pc.ModuleBsi.MType1; // делаем для того, чтобы подтипы совпадали
     memcpy(&econf->Bci_block, &econf->Bci_defblock, sizeof(e_config::Bci));
     FillConfData();
 }

@@ -43,14 +43,14 @@ a_confdialog::a_confdialog(QWidget *parent) :
     Config[22] = {ABCI_W_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.w_104)/sizeof(quint32), &Bci_block.w_104};
     Config[23] = {0xFFFF, 0, 0, 0, NULL};
 
-    if (pc.MType > 3)
+    if (pc.ModuleBsi.MType > 3)
         Bci_defblock.MType = 3;
     else
-        Bci_defblock.MType = pc.MType;
-    if (pc.MType1 > 0x1000000)
+        Bci_defblock.MType = pc.ModuleBsi.MType;
+    if (pc.ModuleBsi.MType1 > 0x1000000)
         Bci_defblock.MType1 = 0x810001;
     else
-        Bci_defblock.MType1 = pc.MType1;
+        Bci_defblock.MType1 = pc.ModuleBsi.MType1;
 
     Bci_defblock.Abs_104 = 205;
     Bci_defblock.Ctype = 2;
@@ -464,7 +464,10 @@ void a_confdialog::SetupUI()
     cp2->setLayout(lyout2);
     cp3->setLayout(lyout3);
     cp4->setLayout(lyout4);
-    SetDefConf();
+    if ((pc.ModuleBsi.Hth & HTH_CONFIG) || (pc.Emul)) // если в модуле нет конфигурации, заполнить поля по умолчанию
+        SetDefConf();
+    else // иначе заполнить значениями из модуля
+        GetBci();
 }
 
 int a_confdialog::GetIndexFromName(QObject *obj)
@@ -1019,11 +1022,6 @@ void a_confdialog::SetDefConf()
 {
     memcpy(&Bci_block, &Bci_defblock, sizeof(Bci));
     FillConfData();
-}
-
-void a_confdialog::UpdateProper(bool tmpb)
-{
-    NoProperConf = tmpb;
 }
 
 void a_confdialog::LoadConf()

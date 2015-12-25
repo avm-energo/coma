@@ -17,5 +17,10 @@
         <file>e.png</file>
         <file>load.png</file>
         <file>save.png</file>
+        <file>Object1-0.png</file>
+        <file>Object2.png</file>
+        <file>Object3.png</file>
+        <file>Object4.png</file>
+        <file>Object5.png</file>
     </qresource>
 </RCC>

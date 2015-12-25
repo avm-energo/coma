@@ -139,7 +139,7 @@ void oscdialog::EndExtractOsc()
     quint32 OscNum = (OscLength-12-sizeof(OscHeader_Data)) / OscSize; // рассчитаем количество осциллограмм
     OscData.resize(OscSize*OscNum); // отведём в буфере место под осциллограммы
     float tmpf;
-    switch(pc.MType)
+    switch(pc.ModuleBsi.MType)
     {
     case MT_A:
     {

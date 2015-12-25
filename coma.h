@@ -41,8 +41,6 @@ public:
 signals:
     void receivecompleted();
     void stopall();
-    void updateconfproper(bool);
-    void updatetuneproper(bool);
     void mipparset();
 
 private:
