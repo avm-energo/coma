@@ -587,7 +587,7 @@ void Coma::Exit()
 void Coma::EmulA()
 {
     QTime tme;
-    WaitWidget *w = new WaitWidget(0);
+    WaitWidget *w = new WaitWidget;
     tme.start();
     w->Start();
     while (tme.elapsed() < 5000)
