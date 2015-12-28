@@ -807,12 +807,13 @@ bool e_tunedialog::Start7_3_3()
 {
     // высвечиваем надпись "7.3.3. Расчёт коррекции смещений сигналов по фазе"
     MsgSetVisible(MSG_7_3_3);
-    double fTmp = Bda_block.phi_next_f[0];
+//    double fTmp = Bda_block.phi_next_f[0];
+    Bac_newblock.DPsi[0] = 0;
     int k = (pc.ModuleBsi.MType1 == MTE_1T1N) ? 3 : 6;
     for (int i=1; i<k; i++)
     {
-        Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - fTmp;
-        fTmp += Bda_block.phi_next_f[i];
+        Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - Bda_block.phi_next_f[i];
+//        fTmp += Bda_block.phi_next_f[i];
     }
     OkMsgSetVisible(MSG_7_3_3);
     return true;
@@ -978,7 +979,8 @@ bool e_tunedialog::Start7_3_7_2()
         if (pc.ModuleBsi.MType1 == MTE_1T1N)
         {
             Bac_newblock.KmU[i] = Bac_block.KmU[i] * mipd[i] / Bda_block.IUefNat_filt[i];
-            Bac_newblock.DPsi[i+3] = Bac_block.DPsi[i+3] + mipd[i+6] - (180*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
+            Bac_newblock.DPsi[i+3] = Bac_block.DPsi[i+3] + Bac_newblock.DPsi[i] - Bac_block.DPsi[i] \
+                    + mipd[i+6] - (180*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
         }
         else
             Bac_newblock.KmI_1[i] = Bac_block.KmI_1[i] * mipd[i+3] / Bda_block.IUefNat_filt[i];
@@ -1400,8 +1402,9 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
     {
         for (int i = 2; i<8; i++)
             ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.15; // +/- 0.15В
-        for (int i=14; i<20; i++)
-            ValuesToCheck[i] = -120.0; // phi
+        ValuesToCheck[14] = ValuesToCheck[17] = 0.0;
+        ValuesToCheck[15] = ValuesToCheck[18] = -120.0;
+        ValuesToCheck[16] = ValuesToCheck[19] = 120.0;
         break;
     }
     case 616: // test 60, 1I1U, 5A, 0,1%
@@ -1413,8 +1416,9 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
             ValuesToCheck[i] = ValuesToCheck[i+6] = 5.0; // i=5A
             ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.01; // +/- 0.01A
         }
-        for (int i=14; i<20; i++)
-            ValuesToCheck[i] = -120.0; // phi
+        ValuesToCheck[14] = ValuesToCheck[17] = 0.0;
+        ValuesToCheck[15] = ValuesToCheck[18] = -120.0;
+        ValuesToCheck[16] = ValuesToCheck[19] = 120.0;
         break;
     }
     case 617: // test 60, 2T0N, 5A, 0,1%
@@ -1424,8 +1428,9 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
             ValuesToCheck[i] = 5.0; // i=5A
             ThresholdsToCheck[i] = 0.01; // +/- 0.05A
         }
-        for (int i=14; i<20; i++)
-            ValuesToCheck[i] = -120.0; // phi
+        ValuesToCheck[14] = ValuesToCheck[17] = 0.0;
+        ValuesToCheck[15] = ValuesToCheck[18] = -120.0;
+        ValuesToCheck[16] = ValuesToCheck[19] = 120.0;
         break;
     }
     case 570: // test 57.74, 0T2N, 1(5) A, 0,1 %
@@ -1435,8 +1440,9 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
             ValuesToCheck[i] = 57.74; // u=57,74В
             ThresholdsToCheck[i] = 0.1; // +/- 0.1В
         }
-        for (int i=14; i<20; i++)
-            ValuesToCheck[i] = -120.0; // phi
+        ValuesToCheck[14] = ValuesToCheck[17] = 0.0;
+        ValuesToCheck[15] = ValuesToCheck[18] = -120.0;
+        ValuesToCheck[16] = ValuesToCheck[19] = 120.0;
         break;
     }
     case 571: // test 57.74, 1T1N
@@ -1448,8 +1454,9 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
             ValuesToCheck[i+3] = ValuesToCheck[i+9] = econf->Bci_block.inom1[0]; // i=1(5)A
             ThresholdsToCheck[i+3] = ThresholdsToCheck[i+9] = 0.05; // +/- 0.05A
         }
-        for (int i=14; i<20; i++)
-            ValuesToCheck[i] = -120.0; // phi
+        ValuesToCheck[14] = ValuesToCheck[17] = 0.0;
+        ValuesToCheck[15] = ValuesToCheck[18] = -120.0;
+        ValuesToCheck[16] = ValuesToCheck[19] = 120.0;
         break;
     }
     case 572:
@@ -1470,8 +1477,9 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
             ValuesToCheck[i+27] = ValuesToCheck[i+39] = 1.0; // CosPhi=1.0
             ThresholdsToCheck[i+27] = ThresholdsToCheck[i+39] = 0.01;
         }
-        for (int i=14; i<20; i++)
-            ValuesToCheck[i] = -120.0; // phi
+        ValuesToCheck[14] = ValuesToCheck[17] = 0.0;
+        ValuesToCheck[15] = ValuesToCheck[18] = -120.0;
+        ValuesToCheck[16] = ValuesToCheck[19] = 120.0;
         break;
     }
     }
@@ -1787,7 +1795,7 @@ void e_tunedialog::Show1RetomDialog(float U, float A)
     QLabel *lbl = new QLabel(QString::number(count)+".Вызовите программу управления РЕТОМ и войдите в режим \"Ручное управление выходами\";");
     lyout->addWidget(lbl);
     count++;
-    lbl = new QLabel(QString::number(count)+".При выключенных выходах РЕТОМ задайте частоту 50,0 Гц, трёхфазные напряжения на уровне " \
+    lbl = new QLabel(QString::number(count)+".На выходах РЕТОМ задайте частоту 50,0 Гц, трёхфазные напряжения на уровне " \
                              + QString::number(U) + " В с фазой 0 градусов;");
     lyout->addWidget(lbl);
     count++;
