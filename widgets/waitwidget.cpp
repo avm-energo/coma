@@ -13,7 +13,7 @@
 
 WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)
 {
-//    setAttribute(Qt::WA_TranslucentBackground);
+    setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_DeleteOnClose);
     gamma = 0.0;
     Message = "";
@@ -49,6 +49,15 @@ void WaitWidget::Stop()
 {
     hide();
     WThread->Stop();
+    if (WThread)
+    {
+        QThread *thr = WThread->thread();
+        if (thr->isRunning())
+        {
+            thr->quit();
+            thr->wait(1000);
+        }
+    }
     emit finished();
     this->close();
 }
@@ -72,7 +81,7 @@ void WaitWidget::Rotate()
 
 void WaitWidget::paintEvent(QPaintEvent *e)
 {
-    QPixmap rotatedPixmap(":/res/Object1-0.png");
+    QPixmap rotatedPixmap(":/Object1-0.png");
     QSize size = rotatedPixmap.size();
     QSize wsize = QSize(800,220);
     int left = wsize.width()/2-size.width()/2;
@@ -83,7 +92,7 @@ void WaitWidget::paintEvent(QPaintEvent *e)
     p1.translate(-wsize.width()/2,-size.height()/2);
     p1.drawPixmap(left, 0, rotatedPixmap);
     p1.end();
-    QPixmap rotatedPixmap2(":/res/Object2.png");
+    QPixmap rotatedPixmap2(":/Object2.png");
     QPainter p2(this);
     p2.setRenderHint(QPainter::Antialiasing);
     p2.translate(wsize.width()/2,size.height()/2);
@@ -91,7 +100,7 @@ void WaitWidget::paintEvent(QPaintEvent *e)
     p2.translate(-wsize.width()/2,-size.height()/2);
     p2.drawPixmap(left, 0, rotatedPixmap2);
     p2.end();
-    QPixmap rotatedPixmap3(":/res/Object3.png");
+    QPixmap rotatedPixmap3(":/Object3.png");
     QPainter p3(this);
     p3.setRenderHint(QPainter::Antialiasing);
     p3.translate(wsize.width()/2,size.height()/2);
@@ -99,7 +108,7 @@ void WaitWidget::paintEvent(QPaintEvent *e)
     p3.translate(-wsize.width()/2,-size.height()/2);
     p3.drawPixmap(left, 0, rotatedPixmap3);
     p3.end();
-    QPixmap rotatedPixmap4(":/res/Object4.png");
+    QPixmap rotatedPixmap4(":/Object4.png");
     QPainter p4(this);
     p4.setRenderHint(QPainter::Antialiasing);
     p4.translate(wsize.width()/2,size.height()/2);
@@ -107,7 +116,7 @@ void WaitWidget::paintEvent(QPaintEvent *e)
     p4.translate(-wsize.width()/2,-size.height()/2);
     p4.drawPixmap(left, 0, rotatedPixmap4);
     p4.end();
-    QPixmap rotatedPixmap5(":/res/Object5.png");
+    QPixmap rotatedPixmap5(":/Object5.png");
     QPainter p5(this);
     p5.setRenderHint(QPainter::Antialiasing);
     p5.translate(wsize.width()/2,size.height()/2);
