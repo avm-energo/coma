@@ -1,6 +1,6 @@
 #include "waitwidget.h"
 #include <QLabel>
-#include <QThread>
+#include <QTimer>
 #include <QPixmap>
 #include <QBitmap>
 #include <QImage>
@@ -35,29 +35,14 @@ WaitWidget::~WaitWidget()
 void WaitWidget::Start()
 {
     show();
-    QThread *thr = new QThread;
-    WThread = new WaitThread;
-    WThread->moveToThread(thr);
-    connect(WThread,SIGNAL(TenMsPassed()),this,SLOT(Rotate()));
-    connect(thr,SIGNAL(started()),WThread,SLOT(Run()));
-    connect(thr,SIGNAL(finished()),WThread,SLOT(deleteLater()));
-    connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
-    thr->start();
+    QTimer *tmr = new QTimer;
+    tmr->setInterval(10);
+    connect(tmr,SIGNAL(timeout()),this,SLOT(Rotate()));
+    tmr->start();
 }
 
 void WaitWidget::Stop()
 {
-    hide();
-    WThread->Stop();
-    if (WThread)
-    {
-        QThread *thr = WThread->thread();
-        if (thr->isRunning())
-        {
-            thr->quit();
-            thr->wait(1000);
-        }
-    }
     emit finished();
     this->close();
 }

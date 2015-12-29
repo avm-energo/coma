@@ -511,6 +511,7 @@ void e_tunedialog::StartTune()
 {
     bool res=true;
     Cancelled = false;
+    Wait15Seconds();
     StopAnalogMeasurements(); // останавливаем текущие измерения, чтобы не мешали процессу
     StopMip(); // останавливаем измерения МИП
     MsgClear(); // очистка экрана с сообщениями
@@ -1969,14 +1970,15 @@ void e_tunedialog::SetTimerPeriod(int per)
 void e_tunedialog::Wait15Seconds()
 {
     QTime tme;
-    SecondsToEnd15SecondsInterval = 15;
+    SecondsToEnd15SecondsInterval = 14;
     WaitWidget *w = new WaitWidget;
     QTimer *tmr = new QTimer;
     tmr->setInterval(1000);
-    connect(tmr,SIGNAL(timeout()),this,SLOT(Update15SecondsWidget()));
     connect(this,SIGNAL(SecondsRemaining(QString)),w,SLOT(SetMessage(QString)));
-    tme.start();
+    connect(tmr,SIGNAL(timeout()),this,SLOT(Update15SecondsWidget()));
+    tmr->start();
     w->Start();
+    tme.start();
     while (tme.elapsed() < 15000)
         qApp->processEvents();
     w->Stop();
@@ -1984,5 +1986,6 @@ void e_tunedialog::Wait15Seconds()
 
 void e_tunedialog::Update15SecondsWidget()
 {
-    emit SecondsRemaining(QString::number(SecondsToEnd15SecondsInterval--));
+    QString tmps = "Подождите " + QString::number(SecondsToEnd15SecondsInterval--) + " секунд(ы/у)...";
+    emit SecondsRemaining(tmps);
 }
