@@ -511,7 +511,7 @@ void e_tunedialog::StartTune()
 {
     bool res=true;
     Cancelled = false;
-    Wait15Seconds();
+    WaitNSeconds(15);
     StopAnalogMeasurements(); // останавливаем текущие измерения, чтобы не мешали процессу
     StopMip(); // останавливаем измерения МИП
     MsgClear(); // очистка экрана с сообщениями
@@ -560,8 +560,8 @@ void e_tunedialog::StartTune()
 
     // 7.3.2. получение аналоговых сигналов
     res = Start7_3_2(MSG_7_3_2);
-/*        if (!res)
-        return;*/
+    if (!res)
+        return;
     // сохраняем значения по п. 7.3.2 для выполнения п. 7.3.6
     for (int i=0; i<6; i++)
         IUefNat_filt_old[i] = Bda_block.IUefNat_filt[i];
@@ -636,7 +636,7 @@ void e_tunedialog::StartTune3p()
     if (Cancelled)
         return;
 
-    Wait15Seconds();
+    WaitNSeconds(15);
 
     // 7.3.6.1. получение аналоговых данных
     res = Start7_3_2(MSG_7_3_6_1);
@@ -753,6 +753,13 @@ bool e_tunedialog::Start7_3_1(bool DefConfig)
         qApp->processEvents();
     if (cn->result == CN_OK)
     {
+        // перейти на новую конфигурацию
+        cn->Send(CN_Cnc);
+        while (cn->Busy)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+        if (cn->result != CN_OK)
+            return false;
+        WaitNSeconds(5);
         // получение настроечных коэффициентов от модуля
         cn->Send(CN_Gac, &Bac_block, sizeof(Bac_block));
         while (cn->Busy)
@@ -885,7 +892,7 @@ void e_tunedialog::Start7_3_5()
         dlg->setLayout(lyout);
         dlg->exec();
         // ждём 15 секунд
-        Wait15Seconds();
+        WaitNSeconds(15);
         // измеряем текущие аналоговые значения
         ReadAnalogMeasurements();
         // сохраняем значения для выполнения п. 7.3.6
@@ -915,19 +922,9 @@ bool e_tunedialog::Start7_3_7_1()
 {
     // высвечиваем надпись "7.3.7.1.1"
     MsgSetVisible(MSG_7_3_7_1_1);
-/*    QDialog *dlg = new QDialog;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("1.На выходах РЕТОМ задайте частоту 50,0 Гц, трёхфазные напряжения на уровне 60,0 В с фазой 0 градусов");
-    lyout->addWidget(lbl);
-    lbl=new QLabel("2.Включите выходы РЕТОМ");
-    lyout->addWidget(lbl);
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
-    lyout->addWidget(pb);
-    dlg->setLayout(lyout);
-    dlg->exec();
-*/
-    GetExternalData(MSG_7_3_7_1_1);
+
+    if (!GetExternalData(MSG_7_3_7_1_1))
+        return false;
 
     // высвечиваем надпись "7.3.7.1.2"
     MsgSetVisible(MSG_7_3_7_1_2);
@@ -947,6 +944,7 @@ bool e_tunedialog::Start7_3_7_2()
     qDebug() << "2";
     for (int i=0; i<6; i++)
         econf->Bci_block.inom2[i] = 1.0;
+    // послать новые коэффициенты по току в конфигурацию
     cn->Send(CN_WF, &econf->Bci_block, sizeof(e_config::Bci), 2, econf->Config);
     qDebug() << "3";
     while (cn->Busy)
@@ -954,6 +952,7 @@ bool e_tunedialog::Start7_3_7_2()
     if (cn->result != CN_OK)
         return false;
     qDebug() << "4";
+    // дать команду перехода на новую конфигурацию
     cn->Send(CN_Cnc);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -963,7 +962,7 @@ bool e_tunedialog::Start7_3_7_2()
     // 2. выдать сообщение об установке 60 В 1 А
     MsgSetVisible(MSG_7_3_7_3);
     Show1RetomDialog(60, 1);
-    Wait15Seconds();
+    WaitNSeconds(15);
     // 3. получить аналоговые данные
     if (!Start7_3_2(MSG_7_3_7_3))
     {
@@ -971,7 +970,8 @@ bool e_tunedialog::Start7_3_7_2()
         return false;
     }
     // 4. ввести показания (с МИП или вручную)
-    GetExternalData(MSG_7_3_7_3);
+    if (!GetExternalData(MSG_7_3_7_3))
+        return false;
     // 5. рассчитать новые коэффициенты
     OkMsgSetVisible(MSG_7_3_7_3);
     MsgSetVisible(MSG_7_3_7_5);
@@ -1000,6 +1000,7 @@ bool e_tunedialog::Start7_3_7_2()
         ErMsgSetVisible(MSG_7_3_7_6);
         return false;
     }
+    // перейти на новую конфигурацию
     cn->Send(CN_Cnc);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -1012,7 +1013,7 @@ bool e_tunedialog::Start7_3_7_2()
     // 2. выдать сообщение об установке 60 В 5 А
     MsgSetVisible(MSG_7_3_7_8);
     Show1RetomDialog(60, 5);
-    Wait15Seconds();
+    WaitNSeconds(15);
     // 3. получить аналоговые данные
     if (!Start7_3_2(MSG_7_3_7_8))
     {
@@ -1020,7 +1021,8 @@ bool e_tunedialog::Start7_3_7_2()
         return false;
     }
     // 4. ввести показания (с МИП или вручную)
-    GetExternalData(MSG_7_3_7_8);
+    if (!GetExternalData(MSG_7_3_7_8))
+        return false;
     // 5. рассчитать новые коэффициенты
     OkMsgSetVisible(MSG_7_3_7_8);
     MsgSetVisible(MSG_7_3_7_10);
@@ -1059,7 +1061,7 @@ bool e_tunedialog::Start7_3_8()
     }
     // 2. Проверяем измеренные напряжения
     MsgSetVisible(MSG_7_3_8_2);
-    Wait15Seconds();
+    WaitNSeconds(15);
     if (!Start7_3_2(MSG_7_3_8_2))
     {
         ErMsgSetVisible(MSG_7_3_8_2);
@@ -1088,7 +1090,7 @@ bool e_tunedialog::Start7_3_9()
             return false;
         // измеряем и проверяем
         Show1RetomDialog(57.74f, econf->Bci_block.inom1[0]);
-        Wait15Seconds();
+        WaitNSeconds(15);
         if (!Start7_3_2(MSG_7_3_9))
         {
             ErMsgSetVisible(MSG_7_3_9);
@@ -1128,7 +1130,7 @@ bool e_tunedialog::LoadWorkConfig()
     return true;
 }
 
-void e_tunedialog::GetExternalData(int numexc)
+bool e_tunedialog::GetExternalData(int numexc)
 {
     switch (TuneControlType)
     {
@@ -1149,12 +1151,15 @@ void e_tunedialog::GetExternalData(int numexc)
                 mipd[i+3] = MipDat[i+7];
                 mipd[i+6] = MipDat[i+11];
             }
+            return true;
         }
+        return false;
         break;
     }
     case TUNEMAN:
     {
         QDialog *dlg = new QDialog(this);
+        dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->setObjectName("dlg7371");
         QGridLayout *glyout = new QGridLayout;
         QLabel *lbl = new QLabel("Введите значения сигналов по приборам");
@@ -1169,7 +1174,7 @@ void e_tunedialog::GetExternalData(int numexc)
             spb->setObjectName("spb7371"+QString::number(i));
             glyout->addWidget(spb,1,i*2+1,1,1);
         }
-        if (numexc == 12) // все параметры для п. 7.3.7.4
+        if (numexc == MSG_7_3_7_3) // все параметры для п. 7.3.7.4
         {
             for (int i=0; i<3; i++) // for A to C
             {
@@ -1183,16 +1188,18 @@ void e_tunedialog::GetExternalData(int numexc)
             }
             for (int i=0; i<3; i++) // for A to C
             {
-                lbl = new QLabel("Dф" + QString::number(i+10,36).toUpper()+", град");
+                lbl = new QLabel("Уг.нагр. ф" + QString::number(i+10,36).toUpper()+", град");
                 glyout->addWidget(lbl,3,i*2,1,1);
                 QDoubleSpinBox *spb = new QDoubleSpinBox;
-                spb->setDecimals(5);
+                spb->setDecimals(3);
+                spb->setMinimum(-360.0);
+                spb->setMaximum(360.0);
                 spb->setValue(0.0);
                 spb->setObjectName("spb7371"+QString::number(i+6));
                 glyout->addWidget(spb,3,i*2+1,1,1);
             }
         }
-        else if (numexc == 15) // все параметры для п. 7.3.7.9
+        else if (numexc == MSG_7_3_7_8) // все параметры для п. 7.3.7.9
         {
             for (int i=0; i<3; i++) // for A to C
             {
@@ -1206,10 +1213,12 @@ void e_tunedialog::GetExternalData(int numexc)
             }
             for (int i=0; i<3; i++) // for A to C
             {
-                lbl = new QLabel("Dф" + QString::number(i+10,36).toUpper()+", град");
+                lbl = new QLabel("Уг.нагр. ф" + QString::number(i+10,36).toUpper()+", град");
                 glyout->addWidget(lbl,3,i*2,1,1);
                 QDoubleSpinBox *spb = new QDoubleSpinBox;
-                spb->setDecimals(5);
+                spb->setDecimals(3);
+                spb->setMinimum(-360.0);
+                spb->setMaximum(360.0);
                 spb->setValue(0.0);
                 spb->setObjectName("spb7371"+QString::number(i+6));
                 glyout->addWidget(spb,3,i*2+1,1,1);
@@ -1217,10 +1226,19 @@ void e_tunedialog::GetExternalData(int numexc)
         }
         QPushButton *pb = new QPushButton("Готово");
         connect(pb,SIGNAL(clicked()),this,SLOT(SetExtData()));
-        glyout->addWidget(pb,4,0,1,6);
+        glyout->addWidget(pb,4,0,1,3);
+        pb = new QPushButton("Отмена");
+        connect(pb,SIGNAL(clicked()),this,SLOT(CancelExtData()));
+        glyout->addWidget(pb,4,3,1,3);
         dlg->setLayout(glyout);
         dlg->exec();
+        if (Cancelled)
+        {
+            ErMsgSetVisible(numexc);
+            return false;
+        }
         OkMsgSetVisible(numexc);
+        return true;
         break;
     }
     case TUNERET:
@@ -1232,9 +1250,11 @@ void e_tunedialog::GetExternalData(int numexc)
             mipd[i+6] = 0.0;
         }
         OkMsgSetVisible(numexc);
+        return true;
         break;
     }
     }
+    return false;
 }
 
 void e_tunedialog::SetExtData()
@@ -1248,6 +1268,16 @@ void e_tunedialog::SetExtData()
         if (spb != 0)
             mipd[i] = spb->value();
     }
+    Cancelled = false;
+    dlg->close();
+}
+
+void e_tunedialog::CancelExtData()
+{
+    QDialog *dlg = this->findChild<QDialog *>("dlg7371");
+    if (dlg == 0)
+        return;
+    Cancelled = true;
     dlg->close();
 }
 
@@ -1344,9 +1374,7 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
     {
     case 600: // test 60, 0T2N
     case 605: // test 60, 0T2N, 5A
-    {
         break;
-    }
     case 601: // test 60, 1T1N
     {
         for (int i = 5; i<8; i++)
@@ -1356,9 +1384,9 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
             ValuesToCheck[i+15] = ValuesToCheck[i+27] = ValuesToCheck[i+18] = \
                     ValuesToCheck[i+33] = 60.0; // P=S=60Вт
             ThresholdsToCheck[i+15] = ThresholdsToCheck[i+27] = ThresholdsToCheck[i+18] = \
-                    ThresholdsToCheck[i+33] = 1.5; // 2.5%
+                    ThresholdsToCheck[i+33] = 10; // 16%
             ValuesToCheck[i+21] = ValuesToCheck[i+30] = 0.0; // Q=0ВАр
-            ThresholdsToCheck[i+21] = ThresholdsToCheck[i+30] = 1.5; // 2.5%
+            ThresholdsToCheck[i+21] = ThresholdsToCheck[i+30] = 10; // 16%
             ValuesToCheck[i+24] = ValuesToCheck[i+36] = 1.0; // CosPhi=1.0
             ThresholdsToCheck[i+24] = ThresholdsToCheck[i+36] = 0.01;
         }
@@ -1380,14 +1408,17 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
             ValuesToCheck[i+3] = ValuesToCheck[i+9] = 5.0; // i=1A
             ThresholdsToCheck[i+3] = ThresholdsToCheck[i+9] = 0.05; // +/- 0.05A
             ValuesToCheck[i+18] = ValuesToCheck[i+30] = ValuesToCheck[i+21] = \
-                    ValuesToCheck[i+36] = 60.0; // P=S=60Вт
+                    ValuesToCheck[i+36] = 300.0; // P=S=60Вт
             ThresholdsToCheck[i+18] = ThresholdsToCheck[i+30] = ThresholdsToCheck[i+21] = \
-                    ThresholdsToCheck[i+36] = 1.5; // 2.5%
-            ValuesToCheck[i+18] = ValuesToCheck[i+33] = 0.0; // Q=0ВАр
-            ThresholdsToCheck[i+18] = ThresholdsToCheck[i+33] = 1.5; // 2.5%
+                    ThresholdsToCheck[i+36] = 10; // 16%
+            ValuesToCheck[i+24] = ValuesToCheck[i+33] = 0.0; // Q=0ВАр
+            ThresholdsToCheck[i+24] = ThresholdsToCheck[i+33] = 10; // 16%
             ValuesToCheck[i+27] = ValuesToCheck[i+39] = 1.0; // CosPhi=1.0
             ThresholdsToCheck[i+27] = ThresholdsToCheck[i+39] = 0.01;
         }
+        ValuesToCheck[14] = ValuesToCheck[17] = 0.0;
+        ValuesToCheck[15] = ValuesToCheck[18] = -120.0;
+        ValuesToCheck[16] = ValuesToCheck[19] = 120.0;
         break;
     }
     case 607: // test 60, 2T0N, 5A
@@ -1411,7 +1442,17 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
     case 616: // test 60, 1I1U, 5A, 0,1%
     {
         for (int i = 2; i<5; i++)
+        {
+            ValuesToCheck[i+18] = ValuesToCheck[i+30] = ValuesToCheck[i+21] = \
+                    ValuesToCheck[i+36] = 300.0; // P=S=60Вт
+            ThresholdsToCheck[i+18] = ThresholdsToCheck[i+30] = ThresholdsToCheck[i+21] = \
+                    ThresholdsToCheck[i+36] = 30; // 10%
+            ValuesToCheck[i+24] = ValuesToCheck[i+33] = 0.0; // Q=0ВАр
+            ThresholdsToCheck[i+24] = ThresholdsToCheck[i+33] = 10; // 16%
+            ValuesToCheck[i+27] = ValuesToCheck[i+39] = 1.0; // CosPhi=1.0
+            ThresholdsToCheck[i+27] = ThresholdsToCheck[i+39] = 0.01;
             ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.15; // +/- 0.15В
+        }
         for (int i = 5; i<8; i++)
         {
             ValuesToCheck[i] = ValuesToCheck[i+6] = 5.0; // i=5A
@@ -1967,25 +2008,26 @@ void e_tunedialog::SetTimerPeriod(int per)
         tmr->start();
 }
 
-void e_tunedialog::Wait15Seconds()
+void e_tunedialog::WaitNSeconds(int Seconds)
 {
     QTime tme;
-    SecondsToEnd15SecondsInterval = 14;
+    SecondsToEnd15SecondsInterval = Seconds-1;
     WaitWidget *w = new WaitWidget;
     QTimer *tmr = new QTimer;
     tmr->setInterval(1000);
     connect(this,SIGNAL(SecondsRemaining(QString)),w,SLOT(SetMessage(QString)));
-    connect(tmr,SIGNAL(timeout()),this,SLOT(Update15SecondsWidget()));
+    connect(tmr,SIGNAL(timeout()),this,SLOT(UpdateNSecondsWidget()));
     tmr->start();
     w->Start();
     tme.start();
     while (tme.elapsed() < 15000)
         qApp->processEvents();
     w->Stop();
+    tmr->stop();
 }
 
-void e_tunedialog::Update15SecondsWidget()
+void e_tunedialog::UpdateNSecondsWidget()
 {
-    QString tmps = "Подождите " + QString::number(SecondsToEnd15SecondsInterval--) + " секунд(ы/у)...";
+    QString tmps = "Подождите немного... " + QString::number(SecondsToEnd15SecondsInterval--);
     emit SecondsRemaining(tmps);
 }
