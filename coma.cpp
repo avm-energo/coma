@@ -27,6 +27,7 @@
 Coma::Coma(QWidget *parent)
     : QMainWindow(parent)
 {
+    cn = new canal;
     ERTimer = new QTimer;
     ERTimer->setInterval(pc.ErrWindowDelay*1000);
     connect(ERTimer,SIGNAL(timeout()),this,SLOT(HideErrorProtocol()));
@@ -298,7 +299,6 @@ void Coma::Connect()
 
 void Coma::Next()
 {
-    cn = new canal;
     QThread *CanalThread = new QThread(this);
     cn->moveToThread(CanalThread);
     connect(CanalThread, &QThread::finished, cn, &canal::deleteLater);
@@ -555,7 +555,6 @@ void Coma::Disconnect()
     if (!pc.Emul)
         cn->Disconnect();
     FillBsi("",true);
-    emit stopall();
     DialogsAreReadyAlready = false;
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
@@ -614,13 +613,6 @@ void Coma::Exit()
 
 void Coma::EmulA()
 {
-    QTime tme;
-    WaitWidget *w = new WaitWidget;
-    tme.start();
-    w->Start();
-    while (tme.elapsed() < 5000)
-        qApp->processEvents();
-    w->Stop();
     if (pc.Emul) // если уже в режиме эмуляции, выход
         return;
     pc.ModuleBsi.MType = MT_A;

@@ -40,7 +40,6 @@ public:
 
 signals:
     void receivecompleted();
-    void stopall();
     void mipparset();
 
 private:
