@@ -44,6 +44,8 @@ private:
     bool tune(int Type, int ChNum);
     void ShowErrMsg(int);
     bool CalcNewTuneCoef(int ChNum);
+    bool RefreshTuneField(int ChNum);
+    void RefreshTuneFields();
     bool RefreshTuneCoef(int ChNum);
     void RefreshTuneCoefs();
     bool CheckAndShowTune0(int ChNum);
@@ -57,6 +59,7 @@ private slots:
     void WriteTuneCoefs();
     void SaveToFile();
     void LoadFromFile();
+    void SetDefCoefs();
 };
 
 #endif // A_TUNEDIALOG_H

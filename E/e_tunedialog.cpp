@@ -92,7 +92,7 @@ void e_tunedialog::SetupUI()
             "7.3.7.1.2. Расчёт калибровочных коэффициентов по напряжениям..." << "7.3.7.2. Сохранение конфигурации и перезапуск..." << \
             "7.3.7.3. Получение текущих аналоговых данных..." << "7.3.7.5. Расчёт калибровочных коэффициентов по токам, напряжениям и углам..." << \
             "7.3.7.6. Сохранение конфигурации и перезапуск..." << "7.3.7.8. Получение текущих аналоговых данных..." << \
-            "7.3.7.10. Расчёт калибровочных коэффициентов по токам, напряжениям и углам..." << "7.3.8.1. Запись настроечных коэффициентов..." << \
+            "7.3.7.10. Расчёт калибровочных коэффициентов по токам, напряжениям и углам..." << "7.3.8.1. Запись настроечных коэффициентов и переход на новую конфигурацию..." << \
             "7.3.8.2. Проверка аналоговых данных..." << "7.3.9. Восстановление сохранённой конфигурации...";
     for (int i = 0; i < lbls.size(); i++)
     {
@@ -1089,7 +1089,7 @@ bool e_tunedialog::Start7_3_9()
         if (cn->result != CN_OK)
             return false;
         // измеряем и проверяем
-        Show1RetomDialog(57.74f, econf->Bci_block.inom1[0]);
+        Show1RetomDialog(60.0f, econf->Bci_block.inom2[0]);
         WaitNSeconds(15);
         if (!Start7_3_2(MSG_7_3_9))
         {
@@ -1479,7 +1479,7 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
     {
         for (int i = 2; i<14; i++)
         {
-            ValuesToCheck[i] = 57.74; // u=57,74В
+            ValuesToCheck[i] = 60.0; // u=60,0В
             ThresholdsToCheck[i] = 0.1; // +/- 0.1В
         }
         ValuesToCheck[14] = ValuesToCheck[17] = 0.0;
@@ -1491,7 +1491,7 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
     {
         for (int i = 2; i<5; i++)
         {
-            ValuesToCheck[i] = ValuesToCheck[i+6] = 57.74; // u=57,74В
+            ValuesToCheck[i] = ValuesToCheck[i+6] = 60.0; // u=60,0В
             ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.1; // +/- 0.1В
             ValuesToCheck[i+3] = ValuesToCheck[i+9] = econf->Bci_block.inom1[0]; // i=1(5)A
             ThresholdsToCheck[i+3] = ThresholdsToCheck[i+9] = 0.05; // +/- 0.05A

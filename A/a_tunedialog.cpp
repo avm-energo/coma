@@ -76,7 +76,10 @@ void a_tunedialog::SetupUI()
     }
     if (gb2lyout->count())
         gb1lyout->addLayout(gb2lyout);
-    QPushButton *pb = new QPushButton("Прочитать настроечные коэффициенты из модуля");
+    QPushButton *pb = new QPushButton("Установить настроечные коэффициенты по умолчанию");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SetDefCoefs()));
+    gb1lyout->addWidget(pb);
+    pb = new QPushButton("Прочитать настроечные коэффициенты из модуля");
     connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs()));
     if (pc.Emul)
         pb->setEnabled(false);
@@ -280,7 +283,7 @@ bool a_tunedialog::CheckAndShowTune0(int ChNum)
     lbl->setText(QString::number(Bda0.sin[ChNum]/ATUNENUMPOINTS,16));
     if (!CalcNewTuneCoef(ChNum))
         return false;
-    if (!RefreshTuneCoef(ChNum))
+    if (!RefreshTuneField(ChNum))
         return false;
     return true;
 }
@@ -296,7 +299,7 @@ bool a_tunedialog::CheckAndShowTune5(int ChNum)
     lbl->setText(QString::number(Bda5.sin[ChNum]/ATUNENUMPOINTS,16));
     if (!CalcNewTuneCoef(ChNum))
         return false;
-    if (!RefreshTuneCoef(ChNum))
+    if (!RefreshTuneField(ChNum))
         return false;
     return true;
 }
@@ -312,7 +315,7 @@ bool a_tunedialog::CheckAndShowTune20(int ChNum)
     lbl->setText(QString::number(Bda20.sin[ChNum]/ATUNENUMPOINTS,16));
     if (!CalcNewTuneCoef(ChNum))
         return false;
-    if (!RefreshTuneCoef(ChNum))
+    if (!RefreshTuneField(ChNum))
         return false;
     return true;
 }
@@ -333,7 +336,18 @@ bool a_tunedialog::CalcNewTuneCoef(int ChNum)
     return true;
 }
 
-bool a_tunedialog::RefreshTuneCoef(int ChNum)
+void a_tunedialog::SetDefCoefs()
+{
+    for (int i=0; i<16; i++)
+    {
+        Bac_block[i].fbin = 0.0;
+        Bac_block[i].fkiin = 1.0;
+        Bac_block[i].fkuin = 1.0;
+    }
+    RefreshTuneFields();
+}
+
+bool a_tunedialog::RefreshTuneField(int ChNum)
 {
     QLineEdit *le = this->findChild<QLineEdit *>("tunebcoef"+QString::number(ChNum));
     if (le == 0)
@@ -359,6 +373,54 @@ bool a_tunedialog::RefreshTuneCoef(int ChNum)
     return true;
 }
 
+void a_tunedialog::RefreshTuneFields()
+{
+    for (int i=0; i<16; i++)
+        RefreshTuneField(i);
+}
+
+bool a_tunedialog::RefreshTuneCoef(int ChNum)
+{
+    QLineEdit *le = this->findChild<QLineEdit *>("tunebcoef"+QString::number(ChNum));
+    if (le == 0)
+    {
+        ATUNEDBG;
+        return false;
+    }
+    bool ok;
+    Bac_block[ChNum].fbin = le->text().toFloat(&ok);
+    if (!ok)
+    {
+        ATUNEWARN("Ошибка при переводе во float");
+        return false;
+    }
+    le = this->findChild<QLineEdit *>("tunek1coef"+QString::number(ChNum));
+    if (le == 0)
+    {
+        ATUNEDBG;
+        return false;
+    }
+    Bac_block[ChNum].fkiin = le->text().toFloat(&ok);
+    if (!ok)
+    {
+        ATUNEWARN("Ошибка при переводе во float");
+        return false;
+    }
+    le = this->findChild<QLineEdit *>("tunek2coef"+QString::number(ChNum));
+    if (le == 0)
+    {
+        ATUNEDBG;
+        return false;
+    }
+    Bac_block[ChNum].fkuin = le->text().toFloat(&ok);
+    if (!ok)
+    {
+        ATUNEWARN("Ошибка при переводе во float");
+        return false;
+    }
+    return true;
+}
+
 void a_tunedialog::RefreshTuneCoefs()
 {
     for (int i=0; i<16; i++)
@@ -371,11 +433,12 @@ void a_tunedialog::ReadTuneCoefs()
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
-        RefreshTuneCoefs();
+        RefreshTuneFields();
 }
 
 void a_tunedialog::WriteTuneCoefs()
 {
+    RefreshTuneCoefs(); // принудительно читаем коэффициенты из полей ввода в структуру
     if (CheckTuneCoefs())
     {
         cn->Send(CN_Wac, &Bac_block, sizeof(Bac_block));
@@ -397,29 +460,29 @@ bool a_tunedialog::CheckTuneCoefs()
 {
     for (int i=0; i<16; i++)
     {
-        QLabel *lbl = this->findChild<QLabel *>("tunebcoef"+QString::number(i));
-        if (lbl == 0)
+        QLineEdit *le = this->findChild<QLineEdit *>("tunebcoef"+QString::number(i));
+        if (le == 0)
         {
             ATUNEDBG;
             return false;
         }
-        if (lbl->text().isEmpty() || (lbl->text().toInt() == -1))
+        if (le->text().isEmpty() || (le->text().toInt() == -1))
             return false;
-        lbl = this->findChild<QLabel *>("tunek1coef"+QString::number(i));
-        if (lbl == 0)
+        le = this->findChild<QLineEdit *>("tunek1coef"+QString::number(i));
+        if (le == 0)
         {
             ATUNEDBG;
             return false;
         }
-        if (lbl->text().isEmpty() || (lbl->text().toInt() == -1))
+        if (le->text().isEmpty() || (le->text().toInt() == -1))
             return false;
-        lbl = this->findChild<QLabel *>("tunek2coef"+QString::number(i));
-        if (lbl == 0)
+        le = this->findChild<QLineEdit *>("tunek2coef"+QString::number(i));
+        if (le == 0)
         {
             ATUNEDBG;
             return false;
         }
-        if (lbl->text().isEmpty() || (lbl->text().toInt() == -1))
+        if (le->text().isEmpty() || (le->text().toInt() == -1))
             return false;
     }
     return true;
@@ -429,7 +492,7 @@ void a_tunedialog::LoadFromFile()
 {
     QByteArray ba = pc.LoadFile("Tune files (*.atn)");
     memcpy(&Bac_block,&(ba.data()[0]),sizeof(Bac_block));
-    RefreshTuneCoefs();
+    RefreshTuneFields();
     ATUNEINFO("Загрузка прошла успешно!");
 }
 

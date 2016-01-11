@@ -25,6 +25,7 @@ canal::canal(QObject *parent) : QObject(parent)
     OscTimer->setSingleShot(false);
     connect(OscTimer,SIGNAL(timeout()),this,SLOT(OscTimerTimeout()));
 //    connect(TTimer, SIGNAL(timeout()),this,SLOT(Timeout())); // для отладки закомментарить
+    SThreadStarted = false;
 }
 
 canal::~canal()
@@ -521,6 +522,8 @@ void canal::Connect()
     connect(thr, &QThread::finished, SThread, &SerialThread::deleteLater);
     connect(thr, &QThread::finished, thr, &QThread::deleteLater);
     connect(thr, &QThread::started, SThread, &SerialThread::Run);
+    connect(thr, SIGNAL(started()), this, SLOT(SetStarted()));
+    connect(thr, SIGNAL(finished()), this, SLOT(ClearStarted()));
     connect(SThread,SIGNAL(canalisready()),this,SLOT(CanalReady()));
     connect(SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(DataWritten(QByteArray)));
     connect(SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
@@ -543,7 +546,8 @@ void canal::Connect()
 
 void canal::Disconnect()
 {
-    StopSThread();
+    if (SThreadStarted)
+        StopSThread();
 }
 
 void canal::CanalReady()
@@ -578,4 +582,14 @@ void canal::StopSThread()
 void canal::OscTimerTimeout()
 {
     Send(CN_OscPg);
+}
+
+void canal::SetStarted()
+{
+    SThreadStarted = true;
+}
+
+void canal::ClearStarted()
+{
+    SThreadStarted = false;
 }

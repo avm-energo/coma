@@ -57,6 +57,8 @@ private slots:
     void CanalReady();
     void CanalError(int);
     void OscTimerTimeout();
+    void SetStarted();
+    void ClearStarted();
 
 private:
     char *outdata;
@@ -77,6 +79,7 @@ private:
     publicclass::DataRec *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     bool LongBlock, ConnectedToPort, PortErrorDetected;
     SerialThread *SThread;
+    bool SThreadStarted;
 
     void InitiateSend();
     void Finish(int ernum);

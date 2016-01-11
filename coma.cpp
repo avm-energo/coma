@@ -39,7 +39,7 @@ Coma::Coma(QWidget *parent)
     connect(ErrorProtocolUpdateTimer,SIGNAL(timeout()),this,SLOT(UpdateErrorProtocol()));
     ErrorProtocolUpdateTimer->start();
     ReconTry = 0;
-    InitiateHth();
+//    InitiateHth();
     setWindowTitle(PROGNAME);
     QString tmps = "QMainWindow {background-color: "+QString(MAINWINCLR)+";}";
     setStyleSheet(tmps);
@@ -84,8 +84,9 @@ Coma::Coma(QWidget *parent)
 
     for (int i = 31; i >= 0; i--)
     {
-        QLabel *lbl = new QLabel(Hth[i]);
+        QLabel *lbl = new QLabel(Hth().at(i));
         lbl->setObjectName("hth"+QString::number(i));
+        lbl->setToolTip(HthToolTip().at(i));
         lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);" \
                            "background: 0px; margin: 0px; spacing: 0; padding: 0px;}");
         hlyout->addWidget(lbl);
@@ -247,8 +248,8 @@ void Coma::AddLabelAndLineedit(QVBoxLayout *lyout, QString caption, QString lena
 
 void Coma::InitiateHth()
 {
-    Hth[0] = "!OK";
-    Hth[1] = "NC";
+/*    Hth[0] = "!OK";
+    Hth[1] = "FL";
     Hth[2] = "TUPP";
     Hth[3] = "REL";
     Hth[4] = "1PPS";
@@ -258,7 +259,7 @@ void Coma::InitiateHth()
     Hth[8] = "LS";
     Hth[9] = "FNC";
     for (int i = 10; i < 32; i++)
-        Hth[i] = "";
+        Hth[i] = ""; */
 }
 
 void Coma::Connect()
@@ -576,7 +577,34 @@ void Coma::Disconnect()
 
 void Coma::GetAbout()
 {
-
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QVBoxLayout *l2yout = new QVBoxLayout;
+    QLabel *lbl = new QLabel("КОМплекс АВ-ТУК (КОМА)");
+    l2yout->addWidget(lbl);
+    QString tmps = "Версия "+QString(PROGNAME);
+    lbl = new QLabel(tmps);
+    l2yout->addWidget(lbl);
+    lbl = new QLabel("накорябано Ёвелем");
+    l2yout->addWidget(lbl);
+    lbl = new QLabel("в 2015-2016 гг.");
+    l2yout->addWidget(lbl);
+    l2yout->addStretch(10);
+    lbl = new QLabel;
+    QPixmap pmp;
+    pmp.load(":/evel.png");
+    lbl->setPixmap(pmp);
+    lbl->setMaximumSize(64,64);
+    hlyout->addWidget(lbl,1);
+    hlyout->setAlignment(lbl,Qt::AlignTop);
+    hlyout->addLayout(l2yout,100);
+    lyout->addLayout(hlyout,1);
+    QPushButton *pb = new QPushButton("Ага");
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb,0);
+    dlg->setLayout(lyout);
+    dlg->exec();
 }
 
 void Coma::Exit()

@@ -23,7 +23,7 @@
 #include "canal.h"
 #include "publicclass.h"
 
-#define PROGNAME    "КОМА 1.0 #0072-t"
+#define PROGNAME    "КОМА 1.0.0073"
 
 #define MAINER(a)       ERMSG(publicclass::ER_MAIN,__LINE__,a)
 #define MAINDBG         DBGMSG(publicclass::ER_MAIN,__LINE__)
@@ -49,7 +49,42 @@ private:
     QTimer *ERTimer;
     QMetaObject::Connection pbh1, pbh2;
 
-    QString Hth[32];
+    static QStringList Hth()
+    {
+        QStringList tmps;
+        tmps.append("!OK");
+        tmps.append("FL");
+        tmps.append("TUPP");
+        tmps.append("REL");
+        tmps.append("1PPS");
+        tmps.append("ADC");
+        tmps.append("REG");
+        tmps.append("CONF");
+        tmps.append("LS");
+        tmps.append("FNC");
+        for (int i=10; i<32; i++)
+            tmps.append("");
+        return tmps;
+    }
+
+    static QStringList HthToolTip()
+    {
+        QStringList sl;
+        sl.append("Что-то не в порядке");
+        sl.append("Ошибка внешней FLASH-памяти");
+        sl.append("Перегрев модуля");
+        sl.append("Неисправность выходных реле");
+        sl.append("Нет сигнала 1PPS с антенны");
+        sl.append("Нет связи с АЦП");
+        sl.append("Нет настроечных параметров в памяти модуля");
+        sl.append("Ошибка конфигурации в памяти модуля, взята конфигурация по умолчанию");
+        sl.append("Сигналы слишком малы");
+        sl.append("Частота находится вне диапазона");
+        for (int i=10; i<32; i++)
+            sl.append("");
+        return sl;
+    }
+
     a_checkdialog *ACheckDialog;
     a_confdialog *AConfDialog;
     a_tunedialog *ATuneDialog;
@@ -63,6 +98,7 @@ private:
     QAction *WriteSNAction, *WriteHWAction;
     quint8 ReconTry;
     publicclass::Bsi Bsi_block;
+
     void InitiateWriteDataToPort(QByteArray ba);
     QString ByteToHex(quint8);
     void StopThreads();
