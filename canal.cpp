@@ -519,11 +519,11 @@ void canal::Connect()
     SThread->portinfo = info;
     SThread->baud = baud;
     SThread->moveToThread(thr);
+    connect(thr, &QThread::started, this, &canal::SetStarted);
+    connect(thr, &QThread::finished, this, &canal::ClearStarted);
     connect(thr, &QThread::finished, SThread, &SerialThread::deleteLater);
     connect(thr, &QThread::finished, thr, &QThread::deleteLater);
     connect(thr, &QThread::started, SThread, &SerialThread::Run);
-    connect(thr, SIGNAL(started()), this, SLOT(SetStarted()));
-    connect(thr, SIGNAL(finished()), this, SLOT(ClearStarted()));
     connect(SThread,SIGNAL(canalisready()),this,SLOT(CanalReady()));
     connect(SThread,SIGNAL(datawritten(QByteArray)),this,SLOT(DataWritten(QByteArray)));
     connect(SThread,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
