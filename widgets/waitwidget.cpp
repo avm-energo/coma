@@ -9,6 +9,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDateTime>
+#include <QFontMetrics>
 #include <math.h>
 
 WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)
@@ -110,7 +111,18 @@ void WaitWidget::paintEvent(QPaintEvent *e)
     p5.drawPixmap(left, 0, rotatedPixmap5);
     p5.end();
     QPainter p(this);
-    QRect mrect = QRect(0,height()-20,width(),20);
+//    p.translate(wsize.width()/2,size.height()/2);
+    QFont font;
+    QFontMetrics fm(font);
+    int center = wsize.width()/2;
+    int msgwidth = fm.width(Message);//+10;
+    left = center - msgwidth/2;
+    QRect mrect = QRect(left,height()-20,msgwidth,20);
+    p.setPen(Qt::blue);
+    QBrush brush(Qt::lightGray, Qt::SolidPattern);
+    p.drawRect(mrect);
+    p.fillRect(mrect, brush);
+    p.setPen(Qt::black);
     p.drawText(mrect, Qt::AlignCenter, Message);
     p.end();
     e->accept();

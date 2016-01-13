@@ -334,7 +334,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
             float value;
             memcpy(&value,&ba[index],4);
             index += 4;
-            Signal.SigVal=QString::number(value,'g',6);
+            Signal.SigVal=value;
             quint8 quality;
             memcpy(&quality,&ba[index],1);
             index++;

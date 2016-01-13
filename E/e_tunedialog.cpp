@@ -8,6 +8,7 @@
 #include <QDoubleSpinBox>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QFileDialog>
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QThread>
@@ -33,6 +34,8 @@ e_tunedialog::e_tunedialog(QWidget *parent) :
     tmr = new QTimer;
     tmr->setObjectName("etunetimer");
     tmr->setInterval(ANMEASINT);
+    XlsxWriting = false;
+    xlsx = 0;
     connect(tmr,SIGNAL(timeout()),this,SLOT(ReadAnalogMeasurements()));
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
@@ -83,7 +86,7 @@ void e_tunedialog::SetupUI()
         pb->setEnabled(false);
     lyout->addWidget(pb);
     QStringList lbls;
-    lbls << "7.2.3. Проверка связки РЕТОМ и МИП..." << "7.3.1. Получение настроечных параметров..." << \
+    lbls << "7.2.3. Проверка связи РЕТОМ и МИП..." << "7.3.1. Получение настроечных параметров..." << \
             "7.3.1.1. Установка настроечных параметров по умолчанию..." << "7.3.2. Получение текущих аналоговых данных..." << \
             "7.3.3. Расчёт коррекции смещений сигналов по фазе..." << "7.3.4. Расчёт коррекции по частоте..." << \
             "7.3.5. Считывание напряжений при нулевых токах..." << "7.3.6.0. Пересборка схемы подключения..." << \
@@ -93,7 +96,7 @@ void e_tunedialog::SetupUI()
             "7.3.7.3. Получение текущих аналоговых данных..." << "7.3.7.5. Расчёт калибровочных коэффициентов по токам, напряжениям и углам..." << \
             "7.3.7.6. Сохранение конфигурации и перезапуск..." << "7.3.7.8. Получение текущих аналоговых данных..." << \
             "7.3.7.10. Расчёт калибровочных коэффициентов по токам, напряжениям и углам..." << "7.3.8.1. Запись настроечных коэффициентов и переход на новую конфигурацию..." << \
-            "7.3.8.2. Проверка аналоговых данных..." << "7.3.9. Восстановление сохранённой конфигурации...";
+            "7.3.8.2. Проверка аналоговых данных..." << "7.3.9. Восстановление сохранённой конфигурации и проверка..." << "Настройка окончена!";
     for (int i = 0; i < lbls.size(); i++)
     {
         QHBoxLayout *hlyout = new QHBoxLayout;
@@ -157,24 +160,27 @@ void e_tunedialog::SetupUI()
     le->setStyleSheet(ValuesLEFormat);
     glyout->addWidget(le,8,4,1,2);
 
+    pb = new QPushButton("Установить настроечные коэффициенты по умолчанию");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SetDefCoefs()));
+    glyout->addWidget(pb, 9, 0, 1, 6);
     pb = new QPushButton("Прочитать настроечные коэффициенты из модуля");
     connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs()));
     if (pc.Emul)
         pb->setEnabled(false);
-    glyout->addWidget(pb, 9, 0, 1, 6);
+    glyout->addWidget(pb, 10, 0, 1, 6);
     pb = new QPushButton("Записать настроечные коэффициенты в модуль");
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteTuneCoefs()));
     if (pc.Emul)
         pb->setEnabled(false);
-    glyout->addWidget(pb, 10, 0, 1, 6);
+    glyout->addWidget(pb, 11, 0, 1, 6);
     pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
     pb->setIcon(QIcon(":/load.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadFromFile()));
-    glyout->addWidget(pb, 11, 0, 1, 6);
+    glyout->addWidget(pb, 12, 0, 1, 6);
     pb = new QPushButton("Записать настроечные коэффициенты в файл");
     pb->setIcon(QIcon(":/save.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
-    glyout->addWidget(pb, 12, 0, 1, 6);
+    glyout->addWidget(pb, 13, 0, 1, 6);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
     lyout->addStretch(1);
@@ -186,65 +192,70 @@ void e_tunedialog::SetupUI()
     QHBoxLayout *hglyout = new QHBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     gb = new QGroupBox("Измеряемые параметры");
-    QGroupBox *gb2 = new QGroupBox("Частота");
+    QGroupBox *gb2 = new QGroupBox("1-3. Частота");
     for (i = 0; i < 3; i++)
     {
         lbl = new QLabel(QString::number(i+10,36).toUpper());
         hlyout->addWidget(lbl);
         lbl = new QLabel("");
         lbl->setObjectName("mip"+QString::number(i+1));
+        lbl->setToolTip("Параметр "+QString::number(i+1));
         lbl->setStyleSheet(ValuesFormat);
         hlyout->addWidget(lbl,10);
     }
     gb2->setLayout(hlyout);
     vlyout->addWidget(gb2);
     hlyout = new QHBoxLayout;
-    gb2 = new QGroupBox("Фазное напряжение");
+    gb2 = new QGroupBox("4-6. Фазное напряжение");
     for (i = 0; i < 3; i++)
     {
         lbl = new QLabel(QString::number(i+10,36).toUpper());
         hlyout->addWidget(lbl);
         lbl = new QLabel("");
         lbl->setObjectName("mip"+QString::number(i+4));
+        lbl->setToolTip("Параметр "+QString::number(i+4));
         lbl->setStyleSheet(ValuesFormat);
         hlyout->addWidget(lbl,10);
     }
     gb2->setLayout(hlyout);
     vlyout->addWidget(gb2);
     hlyout = new QHBoxLayout;
-    gb2 = new QGroupBox("Фазный ток");
+    gb2 = new QGroupBox("7-9. Фазный ток");
     for (i = 0; i < 3; i++)
     {
         lbl = new QLabel(QString::number(i+10,36).toUpper());
         hlyout->addWidget(lbl);
         lbl = new QLabel("");
         lbl->setObjectName("mip"+QString::number(i+7));
+        lbl->setToolTip("Параметр "+QString::number(i+7));
         lbl->setStyleSheet(ValuesFormat);
         hlyout->addWidget(lbl,10);
     }
     gb2->setLayout(hlyout);
     vlyout->addWidget(gb2);
     hlyout = new QHBoxLayout;
-    gb2 = new QGroupBox("Угол нагрузки");
+    gb2 = new QGroupBox("11-13. Угол нагрузки");
     for (i = 0; i < 3; i++)
     {
         lbl = new QLabel(QString::number(i+10,36).toUpper());
         hlyout->addWidget(lbl);
         lbl = new QLabel("");
         lbl->setObjectName("mip"+QString::number(i+11));
+        lbl->setToolTip("Параметр "+QString::number(i+11));
         lbl->setStyleSheet(ValuesFormat);
         hlyout->addWidget(lbl,10);
     }
     gb2->setLayout(hlyout);
     vlyout->addWidget(gb2);
     hlyout = new QHBoxLayout;
-    gb2 = new QGroupBox("Фазовый угол напряжения");
+    gb2 = new QGroupBox("14-16. Фазовый угол напряжения");
     for (i = 0; i < 3; i++)
     {
         lbl = new QLabel(QString::number(i+10,36).toUpper());
         hlyout->addWidget(lbl);
         lbl = new QLabel("");
         lbl->setObjectName("mip"+QString::number(i+14));
+        lbl->setToolTip("Параметр "+QString::number(i+14));
         lbl->setStyleSheet(ValuesFormat);
         hlyout->addWidget(lbl,10);
     }
@@ -252,16 +263,18 @@ void e_tunedialog::SetupUI()
     vlyout->addWidget(gb2);
     hlyout = new QHBoxLayout;
     gb2 = new QGroupBox("Прочие");
-    lbl = new QLabel("Ток N");
+    lbl = new QLabel("10. Ток N");
     hlyout->addWidget(lbl);
     lbl = new QLabel("");
     lbl->setObjectName("mip10");
+    lbl->setToolTip("Параметр 10");
     lbl->setStyleSheet(ValuesFormat);
     hlyout->addWidget(lbl,10);
-    lbl = new QLabel("Темп.");
+    lbl = new QLabel("17. Темп.");
     hlyout->addWidget(lbl);
     lbl = new QLabel("");
     lbl->setObjectName("mip17");
+    lbl->setToolTip("Параметр 17");
     lbl->setStyleSheet(ValuesFormat);
     hlyout->addWidget(lbl,10);
     gb2->setLayout(hlyout);
@@ -269,7 +282,7 @@ void e_tunedialog::SetupUI()
     gb->setLayout(vlyout);
     hglyout->addWidget(gb);
     gb = new QGroupBox("Вычисляемые параметры");
-    gb2 = new QGroupBox("Активная мощность");
+    gb2 = new QGroupBox("22-24. Активная мощность");
     hlyout = new QHBoxLayout;
     for (i = 0; i < 3; i++)
     {
@@ -277,13 +290,14 @@ void e_tunedialog::SetupUI()
         hlyout->addWidget(lbl);
         lbl = new QLabel("");
         lbl->setObjectName("mip"+QString::number(i+22));
+        lbl->setToolTip("Параметр "+QString::number(i+22));
         lbl->setStyleSheet(ValuesFormat);
         hlyout->addWidget(lbl,10);
     }
     gb2->setLayout(hlyout);
     QVBoxLayout *gblyout = new QVBoxLayout;
     gblyout->addWidget(gb2);
-    gb2 = new QGroupBox("Реактивная мощность");
+    gb2 = new QGroupBox("26-28. Реактивная мощность");
     hlyout = new QHBoxLayout;
     for (i = 0; i < 3; i++)
     {
@@ -291,12 +305,13 @@ void e_tunedialog::SetupUI()
         hlyout->addWidget(lbl);
         lbl = new QLabel("");
         lbl->setObjectName("mip"+QString::number(i+26));
+        lbl->setToolTip("Параметр "+QString::number(i+26));
         lbl->setStyleSheet(ValuesFormat);
         hlyout->addWidget(lbl,10);
     }
     gb2->setLayout(hlyout);
     gblyout->addWidget(gb2);
-    gb2 = new QGroupBox("Полная мощность");
+    gb2 = new QGroupBox("30-32. Полная мощность");
     hlyout = new QHBoxLayout;
     for (i = 0; i < 3; i++)
     {
@@ -304,12 +319,13 @@ void e_tunedialog::SetupUI()
         hlyout->addWidget(lbl);
         lbl = new QLabel("");
         lbl->setObjectName("mip"+QString::number(i+30));
+        lbl->setToolTip("Параметр "+QString::number(i+30));
         lbl->setStyleSheet(ValuesFormat);
         hlyout->addWidget(lbl,10);
     }
     gb2->setLayout(hlyout);
     gblyout->addWidget(gb2);
-    gb2 = new QGroupBox("Линейное напряжение");
+    gb2 = new QGroupBox("19-21. Линейное напряжение");
     hlyout = new QHBoxLayout;
     for (i = 0; i < 3; i++)
     {
@@ -317,6 +333,7 @@ void e_tunedialog::SetupUI()
         hlyout->addWidget(lbl);
         lbl = new QLabel("");
         lbl->setObjectName("mip"+QString::number(i+19));
+        lbl->setToolTip("Параметр "+QString::number(i+19));
         lbl->setStyleSheet(ValuesFormat);
         hlyout->addWidget(lbl,10);
     }
@@ -325,24 +342,27 @@ void e_tunedialog::SetupUI()
     hlyout = new QHBoxLayout;
     vlyout=new QVBoxLayout;
     gb2 = new QGroupBox("Мощность");
-    lbl = new QLabel("Акт:");
+    lbl = new QLabel("25. Акт:");
     hlyout->addWidget(lbl);
     lbl = new QLabel("");
     lbl->setObjectName("mip25");
+    lbl->setToolTip("Параметр 25");
     lbl->setStyleSheet(ValuesFormat);
     hlyout->addWidget(lbl,10);
-    lbl = new QLabel("Реакт:");
+    lbl = new QLabel("29. Реакт:");
     hlyout->addWidget(lbl);
     lbl = new QLabel("");
     lbl->setObjectName("mip29");
+    lbl->setToolTip("Параметр 29");
     lbl->setStyleSheet(ValuesFormat);
     hlyout->addWidget(lbl,10);
     vlyout->addLayout(hlyout);
     hlyout=new QHBoxLayout;
-    lbl = new QLabel("Полная:");
+    lbl = new QLabel("33. Полная:");
     hlyout->addWidget(lbl);
     lbl = new QLabel("");
     lbl->setObjectName("mip33");
+    lbl->setToolTip("Параметр 33");
     lbl->setStyleSheet(ValuesFormat);
     hlyout->addWidget(lbl,10);
     vlyout->addLayout(hlyout);
@@ -490,6 +510,11 @@ void e_tunedialog::SetupUI()
 
     pb = new QPushButton("Запустить чтение аналоговых сигналов");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurements()));
+    if (pc.Emul)
+        pb->setEnabled(false);
+    lyout->addWidget(pb);
+    pb = new QPushButton("Запустить чтение аналоговых сигналов в файл");
+    connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurementsToFile()));
     if (pc.Emul)
         pb->setEnabled(false);
     lyout->addWidget(pb);
@@ -660,6 +685,7 @@ void e_tunedialog::Tune3p()
         if (!res)
         {
             ETUNEWARN;
+            LoadWorkConfig();
             return;
         }
     }
@@ -670,6 +696,7 @@ void e_tunedialog::Tune3p()
         if (!res)
         {
             ETUNEWARN;
+            LoadWorkConfig();
             return;
         }
     }
@@ -677,11 +704,15 @@ void e_tunedialog::Tune3p()
     if (!res)
     {
         ETUNEWARN;
+        LoadWorkConfig();
         return;
     }
     res = Start7_3_9();
     if (res)
+    {
         ETUNEINFO("Настройка проведена успешно!");
+        OkMsgSetVisible(MSG_END);
+    }
 }
 
 void e_tunedialog::SetTuneManual()
@@ -735,7 +766,7 @@ bool e_tunedialog::Start7_3_1(bool DefConfig)
             return false;
         }
         // обновление коэффициентов в соответствующих полях на экране
-        RefreshTuneCoefs();
+        WriteTuneCoefsToGUI();
         // проверка коэффициентов на правильность в соотв. с п. 7.3.1 "Д2"
         if (CheckTuneCoefs())
         {
@@ -770,7 +801,7 @@ bool e_tunedialog::Start7_3_1(bool DefConfig)
             return false;
         }
         // обновление коэффициентов в соответствующих полях на экране
-        RefreshTuneCoefs();
+        WriteTuneCoefsToGUI();
         OkMsgSetVisible(MSG_7_3_1_1);
     }
     else
@@ -790,14 +821,30 @@ bool e_tunedialog::Start7_3_2(int num)
     // проверка данных на правильность
     int maxval;
     if (num == MSG_7_3_2) maxval=602; // 3~7.3.2, 6~7.3.6.1, 12~7.3.7.3
-    else if (num == MSG_7_3_7_8) maxval = 607; // 15~7.3.7.8
-    else if (num == MSG_7_3_8_2) maxval = 617; // 18~7.3.8
-    else if (num == MSG_7_3_9) maxval = 572; // 19~7.3.9
+    else if (num == MSG_7_3_7_8)
+    {
+        if (!GetExternalData(MSG_7_3_7_8))
+            return false;
+        maxval = 607; // 15~7.3.7.8
+    }
+    else if (num == MSG_7_3_8_2)
+    {
+        if (!GetExternalData(MSG_7_3_8_2))
+            return false;
+        maxval = 617; // 18~7.3.8
+    }
+    else if (num == MSG_7_3_9)
+    {
+        if (!GetExternalData(MSG_7_3_9))
+            return false;
+        maxval = 572; // 19~7.3.9
+    }
     else
     {
         OkMsgSetVisible(num);
         return true;
     }
+
     if (CheckAnalogValues(maxval-pc.ModuleBsi.MType1)) // MType: 0 = 2T0N, 1 = 1T1N, 2 = 0T2N; NTest: 600 = 0T2N, 601 = 1T1N, 602 = 2T0N
     {
         OkMsgSetVisible(num);
@@ -1021,8 +1068,8 @@ bool e_tunedialog::Start7_3_7_2()
         return false;
     }
     // 4. ввести показания (с МИП или вручную)
-    if (!GetExternalData(MSG_7_3_7_8))
-        return false;
+//    if (!GetExternalData(MSG_7_3_7_8))
+//        return false;
     // 5. рассчитать новые коэффициенты
     OkMsgSetVisible(MSG_7_3_7_8);
     MsgSetVisible(MSG_7_3_7_10);
@@ -1089,7 +1136,7 @@ bool e_tunedialog::Start7_3_9()
         if (cn->result != CN_OK)
             return false;
         // измеряем и проверяем
-        Show1RetomDialog(60.0f, econf->Bci_block.inom2[0]);
+        Show1RetomDialog(60.0f, 1.0);
         WaitNSeconds(15);
         if (!Start7_3_2(MSG_7_3_9))
         {
@@ -1100,6 +1147,17 @@ bool e_tunedialog::Start7_3_9()
     }
     else
         return false;
+    if (QMessageBox::question(this,"Вопрос","Очистить память осциллограмм?",QMessageBox::Yes|QMessageBox::No, QMessageBox::Yes) == \
+            QMessageBox::Yes)
+    {
+        cn->Send(CN_OscEr);
+        while (cn->Busy)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+        if (cn->result == CN_OK)
+            ETUNEINFO("Стёрто успешно");
+        else
+            ETUNEINFO("Ошибка при стирании");
+    }
     return true;
 }
 
@@ -1137,10 +1195,11 @@ bool e_tunedialog::GetExternalData(int numexc)
     case TUNEMIP:
     {
         StartMip();
-        QTime tmr;
+/*        QTime tmr;
         tmr.start();
         while (tmr.elapsed() < 5000)
-            qApp->processEvents();
+            qApp->processEvents(); */
+        WaitNSeconds(5);
         OkMsgSetVisible(numexc);
         StopMip();
         if (CheckMip())
@@ -1174,7 +1233,7 @@ bool e_tunedialog::GetExternalData(int numexc)
             spb->setObjectName("spb7371"+QString::number(i));
             glyout->addWidget(spb,1,i*2+1,1,1);
         }
-        if (numexc == MSG_7_3_7_3) // все параметры для п. 7.3.7.4
+        if (numexc != MSG_7_3_7_1_1) // ввод всех параметров, не только напряжений
         {
             for (int i=0; i<3; i++) // for A to C
             {
@@ -1182,32 +1241,7 @@ bool e_tunedialog::GetExternalData(int numexc)
                 glyout->addWidget(lbl,2,i*2,1,1);
                 QDoubleSpinBox *spb = new QDoubleSpinBox;
                 spb->setDecimals(5);
-                spb->setValue(1.0);
-                spb->setObjectName("spb7371"+QString::number(i+3));
-                glyout->addWidget(spb,2,i*2+1,1,1);
-            }
-            for (int i=0; i<3; i++) // for A to C
-            {
-                lbl = new QLabel("Уг.нагр. ф" + QString::number(i+10,36).toUpper()+", град");
-                glyout->addWidget(lbl,3,i*2,1,1);
-                QDoubleSpinBox *spb = new QDoubleSpinBox;
-                spb->setDecimals(3);
-                spb->setMinimum(-360.0);
-                spb->setMaximum(360.0);
-                spb->setValue(0.0);
-                spb->setObjectName("spb7371"+QString::number(i+6));
-                glyout->addWidget(spb,3,i*2+1,1,1);
-            }
-        }
-        else if (numexc == MSG_7_3_7_8) // все параметры для п. 7.3.7.9
-        {
-            for (int i=0; i<3; i++) // for A to C
-            {
-                lbl = new QLabel("Iф" + QString::number(i+10,36).toUpper()+", A");
-                glyout->addWidget(lbl,2,i*2,1,1);
-                QDoubleSpinBox *spb = new QDoubleSpinBox;
-                spb->setDecimals(5);
-                spb->setValue(5.0);
+                spb->setValue(econf->Bci_block.inom2[i]);
                 spb->setObjectName("spb7371"+QString::number(i+3));
                 glyout->addWidget(spb,2,i*2+1,1,1);
             }
@@ -1246,7 +1280,7 @@ bool e_tunedialog::GetExternalData(int numexc)
         for (int i=0; i<3; i++)
         {
             mipd[i] = 60.0;
-            mipd[i+3] = (numexc == 12) ? 1.0 : 5.0;
+            mipd[i+3] = econf->Bci_block.inom2[i];
             mipd[i+6] = 0.0;
         }
         OkMsgSetVisible(numexc);
@@ -1342,6 +1376,8 @@ bool e_tunedialog::CheckMip()
     default:
         break;
     }
+    for (int i=7; i<10; i++)
+        ValuesToCheck[i] = econf->Bci_block.inom2[i-7]; // значения токов - по текущим номинальным значениям
     for (int i = 1; i < 10; i++)
     {
         QLabel *lbl = this->findChild<QLabel *>("mip"+QString::number(i));
@@ -1353,7 +1389,7 @@ bool e_tunedialog::CheckMip()
             return false;
         if (!IsWithinLimits(vl,ValuesToCheck[i],ThresholdsToCheck[i]))
         {
-            ETUNEINFO("Несовпадение по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'g',4)+\
+            ETUNEINFO("Несовпадение МИП по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'g',4)+\
                       ", должно быть: "+QString::number(ValuesToCheck[i],'g',4)+\
                       " +/- "+QString::number(ThresholdsToCheck[i],'g',4));
             return false;
@@ -1479,7 +1515,7 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
     {
         for (int i = 2; i<14; i++)
         {
-            ValuesToCheck[i] = 60.0; // u=60,0В
+            ValuesToCheck[i] = mipd[i-2]; // u=60,0В
             ThresholdsToCheck[i] = 0.1; // +/- 0.1В
         }
         ValuesToCheck[14] = ValuesToCheck[17] = 0.0;
@@ -1491,33 +1527,30 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
     {
         for (int i = 2; i<5; i++)
         {
-            ValuesToCheck[i] = ValuesToCheck[i+6] = 60.0; // u=60,0В
+            ValuesToCheck[i] = ValuesToCheck[i+6] = mipd[i-2]; // u=60,0В
             ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.1; // +/- 0.1В
-            ValuesToCheck[i+3] = ValuesToCheck[i+9] = econf->Bci_block.inom1[0]; // i=1(5)A
+            ValuesToCheck[i+3] = ValuesToCheck[i+9] = mipd[i+1]; // i=1(5)A
             ThresholdsToCheck[i+3] = ThresholdsToCheck[i+9] = 0.05; // +/- 0.05A
+            ValuesToCheck[i+18] = ValuesToCheck[i+30] = ValuesToCheck[i+21] = \
+                    ValuesToCheck[i+36] = mipd[i-2]*mipd[i+1]; // P=S=60.0*I, W
+            ThresholdsToCheck[i+18] = ThresholdsToCheck[i+30] = ThresholdsToCheck[i+21] = \
+                    ThresholdsToCheck[i+36] = mipd[i+1]*1.25; // 2%
+            ValuesToCheck[i+24] = ValuesToCheck[i+33] = 0.0; // Q=0ВАр
+            ThresholdsToCheck[i+24] = ThresholdsToCheck[i+33] = mipd[i+1]*1.25; // 2%
+            ValuesToCheck[i+27] = ValuesToCheck[i+39] = 1.0; // CosPhi=1.0
+            ThresholdsToCheck[i+27] = ThresholdsToCheck[i+39] = 0.01;
         }
         ValuesToCheck[14] = ValuesToCheck[17] = 0.0;
         ValuesToCheck[15] = ValuesToCheck[18] = -120.0;
         ValuesToCheck[16] = ValuesToCheck[19] = 120.0;
         break;
     }
-    case 572:
+    case 572: // 2T0N
     {
         for (int i = 2; i<14; i++)
         {
-            ValuesToCheck[i] = econf->Bci_block.inom1[0]; // i=1(5)A
+            ValuesToCheck[i] = mipd[i+1]; // i=1(5)A
             ThresholdsToCheck[i] = 0.05; // +/- 0.05A
-        }
-        for (int i = 2; i < 5; i++)
-        {
-            ValuesToCheck[i+18] = ValuesToCheck[i+30] = ValuesToCheck[i+21] = \
-                    ValuesToCheck[i+36] = 57.74*econf->Bci_block.inom1[0]; // P=S=57.74*I, W
-            ThresholdsToCheck[i+18] = ThresholdsToCheck[i+30] = ThresholdsToCheck[i+21] = \
-                    ThresholdsToCheck[i+36] = 1.5; // 2.5%
-            ValuesToCheck[i+24] = ValuesToCheck[i+33] = 0.0; // Q=0ВАр
-            ThresholdsToCheck[i+24] = ThresholdsToCheck[i+33] = 1.5; // 2.5%
-            ValuesToCheck[i+27] = ValuesToCheck[i+39] = 1.0; // CosPhi=1.0
-            ThresholdsToCheck[i+27] = ThresholdsToCheck[i+39] = 0.01;
         }
         ValuesToCheck[14] = ValuesToCheck[17] = 0.0;
         ValuesToCheck[15] = ValuesToCheck[18] = -120.0;
@@ -1552,11 +1585,12 @@ void e_tunedialog::ReadTuneCoefs()
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
-        RefreshTuneCoefs();
+        WriteTuneCoefsToGUI();
 }
 
 void e_tunedialog::WriteTuneCoefs()
 {
+    ReadTuneCoefsFromGUI();
     cn->Send(CN_Wac, &Bac_block, sizeof(Bac_block));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -1577,7 +1611,13 @@ void e_tunedialog::SetNewTuneCoefs()
     }
 }
 
-void e_tunedialog::RefreshTuneCoefs()
+void e_tunedialog::SetDefCoefs()
+{
+    memcpy(&Bac_block, &Bac_defblock, sizeof(Bac));
+    WriteTuneCoefsToGUI();
+}
+
+void e_tunedialog::WriteTuneCoefsToGUI()
 {
     QLineEdit *le;
     for (int i = 0; i < 6; i++)
@@ -1609,66 +1649,132 @@ void e_tunedialog::RefreshTuneCoefs()
     le->setText(QString::number(Bac_block.Kinter, 'f', 5));
 }
 
+void e_tunedialog::ReadTuneCoefsFromGUI()
+{
+    QLineEdit *le;
+    for (int i = 0; i < 6; i++)
+    {
+        le = this->findChild<QLineEdit *>("tune"+QString::number(i));
+        if (le == 0)
+            return;
+        bool ok;
+        Bac_block.KmU[i]=le->text().toFloat(&ok);
+        if (!ok)
+        {
+            ETUNEER("Значение "+le->text()+" не может быть переведено во float");
+            return;
+        }
+        le = this->findChild<QLineEdit *>("tune"+QString::number(i+6));
+        if (le == 0)
+            return;
+        Bac_block.KmI_5[i]=le->text().toFloat(&ok);
+        if (!ok)
+        {
+            ETUNEER("Значение "+le->text()+" не может быть переведено во float");
+            return;
+        }
+        le = this->findChild<QLineEdit *>("tune"+QString::number(i+12));
+        if (le == 0)
+            return;
+        Bac_block.KmI_1[i]=le->text().toFloat(&ok);
+        if (!ok)
+        {
+            ETUNEER("Значение "+le->text()+" не может быть переведено во float");
+            return;
+        }
+        le = this->findChild<QLineEdit *>("tune"+QString::number(i+18));
+        if (le == 0)
+            return;
+        Bac_block.DPsi[i]=le->text().toFloat(&ok);
+        if (!ok)
+        {
+            ETUNEER("Значение "+le->text()+" не может быть переведено во float");
+            return;
+        }
+    }
+    le = this->findChild<QLineEdit *>("tune24");
+    if (le == 0)
+        return;
+    bool ok;
+    Bac_block.K_freq=le->text().toFloat(&ok);
+    if (!ok)
+    {
+        ETUNEER("Значение "+le->text()+" не может быть переведено во float");
+        return;
+    }
+    le = this->findChild<QLineEdit *>("tune25");
+    if (le == 0)
+        return;
+    Bac_block.Kinter=le->text().toFloat(&ok);
+    if (!ok)
+    {
+        ETUNEER("Значение "+le->text()+" не может быть переведено во float");
+        return;
+    }
+}
+
 void e_tunedialog::RefreshAnalogValues()
 {
     QLabel *lbl;
     lbl = this->findChild<QLabel *>("value0");
     if (lbl == 0)
         return;
-    lbl->setText(QString::number(Bda_block.Tmk, 'f', 5));
+    lbl->setText(QString::number(Bda_block.Tmk, 'f', 1));
     lbl = this->findChild<QLabel *>("value1");
     if (lbl == 0)
         return;
-    lbl->setText(QString::number(Bda_block.Frequency, 'f', 5));
+    lbl->setText(QString::number(Bda_block.Frequency, 'f', 4));
     for (int i = 0; i < 6; i++)
     {
         lbl = this->findChild<QLabel *>("value"+QString::number(i+2));
         if (lbl == 0)
             return;
-        lbl->setText(QString::number(Bda_block.IUefNat_filt[i], 'f', 5));
+        int Precision = (pc.ModuleBsi.MType1 == MTE_0T2N) ? 3 : 4;
+        lbl->setText(QString::number(Bda_block.IUefNat_filt[i], 'f', Precision));
         lbl = this->findChild<QLabel *>("value"+QString::number(i+8));
         if (lbl == 0)
             return;
-        lbl->setText(QString::number(Bda_block.IUeff_filtered[i], 'f', 5));
+        Precision = (pc.ModuleBsi.MType1 == MTE_2T0N) ? 4 : 3;
+        lbl->setText(QString::number(Bda_block.IUeff_filtered[i], 'f', Precision));
         lbl = this->findChild<QLabel *>("value"+QString::number(i+14));
         if (lbl == 0)
             return;
-        lbl->setText(QString::number(Bda_block.phi_next_f[i], 'f', 5));
+        lbl->setText(QString::number(Bda_block.phi_next_f[i], 'f', 3));
     }
     for (int i=0; i<3; i++)
     {
         lbl = this->findChild<QLabel *>("value"+QString::number(i+20));
         if (lbl == 0)
             return;
-        lbl->setText(QString::number(Bda_block.PNatf[i], 'f', 5));
+        lbl->setText(QString::number(Bda_block.PNatf[i], 'f', 3));
         lbl = this->findChild<QLabel *>("value"+QString::number(i+23));
         if (lbl == 0)
             return;
-        lbl->setText(QString::number(Bda_block.SNatf[i], 'f', 5));
+        lbl->setText(QString::number(Bda_block.SNatf[i], 'f', 3));
         lbl = this->findChild<QLabel *>("value"+QString::number(i+26));
         if (lbl == 0)
             return;
-        lbl->setText(QString::number(Bda_block.QNatf[i], 'f', 5));
+        lbl->setText(QString::number(Bda_block.QNatf[i], 'f', 3));
         lbl = this->findChild<QLabel *>("value"+QString::number(i+29));
         if (lbl == 0)
             return;
-        lbl->setText(QString::number(Bda_block.CosPhiNat[i], 'f', 5));
+        lbl->setText(QString::number(Bda_block.CosPhiNat[i], 'f', 4));
         lbl = this->findChild<QLabel *>("value"+QString::number(i+32));
         if (lbl == 0)
             return;
-        lbl->setText(QString::number(Bda_block.Pf[i], 'f', 5));
+        lbl->setText(QString::number(Bda_block.Pf[i], 'f', 3));
         lbl = this->findChild<QLabel *>("value"+QString::number(i+35));
         if (lbl == 0)
             return;
-        lbl->setText(QString::number(Bda_block.Qf[i], 'f', 5));
+        lbl->setText(QString::number(Bda_block.Qf[i], 'f', 3));
         lbl = this->findChild<QLabel *>("value"+QString::number(i+38));
         if (lbl == 0)
             return;
-        lbl->setText(QString::number(Bda_block.Sf[i], 'f', 5));
+        lbl->setText(QString::number(Bda_block.Sf[i], 'f', 3));
         lbl = this->findChild<QLabel *>("value"+QString::number(i+41));
         if (lbl == 0)
             return;
-        lbl->setText(QString::number(Bda_block.CosPhi[i], 'f', 5));
+        lbl->setText(QString::number(Bda_block.CosPhi[i], 'f', 4));
     }
     for (int i=0; i<3; i++)
     {
@@ -1676,8 +1782,45 @@ void e_tunedialog::RefreshAnalogValues()
         if (lbl == 0)
             return;
         float PHI = (180*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
-        lbl->setText(QString::number(PHI, 'f', 5));
+        lbl->setText(QString::number(PHI, 'f', 3));
     }
+}
+
+void e_tunedialog::StartAnalogMeasurementsToFile()
+{
+    QString Filename = QFileDialog::getSaveFileName(this,"Сохранить данные","","Excel files (*.xlsx)");
+    if (Filename == "")
+    {
+        ETUNEER("Не задано имя файла");
+        return; // !!! ошибка - не задано имя файла
+    }
+    XlsxWriting = true;
+    xlsx = new QXlsx::Document(Filename);
+    xlsx->write(1,1,QVariant("Модуль: "+pc.ModuleTypeString+" сер. ном. "+QString::number(pc.ModuleBsi.SerNum,10)));
+    xlsx->write(2,1,QVariant("Дата начала записи: "+QDateTime::currentDateTime().toString("dd-MM-yyyy")));
+    xlsx->write(3,1,QVariant("Время начала записи: "+QDateTime::currentDateTime().toString("hh:mm:ss")));
+    xlsx->write(5,1,QVariant("Дата и время отсчёта"));
+    for (int i=0; i<3; i++)
+    {
+        if (pc.ModuleBsi.MType1 != MTE_2T0N)
+            xlsx->write(5,i+2,QVariant(("U1 ф")+QString::number(i+10, 36)+", В"));
+        else
+            xlsx->write(5,i+2,QVariant("I1 ф"+QString::number(i+10, 36)+", А"));
+
+        if (pc.ModuleBsi.MType1 != MTE_0T2N)
+            xlsx->write(5,i+5,QVariant("I2 ф"+QString::number(i+10, 36)+", А"));
+        else
+            xlsx->write(5,i+5,QVariant("U2 ф"+QString::number(i+10, 36)+", В"));
+
+        xlsx->write(5,i+8,QVariant("D ф"+QString::number(i+10, 36)+", град"));
+        xlsx->write(5,i+11,QVariant("Pf ф"+QString::number(i+10, 36)+", Вт"));
+        xlsx->write(5,i+14,QVariant("Qf ф"+QString::number(i+10, 36)+", ВА"));
+        xlsx->write(5,i+17,QVariant("Sf ф"+QString::number(i+10, 36)+", ВА"));
+    }
+    xlsx->write(5,20,QVariant("f, Гц"));
+    xlsx->write(5,21,QVariant("t, град"));
+    WRow = 6;
+    StartAnalogMeasurements();
 }
 
 void e_tunedialog::StartAnalogMeasurements()
@@ -1687,6 +1830,15 @@ void e_tunedialog::StartAnalogMeasurements()
 
 void e_tunedialog::StopAnalogMeasurements()
 {
+    if (XlsxWriting)
+    {
+        if (xlsx)
+        {
+            xlsx->save();
+            delete xlsx;
+        }
+        XlsxWriting = false;
+    }
     tmr->stop();
 }
 
@@ -1703,6 +1855,32 @@ void e_tunedialog::ReadAnalogMeasurements()
     }
     // обновление коэффициентов в соответствующих полях на экране
     RefreshAnalogValues();
+    if (XlsxWriting)
+    {
+        QXlsx::Format format;
+        xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss")));
+        for (int i=0; i<3; i++)
+        {
+            QString Precision = (pc.ModuleBsi.MType1 != MTE_2T0N) ? "0.000" : "0.0000";
+            format.setNumberFormat(Precision);
+            xlsx->write(WRow,i+2,Bda_block.IUeff_filtered[i],format);
+
+            Precision = (pc.ModuleBsi.MType1 != MTE_0T2N) ? "0.0000" : "0.000";
+            format.setNumberFormat(Precision);
+            xlsx->write(WRow,i+5,Bda_block.IUeff_filtered[i+3],format);
+
+            format.setNumberFormat("0.000");
+            xlsx->write(WRow,i+8,Bda_block.phi_next_f[i],format);
+            xlsx->write(WRow,i+11,Bda_block.Pf[i],format);
+            xlsx->write(WRow,i+14,Bda_block.Qf[i],format);
+            xlsx->write(WRow,i+17,Bda_block.Sf[i],format);
+        }
+        format.setNumberFormat("0.0000");
+        xlsx->write(WRow,20,Bda_block.Frequency,format);
+        format.setNumberFormat("0.0");
+        xlsx->write(WRow,21,Bda_block.Tmk,format);
+        WRow++;
+    }
 }
 
 void e_tunedialog::StartMip()
@@ -1733,14 +1911,17 @@ void e_tunedialog::EthDisconnected()
 
 void e_tunedialog::MipData(Parse104::Signals104 &Signal)
 {
+    static int Thresholds[34] = {0,4,4,4,3,3,3,4,4,4,4,3,3,3,3,3,3,1,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3};
     // приём из mipcanal::Signal номера сигнала (SigNum) и его значения (SigVal) и его дальнейшая обработка
     quint32 index = Signal.SigNum;
     if (index != -1)
     {
         QLabel *lbl = this->findChild<QLabel *>("mip"+QString::number(index));
         if (lbl != 0)
-            lbl->setText(Signal.SigVal);
-        MipDat[index] = Signal.SigVal.toFloat();
+            lbl->setText(QString::number(Signal.SigVal, 'g', Thresholds[index]));
+        MipDat[index] = Signal.SigVal;
+        if ((index >= 11) && (index <= 13))
+            MipDat[index] = -MipDat[index]; // у МИП-а знак угла отрицательный
     }
 }
 
@@ -1973,12 +2154,13 @@ void e_tunedialog::LoadFromFile()
 {
     QByteArray ba = pc.LoadFile("Tune files (*.etn)");
     memcpy(&Bac_block,&(ba.data()[0]),sizeof(Bac_block));
-    RefreshTuneCoefs();
+    WriteTuneCoefsToGUI();
     ETUNEINFO("Загрузка прошла успешно!");
 }
 
 void e_tunedialog::SaveToFile()
 {
+    ReadTuneCoefsFromGUI();
     int res = pc.SaveFile("Tune files (*.etn)", &Bac_block, sizeof(Bac_block));
     switch (res)
     {
@@ -2011,23 +2193,28 @@ void e_tunedialog::SetTimerPeriod(int per)
 void e_tunedialog::WaitNSeconds(int Seconds)
 {
     QTime tme;
-    SecondsToEnd15SecondsInterval = Seconds-1;
+    Seconds *= 1000;
+//    SecondsToEnd15SecondsInterval = Seconds-1;
     WaitWidget *w = new WaitWidget;
     QTimer *tmr = new QTimer;
-    tmr->setInterval(1000);
+    float RandInterval = (float)qrand()/RAND_MAX*1000.0;
+    tmr->setInterval(RandInterval);
     connect(this,SIGNAL(SecondsRemaining(QString)),w,SLOT(SetMessage(QString)));
     connect(tmr,SIGNAL(timeout()),this,SLOT(UpdateNSecondsWidget()));
     tmr->start();
     w->Start();
     tme.start();
-    while (tme.elapsed() < 15000)
+    while (tme.elapsed() < Seconds)
+    {
+        SecondsToEnd15SecondsInterval = Seconds - tme.elapsed();
         qApp->processEvents();
+    }
     w->Stop();
     tmr->stop();
 }
 
 void e_tunedialog::UpdateNSecondsWidget()
 {
-    QString tmps = "Подождите немного... " + QString::number(SecondsToEnd15SecondsInterval--);
+    QString tmps = "Подождите " + QString::number(SecondsToEnd15SecondsInterval--) + " мс";
     emit SecondsRemaining(tmps);
 }

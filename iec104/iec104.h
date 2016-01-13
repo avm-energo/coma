@@ -85,7 +85,7 @@ public:
     typedef struct
     {
         quint32 SigNum;
-        QString SigVal;
+        float SigVal;
         quint8 SigQuality;
         quint64 CP56Time;
     } Signals104; // первое - номера сигналов, второе - их значения ("" ~ недостоверное значение), третье - метка времени

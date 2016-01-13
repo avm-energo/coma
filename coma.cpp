@@ -613,6 +613,14 @@ void Coma::Exit()
 
 void Coma::EmulA()
 {
+/*    WaitWidget *w = new WaitWidget;
+    QTime tme;
+    w->SetMessage("УРА!!!");
+    w->Start();
+    tme.start();
+    while (tme.elapsed() < 5000)
+        qApp->processEvents();
+    w->Stop(); */
     if (pc.Emul) // если уже в режиме эмуляции, выход
         return;
     pc.ModuleBsi.MType = MT_A;

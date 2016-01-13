@@ -8,6 +8,7 @@
 #include <QLabel>
 #include "../iec104/iec104.h"
 #include "e_confdialog.h"
+#include <QtXlsx/xlsxdocument.h>
 
 #define TUNEFILELENGTH  256
 
@@ -43,7 +44,8 @@
 #define MSG_7_3_8_1     18
 #define MSG_7_3_8_2     19
 #define MSG_7_3_9       20
-#define MSG_COUNT       21
+#define MSG_END         21
+#define MSG_COUNT       22
 
 class e_tunedialog : public QDialog
 {
@@ -68,6 +70,9 @@ private:
     QTimer *tmr;
     int SecondsToEnd15SecondsInterval;
     QLabel *Label15Seconds;
+    QXlsx::Document *xlsx;
+    bool XlsxWriting;
+    int WRow;
 
     struct Bac
     {
@@ -136,7 +141,8 @@ private:
 
     void SetupUI();
     void Tune3p();
-    void RefreshTuneCoefs();
+    void WriteTuneCoefsToGUI();
+    void ReadTuneCoefsFromGUI();
     bool CheckTuneCoefs();
     bool CheckAnalogValues(int ntest);
     bool CheckMip();
@@ -185,9 +191,11 @@ private slots:
     void SetTuneRetom();
     void SetTuneManual();
     void SetTimerPeriod(int per);
+    void StartAnalogMeasurementsToFile();
     void StartAnalogMeasurements();
     void StopAnalogMeasurements();
     void ReadAnalogMeasurements();
+    void SetDefCoefs();
     void SetExtData();
     void CancelExtData();
     void CancelTune();
