@@ -171,7 +171,7 @@ void ErrorProtocolModel::AddRow(publicclass::ermsg msg)
     if (rowCount()<MAX_MSG)
         insertRows(0,1,QModelIndex());
     QStringList tmpsl = QStringList() << "#"+QString::number(MsgCount) << QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss") \
-                                      << "0x"+QString::number(msg.ernum,16) << "0x"+QString::number(msg.ersubnum,16) << msg.msg;
+                                      << "0x"+QString::number(msg.ernum,10) << "0x"+QString::number(msg.ersubnum,10) << msg.msg;
     MsgCount++;
     erdata.insert(0,tmpsl);
     if (erdata.size() >= MAX_MSG)

@@ -8,6 +8,7 @@
 #include <QDoubleSpinBox>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QRadioButton>
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QFileDialog>
@@ -76,11 +77,13 @@ void e_tunedialog::SetupUI()
 
     lyout = new QVBoxLayout;
     QPushButton *pb = new QPushButton("Начать настройку с начала");
+    pb->setObjectName("starttune1p");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
     if (pc.Emul)
         pb->setEnabled(false);
     lyout->addWidget(pb);
     pb = new QPushButton("Начать настройку с трех фаз");
+    pb->setObjectName("starttune3p");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartTune3p()));
     if (pc.Emul)
         pb->setEnabled(false);
@@ -497,23 +500,36 @@ void e_tunedialog::SetupUI()
         glyout->addWidget(lbl,15,i,1,1);
     }
     lyout->addLayout(glyout);
+
     hlyout = new QHBoxLayout;
-    lbl = new QLabel("Период обновления данных измерения:");
+    lbl = new QLabel("Период обновления данных измерения, сек:");
     hlyout->addWidget(lbl);
-    QSpinBox *spb = new QSpinBox;
-    spb->setMinimum(500);
-    spb->setMaximum(5000);
-    spb->setSingleStep(250);
-    spb->setValue(ANMEASINT);
-    connect(spb,SIGNAL(valueChanged(int)),this,SLOT(SetTimerPeriod(int)));
-    hlyout->addWidget(spb);
+    QRadioButton *rb = new QRadioButton;
+    rb->setObjectName("500");
+    rb->setText("0,5");
+    connect(rb,SIGNAL(clicked()),this,SLOT(SetTimerPeriod()));
+    hlyout->addWidget(rb);
+    rb = new QRadioButton;
+    rb->setObjectName("2000");
+    rb->setText("2");
+    rb->setChecked(true);
+    connect(rb,SIGNAL(clicked()),this,SLOT(SetTimerPeriod()));
+    hlyout->addWidget(rb);
+    rb = new QRadioButton;
+    rb->setObjectName("10000");
+    rb->setText("10");
+    connect(rb,SIGNAL(clicked()),this,SLOT(SetTimerPeriod()));
+    hlyout->addWidget(rb);
+    lyout->addLayout(hlyout);
 
     pb = new QPushButton("Запустить чтение аналоговых сигналов");
+    pb->setObjectName("pbmeasurements");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurements()));
     if (pc.Emul)
         pb->setEnabled(false);
     lyout->addWidget(pb);
     pb = new QPushButton("Запустить чтение аналоговых сигналов в файл");
+    pb->setObjectName("pbfilemeasurements");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurementsToFile()));
     if (pc.Emul)
         pb->setEnabled(false);
@@ -534,22 +550,26 @@ void e_tunedialog::SetupUI()
 
 void e_tunedialog::StartTune()
 {
+    SetTunePbEnabled(false);
     bool res=true;
     Cancelled = false;
-    WaitNSeconds(15);
     StopAnalogMeasurements(); // останавливаем текущие измерения, чтобы не мешали процессу
     StopMip(); // останавливаем измерения МИП
     MsgClear(); // очистка экрана с сообщениями
 
     if (!SaveWorkConfig())
     {
+        SetTunePbEnabled(true);
         ETUNEWARN;
         return;
     }
     // показываем диалог с выбором метода контроля
     ShowControlChooseDialog();
     if (Cancelled)
+    {
+        SetTunePbEnabled(true);
         return;
+    }
     // показываем диалог со схемой подключения
     Show1PhaseScheme();
     if (Cancelled)
@@ -557,13 +577,18 @@ void e_tunedialog::StartTune()
     // показываем диалог с требованием установки необходимых сигналов на РЕТОМ
     Show1RetomDialog(60, 1);
     if (Cancelled)
+    {
+        SetTunePbEnabled(true);
         return;
+    }
+    WaitNSeconds(15);
     // 7.2.3. проверка связи РЕТОМ и МИП
     if (TuneControlType == TUNEMIP)
     {
         res = Start7_2_3();
         if (!res)
         {
+            SetTunePbEnabled(true);
             ETUNEWARN;
             return;
         }
@@ -576,6 +601,7 @@ void e_tunedialog::StartTune()
         res = Start7_3_1(false);
     if (!res)
     {
+        SetTunePbEnabled(true);
         ETUNEWARN;
         return;
     }
@@ -586,7 +612,10 @@ void e_tunedialog::StartTune()
     // 7.3.2. получение аналоговых сигналов
     res = Start7_3_2(MSG_7_3_2);
     if (!res)
+    {
+        SetTunePbEnabled(true);
         return;
+    }
     // сохраняем значения по п. 7.3.2 для выполнения п. 7.3.6
     for (int i=0; i<6; i++)
         IUefNat_filt_old[i] = Bda_block.IUefNat_filt[i];
@@ -595,6 +624,7 @@ void e_tunedialog::StartTune()
     res = Start7_3_3();
     if (!res)
     {
+        SetTunePbEnabled(true);
         ETUNEWARN;
         return;
     }
@@ -604,6 +634,7 @@ void e_tunedialog::StartTune()
     if (!res)
     {
         ETUNEWARN;
+        SetTunePbEnabled(true);
         return;
     }
 
@@ -612,12 +643,17 @@ void e_tunedialog::StartTune()
 
     Show3PhaseScheme();
     if (Cancelled)
+    {
+        SetTunePbEnabled(true);
         return;
+    }
 
     // 7.3.6.1. получение аналоговых данных
+    WaitNSeconds(15);
     res = Start7_3_2(MSG_7_3_6_1);
     if (!res)
     {
+        SetTunePbEnabled(true);
         ETUNEWARN;
         return;
     }
@@ -630,18 +666,23 @@ void e_tunedialog::StartTune()
 
 void e_tunedialog::StartTune3p()
 {
+    SetTunePbEnabled(false);
     Cancelled = false;
     StopAnalogMeasurements(); // останавливаем текущие измерения, чтобы не мешали процессу
     StopMip(); // останавливаем измерения МИП
     MsgClear(); // очистка экрана с сообщениями
     if (!SaveWorkConfig())
     {
+        SetTunePbEnabled(true);
         ETUNEWARN;
         return;
     }
     ShowControlChooseDialog();
     if (Cancelled)
+    {
+        SetTunePbEnabled(true);
         return;
+    }
     int res = true;
     // 7.3.1. получение настроечных коэффициентов
     if (pc.ModuleBsi.Hth & HTH_REGPARS) // нет настроечных коэффициентов в памяти модуля
@@ -650,6 +691,7 @@ void e_tunedialog::StartTune3p()
         res = Start7_3_1(false);
     if (!res)
     {
+        SetTunePbEnabled(true);
         ETUNEWARN;
         return;
     }
@@ -659,7 +701,10 @@ void e_tunedialog::StartTune3p()
 
     Show3PhaseScheme();
     if (Cancelled)
+    {
+        SetTunePbEnabled(true);
         return;
+    }
 
     WaitNSeconds(15);
 
@@ -667,6 +712,7 @@ void e_tunedialog::StartTune3p()
     res = Start7_3_2(MSG_7_3_6_1);
     if (!res)
     {
+        SetTunePbEnabled(true);
         ETUNEWARN;
         return;
     }
@@ -685,6 +731,7 @@ void e_tunedialog::Tune3p()
         if (!res)
         {
             ETUNEWARN;
+            SetTunePbEnabled(true);
             LoadWorkConfig();
             return;
         }
@@ -695,6 +742,7 @@ void e_tunedialog::Tune3p()
         res = Start7_3_7_2();
         if (!res)
         {
+            SetTunePbEnabled(true);
             ETUNEWARN;
             LoadWorkConfig();
             return;
@@ -703,6 +751,7 @@ void e_tunedialog::Tune3p()
     res = Start7_3_8();
     if (!res)
     {
+        SetTunePbEnabled(true);
         ETUNEWARN;
         LoadWorkConfig();
         return;
@@ -710,9 +759,28 @@ void e_tunedialog::Tune3p()
     res = Start7_3_9();
     if (res)
     {
+        SetTunePbEnabled(true);
         ETUNEINFO("Настройка проведена успешно!");
         OkMsgSetVisible(MSG_END);
     }
+}
+
+void e_tunedialog::SetTunePbEnabled(bool Enabled)
+{
+    QPushButton *pb = this->findChild<QPushButton *>("starttune1p");
+    if (pb == 0)
+    {
+        ETUNEDBG;
+        return;
+    }
+    pb->setEnabled(Enabled);
+    pb = this->findChild<QPushButton *>("starttune1p");
+    if (pb == 0)
+    {
+        ETUNEDBG;
+        return;
+    }
+    pb->setEnabled(Enabled);
 }
 
 void e_tunedialog::SetTuneManual()
@@ -988,17 +1056,17 @@ bool e_tunedialog::Start7_3_7_2()
 {
     // 1. установить в конфигурации токи i2nom в 1 А и перезагрузить модуль
     MsgSetVisible(MSG_7_3_7_2);
-    qDebug() << "2";
+//    qDebug() << "2";
     for (int i=0; i<6; i++)
         econf->Bci_block.inom2[i] = 1.0;
     // послать новые коэффициенты по току в конфигурацию
     cn->Send(CN_WF, &econf->Bci_block, sizeof(e_config::Bci), 2, econf->Config);
-    qDebug() << "3";
+//    qDebug() << "3";
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != CN_OK)
         return false;
-    qDebug() << "4";
+//    qDebug() << "4";
     // дать команду перехода на новую конфигурацию
     cn->Send(CN_Cnc);
     while (cn->Busy)
@@ -1166,7 +1234,7 @@ bool e_tunedialog::SaveWorkConfig()
     econf = new e_config;
 
     cn->Send(CN_GF,NULL,0,1,econf->Config);
-    qDebug() << "1";
+//    qDebug() << "1";
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -1335,9 +1403,9 @@ bool e_tunedialog::CheckTuneCoefs()
             return false;
         if (!IsWithinLimits(vl, ValuesToCheck[i], ThresholdsToCheck[i]))
         {
-            ETUNEINFO("Настроечные по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'g',4)+\
-                      ", должно быть: "+QString::number(ValuesToCheck[i],'g',4)+\
-                      " +/- "+QString::number(ThresholdsToCheck[i],'g',4));
+            ETUNEINFO("Настроечные по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'f',4)+\
+                      ", должно быть: "+QString::number(ValuesToCheck[i],'f',4)+\
+                      " +/- "+QString::number(ThresholdsToCheck[i],'f',4));
             res=false;
             lbl->setStyleSheet("QLabel {color: red};");
         }
@@ -1389,9 +1457,9 @@ bool e_tunedialog::CheckMip()
             return false;
         if (!IsWithinLimits(vl,ValuesToCheck[i],ThresholdsToCheck[i]))
         {
-            ETUNEINFO("Несовпадение МИП по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'g',4)+\
-                      ", должно быть: "+QString::number(ValuesToCheck[i],'g',4)+\
-                      " +/- "+QString::number(ThresholdsToCheck[i],'g',4));
+            ETUNEINFO("Несовпадение МИП по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'f',4)+\
+                      ", должно быть: "+QString::number(ValuesToCheck[i],'f',4)+\
+                      " +/- "+QString::number(ThresholdsToCheck[i],'f',4));
             return false;
         }
     }
@@ -1570,9 +1638,9 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
             return false;
         if (!IsWithinLimits(vl,ValuesToCheck[i],ThresholdsToCheck[i]))
         {
-            ETUNEINFO("Несовпадение по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'g',4)+\
-                      ", должно быть: "+QString::number(ValuesToCheck[i],'g',4)+\
-                      " +/- "+QString::number(ThresholdsToCheck[i],'g',4));
+            ETUNEINFO("Несовпадение по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'f',4)+\
+                      ", должно быть: "+QString::number(ValuesToCheck[i],'f',4)+\
+                      " +/- "+QString::number(ThresholdsToCheck[i],'f',4));
             return false;
         }
     }
@@ -1812,7 +1880,7 @@ void e_tunedialog::StartAnalogMeasurementsToFile()
         else
             xlsx->write(5,i+5,QVariant("U2 ф"+QString::number(i+10, 36)+", В"));
 
-        xlsx->write(5,i+8,QVariant("D ф"+QString::number(i+10, 36)+", град"));
+        xlsx->write(5,i+8,QVariant("Phi ф"+QString::number(i+10, 36)+", град"));
         xlsx->write(5,i+11,QVariant("Pf ф"+QString::number(i+10, 36)+", Вт"));
         xlsx->write(5,i+14,QVariant("Qf ф"+QString::number(i+10, 36)+", ВА"));
         xlsx->write(5,i+17,QVariant("Sf ф"+QString::number(i+10, 36)+", ВА"));
@@ -1820,6 +1888,14 @@ void e_tunedialog::StartAnalogMeasurementsToFile()
     xlsx->write(5,20,QVariant("f, Гц"));
     xlsx->write(5,21,QVariant("t, град"));
     WRow = 6;
+    QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
+    if (pb != 0)
+        pb->setEnabled(false);
+    pb = this->findChild<QPushButton *>("pbmeasurements");
+    if (pb != 0)
+        pb->setEnabled(false);
+    ElapsedTimeCounter = new QTime;
+    ElapsedTimeCounter->start();
     StartAnalogMeasurements();
 }
 
@@ -1835,8 +1911,18 @@ void e_tunedialog::StopAnalogMeasurements()
         if (xlsx)
         {
             xlsx->save();
+            ETUNEINFO("Файл создан успешно");
             delete xlsx;
         }
+        QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
+        if (pb != 0)
+        {
+            pb->setEnabled(true);
+            pb->setText("Запустить чтение аналоговых сигналов в файл");
+        }
+        pb = this->findChild<QPushButton *>("pbmeasurements");
+        if (pb != 0)
+            pb->setEnabled(true);
         XlsxWriting = false;
     }
     tmr->stop();
@@ -1857,6 +1943,13 @@ void e_tunedialog::ReadAnalogMeasurements()
     RefreshAnalogValues();
     if (XlsxWriting)
     {
+        QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
+        if (pb != 0)
+        {
+            int MSecs = ElapsedTimeCounter->elapsed();
+            QString TimeElapsed = QTime::fromMSecsSinceStartOfDay(MSecs).toString("hh:mm:ss");
+            pb->setText("Идёт запись: "+TimeElapsed);
+        }
         QXlsx::Format format;
         xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss")));
         for (int i=0; i<3; i++)
@@ -1870,7 +1963,8 @@ void e_tunedialog::ReadAnalogMeasurements()
             xlsx->write(WRow,i+5,Bda_block.IUeff_filtered[i+3],format);
 
             format.setNumberFormat("0.000");
-            xlsx->write(WRow,i+8,Bda_block.phi_next_f[i],format);
+            float Phi = (static_cast<float>(180)*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
+            xlsx->write(WRow,i+8,Phi,format);
             xlsx->write(WRow,i+11,Bda_block.Pf[i],format);
             xlsx->write(WRow,i+14,Bda_block.Qf[i],format);
             xlsx->write(WRow,i+17,Bda_block.Sf[i],format);
@@ -1916,12 +2010,12 @@ void e_tunedialog::MipData(Parse104::Signals104 &Signal)
     quint32 index = Signal.SigNum;
     if (index != -1)
     {
-        QLabel *lbl = this->findChild<QLabel *>("mip"+QString::number(index));
-        if (lbl != 0)
-            lbl->setText(QString::number(Signal.SigVal, 'g', Thresholds[index]));
-        MipDat[index] = Signal.SigVal;
         if ((index >= 11) && (index <= 13))
             MipDat[index] = -MipDat[index]; // у МИП-а знак угла отрицательный
+        QLabel *lbl = this->findChild<QLabel *>("mip"+QString::number(index));
+        if (lbl != 0)
+            lbl->setText(QString::number(Signal.SigVal, 'f', Thresholds[index]));
+        MipDat[index] = Signal.SigVal;
     }
 }
 
@@ -2181,12 +2275,18 @@ void e_tunedialog::SaveToFile()
     }
 }
 
-void e_tunedialog::SetTimerPeriod(int per)
+void e_tunedialog::SetTimerPeriod()
 {
+    bool TimerIsActive = false;
     if (tmr->isActive())
-        tmr->stop();
+        TimerIsActive = true;
+    bool ok;
+    int per = sender()->objectName().toInt(&ok);
+    if (!ok)
+        return;
+    tmr->stop();
     tmr->setInterval(per);
-    if (tmr->isActive())
+    if (TimerIsActive)
         tmr->start();
 }
 
@@ -2194,7 +2294,6 @@ void e_tunedialog::WaitNSeconds(int Seconds)
 {
     QTime tme;
     Seconds *= 1000;
-//    SecondsToEnd15SecondsInterval = Seconds-1;
     WaitWidget *w = new WaitWidget;
     QTimer *tmr = new QTimer;
     float RandInterval = (float)qrand()/RAND_MAX*1000.0;

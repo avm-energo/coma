@@ -4,11 +4,14 @@
 #include <QHBoxLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QRadioButton>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QSpinBox>
 #include <QCoreApplication>
+#include <QFileDialog>
+#include <QDateTime>
 #include "a_checkdialog.h"
 #include "../publicclass.h"
 #include "../canal.h"
@@ -19,12 +22,14 @@ a_checkdialog::a_checkdialog(QWidget *parent) :
     BdMeasurementsActive = BdaMeasurementsActive = false;
     timer = new QTimer;
     timer->setObjectName("timer");
-    timer->setInterval(1000);
+    timer->setInterval(1000); // per / 2
     OddTimeout = true;
+    XlsxWriting = false;
+    xlsx = 0;
+    ElapsedTimeCounter = 0;
     connect(timer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));
     timer->start();
     setAttribute(Qt::WA_DeleteOnClose);
-//    cn = new canal;
     for (int i = 0; i < 16; i++)
     {
         Bda_block.sin[i] = 0;
@@ -41,7 +46,10 @@ a_checkdialog::a_checkdialog(QWidget *parent) :
 void a_checkdialog::SetupUI()
 {
     int i;
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
+    QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
+    setStyleSheet(tmps);
+    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
+            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QWidget *cp1 = new QWidget;
     QWidget *cp2 = new QWidget;
     QWidget *cp3 = new QWidget;
@@ -62,7 +70,6 @@ void a_checkdialog::SetupUI()
     gb2lyout->addWidget(line,1);
     gb1lyout->addLayout(gb2lyout);
     gb2lyout = new QHBoxLayout;
-//    QGroupBox *gb = new QGroupBox("Тек. измерения, приведённые ко входу");
     for (i = 0; i < 16; i++)
     {
         lbl = new QLabel(QString::number(i)+":");
@@ -79,11 +86,6 @@ void a_checkdialog::SetupUI()
     }
     if (gb2lyout->count())
         gb1lyout->addLayout(gb2lyout);
-/*    gb->setLayout(gb1lyout);
-    lyout->addWidget(gb);
-
-    gb = new QGroupBox("Тек. измерения, приведённые ко входу (напряжения)");
-    gb1lyout = new QVBoxLayout; */
     gb2lyout = new QHBoxLayout;
     line = new QFrame;
     line->setFrameShape(QFrame::HLine);
@@ -109,11 +111,6 @@ void a_checkdialog::SetupUI()
     }
     if (gb2lyout->count())
         gb1lyout->addLayout(gb2lyout);
-/*    gb->setLayout(gb1lyout);
-    lyout->addWidget(gb);
-
-    gb = new QGroupBox("Тек. измерения в инж. единицах");
-    gb1lyout = new QVBoxLayout;*/
     gb2lyout = new QHBoxLayout;
     line = new QFrame;
     line->setFrameShape(QFrame::HLine);
@@ -140,11 +137,6 @@ void a_checkdialog::SetupUI()
     }
     if (gb2lyout->count())
         gb1lyout->addLayout(gb2lyout);
-/*    gb->setLayout(gb1lyout);
-    lyout->addWidget(gb);
-
-    gb = new QGroupBox("Текущие минимумы по каналам");
-    gb1lyout = new QVBoxLayout; */
     gb2lyout = new QHBoxLayout;
     line = new QFrame;
     line->setFrameShape(QFrame::HLine);
@@ -171,11 +163,6 @@ void a_checkdialog::SetupUI()
     }
     if (gb2lyout->count())
         gb1lyout->addLayout(gb2lyout);
-/*    gb->setLayout(gb1lyout);
-    lyout->addWidget(gb);
-
-    gb = new QGroupBox("Текущие максимумы по каналам");
-    gb1lyout = new QVBoxLayout; */
     gb2lyout = new QHBoxLayout;
     line = new QFrame;
     line->setFrameShape(QFrame::HLine);
@@ -202,8 +189,6 @@ void a_checkdialog::SetupUI()
     }
     if (gb2lyout->count())
         gb1lyout->addLayout(gb2lyout);
-/*    gb->setLayout(gb1lyout);
-    lyout->addWidget(gb); */
     lyout->addLayout(gb1lyout);
     lbl = new QLabel("Температура в кристалле:");
     gb2lyout = new QHBoxLayout;
@@ -214,16 +199,21 @@ void a_checkdialog::SetupUI()
     lbl->setObjectName("bdat");
     gb2lyout->addWidget(lbl);
     gb1lyout->addLayout(gb2lyout);
-    gb2lyout = new QHBoxLayout;
     QPushButton *pb = new QPushButton("Запустить измерения");
+    pb->setObjectName("pbmeasurements");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartMeasurements()));
     if (pc.Emul)
         pb->setEnabled(false);
-    gb2lyout->addWidget(pb);
+    gb1lyout->addWidget(pb);
+    pb = new QPushButton("Запустить измерения с записью в файл");
+    pb->setObjectName("pbfilemeasurements");
+    if (pc.Emul)
+        pb->setEnabled(false);
+    connect(pb,SIGNAL(clicked()),this,SLOT(StartMeasurementsWithFile()));
+    gb1lyout->addWidget(pb);
     pb = new QPushButton("Остановить измерения");
     connect(pb,SIGNAL(clicked()),this,SLOT(StopMeasurements()));
-    gb2lyout->addWidget(pb);
-    gb1lyout->addLayout(gb2lyout);
+    gb1lyout->addWidget(pb);
     lyout->addLayout(gb1lyout);
     cp2->setLayout(lyout);
 
@@ -263,15 +253,24 @@ void a_checkdialog::SetupUI()
 
     gb = new QGroupBox("Настройки");
     gb2lyout = new QHBoxLayout;
-    lbl = new QLabel("Период обновления данных измерения:");
+    lbl = new QLabel("Период обновления данных измерения, сек:");
     gb2lyout->addWidget(lbl);
-    QSpinBox *spb = new QSpinBox;
-    spb->setMinimum(500);
-    spb->setMaximum(5000);
-    spb->setSingleStep(250);
-    spb->setValue(2000);
-    connect(spb,SIGNAL(valueChanged(int)),this,SLOT(SetTimerPeriod(int)));
-    gb2lyout->addWidget(spb);
+    QRadioButton *rb = new QRadioButton;
+    rb->setObjectName("500");
+    rb->setText("0,5");
+    connect(rb,SIGNAL(clicked()),this,SLOT(SetTimerPeriod()));
+    gb2lyout->addWidget(rb);
+    rb = new QRadioButton;
+    rb->setObjectName("2000");
+    rb->setText("2");
+    rb->setChecked(true);
+    connect(rb,SIGNAL(clicked()),this,SLOT(SetTimerPeriod()));
+    gb2lyout->addWidget(rb);
+    rb = new QRadioButton;
+    rb->setObjectName("10000");
+    rb->setText("10");
+    connect(rb,SIGNAL(clicked()),this,SLOT(SetTimerPeriod()));
+    gb2lyout->addWidget(rb);
     gb->setLayout(gb2lyout);
     lyout->addWidget(gb);
 
@@ -373,6 +372,52 @@ void a_checkdialog::SetupUI()
     setLayout(lyout);
 }
 
+void a_checkdialog::StartMeasurementsWithFile()
+{
+    aconf = new a_config;
+    // читаем текущую конфигурацию
+    cn->Send(CN_GF,NULL,0,1,aconf->Config);
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result != CN_OK)
+    {
+        ACHECKER("Ошибка приёма данных конфигурации");
+        return;
+    }
+    QString Filename = QFileDialog::getSaveFileName(this,"Сохранить данные","","Excel files (*.xlsx)");
+    if (Filename == "")
+    {
+        ACHECKER("Не задано имя файла");
+        return; // !!! ошибка - не задано имя файла
+    }
+    XlsxWriting = true;
+    xlsx = new QXlsx::Document(Filename);
+    xlsx->write(1,1,QVariant("Модуль: "+pc.ModuleTypeString+" сер. ном. "+QString::number(pc.ModuleBsi.SerNum,10)));
+    xlsx->write(2,1,QVariant("Дата начала записи: "+QDateTime::currentDateTime().toString("dd-MM-yyyy")));
+    xlsx->write(3,1,QVariant("Время начала записи: "+QDateTime::currentDateTime().toString("hh:mm:ss")));
+    xlsx->write(5,1,QVariant("Дата и время отсчёта"));
+    for (int i=0; i<16; i++)
+    {
+        if (aconf->Bci_block.in_type[i] == INTYPEMA)
+            xlsx->write(5,i+3,"I"+QString::number(i)+", мА");
+        else if (aconf->Bci_block.in_type[i] == INTYPEV)
+            xlsx->write(5,i+3,"U"+QString::number(i)+", В");
+        else
+            continue;
+    }
+    xlsx->write(5,2,QVariant("t, град"));
+    WRow = 6;
+    QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
+    if (pb != 0)
+        pb->setEnabled(false);
+    pb = this->findChild<QPushButton *>("pbmeasurements");
+    if (pb != 0)
+        pb->setEnabled(false);
+    ElapsedTimeCounter = new QTime;
+    ElapsedTimeCounter->start();
+    StartMeasurements();
+}
+
 void a_checkdialog::StartMeasurements()
 {
     BdMeasurementsActive = true;
@@ -385,6 +430,25 @@ void a_checkdialog::StartBdaMeasurements()
 
 void a_checkdialog::StopMeasurements()
 {
+    if (XlsxWriting)
+    {
+        if (xlsx)
+        {
+            xlsx->save();
+            ACHECKINFO("Файл создан успешно");
+            delete xlsx;
+        }
+        QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
+        if (pb != 0)
+        {
+            pb->setEnabled(true);
+            pb->setText("Запустить измерения с записью в файл");
+        }
+        pb = this->findChild<QPushButton *>("pbmeasurements");
+        if (pb != 0)
+            pb->setEnabled(true);
+        XlsxWriting = false;
+    }
     BdMeasurementsActive = false;
 }
 
@@ -430,11 +494,19 @@ void a_checkdialog::RefreshBda()
     }
 }
 
-void a_checkdialog::SetTimerPeriod(int per)
+void a_checkdialog::SetTimerPeriod()
 {
+    bool TimerIsActive = false;
+    if (timer->isActive())
+        TimerIsActive = true;
+    bool ok;
+    int per = sender()->objectName().toInt(&ok);
+    if (!ok)
+        return;
     timer->stop();
     timer->setInterval(per / 2); // /2, т.к. измерения проводятся за два раза - Bd и Bda
-    timer->start();
+    if (TimerIsActive)
+        timer->start();
 }
 
 void a_checkdialog::CheckLEDOn()
@@ -480,6 +552,31 @@ void a_checkdialog::TimerTimeout()
             QCoreApplication::processEvents(QEventLoop::AllEvents);
         if (cn->result == CN_OK)
             RefreshBd();
+        if (XlsxWriting)
+        {
+            QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
+            if (pb != 0)
+            {
+                int MSecs = ElapsedTimeCounter->elapsed();
+                QString TimeElapsed = QTime::fromMSecsSinceStartOfDay(MSecs).toString("hh:mm:ss");
+                pb->setText("Идёт запись: "+TimeElapsed);
+            }
+            QXlsx::Format format;
+            format.setNumberFormat("0.0000");
+            xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss")));
+            for (int i=0; i<16; i++)
+            {
+                if (aconf->Bci_block.in_type[i] == INTYPEMA)
+                    xlsx->write(WRow,i+3,Bd_block.inI[i],format);
+                else if (aconf->Bci_block.in_type[i] == INTYPEV)
+                    xlsx->write(WRow,i+3,Bd_block.inU[i],format);
+                else
+                    continue;
+            }
+            xlsx->write(WRow,2,Bd_block.at,format);
+            WRow++;
+
+        }
     }
     if ((BdaMeasurementsActive) && (!OddTimeout)) // все остальные - на втором
     {

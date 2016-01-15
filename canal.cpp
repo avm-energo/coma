@@ -1,6 +1,6 @@
 #include "canal.h"
 
-#include <QtDebug>
+//#include <QtDebug>
 #include <QDialog>
 #include <QLabel>
 #include <QVBoxLayout>
@@ -70,7 +70,7 @@ void canal::InitiateSend()
         tmpba.append(cmd);
         tmpba.append(~cmd);
         tmpba.append(fnum);
-        qDebug() << "cnGf_1";
+//        qDebug() << "cnGf_1";
         break;
     }
     case CN_GBosc: // запрос осциллограммы
@@ -84,7 +84,7 @@ void canal::InitiateSend()
     }
     case CN_WF: // запись файла
     {
-        qDebug() << "cn1";
+//        qDebug() << "cn1";
         tmpba.append(CN_Start);
         tmpba.append(cmd);
         tmpba.append(~cmd);
@@ -93,7 +93,7 @@ void canal::InitiateSend()
         if (DR == NULL)
             Finish(CN_NULLDATAERROR);
         pc.StoreDataMem(&(tmpba.data()[7]), DR);
-        qDebug() << "cn1_5";
+//        qDebug() << "cn1_5";
         DLength = static_cast<quint8>(tmpba.at(9))*65536;
         DLength += static_cast<quint8>(tmpba.at(8))*256;
         DLength += static_cast<quint8>(tmpba.at(7));
@@ -102,14 +102,14 @@ void canal::InitiateSend()
         quint32 tmpi2 = tmpba.data()[5] = (DLength - tmpi1*65536)/256;
         tmpba.data()[6] = DLength - tmpi1*65536 - tmpi2*256;
         tmpba.resize(DLength+7);
-        qDebug() << "cn1_7";
+//        qDebug() << "cn1_7";
         SetWR(tmpba,7); // 7 - длина заголовка
         if (SegLeft)
         {
             tmpba.truncate(512+7);
             WriteData->remove(0,512+7);
         }
-        qDebug() << "cn1_9";
+//        qDebug() << "cn1_9";
 
         break;
     }
@@ -117,7 +117,7 @@ void canal::InitiateSend()
     case CN_Wsn:
     case CN_WHv:
     {
-        qDebug() << "cnWsn_1";
+//        qDebug() << "cnWsn_1";
         tmpba = QByteArray (QByteArray::fromRawData((const char *)outdata, outdatasize)); // 10000 - предположительная длина блока
         DLength = outdatasize;
         quint32 tmpi1 = (DLength/65536);
@@ -134,7 +134,7 @@ void canal::InitiateSend()
             tmpba.truncate(512+7);
             WriteData->remove(0,512+7);
         }
-        qDebug() << "cnWsn_2";
+//        qDebug() << "cnWsn_2";
         break;
     }
     default:
@@ -219,7 +219,7 @@ void canal::GetSomeData(QByteArray ba)
         {
             if (RDSize<5) // ещё не пришла длина, ждём-с
                 return;
-            qDebug() << "cnGf_2";
+//            qDebug() << "cnGf_2";
             if ((ReadData->at(0) != CN_MStart) || (ReadData->at(1) != fnum)) // если первая не < и вторая - не необходимый нам номер файла
             {
                 Finish(CN_RCVDATAERROR);
@@ -227,7 +227,7 @@ void canal::GetSomeData(QByteArray ba)
             }
             SetRDLength(2);
             bStep++;
-            qDebug() << "cnGf_3";
+//            qDebug() << "cnGf_3";
             break;
         }
         case CN_WF:
@@ -291,7 +291,7 @@ void canal::GetSomeData(QByteArray ba)
         }
         case CN_GF:
         {
-            qDebug() << "cnGf_4";
+//            qDebug() << "cnGf_4";
             if (!RDCheckForNextSegment())
                 return;
             if (RDSize < RDLength)
@@ -305,7 +305,7 @@ void canal::GetSomeData(QByteArray ba)
             ReadData->remove(0, 5); // убираем заголовок с <, номером файла и длиной
             RDSize -= 5;
             res = pc.RestoreDataMem(ReadData->data(), RDSize, DR);
-            qDebug() << "cnGf_5";
+//            qDebug() << "cnGf_5";
             if (!res)
             {
                 if (LongBlock)
@@ -333,7 +333,7 @@ void canal::GetSomeData(QByteArray ba)
             }
             ReadData->remove(0, 4); // убираем заголовок с < и длиной
             RDSize -= 4;
-            qDebug() << RDSize;
+//            qDebug() << RDSize;
             memcpy(outdata,ReadData->data(),RDSize);
             if (LongBlock)
                 SendOk();
@@ -509,7 +509,7 @@ void canal::Finish(int ernum)
     result = ernum;
     Busy = false;
     emit SendEnd();
-    qDebug() << "Finish";
+//    qDebug() << "Finish";
 }
 
 void canal::Connect()

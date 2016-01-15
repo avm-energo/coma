@@ -3,9 +3,15 @@
 
 #include <QDialog>
 #include <QTimer>
-//#include "canal.h"
+#include <QTime>
+#include "a_config.h"
+#include "../publicclass.h"
+#include <QtXlsx/xlsxdocument.h>
 
 #define ACHECKNUMPOINTS  64 // количество точек, по которым выдаются значения в блоке Bda
+
+#define ACHECKER(a)       ERMSG(publicclass::ER_ACHECK,__LINE__,a)
+#define ACHECKINFO(a)     INFOMSG(publicclass::ER_ACHECK,__LINE__,a)
 
 class a_checkdialog : public QDialog
 {
@@ -41,8 +47,13 @@ private:
     Bd Bd_block;
     Bda Bda_block;
     Bip Bip_block;
+    a_config *aconf;
     bool BdMeasurementsActive, BdaMeasurementsActive, OddTimeout;
     QTimer *timer;
+    bool XlsxWriting;
+    QXlsx::Document *xlsx;
+    int WRow;
+    QTime *ElapsedTimeCounter;
 
     void SetupUI();
     void RefreshBd();
@@ -51,10 +62,11 @@ private:
 
 private slots:
     void StartMeasurements();
+    void StartMeasurementsWithFile();
     void StartBdaMeasurements();
     void StopMeasurements();
     void StopBdaMeasurements();
-    void SetTimerPeriod(int);
+    void SetTimerPeriod();
     void CheckLEDOn();
     void CheckLEDOff();
     void GetIP();

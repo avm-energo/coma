@@ -27,7 +27,6 @@
 Coma::Coma(QWidget *parent)
     : QMainWindow(parent)
 {
-    cn = new canal;
     ERTimer = new QTimer;
     ERTimer->setInterval(pc.ErrWindowDelay*1000);
     connect(ERTimer,SIGNAL(timeout()),this,SLOT(HideErrorProtocol()));
@@ -40,7 +39,6 @@ Coma::Coma(QWidget *parent)
     connect(ErrorProtocolUpdateTimer,SIGNAL(timeout()),this,SLOT(UpdateErrorProtocol()));
     ErrorProtocolUpdateTimer->start();
     ReconTry = 0;
-//    InitiateHth();
     setWindowTitle(PROGNAME);
     QString tmps = "QMainWindow {background-color: "+QString(MAINWINCLR)+";}";
     setStyleSheet(tmps);
@@ -212,23 +210,9 @@ Coma::Coma(QWidget *parent)
     ERHide = true;
 }
 
-void Coma::closeEvent(QCloseEvent *e)
-{
-    if (cn)
-    {
-        QThread *CanalThread = cn->thread();
-        if (CanalThread->isRunning())
-        {
-            CanalThread->quit();
-            CanalThread->wait(1000);
-        }
-    }
-    e->accept();
-}
-
 Coma::~Coma()
 {
-    QSettings *sets = new QSettings ("EvelSoft","Coma");
+    QSettings *sets = new QSettings ("EvelSoft","COMA");
     sets->setValue("mip/asdu",pc.MIPASDU);
     sets->setValue("mip/ip",pc.MIPIP);
     sets->setValue("Port", pc.Port);
@@ -245,22 +229,6 @@ void Coma::AddLabelAndLineedit(QVBoxLayout *lyout, QString caption, QString lena
     le->setEnabled(false);
     hlyout->addWidget(le);
     lyout->addLayout(hlyout);
-}
-
-void Coma::InitiateHth()
-{
-/*    Hth[0] = "!OK";
-    Hth[1] = "FL";
-    Hth[2] = "TUPP";
-    Hth[3] = "REL";
-    Hth[4] = "1PPS";
-    Hth[5] = "ADC";
-    Hth[6] = "REG";
-    Hth[7] = "CONF";
-    Hth[8] = "LS";
-    Hth[9] = "FNC";
-    for (int i = 10; i < 32; i++)
-        Hth[i] = ""; */
 }
 
 void Coma::Connect()
@@ -299,6 +267,7 @@ void Coma::Connect()
 
 void Coma::Next()
 {
+    cn = new canal;
     QThread *CanalThread = new QThread(this);
     cn->moveToThread(CanalThread);
     connect(CanalThread, &QThread::finished, cn, &canal::deleteLater);
@@ -553,7 +522,15 @@ void Coma::AllIsOk()
 void Coma::Disconnect()
 {
     if (!pc.Emul)
+    {
         cn->Disconnect();
+        QThread *CanalThread = cn->thread();
+        if (CanalThread->isRunning())
+        {
+            CanalThread->quit();
+            CanalThread->wait(1000);
+        }
+    }
     FillBsi("",true);
     DialogsAreReadyAlready = false;
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");

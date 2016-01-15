@@ -73,6 +73,7 @@ private:
     QXlsx::Document *xlsx;
     bool XlsxWriting;
     int WRow;
+    QTime *ElapsedTimeCounter;
 
     struct Bac
     {
@@ -173,6 +174,7 @@ private:
     void WaitNSeconds(int SecondsToWait);
     bool SaveWorkConfig();
     bool LoadWorkConfig();
+    void SetTunePbEnabled(bool Enabled);
 
 private slots:
     void StartTune();
@@ -190,7 +192,7 @@ private slots:
     void SetTuneMip();
     void SetTuneRetom();
     void SetTuneManual();
-    void SetTimerPeriod(int per);
+    void SetTimerPeriod();
     void StartAnalogMeasurementsToFile();
     void StartAnalogMeasurements();
     void StopAnalogMeasurements();

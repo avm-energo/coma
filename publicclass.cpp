@@ -209,7 +209,7 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
   if (pos > memsize)
   {
       SetErMsg(CN_S2SIZEERROR); // выход за границу принятых байт
-      return 1;
+      return CN_S2SIZEERROR;
   }
   memcpy(&dh,m,tmpi);
   m+=tmpi;
@@ -218,7 +218,7 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
   if (dh.crc32!=crc)
   {
       SetErMsg(CN_S2CRCERROR); // выход за границу принятых байт
-      return 1;
+      return CN_S2CRCERROR;
   }
   for(;;)
   {
@@ -227,7 +227,7 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       if (pos > memsize)
       {
           SetErMsg(CN_S2SIZEERROR); // выход за границу принятых байт
-          return 1;
+          return CN_S2SIZEERROR;
       }
       memcpy(&R,m,tmpi);
       sz+=tmpi;
@@ -242,7 +242,7 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
           if (pos > memsize)
           {
               SetErMsg(CN_S2SIZEERROR); // выход за границу принятых байт
-              return 1;
+              return CN_S2SIZEERROR;
           }
           m += tmpi;
           sz += tmpi;
@@ -252,14 +252,14 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       if((r->data_type!=R.data_type) || (r->elem_size!=R.elem_size) || (r->num_elem!=R.num_elem)) //несовпадения описания прочитанного элемента с ожидаемым
       {
           SetErMsg(CN_S2DESCERROR); // несовпадение описаний одного и того же блока
-          return 1;
+          return CN_S2DESCERROR;
       }
       tmpi = r->elem_size*r->num_elem;
       pos += tmpi;
       if (pos > memsize)
       {
           SetErMsg(CN_S2SIZEERROR); // выход за границу принятых байт
-          return 1;
+          return CN_S2SIZEERROR;
       }
       memcpy(r->thedata,m,tmpi);
       sz += tmpi;
@@ -268,12 +268,12 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
   if(dh.size!=sz)
   {
       SetErMsg(CN_S2DHSZERROR); // ошибка длины
-      return 1;
+      return CN_S2DHSZERROR;
   }
   if (NoIDs)
   {
       SetErMsg(CN_NOIDS); // не найдено ни одного ИД
-      return 1;
+      return CN_NOIDS;
   }
   return 0;
 }

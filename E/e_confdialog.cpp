@@ -73,7 +73,10 @@ void e_confdialog::GetBci()
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
+    {
         FillConfData();
+        ECONFINFO("Прочитано успешно");
+    }
 }
 
 void e_confdialog::FillConfData()
@@ -852,7 +855,7 @@ void e_confdialog::WriteConfDataToModule()
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
-        QMessageBox::information(this,"Успешно!","Операция проведена успешно!");
+        ECONFINFO("Операция проведена успешно!");
 }
 
 void e_confdialog::SetNewConf()

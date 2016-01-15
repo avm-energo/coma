@@ -101,7 +101,6 @@ private:
     void InitiateWriteDataToPort(QByteArray ba);
     QString ByteToHex(quint8);
     void StopThreads();
-    void InitiateHth();
     void FillBsi(QString MType, bool clear=false);
     void AddLabelAndLineedit (QVBoxLayout *lyout, QString caption, QString lename);
     void ShowOrHideSlideSW();
@@ -142,8 +141,6 @@ private slots:
     void SetProgressBar(quint32);
 
 protected:
-    void closeEvent(QCloseEvent *e);
-//    void mouseMoveEvent(QMouseEvent *e);
     void resizeEvent(QResizeEvent *e);
 };
 

@@ -54,21 +54,22 @@
 #define CN_GF      0x25 // запрос файла конфигурации
 #define CN_GNosc   0x26 // запрос информации об осциллограммах
 #define CN_GBosc   0x27 // запрос осциллограммы
-#define CN_GBev    0x28 // запрос банка событий
+#define CN_GBev    0x28 // запрос банка текущих событий
 #define CN_GBdi    0x29 // запрос текущих данных, приведённых ко входу
 #define CN_Wac     0x31 // запись настроечных коэффициентов
 #define CN_WF      0x32 // запись файла конфигурации
-#define CN_Wsn     0x33 // запись серийного номера модуля
-#define CN_WHv     0x34 // запись версии аппаратуры модуля
-#define CN_OscEr   0x35 // стирание всех осциллограмм из Flash-памяти
-#define CN_OscPg   0x36 // запрос оставшегося для стирания по команде OscEr числа страниц
 #define CN_Start   0x3e // начало посылки
 #define CN_MStart  0x3c // начало посылки модуля
 #define CN_Cln     0x41 // зажечь светодиод
 #define CN_Clf     0x42 // погасить светодиод
 #define CN_Gip     0x43 // запрос IP-адреса
 #define CN_Cps     0x44 // контроль 1PPS
-#define CN_Cnc     0x51 // команда перехода на новую конфигурацию
+#define CN_OscEr   0x45 // стирание всех осциллограмм из Flash-памяти
+#define CN_OscPg   0x46 // запрос оставшегося для стирания по команде OscEr числа страниц
+#define CN_Wsn     0x47 // запись серийного номера модуля
+#define CN_WHv     0x48 // запись версии аппаратуры модуля
+#define CN_Cnc     0x49 // команда перехода на новую конфигурацию
+#define CN_GBte    0x4A // запрос блока технологических событий
 #define CN_SegOk   0x55 // ответ "сегмент принят в порядке"
 #define CN_ResErr  0x0f // ответ "ошибка"
 #define CN_Unk     0xff // неизвестная команда
@@ -253,7 +254,8 @@ public:
         ER_ATUNE,
         ER_ACONF,
         ER_OSC,
-        ER_PUB
+        ER_PUB,
+        ER_ACHECK
     };
 
     static QMap<int, QString> ermsgs()
@@ -268,6 +270,7 @@ public:
         map.insert(ER_ACONF, "Конф. A");
         map.insert(ER_OSC, "Осциллограммы");
         map.insert(ER_PUB, "Основное");
+        map.insert(ER_ACHECK, "Пров. А");
         return map;
     }
 
