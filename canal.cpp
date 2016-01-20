@@ -24,7 +24,7 @@ canal::canal(QObject *parent) : QObject(parent)
     OscTimer->setInterval(CN_OSCT);
     OscTimer->setSingleShot(false);
     connect(OscTimer,SIGNAL(timeout()),this,SLOT(OscTimerTimeout()));
-//    connect(TTimer, SIGNAL(timeout()),this,SLOT(Timeout())); // для отладки закомментарить
+    connect(TTimer, SIGNAL(timeout()),this,SLOT(Timeout())); // для отладки закомментарить
     SThreadStarted = false;
 }
 

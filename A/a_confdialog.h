@@ -11,6 +11,10 @@
 #define RT_V           1
 #define RT_M           2
 
+#define RT_mAText   "Предуст. мА"
+#define RT_VText    "Предуст. В"
+#define RT_MText    "Произвольный"
+
 #define RT_mA420    0
 #define RT_mA020    1
 #define RT_mA05     2
@@ -33,11 +37,12 @@ public:
 
 private:
     QByteArray confba;
-    QGridLayout *ConfLayout;
     a_config *aconf;
+    bool ChTypModelIsFilling;
 
     void FillConfData();
     void SetRange(int Range, int ChNum);
+    void SetRangeCB(int ChNum, int ChTypCB);
     bool CheckConf();
     void SetMinMax(int i);
     void SetRangeWidget(int ChNum, int RangeType);
@@ -46,7 +51,6 @@ private:
 
 signals:
     void BsiIsNeedToBeAcquiredAndChecked();
-    void ChannelDisabled(int, bool);
 
 public slots:
 
@@ -54,14 +58,7 @@ private slots:
     void SetChTypData();
     void SetChOsc(int);
     void SetChOscSrc(int);
-    void SetInMin();
-    void SetInMax();
-    void SetInVMin();
-    void SetInVMax();
-    void SetMinMin();
-    void SetMin();
-    void SetMax();
-    void SetMaxMax();
+    void SetIn();
     void SetRangemA();
     void SetRangeV();
     void Set104();
@@ -75,7 +72,7 @@ private slots:
     void SaveConf();
     void LoadConf();
     void DisableChannel(int ChNum, bool Disable);
-    void SetRangeWidgetSlot(int RangeType);
+    void SetRangeWidgetSlot(QString RangeType);
 };
 
 #endif // A_CONFDIALOG_H

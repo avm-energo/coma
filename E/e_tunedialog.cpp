@@ -1164,6 +1164,7 @@ bool e_tunedialog::Start7_3_8()
         return false;
     }
     // переходим на новую конфигурацию
+    WaitNSeconds(5);
     cn->Send(CN_Cnc);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -1198,6 +1199,7 @@ bool e_tunedialog::Start7_3_9()
             return false;
         }
         // переходим на прежнюю конфигурацию
+        WaitNSeconds(5);
         cn->Send(CN_Cnc);
         while (cn->Busy)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -1792,18 +1794,29 @@ void e_tunedialog::RefreshAnalogValues()
     if (lbl == 0)
         return;
     lbl->setText(QString::number(Bda_block.Frequency, 'f', 4));
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 3; i++)
     {
         lbl = this->findChild<QLabel *>("value"+QString::number(i+2));
         if (lbl == 0)
             return;
-        int Precision = (pc.ModuleBsi.MType1 == MTE_0T2N) ? 3 : 4;
+        int Precision = (pc.ModuleBsi.MType1 != MTE_2T0N) ? 3 : 4;
         lbl->setText(QString::number(Bda_block.IUefNat_filt[i], 'f', Precision));
+        lbl = this->findChild<QLabel *>("value"+QString::number(i+5));
+        if (lbl == 0)
+            return;
+        Precision = (pc.ModuleBsi.MType1 != MTE_0T2N) ? 4 : 3;
+        lbl->setText(QString::number(Bda_block.IUefNat_filt[i+3], 'f', Precision));
+
         lbl = this->findChild<QLabel *>("value"+QString::number(i+8));
         if (lbl == 0)
             return;
-        Precision = (pc.ModuleBsi.MType1 == MTE_2T0N) ? 4 : 3;
+        Precision = (pc.ModuleBsi.MType1 != MTE_2T0N) ? 3 : 4;
         lbl->setText(QString::number(Bda_block.IUeff_filtered[i], 'f', Precision));
+        lbl = this->findChild<QLabel *>("value"+QString::number(i+11));
+        if (lbl == 0)
+            return;
+        Precision = (pc.ModuleBsi.MType1 != MTE_0T2N) ? 4 : 3;
+        lbl->setText(QString::number(Bda_block.IUeff_filtered[i+3], 'f', Precision));
         lbl = this->findChild<QLabel *>("value"+QString::number(i+14));
         if (lbl == 0)
             return;
@@ -1947,11 +1960,11 @@ void e_tunedialog::ReadAnalogMeasurements()
         if (pb != 0)
         {
             int MSecs = ElapsedTimeCounter->elapsed();
-            QString TimeElapsed = QTime::fromMSecsSinceStartOfDay(MSecs).toString("hh:mm:ss");
+            QString TimeElapsed = QTime::fromMSecsSinceStartOfDay(MSecs).toString("hh:mm:ss.zzz");
             pb->setText("Идёт запись: "+TimeElapsed);
         }
         QXlsx::Format format;
-        xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss")));
+        xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz")));
         for (int i=0; i<3; i++)
         {
             QString Precision = (pc.ModuleBsi.MType1 != MTE_2T0N) ? "0.000" : "0.0000";

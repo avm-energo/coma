@@ -179,6 +179,7 @@
 #define ACONFYCLR   "#FFFFDD"
 //#define ACONFOCLR   "#FFCC99"
 #define ACONFOCLR   "#FFDDAA"
+#define ERRCLR      "#FF0000"
 
 #define FLOAT_THRESHOLD 0.1
 

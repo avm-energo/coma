@@ -276,7 +276,7 @@ void a_checkdialog::SetupUI()
 
     gb = new QGroupBox("Проверки");
     gb1lyout = new QVBoxLayout;
-    gb2lyout = new QHBoxLayout;
+ /*   gb2lyout = new QHBoxLayout;
     lbl = new QLabel("Проверка программно управляемого светодиода:");
     gb2lyout->addWidget(lbl);
     pb = new QPushButton("Включить светодиод");
@@ -289,7 +289,7 @@ void a_checkdialog::SetupUI()
     if (pc.Emul)
         pb->setEnabled(false);
     gb2lyout->addWidget(pb);
-    gb1lyout->addLayout(gb2lyout);
+    gb1lyout->addLayout(gb2lyout); */
 
     gb2lyout = new QHBoxLayout;
     lbl = new QLabel("Текущий IP-адрес:");
@@ -558,12 +558,12 @@ void a_checkdialog::TimerTimeout()
             if (pb != 0)
             {
                 int MSecs = ElapsedTimeCounter->elapsed();
-                QString TimeElapsed = QTime::fromMSecsSinceStartOfDay(MSecs).toString("hh:mm:ss");
+                QString TimeElapsed = QTime::fromMSecsSinceStartOfDay(MSecs).toString("hh:mm:ss.zzz");
                 pb->setText("Идёт запись: "+TimeElapsed);
             }
             QXlsx::Format format;
             format.setNumberFormat("0.0000");
-            xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss")));
+            xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz")));
             for (int i=0; i<16; i++)
             {
                 if (aconf->Bci_block.in_type[i] == INTYPEMA)
