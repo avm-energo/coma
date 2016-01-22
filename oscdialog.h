@@ -54,8 +54,6 @@ private slots:
     void GetOsc(QModelIndex);
     void ErMsg(int ermsg);
     void EraseOsc();
-    void SetProgressBar(quint32 cursize);
-    void SetProgressBarSize(quint32 size);
 };
 
 #endif // OSCDIALOG_H

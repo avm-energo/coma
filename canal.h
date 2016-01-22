@@ -45,7 +45,6 @@ signals:
     void SendEnd();
     void OscEraseSize(quint32);
     void OscEraseRemaining(quint32);
-    void OscEraseCompleted();
 
 public slots:
     void StopSThread();

@@ -13,6 +13,7 @@ canal::canal(QObject *parent) : QObject(parent)
     cmd = CN_Unk;
     ConnectedToPort = PortErrorDetected = false;
     ReadData = new QByteArray;
+    RDLength = 0;
     SegEnd = 0;
     SegLeft = 0;
     FirstRun = true;
@@ -179,7 +180,6 @@ void canal::GetSomeData(QByteArray ba)
         Finish(71 + ReadData->at(3));
         return;
     }
-    emit bytesreceived(RDSize); // сигнал для прогрессбара
     switch (bStep)
     {
     case 0: // первая порция
@@ -275,6 +275,7 @@ void canal::GetSomeData(QByteArray ba)
                 return;
             if (RDSize < RDLength)
                 return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
+            RDLength = 0; // обнуляем, чтобы не было лишних вызовов incomingdatalength
             if (outdatasize < DLength)
             {
                 SendErr();
@@ -296,6 +297,7 @@ void canal::GetSomeData(QByteArray ba)
                 return;
             if (RDSize < RDLength)
                 return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
+            RDLength = 0;
             if (DR == NULL)
             {
                 SendErr();
@@ -326,6 +328,7 @@ void canal::GetSomeData(QByteArray ba)
                 return;
             if (RDSize < RDLength)
                 return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
+            RDLength = 0;
             if (RDSize > (RDLength+4))
             {
                 SendErr();
@@ -369,8 +372,8 @@ void canal::GetSomeData(QByteArray ba)
             quint16 OscNumRemaining = static_cast<quint8>(ReadData->at(1))*256+static_cast<quint8>(ReadData->at(2));
             if (OscNumRemaining == 0)
             {
+                emit OscEraseRemaining(OscNum);
                 OscNum = 0;
-                emit OscEraseCompleted();
                 Finish(CN_OK);
                 OscTimer->stop();
                 break;
@@ -381,7 +384,7 @@ void canal::GetSomeData(QByteArray ba)
                 OscNum = OscNumRemaining; // максимальный диапазон для прогрессбара
             }
             else
-                emit OscEraseRemaining(OscNumRemaining);
+                emit OscEraseRemaining(OscNum - OscNumRemaining);
             break;
         }
         default:
@@ -418,6 +421,7 @@ void canal::SetRDLength(int startpos)
 bool canal::RDCheckForNextSegment()
 {
     quint32 RDSize = static_cast<quint32>(ReadData->size());
+    emit bytesreceived(RDSize); // сигнал для прогрессбара
     if ((RDSize >= SegEnd) && (SegLeft)) // если достигли конца текущего сегмента, и ещё есть, что принимать
     {
         SegLeft--;

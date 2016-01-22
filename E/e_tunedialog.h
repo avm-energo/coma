@@ -8,15 +8,12 @@
 #include <QLabel>
 #include "../iec104/iec104.h"
 #include "e_confdialog.h"
-#include <QtXlsx/xlsxdocument.h>
 
 #define TUNEFILELENGTH  256
 
 #define TUNEMIP 1
 #define TUNERET 2
 #define TUNEMAN 3
-
-#define ANMEASINT   2000
 
 #define ETUNEER(a)       ERMSG(publicclass::ER_ETUNE,__LINE__,a)
 #define ETUNEDBG         DBGMSG(publicclass::ER_ETUNE,__LINE__)
@@ -70,10 +67,6 @@ private:
     QTimer *tmr;
     int SecondsToEnd15SecondsInterval;
     QLabel *Label15Seconds;
-    QXlsx::Document *xlsx;
-    bool XlsxWriting;
-    int WRow;
-    QTime *ElapsedTimeCounter;
 
     struct Bac
     {
@@ -148,7 +141,6 @@ private:
     bool CheckAnalogValues(int ntest);
     bool CheckMip();
     bool IsWithinLimits(double number, double base, double threshold);
-    void RefreshAnalogValues();
     void ShowControlChooseDialog();
     void Show1PhaseScheme();
     void Show3PhaseScheme();
@@ -192,10 +184,6 @@ private slots:
     void SetTuneMip();
     void SetTuneRetom();
     void SetTuneManual();
-    void SetTimerPeriod();
-    void StartAnalogMeasurementsToFile();
-    void StartAnalogMeasurements();
-    void StopAnalogMeasurements();
     void ReadAnalogMeasurements();
     void SetDefCoefs();
     void SetExtData();

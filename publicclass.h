@@ -182,6 +182,7 @@
 #define ERRCLR      "#FF0000"
 
 #define FLOAT_THRESHOLD 0.1
+#define ANMEASINT   2000
 
 #include <QtSerialPort/QSerialPort>
 #include <QStringList>
@@ -256,7 +257,8 @@ public:
         ER_ACONF,
         ER_OSC,
         ER_PUB,
-        ER_ACHECK
+        ER_ACHECK,
+        ER_ECHECK
     };
 
     static QMap<int, QString> ermsgs()
@@ -272,6 +274,7 @@ public:
         map.insert(ER_OSC, "Осциллограммы");
         map.insert(ER_PUB, "Основное");
         map.insert(ER_ACHECK, "Пров. А");
+        map.insert(ER_ECHECK, "Пров. Э");
         return map;
     }
 
@@ -292,6 +295,7 @@ public:
     int ErrWindowDelay;
     bool ShowErrWindow;
     Bsi ModuleBsi;
+    QString PrbMessage;
 
     QList<ermsg> ermsgpool;
 

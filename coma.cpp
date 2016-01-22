@@ -170,6 +170,24 @@ Coma::Coma(QWidget *parent)
     MainTW->hide();
 
     lyout->addLayout(inlyout, 90);
+    lyout->addStretch(500);
+
+    QFrame *line = new QFrame;
+    line->setLineWidth(0);
+    line->setMidLineWidth(1);
+    line->setFrameStyle(QFrame::Sunken | QFrame::HLine);
+    lyout->addWidget(line);
+    inlyout = new QHBoxLayout;
+    QLabel *lbl = new QLabel;
+    lbl->setObjectName("prblbl");
+    inlyout->addWidget(lbl);
+    QProgressBar *prb = new QProgressBar;
+    prb->setObjectName("prbprb");
+    prb->setOrientation(Qt::Horizontal);
+    prb->setMinimumWidth(500);
+    inlyout->addWidget(prb);
+    lyout->addLayout(inlyout);
+
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
 
@@ -273,8 +291,12 @@ void Coma::Next()
     connect(CanalThread, &QThread::finished, cn, &canal::deleteLater);
     connect(CanalThread, &QThread::finished, CanalThread, &QThread::deleteLater);
 
-    pbh1 = connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
-    pbh2 = connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
+    pc.PrbMessage = "Загрузка данных...";
+    connect(cn,SIGNAL(OscEraseSize(quint32)),this,SLOT(SetProgressBarSize(quint32)));
+    connect(cn,SIGNAL(OscEraseRemaining(quint32)),this,SLOT(SetProgressBar(quint32)));
+    connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
+    connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
+//    connect(cn,SIGNAL(SendEnd()),this,SLOT(DisableProgressBar()));
     connect(cn,SIGNAL(gotsomedata(QByteArray *)),this,SLOT(ReadUpdateMainTE(QByteArray *)));
     connect(cn,SIGNAL(somedatawritten(QByteArray *)),this,SLOT(WriteUpdateMainTE(QByteArray *)));
     CanalThread->start();
@@ -590,14 +612,6 @@ void Coma::Exit()
 
 void Coma::EmulA()
 {
-/*    WaitWidget *w = new WaitWidget;
-    QTime tme;
-    w->SetMessage("УРА!!!");
-    w->Start();
-    tme.start();
-    while (tme.elapsed() < 5000)
-        qApp->processEvents();
-    w->Stop(); */
     if (pc.Emul) // если уже в режиме эмуляции, выход
         return;
     pc.ModuleBsi.MType = MT_A;
@@ -1109,31 +1123,42 @@ void Coma::HideErrorProtocol()
 
 void Coma::SetProgressBar(quint32 cursize)
 {
-    QProgressBar *prb = this->findChild<QProgressBar *>("oscprb");
+    QProgressBar *prb = this->findChild<QProgressBar *>("prbprb");
     if (prb != 0)
         prb->setValue(cursize);
+    QLabel *lbl = this->findChild<QLabel *>("prblbl");
+    if (lbl != 0)
+        lbl->setText(pc.PrbMessage + QString::number(cursize) + " из " + QString::number(PrbSize));
+    if (cursize >= PrbSize)
+        DisableProgressBar();
 }
 
 void Coma::SetProgressBarSize(quint32 size)
 {
-    QDialog *dlg = new QDialog(this);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    connect(cn,SIGNAL(SendEnd()),dlg,SLOT(close()));
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("Загрузка и обработка данных...");
-    lyout->addWidget(lbl,0,Qt::AlignTop);
-    QProgressBar *prb = new QProgressBar;
-    prb->setObjectName("oscprb");
-    prb->setOrientation(Qt::Horizontal);
-    prb->setMinimumWidth(500);
+    PrbSize = size;
+    QLabel *lbl = this->findChild<QLabel *>("prblbl");
+    QProgressBar *prb = this->findChild<QProgressBar *>("prbprb");
+    if ((prb == 0) || (lbl == 0))
+    {
+        MAINDBG;
+        return;
+    }
+    lbl->setText(pc.PrbMessage + QString::number(size));
     prb->setMinimum(0);
-    prb->setMaximum(size);
-    lyout->addWidget(prb);
-    dlg->setLayout(lyout);
-    if (!cn->Busy)
-        dlg->close();
-    else
-        dlg->setVisible(true);
-/*    if (!cn->Busy)
-        dlg->close(); */
+    prb->setMaximum(PrbSize);
+    lbl->setEnabled(true);
+    prb->setEnabled(true);
+}
+
+void Coma::DisableProgressBar()
+{
+    QLabel *lbl = this->findChild<QLabel *>("prblbl");
+    QProgressBar *prb = this->findChild<QProgressBar *>("prbprb");
+    if ((prb == 0) || (lbl == 0))
+    {
+        MAINDBG;
+        return;
+    }
+    prb->setEnabled(false);
+    lbl->setEnabled(false);
 }

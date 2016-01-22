@@ -47,6 +47,7 @@ private:
     QRect SWGeometry, ERGeometry;
     QTimer *ERTimer;
     QMetaObject::Connection pbh1, pbh2;
+    quint32 PrbSize;
 
     static QStringList Hth()
     {
@@ -139,6 +140,7 @@ private slots:
     void AcceptSettings();
     void SetProgressBarSize(quint32);
     void SetProgressBar(quint32);
+    void DisableProgressBar();
 
 protected:
     void resizeEvent(QResizeEvent *e);

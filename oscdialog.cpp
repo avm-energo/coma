@@ -39,7 +39,6 @@ void oscdialog::SetupUI()
         pb->setEnabled(false);
     lyout->addWidget(pb);
     lyout->addWidget(tv, 89);
-//    lyout->addStretch(1);
     pb = new QPushButton("Стереть все осциллограммы в памяти модуля");
     connect(pb,SIGNAL(clicked()),this,SLOT(EraseOsc()));
     if (pc.Emul)
@@ -216,24 +215,6 @@ void oscdialog::EndExtractOsc()
             OSCER("Не задано имя файла");
             return; // !!! ошибка - не задано имя файла
         }
-/*        QString OpenFileName;
-        switch(pc.MType1)
-        {
-        case MTE_0T2N:
-            OpenFileName = ":/e0t2n.xlsx";
-            break;
-        case MTE_1T1N:
-            OpenFileName = ":/e1t1n.xlsx";
-            break;
-        case MTE_2T0N:
-            OpenFileName = ":/e2t0n.xlsx";
-            break;
-        default:
-            OSCER("Некорректный подтип модуля");
-            return;
-            break;
-        }
-        QXlsx::Document xlsx(OpenFileName.toUtf8()); */
         QXlsx::Document xlsx(filename.toUtf8());
         float StartTime = 0; // нулевое смещение относительно начала записи осциллограммы
         xlsx.write(1,1,QVariant("Модуль: "+pc.ModuleTypeString));
@@ -287,7 +268,6 @@ void oscdialog::EndExtractOsc()
                 return; // !!! ошибка разбора формата С2
             }
         }
-//        xlsx.saveAs(filename.toUtf8());
         xlsx.save();
         QMessageBox::information(this,"Успешно!","Записано успешно!");
         break;
@@ -325,8 +305,7 @@ void oscdialog::ErMsg(int ermsg)
 
 void oscdialog::EraseOsc()
 {
-    QMetaObject::Connection handle1 = connect(cn,SIGNAL(OscEraseSize(quint32)),this,SLOT(SetProgressBarSize(quint32)));
-    QMetaObject::Connection handle2 = connect(cn,SIGNAL(OscEraseRemaining(quint32)),this,SLOT(SetProgressBar(quint32)));
+    pc.PrbMessage = "Стёрто записей: ";
     cn->Send(CN_OscEr);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -334,41 +313,4 @@ void oscdialog::EraseOsc()
         OSCINFO("Стёрто успешно");
     else
         OSCINFO("Ошибка при стирании");
-    disconnect(handle1);
-    disconnect(handle2);
-}
-
-void oscdialog::SetProgressBar(quint32 cursize)
-{
-    QProgressBar *prb = this->findChild<QProgressBar *>("oscprb");
-    if (prb != 0)
-        prb->setValue(cursize);
-    QLabel *lbl = this->findChild<QLabel *>("osclbl");
-    if (lbl != 0)
-        lbl->setText("Осталось стереть "+QString::number(cursize)+" записей...");
-}
-
-void oscdialog::SetProgressBarSize(quint32 size)
-{
-    QDialog *dlg = new QDialog(this);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    connect(cn,SIGNAL(SendEnd()),dlg,SLOT(close()));
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("Осталось стереть "+QString::number(size)+" записей...");
-    lbl->setObjectName("osclbl");
-    lyout->addWidget(lbl,0,Qt::AlignTop);
-    QProgressBar *prb = new QProgressBar;
-    prb->setObjectName("oscprb");
-    prb->setOrientation(Qt::Horizontal);
-    prb->setMinimumWidth(500);
-    prb->setMinimum(0);
-    prb->setMaximum(size);
-    lyout->addWidget(prb);
-    dlg->setLayout(lyout);
-    if (!cn->Busy)
-        dlg->close();
-    else
-        dlg->setVisible(true);
-/*    if (!cn->Busy)
-        dlg->close(); */
 }
