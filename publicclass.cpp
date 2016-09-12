@@ -81,6 +81,7 @@ unsigned long  _crc32_t[256]=
 publicclass::publicclass()
 {
     Emul = false;
+    ErMsgsOk = false;
     AMTypes.append("Z"); // фиктивный тип, типы начинаются с 1
     AMTypes.append("А");
     AMTypes.append("Р");
@@ -105,6 +106,7 @@ publicclass::publicclass()
     }
     else
     {
+        ErMsgsOk = true;
         QString tmpString;
         QTextStream streamfile(&file);
         streamfile.setCodec("WIN-1251");

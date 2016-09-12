@@ -81,9 +81,13 @@ void SerialThread::Error(QSerialPort::SerialPortError err)
     if (!err) // нет ошибок
         return;
     quint16 ernum = err + 50;
-    if (ernum < pc.errmsgs.size())
-        SERIALER(pc.errmsgs.at(ernum));
+    if (pc.ErMsgsOk)
+    {
+        if (ernum < pc.errmsgs.size())
+            SERIALER(pc.errmsgs.at(ernum));
+        else
+            SERIALER("Произошла неведомая фигня #"+QString::number(ernum,10));
+    }
     else
         SERIALER("Произошла неведомая фигня #"+QString::number(ernum,10));
-    SERIALER(pc.errmsgs.at(ernum));
 }

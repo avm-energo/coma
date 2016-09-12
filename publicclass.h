@@ -293,7 +293,7 @@ public:
     QString ModuleTypeString;
     bool Emul;
     int ErrWindowDelay;
-    bool ShowErrWindow;
+    bool ShowErrWindow, ErMsgsOk;
     Bsi ModuleBsi;
     QString PrbMessage;
 
