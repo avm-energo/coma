@@ -1,11 +1,14 @@
-#ifndef A_CONFDIALOG_H
-#define A_CONFDIALOG_H
+/* Файл предназначен для конфигурирования модулей аналоговых АВ-ТУК-2xхх, хх2x и последующих
+ */
+
+#ifndef CONFDIALOG_21_H
+#define CONFDIALOG_21_H
 
 #include <QDialog>
 #include <QGridLayout>
 
 #include "../publicclass.h"
-#include "a_config.h"
+#include "config21.h"
 
 #define RT_mA          0
 #define RT_V           1
@@ -18,7 +21,6 @@
 #define RT_mA420    0
 #define RT_mA020    1
 #define RT_mA05     2
-
 #define RT_V05      3
 #define RT_V_55     4
 
@@ -27,17 +29,17 @@
 #define ACONFWARN        WARNMSG(publicclass::ER_ACONF,__LINE__)
 #define ACONFINFO(a)     INFOMSG(publicclass::ER_ACONF,__LINE__,a)
 
-class a_confdialog : public QDialog
+class confdialog_2x : public QDialog
 {
     Q_OBJECT
 public:
-    explicit a_confdialog(QWidget *parent = 0);
+    explicit confdialog_2x(QWidget *parent = 0);
 
     bool NoProperConf; // в модуле нет нормальной конфигурации
 
 private:
     QByteArray confba;
-    a_config *aconf;
+    config_21 *aconf;
     bool ChTypModelIsFilling;
 
     void FillConfData();
@@ -75,4 +77,4 @@ private slots:
     void SetRangeWidgetSlot(QString RangeType);
 };
 
-#endif // A_CONFDIALOG_H
+#endif // CONFDIALOG_21_H

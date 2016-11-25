@@ -2,8 +2,6 @@
 #define E_CONFIG_H
 
 // Описание блока Bci
-#define EBCI_MTYPE       1
-#define EBCI_MTYPE1      2
 #define EBCI_EQTYPE      101
 #define EBCI_NPOINTS     102
 #define EBCI_NFILTR      103
@@ -16,28 +14,20 @@
 #define EBCI_DUOSC       110
 #define EBCI_DIOSC       111
 #define EBCI_DUIMIN      112
-#define EBCI_CTYPE       3
-#define EBCI_ABS_104     4
-#define EBCI_CYCLE_104   5
-#define EBCI_T1_104      6
-#define EBCI_T2_104      7
-#define EBCI_T3_104      8
-#define EBCI_K_104       9
-#define EBCI_W_104       10
 #define ECONF_NUM        23
 
 #include "../publicclass.h"
+#include "../config.h"
 
-class e_config
+class config_80
 {
 public:
-    e_config();
-    ~e_config();
+    config_80();
+    ~config_80();
 
     typedef struct
     {
-        quint32 MType;          // Тип модуля, для которого предназначена конфигурация
-        quint32 MType1;         // Подтип модуля, для которого предназначена конфигурация
+        Bci_Main mainblk;       // Основной блок (см. config.h)
         quint32 eq_type;        // Тип контролируемого оборудования: 0 - 1фТАТ, 1 - 3фТАТ, 2 - 1фР, 3 - 3фР
         quint32 npoints;        // Количество точек оцифровки на период (64/80/128/256)
         quint32 nfiltr;         // Интервал усреднения данных (постоянная фильтрации)
@@ -50,14 +40,6 @@ public:
         float duosc;            // Уставка скачка напряжения для запуска осциллографирования (в % от номинального напряжения ТН)
         float diosc;            // Уставка скачка тока для запуска осциллографирования (в % от номинального тока ТТ)
         float duimin;           // Уставка контроля минимума сигналов (в %)
-        quint32 Ctype;   		// Тип синхронизации времени от модуля Ц
-        quint32 Abs_104;     	// Адрес базовой станции для протокола 104
-        quint32 Cycle_104;      // Интервал циклического опроса по протоколу МЭК 60870-5-104
-        quint32 T1_104;         // тайм-аут Т1 для протокола 104
-        quint32 T2_104;         // тайм-аут Т2 для протокола 104
-        quint32 T3_104;         // тайм-аут Т3 для протокола 104
-        quint32 k_104;          // макс. кол-во неподтв. сообщений
-        quint32 w_104;          // макс. кол-во сообщений, после которых необх. выдать подтверждение
     } Bci;
 
     Bci Bci_block, Bci_defblock;

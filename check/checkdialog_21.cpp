@@ -374,7 +374,7 @@ void a_checkdialog::SetupUI()
 
 void a_checkdialog::StartMeasurementsWithFile()
 {
-    aconf = new a_config;
+    aconf = new config_21;
     // читаем текущую конфигурацию
     cn->Send(CN_GF,NULL,0,1,aconf->Config);
     while (cn->Busy)
@@ -392,7 +392,7 @@ void a_checkdialog::StartMeasurementsWithFile()
     }
     XlsxWriting = true;
     xlsx = new QXlsx::Document(Filename);
-    xlsx->write(1,1,QVariant("Модуль: "+pc.ModuleTypeString+" сер. ном. "+QString::number(pc.ModuleBsi.SerNum,10)));
+    xlsx->write(1,1,QVariant("Модуль: "+pc.ModuleTypeString+" сер. ном. "+QString::number(pc.ModuleBsi.SerialNum,10)));
     xlsx->write(2,1,QVariant("Дата начала записи: "+QDateTime::currentDateTime().toString("dd-MM-yyyy")));
     xlsx->write(3,1,QVariant("Время начала записи: "+QDateTime::currentDateTime().toString("hh:mm:ss")));
     xlsx->write(5,1,QVariant("Дата и время отсчёта"));

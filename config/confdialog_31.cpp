@@ -207,7 +207,7 @@ void d_confdialog::FillConfData()
 
 void d_confdialog::SetupUI()
 {
-    int i;
+/*/    int i;
     QGridLayout *lyout1 = new QGridLayout;
     QGridLayout *lyout2 = new QGridLayout;
     QGridLayout *lyout3 = new QGridLayout;
@@ -536,7 +536,7 @@ void d_confdialog::SetupUI()
     cp2->setLayout(lyout2);
     cp3->setLayout(lyout3);
     cp4->setLayout(lyout4);
-    SetDefConf();
+    SetDefConf();*/
 }
 
 void d_confdialog::SetChTypData(int num, s_tqComboBox *cb)

@@ -47,7 +47,7 @@ private:
     Bd Bd_block;
     Bda Bda_block;
     Bip Bip_block;
-    a_config *aconf;
+    config_21 *aconf;
     bool BdMeasurementsActive, BdaMeasurementsActive, OddTimeout;
     QTimer *timer;
     bool XlsxWriting;

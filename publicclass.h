@@ -2,29 +2,14 @@
 #define PUBLICCLASS_H
 
 // Макросы для выдачи сообщений
-#define ERMSG(...)     pc.AddErrMsg(publicclass::ER_MSG,__VA_ARGS__)
-#define DBGMSG(...)    pc.AddErrMsg(publicclass::DBG_MSG,__VA_ARGS__)
-#define INFOMSG(...)   pc.AddErrMsg(publicclass::INFO_MSG,__VA_ARGS__)
-#define WARNMSG(...)   pc.AddErrMsg(publicclass::WARN_MSG,__VA_ARGS__)
-
-#define PUBER(a)       ERMSG(publicclass::ER_PUB,__LINE__,a)
-#define PUBDBG         DBGMSG(publicclass::ER_PUB,__LINE__)
-#define PUBWARN        WARNMSG(publicclass::ER_PUB,__LINE__)
-#define PUBINFO(a)     INFOMSG(publicclass::ER_PUB,__LINE__,a)
+#define ERMSG(a)    pc.AddErrMsg(publicclass::ER_MSG,__FILE__,__LINE__,a)
+#define DBGMSG      pc.AddErrMsg(publicclass::DBG_MSG,__FILE__,__LINE__,a)
+#define INFOMSG(a)  pc.AddErrMsg(publicclass::INFO_MSG,__FILE__,__LINE__,a)
+#define WARNMSG(a)  pc.AddErrMsg(publicclass::WARN_MSG,__FILE__,__LINE__,a)
 
 #define MAXBYTEARRAY    65535
 #define MAX_MSG     1000
 #define ER_BUFMAX   16
-// определение типов модулей
-#define MT_C    1
-#define MT_D    2
-#define MT_A    3
-#define MT_E    4
-
-// определение подтипов модулей
-#define MTE_2T0N    0
-#define MTE_1T1N    1
-#define MTE_0T2N    2
 
 // S2: Определение типов элементов данных
 #define u8_TYPE		1  //беззнаковый байт
@@ -215,18 +200,20 @@ public:
 
     typedef struct
     {
-        qint32 MType;
-        qint32 MType1;
-        qint32 HWver;
-        qint32 FWver;
+        qint32 MTypeB;
+        qint32 MTypeM;
+        qint32 Hwver;
+        qint32 Fwver;
         qint32 Cfcrc;
         qint32 Rst;
         qint32 RstCount;
         qint32 Hth;
-        qint32 CpuIdLow;
-        qint32 CpuIdMid;
-        qint32 CpuIdHigh;
-        qint32 SerNum;
+        qint32 UIDLow;
+        qint32 UIDMid;
+        qint32 UIDHigh;
+        qint32 SerialNum;
+        qint32 SerialNumM;
+        qint32 HwverM;
     } Bsi;
 
     enum ermsgtype

@@ -364,67 +364,38 @@ void Coma::GetBsi()
 
 void Coma::CheckBsi()
 {
-    qint32 tmpi = 0x0000000F;
     bool WrongSN = false;
 
-    // серийный модуль проверяется просто - если есть хоть одна не цифра, то серийник некорректный
-    for (int i = 0; i < 8; i++)
-    {
-        qint32 tmpi2 = (pc.ModuleBsi.SerNum & tmpi) >> (i*4);
-        if (tmpi2 > 0x09)
-            WrongSN = true;
-        tmpi <<= 4;
-    }
-
-    if (WrongSN) // серийный номер не задан, надо задать
+    // серийный модуль проверяется просто - если все цифры F, то серийник некорректный
+    if (pc.ModuleBsi.SerialNum == 0xFFFFFFFF) // серийный номер не задан, надо задать
     {
         bool ok = false;
-        qint32 tmpi = QInputDialog::getInt(this, "Серийный номер", "Серийный номер модуля:", 0, 1, 99999999,\
+        qint32 tmpi = QInputDialog::getInt(this, "Серийный номер", "Серийный номер базовой платы:", 0, 1, 999999999,\
                                     1, &ok);
         if (!ok)
         {
             Disconnect();
             return;
         }
-        pc.ModuleBsi.SerNum = QString::number(tmpi, 10).toInt(0,16);
+        pc.ModuleBsi.SerialNum = QString::number(tmpi, 16).toInt(0,10);
+        WrongSN = true;
     }
-    qint32 tmpint;
-    pc.ModuleTypeString.clear();
-    switch (pc.ModuleBsi.MType)
+    if (pc.ModuleBsi.SerialNumM == 0xFFFFFFFF) // серийный номер не задан, надо задать
     {
-    case MT_A:
-    {
-        pc.ModuleTypeString.append("А");
-        pc.ModuleTypeString.append(QString::number(pc.ANumD()));
-        pc.ModuleTypeString.append(QString::number(pc.ANumCh1()));
-        pc.ModuleTypeString.append(pc.AMTypes.at(pc.ATyp1()));
-        tmpint = pc.ANumCh2();
-        if (tmpint != 0)
+        bool ok = false;
+        qint32 tmpi = QInputDialog::getInt(this, "Серийный номер", "Серийный номер мезонина:", 0, 1, 999999999,\
+                                    1, &ok);
+        if (!ok)
         {
-            pc.ModuleTypeString.append(QString::number(tmpint));
-            pc.ModuleTypeString.append(pc.AMTypes.at(pc.ATyp2()));
+            Disconnect();
+            return;
         }
-        pc.ModuleTypeString.append(QString("%1").arg(pc.AMdf(), 3, 10, QChar('0')));
-        break;
+        pc.ModuleBsi.SerialNumM = QString::number(tmpi, 16).toInt(0,10);
+        WrongSN = true;
     }
-    case MT_C: // разборка подтипа модуля Ц
-    {
-        break;
-    }
-    case MT_D: // разборка подтипа модуля Д
-    {
-        break;
-    }
-    case MT_E: // разборка подтипа модуля Э
-    {
-        pc.ModuleTypeString.append("Э");
-        pc.ModuleTypeString.append(pc.ETyp1());
-        break;
-    }
-    default:
-        break;
-    }
-
+    pc.ModuleTypeString = "АВ-ТУК-";
+    pc.ModuleTypeString.append(QString::number(pc.ModuleBsi.MTypeB, 16));
+    pc.ModuleTypeString.append(QString::number(pc.ModuleBsi.MTypeM, 16));
     FillBsi(pc.ModuleTypeString);
 
     if (!DialogsAreReadyAlready)
@@ -432,7 +403,7 @@ void Coma::CheckBsi()
         DialogsAreReadyAlready = true;
         if (WrongSN)
         {
-            cn->Send(CN_Wsn, &pc.ModuleBsi.SerNum, 4);
+            cn->Send(CN_Wsn, &pc.ModuleBsi.SerialNum, 4);
             while (cn->Busy)
                 QCoreApplication::processEvents(QEventLoop::AllEvents);
             if (cn->result == CN_OK)
@@ -443,28 +414,15 @@ void Coma::CheckBsi()
     }
 }
 
-void Coma::FillBsi(QString MType, bool clear)
+void Coma::FillBsi(QString MType)
 {
-    QLineEdit *le = this->findChild<QLineEdit *>("mtypele");
-    if (le == 0)
-        return;
-    le->setText(MType);
-    le = this->findChild<QLineEdit *>("hwverle");
-    if (le == 0)
-        return;
-    le->setText((clear)?"":pc.VerToStr(pc.ModuleBsi.HWver));
-    le = this->findChild<QLineEdit *>("fwverle");
-    if (le == 0)
-        return;
-    le->setText((clear)?"":pc.VerToStr(pc.ModuleBsi.FWver));
-    le = this->findChild<QLineEdit *>("cfcrcle");
-    if (le == 0)
-        return;
-    le->setText((clear)?"":"0x"+QString::number(static_cast<uint>(pc.ModuleBsi.Cfcrc), 16));
-    le = this->findChild<QLineEdit *>("rstle");
-    if (le == 0)
-        return;
-    le->setText((clear)?"":"0x"+QString::number(pc.ModuleBsi.Rst, 16));
+    SetText("mtypele", MType);
+    SetText("hwverle", pc.VerToStr(pc.ModuleBsi.Hwver));
+    SetText("hwvermle", pc.VerToStr(pc.ModuleBsi.HwverM));
+    SetText("fwverle", pc.VerToStr(pc.ModuleBsi.Fwver));
+    SetText("cfcrcle", "0x"+QString::number(static_cast<uint>(pc.ModuleBsi.Cfcrc), 16));
+    SetText("rstle", "0x"+QString::number(pc.ModuleBsi.Rst, 16));
+
     // расшифровка Hth
     for (int i = 0; i < 32; i++)
     {
@@ -472,23 +430,41 @@ void Coma::FillBsi(QString MType, bool clear)
         if (lbl == 0)
             return;
         quint32 tmpui = (0x00000001 << i) & pc.ModuleBsi.Hth;
-        if ((tmpui) && (!clear))
+        if (tmpui)
             lbl->setStyleSheet("QLabel {background-color: rgba(255,10,10,255); color: rgba(255,255,255,255);}");
         else
             lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
     }
-    le = this->findChild<QLineEdit *>("rstcountle");
-    if (le == 0)
-        return;
-    le->setText((clear)?"":QString::number(pc.ModuleBsi.RstCount, 16));
-    le = this->findChild<QLineEdit *>("cpuidle");
-    if (le == 0)
-        return;
-    le->setText((clear)?"":(QString::number(pc.ModuleBsi.CpuIdHigh, 16)+QString::number(pc.ModuleBsi.CpuIdMid, 16)+QString::number(pc.ModuleBsi.CpuIdLow, 16)));
-    le = this->findChild<QLineEdit *>("snle");
-    if (le == 0)
-        return;
-    le->setText((clear)?"":QString::number(pc.ModuleBsi.SerNum, 16));
+    SetText("rstcountle", QString::number(pc.ModuleBsi.RstCount, 16));
+    SetText("cpuidle", QString::number(pc.ModuleBsi.UIDHigh, 16)+QString::number(pc.ModuleBsi.UIDMid, 16)+QString::number(pc.ModuleBsi.UIDLow, 16));
+    SetText("snle", QString::number(pc.ModuleBsi.SerialNum, 16));
+    SetText("snmle", QString::number(pc.ModuleBsi.SerialNumM, 16));
+}
+
+void Coma::ClearBsi()
+{
+    SetText("mtypele", "");
+    SetText("hwverle", "");
+    SetText("hwvermle", "");
+    SetText("fwverle", "");
+    SetText("cfcrcle", "");
+    SetText("rstle", "");
+
+    // расшифровка Hth
+    for (int i = 0; i < 32; i++)
+    {
+        QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
+        if (lbl == 0)
+        {
+            MAINDBG;
+            return;
+        }
+        lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
+    }
+    SetText("rstcountle", "");
+    SetText("cpuidle", "");
+    SetText("snle", "");
+    SetText("snmle", "");
 }
 
 void Coma::AllIsOk()
@@ -499,23 +475,20 @@ void Coma::AllIsOk()
     DownDialog = new downloaddialog;
     FwUpDialog = new fwupdialog;
     OscDialog = new oscdialog;
-    switch (pc.ModuleBsi.MType)
+    if ((pc.ModuleBsi.MTypeB > 0x1F) && (pc.ModuleBsi.MTypeB < 0x30))
     {
-    case MT_A:
-    {
-        AConfDialog = new a_confdialog;
+        ConfDialog2x = new confdialog_2x;
         ATuneDialog = new a_tunedialog;
         ACheckDialog = new a_checkdialog;
-        MainTW->addTab(AConfDialog, "Конфигурирование");
+        MainTW->addTab(ConfDialog2x, "Конфигурирование");
         MainTW->addTab(ATuneDialog, "Настройка");
         MainTW->addTab(ACheckDialog, "Проверка");
         MainTW->addTab(OscDialog, "Осциллограммы");
         MainTW->addTab(DownDialog, "События");
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
-        connect(AConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
-        break;
+        connect(ConfDialog2x,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
     }
-    case MT_E:
+    if ((pc.ModuleBsi.MTypeB > 0x7F) && (pc.ModuleBsi.MTypeB < 0x90))
     {
         EConfDialog = new e_confdialog;
         ETuneDialog = new e_tunedialog;
@@ -528,10 +501,6 @@ void Coma::AllIsOk()
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
         connect(EConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
         connect(ETuneDialog,SIGNAL(dataready(QByteArray)),this,SLOT(UpdateMainTE104(QByteArray)));
-        break;
-    }
-    default:
-        break;
     }
     if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
         ShowErrMsg(ER_NOCONF);
@@ -553,7 +522,7 @@ void Coma::Disconnect()
             CanalThread->wait(1000);
         }
     }
-    FillBsi("",true);
+    ClearBsi();
     DialogsAreReadyAlready = false;
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
@@ -614,8 +583,8 @@ void Coma::EmulA()
 {
     if (pc.Emul) // если уже в режиме эмуляции, выход
         return;
-    pc.ModuleBsi.MType = MT_A;
-    pc.ModuleBsi.SerNum = 0x12345678;
+    pc.ModuleBsi.MTypeB = MTB_21;
+    pc.ModuleBsi.SerialNum = 0x12345678;
     pc.ModuleBsi.Hth = 0x00;
     pc.Emul = true;
     AllIsOk();
@@ -625,7 +594,7 @@ void Coma::EmulE()
 {
     if (pc.Emul) // если уже в режиме эмуляции, выход
         return;
-    pc.ModuleBsi.MType = MT_E;
+    pc.ModuleBsi.MTypeB = MTB_82;
     QDialog *dlg = new QDialog(this);
     dlg->setObjectName("emuledlg");
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -651,7 +620,7 @@ void Coma::EmulE()
 
 void Coma::StartEmulE()
 {
-    QDialog *dlg = this->findChild<QDialog *>("emuledlg");
+/*    QDialog *dlg = this->findChild<QDialog *>("emuledlg");
     QComboBox *cb = this->findChild<QComboBox *>("extxn");
     if ((dlg == 0) || (cb == 0))
     {
@@ -679,7 +648,7 @@ void Coma::StartEmulE()
     Bsi_block.SerNum = 0x12345678;
     Bsi_block.Hth = 0x00;
     pc.Emul = true;
-    AllIsOk();
+    AllIsOk(); */
 }
 
 void Coma::WriteSN()
@@ -688,8 +657,8 @@ void Coma::WriteSN()
     qint32 tmpi = QInputDialog::getInt(this,"Серийный номер","Серийный номер модуля:",0,1,99999999,1,&ok);
     if (!ok)
         return;
-    pc.ModuleBsi.SerNum = QString::number(tmpi, 10).toInt(0,16);
-    cn->Send(CN_Wsn, &(pc.ModuleBsi.SerNum), 4);
+    pc.ModuleBsi.SerialNum = QString::number(tmpi, 10).toInt(0,16);
+    cn->Send(CN_Wsn, &(pc.ModuleBsi.SerialNum), 4);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -1161,4 +1130,15 @@ void Coma::DisableProgressBar()
     }
     prb->setEnabled(false);
     lbl->setEnabled(false);
+}
+
+void Coma::SetText(QString name, QString txt)
+{
+    QLineEdit *le = this->findChild<QLineEdit *>(name);
+    if (le == 0)
+    {
+        MAINER("Не найден виджет "+name);
+        return;
+    }
+    le->setText(txt);
 }

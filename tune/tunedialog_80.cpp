@@ -550,7 +550,7 @@ void e_tunedialog::StartTune3p()
 
 void e_tunedialog::Tune3p()
 {
-    int res = true;
+/*    int res = true;
 
     if (pc.ModuleBsi.MType1 == MTE_0T2N)
     {
@@ -590,7 +590,7 @@ void e_tunedialog::Tune3p()
         SetTunePbEnabled(true);
         ETUNEINFO("Настройка проведена успешно!");
         OkMsgSetVisible(MSG_END);
-    }
+    }*/
 }
 
 void e_tunedialog::SetTunePbEnabled(bool Enabled)
@@ -740,7 +740,7 @@ bool e_tunedialog::Start7_3_2(int num)
         return true;
     }
 
-    if (CheckAnalogValues(maxval-pc.ModuleBsi.MType1)) // MType: 0 = 2T0N, 1 = 1T1N, 2 = 0T2N; NTest: 600 = 0T2N, 601 = 1T1N, 602 = 2T0N
+/*    if (CheckAnalogValues(maxval-pc.ModuleBsi.MTypeB)) // MType: 0 = 2T0N, 1 = 1T1N, 2 = 0T2N; NTest: 600 = 0T2N, 601 = 1T1N, 602 = 2T0N
     {
         OkMsgSetVisible(num);
         return true;
@@ -749,23 +749,19 @@ bool e_tunedialog::Start7_3_2(int num)
     {
         ErMsgSetVisible(num);
         return false;
-    }
+    }*/
     return true;
 }
 
 bool e_tunedialog::Start7_3_3()
 {
-    // высвечиваем надпись "7.3.3. Расчёт коррекции смещений сигналов по фазе"
+/*    // высвечиваем надпись "7.3.3. Расчёт коррекции смещений сигналов по фазе"
     MsgSetVisible(MSG_7_3_3);
-//    double fTmp = Bda_block.phi_next_f[0];
     Bac_newblock.DPsi[0] = 0;
     int k = (pc.ModuleBsi.MType1 == MTE_1T1N) ? 3 : 6;
     for (int i=1; i<k; i++)
-    {
         Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - Bda_block.phi_next_f[i];
-//        fTmp += Bda_block.phi_next_f[i];
-    }
-    OkMsgSetVisible(MSG_7_3_3);
+    OkMsgSetVisible(MSG_7_3_3);*/
     return true;
 }
 
@@ -815,7 +811,7 @@ bool e_tunedialog::Start7_3_4()
 
 void e_tunedialog::Start7_3_5()
 {
-    if (pc.ModuleBsi.MType1 == MTE_1T1N)
+/*    if (pc.ModuleBsi.MType1 == MTE_1T1N)
     {
         // высвечиваем надпись "7.3.5. Считывание напряжений при нулевых токах"
         MsgSetVisible(MSG_7_3_5);
@@ -841,12 +837,12 @@ void e_tunedialog::Start7_3_5()
         for (int i=0; i<6; i++)
             IUefNat_filt_old[i] = Bda_block.IUefNat_filt[i];
         OkMsgSetVisible(MSG_7_3_5);
-    }
+    }*/
 }
 
 void e_tunedialog::Start7_3_6_2()
 {
-    // высвечиваем надпись "7.3.6.2. Расчёт коррекции взаимного влияния"
+/*    // высвечиваем надпись "7.3.6.2. Расчёт коррекции взаимного влияния"
     MsgSetVisible(MSG_7_3_6_2);
     double fSum1 = 0.0;
     double fSum2 = 0.0;
@@ -857,7 +853,7 @@ void e_tunedialog::Start7_3_6_2()
         fSum2 += Bda_block.IUeff_filtered[i];
     }
     Bac_newblock.Kinter = Bac_block.Kinter+(fSum1/fSum2)/k;
-    OkMsgSetVisible(MSG_7_3_6_2);
+    OkMsgSetVisible(MSG_7_3_6_2);*/
 }
 
 bool e_tunedialog::Start7_3_7_1()
@@ -919,7 +915,7 @@ bool e_tunedialog::Start7_3_7_2()
     MsgSetVisible(MSG_7_3_7_5);
     for (int i=0; i<3; i++)
     {
-        if (pc.ModuleBsi.MType1 == MTE_1T1N)
+/*        if (pc.ModuleBsi.MType1 == MTE_1T1N)
         {
             Bac_newblock.KmU[i] = Bac_block.KmU[i] * mipd[i] / Bda_block.IUefNat_filt[i];
             Bac_newblock.DPsi[i+3] = Bac_block.DPsi[i+3] + Bac_newblock.DPsi[i] - Bac_block.DPsi[i] \
@@ -927,7 +923,7 @@ bool e_tunedialog::Start7_3_7_2()
         }
         else
             Bac_newblock.KmI_1[i] = Bac_block.KmI_1[i] * mipd[i+3] / Bda_block.IUefNat_filt[i];
-        Bac_newblock.KmI_1[i+3] = Bac_block.KmI_1[i+3] * mipd[i+3] / Bda_block.IUefNat_filt[i+3];
+        Bac_newblock.KmI_1[i+3] = Bac_block.KmI_1[i+3] * mipd[i+3] / Bda_block.IUefNat_filt[i+3];*/
     }
     OkMsgSetVisible(MSG_7_3_7_5);
     // 6. установить в конфигурации токи i2nom в 5 А и перезагрузить модуль
@@ -970,9 +966,9 @@ bool e_tunedialog::Start7_3_7_2()
     MsgSetVisible(MSG_7_3_7_10);
     for (int i=0; i<3; i++)
     {
-        if (pc.ModuleBsi.MType1 == MTE_2T0N)
+/*        if (pc.ModuleBsi.MType1 == MTE_2T0N)
             Bac_newblock.KmI_5[i] = Bac_block.KmI_5[i] * mipd[i+3] / Bda_block.IUefNat_filt[i];
-        Bac_newblock.KmI_5[i+3] = Bac_block.KmI_5[i+3] * mipd[i+3] / Bda_block.IUefNat_filt[i+3];
+        Bac_newblock.KmI_5[i+3] = Bac_block.KmI_5[i+3] * mipd[i+3] / Bda_block.IUefNat_filt[i+3];*/
     }
     OkMsgSetVisible(MSG_7_3_7_10);
     return true;
@@ -1255,7 +1251,7 @@ bool e_tunedialog::CheckMip()
 {
     double ValuesToCheck[10] = {0,50.0,50.0,50.0,60.0,60.0,60.0,1.0,1.0,1.0};
     double ThresholdsToCheck[10] = {0,0.1,0.1,0.1,1.0,1.0,1.0,0.05,0.05,0.05};
-    switch(pc.ModuleBsi.MType1) //
+/*    switch(pc.ModuleBsi.MType1) //
     {
     case MTE_2T0N:
     {
@@ -1290,7 +1286,7 @@ bool e_tunedialog::CheckMip()
                       " +/- "+QString::number(ThresholdsToCheck[i],'f',4));
             return false;
         }
-    }
+    }*/
     return true;
 }
 
@@ -1709,7 +1705,7 @@ void e_tunedialog::ShowControlChooseDialog()
 
 void e_tunedialog::Show1PhaseScheme()
 {
-    QDialog *dlg = new QDialog;
+/*    QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     QPixmap pmp;
     switch(pc.ModuleBsi.MType1) // выводим окно с предупреждением о включении РЕТОМ-а по схеме в зависимости от исполнения
@@ -1746,12 +1742,12 @@ void e_tunedialog::Show1PhaseScheme()
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
-    dlg->exec();
+    dlg->exec();*/
 }
 
 void e_tunedialog::Show1RetomDialog(float U, float A)
 {
-    QDialog *dlg = new QDialog;
+/*    QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     int count = 1;
     QLabel *lbl = new QLabel(QString::number(count)+".Вызовите программу управления РЕТОМ и войдите в режим \"Ручное управление выходами\";");
@@ -1783,12 +1779,12 @@ void e_tunedialog::Show1RetomDialog(float U, float A)
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
-    dlg->exec();
+    dlg->exec();*/
 }
 
 void e_tunedialog::Show3PhaseScheme()
 {
-    // высвечиваем надпись "Проверка связи РЕТОМ и МИП"
+/*    // высвечиваем надпись "Проверка связи РЕТОМ и МИП"
     MsgSetVisible(MSG_7_3_6_0);
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -1835,7 +1831,7 @@ void e_tunedialog::Show3PhaseScheme()
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
     dlg->exec();
-    OkMsgSetVisible(MSG_7_3_6_0);
+    OkMsgSetVisible(MSG_7_3_6_0);*/
 }
 
 void e_tunedialog::MsgClear()

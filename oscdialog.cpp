@@ -1,5 +1,6 @@
 #include "oscdialog.h"
 #include "canal.h"
+#include "config.h"
 #include "widgets/s_tqtableview.h"
 #include "widgets/s_tablemodel.h"
 #include "widgets/getoscpbdelegate.h"
@@ -138,9 +139,9 @@ void oscdialog::EndExtractOsc()
     quint32 OscNum = (OscLength-12-sizeof(OscHeader_Data)) / OscSize; // рассчитаем количество осциллограмм
     OscData.resize(OscSize*OscNum); // отведём в буфере место под осциллограммы
     float tmpf;
-    switch(pc.ModuleBsi.MType)
+    switch(pc.ModuleBsi.MTypeB)
     {
-    case MT_A:
+    case MTB_21:
     {
         quint32 IDFound = 0;
         for (j=MT_START_OSC; j<MT_END_OSC; j++) // цикл по возможным осциллограммам
@@ -203,7 +204,7 @@ void oscdialog::EndExtractOsc()
         QMessageBox::information(this,"Успешно!","Записано успешно!");
         break;
     }
-    case MT_E:
+    case MTB_82:
     {
         // обработка принятой осциллограммы и запись её в файл
         if (OscHeader.NsTime > 999999999L)

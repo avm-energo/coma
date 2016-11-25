@@ -13,8 +13,8 @@
 #include <QtSerialPort/QSerialPort>
 #include "fwupdialog.h"
 #include "downloaddialog.h"
+#include "config/confdialog_2x.h"
 #include "A/a_checkdialog.h"
-#include "A/a_confdialog.h"
 #include "A/a_tunedialog.h"
 #include "E/e_checkdialog.h"
 #include "E/e_confdialog.h"
@@ -86,7 +86,7 @@ private:
     }
 
     a_checkdialog *ACheckDialog;
-    a_confdialog *AConfDialog;
+    confdialog_2x *ConfDialog2x;
     a_tunedialog *ATuneDialog;
     e_checkdialog *ECheckDialog;
     e_confdialog *EConfDialog;
@@ -102,7 +102,8 @@ private:
     void InitiateWriteDataToPort(QByteArray ba);
     QString ByteToHex(quint8);
     void StopThreads();
-    void FillBsi(QString MType, bool clear=false);
+    void FillBsi(QString MType);
+    void ClearBsi();
     void AddLabelAndLineedit (QVBoxLayout *lyout, QString caption, QString lename);
     void ShowOrHideSlideSW();
     void ShowOrHideSlideER();
@@ -141,6 +142,9 @@ private slots:
     void SetProgressBarSize(quint32);
     void SetProgressBar(quint32);
     void DisableProgressBar();
+
+private:
+    void SetText(QString name, QString txt);
 
 protected:
     void resizeEvent(QResizeEvent *e);

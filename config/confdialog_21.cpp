@@ -14,14 +14,14 @@
 #include <QCoreApplication>
 #include <QDoubleSpinBox>
 #include <QTabBar>
-#include "a_confdialog.h"
+#include "confdialog_2x.h"
 #include "../canal.h"
 
-a_confdialog::a_confdialog(QWidget *parent) :
+confdialog_2x::confdialog_2x(QWidget *parent) :
     QDialog(parent)
 {
     ChTypModelIsFilling = false;
-    aconf = new a_config;
+    aconf = new config_21;
     NoProperConf = false;
 
     setAttribute(Qt::WA_DeleteOnClose);
@@ -32,7 +32,7 @@ a_confdialog::a_confdialog(QWidget *parent) :
         GetBci();
 }
 
-void a_confdialog::SetupUI()
+void confdialog_2x::SetupUI()
 {
     int i;
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
@@ -400,7 +400,7 @@ void a_confdialog::SetupUI()
     setLayout(lyout);
 }
 
-void a_confdialog::SetRangemA()
+void confdialog_2x::SetRangemA()
 {
     QComboBox *cb = qobject_cast<QComboBox *>(sender());
     if (cb == 0)
@@ -411,7 +411,7 @@ void a_confdialog::SetRangemA()
     SetRange(cb->currentIndex(), tmpi);
 }
 
-void a_confdialog::SetRangeV()
+void confdialog_2x::SetRangeV()
 {
     QComboBox *cb = qobject_cast<QComboBox *>(sender());
     if (cb == 0)
@@ -422,7 +422,7 @@ void a_confdialog::SetRangeV()
     SetRange(cb->currentIndex()+RT_V05, tmpi); // перемещаем диапазон комбобокса в область V
 }
 
-void a_confdialog::SetRange(int Range, int ChNum)
+void confdialog_2x::SetRange(int Range, int ChNum)
 {
     switch(Range)
     {
@@ -451,7 +451,7 @@ void a_confdialog::SetRange(int Range, int ChNum)
     }
 }
 
-void a_confdialog::GetBci()
+void confdialog_2x::GetBci()
 {
     cn->Send(CN_GF,NULL,0,1,aconf->Config);
     while (cn->Busy)
@@ -460,7 +460,7 @@ void a_confdialog::GetBci()
         FillConfData();
 }
 
-void a_confdialog::FillConfData()
+void confdialog_2x::FillConfData()
 {
     int i;
     QSpinBox *spb;
@@ -531,7 +531,7 @@ void a_confdialog::FillConfData()
     }
 }
 
-void a_confdialog::SetMinMax(int i)
+void confdialog_2x::SetMinMax(int i)
 {
     QComboBox *cb = this->findChild<QComboBox *>("inrange."+QString::number(i));
     if (cb == 0)
@@ -609,7 +609,7 @@ void a_confdialog::SetMinMax(int i)
     }
 }
 
-void a_confdialog::SetSpinboxValue(QString name, double value)
+void confdialog_2x::SetSpinboxValue(QString name, double value)
 {
     QDoubleSpinBox *dspbls = this->findChild<QDoubleSpinBox *>(name);
     if (dspbls == 0)
@@ -620,7 +620,7 @@ void a_confdialog::SetSpinboxValue(QString name, double value)
     dspbls->setValue(value);
 }
 
-void a_confdialog::SetChTypData()
+void confdialog_2x::SetChTypData()
 {
     QComboBox *cb = qobject_cast<QComboBox *>(sender());
     int tmpi = GetChNumFromObjectName(sender()->objectName());
@@ -634,7 +634,7 @@ void a_confdialog::SetChTypData()
     ChTypModelIsFilling = false;
 }
 
-void a_confdialog::DisableChannel(int ChNum, bool Disable)
+void confdialog_2x::DisableChannel(int ChNum, bool Disable)
 {
     QComboBox *cb;
     QCheckBox *chb = this->findChild<QCheckBox *>("chb."+QString::number(ChNum));
@@ -681,7 +681,7 @@ void a_confdialog::DisableChannel(int ChNum, bool Disable)
         dspbls->setVisible(!Disable);
 }
 
-void a_confdialog::SetRangeCB(int ChNum, int ChTypCB)
+void confdialog_2x::SetRangeCB(int ChNum, int ChTypCB)
 {
     QComboBox *mcb = this->findChild<QComboBox *>("inrange."+QString::number(ChNum));
     if (mcb == 0)
@@ -706,12 +706,12 @@ void a_confdialog::SetRangeCB(int ChNum, int ChTypCB)
     mcb->setModel(slm);
 }
 
-void a_confdialog::SetOscDly(int dly)
+void confdialog_2x::SetOscDly(int dly)
 {
     aconf->Bci_block.oscdly = dly;
 }
 
-void a_confdialog::SetChOsc(int isChecked)
+void confdialog_2x::SetChOsc(int isChecked)
 {
     int ChNum = GetChNumFromObjectName(sender()->objectName());
     if (ChNum == -1)
@@ -738,7 +738,7 @@ void a_confdialog::SetChOsc(int isChecked)
     }
 }
 
-void a_confdialog::SetChOscSrc(int srctyp)
+void confdialog_2x::SetChOscSrc(int srctyp)
 {
     int ChNum = GetChNumFromObjectName(sender()->objectName());
     if (ChNum == -1)
@@ -750,7 +750,7 @@ void a_confdialog::SetChOscSrc(int srctyp)
     aconf->Bci_block.oscsrc |= tmpint;
 }
 
-int a_confdialog::GetChNumFromObjectName(QString ObjectName)
+int confdialog_2x::GetChNumFromObjectName(QString ObjectName)
 {
     QStringList ObjectNameSl = ObjectName.split(".");
     int ChNum;
@@ -764,7 +764,7 @@ int a_confdialog::GetChNumFromObjectName(QString ObjectName)
     return ChNum;
 }
 
-bool a_confdialog::CheckConf()
+bool confdialog_2x::CheckConf()
 {
     bool NotGood = false;
     for (int i=0; i<16; i++)
@@ -791,7 +791,7 @@ bool a_confdialog::CheckConf()
     return NotGood;
 }
 
-void a_confdialog::SetIn()
+void confdialog_2x::SetIn()
 {
     QStringList tmpsl = QStringList() << "inmin" << "inmax" << "invmin" << "invmax" << \
                                          "setminmin" << "setmin" << "setmax" << "setmaxmax";
@@ -847,7 +847,7 @@ void a_confdialog::SetIn()
     spb->setStyleSheet(tmps);
 }
 
-void a_confdialog::Set104()
+void confdialog_2x::Set104()
 {
     QDoubleSpinBox *spb = qobject_cast<QDoubleSpinBox *>(sender());
     int tmpi = GetChNumFromObjectName(sender()->objectName());
@@ -895,12 +895,12 @@ void a_confdialog::Set104()
     }
 }
 
-void a_confdialog::SetCType(int num)
+void confdialog_2x::SetCType(int num)
 {
     aconf->Bci_block.Ctype = num;
 }
 
-void a_confdialog::WriteConfDataToModule()
+void confdialog_2x::WriteConfDataToModule()
 {
     if (CheckConf())
     {
@@ -914,7 +914,7 @@ void a_confdialog::WriteConfDataToModule()
         ACONFINFO("Операция проведена успешно!");
 }
 
-void a_confdialog::SetNewConf()
+void confdialog_2x::SetNewConf()
 {
     cn->Send(CN_Cnc);
     while (cn->Busy)
@@ -926,13 +926,13 @@ void a_confdialog::SetNewConf()
     }
 }
 
-void a_confdialog::SetDefConf()
+void confdialog_2x::SetDefConf()
 {
     memcpy(&(aconf->Bci_block), &(aconf->Bci_defblock), sizeof(aconf->Bci_block));
     FillConfData();
 }
 
-void a_confdialog::LoadConf()
+void confdialog_2x::LoadConf()
 {
     QByteArray ba;
     ba = pc.LoadFile("Config files (*.acf)");
@@ -945,7 +945,7 @@ void a_confdialog::LoadConf()
     ACONFINFO("Загрузка прошла успешно!");
 }
 
-void a_confdialog::SaveConf()
+void confdialog_2x::SaveConf()
 {
     QByteArray *ba = new QByteArray;
     ba->resize(MAXBYTEARRAY);
@@ -975,7 +975,7 @@ void a_confdialog::SaveConf()
     }
 }
 
-void a_confdialog::SetRangeWidgetSlot(QString RangeType)
+void confdialog_2x::SetRangeWidgetSlot(QString RangeType)
 {
     if (ChTypModelIsFilling) // выход, если слот вызван заполнением модели выпадающего списка
         return;
@@ -993,7 +993,7 @@ void a_confdialog::SetRangeWidgetSlot(QString RangeType)
     SetRangeWidget(ChNum, RangeTypes.indexOf(RangeType));
 }
 
-void a_confdialog::SetRangeWidget(int ChNum, int RangeType)
+void confdialog_2x::SetRangeWidget(int ChNum, int RangeType)
 {
     QGroupBox *gb = this->findChild<QGroupBox *>("RangeGB");
     if (gb == 0)

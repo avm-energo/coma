@@ -311,7 +311,7 @@ void e_checkdialog::RefreshAnalogValues()
         lbl = this->findChild<QLabel *>("value"+QString::number(i+2));
         if (lbl == 0)
             return;
-        int Precision = (pc.ModuleBsi.MType1 != MTE_2T0N) ? 3 : 4;
+/*        int Precision = (pc.ModuleBsi.MTypeB != MTE_2T0N) ? 3 : 4;
         lbl->setText(QString::number(Bda_block.IUefNat_filt[i], 'f', Precision));
         lbl = this->findChild<QLabel *>("value"+QString::number(i+5));
         if (lbl == 0)
@@ -332,7 +332,7 @@ void e_checkdialog::RefreshAnalogValues()
         lbl = this->findChild<QLabel *>("value"+QString::number(i+14));
         if (lbl == 0)
             return;
-        lbl->setText(QString::number(Bda_block.phi_next_f[i], 'f', 3));
+        lbl->setText(QString::number(Bda_block.phi_next_f[i], 'f', 3));*/
     }
     for (int i=0; i<3; i++)
     {
@@ -389,13 +389,13 @@ void e_checkdialog::StartAnalogMeasurementsToFile()
     }
     XlsxWriting = true;
     xlsx = new QXlsx::Document(Filename);
-    xlsx->write(1,1,QVariant("Модуль: "+pc.ModuleTypeString+" сер. ном. "+QString::number(pc.ModuleBsi.SerNum,10)));
+    xlsx->write(1,1,QVariant("Модуль: "+pc.ModuleTypeString+" сер. ном. "+QString::number(pc.ModuleBsi.SerialNum,10)));
     xlsx->write(2,1,QVariant("Дата начала записи: "+QDateTime::currentDateTime().toString("dd-MM-yyyy")));
     xlsx->write(3,1,QVariant("Время начала записи: "+QDateTime::currentDateTime().toString("hh:mm:ss")));
     xlsx->write(5,1,QVariant("Дата и время отсчёта"));
     for (int i=0; i<3; i++)
     {
-        if (pc.ModuleBsi.MType1 != MTE_2T0N)
+/*        if (pc.ModuleBsi.MType1 != MTE_2T0N)
             xlsx->write(5,i+2,QVariant(("U1 ф")+QString::number(i+10, 36)+", В"));
         else
             xlsx->write(5,i+2,QVariant("I1 ф"+QString::number(i+10, 36)+", А"));
@@ -408,7 +408,7 @@ void e_checkdialog::StartAnalogMeasurementsToFile()
         xlsx->write(5,i+8,QVariant("Phi ф"+QString::number(i+10, 36)+", град"));
         xlsx->write(5,i+11,QVariant("Pf ф"+QString::number(i+10, 36)+", Вт"));
         xlsx->write(5,i+14,QVariant("Qf ф"+QString::number(i+10, 36)+", ВА"));
-        xlsx->write(5,i+17,QVariant("Sf ф"+QString::number(i+10, 36)+", ВА"));
+        xlsx->write(5,i+17,QVariant("Sf ф"+QString::number(i+10, 36)+", ВА"));*/
     }
     xlsx->write(5,20,QVariant("f, Гц"));
     xlsx->write(5,21,QVariant("t, град"));
@@ -450,11 +450,11 @@ void e_checkdialog::ReadAnalogMeasurements()
         xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz")));
         for (int i=0; i<3; i++)
         {
-            QString Precision = (pc.ModuleBsi.MType1 != MTE_2T0N) ? "0.000" : "0.0000";
+/*            QString Precision = (pc.ModuleBsi.MTypeB != MTE_2T0N) ? "0.000" : "0.0000";
             format.setNumberFormat(Precision);
             xlsx->write(WRow,i+2,Bda_block.IUeff_filtered[i],format);
 
-            Precision = (pc.ModuleBsi.MType1 != MTE_0T2N) ? "0.0000" : "0.000";
+            Precision = (pc.ModuleBsi.MTypeB != MTE_0T2N) ? "0.0000" : "0.000";
             format.setNumberFormat(Precision);
             xlsx->write(WRow,i+5,Bda_block.IUeff_filtered[i+3],format);
 
@@ -463,7 +463,7 @@ void e_checkdialog::ReadAnalogMeasurements()
             xlsx->write(WRow,i+8,Phi,format);
             xlsx->write(WRow,i+11,Bda_block.Pf[i],format);
             xlsx->write(WRow,i+14,Bda_block.Qf[i],format);
-            xlsx->write(WRow,i+17,Bda_block.Sf[i],format);
+            xlsx->write(WRow,i+17,Bda_block.Sf[i],format);*/
         }
         format.setNumberFormat("0.0000");
         xlsx->write(WRow,20,Bda_block.Frequency,format);
