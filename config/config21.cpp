@@ -40,10 +40,10 @@ config_21::config_21()
     Bci_defblock.mainblk.T2_104 = DEF_T2_104;
     Bci_defblock.mainblk.T3_104 = DEF_T3_104;
     Bci_defblock.oscdly = 0;
-    Bci_defblock.oscthr = 0.05;
+    Bci_defblock.oscthr = 0.05f;
     Bci_defblock.filtern = 10;
     Bci_defblock.filterthr = 0.5;
-    Bci_defblock.hysteresis = 0.02;
+    Bci_defblock.hysteresis = 0.02f;
     for (int i = 0; i < 8; i++)
     {
         Bci_defblock.in_type[i] = INTYPEMA;

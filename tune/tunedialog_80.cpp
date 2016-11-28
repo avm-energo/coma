@@ -16,6 +16,7 @@
 #include "../canal.h"
 #include "../config/config80.h"
 #include "../widgets/waitwidget.h"
+#include "../widgets/messagebox.h"
 
 e_tunedialog::e_tunedialog(QWidget *parent) :
     QDialog(parent)
@@ -883,7 +884,7 @@ bool e_tunedialog::Start7_3_7_2()
     for (int i=0; i<6; i++)
         econf->Bci_block.inom2[i] = 1.0;
     // послать новые коэффициенты по току в конфигурацию
-    cn->Send(CN_WF, &econf->Bci_block, sizeof(e_config::Bci), 2, econf->Config);
+    cn->Send(CN_WF, &econf->Bci_block, sizeof(config_80::Bci), 2, econf->Config);
 //    qDebug() << "3";
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -930,7 +931,7 @@ bool e_tunedialog::Start7_3_7_2()
     MsgSetVisible(MSG_7_3_7_6);
     for (int i=0; i<6; i++)
         econf->Bci_block.inom2[i] = 5.0;
-    cn->Send(CN_WF, &econf->Bci_block, sizeof(e_config::Bci), 2, econf->Config);
+    cn->Send(CN_WF, &econf->Bci_block, sizeof(config_80::Bci), 2, econf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != CN_OK)
@@ -1055,14 +1056,14 @@ bool e_tunedialog::Start7_3_9()
 
 bool e_tunedialog::SaveWorkConfig()
 {
-    econf = new e_config;
+    econf = new config_80;
 
     cn->Send(CN_GF,NULL,0,1,econf->Config);
 //    qDebug() << "1";
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
-        memcpy(&Bci_block_work,&econf->Bci_block,sizeof(e_config::Bci));
+        memcpy(&Bci_block_work,&econf->Bci_block,sizeof(config_80::Bci));
     else
         return false;
     return true;
@@ -1071,7 +1072,7 @@ bool e_tunedialog::SaveWorkConfig()
 bool e_tunedialog::LoadWorkConfig()
 {
     // пишем ранее запомненный конфигурационный блок
-    memcpy(&econf->Bci_block,&Bci_block_work,sizeof(e_config::Bci));
+    memcpy(&econf->Bci_block,&Bci_block_work,sizeof(config_80::Bci));
     cn->Send(CN_WF, &econf->Bci_block, sizeof(econf->Bci_block), 2, econf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);

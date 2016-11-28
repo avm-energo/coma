@@ -119,7 +119,7 @@ publicclass::publicclass()
                 errmsgs << tmpString;
         } while (!streamfile.atEnd());
     }
-    result = CN_OK;
+    result = ER_OK;
 }
 
 QString publicclass::VerToStr(quint32 num)
@@ -210,8 +210,8 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
   quint32 pos = tmpi;
   if (pos > memsize)
   {
-      SetErMsg(CN_S2SIZEERROR); // выход за границу принятых байт
-      return CN_S2SIZEERROR;
+      ERMSG("S2: выход за границу принятых байт"); // выход за границу принятых байт
+      return S2_SIZEERROR;
   }
   memcpy(&dh,m,tmpi);
   m+=tmpi;
@@ -219,8 +219,8 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       updCRC32(m[i], &crc);
   if (dh.crc32!=crc)
   {
-      SetErMsg(CN_S2CRCERROR); // выход за границу принятых байт
-      return CN_S2CRCERROR;
+      ERMSG("S2: Ошибка CRC"); // выход за границу принятых байт
+      return S2_CRCERROR;
   }
   for(;;)
   {
@@ -228,8 +228,8 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       pos += tmpi;
       if (pos > memsize)
       {
-          SetErMsg(CN_S2SIZEERROR); // выход за границу принятых байт
-          return CN_S2SIZEERROR;
+          ERMSG("S2: выход за границу принятых байт"); // выход за границу принятых байт
+          return S2_SIZEERROR;
       }
       memcpy(&R,m,tmpi);
       sz+=tmpi;
@@ -243,8 +243,8 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
           pos += tmpi;
           if (pos > memsize)
           {
-              SetErMsg(CN_S2SIZEERROR); // выход за границу принятых байт
-              return CN_S2SIZEERROR;
+              ERMSG("S2: выход за границу принятых байт"); // выход за границу принятых байт
+              return S2_SIZEERROR;
           }
           m += tmpi;
           sz += tmpi;
@@ -253,15 +253,15 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       NoIDs = false;
       if((r->data_type!=R.data_type) || (r->elem_size!=R.elem_size) || (r->num_elem!=R.num_elem)) //несовпадения описания прочитанного элемента с ожидаемым
       {
-          SetErMsg(CN_S2DESCERROR); // несовпадение описаний одного и того же блока
-          return CN_S2DESCERROR;
+          ERMSG("Несовпадение описаний одного и того же блока"); // несовпадение описаний одного и того же блока
+          return S2_DESCERROR;
       }
       tmpi = r->elem_size*r->num_elem;
       pos += tmpi;
       if (pos > memsize)
       {
-          SetErMsg(CN_S2SIZEERROR); // выход за границу принятых байт
-          return CN_S2SIZEERROR;
+          ERMSG("S2: выход за границу принятых байт"); // выход за границу принятых байт
+          return S2_SIZEERROR;
       }
       memcpy(r->thedata,m,tmpi);
       sz += tmpi;
@@ -269,13 +269,13 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
   }
   if(dh.size!=sz)
   {
-      SetErMsg(CN_S2DHSZERROR); // ошибка длины
-      return CN_S2DHSZERROR;
+      ERMSG("S2: ошибка длины"); // ошибка длины
+      return S2_DHSZERROR;
   }
   if (NoIDs)
   {
-      SetErMsg(CN_NOIDS); // не найдено ни одного ИД
-      return CN_NOIDS;
+      ERMSG("Не найдено ни одного элемента с заданным ID"); // не найдено ни одного ИД
+      return S2_NOIDS;
   }
   return 0;
 }
@@ -360,14 +360,14 @@ QString publicclass::NsTimeToString(quint64 nstime)
     return tmps;
 }
 
-void publicclass::AddErrMsg(ermsgtype msgtype, quint64 ernum, quint64 ersubnum, QString msg)
+void publicclass::AddErrMsg(ermsgtype msgtype, QString file, int line, QString msg)
 {
     if (ermsgpool.size()>=ER_BUFMAX)
         ermsgpool.removeFirst();
     ermsg tmpm;
     tmpm.type = msgtype;
-    tmpm.ernum = ernum;
-    tmpm.ersubnum = ersubnum;
+    tmpm.file = file;
+    tmpm.line = line;
     // Разбор кода ошибки
     QString prefix;
     if ((msg.isEmpty()) || (msg == " ")) // пробел выдаётся при пустом запросе в БД
@@ -380,7 +380,7 @@ void publicclass::AddErrMsg(ermsgtype msgtype, quint64 ernum, quint64 ersubnum, 
         case DBG_MSG: prefix = "Отладка "; break;
         }
 
-        msg = prefix+"в файле " + ermsgs().value(ernum) + " строка " + QString::number(ersubnum);
+        msg = prefix+"в файле " + tmpm.file + " строка " + QString::number(tmpm.line);
     }
     tmpm.msg = msg;
     ermsgpool.append(tmpm);
@@ -391,13 +391,13 @@ QByteArray publicclass::LoadFile(QString mask)
     QString filename = QFileDialog::getOpenFileName(0, "Открыть файл", ".", mask);
     if (filename.isEmpty())
     {
-        PUBER("Пустое имя файла");
+        ERMSG("Пустое имя файла");
         return QByteArray(); // Пустое имя файла
     }
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly))
     {
-        PUBER("Ошибка открытия файла");
+        ERMSG("Ошибка открытия файла");
         return QByteArray(); // Ошибка открытия файла
     }
     QByteArray LoadBa = QByteArray(file.readAll());
@@ -424,14 +424,6 @@ int publicclass::SaveFile(QString mask, void *src, unsigned int numbytes)
     if (file.write(SaveBa->data(), numbytes) == -1)
         return 1; // ошибка записи
     return 0; // нет ошибок
-}
-
-void publicclass::SetErMsg(int ernum)
-{
-    if (ernum < pc.errmsgs.size())
-        PUBER(pc.errmsgs.at(ernum));
-    else
-        PUBER("Произошла неведомая фигня #"+QString::number(ernum,10));
 }
 
 bool publicclass::FloatInRange(float var, float value)

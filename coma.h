@@ -25,11 +25,6 @@
 
 #define PROGNAME    "КОМА 2.0"
 
-#define MAINER(a)       ERMSG(publicclass::ER_MAIN,__LINE__,a)
-#define MAINDBG         DBGMSG(publicclass::ER_MAIN,__LINE__)
-#define MAINWARN        WARNMSG(publicclass::ER_MAIN,__LINE__)
-#define MAININFO(a)     INFOMSG(publicclass::ER_MAIN,__LINE__,a)
-
 class Coma : public QMainWindow
 {
     Q_OBJECT
@@ -86,7 +81,7 @@ private:
     }
 
     a_checkdialog *ACheckDialog;
-    confdialog_2x *ConfDialog2x;
+    confdialog_21 *ConfDialog21;
     a_tunedialog *ATuneDialog;
     e_checkdialog *ECheckDialog;
     confdialog_80 *EConfDialog;

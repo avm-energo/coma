@@ -7,11 +7,6 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QMutex>
 
-#define SERIALER(a)       ERMSG(publicclass::ER_SERIAL,__LINE__,a)
-#define SERIALDBG         DBGMSG(publicclass::ER_SERIAL,__LINE__)
-#define SERIALWARN        WARNMSG(publicclass::ER_SERIAL,__LINE__)
-#define SERIALINFO(a)     INFOMSG(publicclass::ER_SERIAL,__LINE__,a)
-
 class SerialThread : public QObject
 {
     Q_OBJECT

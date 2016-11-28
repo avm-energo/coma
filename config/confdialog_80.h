@@ -23,11 +23,11 @@ private:
     void FillConfData();
     QWidget *UNom(int numunom); // 1 - первая тройка напряжений, 2 - вторая
     QWidget *INom(int numinom); // 1 - первичный ток первой группы, 2 - вторичный ток первой группы, 3,4 - то же по второй группе
-    QWidget *Threshold(QString &str, int numthr);
+    QWidget *Threshold(QString str, int numthr);
     int GetWNum(QString &ObjName);
-    void SetComboBox(QString &name, QString &text);
-    void SetSpinBox(QString &name, double value);
-    void SetCheckBox(QString &name, bool isChecked);
+    void SetComboBox(QString name, QString &text);
+    void SetSpinBox(QString name, double value);
+    void SetCheckBox(QString name, bool isChecked);
 
 signals:
     void BsiIsNeedToBeAcquiredAndChecked();

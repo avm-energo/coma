@@ -59,7 +59,7 @@ void oscdialog::GetOscInfo()
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
-        ProcessMessageBox2::information(this, "Внимание", );
+        ProcessOscInfo();
 }
 
 void oscdialog::ProcessOscInfo()
@@ -155,7 +155,7 @@ void oscdialog::EndExtractOsc()
                 IDFound = j;
                 break;
             }
-            else if (res == CN_NOIDS)
+            else if (res == S2_NOIDS)
                 continue;
             else
             {
@@ -205,7 +205,7 @@ void oscdialog::EndExtractOsc()
         QMessageBox::information(this,"Успешно!","Записано успешно!");
         break;
     }
-    case MTB_82:
+    case MTB_80:
     {
         // обработка принятой осциллограммы и запись её в файл
         if (OscHeader.NsTime > 999999999L)
@@ -256,7 +256,7 @@ void oscdialog::EndExtractOsc()
                     i++; // отсчёт++
                 }
             }
-            else if (res == CN_NOIDS)
+            else if (res == S2_NOIDS)
             {
                 MessageBox2::information(this, "Внимание", "Не найден блок с ID = "+QString::number(j+MT_START_OSC));
                 continue;
@@ -300,7 +300,7 @@ void oscdialog::GetOsc(QModelIndex idx)
 void oscdialog::EraseOsc()
 {
     pc.PrbMessage = "Стёрто записей: ";
-    cn->Send(CN_ERMSG);
+    cn->Send(CN_OscEr);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)

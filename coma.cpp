@@ -19,10 +19,13 @@
 #include <QSettings>
 #include <QDialog>
 #include <QSizePolicy>
+#include <QCheckBox>
 #include "coma.h"
 #include "widgets/mytabwidget.h"
 #include "widgets/errorprotocolwidget.h"
 #include "widgets/waitwidget.h"
+#include "widgets/messagebox.h"
+#include "widgets/s_tqspinbox.h"
 
 Coma::Coma(QWidget *parent)
     : QMainWindow(parent)
@@ -192,7 +195,7 @@ Coma::Coma(QWidget *parent)
     setCentralWidget(wdgt);
 
     if (pc.result)
-        MAININFO("Не найден файл с сообщениями об ошибках!");
+        MessageBox2::information(this, "Внимание", "Не найден файл с сообщениями об ошибках!");
 
     QWidget *SlideWidget = new QWidget(this);
     SlideWidget->setObjectName("slidew");
@@ -456,7 +459,7 @@ void Coma::ClearBsi()
         QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
         if (lbl == 0)
         {
-            MAINDBG;
+            DBGMSG;
             return;
         }
         lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
@@ -477,20 +480,20 @@ void Coma::AllIsOk()
     OscDialog = new oscdialog;
     if ((pc.ModuleBsi.MTypeB > 0x1F) && (pc.ModuleBsi.MTypeB < 0x30))
     {
-        ConfDialog2x = new confdialog_2x;
+        ConfDialog21 = new confdialog_21;
         ATuneDialog = new a_tunedialog;
         ACheckDialog = new a_checkdialog;
-        MainTW->addTab(ConfDialog2x, "Конфигурирование");
+        MainTW->addTab(ConfDialog21, "Конфигурирование");
         MainTW->addTab(ATuneDialog, "Настройка");
         MainTW->addTab(ACheckDialog, "Проверка");
         MainTW->addTab(OscDialog, "Осциллограммы");
         MainTW->addTab(DownDialog, "События");
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
-        connect(ConfDialog2x,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
+        connect(ConfDialog21,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
     }
     if ((pc.ModuleBsi.MTypeB > 0x7F) && (pc.ModuleBsi.MTypeB < 0x90))
     {
-        EConfDialog = new e_confdialog;
+        EConfDialog = new confdialog_80;
         ETuneDialog = new e_tunedialog;
         ECheckDialog = new e_checkdialog;
         MainTW->addTab(EConfDialog, "Конфигурирование");
@@ -594,7 +597,7 @@ void Coma::EmulE()
 {
     if (pc.Emul) // если уже в режиме эмуляции, выход
         return;
-    pc.ModuleBsi.MTypeB = MTB_82;
+    pc.ModuleBsi.MTypeB = MTB_80;
     QDialog *dlg = new QDialog(this);
     dlg->setObjectName("emuledlg");
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -624,7 +627,7 @@ void Coma::StartEmulE()
     QComboBox *cb = this->findChild<QComboBox *>("extxn");
     if ((dlg == 0) || (cb == 0))
     {
-        MAINDBG;
+        DBGMSG;
         return;
     }
     switch (cb->currentIndex())
@@ -639,7 +642,7 @@ void Coma::StartEmulE()
         pc.ModuleBsi.MType1 = MTE_0T2N;
         break;
     default:
-        MAINDBG;
+        DBGMSG;
         return;
         break;
     }
@@ -713,7 +716,7 @@ void Coma::SendHW()
     QDialog *dlg = this->findChild<QDialog *>("hwdlg");
     if (dlg == 0)
     {
-        MAINDBG;
+        DBGMSG;
         return;
     }
     s_tqSpinBox *spbmv = this->findChild<s_tqSpinBox *>("hwmv");
@@ -721,7 +724,7 @@ void Coma::SendHW()
     s_tqSpinBox *spbsv = this->findChild<s_tqSpinBox *>("hwsv");
     if ((spbmv == 0) || (spblv == 0) || (spbsv == 0))
     {
-        MAINDBG;
+        DBGMSG;
         return;
     }
     quint32 tmpi = spbmv->value();
@@ -736,7 +739,7 @@ void Coma::SendHW()
         GetBsi();
     else
     {
-        MAINER("Проблема при записи версии аппаратуры модуля");
+        ERMSG("Проблема при записи версии аппаратуры модуля");
         return;
     }
     dlg->close();
@@ -866,14 +869,14 @@ void Coma::AcceptSettings()
     QDialog *dlg = this->findChild<QDialog *>("settingsdlg");
     if (dlg == 0)
     {
-        MAINDBG;
+        DBGMSG;
         return;
     }
     s_tqSpinBox *spb = this->findChild<s_tqSpinBox *>("errdelayspb");
     QCheckBox *cb = this->findChild<QCheckBox *>("showerrcb");
     if ((spb == 0) || (cb == 0))
     {
-        MAINDBG;
+        DBGMSG;
         return;
     }
     QSettings *sets = new QSettings("EvelSoft","COMA");
@@ -1054,9 +1057,9 @@ void Coma::ShowOrHideSlideER()
 void Coma::ShowErrMsg(int ermsg)
 {
     if (ermsg < pc.errmsgs.size())
-        MAINER(pc.errmsgs.at(ermsg));
+        ERMSG(pc.errmsgs.at(ermsg));
     else
-        MAINER("Произошла неведомая фигня #"+QString::number(ermsg,10));
+        ERMSG("Произошла неведомая фигня #"+QString::number(ermsg,10));
 }
 
 void Coma::UpdateErrorProtocol()
@@ -1064,7 +1067,7 @@ void Coma::UpdateErrorProtocol()
     ErrorProtocolWidget *ErWidget = this->findChild<ErrorProtocolWidget *>("errorwidget");
     if (ErWidget == 0)
     {
-        MAINDBG;
+        DBGMSG;
         return;
     }
     if (pc.ermsgpool.isEmpty())
@@ -1109,7 +1112,7 @@ void Coma::SetProgressBarSize(quint32 size)
     QProgressBar *prb = this->findChild<QProgressBar *>("prbprb");
     if ((prb == 0) || (lbl == 0))
     {
-        MAINDBG;
+        DBGMSG;
         return;
     }
     lbl->setText(pc.PrbMessage + QString::number(size));
@@ -1125,7 +1128,7 @@ void Coma::DisableProgressBar()
     QProgressBar *prb = this->findChild<QProgressBar *>("prbprb");
     if ((prb == 0) || (lbl == 0))
     {
-        MAINDBG;
+        DBGMSG;
         return;
     }
     prb->setEnabled(false);
@@ -1137,7 +1140,7 @@ void Coma::SetText(QString name, QString txt)
     QLineEdit *le = this->findChild<QLineEdit *>(name);
     if (le == 0)
     {
-        MAINER("Не найден виджет "+name);
+        ERMSG("Не найден виджет "+name);
         return;
     }
     le->setText(txt);

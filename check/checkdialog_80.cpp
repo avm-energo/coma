@@ -11,8 +11,8 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QLineEdit>
-//#include <QSpinBox>
-#include "e_checkdialog.h"
+#include "checkdialog_80.h"
+#include "../widgets/messagebox.h"
 #include "../publicclass.h"
 #include "../canal.h"
 
@@ -384,7 +384,7 @@ void e_checkdialog::StartAnalogMeasurementsToFile()
     QString Filename = QFileDialog::getSaveFileName(this,"Сохранить данные","","Excel files (*.xlsx)");
     if (Filename == "")
     {
-        ECHECKER("Не задано имя файла");
+        ERMSG("Не задано имя файла");
         return; // !!! ошибка - не задано имя файла
     }
     XlsxWriting = true;
@@ -432,7 +432,7 @@ void e_checkdialog::ReadAnalogMeasurements()
         qApp->processEvents();
     if (cn->result != CN_OK)
     {
-        ECHECKINFO("Ошибка при приёме данных");
+        MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");
         return;
     }
     // обновление коэффициентов в соответствующих полях на экране
@@ -485,7 +485,7 @@ void e_checkdialog::StopAnalogMeasurements()
         if (xlsx)
         {
             xlsx->save();
-            ECHECKINFO("Файл создан успешно");
+            MessageBox2::information(this, "Внимание", "Файл создан успешно");
             delete xlsx;
         }
         QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");

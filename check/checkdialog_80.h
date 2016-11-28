@@ -5,9 +5,6 @@
 #include <QTimer>
 #include <QtXlsx/xlsxdocument.h>
 
-#define ECHECKER(a)       ERMSG(publicclass::ER_ECHECK,__LINE__,a)
-#define ECHECKINFO(a)     INFOMSG(publicclass::ER_ECHECK,__LINE__,a)
-
 class e_checkdialog : public QDialog
 {
     Q_OBJECT

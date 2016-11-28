@@ -8,7 +8,8 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QCoreApplication>
-#include "a_tunedialog.h"
+#include "tunedialog_21.h"
+#include "../widgets/messagebox.h"
 #include "../publicclass.h"
 #include "../canal.h"
 
@@ -170,13 +171,13 @@ bool a_tunedialog::tune(int Type, int ChNum)
                 CheckAndShowTune0(ChNum);
             else
             {
-                ATUNEWARN("");
+                WARNMSG("");
                 return false;
             }
         }
         else
         {
-            ATUNEWARN("Настройка прервана");
+            WARNMSG("Настройка прервана");
             return false;
         }
         break;
@@ -194,13 +195,13 @@ bool a_tunedialog::tune(int Type, int ChNum)
                 CheckAndShowTune20(ChNum);
             else
             {
-                ATUNEWARN("");
+                WARNMSG("");
                 return false;
             }
         }
         else
         {
-            ATUNEWARN("Настройка прервана");
+            WARNMSG("Настройка прервана");
             return false;
         }
         break;
@@ -219,13 +220,13 @@ bool a_tunedialog::tune(int Type, int ChNum)
                 CheckAndShowTune5(ChNum);
             else
             {
-                ATUNEWARN("");
+                WARNMSG("");
                 return false;
             }
         }
         else
         {
-            ATUNEWARN("Настройка прервана");
+            WARNMSG("Настройка прервана");
             return false;
         }
         break;
@@ -253,23 +254,23 @@ void a_tunedialog::StartTune()
                 {
                     if (pb != 0)
                         pb->setStyleSheet("QPushButton {background-color: #FFE0C0;}");
-                    ATUNEINFO("Успешно");
+                    MessageBox2::information(this, "Внимание", "Успешно");
                 }
                 else
                 {
                     if (pb != 0)
                         pb->setStyleSheet("QPushButton {background-color: #D0D0D0;}");
-                    ATUNEWARN("Настройка не удалась");
+                    WARNMSG("Настройка не удалась");
                 }
             }
             else
-                ATUNEDBG;
+                DBGMSG;
         }
         else
-            ATUNEDBG;
+            DBGMSG;
     }
     else
-        ATUNEDBG;
+        DBGMSG;
 }
 
 bool a_tunedialog::CheckAndShowTune0(int ChNum)
@@ -277,7 +278,7 @@ bool a_tunedialog::CheckAndShowTune0(int ChNum)
     QLabel *lbl = this->findChild<QLabel *>("tunech"+QString::number(ChNum));
     if (lbl == 0)
     {
-        ATUNEDBG;
+        DBGMSG;
         return false;
     }
     lbl->setText(QString::number(Bda0.sin[ChNum]/ATUNENUMPOINTS,16));
@@ -293,7 +294,7 @@ bool a_tunedialog::CheckAndShowTune5(int ChNum)
     QLabel *lbl = this->findChild<QLabel *>("tunech"+QString::number(ChNum));
     if (lbl == 0)
     {
-        ATUNEDBG;
+        DBGMSG;
         return false;
     }
     lbl->setText(QString::number(Bda5.sin[ChNum]/ATUNENUMPOINTS,16));
@@ -309,7 +310,7 @@ bool a_tunedialog::CheckAndShowTune20(int ChNum)
     QLabel *lbl = this->findChild<QLabel *>("tunech"+QString::number(ChNum));
     if (lbl == 0)
     {
-        ATUNEDBG;
+        DBGMSG;
         return false;
     }
     lbl->setText(QString::number(Bda20.sin[ChNum]/ATUNENUMPOINTS,16));
@@ -326,7 +327,7 @@ bool a_tunedialog::CalcNewTuneCoef(int ChNum)
                                         (ATUNENUMPOINTS*1638.0));
     if ((Bda0.sin[ChNum] == Bda5.sin[ChNum]) || (Bda0.sin[ChNum] == Bda20.sin[ChNum]))
     {
-        ATUNEWARN("Ошибка в настроечных коэффициентах, деление на ноль");
+        WARNMSG("Ошибка в настроечных коэффициентах, деление на ноль");
         return false;
     }
     Bac_block[ChNum].fkuin = ATUNENUMPOINTS*1638.0 / \
@@ -352,21 +353,21 @@ bool a_tunedialog::RefreshTuneField(int ChNum)
     QLineEdit *le = this->findChild<QLineEdit *>("tunebcoef"+QString::number(ChNum));
     if (le == 0)
     {
-        ATUNEDBG;
+        DBGMSG;
         return false;
     }
     le->setText(QString::number(Bac_block[ChNum].fbin, 'f', 5));
     le = this->findChild<QLineEdit *>("tunek1coef"+QString::number(ChNum));
     if (le == 0)
     {
-        ATUNEDBG;
+        DBGMSG;
         return false;
     }
     le->setText(QString("%1").arg(Bac_block[ChNum].fkuin, 0, 'f', 5));
     le = this->findChild<QLineEdit *>("tunek2coef"+QString::number(ChNum));
     if (le == 0)
     {
-        ATUNEDBG;
+        DBGMSG;
         return false;
     }
     le->setText(QString::number(Bac_block[ChNum].fkiin, 'f', 5));
@@ -384,38 +385,38 @@ bool a_tunedialog::RefreshTuneCoef(int ChNum)
     QLineEdit *le = this->findChild<QLineEdit *>("tunebcoef"+QString::number(ChNum));
     if (le == 0)
     {
-        ATUNEDBG;
+        DBGMSG;
         return false;
     }
     bool ok;
     Bac_block[ChNum].fbin = le->text().toFloat(&ok);
     if (!ok)
     {
-        ATUNEWARN("Ошибка при переводе во float");
+        WARNMSG("Ошибка при переводе во float");
         return false;
     }
     le = this->findChild<QLineEdit *>("tunek1coef"+QString::number(ChNum));
     if (le == 0)
     {
-        ATUNEDBG;
+        DBGMSG;
         return false;
     }
     Bac_block[ChNum].fkiin = le->text().toFloat(&ok);
     if (!ok)
     {
-        ATUNEWARN("Ошибка при переводе во float");
+        WARNMSG("Ошибка при переводе во float");
         return false;
     }
     le = this->findChild<QLineEdit *>("tunek2coef"+QString::number(ChNum));
     if (le == 0)
     {
-        ATUNEDBG;
+        DBGMSG;
         return false;
     }
     Bac_block[ChNum].fkuin = le->text().toFloat(&ok);
     if (!ok)
     {
-        ATUNEWARN("Ошибка при переводе во float");
+        WARNMSG("Ошибка при переводе во float");
         return false;
     }
     return true;
@@ -451,7 +452,7 @@ void a_tunedialog::WriteTuneCoefs()
     }
     else
     {
-        ATUNEWARN("Есть некорректные коэффициенты");
+        WARNMSG("Есть некорректные коэффициенты");
         return;
     }
 }
@@ -463,7 +464,7 @@ bool a_tunedialog::CheckTuneCoefs()
         QLineEdit *le = this->findChild<QLineEdit *>("tunebcoef"+QString::number(i));
         if (le == 0)
         {
-            ATUNEDBG;
+            DBGMSG;
             return false;
         }
         if (le->text().isEmpty() || (le->text().toInt() == -1))
@@ -471,7 +472,7 @@ bool a_tunedialog::CheckTuneCoefs()
         le = this->findChild<QLineEdit *>("tunek1coef"+QString::number(i));
         if (le == 0)
         {
-            ATUNEDBG;
+            DBGMSG;
             return false;
         }
         if (le->text().isEmpty() || (le->text().toInt() == -1))
@@ -479,7 +480,7 @@ bool a_tunedialog::CheckTuneCoefs()
         le = this->findChild<QLineEdit *>("tunek2coef"+QString::number(i));
         if (le == 0)
         {
-            ATUNEDBG;
+            DBGMSG;
             return false;
         }
         if (le->text().isEmpty() || (le->text().toInt() == -1))
@@ -493,7 +494,7 @@ void a_tunedialog::LoadFromFile()
     QByteArray ba = pc.LoadFile("Tune files (*.atn)");
     memcpy(&Bac_block,&(ba.data()[0]),sizeof(Bac_block));
     RefreshTuneFields();
-    ATUNEINFO("Загрузка прошла успешно!");
+    MessageBox2::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
 void a_tunedialog::SaveToFile()
@@ -502,16 +503,16 @@ void a_tunedialog::SaveToFile()
     switch (res)
     {
     case 0:
-        ATUNEINFO("Записано успешно!");
+        MessageBox2::information(this, "Внимание", "Записано успешно!");
         break;
     case 1:
-        ATUNEER("Ошибка при записи файла!");
+        ERMSG("Ошибка при записи файла!");
         break;
     case 2:
-        ATUNEER("Пустое имя файла!");
+        ERMSG("Пустое имя файла!");
         break;
     case 3:
-        ATUNEER("Ошибка открытия файла!");
+        ERMSG("Ошибка открытия файла!");
         break;
     default:
         break;
@@ -521,7 +522,7 @@ void a_tunedialog::SaveToFile()
 void a_tunedialog::ShowErrMsg(int ermsg)
 {
     if (ermsg < pc.errmsgs.size())
-        ATUNEER(pc.errmsgs.at(ermsg));
+        ERMSG(pc.errmsgs.at(ermsg));
     else
-        ATUNEER("Произошла неведомая фигня #"+QString::number(ermsg,10));
+        ERMSG("Произошла неведомая фигня #"+QString::number(ermsg,10));
 }

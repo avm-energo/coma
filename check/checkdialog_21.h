@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QTimer>
 #include <QTime>
-#include "config/config21.h"
+#include "../config/config21.h"
 #include "../publicclass.h"
 #include <QtXlsx/xlsxdocument.h>
 

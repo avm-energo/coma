@@ -24,16 +24,11 @@
 #define RT_V05      3
 #define RT_V_55     4
 
-#define ACONFER(a)       ERMSG(publicclass::ER_ACONF,__LINE__,a)
-#define ACONFDBG         DBGMSG(publicclass::ER_ACONF,__LINE__)
-#define ACONFWARN        WARNMSG(publicclass::ER_ACONF,__LINE__)
-#define ACONFINFO(a)     INFOMSG(publicclass::ER_ACONF,__LINE__,a)
-
-class confdialog_2x : public QDialog
+class confdialog_21 : public QDialog
 {
     Q_OBJECT
 public:
-    explicit confdialog_2x(QWidget *parent = 0);
+    explicit confdialog_21(QWidget *parent = 0);
 
     bool NoProperConf; // в модуле нет нормальной конфигурации
 

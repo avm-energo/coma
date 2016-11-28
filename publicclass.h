@@ -3,7 +3,7 @@
 
 // Макросы для выдачи сообщений
 #define ERMSG(a)    pc.AddErrMsg(publicclass::ER_MSG,__FILE__,__LINE__,a)
-#define DBGMSG      pc.AddErrMsg(publicclass::DBG_MSG,__FILE__,__LINE__,a)
+#define DBGMSG      pc.AddErrMsg(publicclass::DBG_MSG,__FILE__,__LINE__,"")
 #define INFOMSG(a)  pc.AddErrMsg(publicclass::INFO_MSG,__FILE__,__LINE__,a)
 #define WARNMSG(a)  pc.AddErrMsg(publicclass::WARN_MSG,__FILE__,__LINE__,a)
 
@@ -24,59 +24,6 @@
 #define double_TYPE	10 //64-х битовое плавающее
 #define string_TYPE	11 //строка, ограниченная нулём
 #define binary_TYPE	12 //любые двоичные данные
-
-// Канал связи с модулем
-
-#define CN_TIMEOUT  2000 // таймаут по USB в мс
-#define CN_OSCT     1000 // таймаут посылки запроса нестёртых осциллограмм
-
-// Обмен с модулями
-#define CN_ResOk   0x11 // ответ "всё в порядке"
-#define CN_GBsi    0x21 // запрос блока стартовой информации
-#define CN_Gac     0x22 // запрос настроечных коэффициентов
-#define CN_Gda     0x23 // запрос текущих данных без настройки
-#define CN_GBd     0x24 // запрос блока текущих данных
-#define CN_GF      0x25 // запрос файла конфигурации
-#define CN_GNosc   0x26 // запрос информации об осциллограммах
-#define CN_GBosc   0x27 // запрос осциллограммы
-#define CN_GBev    0x28 // запрос банка текущих событий
-#define CN_GBdi    0x29 // запрос текущих данных, приведённых ко входу
-#define CN_Wac     0x31 // запись настроечных коэффициентов
-#define CN_WF      0x32 // запись файла конфигурации
-#define CN_Start   0x3e // начало посылки
-#define CN_MStart  0x3c // начало посылки модуля
-#define CN_Cln     0x41 // зажечь светодиод
-#define CN_Clf     0x42 // погасить светодиод
-#define CN_Gip     0x43 // запрос IP-адреса
-#define CN_Cps     0x44 // контроль 1PPS
-#define CN_OscEr   0x45 // стирание всех осциллограмм из Flash-памяти
-#define CN_OscPg   0x46 // запрос оставшегося для стирания по команде OscEr числа страниц
-#define CN_Wsn     0x47 // запись серийного номера модуля
-#define CN_WHv     0x48 // запись версии аппаратуры модуля
-#define CN_Cnc     0x49 // команда перехода на новую конфигурацию
-#define CN_GBte    0x4A // запрос блока технологических событий
-#define CN_SegOk   0x55 // ответ "сегмент принят в порядке"
-#define CN_ResErr  0x0f // ответ "ошибка"
-#define CN_Unk     0xff // неизвестная команда
-// определение ошибок
-
-#define CN_OK               0 // ошибок нет
-#define CN_PORTOPENERROR    1 // ошибка открытия порта
-#define CN_NOPORTSERROR     2 // нет портов в системе
-#define CN_SEGFAULTERROR    3 // ошибка при приёме сегмента данных на стороне модуля
-#define CN_RCVDATAERROR     4 // ошибка при приёме данных (несовпадение длины, неправильный начальный символ и т.п.)
-#define CN_TIMEOUTERROR     5 // таймаут при приёме данных
-#define CN_RCVLENGTHERROR   6 // некорректная длина блока (принято больше, чем может вместить в себя приёмная переменная)
-#define CN_UNKNOWNCMDERROR  7 // неизвестная команда
-#define CN_S2SIZEERROR      8 // ошибка длины при работе с форматом S2
-#define CN_S2DESCERROR      9 // несовпадение описания прочитанного элемента с ожидаемым при работе с форматом S2
-#define CN_S2CRCERROR       10 // несовпадение контрольной суммы при работе с форматом S2
-#define CN_S2DHSZERROR      11 // некорректная длина в FileHeader при разборе формата S2
-#define CN_NULLDATAERROR    12 // в канальную процедуру переданы некорректные данные
-#define CN_NOIDS            13 // не найдено ни одного элемента с заданным ID
-#define ER_FILEOPENERROR    15 // ошибка при открытии файла
-#define ER_NOCONF           20 // нет конфигурации в модуле
-#define ER_NOTUNECOEF       21 // нет настроечных параметров в модуле
 
 // ошибки IP-сокета
 #define SKT_UNKNOWNER       24 // неизвестная ошибка
@@ -144,6 +91,19 @@
 #define HTH_1PPS            0x00000010 // нет сигнала 1PPS
 #define HTH_REL             0x00000008 // неисправность выходных реле (Д)
 #define HTH_TUPP            0x00000004 // перегрев модуля
+
+// ошибки разбора S2
+#define S2_SIZEERROR      8 // ошибка длины при работе с форматом S2
+#define S2_DESCERROR      9 // несовпадение описания прочитанного элемента с ожидаемым при работе с форматом S2
+#define S2_CRCERROR       10 // несовпадение контрольной суммы при работе с форматом S2
+#define S2_DHSZERROR      11 // некорректная длина в FileHeader при разборе формата S2
+#define S2_NOIDS          13 // не найдено ни одного элемента с заданным ID
+
+// ошибки модулей
+#define ER_OK               0
+#define ER_FILEOPENERROR    15 // ошибка при открытии файла
+#define ER_NOCONF           20 // нет конфигурации в модуле
+#define ER_NOTUNECOEF       21 // нет настроечных параметров в модуле
 
 #define CS_MSGTRIG          500 // частота мигания сообщения о попытке восстановить связь с модулем
 #define CS_TIMEOUT          5000 // количество мс ожидания появления связи с модулем
@@ -228,8 +188,8 @@ public:
     {
         QString DateTime;
         ermsgtype type;
-        quint64 ernum;
-        quint64 ersubnum;
+        QString file;
+        int line;
         QString msg;
     };
 
@@ -247,23 +207,6 @@ public:
         ER_ACHECK,
         ER_ECHECK
     };
-
-    static QMap<int, QString> ermsgs()
-    {
-        QMap<int, QString>map;
-        map.insert(ER_MAIN, "Кома");
-        map.insert(ER_CANAL, "Канал");
-        map.insert(ER_SERIAL, "Поток USB");
-        map.insert(ER_ETUNE, "Настр. Э");
-        map.insert(ER_ECONF, "Конф. Э");
-        map.insert(ER_ATUNE, "Настр. A");
-        map.insert(ER_ACONF, "Конф. A");
-        map.insert(ER_OSC, "Осциллограммы");
-        map.insert(ER_PUB, "Основное");
-        map.insert(ER_ACHECK, "Пров. А");
-        map.insert(ER_ECHECK, "Пров. Э");
-        return map;
-    }
 
     QSerialPort serial;
 //    qint32 MType, MType1, SerNum;
@@ -308,7 +251,7 @@ public:
     void updCRC32(const quint8 byte, quint32 *dwCRC32);
     quint32 getTime32();
     QString NsTimeToString (quint64 nstime);
-    void AddErrMsg(ermsgtype msgtype, quint64 ernum=0, quint64 ersubnum=0, QString msg="");
+    void AddErrMsg(ermsgtype msgtype, QString file=0, int line=0, QString msg="");
     QByteArray LoadFile(QString mask);
     int SaveFile (QString mask, void *src, unsigned int numbytes);
     bool FloatInRange(float var, float value);

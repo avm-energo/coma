@@ -54,7 +54,6 @@ void confdialog::Fill()
 
 QWidget *confdialog::Widget104()
 {
-    BciMain = bci;
     QVBoxLayout *vlyout = new QVBoxLayout;
     s_tqComboBox *cb = new s_tqComboBox;
     QGroupBox *gb = new QGroupBox;
@@ -167,8 +166,8 @@ QWidget *confdialog::Widget104()
     lbl = new QLabel("Тип синхр. времени:");
     gb3lyout->addWidget(lbl,7,0,1,1,Qt::AlignRight);
     cb->setObjectName("spb.8");
-    cbl = QStringList() << "SNTPIP2+PPS" << "SNTPIP1+PPS" << "SNTPIP1";
-    cblm = new QStringListModel;
+    QStringList cbl = QStringList() << "SNTPIP2+PPS" << "SNTPIP1+PPS" << "SNTPIP1";
+    QStringListModel *cblm = new QStringListModel;
     cblm->setStringList(cbl);
     cb->setModel(cblm);
     cb->setMinimumWidth(70);
@@ -184,7 +183,7 @@ QWidget *confdialog::Widget104()
 
 void confdialog::Set104(double dbl)
 {
-    QStringList sl = sender()->objectName.split(".");
+    QStringList sl = sender()->objectName().split(".");
     if (sl.size() < 1)
     {
         DBGMSG;

@@ -63,7 +63,7 @@ void ErrorProtocolWidget::AddRowToProt(publicclass::ermsg ermsg)
     s_tqTableView *tv = this->findChild<s_tqTableView *>("ertv");
     if (tv == 0)
     {
-        DBGMSG(publicclass::ER_MAIN,__LINE__);
+        DBGMSG;
         return;
     }
     ErrorProtocolModel *erm = static_cast<ErrorProtocolModel *>(tv->model());
@@ -171,7 +171,7 @@ void ErrorProtocolModel::AddRow(publicclass::ermsg msg)
     if (rowCount()<MAX_MSG)
         insertRows(0,1,QModelIndex());
     QStringList tmpsl = QStringList() << "#"+QString::number(MsgCount) << QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss") \
-                                      << QString::number(msg.ernum,10) << QString::number(msg.ersubnum,10) << msg.msg;
+                                      << msg.file << QString::number(msg.line,10) << msg.msg;
     MsgCount++;
     erdata.insert(0,tmpsl);
     if (erdata.size() >= MAX_MSG)

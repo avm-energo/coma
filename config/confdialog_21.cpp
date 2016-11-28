@@ -14,10 +14,11 @@
 #include <QCoreApplication>
 #include <QDoubleSpinBox>
 #include <QTabBar>
-#include "confdialog_2x.h"
+#include "confdialog_21.h"
+#include "../widgets/messagebox.h"
 #include "../canal.h"
 
-confdialog_2x::confdialog_2x(QWidget *parent) :
+confdialog_21::confdialog_21(QWidget *parent) :
     QDialog(parent)
 {
     ChTypModelIsFilling = false;
@@ -32,7 +33,7 @@ confdialog_2x::confdialog_2x(QWidget *parent) :
         GetBci();
 }
 
-void confdialog_2x::SetupUI()
+void confdialog_21::SetupUI()
 {
     int i;
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
@@ -400,7 +401,7 @@ void confdialog_2x::SetupUI()
     setLayout(lyout);
 }
 
-void confdialog_2x::SetRangemA()
+void confdialog_21::SetRangemA()
 {
     QComboBox *cb = qobject_cast<QComboBox *>(sender());
     if (cb == 0)
@@ -411,7 +412,7 @@ void confdialog_2x::SetRangemA()
     SetRange(cb->currentIndex(), tmpi);
 }
 
-void confdialog_2x::SetRangeV()
+void confdialog_21::SetRangeV()
 {
     QComboBox *cb = qobject_cast<QComboBox *>(sender());
     if (cb == 0)
@@ -422,7 +423,7 @@ void confdialog_2x::SetRangeV()
     SetRange(cb->currentIndex()+RT_V05, tmpi); // перемещаем диапазон комбобокса в область V
 }
 
-void confdialog_2x::SetRange(int Range, int ChNum)
+void confdialog_21::SetRange(int Range, int ChNum)
 {
     switch(Range)
     {
@@ -451,7 +452,7 @@ void confdialog_2x::SetRange(int Range, int ChNum)
     }
 }
 
-void confdialog_2x::GetBci()
+void confdialog_21::GetBci()
 {
     cn->Send(CN_GF,NULL,0,1,aconf->Config);
     while (cn->Busy)
@@ -460,7 +461,7 @@ void confdialog_2x::GetBci()
         FillConfData();
 }
 
-void confdialog_2x::FillConfData()
+void confdialog_21::FillConfData()
 {
     int i;
     QSpinBox *spb;
@@ -469,37 +470,37 @@ void confdialog_2x::FillConfData()
     spb = this->findChild<QSpinBox *>("oscdlyspb");
     if (spb == 0)
     {
-        ACONFDBG;
+        DBGMSG;
         return;
     }
     spb->setValue(aconf->Bci_block.oscdly);
-    SetSpinboxValue("abs104spb",aconf->Bci_block.Abs_104);
-    SetSpinboxValue("cycle104spb",aconf->Bci_block.Cycle_104);
-    SetSpinboxValue("t1104spb",aconf->Bci_block.T1_104);
-    SetSpinboxValue("t2104spb",aconf->Bci_block.T2_104);
-    SetSpinboxValue("t3104spb",aconf->Bci_block.T3_104);
-    SetSpinboxValue("k104spb",aconf->Bci_block.k_104);
-    SetSpinboxValue("w104spb",aconf->Bci_block.w_104);
+    SetSpinboxValue("abs104spb",aconf->Bci_block.mainblk.Abs_104);
+    SetSpinboxValue("cycle104spb",aconf->Bci_block.mainblk.Cycle_104);
+    SetSpinboxValue("t1104spb",aconf->Bci_block.mainblk.T1_104);
+    SetSpinboxValue("t2104spb",aconf->Bci_block.mainblk.T2_104);
+    SetSpinboxValue("t3104spb",aconf->Bci_block.mainblk.T3_104);
+    SetSpinboxValue("k104spb",aconf->Bci_block.mainblk.k_104);
+    SetSpinboxValue("w104spb",aconf->Bci_block.mainblk.w_104);
     cb = this->findChild<QComboBox *>("ctypecb");
     if (cb == 0)
     {
-        ACONFDBG;
+        DBGMSG;
         return;
     }
-    cb->setCurrentIndex(aconf->Bci_block.Ctype);
+    cb->setCurrentIndex(aconf->Bci_block.mainblk.Ctype);
     for (i = 0; i < 16; i++)
     {
         cb = this->findChild<QComboBox *>("chtypcb."+QString::number(i));
         if (cb == 0)
         {
-            ACONFDBG;
+            DBGMSG;
             return;
         }
         cb->setCurrentIndex(aconf->Bci_block.in_type[i]);
         chb = this->findChild<QCheckBox *>("chb."+QString::number(i));
         if (cb == 0)
         {
-            ACONFDBG;
+            DBGMSG;
             return;
         }
         if (aconf->Bci_block.discosc & (static_cast<quint32>(0x0001) << i))
@@ -509,17 +510,17 @@ void confdialog_2x::FillConfData()
         cb = this->findChild<QComboBox *>("oscsrccb."+QString::number(i));
         if (cb == 0)
         {
-            ACONFDBG;
+            DBGMSG;
             return;
         }
         QLabel *lbl = this->findChild<QLabel *>("oscsrcl."+QString::number(i));
         if (lbl == 0)
         {
-            ACONFDBG;
+            DBGMSG;
             return;
         }
         quint8 tmpi = i << 1;
-        cb->setCurrentIndex((aconf->Bci_block.oscsrc&(static_cast<quint32>(0x00000003) << tmpi)) >> tmpi);
+        cb->setCurrentIndex(aconf->Bci_block.osc[i]);
         SetMinMax(i);
         SetSpinboxValue("invmin."+QString::number(i), aconf->Bci_block.in_vmin[i]);
         SetSpinboxValue("invmax."+QString::number(i), aconf->Bci_block.in_vmax[i]);
@@ -531,12 +532,12 @@ void confdialog_2x::FillConfData()
     }
 }
 
-void confdialog_2x::SetMinMax(int i)
+void confdialog_21::SetMinMax(int i)
 {
     QComboBox *cb = this->findChild<QComboBox *>("inrange."+QString::number(i));
     if (cb == 0)
     {
-        ACONFDBG;
+        DBGMSG;
         return;
     }
     switch (aconf->Bci_block.in_type[i])
@@ -609,18 +610,18 @@ void confdialog_2x::SetMinMax(int i)
     }
 }
 
-void confdialog_2x::SetSpinboxValue(QString name, double value)
+void confdialog_21::SetSpinboxValue(QString name, double value)
 {
     QDoubleSpinBox *dspbls = this->findChild<QDoubleSpinBox *>(name);
     if (dspbls == 0)
     {
-        ACONFDBG;
+        DBGMSG;
         return;
     }
     dspbls->setValue(value);
 }
 
-void confdialog_2x::SetChTypData()
+void confdialog_21::SetChTypData()
 {
     QComboBox *cb = qobject_cast<QComboBox *>(sender());
     int tmpi = GetChNumFromObjectName(sender()->objectName());
@@ -634,7 +635,7 @@ void confdialog_2x::SetChTypData()
     ChTypModelIsFilling = false;
 }
 
-void confdialog_2x::DisableChannel(int ChNum, bool Disable)
+void confdialog_21::DisableChannel(int ChNum, bool Disable)
 {
     QComboBox *cb;
     QCheckBox *chb = this->findChild<QCheckBox *>("chb."+QString::number(ChNum));
@@ -681,12 +682,12 @@ void confdialog_2x::DisableChannel(int ChNum, bool Disable)
         dspbls->setVisible(!Disable);
 }
 
-void confdialog_2x::SetRangeCB(int ChNum, int ChTypCB)
+void confdialog_21::SetRangeCB(int ChNum, int ChTypCB)
 {
     QComboBox *mcb = this->findChild<QComboBox *>("inrange."+QString::number(ChNum));
     if (mcb == 0)
     {
-        ACONFDBG;
+        DBGMSG;
         return;
     }
     QStringList sl = QStringList() << RT_MText;
@@ -706,12 +707,12 @@ void confdialog_2x::SetRangeCB(int ChNum, int ChTypCB)
     mcb->setModel(slm);
 }
 
-void confdialog_2x::SetOscDly(int dly)
+void confdialog_21::SetOscDly(int dly)
 {
     aconf->Bci_block.oscdly = dly;
 }
 
-void confdialog_2x::SetChOsc(int isChecked)
+void confdialog_21::SetChOsc(int isChecked)
 {
     int ChNum = GetChNumFromObjectName(sender()->objectName());
     if (ChNum == -1)
@@ -738,7 +739,7 @@ void confdialog_2x::SetChOsc(int isChecked)
     }
 }
 
-void confdialog_2x::SetChOscSrc(int srctyp)
+void confdialog_21::SetChOscSrc(int srctyp)
 {
     int ChNum = GetChNumFromObjectName(sender()->objectName());
     if (ChNum == -1)
@@ -750,7 +751,7 @@ void confdialog_2x::SetChOscSrc(int srctyp)
     aconf->Bci_block.oscsrc |= tmpint;
 }
 
-int confdialog_2x::GetChNumFromObjectName(QString ObjectName)
+int confdialog_21::GetChNumFromObjectName(QString ObjectName)
 {
     QStringList ObjectNameSl = ObjectName.split(".");
     int ChNum;
@@ -764,7 +765,7 @@ int confdialog_2x::GetChNumFromObjectName(QString ObjectName)
     return ChNum;
 }
 
-bool confdialog_2x::CheckConf()
+bool confdialog_21::CheckConf()
 {
     bool NotGood = false;
     for (int i=0; i<16; i++)
@@ -791,7 +792,7 @@ bool confdialog_2x::CheckConf()
     return NotGood;
 }
 
-void confdialog_2x::SetIn()
+void confdialog_21::SetIn()
 {
     QStringList tmpsl = QStringList() << "inmin" << "inmax" << "invmin" << "invmax" << \
                                          "setminmin" << "setmin" << "setmax" << "setmaxmax";
@@ -800,7 +801,7 @@ void confdialog_2x::SetIn()
     int idx = tmpsl.indexOf(ObjectName);
     if (idx == -1)
     {
-        ACONFDBG;
+        DBGMSG;
         return;
     }
     int tmpi = GetChNumFromObjectName(sender()->objectName());
@@ -847,7 +848,7 @@ void confdialog_2x::SetIn()
     spb->setStyleSheet(tmps);
 }
 
-void confdialog_2x::Set104()
+void confdialog_21::Set104()
 {
     QDoubleSpinBox *spb = qobject_cast<QDoubleSpinBox *>(sender());
     int tmpi = GetChNumFromObjectName(sender()->objectName());
@@ -857,37 +858,37 @@ void confdialog_2x::Set104()
     {
     case 0:
     {
-        aconf->Bci_block.Abs_104=spb->value();
+        aconf->Bci_block.mainblk.Abs_104=spb->value();
         break;
     }
     case 1:
     {
-        aconf->Bci_block.Cycle_104=spb->value();
+        aconf->Bci_block.mainblk.Cycle_104=spb->value();
         break;
     }
     case 2:
     {
-        aconf->Bci_block.T1_104=spb->value();
+        aconf->Bci_block.mainblk.T1_104=spb->value();
         break;
     }
     case 3:
     {
-        aconf->Bci_block.T2_104=spb->value();
+        aconf->Bci_block.mainblk.T2_104=spb->value();
         break;
     }
     case 4:
     {
-        aconf->Bci_block.T3_104=spb->value();
+        aconf->Bci_block.mainblk.T3_104=spb->value();
         break;
     }
     case 5:
     {
-        aconf->Bci_block.k_104=spb->value();
+        aconf->Bci_block.mainblk.k_104=spb->value();
         break;
     }
     case 6:
     {
-        aconf->Bci_block.w_104=spb->value();
+        aconf->Bci_block.mainblk.w_104=spb->value();
         break;
     }
     default:
@@ -895,26 +896,26 @@ void confdialog_2x::Set104()
     }
 }
 
-void confdialog_2x::SetCType(int num)
+void confdialog_21::SetCType(int num)
 {
-    aconf->Bci_block.Ctype = num;
+    aconf->Bci_block.mainblk.Ctype = num;
 }
 
-void confdialog_2x::WriteConfDataToModule()
+void confdialog_21::WriteConfDataToModule()
 {
     if (CheckConf())
     {
-        ACONFER("В конфигурации есть ошибки. Проверьте и исправьте");
+        ERMSG("В конфигурации есть ошибки. Проверьте и исправьте");
         return;
     }
     cn->Send(CN_WF, &aconf->Bci_block, sizeof(aconf->Bci_block), 2, aconf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
-        ACONFINFO("Операция проведена успешно!");
+        MessageBox2::information(this, "Внимание", "Операция проведена успешно!");
 }
 
-void confdialog_2x::SetNewConf()
+void confdialog_21::SetNewConf()
 {
     cn->Send(CN_Cnc);
     while (cn->Busy)
@@ -922,30 +923,30 @@ void confdialog_2x::SetNewConf()
     if (cn->result == CN_OK)
     {
         emit BsiIsNeedToBeAcquiredAndChecked();
-        ACONFINFO("Переход прошёл успешно!");
+        MessageBox2::information(this, "Внимание", "Переход прошёл успешно!");
     }
 }
 
-void confdialog_2x::SetDefConf()
+void confdialog_21::SetDefConf()
 {
     memcpy(&(aconf->Bci_block), &(aconf->Bci_defblock), sizeof(aconf->Bci_block));
     FillConfData();
 }
 
-void confdialog_2x::LoadConf()
+void confdialog_21::LoadConf()
 {
     QByteArray ba;
     ba = pc.LoadFile("Config files (*.acf)");
     if (pc.RestoreDataMem(&(ba.data()[0]), ba.size(), aconf->Config))
     {
-        ACONFWARN;
+        WARNMSG("");
         return;
     }
     FillConfData();
-    ACONFINFO("Загрузка прошла успешно!");
+    MessageBox2::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
-void confdialog_2x::SaveConf()
+void confdialog_21::SaveConf()
 {
     QByteArray *ba = new QByteArray;
     ba->resize(MAXBYTEARRAY);
@@ -959,23 +960,23 @@ void confdialog_2x::SaveConf()
     switch (res)
     {
     case 0:
-        ACONFINFO("Записано успешно!");
+        MessageBox2::information(this, "Внимание", "Записано успешно!");
         break;
     case 1:
-        ACONFER("Ошибка при записи файла!");
+        ERMSG("Ошибка при записи файла!");
         break;
     case 2:
-        ACONFER("Пустое имя файла!");
+        ERMSG("Пустое имя файла!");
         break;
     case 3:
-        ACONFER("Ошибка открытия файла!");
+        ERMSG("Ошибка открытия файла!");
         break;
     default:
         break;
     }
 }
 
-void confdialog_2x::SetRangeWidgetSlot(QString RangeType)
+void confdialog_21::SetRangeWidgetSlot(QString RangeType)
 {
     if (ChTypModelIsFilling) // выход, если слот вызван заполнением модели выпадающего списка
         return;
@@ -986,25 +987,25 @@ void confdialog_2x::SetRangeWidgetSlot(QString RangeType)
         ChNum = McbNameSl.at(1).toInt();
     else
     {
-        ACONFWARN;
+        WARNMSG("");
         return;
     }
     QStringList RangeTypes = QStringList() << "Предуст. мА" << "Предуст. В" << "Произвольный";
     SetRangeWidget(ChNum, RangeTypes.indexOf(RangeType));
 }
 
-void confdialog_2x::SetRangeWidget(int ChNum, int RangeType)
+void confdialog_21::SetRangeWidget(int ChNum, int RangeType)
 {
     QGroupBox *gb = this->findChild<QGroupBox *>("RangeGB");
     if (gb == 0)
     {
-        ACONFDBG;
+        DBGMSG;
         return;
     }
     QGridLayout *lyout = static_cast<QGridLayout *>(gb->layout());
     if (lyout == 0)
     {
-        ACONFDBG;
+        DBGMSG;
         return;
     }
     QLayoutItem *OldLayoutItem = lyout->itemAtPosition(ChNum+1, 2);
