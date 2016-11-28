@@ -506,9 +506,9 @@ void canal::Finish(int ernum)
     if (ernum != CN_OK)
     {
         if (ernum < pc.errmsgs.size())
-            CANALER(pc.errmsgs.at(ernum));
+            ERMSG(pc.errmsgs.at(ernum));
         else
-            CANALER("Произошла неведомая фигня #"+QString::number(ernum,10));
+            ERMSG("Произошла неведомая фигня #"+QString::number(ernum,10));
     }
     result = ernum;
     Busy = false;

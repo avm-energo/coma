@@ -12,7 +12,7 @@
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QDateTime>
-#include "a_checkdialog.h"
+#include "check/checkdialog_21.h"
 #include "../publicclass.h"
 #include "../canal.h"
 
@@ -381,13 +381,13 @@ void a_checkdialog::StartMeasurementsWithFile()
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != CN_OK)
     {
-        ACHECKER("Ошибка приёма данных конфигурации");
+        ERMSG("Ошибка приёма данных конфигурации");
         return;
     }
     QString Filename = QFileDialog::getSaveFileName(this,"Сохранить данные","","Excel files (*.xlsx)");
     if (Filename == "")
     {
-        ACHECKER("Не задано имя файла");
+        ERMSG("Не задано имя файла");
         return; // !!! ошибка - не задано имя файла
     }
     XlsxWriting = true;
@@ -435,7 +435,7 @@ void a_checkdialog::StopMeasurements()
         if (xlsx)
         {
             xlsx->save();
-            ACHECKINFO("Файл создан успешно");
+            MessageBox2::information(this, "Внимание", "Файл создан успешно");
             delete xlsx;
         }
         QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");

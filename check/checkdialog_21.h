@@ -4,14 +4,11 @@
 #include <QDialog>
 #include <QTimer>
 #include <QTime>
-#include "a_config.h"
+#include "config/config21.h"
 #include "../publicclass.h"
 #include <QtXlsx/xlsxdocument.h>
 
 #define ACHECKNUMPOINTS  64 // количество точек, по которым выдаются значения в блоке Bda
-
-#define ACHECKER(a)       ERMSG(publicclass::ER_ACHECK,__LINE__,a)
-#define ACHECKINFO(a)     INFOMSG(publicclass::ER_ACHECK,__LINE__,a)
 
 class a_checkdialog : public QDialog
 {

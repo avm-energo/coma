@@ -11,10 +11,10 @@
 #include <QInputDialog>
 #include <QThread>
 #include <QCoreApplication>
-#include "e_tunedialog.h"
+#include "tunedialog_80.h"
 #include "../publicclass.h"
 #include "../canal.h"
-#include "e_config.h"
+#include "../config/config80.h"
 #include "../widgets/waitwidget.h"
 
 e_tunedialog::e_tunedialog(QWidget *parent) :
@@ -389,7 +389,7 @@ void e_tunedialog::StartTune()
     if (!SaveWorkConfig())
     {
         SetTunePbEnabled(true);
-        ETUNEWARN;
+        WARNMSG("");
         return;
     }
     // показываем диалог с выбором метода контроля
@@ -418,7 +418,7 @@ void e_tunedialog::StartTune()
         if (!res)
         {
             SetTunePbEnabled(true);
-            ETUNEWARN;
+            WARNMSG("");
             return;
         }
     }
@@ -431,7 +431,7 @@ void e_tunedialog::StartTune()
     if (!res)
     {
         SetTunePbEnabled(true);
-        ETUNEWARN;
+        WARNMSG("");
         return;
     }
 
@@ -454,7 +454,7 @@ void e_tunedialog::StartTune()
     if (!res)
     {
         SetTunePbEnabled(true);
-        ETUNEWARN;
+        WARNMSG("");
         return;
     }
 
@@ -462,7 +462,7 @@ void e_tunedialog::StartTune()
     res = Start7_3_4();
     if (!res)
     {
-        ETUNEWARN;
+        WARNMSG("");
         SetTunePbEnabled(true);
         return;
     }
@@ -483,7 +483,7 @@ void e_tunedialog::StartTune()
     if (!res)
     {
         SetTunePbEnabled(true);
-        ETUNEWARN;
+        WARNMSG("");
         return;
     }
 
@@ -502,7 +502,7 @@ void e_tunedialog::StartTune3p()
     if (!SaveWorkConfig())
     {
         SetTunePbEnabled(true);
-        ETUNEWARN;
+        WARNMSG("");
         return;
     }
     ShowControlChooseDialog();
@@ -520,7 +520,7 @@ void e_tunedialog::StartTune3p()
     if (!res)
     {
         SetTunePbEnabled(true);
-        ETUNEWARN;
+        WARNMSG("");
         return;
     }
 
@@ -541,7 +541,7 @@ void e_tunedialog::StartTune3p()
     if (!res)
     {
         SetTunePbEnabled(true);
-        ETUNEWARN;
+        WARNMSG("");
         return;
     }
 
@@ -558,7 +558,7 @@ void e_tunedialog::Tune3p()
         res = Start7_3_7_1();
         if (!res)
         {
-            ETUNEWARN;
+            WARNMSG("");
             SetTunePbEnabled(true);
             LoadWorkConfig();
             return;
@@ -571,7 +571,7 @@ void e_tunedialog::Tune3p()
         if (!res)
         {
             SetTunePbEnabled(true);
-            ETUNEWARN;
+            WARNMSG("");
             LoadWorkConfig();
             return;
         }
@@ -580,7 +580,7 @@ void e_tunedialog::Tune3p()
     if (!res)
     {
         SetTunePbEnabled(true);
-        ETUNEWARN;
+        WARNMSG("");
         LoadWorkConfig();
         return;
     }
@@ -588,7 +588,7 @@ void e_tunedialog::Tune3p()
     if (res)
     {
         SetTunePbEnabled(true);
-        ETUNEINFO("Настройка проведена успешно!");
+        MessageBox2::information(this, "Внимание", "Настройка проведена успешно!");
         OkMsgSetVisible(MSG_END);
     }*/
 }
@@ -598,14 +598,14 @@ void e_tunedialog::SetTunePbEnabled(bool Enabled)
     QPushButton *pb = this->findChild<QPushButton *>("starttune1p");
     if (pb == 0)
     {
-        ETUNEDBG;
+        DBGMSG;
         return;
     }
     pb->setEnabled(Enabled);
     pb = this->findChild<QPushButton *>("starttune1p");
     if (pb == 0)
     {
-        ETUNEDBG;
+        DBGMSG;
         return;
     }
     pb->setEnabled(Enabled);
@@ -658,7 +658,7 @@ bool e_tunedialog::Start7_3_1(bool DefConfig)
             qApp->processEvents();
         if (cn->result != CN_OK)
         {
-            ETUNEINFO("Ошибка при приёме данных");
+            MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");
             return false;
         }
         // обновление коэффициентов в соответствующих полях на экране
@@ -692,7 +692,7 @@ bool e_tunedialog::Start7_3_1(bool DefConfig)
             qApp->processEvents();
         if (cn->result != CN_OK)
         {
-            ETUNEINFO("Ошибка при приёме данных");
+            WARNMSG("Ошибка при приёме данных");
             return false;
         }
         // обновление коэффициентов в соответствующих полях на экране
@@ -701,7 +701,7 @@ bool e_tunedialog::Start7_3_1(bool DefConfig)
     }
     else
     {
-        ETUNEINFO("Ошибка при приёме данных");
+        WARNMSG("Ошибка при приёме данных");
         ErMsgSetVisible(MSG_7_3_1_1);
         return false;
     }
@@ -1046,9 +1046,9 @@ bool e_tunedialog::Start7_3_9()
         while (cn->Busy)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
         if (cn->result == CN_OK)
-            ETUNEINFO("Стёрто успешно");
+            MessageBox2::information(this, "Внимание", "Стёрто успешно");
         else
-            ETUNEINFO("Ошибка при стирании");
+            ERMSG("Ошибка при стирании");
     }
     return true;
 }
@@ -1227,7 +1227,7 @@ bool e_tunedialog::CheckTuneCoefs()
             return false;
         if (!IsWithinLimits(vl, ValuesToCheck[i], ThresholdsToCheck[i]))
         {
-            ETUNEINFO("Настроечные по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'f',4)+\
+            MessageBox2::information(this, "Внимание", "Настроечные по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'f',4)+\
                       ", должно быть: "+QString::number(ValuesToCheck[i],'f',4)+\
                       " +/- "+QString::number(ThresholdsToCheck[i],'f',4));
             res=false;
@@ -1281,7 +1281,7 @@ bool e_tunedialog::CheckMip()
             return false;
         if (!IsWithinLimits(vl,ValuesToCheck[i],ThresholdsToCheck[i]))
         {
-            ETUNEINFO("Несовпадение МИП по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'f',4)+\
+            MessageBox2::information(this, "Внимание", "Несовпадение МИП по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'f',4)+\
                       ", должно быть: "+QString::number(ValuesToCheck[i],'f',4)+\
                       " +/- "+QString::number(ThresholdsToCheck[i],'f',4));
             return false;
@@ -1462,7 +1462,7 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
             return false;
         if (!IsWithinLimits(vl,ValuesToCheck[i],ThresholdsToCheck[i]))
         {
-            ETUNEINFO("Несовпадение по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'f',4)+\
+            MessageBox2::information(this, "Внимание", "Несовпадение по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'f',4)+\
                       ", должно быть: "+QString::number(ValuesToCheck[i],'f',4)+\
                       " +/- "+QString::number(ThresholdsToCheck[i],'f',4));
             return false;
@@ -1487,7 +1487,7 @@ void e_tunedialog::WriteTuneCoefs()
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
-        ETUNEINFO("Записано успешно!");
+        MessageBox2::information(this, "Внимание", "Записано успешно!");
 }
 
 void e_tunedialog::SetNewTuneCoefs()
@@ -1553,7 +1553,7 @@ void e_tunedialog::ReadTuneCoefsFromGUI()
         Bac_block.KmU[i]=le->text().toFloat(&ok);
         if (!ok)
         {
-            ETUNEER("Значение "+le->text()+" не может быть переведено во float");
+            ERMSG("Значение "+le->text()+" не может быть переведено во float");
             return;
         }
         le = this->findChild<QLineEdit *>("tune"+QString::number(i+6));
@@ -1562,7 +1562,7 @@ void e_tunedialog::ReadTuneCoefsFromGUI()
         Bac_block.KmI_5[i]=le->text().toFloat(&ok);
         if (!ok)
         {
-            ETUNEER("Значение "+le->text()+" не может быть переведено во float");
+            ERMSG("Значение "+le->text()+" не может быть переведено во float");
             return;
         }
         le = this->findChild<QLineEdit *>("tune"+QString::number(i+12));
@@ -1571,7 +1571,7 @@ void e_tunedialog::ReadTuneCoefsFromGUI()
         Bac_block.KmI_1[i]=le->text().toFloat(&ok);
         if (!ok)
         {
-            ETUNEER("Значение "+le->text()+" не может быть переведено во float");
+            ERMSG("Значение "+le->text()+" не может быть переведено во float");
             return;
         }
         le = this->findChild<QLineEdit *>("tune"+QString::number(i+18));
@@ -1580,7 +1580,7 @@ void e_tunedialog::ReadTuneCoefsFromGUI()
         Bac_block.DPsi[i]=le->text().toFloat(&ok);
         if (!ok)
         {
-            ETUNEER("Значение "+le->text()+" не может быть переведено во float");
+            ERMSG("Значение "+le->text()+" не может быть переведено во float");
             return;
         }
     }
@@ -1591,7 +1591,7 @@ void e_tunedialog::ReadTuneCoefsFromGUI()
     Bac_block.K_freq=le->text().toFloat(&ok);
     if (!ok)
     {
-        ETUNEER("Значение "+le->text()+" не может быть переведено во float");
+        ERMSG("Значение "+le->text()+" не может быть переведено во float");
         return;
     }
     le = this->findChild<QLineEdit *>("tune25");
@@ -1600,7 +1600,7 @@ void e_tunedialog::ReadTuneCoefsFromGUI()
     Bac_block.Kinter=le->text().toFloat(&ok);
     if (!ok)
     {
-        ETUNEER("Значение "+le->text()+" не может быть переведено во float");
+        ERMSG("Значение "+le->text()+" не может быть переведено во float");
         return;
     }
 }
@@ -1613,7 +1613,7 @@ void e_tunedialog::ReadAnalogMeasurements()
         qApp->processEvents();
     if (cn->result != CN_OK)
     {
-        ETUNEINFO("Ошибка при приёме данных");
+        MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");
         return;
     }
 }
@@ -1848,7 +1848,7 @@ void e_tunedialog::MsgSetVisible(int msg, bool Visible)
     QLabel *lbl = this->findChild<QLabel *>("tunemsg"+QString::number(msg));
     if (lbl == 0)
     {
-        ETUNEDBG;
+        DBGMSG;
         return;
     }
     lbl->setVisible(Visible);
@@ -1859,7 +1859,7 @@ void e_tunedialog::OkMsgSetVisible(int msg, bool Visible)
     QLabel *lbl=this->findChild<QLabel *>("tunemsgres"+QString::number(msg));
     if (lbl == 0)
     {
-        ETUNEDBG;
+        DBGMSG;
         return;
     }
     lbl->setStyleSheet("QLabel {color: black};");
@@ -1872,7 +1872,7 @@ void e_tunedialog::ErMsgSetVisible(int msg, bool Visible)
     QLabel *lbl=this->findChild<QLabel *>("tunemsgres"+QString::number(msg));
     if (lbl == 0)
     {
-        ETUNEDBG;
+        DBGMSG;
         return;
     }
     lbl->setStyleSheet("QLabel {color: red};");
@@ -1890,7 +1890,7 @@ void e_tunedialog::LoadFromFile()
     QByteArray ba = pc.LoadFile("Tune files (*.etn)");
     memcpy(&Bac_block,&(ba.data()[0]),sizeof(Bac_block));
     WriteTuneCoefsToGUI();
-    ETUNEINFO("Загрузка прошла успешно!");
+    MessageBox2::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
 void e_tunedialog::SaveToFile()
@@ -1900,16 +1900,16 @@ void e_tunedialog::SaveToFile()
     switch (res)
     {
     case 0:
-        ETUNEINFO("Записано успешно!");
+        MessageBox2::information(this, "Внимание", "Записано успешно!");
         break;
     case 1:
-        ETUNEER("Ошибка при записи файла!");
+        ERMSG("Ошибка при записи файла!");
         break;
     case 2:
-        ETUNEER("Пустое имя файла!");
+        ERMSG("Пустое имя файла!");
         break;
     case 3:
-        ETUNEER("Ошибка открытия файла!");
+        ERMSG("Ошибка открытия файла!");
         break;
     default:
         break;

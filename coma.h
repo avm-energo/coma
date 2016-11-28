@@ -13,17 +13,17 @@
 #include <QtSerialPort/QSerialPort>
 #include "fwupdialog.h"
 #include "downloaddialog.h"
-#include "config/confdialog_2x.h"
-#include "A/a_checkdialog.h"
-#include "A/a_tunedialog.h"
-#include "E/e_checkdialog.h"
-#include "E/e_confdialog.h"
-#include "E/e_tunedialog.h"
+#include "config/confdialog_21.h"
+#include "check/checkdialog_21.h"
+#include "tune/tunedialog_21.h"
+#include "check/checkdialog_80.h"
+#include "config/confdialog_80.h"
+#include "tune/tunedialog_80.h"
 #include "oscdialog.h"
 #include "canal.h"
 #include "publicclass.h"
 
-#define PROGNAME    "КОМА 1.0.0075"
+#define PROGNAME    "КОМА 2.0"
 
 #define MAINER(a)       ERMSG(publicclass::ER_MAIN,__LINE__,a)
 #define MAINDBG         DBGMSG(publicclass::ER_MAIN,__LINE__)
@@ -89,7 +89,7 @@ private:
     confdialog_2x *ConfDialog2x;
     a_tunedialog *ATuneDialog;
     e_checkdialog *ECheckDialog;
-    e_confdialog *EConfDialog;
+    confdialog_80 *EConfDialog;
     e_tunedialog *ETuneDialog;
     fwupdialog *FwUpDialog;
     downloaddialog *DownDialog;

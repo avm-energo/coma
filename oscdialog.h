@@ -13,11 +13,6 @@
 
 #define MAXOSCBUFSIZE   40000 // максимальный размер буфера для осциллограмм
 
-#define OSCER(a)       ERMSG(publicclass::ER_OSC,__LINE__,a)
-#define OSCDBG         DBGMSG(publicclass::ER_OSC,__LINE__)
-#define OSCWARN        WARNMSG(publicclass::ER_OSC,__LINE__)
-#define OSCINFO(a)     INFOMSG(publicclass::ER_OSC,__LINE__,a)
-
 class oscdialog : public QDialog
 {
     Q_OBJECT

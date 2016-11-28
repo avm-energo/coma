@@ -4,6 +4,7 @@
 #include "widgets/s_tqtableview.h"
 #include "widgets/s_tablemodel.h"
 #include "widgets/getoscpbdelegate.h"
+#include "widgets/messagebox.h"
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -58,7 +59,7 @@ void oscdialog::GetOscInfo()
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
-        ProcessOscInfo();
+        ProcessMessageBox2::information(this, "Внимание", );
 }
 
 void oscdialog::ProcessOscInfo()
@@ -100,7 +101,7 @@ void oscdialog::ProcessOscInfo()
     s_tqTableView *tv = this->findChild<s_tqTableView *>("osctv");
     if (tv == 0)
     {
-        OSCDBG;
+        DBGMSG;
         return; // !!! системная проблема
     }
     QItemSelectionModel *m = tv->selectionModel();
@@ -122,7 +123,7 @@ void oscdialog::EndExtractOsc()
     OscLength += static_cast<quint8>(OscInfo->at(3))*16777216;
     if (OscLength > static_cast<quint32>(OscInfo->size()))
     {
-        OSCER("Передана неверная длина в блоке FileHeader");
+        ERMSG("Передана неверная длина в блоке FileHeader");
         return;
     }
     // считываем шапку - информацию о передаваемом файле осциллограмм - в структуру OscHeader
@@ -159,15 +160,15 @@ void oscdialog::EndExtractOsc()
             else
             {
                 if (res < pc.errmsgs.size())
-                    OSCER(pc.errmsgs.at(res));
+                    ERMSG(pc.errmsgs.at(res));
                 else
-                    OSCER("Произошла неведомая фигня #"+QString::number(res,10));
+                    ERMSG("Произошла неведомая фигня #"+QString::number(res,10));
                 return; // !!! ошибка разбора формата С2
             }
         }
         if (!IDFound) // так и не найдено ни одного ID
         {
-            OSCER("Не найдено ни одного известного ID в принятом блоке осциллограмм");
+            ERMSG("Не найдено ни одного известного ID в принятом блоке осциллограмм");
             return;
         }
         // обработка принятой осциллограммы и запись её в файл
@@ -177,7 +178,7 @@ void oscdialog::EndExtractOsc()
         QString filename = QFileDialog::getSaveFileName(this,"Сохранить осциллограмму",GivenFilename,"Excel files (*.xlsx)");
         if (filename == "")
         {
-            OSCER("Не задано имя файла");
+            ERMSG("Не задано имя файла");
             return; // !!! ошибка - не задано имя файла
         }
         QXlsx::Document xlsx(filename.toUtf8());
@@ -213,7 +214,7 @@ void oscdialog::EndExtractOsc()
         QString filename = QFileDialog::getSaveFileName(this,"Сохранить осциллограмму",GivenFilename,"Excel files (*.xlsx)");
         if (filename == "")
         {
-            OSCER("Не задано имя файла");
+            ERMSG("Не задано имя файла");
             return; // !!! ошибка - не задано имя файла
         }
         QXlsx::Document xlsx(filename.toUtf8());
@@ -257,15 +258,15 @@ void oscdialog::EndExtractOsc()
             }
             else if (res == CN_NOIDS)
             {
-                OSCINFO("Не найден блок с ID = "+QString::number(j+MT_START_OSC));
+                MessageBox2::information(this, "Внимание", "Не найден блок с ID = "+QString::number(j+MT_START_OSC));
                 continue;
             }
             else
             {
                 if (res < pc.errmsgs.size())
-                    OSCER(pc.errmsgs.at(res));
+                    ERMSG(pc.errmsgs.at(res));
                 else
-                    OSCER("Произошла неведомая фигня #"+QString::number(res,10));
+                    ERMSG("Произошла неведомая фигня #"+QString::number(res,10));
                 return; // !!! ошибка разбора формата С2
             }
         }
@@ -296,22 +297,14 @@ void oscdialog::GetOsc(QModelIndex idx)
         EndExtractOsc();
 }
 
-void oscdialog::ErMsg(int ermsg)
-{
-    if (ermsg < pc.errmsgs.size())
-        OSCER(pc.errmsgs.at(ermsg));
-    else
-        OSCER("Произошла неведомая фигня #"+QString::number(ermsg,10));
-}
-
 void oscdialog::EraseOsc()
 {
     pc.PrbMessage = "Стёрто записей: ";
-    cn->Send(CN_OscEr);
+    cn->Send(CN_ERMSG);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
-        OSCINFO("Стёрто успешно");
+        MessageBox2::information(this, "Внимание", "Стёрто успешно");
     else
-        OSCINFO("Ошибка при стирании");
+        MessageBox2::information(this, "Внимание", "Ошибка при стирании");
 }

@@ -7,18 +7,13 @@
 #include <QTimer>
 #include <QLabel>
 #include "../iec104/iec104.h"
-#include "e_confdialog.h"
+#include "../config/confdialog_80.h"
 
 #define TUNEFILELENGTH  256
 
 #define TUNEMIP 1
 #define TUNERET 2
 #define TUNEMAN 3
-
-#define ETUNEER(a)       ERMSG(publicclass::ER_ETUNE,__LINE__,a)
-#define ETUNEDBG         DBGMSG(publicclass::ER_ETUNE,__LINE__)
-#define ETUNEWARN        WARNMSG(publicclass::ER_ETUNE,__LINE__)
-#define ETUNEINFO(a)     INFOMSG(publicclass::ER_ETUNE,__LINE__,a)
 
 #define MSG_7_2_3       0
 #define MSG_7_3_1       1
@@ -60,8 +55,8 @@ public slots:
 
 private:
     bool Cancelled;
-    e_config *econf;
-    e_config::Bci Bci_block_work;
+    config_80 *econf;
+    config_80::Bci Bci_block_work;
     iec104 *mipcanal;
     int TuneControlType;
     QTimer *tmr;
