@@ -85,7 +85,7 @@ d_confdialog::d_confdialog(QWidget *parent) :
     SetupUI();
 }
 
-void d_confdialog::GetBci()
+/*void d_confdialog::GetBci()
 {
     cn->Send(CN_GF,NULL,0,1,Config);
     while (cn->Busy)
@@ -96,7 +96,7 @@ void d_confdialog::GetBci()
 
 void d_confdialog::FillConfData()
 {
-/*    int i;
+    int i;
     QSpinBox *spb;
     s_tqSpinBox *dspbls;
     s_tqComboBox *ChTypCB;
@@ -202,12 +202,12 @@ void d_confdialog::FillConfData()
         if (dspbls == 0)
             return;
         dspbls->setValue(Bci_block.setmaxmax[i]);
-    }*/
-}
+    }
+} */
 
 void d_confdialog::SetupUI()
 {
-/*/    int i;
+/*    int i;
     QGridLayout *lyout1 = new QGridLayout;
     QGridLayout *lyout2 = new QGridLayout;
     QGridLayout *lyout3 = new QGridLayout;
@@ -538,20 +538,20 @@ void d_confdialog::SetupUI()
     cp4->setLayout(lyout4);
     SetDefConf();*/
 }
-
+/*
 void d_confdialog::SetChTypData(int num, s_tqComboBox *cb)
 {
-//    Bci_block.in_type[cb->getAData().toInt()] = num;
+    Bci_block.in_type[cb->getAData().toInt()] = num;
 }
 
 void d_confdialog::SetOscDly(int dly)
 {
-//    Bci_block.oscdly = dly;
+    Bci_block.oscdly = dly;
 }
 
 void d_confdialog::SetChOsc(int isChecked, s_tqCheckBox *ptr)
 {
-/*    quint16 tmpint = 0x0001;
+    quint16 tmpint = 0x0001;
     tmpint = tmpint << ptr->getAData().toInt();
     s_tqComboBox *cb = this->findChild<s_tqComboBox *>("oscsrccb"+QString::number(ptr->getAData().toInt()));
     QLabel *lbl = this->findChild<QLabel *>("oscsrcl"+QString::number(ptr->getAData().toInt()));
@@ -570,56 +570,56 @@ void d_confdialog::SetChOsc(int isChecked, s_tqCheckBox *ptr)
             cb->setVisible(false);
         if (lbl != 0)
             lbl->setVisible(false);
-    }*/
+    }
 }
 
 void d_confdialog::SetChOscSrc(int srctyp, s_tqComboBox *ptr)
 {
-/*    quint8 tmpi = ptr->getAData().toInt() << 1;
+    quint8 tmpi = ptr->getAData().toInt() << 1;
     quint32 tmpint = srctyp << tmpi;
     quint32 tmpmask = ~(0x00000003 << tmpi);
     Bci_block.oscsrc &= tmpmask;
-    Bci_block.oscsrc |= tmpint;*/
+    Bci_block.oscsrc |= tmpint;
 }
 
 void d_confdialog::SetInMin(double dbl, s_tqSpinBox *ptr)
 {
-/*    Bci_block.in_min[ptr->getAData().toInt()] = dbl;*/
+    Bci_block.in_min[ptr->getAData().toInt()] = dbl;
 }
 
 void d_confdialog::SetInMax(double dbl, s_tqSpinBox *ptr)
 {
-//    Bci_block.in_max[ptr->getAData().toInt()] = dbl;
+    Bci_block.in_max[ptr->getAData().toInt()] = dbl;
 }
 
 void d_confdialog::SetInVMin(double dbl, s_tqSpinBox *ptr)
 {
- //   Bci_block.in_vmin[ptr->getAData().toInt()] = dbl;
+    Bci_block.in_vmin[ptr->getAData().toInt()] = dbl;
 }
 
 void d_confdialog::SetInVMax(double dbl, s_tqSpinBox *ptr)
 {
-//    Bci_block.in_vmax[ptr->getAData().toInt()] = dbl;
+    Bci_block.in_vmax[ptr->getAData().toInt()] = dbl;
 }
 
 void d_confdialog::SetMinMin(double dbl, s_tqSpinBox *ptr)
 {
-//    Bci_block.setminmin[ptr->getAData().toInt()] = dbl;
+    Bci_block.setminmin[ptr->getAData().toInt()] = dbl;
 }
 
 void d_confdialog::SetMin(double dbl, s_tqSpinBox *ptr)
 {
-//    Bci_block.setmin[ptr->getAData().toInt()] = dbl;
+    Bci_block.setmin[ptr->getAData().toInt()] = dbl;
 }
 
 void d_confdialog::SetMax(double dbl, s_tqSpinBox *ptr)
 {
-//    Bci_block.setmax[ptr->getAData().toInt()] = dbl;
+    Bci_block.setmax[ptr->getAData().toInt()] = dbl;
 }
 
 void d_confdialog::SetMaxMax(double dbl, s_tqSpinBox *ptr)
 {
-//    Bci_block.setmaxmax[ptr->getAData().toInt()] = dbl;
+    Bci_block.setmaxmax[ptr->getAData().toInt()] = dbl;
 }
 
 void d_confdialog::Set104(double dbl, s_tqSpinBox *ptr)
@@ -699,4 +699,4 @@ void d_confdialog::SetDefConf()
 void d_confdialog::UpdateProper(bool tmpb)
 {
     NoProperConf = tmpb;
-}
+} */

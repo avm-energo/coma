@@ -68,16 +68,17 @@ private:
 
     publicclass::DataRec Config[DCONF_NUM];
 
-    void FillConfData();
+//    void FillConfData();
+    void SetupUI();
 
 signals:
     void BsiIsNeedToBeAcquiredAndChecked();
 
 public slots:
-    void UpdateProper(bool);
+//    void UpdateProper(bool);
 
 private slots:
-    void SetChTypData(int, s_tqComboBox *);
+/*    void SetChTypData(int, s_tqComboBox *);
     void SetChOsc(int, s_tqCheckBox *);
     void SetChOscSrc(int, s_tqComboBox *);
     void SetInMin(double, s_tqSpinBox *);
@@ -93,9 +94,8 @@ private slots:
     void SetOscDly(int);
     void GetBci();
     void WriteConfDataToModule();
-    void SetupUI();
     void SetNewConf();
-    void SetDefConf();
+    void SetDefConf(); */
 };
 
 #endif // D_CONFDIALOG_H

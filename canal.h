@@ -74,7 +74,7 @@ public:
 
     void Connect();
     void Disconnect();
-    void Send(int command, void *ptr=NULL, quint32 ptrsize=0, int filenum=0, publicclass::DataRec *DRptr=NULL);
+    void Send(int command, void *ptr=NULL, quint32 ptrsize=0, quint16 filenum=0, publicclass::DataRec *DRptr=NULL);
 
 signals:
     void stopall();
@@ -111,7 +111,7 @@ private:
     int bStep;
     int cmd;
     QLabel *lbl;
-    quint32 fnum;
+    quint16 fnum;
     quint32 RDLength; // длина всей посылки
     quint32 DLength; // длина данных
     quint32 WRLength; // длина всей посылки

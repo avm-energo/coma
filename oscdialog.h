@@ -47,7 +47,6 @@ private slots:
     void ProcessOscInfo();
     void EndExtractOsc();
     void GetOsc(QModelIndex);
-    void ErMsg(int ermsg);
     void EraseOsc();
 };
 

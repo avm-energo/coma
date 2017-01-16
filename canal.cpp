@@ -33,12 +33,12 @@ canal::~canal()
 {
 }
 
-void canal::Send(int command, void *ptr, quint32 ptrsize, int filenum, publicclass::DataRec *DRptr)
+void canal::Send(int command, void *ptr, quint32 ptrsize, quint16 filenum, publicclass::DataRec *DRptr)
 {
     outdata = static_cast<char *>(ptr);
     outdatasize = ptrsize; // размер области данных, в которую производить запись
     cmd = command;
-    fnum = static_cast<quint32>(filenum);
+    fnum = filenum;
     DR = DRptr;
     Busy = true;
     InitiateSend();
@@ -93,12 +93,12 @@ void canal::InitiateSend()
         tmpba.resize(30000);
         if (DR == NULL)
             Finish(CN_NULLDATAERROR);
-        pc.StoreDataMem(&(tmpba.data()[7]), DR);
+        pc.StoreDataMem(&(tmpba.data()[7]), DR, fnum);
 //        qDebug() << "cn1_5";
         DLength = static_cast<quint8>(tmpba.at(9))*65536;
         DLength += static_cast<quint8>(tmpba.at(8))*256;
         DLength += static_cast<quint8>(tmpba.at(7));
-        DLength += 12; // sizeof(FileHeader)
+        DLength += sizeof(publicclass::FileHeader); // sizeof(FileHeader)
         quint32 tmpi1 = tmpba.data()[4] = (DLength/65536);
         quint32 tmpi2 = tmpba.data()[5] = (DLength - tmpi1*65536)/256;
         tmpba.data()[6] = DLength - tmpi1*65536 - tmpi2*256;

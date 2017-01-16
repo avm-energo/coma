@@ -15,7 +15,7 @@ s_tqTableView::s_tqTableView(QWidget *parent) :
     connect(this,SIGNAL(datachanged()), this, SLOT(resizeColumnsToContents()));
 }
 
-void s_tqTableView::setAData(QVariant dat)
+/*void s_tqTableView::setAData(QVariant dat)
 {
     this->adata = dat;
 }
@@ -23,13 +23,13 @@ void s_tqTableView::setAData(QVariant dat)
 QVariant s_tqTableView::getAData()
 {
     return this->adata;
-}
+} */
 
 void s_tqTableView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
 {
     Q_UNUSED(topLeft);
     Q_UNUSED(bottomRight);
     Q_UNUSED(roles);
-        resizeColumnsToContents();
+    resizeColumnsToContents();
     emit datachanged();
 }

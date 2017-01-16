@@ -503,10 +503,10 @@ void confdialog_21::FillConfData()
             DBGMSG;
             return;
         }
-        if (aconf->Bci_block.discosc & (static_cast<quint32>(0x0001) << i))
+/* !!!       if (aconf->Bci_block.discosc & (static_cast<quint32>(0x0001) << i))
             chb->setChecked(true);
         else
-            chb->setChecked(false);
+            chb->setChecked(false); */
         cb = this->findChild<QComboBox *>("oscsrccb."+QString::number(i));
         if (cb == 0)
         {
@@ -723,7 +723,7 @@ void confdialog_21::SetChOsc(int isChecked)
     QLabel *lbl = this->findChild<QLabel *>("oscsrcl."+QString::number(ChNum));
     if (isChecked == Qt::Checked)
     {
-        aconf->Bci_block.discosc |= tmpint;
+/* !!!        aconf->Bci_block.discosc |= tmpint;
         if (cb != 0)
             cb->setVisible(true);
         if (lbl != 0)
@@ -735,7 +735,7 @@ void confdialog_21::SetChOsc(int isChecked)
         if (cb != 0)
             cb->setVisible(false);
         if (lbl != 0)
-            lbl->setVisible(false);
+            lbl->setVisible(false); */
     }
 }
 
@@ -747,8 +747,8 @@ void confdialog_21::SetChOscSrc(int srctyp)
     quint8 tmpi = ChNum << 1;
     quint32 tmpint = srctyp << tmpi;
     quint32 tmpmask = ~(0x00000003 << tmpi);
-    aconf->Bci_block.oscsrc &= tmpmask;
-    aconf->Bci_block.oscsrc |= tmpint;
+/* !!!    aconf->Bci_block.oscsrc &= tmpmask;
+    aconf->Bci_block.oscsrc |= tmpint; */
 }
 
 int confdialog_21::GetChNumFromObjectName(QString ObjectName)
@@ -950,12 +950,12 @@ void confdialog_21::SaveConf()
 {
     QByteArray *ba = new QByteArray;
     ba->resize(MAXBYTEARRAY);
-    pc.StoreDataMem(&(ba->data()[0]), aconf->Config);
-    quint32 BaLength = static_cast<quint8>(ba->data()[0]);
-    BaLength += static_cast<quint8>(ba->data()[1])*256;
-    BaLength += static_cast<quint8>(ba->data()[2])*65536;
-    BaLength += static_cast<quint8>(ba->data()[3])*16777216;
-    BaLength += 12; // FileHeader
+    pc.StoreDataMem(&(ba->data()[0]), aconf->Config, 0x0001); // 0x101 - номер файла конфигурации
+    quint32 BaLength = static_cast<quint8>(ba->data()[4]);
+    BaLength += static_cast<quint8>(ba->data()[5])*256;
+    BaLength += static_cast<quint8>(ba->data()[6])*65536;
+    BaLength += static_cast<quint8>(ba->data()[7])*16777216;
+    BaLength += sizeof(publicclass::FileHeader); // FileHeader
     int res = pc.SaveFile("Config files (*.acf)", &(ba->data()[0]), BaLength);
     switch (res)
     {

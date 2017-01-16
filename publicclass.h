@@ -142,9 +142,11 @@ public:
     // S2: Определение типа заголовка
     typedef struct
     {
-      quint32 size;
-      quint32 crc32;
-      quint32 thetime;
+        quint16 fname;
+        quint16 service;
+        quint32 size;
+        quint32 crc32;
+        quint32 thetime;
     } FileHeader;
 
     // S2: Определение типа записи
@@ -239,7 +241,7 @@ public:
     QString ETyp1();
 
     // S2: Сборщик в память:
-    int StoreDataMem(void *, DataRec *); //0 - успешно, иначе код ошибки
+    int StoreDataMem(void *, DataRec *, quint16 fname); //0 - успешно, иначе код ошибки
     // S2: получение размера:
     int StoreDataSize(FileHeader *, DataRec *); //>0 - успешно, иначе код ошибки
     // S2: Разборщик из памяти:

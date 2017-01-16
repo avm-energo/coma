@@ -10,8 +10,8 @@ class s_tqTableView : public QTableView
 public:
 //    explicit s_tqTableView(bool autoResize=false, QWidget *parent = 0);
     explicit s_tqTableView(QWidget *parent = 0);
-    QVariant getAData();
-    void setAData(QVariant dat);
+//    QVariant getAData();
+//    void setAData(QVariant dat);
 //    QSize minimumSizeHint() const;
 //    mutable bool datachangedintable;
 
@@ -22,7 +22,7 @@ public slots:
     void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
 
 private:
-    QVariant adata;
+//    QVariant adata;
 //    bool autoResize;
 
 protected:

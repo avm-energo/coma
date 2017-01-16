@@ -131,7 +131,7 @@ QString publicclass::VerToStr(quint32 num)
     return tmpString;
 }
 
-int publicclass::StoreDataMem(void *mem, DataRec *dr) //0 - успешно, иначе код ошибки
+int publicclass::StoreDataMem(void *mem, DataRec *dr, quint16 fname) //0 - успешно, иначе код ошибки
 {
     quint32 crc=0xFFFFFFFF;
     FileHeader D;
@@ -162,6 +162,8 @@ int publicclass::StoreDataMem(void *mem, DataRec *dr) //0 - успешно, ин
     }
     D.crc32=crc;
     D.thetime=getTime32();
+    D.service=0xFFFF;
+    D.fname=fname;
     memcpy(mem,&D,sizeof(D));
     return 0;
 }

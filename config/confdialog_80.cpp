@@ -135,213 +135,99 @@ void confdialog_80::FillConfData()
 
 void confdialog_80::SetupUI()
 {
-    int i;
-    QGridLayout *lyout1 = new QGridLayout;
-//    QGridLayout *lyout2 = new QGridLayout;
-//    QGridLayout *lyout3 = new QGridLayout;
-    QGridLayout *lyout4 = new QGridLayout;
+    QVBoxLayout *vlyout1 = new QVBoxLayout;
+    QVBoxLayout *vlyout2 = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
     QWidget *cp1 = new QWidget;
-//    QWidget *cp2 = new QWidget;
-//    QWidget *cp3 = new QWidget;
-    QWidget *cp4 = new QWidget;
+    QWidget *cp2 = new QWidget;
     QString tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     cp1->setStyleSheet(tmps);
-//    cp2->setStyleSheet(tmps);
-//    cp3->setStyleSheet(tmps);
-    cp4->setStyleSheet(tmps);
+    cp2->setStyleSheet(tmps);
     QTabWidget *ConfTW = this->findChild<QTabWidget *>("conftw");
     if (ConfTW == 0)
         return;
     ConfTW->addTab(cp1,"Общие");
-    ConfTW->addTab(cp4,"104");
-    QGroupBox *gb = new QGroupBox;
-    QVBoxLayout *gblyout = new QVBoxLayout;
-    QHBoxLayout *gb2lyout = new QHBoxLayout;
-    QGridLayout *gb3lyout = new QGridLayout;
-    QLabel *lbl = new QLabel;
-    s_tqComboBox *cb = new s_tqComboBox;
-    QStringList cbl;
+    ConfTW->addTab(cp2,"104");
+
+    QLabel *lbl = new QLabel ("Тип контролируемого оборудования:");
+    hlyout->addWidget(lbl, 0);
+    QStringList cbl = QStringList() << "1ф трансформатор/АТ" << "3ф трансформатор/АТ" << "1ф реактор" << "3ф реактор";
     QStringListModel *cblm = new QStringListModel;
-    QSpinBox *spb = new QSpinBox;
-    s_tqCheckBox *chb;
-
-    lyout4->addWidget(GeneralConf->Widget104());
-    cp4->setLayout(lyout4);
-
-    lbl = new QLabel ("Тип контролируемого оборудования:");
-    lyout1->addWidget(lbl,0,0,1,1);
-    cbl = QStringList() << "1ф трансформатор/АТ" << "3ф трансформатор/АТ" << "1ф реактор" << "3ф реактор";
-    cblm = new QStringListModel;
     cblm->setStringList(cbl);
-    cb = new s_tqComboBox;
+    s_tqComboBox *cb = new s_tqComboBox;
     cb->setObjectName("eq_typecb");
     cb->setModel(cblm);
     cb->setMinimumWidth(70);
     tmps = "QComboBox {background-color: "+QString(ACONFGCLR)+";}";
     cb->setStyleSheet(tmps);
     connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetEqType(int)));
-    lyout1->addWidget(cb,0,1,1,1);
+    hlyout->addWidget(cb,10);
+    vlyout1->addLayout(hlyout);
 
-    gb = new QGroupBox("Аналоговые");
-    gblyout = new QVBoxLayout;
+    QGroupBox *gb = new QGroupBox("Аналоговые");
     switch (pc.ModuleBsi.MTypeM)
     {
     case MTM_81: // 6U0I
     {
-        gblyout->addWidget(UNom(1));
-        gblyout->addWidget(UNom(2));
-        gblyout->addWidget(Threshold("Уставка скачка напряжения для запуска осциллографирования, %", 1));
+        vlyout2->addWidget(UNom(1));
+        vlyout2->addWidget(UNom(2));
+        vlyout2->addWidget(Threshold("Уставка скачка напряжения для запуска осциллографирования, %", 1));
         break;
     }
     case MTM_82: // 3U3I
     {
-        gblyout->addWidget(UNom(1));
-        gblyout->addWidget(INom(2));
-
-        lbl=new QLabel("Номинальные вторичные токи ТТ 2-й группы, А:");
-        gblyout->addWidget(lbl);
-        gb2lyout = new QHBoxLayout;
-        cbl = QStringList() << "1" << "5";
-        cblm = new QStringListModel;
-        cblm->setStringList(cbl);
-        for (i = 3; i < 6; i++)
-        {
-            lbl=new QLabel(QString::number(i+7, 16).toUpper() + ":"); // A, B, C
-            gb2lyout->setAlignment(lbl, Qt::AlignRight);
-            gb2lyout->addWidget(lbl);
-            cb = new s_tqComboBox;
-            cb->setObjectName("inom2"+QString::number(i));
-            cb->setModel(cblm);
-            cb->setAData(i);
-            connect(cb,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetSecCurrent(int,s_tqComboBox*)));
-            gb2lyout->addWidget(cb);
-        }
-        gblyout->addLayout(gb2lyout);
-
-        gblyout->addWidget(Threshold("Уставка скачка напряжения для запуска осциллографирования, %", 1));
-        gblyout->addWidget(Threshold("Уставка скачка тока для запуска осциллографирования, %", 2));
-
+        vlyout2->addWidget(UNom(1));
+        vlyout2->addWidget(INom(3), 10);
+        vlyout2->addWidget(INom(4), 10);
+        vlyout2->addWidget(Threshold("Уставка скачка напряжения для запуска осциллографирования, %", 1));
+        vlyout2->addWidget(Threshold("Уставка скачка тока для запуска осциллографирования, %", 2));
         break;
     }
     case MTM_83: // 0U6I
     {
-        lbl=new QLabel("Номинальные первичные токи ТТ 1-й группы, А:");
-        gblyout->addWidget(lbl);
-        gb2lyout = new QHBoxLayout;
-        for (i = 0; i < 3; i++)
-        {
-            lbl=new QLabel(QString::number(i+10, 16).toUpper() + ":"); // A, B, C
-            gb2lyout->addWidget(lbl);
-            s_tqSpinBox *dspbls = new s_tqSpinBox;
-            dspbls->setObjectName("inom1"+QString::number(i));
-            dspbls->setSingleStep(1);
-            dspbls->setMinimum(1);
-            dspbls->setMaximum(50000);
-            dspbls->setDecimals(0);
-            dspbls->setAData(i);
-            connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(SetCurrent(double,s_tqSpinBox*)));
-            gb2lyout->addWidget(dspbls);
-        }
-        gblyout->addLayout(gb2lyout);
-
-        lbl=new QLabel("Номинальные вторичные токи ТТ 1-й группы, А:");
-        gblyout->addWidget(lbl);
-        gb2lyout = new QHBoxLayout;
-        cbl = QStringList() << "1" << "5";
-        cblm = new QStringListModel;
-        cblm->setStringList(cbl);
-        for (i = 0; i < 3; i++)
-        {
-            lbl=new QLabel(QString::number(i+10, 16).toUpper() + ":"); // A, B, C
-            gb2lyout->addWidget(lbl);
-            cb = new s_tqComboBox;
-            cb->setObjectName("inom2"+QString::number(i));
-            cb->setModel(cblm);
-            cb->setAData(i);
-            connect(cb,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetSecCurrent(int,s_tqComboBox*)));
-            gb2lyout->addWidget(cb);
-        }
-        gblyout->addLayout(gb2lyout);
-
-        lbl=new QLabel("Номинальные первичные токи ТТ 2-й группы, А:");
-        gblyout->addWidget(lbl);
-        gb2lyout = new QHBoxLayout;
-        for (i = 3; i < 6; i++)
-        {
-            lbl=new QLabel(QString::number(i+7, 16).toUpper() + ":"); // A, B, C
-            gb2lyout->addWidget(lbl);
-            s_tqSpinBox *dspbls = new s_tqSpinBox;
-            dspbls->setObjectName("inom1"+QString::number(i));
-            dspbls->setSingleStep(1);
-            dspbls->setMinimum(1);
-            dspbls->setMaximum(50000);
-            dspbls->setDecimals(0);
-            dspbls->setAData(i);
-            connect(dspbls,SIGNAL(valueChanged(double,s_tqSpinBox*)),this,SLOT(SetCurrent(double,s_tqSpinBox*)));
-            gb2lyout->addWidget(dspbls);
-        }
-        gblyout->addLayout(gb2lyout);
-
-        lbl=new QLabel("Номинальные вторичные токи ТТ 2-й группы, А:");
-        gblyout->addWidget(lbl);
-        gb2lyout = new QHBoxLayout;
-        cbl = QStringList() << "1" << "5";
-        cblm = new QStringListModel;
-        cblm->setStringList(cbl);
-        for (i = 3; i < 6; i++)
-        {
-            lbl=new QLabel(QString::number(i+7, 16).toUpper() + ":"); // A, B, C
-            gb2lyout->addWidget(lbl);
-            cb = new s_tqComboBox;
-            cb->setObjectName("inom2"+QString::number(i));
-            cb->setModel(cblm);
-            cb->setAData(i);
-            connect(cb,SIGNAL(textChanged(int,s_tqComboBox*)),this,SLOT(SetSecCurrent(int,s_tqComboBox*)));
-            gb2lyout->addWidget(cb);
-        }
-        gblyout->addLayout(gb2lyout);
-
-        gblyout->addWidget(Threshold("Уставка скачка тока для запуска осциллографирования, %", 2));
+        vlyout2->addWidget(INom(1), 10);
+        vlyout2->addWidget(INom(2), 10);
+        vlyout2->addWidget(INom(3), 10);
+        vlyout2->addWidget(INom(4), 10);
+        vlyout2->addWidget(Threshold("Уставка скачка тока для запуска осциллографирования, %", 2));
         break;
     }
     default:
         break;
     }
-    gblyout->addWidget(Threshold("Уставка порога мин. уровня для определения частоты, %", 3));
-    gb->setLayout(gblyout);
-    lyout1->addWidget(gb,1,0,1,2);
+    vlyout2->addWidget(Threshold("Уставка порога мин. уровня для определения частоты, %", 3));
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
 
     gb = new QGroupBox("Осциллограммы");
-    gblyout = new QVBoxLayout;
-    gb2lyout = new QHBoxLayout;
+    vlyout2 = new QVBoxLayout;
+    hlyout = new QHBoxLayout;
     lbl = new QLabel("Запуск осциллограммы:");
-    gb2lyout->addWidget(lbl);
-    chb = new s_tqCheckBox;
+    hlyout->addWidget(lbl);
+    s_tqCheckBox *chb = new s_tqCheckBox;
     chb->setObjectName("oscchb.0");
     chb->setText("по команде Ц");
-    chb->setAData(0);
-    connect(chb,SIGNAL(statechanged(int,s_tqCheckBox*)),this,SLOT(SetOsc(int,s_tqCheckBox*)));
-    gb2lyout->addWidget(chb);
+    connect(chb,SIGNAL(statechanged(int)),this,SLOT(SetOsc(int)));
+    hlyout->addWidget(chb);
     chb = new s_tqCheckBox;
     chb->setObjectName("oscchb.1");
     chb->setText("по дискр. входу PD1");
-    chb->setAData(1);
-    connect(chb,SIGNAL(statechanged(int,s_tqCheckBox*)),this,SLOT(SetOsc(int,s_tqCheckBox*)));
-    gb2lyout->addWidget(chb);
+    connect(chb,SIGNAL(statechanged(int)),this,SLOT(SetOsc(int)));
+    hlyout->addWidget(chb);
     chb = new s_tqCheckBox;
     chb->setObjectName("oscchb.2");
     chb->setText("по резкому изменению");
-    chb->setAData(2);
-    connect(chb,SIGNAL(statechanged(int,s_tqCheckBox*)),this,SLOT(SetOsc(int,s_tqCheckBox*)));
-    gb2lyout->addWidget(chb);
-    gblyout->addLayout(gb2lyout);
-    gb->setLayout(gblyout);
-    lyout1->addWidget(gb,2,0,1,2);
+    connect(chb,SIGNAL(statechanged(int)),this,SLOT(SetOsc(int)));
+    hlyout->addWidget(chb);
+    vlyout2->addLayout(hlyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
 
     gb = new QGroupBox("Прочие");
-    gb3lyout = new QGridLayout;
+    vlyout2 = new QVBoxLayout;
+    hlyout = new QHBoxLayout;
     lbl = new QLabel("Кол-во точек оцифровки:");
-    gb3lyout->addWidget(lbl, 0, 0, 1, 1);
+    hlyout->addWidget(lbl);
     cbl = QStringList() << "64" << "80" << "128" << "256";
     cblm = new QStringListModel;
     cblm->setStringList(cbl);
@@ -349,29 +235,35 @@ void confdialog_80::SetupUI()
     cb->setObjectName("npointscb");
     cb->setModel(cblm);
     connect(cb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetNPoints(QString)));
-    gb3lyout->addWidget(cb,0,1,1,1);
+    hlyout->addWidget(cb);
+    vlyout2->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
     lbl = new QLabel("Постоянная времени фильтрации:");
-    gb3lyout->addWidget(lbl, 1, 0, 1, 1);
-    spb = new QSpinBox;
+    hlyout->addWidget(lbl);
+    QSpinBox *spb = new QSpinBox;
     spb->setObjectName("nfiltrspb");
     spb->setMinimum(1);
     spb->setMaximum(1000);
     connect(spb,SIGNAL(valueChanged(int)),this,SLOT(SetNFiltr(int)));
-    gb3lyout->addWidget(spb,1,1,1,1);
+    hlyout->addWidget(spb);
+    vlyout2->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
     lbl = new QLabel("Постоянная времени гармоник:");
-    gb3lyout->addWidget(lbl, 2, 0, 1, 1);
+    hlyout->addWidget(lbl);
     spb = new QSpinBox;
     spb->setObjectName("nhfiltrspb");
     spb->setMinimum(1);
     spb->setMaximum(10);
     connect(spb,SIGNAL(valueChanged(int)),this,SLOT(SetNHFiltr(int)));
-    gb3lyout->addWidget(spb,2,1,1,1);
-    gb->setLayout(gb3lyout);
-    lyout1->addWidget(gb,3,0,1,2);
+    hlyout->addWidget(spb);
+    vlyout2->addLayout(hlyout);
+    gb->setLayout(vlyout1);
+    vlyout1->addWidget(gb);
 
-    cp1->setLayout(lyout1);
-//    cp2->setLayout(lyout2);
-//    cp3->setLayout(lyout3);
+    cp1->setLayout(vlyout1);
+    vlyout1 = new QVBoxLayout;
+    vlyout1->addWidget(GeneralConf->Widget104());
+    cp2->setLayout(vlyout1);
 }
 
 QWidget *confdialog_80::UNom(int numunom)
@@ -396,20 +288,21 @@ QWidget *confdialog_80::UNom(int numunom)
     return w;
 }
 
+// 1 - первичный ток первой группы, 2 - вторичный ток первой группы, 3,4 - то же по второй группе
+
 QWidget *confdialog_80::INom(int numinom)
 {
     QWidget *w = new QWidget;
-    QVBoxLayout *gblyout = new QVBoxLayout;
+    QHBoxLayout *gb2lyout = new QHBoxLayout;
     QString NumGroup = (numinom < 3) ? "1" : "2";
     QString Perv = (numinom%2) ? "первичные" : "вторичные";
     QString PervNum = (numinom%2) ? "1" : "2";
-    QLabel *lbl=new QLabel("Номинальные "+Perv+" токи ТТ "+NumGroup+"-й группы, А:");
-    gblyout->addWidget(lbl);
-    QHBoxLayout *gb2lyout = new QHBoxLayout;
+    QLabel *lbl=new QLabel("Номинальные "+Perv+" токи ТТ "+NumGroup+"-й группы, А: ");
+    gb2lyout->addWidget(lbl, 0);
     for (int i = 0; i < 3; i++)
     {
         lbl=new QLabel(QString::number(i+10, 16).toUpper() + ":"); // A, B, C
-        gb2lyout->addWidget(lbl, Qt::AlignRight);
+        gb2lyout->addWidget(lbl, 1, Qt::AlignRight);
         s_tqSpinBox *dspbls = new s_tqSpinBox;
         dspbls->setObjectName("inom."+NumGroup+"."+PervNum+"."+QString::number(i)); // inom.<группа 1|2>.<тип перв/втор 1|2>.<phase>
         dspbls->setSingleStep(1);
@@ -417,10 +310,9 @@ QWidget *confdialog_80::INom(int numinom)
         dspbls->setMaximum(50000);
         dspbls->setDecimals(0);
         connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(SetCurrent(double)));
-        gb2lyout->addWidget(dspbls);
+        gb2lyout->addWidget(dspbls, 1);
     }
-    gblyout->addLayout(gb2lyout);
-    w->setLayout(gblyout);
+    w->setLayout(gb2lyout);
     return w;
 }
 
@@ -617,12 +509,12 @@ void confdialog_80::SaveConf()
 {
     QByteArray *ba = new QByteArray;
     ba->resize(MAXBYTEARRAY);
-    pc.StoreDataMem(&(ba->data()[0]), econf->Config);
-    quint32 BaLength = static_cast<quint8>(ba->data()[0]);
-    BaLength += static_cast<quint8>(ba->data()[1])*256;
-    BaLength += static_cast<quint8>(ba->data()[2])*65536;
-    BaLength += static_cast<quint8>(ba->data()[3])*16777216;
-    BaLength += 12; // FileHeader
+    pc.StoreDataMem(&(ba->data()[0]), econf->Config, 0x0001);
+    quint32 BaLength = static_cast<quint8>(ba->data()[4]);
+    BaLength += static_cast<quint8>(ba->data()[5])*256;
+    BaLength += static_cast<quint8>(ba->data()[6])*65536;
+    BaLength += static_cast<quint8>(ba->data()[7])*16777216;
+    BaLength += sizeof(publicclass::FileHeader); // FileHeader
     int res = pc.SaveFile("Config files (*.ecf)", &(ba->data()[0]), BaLength);
     switch (res)
     {

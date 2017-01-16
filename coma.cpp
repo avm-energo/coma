@@ -598,6 +598,7 @@ void Coma::EmulE()
     if (pc.Emul) // если уже в режиме эмуляции, выход
         return;
     pc.ModuleBsi.MTypeB = MTB_80;
+    pc.ModuleBsi.MTypeM = MTM_82;
     QDialog *dlg = new QDialog(this);
     dlg->setObjectName("emuledlg");
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -605,7 +606,7 @@ void Coma::EmulE()
     QLabel *lbl = new QLabel("Выберите тип модуля:");
     hlyout->addWidget(lbl);
     QStringListModel *mdl = new QStringListModel;
-    QStringList sl = QStringList() << "Э2Т0Н" << "Э1Т1Н" << "Э0Т2Н";
+    QStringList sl = QStringList() << "8081 (0I6U)" << "8082 (3I3U)" << "8083 (6I0U)";
     mdl->setStringList(sl);
     QComboBox *cb = new QComboBox;
     cb->setModel(mdl);
@@ -623,23 +624,24 @@ void Coma::EmulE()
 
 void Coma::StartEmulE()
 {
-/*    QDialog *dlg = this->findChild<QDialog *>("emuledlg");
+    QDialog *dlg = this->findChild<QDialog *>("emuledlg");
     QComboBox *cb = this->findChild<QComboBox *>("extxn");
     if ((dlg == 0) || (cb == 0))
     {
         DBGMSG;
         return;
     }
+    pc.ModuleBsi.MTypeB = MTB_80;
     switch (cb->currentIndex())
     {
     case 0:
-        pc.ModuleBsi.MType1 = MTE_2T0N;
+        pc.ModuleBsi.MTypeM = MTM_81;
         break;
     case 1:
-        pc.ModuleBsi.MType1 = MTE_1T1N;
+        pc.ModuleBsi.MTypeB = MTM_82;
         break;
     case 2:
-        pc.ModuleBsi.MType1 = MTE_0T2N;
+        pc.ModuleBsi.MTypeB = MTM_83;
         break;
     default:
         DBGMSG;
@@ -648,10 +650,10 @@ void Coma::StartEmulE()
     }
     dlg->close();
 
-    Bsi_block.SerNum = 0x12345678;
+    Bsi_block.SerialNum = 0x12345678;
     Bsi_block.Hth = 0x00;
     pc.Emul = true;
-    AllIsOk(); */
+    AllIsOk();
 }
 
 void Coma::WriteSN()

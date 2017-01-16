@@ -131,10 +131,7 @@ void oscdialog::EndExtractOsc()
     Config[1] = {0xFFFF, 0, 0, 0, NULL};
     int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +FileHeader
     if (res)
-    {
-        ErMsg(res);
         return; // !!! ошибка разбора формата С2
-    }
     QByteArray OscData; // буфер для складирования осциллограмм
     quint32 OscSize = OscHeader.Len*sizeof(float); // размер одной осциллограммы в байтах
     quint32 OscNum = (OscLength-12-sizeof(OscHeader_Data)) / OscSize; // рассчитаем количество осциллограмм
@@ -147,7 +144,7 @@ void oscdialog::EndExtractOsc()
         quint32 IDFound = 0;
         for (j=MT_START_OSC; j<MT_END_OSC; j++) // цикл по возможным осциллограммам
         {
-            Config[0] = {j, float_TYPE, sizeof(float), OscHeader.Len, &(OscData.data()[0])};
+            Config[0] = {j&0xFFFF, float_TYPE, sizeof(float), OscHeader.Len, &(OscData.data()[0])};
             Config[1] = {0xFFFF, 0, 0, 0, NULL};
             int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +FileHeader
             if (!res)
@@ -237,7 +234,7 @@ void oscdialog::EndExtractOsc()
 
         for (j=0; j<OscNum; j++) // цикл по возможным осциллограммам
         {
-            Config[0] = {j+MT_START_OSC, float_TYPE, sizeof(float), OscHeader.Len, &(OscData.data()[j*OscSize])};
+            Config[0] = {(j+MT_START_OSC)&0xFFFF, float_TYPE, sizeof(float), OscHeader.Len, &(OscData.data()[j*OscSize])};
             Config[1] = {0xFFFF, 0, 0, 0, NULL};
             int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +FileHeader
             if (!res)

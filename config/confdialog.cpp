@@ -68,7 +68,6 @@ QWidget *confdialog::Widget104()
     dspbls->setDecimals(0);
     dspbls->setMinimum(0);
     dspbls->setMaximum(65535);
-    dspbls->setAData(0);
     QString tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
     dspbls->setStyleSheet(tmps);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
@@ -81,7 +80,6 @@ QWidget *confdialog::Widget104()
     dspbls->setDecimals(0);
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
-    dspbls->setAData(1);
     tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
     dspbls->setStyleSheet(tmps);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
@@ -96,7 +94,6 @@ QWidget *confdialog::Widget104()
     dspbls->setDecimals(0);
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
-    dspbls->setAData(2);
     tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
     dspbls->setStyleSheet(tmps);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
@@ -111,7 +108,6 @@ QWidget *confdialog::Widget104()
     dspbls->setDecimals(0);
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
-    dspbls->setAData(3);
     tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
     dspbls->setStyleSheet(tmps);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
@@ -126,7 +122,6 @@ QWidget *confdialog::Widget104()
     dspbls->setDecimals(0);
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
-    dspbls->setAData(4);
     tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
     dspbls->setStyleSheet(tmps);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
@@ -141,7 +136,6 @@ QWidget *confdialog::Widget104()
     dspbls->setDecimals(0);
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
-    dspbls->setAData(5);
     tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
     dspbls->setStyleSheet(tmps);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
@@ -156,7 +150,6 @@ QWidget *confdialog::Widget104()
     dspbls->setDecimals(0);
     dspbls->setMinimum(0);
     dspbls->setMaximum(255);
-    dspbls->setAData(6);
     tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
     dspbls->setStyleSheet(tmps);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
@@ -166,7 +159,7 @@ QWidget *confdialog::Widget104()
     lbl = new QLabel("Тип синхр. времени:");
     gb3lyout->addWidget(lbl,7,0,1,1,Qt::AlignRight);
     cb->setObjectName("spb.8");
-    QStringList cbl = QStringList() << "SNTPIP2+PPS" << "SNTPIP1+PPS" << "SNTPIP1";
+    QStringList cbl = QStringList() << "SNTP+PPS" << "SNTP";
     QStringListModel *cblm = new QStringListModel;
     cblm->setStringList(cbl);
     cb->setModel(cblm);
