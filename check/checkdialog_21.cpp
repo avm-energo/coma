@@ -377,7 +377,7 @@ void a_checkdialog::StartMeasurementsWithFile()
 {
     aconf = new config_21;
     // читаем текущую конфигурацию
-    cn->Send(CN_GF,NULL,0,1,aconf->Config);
+    cn->Send(CN_GF,canal::BT_NONE,NULL,0,1,aconf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != CN_OK)
@@ -527,7 +527,7 @@ void a_checkdialog::Check1PPS()
 
 void a_checkdialog::GetIP()
 {
-    cn->Send(CN_Gip, &Bip_block, sizeof(Bip));
+    cn->Send(CN_Gip, canal::BT_NONE, &Bip_block, sizeof(Bip));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -548,7 +548,7 @@ void a_checkdialog::TimerTimeout()
 {
     if ((BdMeasurementsActive) && (OddTimeout)) // текущие измерения проводим на первом проходе таймера
     {
-        cn->Send(CN_GBd, &Bd_block, sizeof(Bd));
+        cn->Send(CN_GBd, canal::BT_NONE, &Bd_block, sizeof(Bd));
         while (cn->Busy)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
         if (cn->result == CN_OK)
@@ -581,7 +581,7 @@ void a_checkdialog::TimerTimeout()
     }
     if ((BdaMeasurementsActive) && (!OddTimeout)) // все остальные - на втором
     {
-        cn->Send(CN_Gda, &Bda_block, sizeof(Bda));
+        cn->Send(CN_GBda, canal::BT_NONE, &Bda_block, sizeof(Bda));
         while (cn->Busy)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
         if (cn->result == CN_OK)

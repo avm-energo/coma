@@ -79,7 +79,7 @@ confdialog_80::~confdialog_80()
 
 void confdialog_80::GetBci()
 {
-    cn->Send(CN_GF,NULL,0,1,econf->Config);
+    cn->Send(CN_GF,canal::BT_NONE,NULL,0,1,econf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -465,7 +465,7 @@ void confdialog_80::SetNHFiltr(int tmpi)
 
 void confdialog_80::WriteConfDataToModule()
 {
-    cn->Send(CN_WF, &econf->Bci_block, sizeof(econf->Bci_block), 2, econf->Config);
+    cn->Send(CN_WF, canal::BT_NONE, &econf->Bci_block, sizeof(econf->Bci_block), 2, econf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)

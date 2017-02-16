@@ -164,7 +164,7 @@ bool a_tunedialog::tune(int Type, int ChNum)
                                      "на всех\nвходах модуля и нажмите OK")\
                 == QMessageBox::Ok)
         {
-            cn->Send(CN_Gda, &Bda0, sizeof(Bda));
+            cn->Send(CN_GBda, canal::BT_NONE, &Bda0, sizeof(Bda));
             while (cn->Busy)
                 QCoreApplication::processEvents(QEventLoop::AllEvents);
             if (cn->result == CN_OK)
@@ -188,7 +188,7 @@ bool a_tunedialog::tune(int Type, int ChNum)
                                      "Переключите входные переключатели на ток,\nустановите ток 20 мА на всех" \
                                      "\nвходах модуля и нажмите OK") == QMessageBox::Ok)
         {
-            cn->Send(CN_Gda, &Bda20, sizeof(Bda));
+            cn->Send(CN_GBda, canal::BT_NONE, &Bda20, sizeof(Bda));
             while (cn->Busy)
                 QCoreApplication::processEvents(QEventLoop::AllEvents);
             if (cn->result == CN_OK)
@@ -213,7 +213,7 @@ bool a_tunedialog::tune(int Type, int ChNum)
                                      "5 В на всех\nвходах модуля и нажмите OK")\
                 == QMessageBox::Ok)
         {
-            cn->Send(CN_Gda, &Bda5, sizeof(Bda));
+            cn->Send(CN_GBda, canal::BT_NONE, &Bda5, sizeof(Bda));
             while (cn->Busy)
                 QCoreApplication::processEvents(QEventLoop::AllEvents);
             if (cn->result == CN_OK)
@@ -430,7 +430,7 @@ void a_tunedialog::RefreshTuneCoefs()
 
 void a_tunedialog::ReadTuneCoefs()
 {
-    cn->Send(CN_Gac, &Bac_block, sizeof(Bac_block));
+    cn->Send(CN_GBac, canal::BT_NONE, &Bac_block, sizeof(Bac_block));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -442,7 +442,7 @@ void a_tunedialog::WriteTuneCoefs()
     RefreshTuneCoefs(); // принудительно читаем коэффициенты из полей ввода в структуру
     if (CheckTuneCoefs())
     {
-        cn->Send(CN_Wac, &Bac_block, sizeof(Bac_block));
+        cn->Send(CN_WBac, canal::BT_NONE, &Bac_block, sizeof(Bac_block));
         while (cn->Busy)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
         if (cn->result == CN_OK)

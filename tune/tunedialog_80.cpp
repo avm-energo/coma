@@ -654,7 +654,7 @@ bool e_tunedialog::Start7_3_1(bool DefConfig)
     if (!DefConfig)
     {
         // получение настроечных коэффициентов от модуля
-        cn->Send(CN_Gac, &Bac_block, sizeof(Bac_block));
+        cn->Send(CN_GBac, canal::BT_NONE, &Bac_block, sizeof(Bac_block));
         while (cn->Busy)
             qApp->processEvents();
         if (cn->result != CN_OK)
@@ -676,7 +676,7 @@ bool e_tunedialog::Start7_3_1(bool DefConfig)
     // высвечиваем надпись "Запись настроечных коэффициентов по умолчанию"
     MsgSetVisible(MSG_7_3_1_1);
     // запись настроечных коэффициентов в модуль
-    cn->Send(CN_Wac, &Bac_defblock, sizeof(Bac));
+    cn->Send(CN_WBac, canal::BT_NONE, &Bac_defblock, sizeof(Bac));
     while (cn->Busy)
         qApp->processEvents();
     if (cn->result == CN_OK)
@@ -688,7 +688,7 @@ bool e_tunedialog::Start7_3_1(bool DefConfig)
         if (cn->result != CN_OK)
             return false;
         // получение настроечных коэффициентов от модуля
-        cn->Send(CN_Gac, &Bac_block, sizeof(Bac_block));
+        cn->Send(CN_GBac, canal::BT_NONE, &Bac_block, sizeof(Bac_block));
         while (cn->Busy)
             qApp->processEvents();
         if (cn->result != CN_OK)
@@ -884,7 +884,7 @@ bool e_tunedialog::Start7_3_7_2()
     for (int i=0; i<6; i++)
         econf->Bci_block.inom2[i] = 1.0;
     // послать новые коэффициенты по току в конфигурацию
-    cn->Send(CN_WF, &econf->Bci_block, sizeof(config_80::Bci), 2, econf->Config);
+    cn->Send(CN_WF, canal::BT_NONE, &econf->Bci_block, sizeof(config_80::Bci), 2, econf->Config);
 //    qDebug() << "3";
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -931,7 +931,7 @@ bool e_tunedialog::Start7_3_7_2()
     MsgSetVisible(MSG_7_3_7_6);
     for (int i=0; i<6; i++)
         econf->Bci_block.inom2[i] = 5.0;
-    cn->Send(CN_WF, &econf->Bci_block, sizeof(config_80::Bci), 2, econf->Config);
+    cn->Send(CN_WF, canal::BT_NONE, &econf->Bci_block, sizeof(config_80::Bci), 2, econf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != CN_OK)
@@ -979,7 +979,7 @@ bool e_tunedialog::Start7_3_8()
 {
     MsgSetVisible(MSG_7_3_8_1);
     // 1. Отправляем настроечные параметры в модуль
-    cn->Send(CN_Wac, &Bac_newblock, sizeof(Bac));
+    cn->Send(CN_WBac, canal::BT_NONE, &Bac_newblock, sizeof(Bac));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != CN_OK)
@@ -1058,7 +1058,7 @@ bool e_tunedialog::SaveWorkConfig()
 {
     econf = new config_80;
 
-    cn->Send(CN_GF,NULL,0,1,econf->Config);
+    cn->Send(CN_GF,canal::BT_NONE,NULL,0,1,econf->Config);
 //    qDebug() << "1";
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -1073,7 +1073,7 @@ bool e_tunedialog::LoadWorkConfig()
 {
     // пишем ранее запомненный конфигурационный блок
     memcpy(&econf->Bci_block,&Bci_block_work,sizeof(config_80::Bci));
-    cn->Send(CN_WF, &econf->Bci_block, sizeof(econf->Bci_block), 2, econf->Config);
+    cn->Send(CN_WF, canal::BT_NONE, &econf->Bci_block, sizeof(econf->Bci_block), 2, econf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != CN_OK)
@@ -1474,7 +1474,7 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
 
 void e_tunedialog::ReadTuneCoefs()
 {
-    cn->Send(CN_Gac, &Bac_block, sizeof(Bac_block));
+    cn->Send(CN_GBac, canal::BT_NONE, &Bac_block, sizeof(Bac_block));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -1484,7 +1484,7 @@ void e_tunedialog::ReadTuneCoefs()
 void e_tunedialog::WriteTuneCoefs()
 {
     ReadTuneCoefsFromGUI();
-    cn->Send(CN_Wac, &Bac_block, sizeof(Bac_block));
+    cn->Send(CN_WBac, canal::BT_NONE, &Bac_block, sizeof(Bac_block));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -1609,7 +1609,7 @@ void e_tunedialog::ReadTuneCoefsFromGUI()
 void e_tunedialog::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBdi, &Bda_block, sizeof(Bda_block));
+    cn->Send(CN_GBdi, canal::BT_NONE, &Bda_block, sizeof(Bda_block));
     while (cn->Busy)
         qApp->processEvents();
     if (cn->result != CN_OK)

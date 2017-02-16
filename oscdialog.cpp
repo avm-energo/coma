@@ -55,7 +55,7 @@ void oscdialog::GetOscInfo()
         delete OscInfo;
     OscInfo = new QByteArray;
     OscInfo->resize(MAXOSCBUFSIZE);
-    cn->Send(CN_GNosc,&(OscInfo->data()[0]));
+    cn->Send(CN_GNosc,canal::BT_NONE,&(OscInfo->data()[0]));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -127,8 +127,8 @@ void oscdialog::EndExtractOsc()
         return;
     }
     // считываем шапку - информацию о передаваемом файле осциллограмм - в структуру OscHeader
-    Config[0] = {MT_HEAD_ID, u32_TYPE, sizeof(quint32), sizeof(OscHeader)/sizeof(quint32),&OscHeader};
-    Config[1] = {0xFFFF, 0, 0, 0, NULL};
+    Config[0] = {MT_HEAD_ID, sizeof(OscHeader),&OscHeader};
+    Config[1] = {0xFFFFFFFF, 0, NULL};
     int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +FileHeader
     if (res)
         return; // !!! ошибка разбора формата С2
@@ -144,8 +144,8 @@ void oscdialog::EndExtractOsc()
         quint32 IDFound = 0;
         for (j=MT_START_OSC; j<MT_END_OSC; j++) // цикл по возможным осциллограммам
         {
-            Config[0] = {j&0xFFFF, float_TYPE, sizeof(float), OscHeader.Len, &(OscData.data()[0])};
-            Config[1] = {0xFFFF, 0, 0, 0, NULL};
+            Config[0] = {j&0xFFFFFFFF, OscSize, &(OscData.data()[0])};
+            Config[1] = {0xFFFFFFFF, 0, NULL};
             int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +FileHeader
             if (!res)
             {
@@ -234,8 +234,8 @@ void oscdialog::EndExtractOsc()
 
         for (j=0; j<OscNum; j++) // цикл по возможным осциллограммам
         {
-            Config[0] = {(j+MT_START_OSC)&0xFFFF, float_TYPE, sizeof(float), OscHeader.Len, &(OscData.data()[j*OscSize])};
-            Config[1] = {0xFFFF, 0, 0, 0, NULL};
+            Config[0] = {(j+MT_START_OSC)&0xFFFFFFFF, OscSize, &(OscData.data()[j*OscSize])};
+            Config[1] = {0xFFFFFFFF, 0, NULL};
             int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +FileHeader
             if (!res)
             {
@@ -287,7 +287,7 @@ void oscdialog::GetOsc(QModelIndex idx)
     GivenFilename.replace(":","_");
     GivenFilename.insert(0, " ");
     GivenFilename.insert(0, QString::number(oscnum));
-    cn->Send(CN_GBosc,OscInfo->data(),0,oscnum);
+    cn->Send(CN_GBosc,canal::BT_NONE,OscInfo->data(),0,oscnum);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)

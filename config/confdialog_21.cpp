@@ -454,7 +454,7 @@ void confdialog_21::SetRange(int Range, int ChNum)
 
 void confdialog_21::GetBci()
 {
-    cn->Send(CN_GF,NULL,0,1,aconf->Config);
+    cn->Send(CN_GF,canal::BT_NONE,NULL,0,1,aconf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -908,7 +908,7 @@ void confdialog_21::WriteConfDataToModule()
         ERMSG("В конфигурации есть ошибки. Проверьте и исправьте");
         return;
     }
-    cn->Send(CN_WF, &aconf->Bci_block, sizeof(aconf->Bci_block), 2, aconf->Config);
+    cn->Send(CN_WF, canal::BT_NONE, &aconf->Bci_block, sizeof(aconf->Bci_block), 2, aconf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)

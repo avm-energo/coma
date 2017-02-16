@@ -140,7 +140,7 @@ int publicclass::StoreDataMem(void *mem, DataRec *dr, quint16 fname) //0 - ус�
     char *m=static_cast<char *>(mem);
     m+=sizeof(FileHeader);
     D.size=0;
-    for(R=dr;;R++)
+    for(R=dr;;++R)
     {
         quint32 tmpi = sizeof(DataRec)-sizeof(void*);
         memcpy(m,R,tmpi);
@@ -152,7 +152,7 @@ int publicclass::StoreDataMem(void *mem, DataRec *dr, quint16 fname) //0 - ус�
         m+=tmpi;
         if(R->thedata)
         {
-            tmpi=R->elem_size*R->num_elem;
+            tmpi = R->num_byte;
             for(i=0;i<tmpi;i++)
                 updCRC32(((unsigned char *)R->thedata)[i],&crc);
             D.size += tmpi;
@@ -241,7 +241,7 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       r=FindElem(dr,R.id);
       if(!r) //элемент не найден в описании, пропускаем
       {
-          tmpi = R.elem_size*R.num_elem;
+          tmpi = R.num_byte;
           pos += tmpi;
           if (pos > memsize)
           {
@@ -253,12 +253,12 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
           continue;
       }
       NoIDs = false;
-      if((r->data_type!=R.data_type) || (r->elem_size!=R.elem_size) || (r->num_elem!=R.num_elem)) //несовпадения описания прочитанного элемента с ожидаемым
+      if (r->num_byte!=R.num_byte) //несовпадения описания прочитанного элемента с ожидаемым
       {
           ERMSG("Несовпадение описаний одного и того же блока"); // несовпадение описаний одного и того же блока
           return S2_DESCERROR;
       }
-      tmpi = r->elem_size*r->num_elem;
+      tmpi = r->num_byte;
       pos += tmpi;
       if (pos > memsize)
       {

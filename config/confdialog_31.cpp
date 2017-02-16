@@ -17,23 +17,23 @@ d_confdialog::d_confdialog(QWidget *parent) :
     QDialog(parent)
 {
     NoProperConf = false;
-    Config[0] = {DBCI_MTYPE, u32_TYPE, sizeof(quint32), sizeof(Bci_block.MType)/sizeof(quint32), &(Bci_block.MType)};
-    Config[1] = {DBCI_MTYPE1, u32_TYPE, sizeof(quint32), sizeof(Bci_block.MType1)/sizeof(quint32), &(Bci_block.MType1)};
-    Config[2] = {DBCI_CTYPE, u16_TYPE, sizeof(quint16), sizeof(Bci_block.Ctype)/sizeof(quint16), &Bci_block.Ctype};
-    Config[3] = {DBCI_ABS_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Abs_104)/sizeof(quint32), &Bci_block.Abs_104};
-    Config[4] = {DBCI_CYCLE_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.Cycle_104)/sizeof(quint32), &Bci_block.Cycle_104};
-    Config[5] = {DBCI_T1_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T1_104)/sizeof(quint32), &Bci_block.T1_104};
-    Config[6] = {DBCI_T2_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T2_104)/sizeof(quint32), &Bci_block.T2_104};
-    Config[7] = {DBCI_T3_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.T3_104)/sizeof(quint32), &Bci_block.T3_104};
-    Config[8] = {DBCI_K_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.k_104)/sizeof(quint32), &Bci_block.k_104};
-    Config[9] = {DBCI_W_104, u32_TYPE, sizeof(quint32), sizeof(Bci_block.w_104)/sizeof(quint32), &Bci_block.w_104};
-    Config[10] = {DBCI_INTYPE, u8_TYPE, sizeof(quint8), sizeof(Bci_block.in_type)/sizeof(quint8), &Bci_block.in_type};
-    Config[11] = {DBCI_DLY1, u32_TYPE, sizeof(quint32), sizeof(Bci_block.dly_time1)/sizeof(quint32), &Bci_block.dly_time1};
-    Config[12] = {DBCI_DLY2, u32_TYPE, sizeof(quint32), sizeof(Bci_block.dly_time2)/sizeof(quint32), &Bci_block.dly_time2};
-    Config[13] = {DBCI_DLY3, u32_TYPE, sizeof(quint32), sizeof(Bci_block.dly_time3)/sizeof(quint32), &Bci_block.dly_time3};
-    Config[14] = {DBCI_DLY4, u32_TYPE, sizeof(quint32), sizeof(Bci_block.dly_time4)/sizeof(quint32), &Bci_block.dly_time4};
-    Config[15] = {DBCI_PAIR, u32_TYPE, sizeof(quint32), sizeof(Bci_block.pair)/sizeof(quint32), &Bci_block.pair};
-    Config[16] = {0xFFFF, 0, 0, 0, NULL};
+    Config[0] = {DBCI_MTYPE, sizeof(Bci_block.MType), &(Bci_block.MType)};
+    Config[1] = {DBCI_MTYPE1, sizeof(Bci_block.MType1), &(Bci_block.MType1)};
+    Config[2] = {DBCI_CTYPE, sizeof(Bci_block.Ctype), &Bci_block.Ctype};
+    Config[3] = {DBCI_ABS_104, sizeof(Bci_block.Abs_104), &Bci_block.Abs_104};
+    Config[4] = {DBCI_CYCLE_104, sizeof(Bci_block.Cycle_104), &Bci_block.Cycle_104};
+    Config[5] = {DBCI_T1_104, sizeof(Bci_block.T1_104), &Bci_block.T1_104};
+    Config[6] = {DBCI_T2_104, sizeof(Bci_block.T2_104), &Bci_block.T2_104};
+    Config[7] = {DBCI_T3_104, sizeof(Bci_block.T3_104), &Bci_block.T3_104};
+    Config[8] = {DBCI_K_104, sizeof(Bci_block.k_104), &Bci_block.k_104};
+    Config[9] = {DBCI_W_104, sizeof(Bci_block.w_104), &Bci_block.w_104};
+    Config[10] = {DBCI_INTYPE, sizeof(Bci_block.in_type), &Bci_block.in_type};
+    Config[11] = {DBCI_DLY1, sizeof(Bci_block.dly_time1), &Bci_block.dly_time1};
+    Config[12] = {DBCI_DLY2, sizeof(Bci_block.dly_time2), &Bci_block.dly_time2};
+    Config[13] = {DBCI_DLY3, sizeof(Bci_block.dly_time3), &Bci_block.dly_time3};
+    Config[14] = {DBCI_DLY4, sizeof(Bci_block.dly_time4), &Bci_block.dly_time4};
+    Config[15] = {DBCI_PAIR, sizeof(Bci_block.pair), &Bci_block.pair};
+    Config[16] = {0xFFFFFFFF, 0, NULL};
 
     Bci_defblock.MType = 3;
     Bci_defblock.MType1 = 0x810001;
@@ -87,7 +87,7 @@ d_confdialog::d_confdialog(QWidget *parent) :
 
 /*void d_confdialog::GetBci()
 {
-    cn->Send(CN_GF,NULL,0,1,Config);
+    cn->Send(CN_GF,canal::BT_NONE,NULL,0,1,Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -674,7 +674,7 @@ void d_confdialog::SetCType(int num)
 void d_confdialog::WriteConfDataToModule()
 {
     connect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
-    cn->Send(CN_WF, &Bci_block, sizeof(Bci_block), 2, Config);
+    cn->Send(CN_WF, canal::BT_NONE, &Bci_block, sizeof(Bci_block), 2, Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)

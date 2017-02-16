@@ -153,10 +153,8 @@ public:
 
     typedef struct DataRec
     {
-      quint16 id;
-      quint16 data_type;
-      quint32 elem_size;
-      quint32 num_elem;
+      quint32 id;
+      quint32 num_byte;
       void *thedata;
     } DataRec;
 

@@ -10,7 +10,6 @@ canal *cn;
 
 canal::canal(QObject *parent) : QObject(parent)
 {
-    cmd = CN_Unk;
     ConnectedToPort = PortErrorDetected = false;
     ReadData = new QByteArray;
     RDLength = 0;
@@ -33,7 +32,7 @@ canal::~canal()
 {
 }
 
-void canal::Send(int command, void *ptr, quint32 ptrsize, quint16 filenum, publicclass::DataRec *DRptr)
+void canal::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint16 filenum, publicclass::DataRec *DRptr)
 {
     outdata = static_cast<char *>(ptr);
     outdatasize = ptrsize; // размер области данных, в которую производить запись
@@ -41,6 +40,12 @@ void canal::Send(int command, void *ptr, quint32 ptrsize, quint16 filenum, publi
     fnum = filenum;
     DR = DRptr;
     Busy = true;
+    if (board_type == BT_BASE)
+        BoardType = 0x01;
+    else if (board_type == BT_MEZONIN)
+        BoardType = 0x02;
+    else
+        BoardType = 0x00;
     InitiateSend();
 }
 
@@ -49,32 +54,52 @@ void canal::InitiateSend()
     QByteArray tmpba;
     switch (cmd)
     {
-    case CN_GBsi: // запрос блока стартовой информации
-    case CN_Gda:
-    case CN_Gac:
-    case CN_GBdi:
-    case CN_Cnc: // переход на новую конфигурацию
-    case CN_Gip: // запрос ip-адреса модуля
-    case CN_GNosc: // запрос блока информации об осциллограммах
-    case CN_OscEr: // команда стирания осциллограмм
-    case CN_OscPg: // запрос количества нестёртых страниц
+    case CN_GBsi:   // запрос блока стартовой информации
+    case CN_Gip:    // запрос ip-адреса модуля
+    case CN_OscEr:  // команда стирания осциллограмм
+    case CN_OscPg:  // запрос количества нестёртых страниц
+    case CN_GBo:    // чтение осциллограмм
     {
+        tmpba.resize(5); // +1 on '\x0'
         tmpba.append(CN_Start);
         tmpba.append(cmd);
-        tmpba.append(~cmd);
+        tmpba.append(static_cast<char>(0x00));
+        tmpba.append(static_cast<char>(0x00));
         break;
     }
-    case CN_GF: // запрос файла
-    case CN_GBd: // запрос блока (подблока) текущих данных
+    case CN_GBda:   // чтение текущих данных без настройки
+    case CN_GBac:   // чтение настроечных коэффициентов
+    case CN_GBd:    // запрос блока (подблока) текущих данных
     {
+        tmpba.resize(6);
         tmpba.append(CN_Start);
         tmpba.append(cmd);
-        tmpba.append(~cmd);
-        tmpba.append(fnum);
+        tmpba.append(static_cast<char>(0x01));
+        tmpba.append(static_cast<char>(0x00));
+        tmpba.append(BoardType); // length of block is zero for GBsi and it's a board type for GBda & GBac
+    }
+    case CN_GF:     // запрос файла
+    {
+        tmpba.resize(7);
+        tmpba.append(CN_Start);
+        tmpba.append(cmd);
+        tmpba.append(static_cast<char>(0x02)); // length of block (2 bytes)
+        tmpba.append(static_cast<char>(0x00));
+        tmpba.append(static_cast<char>(fnum&0x00FF));
+        tmpba.append(static_cast<char>((fnum&0xFF00)>>8));
 //        qDebug() << "cnGf_1";
         break;
     }
-    case CN_GBosc: // запрос осциллограммы
+    case CN_WHv:
+    {
+        tmpba.resize(5);
+        tmpba.append(CN_Start);
+        tmpba.append(cmd);
+        tmpba.append(static_cast<char>(0x00));
+        tmpba.append(static_cast<char>(0x00));
+        break;
+    }
+/*    case CN_GBosc: // запрос осциллограммы
     {
         tmpba.append(CN_Start);
         tmpba.append(cmd);
@@ -82,13 +107,12 @@ void canal::InitiateSend()
         tmpba.append(fnum/256);
         tmpba.append(fnum-(static_cast<quint8>(tmpba.at(3))*256));
         break;
-    }
+    } */
     case CN_WF: // запись файла
     {
 //        qDebug() << "cn1";
         tmpba.append(CN_Start);
         tmpba.append(cmd);
-        tmpba.append(~cmd);
         tmpba.append(fnum);
         tmpba.resize(30000);
         if (DR == NULL)
@@ -114,9 +138,7 @@ void canal::InitiateSend()
 
         break;
     }
-    case CN_Wac:
-    case CN_Wsn:
-    case CN_WHv:
+    case CN_WBac:
     {
 //        qDebug() << "cnWsn_1";
         tmpba = QByteArray (QByteArray::fromRawData((const char *)outdata, outdatasize)); // 10000 - предположительная длина блока
@@ -196,8 +218,8 @@ void canal::GetSomeData(QByteArray ba)
             break;
         }
         case CN_GBsi:
-        case CN_Gda:
-        case CN_Gac:
+        case CN_GBda:
+        case CN_GBac:
         case CN_GBd:
         case CN_GBdi:
         case CN_Gip:
@@ -231,7 +253,7 @@ void canal::GetSomeData(QByteArray ba)
             break;
         }
         case CN_WF:
-        case CN_Wac:
+        case CN_WBac:
         case CN_Wsn:
         case CN_WHv:
         {
@@ -265,8 +287,8 @@ void canal::GetSomeData(QByteArray ba)
         switch (cmd)
         {
         case CN_GBsi:
-        case CN_Gda:
-        case CN_Gac:
+        case CN_GBda:
+        case CN_GBac:
         case CN_GBd:
         case CN_GBdi:
         case CN_Gip:
@@ -344,7 +366,7 @@ void canal::GetSomeData(QByteArray ba)
             break;
         }
         case CN_WF:
-        case CN_Wac:
+        case CN_WBac:
         case CN_Cnc:
         case CN_Wsn:
         case CN_WHv:

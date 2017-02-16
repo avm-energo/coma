@@ -358,7 +358,7 @@ void Coma::SetBaud(QString str)
 
 void Coma::GetBsi()
 {
-    cn->Send(CN_GBsi, &pc.ModuleBsi, sizeof(publicclass::Bsi));
+    cn->Send(CN_GBsi, canal::BT_NONE, &pc.ModuleBsi, sizeof(publicclass::Bsi));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -406,7 +406,7 @@ void Coma::CheckBsi()
         DialogsAreReadyAlready = true;
         if (WrongSN)
         {
-            cn->Send(CN_Wsn, &pc.ModuleBsi.SerialNum, 4);
+            cn->Send(CN_Wsn, canal::BT_NONE, &pc.ModuleBsi.SerialNum, 4);
             while (cn->Busy)
                 QCoreApplication::processEvents(QEventLoop::AllEvents);
             if (cn->result == CN_OK)
@@ -663,7 +663,7 @@ void Coma::WriteSN()
     if (!ok)
         return;
     pc.ModuleBsi.SerialNum = QString::number(tmpi, 10).toInt(0,16);
-    cn->Send(CN_Wsn, &(pc.ModuleBsi.SerialNum), 4);
+    cn->Send(CN_Wsn, canal::BT_NONE, &(pc.ModuleBsi.SerialNum), 4);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
@@ -733,7 +733,7 @@ void Coma::SendHW()
     tmpi <<= 24;
     tmpi |= (static_cast<quint32>(spblv->value()) << 16);
     tmpi |= static_cast<quint32>(spbsv->value());
-    cn->Send(CN_WHv, &tmpi, 4);
+    cn->Send(CN_WHv, canal::BT_NONE, &tmpi, 4);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     dlg->close();
