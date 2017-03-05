@@ -27,7 +27,6 @@ SOURCES += main.cpp\
     fwupdialog.cpp \
     oscdialog.cpp \
     publicclass.cpp \
-    serialthread.cpp \
     check/checkdialog_21.cpp \
     check/checkdialog_80.cpp \
     config/confdialog.cpp \
@@ -60,7 +59,6 @@ HEADERS  += coma.h \
     fwupdialog.h \
     oscdialog.h \
     publicclass.h \
-    serialthread.h \
     check/checkdialog_21.h \
     check/checkdialog_80.h \
     config.h \

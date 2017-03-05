@@ -229,6 +229,8 @@ Coma::Coma(QWidget *parent)
     ErrorWidget->hide();
     ERGeometry = ErrorWidget->geometry();
     ERHide = true;
+
+    cn = new Canal;
 }
 
 Coma::~Coma()
@@ -282,27 +284,20 @@ void Coma::Connect()
     connect(nextL, SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(nextL);
     dlg->setLayout(lyout);
-    connect(cn,SIGNAL(portopened()),dlg,SLOT(close()));
+    connect(this,SIGNAL(CloseConnectDialog()),dlg,SLOT(close()));
     dlg->exec();
 }
 
 void Coma::Next()
 {
-    cn = new canal;
-    QThread *CanalThread = new QThread(this);
-    cn->moveToThread(CanalThread);
-    connect(CanalThread, &QThread::finished, cn, &canal::deleteLater);
-    connect(CanalThread, &QThread::finished, CanalThread, &QThread::deleteLater);
-
     pc.PrbMessage = "Загрузка данных...";
     connect(cn,SIGNAL(OscEraseSize(quint32)),this,SLOT(SetProgressBarSize(quint32)));
     connect(cn,SIGNAL(OscEraseRemaining(quint32)),this,SLOT(SetProgressBar(quint32)));
     connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
     connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
 //    connect(cn,SIGNAL(SendEnd()),this,SLOT(DisableProgressBar()));
-    connect(cn,SIGNAL(gotsomedata(QByteArray *)),this,SLOT(ReadUpdateMainTE(QByteArray *)));
-    connect(cn,SIGNAL(somedatawritten(QByteArray *)),this,SLOT(WriteUpdateMainTE(QByteArray *)));
-    CanalThread->start();
+    connect(cn,SIGNAL(ReadBytesSignal(QByteArray)),this,SLOT(ReadUpdateMainTE(QByteArray)));
+    connect(cn,SIGNAL(WriteBytesSignal(QByteArray)),this,SLOT(WriteUpdateMainTE(QByteArray)));
 
     QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
     if (info.size() == 0)
@@ -326,8 +321,8 @@ void Coma::Next()
         Connect();
         return;
     }
-    cn->Connect();
-    if (cn->result != CN_OK)
+    emit CloseConnectDialog();
+    if (!cn->Connect())
     {
         ShowErrMsg(cn->result);
         Connect();
@@ -912,21 +907,17 @@ void Coma::UpdateMainTE104(QByteArray ba)
     UpdateMainTE(&ba);
 }
 
-void Coma::ReadUpdateMainTE(QByteArray *ba)
+void Coma::ReadUpdateMainTE(QByteArray ba)
 {
-    cn->ReadDataMtx.lock();
     UpdateMainTE(ba);
-    cn->ReadDataMtx.unlock();
 }
 
-void Coma::WriteUpdateMainTE(QByteArray *ba)
+void Coma::WriteUpdateMainTE(QByteArray ba)
 {
-    cn->WriteDataMtx.lock();
     UpdateMainTE(ba);
-    cn->WriteDataMtx.unlock();
 }
 
-void Coma::UpdateMainTE(QByteArray *ba)
+void Coma::UpdateMainTE(QByteArray &ba)
 {
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     QString tmpString;
@@ -936,8 +927,8 @@ void Coma::UpdateMainTE(QByteArray *ba)
             tmpString.append(ByteToHex(ba->at(i)));
         MainTE->append(tmpString);
         tmpString = MainTE->toPlainText();
-        if (tmpString.size() > 10000)
-            MainTE->setPlainText(tmpString.right(10000));
+        if (tmpString.size() > C_TE_MAXSIZE)
+            MainTE->setPlainText(tmpString.right(C_TE_MAXSIZE));
         MainTE->verticalScrollBar()->setValue(MainTE->verticalScrollBar()->maximum());
     }
 }

@@ -7,14 +7,17 @@
 #include <QTimer>
 #include <QLabel>
 #include <QMutex>
+#include <QtSerialPort/QSerialPort>
+#include <QtSerialPort/QSerialPortInfo>
 
 #include "publicclass.h"
-#include "serialthread.h"
 
 // Канал связи с модулем
 
 #define CN_TIMEOUT  2000 // таймаут по USB в мс
 #define CN_OSCT     1000 // таймаут посылки запроса нестёртых осциллограмм
+#define CN_MAXFILESIZE  30000 // максимальный размер выходного файла
+#define CN_MAXSEGMENTLENGTH 768 // максимальная длина одного сегмента (0x300)
 
 // Обмен с модулями
 #define CN_ResOk   0x11 // ответ "всё в порядке"
@@ -69,12 +72,12 @@
 #define CN_MER_NOT_FILE     0x0C // нет файла с таким номером
 #define CN_MER_INKN_ERR     0xFF // неизвестная ошибка
 
-class canal : public QObject
+class Canal : public QObject
 {
     Q_OBJECT
 public:
-    explicit canal(QObject *parent = 0);
-    ~canal();
+    explicit Canal(QObject *parent = 0);
+    ~Canal();
 
     enum board_types
     {
@@ -90,42 +93,33 @@ public:
     bool FirstRun;
     bool NeedToSend, Busy, NeedToFinish;
     quint32 RDSize;
-    QMutex ReadDataMtx, WriteDataMtx;
 
-    void Connect();
+    bool Connect();
     void Disconnect();
     void Send(int command, int board_type=BT_NONE, void *ptr=NULL, quint32 ptrsize=0, quint16 filenum=0, publicclass::DataRec *DRptr=NULL);
 
 signals:
-    void stopall();
-    void DataReady();
-    void portopened();
-    void incomingdatalength(quint32);
-    void bytesreceived(quint32);
-    void writedatatoport(QByteArray);
-    void gotsomedata(QByteArray *);
-    void somedatawritten(QByteArray *);
+    void WriteDataLength(quint32);
+    void WriteDataPos(quint32);
+    void ReadBytesSignal(QByteArray);
+    void WriteBytesSignal(QByteArray);
     void SendEnd();
     void OscEraseSize(quint32);
     void OscEraseRemaining(quint32);
 
 public slots:
-    void StopSThread();
-    void GetSomeData(QByteArray ba);
     void Timeout();
 
 private slots:
-    void DataWritten(QByteArray);
-    void CanalReady();
-    void CanalError(int);
+    void CheckForData();
     void OscTimerTimeout();
-    void SetStarted();
-    void ClearStarted();
+    void PortCloseTimeout();
+    void Error(QSerialPort::SerialPortError);
 
 private:
     char *outdata;
-    QByteArray *ReadData;
-    QByteArray *WriteData;
+    QByteArray ReadData;
+    QByteArray WriteData;
     QTimer *TTimer, *OscTimer;
     quint16 OscNum;
     int bStep;
@@ -138,22 +132,26 @@ private:
     quint32 outdatasize; // размер приёмной области памяти
     quint32 SegLeft; // количество оставшихся сегментов
     quint32 SegEnd; // номер последнего байта в ReadData текущего сегмента
+    bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
     publicclass::DataRec *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
-    bool LongBlock, ConnectedToPort, PortErrorDetected;
-    SerialThread *SThread;
-    bool SThreadStarted;
     quint8 BoardType;
+    bool PortCloseTimeoutSet;
+    QSerialPort *port;
 
+    bool InitializePort(QSerialPortInfo &pinfo, int baud);
+    void ClosePort();
     void InitiateSend();
+    bool WriteDataToPort(QByteArray &ba);
+    void ParseIncomeData(QByteArray &ba);
     void Finish(int ernum);
-    void SetRDLength(int startpos);
-    void SetWR(QByteArray, quint32 startpos);
+    void SetRDLength();
+    void SetWR(QByteArray &);
     bool RDCheckForNextSegment();
     void WRCheckForNextSegment();
     void SendOk();
     void SendErr();
 };
 
-extern canal *cn;
+extern Canal cn;
 
 #endif // CANAL_H

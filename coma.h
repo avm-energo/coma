@@ -25,6 +25,8 @@
 
 #define PROGNAME    "КОМА 2.0"
 
+#define C_TE_MAXSIZE    10000
+
 class Coma : public QMainWindow
 {
     Q_OBJECT
@@ -34,7 +36,6 @@ public:
     ~Coma();
 
 signals:
-    void receivecompleted();
     void mipparset();
 
 private:
@@ -94,7 +95,6 @@ private:
     quint8 ReconTry;
     publicclass::Bsi Bsi_block;
 
-    void InitiateWriteDataToPort(QByteArray ba);
     QString ByteToHex(quint8);
     void StopThreads();
     void FillBsi(QString MType);
@@ -102,7 +102,10 @@ private:
     void AddLabelAndLineedit (QVBoxLayout *lyout, QString caption, QString lename);
     void ShowOrHideSlideSW();
     void ShowOrHideSlideER();
-    void UpdateMainTE(QByteArray *ba);
+    void UpdateMainTE(QByteArray &ba);
+
+signals:
+    void CloseConnectDialog();
 
 public slots:
     void GetBsi();
@@ -116,8 +119,8 @@ private slots:
     void GetAbout();
     void ShowErrMsg(int);
     void CheckBsi();
-    void ReadUpdateMainTE(QByteArray *ba);
-    void WriteUpdateMainTE(QByteArray *ba);
+    void ReadUpdateMainTE(QByteArray ba);
+    void WriteUpdateMainTE(QByteArray ba);
     void UpdateMainTE104(QByteArray);
     void SetPort(QString str);
     void SetBaud(QString str);

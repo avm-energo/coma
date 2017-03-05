@@ -11,6 +11,8 @@
 #define MAX_MSG     1000
 #define ER_BUFMAX   16
 
+#define GENERALERROR    -1 // возвращённое значение - ошибка
+
 // S2: Определение типов элементов данных
 #define u8_TYPE		1  //беззнаковый байт
 #define s8_TYPE		2  //знаковый байт
@@ -53,6 +55,7 @@
 #define SKT_SENDDATAER      48 // ошибка при отправке данных
 
 // ошибки USB (COM) порта
+#define COM_ERROR           50
 #define COM_DEVNOTFOUNDER   51 // устройство не найдено
 #define COM_PERMER          52 // устройство занято другим процессом или недостаточно прав
 #define COM_OPENER          53 // устройство уже открыто
@@ -68,16 +71,19 @@
 #define COM_NOTOPENER       63 // операция не может быть выполнена, порт закрыт
 
 // ошибки в модулях УСО
-#define USO_UNKER           71 // неизвестная ошибка
+#define USO_NOERR           71 // нет ошибки
 #define USO_TIMEOUTER       72 // таймаут
-#define USO_CRCER           73 // ошибка CRC
-#define USO_FLASHER         74 // ошибка доступа к FLASH-памяти
-#define USO_LENGTHER        75 // ошибка длины
-#define USO_CMDER           76 // ошибка команды
-#define USO_CMDFMTER        77 // ошибка формата команды
-#define USO_GBDER           78 // ошибка в блоке данных команды GBd
-#define USO_RFILER          79 // запрошен неизвестный номер файла
-#define USO_WFILER          80 // передан файл с неизвестным номером
+#define USO_CRCINCOR        73 // ошибка CRC
+#define USO_FLASHERR        74 // ошибка доступа к FLASH-памяти
+#define USO_LENGTHERR       75 // ошибка длины
+#define USO_WRONGCOM        76 // ошибка команды
+#define USO_WRONGFORMAT     77 // ошибка формата команды
+#define USO_UNKNGBD         78 // ошибка в блоке данных команды GBd
+#define USO_UNKNFILEREQ     79 // запрошен неизвестный номер файла
+#define USO_UNKNFILESENT    80 // передан файл с неизвестным номером
+#define USO_NOTMEZZANINE    81 // отсутствует дополнительная плата
+#define USO_WRONGMTYPE      82 // неверный тип платы
+#define USO_NOTFILE         83 // нет файла с таким номером
 
 // ошибки протокола МЭК 60870-5-104
 #define M104_LENGTHER       81 // ошибка длины в блоке APDU

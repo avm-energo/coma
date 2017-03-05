@@ -673,7 +673,7 @@ void d_confdialog::SetCType(int num)
 
 void d_confdialog::WriteConfDataToModule()
 {
-    connect(cn,SIGNAL(DataReady()),this,SLOT(WriteCompleted()));
+    connect(cn,SIGNAL(SendEnd()),this,SLOT(WriteCompleted()));
     cn->Send(CN_WF, canal::BT_NONE, &Bci_block, sizeof(Bci_block), 2, Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
