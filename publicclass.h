@@ -138,7 +138,6 @@
 #include <QtSerialPort/QSerialPort>
 #include <QStringList>
 #include <QMap>
-#include "serialthread.h"
 
 class publicclass
 {
@@ -219,7 +218,6 @@ public:
 //    quint32 CpuIdHigh, CpuIdMid, CpuIdLow, Health;
 
     QStringList AMTypes, DMTypes, EMTypes;
-    SerialThread *SThread;
     quint16 MIPASDU;
     QString MIPIP;
     QString Port;

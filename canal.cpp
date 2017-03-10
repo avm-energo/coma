@@ -209,7 +209,7 @@ void Canal::ParseIncomeData(QByteArray &ba)
         case CN_Gip:
         case CN_GF:
         {
-            if (RDSize < 4)
+            if (RDSize < 4) // '<', CN, L, L
                 return;
             if ((ReadData.at(0) != CN_MStart) || (ReadData.at(1) != cmd))
             {
@@ -414,7 +414,7 @@ void Canal::SetWR(QByteArray &ba)
     WRLength = WriteData.size();
     if (WRLength > CN_MAXSEGMENTLENGTH)
     {
-        SegLeft = WRLength / 512;
+        SegLeft = WRLength / CN_MAXSEGMENTLENGTH;
         SegEnd = CN_MAXSEGMENTLENGTH;
     }
     else
