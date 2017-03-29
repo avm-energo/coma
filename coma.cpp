@@ -291,13 +291,13 @@ void Coma::Connect()
 void Coma::Next()
 {
     pc.PrbMessage = "Загрузка данных...";
-    connect(cn,SIGNAL(OscEraseSize(quint32)),this,SLOT(SetProgressBarSize(quint32)));
-    connect(cn,SIGNAL(OscEraseRemaining(quint32)),this,SLOT(SetProgressBar(quint32)));
+    connect(cn,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBarSize(quint32)));
+    connect(cn,SIGNAL(osceraseremaining(quint32)),this,SLOT(SetProgressBar(quint32)));
     connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
     connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
-//    connect(cn,SIGNAL(SendEnd()),this,SLOT(DisableProgressBar()));
-    connect(cn,SIGNAL(ReadBytesSignal(QByteArray)),this,SLOT(ReadUpdateMainTE(QByteArray)));
-    connect(cn,SIGNAL(WriteBytesSignal(QByteArray)),this,SLOT(WriteUpdateMainTE(QByteArray)));
+//    connect(cn,SIGNAL(sendend()),this,SLOT(DisableProgressBar()));
+    connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(ReadUpdateMainTE(QByteArray)));
+    connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(WriteUpdateMainTE(QByteArray)));
 
     QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
     if (info.size() == 0)

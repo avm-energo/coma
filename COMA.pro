@@ -10,7 +10,7 @@ QMAKE_TARGET_PRODUCT = COMA
 RC_ICONS = coma.ico
 VERSION = 2.0
 
-QT       += core gui network xlsx
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -88,6 +88,8 @@ HEADERS  += coma.h \
 
 INCLUDEPATH += $$PWD/../../xlsxwriter/src/xlsx
 DEPENDPATH += $$PWD/../../xlsxwriter/src/xlsx
+
+LIBS += -lqtxlsx
 
 RESOURCES += \
     res.qrc

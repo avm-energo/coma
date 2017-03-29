@@ -13,7 +13,7 @@
 
 #define GENERALERROR    -1 // возвращённое значение - ошибка
 
-// S2: Определение типов элементов данных
+/*// S2: Определение типов элементов данных
 #define u8_TYPE		1  //беззнаковый байт
 #define s8_TYPE		2  //знаковый байт
 #define u16_TYPE	3  //беззнаковое слово
@@ -25,7 +25,10 @@
 #define float_TYPE	9  //32-х битовое плавающее
 #define double_TYPE	10 //64-х битовое плавающее
 #define string_TYPE	11 //строка, ограниченная нулём
-#define binary_TYPE	12 //любые двоичные данные
+#define binary_TYPE	12 //любые двоичные данные */
+
+// определение ошибок
+#define NOERROR             0 // нет ошибок
 
 // ошибки IP-сокета
 #define SKT_UNKNOWNER       24 // неизвестная ошибка
@@ -70,24 +73,37 @@
 #define COM_TIMEOUTER       62 // произошло превышение времени ожидания
 #define COM_NOTOPENER       63 // операция не может быть выполнена, порт закрыт
 
+// ошибки канала
+#define CN_ERROR            70
+#define CN_PORTOPENERROR    71 // ошибка открытия порта
+#define CN_NOPORTSERROR     72 // нет портов в системе
+#define CN_SEGFAULTERROR    73 // ошибка при приёме сегмента данных на стороне модуля
+#define CN_RCVDATAERROR     74 // ошибка при приёме данных (несовпадение длины, неправильный начальный символ и т.п.)
+#define CN_TIMEOUTERROR     75 // таймаут при приёме данных
+#define CN_RCVLENGTHERROR   76 // некорректная длина блока (принято больше, чем может вместить в себя приёмная переменная)
+#define CN_UNKNOWNCMDERROR  77 // неизвестная команда
+#define CN_NULLDATAERROR    78 // в канальную процедуру переданы некорректные данные
+
 // ошибки в модулях УСО
-#define USO_NOERR           71 // нет ошибки
-#define USO_TIMEOUTER       72 // таймаут
-#define USO_CRCINCOR        73 // ошибка CRC
-#define USO_FLASHERR        74 // ошибка доступа к FLASH-памяти
-#define USO_LENGTHERR       75 // ошибка длины
-#define USO_WRONGCOM        76 // ошибка команды
-#define USO_WRONGFORMAT     77 // ошибка формата команды
-#define USO_UNKNGBD         78 // ошибка в блоке данных команды GBd
-#define USO_UNKNFILEREQ     79 // запрошен неизвестный номер файла
-#define USO_UNKNFILESENT    80 // передан файл с неизвестным номером
-#define USO_NOTMEZZANINE    81 // отсутствует дополнительная плата
-#define USO_WRONGMTYPE      82 // неверный тип платы
-#define USO_NOTFILE         83 // нет файла с таким номером
+#define USO_ERROR           80
+#define USO_NOERR           81 // нет ошибки
+#define USO_TIMEOUTER       82 // таймаут при приёме
+#define USO_CRCINCOR        83 // неверна контрольная сумма принятого файла CN_WF
+#define USO_FLASHERR        84 // ошибка записи во Flash-память
+#define USO_LENGTHERR       85 // ошибка длины пакета
+#define USO_WRONGCOM        86 // неизвестная команда
+#define USO_WRONGFORMAT     87 // неизвестный формат команды
+#define USO_UNKNGBD         88 // запрошен неизвестный подблок данных
+#define USO_UNKNFILEREQ     89 // запрошен неизвестный номер файла
+#define USO_UNKNFILESENT    90 // передан файл с неизвестным номером
+#define USO_NOTMEZZANINE    91 // отсутствует дополнительная плата
+#define USO_WRONGMTYPE      92 // неверный тип платы
+#define USO_NOTFILE         93 // нет файла с таким номером
 
 // ошибки протокола МЭК 60870-5-104
-#define M104_LENGTHER       81 // ошибка длины в блоке APDU
-#define M104_NUMER          82 // ошибка номеров сообщений
+#define M104_ERROR          100
+#define M104_LENGTHER       101 // ошибка длины в блоке APDU
+#define M104_NUMER          102 // ошибка номеров сообщений
 
 #define HTH_FNC             0x00000200 // частота не в допуске (Э)
 #define HTH_LS              0x00000100 // сигналы малы (Э)

@@ -1,4 +1,5 @@
 #include "Canal.h"
+#include "config.h"
 
 //#include <QtDebug>
 #include <QDialog>
@@ -14,6 +15,7 @@ Canal::Canal(QObject *parent) : QObject(parent)
     SegEnd = 0;
     SegLeft = 0;
     FirstRun = true;
+    FirstSegment = true;
     OscNum = 0;
     TTimer = new QTimer(this);
     TTimer->setInterval(CN_TIMEOUT);
@@ -41,119 +43,103 @@ void Canal::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint1
         BoardType = 0x01;
     else if (board_type == BT_MEZONIN)
         BoardType = 0x02;
-    else
+    else // BT_NONE
         BoardType = 0x00;
     InitiateSend();
 }
 
 void Canal::InitiateSend()
 {
-    QByteArray tmpba;
+    WriteData.clear();
     switch (cmd)
     {
     case CN_GBsi:   // запрос блока стартовой информации
-    case CN_Gip:    // запрос ip-адреса модуля
+    case CN_GBo:    // чтение осциллограмм
+    case CN_IP:    // запрос ip-адреса модуля
     case CN_OscEr:  // команда стирания осциллограмм
     case CN_OscPg:  // запрос количества нестёртых страниц
-    case CN_GBo:    // чтение осциллограмм
     {
-        tmpba.resize(5); // +1 on '\x0'
-        tmpba.append(CN_Start);
-        tmpba.append(cmd);
-        tmpba.append(static_cast<char>(0x00));
-        tmpba.append(static_cast<char>(0x00));
+        WriteData.resize(4);
+        WriteData.append(CN_MS);
+        WriteData.append(cmd);
+        AppendSize(WriteData, 0);
+        WriteDataToPort(WriteData);
         break;
     }
-    case CN_GBda:   // чтение текущих данных без настройки
     case CN_GBac:   // чтение настроечных коэффициентов
+    case CN_GBda:   // чтение текущих данных без настройки
     case CN_GBd:    // запрос блока (подблока) текущих данных
     {
-        tmpba.resize(6);
-        tmpba.append(CN_Start);
-        tmpba.append(cmd);
-        tmpba.append(static_cast<char>(0x01));
-        tmpba.append(static_cast<char>(0x00));
-        tmpba.append(BoardType); // length of block is zero for GBsi and it's a board type for GBda & GBac
+        WriteData.resize(5);
+        WriteData.append(CN_MS);
+        WriteData.append(cmd);
+        AppendSize(WriteData, 1);
+        WriteData.append(BoardType);
+        WriteDataToPort(WriteData);
     }
     case CN_GF:     // запрос файла
     {
-        tmpba.resize(7);
-        tmpba.append(CN_Start);
-        tmpba.append(cmd);
-        tmpba.append(static_cast<char>(0x02)); // length of block (2 bytes)
-        tmpba.append(static_cast<char>(0x00));
-        tmpba.append(static_cast<char>(fnum&0x00FF));
-        tmpba.append(static_cast<char>((fnum&0xFF00)>>8));
+        WriteData.resize(6);
+        WriteData.append(CN_MS);
+        WriteData.append(cmd);
+        AppendSize(WriteData, 2);
+        WriteData.append(static_cast<char>(fnum&0x00FF));
+        WriteData.append(static_cast<char>((fnum&0xFF00)>>8));
 //        qDebug() << "cnGf_1";
+        WriteDataToPort(WriteData);
         break;
     }
     case CN_WHv:
     {
-        tmpba.resize(5);
-        tmpba.append(CN_Start);
-        tmpba.append(cmd);
-        tmpba.append(static_cast<char>(0x00));
-        tmpba.append(static_cast<char>(0x00));
+        WriteData.resize(5+sizeof(Bhb_Main));
+        WriteData.append(CN_MS);
+        WriteData.append(cmd);
+        AppendSize(WriteData, 5); // BoardType, HiddenBlock
+        WriteData.append(BoardType);
+        memcpy(&(WriteData.data()[5]), &outdata[0], sizeof(Bhb_Main));
+        WriteDataToPort(WriteData);
         break;
     }
-/*    case CN_GBosc: // запрос осциллограммы
-    {
-        tmpba.append(CN_Start);
-        tmpba.append(cmd);
-        tmpba.append(~cmd);
-        tmpba.append(fnum/256);
-        tmpba.append(fnum-(static_cast<quint8>(tmpba.at(3))*256));
-        break;
-    } */
     case CN_WF: // запись файла
     {
 //        qDebug() << "cn1";
-        tmpba.append(CN_Start);
-        tmpba.append(cmd);
-        tmpba.append(fnum);
-        tmpba.resize(CN_MAXFILESIZE);
         if (DR == NULL)
             Finish(CN_NULLDATAERROR);
-        pc.StoreDataMem(&(tmpba.data()[7]), DR, fnum);
+        WriteData.resize(CN_MAXFILESIZE);
+        WriteData.append(CN_MS);
+        WriteData.append(cmd);
+        AppendSize(WriteData, 0); // временно записываем нулевую длину, впоследствии поменяем
+        pc.StoreDataMem(&(WriteData.data()[4]), DR, fnum);
 //        qDebug() << "cn1_5";
-        DLength = static_cast<quint8>(tmpba.at(9))*65536;
-        DLength += static_cast<quint8>(tmpba.at(8))*256;
-        DLength += static_cast<quint8>(tmpba.at(7));
-        DLength += sizeof(publicclass::FileHeader); // sizeof(FileHeader)
-        quint32 tmpi1 = tmpba.data()[4] = (DLength/65536);
-        quint32 tmpi2 = tmpba.data()[5] = (DLength - tmpi1*65536)/256;
-        tmpba.data()[6] = DLength - tmpi1*65536 - tmpi2*256;
-        tmpba.resize(DLength+7);
+        // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
+        WRLength = static_cast<quint8>(WriteData.at(11))*16777216; // с 8 байта начинается FileHeader.size
+        WRLength += static_cast<quint8>(WriteData.at(10))*65536;
+        WRLength += static_cast<quint8>(WriteData.at(9))*256;
+        WRLength += static_cast<quint8>(WriteData.at(8));
+        WRLength += sizeof(publicclass::FileHeader); // sizeof(FileHeader)
+        WRLength += 4; // + 4 bytes prefix
+        WriteData.resize(WRLength);
 //        qDebug() << "cn1_7";
-        SetWR(tmpba); // 7 - длина заголовка
-        if (SegLeft)
-        {
-            tmpba.truncate(512+7);
-            WriteData.remove(0,512+7);
-        }
+        emit writedatalength(WRLength); // сигнал для прогрессбара
+        FirstSegment = true;
+        SetWRSegNum();
+        WRCheckForNextSegment();
 //        qDebug() << "cn1_9";
-
         break;
     }
     case CN_WBac:
     {
 //        qDebug() << "cnWsn_1";
-        tmpba = QByteArray (QByteArray::fromRawData((const char *)outdata, outdatasize)); // 10000 - предположительная длина блока
-        DLength = outdatasize;
-        quint32 tmpi1 = (DLength/65536);
-        quint32 tmpi2 = (DLength - tmpi1*65536)/256;
-        tmpba.insert(0, DLength - tmpi1*65536 - tmpi2*256);
-        tmpba.insert(0, tmpi2);
-        tmpba.insert(0, tmpi1);
-        tmpba.insert(0, ~cmd);
-        tmpba.insert(0, cmd);
-        tmpba.insert(0, CN_Start);
-        SetWR(tmpba);
-        if (SegLeft)
-        {
-            tmpba.truncate(512+7);
-            WriteData.remove(0,512+7);
-        }
+        WRLength = outdatasize+5;
+        WriteData.resize(WRLength); // MS, c, L, L, B
+        WriteData.append(CN_MS);
+        WriteData.append(cmd);
+        AppendSize(WriteData, 0); // временно записываем нулевую длину, впоследствии поменяем
+        WriteData.append(QByteArray::fromRawData((const char *)outdata, outdatasize));
+        emit writedatalength(WRLength); // сигнал для прогрессбара
+        FirstSegment = true;
+        SetWRSegNum();
+        WRCheckForNextSegment();
 //        qDebug() << "cnWsn_2";
         break;
     }
@@ -168,7 +154,6 @@ void Canal::InitiateSend()
     LastBlock = false;
     bStep = 0;
     RDLength = 0;
-    WriteDataToPort(tmpba);
 }
 
 void Canal::ParseIncomeData(QByteArray &ba)
@@ -195,23 +180,29 @@ void Canal::ParseIncomeData(QByteArray &ba)
         switch (cmd)
         {
         case CN_OscEr:
-        case CN_OscPg: // 3 байта: <, OSCPGst, OSCPGml
-        {
-            if (RDSize < 3)
-                return;
-            bStep++;
-            break;
-        }
+        case CN_OscPg:
         case CN_GBsi:
-        case CN_GBda:
-        case CN_GBac:
-        case CN_GBd:
-        case CN_Gip:
+        case CN_IP:
         case CN_GF:
         {
             if (RDSize < 4) // '<', CN, L, L
                 return;
-            if ((ReadData.at(0) != CN_MStart) || (ReadData.at(1) != cmd))
+            if ((ReadData.at(0) != CN_SS) || (ReadData.at(1) != cmd))
+            {
+                Finish(CN_RCVDATAERROR);
+                return;
+            }
+            SetRDLength();
+            bStep++;
+            break;
+        }
+        case CN_GBda:
+        case CN_GBac:
+        case CN_GBd:
+        {
+            if (RDSize < 5) // '<', CN, L, L, B
+                return;
+            if ((ReadData.at(0) != CN_SS) || (ReadData.at(1) != cmd))
             {
                 Finish(CN_RCVDATAERROR);
                 return;
@@ -229,7 +220,7 @@ void Canal::ParseIncomeData(QByteArray &ba)
                 bStep++;
                 break;
             }
-            if ((ReadData.at(0) == CN_MStart) && (ReadData.at(1) == CN_ResOk) && (ReadData.at(2) == 0x00) && (ReadData.at(3) == 0x00))
+            if ((ReadData.at(0) == CN_SS) && (ReadData.at(1) == CN_ResOk) && (ReadData.at(2) == 0x00) && (ReadData.at(3) == 0x00))
             {
                 ReadData.clear();
                 WRCheckForNextSegment();
@@ -253,17 +244,19 @@ void Canal::ParseIncomeData(QByteArray &ba)
         case CN_GBd:
         case CN_Gip:
         {
-            if (!RDCheckForNextSegment())
+            if (RDSize < RDLength) // если приняли ещё не весь блок данных
+                return; // ждём, пока он весь не придёт
+/*            if (!RDCheckForNextSegment())
                 return;
             if (RDSize < RDLength)
                 return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
-            RDLength = 0; // обнуляем, чтобы не было лишних вызовов incomingdatalength
-            if (outdatasize < DLength)
+            RDLength = 0; // обнуляем, чтобы не было лишних вызовов incomingdatalength */
+/*            if (outdatasize < DLength)
             {
                 SendErr();
                 Finish(CN_NULLDATAERROR);
                 break;
-            }
+            } */
             ReadData.remove(0, 4); // убираем заголовок с < и длиной
             RDSize -= 4;
             memcpy(outdata,ReadData.data(),RDSize);
@@ -331,7 +324,7 @@ void Canal::ParseIncomeData(QByteArray &ba)
         case CN_Wsn:
         case CN_WHv:
         {
-            if ((ReadData.at(0) == CN_MStart) && (ReadData.at(1) == CN_ResOk) && (ReadData.at(2) == ~CN_ResOk))
+            if ((ReadData.at(0) == CN_SS) && (ReadData.at(1) == CN_ResOk) && (ReadData.at(2) == ~CN_ResOk))
             {
                 Finish(CN_OK);
                 break;
@@ -341,7 +334,7 @@ void Canal::ParseIncomeData(QByteArray &ba)
         }
         case CN_OscEr:
         {
-            if ((ReadData.at(0) == CN_MStart) && (ReadData.at(1) == CN_ResOk) && (ReadData.at(2) == ~CN_ResOk))
+            if ((ReadData.at(0) == CN_SS) && (ReadData.at(1) == CN_ResOk) && (ReadData.at(2) == ~CN_ResOk))
             {
                 OscTimer->start();
                 break;
@@ -354,7 +347,7 @@ void Canal::ParseIncomeData(QByteArray &ba)
             quint16 OscNumRemaining = static_cast<quint8>(ReadData.at(1))*256+static_cast<quint8>(ReadData.at(2));
             if (OscNumRemaining == 0)
             {
-                emit OscEraseRemaining(OscNum);
+                emit osceraseremaining(OscNum);
                 OscNum = 0;
                 Finish(CN_OK);
                 OscTimer->stop();
@@ -362,11 +355,11 @@ void Canal::ParseIncomeData(QByteArray &ba)
             }
             if (OscNum == 0)
             {
-                emit OscEraseSize(OscNumRemaining);
+                emit oscerasesize(OscNumRemaining);
                 OscNum = OscNumRemaining; // максимальный диапазон для прогрессбара
             }
             else
-                emit OscEraseRemaining(OscNum - OscNumRemaining);
+                emit osceraseremaining(OscNum - OscNumRemaining);
             break;
         }
         default:
@@ -381,9 +374,9 @@ void Canal::ParseIncomeData(QByteArray &ba)
 
 void Canal::SetRDLength()
 {
-    DLength = static_cast<quint8>(ReadData.at(2));
-    DLength += static_cast<quint8>(ReadData.at(3))*256; // посчитали длину посылки
-    if (DLength < 768)
+    RDLength = static_cast<quint8>(ReadData.at(2));
+    RDLength += static_cast<quint8>(ReadData.at(3))*256; // посчитали длину посылки
+    if (RDLength < CN_MAXSEGMENTLENGTH)
         LastBlock = true;
 }
 
@@ -399,19 +392,17 @@ bool Canal::RDCheckForNextSegment()
         SegLeft--;
         SegEnd += 512; // устанавливаем границу следующего сегмента
         QByteArray tmpba;
-        tmpba.append(CN_Start);
+        tmpba.append(CN_MS3);
         tmpba.append(CN_SegOk);
-        tmpba.append(~CN_SegOk);
+        AppendSize(tmpba, 0);
         emit writedatatoport(tmpba); // отправляем "ОК" и переходим к следующему сегменту
         return false;
     }
     return true;
 }
 
-void Canal::SetWR(QByteArray &ba)
+void Canal::SetWRSegNum()
 {
-    WriteData = ba;
-    WRLength = WriteData.size();
     if (WRLength > CN_MAXSEGMENTLENGTH)
     {
         SegLeft = WRLength / CN_MAXSEGMENTLENGTH;
@@ -422,7 +413,6 @@ void Canal::SetWR(QByteArray &ba)
         SegLeft = 0;
         SegEnd = WRLength;
     }
-    emit WriteDataLength(WRLength); // сигнал для прогрессбара
 }
 
 void Canal::WRCheckForNextSegment()
@@ -431,50 +421,69 @@ void Canal::WRCheckForNextSegment()
     {
         --SegLeft;
         QByteArray tmpba;
+        if (FirstSegment)
+        {
+            tmpba.append(CN_MS);
+            FirstSegment = false;
+        }
+        else
+            tmpba.append(CN_MS3);
+        tmpba.append(cmd);
         if (SegLeft)
         {
-            tmpba = WriteData.mid(SegEnd, CN_MAXSEGMENTLENGTH);
+            AppendSize(tmpba, CN_MAXSEGMENTLENGTH);
+            tmpba += WriteData.mid(SegEnd, CN_MAXSEGMENTLENGTH);
             SegEnd += CN_MAXSEGMENTLENGTH;
         }
         else
         {
-            tmpba = WriteData.right(WriteData.size()-SegEnd);
+            AppendSize(tmpba, WriteData.size()-SegEnd);
+            tmpba += WriteData.right(WriteData.size()-SegEnd);
             WriteData.clear();
         }
-        emit WriteDataPos(SegEnd);
+        emit writedatapos(SegEnd);
         WriteDataToPort(tmpba);
     }
 }
 
 void Canal::SendOk()
 {
-    QByteArray tmpba;
-    tmpba.append(CN_Start);
-    tmpba.append(CN_ResOk);
-    tmpba.append(~CN_ResOk);
-    WriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
+    WriteData.clear();
+    WriteData.append(CN_MS);
+    WriteData.append(CN_ResOk);
+    AppendSize(WriteData, 0);
+    WriteDataToPort(WriteData); // отправляем "ОК" и переходим к следующему сегменту
+}
+
+void Canal::AppendSize(QByteArray &ba, quint16 size)
+{
+    quint8 byte = static_cast<quint8>(size%0x100);
+    ba.append(byte);
+    byte = static_cast<quint8>(size/0x100);
+    ba.append(byte);
 }
 
 void Canal::SendErr()
 {
     QByteArray tmpba;
-    tmpba.append(CN_Start);
-    tmpba.append(~CN_ResErr);
+    tmpba.append(CN_MS);
     tmpba.append(CN_ResErr);
-    WriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
+    AppendSize(tmpba, 1);
+    tmpba.append(0x00); // модулю не нужны коды ошибок
+    WriteDataToPort(tmpba);
 }
 
 void Canal::Timeout()
 {
-    Finish(CN_TIMEOUTERROR);
-    emit SendEnd();
+    Finish(CN_TIMEOUT);
+    emit sendend();
 }
 
 void Canal::Finish(int ernum)
 {
     TTimer->stop();
     cmd = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
-    if (ernum != CN_OK)
+    if (ernum != NOERROR)
     {
         if (ernum < pc.errmsgs.size())
             ERMSG(pc.errmsgs.at(ernum));
@@ -547,7 +556,7 @@ void Canal::ClosePort()
 void Canal::CheckForData()
 {
     QByteArray ba = port->read(1000);
-    emit ReadBytesSignal(ba);
+    emit readbytessignal(ba);
     ParseIncomeData(ba);
 }
 
@@ -576,15 +585,15 @@ bool Canal::WriteDataToPort(QByteArray &ba)
 {
     if (cmd == CN_Unk) // игнорируем вызовы процедуры без команды
         return false;
-    qint64 byteswritten = 0;
-    qint64 basize = ba.size();
+    quint64 byteswritten = 0;
+    quint64 basize = ba.size();
     while ((byteswritten < basize) && (!ba.isEmpty()))
     {
         qint64 tmpi = port->write(ba);
         if (res == GENERALERROR)
             return false;
         byteswritten += tmpi;
-        emit WriteBytesSignal(ba.left(tmpi));
+        emit writebytessignal(ba.left(tmpi));
         if (tmpi <= ba.size())
             ba = ba.remove(0, tmpi);
         else

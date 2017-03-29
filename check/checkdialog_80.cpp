@@ -280,13 +280,13 @@ void e_checkdialog::Check1PPS()
 
 void e_checkdialog::GetIP()
 {
-    connect(cn,SIGNAL(SendEnd()),this,SLOT(CheckIP()));
+    connect(cn,SIGNAL(sendend()),this,SLOT(CheckIP()));
     cn->Send(CN_Gip, canal::BT_NONE, &Bip_block, sizeof(Bip));
 }
 
 void e_checkdialog::CheckIP()
 {
-    disconnect(cn,SIGNAL(SendEnd()),this,SLOT(CheckIP()));
+    disconnect(cn,SIGNAL(sendend()),this,SLOT(CheckIP()));
     QLabel *lbl = this->findChild<QLabel *>("ipl");
     if (lbl == 0)
         return;
