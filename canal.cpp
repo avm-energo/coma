@@ -79,6 +79,12 @@ void Canal::InitiateSend()
     }
     case CN_GF:     // запрос файла
     {
+        if (DR == NULL)
+        {
+            SendErr();
+            Finish(CN_NULLDATAERROR);
+            break;
+        }
         WriteData.resize(6);
         WriteData.append(CN_MS);
         WriteData.append(cmd);
@@ -128,6 +134,7 @@ void Canal::InitiateSend()
         break;
     }
     case CN_WBac:
+    case CN_CtEr:
     {
 //        qDebug() << "cnWsn_1";
         WRLength = outdatasize+5;
@@ -151,6 +158,7 @@ void Canal::InitiateSend()
     }
     }
     ReadData.clear();
+    ReadDataChunk.clear();
     LastBlock = false;
     bStep = 0;
     RDLength = 0;
@@ -161,16 +169,21 @@ void Canal::ParseIncomeData(QByteArray &ba)
     if (cmd == CN_Unk) // игнорирование вызова процедуры, если не было послано никакой команды
         return;
     int res;
-    ReadData.append(ba);
-    RDSize = static_cast<quint32>(ReadData.size());
+    ReadDataChunk.append(ba);
+    quint32 RDSize = static_cast<quint32>(ReadDataChunk.size());
     if (RDSize<3) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
         return;
-    if (static_cast<quint8>(ReadData.at(1)) == CN_ResErr)
+    if (ReadDataChunk.at(1) == CN_ResErr)
     {
         if (RDSize < 5) // некорректная посылка
             Finish(CN_RCVDATAERROR);
         else
             Finish(USO_NOERR + ReadData.at(4));
+        return;
+    }
+    if (ReadDataChunk.at(0) != CN_SS)
+    {
+        Finish(CN_RCVDATAERROR);
         return;
     }
     switch (bStep)
@@ -179,54 +192,71 @@ void Canal::ParseIncomeData(QByteArray &ba)
     {
         switch (cmd)
         {
+        // команды с ответом "ОК"
+        case CN_WHv:
         case CN_OscEr:
-        case CN_OscPg:
-        case CN_GBsi:
-        case CN_IP:
-        case CN_GF:
+        case CN_CtEr:
         {
-            if (RDSize < 4) // '<', CN, L, L
-                return;
-            if ((ReadData.at(0) != CN_SS) || (ReadData.at(1) != cmd))
+            if (GetLength())
             {
-                Finish(CN_RCVDATAERROR);
-                return;
+                if (cmd == CN_OscEr)
+                    OscTimer->start(); // start timer to send OscPg command periodically
+                Finish(NOERROR);
             }
-            SetRDLength();
-            bStep++;
-            break;
-        }
-        case CN_GBda:
-        case CN_GBac:
-        case CN_GBd:
-        {
-            if (RDSize < 5) // '<', CN, L, L, B
-                return;
-            if ((ReadData.at(0) != CN_SS) || (ReadData.at(1) != cmd))
-            {
+            else
                 Finish(CN_RCVDATAERROR);
-                return;
-            }
-            SetRDLength();
-            bStep++;
-            break;
+            return;
         }
+        // команды с ответом "ОК" и с продолжением
         case CN_WF:
         case CN_WBac:
-        case CN_WHv:
         {
             if (!SegLeft)
             {
-                bStep++;
-                break;
+                if (GetLength())
+                    Finish(NOERROR);
+                else
+                    Finish(CN_RCVDATAERROR);
+                return;
             }
-            if ((ReadData.at(0) == CN_SS) && (ReadData.at(1) == CN_ResOk) && (ReadData.at(2) == 0x00) && (ReadData.at(3) == 0x00))
+            if (GetLength())
             {
-                ReadData.clear();
+                ReadDataChunk.clear();
                 WRCheckForNextSegment();
             }
             else
                 Finish(CN_RCVDATAERROR);
+            break;
+        }
+        // команды с ответом SS c L L ... и продолжением
+        case CN_GBsi:
+        case CN_GBda:
+        case CN_GBac:
+        case CN_GBd:
+        case CN_IP:
+        case CN_OscPg:
+        case CN_GBe:
+        case CN_GBTe:
+        case CN_GF:
+        {
+            if (!GetLength(false)) // !ok = cmd
+            {
+                Finish(CN_RCVDATAERROR);
+                return;
+            }
+            ReadDataChunk.remove(0, 4); // убираем заголовок с < и длиной
+            if (cmd == CN_GF) // надо проверить, тот ли номер файла принимаем
+            {
+                if (RDSize < 6) // не пришёл ещё номер файла
+                    return;
+                quint16 filenum = static_cast<quint16>(ReadDataChunk[0])+static_cast<quint16>(ReadDataChunk[1])<<8; // 0 & 1 because 4 bytes already removed
+                if (filenum != fnum)
+                {
+                    Finish(USO_UNKNFILESENT);
+                    return;
+                }
+            }
+            bStep++;
             break;
         }
         default:
@@ -236,120 +266,64 @@ void Canal::ParseIncomeData(QByteArray &ba)
     }
     case 1:
     {
+        if (RDSize < RDLength)
+            return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
+        ReadData += ReadDataChunk;
+        RDSize = static_cast<quint32>(ReadData.size());
+        emit bytesreceived(RDSize); // сигнал для прогрессбара
+        ReadDataChunk.clear();
         switch (cmd)
         {
         case CN_GBsi:
         case CN_GBda:
         case CN_GBac:
         case CN_GBd:
-        case CN_Gip:
+        case CN_IP:
+        case CN_GBe:
+        case CN_GBTe:
         {
-            if (RDSize < RDLength) // если приняли ещё не весь блок данных
-                return; // ждём, пока он весь не придёт
-/*            if (!RDCheckForNextSegment())
-                return;
-            if (RDSize < RDLength)
-                return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
-            RDLength = 0; // обнуляем, чтобы не было лишних вызовов incomingdatalength */
-/*            if (outdatasize < DLength)
+            if (LastBlock)
             {
-                SendErr();
-                Finish(CN_NULLDATAERROR);
-                break;
-            } */
-            ReadData.remove(0, 4); // убираем заголовок с < и длиной
-            RDSize -= 4;
-            memcpy(outdata,ReadData.data(),RDSize);
-            if (LongBlock)
+                memcpy(outdata,ReadData.data(),RDSize);
+                Finish(NOERROR);
+            }
+            else
+            {
                 SendOk();
-            Finish(CN_OK);
+                bStep = 0; // переход к проверке длины блока и т.п.
+            }
             break;
         }
         case CN_GF:
         {
 //            qDebug() << "cnGf_4";
-            if (!RDCheckForNextSegment())
-                return;
-            if (RDSize < RDLength)
-                return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
-            RDLength = 0;
-            if (DR == NULL)
-            {
-                SendErr();
-                Finish(CN_NULLDATAERROR);
-                break;
-            }
-            ReadData.remove(0, 5); // убираем заголовок с <, номером файла и длиной
-            RDSize -= 5;
-            res = pc.RestoreDataMem(ReadData.data(), RDSize, DR);
 //            qDebug() << "cnGf_5";
-            if (!res)
+            if (LastBlock)
             {
-                if (LongBlock)
-                    SendOk();
-                Finish(CN_OK);
+                res = pc.RestoreDataMem(ReadData.data(), RDSize, DR);
+                if (res == 0)
+                    Finish(NOERROR);
+                else
+                {
+                    SendErr();
+                    Finish(res);
+                }
             }
             else
             {
-                SendErr();
-                Finish(res);
-            }
-            break;
-        }
-        case CN_GNosc:
-        case CN_GBosc:
-        {
-            if (!RDCheckForNextSegment())
-                return;
-            if (RDSize < RDLength)
-                return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
-            RDLength = 0;
-            if (RDSize > (RDLength+4))
-            {
-                SendErr();
-                Finish(CN_RCVLENGTHERROR);
-            }
-            ReadData.remove(0, 4); // убираем заголовок с < и длиной
-            RDSize -= 4;
-//            qDebug() << RDSize;
-            memcpy(outdata,ReadData.data(),RDSize);
-            if (LongBlock)
                 SendOk();
-            Finish(CN_OK);
-            break;
-        }
-        case CN_WF:
-        case CN_WBac:
-        case CN_Cnc:
-        case CN_Wsn:
-        case CN_WHv:
-        {
-            if ((ReadData.at(0) == CN_SS) && (ReadData.at(1) == CN_ResOk) && (ReadData.at(2) == ~CN_ResOk))
-            {
-                Finish(CN_OK);
-                break;
+                bStep = 0; // переход к проверке длины блока и т.п.
             }
-            Finish(CN_RCVDATAERROR);
-            break;
-        }
-        case CN_OscEr:
-        {
-            if ((ReadData.at(0) == CN_SS) && (ReadData.at(1) == CN_ResOk) && (ReadData.at(2) == ~CN_ResOk))
-            {
-                OscTimer->start();
-                break;
-            }
-            Finish(CN_RCVDATAERROR);
             break;
         }
         case CN_OscPg:
         {
-            quint16 OscNumRemaining = static_cast<quint8>(ReadData.at(1))*256+static_cast<quint8>(ReadData.at(2));
+            quint16 OscNumRemaining = static_cast<quint8>(ReadData.at(0))+static_cast<quint8>(ReadData.at(1))*256;
             if (OscNumRemaining == 0)
             {
                 emit osceraseremaining(OscNum);
                 OscNum = 0;
-                Finish(CN_OK);
+                Finish(NOERROR);
                 OscTimer->stop();
                 break;
             }
@@ -372,33 +346,34 @@ void Canal::ParseIncomeData(QByteArray &ba)
     }
 }
 
-void Canal::SetRDLength()
+bool Canal::GetLength(bool ok)
 {
-    RDLength = static_cast<quint8>(ReadData.at(2));
-    RDLength += static_cast<quint8>(ReadData.at(3))*256; // посчитали длину посылки
-    if (RDLength < CN_MAXSEGMENTLENGTH)
-        LastBlock = true;
-}
-
-// false - есть ещё сегменты для приёма
-// true - последний сегмент
-
-bool Canal::RDCheckForNextSegment()
-{
-    quint32 RDSize = static_cast<quint32>(ReadData.size());
-    emit bytesreceived(RDSize); // сигнал для прогрессбара
-    if ((RDSize >= SegEnd) && (SegLeft)) // если достигли конца текущего сегмента, и ещё есть, что принимать
-    {
-        SegLeft--;
-        SegEnd += 512; // устанавливаем границу следующего сегмента
-        QByteArray tmpba;
-        tmpba.append(CN_MS3);
-        tmpba.append(CN_SegOk);
-        AppendSize(tmpba, 0);
-        emit writedatatoport(tmpba); // отправляем "ОК" и переходим к следующему сегменту
+    if (ReadDataChunk.size() < 4)
         return false;
+    if (ReadDataChunk.at(0) == CN_SS)
+    {
+        if (ok)
+        {
+            if ((ReadDataChunk.at(1) == CN_ResOk) && (ReadDataChunk.at(2) == 0x00) && (ReadDataChunk.at(3) == 0x00))
+                return 0;
+            else
+                return false;
+        }
+        if (ReadDataChunk.at(1) != cmd)
+            return false;
+        RDLength = static_cast<quint8>(ReadDataChunk.at(2));
+        RDLength += static_cast<quint8>(ReadDataChunk.at(3))*256; // посчитали длину посылки
+        if (RDLength < CN_MAXSEGMENTLENGTH)
+            LastBlock = true;
+        else
+            LastBlock = false;
+        if (RDLength > MAXLENGTH)
+            return false;
+        else
+            return true;
     }
-    return true;
+    else
+        return false;
 }
 
 void Canal::SetWRSegNum()
@@ -446,10 +421,13 @@ void Canal::WRCheckForNextSegment()
     }
 }
 
-void Canal::SendOk()
+void Canal::SendOk(bool cont)
 {
     WriteData.clear();
-    WriteData.append(CN_MS);
+    if (cont)
+        WriteData.append(CN_MS3);
+    else
+        WriteData.append(CN_MS);
     WriteData.append(CN_ResOk);
     AppendSize(WriteData, 0);
     WriteDataToPort(WriteData); // отправляем "ОК" и переходим к следующему сегменту
@@ -542,7 +520,7 @@ void Canal::ClosePort()
         {
             QTime tme;
             tme.start();
-            while (tme.elapsed() < ST_MAINLOOP_DELAY)
+            while (tme.elapsed() < CN_MAINLOOP_DELAY)
                 qApp->processEvents();
         }
         delete port;

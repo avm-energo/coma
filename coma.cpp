@@ -21,6 +21,7 @@
 #include <QSizePolicy>
 #include <QCheckBox>
 #include "coma.h"
+#include "commands.h"
 #include "widgets/mytabwidget.h"
 #include "widgets/errorprotocolwidget.h"
 #include "widgets/waitwidget.h"
@@ -42,6 +43,16 @@ Coma::Coma(QWidget *parent)
     connect(ErrorProtocolUpdateTimer,SIGNAL(timeout()),this,SLOT(UpdateErrorProtocol()));
     ErrorProtocolUpdateTimer->start();
     ReconTry = 0;
+    SetupUI();
+    SetupMenubar();
+}
+
+Coma::~Coma()
+{
+}
+
+void Coma::SetupUI()
+{
     setWindowTitle(PROGNAME);
     QString tmps = "QMainWindow {background-color: "+QString(MAINWINCLR)+";}";
     setStyleSheet(tmps);
@@ -58,7 +69,7 @@ Coma::Coma(QWidget *parent)
     QAction *ConnectAction = new QAction(this);
     ConnectAction->setToolTip("Соединение");
     ConnectAction->setIcon(QIcon(":/play.png"));
-    connect(ConnectAction,SIGNAL(triggered()),this,SLOT(Next()));
+    connect(ConnectAction,SIGNAL(triggered()),this,SLOT(Stage1_5()));
     QAction *DisconnectAction = new QAction(this);
     DisconnectAction->setToolTip("Разрыв соединения");
     DisconnectAction->setIcon(QIcon(":/stop.png"));
@@ -84,7 +95,7 @@ Coma::Coma(QWidget *parent)
     tb->addAction(SettingsAction);
     hlyout->addWidget(tb);
 
-    for (int i = 31; i >= 0; i--)
+    for (int i = (MAXERRORFLAGNUM-1); i >= 0; i--)
     {
         QLabel *lbl = new QLabel(Hth().at(i));
         lbl->setObjectName("hth"+QString::number(i));
@@ -94,76 +105,6 @@ Coma::Coma(QWidget *parent)
         hlyout->addWidget(lbl);
     }
     lyout->addLayout(hlyout);
-
-    QMenuBar *MainMenuBar = new QMenuBar;
-    tmps = "QMenuBar {background-color: "+QString(MAINWINCLR)+";}"\
-            "QMenuBar::item {background-color: "+QString(MAINWINCLR)+";}";
-    MainMenuBar->setStyleSheet(tmps);
-    QMenu *MainMenu = new QMenu;
-    MainMenu->setTitle("Главное");
-    QAction *act = new QAction(this);
-    act->setText("Выход");
-    connect(act,SIGNAL(triggered()),this,SLOT(Exit()));
-    MainMenu->addAction(act);
-    act = new QAction(this);
-    act->setText("Соединение");
-    act->setIcon(QIcon(":/play.png"));
-    connect(act,SIGNAL(triggered()),this,SLOT(Connect()));
-    MainMenu->addAction(act);
-    act = new QAction(this);
-    act->setText("Разрыв соединения");
-    act->setIcon(QIcon(":/stop.png"));
-    connect(act,SIGNAL(triggered()),this,SLOT(Disconnect()));
-    MainMenu->addAction(act);
-    MainMenuBar->addMenu(MainMenu);
-
-    QMenu *menu = new QMenu;
-    menu->setTitle("Запуск...");
-    EmulAAction = new QAction(this);
-    EmulAAction->setText("...в режиме А");
-    EmulAAction->setIcon(QIcon(":/a.png"));
-    connect(EmulAAction,SIGNAL(triggered()),this,SLOT(EmulA()));
-    menu->addAction(EmulAAction);
-    EmulEAction = new QAction(this);
-    EmulEAction->setIcon(QIcon(":/e.png"));
-    EmulEAction->setText("...в режиме Э");
-    connect(EmulEAction,SIGNAL(triggered()),this,SLOT(EmulE()));
-    menu->addAction(EmulEAction);
-    MainMenuBar->addMenu(menu);
-
-    menu = new QMenu;
-    menu->setTitle("Разработка");
-    WriteSNAction = new QAction(this);
-    WriteSNAction->setText("Запись серийного номера");
-    WriteSNAction->setEnabled(false);
-    connect(WriteSNAction,SIGNAL(triggered()),this,SLOT(WriteSN()));
-    menu->addAction(WriteSNAction);
-    WriteHWAction = new QAction(this);
-    WriteHWAction->setText("Запись аппаратной версии модуля");
-    WriteHWAction->setEnabled(false);
-    connect(WriteHWAction,SIGNAL(triggered()),this,SLOT(WriteHW()));
-    menu->addAction(WriteHWAction);
-    MainMenuBar->addMenu(menu);
-
-    menu = new QMenu;
-    menu->setTitle("Настройки");
-    act = new QAction(this);
-    act->setText("Настройки");
-    act->setIcon(QIcon(":/settings.png"));
-    connect(act,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
-    menu->addAction(act);
-    act = new QAction(this);
-    act->setText("Установка параметров связи с МИП");
-    act->setStatusTip("Настройка связи с прибором контроля электр. параметров МИП для регулировки модулей Э");
-    connect(act,SIGNAL(triggered()),this,SLOT(SetMipDlg()));
-    menu->addAction(act);
-    MainMenuBar->addMenu(menu);
-
-    act = new QAction(this);
-    act->setText("О программе");
-    connect(act,SIGNAL(triggered()),this,SLOT(GetAbout()));
-    MainMenuBar->addAction(act);
-    setMenuBar(MainMenuBar);
 
     QHBoxLayout *inlyout = new QHBoxLayout;
     MyTabWidget *MainTW = new MyTabWidget;
@@ -203,12 +144,14 @@ Coma::Coma(QWidget *parent)
     QVBoxLayout *slyout = new QVBoxLayout;
 
     AddLabelAndLineedit(slyout, "Модуль АВТУК-", "mtypele");
-    AddLabelAndLineedit(slyout, "Аппаратная версия:", "hwverle");
+    AddLabelAndLineedit(slyout, "Аппаратная версия базовой платы:", "hwverble");
+    AddLabelAndLineedit(slyout, "Аппаратная версия мезонинной платы:", "hwvermle");
+    AddLabelAndLineedit(slyout, "Серийный номер базовой платы:", "snble");
+    AddLabelAndLineedit(slyout, "Серийный номер мезонинной платы:", "snmle");
     AddLabelAndLineedit(slyout, "Версия ПО:", "fwverle");
     AddLabelAndLineedit(slyout, "КС конфигурации:", "cfcrcle");
-    AddLabelAndLineedit(slyout, "Сброс:", "rstle");
+    AddLabelAndLineedit(slyout, "Последний сброс:", "rstle");
     AddLabelAndLineedit(slyout, "Количество сбросов:", "rstcountle");
-    AddLabelAndLineedit(slyout, "Серийный номер:", "snle");
     AddLabelAndLineedit(slyout, "ИД процессора:", "cpuidle");
     QTextEdit *MainTE = new QTextEdit;
     MainTE->setObjectName("mainte");
@@ -229,11 +172,86 @@ Coma::Coma(QWidget *parent)
     ErrorWidget->hide();
     ERGeometry = ErrorWidget->geometry();
     ERHide = true;
-
-    cn = new Canal;
 }
 
-Coma::~Coma()
+void Coma::SetupMenubar()
+{
+    QMenuBar *MainMenuBar = new QMenuBar;
+    QString tmps = "QMenuBar {background-color: "+QString(MAINWINCLR)+";}"\
+            "QMenuBar::item {background-color: "+QString(MAINWINCLR)+";}";
+    MainMenuBar->setStyleSheet(tmps);
+    QMenu *MainMenu = new QMenu;
+    MainMenu->setTitle("Главное");
+    QAction *act = new QAction(this);
+    act->setText("Выход");
+    connect(act,SIGNAL(triggered()),this,SLOT(Exit()));
+    MainMenu->addAction(act);
+    act = new QAction(this);
+    act->setText("Соединение");
+    act->setIcon(QIcon(":/play.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
+    MainMenu->addAction(act);
+    act = new QAction(this);
+    act->setText("Разрыв соединения");
+    act->setIcon(QIcon(":/stop.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(Disconnect()));
+    MainMenu->addAction(act);
+    MainMenuBar->addMenu(MainMenu);
+
+    QMenu *menu = new QMenu;
+    menu->setTitle("Запуск...");
+    EmulAAction = new QAction(this);
+    EmulAAction->setText("...в режиме А");
+    EmulAAction->setIcon(QIcon(":/a.png"));
+    connect(EmulAAction,SIGNAL(triggered()),this,SLOT(EmulA()));
+    menu->addAction(EmulAAction);
+    EmulEAction = new QAction(this);
+    EmulEAction->setIcon(QIcon(":/e.png"));
+    EmulEAction->setText("...в режиме Э");
+    connect(EmulEAction,SIGNAL(triggered()),this,SLOT(EmulE()));
+    menu->addAction(EmulEAction);
+    MainMenuBar->addMenu(menu);
+
+    menu = new QMenu;
+    menu->setTitle("Разработка");
+    WriteSNAction = new QAction(this);
+    WriteSNAction->setText("Запись Hidden Block");
+    WriteSNAction->setEnabled(false);
+    connect(WriteSNAction,SIGNAL(triggered()),this,SLOT(WriteSN()));
+    menu->addAction(WriteSNAction);
+    MainMenuBar->addMenu(menu);
+
+    menu = new QMenu;
+    menu->setTitle("Настройки");
+    act = new QAction(this);
+    act->setText("Настройки");
+    act->setIcon(QIcon(":/settings.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
+    menu->addAction(act);
+    act = new QAction(this);
+    act->setText("Установка параметров связи с МИП");
+    act->setStatusTip("Настройка связи с прибором контроля электр. параметров МИП для регулировки модулей Э");
+    connect(act,SIGNAL(triggered()),this,SLOT(SetMipDlg()));
+    menu->addAction(act);
+    MainMenuBar->addMenu(menu);
+
+    act = new QAction(this);
+    act->setText("О программе");
+    connect(act,SIGNAL(triggered()),this,SLOT(GetAbout()));
+    MainMenuBar->addAction(act);
+    setMenuBar(MainMenuBar);
+}
+
+void Coma::LoadSettings()
+{
+    QSettings *sets = new QSettings ("EvelSoft","COMA");
+    pc.MIPASDU = sets->value("mip/asdu",205);
+    pc.MIPIP = sets->value("mip/ip","172.16.30.11");
+    pc.Port = sets->value("Port", "COM3");
+    pc.ermsgpath = sets->value("erpath",".");
+}
+
+void Coma::SaveSettings()
 {
     QSettings *sets = new QSettings ("EvelSoft","COMA");
     sets->setValue("mip/asdu",pc.MIPASDU);
@@ -254,7 +272,7 @@ void Coma::AddLabelAndLineedit(QVBoxLayout *lyout, QString caption, QString lena
     lyout->addLayout(hlyout);
 }
 
-void Coma::Connect()
+void Coma::Stage1()
 {
     int i;
     QDialog *dlg = new QDialog(this);
@@ -280,30 +298,24 @@ void Coma::Connect()
     lyout->addWidget(portscb);
 
     QPushButton *nextL = new QPushButton("Далее");
-    connect(nextL,SIGNAL(clicked()),this,SLOT(Next()));
-    connect(nextL, SIGNAL(clicked()),dlg,SLOT(close()));
+    connect(nextL,SIGNAL(clicked()),this,SLOT(Stage1_5()));
     lyout->addWidget(nextL);
     dlg->setLayout(lyout);
-    connect(this,SIGNAL(CloseConnectDialog()),dlg,SLOT(close()));
     dlg->exec();
 }
 
-void Coma::Next()
+void Coma::Stage1_5()
 {
+    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
+    if (dlg)
+        dlg->close();
     pc.PrbMessage = "Загрузка данных...";
-    connect(cn,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBarSize(quint32)));
-    connect(cn,SIGNAL(osceraseremaining(quint32)),this,SLOT(SetProgressBar(quint32)));
-    connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
-    connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
-//    connect(cn,SIGNAL(sendend()),this,SLOT(DisableProgressBar()));
-    connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(ReadUpdateMainTE(QByteArray)));
-    connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(WriteUpdateMainTE(QByteArray)));
 
     QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
     if (info.size() == 0)
     {
-        ShowErrMsg(2);
-        Connect();
+        ShowErrMsg(COM_DEVNOTFOUNDER);
+        Stage1();
         return;
     }
     bool PortFound = false;
@@ -312,25 +324,31 @@ void Coma::Next()
         if (info.at(i).portName() == pc.Port)
         {
             PortFound = true;
-            cn->info = info.at(i);
+            cn.info = info.at(i);
         }
     }
     if (!PortFound)
     {
-        ShowErrMsg(2);
-        Connect();
+        ShowErrMsg(COM_DEVNOTFOUNDER);
+        Stage1();
         return;
     }
-    emit CloseConnectDialog();
-    if (!cn->Connect())
+    cn.baud = 115200;
+    if (!cn.Connect())
     {
-        ShowErrMsg(cn->result);
-        Connect();
+        ShowErrMsg(cn.result);
+        Stage1();
         return;
     }
     WriteSNAction->setEnabled(true);
-    WriteHWAction->setEnabled(true);
-    GetBsi();
+    connect(cn,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBarSize(quint32)));
+    connect(cn,SIGNAL(osceraseremaining(quint32)),this,SLOT(SetProgressBar(quint32)));
+    connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
+    connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
+    connect(cn,SIGNAL(sendend()),this,SLOT(DisableProgressBar()));
+    connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(ReadUpdateMainTE(QByteArray)));
+    connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(WriteUpdateMainTE(QByteArray)));
+    Stage2();
 }
 
 void Coma::SetPort(QString str)
@@ -346,26 +364,15 @@ void Coma::SetPort(QString str)
     }
 }
 
-void Coma::SetBaud(QString str)
+void Coma::Stage2()
 {
-    cn->baud = str.toInt();
-}
+    if (GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != CN_OK)
+        Stage1();
 
-void Coma::GetBsi()
-{
-    cn->Send(CN_GBsi, canal::BT_NONE, &pc.ModuleBsi, sizeof(publicclass::Bsi));
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
-        CheckBsi();
-}
-
-void Coma::CheckBsi()
-{
     bool WrongSN = false;
 
     // серийный модуль проверяется просто - если все цифры F, то серийник некорректный
-    if (pc.ModuleBsi.SerialNum == 0xFFFFFFFF) // серийный номер не задан, надо задать
+    if ((pc.ModuleBsi.SerialNumB == 0xFFFFFFFF) || ((pc.ModuleBsi.SerialNumM == 0xFFFFFFFF) && (pc.ModuleBsi.MTypeM != MTM_00)) || (pc.ModuleBsi.SerialNum == 0xFFFFFFFF)) // серийный номер не задан, выдадим предупреждение
     {
         bool ok = false;
         qint32 tmpi = QInputDialog::getInt(this, "Серийный номер", "Серийный номер базовой платы:", 0, 1, 999999999,\
@@ -484,7 +491,7 @@ void Coma::AllIsOk()
         MainTW->addTab(OscDialog, "Осциллограммы");
         MainTW->addTab(DownDialog, "События");
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
-        connect(ConfDialog21,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
+        connect(ConfDialog21,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(Stage2()));
     }
     if ((pc.ModuleBsi.MTypeB > 0x7F) && (pc.ModuleBsi.MTypeB < 0x90))
     {
@@ -497,7 +504,7 @@ void Coma::AllIsOk()
         MainTW->addTab(OscDialog, "Осциллограммы");
         MainTW->addTab(DownDialog, "События");
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
-        connect(EConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(GetBsi()));
+        connect(EConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(Stage2()));
         connect(ETuneDialog,SIGNAL(dataready(QByteArray)),this,SLOT(UpdateMainTE104(QByteArray)));
     }
     if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
@@ -662,7 +669,7 @@ void Coma::WriteSN()
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
-        GetBsi();
+        Stage2();
 }
 
 void Coma::WriteHW()
@@ -733,7 +740,7 @@ void Coma::SendHW()
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     dlg->close();
     if (cn->result == CN_OK)
-        GetBsi();
+        Stage2();
     else
     {
         ERMSG("Проблема при записи версии аппаратуры модуля");

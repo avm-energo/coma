@@ -23,5 +23,9 @@
         <file>Object4.png</file>
         <file>Object5.png</file>
         <file>evel.png</file>
+        <file>BM.png</file>
+        <file>BMn.png</file>
+        <file>BnM.png</file>
+        <file>BnMn.png</file>
     </qresource>
 </RCC>

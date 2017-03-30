@@ -26,6 +26,7 @@
 #define PROGNAME    "КОМА 2.0"
 
 #define C_TE_MAXSIZE    10000
+#define MAXERRORFLAGNUM 32
 
 class Coma : public QMainWindow
 {
@@ -47,20 +48,23 @@ private:
 
     static QStringList Hth()
     {
-        QStringList tmps;
-        tmps.append("!OK");
-        tmps.append("FL");
-        tmps.append("TUPP");
-        tmps.append("REL");
-        tmps.append("1PPS");
-        tmps.append("ADC");
-        tmps.append("REG");
-        tmps.append("CONF");
-        tmps.append("LS");
-        tmps.append("FNC");
-        for (int i=10; i<32; i++)
-            tmps.append("");
-        return tmps;
+        QStringList sl;
+        sl.append("!OK");
+        sl.append("FLS");
+        sl.append("TUP");
+        sl.append("REL");
+        sl.append("1PPS");
+        sl.append("ADC");
+        sl.append("REG");
+        sl.append("CNF");
+        sl.append("LS");
+        sl.append("FNC");
+        sl.append("FW");
+        sl.append("BAT");
+        int ts = sl.size();
+        for (int i=ts; i<MAXERRORFLAGNUM; ++i)
+            sl.append("");
+        return sl;
     }
 
     static QStringList HthToolTip()
@@ -76,7 +80,10 @@ private:
         sl.append("Ошибка конфигурации в памяти модуля, взята конфигурация по умолчанию");
         sl.append("Сигналы слишком малы");
         sl.append("Частота находится вне диапазона");
-        for (int i=10; i<32; i++)
+        sl.append("Ошибка файла фирменного ПО");
+        sl.append("Требуется замена батарейки");
+        int ts = sl.size();
+        for (int i=ts; i<MAXERRORFLAGNUM; ++i)
             sl.append("");
         return sl;
     }
@@ -91,7 +98,7 @@ private:
     downloaddialog *DownDialog;
     oscdialog *OscDialog;
     bool DialogsAreReadyAlready;
-    QAction *WriteSNAction, *WriteHWAction;
+    QAction *WriteSNAction;
     quint8 ReconTry;
     publicclass::Bsi Bsi_block;
 
@@ -108,24 +115,21 @@ signals:
     void CloseConnectDialog();
 
 public slots:
-    void GetBsi();
 
 private slots:
+    void Stage2();
     void AllIsOk();
     void Exit();
-    void Connect();
+    void Stage1();
     void Disconnect();
-    void Next();
+    void Stage1_5();
     void GetAbout();
     void ShowErrMsg(int);
-    void CheckBsi();
     void ReadUpdateMainTE(QByteArray ba);
     void WriteUpdateMainTE(QByteArray ba);
     void UpdateMainTE104(QByteArray);
     void SetPort(QString str);
-    void SetBaud(QString str);
     void WriteSN();
-    void WriteHW();
     void SendHW();
     void SetMipConPar();
     void SetMipDlg();
@@ -142,6 +146,11 @@ private slots:
     void DisableProgressBar();
 
 private:
+    void SetupUI();
+    void SetupMenubar();
+    void PrepareTimers();
+    void LoadSettings();
+    void SaveSettings();
     void SetText(QString name, QString txt);
 
 protected:

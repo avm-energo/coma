@@ -183,7 +183,7 @@ public:
     {
         qint32 MTypeB;
         qint32 MTypeM;
-        qint32 Hwver;
+        qint32 HwverB;
         qint32 Fwver;
         qint32 Cfcrc;
         qint32 Rst;
@@ -192,9 +192,10 @@ public:
         qint32 UIDLow;
         qint32 UIDMid;
         qint32 UIDHigh;
-        qint32 SerialNum;
+        qint32 SerialNumB;
         qint32 SerialNumM;
         qint32 HwverM;
+        qint32 SerialNum;
     } Bsi;
 
     enum ermsgtype

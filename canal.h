@@ -18,6 +18,7 @@
 #define CN_OSCT     1000 // таймаут посылки запроса нестёртых осциллограмм
 #define CN_MAXFILESIZE  30000 // максимальный размер выходного файла
 #define CN_MAXSEGMENTLENGTH 768 // максимальная длина одного сегмента (0x300)
+#define CN_MAINLOOP_DELAY   100 // 100 ms main loop sleep
 
 // Обмен с модулями
 #define CN_ResOk    0x11 // ответ "всё в порядке"
@@ -34,6 +35,7 @@
 #define CN_IP       0x43 // чтение IP-адреса
 #define CN_OscEr    0x45 // стирание всех осциллограмм из Flash-памяти
 #define CN_OscPg    0x46 // запрос оставшегося для стирания по команде OscEr числа страниц
+#define CN_CtEr     0x47 // стирание счётчиков дискретных состояний
 #define CN_WHv      0x48 // запись версии аппаратуры модуля/серийного номера/типа платы
 #define CN_ResErr   0xF0 // ответ "ошибка"
 #define CN_Unk      0xFF // неизвестная команда
@@ -47,6 +49,8 @@
 // определение ошибок модуля - см. publicclass.h (USO_)
 
 #define CN_MER_UNKN_ERR     0xFF // неизвестная ошибка
+
+#define MAXLENGTH   0x300   // максимальный размер блока 768 байт
 
 class Canal : public QObject
 {
@@ -68,7 +72,6 @@ public:
     int ernum;
     bool FirstRun;
     bool NeedToSend, Busy, NeedToFinish;
-    quint32 RDSize;
 
     bool Connect();
     void Disconnect();
@@ -94,7 +97,7 @@ private slots:
 
 private:
     char *outdata;
-    QByteArray ReadData;
+    QByteArray ReadData, ReadDataChunk;
     QByteArray WriteData;
     QTimer *TTimer, *OscTimer;
     quint16 OscNum;
@@ -120,13 +123,12 @@ private:
     bool WriteDataToPort(QByteArray &ba);
     void ParseIncomeData(QByteArray &ba);
     void Finish(int ernum);
-    void SetRDLength();
     void SetWRSegNum();
-    bool RDCheckForNextSegment();
     void WRCheckForNextSegment();
     void AppendSize(QByteArray &ba, quint16 size);
-    void SendOk();
+    void SendOk(bool cont); // cont = 1 -> send CN_MS3 instead CN_MS
     void SendErr();
+    bool GetLength(bool ok=true); // ok = 1 -> обработка посылки вида SS OK ..., ok = 0 -> вида SS c L L ... возвращаемое значение = false -> неправильная длина
 };
 
 extern Canal cn;

@@ -23,9 +23,6 @@ TEMPLATE = app
 SOURCES += main.cpp\
     canal.cpp \
     coma.cpp \
-    downloaddialog.cpp \
-    fwupdialog.cpp \
-    oscdialog.cpp \
     publicclass.cpp \
     check/checkdialog_21.cpp \
     check/checkdialog_80.cpp \
@@ -51,13 +48,16 @@ SOURCES += main.cpp\
     widgets/s_tqcombobox.cpp \
     widgets/s_tqspinbox.cpp \
     widgets/s_tqtableview.cpp \
-    widgets/waitwidget.cpp
+    widgets/waitwidget.cpp \
+    commands.cpp \
+    config.cpp \
+    dialogs/downloaddialog.cpp \
+    dialogs/fwupdialog.cpp \
+    dialogs/oscdialog.cpp \
+    dialogs/hiddendialog.cpp
 
 HEADERS  += coma.h \
     canal.h \
-    downloaddialog.h \
-    fwupdialog.h \
-    oscdialog.h \
     publicclass.h \
     check/checkdialog_21.h \
     check/checkdialog_80.h \
@@ -84,7 +84,12 @@ HEADERS  += coma.h \
     widgets/s_tqcombobox.h \
     widgets/s_tqspinbox.h \
     widgets/s_tqtableview.h \
-    widgets/waitwidget.h
+    widgets/waitwidget.h \
+    commands.h \
+    dialogs/downloaddialog.h \
+    dialogs/fwupdialog.h \
+    dialogs/oscdialog.h \
+    dialogs/hiddendialog.h
 
 INCLUDEPATH += $$PWD/../../xlsxwriter/src/xlsx
 DEPENDPATH += $$PWD/../../xlsxwriter/src/xlsx
@@ -93,3 +98,13 @@ LIBS += -lqtxlsx
 
 RESOURCES += \
     res.qrc
+
+DISTFILES += \
+    e0t2n.xlsx \
+    e1t1n.xlsx \
+    e2t0n.xlsx \
+    coma-2.png \
+    coma.png \
+    coma.ico \
+    errors/ermsgs.dat \
+    .gitignore
