@@ -11,15 +11,15 @@
 #include <QVBoxLayout>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtSerialPort/QSerialPort>
-#include "fwupdialog.h"
-#include "downloaddialog.h"
+#include "dialogs/fwupdialog.h"
+#include "dialogs/downloaddialog.h"
 #include "config/confdialog_21.h"
 #include "check/checkdialog_21.h"
 #include "tune/tunedialog_21.h"
 #include "check/checkdialog_80.h"
 #include "config/confdialog_80.h"
 #include "tune/tunedialog_80.h"
-#include "oscdialog.h"
+#include "dialogs/oscdialog.h"
 #include "canal.h"
 #include "publicclass.h"
 
@@ -103,12 +103,11 @@ private:
     publicclass::Bsi Bsi_block;
 
     QString ByteToHex(quint8);
-    void StopThreads();
-    void FillBsi(QString MType);
+//    void StopThreads();
+    void FillBsi();
     void ClearBsi();
     void AddLabelAndLineedit (QVBoxLayout *lyout, QString caption, QString lename);
     void ShowOrHideSlideSW();
-    void ShowOrHideSlideER();
     void UpdateMainTE(QByteArray &ba);
 
 signals:
@@ -118,29 +117,22 @@ public slots:
 
 private slots:
     void Stage2();
-    void AllIsOk();
     void Exit();
-    void Stage1();
     void Disconnect();
     void Stage1_5();
     void GetAbout();
-    void ShowErrMsg(int);
     void ReadUpdateMainTE(QByteArray ba);
     void WriteUpdateMainTE(QByteArray ba);
     void UpdateMainTE104(QByteArray);
     void SetPort(QString str);
-    void WriteSN();
-    void SendHW();
-    void SetMipConPar();
+    void SendBhb();
     void SetMipDlg();
-    void UpdateErrorProtocol();
     void MouseMove();
-    void HideErrorProtocol();
     void EmulA();
     void EmulE();
     void StartEmulE();
     void StartSettingsDialog();
-    void AcceptSettings();
+    void ShowErrorDialog();
     void SetProgressBarSize(quint32);
     void SetProgressBar(quint32);
     void DisableProgressBar();
@@ -151,7 +143,9 @@ private:
     void PrepareTimers();
     void LoadSettings();
     void SaveSettings();
-    void SetText(QString name, QString txt);
+    void CopyBhbFromBsi();
+    void Stage1();
+    void Stage3();
 
 protected:
     void resizeEvent(QResizeEvent *e);

@@ -1,3 +1,25 @@
+/*
+ * COMA is the "COMplex for AV-TUK", i.e. the program to make a communication
+ * with the modules of automatic controller AV-TUK by AVM-Energo LLC
+ *
+ * Copyright (C) 2017 <Evel> <forevel@yandex.ru>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ */
+
 #include <QtTest/QTest>
 #include <QLabel>
 #include <QLineEdit>
@@ -14,8 +36,8 @@
 #include <QTextEdit>
 #include <QToolBar>
 #include <QThread>
-#include <QInputDialog>
-#include <QRegExp>
+//#include <QInputDialog>
+//#include <QRegExp>
 #include <QSettings>
 #include <QDialog>
 #include <QSizePolicy>
@@ -23,32 +45,35 @@
 #include "coma.h"
 #include "commands.h"
 #include "widgets/mytabwidget.h"
-#include "widgets/errorprotocolwidget.h"
 #include "widgets/waitwidget.h"
 #include "widgets/messagebox.h"
 #include "widgets/s_tqspinbox.h"
+#include "widgets/wd_func.h"
+#include "dialogs/hiddendialog.h"
+#include "dialogs/mipsetdialog.h"
+#include "dialogs/settingsdialog.h"
+#include "dialogs/errordialog.h"
+#include "config/config.h"
+#include "log.h"
 
 Coma::Coma(QWidget *parent)
     : QMainWindow(parent)
 {
-    ERTimer = new QTimer;
-    ERTimer->setInterval(pc.ErrWindowDelay*1000);
-    connect(ERTimer,SIGNAL(timeout()),this,SLOT(HideErrorProtocol()));
-    ERTimerIsOn = false;
-    QTimer *MouseTimer = new QTimer;
-    connect(MouseTimer,SIGNAL(timeout()),this,SLOT(MouseMove()));
-    MouseTimer->start(50);
-    QTimer *ErrorProtocolUpdateTimer = new QTimer;
-    ErrorProtocolUpdateTimer->setInterval(1000);
-    connect(ErrorProtocolUpdateTimer,SIGNAL(timeout()),this,SLOT(UpdateErrorProtocol()));
-    ErrorProtocolUpdateTimer->start();
+    // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
+    QDir dir(pc.HomeDir);
+    if (!dir.exists())
+        dir.mkpath(".");
     ReconTry = 0;
+    cn = new Canal;
     SetupUI();
     SetupMenubar();
+    PrepareTimers();
+    LoadSettings();
 }
 
 Coma::~Coma()
 {
+    SaveSettings();
 }
 
 void Coma::SetupUI()
@@ -93,6 +118,11 @@ void Coma::SetupUI()
     tb->addAction(EmulEAction);
     tb->addSeparator();
     tb->addAction(SettingsAction);
+    QAction *act = new QAction;
+    act->setToolTip("Протокол ошибок");
+    act->setIcon(QIcon(":/skull-and-bones.png"));
+    connect(act,SIGNAL(triggered(bool)),this,SLOT(ShowErrorDialog()));
+    tb->addAction(act);
     hlyout->addWidget(tb);
 
     for (int i = (MAXERRORFLAGNUM-1); i >= 0; i--)
@@ -162,16 +192,6 @@ void Coma::SetupUI()
     SlideWidget->hide();
     SWGeometry = SlideWidget->geometry();
     SWHide = true;
-
-    ErrorProtocolWidget *ErrorWidget = new ErrorProtocolWidget(this);
-    ErrorWidget->setObjectName("errorwidget");
-    QString ErrWss = "QWidget {background-color: "+QString(ERPROTCLR)+";}";
-    ErrorWidget->setStyleSheet(ErrWss);
-    ErrorWidget->setAutoFillBackground(true);
-    ErrorWidget->setMinimumHeight(150);
-    ErrorWidget->hide();
-    ERGeometry = ErrorWidget->geometry();
-    ERHide = true;
 }
 
 void Coma::SetupMenubar()
@@ -200,16 +220,16 @@ void Coma::SetupMenubar()
 
     QMenu *menu = new QMenu;
     menu->setTitle("Запуск...");
-    EmulAAction = new QAction(this);
-    EmulAAction->setText("...в режиме А");
-    EmulAAction->setIcon(QIcon(":/a.png"));
-    connect(EmulAAction,SIGNAL(triggered()),this,SLOT(EmulA()));
-    menu->addAction(EmulAAction);
-    EmulEAction = new QAction(this);
-    EmulEAction->setIcon(QIcon(":/e.png"));
-    EmulEAction->setText("...в режиме Э");
-    connect(EmulEAction,SIGNAL(triggered()),this,SLOT(EmulE()));
-    menu->addAction(EmulEAction);
+    act = new QAction(this);
+    act->setText("...в режиме А");
+    act->setIcon(QIcon(":/a.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(EmulA()));
+    menu->addAction(act);
+    act = new QAction(this);
+    act->setIcon(QIcon(":/e.png"));
+    act->setText("...в режиме Э");
+    connect(act,SIGNAL(triggered()),this,SLOT(EmulE()));
+    menu->addAction(act);
     MainMenuBar->addMenu(menu);
 
     menu = new QMenu;
@@ -245,10 +265,11 @@ void Coma::SetupMenubar()
 void Coma::LoadSettings()
 {
     QSettings *sets = new QSettings ("EvelSoft","COMA");
-    pc.MIPASDU = sets->value("mip/asdu",205);
-    pc.MIPIP = sets->value("mip/ip","172.16.30.11");
-    pc.Port = sets->value("Port", "COM3");
-    pc.ermsgpath = sets->value("erpath",".");
+    pc.MIPASDU = sets->value("mip/asdu","206").toInt();
+    pc.MIPIP = sets->value("mip/ip","172.16.30.11").toString();
+    pc.Port = sets->value("Port", "COM1").toString();
+    pc.ErrWindowDelay = sets->value("ErrWindowDelay","5").toInt();
+    pc.ShowErrWindow = sets->value("ShowErrWindow","1").toBool();
 }
 
 void Coma::SaveSettings()
@@ -257,7 +278,8 @@ void Coma::SaveSettings()
     sets->setValue("mip/asdu",pc.MIPASDU);
     sets->setValue("mip/ip",pc.MIPIP);
     sets->setValue("Port", pc.Port);
-    sets->setValue("erpath",pc.ermsgpath);
+    sets->setValue("ErrWindowDelay", pc.ErrWindowDelay);
+    sets->setValue("ShowErrWindow", pc.ShowErrWindow);
 }
 
 void Coma::AddLabelAndLineedit(QVBoxLayout *lyout, QString caption, QString lename)
@@ -270,6 +292,17 @@ void Coma::AddLabelAndLineedit(QVBoxLayout *lyout, QString caption, QString lena
     le->setEnabled(false);
     hlyout->addWidget(le);
     lyout->addLayout(hlyout);
+}
+
+void Coma::PrepareTimers()
+{
+    QTimer *MouseTimer = new QTimer;
+    connect(MouseTimer,SIGNAL(timeout()),this,SLOT(MouseMove()));
+    MouseTimer->start(50);
+    QTimer *ErrorProtocolUpdateTimer = new QTimer;
+    ErrorProtocolUpdateTimer->setInterval(1000);
+    connect(ErrorProtocolUpdateTimer,SIGNAL(timeout()),this,SLOT(UpdateErrorProtocol()));
+    ErrorProtocolUpdateTimer->start();
 }
 
 void Coma::Stage1()
@@ -285,7 +318,7 @@ void Coma::Stage1()
     QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
     if (info.size() == 0)
     {
-        ShowErrMsg(2);
+        pc.ErMsg(USB_NOCOMER);
         return;
     }
     QStringListModel *tmpmodel = new QStringListModel;
@@ -314,7 +347,7 @@ void Coma::Stage1_5()
     QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
     if (info.size() == 0)
     {
-        ShowErrMsg(COM_DEVNOTFOUNDER);
+        pc.ErMsg(USB_NOCOMER);
         Stage1();
         return;
     }
@@ -324,19 +357,18 @@ void Coma::Stage1_5()
         if (info.at(i).portName() == pc.Port)
         {
             PortFound = true;
-            cn.info = info.at(i);
+            cn->info = info.at(i);
         }
     }
     if (!PortFound)
     {
-        ShowErrMsg(COM_DEVNOTFOUNDER);
+        pc.ErMsg(USB_COMER);
         Stage1();
         return;
     }
-    cn.baud = 115200;
-    if (!cn.Connect())
+    cn->baud = 115200;
+    if (!cn->Connect())
     {
-        ShowErrMsg(cn.result);
         Stage1();
         return;
     }
@@ -366,70 +398,45 @@ void Coma::SetPort(QString str)
 
 void Coma::Stage2()
 {
-    if (GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != CN_OK)
+    if (GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
         Stage1();
-
-    bool WrongSN = false;
-
-    // серийный модуль проверяется просто - если все цифры F, то серийник некорректный
-    if ((pc.ModuleBsi.SerialNumB == 0xFFFFFFFF) || ((pc.ModuleBsi.SerialNumM == 0xFFFFFFFF) && (pc.ModuleBsi.MTypeM != MTM_00)) || (pc.ModuleBsi.SerialNum == 0xFFFFFFFF)) // серийный номер не задан, выдадим предупреждение
+    CopyBhbFromBsi();
+    if ((pc.ModuleBsi.SerialNumB == 0xFFFFFFFF) || ((pc.ModuleBsi.SerialNumM == 0xFFFFFFFF) && (pc.ModuleBsi.MTypeM != MTM_00)) || \
+            (pc.ModuleBsi.SerialNum == 0xFFFFFFFF)) // серийный номер не задан, выдадим предупреждение
     {
-        bool ok = false;
-        qint32 tmpi = QInputDialog::getInt(this, "Серийный номер", "Серийный номер базовой платы:", 0, 1, 999999999,\
-                                    1, &ok);
-        if (!ok)
-        {
-            Disconnect();
-            return;
-        }
-        pc.ModuleBsi.SerialNum = QString::number(tmpi, 16).toInt(0,10);
-        WrongSN = true;
-    }
-    if (pc.ModuleBsi.SerialNumM == 0xFFFFFFFF) // серийный номер не задан, надо задать
-    {
-        bool ok = false;
-        qint32 tmpi = QInputDialog::getInt(this, "Серийный номер", "Серийный номер мезонина:", 0, 1, 999999999,\
-                                    1, &ok);
-        if (!ok)
-        {
-            Disconnect();
-            return;
-        }
-        pc.ModuleBsi.SerialNumM = QString::number(tmpi, 16).toInt(0,10);
-        WrongSN = true;
+        HiddenDialog *dlg = new HiddenDialog(HiddenDialog::BYMY);
+        connect(dlg,SIGNAL(accepted()),this,SLOT(SendBhb()));
+        dlg->exec();
     }
     pc.ModuleTypeString = "АВ-ТУК-";
     pc.ModuleTypeString.append(QString::number(pc.ModuleBsi.MTypeB, 16));
     pc.ModuleTypeString.append(QString::number(pc.ModuleBsi.MTypeM, 16));
-    FillBsi(pc.ModuleTypeString);
-
-    if (!DialogsAreReadyAlready)
-    {
-        DialogsAreReadyAlready = true;
-        if (WrongSN)
-        {
-            cn->Send(CN_Wsn, canal::BT_NONE, &pc.ModuleBsi.SerialNum, 4);
-            while (cn->Busy)
-                QCoreApplication::processEvents(QEventLoop::AllEvents);
-            if (cn->result == CN_OK)
-                AllIsOk();
-        }
-        else
-            AllIsOk();
-    }
+    FillBsi();
+    Stage3();
 }
 
-void Coma::FillBsi(QString MType)
+void Coma::CopyBhbFromBsi()
 {
-    SetText("mtypele", MType);
-    SetText("hwverle", pc.VerToStr(pc.ModuleBsi.Hwver));
-    SetText("hwvermle", pc.VerToStr(pc.ModuleBsi.HwverM));
-    SetText("fwverle", pc.VerToStr(pc.ModuleBsi.Fwver));
-    SetText("cfcrcle", "0x"+QString::number(static_cast<uint>(pc.ModuleBsi.Cfcrc), 16));
-    SetText("rstle", "0x"+QString::number(pc.ModuleBsi.Rst, 16));
+    pc.BoardBBhb.HWVer = pc.ModuleBsi.HwverB;
+    pc.BoardBBhb.ModSerialNum = pc.ModuleBsi.SerialNum;
+    pc.BoardBBhb.SerialNum = pc.ModuleBsi.SerialNumB;
+    pc.BoardBBhb.SWVer = pc.ModuleBsi.Fwver;
+    pc.BoardMBhb.HWVer = pc.ModuleBsi.HwverM;
+    pc.BoardMBhb.SerialNum = pc.ModuleBsi.SerialNumM;
+    pc.BoardMBhb.ModSerialNum = pc.BoardMBhb.SWVer = 0xFFFFFFFF;
+}
+
+void Coma::FillBsi()
+{
+    WDFunc::SetLEData(this, "mtypele", pc.ModuleTypeString);
+    WDFunc::SetLEData(this, "hwverle", pc.VerToStr(pc.ModuleBsi.HwverB));
+    WDFunc::SetLEData(this, "hwvermle", pc.VerToStr(pc.ModuleBsi.HwverM));
+    WDFunc::SetLEData(this, "fwverle", pc.VerToStr(pc.ModuleBsi.Fwver));
+    WDFunc::SetLEData(this, "cfcrcle", "0x"+QString::number(static_cast<uint>(pc.ModuleBsi.Cfcrc), 16));
+    WDFunc::SetLEData(this, "rstle", "0x"+QString::number(pc.ModuleBsi.Rst, 16));
 
     // расшифровка Hth
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < MAXERRORFLAGNUM; i++)
     {
         QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
         if (lbl == 0)
@@ -440,20 +447,20 @@ void Coma::FillBsi(QString MType)
         else
             lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
     }
-    SetText("rstcountle", QString::number(pc.ModuleBsi.RstCount, 16));
-    SetText("cpuidle", QString::number(pc.ModuleBsi.UIDHigh, 16)+QString::number(pc.ModuleBsi.UIDMid, 16)+QString::number(pc.ModuleBsi.UIDLow, 16));
-    SetText("snle", QString::number(pc.ModuleBsi.SerialNum, 16));
-    SetText("snmle", QString::number(pc.ModuleBsi.SerialNumM, 16));
+    WDFunc::SetLEData(this, "rstcountle", QString::number(pc.ModuleBsi.RstCount, 16));
+    WDFunc::SetLEData(this, "cpuidle", QString::number(pc.ModuleBsi.UIDHigh, 16)+QString::number(pc.ModuleBsi.UIDMid, 16)+QString::number(pc.ModuleBsi.UIDLow, 16));
+    WDFunc::SetLEData(this, "snle", QString::number(pc.ModuleBsi.SerialNum, 16));
+    WDFunc::SetLEData(this, "snmle", QString::number(pc.ModuleBsi.SerialNumM, 16));
 }
 
 void Coma::ClearBsi()
 {
-    SetText("mtypele", "");
-    SetText("hwverle", "");
-    SetText("hwvermle", "");
-    SetText("fwverle", "");
-    SetText("cfcrcle", "");
-    SetText("rstle", "");
+    WDFunc::SetLEData(this, "mtypele", "");
+    WDFunc::SetLEData(this, "hwverle", "");
+    WDFunc::SetLEData(this, "hwvermle", "");
+    WDFunc::SetLEData(this, "fwverle", "");
+    WDFunc::SetLEData(this, "cfcrcle", "");
+    WDFunc::SetLEData(this, "rstle", "");
 
     // расшифровка Hth
     for (int i = 0; i < 32; i++)
@@ -466,13 +473,41 @@ void Coma::ClearBsi()
         }
         lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
     }
-    SetText("rstcountle", "");
-    SetText("cpuidle", "");
-    SetText("snle", "");
-    SetText("snmle", "");
+    WDFunc::SetLEData(this, "rstcountle", "");
+    WDFunc::SetLEData(this, "cpuidle", "");
+    WDFunc::SetLEData(this, "snle", "");
+    WDFunc::SetLEData(this, "snmle", "");
 }
 
-void Coma::AllIsOk()
+void Coma::SendBhb()
+{
+    cn->Send(CN_WHv, Canal::BT_BASE, &pc.BoardBBhb, sizeof(pc.BoardBBhb));
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    if (cn->result == NOERROR)
+    {
+        cn->Send(CN_WHv, Canal::BT_MEZONIN, &pc.BoardMBhb, sizeof(pc.BoardMBhb));
+        while (cn->Busy)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+        if (cn->result == NOERROR)
+        {
+            MessageBox2::information(this, "Успешно", "Записано успешно");
+            return;
+        }
+        else
+        {
+            ERMSG("Проблема при записи блока Hidden block");
+            return;
+        }
+    }
+    else
+    {
+        ERMSG("Проблема при записи блока Hidden block");
+        return;
+    }
+}
+
+void Coma::Stage3()
 {
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
@@ -508,9 +543,9 @@ void Coma::AllIsOk()
         connect(ETuneDialog,SIGNAL(dataready(QByteArray)),this,SLOT(UpdateMainTE104(QByteArray)));
     }
     if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
-        ShowErrMsg(ER_NOCONF);
+        pc.ErMsg(ER_NOCONF);
     if (pc.ModuleBsi.Hth & HTH_REGPARS) // нет коэффициентов
-        ShowErrMsg(ER_NOTUNECOEF);
+        pc.ErMsg(ER_NOTUNECOEF);
     MainTW->repaint();
     MainTW->show();
 }
@@ -518,15 +553,7 @@ void Coma::AllIsOk()
 void Coma::Disconnect()
 {
     if (!pc.Emul)
-    {
         cn->Disconnect();
-        QThread *CanalThread = cn->thread();
-        if (CanalThread->isRunning())
-        {
-            CanalThread->quit();
-            CanalThread->wait(1000);
-        }
-    }
     ClearBsi();
     DialogsAreReadyAlready = false;
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
@@ -542,7 +569,6 @@ void Coma::Disconnect()
     if (MainTE != 0)
         MainTE->clear();
     WriteSNAction->setEnabled(false);
-    WriteHWAction->setEnabled(false);
     MainTW->hide();
     pc.Emul = false;
 }
@@ -560,7 +586,7 @@ void Coma::GetAbout()
     l2yout->addWidget(lbl);
     lbl = new QLabel("накорябано Ёвелем");
     l2yout->addWidget(lbl);
-    lbl = new QLabel("в 2015-2016 гг.");
+    lbl = new QLabel("в 2015-2017 гг.");
     l2yout->addWidget(lbl);
     l2yout->addStretch(10);
     lbl = new QLabel;
@@ -592,7 +618,7 @@ void Coma::EmulA()
     pc.ModuleBsi.SerialNum = 0x12345678;
     pc.ModuleBsi.Hth = 0x00;
     pc.Emul = true;
-    AllIsOk();
+    Stage3();
 }
 
 void Coma::EmulE()
@@ -655,243 +681,22 @@ void Coma::StartEmulE()
     Bsi_block.SerialNum = 0x12345678;
     Bsi_block.Hth = 0x00;
     pc.Emul = true;
-    AllIsOk();
-}
-
-void Coma::WriteSN()
-{
-    bool ok = false;
-    qint32 tmpi = QInputDialog::getInt(this,"Серийный номер","Серийный номер модуля:",0,1,99999999,1,&ok);
-    if (!ok)
-        return;
-    pc.ModuleBsi.SerialNum = QString::number(tmpi, 10).toInt(0,16);
-    cn->Send(CN_Wsn, canal::BT_NONE, &(pc.ModuleBsi.SerialNum), 4);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
-        Stage2();
-}
-
-void Coma::WriteHW()
-{
-    QDialog *dlg = new QDialog(this);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setObjectName("hwdlg");
-    dlg->setWindowTitle("Ввод версии аппаратуры");
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    QHBoxLayout *lyout = new QHBoxLayout;
-    s_tqSpinBox *spb = new s_tqSpinBox;
-    spb->setObjectName("hwmv");
-    spb->setDecimals(0);
-    spb->setMinimum(0);
-    spb->setMaximum(15);
-    spb->setValue(1);
-    QLabel *lbl = new QLabel("Версия аппаратуры модуля:");
-    lyout->addWidget(lbl);
-    lyout->addWidget(spb);
-    lbl = new QLabel(".");
-    lyout->addWidget(lbl);
-    spb = new s_tqSpinBox;
-    spb->setObjectName("hwlv");
-    spb->setDecimals(0);
-    spb->setMinimum(0);
-    spb->setMaximum(15);
-    spb->setValue(0);
-    lyout->addWidget(spb);
-    lbl = new QLabel("-");
-    lyout->addWidget(lbl);
-    spb = new s_tqSpinBox;
-    spb->setObjectName("hwsv");
-    spb->setDecimals(0);
-    spb->setMinimum(0);
-    spb->setMaximum(65535);
-    spb->setValue(0);
-    lyout->addWidget(spb);
-    vlyout->addLayout(lyout);
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked()),this,SLOT(SendHW()));
-    vlyout->addWidget(pb);
-    dlg->setLayout(vlyout);
-    dlg->exec();
-}
-
-void Coma::SendHW()
-{
-    QDialog *dlg = this->findChild<QDialog *>("hwdlg");
-    if (dlg == 0)
-    {
-        DBGMSG;
-        return;
-    }
-    s_tqSpinBox *spbmv = this->findChild<s_tqSpinBox *>("hwmv");
-    s_tqSpinBox *spblv = this->findChild<s_tqSpinBox *>("hwlv");
-    s_tqSpinBox *spbsv = this->findChild<s_tqSpinBox *>("hwsv");
-    if ((spbmv == 0) || (spblv == 0) || (spbsv == 0))
-    {
-        DBGMSG;
-        return;
-    }
-    quint32 tmpi = spbmv->value();
-    tmpi <<= 24;
-    tmpi |= (static_cast<quint32>(spblv->value()) << 16);
-    tmpi |= static_cast<quint32>(spbsv->value());
-    cn->Send(CN_WHv, canal::BT_NONE, &tmpi, 4);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    dlg->close();
-    if (cn->result == CN_OK)
-        Stage2();
-    else
-    {
-        ERMSG("Проблема при записи версии аппаратуры модуля");
-        return;
-    }
-    dlg->close();
+    Stage3();
 }
 
 void Coma::SetMipDlg()
 {
-    QDialog *dlg = new QDialog(this);
-    dlg->setObjectName("setmipdlg");
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QStringList tmpsl = pc.MIPIP.split(".");
-    if (tmpsl.size()<4)
-    {
-        for (int i = tmpsl.size(); i < 4; i++)
-            tmpsl.append("");
-    }
-    QLabel *lbl = new QLabel("IP-адрес МИП:");
-    hlyout->addWidget(lbl);
-    QLineEdit *le = new QLineEdit;
-    QRegExp re;
-    re.setPattern("^[0-2]{0,1}[0-9]{1,2}$");
-    QValidator *val = new QRegExpValidator(re, this);
-    le->setValidator(val);
-    le->setObjectName("mip1");
-    le->setText(tmpsl.at(0));
-    hlyout->addWidget(le);
-    lbl = new QLabel(".");
-    hlyout->addWidget(lbl);
-    le = new QLineEdit;
-    le->setValidator(val);
-    le->setObjectName("mip2");
-    le->setText(tmpsl.at(1));
-    hlyout->addWidget(le);
-    lbl = new QLabel(".");
-    hlyout->addWidget(lbl);
-    le = new QLineEdit;
-    le->setValidator(val);
-    le->setObjectName("mip3");
-    le->setText(tmpsl.at(2));
-    hlyout->addWidget(le);
-    lbl = new QLabel(".");
-    hlyout->addWidget(lbl);
-    le = new QLineEdit;
-    le->setValidator(val);
-    le->setObjectName("mip4");
-    le->setText(tmpsl.at(3));
-    hlyout->addWidget(le);
-    lyout->addLayout(hlyout);
-
-    hlyout = new QHBoxLayout;
-    lbl = new QLabel("ASDU:");
-    hlyout->addWidget(lbl);
-    s_tqSpinBox *spb = new s_tqSpinBox;
-    spb->setDecimals(0);
-    spb->setMinimum(1);
-    spb->setMaximum(65534);
-    spb->setValue(pc.MIPASDU);
-    spb->setObjectName("asduspb");
-    hlyout->addWidget(spb);
-    hlyout->addStretch(90);
-    lyout->addLayout(hlyout);
-
-    QPushButton *pb = new QPushButton("Готово");
-    pb->setObjectName("dlgpb");
-    connect(pb,SIGNAL(clicked()),this,SLOT(SetMipConPar()));
-    lyout->addWidget(pb);
-    dlg->setLayout(lyout);
-    connect(this,SIGNAL(mipparset()),dlg,SLOT(close()));
+    MipSetDialog *dlg = new MipSetDialog;
     dlg->exec();
-}
-
-void Coma::SetMipConPar()
-{
-    pc.MIPIP.clear();
-    for (int i = 1; i < 5; i++)
-    {
-        QLineEdit *le = this->findChild<QLineEdit *>("mip"+QString::number(i));
-        if (le == 0)
-            return;
-        pc.MIPIP += le->text()+".";
-    }
-    pc.MIPIP.chop(1); // последнюю точку убираем
-    s_tqSpinBox *spb = this->findChild<s_tqSpinBox *>("asduspb");
-    if (spb == 0)
-        return;
-    pc.MIPASDU = spb->value();
-    emit mipparset();
 }
 
 void Coma::StartSettingsDialog()
 {
-    QDialog *dlg = new QDialog(this);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setObjectName("settingsdlg");
-    dlg->setWindowTitle("Настройки");
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QLabel *lbl = new QLabel("Показывать окно ошибок при их появлении");
-    hlyout->addWidget(lbl);
-    QCheckBox *cb = new QCheckBox;
-    QSettings *sets = new QSettings("EvelSoft","COMA");
-    cb->setChecked(sets->value("ShowErrWindow", "1").toBool());
-    cb->setObjectName("showerrcb");
-    hlyout->addWidget(cb);
-    vlyout->addLayout(hlyout);
-    hlyout = new QHBoxLayout;
-    lbl = new QLabel("Задержка появления окна ошибок, с");
-    hlyout->addWidget(lbl);
-    s_tqSpinBox *spb = new s_tqSpinBox;
-    spb->setObjectName("errdelayspb");
-    spb->setDecimals(0);
-    spb->setMinimum(1);
-    spb->setMaximum(10);
-    spb->setValue(sets->value("ErrWindowDelay", "5").toDouble());
-    hlyout->addWidget(spb);
-    vlyout->addLayout(hlyout);
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked()),this,SLOT(AcceptSettings()));
-    vlyout->addWidget(pb);
-    dlg->setLayout(vlyout);
+    SettingsDialog *dlg = new SettingsDialog;
     dlg->exec();
-}
-
-void Coma::AcceptSettings()
-{
-    QDialog *dlg = this->findChild<QDialog *>("settingsdlg");
-    if (dlg == 0)
-    {
-        DBGMSG;
-        return;
-    }
-    s_tqSpinBox *spb = this->findChild<s_tqSpinBox *>("errdelayspb");
-    QCheckBox *cb = this->findChild<QCheckBox *>("showerrcb");
-    if ((spb == 0) || (cb == 0))
-    {
-        DBGMSG;
-        return;
-    }
-    QSettings *sets = new QSettings("EvelSoft","COMA");
-    sets->setValue("ErrWindowDelay",spb->value());
-    sets->setValue("ShowErrWindow", cb->isChecked());
-    pc.ErrWindowDelay = spb->value();
-    pc.ShowErrWindow = cb->isChecked();
     if (ERTimer->isActive())
         ERTimer->stop();
     ERTimer->setInterval(pc.ErrWindowDelay*1000);
-    dlg->close();
 }
 
 void Coma::UpdateMainTE104(QByteArray ba)
@@ -907,11 +712,8 @@ void Coma::UpdateMainTE104(QByteArray ba)
         ba.remove(0,1);
         tmpString = "Eth disconnected!";
     }
-    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
-    if (MainTE == 0)
-        return;
-    MainTE->append(tmpString);
-    UpdateMainTE(&ba);
+    WDFunc::AppendTEData(this, "mainte", tmpString);
+    UpdateMainTE(ba);
 }
 
 void Coma::ReadUpdateMainTE(QByteArray ba)
@@ -930,13 +732,13 @@ void Coma::UpdateMainTE(QByteArray &ba)
     QString tmpString;
     if (MainTE != 0)
     {
-        for (int i = 0; i < ba->size(); i++)
-            tmpString.append(ByteToHex(ba->at(i)));
+        for (int i = 0; i < ba.size(); i++)
+            tmpString.append(ByteToHex(ba.at(i)));
         MainTE->append(tmpString);
         tmpString = MainTE->toPlainText();
         if (tmpString.size() > C_TE_MAXSIZE)
             MainTE->setPlainText(tmpString.right(C_TE_MAXSIZE));
-        MainTE->verticalScrollBar()->setValue(MainTE->verticalScrollBar()->maximum());
+        MainTE->verticalScrollBar()->setValue(MainTE->verticalScrollBar()->maximum()); // перемещение "ползунка" принудительно вниз
     }
 }
 
@@ -988,16 +790,6 @@ void Coma::MouseMove()
         if (!SWHide)
             ShowOrHideSlideSW();
     }
-    if ((abs(curPos.y() - height()) < 10) && (curPos.x() > 0) && (curPos.x() < width()))
-    {
-        if (ERHide)
-            ShowOrHideSlideER();
-    }
-    else if ((abs(curPos.y() - height()) > 120) && (curPos.x() > 0) && (curPos.x() < width()))
-    {
-        if ((!ERHide) && (!ERTimerIsOn))
-            ShowOrHideSlideER();
-    }
 }
 
 void Coma::ShowOrHideSlideSW()
@@ -1027,70 +819,12 @@ void Coma::ShowOrHideSlideSW()
     SWHide = !SWHide;
 }
 
-void Coma::ShowOrHideSlideER()
+void Coma::ShowErrorDialog()
 {
-    QWidget *w = this->findChild<QWidget *>("errorwidget");
-    if (w == 0)
-        return;
-    if (w->isHidden())
-        w->show();
-    if (ERHide)
-        w->setGeometry(ERGeometry);
-    QPropertyAnimation *ani = new QPropertyAnimation(w, "geometry");
-    ani->setDuration(500);
-    QRect startRect(0, height(), width(), 0);
-    QRect endRect(0, height()-w->height(), width(), w->height());
-    if (ERHide)
-    {
-        ani->setStartValue(startRect);
-        ani->setEndValue(endRect);
-    }
-    else
-    {
-        ani->setStartValue(endRect);
-        ani->setEndValue(startRect);
-    }
-    ani->start();
-    ERHide = !ERHide;
-}
-
-void Coma::ShowErrMsg(int ermsg)
-{
-    if (ermsg < pc.errmsgs.size())
-        ERMSG(pc.errmsgs.at(ermsg));
-    else
-        ERMSG("Произошла неведомая фигня #"+QString::number(ermsg,10));
-}
-
-void Coma::UpdateErrorProtocol()
-{
-    ErrorProtocolWidget *ErWidget = this->findChild<ErrorProtocolWidget *>("errorwidget");
-    if (ErWidget == 0)
-    {
-        DBGMSG;
-        return;
-    }
-    if (pc.ermsgpool.isEmpty())
-        return;
-    if (!ERTimerIsOn && pc.ShowErrWindow)
-    {
-        ERTimerIsOn = true;
-        ERHide = true;
-        ShowOrHideSlideER();
-    }
-    while (!pc.ermsgpool.isEmpty())
-    {
-        ErWidget->AddRowToProt(pc.ermsgpool.first());
-        pc.ermsgpool.removeFirst();
-    }
-    ERTimer->start();
-}
-
-void Coma::HideErrorProtocol()
-{
-    ERTimer->stop();
-    ERTimerIsOn = false;
-    ShowOrHideSlideER();
+    ErrorDialog *dlg = new ErrorDialog;
+    for (int i=0; i<pc.ermsgpool.size(); ++i)
+        dlg->AddErrMsg(pc.ermsgpool.at(i));
+    dlg->exec();
 }
 
 void Coma::SetProgressBar(quint32 cursize)
@@ -1098,9 +832,7 @@ void Coma::SetProgressBar(quint32 cursize)
     QProgressBar *prb = this->findChild<QProgressBar *>("prbprb");
     if (prb != 0)
         prb->setValue(cursize);
-    QLabel *lbl = this->findChild<QLabel *>("prblbl");
-    if (lbl != 0)
-        lbl->setText(pc.PrbMessage + QString::number(cursize) + " из " + QString::number(PrbSize));
+    WDFunc::SetLBLText(this, "prblbl",pc.PrbMessage + QString::number(cursize) + " из " + QString::number(PrbSize));
     if (cursize >= PrbSize)
         DisableProgressBar();
 }
@@ -1108,40 +840,26 @@ void Coma::SetProgressBar(quint32 cursize)
 void Coma::SetProgressBarSize(quint32 size)
 {
     PrbSize = size;
-    QLabel *lbl = this->findChild<QLabel *>("prblbl");
     QProgressBar *prb = this->findChild<QProgressBar *>("prbprb");
-    if ((prb == 0) || (lbl == 0))
+    if (prb == 0)
     {
         DBGMSG;
         return;
     }
-    lbl->setText(pc.PrbMessage + QString::number(size));
+    WDFunc::SetLBLText(this, "prblbl",pc.PrbMessage + QString::number(size), false);
     prb->setMinimum(0);
     prb->setMaximum(PrbSize);
-    lbl->setEnabled(true);
     prb->setEnabled(true);
 }
 
 void Coma::DisableProgressBar()
 {
-    QLabel *lbl = this->findChild<QLabel *>("prblbl");
     QProgressBar *prb = this->findChild<QProgressBar *>("prbprb");
-    if ((prb == 0) || (lbl == 0))
+    if (prb == 0)
     {
         DBGMSG;
         return;
     }
     prb->setEnabled(false);
-    lbl->setEnabled(false);
-}
-
-void Coma::SetText(QString name, QString txt)
-{
-    QLineEdit *le = this->findChild<QLineEdit *>(name);
-    if (le == 0)
-    {
-        ERMSG("Не найден виджет "+name);
-        return;
-    }
-    le->setText(txt);
+    WDFunc::SetLBLText(this, "prblbl","",false);
 }

@@ -5,6 +5,8 @@
 #include <QTextStream>
 #include <QDir>
 #include <QFileDialog>
+#include <QStandardPaths>
+#include "log.h"
 
 publicclass pc;
 
@@ -80,6 +82,7 @@ unsigned long  _crc32_t[256]=
 
 publicclass::publicclass()
 {
+    HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     Emul = false;
     ErMsgsOk = false;
     AMTypes.append("Z"); // фиктивный тип, типы начинаются с 1
@@ -89,15 +92,8 @@ publicclass::publicclass()
     AMTypes.append("С");
     ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
 
-    QSettings *sets = new QSettings("EvelSoft","COMA");
-    Port = sets->value("Port", "COM1").toString();
-    ermsgpath = sets->value("erpath","errors/").toString();
-    MIPASDU = sets->value("mip/asdu","206").toInt();
-    MIPIP = sets->value("mip/ip","192.168.1.2").toString();
-    ErrWindowDelay = sets->value("ErrWindowDelay","5").toInt();
-    ShowErrWindow = sets->value("ShowErrWindow","1").toBool();
     QFile file;
-    QString ermsgspath = QDir::currentPath() + "/" + ermsgpath;
+    QString ermsgspath = pc.HomeDir + "/" + ermsgpath;
     file.setFileName(ermsgspath+"ermsgs.dat");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -376,14 +372,23 @@ void publicclass::AddErrMsg(ermsgtype msgtype, QString file, int line, QString m
     {
         switch (msgtype)
         {
-        case ER_MSG: prefix = "Ошибка "; break;
+        case ER_MSG:
+            prefix = "Ошибка ";
+            break;
         case WARN_MSG: prefix = "Проблема "; break;
         case INFO_MSG: prefix = "Инфо "; break;
         case DBG_MSG: prefix = "Отладка "; break;
         }
-
         msg = prefix+"в файле " + tmpm.file + " строка " + QString::number(tmpm.line);
     }
+    Log log;
+    log.Init(LOGFILE);
+    if ((msgtype == ER_MSG) || (msgtype == DBG_MSG))
+        log.error("file: "+tmpm.file+", line: "+QString::number(tmpm.line)+": "+msg);
+    else if (msgtype == WARN_MSG)
+        log.warning("file: "+tmpm.file+", line: "+QString::number(tmpm.line)+": "+msg);
+    else
+        log.info("file: "+tmpm.file+", line: "+QString::number(tmpm.line)+": "+msg);
     tmpm.msg = msg;
     ermsgpool.append(tmpm);
 }
@@ -434,4 +439,12 @@ bool publicclass::FloatInRange(float var, float value)
         return true;
     else
         return false;
+}
+
+void publicclass::ErMsg(int ermsgnum)
+{
+    if (ermsgnum < pc.errmsgs.size())
+        ERMSG(pc.errmsgs.at(ermsgnum));
+    else
+        ERMSG("Произошла неведомая фигня #"+QString::number(ermsgnum,10));
 }

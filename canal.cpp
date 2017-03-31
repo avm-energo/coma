@@ -6,8 +6,9 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QCoreApplication>
+#include <QTime>
 
-Canal cn;
+Canal *cn;
 
 Canal::Canal(QObject *parent) : QObject(parent)
 {
@@ -249,7 +250,7 @@ void Canal::ParseIncomeData(QByteArray &ba)
             {
                 if (RDSize < 6) // не пришёл ещё номер файла
                     return;
-                quint16 filenum = static_cast<quint16>(ReadDataChunk[0])+static_cast<quint16>(ReadDataChunk[1])<<8; // 0 & 1 because 4 bytes already removed
+                quint16 filenum = static_cast<quint16>(ReadDataChunk[0])+static_cast<quint16>(ReadDataChunk[1])*256; // 0 & 1 because 4 bytes already removed
                 if (filenum != fnum)
                 {
                     Finish(USO_UNKNFILESENT);
@@ -447,7 +448,7 @@ void Canal::SendErr()
     tmpba.append(CN_MS);
     tmpba.append(CN_ResErr);
     AppendSize(tmpba, 1);
-    tmpba.append(0x00); // модулю не нужны коды ошибок
+    tmpba.append(CN_BYTE0); // модулю не нужны коды ошибок
     WriteDataToPort(tmpba);
 }
 
@@ -470,7 +471,7 @@ void Canal::Finish(int ernum)
     }
     result = ernum;
     Busy = false;
-    emit SendEnd();
+    emit sendend();
 //    qDebug() << "Finish";
 }
 
@@ -478,6 +479,7 @@ bool Canal::Connect()
 {
     if (!InitializePort(info, baud))
         return false;
+    return true;
 }
 
 void Canal::Disconnect()
@@ -503,7 +505,7 @@ bool Canal::InitializePort(QSerialPortInfo &pinfo, int baud)
     port->setFlowControl(QSerialPort::NoFlowControl);
     port->setStopBits(QSerialPort::OneStop);
     connect(port,SIGNAL(readyRead()),this,SLOT(CheckForData()));
-    emit Canalisready();
+    return true;
 }
 
 void Canal::ClosePort()
@@ -512,7 +514,7 @@ void Canal::ClosePort()
     {
         port->close();
         QTimer *tmr = new QTimer;
-        tmr->setInterval(ST_CLOSEPORT_TIMEOUT);
+        tmr->setInterval(CN_TIMEOUT);
         connect(tmr,SIGNAL(timeout()),this,SLOT(PortCloseTimeout()));
         PortCloseTimeoutSet = false;
         tmr->start();
@@ -543,15 +545,7 @@ void Canal::Error(QSerialPort::SerialPortError err)
     if (!err) // нет ошибок
         return;
     quint16 ernum = err + COM_ERROR;
-    if (pc.ErMsgsOk)
-    {
-        if (ernum < pc.errmsgs.size())
-            ERMSG(pc.errmsgs.at(ernum));
-        else
-            ERMSG("Произошла неведомая фигня #"+QString::number(ernum,10));
-    }
-    else
-        ERMSG("Произошла неведомая фигня #"+QString::number(ernum,10));
+    pc.ErMsg(ernum);
 }
 
 void Canal::PortCloseTimeout()
@@ -568,7 +562,7 @@ bool Canal::WriteDataToPort(QByteArray &ba)
     while ((byteswritten < basize) && (!ba.isEmpty()))
     {
         qint64 tmpi = port->write(ba);
-        if (res == GENERALERROR)
+        if (tmpi == GENERALERROR)
             return false;
         byteswritten += tmpi;
         emit writebytessignal(ba.left(tmpi));

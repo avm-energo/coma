@@ -21,6 +21,7 @@
 #define CN_MAINLOOP_DELAY   100 // 100 ms main loop sleep
 
 // Обмен с модулями
+#define CN_BYTE0    '\x00'
 #define CN_ResOk    0x11 // ответ "всё в порядке"
 #define CN_GBsi     0x21 // чтение блока стартовой информации
 #define CN_GBac     0x22 // чтение настроечных коэффициентов
@@ -37,13 +38,12 @@
 #define CN_OscPg    0x46 // запрос оставшегося для стирания по команде OscEr числа страниц
 #define CN_CtEr     0x47 // стирание счётчиков дискретных состояний
 #define CN_WHv      0x48 // запись версии аппаратуры модуля/серийного номера/типа платы
-#define CN_ResErr   0xF0 // ответ "ошибка"
-#define CN_Unk      0xFF // неизвестная команда
+#define CN_ResErr   '\xF0' // ответ "ошибка"
+#define CN_Unk      '\xFF' // неизвестная команда
 
 #define CN_MS       0x3e // начало посылки
 #define CN_MS3      0x23 // продолжение посылки
 #define CN_SS       0x3c // начало посылки модуля
-#define CN_L0       0x00 // length is 0 bytes
 #define CN_L2       0x02 // length is 2 bytes
 
 // определение ошибок модуля - см. publicclass.h (USO_)
@@ -80,6 +80,7 @@ public:
 signals:
     void writedatalength(quint32);
     void writedatapos(quint32);
+    void bytesreceived(quint32);
     void readbytessignal(QByteArray);
     void writebytessignal(QByteArray);
     void sendend();
@@ -126,11 +127,11 @@ private:
     void SetWRSegNum();
     void WRCheckForNextSegment();
     void AppendSize(QByteArray &ba, quint16 size);
-    void SendOk(bool cont); // cont = 1 -> send CN_MS3 instead CN_MS
+    void SendOk(bool cont=false); // cont = 1 -> send CN_MS3 instead CN_MS
     void SendErr();
     bool GetLength(bool ok=true); // ok = 1 -> обработка посылки вида SS OK ..., ok = 0 -> вида SS c L L ... возвращаемое значение = false -> неправильная длина
 };
 
-extern Canal cn;
+extern Canal *cn;
 
 #endif // CANAL_H

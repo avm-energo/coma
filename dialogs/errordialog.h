@@ -1,18 +1,28 @@
-#ifndef DOWNLOADDIALOG_H
-#define DOWNLOADDIALOG_H
+#ifndef ERRORDIALOG_H
+#define ERRORDIALOG_H
 
 #include <QDialog>
+#include "../publicclass.h"
+#include "../widgets/errorprotocolwidget.h"
 
-class downloaddialog : public QDialog
+class ErrorDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit downloaddialog(QWidget *parent = 0);
+    explicit ErrorDialog(QWidget *parent = 0);
 
 signals:
 
 public slots:
+    void AddErrMsg(publicclass::ermsg msg);
+
+private:
+    ErrorProtocolWidget *ErrorWidget;
+
+    void SetupUI();
+
+private slots:
 
 };
 
-#endif // DOWNLOADDIALOG_H
+#endif // ERRORDIALOG_H

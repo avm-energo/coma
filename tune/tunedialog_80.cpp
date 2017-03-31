@@ -654,10 +654,10 @@ bool e_tunedialog::Start7_3_1(bool DefConfig)
     if (!DefConfig)
     {
         // получение настроечных коэффициентов от модуля
-        cn->Send(CN_GBac, canal::BT_NONE, &Bac_block, sizeof(Bac_block));
+        cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
         while (cn->Busy)
             qApp->processEvents();
-        if (cn->result != CN_OK)
+        if (cn->result != NOERROR)
         {
             MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");
             return false;
@@ -676,22 +676,22 @@ bool e_tunedialog::Start7_3_1(bool DefConfig)
     // высвечиваем надпись "Запись настроечных коэффициентов по умолчанию"
     MsgSetVisible(MSG_7_3_1_1);
     // запись настроечных коэффициентов в модуль
-    cn->Send(CN_WBac, canal::BT_NONE, &Bac_defblock, sizeof(Bac));
+    cn->Send(CN_WBac, Canal::BT_NONE, &Bac_defblock, sizeof(Bac));
     while (cn->Busy)
         qApp->processEvents();
-    if (cn->result == CN_OK)
+    if (cn->result == NOERROR)
     {
         // перейти на новую конфигурацию
-        cn->Send(CN_Cnc);
+/*        cn->Send(CN_Cnc);
         while (cn->Busy)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
-        if (cn->result != CN_OK)
-            return false;
+        if (cn->result != NOERROR)
+            return false; */
         // получение настроечных коэффициентов от модуля
-        cn->Send(CN_GBac, canal::BT_NONE, &Bac_block, sizeof(Bac_block));
+        cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
         while (cn->Busy)
             qApp->processEvents();
-        if (cn->result != CN_OK)
+        if (cn->result != NOERROR)
         {
             WARNMSG("Ошибка при приёме данных");
             return false;
@@ -884,19 +884,19 @@ bool e_tunedialog::Start7_3_7_2()
     for (int i=0; i<6; i++)
         econf->Bci_block.inom2[i] = 1.0;
     // послать новые коэффициенты по току в конфигурацию
-    cn->Send(CN_WF, canal::BT_NONE, &econf->Bci_block, sizeof(config_80::Bci), 2, econf->Config);
+    cn->Send(CN_WF, Canal::BT_NONE, &econf->Bci_block, sizeof(config_80::Bci), 2, econf->Config);
 //    qDebug() << "3";
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result != CN_OK)
+    if (cn->result != NOERROR)
         return false;
 //    qDebug() << "4";
     // дать команду перехода на новую конфигурацию
-    cn->Send(CN_Cnc);
+/*    cn->Send(CN_Cnc);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result != CN_OK)
-        return false;
+    if (cn->result != NOERROR)
+        return false; */
     OkMsgSetVisible(MSG_7_3_7_2);
     // 2. выдать сообщение об установке 60 В 1 А
     MsgSetVisible(MSG_7_3_7_3);
@@ -931,23 +931,23 @@ bool e_tunedialog::Start7_3_7_2()
     MsgSetVisible(MSG_7_3_7_6);
     for (int i=0; i<6; i++)
         econf->Bci_block.inom2[i] = 5.0;
-    cn->Send(CN_WF, canal::BT_NONE, &econf->Bci_block, sizeof(config_80::Bci), 2, econf->Config);
+    cn->Send(CN_WF, Canal::BT_NONE, &econf->Bci_block, sizeof(config_80::Bci), 2, econf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result != CN_OK)
+    if (cn->result != NOERROR)
     {
         ErMsgSetVisible(MSG_7_3_7_6);
         return false;
     }
     // перейти на новую конфигурацию
-    cn->Send(CN_Cnc);
+/*    cn->Send(CN_Cnc);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result != CN_OK)
+    if (cn->result != NOERROR)
     {
         ErMsgSetVisible(MSG_7_3_7_6);
         return false;
-    }
+    } */
     OkMsgSetVisible(MSG_7_3_7_6);
     // 2. выдать сообщение об установке 60 В 5 А
     MsgSetVisible(MSG_7_3_7_8);
@@ -979,25 +979,25 @@ bool e_tunedialog::Start7_3_8()
 {
     MsgSetVisible(MSG_7_3_8_1);
     // 1. Отправляем настроечные параметры в модуль
-    cn->Send(CN_WBac, canal::BT_NONE, &Bac_newblock, sizeof(Bac));
+    cn->Send(CN_WBac, Canal::BT_NONE, &Bac_newblock, sizeof(Bac));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result != CN_OK)
+    if (cn->result != NOERROR)
     {
         ErMsgSetVisible(MSG_7_3_8_1);
         return false;
     }
     // переходим на новую конфигурацию
-    cn->Send(CN_Cnc);
+/*    cn->Send(CN_Cnc);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
+    if (cn->result == NOERROR)
         OkMsgSetVisible(MSG_7_3_8_1);
     else
     {
         ErMsgSetVisible(MSG_7_3_8_1);
         return false;
-    }
+    }*/
     // 2. Проверяем измеренные напряжения
     MsgSetVisible(MSG_7_3_8_2);
     WaitNSeconds(15);
@@ -1022,11 +1022,11 @@ bool e_tunedialog::Start7_3_9()
             return false;
         }
         // переходим на прежнюю конфигурацию
-        cn->Send(CN_Cnc);
+/*        cn->Send(CN_Cnc);
         while (cn->Busy)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
-        if (cn->result != CN_OK)
-            return false;
+        if (cn->result != NOERROR)
+            return false; */
         // измеряем и проверяем
         Show1RetomDialog(60.0f, 1.0);
         WaitNSeconds(15);
@@ -1046,7 +1046,7 @@ bool e_tunedialog::Start7_3_9()
         cn->Send(CN_OscEr);
         while (cn->Busy)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
-        if (cn->result == CN_OK)
+        if (cn->result == NOERROR)
             MessageBox2::information(this, "Внимание", "Стёрто успешно");
         else
             ERMSG("Ошибка при стирании");
@@ -1058,11 +1058,11 @@ bool e_tunedialog::SaveWorkConfig()
 {
     econf = new config_80;
 
-    cn->Send(CN_GF,canal::BT_NONE,NULL,0,1,econf->Config);
+    cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,econf->Config);
 //    qDebug() << "1";
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
+    if (cn->result == NOERROR)
         memcpy(&Bci_block_work,&econf->Bci_block,sizeof(config_80::Bci));
     else
         return false;
@@ -1073,10 +1073,10 @@ bool e_tunedialog::LoadWorkConfig()
 {
     // пишем ранее запомненный конфигурационный блок
     memcpy(&econf->Bci_block,&Bci_block_work,sizeof(config_80::Bci));
-    cn->Send(CN_WF, canal::BT_NONE, &econf->Bci_block, sizeof(econf->Bci_block), 2, econf->Config);
+    cn->Send(CN_WF, Canal::BT_NONE, &econf->Bci_block, sizeof(econf->Bci_block), 2, econf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result != CN_OK)
+    if (cn->result != NOERROR)
         return false;
     return true;
 }
@@ -1474,20 +1474,20 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
 
 void e_tunedialog::ReadTuneCoefs()
 {
-    cn->Send(CN_GBac, canal::BT_NONE, &Bac_block, sizeof(Bac_block));
+    cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
+    if (cn->result == NOERROR)
         WriteTuneCoefsToGUI();
 }
 
 void e_tunedialog::WriteTuneCoefs()
 {
     ReadTuneCoefsFromGUI();
-    cn->Send(CN_WBac, canal::BT_NONE, &Bac_block, sizeof(Bac_block));
+    cn->Send(CN_WBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
+    if (cn->result == NOERROR)
         MessageBox2::information(this, "Внимание", "Записано успешно!");
 }
 
@@ -1609,10 +1609,10 @@ void e_tunedialog::ReadTuneCoefsFromGUI()
 void e_tunedialog::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBdi, canal::BT_NONE, &Bda_block, sizeof(Bda_block));
+    cn->Send(CN_GBd, Canal::BT_NONE, &Bda_block, sizeof(Bda_block));
     while (cn->Busy)
         qApp->processEvents();
-    if (cn->result != CN_OK)
+    if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");
         return;

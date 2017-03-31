@@ -50,11 +50,15 @@ SOURCES += main.cpp\
     widgets/s_tqtableview.cpp \
     widgets/waitwidget.cpp \
     commands.cpp \
-    config.cpp \
     dialogs/downloaddialog.cpp \
     dialogs/fwupdialog.cpp \
     dialogs/oscdialog.cpp \
-    dialogs/hiddendialog.cpp
+    dialogs/hiddendialog.cpp \
+    widgets/wd_func.cpp \
+    log.cpp \
+    dialogs/mipsetdialog.cpp \
+    dialogs/settingsdialog.cpp \
+    dialogs/errordialog.cpp
 
 HEADERS  += coma.h \
     canal.h \
@@ -89,22 +93,28 @@ HEADERS  += coma.h \
     dialogs/downloaddialog.h \
     dialogs/fwupdialog.h \
     dialogs/oscdialog.h \
-    dialogs/hiddendialog.h
+    dialogs/hiddendialog.h \
+    config/config.h \
+    widgets/wd_func.h \
+    log.h \
+    dialogs/mipsetdialog.h \
+    dialogs/settingsdialog.h \
+    dialogs/errordialog.h
 
-INCLUDEPATH += $$PWD/../../xlsxwriter/src/xlsx
-DEPENDPATH += $$PWD/../../xlsxwriter/src/xlsx
+#INCLUDEPATH += $$PWD/../../xlsxwriter/src/xlsx
+#DEPENDPATH += $$PWD/../../xlsxwriter/src/xlsx
 
-LIBS += -lqtxlsx
+LIBS += -lQt5Xlsx
 
 RESOURCES += \
     res.qrc
 
-DISTFILES += \
-    e0t2n.xlsx \
-    e1t1n.xlsx \
-    e2t0n.xlsx \
-    coma-2.png \
-    coma.png \
-    coma.ico \
-    errors/ermsgs.dat \
-    .gitignore
+#DISTFILES += \
+#    e0t2n.xlsx \
+#    e1t1n.xlsx \
+#    e2t0n.xlsx \
+#    coma-2.png \
+#    coma.png \
+#    coma.ico \
+#    errors/ermsgs.dat \
+#    .gitignore

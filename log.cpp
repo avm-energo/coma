@@ -1,31 +1,12 @@
-/*
- * <one line to give the program's name and a brief idea of what it does.>
- * Copyright (C) 2016  <copyright holder> <email>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- */
-
 #include <QDateTime>
 #include <QDir>
-#include <QStandardPaths>
-#define LZMA_API_STATIC
-#include <lzma/lzma.h>
+//#include <QStandardPaths>
+//#define LZMA_API_STATIC
+//#include <lzma/lzma.h>
 
 #include "log.h"
 #include "publicclass.h"
+#include "widgets/messagebox.h"
 
 Log::Log(QObject *parent) : QObject(parent)
 {
@@ -44,18 +25,11 @@ Log::~Log()
 
 void Log::Init(const QString &Filename)
 {
-/*    QString LogPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/log";
-    // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
-    QDir dir(LogPath);
-    if (!dir.exists())
-        dir.mkpath(".");
-    LogFile = LogPath + "/" + Filename; */
-    LogFile = pc.HomeDir + "/log/" + Filename;
+    LogFile = pc.HomeDir + Filename;
     // тестовая проверка открытия файла на запись
     fp = new QFile(LogFile);
     if (!fp->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
     {
-        ERMSG("Невозможно создать log-файл: "+LogFile);
         CanLog = false;
         return;
     }
@@ -95,10 +69,10 @@ void Log::WriteFile(const QString &Prepend, const QString &msg)
     fp->write(msg.toLocal8Bit());
     fp->write("\n");
     fp->flush();
-    CheckAndGz();
+//    CheckAndGz();
 }
 
-void Log::Info(QByteArray &ba)
+/*void Log::Info(QByteArray &ba)
 {
     QString tmps = "[" + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss") + "]";
     fp->write(tmps.toLocal8Bit());
@@ -107,10 +81,10 @@ void Log::Info(QByteArray &ba)
     fp->write(ba);
     fp->write("\n");
     fp->flush();
-    CheckAndGz();
-}
+//    CheckAndGz();
+} */
 
-void Log::CheckAndGz()
+/*void Log::CheckAndGz()
 {
     QString GZippedLogFile = LogFile + ".xz";
     if (fp->size() >= LOG_MAX_SIZE)
@@ -212,3 +186,4 @@ void Log::CheckAndGz()
         }
     }
 }
+*/

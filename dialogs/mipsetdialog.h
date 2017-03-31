@@ -1,18 +1,23 @@
-#ifndef DOWNLOADDIALOG_H
-#define DOWNLOADDIALOG_H
+#ifndef MIPSETDIALOG_H
+#define MIPSETDIALOG_H
 
 #include <QDialog>
 
-class downloaddialog : public QDialog
+class MipSetDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit downloaddialog(QWidget *parent = 0);
+    explicit MipSetDialog(QWidget *parent = 0);
 
 signals:
 
 public slots:
 
+private:
+    void SetupUI();
+
+private slots:
+    void SetMipConPar();
 };
 
-#endif // DOWNLOADDIALOG_H
+#endif // MIPSETDIALOG_H

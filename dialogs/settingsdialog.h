@@ -1,18 +1,25 @@
-#ifndef DOWNLOADDIALOG_H
-#define DOWNLOADDIALOG_H
+#ifndef SETTINGSDIALOG_H
+#define SETTINGSDIALOG_H
 
 #include <QDialog>
 
-class downloaddialog : public QDialog
+class SettingsDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit downloaddialog(QWidget *parent = 0);
+    explicit SettingsDialog(QWidget *parent = 0);
 
 signals:
 
 public slots:
 
+private:
+    void SetupUI();
+    void Fill();
+
+private slots:
+    void AcceptSettings();
+
 };
 
-#endif // DOWNLOADDIALOG_H
+#endif // SETTINGSDIALOG_H

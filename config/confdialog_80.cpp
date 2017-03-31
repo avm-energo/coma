@@ -79,10 +79,10 @@ confdialog_80::~confdialog_80()
 
 void confdialog_80::GetBci()
 {
-    cn->Send(CN_GF,canal::BT_NONE,NULL,0,1,econf->Config);
+    cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,econf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
+    if (cn->result == NOERROR)
     {
         FillConfData();
         MessageBox2::information(this, "OK", "Прочитано успешно");
@@ -465,23 +465,23 @@ void confdialog_80::SetNHFiltr(int tmpi)
 
 void confdialog_80::WriteConfDataToModule()
 {
-    cn->Send(CN_WF, canal::BT_NONE, &econf->Bci_block, sizeof(econf->Bci_block), 2, econf->Config);
+    cn->Send(CN_WF, Canal::BT_NONE, &econf->Bci_block, sizeof(econf->Bci_block), 2, econf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
+    if (cn->result == NOERROR)
         MessageBox2::information(this, "OK", "Операция проведена успешно!");
 }
 
 void confdialog_80::SetNewConf()
 {
-    cn->Send(CN_Cnc);
+/*    cn->Send(CN_Cnc);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
+    if (cn->result == NOERROR)
     {
         MessageBox2::information(this, "OK", "Переведено успешно");
         emit BsiIsNeedToBeAcquiredAndChecked();
-    }
+    } */
 }
 
 void confdialog_80::SetDefConf()

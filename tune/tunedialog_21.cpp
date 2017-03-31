@@ -164,10 +164,10 @@ bool a_tunedialog::tune(int Type, int ChNum)
                                      "на всех\nвходах модуля и нажмите OK")\
                 == QMessageBox::Ok)
         {
-            cn->Send(CN_GBda, canal::BT_NONE, &Bda0, sizeof(Bda));
+            cn->Send(CN_GBda, Canal::BT_NONE, &Bda0, sizeof(Bda));
             while (cn->Busy)
                 QCoreApplication::processEvents(QEventLoop::AllEvents);
-            if (cn->result == CN_OK)
+            if (cn->result == NOERROR)
                 CheckAndShowTune0(ChNum);
             else
             {
@@ -188,10 +188,10 @@ bool a_tunedialog::tune(int Type, int ChNum)
                                      "Переключите входные переключатели на ток,\nустановите ток 20 мА на всех" \
                                      "\nвходах модуля и нажмите OK") == QMessageBox::Ok)
         {
-            cn->Send(CN_GBda, canal::BT_NONE, &Bda20, sizeof(Bda));
+            cn->Send(CN_GBda, Canal::BT_NONE, &Bda20, sizeof(Bda));
             while (cn->Busy)
                 QCoreApplication::processEvents(QEventLoop::AllEvents);
-            if (cn->result == CN_OK)
+            if (cn->result == NOERROR)
                 CheckAndShowTune20(ChNum);
             else
             {
@@ -213,10 +213,10 @@ bool a_tunedialog::tune(int Type, int ChNum)
                                      "5 В на всех\nвходах модуля и нажмите OK")\
                 == QMessageBox::Ok)
         {
-            cn->Send(CN_GBda, canal::BT_NONE, &Bda5, sizeof(Bda));
+            cn->Send(CN_GBda, Canal::BT_NONE, &Bda5, sizeof(Bda));
             while (cn->Busy)
                 QCoreApplication::processEvents(QEventLoop::AllEvents);
-            if (cn->result == CN_OK)
+            if (cn->result == NOERROR)
                 CheckAndShowTune5(ChNum);
             else
             {
@@ -430,10 +430,10 @@ void a_tunedialog::RefreshTuneCoefs()
 
 void a_tunedialog::ReadTuneCoefs()
 {
-    cn->Send(CN_GBac, canal::BT_NONE, &Bac_block, sizeof(Bac_block));
+    cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
+    if (cn->result == NOERROR)
         RefreshTuneFields();
 }
 
@@ -442,10 +442,10 @@ void a_tunedialog::WriteTuneCoefs()
     RefreshTuneCoefs(); // принудительно читаем коэффициенты из полей ввода в структуру
     if (CheckTuneCoefs())
     {
-        cn->Send(CN_WBac, canal::BT_NONE, &Bac_block, sizeof(Bac_block));
+        cn->Send(CN_WBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
         while (cn->Busy)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
-        if (cn->result == CN_OK)
+        if (cn->result == NOERROR)
             QMessageBox::information(this,"Успешно!","Записано успешно!");
         else
             return;

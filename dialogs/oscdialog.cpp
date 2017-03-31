@@ -55,16 +55,16 @@ void oscdialog::GetOscInfo()
         delete OscInfo;
     OscInfo = new QByteArray;
     OscInfo->resize(MAXOSCBUFSIZE);
-    cn->Send(CN_GNosc,canal::BT_NONE,&(OscInfo->data()[0]));
+    cn->Send(CN_GBo,Canal::BT_NONE,&(OscInfo->data()[0]));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
+    if (cn->result == NOERROR)
         ProcessOscInfo();
 }
 
 void oscdialog::ProcessOscInfo()
 {
-    QList<QStringList> lsl;
+/*    QList<QStringList> lsl;
     tm->ClearModel();
     tm->addColumn("#");
     tm->addColumn("Канал");
@@ -111,7 +111,7 @@ void oscdialog::ProcessOscInfo()
     connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(GetOsc(QModelIndex)));
     tv->setItemDelegateForColumn(2,dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
     tv->resizeRowsToContents();
-    tv->resizeColumnsToContents();
+    tv->resizeColumnsToContents(); */
 }
 
 void oscdialog::EndExtractOsc()
@@ -287,10 +287,10 @@ void oscdialog::GetOsc(QModelIndex idx)
     GivenFilename.replace(":","_");
     GivenFilename.insert(0, " ");
     GivenFilename.insert(0, QString::number(oscnum));
-    cn->Send(CN_GBosc,canal::BT_NONE,OscInfo->data(),0,oscnum);
+    cn->Send(CN_GF,Canal::BT_NONE,OscInfo->data(),0,oscnum);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
+    if (cn->result == NOERROR)
         EndExtractOsc();
 }
 
@@ -300,7 +300,7 @@ void oscdialog::EraseOsc()
     cn->Send(CN_OscEr);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
+    if (cn->result == NOERROR)
         MessageBox2::information(this, "Внимание", "Стёрто успешно");
     else
         MessageBox2::information(this, "Внимание", "Ошибка при стирании");

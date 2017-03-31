@@ -454,10 +454,10 @@ void confdialog_21::SetRange(int Range, int ChNum)
 
 void confdialog_21::GetBci()
 {
-    cn->Send(CN_GF,canal::BT_NONE,NULL,0,1,aconf->Config);
+    cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,aconf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
+    if (cn->result == NOERROR)
         FillConfData();
 }
 
@@ -908,23 +908,23 @@ void confdialog_21::WriteConfDataToModule()
         ERMSG("В конфигурации есть ошибки. Проверьте и исправьте");
         return;
     }
-    cn->Send(CN_WF, canal::BT_NONE, &aconf->Bci_block, sizeof(aconf->Bci_block), 2, aconf->Config);
+    cn->Send(CN_WF, Canal::BT_NONE, &aconf->Bci_block, sizeof(aconf->Bci_block), 2, aconf->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
+    if (cn->result == NOERROR)
         MessageBox2::information(this, "Внимание", "Операция проведена успешно!");
 }
 
 void confdialog_21::SetNewConf()
 {
-    cn->Send(CN_Cnc);
+/*    cn->Send(CN_Cnc);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == CN_OK)
+    if (cn->result == NOERROR)
     {
         emit BsiIsNeedToBeAcquiredAndChecked();
         MessageBox2::information(this, "Внимание", "Переход прошёл успешно!");
-    }
+    } */
 }
 
 void confdialog_21::SetDefConf()

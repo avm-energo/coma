@@ -30,6 +30,20 @@
 // определение ошибок
 #define NOERROR             0 // нет ошибок
 
+#define USB_COMER           1 // USB: Ошибка открытия COM-порта
+#define USB_NOCOMER         2 // USB: В системе нет COM-портов
+#define USB_MODSEGER        3 // USB: Ошибка при приёме сегмента данных на стороне модуля
+#define USB_READER          4 // USB: Ошибка при приёме данных
+#define USB_READTIMEOUTER   5 // USB: Произошло превышение времени ожидания при приёме данных
+#define USB_READWRLENER     6 // USB: Некорректная длина принятого блока
+#define USB_WRONGCOMER      7 // USB: Неизвестная команда
+// ошибки разбора S2
+#define S2_SIZEERROR        8 // ошибка длины при работе с форматом S2
+#define S2_DESCERROR        9 // несовпадение описания прочитанного элемента с ожидаемым при работе с форматом S2
+#define S2_CRCERROR         10 // несовпадение контрольной суммы при работе с форматом S2
+#define S2_DHSZERROR        11 // некорректная длина в FileHeader при разборе формата S2
+#define S2_NOIDS            13 // не найдено ни одного элемента с заданным ID
+
 // ошибки IP-сокета
 #define SKT_UNKNOWNER       24 // неизвестная ошибка
 #define SKT_REFUSEDER       25 // тайм-аут при открытии сокета
@@ -114,13 +128,6 @@
 #define HTH_REL             0x00000008 // неисправность выходных реле (Д)
 #define HTH_TUPP            0x00000004 // перегрев модуля
 
-// ошибки разбора S2
-#define S2_SIZEERROR      8 // ошибка длины при работе с форматом S2
-#define S2_DESCERROR      9 // несовпадение описания прочитанного элемента с ожидаемым при работе с форматом S2
-#define S2_CRCERROR       10 // несовпадение контрольной суммы при работе с форматом S2
-#define S2_DHSZERROR      11 // некорректная длина в FileHeader при разборе формата S2
-#define S2_NOIDS          13 // не найдено ни одного элемента с заданным ID
-
 // ошибки модулей
 #define ER_OK               0
 #define ER_FILEOPENERROR    15 // ошибка при открытии файла
@@ -151,9 +158,12 @@
 #define FLOAT_THRESHOLD 0.1
 #define ANMEASINT   2000
 
-#include <QtSerialPort/QSerialPort>
+#define LOGFILE     "coma.log"
+
+//#include <QtSerialPort/QSerialPort>
 #include <QStringList>
-#include <QMap>
+//#include <QMap>
+#include "config/config.h"
 
 class publicclass
 {
@@ -230,10 +240,12 @@ public:
         ER_ECHECK
     };
 
-    QSerialPort serial;
+//    QSerialPort serial;
 //    qint32 MType, MType1, SerNum;
 //    quint32 CpuIdHigh, CpuIdMid, CpuIdLow, Health;
 
+    QString HomeDir;
+    Bhb_Main BoardBBhb, BoardMBhb;
     QStringList AMTypes, DMTypes, EMTypes;
     quint16 MIPASDU;
     QString MIPIP;
@@ -273,6 +285,7 @@ public:
     quint32 getTime32();
     QString NsTimeToString (quint64 nstime);
     void AddErrMsg(ermsgtype msgtype, QString file=0, int line=0, QString msg="");
+    void ErMsg(int ermsgnum);
     QByteArray LoadFile(QString mask);
     int SaveFile (QString mask, void *src, unsigned int numbytes);
     bool FloatInRange(float var, float value);

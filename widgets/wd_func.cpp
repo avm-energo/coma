@@ -1,55 +1,34 @@
 #include "wd_func.h"
-#include "s_tqlineedit.h"
-#include "s_tqlabel.h"
-#include "s_tqchoosewidget.h"
 #include "s_tqcombobox.h"
 #include "s_tqspinbox.h"
-#include "treeview.h"
 #include "s_tqcheckbox.h"
-#include "s_tqtextedit.h"
+#include "s_tqtableview.h"
 #include <QPalette>
+#include <QTextEdit>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QRegExp>
+#include <QLineEdit>
 
-bool WDFunc::SetCWData(QWidget *w, const QString &cwname, const QString &cwvalue)
+bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring)
 {
-    s_tqChooseWidget *cw = w->findChild<s_tqChooseWidget *>(cwname);
-    if (cw == 0)
-        return false;
-    cw->SetValue(cwvalue);
-    return true;
-}
-
-bool WDFunc::SetCWColor(QWidget *w, const QString &cwname, const QColor &color)
-{
-    s_tqChooseWidget *cw = w->findChild<s_tqChooseWidget *>(cwname);
-    if (cw == 0)
-        return false;
-    // http://forum.sources.ru/index.php?showtopic=313950
-    QPalette pal = cw->palette();
-    pal.setColor(QPalette::Window, color);
-    cw->setPalette(pal);
-    return true;
-}
-
-QString WDFunc::CWData(QWidget *w, const QString &cwname)
-{
-    s_tqChooseWidget *cw = w->findChild<s_tqChooseWidget *>(cwname);
-    if (cw == 0)
-        return QString();
-    return cw->Value();
-}
-
-bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue)
-{
-    s_tqLineEdit *le = w->findChild<s_tqLineEdit *>(lename);
+    QLineEdit *le = w->findChild<QLineEdit *>(lename);
     if (le == 0)
         return false;
     le->setText(levalue);
+    if (!restring.isEmpty())
+    {
+        QRegExp re;
+        re.setPattern(restring);
+        QValidator *val = new QRegExpValidator(re);
+        le->setValidator(val);
+    }
     return true;
 }
 
 bool WDFunc::SetLEColor(QWidget *w, const QString &lename, const QColor &color)
 {
-    s_tqLineEdit *le = w->findChild<s_tqLineEdit *>(lename);
+    QLineEdit *le = w->findChild<QLineEdit *>(lename);
     if (le == 0)
         return false;
     // http://forum.sources.ru/index.php?showtopic=313950
@@ -61,7 +40,7 @@ bool WDFunc::SetLEColor(QWidget *w, const QString &lename, const QColor &color)
 
 bool WDFunc::LEData(QWidget *w, const QString &lename, QString &levalue)
 {
-    s_tqLineEdit *le = w->findChild<s_tqLineEdit *>(lename);
+    QLineEdit *le = w->findChild<QLineEdit *>(lename);
     if (le == 0)
         return false;
     levalue = le->text();
@@ -70,16 +49,25 @@ bool WDFunc::LEData(QWidget *w, const QString &lename, QString &levalue)
 
 bool WDFunc::SetTEData(QWidget *w, const QString &tename, const QString &tetext)
 {
-    s_tqTextEdit *te = w->findChild<s_tqTextEdit *>(tename);
+    QTextEdit *te = w->findChild<QTextEdit *>(tename);
     if (te == 0)
         return false;
     te->setText(tetext);
     return true;
 }
 
+bool WDFunc::AppendTEData(QWidget *w, const QString &tename, const QString &tetext)
+{
+    QTextEdit *te = w->findChild<QTextEdit *>(tename);
+    if (te == 0)
+        return false;
+    te->append(tetext);
+    return true;
+}
+
 bool WDFunc::TEData(QWidget *w, const QString &tename, QString &tevalue)
 {
-    s_tqTextEdit *te = w->findChild<s_tqTextEdit *>(tename);
+    QTextEdit *te = w->findChild<QTextEdit *>(tename);
     if (te == 0)
         return false;
     tevalue = te->toPlainText();
@@ -124,25 +112,27 @@ bool WDFunc::SetSPBData(QWidget *w, const QString &spbname, const double &spbval
 
 bool WDFunc::SetLBLImage(QWidget *w, const QString &lblname, QPixmap *pm)
 {
-    s_tqLabel *lbl = w->findChild<s_tqLabel *>(lblname);
+    QLabel *lbl = w->findChild<QLabel *>(lblname);
     if (lbl == 0)
         return false;
     lbl->setPixmap(*pm);
     return true;
 }
 
-bool WDFunc::SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext)
+bool WDFunc::SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext, bool enabled)
 {
-    s_tqLabel *lbl = w->findChild<s_tqLabel *>(lblname);
+    QLabel *lbl = w->findChild<QLabel *>(lblname);
     if (lbl == 0)
         return false;
-    lbl->setText(lbltext);
+    if (!lbltext.isEmpty()) // if label text is empty save previous text in QLabel
+        lbl->setText(lbltext);
+    lbl->setEnabled(enabled);
     return true;
 }
 
 QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid)
 {
-    TreeView *tv = w->findChild<TreeView *>(tvname);
+    s_tqTableView *tv = w->findChild<s_tqTableView *>(tvname);
     if (tv == 0)
         return QString();
     QString tmps = tv->model()->data(tv->model()->index(tv->currentIndex().row(),column,QModelIndex()),Qt::DisplayRole).toString();
@@ -162,7 +152,7 @@ QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid
 
 void WDFunc::TVAutoResize(QWidget *w, const QString &tvname)
 {
-    TreeView *tv = w->findChild<TreeView *>(tvname);
+    s_tqTableView *tv = w->findChild<s_tqTableView *>(tvname);
     if (tv == 0)
         return;
     tv->resizeColumnsToContents();
@@ -185,4 +175,17 @@ bool WDFunc::SetChBData(QWidget *w, const QString &chbname, bool data)
         return false;
     chb->setChecked(data);
     return true;
+}
+
+void WDFunc::AddLabelAndLineedit(QLayout *lyout, QString caption, QString lename, bool enabled)
+{
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QLabel *lbl = new QLabel(caption);
+    hlyout->addWidget(lbl);
+    QLineEdit *le = new QLineEdit("");
+    le->setObjectName(lename);
+    le->setEnabled(enabled);
+    hlyout->addWidget(le);
+    QVBoxLayout *vlyout = static_cast<QVBoxLayout *>(lyout);
+    vlyout->addLayout(hlyout);
 }

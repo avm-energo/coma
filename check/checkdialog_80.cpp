@@ -281,7 +281,7 @@ void e_checkdialog::Check1PPS()
 void e_checkdialog::GetIP()
 {
     connect(cn,SIGNAL(sendend()),this,SLOT(CheckIP()));
-    cn->Send(CN_Gip, canal::BT_NONE, &Bip_block, sizeof(Bip));
+    cn->Send(CN_IP, Canal::BT_NONE, &Bip_block, sizeof(Bip));
 }
 
 void e_checkdialog::CheckIP()
@@ -427,10 +427,10 @@ void e_checkdialog::StartAnalogMeasurementsToFile()
 void e_checkdialog::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBdi, canal::BT_NONE, &Bda_block, sizeof(Bda_block));
+    cn->Send(CN_GBd, Canal::BT_NONE, &Bda_block, sizeof(Bda_block));
     while (cn->Busy)
         qApp->processEvents();
-    if (cn->result != CN_OK)
+    if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");
         return;
