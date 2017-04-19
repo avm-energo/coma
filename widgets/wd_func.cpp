@@ -189,3 +189,14 @@ void WDFunc::AddLabelAndLineedit(QLayout *lyout, QString caption, QString lename
     QVBoxLayout *vlyout = static_cast<QVBoxLayout *>(lyout);
     vlyout->addLayout(hlyout);
 }
+
+void WDFunc::AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lename, bool enabled)
+{
+    QHBoxLayout *hlyout = static_cast<QHBoxLayout *>(lyout);
+    QLabel *lbl = new QLabel(caption);
+    hlyout->addWidget(lbl,1);
+    QLineEdit *le = new QLineEdit("");
+    le->setObjectName(lename);
+    le->setEnabled(enabled);
+    hlyout->addWidget(le,1);
+}

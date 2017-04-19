@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QByteArray>
-#include <QThread>
 #include <QTimer>
 #include <QLabel>
 #include <QMutex>
@@ -72,6 +71,7 @@ public:
     int ernum;
     bool FirstRun;
     bool NeedToSend, Busy, NeedToFinish;
+    bool Connected;
 
     bool Connect();
     void Disconnect();
@@ -81,6 +81,7 @@ signals:
     void writedatalength(quint32);
     void writedatapos(quint32);
     void bytesreceived(quint32);
+    void incomingdatalength(quint32);
     void readbytessignal(QByteArray);
     void writebytessignal(QByteArray);
     void sendend();
@@ -121,7 +122,7 @@ private:
     bool InitializePort(QSerialPortInfo &pinfo, int baud);
     void ClosePort();
     void InitiateSend();
-    bool WriteDataToPort(QByteArray &ba);
+    void WriteDataToPort(QByteArray &ba);
     void ParseIncomeData(QByteArray &ba);
     void Finish(int ernum);
     void SetWRSegNum();

@@ -35,9 +35,6 @@
 #include <QFont>
 #include <QTextEdit>
 #include <QToolBar>
-#include <QThread>
-//#include <QInputDialog>
-//#include <QRegExp>
 #include <QSettings>
 #include <QDialog>
 #include <QSizePolicy>
@@ -73,6 +70,7 @@ Coma::Coma(QWidget *parent)
 
 Coma::~Coma()
 {
+    cn->Disconnect();
     SaveSettings();
 }
 
@@ -173,16 +171,17 @@ void Coma::SetupUI()
     SlideWidget->setStyleSheet("QWidget {background-color: rgba(110,234,145,255);}");
     QVBoxLayout *slyout = new QVBoxLayout;
 
-    AddLabelAndLineedit(slyout, "Модуль АВТУК-", "mtypele");
-    AddLabelAndLineedit(slyout, "Аппаратная версия базовой платы:", "hwverble");
-    AddLabelAndLineedit(slyout, "Аппаратная версия мезонинной платы:", "hwvermle");
-    AddLabelAndLineedit(slyout, "Серийный номер базовой платы:", "snble");
-    AddLabelAndLineedit(slyout, "Серийный номер мезонинной платы:", "snmle");
-    AddLabelAndLineedit(slyout, "Версия ПО:", "fwverle");
-    AddLabelAndLineedit(slyout, "КС конфигурации:", "cfcrcle");
-    AddLabelAndLineedit(slyout, "Последний сброс:", "rstle");
-    AddLabelAndLineedit(slyout, "Количество сбросов:", "rstcountle");
-    AddLabelAndLineedit(slyout, "ИД процессора:", "cpuidle");
+    WDFunc::AddLabelAndLineedit(slyout, "Модуль АВТУК-", "mtypele");
+    WDFunc::AddLabelAndLineedit(slyout, "Аппаратная версия базовой платы:", "hwverble");
+    WDFunc::AddLabelAndLineedit(slyout, "Аппаратная версия мезонинной платы:", "hwvermle");
+    WDFunc::AddLabelAndLineedit(slyout, "Серийный номер модуля:", "snle");
+    WDFunc::AddLabelAndLineedit(slyout, "Серийный номер базовой платы:", "snble");
+    WDFunc::AddLabelAndLineedit(slyout, "Серийный номер мезонинной платы:", "snmle");
+    WDFunc::AddLabelAndLineedit(slyout, "Версия ПО:", "fwverle");
+    WDFunc::AddLabelAndLineedit(slyout, "КС конфигурации:", "cfcrcle");
+    WDFunc::AddLabelAndLineedit(slyout, "Последний сброс:", "rstle");
+    WDFunc::AddLabelAndLineedit(slyout, "Количество сбросов:", "rstcountle");
+    WDFunc::AddLabelAndLineedit(slyout, "ИД процессора:", "cpuidle", true);
     QTextEdit *MainTE = new QTextEdit;
     MainTE->setObjectName("mainte");
     slyout->addWidget(MainTE, 40);
@@ -237,7 +236,7 @@ void Coma::SetupMenubar()
     WriteSNAction = new QAction(this);
     WriteSNAction->setText("Запись Hidden Block");
     WriteSNAction->setEnabled(false);
-    connect(WriteSNAction,SIGNAL(triggered()),this,SLOT(WriteSN()));
+    connect(WriteSNAction,SIGNAL(triggered()),this,SLOT(OpenBhbDialog()));
     menu->addAction(WriteSNAction);
     MainMenuBar->addMenu(menu);
 
@@ -282,27 +281,11 @@ void Coma::SaveSettings()
     sets->setValue("ShowErrWindow", pc.ShowErrWindow);
 }
 
-void Coma::AddLabelAndLineedit(QVBoxLayout *lyout, QString caption, QString lename)
-{
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QLabel *lbl = new QLabel(caption);
-    hlyout->addWidget(lbl);
-    QLineEdit *le = new QLineEdit("");
-    le->setObjectName(lename);
-    le->setEnabled(false);
-    hlyout->addWidget(le);
-    lyout->addLayout(hlyout);
-}
-
 void Coma::PrepareTimers()
 {
     QTimer *MouseTimer = new QTimer;
     connect(MouseTimer,SIGNAL(timeout()),this,SLOT(MouseMove()));
     MouseTimer->start(50);
-    QTimer *ErrorProtocolUpdateTimer = new QTimer;
-    ErrorProtocolUpdateTimer->setInterval(1000);
-    connect(ErrorProtocolUpdateTimer,SIGNAL(timeout()),this,SLOT(UpdateErrorProtocol()));
-    ErrorProtocolUpdateTimer->start();
 }
 
 void Coma::Stage1()
@@ -398,19 +381,20 @@ void Coma::SetPort(QString str)
 
 void Coma::Stage2()
 {
-    if (GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
-        Stage1();
-    CopyBhbFromBsi();
-    if ((pc.ModuleBsi.SerialNumB == 0xFFFFFFFF) || ((pc.ModuleBsi.SerialNumM == 0xFFFFFFFF) && (pc.ModuleBsi.MTypeM != MTM_00)) || \
-            (pc.ModuleBsi.SerialNum == 0xFFFFFFFF)) // серийный номер не задан, выдадим предупреждение
+    if (CN_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
     {
-        HiddenDialog *dlg = new HiddenDialog(HiddenDialog::BYMY);
-        connect(dlg,SIGNAL(accepted()),this,SLOT(SendBhb()));
-        dlg->exec();
+        cn->Disconnect();
+        Stage1();
     }
+    CopyBhbFromBsi();
     pc.ModuleTypeString = "АВ-ТУК-";
     pc.ModuleTypeString.append(QString::number(pc.ModuleBsi.MTypeB, 16));
-    pc.ModuleTypeString.append(QString::number(pc.ModuleBsi.MTypeM, 16));
+    QString tmps = QString::number(pc.ModuleBsi.MTypeM, 16);
+    tmps.truncate(8);
+    pc.ModuleTypeString.append(tmps);
+    if ((pc.ModuleBsi.SerialNumB == 0xFFFFFFFF) || ((pc.ModuleBsi.SerialNumM == 0xFFFFFFFF) && (pc.ModuleBsi.MTypeM != MTM_00)) || \
+            (pc.ModuleBsi.SerialNum == 0xFFFFFFFF)) // серийный номер не задан, выдадим предупреждение
+        OpenBhbDialog();
     FillBsi();
     Stage3();
 }
@@ -420,16 +404,17 @@ void Coma::CopyBhbFromBsi()
     pc.BoardBBhb.HWVer = pc.ModuleBsi.HwverB;
     pc.BoardBBhb.ModSerialNum = pc.ModuleBsi.SerialNum;
     pc.BoardBBhb.SerialNum = pc.ModuleBsi.SerialNumB;
-    pc.BoardBBhb.SWVer = pc.ModuleBsi.Fwver;
+    pc.BoardBBhb.MType = pc.ModuleBsi.MTypeB;
+    pc.BoardMBhb.MType = pc.ModuleBsi.MTypeM;
     pc.BoardMBhb.HWVer = pc.ModuleBsi.HwverM;
     pc.BoardMBhb.SerialNum = pc.ModuleBsi.SerialNumM;
-    pc.BoardMBhb.ModSerialNum = pc.BoardMBhb.SWVer = 0xFFFFFFFF;
+    pc.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
 }
 
 void Coma::FillBsi()
 {
     WDFunc::SetLEData(this, "mtypele", pc.ModuleTypeString);
-    WDFunc::SetLEData(this, "hwverle", pc.VerToStr(pc.ModuleBsi.HwverB));
+    WDFunc::SetLEData(this, "hwverble", pc.VerToStr(pc.ModuleBsi.HwverB));
     WDFunc::SetLEData(this, "hwvermle", pc.VerToStr(pc.ModuleBsi.HwverM));
     WDFunc::SetLEData(this, "fwverle", pc.VerToStr(pc.ModuleBsi.Fwver));
     WDFunc::SetLEData(this, "cfcrcle", "0x"+QString::number(static_cast<uint>(pc.ModuleBsi.Cfcrc), 16));
@@ -450,13 +435,14 @@ void Coma::FillBsi()
     WDFunc::SetLEData(this, "rstcountle", QString::number(pc.ModuleBsi.RstCount, 16));
     WDFunc::SetLEData(this, "cpuidle", QString::number(pc.ModuleBsi.UIDHigh, 16)+QString::number(pc.ModuleBsi.UIDMid, 16)+QString::number(pc.ModuleBsi.UIDLow, 16));
     WDFunc::SetLEData(this, "snle", QString::number(pc.ModuleBsi.SerialNum, 16));
+    WDFunc::SetLEData(this, "snble", QString::number(pc.ModuleBsi.SerialNumB, 16));
     WDFunc::SetLEData(this, "snmle", QString::number(pc.ModuleBsi.SerialNumM, 16));
 }
 
 void Coma::ClearBsi()
 {
     WDFunc::SetLEData(this, "mtypele", "");
-    WDFunc::SetLEData(this, "hwverle", "");
+    WDFunc::SetLEData(this, "hwverble", "");
     WDFunc::SetLEData(this, "hwvermle", "");
     WDFunc::SetLEData(this, "fwverle", "");
     WDFunc::SetLEData(this, "cfcrcle", "");
@@ -477,6 +463,18 @@ void Coma::ClearBsi()
     WDFunc::SetLEData(this, "cpuidle", "");
     WDFunc::SetLEData(this, "snle", "");
     WDFunc::SetLEData(this, "snmle", "");
+}
+
+void Coma::OpenBhbDialog()
+{
+    HiddenDialog *dlg = new HiddenDialog(HiddenDialog::BYMY);
+    connect(dlg,SIGNAL(accepted()),this,SLOT(SendBhb()));
+    dlg->exec();
+    if (CN_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
+    {
+        cn->Disconnect();
+        Stage1();
+    }
 }
 
 void Coma::SendBhb()
@@ -694,9 +692,6 @@ void Coma::StartSettingsDialog()
 {
     SettingsDialog *dlg = new SettingsDialog;
     dlg->exec();
-    if (ERTimer->isActive())
-        ERTimer->stop();
-    ERTimer->setInterval(pc.ErrWindowDelay*1000);
 }
 
 void Coma::UpdateMainTE104(QByteArray ba)
@@ -803,8 +798,8 @@ void Coma::ShowOrHideSlideSW()
         w->setGeometry(SWGeometry);
     QPropertyAnimation *ani = new QPropertyAnimation(w, "geometry");
     ani->setDuration(500);
-    QRect startRect(width(), 0, 0, height());
-    QRect endRect(width() - w->width(), 0, w->width(), height());
+    QRect startRect(width(), 30, 0, height()-30);
+    QRect endRect(width() - w->width(), 30, w->width(), height()-30);
     if (SWHide)
     {
         ani->setStartValue(startRect);

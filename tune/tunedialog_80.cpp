@@ -9,7 +9,6 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QInputDialog>
-#include <QThread>
 #include <QCoreApplication>
 #include "tunedialog_80.h"
 #include "../publicclass.h"

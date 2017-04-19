@@ -91,6 +91,7 @@ publicclass::publicclass()
     AMTypes.append("И");
     AMTypes.append("С");
     ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
+    log.Init(LOGFILE);
 
     QFile file;
     QString ermsgspath = pc.HomeDir + "/" + ermsgpath;
@@ -381,8 +382,6 @@ void publicclass::AddErrMsg(ermsgtype msgtype, QString file, int line, QString m
         }
         msg = prefix+"в файле " + tmpm.file + " строка " + QString::number(tmpm.line);
     }
-    Log log;
-    log.Init(LOGFILE);
     if ((msgtype == ER_MSG) || (msgtype == DBG_MSG))
         log.error("file: "+tmpm.file+", line: "+QString::number(tmpm.line)+": "+msg);
     else if (msgtype == WARN_MSG)

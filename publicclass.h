@@ -164,6 +164,7 @@
 #include <QStringList>
 //#include <QMap>
 #include "config/config.h"
+#include "log.h"
 
 class publicclass
 {
@@ -195,10 +196,8 @@ public:
         qint32 MTypeM;
         qint32 HwverB;
         qint32 Fwver;
-        qint32 Cfcrc;
         qint32 Rst;
         qint32 RstCount;
-        qint32 Hth;
         qint32 UIDLow;
         qint32 UIDMid;
         qint32 UIDHigh;
@@ -206,6 +205,8 @@ public:
         qint32 SerialNumM;
         qint32 HwverM;
         qint32 SerialNum;
+        qint32 Cfcrc;
+        qint32 Hth;
     } Bsi;
 
     enum ermsgtype
@@ -244,6 +245,7 @@ public:
 //    qint32 MType, MType1, SerNum;
 //    quint32 CpuIdHigh, CpuIdMid, CpuIdLow, Health;
 
+    Log log;
     QString HomeDir;
     Bhb_Main BoardBBhb, BoardMBhb;
     QStringList AMTypes, DMTypes, EMTypes;

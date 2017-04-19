@@ -30,6 +30,8 @@ private:
     void Fill();
     void SetVersion(quint32 number, QString lename);
     void GetVersion(quint32 &number, QString lename);
+    void ToHex(quint32 dec);
+    void ToDec(quint32 hex);
 
 private slots:
     void AcceptChanges();

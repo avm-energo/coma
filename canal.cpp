@@ -18,6 +18,7 @@ Canal::Canal(QObject *parent) : QObject(parent)
     FirstRun = true;
     FirstSegment = true;
     OscNum = 0;
+    Connected = false;
     TTimer = new QTimer(this);
     TTimer->setInterval(CN_TIMEOUT);
     NeedToSend = false;
@@ -60,7 +61,7 @@ void Canal::InitiateSend()
     case CN_OscEr:  // команда стирания осциллограмм
     case CN_OscPg:  // запрос количества нестёртых страниц
     {
-        WriteData.resize(4);
+//        WriteData.resize(4);
         WriteData.append(CN_MS);
         WriteData.append(cmd);
         AppendSize(WriteData, 0);
@@ -71,12 +72,13 @@ void Canal::InitiateSend()
     case CN_GBda:   // чтение текущих данных без настройки
     case CN_GBd:    // запрос блока (подблока) текущих данных
     {
-        WriteData.resize(5);
+//        WriteData.resize(5);
         WriteData.append(CN_MS);
         WriteData.append(cmd);
         AppendSize(WriteData, 1);
         WriteData.append(BoardType);
         WriteDataToPort(WriteData);
+        break;
     }
     case CN_GF:     // запрос файла
     {
@@ -86,7 +88,7 @@ void Canal::InitiateSend()
             Finish(CN_NULLDATAERROR);
             break;
         }
-        WriteData.resize(6);
+//        WriteData.resize(6);
         WriteData.append(CN_MS);
         WriteData.append(cmd);
         AppendSize(WriteData, 2);
@@ -98,11 +100,12 @@ void Canal::InitiateSend()
     }
     case CN_WHv:
     {
-        WriteData.resize(5+sizeof(Bhb_Main));
+//        WriteData.resize(5+sizeof(Bhb_Main));
         WriteData.append(CN_MS);
         WriteData.append(cmd);
-        AppendSize(WriteData, 5); // BoardType, HiddenBlock
+        AppendSize(WriteData, 17); // BoardType(1), HiddenBlock(16)
         WriteData.append(BoardType);
+        WriteData.resize(WriteData.size()+sizeof(Bhb_Main));
         memcpy(&(WriteData.data()[5]), &outdata[0], sizeof(Bhb_Main));
         WriteDataToPort(WriteData);
         break;
@@ -112,10 +115,11 @@ void Canal::InitiateSend()
 //        qDebug() << "cn1";
         if (DR == NULL)
             Finish(CN_NULLDATAERROR);
-        WriteData.resize(CN_MAXFILESIZE);
+//        WriteData.resize(CN_MAXFILESIZE);
         WriteData.append(CN_MS);
         WriteData.append(cmd);
         AppendSize(WriteData, 0); // временно записываем нулевую длину, впоследствии поменяем
+        WriteData.resize(CN_MAXFILESIZE);
         pc.StoreDataMem(&(WriteData.data()[4]), DR, fnum);
 //        qDebug() << "cn1_5";
         // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
@@ -125,7 +129,7 @@ void Canal::InitiateSend()
         WRLength += static_cast<quint8>(WriteData.at(8));
         WRLength += sizeof(publicclass::FileHeader); // sizeof(FileHeader)
         WRLength += 4; // + 4 bytes prefix
-        WriteData.resize(WRLength);
+//        WriteData.resize(WRLength);
 //        qDebug() << "cn1_7";
         emit writedatalength(WRLength); // сигнал для прогрессбара
         FirstSegment = true;
@@ -139,7 +143,7 @@ void Canal::InitiateSend()
     {
 //        qDebug() << "cnWsn_1";
         WRLength = outdatasize+5;
-        WriteData.resize(WRLength); // MS, c, L, L, B
+//        WriteData.resize(WRLength); // MS, c, L, L, B
         WriteData.append(CN_MS);
         WriteData.append(cmd);
         AppendSize(WriteData, 0); // временно записываем нулевую длину, впоследствии поменяем
@@ -179,7 +183,7 @@ void Canal::ParseIncomeData(QByteArray &ba)
         if (RDSize < 5) // некорректная посылка
             Finish(CN_RCVDATAERROR);
         else
-            Finish(USO_NOERR + ReadData.at(4));
+            Finish(USO_NOERR + ReadDataChunk.at(4));
         return;
     }
     if (ReadDataChunk.at(0) != CN_SS)
@@ -245,7 +249,9 @@ void Canal::ParseIncomeData(QByteArray &ba)
                 Finish(CN_RCVDATAERROR);
                 return;
             }
+            emit incomingdatalength(RDLength);
             ReadDataChunk.remove(0, 4); // убираем заголовок с < и длиной
+            RDSize -= 4;
             if (cmd == CN_GF) // надо проверить, тот ли номер файла принимаем
             {
                 if (RDSize < 6) // не пришёл ещё номер файла
@@ -356,7 +362,7 @@ bool Canal::GetLength(bool ok)
         if (ok)
         {
             if ((ReadDataChunk.at(1) == CN_ResOk) && (ReadDataChunk.at(2) == 0x00) && (ReadDataChunk.at(3) == 0x00))
-                return 0;
+                return true;
             else
                 return false;
         }
@@ -424,14 +430,14 @@ void Canal::WRCheckForNextSegment()
 
 void Canal::SendOk(bool cont)
 {
-    WriteData.clear();
+    QByteArray tmpba;
     if (cont)
-        WriteData.append(CN_MS3);
+        tmpba.append(CN_MS3);
     else
-        WriteData.append(CN_MS);
-    WriteData.append(CN_ResOk);
-    AppendSize(WriteData, 0);
-    WriteDataToPort(WriteData); // отправляем "ОК" и переходим к следующему сегменту
+        tmpba.append(CN_MS);
+    tmpba.append(CN_ResOk);
+    AppendSize(tmpba, 0);
+    WriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
 }
 
 void Canal::AppendSize(QByteArray &ba, quint16 size)
@@ -454,7 +460,7 @@ void Canal::SendErr()
 
 void Canal::Timeout()
 {
-    Finish(CN_TIMEOUT);
+    Finish(USO_TIMEOUTER);
     emit sendend();
 }
 
@@ -505,6 +511,7 @@ bool Canal::InitializePort(QSerialPortInfo &pinfo, int baud)
     port->setFlowControl(QSerialPort::NoFlowControl);
     port->setStopBits(QSerialPort::OneStop);
     connect(port,SIGNAL(readyRead()),this,SLOT(CheckForData()));
+    Connected = true;
     return true;
 }
 
@@ -512,20 +519,9 @@ void Canal::ClosePort()
 {
     try
     {
-        port->close();
-        QTimer *tmr = new QTimer;
-        tmr->setInterval(CN_TIMEOUT);
-        connect(tmr,SIGNAL(timeout()),this,SLOT(PortCloseTimeout()));
-        PortCloseTimeoutSet = false;
-        tmr->start();
-        while ((port->isOpen() && (!PortCloseTimeoutSet)))
-        {
-            QTime tme;
-            tme.start();
-            while (tme.elapsed() < CN_MAINLOOP_DELAY)
-                qApp->processEvents();
-        }
-        delete port;
+        Connected = false;
+        if (port->isOpen())
+            port->close();
     }
     catch(...)
     {
@@ -546,6 +542,7 @@ void Canal::Error(QSerialPort::SerialPortError err)
         return;
     quint16 ernum = err + COM_ERROR;
     pc.ErMsg(ernum);
+    Disconnect();
 }
 
 void Canal::PortCloseTimeout()
@@ -553,24 +550,32 @@ void Canal::PortCloseTimeout()
     PortCloseTimeoutSet = true;
 }
 
-bool Canal::WriteDataToPort(QByteArray &ba)
+void Canal::WriteDataToPort(QByteArray &ba)
 {
-    if (cmd == CN_Unk) // игнорируем вызовы процедуры без команды
-        return false;
-    quint64 byteswritten = 0;
-    quint64 basize = ba.size();
-    while ((byteswritten < basize) && (!ba.isEmpty()))
+    if (port->isOpen())
     {
-        qint64 tmpi = port->write(ba);
-        if (tmpi == GENERALERROR)
-            return false;
-        byteswritten += tmpi;
-        emit writebytessignal(ba.left(tmpi));
-        if (tmpi <= ba.size())
-            ba = ba.remove(0, tmpi);
-        else
-            ba.clear();
+        QByteArray tmpba = ba;
+        if (cmd == CN_Unk) // игнорируем вызовы процедуры без команды
+        {
+            pc.ErMsg(USB_WRONGCOMER);
+            return;
+        }
+        quint64 byteswritten = 0;
+        quint64 basize = tmpba.size();
+        while ((byteswritten < basize) && (!tmpba.isEmpty()))
+        {
+            qint64 tmpi = port->write(tmpba);
+            if (tmpi == GENERALERROR)
+            {
+                pc.ErMsg(COM_WRITEER);
+                return;
+            }
+            byteswritten += tmpi;
+            emit writebytessignal(tmpba.left(tmpi));
+            tmpba = tmpba.remove(0, tmpi);
+        }
+        TTimer->start();
     }
-    TTimer->start();
-    return true;
+    else
+        pc.ErMsg(COM_RESER);
 }

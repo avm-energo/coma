@@ -46,6 +46,13 @@
 #define MTM_83      0x83 // 0U6I
 #define MTM_85      0x85 // 3U3I УСК (перегрузка по току 20х)
 
+// определение файлов
+#define FILE_CONF   1 // configuration
+#define FILE_FW     3 // firmware
+#define FILE_CJ     17 // commutation journal
+#define FILE_EJ     18 // events journal (12->62)
+#define FILE_OSC    1000 // oscilloscope info
+
 struct Bci_Main
 {
     quint32 MTypeB;         // Тип базовой платы, для которой предназначена конфигурация
@@ -62,10 +69,10 @@ struct Bci_Main
 
 struct Bhb_Main
 {
-    quint32 ModSerialNum;   // серийный номер модуля целиком
-    quint32 HWVer;          // версия аппаратного обеспечения модуля (платы)
-    quint32 SWVer;          // версия программного обеспечения модуля
+    quint32 MType;          // тип модуля
     quint32 SerialNum;      // серийный номер платы
+    quint32 HWVer;          // версия аппаратного обеспечения модуля (платы)
+    quint32 ModSerialNum;   // серийный номер модуля целиком
 };
 
 #endif // CONFIG

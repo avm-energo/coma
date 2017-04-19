@@ -7,7 +7,6 @@
 #include <QMouseEvent>
 #include <QResizeEvent>
 #include <QAction>
-#include <QThread>
 #include <QVBoxLayout>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtSerialPort/QSerialPort>
@@ -103,10 +102,8 @@ private:
     publicclass::Bsi Bsi_block;
 
     QString ByteToHex(quint8);
-//    void StopThreads();
     void FillBsi();
     void ClearBsi();
-    void AddLabelAndLineedit (QVBoxLayout *lyout, QString caption, QString lename);
     void ShowOrHideSlideSW();
     void UpdateMainTE(QByteArray &ba);
 
@@ -125,6 +122,7 @@ private slots:
     void WriteUpdateMainTE(QByteArray ba);
     void UpdateMainTE104(QByteArray);
     void SetPort(QString str);
+    void OpenBhbDialog();
     void SendBhb();
     void SetMipDlg();
     void MouseMove();

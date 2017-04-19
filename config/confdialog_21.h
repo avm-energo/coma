@@ -58,8 +58,8 @@ private slots:
     void SetIn();
     void SetRangemA();
     void SetRangeV();
-    void Set104();
-    void SetCType(int);
+//    void Set104();
+//    void SetCType(int);
     void SetOscDly(int);
     void GetBci();
     void WriteConfDataToModule();

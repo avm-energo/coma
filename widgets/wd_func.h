@@ -27,6 +27,7 @@ public:
     static bool ChBData(QWidget *w, const QString &chbname, bool &data);
     static bool SetChBData(QWidget *w, const QString &chbname, bool data);
     static void AddLabelAndLineedit(QLayout *lyout, QString caption, QString lename, bool enabled=false);
+    static void AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lename, bool enabled=false);
 };
 
 #endif // WD_FUNC

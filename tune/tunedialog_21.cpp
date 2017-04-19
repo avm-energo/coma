@@ -430,7 +430,7 @@ void a_tunedialog::RefreshTuneCoefs()
 
 void a_tunedialog::ReadTuneCoefs()
 {
-    cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
+    cn->Send(CN_GBac, Canal::BT_BASE, &Bac_block, sizeof(Bac_block));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == NOERROR)

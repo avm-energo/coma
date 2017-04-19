@@ -12,19 +12,26 @@
 HiddenDialog::HiddenDialog(int type, QWidget *parent) :
     QDialog(parent)
 {
+    setAttribute(Qt::WA_DeleteOnClose);
+    setStyleSheet("QDialog {background-color: rgb(0,192,0);}");
     Type = type;
     switch (type)
     {
     case BYMY:
         BGImage=":/BM.png";
+        break;
     case BNMY:
         BGImage=":/BnM.png";
+        break;
     case BYMN:
         BGImage=":/BMn.png";
+        break;
     case BNMN:
         BGImage=":/BnMn.png";
+        break;
     default:
         BGImage="";
+        break;
     }
     SetupUI();
     Fill();
@@ -39,55 +46,63 @@ void HiddenDialog::paintEvent(QPaintEvent *e)
 
 void HiddenDialog::SetupUI()
 {
-    QString tmps = "QMainWindow {background-color: "+QString(MAINWINCLR)+";}";
-    setStyleSheet(tmps);
     setMinimumSize(QSize(800, 600));
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    WDFunc::AddLabelAndLineedit(vlyout, "Серийный номер модуля:", "modsn", true);
-    WDFunc::AddLabelAndLineedit(hlyout, "Версия ПО модуля:", "modswmv", true);
-    WDFunc::AddLabelAndLineedit(hlyout, ".", "modswlv", true);
-    WDFunc::AddLabelAndLineedit(hlyout, ".", "modswsv", true);
+    WDFunc::AddLabelAndLineeditH(hlyout, "Тип модуля:", "modtype");
+    hlyout->setStretch(1, 20);
+    hlyout->addStretch(600);
     vlyout->addLayout(hlyout);
-    QGroupBox *gb = new QGroupBox("Мезонинная плата");
-    QVBoxLayout *gblyout = new QVBoxLayout;
-    QLabel *lbl = new QLabel ("Мезонинная плата");
-    gblyout->addWidget(lbl);
-    WDFunc::AddLabelAndLineedit(gblyout, "Тип платы:", "meztp");
     hlyout = new QHBoxLayout;
-    WDFunc::AddLabelAndLineedit(hlyout, "Версия платы:", "mezhwmv", true);
-    WDFunc::AddLabelAndLineedit(hlyout, ".", "mezhwlv", true);
-    WDFunc::AddLabelAndLineedit(hlyout, ".", "mezhwsv", true);
+    WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер модуля:", "modsn", true);
+    hlyout->setStretch(1, 20);
+    hlyout->addStretch(600);
     vlyout->addLayout(hlyout);
-    WDFunc::AddLabelAndLineedit(gblyout, "Серийный номер платы:", "mezsn", true);
-    gb->setLayout(gblyout);
-    hlyout->addWidget(gb);
-    hlyout->addStretch(10);
     if (Type == BYMY) // ввод данных по мезонинной плате открывается только в случае её наличия
+    {
+        QGroupBox *gb = new QGroupBox("Мезонинная плата");
+        QVBoxLayout *gblyout = new QVBoxLayout;
+        hlyout = new QHBoxLayout;
+        WDFunc::AddLabelAndLineeditH(hlyout, "Тип платы:", "meztp", true);
+        gblyout->addLayout(hlyout);
+        hlyout = new QHBoxLayout;
+        WDFunc::AddLabelAndLineeditH(hlyout, "Версия платы:", "mezhwmv", true);
+        WDFunc::AddLabelAndLineeditH(hlyout, ".", "mezhwlv", true);
+        WDFunc::AddLabelAndLineeditH(hlyout, ".", "mezhwsv", true);
+        gblyout->addLayout(hlyout);
+        hlyout = new QHBoxLayout;
+        WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "mezsn", true);
+        gblyout->addLayout(hlyout);
+        gb->setLayout(gblyout);
+        hlyout = new QHBoxLayout;
+        hlyout->addWidget(gb,1);
+        hlyout->addStretch(600);
         vlyout->addLayout(hlyout);
+    }
     vlyout->addStretch(800);
+    QGroupBox *gb = new QGroupBox("Базовая плата");
+    QVBoxLayout *gblyout = new QVBoxLayout;
     hlyout = new QHBoxLayout;
-    gb = new QGroupBox("Базовая плата");
-    gblyout = new QVBoxLayout;
-    lbl = new QLabel ("Базовая плата");
-    gblyout->addWidget(lbl);
-    WDFunc::AddLabelAndLineedit(gblyout, "Тип платы:", "bastp");
+    WDFunc::AddLabelAndLineeditH(hlyout, "Тип платы:", "bastp", true);
+    gblyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    WDFunc::AddLabelAndLineedit(hlyout, "Версия платы:", "bashwmv", true);
-    WDFunc::AddLabelAndLineedit(hlyout, ".", "bashwlv", true);
-    WDFunc::AddLabelAndLineedit(hlyout, ".", "bashwsv", true);
-    vlyout->addLayout(hlyout);
-    WDFunc::AddLabelAndLineedit(gblyout, "Серийный номер платы:", "bassn", true);
+    WDFunc::AddLabelAndLineeditH(hlyout, "Версия платы:", "bashwmv", true);
+    WDFunc::AddLabelAndLineeditH(hlyout, ".", "bashwlv", true);
+    WDFunc::AddLabelAndLineeditH(hlyout, ".", "bashwsv", true);
+    gblyout->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
+    WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "bassn", true);
+    gblyout->addLayout(hlyout);
     gb->setLayout(gblyout);
-    hlyout->addWidget(gb);
-    hlyout->addStretch(10);
+    hlyout = new QHBoxLayout;
+    hlyout->addStretch(600);
+    hlyout->addWidget(gb,1);
     vlyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    hlyout->addStretch(200);
     QPushButton *pb = new QPushButton("Записать и закрыть");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(AcceptChanges()));
+    hlyout->addStretch(800);
     hlyout->addWidget(pb);
-    hlyout->addStretch(200);
     vlyout->addLayout(hlyout);
     setLayout(vlyout);
 }
@@ -96,11 +111,17 @@ void HiddenDialog::Fill()
 {
     SetVersion(pc.BoardBBhb.HWVer, "bashw");
     SetVersion(pc.BoardMBhb.HWVer, "mezhw");
-    SetVersion(pc.BoardBBhb.SWVer, "modsw");
+    QString tmps = QString::number(pc.BoardBBhb.MType, 16);
+    tmps.truncate(8);
+    WDFunc::SetLEData(this, "bastp", tmps);
     WDFunc::SetLEData(this, "modsn", QString::number(pc.BoardBBhb.ModSerialNum, 16), "^[a-fA-F0-9]{1,8}$");
     WDFunc::SetLEData(this, "bassn", QString::number(pc.BoardBBhb.SerialNum, 16), "^[a-fA-F0-9]{1,8}$");
     WDFunc::SetLEData(this, "mezsn", QString::number(pc.BoardMBhb.SerialNum, 16), "^[a-fA-F0-9]{1,8}$");
-    pc.BoardMBhb.ModSerialNum = pc.BoardMBhb.SWVer = 0xFFFFFFFF;
+    tmps = QString::number(pc.BoardMBhb.MType, 16);
+    tmps.truncate(8);
+    WDFunc::SetLEData(this, "meztp", tmps);
+    WDFunc::SetLEData(this, "modtype", pc.ModuleTypeString);
+    pc.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
 }
 
 void HiddenDialog::SetVersion(quint32 number, QString lename)
@@ -117,7 +138,6 @@ void HiddenDialog::AcceptChanges()
 {
     GetVersion(pc.BoardBBhb.HWVer, "bashw");
     GetVersion(pc.BoardMBhb.HWVer, "mezhw");
-    GetVersion(pc.BoardBBhb.SWVer, "modsw");
     QString tmps;
     WDFunc::LEData(this, "modsn", tmps);
     pc.BoardBBhb.ModSerialNum = tmps.toInt(Q_NULLPTR, 16);
@@ -125,8 +145,23 @@ void HiddenDialog::AcceptChanges()
     pc.BoardBBhb.SerialNum = tmps.toInt(Q_NULLPTR, 16);
     WDFunc::LEData(this, "mezsn", tmps);
     pc.BoardMBhb.SerialNum = tmps.toInt(Q_NULLPTR, 16);
-    pc.BoardMBhb.ModSerialNum = pc.BoardMBhb.SWVer = 0xFFFFFFFF;
+    pc.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
+    WDFunc::LEData(this, "bastp", tmps);
+    pc.BoardBBhb.MType = tmps.toInt(Q_NULLPTR, 16);
+    WDFunc::LEData(this, "meztp", tmps);
+    pc.BoardMBhb.MType = tmps.toInt(Q_NULLPTR, 16);
+    emit accepted();
     this->close();
+}
+
+void HiddenDialog::ToDec(quint32 hex)
+{
+
+}
+
+void HiddenDialog::ToHex(quint32 dec)
+{
+
 }
 
 void HiddenDialog::GetVersion(quint32 &number, QString lename)
@@ -134,8 +169,8 @@ void HiddenDialog::GetVersion(quint32 &number, QString lename)
     QString tmps;
     WDFunc::LEData(this, lename+"mv", tmps);
     number = static_cast<quint32>(tmps.toInt()) << 24;
-    WDFunc::LEData(this, lename+"sv", tmps);
-    number += static_cast<quint32>(tmps.toInt()) << 16;
     WDFunc::LEData(this, lename+"lv", tmps);
+    number += static_cast<quint32>(tmps.toInt()) << 16;
+    WDFunc::LEData(this, lename+"sv", tmps);
     number += static_cast<quint32>(tmps.toInt());
 }

@@ -15,6 +15,7 @@
 #include <QDoubleSpinBox>
 #include <QTabBar>
 #include "confdialog_21.h"
+#include "confdialog.h"
 #include "../widgets/messagebox.h"
 #include "../canal.h"
 
@@ -250,8 +251,12 @@ void confdialog_21::SetupUI()
     lyout3->addWidget(gb);
 
     gb = new QGroupBox("Настройки протокола МЭК-60870-5-104");
-    gb3lyout = new QGridLayout;
-    gb3lyout->setColumnStretch(2, 50);
+    confdialog *dlg = new confdialog(&aconf->Bci_block.mainblk);
+    QWidget *w = dlg->Widget104();
+
+    gblyout = new QVBoxLayout;
+    gblyout->addWidget(w);
+/*    gb3lyout->setColumnStretch(2, 50);
     lbl = new QLabel("Адрес базовой станции:");
     gb3lyout->addWidget(lbl,0,0,1,1,Qt::AlignRight);
     dspbls = new QDoubleSpinBox;
@@ -354,8 +359,9 @@ void confdialog_21::SetupUI()
     tmps = "QComboBox {background-color: "+QString(ACONFGCLR)+";}";
     ChTypCB->setStyleSheet(tmps);
     connect(ChTypCB,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
-    gb3lyout->addWidget(ChTypCB, 7, 1, 1, 2);
-    gb->setLayout(gb3lyout);
+    gb3lyout->addWidget(ChTypCB, 7, 1, 1, 2); */
+
+    gb->setLayout(gblyout);
     lyout4->addWidget(gb);
     cp1->setLayout(lyout1);
     cp2->setLayout(lyout2);
@@ -519,7 +525,7 @@ void confdialog_21::FillConfData()
             DBGMSG;
             return;
         }
-        quint8 tmpi = i << 1;
+//        quint8 tmpi = i << 1;
         cb->setCurrentIndex(aconf->Bci_block.osc[i]);
         SetMinMax(i);
         SetSpinboxValue("invmin."+QString::number(i), aconf->Bci_block.in_vmin[i]);
@@ -848,7 +854,7 @@ void confdialog_21::SetIn()
     spb->setStyleSheet(tmps);
 }
 
-void confdialog_21::Set104()
+/*void confdialog_21::Set104()
 {
     QDoubleSpinBox *spb = qobject_cast<QDoubleSpinBox *>(sender());
     int tmpi = GetChNumFromObjectName(sender()->objectName());
@@ -900,6 +906,8 @@ void confdialog_21::SetCType(int num)
 {
     aconf->Bci_block.mainblk.Ctype = num;
 }
+
+*/
 
 void confdialog_21::WriteConfDataToModule()
 {
