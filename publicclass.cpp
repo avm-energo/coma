@@ -82,7 +82,7 @@ unsigned long  _crc32_t[256]=
 
 publicclass::publicclass()
 {
-    HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/COMA/";
     Emul = false;
     ErMsgsOk = false;
     AMTypes.append("Z"); // фиктивный тип, типы начинаются с 1
@@ -94,7 +94,7 @@ publicclass::publicclass()
     log.Init(LOGFILE);
 
     QFile file;
-    QString ermsgspath = pc.HomeDir + "/" + ermsgpath;
+    QString ermsgspath = pc.HomeDir;
     file.setFileName(ermsgspath+"ermsgs.dat");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -116,7 +116,7 @@ publicclass::publicclass()
                 errmsgs << tmpString;
         } while (!streamfile.atEnd());
     }
-    result = ER_OK;
+    result = NOERROR;
 }
 
 QString publicclass::VerToStr(quint32 num)

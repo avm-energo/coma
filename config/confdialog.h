@@ -14,7 +14,6 @@ public:
     ~confdialog();
 
     QWidget *Widget104();
-    void Fill();
 
 private:
 
@@ -24,6 +23,8 @@ private:
 signals:
 
 public slots:
+    void Fill();
+//    void Fill104(Bci_Main &bcim);
 
 private slots:
     void Set104(double);

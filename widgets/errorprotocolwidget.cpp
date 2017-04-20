@@ -167,7 +167,7 @@ int ErrorProtocolModel::columnCount(const QModelIndex &index) const
 
 void ErrorProtocolModel::AddRow(publicclass::ermsg msg)
 {
-    beginResetModel();
+//    beginResetModel();
     if (rowCount()<MAX_MSG)
         insertRows(0,1,QModelIndex());
     QStringList tmpsl = QStringList() << "#"+QString::number(MsgCount) << QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss") \
@@ -179,6 +179,6 @@ void ErrorProtocolModel::AddRow(publicclass::ermsg msg)
     ertypedata.insert(0,msg.type);
     if (ertypedata.size() >= MAX_MSG)
         ertypedata.removeLast();
-    endResetModel();
+//    endResetModel();
     emit dataChanged(index(0, 0), index(rowCount(),columnCount()));
 }

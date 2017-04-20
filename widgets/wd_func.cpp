@@ -92,6 +92,15 @@ bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue
     return true;
 }
 
+bool WDFunc::SetCBIndex(QWidget *w, const QString &cbname, int index)
+{
+    s_tqComboBox *cb = w->findChild<s_tqComboBox *>(cbname);
+    if (cb == 0)
+        return false;
+    cb->setCurrentIndex(index);
+    return true;
+}
+
 bool WDFunc::SPBData(QWidget *w, const QString &spbname, double &spbvalue)
 {
     s_tqSpinBox *spb = w->findChild<s_tqSpinBox *>(spbname);

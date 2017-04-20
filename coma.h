@@ -96,7 +96,6 @@ private:
     fwupdialog *FwUpDialog;
     downloaddialog *DownDialog;
     oscdialog *OscDialog;
-    bool DialogsAreReadyAlready;
     QAction *WriteSNAction;
     quint8 ReconTry;
     publicclass::Bsi Bsi_block;

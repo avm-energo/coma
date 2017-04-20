@@ -80,7 +80,6 @@ void Coma::SetupUI()
     QString tmps = "QMainWindow {background-color: "+QString(MAINWINCLR)+";}";
     setStyleSheet(tmps);
     setMinimumSize(QSize(800, 600));
-    DialogsAreReadyAlready = false;
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     setMinimumHeight(650);
@@ -235,7 +234,6 @@ void Coma::SetupMenubar()
     menu->setTitle("Разработка");
     WriteSNAction = new QAction(this);
     WriteSNAction->setText("Запись Hidden Block");
-    WriteSNAction->setEnabled(false);
     connect(WriteSNAction,SIGNAL(triggered()),this,SLOT(OpenBhbDialog()));
     menu->addAction(WriteSNAction);
     MainMenuBar->addMenu(menu);
@@ -323,7 +321,7 @@ void Coma::Stage1()
 void Coma::Stage1_5()
 {
     QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-    if (dlg)
+    if (dlg != 0)
         dlg->close();
     pc.PrbMessage = "Загрузка данных...";
 
@@ -355,7 +353,6 @@ void Coma::Stage1_5()
         Stage1();
         return;
     }
-    WriteSNAction->setEnabled(true);
     connect(cn,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBarSize(quint32)));
     connect(cn,SIGNAL(osceraseremaining(quint32)),this,SLOT(SetProgressBar(quint32)));
     connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
@@ -462,6 +459,7 @@ void Coma::ClearBsi()
     WDFunc::SetLEData(this, "rstcountle", "");
     WDFunc::SetLEData(this, "cpuidle", "");
     WDFunc::SetLEData(this, "snle", "");
+    WDFunc::SetLEData(this, "snble", "");
     WDFunc::SetLEData(this, "snmle", "");
 }
 
@@ -553,7 +551,6 @@ void Coma::Disconnect()
     if (!pc.Emul)
         cn->Disconnect();
     ClearBsi();
-    DialogsAreReadyAlready = false;
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
@@ -566,7 +563,6 @@ void Coma::Disconnect()
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
         MainTE->clear();
-    WriteSNAction->setEnabled(false);
     MainTW->hide();
     pc.Emul = false;
 }

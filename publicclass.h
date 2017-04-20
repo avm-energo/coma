@@ -44,6 +44,11 @@
 #define S2_DHSZERROR        11 // некорректная длина в FileHeader при разборе формата S2
 #define S2_NOIDS            13 // не найдено ни одного элемента с заданным ID
 
+// ошибки модулей
+#define ER_FILEOPENERROR    15 // ошибка при открытии файла
+#define ER_NOCONF           20 // нет конфигурации в модуле
+#define ER_NOTUNECOEF       21 // нет настроечных параметров в модуле
+
 // ошибки IP-сокета
 #define SKT_UNKNOWNER       24 // неизвестная ошибка
 #define SKT_REFUSEDER       25 // тайм-аут при открытии сокета
@@ -127,12 +132,6 @@
 #define HTH_1PPS            0x00000010 // нет сигнала 1PPS
 #define HTH_REL             0x00000008 // неисправность выходных реле (Д)
 #define HTH_TUPP            0x00000004 // перегрев модуля
-
-// ошибки модулей
-#define ER_OK               0
-#define ER_FILEOPENERROR    15 // ошибка при открытии файла
-#define ER_NOCONF           20 // нет конфигурации в модуле
-#define ER_NOTUNECOEF       21 // нет настроечных параметров в модуле
 
 #define CS_MSGTRIG          500 // частота мигания сообщения о попытке восстановить связь с модулем
 #define CS_TIMEOUT          5000 // количество мс ожидания появления связи с модулем
@@ -254,7 +253,6 @@ public:
     QString Port;
     int result;
     QStringList errmsgs;
-    QString ermsgpath;
     QString ModuleTypeString;
     bool Emul;
     int ErrWindowDelay;

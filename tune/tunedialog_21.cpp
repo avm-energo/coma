@@ -13,7 +13,7 @@
 #include "../publicclass.h"
 #include "../canal.h"
 
-a_tunedialog::a_tunedialog(QWidget *parent) :
+a_tunedialog::a_tunedialog(int type, QWidget *parent) :
     QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -23,6 +23,7 @@ a_tunedialog::a_tunedialog(QWidget *parent) :
         Bda5.sin[i] = UINT_MAX;
         Bda20.sin[i] = UINT_MAX;
     }
+    BoardType = type;
     SetupUI();
 }
 
@@ -435,6 +436,8 @@ void a_tunedialog::ReadTuneCoefs()
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == NOERROR)
         RefreshTuneFields();
+    else
+        MessageBox2::error(this, "ошибка", "Ошибка чтения регулировочных параметров из модуля");
 }
 
 void a_tunedialog::WriteTuneCoefs()
@@ -446,9 +449,12 @@ void a_tunedialog::WriteTuneCoefs()
         while (cn->Busy)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
         if (cn->result == NOERROR)
-            QMessageBox::information(this,"Успешно!","Записано успешно!");
+            MessageBox2::information(this,"Успешно!","Записано успешно!");
         else
+        {
+            MessageBox2::error(this, "Ошибка", "Ошибка записи регулировочных параметров в модуль");
             return;
+        }
     }
     else
     {

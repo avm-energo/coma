@@ -2,7 +2,7 @@
 #define A_TUNEDIALOG_H
 
 #include <QDialog>
-//#include "canal.h"
+#include "canal.h"
 
 #define ATUNENUMPOINTS  64 // количество точек, по которым выдаются значения в блоке Bda
 
@@ -17,7 +17,7 @@ class a_tunedialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit a_tunedialog(QWidget *parent = 0);
+    explicit a_tunedialog(int type = Canal::BT_BASE, QWidget *parent = 0);
 
 signals:
 
@@ -39,6 +39,7 @@ private:
     };
 
     Bac Bac_block[16];
+    int BoardType;
 
     void SetupUI();
     bool tune(int Type, int ChNum);

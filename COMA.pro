@@ -15,8 +15,7 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-QT += serialport xlsx
-
+QT += serialport
 TARGET = COMA
 TEMPLATE = app
 
@@ -104,3 +103,5 @@ HEADERS  += coma.h \
 
 RESOURCES += \
     res.qrc
+
+LIBS += -lQt5Xlsx

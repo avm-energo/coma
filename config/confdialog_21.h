@@ -43,11 +43,12 @@ private:
     bool CheckConf();
     void SetMinMax(int i);
     void SetRangeWidget(int ChNum, int RangeType);
-    void SetSpinboxValue(QString name, double value);
     int GetChNumFromObjectName(QString ObjectName);
 
 signals:
     void BsiIsNeedToBeAcquiredAndChecked();
+//    void Set104Conf(Bci_Main &);
+    void Fill104Conf();
 
 public slots:
 

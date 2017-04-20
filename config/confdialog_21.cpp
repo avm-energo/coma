@@ -17,6 +17,7 @@
 #include "confdialog_21.h"
 #include "confdialog.h"
 #include "../widgets/messagebox.h"
+#include "../widgets/wd_func.h"
 #include "../canal.h"
 
 confdialog_21::confdialog_21(QWidget *parent) :
@@ -253,114 +254,9 @@ void confdialog_21::SetupUI()
     gb = new QGroupBox("Настройки протокола МЭК-60870-5-104");
     confdialog *dlg = new confdialog(&aconf->Bci_block.mainblk);
     QWidget *w = dlg->Widget104();
-
+    connect(this,SIGNAL(Fill104Conf()),dlg,SLOT(Fill()));
     gblyout = new QVBoxLayout;
     gblyout->addWidget(w);
-/*    gb3lyout->setColumnStretch(2, 50);
-    lbl = new QLabel("Адрес базовой станции:");
-    gb3lyout->addWidget(lbl,0,0,1,1,Qt::AlignRight);
-    dspbls = new QDoubleSpinBox;
-    dspbls->setObjectName("abs104spb");
-    dspbls->setSingleStep(1);
-    dspbls->setDecimals(0);
-    dspbls->setMinimum(0);
-    dspbls->setMaximum(65535);
-    tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
-    dspbls->setStyleSheet(tmps);
-    connect(dspbls,SIGNAL(editingFinished()),this,SLOT(Set104()));
-    gb3lyout->addWidget(dspbls, 0, 1, 1, 1, Qt::AlignLeft);
-    lbl = new QLabel("Интервал циклического опроса:");
-    gb3lyout->addWidget(lbl,1,0,1,1,Qt::AlignRight);
-    dspbls = new QDoubleSpinBox;
-    dspbls->setObjectName("cycle104spb");
-    dspbls->setSingleStep(1);
-    dspbls->setDecimals(0);
-    dspbls->setMinimum(0);
-    dspbls->setMaximum(255);
-    dspbls->setStyleSheet(tmps);
-    connect(dspbls,SIGNAL(editingFinished()),this,SLOT(Set104()));
-    gb3lyout->addWidget(dspbls, 1, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    gb3lyout->addWidget(lbl,1,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Тайм-аут t1:");
-    gb3lyout->addWidget(lbl,2,0,1,1,Qt::AlignRight);
-    dspbls = new QDoubleSpinBox;
-    dspbls->setObjectName("t1104spb");
-    dspbls->setSingleStep(1);
-    dspbls->setDecimals(0);
-    dspbls->setMinimum(0);
-    dspbls->setMaximum(255);
-    dspbls->setStyleSheet(tmps);
-    connect(dspbls,SIGNAL(editingFinished()),this,SLOT(Set104()));
-    gb3lyout->addWidget(dspbls, 2, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    gb3lyout->addWidget(lbl,2,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Тайм-аут t2:");
-    gb3lyout->addWidget(lbl,3,0,1,1,Qt::AlignRight);
-    dspbls = new QDoubleSpinBox;
-    dspbls->setObjectName("t2104spb");
-    dspbls->setSingleStep(1);
-    dspbls->setDecimals(0);
-    dspbls->setMinimum(0);
-    dspbls->setMaximum(255);
-    dspbls->setStyleSheet(tmps);
-    connect(dspbls,SIGNAL(editingFinished()),this,SLOT(Set104()));
-    gb3lyout->addWidget(dspbls, 3, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    gb3lyout->addWidget(lbl,3,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Тайм-аут t3:");
-    gb3lyout->addWidget(lbl,4,0,1,1,Qt::AlignRight);
-    dspbls = new QDoubleSpinBox;
-    dspbls->setObjectName("t3104spb");
-    dspbls->setSingleStep(1);
-    dspbls->setDecimals(0);
-    dspbls->setMinimum(0);
-    dspbls->setMaximum(255);
-    dspbls->setStyleSheet(tmps);
-    connect(dspbls,SIGNAL(editingFinished()),this,SLOT(Set104()));
-    gb3lyout->addWidget(dspbls, 4, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    gb3lyout->addWidget(lbl,4,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Макс. число неподтв. APDU (k):");
-    gb3lyout->addWidget(lbl,5,0,1,1,Qt::AlignRight);
-    dspbls = new QDoubleSpinBox;
-    dspbls->setObjectName("k104spb");
-    dspbls->setSingleStep(1);
-    dspbls->setDecimals(0);
-    dspbls->setMinimum(0);
-    dspbls->setMaximum(255);
-    dspbls->setStyleSheet(tmps);
-    connect(dspbls,SIGNAL(editingFinished()),this,SLOT(Set104()));
-    gb3lyout->addWidget(dspbls, 5, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    gb3lyout->addWidget(lbl,5,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Макс. число посл. подтв. APDU (w):");
-    gb3lyout->addWidget(lbl,6,0,1,1,Qt::AlignRight);
-    dspbls = new QDoubleSpinBox;
-    dspbls->setObjectName("w104spb");
-    dspbls->setSingleStep(1);
-    dspbls->setDecimals(0);
-    dspbls->setMinimum(0);
-    dspbls->setMaximum(255);
-    dspbls->setStyleSheet(tmps);
-    connect(dspbls,SIGNAL(editingFinished()),this,SLOT(Set104()));
-    gb3lyout->addWidget(dspbls, 6, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    gb3lyout->addWidget(lbl,6,2,1,1);
-    lbl = new QLabel("Тип синхр. времени:");
-    gb3lyout->addWidget(lbl,7,0,1,1,Qt::AlignRight);
-    QComboBox *ChTypCB = new QComboBox;
-    ChTypCB->setObjectName("ctypecb");
-    ChTypSl = QStringList() << "SNTPIP2+PPS" << "SNTPIP1+PPS" << "SNTPIP1";
-    ChTypSlM = new QStringListModel;
-    ChTypSlM->setStringList(ChTypSl);
-    ChTypCB->setModel(ChTypSlM);
-    ChTypCB->setMinimumWidth(70);
-    tmps = "QComboBox {background-color: "+QString(ACONFGCLR)+";}";
-    ChTypCB->setStyleSheet(tmps);
-    connect(ChTypCB,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
-    gb3lyout->addWidget(ChTypCB, 7, 1, 1, 2); */
-
     gb->setLayout(gblyout);
     lyout4->addWidget(gb);
     cp1->setLayout(lyout1);
@@ -465,54 +361,21 @@ void confdialog_21::GetBci()
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == NOERROR)
         FillConfData();
+    else
+        MessageBox2::error(this, "ошибка", "Ошибка чтения конфигурации из модуля");
 }
 
 void confdialog_21::FillConfData()
 {
     int i;
-    QSpinBox *spb;
     QComboBox *cb;
     QCheckBox *chb;
-    spb = this->findChild<QSpinBox *>("oscdlyspb");
-    if (spb == 0)
-    {
-        DBGMSG;
-        return;
-    }
-    spb->setValue(aconf->Bci_block.oscdly);
-    SetSpinboxValue("abs104spb",aconf->Bci_block.mainblk.Abs_104);
-    SetSpinboxValue("cycle104spb",aconf->Bci_block.mainblk.Cycle_104);
-    SetSpinboxValue("t1104spb",aconf->Bci_block.mainblk.T1_104);
-    SetSpinboxValue("t2104spb",aconf->Bci_block.mainblk.T2_104);
-    SetSpinboxValue("t3104spb",aconf->Bci_block.mainblk.T3_104);
-    SetSpinboxValue("k104spb",aconf->Bci_block.mainblk.k_104);
-    SetSpinboxValue("w104spb",aconf->Bci_block.mainblk.w_104);
-    cb = this->findChild<QComboBox *>("ctypecb");
-    if (cb == 0)
-    {
-        DBGMSG;
-        return;
-    }
-    cb->setCurrentIndex(aconf->Bci_block.mainblk.Ctype);
+
+    WDFunc::SetSPBData(this, "oscdlyspb", aconf->Bci_block.oscdly);
     for (i = 0; i < 16; i++)
     {
-        cb = this->findChild<QComboBox *>("chtypcb."+QString::number(i));
-        if (cb == 0)
-        {
-            DBGMSG;
-            return;
-        }
-        cb->setCurrentIndex(aconf->Bci_block.in_type[i]);
-        chb = this->findChild<QCheckBox *>("chb."+QString::number(i));
-        if (cb == 0)
-        {
-            DBGMSG;
-            return;
-        }
-/* !!!       if (aconf->Bci_block.discosc & (static_cast<quint32>(0x0001) << i))
-            chb->setChecked(true);
-        else
-            chb->setChecked(false); */
+        WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), aconf->Bci_block.in_type[i]);
+        WDFunc::SetChBData(this, "chb."+QString::number(i), aconf->Bci_block.discosc & (static_cast<quint32>(0x0001) << i));
         cb = this->findChild<QComboBox *>("oscsrccb."+QString::number(i));
         if (cb == 0)
         {
@@ -528,12 +391,12 @@ void confdialog_21::FillConfData()
 //        quint8 tmpi = i << 1;
         cb->setCurrentIndex(aconf->Bci_block.osc[i]);
         SetMinMax(i);
-        SetSpinboxValue("invmin."+QString::number(i), aconf->Bci_block.in_vmin[i]);
-        SetSpinboxValue("invmax."+QString::number(i), aconf->Bci_block.in_vmax[i]);
-        SetSpinboxValue("setminmin."+QString::number(i), aconf->Bci_block.setminmin[i]);
-        SetSpinboxValue("setmin."+QString::number(i), aconf->Bci_block.setmin[i]);
-        SetSpinboxValue("setmax."+QString::number(i), aconf->Bci_block.setmax[i]);
-        SetSpinboxValue("setmaxmax."+QString::number(i), aconf->Bci_block.setmaxmax[i]);
+        WDFunc::SetSPBData(this, "invmin."+QString::number(i), aconf->Bci_block.in_vmin[i]);
+        WDFunc::SetSPBData(this, "invmax."+QString::number(i), aconf->Bci_block.in_vmax[i]);
+        WDFunc::SetSPBData(this, "setminmin."+QString::number(i), aconf->Bci_block.setminmin[i]);
+        WDFunc::SetSPBData(this, "setmin."+QString::number(i), aconf->Bci_block.setmin[i]);
+        WDFunc::SetSPBData(this, "setmax."+QString::number(i), aconf->Bci_block.setmax[i]);
+        WDFunc::SetSPBData(this, "setmaxmax."+QString::number(i), aconf->Bci_block.setmaxmax[i]);
         DisableChannel(i, (aconf->Bci_block.in_type[i] == INTYPENA));
     }
 }
@@ -614,17 +477,6 @@ void confdialog_21::SetMinMax(int i)
     default: // INTYPENA, INTYPERES
         break;
     }
-}
-
-void confdialog_21::SetSpinboxValue(QString name, double value)
-{
-    QDoubleSpinBox *dspbls = this->findChild<QDoubleSpinBox *>(name);
-    if (dspbls == 0)
-    {
-        DBGMSG;
-        return;
-    }
-    dspbls->setValue(value);
 }
 
 void confdialog_21::SetChTypData()
@@ -854,61 +706,6 @@ void confdialog_21::SetIn()
     spb->setStyleSheet(tmps);
 }
 
-/*void confdialog_21::Set104()
-{
-    QDoubleSpinBox *spb = qobject_cast<QDoubleSpinBox *>(sender());
-    int tmpi = GetChNumFromObjectName(sender()->objectName());
-    if (tmpi == -1)
-        return;
-    switch (tmpi)
-    {
-    case 0:
-    {
-        aconf->Bci_block.mainblk.Abs_104=spb->value();
-        break;
-    }
-    case 1:
-    {
-        aconf->Bci_block.mainblk.Cycle_104=spb->value();
-        break;
-    }
-    case 2:
-    {
-        aconf->Bci_block.mainblk.T1_104=spb->value();
-        break;
-    }
-    case 3:
-    {
-        aconf->Bci_block.mainblk.T2_104=spb->value();
-        break;
-    }
-    case 4:
-    {
-        aconf->Bci_block.mainblk.T3_104=spb->value();
-        break;
-    }
-    case 5:
-    {
-        aconf->Bci_block.mainblk.k_104=spb->value();
-        break;
-    }
-    case 6:
-    {
-        aconf->Bci_block.mainblk.w_104=spb->value();
-        break;
-    }
-    default:
-        break;
-    }
-}
-
-void confdialog_21::SetCType(int num)
-{
-    aconf->Bci_block.mainblk.Ctype = num;
-}
-
-*/
-
 void confdialog_21::WriteConfDataToModule()
 {
     if (CheckConf())
@@ -939,6 +736,9 @@ void confdialog_21::SetDefConf()
 {
     memcpy(&(aconf->Bci_block), &(aconf->Bci_defblock), sizeof(aconf->Bci_block));
     FillConfData();
+//    emit Set104Conf(aconf->Bci_block.mainblk);
+    emit Fill104Conf();
+    MessageBox2::information(this, "Успешно", "Задана конфигурация по умолчанию");
 }
 
 void confdialog_21::LoadConf()
