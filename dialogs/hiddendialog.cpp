@@ -154,16 +154,6 @@ void HiddenDialog::AcceptChanges()
     this->close();
 }
 
-void HiddenDialog::ToDec(quint32 hex)
-{
-
-}
-
-void HiddenDialog::ToHex(quint32 dec)
-{
-
-}
-
 void HiddenDialog::GetVersion(quint32 &number, QString lename)
 {
     QString tmps;

@@ -8,13 +8,14 @@ QMAKE_TARGET_COMPANY = EvelSoft
 QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = COMA
 RC_ICONS = coma.ico
+CONFIG += c++11
 VERSION = 2.0
 
 QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-QT += serialport
+QT += serialport xlsx
 
 TARGET = COMA
 TEMPLATE = app
@@ -101,20 +102,5 @@ HEADERS  += coma.h \
     dialogs/settingsdialog.h \
     dialogs/errordialog.h
 
-#INCLUDEPATH += $$PWD/../../xlsxwriter/src/xlsx
-#DEPENDPATH += $$PWD/../../xlsxwriter/src/xlsx
-
-LIBS += -lQt5Xlsx
-
 RESOURCES += \
     res.qrc
-
-#DISTFILES += \
-#    e0t2n.xlsx \
-#    e1t1n.xlsx \
-#    e2t0n.xlsx \
-#    coma-2.png \
-#    coma.png \
-#    coma.ico \
-#    errors/ermsgs.dat \
-#    .gitignore

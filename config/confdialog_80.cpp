@@ -395,7 +395,7 @@ void confdialog_80::SetVoltageClass(int tmpi)
 
 // по имени виджета взять его номер
 
-int confdialog_80::GetWNum(QString &ObjName)
+int confdialog_80::GetWNum(const QString &ObjName)
 {
     QStringList sl = ObjName.split(".");
     if (sl.size() < 1)
@@ -535,7 +535,7 @@ void confdialog_80::SaveConf()
     }
 }
 
-void confdialog_80::SetComboBox(QString name, QString &text)
+void confdialog_80::SetComboBox(QString name, const QString &text)
 {
     s_tqComboBox *cb = this->findChild<s_tqComboBox *>(name);
     if (cb != 0)

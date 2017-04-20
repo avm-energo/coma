@@ -20,7 +20,7 @@
  *
  */
 
-#include <QtTest/QTest>
+#include <QCoreApplication>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
@@ -39,6 +39,7 @@
 #include <QDialog>
 #include <QSizePolicy>
 #include <QCheckBox>
+#include <QDir>
 #include "coma.h"
 #include "commands.h"
 #include "widgets/mytabwidget.h"
@@ -70,7 +71,6 @@ Coma::Coma(QWidget *parent)
 
 Coma::~Coma()
 {
-    cn->Disconnect();
     SaveSettings();
 }
 
@@ -116,7 +116,7 @@ void Coma::SetupUI()
     tb->addAction(EmulEAction);
     tb->addSeparator();
     tb->addAction(SettingsAction);
-    QAction *act = new QAction;
+    QAction *act = new QAction(this);
     act->setToolTip("Протокол ошибок");
     act->setIcon(QIcon(":/skull-and-bones.png"));
     connect(act,SIGNAL(triggered(bool)),this,SLOT(ShowErrorDialog()));
