@@ -214,10 +214,14 @@ void s_tablemodel::fillModel(QList<QStringList> lsl)
         for (j = 0; j < lsl.size(); j++) // цикл по столбцам
         {
             if (i > lsl.at(j).size()) // если строк в текущем столбце меньше, чем текущий номер строки, пишем пустое значение
-                setData(index(i, j, QModelIndex()), QVariant(""), Qt::EditRole);
+            {
+                QVariant tmpv = QVariant("");
+                setData(index(i, j, QModelIndex()), tmpv, Qt::EditRole);
+            }
             else
             {
-                setData(index(i, j, QModelIndex()), QVariant(lsl.at(j).at(i)), Qt::EditRole);
+                QVariant tmpv = QVariant(lsl.at(j).at(i));
+                setData(index(i, j, QModelIndex()), tmpv, Qt::EditRole);
             }
         }
     }

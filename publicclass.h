@@ -192,21 +192,21 @@ public:
 
     typedef struct
     {
-        qint32 MTypeB;
-        qint32 MTypeM;
-        qint32 HwverB;
-        qint32 Fwver;
-        qint32 Rst;
-        qint32 RstCount;
-        qint32 UIDLow;
-        qint32 UIDMid;
-        qint32 UIDHigh;
-        qint32 SerialNumB;
-        qint32 SerialNumM;
-        qint32 HwverM;
-        qint32 SerialNum;
-        qint32 Cfcrc;
-        qint32 Hth;
+        quint32 MTypeB;
+        quint32 MTypeM;
+        quint32 HwverB;
+        quint32 Fwver;
+        quint32 Rst;
+        quint32 RstCount;
+        quint32 UIDLow;
+        quint32 UIDMid;
+        quint32 UIDHigh;
+        quint32 SerialNumB;
+        quint32 SerialNumM;
+        quint32 HwverM;
+        quint32 SerialNum;
+        quint32 Cfcrc;
+        quint32 Hth;
     } Bsi;
 
     enum ermsgtype
