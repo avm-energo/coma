@@ -375,7 +375,7 @@ void confdialog_21::FillConfData()
     for (i = 0; i < 16; i++)
     {
         WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), aconf->Bci_block.in_type[i]);
-        WDFunc::SetChBData(this, "chb."+QString::number(i), aconf->Bci_block.discosc & (static_cast<quint32>(0x0001) << i));
+        WDFunc::SetChBData(this, "chb."+QString::number(i), aconf->Bci_block.osc[i]);
         cb = this->findChild<QComboBox *>("oscsrccb."+QString::number(i));
         if (cb == 0)
         {
