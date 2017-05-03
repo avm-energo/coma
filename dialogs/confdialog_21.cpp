@@ -40,32 +40,19 @@ void confdialog_21::SetupUI()
     int i;
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
     setStyleSheet(tmps);
-    QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
     QString ConfTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLOR)+";}";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
+    QVBoxLayout *lyout = new QVBoxLayout;
 
-    QVBoxLayout *lyout1 = new QVBoxLayout;
-    QVBoxLayout *lyout2 = new QVBoxLayout;
-    QVBoxLayout *lyout3 = new QVBoxLayout;
-    QVBoxLayout *lyout4 = new QVBoxLayout;
-    QWidget *cp1 = new QWidget;
-    QWidget *cp2 = new QWidget;
-    QWidget *cp3 = new QWidget;
-    QWidget *cp4 = new QWidget;
-    tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
-    cp1->setStyleSheet(tmps);
-    cp2->setStyleSheet(tmps);
-    cp3->setStyleSheet(tmps);
-    cp4->setStyleSheet(tmps);
     QGroupBox *gb = new QGroupBox("Типы каналов");
     QVBoxLayout *gblyout = new QVBoxLayout;
-    QHBoxLayout *gb2lyout = new QHBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
     QStringList ChTypSl = QStringList() << "Не исп." << "мА" << "В";
     QStringListModel *ChTypSlM = new QStringListModel;
     ChTypSlM->setStringList(ChTypSl);
-    for (i = 0; i < 16; i++)
+    for (i = 1; i <= AIN_NUMCH; ++i)
     {
         QLabel *ChTypL = new QLabel(QString::number(i)+":");
         QComboBox *ChTypCB = new QComboBox;
@@ -74,41 +61,81 @@ void confdialog_21::SetupUI()
         tmps = "QComboBox {background-color: "+QString(ACONFGCLR)+";}";
         ChTypCB->setStyleSheet(tmps);
         connect(ChTypCB,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChTypData()));
-        gb2lyout->addWidget(ChTypL);
-        gb2lyout->addWidget(ChTypCB, 1);
-        if ((i>1)&&!((i+1)%4))
+        hlyout->addWidget(ChTypL);
+        hlyout->addWidget(ChTypCB, 1);
+        if ((i % 4) == 0)
         {
-            gblyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
+            gblyout->addLayout(hlyout);
+            hlyout = new QHBoxLayout;
         }
     }
     gb->setLayout(gblyout);
-    lyout1->addWidget(gb);
+    lyout->addWidget(gb);
     gb = new QGroupBox("Осциллограммы");
     gblyout = new QVBoxLayout;
-    QGridLayout *gb3lyout = new QGridLayout;
-    QLabel *lbl = new QLabel("Каналы записи осциллограмм:");
+    QGridLayout *glyout = new QGridLayout;
+    QLabel *lbl = new QLabel("Источники записи осциллограмм:");
     gblyout->addWidget(lbl);
-    for (i=0; i<16; i++)
+    lbl = new QLabel("#");
+    glyout->addWidget(lbl,0,0,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Вход DI2");
+    glyout->addWidget(lbl,0,1,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Вход DI1");
+    glyout->addWidget(lbl,0,2,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Превыш. oscthr");
+    glyout->addWidget(lbl,0,3,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Команда Cso0");
+    glyout->addWidget(lbl,0,4,1,1,Qt::AlignCenter);
+    lbl = new QLabel("#");
+    glyout->addWidget(lbl,0,5,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Вход DI2");
+    glyout->addWidget(lbl,0,6,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Вход DI1");
+    glyout->addWidget(lbl,0,7,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Превыш. oscthr");
+    glyout->addWidget(lbl,0,8,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Команда Cso0");
+    glyout->addWidget(lbl,0,9,1,1,Qt::AlignCenter);
+    int row = 1;
+    int column = 0;
+    for (i=1; i<=AIN_NUMCH; ++i)
     {
         lbl=new QLabel(QString::number(i));
-        QCheckBox *chb = new QCheckBox;
-        chb->setObjectName("chb."+QString::number(i));
-        chb->setText("");
-        tmps = "QCheckBox {background-color: "+QString(ACONFGCLR)+";}";
-        chb->setStyleSheet(tmps);
-        connect(chb,SIGNAL(stateChanged(int)),this,SLOT(SetChOsc(int)));
-        gb3lyout->addWidget(lbl,0,i,1,1,Qt::AlignCenter);
-        gb3lyout->addWidget(chb,1,i,1,1,Qt::AlignCenter);
+        glyout->addWidget(lbl,row,++column,1,1,Qt::AlignCenter);
+        s_tqCheckBox *chb = WDFunc::NewCB("choscdi2."+QString::number(i), \
+                                          "", \
+                                          ACONFCLR);
+        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
+        glyout->addWidget(chb,row,++column,1,1,Qt::AlignCenter);
+        chb = WDFunc::NewCB("choscdi1."+QString::number(i), \
+                            "", \
+                            ACONFCLR);
+        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
+        glyout->addWidget(chb,row,++column,1,1,Qt::AlignCenter);
+        chb = WDFunc::NewCB("choscthr."+QString::number(i), \
+                            "", \
+                            ACONFCLR);
+        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
+        glyout->addWidget(chb,row,++column,1,1,Qt::AlignCenter);
+        chb = WDFunc::NewCB("chosccso0."+QString::number(i), \
+                            "", \
+                            ACONFCLR);
+        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
+        glyout->addWidget(chb,row,++column,1,1,Qt::AlignCenter);
+        if ((i%2) == 0)
+        {
+            ++row;
+            column = 0;
+        }
     }
-    gblyout->addLayout(gb3lyout);
+    gblyout->addLayout(glyout);
     ChTypSl = QStringList() << "Ком. Ц" << "Ц+U>" << "Ц+DI" << "Любой";
     ChTypSlM = new QStringListModel;
     ChTypSlM->setStringList(ChTypSl);
     lbl = new QLabel("События-инициаторы запуска осциллограмм:");
     gblyout->addWidget(lbl);
-    gb2lyout = new QHBoxLayout;
-    for (i = 0; i < 16; i++)
+    hlyout = new QHBoxLayout;
+    for (i = 0; i < AIN_NUMCH; i++)
     {
         QLabel *ChTypL = new QLabel(QString::number(i)+":");
         ChTypL->setObjectName("oscsrcl."+QString::number(i));
@@ -118,15 +145,15 @@ void confdialog_21::SetupUI()
         tmps = "QComboBox {background-color: "+QString(ACONFGCLR)+";}";
         ChTypCB->setStyleSheet(tmps);
         connect(ChTypCB,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChOscSrc(int)));
-        gb2lyout->addWidget(ChTypL);
-        gb2lyout->addWidget(ChTypCB, 1);
+        hlyout->addWidget(ChTypL);
+        hlyout->addWidget(ChTypCB, 1);
         if ((i>1)&&!((i+1)%4))
         {
-            gblyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
+            gblyout->addLayout(hlyout);
+            hlyout = new QHBoxLayout;
         }
     }
-    gblyout->addLayout(gb2lyout);
+    gblyout->addLayout(hlyout);
     lbl = new QLabel("Задержка в мс начала фиксации максимумов:");
     gblyout->addWidget(lbl);
     QSpinBox *spb = new QSpinBox;
@@ -139,39 +166,45 @@ void confdialog_21::SetupUI()
     connect(spb,SIGNAL(valueChanged(int)),this,SLOT(SetOscDly(int)));
     gblyout->addWidget(spb);
     gb->setLayout(gblyout);
-    lyout1->addWidget(gb);
+    lyout->addWidget(gb);
+    QWidget *cp = new QWidget;
+    tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
+    cp->setStyleSheet(tmps);
+    cp->setLayout(lyout);
+    ConfTW->addTab(cp,"Общие");
 
+    lyout = new QVBoxLayout;
     gb = new QGroupBox("Диапазоны сигналов");
     gb->setObjectName("RangeGB");
-    QGridLayout *rlyout = new QGridLayout;
-    rlyout->setColumnStretch(0,0);
-    rlyout->setColumnStretch(1,10);
-    rlyout->setColumnStretch(2,5);
-    rlyout->setColumnStretch(3,5);
-    rlyout->setColumnStretch(4,5);
-    rlyout->setColumnStretch(5,5);
+    glyout = new QGridLayout;
+    glyout->setColumnStretch(0,0);
+    glyout->setColumnStretch(1,10);
+    glyout->setColumnStretch(2,5);
+    glyout->setColumnStretch(3,5);
+    glyout->setColumnStretch(4,5);
+    glyout->setColumnStretch(5,5);
     QDoubleSpinBox *dspbls;
     lbl = new QLabel("№ канала");
-    rlyout->addWidget(lbl,0,0,1,1);
+    glyout->addWidget(lbl,0,0,1,1);
     lbl = new QLabel("Тип диапазона");
-    rlyout->addWidget(lbl,0,1,1,1);
+    glyout->addWidget(lbl,0,1,1,1);
     lbl = new QLabel("Диапазон");
-    rlyout->addWidget(lbl,0,2,1,2);
+    glyout->addWidget(lbl,0,2,1,2);
     lbl = new QLabel("Мин. инж.");
-    rlyout->addWidget(lbl,0,3,1,1);
+    glyout->addWidget(lbl,0,3,1,1);
     lbl = new QLabel("Макс. инж.");
-    rlyout->addWidget(lbl,0,4,1,1);
+    glyout->addWidget(lbl,0,4,1,1);
     QStringList sl = QStringList() << "Предуст. мА" << "Произвольный";
     QStringListModel *slm = new QStringListModel;
     slm->setStringList(sl);
     for (i = 0; i < 16; i++)
     {
         QLabel *ChTypL = new QLabel(QString::number(i));
-        rlyout->addWidget(ChTypL,i+1,0,1,1);
+        glyout->addWidget(ChTypL,i+1,0,1,1);
         QComboBox *mcb = new QComboBox;
         mcb->setObjectName("inrange."+QString::number(i));
         mcb->setModel(slm);
-        rlyout->addWidget(mcb, i+1,1,1,1);
+        glyout->addWidget(mcb, i+1,1,1,1);
         connect(mcb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetRangeWidgetSlot(QString)));
         dspbls = new QDoubleSpinBox;
         dspbls->setObjectName("invmin."+QString::number(i));
@@ -181,7 +214,7 @@ void confdialog_21::SetupUI()
         tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
         dspbls->setStyleSheet(tmps);
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        rlyout->addWidget(dspbls,i+1,3,1,1);
+        glyout->addWidget(dspbls,i+1,3,1,1);
         dspbls = new QDoubleSpinBox;
         dspbls->setObjectName("invmax."+QString::number(i));
         dspbls->setSingleStep(0.01);
@@ -190,27 +223,33 @@ void confdialog_21::SetupUI()
         tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
         dspbls->setStyleSheet(tmps);
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        rlyout->addWidget(dspbls,i+1,4,1,1);
+        glyout->addWidget(dspbls,i+1,4,1,1);
     }
-    gb->setLayout(rlyout);
-    lyout2->addWidget(gb);
+    gb->setLayout(glyout);
+    lyout->addWidget(gb);
+    cp = new QWidget;
+    tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
+    cp->setStyleSheet(tmps);
+    cp->setLayout(lyout);
+    ConfTW->addTab(cp,"Диапазоны");
 
+    lyout = new QVBoxLayout;
     gb = new QGroupBox("Уставки");
-    gb3lyout = new QGridLayout;
+    glyout = new QGridLayout;
     lbl = new QLabel("№ канала");
-    gb3lyout->addWidget(lbl,0,0,1,1,Qt::AlignCenter);
+    glyout->addWidget(lbl,0,0,1,1,Qt::AlignCenter);
     lbl = new QLabel("Мин. авар.");
-    gb3lyout->addWidget(lbl,0,1,1,1,Qt::AlignCenter);
+    glyout->addWidget(lbl,0,1,1,1,Qt::AlignCenter);
     lbl = new QLabel("Мин. пред.");
-    gb3lyout->addWidget(lbl,0,2,1,1,Qt::AlignCenter);
+    glyout->addWidget(lbl,0,2,1,1,Qt::AlignCenter);
     lbl = new QLabel("Макс. пред.");
-    gb3lyout->addWidget(lbl,0,3,1,1,Qt::AlignCenter);
+    glyout->addWidget(lbl,0,3,1,1,Qt::AlignCenter);
     lbl = new QLabel("Макс. авар.");
-    gb3lyout->addWidget(lbl,0,4,1,1,Qt::AlignCenter);
+    glyout->addWidget(lbl,0,4,1,1,Qt::AlignCenter);
     for (i = 0; i < 16; i++)
     {
         QLabel *ChTypL = new QLabel(QString::number(i));
-        gb3lyout->addWidget(ChTypL,i+1,0,1,1,Qt::AlignRight);
+        glyout->addWidget(ChTypL,i+1,0,1,1,Qt::AlignRight);
         dspbls = new QDoubleSpinBox;
         dspbls->setObjectName("setminmin."+QString::number(i));
         dspbls->setSingleStep(0.01);
@@ -219,7 +258,7 @@ void confdialog_21::SetupUI()
         tmps = "QDoubleSpinBox {background-color: "+QString(ACONFRCLR)+";}";
         dspbls->setStyleSheet(tmps);
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        gb3lyout->addWidget(dspbls,i+1,1,1,1,Qt::AlignCenter);
+        glyout->addWidget(dspbls,i+1,1,1,1,Qt::AlignCenter);
         dspbls = new QDoubleSpinBox;
         dspbls->setObjectName("setmin."+QString::number(i));
         dspbls->setSingleStep(0.01);
@@ -228,7 +267,7 @@ void confdialog_21::SetupUI()
         tmps = "QDoubleSpinBox {background-color: "+QString(ACONFYCLR)+";}";
         dspbls->setStyleSheet(tmps);
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        gb3lyout->addWidget(dspbls,i+1,2,1,1,Qt::AlignCenter);
+        glyout->addWidget(dspbls,i+1,2,1,1,Qt::AlignCenter);
         dspbls = new QDoubleSpinBox;
         dspbls->setObjectName("setmax."+QString::number(i));
         dspbls->setSingleStep(0.01);
@@ -237,7 +276,7 @@ void confdialog_21::SetupUI()
         tmps = "QDoubleSpinBox {background-color: "+QString(ACONFYCLR)+";}";
         dspbls->setStyleSheet(tmps);
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        gb3lyout->addWidget(dspbls,i+1,3,1,1,Qt::AlignCenter);
+        glyout->addWidget(dspbls,i+1,3,1,1,Qt::AlignCenter);
         dspbls = new QDoubleSpinBox;
         dspbls->setObjectName("setmaxmax."+QString::number(i));
         dspbls->setSingleStep(0.01);
@@ -246,10 +285,15 @@ void confdialog_21::SetupUI()
         tmps = "QDoubleSpinBox {background-color: "+QString(ACONFRCLR)+";}";
         dspbls->setStyleSheet(tmps);
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        gb3lyout->addWidget(dspbls,i+1,4,1,1,Qt::AlignCenter);
+        glyout->addWidget(dspbls,i+1,4,1,1,Qt::AlignCenter);
     }
-    gb->setLayout(gb3lyout);
-    lyout3->addWidget(gb);
+    gb->setLayout(glyout);
+    lyout->addWidget(gb);
+    cp = new QWidget;
+    tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
+    cp->setStyleSheet(tmps);
+    cp->setLayout(lyout);
+    ConfTW->addTab(cp,"Уставки");
 
     gb = new QGroupBox("Настройки протокола МЭК-60870-5-104");
     confdialog *dlg = new confdialog(&aconf->Bci_block.mainblk);
@@ -258,16 +302,14 @@ void confdialog_21::SetupUI()
     gblyout = new QVBoxLayout;
     gblyout->addWidget(w);
     gb->setLayout(gblyout);
-    lyout4->addWidget(gb);
-    cp1->setLayout(lyout1);
-    cp2->setLayout(lyout2);
-    cp3->setLayout(lyout3);
-    cp4->setLayout(lyout4);
+    lyout->addWidget(gb);
+    cp = new QWidget;
+    tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
+    cp->setStyleSheet(tmps);
+    cp->setLayout(lyout);
+    ConfTW->addTab(cp,"104");
 
-    ConfTW->addTab(cp1,"Общие");
-    ConfTW->addTab(cp2,"Диапазоны");
-    ConfTW->addTab(cp3,"Уставки");
-    ConfTW->addTab(cp4,"104");
+    lyout = new QVBoxLayout;
     lyout->addWidget(ConfTW);
     QWidget *wdgt = new QWidget;
     QGridLayout *wdgtlyout = new QGridLayout;

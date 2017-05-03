@@ -26,12 +26,12 @@ SOURCES += main.cpp\
     publicclass.cpp \
     check/checkdialog_21.cpp \
     check/checkdialog_80.cpp \
-    config/confdialog.cpp \
+    dialogs/confdialog.cpp \
     config/config21.cpp \
     config/config80.cpp \
-    config/confdialog_21.cpp \
-    config/confdialog_31.cpp \
-    config/confdialog_80.cpp \
+    dialogs/confdialog_21.cpp \
+    dialogs/confdialog_31.cpp \
+    dialogs/confdialog_80.cpp \
     iec104/iec104.cpp \
     iec104/ethernet.cpp \
     threads/waitthread.cpp \
@@ -66,10 +66,10 @@ HEADERS  += coma.h \
     check/checkdialog_21.h \
     check/checkdialog_80.h \
     config.h \
-    config/confdialog.h \
-    config/confdialog_21.h \
-    config/confdialog_31.h \
-    config/confdialog_80.h \
+    dialogs/confdialog.h \
+    dialogs/confdialog_21.h \
+    dialogs/confdialog_31.h \
+    dialogs/confdialog_80.h \
     config/config21.h \
     config/config80.h \
     iec104/ethernet.h \

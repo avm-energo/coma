@@ -8,7 +8,7 @@
 #include <QGridLayout>
 
 #include "../publicclass.h"
-#include "config21.h"
+#include "../config/config21.h"
 
 #define RT_mA          0
 #define RT_V           1
@@ -23,6 +23,8 @@
 #define RT_mA05     2
 #define RT_V05      3
 #define RT_V_55     4
+
+#define AIN_NUMCH   8
 
 class confdialog_21 : public QDialog
 {
