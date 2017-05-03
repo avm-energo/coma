@@ -13,7 +13,7 @@
 #define BCI_T3_104      8
 #define BCI_K_104       9
 #define BCI_W_104       10
-#define CONF_NUM        11
+#define CONF_NUM        10
 
 #define DEF_ABS_104     205
 #define DEF_CTYPE       2

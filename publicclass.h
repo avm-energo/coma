@@ -10,22 +10,9 @@
 #define MAXBYTEARRAY    65535
 #define MAX_MSG     1000
 #define ER_BUFMAX   16
+#define SIZEMAX     128 // максимальный размер массивов конфигурационных параметров
 
 #define GENERALERROR    -1 // возвращённое значение - ошибка
-
-/*// S2: Определение типов элементов данных
-#define u8_TYPE		1  //беззнаковый байт
-#define s8_TYPE		2  //знаковый байт
-#define u16_TYPE	3  //беззнаковое слово
-#define s16_TYPE	4	//знаковое слово
-#define u32_TYPE	5  //32-х битовое беззнаковое
-#define s32_TYPE	6  //32-х битовое знаковое
-#define u64_TYPE	7  //64-х битовое беззнаковое
-#define s64_TYPE	8  //64-х битовое знаковое
-#define float_TYPE	9  //32-х битовое плавающее
-#define double_TYPE	10 //64-х битовое плавающее
-#define string_TYPE	11 //строка, ограниченная нулём
-#define binary_TYPE	12 //любые двоичные данные */
 
 // определение ошибок
 #define NOERROR             0 // нет ошибок
