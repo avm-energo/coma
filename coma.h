@@ -12,11 +12,11 @@
 #include <QtSerialPort/QSerialPort>
 #include "dialogs/fwupdialog.h"
 #include "dialogs/downloaddialog.h"
-#include "config/confdialog_21.h"
+#include "dialogs/confdialog_21.h"
 #include "check/checkdialog_21.h"
 #include "tune/tunedialog_21.h"
 #include "check/checkdialog_80.h"
-#include "config/confdialog_80.h"
+#include "dialogs/confdialog_80.h"
 #include "tune/tunedialog_80.h"
 #include "dialogs/oscdialog.h"
 #include "canal.h"

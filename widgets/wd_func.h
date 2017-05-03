@@ -2,6 +2,7 @@
 #define WD_FUNC
 
 #include <QWidget>
+#include "s_tqcheckbox.h"
 
 class WDFunc
 {
@@ -15,6 +16,7 @@ public:
     static bool AppendTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool SetTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool TEData(QWidget *w, const QString &tename, QString &tevalue);
+    static s_tqCheckBox *NewCB(const QString &cbname, const QString &cbtext, const QString &cbcolor);
     static bool SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue);
     static bool SetCBIndex(QWidget *w, const QString &cbname, int index);
     static bool CBData(QWidget *w, const QString &cbname, QString &cbvalue);

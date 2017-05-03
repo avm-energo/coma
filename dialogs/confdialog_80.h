@@ -4,7 +4,7 @@
 #include <QDialog>
 
 #include "../publicclass.h"
-#include "config80.h"
+#include "../config/config80.h"
 #include "confdialog.h"
 
 class confdialog_80 : public QDialog

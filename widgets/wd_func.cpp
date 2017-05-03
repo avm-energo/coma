@@ -1,7 +1,6 @@
 #include "wd_func.h"
 #include "s_tqcombobox.h"
 #include "s_tqspinbox.h"
-#include "s_tqcheckbox.h"
 #include "s_tqtableview.h"
 #include <QPalette>
 #include <QTextEdit>
@@ -72,6 +71,16 @@ bool WDFunc::TEData(QWidget *w, const QString &tename, QString &tevalue)
         return false;
     tevalue = te->toPlainText();
     return true;
+}
+
+s_tqCheckBox *WDFunc::NewCB(const QString &cbname, const QString &cbtext, const QString &cbcolor)
+{
+    s_tqCheckBox *chb = new s_tqCheckBox;
+    chb->setObjectName(cbname);
+    chb->setText(cbtext);
+    QString tmps = "QCheckBox {background-color: "+cbcolor+";}";
+    chb->setStyleSheet(tmps);
+    return chb;
 }
 
 bool WDFunc::CBData(QWidget *w, const QString &cbname, QString &cbvalue)
