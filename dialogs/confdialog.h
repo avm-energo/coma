@@ -4,7 +4,7 @@
 #include <QObject>
 
 #include "../publicclass.h"
-#include "../config.h"
+#include "config/config.h"
 
 class confdialog : public QObject
 {

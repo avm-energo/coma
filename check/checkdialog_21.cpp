@@ -377,7 +377,7 @@ void a_checkdialog::StartMeasurementsWithFile()
 {
     aconf = new config_21;
     // читаем текущую конфигурацию
-    cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,aconf->Config);
+    cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,aconf->Config->Config);
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != NOERROR)
@@ -399,9 +399,9 @@ void a_checkdialog::StartMeasurementsWithFile()
     xlsx->write(5,1,QVariant("Дата и время отсчёта"));
     for (int i=0; i<16; i++)
     {
-        if (aconf->Bci_block.in_type[i] == INTYPEMA)
+        if (aconf->Config->Bci_block.in_type[i] == Config2x::AIT_MA)
             xlsx->write(5,i+3,"I"+QString::number(i)+", мА");
-        else if (aconf->Bci_block.in_type[i] == INTYPEV)
+        else if (aconf->Config->Bci_block.in_type[i] == Config2x::AIT_V)
             xlsx->write(5,i+3,"U"+QString::number(i)+", В");
         else
             continue;
@@ -567,9 +567,9 @@ void a_checkdialog::TimerTimeout()
             xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz")));
             for (int i=0; i<16; i++)
             {
-                if (aconf->Bci_block.in_type[i] == INTYPEMA)
+                if (aconf->Config->Bci_block.in_type[i] == Config2x::AIT_MA)
                     xlsx->write(WRow,i+3,Bd_block.inI[i],format);
-                else if (aconf->Bci_block.in_type[i] == INTYPEV)
+                else if (aconf->Config->Bci_block.in_type[i] == Config2x::AIT_V)
                     xlsx->write(WRow,i+3,Bd_block.inU[i],format);
                 else
                     continue;

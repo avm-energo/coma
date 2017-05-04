@@ -58,17 +58,17 @@ SOURCES += main.cpp\
     dialogs/mipsetdialog.cpp \
     dialogs/settingsdialog.cpp \
     dialogs/errordialog.cpp \
-    dialogs/confdialog_2x.cpp \
     config/config2x.cpp \
     dialogs/confdialog.cpp \
-    config/config21.cpp
+    config/config21b.cpp \
+    config/config21m.cpp \
+    config/config.cpp
 
 HEADERS  += coma.h \
     canal.h \
     publicclass.h \
     check/checkdialog_21.h \
     check/checkdialog_80.h \
-    config.h \
     dialogs/confdialog.h \
     dialogs/confdialog_21.h \
     dialogs/confdialog_31.h \
@@ -102,10 +102,10 @@ HEADERS  += coma.h \
     dialogs/mipsetdialog.h \
     dialogs/settingsdialog.h \
     dialogs/errordialog.h \
-    dialogs/confdialog_2x.h \
     config/config2x.h \
     dialogs/confdialog.h \
-    config/config21.h
+    config/config21b.h \
+    config/config21m.h
 
 RESOURCES += \
     res.qrc

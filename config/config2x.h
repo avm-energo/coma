@@ -1,22 +1,18 @@
 #ifndef CONFIG2X_H
 #define CONFIG2X_H
 
-/*#define INTYPENA    0
-#define INTYPEMA    1
-#define INTYPEV     2
-#define INTYPERES   3 */
-
-#define BCI_AIN_NUM 15 // 15 параметров в конфигурации аналоговых входов
+#define BCI_AIN_NUM     15 // 15 параметров в конфигурации аналоговых входов
 #define BCI_AOUT_NUM    5 // 5 параметров в конфигурации аналоговых выходов
+
+#define AIN_MIN_TYPE    0x20 // минимальный номер аналоговой платы
+#define AIN_MAX_TYPE    0x2F // максимальный номер аналоговой платы
 
 #include <QVector>
 #include <QMap>
-#include "../config.h"`
+#include "config.h"
 
-class config2x
+class Config2x
 {
-    explicit config2x();
-
 public:
     enum AInTypes
     {
@@ -34,12 +30,6 @@ public:
         AOT_PWM
     };
 
-/*    enum AModuleTypes
-    {
-        MT_21,
-        MT_22
-    }; */
-
     struct ModuleDesc
     {
         int AInSize, AOutSize; // размер векторов в соответствующих структурах
@@ -49,13 +39,13 @@ public:
     static QMap<int, ModuleDesc> ModTypeMap()
     {
         QMap<int, ModuleDesc> map;
-        ModuleDesc MTB21MD = {8, 8, 101, 151};
+        ModuleDesc MTB21MD = {8, 0, 101, 0};
         map.insert(MTB_21, MTB21MD);
-        ModuleDesc MTM21MD = {8, 8, 121, 171};
+        ModuleDesc MTM21MD = {8, 0, 121, 0};
         map.insert(MTM_21, MTM21MD);
-        ModuleDesc MTB22MD = {8, 8, 301, 351};
+        ModuleDesc MTB22MD = {0, 8, 0, 301};
         map.insert(MTB_22, MTB22MD);
-        ModuleDesc MTM22MD = {8, 8, 321, 371};
+        ModuleDesc MTM22MD = {0, 8, 0, 321};
         map.insert(MTM_22, MTM22MD);
         return map;
     }
@@ -88,21 +78,8 @@ public:
         QVector<float> out_vmax;    // Максимальное значение сигнала в инженерных единицах
     } Bci_AOut;
 
-    struct Bci
-    {
-        Bci_Main mainblk;   // Основной блок (см. config.h)
-        Bci_AIn inblk;      // Блок с определениями входов
-        Bci_AOut outblk;    // Блок с определениями выходов
-    };
-
-    Bci Bci_block, Bci_defblock;
-    publicclass::DataRec Config[CONF_NUM+BCI_AIN_NUM+BCI_AOUT_NUM+1]; // +1 на "пустой" элемент
-
-    bool Setup(int MType);
-
 private:
-    bool SetConfig();
-    bool SetAInSize(Bci_AIn &Bcii, int size);
-    bool SetAOutSize(Bci_AOut &Bcio, int size);
+    static void SetAInSize(Bci_AIn &Bcii, int mtype);
+    static void SetAOutSize(Bci_AOut &Bcio, int mtype);
 };
 #endif // CONFIG2X_H

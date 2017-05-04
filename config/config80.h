@@ -17,7 +17,7 @@
 #define ECONF_NUM        23
 
 #include "../publicclass.h"
-#include "../config.h"
+#include "config.h"
 
 class config_80
 {

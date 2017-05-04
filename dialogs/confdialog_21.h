@@ -8,7 +8,8 @@
 #include <QGridLayout>
 
 #include "../publicclass.h"
-#include "../config/config21.h"
+#include "../config/config21b.h"
+#include "../config/config21m.h"
 
 #define RT_mA          0
 #define RT_V           1
@@ -30,13 +31,15 @@ class confdialog_21 : public QDialog
 {
     Q_OBJECT
 public:
-    explicit confdialog_21(QWidget *parent = 0);
+    explicit confdialog_21(bool BaseBoard=true, QWidget *parent = 0);
 
     bool NoProperConf; // в модуле нет нормальной конфигурации
 
 private:
     QByteArray confba;
-    config_21 *aconf;
+    bool isBaseBoard;
+    Config21b *C21b;
+    Config21m *C21m;
     bool ChTypModelIsFilling;
 
     void FillConfData();

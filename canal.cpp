@@ -1,5 +1,5 @@
 #include "Canal.h"
-#include "config.h"
+//#include "config/config.h"
 
 //#include <QtDebug>
 #include <QDialog>
@@ -33,7 +33,7 @@ Canal::~Canal()
 {
 }
 
-void Canal::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint16 filenum, publicclass::DataRec *DRptr)
+void Canal::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint16 filenum, QVector<publicclass::DataRec> &DRptr)
 {
     outdata = static_cast<char *>(ptr);
     outdatasize = ptrsize; // размер области данных, в которую производить запись
@@ -82,7 +82,7 @@ void Canal::InitiateSend()
     }
     case CN_GF:     // запрос файла
     {
-        if (DR == NULL)
+        if (DR.isEmpty())
         {
             SendErr();
             Finish(CN_NULLDATAERROR);
@@ -100,7 +100,6 @@ void Canal::InitiateSend()
     }
     case CN_WHv:
     {
-//        WriteData.resize(5+sizeof(Bhb_Main));
         WriteData.append(CN_MS);
         WriteData.append(cmd);
         AppendSize(WriteData, 17); // BoardType(1), HiddenBlock(16)
@@ -113,7 +112,7 @@ void Canal::InitiateSend()
     case CN_WF: // запись файла
     {
 //        qDebug() << "cn1";
-        if (DR == NULL)
+        if (DR.isEmpty())
             Finish(CN_NULLDATAERROR);
 //        WriteData.resize(CN_MAXFILESIZE);
         WriteData.append(CN_MS);

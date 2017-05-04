@@ -128,32 +128,33 @@ QString publicclass::VerToStr(quint32 num)
     return tmpString;
 }
 
-int publicclass::StoreDataMem(void *mem, DataRec *dr, quint16 fname) //0 - успешно, иначе код ошибки
+int publicclass::StoreDataMem(void *mem, QVector<DataRec> &dr, quint16 fname) //0 - успешно, иначе код ошибки
 {
     quint32 crc=0xFFFFFFFF;
     FileHeader D;
-    DataRec *R;
+    DataRec R;
     quint32 i;
     char *m=static_cast<char *>(mem);
     m+=sizeof(FileHeader);
     D.size=0;
-    for(R=dr;;++R)
+    for(QVector<DataRec>::iterator it=dr.begin(); it!=dr.end(); ++it)
     {
+        R = *it;
         quint32 tmpi = sizeof(DataRec)-sizeof(void*);
-        memcpy(m,R,tmpi);
+        memcpy(m,&R,tmpi);
         D.size += tmpi;
         for(i=0;i<tmpi;i++)
-            updCRC32(((unsigned char *)R)[i],&crc);
-        if(R->id==0xFFFF)
+            updCRC32((static_cast<unsigned char *>(&R))[i],&crc);
+        if(R.id==0xFFFF)
             break;
         m+=tmpi;
-        if(R->thedata)
+        if(R.thedata)
         {
-            tmpi = R->num_byte;
+            tmpi = R.num_byte;
             for(i=0;i<tmpi;i++)
-                updCRC32(((unsigned char *)R->thedata)[i],&crc);
+                updCRC32((static_cast<unsigned char *>(R.thedata))[i],&crc);
             D.size += tmpi;
-            memcpy(m,R->thedata,tmpi);
+            memcpy(m,R.thedata,tmpi);
             m+=tmpi;
         }
     }
@@ -165,40 +166,13 @@ int publicclass::StoreDataMem(void *mem, DataRec *dr, quint16 fname) //0 - ус�
     return 0;
 }
 
-void inline publicclass::updCRC32(const quint8 byte, quint32 *dwCRC32)
-{
-    *dwCRC32 = (( *dwCRC32 ) >> 8 )^ _crc32_t[( byte )^(( *dwCRC32 ) & 0x000000FF )];
-}
-
-quint32 publicclass::GetCRC32(char *data, quint32 len)
-{
-  quint32 dwCRC32 = 0xFFFFFFFF;
-  for(quint32 i=0;i<len;i++)
-  {
-      updCRC32(*data,&dwCRC32);
-      data++;
-  }
-  return dwCRC32;
-}
-
-publicclass::DataRec *publicclass::FindElem(DataRec *dr, quint16 id)
-{
-    for(;;dr++)
-    {
-        if(dr->id==id)
-            return dr;
-        if(dr->id==static_cast<quint16>(0xFFFF))
-            break;
-    }
-    return NULL;
-}
-
-int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
+int publicclass::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> &dr)
 {
   quint32 crc;
   quint32 sz=0;
   char *m=static_cast<char *>(mem);
-  DataRec R,*r;
+  DataRec R;
+  QPointer<DataRec> r;
   FileHeader dh;
   quint32 i;
   bool NoIDs=true; // признак того, что не встретился ни один из ID в dr
@@ -236,7 +210,7 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
       if(R.id==0xFFFF)
           break;
       r=FindElem(dr,R.id);
-      if(!r) //элемент не найден в описании, пропускаем
+      if(r.isNull()) //элемент не найден в описании, пропускаем
       {
           tmpi = R.num_byte;
           pos += tmpi;
@@ -250,19 +224,19 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
           continue;
       }
       NoIDs = false;
-      if (r->num_byte!=R.num_byte) //несовпадения описания прочитанного элемента с ожидаемым
+      if (r.data()->num_byte!=R.num_byte) //несовпадения описания прочитанного элемента с ожидаемым
       {
           ERMSG("Несовпадение описаний одного и того же блока"); // несовпадение описаний одного и того же блока
           return S2_DESCERROR;
       }
-      tmpi = r->num_byte;
+      tmpi = r.data()->num_byte;
       pos += tmpi;
       if (pos > memsize)
       {
           ERMSG("S2: выход за границу принятых байт"); // выход за границу принятых байт
           return S2_SIZEERROR;
       }
-      memcpy(r->thedata,m,tmpi);
+      memcpy(r.data()->thedata,m,tmpi);
       sz += tmpi;
       m += tmpi;
   }
@@ -279,71 +253,39 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, DataRec *dr)
   return 0;
 }
 
+QPointer<publicclass::DataRec> publicclass::FindElem(QVector<DataRec> &dr, quint16 id)
+{
+    for(QVector<DataRec>::iterator it=dr.begin(); it!=dr.end(); ++it)
+    {
+        DataRec R = *it;
+        if(R.id==id)
+            return it;
+        if(R.id==static_cast<quint16>(0xFFFF))
+            return NULL;
+    }
+    return NULL;
+}
+
+void inline publicclass::updCRC32(const quint8 byte, quint32 *dwCRC32)
+{
+    *dwCRC32 = (( *dwCRC32 ) >> 8 )^ _crc32_t[( byte )^(( *dwCRC32 ) & 0x000000FF )];
+}
+
+quint32 publicclass::GetCRC32(char *data, quint32 len)
+{
+  quint32 dwCRC32 = 0xFFFFFFFF;
+  for(quint32 i=0;i<len;i++)
+  {
+      updCRC32(*data,&dwCRC32);
+      data++;
+  }
+  return dwCRC32;
+}
+
 quint32 publicclass::getTime32()
 {
     QDateTime dt;
     return dt.currentDateTime().toTime_t();
-}
-
-quint32 publicclass::ANumD()
-{
-    quint32 tmpint = (ModuleBsi.MTypeB & 0xF0000000) >> 28;
-    return tmpint;
-}
-
-quint32 publicclass::ANumCh1()
-{
-    quint32 tmpint = (ModuleBsi.MTypeB & 0x00F80000) >> 19;
-    return tmpint;
-}
-
-quint32 publicclass::ANumCh2()
-{
-    quint32 tmpint = (ModuleBsi.MTypeB & 0x0000F800) >> 11;
-    return tmpint;
-}
-
-quint32 publicclass::ATyp1()
-{
-    quint32 tmpint = (ModuleBsi.MTypeB & 0x00070000) >> 16;
-    return tmpint;
-}
-
-quint32 publicclass::ATyp2()
-{
-    quint32 tmpint = (ModuleBsi.MTypeB & 0x00000700) >> 8;
-    return tmpint;
-}
-
-quint32 publicclass::AMdf()
-{
-    quint32 tmpint = (ModuleBsi.MTypeB & 0x000000FF);
-    return tmpint;
-}
-
-QString publicclass::ETyp1()
-{
-/*    switch (ModuleBsi.MTypeB)
-    {
-    case MTE_2T0N:
-    {
-        return "2Т0Н";
-        break;
-    }
-    case MTE_1T1N:
-    {
-        return "1Т1Н";
-        break;
-    }
-    case MTE_0T2N:
-    {
-        return "0Т2Н";
-        break;
-    }
-    default:
-        break;
-    } */
-    return QString();
 }
 
 QString publicclass::NsTimeToString(quint64 nstime)

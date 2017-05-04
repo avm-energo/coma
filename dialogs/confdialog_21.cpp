@@ -20,11 +20,15 @@
 #include "../widgets/wd_func.h"
 #include "../canal.h"
 
-confdialog_21::confdialog_21(QWidget *parent) :
+confdialog_21::confdialog_21(bool BaseBoard, QWidget *parent) :
     QDialog(parent)
 {
+    isBaseBoard = BaseBoard;
     ChTypModelIsFilling = false;
-    aconf = new config_21;
+    if (isBaseBoard)
+        C21b = new Config21b;
+    else
+        C21m = new Config21m;
     NoProperConf = false;
 
     setAttribute(Qt::WA_DeleteOnClose);

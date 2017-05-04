@@ -51,7 +51,6 @@
 #include "dialogs/mipsetdialog.h"
 #include "dialogs/settingsdialog.h"
 #include "dialogs/errordialog.h"
-#include "config/config.h"
 #include "log.h"
 
 Coma::Coma(QWidget *parent)
@@ -384,11 +383,12 @@ void Coma::Stage2()
         Stage1();
     }
     CopyBhbFromBsi();
+    pc.MType = ((pc.ModuleBsi.MTypeB & 0x000000FF) << 8) | (pc.ModuleBsi.MTypeM & 0x000000FF);
     pc.ModuleTypeString = "АВ-ТУК-";
-    pc.ModuleTypeString.append(QString::number(pc.ModuleBsi.MTypeB, 16));
-    QString tmps = QString::number(pc.ModuleBsi.MTypeM, 16);
+    pc.ModuleTypeString.append(QString::number(pc.MType, 16));
+/*    QString tmps = QString::number(pc.ModuleBsi.MTypeM, 16);
     tmps.truncate(8);
-    pc.ModuleTypeString.append(tmps);
+    pc.ModuleTypeString.append(tmps); */
     if ((pc.ModuleBsi.SerialNumB == 0xFFFFFFFF) || ((pc.ModuleBsi.SerialNumM == 0xFFFFFFFF) && (pc.ModuleBsi.MTypeM != MTM_00)) || \
             (pc.ModuleBsi.SerialNum == 0xFFFFFFFF)) // серийный номер не задан, выдадим предупреждение
         OpenBhbDialog();
@@ -480,25 +480,25 @@ void Coma::SendBhb()
     cn->Send(CN_WHv, Canal::BT_BASE, &pc.BoardBBhb, sizeof(pc.BoardBBhb));
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == NOERROR)
+    if (cn->result != NOERROR)
+    {
+        ERMSG("Проблема при записи блока Hidden block базовой платы");
+        return;
+    }
+    if (pc.BoardMBhb.MType != MTM_00)
     {
         cn->Send(CN_WHv, Canal::BT_MEZONIN, &pc.BoardMBhb, sizeof(pc.BoardMBhb));
         while (cn->Busy)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
-        if (cn->result == NOERROR)
-        {
-            MessageBox2::information(this, "Успешно", "Записано успешно");
-            return;
-        }
-        else
-        {
-            ERMSG("Проблема при записи блока Hidden block");
-            return;
-        }
+    }
+    if (cn->result == NOERROR)
+    {
+        MessageBox2::information(this, "Успешно", "Записано успешно");
+        return;
     }
     else
     {
-        ERMSG("Проблема при записи блока Hidden block");
+        ERMSG("Проблема при записи блока Hidden block мезонинной платы");
         return;
     }
 }

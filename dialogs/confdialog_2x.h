@@ -1,14 +1,14 @@
 /* Файл предназначен для конфигурирования модулей аналоговых АВ-ТУК-2xхх, хх2x и последующих
  */
 
-#ifndef CONFDIALOG_21_H
-#define CONFDIALOG_21_H
+#ifndef CONFDIALOG_2X_H
+#define CONFDIALOG_2X_H
 
 #include <QDialog>
 #include <QGridLayout>
 
 #include "../publicclass.h"
-#include "config21.h"
+#include "../config/config21.h"
 
 #define RT_mA          0
 #define RT_V           1
@@ -24,11 +24,13 @@
 #define RT_V05      3
 #define RT_V_55     4
 
-class confdialog_21 : public QDialog
+#define AIN_NUMCH   8
+
+class ConfDialog_2x : public QDialog
 {
     Q_OBJECT
 public:
-    explicit confdialog_21(QWidget *parent = 0);
+    explicit ConfDialog_2x(QWidget *parent = 0);
 
     bool NoProperConf; // в модуле нет нормальной конфигурации
 
@@ -73,4 +75,4 @@ private slots:
     void SetRangeWidgetSlot(QString RangeType);
 };
 
-#endif // CONFDIALOG_21_H
+#endif // CONFDIALOG_2X_H

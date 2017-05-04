@@ -148,7 +148,7 @@
 
 //#include <QtSerialPort/QSerialPort>
 #include <QStringList>
-//#include <QMap>
+#include <QPointer>
 #include "config/config.h"
 #include "log.h"
 
@@ -227,9 +227,7 @@ public:
         ER_ECHECK
     };
 
-//    QSerialPort serial;
-//    qint32 MType, MType1, SerNum;
-//    quint32 CpuIdHigh, CpuIdMid, CpuIdLow, Health;
+    quint32 MType;
 
     Log log;
     QString HomeDir;
@@ -246,26 +244,20 @@ public:
     bool ShowErrWindow, ErMsgsOk;
     Bsi ModuleBsi;
     QString PrbMessage;
+    QVector<DataRec> Config;
 
     QList<ermsg> ermsgpool;
 
     QString VerToStr(quint32);
-    quint32 ANumD();
-    quint32 ANumCh1();
-    quint32 ANumCh2();
-    quint32 ATyp1();
-    quint32 ATyp2();
-    quint32 AMdf();
-    QString ETyp1();
 
     // S2: Сборщик в память:
-    int StoreDataMem(void *, DataRec *, quint16 fname); //0 - успешно, иначе код ошибки
+    int StoreDataMem(void *, QVector<DataRec> &, quint16 fname); //0 - успешно, иначе код ошибки
     // S2: получение размера:
     int StoreDataSize(FileHeader *, DataRec *); //>0 - успешно, иначе код ошибки
     // S2: Разборщик из памяти:
-    int RestoreDataMem(void *, quint32, DataRec *); //0 - успешно, иначе код ошибки
+    int RestoreDataMem(void *, quint32, QVector<DataRec> &); //0 - успешно, иначе код ошибки
     // S2: Поиск элемента в массиве описаний
-    DataRec *FindElem(DataRec *, quint16);
+    QPointer<DataRec> FindElem(QVector<DataRec> &, quint16);
 
     quint32 GetCRC32(char *, quint32);
     void updCRC32(const quint8 byte, quint32 *dwCRC32);
