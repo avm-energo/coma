@@ -40,6 +40,7 @@
 #include <QSizePolicy>
 #include <QCheckBox>
 #include <QDir>
+#include <QtSerialPort/QSerialPortInfo>
 #include "coma.h"
 #include "commands.h"
 #include "widgets/mytabwidget.h"
@@ -48,7 +49,6 @@
 #include "widgets/s_tqspinbox.h"
 #include "widgets/wd_func.h"
 #include "dialogs/hiddendialog.h"
-#include "dialogs/mipsetdialog.h"
 #include "dialogs/settingsdialog.h"
 #include "dialogs/errordialog.h"
 #include "log.h"
@@ -244,11 +244,6 @@ void Coma::SetupMenubar()
     act->setIcon(QIcon(":/settings.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
     menu->addAction(act);
-    act = new QAction(this);
-    act->setText("Установка параметров связи с МИП");
-    act->setStatusTip("Настройка связи с прибором контроля электр. параметров МИП для регулировки модулей Э");
-    connect(act,SIGNAL(triggered()),this,SLOT(SetMipDlg()));
-    menu->addAction(act);
     MainMenuBar->addMenu(menu);
 
     act = new QAction(this);
@@ -357,8 +352,8 @@ void Coma::Stage1_5()
     connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
     connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
     connect(cn,SIGNAL(sendend()),this,SLOT(DisableProgressBar()));
-    connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(ReadUpdateMainTE(QByteArray)));
-    connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(WriteUpdateMainTE(QByteArray)));
+    connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+    connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     Stage2();
 }
 
@@ -513,16 +508,16 @@ void Coma::Stage3()
     OscDialog = new oscdialog;
     if ((pc.ModuleBsi.MTypeB > 0x1F) && (pc.ModuleBsi.MTypeB < 0x30))
     {
-        ConfDialog21 = new confdialog_21;
+        ConfDialog21 *Dialog21 = new ConfDialog21;
         ATuneDialog = new a_tunedialog;
         ACheckDialog = new a_checkdialog;
-        MainTW->addTab(ConfDialog21, "Конфигурирование");
+        MainTW->addTab(Dialog21, "Конфигурирование");
         MainTW->addTab(ATuneDialog, "Настройка");
         MainTW->addTab(ACheckDialog, "Проверка");
         MainTW->addTab(OscDialog, "Осциллограммы");
         MainTW->addTab(DownDialog, "События");
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
-        connect(ConfDialog21,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(Stage2()));
+        connect(Dialog21,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(Stage2()));
     }
     if ((pc.ModuleBsi.MTypeB > 0x7F) && (pc.ModuleBsi.MTypeB < 0x90))
     {
@@ -536,7 +531,6 @@ void Coma::Stage3()
         MainTW->addTab(DownDialog, "События");
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
         connect(EConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(Stage2()));
-        connect(ETuneDialog,SIGNAL(dataready(QByteArray)),this,SLOT(UpdateMainTE104(QByteArray)));
     }
     if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
         pc.ErMsg(ER_NOCONF);
@@ -678,46 +672,13 @@ void Coma::StartEmulE()
     Stage3();
 }
 
-void Coma::SetMipDlg()
-{
-    MipSetDialog *dlg = new MipSetDialog;
-    dlg->exec();
-}
-
 void Coma::StartSettingsDialog()
 {
     SettingsDialog *dlg = new SettingsDialog;
     dlg->exec();
 }
 
-void Coma::UpdateMainTE104(QByteArray ba)
-{
-    QString tmpString;
-    if (ba.at(0) == 0x3A) // ':' - символ установления связи по Ethernet
-    {
-        ba.remove(0,1);
-        tmpString = "Eth connected!";
-    }
-    else if (ba.at(0) == 0x3B) // ';' - символ закрытия связи по Ethernet
-    {
-        ba.remove(0,1);
-        tmpString = "Eth disconnected!";
-    }
-    WDFunc::AppendTEData(this, "mainte", tmpString);
-    UpdateMainTE(ba);
-}
-
-void Coma::ReadUpdateMainTE(QByteArray ba)
-{
-    UpdateMainTE(ba);
-}
-
-void Coma::WriteUpdateMainTE(QByteArray ba)
-{
-    UpdateMainTE(ba);
-}
-
-void Coma::UpdateMainTE(QByteArray &ba)
+void Coma::UpdateMainTE(QByteArray ba)
 {
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     QString tmpString;
@@ -755,13 +716,6 @@ void Coma::resizeEvent(QResizeEvent *e)
         if (sww == 0)
             return;
         sww->setGeometry(QRect(width()-sww->width(), 0, sww->width(), height()));
-    }
-    if (!ERHide)
-    {
-        QWidget *erw = this->findChild<QWidget *>("errorwidget");
-        if (erw == 0)
-            return;
-        erw->setGeometry(QRect(0, height()-erw->height(), width(), erw->height()));
     }
 }
 

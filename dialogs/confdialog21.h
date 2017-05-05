@@ -1,12 +1,13 @@
 /* Файл предназначен для конфигурирования модулей аналоговых АВ-ТУК-2xхх, хх2x и последующих
  */
 
-#ifndef CONFDIALOG_21_H
-#define CONFDIALOG_21_H
+#ifndef CONFDIALOG21_H
+#define CONFDIALOG21_H
 
 #include <QDialog>
 #include <QGridLayout>
 
+#include "abstractconfdialog.h"
 #include "../publicclass.h"
 #include "../config/config21b.h"
 #include "../config/config21m.h"
@@ -25,13 +26,13 @@
 #define RT_V05      3
 #define RT_V_55     4
 
-#define AIN_NUMCH   8
+#define AIN21_NUMCH 8
 
-class confdialog_21 : public QDialog
+class ConfDialog21 : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    explicit confdialog_21(bool BaseBoard=true, QWidget *parent = 0);
+    explicit ConfDialog21(bool BaseBoard=true, QWidget *parent = 0);
 
     bool NoProperConf; // в модуле нет нормальной конфигурации
 
@@ -42,7 +43,7 @@ private:
     Config21m *C21m;
     bool ChTypModelIsFilling;
 
-    void FillConfData();
+    void Fill();
     void SetRange(int Range, int ChNum);
     void SetRangeCB(int ChNum, int ChTypCB);
     bool CheckConf();
@@ -51,9 +52,6 @@ private:
     int GetChNumFromObjectName(QString ObjectName);
 
 signals:
-    void BsiIsNeedToBeAcquiredAndChecked();
-//    void Set104Conf(Bci_Main &);
-    void Fill104Conf();
 
 public slots:
 
@@ -67,15 +65,14 @@ private slots:
 //    void Set104();
 //    void SetCType(int);
     void SetOscDly(int);
-    void GetBci();
+    void ReadConf();
     void WriteConfDataToModule();
     void SetupUI();
-    void SetNewConf();
     void SetDefConf();
-    void SaveConf();
-    void LoadConf();
+    void SaveConfToFile();
+    void LoadConfFromFile();
     void DisableChannel(int ChNum, bool Disable);
     void SetRangeWidgetSlot(QString RangeType);
 };
 
-#endif // CONFDIALOG_21_H
+#endif // CONFDIALOG21_H

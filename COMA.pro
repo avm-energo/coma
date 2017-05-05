@@ -26,9 +26,7 @@ SOURCES += main.cpp\
     publicclass.cpp \
     check/checkdialog_21.cpp \
     check/checkdialog_80.cpp \
-    dialogs/confdialog.cpp \
     config/config80.cpp \
-    dialogs/confdialog_21.cpp \
     dialogs/confdialog_31.cpp \
     dialogs/confdialog_80.cpp \
     iec104/iec104.cpp \
@@ -55,22 +53,20 @@ SOURCES += main.cpp\
     dialogs/hiddendialog.cpp \
     widgets/wd_func.cpp \
     log.cpp \
-    dialogs/mipsetdialog.cpp \
     dialogs/settingsdialog.cpp \
     dialogs/errordialog.cpp \
     config/config2x.cpp \
-    dialogs/confdialog.cpp \
     config/config21b.cpp \
     config/config21m.cpp \
-    config/config.cpp
+    config/config.cpp \
+    dialogs/confdialog21.cpp \
+    dialogs/abstractconfdialog.cpp
 
 HEADERS  += coma.h \
     canal.h \
     publicclass.h \
     check/checkdialog_21.h \
     check/checkdialog_80.h \
-    dialogs/confdialog.h \
-    dialogs/confdialog_21.h \
     dialogs/confdialog_31.h \
     dialogs/confdialog_80.h \
     config/config80.h \
@@ -99,13 +95,13 @@ HEADERS  += coma.h \
     config/config.h \
     widgets/wd_func.h \
     log.h \
-    dialogs/mipsetdialog.h \
     dialogs/settingsdialog.h \
     dialogs/errordialog.h \
     config/config2x.h \
-    dialogs/confdialog.h \
     config/config21b.h \
-    config/config21m.h
+    config/config21m.h \
+    dialogs/confdialog21.h \
+    dialogs/abstractconfdialog.h
 
 RESOURCES += \
     res.qrc

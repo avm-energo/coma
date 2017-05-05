@@ -14,13 +14,13 @@
 #include <QCoreApplication>
 #include <QDoubleSpinBox>
 #include <QTabBar>
-#include "confdialog_21.h"
+#include "confdialog21.h"
 #include "confdialog.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
 #include "../canal.h"
 
-confdialog_21::confdialog_21(bool BaseBoard, QWidget *parent) :
+ConfDialog21::ConfDialog21(bool BaseBoard, QWidget *parent) :
     QDialog(parent)
 {
     isBaseBoard = BaseBoard;
@@ -36,10 +36,10 @@ confdialog_21::confdialog_21(bool BaseBoard, QWidget *parent) :
     if ((pc.ModuleBsi.Hth & HTH_CONFIG) || (pc.Emul)) // если в модуле нет конфигурации, заполнить поля по умолчанию
         SetDefConf();
     else // иначе заполнить значениями из модуля
-        GetBci();
+        ReadConf();
 }
 
-void confdialog_21::SetupUI()
+void ConfDialog21::SetupUI()
 {
     int i;
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
@@ -106,22 +106,22 @@ void confdialog_21::SetupUI()
     {
         lbl=new QLabel(QString::number(i));
         glyout->addWidget(lbl,row,++column,1,1,Qt::AlignCenter);
-        s_tqCheckBox *chb = WDFunc::NewCB("choscdi2."+QString::number(i), \
+        s_tqCheckBox *chb = WDFunc::NewChB("choscdi2."+QString::number(i), \
                                           "", \
                                           ACONFCLR);
         connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
         glyout->addWidget(chb,row,++column,1,1,Qt::AlignCenter);
-        chb = WDFunc::NewCB("choscdi1."+QString::number(i), \
+        chb = WDFunc::NewChB("choscdi1."+QString::number(i), \
                             "", \
                             ACONFCLR);
         connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
         glyout->addWidget(chb,row,++column,1,1,Qt::AlignCenter);
-        chb = WDFunc::NewCB("choscthr."+QString::number(i), \
+        chb = WDFunc::NewChB("choscthr."+QString::number(i), \
                             "", \
                             ACONFCLR);
         connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
         glyout->addWidget(chb,row,++column,1,1,Qt::AlignCenter);
-        chb = WDFunc::NewCB("chosccso0."+QString::number(i), \
+        chb = WDFunc::NewChB("chosccso0."+QString::number(i), \
                             "", \
                             ACONFCLR);
         connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
@@ -201,7 +201,7 @@ void confdialog_21::SetupUI()
     QStringList sl = QStringList() << "Предуст. мА" << "Произвольный";
     QStringListModel *slm = new QStringListModel;
     slm->setStringList(sl);
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < AIN_NUMCH; i++)
     {
         QLabel *ChTypL = new QLabel(QString::number(i));
         glyout->addWidget(ChTypL,i+1,0,1,1);
@@ -250,7 +250,7 @@ void confdialog_21::SetupUI()
     glyout->addWidget(lbl,0,3,1,1,Qt::AlignCenter);
     lbl = new QLabel("Макс. авар.");
     glyout->addWidget(lbl,0,4,1,1,Qt::AlignCenter);
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < AIN_NUMCH; i++)
     {
         QLabel *ChTypL = new QLabel(QString::number(i));
         glyout->addWidget(ChTypL,i+1,0,1,1,Qt::AlignRight);
@@ -299,26 +299,27 @@ void confdialog_21::SetupUI()
     cp->setLayout(lyout);
     ConfTW->addTab(cp,"Уставки");
 
-    gb = new QGroupBox("Настройки протокола МЭК-60870-5-104");
-    confdialog *dlg = new confdialog(&aconf->Bci_block.mainblk);
-    QWidget *w = dlg->Widget104();
-    connect(this,SIGNAL(Fill104Conf()),dlg,SLOT(Fill()));
-    gblyout = new QVBoxLayout;
-    gblyout->addWidget(w);
-    gb->setLayout(gblyout);
-    lyout->addWidget(gb);
-    cp = new QWidget;
-    tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
-    cp->setStyleSheet(tmps);
-    cp->setLayout(lyout);
-    ConfTW->addTab(cp,"104");
+    if (isBaseBoard)
+    {
+        gb = new QGroupBox("Настройки протокола МЭК-60870-5-104");
+        QWidget *w = Widget104();
+        gblyout = new QVBoxLayout;
+        gblyout->addWidget(w);
+        gb->setLayout(gblyout);
+        lyout->addWidget(gb);
+        cp = new QWidget;
+        tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
+        cp->setStyleSheet(tmps);
+        cp->setLayout(lyout);
+        ConfTW->addTab(cp,"104");
+    }
 
     lyout = new QVBoxLayout;
     lyout->addWidget(ConfTW);
     QWidget *wdgt = new QWidget;
     QGridLayout *wdgtlyout = new QGridLayout;
     QPushButton *pb = new QPushButton("Прочитать из модуля");
-    connect(pb,SIGNAL(clicked()),this,SLOT(GetBci()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(ReadConf()));
     if (pc.Emul)
         pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 0, 1, 1);
@@ -330,26 +331,21 @@ void confdialog_21::SetupUI()
     wdgtlyout->addWidget(pb, 0, 1, 1, 1);
     pb = new QPushButton("Прочитать из файла");
     pb->setIcon(QIcon(":/load.png"));
-    connect(pb,SIGNAL(clicked()),this,SLOT(LoadConf()));
-    wdgtlyout->addWidget(pb, 0, 2, 1, 1);
+    connect(pb,SIGNAL(clicked()),this,SLOT(LoadConfFromFile()));
+    wdgtlyout->addWidget(pb, 1, 0, 1, 1);
     pb = new QPushButton("Записать в файл");
     pb->setIcon(QIcon(":/save.png"));
-    connect(pb,SIGNAL(clicked()),this,SLOT(SaveConf()));
-    wdgtlyout->addWidget(pb, 0, 3, 1, 1);
+    connect(pb,SIGNAL(clicked()),this,SLOT(SaveConfToFile()));
+    wdgtlyout->addWidget(pb, 1, 1, 1, 1);
     pb = new QPushButton("Задать конфигурацию по умолчанию");
     connect(pb,SIGNAL(clicked()),this,SLOT(SetDefConf()));
-    wdgtlyout->addWidget(pb, 1, 0, 1, 2);
-    pb = new QPushButton("Перейти на новую конфигурацию");
-    connect(pb,SIGNAL(clicked()),this,SLOT(SetNewConf()));
-    if (pc.Emul)
-        pb->setEnabled(false);
-    wdgtlyout->addWidget(pb, 1, 2, 1, 2);
+    wdgtlyout->addWidget(pb, 2, 0, 1, 2);
     wdgt->setLayout(wdgtlyout);
     lyout->addWidget(wdgt);
     setLayout(lyout);
 }
 
-void confdialog_21::SetRangemA()
+void ConfDialog21::SetRangemA()
 {
     QComboBox *cb = qobject_cast<QComboBox *>(sender());
     if (cb == 0)
@@ -360,7 +356,7 @@ void confdialog_21::SetRangemA()
     SetRange(cb->currentIndex(), tmpi);
 }
 
-void confdialog_21::SetRangeV()
+void ConfDialog21::SetRangeV()
 {
     QComboBox *cb = qobject_cast<QComboBox *>(sender());
     if (cb == 0)
@@ -371,7 +367,7 @@ void confdialog_21::SetRangeV()
     SetRange(cb->currentIndex()+RT_V05, tmpi); // перемещаем диапазон комбобокса в область V
 }
 
-void confdialog_21::SetRange(int Range, int ChNum)
+void ConfDialog21::SetRange(int Range, int ChNum)
 {
     switch(Range)
     {
@@ -400,7 +396,7 @@ void confdialog_21::SetRange(int Range, int ChNum)
     }
 }
 
-void confdialog_21::GetBci()
+void ConfDialog21::ReadConf()
 {
     cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,aconf->Config);
     while (cn->Busy)
@@ -411,7 +407,7 @@ void confdialog_21::GetBci()
         MessageBox2::error(this, "ошибка", "Ошибка чтения конфигурации из модуля");
 }
 
-void confdialog_21::FillConfData()
+void ConfDialog21::FillConfData()
 {
     int i;
     QComboBox *cb;
@@ -447,7 +443,7 @@ void confdialog_21::FillConfData()
     }
 }
 
-void confdialog_21::SetMinMax(int i)
+void ConfDialog21::SetMinMax(int i)
 {
     QComboBox *cb = this->findChild<QComboBox *>("inrange."+QString::number(i));
     if (cb == 0)
@@ -525,7 +521,7 @@ void confdialog_21::SetMinMax(int i)
     }
 }
 
-void confdialog_21::SetChTypData()
+void ConfDialog21::SetChTypData()
 {
     QComboBox *cb = qobject_cast<QComboBox *>(sender());
     int tmpi = GetChNumFromObjectName(sender()->objectName());
@@ -539,7 +535,7 @@ void confdialog_21::SetChTypData()
     ChTypModelIsFilling = false;
 }
 
-void confdialog_21::DisableChannel(int ChNum, bool Disable)
+void ConfDialog21::DisableChannel(int ChNum, bool Disable)
 {
     QComboBox *cb;
     QCheckBox *chb = this->findChild<QCheckBox *>("chb."+QString::number(ChNum));
@@ -586,7 +582,7 @@ void confdialog_21::DisableChannel(int ChNum, bool Disable)
         dspbls->setVisible(!Disable);
 }
 
-void confdialog_21::SetRangeCB(int ChNum, int ChTypCB)
+void ConfDialog21::SetRangeCB(int ChNum, int ChTypCB)
 {
     QComboBox *mcb = this->findChild<QComboBox *>("inrange."+QString::number(ChNum));
     if (mcb == 0)
@@ -611,12 +607,12 @@ void confdialog_21::SetRangeCB(int ChNum, int ChTypCB)
     mcb->setModel(slm);
 }
 
-void confdialog_21::SetOscDly(int dly)
+void ConfDialog21::SetOscDly(int dly)
 {
     aconf->Bci_block.oscdly = dly;
 }
 
-void confdialog_21::SetChOsc(int isChecked)
+void ConfDialog21::SetChOsc(int isChecked)
 {
     int ChNum = GetChNumFromObjectName(sender()->objectName());
     if (ChNum == -1)
@@ -643,7 +639,7 @@ void confdialog_21::SetChOsc(int isChecked)
     }
 }
 
-void confdialog_21::SetChOscSrc(int srctyp)
+void ConfDialog21::SetChOscSrc(int srctyp)
 {
     int ChNum = GetChNumFromObjectName(sender()->objectName());
     if (ChNum == -1)
@@ -655,7 +651,7 @@ void confdialog_21::SetChOscSrc(int srctyp)
     aconf->Bci_block.oscsrc |= tmpint; */
 }
 
-int confdialog_21::GetChNumFromObjectName(QString ObjectName)
+int ConfDialog21::GetChNumFromObjectName(QString ObjectName)
 {
     QStringList ObjectNameSl = ObjectName.split(".");
     int ChNum;
@@ -669,7 +665,7 @@ int confdialog_21::GetChNumFromObjectName(QString ObjectName)
     return ChNum;
 }
 
-bool confdialog_21::CheckConf()
+bool ConfDialog21::CheckConf()
 {
     bool NotGood = false;
     for (int i=0; i<16; i++)
@@ -696,7 +692,7 @@ bool confdialog_21::CheckConf()
     return NotGood;
 }
 
-void confdialog_21::SetIn()
+void ConfDialog21::SetIn()
 {
     QStringList tmpsl = QStringList() << "inmin" << "inmax" << "invmin" << "invmax" << \
                                          "setminmin" << "setmin" << "setmax" << "setmaxmax";
@@ -752,7 +748,7 @@ void confdialog_21::SetIn()
     spb->setStyleSheet(tmps);
 }
 
-void confdialog_21::WriteConfDataToModule()
+void ConfDialog21::WriteConfDataToModule()
 {
     if (CheckConf())
     {
@@ -763,31 +759,22 @@ void confdialog_21::WriteConfDataToModule()
     while (cn->Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == NOERROR)
-        MessageBox2::information(this, "Внимание", "Операция проведена успешно!");
-}
-
-void confdialog_21::SetNewConf()
-{
-/*    cn->Send(CN_Cnc);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == NOERROR)
     {
         emit BsiIsNeedToBeAcquiredAndChecked();
-        MessageBox2::information(this, "Внимание", "Переход прошёл успешно!");
-    } */
+        MessageBox2::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
+    }
 }
 
-void confdialog_21::SetDefConf()
+void ConfDialog21::SetDefConf()
 {
     memcpy(&(aconf->Bci_block), &(aconf->Bci_defblock), sizeof(aconf->Bci_block));
     FillConfData();
 //    emit Set104Conf(aconf->Bci_block.mainblk);
-    emit Fill104Conf();
+    Fill104();
     MessageBox2::information(this, "Успешно", "Задана конфигурация по умолчанию");
 }
 
-void confdialog_21::LoadConf()
+void ConfDialog21::LoadConfFromFile()
 {
     QByteArray ba;
     ba = pc.LoadFile("Config files (*.acf)");
@@ -800,7 +787,7 @@ void confdialog_21::LoadConf()
     MessageBox2::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
-void confdialog_21::SaveConf()
+void ConfDialog21::SaveConfToFile()
 {
     QByteArray *ba = new QByteArray;
     ba->resize(MAXBYTEARRAY);
@@ -830,7 +817,7 @@ void confdialog_21::SaveConf()
     }
 }
 
-void confdialog_21::SetRangeWidgetSlot(QString RangeType)
+void ConfDialog21::SetRangeWidgetSlot(QString RangeType)
 {
     if (ChTypModelIsFilling) // выход, если слот вызван заполнением модели выпадающего списка
         return;
@@ -848,7 +835,7 @@ void confdialog_21::SetRangeWidgetSlot(QString RangeType)
     SetRangeWidget(ChNum, RangeTypes.indexOf(RangeType));
 }
 
-void confdialog_21::SetRangeWidget(int ChNum, int RangeType)
+void ConfDialog21::SetRangeWidget(int ChNum, int RangeType)
 {
     QGroupBox *gb = this->findChild<QGroupBox *>("RangeGB");
     if (gb == 0)

@@ -1,7 +1,8 @@
 #ifndef CONFIG
 #define CONFIG
 
-#include "publicclass.h"
+#include <QVector>
+#include "../publicclass.h"
 
 #define BCI_MTYPEB      1
 #define BCI_MTYPEM      2
@@ -56,7 +57,8 @@
 class Config
 {
 public:
-    Config(QVector<publicclass::DataRec> &config);
+
+    explicit Config(QVector<publicclass::DataRec> &config);
 
     struct Bci_Main
     {

@@ -1,6 +1,4 @@
 #include "wd_func.h"
-#include "s_tqcombobox.h"
-#include "s_tqspinbox.h"
 #include "s_tqtableview.h"
 #include <QPalette>
 #include <QTextEdit>
@@ -8,6 +6,7 @@
 #include <QLabel>
 #include <QRegExp>
 #include <QLineEdit>
+#include <QStringListModel>
 
 bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring)
 {
@@ -73,14 +72,16 @@ bool WDFunc::TEData(QWidget *w, const QString &tename, QString &tevalue)
     return true;
 }
 
-s_tqCheckBox *WDFunc::NewCB(const QString &cbname, const QString &cbtext, const QString &cbcolor)
+s_tqComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, QStringList &cbsl, const QString &cbcolor)
 {
-    s_tqCheckBox *chb = new s_tqCheckBox;
-    chb->setObjectName(cbname);
-    chb->setText(cbtext);
-    QString tmps = "QCheckBox {background-color: "+cbcolor+";}";
-    chb->setStyleSheet(tmps);
-    return chb;
+    s_tqComboBox *cb = new s_tqComboBox(parent);
+    cb->setObjectName(cbname);
+    QStringListModel *cblm = new QStringListModel;
+    cblm->setStringList(cbsl);
+    cb->setModel(cblm);
+    tmps = "QComboBox {background-color: " + cbcolor + ";}";
+    cb->setStyleSheet(tmps);
+    return cb;
 }
 
 bool WDFunc::CBData(QWidget *w, const QString &cbname, QString &cbvalue)
@@ -108,6 +109,19 @@ bool WDFunc::SetCBIndex(QWidget *w, const QString &cbname, int index)
         return false;
     cb->setCurrentIndex(index);
     return true;
+}
+
+s_tqSpinBox *WDFunc::NewSPB(QWidget *parent, const QString &spbname, double min, double max, double step, int decimals, const QString &spbcolor)
+{
+    s_tqSpinBox *dspbls = new s_tqSpinBox(parent);
+    dspbls->setObjectName(spbname);
+    dspbls->setSingleStep(step);
+    dspbls->setDecimals(decimals);
+    dspbls->setMinimum(min);
+    dspbls->setMaximum(max);
+    QString tmps = "QDoubleSpinBox {background-color: " + spbcolor + ";}";
+    dspbls->setStyleSheet(tmps);
+    return dspbls;
 }
 
 bool WDFunc::SPBData(QWidget *w, const QString &spbname, double &spbvalue)
@@ -175,6 +189,16 @@ void WDFunc::TVAutoResize(QWidget *w, const QString &tvname)
         return;
     tv->resizeColumnsToContents();
     tv->resizeRowsToContents();
+}
+
+static s_tqCheckBox *NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor)
+{
+    s_tqCheckBox *chb = new s_tqCheckBox(parent);
+    chb->setObjectName(chbname);
+    chb->setText(chbtext);
+    QString tmps = "QCheckBox {background-color: "+chbcolor+";}";
+    chb->setStyleSheet(tmps);
+    return chb;
 }
 
 bool WDFunc::ChBData(QWidget *w, const QString &chbname, bool &data)

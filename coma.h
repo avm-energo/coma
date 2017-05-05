@@ -2,14 +2,7 @@
 #define COMA_H
 
 #include <QMainWindow>
-#include <QTimer>
-#include <QCloseEvent>
-#include <QMouseEvent>
 #include <QResizeEvent>
-#include <QAction>
-#include <QVBoxLayout>
-#include <QtSerialPort/QSerialPortInfo>
-#include <QtSerialPort/QSerialPort>
 #include "dialogs/fwupdialog.h"
 #include "dialogs/downloaddialog.h"
 #include "dialogs/oscdialog.h"
@@ -40,10 +33,8 @@ signals:
     void mipparset();
 
 private:
-    bool SWHide,ERHide, ERTimerIsOn;
-    QRect SWGeometry, ERGeometry;
-    QTimer *ERTimer;
-    QMetaObject::Connection pbh1, pbh2;
+    bool SWHide;
+    QRect SWGeometry;
     quint32 PrbSize;
 
     static QStringList Hth()
@@ -89,7 +80,6 @@ private:
     }
 
     a_checkdialog *ACheckDialog;
-    confdialog_21 *ConfDialog21;
     a_tunedialog *ATuneDialog;
     e_checkdialog *ECheckDialog;
     confdialog_80 *EConfDialog;
@@ -100,12 +90,12 @@ private:
     QAction *WriteSNAction;
     quint8 ReconTry;
     publicclass::Bsi Bsi_block;
+    QVector<publicclass::DataRec> S2Config;
 
     QString ByteToHex(quint8);
     void FillBsi();
     void ClearBsi();
     void ShowOrHideSlideSW();
-    void UpdateMainTE(QByteArray &ba);
 
 signals:
     void CloseConnectDialog();
@@ -118,13 +108,10 @@ private slots:
     void Disconnect();
     void Stage1_5();
     void GetAbout();
-    void ReadUpdateMainTE(QByteArray ba);
-    void WriteUpdateMainTE(QByteArray ba);
-    void UpdateMainTE104(QByteArray);
+    void UpdateMainTE(QByteArray ba);
     void SetPort(QString str);
     void OpenBhbDialog();
     void SendBhb();
-    void SetMipDlg();
     void MouseMove();
     void EmulA();
     void EmulE();
