@@ -12,10 +12,12 @@
 #define ER_BUFMAX   16
 #define SIZEMAX     128 // максимальный размер массивов конфигурационных параметров
 
-#define GENERALERROR    -1 // возвращённое значение - ошибка
-
 // определение ошибок
-#define NOERROR             0 // нет ошибок
+#define NOERROR         0 // нет ошибок
+#define GENERALERROR    -1 // возвращённое значение - ошибка
+#define ER_FILEWRITE    1 // ошибка записи файла
+#define ER_FILENAMEEMP  2 // пустое имя файла
+#define ER_FILEOPEN     3 // ошибка открытия файла
 
 #define USB_COMER           1 // USB: Ошибка открытия COM-порта
 #define USB_NOCOMER         2 // USB: В системе нет COM-портов

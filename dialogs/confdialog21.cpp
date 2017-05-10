@@ -15,334 +15,22 @@
 #include <QDoubleSpinBox>
 #include <QTabBar>
 #include "confdialog21.h"
-#include "confdialog.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
 #include "../canal.h"
 
-ConfDialog21::ConfDialog21(bool BaseBoard, QWidget *parent) :
-    QDialog(parent)
+ConfDialog21::ConfDialog21(QVector<publicclass::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
+    AbstractConfDialog2x(S2Config, BaseBoard, parent)
 {
-    isBaseBoard = BaseBoard;
-    ChTypModelIsFilling = false;
-    if (isBaseBoard)
-        C21b = new Config21b;
-    else
-        C21m = new Config21m;
-    NoProperConf = false;
-
-    setAttribute(Qt::WA_DeleteOnClose);
-    SetupUI();
-    if ((pc.ModuleBsi.Hth & HTH_CONFIG) || (pc.Emul)) // если в модуле нет конфигурации, заполнить поля по умолчанию
-        SetDefConf();
-    else // иначе заполнить значениями из модуля
-        ReadConf();
-}
-
-void ConfDialog21::SetupUI()
-{
-    int i;
-    QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
-    setStyleSheet(tmps);
-    QTabWidget *ConfTW = new QTabWidget;
-    ConfTW->setObjectName("conftw");
-    QString ConfTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLOR)+";}";
-    ConfTW->tabBar()->setStyleSheet(ConfTWss);
-    QVBoxLayout *lyout = new QVBoxLayout;
-
-    QGroupBox *gb = new QGroupBox("Типы каналов");
-    QVBoxLayout *gblyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QStringList ChTypSl = QStringList() << "Не исп." << "мА" << "В";
-    QStringListModel *ChTypSlM = new QStringListModel;
-    ChTypSlM->setStringList(ChTypSl);
-    for (i = 1; i <= AIN_NUMCH; ++i)
-    {
-        QLabel *ChTypL = new QLabel(QString::number(i)+":");
-        QComboBox *ChTypCB = new QComboBox;
-        ChTypCB->setModel(ChTypSlM);
-        ChTypCB->setObjectName("chtypcb."+QString::number(i));
-        tmps = "QComboBox {background-color: "+QString(ACONFGCLR)+";}";
-        ChTypCB->setStyleSheet(tmps);
-        connect(ChTypCB,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChTypData()));
-        hlyout->addWidget(ChTypL);
-        hlyout->addWidget(ChTypCB, 1);
-        if ((i % 4) == 0)
-        {
-            gblyout->addLayout(hlyout);
-            hlyout = new QHBoxLayout;
-        }
-    }
-    gb->setLayout(gblyout);
-    lyout->addWidget(gb);
-    gb = new QGroupBox("Осциллограммы");
-    gblyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    QLabel *lbl = new QLabel("Источники записи осциллограмм:");
-    gblyout->addWidget(lbl);
-    lbl = new QLabel("#");
-    glyout->addWidget(lbl,0,0,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Вход DI2");
-    glyout->addWidget(lbl,0,1,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Вход DI1");
-    glyout->addWidget(lbl,0,2,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Превыш. oscthr");
-    glyout->addWidget(lbl,0,3,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Команда Cso0");
-    glyout->addWidget(lbl,0,4,1,1,Qt::AlignCenter);
-    lbl = new QLabel("#");
-    glyout->addWidget(lbl,0,5,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Вход DI2");
-    glyout->addWidget(lbl,0,6,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Вход DI1");
-    glyout->addWidget(lbl,0,7,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Превыш. oscthr");
-    glyout->addWidget(lbl,0,8,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Команда Cso0");
-    glyout->addWidget(lbl,0,9,1,1,Qt::AlignCenter);
-    int row = 1;
-    int column = 0;
-    for (i=1; i<=AIN_NUMCH; ++i)
-    {
-        lbl=new QLabel(QString::number(i));
-        glyout->addWidget(lbl,row,++column,1,1,Qt::AlignCenter);
-        s_tqCheckBox *chb = WDFunc::NewChB("choscdi2."+QString::number(i), \
-                                          "", \
-                                          ACONFCLR);
-        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
-        glyout->addWidget(chb,row,++column,1,1,Qt::AlignCenter);
-        chb = WDFunc::NewChB("choscdi1."+QString::number(i), \
-                            "", \
-                            ACONFCLR);
-        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
-        glyout->addWidget(chb,row,++column,1,1,Qt::AlignCenter);
-        chb = WDFunc::NewChB("choscthr."+QString::number(i), \
-                            "", \
-                            ACONFCLR);
-        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
-        glyout->addWidget(chb,row,++column,1,1,Qt::AlignCenter);
-        chb = WDFunc::NewChB("chosccso0."+QString::number(i), \
-                            "", \
-                            ACONFCLR);
-        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
-        glyout->addWidget(chb,row,++column,1,1,Qt::AlignCenter);
-        if ((i%2) == 0)
-        {
-            ++row;
-            column = 0;
-        }
-    }
-    gblyout->addLayout(glyout);
-    ChTypSl = QStringList() << "Ком. Ц" << "Ц+U>" << "Ц+DI" << "Любой";
-    ChTypSlM = new QStringListModel;
-    ChTypSlM->setStringList(ChTypSl);
-    lbl = new QLabel("События-инициаторы запуска осциллограмм:");
-    gblyout->addWidget(lbl);
-    hlyout = new QHBoxLayout;
-    for (i = 0; i < AIN_NUMCH; i++)
-    {
-        QLabel *ChTypL = new QLabel(QString::number(i)+":");
-        ChTypL->setObjectName("oscsrcl."+QString::number(i));
-        QComboBox *ChTypCB = new QComboBox;
-        ChTypCB->setObjectName("oscsrccb."+QString::number(i));
-        ChTypCB->setModel(ChTypSlM);
-        tmps = "QComboBox {background-color: "+QString(ACONFGCLR)+";}";
-        ChTypCB->setStyleSheet(tmps);
-        connect(ChTypCB,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChOscSrc(int)));
-        hlyout->addWidget(ChTypL);
-        hlyout->addWidget(ChTypCB, 1);
-        if ((i>1)&&!((i+1)%4))
-        {
-            gblyout->addLayout(hlyout);
-            hlyout = new QHBoxLayout;
-        }
-    }
-    gblyout->addLayout(hlyout);
-    lbl = new QLabel("Задержка в мс начала фиксации максимумов:");
-    gblyout->addWidget(lbl);
-    QSpinBox *spb = new QSpinBox;
-    spb->setObjectName("oscdlyspb");
-    spb->setSingleStep(1);
-    spb->setMinimum(0);
-    spb->setMaximum(10000);
-    tmps = "QSpinBox {background-color: "+QString(ACONFGCLR)+";}";
-    spb->setStyleSheet(tmps);
-    connect(spb,SIGNAL(valueChanged(int)),this,SLOT(SetOscDly(int)));
-    gblyout->addWidget(spb);
-    gb->setLayout(gblyout);
-    lyout->addWidget(gb);
-    QWidget *cp = new QWidget;
-    tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
-    cp->setStyleSheet(tmps);
-    cp->setLayout(lyout);
-    ConfTW->addTab(cp,"Общие");
-
-    lyout = new QVBoxLayout;
-    gb = new QGroupBox("Диапазоны сигналов");
-    gb->setObjectName("RangeGB");
-    glyout = new QGridLayout;
-    glyout->setColumnStretch(0,0);
-    glyout->setColumnStretch(1,10);
-    glyout->setColumnStretch(2,5);
-    glyout->setColumnStretch(3,5);
-    glyout->setColumnStretch(4,5);
-    glyout->setColumnStretch(5,5);
-    QDoubleSpinBox *dspbls;
-    lbl = new QLabel("№ канала");
-    glyout->addWidget(lbl,0,0,1,1);
-    lbl = new QLabel("Тип диапазона");
-    glyout->addWidget(lbl,0,1,1,1);
-    lbl = new QLabel("Диапазон");
-    glyout->addWidget(lbl,0,2,1,2);
-    lbl = new QLabel("Мин. инж.");
-    glyout->addWidget(lbl,0,3,1,1);
-    lbl = new QLabel("Макс. инж.");
-    glyout->addWidget(lbl,0,4,1,1);
-    QStringList sl = QStringList() << "Предуст. мА" << "Произвольный";
-    QStringListModel *slm = new QStringListModel;
-    slm->setStringList(sl);
-    for (i = 0; i < AIN_NUMCH; i++)
-    {
-        QLabel *ChTypL = new QLabel(QString::number(i));
-        glyout->addWidget(ChTypL,i+1,0,1,1);
-        QComboBox *mcb = new QComboBox;
-        mcb->setObjectName("inrange."+QString::number(i));
-        mcb->setModel(slm);
-        glyout->addWidget(mcb, i+1,1,1,1);
-        connect(mcb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetRangeWidgetSlot(QString)));
-        dspbls = new QDoubleSpinBox;
-        dspbls->setObjectName("invmin."+QString::number(i));
-        dspbls->setSingleStep(0.01);
-        dspbls->setMinimum(-100000.0);
-        dspbls->setMaximum(100000.0);
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
-        dspbls->setStyleSheet(tmps);
-        connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        glyout->addWidget(dspbls,i+1,3,1,1);
-        dspbls = new QDoubleSpinBox;
-        dspbls->setObjectName("invmax."+QString::number(i));
-        dspbls->setSingleStep(0.01);
-        dspbls->setMinimum(-100000.0);
-        dspbls->setMaximum(100000.0);
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
-        dspbls->setStyleSheet(tmps);
-        connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        glyout->addWidget(dspbls,i+1,4,1,1);
-    }
-    gb->setLayout(glyout);
-    lyout->addWidget(gb);
-    cp = new QWidget;
-    tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
-    cp->setStyleSheet(tmps);
-    cp->setLayout(lyout);
-    ConfTW->addTab(cp,"Диапазоны");
-
-    lyout = new QVBoxLayout;
-    gb = new QGroupBox("Уставки");
-    glyout = new QGridLayout;
-    lbl = new QLabel("№ канала");
-    glyout->addWidget(lbl,0,0,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Мин. авар.");
-    glyout->addWidget(lbl,0,1,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Мин. пред.");
-    glyout->addWidget(lbl,0,2,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Макс. пред.");
-    glyout->addWidget(lbl,0,3,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Макс. авар.");
-    glyout->addWidget(lbl,0,4,1,1,Qt::AlignCenter);
-    for (i = 0; i < AIN_NUMCH; i++)
-    {
-        QLabel *ChTypL = new QLabel(QString::number(i));
-        glyout->addWidget(ChTypL,i+1,0,1,1,Qt::AlignRight);
-        dspbls = new QDoubleSpinBox;
-        dspbls->setObjectName("setminmin."+QString::number(i));
-        dspbls->setSingleStep(0.01);
-        dspbls->setMinimum(-100000.0);
-        dspbls->setMaximum(100000.0);
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFRCLR)+";}";
-        dspbls->setStyleSheet(tmps);
-        connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        glyout->addWidget(dspbls,i+1,1,1,1,Qt::AlignCenter);
-        dspbls = new QDoubleSpinBox;
-        dspbls->setObjectName("setmin."+QString::number(i));
-        dspbls->setSingleStep(0.01);
-        dspbls->setMinimum(-100000.0);
-        dspbls->setMaximum(100000.0);
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFYCLR)+";}";
-        dspbls->setStyleSheet(tmps);
-        connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        glyout->addWidget(dspbls,i+1,2,1,1,Qt::AlignCenter);
-        dspbls = new QDoubleSpinBox;
-        dspbls->setObjectName("setmax."+QString::number(i));
-        dspbls->setSingleStep(0.01);
-        dspbls->setMinimum(-100000.0);
-        dspbls->setMaximum(100000.0);
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFYCLR)+";}";
-        dspbls->setStyleSheet(tmps);
-        connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        glyout->addWidget(dspbls,i+1,3,1,1,Qt::AlignCenter);
-        dspbls = new QDoubleSpinBox;
-        dspbls->setObjectName("setmaxmax."+QString::number(i));
-        dspbls->setSingleStep(0.01);
-        dspbls->setMinimum(-100000.0);
-        dspbls->setMaximum(100000.0);
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFRCLR)+";}";
-        dspbls->setStyleSheet(tmps);
-        connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        glyout->addWidget(dspbls,i+1,4,1,1,Qt::AlignCenter);
-    }
-    gb->setLayout(glyout);
-    lyout->addWidget(gb);
-    cp = new QWidget;
-    tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
-    cp->setStyleSheet(tmps);
-    cp->setLayout(lyout);
-    ConfTW->addTab(cp,"Уставки");
-
-    if (isBaseBoard)
-    {
-        gb = new QGroupBox("Настройки протокола МЭК-60870-5-104");
-        QWidget *w = Widget104();
-        gblyout = new QVBoxLayout;
-        gblyout->addWidget(w);
-        gb->setLayout(gblyout);
-        lyout->addWidget(gb);
-        cp = new QWidget;
-        tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
-        cp->setStyleSheet(tmps);
-        cp->setLayout(lyout);
-        ConfTW->addTab(cp,"104");
-    }
-
-    lyout = new QVBoxLayout;
-    lyout->addWidget(ConfTW);
-    QWidget *wdgt = new QWidget;
-    QGridLayout *wdgtlyout = new QGridLayout;
-    QPushButton *pb = new QPushButton("Прочитать из модуля");
-    connect(pb,SIGNAL(clicked()),this,SLOT(ReadConf()));
-    if (pc.Emul)
-        pb->setEnabled(false);
-    wdgtlyout->addWidget(pb, 0, 0, 1, 1);
-    pb = new QPushButton("Записать в модуль");
-    pb->setObjectName("WriteConfPB");
-    connect(pb,SIGNAL(clicked()),this,SLOT(WriteConfDataToModule()));
-    if (pc.Emul)
-        pb->setEnabled(false);
-    wdgtlyout->addWidget(pb, 0, 1, 1, 1);
-    pb = new QPushButton("Прочитать из файла");
-    pb->setIcon(QIcon(":/load.png"));
-    connect(pb,SIGNAL(clicked()),this,SLOT(LoadConfFromFile()));
-    wdgtlyout->addWidget(pb, 1, 0, 1, 1);
-    pb = new QPushButton("Записать в файл");
-    pb->setIcon(QIcon(":/save.png"));
-    connect(pb,SIGNAL(clicked()),this,SLOT(SaveConfToFile()));
-    wdgtlyout->addWidget(pb, 1, 1, 1, 1);
-    pb = new QPushButton("Задать конфигурацию по умолчанию");
-    connect(pb,SIGNAL(clicked()),this,SLOT(SetDefConf()));
-    wdgtlyout->addWidget(pb, 2, 0, 1, 2);
-    wdgt->setLayout(wdgtlyout);
-    lyout->addWidget(wdgt);
-    setLayout(lyout);
+    ModuleConf.S2Config = QPointer(S2Config);
+    C21 = new Config21(S2Config);
+    ModuleConf.Bci_block = static_cast<void *>(C21->Bci_block);
+    ModuleConf.Bci_block_size = sizeof(Config21::Bci);
+    ModuleConf.Bci_defblock = static_cast<void *>(C21->Bci_defblock);
+    Params.InTypes = QStringList() << "Не исп." << "мА" << "В";
+    Params.RangeTypes = QStringList() << "Предуст. мА" << "Предуст. В" << "Произвольный";
+    Params.NumCh = AIN21_NUMCH;
+    PrereadConf();
 }
 
 void ConfDialog21::SetRangemA()
@@ -369,56 +57,23 @@ void ConfDialog21::SetRangeV()
 
 void ConfDialog21::SetRange(int Range, int ChNum)
 {
-    switch(Range)
-    {
-    case RT_mA420: // 4-20 мА
-        aconf->Bci_block.in_min[ChNum] = 4.0;
-        aconf->Bci_block.in_max[ChNum] = 20.0;
-        break;
-    case RT_mA020: // -20-20 мА
-        aconf->Bci_block.in_min[ChNum] = 0.0;
-        aconf->Bci_block.in_max[ChNum] = 20.0;
-        break;
-    case RT_mA05: // 0-5 мА
-        aconf->Bci_block.in_min[ChNum] = 0.0;
-        aconf->Bci_block.in_max[ChNum] = 5.0;
-        break;
-    case RT_V05: // 0-5 В
-        aconf->Bci_block.in_min[ChNum] = 0.0;
-        aconf->Bci_block.in_max[ChNum] = 5.0;
-        break;
-    case RT_V_55: // -5-5 В
-        aconf->Bci_block.in_min[ChNum] = -5.0;
-        aconf->Bci_block.in_max[ChNum] = 5.0;
-        break;
-    default:
-        break;
-    }
+    C21->Bci_block.inblk.in_min[ChNum] = RangeInMins.at(Range);
+    C21->Bci_block.inblk.in_max[ChNum] = RangeInMaxs.at(Range);
 }
 
-void ConfDialog21::ReadConf()
-{
-    cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,aconf->Config);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == NOERROR)
-        FillConfData();
-    else
-        MessageBox2::error(this, "ошибка", "Ошибка чтения конфигурации из модуля");
-}
-
-void ConfDialog21::FillConfData()
+void ConfDialog21::Fill()
 {
     int i;
     QComboBox *cb;
     QCheckBox *chb;
 
-    WDFunc::SetSPBData(this, "oscdlyspb", aconf->Bci_block.oscdly);
-    for (i = 0; i < 16; i++)
+    WDFunc::SetSPBData(this, "oscdlyspb", C21->Bci_block.inblk.oscdly);
+    for (i = 0; i < AIN21_NUMCH; i++)
     {
-        WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), aconf->Bci_block.in_type[i]);
-        WDFunc::SetChBData(this, "chb."+QString::number(i), aconf->Bci_block.osc[i]);
-        cb = this->findChild<QComboBox *>("oscsrccb."+QString::number(i));
+        WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), C21->Bci_block.inblk.in_type[i]);
+        WDFunc::SetChBData(this, "chb."+QString::number(i), C21->Bci_block.inblk.osc[i]);
+        WDFunc::SetCBIndex(this, "oscsrccb."+QString::number(i), C21->Bci_block.inblk.osc)
+        cb = this->findChild<QComboBox *>();
         if (cb == 0)
         {
             DBGMSG;
@@ -523,88 +178,13 @@ void ConfDialog21::SetMinMax(int i)
 
 void ConfDialog21::SetChTypData()
 {
-    QComboBox *cb = qobject_cast<QComboBox *>(sender());
+    s_tqComboBox *cb = qobject_cast<s_tqComboBox *>(sender());
     int tmpi = GetChNumFromObjectName(sender()->objectName());
-    if (tmpi == -1)
+    if (tmpi == GENERALERROR)
         return;
     int value = cb->currentIndex();
-    aconf->Bci_block.in_type[tmpi] = value;
+    C21->Bci_block.inblk.in_type[tmpi] = value;
     DisableChannel(tmpi, (value == 0));
-    ChTypModelIsFilling = true;
-    SetRangeCB(tmpi, value);
-    ChTypModelIsFilling = false;
-}
-
-void ConfDialog21::DisableChannel(int ChNum, bool Disable)
-{
-    QComboBox *cb;
-    QCheckBox *chb = this->findChild<QCheckBox *>("chb."+QString::number(ChNum));
-    if (chb != 0)
-        chb->setVisible(!Disable);
-    cb = this->findChild<QComboBox *>("oscsrccb."+QString::number(ChNum));
-    if (cb != 0)
-        cb->setVisible(!Disable && (chb->isChecked()));
-    QLabel *lbl = this->findChild<QLabel *>("oscsrcl."+QString::number(ChNum));
-    if (lbl != 0)
-        lbl->setVisible(!Disable && (chb->isChecked()));
-    cb = this->findChild<QComboBox *>("inrange."+QString::number(ChNum));
-    if (cb != 0)
-        cb->setVisible(!Disable);
-    cb = this->findChild<QComboBox *>("rangemA."+QString::number(ChNum));
-    if (cb != 0)
-        cb->setVisible(!Disable);
-    cb = this->findChild<QComboBox *>("rangeV."+QString::number(ChNum));
-    if (cb != 0)
-        cb->setVisible(!Disable);
-    QDoubleSpinBox *dspbls = this->findChild<QDoubleSpinBox *>("inmin."+QString::number(ChNum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("inmax."+QString::number(ChNum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("invmin."+QString::number(ChNum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("invmax."+QString::number(ChNum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("setminmin."+QString::number(ChNum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("setmin."+QString::number(ChNum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("setmax."+QString::number(ChNum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("setmaxmax."+QString::number(ChNum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-}
-
-void ConfDialog21::SetRangeCB(int ChNum, int ChTypCB)
-{
-    QComboBox *mcb = this->findChild<QComboBox *>("inrange."+QString::number(ChNum));
-    if (mcb == 0)
-    {
-        DBGMSG;
-        return;
-    }
-    QStringList sl = QStringList() << RT_MText;
-    switch (ChTypCB)
-    {
-    case INTYPEMA:
-        sl.insert(0, RT_mAText);
-        break;
-    case INTYPEV:
-        sl.insert(0, RT_VText);
-        break;
-    default:
-        break;
-    }
-    QStringListModel *slm = new QStringListModel;
-    slm->setStringList(sl);
-    mcb->setModel(slm);
 }
 
 void ConfDialog21::SetOscDly(int dly)
@@ -651,45 +231,32 @@ void ConfDialog21::SetChOscSrc(int srctyp)
     aconf->Bci_block.oscsrc |= tmpint; */
 }
 
-int ConfDialog21::GetChNumFromObjectName(QString ObjectName)
-{
-    QStringList ObjectNameSl = ObjectName.split(".");
-    int ChNum;
-    bool ok;
-    if (ObjectNameSl.size()>1)
-        ChNum = ObjectNameSl.at(1).toInt(&ok);
-    else
-        return -1;
-    if (!ok)
-        return -1;
-    return ChNum;
-}
-
 bool ConfDialog21::CheckConf()
 {
     bool NotGood = false;
-    for (int i=0; i<16; i++)
+    for (int i=0; i<Params.NumCh; ++i)
     {
-        if (aconf->Bci_block.in_min[i] > aconf->Bci_block.in_max[i])
+        if (C21->Bci_block.inblk.in_min[i] > C21->Bci_block.inblk.in_max[i])
             NotGood = true;
-        if (aconf->Bci_block.in_vmin[i] > aconf->Bci_block.in_vmax[i])
+        if (C21->Bci_block.inblk.in_vmin[i] > C21->Bci_block.inblk.in_vmax[i])
             NotGood = true;
-        if (aconf->Bci_block.setminmin[i] > aconf->Bci_block.setmin[i])
+        if (C21->Bci_block.inblk.setminmin[i] > C21->Bci_block.inblk.setmin[i])
             NotGood = true;
-        if (aconf->Bci_block.setminmin[i] < aconf->Bci_block.in_vmin[i])
+        if (C21->Bci_block.inblk.setminmin[i] < C21->Bci_block.inblk.in_vmin[i])
             NotGood = true;
-        if (aconf->Bci_block.setmin[i] < aconf->Bci_block.in_vmin[i])
+        if (C21->Bci_block.inblk.setmin[i] < C21->Bci_block.inblk.in_vmin[i])
             NotGood = true;
-        if (aconf->Bci_block.setmax[i] < aconf->Bci_block.setmin[i])
+        if (C21->Bci_block.inblk.setmax[i] < C21->Bci_block.inblk.setmin[i])
             NotGood = true;
-        if (aconf->Bci_block.setmax[i] > aconf->Bci_block.setmaxmax[i])
+        if (C21->Bci_block.inblk.setmax[i] > C21->Bci_block.inblk.setmaxmax[i])
             NotGood = true;
-        if (aconf->Bci_block.setmax[i] > aconf->Bci_block.in_vmax[i])
+        if (C21->Bci_block.inblk.setmax[i] > C21->Bci_block.inblk.in_vmax[i])
             NotGood = true;
-        if (aconf->Bci_block.setmaxmax[i] > aconf->Bci_block.in_vmax[i])
+        if (C21->Bci_block.inblk.setmaxmax[i] > C21->Bci_block.inblk.in_vmax[i])
             NotGood = true;
     }
     return NotGood;
+
 }
 
 void ConfDialog21::SetIn()
@@ -748,79 +315,14 @@ void ConfDialog21::SetIn()
     spb->setStyleSheet(tmps);
 }
 
-void ConfDialog21::WriteConfDataToModule()
-{
-    if (CheckConf())
-    {
-        ERMSG("В конфигурации есть ошибки. Проверьте и исправьте");
-        return;
-    }
-    cn->Send(CN_WF, Canal::BT_NONE, &aconf->Bci_block, sizeof(aconf->Bci_block), 2, aconf->Config);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result == NOERROR)
-    {
-        emit BsiIsNeedToBeAcquiredAndChecked();
-        MessageBox2::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
-    }
-}
-
 void ConfDialog21::SetDefConf()
 {
-    memcpy(&(aconf->Bci_block), &(aconf->Bci_defblock), sizeof(aconf->Bci_block));
-    FillConfData();
-//    emit Set104Conf(aconf->Bci_block.mainblk);
-    Fill104();
+    C21->SetDefConf();
     MessageBox2::information(this, "Успешно", "Задана конфигурация по умолчанию");
-}
-
-void ConfDialog21::LoadConfFromFile()
-{
-    QByteArray ba;
-    ba = pc.LoadFile("Config files (*.acf)");
-    if (pc.RestoreDataMem(&(ba.data()[0]), ba.size(), aconf->Config))
-    {
-        WARNMSG("");
-        return;
-    }
-    FillConfData();
-    MessageBox2::information(this, "Внимание", "Загрузка прошла успешно!");
-}
-
-void ConfDialog21::SaveConfToFile()
-{
-    QByteArray *ba = new QByteArray;
-    ba->resize(MAXBYTEARRAY);
-    pc.StoreDataMem(&(ba->data()[0]), aconf->Config, 0x0001); // 0x101 - номер файла конфигурации
-    quint32 BaLength = static_cast<quint8>(ba->data()[4]);
-    BaLength += static_cast<quint8>(ba->data()[5])*256;
-    BaLength += static_cast<quint8>(ba->data()[6])*65536;
-    BaLength += static_cast<quint8>(ba->data()[7])*16777216;
-    BaLength += sizeof(publicclass::FileHeader); // FileHeader
-    int res = pc.SaveFile("Config files (*.acf)", &(ba->data()[0]), BaLength);
-    switch (res)
-    {
-    case 0:
-        MessageBox2::information(this, "Внимание", "Записано успешно!");
-        break;
-    case 1:
-        ERMSG("Ошибка при записи файла!");
-        break;
-    case 2:
-        ERMSG("Пустое имя файла!");
-        break;
-    case 3:
-        ERMSG("Ошибка открытия файла!");
-        break;
-    default:
-        break;
-    }
 }
 
 void ConfDialog21::SetRangeWidgetSlot(QString RangeType)
 {
-    if (ChTypModelIsFilling) // выход, если слот вызван заполнением модели выпадающего списка
-        return;
     QString McbName = sender()->objectName();
     QStringList McbNameSl = McbName.split(".");
     int ChNum;

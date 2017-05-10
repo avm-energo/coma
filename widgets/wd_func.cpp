@@ -79,8 +79,11 @@ s_tqComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, QStringList 
     QStringListModel *cblm = new QStringListModel;
     cblm->setStringList(cbsl);
     cb->setModel(cblm);
-    tmps = "QComboBox {background-color: " + cbcolor + ";}";
-    cb->setStyleSheet(tmps);
+    if (!cbcolor.isEmpty())
+    {
+        tmps = "QComboBox {background-color: " + cbcolor + ";}";
+        cb->setStyleSheet(tmps);
+    }
     return cb;
 }
 
@@ -119,8 +122,11 @@ s_tqSpinBox *WDFunc::NewSPB(QWidget *parent, const QString &spbname, double min,
     dspbls->setDecimals(decimals);
     dspbls->setMinimum(min);
     dspbls->setMaximum(max);
-    QString tmps = "QDoubleSpinBox {background-color: " + spbcolor + ";}";
-    dspbls->setStyleSheet(tmps);
+    if (!spbcolor.isEmpty())
+    {
+        QString tmps = "QDoubleSpinBox {background-color: " + spbcolor + ";}";
+        dspbls->setStyleSheet(tmps);
+    }
     return dspbls;
 }
 
@@ -196,8 +202,11 @@ static s_tqCheckBox *NewChB(QWidget *parent, const QString &chbname, const QStri
     s_tqCheckBox *chb = new s_tqCheckBox(parent);
     chb->setObjectName(chbname);
     chb->setText(chbtext);
-    QString tmps = "QCheckBox {background-color: "+chbcolor+";}";
-    chb->setStyleSheet(tmps);
+    if (!chbcolor.isEmpty())
+    {
+        QString tmps = "QCheckBox {background-color: "+chbcolor+";}";
+        chb->setStyleSheet(tmps);
+    }
     return chb;
 }
 
@@ -241,4 +250,10 @@ void WDFunc::AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lenam
     le->setObjectName(lename);
     le->setEnabled(enabled);
     hlyout->addWidget(le,1);
+}
+
+void WDFunc::SetEnabled(QWidget *w, const QString &wname, bool enabled)
+{
+    QWidget *wdgt = w->findChild<QWidget *>(wname);
+    wdgt->setEnabled(enabled);
 }

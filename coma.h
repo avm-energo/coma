@@ -7,7 +7,7 @@
 #include "dialogs/downloaddialog.h"
 #include "dialogs/oscdialog.h"
 #include "dialogs/confdialog.h"
-#include "dialogs/confdialog_21.h"
+#include "dialogs/confdialog21.h"
 #include "dialogs/confdialog_80.h"
 #include "check/checkdialog_21.h"
 #include "check/checkdialog_80.h"
@@ -79,6 +79,8 @@ private:
         return sl;
     }
 
+    AbstractConfDialog *ConfB, *ConfM;
+    ConfDialog *MainConfDialog;
     a_checkdialog *ACheckDialog;
     a_tunedialog *ATuneDialog;
     e_checkdialog *ECheckDialog;
@@ -121,6 +123,8 @@ private slots:
     void SetProgressBarSize(quint32);
     void SetProgressBar(quint32);
     void DisableProgressBar();
+    void SetDefConf();
+    void Fill();
 
 private:
     void SetupUI();

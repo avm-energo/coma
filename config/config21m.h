@@ -8,7 +8,7 @@
 class Config21m
 {
 public:
-    Config21m();
+    Config21m(QVector<publicclass::DataRec> &config);
 
     struct Bci
     {
@@ -16,9 +16,7 @@ public:
         Config2x::Bci_AOut outblk;  // Блок с определениями выходов
     };
 
-    Bci Bcim_block, Bcim_defblock;
-    Config2x *Config;
-
+    Bci Bci_block, Bci_defblock;
 };
 
 #endif // CONFIG21M_H

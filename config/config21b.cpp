@@ -5,6 +5,18 @@ Config21b::Config21b(QVector<publicclass::DataRec> &config)
     Config2x::SetAInSize(Bci_block.inblk, MTB_21);
     // параметры входных сигналов
     int StartInIndex = Config2x::ModTypeMap().value(MTB_21).AInStart;
+    publicclass::DataRec configelement;
+    bool FFound = false;
+    foreach (configelement, config)
+    {
+        if (configelement.id == 0xFFFFFFFF)
+        {
+            FFound = true;
+            break;
+        }
+    }
+    if (!FFound)
+        config.append({0xFFFFFFFF, 0, NULL});
     if (StartInIndex != 0)
     {
         config.append({StartInIndex, sizeof(Bci_block.inblk.in_type), Bci_block.inblk.in_type.data()});
@@ -22,19 +34,8 @@ Config21b::Config21b(QVector<publicclass::DataRec> &config)
         config.append({StartInIndex+12, sizeof(Bci_block.inblk.filterthr), &Bci_block.inblk.filterthr});
         config.append({StartInIndex+13, sizeof(Bci_block.inblk.filtern), &Bci_block.inblk.filtern});
         config.append({StartInIndex+14, sizeof(Bci_block.inblk.hysteresis), &Bci_block.inblk.hysteresis});
-        config.append({0xFFFFFFFF, 0, NULL});
     }
 
-    Bci_defblock.mainblk.MTypeB = MTB_21;
-    Bci_defblock.mainblk.MTypeM = MTM_00;
-    Bci_defblock.mainblk.Abs_104 = DEF_ABS_104;
-    Bci_defblock.mainblk.Ctype = DEF_CTYPE;
-    Bci_defblock.mainblk.Cycle_104 = DEF_CYCLE_104;
-    Bci_defblock.mainblk.k_104 = DEF_K_104;
-    Bci_defblock.mainblk.w_104 = DEF_W_104;
-    Bci_defblock.mainblk.T1_104 = DEF_T1_104;
-    Bci_defblock.mainblk.T2_104 = DEF_T2_104;
-    Bci_defblock.mainblk.T3_104 = DEF_T3_104;
     Bci_defblock.oscdly = 0;
     Bci_defblock.oscthr = 0.05f;
     Bci_defblock.filtern = 10;

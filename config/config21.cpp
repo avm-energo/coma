@@ -1,10 +1,23 @@
 #include "config21.h"
 
-Config21::Config21(QVector<publicclass::DataRec> &config)
+Config21::Config21(QVector<publicclass::DataRec> &config, bool BaseBoard)
 {
-    Config2x::SetAInSize(Bci_block.inblk, MTB_21);
+    int Type = (BaseBoard) ? MTB_21 : MTM_21;
+    Config2x::SetAInSize(Bci_block.inblk, Type);
     // параметры входных сигналов
-    int StartInIndex = Config2x::ModTypeMap().value(MTB_21).AInStart;
+    int StartInIndex = Config2x::ModTypeMap().value(Type).AInStart;
+    publicclass::DataRec configelement;
+    bool FFound = false;
+    foreach (configelement, config)
+    {
+        if (configelement.id == 0xFFFFFFFF)
+        {
+            FFound = true;
+            break;
+        }
+    }
+    if (!FFound)
+        config.append({0xFFFFFFFF, 0, NULL});
     if (StartInIndex != 0)
     {
         config.append({StartInIndex, sizeof(Bci_block.inblk.in_type), Bci_block.inblk.in_type.data()});
@@ -22,35 +35,27 @@ Config21::Config21(QVector<publicclass::DataRec> &config)
         config.append({StartInIndex+12, sizeof(Bci_block.inblk.filterthr), &Bci_block.inblk.filterthr});
         config.append({StartInIndex+13, sizeof(Bci_block.inblk.filtern), &Bci_block.inblk.filtern});
         config.append({StartInIndex+14, sizeof(Bci_block.inblk.hysteresis), &Bci_block.inblk.hysteresis});
-        config.append({0xFFFFFFFF, 0, NULL});
     }
+}
 
-    Bci_defblock.mainblk.MTypeB = MTB_21;
-    Bci_defblock.mainblk.MTypeM = MTM_00;
-    Bci_defblock.mainblk.Abs_104 = DEF_ABS_104;
-    Bci_defblock.mainblk.Ctype = DEF_CTYPE;
-    Bci_defblock.mainblk.Cycle_104 = DEF_CYCLE_104;
-    Bci_defblock.mainblk.k_104 = DEF_K_104;
-    Bci_defblock.mainblk.w_104 = DEF_W_104;
-    Bci_defblock.mainblk.T1_104 = DEF_T1_104;
-    Bci_defblock.mainblk.T2_104 = DEF_T2_104;
-    Bci_defblock.mainblk.T3_104 = DEF_T3_104;
-    Bci_defblock.oscdly = 0;
-    Bci_defblock.oscthr = 0.05f;
-    Bci_defblock.filtern = 10;
-    Bci_defblock.filterthr = 0.5;
-    Bci_defblock.hysteresis = 0.02f;
-    for (int i = 0; i < MOD_NUMINPUTS21; i++)
+void Config21::SetDefConf()
+{
+    Bci_defblock.oscdly = AIN21_DEF_OSCDLY;
+    Bci_defblock.oscthr = AIN21_DEF_OSCTHR;
+    Bci_defblock.filtern = AIN21_DEF_FILTERN;
+    Bci_defblock.filterthr = AIN21_DEF_FILTERTHR;
+    Bci_defblock.hysteresis = AIN21_DEF_HYSTERS;
+    for (int i = 0; i < AIN21_NUMCH; i++)
     {
-        Bci_defblock.in_type[i] = INTYPEMA;
-        Bci_defblock.in_min[i] = 4;
-        Bci_defblock.in_max[i] = 20;
-        Bci_defblock.in_vmin[i] = 0;
-        Bci_defblock.in_vmax[i] = 1000;
-        Bci_defblock.setminmin[i] = 10;
-        Bci_defblock.setmin[i] = 50;
-        Bci_defblock.setmax[i] = 950;
-        Bci_defblock.setmaxmax[i] = 990;
-        Bci_defblock.osc[i] = 0;
+        Bci_defblock.in_type[i] = Config2x::AIT_MA;
+        Bci_defblock.in_min[i] = AIN21_DEF_INMIN;
+        Bci_defblock.in_max[i] = AIN21_DEF_INMAX;
+        Bci_defblock.in_vmin[i] = AIN21_DEF_INVMIN;
+        Bci_defblock.in_vmax[i] = AIN21_DEF_INVMAX;
+        Bci_defblock.setminmin[i] = AIN21_DEF_SETMINMIN;
+        Bci_defblock.setmin[i] = AIN21_DEF_SETMIN;
+        Bci_defblock.setmax[i] = AIN21_DEF_SETMAX;
+        Bci_defblock.setmaxmax[i] = AIN21_DEF_SETMAXMAX;
+        Bci_defblock.osc[i] = AIN21_DEF_OSC;
     }
 }

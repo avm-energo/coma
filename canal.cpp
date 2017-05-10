@@ -48,6 +48,8 @@ void Canal::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint1
     else // BT_NONE
         BoardType = 0x00;
     InitiateSend();
+    while (cn->Busy)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
 }
 
 void Canal::InitiateSend()

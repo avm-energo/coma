@@ -362,16 +362,16 @@ int publicclass::SaveFile(QString mask, void *src, unsigned int numbytes)
     QString filename = QFileDialog::getSaveFileName(0, "Сохранить файл", \
                                                     tmps, mask);
     if (filename.isEmpty())
-        return 2; // Пустое имя файла
+        return ER_FILENAMEEMP; // Пустое имя файла
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly))
-        return 3; // Ошибка открытия файла
+        return ER_FILEOPEN; // Ошибка открытия файла
     SaveBa = new QByteArray;
     SaveBa->resize(numbytes);
     memcpy(&(SaveBa->data()[0]), src, numbytes);
     if (file.write(SaveBa->data(), numbytes) == -1)
-        return 1; // ошибка записи
-    return 0; // нет ошибок
+        return ER_FILEWRITE; // ошибка записи
+    return NOERROR; // нет ошибок
 }
 
 bool publicclass::FloatInRange(float var, float value)

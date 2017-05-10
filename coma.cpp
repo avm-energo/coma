@@ -381,9 +381,6 @@ void Coma::Stage2()
     pc.MType = ((pc.ModuleBsi.MTypeB & 0x000000FF) << 8) | (pc.ModuleBsi.MTypeM & 0x000000FF);
     pc.ModuleTypeString = "АВ-ТУК-";
     pc.ModuleTypeString.append(QString::number(pc.MType, 16));
-/*    QString tmps = QString::number(pc.ModuleBsi.MTypeM, 16);
-    tmps.truncate(8);
-    pc.ModuleTypeString.append(tmps); */
     if ((pc.ModuleBsi.SerialNumB == 0xFFFFFFFF) || ((pc.ModuleBsi.SerialNumM == 0xFFFFFFFF) && (pc.ModuleBsi.MTypeM != MTM_00)) || \
             (pc.ModuleBsi.SerialNum == 0xFFFFFFFF)) // серийный номер не задан, выдадим предупреждение
         OpenBhbDialog();
@@ -473,29 +470,17 @@ void Coma::OpenBhbDialog()
 void Coma::SendBhb()
 {
     cn->Send(CN_WHv, Canal::BT_BASE, &pc.BoardBBhb, sizeof(pc.BoardBBhb));
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != NOERROR)
     {
         ERMSG("Проблема при записи блока Hidden block базовой платы");
         return;
     }
     if (pc.BoardMBhb.MType != MTM_00)
-    {
         cn->Send(CN_WHv, Canal::BT_MEZONIN, &pc.BoardMBhb, sizeof(pc.BoardMBhb));
-        while (cn->Busy)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-    }
     if (cn->result == NOERROR)
-    {
         MessageBox2::information(this, "Успешно", "Записано успешно");
-        return;
-    }
     else
-    {
         ERMSG("Проблема при записи блока Hidden block мезонинной платы");
-        return;
-    }
 }
 
 void Coma::Stage3()
@@ -506,12 +491,32 @@ void Coma::Stage3()
     DownDialog = new downloaddialog;
     FwUpDialog = new fwupdialog;
     OscDialog = new oscdialog;
-    if ((pc.ModuleBsi.MTypeB > 0x1F) && (pc.ModuleBsi.MTypeB < 0x30))
+    MainConfDialog = new ConfDialog;
+    MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
+    switch(pc.ModuleBsi.MTypeB)
     {
-        ConfDialog21 *Dialog21 = new ConfDialog21;
+    case MTB_21:
+        ConfDialog21 *Dialog21 = new ConfDialog21(S2Config, true);
+        MainTW->addTab(Dialog21, "Конфигурирование\nБазовая");
+        ConfB = Dialog21;
+        break;
+    }
+    switch(pc.ModuleBsi.MTypeM)
+    {
+    case MTM_21:
+        ConfDialog21 *Dialog21 = new ConfDialog21(S2Config, false);
+        MainTW->addTab(Dialog21, "Конфигурирование\nМезонин");
+        ConfM = Dialog21;
+        break;
+    }
+    connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
+    connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
+    connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+    connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+/*    if ((pc.ModuleBsi.MTypeB > 0x1F) && (pc.ModuleBsi.MTypeB < 0x30))
+    {
         ATuneDialog = new a_tunedialog;
         ACheckDialog = new a_checkdialog;
-        MainTW->addTab(Dialog21, "Конфигурирование");
         MainTW->addTab(ATuneDialog, "Настройка");
         MainTW->addTab(ACheckDialog, "Проверка");
         MainTW->addTab(OscDialog, "Осциллограммы");
@@ -531,7 +536,7 @@ void Coma::Stage3()
         MainTW->addTab(DownDialog, "События");
         MainTW->addTab(FwUpDialog, "Загрузка ВПО");
         connect(EConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(Stage2()));
-    }
+    } */
     if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
         pc.ErMsg(ER_NOCONF);
     if (pc.ModuleBsi.Hth & HTH_REGPARS) // нет коэффициентов
@@ -603,6 +608,7 @@ void Coma::EmulA()
     if (pc.Emul) // если уже в режиме эмуляции, выход
         return;
     pc.ModuleBsi.MTypeB = MTB_21;
+    pc.ModuleBsi.MTypeM = MTM_21;
     pc.ModuleBsi.SerialNum = 0x12345678;
     pc.ModuleBsi.Hth = 0x00;
     pc.Emul = true;
@@ -807,4 +813,20 @@ void Coma::DisableProgressBar()
     }
     prb->setEnabled(false);
     WDFunc::SetLBLText(this, "prblbl","",false);
+}
+
+void Coma::SetDefConf()
+{
+    MainConfDialog->SetMainDefConf();
+    ConfB->SetDefConf();
+    ConfM->SetDefConf();
+    Fill();
+    MessageBox2::information(this, "Успешно", "Задана конфигурация по умолчанию");
+}
+
+void Coma::Fill()
+{
+    MainConfDialog->Fill();
+    ConfB->Fill();
+    ConfM->Fill();
 }

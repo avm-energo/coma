@@ -60,7 +60,10 @@ SOURCES += main.cpp\
     config/config21m.cpp \
     config/config.cpp \
     dialogs/confdialog21.cpp \
-    dialogs/abstractconfdialog.cpp
+    dialogs/abstractconfdialog.cpp \
+    dialogs/abstractconfdialog2x.cpp \
+    config/config21.cpp \
+    dialogs/confdialog.cpp
 
 HEADERS  += coma.h \
     canal.h \
@@ -101,7 +104,10 @@ HEADERS  += coma.h \
     config/config21b.h \
     config/config21m.h \
     dialogs/confdialog21.h \
-    dialogs/abstractconfdialog.h
+    dialogs/abstractconfdialog.h \
+    dialogs/abstractconfdialog2x.h \
+    config/config21.h \
+    dialogs/confdialog.h
 
 RESOURCES += \
     res.qrc

@@ -1,15 +1,14 @@
 /* Файл предназначен для конфигурирования модулей аналоговых АВ-ТУК-2xхх, хх2x и последующих
  */
 
-#ifndef CONFDIALOG21_H
-#define CONFDIALOG21_H
+#ifndef ABSTRACTCONFDIALOG2X_H
+#define ABSTRACTCONFDIALOG2X_H
 
 #include <QDialog>
 #include <QGridLayout>
 
-#include "abstractconfdialog2x.h"
+#include "abstractconfdialog.h"
 #include "../publicclass.h"
-#include "../config/config21.h"
 
 #define RT_mA          0
 #define RT_V           1
@@ -25,41 +24,46 @@
 #define RT_V05      3
 #define RT_V_55     4
 
-class ConfDialog21 : public AbstractConfDialog2x
+class AbstractConfDialog2x : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    explicit ConfDialog21(QVector<publicclass::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = 0);
+    explicit AbstractConfDialog2x(QVector<publicclass::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = 0);
 
     bool NoProperConf; // в модуле нет нормальной конфигурации
 
 private:
+    struct SpecificParams
+    {
+        const QStringList InTypes;
+        const QStringList RangeTypes;
+        const int NumCh;
+    };
     QByteArray confba;
-    Config21 *C21;
-    const QVector<float> RangeInMins = {4.0, 0.0, 0.0, 0.0, -5.0};
-    const QVector<float> RangeInMaxs = {20.0, 20.0, 5.0, 5.0, 5.0};
+    bool isBaseBoard;
+    SpecificParams Params;
 
-    void Fill();
-    void SetRange(int Range, int ChNum);
+    virtual void SetRange(int Range, int ChNum) = 0;
     void SetRangeCB(int ChNum, int ChTypCB);
     bool CheckConf();
     void SetMinMax(int i);
     void SetRangeWidget(int ChNum, int RangeType);
+    int GetChNumFromObjectName(QString ObjectName);
+    void PrereadConf();
 
 signals:
 
 public slots:
 
 private slots:
-    void SetChTypData();
+    virtual void SetChTypData() = 0;
     void SetChOsc(int);
     void SetChOscSrc(int);
     void SetIn();
-    void SetRangemA();
-    void SetRangeV();
     void SetOscDly(int);
-    void SetDefConf();
-    void SetRangeWidgetSlot(QString RangeType);
+    void SetupUI();
+    void DisableChannel(int chnum, bool disable);
+    void SetRangeWidgetSlot(int RangeType);
 };
 
-#endif // CONFDIALOG21_H
+#endif // ABSTRACTCONFDIALOG2X_H
