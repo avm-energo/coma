@@ -56,8 +56,6 @@ SOURCES += main.cpp\
     dialogs/settingsdialog.cpp \
     dialogs/errordialog.cpp \
     config/config2x.cpp \
-    config/config21b.cpp \
-    config/config21m.cpp \
     config/config.cpp \
     dialogs/confdialog21.cpp \
     dialogs/abstractconfdialog.cpp \
@@ -101,8 +99,6 @@ HEADERS  += coma.h \
     dialogs/settingsdialog.h \
     dialogs/errordialog.h \
     config/config2x.h \
-    config/config21b.h \
-    config/config21m.h \
     dialogs/confdialog21.h \
     dialogs/abstractconfdialog.h \
     dialogs/abstractconfdialog2x.h \
