@@ -141,17 +141,17 @@ void AbstractConfDialog2x::SetupUI()
     glyout->addWidget(lbl,0,3,1,1);
     lbl = new QLabel("Макс. инж.");
     glyout->addWidget(lbl,0,4,1,1);
-    for (i = 1; i <= Params.NumCh; i++)
+    for (i = 1; i <= Params.NumCh; ++i)
     {
         lbl = new QLabel(QString::number(i));
         glyout->addWidget(lbl,i,0,1,1);
         QComboBox *mcb = WDFunc::NewCB(this, "inrange."+QString::number(i), Params.RangeTypes);
         connect(mcb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetRangeWidgetSlot(int)));
         glyout->addWidget(mcb, i,1,1,1);
-        dspbls = WDFunc::NewSPB(this, "invmin."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFGCLR);
+        dspbls = WDFunc::NewSPB(this, "2."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFGCLR); // invmin
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
         glyout->addWidget(dspbls,i,3,1,1);
-        dspbls = WDFunc::NewSPB(this, "invmax."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFGCLR);;
+        dspbls = WDFunc::NewSPB(this, "3."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFGCLR); // invmax
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
         glyout->addWidget(dspbls,i,4,1,1);
     }
@@ -176,46 +176,22 @@ void AbstractConfDialog2x::SetupUI()
     glyout->addWidget(lbl,0,3,1,1,Qt::AlignCenter);
     lbl = new QLabel("Макс. авар.");
     glyout->addWidget(lbl,0,4,1,1,Qt::AlignCenter);
-    for (i = 0; i < AIN21_NUMCH; i++)
+    for (i = 1; i <= Params.NumCh; ++i)
     {
         QLabel *ChTypL = new QLabel(QString::number(i));
-        glyout->addWidget(ChTypL,i+1,0,1,1,Qt::AlignRight);
-        dspbls = new QDoubleSpinBox;
-        dspbls->setObjectName("setminmin."+QString::number(i));
-        dspbls->setSingleStep(0.01);
-        dspbls->setMinimum(-100000.0);
-        dspbls->setMaximum(100000.0);
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFRCLR)+";}";
-        dspbls->setStyleSheet(tmps);
+        glyout->addWidget(ChTypL,i,0,1,1,Qt::AlignRight);
+        dspbls = WDFunc::NewSPB(this, "4."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFRCLR); // setminmin
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        glyout->addWidget(dspbls,i+1,1,1,1,Qt::AlignCenter);
-        dspbls = new QDoubleSpinBox;
-        dspbls->setObjectName("setmin."+QString::number(i));
-        dspbls->setSingleStep(0.01);
-        dspbls->setMinimum(-100000.0);
-        dspbls->setMaximum(100000.0);
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFYCLR)+";}";
-        dspbls->setStyleSheet(tmps);
+        glyout->addWidget(dspbls,i,1,1,1,Qt::AlignCenter);
+        dspbls = WDFunc::NewSPB(this, "5."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFYCLR); // setmin
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        glyout->addWidget(dspbls,i+1,2,1,1,Qt::AlignCenter);
-        dspbls = new QDoubleSpinBox;
-        dspbls->setObjectName("setmax."+QString::number(i));
-        dspbls->setSingleStep(0.01);
-        dspbls->setMinimum(-100000.0);
-        dspbls->setMaximum(100000.0);
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFYCLR)+";}";
-        dspbls->setStyleSheet(tmps);
+        glyout->addWidget(dspbls,i,2,1,1,Qt::AlignCenter);
+        dspbls = WDFunc::NewSPB(this, "6."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFYCLR); // setmax
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        glyout->addWidget(dspbls,i+1,3,1,1,Qt::AlignCenter);
-        dspbls = new QDoubleSpinBox;
-        dspbls->setObjectName("setmaxmax."+QString::number(i));
-        dspbls->setSingleStep(0.01);
-        dspbls->setMinimum(-100000.0);
-        dspbls->setMaximum(100000.0);
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFRCLR)+";}";
-        dspbls->setStyleSheet(tmps);
+        glyout->addWidget(dspbls,i,3,1,1,Qt::AlignCenter);
+        dspbls = WDFunc::NewSPB(this, "7."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFRCLR); // setmaxmax
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        glyout->addWidget(dspbls,i+1,4,1,1,Qt::AlignCenter);
+        glyout->addWidget(dspbls,i,4,1,1,Qt::AlignCenter);
     }
     gb->setLayout(glyout);
     lyout->addWidget(gb);
@@ -256,11 +232,11 @@ void AbstractConfDialog2x::SetMinMax(int i)
         DBGMSG;
         return;
     }
-    switch (aconf->Bci_block.in_type[i])
+    switch (C21->Bci_block.inblk.in_type[i])
     {
     case INTYPEMA: // канал с мА
     {
-        if (pc.FloatInRange(aconf->Bci_block.in_min[i],0.0) && pc.FloatInRange(aconf->Bci_block.in_max[i],20.0))
+        if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],20.0))
         {
             cb->setCurrentText(RT_mAText);
             SetRangeWidget(i, RT_mA); // принудительный вызов, чтобы c2b не было равно 0
@@ -269,7 +245,7 @@ void AbstractConfDialog2x::SetMinMax(int i)
                 return;
             c2b->setCurrentIndex(RT_mA020);
         }
-        else if (pc.FloatInRange(aconf->Bci_block.in_min[i],4.0) && pc.FloatInRange(aconf->Bci_block.in_max[i],20.0))
+        else if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],4.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],20.0))
         {
             cb->setCurrentText(RT_mAText);
             SetRangeWidget(i, RT_mA); // принудительный вызов, чтобы c2b не было равно 0
@@ -278,7 +254,7 @@ void AbstractConfDialog2x::SetMinMax(int i)
                 return;
             c2b->setCurrentIndex(RT_mA420);
         }
-        else if (pc.FloatInRange(aconf->Bci_block.in_min[i],0.0) && pc.FloatInRange(aconf->Bci_block.in_max[i],5.0))
+        else if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],5.0))
         {
             cb->setCurrentText(RT_mAText);
             SetRangeWidget(i, RT_mA); // принудительный вызов, чтобы c2b не было равно 0
@@ -296,7 +272,7 @@ void AbstractConfDialog2x::SetMinMax(int i)
     }
     case INTYPEV: // канал с В
     {
-        if (pc.FloatInRange(aconf->Bci_block.in_min[i],0.0) && pc.FloatInRange(aconf->Bci_block.in_max[i],5.0))
+        if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],5.0))
         {
             cb->setCurrentText(RT_VText);
             SetRangeWidget(i, RT_V); // принудительный вызов, чтобы c2b не было равно 0
@@ -305,7 +281,7 @@ void AbstractConfDialog2x::SetMinMax(int i)
                 return;
             c2b->setCurrentIndex(RT_V05-3);
         }
-        else if (pc.FloatInRange(aconf->Bci_block.in_min[i], -5.0) && pc.FloatInRange(aconf->Bci_block.in_max[i],5.0))
+        else if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i], -5.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],5.0))
         {
             cb->setCurrentText(RT_VText);
             SetRangeWidget(i, RT_V); // принудительный вызов, чтобы c2b не было равно 0
@@ -343,60 +319,35 @@ void AbstractConfDialog2x::DisableChannel(int chnum, bool disable)
     cb = this->findChild<QComboBox *>("rangeV."+QString::number(chnum));
     if (cb != 0)
         cb->setVisible(!Disable);
-    QDoubleSpinBox *dspbls = this->findChild<QDoubleSpinBox *>("inmin."+QString::number(chnum));
+    QDoubleSpinBox *dspbls = this->findChild<QDoubleSpinBox *>("0."+QString::number(chnum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("inmax."+QString::number(chnum));
+    dspbls = this->findChild<QDoubleSpinBox *>("1."+QString::number(chnum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("invmin."+QString::number(chnum));
+    dspbls = this->findChild<QDoubleSpinBox *>("2."+QString::number(chnum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("invmax."+QString::number(chnum));
+    dspbls = this->findChild<QDoubleSpinBox *>("3."+QString::number(chnum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("setminmin."+QString::number(chnum));
+    dspbls = this->findChild<QDoubleSpinBox *>("4."+QString::number(chnum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("setmin."+QString::number(chnum));
+    dspbls = this->findChild<QDoubleSpinBox *>("5."+QString::number(chnum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("setmax."+QString::number(chnum));
+    dspbls = this->findChild<QDoubleSpinBox *>("6."+QString::number(chnum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("setmaxmax."+QString::number(chnum));
+    dspbls = this->findChild<QDoubleSpinBox *>("7."+QString::number(chnum));
     if (dspbls != 0)
         dspbls->setVisible(!Disable);
-}
-
-void AbstractConfDialog2x::SetRangeCB(int ChNum, int ChTypCB)
-{
-    QComboBox *mcb = this->findChild<QComboBox *>("inrange."+QString::number(ChNum));
-    if (mcb == 0)
-    {
-        DBGMSG;
-        return;
-    }
-    QStringList sl = QStringList() << RT_MText;
-    switch (ChTypCB)
-    {
-    case INTYPEMA:
-        sl.insert(0, RT_mAText);
-        break;
-    case INTYPEV:
-        sl.insert(0, RT_VText);
-        break;
-    default:
-        break;
-    }
-    QStringListModel *slm = new QStringListModel;
-    slm->setStringList(sl);
-    mcb->setModel(slm);
 }
 
 void AbstractConfDialog2x::SetOscDly(int dly)
 {
-    aconf->Bci_block.oscdly = dly;
+    C21->Bci_block.inblk.oscdly = dly;
 }
 
 void AbstractConfDialog2x::SetChOsc(int isChecked)
@@ -410,7 +361,7 @@ void AbstractConfDialog2x::SetChOsc(int isChecked)
     QLabel *lbl = this->findChild<QLabel *>("oscsrcl."+QString::number(ChNum));
     if (isChecked == Qt::Checked)
     {
-/* !!!        aconf->Bci_block.discosc |= tmpint;
+/* !!!        C21->Bci_block.inblk.discosc |= tmpint;
         if (cb != 0)
             cb->setVisible(true);
         if (lbl != 0)
@@ -418,7 +369,7 @@ void AbstractConfDialog2x::SetChOsc(int isChecked)
     }
     else
     {
-        aconf->Bci_block.discosc &= ~tmpint;
+        C21->Bci_block.inblk.discosc &= ~tmpint;
         if (cb != 0)
             cb->setVisible(false);
         if (lbl != 0)
@@ -434,8 +385,8 @@ void AbstractConfDialog2x::SetChOscSrc(int srctyp)
     quint8 tmpi = ChNum << 1;
     quint32 tmpint = srctyp << tmpi;
     quint32 tmpmask = ~(0x00000003 << tmpi);
-/* !!!    aconf->Bci_block.oscsrc &= tmpmask;
-    aconf->Bci_block.oscsrc |= tmpint; */
+/* !!!    C21->Bci_block.inblk.oscsrc &= tmpmask;
+    C21->Bci_block.inblk.oscsrc |= tmpint; */
 }
 
 int AbstractConfDialog2x::GetChNumFromObjectName(QString ObjectName)
@@ -462,55 +413,22 @@ void AbstractConfDialog2x::PrereadConf()
 
 void AbstractConfDialog2x::SetIn()
 {
-    QStringList tmpsl = QStringList() << "inmin" << "inmax" << "invmin" << "invmax" << \
-                                         "setminmin" << "setmin" << "setmax" << "setmaxmax";
     QDoubleSpinBox *spb = qobject_cast<QDoubleSpinBox *>(sender());
     QString ObjectName = spb->objectName().split(".").at(0);
-    int idx = tmpsl.indexOf(ObjectName);
-    if (idx == -1)
+    int idx = ObjectName.toInt();
+    if (idx == GENERALERROR)
     {
         DBGMSG;
         return;
     }
     int tmpi = GetChNumFromObjectName(sender()->objectName());
-    if (tmpi == -1)
-        return;
-    QString tmps;
-    switch(idx)
+    if (tmpi <= 0)
     {
-    case 0: // inmin
-        aconf->Bci_block.in_min[tmpi] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
-        break;
-    case 1: // inmax
-        aconf->Bci_block.in_max[tmpi] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
-        break;
-    case 2: // invmin
-        aconf->Bci_block.in_vmin[tmpi] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
-        break;
-    case 3: // invmax
-        aconf->Bci_block.in_vmax[tmpi] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
-        break;
-    case 4: // setminmin
-        aconf->Bci_block.setminmin[tmpi] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFRCLR)+";}";
-        break;
-    case 5: // setmin
-        aconf->Bci_block.setmin[tmpi] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFYCLR)+";}";
-        break;
-    case 6: // setmax
-        aconf->Bci_block.setmax[tmpi] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFYCLR)+";}";
-        break;
-    case 7: // setmaxmax
-        aconf->Bci_block.setmaxmax[tmpi] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFRCLR)+";}";
-        break;
+        DBGMSG;
+        return;
     }
+    --tmpi; // каналы в Bci_block нумеруются с нуля, а objname - с 1
+    SetInP2(idx, tmpi, spb->value());
     if (CheckConf())
         tmps = "QDoubleSpinBox {color: "+QString(ERRCLR)+"; font: bold;}";
     spb->setStyleSheet(tmps);
@@ -519,122 +437,6 @@ void AbstractConfDialog2x::SetIn()
 void AbstractConfDialog2x::SetRangeWidgetSlot(int RangeType)
 {
     QString McbName = sender()->objectName();
-    QStringList McbNameSl = McbName.split(".");
-    int ChNum;
-    if (McbNameSl.size()>1)
-        ChNum = McbNameSl.at(1).toInt();
-    else
-    {
-        WARNMSG("");
-        return;
-    }
-    QStringList RangeTypes = QStringList() << "Предуст. мА" << "Предуст. В" << "Произвольный";
-    SetRangeWidget(ChNum, RangeTypes.indexOf(RangeType));
-}
-
-void AbstractConfDialog2x::SetRangeWidget(int ChNum, int RangeType)
-{
-    QGroupBox *gb = this->findChild<QGroupBox *>("RangeGB");
-    if (gb == 0)
-    {
-        DBGMSG;
-        return;
-    }
-    QGridLayout *lyout = static_cast<QGridLayout *>(gb->layout());
-    if (lyout == 0)
-    {
-        DBGMSG;
-        return;
-    }
-    QLayoutItem *OldLayoutItem = lyout->itemAtPosition(ChNum+1, 2);
-    if (OldLayoutItem != 0)
-    {
-        QWidget *wdgt = OldLayoutItem->widget();
-        if (wdgt != 0)
-        {
-            wdgt->hide();
-            delete wdgt;
-        }
-        QLayout *olyout = OldLayoutItem->layout();
-        if (olyout != 0)
-        {
-            QLayoutItem *item;
-            QWidget *widget;
-            while ((item = olyout->takeAt(0)) != 0)
-            {
-                if ((widget = item->widget()) != 0)
-                {
-                    widget->hide();
-                    delete widget;
-                }
-                else
-                    delete item;
-            }
-        }
-    }
-    if (aconf->Bci_block.in_type[ChNum] == INTYPENA)
-        return;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    switch (RangeType)
-    {
-    case RT_mA:
-    {
-        QComboBox *cb = new QComboBox;
-        setStyleSheet("QComboBox {border: 1px solid gray; border-radius: 5px;}" \
-                      "QComboBox::drop-down {background-color: rgba(100,100,100,255); width: 5px; border-style: none;}");
-        cb->addItem("(4..20) мА");
-        cb->addItem("(0..20) мА");
-        cb->addItem("(0..5) мА");
-        cb->setObjectName("rangemA."+QString::number(ChNum));
-        connect(cb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetRangemA()));
-        cb->setCurrentIndex(0);
-        hlyout->addWidget(cb);
-        lyout->addLayout(hlyout, ChNum+1, 2, 1, 1);
-        SetRange(0, ChNum);
-        break;
-    }
-    case RT_V:
-    {
-        QComboBox *cb = new QComboBox;
-        setStyleSheet("QComboBox {border: 1px solid gray; border-radius: 5px;}" \
-                      "QComboBox::drop-down {background-color: rgba(100,100,100,255); width: 5px; border-style: none;}");
-        cb->addItem("(0..5) В");
-        cb->addItem("(-5..5) В");
-        cb->setObjectName("rangeV."+QString::number(ChNum));
-        connect(cb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetRangeV()));
-        cb->setCurrentIndex(0);
-        hlyout->addWidget(cb);
-        lyout->addLayout(hlyout, ChNum+1, 2, 1, 1);
-        SetRange(0+RT_V05, ChNum);
-        break;
-    }
-    case RT_M:
-    {
-        QDoubleSpinBox *dspbls = new QDoubleSpinBox;
-        dspbls->setObjectName("inmin."+QString::number(ChNum));
-        dspbls->setSingleStep(0.01);
-        dspbls->setMinimum(-20.0);
-        dspbls->setMaximum(20.0);
-        QString tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
-        dspbls->setStyleSheet(tmps);
-        connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        dspbls->setValue(aconf->Bci_block.in_min[ChNum]);
-        hlyout->addWidget(dspbls);
-        dspbls = new QDoubleSpinBox(this);
-        dspbls->setObjectName("inmax."+QString::number(ChNum));
-        dspbls->setSingleStep(0.01);
-        dspbls->setMinimum(-20.0);
-        dspbls->setMaximum(20.0);
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
-        dspbls->setStyleSheet(tmps);
-        connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
-        dspbls->setValue(aconf->Bci_block.in_max[ChNum]);
-        hlyout->addWidget(dspbls);
-        lyout->addLayout(hlyout, ChNum+1, 2, 1, 1);
-        break;
-    }
-    default:
-        return;
-        break;
-    }
+    int ChNum = GetChNumFromObjectName(McbName);
+    SetRangeWidget(ChNum, RangeType);
 }

@@ -44,10 +44,10 @@ private:
     SpecificParams Params;
 
     virtual void SetRange(int Range, int ChNum) = 0;
-    void SetRangeCB(int ChNum, int ChTypCB);
+    virtual void SetInP2(int type, int numch, double value) = 0; // запись в структуру Bci_block значения из spinbox: 0 - in_min, 1 - in_max,..., 7 - setmaxmax
     bool CheckConf();
     void SetMinMax(int i);
-    void SetRangeWidget(int ChNum, int RangeType);
+    virtual void SetRangeWidget(int ChNum, int RangeType) = 0;
     int GetChNumFromObjectName(QString ObjectName);
     void PrereadConf();
 

@@ -41,10 +41,10 @@ private:
 
     void Fill();
     void SetRange(int Range, int ChNum);
-    void SetRangeCB(int ChNum, int ChTypCB);
     bool CheckConf();
     void SetMinMax(int i);
     void SetRangeWidget(int ChNum, int RangeType);
+    void SetInP2(int type, int chnum, double value);
 
 signals:
 
