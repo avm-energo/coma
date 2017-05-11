@@ -36,15 +36,12 @@ public:
 private:
     QByteArray confba;
     Config21 *C21;
-    const QVector<float> RangeInMins = {4.0, 0.0, 0.0, 0.0, -5.0};
+    const QVector<float> RangeInMins = {4.0, 0.0, 0.0, -5.0, 0.0};
     const QVector<float> RangeInMaxs = {20.0, 20.0, 5.0, 5.0, 5.0};
 
     void Fill();
-    void SetRange(int Range, int ChNum);
     bool CheckConf();
-    void SetMinMax(int i);
-    void SetRangeWidget(int ChNum, int RangeType);
-    void SetInP2(int type, int chnum, double value);
+    void SetMinMax(int i); // установка значений виджетов в соответствии с конфигурацией
 
 signals:
 
@@ -55,11 +52,9 @@ private slots:
     void SetChOsc(int);
     void SetChOscSrc(int);
     void SetIn();
-    void SetRangemA();
-    void SetRangeV();
     void SetOscDly(int);
     void SetDefConf();
-    void SetRangeWidgetSlot(QString RangeType);
+    void SetRange(int Range);
 };
 
 #endif // CONFDIALOG21_H

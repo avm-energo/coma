@@ -43,27 +43,21 @@ private:
     bool isBaseBoard;
     SpecificParams Params;
 
-    virtual void SetRange(int Range, int ChNum) = 0;
-    virtual void SetInP2(int type, int numch, double value) = 0; // запись в структуру Bci_block значения из spinbox: 0 - in_min, 1 - in_max,..., 7 - setmaxmax
-    bool CheckConf();
-    void SetMinMax(int i);
-    virtual void SetRangeWidget(int ChNum, int RangeType) = 0;
+    void SetupUI();
     int GetChNumFromObjectName(QString ObjectName);
     void PrereadConf();
+    void DisableChannel(int chnum, bool disable);
 
 signals:
 
 public slots:
 
 private slots:
-    virtual void SetChTypData() = 0;
-    void SetChOsc(int);
-    void SetChOscSrc(int);
-    void SetIn();
-    void SetOscDly(int);
-    void SetupUI();
-    void DisableChannel(int chnum, bool disable);
-    void SetRangeWidgetSlot(int RangeType);
+    virtual void SetChTypData() = 0; // задать тип канала (номер канала - в objectName.aplit(".").at(1)
+    virtual void SetChOsc(int) = 0; //
+    virtual void SetIn(); // задать значение одного из свойств сигнала канала (мин, макс, инж. ед., уставки)
+    virtual void SetOscDly(int); // задать задержку перед началом осциллографирования
+    virtual void SetRange(int RangeType);
 };
 
 #endif // ABSTRACTCONFDIALOG2X_H

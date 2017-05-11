@@ -121,7 +121,7 @@ void AbstractConfDialog2x::SetupUI()
     ConfTW->addTab(cp,"Общие");
 
     lyout = new QVBoxLayout;
-    gb = new QGroupBox("Диапазоны сигналов");
+    gb = new QGroupBox("Входные сигналы");
     gb->setObjectName("RangeGB");
     glyout = new QGridLayout;
     glyout->setColumnStretch(0,0);
@@ -133,9 +133,9 @@ void AbstractConfDialog2x::SetupUI()
     QDoubleSpinBox *dspbls;
     lbl = new QLabel("№ канала");
     glyout->addWidget(lbl,0,0,1,1);
-    lbl = new QLabel("Тип диапазона");
-    glyout->addWidget(lbl,0,1,1,1);
     lbl = new QLabel("Диапазон");
+    glyout->addWidget(lbl,0,1,1,1);
+    lbl = new QLabel("Границы сигнала");
     glyout->addWidget(lbl,0,2,1,2);
     lbl = new QLabel("Мин. инж.");
     glyout->addWidget(lbl,0,3,1,1);
@@ -146,8 +146,18 @@ void AbstractConfDialog2x::SetupUI()
         lbl = new QLabel(QString::number(i));
         glyout->addWidget(lbl,i,0,1,1);
         QComboBox *mcb = WDFunc::NewCB(this, "inrange."+QString::number(i), Params.RangeTypes);
-        connect(mcb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetRangeWidgetSlot(int)));
+        connect(mcb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetRange(int)));
         glyout->addWidget(mcb, i,1,1,1);
+        dspbls = WDFunc::NewSPB(this, "0."+QString::number(i), -20.0, 20.0, 0.01, 2, ACONFGCLR); // inmin
+        connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
+        hlyout->addWidget(dspbls);
+        dspbls = WDFunc::NewSPB(this, "1."+QString::number(i), -20.0, 20.0, 0.01, 2, ACONFGCLR); // inmax
+        connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
+        hlyout->addWidget(dspbls);
+        lbl = new QLabel("мА");
+        lbl->setObjectName("units");
+        hlyout->addWidget(lbl);
+        glyout->addLayout(hlyout, i, 2, 1, 1);
         dspbls = WDFunc::NewSPB(this, "2."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFGCLR); // invmin
         connect(dspbls,SIGNAL(editingFinished()),this,SLOT(SetIn()));
         glyout->addWidget(dspbls,i,3,1,1);
@@ -222,84 +232,6 @@ void AbstractConfDialog2x::SetupUI()
     QWidget *wdgt = ConfButtons();
     lyout->addWidget(wdgt);
     setLayout(lyout);
-}
-
-void AbstractConfDialog2x::SetMinMax(int i)
-{
-    QComboBox *cb = this->findChild<QComboBox *>("inrange."+QString::number(i));
-    if (cb == 0)
-    {
-        DBGMSG;
-        return;
-    }
-    switch (C21->Bci_block.inblk.in_type[i])
-    {
-    case INTYPEMA: // канал с мА
-    {
-        if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],20.0))
-        {
-            cb->setCurrentText(RT_mAText);
-            SetRangeWidget(i, RT_mA); // принудительный вызов, чтобы c2b не было равно 0
-            QComboBox *c2b = this->findChild<QComboBox *>("rangemA."+QString::number(i));
-            if (c2b == 0)
-                return;
-            c2b->setCurrentIndex(RT_mA020);
-        }
-        else if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],4.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],20.0))
-        {
-            cb->setCurrentText(RT_mAText);
-            SetRangeWidget(i, RT_mA); // принудительный вызов, чтобы c2b не было равно 0
-            QComboBox *c2b = this->findChild<QComboBox *>("rangemA."+QString::number(i));
-            if (c2b == 0)
-                return;
-            c2b->setCurrentIndex(RT_mA420);
-        }
-        else if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],5.0))
-        {
-            cb->setCurrentText(RT_mAText);
-            SetRangeWidget(i, RT_mA); // принудительный вызов, чтобы c2b не было равно 0
-            QComboBox *c2b = this->findChild<QComboBox *>("rangemA."+QString::number(i));
-            if (c2b == 0)
-                return;
-            c2b->setCurrentIndex(RT_mA05);
-        }
-        else
-        {
-            cb->setCurrentText(RT_MText);
-            SetRangeWidget(i, RT_M); // принудительный вызов, чтобы inmin не было равно 0
-        }
-        break;
-    }
-    case INTYPEV: // канал с В
-    {
-        if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],5.0))
-        {
-            cb->setCurrentText(RT_VText);
-            SetRangeWidget(i, RT_V); // принудительный вызов, чтобы c2b не было равно 0
-            QComboBox *c2b = this->findChild<QComboBox *>("rangeV."+QString::number(i));
-            if (c2b == 0)
-                return;
-            c2b->setCurrentIndex(RT_V05-3);
-        }
-        else if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i], -5.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],5.0))
-        {
-            cb->setCurrentText(RT_VText);
-            SetRangeWidget(i, RT_V); // принудительный вызов, чтобы c2b не было равно 0
-            QComboBox *c2b = this->findChild<QComboBox *>("rangeV."+QString::number(i));
-            if (c2b == 0)
-                return;
-            c2b->setCurrentIndex(RT_V_55-3);
-        }
-        else
-        {
-            cb->setCurrentText(RT_MText);
-            SetRangeWidget(i, RT_M); // принудительный вызов, чтобы inmin не было равно 0
-        }
-        break;
-    }
-    default: // INTYPENA, INTYPERES
-        break;
-    }
 }
 
 void AbstractConfDialog2x::DisableChannel(int chnum, bool disable)
@@ -409,34 +341,4 @@ void AbstractConfDialog2x::PrereadConf()
         emit LoadDefConf();
     else // иначе заполнить значениями из модуля
         ReadConf();
-}
-
-void AbstractConfDialog2x::SetIn()
-{
-    QDoubleSpinBox *spb = qobject_cast<QDoubleSpinBox *>(sender());
-    QString ObjectName = spb->objectName().split(".").at(0);
-    int idx = ObjectName.toInt();
-    if (idx == GENERALERROR)
-    {
-        DBGMSG;
-        return;
-    }
-    int tmpi = GetChNumFromObjectName(sender()->objectName());
-    if (tmpi <= 0)
-    {
-        DBGMSG;
-        return;
-    }
-    --tmpi; // каналы в Bci_block нумеруются с нуля, а objname - с 1
-    SetInP2(idx, tmpi, spb->value());
-    if (CheckConf())
-        tmps = "QDoubleSpinBox {color: "+QString(ERRCLR)+"; font: bold;}";
-    spb->setStyleSheet(tmps);
-}
-
-void AbstractConfDialog2x::SetRangeWidgetSlot(int RangeType)
-{
-    QString McbName = sender()->objectName();
-    int ChNum = GetChNumFromObjectName(McbName);
-    SetRangeWidget(ChNum, RangeType);
 }
