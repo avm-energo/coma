@@ -20,7 +20,7 @@
 a_checkdialog::a_checkdialog(QWidget *parent) :
     QDialog(parent)
 {
-    BdMeasurementsActive = BdaMeasurementsActive = false;
+/*    BdMeasurementsActive = BdaMeasurementsActive = false;
     timer = new QTimer;
     timer->setObjectName("timer");
     timer->setInterval(1000); // per / 2
@@ -41,12 +41,12 @@ a_checkdialog::a_checkdialog(QWidget *parent) :
         Bd_block.ainx[i] = 0;
     }
     Bd_block.at = 0;
-    SetupUI();
+    SetupUI();*/
 }
 
 void a_checkdialog::SetupUI()
 {
-    int i;
+    /*int i;
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
     setStyleSheet(tmps);
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
@@ -277,20 +277,6 @@ void a_checkdialog::SetupUI()
 
     gb = new QGroupBox("Проверки");
     gb1lyout = new QVBoxLayout;
- /*   gb2lyout = new QHBoxLayout;
-    lbl = new QLabel("Проверка программно управляемого светодиода:");
-    gb2lyout->addWidget(lbl);
-    pb = new QPushButton("Включить светодиод");
-    connect(pb,SIGNAL(clicked()),this,SLOT(CheckLEDOn()));
-    if (pc.Emul)
-        pb->setEnabled(false);
-    gb2lyout->addWidget(pb);
-    pb = new QPushButton("Выключить светодиод");
-    connect(pb,SIGNAL(clicked()),this,SLOT(CheckLEDOff()));
-    if (pc.Emul)
-        pb->setEnabled(false);
-    gb2lyout->addWidget(pb);
-    gb1lyout->addLayout(gb2lyout); */
 
     gb2lyout = new QHBoxLayout;
     lbl = new QLabel("Текущий IP-адрес:");
@@ -370,16 +356,14 @@ void a_checkdialog::SetupUI()
     cp1->setLayout(lyout);
     lyout = new QVBoxLayout;
     lyout->addWidget(CheckTW);
-    setLayout(lyout);
+    setLayout(lyout); */
 }
 
 void a_checkdialog::StartMeasurementsWithFile()
 {
-    aconf = new config_21;
+/*    aconf = new config_21;
     // читаем текущую конфигурацию
     cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,aconf->Config->Config);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != NOERROR)
     {
         ERMSG("Ошибка приёма данных конфигурации");
@@ -416,7 +400,7 @@ void a_checkdialog::StartMeasurementsWithFile()
         pb->setEnabled(false);
     ElapsedTimeCounter = new QTime;
     ElapsedTimeCounter->start();
-    StartMeasurements();
+    StartMeasurements(); */
 }
 
 void a_checkdialog::StartMeasurements()
@@ -460,7 +444,7 @@ void a_checkdialog::StopBdaMeasurements()
 
 void a_checkdialog::RefreshBd()
 {
-    int i;
+/*    int i;
     for (i = 0; i < 16; i++)
     {
         QLabel *lbl = this->findChild<QLabel *>("bdinI"+QString::number(i));
@@ -481,7 +465,7 @@ void a_checkdialog::RefreshBd()
     }
     QLabel *lbl = this->findChild<QLabel *>("bdat");
     if (lbl != 0)
-        lbl->setText(QString::number(Bd_block.at,'f',5));
+        lbl->setText(QString::number(Bd_block.at,'f',5)); */
 }
 
 void a_checkdialog::RefreshBda()
@@ -528,8 +512,6 @@ void a_checkdialog::Check1PPS()
 void a_checkdialog::GetIP()
 {
     cn->Send(CN_IP, Canal::BT_NONE, &Bip_block, sizeof(Bip));
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == NOERROR)
         CheckIP();
 }
@@ -546,11 +528,9 @@ void a_checkdialog::CheckIP()
 
 void a_checkdialog::TimerTimeout()
 {
-    if ((BdMeasurementsActive) && (OddTimeout)) // текущие измерения проводим на первом проходе таймера
+/*    if ((BdMeasurementsActive) && (OddTimeout)) // текущие измерения проводим на первом проходе таймера
     {
         cn->Send(CN_GBd, Canal::BT_NONE, &Bd_block, sizeof(Bd));
-        while (cn->Busy)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
         if (cn->result == NOERROR)
             RefreshBd();
         if (XlsxWriting)
@@ -582,10 +562,8 @@ void a_checkdialog::TimerTimeout()
     if ((BdaMeasurementsActive) && (!OddTimeout)) // все остальные - на втором
     {
         cn->Send(CN_GBda, Canal::BT_NONE, &Bda_block, sizeof(Bda));
-        while (cn->Busy)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
         if (cn->result == NOERROR)
             RefreshBda();
     }
-    OddTimeout = !OddTimeout;
+    OddTimeout = !OddTimeout; */
 }

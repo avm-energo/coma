@@ -5,7 +5,7 @@ Config21::Config21(QVector<publicclass::DataRec> &config, bool BaseBoard)
     int Type = (BaseBoard) ? MTB_21 : MTM_21;
     Config2x::SetAInSize(Bci_block.inblk, Type);
     // параметры входных сигналов
-    int StartInIndex = Config2x::ModTypeMap().value(Type).AInStart;
+    quint32 StartInIndex = Config2x::ModTypeMap().value(Type).AInStart;
     publicclass::DataRec configelement;
     bool FFound = false;
     foreach (configelement, config)
@@ -40,22 +40,22 @@ Config21::Config21(QVector<publicclass::DataRec> &config, bool BaseBoard)
 
 void Config21::SetDefConf()
 {
-    Bci_defblock.oscdly = AIN21_DEF_OSCDLY;
-    Bci_defblock.oscthr = AIN21_DEF_OSCTHR;
-    Bci_defblock.filtern = AIN21_DEF_FILTERN;
-    Bci_defblock.filterthr = AIN21_DEF_FILTERTHR;
-    Bci_defblock.hysteresis = AIN21_DEF_HYSTERS;
+    Bci_defblock.inblk.oscdly = AIN21_DEF_OSCDLY;
+    Bci_defblock.inblk.oscthr = AIN21_DEF_OSCTHR;
+    Bci_defblock.inblk.filtern = AIN21_DEF_FILTERN;
+    Bci_defblock.inblk.filterthr = AIN21_DEF_FILTERTHR;
+    Bci_defblock.inblk.hysteresis = AIN21_DEF_HYSTERS;
     for (int i = 0; i < AIN21_NUMCH; i++)
     {
-        Bci_defblock.in_type[i] = Config2x::AIT_MA;
-        Bci_defblock.in_min[i] = AIN21_DEF_INMIN;
-        Bci_defblock.in_max[i] = AIN21_DEF_INMAX;
-        Bci_defblock.in_vmin[i] = AIN21_DEF_INVMIN;
-        Bci_defblock.in_vmax[i] = AIN21_DEF_INVMAX;
-        Bci_defblock.setminmin[i] = AIN21_DEF_SETMINMIN;
-        Bci_defblock.setmin[i] = AIN21_DEF_SETMIN;
-        Bci_defblock.setmax[i] = AIN21_DEF_SETMAX;
-        Bci_defblock.setmaxmax[i] = AIN21_DEF_SETMAXMAX;
-        Bci_defblock.osc[i] = AIN21_DEF_OSC;
+        Bci_defblock.inblk.in_type[i] = Config2x::AIT_MA;
+        Bci_defblock.inblk.in_min[i] = AIN21_DEF_INMIN;
+        Bci_defblock.inblk.in_max[i] = AIN21_DEF_INMAX;
+        Bci_defblock.inblk.in_vmin[i] = AIN21_DEF_INVMIN;
+        Bci_defblock.inblk.in_vmax[i] = AIN21_DEF_INVMAX;
+        Bci_defblock.inblk.setminmin[i] = AIN21_DEF_SETMINMIN;
+        Bci_defblock.inblk.setmin[i] = AIN21_DEF_SETMIN;
+        Bci_defblock.inblk.setmax[i] = AIN21_DEF_SETMAX;
+        Bci_defblock.inblk.setmaxmax[i] = AIN21_DEF_SETMAXMAX;
+        Bci_defblock.inblk.osc[i] = AIN21_DEF_OSC;
     }
 }

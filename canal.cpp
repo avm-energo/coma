@@ -48,7 +48,7 @@ void Canal::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint1
     else // BT_NONE
         BoardType = 0x00;
     InitiateSend();
-    while (cn->Busy)
+    while (Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
 }
 
@@ -106,8 +106,8 @@ void Canal::InitiateSend()
         WriteData.append(cmd);
         AppendSize(WriteData, 17); // BoardType(1), HiddenBlock(16)
         WriteData.append(BoardType);
-        WriteData.resize(WriteData.size()+sizeof(Bhb_Main));
-        memcpy(&(WriteData.data()[5]), &outdata[0], sizeof(Bhb_Main));
+        WriteData.resize(WriteData.size()+outdatasize);
+        memcpy(&(WriteData.data()[5]), &outdata[0], outdatasize);
         WriteDataToPort(WriteData);
         break;
     }

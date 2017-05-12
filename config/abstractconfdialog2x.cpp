@@ -19,8 +19,8 @@
 #include "../widgets/wd_func.h"
 #include "../canal.h"
 
-AbstractConfDialog2x::AbstractConfDialog2x(QVector<publicclass::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
-    AbstractConfDialog(S2Config, parent)
+AbstractConfDialog2x::AbstractConfDialog2x(bool BaseBoard, QWidget *parent) :
+    AbstractConfDialog(parent)
 {
     isBaseBoard = BaseBoard;
     NoProperConf = false;
@@ -109,7 +109,7 @@ void AbstractConfDialog2x::SetupUI()
     gblyout->addLayout(glyout);
     lbl = new QLabel("Задержка в мс начала фиксации максимумов:");
     gblyout->addWidget(lbl);
-    QSpinBox *spb = WDFunc::NewSPB(this, "oscdlyspb", 0, 10000, 1, 0, ACONFGCLR);
+    s_tqSpinBox *spb = WDFunc::NewSPB(this, "oscdlyspb", 0, 10000, 1, 0, ACONFGCLR);
     connect(spb,SIGNAL(valueChanged(int)),this,SLOT(SetOscDly(int)));
     gblyout->addWidget(spb);
     gb->setLayout(gblyout);
@@ -242,44 +242,15 @@ void AbstractConfDialog2x::DisableChannel(int chnum, bool disable)
     WDFunc::SetEnabled(this, "choscdi2."+QString::number(chnum), Enabled);
     WDFunc::SetEnabled(this, "choscthr."+QString::number(chnum), Enabled);
     WDFunc::SetEnabled(this, "chosccso0."+QString::number(chnum), Enabled);
-    cb = this->findChild<QComboBox *>("inrange."+QString::number(chnum));
-    if (cb != 0)
-        cb->setVisible(!Disable);
-    cb = this->findChild<QComboBox *>("rangemA."+QString::number(chnum));
-    if (cb != 0)
-        cb->setVisible(!Disable);
-    cb = this->findChild<QComboBox *>("rangeV."+QString::number(chnum));
-    if (cb != 0)
-        cb->setVisible(!Disable);
-    QDoubleSpinBox *dspbls = this->findChild<QDoubleSpinBox *>("0."+QString::number(chnum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("1."+QString::number(chnum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("2."+QString::number(chnum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("3."+QString::number(chnum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("4."+QString::number(chnum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("5."+QString::number(chnum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("6."+QString::number(chnum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-    dspbls = this->findChild<QDoubleSpinBox *>("7."+QString::number(chnum));
-    if (dspbls != 0)
-        dspbls->setVisible(!Disable);
-}
-
-void AbstractConfDialog2x::SetOscDly(int dly)
-{
-    C21->Bci_block.inblk.oscdly = dly;
+    WDFunc::SetEnabled(this, "inrange."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "0."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "1."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "2."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "3."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "4."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "5."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "6."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "7."+QString::number(chnum), Enabled);
 }
 
 void AbstractConfDialog2x::SetChOsc(int isChecked)

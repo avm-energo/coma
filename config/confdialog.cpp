@@ -11,7 +11,7 @@
 #include "../canal.h"
 #include "../publicclass.h"
 
-ConfDialog::ConfDialog(QVector<publicclass::DataRec> &S2Config, QObject *parent) : QDialog(parent)
+ConfDialog::ConfDialog(QVector<publicclass::DataRec> &S2Config, QWidget *parent) : QDialog(parent)
 {
     ConfigMain = new Config(S2Config); // добавляем к переданному S2Config общую часть
     SetupUI();
@@ -38,47 +38,47 @@ void ConfDialog::SetupUI()
     glyout->setColumnStretch(2, 50);
     QLabel *lbl = new QLabel("Адрес базовой станции:");
     glyout->addWidget(lbl,0,0,1,1,Qt::AlignRight);
-    s_tqSpinBox *dspbls = WDFunc::NewSPB(w, "spb.1", 0, 65535, 1, 0, ACONFGCLR);
+    s_tqSpinBox *dspbls = WDFunc::NewSPB(this, "spb.1", 0, 65535, 1, 0, ACONFGCLR);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
     glyout->addWidget(dspbls, 0, 1, 1, 1, Qt::AlignLeft);
     lbl = new QLabel("Интервал циклического опроса:");
     glyout->addWidget(lbl,1,0,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(w, "spb.2", 0, 255, 1, 0, ACONFGCLR);
+    dspbls = WDFunc::NewSPB(this, "spb.2", 0, 255, 1, 0, ACONFGCLR);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
     glyout->addWidget(dspbls, 1, 1, 1, 1, Qt::AlignLeft);
     lbl=new QLabel("c");
     glyout->addWidget(lbl,1,2,1,1,Qt::AlignLeft);
     lbl = new QLabel("Тайм-аут t1:");
     glyout->addWidget(lbl,2,0,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(w, "spb.3", 0, 255, 1, 0, ACONFGCLR);
+    dspbls = WDFunc::NewSPB(this, "spb.3", 0, 255, 1, 0, ACONFGCLR);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
     glyout->addWidget(dspbls, 2, 1, 1, 1, Qt::AlignLeft);
     lbl=new QLabel("c");
     glyout->addWidget(lbl,2,2,1,1,Qt::AlignLeft);
     lbl = new QLabel("Тайм-аут t2:");
     glyout->addWidget(lbl,3,0,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(w, "spb.4", 0, 255, 1, 0, ACONFGCLR);
+    dspbls = WDFunc::NewSPB(this, "spb.4", 0, 255, 1, 0, ACONFGCLR);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
     glyout->addWidget(dspbls, 3, 1, 1, 1, Qt::AlignLeft);
     lbl=new QLabel("c");
     glyout->addWidget(lbl,3,2,1,1,Qt::AlignLeft);
     lbl = new QLabel("Тайм-аут t3:");
     glyout->addWidget(lbl,4,0,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(w, "spb.5", 0, 255, 1, 0, ACONFGCLR);
+    dspbls = WDFunc::NewSPB(this, "spb.5", 0, 255, 1, 0, ACONFGCLR);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
     glyout->addWidget(dspbls, 4, 1, 1, 1, Qt::AlignLeft);
     lbl=new QLabel("c");
     glyout->addWidget(lbl,4,2,1,1,Qt::AlignLeft);
     lbl = new QLabel("Макс. число неподтв. APDU (k):");
     glyout->addWidget(lbl,5,0,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(w, "spb.6", 0, 255, 1, 0, ACONFGCLR);
+    dspbls = WDFunc::NewSPB(this, "spb.6", 0, 255, 1, 0, ACONFGCLR);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
     glyout->addWidget(dspbls, 5, 1, 1, 1, Qt::AlignLeft);
     lbl=new QLabel("c");
     glyout->addWidget(lbl,5,2,1,1,Qt::AlignLeft);
     lbl = new QLabel("Макс. число посл. подтв. APDU (w):");
     glyout->addWidget(lbl,6,0,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(w, "spb.7", 0, 255, 1, 0, ACONFGCLR);
+    dspbls = WDFunc::NewSPB(this, "spb.7", 0, 255, 1, 0, ACONFGCLR);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
     glyout->addWidget(dspbls, 6, 1, 1, 1, Qt::AlignLeft);
     lbl=new QLabel("c");
@@ -86,7 +86,7 @@ void ConfDialog::SetupUI()
     lbl = new QLabel("Тип синхр. времени:");
     glyout->addWidget(lbl,7,0,1,1,Qt::AlignRight);
     QStringList cbl = QStringList() << "SNTP+PPS" << "SNTP";
-    s_tqComboBox *cb = WDFunc::NewCB(w, "spb.8", cbl, ACONFGCLR);
+    s_tqComboBox *cb = WDFunc::NewCB(this, "spb.8", cbl, ACONFGCLR);
     cb->setMinimumWidth(70);
     connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
     glyout->addWidget(cb, 7, 1, 1, 2);

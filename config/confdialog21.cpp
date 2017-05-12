@@ -20,16 +20,13 @@
 #include "../canal.h"
 
 ConfDialog21::ConfDialog21(QVector<publicclass::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
-    AbstractConfDialog2x(S2Config, BaseBoard, parent)
+    AbstractConfDialog2x(BaseBoard, parent)
 {
-    ModuleConf.S2Config = QPointer(S2Config);
+    this->S2Config = S2Config;
     C21 = new Config21(S2Config);
-    ModuleConf.Bci_block = static_cast<void *>(C21->Bci_block);
+/*    ModuleConf.Bci_block = static_cast<void *>(C21->Bci_block);
     ModuleConf.Bci_block_size = sizeof(Config21::Bci);
-    ModuleConf.Bci_defblock = static_cast<void *>(C21->Bci_defblock);
-    cb->addItem("(4..20) мА");
-    cb->addItem("(0..20) мА");
-    cb->addItem("(0..5) мА");
+    ModuleConf.Bci_defblock = static_cast<void *>(C21->Bci_defblock); */
     Params.InTypes = QStringList() << "Не исп." << "мА" << "В";
     Params.RangeTypes = QStringList() << "(4..20) мА" << "(0..20) мА" << "(0..5) мА" << "(-5..5) В" << "(0..5) В" << "Произвольный";
     Params.NumCh = AIN21_NUMCH;

@@ -81,7 +81,7 @@ s_tqComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, QStringList 
     cb->setModel(cblm);
     if (!cbcolor.isEmpty())
     {
-        tmps = "QComboBox {background-color: " + cbcolor + ";}";
+        QString tmps = "QComboBox {background-color: " + cbcolor + ";}";
         cb->setStyleSheet(tmps);
     }
     return cb;

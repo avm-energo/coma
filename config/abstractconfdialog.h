@@ -3,37 +3,40 @@
 
 #include "config/config.h"
 
-class QDialog;
+#include <QDialog>
 
 class AbstractConfDialog : public QDialog
 {
     Q_OBJECT
 public:
-    AbstractConfDialog(QVector<publicclass::DataRec> &S2Config, QObject *parent = 0);
-    virtual ~AbstractConfDialog();
-
-    virtual void Fill() = 0;
-
-public slots:
-
-private:
-    struct ModConf
+/*    struct ModConf
     {
         void *Bci_block;
         void *Bci_defblock;
         int Bci_block_size;
-        QPointer<QVector<publicclass::DataRec> > S2Config;
-    };
+        QVector<publicclass::DataRec> S2Config;
+    }; */
 
-    ModConf ModuleConf;
-    virtual void SetupUI() = 0;
-    virtual void CheckConf() = 0;
+    AbstractConfDialog(QWidget *parent = 0);
+    virtual ~AbstractConfDialog();
+
+    QVector<publicclass::DataRec> S2Config;
+
+    QWidget *Widget104();
+    QWidget *ConfButtons();
+    virtual void Fill() = 0;
     virtual void SetDefConf() = 0;
+
+public slots:
+
+private:
+
+    virtual void SetupUI() = 0;
+    virtual bool CheckConf() = 0;
     void SaveConfToFile();
     void LoadConfFromFile();
     void ReadConf();
     void WriteConf();
-    QWidget *ConfButtons();
 
 private slots:
 

@@ -2,7 +2,7 @@
 
 config_80::config_80()
 {
-    Config[0] = {BCI_MTYPEB, sizeof(Bci_block.mainblk.MTypeB), &(Bci_block.mainblk.MTypeB)};
+/*    Config[0] = {BCI_MTYPEB, sizeof(Bci_block.mainblk.MTypeB), &(Bci_block.mainblk.MTypeB)};
     Config[1] = {BCI_MTYPEM, sizeof(Bci_block.mainblk.MTypeM), &(Bci_block.mainblk.MTypeM)};
     Config[2] = {BCI_CTYPE, sizeof(Bci_block.mainblk.Ctype), &Bci_block.mainblk.Ctype};
     Config[3] = {BCI_ABS_104, sizeof(Bci_block.mainblk.Abs_104), &Bci_block.mainblk.Abs_104};
@@ -50,7 +50,7 @@ config_80::config_80()
         Bci_defblock.inom1[i] = 600;
         Bci_defblock.inom1[i+3] = 1000;
         Bci_defblock.inom2[i] = Bci_defblock.inom2[i+3] = 5;
-    }
+    } */
 }
 
 config_80::~config_80()

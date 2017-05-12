@@ -21,10 +21,10 @@
 confdialog_80::confdialog_80(QWidget *parent) :
     QDialog(parent)
 {
-    QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
+/*    QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
     setStyleSheet(tmps);
     econf = new config_80;
-    GeneralConf = new confdialog(&(econf->Bci_block.mainblk));
+    GeneralConf = new ConfDialog(&(econf->Bci_block.mainblk));
     setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
@@ -69,29 +69,27 @@ confdialog_80::confdialog_80(QWidget *parent) :
     if ((pc.ModuleBsi.Hth & HTH_CONFIG) || (pc.Emul)) // если установлен признак отсутствия конфигурации
         SetDefConf();
     else
-        GetBci();
+        GetBci();*/
 }
 
 confdialog_80::~confdialog_80()
 {
-    delete GeneralConf;
+//    delete GeneralConf;
 }
 
 void confdialog_80::GetBci()
 {
-    cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,econf->Config);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
+/*    cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,econf->Config);
     if (cn->result == NOERROR)
     {
         FillConfData();
         MessageBox2::information(this, "OK", "Прочитано успешно");
-    }
+    }*/
 }
 
 void confdialog_80::FillConfData()
 {
-    int i;
+/*    int i;
     GeneralConf->Fill(); // заполнение общих полей
     SetComboBox("eq_typecb", QString::number(econf->Bci_block.eq_type));
     SetCheckBox("oscchb.0", (econf->Bci_block.ddosc & 0x0001));
@@ -130,12 +128,12 @@ void confdialog_80::FillConfData()
     default:
         break;
     }
-    SetSpinBox("thr.3", econf->Bci_block.duimin);
+    SetSpinBox("thr.3", econf->Bci_block.duimin);*/
 }
 
 void confdialog_80::SetupUI()
 {
-    QVBoxLayout *vlyout1 = new QVBoxLayout;
+/*    QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QWidget *cp1 = new QWidget;
@@ -263,7 +261,7 @@ void confdialog_80::SetupUI()
     cp1->setLayout(vlyout1);
     vlyout1 = new QVBoxLayout;
     vlyout1->addWidget(GeneralConf->Widget104());
-    cp2->setLayout(vlyout1);
+    cp2->setLayout(vlyout1);*/
 }
 
 QWidget *confdialog_80::UNom(int numunom)
@@ -465,18 +463,14 @@ void confdialog_80::SetNHFiltr(int tmpi)
 
 void confdialog_80::WriteConfDataToModule()
 {
-    cn->Send(CN_WF, Canal::BT_NONE, &econf->Bci_block, sizeof(econf->Bci_block), 2, econf->Config);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
+/*    cn->Send(CN_WF, Canal::BT_NONE, &econf->Bci_block, sizeof(econf->Bci_block), 2, econf->Config);
     if (cn->result == NOERROR)
-        MessageBox2::information(this, "OK", "Операция проведена успешно!");
+        MessageBox2::information(this, "OK", "Операция проведена успешно!");*/
 }
 
 void confdialog_80::SetNewConf()
 {
 /*    cn->Send(CN_Cnc);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == NOERROR)
     {
         MessageBox2::information(this, "OK", "Переведено успешно");
@@ -486,15 +480,15 @@ void confdialog_80::SetNewConf()
 
 void confdialog_80::SetDefConf()
 {
-    econf->Bci_defblock.mainblk.MTypeB = pc.ModuleBsi.MTypeB; // делаем для того, чтобы типы совпадали
+/*    econf->Bci_defblock.mainblk.MTypeB = pc.ModuleBsi.MTypeB; // делаем для того, чтобы типы совпадали
     econf->Bci_defblock.mainblk.MTypeM = pc.ModuleBsi.MTypeM; // делаем для того, чтобы подтипы совпадали
     memcpy(&econf->Bci_block, &econf->Bci_defblock, sizeof(config_80::Bci));
-    FillConfData();
+    FillConfData();*/
 }
 
 void confdialog_80::LoadConf()
 {
-    QByteArray ba;
+ /*   QByteArray ba;
     ba = pc.LoadFile("Config files (*.ecf)");
     if (pc.RestoreDataMem(&(ba.data()[0]), ba.size(), econf->Config))
     {
@@ -502,12 +496,12 @@ void confdialog_80::LoadConf()
         return;
     }
     FillConfData();
-    MessageBox2::information(this, "OK", "Загрузка прошла успешно!");
+    MessageBox2::information(this, "OK", "Загрузка прошла успешно!");*/
 }
 
 void confdialog_80::SaveConf()
 {
-    QByteArray *ba = new QByteArray;
+/*    QByteArray *ba = new QByteArray;
     ba->resize(MAXBYTEARRAY);
     pc.StoreDataMem(&(ba->data()[0]), econf->Config, 0x0001);
     quint32 BaLength = static_cast<quint8>(ba->data()[4]);
@@ -532,7 +526,7 @@ void confdialog_80::SaveConf()
         break;
     default:
         break;
-    }
+    }*/
 }
 
 void confdialog_80::SetComboBox(QString name, const QString &text)

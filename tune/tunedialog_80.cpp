@@ -654,8 +654,6 @@ bool e_tunedialog::Start7_3_1(bool DefConfig)
     {
         // получение настроечных коэффициентов от модуля
         cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
-        while (cn->Busy)
-            qApp->processEvents();
         if (cn->result != NOERROR)
         {
             MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");
@@ -676,20 +674,14 @@ bool e_tunedialog::Start7_3_1(bool DefConfig)
     MsgSetVisible(MSG_7_3_1_1);
     // запись настроечных коэффициентов в модуль
     cn->Send(CN_WBac, Canal::BT_NONE, &Bac_defblock, sizeof(Bac));
-    while (cn->Busy)
-        qApp->processEvents();
     if (cn->result == NOERROR)
     {
         // перейти на новую конфигурацию
 /*        cn->Send(CN_Cnc);
-        while (cn->Busy)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
         if (cn->result != NOERROR)
             return false; */
         // получение настроечных коэффициентов от модуля
         cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
-        while (cn->Busy)
-            qApp->processEvents();
         if (cn->result != NOERROR)
         {
             WARNMSG("Ошибка при приёме данных");
@@ -877,7 +869,7 @@ bool e_tunedialog::Start7_3_7_1()
 
 bool e_tunedialog::Start7_3_7_2()
 {
-    // 1. установить в конфигурации токи i2nom в 1 А и перезагрузить модуль
+/*    // 1. установить в конфигурации токи i2nom в 1 А и перезагрузить модуль
     MsgSetVisible(MSG_7_3_7_2);
 //    qDebug() << "2";
     for (int i=0; i<6; i++)
@@ -885,17 +877,10 @@ bool e_tunedialog::Start7_3_7_2()
     // послать новые коэффициенты по току в конфигурацию
     cn->Send(CN_WF, Canal::BT_NONE, &econf->Bci_block, sizeof(config_80::Bci), 2, econf->Config);
 //    qDebug() << "3";
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != NOERROR)
         return false;
 //    qDebug() << "4";
     // дать команду перехода на новую конфигурацию
-/*    cn->Send(CN_Cnc);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result != NOERROR)
-        return false; */
     OkMsgSetVisible(MSG_7_3_7_2);
     // 2. выдать сообщение об установке 60 В 1 А
     MsgSetVisible(MSG_7_3_7_3);
@@ -915,7 +900,7 @@ bool e_tunedialog::Start7_3_7_2()
     MsgSetVisible(MSG_7_3_7_5);
     for (int i=0; i<3; i++)
     {
-/*        if (pc.ModuleBsi.MType1 == MTE_1T1N)
+//*        if (pc.ModuleBsi.MType1 == MTE_1T1N)
         {
             Bac_newblock.KmU[i] = Bac_block.KmU[i] * mipd[i] / Bda_block.IUefNat_filt[i];
             Bac_newblock.DPsi[i+3] = Bac_block.DPsi[i+3] + Bac_newblock.DPsi[i] - Bac_block.DPsi[i] \
@@ -923,7 +908,7 @@ bool e_tunedialog::Start7_3_7_2()
         }
         else
             Bac_newblock.KmI_1[i] = Bac_block.KmI_1[i] * mipd[i+3] / Bda_block.IUefNat_filt[i];
-        Bac_newblock.KmI_1[i+3] = Bac_block.KmI_1[i+3] * mipd[i+3] / Bda_block.IUefNat_filt[i+3];*/
+        Bac_newblock.KmI_1[i+3] = Bac_block.KmI_1[i+3] * mipd[i+3] / Bda_block.IUefNat_filt[i+3];**
     }
     OkMsgSetVisible(MSG_7_3_7_5);
     // 6. установить в конфигурации токи i2nom в 5 А и перезагрузить модуль
@@ -931,22 +916,12 @@ bool e_tunedialog::Start7_3_7_2()
     for (int i=0; i<6; i++)
         econf->Bci_block.inom2[i] = 5.0;
     cn->Send(CN_WF, Canal::BT_NONE, &econf->Bci_block, sizeof(config_80::Bci), 2, econf->Config);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != NOERROR)
     {
         ErMsgSetVisible(MSG_7_3_7_6);
         return false;
     }
     // перейти на новую конфигурацию
-/*    cn->Send(CN_Cnc);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    if (cn->result != NOERROR)
-    {
-        ErMsgSetVisible(MSG_7_3_7_6);
-        return false;
-    } */
     OkMsgSetVisible(MSG_7_3_7_6);
     // 2. выдать сообщение об установке 60 В 5 А
     MsgSetVisible(MSG_7_3_7_8);
@@ -968,9 +943,9 @@ bool e_tunedialog::Start7_3_7_2()
     {
 /*        if (pc.ModuleBsi.MType1 == MTE_2T0N)
             Bac_newblock.KmI_5[i] = Bac_block.KmI_5[i] * mipd[i+3] / Bda_block.IUefNat_filt[i];
-        Bac_newblock.KmI_5[i+3] = Bac_block.KmI_5[i+3] * mipd[i+3] / Bda_block.IUefNat_filt[i+3];*/
+        Bac_newblock.KmI_5[i+3] = Bac_block.KmI_5[i+3] * mipd[i+3] / Bda_block.IUefNat_filt[i+3];**
     }
-    OkMsgSetVisible(MSG_7_3_7_10);
+    OkMsgSetVisible(MSG_7_3_7_10); */
     return true;
 }
 
@@ -979,8 +954,6 @@ bool e_tunedialog::Start7_3_8()
     MsgSetVisible(MSG_7_3_8_1);
     // 1. Отправляем настроечные параметры в модуль
     cn->Send(CN_WBac, Canal::BT_NONE, &Bac_newblock, sizeof(Bac));
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != NOERROR)
     {
         ErMsgSetVisible(MSG_7_3_8_1);
@@ -988,8 +961,6 @@ bool e_tunedialog::Start7_3_8()
     }
     // переходим на новую конфигурацию
 /*    cn->Send(CN_Cnc);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == NOERROR)
         OkMsgSetVisible(MSG_7_3_8_1);
     else
@@ -1022,8 +993,6 @@ bool e_tunedialog::Start7_3_9()
         }
         // переходим на прежнюю конфигурацию
 /*        cn->Send(CN_Cnc);
-        while (cn->Busy)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
         if (cn->result != NOERROR)
             return false; */
         // измеряем и проверяем
@@ -1043,8 +1012,6 @@ bool e_tunedialog::Start7_3_9()
     {
         pc.PrbMessage = "Стёрто записей: ";
         cn->Send(CN_OscEr);
-        while (cn->Busy)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
         if (cn->result == NOERROR)
             MessageBox2::information(this, "Внимание", "Стёрто успешно");
         else
@@ -1055,28 +1022,24 @@ bool e_tunedialog::Start7_3_9()
 
 bool e_tunedialog::SaveWorkConfig()
 {
-    econf = new config_80;
+/*    econf = new config_80;
 
     cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,econf->Config);
 //    qDebug() << "1";
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == NOERROR)
         memcpy(&Bci_block_work,&econf->Bci_block,sizeof(config_80::Bci));
     else
-        return false;
+        return false; */
     return true;
 }
 
 bool e_tunedialog::LoadWorkConfig()
 {
-    // пишем ранее запомненный конфигурационный блок
+/*    // пишем ранее запомненный конфигурационный блок
     memcpy(&econf->Bci_block,&Bci_block_work,sizeof(config_80::Bci));
     cn->Send(CN_WF, Canal::BT_NONE, &econf->Bci_block, sizeof(econf->Bci_block), 2, econf->Config);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result != NOERROR)
-        return false;
+        return false; */
     return true;
 }
 
@@ -1474,8 +1437,6 @@ bool e_tunedialog::CheckAnalogValues(int ntest)
 void e_tunedialog::ReadTuneCoefs()
 {
     cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == NOERROR)
         WriteTuneCoefsToGUI();
 }
@@ -1484,8 +1445,6 @@ void e_tunedialog::WriteTuneCoefs()
 {
     ReadTuneCoefsFromGUI();
     cn->Send(CN_WBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == NOERROR)
         MessageBox2::information(this, "Внимание", "Записано успешно!");
 }
@@ -1609,8 +1568,6 @@ void e_tunedialog::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
     cn->Send(CN_GBd, Canal::BT_NONE, &Bda_block, sizeof(Bda_block));
-    while (cn->Busy)
-        qApp->processEvents();
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");

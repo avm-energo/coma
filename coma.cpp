@@ -62,6 +62,7 @@ Coma::Coma(QWidget *parent)
         dir.mkpath(".");
     ReconTry = 0;
     cn = new Canal;
+    S2Config.clear();
     SetupUI();
     SetupMenubar();
     PrepareTimers();
@@ -377,7 +378,6 @@ void Coma::Stage2()
         cn->Disconnect();
         Stage1();
     }
-    CopyBhbFromBsi();
     pc.MType = ((pc.ModuleBsi.MTypeB & 0x000000FF) << 8) | (pc.ModuleBsi.MTypeM & 0x000000FF);
     pc.ModuleTypeString = "АВ-ТУК-";
     pc.ModuleTypeString.append(QString::number(pc.MType, 16));
@@ -386,18 +386,6 @@ void Coma::Stage2()
         OpenBhbDialog();
     FillBsi();
     Stage3();
-}
-
-void Coma::CopyBhbFromBsi()
-{
-    pc.BoardBBhb.HWVer = pc.ModuleBsi.HwverB;
-    pc.BoardBBhb.ModSerialNum = pc.ModuleBsi.SerialNum;
-    pc.BoardBBhb.SerialNum = pc.ModuleBsi.SerialNumB;
-    pc.BoardBBhb.MType = pc.ModuleBsi.MTypeB;
-    pc.BoardMBhb.MType = pc.ModuleBsi.MTypeM;
-    pc.BoardMBhb.HWVer = pc.ModuleBsi.HwverM;
-    pc.BoardMBhb.SerialNum = pc.ModuleBsi.SerialNumM;
-    pc.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
 }
 
 void Coma::FillBsi()
@@ -458,29 +446,22 @@ void Coma::ClearBsi()
 void Coma::OpenBhbDialog()
 {
     HiddenDialog *dlg = new HiddenDialog(HiddenDialog::BYMY);
+    pc.BoardBBhb.HWVer = pc.ModuleBsi.HwverB;
+    pc.BoardBBhb.ModSerialNum = pc.ModuleBsi.SerialNum;
+    pc.BoardBBhb.SerialNum = pc.ModuleBsi.SerialNumB;
+    pc.BoardBBhb.MType = pc.ModuleBsi.MTypeB;
+    pc.BoardMBhb.MType = pc.ModuleBsi.MTypeM;
+    pc.BoardMBhb.HWVer = pc.ModuleBsi.HwverM;
+    pc.BoardMBhb.SerialNum = pc.ModuleBsi.SerialNumM;
+    pc.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
     connect(dlg,SIGNAL(accepted()),this,SLOT(SendBhb()));
+    dlg->Fill(); // заполняем диалог из недавно присвоенных значений
     dlg->exec();
     if (CN_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
     {
         cn->Disconnect();
         Stage1();
     }
-}
-
-void Coma::SendBhb()
-{
-    cn->Send(CN_WHv, Canal::BT_BASE, &pc.BoardBBhb, sizeof(pc.BoardBBhb));
-    if (cn->result != NOERROR)
-    {
-        ERMSG("Проблема при записи блока Hidden block базовой платы");
-        return;
-    }
-    if (pc.BoardMBhb.MType != MTM_00)
-        cn->Send(CN_WHv, Canal::BT_MEZONIN, &pc.BoardMBhb, sizeof(pc.BoardMBhb));
-    if (cn->result == NOERROR)
-        MessageBox2::information(this, "Успешно", "Записано успешно");
-    else
-        ERMSG("Проблема при записи блока Hidden block мезонинной платы");
 }
 
 void Coma::Stage3()
@@ -491,7 +472,7 @@ void Coma::Stage3()
     DownDialog = new downloaddialog;
     FwUpDialog = new fwupdialog;
     OscDialog = new oscdialog;
-    MainConfDialog = new ConfDialog;
+    MainConfDialog = new ConfDialog(S2Config);
     MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     switch(pc.ModuleBsi.MTypeB)
     {

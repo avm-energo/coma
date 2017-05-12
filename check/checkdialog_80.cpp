@@ -428,8 +428,6 @@ void e_checkdialog::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
     cn->Send(CN_GBd, Canal::BT_NONE, &Bda_block, sizeof(Bda_block));
-    while (cn->Busy)
-        qApp->processEvents();
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");

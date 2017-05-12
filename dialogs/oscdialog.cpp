@@ -1,6 +1,6 @@
 #include "oscdialog.h"
 #include "canal.h"
-#include "config.h"
+#include "../config/config.h"
 #include "widgets/s_tqtableview.h"
 #include "widgets/s_tablemodel.h"
 #include "widgets/getoscpbdelegate.h"
@@ -56,8 +56,6 @@ void oscdialog::GetOscInfo()
     OscInfo = new QByteArray;
     OscInfo->resize(MAXOSCBUFSIZE);
     cn->Send(CN_GBo,Canal::BT_NONE,&(OscInfo->data()[0]));
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == NOERROR)
         ProcessOscInfo();
 }
@@ -116,7 +114,7 @@ void oscdialog::ProcessOscInfo()
 
 void oscdialog::EndExtractOsc()
 {
-    quint32 j;
+/*    quint32 j;
     quint32 OscLength = static_cast<quint8>(OscInfo->at(0));
     OscLength += static_cast<quint8>(OscInfo->at(1))*256;
     OscLength += static_cast<quint8>(OscInfo->at(2))*65536;
@@ -274,7 +272,7 @@ void oscdialog::EndExtractOsc()
     default:
         break;
     }
-
+*/
 }
 
 void oscdialog::GetOsc(QModelIndex idx)
@@ -288,8 +286,6 @@ void oscdialog::GetOsc(QModelIndex idx)
     GivenFilename.insert(0, " ");
     GivenFilename.insert(0, QString::number(oscnum));
     cn->Send(CN_GF,Canal::BT_NONE,OscInfo->data(),0,oscnum);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == NOERROR)
         EndExtractOsc();
 }
@@ -298,8 +294,6 @@ void oscdialog::EraseOsc()
 {
     pc.PrbMessage = "Стёрто записей: ";
     cn->Send(CN_OscEr);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == NOERROR)
         MessageBox2::information(this, "Внимание", "Стёрто успешно");
     else

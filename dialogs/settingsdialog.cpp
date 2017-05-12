@@ -2,6 +2,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLineEdit>
 #include <QCheckBox>
 #include <QPushButton>
 #include <QString>
@@ -61,7 +62,7 @@ void SettingsDialog::SetupUI()
     le = new QLineEdit;
     le->setObjectName("mip4");
     hlyout->addWidget(le);
-    lyout->addLayout(hlyout);
+    vlyout->addLayout(hlyout);
 
     hlyout = new QHBoxLayout;
     lbl = new QLabel("ASDU:");
@@ -74,7 +75,7 @@ void SettingsDialog::SetupUI()
     spb->setObjectName("asduspb");
     hlyout->addWidget(spb);
     hlyout->addStretch(90);
-    lyout->addLayout(hlyout);
+    vlyout->addLayout(hlyout);
 
     QString restring = "^[0-2]{0,1}[0-9]{1,2}$";
     QStringList tmpsl = pc.MIPIP.split(".");

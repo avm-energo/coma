@@ -151,7 +151,7 @@
 //#include <QtSerialPort/QSerialPort>
 #include <QStringList>
 #include <QPointer>
-#include "config/config.h"
+#include <QVector>
 #include "log.h"
 
 class publicclass
@@ -229,11 +229,18 @@ public:
         ER_ECHECK
     };
 
+    struct Bhb_Main
+    {
+        quint32 MType;          // тип модуля
+        quint32 SerialNum;      // серийный номер платы
+        quint32 HWVer;          // версия аппаратного обеспечения модуля (платы)
+        quint32 ModSerialNum;   // серийный номер модуля целиком
+    };
+
     quint32 MType;
 
     Log log;
     QString HomeDir;
-    Bhb_Main BoardBBhb, BoardMBhb;
     QStringList AMTypes, DMTypes, EMTypes;
     quint16 MIPASDU;
     QString MIPIP;
@@ -245,6 +252,7 @@ public:
     int ErrWindowDelay;
     bool ShowErrWindow, ErMsgsOk;
     Bsi ModuleBsi;
+    Bhb_Main BoardBBhb, BoardMBhb;
     QString PrbMessage;
     QVector<DataRec> Config;
 
@@ -259,7 +267,7 @@ public:
     // S2: Разборщик из памяти:
     int RestoreDataMem(void *, quint32, QVector<DataRec> &); //0 - успешно, иначе код ошибки
     // S2: Поиск элемента в массиве описаний
-    QPointer<DataRec> FindElem(QVector<DataRec> &, quint16);
+    DataRec *FindElem(QVector<DataRec> &, quint16);
 
     quint32 GetCRC32(char *, quint32);
     void updCRC32(const quint8 byte, quint32 *dwCRC32);

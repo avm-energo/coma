@@ -7,7 +7,7 @@
 #include <QTimer>
 #include <QLabel>
 #include "../iec104/iec104.h"
-#include "../dialogs/confdialog_80.h"
+#include "../config/confdialog_80.h"
 
 #define TUNEFILELENGTH  256
 

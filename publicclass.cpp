@@ -140,11 +140,12 @@ int publicclass::StoreDataMem(void *mem, QVector<DataRec> &dr, quint16 fname) //
     for(QVector<DataRec>::iterator it=dr.begin(); it!=dr.end(); ++it)
     {
         R = *it;
+        void *Rptr = static_cast<void *>(it);
         quint32 tmpi = sizeof(DataRec)-sizeof(void*);
         memcpy(m,&R,tmpi);
         D.size += tmpi;
         for(i=0;i<tmpi;i++)
-            updCRC32((static_cast<unsigned char *>(&R))[i],&crc);
+            updCRC32((static_cast<unsigned char *>(Rptr))[i],&crc);
         if(R.id==0xFFFF)
             break;
         m+=tmpi;
@@ -209,7 +210,7 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> &dr
       m+=tmpi;
       if(R.id==0xFFFF)
           break;
-      r=FindElem(dr,R.id);
+//      r=FindElem(dr,R.id);
       if(r.isNull()) //элемент не найден в описании, пропускаем
       {
           tmpi = R.num_byte;
@@ -253,16 +254,16 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> &dr
   return 0;
 }
 
-QPointer<publicclass::DataRec> publicclass::FindElem(QVector<DataRec> &dr, quint16 id)
+publicclass::DataRec *publicclass::FindElem(QVector<DataRec> &dr, quint16 id)
 {
-    for(QVector<DataRec>::iterator it=dr.begin(); it!=dr.end(); ++it)
+/*    for(QVector<DataRec>::iterator it=dr.begin(); it!=dr.end(); ++it)
     {
         DataRec R = *it;
         if(R.id==id)
             return it;
         if(R.id==static_cast<quint16>(0xFFFF))
             return NULL;
-    }
+    }*/
     return NULL;
 }
 

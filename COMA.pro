@@ -27,8 +27,8 @@ SOURCES += main.cpp\
     check/checkdialog_21.cpp \
     check/checkdialog_80.cpp \
     config/config80.cpp \
-    dialogs/confdialog_31.cpp \
-    dialogs/confdialog_80.cpp \
+    config/confdialog_31.cpp \
+    config/confdialog_80.cpp \
     iec104/iec104.cpp \
     iec104/ethernet.cpp \
     threads/waitthread.cpp \
@@ -57,19 +57,19 @@ SOURCES += main.cpp\
     dialogs/errordialog.cpp \
     config/config2x.cpp \
     config/config.cpp \
-    dialogs/confdialog21.cpp \
-    dialogs/abstractconfdialog.cpp \
-    dialogs/abstractconfdialog2x.cpp \
+    config/confdialog21.cpp \
+    config/abstractconfdialog.cpp \
+    config/abstractconfdialog2x.cpp \
     config/config21.cpp \
-    dialogs/confdialog.cpp
+    config/confdialog.cpp
 
 HEADERS  += coma.h \
     canal.h \
     publicclass.h \
     check/checkdialog_21.h \
     check/checkdialog_80.h \
-    dialogs/confdialog_31.h \
-    dialogs/confdialog_80.h \
+    config/confdialog_31.h \
+    config/confdialog_80.h \
     config/config80.h \
     iec104/ethernet.h \
     iec104/iec104.h \
@@ -99,11 +99,11 @@ HEADERS  += coma.h \
     dialogs/settingsdialog.h \
     dialogs/errordialog.h \
     config/config2x.h \
-    dialogs/confdialog21.h \
-    dialogs/abstractconfdialog.h \
-    dialogs/abstractconfdialog2x.h \
+    config/confdialog21.h \
+    config/abstractconfdialog.h \
+    config/abstractconfdialog2x.h \
     config/config21.h \
-    dialogs/confdialog.h
+    config/confdialog.h
 
 RESOURCES += \
     res.qrc

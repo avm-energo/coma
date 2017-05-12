@@ -1,6 +1,4 @@
 #include "hiddendialog.h"
-#include "../publicclass.h"
-#include "../config/config.h"
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -8,6 +6,8 @@
 #include <QGroupBox>
 #include <QPushButton>
 #include "../widgets/wd_func.h"
+#include "../widgets/messagebox.h"
+#include "../canal.h"
 
 HiddenDialog::HiddenDialog(int type, QWidget *parent) :
     QDialog(parent)
@@ -34,7 +34,6 @@ HiddenDialog::HiddenDialog(int type, QWidget *parent) :
         break;
     }
     SetupUI();
-    Fill();
 }
 
 void HiddenDialog::paintEvent(QPaintEvent *e)
@@ -163,4 +162,20 @@ void HiddenDialog::GetVersion(quint32 &number, QString lename)
     number += static_cast<quint32>(tmps.toInt()) << 16;
     WDFunc::LEData(this, lename+"sv", tmps);
     number += static_cast<quint32>(tmps.toInt());
+}
+
+void HiddenDialog::SendBhb()
+{
+    cn->Send(CN_WHv, Canal::BT_BASE, &pc.BoardBBhb, sizeof(pc.BoardBBhb));
+    if (cn->result != NOERROR)
+    {
+        ERMSG("Проблема при записи блока Hidden block базовой платы");
+        return;
+    }
+    if (pc.BoardMBhb.MType != MTM_00)
+        cn->Send(CN_WHv, Canal::BT_MEZONIN, &pc.BoardMBhb, sizeof(pc.BoardMBhb));
+    if (cn->result == NOERROR)
+        MessageBox2::information(this, "Успешно", "Записано успешно");
+    else
+        ERMSG("Проблема при записи блока Hidden block мезонинной платы");
 }

@@ -75,14 +75,6 @@ public:
         quint32 w_104;          // макс. кол-во сообщений, после которых необх. выдать подтверждение
     };
 
-    struct Bhb_Main
-    {
-        quint32 MType;          // тип модуля
-        quint32 SerialNum;      // серийный номер платы
-        quint32 HWVer;          // версия аппаратного обеспечения модуля (платы)
-        quint32 ModSerialNum;   // серийный номер модуля целиком
-    };
-
     Bci_Main MainBlk;   // Основной блок (см. config.h)
 
     void SetDefBlock();

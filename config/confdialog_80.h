@@ -18,7 +18,7 @@ private:
 
     QByteArray confba;
     config_80 *econf;
-    confdialog *GeneralConf;
+    ConfDialog *GeneralConf;
 
     void FillConfData();
     QWidget *UNom(int numunom); // 1 - первая тройка напряжений, 2 - вторая

@@ -32,8 +32,8 @@ public:
 
     struct ModuleDesc
     {
-        int AInSize, AOutSize; // размер векторов в соответствующих структурах
-        int AInStart, AOutStart; // начальный номер ID диапазонов аналоговых входов и выходов
+        quint32 AInSize, AOutSize; // размер векторов в соответствующих структурах
+        quint32 AInStart, AOutStart; // начальный номер ID диапазонов аналоговых входов и выходов
     };
 
     static QMap<int, ModuleDesc> ModTypeMap()
@@ -78,8 +78,9 @@ public:
         QVector<float> out_vmax;    // Максимальное значение сигнала в инженерных единицах
     } Bci_AOut;
 
-private:
     static void SetAInSize(Bci_AIn &Bcii, int mtype);
     static void SetAOutSize(Bci_AOut &Bcio, int mtype);
+
+private:
 };
 #endif // CONFIG2X_H

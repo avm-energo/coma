@@ -166,8 +166,6 @@ bool a_tunedialog::tune(int Type, int ChNum)
                 == QMessageBox::Ok)
         {
             cn->Send(CN_GBda, Canal::BT_NONE, &Bda0, sizeof(Bda));
-            while (cn->Busy)
-                QCoreApplication::processEvents(QEventLoop::AllEvents);
             if (cn->result == NOERROR)
                 CheckAndShowTune0(ChNum);
             else
@@ -190,8 +188,6 @@ bool a_tunedialog::tune(int Type, int ChNum)
                                      "\nвходах модуля и нажмите OK") == QMessageBox::Ok)
         {
             cn->Send(CN_GBda, Canal::BT_NONE, &Bda20, sizeof(Bda));
-            while (cn->Busy)
-                QCoreApplication::processEvents(QEventLoop::AllEvents);
             if (cn->result == NOERROR)
                 CheckAndShowTune20(ChNum);
             else
@@ -215,8 +211,6 @@ bool a_tunedialog::tune(int Type, int ChNum)
                 == QMessageBox::Ok)
         {
             cn->Send(CN_GBda, Canal::BT_NONE, &Bda5, sizeof(Bda));
-            while (cn->Busy)
-                QCoreApplication::processEvents(QEventLoop::AllEvents);
             if (cn->result == NOERROR)
                 CheckAndShowTune5(ChNum);
             else
@@ -432,8 +426,6 @@ void a_tunedialog::RefreshTuneCoefs()
 void a_tunedialog::ReadTuneCoefs()
 {
     cn->Send(CN_GBac, Canal::BT_BASE, &Bac_block, sizeof(Bac_block));
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == NOERROR)
         RefreshTuneFields();
     else
@@ -446,8 +438,6 @@ void a_tunedialog::WriteTuneCoefs()
     if (CheckTuneCoefs())
     {
         cn->Send(CN_WBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
-        while (cn->Busy)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
         if (cn->result == NOERROR)
             MessageBox2::information(this,"Успешно!","Записано успешно!");
         else

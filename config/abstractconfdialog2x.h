@@ -28,24 +28,25 @@ class AbstractConfDialog2x : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    explicit AbstractConfDialog2x(QVector<publicclass::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = 0);
+    explicit AbstractConfDialog2x(bool BaseBoard=true, QWidget *parent = 0);
 
-    bool NoProperConf; // в модуле нет нормальной конфигурации
-
-private:
     struct SpecificParams
     {
-        const QStringList InTypes;
-        const QStringList RangeTypes;
-        const int NumCh;
+        QStringList InTypes;
+        QStringList RangeTypes;
+        int NumCh;
     };
+
     QByteArray confba;
     bool isBaseBoard;
     SpecificParams Params;
+    bool NoProperConf; // в модуле нет нормальной конфигурации
 
+    void PrereadConf();
+
+private:
     void SetupUI();
     int GetChNumFromObjectName(QString ObjectName);
-    void PrereadConf();
     void DisableChannel(int chnum, bool disable);
 
 signals:

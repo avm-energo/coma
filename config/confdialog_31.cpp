@@ -88,8 +88,6 @@ d_confdialog::d_confdialog(QWidget *parent) :
 /*void d_confdialog::GetBci()
 {
     cn->Send(CN_GF,canal::BT_NONE,NULL,0,1,Config);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
         FillConfData();
 }
@@ -675,8 +673,6 @@ void d_confdialog::WriteConfDataToModule()
 {
     connect(cn,SIGNAL(sendend()),this,SLOT(WriteCompleted()));
     cn->Send(CN_WF, canal::BT_NONE, &Bci_block, sizeof(Bci_block), 2, Config);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
         QMessageBox::information(this,"Успешно!","Операция проведена успешно!");
 }
@@ -684,8 +680,6 @@ void d_confdialog::WriteConfDataToModule()
 void d_confdialog::SetNewConf()
 {
     cn->Send(CN_Cnc);
-    while (cn->Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     if (cn->result == CN_OK)
         emit BsiIsNeedToBeAcquiredAndChecked();
 }

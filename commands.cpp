@@ -5,8 +5,6 @@
 int CN_GetBsi(void *ptr, quint32 size)
 {
     cn->Send(CN_GBsi, Canal::BT_NONE, ptr, size);
-    while ((cn->Busy) && (cn->Connected))
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
     return cn->result;
 }
 

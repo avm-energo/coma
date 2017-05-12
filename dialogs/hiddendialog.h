@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QPaintEvent>
 #include <QVBoxLayout>
+#include "../config/config.h"
 
 class HiddenDialog : public QDialog
 {
@@ -17,7 +18,10 @@ public:
         BNMN
     };
 
+    Config *HidConf;
+
     explicit HiddenDialog(int type, QWidget *parent = 0);
+    void Fill();
 
 signals:
     void accepted();
@@ -27,9 +31,9 @@ private:
     int Type;
 
     void SetupUI();
-    void Fill();
     void SetVersion(quint32 number, QString lename);
     void GetVersion(quint32 &number, QString lename);
+    void SendBhb();
 
 private slots:
     void AcceptChanges();
