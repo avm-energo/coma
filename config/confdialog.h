@@ -10,7 +10,6 @@ class ConfDialog : public QDialog
     Q_OBJECT
 public:
     ConfDialog(QVector<publicclass::DataRec> &S2Config, QWidget *parent = 0);
-    virtual ~ConfDialog();
 
     void SetMainDefConf();
     void Fill();

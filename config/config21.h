@@ -31,7 +31,7 @@ public:
         Config2x::Bci_AOut outblk;  // Блок с определениями выходов
     };
 
-    Bci Bci_block, Bci_defblock;
+    Bci Bci_block;
 
     void SetDefConf();
 };

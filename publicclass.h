@@ -131,8 +131,8 @@
 #define MAINWINCLR  "#E0FFE0"
 //#define ACONFCLR    "#DDDDAA"
 #define ACONFCLR    "#D0FFD0"
-//#define ACONFWCLR   "#CCFF99"
 #define ACONFWCLR   "#C0FFC0"
+#define ACONFWCLRO  "#E0FFE0"
 //#define ACONFGCLR   "#CCCC99"
 #define ACONFGCLR   "#B0FFB0"
 //#define ACONFRCLR   "#FFCCCC"
@@ -241,7 +241,6 @@ public:
 
     Log log;
     QString HomeDir;
-    QStringList AMTypes, DMTypes, EMTypes;
     quint16 MIPASDU;
     QString MIPIP;
     QString Port;

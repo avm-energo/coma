@@ -2,6 +2,7 @@
 #define WD_FUNC
 
 #include <QWidget>
+#include <QLabel>
 #include "s_tqcheckbox.h"
 #include "s_tqspinbox.h"
 #include "s_tqcombobox.h"
@@ -26,6 +27,7 @@ public:
     static bool SetSPBData(QWidget *w, const QString &spbname, const double &spbvalue);
     static bool SPBData(QWidget *w, const QString &spbname, double &spbvalue);
     static bool SetLEColor(QWidget *w, const QString &lename, const QColor &color);
+    static QLabel *NewLBL(QWidget *w, const QString &text, const QString &lblcolor="", const QString &lblname="");
     static bool SetLBLImage(QWidget *w, const QString &lblname, QPixmap *pm);
     static bool SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext="", bool enabled=true);
     static QString TVField(QWidget *w, const QString &tvname, int column, bool isid=false);

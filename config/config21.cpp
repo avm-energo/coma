@@ -40,22 +40,22 @@ Config21::Config21(QVector<publicclass::DataRec> &config, bool BaseBoard)
 
 void Config21::SetDefConf()
 {
-    Bci_defblock.inblk.oscdly = AIN21_DEF_OSCDLY;
-    Bci_defblock.inblk.oscthr = AIN21_DEF_OSCTHR;
-    Bci_defblock.inblk.filtern = AIN21_DEF_FILTERN;
-    Bci_defblock.inblk.filterthr = AIN21_DEF_FILTERTHR;
-    Bci_defblock.inblk.hysteresis = AIN21_DEF_HYSTERS;
+    Bci_block.inblk.oscdly = AIN21_DEF_OSCDLY;
+    Bci_block.inblk.oscthr = AIN21_DEF_OSCTHR;
+    Bci_block.inblk.filtern = AIN21_DEF_FILTERN;
+    Bci_block.inblk.filterthr = AIN21_DEF_FILTERTHR;
+    Bci_block.inblk.hysteresis = AIN21_DEF_HYSTERS;
     for (int i = 0; i < AIN21_NUMCH; i++)
     {
-        Bci_defblock.inblk.in_type[i] = Config2x::AIT_MA;
-        Bci_defblock.inblk.in_min[i] = AIN21_DEF_INMIN;
-        Bci_defblock.inblk.in_max[i] = AIN21_DEF_INMAX;
-        Bci_defblock.inblk.in_vmin[i] = AIN21_DEF_INVMIN;
-        Bci_defblock.inblk.in_vmax[i] = AIN21_DEF_INVMAX;
-        Bci_defblock.inblk.setminmin[i] = AIN21_DEF_SETMINMIN;
-        Bci_defblock.inblk.setmin[i] = AIN21_DEF_SETMIN;
-        Bci_defblock.inblk.setmax[i] = AIN21_DEF_SETMAX;
-        Bci_defblock.inblk.setmaxmax[i] = AIN21_DEF_SETMAXMAX;
-        Bci_defblock.inblk.osc[i] = AIN21_DEF_OSC;
+        Bci_block.inblk.in_type[i] = Config2x::AIT_MA;
+        Bci_block.inblk.in_min[i] = AIN21_DEF_INMIN;
+        Bci_block.inblk.in_max[i] = AIN21_DEF_INMAX;
+        Bci_block.inblk.in_vmin[i] = AIN21_DEF_INVMIN;
+        Bci_block.inblk.in_vmax[i] = AIN21_DEF_INVMAX;
+        Bci_block.inblk.setminmin[i] = AIN21_DEF_SETMINMIN;
+        Bci_block.inblk.setmin[i] = AIN21_DEF_SETMIN;
+        Bci_block.inblk.setmax[i] = AIN21_DEF_SETMAX;
+        Bci_block.inblk.setmaxmax[i] = AIN21_DEF_SETMAXMAX;
+        Bci_block.inblk.osc[i] = AIN21_DEF_OSC;
     }
 }

@@ -22,19 +22,21 @@
 ConfDialog21::ConfDialog21(QVector<publicclass::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
     AbstractConfDialog2x(BaseBoard, parent)
 {
+    RangeInMins = {4.0, 0.0, 0.0, -5.0, 0.0};
+    RangeInMaxs = {20.0, 20.0, 5.0, 5.0, 5.0};
     this->S2Config = S2Config;
     C21 = new Config21(S2Config);
-/*    ModuleConf.Bci_block = static_cast<void *>(C21->Bci_block);
-    ModuleConf.Bci_block_size = sizeof(Config21::Bci);
-    ModuleConf.Bci_defblock = static_cast<void *>(C21->Bci_defblock); */
     Params.InTypes = QStringList() << "Не исп." << "мА" << "В";
-    Params.RangeTypes = QStringList() << "(4..20) мА" << "(0..20) мА" << "(0..5) мА" << "(-5..5) В" << "(0..5) В" << "Произвольный";
+    Params.RangeTypes = QStringList() << "(4..20) мА" << "(0..20) мА" << "(0..5) мА" << \
+                                         "(-5..5) В" << "(0..5) В" << "Произвольный мА" << "Произвольный В";
     Params.NumCh = AIN21_NUMCH;
+    SetupUI();
     PrereadConf();
 }
 
 void ConfDialog21::SetRange(int Range)
 {
+    int ChNum = GetChNumFromObjectName(sender()->objectName());
     switch(Range)
     {
     case 0: // 4..20 мА
@@ -94,67 +96,26 @@ void ConfDialog21::SetMinMax(int i)
     case Config2x::AIT_MA: // канал с мА
     {
         if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],20.0))
-        {
-            cb->setCurrentText(RT_mAText);
-            SetRangeWidget(i, RT_mA); // принудительный вызов, чтобы c2b не было равно 0
-            QComboBox *c2b = this->findChild<QComboBox *>("rangemA."+QString::number(i));
-            if (c2b == 0)
-                return;
-            c2b->setCurrentIndex(RT_mA020);
-        }
+            cb->setCurrentIndex(RT_I020);
         else if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],4.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],20.0))
-        {
-            cb->setCurrentText(RT_mAText);
-            SetRangeWidget(i, RT_mA); // принудительный вызов, чтобы c2b не было равно 0
-            QComboBox *c2b = this->findChild<QComboBox *>("rangemA."+QString::number(i));
-            if (c2b == 0)
-                return;
-            c2b->setCurrentIndex(RT_mA420);
-        }
+            cb->setCurrentIndex(RT_I420);
         else if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],5.0))
-        {
-            cb->setCurrentText(RT_mAText);
-            SetRangeWidget(i, RT_mA); // принудительный вызов, чтобы c2b не было равно 0
-            QComboBox *c2b = this->findChild<QComboBox *>("rangemA."+QString::number(i));
-            if (c2b == 0)
-                return;
-            c2b->setCurrentIndex(RT_mA05);
-        }
+            cb->setCurrentIndex(RT_I05);
         else
-        {
-            cb->setCurrentText(RT_MText);
-            SetRangeWidget(i, RT_M); // принудительный вызов, чтобы inmin не было равно 0
-        }
+            cb->setCurrentIndex(RT_IMANUAL);
         break;
     }
     case Config2x::AIT_V: // канал с В
     {
         if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],5.0))
-        {
-            cb->setCurrentText(RT_VText);
-            SetRangeWidget(i, RT_V); // принудительный вызов, чтобы c2b не было равно 0
-            QComboBox *c2b = this->findChild<QComboBox *>("rangeV."+QString::number(i));
-            if (c2b == 0)
-                return;
-            c2b->setCurrentIndex(RT_V05-3);
-        }
+            cb->setCurrentIndex(RT_V05);
         else if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i], -5.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],5.0))
-        {
-            cb->setCurrentText(RT_VText);
-            SetRangeWidget(i, RT_V); // принудительный вызов, чтобы c2b не было равно 0
-            QComboBox *c2b = this->findChild<QComboBox *>("rangeV."+QString::number(i));
-            if (c2b == 0)
-                return;
-            c2b->setCurrentIndex(RT_V_55-3);
-        }
+            cb->setCurrentIndex(RT_V55);
         else
-        {
-            cb->setCurrentText(RT_MText);
-            SetRangeWidget(i, RT_M); // принудительный вызов, чтобы inmin не было равно 0
-        }
+            cb->setCurrentIndex(RT_VMANUAL);
         break;
     }
-    default: // INTYPENA, INTYPERES
+    default:
         break;
     }
 }
@@ -170,9 +131,9 @@ void ConfDialog21::SetChTypData()
     DisableChannel(tmpi, (value == 0));
 }
 
-void ConfDialog21::SetOscDly(int dly)
+void ConfDialog21::SetOscDly(double dly)
 {
-    C21->Bci_block.inblk.oscdly = dly;
+    C21->Bci_block.inblk.oscdly = static_cast<quint16>(dly);
 }
 
 void ConfDialog21::SetChOsc(int isChecked)
@@ -180,38 +141,20 @@ void ConfDialog21::SetChOsc(int isChecked)
     int ChNum = GetChNumFromObjectName(sender()->objectName());
     if (ChNum == -1)
         return;
-    quint16 tmpint = 0x0001;
-    tmpint = tmpint << ChNum;
-    QComboBox *cb = this->findChild<QComboBox *>("oscsrccb."+QString::number(ChNum));
-    QLabel *lbl = this->findChild<QLabel *>("oscsrcl."+QString::number(ChNum));
+    int Mask;
+    QString ObjName = sender()->objectName().split(".").at(0);
+    if (ObjName.compare("choscdi1") == 0)
+        Mask = 0x10;
+    if (ObjName.compare("choscdi2") == 0)
+        Mask = 0x20;
+    if (ObjName.compare("choscthr") == 0)
+        Mask = 0x04;
+    if (ObjName.compare("chosccso0") == 0)
+        Mask = 0x10;
     if (isChecked == Qt::Checked)
-    {
-/* !!!        C21->Bci_block.inblk.discosc |= tmpint;
-        if (cb != 0)
-            cb->setVisible(true);
-        if (lbl != 0)
-            lbl->setVisible(true);
-    }
+        C21->Bci_block.inblk.osc[ChNum] |= Mask;
     else
-    {
-        C21->Bci_block.inblk.discosc &= ~tmpint;
-        if (cb != 0)
-            cb->setVisible(false);
-        if (lbl != 0)
-            lbl->setVisible(false); */
-    }
-}
-
-void ConfDialog21::SetChOscSrc(int srctyp)
-{
-    int ChNum = GetChNumFromObjectName(sender()->objectName());
-    if (ChNum == -1)
-        return;
-    quint8 tmpi = ChNum << 1;
-    quint32 tmpint = srctyp << tmpi;
-    quint32 tmpmask = ~(0x00000003 << tmpi);
-/* !!!    C21->Bci_block.inblk.oscsrc &= tmpmask;
-    C21->Bci_block.inblk.oscsrc |= tmpint; */
+        C21->Bci_block.inblk.osc[ChNum] &= ~Mask;
 }
 
 bool ConfDialog21::CheckConf()
@@ -245,7 +188,6 @@ bool ConfDialog21::CheckConf()
 void ConfDialog21::SetDefConf()
 {
     C21->SetDefConf();
-    MessageBox2::information(this, "Успешно", "Задана конфигурация по умолчанию");
 }
 
 void ConfDialog21::SetIn()
@@ -264,25 +206,24 @@ void ConfDialog21::SetIn()
         DBGMSG;
         return;
     }
-    --chnum; // каналы в Bci_block нумеруются с нуля, а objname - с 1
     QString tmps;
     switch(idx)
     {
     case 0: // inmin
         C21->Bci_block.inblk.in_min[chnum] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(C21GCLR)+";}";
+        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
         break;
     case 1: // inmax
         C21->Bci_block.inblk.in_max[chnum] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(C21GCLR)+";}";
+        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
         break;
     case 2: // invmin
         C21->Bci_block.inblk.in_vmin[chnum] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(C21GCLR)+";}";
+        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
         break;
     case 3: // invmax
         C21->Bci_block.inblk.in_vmax[chnum] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(C21GCLR)+";}";
+        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
         break;
     case 4: // setminmin
         C21->Bci_block.inblk.setminmin[chnum] = spb->value();
@@ -290,15 +231,15 @@ void ConfDialog21::SetIn()
         break;
     case 5: // setmin
         C21->Bci_block.inblk.setmin[chnum] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(C21YCLR)+";}";
+        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFYCLR)+";}";
         break;
     case 6: // setmax
         C21->Bci_block.inblk.setmax[chnum] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(C21YCLR)+";}";
+        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFYCLR)+";}";
         break;
     case 7: // setmaxmax
         C21->Bci_block.inblk.setmaxmax[chnum] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(C21RCLR)+";}";
+        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFRCLR)+";}";
         break;
     }
     if (CheckConf())

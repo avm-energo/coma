@@ -85,11 +85,6 @@ publicclass::publicclass()
     HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/COMA/";
     Emul = false;
     ErMsgsOk = false;
-    AMTypes.append("Z"); // фиктивный тип, типы начинаются с 1
-    AMTypes.append("А");
-    AMTypes.append("Р");
-    AMTypes.append("И");
-    AMTypes.append("С");
     ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
     log.Init(LOGFILE);
 
@@ -173,7 +168,7 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> &dr
   quint32 sz=0;
   char *m=static_cast<char *>(mem);
   DataRec R;
-  QPointer<DataRec> r;
+  DataRec *r;
   FileHeader dh;
   quint32 i;
   bool NoIDs=true; // признак того, что не встретился ни один из ID в dr
@@ -210,8 +205,8 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> &dr
       m+=tmpi;
       if(R.id==0xFFFF)
           break;
-//      r=FindElem(dr,R.id);
-      if(r.isNull()) //элемент не найден в описании, пропускаем
+      r=FindElem(dr,R.id);
+      if(r == 0) //элемент не найден в описании, пропускаем
       {
           tmpi = R.num_byte;
           pos += tmpi;
@@ -225,19 +220,19 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> &dr
           continue;
       }
       NoIDs = false;
-      if (r.data()->num_byte!=R.num_byte) //несовпадения описания прочитанного элемента с ожидаемым
+      if (r->num_byte!=R.num_byte) //несовпадения описания прочитанного элемента с ожидаемым
       {
           ERMSG("Несовпадение описаний одного и того же блока"); // несовпадение описаний одного и того же блока
           return S2_DESCERROR;
       }
-      tmpi = r.data()->num_byte;
+      tmpi = r->num_byte;
       pos += tmpi;
       if (pos > memsize)
       {
           ERMSG("S2: выход за границу принятых байт"); // выход за границу принятых байт
           return S2_SIZEERROR;
       }
-      memcpy(r.data()->thedata,m,tmpi);
+      memcpy(r->thedata,m,tmpi);
       sz += tmpi;
       m += tmpi;
   }
@@ -256,15 +251,15 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> &dr
 
 publicclass::DataRec *publicclass::FindElem(QVector<DataRec> &dr, quint16 id)
 {
-/*    for(QVector<DataRec>::iterator it=dr.begin(); it!=dr.end(); ++it)
+    for(QVector<DataRec>::iterator it=dr.begin(); it!=dr.end(); ++it)
     {
         DataRec R = *it;
         if(R.id==id)
             return it;
         if(R.id==static_cast<quint16>(0xFFFF))
-            return NULL;
-    }*/
-    return NULL;
+            return 0;
+    }
+    return 0;
 }
 
 void inline publicclass::updCRC32(const quint8 byte, quint32 *dwCRC32)

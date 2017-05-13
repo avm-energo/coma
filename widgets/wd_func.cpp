@@ -36,6 +36,20 @@ bool WDFunc::SetLEColor(QWidget *w, const QString &lename, const QColor &color)
     return true;
 }
 
+QLabel *WDFunc::NewLBL(QWidget *w, const QString &text, const QString &lblcolor, const QString &lblname)
+{
+    QLabel *lbl = new QLabel(w);
+    lbl->setText(text);
+    if (!lblname.isEmpty())
+        lbl->setObjectName(lblname);
+    if (!lblcolor.isEmpty())
+    {
+        QString tmps = "QLabel {background-color: " + lblcolor + ";}";
+        lbl->setStyleSheet(tmps);
+    }
+    return lbl;
+}
+
 bool WDFunc::LEData(QWidget *w, const QString &lename, QString &levalue)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);
@@ -197,7 +211,7 @@ void WDFunc::TVAutoResize(QWidget *w, const QString &tvname)
     tv->resizeRowsToContents();
 }
 
-static s_tqCheckBox *NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor)
+s_tqCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor)
 {
     s_tqCheckBox *chb = new s_tqCheckBox(parent);
     chb->setObjectName(chbname);
@@ -255,5 +269,6 @@ void WDFunc::AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lenam
 void WDFunc::SetEnabled(QWidget *w, const QString &wname, bool enabled)
 {
     QWidget *wdgt = w->findChild<QWidget *>(wname);
-    wdgt->setEnabled(enabled);
+    if (wdgt != 0)
+        wdgt->setEnabled(enabled);
 }

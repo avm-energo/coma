@@ -12,74 +12,6 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
 }
 
-QWidget *AbstractConfDialog::Widget104()
-{
-    QWidget *w = new QWidget;
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    QGroupBox *gb = new QGroupBox;
-    gb->setTitle("Настройки протокола МЭК-60870-5-104");
-    QGridLayout *glyout = new QGridLayout;
-    glyout->setColumnStretch(2, 50);
-    QLabel *lbl = new QLabel("Адрес базовой станции:");
-    glyout->addWidget(lbl,0,0,1,1,Qt::AlignRight);
-    s_tqSpinBox *dspbls = WDFunc::NewSPB(w, "spb.1", 0, 65535, 1, 0, ACONFGCLR);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 0, 1, 1, 1, Qt::AlignLeft);
-    lbl = new QLabel("Интервал циклического опроса:");
-    glyout->addWidget(lbl,1,0,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(w, "spb.2", 0, 255, 1, 0, ACONFGCLR);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 1, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    glyout->addWidget(lbl,1,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Тайм-аут t1:");
-    glyout->addWidget(lbl,2,0,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(w, "spb.3", 0, 255, 1, 0, ACONFGCLR);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 2, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    glyout->addWidget(lbl,2,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Тайм-аут t2:");
-    glyout->addWidget(lbl,3,0,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(w, "spb.4", 0, 255, 1, 0, ACONFGCLR);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 3, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    glyout->addWidget(lbl,3,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Тайм-аут t3:");
-    glyout->addWidget(lbl,4,0,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(w, "spb.5", 0, 255, 1, 0, ACONFGCLR);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 4, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    glyout->addWidget(lbl,4,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Макс. число неподтв. APDU (k):");
-    glyout->addWidget(lbl,5,0,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(w, "spb.6", 0, 255, 1, 0, ACONFGCLR);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 5, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    glyout->addWidget(lbl,5,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Макс. число посл. подтв. APDU (w):");
-    glyout->addWidget(lbl,6,0,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(w, "spb.7", 0, 255, 1, 0, ACONFGCLR);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 6, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    glyout->addWidget(lbl,6,2,1,1);
-    lbl = new QLabel("Тип синхр. времени:");
-    glyout->addWidget(lbl,7,0,1,1,Qt::AlignRight);
-    QStringList cbl = QStringList() << "SNTP+PPS" << "SNTP";
-    s_tqComboBox *cb = WDFunc::NewCB(w, "spb.8", cbl, ACONFGCLR);
-    cb->setMinimumWidth(70);
-    connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
-    glyout->addWidget(cb, 7, 1, 1, 2);
-    gb->setLayout(glyout);
-    vlyout->addWidget(gb);
-    w->setLayout(vlyout);
-    return w;
-}
-
 void AbstractConfDialog::ReadConf()
 {
     cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,S2Config);
@@ -158,7 +90,7 @@ QWidget *AbstractConfDialog::ConfButtons()
     wdgtlyout->addWidget(pb, 0, 0, 1, 1);
     pb = new QPushButton("Записать в модуль");
     pb->setObjectName("WriteConfPB");
-    connect(pb,SIGNAL(clicked()),this,SLOT(WriteConfDataToModule()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(WriteConf()));
     if (pc.Emul)
         pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 1, 1, 1);
@@ -177,3 +109,10 @@ QWidget *AbstractConfDialog::ConfButtons()
     return wdgt;
 }
 
+void AbstractConfDialog::PrereadConf()
+{
+    if ((pc.ModuleBsi.Hth & HTH_CONFIG) || (pc.Emul)) // если в модуле нет конфигурации, заполнить поля по умолчанию
+        emit LoadDefConf();
+    else // иначе заполнить значениями из модуля
+        ReadConf();
+}
