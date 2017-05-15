@@ -10,22 +10,21 @@
 #include <QSpinBox>
 #include <QComboBox>
 #include <QCheckBox>
-#include <QMessageBox>
 #include <QCoreApplication>
 #include <QDoubleSpinBox>
 #include <QTabBar>
-#include "abstractconfdialog2x.h"
+#include "abstractconfdialog3x.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
 #include "../canal.h"
 
-AbstractConfDialog2x::AbstractConfDialog2x(QWidget *parent) :
+AbstractConfDialog3x::AbstractConfDialog3x(QWidget *parent) :
     AbstractConfDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void AbstractConfDialog2x::SetupUI()
+void AbstractConfDialog3x::SetupUI()
 {
     int i;
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
@@ -223,7 +222,7 @@ void AbstractConfDialog2x::SetupUI()
     setLayout(lyout);
 }
 
-void AbstractConfDialog2x::DisableChannel(int chnum, bool disable)
+void AbstractConfDialog3x::DisableChannel(int chnum, bool disable)
 {
     bool Enabled = !disable;
     WDFunc::SetEnabled(this, "chtypcb."+QString::number(chnum), Enabled);
@@ -242,7 +241,7 @@ void AbstractConfDialog2x::DisableChannel(int chnum, bool disable)
     WDFunc::SetEnabled(this, "7."+QString::number(chnum), Enabled);
 }
 
-int AbstractConfDialog2x::GetChNumFromObjectName(QString ObjectName)
+int AbstractConfDialog3x::GetChNumFromObjectName(QString ObjectName)
 {
     QStringList ObjectNameSl = ObjectName.split(".");
     int ChNum;

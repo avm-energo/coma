@@ -1,8 +1,8 @@
-/* Файл предназначен для конфигурирования модулей аналоговых АВ-ТУК-2xхх, хх2x и последующих
+/* Файл предназначен для конфигурирования модулей аналоговых АВ-ТУК-3xхх, хх3x и последующих
  */
 
-#ifndef ABSTRACTCONFDIALOG2X_H
-#define ABSTRACTCONFDIALOG2X_H
+#ifndef ABSTRACTCONFDIALOG3X_H
+#define ABSTRACTCONFDIALOG3X_H
 
 #include <QDialog>
 #include <QGridLayout>
@@ -10,11 +10,11 @@
 #include "abstractconfdialog.h"
 #include "../publicclass.h"
 
-class AbstractConfDialog2x : public AbstractConfDialog
+class AbstractConfDialog3x : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    explicit AbstractConfDialog2x(QWidget *parent = 0);
+    explicit AbstractConfDialog3x(QWidget *parent = 0);
 
     struct SpecificParams
     {
@@ -44,4 +44,4 @@ private slots:
     virtual void SetRange(int RangeType) = 0;
 };
 
-#endif // ABSTRACTCONFDIALOG2X_H
+#endif // ABSTRACTCONFDIALOG3X_H

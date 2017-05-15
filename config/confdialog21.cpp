@@ -19,8 +19,8 @@
 #include "../widgets/wd_func.h"
 #include "../canal.h"
 
-ConfDialog21::ConfDialog21(QVector<publicclass::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
-    AbstractConfDialog2x(BaseBoard, parent)
+ConfDialog21::ConfDialog21(QVector<publicclass::DataRec> &S2Config, QWidget *parent) :
+    AbstractConfDialog2x(parent)
 {
     RangeInMins = {4.0, 0.0, 0.0, -5.0, 0.0};
     RangeInMaxs = {20.0, 20.0, 5.0, 5.0, 5.0};

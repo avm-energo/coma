@@ -26,9 +26,7 @@ public:
         RT_VMANUAL
     };
 
-    explicit ConfDialog21(QVector<publicclass::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = 0);
-
-    bool NoProperConf; // в модуле нет нормальной конфигурации
+    explicit ConfDialog21(QVector<publicclass::DataRec> &S2Config, QWidget *parent = 0);
 
 private:
     QByteArray confba;
