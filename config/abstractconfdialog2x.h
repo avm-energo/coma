@@ -27,7 +27,6 @@ public:
     SpecificParams Params;
 
     void DisableChannel(int chnum, bool disable);
-    int GetChNumFromObjectName(QString ObjectName);
     void SetupUI();
 
 private:

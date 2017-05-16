@@ -20,9 +20,4 @@ void Config3x::SetDOutSize(Bci_DOut &Bcio, int mtype)
     int size = ModTypeMap().value(mtype).DOutSize;
     if ((size > SIZEMAX) || !size)
         return;
-    Bcio.out_max.resize(size);
-    Bcio.out_min.resize(size);
-    Bcio.out_type.resize(size);
-    Bcio.out_vmax.resize(size);
-    Bcio.out_vmin.resize(size);
 }

@@ -17,6 +17,7 @@ public:
     virtual void Fill() = 0;
     virtual void SetDefConf() = 0;
     void PrereadConf();
+    int GetChNumFromObjectName(QString ObjectName);
 
 public slots:
     void ReadConf();

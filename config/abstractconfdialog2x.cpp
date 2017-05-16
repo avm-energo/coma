@@ -241,18 +241,3 @@ void AbstractConfDialog2x::DisableChannel(int chnum, bool disable)
     WDFunc::SetEnabled(this, "6."+QString::number(chnum), Enabled);
     WDFunc::SetEnabled(this, "7."+QString::number(chnum), Enabled);
 }
-
-int AbstractConfDialog2x::GetChNumFromObjectName(QString ObjectName)
-{
-    QStringList ObjectNameSl = ObjectName.split(".");
-    int ChNum;
-    bool ok;
-    if (ObjectNameSl.size()>1)
-        ChNum = ObjectNameSl.at(1).toInt(&ok);
-    else
-        return GENERALERROR;
-    if (!ok)
-        return GENERALERROR;
-    return ChNum;
-}
-

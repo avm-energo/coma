@@ -116,3 +116,17 @@ void AbstractConfDialog::PrereadConf()
     else // иначе заполнить значениями из модуля
         ReadConf();
 }
+
+int AbstractConfDialog::GetChNumFromObjectName(QString ObjectName)
+{
+    QStringList ObjectNameSl = ObjectName.split(".");
+    int ChNum;
+    bool ok;
+    if (ObjectNameSl.size()>1)
+        ChNum = ObjectNameSl.at(1).toInt(&ok);
+    else
+        return GENERALERROR;
+    if (!ok)
+        return GENERALERROR;
+    return ChNum;
+}

@@ -19,7 +19,6 @@ public:
     struct SpecificParams
     {
         QStringList InTypes;
-        QStringList RangeTypes;
         int NumCh;
     };
 
@@ -27,7 +26,6 @@ public:
     SpecificParams Params;
 
     void DisableChannel(int chnum, bool disable);
-    int GetChNumFromObjectName(QString ObjectName);
     void SetupUI();
 
 private:
@@ -38,10 +36,8 @@ public slots:
 
 private slots:
     virtual void SetChTypData() = 0; // задать тип канала (номер канала - в objectName.aplit(".").at(1)
-    virtual void SetChOsc(int) = 0; //
-    virtual void SetIn() = 0; // задать значение одного из свойств сигнала канала (мин, макс, инж. ед., уставки)
-    virtual void SetOscDly(double) = 0; // задать задержку перед началом осциллографирования
-    virtual void SetRange(int RangeType) = 0;
+    virtual void SetDly(int) = 0; // задать задержку для контроля дребезга
+    virtual void SetPair(int) = 0; // задать парность каналов
 };
 
 #endif // ABSTRACTCONFDIALOG3X_H
