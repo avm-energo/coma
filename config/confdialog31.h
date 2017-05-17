@@ -1,13 +1,10 @@
-#ifndef D_CONFDIALOG_H
-#define D_CONFDIALOG_H
+#ifndef CONFDIALOG31_H
+#define CONFDIALOG31_H
 
 #include <QDialog>
 
-#include "../widgets/s_tqcombobox.h"
-#include "../widgets/s_tqcheckbox.h"
-#include "../widgets/s_tqSpinBox.h"
-#include "../publicclass.h"
-//#include "../canal.h"
+#include "abstractconfdialog3x.h"
+#include "config31.h"
 
 // Описание блока Bci
 #define DBCI_INTYPE     11
@@ -15,54 +12,24 @@
 #define DBCI_PAIR       16
 #define DCONF_NUM       17
 
-class d_confdialog : public QDialog
+class ConfDialog31 : public AbstractConfDialog3x
 {
     Q_OBJECT
 public:
-    explicit d_confdialog(QWidget *parent = 0);
-
-    bool NoProperConf; // в модуле нет нормальной конфигурации
+    explicit ConfDialog31(QVector<publicclass::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = 0);
 
 private:
-    typedef struct
-    {
-        quint32 MType;          // Тип модуля, для которого предназначена конфигурация
-        quint32 MType1;         // Подтип модуля, для которого предназначена конфигурация
-        quint16 Ctype;   		// Тип синхронизации времени от модуля Ц
-        quint32 Abs_104;     	// Адрес базовой станции для протокола 104
-        quint32 Cycle_104;      // Интервал циклического опроса по протоколу МЭК 60870-5-104
-        quint32 T1_104;         // тайм-аут Т1 для протокола 104
-        quint32 T2_104;         // тайм-аут Т2 для протокола 104
-        quint32 T3_104;         // тайм-аут Т3 для протокола 104
-        quint32 k_104;          // макс. кол-во неподтв. сообщений
-        quint32 w_104;          // макс. кол-во сообщений, после которых необх. выдать подтверждение
-        quint8 in_type[32];     // тип входа 0…15: 0 - вход не используется
-                                // 1 – питание «замочки»
-                                // 2 – неинвертированный сигнал без контроля целостности цепи
-                                // 3 – инвертированный сигнал без контроля целостности цепи
-                                // 4 – неинвертированный сигнал с контролем целостности цепи
-                                // 5 – инвертированный сигнал с контролем целостности цепи
-        quint32 dly_time1;      // маска дребезга 0,5 мс
-        quint32 dly_time2;      // маска дребезга 2 мс
-        quint32 dly_time3;      // маска дребезга 8 мс
-        quint32 dly_time4;      // маска дребезга 16 мс
-        quint32 pair[16];
-
-    } Bci;
-
-    QByteArray confba;
-    Bci Bci_block, Bci_defblock;
-
     publicclass::DataRec Config[DCONF_NUM];
+    Config31 *C31;
 
-//    void FillConfData();
+    void Fill();
     void SetupUI();
+    void SetPair(int firstch, int secondch);
 
 signals:
     void BsiIsNeedToBeAcquiredAndChecked();
 
 public slots:
-//    void UpdateProper(bool);
 
 private slots:
 /*    void SetChTypData(int, s_tqComboBox *);
@@ -85,4 +52,4 @@ private slots:
     void SetDefConf(); */
 };
 
-#endif // D_CONFDIALOG_H
+#endif // CONFDIALOG31_H

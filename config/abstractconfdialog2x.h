@@ -36,7 +36,7 @@ signals:
 public slots:
 
 private slots:
-    virtual void SetChTypData() = 0; // задать тип канала (номер канала - в objectName.aplit(".").at(1)
+    virtual void SetChTypData(int) = 0; // задать тип канала (номер канала - в objectName.aplit(".").at(1)
     virtual void SetChOsc(int) = 0; //
     virtual void SetIn() = 0; // задать значение одного из свойств сигнала канала (мин, макс, инж. ед., уставки)
     virtual void SetOscDly(double) = 0; // задать задержку перед началом осциллографирования

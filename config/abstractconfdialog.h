@@ -11,11 +11,12 @@ class AbstractConfDialog : public QDialog
 public:
     AbstractConfDialog(QWidget *parent = 0);
 
-    QVector<publicclass::DataRec> S2Config;
+    QVector<publicclass::DataRec> *S2Config;
 
     QWidget *ConfButtons();
     virtual void Fill() = 0;
     virtual void SetDefConf() = 0;
+    virtual bool CheckConf() = 0;
     void PrereadConf();
     int GetChNumFromObjectName(QString ObjectName);
 
@@ -26,7 +27,6 @@ public slots:
 private:
 
     virtual void SetupUI() = 0;
-    virtual bool CheckConf() = 0;
 
 private slots:
     void SaveConfToFile();

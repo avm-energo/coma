@@ -26,10 +26,9 @@ public:
         RT_VMANUAL
     };
 
-    explicit ConfDialog21(QVector<publicclass::DataRec> &S2Config, QWidget *parent = 0);
+    explicit ConfDialog21(QVector<publicclass::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = 0);
 
 private:
-    QByteArray confba;
     Config21 *C21;
     QVector<float> RangeInMins;
     QVector<float> RangeInMaxs;
@@ -43,12 +42,12 @@ signals:
 public slots:
 
 private slots:
-    void SetChTypData();
+    void SetChTypData(int);
     void SetChOsc(int);
     void SetIn();
     void SetOscDly(double);
     void SetDefConf();
-    void SetRange(int Range);
+    void SetRange(int RangeType);
 };
 
 #endif // CONFDIALOG21_H

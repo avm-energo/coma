@@ -19,13 +19,13 @@
 #include "../widgets/wd_func.h"
 #include "../canal.h"
 
-ConfDialog21::ConfDialog21(QVector<publicclass::DataRec> &S2Config, QWidget *parent) :
+ConfDialog21::ConfDialog21(QVector<publicclass::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
     AbstractConfDialog2x(parent)
 {
     RangeInMins = {4.0, 0.0, 0.0, -5.0, 0.0};
     RangeInMaxs = {20.0, 20.0, 5.0, 5.0, 5.0};
-    this->S2Config = S2Config;
-    C21 = new Config21(S2Config);
+    this->S2Config = &S2Config;
+    C21 = new Config21(S2Config, BaseBoard);
     Params.InTypes = QStringList() << "Не исп." << "мА" << "В";
     Params.RangeTypes = QStringList() << "(4..20) мА" << "(0..20) мА" << "(0..5) мА" << \
                                          "(-5..5) В" << "(0..5) В" << "Произвольный мА" << "Произвольный В";
@@ -34,10 +34,10 @@ ConfDialog21::ConfDialog21(QVector<publicclass::DataRec> &S2Config, QWidget *par
     PrereadConf();
 }
 
-void ConfDialog21::SetRange(int Range)
+void ConfDialog21::SetRange(int RangeType)
 {
     int ChNum = GetChNumFromObjectName(sender()->objectName());
-    switch(Range)
+    switch(RangeType)
     {
     case 0: // 4..20 мА
     case 1: // 0..20 мА
@@ -53,10 +53,10 @@ void ConfDialog21::SetRange(int Range)
     default:
         return;
     }
-    if (Range < 5) // predefined ranges
+    if (RangeType < 5) // predefined ranges
     {
-        C21->Bci_block.inblk.in_min[ChNum] = RangeInMins.at(Range);
-        C21->Bci_block.inblk.in_max[ChNum] = RangeInMaxs.at(Range);
+        C21->Bci_block.inblk.in_min[ChNum] = RangeInMins.at(RangeType);
+        C21->Bci_block.inblk.in_max[ChNum] = RangeInMaxs.at(RangeType);
     }
 }
 
@@ -120,13 +120,11 @@ void ConfDialog21::SetMinMax(int i)
     }
 }
 
-void ConfDialog21::SetChTypData()
+void ConfDialog21::SetChTypData(int value)
 {
-    s_tqComboBox *cb = qobject_cast<s_tqComboBox *>(sender());
     int tmpi = GetChNumFromObjectName(sender()->objectName());
     if (tmpi == GENERALERROR)
         return;
-    int value = cb->currentIndex();
     C21->Bci_block.inblk.in_type[tmpi] = value;
     DisableChannel(tmpi, (value == 0));
 }

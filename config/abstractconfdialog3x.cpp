@@ -27,7 +27,7 @@ AbstractConfDialog3x::AbstractConfDialog3x(QWidget *parent) :
 void AbstractConfDialog3x::SetupUI()
 {
     int i;
-    QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
+    QString tmps = "QDialog {background-color: "+QString(DCONFCLR)+";}";
     setStyleSheet(tmps);
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
@@ -45,21 +45,27 @@ void AbstractConfDialog3x::SetupUI()
     gblyout->addWidget(lbl, 0, 2, 1, 1, Qt::AlignCenter);
     lbl = new QLabel("Парный канал");
     gblyout->addWidget(lbl, 0, 3, 1, 1, Qt::AlignCenter);
-    QStringList dlysl = QStringList() << "0,5" << "2" << "4" << "16";
+    QStringList chsl = QStringList() << "X"; // "x" - нет пары
+    for (i=0; i<Params.NumCh; ++i)
+        chsl << QString::number(i);
     for (i = 0; i < Params.NumCh; ++i)
     {
         lbl = new QLabel(QString::number(i+1)+":");
         gblyout->addWidget(lbl, i+1, 0, 1, 1, Qt::AlignRight);
-        s_tqComboBox *cb = WDFunc::NewCB(this, "chtypcb."+QString::number(i), Params.InTypes, ACONFWCLR);
+        s_tqComboBox *cb = WDFunc::NewCB(this, "chtypcb."+QString::number(i), Params.InTypes, DCONFWCLR);
         connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChTypData()));
-        gblyout->addWidget(cb, i+1, 1, 1, 1, Qt::AlignRight);
-        s_tqComboBox *spb = WDFunc::NewCB(this, "chdlycb."+QString::number(i), dlyslm, ACONFWCLR);
-
+        gblyout->addWidget(cb, i+1, 1, 1, 1, Qt::AlignCenter);
+        s_tqSpinBox *spb = WDFunc::NewSPB(this, "chdlyspb."+QString::number(i),1,20,1,0,DCONFWCLR);
+        connect(spb,SIGNAL(valueChanged(double)),this,SLOT(SetDly(double)));
+        gblyout->addWidget(cb, i+1, 2, 1, 1, Qt::AlignCenter);
+        cb = WDFunc::NewCB(this, "chpaircb."+QString::number(i), chsl, DCONFWCLR);
+        connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetPair(int)));
+        gblyout->addWidget(cb, i+1, 3, 1, 1, Qt::AlignCenter);
     }
     gb->setLayout(gblyout);
     lyout->addWidget(gb);
     QWidget *cp = new QWidget;
-    tmps = "QWidget {background-color: "+QString(ACONFGCLR)+";}";
+    tmps = "QWidget {background-color: "+QString(DCONFGCLR)+";}";
     cp->setStyleSheet(tmps);
     cp->setLayout(lyout);
     ConfTW->addTab(cp,"Общие");
@@ -75,17 +81,6 @@ void AbstractConfDialog3x::DisableChannel(int chnum, bool disable)
 {
     bool Enabled = !disable;
     WDFunc::SetEnabled(this, "chtypcb."+QString::number(chnum), Enabled);
-    WDFunc::SetEnabled(this, "choscdi1."+QString::number(chnum), Enabled);
-    WDFunc::SetEnabled(this, "choscdi2."+QString::number(chnum), Enabled);
-    WDFunc::SetEnabled(this, "choscthr."+QString::number(chnum), Enabled);
-    WDFunc::SetEnabled(this, "chosccso0."+QString::number(chnum), Enabled);
-    WDFunc::SetEnabled(this, "inrange."+QString::number(chnum), Enabled);
-    WDFunc::SetEnabled(this, "0."+QString::number(chnum), Enabled);
-    WDFunc::SetEnabled(this, "1."+QString::number(chnum), Enabled);
-    WDFunc::SetEnabled(this, "2."+QString::number(chnum), Enabled);
-    WDFunc::SetEnabled(this, "3."+QString::number(chnum), Enabled);
-    WDFunc::SetEnabled(this, "4."+QString::number(chnum), Enabled);
-    WDFunc::SetEnabled(this, "5."+QString::number(chnum), Enabled);
-    WDFunc::SetEnabled(this, "6."+QString::number(chnum), Enabled);
-    WDFunc::SetEnabled(this, "7."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "chdlycb."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "chpaircb."+QString::number(chnum), Enabled);
 }

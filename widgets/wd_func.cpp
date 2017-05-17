@@ -110,6 +110,15 @@ bool WDFunc::CBData(QWidget *w, const QString &cbname, QString &cbvalue)
     return true;
 }
 
+bool WDFunc::CBIndex(QWidget *w, const QString &cbname, int &index)
+{
+    s_tqComboBox *cb = w->findChild<s_tqComboBox *>(cbname);
+    if (cb == 0)
+        return false;
+    index = cb->currentIndex();
+    return true;
+}
+
 bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue)
 {
     s_tqComboBox *cb = w->findChild<s_tqComboBox *>(cbname);
@@ -124,7 +133,23 @@ bool WDFunc::SetCBIndex(QWidget *w, const QString &cbname, int index)
     s_tqComboBox *cb = w->findChild<s_tqComboBox *>(cbname);
     if (cb == 0)
         return false;
-    cb->setCurrentIndex(index);
+    if (index < cb->count())
+    {
+        cb->setCurrentIndex(index);
+        return true;
+    }
+    return false;
+}
+
+bool WDFunc::SetCBColor(QWidget *w, const QString &cbname, const QString &color)
+{
+    s_tqComboBox *cb = w->findChild<s_tqComboBox *>(cbname);
+    if (cb == 0)
+        return false;
+    // http://forum.sources.ru/index.php?showtopic=313950
+    QPalette pal = cb->palette();
+    pal.setColor(QPalette::Text, color);
+    cb->setPalette(pal);
     return true;
 }
 

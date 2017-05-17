@@ -8,7 +8,6 @@
 #include <QGridLayout>
 
 #include "abstractconfdialog.h"
-#include "../publicclass.h"
 
 class AbstractConfDialog3x : public AbstractConfDialog
 {
@@ -22,7 +21,6 @@ public:
         int NumCh;
     };
 
-    QByteArray confba;
     SpecificParams Params;
 
     void DisableChannel(int chnum, bool disable);
@@ -35,8 +33,8 @@ signals:
 public slots:
 
 private slots:
-    virtual void SetChTypData() = 0; // задать тип канала (номер канала - в objectName.aplit(".").at(1)
-    virtual void SetDly(int) = 0; // задать задержку для контроля дребезга
+    virtual void SetChTypData(int) = 0; // задать тип канала (номер канала - в objectName.aplit(".").at(1)
+    virtual void SetDly(double) = 0; // задать задержку для контроля дребезга
     virtual void SetPair(int) = 0; // задать парность каналов
 };
 

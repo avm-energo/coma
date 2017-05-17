@@ -22,7 +22,9 @@ public:
     static s_tqComboBox *NewCB(QWidget *parent, const QString &cbname, QStringList &cbsl, const QString &cbcolor="");
     static bool SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue);
     static bool SetCBIndex(QWidget *w, const QString &cbname, int index);
+    static bool SetCBColor(QWidget *w, const QString &cbname, const QString &color);
     static bool CBData(QWidget *w, const QString &cbname, QString &cbvalue);
+    static bool CBIndex(QWidget *w, const QString &cbname, int &index);
     static s_tqSpinBox *NewSPB(QWidget *parent, const QString &spbname, double min, double max, double step, int decimals, const QString &spbcolor="");
     static bool SetSPBData(QWidget *w, const QString &spbname, const double &spbvalue);
     static bool SPBData(QWidget *w, const QString &spbname, double &spbvalue);

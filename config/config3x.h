@@ -9,7 +9,7 @@
 
 #include <QVector>
 #include <QMap>
-//#include "config.h"
+#include "config.h"
 
 class Config3x
 {
@@ -18,7 +18,7 @@ public:
     {
         DIT_NONE,
         DIT_INV,
-        DIT_RES
+        DIT_NORM
     };
 
     enum DOutTypes
