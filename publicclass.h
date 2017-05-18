@@ -261,13 +261,13 @@ public:
     QString VerToStr(quint32);
 
     // S2: Сборщик в память:
-    int StoreDataMem(void *, QVector<DataRec> &, quint16 fname); //0 - успешно, иначе код ошибки
+    int StoreDataMem(void *, QVector<DataRec> *, quint16 fname); //0 - успешно, иначе код ошибки
     // S2: получение размера:
     int StoreDataSize(FileHeader *, DataRec *); //>0 - успешно, иначе код ошибки
     // S2: Разборщик из памяти:
-    int RestoreDataMem(void *, quint32, QVector<DataRec> &); //0 - успешно, иначе код ошибки
+    int RestoreDataMem(void *, quint32, QVector<DataRec> *); //0 - успешно, иначе код ошибки
     // S2: Поиск элемента в массиве описаний
-    DataRec *FindElem(QVector<DataRec> &, quint16);
+    DataRec *FindElem(QVector<DataRec> *, quint16);
 
     quint32 GetCRC32(char *, quint32);
     void updCRC32(const quint8 byte, quint32 *dwCRC32);

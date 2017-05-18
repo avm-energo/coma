@@ -76,7 +76,7 @@ public:
     bool Connect();
     void Disconnect();
     void Send(int command, int board_type=BT_NONE, void *ptr=NULL, quint32 ptrsize=0, quint16 filenum=0, \
-              QVector<publicclass::DataRec> &DRptr=QVector<publicclass::DataRec>());
+              QVector<publicclass::DataRec> *DRptr=0);
 
 signals:
     void writedatalength(quint32);
@@ -115,7 +115,7 @@ private:
     quint32 SegEnd; // номер последнего байта в ReadData текущего сегмента
     bool FirstSegment; // признак того, что передаётся первый сегмент (начало посылки MS, а не MS3)
     bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
-    QVector<publicclass::DataRec> DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
+    QVector<publicclass::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     quint8 BoardType;
     bool PortCloseTimeoutSet;
     QSerialPort *port;

@@ -87,11 +87,6 @@ bool ConfDialog31::CheckConf()
     return result;
 }
 
-void ConfDialog31::SetDefConf()
-{
-    C31->SetDefConf();
-}
-
 void ConfDialog31::SetChTypData(int value)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());

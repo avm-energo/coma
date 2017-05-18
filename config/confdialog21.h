@@ -35,6 +35,7 @@ private:
 
     void Fill();
     bool CheckConf();
+    void SetDefConf();
     void SetMinMax(int i); // установка значений виджетов в соответствии с конфигурацией
 
 signals:
@@ -46,7 +47,6 @@ private slots:
     void SetChOsc(int);
     void SetIn();
     void SetOscDly(double);
-    void SetDefConf();
     void SetRange(int RangeType);
 };
 

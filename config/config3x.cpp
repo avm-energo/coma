@@ -17,6 +17,7 @@ void Config3x::SetDInSize(Bci_DIn &Bcii, int mtype)
 
 void Config3x::SetDOutSize(Bci_DOut &Bcio, int mtype)
 {
+    Q_UNUSED(Bcio);
     int size = ModTypeMap().value(mtype).DOutSize;
     if ((size > SIZEMAX) || !size)
         return;

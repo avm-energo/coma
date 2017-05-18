@@ -8,7 +8,7 @@
 #include "dialogs/oscdialog.h"
 #include "config/confdialog.h"
 #include "config/confdialog21.h"
-#include "config/confdialog_80.h"
+#include "config/confdialog80.h"
 #include "check/checkdialog_21.h"
 #include "check/checkdialog_80.h"
 #include "tune/tunedialog_21.h"

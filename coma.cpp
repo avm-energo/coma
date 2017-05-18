@@ -90,23 +90,23 @@ void Coma::SetupUI()
     tb->setIconSize(QSize(20,20));
     QAction *ConnectAction = new QAction(this);
     ConnectAction->setToolTip("Соединение");
-    ConnectAction->setIcon(QIcon(":/play.png"));
+    ConnectAction->setIcon(QIcon(":/pic/play.png"));
     connect(ConnectAction,SIGNAL(triggered()),this,SLOT(Stage1_5()));
     QAction *DisconnectAction = new QAction(this);
     DisconnectAction->setToolTip("Разрыв соединения");
-    DisconnectAction->setIcon(QIcon(":/stop.png"));
+    DisconnectAction->setIcon(QIcon(":/pic/stop.png"));
     connect(DisconnectAction,SIGNAL(triggered()),this,SLOT(Disconnect()));
     QAction *EmulAAction = new QAction(this);
     EmulAAction->setToolTip("Запуск в режиме А");
-    EmulAAction->setIcon(QIcon(":/a.png"));
+    EmulAAction->setIcon(QIcon(":/pic/a.png"));
     connect(EmulAAction,SIGNAL(triggered()),this,SLOT(EmulA()));
     QAction *EmulEAction = new QAction(this);
     EmulEAction->setToolTip("Запуск в режиме Э");
-    EmulEAction->setIcon(QIcon(":/e.png"));
+    EmulEAction->setIcon(QIcon(":/pic/e.png"));
     connect(EmulEAction,SIGNAL(triggered()),this,SLOT(EmulE()));
     QAction *SettingsAction = new QAction(this);
     SettingsAction->setToolTip("Настройки");
-    SettingsAction->setIcon(QIcon(":/settings.png"));
+    SettingsAction->setIcon(QIcon(":/pic/settings.png"));
     connect(SettingsAction,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
     tb->addAction(ConnectAction);
     tb->addAction(DisconnectAction);
@@ -117,7 +117,7 @@ void Coma::SetupUI()
     tb->addAction(SettingsAction);
     QAction *act = new QAction(this);
     act->setToolTip("Протокол ошибок");
-    act->setIcon(QIcon(":/skull-and-bones.png"));
+    act->setIcon(QIcon(":/pic/skull-and-bones.png"));
     connect(act,SIGNAL(triggered(bool)),this,SLOT(ShowErrorDialog()));
     tb->addAction(act);
     hlyout->addWidget(tb);
@@ -206,12 +206,12 @@ void Coma::SetupMenubar()
     MainMenu->addAction(act);
     act = new QAction(this);
     act->setText("Соединение");
-    act->setIcon(QIcon(":/play.png"));
+    act->setIcon(QIcon(":/pic/play.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
     MainMenu->addAction(act);
     act = new QAction(this);
     act->setText("Разрыв соединения");
-    act->setIcon(QIcon(":/stop.png"));
+    act->setIcon(QIcon(":/pic/stop.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(Disconnect()));
     MainMenu->addAction(act);
     MainMenuBar->addMenu(MainMenu);
@@ -220,11 +220,11 @@ void Coma::SetupMenubar()
     menu->setTitle("Запуск...");
     act = new QAction(this);
     act->setText("...в режиме А");
-    act->setIcon(QIcon(":/a.png"));
+    act->setIcon(QIcon(":/pic/a.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(EmulA()));
     menu->addAction(act);
     act = new QAction(this);
-    act->setIcon(QIcon(":/e.png"));
+    act->setIcon(QIcon(":/pic/e.png"));
     act->setText("...в режиме Э");
     connect(act,SIGNAL(triggered()),this,SLOT(EmulE()));
     menu->addAction(act);
@@ -242,7 +242,7 @@ void Coma::SetupMenubar()
     menu->setTitle("Настройки");
     act = new QAction(this);
     act->setText("Настройки");
-    act->setIcon(QIcon(":/settings.png"));
+    act->setIcon(QIcon(":/pic/settings.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
     menu->addAction(act);
     MainMenuBar->addMenu(menu);
@@ -454,7 +454,6 @@ void Coma::OpenBhbDialog()
     pc.BoardMBhb.HWVer = pc.ModuleBsi.HwverM;
     pc.BoardMBhb.SerialNum = pc.ModuleBsi.SerialNumM;
     pc.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
-    connect(dlg,SIGNAL(accepted()),this,SLOT(SendBhb()));
     dlg->Fill(); // заполняем диалог из недавно присвоенных значений
     dlg->exec();
     if (CN_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
@@ -565,7 +564,7 @@ void Coma::GetAbout()
     l2yout->addStretch(10);
     lbl = new QLabel;
     QPixmap pmp;
-    pmp.load(":/evel.png");
+    pmp.load(":/pic/evel.png");
     lbl->setPixmap(pmp);
     lbl->setMaximumSize(64,64);
     hlyout->addWidget(lbl,1);

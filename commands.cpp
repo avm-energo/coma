@@ -10,6 +10,7 @@ int CN_GetBsi(void *ptr, quint32 size)
 
 int CN_GetFile(void *ptr, quint32 filenum)
 {
+    cn->Send(CN_GF, Canal::BT_NONE, ptr, 0, filenum);
     return NOERROR;
 }
 

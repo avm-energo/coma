@@ -18,16 +18,16 @@ HiddenDialog::HiddenDialog(int type, QWidget *parent) :
     switch (type)
     {
     case BYMY:
-        BGImage=":/BM.png";
+        BGImage=":/pic/BM.png";
         break;
     case BNMY:
-        BGImage=":/BnM.png";
+        BGImage=":/pic/BnM.png";
         break;
     case BYMN:
-        BGImage=":/BMn.png";
+        BGImage=":/pic/BMn.png";
         break;
     case BNMN:
-        BGImage=":/BnMn.png";
+        BGImage=":/pic/BnMn.png";
         break;
     default:
         BGImage="";
@@ -149,7 +149,7 @@ void HiddenDialog::AcceptChanges()
     pc.BoardBBhb.MType = tmps.toInt(Q_NULLPTR, 16);
     WDFunc::LEData(this, "meztp", tmps);
     pc.BoardMBhb.MType = tmps.toInt(Q_NULLPTR, 16);
-    emit accepted();
+    SendBhb();
     this->close();
 }
 

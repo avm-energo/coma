@@ -33,7 +33,7 @@ Canal::~Canal()
 {
 }
 
-void Canal::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint16 filenum, QVector<publicclass::DataRec> &DRptr)
+void Canal::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint16 filenum, QVector<publicclass::DataRec> *DRptr)
 {
     outdata = static_cast<char *>(ptr);
     outdatasize = ptrsize; // размер области данных, в которую производить запись
@@ -84,7 +84,7 @@ void Canal::InitiateSend()
     }
     case CN_GF:     // запрос файла
     {
-        if (DR.isEmpty())
+        if (DR->isEmpty())
         {
             SendErr();
             Finish(CN_NULLDATAERROR);
@@ -114,7 +114,7 @@ void Canal::InitiateSend()
     case CN_WF: // запись файла
     {
 //        qDebug() << "cn1";
-        if (DR.isEmpty())
+        if (DR->isEmpty())
             Finish(CN_NULLDATAERROR);
 //        WriteData.resize(CN_MAXFILESIZE);
         WriteData.append(CN_MS);

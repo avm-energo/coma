@@ -1,29 +1,16 @@
-#ifndef E_CONFIG_H
-#define E_CONFIG_H
+#ifndef CONFIG80_H
+#define CONFIG80_H
 
-// Описание блока Bci
-#define EBCI_EQTYPE      101
-#define EBCI_NPOINTS     102
-#define EBCI_NFILTR      103
-#define EBCI_NHFILTR     104
-#define EBCI_DDOSC       105
-#define EBCI_UNOM1       106
-#define EBCI_UNOM2       107
-#define EBCI_INOM1       108
-#define EBCI_INOM2       109
-#define EBCI_DUOSC       110
-#define EBCI_DIOSC       111
-#define EBCI_DUIMIN      112
-#define ECONF_NUM        23
+#define ID808X_START    1001
 
-#include "../publicclass.h"
 #include "config.h"
+#include "../publicclass.h"
 
-class config_80
+class Config80
 {
 public:
-    config_80();
-    ~config_80();
+    explicit Config80(QVector<publicclass::DataRec> &config);
+    explicit Config80();
 
     typedef struct
     {
@@ -41,8 +28,9 @@ public:
         float duimin;           // Уставка контроля минимума сигналов (в %)
     } Bci;
 
-    Bci Bci_block, Bci_defblock;
-    publicclass::DataRec Config[ECONF_NUM];
+    Bci Bci_block;
+
+    void SetDefConf();
 };
 
-#endif // E_CONFIG_H
+#endif // CONFIG80_H

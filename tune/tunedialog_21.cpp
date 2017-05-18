@@ -92,11 +92,11 @@ void a_tunedialog::SetupUI()
         pb->setEnabled(false);
     gb1lyout->addWidget(pb);
     pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
-    pb->setIcon(QIcon(":/load.png"));
+    pb->setIcon(QIcon(":/pic/load.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadFromFile()));
     gb1lyout->addWidget(pb);
     pb = new QPushButton("Записать настроечные коэффициенты в файл");
-    pb->setIcon(QIcon(":/save.png"));
+    pb->setIcon(QIcon(":/pic/save.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
     gb1lyout->addWidget(pb);
     gb->setLayout(gb1lyout);

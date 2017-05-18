@@ -297,3 +297,15 @@ void WDFunc::SetEnabled(QWidget *w, const QString &wname, bool enabled)
     if (wdgt != 0)
         wdgt->setEnabled(enabled);
 }
+
+void WDFunc::SetVisible(QWidget *w, const QString &wname, bool visible)
+{
+    QWidget *wdgt = w->findChild<QWidget *>(wname);
+    if (wdgt != 0)
+    {
+        if (visible)
+            wdgt->show();
+        else
+            wdgt->hide();
+    }
+}

@@ -15,9 +15,9 @@ s_tablemodel::s_tablemodel(QObject *parent) :
     QFont fontN = QFont("MS Sans Serif", -1, QFont::Normal);
     fonts[0] = fonts[3] = fonts[5] = fontN;
     fonts[1] = fonts[2] = fonts[4] = fontB;
-    icons[0] = QIcon(":/res/hr.png");
-    icons[1] = QIcon(":/res/ok.png");
-    icons[2] = QIcon(":/res/cross.png");
+    icons[0] = QIcon(":/pic/hr.png");
+    icons[1] = QIcon(":/pic/ok.png");
+    icons[2] = QIcon(":/pic/cross.png");
     hdr.clear();
     maindata.clear();
 }

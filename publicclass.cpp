@@ -123,7 +123,7 @@ QString publicclass::VerToStr(quint32 num)
     return tmpString;
 }
 
-int publicclass::StoreDataMem(void *mem, QVector<DataRec> &dr, quint16 fname) //0 - успешно, иначе код ошибки
+int publicclass::StoreDataMem(void *mem, QVector<DataRec> *dr, quint16 fname) //0 - успешно, иначе код ошибки
 {
     quint32 crc=0xFFFFFFFF;
     FileHeader D;
@@ -132,7 +132,7 @@ int publicclass::StoreDataMem(void *mem, QVector<DataRec> &dr, quint16 fname) //
     char *m=static_cast<char *>(mem);
     m+=sizeof(FileHeader);
     D.size=0;
-    for(QVector<DataRec>::iterator it=dr.begin(); it!=dr.end(); ++it)
+    for(QVector<DataRec>::iterator it=dr->begin(); it!=dr->end(); ++it)
     {
         R = *it;
         void *Rptr = static_cast<void *>(it);
@@ -162,7 +162,7 @@ int publicclass::StoreDataMem(void *mem, QVector<DataRec> &dr, quint16 fname) //
     return 0;
 }
 
-int publicclass::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> &dr)
+int publicclass::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
 {
   quint32 crc;
   quint32 sz=0;
@@ -249,9 +249,9 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> &dr
   return 0;
 }
 
-publicclass::DataRec *publicclass::FindElem(QVector<DataRec> &dr, quint16 id)
+publicclass::DataRec *publicclass::FindElem(QVector<DataRec> *dr, quint16 id)
 {
-    for(QVector<DataRec>::iterator it=dr.begin(); it!=dr.end(); ++it)
+    for(QVector<DataRec>::iterator it=dr->begin(); it!=dr->end(); ++it)
     {
         DataRec R = *it;
         if(R.id==id)

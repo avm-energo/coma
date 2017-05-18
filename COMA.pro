@@ -26,8 +26,6 @@ SOURCES += main.cpp\
     publicclass.cpp \
     check/checkdialog_21.cpp \
     check/checkdialog_80.cpp \
-    config/config80.cpp \
-    config/confdialog_80.cpp \
     iec104/iec104.cpp \
     iec104/ethernet.cpp \
     threads/waitthread.cpp \
@@ -64,14 +62,15 @@ SOURCES += main.cpp\
     config/abstractconfdialog3x.cpp \
     config/config3x.cpp \
     config/confdialog31.cpp \
-    config/config31.cpp
+    config/config31.cpp \
+    config/confdialog80.cpp \
+    config/config80.cpp
 
 HEADERS  += coma.h \
     canal.h \
     publicclass.h \
     check/checkdialog_21.h \
     check/checkdialog_80.h \
-    config/confdialog_80.h \
     config/config80.h \
     iec104/ethernet.h \
     iec104/iec104.h \
@@ -109,7 +108,9 @@ HEADERS  += coma.h \
     config/abstractconfdialog3x.h \
     config/config3x.h \
     config/confdialog31.h \
-    config/config31.h
+    config/config31.h \
+    config/confdialog80.h \
+    config/config80.h
 
 RESOURCES += \
     res.qrc

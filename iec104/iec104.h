@@ -103,7 +103,6 @@ public slots:
 
 signals:
     void signalsreceived(Parse104::Signals104 &);
-    void finished();
     void error(int);
     void sendS();
     void parsestarted();
@@ -173,7 +172,6 @@ public slots:
 signals:
     void writedatatoeth(QByteArray);
     void stopall();
-    void finished();
     void error(int);
     void ethconnected();
     void ethdisconnected();
@@ -189,7 +187,6 @@ private slots:
     void SendS();
     void GetSomeData(QByteArray);
     void StartParse();
-    void EthFinished();
 };
 
 #endif // IEC104_H

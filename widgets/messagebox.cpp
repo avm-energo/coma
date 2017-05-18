@@ -81,9 +81,9 @@ bool question(QWidget *parent, const QString &title,
         messageBox->setInformativeText(detailedText);
     messageBox->setIcon(QMessageBox::Question);
     QPushButton *yesButton = messageBox->addButton(yesText, QMessageBox::AcceptRole);
-    yesButton->setIcon(QIcon(":/res/ok.png"));
+    yesButton->setIcon(QIcon(":/pic/ok.png"));
     QPushButton *noButton = messageBox->addButton(noText, QMessageBox::RejectRole);
-    noButton->setIcon(QIcon(":/res/cross.png"));
+    noButton->setIcon(QIcon(":/pic/cross.png"));
     messageBox->setDefaultButton(yesButton);
     messageBox->exec();
     QPushButton *pb = qobject_cast<QPushButton *>(messageBox->clickedButton());

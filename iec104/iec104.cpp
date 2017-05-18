@@ -19,7 +19,6 @@ iec104::iec104(QObject *parent) : QObject(parent)
     connect(this,SIGNAL(stopall()),eth,SLOT(Stop()));
     connect(eth,SIGNAL(connected()),this,SIGNAL(ethconnected()));
     connect(eth,SIGNAL(disconnected()),this,SIGNAL(ethdisconnected()));
-    connect(eth,SIGNAL(finished()),this,SLOT(EthFinished()));
     connect(eth,SIGNAL(connected()),this,SLOT(Start()));
     connect(eth,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
     connect(this,SIGNAL(writedatatoeth(QByteArray)),eth,SLOT(InitiateWriteDataToPort(QByteArray)));
@@ -73,11 +72,6 @@ void iec104::Stop()
     while (tmr.elapsed() < 1000)
         qApp->processEvents();
     emit stopall();
-}
-
-void iec104::EthFinished()
-{
-    emit finished();
 }
 
 void iec104::Send(APCI apci, ASDU asdu)
@@ -212,7 +206,6 @@ void Parse104::Run()
         QThread::msleep(10);
         qApp->processEvents();
     }
-    emit finished();
 }
 
 int Parse104::isIncomeDataValid(QByteArray ba)

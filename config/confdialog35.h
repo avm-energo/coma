@@ -19,11 +19,11 @@ public:
     explicit ConfDialog31(QVector<publicclass::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = 0);
 
 private:
+    publicclass::DataRec Config[DCONF_NUM];
     Config31 *C31;
 
     void Fill();
     bool CheckConf();
-    void SetDefConf();
     void SetPair(int firstch, int secondch);
 
 signals:

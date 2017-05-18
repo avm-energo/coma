@@ -21,8 +21,6 @@ public:
     int GetChNumFromObjectName(QString ObjectName);
 
 public slots:
-    void ReadConf();
-    void WriteConf();
 
 private:
 
@@ -31,6 +29,8 @@ private:
 private slots:
     void SaveConfToFile();
     void LoadConfFromFile();
+    void ReadConf();
+    void WriteConf();
 
 signals:
     void BsiIsNeedToBeAcquiredAndChecked(); // signal to reload start block emitted when new configuration has been sent to module

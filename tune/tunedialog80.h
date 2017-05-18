@@ -1,11 +1,12 @@
-#ifndef E_TUNEDIALOG_H
-#define E_TUNEDIALOG_H
+#ifndef TUNEDIALOG80_H
+#define TUNEDIALOG80_H
 
 #include <QDialog>
 #include <QCloseEvent>
+#include <QGroupBox>
 #include <QByteArray>
-#include <QTimer>
 #include <QLabel>
+#include "config/config80.h"
 #include "../iec104/iec104.h"
 
 #define TUNEFILELENGTH  256
@@ -38,11 +39,11 @@
 #define MSG_END         21
 #define MSG_COUNT       22
 
-class e_tunedialog : public QDialog
+class TuneDialog80 : public QDialog
 {
     Q_OBJECT
 public:
-    explicit e_tunedialog(QWidget *parent = 0);
+    explicit TuneDialog80(QWidget *parent = 0);
 
 signals:
     void stopall();
@@ -82,11 +83,10 @@ private:
     }
 
     bool Cancelled;
-    Config80 conf;
-    config_80::Bci Bci_block_work;
+    Config80 *C80;
+    Config80::Bci Bci_block_work;
     iec104 *mipcanal;
     int TuneControlType;
-    QTimer *tmr;
     int SecondsToEnd15SecondsInterval;
     QLabel *Label15Seconds;
 
@@ -100,7 +100,7 @@ private:
         float Kinter;
     };
 
-    Bac Bac_block, Bac_defblock, Bac_newblock;
+    Bac Bac_block, Bac_newblock;
 
     struct Bda
     {
@@ -164,7 +164,6 @@ private:
     bool CheckMip();
     bool IsWithinLimits(double number, double base, double threshold);
     void ShowControlChooseDialog();
-    void Show1PhaseScheme();
     void Show3PhaseScheme();
     void Show1RetomDialog(float U, float A);
     bool Start7_2_3();
@@ -188,7 +187,8 @@ private:
     void WaitNSeconds(int SecondsToWait);
     bool SaveWorkConfig();
     bool LoadWorkConfig();
-    void SetTunePbEnabled(bool Enabled);
+    QGroupBox *MipPars(int parnum, QString &groupname);
+    float ToFloat(QString text);
 
 private slots:
     void StartTune();
@@ -199,9 +199,6 @@ private slots:
     void LoadFromFile();
     void StartMip();
     void StopMip();
-    void DeleteMip();
-    void EthConnected();
-    void EthDisconnected();
     void MipData(Parse104::Signals104 &);
     void SetTuneMip();
     void SetTuneRetom();
@@ -217,4 +214,4 @@ protected:
     void closeEvent(QCloseEvent *e);
 };
 
-#endif // E_TUNEDIALOG_H
+#endif // TuneDialog8080_H
