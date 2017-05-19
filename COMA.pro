@@ -24,13 +24,13 @@ SOURCES += main.cpp\
     canal.cpp \
     coma.cpp \
     publicclass.cpp \
-    check/checkdialog_21.cpp \
-    check/checkdialog_80.cpp \
+    check/checkdialog21.cpp \
+    check/checkdialog80.cpp \
     iec104/iec104.cpp \
     iec104/ethernet.cpp \
     threads/waitthread.cpp \
-    tune/tunedialog_21.cpp \
-    tune/tunedialog_80.cpp \
+    tune/tunedialog21.cpp \
+    tune/tunedialog80.cpp \
     widgets/errorprotocolwidget.cpp \
     widgets/getoscpbdelegate.cpp \
     widgets/messagebox.cpp \
@@ -69,14 +69,14 @@ SOURCES += main.cpp\
 HEADERS  += coma.h \
     canal.h \
     publicclass.h \
-    check/checkdialog_21.h \
-    check/checkdialog_80.h \
+    check/checkdialog21.h \
+    check/checkdialog80.h \
     config/config80.h \
     iec104/ethernet.h \
     iec104/iec104.h \
     threads/waitthread.h \
-    tune/tunedialog_21.h \
-    tune/tunedialog_80.h \
+    tune/tunedialog21.h \
+    tune/tunedialog80.h \
     widgets/getoscpbdelegate.h \
     widgets/mytabwidget.h \
     widgets/errorprotocolwidget.h \

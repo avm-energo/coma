@@ -5,7 +5,7 @@
 #include <QCloseEvent>
 #include <QGroupBox>
 #include <QByteArray>
-#include <QLabel>
+#include <QStringList>
 #include "config/config80.h"
 #include "../iec104/iec104.h"
 
@@ -84,11 +84,12 @@ private:
 
     bool Cancelled;
     Config80 *C80;
+    QVector<publicclass::DataRec> S2Config;
     Config80::Bci Bci_block_work;
     iec104 *mipcanal;
     int TuneControlType;
     int SecondsToEnd15SecondsInterval;
-    QLabel *Label15Seconds;
+    QHash <QString, void (TuneDialog80::*)()> pf;
 
     struct Bac
     {
@@ -187,7 +188,7 @@ private:
     void WaitNSeconds(int SecondsToWait);
     bool SaveWorkConfig();
     bool LoadWorkConfig();
-    QGroupBox *MipPars(int parnum, QString &groupname);
+    QGroupBox *MipPars(int parnum, const QString &groupname);
     float ToFloat(QString text);
 
 private slots:

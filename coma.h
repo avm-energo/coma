@@ -9,10 +9,10 @@
 #include "config/confdialog.h"
 #include "config/confdialog21.h"
 #include "config/confdialog80.h"
-#include "check/checkdialog_21.h"
-#include "check/checkdialog_80.h"
-#include "tune/tunedialog_21.h"
-#include "tune/tunedialog_80.h"
+#include "check/checkdialog21.h"
+#include "check/checkdialog80.h"
+#include "tune/tunedialog21.h"
+#include "tune/tunedialog80.h"
 #include "canal.h"
 #include "publicclass.h"
 
@@ -84,8 +84,8 @@ private:
     a_checkdialog *ACheckDialog;
     a_tunedialog *ATuneDialog;
     e_checkdialog *ECheckDialog;
-    confdialog_80 *EConfDialog;
-    e_tunedialog *ETuneDialog;
+    ConfDialog80 *EConfDialog;
+    TuneDialog80 *ETuneDialog;
     fwupdialog *FwUpDialog;
     downloaddialog *DownDialog;
     oscdialog *OscDialog;

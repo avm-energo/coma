@@ -11,7 +11,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QLineEdit>
-#include "checkdialog_80.h"
+#include "checkdialog80.h"
 #include "../widgets/messagebox.h"
 #include "../publicclass.h"
 #include "../canal.h"

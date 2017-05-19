@@ -16,7 +16,7 @@
 TuneDialog80::TuneDialog80(QWidget *parent) :
     QDialog(parent)
 {
-    C80 = new Config80;
+    C80 = new Config80(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
 }
@@ -55,10 +55,10 @@ void TuneDialog80::SetupUI()
     if (pc.Emul)
         pb->setEnabled(false);
     lyout->addWidget(pb);
-    for (int i = 0; i < lbls.size(); i++)
+    for (int i = 0; i < lbls().size(); ++i)
     {
         QHBoxLayout *hlyout = new QHBoxLayout;
-        lbl=new QLabel(lbls.at(i));
+        lbl=new QLabel(lbls().at(i));
         lbl->setVisible(false);
         lbl->setObjectName("tunemsg"+QString::number(i));
         hlyout->addWidget(lbl);
@@ -80,6 +80,7 @@ void TuneDialog80::SetupUI()
     {
         lbl = new QLabel("KmU["+QString::number(i)+"]");
         glyout->addWidget(lbl,0,i,1,1);
+        QLineEdit *le = new QLineEdit("");
         le->setObjectName("tune"+QString::number(i));
         le->setStyleSheet(ValuesLEFormat);
         glyout->addWidget(le,1,i,1,1);
@@ -147,16 +148,16 @@ void TuneDialog80::SetupUI()
 
     QVBoxLayout *vlyout = new QVBoxLayout;
     gb = new QGroupBox("Измеряемые параметры");
-    QGroupBox *gb = MipPars(1, "Частота");
-    vlyout->addWidget(gb);
-    gb = MipPars(4, "Фазное напряжение");
-    vlyout->addWidget(gb);
-    gb = MipPars(7, "Фазный ток");
-    vlyout->addWidget(gb);
-    gb = MipPars(11, "Угол нагрузки");
-    vlyout->addWidget(gb);
-    gb = MipPars(14, "Фазовый угол напряжения");
-    vlyout->addWidget(gb);
+    QGroupBox *gb2 = MipPars(1, "Частота");
+    vlyout->addWidget(gb2);
+    gb2 = MipPars(4, "Фазное напряжение");
+    vlyout->addWidget(gb2);
+    gb2 = MipPars(7, "Фазный ток");
+    vlyout->addWidget(gb2);
+    gb2 = MipPars(11, "Угол нагрузки");
+    vlyout->addWidget(gb2);
+    gb2 = MipPars(14, "Фазовый угол напряжения");
+    vlyout->addWidget(gb2);
     QHBoxLayout *hlyout = new QHBoxLayout;
     gb2 = new QGroupBox("Прочие");
     lbl = new QLabel("10. Ток N");
@@ -176,9 +177,9 @@ void TuneDialog80::SetupUI()
     gb2->setLayout(hlyout);
     vlyout->addWidget(gb2);
     gb->setLayout(vlyout);
-    hglyout->addWidget(gb);
+    vlyout->addWidget(gb);
     gb = new QGroupBox("Вычисляемые параметры");
-    QGroupBox *gb2 = MipPars(22, "Активная мощность");
+    gb2 = MipPars(22, "Активная мощность");
     QVBoxLayout *gblyout = new QVBoxLayout;
     gblyout->addWidget(gb2);
     gb2 = MipPars(26, "Реактивная мощность");
@@ -218,9 +219,7 @@ void TuneDialog80::SetupUI()
     gb2->setLayout(vlyout);
     gblyout->addWidget(gb2,1);
     gb->setLayout(gblyout);
-    hglyout->addWidget(gb);
-    vlyout = new QVBoxLayout;
-    vlyout->addLayout(hglyout);
+    vlyout->addWidget(gb);
     pb = new QPushButton("Запустить связь с МИП");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartMip()));
     vlyout->addWidget(pb);
@@ -242,42 +241,31 @@ void TuneDialog80::StartTune()
     StopMip(); // останавливаем измерения МИП
     MsgClear(); // очистка экрана с сообщениями
 
-    if (!SaveWorkConfig())
+
+
+    for (QHash<QString, void (TuneDialog80::*)()>::iterator it = pf.begin(); it != pf.end(); ++it)
+        (this->*pf[it.key()])();
+
+    if (SaveWorkConfig())
     {
-        SetTunePbEnabled(true);
-        WARNMSG("");
-        return;
-    }
-    // показываем диалог с выбором метода контроля
-    ShowControlChooseDialog();
-    if (Cancelled)
-    {
-        SetTunePbEnabled(true);
-        return;
-    }
-    // показываем диалог со схемой подключения
-    Show1PhaseScheme();
-    if (Cancelled)
-        return;
-    // показываем диалог с требованием установки необходимых сигналов на РЕТОМ
-    Show1RetomDialog(60, 1);
-    if (Cancelled)
-    {
-        SetTunePbEnabled(true);
-        return;
-    }
-    WaitNSeconds(15);
-    // 7.2.3. проверка связи РЕТОМ и МИП
-    if (TuneControlType == TUNEMIP)
-    {
-        res = Start7_2_3();
-        if (!res)
+        // показываем диалог с выбором метода контроля
+        ShowControlChooseDialog();
+        if (!Cancelled)
         {
-            SetTunePbEnabled(true);
-            WARNMSG("");
-            return;
+            // 7.2.3. проверка связи РЕТОМ и МИП
+            if (TuneControlType == TUNEMIP)
+            {
+                res = Start7_2_3();
+                if (res)
+                {
+                    Show3PhaseScheme();
+                }
+            }
         }
     }
+    WDFunc::SetEnabled(this, "starttune", false);
+    WARNMSG("");
+    return;
 
     // 7.3.1. получение настроечных коэффициентов
     if (pc.ModuleBsi.Hth & HTH_REGPARS) // нет настроечных коэффициентов в памяти модуля
@@ -861,10 +849,10 @@ bool TuneDialog80::Start7_3_9()
 
 bool TuneDialog80::SaveWorkConfig()
 {
-    cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,C80->Config);
+    cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,S2Config);
 //    qDebug() << "1";
     if (cn->result == NOERROR)
-        memcpy(&Bci_block_work,&econf->Bci_block,sizeof(config_80::Bci));
+        memcpy(&Bci_block_work,&C80->Bci_block,sizeof(Config80::Bci));
     else
         return false;
     return true;
@@ -880,7 +868,7 @@ bool TuneDialog80::LoadWorkConfig()
     return true;
 }
 
-QGroupBox *TuneDialog80::MipPars(int parnum, QString &groupname)
+QGroupBox *TuneDialog80::MipPars(int parnum, const QString &groupname)
 {
     QHBoxLayout *hlyout = new QHBoxLayout;
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\

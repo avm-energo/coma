@@ -12,7 +12,7 @@
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QDateTime>
-#include "checkdialog_21.h"
+#include "checkdialog21.h"
 #include "../widgets/messagebox.h"
 #include "../publicclass.h"
 #include "../canal.h"

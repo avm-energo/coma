@@ -10,7 +10,6 @@ class Config80
 {
 public:
     explicit Config80(QVector<publicclass::DataRec> &config);
-    explicit Config80();
 
     typedef struct
     {

@@ -15,12 +15,6 @@
         <file>pic/evel.png</file>
         <file>pic/info_msg.png</file>
         <file>pic/load.png</file>
-        <file>pic/mte_0t2n.png</file>
-        <file>pic/mte_1t1n.png</file>
-        <file>pic/mte_2t0n.png</file>
-        <file>pic/mte3-e0t2n.png</file>
-        <file>pic/mte3-e1t1n.png</file>
-        <file>pic/mte3-e2t0n.png</file>
         <file>pic/Object1-0.png</file>
         <file>pic/Object2.png</file>
         <file>pic/Object3.png</file>
@@ -32,5 +26,8 @@
         <file>pic/skull-and-bones.png</file>
         <file>pic/stop.png</file>
         <file>pic/warn_msg.png</file>
+        <file>pic/tune81.png</file>
+        <file>pic/tune82.png</file>
+        <file>pic/tune83.png</file>
     </qresource>
 </RCC>

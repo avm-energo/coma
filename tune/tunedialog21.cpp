@@ -8,7 +8,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QCoreApplication>
-#include "tunedialog_21.h"
+#include "tunedialog21.h"
 #include "../widgets/messagebox.h"
 #include "../publicclass.h"
 #include "../canal.h"
