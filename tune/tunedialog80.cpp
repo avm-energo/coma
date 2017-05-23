@@ -237,58 +237,41 @@ void TuneDialog80::StartTune()
 {
     WDFunc::SetEnabled(this, "starttune", false);
     bool res=true;
+
+    DefConfig = pc.ModuleBsi.Hth & HTH_REGPARS; // наличие настроечных коэффициентов в памяти модуля
+
+    int count = 0;
+    pf[lbls().at(count++)] = &TuneDialog80::SaveWorkConfig;
+    pf[lbls().at(count++)] = &TuneDialog80::ShowControlChooseDialog;
+    pf[lbls().at(count++)] = &TuneDialog80::Start7_2_3;
+    pf[lbls().at(count++)] = &TuneDialog80::Show3PhaseScheme;
+    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_1;
+    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_1_1;
+    pf[lbls().at(count++)] = &TuneDialog80::SetNewTuneCoefs;
+    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_2;
+
     Cancelled = false;
     StopMip(); // останавливаем измерения МИП
     MsgClear(); // очистка экрана с сообщениями
-
-
-
+    count = 0;
     for (QHash<QString, void (TuneDialog80::*)()>::iterator it = pf.begin(); it != pf.end(); ++it)
-        (this->*pf[it.key()])();
-
-    if (SaveWorkConfig())
     {
-        // показываем диалог с выбором метода контроля
-        ShowControlChooseDialog();
-        if (!Cancelled)
+        MsgSetVisible(count);
+        int res = (this->*pf[it.key()])();
+        if (res == GENERALERROR)
         {
-            // 7.2.3. проверка связи РЕТОМ и МИП
-            if (TuneControlType == TUNEMIP)
-            {
-                res = Start7_2_3();
-                if (res)
-                {
-                    Show3PhaseScheme();
-                }
-            }
+            ErMsgSetVisible(count);
+            WDFunc::SetEnabled(this, "starttune", false);
+            WARNMSG(it.key());
+            return;
         }
-    }
-    WDFunc::SetEnabled(this, "starttune", false);
-    WARNMSG("");
-    return;
-
-    // 7.3.1. получение настроечных коэффициентов
-    if (pc.ModuleBsi.Hth & HTH_REGPARS) // нет настроечных коэффициентов в памяти модуля
-        res = Start7_3_1(true); // запуск процедуры записи настроечных коэффициентов в режиме по умолчанию
-    else
-        res = Start7_3_1(false);
-    if (!res)
-    {
-        SetTunePbEnabled(true);
-        WARNMSG("");
-        return;
+        else if (res == ER_RESEMPTY)
+            SkMsgSetVisible(count);
+        else
+            OkMsgSetVisible(count);
+        ++count;
     }
 
-    // переписываем считанные или установленные по умолчанию коэффициенты в блок новых коэффициентов
-    SetNewTuneCoefs();
-
-    // 7.3.2. получение аналоговых сигналов
-    res = Start7_3_2(MSG_7_3_2);
-    if (!res)
-    {
-        SetTunePbEnabled(true);
-        return;
-    }
     // сохраняем значения по п. 7.3.2 для выполнения п. 7.3.6
     for (int i=0; i<6; i++)
         IUefNat_filt_old[i] = Bda_block.IUefNat_filt[i];
@@ -333,61 +316,6 @@ void TuneDialog80::StartTune()
 
     // 7.3.6.2. расчёт коррекции влияния каналов
     Start7_3_6_2();
-
-    Tune3p();
-}
-
-void TuneDialog80::StartTune3p()
-{
-    SetTunePbEnabled(false);
-    Cancelled = false;
-    StopMip(); // останавливаем измерения МИП
-    MsgClear(); // очистка экрана с сообщениями
-    if (!SaveWorkConfig())
-    {
-        SetTunePbEnabled(true);
-        WARNMSG("");
-        return;
-    }
-    ShowControlChooseDialog();
-    if (Cancelled)
-    {
-        SetTunePbEnabled(true);
-        return;
-    }
-    int res = true;
-    // 7.3.1. получение настроечных коэффициентов
-    if (pc.ModuleBsi.Hth & HTH_REGPARS) // нет настроечных коэффициентов в памяти модуля
-        res = Start7_3_1(true); // запуск процедуры записи настроечных коэффициентов в режиме по умолчанию
-    else
-        res = Start7_3_1(false);
-    if (!res)
-    {
-        SetTunePbEnabled(true);
-        WARNMSG("");
-        return;
-    }
-
-    // переписываем считанные или установленные по умолчанию коэффициенты в блок новых коэффициентов
-    SetNewTuneCoefs();
-
-    Show3PhaseScheme();
-    if (Cancelled)
-    {
-        SetTunePbEnabled(true);
-        return;
-    }
-
-    WaitNSeconds(15);
-
-    // 7.3.6.1. получение аналоговых данных
-    res = Start7_3_2(MSG_7_3_6_1);
-    if (!res)
-    {
-        SetTunePbEnabled(true);
-        WARNMSG("");
-        return;
-    }
 
     Tune3p();
 }
@@ -452,10 +380,8 @@ void TuneDialog80::SetTuneRetom()
     TuneControlType=TUNERET;
 }
 
-bool TuneDialog80::Start7_2_3()
+int TuneDialog80::Start7_2_3()
 {
-    // высвечиваем надпись "Проверка связи РЕТОМ и МИП"
-    MsgSetVisible(MSG_7_2_3);
     StartMip();
     QTime tmr;
     tmr.start();
@@ -463,79 +389,79 @@ bool TuneDialog80::Start7_2_3()
         qApp->processEvents();
     StopMip();
     if (CheckMip())
-        OkMsgSetVisible(MSG_7_2_3);
+        return NOERROR;
     else
-    {
-        ErMsgSetVisible(MSG_7_2_3);
-        return false;
-    }
-    return true;
+        return GENERALERROR;
 }
 
-bool TuneDialog80::Start7_3_1(bool DefConfig)
+int TuneDialog80::Start7_3_1()
 {
-    // высвечиваем надпись "Получение настроечных коэффициентов"
-    MsgSetVisible(MSG_7_3_1);
-    if (!DefConfig)
+    if (!DefConfig) // если есть настроечные параметры в памяти модуля
     {
         // получение настроечных коэффициентов от модуля
         cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
         if (cn->result != NOERROR)
         {
             MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");
-            return false;
+            return GENERALERROR;
         }
         // обновление коэффициентов в соответствующих полях на экране
         WriteTuneCoefsToGUI();
         // проверка коэффициентов на правильность в соотв. с п. 7.3.1 "Д2"
         if (CheckTuneCoefs())
-        {
-            OkMsgSetVisible(MSG_7_3_1);
-            return true;
-        }
+            return NOERROR;
         else
-            ErMsgSetVisible(MSG_7_3_1);
-    }
-    // высвечиваем надпись "Запись настроечных коэффициентов по умолчанию"
-    MsgSetVisible(MSG_7_3_1_1);
-    // запись настроечных коэффициентов в модуль
-    SetDefCoefs();
-    cn->Send(CN_WBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
-    if (cn->result == NOERROR)
-    {
-        // перейти на новую конфигурацию
-/*        cn->Send(CN_Cnc);
-        if (cn->result != NOERROR)
-            return false; */
-        // получение настроечных коэффициентов от модуля
-        cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
-        if (cn->result != NOERROR)
-        {
-            WARNMSG("Ошибка при приёме данных");
-            return false;
-        }
-        // обновление коэффициентов в соответствующих полях на экране
-        WriteTuneCoefsToGUI();
-        OkMsgSetVisible(MSG_7_3_1_1);
+            return GENERALERROR;
     }
     else
-    {
-        WARNMSG("Ошибка при приёме данных");
-        ErMsgSetVisible(MSG_7_3_1_1);
-        return false;
-    }
-    return true;
+        return ER_RESEMPTY;
 }
 
-bool TuneDialog80::Start7_3_2(int num)
+int TuneDialog80::Start7_3_1_1()
 {
-    // высвечиваем надпись "Получение текущих аналоговых данных"
-    MsgSetVisible(num);
+    if (DefConfig)
+    {
+        // запись настроечных коэффициентов в модуль
+        SetDefCoefs();
+        cn->Send(CN_WBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
+        if (cn->result == NOERROR)
+        {
+            // получение настроечных коэффициентов от модуля
+            cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
+            if (cn->result != NOERROR)
+            {
+                WARNMSG("Ошибка при приёме данных");
+                return false;
+            }
+            // обновление коэффициентов в соответствующих полях на экране
+            WriteTuneCoefsToGUI();
+            return NOERROR;
+        }
+        else
+            return GENERALERROR;
+    }
+    else
+        return ER_RESEMPTY;
+}
+
+int TuneDialog80::Start7_3_2()
+{
     ReadAnalogMeasurements();
+
     // проверка данных на правильность
-    int maxval;
-    if (num == MSG_7_3_2) maxval=602; // 3~7.3.2, 6~7.3.6.1, 12~7.3.7.3
-    else if (num == MSG_7_3_7_8)
+    VTCG.tmk = 25.0; // degrees
+    VTCG.bat = 3.0; // degrees
+    VTCG.freq = 50; // Hz
+    VTCG.v1 = VTCG.v2 = V60;
+    VTCG.phi = S0;
+    VTCG.p = VTCG.s = V60;
+    VTCG.q = VTCG.cosphi = S0;
+    if (CheckAnalogValues())
+        return NOERROR;
+    else
+        return GENERALERROR;
+/*    if (num == MSG_7_3_2) maxval=602; // 3~7.3.2, 6~7.3.6.1, 12~7.3.7.3
+/*    else if (num == MSG_7_3_7_8)
     {
         if (!GetExternalData(MSG_7_3_7_8))
             return false;
@@ -552,24 +478,7 @@ bool TuneDialog80::Start7_3_2(int num)
         if (!GetExternalData(MSG_7_3_9))
             return false;
         maxval = 572; // 19~7.3.9
-    }
-    else
-    {
-        OkMsgSetVisible(num);
-        return true;
-    }
-
-/*    if (CheckAnalogValues(maxval-pc.ModuleBsi.MTypeB)) // MType: 0 = 2T0N, 1 = 1T1N, 2 = 0T2N; NTest: 600 = 0T2N, 601 = 1T1N, 602 = 2T0N
-    {
-        OkMsgSetVisible(num);
-        return true;
-    }
-    else
-    {
-        ErMsgSetVisible(num);
-        return false;
-    }*/
-    return true;
+    } */
 }
 
 bool TuneDialog80::Start7_3_3()
@@ -847,24 +756,24 @@ bool TuneDialog80::Start7_3_9()
     return true;
 }
 
-bool TuneDialog80::SaveWorkConfig()
+int TuneDialog80::SaveWorkConfig()
 {
     cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,S2Config);
 //    qDebug() << "1";
     if (cn->result == NOERROR)
         memcpy(&Bci_block_work,&C80->Bci_block,sizeof(Config80::Bci));
     else
-        return false;
-    return true;
+        return GENERALERROR;
+    return NOERROR;
 }
 
 bool TuneDialog80::LoadWorkConfig()
 {
-/*    // пишем ранее запомненный конфигурационный блок
+    // пишем ранее запомненный конфигурационный блок
     memcpy(&econf->Bci_block,&Bci_block_work,sizeof(config_80::Bci));
-    cn->Send(CN_WF, Canal::BT_NONE, &econf->Bci_block, sizeof(econf->Bci_block), 2, econf->Config);
+    cn->Send(CN_WF, Canal::BT_NONE, &C80->Bci_block, sizeof(Config80::Bci), 2, S2Config);
     if (cn->result != NOERROR)
-        return false; */
+        return false;
     return true;
 }
 
@@ -1032,31 +941,33 @@ void TuneDialog80::CancelExtData()
 
 bool TuneDialog80::CheckTuneCoefs()
 {
-    double ValuesToCheck[26] = {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,\
-                               0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0};
-    double ThresholdsToCheck[26] = {0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,\
-                                   0.5,0.5,0.5,0.5,0.5,0.5,1.0,1.0,1.0,1.0,1.0,1.0,0.5,0.005};
-    bool res = true;
+    double ValuesToCheck[26] = {TU1,TU1,TU1,TU1,TU1,TU1,TU1,TU1,TU1,TU1,TU1,TU1,TU1,TU1,TU1,TU1,TU1,TU1,\
+                               TU0,TU0,TU0,TU0,TU0,TU0,TU1,TU0};
+    double ThresholdsToCheck[26] = {T002,T002,T002,T002,T002,T002,T002,T002,T002,T002,T002,T002,\
+                                   T002,T002,T002,T002,T002,T002,T1,T1,T1,T1,T1,T1,T002,T0005};
+    double *VTC = ValuesToCheck;
+    double *TTC = ThresholdsToCheck;
+    int res = NOERROR;
     for (int i = 0; i < 26; i++)
     {
-        QLineEdit *lbl = this->findChild<QLineEdit *>("tune"+QString::number(i));
-        if (lbl == 0)
-            return false;
+        QString tmps;
+        WDFunc::LBLText(this, "tune"+QString::number(i), tmps);
         bool ok;
-        double vl = lbl->text().toDouble(&ok);
+        double tmpd = tmps.toDouble(&ok);
         if (!ok)
-            return false;
-        if (!IsWithinLimits(vl, ValuesToCheck[i], ThresholdsToCheck[i]))
+            return GENERALERROR;
+        if (!IsWithinLimits(tmpd, *VTC, *TTC))
         {
-            MessageBox2::information(this, "Внимание", "Настроечные по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'f',4)+\
-                      ", должно быть: "+QString::number(ValuesToCheck[i],'f',4)+\
-                      " +/- "+QString::number(ThresholdsToCheck[i],'f',4));
-            res=false;
-            lbl->setStyleSheet("QLabel {color: red};");
+            MessageBox2::information(this, "Внимание", "Настроечные по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
+                      ", должно быть: "+QString::number(*VTC,'f',4)+\
+                      " +/- "+QString::number(*TTC,'f',4));
+            res=GENERALERROR;
+            WDFunc::SetLBLColor(this, "tune"+QString::number(i), "red");
+            VTC++;
+            TTC++;
         }
     }
     return res;
-    return true;
 }
 
 bool TuneDialog80::IsWithinLimits(double number, double base, double threshold)
@@ -1068,58 +979,94 @@ bool TuneDialog80::IsWithinLimits(double number, double base, double threshold)
         return false;
 }
 
-bool TuneDialog80::CheckMip()
+int TuneDialog80::CheckMip()
 {
-    double ValuesToCheck[10] = {0,50.0,50.0,50.0,60.0,60.0,60.0,1.0,1.0,1.0};
-    double ThresholdsToCheck[10] = {0,0.1,0.1,0.1,1.0,1.0,1.0,0.05,0.05,0.05};
-/*    switch(pc.ModuleBsi.MType1) //
+    double ValuesToCheck81 = {S0,HZ50,HZ50,HZ50,S0,S0,S0,C80->Bci_block.inom2[0],C80->Bci_block.inom2[1],C80->Bci_block.inom2[2]};
+    double ThresholdsToCheck81[10] = {S0,T01,T01,T01,TMAX,TMAX,TMAX,T005,T005,T005};
+    double ValuesToCheck83[10] = {S0,HZ50,HZ50,HZ50,V60,V60,V60,S0,S0,S0};
+    double ThresholdsToCheck83[10] = {S0,T01,T01,T01,T1,T1,T1,TMAX,TMAX,TMAX};
+    double ValuesToCheck82[10] = {S0,HZ50,HZ50,HZ50,V60,V60,V60,C80->Bci_block.inom2[0],C80->Bci_block.inom2[1],C80->Bci_block.inom2[2]};
+    double ThresholdsToCheck82[10] = {S0,T01,T01,T01,T1,T1,T1,T005,T005,T005};
+    double *VTC, *TTC;
+    switch(pc.ModuleBsi.MTypeM)
     {
-    case MTE_2T0N:
+    case MTM_81:
     {
-        ValuesToCheck[4] = ValuesToCheck[5] = ValuesToCheck[6] = 0;
-        ThresholdsToCheck[4] = ThresholdsToCheck[5] = ThresholdsToCheck[6] = FLT_MAX;
+        VTC = ValuesToCheck81;
+        TTC = ThresholdsToCheck81;
         break;
     }
-    case MTE_0T2N:
+    case MTM_82:
     {
-        ValuesToCheck[7] = ValuesToCheck[8] = ValuesToCheck[9] = 0;
-        ThresholdsToCheck[7] = ThresholdsToCheck[8] = ThresholdsToCheck[9] = FLT_MAX;
+        VTC = ValuesToCheck82;
+        TTC = ThresholdsToCheck82;
+        break;
+    }
+    case MTM_83:
+    {
+        VTC = ValuesToCheck83;
+        TTC = ThresholdsToCheck83;
         break;
     }
     default:
+        return GENERALERROR;
         break;
     }
-    for (int i=7; i<10; i++)
-        ValuesToCheck[i] = econf->Bci_block.inom2[i-7]; // значения токов - по текущим номинальным значениям
     for (int i = 1; i < 10; i++)
     {
-        QLabel *lbl = this->findChild<QLabel *>("mip"+QString::number(i));
-        if (lbl == 0)
-            return false;
+        QString tmps;
+        WDFunc::LBLText(this, "mip"+QString::number(i), tmps);
         bool ok;
-        double vl = lbl->text().toDouble(&ok);
+        double tmpd = tmps.toDouble(&ok);
         if (!ok)
-            return false;
-        if (!IsWithinLimits(vl,ValuesToCheck[i],ThresholdsToCheck[i]))
+            return GENERALERROR;
+        if (!IsWithinLimits(tmpd, *VTC, *TTC))
         {
-            MessageBox2::information(this, "Внимание", "Несовпадение МИП по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'f',4)+\
-                      ", должно быть: "+QString::number(ValuesToCheck[i],'f',4)+\
-                      " +/- "+QString::number(ThresholdsToCheck[i],'f',4));
-            return false;
+            MessageBox2::information(this, "Внимание", "Несовпадение МИП по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
+                      ", должно быть: "+QString::number(*VTC,'f',4)+\
+                      " +/- "+QString::number(*TTC,'f',4));
+            return GENERALERROR;
         }
-    }*/
-    return true;
+        ++VTC;
+        ++TTC;
+    }
+    return NOERROR;
 }
 
-bool TuneDialog80::CheckAnalogValues(int ntest)
+int TuneDialog80::CheckAnalogValues()
 {
-    double ValuesToCheck[44] = {25.0,50.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,\
-                                0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,\
-                                0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-    double ThresholdsToCheck[44] = {25.0,0.05,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,\
-                                    1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,\
-                                    1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0};
-    switch (ntest)
+    double ValuesToCheck[45] = {VTCG.tmk, VTCG.bat, VTCG.freq, VTCG.v1, VTCG.v1, VTCG.v1, VTCG.v2, VTCG.v2, VTCG.v2,\
+                                VTCG.v1, VTCG.v1, VTCG.v1, VTCG.v2, VTCG.v2, VTCG.v2, VTCG.phi, VTCG.phi, VTCG.phi, \
+                                VTCG.phi, VTCG.phi, VTCG.phi, VTCG.p, VTCG.p, VTCG.p, VTCG.s, VTCG.s, VTCG.s, \
+                                VTCG.q, VTCG.q, VTCG.q, VTCG.cosphi, VTCG.cosphi, VTCG.cosphi, VTCG.p, VTCG.p, VTCG.p, \
+                                VTCG.q, VTCG.q, VTCG.q, VTCG.s, VTCG.s, VTCG.s, VTCG.cosphi, VTCG.cosphi, VTCG.cosphi};
+    double ThresholdsToCheck[45] = {T25,T05,T005,T05,T05,T05,T05,T05,T05,T05,T05,T05,T05,T05,T05,\
+                                    T1,T1,T1,T1,T1,T1,T05,T05,T05,T05,T05,T05,T05,T05,T05,\
+                                    T005,T005,T005,T05,T05,T05,T05,T05,T05,T05,T05,T05,T005,T005,T005};
+    double *VTC = ValuesToCheck;
+    double *TTC = ThresholdsToCheck;
+
+    for (int i = 0; i < 45; i++)
+    {
+        QString tmps;
+        WDFunc::LBLText(this, "value"+QString::number(i), tmps);
+        bool ok;
+        double tmpd = tmps.toDouble(&ok);
+        if (!ok)
+            return GENERALERROR;
+
+        if (!IsWithinLimits(tmpd,*VTC,*TTC))
+        {
+            MessageBox2::information(this, "Внимание", "Несовпадение по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
+                      ", должно быть: "+QString::number(*VTC,'f',4)+\
+                      " +/- "+QString::number(*TTC,'f',4));
+            return GENERALERROR;
+        }
+        ++VTC;
+        ++TTC;
+    }
+
+/*    switch (ntest)
     {
     case 600: // test 60, 0T2N
     case 605: // test 60, 0T2N, 5A
@@ -1271,25 +1218,7 @@ bool TuneDialog80::CheckAnalogValues(int ntest)
         break;
     }
     }
-
-    for (int i = 0; i < 44; i++)
-    {
-        QLabel *lbl = this->findChild<QLabel *>("value"+QString::number(i));
-        if (lbl == 0)
-            return false;
-        bool ok;
-        double vl = lbl->text().toDouble(&ok);
-        if (!ok)
-            return false;
-        if (!IsWithinLimits(vl,ValuesToCheck[i],ThresholdsToCheck[i]))
-        {
-            MessageBox2::information(this, "Внимание", "Несовпадение по параметру "+QString::number(i)+". Измерено: "+QString::number(vl,'f',4)+\
-                      ", должно быть: "+QString::number(ValuesToCheck[i],'f',4)+\
-                      " +/- "+QString::number(ThresholdsToCheck[i],'f',4));
-            return false;
-        }
-    }
-    return true;
+*/
 }
 
 void TuneDialog80::ReadTuneCoefs()
@@ -1400,6 +1329,11 @@ void TuneDialog80::MipData(Parse104::Signals104 &Signal)
     }
 }
 
+void TuneDialog80::SetTuneMode()
+{
+    TuneControlType = sender()->objectName().toInt();
+}
+
 void TuneDialog80::StopMip()
 {
     emit stopall();
@@ -1411,15 +1345,16 @@ void TuneDialog80::closeEvent(QCloseEvent *e)
     e->accept();
 }
 
-void TuneDialog80::ShowControlChooseDialog()
+int TuneDialog80::ShowControlChooseDialog()
 {
+    TuneControlType = TUNERET; // по-умолчанию тип контроля - по РЕТОМу
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     QLabel *lbl = new QLabel("Выберите метод подтверждения измеряемых данных:");
     lyout->addWidget(lbl);
     QPushButton *pb = new QPushButton("Автоматически по показаниям МИП-02");
-    TuneControlType = TUNERET; // по-умолчанию тип контроля - по РЕТОМу
-    connect(pb,SIGNAL(clicked()),this,SLOT(SetTuneMip()));
+    pb->setObjectName(TUNEMIP);
+    connect(pb,SIGNAL(clicked()),this,SLOT(SetTuneMode()));
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(pb);
     pb = new QPushButton("Вручную");
@@ -1436,6 +1371,10 @@ void TuneDialog80::ShowControlChooseDialog()
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
     dlg->exec();
+    if (Cancelled)
+        return GENERALERROR;
+    else
+        return NOERROR;
 }
 
 void TuneDialog80::Show1RetomDialog(float U, float A)
@@ -1553,6 +1492,12 @@ void TuneDialog80::ErMsgSetVisible(int msg, bool Visible)
 {
     WDFunc::SetVisible(this, "tunemsgres"+QString::number(msg), Visible);
     WDFunc::SetLBLImage(this, "tunemsgres"+QString::number(msg), ":/pic/cross.png");
+}
+
+void TuneDialog80::SkMsgSetVisible(int msg, bool Visible)
+{
+    WDFunc::SetVisible(this, "tunemsgres"+QString::number(msg), Visible);
+    WDFunc::SetLBLImage(this, "tunemsgres"+QString::number(msg), ":/pic/hr.png");
 }
 
 void TuneDialog80::CancelTune()

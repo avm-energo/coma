@@ -148,7 +148,7 @@ bool WDFunc::SetCBColor(QWidget *w, const QString &cbname, const QString &color)
         return false;
     // http://forum.sources.ru/index.php?showtopic=313950
     QPalette pal = cb->palette();
-    pal.setColor(QPalette::Text, color);
+    pal.setColor(QPalette::Text, QColor(color));
     cb->setPalette(pal);
     return true;
 }
@@ -196,6 +196,17 @@ bool WDFunc::SetLBLImage(QWidget *w, const QString &lblname, QPixmap *pm)
     return true;
 }
 
+bool WDFunc::SetLBLColor(QWidget *w, const QString &lblname, const QString &lblcolor)
+{
+    QLabel *lbl = w->findChild<QLabel *>(lblname);
+    if (lbl == 0)
+        return false;
+    // http://forum.sources.ru/index.php?showtopic=313950
+    QPalette pal = lbl->palette();
+    pal.setColor(QPalette::Text, QColor(lblcolor));
+    lbl->setPalette(pal);
+}
+
 bool WDFunc::SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext, bool enabled)
 {
     QLabel *lbl = w->findChild<QLabel *>(lblname);
@@ -205,6 +216,14 @@ bool WDFunc::SetLBLText(QWidget *w, const QString &lblname, const QString &lblte
         lbl->setText(lbltext);
     lbl->setEnabled(enabled);
     return true;
+}
+
+bool WDFunc::LBLText(QWidget *w, const QString &lblname, const QString &text)
+{
+    QLabel *lbl = w->findChild<QLabel *>(lblname);
+    if (lbl == 0)
+        return false;
+    text = lbl->text();
 }
 
 QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid)

@@ -11,33 +11,29 @@
 
 #define TUNEFILELENGTH  256
 
-#define TUNEMIP 1
-#define TUNERET 2
-#define TUNEMAN 3
-
-#define MSG_7_2_3       0
-#define MSG_7_3_1       1
-#define MSG_7_3_1_1     2
-#define MSG_7_3_2       3
-#define MSG_7_3_3       4
-#define MSG_7_3_4       5
-#define MSG_7_3_5       6
-#define MSG_7_3_6_0     7
-#define MSG_7_3_6_1     8
-#define MSG_7_3_6_2     9
-#define MSG_7_3_7_1_1   10
-#define MSG_7_3_7_1_2   11
-#define MSG_7_3_7_2     12
-#define MSG_7_3_7_3     13
-#define MSG_7_3_7_5     14
-#define MSG_7_3_7_6     15
-#define MSG_7_3_7_8     16
-#define MSG_7_3_7_10    17
-#define MSG_7_3_8_1     18
-#define MSG_7_3_8_2     19
-#define MSG_7_3_9       20
-#define MSG_END         21
-#define MSG_COUNT       22
+// voltages
+#define V60     60.0
+#define V57     57.74
+// frequencies
+#define HZ50    50.0
+// currents
+#define I1      1.0
+#define I5      5.0
+// zero signal
+#define S0      0.0
+// thresholds
+#define TMAX    FLT_MAX
+#define T25     25.0
+#define T5      5.0
+#define T1      1.0
+#define T05     0.5
+#define T01     0.1
+#define T005    0.05
+#define T002    0.02
+#define T0005   0.005
+// tune coefficients
+#define TU0     0.0
+#define TU1     1.0
 
 class TuneDialog80 : public QDialog
 {
@@ -54,12 +50,23 @@ signals:
 public slots:
 
 private:
+    enum TuneModes
+    {
+        TUNEMIP,
+        TUNERET,
+        TUNEMAN
+    };
+
     static QStringList lbls()
     {
         QStringList sl;
+        sl.append("1. Сохранение текущей конфигурации...");
+        sl.append("2. Отображение диалога выбора режима контроля показаний...");
         sl.append("7.2.3. Проверка связи РЕТОМ и МИП...");
-        sl.append("7.3.1. Получение настроечных параметров...");
-        sl.append("7.3.1.1. Установка настроечных параметров по умолчанию...");
+        sl.append("3. Отображение схемы подключения...");
+        sl.append("7.3.1. Получение настроечных коэффициентов...");
+        sl.append("7.3.1.1. Установка настроечных коэффициентов по умолчанию...");
+        sl.append("4. Установка коэффициентов...");
         sl.append("7.3.2. Получение текущих аналоговых данных...");
         sl.append("7.3.3. Расчёт коррекции смещений сигналов по фазе...");
         sl.append("7.3.4. Расчёт коррекции по частоте...");
@@ -68,13 +75,13 @@ private:
         sl.append("7.3.6.1. Получение текущих аналоговых данных...");
         sl.append("7.3.6.2. Расчёт коррекции взаимного влияния каналов...");
         sl.append("7.3.7.1.1. Получение текущих аналоговых данных...");
-        sl.append("7.3.7.1.2. Расчёт калибровочных коэффициентов по напряжениям...");
+        sl.append("7.3.7.1.2. Расчёт настроечных коэффициентов по напряжениям...");
         sl.append("7.3.7.2. Сохранение конфигурации и перезапуск...");
         sl.append("7.3.7.3. Получение текущих аналоговых данных...");
-        sl.append("7.3.7.5. Расчёт калибровочных коэффициентов по токам, напряжениям и углам...");
+        sl.append("7.3.7.5. Расчёт настроечных коэффициентов по токам, напряжениям и углам...");
         sl.append("7.3.7.6. Сохранение конфигурации и перезапуск...");
         sl.append("7.3.7.8. Получение текущих аналоговых данных...");
-        sl.append("7.3.7.10. Расчёт калибровочных коэффициентов по токам, напряжениям и углам...");
+        sl.append("7.3.7.10. Расчёт настроечных коэффициентов по токам, напряжениям и углам...");
         sl.append("7.3.8.1. Запись настроечных коэффициентов и переход на новую конфигурацию...");
         sl.append("7.3.8.2. Проверка аналоговых данных...");
         sl.append("7.3.9. Восстановление сохранённой конфигурации и проверка...");
@@ -82,14 +89,14 @@ private:
         return sl;
     }
 
-    bool Cancelled;
+    bool Cancelled, DefConfig;
     Config80 *C80;
     QVector<publicclass::DataRec> S2Config;
     Config80::Bci Bci_block_work;
     iec104 *mipcanal;
     int TuneControlType;
     int SecondsToEnd15SecondsInterval;
-    QHash <QString, void (TuneDialog80::*)()> pf;
+    QHash <QString, int (TuneDialog80::*)()> pf;
 
     struct Bac
     {
@@ -103,9 +110,26 @@ private:
 
     Bac Bac_block, Bac_newblock;
 
+    struct BdaValues
+    {
+        float tmk;
+        float bat;
+        float freq;
+        float v1;
+        float v2;
+        float phi;
+        float p;
+        float s;
+        float q;
+        float cosphi;
+    };
+
+    BdaValues VTCG;
+
     struct Bda
     {
         float Tmk;                  // 0 Температура кристалла микроконтроллера,
+        float Vbat;                 // 1 напряжение батареи, В
         float Frequency;            // 1 частота сигналов, Гц,
         float IUefNat_filt[6];      // 2-7 Истинные действующие значения сигналов
                                     // в вольтах и амперах,
@@ -161,15 +185,16 @@ private:
     void WriteTuneCoefsToGUI();
     void ReadTuneCoefsFromGUI();
     bool CheckTuneCoefs();
-    bool CheckAnalogValues(int ntest);
-    bool CheckMip();
+    int CheckAnalogValues();
+    int CheckMip();
     bool IsWithinLimits(double number, double base, double threshold);
-    void ShowControlChooseDialog();
+    int ShowControlChooseDialog();
     void Show3PhaseScheme();
     void Show1RetomDialog(float U, float A);
-    bool Start7_2_3();
-    bool Start7_3_1(bool DefConfig);
-    bool Start7_3_2(int num);
+    int Start7_2_3();
+    int Start7_3_1();
+    int Start7_3_1_1();
+    int Start7_3_2();
     bool Start7_3_3();
     bool Start7_3_4();
     void Start7_3_5();
@@ -183,17 +208,17 @@ private:
     void MsgSetVisible(int msg, bool Visible=true);
     void OkMsgSetVisible(int msg, bool Visible=true);
     void ErMsgSetVisible(int msg, bool Visible=true);
+    void SkMsgSetVisible(int msg, bool Visible=true);
     void MsgClear();
     void SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
     void WaitNSeconds(int SecondsToWait);
-    bool SaveWorkConfig();
+    int SaveWorkConfig();
     bool LoadWorkConfig();
     QGroupBox *MipPars(int parnum, const QString &groupname);
     float ToFloat(QString text);
 
 private slots:
     void StartTune();
-    void StartTune3p(); // начало калибровки с пп. 7.3.6
     void ReadTuneCoefs();
     void WriteTuneCoefs();
     void SaveToFile();
@@ -201,9 +226,7 @@ private slots:
     void StartMip();
     void StopMip();
     void MipData(Parse104::Signals104 &);
-    void SetTuneMip();
-    void SetTuneRetom();
-    void SetTuneManual();
+    void SetTuneMode();
     void ReadAnalogMeasurements();
     void SetDefCoefs();
     void SetExtData();

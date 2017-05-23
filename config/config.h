@@ -43,9 +43,9 @@
 #define MTM_22      0x0022 // аналоговый ввод
 #define MTM_31      0x0031 // дискретный ввод
 #define MTM_35      0x0035 // дискретный вывод
-#define MTM_81      0x0081 // 6U0I
+#define MTM_81      0x0081 // 0U6I
 #define MTM_82      0x0082 // 3U3I
-#define MTM_83      0x0083 // 0U6I
+#define MTM_83      0x0083 // 6U0I
 #define MTM_85      0x0085 // 3U3I УСК (перегрузка по току 20х)
 
 // определение файлов

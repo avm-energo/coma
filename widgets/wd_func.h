@@ -31,7 +31,9 @@ public:
     static bool SetLEColor(QWidget *w, const QString &lename, const QColor &color);
     static QLabel *NewLBL(QWidget *w, const QString &text, const QString &lblcolor="", const QString &lblname="");
     static bool SetLBLImage(QWidget *w, const QString &lblname, QPixmap *pm);
+    static bool SetLBLColor(QWidget *w, const QString &lblname, const QString &lblcolor);
     static bool SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext="", bool enabled=true);
+    static bool LBLText(QWidget *w, const QString &lblname, const QString &text);
     static QString TVField(QWidget *w, const QString &tvname, int column, bool isid=false);
     static void TVAutoResize(QWidget *w, const QString &tvname);
     static s_tqCheckBox *NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor="");

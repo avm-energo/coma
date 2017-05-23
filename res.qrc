@@ -29,5 +29,6 @@
         <file>pic/tune81.png</file>
         <file>pic/tune82.png</file>
         <file>pic/tune83.png</file>
+        <file>pic/hr.png</file>
     </qresource>
 </RCC>

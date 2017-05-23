@@ -15,6 +15,7 @@
 // определение ошибок
 #define NOERROR         0 // нет ошибок
 #define GENERALERROR    -1 // возвращённое значение - ошибка
+#define ER_RESEMPTY     1 // пустой результат
 #define ER_FILEWRITE    1 // ошибка записи файла
 #define ER_FILENAMEEMP  2 // пустое имя файла
 #define ER_FILEOPEN     3 // ошибка открытия файла
