@@ -145,8 +145,23 @@
 #define ACONFOCLR   "#FFDDAA"
 #define ERRCLR      "#FF0000"
 
-#define FLOAT_THRESHOLD 0.1
+// thresholds
+#define TMAX    FLT_MAX
+#define T25     25.0
+#define T5      5.0
+#define T1      1.0
+#define T05     0.5
+#define T01     0.1
+#define T005    0.05
+#define T002    0.02
+#define T0005   0.005
 #define ANMEASINT   2000
+
+// signals
+#define S0      0.0
+#define S1      1.0
+#define S4      4.0
+#define S20     20.0
 
 #define LOGFILE     "coma.log"
 

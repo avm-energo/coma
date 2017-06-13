@@ -2,17 +2,20 @@
 #define CONFDIALOG_H
 
 #include "config/config.h"
+#include "abstractconfdialog.h"
 
-#include <QDialog>
-
-class ConfDialog : public QDialog
+class ConfDialog : public AbstractConfDialog
 {
     Q_OBJECT
 public:
     ConfDialog(QVector<publicclass::DataRec> &S2Config, QWidget *parent = 0);
 
-    void SetMainDefConf();
+    void SetDefConf();
     void Fill();
+    bool CheckConf()
+    {
+        return true;
+    }
 
 public slots:
 

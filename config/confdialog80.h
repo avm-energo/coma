@@ -11,7 +11,7 @@ class ConfDialog80 : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    explicit ConfDialog80(QWidget *parent = 0);
+    explicit ConfDialog80(QVector<publicclass::DataRec> &S2Config, QWidget *parent = 0);
     ~ConfDialog80();
 
 private:
@@ -19,7 +19,7 @@ private:
 
     void Fill();
     void SetupUI();
-    bool CheckConf() = 0;
+    bool CheckConf();
 
     QWidget *UNom(int numunom); // 1 - первая тройка напряжений, 2 - вторая
     QWidget *INom(int numinom); // 1 - первичный ток первой группы, 2 - вторичный ток первой группы, 3,4 - то же по второй группе

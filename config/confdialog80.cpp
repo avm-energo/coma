@@ -13,11 +13,12 @@
 #include "../widgets/wd_func.h"
 #include "confdialog80.h"
 
-ConfDialog80::ConfDialog80(QWidget *parent) :
-    QDialog(parent)
+ConfDialog80::ConfDialog80(QVector<publicclass::DataRec> &S2Config, QWidget *parent) :
+    AbstractConfDialog(parent)
 {
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
     setStyleSheet(tmps);
+    this->S2Config = &S2Config;
     C80 = new Config80(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -29,7 +30,7 @@ ConfDialog80::~ConfDialog80()
 {
 }
 
-void ConfDialog80::FillConfData()
+void ConfDialog80::Fill()
 {
 /*    int i;
     GeneralConf->Fill(); // заполнение общих полей
@@ -168,7 +169,7 @@ void ConfDialog80::SetupUI()
     connect(spb,SIGNAL(valueChanged(int)),this,SLOT(SetNHFiltr(int)));
     hlyout->addWidget(spb);
     vlyout2->addLayout(hlyout);
-    gb->setLayout(vlyout1);
+    gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
     cp1->setLayout(vlyout1);
 
@@ -180,6 +181,11 @@ void ConfDialog80::SetupUI()
     ConfTW->addTab(cp1,"Общие");
     lyout->addWidget(ConfTW);
     setLayout(lyout);
+}
+
+bool ConfDialog80::CheckConf()
+{
+    return true;
 }
 
 QWidget *ConfDialog80::UNom(int numunom)

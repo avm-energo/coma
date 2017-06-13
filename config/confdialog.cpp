@@ -11,7 +11,7 @@
 #include "../canal.h"
 #include "../publicclass.h"
 
-ConfDialog::ConfDialog(QVector<publicclass::DataRec> &S2Config, QWidget *parent) : QDialog(parent)
+ConfDialog::ConfDialog(QVector<publicclass::DataRec> &S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {
     ConfigMain = new Config(S2Config); // добавляем к переданному S2Config общую часть
     SetupUI();
@@ -95,7 +95,7 @@ void ConfDialog::SetupUI()
     setLayout(vlyout);
 }
 
-void ConfDialog::SetMainDefConf()
+void ConfDialog::SetDefConf()
 {
     ConfigMain->MainBlk.Abs_104 = DEF_ABS_104;
     ConfigMain->MainBlk.Ctype = DEF_CTYPE;

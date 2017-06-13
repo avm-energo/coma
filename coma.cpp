@@ -476,22 +476,37 @@ void Coma::Stage3()
     switch(pc.ModuleBsi.MTypeB)
     {
     case MTB_21:
+    {
         ConfDialog21 *Dialog21 = new ConfDialog21(S2Config, true);
         MainTW->addTab(Dialog21, "Конфигурирование\nБазовая");
         ConfB = Dialog21;
+    }
+        break;
+    case MTB_80:
+        ConfB = 0;
         break;
     }
     switch(pc.ModuleBsi.MTypeM)
     {
     case MTM_21:
+    {
         ConfDialog21 *Dialog21 = new ConfDialog21(S2Config, false);
         MainTW->addTab(Dialog21, "Конфигурирование\nМезонин");
         ConfM = Dialog21;
+    }
+        break;
+    case MTM_82:
+        ConfDialog80 *Dialog80 = new ConfDialog80(S2Config);
+        MainTW->addTab(Dialog80, "Конфигурирование\nМезонин");
+        ConfM = Dialog80;
         break;
     }
-    connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
+    if (ConfB != 0)
+    {
+        connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
+        connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+    }
     connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
-    connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
     connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
 /*    if ((pc.ModuleBsi.MTypeB > 0x1F) && (pc.ModuleBsi.MTypeB < 0x30))
     {
@@ -599,8 +614,8 @@ void Coma::EmulE()
 {
     if (pc.Emul) // если уже в режиме эмуляции, выход
         return;
-    pc.ModuleBsi.MTypeB = MTB_80;
-    pc.ModuleBsi.MTypeM = MTM_82;
+//    pc.ModuleBsi.MTypeB = MTB_80;
+//    pc.ModuleBsi.MTypeM = MTM_82;
     QDialog *dlg = new QDialog(this);
     dlg->setObjectName("emuledlg");
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -640,10 +655,10 @@ void Coma::StartEmulE()
         pc.ModuleBsi.MTypeM = MTM_81;
         break;
     case 1:
-        pc.ModuleBsi.MTypeB = MTM_82;
+        pc.ModuleBsi.MTypeM = MTM_82;
         break;
     case 2:
-        pc.ModuleBsi.MTypeB = MTM_83;
+        pc.ModuleBsi.MTypeM = MTM_83;
         break;
     default:
         DBGMSG;
@@ -797,8 +812,9 @@ void Coma::DisableProgressBar()
 
 void Coma::SetDefConf()
 {
-    MainConfDialog->SetMainDefConf();
-    ConfB->SetDefConf();
+    MainConfDialog->SetDefConf();
+    if (ConfB)
+        ConfB->SetDefConf();
     ConfM->SetDefConf();
     Fill();
     MessageBox2::information(this, "Успешно", "Задана конфигурация по умолчанию");
@@ -807,6 +823,7 @@ void Coma::SetDefConf()
 void Coma::Fill()
 {
     MainConfDialog->Fill();
-    ConfB->Fill();
+    if (ConfB)
+        ConfB->Fill();
     ConfM->Fill();
 }

@@ -372,7 +372,7 @@ int publicclass::SaveFile(QString mask, void *src, unsigned int numbytes)
 
 bool publicclass::FloatInRange(float var, float value)
 {
-    if ((var > (value-FLOAT_THRESHOLD)) && (var < (value+FLOAT_THRESHOLD)))
+    if ((var > (value-T01)) && (var < (value+T01)))
         return true;
     else
         return false;

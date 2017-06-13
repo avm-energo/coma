@@ -218,7 +218,7 @@ bool WDFunc::SetLBLText(QWidget *w, const QString &lblname, const QString &lblte
     return true;
 }
 
-bool WDFunc::LBLText(QWidget *w, const QString &lblname, const QString &text)
+bool WDFunc::LBLText(QWidget *w, const QString &lblname, QString &text)
 {
     QLabel *lbl = w->findChild<QLabel *>(lblname);
     if (lbl == 0)

@@ -304,6 +304,7 @@ void e_checkdialog::CheckIP()
 
 void e_checkdialog::RefreshAnalogValues()
 {
+    QLabel *lbl;
     WDFunc::SetLBLText(this, "value0", QString::number(Bda_block.Tmk, 'f', 1));
     WDFunc::SetLBLText(this, "value1", QString::number(Bda_block.Vbat, 'f', 1));
     WDFunc::SetLBLText(this, "value2", QString::number(Bda_block.Frequency, 'f', 1));

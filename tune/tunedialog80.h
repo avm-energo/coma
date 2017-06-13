@@ -19,21 +19,16 @@
 // currents
 #define I1      1.0
 #define I5      5.0
-// zero signal
-#define S0      0.0
-// thresholds
-#define TMAX    FLT_MAX
-#define T25     25.0
-#define T5      5.0
-#define T1      1.0
-#define T05     0.5
-#define T01     0.1
-#define T005    0.05
-#define T002    0.02
-#define T0005   0.005
-// tune coefficients
-#define TU0     0.0
-#define TU1     1.0
+
+// parameters for GetExtData
+#define TD_GED_U    0x01 // напряжение
+#define TD_GED_I    0x02 // ток
+#define TD_GED_F    0x04 // частота
+#define TD_GED_D    0x08 // угол нагрузки
+
+#define TD_TMK  25.0 // degrees
+#define TD_VBAT 3.0 // voltage
+#define TD_FREQ 50 // Hz
 
 class TuneDialog80 : public QDialog
 {
@@ -62,24 +57,24 @@ private:
         QStringList sl;
         sl.append("1. Сохранение текущей конфигурации...");
         sl.append("2. Отображение диалога выбора режима контроля показаний...");
-        sl.append("7.2.3. Проверка связи РЕТОМ и МИП...");
         sl.append("3. Отображение схемы подключения...");
+        sl.append("7.2.3. Проверка связи РЕТОМ и МИП...");
         sl.append("7.3.1. Получение настроечных коэффициентов...");
         sl.append("7.3.1.1. Установка настроечных коэффициентов по умолчанию...");
         sl.append("4. Установка коэффициентов...");
         sl.append("7.3.2. Получение текущих аналоговых данных...");
+        sl.append("5. Сохранение значений фильтра...");
         sl.append("7.3.3. Расчёт коррекции смещений сигналов по фазе...");
         sl.append("7.3.4. Расчёт коррекции по частоте...");
-        sl.append("7.3.5. Считывание напряжений при нулевых токах...");
-        sl.append("7.3.6.0. Пересборка схемы подключения...");
+        sl.append("7.3.5. Отображение ввода трёхфазных значений...");
         sl.append("7.3.6.1. Получение текущих аналоговых данных...");
         sl.append("7.3.6.2. Расчёт коррекции взаимного влияния каналов...");
-        sl.append("7.3.7.1.1. Получение текущих аналоговых данных...");
-        sl.append("7.3.7.1.2. Расчёт настроечных коэффициентов по напряжениям...");
-        sl.append("7.3.7.2. Сохранение конфигурации и перезапуск...");
+        sl.append("7.3.7.1. Получение текущих аналоговых данных и расчёт настроечных коэффициентов по напряжениям...");
+        sl.append("7.3.7.2. Сохранение конфигурации...");
         sl.append("7.3.7.3. Получение текущих аналоговых данных...");
+        sl.append("7.3.7.4. Ввод измеренных значений...");
         sl.append("7.3.7.5. Расчёт настроечных коэффициентов по токам, напряжениям и углам...");
-        sl.append("7.3.7.6. Сохранение конфигурации и перезапуск...");
+        sl.append("7.3.7.6. Сохранение конфигурации...");
         sl.append("7.3.7.8. Получение текущих аналоговых данных...");
         sl.append("7.3.7.10. Расчёт настроечных коэффициентов по токам, напряжениям и углам...");
         sl.append("7.3.8.1. Запись настроечных коэффициентов и переход на новую конфигурацию...");
@@ -110,21 +105,48 @@ private:
 
     Bac Bac_block, Bac_newblock;
 
+    struct MipValues
+    {
+        double u;
+        double i[3];
+    };
+
+    MipValues MVTC;
+
+    struct MipTolerances
+    {
+        double u;
+        double i;
+    };
+
+    MipTolerances MTTC;
+
     struct BdaValues
     {
-        float tmk;
-        float bat;
-        float freq;
-        float v1;
-        float v2;
-        float phi;
-        float p;
-        float s;
-        float q;
-        float cosphi;
+        double tmk;
+        double bat;
+        double freq;
+        double v1;
+        double v2;
+        double phi;
+        double p;
+        double s;
+        double q;
+        double cosphi;
     };
 
     BdaValues VTCG;
+
+    struct BdaTolerances
+    {
+        double v1;
+        double v2;
+        double phi;
+        double p;
+        double cosphi;
+    };
+
+    BdaTolerances TTCG;
 
     struct Bda
     {
@@ -150,67 +172,56 @@ private:
 
     Bda Bda_block;
 
-    typedef struct
+    struct RealDataStruct
     {
-        quint32 MType;          // Тип модуля, для которого предназначена конфигурация
-        quint32 MType1;         // Подтип модуля, для которого предназначена конфигурация
-        quint32 eq_type;        // Тип контролируемого оборудования: 0 - 1фТАТ, 1 - 3фТАТ, 2 - 1фР, 3 - 3фР
-        quint32 npoints;        // Количество точек оцифровки на период (64/80/128/256)
-        quint32 nfiltr;         // Интервал усреднения данных (постоянная фильтрации)
-        quint32 nhfiltr;        // Постоянная фильтрации гармоник
-        quint32 ddosc;          // События-инициаторы запуска осциллографирования
-        float unom1;            // Класс напряжения 1-й группы
-        float unom2;            // Класс напряжения 2-й группы
-        float inom1[6];         // Номинальный первичный ток внешнего ТТ по каналам
-        float inom2[6];         // Номинальный вторичный ток внешнего ТТ по каналам
-        float duosc;            // Уставка скачка напряжения для запуска осциллографирования (в % от номинального напряжения ТН)
-        float diosc;            // Уставка скачка тока для запуска осциллографирования (в % от номинального тока ТТ)
-        float duimin;           // Уставка контроля минимума сигналов (в %)
-        quint32 Ctype;   		// Тип синхронизации времени от модуля Ц
-        quint32 Abs_104;     	// Адрес базовой станции для протокола 104
-        quint32 Cycle_104;      // Интервал циклического опроса по протоколу МЭК 60870-5-104
-        quint32 T1_104;         // тайм-аут Т1 для протокола 104
-        quint32 T2_104;         // тайм-аут Т2 для протокола 104
-        quint32 T3_104;         // тайм-аут Т3 для протокола 104
-        quint32 k_104;          // макс. кол-во неподтв. сообщений
-        quint32 w_104;          // макс. кол-во сообщений, после которых необх. выдать подтверждение
-    } Bci;
+        float f[3]; // frequencies
+        float u[3]; // voltages
+        float i[3]; // currents
+        float d[3]; // load phase
+    };
 
+    RealDataStruct RealData;
     float IUefNat_filt_old[6];      // для сохранения значений по п. 7.3.2
-    float mipd[13];
     float MipDat[41];
+    int GED_Type;
 
     void SetupUI();
     void Tune3p();
     void WriteTuneCoefsToGUI();
     void ReadTuneCoefsFromGUI();
-    bool CheckTuneCoefs();
-    int CheckAnalogValues();
+    int CheckTuneCoefs();
+    int CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct);
     int CheckMip();
     bool IsWithinLimits(double number, double base, double threshold);
     int ShowControlChooseDialog();
-    void Show3PhaseScheme();
+    int Show3PhaseScheme();
     void Show1RetomDialog(float U, float A);
     int Start7_2_3();
     int Start7_3_1();
     int Start7_3_1_1();
     int Start7_3_2();
-    bool Start7_3_3();
-    bool Start7_3_4();
-    void Start7_3_5();
-    void Start7_3_6_2();
-    bool Start7_3_7_1();
-    bool Start7_3_7_2();
+    int SaveUeff();
+    int Start7_3_3();
+    int Start7_3_4();
+    int Start7_3_5();
+    int Start7_3_6_2();
+    int Start7_3_7_1();
+    int Start7_3_7_2();
+    int Start7_3_7_3();
+    int Start7_3_7_4();
+    bool Start7_3_7_5();
+    bool Start7_3_7_6();
+    bool Start7_3_7_8();
     bool Start7_3_8();
     bool Start7_3_9();
     bool SetConfA(int i2nom);
-    bool GetExternalData(int numexc); // ввод данных в зависимости от выбранного режима и номера опыта
+    int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта
     void MsgSetVisible(int msg, bool Visible=true);
     void OkMsgSetVisible(int msg, bool Visible=true);
     void ErMsgSetVisible(int msg, bool Visible=true);
     void SkMsgSetVisible(int msg, bool Visible=true);
     void MsgClear();
-    void SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
+    int SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
     void WaitNSeconds(int SecondsToWait);
     int SaveWorkConfig();
     bool LoadWorkConfig();
@@ -225,7 +236,7 @@ private slots:
     void LoadFromFile();
     void StartMip();
     void StopMip();
-    void MipData(Parse104::Signals104 &);
+    void ParseMipData(Parse104::Signals104 &);
     void SetTuneMode();
     void ReadAnalogMeasurements();
     void SetDefCoefs();
