@@ -75,6 +75,7 @@ private:
         sl.append("7.3.7.4. Ввод измеренных значений...");
         sl.append("7.3.7.5. Расчёт настроечных коэффициентов по токам, напряжениям и углам...");
         sl.append("7.3.7.6. Сохранение конфигурации...");
+        sl.append("7.3.7.7. Отображение ввода трёхфазных значений...");
         sl.append("7.3.7.8. Получение текущих аналоговых данных...");
         sl.append("7.3.7.10. Расчёт настроечных коэффициентов по токам, напряжениям и углам...");
         sl.append("7.3.8.1. Запись настроечных коэффициентов и переход на новую конфигурацию...");
@@ -190,7 +191,6 @@ private:
     void WriteTuneCoefsToGUI();
     void ReadTuneCoefsFromGUI();
     int CheckTuneCoefs();
-    int CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct);
     int CheckMip();
     bool IsWithinLimits(double number, double base, double threshold);
     int ShowControlChooseDialog();
@@ -200,7 +200,6 @@ private:
     int Start7_3_1();
     int Start7_3_1_1();
     int Start7_3_2();
-    int SaveUeff();
     int Start7_3_3();
     int Start7_3_4();
     int Start7_3_5();
@@ -209,11 +208,18 @@ private:
     int Start7_3_7_2();
     int Start7_3_7_3();
     int Start7_3_7_4();
-    bool Start7_3_7_5();
-    bool Start7_3_7_6();
-    bool Start7_3_7_8();
-    bool Start7_3_8();
-    bool Start7_3_9();
+    int Start7_3_7_5();
+    int Start7_3_7_6();
+    int Start7_3_7_7();
+    int Start7_3_7_8();
+    int Start7_3_7_10();
+    int Start7_3_8_1();
+    int Start7_3_8_2();
+    int Start7_3_9();
+    int SaveUeff();
+    int ShowRetomDialog(float U, float I);
+    int StartCheckAnalogValues(float u, float i, float deg, bool tol); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0: начальная точность, 1 - повышенная
+    int CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct);
     bool SetConfA(int i2nom);
     int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта
     void MsgSetVisible(int msg, bool Visible=true);
@@ -224,7 +230,7 @@ private:
     int SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
     void WaitNSeconds(int SecondsToWait);
     int SaveWorkConfig();
-    bool LoadWorkConfig();
+    int LoadWorkConfig();
     QGroupBox *MipPars(int parnum, const QString &groupname);
     float ToFloat(QString text);
 
