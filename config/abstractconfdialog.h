@@ -1,9 +1,8 @@
 #ifndef ABSTRACTCONFDIALOG_H
 #define ABSTRACTCONFDIALOG_H
 
-#include "config/config.h"
-
 #include <QDialog>
+#include "config/config.h"
 
 class AbstractConfDialog : public QDialog
 {

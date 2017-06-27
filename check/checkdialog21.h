@@ -4,9 +4,9 @@
 #include <QDialog>
 #include <QTimer>
 #include <QTime>
+#include <QtXlsx/xlsxdocument.h>
 #include "../config/config21.h"
 #include "../publicclass.h"
-#include <QtXlsx/xlsxdocument.h>
 
 #define ACHECKNUMPOINTS  64 // количество точек, по которым выдаются значения в блоке Bda
 

@@ -1,9 +1,9 @@
-#include "getoscpbdelegate.h"
 #include <QPainter>
 #include <QApplication>
 #include <QStandardItemModel>
 #include <QStandardItem>
 #include <QMouseEvent>
+#include "getoscpbdelegate.h"
 #include "s_tablemodel.h"
 #include "s_tableitem.h"
 

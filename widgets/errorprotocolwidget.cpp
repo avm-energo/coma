@@ -1,11 +1,10 @@
-#include "errorprotocolwidget.h"
-#include "s_tqtableview.h"
-
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QHeaderView>
 #include <QDateTime>
+#include "errorprotocolwidget.h"
+#include "s_tqtableview.h"
 
 ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
 {

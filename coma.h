@@ -80,6 +80,7 @@ private:
     }
 
     AbstractConfDialog *ConfB, *ConfM;
+    QDialog *TuneD;
     ConfDialog *MainConfDialog;
     a_checkdialog *ACheckDialog;
     a_tunedialog *ATuneDialog;

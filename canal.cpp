@@ -1,12 +1,9 @@
-#include "Canal.h"
-//#include "config/config.h"
-
-//#include <QtDebug>
 #include <QDialog>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QCoreApplication>
 #include <QTime>
+#include "canal.h"
 
 Canal *cn;
 
@@ -96,7 +93,6 @@ void Canal::InitiateSend()
         AppendSize(WriteData, 2);
         WriteData.append(static_cast<char>(fnum&0x00FF));
         WriteData.append(static_cast<char>((fnum&0xFF00)>>8));
-//        qDebug() << "cnGf_1";
         WriteDataToPort(WriteData);
         break;
     }
@@ -113,7 +109,6 @@ void Canal::InitiateSend()
     }
     case CN_WF: // запись файла
     {
-//        qDebug() << "cn1";
         if (DR->isEmpty())
             Finish(CN_NULLDATAERROR);
 //        WriteData.resize(CN_MAXFILESIZE);
@@ -122,7 +117,6 @@ void Canal::InitiateSend()
         AppendSize(WriteData, 0); // временно записываем нулевую длину, впоследствии поменяем
         WriteData.resize(CN_MAXFILESIZE);
         pc.StoreDataMem(&(WriteData.data()[4]), DR, fnum);
-//        qDebug() << "cn1_5";
         // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
         WRLength = static_cast<quint8>(WriteData.at(11))*16777216; // с 8 байта начинается FileHeader.size
         WRLength += static_cast<quint8>(WriteData.at(10))*65536;
@@ -131,18 +125,15 @@ void Canal::InitiateSend()
         WRLength += sizeof(publicclass::FileHeader); // sizeof(FileHeader)
         WRLength += 4; // + 4 bytes prefix
 //        WriteData.resize(WRLength);
-//        qDebug() << "cn1_7";
         emit writedatalength(WRLength); // сигнал для прогрессбара
         FirstSegment = true;
         SetWRSegNum();
         WRCheckForNextSegment();
-//        qDebug() << "cn1_9";
         break;
     }
     case CN_WBac:
     case CN_CtEr:
     {
-//        qDebug() << "cnWsn_1";
         WRLength = outdatasize+5;
 //        WriteData.resize(WRLength); // MS, c, L, L, B
         WriteData.append(CN_MS);
@@ -153,7 +144,6 @@ void Canal::InitiateSend()
         FirstSegment = true;
         SetWRSegNum();
         WRCheckForNextSegment();
-//        qDebug() << "cnWsn_2";
         break;
     }
     default:
@@ -304,8 +294,6 @@ void Canal::ParseIncomeData(QByteArray &ba)
         }
         case CN_GF:
         {
-//            qDebug() << "cnGf_4";
-//            qDebug() << "cnGf_5";
             if (LastBlock)
             {
                 res = pc.RestoreDataMem(ReadData.data(), RDSize, DR);
@@ -479,7 +467,6 @@ void Canal::Finish(int ernum)
     result = ernum;
     Busy = false;
     emit sendend();
-//    qDebug() << "Finish";
 }
 
 bool Canal::Connect()

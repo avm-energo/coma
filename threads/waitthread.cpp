@@ -1,7 +1,6 @@
-#include "waitthread.h"
-
 #include <QTimer>
 #include <QCoreApplication>
+#include "waitthread.h"
 
 WaitThread::WaitThread(QObject *parent) : QObject(parent)
 {

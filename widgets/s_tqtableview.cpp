@@ -1,8 +1,8 @@
-#include "s_tqtableview.h"
 #include <QHeaderView>
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDialog>
+#include "s_tqtableview.h"
 
 s_tqTableView::s_tqTableView(QWidget *parent) :
     QTableView(parent)

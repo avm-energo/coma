@@ -162,8 +162,8 @@ void Coma::SetupUI()
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
 
-    if (pc.result)
-        MessageBox2::information(this, "Внимание", "Не найден файл с сообщениями об ошибках!");
+/*    if (pc.result)
+        MessageBox2::information(this, "Внимание", "Не найден файл с сообщениями об ошибках!"); */
 
     QWidget *SlideWidget = new QWidget(this);
     SlideWidget->setObjectName("slidew");
@@ -260,8 +260,6 @@ void Coma::LoadSettings()
     pc.MIPASDU = sets->value("mip/asdu","206").toInt();
     pc.MIPIP = sets->value("mip/ip","172.16.30.11").toString();
     pc.Port = sets->value("Port", "COM1").toString();
-    pc.ErrWindowDelay = sets->value("ErrWindowDelay","5").toInt();
-    pc.ShowErrWindow = sets->value("ShowErrWindow","1").toBool();
 }
 
 void Coma::SaveSettings()
@@ -270,8 +268,6 @@ void Coma::SaveSettings()
     sets->setValue("mip/asdu",pc.MIPASDU);
     sets->setValue("mip/ip",pc.MIPIP);
     sets->setValue("Port", pc.Port);
-    sets->setValue("ErrWindowDelay", pc.ErrWindowDelay);
-    sets->setValue("ShowErrWindow", pc.ShowErrWindow);
 }
 
 void Coma::PrepareTimers()
@@ -478,10 +474,9 @@ void Coma::Stage3()
     case MTB_21:
     {
         ConfDialog21 *Dialog21 = new ConfDialog21(S2Config, true);
-        MainTW->addTab(Dialog21, "Конфигурирование\nБазовая");
         ConfB = Dialog21;
-    }
         break;
+    }
     case MTB_80:
         ConfB = 0;
         break;
@@ -491,23 +486,33 @@ void Coma::Stage3()
     case MTM_21:
     {
         ConfDialog21 *Dialog21 = new ConfDialog21(S2Config, false);
-        MainTW->addTab(Dialog21, "Конфигурирование\nМезонин");
         ConfM = Dialog21;
+        break;
     }
-        break;
+    case MTM_81:
     case MTM_82:
-        ConfDialog80 *Dialog80 = new ConfDialog80(S2Config);
-        MainTW->addTab(Dialog80, "Конфигурирование\nМезонин");
-        ConfM = Dialog80;
+    case MTM_83:
+//        ConfDialog80 *Dialog80 = new ConfDialog80(S2Config);
+    {
+        ConfM = new ConfDialog80(S2Config);
+        TuneD = new TuneDialog80();
         break;
+    }
     }
     if (ConfB != 0)
     {
+        MainTW->addTab(ConfB, "Конфигурирование\nБазовая");
         connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
         connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
     }
-    connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
-    connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+    if (ConfM != 0)
+    {
+        MainTW->addTab(ConfM, "Конфигурирование\nМезонин");
+        connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
+        connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+    }
+    if (TuneD != 0)
+        MainTW->addTab(TuneD, "Регулировка");
 /*    if ((pc.ModuleBsi.MTypeB > 0x1F) && (pc.ModuleBsi.MTypeB < 0x30))
     {
         ATuneDialog = new a_tunedialog;

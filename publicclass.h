@@ -149,13 +149,12 @@
 #define TMAX    FLT_MAX
 #define T25     25.0
 #define T5      5.0
-#define T1      1.0
-#define T05     0.5
-#define T01     0.1
-#define T005    0.05
-#define T002    0.02
-#define T0005   0.005
-#define ANMEASINT   2000
+#define TH1     1.0
+#define TH05    0.5
+#define TH01    0.1
+#define TH005   0.05
+#define TH002   0.02
+#define TH0005  0.005
 
 // signals
 #define S0      0.0
@@ -265,8 +264,6 @@ public:
     QStringList errmsgs;
     QString ModuleTypeString;
     bool Emul;
-    int ErrWindowDelay;
-    bool ShowErrWindow, ErMsgsOk;
     Bsi ModuleBsi;
     Bhb_Main BoardBBhb, BoardMBhb;
     QString PrbMessage;

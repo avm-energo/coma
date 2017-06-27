@@ -11,14 +11,12 @@ RC_ICONS = coma.ico
 CONFIG += c++11
 VERSION = 2.0
 
-QT       += core gui network
+QT       += widgets core gui network serialport
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-QT += serialport
 TARGET = COMA
 TEMPLATE = app
 
+LIBS += -lQt5Xlsx
 
 SOURCES += main.cpp\
     canal.cpp \
@@ -64,7 +62,8 @@ SOURCES += main.cpp\
     config/confdialog31.cpp \
     config/config31.cpp \
     config/confdialog80.cpp \
-    config/config80.cpp
+    config/config80.cpp \
+    check/astractcheckdialog.cpp
 
 HEADERS  += coma.h \
     canal.h \
@@ -110,9 +109,8 @@ HEADERS  += coma.h \
     config/confdialog31.h \
     config/config31.h \
     config/confdialog80.h \
-    config/config80.h
+    config/config80.h \
+    check/abstractcheckdialog.h
 
 RESOURCES += \
     res.qrc
-
-LIBS += -lQt5Xlsx

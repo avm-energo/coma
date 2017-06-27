@@ -1,10 +1,10 @@
-#include "hiddendialog.h"
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPainter>
 #include <QGroupBox>
 #include <QPushButton>
+#include "hiddendialog.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/messagebox.h"
 #include "../canal.h"

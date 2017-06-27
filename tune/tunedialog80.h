@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QCloseEvent>
-#include <QGroupBox>
+#include <QHBoxLayout>
 #include <QByteArray>
 #include <QStringList>
 #include "config/config80.h"
@@ -217,8 +217,8 @@ private:
     int Start7_3_8_2();
     int Start7_3_9();
     int SaveUeff();
-    int ShowRetomDialog(float U, float I);
-    int StartCheckAnalogValues(float u, float i, float deg, bool tol); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0: начальная точность, 1 - повышенная
+    int ShowRetomDialog(double U, double I);
+    int TuneDialog80::StartCheckAnalogValues(double u, double i, double deg, bool tol); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0: начальная точность, 1 - повышенная
     int CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct);
     bool SetConfA(int i2nom);
     int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта
@@ -231,7 +231,7 @@ private:
     void WaitNSeconds(int SecondsToWait);
     int SaveWorkConfig();
     int LoadWorkConfig();
-    QGroupBox *MipPars(int parnum, const QString &groupname);
+    QHBoxLayout *MipPars(int parnum, const QString &groupname);
     float ToFloat(QString text);
 
 private slots:

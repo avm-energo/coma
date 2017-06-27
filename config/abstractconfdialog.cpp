@@ -1,8 +1,8 @@
-#include "abstractconfdialog.h"
 #include <QPushButton>
 #include <QCoreApplication>
 #include <QGridLayout>
 #include <QGroupBox>
+#include "abstractconfdialog.h"
 #include "../widgets/s_tqspinbox.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"

@@ -1,5 +1,3 @@
-#include "wd_func.h"
-#include "s_tqtableview.h"
 #include <QPalette>
 #include <QTextEdit>
 #include <QHBoxLayout>
@@ -7,6 +5,8 @@
 #include <QRegExp>
 #include <QLineEdit>
 #include <QStringListModel>
+#include "wd_func.h"
+#include "s_tqtableview.h"
 
 bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring)
 {
@@ -205,6 +205,7 @@ bool WDFunc::SetLBLColor(QWidget *w, const QString &lblname, const QString &lblc
     QPalette pal = lbl->palette();
     pal.setColor(QPalette::Text, QColor(lblcolor));
     lbl->setPalette(pal);
+    return true;
 }
 
 bool WDFunc::SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext, bool enabled)
@@ -224,6 +225,7 @@ bool WDFunc::LBLText(QWidget *w, const QString &lblname, QString &text)
     if (lbl == 0)
         return false;
     text = lbl->text();
+    return true;
 }
 
 QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid)

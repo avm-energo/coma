@@ -1,10 +1,3 @@
-#include "oscdialog.h"
-#include "canal.h"
-#include "../config/config.h"
-#include "widgets/s_tqtableview.h"
-#include "widgets/s_tablemodel.h"
-#include "widgets/getoscpbdelegate.h"
-#include "widgets/messagebox.h"
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -15,6 +8,13 @@
 #include <QtXlsx/xlsxdocument.h>
 #include <QFileDialog>
 #include <QMessageBox>
+#include "oscdialog.h"
+#include "canal.h"
+#include "../config/config.h"
+#include "widgets/s_tqtableview.h"
+#include "widgets/s_tablemodel.h"
+#include "widgets/getoscpbdelegate.h"
+#include "widgets/messagebox.h"
 
 oscdialog::oscdialog(QWidget *parent) :
     QDialog(parent)

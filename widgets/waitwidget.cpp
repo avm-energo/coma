@@ -1,4 +1,3 @@
-#include "waitwidget.h"
 #include <QLabel>
 #include <QTimer>
 #include <QPixmap>
@@ -10,6 +9,7 @@
 #include <QDesktopWidget>
 #include <QDateTime>
 #include <QFontMetrics>
+#include "waitwidget.h"
 #include <math.h>
 
 WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)

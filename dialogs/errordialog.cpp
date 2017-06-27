@@ -1,8 +1,8 @@
-#include "errordialog.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QWidget>
+#include "errordialog.h"
 
 ErrorDialog::ErrorDialog(QWidget *parent) :
     QDialog(parent)

@@ -38,7 +38,7 @@ protected:
             painter.begin(this);
             QRect tabrect = tabRect(index);
             tabrect.adjust(0, 8, 0, -8);
-            painter.drawText(tabrect, Qt::AlignBottom | Qt::AlignHCenter, tempText);
+            painter.drawText(tabrect, Qt::AlignVCenter | Qt::AlignHCenter, tempText);
             tempIcon.paint(&painter, 0, tabrect.top(), tab.iconSize.width(), tab.iconSize.height(), Qt::AlignTop | Qt::AlignHCenter);
             painter.end();
         }

@@ -1,9 +1,9 @@
-#include "confdialog.h"
 #include <QGroupBox>
 #include <QLabel>
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include "confdialog.h"
 #include "../widgets/s_tqcombobox.h"
 #include "../widgets/s_tqspinbox.h"
 #include "../widgets/messagebox.h"

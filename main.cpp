@@ -1,5 +1,5 @@
-#include "coma.h"
 #include <QApplication>
+#include "coma.h"
 
 int main(int argc, char *argv[])
 {

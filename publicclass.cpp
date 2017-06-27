@@ -1,4 +1,3 @@
-#include "publicclass.h"
 #include <QDateTime>
 #include <QSettings>
 #include <QFile>
@@ -6,6 +5,7 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include "publicclass.h"
 #include "log.h"
 
 publicclass pc;
@@ -84,7 +84,6 @@ publicclass::publicclass()
 {
     HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/COMA/";
     Emul = false;
-    ErMsgsOk = false;
     ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
     log.Init(LOGFILE);
 
@@ -98,7 +97,6 @@ publicclass::publicclass()
     }
     else
     {
-        ErMsgsOk = true;
         QString tmpString;
         QTextStream streamfile(&file);
         streamfile.setCodec("WIN-1251");
@@ -372,7 +370,7 @@ int publicclass::SaveFile(QString mask, void *src, unsigned int numbytes)
 
 bool publicclass::FloatInRange(float var, float value)
 {
-    if ((var > (value-T01)) && (var < (value+T01)))
+    if ((var > (value-TH01)) && (var < (value+TH01)))
         return true;
     else
         return false;
