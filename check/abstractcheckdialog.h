@@ -1,3 +1,16 @@
+/* Абстрактный класс проверки работы модулей АВ-ТУК
+ * Функции, которые необходимо реализовать при наследовании:
+ * QWidget *AutoCheckUI() - реализация виджета автоматической проверки работоспособности модуля (набор сообщений)
+ * QWidget *BdUI(int) - реализация GUI для каждого блока данных, получаемого с модуля
+ * RefreshAnalogValues(int) - обновление данных по полученному блоку Bd
+ * PrepareHeadersForFile(int) - запись в указанной строке файла xlsx заголовков получаемых данных
+ * WriteToFile(int, int) - запись в указанную строку полученных значений по блоку Bd
+ * При наследовании необходимо в конструкторе предусмотреть следующее:
+ *      - установить количество блоков данных в BdNum
+ *      - для каждого блока данных, определённого в наследнике, требуется создать элемент в Bd_blocks с указателем на блок и его длиной
+ *      - в конце конструктора не забыть вызвать SetupUI()
+ * */
+
 #ifndef ABSTRACTCHECKDIALOG_H
 #define ABSTRACTCHECKDIALOG_H
 
@@ -13,19 +26,24 @@ class AbstractCheckDialog : public QDialog
 public:
     explicit AbstractCheckDialog(QWidget *parent = 0);
 
-    virtual QWidget *AutoCheckUI(); // UI для автоматической проверки модуля
-    virtual QWidget *Bd1UI(); // первый набор текущих данных от модуля
-    virtual QWidget *Bd2UI(); // второй набор текущих данных от модуля
-    virtual QWidget *Bd3UI(); // третий набор текущих данных от модуля
-    virtual void RefreshAnalogValues();
-    virtual void ReadAnalogMeasurements();
-    virtual void PrepareHeadersForFile(int row); // row - строка для записи заголовков
+    virtual QWidget *AutoCheckUI() = 0; // UI для автоматической проверки модуля
+    virtual QWidget *BdUI(int bdnum) = 0; // визуализация наборов текущих данных от модуля
+    virtual void RefreshAnalogValues(int bdnum) = 0;
+    virtual void PrepareHeadersForFile(int row) = 0; // row - строка для записи заголовков
+    virtual void WriteToFile(int row, int bdnum) = 0; // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
 
 signals:
 
 public slots:
 
 private:
+    struct BdBlocks
+    {
+        void *block;
+        int blocknum;
+    };
+
+    QList<BdBlocks> Bd_blocks;
     struct Bip
     {
         quint8 ip[4];
@@ -35,12 +53,13 @@ private:
     QTimer *timer;
     QXlsx::Document *xlsx;
     bool XlsxWriting;
-    int WRow;
+    int WRow, CurBdNum, BdNum;
     QTime *ElapsedTimeCounter;
 
     void SetupUI();
     void CheckIP();
     void GetIP();
+    void ReadAnalogMeasurementsAndWriteToFile(int bdnum);
 
 private slots:
     void StartAnalogMeasurementsToFile();

@@ -22,12 +22,14 @@ AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) :
 {
     XlsxWriting = false;
     xlsx = 0;
+    CurBdNum = 0;
+    WRow = 0;
+    Bd_blocks.clear();
     timer = new QTimer;
     timer->setObjectName("checktimer");
     timer->setInterval(ANMEASINT);
     connect(timer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));
     setAttribute(Qt::WA_DeleteOnClose);
-    SetupUI();
 }
 
 void AbstractCheckDialog::SetupUI()
@@ -35,9 +37,8 @@ void AbstractCheckDialog::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
     CheckTW->addTab(AutoCheckUI(),"Автоматическая проверка");
-    CheckTW->addTab(Bd1UI(),"Текущие измерения гр. 1");
-    CheckTW->addTab(Bd2UI(),"Текущие измерения гр. 2");
-    CheckTW->addTab(Bd3UI(),"Текущие измерения гр. 3");
+    for (int i=0; i<BdNum; ++i)
+        CheckTW->addTab(BdUI(i),"Текущие измерения гр. "+QString::number(i));
     lyout->addWidget(CheckTW);
 
     lyout = new QVBoxLayout;
@@ -121,6 +122,7 @@ void AbstractCheckDialog::StartAnalogMeasurementsToFile()
     xlsx->write(3,1,QVariant("Время начала записи: "+QDateTime::currentDateTime().toString("hh:mm:ss")));
     xlsx->write(5,1,QVariant("Дата и время отсчёта"));
     PrepareHeadersForFile(6);
+    WRow = 7;
     QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
     if (pb != 0)
         pb->setEnabled(false);
@@ -132,55 +134,40 @@ void AbstractCheckDialog::StartAnalogMeasurementsToFile()
     StartAnalogMeasurements();
 }
 
-void AbstractCheckDialog::ReadAnalogMeasurements()
+void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile(int bdnum)
 {
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBd, Canal::BT_NONE, &Bda_block, sizeof(Bda_block));
-    if (cn->result != NOERROR)
+    if (bdnum < Bd_blocks.size())
     {
-        MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");
-        return;
-    }
-    // обновление коэффициентов в соответствующих полях на экране
-    RefreshAnalogValues();
-    if (XlsxWriting)
-    {
-        QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
-        if (pb != 0)
+        cn->Send(CN_GBd, bdnum, Bd_blocks.at(bdnum).block, Bd_blocks.at(bdnum).blocknum);
+        if (cn->result != NOERROR)
         {
-            int MSecs = ElapsedTimeCounter->elapsed();
-            QString TimeElapsed = QTime::fromMSecsSinceStartOfDay(MSecs).toString("hh:mm:ss.zzz");
-            pb->setText("Идёт запись: "+TimeElapsed);
+            WARNMSG("Ошибка при приёме данных");
+            return;
         }
-        QXlsx::Format format;
-        xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz")));
-        for (int i=0; i<3; i++)
+        // обновление коэффициентов в соответствующих полях на экране
+        RefreshAnalogValues(bdnum);
+        if (XlsxWriting)
         {
-/*            QString Precision = (pc.ModuleBsi.MTypeB != MTE_2T0N) ? "0.000" : "0.0000";
-            format.setNumberFormat(Precision);
-            xlsx->write(WRow,i+2,Bda_block.IUeff_filtered[i],format);
-
-            Precision = (pc.ModuleBsi.MTypeB != MTE_0T2N) ? "0.0000" : "0.000";
-            format.setNumberFormat(Precision);
-            xlsx->write(WRow,i+5,Bda_block.IUeff_filtered[i+3],format);
-
-            format.setNumberFormat("0.000");
-            float Phi = (static_cast<float>(180)*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
-            xlsx->write(WRow,i+8,Phi,format);
-            xlsx->write(WRow,i+11,Bda_block.Pf[i],format);
-            xlsx->write(WRow,i+14,Bda_block.Qf[i],format);
-            xlsx->write(WRow,i+17,Bda_block.Sf[i],format);*/
+            QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
+            if (pb != 0)
+            {
+                int MSecs = ElapsedTimeCounter->elapsed();
+                QString TimeElapsed = QTime::fromMSecsSinceStartOfDay(MSecs).toString("hh:mm:ss.zzz");
+                pb->setText("Идёт запись: "+TimeElapsed);
+            }
+            xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz")));
+            WriteToFile(WRow, bdnum);
+            WRow++;
         }
-        format.setNumberFormat("0.0000");
-        xlsx->write(WRow,20,Bda_block.Frequency,format);
-        format.setNumberFormat("0.0");
-        xlsx->write(WRow,21,Bda_block.Tmk,format);
-        WRow++;
     }
+    else
+        WARNMSG("Передан некорректный номер блока");
 }
 
 void AbstractCheckDialog::StartAnalogMeasurements()
 {
+    CurBdNum = 0;
     timer->start();
 }
 
@@ -225,15 +212,6 @@ void AbstractCheckDialog::SetTimerPeriod()
 
 void AbstractCheckDialog::TimerTimeout()
 {
-    if ((BdMeasurementsActive) && (OddTimeout)) // текущие измерения проводим на первом проходе таймера
-    {
-        connect(cn,SIGNAL(DataReady()),this,SLOT(RefreshBd()));
-        cn->Send(CN_GBd, &Bd_block, sizeof(Bd));
-    }
-    if ((BdaMeasurementsActive) && (!OddTimeout)) // все остальные - на втором
-    {
-        connect(cn,SIGNAL(DataReady()),this,SLOT(RefreshBda()));
-        cn->Send(CN_Gda, &Bda_block, sizeof(Bda));
-    }
-    OddTimeout = !OddTimeout;
+    ReadAnalogMeasurementsAndWriteToFile(CurBdNum);
+    ++CurBdNum;
 }

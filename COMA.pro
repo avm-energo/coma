@@ -63,7 +63,7 @@ SOURCES += main.cpp\
     config/config31.cpp \
     config/confdialog80.cpp \
     config/config80.cpp \
-    check/astractcheckdialog.cpp
+    check/abstractcheckdialog.cpp
 
 HEADERS  += coma.h \
     canal.h \

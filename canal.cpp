@@ -42,8 +42,10 @@ void Canal::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint1
         BoardType = 0x01;
     else if (board_type == BT_MEZONIN)
         BoardType = 0x02;
-    else // BT_NONE
+    else if (board_type == BT_NONE)
         BoardType = 0x00;
+    else
+        BoardType = board_type; // in GBd command it is a block number
     InitiateSend();
     while (Busy)
         QCoreApplication::processEvents(QEventLoop::AllEvents);
