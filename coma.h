@@ -84,7 +84,7 @@ private:
     ConfDialog *MainConfDialog;
     a_checkdialog *ACheckDialog;
     a_tunedialog *ATuneDialog;
-    e_checkdialog *ECheckDialog;
+    CheckDialog80 *ECheckDialog;
     ConfDialog80 *EConfDialog;
     TuneDialog80 *ETuneDialog;
     fwupdialog *FwUpDialog;

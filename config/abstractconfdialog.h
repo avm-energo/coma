@@ -13,9 +13,10 @@ public:
     QVector<publicclass::DataRec> *S2Config;
 
     QWidget *ConfButtons();
-    virtual void Fill() = 0;
-    virtual void SetDefConf() = 0;
-    virtual bool CheckConf() = 0;
+    virtual void Fill() = 0; // заполнить значения полей вывода из структуры конфигурации
+    virtual void FillBack() = 0; // ввести информацию из полей вывода в конфигурацию
+    virtual void SetDefConf() = 0; // задать конфигурацию по умолчанию
+    virtual bool CheckConf() = 0; // проверить конфигурацию на корректность
     void PrereadConf();
     int GetChNumFromObjectName(QString ObjectName);
 

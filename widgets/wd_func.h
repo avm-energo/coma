@@ -14,6 +14,7 @@ public:
     static bool SetCWData(QWidget *w, const QString &cwname, const QString &cwvalue);
     static QString CWData(QWidget *w, const QString &cwname);
     static bool SetCWColor(QWidget *w, const QString &cwname, const QColor &color);
+    static QLineEdit *NewLE(QWidget *w, const QString &lename, const QString &letext="", const QString &lecolor="");
     static bool SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring="");
     static bool LEData(QWidget *w, const QString &lename, QString &levalue);
     static bool AppendTEData(QWidget *w, const QString &tename, const QString &tetext);
@@ -30,6 +31,7 @@ public:
     static bool SPBData(QWidget *w, const QString &spbname, double &spbvalue);
     static bool SetLEColor(QWidget *w, const QString &lename, const QColor &color);
     static QLabel *NewLBL(QWidget *w, const QString &text, const QString &lblcolor="", const QString &lblname="");
+    static QLabel *NewLBLT(QWidget *w, const QString &text, const QString &lblname="", const QString &lblstyle="", const QString &lbltip="");
     static bool SetLBLImage(QWidget *w, const QString &lblname, QPixmap *pm);
     static bool SetLBLColor(QWidget *w, const QString &lblname, const QString &lblcolor);
     static bool SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext="", bool enabled=true);

@@ -25,12 +25,16 @@ class AbstractCheckDialog : public QDialog
     Q_OBJECT
 public:
     explicit AbstractCheckDialog(QWidget *parent = 0);
+    void SetupUI();
 
     virtual QWidget *AutoCheckUI() = 0; // UI для автоматической проверки модуля
     virtual QWidget *BdUI(int bdnum) = 0; // визуализация наборов текущих данных от модуля
-    virtual void RefreshAnalogValues(int bdnum) = 0;
+    virtual void RefreshAnalogValues(int bdnum) = 0; // обновление полей в GUI из полученного соответствующего Bd_block
     virtual void PrepareHeadersForFile(int row) = 0; // row - строка для записи заголовков
     virtual void WriteToFile(int row, int bdnum) = 0; // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
+
+    QXlsx::Document *xlsx;
+    int WRow, CurBdNum, BdNum;
 
 signals:
 
@@ -51,14 +55,12 @@ private:
 
     Bip Bip_block;
     QTimer *timer;
-    QXlsx::Document *xlsx;
     bool XlsxWriting;
-    int WRow, CurBdNum, BdNum;
     QTime *ElapsedTimeCounter;
 
-    void SetupUI();
     void CheckIP();
     void GetIP();
+    void Check1PPS();
     void ReadAnalogMeasurementsAndWriteToFile(int bdnum);
 
 private slots:

@@ -43,7 +43,7 @@ void AbstractCheckDialog::SetupUI()
 
     lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    lbl = new QLabel("Период обновления данных измерения, сек:");
+    QLabel *lbl = new QLabel("Период обновления данных измерения, сек:");
     hlyout->addWidget(lbl);
     QRadioButton *rb = new QRadioButton;
     rb->setObjectName("500");
