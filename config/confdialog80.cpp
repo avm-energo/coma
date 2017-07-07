@@ -74,6 +74,11 @@ void ConfDialog80::Fill()
     SetSpinBox("thr.3", econf->Bci_block.duimin);*/
 }
 
+void ConfDialog80::FillBack()
+{
+
+}
+
 void ConfDialog80::SetupUI()
 {
     QVBoxLayout *vlyout1 = new QVBoxLayout;
@@ -183,9 +188,8 @@ void ConfDialog80::SetupUI()
     setLayout(lyout);
 }
 
-bool ConfDialog80::CheckConf()
+void ConfDialog80::CheckConf()
 {
-    return true;
 }
 
 QWidget *ConfDialog80::UNom(int numunom)

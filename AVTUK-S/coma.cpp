@@ -42,16 +42,25 @@
 #include <QDir>
 #include <QtSerialPort/QSerialPortInfo>
 #include "coma.h"
-#include "commands.h"
-#include "widgets/mytabwidget.h"
-#include "widgets/waitwidget.h"
-#include "widgets/messagebox.h"
-#include "widgets/s_tqspinbox.h"
-#include "widgets/wd_func.h"
-#include "dialogs/hiddendialog.h"
-#include "dialogs/settingsdialog.h"
-#include "dialogs/errordialog.h"
-#include "log.h"
+#include "../commands.h"
+#include "../check/checkdialog21.h"
+#include "../check/checkdialog80.h"
+#include "../config/confdialog21.h"
+#include "../config/confdialog80.h"
+#include "../dialogs/fwupdialog.h"
+#include "../dialogs/downloaddialog.h"
+#include "../dialogs/oscdialog.h"
+#include "../dialogs/hiddendialog.h"
+#include "../dialogs/settingsdialog.h"
+#include "../dialogs/errordialog.h"
+#include "../tune/tunedialog21.h"
+#include "../tune/tunedialog80.h"
+#include "../widgets/mytabwidget.h"
+#include "../widgets/waitwidget.h"
+#include "../widgets/messagebox.h"
+#include "../widgets/s_tqspinbox.h"
+#include "../widgets/wd_func.h"
+#include "../log.h"
 
 Coma::Coma(QWidget *parent)
     : QMainWindow(parent)
@@ -88,34 +97,39 @@ void Coma::SetupUI()
     QToolBar *tb = new QToolBar;
     tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
     tb->setIconSize(QSize(20,20));
-    QAction *ConnectAction = new QAction(this);
-    ConnectAction->setToolTip("Соединение");
-    ConnectAction->setIcon(QIcon(":/pic/play.png"));
-    connect(ConnectAction,SIGNAL(triggered()),this,SLOT(Stage1_5()));
-    QAction *DisconnectAction = new QAction(this);
-    DisconnectAction->setToolTip("Разрыв соединения");
-    DisconnectAction->setIcon(QIcon(":/pic/stop.png"));
-    connect(DisconnectAction,SIGNAL(triggered()),this,SLOT(Disconnect()));
-    QAction *EmulAAction = new QAction(this);
-    EmulAAction->setToolTip("Запуск в режиме А");
-    EmulAAction->setIcon(QIcon(":/pic/a.png"));
-    connect(EmulAAction,SIGNAL(triggered()),this,SLOT(EmulA()));
-    QAction *EmulEAction = new QAction(this);
-    EmulEAction->setToolTip("Запуск в режиме Э");
-    EmulEAction->setIcon(QIcon(":/pic/e.png"));
-    connect(EmulEAction,SIGNAL(triggered()),this,SLOT(EmulE()));
-    QAction *SettingsAction = new QAction(this);
-    SettingsAction->setToolTip("Настройки");
-    SettingsAction->setIcon(QIcon(":/pic/settings.png"));
-    connect(SettingsAction,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
-    tb->addAction(ConnectAction);
-    tb->addAction(DisconnectAction);
-    tb->addSeparator();
-    tb->addAction(EmulAAction);
-    tb->addAction(EmulEAction);
-    tb->addSeparator();
-    tb->addAction(SettingsAction);
     QAction *act = new QAction(this);
+    act->setToolTip("Соединение");
+    act->setIcon(QIcon(":/pic/play.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
+    tb->addAction(act);
+    act = new QAction(this);
+    act->setToolTip("Разрыв соединения");
+    act->setIcon(QIcon(":/pic/stop.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(Disconnect()));
+    tb->addAction(act);
+    tb->addSeparator();
+    act = new QAction(this);
+    act->setToolTip("Эмуляция 21");
+    act->setIcon(QIcon(":/pic/2x.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(Emul2x()));
+    tb->addAction(act);
+    act = new QAction(this);
+    act->setToolTip("Эмуляция 8x");
+    act->setIcon(QIcon(":/pic/8x.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(Emul8x()));
+    tb->addAction(act);
+    act = new QAction(this);
+    act->setToolTip("Эмуляция A1");
+    act->setIcon(QIcon(":/pic/a1.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(EmulA1()));
+    tb->addAction(act);
+    tb->addSeparator();
+    act = new QAction(this);
+    act->setToolTip("Настройки");
+    act->setIcon(QIcon(":/pic/settings.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
+    tb->addAction(act);
+    act = new QAction(this);
     act->setToolTip("Протокол ошибок");
     act->setIcon(QIcon(":/pic/skull-and-bones.png"));
     connect(act,SIGNAL(triggered(bool)),this,SLOT(ShowErrorDialog()));
@@ -464,9 +478,9 @@ void Coma::Stage3()
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
-    DownDialog = new downloaddialog;
+/*    DownDialog = new downloaddialog;
     FwUpDialog = new fwupdialog;
-    OscDialog = new oscdialog;
+    OscDialog = new oscdialog; */
     MainConfDialog = new ConfDialog(S2Config);
     MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     switch(pc.ModuleBsi.MTypeB)
@@ -603,24 +617,18 @@ void Coma::Exit()
     this->close();
 }
 
-void Coma::EmulA()
+void Coma::Emul2x()
 {
     if (pc.Emul) // если уже в режиме эмуляции, выход
         return;
     pc.ModuleBsi.MTypeB = MTB_21;
     pc.ModuleBsi.MTypeM = MTM_21;
-    pc.ModuleBsi.SerialNum = 0x12345678;
-    pc.ModuleBsi.Hth = 0x00;
-    pc.Emul = true;
-    Stage3();
 }
 
-void Coma::EmulE()
+void Coma::Emul8x()
 {
     if (pc.Emul) // если уже в режиме эмуляции, выход
         return;
-//    pc.ModuleBsi.MTypeB = MTB_80;
-//    pc.ModuleBsi.MTypeM = MTM_82;
     QDialog *dlg = new QDialog(this);
     dlg->setObjectName("emuledlg");
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -636,7 +644,7 @@ void Coma::EmulE()
     hlyout->addWidget(cb);
     lyout->addLayout(hlyout);
     QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked()),this,SLOT(StartEmulE()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(StartEmul8x()));
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
     QSizePolicy fixed(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -644,7 +652,20 @@ void Coma::EmulE()
     dlg->exec();
 }
 
-void Coma::StartEmulE()
+void Coma::EmulA1()
+{
+
+}
+
+void Coma::StartEmul2x()
+{
+    pc.ModuleBsi.SerialNum = 0x12345678;
+    pc.ModuleBsi.Hth = 0x00;
+    pc.Emul = true;
+    Stage3();
+}
+
+void Coma::StartEmul8x()
 {
     QDialog *dlg = this->findChild<QDialog *>("emuledlg");
     QComboBox *cb = this->findChild<QComboBox *>("extxn");

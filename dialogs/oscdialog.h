@@ -4,8 +4,8 @@
 #include <QDialog>
 #include <QByteArray>
 
-#include "widgets/s_tablemodel.h"
-#include "publicclass.h"
+#include "../widgets/s_tablemodel.h"
+#include "../publicclass.h"
 
 #define MT_HEAD_ID      1000 // ID шапки осциллограммы равен 1000
 #define MT_START_OSC    1001 // первый ID осциллограммы

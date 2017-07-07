@@ -22,7 +22,7 @@ private:
     Config31 *C31;
 
     void Fill();
-    bool CheckConf();
+    void CheckConf();
     void SetDefConf();
     void SetPair(int firstch, int secondch);
 

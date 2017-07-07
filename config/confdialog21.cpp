@@ -83,6 +83,32 @@ void ConfDialog21::Fill()
     }
 }
 
+void ConfDialog21::FillBack()
+{
+    WDFunc::SPBData(this, "oscdlyspb", C21->Bci_block.inblk.oscdly);
+    for (int i=0; i<AIN21_NUMCH; ++i)
+    {
+        WDFunc::CBIndex(this, "chtypcb."+QString::number(i), C21->Bci_block.inblk.in_type[i]);
+        bool tmpb;
+        quint8 Osc = 0;
+        WDFunc::ChBData(this, "choscdi2."+QString::number(i), tmpb);
+        if (tmpb) Osc |= 0x20;
+        WDFunc::ChBData(this, "choscdi1."+QString::number(i), tmpb);
+        if (tmpb) Osc |= 0x10;
+        WDFunc::ChBData(this, "choscthr."+QString::number(i), tmpb);
+        if (tmpb) Osc |= 0x04;
+        WDFunc::ChBData(this, "chosccso0."+QString::number(i), tmpb);
+        if (tmpb) Osc |= 0x01;
+        C21->Bci_block.inblk.osc[i] = Osc;
+        WDFunc::SPBData(this, "2."+QString::number(i), C21->Bci_block.inblk.in_vmin[i]); // in_vmin
+        WDFunc::SPBData(this, "3."+QString::number(i), C21->Bci_block.inblk.in_vmax[i]); // in_vmax
+        WDFunc::SPBData(this, "4."+QString::number(i), C21->Bci_block.inblk.setminmin[i]); // setminmin
+        WDFunc::SPBData(this, "5."+QString::number(i), C21->Bci_block.inblk.setmin[i]); // setmin
+        WDFunc::SPBData(this, "6."+QString::number(i), C21->Bci_block.inblk.setmax[i]); // setmax
+        WDFunc::SPBData(this, "7."+QString::number(i), C21->Bci_block.inblk.setmaxmax[i]); // setmaxmax
+    }
+}
+
 void ConfDialog21::SetMinMax(int i)
 {
     QComboBox *cb = this->findChild<QComboBox *>("inrange."+QString::number(i));
@@ -129,12 +155,12 @@ void ConfDialog21::SetChTypData(int value)
     DisableChannel(tmpi, (value == 0));
 }
 
-void ConfDialog21::SetOscDly(double dly)
+/*void ConfDialog21::SetOscDly(double dly)
 {
     C21->Bci_block.inblk.oscdly = static_cast<quint16>(dly);
-}
+} */
 
-void ConfDialog21::SetChOsc(int isChecked)
+/*void ConfDialog21::SetChOsc(int isChecked)
 {
     int ChNum = GetChNumFromObjectName(sender()->objectName());
     if (ChNum == -1)
@@ -153,34 +179,31 @@ void ConfDialog21::SetChOsc(int isChecked)
         C21->Bci_block.inblk.osc[ChNum] |= Mask;
     else
         C21->Bci_block.inblk.osc[ChNum] &= ~Mask;
-}
+}*/
 
-bool ConfDialog21::CheckConf()
+void ConfDialog21::CheckConf()
 {
-    bool NotGood = false;
     for (int i=0; i<Params.NumCh; ++i)
     {
         if (C21->Bci_block.inblk.in_min[i] > C21->Bci_block.inblk.in_max[i])
-            NotGood = true;
+            CheckConfErrors.append("IN_MIN["+QString::number(i)+"] > IN_MAX["+QString::number(i)+"]");
         if (C21->Bci_block.inblk.in_vmin[i] > C21->Bci_block.inblk.in_vmax[i])
-            NotGood = true;
+            CheckConfErrors.append("IN_VMIN["+QString::number(i)+"] > IN_VMAX["+QString::number(i)+"]");
         if (C21->Bci_block.inblk.setminmin[i] > C21->Bci_block.inblk.setmin[i])
-            NotGood = true;
+            CheckConfErrors.append("SETMINMIN["+QString::number(i)+"] > SETMIN["+QString::number(i)+"]");
         if (C21->Bci_block.inblk.setminmin[i] < C21->Bci_block.inblk.in_vmin[i])
-            NotGood = true;
+            CheckConfErrors.append("SETMINMIN["+QString::number(i)+"] < IN_VMIN["+QString::number(i)+"]");
         if (C21->Bci_block.inblk.setmin[i] < C21->Bci_block.inblk.in_vmin[i])
-            NotGood = true;
+            CheckConfErrors.append("SETMIN["+QString::number(i)+"] < IN_VMIN["+QString::number(i)+"]");
         if (C21->Bci_block.inblk.setmax[i] < C21->Bci_block.inblk.setmin[i])
-            NotGood = true;
+            CheckConfErrors.append("SETMAX["+QString::number(i)+"] < SETMIN["+QString::number(i)+"]");
         if (C21->Bci_block.inblk.setmax[i] > C21->Bci_block.inblk.setmaxmax[i])
-            NotGood = true;
+            CheckConfErrors.append("SETMAX["+QString::number(i)+"] > SETMAXMAX["+QString::number(i)+"]");
         if (C21->Bci_block.inblk.setmax[i] > C21->Bci_block.inblk.in_vmax[i])
-            NotGood = true;
+            CheckConfErrors.append("SETMAX["+QString::number(i)+"] > IN_VMAX["+QString::number(i)+"]");
         if (C21->Bci_block.inblk.setmaxmax[i] > C21->Bci_block.inblk.in_vmax[i])
-            NotGood = true;
+            CheckConfErrors.append("SETMAXMAX["+QString::number(i)+"] > IN_VMAX["+QString::number(i)+"]");
     }
-    return NotGood;
-
 }
 
 void ConfDialog21::SetDefConf()
@@ -188,7 +211,7 @@ void ConfDialog21::SetDefConf()
     C21->SetDefConf();
 }
 
-void ConfDialog21::SetIn()
+/*void ConfDialog21::SetIn()
 {
     s_tqSpinBox *spb = qobject_cast<s_tqSpinBox *>(sender());
     QString ObjectName = spb->objectName().split(".").at(0);
@@ -243,4 +266,4 @@ void ConfDialog21::SetIn()
     if (CheckConf())
         tmps = "QDoubleSpinBox {color: "+QString(ERRCLR)+"; font: bold;}";
     spb->setStyleSheet(tmps);
-}
+} */

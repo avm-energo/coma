@@ -107,7 +107,7 @@ void AbstractConfDialog2x::SetupUI()
     lbl = new QLabel("Задержка в мс начала фиксации максимумов:");
     gblyout->addWidget(lbl);
     s_tqSpinBox *spb = WDFunc::NewSPB(this, "oscdlyspb", 0, 10000, 1, 0, ACONFWCLR);
-    connect(spb,SIGNAL(valueChanged(double)),this,SLOT(SetOscDly(double)));
+//    connect(spb,SIGNAL(valueChanged(double)),this,SLOT(SetOscDly(double)));
     gblyout->addWidget(spb);
     gb->setLayout(gblyout);
     lyout->addWidget(gb);

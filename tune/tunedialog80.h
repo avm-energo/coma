@@ -6,7 +6,7 @@
 #include <QHBoxLayout>
 #include <QByteArray>
 #include <QStringList>
-#include "config/config80.h"
+#include "../config/config80.h"
 #include "../iec104/iec104.h"
 
 #define TUNEFILELENGTH  256

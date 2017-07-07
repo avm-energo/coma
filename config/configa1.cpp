@@ -25,8 +25,8 @@ ConfigA1::ConfigA1(QVector<publicclass::DataRec> &config)
         config.append({StartInIndex+4, sizeof(Bci_block.Unom), &Bci_block.Unom});
         config.append({StartInIndex+5, sizeof(Bci_block.W100), &Bci_block.W100});
         config.append({StartInIndex+6, sizeof(Bci_block.T4), &Bci_block.T4});
-        config.append({StartInIndex+7, sizeof(Bci_block.T20), Bci_block.T20});
-        config.append({StartInIndex+8, sizeof(Bci_block.H4), Bci_block.H4});
+        config.append({StartInIndex+7, sizeof(Bci_block.T20), &Bci_block.T20});
+        config.append({StartInIndex+8, sizeof(Bci_block.H4), &Bci_block.H4});
         config.append({StartInIndex+9, sizeof(Bci_block.H20), &Bci_block.H20});
         config.append({StartInIndex+10, sizeof(Bci_block.DUosc), &Bci_block.DUosc});
         config.append({StartInIndex+11, sizeof(Bci_block.DUmin), &Bci_block.DUmin});

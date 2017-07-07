@@ -10,7 +10,7 @@
 
 QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letext, const QString &lecolor)
 {
-    QLineEdit *le = new s_tqLineEdit(w);
+    QLineEdit *le = new QLineEdit(w);
     le->setObjectName(lename);
     le->setText(letext);
     if (!lecolor.isEmpty())
@@ -134,15 +134,6 @@ bool WDFunc::CBData(QWidget *w, const QString &cbname, QString &cbvalue)
     return true;
 }
 
-bool WDFunc::CBIndex(QWidget *w, const QString &cbname, int &index)
-{
-    s_tqComboBox *cb = w->findChild<s_tqComboBox *>(cbname);
-    if (cb == 0)
-        return false;
-    index = cb->currentIndex();
-    return true;
-}
-
 bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue)
 {
     s_tqComboBox *cb = w->findChild<s_tqComboBox *>(cbname);
@@ -191,15 +182,6 @@ s_tqSpinBox *WDFunc::NewSPB(QWidget *parent, const QString &spbname, double min,
         dspbls->setStyleSheet(tmps);
     }
     return dspbls;
-}
-
-bool WDFunc::SPBData(QWidget *w, const QString &spbname, double &spbvalue)
-{
-    s_tqSpinBox *spb = w->findChild<s_tqSpinBox *>(spbname);
-    if (spb == 0)
-        return false;
-    spbvalue = spb->value();
-    return true;
 }
 
 bool WDFunc::SetSPBData(QWidget *w, const QString &spbname, const double &spbvalue)

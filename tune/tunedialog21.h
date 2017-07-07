@@ -2,7 +2,7 @@
 #define A_TUNEDIALOG_H
 
 #include <QDialog>
-#include "canal.h"
+#include "../canal.h"
 
 #define ATUNENUMPOINTS  64 // количество точек, по которым выдаются значения в блоке Bda
 

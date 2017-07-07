@@ -142,7 +142,7 @@ QWidget *CheckDialog80::BdUI(int bdnum)
 
 void CheckDialog80::RefreshAnalogValues(int bdnum)
 {
-    QLabel *lbl;
+/*    QLabel *lbl;
     WDFunc::SetLBLText(this, "value0", QString::number(Bda_block.Tmk, 'f', 1));
     WDFunc::SetLBLText(this, "value1", QString::number(Bda_block.Vbat, 'f', 1));
     WDFunc::SetLBLText(this, "value2", QString::number(Bda_block.Frequency, 'f', 1));
@@ -151,7 +151,7 @@ void CheckDialog80::RefreshAnalogValues(int bdnum)
         lbl = this->findChild<QLabel *>("value"+QString::number(i+3));
         if (lbl == 0)
             return;
-/*        int Precision = (pc.ModuleBsi.MTypeB != MTE_2T0N) ? 3 : 4;
+        int Precision = (pc.ModuleBsi.MTypeB != MTE_2T0N) ? 3 : 4;
         lbl->setText(QString::number(Bda_block.IUefNat_filt[i], 'f', Precision));
         lbl = this->findChild<QLabel *>("value"+QString::number(i+6));
         if (lbl == 0)
@@ -172,7 +172,7 @@ void CheckDialog80::RefreshAnalogValues(int bdnum)
         lbl = this->findChild<QLabel *>("value"+QString::number(i+15));
         if (lbl == 0)
             return;
-        lbl->setText(QString::number(Bda_block.phi_next_f[i], 'f', 3));*/
+        lbl->setText(QString::number(Bda_block.phi_next_f[i], 'f', 3));
     }
     for (int i=0; i<3; i++)
     {
@@ -216,7 +216,7 @@ void CheckDialog80::RefreshAnalogValues(int bdnum)
             return;
         float PHI = (180*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
         lbl->setText(QString::number(PHI, 'f', 3));
-    }
+    } */
 }
 
 void CheckDialog80::PrepareHeadersForFile(int row)
@@ -242,7 +242,7 @@ void CheckDialog80::PrepareHeadersForFile(int row)
 
 void CheckDialog80::WriteToFile(int row, int bdnum)
 {
-    // получение текущих аналоговых сигналов от модуля
+/*    // получение текущих аналоговых сигналов от модуля
     QXlsx::Format format;
     for (int i=0; i<3; i++)
     {
@@ -264,5 +264,5 @@ void CheckDialog80::WriteToFile(int row, int bdnum)
     format.setNumberFormat("0.0000");
     xlsx->write(WRow,20,Bda_block.Frequency,format);
     format.setNumberFormat("0.0");
-    xlsx->write(WRow,21,Bda_block.Tmk,format);
+    xlsx->write(WRow,21,Bda_block.Tmk,format); */
 }

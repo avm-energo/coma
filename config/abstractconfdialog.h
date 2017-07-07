@@ -2,7 +2,7 @@
 #define ABSTRACTCONFDIALOG_H
 
 #include <QDialog>
-#include "config/config.h"
+#include "config.h"
 
 class AbstractConfDialog : public QDialog
 {
@@ -11,12 +11,14 @@ public:
     AbstractConfDialog(QWidget *parent = 0);
 
     QVector<publicclass::DataRec> *S2Config;
+    QStringList CheckConfErrors;
 
     QWidget *ConfButtons();
     virtual void Fill() = 0; // заполнить значения полей вывода из структуры конфигурации
     virtual void FillBack() = 0; // ввести информацию из полей вывода в конфигурацию
     virtual void SetDefConf() = 0; // задать конфигурацию по умолчанию
-    virtual bool CheckConf() = 0; // проверить конфигурацию на корректность
+    virtual void CheckConf() = 0; // проверить конфигурацию на корректность, признаком наличия некорректностей
+                                    // является непустой список CheckConfErrors
     void PrereadConf();
     int GetChNumFromObjectName(QString ObjectName);
 

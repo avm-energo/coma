@@ -73,8 +73,7 @@ void ConfDialogA1::Fill()
     SetSpinBox("thr.3", econf->Bci_block.duimin);*/
 }
 
-
-bool ConfDialogA1::FillBack()
+void ConfDialogA1::FillBack()
 {
 
 }
@@ -139,9 +138,8 @@ void ConfDialogA1::SetupUI()
     setLayout(vlyout1);
 }
 
-bool ConfDialogA1::CheckConf()
+void ConfDialogA1::CheckConf()
 {
-    return true;
 }
 
 QWidget *ConfDialogA1::Threshold(QString str, int numthr)
@@ -169,17 +167,12 @@ void ConfDialogA1::SetThreshold(double dbl)
     {
     case 1: // % напряжения
     {
-        CA1->Bci_block.duosc = dbl;
+        CA1->Bci_block.DUosc = dbl;
         break;
     }
-    case 2: // % тока
+    case 2: // % частоты
     {
-        CA1->Bci_block.diosc = dbl;
-        break;
-    }
-    case 3: // % частоты
-    {
-        CA1->Bci_block.duimin = dbl;
+        CA1->Bci_block.DUmin = dbl;
         break;
     }
     default:

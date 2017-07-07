@@ -3,18 +3,9 @@
 
 #include <QMainWindow>
 #include <QResizeEvent>
-#include "dialogs/fwupdialog.h"
-#include "dialogs/downloaddialog.h"
-#include "dialogs/oscdialog.h"
-#include "config/confdialog.h"
-#include "config/confdialog21.h"
-#include "config/confdialog80.h"
-#include "check/checkdialog21.h"
-#include "check/checkdialog80.h"
-#include "tune/tunedialog21.h"
-#include "tune/tunedialog80.h"
-#include "canal.h"
-#include "publicclass.h"
+#include "../config/confdialog.h"
+#include "../canal.h"
+#include "../publicclass.h"
 
 #define PROGNAME    "КОМА 2.0"
 
@@ -82,14 +73,14 @@ private:
     AbstractConfDialog *ConfB, *ConfM;
     QDialog *TuneD;
     ConfDialog *MainConfDialog;
-    a_checkdialog *ACheckDialog;
+/*    a_checkdialog *ACheckDialog;
     a_tunedialog *ATuneDialog;
     CheckDialog80 *ECheckDialog;
     ConfDialog80 *EConfDialog;
     TuneDialog80 *ETuneDialog;
     fwupdialog *FwUpDialog;
     downloaddialog *DownDialog;
-    oscdialog *OscDialog;
+    oscdialog *OscDialog; */
     QAction *WriteSNAction;
     quint8 ReconTry;
     publicclass::Bsi Bsi_block;
@@ -115,9 +106,11 @@ private slots:
     void SetPort(QString str);
     void OpenBhbDialog();
     void MouseMove();
-    void EmulA();
-    void EmulE();
-    void StartEmulE();
+    void Emul2x();
+    void Emul8x();
+    void EmulA1();
+    void StartEmul2x();
+    void StartEmul8x();
     void StartSettingsDialog();
     void ShowErrorDialog();
     void SetProgressBarSize(quint32);

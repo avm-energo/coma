@@ -59,11 +59,10 @@ void ConfDialog31::SetPair(int firstch, int secondch)
     WDFunc::SetCBIndex(this, "chpaircb."+QString::number(secondch), firstch+1);
 }
 
-bool ConfDialog31::CheckConf()
+void ConfDialog31::CheckConf()
 {
+    CheckConfErrors.clear();
     // проверяем, все ли пары соответствуют друг другу
-    bool result = true;
-    QMap<quint8, quint8> Pairs;
     QList<int> InPairs;
     for (int first=0; first<Params.NumCh; ++first)
     {
@@ -76,15 +75,10 @@ bool ConfDialog31::CheckConf()
             continue;
         WDFunc::CBIndex(this, "chpaircb."+QString::number(--second), firstcheck); // -- из-за 0-го элемента "нет пары"
         if (first != firstcheck)
-        {
-            WDFunc::SetCBColor(this, "chpaircb."+QString::number(first), DCONFRCLR);
-            WDFunc::SetCBColor(this, "chpaircb."+QString::number(second), DCONFRCLR);
-            result = false;
-        }
+            CheckConfErrors.append("Несоответствие в парах: "+QString::number(first)+", "+QString::number(second));
         else
             InPairs.append(second); // если всё хорошо с парой, добавить в список пропускаемых проверкой
     }
-    return result;
 }
 
 void ConfDialog31::SetDefConf()

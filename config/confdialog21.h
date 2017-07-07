@@ -34,7 +34,8 @@ private:
     QVector<float> RangeInMaxs;
 
     void Fill();
-    bool CheckConf();
+    void FillBack();
+    void CheckConf();
     void SetDefConf();
     void SetMinMax(int i); // установка значений виджетов в соответствии с конфигурацией
 
@@ -44,9 +45,9 @@ public slots:
 
 private slots:
     void SetChTypData(int);
-    void SetChOsc(int);
-    void SetIn();
-    void SetOscDly(double);
+//    void SetChOsc(int);
+//    void SetIn();
+//    void SetOscDly(double);
     void SetRange(int RangeType);
 };
 

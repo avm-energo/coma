@@ -9,12 +9,12 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include "oscdialog.h"
-#include "canal.h"
+#include "../canal.h"
 #include "../config/config.h"
-#include "widgets/s_tqtableview.h"
-#include "widgets/s_tablemodel.h"
-#include "widgets/getoscpbdelegate.h"
-#include "widgets/messagebox.h"
+#include "../widgets/s_tqtableview.h"
+#include "../widgets/s_tablemodel.h"
+#include "../widgets/getoscpbdelegate.h"
+#include "../widgets/messagebox.h"
 
 oscdialog::oscdialog(QWidget *parent) :
     QDialog(parent)

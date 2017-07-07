@@ -25,10 +25,24 @@ public:
     static bool SetCBIndex(QWidget *w, const QString &cbname, int index);
     static bool SetCBColor(QWidget *w, const QString &cbname, const QString &color);
     static bool CBData(QWidget *w, const QString &cbname, QString &cbvalue);
-    static bool CBIndex(QWidget *w, const QString &cbname, int &index);
+    template <typename T> static bool CBIndex(QWidget *w, const QString &cbname, T &index)
+    {
+        s_tqComboBox *cb = w->findChild<s_tqComboBox *>(cbname);
+        if (cb == 0)
+            return false;
+        index = cb->currentIndex();
+        return true;
+    }
     static s_tqSpinBox *NewSPB(QWidget *parent, const QString &spbname, double min, double max, double step, int decimals, const QString &spbcolor="");
     static bool SetSPBData(QWidget *w, const QString &spbname, const double &spbvalue);
-    static bool SPBData(QWidget *w, const QString &spbname, double &spbvalue);
+    template <typename T> static bool SPBData(QWidget *w, const QString &spbname, T &spbvalue)
+    {
+        s_tqSpinBox *spb = w->findChild<s_tqSpinBox *>(spbname);
+        if (spb == 0)
+            return false;
+        spbvalue = spb->value();
+        return true;
+    }
     static bool SetLEColor(QWidget *w, const QString &lename, const QColor &color);
     static QLabel *NewLBL(QWidget *w, const QString &text, const QString &lblcolor="", const QString &lblname="");
     static QLabel *NewLBLT(QWidget *w, const QString &text, const QString &lblname="", const QString &lblstyle="", const QString &lbltip="");

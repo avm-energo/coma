@@ -29,6 +29,18 @@ void ConfDialog::Fill()
     WDFunc::SetSPBData(this, "spb.8", ConfigMain->MainBlk.Ctype);
 }
 
+void ConfDialog::FillBack()
+{
+    WDFunc::SPBData(this, "spb.1", ConfigMain->MainBlk.Abs_104);
+    WDFunc::SPBData(this, "spb.2", ConfigMain->MainBlk.Cycle_104);
+    WDFunc::SPBData(this, "spb.3", ConfigMain->MainBlk.T1_104);
+    WDFunc::SPBData(this, "spb.4", ConfigMain->MainBlk.T2_104);
+    WDFunc::SPBData(this, "spb.5", ConfigMain->MainBlk.T3_104);
+    WDFunc::SPBData(this, "spb.6", ConfigMain->MainBlk.k_104);
+    WDFunc::SPBData(this, "spb.7", ConfigMain->MainBlk.w_104);
+    WDFunc::SPBData(this, "spb.8", ConfigMain->MainBlk.Ctype);
+}
+
 void ConfDialog::SetupUI()
 {
     QVBoxLayout *vlyout = new QVBoxLayout;

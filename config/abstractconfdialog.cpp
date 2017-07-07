@@ -2,6 +2,7 @@
 #include <QCoreApplication>
 #include <QGridLayout>
 #include <QGroupBox>
+#include <QTextEdit>
 #include "abstractconfdialog.h"
 #include "../widgets/s_tqspinbox.h"
 #include "../widgets/messagebox.h"
@@ -23,9 +24,22 @@ void AbstractConfDialog::ReadConf()
 
 void AbstractConfDialog::WriteConf()
 {
-    if (CheckConf())
+    FillBack();
+    CheckConf();
+    if (!CheckConfErrors.isEmpty())
     {
-        ERMSG("В конфигурации есть ошибки. Проверьте и исправьте");
+        QDialog *dlg = new QDialog;
+        QVBoxLayout *vlyout = new QVBoxLayout;
+        QLabel *lbl = new QLabel("В конфигурации есть ошибки, проверьте и исправьте");
+        vlyout->addWidget(lbl, 0, Qt::AlignLeft);
+        QTextEdit *te = new QTextEdit;
+        te->setPlainText(CheckConfErrors.join("\n"));
+        vlyout->addWidget(te, 0, Qt::AlignCenter);
+        QPushButton *pb = new QPushButton("Ага");
+        connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
+        vlyout->addWidget(pb);
+        dlg->setLayout(vlyout);
+        dlg->exec();
         return;
     }
     cn->Send(CN_WF, Canal::BT_NONE, NULL, 0, 1, S2Config);

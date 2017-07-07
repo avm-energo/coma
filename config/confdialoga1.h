@@ -18,8 +18,9 @@ private:
     ConfigA1 *CA1;
 
     void Fill();
+    void FillBack();
     void SetupUI();
-    bool CheckConf();
+    void CheckConf();
 
     QWidget *UNom(int numunom); // 1 - первая тройка напряжений, 2 - вторая
     QWidget *INom(int numinom); // 1 - первичный ток первой группы, 2 - вторичный ток первой группы, 3,4 - то же по второй группе
