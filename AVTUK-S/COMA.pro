@@ -65,7 +65,9 @@ SOURCES += main.cpp\
     ../config/config80.cpp \
     ../check/abstractcheckdialog.cpp \
     ../config/confdialoga1.cpp \
-    ../config/configa1.cpp
+    ../config/configa1.cpp \
+    ../tune/tunedialoga1.cpp \
+    ../check/checkdialoga1.cpp
 
 HEADERS  += coma.h \
     ../canal.h \
@@ -114,7 +116,9 @@ HEADERS  += coma.h \
     ../config/config80.h \
     ../check/abstractcheckdialog.h \
     ../config/confdialoga1.h \
-    ../config/configa1.h
+    ../config/configa1.h \
+    ../tune/tunedialoga1.h \
+    ../check/checkdialoga1.h
 
 RESOURCES += \
     res.qrc

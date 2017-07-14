@@ -109,7 +109,7 @@ private slots:
     void Emul2x();
     void Emul8x();
     void EmulA1();
-    void StartEmul2x();
+    void StartEmulxx();
     void StartEmul8x();
     void StartSettingsDialog();
     void ShowErrorDialog();

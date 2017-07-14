@@ -32,6 +32,11 @@ Canal::~Canal()
 
 void Canal::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint16 filenum, QVector<publicclass::DataRec> *DRptr)
 {
+    if (!Connected)
+    {
+        result = CN_NULLDATAERROR;
+        return;
+    }
     outdata = static_cast<char *>(ptr);
     outdatasize = ptrsize; // размер области данных, в которую производить запись
     cmd = command;
@@ -507,6 +512,8 @@ bool Canal::InitializePort(QSerialPortInfo &pinfo, int baud)
 
 void Canal::ClosePort()
 {
+    if (!Connected)
+        return;
     try
     {
         Connected = false;

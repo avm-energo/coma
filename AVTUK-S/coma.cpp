@@ -47,6 +47,7 @@
 #include "../check/checkdialog80.h"
 #include "../config/confdialog21.h"
 #include "../config/confdialog80.h"
+#include "../config/confdialoga1.h"
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/downloaddialog.h"
 #include "../dialogs/oscdialog.h"
@@ -483,6 +484,8 @@ void Coma::Stage3()
     OscDialog = new oscdialog; */
     MainConfDialog = new ConfDialog(S2Config);
     MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
+    ConfB = ConfM = 0;
+    TuneD = 0;
     switch(pc.ModuleBsi.MTypeB)
     {
     case MTB_21:
@@ -492,8 +495,13 @@ void Coma::Stage3()
         break;
     }
     case MTB_80:
-        ConfB = 0;
         break;
+    case MTB_A1:
+    {
+        ConfDialogA1 *DialogA1 = new ConfDialogA1(S2Config);
+        ConfB = DialogA1;
+        break;
+    }
     }
     switch(pc.ModuleBsi.MTypeM)
     {
@@ -512,6 +520,8 @@ void Coma::Stage3()
         TuneD = new TuneDialog80();
         break;
     }
+    default: // 0x00
+        break;
     }
     if (ConfB != 0)
     {
@@ -623,6 +633,7 @@ void Coma::Emul2x()
         return;
     pc.ModuleBsi.MTypeB = MTB_21;
     pc.ModuleBsi.MTypeM = MTM_21;
+    StartEmulxx();
 }
 
 void Coma::Emul8x()
@@ -654,10 +665,14 @@ void Coma::Emul8x()
 
 void Coma::EmulA1()
 {
-
+    if (pc.Emul) // если уже в режиме эмуляции, выход
+        return;
+    pc.ModuleBsi.MTypeB = MTB_A1;
+    pc.ModuleBsi.MTypeM = MTM_00;
+    StartEmulxx();
 }
 
-void Coma::StartEmul2x()
+void Coma::StartEmulxx()
 {
     pc.ModuleBsi.SerialNum = 0x12345678;
     pc.ModuleBsi.Hth = 0x00;
@@ -839,9 +854,10 @@ void Coma::DisableProgressBar()
 void Coma::SetDefConf()
 {
     MainConfDialog->SetDefConf();
-    if (ConfB)
+    if (ConfB != 0)
         ConfB->SetDefConf();
-    ConfM->SetDefConf();
+    if (ConfM != 0)
+        ConfM->SetDefConf();
     Fill();
     MessageBox2::information(this, "Успешно", "Задана конфигурация по умолчанию");
 }
@@ -849,7 +865,8 @@ void Coma::SetDefConf()
 void Coma::Fill()
 {
     MainConfDialog->Fill();
-    if (ConfB)
+    if (ConfB != 0)
         ConfB->Fill();
-    ConfM->Fill();
+    if (ConfM != 0)
+        ConfM->Fill();
 }

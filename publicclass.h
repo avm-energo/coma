@@ -143,6 +143,8 @@
 #define ACONFRCLR   "#FFDDDD"
 #define ACONFYCLR   "#FFFFDD"
 #define ACONFOCLR   "#FFDDAA"
+#define UCONFCLR    "#FFD0FF"
+#define UCONFWCLR   "#FFC0FF"
 #define ERRCLR      "#FF0000"
 
 // thresholds

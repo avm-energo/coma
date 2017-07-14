@@ -49,7 +49,7 @@ bool WDFunc::SetLEColor(QWidget *w, const QString &lename, const QColor &color)
     return true;
 }
 
-QLabel *WDFunc::NewLBL(QWidget *w, const QString &text, const QString &lblcolor, const QString &lblname)
+QLabel *WDFunc::NewLBL(QWidget *w, const QString &text, const QString &lblcolor, const QString &lblname, const QPixmap *pm)
 {
     QLabel *lbl = new QLabel(w);
     lbl->setText(text);
@@ -60,6 +60,8 @@ QLabel *WDFunc::NewLBL(QWidget *w, const QString &text, const QString &lblcolor,
         QString tmps = "QLabel {background-color: " + lblcolor + ";}";
         lbl->setStyleSheet(tmps);
     }
+    if (pm != Q_NULLPTR)
+        lbl->setPixmap(*pm);
     return lbl;
 }
 
