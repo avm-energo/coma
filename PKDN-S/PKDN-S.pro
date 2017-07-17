@@ -40,7 +40,11 @@ SOURCES += main.cpp\
     ../config/confdialog.cpp \
     ../config/confdialoga1.cpp \
     ../config/config.cpp \
-    ../config/configa1.cpp
+    ../config/configa1.cpp \
+    ../check/checkdialoga1.cpp \
+    ../tune/tunedialoga1.cpp \
+    ../dialogs/keypressdialog.cpp \
+    ../check/checka1.cpp
 
 HEADERS  += pkdn_s.h \
     ../Canal.h \
@@ -69,4 +73,11 @@ HEADERS  += pkdn_s.h \
     ../config/confdialog.h \
     ../config/confdialoga1.h \
     ../config/config.h \
-    ../config/configa1.h
+    ../config/configa1.h \
+    ../check/checkdialoga1.h \
+    ../tune/tunedialoga1.h \
+    ../dialogs/keypressdialog.h \
+    ../check/checka1.h
+
+RESOURCES += \
+    pkdn-s.qrc

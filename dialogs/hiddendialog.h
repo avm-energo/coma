@@ -15,7 +15,8 @@ public:
         BYMY,
         BNMY,
         BYMN,
-        BNMN
+        BNMN,
+        PKDN
     };
 
     Config *HidConf;

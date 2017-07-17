@@ -348,13 +348,12 @@ QByteArray publicclass::LoadFile(QString mask)
 
 int publicclass::SaveFile(QString mask, void *src, unsigned int numbytes)
 {
-    QString tmps = "./"+QString::number(ModuleBsi.MTypeB)+QString::number(ModuleBsi.MTypeB)+"-"+\
+    QString tmps = "./"+QString::number(ModuleBsi.MTypeB)+QString::number(ModuleBsi.MTypeM)+"-"+\
             QString("%1").arg(ModuleBsi.SerialNum, 8, 10, QChar('0'))+".";
     QStringList tmpsl = mask.split(".");
     if (tmpsl.size() > 1)
         tmps += tmpsl.at(1).left(3); // формирование расширения файла
-    QString filename = QFileDialog::getSaveFileName(0, "Сохранить файл", \
-                                                    tmps, mask);
+    QString filename = QFileDialog::getSaveFileName(0, "Сохранить файл", tmps, mask);
     if (filename.isEmpty())
         return ER_FILENAMEEMP; // Пустое имя файла
     QFile file(filename);

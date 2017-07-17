@@ -8,16 +8,13 @@
 #include "wd_func.h"
 #include "s_tqtableview.h"
 
-QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letext, const QString &lecolor)
+QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letext, const QString &lestyle)
 {
     QLineEdit *le = new QLineEdit(w);
     le->setObjectName(lename);
     le->setText(letext);
-    if (!lecolor.isEmpty())
-    {
-        QString tmps = "QLineEdit {background-color: " + lecolor + ";}";
-        le->setStyleSheet(tmps);
-    }
+    if (!lestyle.isEmpty())
+        le->setStyleSheet(lestyle);
     return le;
 }
 
@@ -74,15 +71,6 @@ QLabel *WDFunc::NewLBLT(QWidget *w, const QString &text, const QString &lblname,
     lbl->setToolTip(lbltip);
     return lbl;
 
-}
-
-bool WDFunc::LEData(QWidget *w, const QString &lename, QString &levalue)
-{
-    QLineEdit *le = w->findChild<QLineEdit *>(lename);
-    if (le == 0)
-        return false;
-    levalue = le->text();
-    return true;
 }
 
 bool WDFunc::SetTEData(QWidget *w, const QString &tename, const QString &tetext)

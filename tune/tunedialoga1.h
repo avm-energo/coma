@@ -7,6 +7,7 @@
 #include <QByteArray>
 #include <QStringList>
 #include "../config/configa1.h"
+#include "../check/checka1.h"
 
 #define TUNEFILELENGTH  256
 
@@ -21,55 +22,45 @@ public:
     explicit TuneDialogA1(QWidget *parent = 0);
 
 signals:
+    void PasswordChecked();
     void stopall();
-    void SendMip(QByteArray);
     void dataready(QByteArray);
     void SecondsRemaining(QString);
 
 public slots:
 
 private:
-    enum TuneModes
-    {
-        TUNEMIP,
-        TUNERET,
-        TUNEMAN
-    };
-
     static QStringList lbls()
     {
         QStringList sl;
         sl.append("1. Ввод пароля...");
         sl.append("2. Отображение схемы подключения...");
-        sl.append("7.2.3. Проверка связи РЕТОМ и МИП...");
-        sl.append("7.3.1. Получение настроечных коэффициентов...");
-        sl.append("7.3.1.1. Установка настроечных коэффициентов по умолчанию...");
-        sl.append("4. Установка коэффициентов...");
-        sl.append("7.3.2. Получение текущих аналоговых данных...");
-        sl.append("5. Сохранение значений фильтра...");
-        sl.append("7.3.3. Расчёт коррекции смещений сигналов по фазе...");
-        sl.append("7.3.4. Расчёт коррекции по частоте...");
-        sl.append("7.3.5. Отображение ввода трёхфазных значений...");
-        sl.append("7.3.6.1. Получение текущих аналоговых данных...");
-        sl.append("7.3.6.2. Расчёт коррекции взаимного влияния каналов...");
-        sl.append("7.3.7.1. Получение текущих аналоговых данных и расчёт настроечных коэффициентов по напряжениям...");
-        sl.append("7.3.7.2. Сохранение конфигурации...");
-        sl.append("7.3.7.3. Получение текущих аналоговых данных...");
-        sl.append("7.3.7.4. Ввод измеренных значений...");
-        sl.append("7.3.7.5. Расчёт настроечных коэффициентов по токам, напряжениям и углам...");
-        sl.append("7.3.7.6. Сохранение конфигурации...");
-        sl.append("7.3.7.7. Отображение ввода трёхфазных значений...");
-        sl.append("7.3.7.8. Получение текущих аналоговых данных...");
-        sl.append("7.3.7.10. Расчёт настроечных коэффициентов по токам, напряжениям и углам...");
-        sl.append("7.3.8.1. Запись настроечных коэффициентов и переход на новую конфигурацию...");
-        sl.append("7.3.8.2. Проверка аналоговых данных...");
-        sl.append("7.3.9. Восстановление сохранённой конфигурации и проверка...");
+        sl.append("6.2. Проверка правильности измерения сигналов переменного напряжения...");
+        sl.append("6.3.1. Получение настроечных коэффициентов...");
+        sl.append("6.3.2.1. КПТ: получение блока данных и усреднение...");
+        sl.append("6.3.2.2. КПТ: ввод данных от энергомонитора...");
+        sl.append("6.3.2.3. КПТ: расчёт регулировочных коэффициентов...");
+        sl.append("6.3.3.1. КТС: подтверждение установки 80 Ом...");
+        sl.append("6.3.3.2. КТС: получение блока данных...");
+        sl.append("6.3.3.3. КТС: подтверждение установки 120 Ом...");
+        sl.append("6.3.3.4. КТС: получение блока данных и расчёт регулировочных коэффициентов...");
+        sl.append("6.3.4. КМТ2: подтверждение установки 4 мА...");
+        sl.append("6.3.5.1. КМТ2: получение блока данных...");
+        sl.append("6.3.5.2. КМТ2: подтверждение установки 20 мА...");
+        sl.append("6.3.5.3. КМТ2: получение блока данных и расчёт регулировочных коэффициентов...");
+        sl.append("6.3.6. КМТ1: подтверждение установки 4 мА...");
+        sl.append("6.3.7.1. КМТ1: получение блока данных...");
+        sl.append("6.3.7.2. КМТ1: подтверждение установки 20 мА...");
+        sl.append("6.3.7.3. КМТ1: получение блока данных и расчёт регулировочных коэффициентов...");
+        sl.append("6.3.8. Запись настроечных коэффициентов и переход на новую конфигурацию...");
+        sl.append("6.3.9. Проверка аналоговых данных...");
         sl.append("Настройка окончена!");
         return sl;
     }
 
-    bool Cancelled, DefConfig;
+    bool Cancelled, DefConfig, ok;
     ConfigA1 *CA1;
+    Check_A1 ChA1;
     QVector<publicclass::DataRec> S2Config;
     int SecondsToEnd15SecondsInterval;
     QHash <QString, int (TuneDialogA1::*)()> pf;
@@ -92,67 +83,51 @@ private:
 
     Bac Bac_block;
 
-    // Блок Bdа – оцифрованные сигналы в масштабах АЦП и частота в Гц
-    struct Bda
-    {
-        float Ueff_ADC[2];          // 0-1 Действующие значения напряжений в единицах АЦП
-        float Frequency;            // 2 частота сигналов, Гц,
-        float Pt100;                // 3 значение температурного сигнала
-        float EXTmA1;               // 4 значение первого сигнала (4-20) мА
-        float EXTmA2;               // 5 значение второго сигнала (4-20) мА
-    };
-
-    Bda Bda_block;
-
     void SetupUI();
-    int CheckPassword();
 
-    void WriteTuneCoefsToGUI();
-    void ReadTuneCoefsFromGUI();
+    int CheckPassword();
+    int ShowScheme();
+    int Start6_2();
     int CheckTuneCoefs();
+    int Start6_3_1();
+    int Start6_3_2_1();
+    int Start6_3_2_2();
+    int Start6_3_2_3();
+    int Start6_3_3_1();
+    int Start6_3_3_2();
+    int Start6_3_3_3();
+    int Start6_3_3_4();
+    int Start6_3_4();
+    int Start6_3_5_1();
+    int Start6_3_5_2();
+    int Start6_3_5_3();
+    int Start6_3_6();
+    int Start6_3_7_1();
+    int Start6_3_7_2();
+    int Start6_3_7_3();
+    int Start6_3_8();
+    int Start6_3_9();
+
     bool IsWithinLimits(double number, double base, double threshold);
-    void ShowScheme();
-    int Start7_2_3();
-    int Start7_3_1();
-    int Start7_3_1_1();
-    int Start7_3_2();
-    int Start7_3_3();
-    int Start7_3_4();
-    int Start7_3_5();
-    int Start7_3_6_2();
-    int Start7_3_7_1();
-    int Start7_3_7_2();
-    int Start7_3_7_3();
-    int Start7_3_7_4();
-    int Start7_3_7_5();
-    int Start7_3_7_6();
-    int Start7_3_7_7();
-    int Start7_3_7_8();
-    int Start7_3_7_10();
-    int Start7_3_8_1();
-    int Start7_3_8_2();
-    int Start7_3_9();
-    int SaveUeff();
-    int TuneDialogA1::StartCheckAnalogValues(double u, double i, double deg, bool tol); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0: начальная точность, 1 - повышенная
-    int CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct);
-    bool SetConfA(int i2nom);
     int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта
     void MsgSetVisible(int msg, bool Visible=true);
     void OkMsgSetVisible(int msg, bool Visible=true);
     void ErMsgSetVisible(int msg, bool Visible=true);
     void SkMsgSetVisible(int msg, bool Visible=true);
     void MsgClear();
-    int SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
     void WaitNSeconds(int SecondsToWait);
-    float ToFloat(QString text);
 
 private slots:
+    void PasswordCheck(QString psw);
     void StartTune();
     void ReadTuneCoefs();
     void WriteTuneCoefs();
     void SaveToFile();
     void LoadFromFile();
-    void ReadAnalogMeasurements(int BdNum);
+    int ReadAnalogMeasurements();
+    void FillBda();
+    void FillBac();
+    void FillBackBac();
     void SetDefCoefs();
     void SetExtData();
     void CancelExtData();

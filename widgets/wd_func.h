@@ -14,9 +14,16 @@ public:
     static bool SetCWData(QWidget *w, const QString &cwname, const QString &cwvalue);
     static QString CWData(QWidget *w, const QString &cwname);
     static bool SetCWColor(QWidget *w, const QString &cwname, const QColor &color);
-    static QLineEdit *NewLE(QWidget *w, const QString &lename, const QString &letext="", const QString &lecolor="");
+    static QLineEdit *NewLE(QWidget *w, const QString &lename, const QString &letext="", const QString &lestyle="");
     static bool SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring="");
-    static bool LEData(QWidget *w, const QString &lename, QString &levalue);
+    template <typename T> static bool LEData(QWidget *w, const QString &lename, T &levalue)
+    {
+        QLineEdit *le = w->findChild<QLineEdit *>(lename);
+        if (le == 0)
+            return false;
+        levalue = le->text();
+        return true;
+    }
     static bool AppendTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool SetTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool TEData(QWidget *w, const QString &tename, QString &tevalue);

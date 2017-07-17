@@ -537,30 +537,14 @@ void Coma::Stage3()
     }
     if (TuneD != 0)
         MainTW->addTab(TuneD, "Регулировка");
-/*    if ((pc.ModuleBsi.MTypeB > 0x1F) && (pc.ModuleBsi.MTypeB < 0x30))
-    {
-        ATuneDialog = new a_tunedialog;
-        ACheckDialog = new a_checkdialog;
-        MainTW->addTab(ATuneDialog, "Настройка");
-        MainTW->addTab(ACheckDialog, "Проверка");
-        MainTW->addTab(OscDialog, "Осциллограммы");
-        MainTW->addTab(DownDialog, "События");
-        MainTW->addTab(FwUpDialog, "Загрузка ВПО");
-        connect(Dialog21,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(Stage2()));
-    }
-    if ((pc.ModuleBsi.MTypeB > 0x7F) && (pc.ModuleBsi.MTypeB < 0x90))
-    {
-        EConfDialog = new confdialog_80;
-        ETuneDialog = new e_tunedialog;
-        ECheckDialog = new e_checkdialog;
-        MainTW->addTab(EConfDialog, "Конфигурирование");
-        MainTW->addTab(ETuneDialog, "Настройка");
-        MainTW->addTab(ECheckDialog, "Проверка");
-        MainTW->addTab(OscDialog, "Осциллограммы");
-        MainTW->addTab(DownDialog, "События");
-        MainTW->addTab(FwUpDialog, "Загрузка ВПО");
-        connect(EConfDialog,SIGNAL(BsiIsNeedToBeAcquiredAndChecked()),this,SLOT(Stage2()));
-    } */
+    if (CheckD != 0)
+        MainTW->addTab(CheckD, "Проверка");
+    oscdialog *OscD = new oscdialog;
+    downloaddialog *DownD = new downloaddialog;
+    fwupdialog *FwUpD = new fwupdialog;
+    MainTW->addTab(OscD, "Осциллограммы");
+    MainTW->addTab(DownD, "События");
+    MainTW->addTab(FwUpD, "Загрузка ВПО");
     if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
         pc.ErMsg(ER_NOCONF);
     if (pc.ModuleBsi.Hth & HTH_REGPARS) // нет коэффициентов

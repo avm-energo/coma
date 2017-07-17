@@ -71,16 +71,8 @@ private:
     }
 
     AbstractConfDialog *ConfB, *ConfM;
-    QDialog *TuneD;
+    QDialog *TuneD, *CheckD;
     ConfDialog *MainConfDialog;
-/*    a_checkdialog *ACheckDialog;
-    a_tunedialog *ATuneDialog;
-    CheckDialog80 *ECheckDialog;
-    ConfDialog80 *EConfDialog;
-    TuneDialog80 *ETuneDialog;
-    fwupdialog *FwUpDialog;
-    downloaddialog *DownDialog;
-    oscdialog *OscDialog; */
     QAction *WriteSNAction;
     quint8 ReconTry;
     publicclass::Bsi Bsi_block;
