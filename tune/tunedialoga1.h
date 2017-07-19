@@ -88,7 +88,7 @@ private:
     int CheckPassword();
     int ShowScheme();
     int Start6_2();
-    int CheckTuneCoefs();
+    int CheckAnalogValues();
     int Start6_3_1();
     int Start6_3_2_1();
     int Start6_3_2_2();
@@ -125,7 +125,6 @@ private slots:
     void SaveToFile();
     void LoadFromFile();
     int ReadAnalogMeasurements();
-    void FillBda();
     void FillBac();
     void FillBackBac();
     void SetDefCoefs();

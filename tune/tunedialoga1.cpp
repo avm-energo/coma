@@ -151,7 +151,7 @@ void TuneDialogA1::SetupUI()
     gb->setLayout(glyout);
     lyout->addWidget(gb);
     gb = new QGroupBox("Напряжения в масштабе входных сигналов (Bda_in)");
-    QVBoxLayout *vlyout = new QVBoxLayout;
+    vlyout = new QVBoxLayout;
     vlyout->addWidget(ChA1.Bd1W(this));
     gb->setLayout(glyout);
     lyout->addWidget(gb);
@@ -629,99 +629,16 @@ bool TuneDialogA1::IsWithinLimits(double number, double base, double threshold)
         return false;
 }
 
-int TuneDialogA1::CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct)
-{
-    double it = (pc.ModuleBsi.MTypeM == MTM_83) ? utol : itol; // 0t2n
-    double ut = (pc.ModuleBsi.MTypeM == MTM_81) ? itol : utol; // 2t0n
-    double ValuesToCheck[45] = {TD_TMK,TD_VBAT,TD_FREQ,u,u,u,i,i,i,u,u,u,i,i,i,phi,phi,phi,phi,phi,phi,p,p,p,s,s,s,q,q,q, \
-                                cosphi,cosphi,cosphi,p,p,p,q,q,q,s,s,s,cosphi,cosphi,cosphi};
-    double ThresholdsToCheck[45] = {T25,TH05,TH0005,ut,ut,ut,it,it,it,ut,ut,ut,it,it,it,pht,pht,pht,pht,pht,pht,pt,pt,pt,pt,pt,pt,pt,pt,pt,\
-                                    ct,ct,ct,pt,pt,pt,pt,pt,pt,pt,pt,pt,ct,ct,ct};
-    double *VTC = ValuesToCheck;
-    double *TTC = ThresholdsToCheck;
-
-    for (int i = 0; i < 45; i++)
-    {
-        QString tmps;
-        WDFunc::LBLText(this, "value"+QString::number(i), tmps);
-        bool ok;
-        double tmpd = tmps.toDouble(&ok);
-        if (!ok)
-            return GENERALERROR;
-
-        if (!IsWithinLimits(tmpd,*VTC,*TTC))
-        {
-            MessageBox2::information(this, "Внимание", "Несовпадение по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
-                      ", должно быть: "+QString::number(*VTC,'f',4)+ " +/- " + QString::number(*TTC,'f',4));
-            return GENERALERROR;
-        }
-        ++VTC;
-        ++TTC;
-    }
-
-/*    switch (ntest)
-
-    case 570: // test 57.74, 0T2N, 1(5) A, 0,1 %
-    {
-        for (int i = 2; i<14; i++)
-        {
-            ValuesToCheck[i] = mipd[i-2]; // u=60,0В
-            ThresholdsToCheck[i] = 0.1; // +/- 0.1В
-        }
-        ValuesToCheck[14] = ValuesToCheck[17] = 0.0;
-        ValuesToCheck[15] = ValuesToCheck[18] = -120.0;
-        ValuesToCheck[16] = ValuesToCheck[19] = 120.0;
-        break;
-    }
-    case 571: // test 57.74, 1T1N
-    {
-        for (int i = 2; i<5; i++)
-        {
-            ValuesToCheck[i] = ValuesToCheck[i+6] = mipd[i-2]; // u=60,0В
-            ThresholdsToCheck[i] = ThresholdsToCheck[i+6] = 0.1; // +/- 0.1В
-            ValuesToCheck[i+3] = ValuesToCheck[i+9] = mipd[i+1]; // i=1(5)A
-            ThresholdsToCheck[i+3] = ThresholdsToCheck[i+9] = 0.05; // +/- 0.05A
-            ValuesToCheck[i+18] = ValuesToCheck[i+30] = ValuesToCheck[i+21] = \
-                    ValuesToCheck[i+36] = mipd[i-2]*mipd[i+1]; // P=S=60.0*I, W
-            ThresholdsToCheck[i+18] = ThresholdsToCheck[i+30] = ThresholdsToCheck[i+21] = \
-                    ThresholdsToCheck[i+36] = mipd[i+1]*1.25; // 2%
-            ValuesToCheck[i+24] = ValuesToCheck[i+33] = 0.0; // Q=0ВАр
-            ThresholdsToCheck[i+24] = ThresholdsToCheck[i+33] = mipd[i+1]*1.25; // 2%
-            ValuesToCheck[i+27] = ValuesToCheck[i+39] = 1.0; // CosPhi=1.0
-            ThresholdsToCheck[i+27] = ThresholdsToCheck[i+39] = 0.01;
-        }
-        ValuesToCheck[14] = ValuesToCheck[17] = 0.0;
-        ValuesToCheck[15] = ValuesToCheck[18] = -120.0;
-        ValuesToCheck[16] = ValuesToCheck[19] = 120.0;
-        break;
-    }
-    case 572: // 2T0N
-    {
-        for (int i = 2; i<14; i++)
-        {
-            ValuesToCheck[i] = mipd[i+1]; // i=1(5)A
-            ThresholdsToCheck[i] = 0.05; // +/- 0.05A
-        }
-        ValuesToCheck[14] = ValuesToCheck[17] = 0.0;
-        ValuesToCheck[15] = ValuesToCheck[18] = -120.0;
-        ValuesToCheck[16] = ValuesToCheck[19] = 120.0;
-        break;
-    }
-    }
-*/
-    return NOERROR;
-}
-
 void TuneDialogA1::ReadTuneCoefs()
 {
     cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
     if (cn->result == NOERROR)
-        WriteTuneCoefsToGUI();
+        FillBac();
 }
 
 void TuneDialogA1::WriteTuneCoefs()
 {
-    ReadTuneCoefsFromGUI();
+    FillBackBac();
     cn->Send(CN_WBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
     if (cn->result == NOERROR)
         MessageBox2::information(this, "Внимание", "Записано успешно!");
@@ -731,30 +648,20 @@ void TuneDialogA1::SetDefCoefs()
 {
     Bac_block = {0.974, 0.98307, 1.0, 0.00919, 12.0, 24.0, 36.0, 48.0, 60.0, 71.0, 12.0, 24.0, 36.0, 48.0, 60.0, 71.0, \
                  0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 82.0875, 6023.3, 163.839, -0.4125, 163.6494, -0.8425};
-    WriteTuneCoefsToGUI();
+    FillBac();
 }
 
 int TuneDialogA1::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBd, Canal::BT_NONE, &Bda_block, sizeof(Bda));
+    cn->Send(CN_GBd, Canal::BT_NONE, &ChA1.Bda_block, sizeof(ChA1.Bda));
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda");
         return GENERALERROR;
     }
-    FillBda();
+    ChA1.FillBda(this);
     return NOERROR;
-}
-
-void TuneDialogA1::FillBda()
-{
-    WDFunc::SetLBLText(this, "value0", QString::number(Bda_block.Ueff_ADC[0]));
-    WDFunc::SetLBLText(this, "value1", QString::number(Bda_block.Ueff_ADC[1]));
-    WDFunc::SetLBLText(this, "value2", QString::number(Bda_block.Frequency));
-    WDFunc::SetLBLText(this, "value3", QString::number(Bda_block.Pt100));
-    WDFunc::SetLBLText(this, "value4", QString::number(Bda_block.EXTmA1));
-    WDFunc::SetLBLText(this, "value5", QString::number(Bda_block.EXTmA2));
 }
 
 void TuneDialogA1::FillBac()
@@ -827,22 +734,22 @@ int TuneDialogA1::Start6_2()
     WaitNSeconds(10);
     if (ReadAnalogMeasurements() == GENERALERROR)
         return GENERALERROR;
-    return CheckTuneCoefs();
+    return CheckAnalogValues();
 }
 
-int TuneDialogA1::CheckTuneCoefs()
+int TuneDialogA1::CheckAnalogValues()
 {
-    if (!IsWithinLimits(Bda_block.Ueff_ADC[0], 3900000.0, 200000.0))
+    if (!IsWithinLimits(ChA1.Bda_block.Ueff_ADC[0], 3900000.0, 200000.0))
         return GENERALERROR;
-    if (!IsWithinLimits(Bda_block.Ueff_ADC[1], 3900000.0, 200000.0))
+    if (!IsWithinLimits(ChA1.Bda_block.Ueff_ADC[1], 3900000.0, 200000.0))
         return GENERALERROR;
-    if (!IsWithinLimits(Bda_block.Frequency, 50.0, 0.05))
+    if (!IsWithinLimits(ChA1.Bda_block.Frequency, 50.0, 0.05))
         return GENERALERROR;
-    if (!IsWithinLimits(Bda_block.Pt100, 2125.0, 75.0))
+    if (!IsWithinLimits(ChA1.Bda_block.Pt100, 2125.0, 75.0))
         return GENERALERROR;
-    if (!IsWithinLimits(Bda_block.EXTmA1, 25.0, 25.0))
+    if (!IsWithinLimits(ChA1.Bda_block.EXTmA1, 25.0, 25.0))
         return GENERALERROR;
-    if (!IsWithinLimits(Bda_block.EXTmA2, 3275.0, 75.0))
+    if (!IsWithinLimits(ChA1.Bda_block.EXTmA2, 3275.0, 75.0))
         return GENERALERROR;
 }
 
@@ -862,7 +769,7 @@ int TuneDialogA1::Start6_3_1()
 int TuneDialogA1::Start6_3_2_1()
 {
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBd, 1, &Bda_in, sizeof(A1_Bd1));
+    cn->Send(CN_GBd, 1, &ChA1.Bda_in, sizeof(ChA1.A1_Bd1));
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda_in");

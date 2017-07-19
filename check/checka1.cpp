@@ -28,3 +28,22 @@ QWidget *Check_A1::BdaW(QWidget *parent)
     return w;
 }
 
+QWidget *Check_A1::Bd1W(QWidget *parent)
+{
+    QWidget *w = new QWidget(parent);
+    QGridLayout *glyout = new QGridLayout;
+    glyout->addWidget(WDFunc::NewLBL(this, "1. UeffADC1:"), 0, 0);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "value0", ValuesFormat, "Действующее значение напряжения 1 в единицах АЦП"), 0, 1);
+    w->setLayout(glyout);
+    return w;
+}
+
+void Check_A1::FillBda(QWidget *parent)
+{
+    WDFunc::SetLBLText(parent, "value0", QString::number(Bda_block.Ueff_ADC[0]));
+    WDFunc::SetLBLText(parent, "value1", QString::number(Bda_block.Ueff_ADC[1]));
+    WDFunc::SetLBLText(parent, "value2", QString::number(Bda_block.Frequency));
+    WDFunc::SetLBLText(parent, "value3", QString::number(Bda_block.Pt100));
+    WDFunc::SetLBLText(parent, "value4", QString::number(Bda_block.EXTmA1));
+    WDFunc::SetLBLText(parent, "value5", QString::number(Bda_block.EXTmA2));
+}
