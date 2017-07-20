@@ -42,8 +42,6 @@ void TuneDialogA1::SetupUI()
 
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
-            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
             "background-color: "+QString(UCONFWCLR)+"; font: bold 10px;}";
     tmps = "QWidget {background-color: "+QString(UCONFWCLR)+";}";
@@ -148,12 +146,32 @@ void TuneDialogA1::SetupUI()
     gb = new QGroupBox("Данные измерений без настройки (Bda)");
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addWidget(ChA1.BdaW(this));
-    gb->setLayout(glyout);
+    gb->setLayout(vlyout);
     lyout->addWidget(gb);
     gb = new QGroupBox("Напряжения в масштабе входных сигналов (Bda_in)");
     vlyout = new QVBoxLayout;
-    vlyout->addWidget(ChA1.Bd1W(this));
-    gb->setLayout(glyout);
+    vlyout->addWidget(ChA1.Bda_inW(this));
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+    gb = new QGroupBox("Гармонический состав напряжений (Bda_h)");
+    vlyout = new QVBoxLayout;
+    vlyout->addWidget(ChA1.Bda_hW(this));
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+    gb = new QGroupBox("Напряжения в первичном масштабе (Bda_out)");
+    vlyout = new QVBoxLayout;
+    vlyout->addWidget(ChA1.Bda_outW(this));
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+    gb = new QGroupBox("Входные сигналы постоянного тока (Bda_in_an)");
+    vlyout = new QVBoxLayout;
+    vlyout->addWidget(ChA1.Bda_in_anW(this));
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+    gb = new QGroupBox("Выходные сигналы постоянного тока (Bda_out_an)");
+    vlyout = new QVBoxLayout;
+    vlyout->addWidget(ChA1.Bda_out_anW(this));
+    gb->setLayout(vlyout);
     lyout->addWidget(gb);
 
     lyout->addStretch(1);
@@ -194,7 +212,7 @@ void TuneDialogA1::StartTune()
     pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_8; // 6.3.8. Запись настроечных коэффициентов и переход на новую конфигурацию
     pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_9; // 6.3.9. Проверка аналоговых данных
 
-    Cancelled = false;
+    Cancelled = Skipped = false;
     MsgClear(); // очистка экрана с сообщениями
     count = 0;
     for (QHash<QString, int (TuneDialogA1::*)()>::iterator it = pf.begin(); it != pf.end(); ++it)
@@ -236,335 +254,21 @@ int TuneDialogA1::CheckPassword()
     return NOERROR;
 }
 
-int TuneDialogA1::Start7_2_3()
-{
-    if (TuneControlType == TUNEMIP)
-    {
-        GED_Type = TD_GED_U; // любой параметр для проверки связи сгодится
-        return GetExternalData();
-    }
-    return NOERROR;
-}
-
-int TuneDialogA1::Start7_3_1()
-{
-    if (!DefConfig) // если есть настроечные параметры в памяти модуля
-    {
-        // получение настроечных коэффициентов от модуля
-        cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
-        if (cn->result != NOERROR)
-        {
-            MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");
-            return GENERALERROR;
-        }
-        // обновление коэффициентов в соответствующих полях на экране
-        WriteTuneCoefsToGUI();
-        // проверка коэффициентов на правильность в соотв. с п. 7.3.1 "Д2"
-        if (CheckTuneCoefs())
-            return NOERROR;
-        else
-            return GENERALERROR;
-    }
-    else
-        return ER_RESEMPTY;
-}
-
-int TuneDialogA1::Start7_3_1_1()
-{
-    if (DefConfig)
-    {
-        // запись настроечных коэффициентов в модуль
-        SetDefCoefs();
-        cn->Send(CN_WBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
-        if (cn->result == NOERROR)
-        {
-            // получение настроечных коэффициентов от модуля
-            cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
-            if (cn->result != NOERROR)
-            {
-                WARNMSG("Ошибка при приёме данных");
-                return false;
-            }
-            // обновление коэффициентов в соответствующих полях на экране
-            WriteTuneCoefsToGUI();
-            return NOERROR;
-        }
-        else
-            return GENERALERROR;
-    }
-    else
-        return ER_RESEMPTY;
-}
-
-int TuneDialogA1::Start7_3_2()
-{
-    ReadAnalogMeasurements();
-    return StartCheckAnalogValues(V60, I1, S0, false);
-}
-
-/*    if (num == MSG_7_3_2) maxval=602; // 3~7.3.2, 6~7.3.6.1, 12~7.3.7.3
-/*    else if (num == MSG_7_3_7_8)
-    {
-        if (!GetExternalData(MSG_7_3_7_8))
-            return false;
-        maxval = 607; // 15~7.3.7.8
-    }
-    else if (num == MSG_7_3_8_2)
-    {
-        if (!GetExternalData(MSG_7_3_8_2))
-            return false;
-        maxval = 617; // 18~7.3.8
-    }
-    else if (num == MSG_7_3_9)
-    {
-        if (!GetExternalData(MSG_7_3_9))
-            return false;
-        maxval = 572; // 19~7.3.9
-    } */
-    /*    if (CheckAnalogValues(maxval-pc.ModuleBsi.MTypeB)) // MType: 0 = 2T0N, 1 = 1T1N, 2 = 0T2N; NTest: 600 = 0T2N, 601 = 1T1N, 602 = 2T0N
-        {
-            OkMsgSetVisible(num);
-            return true;
-        }
-        else
-        {
-            ErMsgSetVisible(num);
-            return false;
-        }*/
-
-int TuneDialogA1::Start7_3_3()
-{
-    GED_Type = TD_GED_D;
-    GetExternalData();
-    Bac_newblock.DPsi[0] = 0;
-    int k = (pc.ModuleBsi.MTypeM == MTM_82) ? 3 : 6;
-    for (int i=1; i<k; ++i)
-        Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - Bda_block.phi_next_f[i];
-    if (pc.ModuleBsi.MTypeM == MTM_82)
-    {
-        for (int i=3; i<6; ++i)
-            Bac_newblock.DPsi[i] += RealData.d[i-3];
-    }
-    return NOERROR;
-}
-
-int TuneDialogA1::Start7_3_4()
-{
-    GED_Type = TD_GED_F;
-    if (!(GetExternalData() == GENERALERROR))
-        Bac_newblock.K_freq = Bac_block.K_freq*RealData.f[0]/Bda_block.Frequency;
-    else
-        return GENERALERROR;
-    return NOERROR;
-}
-
-int TuneDialogA1::Start7_3_5()
-{
-    return ShowRetomDialog(60.0, 1.0);
-}
-
-int TuneDialogA1::Start7_3_6_2()
-{
-    double fTmp = Bda_block.IUefNat_filt[0] / IUefNat_filt_old[0] + Bda_block.IUefNat_filt[3] / IUefNat_filt_old[3];
-    fTmp /= 2;
-    Bac_newblock.Kinter = (fTmp * (1 + 6 * Bac_block.Kinter) - 1) / 6;
-    return NOERROR;
-}
-
-int TuneDialogA1::Start7_3_7_1()
-{
-    if (pc.ModuleBsi.MTypeM != MTM_81)
-        return ER_RESEMPTY;
-    GED_Type = TD_GED_U;
-    if (GetExternalData() == GENERALERROR)
-        return GENERALERROR;
-    if (Start7_3_2() == GENERALERROR)
-        return GENERALERROR;
-    for (int i=0; i<3; i++)
-    {
-        Bac_newblock.KmU[i] = Bac_block.KmU[i] * RealData.u[i] / Bda_block.IUefNat_filt[i];
-        Bac_newblock.KmU[i+3] = Bac_block.KmU[i+3] * RealData.u[i] / Bda_block.IUefNat_filt[i+3];
-    }
-    return NOERROR;
-}
-
-int TuneDialogA1::Start7_3_7_2()
-{
-    if (pc.ModuleBsi.MTypeM == MTM_81)
-        return ER_RESEMPTY;
-
-   // Установить в конфигурации токи i2nom в 1 А
-    for (int i=0; i<6; i++)
-        C80->Bci_block.inom2[i] = I1;
-    // послать новые коэффициенты по току в конфигурацию
-    cn->Send(CN_WF, Canal::BT_NONE, &C80->Bci_block, sizeof(Config80::Bci), 2, &S2Config);
-    WaitNSeconds(2);
-    if (cn->result != NOERROR)
-        return GENERALERROR;
-    return NOERROR;
-}
-
-int TuneDialogA1::Start7_3_7_3()
-{
-    if (pc.ModuleBsi.MTypeM == MTM_81)
-        return ER_RESEMPTY;
-    ShowRetomDialog(V60, I1);
-    if (Start7_3_2() == GENERALERROR)
-        return GENERALERROR;
-    return NOERROR;
-}
-
-int TuneDialogA1::Start7_3_7_4()
-{
-    if (pc.ModuleBsi.MTypeM == MTM_81)
-        return ER_RESEMPTY;
-    GED_Type = (pc.ModuleBsi.MTypeM == MTM_82) ? (TD_GED_I | TD_GED_U) : TD_GED_I;
-    return GetExternalData();
-}
-
-int TuneDialogA1::Start7_3_7_5()
-{
-    if (pc.ModuleBsi.MTypeM == MTM_81)
-        return ER_RESEMPTY;
-    for (int i=0; i<3; ++i)
-    {
-        if (pc.ModuleBsi.MTypeM == MTM_82)
-            Bac_newblock.KmU[i] = Bac_block.KmU[i] * RealData.u[i] / Bda_block.IUefNat_filt[i];
-        else
-            Bac_newblock.KmI_1[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_block.IUefNat_filt[i];
-        Bac_newblock.KmI_1[i+3] = Bac_block.KmI_1[i+3] * RealData.i[i] / Bda_block.IUefNat_filt[i+3];
-    }
-    return NOERROR;
-}
-
-int TuneDialogA1::Start7_3_7_6()
-{
-    if (pc.ModuleBsi.MTypeM == MTM_81)
-        return ER_RESEMPTY;
-    for (int i=0; i<6; ++i)
-        C80->Bci_block.inom2[i] = I5;
-    cn->Send(CN_WF, Canal::BT_NONE, &C80->Bci_block, sizeof(Config80::Bci), 2, &S2Config);
-    WaitNSeconds(2);
-    if (cn->result != NOERROR)
-        return GENERALERROR;
-    return NOERROR;
-}
-
-int TuneDialogA1::Start7_3_7_7()
-{
-    return ShowRetomDialog(V60, I5);
-}
-
-int TuneDialogA1::Start7_3_7_8()
-{
-    WaitNSeconds(15);
-    ReadAnalogMeasurements();
-    int res = StartCheckAnalogValues(V60, I5, S0, false);
-    if (res == GENERALERROR)
-        return GENERALERROR;
-    GED_Type = TD_GED_D | TD_GED_U;
-    return GetExternalData();
-}
-
-int TuneDialogA1::Start7_3_7_10()
-{
-    for (int i=0; i<3; ++i)
-    {
-        if (pc.ModuleBsi.MTypeM == MTM_81)
-            Bac_newblock.KmI_5[i] = Bac_block.KmI_5[i] * RealData.i[i] / Bda_block.IUefNat_filt[i];
-        Bac_newblock.KmI_5[i+3] = Bac_block.KmI_5[i+3] * RealData.i[i] / Bda_block.IUefNat_filt[i+3];
-    }
-    return NOERROR;
-}
-
-int TuneDialogA1::Start7_3_8_1()
-{
-    // 1. Отправляем настроечные параметры в модуль
-    cn->Send(CN_WBac, Canal::BT_NONE, &Bac_newblock, sizeof(Bac));
-    if (cn->result != NOERROR)
-        return GENERALERROR;
-    return NOERROR;
-}
-
-int TuneDialogA1::Start7_3_8_2()
-{
-    WaitNSeconds(15);
-    ReadAnalogMeasurements();
-    return StartCheckAnalogValues(V60, I5, S0, true);
-}
-
-int TuneDialogA1::Start7_3_9()
-{
-    if (MessageBox2::question(this,"Закончить?","Закончить настройку?"))
-    {
-        if (!LoadWorkConfig())
-            return GENERALERROR;
-        // переходим на прежнюю конфигурацию
-        // измеряем и проверяем
-        ShowRetomDialog(V57, C80->Bci_block.inom2[0]); // I = 1.0 or 5.0 A
-        WaitNSeconds(15);
-        ReadAnalogMeasurements();
-        return StartCheckAnalogValues(V57, C80->Bci_block.inom2[0], S0, true);
-    }
-    else
-        return false;
-    if (MessageBox2::question(this,"Вопрос","Очистить память осциллограмм?"))
-    {
-        pc.PrbMessage = "Стёрто записей: ";
-        cn->Send(CN_OscEr);
-        if (cn->result == NOERROR)
-            MessageBox2::information(this, "Внимание", "Стёрто успешно");
-        else
-            ERMSG("Ошибка при стирании");
-    }
-    return true;
-}
-
 int TuneDialogA1::GetExternalData()
 {
     QDialog *dlg = new QDialog(this);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setObjectName("dlg7371");
+    dlg->setObjectName("extdatad");
     QGridLayout *glyout = new QGridLayout;
-    QLabel *lbl = new QLabel("Введите значения сигналов по приборам");
-    glyout->addWidget(lbl,0,0,1,6);
-    int row = 1;
-    int column = 0;
-    for (int i=0; i<3; i++) // for A to C
-    {
-        lbl = new QLabel("Uф" + QString::number(i+10,36).toUpper()+", В");
-        glyout->addWidget(lbl,row,column++,1,1);
-        s_tqSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i), 0, 200, 0.1, 5);
-        spb->setValue(60.0);
-        glyout->addWidget(spb,row,column++,1,1);
-    }
-    ++row;
-    column = 0;
-    for (int i=0; i<3; i++) // for A to C
-    {
-        lbl = new QLabel("Iф" + QString::number(i+10,36).toUpper()+", A");
-        glyout->addWidget(lbl,row, column++,1,1);
-        s_tqSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i+3), 0, 6, 0.001, 5);
-        spb->setValue(C80->Bci_block.inom2[i]);
-        glyout->addWidget(spb,row, column++,1,1);
-    }
-    ++row;
-    column = 0;
-    for (int i=0; i<3; i++) // for A to C
-    {
-        lbl = new QLabel("Уг.нагр. ф" + QString::number(i+10,36).toUpper()+", град");
-        glyout->addWidget(lbl,3,i*2,1,1);
-        s_tqSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i+6), -360, 360, 0.01, 3);
-        spb->setValue(0.0);
-        glyout->addWidget(spb,row, column++,1,1);
-    }
-    ++row;
-    column = 0;
-    lbl = new QLabel("Частота ");
-    glyout->addWidget(lbl,row,column++,1,1);
-    s_tqSpinBox *spb = WDFunc::NewSPB(this, "spb73719", 40.0, 60.0, 0.01, 5);
-    spb->setValue(50.0);
-    glyout->addWidget(spb,row, column++,1,1);
+    glyout->addWidget(WDFunc::NewLBL(dlg, "Введите значения сигналов по приборам"),0,0,1,4);
+    glyout->addWidget(WDFunc::NewLBL(dlg, "Значение напряжения 1, В"), 1,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(dlg, "u1", -100, 100, 0.00001, 5), 1,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(dlg, "Значение напряжения 2, В"), 1,2,1,1);
+    glyout->addWidget(WDFunc::NewSPB(dlg, "u2", -100, 100, 0.00001, 5), 1,3,1,1);
+    glyout->addWidget(WDFunc::NewLBL(dlg, "Угол между напряжениями, град"), 2,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(dlg, "phy", -100, 100, 0.00001, 5), 2,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(dlg, "Частота, Гц"), 2,2,1,1);
+    glyout->addWidget(WDFunc::NewSPB(dlg, "freq", -100, 100, 0.00001, 5), 2,3,1,1);
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),this,SLOT(SetExtData()));
     glyout->addWidget(pb,4,0,1,3);
@@ -589,31 +293,20 @@ void TuneDialogA1::PasswordCheck(QString psw)
 
 void TuneDialogA1::SetExtData()
 {
-    QDialog *dlg = this->findChild<QDialog *>("dlg7371");
+    QDialog *dlg = this->findChild<QDialog *>("extdatad");
     if (dlg == 0)
         return;
-    for (int i=0; i<3; ++i)
-    {
-        s_tqSpinBox *spb = this->findChild<s_tqSpinBox *>("spb7371"+QString::number(i));
-        if (spb != 0)
-            RealData.u[i] = spb->value();
-        spb = this->findChild<s_tqSpinBox *>("spb7371"+QString::number(i+3));
-        if (spb != 0)
-            RealData.i[i] = spb->value();
-        spb = this->findChild<s_tqSpinBox *>("spb7371"+QString::number(i+6));
-        if (spb != 0)
-            RealData.d[i] = spb->value();
-    }
-    s_tqSpinBox *spb = this->findChild<s_tqSpinBox *>("spb73719");
-    if (spb != 0)
-        RealData.f[0] = spb->value();
+    WDFunc::SPBData(dlg, "u1", RealData.u1);
+    WDFunc::SPBData(dlg, "u2", RealData.u2);
+    WDFunc::SPBData(dlg, "phy", RealData.phy);
+    WDFunc::SPBData(dlg, "freq", RealData.freq);
     Cancelled = false;
     dlg->close();
 }
 
 void TuneDialogA1::CancelExtData()
 {
-    QDialog *dlg = this->findChild<QDialog *>("dlg7371");
+    QDialog *dlg = this->findChild<QDialog *>("extdatad");
     if (dlg == 0)
         return;
     Cancelled = true;
@@ -654,7 +347,7 @@ void TuneDialogA1::SetDefCoefs()
 int TuneDialogA1::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBd, Canal::BT_NONE, &ChA1.Bda_block, sizeof(ChA1.Bda));
+    cn->Send(CN_GBd, Canal::BT_NONE, &ChA1.Bda_block, sizeof(Check_A1::Bda));
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda");
@@ -670,7 +363,7 @@ void TuneDialogA1::FillBac()
     WDFunc::SetLEData(this, "tune1", QString::number(Bac_block.KmU[1], 'f', 5));
     WDFunc::SetLEData(this, "tune2", QString::number(Bac_block.K_freq, 'f', 5));
     WDFunc::SetLEData(this, "tune3", QString::number(Bac_block.DPhy, 'f', 5));
-    for (i = 0; i < 6; ++i)
+    for (int i = 0; i < 6; ++i)
     {
         WDFunc::SetLEData(this, "tune"+QString::number(i+4), QString::number(Bac_block.U1kDN[i], 'f', 5));
         WDFunc::SetLEData(this, "tune"+QString::number(i+10), QString::number(Bac_block.U2kDN[i], 'f', 5));
@@ -686,22 +379,22 @@ void TuneDialogA1::FillBac()
 
 void TuneDialogA1::FillBackBac()
 {
-    WDFunc::LEData(this, "tune0", Bac_block.KmU[0]);
-    WDFunc::LEData(this, "tune1", Bac_block.KmU[1]);
-    WDFunc::LEData(this, "tune2", Bac_block.K_freq);
-    WDFunc::LEData(this, "tune3", Bac_block.DPhy);
+    WDFunc::LENumber(this, "tune0", Bac_block.KmU[0]);
+    WDFunc::LENumber(this, "tune1", Bac_block.KmU[1]);
+    WDFunc::LENumber(this, "tune2", Bac_block.K_freq);
+    WDFunc::LENumber(this, "tune3", Bac_block.DPhy);
     for (int i = 0; i < 6; i++)
     {
-        WDFunc::LEData(this, "tune"+QString::number(i+4), Bac_block.U1kDN[i]);
-        WDFunc::LEData(this, "tune"+QString::number(i+10), Bac_block.U2kDN[i]);
-        WDFunc::LEData(this, "tune"+QString::number(i+16), Bac_block.PhyDN[i]);
+        WDFunc::LENumber(this, "tune"+QString::number(i+4), Bac_block.U1kDN[i]);
+        WDFunc::LENumber(this, "tune"+QString::number(i+10), Bac_block.U2kDN[i]);
+        WDFunc::LENumber(this, "tune"+QString::number(i+16), Bac_block.PhyDN[i]);
     }
-    WDFunc::LEData(this, "tune22", Bac_block.Art);
-    WDFunc::LEData(this, "tune23", Bac_block.Brt);
-    WDFunc::LEData(this, "tune24", Bac_block.Ama1);
-    WDFunc::LEData(this, "tune25", Bac_block.Bma1);
-    WDFunc::LEData(this, "tune26", Bac_block.Ama2);
-    WDFunc::LEData(this, "tune27", Bac_block.Bma2);
+    WDFunc::LENumber(this, "tune22", Bac_block.Art);
+    WDFunc::LENumber(this, "tune23", Bac_block.Brt);
+    WDFunc::LENumber(this, "tune24", Bac_block.Ama1);
+    WDFunc::LENumber(this, "tune25", Bac_block.Bma1);
+    WDFunc::LENumber(this, "tune26", Bac_block.Ama2);
+    WDFunc::LENumber(this, "tune27", Bac_block.Bma2);
 }
 
 int TuneDialogA1::ShowScheme()
@@ -709,7 +402,6 @@ int TuneDialogA1::ShowScheme()
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap(":/../pic/tunea1.png")));
-    lbl = new QLabel();
     lyout->addWidget(WDFunc::NewLBL(this, "1. На выходах РЕТОМ задайте частоту 50,0 Гц, уровень напряжения фазы А 60 В с фазой 0 градусов, включите режим однофазного выхода;"));
     lyout->addWidget(WDFunc::NewLBL(this, "2. Включите питание прибора Энергомонитор-3.1КМ и настройте его на режим измерения напряжений в диапазоне 0...100 В и частоты;"));
     lyout->addWidget(WDFunc::NewLBL(this, "3. На магазине сопротивлений установите значение сопротивления 100,0 Ом;"));
@@ -734,10 +426,10 @@ int TuneDialogA1::Start6_2()
     WaitNSeconds(10);
     if (ReadAnalogMeasurements() == GENERALERROR)
         return GENERALERROR;
-    return CheckAnalogValues();
+    return CheckBdaValues();
 }
 
-int TuneDialogA1::CheckAnalogValues()
+int TuneDialogA1::CheckBdaValues()
 {
     if (!IsWithinLimits(ChA1.Bda_block.Ueff_ADC[0], 3900000.0, 200000.0))
         return GENERALERROR;
@@ -751,10 +443,16 @@ int TuneDialogA1::CheckAnalogValues()
         return GENERALERROR;
     if (!IsWithinLimits(ChA1.Bda_block.EXTmA2, 3275.0, 75.0))
         return GENERALERROR;
+    return NOERROR;
 }
 
 int TuneDialogA1::Start6_3_1()
 {
+    if (MessageBox2::question(this, "Вопрос", "Будет проведена регулировка по напряжениям, выполнить?") == false)
+    {
+        Skipped = true;
+        return ER_RESEMPTY;
+    }
     // получение текущих аналоговых сигналов от модуля
     cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
     if (cn->result != NOERROR)
@@ -768,14 +466,233 @@ int TuneDialogA1::Start6_3_1()
 
 int TuneDialogA1::Start6_3_2_1()
 {
+    if (Skipped)
+        return ER_RESEMPTY;
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBd, 1, &ChA1.Bda_in, sizeof(ChA1.A1_Bd1));
+    Check_A1::A1_Bd1 tmpst;
+    QScopedPointer<Check_A1::A1_Bd1> tmpstp(&ChA1.Bda_in);
+//    tmpstp = &ChA1.Bda_in;
+    tmpstp->Frequency = tmpstp->Phy = tmpstp->UefNat_filt[0] = tmpstp->UefNat_filt[1] = tmpstp->Uef_filt[0] = tmpstp->Uef_filt[1] = 0;
+    for (int i=0; i<TDA1_MEASNUM; ++i)
+    {
+        cn->Send(CN_GBd, 1, &tmpst, sizeof(Check_A1::A1_Bd1));
+        tmpstp->Frequency += tmpst.Frequency;
+        tmpstp->Phy += tmpst.Phy;
+        tmpstp->UefNat_filt[0] += tmpst.UefNat_filt[0];
+        tmpstp->UefNat_filt[1] += tmpst.UefNat_filt[1];
+        tmpstp->Uef_filt[0] = tmpst.Uef_filt[0];
+        tmpstp->Uef_filt[1] = tmpst.Uef_filt[1];
+    }
+    // усреднение
+    tmpstp->Frequency /= TDA1_MEASNUM;
+    tmpstp->Phy /= TDA1_MEASNUM;
+    tmpstp->UefNat_filt[0] /= TDA1_MEASNUM;
+    tmpstp->UefNat_filt[1] /= TDA1_MEASNUM;
+    tmpstp->Uef_filt[0] /= TDA1_MEASNUM;
+    tmpstp->Uef_filt[1] /= TDA1_MEASNUM;
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
         return GENERALERROR;
     }
+    ChA1.FillBda_in(this);
+    return CheckAnalogValues(false);
+}
 
+int TuneDialogA1::CheckAnalogValues(bool isPrecise)
+{
+    double Tols[6] = {0.5, 0.5, 0.5, 0.5, 0.5, 0.15};
+    double PrecTols[6] = {0.03, 0.03, 0.03, 0.03, 0.025, 0.05};
+    double *T;
+    T = (isPrecise) ? &PrecTols[0] : &Tols[0];
+    if (!IsWithinLimits(ChA1.Bda_in.UefNat_filt[0], 60.0, T[0]))
+        return GENERALERROR;
+    if (!IsWithinLimits(ChA1.Bda_in.UefNat_filt[1], 60.0, T[1]))
+        return GENERALERROR;
+    if (!IsWithinLimits(ChA1.Bda_in.Uef_filt[0], 60.0, T[2]))
+        return GENERALERROR;
+    if (!IsWithinLimits(ChA1.Bda_in.Uef_filt[0], 60.0, T[3]))
+        return GENERALERROR;
+    if (!IsWithinLimits(ChA1.Bda_in.Frequency, 50.0, T[4]))
+        return GENERALERROR;
+    if (!IsWithinLimits(ChA1.Bda_in.Phy, 0, T[5]))
+        return GENERALERROR;
+    return NOERROR;
+}
+
+int TuneDialogA1::Start6_3_2_2()
+{
+    if (Skipped)
+        return ER_RESEMPTY;
+    return GetExternalData();
+}
+
+int TuneDialogA1::Start6_3_2_3()
+{
+    if (Skipped)
+        return ER_RESEMPTY;
+    Bac_block.KmU[0] = Bac_block.KmU[0] * RealData.u1 / ChA1.Bda_in.UefNat_filt[0];
+    Bac_block.KmU[1] = Bac_block.KmU[1] * RealData.u2 / ChA1.Bda_in.UefNat_filt[1];
+    Bac_block.K_freq = Bac_block.K_freq * RealData.freq / ChA1.Bda_in.Frequency;
+    Bac_block.DPhy = -ChA1.Bda_in.Phy;
+    return NOERROR;
+}
+
+int TuneDialogA1::Start6_3_3_1()
+{
+    Skipped = false;
+    if (MessageBox2::question(this, "Вопрос", "Будет проведена регулировка по входу Pt100, выполнить?") == false)
+    {
+        Skipped = true;
+        return ER_RESEMPTY;
+    }
+    MessageBox2::information(this, "Требование", "Установите на магазине сопротивлений значение 80 Ом");
+    return NOERROR;
+}
+
+int TuneDialogA1::Start6_3_3_2()
+{
+    if (Skipped)
+        return ER_RESEMPTY;
+    int res = ReadAnalogMeasurements();
+    if (res == NOERROR)
+        RegData = ChA1.Bda_block.Pt100;
+    return res;
+}
+
+int TuneDialogA1::Start6_3_3_3()
+{
+    if (Skipped)
+        return ER_RESEMPTY;
+    MessageBox2::information(this, "Требование", "Установите на магазине сопротивлений значение 120 Ом");
+    return NOERROR;
+}
+
+int TuneDialogA1::Start6_3_3_4()
+{
+    if (Skipped)
+        return ER_RESEMPTY;
+    int res = ReadAnalogMeasurements();
+    if (res == NOERROR)
+    {
+        Bac_block.Art = (ChA1.Bda_block.Pt100 - RegData) / 40;
+        Bac_block.Brt = 2*ChA1.Bda_block.Pt100 - 3*RegData;
+    }
+    return res;
+}
+
+int TuneDialogA1::Start6_3_4()
+{
+    Skipped = false;
+    if (MessageBox2::question(this, "Вопрос", "Будет проведена регулировка по входу EXTmA2, выполнить?") == false)
+    {
+        Skipped = true;
+        return ER_RESEMPTY;
+    }
+    MessageBox2::information(this, "Требование", "Задайте ток 4,000мА в канале EXTmA2");
+    return NOERROR;
+}
+
+int TuneDialogA1::Start6_3_5_1()
+{
+    if (Skipped)
+        return ER_RESEMPTY;
+    WaitNSeconds(10);
+    int res = ReadAnalogMeasurements();
+    if (res == NOERROR)
+        RegData = ChA1.Bda_block.EXTmA2;
+    return res;
+}
+
+int TuneDialogA1::Start6_3_5_2()
+{
+    if (Skipped)
+        return ER_RESEMPTY;
+    MessageBox2::information(this, "Требование", "Задайте ток 20,000мА в канале EXTmA2");
+    return NOERROR;
+}
+
+int TuneDialogA1::Start6_3_5_3()
+{
+    if (Skipped)
+        return ER_RESEMPTY;
+    int res = ReadAnalogMeasurements();
+    if (res == NOERROR)
+    {
+        Bac_block.Ama2 = (ChA1.Bda_block.EXTmA2 - RegData) / 16;
+        Bac_block.Bma2 = (4*ChA1.Bda_block.EXTmA2 - 20*RegData) / 16;
+    }
+    return res;
+}
+
+int TuneDialogA1::Start6_3_6()
+{
+    Skipped = false;
+    if (MessageBox2::question(this, "Вопрос", "Будет проведена регулировка по входу EXTmA1, выполнить?") == false)
+    {
+        Skipped = true;
+        return ER_RESEMPTY;
+    }
+    MessageBox2::information(this, "Требование", "Задайте ток 4,000мА в канале EXTmA1");
+    return NOERROR;
+}
+
+int TuneDialogA1::Start6_3_7_1()
+{
+    if (Skipped)
+        return ER_RESEMPTY;
+    WaitNSeconds(10);
+    int res = ReadAnalogMeasurements();
+    if (res == NOERROR)
+        RegData = ChA1.Bda_block.EXTmA1;
+    return res;
+}
+
+int TuneDialogA1::Start6_3_7_2()
+{
+    if (Skipped)
+        return ER_RESEMPTY;
+    MessageBox2::information(this, "Требование", "Задайте ток 20,000мА в канале EXTmA1");
+    return NOERROR;
+}
+
+int TuneDialogA1::Start6_3_7_3()
+{
+    if (Skipped)
+        return ER_RESEMPTY;
+    int res = ReadAnalogMeasurements();
+    if (res == NOERROR)
+    {
+        Bac_block.Ama1 = (ChA1.Bda_block.EXTmA1 - RegData) / 16;
+        Bac_block.Bma1 = (4*ChA1.Bda_block.EXTmA1 - 20*RegData) / 16;
+    }
+    return res;
+}
+
+int TuneDialogA1::Start6_3_8()
+{
+    if (MessageBox2::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?") == false)
+        return GENERALERROR;
+    cn->Send(CN_WBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
+    if (cn->result != NOERROR)
+        return GENERALERROR;
+    return NOERROR;
+}
+
+int TuneDialogA1::Start6_3_9()
+{
+    WaitNSeconds(10);
+    if (ReadAnalogMeasurements() != NOERROR)
+        return GENERALERROR;
+    return CheckAnalogValues(true);
+}
+
+int TuneDialogA1::Start6_3_10()
+{
+    cn->Send(CN_GBd, 5, &ChA1.Bda_out_an, sizeof(Check_A1::A1_Bd4));
+    if (cn->result != NOERROR)
+        return GENERALERROR;
+    return NOERROR;
 }
 
 void TuneDialogA1::MsgClear()
@@ -822,13 +739,13 @@ void TuneDialogA1::LoadFromFile()
 {
     QByteArray ba = pc.LoadFile("Tune files (*.tn)");
     memcpy(&Bac_block,&(ba.data()[0]),sizeof(Bac_block));
-    WriteTuneCoefsToGUI();
+    FillBac();
     MessageBox2::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
 void TuneDialogA1::SaveToFile()
 {
-    ReadTuneCoefsFromGUI();
+    FillBackBac();
     int res = pc.SaveFile("Tune files (*.tn)", &Bac_block, sizeof(Bac_block));
     switch (res)
     {

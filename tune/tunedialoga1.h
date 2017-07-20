@@ -9,7 +9,7 @@
 #include "../config/configa1.h"
 #include "../check/checka1.h"
 
-#define TUNEFILELENGTH  256
+#define TDA1_MEASNUM    4 // количество проводимых измерений для усреднения
 
 #define TD_TMK  25.0 // degrees
 #define TD_VBAT 3.0 // voltage
@@ -54,11 +54,12 @@ private:
         sl.append("6.3.7.3. КМТ1: получение блока данных и расчёт регулировочных коэффициентов...");
         sl.append("6.3.8. Запись настроечных коэффициентов и переход на новую конфигурацию...");
         sl.append("6.3.9. Проверка аналоговых данных...");
+        sl.append("6.3.10. Проверка аналоговых данных...");
         sl.append("Настройка окончена!");
         return sl;
     }
 
-    bool Cancelled, DefConfig, ok;
+    bool Cancelled, Skipped, DefConfig, ok;
     ConfigA1 *CA1;
     Check_A1 ChA1;
     QVector<publicclass::DataRec> S2Config;
@@ -83,14 +84,27 @@ private:
 
     Bac Bac_block;
 
+    struct EMData
+    {
+        float u1;
+        float u2;
+        float phy;
+        float freq;
+    };
+
+    EMData RealData;
+
+    float RegData;
+
     void SetupUI();
 
     int CheckPassword();
     int ShowScheme();
     int Start6_2();
-    int CheckAnalogValues();
+    int CheckBdaValues();
     int Start6_3_1();
     int Start6_3_2_1();
+    int CheckAnalogValues(bool isPrecise); // проверка Bda_in на корректность
     int Start6_3_2_2();
     int Start6_3_2_3();
     int Start6_3_3_1();
@@ -107,6 +121,7 @@ private:
     int Start6_3_7_3();
     int Start6_3_8();
     int Start6_3_9();
+    int Start6_3_10();
 
     bool IsWithinLimits(double number, double base, double threshold);
     int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта

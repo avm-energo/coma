@@ -15,7 +15,6 @@ signals:
 public slots:
 
 private:
-    Bip Bip_block;
     QTimer *timer;
     QXlsx::Document *xlsx;
     bool XlsxWriting;

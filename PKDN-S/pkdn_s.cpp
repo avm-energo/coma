@@ -418,7 +418,7 @@ void pkdn_s::ClearBsi()
 
 void pkdn_s::OpenBhbDialog()
 {
-    HiddenDialog *dlg = new HiddenDialog(HiddenDialog::BYMY);
+    HiddenDialog *dlg = new HiddenDialog(HiddenDialog::PKDN);
     pc.BoardBBhb.HWVer = pc.ModuleBsi.HwverB;
     pc.BoardBBhb.ModSerialNum = pc.ModuleBsi.SerialNum;
     pc.BoardBBhb.SerialNum = pc.ModuleBsi.SerialNumB;

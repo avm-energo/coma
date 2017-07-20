@@ -24,6 +24,14 @@ public:
         levalue = le->text();
         return true;
     }
+    template <typename T> static bool LENumber(QWidget *w, const QString &lename, T &levalue)
+    {
+        QLineEdit *le = w->findChild<QLineEdit *>(lename);
+        if (le == 0)
+            return false;
+        levalue = le->text().toDouble();
+        return true;
+    }
     static bool AppendTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool SetTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool TEData(QWidget *w, const QString &tename, QString &tevalue);

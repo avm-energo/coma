@@ -5,6 +5,8 @@
 
 class Check_A1
 {
+public:
+
     // Блок Bdа_in – входная информация о переменных напряжениях в реальном масштабе на входах модуля
     // Блок Bdа_out  - выходные сигналы переменного тока в первичном масштабе
     struct A1_Bd1
@@ -48,9 +50,6 @@ class Check_A1
         float EXTmA2;               // 5 значение второго сигнала (4-20) мА
     };
 
-
-public:
-
     Bda Bda_block;
     A1_Bd1 Bda_in, Bda_out;
     A1_Bd2 Bda_h;
@@ -59,22 +58,22 @@ public:
 
     Check_A1();
     QWidget *BdaW(QWidget *parent);
-    QWidget *Bd1W(QWidget *parent);
-    QWidget *Bd2W(QWidget *parent);
-    QWidget *Bd3W(QWidget *parent);
-    QWidget *Bd4W(QWidget *parent);
+    QWidget *Bd1W(const QString &begin, QWidget *parent);
+    QWidget *Bd2W(const QString &begin, QWidget *parent);
+    QWidget *Bd3W(const QString &begin, QWidget *parent);
+    QWidget *Bd4W(const QString &begin, QWidget *parent);
+    QWidget *Bda_inW(QWidget *parent);
+    QWidget *Bda_outW(QWidget *parent);
+    QWidget *Bda_hW(QWidget *parent);
+    QWidget *Bda_in_anW(QWidget *parent);
+    QWidget *Bda_out_anW(QWidget *parent);
     void FillBda(QWidget *parent);
+    void FillBd1W(const QString &begin, A1_Bd1 Bda, QWidget *parent);
     void FillBda_in(QWidget *parent);
     void FillBda_out(QWidget *parent);
     void FillBda_h(QWidget *parent);
     void FillBda_in_an(QWidget *parent);
     void FillBda_out_an(QWidget *parent);
-    void FillBackBda(QWidget *parent);
-    void FillBackBda_in(QWidget *parent);
-    void FillBackBda_out(QWidget *parent);
-    void FillBackBda_h(QWidget *parent);
-    void FillBackBda_in_an(QWidget *parent);
-    void FillBackBda_out_an(QWidget *parent);
 };
 
 #endif // CHECKA1_H

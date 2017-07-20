@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QGroupBox>
 #include <QPushButton>
+#include <QPixmap>
 #include "hiddendialog.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/messagebox.h"
@@ -13,7 +14,7 @@ HiddenDialog::HiddenDialog(int type, QWidget *parent) :
     QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    setStyleSheet("QDialog {background-color: rgb(0,192,0);}");
+//    setStyleSheet("QDialog {background-color: rgb(0,192,0);}");
     Type = type;
     switch (type)
     {

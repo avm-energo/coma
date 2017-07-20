@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui xlsx serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -44,7 +44,9 @@ SOURCES += main.cpp\
     ../check/checkdialoga1.cpp \
     ../tune/tunedialoga1.cpp \
     ../dialogs/keypressdialog.cpp \
-    ../check/checka1.cpp
+    ../check/checka1.cpp \
+    ../dialogs/settingsdialog.cpp \
+    ../dialogs/downloaddialog.cpp
 
 HEADERS  += pkdn_s.h \
     ../Canal.h \
@@ -77,7 +79,9 @@ HEADERS  += pkdn_s.h \
     ../check/checkdialoga1.h \
     ../tune/tunedialoga1.h \
     ../dialogs/keypressdialog.h \
-    ../check/checka1.h
+    ../check/checka1.h \
+    ../dialogs/settingsdialog.h \
+    ../dialogs/downloaddialog.h
 
 RESOURCES += \
     pkdn-s.qrc
