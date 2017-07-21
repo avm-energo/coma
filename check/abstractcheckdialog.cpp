@@ -22,7 +22,7 @@ AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) :
 {
     XlsxWriting = false;
     xlsx = 0;
-    CurBdNum = 0;
+    CurBdNum = 1;
     WRow = 0;
     Bd_blocks.clear();
     timer = new QTimer;
@@ -35,13 +35,7 @@ AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) :
 void AbstractCheckDialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    QTabWidget *CheckTW = new QTabWidget;
-    CheckTW->addTab(AutoCheckUI(),"Автоматическая проверка");
-    for (int i=0; i<BdNum; ++i)
-        CheckTW->addTab(BdUI(i),"Текущие измерения гр. "+QString::number(i));
-    lyout->addWidget(CheckTW);
-
-    lyout = new QVBoxLayout;
+    QWidget *w = new QWidget;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QLabel *lbl = new QLabel("Период обновления данных измерения, сек:");
     hlyout->addWidget(lbl);
@@ -80,6 +74,15 @@ void AbstractCheckDialog::SetupUI()
     if (pc.Emul)
         pb->setEnabled(false);
     lyout->addWidget(pb);
+    w->setLayout(lyout);
+
+    QTabWidget *CheckTW = new QTabWidget;
+    CheckTW->addTab(AutoCheckUI(),"Автоматическая проверка");
+    for (int i=1; i<=BdNum; ++i)
+        CheckTW->addTab(BdUI(i),"Текущие измерения гр. "+QString::number(i));
+    lyout = new QVBoxLayout;
+    lyout->addWidget(CheckTW);
+    lyout->addWidget(w);
     setLayout(lyout);
 }
 
@@ -167,7 +170,7 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile(int bdnum)
 
 void AbstractCheckDialog::StartAnalogMeasurements()
 {
-    CurBdNum = 0;
+    CurBdNum = 1;
     timer->start();
 }
 
@@ -214,4 +217,6 @@ void AbstractCheckDialog::TimerTimeout()
 {
     ReadAnalogMeasurementsAndWriteToFile(CurBdNum);
     ++CurBdNum;
+    if (CurBdNum >= BdNum)
+        CurBdNum = 1;
 }

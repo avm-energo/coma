@@ -20,7 +20,7 @@
 
 CheckDialogA1::CheckDialogA1(QWidget *parent) : AbstractCheckDialog(parent)
 {
-    BdNum = 8;
+    BdNum = 5;
     SetupUI();
 }
 
@@ -68,155 +68,40 @@ QWidget *CheckDialogA1::AutoCheckUI()
 
 QWidget *CheckDialogA1::BdUI(int bdnum)
 {
-    QWidget *w = new QWidget;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    int i;
     switch (bdnum)
     {
-    case 0: // Блок #1
-    {
-        hlyout->addWidget(WDFunc::NewLBL(this, "0.Температура:"));
-        hlyout->addWidget(WDFunc::NewLBLT(this, "", "value0", ValuesFormat, ""));
-        hlyout->addWidget(WDFunc::NewLBL(this, "1.Батарея:"));
-        hlyout->addWidget(WDFunc::NewLBLT(this, "", "value1", ValuesFormat, ""));
-        hlyout->addWidget(WDFunc::NewLBL(this, "2.Частота:"));
-        hlyout->addWidget(WDFunc::NewLBLT(this, "", "value2", ValuesFormat, ""));
-        lyout->addLayout(hlyout);
-        for (i = 0; i < 6; ++i)
-        {
-            QString IndexStr = "[" + QString::number(i) + "]";
-            glyout->addWidget(WDFunc::NewLBL(this, "IUNF"+IndexStr),0,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+3), ValuesFormat, \
-                                              QString::number(i+3)+".Истинные действующие значения сигналов"),1,i,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "IUF"+IndexStr),2,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+9), ValuesFormat, \
-                                              QString::number(i+9)+".Действующие значения сигналов по 1-й гармонике\nотносительно ф. А 1-й группы"),3,i,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "PHF"+IndexStr),4,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+15), ValuesFormat, \
-                                              QString::number(i+15)+".Угол сдвига между сигналами по первой гармонике\nотносительно ф. А 1-й группы"),5,i,1,1);
-        }
-        for (i = 0; i < 3; ++i)
-        {
-            QString IndexStr = "[" + QString::number(i) + "]";
-            glyout->addWidget(WDFunc::NewLBL(this, "PNF"+IndexStr),6,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+21), ValuesFormat, \
-                                              QString::number(i+21)+".Истинная активная мощность"),7,i,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "SNF"+IndexStr),6,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+24), ValuesFormat, \
-                                              QString::number(i+24)+".Кажущаяся полная мощность"),7,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "QNF"+IndexStr),8,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+27), ValuesFormat, \
-                                              QString::number(i+27)+".Реактивная мощность"),9,i,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "Cos"+IndexStr),8,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+30), ValuesFormat, \
-                                              QString::number(i+30)+".Cos phi по истинной активной мощности"),9,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "PF"+IndexStr),10,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+33), ValuesFormat, \
-                                              QString::number(i+33)+".Активная мощность по 1-й гармонике"),11,i,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "QF"+IndexStr),10,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+36), ValuesFormat, \
-                                              QString::number(i+36)+".Реактивная мощность по 1-й гармонике"),11,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "SF"+IndexStr),12,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+39), ValuesFormat, \
-                                              QString::number(i+39)+".Полная мощность по 1-й гармонике"),13,i,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "CosPhi"+IndexStr),12,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+42), ValuesFormat, \
-                                              QString::number(i+42)+".Cos phi по 1-й гармонике"),13,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "PHI"+IndexStr),14,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+45), ValuesFormat, \
-                                              QString::number(i+45)+".Угол между током и напряжением"),15,i,1,1);
-        }
-        lyout->addLayout(glyout);
-        break;
+    case 1: // Блок #1
+        return ChA1.Bda_inW(this);
+    case 2:
+        return ChA1.Bda_outW(this);
+    case 3:
+        return ChA1.Bda_hW(this);
+    case 4:
+        return ChA1.Bda_in_anW(this);
+    case 5:
+        return ChA1.Bda_out_anW(this);
+    default:
+        return new QWidget;
     }
-    case 1:
-    {
-
-    }
-    }
-    w->setLayout(lyout);
-    return w;
 }
 
 void CheckDialogA1::RefreshAnalogValues(int bdnum)
 {
-/*    QLabel *lbl;
-    WDFunc::SetLBLText(this, "value0", QString::number(Bda_block.Tmk, 'f', 1));
-    WDFunc::SetLBLText(this, "value1", QString::number(Bda_block.Vbat, 'f', 1));
-    WDFunc::SetLBLText(this, "value2", QString::number(Bda_block.Frequency, 'f', 1));
-    for (int i = 0; i < 3; i++)
+    switch (bdnum)
     {
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+3));
-        if (lbl == 0)
-            return;
-        int Precision = (pc.ModuleBsi.MTypeB != MTE_2T0N) ? 3 : 4;
-        lbl->setText(QString::number(Bda_block.IUefNat_filt[i], 'f', Precision));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+6));
-        if (lbl == 0)
-            return;
-        Precision = (pc.ModuleBsi.MType1 != MTE_0T2N) ? 4 : 3;
-        lbl->setText(QString::number(Bda_block.IUefNat_filt[i+3], 'f', Precision));
-
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+9));
-        if (lbl == 0)
-            return;
-        Precision = (pc.ModuleBsi.MType1 != MTE_2T0N) ? 3 : 4;
-        lbl->setText(QString::number(Bda_block.IUeff_filtered[i], 'f', Precision));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+12));
-        if (lbl == 0)
-            return;
-        Precision = (pc.ModuleBsi.MType1 != MTE_0T2N) ? 4 : 3;
-        lbl->setText(QString::number(Bda_block.IUeff_filtered[i+3], 'f', Precision));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+15));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.phi_next_f[i], 'f', 3));
+    case 1: // Блок #1
+        ChA1.FillBda_in(this);
+    case 2:
+        ChA1.FillBda_out(this);
+    case 3:
+        ChA1.FillBda_h(this);
+    case 4:
+        ChA1.FillBda_in_an(this);
+    case 5:
+        ChA1.FillBda_out_an(this);
+    default:
+        return;
     }
-    for (int i=0; i<3; i++)
-    {
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+21));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.PNatf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+24));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.SNatf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+27));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.QNatf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+30));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.CosPhiNat[i], 'f', 4));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+33));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.Pf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+36));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.Qf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+39));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.Sf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+42));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.CosPhi[i], 'f', 4));
-    }
-    for (int i=0; i<3; i++)
-    {
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+45));
-        if (lbl == 0)
-            return;
-        float PHI = (180*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
-        lbl->setText(QString::number(PHI, 'f', 3));
-    } */
 }
 
 void CheckDialogA1::PrepareHeadersForFile(int row)

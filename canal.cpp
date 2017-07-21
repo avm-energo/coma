@@ -131,7 +131,7 @@ void Canal::InitiateSend()
         WRLength += static_cast<quint8>(WriteData.at(8));
         WRLength += sizeof(publicclass::FileHeader); // sizeof(FileHeader)
         WRLength += 4; // + 4 bytes prefix
-//        WriteData.resize(WRLength);
+        WriteData.resize(WRLength);
         emit writedatalength(WRLength); // сигнал для прогрессбара
         FirstSegment = true;
         SetWRSegNum();
@@ -395,10 +395,10 @@ void Canal::SetWRSegNum()
 
 void Canal::WRCheckForNextSegment()
 {
+    QByteArray tmpba;
     if (SegLeft)
     {
         --SegLeft;
-        QByteArray tmpba;
         if (FirstSegment)
         {
             tmpba.append(CN_MS);
@@ -407,21 +407,21 @@ void Canal::WRCheckForNextSegment()
         else
             tmpba.append(CN_MS3);
         tmpba.append(cmd);
-        if (SegLeft)
-        {
-            AppendSize(tmpba, CN_MAXSEGMENTLENGTH);
-            tmpba += WriteData.mid(SegEnd, CN_MAXSEGMENTLENGTH);
-            SegEnd += CN_MAXSEGMENTLENGTH;
-        }
-        else
-        {
-            AppendSize(tmpba, WriteData.size()-SegEnd);
-            tmpba += WriteData.right(WriteData.size()-SegEnd);
-            WriteData.clear();
-        }
-        emit writedatapos(SegEnd);
-        WriteDataToPort(tmpba);
     }
+    if (SegLeft)
+    {
+        AppendSize(tmpba, CN_MAXSEGMENTLENGTH);
+        tmpba += WriteData.mid(SegEnd, CN_MAXSEGMENTLENGTH);
+        SegEnd += CN_MAXSEGMENTLENGTH;
+    }
+    else
+    {
+        AppendSize(tmpba, SegEnd);
+        tmpba += WriteData.right(SegEnd);
+        WriteData.clear();
+    }
+    emit writedatapos(SegEnd);
+    WriteDataToPort(tmpba);
 }
 
 void Canal::SendOk(bool cont)

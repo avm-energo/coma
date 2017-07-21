@@ -4,13 +4,19 @@
 #
 #-------------------------------------------------
 
+QMAKE_TARGET_COMPANY = EvelSoft
+QMAKE_TARGET_COPYRIGHT = EvelSoft
+QMAKE_TARGET_PRODUCT = COMA
+RC_ICONS = ../coma.ico
+CONFIG += c++11
+VERSION = 2.0
+
 QT       += core gui xlsx serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = PKDN-S
 TEMPLATE = app
-
 
 SOURCES += main.cpp\
         pkdn_s.cpp \

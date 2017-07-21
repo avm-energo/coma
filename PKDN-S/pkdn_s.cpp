@@ -72,6 +72,13 @@ pkdn_s::pkdn_s(QWidget *parent)
     SetupMenubar();
     PrepareTimers();
     LoadSettings();
+    connect(cn,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBarSize(quint32)));
+    connect(cn,SIGNAL(osceraseremaining(quint32)),this,SLOT(SetProgressBar(quint32)));
+    connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
+    connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
+    connect(cn,SIGNAL(sendend()),this,SLOT(DisableProgressBar()));
+    connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+    connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
 }
 
 pkdn_s::~pkdn_s()
@@ -110,11 +117,12 @@ void pkdn_s::SetupUI()
     connect(act,SIGNAL(triggered()),this,SLOT(EmulA1()));
     tb->addAction(act);
     tb->addSeparator();
-    act = new QAction(this);
+    // пока непонятно, что настраивать
+/*    act = new QAction(this);
     act->setToolTip("Настройки");
     act->setIcon(QIcon(":/pic/settings.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
-    tb->addAction(act);
+    tb->addAction(act); */
     act = new QAction(this);
     act->setToolTip("Протокол ошибок");
     act->setIcon(QIcon(":/pic/skull-and-bones.png"));
@@ -227,14 +235,15 @@ void pkdn_s::SetupMenubar()
     menu->addAction(WriteSNAction);
     MainMenuBar->addMenu(menu);
 
-    menu = new QMenu;
+    // пока непонятно, что настраивать
+/*    menu = new QMenu;
     menu->setTitle("Настройки");
     act = new QAction(this);
     act->setText("Настройки");
     act->setIcon(QIcon(":/pic/settings.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
     menu->addAction(act);
-    MainMenuBar->addMenu(menu);
+    MainMenuBar->addMenu(menu); */
 
     act = new QAction(this);
     act->setText("О программе");
@@ -296,6 +305,8 @@ void pkdn_s::Stage1()
 
 void pkdn_s::Stage1_5()
 {
+    if (cn->Connected)
+        return;
     QDialog *dlg = this->findChild<QDialog *>("connectdlg");
     if (dlg != 0)
         dlg->close();
@@ -329,13 +340,6 @@ void pkdn_s::Stage1_5()
         Stage1();
         return;
     }
-    connect(cn,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBarSize(quint32)));
-    connect(cn,SIGNAL(osceraseremaining(quint32)),this,SLOT(SetProgressBar(quint32)));
-    connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
-    connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
-    connect(cn,SIGNAL(sendend()),this,SLOT(DisableProgressBar()));
-    connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-    connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     Stage2();
 }
 
@@ -390,7 +394,7 @@ void pkdn_s::FillBsi()
     }
     WDFunc::SetLEData(this, "rstcountle", QString::number(pc.ModuleBsi.RstCount, 16));
     WDFunc::SetLEData(this, "cpuidle", QString::number(pc.ModuleBsi.UIDHigh, 16)+QString::number(pc.ModuleBsi.UIDMid, 16)+QString::number(pc.ModuleBsi.UIDLow, 16));
-    WDFunc::SetLEData(this, "snble", QString::number(pc.ModuleBsi.SerialNumB, 16));
+    WDFunc::SetLEData(this, "snble", QString::number(pc.ModuleBsi.SerialNum, 16));
 }
 
 void pkdn_s::ClearBsi()
@@ -418,6 +422,11 @@ void pkdn_s::ClearBsi()
 
 void pkdn_s::OpenBhbDialog()
 {
+    if (!cn->Connected)
+    {
+        MessageBox2::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с модулем");
+        return;
+    }
     HiddenDialog *dlg = new HiddenDialog(HiddenDialog::PKDN);
     pc.BoardBBhb.HWVer = pc.ModuleBsi.HwverB;
     pc.BoardBBhb.ModSerialNum = pc.ModuleBsi.SerialNum;
@@ -525,7 +534,8 @@ void pkdn_s::Exit()
 
 void pkdn_s::EmulA1()
 {
-    if (pc.Emul) // если уже в режиме эмуляции, выход
+//    if ((pc.Emul) || (cn->Connected)) // если уже в режиме эмуляции или работаем с модулем, выход
+    if (pc.Emul)
         return;
     pc.ModuleBsi.MTypeB = MTB_A1;
     pc.ModuleBsi.MTypeM = MTM_00;
@@ -534,6 +544,8 @@ void pkdn_s::EmulA1()
 
 void pkdn_s::StartEmulxx()
 {
+    if (cn->Connected)
+        Disconnect();
     pc.ModuleBsi.SerialNum = 0x12345678;
     pc.ModuleBsi.Hth = 0x00;
     pc.Emul = true;
@@ -542,8 +554,9 @@ void pkdn_s::StartEmulxx()
 
 void pkdn_s::StartSettingsDialog()
 {
-    SettingsDialog *dlg = new SettingsDialog;
-    dlg->exec();
+    // пока непонятно, что тут настраивать
+/*    SettingsDialog *dlg = new SettingsDialog;
+    dlg->exec(); */
 }
 
 void pkdn_s::UpdateMainTE(QByteArray ba)
@@ -680,10 +693,7 @@ void pkdn_s::DisableProgressBar()
 void pkdn_s::SetDefConf()
 {
     MainConfDialog->SetDefConf();
-    if (ConfB != 0)
-        ConfB->SetDefConf();
-    if (ConfM != 0)
-        ConfM->SetDefConf();
+    ConfB->SetDefConf();
     Fill();
     MessageBox2::information(this, "Успешно", "Задана конфигурация по умолчанию");
 }
@@ -691,8 +701,5 @@ void pkdn_s::SetDefConf()
 void pkdn_s::Fill()
 {
     MainConfDialog->Fill();
-    if (ConfB != 0)
-        ConfB->Fill();
-    if (ConfM != 0)
-        ConfM->Fill();
+    ConfB->Fill();
 }

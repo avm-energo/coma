@@ -153,24 +153,9 @@ void TuneDialogA1::SetupUI()
     vlyout->addWidget(ChA1.Bda_inW(this));
     gb->setLayout(vlyout);
     lyout->addWidget(gb);
-    gb = new QGroupBox("Гармонический состав напряжений (Bda_h)");
-    vlyout = new QVBoxLayout;
-    vlyout->addWidget(ChA1.Bda_hW(this));
-    gb->setLayout(vlyout);
-    lyout->addWidget(gb);
-    gb = new QGroupBox("Напряжения в первичном масштабе (Bda_out)");
-    vlyout = new QVBoxLayout;
-    vlyout->addWidget(ChA1.Bda_outW(this));
-    gb->setLayout(vlyout);
-    lyout->addWidget(gb);
     gb = new QGroupBox("Входные сигналы постоянного тока (Bda_in_an)");
     vlyout = new QVBoxLayout;
     vlyout->addWidget(ChA1.Bda_in_anW(this));
-    gb->setLayout(vlyout);
-    lyout->addWidget(gb);
-    gb = new QGroupBox("Выходные сигналы постоянного тока (Bda_out_an)");
-    vlyout = new QVBoxLayout;
-    vlyout->addWidget(ChA1.Bda_out_anW(this));
     gb->setLayout(vlyout);
     lyout->addWidget(gb);
 
@@ -339,8 +324,23 @@ void TuneDialogA1::WriteTuneCoefs()
 
 void TuneDialogA1::SetDefCoefs()
 {
-    Bac_block = {0.974, 0.98307, 1.0, 0.00919, 12.0, 24.0, 36.0, 48.0, 60.0, 71.0, 12.0, 24.0, 36.0, 48.0, 60.0, 71.0, \
-                 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 82.0875, 6023.3, 163.839, -0.4125, 163.6494, -0.8425};
+    Bac_block.KmU[0] = static_cast<float>(0.974);
+    Bac_block.KmU[1] = static_cast<float>(0.98307);
+    Bac_block.K_freq = 1;
+    Bac_block.DPhy = static_cast<float>(0.00919);
+    Bac_block.U1kDN[0] = Bac_block.U2kDN[0] = 12;
+    Bac_block.U1kDN[1] = Bac_block.U2kDN[1] = 24;
+    Bac_block.U1kDN[2] = Bac_block.U2kDN[2] = 36;
+    Bac_block.U1kDN[3] = Bac_block.U2kDN[3] = 48;
+    Bac_block.U1kDN[4] = Bac_block.U2kDN[4] = 60;
+    Bac_block.U1kDN[5] = Bac_block.U2kDN[5] = 71;
+    Bac_block.PhyDN[0] = Bac_block.PhyDN[1] = Bac_block.PhyDN[2] = Bac_block.PhyDN[3] = Bac_block.PhyDN[4] = Bac_block.PhyDN[5] = 0;
+    Bac_block.Art = static_cast<float>(82.0875);
+    Bac_block.Brt = static_cast<float>(6023.3);
+    Bac_block.Ama1 = static_cast<float>(163.839);
+    Bac_block.Bma1 = static_cast<float>(-0.4125);
+    Bac_block.Ama2 = static_cast<float>(163.6494);
+    Bac_block.Bma2 = static_cast<float>(-0.8425);
     FillBac();
 }
 

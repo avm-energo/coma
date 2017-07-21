@@ -19,6 +19,7 @@ private:
     QXlsx::Document *xlsx;
     bool XlsxWriting;
     int WRow;
+    Check_A1 ChA1;
     QTime *ElapsedTimeCounter;
     const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
 
