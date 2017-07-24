@@ -32,6 +32,9 @@ public:
     virtual void RefreshAnalogValues(int bdnum) = 0; // обновление полей в GUI из полученного соответствующего Bd_block
     virtual void PrepareHeadersForFile(int row) = 0; // row - строка для записи заголовков
     virtual void WriteToFile(int row, int bdnum) = 0; // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
+    virtual void ChooseValuesToWrite() = 0;
+    virtual void SetDefaultValuesToWrite() = 0;
+    void SetBd(void *block, int blocksize);
 
     QXlsx::Document *xlsx;
     int WRow, CurBdNum, BdNum;

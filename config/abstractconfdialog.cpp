@@ -19,7 +19,7 @@ void AbstractConfDialog::ReadConf()
     if (cn->result == NOERROR)
         emit NewConfLoaded();
     else
-        MessageBox2::error(this, "ошибка", "Ошибка чтения конфигурации из модуля");
+        MessageBox2::error(this, "ошибка", "Ошибка чтения конфигурации из модуля "+QString::number(cn->result));
 }
 
 void AbstractConfDialog::WriteConf()

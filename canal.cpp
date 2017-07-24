@@ -90,7 +90,7 @@ void Canal::InitiateSend()
     {
         if (DR->isEmpty())
         {
-            SendErr();
+//            SendErr();
             Finish(CN_NULLDATAERROR);
             break;
         }
@@ -119,18 +119,18 @@ void Canal::InitiateSend()
         if (DR->isEmpty())
             Finish(CN_NULLDATAERROR);
 //        WriteData.resize(CN_MAXFILESIZE);
-        WriteData.append(CN_MS);
-        WriteData.append(cmd);
-        AppendSize(WriteData, 0); // временно записываем нулевую длину, впоследствии поменяем
+//        WriteData.append(CN_MS);
+//        WriteData.append(cmd);
+//        AppendSize(WriteData, 0); // временно записываем нулевую длину, впоследствии поменяем
         WriteData.resize(CN_MAXFILESIZE);
-        pc.StoreDataMem(&(WriteData.data()[4]), DR, fnum);
+        pc.StoreDataMem(&(WriteData.data()[0]), DR, fnum);
         // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
-        WRLength = static_cast<quint8>(WriteData.at(11))*16777216; // с 8 байта начинается FileHeader.size
-        WRLength += static_cast<quint8>(WriteData.at(10))*65536;
-        WRLength += static_cast<quint8>(WriteData.at(9))*256;
-        WRLength += static_cast<quint8>(WriteData.at(8));
+        WRLength = static_cast<quint8>(WriteData.at(7))*16777216; // с 4 байта начинается FileHeader.size
+        WRLength += static_cast<quint8>(WriteData.at(6))*65536;
+        WRLength += static_cast<quint8>(WriteData.at(5))*256;
+        WRLength += static_cast<quint8>(WriteData.at(4));
         WRLength += sizeof(publicclass::FileHeader); // sizeof(FileHeader)
-        WRLength += 4; // + 4 bytes prefix
+//        WRLength += 4; // + 4 bytes prefix
         WriteData.resize(WRLength);
         emit writedatalength(WRLength); // сигнал для прогрессбара
         FirstSegment = true;
@@ -308,7 +308,7 @@ void Canal::ParseIncomeData(QByteArray &ba)
                     Finish(NOERROR);
                 else
                 {
-                    SendErr();
+//                    SendErr();
                     Finish(res);
                 }
             }
@@ -388,7 +388,7 @@ void Canal::SetWRSegNum()
     }
     else
     {
-        SegLeft = 0;
+        SegLeft = 1;
         SegEnd = WRLength;
     }
 }

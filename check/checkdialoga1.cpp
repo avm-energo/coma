@@ -20,7 +20,12 @@
 
 CheckDialogA1::CheckDialogA1(QWidget *parent) : AbstractCheckDialog(parent)
 {
-    BdNum = 5;
+    BdNum = 8;
+    SetBd(&ChA1.Bda_in, sizeof(ChA1.Bda_in));
+    SetBd(&ChA1.Bda_out, sizeof(ChA1.Bda_out));
+    SetBd(&ChA1.Bda_h, sizeof(ChA1.Bda_h));
+    SetBd(&ChA1.Bda_in_an, sizeof(ChA1.Bda_in_an));
+    SetBd(&ChA1.Bda_out_an, sizeof(ChA1.Bda_out_an));
     SetupUI();
 }
 
@@ -75,10 +80,16 @@ QWidget *CheckDialogA1::BdUI(int bdnum)
     case 2:
         return ChA1.Bda_outW(this);
     case 3:
-        return ChA1.Bda_hW(this);
+        return ChA1.Bda_h0W(this);
     case 4:
-        return ChA1.Bda_in_anW(this);
+        return ChA1.Bda_h1W(this);
     case 5:
+        return ChA1.Bda_h2W(this);
+    case 6:
+        return ChA1.Bda_h3W(this);
+    case 7:
+        return ChA1.Bda_in_anW(this);
+    case 8:
         return ChA1.Bda_out_anW(this);
     default:
         return new QWidget;
@@ -106,48 +117,58 @@ void CheckDialogA1::RefreshAnalogValues(int bdnum)
 
 void CheckDialogA1::PrepareHeadersForFile(int row)
 {
-    for (int i=0; i<3; i++)
-    {
-        if (pc.ModuleBsi.MTypeM != MTM_81)
-            xlsx->write(row,i+2,QVariant(("U1 ф")+QString::number(i+10, 36)+", В"));
-        else
-            xlsx->write(row,i+2,QVariant("I1 ф"+QString::number(i+10, 36)+", А"));
-        if (pc.ModuleBsi.MTypeM != MTM_83)
-            xlsx->write(row,i+5,QVariant("I2 ф"+QString::number(i+10, 36)+", А"));
-        else
-            xlsx->write(row,i+5,QVariant("U2 ф"+QString::number(i+10, 36)+", В"));
-        xlsx->write(row,i+8,QVariant("Phi ф"+QString::number(i+10, 36)+", град"));
-        xlsx->write(row,i+11,QVariant("Pf ф"+QString::number(i+10, 36)+", Вт"));
-        xlsx->write(row,i+14,QVariant("Qf ф"+QString::number(i+10, 36)+", ВА"));
-        xlsx->write(row,i+17,QVariant("Sf ф"+QString::number(i+10, 36)+", ВА"));
-    }
-    xlsx->write(row,20,QVariant("f, Гц"));
-    xlsx->write(row,21,QVariant("t, град"));
+    xlsx->write(row,2,QVariant("UefNat_filt1, В"));
+    xlsx->write(row,3,QVariant("UefNat_filt2, В"));
+    xlsx->write(row,4,QVariant("Uef_filt1, В"));
+    xlsx->write(row,5,QVariant("Uef_filt2, В"));
+    xlsx->write(row,6,QVariant("Phy, град."));
+    xlsx->write(row,7,QVariant("Freq, Гц"));
+    xlsx->write(row,8,QVariant("Pt100R, Ом"));
+    xlsx->write(row,9,QVariant("EXTmA1, мА"));
+    xlsx->write(row,10,QVariant("EXTmA2, мА"));
+    xlsx->write(row,11,QVariant("Tmk, град. С"));
+    xlsx->write(row,12,QVariant("Vbat, В"));
+    xlsx->write(row,13,QVariant("Tamb, град. С"));
+    xlsx->write(row,14,QVariant("Hamb, %"));
 }
 
 void CheckDialogA1::WriteToFile(int row, int bdnum)
 {
-/*    // получение текущих аналоговых сигналов от модуля
     QXlsx::Format format;
-    for (int i=0; i<3; i++)
+    QString Precision = "0.0000";
+    format.setNumberFormat(Precision);
+    switch (bdnum)
     {
-        QString Precision = (pc.ModuleBsi.MTypeM != MTM_81) ? "0.000" : "0.0000";
-        format.setNumberFormat(Precision);
-        xlsx->write(WRow,i+2,Bda_block.IUeff_filtered[i],format);
-
-        Precision = (pc.ModuleBsi.MTypeM != MTM_83) ? "0.0000" : "0.000";
-        format.setNumberFormat(Precision);
-        xlsx->write(WRow,i+5,Bda_block.IUeff_filtered[i+3],format);
-
-        format.setNumberFormat("0.000");
-        float Phi = (static_cast<float>(180)*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
-        xlsx->write(WRow,i+8,Phi,format);
-        xlsx->write(WRow,i+11,Bda_block.Pf[i],format);
-        xlsx->write(WRow,i+14,Bda_block.Qf[i],format);
-        xlsx->write(WRow,i+17,Bda_block.Sf[i],format);
+    case 1: // Блок #1
+        xlsx->write(row,2,ChA1.Bda_in.UefNat_filt[0],format);
+        xlsx->write(row,3,ChA1.Bda_in.UefNat_filt[1],format);
+        xlsx->write(row,4,ChA1.Bda_in.Uef_filt[0],format);
+        xlsx->write(row,5,ChA1.Bda_in.Uef_filt[1],format);
+        xlsx->write(row,6,ChA1.Bda_in.Phy, format);
+        xlsx->write(row,7,ChA1.Bda_in.Frequency, format);
+        break;
+    case 2:
+        xlsx->write(row,8,ChA1.Bda_in_an.Pt100_R, format);
+        xlsx->write(row,9,ChA1.Bda_in_an.EXTmA1_I, format);
+        xlsx->write(row,10,ChA1.Bda_in_an.EXTmA2_I, format);
+        break;
+    case 3:
+        xlsx->write(row,11,ChA1.Bda_out_an.Tmk, format);
+        xlsx->write(row,12,ChA1.Bda_out_an.Vbat, format);
+        xlsx->write(row,13,ChA1.Bda_out_an.Tamb, format);
+        xlsx->write(row,14,ChA1.Bda_out_an.Hamb, format);
+        break;
+    default:
+        break;
     }
-    format.setNumberFormat("0.0000");
-    xlsx->write(WRow,20,Bda_block.Frequency,format);
-    format.setNumberFormat("0.0");
-    xlsx->write(WRow,21,Bda_block.Tmk,format); */
+}
+
+void CheckDialogA1::ChooseValuesToWrite()
+{
+
+}
+
+void CheckDialogA1::SetDefaultValuesToWrite()
+{
+
 }

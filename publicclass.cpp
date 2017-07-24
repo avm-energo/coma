@@ -139,7 +139,7 @@ int publicclass::StoreDataMem(void *mem, QVector<DataRec> *dr, quint16 fname) //
         D.size += tmpi;
         for(i=0;i<tmpi;i++)
             updCRC32((static_cast<unsigned char *>(Rptr))[i],&crc);
-        if(R.id==0xFFFF)
+        if(R.id==0xFFFFFFFF)
             break;
         m+=tmpi;
         if(R.thedata)
@@ -201,7 +201,7 @@ int publicclass::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr
       memcpy(&R,m,tmpi);
       sz+=tmpi;
       m+=tmpi;
-      if(R.id==0xFFFF)
+      if(R.id==0xFFFFFFFF)
           break;
       r=FindElem(dr,R.id);
       if(r == 0) //элемент не найден в описании, пропускаем

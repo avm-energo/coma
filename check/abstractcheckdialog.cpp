@@ -79,7 +79,7 @@ void AbstractCheckDialog::SetupUI()
     QTabWidget *CheckTW = new QTabWidget;
     CheckTW->addTab(AutoCheckUI(),"Автоматическая проверка");
     for (int i=1; i<=BdNum; ++i)
-        CheckTW->addTab(BdUI(i),"Текущие измерения гр. "+QString::number(i));
+        CheckTW->addTab(BdUI(i),"Гр. "+QString::number(i));
     lyout = new QVBoxLayout;
     lyout->addWidget(CheckTW);
     lyout->addWidget(w);
@@ -89,6 +89,14 @@ void AbstractCheckDialog::SetupUI()
 void AbstractCheckDialog::Check1PPS()
 {
 
+}
+
+void AbstractCheckDialog::SetBd(void *block, int blocksize)
+{
+    BdBlocks bdblock;
+    bdblock.block = block;
+    bdblock.blocknum = blocksize;
+    Bd_blocks.append(bdblock);
 }
 
 void AbstractCheckDialog::GetIP()

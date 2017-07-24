@@ -6,18 +6,6 @@ ConfigA1::ConfigA1(QVector<publicclass::DataRec> &config)
     // параметры входных сигналов
     quint32 StartInIndex = IDA100_START;
     quint32 StartInIndex8x = ID808X_START;
-    publicclass::DataRec configelement;
-    bool FFound = false;
-    foreach (configelement, config)
-    {
-        if (configelement.id == 0xFFFFFFFF)
-        {
-            FFound = true;
-            break;
-        }
-    }
-    if (!FFound)
-        config.append({0xFFFFFFFF, 0, NULL});
     if (StartInIndex != 0)
     {
         config.append({StartInIndex, sizeof(Bci_block.DTCanal), &Bci_block.DTCanal});
@@ -36,6 +24,12 @@ ConfigA1::ConfigA1(QVector<publicclass::DataRec> &config)
         config.append({StartInIndex8x+9, sizeof(Bci_block.DUosc), &Bci_block.DUosc});
         config.append({StartInIndex8x+11, sizeof(Bci_block.DUmin), &Bci_block.DUmin});
     }
+    for (int i=0; i<config.size(); ++i)
+    {
+        if (config.at(i).id == 0xFFFFFFFF)
+            config.removeAt(i);
+    }
+    config.append({0xFFFFFFFF, 0, NULL});
 }
 
 void ConfigA1::SetDefConf()
@@ -51,7 +45,7 @@ void ConfigA1::SetDefConf()
     Bci_block.T4 = -50;
     Bci_block.T20 = 50;
     Bci_block.H4 = 0;
-    Bci_block.H20 = 0;
+    Bci_block.H20 = 100;
     Bci_block.DDOsc = 0;
     Bci_block.DUosc = 10.0;
     Bci_block.DUmin = 1.0;

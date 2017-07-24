@@ -309,7 +309,7 @@ bool TuneDialogA1::IsWithinLimits(double number, double base, double threshold)
 
 void TuneDialogA1::ReadTuneCoefs()
 {
-    cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
+    cn->Send(CN_GBac, Canal::BT_BASE, &Bac_block, sizeof(Bac));
     if (cn->result == NOERROR)
         FillBac();
 }
@@ -317,7 +317,7 @@ void TuneDialogA1::ReadTuneCoefs()
 void TuneDialogA1::WriteTuneCoefs()
 {
     FillBackBac();
-    cn->Send(CN_WBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
+    cn->Send(CN_WBac, Canal::BT_BASE, &Bac_block, sizeof(Bac));
     if (cn->result == NOERROR)
         MessageBox2::information(this, "Внимание", "Записано успешно!");
 }
@@ -347,7 +347,7 @@ void TuneDialogA1::SetDefCoefs()
 int TuneDialogA1::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBd, Canal::BT_NONE, &ChA1.Bda_block, sizeof(Check_A1::Bda));
+    cn->Send(CN_GBd, Canal::BT_BASE, &ChA1.Bda_block, sizeof(Check_A1::Bda));
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda");
@@ -454,7 +454,7 @@ int TuneDialogA1::Start6_3_1()
         return ER_RESEMPTY;
     }
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
+    cn->Send(CN_GBac, Canal::BT_BASE, &Bac_block, sizeof(Bac));
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bac");
@@ -673,7 +673,7 @@ int TuneDialogA1::Start6_3_8()
 {
     if (MessageBox2::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?") == false)
         return GENERALERROR;
-    cn->Send(CN_WBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
+    cn->Send(CN_WBac, Canal::BT_BASE, &Bac_block, sizeof(Bac));
     if (cn->result != NOERROR)
         return GENERALERROR;
     return NOERROR;

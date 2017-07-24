@@ -64,7 +64,10 @@ public:
     QWidget *Bd4W(const QString &begin, QWidget *parent);
     QWidget *Bda_inW(QWidget *parent);
     QWidget *Bda_outW(QWidget *parent);
-    QWidget *Bda_hW(QWidget *parent);
+    QWidget *Bda_h0W(QWidget *parent);
+    QWidget *Bda_h1W(QWidget *parent);
+    QWidget *Bda_h2W(QWidget *parent);
+    QWidget *Bda_h3W(QWidget *parent);
     QWidget *Bda_in_anW(QWidget *parent);
     QWidget *Bda_out_anW(QWidget *parent);
     void FillBda(QWidget *parent);

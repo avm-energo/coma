@@ -71,7 +71,6 @@ private:
 
     AbstractConfDialog *ConfB, *ConfM;
     QDialog *TuneD, *CheckD;
-    ConfDialog *MainConfDialog;
     QAction *WriteSNAction;
     publicclass::Bsi Bsi_block;
     QVector<publicclass::DataRec> S2Config;

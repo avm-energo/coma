@@ -221,11 +221,11 @@ void pkdn_s::SetupMenubar()
     MainMenu->addAction(act);
     MainMenuBar->addMenu(MainMenu);
 
-    act = new QAction(this);
+/*    act = new QAction(this);
     act->setText("Запуск в режиме эмуляции");
     act->setIcon(QIcon(":/pic/a1.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(EmulA1()));
-    MainMenuBar->addAction(act);
+    MainMenuBar->addAction(act); */
 
     QMenu *menu = new QMenu;
     menu->setTitle("Секретные операции");
@@ -449,8 +449,6 @@ void pkdn_s::Stage3()
 /*    DownDialog = new downloaddialog;
     FwUpDialog = new fwupdialog;
     OscDialog = new oscdialog; */
-    MainConfDialog = new ConfDialog(S2Config);
-    MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     ConfDialogA1 *DialogA1 = new ConfDialogA1(S2Config);
     ConfB = DialogA1;
     MainTW->addTab(ConfB, "Конфигурирование");
@@ -692,7 +690,6 @@ void pkdn_s::DisableProgressBar()
 
 void pkdn_s::SetDefConf()
 {
-    MainConfDialog->SetDefConf();
     ConfB->SetDefConf();
     Fill();
     MessageBox2::information(this, "Успешно", "Задана конфигурация по умолчанию");
@@ -700,6 +697,5 @@ void pkdn_s::SetDefConf()
 
 void pkdn_s::Fill()
 {
-    MainConfDialog->Fill();
     ConfB->Fill();
 }

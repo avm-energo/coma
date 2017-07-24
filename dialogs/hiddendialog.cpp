@@ -108,6 +108,10 @@ void HiddenDialog::SetupUI()
     hlyout->addWidget(pb);
     vlyout->addLayout(hlyout);
     setLayout(vlyout);
+    WDFunc::SetLEData(this, "modsn", "00000000", "^\\d{8}$");
+    if (Type == BYMY) // ввод данных по мезонинной плате открывается только в случае её наличия
+        WDFunc::SetLEData(this, "mezsn", "00000000", "^\\d{8}$");
+    WDFunc::SetLEData(this, "bassn", "00000000", "^\\d{8}$");
 }
 
 void HiddenDialog::Fill()
