@@ -20,6 +20,7 @@
 AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) :
     QDialog(parent)
 {
+    Parent = parent;
     XlsxWriting = false;
     xlsx = 0;
     CurBdNum = 1;
@@ -32,10 +33,25 @@ AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) :
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void AbstractCheckDialog::SetupUI()
+void AbstractCheckDialog::Check1PPS()
 {
-    QVBoxLayout *lyout = new QVBoxLayout;
+
+}
+
+void AbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize)
+{
+    BdBlocks *bdblock = new BdBlocks;
+    while (bdnum >= Bd_blocks.size())
+        Bd_blocks.append(new BdBlocks);
+    bdblock->block = block;
+    bdblock->blocknum = blocksize;
+    Bd_blocks.replace(bdnum, bdblock);
+}
+
+QWidget *AbstractCheckDialog::BottomUI()
+{
     QWidget *w = new QWidget;
+    QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QLabel *lbl = new QLabel("Период обновления данных измерения, сек:");
     hlyout->addWidget(lbl);
@@ -75,28 +91,7 @@ void AbstractCheckDialog::SetupUI()
         pb->setEnabled(false);
     lyout->addWidget(pb);
     w->setLayout(lyout);
-
-    QTabWidget *CheckTW = new QTabWidget;
-    CheckTW->addTab(AutoCheckUI(),"Автоматическая проверка");
-    for (int i=1; i<=BdNum; ++i)
-        CheckTW->addTab(BdUI(i),"Гр. "+QString::number(i));
-    lyout = new QVBoxLayout;
-    lyout->addWidget(CheckTW);
-    lyout->addWidget(w);
-    setLayout(lyout);
-}
-
-void AbstractCheckDialog::Check1PPS()
-{
-
-}
-
-void AbstractCheckDialog::SetBd(void *block, int blocksize)
-{
-    BdBlocks bdblock;
-    bdblock.block = block;
-    bdblock.blocknum = blocksize;
-    Bd_blocks.append(bdblock);
+    return w;
 }
 
 void AbstractCheckDialog::GetIP()
@@ -110,7 +105,7 @@ void AbstractCheckDialog::GetIP()
 
 void AbstractCheckDialog::CheckIP()
 {
-    QLabel *lbl = this->findChild<QLabel *>("ipl");
+    QLabel *lbl = Parent->findChild<QLabel *>("ipl");
     if (lbl == 0)
         return;
     for (int i = 0; i < 4; i++)
@@ -134,7 +129,7 @@ void AbstractCheckDialog::StartAnalogMeasurementsToFile()
     xlsx->write(5,1,QVariant("Дата и время отсчёта"));
     PrepareHeadersForFile(6);
     WRow = 7;
-    QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
+    QPushButton *pb = Parent->findChild<QPushButton *>("pbfilemeasurements");
     if (pb != 0)
         pb->setEnabled(false);
     pb = this->findChild<QPushButton *>("pbmeasurements");
@@ -150,7 +145,9 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile(int bdnum)
     // получение текущих аналоговых сигналов от модуля
     if (bdnum < Bd_blocks.size())
     {
-        cn->Send(CN_GBd, bdnum, Bd_blocks.at(bdnum).block, Bd_blocks.at(bdnum).blocknum);
+        cn->Send(CN_GBd, bdnum, Bd_blocks.at(bdnum)->block, Bd_blocks.at(bdnum)->blocknum);
+//        if (bdnum == 3)
+//            WARNMSG("");
         if (cn->result != NOERROR)
         {
             WARNMSG("Ошибка при приёме данных");
@@ -225,6 +222,6 @@ void AbstractCheckDialog::TimerTimeout()
 {
     ReadAnalogMeasurementsAndWriteToFile(CurBdNum);
     ++CurBdNum;
-    if (CurBdNum >= BdNum)
+    if (CurBdNum > BdNum)
         CurBdNum = 1;
 }

@@ -17,6 +17,7 @@ public:
     int rowCount(const QModelIndex &index = QModelIndex()) const;
     int columnCount(const QModelIndex &index = QModelIndex()) const;
     void AddRow(publicclass::ermsg ermsg);
+    void InitModel();
 
 private:
     QList<QStringList> erdata;
@@ -35,9 +36,14 @@ public:
     ~ErrorProtocolWidget();
 
     void AddRowToProt(publicclass::ermsg ermsg);
+    void InitModel();
+
 signals:
 
 public slots:
+
+private:
+    ErrorProtocolModel *Model;
 };
 
 #endif // ERRORPROTOCOLWIDGET_H

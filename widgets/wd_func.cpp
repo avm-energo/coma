@@ -326,3 +326,8 @@ void WDFunc::SetVisible(QWidget *w, const QString &wname, bool visible)
             wdgt->hide();
     }
 }
+
+QString WDFunc::StringValueWithCheck(float value)
+{
+    if (value )
+}

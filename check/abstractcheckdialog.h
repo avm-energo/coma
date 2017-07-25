@@ -25,19 +25,19 @@ class AbstractCheckDialog : public QDialog
     Q_OBJECT
 public:
     explicit AbstractCheckDialog(QWidget *parent = 0);
-    void SetupUI();
+    virtual void SetupUI()=0;
 
-    virtual QWidget *AutoCheckUI() = 0; // UI для автоматической проверки модуля
-    virtual QWidget *BdUI(int bdnum) = 0; // визуализация наборов текущих данных от модуля
     virtual void RefreshAnalogValues(int bdnum) = 0; // обновление полей в GUI из полученного соответствующего Bd_block
     virtual void PrepareHeadersForFile(int row) = 0; // row - строка для записи заголовков
     virtual void WriteToFile(int row, int bdnum) = 0; // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
     virtual void ChooseValuesToWrite() = 0;
     virtual void SetDefaultValuesToWrite() = 0;
-    void SetBd(void *block, int blocksize);
+    void SetBd(int bdnum, void *block, int blocksize);
+    QWidget *BottomUI();
 
     QXlsx::Document *xlsx;
-    int WRow, CurBdNum, BdNum;
+    int WRow, CurBdNum, BdNum, BdUINum; // BdNum - количество блоков данных модуля, BdUINum - количество вкладок с выводом блоков данных модуля
+                                        // BdUINum >= BdNum, т.е. один блок может быть разделён на несколько вкладок
 
 signals:
 
@@ -50,7 +50,7 @@ private:
         int blocknum;
     };
 
-    QList<BdBlocks> Bd_blocks;
+    QList<BdBlocks *> Bd_blocks;
     struct Bip
     {
         quint8 ip[4];
@@ -60,6 +60,7 @@ private:
     QTimer *timer;
     bool XlsxWriting;
     QTime *ElapsedTimeCounter;
+    QWidget *Parent;
 
     void CheckIP();
     void GetIP();

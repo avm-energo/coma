@@ -271,7 +271,7 @@ public:
     QString PrbMessage;
     QVector<DataRec> Config;
 
-    QList<ermsg> ermsgpool;
+    QList<ermsg> ErMsgPool;
 
     QString VerToStr(quint32);
 

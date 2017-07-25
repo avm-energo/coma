@@ -74,6 +74,7 @@ public:
     static void AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lename, bool enabled=false);
     static void SetEnabled(QWidget *w, const QString &wname, bool enabled);
     static void SetVisible(QWidget *w, const QString &wname, bool visible);
+    static QString StringValueWithCheck(float value);
 };
 
 #endif // WD_FUNC

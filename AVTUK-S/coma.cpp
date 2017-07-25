@@ -45,6 +45,7 @@
 #include "../commands.h"
 #include "../check/checkdialog21.h"
 #include "../check/checkdialog80.h"
+#include "../check/checkdialoga1.h"
 #include "../config/confdialog21.h"
 #include "../config/confdialog80.h"
 #include "../config/confdialoga1.h"
@@ -56,6 +57,7 @@
 #include "../dialogs/errordialog.h"
 #include "../tune/tunedialog21.h"
 #include "../tune/tunedialog80.h"
+#include "../tune/tunedialoga1.h"
 #include "../widgets/mytabwidget.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/messagebox.h"
@@ -482,24 +484,41 @@ void Coma::Stage3()
 /*    DownDialog = new downloaddialog;
     FwUpDialog = new fwupdialog;
     OscDialog = new oscdialog; */
-    MainConfDialog = new ConfDialog(S2Config);
-    MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     ConfB = ConfM = 0;
     TuneD = 0;
+    CheckD = 0;
     switch(pc.ModuleBsi.MTypeB)
     {
     case MTB_21:
     {
+        MainConfDialog = new ConfDialog(S2Config);
+        MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
         ConfDialog21 *Dialog21 = new ConfDialog21(S2Config, true);
         ConfB = Dialog21;
+        TuneDialog21 *TD21 = new TuneDialog21;
+        TuneD = TD21;
         break;
     }
     case MTB_80:
+    {
+        MainConfDialog = new ConfDialog(S2Config);
+        MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
+        ConfDialog80 *D80 = new ConfDialog80(S2Config);
+        ConfB = D80;
+        TuneDialog80 *TD80 = new TuneDialog80(S2Config);
+        TuneD = TD80;
+        CheckDialog80 *CD80 = new CheckDialog80;
+        CheckD = CD80;
         break;
+    }
     case MTB_A1:
     {
         ConfDialogA1 *DialogA1 = new ConfDialogA1(S2Config);
         ConfB = DialogA1;
+        CheckDialogA1 *CDA1 = new CheckDialogA1;
+        CheckD = CDA1;
+        TuneDialogA1 *TDA1 = new TuneDialogA1;
+        TuneD = TDA1;
         break;
     }
     }
@@ -517,7 +536,7 @@ void Coma::Stage3()
 //        ConfDialog80 *Dialog80 = new ConfDialog80(S2Config);
     {
         ConfM = new ConfDialog80(S2Config);
-        TuneD = new TuneDialog80();
+        TuneD = new TuneDialog80(S2Config);
         break;
     }
     default: // 0x00
@@ -793,8 +812,6 @@ void Coma::ShowOrHideSlideSW()
 void Coma::ShowErrorDialog()
 {
     ErrorDialog *dlg = new ErrorDialog;
-    for (int i=0; i<pc.ermsgpool.size(); ++i)
-        dlg->AddErrMsg(pc.ermsgpool.at(i));
     dlg->exec();
 }
 

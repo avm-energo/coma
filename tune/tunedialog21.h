@@ -1,5 +1,5 @@
-#ifndef A_TUNEDIALOG_H
-#define A_TUNEDIALOG_H
+#ifndef TUNEDIALOG21_H
+#define TUNEDIALOG21_H
 
 #include <QDialog>
 #include "../canal.h"
@@ -13,11 +13,11 @@
 #define ATUNEWARN(a)    WARNMSG(publicclass::ER_ATUNE,__LINE__,a)
 #define ATUNEINFO(a)     INFOMSG(publicclass::ER_ATUNE,__LINE__,a)
 
-class a_tunedialog : public QDialog
+class TuneDialog21 : public QDialog
 {
     Q_OBJECT
 public:
-    explicit a_tunedialog(int type = Canal::BT_BASE, QWidget *parent = 0);
+    explicit TuneDialog21(int type = Canal::BT_BASE, QWidget *parent = 0);
 
 signals:
 
@@ -63,4 +63,4 @@ private slots:
     void SetDefCoefs();
 };
 
-#endif // A_TUNEDIALOG_H
+#endif // TUNEDIALOG21_H

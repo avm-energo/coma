@@ -66,6 +66,11 @@ QWidget *CheckDialog80::AutoCheckUI()
     return w;
 }
 
+void CheckDialog80::SetupUI()
+{
+
+}
+
 QWidget *CheckDialog80::BdUI(int bdnum)
 {
     QWidget *w = new QWidget;
@@ -265,4 +270,14 @@ void CheckDialog80::WriteToFile(int row, int bdnum)
     xlsx->write(WRow,20,Bda_block.Frequency,format);
     format.setNumberFormat("0.0");
     xlsx->write(WRow,21,Bda_block.Tmk,format); */
+}
+
+void CheckDialog80::ChooseValuesToWrite()
+{
+
+}
+
+void CheckDialog80::SetDefaultValuesToWrite()
+{
+
 }

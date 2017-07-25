@@ -187,10 +187,16 @@ void Check_A1::FillBda_out(QWidget *parent)
 
 void Check_A1::FillBda_h(QWidget *parent)
 {
-    for (int i=0; i<61; ++i)
+    for (int i=0; i<15; ++i)
     {
-        WDFunc::SetLBLText(parent, "Bda_h0"+QString::number(i), QString::number(Bda_h.HarmBuf[0][i]));
-        WDFunc::SetLBLText(parent, "Bda_h1"+QString::number(i), QString::number(Bda_h.HarmBuf[1][i]));
+        WDFunc::SetLBLText(parent, "Bda_h00"+QString::number(i), QString::number(Bda_h.HarmBuf[0][i]));
+        WDFunc::SetLBLText(parent, "Bda_h01"+QString::number(i), QString::number(Bda_h.HarmBuf[1][i]));
+        WDFunc::SetLBLText(parent, "Bda_h10"+QString::number(15+i), QString::number(Bda_h.HarmBuf[0][15+i]));
+        WDFunc::SetLBLText(parent, "Bda_h11"+QString::number(15+i), QString::number(Bda_h.HarmBuf[1][15+i]));
+        WDFunc::SetLBLText(parent, "Bda_h20"+QString::number(30+i), QString::number(Bda_h.HarmBuf[0][30+i]));
+        WDFunc::SetLBLText(parent, "Bda_h21"+QString::number(30+i), QString::number(Bda_h.HarmBuf[1][30+i]));
+        WDFunc::SetLBLText(parent, "Bda_h30"+QString::number(45+i), QString::number(Bda_h.HarmBuf[0][45+i]));
+        WDFunc::SetLBLText(parent, "Bda_h31"+QString::number(45+i), QString::number(Bda_h.HarmBuf[1][45+i]));
     }
 }
 

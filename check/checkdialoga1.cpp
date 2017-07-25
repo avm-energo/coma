@@ -20,12 +20,14 @@
 
 CheckDialogA1::CheckDialogA1(QWidget *parent) : AbstractCheckDialog(parent)
 {
-    BdNum = 8;
-    SetBd(&ChA1.Bda_in, sizeof(ChA1.Bda_in));
-    SetBd(&ChA1.Bda_out, sizeof(ChA1.Bda_out));
-    SetBd(&ChA1.Bda_h, sizeof(ChA1.Bda_h));
-    SetBd(&ChA1.Bda_in_an, sizeof(ChA1.Bda_in_an));
-    SetBd(&ChA1.Bda_out_an, sizeof(ChA1.Bda_out_an));
+    BdNum = 5; // количество блоков данных 5
+    BdUINum = 8; // количество вкладок - 8 (блок Bda_h разделён ввиду его огромности на четыре вкладки)
+    ChA1 = new Check_A1;
+    SetBd(1, &ChA1->Bda_in, sizeof(ChA1->Bda_in));
+    SetBd(4, &ChA1->Bda_out, sizeof(ChA1->Bda_out));
+    SetBd(3, &ChA1->Bda_h, sizeof(ChA1->Bda_h));
+    SetBd(2, &ChA1->Bda_in_an, sizeof(ChA1->Bda_in_an));
+    SetBd(5, &ChA1->Bda_out_an, sizeof(ChA1->Bda_out_an));
     SetupUI();
 }
 
@@ -76,24 +78,37 @@ QWidget *CheckDialogA1::BdUI(int bdnum)
     switch (bdnum)
     {
     case 1: // Блок #1
-        return ChA1.Bda_inW(this);
+        return ChA1->Bda_inW(this);
     case 2:
-        return ChA1.Bda_outW(this);
+        return ChA1->Bda_in_anW(this);
     case 3:
-        return ChA1.Bda_h0W(this);
+        return ChA1->Bda_h0W(this);
     case 4:
-        return ChA1.Bda_h1W(this);
+        return ChA1->Bda_h1W(this);
     case 5:
-        return ChA1.Bda_h2W(this);
+        return ChA1->Bda_h2W(this);
     case 6:
-        return ChA1.Bda_h3W(this);
+        return ChA1->Bda_h3W(this);
     case 7:
-        return ChA1.Bda_in_anW(this);
+        return ChA1->Bda_outW(this);
     case 8:
-        return ChA1.Bda_out_anW(this);
+        return ChA1->Bda_out_anW(this);
     default:
         return new QWidget;
     }
+}
+
+void CheckDialogA1::SetupUI()
+{
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QTabWidget *CheckTW = new QTabWidget;
+    CheckTW->addTab(AutoCheckUI(),"Автоматическая проверка");
+    for (int i=1; i<=BdUINum; ++i)
+        CheckTW->addTab(BdUI(i),"Гр. "+QString::number(i));
+    lyout = new QVBoxLayout;
+    lyout->addWidget(CheckTW);
+    lyout->addWidget(BottomUI());
+    setLayout(lyout);
 }
 
 void CheckDialogA1::RefreshAnalogValues(int bdnum)
@@ -101,15 +116,15 @@ void CheckDialogA1::RefreshAnalogValues(int bdnum)
     switch (bdnum)
     {
     case 1: // Блок #1
-        ChA1.FillBda_in(this);
+        ChA1->FillBda_in(this);
     case 2:
-        ChA1.FillBda_out(this);
+        ChA1->FillBda_in_an(this);
     case 3:
-        ChA1.FillBda_h(this);
+        ChA1->FillBda_h(this);
     case 4:
-        ChA1.FillBda_in_an(this);
+        ChA1->FillBda_out(this);
     case 5:
-        ChA1.FillBda_out_an(this);
+        ChA1->FillBda_out_an(this);
     default:
         return;
     }
@@ -140,23 +155,23 @@ void CheckDialogA1::WriteToFile(int row, int bdnum)
     switch (bdnum)
     {
     case 1: // Блок #1
-        xlsx->write(row,2,ChA1.Bda_in.UefNat_filt[0],format);
-        xlsx->write(row,3,ChA1.Bda_in.UefNat_filt[1],format);
-        xlsx->write(row,4,ChA1.Bda_in.Uef_filt[0],format);
-        xlsx->write(row,5,ChA1.Bda_in.Uef_filt[1],format);
-        xlsx->write(row,6,ChA1.Bda_in.Phy, format);
-        xlsx->write(row,7,ChA1.Bda_in.Frequency, format);
+        xlsx->write(row,2,ChA1->Bda_in.UefNat_filt[0],format);
+        xlsx->write(row,3,ChA1->Bda_in.UefNat_filt[1],format);
+        xlsx->write(row,4,ChA1->Bda_in.Uef_filt[0],format);
+        xlsx->write(row,5,ChA1->Bda_in.Uef_filt[1],format);
+        xlsx->write(row,6,ChA1->Bda_in.Phy, format);
+        xlsx->write(row,7,ChA1->Bda_in.Frequency, format);
         break;
     case 2:
-        xlsx->write(row,8,ChA1.Bda_in_an.Pt100_R, format);
-        xlsx->write(row,9,ChA1.Bda_in_an.EXTmA1_I, format);
-        xlsx->write(row,10,ChA1.Bda_in_an.EXTmA2_I, format);
+        xlsx->write(row,8,ChA1->Bda_in_an.Pt100_R, format);
+        xlsx->write(row,9,ChA1->Bda_in_an.EXTmA1_I, format);
+        xlsx->write(row,10,ChA1->Bda_in_an.EXTmA2_I, format);
         break;
-    case 3:
-        xlsx->write(row,11,ChA1.Bda_out_an.Tmk, format);
-        xlsx->write(row,12,ChA1.Bda_out_an.Vbat, format);
-        xlsx->write(row,13,ChA1.Bda_out_an.Tamb, format);
-        xlsx->write(row,14,ChA1.Bda_out_an.Hamb, format);
+    case 5:
+        xlsx->write(row,11,ChA1->Bda_out_an.Tmk, format);
+        xlsx->write(row,12,ChA1->Bda_out_an.Vbat, format);
+        xlsx->write(row,13,ChA1->Bda_out_an.Tamb, format);
+        xlsx->write(row,14,ChA1->Bda_out_an.Hamb, format);
         break;
     default:
         break;

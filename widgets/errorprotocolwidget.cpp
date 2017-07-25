@@ -13,17 +13,17 @@ ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
     QString ErrWss = "QWidget {background-color: "+QString(ERPROTCLR)+";}";
     w->setStyleSheet(ErrWss);
     s_tqTableView *tv = new s_tqTableView;
-    ErrorProtocolModel *erm = new ErrorProtocolModel;
-    erm->setHeaderData(0, Qt::Horizontal, "Номер",Qt::EditRole);
-    erm->setHeaderData(1, Qt::Horizontal, "Дата/время",Qt::EditRole);
-    erm->setHeaderData(2, Qt::Horizontal, "Номер сообщения",Qt::EditRole);
-    erm->setHeaderData(3, Qt::Horizontal, "Тип сообщения",Qt::EditRole);
-    erm->setHeaderData(4, Qt::Horizontal, "Сообщение",Qt::EditRole);
-    tv->setModel(erm);
+    Model = new ErrorProtocolModel;
+    Model->setHeaderData(0, Qt::Horizontal, "Номер",Qt::EditRole);
+    Model->setHeaderData(1, Qt::Horizontal, "Дата/время",Qt::EditRole);
+    Model->setHeaderData(2, Qt::Horizontal, "Номер сообщения",Qt::EditRole);
+    Model->setHeaderData(3, Qt::Horizontal, "Тип сообщения",Qt::EditRole);
+    Model->setHeaderData(4, Qt::Horizontal, "Сообщение",Qt::EditRole);
+    tv->setModel(Model);
     QString Tvss = "QHeaderView::section {background-color: "+QString(ERPROTCLR)+";}";
     tv->horizontalHeader()->setStyleSheet(Tvss);
     tv->resizeColumnsToContents();
-    connect(erm,SIGNAL(dataChanged(QModelIndex,QModelIndex)),tv,SLOT(resizeColumnsToContents()));
+    connect(Model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),tv,SLOT(resizeColumnsToContents()));
     tv->horizontalHeader()->setStretchLastSection(true);
     tv->horizontalHeader()->setEnabled(false);
     tv->verticalHeader()->setVisible(false);
@@ -59,14 +59,12 @@ ErrorProtocolWidget::~ErrorProtocolWidget()
 
 void ErrorProtocolWidget::AddRowToProt(publicclass::ermsg ermsg)
 {
-    s_tqTableView *tv = this->findChild<s_tqTableView *>("ertv");
-    if (tv == 0)
-    {
-        DBGMSG;
-        return;
-    }
-    ErrorProtocolModel *erm = static_cast<ErrorProtocolModel *>(tv->model());
-    erm->AddRow(ermsg);
+    Model->AddRow(ermsg);
+}
+
+void ErrorProtocolWidget::InitModel()
+{
+    Model->InitModel();
 }
 
 ErrorProtocolModel::ErrorProtocolModel(QObject *parent) : QAbstractTableModel (parent)
@@ -172,12 +170,31 @@ void ErrorProtocolModel::AddRow(publicclass::ermsg msg)
     QStringList tmpsl = QStringList() << "#"+QString::number(MsgCount) << QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss") \
                                       << msg.file << QString::number(msg.line,10) << msg.msg;
     MsgCount++;
-    erdata.insert(0,tmpsl);
-    if (erdata.size() >= MAX_MSG)
+    if (rowCount() >= MAX_MSG)
+    {
         erdata.removeLast();
-    ertypedata.insert(0,msg.type);
-    if (ertypedata.size() >= MAX_MSG)
         ertypedata.removeLast();
+    }
+    erdata.insert(0,tmpsl);
+    ertypedata.insert(0,msg.type);
 //    endResetModel();
     emit dataChanged(index(0, 0), index(rowCount(),columnCount()));
+}
+
+void ErrorProtocolModel::InitModel()
+{
+    beginResetModel();
+    int beg = pc.ErMsgPool.size();
+    int end = (beg > MAX_MSG) ? (beg-MAX_MSG) : 0;
+    insertRows(0,(beg-end),QModelIndex());
+    for (int i = beg; i >= end; --i)
+    {
+        publicclass::ermsg msg = pc.ErMsgPool.at(i);
+        QStringList tmpsl = QStringList() << "#"+QString::number(MsgCount) << msg.DateTime << msg.file << QString::number(msg.line,10) << msg.msg;
+        ++MsgCount;
+        erdata.append(tmpsl);
+        ertypedata.append(msg.type);
+    }
+    endResetModel();
+    emit dataChanged(index(0,0), index(rowCount(),columnCount()));
 }

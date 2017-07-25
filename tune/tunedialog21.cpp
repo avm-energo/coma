@@ -13,7 +13,7 @@
 #include "../publicclass.h"
 #include "../canal.h"
 
-a_tunedialog::a_tunedialog(int type, QWidget *parent) :
+TuneDialog21::TuneDialog21(int type, QWidget *parent) :
     QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -27,7 +27,7 @@ a_tunedialog::a_tunedialog(int type, QWidget *parent) :
     SetupUI();
 }
 
-void a_tunedialog::SetupUI()
+void TuneDialog21::SetupUI()
 {
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
     setStyleSheet(tmps);
@@ -154,7 +154,7 @@ void a_tunedialog::SetupUI()
         ReadTuneCoefs(); // считать их из модуля и показать на экране
 }
 
-bool a_tunedialog::tune(int Type, int ChNum)
+bool TuneDialog21::tune(int Type, int ChNum)
 {
     switch (Type)
     {
@@ -233,7 +233,7 @@ bool a_tunedialog::tune(int Type, int ChNum)
     return true;
 }
 
-void a_tunedialog::StartTune()
+void TuneDialog21::StartTune()
 {
     QString AllNum = sender()->objectName();
     if (!AllNum.isEmpty())
@@ -268,7 +268,7 @@ void a_tunedialog::StartTune()
         DBGMSG;
 }
 
-bool a_tunedialog::CheckAndShowTune0(int ChNum)
+bool TuneDialog21::CheckAndShowTune0(int ChNum)
 {
     QLabel *lbl = this->findChild<QLabel *>("tunech"+QString::number(ChNum));
     if (lbl == 0)
@@ -284,7 +284,7 @@ bool a_tunedialog::CheckAndShowTune0(int ChNum)
     return true;
 }
 
-bool a_tunedialog::CheckAndShowTune5(int ChNum)
+bool TuneDialog21::CheckAndShowTune5(int ChNum)
 {
     QLabel *lbl = this->findChild<QLabel *>("tunech"+QString::number(ChNum));
     if (lbl == 0)
@@ -300,7 +300,7 @@ bool a_tunedialog::CheckAndShowTune5(int ChNum)
     return true;
 }
 
-bool a_tunedialog::CheckAndShowTune20(int ChNum)
+bool TuneDialog21::CheckAndShowTune20(int ChNum)
 {
     QLabel *lbl = this->findChild<QLabel *>("tunech"+QString::number(ChNum));
     if (lbl == 0)
@@ -316,7 +316,7 @@ bool a_tunedialog::CheckAndShowTune20(int ChNum)
     return true;
 }
 
-bool a_tunedialog::CalcNewTuneCoef(int ChNum)
+bool TuneDialog21::CalcNewTuneCoef(int ChNum)
 {
     Bac_block[ChNum].fbin = 1.25 - (static_cast<float>(Bda0.sin[ChNum]) / \
                                         (ATUNENUMPOINTS*1638.0));
@@ -332,7 +332,7 @@ bool a_tunedialog::CalcNewTuneCoef(int ChNum)
     return true;
 }
 
-void a_tunedialog::SetDefCoefs()
+void TuneDialog21::SetDefCoefs()
 {
     for (int i=0; i<16; i++)
     {
@@ -343,7 +343,7 @@ void a_tunedialog::SetDefCoefs()
     RefreshTuneFields();
 }
 
-bool a_tunedialog::RefreshTuneField(int ChNum)
+bool TuneDialog21::RefreshTuneField(int ChNum)
 {
     QLineEdit *le = this->findChild<QLineEdit *>("tunebcoef"+QString::number(ChNum));
     if (le == 0)
@@ -369,13 +369,13 @@ bool a_tunedialog::RefreshTuneField(int ChNum)
     return true;
 }
 
-void a_tunedialog::RefreshTuneFields()
+void TuneDialog21::RefreshTuneFields()
 {
     for (int i=0; i<16; i++)
         RefreshTuneField(i);
 }
 
-bool a_tunedialog::RefreshTuneCoef(int ChNum)
+bool TuneDialog21::RefreshTuneCoef(int ChNum)
 {
     QLineEdit *le = this->findChild<QLineEdit *>("tunebcoef"+QString::number(ChNum));
     if (le == 0)
@@ -417,13 +417,13 @@ bool a_tunedialog::RefreshTuneCoef(int ChNum)
     return true;
 }
 
-void a_tunedialog::RefreshTuneCoefs()
+void TuneDialog21::RefreshTuneCoefs()
 {
     for (int i=0; i<16; i++)
         RefreshTuneCoef(i);
 }
 
-void a_tunedialog::ReadTuneCoefs()
+void TuneDialog21::ReadTuneCoefs()
 {
     cn->Send(CN_GBac, Canal::BT_BASE, &Bac_block, sizeof(Bac_block));
     if (cn->result == NOERROR)
@@ -432,7 +432,7 @@ void a_tunedialog::ReadTuneCoefs()
         MessageBox2::error(this, "ошибка", "Ошибка чтения регулировочных параметров из модуля");
 }
 
-void a_tunedialog::WriteTuneCoefs()
+void TuneDialog21::WriteTuneCoefs()
 {
     RefreshTuneCoefs(); // принудительно читаем коэффициенты из полей ввода в структуру
     if (CheckTuneCoefs())
@@ -453,7 +453,7 @@ void a_tunedialog::WriteTuneCoefs()
     }
 }
 
-bool a_tunedialog::CheckTuneCoefs()
+bool TuneDialog21::CheckTuneCoefs()
 {
     for (int i=0; i<16; i++)
     {
@@ -485,7 +485,7 @@ bool a_tunedialog::CheckTuneCoefs()
     return true;
 }
 
-void a_tunedialog::LoadFromFile()
+void TuneDialog21::LoadFromFile()
 {
     QByteArray ba = pc.LoadFile("Tune files (*.atn)");
     memcpy(&Bac_block,&(ba.data()[0]),sizeof(Bac_block));
@@ -493,7 +493,7 @@ void a_tunedialog::LoadFromFile()
     MessageBox2::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
-void a_tunedialog::SaveToFile()
+void TuneDialog21::SaveToFile()
 {
     int res = pc.SaveFile("Tune files (*.atn)", &Bac_block, sizeof(Bac_block));
     switch (res)
@@ -515,7 +515,7 @@ void a_tunedialog::SaveToFile()
     }
 }
 
-void a_tunedialog::ShowErrMsg(int ermsg)
+void TuneDialog21::ShowErrMsg(int ermsg)
 {
     if (ermsg < pc.errmsgs.size())
         ERMSG(pc.errmsgs.at(ermsg));

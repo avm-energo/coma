@@ -297,12 +297,13 @@ QString publicclass::NsTimeToString(quint64 nstime)
 
 void publicclass::AddErrMsg(ermsgtype msgtype, QString file, int line, QString msg)
 {
-    if (ermsgpool.size()>=ER_BUFMAX)
-        ermsgpool.removeFirst();
+    if (ErMsgPool.size()>=ER_BUFMAX)
+        ErMsgPool.removeFirst();
     ermsg tmpm;
     tmpm.type = msgtype;
     tmpm.file = file;
     tmpm.line = line;
+    tmpm.DateTime = QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss");
     // Разбор кода ошибки
     QString prefix;
     if ((msg.isEmpty()) || (msg == " ")) // пробел выдаётся при пустом запросе в БД
@@ -325,7 +326,7 @@ void publicclass::AddErrMsg(ermsgtype msgtype, QString file, int line, QString m
     else
         log.info("file: "+tmpm.file+", line: "+QString::number(tmpm.line)+": "+msg);
     tmpm.msg = msg;
-    ermsgpool.append(tmpm);
+    ErMsgPool.append(tmpm);
 }
 
 QByteArray publicclass::LoadFile(QString mask)

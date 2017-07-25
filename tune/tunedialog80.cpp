@@ -15,9 +15,10 @@
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
 
-TuneDialog80::TuneDialog80(QWidget *parent) :
+TuneDialog80::TuneDialog80(QVector<publicclass::DataRec> &S2Config, QWidget *parent) :
     QDialog(parent)
 {
+    this->S2Config = &S2Config;
     C80 = new Config80(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
@@ -485,7 +486,7 @@ int TuneDialog80::Start7_3_7_2()
     for (int i=0; i<6; i++)
         C80->Bci_block.inom2[i] = I1;
     // послать новые коэффициенты по току в конфигурацию
-    cn->Send(CN_WF, Canal::BT_NONE, &C80->Bci_block, sizeof(Config80::Bci), 2, &S2Config);
+    cn->Send(CN_WF, Canal::BT_NONE, &C80->Bci_block, sizeof(Config80::Bci), 2, S2Config);
     WaitNSeconds(2);
     if (cn->result != NOERROR)
         return GENERALERROR;
@@ -531,7 +532,7 @@ int TuneDialog80::Start7_3_7_6()
         return ER_RESEMPTY;
     for (int i=0; i<6; ++i)
         C80->Bci_block.inom2[i] = I5;
-    cn->Send(CN_WF, Canal::BT_NONE, &C80->Bci_block, sizeof(Config80::Bci), 2, &S2Config);
+    cn->Send(CN_WF, Canal::BT_NONE, &C80->Bci_block, sizeof(Config80::Bci), 2, S2Config);
     WaitNSeconds(2);
     if (cn->result != NOERROR)
         return GENERALERROR;
@@ -777,7 +778,7 @@ int TuneDialog80::GetExternalData()
 
 int TuneDialog80::SaveWorkConfig()
 {
-    cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,&S2Config);
+    cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,S2Config);
     if (cn->result == NOERROR)
         memcpy(&Bci_block_work,&C80->Bci_block,sizeof(Config80::Bci));
     else
@@ -789,7 +790,7 @@ int TuneDialog80::LoadWorkConfig()
 {
     // пишем ранее запомненный конфигурационный блок
     memcpy(&C80->Bci_block,&Bci_block_work,sizeof(Config80::Bci));
-    cn->Send(CN_WF, Canal::BT_NONE, &C80->Bci_block, sizeof(Config80::Bci), 2, &S2Config);
+    cn->Send(CN_WF, Canal::BT_NONE, &C80->Bci_block, sizeof(Config80::Bci), 2, S2Config);
     if (cn->result != NOERROR)
         return GENERALERROR;
     return NOERROR;

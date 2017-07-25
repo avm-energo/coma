@@ -34,7 +34,7 @@ class TuneDialog80 : public QDialog
 {
     Q_OBJECT
 public:
-    explicit TuneDialog80(QWidget *parent = 0);
+    explicit TuneDialog80(QVector<publicclass::DataRec> &S2Config, QWidget *parent = 0);
 
 signals:
     void stopall();
@@ -87,7 +87,7 @@ private:
 
     bool Cancelled, DefConfig;
     Config80 *C80;
-    QVector<publicclass::DataRec> S2Config;
+    QVector<publicclass::DataRec> *S2Config;
     Config80::Bci Bci_block_work;
     iec104 *mipcanal;
     int TuneControlType;
@@ -255,4 +255,4 @@ protected:
     void closeEvent(QCloseEvent *e);
 };
 
-#endif // TuneDialog8080_H
+#endif // TuneDialog80_H

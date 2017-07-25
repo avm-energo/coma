@@ -11,6 +11,8 @@ class ErrorDialog : public QDialog
 public:
     explicit ErrorDialog(QWidget *parent = 0);
 
+    void InitDialog(); // initiate dialog with contents from pc.ErMsgPool
+
 signals:
 
 public slots:

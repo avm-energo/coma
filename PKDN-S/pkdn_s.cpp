@@ -646,8 +646,6 @@ void pkdn_s::ShowOrHideSlideSW()
 void pkdn_s::ShowErrorDialog()
 {
     ErrorDialog *dlg = new ErrorDialog;
-    for (int i=0; i<pc.ermsgpool.size(); ++i)
-        dlg->AddErrMsg(pc.ermsgpool.at(i));
     dlg->exec();
 }
 
