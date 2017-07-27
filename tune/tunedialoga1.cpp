@@ -203,12 +203,12 @@ void TuneDialogA1::StartTune()
     for (QHash<QString, int (TuneDialogA1::*)()>::iterator it = pf.begin(); it != pf.end(); ++it)
     {
         MsgSetVisible(count);
-        int res = (this->*pf[it.key()])();
+        int res = (this->*pf[lbls().at(count)])();
         if ((res == GENERALERROR) || (Cancelled))
         {
             ErMsgSetVisible(count);
-            WDFunc::SetEnabled(this, "starttune", false);
-            WARNMSG(it.key());
+            WDFunc::SetEnabled(this, "starttune", true);
+            WARNMSG(lbls().at(count));
             return;
         }
         else if (res == ER_RESEMPTY)
@@ -347,7 +347,7 @@ void TuneDialogA1::SetDefCoefs()
 int TuneDialogA1::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBd, Canal::BT_BASE, &ChA1.Bda_block, sizeof(Check_A1::Bda));
+    cn->Send(CN_GBda, Canal::BT_BASE, &ChA1.Bda_block, sizeof(Check_A1::Bda));
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda");
@@ -431,9 +431,9 @@ int TuneDialogA1::Start6_2()
 
 int TuneDialogA1::CheckBdaValues()
 {
-    if (!IsWithinLimits(ChA1.Bda_block.Ueff_ADC[0], 3900000.0, 200000.0))
+    if (!IsWithinLimits(ChA1.Bda_block.Ueff_ADC[0], 3900000.0, 400000.0))
         return GENERALERROR;
-    if (!IsWithinLimits(ChA1.Bda_block.Ueff_ADC[1], 3900000.0, 200000.0))
+    if (!IsWithinLimits(ChA1.Bda_block.Ueff_ADC[1], 3900000.0, 400000.0))
         return GENERALERROR;
     if (!IsWithinLimits(ChA1.Bda_block.Frequency, 50.0, 0.05))
         return GENERALERROR;
@@ -768,7 +768,6 @@ void TuneDialogA1::SaveToFile()
 
 void TuneDialogA1::WaitNSeconds(int Seconds)
 {
-    QTime tme;
     SecondsToEnd15SecondsInterval = Seconds;
     WaitWidget *w = new WaitWidget;
     QTimer *tmr = new QTimer;
@@ -777,8 +776,13 @@ void TuneDialogA1::WaitNSeconds(int Seconds)
     connect(this,SIGNAL(SecondsRemaining(QString)),w,SLOT(SetMessage(QString)));
     tmr->start();
     w->Start();
-    tme.start();
-    while (SecondsToEnd15SecondsInterval > 0);
+    while (SecondsToEnd15SecondsInterval > 0)
+    {
+        QTime tme;
+        tme.start();
+        while (tme.elapsed() < 20)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+    }
     tmr->stop();
     w->Stop();
 }

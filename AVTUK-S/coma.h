@@ -119,6 +119,7 @@ private:
     void SaveSettings();
     void Stage1();
     void Stage3();
+    void ClearTW();
 
 protected:
     void resizeEvent(QResizeEvent *e);

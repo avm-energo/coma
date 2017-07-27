@@ -184,9 +184,9 @@ void ErrorProtocolModel::AddRow(publicclass::ermsg msg)
 void ErrorProtocolModel::InitModel()
 {
     beginResetModel();
-    int beg = pc.ErMsgPool.size();
+    int beg = pc.ErMsgPool.size()-1;
     int end = (beg > MAX_MSG) ? (beg-MAX_MSG) : 0;
-    insertRows(0,(beg-end),QModelIndex());
+    insertRows(0,(beg-end+1),QModelIndex());
     for (int i = beg; i >= end; --i)
     {
         publicclass::ermsg msg = pc.ErMsgPool.at(i);

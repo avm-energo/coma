@@ -329,5 +329,10 @@ void WDFunc::SetVisible(QWidget *w, const QString &wname, bool visible)
 
 QString WDFunc::StringValueWithCheck(float value)
 {
-    if (value )
+    QString tmps;
+    if (value == FLT_MAX)
+        tmps = "***";
+    else
+        tmps = QString::number(value, 'f', 5);
+    return tmps;
 }

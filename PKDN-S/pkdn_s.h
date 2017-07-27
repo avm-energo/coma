@@ -82,10 +82,12 @@ private:
 
 signals:
     void CloseConnectDialog();
+    void Retry();
 
 public slots:
 
 private slots:
+    void Stage1();
     void Stage2();
     void Exit();
     void Disconnect();
@@ -111,8 +113,8 @@ private:
     void PrepareTimers();
     void LoadSettings();
     void SaveSettings();
-    void Stage1();
     void Stage3();
+    void ClearTW();
 
 protected:
     void resizeEvent(QResizeEvent *e);

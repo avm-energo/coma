@@ -157,22 +157,22 @@ QWidget *Check_A1::Bda_out_anW(QWidget *parent)
 
 void Check_A1::FillBda(QWidget *parent)
 {
-    WDFunc::SetLBLText(parent, "value0", QString::number(Bda_block.Ueff_ADC[0]));
-    WDFunc::SetLBLText(parent, "value1", QString::number(Bda_block.Ueff_ADC[1]));
-    WDFunc::SetLBLText(parent, "value2", QString::number(Bda_block.Frequency));
-    WDFunc::SetLBLText(parent, "value3", QString::number(Bda_block.Pt100));
-    WDFunc::SetLBLText(parent, "value4", QString::number(Bda_block.EXTmA1));
-    WDFunc::SetLBLText(parent, "value5", QString::number(Bda_block.EXTmA2));
+    WDFunc::SetLBLText(parent, "value0", WDFunc::StringValueWithCheck(Bda_block.Ueff_ADC[0]));
+    WDFunc::SetLBLText(parent, "value1", WDFunc::StringValueWithCheck(Bda_block.Ueff_ADC[1]));
+    WDFunc::SetLBLText(parent, "value2", WDFunc::StringValueWithCheck(Bda_block.Frequency));
+    WDFunc::SetLBLText(parent, "value3", WDFunc::StringValueWithCheck(Bda_block.Pt100));
+    WDFunc::SetLBLText(parent, "value4", WDFunc::StringValueWithCheck(Bda_block.EXTmA1));
+    WDFunc::SetLBLText(parent, "value5", WDFunc::StringValueWithCheck(Bda_block.EXTmA2));
 }
 
 void Check_A1::FillBd1W(const QString &begin, A1_Bd1 Bda, QWidget *parent)
 {
-    WDFunc::SetLBLText(parent, begin+"0", QString::number(Bda.UefNat_filt[0]));
-    WDFunc::SetLBLText(parent, begin+"1", QString::number(Bda.UefNat_filt[1]));
-    WDFunc::SetLBLText(parent, begin+"2", QString::number(Bda.Uef_filt[0]));
-    WDFunc::SetLBLText(parent, begin+"3", QString::number(Bda.Uef_filt[0]));
-    WDFunc::SetLBLText(parent, begin+"4", QString::number(Bda.Phy));
-    WDFunc::SetLBLText(parent, begin+"5", QString::number(Bda.Frequency));
+    WDFunc::SetLBLText(parent, begin+"0", WDFunc::StringValueWithCheck(Bda.UefNat_filt[0]));
+    WDFunc::SetLBLText(parent, begin+"1", WDFunc::StringValueWithCheck(Bda.UefNat_filt[1]));
+    WDFunc::SetLBLText(parent, begin+"2", WDFunc::StringValueWithCheck(Bda.Uef_filt[0]));
+    WDFunc::SetLBLText(parent, begin+"3", WDFunc::StringValueWithCheck(Bda.Uef_filt[0]));
+    WDFunc::SetLBLText(parent, begin+"4", WDFunc::StringValueWithCheck(Bda.Phy));
+    WDFunc::SetLBLText(parent, begin+"5", WDFunc::StringValueWithCheck(Bda.Frequency));
 }
 
 void Check_A1::FillBda_in(QWidget *parent)
@@ -189,28 +189,28 @@ void Check_A1::FillBda_h(QWidget *parent)
 {
     for (int i=0; i<15; ++i)
     {
-        WDFunc::SetLBLText(parent, "Bda_h00"+QString::number(i), QString::number(Bda_h.HarmBuf[0][i]));
-        WDFunc::SetLBLText(parent, "Bda_h01"+QString::number(i), QString::number(Bda_h.HarmBuf[1][i]));
-        WDFunc::SetLBLText(parent, "Bda_h10"+QString::number(15+i), QString::number(Bda_h.HarmBuf[0][15+i]));
-        WDFunc::SetLBLText(parent, "Bda_h11"+QString::number(15+i), QString::number(Bda_h.HarmBuf[1][15+i]));
-        WDFunc::SetLBLText(parent, "Bda_h20"+QString::number(30+i), QString::number(Bda_h.HarmBuf[0][30+i]));
-        WDFunc::SetLBLText(parent, "Bda_h21"+QString::number(30+i), QString::number(Bda_h.HarmBuf[1][30+i]));
-        WDFunc::SetLBLText(parent, "Bda_h30"+QString::number(45+i), QString::number(Bda_h.HarmBuf[0][45+i]));
-        WDFunc::SetLBLText(parent, "Bda_h31"+QString::number(45+i), QString::number(Bda_h.HarmBuf[1][45+i]));
+        WDFunc::SetLBLText(parent, "Bda_h00"+QString::number(i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[0][i]));
+        WDFunc::SetLBLText(parent, "Bda_h01"+QString::number(i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[1][i]));
+        WDFunc::SetLBLText(parent, "Bda_h10"+QString::number(15+i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[0][15+i]));
+        WDFunc::SetLBLText(parent, "Bda_h11"+QString::number(15+i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[1][15+i]));
+        WDFunc::SetLBLText(parent, "Bda_h20"+QString::number(30+i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[0][30+i]));
+        WDFunc::SetLBLText(parent, "Bda_h21"+QString::number(30+i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[1][30+i]));
+        WDFunc::SetLBLText(parent, "Bda_h30"+QString::number(45+i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[0][45+i]));
+        WDFunc::SetLBLText(parent, "Bda_h31"+QString::number(45+i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[1][45+i]));
     }
 }
 
 void Check_A1::FillBda_in_an(QWidget *parent)
 {
-    WDFunc::SetLBLText(parent, "Bda_in_an0", QString::number(Bda_in_an.Pt100_R));
-    WDFunc::SetLBLText(parent, "Bda_in_an1", QString::number(Bda_in_an.EXTmA1_I));
-    WDFunc::SetLBLText(parent, "Bda_in_an2", QString::number(Bda_in_an.EXTmA2_I));
+    WDFunc::SetLBLText(parent, "Bda_in_an0", WDFunc::StringValueWithCheck(Bda_in_an.Pt100_R));
+    WDFunc::SetLBLText(parent, "Bda_in_an1", WDFunc::StringValueWithCheck(Bda_in_an.EXTmA1_I));
+    WDFunc::SetLBLText(parent, "Bda_in_an2", WDFunc::StringValueWithCheck(Bda_in_an.EXTmA2_I));
 }
 
 void Check_A1::FillBda_out_an(QWidget *parent)
 {
-    WDFunc::SetLBLText(parent, "Bda_out_an0", QString::number(Bda_out_an.Tmk));
-    WDFunc::SetLBLText(parent, "Bda_out_an1", QString::number(Bda_out_an.Vbat));
-    WDFunc::SetLBLText(parent, "Bda_out_an2", QString::number(Bda_out_an.Tamb));
-    WDFunc::SetLBLText(parent, "Bda_out_an3", QString::number(Bda_out_an.Hamb));
+    WDFunc::SetLBLText(parent, "Bda_out_an0", WDFunc::StringValueWithCheck(Bda_out_an.Tmk));
+    WDFunc::SetLBLText(parent, "Bda_out_an1", WDFunc::StringValueWithCheck(Bda_out_an.Vbat));
+    WDFunc::SetLBLText(parent, "Bda_out_an2", WDFunc::StringValueWithCheck(Bda_out_an.Tamb));
+    WDFunc::SetLBLText(parent, "Bda_out_an3", WDFunc::StringValueWithCheck(Bda_out_an.Hamb));
 }

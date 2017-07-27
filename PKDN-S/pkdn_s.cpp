@@ -79,6 +79,7 @@ pkdn_s::pkdn_s(QWidget *parent)
     connect(cn,SIGNAL(sendend()),this,SLOT(DisableProgressBar()));
     connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+    connect(this,SIGNAL(Retry()),this,SLOT(Stage1()));
 }
 
 pkdn_s::~pkdn_s()
@@ -298,6 +299,7 @@ void pkdn_s::Stage1()
 
     QPushButton *nextL = new QPushButton("Далее");
     connect(nextL,SIGNAL(clicked()),this,SLOT(Stage1_5()));
+    connect(nextL, SIGNAL(clicked(bool)),dlg,SLOT(close()));
     lyout->addWidget(nextL);
     dlg->setLayout(lyout);
     dlg->exec();
@@ -305,40 +307,41 @@ void pkdn_s::Stage1()
 
 void pkdn_s::Stage1_5()
 {
-    if (cn->Connected)
-        return;
-    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-    if (dlg != 0)
-        dlg->close();
-    pc.PrbMessage = "Загрузка данных...";
+    if (!cn->Connected)
+    {
+        pc.PrbMessage = "Загрузка данных...";
 
-    QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
-    if (info.size() == 0)
-    {
-        pc.ErMsg(USB_NOCOMER);
-        Stage1();
-        return;
-    }
-    bool PortFound = false;
-    for (int i = 0; i < info.size(); i++)
-    {
-        if (info.at(i).portName() == pc.Port)
+        QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
+        if (info.size() == 0)
         {
-            PortFound = true;
-            cn->info = info.at(i);
+            MessageBox2::error(this, "Ошибка", "В системе нет последовательных портов");
+            pc.ErMsg(USB_NOCOMER);
+            emit Retry();
+            return;
         }
-    }
-    if (!PortFound)
-    {
-        pc.ErMsg(USB_COMER);
-        Stage1();
-        return;
-    }
-    cn->baud = 115200;
-    if (!cn->Connect())
-    {
-        Stage1();
-        return;
+        bool PortFound = false;
+        for (int i = 0; i < info.size(); i++)
+        {
+            if (info.at(i).portName() == pc.Port)
+            {
+                PortFound = true;
+                cn->info = info.at(i);
+            }
+        }
+        if (!PortFound)
+        {
+            MessageBox2::error(this, "Ошибка", "Порт не найден");
+            pc.ErMsg(USB_COMER);
+            emit Retry();
+            return;
+        }
+        cn->baud = 115200;
+        if (!cn->Connect())
+        {
+            MessageBox2::error(this, "Ошибка", "Связь по данному порту не может быть установлена");
+            emit Retry();
+            return;
+        }
     }
     Stage2();
 }
@@ -360,8 +363,10 @@ void pkdn_s::Stage2()
 {
     if (CN_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
     {
+        MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
         cn->Disconnect();
-        Stage1();
+        emit Retry();
+        return;
     }
     pc.MType = ((pc.ModuleBsi.MTypeB & 0x000000FF) << 8) | (pc.ModuleBsi.MTypeM & 0x000000FF);
     pc.ModuleTypeString = "ПКДН-";
@@ -436,13 +441,15 @@ void pkdn_s::OpenBhbDialog()
     dlg->exec();
     if (CN_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
     {
+        MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
         cn->Disconnect();
-        Stage1();
+        emit Retry();
     }
 }
 
 void pkdn_s::Stage3()
 {
+    ClearTW();
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
@@ -472,11 +479,8 @@ void pkdn_s::Stage3()
     MainTW->show();
 }
 
-void pkdn_s::Disconnect()
+void pkdn_s::ClearTW()
 {
-    if (!pc.Emul)
-        cn->Disconnect();
-    ClearBsi();
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
@@ -489,6 +493,17 @@ void pkdn_s::Disconnect()
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
         MainTE->clear();
+}
+
+void pkdn_s::Disconnect()
+{
+    if (!pc.Emul)
+        cn->Disconnect();
+    ClearBsi();
+    ClearTW();
+    MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
+    if (MainTW == 0)
+        return;
     MainTW->hide();
     pc.Emul = false;
 }

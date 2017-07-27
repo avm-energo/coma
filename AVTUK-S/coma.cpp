@@ -321,6 +321,7 @@ void Coma::Stage1()
 
     QPushButton *nextL = new QPushButton("Далее");
     connect(nextL,SIGNAL(clicked()),this,SLOT(Stage1_5()));
+    connect(nextL,SIGNAL(clicked(bool)),dlg,SLOT(close()));
     lyout->addWidget(nextL);
     dlg->setLayout(lyout);
     dlg->exec();
@@ -328,9 +329,6 @@ void Coma::Stage1()
 
 void Coma::Stage1_5()
 {
-    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-    if (dlg != 0)
-        dlg->close();
     pc.PrbMessage = "Загрузка данных...";
 
     QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
@@ -478,12 +476,14 @@ void Coma::OpenBhbDialog()
 
 void Coma::Stage3()
 {
+    ClearTW();
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
 /*    DownDialog = new downloaddialog;
     FwUpDialog = new fwupdialog;
     OscDialog = new oscdialog; */
+    MainConfDialog = 0;
     ConfB = ConfM = 0;
     TuneD = 0;
     CheckD = 0;
@@ -572,11 +572,8 @@ void Coma::Stage3()
     MainTW->show();
 }
 
-void Coma::Disconnect()
+void Coma::ClearTW()
 {
-    if (!pc.Emul)
-        cn->Disconnect();
-    ClearBsi();
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
@@ -589,6 +586,17 @@ void Coma::Disconnect()
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
         MainTE->clear();
+}
+
+void Coma::Disconnect()
+{
+    if (!pc.Emul)
+        cn->Disconnect();
+    ClearBsi();
+    ClearTW();
+    MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
+    if (MainTW == 0)
+        return;
     MainTW->hide();
     pc.Emul = false;
 }
@@ -854,7 +862,8 @@ void Coma::DisableProgressBar()
 
 void Coma::SetDefConf()
 {
-    MainConfDialog->SetDefConf();
+    if (MainConfDialog != 0)
+        MainConfDialog->SetDefConf();
     if (ConfB != 0)
         ConfB->SetDefConf();
     if (ConfM != 0)
@@ -865,7 +874,8 @@ void Coma::SetDefConf()
 
 void Coma::Fill()
 {
-    MainConfDialog->Fill();
+    if (MainConfDialog != 0)
+        MainConfDialog->Fill();
     if (ConfB != 0)
         ConfB->Fill();
     if (ConfM != 0)
