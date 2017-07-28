@@ -51,6 +51,10 @@
 
 #define MAXLENGTH   0x300   // максимальный размер блока 768 байт
 
+#define BT_NONE     0
+#define BT_BASE     1
+#define BT_MEZONIN  2
+
 class Canal : public QObject
 {
     Q_OBJECT
@@ -58,12 +62,12 @@ public:
     explicit Canal(QObject *parent = 0);
     ~Canal();
 
-    enum board_types
+/*    enum board_types
     {
         BT_NONE,
         BT_BASE,
         BT_MEZONIN
-    };
+    }; */
 
     int result;
     QSerialPortInfo info;

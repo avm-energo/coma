@@ -27,7 +27,11 @@ QWidget *Check_A1::BdaW(QWidget *parent)
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value4", ValuesFormat, "Значение первого сигнала (4-20) мА"), 2, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "6. EXTmA2:"), 2, 2);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value5", ValuesFormat, "Значение второго сигнала (4-20) мА"), 2, 3);
+    glyout->setColumnStretch(1, 10);
+    glyout->setColumnStretch(3, 10);
     w->setLayout(glyout);
+    QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
+    w->setStyleSheet(tmps);
     return w;
 }
 
@@ -50,9 +54,13 @@ QWidget *Check_A1::Bd1W(const QString &begin, QWidget *parent)
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"4", ValuesFormat, "Разность фаз первых гармоник напряжений"), 2, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "6. Frequency:"), 2, 2);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"5", ValuesFormat, "Частота в сети"), 2, 3);
+    glyout->setColumnStretch(1, 10);
+    glyout->setColumnStretch(3, 10);
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
+    QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
+    w->setStyleSheet(tmps);
     return w;
 }
 
@@ -71,7 +79,11 @@ QWidget *Check_A1::Bd2W(const QString &begin, QWidget *parent)
         glyout->addWidget(WDFunc::NewLBL(parent, "Канал 1, гарм. "+QString::number(i+2)+":"), i, 2);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1"+QString::number(i), ValuesFormat), i, 3);
     }
+    glyout->setColumnStretch(1, 10);
+    glyout->setColumnStretch(3, 10);
     w->setLayout(glyout);
+    QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
+    w->setStyleSheet(tmps);
     return w;
 }
 
@@ -88,9 +100,14 @@ QWidget *Check_A1::Bd3W(const QString &begin, QWidget *parent)
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1", ValuesFormat, "Измеренный ток по каналу EXTmA1"), 0, 3);
     glyout->addWidget(WDFunc::NewLBL(parent, "3. EXTmA2:"), 0, 4);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"2", ValuesFormat, "Измеренный ток по каналу EXTmA2"), 0, 5);
+    glyout->setColumnStretch(1, 10);
+    glyout->setColumnStretch(3, 10);
+    glyout->setColumnStretch(5, 10);
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
+    QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
+    w->setStyleSheet(tmps);
     return w;
 }
 
@@ -109,9 +126,15 @@ QWidget *Check_A1::Bd4W(const QString &begin, QWidget *parent)
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"2", ValuesFormat, "Температура окружающей среды, °С"), 0, 5);
     glyout->addWidget(WDFunc::NewLBL(parent, "4. Hamb:"), 0, 6);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"3", ValuesFormat, "Относительная влажность окружающей среды, %"), 0, 7);
+    glyout->setColumnStretch(1, 10);
+    glyout->setColumnStretch(3, 10);
+    glyout->setColumnStretch(5, 10);
+    glyout->setColumnStretch(7, 10);
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
+    QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
+    w->setStyleSheet(tmps);
     return w;
 }
 

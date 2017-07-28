@@ -126,9 +126,11 @@
 #define CS_MSGTRIG          500 // частота мигания сообщения о попытке восстановить связь с модулем
 #define CS_TIMEOUT          5000 // количество мс ожидания появления связи с модулем
 
-#define TABCOLOR    "rgba(175,255,168,255)"
+#define TABCOLOR    "#AFFFAF"
+#define TABCOLORA1  "#FFFF5F"
 #define ERPROTCLR   "rgba(248,214,255,255)"
 #define MAINWINCLR  "#E0FFE0"
+#define MAINWINCLRA1    "#FFFFE0"
 #define DCONFCLR    "#DDDDAA"
 //#define DCONFCLR    "#D0FFFF"
 #define DCONFWCLR   "#C0FFE0"
@@ -143,8 +145,8 @@
 #define ACONFRCLR   "#FFDDDD"
 #define ACONFYCLR   "#FFFFDD"
 #define ACONFOCLR   "#FFDDAA"
-#define UCONFCLR    "#FFD0FF"
-#define UCONFWCLR   "#FFC0FF"
+#define UCONFCLR    "#FFFFD0"
+#define UCONFWCLR   "#FFFFC0"
 #define ERRCLR      "#FF0000"
 
 // thresholds

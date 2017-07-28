@@ -20,6 +20,8 @@
 
 CheckDialogA1::CheckDialogA1(QWidget *parent) : AbstractCheckDialog(parent)
 {
+    QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
+    setStyleSheet(tmps);
     BdNum = 5; // количество блоков данных 5
     BdUINum = 8; // количество вкладок - 8 (блок Bda_h разделён ввиду его огромности на четыре вкладки)
     ChA1 = new Check_A1;
@@ -34,6 +36,8 @@ CheckDialogA1::CheckDialogA1(QWidget *parent) : AbstractCheckDialog(parent)
 QWidget *CheckDialogA1::AutoCheckUI()
 {
     QWidget *w = new QWidget;
+    QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
+    w->setStyleSheet(tmps);
     QVBoxLayout *lyout = new QVBoxLayout;
 
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -102,6 +106,17 @@ void CheckDialogA1::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
+    QString ConfTWss = "QTabBar::tab {margin-right: 0px; margin-left: 0px; padding: 5px;}"
+                       "QTabBar::tab:selected {background-color: "+QString(TABCOLORA1)+";"
+                        "border: 1px solid #000000;"
+                        "border-top-left-radius: 4px;"
+                        "border-top-right-radius: 4px;"
+                        "padding: 2px;"
+                        "margin-left: -4px; margin-right: -4px;}" \
+                       "QTabBar::tab:first:selected {margin-left: 0;}" \
+                       "QTabBar::tab:last:selected {margin-right: 0;}" \
+                       "QTabBar::tab:only-one {margin: 0;}";
+    CheckTW->tabBar()->setStyleSheet(ConfTWss);
     CheckTW->addTab(AutoCheckUI(),"Автоматическая проверка");
     for (int i=1; i<=BdUINum; ++i)
         CheckTW->addTab(BdUI(i),"Гр. "+QString::number(i));

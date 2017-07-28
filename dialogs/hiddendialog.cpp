@@ -180,7 +180,7 @@ void HiddenDialog::GetVersion(quint32 &number, QString lename)
 
 void HiddenDialog::SendBhb()
 {
-    cn->Send(CN_WHv, Canal::BT_BASE, &pc.BoardBBhb, sizeof(pc.BoardBBhb));
+    cn->Send(CN_WHv, BT_BASE, &pc.BoardBBhb, sizeof(pc.BoardBBhb));
     if (cn->result != NOERROR)
     {
         ERMSG("Проблема при записи блока Hidden block базовой платы");
@@ -188,7 +188,7 @@ void HiddenDialog::SendBhb()
     }
     if (pc.BoardMBhb.MType != MTM_00)
     {
-        cn->Send(CN_WHv, Canal::BT_MEZONIN, &pc.BoardMBhb, sizeof(pc.BoardMBhb));
+        cn->Send(CN_WHv, BT_MEZONIN, &pc.BoardMBhb, sizeof(pc.BoardMBhb));
         if (cn->result == NOERROR)
             MessageBox2::information(this, "Успешно", "Записано успешно");
         else

@@ -55,7 +55,7 @@ void oscdialog::GetOscInfo()
         delete OscInfo;
     OscInfo = new QByteArray;
     OscInfo->resize(MAXOSCBUFSIZE);
-    cn->Send(CN_GBo,Canal::BT_NONE,&(OscInfo->data()[0]));
+    cn->Send(CN_GBo,BT_NONE,&(OscInfo->data()[0]));
     if (cn->result == NOERROR)
         ProcessOscInfo();
 }
@@ -285,7 +285,7 @@ void oscdialog::GetOsc(QModelIndex idx)
     GivenFilename.replace(":","_");
     GivenFilename.insert(0, " ");
     GivenFilename.insert(0, QString::number(oscnum));
-    cn->Send(CN_GF,Canal::BT_NONE,OscInfo->data(),0,oscnum);
+    cn->Send(CN_GF,BT_NONE,OscInfo->data(),0,oscnum);
     if (cn->result == NOERROR)
         EndExtractOsc();
 }

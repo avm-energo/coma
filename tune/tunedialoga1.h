@@ -131,6 +131,7 @@ private:
     void SkMsgSetVisible(int msg, bool Visible=true);
     void MsgClear();
     void WaitNSeconds(int SecondsToWait);
+    void SaveToFileEx();
 
 private slots:
     void PasswordCheck(QString psw);

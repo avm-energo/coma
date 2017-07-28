@@ -304,12 +304,16 @@ bool TuneDialogA1::IsWithinLimits(double number, double base, double threshold)
     if (tmpf<fabs(threshold))
         return true;
     else
+    {
+        MessageBox2::error(this, "Ошибка", "Ошибочное значение: должно быть "+QString::number(base, 'f', 5) + \
+                           ", а получили: "+QString::number(number, 'f', 5));
         return false;
+    }
 }
 
 void TuneDialogA1::ReadTuneCoefs()
 {
-    cn->Send(CN_GBac, Canal::BT_BASE, &Bac_block, sizeof(Bac));
+    cn->Send(CN_GBac, BT_BASE, &Bac_block, sizeof(Bac));
     if (cn->result == NOERROR)
         FillBac();
 }
@@ -317,7 +321,7 @@ void TuneDialogA1::ReadTuneCoefs()
 void TuneDialogA1::WriteTuneCoefs()
 {
     FillBackBac();
-    cn->Send(CN_WBac, Canal::BT_BASE, &Bac_block, sizeof(Bac));
+    cn->Send(CN_WBac, BT_BASE, &Bac_block, sizeof(Bac));
     if (cn->result == NOERROR)
         MessageBox2::information(this, "Внимание", "Записано успешно!");
 }
@@ -347,7 +351,7 @@ void TuneDialogA1::SetDefCoefs()
 int TuneDialogA1::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBda, Canal::BT_BASE, &ChA1.Bda_block, sizeof(Check_A1::Bda));
+    cn->Send(CN_GBda, BT_BASE, &ChA1.Bda_block, sizeof(Check_A1::Bda));
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda");
@@ -401,8 +405,8 @@ int TuneDialogA1::ShowScheme()
 {
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap(":/../pic/tunea1.png")));
-    lyout->addWidget(WDFunc::NewLBL(this, "1. На выходах РЕТОМ задайте частоту 50,0 Гц, уровень напряжения фазы А 60 В с фазой 0 градусов, включите режим однофазного выхода;"));
+    lyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap(":/pic/tunea1.png")));
+    lyout->addWidget(WDFunc::NewLBL(this, "1. На выходах РЕТОМ задайте частоту 51,0 Гц, уровень напряжения фазы А 60 В с фазой 0 градусов, включите режим однофазного выхода;"));
     lyout->addWidget(WDFunc::NewLBL(this, "2. Включите питание прибора Энергомонитор-3.1КМ и настройте его на режим измерения напряжений в диапазоне 0...100 В и частоты;"));
     lyout->addWidget(WDFunc::NewLBL(this, "3. На магазине сопротивлений установите значение сопротивления 100,0 Ом;"));
     lyout->addWidget(WDFunc::NewLBL(this, "4. Включите калибратор токовой петли и установите выходной ток 20 мА;"));
@@ -435,7 +439,7 @@ int TuneDialogA1::CheckBdaValues()
         return GENERALERROR;
     if (!IsWithinLimits(ChA1.Bda_block.Ueff_ADC[1], 3900000.0, 400000.0))
         return GENERALERROR;
-    if (!IsWithinLimits(ChA1.Bda_block.Frequency, 50.0, 0.05))
+    if (!IsWithinLimits(ChA1.Bda_block.Frequency, 51.0, 0.05))
         return GENERALERROR;
     if (!IsWithinLimits(ChA1.Bda_block.Pt100, 2125.0, 75.0))
         return GENERALERROR;
@@ -454,7 +458,7 @@ int TuneDialogA1::Start6_3_1()
         return ER_RESEMPTY;
     }
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBac, Canal::BT_BASE, &Bac_block, sizeof(Bac));
+    cn->Send(CN_GBac, BT_BASE, &Bac_block, sizeof(Bac));
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bac");
@@ -469,32 +473,31 @@ int TuneDialogA1::Start6_3_2_1()
     if (Skipped)
         return ER_RESEMPTY;
     // получение текущих аналоговых сигналов от модуля
-    Check_A1::A1_Bd1 tmpst;
-    QScopedPointer<Check_A1::A1_Bd1> tmpstp(&ChA1.Bda_in);
-//    tmpstp = &ChA1.Bda_in;
-    tmpstp->Frequency = tmpstp->Phy = tmpstp->UefNat_filt[0] = tmpstp->UefNat_filt[1] = tmpstp->Uef_filt[0] = tmpstp->Uef_filt[1] = 0;
+    Check_A1::A1_Bd1 tmpst, tmpst2;
+    tmpst2.Frequency = tmpst2.Phy = tmpst2.UefNat_filt[0] = tmpst2.UefNat_filt[1] = tmpst2.Uef_filt[0] = tmpst2.Uef_filt[1] = 0;
     for (int i=0; i<TDA1_MEASNUM; ++i)
     {
         cn->Send(CN_GBd, 1, &tmpst, sizeof(Check_A1::A1_Bd1));
-        tmpstp->Frequency += tmpst.Frequency;
-        tmpstp->Phy += tmpst.Phy;
-        tmpstp->UefNat_filt[0] += tmpst.UefNat_filt[0];
-        tmpstp->UefNat_filt[1] += tmpst.UefNat_filt[1];
-        tmpstp->Uef_filt[0] = tmpst.Uef_filt[0];
-        tmpstp->Uef_filt[1] = tmpst.Uef_filt[1];
+        tmpst2.Frequency += tmpst.Frequency;
+        tmpst2.Phy += tmpst.Phy;
+        tmpst2.UefNat_filt[0] += tmpst.UefNat_filt[0];
+        tmpst2.UefNat_filt[1] += tmpst.UefNat_filt[1];
+        tmpst2.Uef_filt[0] += tmpst.Uef_filt[0];
+        tmpst2.Uef_filt[1] += tmpst.Uef_filt[1];
     }
     // усреднение
-    tmpstp->Frequency /= TDA1_MEASNUM;
-    tmpstp->Phy /= TDA1_MEASNUM;
-    tmpstp->UefNat_filt[0] /= TDA1_MEASNUM;
-    tmpstp->UefNat_filt[1] /= TDA1_MEASNUM;
-    tmpstp->Uef_filt[0] /= TDA1_MEASNUM;
-    tmpstp->Uef_filt[1] /= TDA1_MEASNUM;
+    tmpst2.Frequency /= TDA1_MEASNUM;
+    tmpst2.Phy /= TDA1_MEASNUM;
+    tmpst2.UefNat_filt[0] /= TDA1_MEASNUM;
+    tmpst2.UefNat_filt[1] /= TDA1_MEASNUM;
+    tmpst2.Uef_filt[0] /= TDA1_MEASNUM;
+    tmpst2.Uef_filt[1] /= TDA1_MEASNUM;
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
         return GENERALERROR;
     }
+    memcpy(&ChA1.Bda_in, &tmpst2, sizeof(Check_A1::A1_Bd1));
     ChA1.FillBda_in(this);
     return CheckAnalogValues(false);
 }
@@ -513,7 +516,7 @@ int TuneDialogA1::CheckAnalogValues(bool isPrecise)
         return GENERALERROR;
     if (!IsWithinLimits(ChA1.Bda_in.Uef_filt[0], 60.0, T[3]))
         return GENERALERROR;
-    if (!IsWithinLimits(ChA1.Bda_in.Frequency, 50.0, T[4]))
+    if (!IsWithinLimits(ChA1.Bda_in.Frequency, 51.0, T[4]))
         return GENERALERROR;
     if (!IsWithinLimits(ChA1.Bda_in.Phy, 0, T[5]))
         return GENERALERROR;
@@ -534,7 +537,7 @@ int TuneDialogA1::Start6_3_2_3()
     Bac_block.KmU[0] = Bac_block.KmU[0] * RealData.u1 / ChA1.Bda_in.UefNat_filt[0];
     Bac_block.KmU[1] = Bac_block.KmU[1] * RealData.u2 / ChA1.Bda_in.UefNat_filt[1];
     Bac_block.K_freq = Bac_block.K_freq * RealData.freq / ChA1.Bda_in.Frequency;
-    Bac_block.DPhy = -ChA1.Bda_in.Phy;
+    Bac_block.DPhy = Bac_block.DPhy - ChA1.Bda_in.Phy;
     return NOERROR;
 }
 
@@ -554,6 +557,7 @@ int TuneDialogA1::Start6_3_3_2()
 {
     if (Skipped)
         return ER_RESEMPTY;
+    WaitNSeconds(10);
     int res = ReadAnalogMeasurements();
     if (res == NOERROR)
         RegData = ChA1.Bda_block.Pt100;
@@ -572,6 +576,7 @@ int TuneDialogA1::Start6_3_3_4()
 {
     if (Skipped)
         return ER_RESEMPTY;
+    WaitNSeconds(10);
     int res = ReadAnalogMeasurements();
     if (res == NOERROR)
     {
@@ -589,7 +594,7 @@ int TuneDialogA1::Start6_3_4()
         Skipped = true;
         return ER_RESEMPTY;
     }
-    MessageBox2::information(this, "Требование", "Задайте ток 4,000мА в канале EXTmA2");
+    MessageBox2::information(this, "Требование", "Задайте ток 20,000мА в канале EXTmA2");
     return NOERROR;
 }
 
@@ -608,7 +613,7 @@ int TuneDialogA1::Start6_3_5_2()
 {
     if (Skipped)
         return ER_RESEMPTY;
-    MessageBox2::information(this, "Требование", "Задайте ток 20,000мА в канале EXTmA2");
+    MessageBox2::information(this, "Требование", "Задайте ток 4,000мА в канале EXTmA2");
     return NOERROR;
 }
 
@@ -616,11 +621,12 @@ int TuneDialogA1::Start6_3_5_3()
 {
     if (Skipped)
         return ER_RESEMPTY;
+    WaitNSeconds(10);
     int res = ReadAnalogMeasurements();
     if (res == NOERROR)
     {
-        Bac_block.Ama2 = (ChA1.Bda_block.EXTmA2 - RegData) / 16;
-        Bac_block.Bma2 = (4*ChA1.Bda_block.EXTmA2 - 20*RegData) / 16;
+        Bac_block.Ama2 = (RegData - ChA1.Bda_block.EXTmA2) / 16;
+        Bac_block.Bma2 = (4*RegData - 20*ChA1.Bda_block.EXTmA2) / 16;
     }
     return res;
 }
@@ -660,6 +666,7 @@ int TuneDialogA1::Start6_3_7_3()
 {
     if (Skipped)
         return ER_RESEMPTY;
+    WaitNSeconds(10);
     int res = ReadAnalogMeasurements();
     if (res == NOERROR)
     {
@@ -673,7 +680,8 @@ int TuneDialogA1::Start6_3_8()
 {
     if (MessageBox2::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?") == false)
         return GENERALERROR;
-    cn->Send(CN_WBac, Canal::BT_BASE, &Bac_block, sizeof(Bac));
+    SaveToFileEx();
+    cn->Send(CN_WBac, BT_BASE, &Bac_block, sizeof(Bac));
     if (cn->result != NOERROR)
         return GENERALERROR;
     return NOERROR;
@@ -746,24 +754,7 @@ void TuneDialogA1::LoadFromFile()
 void TuneDialogA1::SaveToFile()
 {
     FillBackBac();
-    int res = pc.SaveFile("Tune files (*.tn)", &Bac_block, sizeof(Bac_block));
-    switch (res)
-    {
-    case NOERROR:
-        MessageBox2::information(this, "Внимание", "Записано успешно!");
-        break;
-    case ER_FILEWRITE:
-        MessageBox2::error(this, "Ошибка", "Ошибка при записи файла!");
-        break;
-    case ER_FILENAMEEMP:
-        MessageBox2::error(this, "Ошибка", "Пустое имя файла!");
-        break;
-    case ER_FILEOPEN:
-        MessageBox2::error(this, "Ошибка", "Ошибка открытия файла!");
-        break;
-    default:
-        break;
-    }
+    SaveToFileEx();
 }
 
 void TuneDialogA1::WaitNSeconds(int Seconds)
@@ -785,6 +776,28 @@ void TuneDialogA1::WaitNSeconds(int Seconds)
     }
     tmr->stop();
     w->Stop();
+}
+
+void TuneDialogA1::SaveToFileEx()
+{
+    int res = pc.SaveFile("Tune files (*.tn)", &Bac_block, sizeof(Bac_block));
+    switch (res)
+    {
+    case NOERROR:
+        MessageBox2::information(this, "Внимание", "Записано успешно!");
+        break;
+    case ER_FILEWRITE:
+        MessageBox2::error(this, "Ошибка", "Ошибка при записи файла!");
+        break;
+    case ER_FILENAMEEMP:
+        MessageBox2::error(this, "Ошибка", "Пустое имя файла!");
+        break;
+    case ER_FILEOPEN:
+        MessageBox2::error(this, "Ошибка", "Ошибка открытия файла!");
+        break;
+    default:
+        break;
+    }
 }
 
 void TuneDialogA1::UpdateNSecondsWidget()

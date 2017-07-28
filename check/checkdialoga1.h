@@ -16,7 +16,7 @@ public slots:
 
 private:
     Check_A1 *ChA1;
-    const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
+    const QString ValuesFormat = "QLabel {border: 1px solid red; border-radius: 4px; padding: 1px; color: red; font: bold 10px;}";
 
     QWidget *AutoCheckUI(); // UI для автоматической проверки модуля
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля

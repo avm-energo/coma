@@ -16,7 +16,7 @@
 ConfDialogA1::ConfDialogA1(QVector<publicclass::DataRec> &S2Config, QWidget *parent) :
     AbstractConfDialog(parent)
 {
-    QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
+    QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);
     this->S2Config = &S2Config;
     CA1 = new ConfigA1(S2Config);
@@ -28,6 +28,7 @@ ConfDialogA1::ConfDialogA1(QVector<publicclass::DataRec> &S2Config, QWidget *par
 
 ConfDialogA1::~ConfDialogA1()
 {
+    delete CA1;
 }
 
 void ConfDialogA1::Fill()
@@ -77,75 +78,75 @@ void ConfDialogA1::SetupUI()
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QWidget *cp1 = new QWidget;
-    QString tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
+    QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
     cp1->setStyleSheet(tmps);
 
     hlyout->addWidget(WDFunc::NewLBL(this,"Заводской номер делителя:"), 0);
     hlyout->addWidget(WDFunc::NewLE(this, "DividerSN", "", tmps),10);
     hlyout->addWidget(WDFunc::NewLBL(this,"Номинальный коэффициент деления ДН:"), 0);
-    hlyout->addWidget(WDFunc::NewSPB(this,"K_DNSPB",1,10000,1,0,ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this,"K_DNSPB",1,10000,1,0,UCONFWCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
 
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Канал датчика Tокр:"));
     QStringList sl = QStringList() << "0. Нет датчика" << "1. Канал Pt100" << "2. Канал А1" << "3. Канал А2";
-    s_tqComboBox *cb = WDFunc::NewCB(this, "TokrCB", sl, ACONFGCLR);
+    s_tqComboBox *cb = WDFunc::NewCB(this, "TokrCB", sl, UCONFCLR);
     hlyout->addWidget(cb, 10);
     hlyout->addWidget(WDFunc::NewLBL(this, "W100:"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "TokrW100", 0.1, 3, 0.001, 3, ACONFGCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "TokrW100", 0.1, 3, 0.001, 3, UCONFCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Значение при 4 мА:"), 0, Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewSPB(this, "TokrSPB4", 0, 100, 0.1, 1, ACONFGCLR), 10);
+    hlyout->addWidget(WDFunc::NewSPB(this, "TokrSPB4", 0, 100, 0.1, 1, UCONFCLR), 10);
     hlyout->addWidget(WDFunc::NewLBL(this, "Значение при 20 мА:"), 0, Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewSPB(this, "TokrSPB20", 0, 100, 0.1, 1, ACONFGCLR), 10);
+    hlyout->addWidget(WDFunc::NewSPB(this, "TokrSPB20", 0, 100, 0.1, 1, UCONFCLR), 10);
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
 
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Канал датчика влажности:"));
     sl = QStringList() << "0. Нет датчика" << "2. Канал А1" << "3. Канал А2";
-    cb = WDFunc::NewCB(this, "HumidityCB", sl, ACONFGCLR);
+    cb = WDFunc::NewCB(this, "HumidityCB", sl, UCONFCLR);
     hlyout->addWidget(cb);
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Значение при 4 мА:"), 0, Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewSPB(this, "HumiditySPB4", 0, 100, 0.1, 1, ACONFGCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "HumiditySPB4", 0, 100, 0.1, 1, UCONFCLR));
     hlyout->addWidget(WDFunc::NewLBL(this, "Значение при 20 мА:"), 0, Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewSPB(this, "HumiditySPB20", 0, 100, 0.1, 1, ACONFGCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "HumiditySPB20", 0, 100, 0.1, 1, UCONFCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
 
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Уставка скачка напряжения для запуска осциллографирования, %"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "thr.1", 0, 100, 0.1, 1, ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "thr.1", 0, 100, 0.1, 1, UCONFWCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Уставка контроля минимума напряжения для частоты и фазового сдвига, %"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "thr.2", 0, 100, 0.1, 1, ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "thr.2", 0, 100, 0.1, 1, UCONFWCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
 
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Количество точек оцифровки на период:"), 0);
     sl = QStringList() << "64" << "128" << "256";
-    cb = WDFunc::NewCB(this, "NPointsCB", sl, ACONFGCLR);
+    cb = WDFunc::NewCB(this, "NPointsCB", sl, UCONFCLR);
     hlyout->addWidget(cb, 10);
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBLT(this, "Постоянная фильтрации:", "", "", "Задаётся в тактах, один такт - 20 мс"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "NFilterSPB", 1, 1000, 1, 0, ACONFGCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "NFilterSPB", 1, 1000, 1, 0, UCONFCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBLT(this, "Постоянная фильтрации гармоник:", "", "", "Задаётся в циклах, каждый цикл равен количеству гармоник, \n"
                                                                                        "умноженному на длину одного такта (20 мс), по умолчанию 61 такт"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "NHarmFiltSPB", 1, 1000, 1, 0, ACONFGCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "NHarmFiltSPB", 1, 1000, 1, 0, UCONFCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
 
@@ -154,7 +155,7 @@ void ConfDialogA1::SetupUI()
     vlyout1 = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
-    QString ConfTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLOR)+";}";
+    QString ConfTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLORA1)+";}";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
     ConfTW->addTab(cp1,"Конфигурация");
     vlyout1->addWidget(ConfTW);

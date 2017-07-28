@@ -90,7 +90,7 @@ pkdn_s::~pkdn_s()
 void pkdn_s::SetupUI()
 {
     setWindowTitle(PROGNAME);
-    QString tmps = "QMainWindow {background-color: "+QString(MAINWINCLR)+";}";
+    QString tmps = "QMainWindow {background-color: "+QString(MAINWINCLRA1)+";}";
     setStyleSheet(tmps);
     setMinimumSize(QSize(800, 600));
     QWidget *wdgt = new QWidget;
@@ -201,8 +201,8 @@ void pkdn_s::SetupUI()
 void pkdn_s::SetupMenubar()
 {
     QMenuBar *MainMenuBar = new QMenuBar;
-    QString tmps = "QMenuBar {background-color: "+QString(MAINWINCLR)+";}"\
-            "QMenuBar::item {background-color: "+QString(MAINWINCLR)+";}";
+    QString tmps = "QMenuBar {background-color: "+QString(MAINWINCLRA1)+";}"\
+            "QMenuBar::item {background-color: "+QString(MAINWINCLRA1)+";}";
     MainMenuBar->setStyleSheet(tmps);
     QMenu *MainMenu = new QMenu;
     MainMenu->setTitle("Главное");
@@ -481,6 +481,7 @@ void pkdn_s::Stage3()
 
 void pkdn_s::ClearTW()
 {
+    S2Config.clear();
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;

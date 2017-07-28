@@ -96,7 +96,7 @@ QWidget *AbstractCheckDialog::BottomUI()
 
 void AbstractCheckDialog::GetIP()
 {
-    cn->Send(CN_IP, Canal::BT_NONE, &Bip_block, sizeof(Bip));
+    cn->Send(CN_IP, BT_NONE, &Bip_block, sizeof(Bip));
     if (cn->result != NOERROR)
         MessageBox2::error(this, "Ошибка", "Ошибка получения данных по IP адресу модуля");
     else
