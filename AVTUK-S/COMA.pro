@@ -69,7 +69,8 @@ SOURCES += main.cpp\
     ../tune/tunedialoga1.cpp \
     ../check/checkdialoga1.cpp \
     ../check/checka1.cpp \
-    ../dialogs/keypressdialog.cpp
+    ../dialogs/keypressdialog.cpp \
+    ../check/check80.cpp
 
 HEADERS  += coma.h \
     ../canal.h \
@@ -122,7 +123,8 @@ HEADERS  += coma.h \
     ../tune/tunedialoga1.h \
     ../check/checkdialoga1.h \
     ../check/checka1.h \
-    ../dialogs/keypressdialog.h
+    ../dialogs/keypressdialog.h \
+    ../check/check80.h
 
 RESOURCES += \
     res.qrc

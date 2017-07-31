@@ -1,5 +1,6 @@
 // checka1.cpp
 #include <QGridLayout>
+#include <QGroupBox>
 #include "checka1.h"
 #include "../publicclass.h"
 #include "../widgets/wd_func.h"
@@ -35,12 +36,13 @@ QWidget *Check_A1::BdaW(QWidget *parent)
     return w;
 }
 
-QWidget *Check_A1::Bd1W(const QString &begin, QWidget *parent)
+QWidget *Check_A1::Bd1W(const QString &title, const QString &begin, QWidget *parent)
 {
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
+    QGroupBox *gb = new QGroupBox(title);
     QGridLayout *glyout = new QGridLayout;
     glyout->addWidget(WDFunc::NewLBL(parent, "1. UefNat_filt1:"), 0, 0);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0", ValuesFormat, "Истинное действующее значение напряжения 1 (в В на входе прибора)"), 0, 1);
@@ -56,7 +58,8 @@ QWidget *Check_A1::Bd1W(const QString &begin, QWidget *parent)
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"5", ValuesFormat, "Частота в сети"), 2, 3);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
-    lyout->addLayout(glyout);
+    gb->setLayout(glyout);
+    lyout->addWidget(gb);
     lyout->addStretch(100);
     w->setLayout(lyout);
     QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
@@ -140,12 +143,12 @@ QWidget *Check_A1::Bd4W(const QString &begin, QWidget *parent)
 
 QWidget *Check_A1::Bda_inW(QWidget *parent)
 {
-    return Bd1W("Bda_in", parent);
+    return Bd1W("Переменные напряжения, приведённые ко входу", "Bda_in", parent);
 }
 
 QWidget *Check_A1::Bda_outW(QWidget *parent)
 {
-    return Bd1W("Bda_out", parent);
+    return Bd1W("Переменные напряжения в первичном масштабе", "Bda_out", parent);
 }
 
 QWidget *Check_A1::Bda_h0W(QWidget *parent)

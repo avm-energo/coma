@@ -58,7 +58,7 @@ public:
 
     Check_A1();
     QWidget *BdaW(QWidget *parent);
-    QWidget *Bd1W(const QString &begin, QWidget *parent);
+    QWidget *Bd1W(const QString &title, const QString &begin, QWidget *parent);
     QWidget *Bd2W(const QString &begin, QWidget *parent);
     QWidget *Bd3W(const QString &begin, QWidget *parent);
     QWidget *Bd4W(const QString &begin, QWidget *parent);

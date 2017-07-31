@@ -117,9 +117,9 @@ void CheckDialogA1::SetupUI()
                        "QTabBar::tab:last:selected {margin-right: 0;}" \
                        "QTabBar::tab:only-one {margin: 0;}";
     CheckTW->tabBar()->setStyleSheet(ConfTWss);
-    CheckTW->addTab(AutoCheckUI(),"Автоматическая проверка");
+    CheckTW->addTab(AutoCheckUI(),"  Автоматическая проверка  ");
     for (int i=1; i<=BdUINum; ++i)
-        CheckTW->addTab(BdUI(i),"Гр. "+QString::number(i));
+        CheckTW->addTab(BdUI(i),"  Гр. "+QString::number(i)+"  ");
     lyout = new QVBoxLayout;
     lyout->addWidget(CheckTW);
     lyout->addWidget(BottomUI());

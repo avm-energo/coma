@@ -340,7 +340,7 @@ int TuneDialog80::Start7_3_1()
     if (!DefConfig) // если есть настроечные параметры в памяти модуля
     {
         // получение настроечных коэффициентов от модуля
-        cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
+        cn->Send(CN_GBac, BT_NONE, &Bac_block, sizeof(Bac_block));
         if (cn->result != NOERROR)
         {
             MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");

@@ -20,7 +20,18 @@
 
 CheckDialog80::CheckDialog80(QWidget *parent) : AbstractCheckDialog(parent)
 {
+    QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
+    setStyleSheet(tmps);
+    C80 = new Check_80;
     BdNum = 8;
+    SetBd(1, &C80->Bd_block1, sizeof(Check_80::Bd1));
+    SetBd(2, &C80->Bd_block2, sizeof(Check_80::Bd2));
+    SetBd(3, &C80->Bd_block3, sizeof(Check_80::Bd2));
+    SetBd(4, &C80->Bd_block4, sizeof(Check_80::Bd4));
+    SetBd(5, &C80->Bd_block5, sizeof(Check_80::Bd4));
+    SetBd(6, &C80->Bd_block6, sizeof(Check_80::Bd6));
+    SetBd(7, &C80->Bd_block7, sizeof(Check_80::Bd6));
+    SetBd(8, &C80->Bd_block8, sizeof(Check_80::Bd8));
     SetupUI();
 }
 
@@ -73,76 +84,27 @@ void CheckDialog80::SetupUI()
 
 QWidget *CheckDialog80::BdUI(int bdnum)
 {
-    QWidget *w = new QWidget;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    int i;
     switch (bdnum)
     {
-    case 0: // Блок #1
-    {
-        hlyout->addWidget(WDFunc::NewLBL(this, "0.Температура:"));
-        hlyout->addWidget(WDFunc::NewLBLT(this, "", "value0", ValuesFormat, ""));
-        hlyout->addWidget(WDFunc::NewLBL(this, "1.Батарея:"));
-        hlyout->addWidget(WDFunc::NewLBLT(this, "", "value1", ValuesFormat, ""));
-        hlyout->addWidget(WDFunc::NewLBL(this, "2.Частота:"));
-        hlyout->addWidget(WDFunc::NewLBLT(this, "", "value2", ValuesFormat, ""));
-        lyout->addLayout(hlyout);
-        for (i = 0; i < 6; ++i)
-        {
-            QString IndexStr = "[" + QString::number(i) + "]";
-            glyout->addWidget(WDFunc::NewLBL(this, "IUNF"+IndexStr),0,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+3), ValuesFormat, \
-                                              QString::number(i+3)+".Истинные действующие значения сигналов"),1,i,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "IUF"+IndexStr),2,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+9), ValuesFormat, \
-                                              QString::number(i+9)+".Действующие значения сигналов по 1-й гармонике\nотносительно ф. А 1-й группы"),3,i,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "PHF"+IndexStr),4,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+15), ValuesFormat, \
-                                              QString::number(i+15)+".Угол сдвига между сигналами по первой гармонике\nотносительно ф. А 1-й группы"),5,i,1,1);
-        }
-        for (i = 0; i < 3; ++i)
-        {
-            QString IndexStr = "[" + QString::number(i) + "]";
-            glyout->addWidget(WDFunc::NewLBL(this, "PNF"+IndexStr),6,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+21), ValuesFormat, \
-                                              QString::number(i+21)+".Истинная активная мощность"),7,i,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "SNF"+IndexStr),6,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+24), ValuesFormat, \
-                                              QString::number(i+24)+".Кажущаяся полная мощность"),7,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "QNF"+IndexStr),8,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+27), ValuesFormat, \
-                                              QString::number(i+27)+".Реактивная мощность"),9,i,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "Cos"+IndexStr),8,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+30), ValuesFormat, \
-                                              QString::number(i+30)+".Cos phi по истинной активной мощности"),9,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "PF"+IndexStr),10,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+33), ValuesFormat, \
-                                              QString::number(i+33)+".Активная мощность по 1-й гармонике"),11,i,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "QF"+IndexStr),10,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+36), ValuesFormat, \
-                                              QString::number(i+36)+".Реактивная мощность по 1-й гармонике"),11,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "SF"+IndexStr),12,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+39), ValuesFormat, \
-                                              QString::number(i+39)+".Полная мощность по 1-й гармонике"),13,i,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "CosPhi"+IndexStr),12,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+42), ValuesFormat, \
-                                              QString::number(i+42)+".Cos phi по 1-й гармонике"),13,i+3,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "PHI"+IndexStr),14,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "", "value"+QString::number(i+45), ValuesFormat, \
-                                              QString::number(i+45)+".Угол между током и напряжением"),15,i,1,1);
-        }
-        lyout->addLayout(glyout);
-        break;
+    case 1: // Блок #1
+        return C80->Bd_1W(this);
+    case 2:
+        return C80->Bd_2W(this);
+    case 3:
+        return C80->Bd_3W(this);
+    case 4:
+        return C80->Bd_4W(this);
+    case 5:
+        return C80->Bd_5W(this);
+    case 6:
+        return C80->Bd_6W(this);
+    case 7:
+        return C80->Bd_7W(this);
+    case 8:
+        return C80->Bd_8W(this);
+    default:
+        return new QWidget;
     }
-    case 1:
-    {
-
-    }
-    }
-    w->setLayout(lyout);
-    return w;
 }
 
 void CheckDialog80::RefreshAnalogValues(int bdnum)
