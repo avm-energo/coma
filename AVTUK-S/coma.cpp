@@ -607,7 +607,7 @@ void Coma::GetAbout()
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *l2yout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("КОМплекс АВ-ТУК (КОМА)");
+    QLabel *lbl = new QLabel("КОнфигуратор Модулей АВ-ТУК (КОМА)");
     l2yout->addWidget(lbl);
     QString tmps = "Версия "+QString(PROGNAME);
     lbl = new QLabel(tmps);

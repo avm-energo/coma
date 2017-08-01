@@ -511,7 +511,7 @@ void a_checkdialog::Check1PPS()
 
 void a_checkdialog::GetIP()
 {
-    cn->Send(CN_IP, Canal::BT_NONE, &Bip_block, sizeof(Bip));
+    cn->Send(CN_IP, BT_NONE, &Bip_block, sizeof(Bip));
     if (cn->result == NOERROR)
         CheckIP();
 }

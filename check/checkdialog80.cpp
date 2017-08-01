@@ -95,10 +95,16 @@ QWidget *CheckDialog80::BdUI(int bdnum)
     case 4:
         return C80->Bd_4W(this);
     case 5:
-        return C80->Bd_5W(this);
     case 6:
-        return C80->Bd_6W(this);
     case 7:
+    case 8:
+        return C80->Bd_5W(bdnum-5, this);
+    case 9:
+        return C80->Bd_6W(this);
+    case 10:
+    case 11:
+    case 12:
+    case 13:
         return C80->Bd_7W(this);
     case 8:
         return C80->Bd_8W(this);

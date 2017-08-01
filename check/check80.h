@@ -73,25 +73,22 @@ public:
     QWidget *Bd1W(QWidget *parent);
     QWidget *Bd2W(const QString &title, const QString &begin, QWidget *parent);
     QWidget *Bd4W(const QString &title, const QString &begin, QWidget *parent);
-    QWidget *Bd6W(const QString &title, const QString &begin, QWidget *parent);
-    QWidget *Bd8W(const QString &title, QWidget *parent);
+    QWidget *Bd5W(const QString &title, const QString &begin, QWidget *parent);
+    QWidget *Bd8W(const QString &title, const QString &begin, QWidget *parent);
+    QWidget *Bd10W(QWidget *parent);
     QWidget *Bd_1W(QWidget *parent);
     QWidget *Bd_2W(QWidget *parent);
     QWidget *Bd_3W(QWidget *parent);
-    QWidget *Bd_4aW(QWidget *parent);
-    QWidget *Bd_4bW(QWidget *parent);
-    QWidget *Bd_4cW(QWidget *parent);
-    QWidget *Bd_4dW(QWidget *parent);
-    QWidget *Bd_5aW(QWidget *parent);
-    QWidget *Bd_5bW(QWidget *parent);
-    QWidget *Bd_5cW(QWidget *parent);
-    QWidget *Bd_5dW(QWidget *parent);
+    QWidget *Bd_4W(QWidget *parent);
+    QWidget *Bd_5W(int num, QWidget *parent);
     QWidget *Bd_6W(QWidget *parent);
-    QWidget *Bd_7W(QWidget *parent);
+    QWidget *Bd_7W(int num, QWidget *parent);
     QWidget *Bd_8W(QWidget *parent);
-    void FillBd2W(const QString &begin, A1_Bd1 Bda, QWidget *parent);
-    void FillBd4W(const QString &begin, A1_Bd1 Bda, QWidget *parent);
-    void FillBd6W(const QString &begin, A1_Bd1 Bda, QWidget *parent);
+    QWidget *Bd_9W(QWidget *parent);
+    QWidget *Bd_10W(QWidget *parent);
+    void FillBd2W(const QString &begin, Bd2 &Bd, QWidget *parent);
+    void FillBd4W(const QString &begin, Bd4 &Bd, QWidget *parent);
+    void FillBd6W(const QString &begin, Bd6 &Bd, QWidget *parent);
     void FillBd1(QWidget *parent);
     void FillBd2(QWidget *parent);
     void FillBd3(QWidget *parent);
@@ -100,6 +97,9 @@ public:
     void FillBd6(QWidget *parent);
     void FillBd7(QWidget *parent);
     void FillBd8(QWidget *parent);
+
+private:
+    QString ValuesFormat, WidgetFormat;
 };
 
 #endif // CHECK80_H
