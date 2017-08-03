@@ -71,9 +71,6 @@ private:
         float KmU[2];		// калибровочные коэффициенты по напряжению в 2 каналах
         float K_freq;		// коррекция частоты
         float DPhy;         // коррекция фазы в приборе (в градусах)
-        float U1kDN[6];     // измеренные при калибровке напряжения на выходе своего ДН для значений вблизи 12, 24, 36, 48, 60 и 72 В
-        float U2kDN[6];     // и соответствующие им значения на выходе эталонного делителя.
-        float PhyDN[6]; 	// фазовый сдвиг ДН на частоте 50 Гц для значений напряжения U1kDN[6]
         float Art;          // коэффициент в канале Pt100, ед.АЦП/Ом
         float Brt;          // смещение в канале Pt100, ед.АЦП
         float Ama1; 		// коэффициент в канале A1, ед./мА
@@ -82,7 +79,15 @@ private:
         float Bma2; 		// смещение в канале A2, ед.
     };
 
+    struct Bac2
+    {
+        float U1kDN[6];     // измеренные при калибровке напряжения на выходе своего ДН для значений вблизи 12, 24, 36, 48, 60 и 72 В
+        float U2kDN[6];     // и соответствующие им значения на выходе эталонного делителя.
+        float PhyDN[6]; 	// фазовый сдвиг ДН на частоте 50 Гц для значений напряжения U1kDN[6]
+    };
+
     Bac Bac_block;
+    Bac2 Bac_block2;
 
     struct EMData
     {
@@ -98,13 +103,9 @@ private:
 
     void SetupUI();
 
-    int CheckPassword();
-    int ShowScheme();
     int Start6_2();
-    int CheckBdaValues();
     int Start6_3_1();
     int Start6_3_2_1();
-    int CheckAnalogValues(bool isPrecise); // проверка Bda_in на корректность
     int Start6_3_2_2();
     int Start6_3_2_3();
     int Start6_3_3_1();
@@ -122,7 +123,14 @@ private:
     int Start6_3_8();
     int Start6_3_9();
     int Start6_3_10();
+    int Start7_2_345(int counter);
+    int Start7_2_67();
+    int Start7_2_8();
 
+    int CheckPassword();
+    int ShowScheme();
+    int CheckBdaValues();
+    int CheckAnalogValues(bool isPrecise); // проверка Bda_in на корректность
     bool IsWithinLimits(double number, double base, double threshold);
     int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта
     void MsgSetVisible(int msg, bool Visible=true);
@@ -142,8 +150,11 @@ private slots:
     void LoadFromFile();
     int ReadAnalogMeasurements();
     void FillBac();
+    void FillBac2();
     void FillBackBac();
+    void FillBackBac2();
     void SetDefCoefs();
+    void SetDefCoefs2();
     void SetExtData();
     void CancelExtData();
     void CancelTune();
