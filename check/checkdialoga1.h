@@ -15,7 +15,7 @@ signals:
 public slots:
 
 private:
-    Check_A1 *ChA1;
+    CheckA1 *ChA1;
     const QString ValuesFormat = "QLabel {border: 1px solid red; border-radius: 4px; padding: 1px; color: red; font: bold 10px;}";
 
     QWidget *AutoCheckUI(); // UI для автоматической проверки модуля

@@ -24,7 +24,7 @@ CheckDialogA1::CheckDialogA1(QWidget *parent) : AbstractCheckDialog(parent)
     setStyleSheet(tmps);
     BdNum = 5; // количество блоков данных 5
     BdUINum = 8; // количество вкладок - 8 (блок Bda_h разделён ввиду его огромности на четыре вкладки)
-    ChA1 = new Check_A1;
+    ChA1 = new CheckA1;
     SetBd(1, &ChA1->Bda_in, sizeof(ChA1->Bda_in));
     SetBd(4, &ChA1->Bda_out, sizeof(ChA1->Bda_out));
     SetBd(3, &ChA1->Bda_h, sizeof(ChA1->Bda_h));

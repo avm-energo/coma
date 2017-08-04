@@ -5,12 +5,12 @@
 #include "../publicclass.h"
 #include "../widgets/wd_func.h"
 
-Check_A1::Check_A1()
+CheckA1::CheckA1()
 {
 
 }
 
-QWidget *Check_A1::BdaW(QWidget *parent)
+QWidget *CheckA1::BdaW(QWidget *parent)
 {
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
@@ -36,7 +36,7 @@ QWidget *Check_A1::BdaW(QWidget *parent)
     return w;
 }
 
-QWidget *Check_A1::Bd1W(const QString &title, const QString &begin, QWidget *parent)
+QWidget *CheckA1::Bd1W(const QString &title, const QString &begin, QWidget *parent)
 {
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
@@ -67,7 +67,7 @@ QWidget *Check_A1::Bd1W(const QString &title, const QString &begin, QWidget *par
     return w;
 }
 
-QWidget *Check_A1::Bd2W(const QString &begin, QWidget *parent)
+QWidget *CheckA1::Bd2W(const QString &begin, QWidget *parent)
 {
     int Beg = (begin.at(begin.size()-1).digitValue())*15;
     int End = Beg + 15;
@@ -90,7 +90,7 @@ QWidget *Check_A1::Bd2W(const QString &begin, QWidget *parent)
     return w;
 }
 
-QWidget *Check_A1::Bd3W(const QString &begin, QWidget *parent)
+QWidget *CheckA1::Bd3W(const QString &begin, QWidget *parent)
 {
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
@@ -114,7 +114,7 @@ QWidget *Check_A1::Bd3W(const QString &begin, QWidget *parent)
     return w;
 }
 
-QWidget *Check_A1::Bd4W(const QString &begin, QWidget *parent)
+QWidget *CheckA1::Bd4W(const QString &begin, QWidget *parent)
 {
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
@@ -141,47 +141,47 @@ QWidget *Check_A1::Bd4W(const QString &begin, QWidget *parent)
     return w;
 }
 
-QWidget *Check_A1::Bda_inW(QWidget *parent)
+QWidget *CheckA1::Bda_inW(QWidget *parent)
 {
     return Bd1W("Переменные напряжения, приведённые ко входу", "Bda_in", parent);
 }
 
-QWidget *Check_A1::Bda_outW(QWidget *parent)
+QWidget *CheckA1::Bda_outW(QWidget *parent)
 {
     return Bd1W("Переменные напряжения в первичном масштабе", "Bda_out", parent);
 }
 
-QWidget *Check_A1::Bda_h0W(QWidget *parent)
+QWidget *CheckA1::Bda_h0W(QWidget *parent)
 {
     return Bd2W("Bda_h0", parent);
 }
 
-QWidget *Check_A1::Bda_h1W(QWidget *parent)
+QWidget *CheckA1::Bda_h1W(QWidget *parent)
 {
     return Bd2W("Bda_h1", parent);
 }
 
-QWidget *Check_A1::Bda_h2W(QWidget *parent)
+QWidget *CheckA1::Bda_h2W(QWidget *parent)
 {
     return Bd2W("Bda_h2", parent);
 }
 
-QWidget *Check_A1::Bda_h3W(QWidget *parent)
+QWidget *CheckA1::Bda_h3W(QWidget *parent)
 {
     return Bd2W("Bda_h3", parent);
 }
 
-QWidget *Check_A1::Bda_in_anW(QWidget *parent)
+QWidget *CheckA1::Bda_in_anW(QWidget *parent)
 {
     return Bd3W("Bda_in_an", parent);
 }
 
-QWidget *Check_A1::Bda_out_anW(QWidget *parent)
+QWidget *CheckA1::Bda_out_anW(QWidget *parent)
 {
     return Bd4W("Bda_out_an", parent);
 }
 
-void Check_A1::FillBda(QWidget *parent)
+void CheckA1::FillBda(QWidget *parent)
 {
     WDFunc::SetLBLText(parent, "value0", WDFunc::StringValueWithCheck(Bda_block.Ueff_ADC[0]));
     WDFunc::SetLBLText(parent, "value1", WDFunc::StringValueWithCheck(Bda_block.Ueff_ADC[1]));
@@ -191,7 +191,7 @@ void Check_A1::FillBda(QWidget *parent)
     WDFunc::SetLBLText(parent, "value5", WDFunc::StringValueWithCheck(Bda_block.EXTmA2));
 }
 
-void Check_A1::FillBd1W(const QString &begin, A1_Bd1 Bda, QWidget *parent)
+void CheckA1::FillBd1W(const QString &begin, A1_Bd1 Bda, QWidget *parent)
 {
     WDFunc::SetLBLText(parent, begin+"0", WDFunc::StringValueWithCheck(Bda.UefNat_filt[0]));
     WDFunc::SetLBLText(parent, begin+"1", WDFunc::StringValueWithCheck(Bda.UefNat_filt[1]));
@@ -201,17 +201,17 @@ void Check_A1::FillBd1W(const QString &begin, A1_Bd1 Bda, QWidget *parent)
     WDFunc::SetLBLText(parent, begin+"5", WDFunc::StringValueWithCheck(Bda.Frequency));
 }
 
-void Check_A1::FillBda_in(QWidget *parent)
+void CheckA1::FillBda_in(QWidget *parent)
 {
     FillBd1W("Bda_in", Bda_in, parent);
 }
 
-void Check_A1::FillBda_out(QWidget *parent)
+void CheckA1::FillBda_out(QWidget *parent)
 {
     FillBd1W("Bda_out", Bda_out, parent);
 }
 
-void Check_A1::FillBda_h(QWidget *parent)
+void CheckA1::FillBda_h(QWidget *parent)
 {
     for (int i=0; i<15; ++i)
     {
@@ -226,14 +226,14 @@ void Check_A1::FillBda_h(QWidget *parent)
     }
 }
 
-void Check_A1::FillBda_in_an(QWidget *parent)
+void CheckA1::FillBda_in_an(QWidget *parent)
 {
     WDFunc::SetLBLText(parent, "Bda_in_an0", WDFunc::StringValueWithCheck(Bda_in_an.Pt100_R));
     WDFunc::SetLBLText(parent, "Bda_in_an1", WDFunc::StringValueWithCheck(Bda_in_an.EXTmA1_I));
     WDFunc::SetLBLText(parent, "Bda_in_an2", WDFunc::StringValueWithCheck(Bda_in_an.EXTmA2_I));
 }
 
-void Check_A1::FillBda_out_an(QWidget *parent)
+void CheckA1::FillBda_out_an(QWidget *parent)
 {
     WDFunc::SetLBLText(parent, "Bda_out_an0", WDFunc::StringValueWithCheck(Bda_out_an.Tmk));
     WDFunc::SetLBLText(parent, "Bda_out_an1", WDFunc::StringValueWithCheck(Bda_out_an.Vbat));

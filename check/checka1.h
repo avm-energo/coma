@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-class Check_A1
+class CheckA1
 {
 public:
 
@@ -56,7 +56,7 @@ public:
     A1_Bd3 Bda_in_an;
     A1_Bd4 Bda_out_an;
 
-    Check_A1();
+    CheckA1();
     QWidget *BdaW(QWidget *parent);
     QWidget *Bd1W(const QString &title, const QString &begin, QWidget *parent);
     QWidget *Bd2W(const QString &begin, QWidget *parent);

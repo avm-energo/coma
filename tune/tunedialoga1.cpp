@@ -20,7 +20,43 @@ TuneDialogA1::TuneDialogA1(QWidget *parent) :
     QDialog(parent)
 {
     CA1 = new ConfigA1(S2Config);
+    ChA1 = new CheckA1;
     setAttribute(Qt::WA_DeleteOnClose);
+    int count = 0;
+    MeasurementEnabled = false;
+    MeasurementTimer = new QTimer;
+    connect(MeasurementTimer,SIGNAL(timeout()),this,SLOT(MeasTimerTimeout()));
+    pf[lbls().at(count++)] = &TuneDialogA1::CheckPassword; // 1. Ввод пароля
+    pf[lbls().at(count++)] = &TuneDialogA1::ShowScheme; // 2. Отображение схемы подключения
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_2; // 6.2. Проверка правильности измерения сигналов переменного напряжения
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_1; // 6.3.1. Получение настроечных коэффициентов
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_2_1; // 6.3.2.1. КПТ: получение блока данных и усреднение
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_2_2; // 6.3.2.2. КПТ: ввод данных от энергомонитора
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_2_3; // 6.3.2.3. КПТ: расчёт регулировочных коэффициентов
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_3_1; // 6.3.3.1. КТС: подтверждение установки 80 Ом
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_3_2; // 6.3.3.2. КТС: получение блока данных
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_3_3; // 6.3.3.3. КТС: подтверждение установки 120 Ом
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_3_4; // 6.3.3.4. КТС: получение блока данных и расчёт регулировочных коэффициентов
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_4; // 6.3.4. КМТ2: подтверждение установки 4 мА
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_5_1; // 6.3.5.1. КМТ2: получение блока данных
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_5_2; // 6.3.5.2. КМТ2: подтверждение установки 20 мА
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_5_3; // 6.3.5.3. КМТ2: получение блока данных и расчёт регулировочных коэффициентов
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_6; // 6.3.6. КМТ1: подтверждение установки 4 мА
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_7_1; // 6.3.7.1. КМТ1: получение блока данных
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_7_2; // 6.3.7.2. КМТ1: подтверждение установки 20 мА
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_7_3; // 6.3.7.3. КМТ1: получение блока данных и расчёт регулировочных коэффициентов
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_8; // 6.3.8. Запись настроечных коэффициентов и переход на новую конфигурацию
+    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_9; // 6.3.9. Проверка аналоговых данных
+    pf[lblsDN().at(count++)] = &TuneDialogA1::CheckPassword; // 7.2.2. Ввод пароля
+    pf[lblsDN().at(count++)] = &TuneDialogA1::ShowSchemeDN; // 7.2.1. Отображение диалога проверки схемы подключения
+    pf[lblsDN().at(count++)] = &TuneDialogA1::Start7_2_3_1; // 7.2.3. Установка 20%, проверка и сохранение
+    pf[lblsDN().at(count++)] = &TuneDialogA1::Start7_2_3_2; // 7.2.5. Установка 40%, проверка и сохранение
+    pf[lblsDN().at(count++)] = &TuneDialogA1::Start7_2_3_3; // 7.2.5. Установка 60%, проверка и сохранение
+    pf[lblsDN().at(count++)] = &TuneDialogA1::Start7_2_3_4; // 7.2.5. Установка 80%, проверка и сохранение
+    pf[lblsDN().at(count++)] = &TuneDialogA1::Start7_2_3_5; // 7.2.5. Установка 100%, проверка и сохранение
+    pf[lblsDN().at(count++)] = &TuneDialogA1::Start7_2_3_6; // 7.2.5. Установка 120%, проверка и сохранение
+    pf[lblsDN().at(count++)] = &TuneDialogA1::Start7_2_67; // 7.2.6. Запись настроечных коэффициентов и переход на новую конфигурацию
+    pf[lblsDN().at(count++)] = &TuneDialogA1::Start7_2_8; // 7.2.8. Проверка аналоговых данных
     SetupUI();
 }
 
@@ -31,7 +67,6 @@ void TuneDialogA1::SetupUI()
     QWidget *cp3 = new QWidget;
     QWidget *cp4 = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
     QTabWidget *TuneTW = new QTabWidget;
     int i;
 
@@ -54,7 +89,7 @@ void TuneDialogA1::SetupUI()
     // CP1 - НАСТРОЙКА ПРИБОРА
 
     lyout = new QVBoxLayout;
-    QPushButton *pb = new QPushButton("Начать настройку");
+    QPushButton *pb = new QPushButton("Начать настройку прибора");
     pb->setObjectName("starttune");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
     if (pc.Emul)
@@ -77,10 +112,60 @@ void TuneDialogA1::SetupUI()
     lyout->addStretch(1);
     cp1->setLayout(lyout);
 
-    // CP2 - КОЭФФИЦИЕНТЫ МОДУЛЯ
+    // CP2 - НАСТРОЙКА ДН
+
+    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
+            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
+    lyout = new QVBoxLayout;
+    pb = new QPushButton("Начать настройку делителя");
+    pb->setObjectName("starttuneDN");
+    connect(pb,SIGNAL(clicked()),this,SLOT(StartTuneDN()));
+    if (pc.Emul)
+        pb->setEnabled(false);
+    lyout->addWidget(pb);
+    QGridLayout *glyout = new QGridLayout;
+    QGroupBox *gb = new QGroupBox("Результаты измерений");
+    glyout->addWidget(WDFunc::NewLBL(this, "U1"), 0, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu1", ValuesFormat, ""), 0, 1, 1, 2);
+    glyout->addWidget(WDFunc::NewLBL(this, "U2"), 0, 2, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu2", ValuesFormat, ""), 0, 3, 1, 2);
+    glyout->addWidget(WDFunc::NewLBL(this, "ΔU, %"), 0, 4, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunepercent", ValuesFormat, ""), 0, 5, 1, 2);
+    glyout->addWidget(WDFunc::NewLBL(this, "Phy"), 1, 4, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednphy", ValuesFormat, ""), 1, 5, 1, 2);
+    glyout->addWidget(WDFunc::NewLBL(this, "Freq"), 1, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednfreq", ValuesFormat, ""), 1, 1, 1, 2);
+    pb = new QPushButton("Годится");
+    pb->setObjectName("GoodDN");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(Good()));
+    glyout->addWidget(pb, 1, 4, 1, 1);
+    pb = new QPushButton("Отмена");
+    pb->setObjectName("NoGoodDN");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(NoGood()));
+    glyout->addWidget(pb, 1, 5, 1, 1);
+    gb->setLayout(glyout);
+    lyout->addWidget(gb);
+    for (int i = 0; i < lblsDN().size(); ++i)
+    {
+        QHBoxLayout *hlyout = new QHBoxLayout;
+        lbl=new QLabel(lblsDN().at(i));
+        lbl->setVisible(false);
+        lbl->setObjectName("tunemsg"+QString::number(LBLSDN+i));
+        hlyout->addWidget(lbl);
+        lbl=new QLabel("");
+        lbl->setVisible(false);
+        lbl->setObjectName("tunemsgres"+QString::number(LBLSDN+i));
+        hlyout->addWidget(lbl);
+        hlyout->addStretch(1);
+        lyout->addLayout(hlyout);
+    }
+    cp2->setLayout(lyout);
+
+    // CP3 - КОЭФФИЦИЕНТЫ МОДУЛЯ
 
     lyout = new QVBoxLayout;
-    QGroupBox *gb = new QGroupBox("Настроечные коэффициенты");
+    glyout = new QGridLayout;
+    gb = new QGroupBox("Настроечные коэффициенты");
     glyout->addWidget(WDFunc::NewLBL(this, "KmU[0]"), 0, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "tune0", "", ValuesLEFormat), 0, 1, 1, 2);
     glyout->addWidget(WDFunc::NewLBL(this, "KmU[1]"), 0, 3, 1, 1, Qt::AlignRight);
@@ -135,9 +220,9 @@ void TuneDialogA1::SetupUI()
     gb->setLayout(glyout);
     lyout->addWidget(gb);
     lyout->addStretch(1);
-    cp2->setLayout(lyout);
+    cp3->setLayout(lyout);
 
-    // CP3 - Данные измерений
+    // CP4 - Данные измерений
 
     lyout = new QVBoxLayout;
     gb = new QGroupBox("Данные измерений без настройки (Bda)");
@@ -157,7 +242,7 @@ void TuneDialogA1::SetupUI()
     lyout->addWidget(gb);
 
     lyout->addStretch(1);
-    cp3->setLayout(lyout);
+    cp4->setLayout(lyout);
 
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
@@ -195,11 +280,11 @@ int TuneDialogA1::Start6_3_2_1()
     if (Skipped)
         return ER_RESEMPTY;
     // получение текущих аналоговых сигналов от модуля
-    Check_A1::A1_Bd1 tmpst, tmpst2;
+    CheckA1::A1_Bd1 tmpst, tmpst2;
     tmpst2.Frequency = tmpst2.Phy = tmpst2.UefNat_filt[0] = tmpst2.UefNat_filt[1] = tmpst2.Uef_filt[0] = tmpst2.Uef_filt[1] = 0;
     for (int i=0; i<TDA1_MEASNUM; ++i)
     {
-        cn->Send(CN_GBd, 1, &tmpst, sizeof(Check_A1::A1_Bd1));
+        cn->Send(CN_GBd, 1, &tmpst, sizeof(CheckA1::A1_Bd1));
         tmpst2.Frequency += tmpst.Frequency;
         tmpst2.Phy += tmpst.Phy;
         tmpst2.UefNat_filt[0] += tmpst.UefNat_filt[0];
@@ -219,7 +304,7 @@ int TuneDialogA1::Start6_3_2_1()
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
         return GENERALERROR;
     }
-    memcpy(&ChA1.Bda_in, &tmpst2, sizeof(Check_A1::A1_Bd1));
+    memcpy(&ChA1.Bda_in, &tmpst2, sizeof(CheckA1::A1_Bd1));
     ChA1.FillBda_in(this);
     return CheckAnalogValues(false);
 }
@@ -398,10 +483,108 @@ int TuneDialogA1::Start6_3_9()
 
 int TuneDialogA1::Start6_3_10()
 {
-    cn->Send(CN_GBd, 5, &ChA1.Bda_out_an, sizeof(Check_A1::A1_Bd4));
+    cn->Send(CN_GBd, 5, &ChA1.Bda_out_an, sizeof(CheckA1::A1_Bd4));
     if (cn->result != NOERROR)
         return GENERALERROR;
     return NOERROR;
+}
+
+int TuneDialogA1::Start7_2_2()
+{
+    cn->Send(CN_GF, BT_NONE,NULL,0,1,S2Config);
+    if (cn->result == NOERROR)
+        return NOERROR;
+    return GENERALERROR;
+}
+
+int TuneDialogA1::Start7_2_3_1()
+{
+    Start7_2_345(0);
+}
+
+int TuneDialogA1::Start7_2_3_2()
+{
+    Start7_2_345(1);
+}
+
+int TuneDialogA1::Start7_2_3_3()
+{
+    Start7_2_345(2);
+}
+
+int TuneDialogA1::Start7_2_3_4()
+{
+    Start7_2_345(3);
+}
+
+int TuneDialogA1::Start7_2_3_5()
+{
+    Start7_2_345(4);
+}
+
+int TuneDialogA1::Start7_2_3_6()
+{
+    Start7_2_345(5);
+}
+
+int TuneDialogA1::Start7_2_345(int counter)
+{
+    const int Percents = {20,40,60,80,100,120};
+    if (counter > 5)
+        return GENERALERROR;
+    int VoltageInkV = CA1->Bci_block.K_DN * Percents[counter] / 1732;
+    if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV) + " кВ") == false)
+    {
+        Cancelled = true;
+        return GENERALERROR;
+    }
+    MeasurementEnabled = true;
+    while (MeasurementEnabled && !Cancelled)
+    {
+        QTime tme;
+        tme.start();
+        while (tme.elapsed() < SLEEPINT)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+    }
+    if (Cancelled)
+        return GENERALERROR;
+    // теперь в ChA1->Bda_block лежат нужные нам значения
+    Bac_block2.U1kDN[counter] = ChA1->Bda_out.Uef_filt[0];
+    Bac_block2.U2kDN[counter] = ChA1->Bda_out.Uef_filt[1];
+    Bac_block2.PhyDN[counter] = ChA1->Bda_out.Phy;
+}
+
+int TuneDialogA1::Start7_2_67()
+{
+    QDialog *dlg
+}
+
+int TuneDialogA1::Start7_2_8()
+{
+
+}
+
+void TuneDialogA1::ProcessTune(int count, QStringList &sl)
+{
+    Cancelled = Skipped = false;
+    MsgClear(); // очистка экрана с сообщениями
+    for (int i=0; i<sl.size(); ++i)
+    {
+        MsgSetVisible(count);
+        int res = (this->*pf[sl.at(i)])();
+        if ((res == GENERALERROR) || (Cancelled))
+        {
+            ErMsgSetVisible(count);
+            WDFunc::SetEnabled(this, "starttune", true);
+            WARNMSG(sl.at(i));
+            return;
+        }
+        else if (res == ER_RESEMPTY)
+            SkMsgSetVisible(count);
+        else
+            OkMsgSetVisible(count);
+        ++count;
+    }
 }
 
 int TuneDialogA1::CheckPassword()
@@ -605,7 +788,30 @@ void TuneDialogA1::SaveToFileEx()
     }
 }
 
+int TuneDialogA1::ShowSchemeDN()
+{
+    if (MessageBox2::question(this, "Подтверждение", "Подключите выход своего делителя напряжения ко входу U1 прибора\n"
+                              "Выход эталонного делителя - ко входу U2") == false)
+    {
+        Cancelled = true;
+        return GENERALERROR;
+    }
+    return NOERROR;
+}
+
 // ####################### SLOTS #############################
+
+void TuneDialogA1::StartTune()
+{
+    WDFunc::SetEnabled(this, "starttune", false);
+    ProcessTune(0, lbls());
+}
+
+void TuneDialogA1::StartTuneDN()
+{
+    WDFunc::SetEnabled(this, "starttuneDN", false);
+    ProcessTune(LBLSDN, lblsDN());
+}
 
 void TuneDialogA1::PasswordCheck(QString psw)
 {
@@ -614,58 +820,6 @@ void TuneDialogA1::PasswordCheck(QString psw)
     else
         ok = false;
     emit PasswordChecked();
-}
-
-void TuneDialogA1::StartTune()
-{
-    WDFunc::SetEnabled(this, "starttune", false);
-
-    DefConfig = pc.ModuleBsi.Hth & HTH_REGPARS; // наличие настроечных коэффициентов в памяти модуля
-
-    int count = 0;
-
-    pf[lbls().at(count++)] = &TuneDialogA1::CheckPassword; // 1. Ввод пароля
-    pf[lbls().at(count++)] = &TuneDialogA1::ShowScheme; // 2. Отображение схемы подключения
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_2; // 6.2. Проверка правильности измерения сигналов переменного напряжения
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_1; // 6.3.1. Получение настроечных коэффициентов
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_2_1; // 6.3.2.1. КПТ: получение блока данных и усреднение
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_2_2; // 6.3.2.2. КПТ: ввод данных от энергомонитора
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_2_3; // 6.3.2.3. КПТ: расчёт регулировочных коэффициентов
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_3_1; // 6.3.3.1. КТС: подтверждение установки 80 Ом
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_3_2; // 6.3.3.2. КТС: получение блока данных
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_3_3; // 6.3.3.3. КТС: подтверждение установки 120 Ом
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_3_4; // 6.3.3.4. КТС: получение блока данных и расчёт регулировочных коэффициентов
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_4; // 6.3.4. КМТ2: подтверждение установки 4 мА
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_5_1; // 6.3.5.1. КМТ2: получение блока данных
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_5_2; // 6.3.5.2. КМТ2: подтверждение установки 20 мА
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_5_3; // 6.3.5.3. КМТ2: получение блока данных и расчёт регулировочных коэффициентов
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_6; // 6.3.6. КМТ1: подтверждение установки 4 мА
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_7_1; // 6.3.7.1. КМТ1: получение блока данных
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_7_2; // 6.3.7.2. КМТ1: подтверждение установки 20 мА
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_7_3; // 6.3.7.3. КМТ1: получение блока данных и расчёт регулировочных коэффициентов
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_8; // 6.3.8. Запись настроечных коэффициентов и переход на новую конфигурацию
-    pf[lbls().at(count++)] = &TuneDialogA1::Start6_3_9; // 6.3.9. Проверка аналоговых данных
-
-    Cancelled = Skipped = false;
-    MsgClear(); // очистка экрана с сообщениями
-    count = 0;
-    for (QHash<QString, int (TuneDialogA1::*)()>::iterator it = pf.begin(); it != pf.end(); ++it)
-    {
-        MsgSetVisible(count);
-        int res = (this->*pf[lbls().at(count)])();
-        if ((res == GENERALERROR) || (Cancelled))
-        {
-            ErMsgSetVisible(count);
-            WDFunc::SetEnabled(this, "starttune", true);
-            WARNMSG(lbls().at(count));
-            return;
-        }
-        else if (res == ER_RESEMPTY)
-            SkMsgSetVisible(count);
-        else
-            OkMsgSetVisible(count);
-        ++count;
-    }
 }
 
 void TuneDialogA1::ReadTuneCoefs()
@@ -700,14 +854,26 @@ void TuneDialogA1::LoadFromFile()
 int TuneDialogA1::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBda, BT_BASE, &ChA1.Bda_block, sizeof(Check_A1::Bda));
+    cn->Send(CN_GBda, BT_BASE, &ChA1->Bda_block, sizeof(CheckA1::Bda));
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda");
         return GENERALERROR;
     }
-    ChA1.FillBda(this);
+    ChA1->FillBda(this);
     return NOERROR;
+}
+
+void TuneDialogA1::Good()
+{
+    FillBackBdOut();
+    MeasurementEnabled = false;
+}
+
+void TuneDialogA1::NoGood()
+{
+    Cancelled = true;
+    MeasurementEnabled = false;
 }
 
 void TuneDialogA1::FillBac()
@@ -756,6 +922,29 @@ void TuneDialogA1::FillBackBac2()
         WDFunc::LENumber(this, "tune"+QString::number(i+10), Bac_block2.U2kDN[i]);
         WDFunc::LENumber(this, "tune"+QString::number(i+16), Bac_block2.PhyDN[i]);
     }
+}
+
+void TuneDialogA1::FillBdOut()
+{
+    WDFunc::SetLBLText(this, "tunednu1", QString::number(ChA1->Bda_out.Uef_filt[0], 'f', 5));
+    WDFunc::SetLBLText(this, "tunednu2", QString::number(ChA1->Bda_out.Uef_filt[1], 'f', 5));
+    WDFunc::SetLBLText(this, "tunednphy", QString::number(ChA1->Bda_out.Phy, 'f', 5));
+    WDFunc::SetLBLText(this, "tunednfreq", QString::number(ChA1->Bda_out.Frequency, 'f', 5));
+    float Percents = qAbs(ChA1->Bda_out.Uef_filt[0]-ChA1->Bda_out.Uef_filt[1]) / CA1->Bci_block.K_DN / 1.732f;
+    WDFunc::SetLBLText(this, "tunepercent", QString::number(Percents, 'f', 5));
+}
+
+void TuneDialogA1::FillBackBdOut()
+{
+    QString tmps;
+    WDFunc::LBLText(this, "tunednu1", tmps);
+    ChA1->Bda_out.Uef_filt[0] = tmps.toFloat();
+    WDFunc::LBLText(this, "tunednu2", tmps);
+    ChA1->Bda_out.Uef_filt[1] = tmps.toFloat();
+    WDFunc::LBLText(this, "tunednphy", tmps);
+    ChA1->Bda_out.Phy = tmps.toFloat();
+    WDFunc::LBLText(this, "tunednfreq", tmps);
+    ChA1->Bda_out.Frequency = tmps.toFloat();
 }
 
 void TuneDialogA1::SetDefCoefs()
@@ -815,6 +1004,22 @@ void TuneDialogA1::UpdateNSecondsWidget()
 {
     QString tmps = "Подождите " + QString::number(--SecondsToEnd15SecondsInterval) + " с";
     emit SecondsRemaining(tmps);
+}
+
+void TuneDialogA1::MeasTimerTimeout()
+{
+    if (MeasurementEnabled)
+    {
+        WDFunc::SetEnabled(this, "GoodDN", true);
+        WDFunc::SetEnabled(this, "NoGoodDN", true);
+        cn->Send(CN_GBd, 4, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
+        FillBdOut();
+    }
+    else
+    {
+        WDFunc::SetEnabled(this, "GoodDN", false);
+        WDFunc::SetEnabled(this, "NoGoodDN", false);
+    }
 }
 
 // ##################### PROTECTED ####################
