@@ -31,6 +31,7 @@ signals:
     void SecondsRemaining(QString);
 
 public slots:
+    void CancelTune();
 
 private:
     static QStringList lbls()
@@ -88,7 +89,7 @@ private:
     int SecondsToEnd15SecondsInterval;
     QHash <QString, int (TuneDialogA1::*)()> pf;
 
-    struct Bac
+    struct Bac1s
     {
         float KmU[2];		// калибровочные коэффициенты по напряжению в 2 каналах
         float K_freq;		// коррекция частоты
@@ -101,15 +102,22 @@ private:
         float Bma2; 		// смещение в канале A2, ед.
     };
 
-    struct Bac2
+    struct Bac2s
     {
         float U1kDN[6];     // измеренные при калибровке напряжения на выходе своего ДН для значений вблизи 12, 24, 36, 48, 60 и 72 В
         float U2kDN[6];     // и соответствующие им значения на выходе эталонного делителя.
         float PhyDN[6]; 	// фазовый сдвиг ДН на частоте 50 Гц для значений напряжения U1kDN[6]
     };
 
+    struct Bac
+    {
+        Bac1s Bac1;
+        Bac2s Bac2;
+    };
+
+//    Bac1s Bac_block1;
+//    Bac2s Bac_block2;
     Bac Bac_block;
-    Bac2 Bac_block2;
 
     struct EMData
     {
@@ -171,6 +179,7 @@ private:
     void WaitNSeconds(int SecondsToWait);
     void SaveToFileEx();
     int ShowSchemeDN();
+    int StartMeasurement();
 
 private slots:
     void StartTune();
@@ -188,12 +197,12 @@ private slots:
     void FillBackBac();
     void FillBackBac2();
     void FillBdOut();
+    void FillBdIn();
     void FillBackBdOut();
     void SetDefCoefs();
     void SetDefCoefs2();
     void SetExtData();
     void CancelExtData();
-    void CancelTune();
     void UpdateNSecondsWidget();
     void MeasTimerTimeout();
 

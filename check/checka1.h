@@ -40,6 +40,13 @@ public:
         float Hamb;	// Относительная влажность окружающей среды, %
     };
 
+    struct A1_Bd6
+    {
+        A1_Bd1 B1;
+        A1_Bd1 B4;
+        A1_Bd4 B5;
+    };
+
     // Блок Bdа – оцифрованные сигналы в масштабах АЦП и частота в Гц
     struct Bda
     {
@@ -55,6 +62,7 @@ public:
     A1_Bd2 Bda_h;
     A1_Bd3 Bda_in_an;
     A1_Bd4 Bda_out_an;
+    A1_Bd6 Bd_com;
 
     CheckA1();
     QWidget *BdaW(QWidget *parent);

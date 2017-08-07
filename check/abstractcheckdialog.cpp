@@ -28,7 +28,6 @@ AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) :
     Bd_blocks.clear();
     timer = new QTimer;
     timer->setObjectName("checktimer");
-    timer->setInterval(ANMEASINT);
     connect(timer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));
     setAttribute(Qt::WA_DeleteOnClose);
 }
@@ -212,6 +211,7 @@ void AbstractCheckDialog::SetTimerPeriod()
     int per = sender()->objectName().toInt(&ok);
     if (!ok)
         return;
+    per /= BdNum; // период обновления всех данных во всех группах должен быть, как задан в поле ввода
     timer->stop();
     timer->setInterval(per);
     if (TimerIsActive)

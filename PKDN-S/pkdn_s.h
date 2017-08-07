@@ -83,6 +83,7 @@ private:
 signals:
     void CloseConnectDialog();
     void Retry();
+    void FinishAll();
 
 public slots:
 

@@ -84,7 +84,7 @@ pkdn_s::pkdn_s(QWidget *parent)
 
 pkdn_s::~pkdn_s()
 {
-    SaveSettings();
+//    SaveSettings();
 }
 
 void pkdn_s::SetupUI()
@@ -342,6 +342,7 @@ void pkdn_s::Stage1_5()
             emit Retry();
             return;
         }
+        SaveSettings();
     }
     Stage2();
 }
@@ -462,7 +463,9 @@ void pkdn_s::Stage3()
     connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
     connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
     CheckD = new CheckDialogA1;
-    TuneD = new TuneDialogA1;
+    TuneDialogA1 *tdlg = new TuneDialogA1;
+    connect(this,SIGNAL(FinishAll()),tdlg,SLOT(CancelTune()));
+    TuneD = tdlg;
     oscdialog *OscD = new oscdialog;
     downloaddialog *DownD = new downloaddialog;
     fwupdialog *FwUpD = new fwupdialog;
@@ -489,7 +492,7 @@ void pkdn_s::ClearTW()
     {
         QWidget *wdgt = MainTW->widget(0);
         MainTW->removeTab(0);
-        delete wdgt;
+        wdgt->deleteLater();
     }
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
@@ -498,6 +501,7 @@ void pkdn_s::ClearTW()
 
 void pkdn_s::Disconnect()
 {
+    emit FinishAll();
     if (!pc.Emul)
         cn->Disconnect();
     ClearBsi();

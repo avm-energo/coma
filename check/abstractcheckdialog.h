@@ -36,6 +36,7 @@ public:
     QWidget *BottomUI();
 
     QXlsx::Document *xlsx;
+    QTimer *timer;
     int WRow, CurBdNum, BdNum, BdUINum; // BdNum - количество блоков данных модуля, BdUINum - количество вкладок с выводом блоков данных модуля
                                         // BdUINum >= BdNum, т.е. один блок может быть разделён на несколько вкладок
 
@@ -57,7 +58,6 @@ private:
     };
 
     Bip Bip_block;
-    QTimer *timer;
     bool XlsxWriting;
     QTime *ElapsedTimeCounter;
     QWidget *Parent;
