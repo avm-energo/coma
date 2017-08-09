@@ -52,7 +52,9 @@ SOURCES += main.cpp\
     ../dialogs/keypressdialog.cpp \
     ../check/checka1.cpp \
     ../dialogs/settingsdialog.cpp \
-    ../dialogs/downloaddialog.cpp
+    ../dialogs/downloaddialog.cpp \
+    ../tune/abstracttunedialog.cpp \
+    ../tune/tunedialoga1dn.cpp
 
 HEADERS  += pkdn_s.h \
     ../Canal.h \
@@ -87,7 +89,9 @@ HEADERS  += pkdn_s.h \
     ../dialogs/keypressdialog.h \
     ../check/checka1.h \
     ../dialogs/settingsdialog.h \
-    ../dialogs/downloaddialog.h
+    ../dialogs/downloaddialog.h \
+    ../tune/abstracttunedialog.h \
+    ../tune/tunedialoga1dn.h
 
 RESOURCES += \
     pkdn-s.qrc

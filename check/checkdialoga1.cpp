@@ -106,6 +106,13 @@ QWidget *CheckDialogA1::BdUI(int bdnum)
 
 void CheckDialogA1::SetupUI()
 {
+    QStringList sl = QStringList() << "Uin" << "Ain" << "Harm1" << "Harm2" << "Harm3" << \
+                                      "Harm4" << "Uout" << "Aout";
+    if (sl.size() < BdUINum)
+    {
+        ERMSG("Wrong BdTab size");
+        return;
+    }
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
     QString ConfTWss = "QTabBar::tab {margin-right: 0px; margin-left: 0px; padding: 5px;}"
@@ -119,9 +126,9 @@ void CheckDialogA1::SetupUI()
                        "QTabBar::tab:last:selected {margin-right: 0;}" \
                        "QTabBar::tab:only-one {margin: 0;}";
     CheckTW->tabBar()->setStyleSheet(ConfTWss);
-    CheckTW->addTab(AutoCheckUI(),"  Автоматическая проверка  ");
-    for (int i=1; i<=BdUINum; ++i)
-        CheckTW->addTab(BdUI(i),"  Гр. "+QString::number(i)+"  ");
+//    CheckTW->addTab(AutoCheckUI(),"  Автоматическая проверка  ");
+    for (int i=0; i<BdUINum; ++i)
+        CheckTW->addTab(BdUI(i),"  Гр. "+sl.at(i)+"  ");
     lyout = new QVBoxLayout;
     lyout->addWidget(CheckTW);
     lyout->addWidget(BottomUI());

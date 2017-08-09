@@ -82,8 +82,12 @@ void AbstractConfDialog::SaveConfToFile()
 
 void AbstractConfDialog::LoadConfFromFile()
 {
-    QByteArray ba;
-    ba = pc.LoadFile("Config files (*.cf)");
+    QByteArray ba = pc.LoadFile("Config files (*.cf)");
+    if (ba.isEmpty())
+    {
+        MessageBox2::error(this, "Ошибка", "Ошибка чтения файла");
+        return;
+    }
     if (pc.RestoreDataMem(&(ba.data()[0]), ba.size(), S2Config))
     {
         WARNMSG("Ошибка при разборе файла конфигурации");

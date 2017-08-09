@@ -343,17 +343,15 @@ QByteArray publicclass::LoadFile(QString mask)
         ERMSG("Ошибка открытия файла");
         return QByteArray(); // Ошибка открытия файла
     }
-    QByteArray LoadBa = QByteArray(file.readAll());
+    QByteArray LoadBa = file.readAll();
+    file.close();
     return LoadBa;
 }
 
 int publicclass::SaveFile(QString mask, void *src, unsigned int numbytes)
 {
-    QString tmps = "./"+QString::number(ModuleBsi.MTypeB)+QString::number(ModuleBsi.MTypeM)+"-"+\
-            QString("%1").arg(ModuleBsi.SerialNum, 8, 10, QChar('0'))+".";
-    QStringList tmpsl = mask.split(".");
-/*    if (tmpsl.size() > 1)
-        tmps += tmpsl.at(1).left(3); // формирование расширения файла */
+    QString tmps = "./"+QString::number(ModuleBsi.MTypeB, 36)+QString::number(ModuleBsi.MTypeM, 36)+"-"+\
+            QString("%1").arg(ModuleBsi.SerialNum, 8, 10, QChar('0'));
     QString filename = QFileDialog::getSaveFileName(0, "Сохранить файл", tmps, mask);
     if (filename.isEmpty())
         return ER_FILENAMEEMP; // Пустое имя файла
@@ -363,7 +361,9 @@ int publicclass::SaveFile(QString mask, void *src, unsigned int numbytes)
     SaveBa = new QByteArray;
     SaveBa->resize(numbytes);
     memcpy(&(SaveBa->data()[0]), src, numbytes);
-    if (file.write(SaveBa->data(), numbytes) == -1)
+    int res = file.write(SaveBa->data(), numbytes);
+    file.close();
+    if (res == GENERALERROR)
         return ER_FILEWRITE; // ошибка записи
     return NOERROR; // нет ошибок
 }

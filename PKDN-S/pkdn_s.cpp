@@ -52,6 +52,7 @@
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../tune/tunedialoga1.h"
+#include "../tune/tunedialoga1dn.h"
 #include "../widgets/mytabwidget.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/messagebox.h"
@@ -84,7 +85,6 @@ pkdn_s::pkdn_s(QWidget *parent)
 
 pkdn_s::~pkdn_s()
 {
-//    SaveSettings();
 }
 
 void pkdn_s::SetupUI()
@@ -454,9 +454,6 @@ void pkdn_s::Stage3()
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
-/*    DownDialog = new downloaddialog;
-    FwUpDialog = new fwupdialog;
-    OscDialog = new oscdialog; */
     ConfDialogA1 *DialogA1 = new ConfDialogA1(S2Config);
     ConfB = DialogA1;
     MainTW->addTab(ConfB, "Конфигурирование");
@@ -466,10 +463,12 @@ void pkdn_s::Stage3()
     TuneDialogA1 *tdlg = new TuneDialogA1;
     connect(this,SIGNAL(FinishAll()),tdlg,SLOT(CancelTune()));
     TuneD = tdlg;
+    TuneDialogA1DN *t2dlg = new TuneDialogA1DN;
     oscdialog *OscD = new oscdialog;
     downloaddialog *DownD = new downloaddialog;
     fwupdialog *FwUpD = new fwupdialog;
     MainTW->addTab(TuneD, "Регулировка");
+    MainTW->addTab(t2dlg, "Настройка своего ДН");
     MainTW->addTab(CheckD, "Проверка");
     MainTW->addTab(OscD, "Осциллограммы");
     MainTW->addTab(DownD, "События");
