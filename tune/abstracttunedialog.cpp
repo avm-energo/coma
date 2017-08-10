@@ -216,7 +216,7 @@ void AbstractTuneDialog::WaitNSeconds(int Seconds)
 void AbstractTuneDialog::SaveToFileEx()
 {
     int res = NOERROR;
-//    res = pc.SaveFile("Tune files (*.tn)", &AbsBac.BacBlock, sizeof(AbsBac.BacBlockSize));
+    res = pc.SaveFile("Tune files (*.tn)", &AbsBac.BacBlock, sizeof(AbsBac.BacBlockSize));
     switch (res)
     {
     case NOERROR:
@@ -295,7 +295,7 @@ void AbstractTuneDialog::SaveToFile()
 
 void AbstractTuneDialog::LoadFromFile()
 {
-    QByteArray ba; // = pc.LoadFile("Tune files (*.tn)");
+    QByteArray ba = pc.LoadFile("Tune files (*.tn)");
     if (ba.isEmpty())
     {
         MessageBox2::error(this, "Ошибка", "Ошибка при загрузке файла");

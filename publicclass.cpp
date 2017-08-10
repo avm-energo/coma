@@ -355,14 +355,16 @@ int publicclass::SaveFile(QString mask, void *src, unsigned int numbytes)
     QString filename = QFileDialog::getSaveFileName(0, "Сохранить файл", tmps, mask);
     if (filename.isEmpty())
         return ER_FILENAMEEMP; // Пустое имя файла
-    QFile file(filename);
-    if (!file.open(QIODevice::WriteOnly))
+    QFile *file = new QFile;
+    file->setFileName(filename);
+    if (!file->open(QIODevice::WriteOnly))
         return ER_FILEOPEN; // Ошибка открытия файла
     SaveBa = new QByteArray;
     SaveBa->resize(numbytes);
     memcpy(&(SaveBa->data()[0]), src, numbytes);
-    int res = file.write(SaveBa->data(), numbytes);
-    file.close();
+    int res = file->write(SaveBa->data(), numbytes);
+    file->close();
+    delete file;
     if (res == GENERALERROR)
         return ER_FILEWRITE; // ошибка записи
     return NOERROR; // нет ошибок
