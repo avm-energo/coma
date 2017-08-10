@@ -83,21 +83,21 @@ QWidget *CheckDialogA1::BdUI(int bdnum)
 {
     switch (bdnum)
     {
-    case 1: // Блок #1
+    case 0: // Блок #1
         return ChA1->Bda_inW(this);
-    case 2:
+    case 1:
         return ChA1->Bda_in_anW(this);
-    case 3:
+    case 2:
         return ChA1->Bda_h0W(this);
-    case 4:
+    case 3:
         return ChA1->Bda_h1W(this);
-    case 5:
+    case 4:
         return ChA1->Bda_h2W(this);
-    case 6:
+    case 5:
         return ChA1->Bda_h3W(this);
-    case 7:
+    case 6:
         return ChA1->Bda_outW(this);
-    case 8:
+    case 7:
         return ChA1->Bda_out_anW(this);
     default:
         return new QWidget;
@@ -128,7 +128,7 @@ void CheckDialogA1::SetupUI()
     CheckTW->tabBar()->setStyleSheet(ConfTWss);
 //    CheckTW->addTab(AutoCheckUI(),"  Автоматическая проверка  ");
     for (int i=0; i<BdUINum; ++i)
-        CheckTW->addTab(BdUI(i),"  Гр. "+sl.at(i)+"  ");
+        CheckTW->addTab(BdUI(i),"  "+sl.at(i)+"  ");
     lyout = new QVBoxLayout;
     lyout->addWidget(CheckTW);
     lyout->addWidget(BottomUI());

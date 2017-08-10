@@ -337,20 +337,22 @@ QByteArray publicclass::LoadFile(QString mask)
         ERMSG("Пустое имя файла");
         return QByteArray(); // Пустое имя файла
     }
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly))
+    QFile *file = new QFile;
+    file->setFileName(filename);
+    if (!file->open(QIODevice::ReadOnly))
     {
         ERMSG("Ошибка открытия файла");
         return QByteArray(); // Ошибка открытия файла
     }
-    QByteArray LoadBa = file.readAll();
-    file.close();
+    QByteArray LoadBa = file->readAll();
+    file->close();
     return LoadBa;
 }
 
 int publicclass::SaveFile(QString mask, void *src, unsigned int numbytes)
 {
-    QString tmps = "./"+QString::number(ModuleBsi.MTypeB, 36)+QString::number(ModuleBsi.MTypeM, 36)+"-"+\
+    QString MTypeM = (ModuleBsi.MTypeM == 0) ? "00" : QString::number(ModuleBsi.MTypeM, 16);
+    QString tmps = "./"+QString::number(ModuleBsi.MTypeB, 16)+MTypeM+"-"+\
             QString("%1").arg(ModuleBsi.SerialNum, 8, 10, QChar('0'));
     QString filename = QFileDialog::getSaveFileName(0, "Сохранить файл", tmps, mask);
     if (filename.isEmpty())

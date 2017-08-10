@@ -21,6 +21,7 @@ TuneDialogA1::TuneDialogA1(QWidget *parent) :
 {
     CA1 = new ConfigA1(S2Config);
     ChA1 = new CheckA1;
+    SetBac(&Bac_block, BT_BASE, sizeof(Bac_block));
     SetupUI();
 }
 
