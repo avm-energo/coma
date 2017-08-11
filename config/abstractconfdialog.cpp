@@ -60,7 +60,7 @@ void AbstractConfDialog::SaveConfToFile()
     BaLength += static_cast<quint8>(ba->data()[6])*65536;
     BaLength += static_cast<quint8>(ba->data()[7])*16777216;
     BaLength += sizeof(publicclass::FileHeader); // FileHeader
-    int res = pc.SaveFile("Config files (*.cf)", &(ba->data()[0]), BaLength);
+    int res = pc.SaveFile(this, "Config files (*.cf)", &(ba->data()[0]), BaLength);
     switch (res)
     {
     case NOERROR:
@@ -82,13 +82,16 @@ void AbstractConfDialog::SaveConfToFile()
 
 void AbstractConfDialog::LoadConfFromFile()
 {
-    QByteArray ba = pc.LoadFile("Config files (*.cf)");
-    if (ba.isEmpty())
+    int BytesRead = MAXCONFSIZE;
+    QScopedPointer<quint8> buf (new quint8[MAXCONFSIZE]);
+    int res = pc.LoadFile(this, "Config files (*.cf)", buf.data(), BytesRead);
+    // now BytesRead is the number of bytes that was read from the file
+    if (res != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Ошибка чтения файла");
         return;
     }
-    if (pc.RestoreDataMem(&(ba.data()[0]), ba.size(), S2Config))
+    if (pc.RestoreDataMem(buf.data(), BytesRead, S2Config))
     {
         WARNMSG("Ошибка при разборе файла конфигурации");
         return;

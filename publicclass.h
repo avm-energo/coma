@@ -292,12 +292,11 @@ public:
     QString NsTimeToString (quint64 nstime);
     void AddErrMsg(ermsgtype msgtype, QString file=0, int line=0, QString msg="");
     void ErMsg(int ermsgnum);
-    QByteArray LoadFile(QString mask);
-    int SaveFile (QString mask, void *src, unsigned int numbytes);
+    int LoadFile(QWidget *parent, QString mask, void *dst, int &maxsize);
+    int SaveFile (QWidget *parent, QString mask, void *src, unsigned int numbytes);
     bool FloatInRange(float var, float value);
 
 private:
-    QByteArray *LoadBa, *SaveBa;
     void addmessage(QStringList &sl, QString mes);
     void SetErMsg(int ernum);
 };

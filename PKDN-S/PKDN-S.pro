@@ -54,7 +54,8 @@ SOURCES += main.cpp\
     ../dialogs/settingsdialog.cpp \
     ../dialogs/downloaddialog.cpp \
     ../tune/abstracttunedialog.cpp \
-    ../tune/tunedialoga1dn.cpp
+    ../tune/tunedialoga1dn.cpp \
+    ../dialogs/a1dialog.cpp
 
 HEADERS  += pkdn_s.h \
     ../Canal.h \
@@ -91,7 +92,8 @@ HEADERS  += pkdn_s.h \
     ../dialogs/settingsdialog.h \
     ../dialogs/downloaddialog.h \
     ../tune/abstracttunedialog.h \
-    ../tune/tunedialoga1dn.h
+    ../tune/tunedialoga1dn.h \
+    ../dialogs/a1dialog.h
 
 RESOURCES += \
     pkdn-s.qrc

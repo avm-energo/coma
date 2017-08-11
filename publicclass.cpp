@@ -329,46 +329,45 @@ void publicclass::AddErrMsg(ermsgtype msgtype, QString file, int line, QString m
     ErMsgPool.append(tmpm);
 }
 
-QByteArray publicclass::LoadFile(QString mask)
+int publicclass::LoadFile(QWidget *parent, QString mask, void *dst, int &maxsize)
 {
-    QString filename = QFileDialog::getOpenFileName(0, "Открыть файл", ".", mask);
+    QString filename = QFileDialog::getOpenFileName(parent, "Открыть файл", ".", mask);
     if (filename.isEmpty())
     {
         ERMSG("Пустое имя файла");
-        return QByteArray(); // Пустое имя файла
+        return ER_FILEOPEN; // Пустое имя файла
     }
     QFile *file = new QFile;
     file->setFileName(filename);
     if (!file->open(QIODevice::ReadOnly))
     {
         ERMSG("Ошибка открытия файла");
-        return QByteArray(); // Ошибка открытия файла
+        return ER_FILEOPEN; // Ошибка открытия файла
     }
     QByteArray LoadBa = file->readAll();
     file->close();
-    return LoadBa;
+    maxsize = (LoadBa.size() <= maxsize) ? LoadBa.size() : maxsize;
+    memcpy(dst, &(LoadBa.data()[0]), maxsize);
+    return NOERROR;
 }
 
-int publicclass::SaveFile(QString mask, void *src, unsigned int numbytes)
+int publicclass::SaveFile(QWidget *parent, QString mask, void *src, unsigned int numbytes)
 {
     QString MTypeM = (ModuleBsi.MTypeM == 0) ? "00" : QString::number(ModuleBsi.MTypeM, 16);
     QString tmps = "./"+QString::number(ModuleBsi.MTypeB, 16)+MTypeM+"-"+\
             QString("%1").arg(ModuleBsi.SerialNum, 8, 10, QChar('0'));
-    QString filename = QFileDialog::getSaveFileName(0, "Сохранить файл", tmps, mask);
+    QString filename = QFileDialog::getSaveFileName(Q_NULLPTR, "Сохранить файл", tmps, mask);
     if (filename.isEmpty())
         return ER_FILENAMEEMP; // Пустое имя файла
-    QFile *file = new QFile;
+/*    QFile *file = new QFile;
     file->setFileName(filename);
     if (!file->open(QIODevice::WriteOnly))
         return ER_FILEOPEN; // Ошибка открытия файла
-    SaveBa = new QByteArray;
-    SaveBa->resize(numbytes);
-    memcpy(&(SaveBa->data()[0]), src, numbytes);
-    int res = file->write(SaveBa->data(), numbytes);
+    int res = file->write(static_cast<char *>(src), numbytes);
     file->close();
     delete file;
     if (res == GENERALERROR)
-        return ER_FILEWRITE; // ошибка записи
+        return ER_FILEWRITE; // ошибка записи */
     return NOERROR; // нет ошибок
 }
 

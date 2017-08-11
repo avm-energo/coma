@@ -4,6 +4,8 @@
 #include <QDialog>
 #include "config.h"
 
+#define MAXCONFSIZE 4096 // максимальный размер файла конфигурации
+
 class AbstractConfDialog : public QDialog
 {
     Q_OBJECT
