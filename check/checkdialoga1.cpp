@@ -158,20 +158,22 @@ void CheckDialogA1::PrepareHeadersForFile(int row)
 {
     xlsx->write(row,2,QVariant("UefNat_filt1, В"));
     xlsx->write(row,3,QVariant("UefNat_filt2, В"));
-    xlsx->write(row,4,QVariant("Uef_filt1, В"));
-    xlsx->write(row,5,QVariant("Uef_filt2, В"));
-    xlsx->write(row,6,QVariant("Phy, град."));
-    xlsx->write(row,7,QVariant("Freq, Гц"));
-    xlsx->write(row,8,QVariant("UefNat_filt1, кВ"));
-    xlsx->write(row,9,QVariant("UefNat_filt2, кВ"));
-    xlsx->write(row,10,QVariant("Uef_filt1, кВ"));
-    xlsx->write(row,11,QVariant("Uef_filt2, кВ"));
-    xlsx->write(row,12,QVariant("Phy, град."));
-    xlsx->write(row,13,QVariant("Freq, Гц"));
-    xlsx->write(row,14,QVariant("Tmk, град. С"));
-    xlsx->write(row,15,QVariant("Vbat, В"));
-    xlsx->write(row,16,QVariant("Tamb, град. С"));
-    xlsx->write(row,17,QVariant("Hamb, %"));
+    xlsx->write(row,4,QVariant("δUrms, В"));
+    xlsx->write(row,5,QVariant("Uef_filt1, В"));
+    xlsx->write(row,6,QVariant("Uef_filt2, В"));
+    xlsx->write(row,7,QVariant("δU, В"));
+    xlsx->write(row,8,QVariant("Phy, град."));
+    xlsx->write(row,9,QVariant("Freq, Гц"));
+    xlsx->write(row,10,QVariant("UefNat_filt1, кВ"));
+    xlsx->write(row,11,QVariant("UefNat_filt2, кВ"));
+    xlsx->write(row,12,QVariant("Uef_filt1, кВ"));
+    xlsx->write(row,13,QVariant("Uef_filt2, кВ"));
+    xlsx->write(row,14,QVariant("Phy, град."));
+    xlsx->write(row,15,QVariant("Freq, Гц"));
+    xlsx->write(row,16,QVariant("Tmk, град. С"));
+    xlsx->write(row,17,QVariant("Vbat, В"));
+    xlsx->write(row,18,QVariant("Tamb, град. С"));
+    xlsx->write(row,19,QVariant("Hamb, %"));
 }
 
 void CheckDialogA1::WriteToFile(int row, int bdnum)
@@ -181,23 +183,29 @@ void CheckDialogA1::WriteToFile(int row, int bdnum)
     format.setNumberFormat(Precision);
     switch (bdnum)
     {
-    case 6:
+    case 1:
         xlsx->write(row,2,ChA1->Bd_com.B1.UefNat_filt[0],format);
         xlsx->write(row,3,ChA1->Bd_com.B1.UefNat_filt[1],format);
-        xlsx->write(row,4,ChA1->Bd_com.B1.Uef_filt[0],format);
-        xlsx->write(row,5,ChA1->Bd_com.B1.Uef_filt[1],format);
-        xlsx->write(row,6,ChA1->Bd_com.B1.Phy, format);
-        xlsx->write(row,7,ChA1->Bd_com.B1.Frequency, format);
-        xlsx->write(row,8,ChA1->Bd_com.B4.UefNat_filt[0], format);
-        xlsx->write(row,9,ChA1->Bd_com.B4.UefNat_filt[1],format);
-        xlsx->write(row,10,ChA1->Bd_com.B4.Uef_filt[0],format);
-        xlsx->write(row,11,ChA1->Bd_com.B4.Uef_filt[1],format);
-        xlsx->write(row,12,ChA1->Bd_com.B4.Phy, format);
-        xlsx->write(row,13,ChA1->Bd_com.B4.Frequency, format);
-        xlsx->write(row,14,ChA1->Bd_com.B5.Tmk, format);
-        xlsx->write(row,15,ChA1->Bd_com.B5.Vbat, format);
-        xlsx->write(row,16,ChA1->Bd_com.B5.Tamb, format);
-        xlsx->write(row,17,ChA1->Bd_com.B5.Hamb, format);
+        xlsx->write(row,4,ChA1->Bd_com.B1.dUrms,format);
+        xlsx->write(row,5,ChA1->Bd_com.B1.Uef_filt[0],format);
+        xlsx->write(row,6,ChA1->Bd_com.B1.Uef_filt[1],format);
+        xlsx->write(row,7,ChA1->Bd_com.B1.dU,format);
+        xlsx->write(row,8,ChA1->Bd_com.B1.Phy, format);
+        xlsx->write(row,9,ChA1->Bd_com.B1.Frequency, format);
+        break;
+    case 4:
+        xlsx->write(row,10,ChA1->Bd_com.B4.UefNat_filt[0], format);
+        xlsx->write(row,11,ChA1->Bd_com.B4.UefNat_filt[1],format);
+        xlsx->write(row,12,ChA1->Bd_com.B4.Uef_filt[0],format);
+        xlsx->write(row,13,ChA1->Bd_com.B4.Uef_filt[1],format);
+        xlsx->write(row,14,ChA1->Bd_com.B4.Phy, format);
+        xlsx->write(row,15,ChA1->Bd_com.B4.Frequency, format);
+        break;
+    case 5:
+        xlsx->write(row,16,ChA1->Bd_com.B5.Tmk, format);
+        xlsx->write(row,17,ChA1->Bd_com.B5.Vbat, format);
+        xlsx->write(row,18,ChA1->Bd_com.B5.Tamb, format);
+        xlsx->write(row,19,ChA1->Bd_com.B5.Hamb, format);
         break;
     default:
         break;

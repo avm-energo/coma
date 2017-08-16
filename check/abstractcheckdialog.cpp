@@ -23,7 +23,7 @@ AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) :
     Parent = parent;
     XlsxWriting = false;
     xlsx = 0;
-    CurBdNum = 1;
+//    CurBdNum = 1;
     WRow = 0;
     Bd_blocks.clear();
     timer = new QTimer;
@@ -139,42 +139,45 @@ void AbstractCheckDialog::StartAnalogMeasurementsToFile()
     StartAnalogMeasurements();
 }
 
-void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile(int bdnum)
+void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 {
     // получение текущих аналоговых сигналов от модуля
-    if (bdnum < Bd_blocks.size())
+    for (int bdnum = 0; bdnum < BdNum; ++bdnum)
     {
-        cn->Send(CN_GBd, bdnum, Bd_blocks.at(bdnum)->block, Bd_blocks.at(bdnum)->blocknum);
-//        if (bdnum == 3)
-//            WARNMSG("");
-        if (cn->result != NOERROR)
+        if (bdnum < Bd_blocks.size())
         {
-            WARNMSG("Ошибка при приёме данных");
-            return;
-        }
-        // обновление коэффициентов в соответствующих полях на экране
-        RefreshAnalogValues(bdnum);
-        if (XlsxWriting)
-        {
-            QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
-            if (pb != 0)
+            cn->Send(CN_GBd, bdnum, Bd_blocks.at(bdnum)->block, Bd_blocks.at(bdnum)->blocknum);
+    //        if (bdnum == 3)
+    //            WARNMSG("");
+            if (cn->result != NOERROR)
             {
-                int MSecs = ElapsedTimeCounter->elapsed();
-                QString TimeElapsed = QTime::fromMSecsSinceStartOfDay(MSecs).toString("hh:mm:ss.zzz");
-                pb->setText("Идёт запись: "+TimeElapsed);
+                WARNMSG("Ошибка при приёме данных");
+                return;
             }
-            xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz")));
-            WriteToFile(WRow, bdnum);
-            WRow++;
+            // обновление коэффициентов в соответствующих полях на экране
+            RefreshAnalogValues(bdnum);
+            if (XlsxWriting)
+            {
+                QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
+                if (pb != 0)
+                {
+                    int MSecs = ElapsedTimeCounter->elapsed();
+                    QString TimeElapsed = QTime::fromMSecsSinceStartOfDay(MSecs).toString("hh:mm:ss.zzz");
+                    pb->setText("Идёт запись: "+TimeElapsed);
+                }
+                xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz")));
+                WriteToFile(WRow, bdnum);
+                WRow++;
+            }
         }
+        else
+            WARNMSG("Передан некорректный номер блока");
     }
-    else
-        WARNMSG("Передан некорректный номер блока");
 }
 
 void AbstractCheckDialog::StartAnalogMeasurements()
 {
-    CurBdNum = 1;
+//    CurBdNum = 1;
     timer->start();
 }
 
@@ -220,8 +223,5 @@ void AbstractCheckDialog::SetTimerPeriod()
 
 void AbstractCheckDialog::TimerTimeout()
 {
-    ReadAnalogMeasurementsAndWriteToFile(CurBdNum);
-    ++CurBdNum;
-    if (CurBdNum > BdNum)
-        CurBdNum = 1;
+    ReadAnalogMeasurementsAndWriteToFile();
 }

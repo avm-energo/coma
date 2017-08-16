@@ -7,7 +7,7 @@
 #include "../canal.h"
 #include "../publicclass.h"
 
-#define PROGNAME    "ПКДН-Сервис 1.0"
+//#define PROGNAME    ""
 
 #define C_TE_MAXSIZE    10000
 #define MAXERRORFLAGNUM 32

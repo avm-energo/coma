@@ -89,7 +89,7 @@ pkdn_s::~pkdn_s()
 
 void pkdn_s::SetupUI()
 {
-    setWindowTitle(PROGNAME);
+    setWindowTitle(PROGCAPTION);
     QString tmps = "QMainWindow {background-color: "+QString(MAINWINCLRA1)+";}";
     setStyleSheet(tmps);
     setMinimumSize(QSize(800, 600));
@@ -520,7 +520,7 @@ void pkdn_s::GetAbout()
     QVBoxLayout *l2yout = new QVBoxLayout;
     QLabel *lbl = new QLabel("ПКДН-Сервис");
     l2yout->addWidget(lbl);
-    QString tmps = "Версия "+QString(PROGNAME);
+    QString tmps = "Версия "+QString(PROGCAPTION);
     lbl = new QLabel(tmps);
     l2yout->addWidget(lbl);
     lbl = new QLabel("накорябано Ёвелем");

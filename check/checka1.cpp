@@ -48,20 +48,14 @@ QWidget *CheckA1::Bd1W(const QString &title, const QString &begin, QWidget *pare
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0", ValuesFormat, "Истинное действующее значение напряжения 1 (в В на входе прибора)"), 0, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "2. UefNat_filt2"), 0, 2);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1", ValuesFormat, "Истинное действующее значение напряжения 2 (в В на входе прибора)"), 0, 3);
-    if (begin != "Bda_out")
-    {
-        glyout->addWidget(WDFunc::NewLBL(parent, "ΔU, %"), 0, 4);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"dU", ValuesFormat, "Приведённая погрешность между двумя напряжениями"), 0, 5);
-    }
+    glyout->addWidget(WDFunc::NewLBL(parent, "δUrms, %"), 0, 4);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"dU", ValuesFormat, "Относительная погрешность, %"), 0, 5);
     glyout->addWidget(WDFunc::NewLBL(parent, "3. Uef_filt1"), 1, 0);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"2", ValuesFormat, "Действующие значения первых гармоник напряжения 1"), 1, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "4. Uef_filt2"), 1, 2);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"3", ValuesFormat, "Действующие значения первых гармоник напряжения 2"), 1, 3);
-    if (begin != "Bda_out")
-    {
-        glyout->addWidget(WDFunc::NewLBL(parent, "ΔU, %"), 1, 4);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"dU2", ValuesFormat, "Приведённая погрешность между двумя напряжениями"), 1, 5);
-    }
+    glyout->addWidget(WDFunc::NewLBL(parent, "δU, %"), 1, 4);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"dU2", ValuesFormat, "Относительная погрешность, %"), 1, 5);
     glyout->addWidget(WDFunc::NewLBL(parent, "5. Phy"), 2, 0);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"4", ValuesFormat, "Разность фаз первых гармоник напряжений"), 2, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "6. Frequency"), 2, 2);
@@ -80,18 +74,30 @@ QWidget *CheckA1::Bd1W(const QString &title, const QString &begin, QWidget *pare
 
 QWidget *CheckA1::Bd2W(const QString &begin, QWidget *parent)
 {
-    int Beg = (begin.at(begin.size()-1).digitValue())*15;
-    int End = Beg + 15;
+    int Beg = (begin.at(begin.size()-1).digitValue())*16;
+    int End = Beg + 16;
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QWidget *w = new QWidget(parent);
     QGridLayout *glyout = new QGridLayout;
     for (int i=Beg; i<End; ++i)
     {
-        glyout->addWidget(WDFunc::NewLBL(parent, "Канал 0, гарм. "+QString::number(i+2)), i, 0);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0"+QString::number(i), ValuesFormat), i, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Канал 1, гарм. "+QString::number(i+2)), i, 2);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1"+QString::number(i), ValuesFormat), i, 3);
+        if (i == 0)
+        {
+            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 0, КГИ"), i, 0);
+            glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0"+QString::number(i), ValuesFormat), i, 1);
+            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 1, КГИ"), i, 2);
+            glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1"+QString::number(i), ValuesFormat), i, 3);
+        }
+        else if (i > MAXHARMINDEX)
+            break;
+        else
+        {
+            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 0, гарм. "+QString::number(i+1)), i, 0);
+            glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0"+QString::number(i), ValuesFormat), i, 1);
+            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 1, гарм. "+QString::number(i+1)), i, 2);
+            glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1"+QString::number(i), ValuesFormat), i, 3);
+        }
     }
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
@@ -210,11 +216,10 @@ void CheckA1::FillBd1W(const QString &begin, A1_Bd1 Bda, QWidget *parent)
     WDFunc::SetLBLText(parent, begin+"3", WDFunc::StringValueWithCheck(Bda.Uef_filt[0]));
     WDFunc::SetLBLText(parent, begin+"4", WDFunc::StringValueWithCheck(Bda.Phy));
     WDFunc::SetLBLText(parent, begin+"5", WDFunc::StringValueWithCheck(Bda.Frequency));
-    if (begin != "Bda_out")
-    {
-        WDFunc::SetLBLText(parent, begin+"dU", QString::number(qAbs(Bda.UefNat_filt[0]-Bda.UefNat_filt[1])/57.74f*100));
-        WDFunc::SetLBLText(parent, begin+"dU2", QString::number(qAbs(Bda.Uef_filt[0]-Bda.Uef_filt[1])/57.74f*100));
-    }
+//    WDFunc::SetLBLText(parent, begin+"dU", QString::number(qAbs(Bda.UefNat_filt[0]-Bda.UefNat_filt[1])/57.74f*100));
+//    WDFunc::SetLBLText(parent, begin+"dU2", QString::number(qAbs(Bda.Uef_filt[0]-Bda.Uef_filt[1])/57.74f*100));
+    WDFunc::SetLBLText(parent, begin+"dU", WDFunc::StringValueWithCheck(Bda.dUrms));
+    WDFunc::SetLBLText(parent, begin+"dU2", WDFunc::StringValueWithCheck(Bda.dU));
 }
 
 void CheckA1::FillBda_in(QWidget *parent)
@@ -229,16 +234,21 @@ void CheckA1::FillBda_out(QWidget *parent)
 
 void CheckA1::FillBda_h(QWidget *parent)
 {
-    for (int i=0; i<15; ++i)
+    for (int i=0; i<16; ++i)
     {
         WDFunc::SetLBLText(parent, "Bda_h00"+QString::number(i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[0][i]));
         WDFunc::SetLBLText(parent, "Bda_h01"+QString::number(i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[1][i]));
-        WDFunc::SetLBLText(parent, "Bda_h10"+QString::number(15+i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[0][15+i]));
-        WDFunc::SetLBLText(parent, "Bda_h11"+QString::number(15+i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[1][15+i]));
-        WDFunc::SetLBLText(parent, "Bda_h20"+QString::number(30+i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[0][30+i]));
-        WDFunc::SetLBLText(parent, "Bda_h21"+QString::number(30+i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[1][30+i]));
-        WDFunc::SetLBLText(parent, "Bda_h30"+QString::number(45+i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[0][45+i]));
-        WDFunc::SetLBLText(parent, "Bda_h31"+QString::number(45+i), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[1][45+i]));
+        int count = 16+i;
+        WDFunc::SetLBLText(parent, "Bda_h10"+QString::number(count), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[0][count]));
+        WDFunc::SetLBLText(parent, "Bda_h11"+QString::number(count), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[1][count]));
+        count = 32+i;
+        WDFunc::SetLBLText(parent, "Bda_h20"+QString::number(count), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[0][count]));
+        WDFunc::SetLBLText(parent, "Bda_h21"+QString::number(count), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[1][count]));
+        count = 48+i;
+        if (count > MAXHARMINDEX)
+            continue;
+        WDFunc::SetLBLText(parent, "Bda_h30"+QString::number(count), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[0][count]));
+        WDFunc::SetLBLText(parent, "Bda_h31"+QString::number(count), WDFunc::StringValueWithCheck(Bda_h.HarmBuf[1][count]));
     }
 }
 

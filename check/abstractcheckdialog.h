@@ -37,8 +37,9 @@ public:
 
     QXlsx::Document *xlsx;
     QTimer *timer;
-    int WRow, CurBdNum, BdNum, BdUINum; // BdNum - количество блоков данных модуля, BdUINum - количество вкладок с выводом блоков данных модуля
+    int WRow, BdNum, BdUINum; // BdNum - количество блоков данных модуля, BdUINum - количество вкладок с выводом блоков данных модуля
                                         // BdUINum >= BdNum, т.е. один блок может быть разделён на несколько вкладок
+// CurBdNum,
 
 signals:
 
@@ -65,7 +66,7 @@ private:
     void CheckIP();
     void GetIP();
     void Check1PPS();
-    void ReadAnalogMeasurementsAndWriteToFile(int bdnum);
+    void ReadAnalogMeasurementsAndWriteToFile();
 
 private slots:
     void StartAnalogMeasurementsToFile();

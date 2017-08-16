@@ -99,9 +99,9 @@ void ConfDialogA1::SetupUI()
     vlyout1->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Значение при 4 мА:"), 0, Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewSPB(this, "TokrSPB4", 0, 100, 0.1, 1, UCONFCLR), 10);
+    hlyout->addWidget(WDFunc::NewSPB(this, "TokrSPB4", -200, 100, 0.1, 1, UCONFCLR), 10);
     hlyout->addWidget(WDFunc::NewLBL(this, "Значение при 20 мА:"), 0, Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewSPB(this, "TokrSPB20", 0, 100, 0.1, 1, UCONFCLR), 10);
+    hlyout->addWidget(WDFunc::NewSPB(this, "TokrSPB20", -200, 100, 0.1, 1, UCONFCLR), 10);
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
 

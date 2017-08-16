@@ -6,16 +6,18 @@
 
 QMAKE_TARGET_COMPANY = EvelSoft
 QMAKE_TARGET_COPYRIGHT = EvelSoft
-QMAKE_TARGET_PRODUCT = COMA
+QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.0
+VERSION = 1.0.43
 
 QT       += core gui xlsx serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = PKDN-S
+DEFINES += PROGNAME='\\"PKDN-S\\"'
+DEFINES += PROGCAPTION='\\"PKDN-Service\\0401.0.43\\"'
 TEMPLATE = app
 
 SOURCES += main.cpp\
@@ -55,7 +57,8 @@ SOURCES += main.cpp\
     ../dialogs/downloaddialog.cpp \
     ../tune/abstracttunedialog.cpp \
     ../tune/tunedialoga1dn.cpp \
-    ../dialogs/a1dialog.cpp
+    ../dialogs/a1dialog.cpp \
+    ../report.cpp
 
 HEADERS  += pkdn_s.h \
     ../Canal.h \
@@ -93,7 +96,8 @@ HEADERS  += pkdn_s.h \
     ../dialogs/downloaddialog.h \
     ../tune/abstracttunedialog.h \
     ../tune/tunedialoga1dn.h \
-    ../dialogs/a1dialog.h
+    ../dialogs/a1dialog.h \
+    ../report.h
 
 RESOURCES += \
     pkdn-s.qrc

@@ -82,7 +82,7 @@ unsigned long  _crc32_t[256]=
 
 publicclass::publicclass()
 {
-    HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/COMA/";
+    HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"+PROGNAME+"/";
     Emul = false;
     ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
     log.Init(LOGFILE);

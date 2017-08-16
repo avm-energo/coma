@@ -13,10 +13,9 @@
 
 A1Dialog::A1Dialog(QWidget *parent) : QDialog(parent)
 {
-    CA1 = new ConfigA1(S2Config);
     SetupUI();
     MeasurementTimer = new QTimer;
-    MeasurementTimer->setInterval(MEASTIMERINT);
+//    MeasurementTimer->setInterval(MEASTIMERINT);
     connect(MeasurementTimer,SIGNAL(timeout()),this,SLOT(MeasTimerTimeout()));
 }
 
@@ -44,10 +43,23 @@ void A1Dialog::SetupUI()
     glyout->setColumnStretch(5, 10);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
-    QPushButton *pb = new QPushButton("Начать поверку делителя");
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(Accept()));
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    pb->setObjectName("acceptpb");
+    pb->setEnabled(false);
+    hlyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(Decline()));
+    pb->setObjectName("cancelpb");
+    pb->setEnabled(false);
+    hlyout->addWidget(pb);
+    lyout->addLayout(hlyout);
+    lyout->addStretch(1);
+    pb = new QPushButton("Начать поверку делителя");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(StartWork()));
     lyout->addWidget(pb);
-    lyout->addStretch(1);
+    lyout->addStretch(10);
     setLayout(lyout);
 }
 
@@ -59,12 +71,26 @@ void A1Dialog::StartWork()
         Cancelled = true;
         return;
     }
-    WaitNSeconds(5);
+//    WaitNSeconds(5);
     MeasurementTimer->start();
+    WDFunc::SetEnabled(this, "cancelpb", true);
+    WDFunc::SetEnabled(this, "acceptpb", true);
 }
 
 void A1Dialog::MeasTimerTimeout()
 {
 
+}
+
+void A1Dialog::Accept()
+{
+    WDFunc::SetEnabled(this, "cancelpb", false);
+    WDFunc::SetEnabled(this, "acceptpb", false);
+}
+
+void A1Dialog::Decline()
+{
+    WDFunc::SetEnabled(this, "cancelpb", false);
+    WDFunc::SetEnabled(this, "acceptpb", false);
 }
 

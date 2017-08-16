@@ -31,8 +31,7 @@ void TuneDialogA1DN::SetLbls()
     lbls.append("7.2.1. Отображение диалога проверки схемы подключения...");
     lbls.append("7.2.2. Приём конфигурации от прибора...");
     lbls.append("7.2.3. Установка 20%, проверка и сохранение...");
-    lbls.append("7.2.5. Установка 40%, проверка и сохранение...");
-    lbls.append("7.2.5. Установка 60%, проверка и сохранение...");
+    lbls.append("7.2.5. Установка 50%, проверка и сохранение...");
     lbls.append("7.2.5. Установка 80%, проверка и сохранение...");
     lbls.append("7.2.5. Установка 100%, проверка и сохранение...");
     lbls.append("7.2.5. Установка 120%, проверка и сохранение...");
@@ -49,15 +48,13 @@ void TuneDialogA1DN::SetPf()
     pf[lbls.at(count++)] = func; // 7.2.2. Приём конфигурации от прибора
     func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_1); // 7.2.3. Установка 20%, проверка и сохранение
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_2); // 7.2.5. Установка 40%, проверка и сохранение
+    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_2); // 7.2.5. Установка 50%, проверка и сохранение
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_3); // 7.2.5. Установка 60%, проверка и сохранение
+    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_3); // 7.2.5. Установка 80%, проверка и сохранение
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_4); // 7.2.5. Установка 80%, проверка и сохранение
+    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_4); // 7.2.5. Установка 100%, проверка и сохранение
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_5); // 7.2.5. Установка 100%, проверка и сохранение
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_6); // 7.2.5. Установка 120%, проверка и сохранение
+    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_5); // 7.2.5. Установка 120%, проверка и сохранение
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_67); // 7.2.6. Запись настроечных коэффициентов и переход на новую конфигурацию
     pf[lbls.at(count++)] = func;
@@ -153,14 +150,21 @@ void TuneDialogA1DN::SetupUI()
     lyout = new QVBoxLayout;
     glyout = new QGridLayout;
     gb = new QGroupBox("Настроечные коэффициенты");
-    for (i = 0; i < 7; ++i)
+    for (i = 0; i < 6; ++i)
     {
-        glyout->addWidget(WDFunc::NewLBL(this, "U1kDN["+QString::number(i+1)+"]"),0,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(this, "U1kDN["+QString::number(i)+"]"),0,i,1,1);
         glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+4), "", ValuesLEFormat),1,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(this, "U2kDN["+QString::number(i+1)+"]"),2,i,1,1);
-        glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+11), "", ValuesLEFormat),3,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(this, "PhyDN["+QString::number(i+1)+"]"),4,i,1,1);
-        glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+18), "", ValuesLEFormat),5,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(this, "U2kDN["+QString::number(i)+"]"),2,i,1,1);
+        glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+10), "", ValuesLEFormat),3,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(this, "PhyDN["+QString::number(i)+"]"),4,i,1,1);
+        glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+16), "", ValuesLEFormat),5,i,1,1);
+        if (i < 5)
+        {
+            glyout->addWidget(WDFunc::NewLBL(this, "δU["+QString::number(i)+"]"),6,i,1,1);
+            glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+22), "", ValuesLEFormat),7,i,1,1);
+            glyout->addWidget(WDFunc::NewLBL(this, "Δφ["+QString::number(i)+"]"),8,i,1,1);
+            glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+27), "", ValuesLEFormat),9,i,1,1);
+        }
     }
     gb->setLayout(glyout);
     lyout->addWidget(gb);
@@ -197,21 +201,31 @@ void TuneDialogA1DN::SetupUI()
 
 void TuneDialogA1DN::FillBac()
 {
-    for (int i = 0; i < 7; ++i)
+    for (int i = 0; i < 6; ++i)
     {
         WDFunc::SetLEData(this, "tune"+QString::number(i+4), QString::number(Bac_block.U1kDN[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune"+QString::number(i+11), QString::number(Bac_block.U2kDN[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune"+QString::number(i+18), QString::number(Bac_block.PhyDN[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+10), QString::number(Bac_block.U2kDN[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+16), QString::number(Bac_block.PhyDN[i], 'f', 5));
+        if (i < 5)
+        {
+            WDFunc::SetLEData(this, "tune"+QString::number(i+22), QString::number(Bac_block.dU_cor[i], 'f', 5));
+            WDFunc::SetLEData(this, "tune"+QString::number(i+27), QString::number(Bac_block.dPhy_cor[i], 'f', 5));
+        }
     }
 }
 
 void TuneDialogA1DN::FillBackBac()
 {
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < 6; i++)
     {
         WDFunc::LENumber(this, "tune"+QString::number(i+4), Bac_block.U1kDN[i]);
         WDFunc::LENumber(this, "tune"+QString::number(i+11), Bac_block.U2kDN[i]);
         WDFunc::LENumber(this, "tune"+QString::number(i+18), Bac_block.PhyDN[i]);
+        if (i < 5)
+        {
+            WDFunc::LENumber(this, "tune"+QString::number(i+22), Bac_block.dU_cor[i]);
+            WDFunc::LENumber(this, "tune"+QString::number(i+27), Bac_block.dPhy_cor[i]);
+        }
     }
 }
 
@@ -244,13 +258,17 @@ void TuneDialogA1DN::SetDefCoefs()
     Bac_block.U2kDN[0] = 0;
     Bac_block.PhyDN[0] = 0;
     Bac_block.U1kDN[1] = Bac_block.U2kDN[1] = 12;
-    Bac_block.U1kDN[2] = Bac_block.U2kDN[2] = 24;
-    Bac_block.U1kDN[3] = Bac_block.U2kDN[3] = 36;
-    Bac_block.U1kDN[4] = Bac_block.U2kDN[4] = 48;
-    Bac_block.U1kDN[5] = Bac_block.U2kDN[5] = 60;
-    Bac_block.U1kDN[6] = Bac_block.U2kDN[6] = 71;
+    Bac_block.U1kDN[2] = Bac_block.U2kDN[2] = 30;
+    Bac_block.U1kDN[3] = Bac_block.U2kDN[3] = 48;
+    Bac_block.U1kDN[4] = Bac_block.U2kDN[4] = 60;
+    Bac_block.U1kDN[5] = Bac_block.U2kDN[5] = 71;
     Bac_block.PhyDN[1] = Bac_block.PhyDN[2] = Bac_block.PhyDN[3] = \
-            Bac_block.PhyDN[4] = Bac_block.PhyDN[5] = Bac_block.PhyDN[6] = 0;
+            Bac_block.PhyDN[4] = Bac_block.PhyDN[5] = 0;
+    Bac_block.dU_cor[0] = Bac_block.dPhy_cor[0] = 0;
+    Bac_block.dU_cor[1] = Bac_block.dPhy_cor[1] = 0;
+    Bac_block.dU_cor[2] = Bac_block.dPhy_cor[2] = 0;
+    Bac_block.dU_cor[3] = Bac_block.dPhy_cor[3] = 0;
+    Bac_block.dU_cor[4] = Bac_block.dPhy_cor[4] = 0;
     FillBac();
 }
 
@@ -269,6 +287,9 @@ int TuneDialogA1DN::Start7_2_2()
 
 int TuneDialogA1DN::Start7_2_3_1()
 {
+    QPushButton *pb = this->findChild<QPushButton *>("GoodDN");
+    if (pb != 0)
+        pb->setText("Годится");
     return Start7_2_345(0);
 }
 
@@ -292,15 +313,10 @@ int TuneDialogA1DN::Start7_2_3_5()
     return Start7_2_345(4);
 }
 
-int TuneDialogA1DN::Start7_2_3_6()
-{
-    return Start7_2_345(5);
-}
-
 int TuneDialogA1DN::Start7_2_345(int counter)
 {
-    const int Percents[] = {20,40,60,80,100,120};
-    if (counter > 5)
+    const int Percents[] = {20,50,80,100,120};
+    if (counter > 4)
         return GENERALERROR;
     float VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * Percents[counter] / 1732;
     if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == false)
@@ -321,20 +337,80 @@ int TuneDialogA1DN::Start7_2_345(int counter)
 
 int TuneDialogA1DN::Start7_2_67()
 {
-    SaveToFile();
     WriteTuneCoefs();
-    if (cn->result == NOERROR)
+    if (cn->result != NOERROR)
+        return GENERALERROR;
+    return NOERROR;
+/*    if (cn->result == NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Записано успешно!");
         return NOERROR;
     }
-    return GENERALERROR;
+    return GENERALERROR; */
 }
 
 int TuneDialogA1DN::Start7_2_8()
 {
+    if (MessageBox2::question(this, "Подтверждение", "Теперь необходимо подтвердить погрешности установки") == false)
+    {
+        Cancelled = true;
+        return GENERALERROR;
+    }
     WaitNSeconds(5);
-    return StartMeasurement();
+    QPushButton *pb = this->findChild<QPushButton *>("GoodDN");
+    if (pb != 0)
+        pb->setText("Запомнить погрешность");
+    if (StartMeasurement() != NOERROR)
+        return GENERALERROR;
+    FillBackBdOut();
+    Bac_block.dU_cor[0] = ChA1->Bda_out.dUrms;
+    Bac_block.dPhy_cor[0] = ChA1->Bda_out.Phy;
+    FillBac();
+    return NOERROR;
+}
+
+int TuneDialogA1DN::Start7_2_9_1()
+{
+    return Start7_2_9(0);
+}
+
+int TuneDialogA1DN::Start7_2_9_2()
+{
+    return Start7_2_9(1);
+}
+
+int TuneDialogA1DN::Start7_2_9_3()
+{
+    return Start7_2_9(2);
+}
+
+int TuneDialogA1DN::Start7_2_9_4()
+{
+    if (Start7_2_9(3) != NOERROR)
+        return GENERALERROR;
+    SaveToFile();
+    return Start7_2_67();
+}
+
+int TuneDialogA1DN::Start7_2_9(int counter)
+{
+    const int Percents[] = {100, 80, 50, 20};
+    if (counter > 3)
+        return GENERALERROR;
+    float VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * Percents[counter] / 1732;
+    if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == false)
+    {
+        Cancelled = true;
+        return GENERALERROR;
+    }
+    if (StartMeasurement() != NOERROR)
+        return GENERALERROR;
+    FillBackBdOut();
+    // теперь в ChA1->Bda_block лежат нужные нам значения
+    Bac_block.dU_cor[counter+1] = ChA1->Bda_out.dUrms;
+    Bac_block.dPhy_cor[counter+1] = ChA1->Bda_out.Phy;
+    FillBac();
+    return NOERROR;
 }
 
 int TuneDialogA1DN::ReadAnalogMeasurements()

@@ -505,12 +505,12 @@ int TuneDialogA1::GetExternalData()
 
 void TuneDialogA1::GetBdAndFillMTT()
 {
-    cn->Send(CN_GBd, 4, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
+/*    cn->Send(CN_GBd, 4, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
     if (cn->result == NOERROR)
         FillBdOut();
     cn->Send(CN_GBd, 1, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1));
     if (cn->result == NOERROR)
-        FillBdIn();
+        FillBdIn(); */
 }
 
 // ####################### SLOTS #############################
@@ -558,22 +558,22 @@ void TuneDialogA1::FillBackBac()
 
 void TuneDialogA1::FillBdOut()
 {
-    WDFunc::SetLBLText(this, "tunednu1", QString::number(ChA1->Bda_out.Uef_filt[0], 'f', 5));
+/*    WDFunc::SetLBLText(this, "tunednu1", QString::number(ChA1->Bda_out.Uef_filt[0], 'f', 5));
     WDFunc::SetLBLText(this, "tunednu2", QString::number(ChA1->Bda_out.Uef_filt[1], 'f', 5));
     WDFunc::SetLBLText(this, "tunednphy", QString::number(ChA1->Bda_out.Phy, 'f', 5));
     WDFunc::SetLBLText(this, "tunednfreq", QString::number(ChA1->Bda_out.Frequency, 'f', 5));
     float Percents = qAbs(ChA1->Bda_out.Uef_filt[0]-ChA1->Bda_out.Uef_filt[1]) / (CA1->Bci_block.K_DN / 1732.051f);
-    WDFunc::SetLBLText(this, "tunepercent", QString::number(Percents, 'f', 5));
+    WDFunc::SetLBLText(this, "tunepercent", QString::number(Percents, 'f', 5));*/
 }
 
 void TuneDialogA1::FillBdIn()
 {
-    WDFunc::SetLBLText(this, "tunednu1i", QString::number(ChA1->Bda_in.Uef_filt[0], 'f', 5));
+/*    WDFunc::SetLBLText(this, "tunednu1i", QString::number(ChA1->Bda_in.Uef_filt[0], 'f', 5));
     WDFunc::SetLBLText(this, "tunednu2i", QString::number(ChA1->Bda_in.Uef_filt[1], 'f', 5));
     WDFunc::SetLBLText(this, "tunednphyi", QString::number(ChA1->Bda_in.Phy, 'f', 5));
     WDFunc::SetLBLText(this, "tunednfreqi", QString::number(ChA1->Bda_in.Frequency, 'f', 5));
     float Percents = qAbs(ChA1->Bda_in.Uef_filt[0]-ChA1->Bda_in.Uef_filt[1]) / 57.74f * 100.0;
-    WDFunc::SetLBLText(this, "tunepercenti", QString::number(Percents, 'f', 5));
+    WDFunc::SetLBLText(this, "tunepercenti", QString::number(Percents, 'f', 5));*/
 }
 
 void TuneDialogA1::SetDefCoefs()
