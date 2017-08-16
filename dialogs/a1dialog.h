@@ -2,7 +2,8 @@
 #define A1DIALOG_H
 
 #include <QDialog>
-#include "../publicclass.h"
+#include "../config/configa1.h"
+#include "../check/checka1.h"
 
 class A1Dialog : public QDialog
 {
@@ -22,10 +23,24 @@ public:
     Bac Bac_block;
 
 private:
-    bool Cancelled;
+    CheckA1 *ChA1;
+    ConfigA1 *CA1;
+    QVector<publicclass::DataRec> S2Config;
     QTimer *MeasurementTimer;
+    struct ResultsStruct
+    {
+        float K;    // отношение напряжения к номинальному напряжению ТН
+        float dUp;  // относительная погрешность прибора по амплитуде
+        float dPp;  // абсолютная погрешность прибора по фазе
+        float dUd;  // относительная погрешность ДН по амплитуде
+        float dPd;  // абсолютная погрешность ДН по фазе
+    };
+    ResultsStruct Results[9];   // девять уровней напряжения: 20, 50, 80, 100, 120, 100, 80, 50, 20 %
+    int Counter;
 
     void SetupUI();
+    int GetConf();
+    void FillBdOut();
 
 private slots:
     void StartWork();

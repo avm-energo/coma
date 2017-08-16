@@ -235,8 +235,7 @@ void TuneDialogA1DN::FillBdOut()
     WDFunc::SetLBLText(this, "tunednu2", QString::number(ChA1->Bda_out.Uef_filt[1], 'f', 5));
     WDFunc::SetLBLText(this, "tunednphy", QString::number(ChA1->Bda_out.Phy, 'f', 5));
     WDFunc::SetLBLText(this, "tunednfreq", QString::number(ChA1->Bda_out.Frequency, 'f', 5));
-    float Percents = qAbs(ChA1->Bda_out.Uef_filt[0]-ChA1->Bda_out.Uef_filt[1]) / (CA1->Bci_block.K_DN / 1732.051f);
-    WDFunc::SetLBLText(this, "tunepercent", QString::number(Percents, 'f', 5));
+    WDFunc::SetLBLText(this, "tunepercent", QString::number(ChA1->Bda_out.dUrms, 'f', 5));
 }
 
 void TuneDialogA1DN::FillBackBdOut()

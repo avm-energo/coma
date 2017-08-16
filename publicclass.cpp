@@ -329,9 +329,11 @@ void publicclass::AddErrMsg(ermsgtype msgtype, QString file, int line, QString m
     ErMsgPool.append(tmpm);
 }
 
-int publicclass::LoadFile(QWidget *parent, QString mask, void *dst, int &maxsize)
+int publicclass::LoadFile(QWidget *parent, QString mask, QByteArray &ba)
 {
-    QString filename = QFileDialog::getOpenFileName(parent, "Открыть файл", ".", mask);
+    QFileDialog *dlg = new QFileDialog;
+    dlg->setFileMode(QFileDialog::AnyFile);
+    QString filename = dlg->getOpenFileName(parent, "Открыть файл", HomeDir, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     if (filename.isEmpty())
     {
         ERMSG("Пустое имя файла");
@@ -344,30 +346,32 @@ int publicclass::LoadFile(QWidget *parent, QString mask, void *dst, int &maxsize
         ERMSG("Ошибка открытия файла");
         return ER_FILEOPEN; // Ошибка открытия файла
     }
-    QByteArray LoadBa = file->readAll();
+    ba = file->readAll();
     file->close();
-    maxsize = (LoadBa.size() <= maxsize) ? LoadBa.size() : maxsize;
-    memcpy(dst, &(LoadBa.data()[0]), maxsize);
+/*    maxsize = (LoadBa.size() <= maxsize) ? LoadBa.size() : maxsize;
+    memcpy(dst, &(LoadBa.data()[0]), maxsize); */
     return NOERROR;
 }
 
-int publicclass::SaveFile(QWidget *parent, QString mask, void *src, unsigned int numbytes)
+int publicclass::SaveFile(QWidget *parent, QString mask, QByteArray src, unsigned int numbytes)
 {
     QString MTypeM = (ModuleBsi.MTypeM == 0) ? "00" : QString::number(ModuleBsi.MTypeM, 16);
-    QString tmps = "./"+QString::number(ModuleBsi.MTypeB, 16)+MTypeM+"-"+\
+    QString tmps = HomeDir + QString::number(ModuleBsi.MTypeB, 16)+MTypeM+"-"+\
             QString("%1").arg(ModuleBsi.SerialNum, 8, 10, QChar('0'));
-    QString filename = QFileDialog::getSaveFileName(Q_NULLPTR, "Сохранить файл", tmps, mask);
+    QFileDialog *dlg = new QFileDialog;
+    dlg->setFileMode(QFileDialog::AnyFile);
+    QString filename = dlg->getSaveFileName(parent, "Сохранить файл", tmps, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     if (filename.isEmpty())
         return ER_FILENAMEEMP; // Пустое имя файла
-/*    QFile *file = new QFile;
+    QFile *file = new QFile;
     file->setFileName(filename);
     if (!file->open(QIODevice::WriteOnly))
         return ER_FILEOPEN; // Ошибка открытия файла
-    int res = file->write(static_cast<char *>(src), numbytes);
+    int res = file->write(src, numbytes);
     file->close();
     delete file;
     if (res == GENERALERROR)
-        return ER_FILEWRITE; // ошибка записи */
+        return ER_FILEWRITE; // ошибка записи
     return NOERROR; // нет ошибок
 }
 

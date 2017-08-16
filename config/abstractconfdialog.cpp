@@ -3,6 +3,7 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QTextEdit>
+#include <QFileDialog>
 #include "abstractconfdialog.h"
 #include "../widgets/s_tqspinbox.h"
 #include "../widgets/messagebox.h"
@@ -52,15 +53,15 @@ void AbstractConfDialog::WriteConf()
 
 void AbstractConfDialog::SaveConfToFile()
 {
-    QByteArray *ba = new QByteArray;
-    ba->resize(MAXBYTEARRAY);
-    pc.StoreDataMem(&(ba->data()[0]), S2Config, 0x0001); // 0x101 - номер файла конфигурации
-    quint32 BaLength = static_cast<quint8>(ba->data()[4]);
-    BaLength += static_cast<quint8>(ba->data()[5])*256;
-    BaLength += static_cast<quint8>(ba->data()[6])*65536;
-    BaLength += static_cast<quint8>(ba->data()[7])*16777216;
+    QByteArray ba;
+    ba.resize(MAXBYTEARRAY);
+    pc.StoreDataMem(&(ba.data()[0]), S2Config, 0x0001); // 0x101 - номер файла конфигурации
+    quint32 BaLength = static_cast<quint8>(ba.data()[4]);
+    BaLength += static_cast<quint8>(ba.data()[5])*256;
+    BaLength += static_cast<quint8>(ba.data()[6])*65536;
+    BaLength += static_cast<quint8>(ba.data()[7])*16777216;
     BaLength += sizeof(publicclass::FileHeader); // FileHeader
-    int res = pc.SaveFile(this, "Config files (*.cf)", &(ba->data()[0]), BaLength);
+    int res = pc.SaveFile(this, "Config files (*.cf)", &(ba.data()[0]), BaLength);
     switch (res)
     {
     case NOERROR:
@@ -82,16 +83,14 @@ void AbstractConfDialog::SaveConfToFile()
 
 void AbstractConfDialog::LoadConfFromFile()
 {
-    int BytesRead = MAXCONFSIZE;
-    QScopedPointer<quint8> buf (new quint8[MAXCONFSIZE]);
-    int res = pc.LoadFile(this, "Config files (*.cf)", buf.data(), BytesRead);
-    // now BytesRead is the number of bytes that was read from the file
+    QByteArray ba;
+    int res = pc.LoadFile(this, "Config files (*.cf)", ba);
     if (res != NOERROR)
     {
-        MessageBox2::error(this, "Ошибка", "Ошибка чтения файла");
+        WARNMSG("Ошибка при загрузке файла конфигурации");
         return;
     }
-    if (pc.RestoreDataMem(buf.data(), BytesRead, S2Config))
+    if (pc.RestoreDataMem(&(ba.data()[0]), ba.size(), S2Config))
     {
         WARNMSG("Ошибка при разборе файла конфигурации");
         return;

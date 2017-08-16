@@ -217,7 +217,10 @@ void AbstractTuneDialog::SaveToFileEx()
 {
     int res = NOERROR;
     QString tunenum = QString::number(AbsBac.BacBlockNum, 16);
-    res = pc.SaveFile(this, "Tune files (*.tn"+tunenum+")", AbsBac.BacBlock, AbsBac.BacBlockSize);
+    QByteArray ba;
+    ba.resize(AbsBac.BacBlockSize);
+    memcpy(&(ba.data()[0]), &AbsBac.BacBlock, AbsBac.BacBlockSize);
+    res = pc.SaveFile(this, "Tune files (*.tn"+tunenum+")", ba, AbsBac.BacBlockSize);
     switch (res)
     {
     case NOERROR:
@@ -296,15 +299,15 @@ void AbstractTuneDialog::SaveToFile()
 
 void AbstractTuneDialog::LoadFromFile()
 {
-    int BytesRead = MAXTUNESIZE;
-    QScopedPointer<quint8> buf (new quint8[MAXTUNESIZE]);
-    int res = pc.LoadFile(this, "Tune files (*.tn)", buf.data(), BytesRead);
+    QByteArray ba;
+    ba.resize(MAXTUNESIZE);
+    int res = pc.LoadFile(this, "Tune files (*.tn)", ba);
     if (res != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Ошибка при загрузке файла");
         return;
     }
-    memcpy(AbsBac.BacBlock,buf.data(),BytesRead);
+    memcpy(AbsBac.BacBlock,&(ba.data()[0]),ba.size());
     FillBac();
     MessageBox2::information(this, "Внимание", "Загрузка прошла успешно!");
 }
