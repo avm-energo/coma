@@ -61,7 +61,7 @@ void AbstractConfDialog::SaveConfToFile()
     BaLength += static_cast<quint8>(ba.data()[6])*65536;
     BaLength += static_cast<quint8>(ba.data()[7])*16777216;
     BaLength += sizeof(publicclass::FileHeader); // FileHeader
-    int res = pc.SaveFile(this, "Config files (*.cf)", &(ba.data()[0]), BaLength);
+    int res = pc.SaveFile(this, "Config files (*.cf)", "cf", ba, BaLength);
     switch (res)
     {
     case NOERROR:

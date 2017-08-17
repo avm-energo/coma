@@ -141,11 +141,6 @@ void Canal::InitiateSend()
     case CN_WBac:
     case CN_CtEr:
     {
-//        WRLength = outdatasize+5;
-//        WriteData.resize(WRLength); // MS, c, L, L, B
-//        WriteData.append(CN_MS);
-//        WriteData.append(cmd);
-//        AppendSize(WriteData, 0); // временно записываем нулевую длину, впоследствии поменяем
         WriteData.append(BoardType);
         WriteData.append(QByteArray::fromRawData((const char *)outdata, outdatasize));
         WRLength = outdatasize + 1;
@@ -291,6 +286,8 @@ void Canal::ParseIncomeData(QByteArray &ba)
         {
             if (LastBlock)
             {
+                if (RDSize > outdatasize)
+                    RDSize = outdatasize;
                 memcpy(outdata,ReadData.data(),RDSize);
                 Finish(NOERROR);
             }

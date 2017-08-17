@@ -61,7 +61,7 @@ private:
     Bip Bip_block;
     bool XlsxWriting;
     QTime *ElapsedTimeCounter;
-    QWidget *Parent;
+//    QWidget *Parent;
 
     void CheckIP();
     void GetIP();

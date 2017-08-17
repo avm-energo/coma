@@ -219,8 +219,8 @@ void TuneDialogA1DN::FillBackBac()
     for (int i = 0; i < 6; i++)
     {
         WDFunc::LENumber(this, "tune"+QString::number(i+4), Bac_block.U1kDN[i]);
-        WDFunc::LENumber(this, "tune"+QString::number(i+11), Bac_block.U2kDN[i]);
-        WDFunc::LENumber(this, "tune"+QString::number(i+18), Bac_block.PhyDN[i]);
+        WDFunc::LENumber(this, "tune"+QString::number(i+10), Bac_block.U2kDN[i]);
+        WDFunc::LENumber(this, "tune"+QString::number(i+16), Bac_block.PhyDN[i]);
         if (i < 5)
         {
             WDFunc::LENumber(this, "tune"+QString::number(i+22), Bac_block.dU_cor[i]);

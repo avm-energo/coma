@@ -332,8 +332,10 @@ void publicclass::AddErrMsg(ermsgtype msgtype, QString file, int line, QString m
 int publicclass::LoadFile(QWidget *parent, QString mask, QByteArray &ba)
 {
     QFileDialog *dlg = new QFileDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
     QString filename = dlg->getOpenFileName(parent, "Открыть файл", HomeDir, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    dlg->close();
     if (filename.isEmpty())
     {
         ERMSG("Пустое имя файла");
@@ -353,14 +355,16 @@ int publicclass::LoadFile(QWidget *parent, QString mask, QByteArray &ba)
     return NOERROR;
 }
 
-int publicclass::SaveFile(QWidget *parent, QString mask, QByteArray src, unsigned int numbytes)
+int publicclass::SaveFile(QWidget *parent, const QString &mask, const QString &ext, QByteArray &src, unsigned int numbytes)
 {
     QString MTypeM = (ModuleBsi.MTypeM == 0) ? "00" : QString::number(ModuleBsi.MTypeM, 16);
     QString tmps = HomeDir + QString::number(ModuleBsi.MTypeB, 16)+MTypeM+"-"+\
-            QString("%1").arg(ModuleBsi.SerialNum, 8, 10, QChar('0'));
+            QString("%1").arg(ModuleBsi.SerialNum, 8, 10, QChar('0'))+"."+ext;
     QFileDialog *dlg = new QFileDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
     QString filename = dlg->getSaveFileName(parent, "Сохранить файл", tmps, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    dlg->close();
     if (filename.isEmpty())
         return ER_FILENAMEEMP; // Пустое имя файла
     QFile *file = new QFile;

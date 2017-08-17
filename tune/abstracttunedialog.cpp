@@ -220,7 +220,7 @@ void AbstractTuneDialog::SaveToFileEx()
     QByteArray ba;
     ba.resize(AbsBac.BacBlockSize);
     memcpy(&(ba.data()[0]), &AbsBac.BacBlock, AbsBac.BacBlockSize);
-    res = pc.SaveFile(this, "Tune files (*.tn"+tunenum+")", ba, AbsBac.BacBlockSize);
+    res = pc.SaveFile(this, "Tune files (*.tn"+tunenum+")", "tn"+tunenum, ba, AbsBac.BacBlockSize);
     switch (res)
     {
     case NOERROR:
@@ -274,7 +274,7 @@ void AbstractTuneDialog::PasswordCheck(QString psw)
 
 void AbstractTuneDialog::ReadTuneCoefs()
 {
-    cn->Send(CN_GBac, AbsBac.BacBlockNum, &AbsBac.BacBlock, AbsBac.BacBlockSize);
+    cn->Send(CN_GBac, AbsBac.BacBlockNum, AbsBac.BacBlock, AbsBac.BacBlockSize);
     if (cn->result == NOERROR)
         FillBac();
 }
@@ -282,7 +282,7 @@ void AbstractTuneDialog::ReadTuneCoefs()
 void AbstractTuneDialog::WriteTuneCoefs()
 {
     FillBackBac();
-    cn->Send(CN_WBac, AbsBac.BacBlockNum, &AbsBac.BacBlock, AbsBac.BacBlockSize);
+    cn->Send(CN_WBac, AbsBac.BacBlockNum, AbsBac.BacBlock, AbsBac.BacBlockSize);
     if (cn->result == NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Записано успешно!");

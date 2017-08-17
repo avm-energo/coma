@@ -22,7 +22,7 @@ CheckDialogA1::CheckDialogA1(QWidget *parent) : AbstractCheckDialog(parent)
 {
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);
-    BdNum = 6; // количество блоков данных 6
+    BdNum = 5; // количество блоков данных 6
     BdUINum = 8; // количество вкладок - 8 (блок Bda_h разделён ввиду его огромности на четыре вкладки)
     ChA1 = new CheckA1;
     SetBd(1, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1));
@@ -30,9 +30,9 @@ CheckDialogA1::CheckDialogA1(QWidget *parent) : AbstractCheckDialog(parent)
     SetBd(3, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2));
     SetBd(2, &ChA1->Bda_in_an, sizeof(CheckA1::A1_Bd3));
     SetBd(5, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
-    SetBd(6, &ChA1->Bd_com, sizeof(CheckA1::A1_Bd6));
+//    SetBd(6, &ChA1->Bd_com, sizeof(CheckA1::A1_Bd6));
     SetupUI();
-    timer->setInterval(ANMEASINT/BdNum);
+    timer->setInterval(ANMEASINT);
 }
 
 QWidget *CheckDialogA1::AutoCheckUI()
@@ -184,28 +184,28 @@ void CheckDialogA1::WriteToFile(int row, int bdnum)
     switch (bdnum)
     {
     case 1:
-        xlsx->write(row,2,ChA1->Bd_com.B1.UefNat_filt[0],format);
-        xlsx->write(row,3,ChA1->Bd_com.B1.UefNat_filt[1],format);
-        xlsx->write(row,4,ChA1->Bd_com.B1.dUrms,format);
-        xlsx->write(row,5,ChA1->Bd_com.B1.Uef_filt[0],format);
-        xlsx->write(row,6,ChA1->Bd_com.B1.Uef_filt[1],format);
-        xlsx->write(row,7,ChA1->Bd_com.B1.dU,format);
-        xlsx->write(row,8,ChA1->Bd_com.B1.Phy, format);
-        xlsx->write(row,9,ChA1->Bd_com.B1.Frequency, format);
+        xlsx->write(row,2,WDFunc::StringValueWithCheck(ChA1->Bda_in.UefNat_filt[0]),format);
+        xlsx->write(row,3,WDFunc::StringValueWithCheck(ChA1->Bda_in.UefNat_filt[1]),format);
+        xlsx->write(row,4,WDFunc::StringValueWithCheck(ChA1->Bda_in.dUrms),format);
+        xlsx->write(row,5,WDFunc::StringValueWithCheck(ChA1->Bda_in.Uef_filt[0]),format);
+        xlsx->write(row,6,WDFunc::StringValueWithCheck(ChA1->Bda_in.Uef_filt[1]),format);
+        xlsx->write(row,7,WDFunc::StringValueWithCheck(ChA1->Bda_in.dU),format);
+        xlsx->write(row,8,WDFunc::StringValueWithCheck(ChA1->Bda_in.Phy), format);
+        xlsx->write(row,9,WDFunc::StringValueWithCheck(ChA1->Bda_in.Frequency), format);
         break;
     case 4:
-        xlsx->write(row,10,ChA1->Bd_com.B4.UefNat_filt[0], format);
-        xlsx->write(row,11,ChA1->Bd_com.B4.UefNat_filt[1],format);
-        xlsx->write(row,12,ChA1->Bd_com.B4.Uef_filt[0],format);
-        xlsx->write(row,13,ChA1->Bd_com.B4.Uef_filt[1],format);
-        xlsx->write(row,14,ChA1->Bd_com.B4.Phy, format);
-        xlsx->write(row,15,ChA1->Bd_com.B4.Frequency, format);
+        xlsx->write(row,10,WDFunc::StringValueWithCheck(ChA1->Bda_out.UefNat_filt[0]), format);
+        xlsx->write(row,11,WDFunc::StringValueWithCheck(ChA1->Bda_out.UefNat_filt[1]),format);
+        xlsx->write(row,12,WDFunc::StringValueWithCheck(ChA1->Bda_out.Uef_filt[0]),format);
+        xlsx->write(row,13,WDFunc::StringValueWithCheck(ChA1->Bda_out.Uef_filt[1]),format);
+        xlsx->write(row,14,WDFunc::StringValueWithCheck(ChA1->Bda_out.Phy), format);
+        xlsx->write(row,15,WDFunc::StringValueWithCheck(ChA1->Bda_out.Frequency), format);
         break;
     case 5:
-        xlsx->write(row,16,ChA1->Bd_com.B5.Tmk, format);
-        xlsx->write(row,17,ChA1->Bd_com.B5.Vbat, format);
-        xlsx->write(row,18,ChA1->Bd_com.B5.Tamb, format);
-        xlsx->write(row,19,ChA1->Bd_com.B5.Hamb, format);
+        xlsx->write(row,16,WDFunc::StringValueWithCheck(ChA1->Bda_out_an.Tmk), format);
+        xlsx->write(row,17,WDFunc::StringValueWithCheck(ChA1->Bda_out_an.Vbat), format);
+        xlsx->write(row,18,WDFunc::StringValueWithCheck(ChA1->Bda_out_an.Tamb), format);
+        xlsx->write(row,19,WDFunc::StringValueWithCheck(ChA1->Bda_out_an.Hamb), format);
         break;
     default:
         break;

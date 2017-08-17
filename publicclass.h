@@ -293,7 +293,7 @@ public:
     void AddErrMsg(ermsgtype msgtype, QString file=0, int line=0, QString msg="");
     void ErMsg(int ermsgnum);
     int LoadFile(QWidget *parent, QString mask, QByteArray &ba);
-    int SaveFile (QWidget *parent, QString mask, QByteArray src, unsigned int numbytes);
+    int SaveFile (QWidget *parent, const QString &mask, const QString &ext, QByteArray &src, unsigned int numbytes);
     bool FloatInRange(float var, float value);
 
 private:

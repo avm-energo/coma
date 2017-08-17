@@ -20,7 +20,7 @@
 AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) :
     QDialog(parent)
 {
-    Parent = parent;
+//    Parent = parent;
     XlsxWriting = false;
     xlsx = 0;
 //    CurBdNum = 1;
@@ -104,7 +104,7 @@ void AbstractCheckDialog::GetIP()
 
 void AbstractCheckDialog::CheckIP()
 {
-    QLabel *lbl = Parent->findChild<QLabel *>("ipl");
+    QLabel *lbl = this->findChild<QLabel *>("ipl");
     if (lbl == 0)
         return;
     for (int i = 0; i < 4; i++)
@@ -114,21 +114,30 @@ void AbstractCheckDialog::CheckIP()
 
 void AbstractCheckDialog::StartAnalogMeasurementsToFile()
 {
-    QString Filename = QFileDialog::getSaveFileName(this,"Сохранить данные","","Excel files (*.xlsx)");
+    QFileDialog *dlg = new QFileDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setFileMode(QFileDialog::AnyFile);
+    QString Filename = dlg->getSaveFileName(this, "Сохранить данные",pc.HomeDir,"Excel files (*.xlsx)", Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    dlg->close();
     if (Filename == "")
     {
         ERMSG("Не задано имя файла");
         return; // !!! ошибка - не задано имя файла
     }
+    // удаляем файл, если он есть
+    QFile fn;
+    fn.setFileName(Filename);
+    if (fn.exists())
+        fn.remove();
     XlsxWriting = true;
     xlsx = new QXlsx::Document(Filename);
     xlsx->write(1,1,QVariant("Модуль: "+pc.ModuleTypeString+" сер. ном. "+QString::number(pc.ModuleBsi.SerialNum,10)));
     xlsx->write(2,1,QVariant("Дата начала записи: "+QDateTime::currentDateTime().toString("dd-MM-yyyy")));
     xlsx->write(3,1,QVariant("Время начала записи: "+QDateTime::currentDateTime().toString("hh:mm:ss")));
     xlsx->write(5,1,QVariant("Дата и время отсчёта"));
-    PrepareHeadersForFile(6);
+    PrepareHeadersForFile(6); // в 6 ряду пишем заголовки
     WRow = 7;
-    QPushButton *pb = Parent->findChild<QPushButton *>("pbfilemeasurements");
+    QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
     if (pb != 0)
         pb->setEnabled(false);
     pb = this->findChild<QPushButton *>("pbmeasurements");
@@ -142,7 +151,18 @@ void AbstractCheckDialog::StartAnalogMeasurementsToFile()
 void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 {
     // получение текущих аналоговых сигналов от модуля
-    for (int bdnum = 0; bdnum < BdNum; ++bdnum)
+    if (XlsxWriting)
+    {
+        xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("hh:mm:ss.zzz")));
+        QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
+        if (pb != 0)
+        {
+            int MSecs = ElapsedTimeCounter->elapsed();
+            QString TimeElapsed = QTime::fromMSecsSinceStartOfDay(MSecs).toString("hh:mm:ss.zzz");
+            pb->setText("Идёт запись: "+TimeElapsed);
+        }
+    }
+    for (int bdnum = 1; bdnum <= BdNum; ++bdnum)
     {
         if (bdnum < Bd_blocks.size())
         {
@@ -157,22 +177,15 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
             // обновление коэффициентов в соответствующих полях на экране
             RefreshAnalogValues(bdnum);
             if (XlsxWriting)
-            {
-                QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
-                if (pb != 0)
-                {
-                    int MSecs = ElapsedTimeCounter->elapsed();
-                    QString TimeElapsed = QTime::fromMSecsSinceStartOfDay(MSecs).toString("hh:mm:ss.zzz");
-                    pb->setText("Идёт запись: "+TimeElapsed);
-                }
-                xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz")));
                 WriteToFile(WRow, bdnum);
-                WRow++;
-            }
         }
         else
+        {
             WARNMSG("Передан некорректный номер блока");
+            return;
+        }
     }
+    WRow++;
 }
 
 void AbstractCheckDialog::StartAnalogMeasurements()
@@ -214,7 +227,6 @@ void AbstractCheckDialog::SetTimerPeriod()
     int per = sender()->objectName().toInt(&ok);
     if (!ok)
         return;
-    per /= BdNum; // период обновления всех данных во всех группах должен быть, как задан в поле ввода
     timer->stop();
     timer->setInterval(per);
     if (TimerIsActive)
