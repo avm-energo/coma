@@ -7,8 +7,6 @@
 #include "../canal.h"
 #include "../publicclass.h"
 
-//#define PROGNAME    ""
-
 #define C_TE_MAXSIZE    10000
 #define MAXERRORFLAGNUM 32
 
@@ -116,6 +114,7 @@ private:
     void SaveSettings();
     void Stage3();
     void ClearTW();
+    QWidget *MainInfoWidget(QWidget *parent);
 
 protected:
     void resizeEvent(QResizeEvent *e);

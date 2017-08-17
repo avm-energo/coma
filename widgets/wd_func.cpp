@@ -330,9 +330,10 @@ void WDFunc::SetVisible(QWidget *w, const QString &wname, bool visible)
 QString WDFunc::StringValueWithCheck(float value)
 {
     QString tmps;
+    QLocale russian(QLocale::Russian, QLocale::Russia);
     if (value == FLT_MAX)
         tmps = "***";
     else
-        tmps = QString::number(value, 'f', 5);
+        tmps = russian.toString(value, 'f', 5);
     return tmps;
 }

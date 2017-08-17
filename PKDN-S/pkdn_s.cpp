@@ -179,14 +179,6 @@ void pkdn_s::SetupUI()
     SlideWidget->setStyleSheet("QWidget {background-color: rgba(110,234,145,255);}");
     QVBoxLayout *slyout = new QVBoxLayout;
 
-    slyout->addWidget(WDFunc::NewLBL(this, "ПКДН"));
-    WDFunc::AddLabelAndLineedit(slyout, "Серийный номер устройства:", "snble");
-    WDFunc::AddLabelAndLineedit(slyout, "Аппаратная версия платы:", "hwverble");
-    WDFunc::AddLabelAndLineedit(slyout, "Версия ПО:", "fwverle");
-    WDFunc::AddLabelAndLineedit(slyout, "КС конфигурации:", "cfcrcle");
-    WDFunc::AddLabelAndLineedit(slyout, "Последний сброс:", "rstle");
-    WDFunc::AddLabelAndLineedit(slyout, "Количество сбросов:", "rstcountle");
-    WDFunc::AddLabelAndLineedit(slyout, "ИД процессора:", "cpuidle", true);
     QTextEdit *MainTE = new QTextEdit;
     MainTE->setObjectName("mainte");
     slyout->addWidget(MainTE, 40);
@@ -400,7 +392,7 @@ void pkdn_s::FillBsi()
     }
     WDFunc::SetLEData(this, "rstcountle", QString::number(pc.ModuleBsi.RstCount, 16));
     WDFunc::SetLEData(this, "cpuidle", QString::number(pc.ModuleBsi.UIDHigh, 16)+QString::number(pc.ModuleBsi.UIDMid, 16)+QString::number(pc.ModuleBsi.UIDLow, 16));
-    WDFunc::SetLEData(this, "snble", QString::number(pc.ModuleBsi.SerialNum, 16));
+    WDFunc::SetLEData(this, "snle", QString::number(pc.ModuleBsi.SerialNum, 16));
 }
 
 void pkdn_s::ClearBsi()
@@ -467,6 +459,7 @@ void pkdn_s::Stage3()
     oscdialog *OscD = new oscdialog;
     downloaddialog *DownD = new downloaddialog;
     fwupdialog *FwUpD = new fwupdialog;
+    MainTW->addTab(MainInfoWidget(this), "Информация");
     MainTW->addTab(TuneD, "Регулировка");
     MainTW->addTab(t2dlg, "Настройка своего ДН");
     MainTW->addTab(CheckD, "Проверка");
@@ -496,6 +489,27 @@ void pkdn_s::ClearTW()
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
         MainTE->clear();
+}
+
+QWidget *pkdn_s::MainInfoWidget(QWidget *parent)
+{
+    QWidget *w = new QWidget(parent);
+    QVBoxLayout *slyout = new QVBoxLayout;
+    slyout->addWidget(WDFunc::NewLBL(this, "ПКДН"));
+    WDFunc::AddLabelAndLineedit(slyout, "Серийный номер устройства:", "snle");
+    WDFunc::AddLabelAndLineedit(slyout, "Версия ПО:", "fwverle");
+    WDFunc::AddLabelAndLineedit(slyout, "КС конфигурации:", "cfcrcle");
+    WDFunc::AddLabelAndLineedit(slyout, "Последний сброс:", "rstle");
+    WDFunc::AddLabelAndLineedit(slyout, "Количество сбросов:", "rstcountle");
+    WDFunc::AddLabelAndLineedit(slyout, "ИД процессора:", "cpuidle");
+    WDFunc::AddLabelAndLineedit(slyout, "Тип базовой платы:", "typeble");
+    WDFunc::AddLabelAndLineedit(slyout, "Серийный номер базовой платы:", "snble");
+    WDFunc::AddLabelAndLineedit(slyout, "Аппаратная версия базовой платы:", "hwble");
+    WDFunc::AddLabelAndLineedit(slyout, "Тип мезонинной платы:", "typemle");
+    WDFunc::AddLabelAndLineedit(slyout, "Серийный номер мезонинной платы:", "snmle");
+    WDFunc::AddLabelAndLineedit(slyout, "Аппаратная версия мезонинной платы:", "hwmle");
+    w->setLayout(slyout);
+    return w;
 }
 
 void pkdn_s::Disconnect()
