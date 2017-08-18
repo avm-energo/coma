@@ -3,9 +3,11 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QCheckBox>
+#include <QFileDialog>
 #include <QPushButton>
 #include <QString>
 #include "settingsdialog.h"
+#include "../config/config.h"
 #include "../widgets/s_tqspinbox.h"
 #include "../widgets/wd_func.h"
 #include "../publicclass.h"
@@ -24,54 +26,33 @@ void SettingsDialog::SetupUI()
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout = new QHBoxLayout;
-    QLabel *lbl = new QLabel("IP-адрес МИП:");
+    QLabel *lbl = new QLabel("Наименование организации, эксплуатирующей прибор");
     hlyout->addWidget(lbl);
     QLineEdit *le = new QLineEdit;
-    le->setObjectName("mip1");
-    hlyout->addWidget(le);
-    lbl = new QLabel(".");
-    hlyout->addWidget(lbl);
-    le = new QLineEdit;
-    le->setObjectName("mip2");
-    hlyout->addWidget(le);
-    lbl = new QLabel(".");
-    hlyout->addWidget(lbl);
-    le = new QLineEdit;
-    le->setObjectName("mip3");
-    hlyout->addWidget(le);
-    lbl = new QLabel(".");
-    hlyout->addWidget(lbl);
-    le = new QLineEdit;
-    le->setObjectName("mip4");
+    le->setObjectName("orgle");
     hlyout->addWidget(le);
     vlyout->addLayout(hlyout);
-
     hlyout = new QHBoxLayout;
-    lbl = new QLabel("ASDU:");
-    hlyout->addWidget(lbl);
-    s_tqSpinBox *spb = new s_tqSpinBox;
-    spb->setDecimals(0);
-    spb->setMinimum(1);
-    spb->setMaximum(65534);
-    spb->setValue(pc.MIPASDU);
-    spb->setObjectName("asduspb");
-    hlyout->addWidget(spb);
-    hlyout->addStretch(90);
+    lbl = new QLabel("Рабочий каталог сервисной программы");
+    hlyout->addWidget(lbl, 0);
+    le = new QLineEdit;
+    le->setObjectName("pathle");
+    hlyout->addWidget(le, 1);
+    QPushButton *pb = new QPushButton("...");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetHomeDir()));
+    hlyout->addWidget(pb, 0);
     vlyout->addLayout(hlyout);
-
-    QString restring = "^[0-2]{0,1}[0-9]{1,2}$";
-    QStringList tmpsl = pc.MIPIP.split(".");
-    if (tmpsl.size()<4)
+    if (pc.ModuleBsi.MTypeB == MTB_80)
     {
-        for (int i = tmpsl.size(); i < 4; i++)
-            tmpsl.append("");
+        hlyout = new QHBoxLayout;
+        lbl = new QLabel("IP-адрес МИП:");
+        hlyout->addWidget(lbl);
+        le = new QLineEdit;
+        le->setObjectName("miple");
+        hlyout->addWidget(le);
+        vlyout->addLayout(hlyout);
     }
-    WDFunc::SetLEData(this,"mip1",tmpsl.at(0),restring);
-    WDFunc::SetLEData(this,"mip2",tmpsl.at(1),restring);
-    WDFunc::SetLEData(this,"mip3",tmpsl.at(2),restring);
-    WDFunc::SetLEData(this,"mip4",tmpsl.at(3),restring);
-
-    QPushButton *pb = new QPushButton("Готово");
+    pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),this,SLOT(AcceptSettings()));
     vlyout->addWidget(pb);
     setLayout(vlyout);
@@ -79,31 +60,29 @@ void SettingsDialog::SetupUI()
 
 void SettingsDialog::Fill()
 {
-    QString restring = "^[0-2]{0,1}[0-9]{1,2}$";
-    QStringList tmpsl = pc.MIPIP.split(".");
-    if (tmpsl.size()<4)
+    WDFunc::SetLEData(this,"orgle",pc.OrganizationString);
+    WDFunc::SetLEData(this,"pathle",pc.HomeDir);
+    if (pc.ModuleBsi.MTypeB == MTB_80)
     {
-        for (int i = tmpsl.size(); i < 4; i++)
-            tmpsl.append("");
+        QString restring = "^[0-2]{0,1}[0-9]{1,2}{\\.[0-2]{0,1}[0-9]{1,2}}{3}$";
+        WDFunc::SetLEData(this,"miple",pc.MIPIP,restring);
     }
-    WDFunc::SetLEData(this,"mip1",tmpsl.at(0),restring);
-    WDFunc::SetLEData(this,"mip2",tmpsl.at(1),restring);
-    WDFunc::SetLEData(this,"mip3",tmpsl.at(2),restring);
-    WDFunc::SetLEData(this,"mip4",tmpsl.at(3),restring);
-    WDFunc::SetSPBData(this, "asduspb", pc.MIPASDU);
 }
 
 void SettingsDialog::AcceptSettings()
 {
-    pc.MIPIP.clear();
-    QString tmps;
-    for (int i = 1; i < 5; ++i)
-    {
-        WDFunc::LEData(this, "mip"+QString::number(i), tmps);
-        pc.MIPIP += tmps+".";
-    }
-    pc.MIPIP.chop(1); // последнюю точку убираем
-    double mipasdu = static_cast<double>(pc.MIPASDU);
-    WDFunc::SPBData(this, "asduspb", mipasdu);
+    WDFunc::LEData(this, "orgle", pc.OrganizationString);
+    WDFunc::LEData(this, "pathle", pc.HomeDir);
+    WDFunc::LEData(this, "miple", pc.MIPIP);
     this->close();
+}
+
+void SettingsDialog::SetHomeDir()
+{
+    QFileDialog *dlg = new QFileDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setFileMode(QFileDialog::AnyFile);
+    QString dir = dlg->getExistingDirectory(this, "Домашний каталог", pc.HomeDir);
+    if (!dir.isEmpty())
+        WDFunc::SetLEData(this,"pathle",dir);
 }

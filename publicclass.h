@@ -260,7 +260,8 @@ public:
     quint32 MType;
 
     Log log;
-    QString HomeDir;
+    QString HomeDir; // рабочий каталог программы
+    QString OrganizationString; // наименование организации, работающей с программой
     quint16 MIPASDU;
     QString MIPIP;
     QString Port;
@@ -295,6 +296,7 @@ public:
     int LoadFile(QWidget *parent, QString mask, QByteArray &ba);
     int SaveFile (QWidget *parent, const QString &mask, const QString &ext, QByteArray &src, unsigned int numbytes);
     bool FloatInRange(float var, float value);
+    static QString ByteToHex(quint8 hb);
 
 private:
     void addmessage(QStringList &sl, QString mes);

@@ -37,6 +37,8 @@ QWidget *AbstractTuneDialog::TuneUI()
     connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
     if (pc.Emul)
         pb->setEnabled(false);
+    else
+        pb->setEnabled(true);
     lyout->addWidget(pb);
     for (int i = 0; i < lbls.size(); ++i)
     {
@@ -219,7 +221,7 @@ void AbstractTuneDialog::SaveToFileEx()
     QString tunenum = QString::number(AbsBac.BacBlockNum, 16);
     QByteArray ba;
     ba.resize(AbsBac.BacBlockSize);
-    memcpy(&(ba.data()[0]), &AbsBac.BacBlock, AbsBac.BacBlockSize);
+    memcpy(&(ba.data()[0]), AbsBac.BacBlock, AbsBac.BacBlockSize);
     res = pc.SaveFile(this, "Tune files (*.tn"+tunenum+")", "tn"+tunenum, ba, AbsBac.BacBlockSize);
     switch (res)
     {
@@ -301,7 +303,8 @@ void AbstractTuneDialog::LoadFromFile()
 {
     QByteArray ba;
     ba.resize(MAXTUNESIZE);
-    int res = pc.LoadFile(this, "Tune files (*.tn)", ba);
+    QString tunenum = QString::number(AbsBac.BacBlockNum, 16);
+    int res = pc.LoadFile(this, "Tune files (*.tn"+tunenum+")", ba);
     if (res != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Ошибка при загрузке файла");

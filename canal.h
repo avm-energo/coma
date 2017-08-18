@@ -87,8 +87,8 @@ signals:
     void writedatapos(quint32);
     void bytesreceived(quint32);
     void incomingdatalength(quint32);
-    void readbytessignal(QByteArray);
-    void writebytessignal(QByteArray);
+    void readbytessignal(QByteArray &);
+    void writebytessignal(QByteArray &);
     void sendend();
     void oscerasesize(quint32);
     void osceraseremaining(quint32);
