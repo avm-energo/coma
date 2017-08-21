@@ -44,22 +44,22 @@ QWidget *CheckA1::Bd1W(const QString &title, const QString &begin, QWidget *pare
     QVBoxLayout *lyout = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox(title);
     QGridLayout *glyout = new QGridLayout;
-    glyout->addWidget(WDFunc::NewLBL(parent, "1. UefNat_filt1"), 0, 0);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0", ValuesFormat, "Истинное действующее значение напряжения 1 (в В на входе прибора)"), 0, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "2. UefNat_filt2"), 0, 2);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1", ValuesFormat, "Истинное действующее значение напряжения 2 (в В на входе прибора)"), 0, 3);
+    glyout->addWidget(WDFunc::NewLBL(parent, "1. UefNat_filt1, В"), 0, 0);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0", ValuesFormat, "Истинное действующее значение напряжения 1 (в В на входе прибора), В"), 0, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "2. UefNat_filt2, В"), 0, 2);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1", ValuesFormat, "Истинное действующее значение напряжения 2 (в В на входе прибора), В"), 0, 3);
     glyout->addWidget(WDFunc::NewLBL(parent, "δUrms, %"), 0, 4);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"dU", ValuesFormat, "Относительная погрешность, %"), 0, 5);
-    glyout->addWidget(WDFunc::NewLBL(parent, "3. Uef_filt1"), 1, 0);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"2", ValuesFormat, "Действующие значения первых гармоник напряжения 1"), 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "4. Uef_filt2"), 1, 2);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"3", ValuesFormat, "Действующие значения первых гармоник напряжения 2"), 1, 3);
+    glyout->addWidget(WDFunc::NewLBL(parent, "3. Uef_filt1, В"), 1, 0);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"2", ValuesFormat, "Действующие значения первых гармоник напряжения 1, В"), 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "4. Uef_filt2, В"), 1, 2);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"3", ValuesFormat, "Действующие значения первых гармоник напряжения 2, В"), 1, 3);
     glyout->addWidget(WDFunc::NewLBL(parent, "δU, %"), 1, 4);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"dU2", ValuesFormat, "Относительная погрешность, %"), 1, 5);
-    glyout->addWidget(WDFunc::NewLBL(parent, "5. Phy"), 2, 0);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"4", ValuesFormat, "Разность фаз первых гармоник напряжений"), 2, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "6. Frequency"), 2, 2);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"5", ValuesFormat, "Частота в сети"), 2, 3);
+    glyout->addWidget(WDFunc::NewLBL(parent, "5. Phy, срад"), 2, 0);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"4", ValuesFormat, "Разность фаз первых гармоник напряжений, срад"), 2, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "6. Frequency, Гц"), 2, 2);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"5", ValuesFormat, "Частота в сети, Гц"), 2, 3);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
     glyout->setColumnStretch(5, 10);
@@ -84,18 +84,18 @@ QWidget *CheckA1::Bd2W(const QString &begin, QWidget *parent)
     {
         if (i == 0)
         {
-            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 0, КГИ"), i, 0);
+            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 0, КГИ, %"), i, 0);
             glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0"+QString::number(i), ValuesFormat), i, 1);
-            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 1, КГИ"), i, 2);
+            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 1, КГИ, %"), i, 2);
             glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1"+QString::number(i), ValuesFormat), i, 3);
         }
         else if (i > MAXHARMINDEX)
             break;
         else
         {
-            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 0, гарм. "+QString::number(i+1)), i, 0);
+            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 0, гарм. "+QString::number(i+1) + ", %"), i, 0);
             glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0"+QString::number(i), ValuesFormat), i, 1);
-            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 1, гарм. "+QString::number(i+1)), i, 2);
+            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 1, гарм. "+QString::number(i+1) + ", %"), i, 2);
             glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1"+QString::number(i), ValuesFormat), i, 3);
         }
     }
@@ -138,13 +138,13 @@ QWidget *CheckA1::Bd4W(const QString &begin, QWidget *parent)
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    glyout->addWidget(WDFunc::NewLBL(parent, "1. Tmk:"), 0, 0);
+    glyout->addWidget(WDFunc::NewLBL(parent, "1. Tmk, °С:"), 0, 0);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0", ValuesFormat, "Температура кристалла микроконтроллера, °С"), 0, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "2. VBAT:"), 0, 2);
+    glyout->addWidget(WDFunc::NewLBL(parent, "2. VBAT, В:"), 0, 2);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1", ValuesFormat, "Напряжение аккумуляторной батареи, В"), 0, 3);
-    glyout->addWidget(WDFunc::NewLBL(parent, "3. Tamb:"), 0, 4);
+    glyout->addWidget(WDFunc::NewLBL(parent, "3. Tamb, °С:"), 0, 4);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"2", ValuesFormat, "Температура окружающей среды, °С"), 0, 5);
-    glyout->addWidget(WDFunc::NewLBL(parent, "4. Hamb:"), 0, 6);
+    glyout->addWidget(WDFunc::NewLBL(parent, "4. Hamb, %:"), 0, 6);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"3", ValuesFormat, "Относительная влажность окружающей среды, %"), 0, 7);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);

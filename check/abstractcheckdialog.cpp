@@ -1,4 +1,5 @@
 #include <QCoreApplication>
+#include <QtTest/QTest>
 #include <QtMath>
 #include <QTime>
 #include <QTabWidget>
@@ -55,8 +56,8 @@ QWidget *AbstractCheckDialog::BottomUI()
     QLabel *lbl = new QLabel("Период обновления данных измерения, сек:");
     hlyout->addWidget(lbl);
     QRadioButton *rb = new QRadioButton;
-    rb->setObjectName("500");
-    rb->setText("0,5");
+    rb->setObjectName("1000");
+    rb->setText("1");
     connect(rb,SIGNAL(clicked()),this,SLOT(SetTimerPeriod()));
     hlyout->addWidget(rb);
     rb = new QRadioButton;
@@ -124,6 +125,8 @@ void AbstractCheckDialog::StartAnalogMeasurementsToFile()
         ERMSG("Не задано имя файла");
         return; // !!! ошибка - не задано имя файла
     }
+    if (Filename.split(".").last() != "xlsx")
+        Filename += ".xlsx";
     // удаляем файл, если он есть
     QFile fn;
     fn.setFileName(Filename);
@@ -150,6 +153,8 @@ void AbstractCheckDialog::StartAnalogMeasurementsToFile()
 
 void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 {
+//    int Interval = ElapsedTimeCounter->elapsed();
+//    qDebug() << ElapsedTimeCounter->elapsed();
     // получение текущих аналоговых сигналов от модуля
     if (XlsxWriting)
     {
@@ -185,6 +190,8 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
             return;
         }
     }
+//    Interval = ElapsedTimeCounter->elapsed() - Interval;
+//    qDebug() << Interval;
     WRow++;
 }
 

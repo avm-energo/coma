@@ -6,6 +6,8 @@
 #include <QVBoxLayout>
 #include "../config/config.h"
 
+#define RSTTIMEOUT  5000 // таймаут на рестарт модуля после отправки ему блока Bhb
+
 class HiddenDialog : public QDialog
 {
     Q_OBJECT

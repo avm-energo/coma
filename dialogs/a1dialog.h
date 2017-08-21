@@ -41,6 +41,9 @@ private:
     void SetupUI();
     int GetConf();
     void FillBdOut();
+    void WriteProtocolToFile();
+    void ShowProtocol();
+    void SaveProtocolToPDF();
 
 private slots:
     void StartWork();

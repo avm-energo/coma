@@ -6,6 +6,7 @@
 #include <QCoreApplication>
 #include <QGroupBox>
 #include <QPushButton>
+#include <limereport/LimeReport>
 #include "../canal.h"
 #include "a1dialog.h"
 #include "../widgets/messagebox.h"
@@ -93,7 +94,8 @@ void A1Dialog::FillBdOut()
 
 void A1Dialog::StartWork()
 {
-    if (GetConf() != NOERROR)
+
+/*    if (GetConf() != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Ошибка чтения конфигурации или настроечных параметров из модуля");
         return;
@@ -107,7 +109,7 @@ void A1Dialog::StartWork()
     Counter = 0;
     MeasurementTimer->start();
     WDFunc::SetEnabled(this, "cancelpb", true);
-    WDFunc::SetEnabled(this, "acceptpb", true);
+    WDFunc::SetEnabled(this, "acceptpb", true); */
 }
 
 void A1Dialog::MeasTimerTimeout()
@@ -124,16 +126,17 @@ void A1Dialog::Accept()
     const int Percents[] = {20, 50, 80, 100, 120, 100, 80, 50, 20};
     Results[Counter].K = Percents[Counter];
     Results[Counter].dUp = Bac_block.dU_cor[Pindex];
-    Results[Counter].dUp = Bac_block.dPhy_cor[Pindex];
+    Results[Counter].dPp = Bac_block.dPhy_cor[Pindex];
     Results[Counter].dUd = ChA1->Bda_out.dUrms;
     Results[Counter].dPd = ChA1->Bda_out.Phy;
     ++Counter;
-    if (Counter > 9)
+    if (Counter >= 9)
     {
         // запись файла протокола
         // вывод протокола на экран
         // формирование отчёта
         Decline();
+        return;
     }
     float VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * Percents[Counter] / 1732;
     if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == false)

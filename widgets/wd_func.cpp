@@ -337,3 +337,13 @@ QString WDFunc::StringValueWithCheck(float value)
         tmps = russian.toString(value, 'f', 5);
     return tmps;
 }
+
+QVariant WDFunc::FloatValueWithCheck(float value)
+{
+    QVariant tmps;
+    if (value == FLT_MAX)
+        tmps = "***";
+    else
+        tmps = value;
+    return tmps;
+}

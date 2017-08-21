@@ -27,15 +27,18 @@
 #include "../config/confdialoga1.h"
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/downloaddialog.h"
+#include "../dialogs/infodialog.h"
 #include "../dialogs/oscdialog.h"
 #include "../tune/tunedialoga1.h"
 #include "../tune/tunedialoga1dn.h"
+#include "../dialogs/a1dialog.h"
 #include "../widgets/mytabwidget.h"
 
 
 pkdn_s::pkdn_s(QWidget *parent)
     : MainWindow(parent)
 {
+//    SetParent(this);
     SetupUI();
 }
 
@@ -47,6 +50,8 @@ void pkdn_s::SetupUI()
     setMinimumSize(QSize(800, 600));
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
+//    lyout->setSpacing(0);
+//    lyout->setMargin(0);
     setMinimumHeight(650);
 
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -84,11 +89,13 @@ void pkdn_s::SetupUI()
     connect(act,SIGNAL(triggered(bool)),this,SLOT(ShowErrorDialog()));
     tb->addAction(act);
     hlyout->addWidget(tb);
+    hlyout->addWidget(HthWidget());
     lyout->addLayout(hlyout);
-    lyout->addWidget(HthWidget());
+//    lyout->addWidget(HthWidget());
     lyout->addWidget(Least());
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
+    SetSlideWidget();
 }
 
 void pkdn_s::Stage3()
@@ -97,7 +104,10 @@ void pkdn_s::Stage3()
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
-    MainTW->addTab(MainInfoWidget(this), "Информация");
+    InfoDialog *idlg = new InfoDialog;
+    connect(this,SIGNAL(BsiRefresh()),idlg,SLOT(FillBsi()));
+    connect(this,SIGNAL(ClearBsi()),idlg,SLOT(ClearBsi()));
+    MainTW->addTab(idlg, "Информация");
     ConfDialogA1 *DialogA1 = new ConfDialogA1(S2Config);
     ConfB = DialogA1;
     MainTW->addTab(ConfB, "Конфигурирование");
@@ -107,19 +117,21 @@ void pkdn_s::Stage3()
     TuneDialogA1 *tdlg = new TuneDialogA1;
     connect(this,SIGNAL(FinishAll()),tdlg,SLOT(CancelTune()));
     TuneDialogA1DN *t2dlg = new TuneDialogA1DN;
-    oscdialog *OscD = new oscdialog;
+//    oscdialog *OscD = new oscdialog;
     downloaddialog *DownD = new downloaddialog;
-    fwupdialog *FwUpD = new fwupdialog;
+//    fwupdialog *FwUpD = new fwupdialog;
     MainTW->addTab(tdlg, "Регулировка");
     MainTW->addTab(t2dlg, "Настройка своего ДН");
-    MainTW->addTab(chdlg, "Проверка");
-    MainTW->addTab(OscD, "Осциллограммы");
+    MainTW->addTab(chdlg, "Измерения");
+//    MainTW->addTab(OscD, "Осциллограммы");
     MainTW->addTab(DownD, "События");
-    MainTW->addTab(FwUpD, "Загрузка ВПО");
+    MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
+//    MainTW->addTab(FwUpD, "Загрузка ВПО");
     if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
         pc.ErMsg(ER_NOCONF);
     if (pc.ModuleBsi.Hth & HTH_REGPARS) // нет коэффициентов
         pc.ErMsg(ER_NOTUNECOEF);
     MainTW->repaint();
     MainTW->show();
+    emit BsiRefresh();
 }

@@ -485,6 +485,7 @@ bool Canal::Connect()
 void Canal::Disconnect()
 {
     ClosePort();
+    emit Disconnected();
 }
 
 void Canal::OscTimerTimeout()
@@ -496,7 +497,12 @@ bool Canal::InitializePort(QSerialPortInfo &pinfo, int baud)
 {
     port = new QSerialPort;
     port->setPort(pinfo);
+    port->clearError();
     connect(port,SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(Error(QSerialPort::SerialPortError)));
+    QTimer *OpenTimeoutTimer = new QTimer;
+    OpenTimeoutTimer->setInterval(2000);
+    connect(OpenTimeoutTimer,SIGNAL(timeout()),this,SLOT(Disconnect()));
+    OpenTimeoutTimer->start();
     if (!port->open(QIODevice::ReadWrite))
         return false;
     port->setBaudRate(baud);
@@ -506,6 +512,7 @@ bool Canal::InitializePort(QSerialPortInfo &pinfo, int baud)
     port->setStopBits(QSerialPort::OneStop);
     connect(port,SIGNAL(readyRead()),this,SLOT(CheckForData()));
     Connected = true;
+    OpenTimeoutTimer->stop();
     return true;
 }
 
@@ -538,7 +545,8 @@ void Canal::Error(QSerialPort::SerialPortError err)
         return;
     quint16 ernum = err + COM_ERROR;
     pc.ErMsg(ernum);
-    Disconnect();
+    if (Connected)
+        Disconnect();
 }
 
 void Canal::PortCloseTimeout()

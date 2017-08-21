@@ -18,7 +18,7 @@ public:
     explicit KeyPressDialog(QWidget *parent = 0);
 
 signals:
-    void Finished(QString str);
+    void Finished(QString &str);
     void Cancelled();
 
 public slots:

@@ -162,13 +162,13 @@ void CheckDialogA1::PrepareHeadersForFile(int row)
     xlsx->write(row,5,QVariant("Uef_filt1, В"));
     xlsx->write(row,6,QVariant("Uef_filt2, В"));
     xlsx->write(row,7,QVariant("δU, В"));
-    xlsx->write(row,8,QVariant("Phy, град."));
+    xlsx->write(row,8,QVariant("Phy, срад"));
     xlsx->write(row,9,QVariant("Freq, Гц"));
     xlsx->write(row,10,QVariant("UefNat_filt1, кВ"));
     xlsx->write(row,11,QVariant("UefNat_filt2, кВ"));
     xlsx->write(row,12,QVariant("Uef_filt1, кВ"));
     xlsx->write(row,13,QVariant("Uef_filt2, кВ"));
-    xlsx->write(row,14,QVariant("Phy, град."));
+    xlsx->write(row,14,QVariant("Phy, срад"));
     xlsx->write(row,15,QVariant("Freq, Гц"));
     xlsx->write(row,16,QVariant("Tmk, град. С"));
     xlsx->write(row,17,QVariant("Vbat, В"));
@@ -184,28 +184,28 @@ void CheckDialogA1::WriteToFile(int row, int bdnum)
     switch (bdnum)
     {
     case 1:
-        xlsx->write(row,2,WDFunc::StringValueWithCheck(ChA1->Bda_in.UefNat_filt[0]),format);
-        xlsx->write(row,3,WDFunc::StringValueWithCheck(ChA1->Bda_in.UefNat_filt[1]),format);
-        xlsx->write(row,4,WDFunc::StringValueWithCheck(ChA1->Bda_in.dUrms),format);
-        xlsx->write(row,5,WDFunc::StringValueWithCheck(ChA1->Bda_in.Uef_filt[0]),format);
-        xlsx->write(row,6,WDFunc::StringValueWithCheck(ChA1->Bda_in.Uef_filt[1]),format);
-        xlsx->write(row,7,WDFunc::StringValueWithCheck(ChA1->Bda_in.dU),format);
-        xlsx->write(row,8,WDFunc::StringValueWithCheck(ChA1->Bda_in.Phy), format);
-        xlsx->write(row,9,WDFunc::StringValueWithCheck(ChA1->Bda_in.Frequency), format);
+        xlsx->write(row,2,WDFunc::FloatValueWithCheck(ChA1->Bda_in.UefNat_filt[0]),format);
+        xlsx->write(row,3,WDFunc::FloatValueWithCheck(ChA1->Bda_in.UefNat_filt[1]),format);
+        xlsx->write(row,4,WDFunc::FloatValueWithCheck(ChA1->Bda_in.dUrms),format);
+        xlsx->write(row,5,WDFunc::FloatValueWithCheck(ChA1->Bda_in.Uef_filt[0]),format);
+        xlsx->write(row,6,WDFunc::FloatValueWithCheck(ChA1->Bda_in.Uef_filt[1]),format);
+        xlsx->write(row,7,WDFunc::FloatValueWithCheck(ChA1->Bda_in.dU),format);
+        xlsx->write(row,8,WDFunc::FloatValueWithCheck(ChA1->Bda_in.Phy), format);
+        xlsx->write(row,9,WDFunc::FloatValueWithCheck(ChA1->Bda_in.Frequency), format);
         break;
     case 4:
-        xlsx->write(row,10,WDFunc::StringValueWithCheck(ChA1->Bda_out.UefNat_filt[0]), format);
-        xlsx->write(row,11,WDFunc::StringValueWithCheck(ChA1->Bda_out.UefNat_filt[1]),format);
-        xlsx->write(row,12,WDFunc::StringValueWithCheck(ChA1->Bda_out.Uef_filt[0]),format);
-        xlsx->write(row,13,WDFunc::StringValueWithCheck(ChA1->Bda_out.Uef_filt[1]),format);
-        xlsx->write(row,14,WDFunc::StringValueWithCheck(ChA1->Bda_out.Phy), format);
-        xlsx->write(row,15,WDFunc::StringValueWithCheck(ChA1->Bda_out.Frequency), format);
+        xlsx->write(row,10,WDFunc::FloatValueWithCheck(ChA1->Bda_out.UefNat_filt[0]), format);
+        xlsx->write(row,11,WDFunc::FloatValueWithCheck(ChA1->Bda_out.UefNat_filt[1]),format);
+        xlsx->write(row,12,WDFunc::FloatValueWithCheck(ChA1->Bda_out.Uef_filt[0]),format);
+        xlsx->write(row,13,WDFunc::FloatValueWithCheck(ChA1->Bda_out.Uef_filt[1]),format);
+        xlsx->write(row,14,WDFunc::FloatValueWithCheck(ChA1->Bda_out.Phy), format);
+        xlsx->write(row,15,WDFunc::FloatValueWithCheck(ChA1->Bda_out.Frequency), format);
         break;
     case 5:
-        xlsx->write(row,16,WDFunc::StringValueWithCheck(ChA1->Bda_out_an.Tmk), format);
-        xlsx->write(row,17,WDFunc::StringValueWithCheck(ChA1->Bda_out_an.Vbat), format);
-        xlsx->write(row,18,WDFunc::StringValueWithCheck(ChA1->Bda_out_an.Tamb), format);
-        xlsx->write(row,19,WDFunc::StringValueWithCheck(ChA1->Bda_out_an.Hamb), format);
+        xlsx->write(row,16,WDFunc::FloatValueWithCheck(ChA1->Bda_out_an.Tmk), format);
+        xlsx->write(row,17,WDFunc::FloatValueWithCheck(ChA1->Bda_out_an.Vbat), format);
+        xlsx->write(row,18,WDFunc::FloatValueWithCheck(ChA1->Bda_out_an.Tamb), format);
+        xlsx->write(row,19,WDFunc::FloatValueWithCheck(ChA1->Bda_out_an.Hamb), format);
         break;
     default:
         break;

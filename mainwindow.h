@@ -7,8 +7,7 @@
 #include "publicclass.h"
 #include "../config/confdialog.h"
 
-#define C_TE_MAXSIZE    10000
-#define MAXERRORFLAGNUM 32
+#define C_TE_MAXSIZE    100
 
 class MainWindow : public QMainWindow
 {
@@ -23,6 +22,7 @@ public:
     quint32 PrbSize;
     QVector<publicclass::DataRec> S2Config;
     AbstractConfDialog *ConfB, *ConfM;
+    QWidget *Parent;
 
     static QStringList Hth()
     {
@@ -66,37 +66,33 @@ public:
         return sl;
     }
 
-    QMap<int, QString> ModuleNames()
-    {
-        QMap<int, QString> map;
-        map[MTB_A1] = "ПКДН";
-        map[MTB_80] = "АВТУК";
-        return map;
-    }
-
     virtual void SetupUI() = 0;
     virtual void Stage3() = 0;
     void ClearTW();
-    QWidget *MainInfoWidget(QWidget *parent);
+    QWidget *MainInfoWidget();
     QWidget *HthWidget();
     QWidget *Least();
+    void SetSlideWidget();
+//    void SetParent(QWidget *parent);
 
 signals:
     void CloseConnectDialog();
     void Retry();
     void FinishAll();
+    void PasswordChecked();
+    void BsiRefresh();
+    void ClearBsi();
 
 private:
     publicclass::Bsi Bsi_block;
+    bool ok, Cancelled;
 
-    void SetSlideWidget();
     void SetupMenubar();
     void PrepareTimers();
     void LoadSettings();
     void SaveSettings();
-    void FillBsi();
-    void ClearBsi();
     void ShowOrHideSlideSW();
+    int CheckPassword();
 
 
 private slots:
@@ -107,6 +103,8 @@ private slots:
     void Fill();
     void UpdateMainTE(QByteArray &ba);
     void SetPort(QString str);
+    void PasswordCheck(QString &psw);
+    void CancelPswCheck();
     void OpenBhbDialog();
     void StartEmul();
     void StartSettingsDialog();
@@ -116,6 +114,7 @@ private slots:
     void DisableProgressBar();
     void GetAbout();
     void Disconnect();
+    void ContinueDisconnect();
     void MouseMove();
 
 protected:

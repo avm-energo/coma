@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QMenu>
 #include <QMenuBar>
+#include <QEventLoop>
 #include <QScrollBar>
 #include <QProgressBar>
 #include <QSettings>
@@ -20,6 +21,7 @@
 #include "dialogs/errordialog.h"
 #include "dialogs/hiddendialog.h"
 #include "dialogs/settingsdialog.h"
+#include "dialogs/keypressdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -40,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(cn,SIGNAL(sendend()),this,SLOT(DisableProgressBar()));
     connect(cn,SIGNAL(readbytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(cn,SIGNAL(writebytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
+    connect(cn,SIGNAL(Disconnected()),this,SLOT(ContinueDisconnect()));
     connect(this,SIGNAL(Retry()),this,SLOT(Stage1()));
 }
 
@@ -59,12 +62,13 @@ QWidget *MainWindow::HthWidget()
 QWidget *MainWindow::Least()
 {
     QWidget *w = new QWidget;
-    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
+//    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *inlyout = new QHBoxLayout;
     MyTabWidget *MainTW = new MyTabWidget;
     MainTW->setObjectName("maintw");
     MainTW->setTabPosition(QTabWidget::West);
+//    MainTW->tabBar()->setStyleSheet("QTabBar::tab {background-color: yellow;}");
     inlyout->addWidget(MainTW, 60);
     MainTW->hide();
     lyout->addLayout(inlyout, 90);
@@ -96,6 +100,10 @@ void MainWindow::SetSlideWidget()
     QVBoxLayout *slyout = new QVBoxLayout;
     QTextEdit *MainTE = new QTextEdit;
     MainTE->setObjectName("mainte");
+    MainTE->setReadOnly(true);
+    MainTE->setUndoRedoEnabled(false);
+    MainTE->setWordWrapMode(QTextOption::WrapAnywhere);
+    MainTE->document()->setMaximumBlockCount(C_TE_MAXSIZE);
     slyout->addWidget(MainTE, 40);
 
     SlideWidget->setLayout(slyout);
@@ -137,7 +145,6 @@ void MainWindow::SetupMenubar()
     menu->addAction(act);
     MainMenuBar->addMenu(menu);
 
-    // пока непонятно, что настраивать
     menu = new QMenu;
     menu->setTitle("Настройки");
     act = new QAction(this);
@@ -195,98 +202,6 @@ void MainWindow::ClearTW()
         MainTE->clear();
 }
 
-QWidget *MainWindow::MainInfoWidget(QWidget *parent)
-{
-    QWidget *w = new QWidget(parent);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *slyout = new QGridLayout;
-    slyout->addWidget(WDFunc::NewLBL(parent, ModuleNames()[pc.ModuleBsi.MTypeB]), 0, 0, 1, 1, Qt::AlignLeft);
-    slyout->addWidget(WDFunc::NewLBL(parent, "Серийный номер устройства:"), 1, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBLT(parent, "", "snle"), 1, 1, 1, 1);
-    slyout->addWidget(WDFunc::NewLBL(parent, "Версия ПО:"), 2, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBLT(parent, "", "fwverle"), 2, 1, 1, 1);
-    slyout->addWidget(WDFunc::NewLBL(parent, "КС конфигурации:"), 3, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBLT(parent, "", "cfcrcle"), 3, 1, 1, 1);
-    slyout->addWidget(WDFunc::NewLBL(parent, "Последний сброс:"), 4, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBLT(parent, "", "rstle"), 4, 1, 1, 1);
-    slyout->addWidget(WDFunc::NewLBL(parent, "Количество сбросов:"), 5, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBLT(parent, "", "rstcountle"), 5, 1, 1, 1);
-    slyout->addWidget(WDFunc::NewLBL(parent, "ИД процессора:"), 6, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBLT(parent, "", "cpuidle"), 6, 1, 1, 1);
-    slyout->addWidget(WDFunc::NewLBL(parent, "Тип базовой платы:"), 7, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBLT(parent, "", "typeble"), 7, 1, 1, 1);
-    slyout->addWidget(WDFunc::NewLBL(parent, "Серийный номер базовой платы:"), 8, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBLT(parent, "", "snble"), 8, 1, 1, 1);
-    slyout->addWidget(WDFunc::NewLBL(parent, "Аппаратная версия базовой платы:"), 9, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBLT(parent, "", "hwble"), 9, 1, 1, 1);
-    slyout->addWidget(WDFunc::NewLBL(parent, "Тип мезонинной платы:"), 10, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBLT(parent, "", "typemle"), 10, 1, 1, 1);
-    slyout->addWidget(WDFunc::NewLBL(parent, "Серийный номер мезонинной платы:"), 11, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBLT(parent, "", "snmle"), 11, 1, 1, 1);
-    slyout->addWidget(WDFunc::NewLBL(parent, "Аппаратная версия мезонинной платы:"), 12, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBLT(parent, "", "hwmle"), 12, 1, 1, 1);
-    slyout->setColumnStretch(1, 1);
-    lyout->addLayout(slyout);
-    lyout->addStretch(1);
-    w->setLayout(lyout);
-    return w;
-}
-
-void MainWindow::FillBsi()
-{
-    WDFunc::SetLBLText(this, "snle", QString::number(pc.ModuleBsi.SerialNum, 16));
-    WDFunc::SetLBLText(this, "fwverle", pc.VerToStr(pc.ModuleBsi.Fwver));
-    WDFunc::SetLBLText(this, "cfcrcle", "0x"+QString::number(static_cast<uint>(pc.ModuleBsi.Cfcrc), 16));
-    WDFunc::SetLBLText(this, "rstle", "0x"+QString::number(pc.ModuleBsi.Rst, 16));
-    WDFunc::SetLBLText(this, "rstcountle", QString::number(pc.ModuleBsi.RstCount, 16));
-    WDFunc::SetLBLText(this, "cpuidle", QString::number(pc.ModuleBsi.UIDHigh, 16)+QString::number(pc.ModuleBsi.UIDMid, 16)+QString::number(pc.ModuleBsi.UIDLow, 16));
-    WDFunc::SetLBLText(this, "typeble", QString::number(pc.ModuleBsi.MTypeB, 16));
-    WDFunc::SetLBLText(this, "snble", QString::number(pc.ModuleBsi.SerialNumB, 16));
-    WDFunc::SetLBLText(this, "hwble", pc.VerToStr(pc.ModuleBsi.HwverB));
-    WDFunc::SetLBLText(this, "typemle", QString::number(pc.ModuleBsi.MTypeM, 16));
-    WDFunc::SetLBLText(this, "snmle", QString::number(pc.ModuleBsi.SerialNumM, 16));
-    WDFunc::SetLBLText(this, "hwmle", pc.VerToStr(pc.ModuleBsi.HwverM));
-    // расшифровка Hth
-    for (int i = 0; i < MAXERRORFLAGNUM; i++)
-    {
-        QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
-        if (lbl == 0)
-            return;
-        quint32 tmpui = (0x00000001 << i) & pc.ModuleBsi.Hth;
-        if (tmpui)
-            lbl->setStyleSheet("QLabel {background-color: rgba(255,10,10,255); color: rgba(255,255,255,255);}");
-        else
-            lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
-    }
-}
-
-void MainWindow::ClearBsi()
-{
-    WDFunc::SetLBLText(this, "snle", "");
-    WDFunc::SetLBLText(this, "fwverle", "");
-    WDFunc::SetLBLText(this, "cfcrcle", "");
-    WDFunc::SetLBLText(this, "rstle", "");
-    WDFunc::SetLBLText(this, "rstcountle", "");
-    WDFunc::SetLBLText(this, "cpuidle", "");
-    WDFunc::SetLBLText(this, "typeble", "");
-    WDFunc::SetLBLText(this, "snble", "");
-    WDFunc::SetLBLText(this, "hwble", "");
-    WDFunc::SetLBLText(this, "typemle", "");
-    WDFunc::SetLBLText(this, "snmle", "");
-    WDFunc::SetLBLText(this, "hwmle", "");
-    // расшифровка Hth
-    for (int i = 0; i < 32; i++)
-    {
-        QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
-        if (lbl == 0)
-        {
-            DBGMSG;
-            return;
-        }
-        lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
-    }
-}
-
 void MainWindow::ShowOrHideSlideSW()
 {
     QWidget *w = this->findChild<QWidget *>("slidew");
@@ -312,6 +227,29 @@ void MainWindow::ShowOrHideSlideSW()
     }
     ani->start();
     SWHide = !SWHide;
+}
+
+int MainWindow::CheckPassword()
+{
+    Cancelled = ok = false;
+    QEventLoop PasswordLoop;
+    KeyPressDialog *dlg = new KeyPressDialog;
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    vlyout->addWidget(WDFunc::NewLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc"));
+    connect(dlg,SIGNAL(Cancelled()),this,SLOT(CancelPswCheck()));
+    connect(dlg,SIGNAL(Finished(QString &)),this,SLOT(PasswordCheck(QString &)));
+    connect(this,SIGNAL(PasswordChecked()),&PasswordLoop,SLOT(quit()));
+    dlg->setLayout(vlyout);
+    dlg->show();
+    PasswordLoop.exec();
+    if (Cancelled)
+        return GENERALERROR;
+    if (!ok)
+    {
+        MessageBox2::error(this, "Неправильно", "Пароль введён неверно");
+        return GENERALERROR;
+    }
+    return NOERROR;
 }
 
 void MainWindow::Stage1()
@@ -404,7 +342,6 @@ void MainWindow::Stage2()
     if ((pc.ModuleBsi.SerialNumB == 0xFFFFFFFF) || ((pc.ModuleBsi.SerialNumM == 0xFFFFFFFF) && (pc.ModuleBsi.MTypeM != MTM_00)) || \
             (pc.ModuleBsi.SerialNum == 0xFFFFFFFF)) // серийный номер не задан, выдадим предупреждение
         OpenBhbDialog();
-    FillBsi();
     Stage3();
 }
 
@@ -427,17 +364,8 @@ void MainWindow::Fill()
 void MainWindow::UpdateMainTE(QByteArray &ba)
 {
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
-    QString tmpString;
     if (MainTE != 0)
-    {
-        for (int i = 0; i < ba.size(); i++)
-            tmpString.append(pc.ByteToHex(ba.at(i)));
-        MainTE->append(tmpString);
-        tmpString = MainTE->toPlainText();
-        if (tmpString.size() > C_TE_MAXSIZE)
-            MainTE->setPlainText(tmpString.right(C_TE_MAXSIZE));
-        MainTE->verticalScrollBar()->setValue(MainTE->verticalScrollBar()->maximum()); // перемещение "ползунка" принудительно вниз
-    }
+        MainTE->append(ba.toHex());
 }
 
 void MainWindow::SetPort(QString str)
@@ -453,6 +381,20 @@ void MainWindow::SetPort(QString str)
     }
 }
 
+void MainWindow::PasswordCheck(QString &psw)
+{
+    if (psw == "SE/7520A")
+        ok = true;
+    else
+        ok = false;
+    emit PasswordChecked();
+}
+
+void MainWindow::CancelPswCheck()
+{
+    Cancelled = true;
+}
+
 void MainWindow::OpenBhbDialog()
 {
     if (!cn->Connected)
@@ -460,6 +402,8 @@ void MainWindow::OpenBhbDialog()
         MessageBox2::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с модулем");
         return;
     }
+    if (CheckPassword() == GENERALERROR)
+        return;
     HiddenDialog *dlg = new HiddenDialog(HiddenDialog::PKDN);
     pc.BoardBBhb.HWVer = pc.ModuleBsi.HwverB;
     pc.BoardBBhb.ModSerialNum = pc.ModuleBsi.SerialNum;
@@ -473,6 +417,7 @@ void MainWindow::OpenBhbDialog()
         cn->Disconnect();
         emit Retry();
     }
+    emit BsiRefresh();
 }
 
 void MainWindow::StartEmul()
@@ -575,10 +520,15 @@ void MainWindow::GetAbout()
 
 void MainWindow::Disconnect()
 {
-    emit FinishAll();
     if (!pc.Emul)
         cn->Disconnect();
-    ClearBsi();
+    ContinueDisconnect();
+}
+
+void MainWindow::ContinueDisconnect()
+{
+    emit FinishAll();
+    emit ClearBsi();
     ClearTW();
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)

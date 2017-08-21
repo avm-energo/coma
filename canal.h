@@ -78,7 +78,6 @@ public:
     bool Connected;
 
     bool Connect();
-    void Disconnect();
     void Send(int command, int board_type=BT_NONE, void *ptr=NULL, quint32 ptrsize=0, quint16 filenum=0, \
               QVector<publicclass::DataRec> *DRptr=0);
 
@@ -92,9 +91,11 @@ signals:
     void sendend();
     void oscerasesize(quint32);
     void osceraseremaining(quint32);
+    void Disconnected();
 
 public slots:
     void Timeout();
+    void Disconnect();
 
 private slots:
     void CheckForData();

@@ -7,6 +7,7 @@
 #define INFOMSG(a)  pc.AddErrMsg(publicclass::INFO_MSG,__FILE__,__LINE__,a)
 #define WARNMSG(a)  pc.AddErrMsg(publicclass::WARN_MSG,__FILE__,__LINE__,a)
 
+#define MAXERRORFLAGNUM 32
 #define MAXBYTEARRAY    65535
 #define MAX_MSG     1000
 #define ER_BUFMAX   16
@@ -122,9 +123,6 @@
 #define HTH_1PPS            0x00000010 // нет сигнала 1PPS
 #define HTH_REL             0x00000008 // неисправность выходных реле (Д)
 #define HTH_TUPP            0x00000004 // перегрев модуля
-
-#define CS_MSGTRIG          500 // частота мигания сообщения о попытке восстановить связь с модулем
-#define CS_TIMEOUT          5000 // количество мс ожидания появления связи с модулем
 
 #define TABCOLOR    "#AFFFAF"
 #define TABCOLORA1  "#FFFF5F"
@@ -296,7 +294,6 @@ public:
     int LoadFile(QWidget *parent, QString mask, QByteArray &ba);
     int SaveFile (QWidget *parent, const QString &mask, const QString &ext, QByteArray &src, unsigned int numbytes);
     bool FloatInRange(float var, float value);
-    static QString ByteToHex(quint8 hb);
 
 private:
     void addmessage(QStringList &sl, QString mes);

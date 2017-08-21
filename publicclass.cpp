@@ -386,17 +386,6 @@ bool publicclass::FloatInRange(float var, float value)
         return false;
 }
 
-QString publicclass::ByteToHex(quint8 hb)
-{
-    QString tmpString;
-    quint8 halfbyte = hb & 0xF0;
-    halfbyte >>= 4;
-    tmpString.append(QString::number(halfbyte, 16));
-    halfbyte = hb & 0x0F;
-    tmpString.append(QString::number(halfbyte, 16));
-    return tmpString;
-}
-
 void publicclass::ErMsg(int ermsgnum)
 {
     if (ermsgnum < pc.errmsgs.size())

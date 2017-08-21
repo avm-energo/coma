@@ -75,6 +75,7 @@ public:
     static void SetEnabled(QWidget *w, const QString &wname, bool enabled);
     static void SetVisible(QWidget *w, const QString &wname, bool visible);
     static QString StringValueWithCheck(float value);
+    static QVariant FloatValueWithCheck(float value);
 };
 
 #endif // WD_FUNC

@@ -2,6 +2,8 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPainter>
+#include <QTime>
+#include <QCoreApplication>
 #include <QGroupBox>
 #include <QPushButton>
 #include <QPixmap>
@@ -103,6 +105,7 @@ void HiddenDialog::SetupUI()
     vlyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     QPushButton *pb = new QPushButton("Записать и закрыть");
+    pb->setObjectName("acceptpb");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(AcceptChanges()));
     hlyout->addStretch(800);
     hlyout->addWidget(pb);
@@ -146,6 +149,7 @@ void HiddenDialog::SetVersion(quint32 number, QString lename)
 
 void HiddenDialog::AcceptChanges()
 {
+    QPushButton *pb = qobject_cast<QPushButton *>(this->sender());
     GetVersion(pc.BoardBBhb.HWVer, "bashw");
     QString tmps;
     WDFunc::LEData(this, "modsn", tmps);
@@ -164,6 +168,19 @@ void HiddenDialog::AcceptChanges()
         pc.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
     }
     SendBhb();
+    QTime tme;
+    tme.start();
+    int endcounter = RSTTIMEOUT / 1000;
+    int counter = endcounter;
+    pb->setEnabled(false);
+    while (counter > 0)
+    {
+        pb->setText(QString::number(counter));
+        while (tme.elapsed() < 1000)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+        tme.start();
+        --counter;
+    }
     this->close();
 }
 
