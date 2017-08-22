@@ -11,7 +11,7 @@ RC_ICONS = ../coma.ico
 CONFIG += c++11
 VERSION = 1.0.48
 
-QT       += core gui xlsx serialport
+QT       += core gui xlsx serialport printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

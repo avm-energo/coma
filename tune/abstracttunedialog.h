@@ -60,6 +60,7 @@ public:
     void SaveToFileEx();
     int StartMeasurement();
     QByteArray *LoadFile(QString mask);
+    void SetStartTuneButtonEnabled(bool enabled);
 
 signals:
     void PasswordChecked();

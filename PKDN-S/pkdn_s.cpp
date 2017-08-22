@@ -116,7 +116,9 @@ void pkdn_s::Stage3()
     CheckDialogA1 *chdlg = new CheckDialogA1;
     TuneDialogA1 *tdlg = new TuneDialogA1;
     connect(this,SIGNAL(FinishAll()),tdlg,SLOT(CancelTune()));
+    tdlg->SetStartTuneButtonEnabled(!pc.Emul);
     TuneDialogA1DN *t2dlg = new TuneDialogA1DN;
+    t2dlg->SetStartTuneButtonEnabled(!pc.Emul);
 //    oscdialog *OscD = new oscdialog;
     downloaddialog *DownD = new downloaddialog;
 //    fwupdialog *FwUpD = new fwupdialog;

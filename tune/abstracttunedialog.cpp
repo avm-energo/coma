@@ -35,10 +35,7 @@ QWidget *AbstractTuneDialog::TuneUI()
     QPushButton *pb = new QPushButton("Начать настройку");
     pb->setObjectName("starttune");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
-    if (pc.Emul)
-        pb->setEnabled(false);
-    else
-        pb->setEnabled(true);
+    pb->setEnabled(true);
     lyout->addWidget(pb);
     for (int i = 0; i < lbls.size(); ++i)
     {
@@ -257,11 +254,16 @@ int AbstractTuneDialog::StartMeasurement()
     return NOERROR;
 }
 
+void AbstractTuneDialog::SetStartTuneButtonEnabled(bool enabled)
+{
+    WDFunc::SetEnabled(this, "starttune", enabled);
+}
+
 // ####################### SLOTS #############################
 
 void AbstractTuneDialog::StartTune()
 {
-    WDFunc::SetEnabled(this, "starttune", false);
+    SetStartTuneButtonEnabled(false);
     ProcessTune();
 }
 
