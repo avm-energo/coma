@@ -2,6 +2,7 @@
 #define A1DIALOG_H
 
 #include <QDialog>
+#include "limereport/lrreportengine.h"
 #include "../config/configa1.h"
 #include "../check/checka1.h"
 
@@ -25,6 +26,7 @@ public:
 private:
     CheckA1 *ChA1;
     ConfigA1 *CA1;
+    LimeReport::ReportEngine *report;
     QVector<publicclass::DataRec> S2Config;
     QTimer *MeasurementTimer;
     struct ResultsStruct

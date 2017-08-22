@@ -86,8 +86,9 @@ publicclass::publicclass()
     ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
     log.Init(LOGFILE);
 
+    SystemHomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"+PROGNAME+"/";
     QFile file;
-    QString ermsgspath = pc.HomeDir;
+    QString ermsgspath = SystemHomeDir;
     file.setFileName(ermsgspath+"ermsgs.dat");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {

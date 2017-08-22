@@ -259,6 +259,7 @@ public:
 
     Log log;
     QString HomeDir; // рабочий каталог программы
+    QString SystemHomeDir; // системный каталог программы
     QString OrganizationString; // наименование организации, работающей с программой
     quint16 MIPASDU;
     QString MIPIP;

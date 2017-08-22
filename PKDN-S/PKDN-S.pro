@@ -105,3 +105,19 @@ HEADERS  += pkdn_s.h \
 
 RESOURCES += \
     pkdn-s.qrc
+
+win32 {
+
+    ## Windows common build here
+
+    !contains(QMAKE_TARGET.arch, x86_64) {
+        ## Windows x86 (32bit) specific build here
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../LimeReport-master/win32/release/ -llimereport
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../LimeReport-master/win32/debug/ -llimereport
+    } else {
+        ## Windows x64 (64bit) specific build here
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../LimeReport-master/win64/release/ -llimereport
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../LimeReport-master/win64/debug/ -llimereport
+    }
+}
+unix: LIBS += -L$$PWD/LimeReport-master/build/5.5.1/win32/debug/lib/ -llimereport

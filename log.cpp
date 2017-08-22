@@ -25,7 +25,7 @@ Log::~Log()
 
 void Log::Init(const QString &Filename)
 {
-    LogFile = pc.HomeDir + Filename;
+    LogFile = pc.SystemHomeDir + Filename;
     // тестовая проверка открытия файла на запись
     fp = new QFile(LogFile);
     if (!fp->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))

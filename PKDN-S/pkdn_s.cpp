@@ -21,6 +21,7 @@
  */
 
 #include <QToolBar>
+#include <QFileDialog>
 #include <QVBoxLayout>
 #include "pkdn_s.h"
 #include "../check/checkdialoga1.h"
