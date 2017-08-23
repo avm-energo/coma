@@ -60,7 +60,9 @@ void A1Dialog::SetupUI()
     pb->setEnabled(false);
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
-    lyout->addStretch(1);
+    pb = new QPushButton("Сформировать протокол из файла ПКДН");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(ParsePKDNFile()));
+    lyout->addWidget(pb);
     pb = new QPushButton("Начать поверку делителя");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(StartWork()));
     lyout->addWidget(pb);
@@ -94,26 +96,70 @@ void A1Dialog::FillBdOut()
     WDFunc::SetLBLText(this, "tunepercent", QString::number(ChA1->Bda_out.dUrms, 'f', 5));
 }
 
+void A1Dialog::GenerateReport()
+{
+    ConditionDataDialog(); // задаём условия поверки
+    DNDialog(); // вводим данные по делителю
+    // данные в таблицу уже получены или из файла, или в процессе работы
+    QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
+    report = new LimeReport::ReportEngine();
+    report->loadFromFile(pc.SystemHomeDir+"a1_"+GOST+".lrxml");
+    report->dataManager()->setReportVariable("Organization", pc.OrganizationString);
+    QFileDialog *dlg = new QFileDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    QString Filename = dlg->getSaveFileName(this, "", pc.HomeDir, "*.pdf");
+    report->printToPDF(Filename);
+}
+
+void A1Dialog::ConditionDataDialog()
+{
+    int row = 0;
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    lyout->addWidget(WDFunc::NewLBL(this, "Условия поверки"), Qt::AlignCenter);
+    if (CA1->Bci_block.DTCanal == 0)
+    {
+        glyout->addWidget(WDFunc::NewLBL(this, "Температура окружающей среды, °С"), row, 0, 1, 1, Qt::AlignRight);
+        glyout->addWidget(WDFunc::NewLEF(this, "Temp", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    }
+    if (CA1->Bci_block.DHCanal == 0)
+    {
+        glyout->addWidget(WDFunc::NewLBL(this, "Влажность воздуха, %"), row, 0, 1, 1, Qt::AlignRight);
+        glyout->addWidget(WDFunc::NewLEF(this, "Humidity", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    }
+    glyout->addWidget(WDFunc::NewLBL(this, "Атмосферное давление, кПа"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "Pressure", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Напряжение питания сети, В"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "Voltage", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Частота питания сети, Гц"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "Frequency", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Коэффициент искажения синусоидальности, %"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "KNI", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->setColumnStretch(1, 1);
+    lyout->addLayout(glyout);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetConditionData()));
+    connect(this,SIGNAL(CloseDialog()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
 void A1Dialog::StartWork()
 {
+    if (GetConf() != NOERROR)
+    {
+        MessageBox2::error(this, "Ошибка", "Ошибка чтения конфигурации или настроечных параметров из модуля");
+        return;
+    }
     PovType = GOST_NONE;
     while (PovType == GOST_NONE)
     {
         QTime tme;
         tme.start();
-    }
-/*    report = new LimeReport::ReportEngine();
-    report->loadFromFile(pc.SystemHomeDir+"a1.lrxml");
-    report->dataManager()->setReportVariable("Organization", pc.OrganizationString);
-    QFileDialog *dlg = new QFileDialog;
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    QString Filename = dlg->getSaveFileName(this, "", pc.HomeDir, "*.pdf");
-    report->printToPDF(Filename); */
-
-/*    if (GetConf() != NOERROR)
-    {
-        MessageBox2::error(this, "Ошибка", "Ошибка чтения конфигурации или настроечных параметров из модуля");
-        return;
+        while (tme.elapsed() < SLEEPINT)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
     if (MessageBox2::question(this, "Подтверждение", "Подключите вывод нижнего плеча \"своего\" делителя напряжения ко входу U1 прибора\n"
                               "Вывод нижнего плеча поверяемого делителя или выход низшего напряжения поверяемого ТН - ко входу U2") == false)
@@ -124,7 +170,16 @@ void A1Dialog::StartWork()
     Counter = 0;
     MeasurementTimer->start();
     WDFunc::SetEnabled(this, "cancelpb", true);
-    WDFunc::SetEnabled(this, "acceptpb", true); */
+    WDFunc::SetEnabled(this, "acceptpb", true);
+}
+
+void A1Dialog::ParsePKDNFile()
+{
+    QByteArray ba;
+    int res = pc.LoadFile(this, "PKDN verification files (*.vrf)", ba);
+    if (res != NOERROR)
+        return;
+    GenerateReport();
 }
 
 void A1Dialog::MeasTimerTimeout()
@@ -148,6 +203,7 @@ void A1Dialog::Accept()
     if (Counter >= 9)
     {
         // запись файла протокола
+        GenerateReport();
         // вывод протокола на экран
         // формирование отчёта
         Decline();
@@ -164,5 +220,28 @@ void A1Dialog::Decline()
     WDFunc::SetEnabled(this, "cancelpb", false);
     WDFunc::SetEnabled(this, "acceptpb", false);
     MeasurementTimer->stop();
+}
+
+void A1Dialog::SetDNData()
+{
+
+}
+
+void A1Dialog::SetConditionData()
+{
+    cn->Send(CN_GBd, A1_BDA_OUT_AN_BN, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
+    if (CA1->Bci_block.DTCanal == 0)
+        WDFunc::LEData(this, "Temp", ReportHeader.Temp);
+    else
+        ReportHeader.Temp = ChA1->Bda_out_an.Tamb;
+    if (CA1->Bci_block.DHCanal == 0)
+        WDFunc::LEData(this, "Humidity", ReportHeader.Humidity);
+    else
+        ReportHeader.Humidity = ChA1->Bda_out_an.Hamb;
+    WDFunc::LEData(this, "Pressure", ReportHeader.Pressure);
+    WDFunc::LEData(this, "Voltage", ReportHeader.Voltage);
+    WDFunc::LEData(this, "Frequency", ReportHeader.Freq);
+    WDFunc::LEData(this, "KNI", ReportHeader.KNI);
+    emit CloseDialog();
 }
 

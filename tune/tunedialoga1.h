@@ -73,15 +73,12 @@ private:
     int Start6_3_7_3();
     int Start6_3_8();
     int Start6_3_9();
-    int Start6_3_10();
 
     int ShowScheme();
     int CheckBdaValues();
     int CheckAnalogValues(bool isPrecise); // проверка Bda_in на корректность
     int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта
     void GetBdAndFillMTT();
-    void FillBdIn();
-    void FillBdOut();
 
 private slots:
     int ReadAnalogMeasurements();

@@ -397,6 +397,7 @@ int TuneDialogA1::Start6_3_8()
 
 int TuneDialogA1::Start6_3_9()
 {
+    QEventLoop Loop;
     WaitNSeconds(10);
     QString tmps = "Пожалуйста, просмотрите текущие данные после регулировки в соответствующих окнах";
     if (TuneFileSaved)
@@ -406,9 +407,9 @@ int TuneDialogA1::Start6_3_9()
     MessageBox2::information(this, "Завершение регулировки", tmps);
     KeyPressDialog *dlg = new KeyPressDialog;
     connect(dlg,SIGNAL(Finished(QString &)),this,SLOT(PasswordCheck(QString &)));
-    connect(this,SIGNAL(PasswordChecked()),&PasswordLoop,SLOT(quit()));
+    connect(this,SIGNAL(PasswordChecked()),&Loop,SLOT(quit()));
     dlg->show();
-    PasswordLoop.exec();
+    Loop.exec();
     return NOERROR;
 }
 

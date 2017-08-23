@@ -60,7 +60,8 @@ SOURCES += main.cpp\
     ../dialogs/a1dialog.cpp \
     ../report.cpp \
     ../mainwindow.cpp \
-    ../dialogs/infodialog.cpp
+    ../dialogs/infodialog.cpp \
+    ../widgets/lineeditfield.cpp
 
 HEADERS  += pkdn_s.h \
     ../Canal.h \
@@ -101,7 +102,8 @@ HEADERS  += pkdn_s.h \
     ../dialogs/a1dialog.h \
     ../report.h \
     ../mainwindow.h \
-    ../dialogs/infodialog.h
+    ../dialogs/infodialog.h \
+    ../widgets/lineeditfield.h
 
 RESOURCES += \
     pkdn-s.qrc

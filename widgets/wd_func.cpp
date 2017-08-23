@@ -34,6 +34,16 @@ bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue
     return true;
 }
 
+LineEditField *WDFunc::NewLEF(QWidget *w, const QString &lename, const QString &letext, const QString &lestyle)
+{
+    LineEditField *le = new LineEditField(w);
+    le->setObjectName(lename);
+    le->setText(letext);
+    if (!lestyle.isEmpty())
+        le->setStyleSheet(lestyle);
+    return le;
+}
+
 bool WDFunc::SetLEColor(QWidget *w, const QString &lename, const QColor &color)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);

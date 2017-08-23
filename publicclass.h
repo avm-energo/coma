@@ -164,6 +164,8 @@
 #define S4      4.0
 #define S20     20.0
 
+#define SLEEPINT    20
+
 #define LOGFILE     "coma.log"
 
 //#include <QtSerialPort/QSerialPort>

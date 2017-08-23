@@ -30,6 +30,45 @@ public:
 
     Bac Bac_block;
 
+    struct ReportHeaderStructure
+    {
+        QString Organization;   // организация, проводившая проверку
+        QString Day;            // день месяца проведения проверки
+        QString Month;          // месяц
+        QString Yr;             // две последние цифры года (20хх)
+        QString DNType;         // тип трансформатора (делителя) напряжения
+        QString DNSerNum;       // серийный номер ДН
+        QString DNTol;          // класс точности ДН
+        QString DNU1;           // номинальное первичное напряжение ДН
+        QString DNU2;           // номинальное вторичное напряжение ДН
+        QString DNP;            // номинальная мощность нагрузки ДН
+        QString DNF;            // номинальная частота ДН
+        QString DNOrganization; // предприятие-изготовитель ДН
+        QString DNPlace;        // место установки ДН
+        QString DNDevices;      // эталонные средства поверки ДН
+        QString Temp;           // температура окружающей среды
+        QString Humidity;       // влажность воздуха
+        QString Pressure;       // атмосферное давление
+        QString Voltage;        // напряжение питания сети
+        QString Freq;           // частота питания сети
+        QString KNI;            // коэффициент искажения синусоидальности кривой напряжения
+        QString OuterInsp;      // вывод проведения внешнего осмотра
+        QString WindingsInsp;   // вывод проведения проверки правильности обозначения выводов и групп соединений обмоток
+    };
+
+    QStringList TableItem;      // строка таблицы с данными вывода
+    QList<QStringList *> MainData; // полные данные таблицы для модели
+
+    struct ReportFooterStructure
+    {
+        QString Conclusion;     // заключение
+        QString Customer;       // поверитель
+        QString Date;           // дата поверки
+    };
+
+    ReportHeaderStructure ReportHeader;
+    ReportFooterStructure ReportFooter;
+
 private:
     CheckA1 *ChA1;
     ConfigA1 *CA1;
@@ -54,12 +93,21 @@ private:
     void WriteProtocolToFile();
     void ShowProtocol();
     void SaveProtocolToPDF();
+    void GenerateReport(); // сгенерировать протокол
+    void ConditionDataDialog(); // задание условий поверки
+    void DNDialog(); // задание параметров ДН(ТН)
+
+signals:
+    void CloseDialog();
 
 private slots:
     void StartWork();
+    void ParsePKDNFile();
     void MeasTimerTimeout();
     void Accept();
     void Decline();
+    void SetDNData();
+    void SetConditionData();
 };
 
 #endif // A1DIALOG_H

@@ -6,6 +6,7 @@
 #include "s_tqcheckbox.h"
 #include "s_tqspinbox.h"
 #include "s_tqcombobox.h"
+#include "lineeditfield.h"
 
 class WDFunc
 {
@@ -32,6 +33,7 @@ public:
         levalue = le->text().toDouble();
         return true;
     }
+    static LineEditField *NewLEF(QWidget *w, const QString &lename, const QString &letext="", const QString &lestyle="");
     static bool AppendTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool SetTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool TEData(QWidget *w, const QString &tename, QString &tevalue);

@@ -15,7 +15,6 @@
 #define TD_TMK  25.0 // degrees
 #define TD_VBAT 3.0 // voltage
 #define TD_FREQ 50 // Hz
-#define SLEEPINT    20
 #define MEASTIMERINT    1000 // интервал проведения измерений - 1 с
 
 class AbstractTuneDialog : public QDialog

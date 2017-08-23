@@ -4,12 +4,6 @@
 #include "abstractcheckdialog.h"
 #include "checka1.h"
 
-#define A1_BDA_IN_BN        1
-#define A1_BDA_IN_AN_BN     2
-#define A1_BDA_H_BN         3
-#define A1_BDA_OUT_BN       4
-#define A1_BDA_OUT_AN_BN    5
-
 class CheckDialogA1 : public AbstractCheckDialog
 {
     Q_OBJECT
