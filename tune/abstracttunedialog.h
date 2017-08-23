@@ -33,7 +33,7 @@ public:
 
     BacStruct AbsBac;
     QStringList lbls;
-    bool Cancelled, Skipped, MeasurementEnabled, ok;
+    bool Cancelled, Skipped, MeasurementEnabled, ok, TuneFileSaved;
     QTimer *MeasurementTimer;
     QVector<publicclass::DataRec> S2Config;
     int SecondsToEnd15SecondsInterval;
@@ -60,7 +60,6 @@ public:
     void SaveToFileEx();
     int StartMeasurement();
     QByteArray *LoadFile(QString mask);
-    void SetStartTuneButtonEnabled(bool enabled);
 
 signals:
     void PasswordChecked();
@@ -77,7 +76,7 @@ private:
 
 private slots:
     void StartTune();
-    void PasswordCheck(QString psw);
+    void PasswordCheck(QString &psw);
     void ReadTuneCoefs();
     void LoadFromFile();
     virtual int ReadAnalogMeasurements() = 0;

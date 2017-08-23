@@ -12,6 +12,13 @@ class A1Dialog : public QDialog
 public:
     explicit A1Dialog(QWidget *parent = 0);
 
+    enum PovTypes
+    {
+        GOST_NONE, // не задано
+        GOST_23625, // по 5 точкам туда-сюда
+        GOST_1983 // по 3 точкам только туда
+    };
+
     struct Bac
     {
         float U1kDN[6];     // измеренные при калибровке напряжения на выходе своего ДН для значений вблизи 12, 30, 48, 60 и 72 В
@@ -39,6 +46,7 @@ private:
     };
     ResultsStruct Results[9];   // девять уровней напряжения: 20, 50, 80, 100, 120, 100, 80, 50, 20 %
     int Counter;
+    int PovType; // тип поверяемого оборудования (по какому ГОСТу)
 
     void SetupUI();
     int GetConf();

@@ -17,7 +17,7 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
     }
     if (e->key() == Qt::Key_Escape)
     {
-        emit Cancelled();
+        emit Finished(QString());
         this->close();
     }
     KeyPressString.append(e->key());

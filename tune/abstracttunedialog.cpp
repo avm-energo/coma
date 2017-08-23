@@ -29,15 +29,23 @@ AbstractTuneDialog::AbstractTuneDialog(QWidget *parent) :
 
 QWidget *AbstractTuneDialog::TuneUI()
 {
+    lbls.clear();
+    pf.clear();
+    SetLbls();
+    SetPf();
+    int i;
     // CP1 - НАСТРОЙКА ПРИБОРА
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QPushButton *pb = new QPushButton("Начать настройку");
     pb->setObjectName("starttune");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
-    pb->setEnabled(true);
+    if (pc.Emul)
+        pb->setEnabled(false);
+    else
+        pb->setEnabled(true);
     lyout->addWidget(pb);
-    for (int i = 0; i < lbls.size(); ++i)
+    for (i = 0; i < lbls.size(); ++i)
     {
         QHBoxLayout *hlyout = new QHBoxLayout;
         QLabel *lbl=new QLabel(lbls.at(i));
@@ -51,6 +59,10 @@ QWidget *AbstractTuneDialog::TuneUI()
         hlyout->addStretch(1);
         lyout->addLayout(hlyout);
     }
+    QLabel *lbl=new QLabel("Настройка завершена!");
+    lbl->setVisible(false);
+    lbl->setObjectName("tunemsg"+QString::number(i));
+    lyout->addWidget(lbl);
     lyout->addStretch(1);
     w->setLayout(lyout);
     return w;
@@ -87,16 +99,27 @@ QWidget *AbstractTuneDialog::BottomUI()
 
 void AbstractTuneDialog::ProcessTune()
 {
+    int i;
     if (lbls.size() > pf.size())
     {
         ERMSG("lbls size > pf size");
+        WDFunc::SetEnabled(this, "starttune", true);
         return;
     }
+    // сохраняем на всякий случай настроечные коэффициенты
+    QString tunenum = QString::number(AbsBac.BacBlockNum, 16);
+    QByteArray ba;
+    ba.resize(AbsBac.BacBlockSize);
+    memcpy(&(ba.data()[0]), AbsBac.BacBlock, AbsBac.BacBlockSize);
+    if (pc.SaveToFile(pc.SystemHomeDir+"temptune.tn"+tunenum, ba, AbsBac.BacBlockSize) == NOERROR)
+        TuneFileSaved = true;
+    else
+        TuneFileSaved = false;
     ReadTuneCoefs();
     MeasurementTimer->start();
     Cancelled = Skipped = false;
     MsgClear(); // очистка экрана с сообщениями
-    for (int i=0; i<lbls.size(); ++i)
+    for (i=0; i<lbls.size(); ++i)
     {
         MsgSetVisible(i);
         int res = (this->*pf[lbls.at(i)])();
@@ -113,7 +136,9 @@ void AbstractTuneDialog::ProcessTune()
         else
             OkMsgSetVisible(i);
     }
+    MsgSetVisible(i); // выдаём надпись "Настройка завершена!"
     MeasurementTimer->stop();
+    WDFunc::SetEnabled(this, "starttune", true);
 }
 
 int AbstractTuneDialog::CheckPassword()
@@ -122,8 +147,7 @@ int AbstractTuneDialog::CheckPassword()
     KeyPressDialog *dlg = new KeyPressDialog;
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addWidget(WDFunc::NewLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc"));
-    connect(dlg,SIGNAL(Cancelled()),this,SLOT(CancelTune()));
-    connect(dlg,SIGNAL(Finished(QString)),this,SLOT(PasswordCheck(QString)));
+    connect(dlg,SIGNAL(Finished(QString &)),this,SLOT(PasswordCheck(QString &)));
     connect(this,SIGNAL(PasswordChecked()),&PasswordLoop,SLOT(quit()));
     dlg->setLayout(vlyout);
     dlg->show();
@@ -254,24 +278,20 @@ int AbstractTuneDialog::StartMeasurement()
     return NOERROR;
 }
 
-void AbstractTuneDialog::SetStartTuneButtonEnabled(bool enabled)
-{
-    WDFunc::SetEnabled(this, "starttune", enabled);
-}
-
 // ####################### SLOTS #############################
 
 void AbstractTuneDialog::StartTune()
 {
-    SetStartTuneButtonEnabled(false);
+    WDFunc::SetEnabled(this, "starttune", false);
     ProcessTune();
 }
 
-void AbstractTuneDialog::PasswordCheck(QString psw)
+void AbstractTuneDialog::PasswordCheck(QString &psw)
 {
-    if (psw == "121941")
-        ok = true;
-    else
+    ok = true;
+    if (psw.isEmpty())
+        Cancelled = true;
+    else if (psw != "121941")
         ok = false;
     emit PasswordChecked();
 }

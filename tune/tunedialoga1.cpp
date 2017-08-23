@@ -48,8 +48,6 @@ void TuneDialogA1::SetLbls()
     lbls.append("6.3.7.3. КМТ1: получение блока данных и расчёт регулировочных коэффициентов...");
     lbls.append("6.3.8. Запись настроечных коэффициентов и переход на новую конфигурацию...");
     lbls.append("6.3.9. Проверка аналоговых данных...");
-    lbls.append("6.3.10. Проверка аналоговых данных...");
-    lbls.append("Настройка окончена!");
 }
 
 void TuneDialogA1::SetPf()
@@ -400,16 +398,17 @@ int TuneDialogA1::Start6_3_8()
 int TuneDialogA1::Start6_3_9()
 {
     WaitNSeconds(10);
-    if (ReadAnalogMeasurements() != NOERROR)
-        return GENERALERROR;
-    return CheckAnalogValues(true);
-}
-
-int TuneDialogA1::Start6_3_10()
-{
-    cn->Send(CN_GBd, 5, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
-    if (cn->result != NOERROR)
-        return GENERALERROR;
+    QString tmps = "Пожалуйста, просмотрите текущие данные после регулировки в соответствующих окнах";
+    if (TuneFileSaved)
+        tmps += "\nЕсли в процессе регулировки произошла ошибка, сохранённые коэффициенты\n"
+                "Вы можете загрузить из файла "+pc.SystemHomeDir+"temptune.tn1";
+    tmps += "\nДля завершения регулировки нажмите Esc";
+    MessageBox2::information(this, "Завершение регулировки", tmps);
+    KeyPressDialog *dlg = new KeyPressDialog;
+    connect(dlg,SIGNAL(Finished(QString &)),this,SLOT(PasswordCheck(QString &)));
+    connect(this,SIGNAL(PasswordChecked()),&PasswordLoop,SLOT(quit()));
+    dlg->show();
+    PasswordLoop.exec();
     return NOERROR;
 }
 
@@ -505,12 +504,13 @@ int TuneDialogA1::GetExternalData()
 
 void TuneDialogA1::GetBdAndFillMTT()
 {
-/*    cn->Send(CN_GBd, 4, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
+    cn->Send(CN_GBd, A1_BDA_IN_BN, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1));
     if (cn->result == NOERROR)
-        FillBdOut();
-    cn->Send(CN_GBd, 1, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1));
+        ChA1->FillBda_in(this);
+    cn->Send(CN_GBd, A1_BDA_IN_AN_BN, &ChA1->Bda_in_an, sizeof(CheckA1::A1_Bd3));
     if (cn->result == NOERROR)
-        FillBdIn(); */
+        ChA1->FillBda_in_an(this);
+
 }
 
 // ####################### SLOTS #############################
@@ -554,26 +554,6 @@ void TuneDialogA1::FillBackBac()
     WDFunc::LENumber(this, "tune28", Bac_block.Bma1);
     WDFunc::LENumber(this, "tune29", Bac_block.Ama2);
     WDFunc::LENumber(this, "tune30", Bac_block.Bma2);
-}
-
-void TuneDialogA1::FillBdOut()
-{
-/*    WDFunc::SetLBLText(this, "tunednu1", QString::number(ChA1->Bda_out.Uef_filt[0], 'f', 5));
-    WDFunc::SetLBLText(this, "tunednu2", QString::number(ChA1->Bda_out.Uef_filt[1], 'f', 5));
-    WDFunc::SetLBLText(this, "tunednphy", QString::number(ChA1->Bda_out.Phy, 'f', 5));
-    WDFunc::SetLBLText(this, "tunednfreq", QString::number(ChA1->Bda_out.Frequency, 'f', 5));
-    float Percents = qAbs(ChA1->Bda_out.Uef_filt[0]-ChA1->Bda_out.Uef_filt[1]) / (CA1->Bci_block.K_DN / 1732.051f);
-    WDFunc::SetLBLText(this, "tunepercent", QString::number(Percents, 'f', 5));*/
-}
-
-void TuneDialogA1::FillBdIn()
-{
-/*    WDFunc::SetLBLText(this, "tunednu1i", QString::number(ChA1->Bda_in.Uef_filt[0], 'f', 5));
-    WDFunc::SetLBLText(this, "tunednu2i", QString::number(ChA1->Bda_in.Uef_filt[1], 'f', 5));
-    WDFunc::SetLBLText(this, "tunednphyi", QString::number(ChA1->Bda_in.Phy, 'f', 5));
-    WDFunc::SetLBLText(this, "tunednfreqi", QString::number(ChA1->Bda_in.Frequency, 'f', 5));
-    float Percents = qAbs(ChA1->Bda_in.Uef_filt[0]-ChA1->Bda_in.Uef_filt[1]) / 57.74f * 100.0;
-    WDFunc::SetLBLText(this, "tunepercenti", QString::number(Percents, 'f', 5));*/
 }
 
 void TuneDialogA1::SetDefCoefs()

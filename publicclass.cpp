@@ -336,6 +336,11 @@ int publicclass::LoadFile(QWidget *parent, QString mask, QByteArray &ba)
     dlg->setFileMode(QFileDialog::AnyFile);
     QString filename = dlg->getOpenFileName(parent, "Открыть файл", HomeDir, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     dlg->close();
+    return LoadFromFile(filename, ba);
+}
+
+int publicclass::LoadFromFile(const QString &filename, QByteArray &ba)
+{
     if (filename.isEmpty())
     {
         ERMSG("Пустое имя файла");
@@ -350,8 +355,6 @@ int publicclass::LoadFile(QWidget *parent, QString mask, QByteArray &ba)
     }
     ba = file->readAll();
     file->close();
-/*    maxsize = (LoadBa.size() <= maxsize) ? LoadBa.size() : maxsize;
-    memcpy(dst, &(LoadBa.data()[0]), maxsize); */
     return NOERROR;
 }
 
@@ -365,6 +368,11 @@ int publicclass::SaveFile(QWidget *parent, const QString &mask, const QString &e
     dlg->setFileMode(QFileDialog::AnyFile);
     QString filename = dlg->getSaveFileName(parent, "Сохранить файл", tmps, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     dlg->close();
+    return SaveToFile(filename, src, numbytes);
+}
+
+int publicclass::SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes)
+{
     if (filename.isEmpty())
         return ER_FILENAMEEMP; // Пустое имя файла
     QFile *file = new QFile;

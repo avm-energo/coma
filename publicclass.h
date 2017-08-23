@@ -126,7 +126,7 @@
 
 #define TABCOLOR    "#AFFFAF"
 #define TABCOLORA1  "#FFFF5F"
-#define ERPROTCLR   "rgba(248,214,255,255)"
+#define ERPROTCLR   "rgba(255,234,255,255)"
 #define MAINWINCLR  "#E0FFE0"
 #define MAINWINCLRA1    "#FFFFE0"
 #define DCONFCLR    "#DDDDAA"
@@ -293,7 +293,9 @@ public:
     void AddErrMsg(ermsgtype msgtype, QString file=0, int line=0, QString msg="");
     void ErMsg(int ermsgnum);
     int LoadFile(QWidget *parent, QString mask, QByteArray &ba);
-    int SaveFile (QWidget *parent, const QString &mask, const QString &ext, QByteArray &src, unsigned int numbytes);
+    int LoadFromFile(const QString &filename, QByteArray &ba);
+    int SaveFile(QWidget *parent, const QString &mask, const QString &ext, QByteArray &src, unsigned int numbytes);
+    int SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes);
     bool FloatInRange(float var, float value);
 
 private:

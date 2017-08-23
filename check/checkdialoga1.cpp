@@ -25,11 +25,11 @@ CheckDialogA1::CheckDialogA1(QWidget *parent) : AbstractCheckDialog(parent)
     BdNum = 5; // количество блоков данных 6
     BdUINum = 8; // количество вкладок - 8 (блок Bda_h разделён ввиду его огромности на четыре вкладки)
     ChA1 = new CheckA1;
-    SetBd(1, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1));
-    SetBd(4, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
-    SetBd(3, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2));
-    SetBd(2, &ChA1->Bda_in_an, sizeof(CheckA1::A1_Bd3));
-    SetBd(5, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
+    SetBd(A1_BDA_IN_BN, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1));
+    SetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
+    SetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2));
+    SetBd(A1_BDA_IN_AN_BN, &ChA1->Bda_in_an, sizeof(CheckA1::A1_Bd3));
+    SetBd(A1_BDA_OUT_AN_BN, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
 //    SetBd(6, &ChA1->Bd_com, sizeof(CheckA1::A1_Bd6));
     SetupUI();
     timer->setInterval(ANMEASINT);
@@ -139,15 +139,15 @@ void CheckDialogA1::RefreshAnalogValues(int bdnum)
 {
     switch (bdnum)
     {
-    case 1: // Блок #1
+    case A1_BDA_IN_BN: // Блок #1
         ChA1->FillBda_in(this);
-    case 2:
+    case A1_BDA_IN_AN_BN:
         ChA1->FillBda_in_an(this);
-    case 3:
+    case A1_BDA_H_BN:
         ChA1->FillBda_h(this);
-    case 4:
+    case A1_BDA_OUT_BN:
         ChA1->FillBda_out(this);
-    case 5:
+    case A1_BDA_OUT_AN_BN:
         ChA1->FillBda_out_an(this);
     default:
         return;

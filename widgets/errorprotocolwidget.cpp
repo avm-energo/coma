@@ -117,7 +117,7 @@ QVariant ErrorProtocolModel::data(const QModelIndex &index, int role) const
             else if (role == Qt::BackgroundRole)
             {
                 if (ertypedata.at(index.row()) == publicclass::ER_MSG)
-                    return QVariant::fromValue(QColor(255,139,137)); // red
+                    return QVariant::fromValue(QColor(255,233,255)); // red
                 else if (ertypedata.at(index.row()) == publicclass::WARN_MSG)
                     return QVariant::fromValue(QColor(255,190,255)); // magenta
                 else if (ertypedata.at(index.row()) == publicclass::INFO_MSG)

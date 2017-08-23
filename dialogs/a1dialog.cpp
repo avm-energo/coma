@@ -8,6 +8,7 @@
 #include <QStringListModel>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QTime>
 #include "../canal.h"
 #include "a1dialog.h"
 #include "../widgets/messagebox.h"
@@ -20,7 +21,6 @@ A1Dialog::A1Dialog(QWidget *parent) : QDialog(parent)
 
     SetupUI();
     MeasurementTimer = new QTimer;
-//    MeasurementTimer->setInterval(MEASTIMERINT);
     connect(MeasurementTimer,SIGNAL(timeout()),this,SLOT(MeasTimerTimeout()));
 }
 
@@ -96,13 +96,20 @@ void A1Dialog::FillBdOut()
 
 void A1Dialog::StartWork()
 {
-    report = new LimeReport::ReportEngine();
+    PovType = GOST_NONE;
+    while (PovType == GOST_NONE)
+    {
+        QTime tme;
+        tme.start();
+    }
+/*    report = new LimeReport::ReportEngine();
     report->loadFromFile(pc.SystemHomeDir+"a1.lrxml");
     report->dataManager()->setReportVariable("Organization", pc.OrganizationString);
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QString Filename = dlg->getSaveFileName(this, "", pc.HomeDir, "*.pdf");
-    report->printToPDF(Filename);
+    report->printToPDF(Filename); */
+
 /*    if (GetConf() != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Ошибка чтения конфигурации или настроечных параметров из модуля");
