@@ -2,6 +2,7 @@
 #define A1DIALOG_H
 
 #include <QDialog>
+#include <QStandardItemModel>
 #include "limereport/lrreportengine.h"
 #include "../config/configa1.h"
 #include "../check/checka1.h"
@@ -75,17 +76,19 @@ private:
     LimeReport::ReportEngine *report;
     QVector<publicclass::DataRec> S2Config;
     QTimer *MeasurementTimer;
-    struct ResultsStruct
+/*    struct ResultsStruct
     {
         float K;    // отношение напряжения к номинальному напряжению ТН
         float dUp;  // относительная погрешность прибора по амплитуде
         float dPp;  // абсолютная погрешность прибора по фазе
         float dUd;  // относительная погрешность ДН по амплитуде
         float dPd;  // абсолютная погрешность ДН по фазе
-    };
-    ResultsStruct Results[9];   // девять уровней напряжения: 20, 50, 80, 100, 120, 100, 80, 50, 20 %
+    }; */
+//    ResultsStruct Results[9];   // девять уровней напряжения: 20, 50, 80, 100, 120, 100, 80, 50, 20 % или три уровня: 80, 100, 120 % в зависимости от ГОСТа
     int Counter;
+    bool Cancelled;
     int PovType; // тип поверяемого оборудования (по какому ГОСТу)
+    QStandardItemModel *mdl; // модель, в которую заносим данные для отчёта
 
     void SetupUI();
     int GetConf();
@@ -96,6 +99,7 @@ private:
     void GenerateReport(); // сгенерировать протокол
     void ConditionDataDialog(); // задание условий поверки
     void DNDialog(); // задание параметров ДН(ТН)
+    void InsertItemInModel(int column, QString value); // Row is Counter
 
 signals:
     void CloseDialog();
@@ -106,6 +110,8 @@ private slots:
     void MeasTimerTimeout();
     void Accept();
     void Decline();
+    void Proceed();
+    void Cancel();
     void SetDNData();
     void SetConditionData();
 };
