@@ -37,7 +37,6 @@ void TuneDialogA1DN::SetLbls()
     lbls.append("7.2.5. Установка 120%, проверка и сохранение...");
     lbls.append("7.2.6. Запись настроечных коэффициентов и переход на новую конфигурацию...");
     lbls.append("7.2.8. Проверка аналоговых данных...");
-    lbls.append("Настройка окончена!");
 }
 
 void TuneDialogA1DN::SetPf()
@@ -45,7 +44,9 @@ void TuneDialogA1DN::SetPf()
     int count = 0;
     pf[lbls.at(count++)] = &AbstractTuneDialog::CheckPassword; // 7.2.2. Ввод пароля
     int (AbstractTuneDialog::*func)() = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::ShowScheme); // 7.2.1. Отображение диалога проверки схемы подключения
-    pf[lbls.at(count++)] = func; // 7.2.2. Приём конфигурации от прибора
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_2); // 7.2.2. Приём конфигурации от прибора
+    pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_1); // 7.2.3. Установка 20%, проверка и сохранение
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_2); // 7.2.5. Установка 50%, проверка и сохранение

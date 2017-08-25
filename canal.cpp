@@ -504,7 +504,10 @@ bool Canal::InitializePort(QSerialPortInfo &pinfo, int baud)
     connect(OpenTimeoutTimer,SIGNAL(timeout()),this,SLOT(Disconnect()));
     OpenTimeoutTimer->start();
     if (!port->open(QIODevice::ReadWrite))
+    {
+        OpenTimeoutTimer->stop();
         return false;
+    }
     port->setBaudRate(baud);
     port->setParity(QSerialPort::NoParity);
     port->setDataBits(QSerialPort::Data8);

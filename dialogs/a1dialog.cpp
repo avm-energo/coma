@@ -99,26 +99,33 @@ void A1Dialog::FillBdOut()
 
 void A1Dialog::GenerateReport()
 {
-    ConditionDataDialog(); // задаём условия поверки
-    DNDialog(); // вводим данные по делителю
+//    ConditionDataDialog(); // задаём условия поверки
+//    DNDialog(); // вводим данные по делителю
     // данные в таблицу уже получены или из файла, или в процессе работы
-    QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
-    report = new LimeReport::ReportEngine();
-    report->loadFromFile(pc.SystemHomeDir+"a1_"+GOST+".lrxml");
-    report->dataManager()->setReportVariable("Organization", pc.OrganizationString);
-    int RowCount = 1;
-    int ColumnCount = 8;
+//    QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
+    QString GOST = "23625";
+    report = new LimeReport::ReportEngine(this);
+    int RowCount = 3;
+    int ColumnCount = 14;
     QStandardItemModel *mdl = new QStandardItemModel(RowCount, ColumnCount);
-    for (int i=0; i<ColumnCount; ++i)
+    for (int i=0; i<RowCount; ++i)
     {
-        QStandardItem *item = new QStandardItem(QString::number(i));
-        mdl->setItem(0, i, item);
+        for (int j=0; j<ColumnCount; ++j)
+        {
+            QStandardItem *item = new QStandardItem(QString::number(RowCount*i+j));
+            mdl->setItem(i, j, item);
+        }
     }
     report->dataManager()->addModel("maindata", mdl, false);
-    QFileDialog *dlg = new QFileDialog;
+    report->loadFromFile(pc.SystemHomeDir+"a1_"+GOST+".lrxml");
+    report->dataManager()->setReportVariable("Organization", pc.OrganizationString);
+/*    QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QString Filename = dlg->getSaveFileName(this, "", pc.HomeDir, "*.pdf");
-    report->printToPDF(Filename);
+    dlg->close(); */
+    report->previewReport();
+//    report->printToPDF(Filename);
+//    report->designReport();
 }
 
 void A1Dialog::ConditionDataDialog()
@@ -265,10 +272,10 @@ void A1Dialog::StartWork()
 
 void A1Dialog::ParsePKDNFile()
 {
-    QByteArray ba;
+/*    QByteArray ba;
     int res = pc.LoadFile(this, "PKDN verification files (*.vrf)", ba);
     if (res != NOERROR)
-        return;
+        return; */
 
     GenerateReport();
 }

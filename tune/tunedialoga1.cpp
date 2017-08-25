@@ -29,7 +29,7 @@ void TuneDialogA1::SetLbls()
 {
     lbls.append("1. Ввод пароля...");
     lbls.append("2. Отображение схемы подключения...");
-    lbls.append("6.2. Проверка правильности измерения сигналов переменного напряжения...");
+    lbls.append("6.2. Проверка правильности измерения сигналов...");
     lbls.append("6.3.1. Получение настроечных коэффициентов...");
     lbls.append("6.3.2.1. КПТ: получение блока данных и усреднение...");
     lbls.append("6.3.2.2. КПТ: ввод данных от энергомонитора...");
@@ -445,7 +445,7 @@ int TuneDialogA1::CheckBdaValues()
         return GENERALERROR;
     if (!IsWithinLimits(ChA1->Bda_block.Frequency, 51.0, 0.05))
         return GENERALERROR;
-    if (!IsWithinLimits(ChA1->Bda_block.Pt100, 2125.0, 75.0))
+    if (!IsWithinLimits(ChA1->Bda_block.Pt100, 2125.0, 1000.0))
         return GENERALERROR;
     if (!IsWithinLimits(ChA1->Bda_block.EXTmA1, 25.0, 25.0))
         return GENERALERROR;
