@@ -44,11 +44,6 @@ void A1Dialog::SetupUI()
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednphy", ValuesFormat, ""), 1, 5, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Freq"), 1, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednfreq", ValuesFormat, ""), 1, 1, 1, 1);
-    glyout->setColumnStretch(1, 10);
-    glyout->setColumnStretch(3, 10);
-    glyout->setColumnStretch(5, 10);
-    gb->setLayout(glyout);
-    lyout->addWidget(gb);
     QPushButton *pb = new QPushButton("Подтвердить");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(Accept()));
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -60,7 +55,12 @@ void A1Dialog::SetupUI()
     pb->setObjectName("cancelpb");
     pb->setEnabled(false);
     hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
+    glyout->addLayout(hlyout, 2, 0, 1, 6);
+    glyout->setColumnStretch(1, 10);
+    glyout->setColumnStretch(3, 10);
+    glyout->setColumnStretch(5, 10);
+    gb->setLayout(glyout);
+    lyout->addWidget(gb);
     pb = new QPushButton("Сформировать протокол из файла ПКДН");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(ParsePKDNFile()));
     lyout->addWidget(pb);
@@ -289,7 +289,7 @@ void A1Dialog::Accept()
     const int Percents23625[] = {20, 50, 80, 100, 120, 100, 80, 50, 20};
     const int Percents1983[] = {80, 100, 120};
 
-    InsertItemInModel(1, );
+/*    InsertItemInModel(1, );
     Results[Counter].dUp = Bac_block.dU_cor[Pindex];
     Results[Counter].dPp = Bac_block.dPhy_cor[Pindex];
     Results[Counter].dUd = ChA1->Bda_out.dUrms;
@@ -303,7 +303,7 @@ void A1Dialog::Accept()
     {
         InsertItemInModel(0, Percents23625[Counter]);
         VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * Percents23625[Counter] / 1732;
-    }
+    } */
     ++Counter;
     if (Counter >= endcounter)
     {
