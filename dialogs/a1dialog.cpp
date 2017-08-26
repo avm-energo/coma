@@ -19,7 +19,7 @@ A1Dialog::A1Dialog(QWidget *parent) : QDialog(parent)
 {
     ChA1 = new CheckA1;
     CA1 = new ConfigA1(S2Config);
-
+    ReportModel = new QStandardItemModel;
     SetupUI();
     MeasurementTimer = new QTimer;
     connect(MeasurementTimer,SIGNAL(timeout()),this,SLOT(MeasTimerTimeout()));
@@ -99,32 +99,31 @@ void A1Dialog::FillBdOut()
 
 void A1Dialog::GenerateReport()
 {
-//    ConditionDataDialog(); // задаём условия поверки
-//    DNDialog(); // вводим данные по делителю
+    ConditionDataDialog(); // задаём условия поверки
+    DNDialog(); // вводим данные по делителю
     // данные в таблицу уже получены или из файла, или в процессе работы
-//    QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
-    QString GOST = "23625";
+    QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
     report = new LimeReport::ReportEngine(this);
-    int RowCount = 3;
+/*    int RowCount = 3;
     int ColumnCount = 14;
     QStandardItemModel *mdl = new QStandardItemModel(RowCount, ColumnCount);
     for (int i=0; i<RowCount; ++i)
     {
         for (int j=0; j<ColumnCount; ++j)
         {
-            QStandardItem *item = new QStandardItem(QString::number(RowCount*i+j));
+            QStandardItem *item = new QStandardItem(QString::number(ColumnCount*i+j));
             mdl->setItem(i, j, item);
         }
-    }
-    report->dataManager()->addModel("maindata", mdl, false);
+    } */
     report->loadFromFile(pc.SystemHomeDir+"a1_"+GOST+".lrxml");
+    report->dataManager()->addModel("maindata", ReportModel, false);
     report->dataManager()->setReportVariable("Organization", pc.OrganizationString);
 /*    QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QString Filename = dlg->getSaveFileName(this, "", pc.HomeDir, "*.pdf");
-    dlg->close(); */
+    dlg->close();
+    report->printToPDF(Filename); */
     report->previewReport();
-//    report->printToPDF(Filename);
 //    report->designReport();
 }
 
@@ -198,44 +197,33 @@ void A1Dialog::DNDialog()
     dlg->exec();
 }
 
-void A1Dialog::InsertItemInModel(int column, QString value)
+void A1Dialog::UpdateItemInModel(int row, int column, QVariant value)
 {
-    QStandardItem *item = new QStandardItem(value);
-    mdl->setItem(Counter, column, item);
+    QStandardItem *item = ReportModel->item(row, column);
+    item->setText(value.toString());
+    ReportModel->setItem(row, column, item);
 }
 
 void A1Dialog::StartWork()
 {
-/*    QString GOST = "23625";
-    report = new LimeReport::ReportEngine();
-    report->loadFromFile(pc.SystemHomeDir+"a1_"+GOST+".lrxml");
-    report->dataManager()->setReportVariable("Organization", pc.OrganizationString);
-    int RowCount = 1;
-    int ColumnCount = 14;
-    QStandardItemModel *mdl = new QStandardItemModel(RowCount, ColumnCount);
-    for (int i=0; i<ColumnCount; ++i)
-    {
-        QStandardItem *item = new QStandardItem(QString::number(i));
-        mdl->setItem(0, i, item);
-    }
-    report->dataManager()->addModel("maindata", mdl, false);
-    report->designReport(); */
     float VoltageInkV;
     Cancelled = false;
-    if (GetConf() != NOERROR)
+/*    if (GetConf() != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Ошибка чтения конфигурации или настроечных параметров из модуля");
         return;
-    }
-    PovType = GOST_NONE;
-    QDialog *dlg = new QDialog;
+    } */
+    PovType = TempPovType = GOST_NONE;
+    QDialog *dlg = new QDialog(this);
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Выберите тип поверяемого оборудования"));
     QRadioButton *rb = new QRadioButton("Трансформаторы напряжения измерительные лабораторные по ГОСТ 23625-2001");
     rb->setObjectName("rb1");
+    connect(rb,SIGNAL(toggled(bool)),this,SLOT(RBToggled()));
     lyout->addWidget(rb);
     rb = new QRadioButton("Трансформаторы напряжения по ГОСТ 1983-2001");
     rb->setObjectName("rb2");
+    connect(rb,SIGNAL(toggled(bool)),this,SLOT(RBToggled()));
     lyout->addWidget(rb);
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(Proceed()));
@@ -255,19 +243,41 @@ void A1Dialog::StartWork()
             QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
     dlg->close();
-    if (MessageBox2::question(this, "Подтверждение", "Подключите вывод нижнего плеча \"своего\" делителя напряжения ко входу U1 прибора\n"
-                              "Вывод нижнего плеча поверяемого делителя или выход низшего напряжения поверяемого ТН - ко входу U2") == false)
-        return;
-    if (PovType == GOST_1983)
-        VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * 80 / 1732;
-    else
-        VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * 20 / 1732;
-    if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == false)
-        return;
-    Counter = 0;
-    MeasurementTimer->start();
-    WDFunc::SetEnabled(this, "cancelpb", true);
-    WDFunc::SetEnabled(this, "acceptpb", true);
+    RowCount = (PovType == GOST_1983) ? GOST1983ROWCOUNT : GOST23625ROWCOUNT;
+    ColumnCount = (PovType == GOST_1983) ? GOST1983COLCOUNT : GOST23625COLCOUNT;
+    ReportModel->setColumnCount(ColumnCount);
+    ReportModel->setRowCount(RowCount);
+    for (int i=0; i<RowCount; ++i)
+    {
+        for (int j=0; j<ColumnCount; ++j)
+        {
+            QStandardItem *item = new QStandardItem("");
+            ReportModel->setItem(i, j, item);
+        }
+    }
+    if (!Cancelled)
+    {
+        if (MessageBox2::question(this, "Подтверждение", "Подключите вывод нижнего плеча \"своего\" делителя напряжения ко входу U1 прибора\n"
+                                  "Вывод нижнего плеча поверяемого делителя или выход низшего напряжения поверяемого ТН - ко входу U2\n"
+                                  "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное 0,25·Sном") == true)
+        {
+            CurrentS = 0.25;
+            if (PovType == GOST_1983)
+                VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * 80 / 1732;
+            else
+                VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * 20 / 1732;
+            if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == true)
+            {
+                Counter = 0;
+                MeasurementTimer->start();
+                WDFunc::SetEnabled(this, "cancelpb", true);
+                WDFunc::SetEnabled(this, "acceptpb", true);
+                return;
+            }
+        }
+    }
+    MessageBox2::information(this, "Информация", "Операция прервана");
+    return;
 }
 
 void A1Dialog::ParsePKDNFile()
@@ -282,7 +292,7 @@ void A1Dialog::ParsePKDNFile()
 
 void A1Dialog::MeasTimerTimeout()
 {
-    cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
+//    cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
     if (cn->result == NOERROR)
         FillBdOut();
 }
@@ -293,34 +303,72 @@ void A1Dialog::Accept()
     int endcounter = (PovType == GOST_1983) ? 3 : 9;
     MeasurementTimer->stop();
     int Pindex = (Counter > 4) ? (8 - Counter) : Counter;
-    const int Percents23625[] = {20, 50, 80, 100, 120, 100, 80, 50, 20};
+    const int Percents23625[] = {20, 50, 80, 100, 120};
     const int Percents1983[] = {80, 100, 120};
+    const int *Percents = (PovType == GOST_1983) ? Percents1983 : Percents23625;
 
-/*    InsertItemInModel(1, );
-    Results[Counter].dUp = Bac_block.dU_cor[Pindex];
-    Results[Counter].dPp = Bac_block.dPhy_cor[Pindex];
-    Results[Counter].dUd = ChA1->Bda_out.dUrms;
-    Results[Counter].dPd = ChA1->Bda_out.Phy;
-    if (PovType == GOST_1983)
+    // заполняем модель по полученным измерениям:
+    // 0 - U/Un (%), 1 - S, 2 -
+    int row = Pindex;
+    if (CurrentS == 1)
     {
-        InsertItemInModel(0, Percents1983[Counter]);
-        VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * Percents1983[Counter] / 1732;
+        if (PovType == GOST_1983)
+            row += GOST1983ROWCOUNT/2;
+        else
+            row += GOST23625ROWCOUNT/2;
+    }
+    if (Counter > 4) // на нисходящем отрезке по ГОСТ 23625
+    {
+        UpdateItemInModel(row, 4, ChA1->Bda_out.dUrms);
+        UpdateItemInModel(row, 5, ChA1->Bda_out.Phy);
+        float dUrmsU = ReportModel->item(row, 2)->text().toFloat();
+        float PhyU = ReportModel->item(row, 3)->text().toFloat();
+        float UrmsM = (dUrmsU + ChA1->Bda_out.dUrms) / 2;
+        float PhyM = (PhyU + ChA1->Bda_out.Phy) / 2;
+        UpdateItemInModel(row, 6, UrmsM);
+        UpdateItemInModel(row, 7, PhyM);
+        UpdateItemInModel(row, 8, (ChA1->Bda_out.dUrms - dUrmsU));
+        UpdateItemInModel(row, 9, (ChA1->Bda_out.Phy - PhyU));
     }
     else
     {
-        InsertItemInModel(0, Percents23625[Counter]);
-        VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * Percents23625[Counter] / 1732;
-    } */
+        int column = 0;
+        UpdateItemInModel(row, column++, Percents[Pindex]);
+        UpdateItemInModel(row, column++, CurrentS);
+        UpdateItemInModel(row, column++, ChA1->Bda_out.dUrms);
+        UpdateItemInModel(row, column++, ChA1->Bda_out.Phy);
+        if (PovType == GOST_23625)
+            column += 6;
+        UpdateItemInModel(row, column++, Bac_block.dU_cor[Pindex]);
+        UpdateItemInModel(row, column++, Bac_block.dPhy_cor[Pindex]);
+        UpdateItemInModel(row, column++, ChA1->Bda_out.dUrms);
+        UpdateItemInModel(row, column++, ChA1->Bda_out.Phy);
+    }
     ++Counter;
     if (Counter >= endcounter)
     {
-        // запись файла протокола
-        GenerateReport();
-        // вывод протокола на экран
-        // формирование отчёта
-        Decline();
-        return;
+        if (CurrentS == 0.25)
+        {
+            Counter = 0;
+            CurrentS = 1;
+            if (MessageBox2::question(this, "Подтверждение", "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное 1,0·Sном") == false)
+            {
+                Cancelled = true;
+                Decline();
+            }
+        }
+        else
+        {
+            // запись файла протокола
+            GenerateReport();
+            // вывод протокола на экран
+            // формирование отчёта
+            Decline();
+            return;
+        }
     }
+    Pindex = (Counter > 4) ? (8 - Counter) : Counter;
+    VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * Percents[Pindex] / 1732;
     if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == false)
         Decline();
     MeasurementTimer->start();
@@ -335,20 +383,7 @@ void A1Dialog::Decline()
 
 void A1Dialog::Proceed()
 {
-    QRadioButton *rb1 = this->findChild<QRadioButton *>("rb1");
-    QRadioButton *rb2 = this->findChild<QRadioButton *>("rb2");
-    if ((rb1 == 0) || (rb2 == 0))
-    {
-        DBGMSG;
-        Cancelled = true;
-        return;
-    }
-    if (rb1->isChecked() && !rb2->isChecked())
-        PovType = GOST_23625;
-    else if (rb2->isChecked() && !rb1->isChecked())
-        PovType = GOST_1983;
-    else
-        Cancelled = true;
+    PovType = TempPovType;
 }
 
 void A1Dialog::Cancel()
@@ -379,3 +414,11 @@ void A1Dialog::SetConditionData()
     emit CloseDialog();
 }
 
+void A1Dialog::RBToggled()
+{
+    QString tmps = sender()->objectName();
+    if (tmps == "rb1")
+        TempPovType = GOST_23625;
+    else
+        TempPovType = GOST_1983;
+}

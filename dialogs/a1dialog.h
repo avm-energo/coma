@@ -7,6 +7,11 @@
 #include "../config/configa1.h"
 #include "../check/checka1.h"
 
+#define GOST1983ROWCOUNT    6 // 80, 100, 120 %
+#define GOST23625ROWCOUNT   10 // 20, 50, 80, 100, 120 %
+#define GOST1983COLCOUNT    8 // K, S, 3x(dU, dP)
+#define GOST23625COLCOUNT   14 // K, S, 5x(dU, dP), dd, dD
+
 class A1Dialog : public QDialog
 {
     Q_OBJECT
@@ -87,8 +92,10 @@ private:
 //    ResultsStruct Results[9];   // девять уровней напряжения: 20, 50, 80, 100, 120, 100, 80, 50, 20 % или три уровня: 80, 100, 120 % в зависимости от ГОСТа
     int Counter;
     bool Cancelled;
-    int PovType; // тип поверяемого оборудования (по какому ГОСТу)
-    QStandardItemModel *mdl; // модель, в которую заносим данные для отчёта
+    float CurrentS; // текущее значение нагрузки
+    int PovType, TempPovType; // тип поверяемого оборудования (по какому ГОСТу)
+    QStandardItemModel *ReportModel; // модель, в которую заносим данные для отчёта
+    int RowCount, ColumnCount; // количество рядов и столбцов в модели
 
     void SetupUI();
     int GetConf();
@@ -99,7 +106,7 @@ private:
     void GenerateReport(); // сгенерировать протокол
     void ConditionDataDialog(); // задание условий поверки
     void DNDialog(); // задание параметров ДН(ТН)
-    void InsertItemInModel(int column, QString value); // Row is Counter
+    void UpdateItemInModel(int row, int column, QVariant value);
 
 signals:
     void CloseDialog();
@@ -114,6 +121,7 @@ private slots:
     void Cancel();
     void SetDNData();
     void SetConditionData();
+    void RBToggled();
 };
 
 #endif // A1DIALOG_H
