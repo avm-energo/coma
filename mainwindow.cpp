@@ -511,7 +511,7 @@ void MainWindow::GetAbout()
     hlyout->setAlignment(lbl,Qt::AlignTop);
     hlyout->addLayout(l2yout,100);
     lyout->addLayout(hlyout,1);
-    QPushButton *pb = new QPushButton("Ага");
+    QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(pb,0);
     dlg->setLayout(lyout);

@@ -10,8 +10,8 @@ ConfigA1::ConfigA1(QVector<publicclass::DataRec> &config)
     {
         config.append({StartInIndex, sizeof(Bci_block.DTCanal), &Bci_block.DTCanal});
         config.append({StartInIndex+1, sizeof(Bci_block.DHCanal), &Bci_block.DHCanal});
-        config.append({StartInIndex+2, sizeof(Bci_block.DNFNum), &Bci_block.DNFNum});
-        config.append({StartInIndex+3, sizeof(Bci_block.K_DN), &Bci_block.K_DN});
+//        config.append({StartInIndex+2, sizeof(Bci_block.DNFNum), &Bci_block.DNFNum});
+//        config.append({StartInIndex+3, sizeof(Bci_block.K_DN), &Bci_block.K_DN});
         config.append({StartInIndex+4, sizeof(Bci_block.W100), &Bci_block.W100});
         config.append({StartInIndex+5, sizeof(Bci_block.T4), &Bci_block.T4});
         config.append({StartInIndex+6, sizeof(Bci_block.T20), &Bci_block.T20});
@@ -36,11 +36,11 @@ void ConfigA1::SetDefConf()
 {
     Bci_block.DTCanal = 1;
     Bci_block.DHCanal = 0;
-    Bci_block.DNFNum = 1;
+//    Bci_block.DNFNum = 1;
     Bci_block.NPoints = 256;
     Bci_block.Filter = 100;
     Bci_block.NHarmFilt = 3;
-    Bci_block.K_DN = 2200; // 500 кВ
+//    Bci_block.K_DN = 2200; // 500 кВ
     Bci_block.W100 = static_cast<float>(1.385);
     Bci_block.T4 = -50;
     Bci_block.T20 = 50;

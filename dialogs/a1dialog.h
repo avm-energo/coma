@@ -32,6 +32,8 @@ public:
         float PhyDN[6]; 	// фазовый сдвиг ДН на частоте 50 Гц для значений напряжения U1kDN[6]
         float dU_cor[5];    // относительная ампл. погрешность установки после коррекции, в %
         float dPhy_cor[5];  // абс. фазовая погрешность установки после коррекции, срад
+        float K_DN;         // номинальный коэффициент деления ДН
+        quint32 DNFNum;     // заводской номер делителя
     };
 
     Bac Bac_block;
@@ -65,15 +67,7 @@ public:
     QStringList TableItem;      // строка таблицы с данными вывода
     QList<QStringList *> MainData; // полные данные таблицы для модели
 
-    struct ReportFooterStructure
-    {
-        QString Conclusion;     // заключение
-        QString Customer;       // поверитель
-        QString Date;           // дата поверки
-    };
-
     ReportHeaderStructure ReportHeader;
-    ReportFooterStructure ReportFooter;
 
 private:
     CheckA1 *ChA1;

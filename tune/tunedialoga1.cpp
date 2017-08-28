@@ -186,14 +186,14 @@ int TuneDialogA1::Start6_3_1()
         Skipped = true;
         return ER_RESEMPTY;
     }
-/*    // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBac, BT_BASE, &Bac_block.Bac1, sizeof(Bac1s));
+    // получение текущих аналоговых сигналов от модуля
+    cn->Send(CN_GBac, BT_BASE, &Bac_block, sizeof(Bac));
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bac");
         return GENERALERROR;
     }
-    FillBac(); */
+    FillBac();
     return NOERROR;
 }
 
@@ -203,7 +203,8 @@ int TuneDialogA1::Start6_3_2_1()
         return ER_RESEMPTY;
     // получение текущих аналоговых сигналов от модуля
     CheckA1::A1_Bd1 tmpst, tmpst2;
-    tmpst2.Frequency = tmpst2.Phy = tmpst2.UefNat_filt[0] = tmpst2.UefNat_filt[1] = tmpst2.Uef_filt[0] = tmpst2.Uef_filt[1] = 0;
+    tmpst2.Frequency = tmpst2.Phy = tmpst2.UefNat_filt[0] = tmpst2.UefNat_filt[1] = \
+            tmpst2.Uef_filt[0] = tmpst2.Uef_filt[1] = tmpst2.dU = tmpst2.dUrms = 0;
     for (int i=0; i<TD_MEASNUM; ++i)
     {
         cn->Send(CN_GBd, 1, &tmpst, sizeof(CheckA1::A1_Bd1));
@@ -213,6 +214,8 @@ int TuneDialogA1::Start6_3_2_1()
         tmpst2.UefNat_filt[1] += tmpst.UefNat_filt[1];
         tmpst2.Uef_filt[0] += tmpst.Uef_filt[0];
         tmpst2.Uef_filt[1] += tmpst.Uef_filt[1];
+        tmpst2.dU += tmpst.dU;
+        tmpst2.dUrms += tmpst.dUrms;
     }
     // усреднение
     tmpst2.Frequency /= TD_MEASNUM;
@@ -221,6 +224,8 @@ int TuneDialogA1::Start6_3_2_1()
     tmpst2.UefNat_filt[1] /= TD_MEASNUM;
     tmpst2.Uef_filt[0] /= TD_MEASNUM;
     tmpst2.Uef_filt[1] /= TD_MEASNUM;
+    tmpst2.dU /= TD_MEASNUM;
+    tmpst2.dUrms /= TD_MEASNUM;
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
@@ -403,12 +408,9 @@ int TuneDialogA1::Start6_3_9()
     if (TuneFileSaved)
         tmps += "\nЕсли в процессе регулировки произошла ошибка, сохранённые коэффициенты\n"
                 "Вы можете загрузить из файла "+pc.SystemHomeDir+"temptune.tn1";
-    tmps += "\nДля завершения регулировки нажмите Esc";
+    tmps += "\nПосле окончания проверки нажмите Esc для завершения процедуры регулировки";
     MessageBox2::information(this, "Завершение регулировки", tmps);
-    KeyPressDialog *dlg = new KeyPressDialog;
-    connect(dlg,SIGNAL(Finished(QString &)),this,SLOT(PasswordCheck(QString &)));
-    connect(this,SIGNAL(PasswordChecked()),&Loop,SLOT(quit()));
-    dlg->show();
+    connect(this,SIGNAL(Finished()),&Loop,SLOT(quit()));
     Loop.exec();
     return NOERROR;
 }
@@ -592,4 +594,14 @@ void TuneDialogA1::CancelExtData()
         return;
     Cancelled = true;
     dlg->close();
+}
+
+void TuneDialogA1::keyPressEvent(QKeyEvent *e)
+{
+    if (e->key() == Qt::Key_Escape)
+    {
+        emit Finished();
+        this->close();
+    }
+    QDialog::keyPressEvent(e);
 }

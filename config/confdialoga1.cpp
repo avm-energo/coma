@@ -33,8 +33,8 @@ ConfDialogA1::~ConfDialogA1()
 
 void ConfDialogA1::Fill()
 {
-    WDFunc::SetLEData(this, "DividerSN", QString::number(CA1->Bci_block.DNFNum));
-    WDFunc::SetSPBData(this, "K_DNSPB", CA1->Bci_block.K_DN);
+//    WDFunc::SetLEData(this, "DividerSN", QString::number(CA1->Bci_block.DNFNum));
+//    WDFunc::SetSPBData(this, "K_DNSPB", CA1->Bci_block.K_DN);
     WDFunc::SetCBIndex(this, "TokrCB", CA1->Bci_block.DTCanal);
     WDFunc::SetSPBData(this, "TokrSPB4", CA1->Bci_block.T4);
     WDFunc::SetSPBData(this, "TokrSPB20", CA1->Bci_block.T20);
@@ -55,8 +55,8 @@ void ConfDialogA1::FillBack()
     int tmpi;
     CA1->Bci_block.DDOsc = 0;
     WDFunc::LEData(this, "DividerSN", tmps);
-    CA1->Bci_block.DNFNum = tmps.toInt();
-    WDFunc::SPBData(this, "K_DNSPB", CA1->Bci_block.K_DN);
+//    CA1->Bci_block.DNFNum = tmps.toInt();
+//    WDFunc::SPBData(this, "K_DNSPB", CA1->Bci_block.K_DN);
     WDFunc::CBIndex(this, "TokrCB", CA1->Bci_block.DTCanal);
     WDFunc::SPBData(this, "TokrSPB4", CA1->Bci_block.T4);
     WDFunc::SPBData(this, "TokrSPB20", CA1->Bci_block.T20);

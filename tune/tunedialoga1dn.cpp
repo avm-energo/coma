@@ -29,6 +29,7 @@ void TuneDialogA1DN::SetLbls()
 {
     lbls.append("7.2.2. Ввод пароля...");
     lbls.append("7.2.1. Отображение диалога проверки схемы подключения...");
+    lbls.append("Ввод данных по делителю...");
     lbls.append("7.2.2. Приём конфигурации от прибора...");
     lbls.append("7.2.3. Установка 20%, проверка и сохранение...");
     lbls.append("7.2.5. Установка 50%, проверка и сохранение...");
@@ -46,6 +47,8 @@ void TuneDialogA1DN::SetPf()
     int (AbstractTuneDialog::*func)() = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::ShowScheme); // 7.2.1. Отображение диалога проверки схемы подключения
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_2); // 7.2.2. Приём конфигурации от прибора
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::InputDNData); // Ввод данных по делителю
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_1); // 7.2.3. Установка 20%, проверка и сохранение
     pf[lbls.at(count++)] = func;
@@ -200,6 +203,36 @@ void TuneDialogA1DN::SetupUI()
     setLayout(lyout);
 }
 
+int TuneDialogA1DN::InputDNData()
+{
+    int row = 0;
+    QDialog *dlg = new QDialog(this);
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    lyout->addWidget(WDFunc::NewLBL(this, "Данные на ТН(ДН)"), Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBL(this, "Коэффициент деления ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "K_DN", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "DNFNum", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->setColumnStretch(1, 1);
+    lyout->addLayout(glyout);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(AcceptDNData()));
+    connect(this,SIGNAL(DNDataIsSet()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    Accepted = false;
+    dlg->show();
+    while (!Accepted)
+    {
+        QTime tme;
+        tme.start();
+        while (tme.elapsed() < SLEEPINT)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+    }
+    return NOERROR;
+}
+
 void TuneDialogA1DN::FillBac()
 {
     for (int i = 0; i < 6; ++i)
@@ -269,7 +302,20 @@ void TuneDialogA1DN::SetDefCoefs()
     Bac_block.dU_cor[2] = Bac_block.dPhy_cor[2] = 0;
     Bac_block.dU_cor[3] = Bac_block.dPhy_cor[3] = 0;
     Bac_block.dU_cor[4] = Bac_block.dPhy_cor[4] = 0;
+    Bac_block.K_DN = 2200;
+    Bac_block.DNFNum = 0;
     FillBac();
+}
+
+void TuneDialogA1DN::AcceptDNData()
+{
+    QString tmps;
+    WDFunc::LEData(this, "K_DN", tmps);
+    Bac_block.K_DN = tmps.toFloat();
+    WDFunc::LEData(this, "DNFNum", tmps);
+    Bac_block.DNFNum = tmps.toUInt();
+    Accepted = true;
+    emit DNDataIsSet();
 }
 
 int TuneDialogA1DN::Start7_2_2()
@@ -318,7 +364,7 @@ int TuneDialogA1DN::Start7_2_345(int counter)
     const int Percents[] = {20,50,80,100,120};
     if (counter > 4)
         return GENERALERROR;
-    float VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * Percents[counter] / 1732;
+    float VoltageInkV = static_cast<float>(Bac_block.K_DN) * Percents[counter] / 1732;
     if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == false)
     {
         Cancelled = true;
@@ -397,7 +443,7 @@ int TuneDialogA1DN::Start7_2_9(int counter)
     const int Percents[] = {100, 80, 50, 20};
     if (counter > 3)
         return GENERALERROR;
-    float VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * Percents[counter] / 1732;
+    float VoltageInkV = static_cast<float>(Bac_block.K_DN) * Percents[counter] / 1732;
     if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == false)
     {
         Cancelled = true;

@@ -26,8 +26,8 @@ void error(QWidget *parent, const QString &title,
 
 bool question(QWidget *parent, const QString &title,
               const QString &text, const QString &detailedText=QString(),
-              const QString &yesText=QObject::tr("&Ага"),
-              const QString &noText=QObject::tr("&Неа"));
+              const QString &yesText=QObject::tr("&Готово"),
+              const QString &noText=QObject::tr("&Отмена"));
 }
 
 #endif // MESSAGEBOX_H

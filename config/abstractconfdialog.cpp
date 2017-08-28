@@ -36,7 +36,7 @@ void AbstractConfDialog::WriteConf()
         QTextEdit *te = new QTextEdit;
         te->setPlainText(CheckConfErrors.join("\n"));
         vlyout->addWidget(te, 0, Qt::AlignCenter);
-        QPushButton *pb = new QPushButton("Ага");
+        QPushButton *pb = new QPushButton("Хорошо");
         connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
         vlyout->addWidget(pb);
         dlg->setLayout(vlyout);

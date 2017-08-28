@@ -25,16 +25,20 @@ private:
         float PhyDN[6]; 	// фазовый сдвиг ДН на частоте 50 Гц для значений напряжения U1kDN[6]
         float dU_cor[5];    // относительная ампл. погрешность установки после коррекции, в %
         float dPhy_cor[5];  // абс. фазовая погрешность установки после коррекции, срад
+        float K_DN;         // номинальный коэффициент деления ДН
+        quint32 DNFNum;     // заводской номер делителя
     };
 
     Bac Bac_block;
     ConfigA1 *CA1;
     CheckA1 *ChA1;
+    bool Accepted;
 
     void SetLbls();
     void SetPf();
     void SetupUI();
 
+    int InputDNData();
     int Start7_2_2();
     int Start7_2_3_1();
     int Start7_2_3_2();
@@ -59,6 +63,10 @@ private slots:
     void FillBdOut();
     void FillBackBdOut();
     void SetDefCoefs();
+    void AcceptDNData();
+
+signals:
+    void DNDataIsSet();
 };
 
 #endif // TUNEDIALOGA1DN_H

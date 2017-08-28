@@ -23,6 +23,7 @@ A1Dialog::A1Dialog(QWidget *parent) : QDialog(parent)
     SetupUI();
     MeasurementTimer = new QTimer;
     connect(MeasurementTimer,SIGNAL(timeout()),this,SLOT(MeasTimerTimeout()));
+    ReportHeader.DNDevices = "УКДН сер. номер " + QString::number(pc.ModuleBsi.SerialNum) + ", кл. точн. 0,05";
 }
 
 void A1Dialog::SetupUI()
@@ -104,20 +105,33 @@ void A1Dialog::GenerateReport()
     // данные в таблицу уже получены или из файла, или в процессе работы
     QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
     report = new LimeReport::ReportEngine(this);
-/*    int RowCount = 3;
-    int ColumnCount = 14;
-    QStandardItemModel *mdl = new QStandardItemModel(RowCount, ColumnCount);
-    for (int i=0; i<RowCount; ++i)
-    {
-        for (int j=0; j<ColumnCount; ++j)
-        {
-            QStandardItem *item = new QStandardItem(QString::number(ColumnCount*i+j));
-            mdl->setItem(i, j, item);
-        }
-    } */
     report->loadFromFile(pc.SystemHomeDir+"a1_"+GOST+".lrxml");
     report->dataManager()->addModel("maindata", ReportModel, false);
     report->dataManager()->setReportVariable("Organization", pc.OrganizationString);
+    QString day = QDateTime::currentDateTime().toString("dd");
+    QString month = QDateTime::currentDateTime().toString("MM");
+    QString yr = QDateTime::currentDateTime().toString("yy");
+    report->dataManager()->setReportVariable("Day", day);
+    report->dataManager()->setReportVariable("Month", month);
+    report->dataManager()->setReportVariable("Yr", yr);
+    report->dataManager()->setReportVariable("DNType", ReportHeader.DNType);
+    report->dataManager()->setReportVariable("DNSerNum", ReportHeader.DNSerNum);
+    report->dataManager()->setReportVariable("DNTol", ReportHeader.DNTol);
+    report->dataManager()->setReportVariable("DNU1", ReportHeader.DNU1);
+    report->dataManager()->setReportVariable("DNU2", ReportHeader.DNU2);
+    report->dataManager()->setReportVariable("DNP", ReportHeader.DNP);
+    report->dataManager()->setReportVariable("DNF", ReportHeader.DNF);
+    report->dataManager()->setReportVariable("DNOrganization", ReportHeader.DNOrganization);
+    report->dataManager()->setReportVariable("DNPlace", ReportHeader.DNPlace);
+    report->dataManager()->setReportVariable("DNDevices", ReportHeader.DNDevices);
+    report->dataManager()->setReportVariable("Temp", ReportHeader.Temp);
+    report->dataManager()->setReportVariable("Humidity", ReportHeader.Humidity);
+    report->dataManager()->setReportVariable("Pressure", ReportHeader.Pressure);
+    report->dataManager()->setReportVariable("Voltage", ReportHeader.Voltage);
+    report->dataManager()->setReportVariable("Freq", ReportHeader.Freq);
+    report->dataManager()->setReportVariable("KNI", ReportHeader.KNI);
+    report->dataManager()->setReportVariable("OuterInsp", ReportHeader.OuterInsp);
+    report->dataManager()->setReportVariable("WindingsInsp", ReportHeader.WindingsInsp);
 /*    QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QString Filename = dlg->getSaveFileName(this, "", pc.HomeDir, "*.pdf");
@@ -130,7 +144,7 @@ void A1Dialog::GenerateReport()
 void A1Dialog::ConditionDataDialog()
 {
     int row = 0;
-    QDialog *dlg = new QDialog;
+    QDialog *dlg = new QDialog(this);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Условия поверки"), Qt::AlignCenter);
@@ -165,28 +179,32 @@ void A1Dialog::ConditionDataDialog()
 void A1Dialog::DNDialog()
 {
     int row = 0;
-    QDialog *dlg = new QDialog;
+    QDialog *dlg = new QDialog(this);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    lyout->addWidget(WDFunc::NewLBL(this, "Условия поверки"), Qt::AlignCenter);
-    if (CA1->Bci_block.DTCanal == 0)
-    {
-        glyout->addWidget(WDFunc::NewLBL(this, "Температура окружающей среды, °С"), row, 0, 1, 1, Qt::AlignRight);
-        glyout->addWidget(WDFunc::NewLEF(this, "Temp", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    }
-    if (CA1->Bci_block.DHCanal == 0)
-    {
-        glyout->addWidget(WDFunc::NewLBL(this, "Влажность воздуха, %"), row, 0, 1, 1, Qt::AlignRight);
-        glyout->addWidget(WDFunc::NewLEF(this, "Humidity", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    }
-    glyout->addWidget(WDFunc::NewLBL(this, "Атмосферное давление, кПа"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLEF(this, "Pressure", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Напряжение питания сети, В"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLEF(this, "Voltage", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Частота питания сети, Гц"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLEF(this, "Frequency", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Коэффициент искажения синусоидальности, %"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLEF(this, "KNI", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewLBL(this, "Данные ТН(ДН)"), Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBL(this, "Тип ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "DNType", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "DNSerialNum", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "DNTolerance", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное первичное напряжение, В"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "DNU1", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение, В"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "DNU2", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальная мощность нагрузки, ВА"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "DNP", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальная частота, Гц"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "DNFreq", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Предприятие-изготовитель"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "DNOrganization", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Место установки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "DNPlace", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Результаты внешнего осмотра"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "DNInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Результаты проверки правильности обозначения\nвыводов и групп соединений обмоток"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "DNWindingInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->setColumnStretch(1, 1);
     lyout->addLayout(glyout);
     QPushButton *pb = new QPushButton("Готово");
@@ -263,9 +281,9 @@ void A1Dialog::StartWork()
         {
             CurrentS = 0.25;
             if (PovType == GOST_1983)
-                VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * 80 / 1732;
+                VoltageInkV = static_cast<float>(Bac_block.K_DN) * 80 / 1732;
             else
-                VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * 20 / 1732;
+                VoltageInkV = static_cast<float>(Bac_block.K_DN) * 20 / 1732;
             if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == true)
             {
                 Counter = 0;
@@ -368,7 +386,7 @@ void A1Dialog::Accept()
         }
     }
     Pindex = (Counter > 4) ? (8 - Counter) : Counter;
-    VoltageInkV = static_cast<float>(CA1->Bci_block.K_DN) * Percents[Pindex] / 1732;
+    VoltageInkV = static_cast<float>(Bac_block.K_DN) * Percents[Pindex] / 1732;
     if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == false)
         Decline();
     MeasurementTimer->start();
@@ -393,6 +411,17 @@ void A1Dialog::Cancel()
 
 void A1Dialog::SetDNData()
 {
+    WDFunc::LEData(this, "DNType", ReportHeader.DNType);
+    WDFunc::LEData(this, "DNSerialNum", ReportHeader.DNSerNum);
+    WDFunc::LEData(this, "DNTolerance", ReportHeader.DNTol);
+    WDFunc::LEData(this, "DNU1", ReportHeader.DNU1);
+    WDFunc::LEData(this, "DNU2", ReportHeader.DNU2);
+    WDFunc::LEData(this, "DNP", ReportHeader.DNP);
+    WDFunc::LEData(this, "DNFreq", ReportHeader.DNF);
+    WDFunc::LEData(this, "DNOrganization", ReportHeader.DNOrganization);
+    WDFunc::LEData(this, "DNPlace", ReportHeader.DNPlace);
+    WDFunc::LEData(this, "DNInspection", ReportHeader.OuterInsp);
+    WDFunc::LEData(this, "DNWindingInspection", ReportHeader.WindingsInsp);
     emit CloseDialog();
 }
 
@@ -402,11 +431,11 @@ void A1Dialog::SetConditionData()
     if (CA1->Bci_block.DTCanal == 0)
         WDFunc::LEData(this, "Temp", ReportHeader.Temp);
     else
-        ReportHeader.Temp = ChA1->Bda_out_an.Tamb;
+        ReportHeader.Temp = QString::number(ChA1->Bda_out_an.Tamb, 'f', 5);
     if (CA1->Bci_block.DHCanal == 0)
         WDFunc::LEData(this, "Humidity", ReportHeader.Humidity);
     else
-        ReportHeader.Humidity = ChA1->Bda_out_an.Hamb;
+        ReportHeader.Humidity = QString::number(ChA1->Bda_out_an.Hamb, 'f', 5);
     WDFunc::LEData(this, "Pressure", ReportHeader.Pressure);
     WDFunc::LEData(this, "Voltage", ReportHeader.Voltage);
     WDFunc::LEData(this, "Frequency", ReportHeader.Freq);

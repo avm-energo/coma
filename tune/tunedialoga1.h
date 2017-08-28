@@ -17,6 +17,7 @@ public:
     explicit TuneDialogA1(QWidget *parent = 0);
 
 signals:
+    void Finished();
 
 public slots:
 
@@ -87,6 +88,9 @@ private slots:
     void SetDefCoefs();
     void SetExtData();
     void CancelExtData();
+
+protected:
+    void keyPressEvent(QKeyEvent *e);
 };
 
 #endif // TUNEDIALOGA1_H
