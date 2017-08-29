@@ -29,8 +29,8 @@ void TuneDialogA1::SetLbls()
 {
     lbls.append("1. Ввод пароля...");
     lbls.append("2. Отображение схемы подключения...");
-    lbls.append("6.2. Проверка правильности измерения сигналов...");
     lbls.append("6.3.1. Получение настроечных коэффициентов...");
+    lbls.append("6.2. Проверка правильности измерения сигналов...");
     lbls.append("6.3.2.1. КПТ: получение блока данных и усреднение...");
     lbls.append("6.3.2.2. КПТ: ввод данных от энергомонитора...");
     lbls.append("6.3.2.3. КПТ: расчёт регулировочных коэффициентов...");
@@ -56,10 +56,10 @@ void TuneDialogA1::SetPf()
     pf[lbls.at(count++)] = &AbstractTuneDialog::CheckPassword; // 1. Ввод пароля
     int (AbstractTuneDialog::*func)() = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::ShowScheme);
     pf[lbls.at(count++)] = func; // 2. Отображение схемы подключения
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_2);
-    pf[lbls.at(count++)] = func; // 6.2. Проверка правильности измерения сигналов переменного напряжения
     func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_1); // 6.3.1. Получение настроечных коэффициентов
     pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_2);
+    pf[lbls.at(count++)] = func; // 6.2. Проверка правильности измерения сигналов переменного напряжения
     func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_2_1); // 6.3.2.1. КПТ: получение блока данных и усреднение
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_2_2); // 6.3.2.2. КПТ: ввод данных от энергомонитора
@@ -173,7 +173,7 @@ void TuneDialogA1::SetupUI()
 
 int TuneDialogA1::Start6_2()
 {
-    WaitNSeconds(10);
+//    WaitNSeconds(10);
     if (ReadAnalogMeasurements() == GENERALERROR)
         return GENERALERROR;
     return CheckBdaValues();
@@ -439,20 +439,29 @@ int TuneDialogA1::ShowScheme()
     return NOERROR;
 }
 
-int TuneDialogA1::CheckBdaValues()
+int TuneDialogA1::CheckBdaValues(int checktype)
 {
-    if (!IsWithinLimits(ChA1->Bda_block.Ueff_ADC[0], 3900000.0, 400000.0))
-        return GENERALERROR;
-    if (!IsWithinLimits(ChA1->Bda_block.Ueff_ADC[1], 3900000.0, 400000.0))
-        return GENERALERROR;
-    if (!IsWithinLimits(ChA1->Bda_block.Frequency, 51.0, 0.05))
-        return GENERALERROR;
-    if (!IsWithinLimits(ChA1->Bda_block.Pt100, 2125.0, 1000.0))
-        return GENERALERROR;
-    if (!IsWithinLimits(ChA1->Bda_block.EXTmA1, 25.0, 25.0))
-        return GENERALERROR;
-    if (!IsWithinLimits(ChA1->Bda_block.EXTmA2, 3275.0, 75.0))
-        return GENERALERROR;
+    if (checktype | CHECK_VOLT)
+    {
+        if (!IsWithinLimits(ChA1->Bda_block.Ueff_ADC[0], 3900000.0, 400000.0))
+            return GENERALERROR;
+        if (!IsWithinLimits(ChA1->Bda_block.Ueff_ADC[1], 3900000.0, 400000.0))
+            return GENERALERROR;
+        if (!IsWithinLimits(ChA1->Bda_block.Frequency, 51.0, 0.05))
+            return GENERALERROR;
+    }
+    if (checktype | CHECK_PT100)
+    {
+        if (!IsWithinLimits(ChA1->Bda_block.Pt100, 2125.0, 1000.0))
+            return GENERALERROR;
+    }
+    if (checktype | CHECK_MA)
+    {
+        if (!IsWithinLimits(ChA1->Bda_block.EXTmA1, 25.0, 25.0))
+            return GENERALERROR;
+        if (!IsWithinLimits(ChA1->Bda_block.EXTmA2, 3275.0, 75.0))
+            return GENERALERROR;
+    }
     return NOERROR;
 }
 

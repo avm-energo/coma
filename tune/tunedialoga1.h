@@ -10,6 +10,11 @@
 #include "../config/configa1.h"
 #include "../check/checka1.h"
 
+// определения для процедуры проверки CheckBdaValues
+#define CHECK_VOLT  1
+#define CHECK_PT100 2
+#define CHECK_MA    4
+
 class TuneDialogA1 : public AbstractTuneDialog
 {
     Q_OBJECT
