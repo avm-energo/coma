@@ -38,6 +38,7 @@ void TuneDialogA1DN::SetLbls()
     lbls.append("7.2.5. Установка 120%, проверка и сохранение...");
     lbls.append("7.2.6. Запись настроечных коэффициентов и переход на новую конфигурацию...");
     lbls.append("7.2.8. Проверка аналоговых данных...");
+    lbls.append("Регулировка завершена!");
 }
 
 void TuneDialogA1DN::SetPf()
@@ -152,6 +153,14 @@ void TuneDialogA1DN::SetupUI()
     // CP2 - КОЭФФИЦИЕНТЫ МОДУЛЯ
 
     lyout = new QVBoxLayout;
+    hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBL(this,"Заводской номер делителя:"), 0);
+    hlyout->addWidget(WDFunc::NewLE(this, "DividerSN", "", tmps),10);
+    hlyout->addWidget(WDFunc::NewLBL(this,"Номинальный коэффициент деления ДН:"), 0);
+    hlyout->addWidget(WDFunc::NewSPB(this,"K_DNSPB",1,10000,1,0,UCONFWCLR));
+    hlyout->addStretch(10);
+    lyout->addLayout(hlyout);
+
     glyout = new QGridLayout;
     gb = new QGroupBox("Настроечные коэффициенты");
     for (i = 0; i < 6; ++i)
@@ -201,6 +210,7 @@ void TuneDialogA1DN::SetupUI()
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
+    WDFunc::SetLEData(this, "DividerSN", "00000000", "^\\d{8}$");
 }
 
 int TuneDialogA1DN::InputDNData()
@@ -235,6 +245,8 @@ int TuneDialogA1DN::InputDNData()
 
 void TuneDialogA1DN::FillBac()
 {
+    WDFunc::SetLEData(this, "DividerSN", QString::number(Bac_block.DNFNum));
+    WDFunc::SetSPBData(this, "K_DNSPB", Bac_block.K_DN);
     for (int i = 0; i < 6; ++i)
     {
         WDFunc::SetLEData(this, "tune"+QString::number(i+4), QString::number(Bac_block.U1kDN[i], 'f', 5));
@@ -250,6 +262,10 @@ void TuneDialogA1DN::FillBac()
 
 void TuneDialogA1DN::FillBackBac()
 {
+    QString tmps;
+    WDFunc::LEData(this, "DividerSN", tmps);
+    Bac_block.DNFNum = tmps.toInt();
+    WDFunc::SPBData(this, "K_DNSPB", Bac_block.K_DN);
     for (int i = 0; i < 6; i++)
     {
         WDFunc::LENumber(this, "tune"+QString::number(i+4), Bac_block.U1kDN[i]);

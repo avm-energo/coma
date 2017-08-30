@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 1.0.57
+VERSION = 1.0.59
 
 QT       += core gui xlsx serialport printsupport
 
@@ -17,7 +17,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = PKDN-S
 DEFINES += PROGNAME='\\"PKDN-S\\"'
-DEFINES += PROGCAPTION='\\"PKDN-Service\\040v1.0.57\\"'
+DEFINES += PROGCAPTION='\\"PKDN-Service\\040v1.0.59\\"'
+DEFINES += DEVICETYPE=2 # 1 - module, 2 - pribor, for diagnostic messages
 TEMPLATE = app
 
 SOURCES += main.cpp\

@@ -20,7 +20,10 @@ void AbstractConfDialog::ReadConf()
     if (cn->result == NOERROR)
         emit NewConfLoaded();
     else
-        MessageBox2::error(this, "ошибка", "Ошибка чтения конфигурации из модуля "+QString::number(cn->result));
+    {
+        QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
+        MessageBox2::error(this, "ошибка", "Ошибка чтения конфигурации из " + tmps + QString::number(cn->result));
+    }
 }
 
 void AbstractConfDialog::WriteConf()
@@ -103,12 +106,14 @@ QWidget *AbstractConfDialog::ConfButtons()
 {
     QWidget *wdgt = new QWidget;
     QGridLayout *wdgtlyout = new QGridLayout;
-    QPushButton *pb = new QPushButton("Прочитать из модуля");
+    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
+    QPushButton *pb = new QPushButton("Прочитать из " + tmps);
     connect(pb,SIGNAL(clicked()),this,SLOT(ReadConf()));
     if (pc.Emul)
         pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 0, 1, 1);
-    pb = new QPushButton("Записать в модуль");
+    tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
+    pb = new QPushButton("Записать в " + tmps);
     pb->setObjectName("WriteConfPB");
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteConf()));
     if (pc.Emul)

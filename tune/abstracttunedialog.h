@@ -37,6 +37,7 @@ public:
     QVector<publicclass::DataRec> S2Config;
     int SecondsToEnd15SecondsInterval;
     QHash <QString, int (AbstractTuneDialog::*)()> pf;
+    quint8 bStep;
 
     virtual void SetupUI() = 0;
     QWidget *TuneUI();

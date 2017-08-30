@@ -1,6 +1,9 @@
 #ifndef PUBLICCLASS_H
 #define PUBLICCLASS_H
 
+#define DEVICETYPE_MODULE   1 // модуль
+#define DEVICETYPE_DEVICE   2 // прибор
+
 // Макросы для выдачи сообщений
 #define ERMSG(a)    pc.AddErrMsg(publicclass::ER_MSG,__FILE__,__LINE__,a)
 #define DBGMSG      pc.AddErrMsg(publicclass::DBG_MSG,__FILE__,__LINE__,"")

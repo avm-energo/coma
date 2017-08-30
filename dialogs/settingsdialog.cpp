@@ -25,15 +25,20 @@ void SettingsDialog::SetupUI()
 {
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
+    QLabel *lbl;
+    QLineEdit *le;
+    if (pc.ModuleBsi.MTypeB == MTB_A1)
+    {
+        hlyout = new QHBoxLayout;
+        lbl = new QLabel("Наименование организации, эксплуатирующей прибор");
+        hlyout->addWidget(lbl);
+        le = new QLineEdit;
+        le->setObjectName("orgle");
+        hlyout->addWidget(le);
+        vlyout->addLayout(hlyout);
+    }
     hlyout = new QHBoxLayout;
-    QLabel *lbl = new QLabel("Наименование организации, эксплуатирующей прибор");
-    hlyout->addWidget(lbl);
-    QLineEdit *le = new QLineEdit;
-    le->setObjectName("orgle");
-    hlyout->addWidget(le);
-    vlyout->addLayout(hlyout);
-    hlyout = new QHBoxLayout;
-    lbl = new QLabel("Рабочий каталог сервисной программы");
+    lbl = new QLabel("Рабочий каталог программы");
     hlyout->addWidget(lbl, 0);
     le = new QLineEdit;
     le->setObjectName("pathle");
@@ -60,7 +65,8 @@ void SettingsDialog::SetupUI()
 
 void SettingsDialog::Fill()
 {
-    WDFunc::SetLEData(this,"orgle",pc.OrganizationString);
+    if (pc.ModuleBsi.MTypeB == MTB_A1)
+        WDFunc::SetLEData(this,"orgle",pc.OrganizationString);
     WDFunc::SetLEData(this,"pathle",pc.HomeDir);
     if (pc.ModuleBsi.MTypeB == MTB_80)
     {
@@ -71,9 +77,11 @@ void SettingsDialog::Fill()
 
 void SettingsDialog::AcceptSettings()
 {
-    WDFunc::LEData(this, "orgle", pc.OrganizationString);
+    if (pc.ModuleBsi.MTypeB == MTB_A1)
+        WDFunc::LEData(this, "orgle", pc.OrganizationString);
     WDFunc::LEData(this, "pathle", pc.HomeDir);
-    WDFunc::LEData(this, "miple", pc.MIPIP);
+    if (pc.ModuleBsi.MTypeB == MTB_80)
+        WDFunc::LEData(this, "miple", pc.MIPIP);
     this->close();
 }
 

@@ -54,12 +54,13 @@ void HiddenDialog::SetupUI()
     setMinimumSize(QSize(800, 600));
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    WDFunc::AddLabelAndLineeditH(hlyout, "Тип модуля:", "modtype");
+    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
+    WDFunc::AddLabelAndLineeditH(hlyout, "Тип "+tmps+":", "modtype");
     hlyout->setStretch(1, 20);
     hlyout->addStretch(600);
     vlyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер модуля:", "modsn", true);
+    WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер "+tmps+":", "modsn", true);
     hlyout->setStretch(1, 20);
     hlyout->addStretch(600);
     vlyout->addLayout(hlyout);

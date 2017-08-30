@@ -54,7 +54,7 @@ void ConfDialogA1::FillBack()
     QString tmps;
     int tmpi;
     CA1->Bci_block.DDOsc = 0;
-    WDFunc::LEData(this, "DividerSN", tmps);
+//    WDFunc::LEData(this, "DividerSN", tmps);
 //    CA1->Bci_block.DNFNum = tmps.toInt();
 //    WDFunc::SPBData(this, "K_DNSPB", CA1->Bci_block.K_DN);
     WDFunc::CBIndex(this, "TokrCB", CA1->Bci_block.DTCanal);
@@ -81,12 +81,12 @@ void ConfDialogA1::SetupUI()
     QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
     cp1->setStyleSheet(tmps);
 
-    hlyout->addWidget(WDFunc::NewLBL(this,"Заводской номер делителя:"), 0);
+/*    hlyout->addWidget(WDFunc::NewLBL(this,"Заводской номер делителя:"), 0);
     hlyout->addWidget(WDFunc::NewLE(this, "DividerSN", "", tmps),10);
     hlyout->addWidget(WDFunc::NewLBL(this,"Номинальный коэффициент деления ДН:"), 0);
     hlyout->addWidget(WDFunc::NewSPB(this,"K_DNSPB",1,10000,1,0,UCONFWCLR));
     hlyout->addStretch(10);
-    vlyout1->addLayout(hlyout);
+    vlyout1->addLayout(hlyout); */
 
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Канал датчика Tокр:"));
@@ -163,7 +163,7 @@ void ConfDialogA1::SetupUI()
     QWidget *wdgt = ConfButtons();
     vlyout1->addWidget(wdgt);
     setLayout(vlyout1);
-    WDFunc::SetLEData(this, "DividerSN", "00000000", "^\\d{8}$");
+//    WDFunc::SetLEData(this, "DividerSN", "00000000", "^\\d{8}$");
 }
 
 void ConfDialogA1::CheckConf()

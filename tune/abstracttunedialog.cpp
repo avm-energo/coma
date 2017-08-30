@@ -34,7 +34,7 @@ QWidget *AbstractTuneDialog::TuneUI()
     SetLbls();
     SetPf();
     int i;
-    // CP1 - НАСТРОЙКА ПРИБОРА
+    // CP1 - НАСТРОЙКА ПРИБОРА/МОДУЛЯ
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QPushButton *pb = new QPushButton("Начать настройку");
@@ -75,12 +75,16 @@ QWidget *AbstractTuneDialog::BottomUI()
     QPushButton *pb = new QPushButton("Установить настроечные коэффициенты по умолчанию");
     connect(pb,SIGNAL(clicked()),this,SLOT(SetDefCoefs()));
     lyout->addWidget(pb);
-    pb = new QPushButton("Прочитать настроечные коэффициенты из модуля");
+    QString tmps = "Прочитать настроечные коэффициенты из ";
+    tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
+    pb = new QPushButton(tmps);
     connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs()));
     if (pc.Emul)
         pb->setEnabled(false);
     lyout->addWidget(pb);
-    pb = new QPushButton("Записать настроечные коэффициенты в модуль");
+    tmps = "Записать настроечные коэффициенты в ";
+    tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
+    pb = new QPushButton(tmps);
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteTuneCoefs()));
     if (pc.Emul)
         pb->setEnabled(false);
@@ -99,7 +103,6 @@ QWidget *AbstractTuneDialog::BottomUI()
 
 void AbstractTuneDialog::ProcessTune()
 {
-    int i;
     if (lbls.size() > pf.size())
     {
         ERMSG("lbls size > pf size");
@@ -119,24 +122,24 @@ void AbstractTuneDialog::ProcessTune()
     MeasurementTimer->start();
     Cancelled = Skipped = false;
     MsgClear(); // очистка экрана с сообщениями
-    for (i=0; i<lbls.size(); ++i)
+    for (bStep=0; bStep<lbls.size(); ++bStep)
     {
-        MsgSetVisible(i);
-        int res = (this->*pf[lbls.at(i)])();
+        MsgSetVisible(bStep);
+        int res = (this->*pf[lbls.at(bStep)])();
         if ((res == GENERALERROR) || (Cancelled))
         {
-            ErMsgSetVisible(i);
+            ErMsgSetVisible(bStep);
             WDFunc::SetEnabled(this, "starttune", true);
-            WARNMSG(lbls.at(i));
+            WARNMSG(lbls.at(bStep));
             MeasurementTimer->stop();
             return;
         }
         else if (res == ER_RESEMPTY)
-            SkMsgSetVisible(i);
+            SkMsgSetVisible(bStep);
         else
-            OkMsgSetVisible(i);
+            OkMsgSetVisible(bStep);
     }
-    MsgSetVisible(i); // выдаём надпись "Настройка завершена!"
+    MsgSetVisible(bStep); // выдаём надпись "Настройка завершена!"
     MeasurementTimer->stop();
     WDFunc::SetEnabled(this, "starttune", true);
 }
@@ -247,7 +250,7 @@ void AbstractTuneDialog::SaveToFileEx()
     switch (res)
     {
     case NOERROR:
-        MessageBox2::information(this, "Внимание", "Записано успешно!");
+        MessageBox2::information(this, "Внимание", "Файл коэффициентов записан успешно!");
         break;
     case ER_FILEWRITE:
         MessageBox2::error(this, "Ошибка", "Ошибка при записи файла!");
@@ -307,12 +310,13 @@ void AbstractTuneDialog::WriteTuneCoefs()
 {
     FillBackBac();
     cn->Send(CN_WBac, AbsBac.BacBlockNum, AbsBac.BacBlock, AbsBac.BacBlockSize);
+    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     if (cn->result == NOERROR)
     {
-        MessageBox2::information(this, "Внимание", "Записано успешно!");
+        MessageBox2::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
         return;
     }
-    MessageBox2::error(this, "Ошибка", "Ошибка записи коэффициентов в модуль!");
+    MessageBox2::error(this, "Ошибка", "Ошибка записи коэффициентов в " + tmps + "!");
 }
 
 void AbstractTuneDialog::SaveToFile()

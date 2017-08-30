@@ -399,7 +399,8 @@ void MainWindow::OpenBhbDialog()
 {
     if (!cn->Connected)
     {
-        MessageBox2::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с модулем");
+        QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модулем" : "прибором");
+        MessageBox2::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с "+tmps);
         return;
     }
     if (CheckPassword() == GENERALERROR)

@@ -35,13 +35,14 @@ void oscdialog::SetupUI()
     s_tqTableView *tv = new s_tqTableView;
     tv->setObjectName("osctv");
     tm = new s_tablemodel;
-    QPushButton *pb = new QPushButton("Получить данные по осциллограммам в памяти модуля");
+    QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
+    QPushButton *pb = new QPushButton("Получить данные по осциллограммам в памяти "+tmps);
     connect(pb,SIGNAL(clicked()),this,SLOT(GetOscInfo()));
     if (pc.Emul)
         pb->setEnabled(false);
     lyout->addWidget(pb);
     lyout->addWidget(tv, 89);
-    pb = new QPushButton("Стереть все осциллограммы в памяти модуля");
+    pb = new QPushButton("Стереть все осциллограммы в памяти "+tmps);
     connect(pb,SIGNAL(clicked()),this,SLOT(EraseOsc()));
     if (pc.Emul)
         pb->setEnabled(false);

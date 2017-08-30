@@ -13,7 +13,8 @@
 // определения для процедуры проверки CheckBdaValues
 #define CHECK_VOLT  1
 #define CHECK_PT100 2
-#define CHECK_MA    4
+#define CHECK_MA1   3
+#define CHECK_MA2   4
 
 class TuneDialogA1 : public AbstractTuneDialog
 {
@@ -47,9 +48,7 @@ private:
 
     struct EMData
     {
-        float u1;
-        float u2;
-        float phy;
+        float u;
         float freq;
     };
 
@@ -60,7 +59,6 @@ private:
     void SetPf();
     void SetupUI();
 
-    int Start6_2();
     int Start6_3_1();
     int Start6_3_2_1();
     int Start6_3_2_2();
@@ -81,7 +79,7 @@ private:
     int Start6_3_9();
 
     int ShowScheme();
-    int CheckBdaValues();
+    int CheckBdaValues(int checktype);
     int CheckAnalogValues(bool isPrecise); // проверка Bda_in на корректность
     int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта
     void GetBdAndFillMTT();
