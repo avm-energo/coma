@@ -47,7 +47,6 @@ void TuneDialogA1::SetLbls()
     lbls.append("6.3.2.3. КПТ: расчёт регулировочных коэффициентов...");
     lbls.append("6.3.8. Запись настроечных коэффициентов и переход на новую конфигурацию...");
     lbls.append("6.3.9. Проверка аналоговых данных...");
-    lbls.append("Регулировка завершена!");
 }
 
 void TuneDialogA1::SetPf()
@@ -101,6 +100,7 @@ void TuneDialogA1::SetupUI()
     QWidget *cp3 = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *TuneTW = new QTabWidget;
+    TuneTW->setObjectName("tunetw");
 
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);
@@ -395,6 +395,7 @@ int TuneDialogA1::Start6_3_8()
 {
     if (MessageBox2::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?") == false)
         return GENERALERROR;
+    FillBac();
     SaveToFileEx();
     WriteTuneCoefs();
     if (cn->result != NOERROR)
@@ -405,13 +406,16 @@ int TuneDialogA1::Start6_3_8()
 int TuneDialogA1::Start6_3_9()
 {
     QEventLoop Loop;
-    WaitNSeconds(10);
+//    WaitNSeconds(10);
     QString tmps = "Пожалуйста, просмотрите текущие данные после регулировки в соответствующих окнах";
     if (TuneFileSaved)
         tmps += "\nЕсли в процессе регулировки произошла ошибка, сохранённые коэффициенты\n"
                 "Вы можете загрузить из файла "+pc.SystemHomeDir+"temptune.tn1";
     tmps += "\nПосле окончания проверки нажмите Enter для завершения процедуры регулировки";
-//    MessageBox2::information(this, "Завершение регулировки", tmps);
+    MessageBox2::information(this, "Завершение регулировки", tmps);
+    QTabWidget *TuneTW = this->findChild<QTabWidget *>("tunetw");
+    if (TuneTW != 0)
+        TuneTW->setCurrentIndex(2); // показ данных измерений
     connect(this,SIGNAL(Finished()),&Loop,SLOT(quit()));
     Loop.exec();
     return NOERROR;

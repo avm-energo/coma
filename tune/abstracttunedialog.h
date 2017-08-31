@@ -69,6 +69,7 @@ signals:
 
 public slots:
     void CancelTune();
+    void ReadTuneCoefs();
     void WriteTuneCoefs();
     void SaveToFile();
 
@@ -77,7 +78,6 @@ private:
 private slots:
     void StartTune();
     void PasswordCheck(QString &psw);
-    void ReadTuneCoefs();
     void LoadFromFile();
     virtual int ReadAnalogMeasurements() = 0;
     void Good();

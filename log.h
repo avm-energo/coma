@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QFile>
 
-//#define LOG_MAX_SIZE    1048576
+#define LOG_MAX_SIZE    1048576
 
 class Log : public QObject
 {
@@ -20,13 +20,14 @@ public:
 //    void Info(QByteArray &ba);
     void intvarvalue(const QString &var, int value);
     void WriteFile(const QString &Prepend, const QString &msg);
+    void WriteRaw(const QByteArray &ba);
     
 private:
     QString LogFile;
     bool CanLog;
     QFile *fp;
 
-//    void CheckAndGz();
+    void CheckAndGz();
 };
 
 #endif // LOG_H

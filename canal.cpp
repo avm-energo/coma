@@ -4,11 +4,14 @@
 #include <QCoreApplication>
 #include <QTime>
 #include "canal.h"
+#include "widgets/messagebox.h"
 
 Canal *cn;
 
 Canal::Canal(QObject *parent) : QObject(parent)
 {
+    log = new Log;
+    log->Init("canal.log");
     RDLength = 0;
     SegEnd = 0;
     SegLeft = 0;
@@ -166,6 +169,12 @@ void Canal::InitiateSend()
 
 void Canal::ParseIncomeData(QByteArray &ba)
 {
+    if (pc.WriteUSBLog)
+    {
+        log->WriteRaw("<-");
+        log->WriteRaw(ba.toHex());
+        log->WriteRaw("\n");
+    }
     if (cmd == CN_Unk) // игнорирование вызова процедуры, если не было послано никакой команды
         return;
     int res;
@@ -173,17 +182,17 @@ void Canal::ParseIncomeData(QByteArray &ba)
     quint32 RDSize = static_cast<quint32>(ReadDataChunk.size());
     if (RDSize<3) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
         return;
+    if (ReadDataChunk.at(0) != CN_SS)
+    {
+        Finish(CN_RCVDATAERROR);
+        return;
+    }
     if (ReadDataChunk.at(1) == CN_ResErr)
     {
         if (RDSize < 5) // некорректная посылка
             Finish(CN_RCVDATAERROR);
         else
             Finish(USO_NOERR + ReadDataChunk.at(4));
-        return;
-    }
-    if (ReadDataChunk.at(0) != CN_SS)
-    {
-        Finish(CN_RCVDATAERROR);
         return;
     }
     switch (bStep)
@@ -465,7 +474,9 @@ void Canal::Finish(int ernum)
     cmd = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
     if (ernum != NOERROR)
     {
-        if (ernum < pc.errmsgs.size())
+        if (ernum < 0)
+            ERMSG("ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ!!!");
+        else if (ernum < pc.errmsgs.size())
             ERMSG(pc.errmsgs.at(ernum));
         else
             ERMSG("Произошла неведомая фигня #"+QString::number(ernum,10));
@@ -571,6 +582,12 @@ void Canal::WriteDataToPort(QByteArray &ba)
         quint64 basize = tmpba.size();
         while ((byteswritten < basize) && (!tmpba.isEmpty()))
         {
+            if (pc.WriteUSBLog)
+            {
+                log->WriteRaw("->");
+                log->WriteRaw(tmpba.toHex());
+                log->WriteRaw("\n");
+            }
             qint64 tmpi = port->write(tmpba);
             if (tmpi == GENERALERROR)
             {

@@ -42,11 +42,13 @@ void ConfDialogA1::Fill()
     WDFunc::SetCBIndex(this, "HumidityCB", (CA1->Bci_block.DHCanal > 0) ? (CA1->Bci_block.DHCanal-1) : 0);
     WDFunc::SetSPBData(this, "HumiditySPB4", CA1->Bci_block.H4);
     WDFunc::SetSPBData(this, "HumiditySPB20", CA1->Bci_block.H20);
+#if PROGSIZE >= PROGSIZE_LARGE
     WDFunc::SetSPBData(this, "thr.1", CA1->Bci_block.DUosc);
     WDFunc::SetSPBData(this, "thr.2", CA1->Bci_block.DUmin);
     WDFunc::SetCBData(this, "NPointsCB", QString::number(CA1->Bci_block.NPoints));
     WDFunc::SetSPBData(this, "NFilterSPB", CA1->Bci_block.Filter);
     WDFunc::SetSPBData(this, "NHarmFiltSPB", CA1->Bci_block.NHarmFilt);
+#endif
 }
 
 void ConfDialogA1::FillBack()
@@ -65,12 +67,14 @@ void ConfDialogA1::FillBack()
     CA1->Bci_block.DHCanal = (tmpi > 0) ? (tmpi+1) : 0;
     WDFunc::SPBData(this, "HumiditySPB4", CA1->Bci_block.H4);
     WDFunc::SPBData(this, "HumiditySPB20", CA1->Bci_block.H20);
+#if PROGSIZE >= PROGSIZE_LARGE
     WDFunc::SPBData(this, "thr.1", CA1->Bci_block.DUosc);
     WDFunc::SPBData(this, "thr.2", CA1->Bci_block.DUmin);
     WDFunc::CBData(this, "NPointsCB", tmps);
     CA1->Bci_block.NPoints = tmps.toInt();
     WDFunc::SPBData(this, "NFilterSPB", CA1->Bci_block.Filter);
     WDFunc::SPBData(this, "NHarmFiltSPB", CA1->Bci_block.NHarmFilt);
+#endif
 }
 
 void ConfDialogA1::SetupUI()
@@ -120,6 +124,7 @@ void ConfDialogA1::SetupUI()
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
 
+#if PROGSIZE >= PROGSIZE_LARGE
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Уставка скачка напряжения для запуска осциллографирования, %"));
     hlyout->addWidget(WDFunc::NewSPB(this, "thr.1", 0, 100, 0.1, 1, UCONFWCLR));
@@ -149,6 +154,7 @@ void ConfDialogA1::SetupUI()
     hlyout->addWidget(WDFunc::NewSPB(this, "NHarmFiltSPB", 1, 1000, 1, 0, UCONFCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
+#endif
 
     cp1->setLayout(vlyout1);
 

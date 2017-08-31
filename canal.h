@@ -10,6 +10,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 
 #include "publicclass.h"
+#include "log.h"
 
 // Канал связи с модулем
 
@@ -61,13 +62,6 @@ class Canal : public QObject
 public:
     explicit Canal(QObject *parent = 0);
     ~Canal();
-
-/*    enum board_types
-    {
-        BT_NONE,
-        BT_BASE,
-        BT_MEZONIN
-    }; */
 
     int result;
     QSerialPortInfo info;
@@ -124,6 +118,7 @@ private:
     quint8 BoardType;
     bool PortCloseTimeoutSet;
     QSerialPort *port;
+    Log *log;
 
     bool InitializePort(QSerialPortInfo &pinfo, int baud);
     void ClosePort();

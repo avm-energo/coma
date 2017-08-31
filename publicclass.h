@@ -4,6 +4,12 @@
 #define DEVICETYPE_MODULE   1 // модуль
 #define DEVICETYPE_DEVICE   2 // прибор
 
+// program sizes
+#define PROGSIZE_SMALL  1
+#define PROGSIZE_MEDIUM 2
+#define PROGSIZE_LARGE  3
+#define PROGSIZE_FULL   4
+
 // Макросы для выдачи сообщений
 #define ERMSG(a)    pc.AddErrMsg(publicclass::ER_MSG,__FILE__,__LINE__,a)
 #define DBGMSG      pc.AddErrMsg(publicclass::DBG_MSG,__FILE__,__LINE__,"")
@@ -263,6 +269,7 @@ public:
     quint32 MType;
 
     Log log;
+    bool WriteUSBLog; // надо ли писать лог обмена в файл
     QString HomeDir; // рабочий каталог программы
     QString SystemHomeDir; // системный каталог программы
     QString OrganizationString; // наименование организации, работающей с программой

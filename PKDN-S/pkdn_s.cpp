@@ -69,6 +69,7 @@ void pkdn_s::SetupUI()
     act->setIcon(QIcon(":/pic/stop.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(Disconnect()));
     tb->addAction(act);
+#if PROGSIZE >= PROGSIZE_LARGE
     tb->addSeparator();
     act = new QAction(this);
     act->setToolTip("Эмуляция A1");
@@ -78,6 +79,7 @@ void pkdn_s::SetupUI()
     act->setIcon(QIcon(":/pic/a1.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
     tb->addAction(act);
+#endif
     tb->addSeparator();
     act = new QAction(this);
     act->setToolTip("Настройки");
@@ -96,7 +98,9 @@ void pkdn_s::SetupUI()
     lyout->addWidget(Least());
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
-    SetSlideWidget();
+#if PROGSIZE >= PROGSIZE_LARGE
+        SetSlideWidget();
+#endif
 }
 
 void pkdn_s::Stage3()
@@ -115,17 +119,23 @@ void pkdn_s::Stage3()
     connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
     connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
     CheckDialogA1 *chdlg = new CheckDialogA1;
+//    oscdialog *OscD = new oscdialog;
+//    fwupdialog *FwUpD = new fwupdialog;
+#if PROGSIZE >= PROGSIZE_LARGE
     TuneDialogA1 *tdlg = new TuneDialogA1;
     connect(this,SIGNAL(FinishAll()),tdlg,SLOT(CancelTune()));
-    TuneDialogA1DN *t2dlg = new TuneDialogA1DN;
-//    oscdialog *OscD = new oscdialog;
-    downloaddialog *DownD = new downloaddialog;
-//    fwupdialog *FwUpD = new fwupdialog;
     MainTW->addTab(tdlg, "Регулировка");
+#endif
+#if PROGSIZE >= PROGSIZE_MEDIUM
+    TuneDialogA1DN *t2dlg = new TuneDialogA1DN;
     MainTW->addTab(t2dlg, "Настройка своего ДН");
+#endif
     MainTW->addTab(chdlg, "Измерения");
 //    MainTW->addTab(OscD, "Осциллограммы");
+#if PROGSIZE >= PROGSIZE_LARGE
+    downloaddialog *DownD = new downloaddialog;
     MainTW->addTab(DownD, "События");
+#endif
     MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
 //    MainTW->addTab(FwUpD, "Загрузка ВПО");
     if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации

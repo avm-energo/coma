@@ -38,7 +38,6 @@ void TuneDialogA1DN::SetLbls()
     lbls.append("7.2.5. Установка 120%, проверка и сохранение...");
     lbls.append("7.2.6. Запись настроечных коэффициентов и переход на новую конфигурацию...");
     lbls.append("7.2.8. Проверка аналоговых данных...");
-    lbls.append("Регулировка завершена!");
 }
 
 void TuneDialogA1DN::SetPf()
@@ -299,6 +298,32 @@ void TuneDialogA1DN::FillBackBdOut()
     ChA1->Bda_out.Phy = tmps.toFloat();
     WDFunc::LBLText(this, "tunednfreq", tmps);
     ChA1->Bda_out.Frequency = tmps.toFloat();
+    WDFunc::LBLText(this, "tunepercent", tmps);
+    ChA1->Bda_out.dUrms = tmps.toFloat();
+}
+
+void TuneDialogA1DN::FillBdIn()
+{
+    WDFunc::SetLBLText(this, "tunednu1i", QString::number(ChA1->Bda_in.Uef_filt[0], 'f', 5));
+    WDFunc::SetLBLText(this, "tunednu2i", QString::number(ChA1->Bda_in.Uef_filt[1], 'f', 5));
+    WDFunc::SetLBLText(this, "tunednphyi", QString::number(ChA1->Bda_in.Phy, 'f', 5));
+    WDFunc::SetLBLText(this, "tunednfreqi", QString::number(ChA1->Bda_in.Frequency, 'f', 5));
+    WDFunc::SetLBLText(this, "tunepercenti", QString::number(ChA1->Bda_in.dUrms, 'f', 5));
+}
+
+void TuneDialogA1DN::FillBackBdIn()
+{
+    QString tmps;
+    WDFunc::LBLText(this, "tunednu1i", tmps);
+    ChA1->Bda_in.Uef_filt[0] = tmps.toFloat();
+    WDFunc::LBLText(this, "tunednu2i", tmps);
+    ChA1->Bda_in.Uef_filt[1] = tmps.toFloat();
+    WDFunc::LBLText(this, "tunednphyi", tmps);
+    ChA1->Bda_in.Phy = tmps.toFloat();
+    WDFunc::LBLText(this, "tunednfreqi", tmps);
+    ChA1->Bda_in.Frequency = tmps.toFloat();
+    WDFunc::LBLText(this, "tunepercenti", tmps);
+    ChA1->Bda_in.dUrms = tmps.toFloat();
 }
 
 void TuneDialogA1DN::SetDefCoefs()
@@ -325,11 +350,13 @@ void TuneDialogA1DN::SetDefCoefs()
 
 void TuneDialogA1DN::AcceptDNData()
 {
+    ReadTuneCoefs();
     QString tmps;
     WDFunc::LEData(this, "K_DN", tmps);
     Bac_block.K_DN = tmps.toFloat();
     WDFunc::LEData(this, "DNFNum", tmps);
     Bac_block.DNFNum = tmps.toUInt();
+    cn->Send(CN_WBac, BT_MEZONIN, &Bac_block, sizeof(Bac));
     Accepted = true;
     emit DNDataIsSet();
 }
@@ -389,6 +416,7 @@ int TuneDialogA1DN::Start7_2_345(int counter)
     if (StartMeasurement() != NOERROR)
         return GENERALERROR;
     FillBackBdOut();
+    FillBackBdIn();
     // теперь в ChA1->Bda_block лежат нужные нам значения
     Bac_block.U1kDN[counter+1] = ChA1->Bda_in.Uef_filt[0];
     Bac_block.U2kDN[counter+1] = ChA1->Bda_in.Uef_filt[1];
@@ -501,7 +529,10 @@ int TuneDialogA1DN::ShowScheme()
 
 void TuneDialogA1DN::GetBdAndFillMTT()
 {
-    cn->Send(CN_GBd, 4, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
+    cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
     if (cn->result == NOERROR)
         FillBdOut();
+    cn->Send(CN_GBd, A1_BDA_IN_BN, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1));
+    if (cn->result == NOERROR)
+        FillBdIn();
 }

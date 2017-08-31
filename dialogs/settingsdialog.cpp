@@ -27,7 +27,7 @@ void SettingsDialog::SetupUI()
     QHBoxLayout *hlyout = new QHBoxLayout;
     QLabel *lbl;
     QLineEdit *le;
-    if (pc.ModuleBsi.MTypeB == MTB_A1)
+    if (PROGNAME == "PKDN-S")
     {
         hlyout = new QHBoxLayout;
         lbl = new QLabel("Наименование организации, эксплуатирующей прибор");
@@ -57,6 +57,11 @@ void SettingsDialog::SetupUI()
         hlyout->addWidget(le);
         vlyout->addLayout(hlyout);
     }
+#if PROGSIZE >= PROGSIZE_FULL
+    hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewChB(this, "writelogchb", "Запись обмена данными в файл"));
+    vlyout->addLayout(hlyout);
+#endif
     pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),this,SLOT(AcceptSettings()));
     vlyout->addWidget(pb);
@@ -65,7 +70,7 @@ void SettingsDialog::SetupUI()
 
 void SettingsDialog::Fill()
 {
-    if (pc.ModuleBsi.MTypeB == MTB_A1)
+    if (PROGNAME == "PKDN-S")
         WDFunc::SetLEData(this,"orgle",pc.OrganizationString);
     WDFunc::SetLEData(this,"pathle",pc.HomeDir);
     if (pc.ModuleBsi.MTypeB == MTB_80)
@@ -73,15 +78,17 @@ void SettingsDialog::Fill()
         QString restring = "^[0-2]{0,1}[0-9]{1,2}{\\.[0-2]{0,1}[0-9]{1,2}}{3}$";
         WDFunc::SetLEData(this,"miple",pc.MIPIP,restring);
     }
+    WDFunc::SetChBData(this, "writelogchb", pc.WriteUSBLog);
 }
 
 void SettingsDialog::AcceptSettings()
 {
-    if (pc.ModuleBsi.MTypeB == MTB_A1)
+    if (PROGNAME == "PKDN-S")
         WDFunc::LEData(this, "orgle", pc.OrganizationString);
     WDFunc::LEData(this, "pathle", pc.HomeDir);
     if (pc.ModuleBsi.MTypeB == MTB_80)
         WDFunc::LEData(this, "miple", pc.MIPIP);
+    WDFunc::ChBData(this, "writelogchb", pc.WriteUSBLog);
     this->close();
 }
 

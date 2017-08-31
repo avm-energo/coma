@@ -160,7 +160,7 @@ QWidget *CheckA1::Bd4W(const QString &begin, QWidget *parent)
 
 QWidget *CheckA1::Bda_inW(QWidget *parent)
 {
-    return Bd1W("Переменные напряжения, приведённые ко входу", "Bda_in", parent);
+    return Bd1W("Переменные напряжения на входах", "Bda_in", parent);
 }
 
 QWidget *CheckA1::Bda_outW(QWidget *parent)

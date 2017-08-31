@@ -92,6 +92,7 @@ QWidget *MainWindow::Least()
     return w;
 }
 
+#if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::SetSlideWidget()
 {
     QWidget *SlideWidget = new QWidget(this);
@@ -112,38 +113,41 @@ void MainWindow::SetSlideWidget()
     SWGeometry = SlideWidget->geometry();
     SWHide = true;
 }
+#endif
 
 void MainWindow::SetupMenubar()
 {
-    QMenuBar *MainMenuBar = new QMenuBar;
+    QMenuBar *menubar = new QMenuBar;
     QString tmps = "QMenuBar {background-color: "+QString(MAINWINCLRA1)+";}"\
             "QMenuBar::item {background-color: "+QString(MAINWINCLRA1)+";}";
-    MainMenuBar->setStyleSheet(tmps);
-    QMenu *MainMenu = new QMenu;
-    MainMenu->setTitle("Главное");
+    menubar->setStyleSheet(tmps);
+    QMenu *menu = new QMenu;
+    menu->setTitle("Главное");
     QAction *act = new QAction(this);
     act->setText("Выход");
     connect(act,SIGNAL(triggered()),this,SLOT(close()));
-    MainMenu->addAction(act);
+    menu->addAction(act);
     act = new QAction(this);
     act->setText("Соединение");
     act->setIcon(QIcon(":/pic/play.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
-    MainMenu->addAction(act);
+    menu->addAction(act);
     act = new QAction(this);
     act->setText("Разрыв соединения");
     act->setIcon(QIcon(":/pic/stop.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(Disconnect()));
-    MainMenu->addAction(act);
-    MainMenuBar->addMenu(MainMenu);
+    menu->addAction(act);
+    menubar->addMenu(menu);
 
-    QMenu *menu = new QMenu;
+#if PROGSIZE >= PROGSIZE_LARGE
+    menu = new QMenu;
     menu->setTitle("Секретные операции");
     act = new QAction(this);
     act->setText("Работа с Hidden Block");
     connect(act,SIGNAL(triggered()),this,SLOT(OpenBhbDialog()));
     menu->addAction(act);
-    MainMenuBar->addMenu(menu);
+    menubar->addMenu(menu);
+#endif
 
     menu = new QMenu;
     menu->setTitle("Настройки");
@@ -152,20 +156,22 @@ void MainWindow::SetupMenubar()
     act->setIcon(QIcon(":/pic/settings.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
     menu->addAction(act);
-    MainMenuBar->addMenu(menu);
+    menubar->addMenu(menu);
 
     act = new QAction(this);
     act->setText("О программе");
     connect(act,SIGNAL(triggered()),this,SLOT(GetAbout()));
-    MainMenuBar->addAction(act);
-    setMenuBar(MainMenuBar);
+    menubar->addAction(act);
+    setMenuBar(menubar);
 }
 
 void MainWindow::PrepareTimers()
 {
+#if PROGSIZE >= PROGSIZE_LARGE
     QTimer *MouseTimer = new QTimer;
     connect(MouseTimer,SIGNAL(timeout()),this,SLOT(MouseMove()));
     MouseTimer->start(50);
+#endif
 }
 
 void MainWindow::LoadSettings()
@@ -175,6 +181,7 @@ void MainWindow::LoadSettings()
     pc.Port = sets->value("Port", "COM1").toString();
     pc.HomeDir = sets->value("Homedir", HomeDir).toString();
     pc.OrganizationString = sets->value("Organization", "Р&К").toString();
+    pc.WriteUSBLog = sets->value("WriteLog", "0").toBool();
 }
 
 void MainWindow::SaveSettings()
@@ -183,6 +190,7 @@ void MainWindow::SaveSettings()
     sets->setValue("Port", pc.Port);
     sets->setValue("Homedir", pc.HomeDir);
     sets->setValue("Organization", pc.OrganizationString);
+    sets->setValue("WriteLog", pc.WriteUSBLog);
 }
 
 void MainWindow::ClearTW()
@@ -202,6 +210,7 @@ void MainWindow::ClearTW()
         MainTE->clear();
 }
 
+#if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::ShowOrHideSlideSW()
 {
     QWidget *w = this->findChild<QWidget *>("slidew");
@@ -228,7 +237,7 @@ void MainWindow::ShowOrHideSlideSW()
     ani->start();
     SWHide = !SWHide;
 }
-
+#endif
 int MainWindow::CheckPassword()
 {
     Cancelled = ok = false;
@@ -339,9 +348,11 @@ void MainWindow::Stage2()
     pc.MType = ((pc.ModuleBsi.MTypeB & 0x000000FF) << 8) | (pc.ModuleBsi.MTypeM & 0x000000FF);
     pc.ModuleTypeString = "ПКДН-";
     pc.ModuleTypeString.append(QString::number(pc.MType, 16));
+#if PROGSIZE >= PROGSIZE_LARGE
     if ((pc.ModuleBsi.SerialNumB == 0xFFFFFFFF) || ((pc.ModuleBsi.SerialNumM == 0xFFFFFFFF) && (pc.ModuleBsi.MTypeM != MTM_00)) || \
             (pc.ModuleBsi.SerialNum == 0xFFFFFFFF)) // серийный номер не задан, выдадим предупреждение
         OpenBhbDialog();
+#endif
     Stage3();
 }
 
@@ -361,12 +372,14 @@ void MainWindow::Fill()
         ConfM->Fill();
 }
 
+#if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::UpdateMainTE(QByteArray &ba)
 {
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
         MainTE->append(ba.toHex());
 }
+#endif
 
 void MainWindow::SetPort(QString str)
 {
@@ -395,6 +408,7 @@ void MainWindow::CancelPswCheck()
     Cancelled = true;
 }
 
+#if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::OpenBhbDialog()
 {
     if (!cn->Connected)
@@ -439,11 +453,14 @@ void MainWindow::StartEmul()
     pc.Emul = true;
     Stage3();
 }
+#endif
 
 void MainWindow::StartSettingsDialog()
 {
     SettingsDialog *dlg = new SettingsDialog;
+//    dlg->Fill();
     dlg->exec();
+    SaveSettings();
 }
 
 void MainWindow::ShowErrorDialog()
@@ -498,9 +515,9 @@ void MainWindow::GetAbout()
     QString tmps = QString(PROGCAPTION);
     QLabel *lbl = new QLabel(tmps);
     l2yout->addWidget(lbl);
-    lbl = new QLabel("накорябано Ёвелем");
+    lbl = new QLabel("ООО \"АВМ-Энерго\"");
     l2yout->addWidget(lbl);
-    lbl = new QLabel("в 2015-2017 гг.");
+    lbl = new QLabel("2015-2017 гг.");
     l2yout->addWidget(lbl);
     l2yout->addStretch(10);
     lbl = new QLabel;
@@ -538,6 +555,7 @@ void MainWindow::ContinueDisconnect()
     pc.Emul = false;
 }
 
+#if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::MouseMove()
 {
     QPoint curPos = mapFromGlobal(QCursor::pos());
@@ -555,6 +573,7 @@ void MainWindow::MouseMove()
             ShowOrHideSlideSW();
     }
 }
+#endif
 
 void MainWindow::resizeEvent(QResizeEvent *e)
 {

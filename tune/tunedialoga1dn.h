@@ -62,6 +62,8 @@ private slots:
     void FillBackBac();
     void FillBdOut();
     void FillBackBdOut();
+    void FillBdIn();
+    void FillBackBdIn();
     void SetDefCoefs();
     void AcceptDNData();
 

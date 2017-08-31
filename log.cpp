@@ -1,8 +1,8 @@
 #include <QDateTime>
 #include <QDir>
 //#include <QStandardPaths>
-//#define LZMA_API_STATIC
-//#include <lzma/lzma.h>
+#define LZMA_API_STATIC
+#include "lzma/lzma.h"
 
 #include "log.h"
 #include "publicclass.h"
@@ -69,7 +69,14 @@ void Log::WriteFile(const QString &Prepend, const QString &msg)
     fp->write(msg.toLocal8Bit());
     fp->write("\n");
     fp->flush();
-//    CheckAndGz();
+    CheckAndGz();
+}
+
+void Log::WriteRaw(const QByteArray &ba)
+{
+    fp->write(ba);
+    fp->flush();
+    CheckAndGz();
 }
 
 /*void Log::Info(QByteArray &ba)
@@ -84,7 +91,7 @@ void Log::WriteFile(const QString &Prepend, const QString &msg)
 //    CheckAndGz();
 } */
 
-/*void Log::CheckAndGz()
+void Log::CheckAndGz()
 {
     QString GZippedLogFile = LogFile + ".xz";
     if (fp->size() >= LOG_MAX_SIZE)
@@ -186,4 +193,3 @@ void Log::WriteFile(const QString &Prepend, const QString &msg)
         }
     }
 }
-*/

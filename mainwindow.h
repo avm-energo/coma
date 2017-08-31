@@ -72,7 +72,9 @@ public:
     QWidget *MainInfoWidget();
     QWidget *HthWidget();
     QWidget *Least();
+#if PROGSIZE >= PROGSIZE_LARGE
     void SetSlideWidget();
+#endif
 //    void SetParent(QWidget *parent);
 
 signals:
@@ -91,7 +93,9 @@ private:
     void PrepareTimers();
     void LoadSettings();
     void SaveSettings();
+#if PROGSIZE >= PROGSIZE_LARGE
     void ShowOrHideSlideSW();
+#endif
     int CheckPassword();
 
 
@@ -101,12 +105,9 @@ private slots:
     void Stage2();
     void SetDefConf();
     void Fill();
-    void UpdateMainTE(QByteArray &ba);
     void SetPort(QString str);
     void PasswordCheck(QString &psw);
     void CancelPswCheck();
-    void OpenBhbDialog();
-    void StartEmul();
     void StartSettingsDialog();
     void ShowErrorDialog();
     void SetProgressBarSize(quint32 size);
@@ -115,8 +116,12 @@ private slots:
     void GetAbout();
     void Disconnect();
     void ContinueDisconnect();
+#if PROGSIZE >= PROGSIZE_LARGE
+    void UpdateMainTE(QByteArray &ba);
+    void OpenBhbDialog();
+    void StartEmul();
     void MouseMove();
-
+#endif
 protected:
     void resizeEvent(QResizeEvent *e);
 };
