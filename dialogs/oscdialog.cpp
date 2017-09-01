@@ -5,7 +5,7 @@
 #include <QProgressBar>
 #include <QApplication>
 #include <QDateTime>
-#include <QtXlsx/xlsxdocument.h>
+#include "QtXlsx/xlsxdocument.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include "oscdialog.h"

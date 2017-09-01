@@ -3,15 +3,15 @@
 #include <QVBoxLayout>
 #include <QCoreApplication>
 #include <QTime>
-#include "canal.h"
+#include "eusbhid.h"
 #include "widgets/messagebox.h"
 
-Canal *cn;
+EUsbHid *uh;
 
-Canal::Canal(QObject *parent) : QObject(parent)
+EUsbHid::EUsbHid(QObject *parent) : QObject(parent)
 {
     log = new Log;
-    log->Init("canal.log");
+    log->Init("usb.log");
     RDLength = 0;
     SegEnd = 0;
     SegLeft = 0;
@@ -29,11 +29,11 @@ Canal::Canal(QObject *parent) : QObject(parent)
     connect(TTimer, SIGNAL(timeout()),this,SLOT(Timeout())); // для отладки закомментарить
 }
 
-Canal::~Canal()
+EUsbHid::~EUsbHid()
 {
 }
 
-void Canal::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint16 filenum, QVector<publicclass::DataRec> *DRptr)
+void EUsbHid::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint16 filenum, QVector<publicclass::DataRec> *DRptr)
 {
     if (!Connected)
     {
@@ -59,7 +59,7 @@ void Canal::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint1
         QCoreApplication::processEvents(QEventLoop::AllEvents);
 }
 
-void Canal::InitiateSend()
+void EUsbHid::InitiateSend()
 {
     WriteData.clear();
     switch (cmd)
@@ -167,7 +167,7 @@ void Canal::InitiateSend()
     RDLength = 0;
 }
 
-void Canal::ParseIncomeData(QByteArray &ba)
+void EUsbHid::ParseIncomeData(QByteArray &ba)
 {
     if (pc.WriteUSBLog)
     {
@@ -357,7 +357,7 @@ void Canal::ParseIncomeData(QByteArray &ba)
     }
 }
 
-bool Canal::GetLength(bool ok)
+bool EUsbHid::GetLength(bool ok)
 {
     if (ReadDataChunk.size() < 4)
         return false;
@@ -387,7 +387,7 @@ bool Canal::GetLength(bool ok)
         return false;
 }
 
-void Canal::SetWRSegNum()
+void EUsbHid::SetWRSegNum()
 {
     if (WRLength > CN_MAXSEGMENTLENGTH)
     {
@@ -401,7 +401,7 @@ void Canal::SetWRSegNum()
     }
 }
 
-void Canal::WRCheckForNextSegment()
+void EUsbHid::WRCheckForNextSegment()
 {
     QByteArray tmpba;
     if (SegLeft)
@@ -432,7 +432,7 @@ void Canal::WRCheckForNextSegment()
     WriteDataToPort(tmpba);
 }
 
-void Canal::SendOk(bool cont)
+void EUsbHid::SendOk(bool cont)
 {
     QByteArray tmpba;
     if (cont)
@@ -444,7 +444,7 @@ void Canal::SendOk(bool cont)
     WriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
 }
 
-void Canal::AppendSize(QByteArray &ba, quint16 size)
+void EUsbHid::AppendSize(QByteArray &ba, quint16 size)
 {
     quint8 byte = static_cast<quint8>(size%0x100);
     ba.append(byte);
@@ -452,7 +452,7 @@ void Canal::AppendSize(QByteArray &ba, quint16 size)
     ba.append(byte);
 }
 
-void Canal::SendErr()
+void EUsbHid::SendErr()
 {
     QByteArray tmpba;
     tmpba.append(CN_MS);
@@ -462,13 +462,13 @@ void Canal::SendErr()
     WriteDataToPort(tmpba);
 }
 
-void Canal::Timeout()
+void EUsbHid::Timeout()
 {
     Finish(USO_TIMEOUTER);
     emit sendend();
 }
 
-void Canal::Finish(int ernum)
+void EUsbHid::Finish(int ernum)
 {
     TTimer->stop();
     cmd = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
@@ -489,25 +489,25 @@ void Canal::Finish(int ernum)
     emit sendend();
 }
 
-bool Canal::Connect()
+bool EUsbHid::Connect()
 {
     if (!InitializePort(info, baud))
         return false;
     return true;
 }
 
-void Canal::Disconnect()
+void EUsbHid::Disconnect()
 {
     ClosePort();
     emit Disconnected();
 }
 
-void Canal::OscTimerTimeout()
+void EUsbHid::OscTimerTimeout()
 {
     Send(CN_OscPg);
 }
 
-bool Canal::InitializePort(QSerialPortInfo &pinfo, int baud)
+bool EUsbHid::InitializePort(QSerialPortInfo &pinfo, int baud)
 {
     port = new QSerialPort;
     port->setPort(pinfo);
@@ -533,7 +533,7 @@ bool Canal::InitializePort(QSerialPortInfo &pinfo, int baud)
     return true;
 }
 
-void Canal::ClosePort()
+void EUsbHid::ClosePort()
 {
     if (!Connected)
         return;
@@ -549,14 +549,14 @@ void Canal::ClosePort()
     }
 }
 
-void Canal::CheckForData()
+void EUsbHid::CheckForData()
 {
     QByteArray ba = port->read(1000);
     emit readbytessignal(ba);
     ParseIncomeData(ba);
 }
 
-void Canal::Error(QSerialPort::SerialPortError err)
+void EUsbHid::Error()
 {
     if (!err) // нет ошибок
         return;
@@ -566,12 +566,12 @@ void Canal::Error(QSerialPort::SerialPortError err)
         Disconnect();
 }
 
-void Canal::PortCloseTimeout()
+void EUsbHid::PortCloseTimeout()
 {
     PortCloseTimeoutSet = true;
 }
 
-void Canal::WriteDataToPort(QByteArray &ba)
+void EUsbHid::WriteDataToPort(QByteArray &ba)
 {
     if (port->isOpen())
     {

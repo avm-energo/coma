@@ -11,7 +11,7 @@ RC_ICONS = ../coma.ico
 CONFIG += c++11
 VERSION = 1.0.60
 
-QT       += core gui xlsx serialport printsupport
+QT       += core gui serialport printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -64,6 +64,8 @@ SOURCES += main.cpp\
     ../mainwindow.cpp \
     ../dialogs/infodialog.cpp \
     ../widgets/lineeditfield.cpp
+#    ../widgets/lineeditfield.cpp \
+#    ../eusbhid.cpp
 
 HEADERS  += pkdn_s.h \
     ../Canal.h \
@@ -106,9 +108,13 @@ HEADERS  += pkdn_s.h \
     ../mainwindow.h \
     ../dialogs/infodialog.h \
     ../widgets/lineeditfield.h
+#    ../widgets/lineeditfield.h \
+#    ../eusbhid.h
 
 RESOURCES += \
     pkdn-s.qrc
+
+INCLUDEPATH += $$PWD/../../includes
 
 win32 {
 
@@ -116,12 +122,12 @@ win32 {
 
     !contains(QMAKE_TARGET.arch, x86_64) {
         ## Windows x86 (32bit) specific build here
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win32/debug/ -llimereport -lliblzma
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
     } else {
         ## Windows x64 (64bit) specific build here
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereport -lliblzma
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
     }
 }
-unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereport -lliblzma
+unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd

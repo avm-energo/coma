@@ -16,7 +16,7 @@
 
 #include <QDialog>
 #include <QTimer>
-#include <QtXlsx/xlsxdocument.h>
+#include "QtXlsx/xlsxdocument.h"
 
 #define ANMEASINT   2000 // default timer interval to check analog values
 
