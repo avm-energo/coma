@@ -11,6 +11,7 @@
 Log::Log(QObject *parent) : QObject(parent)
 {
     fp = 0;
+    mtx = new QMutex;
 }
 
 Log::~Log()
@@ -72,11 +73,15 @@ void Log::WriteFile(const QString &Prepend, const QString &msg)
     CheckAndGz();
 }
 
+// thread-safe function
+
 void Log::WriteRaw(const QByteArray &ba)
 {
+    mtx->lock();
     fp->write(ba);
     fp->flush();
     CheckAndGz();
+    mtx->unlock();
 }
 
 /*void Log::Info(QByteArray &ba)

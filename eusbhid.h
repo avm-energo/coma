@@ -4,19 +4,24 @@
 #include <QObject>
 #include <QByteArray>
 #include <QTimer>
+#include <QThread>
 #include <QLabel>
 #include <QMutex>
 
 #include "publicclass.h"
 #include "log.h"
+#include "hidapi/hidapi.h"
 
 // Канал связи с модулем
 
-#define CN_TIMEOUT  2000 // таймаут по USB в мс
-#define CN_OSCT     1000 // таймаут посылки запроса нестёртых осциллограмм
-#define CN_MAXFILESIZE  30000 // максимальный размер выходного файла
-#define CN_MAXSEGMENTLENGTH 64 // максимальная длина одного сегмента (0x40)
-#define CN_MAINLOOP_DELAY   100 // 100 ms main loop sleep
+#define UH_TIMEOUT  2000 // таймаут по USB в мс
+#define UH_OSCT     1000 // таймаут посылки запроса нестёртых осциллограмм
+#define UH_MAXFILESIZE  30000 // максимальный размер выходного файла
+#define UH_MAXSEGMENTLENGTH 64 // максимальная длина одного сегмента (0x40)
+#define UH_MAINLOOP_DELAY   50 // 100 ms main loop sleep
+
+#define UH_VID  0x0483
+#define UH_PID  0xF135
 
 // Обмен с модулями
 #define CN_BYTE0    '\x00'
@@ -61,14 +66,21 @@ public:
     explicit EUsbThread(QObject *parent = 0);
     ~EUsbThread();
 
-    void Set(const QString &VID, const QString &PID, const QString &DeviceString);
-    void Run();
+    Log *log;
+
+    int Set();
 
 signals:
     void NewDataReceived(QByteArray &ba);
 
 public slots:
+    void Run();
     void WriteData(QByteArray &ba);
+    void Finish();
+
+private:
+    hid_device *HidDevice;
+    bool AboutToFinish;
 };
 
 class EUsbHid : public QObject
@@ -99,16 +111,16 @@ signals:
     void oscerasesize(quint32);
     void osceraseremaining(quint32);
     void Disconnected();
+    void StartUThread(QThread::Priority);
+    void StopUThread();
 
 public slots:
-    void Timeout();
     void Disconnect();
 
 private slots:
-    void CheckForData();
+    void Timeout();
     void OscTimerTimeout();
-    void PortCloseTimeout();
-    void Error();
+    void ParseIncomeData(QByteArray &ba);
 
 private:
     char *outdata;
@@ -130,12 +142,11 @@ private:
     QVector<publicclass::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     quint8 BoardType;
     bool PortCloseTimeoutSet;
-    Log *log;
+    EUsbThread *UThread;
 
     void ClosePort();
     void InitiateSend();
     void WriteDataToPort(QByteArray &ba);
-    void ParseIncomeData(QByteArray &ba);
     void Finish(int ernum);
     void SetWRSegNum();
     void WRCheckForNextSegment();

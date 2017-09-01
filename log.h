@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QFile>
+#include <QMutex>
 
 #define LOG_MAX_SIZE    1048576
 
@@ -26,6 +27,7 @@ private:
     QString LogFile;
     bool CanLog;
     QFile *fp;
+    QMutex *mtx;
 
     void CheckAndGz();
 };

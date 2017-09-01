@@ -63,8 +63,9 @@ SOURCES += main.cpp\
     ../report.cpp \
     ../mainwindow.cpp \
     ../dialogs/infodialog.cpp \
-    ../widgets/lineeditfield.cpp \
-    ../eusbhid.cpp
+    ../widgets/lineeditfield.cpp
+#    ../widgets/lineeditfield.cpp \
+#    ../eusbhid.cpp
 
 HEADERS  += pkdn_s.h \
     ../Canal.h \
@@ -106,8 +107,9 @@ HEADERS  += pkdn_s.h \
     ../report.h \
     ../mainwindow.h \
     ../dialogs/infodialog.h \
-    ../widgets/lineeditfield.h \
-    ../eusbhid.h
+    ../widgets/lineeditfield.h
+#    ../widgets/lineeditfield.h \
+#    ../eusbhid.h
 
 RESOURCES += \
     pkdn-s.qrc
