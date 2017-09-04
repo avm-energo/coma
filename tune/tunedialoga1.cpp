@@ -183,6 +183,7 @@ int TuneDialogA1::Start6_3_1()
 
 int TuneDialogA1::Start6_3_2_1()
 {
+    Skipped = false;
     if (MessageBox2::question(this, "Вопрос", "Будет проведена регулировка по напряжениям, выполнить?") == false)
     {
         Skipped = true;
@@ -198,7 +199,9 @@ int TuneDialogA1::Start6_3_2_1()
     CheckA1::A1_Bd1 tmpst, tmpst2;
     tmpst2.Frequency = tmpst2.Phy = tmpst2.UefNat_filt[0] = tmpst2.UefNat_filt[1] = \
             tmpst2.Uef_filt[0] = tmpst2.Uef_filt[1] = tmpst2.dU = tmpst2.dUrms = 0;
-    for (int i=0; i<TD_MEASNUM; ++i)
+    int count = 0;
+    emit StartPercents(TUNE_COUNTEND);
+    while (count < TUNE_COUNTEND)
     {
         cn->Send(CN_GBd, 1, &tmpst, sizeof(CheckA1::A1_Bd1));
         tmpst2.Frequency += tmpst.Frequency;
@@ -209,16 +212,22 @@ int TuneDialogA1::Start6_3_2_1()
         tmpst2.Uef_filt[1] += tmpst.Uef_filt[1];
         tmpst2.dU += tmpst.dU;
         tmpst2.dUrms += tmpst.dUrms;
+        QTime tme;
+        tme.start();
+        while (tme.elapsed() < TUNE_POINTSPER)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+        emit SetPercent(count);
+        ++count;
     }
     // усреднение
-    tmpst2.Frequency /= TD_MEASNUM;
-    tmpst2.Phy /= TD_MEASNUM;
-    tmpst2.UefNat_filt[0] /= TD_MEASNUM;
-    tmpst2.UefNat_filt[1] /= TD_MEASNUM;
-    tmpst2.Uef_filt[0] /= TD_MEASNUM;
-    tmpst2.Uef_filt[1] /= TD_MEASNUM;
-    tmpst2.dU /= TD_MEASNUM;
-    tmpst2.dUrms /= TD_MEASNUM;
+    tmpst2.Frequency /= count;
+    tmpst2.Phy /= count;
+    tmpst2.UefNat_filt[0] /= count;
+    tmpst2.UefNat_filt[1] /= count;
+    tmpst2.Uef_filt[0] /= count;
+    tmpst2.Uef_filt[1] /= count;
+    tmpst2.dU /= count;
+    tmpst2.dUrms /= count;
     if (cn->result != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
@@ -407,7 +416,7 @@ int TuneDialogA1::Start6_3_9()
 {
     QEventLoop Loop;
 //    WaitNSeconds(10);
-    QString tmps = "Пожалуйста, просмотрите текущие данные после регулировки в соответствующих окнах";
+    QString tmps = "Пожалуйста, после нажатия \"ОК\" просмотрите текущие данные после регулировки в соответствующих окнах";
     if (TuneFileSaved)
         tmps += "\nЕсли в процессе регулировки произошла ошибка, сохранённые коэффициенты\n"
                 "Вы можете загрузить из файла "+pc.SystemHomeDir+"temptune.tn1";

@@ -123,11 +123,15 @@ void pkdn_s::Stage3()
 //    fwupdialog *FwUpD = new fwupdialog;
 #if PROGSIZE >= PROGSIZE_LARGE
     TuneDialogA1 *tdlg = new TuneDialogA1;
+    connect(tdlg,SIGNAL(StartPercents(quint32)),this,SLOT(SetProgressBar2Size(quint32)));
+    connect(tdlg,SIGNAL(SetPercent(quint32)),this,SLOT(SetProgressBar2(quint32)));
     connect(this,SIGNAL(FinishAll()),tdlg,SLOT(CancelTune()));
     MainTW->addTab(tdlg, "Регулировка");
 #endif
 #if PROGSIZE >= PROGSIZE_MEDIUM
     TuneDialogA1DN *t2dlg = new TuneDialogA1DN;
+    connect(t2dlg,SIGNAL(StartPercents(quint32)),this,SLOT(SetProgressBar2Size(quint32)));
+    connect(t2dlg,SIGNAL(SetPercent(quint32)),this,SLOT(SetProgressBar2(quint32)));
     MainTW->addTab(t2dlg, "Настройка своего ДН");
 #endif
     MainTW->addTab(chdlg, "Измерения");

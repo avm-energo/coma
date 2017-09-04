@@ -8,8 +8,6 @@
 #include <QStringList>
 #include "../publicclass.h"
 
-#define TD_MEASNUM    4 // количество проводимых измерений для усреднения
-
 #define MAXTUNESIZE 1024 // максимальный размер файла с данными настройки
 
 #define TD_TMK  25.0 // degrees

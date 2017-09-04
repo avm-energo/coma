@@ -176,6 +176,10 @@ void TuneDialogA1DN::SetupUI()
             glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+22), "", ValuesLEFormat),7,i,1,1);
             glyout->addWidget(WDFunc::NewLBL(this, "Δφ["+QString::number(i)+"]"),8,i,1,1);
             glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+27), "", ValuesLEFormat),9,i,1,1);
+            glyout->addWidget(WDFunc::NewLBLT(this, "σU["+QString::number(i)+"]","","","СКО амплитудной погрешности"),10,i,1,1);
+            glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+32), "", ValuesLEFormat),11,i,1,1);
+            glyout->addWidget(WDFunc::NewLBLT(this, "σφ["+QString::number(i)+"]","","","СКО фазовой погрешности"),12,i,1,1);
+            glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+37), "", ValuesLEFormat),13,i,1,1);
         }
     }
     gb->setLayout(glyout);
@@ -255,6 +259,8 @@ void TuneDialogA1DN::FillBac()
         {
             WDFunc::SetLEData(this, "tune"+QString::number(i+22), QString::number(Bac_block.dU_cor[i], 'f', 5));
             WDFunc::SetLEData(this, "tune"+QString::number(i+27), QString::number(Bac_block.dPhy_cor[i], 'f', 5));
+            WDFunc::SetLEData(this, "tune"+QString::number(i+32), QString::number(Bac_block.ddU_cor[i], 'f', 5));
+            WDFunc::SetLEData(this, "tune"+QString::number(i+37), QString::number(Bac_block.ddPhy_cor[i], 'f', 5));
         }
     }
 }
@@ -274,6 +280,8 @@ void TuneDialogA1DN::FillBackBac()
         {
             WDFunc::LENumber(this, "tune"+QString::number(i+22), Bac_block.dU_cor[i]);
             WDFunc::LENumber(this, "tune"+QString::number(i+27), Bac_block.dPhy_cor[i]);
+            WDFunc::LENumber(this, "tune"+QString::number(i+32), Bac_block.ddU_cor[i]);
+            WDFunc::LENumber(this, "tune"+QString::number(i+37), Bac_block.ddPhy_cor[i]);
         }
     }
 }
@@ -330,19 +338,19 @@ void TuneDialogA1DN::SetDefCoefs()
 {
     Bac_block.U1kDN[0] = 0;
     Bac_block.U2kDN[0] = 0;
-    Bac_block.PhyDN[0] = 0;
     Bac_block.U1kDN[1] = Bac_block.U2kDN[1] = 12;
     Bac_block.U1kDN[2] = Bac_block.U2kDN[2] = 30;
     Bac_block.U1kDN[3] = Bac_block.U2kDN[3] = 48;
     Bac_block.U1kDN[4] = Bac_block.U2kDN[4] = 60;
     Bac_block.U1kDN[5] = Bac_block.U2kDN[5] = 71;
-    Bac_block.PhyDN[1] = Bac_block.PhyDN[2] = Bac_block.PhyDN[3] = \
-            Bac_block.PhyDN[4] = Bac_block.PhyDN[5] = 0;
-    Bac_block.dU_cor[0] = Bac_block.dPhy_cor[0] = 0;
-    Bac_block.dU_cor[1] = Bac_block.dPhy_cor[1] = 0;
-    Bac_block.dU_cor[2] = Bac_block.dPhy_cor[2] = 0;
-    Bac_block.dU_cor[3] = Bac_block.dPhy_cor[3] = 0;
-    Bac_block.dU_cor[4] = Bac_block.dPhy_cor[4] = 0;
+    for (int i=0; i<5; ++i)
+    {
+        Bac_block.PhyDN[i] = 0;
+        Bac_block.dU_cor[i] = 0;
+        Bac_block.dPhy_cor[i] = 0;
+        Bac_block.ddU_cor[i] = 0;
+        Bac_block.ddPhy_cor[i] = 0;
+    }
     Bac_block.K_DN = 2200;
     Bac_block.DNFNum = 0;
     FillBac();
@@ -413,6 +421,7 @@ int TuneDialogA1DN::Start7_2_345(int counter)
         Cancelled = true;
         return GENERALERROR;
     }
+    WaitNSeconds(10);
     if (StartMeasurement() != NOERROR)
         return GENERALERROR;
     FillBackBdOut();
@@ -453,8 +462,8 @@ int TuneDialogA1DN::Start7_2_8()
     if (StartMeasurement() != NOERROR)
         return GENERALERROR;
     FillBackBdOut();
-    Bac_block.dU_cor[0] = ChA1->Bda_out.dUrms;
-    Bac_block.dPhy_cor[0] = ChA1->Bda_out.Phy;
+    Bac_block.dU_cor[4] = ChA1->Bda_out.dUrms;
+    Bac_block.dPhy_cor[4] = ChA1->Bda_out.Phy;
     FillBac();
     return NOERROR;
 }

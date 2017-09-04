@@ -19,7 +19,6 @@ public:
 
     bool SWHide;
     QRect SWGeometry;
-    quint32 PrbSize;
     QVector<publicclass::DataRec> S2Config;
     AbstractConfDialog *ConfB, *ConfM;
     QWidget *Parent;
@@ -97,6 +96,8 @@ private:
     void ShowOrHideSlideSW();
 #endif
     int CheckPassword();
+    void SetProgressBarSize(QString prbnum, quint32 size);
+    void SetProgressBar(QString prbnum, quint32 cursize);
 
 
 private slots:
@@ -110,9 +111,10 @@ private slots:
     void CancelPswCheck();
     void StartSettingsDialog();
     void ShowErrorDialog();
-    void SetProgressBarSize(quint32 size);
-    void SetProgressBar(quint32 cursize);
-    void DisableProgressBar();
+    void SetProgressBar1Size(quint32 size);
+    void SetProgressBar1(quint32 cursize);
+    void SetProgressBar2Size(quint32 size);
+    void SetProgressBar2(quint32 cursize);
     void GetAbout();
     void Disconnect();
     void ContinueDisconnect();

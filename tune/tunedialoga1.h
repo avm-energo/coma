@@ -16,6 +16,9 @@
 #define CHECK_MA1   3
 #define CHECK_MA2   4
 
+#define TUNE_COUNTEND   120 // столько точек по
+#define TUNE_POINTSPER  500 // столько миллисекунд должно усредняться при регулировке
+
 class TuneDialogA1 : public AbstractTuneDialog
 {
     Q_OBJECT
@@ -24,6 +27,8 @@ public:
 
 signals:
     void Finished();
+    void StartPercents(quint32 Percent);
+    void SetPercent(quint32 Percent);
 
 public slots:
 

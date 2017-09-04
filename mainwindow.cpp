@@ -35,11 +35,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     SetupMenubar();
     PrepareTimers();
     LoadSettings();
-    connect(cn,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBarSize(quint32)));
-    connect(cn,SIGNAL(osceraseremaining(quint32)),this,SLOT(SetProgressBar(quint32)));
-    connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBarSize(quint32)));
-    connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar(quint32)));
-    connect(cn,SIGNAL(sendend()),this,SLOT(DisableProgressBar()));
+    connect(cn,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
+    connect(cn,SIGNAL(osceraseremaining(quint32)),this,SLOT(SetProgressBar1(quint32)));
+    connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
+    connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar1(quint32)));
     connect(cn,SIGNAL(readbytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(cn,SIGNAL(writebytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(cn,SIGNAL(Disconnected()),this,SLOT(ContinueDisconnect()));
@@ -79,13 +78,23 @@ QWidget *MainWindow::Least()
     line->setFrameStyle(QFrame::Sunken | QFrame::HLine);
     lyout->addWidget(line);
     inlyout = new QHBoxLayout;
-    QLabel *lbl = new QLabel;
-    lbl->setObjectName("prblbl");
-    inlyout->addWidget(lbl);
+    inlyout->addWidget(WDFunc::NewLBLT(this, "Обмен"));
+    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb1lbl"));
     QProgressBar *prb = new QProgressBar;
-    prb->setObjectName("prbprb");
+    prb->setObjectName("prb1prb");
     prb->setOrientation(Qt::Horizontal);
     prb->setMinimumWidth(500);
+    prb->setMaximumHeight(10);
+    inlyout->addWidget(prb);
+    lyout->addLayout(inlyout);
+    inlyout = new QHBoxLayout;
+    inlyout->addWidget(WDFunc::NewLBLT(this, "Отсчёт"));
+    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb2lbl"));
+    prb = new QProgressBar;
+    prb->setObjectName("prb2prb");
+    prb->setOrientation(Qt::Horizontal);
+    prb->setMinimumWidth(500);
+    prb->setMaximumHeight(10);
     inlyout->addWidget(prb);
     lyout->addLayout(inlyout);
     w->setLayout(lyout);
@@ -469,41 +478,51 @@ void MainWindow::ShowErrorDialog()
     dlg->exec();
 }
 
-void MainWindow::SetProgressBarSize(quint32 size)
+void MainWindow::SetProgressBar1Size(quint32 size)
 {
-    PrbSize = size;
-    QProgressBar *prb = this->findChild<QProgressBar *>("prbprb");
+    SetProgressBarSize("1", size);
+}
+
+void MainWindow::SetProgressBar1(quint32 cursize)
+{
+    SetProgressBar("1", cursize);
+}
+
+void MainWindow::SetProgressBar2Size(quint32 size)
+{
+    SetProgressBarSize("2", size);
+}
+
+void MainWindow::SetProgressBar2(quint32 cursize)
+{
+    SetProgressBar("2", cursize);
+}
+
+void MainWindow::SetProgressBarSize(QString prbnum, quint32 size)
+{
+    QString prbname = "prb"+prbnum+"prb";
+    QString lblname = "prb"+prbnum+"lbl";
+    QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
     if (prb == 0)
     {
         DBGMSG;
         return;
     }
-    WDFunc::SetLBLText(this, "prblbl",pc.PrbMessage + QString::number(size), false);
+    WDFunc::SetLBLText(this, lblname,pc.PrbMessage + QString::number(size), false);
     prb->setMinimum(0);
-    prb->setMaximum(PrbSize);
-    prb->setEnabled(true);
+    prb->setMaximum(size);
 }
 
-void MainWindow::SetProgressBar(quint32 cursize)
+void MainWindow::SetProgressBar(QString prbnum, quint32 cursize)
 {
-    QProgressBar *prb = this->findChild<QProgressBar *>("prbprb");
+    QString prbname = "prb"+prbnum+"prb";
+    QString lblname = "prb"+prbnum+"lbl";
+    QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
     if (prb != 0)
-        prb->setValue(cursize);
-    WDFunc::SetLBLText(this, "prblbl",pc.PrbMessage + QString::number(cursize) + " из " + QString::number(PrbSize));
-    if (cursize >= PrbSize)
-        DisableProgressBar();
-}
-
-void MainWindow::DisableProgressBar()
-{
-    QProgressBar *prb = this->findChild<QProgressBar *>("prbprb");
-    if (prb == 0)
     {
-        DBGMSG;
-        return;
+        prb->setValue(cursize);
+        WDFunc::SetLBLText(this, lblname, pc.PrbMessage + QString::number(cursize) + " из " + QString::number(prb->maximum()));
     }
-    prb->setEnabled(false);
-    WDFunc::SetLBLText(this, "prblbl","",false);
 }
 
 void MainWindow::GetAbout()

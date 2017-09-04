@@ -465,7 +465,6 @@ void Canal::SendErr()
 void Canal::Timeout()
 {
     Finish(USO_TIMEOUTER);
-    emit sendend();
 }
 
 void Canal::Finish(int ernum)
@@ -486,7 +485,6 @@ void Canal::Finish(int ernum)
     }
     result = ernum;
     Busy = false;
-    emit sendend();
 }
 
 bool Canal::Connect()

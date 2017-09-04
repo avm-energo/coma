@@ -472,7 +472,6 @@ void EUsbHid::SendErr()
 void EUsbHid::Timeout()
 {
     Finish(USO_TIMEOUTER);
-    emit sendend();
 }
 
 void EUsbHid::Finish(int ernum)
@@ -493,7 +492,6 @@ void EUsbHid::Finish(int ernum)
     }
     result = ernum;
     Busy = false;
-    emit sendend();
 }
 
 bool EUsbHid::Connect()

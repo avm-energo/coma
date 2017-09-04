@@ -82,7 +82,6 @@ signals:
     void incomingdatalength(quint32);
     void readbytessignal(QByteArray &);
     void writebytessignal(QByteArray &);
-    void sendend();
     void oscerasesize(quint32);
     void osceraseremaining(quint32);
     void Disconnected();
