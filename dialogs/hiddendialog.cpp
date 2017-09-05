@@ -207,9 +207,11 @@ void HiddenDialog::SendBhb()
     if (pc.BoardMBhb.MType != MTM_00)
     {
         cn->Send(CN_WHv, BT_MEZONIN, &pc.BoardMBhb, sizeof(pc.BoardMBhb));
-        if (cn->result == NOERROR)
-            MessageBox2::information(this, "Успешно", "Записано успешно");
-        else
+        if (cn->result != NOERROR)
+        {
             ERMSG("Проблема при записи блока Hidden block мезонинной платы");
+            return;
+        }
     }
+    MessageBox2::information(this, "Успешно", "Записано успешно");
 }

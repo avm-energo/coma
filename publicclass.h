@@ -284,6 +284,7 @@ public:
     Bhb_Main BoardBBhb, BoardMBhb;
     QString PrbMessage;
     QVector<DataRec> Config;
+    bool Cancelled;
 
     QList<ermsg> ErMsgPool;
 

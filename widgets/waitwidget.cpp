@@ -9,8 +9,9 @@
 #include <QDesktopWidget>
 #include <QDateTime>
 #include <QFontMetrics>
-#include "waitwidget.h"
 #include <math.h>
+#include "waitwidget.h"
+#include "../publicclass.h"
 
 WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)
 {
@@ -45,12 +46,16 @@ void WaitWidget::Start()
 void WaitWidget::Stop()
 {
     emit finished();
-    this->close();
 }
 
 void WaitWidget::SetMessage(QString msg)
 {
     Message = msg;
+}
+
+void WaitWidget::SetSeconds(quint32 seconds)
+{
+    Seconds = seconds;
 }
 
 void WaitWidget::Rotate()
@@ -125,5 +130,24 @@ void WaitWidget::paintEvent(QPaintEvent *e)
     p.setPen(Qt::black);
     p.drawText(mrect, Qt::AlignCenter, Message);
     p.end();
+    QPainter ps(this);
+    QPen pen(Qt::darkGreen, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    ps.setPen(pen);
+    font.setFamily("Helvetica");
+    font.setPointSize(20);
+    ps.setFont(font);
+    QRect srect = QRect(0,height()/2-20,width(),20);
+    ps.drawText(srect, Qt::AlignCenter, QString::number(Seconds));
+    ps.end();
     e->accept();
+}
+
+void WaitWidget::keyPressEvent(QKeyEvent *e)
+{
+    if (e->key() == Qt::Key_Escape)
+    {
+        pc.Cancelled = true;
+        Stop();
+    }
+    QWidget::keyPressEvent(e);
 }

@@ -1,4 +1,5 @@
 #include "keypressdialog.h"
+#include "../publicclass.h"
 
 KeyPressDialog::KeyPressDialog(QWidget *parent) :
     QDialog(parent)
@@ -18,6 +19,7 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
     if (e->key() == Qt::Key_Escape)
     {
         emit Finished(QString());
+        pc.Cancelled = true;
         this->close();
     }
     KeyPressString.append(e->key());

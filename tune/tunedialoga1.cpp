@@ -192,6 +192,8 @@ int TuneDialogA1::Start6_3_2_1()
     MessageBox2::information(this, "Требование", "Установите на РЕТОМ значение напряжения 60 В");
     // получение текущих аналоговых сигналов от модуля
     WaitNSeconds(10);
+    if (pc.Cancelled)
+        return GENERALERROR;
     if (ReadAnalogMeasurements() == GENERALERROR)
         return GENERALERROR;
     if (CheckBdaValues(CHECK_VOLT) == GENERALERROR)
@@ -201,7 +203,7 @@ int TuneDialogA1::Start6_3_2_1()
             tmpst2.Uef_filt[0] = tmpst2.Uef_filt[1] = tmpst2.dU = tmpst2.dUrms = 0;
     int count = 0;
     emit StartPercents(TUNE_COUNTEND);
-    while (count < TUNE_COUNTEND)
+    while ((count < TUNE_COUNTEND) && !pc.Cancelled)
     {
         cn->Send(CN_GBd, 1, &tmpst, sizeof(CheckA1::A1_Bd1));
         tmpst2.Frequency += tmpst.Frequency;
@@ -216,9 +218,11 @@ int TuneDialogA1::Start6_3_2_1()
         tme.start();
         while (tme.elapsed() < TUNE_POINTSPER)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
-        emit SetPercent(count);
         ++count;
+        emit SetPercent(count);
     }
+    if (pc.Cancelled)
+        return GENERALERROR;
     // усреднение
     tmpst2.Frequency /= count;
     tmpst2.Phy /= count;
@@ -235,14 +239,16 @@ int TuneDialogA1::Start6_3_2_1()
     }
     memcpy(&ChA1->Bda_in, &tmpst2, sizeof(CheckA1::A1_Bd1));
     ChA1->FillBda_in(this);
-    return CheckAnalogValues(false);
+    return NOERROR;
 }
 
 int TuneDialogA1::Start6_3_2_2()
 {
     if (Skipped)
         return ER_RESEMPTY;
-    return GetExternalData();
+    if (GetExternalData() != NOERROR)
+        return GENERALERROR;
+    return CheckAnalogValues(false);
 }
 
 int TuneDialogA1::Start6_3_2_3()
@@ -266,6 +272,8 @@ int TuneDialogA1::Start6_3_3_1()
     }
     MessageBox2::information(this, "Требование", "Установите на магазине сопротивлений значение 80 Ом");
     WaitNSeconds(10);
+    if (pc.Cancelled)
+        return GENERALERROR;
     if (ReadAnalogMeasurements() == GENERALERROR)
         return GENERALERROR;
     return CheckBdaValues(CHECK_PT100);
@@ -276,6 +284,8 @@ int TuneDialogA1::Start6_3_3_2()
     if (Skipped)
         return ER_RESEMPTY;
     WaitNSeconds(10);
+    if (pc.Cancelled)
+        return GENERALERROR;
     int res = ReadAnalogMeasurements();
     if (res == NOERROR)
         RegData = ChA1->Bda_block.Pt100;
@@ -295,6 +305,8 @@ int TuneDialogA1::Start6_3_3_4()
     if (Skipped)
         return ER_RESEMPTY;
     WaitNSeconds(10);
+    if (pc.Cancelled)
+        return GENERALERROR;
     int res = ReadAnalogMeasurements();
     if (res == NOERROR)
     {
@@ -314,6 +326,8 @@ int TuneDialogA1::Start6_3_4()
     }
     MessageBox2::information(this, "Требование", "Задайте ток 20,000мА в канале EXTmA2");
     WaitNSeconds(10);
+    if (pc.Cancelled)
+        return GENERALERROR;
     if (ReadAnalogMeasurements() == GENERALERROR)
         return GENERALERROR;
     return CheckBdaValues(CHECK_MA2);
@@ -324,6 +338,8 @@ int TuneDialogA1::Start6_3_5_1()
     if (Skipped)
         return ER_RESEMPTY;
     WaitNSeconds(10);
+    if (pc.Cancelled)
+        return GENERALERROR;
     int res = ReadAnalogMeasurements();
     if (res == NOERROR)
         RegData = ChA1->Bda_block.EXTmA2;
@@ -343,6 +359,8 @@ int TuneDialogA1::Start6_3_5_3()
     if (Skipped)
         return ER_RESEMPTY;
     WaitNSeconds(10);
+    if (pc.Cancelled)
+        return GENERALERROR;
     int res = ReadAnalogMeasurements();
     if (res == NOERROR)
     {
@@ -362,6 +380,8 @@ int TuneDialogA1::Start6_3_6()
     }
     MessageBox2::information(this, "Требование", "Задайте ток 4,000мА в канале EXTmA1");
     WaitNSeconds(10);
+    if (pc.Cancelled)
+        return GENERALERROR;
     if (ReadAnalogMeasurements() == GENERALERROR)
         return GENERALERROR;
     return CheckBdaValues(CHECK_MA1);
@@ -372,6 +392,8 @@ int TuneDialogA1::Start6_3_7_1()
     if (Skipped)
         return ER_RESEMPTY;
     WaitNSeconds(10);
+    if (pc.Cancelled)
+        return GENERALERROR;
     int res = ReadAnalogMeasurements();
     if (res == NOERROR)
         RegData = ChA1->Bda_block.EXTmA1;
@@ -391,6 +413,8 @@ int TuneDialogA1::Start6_3_7_3()
     if (Skipped)
         return ER_RESEMPTY;
     WaitNSeconds(10);
+    if (pc.Cancelled)
+        return GENERALERROR;
     int res = ReadAnalogMeasurements();
     if (res == NOERROR)
     {
@@ -449,7 +473,7 @@ int TuneDialogA1::ShowScheme()
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
     dlg->exec();
-    if (Cancelled == true)
+    if (pc.Cancelled == true)
         return GENERALERROR;
     return NOERROR;
 }
@@ -489,15 +513,15 @@ int TuneDialogA1::CheckAnalogValues(bool isPrecise)
     double PrecTols[6] = {0.03, 0.03, 0.03, 0.03, 0.025, 0.05};
     double *T;
     T = (isPrecise) ? &PrecTols[0] : &Tols[0];
-    if (!IsWithinLimits(ChA1->Bda_in.UefNat_filt[0], 60.0, T[0]))
+    if (!IsWithinLimits(ChA1->Bda_in.UefNat_filt[0], RealData.u, T[0]))
         return GENERALERROR;
-    if (!IsWithinLimits(ChA1->Bda_in.UefNat_filt[1], 60.0, T[1]))
+    if (!IsWithinLimits(ChA1->Bda_in.UefNat_filt[1], RealData.u, T[1]))
         return GENERALERROR;
-    if (!IsWithinLimits(ChA1->Bda_in.Uef_filt[0], 60.0, T[2]))
+    if (!IsWithinLimits(ChA1->Bda_in.Uef_filt[0], RealData.u, T[2]))
         return GENERALERROR;
-    if (!IsWithinLimits(ChA1->Bda_in.Uef_filt[0], 60.0, T[3]))
+    if (!IsWithinLimits(ChA1->Bda_in.Uef_filt[0], RealData.u, T[3]))
         return GENERALERROR;
-    if (!IsWithinLimits(ChA1->Bda_in.Frequency, 51.0, T[4]))
+    if (!IsWithinLimits(ChA1->Bda_in.Frequency, RealData.freq, T[4]))
         return GENERALERROR;
     if (!IsWithinLimits(ChA1->Bda_in.Phy, 0, T[5]))
         return GENERALERROR;
@@ -523,7 +547,7 @@ int TuneDialogA1::GetExternalData()
     glyout->addWidget(pb,4,3,1,3);
     dlg->setLayout(glyout);
     dlg->exec();
-    if (Cancelled)
+    if (pc.Cancelled)
         return GENERALERROR;
     return NOERROR;
 }
@@ -604,7 +628,7 @@ void TuneDialogA1::SetExtData()
         return;
     WDFunc::SPBData(dlg, "u", RealData.u);
     WDFunc::SPBData(dlg, "freq", RealData.freq);
-    Cancelled = false;
+    pc.Cancelled = false;
     dlg->close();
 }
 
@@ -613,16 +637,6 @@ void TuneDialogA1::CancelExtData()
     QDialog *dlg = this->findChild<QDialog *>("extdatad");
     if (dlg == 0)
         return;
-    Cancelled = true;
+    pc.Cancelled = true;
     dlg->close();
-}
-
-void TuneDialogA1::keyPressEvent(QKeyEvent *e)
-{
-    if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
-    {
-        emit Finished();
-        this->close();
-    }
-    QDialog::keyPressEvent(e);
 }

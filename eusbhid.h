@@ -75,7 +75,7 @@ signals:
 
 public slots:
     void Run();
-    void WriteData(QByteArray &ba);
+    qint64 WriteData(QByteArray &ba);
     void Finish();
 
 private:

@@ -19,17 +19,20 @@ signals:
 
 public slots:
     void SetMessage(QString msg);
+    void SetSeconds(quint32 seconds);
 
 private slots:
     void Rotate();
 
 private:
     QString Message;
+    quint32 Seconds;
     float gamma;
     float vel1, vel2, vel3, vel4, vel5;
 
 protected:
     void paintEvent(QPaintEvent *e);
+    void keyPressEvent(QKeyEvent *e);
 };
 
 #endif // WAITWIDGET_H

@@ -26,7 +26,6 @@ public:
     explicit TuneDialogA1(QWidget *parent = 0);
 
 signals:
-    void Finished();
     void StartPercents(quint32 Percent);
     void SetPercent(quint32 Percent);
 
@@ -98,7 +97,6 @@ private slots:
     void CancelExtData();
 
 protected:
-    void keyPressEvent(QKeyEvent *e);
 };
 
 #endif // TUNEDIALOGA1_H

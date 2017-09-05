@@ -30,10 +30,10 @@ public:
 
     BacStruct AbsBac;
     QStringList lbls;
-    bool Cancelled, Skipped, MeasurementEnabled, ok, TuneFileSaved;
+    bool Skipped, MeasurementEnabled, ok, TuneFileSaved;
     QTimer *MeasurementTimer;
     QVector<publicclass::DataRec> S2Config;
-    int SecondsToEnd15SecondsInterval;
+    quint32 SecondsToEnd15SecondsInterval;
     QHash <QString, int (AbstractTuneDialog::*)()> pf;
     quint8 bStep;
 
@@ -63,7 +63,8 @@ signals:
     void PasswordChecked();
     void stopall();
     void dataready(QByteArray);
-    void SecondsRemaining(QString);
+    void SecondsRemaining(quint32);
+    void Finished();
 
 public slots:
     void CancelTune();
@@ -86,6 +87,7 @@ private slots:
 
 protected:
     void closeEvent(QCloseEvent *e);
+    void keyPressEvent(QKeyEvent *e);
 };
 
 #endif // ABSTRACTTUNEDIALOG_H

@@ -120,13 +120,13 @@ void AbstractTuneDialog::ProcessTune()
         TuneFileSaved = false;
     ReadTuneCoefs();
     MeasurementTimer->start();
-    Cancelled = Skipped = false;
+    pc.Cancelled = Skipped = false;
     MsgClear(); // очистка экрана с сообщениями
     for (bStep=0; bStep<lbls.size(); ++bStep)
     {
         MsgSetVisible(bStep);
         int res = (this->*pf[lbls.at(bStep)])();
-        if ((res == GENERALERROR) || (Cancelled))
+        if ((res == GENERALERROR) || (pc.Cancelled))
         {
             ErMsgSetVisible(bStep);
             WDFunc::SetEnabled(this, "starttune", true);
@@ -225,10 +225,12 @@ void AbstractTuneDialog::WaitNSeconds(int Seconds)
     QTimer *tmr = new QTimer;
     tmr->setInterval(1000);
     connect(tmr,SIGNAL(timeout()),this,SLOT(UpdateNSecondsWidget()));
-    connect(this,SIGNAL(SecondsRemaining(QString)),w,SLOT(SetMessage(QString)));
+    connect(this,SIGNAL(SecondsRemaining(quint32)),w,SLOT(SetSeconds(quint32)));
+    w->SetMessage("Пожалуйста, подождите...");
+    w->SetSeconds(Seconds);
     tmr->start();
     w->Start();
-    while (SecondsToEnd15SecondsInterval > 0)
+    while ((SecondsToEnd15SecondsInterval > 0) && !pc.Cancelled)
     {
         QTime tme;
         tme.start();
@@ -236,7 +238,7 @@ void AbstractTuneDialog::WaitNSeconds(int Seconds)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
     tmr->stop();
-    w->Stop();
+    w->close();
 }
 
 void AbstractTuneDialog::SaveToFileEx()
@@ -269,14 +271,14 @@ void AbstractTuneDialog::SaveToFileEx()
 int AbstractTuneDialog::StartMeasurement()
 {
     MeasurementEnabled = true;
-    while (MeasurementEnabled && !Cancelled)
+    while (MeasurementEnabled && !pc.Cancelled)
     {
         QTime tme;
         tme.start();
         while (tme.elapsed() < SLEEPINT)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
-    if (Cancelled)
+    if (pc.Cancelled)
         return GENERALERROR;
     return NOERROR;
 }
@@ -293,7 +295,7 @@ void AbstractTuneDialog::PasswordCheck(QString &psw)
 {
     ok = true;
     if (psw.isEmpty())
-        Cancelled = true;
+        pc.Cancelled = true;
     else if (psw != "121941")
         ok = false;
     emit PasswordChecked();
@@ -348,19 +350,18 @@ void AbstractTuneDialog::Good()
 
 void AbstractTuneDialog::NoGood()
 {
-    Cancelled = true;
+    pc.Cancelled = true;
     MeasurementEnabled = false;
 }
 
 void AbstractTuneDialog::CancelTune()
 {
-    Cancelled = true;
+    pc.Cancelled = true;
 }
 
 void AbstractTuneDialog::UpdateNSecondsWidget()
 {
-    QString tmps = "Подождите " + QString::number(--SecondsToEnd15SecondsInterval) + " с";
-    emit SecondsRemaining(tmps);
+    emit SecondsRemaining(--SecondsToEnd15SecondsInterval);
 }
 
 void AbstractTuneDialog::MeasTimerTimeout()
@@ -384,4 +385,13 @@ void AbstractTuneDialog::closeEvent(QCloseEvent *e)
 {
     emit stopall();
     e->accept();
+}
+
+void AbstractTuneDialog::keyPressEvent(QKeyEvent *e)
+{
+    if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
+        emit Finished();
+    if (e->key() == Qt::Key_Escape)
+        pc.Cancelled = true;
+    QDialog::keyPressEvent(e);
 }

@@ -86,7 +86,7 @@ signals:
 
 private:
     publicclass::Bsi Bsi_block;
-    bool ok, Cancelled;
+    bool ok;
 
     void SetupMenubar();
     void PrepareTimers();
@@ -108,7 +108,6 @@ private slots:
     void Fill();
     void SetPort(QString str);
     void PasswordCheck(QString &psw);
-    void CancelPswCheck();
     void StartSettingsDialog();
     void ShowErrorDialog();
     void SetProgressBar1Size(quint32 size);

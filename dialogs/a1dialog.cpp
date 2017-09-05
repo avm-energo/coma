@@ -225,7 +225,7 @@ void A1Dialog::UpdateItemInModel(int row, int column, QVariant value)
 void A1Dialog::StartWork()
 {
     float VoltageInkV;
-    Cancelled = false;
+    pc.Cancelled = false;
 /*    if (GetConf() != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Ошибка чтения конфигурации или настроечных параметров из модуля");
@@ -253,7 +253,7 @@ void A1Dialog::StartWork()
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
     dlg->show();
-    while ((PovType == GOST_NONE) && !Cancelled)
+    while ((PovType == GOST_NONE) && !pc.Cancelled)
     {
         QTime tme;
         tme.start();
@@ -273,7 +273,7 @@ void A1Dialog::StartWork()
             ReportModel->setItem(i, j, item);
         }
     }
-    if (!Cancelled)
+    if (!pc.Cancelled)
     {
         if (MessageBox2::question(this, "Подтверждение", "Подключите вывод нижнего плеча \"своего\" делителя напряжения ко входу U1 прибора\n"
                                   "Вывод нижнего плеча поверяемого делителя или выход низшего напряжения поверяемого ТН - ко входу U2\n"
@@ -371,7 +371,7 @@ void A1Dialog::Accept()
             CurrentS = 1;
             if (MessageBox2::question(this, "Подтверждение", "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное 1,0·Sном") == false)
             {
-                Cancelled = true;
+                pc.Cancelled = true;
                 Decline();
             }
         }
@@ -406,7 +406,7 @@ void A1Dialog::Proceed()
 
 void A1Dialog::Cancel()
 {
-    Cancelled = true;
+    pc.Cancelled = true;
 }
 
 void A1Dialog::SetDNData()

@@ -13,7 +13,8 @@
 #include <QPropertyAnimation>
 #include <QtSerialPort/QSerialPortInfo>
 #include "mainwindow.h"
-#include "canal.h"
+//#include "canal.h"
+#include "eusbhid.h"
 #include "commands.h"
 #include "widgets/wd_func.h"
 #include "widgets/mytabwidget.h"
@@ -29,19 +30,27 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     QDir dir(pc.HomeDir);
     if (!dir.exists())
         dir.mkpath(".");
-    cn = new Canal;
+//    cn = new Canal;
+    uh = new EUsbHid;
     S2Config.clear();
     ConfB = ConfM = 0;
     SetupMenubar();
     PrepareTimers();
     LoadSettings();
-    connect(cn,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
+/*    connect(cn,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
     connect(cn,SIGNAL(osceraseremaining(quint32)),this,SLOT(SetProgressBar1(quint32)));
     connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
     connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar1(quint32)));
     connect(cn,SIGNAL(readbytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(cn,SIGNAL(writebytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
-    connect(cn,SIGNAL(Disconnected()),this,SLOT(ContinueDisconnect()));
+    connect(cn,SIGNAL(Disconnected()),this,SLOT(ContinueDisconnect())); */
+    connect(uh,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
+    connect(uh,SIGNAL(osceraseremaining(quint32)),this,SLOT(SetProgressBar1(quint32)));
+    connect(uh,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
+    connect(uh,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar1(quint32)));
+    connect(uh,SIGNAL(readbytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
+    connect(uh,SIGNAL(writebytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
+    connect(uh,SIGNAL(Disconnected()),this,SLOT(ContinueDisconnect()));
     connect(this,SIGNAL(Retry()),this,SLOT(Stage1()));
 }
 
@@ -249,18 +258,17 @@ void MainWindow::ShowOrHideSlideSW()
 #endif
 int MainWindow::CheckPassword()
 {
-    Cancelled = ok = false;
+    pc.Cancelled = ok = false;
     QEventLoop PasswordLoop;
     KeyPressDialog *dlg = new KeyPressDialog;
     QVBoxLayout *vlyout = new QVBoxLayout;
     vlyout->addWidget(WDFunc::NewLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc"));
-    connect(dlg,SIGNAL(Cancelled()),this,SLOT(CancelPswCheck()));
     connect(dlg,SIGNAL(Finished(QString &)),this,SLOT(PasswordCheck(QString &)));
     connect(this,SIGNAL(PasswordChecked()),&PasswordLoop,SLOT(quit()));
     dlg->setLayout(vlyout);
     dlg->show();
     PasswordLoop.exec();
-    if (Cancelled)
+    if (pc.Cancelled)
         return GENERALERROR;
     if (!ok)
     {
@@ -305,11 +313,12 @@ void MainWindow::Stage1()
 
 void MainWindow::Stage1_5()
 {
-    if (!cn->Connected)
+//    if (!cn->Connected)
+    if (!uh->Connected)
     {
         pc.PrbMessage = "Загрузка данных...";
 
-        QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
+/*        QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
         if (info.size() == 0)
         {
             MessageBox2::error(this, "Ошибка", "В системе нет последовательных портов");
@@ -334,10 +343,11 @@ void MainWindow::Stage1_5()
             return;
         }
         cn->baud = 115200;
-        if (!cn->Connect())
+        if (!cn->Connect()) */
+        if (!uh->Connect())
         {
-            MessageBox2::error(this, "Ошибка", "Связь по данному порту не может быть установлена");
-            emit Retry();
+            MessageBox2::error(this, "Ошибка", "Связь не может быть установлена");
+//            emit Retry();
             return;
         }
         SaveSettings();
@@ -347,10 +357,11 @@ void MainWindow::Stage1_5()
 
 void MainWindow::Stage2()
 {
-    if (CN_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
+    if (UH_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
-        cn->Disconnect();
+//        cn->Disconnect();
+        uh->Disconnect();
         emit Retry();
         return;
     }
@@ -412,15 +423,11 @@ void MainWindow::PasswordCheck(QString &psw)
     emit PasswordChecked();
 }
 
-void MainWindow::CancelPswCheck()
-{
-    Cancelled = true;
-}
-
 #if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::OpenBhbDialog()
 {
-    if (!cn->Connected)
+//    if (!cn->Connected)
+    if (!uh->Connected)
     {
         QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модулем" : "прибором");
         MessageBox2::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с "+tmps);
@@ -435,11 +442,16 @@ void MainWindow::OpenBhbDialog()
     pc.BoardBBhb.MType = pc.ModuleBsi.MTypeB;
     dlg->Fill(); // заполняем диалог из недавно присвоенных значений
     dlg->exec();
-    if (CN_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
+/*    if (CN_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
         cn->Disconnect();
         emit Retry();
+    } */
+    if (UH_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
+    {
+        MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
+        uh->Disconnect();
     }
     emit BsiRefresh();
 }
@@ -455,7 +467,8 @@ void MainWindow::StartEmul()
     }
     pc.ModuleBsi.MTypeB = (MType & 0xFF00) >> 8;
     pc.ModuleBsi.MTypeM = MType & 0x00FF;
-    if (cn->Connected)
+//    if (cn->Connected)
+    if (uh->Connected)
         Disconnect();
     pc.ModuleBsi.SerialNum = 0x12345678;
     pc.ModuleBsi.Hth = 0x00;
@@ -558,7 +571,8 @@ void MainWindow::GetAbout()
 void MainWindow::Disconnect()
 {
     if (!pc.Emul)
-        cn->Disconnect();
+//        cn->Disconnect();
+        uh->Disconnect();
     ContinueDisconnect();
 }
 

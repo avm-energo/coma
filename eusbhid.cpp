@@ -3,6 +3,7 @@
 #include <QVBoxLayout>
 #include <QCoreApplication>
 #include <QTime>
+#include "canal.h"
 #include "eusbhid.h"
 #include "widgets/messagebox.h"
 
@@ -561,12 +562,12 @@ EUsbThread::EUsbThread(QObject *parent) : QObject(parent)
     if (pc.WriteUSBLog)
         log->WriteRaw("=== Log started ===");
     AboutToFinish = false;
-    isRunning = false;
+//    isRunning = false;
 }
 
 EUsbThread::~EUsbThread()
 {
-    delete Log;
+    delete log;
 }
 
 int EUsbThread::Set()
@@ -575,16 +576,17 @@ int EUsbThread::Set()
     if (!HidDevice)
         return GENERALERROR;
     hid_set_nonblocking(HidDevice, 1);
+    return NOERROR;
 }
 
 void EUsbThread::Run()
 {
-    unsigned char *data;
-    data = new unsigned char(UH_MAXSEGMENTLENGTH+1); // +1 to ID
+    char *data;
+    data = new char(UH_MAXSEGMENTLENGTH+1); // +1 to ID
     while (!AboutToFinish)
     {
         // check if there's any data in input buffer
-        int bytes = hid_read(HidDevice, data, UH_MAXSEGMENTLENGTH+1);
+        int bytes = hid_read(HidDevice, reinterpret_cast<unsigned char *>(data), UH_MAXSEGMENTLENGTH+1);
         if (bytes < 0)
         {
             if (pc.WriteUSBLog)
@@ -604,7 +606,7 @@ void EUsbThread::Run()
     hid_close(HidDevice);
 }
 
-void EUsbThread::WriteData(QByteArray &ba)
+qint64 EUsbThread::WriteData(QByteArray &ba)
 {
     if (ba.size() > UH_MAXSEGMENTLENGTH)
     {
@@ -615,9 +617,10 @@ void EUsbThread::WriteData(QByteArray &ba)
             log->WriteRaw("WRONG SEGMENT LENGTH!\n");
         }
         ERMSG("Длина сегмента больше "+QString::number(UH_MAXSEGMENTLENGTH)+" байт");
+        return GENERALERROR;
     }
-    ba.prepend(0x00); // inserting ID field
-    hid_write(HidDevice, ba.data(), ba.size());
+    ba.prepend(static_cast<char>(0x00)); // inserting ID field
+    return hid_write(HidDevice, reinterpret_cast<unsigned char *>(ba.data()), ba.size());
 }
 
 void EUsbThread::Finish()

@@ -38,6 +38,10 @@ void TuneDialogA1DN::SetLbls()
     lbls.append("7.2.5. Установка 120%, проверка и сохранение...");
     lbls.append("7.2.6. Запись настроечных коэффициентов и переход на новую конфигурацию...");
     lbls.append("7.2.8. Проверка аналоговых данных...");
+    lbls.append("7.2.9.1. Проверка аналоговых данных...");
+    lbls.append("7.2.9.2. Проверка аналоговых данных...");
+    lbls.append("7.2.9.3. Проверка аналоговых данных...");
+    lbls.append("7.2.9.4. Проверка аналоговых данных...");
 }
 
 void TuneDialogA1DN::SetPf()
@@ -63,6 +67,14 @@ void TuneDialogA1DN::SetPf()
     func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_67); // 7.2.6. Запись настроечных коэффициентов и переход на новую конфигурацию
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_8); // 7.2.8. Проверка аналоговых данных
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_1); // 7.2.9.1. Проверка аналоговых данных
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_2); // 7.2.9.2. Проверка аналоговых данных
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_3); // 7.2.9.3. Проверка аналоговых данных
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_4); // 7.2.9.4. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
 }
 
@@ -418,10 +430,12 @@ int TuneDialogA1DN::Start7_2_345(int counter)
     float VoltageInkV = static_cast<float>(Bac_block.K_DN) * Percents[counter] / 1732;
     if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == false)
     {
-        Cancelled = true;
+        pc.Cancelled = true;
         return GENERALERROR;
     }
     WaitNSeconds(10);
+    if (pc.Cancelled)
+        return GENERALERROR;
     if (StartMeasurement() != NOERROR)
         return GENERALERROR;
     FillBackBdOut();
@@ -452,10 +466,12 @@ int TuneDialogA1DN::Start7_2_8()
 {
     if (MessageBox2::question(this, "Подтверждение", "Теперь необходимо подтвердить погрешности установки") == false)
     {
-        Cancelled = true;
+        pc.Cancelled = true;
         return GENERALERROR;
     }
     WaitNSeconds(5);
+    if (pc.Cancelled)
+        return GENERALERROR;
     QPushButton *pb = this->findChild<QPushButton *>("GoodDN");
     if (pb != 0)
         pb->setText("Запомнить погрешность");
@@ -499,7 +515,7 @@ int TuneDialogA1DN::Start7_2_9(int counter)
     float VoltageInkV = static_cast<float>(Bac_block.K_DN) * Percents[counter] / 1732;
     if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == false)
     {
-        Cancelled = true;
+        pc.Cancelled = true;
         return GENERALERROR;
     }
     if (StartMeasurement() != NOERROR)
@@ -530,7 +546,7 @@ int TuneDialogA1DN::ShowScheme()
     if (MessageBox2::question(this, "Подтверждение", "Подключите выход своего делителя напряжения ко входу U1 прибора\n"
                               "Выход эталонного делителя - ко входу U2") == false)
     {
-        Cancelled = true;
+        pc.Cancelled = true;
         return GENERALERROR;
     }
     return NOERROR;

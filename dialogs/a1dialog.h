@@ -85,7 +85,6 @@ private:
     }; */
 //    ResultsStruct Results[9];   // девять уровней напряжения: 20, 50, 80, 100, 120, 100, 80, 50, 20 % или три уровня: 80, 100, 120 % в зависимости от ГОСТа
     int Counter;
-    bool Cancelled;
     float CurrentS; // текущее значение нагрузки
     int PovType, TempPovType; // тип поверяемого оборудования (по какому ГОСТу)
     QStandardItemModel *ReportModel; // модель, в которую заносим данные для отчёта
