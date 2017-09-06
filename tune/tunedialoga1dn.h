@@ -10,6 +10,8 @@
 #include "../config/configa1.h"
 #include "../check/checka1.h"
 
+#define TUNEA1LEVELS    8
+
 class TuneDialogA1DN : public AbstractTuneDialog
 {
     Q_OBJECT
@@ -32,6 +34,17 @@ private:
     };
 
     Bac Bac_block;
+
+    struct DdStruct
+    {
+        float dUrms;
+        float Phy;
+        float sU;
+        float sPhy;
+    };
+
+    DdStruct Dd_Block[TUNEA1LEVELS];
+
     ConfigA1 *CA1;
     CheckA1 *ChA1;
     bool Accepted;
@@ -54,6 +67,10 @@ private:
     int Start7_2_9_2();
     int Start7_2_9_3();
     int Start7_2_9_4();
+    int Start7_2_9_5();
+    int Start7_2_9_6();
+    int Start7_2_9_7();
+    int Start7_2_9_8();
     int Start7_2_9(int counter);
     int ReadAnalogMeasurements();
     int ShowScheme();
@@ -66,6 +83,7 @@ private slots:
     void FillBackBdOut();
     void FillBdIn();
     void FillBackBdIn();
+    void FillMedian(int index); // заполнение значений по средним показателям - медианам и СКО
     void SetDefCoefs();
     void AcceptDNData();
 

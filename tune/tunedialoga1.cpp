@@ -206,6 +206,11 @@ int TuneDialogA1::Start6_3_2_1()
     while ((count < TUNE_COUNTEND) && !pc.Cancelled)
     {
         cn->Send(CN_GBd, 1, &tmpst, sizeof(CheckA1::A1_Bd1));
+        if (cn->result != NOERROR)
+        {
+            MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
+            return GENERALERROR;
+        }
         tmpst2.Frequency += tmpst.Frequency;
         tmpst2.Phy += tmpst.Phy;
         tmpst2.UefNat_filt[0] += tmpst.UefNat_filt[0];
@@ -232,11 +237,6 @@ int TuneDialogA1::Start6_3_2_1()
     tmpst2.Uef_filt[1] /= count;
     tmpst2.dU /= count;
     tmpst2.dUrms /= count;
-    if (cn->result != NOERROR)
-    {
-        MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
-        return GENERALERROR;
-    }
     memcpy(&ChA1->Bda_in, &tmpst2, sizeof(CheckA1::A1_Bd1));
     ChA1->FillBda_in(this);
     return NOERROR;
