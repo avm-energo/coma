@@ -3,6 +3,7 @@
 #include <QPushButton>
 #include <QDir>
 #include <QMenu>
+#include <QTimer>
 #include <QMenuBar>
 #include <QEventLoop>
 #include <QScrollBar>
@@ -13,8 +14,13 @@
 #include <QPropertyAnimation>
 #include <QtSerialPort/QSerialPortInfo>
 #include "mainwindow.h"
-//#include "canal.h"
+#ifdef COMPORTENABLE
+#include "canal.h"
+#else
+#ifdef USBENABLE
 #include "eusbhid.h"
+#endif
+#endif
 #include "commands.h"
 #include "widgets/wd_func.h"
 #include "widgets/mytabwidget.h"
@@ -30,20 +36,28 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     QDir dir(pc.HomeDir);
     if (!dir.exists())
         dir.mkpath(".");
-//    cn = new Canal;
+#ifdef COMPORTENABLE
+    cn = new Canal;
+#else
+#ifdef USBENABLE
     uh = new EUsbHid;
+#endif
+#endif
     S2Config.clear();
     ConfB = ConfM = 0;
     SetupMenubar();
     PrepareTimers();
     LoadSettings();
-/*    connect(cn,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
+#ifdef COMPORTENABLE
+    connect(cn,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
     connect(cn,SIGNAL(osceraseremaining(quint32)),this,SLOT(SetProgressBar1(quint32)));
     connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
     connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar1(quint32)));
     connect(cn,SIGNAL(readbytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(cn,SIGNAL(writebytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
-    connect(cn,SIGNAL(Disconnected()),this,SLOT(ContinueDisconnect())); */
+    connect(cn,SIGNAL(Disconnected()),this,SLOT(ContinueDisconnect()));
+#else
+#ifdef USBENABLE
     connect(uh,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
     connect(uh,SIGNAL(osceraseremaining(quint32)),this,SLOT(SetProgressBar1(quint32)));
     connect(uh,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
@@ -51,6 +65,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(uh,SIGNAL(readbytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(uh,SIGNAL(writebytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(uh,SIGNAL(Disconnected()),this,SLOT(ContinueDisconnect()));
+#endif
+#endif
     connect(this,SIGNAL(Retry()),this,SLOT(Stage1()));
 }
 
@@ -313,12 +329,12 @@ void MainWindow::Stage1()
 
 void MainWindow::Stage1_5()
 {
-//    if (!cn->Connected)
-    if (!uh->Connected)
+#ifdef COMPORTENABLE
+    if (!cn->Connected)
     {
         pc.PrbMessage = "Загрузка данных...";
 
-/*        QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
+        QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
         if (info.size() == 0)
         {
             MessageBox2::error(this, "Ошибка", "В системе нет последовательных портов");
@@ -343,28 +359,51 @@ void MainWindow::Stage1_5()
             return;
         }
         cn->baud = 115200;
-        if (!cn->Connect()) */
-        if (!uh->Connect())
+        if (!cn->Connect())
         {
             MessageBox2::error(this, "Ошибка", "Связь не может быть установлена");
-//            emit Retry();
+            emit Retry();
             return;
         }
         SaveSettings();
     }
+#else
+#ifdef USBENABLE
+    if (!uh->Connected)
+    {
+        pc.PrbMessage = "Загрузка данных...";
+        if (!uh->Connect())
+        {
+            MessageBox2::error(this, "Ошибка", "Связь не может быть установлена");
+            return;
+        }
+        SaveSettings();
+    }
+#endif
+#endif
     Stage2();
 }
 
 void MainWindow::Stage2()
 {
-    if (UH_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
+#ifdef COMPORTENABLE
+    if (CN_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
-//        cn->Disconnect();
-        uh->Disconnect();
+        cn->Disconnect();
         emit Retry();
         return;
     }
+#else
+#ifdef USBENABLE
+    if (UH_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
+    {
+        MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
+        uh->Disconnect();
+        return;
+    }
+#endif
+#endif
     pc.MType = ((pc.ModuleBsi.MTypeB & 0x000000FF) << 8) | (pc.ModuleBsi.MTypeM & 0x000000FF);
     pc.ModuleTypeString = "ПКДН-";
     pc.ModuleTypeString.append(QString::number(pc.MType, 16));
@@ -426,8 +465,13 @@ void MainWindow::PasswordCheck(QString &psw)
 #if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::OpenBhbDialog()
 {
-//    if (!cn->Connected)
+#ifdef COMPORTENABLE
+    if (!cn->Connected)
+#else
+#ifdef USBENABLE
     if (!uh->Connected)
+#endif
+#endif
     {
         QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модулем" : "прибором");
         MessageBox2::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с "+tmps);
@@ -442,17 +486,22 @@ void MainWindow::OpenBhbDialog()
     pc.BoardBBhb.MType = pc.ModuleBsi.MTypeB;
     dlg->Fill(); // заполняем диалог из недавно присвоенных значений
     dlg->exec();
-/*    if (CN_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
+#ifdef COMPORTENABLE
+    if (CN_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
         cn->Disconnect();
         emit Retry();
-    } */
+    }
+#else
+#ifdef USBENABLE
     if (UH_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
         uh->Disconnect();
     }
+#endif
+#endif
     emit BsiRefresh();
 }
 
@@ -467,8 +516,13 @@ void MainWindow::StartEmul()
     }
     pc.ModuleBsi.MTypeB = (MType & 0xFF00) >> 8;
     pc.ModuleBsi.MTypeM = MType & 0x00FF;
-//    if (cn->Connected)
+#ifdef COMPORTENABLE
+    if (cn->Connected)
+#else
+#ifdef USBENABLE
     if (uh->Connected)
+#endif
+#endif
         Disconnect();
     pc.ModuleBsi.SerialNum = 0x12345678;
     pc.ModuleBsi.Hth = 0x00;
@@ -571,8 +625,13 @@ void MainWindow::GetAbout()
 void MainWindow::Disconnect()
 {
     if (!pc.Emul)
-//        cn->Disconnect();
+#ifdef COMPORTENABLE
+        cn->Disconnect();
+#else
+#ifdef USBENABLE
         uh->Disconnect();
+#endif
+#endif
     ContinueDisconnect();
 }
 
@@ -620,3 +679,11 @@ void MainWindow::resizeEvent(QResizeEvent *e)
     }
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *e)
+{
+    if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
+        emit Finished();
+    if (e->key() == Qt::Key_Escape)
+        pc.Cancelled = true;
+    QMainWindow::keyPressEvent(e);
+}

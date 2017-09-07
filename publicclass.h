@@ -177,7 +177,6 @@
 
 #define LOGFILE     "coma.log"
 
-//#include <QtSerialPort/QSerialPort>
 #include <QStringList>
 #include <QPointer>
 #include <QVector>

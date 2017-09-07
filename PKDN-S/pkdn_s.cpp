@@ -125,6 +125,7 @@ void pkdn_s::Stage3()
     TuneDialogA1 *tdlg = new TuneDialogA1;
     connect(tdlg,SIGNAL(StartPercents(quint32)),this,SLOT(SetProgressBar2Size(quint32)));
     connect(tdlg,SIGNAL(SetPercent(quint32)),this,SLOT(SetProgressBar2(quint32)));
+    connect(this,SIGNAL(Finished()),tdlg,SIGNAL(Finished()));
     connect(this,SIGNAL(FinishAll()),tdlg,SLOT(CancelTune()));
     MainTW->addTab(tdlg, "Регулировка");
 #endif
@@ -140,7 +141,11 @@ void pkdn_s::Stage3()
     downloaddialog *DownD = new downloaddialog;
     MainTW->addTab(DownD, "События");
 #endif
-    MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
+    A1Dialog *extdlg = new A1Dialog;
+    connect(extdlg,SIGNAL(StartPercents(quint32)),this,SLOT(SetProgressBar2Size(quint32)));
+    connect(extdlg,SIGNAL(SetPercent(quint32)),this,SLOT(SetProgressBar2(quint32)));
+    connect(this,SIGNAL(Finished()),extdlg,SIGNAL(Finished()));
+    MainTW->addTab(extdlg, "Поверка внешнего ДН/ТН");
 //    MainTW->addTab(FwUpD, "Загрузка ВПО");
     if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
         pc.ErMsg(ER_NOCONF);

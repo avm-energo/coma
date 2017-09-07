@@ -1,9 +1,8 @@
 // commands.cpp
 #include <QCoreApplication>
-//#include "canal.h"
-#include "eusbhid.h"
-
-/*int CN_GetBsi(void *ptr, quint32 size)
+#ifdef COMPORTENABLE
+#include "canal.h"
+int CN_GetBsi(void *ptr, quint32 size)
 {
     cn->Send(CN_GBsi, BT_NONE, ptr, size);
     return cn->result;
@@ -19,8 +18,10 @@ int CN_PutFile(void *ptr, quint32 filenum, quint32 size)
 {
     cn->Send(CN_WF, BT_NONE, ptr, size, filenum);
     return NOERROR;
-} */
-
+}
+#else
+#ifdef USBENABLE
+#include "eusbhid.h"
 int UH_GetBsi(void *ptr, quint32 size)
 {
     uh->Send(CN_GBsi, BT_NONE, ptr, size);
@@ -38,3 +39,5 @@ int UH_PutFile(void *ptr, quint32 filenum, quint32 size)
     uh->Send(CN_WF, BT_NONE, ptr, size, filenum);
     return NOERROR;
 }
+#endif
+#endif

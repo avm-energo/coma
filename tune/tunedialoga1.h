@@ -93,7 +93,6 @@ private slots:
     void SetExtData();
     void CancelExtData();
 
-protected:
 };
 
 #endif // TUNEDIALOGA1_H

@@ -1,6 +1,7 @@
 /* A1Dialog - dialog providing a main function of the device
  *
 */
+#include <QtMath>
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include <QCoreApplication>
@@ -9,6 +10,7 @@
 #include <QStringListModel>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QTableView>
 #include <QTime>
 #include "../canal.h"
 #include "a1dialog.h"
@@ -62,10 +64,27 @@ void A1Dialog::SetupUI()
     glyout->setColumnStretch(5, 10);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
+
+    glyout = new QGridLayout;
+    gb = new QGroupBox("СКО");
+    glyout->addWidget(WDFunc::NewLBL(this, "dUrms(m)"), 0, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunedurmsm", ValuesFormat, ""), 0, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(this, "φ(m)"), 0, 2, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunephym", ValuesFormat, ""), 0, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(this, "σUrms"), 1, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunesurms", ValuesFormat, ""), 1, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(this, "σφ"), 1, 2, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBLT(this, "", "tunesphy", ValuesFormat, ""), 1, 3, 1, 1);
+    glyout->setColumnStretch(1, 10);
+    glyout->setColumnStretch(3, 10);
+    gb->setLayout(glyout);
+    lyout->addWidget(gb);
+
     pb = new QPushButton("Сформировать протокол из файла ПКДН");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(ParsePKDNFile()));
     lyout->addWidget(pb);
     pb = new QPushButton("Начать поверку делителя");
+    pb->setObjectName("StartWorkPb");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(StartWork()));
     lyout->addWidget(pb);
     lyout->addStretch(10);
@@ -78,13 +97,13 @@ int A1Dialog::GetConf()
     if (cn->result == NOERROR)
     {
         cn->Send(CN_GBac, BT_MEZONIN, &Bac_block, sizeof(Bac));
-        if (cn->result == NOERROR)
+/*        if (cn->result == NOERROR)
         {
             Bac_block.U1kDN[0] = 0;
             Bac_block.U2kDN[0] = 0;
             Bac_block.PhyDN[0] = 0;
             return NOERROR;
-        }
+        } */
     }
     return GENERALERROR;
 }
@@ -93,9 +112,17 @@ void A1Dialog::FillBdOut()
 {
     WDFunc::SetLBLText(this, "tunednu1", QString::number(ChA1->Bda_out.Uef_filt[0], 'f', 5));
     WDFunc::SetLBLText(this, "tunednu2", QString::number(ChA1->Bda_out.Uef_filt[1], 'f', 5));
-    WDFunc::SetLBLText(this, "tunednphy", QString::number(ChA1->Bda_out.Phy, 'f', 5));
+    WDFunc::SetLBLText(this, "tunednphy", QString::number((-ChA1->Bda_out.Phy), 'f', 5));
     WDFunc::SetLBLText(this, "tunednfreq", QString::number(ChA1->Bda_out.Frequency, 'f', 5));
-    WDFunc::SetLBLText(this, "tunepercent", QString::number(ChA1->Bda_out.dUrms, 'f', 5));
+    WDFunc::SetLBLText(this, "tunepercent", QString::number((-ChA1->Bda_out.dUrms), 'f', 5));
+}
+
+void A1Dialog::FillMedian()
+{
+    WDFunc::SetLBLText(this, "tunedurmsm", QString::number(Dd_Block.dUrms, 'f', 5));
+    WDFunc::SetLBLText(this, "tunephym", QString::number(Dd_Block.Phy, 'f', 5));
+    WDFunc::SetLBLText(this, "tunesurms", QString::number(Dd_Block.sU, 'f', 5));
+    WDFunc::SetLBLText(this, "tunesphy", QString::number(Dd_Block.sPhy, 'f', 5));
 }
 
 void A1Dialog::GenerateReport()
@@ -103,6 +130,8 @@ void A1Dialog::GenerateReport()
     ConditionDataDialog(); // задаём условия поверки
     DNDialog(); // вводим данные по делителю
     // данные в таблицу уже получены или из файла, или в процессе работы
+    // отобразим таблицу
+    ShowTable();
     QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
     report = new LimeReport::ReportEngine(this);
     report->loadFromFile(pc.SystemHomeDir+"a1_"+GOST+".lrxml");
@@ -222,15 +251,30 @@ void A1Dialog::UpdateItemInModel(int row, int column, QVariant value)
     ReportModel->setItem(row, column, item);
 }
 
+void A1Dialog::ShowTable()
+{
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QTableView *tw = new QTableView;
+    tw->setModel(ReportModel);
+    lyout->addWidget(tw);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
 void A1Dialog::StartWork()
 {
     float VoltageInkV;
     pc.Cancelled = false;
-/*    if (GetConf() != NOERROR)
+    if (GetConf() != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Ошибка чтения конфигурации или настроечных параметров из модуля");
         return;
-    } */
+    }
+    WDFunc::SetEnabled(this, "StartWorkPb", false);
     PovType = TempPovType = GOST_NONE;
     QDialog *dlg = new QDialog(this);
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -286,6 +330,7 @@ void A1Dialog::StartWork()
                 VoltageInkV = static_cast<float>(Bac_block.K_DN) * 20 / 1732;
             if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == true)
             {
+                Index = 0;
                 Counter = 0;
                 MeasurementTimer->start();
                 WDFunc::SetEnabled(this, "cancelpb", true);
@@ -294,6 +339,7 @@ void A1Dialog::StartWork()
             }
         }
     }
+    WDFunc::SetEnabled(this, "StartWorkPb", true);
     MessageBox2::information(this, "Информация", "Операция прервана");
     return;
 }
@@ -310,7 +356,7 @@ void A1Dialog::ParsePKDNFile()
 
 void A1Dialog::MeasTimerTimeout()
 {
-//    cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
+    cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
     if (cn->result == NOERROR)
         FillBdOut();
 }
@@ -320,7 +366,7 @@ void A1Dialog::Accept()
     float VoltageInkV;
     int endcounter = (PovType == GOST_1983) ? 3 : 9;
     MeasurementTimer->stop();
-    int Pindex = (Counter > 4) ? (8 - Counter) : Counter;
+    int Pindex = (Index > 4) ? (8 - Index) : Index;
     const int Percents23625[] = {20, 50, 80, 100, 120};
     const int Percents1983[] = {80, 100, 120};
     const int *Percents = (PovType == GOST_1983) ? Percents1983 : Percents23625;
@@ -335,7 +381,12 @@ void A1Dialog::Accept()
         else
             row += GOST23625ROWCOUNT/2;
     }
-    if (Counter > 4) // на нисходящем отрезке по ГОСТ 23625
+    if (GetStatistics() == GENERALERROR) // набираем статистику измерений и вычисляем средние значения
+    {
+        pc.Cancelled = true;
+        Decline();
+    }
+    if (Index > 4) // на нисходящем отрезке по ГОСТ 23625
     {
         UpdateItemInModel(row, 4, ChA1->Bda_out.dUrms);
         UpdateItemInModel(row, 5, ChA1->Bda_out.Phy);
@@ -347,6 +398,10 @@ void A1Dialog::Accept()
         UpdateItemInModel(row, 7, PhyM);
         UpdateItemInModel(row, 8, (ChA1->Bda_out.dUrms - dUrmsU));
         UpdateItemInModel(row, 9, (ChA1->Bda_out.Phy - PhyU));
+        UpdateItemInModel(row, 10, Dd_Block.dUrms);
+        UpdateItemInModel(row, 11, Dd_Block.Phy);
+        UpdateItemInModel(row, 12, Dd_Block.sPhy);
+        UpdateItemInModel(row, 13, Dd_Block.sU);
     }
     else
     {
@@ -356,18 +411,22 @@ void A1Dialog::Accept()
         UpdateItemInModel(row, column++, ChA1->Bda_out.dUrms);
         UpdateItemInModel(row, column++, ChA1->Bda_out.Phy);
         if (PovType == GOST_23625)
-            column += 6;
+            column += 10;
         UpdateItemInModel(row, column++, Bac_block.dU_cor[Pindex]);
         UpdateItemInModel(row, column++, Bac_block.dPhy_cor[Pindex]);
         UpdateItemInModel(row, column++, ChA1->Bda_out.dUrms);
         UpdateItemInModel(row, column++, ChA1->Bda_out.Phy);
+        UpdateItemInModel(row, column++, Dd_Block.dUrms);
+        UpdateItemInModel(row, column++, Dd_Block.Phy);
+        UpdateItemInModel(row, column++, Dd_Block.sPhy);
+        UpdateItemInModel(row, column++, Dd_Block.sU);
     }
-    ++Counter;
-    if (Counter >= endcounter)
+    ++Index;
+    if (Index >= endcounter)
     {
         if (CurrentS == 0.25)
         {
-            Counter = 0;
+            Index = 0;
             CurrentS = 1;
             if (MessageBox2::question(this, "Подтверждение", "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное 1,0·Sном") == false)
             {
@@ -385,7 +444,7 @@ void A1Dialog::Accept()
             return;
         }
     }
-    Pindex = (Counter > 4) ? (8 - Counter) : Counter;
+    Pindex = (Index > 4) ? (8 - Index) : Index;
     VoltageInkV = static_cast<float>(Bac_block.K_DN) * Percents[Pindex] / 1732;
     if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == false)
         Decline();
@@ -396,6 +455,7 @@ void A1Dialog::Decline()
 {
     WDFunc::SetEnabled(this, "cancelpb", false);
     WDFunc::SetEnabled(this, "acceptpb", false);
+    WDFunc::SetEnabled(this, "StartWorkPb", true);
     MeasurementTimer->stop();
 }
 
@@ -450,4 +510,58 @@ void A1Dialog::RBToggled()
         TempPovType = GOST_23625;
     else
         TempPovType = GOST_1983;
+}
+
+int A1Dialog::GetStatistics()
+{
+    // накопление измерений
+    DdStruct tmpst2;
+    tmpst2.dUrms = tmpst2.Phy = tmpst2.sPhy = tmpst2.sU = 0;
+    QList<int> sPhy, sU;
+    int count = 0;
+    emit StartPercents(TUNE_COUNTEND);
+    while ((count < TUNE_COUNTEND) && !pc.Cancelled)
+    {
+        cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
+        if (cn->result == NOERROR)
+            FillBdOut();
+        else
+        {
+            MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda_out");
+            return GENERALERROR;
+        }
+        tmpst2.dUrms += ChA1->Bda_out.dUrms;
+        tmpst2.Phy += ChA1->Bda_out.Phy;
+        sU.append(tmpst2.dUrms);
+        sPhy.append(tmpst2.Phy);
+        QTime tme;
+        tme.start();
+        while (tme.elapsed() < TUNE_POINTSPER)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+        ++count;
+        emit SetPercent(count);
+    }
+    if (pc.Cancelled)
+        return GENERALERROR;
+    // усреднение
+    float Um = tmpst2.dUrms / count; // среднее значение погрешности по напряжению
+    float Phym = tmpst2.Phy / count; // среднее значение погрешности по углу
+    Dd_Block.dUrms = Um;
+    Dd_Block.Phy = Phym;
+    float sUo, sPhyo; // временные накопительные СКО
+    sUo = sPhyo = 0;
+    for (int i=0; i<count; ++i)
+    {
+        if ((i < sPhy.size()) && (i < sU.size()))
+        {
+            sUo += qPow((sU.at(i) - Um), 2);
+            sPhyo += qPow((sPhy.at(i) - Phym), 2);
+        }
+    }
+    sUo = qSqrt(sUo/count);
+    sPhyo = qSqrt(sPhyo/count);
+    Dd_Block.sPhy = sPhyo;
+    Dd_Block.sU = sUo;
+    FillMedian();
+    return NOERROR;
 }

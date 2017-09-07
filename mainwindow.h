@@ -2,8 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QToolBar>
-#include <QMap>
 #include "publicclass.h"
 #include "../config/confdialog.h"
 
@@ -83,6 +81,7 @@ signals:
     void PasswordChecked();
     void BsiRefresh();
     void ClearBsi();
+    void Finished();
 
 private:
     publicclass::Bsi Bsi_block;
@@ -124,6 +123,7 @@ private slots:
     void MouseMove();
 #endif
 protected:
+    void keyPressEvent(QKeyEvent *e);
     void resizeEvent(QResizeEvent *e);
 };
 

@@ -182,23 +182,23 @@ void Canal::ParseIncomeData(QByteArray &ba)
     quint32 RDSize = static_cast<quint32>(ReadDataChunk.size());
     if (RDSize<3) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
         return;
-    if (ReadDataChunk.at(0) != CN_SS)
-    {
-        Finish(CN_RCVDATAERROR);
-        return;
-    }
-    if (ReadDataChunk.at(1) == CN_ResErr)
-    {
-        if (RDSize < 5) // некорректная посылка
-            Finish(CN_RCVDATAERROR);
-        else
-            Finish(USO_NOERR + ReadDataChunk.at(4));
-        return;
-    }
     switch (bStep)
     {
     case 0: // первая порция
     {
+        if (ReadDataChunk.at(0) != CN_SS)
+        {
+            Finish(CN_RCVDATAERROR);
+            return;
+        }
+        if (ReadDataChunk.at(1) == CN_ResErr)
+        {
+            if (RDSize < 5) // некорректная посылка
+                Finish(CN_RCVDATAERROR);
+            else
+                Finish(USO_NOERR + ReadDataChunk.at(4));
+            return;
+        }
         switch (cmd)
         {
         // команды с ответом "ОК"

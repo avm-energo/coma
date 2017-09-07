@@ -9,8 +9,11 @@
 
 #define GOST1983ROWCOUNT    6 // 80, 100, 120 %
 #define GOST23625ROWCOUNT   10 // 20, 50, 80, 100, 120 %
-#define GOST1983COLCOUNT    8 // K, S, 3x(dU, dP)
-#define GOST23625COLCOUNT   14 // K, S, 5x(dU, dP), dd, dD
+#define GOST1983COLCOUNT    12 // K, S, 3x(dU, dP), ddU, ddP, sU, sP
+#define GOST23625COLCOUNT   22 // K, S, 5x(dU, dP), dd, dD, 2x(ddU, ddP, sU, sP)
+
+#define TUNE_COUNTEND   120 // столько точек по
+#define TUNE_POINTSPER  500 // столько миллисекунд должно усредняться при регулировке
 
 class A1Dialog : public QDialog
 {
@@ -28,15 +31,27 @@ public:
     struct Bac
     {
         float U1kDN[6];     // измеренные при калибровке напряжения на выходе своего ДН для значений вблизи 12, 30, 48, 60 и 72 В
-        float U2kDN[6];     // и соответствующие им значения на выходе эталонного делителя.
+        float U2kDN[6];     // и соответствующие им значения на выходе эталонного делителя
         float PhyDN[6]; 	// фазовый сдвиг ДН на частоте 50 Гц для значений напряжения U1kDN[6]
         float dU_cor[5];    // относительная ампл. погрешность установки после коррекции, в %
         float dPhy_cor[5];  // абс. фазовая погрешность установки после коррекции, срад
+        float ddU_cor[5];	// среднеквадратичное отклонение амплитудной погрешности
+        float ddPhy_cor[5]; // среднеквадратичное отклонение фазовой погрешности
         float K_DN;         // номинальный коэффициент деления ДН
         quint32 DNFNum;     // заводской номер делителя
     };
 
     Bac Bac_block;
+
+    struct DdStruct
+    {
+        float dUrms;
+        float Phy;
+        float sU;
+        float sPhy;
+    };
+
+    DdStruct Dd_Block;
 
     struct ReportHeaderStructure
     {
@@ -84,7 +99,7 @@ private:
         float dPd;  // абсолютная погрешность ДН по фазе
     }; */
 //    ResultsStruct Results[9];   // девять уровней напряжения: 20, 50, 80, 100, 120, 100, 80, 50, 20 % или три уровня: 80, 100, 120 % в зависимости от ГОСТа
-    int Counter;
+    int Index, Counter;
     float CurrentS; // текущее значение нагрузки
     int PovType, TempPovType; // тип поверяемого оборудования (по какому ГОСТу)
     QStandardItemModel *ReportModel; // модель, в которую заносим данные для отчёта
@@ -93,6 +108,7 @@ private:
     void SetupUI();
     int GetConf();
     void FillBdOut();
+    void FillMedian();
     void WriteProtocolToFile();
     void ShowProtocol();
     void SaveProtocolToPDF();
@@ -100,9 +116,12 @@ private:
     void ConditionDataDialog(); // задание условий поверки
     void DNDialog(); // задание параметров ДН(ТН)
     void UpdateItemInModel(int row, int column, QVariant value);
+    void ShowTable();
 
 signals:
     void CloseDialog();
+    void StartPercents(quint32 Percent);
+    void SetPercent(quint32 Percent);
 
 private slots:
     void StartWork();
@@ -115,6 +134,7 @@ private slots:
     void SetDNData();
     void SetConditionData();
     void RBToggled();
+    int GetStatistics();
 };
 
 #endif // A1DIALOG_H

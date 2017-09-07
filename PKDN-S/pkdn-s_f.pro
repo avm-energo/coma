@@ -20,6 +20,8 @@ DEFINES += PROGNAME='\\"PKDN-S\\"'
 DEFINES += PROGCAPTION='\\"PKDN-Service\\040v1.0.60\\"'
 DEFINES += DEVICETYPE=2 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=4 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
+DEFINES += COMPORTENABLE # enable virtual com port driver
+#DEFINES += USBENABLE # enable usb hid driver
 TEMPLATE = app
 
 SOURCES += main.cpp\

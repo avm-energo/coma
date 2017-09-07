@@ -197,7 +197,7 @@ void TuneDialogA1DN::SetupUI()
     lyout->addLayout(hlyout);
 
     glyout = new QGridLayout;
-    gb = new QGroupBox("Настроечные коэффициенты");
+//    gb = new QGroupBox("Настроечные коэффициенты");
     for (i = 0; i < 6; ++i)
     {
         glyout->addWidget(WDFunc::NewLBL(this, "U1kDN["+QString::number(i)+"]"),0,i,1,1);
@@ -218,8 +218,9 @@ void TuneDialogA1DN::SetupUI()
             glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+37), "", ValuesLEFormat),13,i,1,1);
         }
     }
-    gb->setLayout(glyout);
-    lyout->addWidget(gb);
+//    gb->setLayout(glyout);
+    lyout->addLayout(glyout);
+//    lyout->addWidget(gb);
     lyout->addWidget(BottomUI());
     lyout->addStretch(1);
     cp2->setLayout(lyout);

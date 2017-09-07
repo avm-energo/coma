@@ -283,7 +283,7 @@ int TuneDialogA1::Start6_3_3_2()
 {
     if (Skipped)
         return ER_RESEMPTY;
-    WaitNSeconds(10);
+//    WaitNSeconds(10);
     if (pc.Cancelled)
         return GENERALERROR;
     int res = ReadAnalogMeasurements();
@@ -337,7 +337,7 @@ int TuneDialogA1::Start6_3_5_1()
 {
     if (Skipped)
         return ER_RESEMPTY;
-    WaitNSeconds(10);
+//    WaitNSeconds(10);
     if (pc.Cancelled)
         return GENERALERROR;
     int res = ReadAnalogMeasurements();
@@ -391,7 +391,7 @@ int TuneDialogA1::Start6_3_7_1()
 {
     if (Skipped)
         return ER_RESEMPTY;
-    WaitNSeconds(10);
+//    WaitNSeconds(10);
     if (pc.Cancelled)
         return GENERALERROR;
     int res = ReadAnalogMeasurements();
@@ -496,10 +496,10 @@ int TuneDialogA1::CheckBdaValues(int checktype)
     }
     if (checktype == CHECK_MA1)
     {
-        if (!IsWithinLimits(ChA1->Bda_block.EXTmA1, 25.0, 25.0))
+        if (!IsWithinLimits(ChA1->Bda_block.EXTmA1, 655.0, 25.0))
             return GENERALERROR;
     }
-    if (checktype == CHECK_MA1)
+    if (checktype == CHECK_MA2)
     {
         if (!IsWithinLimits(ChA1->Bda_block.EXTmA2, 3275.0, 75.0))
             return GENERALERROR;

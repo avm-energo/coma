@@ -361,7 +361,7 @@ int publicclass::LoadFromFile(const QString &filename, QByteArray &ba)
 int publicclass::SaveFile(QWidget *parent, const QString &mask, const QString &ext, QByteArray &src, unsigned int numbytes)
 {
     QString MTypeM = (ModuleBsi.MTypeM == 0) ? "00" : QString::number(ModuleBsi.MTypeM, 16);
-    QString tmps = HomeDir + QString::number(ModuleBsi.MTypeB, 16)+MTypeM+"-"+\
+    QString tmps = HomeDir + "/" + QString::number(ModuleBsi.MTypeB, 16)+MTypeM+"-"+\
             QString("%1").arg(ModuleBsi.SerialNum, 8, 10, QChar('0'))+"."+ext;
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
