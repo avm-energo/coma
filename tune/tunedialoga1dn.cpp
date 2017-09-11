@@ -408,24 +408,17 @@ void TuneDialogA1DN::SetDefCoefs()
 
 void TuneDialogA1DN::AcceptDNData()
 {
-//    ReadTuneCoefs();
-//    QString tmps;
-//    bool ok;
     WDFunc::LENumber(this, "kdnle", Bac_block.K_DN);
-//    Bac_block.K_DN = tmps.toFloat(&ok);
-/*    if (!ok)
-    {
-        MessageBox2::error(this, "Ошибка!", "Коэффициент деления не является корректным числом");
-        return;
-    } */
     WDFunc::LENumber(this, "dnfnumle", Bac_block.DNFNum);
-//    Bac_block.DNFNum = tmps.toUInt(&ok);
-/*    if (!ok)
-    {
-        MessageBox2::error(this, "Ошибка!", "Серийный номер не является корректным числом");
-        return;
-    } */
     cn->Send(CN_WBac, BT_MEZONIN, &Bac_block, sizeof(Bac));
+    if (cn->result != NOERROR)
+    {
+        MessageBox2::error(this, "Ошибка", "Ошибка при записи коэффициентов");
+        return;
+    }
+    else
+        MessageBox2::information(this, "Успешно", "Записано успешно!");
+    FillBac();
     Accepted = true;
     emit DNDataIsSet();
 }

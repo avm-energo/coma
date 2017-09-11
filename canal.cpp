@@ -12,6 +12,7 @@ Canal::Canal(QObject *parent) : QObject(parent)
 {
     log = new Log;
     log->Init("canal.log");
+    log->WriteRaw("Log started!");
     RDLength = 0;
     SegEnd = 0;
     SegLeft = 0;

@@ -97,13 +97,13 @@ int A1Dialog::GetConf()
     if (cn->result == NOERROR)
     {
         cn->Send(CN_GBac, BT_MEZONIN, &Bac_block, sizeof(Bac));
-/*        if (cn->result == NOERROR)
+        if (cn->result == NOERROR)
         {
             Bac_block.U1kDN[0] = 0;
             Bac_block.U2kDN[0] = 0;
             Bac_block.PhyDN[0] = 0;
             return NOERROR;
-        } */
+        }
     }
     return GENERALERROR;
 }
@@ -161,12 +161,12 @@ void A1Dialog::GenerateReport()
     report->dataManager()->setReportVariable("KNI", ReportHeader.KNI);
     report->dataManager()->setReportVariable("OuterInsp", ReportHeader.OuterInsp);
     report->dataManager()->setReportVariable("WindingsInsp", ReportHeader.WindingsInsp);
-/*    QFileDialog *dlg = new QFileDialog;
+    QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QString Filename = dlg->getSaveFileName(this, "", pc.HomeDir, "*.pdf");
     dlg->close();
-    report->printToPDF(Filename); */
-    report->previewReport();
+    report->printToPDF(Filename);
+//    report->previewReport();
 //    report->designReport();
 }
 
@@ -177,12 +177,12 @@ void A1Dialog::ConditionDataDialog()
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Условия поверки"), Qt::AlignCenter);
-    if (CA1->Bci_block.DTCanal == 0)
+    if ((CA1->Bci_block.DTCanal == 0)  || (ChA1->Bda_out_an.Tamb == FLT_MAX))
     {
         glyout->addWidget(WDFunc::NewLBL(this, "Температура окружающей среды, °С"), row, 0, 1, 1, Qt::AlignRight);
         glyout->addWidget(WDFunc::NewLEF(this, "Temp", ""), row++, 1, 1, 1, Qt::AlignLeft);
     }
-    if (CA1->Bci_block.DHCanal == 0)
+    if ((CA1->Bci_block.DHCanal == 0) || (ChA1->Bda_out_an.Hamb == FLT_MAX))
     {
         glyout->addWidget(WDFunc::NewLBL(this, "Влажность воздуха, %"), row, 0, 1, 1, Qt::AlignRight);
         glyout->addWidget(WDFunc::NewLEF(this, "Humidity", ""), row++, 1, 1, 1, Qt::AlignLeft);
@@ -267,7 +267,7 @@ void A1Dialog::ShowTable()
 
 void A1Dialog::StartWork()
 {
-    float VoltageInkV;
+    float VoltageInkV, VoltageInV;
     pc.Cancelled = false;
     if (GetConf() != NOERROR)
     {
@@ -325,10 +325,17 @@ void A1Dialog::StartWork()
         {
             CurrentS = 0.25;
             if (PovType == GOST_1983)
+            {
                 VoltageInkV = static_cast<float>(Bac_block.K_DN) * 80 / 1732;
+                VoltageInV = static_cast<float>(1000 * 80) / 1732;
+            }
             else
+            {
                 VoltageInkV = static_cast<float>(Bac_block.K_DN) * 20 / 1732;
-            if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == true)
+                VoltageInV = static_cast<float>(1000 * 20) / 1732;
+            }
+            if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + \
+                                      QString::number(VoltageInkV, 'f', 1) + " кВ ("+QString::number(VoltageInV, 'f', 1)+" В)") == true)
             {
                 Index = 0;
                 Counter = 0;
@@ -363,7 +370,7 @@ void A1Dialog::MeasTimerTimeout()
 
 void A1Dialog::Accept()
 {
-    float VoltageInkV;
+    float VoltageInkV, VoltageInV;
     int endcounter = (PovType == GOST_1983) ? 3 : 9;
     MeasurementTimer->stop();
     int Pindex = (Index > 4) ? (8 - Index) : Index;
@@ -385,6 +392,7 @@ void A1Dialog::Accept()
     {
         pc.Cancelled = true;
         Decline();
+        return;
     }
     if (Index > 4) // на нисходящем отрезке по ГОСТ 23625
     {
@@ -406,20 +414,20 @@ void A1Dialog::Accept()
     else
     {
         int column = 0;
-        UpdateItemInModel(row, column++, Percents[Pindex]);
-        UpdateItemInModel(row, column++, CurrentS);
-        UpdateItemInModel(row, column++, ChA1->Bda_out.dUrms);
-        UpdateItemInModel(row, column++, ChA1->Bda_out.Phy);
+        UpdateItemInModel(row, column++, QString::number(Percents[Pindex], 10));
+        UpdateItemInModel(row, column++, QString::number(CurrentS, 'f', 3));
+        UpdateItemInModel(row, column++, QString::number(ChA1->Bda_out.dUrms, 'f', 5));
+        UpdateItemInModel(row, column++, QString::number(ChA1->Bda_out.Phy, 'f', 5));
         if (PovType == GOST_23625)
             column += 10;
-        UpdateItemInModel(row, column++, Bac_block.dU_cor[Pindex]);
-        UpdateItemInModel(row, column++, Bac_block.dPhy_cor[Pindex]);
-        UpdateItemInModel(row, column++, ChA1->Bda_out.dUrms);
-        UpdateItemInModel(row, column++, ChA1->Bda_out.Phy);
-        UpdateItemInModel(row, column++, Dd_Block.dUrms);
-        UpdateItemInModel(row, column++, Dd_Block.Phy);
-        UpdateItemInModel(row, column++, Dd_Block.sPhy);
-        UpdateItemInModel(row, column++, Dd_Block.sU);
+        UpdateItemInModel(row, column++, QString::number(Bac_block.dU_cor[Pindex],'f',5));
+        UpdateItemInModel(row, column++, QString::number(Bac_block.dPhy_cor[Pindex],'f',5));
+        UpdateItemInModel(row, column++, QString::number(ChA1->Bda_out.dUrms,'f',5));
+        UpdateItemInModel(row, column++, QString::number(ChA1->Bda_out.Phy,'f',5));
+        UpdateItemInModel(row, column++, QString::number(Dd_Block.dUrms,'f',5));
+        UpdateItemInModel(row, column++, QString::number(Dd_Block.Phy,'f',5));
+        UpdateItemInModel(row, column++, QString::number(Dd_Block.sPhy,'f',5));
+        UpdateItemInModel(row, column++, QString::number(Dd_Block.sU,'f',5));
     }
     ++Index;
     if (Index >= endcounter)
@@ -446,7 +454,9 @@ void A1Dialog::Accept()
     }
     Pindex = (Index > 4) ? (8 - Index) : Index;
     VoltageInkV = static_cast<float>(Bac_block.K_DN) * Percents[Pindex] / 1732;
-    if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == false)
+    VoltageInV = static_cast<float>(1000 * Percents[Pindex]) / 1732;
+    if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + \
+                              QString::number(VoltageInkV, 'f', 1) + " кВ ("+QString::number(VoltageInV, 'f', 1)+" В)") == false)
         Decline();
     MeasurementTimer->start();
 }
