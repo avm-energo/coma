@@ -55,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar1(quint32)));
     connect(cn,SIGNAL(readbytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(cn,SIGNAL(writebytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
-    connect(cn,SIGNAL(Disconnected()),this,SLOT(ContinueDisconnect()));
+//    connect(cn,SIGNAL(Disconnected()),this,SLOT(ContinueDisconnect()));
 #else
 #ifdef USBENABLE
     connect(uh,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
@@ -64,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(uh,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar1(quint32)));
     connect(uh,SIGNAL(readbytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(uh,SIGNAL(writebytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
-    connect(uh,SIGNAL(Disconnected()),this,SLOT(ContinueDisconnect()));
+//    connect(uh,SIGNAL(Disconnected()),this,SLOT(ContinueDisconnect()));
 #endif
 #endif
     connect(this,SIGNAL(Retry()),this,SLOT(Stage1()));
@@ -169,7 +169,7 @@ void MainWindow::SetupMenubar()
     act = new QAction(this);
     act->setText("Разрыв соединения");
     act->setIcon(QIcon(":/pic/stop.png"));
-    connect(act,SIGNAL(triggered()),this,SLOT(Disconnect()));
+    connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndClear()));
     menu->addAction(act);
     menubar->addMenu(menu);
 
@@ -632,11 +632,11 @@ void MainWindow::Disconnect()
         uh->Disconnect();
 #endif
 #endif
-    ContinueDisconnect();
 }
 
-void MainWindow::ContinueDisconnect()
+void MainWindow::DisconnectAndClear()
 {
+    Disconnect();
     emit FinishAll();
     emit ClearBsi();
     ClearTW();

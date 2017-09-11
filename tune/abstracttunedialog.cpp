@@ -9,6 +9,8 @@
 #include <QInputDialog>
 #include <QCoreApplication>
 #include <QFileDialog>
+#include <QScrollArea>
+#include <QScrollBar>
 #include "abstracttunedialog.h"
 #include "../publicclass.h"
 #include "../canal.h"
@@ -45,6 +47,12 @@ QWidget *AbstractTuneDialog::TuneUI()
     else
         pb->setEnabled(true);
     lyout->addWidget(pb);
+    QScrollArea *area = new QScrollArea;
+    area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
+    area->setFrameShape(QFrame::NoFrame);
+    area->setWidgetResizable(true);
+    QWidget *w2 = new QWidget;
+    QVBoxLayout *w2lyout = new QVBoxLayout;
     for (i = 0; i < lbls.size(); ++i)
     {
         QHBoxLayout *hlyout = new QHBoxLayout;
@@ -57,13 +65,18 @@ QWidget *AbstractTuneDialog::TuneUI()
         lbl->setObjectName("tunemsgres"+QString::number(i));
         hlyout->addWidget(lbl);
         hlyout->addStretch(1);
-        lyout->addLayout(hlyout);
+        w2lyout->addLayout(hlyout);
     }
+    w2lyout->addStretch(10);
+    w2->setLayout(w2lyout);
+    area->setWidget(w2);
+    lyout->addWidget(area);
+    area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
     QLabel *lbl=new QLabel("Настройка завершена!");
     lbl->setVisible(false);
     lbl->setObjectName("tunemsg"+QString::number(i));
     lyout->addWidget(lbl);
-    lyout->addStretch(1);
+//    lyout->addStretch(1);
     w->setLayout(lyout);
     return w;
 }
@@ -75,28 +88,32 @@ QWidget *AbstractTuneDialog::BottomUI()
     QPushButton *pb = new QPushButton("Установить настроечные коэффициенты по умолчанию");
     connect(pb,SIGNAL(clicked()),this,SLOT(SetDefCoefs()));
     lyout->addWidget(pb);
+    QHBoxLayout *hlyout = new QHBoxLayout;
     QString tmps = "Прочитать настроечные коэффициенты из ";
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     pb = new QPushButton(tmps);
     connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs()));
     if (pc.Emul)
         pb->setEnabled(false);
-    lyout->addWidget(pb);
+    hlyout->addWidget(pb);
     tmps = "Записать настроечные коэффициенты в ";
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     pb = new QPushButton(tmps);
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteTuneCoefs()));
     if (pc.Emul)
         pb->setEnabled(false);
-    lyout->addWidget(pb);
+    hlyout->addWidget(pb);
+    lyout->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
     pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
     pb->setIcon(QIcon(":/load.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadFromFile()));
-    lyout->addWidget(pb);
+    hlyout->addWidget(pb);
     pb = new QPushButton("Записать настроечные коэффициенты в файл");
     pb->setIcon(QIcon(":/save.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
-    lyout->addWidget(pb);
+    hlyout->addWidget(pb);
+    lyout->addLayout(hlyout);
     w->setLayout(lyout);
     return w;
 }
@@ -142,6 +159,7 @@ void AbstractTuneDialog::ProcessTune()
     MsgSetVisible(bStep); // выдаём надпись "Настройка завершена!"
     MeasurementTimer->stop();
     WDFunc::SetEnabled(this, "starttune", true);
+    MessageBox2::information(this, "Готово", "Настройка завершена!");
 }
 
 int AbstractTuneDialog::CheckPassword()
@@ -211,11 +229,13 @@ void AbstractTuneDialog::SkMsgSetVisible(int msg, bool Visible)
 
 void AbstractTuneDialog::MsgClear()
 {
-    for (int i=0; i<lbls.size(); ++i)
+    int i;
+    for (i=0; i<lbls.size(); ++i)
     {
         MsgSetVisible(i, false);
         OkMsgSetVisible(i, false);
     }
+    MsgSetVisible(i, false);
 }
 
 void AbstractTuneDialog::WaitNSeconds(int Seconds)

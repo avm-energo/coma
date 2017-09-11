@@ -115,7 +115,7 @@ private slots:
     void SetProgressBar2(quint32 cursize);
     void GetAbout();
     void Disconnect();
-    void ContinueDisconnect();
+    void DisconnectAndClear();
 #if PROGSIZE >= PROGSIZE_LARGE
     void UpdateMainTE(QByteArray &ba);
     void OpenBhbDialog();

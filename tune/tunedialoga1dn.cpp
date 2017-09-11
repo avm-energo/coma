@@ -182,7 +182,7 @@ void TuneDialogA1DN::SetupUI()
     lyout->addWidget(gb);
 
     lyout->addWidget(TuneUI());
-    lyout->addStretch(1);
+//    lyout->addStretch(1);
     cp1->setLayout(lyout);
 
     // CP2 - КОЭФФИЦИЕНТЫ МОДУЛЯ
@@ -255,17 +255,17 @@ void TuneDialogA1DN::SetupUI()
 
 int TuneDialogA1DN::InputDNData()
 {
-//    cn->Send(CN_GBac, BT_MEZONIN, &Bac_block, sizeof(Bac));
-    ReadTuneCoefs();
+    cn->Send(CN_GBac, BT_MEZONIN, &Bac_block, sizeof(Bac));
     int row = 0;
     QDialog *dlg = new QDialog(this);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Данные на ТН(ДН)"), Qt::AlignCenter);
     glyout->addWidget(WDFunc::NewLBL(this, "Коэффициент деления ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLEF(this, "K_DN", QString::number(Bac_block.K_DN)), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLE(this, "kdnle", QString::number(Bac_block.K_DN)), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLEF(this, "DNFNum", QString::number(Bac_block.DNFNum)), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLE(this, "dnfnumle", QString::number(Bac_block.DNFNum)), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->setColumnStretch(1, 1);
     lyout->addLayout(glyout);
     QPushButton *pb = new QPushButton("Готово");
@@ -409,22 +409,22 @@ void TuneDialogA1DN::SetDefCoefs()
 void TuneDialogA1DN::AcceptDNData()
 {
 //    ReadTuneCoefs();
-    QString tmps;
-    bool ok;
-    WDFunc::LEData(this, "K_DN", tmps);
-    Bac_block.K_DN = tmps.toFloat(&ok);
-    if (!ok)
+//    QString tmps;
+//    bool ok;
+    WDFunc::LENumber(this, "kdnle", Bac_block.K_DN);
+//    Bac_block.K_DN = tmps.toFloat(&ok);
+/*    if (!ok)
     {
         MessageBox2::error(this, "Ошибка!", "Коэффициент деления не является корректным числом");
         return;
-    }
-    WDFunc::LEData(this, "DNFNum", tmps);
-    Bac_block.DNFNum = tmps.toUInt(&ok);
-    if (!ok)
+    } */
+    WDFunc::LENumber(this, "dnfnumle", Bac_block.DNFNum);
+//    Bac_block.DNFNum = tmps.toUInt(&ok);
+/*    if (!ok)
     {
         MessageBox2::error(this, "Ошибка!", "Серийный номер не является корректным числом");
         return;
-    }
+    } */
     cn->Send(CN_WBac, BT_MEZONIN, &Bac_block, sizeof(Bac));
     Accepted = true;
     emit DNDataIsSet();
@@ -477,7 +477,9 @@ int TuneDialogA1DN::Start7_2_345(int counter)
     if (counter > 4)
         return GENERALERROR;
     float VoltageInkV = static_cast<float>(Bac_block.K_DN) * Percents[counter] / 1732;
-    if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == false)
+    float VoltageInV = 57.735 * Percents[counter] / 100;
+    if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + \
+                              QString::number(VoltageInkV, 'f', 1) + " кВ (" + QString::number(VoltageInV, 'f', 3) + " В)") == false)
     {
         pc.Cancelled = true;
         return GENERALERROR;
@@ -615,11 +617,14 @@ int TuneDialogA1DN::Start7_2_9(int counter)
     if (counter > 7)
         return GENERALERROR;
     float VoltageInkV = static_cast<float>(Bac_block.K_DN) * Percents[counter] / 1732;
-    if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + QString::number(VoltageInkV, 'f', 1) + " кВ") == false)
+    float VoltageInV = 57.735 * Percents[counter] / 100;
+    if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + \
+                              QString::number(VoltageInkV, 'f', 1) + " кВ (" + QString::number(VoltageInV, 'f', 3) + " В)") == false)
     {
         pc.Cancelled = true;
         return GENERALERROR;
     }
+    WaitNSeconds(10);
     if (StartMeasurement() != NOERROR)
         return GENERALERROR;
     FillBackBdOut();
@@ -627,7 +632,7 @@ int TuneDialogA1DN::Start7_2_9(int counter)
     // накопление измерений
     DdStruct tmpst2;
     tmpst2.dUrms = tmpst2.Phy = tmpst2.sPhy = tmpst2.sU = 0;
-    QList<int> sPhy, sU;
+    QList<float> sPhy, sU;
     int count = 0;
     emit StartPercents(TUNE_COUNTEND);
     while ((count < TUNE_COUNTEND) && !pc.Cancelled)
@@ -642,8 +647,8 @@ int TuneDialogA1DN::Start7_2_9(int counter)
         }
         tmpst2.dUrms += ChA1->Bda_out.dUrms;
         tmpst2.Phy += ChA1->Bda_out.Phy;
-        sU.append(tmpst2.dUrms);
-        sPhy.append(tmpst2.Phy);
+        sU.append(ChA1->Bda_out.dUrms);
+        sPhy.append(ChA1->Bda_out.Phy);
         QTime tme;
         tme.start();
         while (tme.elapsed() < TUNE_POINTSPER)

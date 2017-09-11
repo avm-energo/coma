@@ -144,7 +144,7 @@ void pkdn_s::Stage3()
     A1Dialog *extdlg = new A1Dialog;
     connect(extdlg,SIGNAL(StartPercents(quint32)),this,SLOT(SetProgressBar2Size(quint32)));
     connect(extdlg,SIGNAL(SetPercent(quint32)),this,SLOT(SetProgressBar2(quint32)));
-    connect(this,SIGNAL(Finished()),extdlg,SIGNAL(Finished()));
+//    connect(this,SIGNAL(Finished()),extdlg,SIGNAL(Finished()));
     MainTW->addTab(extdlg, "Поверка внешнего ДН/ТН");
 //    MainTW->addTab(FwUpD, "Загрузка ВПО");
     if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации

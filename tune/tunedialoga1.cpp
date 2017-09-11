@@ -438,7 +438,6 @@ int TuneDialogA1::Start6_3_8()
 
 int TuneDialogA1::Start6_3_9()
 {
-    QEventLoop Loop;
 //    WaitNSeconds(10);
     QString tmps = "Пожалуйста, после нажатия \"ОК\" просмотрите текущие данные после регулировки в соответствующих окнах";
     if (TuneFileSaved)
@@ -449,8 +448,10 @@ int TuneDialogA1::Start6_3_9()
     QTabWidget *TuneTW = this->findChild<QTabWidget *>("tunetw");
     if (TuneTW != 0)
         TuneTW->setCurrentIndex(2); // показ данных измерений
-    connect(this,SIGNAL(Finished()),&Loop,SLOT(quit()));
-    Loop.exec();
+    connect(this,SIGNAL(Finished()),this,SLOT(Good()));
+    StartMeasurement();
+    if (TuneTW != 0)
+        TuneTW->setCurrentIndex(0); // показ данных измерений
     return NOERROR;
 }
 

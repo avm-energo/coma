@@ -74,6 +74,8 @@ public slots:
     void ReadTuneCoefs();
     void WriteTuneCoefs();
     void SaveToFile();
+    void Good();
+    void NoGood();
 
 private:
 
@@ -82,8 +84,6 @@ private slots:
     void PasswordCheck(QString &psw);
     void LoadFromFile();
     virtual int ReadAnalogMeasurements() = 0;
-    void Good();
-    void NoGood();
     virtual void SetDefCoefs() = 0;
     void UpdateNSecondsWidget();
     void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
