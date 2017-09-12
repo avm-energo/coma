@@ -15,6 +15,7 @@
 #include "../canal.h"
 #include "a1dialog.h"
 #include "../widgets/messagebox.h"
+#include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
 
 A1Dialog::A1Dialog(QWidget *parent) : QDialog(parent)
@@ -25,7 +26,7 @@ A1Dialog::A1Dialog(QWidget *parent) : QDialog(parent)
     SetupUI();
     MeasurementTimer = new QTimer;
     connect(MeasurementTimer,SIGNAL(timeout()),this,SLOT(MeasTimerTimeout()));
-    ReportHeader.DNDevices = "УКДН сер. номер " + QString::number(pc.ModuleBsi.SerialNum) + ", кл. точн. 0,05";
+//    ReportHeader.DNDevices = "УКДН сер. номер " + QString::number(pc.ModuleBsi.SerialNum) + ", кл. точн. 0,05";
 }
 
 void A1Dialog::SetupUI()
@@ -67,13 +68,13 @@ void A1Dialog::SetupUI()
 
     glyout = new QGridLayout;
     gb = new QGroupBox("СКО");
-    glyout->addWidget(WDFunc::NewLBL(this, "dUrms(m)"), 0, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "dUrms(m), В"), 0, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunedurmsm", ValuesFormat, ""), 0, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "φ(m)"), 0, 2, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "φ(m), срад"), 0, 2, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunephym", ValuesFormat, ""), 0, 3, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "σUrms"), 1, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "σUrms, %"), 1, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunesurms", ValuesFormat, ""), 1, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "σφ"), 1, 2, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "σφ, срад"), 1, 2, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunesphy", ValuesFormat, ""), 1, 3, 1, 1);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
@@ -127,53 +128,64 @@ void A1Dialog::FillMedian()
 
 void A1Dialog::GenerateReport()
 {
-    ConditionDataDialog(); // задаём условия поверки
-    DNDialog(); // вводим данные по делителю
-    // данные в таблицу уже получены или из файла, или в процессе работы
-    // отобразим таблицу
-    ShowTable();
-    QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
-    report = new LimeReport::ReportEngine(this);
-    report->loadFromFile(pc.SystemHomeDir+"a1_"+GOST+".lrxml");
-    report->dataManager()->addModel("maindata", ReportModel, false);
-    report->dataManager()->setReportVariable("Organization", pc.OrganizationString);
-    QString day = QDateTime::currentDateTime().toString("dd");
-    QString month = QDateTime::currentDateTime().toString("MM");
-    QString yr = QDateTime::currentDateTime().toString("yy");
-    report->dataManager()->setReportVariable("Day", day);
-    report->dataManager()->setReportVariable("Month", month);
-    report->dataManager()->setReportVariable("Yr", yr);
-    report->dataManager()->setReportVariable("DNType", ReportHeader.DNType);
-    report->dataManager()->setReportVariable("DNSerNum", ReportHeader.DNSerNum);
-    report->dataManager()->setReportVariable("DNTol", ReportHeader.DNTol);
-    report->dataManager()->setReportVariable("DNU1", ReportHeader.DNU1);
-    report->dataManager()->setReportVariable("DNU2", ReportHeader.DNU2);
-    report->dataManager()->setReportVariable("DNP", ReportHeader.DNP);
-    report->dataManager()->setReportVariable("DNF", ReportHeader.DNF);
-    report->dataManager()->setReportVariable("DNOrganization", ReportHeader.DNOrganization);
-    report->dataManager()->setReportVariable("DNPlace", ReportHeader.DNPlace);
-    report->dataManager()->setReportVariable("DNDevices", ReportHeader.DNDevices);
-    report->dataManager()->setReportVariable("Temp", ReportHeader.Temp);
-    report->dataManager()->setReportVariable("Humidity", ReportHeader.Humidity);
-    report->dataManager()->setReportVariable("Pressure", ReportHeader.Pressure);
-    report->dataManager()->setReportVariable("Voltage", ReportHeader.Voltage);
-    report->dataManager()->setReportVariable("Freq", ReportHeader.Freq);
-    report->dataManager()->setReportVariable("KNI", ReportHeader.KNI);
-    report->dataManager()->setReportVariable("OuterInsp", ReportHeader.OuterInsp);
-    report->dataManager()->setReportVariable("WindingsInsp", ReportHeader.WindingsInsp);
-    QFileDialog *dlg = new QFileDialog;
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    QString Filename = dlg->getSaveFileName(this, "", pc.HomeDir, "*.pdf");
-    dlg->close();
-    report->printToPDF(Filename);
-//    report->previewReport();
-//    report->designReport();
+    try
+    {
+        // запрос блока Bda_h, чтобы выдать KNI в протокол
+        cn->Send(CN_GBd, A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd3));
+        if (cn->result != NOERROR)
+            report->dataManager()->setReportVariable("KNI", ChA1->Bda_h.HarmBuf[0][0]);
+        ConditionDataDialog(); // задаём условия поверки
+        DNDialog(); // вводим данные по делителю
+        // данные в таблицу уже получены или из файла, или в процессе работы
+        // отобразим таблицу
+        ShowTable();
+        QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
+        report = new LimeReport::ReportEngine(this);
+        report->loadFromFile(pc.SystemHomeDir+"a1_"+GOST+".lrxml");
+        report->dataManager()->addModel("maindata", ReportModel, false);
+        report->dataManager()->setReportVariable("Organization", pc.OrganizationString);
+        QString day = QDateTime::currentDateTime().toString("dd");
+        QString month = QDateTime::currentDateTime().toString("MM");
+        QString yr = QDateTime::currentDateTime().toString("yy");
+        report->dataManager()->setReportVariable("Day", day);
+        report->dataManager()->setReportVariable("Month", month);
+        report->dataManager()->setReportVariable("Yr", yr);
+        report->dataManager()->setReportVariable("DNType", ReportHeader.DNType);
+        report->dataManager()->setReportVariable("DNSerNum", ReportHeader.DNSerNum);
+        report->dataManager()->setReportVariable("DNTol", ReportHeader.DNTol);
+        report->dataManager()->setReportVariable("DNU1", ReportHeader.DNU1);
+        report->dataManager()->setReportVariable("DNU2", ReportHeader.DNU2);
+        report->dataManager()->setReportVariable("DNP", ReportHeader.DNP);
+        report->dataManager()->setReportVariable("DNF", ReportHeader.DNF);
+        report->dataManager()->setReportVariable("DNOrganization", ReportHeader.DNOrganization);
+        report->dataManager()->setReportVariable("DNPlace", ReportHeader.DNPlace);
+        report->dataManager()->setReportVariable("DNDevices", ReportHeader.DNDevices);
+        report->dataManager()->setReportVariable("Temp", ReportHeader.Temp);
+        report->dataManager()->setReportVariable("Humidity", ReportHeader.Humidity);
+        report->dataManager()->setReportVariable("Pressure", ReportHeader.Pressure);
+        report->dataManager()->setReportVariable("Voltage", ReportHeader.Voltage);
+        report->dataManager()->setReportVariable("Freq", ReportHeader.Freq);
+        report->dataManager()->setReportVariable("OuterInsp", ReportHeader.OuterInsp);
+        report->dataManager()->setReportVariable("WindingsInsp", ReportHeader.WindingsInsp);
+        QFileDialog *dlg = new QFileDialog;
+        dlg->setAttribute(Qt::WA_DeleteOnClose);
+        QString Filename = dlg->getSaveFileName(this, "", pc.HomeDir, "*.pdf");
+        dlg->close();
+        report->printToPDF(Filename);
+    //    report->previewReport();
+    //    report->designReport();
+    }
+    catch(...)
+    {
+        ERMSG("Report exception!");
+    }
 }
 
 void A1Dialog::ConditionDataDialog()
 {
     int row = 0;
     QDialog *dlg = new QDialog(this);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Условия поверки"), Qt::AlignCenter);
@@ -193,8 +205,6 @@ void A1Dialog::ConditionDataDialog()
     glyout->addWidget(WDFunc::NewLEF(this, "Voltage", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Частота питания сети, Гц"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLEF(this, "Frequency", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Коэффициент искажения синусоидальности, %"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLEF(this, "KNI", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->setColumnStretch(1, 1);
     lyout->addLayout(glyout);
     QPushButton *pb = new QPushButton("Готово");
@@ -209,16 +219,21 @@ void A1Dialog::DNDialog()
 {
     int row = 0;
     QDialog *dlg = new QDialog(this);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Данные ТН(ДН)"), Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBL(this, "Организация, проводившая поверку"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "UKDNOrganization", pc.OrganizationString), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Тип ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLEF(this, "DNType", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Обозначение по схеме, фаза"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "DNNamePhase", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLEF(this, "DNSerialNum", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности, %"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLEF(this, "DNTolerance", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное первичное напряжение, В"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное первичное напряжение, кВ"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLEF(this, "DNU1", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение, В"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLEF(this, "DNU2", ""), row++, 1, 1, 1, Qt::AlignLeft);
@@ -230,6 +245,12 @@ void A1Dialog::DNDialog()
     glyout->addWidget(WDFunc::NewLEF(this, "DNOrganization", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Место установки"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLEF(this, "DNPlace", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Обозначение эталонного средства поверки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "PovDev", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер средства поверки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "PovDevSN", QString::number(pc.ModuleBsi.SerialNum, 10)), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности средства поверки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "PovDevPrecision", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Результаты внешнего осмотра"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLEF(this, "DNInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Результаты проверки правильности обозначения\nвыводов и групп соединений обмоток"), row, 0, 1, 1, Qt::AlignRight);
@@ -396,20 +417,20 @@ void A1Dialog::Accept()
     }
     if (Index > 4) // на нисходящем отрезке по ГОСТ 23625
     {
-        UpdateItemInModel(row, 4, ChA1->Bda_out.dUrms);
-        UpdateItemInModel(row, 5, ChA1->Bda_out.Phy);
+        UpdateItemInModel(row, 4, QString::number(ChA1->Bda_out.dUrms,'f',5));
+        UpdateItemInModel(row, 5, QString::number(ChA1->Bda_out.Phy,'f',5));
         float dUrmsU = ReportModel->item(row, 2)->text().toFloat();
         float PhyU = ReportModel->item(row, 3)->text().toFloat();
         float UrmsM = (dUrmsU + ChA1->Bda_out.dUrms) / 2;
         float PhyM = (PhyU + ChA1->Bda_out.Phy) / 2;
-        UpdateItemInModel(row, 6, UrmsM);
-        UpdateItemInModel(row, 7, PhyM);
-        UpdateItemInModel(row, 8, (ChA1->Bda_out.dUrms - dUrmsU));
-        UpdateItemInModel(row, 9, (ChA1->Bda_out.Phy - PhyU));
-        UpdateItemInModel(row, 10, Dd_Block.dUrms);
-        UpdateItemInModel(row, 11, Dd_Block.Phy);
-        UpdateItemInModel(row, 12, Dd_Block.sPhy);
-        UpdateItemInModel(row, 13, Dd_Block.sU);
+        UpdateItemInModel(row, 6, QString::number(UrmsM,'f',5));
+        UpdateItemInModel(row, 7, QString::number(PhyM,'f',5));
+        UpdateItemInModel(row, 8, QString::number((ChA1->Bda_out.dUrms - dUrmsU),'f',5));
+        UpdateItemInModel(row, 9, QString::number((ChA1->Bda_out.Phy - PhyU),'f',5));
+        UpdateItemInModel(row, 10, QString::number(Dd_Block.dUrms,'f',5));
+        UpdateItemInModel(row, 11, QString::number(Dd_Block.Phy,'f',5));
+        UpdateItemInModel(row, 12, QString::number(Dd_Block.sPhy,'f',5));
+        UpdateItemInModel(row, 13, QString::number(Dd_Block.sU,'f',5));
     }
     else
     {
@@ -444,6 +465,32 @@ void A1Dialog::Accept()
         }
         else
         {
+            int section = 0;
+            ReportModel->setHeaderData(section++, Qt::Horizontal, "Проц");
+            ReportModel->setHeaderData(section++, Qt::Horizontal, "S/Sном");
+            ReportModel->setHeaderData(section++, Qt::Horizontal, "dUrms(u)");
+            ReportModel->setHeaderData(section++, Qt::Horizontal, "Phy(u)");
+            if (PovType == GOST_23625)
+            {
+                ReportModel->setHeaderData(section++, Qt::Horizontal, "dUrms(d)");
+                ReportModel->setHeaderData(section++, Qt::Horizontal, "Phy(d)");
+                ReportModel->setHeaderData(section++, Qt::Horizontal, "dUrms(ud)");
+                ReportModel->setHeaderData(section++, Qt::Horizontal, "Phy(ud)");
+                ReportModel->setHeaderData(section++, Qt::Horizontal, "dUrms(u-d)");
+                ReportModel->setHeaderData(section++, Qt::Horizontal, "Phy(u-d)");
+                ReportModel->setHeaderData(section++, Qt::Horizontal, "dUrms(md)");
+                ReportModel->setHeaderData(section++, Qt::Horizontal, "Phy(md)");
+                ReportModel->setHeaderData(section++, Qt::Horizontal, "sUrms(d)");
+                ReportModel->setHeaderData(section++, Qt::Horizontal, "sPhy(d)");
+            }
+            ReportModel->setHeaderData(section++, Qt::Horizontal, "dUcor");
+            ReportModel->setHeaderData(section++, Qt::Horizontal, "dPhycor");
+            ReportModel->setHeaderData(section++, Qt::Horizontal, "Bda_out.dUrms");
+            ReportModel->setHeaderData(section++, Qt::Horizontal, "Bda_out.Phy");
+            ReportModel->setHeaderData(section++, Qt::Horizontal, "dUrms(mu)");
+            ReportModel->setHeaderData(section++, Qt::Horizontal, "Phy(mu)");
+            ReportModel->setHeaderData(section++, Qt::Horizontal, "sUrms(u)");
+            ReportModel->setHeaderData(section++, Qt::Horizontal, "sPhy(u)");
             // запись файла протокола
             GenerateReport();
             // вывод протокола на экран
@@ -481,7 +528,10 @@ void A1Dialog::Cancel()
 
 void A1Dialog::SetDNData()
 {
+    QString PovDev, PovDevSN, PovDevPrecision;
+    WDFunc::LEData(this, "UKDNOrganization", pc.OrganizationString);
     WDFunc::LEData(this, "DNType", ReportHeader.DNType);
+    WDFunc::LEData(this, "DNNamePhase", ReportHeader.DNNamePhase);
     WDFunc::LEData(this, "DNSerialNum", ReportHeader.DNSerNum);
     WDFunc::LEData(this, "DNTolerance", ReportHeader.DNTol);
     WDFunc::LEData(this, "DNU1", ReportHeader.DNU1);
@@ -492,24 +542,27 @@ void A1Dialog::SetDNData()
     WDFunc::LEData(this, "DNPlace", ReportHeader.DNPlace);
     WDFunc::LEData(this, "DNInspection", ReportHeader.OuterInsp);
     WDFunc::LEData(this, "DNWindingInspection", ReportHeader.WindingsInsp);
+    WDFunc::LEData(this, "PovDev", PovDev);
+    WDFunc::LEData(this, "PovDevSN", PovDevSN);
+    WDFunc::LEData(this, "PovDevPrecision", PovDevPrecision);
+    ReportHeader.DNDevices = PovDev + " сер. номер " + PovDevSN + ", кл. точн. " + PovDevPrecision;
     emit CloseDialog();
 }
 
 void A1Dialog::SetConditionData()
 {
     cn->Send(CN_GBd, A1_BDA_OUT_AN_BN, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
-    if (CA1->Bci_block.DTCanal == 0)
+    if ((CA1->Bci_block.DTCanal == 0) || (ChA1->Bda_out_an.Tamb == FLT_MAX))
         WDFunc::LEData(this, "Temp", ReportHeader.Temp);
     else
         ReportHeader.Temp = QString::number(ChA1->Bda_out_an.Tamb, 'f', 5);
-    if (CA1->Bci_block.DHCanal == 0)
+    if ((CA1->Bci_block.DHCanal == 0) || (ChA1->Bda_out_an.Hamb == FLT_MAX))
         WDFunc::LEData(this, "Humidity", ReportHeader.Humidity);
     else
         ReportHeader.Humidity = QString::number(ChA1->Bda_out_an.Hamb, 'f', 5);
     WDFunc::LEData(this, "Pressure", ReportHeader.Pressure);
     WDFunc::LEData(this, "Voltage", ReportHeader.Voltage);
     WDFunc::LEData(this, "Frequency", ReportHeader.Freq);
-    WDFunc::LEData(this, "KNI", ReportHeader.KNI);
     emit CloseDialog();
 }
 
@@ -527,16 +580,21 @@ int A1Dialog::GetStatistics()
     // накопление измерений
     DdStruct tmpst2;
     tmpst2.dUrms = tmpst2.Phy = tmpst2.sPhy = tmpst2.sU = 0;
-    QList<int> sPhy, sU;
+    QList<float> sPhy, sU;
     int count = 0;
     emit StartPercents(TUNE_COUNTEND);
+    WaitWidget *w = new WaitWidget;
+    w->SetMessage("Пожалуйста, подождите...");
+    w->Start();
     while ((count < TUNE_COUNTEND) && !pc.Cancelled)
     {
+        w->SetSeconds(TUNE_COUNTEND-count);
         cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
         if (cn->result == NOERROR)
             FillBdOut();
         else
         {
+            w->close();
             MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda_out");
             return GENERALERROR;
         }
@@ -551,6 +609,7 @@ int A1Dialog::GetStatistics()
         ++count;
         emit SetPercent(count);
     }
+    w->close();
     if (pc.Cancelled)
         return GENERALERROR;
     // усреднение

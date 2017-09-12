@@ -9,17 +9,19 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 1.0.59
+VERSION = 1.0.69
 
-QT       += core gui xlsx serialport printsupport
+QT       += core gui serialport printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = pkdn-s_f
+TARGET = pkdn-s_m
 DEFINES += PROGNAME='\\"PKDN-S\\"'
-DEFINES += PROGCAPTION='\\"PKDN-Service\\040v1.0.59\\"'
+DEFINES += PROGCAPTION='\\"PKDN-Service-S\\040v1.0.69\\"'
 DEFINES += DEVICETYPE=2 # 1 - module, 2 - pribor, for diagnostic messages
-DEFINES += PROGSIZE=4 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
+DEFINES += PROGSIZE=2 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
+DEFINES += COMPORTENABLE # enable virtual com port driver
+#DEFINES += USBENABLE # enable usb hid driver
 TEMPLATE = app
 
 SOURCES += main.cpp\
@@ -42,9 +44,6 @@ SOURCES += main.cpp\
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp \
     ../dialogs/errordialog.cpp \
-    ../dialogs/fwupdialog.cpp \
-    ../dialogs/hiddendialog.cpp \
-    ../dialogs/oscdialog.cpp \
     ../check/abstractcheckdialog.cpp \
     ../config/abstractconfdialog.cpp \
     ../config/confdialog.cpp \
@@ -52,11 +51,9 @@ SOURCES += main.cpp\
     ../config/config.cpp \
     ../config/configa1.cpp \
     ../check/checkdialoga1.cpp \
-    ../tune/tunedialoga1.cpp \
     ../dialogs/keypressdialog.cpp \
     ../check/checka1.cpp \
     ../dialogs/settingsdialog.cpp \
-    ../dialogs/downloaddialog.cpp \
     ../tune/abstracttunedialog.cpp \
     ../tune/tunedialoga1dn.cpp \
     ../dialogs/a1dialog.cpp \
@@ -84,9 +81,6 @@ HEADERS  += pkdn_s.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
     ../dialogs/errordialog.h \
-    ../dialogs/fwupdialog.h \
-    ../dialogs/hiddendialog.h \
-    ../dialogs/oscdialog.h \
     ../check/abstractcheckdialog.h \
     ../config/abstractconfdialog.h \
     ../config/confdialog.h \
@@ -94,11 +88,9 @@ HEADERS  += pkdn_s.h \
     ../config/config.h \
     ../config/configa1.h \
     ../check/checkdialoga1.h \
-    ../tune/tunedialoga1.h \
     ../dialogs/keypressdialog.h \
     ../check/checka1.h \
     ../dialogs/settingsdialog.h \
-    ../dialogs/downloaddialog.h \
     ../tune/abstracttunedialog.h \
     ../tune/tunedialoga1dn.h \
     ../dialogs/a1dialog.h \
@@ -110,18 +102,20 @@ HEADERS  += pkdn_s.h \
 RESOURCES += \
     pkdn-s.qrc
 
+INCLUDEPATH += $$PWD/../../includes
+
 win32 {
 
     ## Windows common build here
 
     !contains(QMAKE_TARGET.arch, x86_64) {
         ## Windows x86 (32bit) specific build here
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../LimeReport-master/win32/release/ -llimereport
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../LimeReport-master/win32/debug/ -llimereport
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
     } else {
         ## Windows x64 (64bit) specific build here
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../LimeReport-master/win64/release/ -llimereport
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../LimeReport-master/win64/debug/ -llimereport
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
     }
 }
-unix: LIBS += -L$$PWD/LimeReport-master/build/5.5.1/win32/debug/lib/ -llimereport
+unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd

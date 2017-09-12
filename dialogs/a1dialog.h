@@ -60,6 +60,7 @@ public:
         QString Month;          // месяц
         QString Yr;             // две последние цифры года (20хх)
         QString DNType;         // тип трансформатора (делителя) напряжения
+        QString DNNamePhase;    // обозначение ТН и фаза
         QString DNSerNum;       // серийный номер ДН
         QString DNTol;          // класс точности ДН
         QString DNU1;           // номинальное первичное напряжение ДН
