@@ -1,43 +1,92 @@
 // commands.cpp
 #include <QCoreApplication>
-#ifdef COMPORTENABLE
-#include "canal.h"
-int CN_GetBsi(void *ptr, quint32 size)
-{
-    cn->Send(CN_GBsi, BT_NONE, ptr, size);
-    return cn->result;
-}
-
-int CN_GetFile(void *ptr, quint32 filenum)
-{
-    cn->Send(CN_GF, BT_NONE, ptr, 0, filenum);
-    return NOERROR;
-}
-
-int CN_PutFile(void *ptr, quint32 filenum, quint32 size)
-{
-    cn->Send(CN_WF, BT_NONE, ptr, size, filenum);
-    return NOERROR;
-}
-#else
 #ifdef USBENABLE
 #include "eusbhid.h"
-int UH_GetBsi(void *ptr, quint32 size)
+#else
+#ifdef COMPORTENABLE
+#include "canal.h"
+#endif
+#endif
+
+int CM_GetBsi()
 {
-    uh->Send(CN_GBsi, BT_NONE, ptr, size);
+#ifdef USBENABLE
+    uh->Send(CN_GBsi, BT_NONE, &pc.ModuleBsi, sizeof(publicclass::Bsi));
     return uh->result;
+#endif
+#ifdef COMPORTENABLE
+    cn->Send(CN_GBsi, BT_NONE, &pc.ModuleBsi, sizeof(publicclass::Bsi));
+    return cn->result;
+#endif
 }
 
-int UH_GetFile(void *ptr, quint32 filenum)
+int CM_GetFile(quint32 filenum, QVector<publicclass::DataRec> *data)
 {
-    uh->Send(CN_GF, BT_NONE, ptr, 0, filenum);
-    return NOERROR;
+#ifdef USBENABLE
+    uh->Send(CN_GF, BT_NONE, NULL, 0, filenum, data);
+    return uh->result;
+#endif
+#ifdef COMPORTENABLE
+    cn->Send(CN_GF, BT_NONE, NULL, 0, filenum, data);
+    return cn->result;
+#endif
 }
 
-int UH_PutFile(void *ptr, quint32 filenum, quint32 size)
+int CM_WriteFile(void *ptr, quint32 filenum, QVector<publicclass::DataRec> *data)
 {
-    uh->Send(CN_WF, BT_NONE, ptr, size, filenum);
-    return NOERROR;
+#ifdef USBENABLE
+    uh->Send(CN_WF, BT_NONE, ptr, 0, filenum, data);
+    return uh->result;
+#endif
+#ifdef COMPORTENABLE
+    cn->Send(CN_WF, BT_NONE, ptr, 0, filenum, data);
+    return cn->result;
+#endif
 }
+
+int CM_GetBac(void *BacPtr, int BacPtrSize, int BacNum)
+{
+#ifdef USBENABLE
+    uh->Send(CN_GBac, BacNum, BacPtr, BacPtrSize);
+    return uh->result;
 #endif
+#ifdef COMPORTENABLE
+    cn->Send(CN_GBac, BacNum, BacPtr, BacPtrSize);
+    return cn->result;
 #endif
+}
+
+int CM_Connect()
+{
+#ifdef USBENABLE
+    if (uh->Connect())
+        return NOERROR;
+#endif
+#ifdef COMPORTENABLE
+    if (cn->Connect())
+        return NOERROR;
+#endif
+    return GENERALERROR;
+}
+
+void CM_Disconnect()
+{
+#ifdef USBENABLE
+    uh->Disconnect();
+#endif
+#ifdef COMPORTENABLE
+    cn->Disconnect();
+#endif
+}
+
+int CM_GetBd(int BdNum, void *BdPtr, int BdPtrSize)
+{
+#ifdef USBENABLE
+    uh->Send(CN_GBd, BdNum, BdPtr, BdPtrSize);
+    return uh->result;
+#endif
+#ifdef COMPORTENABLE
+    cn->Send(CN_GBd, BdNum, BdPtr, BdPtrSize);
+    return cn->result;
+#endif
+}

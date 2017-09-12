@@ -8,7 +8,8 @@
 #include "../widgets/s_tqspinbox.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
-#include "../canal.h"
+//#include "../canal.h"
+#include "../commands.h"
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
@@ -16,13 +17,15 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 
 void AbstractConfDialog::ReadConf()
 {
-    cn->Send(CN_GF,BT_NONE,NULL,0,1,S2Config);
-    if (cn->result == NOERROR)
+//    cn->Send(CN_GF,BT_NONE,NULL,0,1,S2Config);
+//    if (cn->result == NOERROR)
+    int res;
+    if ((res = CM_GetFile(1, S2Config)) == NOERROR)
         emit NewConfLoaded();
     else
     {
         QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
-        MessageBox2::error(this, "ошибка", "Ошибка чтения конфигурации из " + tmps + QString::number(cn->result));
+        MessageBox2::error(this, "ошибка", "Ошибка чтения конфигурации из " + tmps + QString::number(res));
     }
 }
 
@@ -46,8 +49,9 @@ void AbstractConfDialog::WriteConf()
         dlg->exec();
         return;
     }
-    cn->Send(CN_WF, BT_NONE, NULL, 0, 1, S2Config);
-    if (cn->result == NOERROR)
+//    cn->Send(CN_WF, BT_NONE, NULL, 0, 1, S2Config);
+//    if (cn->result == NOERROR)
+    if (CM_WriteFile(NULL, 1, S2Config) == NOERROR)
     {
         emit BsiIsNeedToBeAcquiredAndChecked();
         MessageBox2::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");

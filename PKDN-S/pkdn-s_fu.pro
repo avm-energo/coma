@@ -9,17 +9,19 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 1.0.60
+VERSION = 1.0.69
 
 QT       += core gui serialport printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = pkdn-s_f
+TARGET = pkdn-s_fu
 DEFINES += PROGNAME='\\"PKDN-S\\"'
-DEFINES += PROGCAPTION='\\"PKDN-Service\\040v1.0.60\\"'
+DEFINES += PROGCAPTION='\\"PKDN-Service\\040v1.0.69\\"'
 DEFINES += DEVICETYPE=2 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=4 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
+#DEFINES += COMPORTENABLE # enable virtual com port driver
+DEFINES += USBENABLE # enable usb hid driver
 TEMPLATE = app
 
 SOURCES += main.cpp\
@@ -64,7 +66,8 @@ SOURCES += main.cpp\
     ../mainwindow.cpp \
     ../dialogs/infodialog.cpp \
     ../widgets/lineeditfield.cpp \
-    ../eusbhid.cpp
+    ../eusbhid.cpp \
+    ../abstractprotocomcanal.cpp
 
 HEADERS  += pkdn_s.h \
     ../Canal.h \
@@ -107,7 +110,8 @@ HEADERS  += pkdn_s.h \
     ../mainwindow.h \
     ../dialogs/infodialog.h \
     ../widgets/lineeditfield.h \
-    ../eusbhid.h
+    ../eusbhid.h \
+    ../abstractprotocomcanal.h
 
 RESOURCES += \
     pkdn-s.qrc

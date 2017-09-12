@@ -14,13 +14,6 @@
 #include <QPropertyAnimation>
 #include <QtSerialPort/QSerialPortInfo>
 #include "mainwindow.h"
-#ifdef COMPORTENABLE
-#include "canal.h"
-#else
-#ifdef USBENABLE
-#include "eusbhid.h"
-#endif
-#endif
 #include "commands.h"
 #include "widgets/wd_func.h"
 #include "widgets/mytabwidget.h"
@@ -214,6 +207,9 @@ void MainWindow::LoadSettings()
     QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
     pc.Port = sets->value("Port", "COM1").toString();
     pc.HomeDir = sets->value("Homedir", HomeDir).toString();
+    pc.PovDev.DevName = sets->value("PovDevName", "UPTN").toString();
+    pc.PovDev.DevSN = sets->value("PovDevSN", "00000001").toString();
+    pc.PovDev.DevPrecision = sets->value("PovDevPrecision", "0.05").toString();
     pc.OrganizationString = sets->value("Organization", "Р&К").toString();
     pc.WriteUSBLog = sets->value("WriteLog", "0").toBool();
 }
@@ -223,6 +219,9 @@ void MainWindow::SaveSettings()
     QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
     sets->setValue("Port", pc.Port);
     sets->setValue("Homedir", pc.HomeDir);
+    sets->setValue("PovDevName", pc.PovDev.DevName);
+    sets->setValue("PovDevSN", pc.PovDev.DevSN);
+    sets->setValue("PovDevPrecision", pc.PovDev.DevPrecision);
     sets->setValue("Organization", pc.OrganizationString);
     sets->setValue("WriteLog", pc.WriteUSBLog);
 }
@@ -396,10 +395,10 @@ void MainWindow::Stage2()
     }
 #else
 #ifdef USBENABLE
-    if (UH_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
+    if (CM_GetBsi() != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
-        uh->Disconnect();
+        CM_Disconnect();
         return;
     }
 #endif
@@ -486,22 +485,11 @@ void MainWindow::OpenBhbDialog()
     pc.BoardBBhb.MType = pc.ModuleBsi.MTypeB;
     dlg->Fill(); // заполняем диалог из недавно присвоенных значений
     dlg->exec();
-#ifdef COMPORTENABLE
-    if (CN_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
+    if (CM_GetBsi() != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
-        cn->Disconnect();
-        emit Retry();
+        CM_Disconnect();
     }
-#else
-#ifdef USBENABLE
-    if (UH_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
-    {
-        MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
-        uh->Disconnect();
-    }
-#endif
-#endif
     emit BsiRefresh();
 }
 

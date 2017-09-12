@@ -3,14 +3,14 @@
 #include <QVBoxLayout>
 #include <QCoreApplication>
 #include <QTime>
-#include "canal.h"
-#include "eusbhid.h"
+#include "abstractprotocomchannel.h"
 #include "widgets/messagebox.h"
 
-EUsbHid *uh;
-
-EUsbHid::EUsbHid(QObject *parent) : QObject(parent)
+AbstractProtocomChannel::AbstractProtocomChannel(QObject *parent) : QObject(parent)
 {
+    log = new Log;
+    log->Init("AbstractProtocomChannel.log");
+    log->WriteRaw("Log started!");
     RDLength = 0;
     SegEnd = 0;
     SegLeft = 0;
@@ -28,11 +28,11 @@ EUsbHid::EUsbHid(QObject *parent) : QObject(parent)
     connect(TTimer, SIGNAL(timeout()),this,SLOT(Timeout())); // для отладки закомментарить
 }
 
-EUsbHid::~EUsbHid()
+AbstractProtocomChannel::~AbstractProtocomChannel()
 {
 }
 
-void EUsbHid::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint16 filenum, QVector<publicclass::DataRec> *DRptr)
+void AbstractProtocomChannel::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint16 filenum, QVector<publicclass::DataRec> *DRptr)
 {
     if (!Connected)
     {
@@ -58,7 +58,7 @@ void EUsbHid::Send(int command, int board_type, void *ptr, quint32 ptrsize, quin
         QCoreApplication::processEvents(QEventLoop::AllEvents);
 }
 
-void EUsbHid::InitiateSend()
+void AbstractProtocomChannel::InitiateSend()
 {
     WriteData.clear();
     switch (cmd)
@@ -166,13 +166,13 @@ void EUsbHid::InitiateSend()
     RDLength = 0;
 }
 
-void EUsbHid::ParseIncomeData(QByteArray ba)
+void AbstractProtocomChannel::ParseIncomeData(QByteArray &ba)
 {
     if (pc.WriteUSBLog)
     {
-        UThread->log->WriteRaw("<-");
-        UThread->log->WriteRaw(ba.toHex());
-        UThread->log->WriteRaw("\n");
+        log->WriteRaw("<-");
+        log->WriteRaw(ba.toHex());
+        log->WriteRaw("\n");
     }
     if (cmd == CN_Unk) // игнорирование вызова процедуры, если не было послано никакой команды
         return;
@@ -181,23 +181,23 @@ void EUsbHid::ParseIncomeData(QByteArray ba)
     quint32 RDSize = static_cast<quint32>(ReadDataChunk.size());
     if (RDSize<3) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
         return;
-    if (ReadDataChunk.at(0) != CN_SS)
-    {
-        Finish(CN_RCVDATAERROR);
-        return;
-    }
-    if (ReadDataChunk.at(1) == CN_ResErr)
-    {
-        if (RDSize < 5) // некорректная посылка
-            Finish(CN_RCVDATAERROR);
-        else
-            Finish(USO_NOERR + ReadDataChunk.at(4));
-        return;
-    }
     switch (bStep)
     {
     case 0: // первая порция
     {
+        if (ReadDataChunk.at(0) != CN_SS)
+        {
+            Finish(CN_RCVDATAERROR);
+            return;
+        }
+        if (ReadDataChunk.at(1) == CN_ResErr)
+        {
+            if (RDSize < 5) // некорректная посылка
+                Finish(CN_RCVDATAERROR);
+            else
+                Finish(USO_NOERR + ReadDataChunk.at(4));
+            return;
+        }
         switch (cmd)
         {
         // команды с ответом "ОК"
@@ -356,7 +356,7 @@ void EUsbHid::ParseIncomeData(QByteArray ba)
     }
 }
 
-bool EUsbHid::GetLength(bool ok)
+bool AbstractProtocomChannel::GetLength(bool ok)
 {
     if (ReadDataChunk.size() < 4)
         return false;
@@ -377,7 +377,7 @@ bool EUsbHid::GetLength(bool ok)
             LastBlock = true;
         else
             LastBlock = false;
-        if (RDLength > UH_MAXLENGTH)
+        if (RDLength > MAXLENGTH)
             return false;
         else
             return true;
@@ -386,7 +386,7 @@ bool EUsbHid::GetLength(bool ok)
         return false;
 }
 
-void EUsbHid::SetWRSegNum()
+void AbstractProtocomChannel::SetWRSegNum()
 {
     if (WRLength > CN_MAXSEGMENTLENGTH)
     {
@@ -400,7 +400,7 @@ void EUsbHid::SetWRSegNum()
     }
 }
 
-void EUsbHid::WRCheckForNextSegment()
+void AbstractProtocomChannel::WRCheckForNextSegment()
 {
     QByteArray tmpba;
     if (SegLeft)
@@ -431,7 +431,7 @@ void EUsbHid::WRCheckForNextSegment()
     WriteDataToPort(tmpba);
 }
 
-void EUsbHid::SendOk(bool cont)
+void AbstractProtocomChannel::SendOk(bool cont)
 {
     QByteArray tmpba;
     if (cont)
@@ -443,7 +443,7 @@ void EUsbHid::SendOk(bool cont)
     WriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
 }
 
-void EUsbHid::AppendSize(QByteArray &ba, quint16 size)
+void AbstractProtocomChannel::AppendSize(QByteArray &ba, quint16 size)
 {
     quint8 byte = static_cast<quint8>(size%0x100);
     ba.append(byte);
@@ -451,7 +451,7 @@ void EUsbHid::AppendSize(QByteArray &ba, quint16 size)
     ba.append(byte);
 }
 
-void EUsbHid::SendErr()
+void AbstractProtocomChannel::SendErr()
 {
     QByteArray tmpba;
     tmpba.append(CN_MS);
@@ -461,12 +461,12 @@ void EUsbHid::SendErr()
     WriteDataToPort(tmpba);
 }
 
-void EUsbHid::Timeout()
+void AbstractProtocomChannel::Timeout()
 {
     Finish(USO_TIMEOUTER);
 }
 
-void EUsbHid::Finish(int ernum)
+void AbstractProtocomChannel::Finish(int ernum)
 {
     TTimer->stop();
     cmd = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
@@ -474,7 +474,7 @@ void EUsbHid::Finish(int ernum)
     {
         if (ernum < 0)
         {
-            UThread->log->WriteRaw("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###");
+            log->WriteRaw("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###");
             ERMSG("ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ!!!");
         }
         else if (ernum < pc.errmsgs.size())
@@ -486,45 +486,84 @@ void EUsbHid::Finish(int ernum)
     Busy = false;
 }
 
-bool EUsbHid::Connect()
+void AbstractProtocomChannel::Disconnect()
 {
-    UThread = new EUsbThread;
-    UThr = new QThread;
-    UThread->moveToThread(UThr);
-//    connect(this,SIGNAL(StartUThread(QThread::Priority)),thr,SLOT(start(QThread::Priority)));
-    connect(UThr,SIGNAL(started()),UThread,SLOT(Run()));
-    connect(UThread,SIGNAL(NewDataReceived(QByteArray)),this,SLOT(ParseIncomeData(QByteArray)));
-    connect(UThr,SIGNAL(finished()),UThread,SLOT(deleteLater()));
-    connect(UThr,SIGNAL(finished()),UThr,SLOT(deleteLater()));
-    connect(this,SIGNAL(StopUThread()),UThread,SLOT(Finish()));
-    if (UThread->Set() != NOERROR)
-        return false;
-    Connected = true;
-//    emit StartUThread(QThread::InheritPriority);
-    UThr->start();
-    return true;
-}
-
-void EUsbHid::Disconnect()
-{
-    Connected = false;
     ClosePort();
     emit Disconnected();
 }
 
-void EUsbHid::OscTimerTimeout()
+void AbstractProtocomChannel::OscTimerTimeout()
 {
     Send(CN_OscPg);
 }
 
-void EUsbHid::ClosePort()
+bool AbstractProtocomChannel::InitializePort(QSerialPortInfo &pinfo, int baud)
 {
-    emit StopUThread();
+    port = new QSerialPort;
+    port->setPort(pinfo);
+    port->clearError();
+    connect(port,SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(Error(QSerialPort::SerialPortError)));
+    QTimer *OpenTimeoutTimer = new QTimer;
+    OpenTimeoutTimer->setInterval(2000);
+    connect(OpenTimeoutTimer,SIGNAL(timeout()),this,SLOT(Disconnect()));
+    OpenTimeoutTimer->start();
+    if (!port->open(QIODevice::ReadWrite))
+    {
+        OpenTimeoutTimer->stop();
+        return false;
+    }
+    port->setBaudRate(baud);
+    port->setParity(QSerialPort::NoParity);
+    port->setDataBits(QSerialPort::Data8);
+    port->setFlowControl(QSerialPort::NoFlowControl);
+    port->setStopBits(QSerialPort::OneStop);
+    connect(port,SIGNAL(readyRead()),this,SLOT(CheckForData()));
+    Connected = true;
+    OpenTimeoutTimer->stop();
+    return true;
 }
 
-void EUsbHid::WriteDataToPort(QByteArray &ba)
+void AbstractProtocomChannel::ClosePort()
 {
-    if (UThread)
+    if (!Connected)
+        return;
+    try
+    {
+        Connected = false;
+        if (port->isOpen())
+            port->close();
+    }
+    catch(...)
+    {
+        DBGMSG;
+    }
+}
+
+void AbstractProtocomChannel::CheckForData()
+{
+    QByteArray ba = port->read(1000);
+    emit readbytessignal(ba);
+    ParseIncomeData(ba);
+}
+
+void AbstractProtocomChannel::Error(QSerialPort::SerialPortError err)
+{
+    if (!err) // нет ошибок
+        return;
+    quint16 ernum = err + COM_ERROR;
+    pc.ErMsg(ernum);
+    if (Connected)
+        Disconnect();
+}
+
+void AbstractProtocomChannel::PortCloseTimeout()
+{
+    PortCloseTimeoutSet = true;
+}
+
+void AbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
+{
+    if (port->isOpen())
     {
         QByteArray tmpba = ba;
         if (cmd == CN_Unk) // игнорируем вызовы процедуры без команды
@@ -536,7 +575,13 @@ void EUsbHid::WriteDataToPort(QByteArray &ba)
         quint64 basize = tmpba.size();
         while ((byteswritten < basize) && (!tmpba.isEmpty()))
         {
-            qint64 tmpi = UThread->WriteData(tmpba);
+            if (pc.WriteUSBLog)
+            {
+                log->WriteRaw("->");
+                log->WriteRaw(tmpba.toHex());
+                log->WriteRaw("\n");
+            }
+            qint64 tmpi = port->write(tmpba);
             if (tmpi == GENERALERROR)
             {
                 pc.ErMsg(COM_WRITEER);
@@ -550,84 +595,4 @@ void EUsbHid::WriteDataToPort(QByteArray &ba)
     }
     else
         pc.ErMsg(COM_RESER);
-}
-
-EUsbThread::EUsbThread(QObject *parent) : QObject(parent)
-{
-    log = new Log;
-    log->Init("usb.log");
-    log->WriteRaw("=== Log started ===");
-    AboutToFinish = false;
-//    isRunning = false;
-}
-
-EUsbThread::~EUsbThread()
-{
-    delete log;
-}
-
-int EUsbThread::Set()
-{
-    HidDevice = hid_open(UH_VID, UH_PID, NULL);
-    if (!HidDevice)
-        return GENERALERROR;
-    hid_set_nonblocking(HidDevice, 1);
-    return NOERROR;
-}
-
-void EUsbThread::Run()
-{
-    char *data;
-    data = new char(UH_MAXSEGMENTLENGTH+1); // +1 to ID
-    while (!AboutToFinish)
-    {
-        // check if there's any data in input buffer
-        int bytes = hid_read(HidDevice, reinterpret_cast<unsigned char *>(data), UH_MAXSEGMENTLENGTH+1);
-        if (bytes < 0)
-        {
-            if (pc.WriteUSBLog)
-                log->WriteRaw("Unable to hid_read()");
-            continue;
-        }
-        if (bytes > 0)
-        {
-            QByteArray ba(data, bytes);
-            emit NewDataReceived(ba);
-        }
-        QTime tme;
-        tme.start();
-        while (tme.elapsed() < UH_MAINLOOP_DELAY)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-    }
-    hid_close(HidDevice);
-}
-
-qint64 EUsbThread::WriteData(QByteArray &ba)
-{
-    if (ba.size() > UH_MAXSEGMENTLENGTH)
-    {
-        if (pc.WriteUSBLog)
-        {
-            log->WriteRaw("WRONG SEGMENT LENGTH!\n");
-            log->WriteRaw(ba.toHex());
-            log->WriteRaw("WRONG SEGMENT LENGTH!\n");
-        }
-        ERMSG("Длина сегмента больше "+QString::number(UH_MAXSEGMENTLENGTH)+" байт");
-        return GENERALERROR;
-    }
-    if (ba.size() < UH_MAXSEGMENTLENGTH)
-        ba.append(UH_MAXSEGMENTLENGTH - ba.size(), static_cast<char>(0x00));
-    ba.prepend(static_cast<char>(0x00)); // inserting ID field
-    if (pc.WriteUSBLog)
-    {
-        log->WriteRaw("->");
-        log->WriteRaw(ba.toHex());
-        log->WriteRaw("\n");
-    }
-    return hid_write(HidDevice, reinterpret_cast<unsigned char *>(ba.data()), ba.size());
-}
-
-void EUsbThread::Finish()
-{
-    AboutToFinish = true;
 }

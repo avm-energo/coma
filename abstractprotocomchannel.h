@@ -1,27 +1,24 @@
-#ifndef EUSBHID_H
-#define EUSBHID_H
+#ifndef ABSTRACTPROTOCOMCHANNEL_H
+#define ABSTRACTPROTOCOMCHANNEL_H
 
 #include <QObject>
 #include <QByteArray>
 #include <QTimer>
-#include <QThread>
 #include <QLabel>
 #include <QMutex>
+#include <QtSerialPort/QSerialPort>
+#include <QtSerialPort/QSerialPortInfo>
 
 #include "publicclass.h"
 #include "log.h"
-#include "hidapi/hidapi.h"
 
 // Канал связи с модулем
 
-#define UH_TIMEOUT  2000 // таймаут по USB в мс
-#define UH_OSCT     1000 // таймаут посылки запроса нестёртых осциллограмм
-#define UH_MAXFILESIZE  30000 // максимальный размер выходного файла
-#define UH_MAXSEGMENTLENGTH 64 // максимальная длина одного сегмента (0x40)
-#define UH_MAINLOOP_DELAY   50 // 100 ms main loop sleep
-
-#define UH_VID  0xC251
-#define UH_PID  0x3505
+#define CN_TIMEOUT  2000 // таймаут по USB в мс
+#define CN_OSCT     1000 // таймаут посылки запроса нестёртых осциллограмм
+#define CN_MAXFILESIZE  30000 // максимальный размер выходного файла
+#define CN_MAXSEGMENTLENGTH 768 // максимальная длина одного сегмента (0x300)
+#define CN_MAINLOOP_DELAY   100 // 100 ms main loop sleep
 
 // Обмен с модулями
 #define CN_BYTE0    '\x00'
@@ -53,51 +50,29 @@
 
 #define CN_MER_UNKN_ERR     0xFF // неизвестная ошибка
 
-//#define MAXLENGTH   0x300   // максимальный размер блока 768 байт
-#define UH_MAXLENGTH   0x40   // максимальный размер блока 64 байт
+#define MAXLENGTH   0x300   // максимальный размер блока 768 байт
 
 #define BT_NONE     0
 #define BT_BASE     1
 #define BT_MEZONIN  2
 
-class EUsbThread : public QObject
+class AbstractProtocomChannel : public QObject
 {
     Q_OBJECT
 public:
-    explicit EUsbThread(QObject *parent = 0);
-    ~EUsbThread();
-
-    Log *log;
-
-    int Set();
-
-signals:
-    void NewDataReceived(QByteArray ba);
-
-public slots:
-    void Run();
-    qint64 WriteData(QByteArray &ba);
-    void Finish();
-
-private:
-    hid_device *HidDevice;
-    bool AboutToFinish;
-};
-
-class EUsbHid : public QObject
-{
-    Q_OBJECT
-public:
-    explicit EUsbHid(QObject *parent = 0);
-    ~EUsbHid();
+    explicit AbstractProtocomChannel(QObject *parent = 0);
+    ~AbstractProtocomChannel();
 
     int result;
+    QSerialPortInfo info;
+    int baud;
     int ernum;
     bool FirstRun;
     bool NeedToSend, Busy, NeedToFinish;
     bool Connected;
 
-    bool Connect();
+    virtual bool Connect() = 0;
+    virtual bool Initialize() = 0;
     void Send(int command, int board_type=BT_NONE, void *ptr=NULL, quint32 ptrsize=0, quint16 filenum=0, \
               QVector<publicclass::DataRec> *DRptr=0);
 
@@ -111,16 +86,16 @@ signals:
     void oscerasesize(quint32);
     void osceraseremaining(quint32);
     void Disconnected();
-    void StartUThread(QThread::Priority);
-    void StopUThread();
 
 public slots:
+    void Timeout();
     void Disconnect();
 
 private slots:
-    void Timeout();
+    void CheckForData();
     void OscTimerTimeout();
-    void ParseIncomeData(QByteArray ba);
+    void PortCloseTimeout();
+    void Error(QSerialPort::SerialPortError);
 
 private:
     char *outdata;
@@ -142,12 +117,14 @@ private:
     QVector<publicclass::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     quint8 BoardType;
     bool PortCloseTimeoutSet;
-    EUsbThread *UThread;
-    QThread *UThr;
+    QSerialPort *port;
+    Log *log;
 
+    bool InitializePort(QSerialPortInfo &pinfo, int baud);
     void ClosePort();
     void InitiateSend();
     void WriteDataToPort(QByteArray &ba);
+    void ParseIncomeData(QByteArray &ba);
     void Finish(int ernum);
     void SetWRSegNum();
     void WRCheckForNextSegment();
@@ -157,6 +134,4 @@ private:
     bool GetLength(bool ok=true); // ok = 1 -> обработка посылки вида SS OK ..., ok = 0 -> вида SS c L L ... возвращаемое значение = false -> неправильная длина
 };
 
-extern EUsbHid *uh;
-
-#endif // EUSBHID_H
+#endif // ABSTRACTPROTOCOMCHANNEL_H

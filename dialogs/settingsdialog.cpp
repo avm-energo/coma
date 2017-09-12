@@ -27,14 +27,23 @@ void SettingsDialog::SetupUI()
     QHBoxLayout *hlyout = new QHBoxLayout;
     QLabel *lbl;
     QLineEdit *le;
-    if (PROGNAME == "PKDN-S")
+    if (pc.ModuleBsi.MTypeB == MTB_A1)
     {
         hlyout = new QHBoxLayout;
-        lbl = new QLabel("Наименование организации, эксплуатирующей прибор");
-        hlyout->addWidget(lbl);
-        le = new QLineEdit;
-        le->setObjectName("orgle");
-        hlyout->addWidget(le);
+        hlyout->addWidget(WDFunc::NewLBLT(this, "Наименование организации, эксплуатирующей прибор"));
+        hlyout->addWidget(WDFunc::NewLE(this, "orgle"));
+        vlyout->addLayout(hlyout);
+        hlyout = new QHBoxLayout;
+        hlyout->addWidget(WDFunc::NewLBLT(this, "Наименование средства поверки"));
+        hlyout->addWidget(WDFunc::NewLE(this, "povdev"));
+        vlyout->addLayout(hlyout);
+        hlyout = new QHBoxLayout;
+        hlyout->addWidget(WDFunc::NewLBLT(this, "Заводской номер средства поверки"));
+        hlyout->addWidget(WDFunc::NewLE(this, "povdevsn"));
+        vlyout->addLayout(hlyout);
+        hlyout = new QHBoxLayout;
+        hlyout->addWidget(WDFunc::NewLBLT(this, "Класс точности средства поверки"));
+        hlyout->addWidget(WDFunc::NewLE(this, "povdevprecision"));
         vlyout->addLayout(hlyout);
     }
     hlyout = new QHBoxLayout;
@@ -73,6 +82,9 @@ void SettingsDialog::Fill()
     if (PROGNAME == "PKDN-S")
         WDFunc::SetLEData(this,"orgle",pc.OrganizationString);
     WDFunc::SetLEData(this,"pathle",pc.HomeDir);
+    WDFunc::SetLEData(this,"povdev",pc.PovDev.DevName);
+    WDFunc::SetLEData(this,"povdevsn",pc.PovDev.DevSN);
+    WDFunc::SetLEData(this,"povdevprecision",pc.PovDev.DevPrecision);
     if (pc.ModuleBsi.MTypeB == MTB_80)
     {
         QString restring = "^[0-2]{0,1}[0-9]{1,2}{\\.[0-2]{0,1}[0-9]{1,2}}{3}$";
@@ -86,6 +98,9 @@ void SettingsDialog::AcceptSettings()
     if (PROGNAME == "PKDN-S")
         WDFunc::LEData(this, "orgle", pc.OrganizationString);
     WDFunc::LEData(this, "pathle", pc.HomeDir);
+    WDFunc::LEData(this, "povdev", pc.PovDev.DevName);
+    WDFunc::LEData(this, "povdevsn", pc.PovDev.DevSN);
+    WDFunc::LEData(this, "povdevprecision", pc.PovDev.DevPrecision);
     if (pc.ModuleBsi.MTypeB == MTB_80)
         WDFunc::LEData(this, "miple", pc.MIPIP);
     WDFunc::ChBData(this, "writelogchb", pc.WriteUSBLog);

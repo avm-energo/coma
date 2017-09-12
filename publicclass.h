@@ -267,6 +267,15 @@ public:
 
     quint32 MType;
 
+    struct PovDevStruct // данные об установке
+    {
+        QString DevName; // наименование установки
+        QString DevSN; // серийный (заводской) номер
+        QString DevPrecision; // точность
+    };
+
+    PovDevStruct PovDev;
+
     Log log;
     bool WriteUSBLog; // надо ли писать лог обмена в файл
     QString HomeDir; // рабочий каталог программы

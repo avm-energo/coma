@@ -12,11 +12,12 @@
 #include <QPushButton>
 #include <QTableView>
 #include <QTime>
-#include "../canal.h"
+//#include "../canal.h"
 #include "a1dialog.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
+#include "../commands.h"
 
 A1Dialog::A1Dialog(QWidget *parent) : QDialog(parent)
 {
@@ -94,11 +95,13 @@ void A1Dialog::SetupUI()
 
 int A1Dialog::GetConf()
 {
-    cn->Send(CN_GF, BT_NONE,NULL,0,1,&S2Config); // заполнение CA1->Bci_block
-    if (cn->result == NOERROR)
+//    cn->Send(CN_GF, BT_NONE,NULL,0,1,&S2Config); // заполнение CA1->Bci_block
+//    if (cn->result == NOERROR)
+    if (CM_GetFile(1, &S2Config))
     {
-        cn->Send(CN_GBac, BT_MEZONIN, &Bac_block, sizeof(Bac));
-        if (cn->result == NOERROR)
+        if (CM_GetBac(&Bac_block, sizeof(Bac), BT_MEZONIN) == NOERROR)
+/*        cn->Send(CN_GBac, BT_MEZONIN, &Bac_block, sizeof(Bac));
+        if (cn->result == NOERROR) */
         {
             Bac_block.U1kDN[0] = 0;
             Bac_block.U2kDN[0] = 0;
@@ -131,11 +134,15 @@ void A1Dialog::GenerateReport()
     try
     {
         // запрос блока Bda_h, чтобы выдать KNI в протокол
-        cn->Send(CN_GBd, A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd3));
-        if (cn->result != NOERROR)
+        if (CM_GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd3)) != NOERROR)
+/*        cn->Send(CN_GBd, A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd3));
+        if (cn->result != NOERROR) */
             report->dataManager()->setReportVariable("KNI", ChA1->Bda_h.HarmBuf[0][0]);
-        ConditionDataDialog(); // задаём условия поверки
-        DNDialog(); // вводим данные по делителю
+        ResultsStruct Results;
+        Results.Frequency = Results.Humidity = Results.Temp = Results.THD = 0;
+        Results.GOST = Results.SerNum = Results.Time = 0;
+        ConditionDataDialog(Results); // задаём условия поверки
+        DNDialog(pc.PovDev, Results); // вводим данные по делителю
         // данные в таблицу уже получены или из файла, или в процессе работы
         // отобразим таблицу
         ShowTable();
@@ -181,7 +188,7 @@ void A1Dialog::GenerateReport()
     }
 }
 
-void A1Dialog::ConditionDataDialog()
+void A1Dialog::ConditionDataDialog(ResultsStruct &Results)
 {
     int row = 0;
     QDialog *dlg = new QDialog(this);
@@ -189,22 +196,22 @@ void A1Dialog::ConditionDataDialog()
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Условия поверки"), Qt::AlignCenter);
-    if ((CA1->Bci_block.DTCanal == 0)  || (ChA1->Bda_out_an.Tamb == FLT_MAX))
+    if ((CA1->Bci_block.DTCanal == 0)  || (ChA1->Bda_out_an.Tamb == FLT_MAX) || (Results.Temp != 0))
     {
         glyout->addWidget(WDFunc::NewLBL(this, "Температура окружающей среды, °С"), row, 0, 1, 1, Qt::AlignRight);
-        glyout->addWidget(WDFunc::NewLEF(this, "Temp", ""), row++, 1, 1, 1, Qt::AlignLeft);
+        glyout->addWidget(WDFunc::NewLEF(this, "Temp", Results.Temp), row++, 1, 1, 1, Qt::AlignLeft);
     }
-    if ((CA1->Bci_block.DHCanal == 0) || (ChA1->Bda_out_an.Hamb == FLT_MAX))
+    if ((CA1->Bci_block.DHCanal == 0) || (ChA1->Bda_out_an.Hamb == FLT_MAX) || (Results.Humidity != 0))
     {
         glyout->addWidget(WDFunc::NewLBL(this, "Влажность воздуха, %"), row, 0, 1, 1, Qt::AlignRight);
-        glyout->addWidget(WDFunc::NewLEF(this, "Humidity", ""), row++, 1, 1, 1, Qt::AlignLeft);
+        glyout->addWidget(WDFunc::NewLEF(this, "Humidity", Results.Humidity), row++, 1, 1, 1, Qt::AlignLeft);
     }
     glyout->addWidget(WDFunc::NewLBL(this, "Атмосферное давление, кПа"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLEF(this, "Pressure", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Напряжение питания сети, В"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLEF(this, "Voltage", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Частота питания сети, Гц"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLEF(this, "Frequency", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLEF(this, "Frequency", Results.Frequency), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->setColumnStretch(1, 1);
     lyout->addLayout(glyout);
     QPushButton *pb = new QPushButton("Готово");
@@ -215,7 +222,7 @@ void A1Dialog::ConditionDataDialog()
     dlg->exec();
 }
 
-void A1Dialog::DNDialog()
+void A1Dialog::DNDialog(publicclass::PovDevStruct &PovDev, ResultsStruct &Results)
 {
     int row = 0;
     QDialog *dlg = new QDialog(this);
@@ -230,7 +237,7 @@ void A1Dialog::DNDialog()
     glyout->addWidget(WDFunc::NewLBL(this, "Обозначение по схеме, фаза"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLEF(this, "DNNamePhase", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLEF(this, "DNSerialNum", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLEF(this, "DNSerialNum", QString::number(Results.SerNum)), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Класс точности, %"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLEF(this, "DNTolerance", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Номинальное первичное напряжение, кВ"), row, 0, 1, 1, Qt::AlignRight);
@@ -245,12 +252,12 @@ void A1Dialog::DNDialog()
     glyout->addWidget(WDFunc::NewLEF(this, "DNOrganization", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Место установки"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLEF(this, "DNPlace", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Обозначение эталонного средства поверки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLEF(this, "PovDev", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Наименование средства поверки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLEF(this, "PovDev", PovDev.DevName), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер средства поверки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLEF(this, "PovDevSN", QString::number(pc.ModuleBsi.SerialNum, 10)), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLEF(this, "PovDevSN", PovDev.DevSN), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Класс точности средства поверки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLEF(this, "PovDevPrecision", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLEF(this, "PovDevPrecision", PovDev.DevPrecision), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Результаты внешнего осмотра"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLEF(this, "DNInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Результаты проверки правильности обозначения\nвыводов и групп соединений обмоток"), row, 0, 1, 1, Qt::AlignRight);
@@ -374,18 +381,99 @@ void A1Dialog::StartWork()
 
 void A1Dialog::ParsePKDNFile()
 {
-/*    QByteArray ba;
-    int res = pc.LoadFile(this, "PKDN verification files (*.vrf)", ba);
+    QByteArray ba;
+    publicclass::PovDevStruct PovDev;
+    QFileDialog *dlg = new QFileDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setFileMode(QFileDialog::AnyFile);
+    QString filename = dlg->getOpenFileName(parent, "Открыть файл", pc.HomeDir, "PKDN verification files (*.vrf)", Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    dlg->close();
+    int res = LoadFromFile(filename, ba);
     if (res != NOERROR)
-        return; */
+    {
+        MessageBox2::error(this, "Ошибка", "Ошибка загрузки файла");
+        return;
+    }
+    // заполняем ReportHeader
+    QStringList sl = filename.split("-");
+    if (!sl.isEmpty())
+    {
+        filename = sl.at(0);
+        if (filename.size() < 5)
+        {
+            MessageBox2::error(this, "Ошибка", "Ошибка в имени файла");
+            return;
+        }
+        PovDev.DevSN = filename.right(filename.size()-4);
+    }
+    else
+    {
+        MessageBox2::error(this, "Ошибка", "Ошибка в имени файла");
+        return;
+    }
+    PovDev.DevName = pc.PovDev.DevName;
+    PovDev.DevPrecision = pc.PovDev.DevPrecision;
+    if (ba.size() >= sizeof(ResultsStruct))
+    {
+        ResultsStruct Results;
+        memcpy(&Results, &ba.data()[0], sizeof(ResultsStruct));
+        MainDataStruct MDS;
+        int MDSSize;
+        if (Results.GOST == 0) // GOST 1983
+            MDSSize = 6;
+        else if (Results.GOST == 1) // GOST 23625
+            MDSSize = 18;
+        else
+        {
+            MessageBox2::error(this, "Ошибка", "Ошибочный тип трансформатора в файле");
+            return;
+        }
+        // разберём время
 
-    GenerateReport();
+        ChA1->Bda_h.HarmBuf[0][0] = Results.THD;
+
+        RowCount = (Results.GOST == 0) ? GOST1983ROWCOUNT : GOST23625ROWCOUNT;
+        ColumnCount = (Results.GOST == 0) ? GOST1983COLCOUNT : GOST23625COLCOUNT;
+        ReportModel->setColumnCount(ColumnCount);
+        ReportModel->setRowCount(RowCount);
+        for (int i=0; i<RowCount; ++i)
+        {
+            for (int j=0; j<ColumnCount; ++j)
+            {
+                QStandardItem *item = new QStandardItem("");
+                ReportModel->setItem(i, j, item);
+            }
+        }
+        int memptr, MDSs;
+        memptr = MDSs = sizeof(MainDataStruct);
+        for (int i=0; i<MDSSize; ++i)
+        {
+            if (memptr >= (ba.size() - MDSs))
+            {
+                MessageBox2::error(this, "Ошибка", "Неожиданный конец файла");
+                return;
+            }
+            memcpy(&MDS, &ba.data()[memptr], MDSs);
+            // заполним модель
+
+            memptr += MDSs;
+        }
+        DNDialog(PovDev, Results);
+        ConditionDataDialog(Results);
+        GenerateReport();
+    }
+    else
+    {
+        MessageBox2::error(this, "Ошибка", "Неожиданный конец файла");
+        return;
+    }
 }
 
 void A1Dialog::MeasTimerTimeout()
 {
-    cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
-    if (cn->result == NOERROR)
+/*    cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
+    if (cn->result == NOERROR) */
+    if (CM_GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == NOERROR)
         FillBdOut();
 }
 
@@ -551,7 +639,8 @@ void A1Dialog::SetDNData()
 
 void A1Dialog::SetConditionData()
 {
-    cn->Send(CN_GBd, A1_BDA_OUT_AN_BN, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
+//    cn->Send(CN_GBd, A1_BDA_OUT_AN_BN, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
+    CM_GetBd(A1_BDA_OUT_AN_BN, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
     if ((CA1->Bci_block.DTCanal == 0) || (ChA1->Bda_out_an.Tamb == FLT_MAX))
         WDFunc::LEData(this, "Temp", ReportHeader.Temp);
     else
@@ -589,8 +678,9 @@ int A1Dialog::GetStatistics()
     while ((count < TUNE_COUNTEND) && !pc.Cancelled)
     {
         w->SetSeconds(TUNE_COUNTEND-count);
-        cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
-        if (cn->result == NOERROR)
+/*        cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
+        if (cn->result == NOERROR) */
+        if (CM_GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == NOERROR)
             FillBdOut();
         else
         {

@@ -91,15 +91,29 @@ private:
     LimeReport::ReportEngine *report;
     QVector<publicclass::DataRec> S2Config;
     QTimer *MeasurementTimer;
-/*    struct ResultsStruct
+    struct ResultsStruct
     {
-        float K;    // отношение напряжения к номинальному напряжению ТН
-        float dUp;  // относительная погрешность прибора по амплитуде
-        float dPp;  // абсолютная погрешность прибора по фазе
-        float dUd;  // относительная погрешность ДН по амплитуде
-        float dPd;  // абсолютная погрешность ДН по фазе
-    }; */
-//    ResultsStruct Results[9];   // девять уровней напряжения: 20, 50, 80, 100, 120, 100, 80, 50, 20 % или три уровня: 80, 100, 120 % в зависимости от ГОСТа
+        quint64 Time;
+        quint32 GOST;
+        quint64 SerNum;
+        float Temp;
+        float Humidity;
+        float THD;
+        float Frequency;
+    };
+    struct MainDataStruct
+    {
+        float U; // Относительное значение напряжения
+        float S; // Значение мощности нагрузки, установленное на i-м испытании
+        float dUp; // Относительная погрешность измерения по rms
+        float ddUp; // Среднеквадратическое отклонение dUp
+        float dPp; // Абсолютная погрешность по углу
+        float ddPp; // Среднеквадратическое отклонение dPp
+        float dUd; // Погрешность поверочной установки по rms
+        float dPd; // Погрешность поверочной установки по углу
+        float ddUd; // Среднеквадратичное отклонение dUd
+        float ddPd; // Среднеквадратичное отклонение dPd
+    };
     int Index, Counter;
     float CurrentS; // текущее значение нагрузки
     int PovType, TempPovType; // тип поверяемого оборудования (по какому ГОСТу)
@@ -114,8 +128,8 @@ private:
     void ShowProtocol();
     void SaveProtocolToPDF();
     void GenerateReport(); // сгенерировать протокол
-    void ConditionDataDialog(); // задание условий поверки
-    void DNDialog(); // задание параметров ДН(ТН)
+    void ConditionDataDialog(ResultsStruct &Results); // задание условий поверки
+    void DNDialog(publicclass::PovDevStruct &PovDev, ResultsStruct &Results); // задание параметров ДН(ТН)
     void UpdateItemInModel(int row, int column, QVariant value);
     void ShowTable();
 
