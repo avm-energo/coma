@@ -1,5 +1,6 @@
 // commands.cpp
 #include <QCoreApplication>
+#include "commands.h"
 #ifdef USBENABLE
 #include "eusbhid.h"
 #else
@@ -8,7 +9,7 @@
 #endif
 #endif
 
-int CM_GetBsi()
+int Commands::GetBsi()
 {
 #ifdef USBENABLE
     uh->Send(CN_GBsi, BT_NONE, &pc.ModuleBsi, sizeof(publicclass::Bsi));
@@ -20,7 +21,7 @@ int CM_GetBsi()
 #endif
 }
 
-int CM_GetFile(quint32 filenum, QVector<publicclass::DataRec> *data)
+int Commands::GetFile(quint32 filenum, QVector<publicclass::DataRec> *data)
 {
 #ifdef USBENABLE
     uh->Send(CN_GF, BT_NONE, NULL, 0, filenum, data);
@@ -32,7 +33,7 @@ int CM_GetFile(quint32 filenum, QVector<publicclass::DataRec> *data)
 #endif
 }
 
-int CM_WriteFile(void *ptr, quint32 filenum, QVector<publicclass::DataRec> *data)
+int Commands::WriteFile(void *ptr, quint32 filenum, QVector<publicclass::DataRec> *data)
 {
 #ifdef USBENABLE
     uh->Send(CN_WF, BT_NONE, ptr, 0, filenum, data);
@@ -44,7 +45,7 @@ int CM_WriteFile(void *ptr, quint32 filenum, QVector<publicclass::DataRec> *data
 #endif
 }
 
-int CM_GetBac(void *BacPtr, int BacPtrSize, int BacNum)
+int Commands::GetBac(void *BacPtr, int BacPtrSize, int BacNum)
 {
 #ifdef USBENABLE
     uh->Send(CN_GBac, BacNum, BacPtr, BacPtrSize);
@@ -56,7 +57,7 @@ int CM_GetBac(void *BacPtr, int BacPtrSize, int BacNum)
 #endif
 }
 
-int CM_Connect()
+int Commands::Connect()
 {
 #ifdef USBENABLE
     if (uh->Connect())
@@ -69,7 +70,7 @@ int CM_Connect()
     return GENERALERROR;
 }
 
-void CM_Disconnect()
+void Commands::Disconnect()
 {
 #ifdef USBENABLE
     uh->Disconnect();
@@ -79,7 +80,7 @@ void CM_Disconnect()
 #endif
 }
 
-int CM_GetBd(int BdNum, void *BdPtr, int BdPtrSize)
+int Commands::GetBd(int BdNum, void *BdPtr, int BdPtrSize)
 {
 #ifdef USBENABLE
     uh->Send(CN_GBd, BdNum, BdPtr, BdPtrSize);
@@ -88,5 +89,15 @@ int CM_GetBd(int BdNum, void *BdPtr, int BdPtrSize)
 #ifdef COMPORTENABLE
     cn->Send(CN_GBd, BdNum, BdPtr, BdPtrSize);
     return cn->result;
+#endif
+}
+
+bool Commands::isConnected()
+{
+#ifdef USBENABLE
+    return uh->Connected;
+#endif
+#ifdef COMPORTENABLE
+    return cn->Connected;
 #endif
 }

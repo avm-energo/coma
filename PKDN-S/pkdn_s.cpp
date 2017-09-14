@@ -23,6 +23,8 @@
 #include <QToolBar>
 #include <QFileDialog>
 #include <QVBoxLayout>
+#include <QAction>
+#include <QMenuBar>
 #include "pkdn_s.h"
 #include "../check/checkdialoga1.h"
 #include "../config/confdialoga1.h"
@@ -40,6 +42,7 @@ pkdn_s::pkdn_s(QWidget *parent)
     : MainWindow(parent)
 {
 //    SetParent(this);
+    SetupMenubar();
     SetupUI();
 }
 
@@ -69,7 +72,7 @@ void pkdn_s::SetupUI()
     act->setIcon(QIcon(":/pic/stop.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(Disconnect()));
     tb->addAction(act);
-#if PROGSIZE >= PROGSIZE_LARGE
+#if PROGSIZE >= PROGSIZE_FULL
     tb->addSeparator();
     act = new QAction(this);
     act->setToolTip("Эмуляция A1");
@@ -101,6 +104,17 @@ void pkdn_s::SetupUI()
 #if PROGSIZE >= PROGSIZE_LARGE
         SetSlideWidget();
 #endif
+}
+
+void pkdn_s::AddActionsToMenuBar(QMenuBar *menubar)
+{
+    QMenu *menu = new QMenu;
+    menu->setTitle("Работа без прибора");
+    QAction *act = new QAction(this);
+    act->setText("Протокол из файла");
+    connect(act,SIGNAL(triggered()),this,SLOT(ProtocolFromFile()));
+    menu->addAction(act);
+    menubar->addMenu(menu);
 }
 
 void pkdn_s::Stage3()
@@ -154,4 +168,10 @@ void pkdn_s::Stage3()
     MainTW->repaint();
     MainTW->show();
     emit BsiRefresh();
+}
+
+void pkdn_s::ProtocolFromFile()
+{
+    A1Dialog *dlg = new A1Dialog(false);
+    delete dlg;
 }

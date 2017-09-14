@@ -19,7 +19,7 @@ class A1Dialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit A1Dialog(bool WithGUI = true, QWidget *parent = 0);
+    explicit A1Dialog(QWidget *parent = 0);
 
     enum PovTypes
     {
@@ -78,7 +78,6 @@ public:
         QString KNI;            // коэффициент искажения синусоидальности кривой напряжения
         QString OuterInsp;      // вывод проведения внешнего осмотра
         QString WindingsInsp;   // вывод проведения проверки правильности обозначения выводов и групп соединений обмоток
-        QString PovDateTime;    // дата и время выполнения поверки
     };
 
     QStringList TableItem;      // строка таблицы с данными вывода
@@ -118,7 +117,7 @@ private:
     int Index, Counter;
     float CurrentS; // текущее значение нагрузки
     int PovType, TempPovType; // тип поверяемого оборудования (по какому ГОСТу)
-    QStandardItemModel *ReportModel, *ViewModel; // модель, в которую заносим данные для отчёта
+    QStandardItemModel *ReportModel; // модель, в которую заносим данные для отчёта
     int RowCount, ColumnCount; // количество рядов и столбцов в модели
 
     void SetupUI();
@@ -133,8 +132,6 @@ private:
     void DNDialog(publicclass::PovDevStruct &PovDev, ResultsStruct &Results); // задание параметров ДН(ТН)
     void UpdateItemInModel(int row, int column, QVariant value);
     void ShowTable();
-    void FillModel();
-    void FillHeaders();
 
 signals:
     void CloseDialog();
@@ -153,7 +150,6 @@ private slots:
     void SetConditionData();
     void RBToggled();
     int GetStatistics();
-    void TempRandomizeModel();
 };
 
 #endif // A1DIALOG_H

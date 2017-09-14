@@ -1,15 +1,11 @@
-#include <QDialog>
-#include <QLabel>
-#include <QVBoxLayout>
 #include <QCoreApplication>
 #include <QTime>
-#include "abstractprotocomchannel.h"
-#include "widgets/messagebox.h"
+#include "eabstractprotocomchannel.h"
 
-AbstractProtocomChannel::AbstractProtocomChannel(QObject *parent) : QObject(parent)
+EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(parent)
 {
     log = new Log;
-    log->Init("AbstractProtocomChannel.log");
+    log->Init("EAbstractProtocomChannel.log");
     log->WriteRaw("Log started!");
     RDLength = 0;
     SegEnd = 0;
@@ -28,11 +24,11 @@ AbstractProtocomChannel::AbstractProtocomChannel(QObject *parent) : QObject(pare
     connect(TTimer, SIGNAL(timeout()),this,SLOT(Timeout())); // для отладки закомментарить
 }
 
-AbstractProtocomChannel::~AbstractProtocomChannel()
+EAbstractProtocomChannel::~EAbstractProtocomChannel()
 {
 }
 
-void AbstractProtocomChannel::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint16 filenum, QVector<publicclass::DataRec> *DRptr)
+void EAbstractProtocomChannel::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint16 filenum, QVector<publicclass::DataRec> *DRptr)
 {
     if (!Connected)
     {
@@ -55,10 +51,15 @@ void AbstractProtocomChannel::Send(int command, int board_type, void *ptr, quint
         BoardType = board_type; // in GBd command it is a block number
     InitiateSend();
     while (Busy)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    {
+        QTime tme;
+        tme.start();
+        while (tme.elapsed() < CN_MAINLOOP_DELAY)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+    }
 }
 
-void AbstractProtocomChannel::InitiateSend()
+void EAbstractProtocomChannel::InitiateSend()
 {
     WriteData.clear();
     switch (cmd)
@@ -134,7 +135,7 @@ void AbstractProtocomChannel::InitiateSend()
         WRLength += sizeof(publicclass::FileHeader); // sizeof(FileHeader)
 //        WRLength += 4; // + 4 bytes prefix
         WriteData.resize(WRLength);
-        emit writedatalength(WRLength); // сигнал для прогрессбара
+        emit SetDataSize(WRLength); // сигнал для прогрессбара
         FirstSegment = true;
         SetWRSegNum();
         WRCheckForNextSegment();
@@ -146,7 +147,7 @@ void AbstractProtocomChannel::InitiateSend()
         WriteData.append(BoardType);
         WriteData.append(QByteArray::fromRawData((const char *)outdata, outdatasize));
         WRLength = outdatasize + 1;
-        emit writedatalength(WRLength); // сигнал для прогрессбара
+        emit SetDataSize(WRLength); // сигнал для прогрессбара
         FirstSegment = true;
         SetWRSegNum();
         WRCheckForNextSegment();
@@ -166,7 +167,7 @@ void AbstractProtocomChannel::InitiateSend()
     RDLength = 0;
 }
 
-void AbstractProtocomChannel::ParseIncomeData(QByteArray &ba)
+void EAbstractProtocomChannel::ParseIncomeData(QByteArray &ba)
 {
     if (pc.WriteUSBLog)
     {
@@ -252,7 +253,7 @@ void AbstractProtocomChannel::ParseIncomeData(QByteArray &ba)
                 Finish(CN_RCVDATAERROR);
                 return;
             }
-            emit incomingdatalength(RDLength);
+            emit SetDataSize(RDLength);
             ReadDataChunk.remove(0, 4); // убираем заголовок с < и длиной
             RDSize -= 4;
             if (cmd == CN_GF) // надо проверить, тот ли номер файла принимаем
@@ -280,7 +281,7 @@ void AbstractProtocomChannel::ParseIncomeData(QByteArray &ba)
             return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
         ReadData += ReadDataChunk;
         RDSize = static_cast<quint32>(ReadData.size());
-        emit bytesreceived(RDSize); // сигнал для прогрессбара
+        emit SetDataCount(RDSize); // сигнал для прогрессбара
         ReadDataChunk.clear();
         switch (cmd)
         {
@@ -331,7 +332,7 @@ void AbstractProtocomChannel::ParseIncomeData(QByteArray &ba)
             quint16 OscNumRemaining = static_cast<quint8>(ReadData.at(0))+static_cast<quint8>(ReadData.at(1))*256;
             if (OscNumRemaining == 0)
             {
-                emit osceraseremaining(OscNum);
+                emit SetDataCount(OscNum);
                 OscNum = 0;
                 Finish(NOERROR);
                 OscTimer->stop();
@@ -339,11 +340,11 @@ void AbstractProtocomChannel::ParseIncomeData(QByteArray &ba)
             }
             if (OscNum == 0)
             {
-                emit oscerasesize(OscNumRemaining);
+                emit SetDataSize(OscNumRemaining);
                 OscNum = OscNumRemaining; // максимальный диапазон для прогрессбара
             }
             else
-                emit osceraseremaining(OscNum - OscNumRemaining);
+                emit SetDataCount(OscNum - OscNumRemaining);
             break;
         }
         default:
@@ -356,7 +357,7 @@ void AbstractProtocomChannel::ParseIncomeData(QByteArray &ba)
     }
 }
 
-bool AbstractProtocomChannel::GetLength(bool ok)
+bool EAbstractProtocomChannel::GetLength(bool ok)
 {
     if (ReadDataChunk.size() < 4)
         return false;
@@ -386,7 +387,7 @@ bool AbstractProtocomChannel::GetLength(bool ok)
         return false;
 }
 
-void AbstractProtocomChannel::SetWRSegNum()
+void EAbstractProtocomChannel::SetWRSegNum()
 {
     if (WRLength > CN_MAXSEGMENTLENGTH)
     {
@@ -400,7 +401,7 @@ void AbstractProtocomChannel::SetWRSegNum()
     }
 }
 
-void AbstractProtocomChannel::WRCheckForNextSegment()
+void EAbstractProtocomChannel::WRCheckForNextSegment()
 {
     QByteArray tmpba;
     if (SegLeft)
@@ -427,11 +428,11 @@ void AbstractProtocomChannel::WRCheckForNextSegment()
         tmpba += WriteData.right(SegEnd);
         WriteData.clear();
     }
-    emit writedatapos(SegEnd);
+    emit SetDataCount(SegEnd);
     WriteDataToPort(tmpba);
 }
 
-void AbstractProtocomChannel::SendOk(bool cont)
+void EAbstractProtocomChannel::SendOk(bool cont)
 {
     QByteArray tmpba;
     if (cont)
@@ -443,7 +444,7 @@ void AbstractProtocomChannel::SendOk(bool cont)
     WriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
 }
 
-void AbstractProtocomChannel::AppendSize(QByteArray &ba, quint16 size)
+void EAbstractProtocomChannel::AppendSize(QByteArray &ba, quint16 size)
 {
     quint8 byte = static_cast<quint8>(size%0x100);
     ba.append(byte);
@@ -451,7 +452,7 @@ void AbstractProtocomChannel::AppendSize(QByteArray &ba, quint16 size)
     ba.append(byte);
 }
 
-void AbstractProtocomChannel::SendErr()
+void EAbstractProtocomChannel::SendErr()
 {
     QByteArray tmpba;
     tmpba.append(CN_MS);
@@ -461,12 +462,12 @@ void AbstractProtocomChannel::SendErr()
     WriteDataToPort(tmpba);
 }
 
-void AbstractProtocomChannel::Timeout()
+void EAbstractProtocomChannel::Timeout()
 {
     Finish(USO_TIMEOUTER);
 }
 
-void AbstractProtocomChannel::Finish(int ernum)
+void EAbstractProtocomChannel::Finish(int ernum)
 {
     TTimer->stop();
     cmd = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
@@ -486,113 +487,51 @@ void AbstractProtocomChannel::Finish(int ernum)
     Busy = false;
 }
 
-void AbstractProtocomChannel::Disconnect()
+void EAbstractProtocomChannel::Disconnect()
 {
-    ClosePort();
+    RawClose();
     emit Disconnected();
 }
 
-void AbstractProtocomChannel::OscTimerTimeout()
+void EAbstractProtocomChannel::OscTimerTimeout()
 {
     Send(CN_OscPg);
 }
 
-bool AbstractProtocomChannel::InitializePort(QSerialPortInfo &pinfo, int baud)
+void EAbstractProtocomChannel::CheckForData()
 {
-    port = new QSerialPort;
-    port->setPort(pinfo);
-    port->clearError();
-    connect(port,SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(Error(QSerialPort::SerialPortError)));
-    QTimer *OpenTimeoutTimer = new QTimer;
-    OpenTimeoutTimer->setInterval(2000);
-    connect(OpenTimeoutTimer,SIGNAL(timeout()),this,SLOT(Disconnect()));
-    OpenTimeoutTimer->start();
-    if (!port->open(QIODevice::ReadWrite))
-    {
-        OpenTimeoutTimer->stop();
-        return false;
-    }
-    port->setBaudRate(baud);
-    port->setParity(QSerialPort::NoParity);
-    port->setDataBits(QSerialPort::Data8);
-    port->setFlowControl(QSerialPort::NoFlowControl);
-    port->setStopBits(QSerialPort::OneStop);
-    connect(port,SIGNAL(readyRead()),this,SLOT(CheckForData()));
-    Connected = true;
-    OpenTimeoutTimer->stop();
-    return true;
-}
-
-void AbstractProtocomChannel::ClosePort()
-{
-    if (!Connected)
-        return;
-    try
-    {
-        Connected = false;
-        if (port->isOpen())
-            port->close();
-    }
-    catch(...)
-    {
-        DBGMSG;
-    }
-}
-
-void AbstractProtocomChannel::CheckForData()
-{
-    QByteArray ba = port->read(1000);
+    QByteArray ba = RawRead(1000);
     emit readbytessignal(ba);
     ParseIncomeData(ba);
 }
 
-void AbstractProtocomChannel::Error(QSerialPort::SerialPortError err)
+void EAbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
 {
-    if (!err) // нет ошибок
-        return;
-    quint16 ernum = err + COM_ERROR;
-    pc.ErMsg(ernum);
-    if (Connected)
-        Disconnect();
-}
-
-void AbstractProtocomChannel::PortCloseTimeout()
-{
-    PortCloseTimeoutSet = true;
-}
-
-void AbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
-{
-    if (port->isOpen())
+    QByteArray tmpba = ba;
+    if (cmd == CN_Unk) // игнорируем вызовы процедуры без команды
     {
-        QByteArray tmpba = ba;
-        if (cmd == CN_Unk) // игнорируем вызовы процедуры без команды
+        pc.ErMsg(USB_WRONGCOMER);
+        return;
+    }
+    quint64 byteswritten = 0;
+    quint64 basize = tmpba.size();
+    while ((byteswritten < basize) && (!tmpba.isEmpty()))
+    {
+        if (pc.WriteUSBLog)
         {
-            pc.ErMsg(USB_WRONGCOMER);
+            log->WriteRaw("->");
+            log->WriteRaw(tmpba.toHex());
+            log->WriteRaw("\n");
+        }
+        qint64 tmpi = RawWrite(tmpba);
+        if (tmpi == GENERALERROR)
+        {
+            pc.ErMsg(COM_WRITEER);
             return;
         }
-        quint64 byteswritten = 0;
-        quint64 basize = tmpba.size();
-        while ((byteswritten < basize) && (!tmpba.isEmpty()))
-        {
-            if (pc.WriteUSBLog)
-            {
-                log->WriteRaw("->");
-                log->WriteRaw(tmpba.toHex());
-                log->WriteRaw("\n");
-            }
-            qint64 tmpi = port->write(tmpba);
-            if (tmpi == GENERALERROR)
-            {
-                pc.ErMsg(COM_WRITEER);
-                return;
-            }
-            byteswritten += tmpi;
-            emit writebytessignal(tmpba.left(tmpi));
-            tmpba = tmpba.remove(0, tmpi);
-        }
-        TTimer->start();
+        byteswritten += tmpi;
+        emit writebytessignal(tmpba.left(tmpi));
+        tmpba = tmpba.remove(0, tmpi);
     }
-    else
-        pc.ErMsg(COM_RESER);
+    TTimer->start();
 }

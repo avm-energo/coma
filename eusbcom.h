@@ -1,17 +1,17 @@
-#ifndef CANAL_H
-#define CANAL_H
+#ifndef EUSBCOM_H
+#define EUSBCOM_H
 
 #include <QByteArray>
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include "eabstractprotocomchannel.h"
 
-class Canal : public EAbstractProtocomChannel
+class EUsbCom : public EAbstractProtocomChannel
 {
     Q_OBJECT
 public:
-    explicit Canal(QObject *parent = 0);
-    ~Canal();
+    explicit EUsbCom(QObject *parent = 0);
+    ~EUsbCom();
 
     QSerialPortInfo info;
     int baud;
@@ -39,4 +39,4 @@ private:
     bool SetPort(const QString &port, QSerialPortInfo &info);
 };
 
-#endif // CANAL_H
+#endif // EUSBCOM_H

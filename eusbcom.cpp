@@ -5,19 +5,19 @@
 #include <QStringListModel>
 #include <QCoreApplication>
 #include <QTime>
-#include "canal.h"
+#include "eusbcom.h"
 #include "../widgets/messagebox.h"
 
-Canal::Canal(QObject *parent) : EAbstractProtocomChannel(parent)
+EUsbCom::EUsbCom(QObject *parent) : EAbstractProtocomChannel(parent)
 {
     FirstPass = true;
 }
 
-Canal::~Canal()
+EUsbCom::~EUsbCom()
 {
 }
 
-bool Canal::Connect()
+bool EUsbCom::Connect()
 {
     while ((!Connected) && (!Cancelled))
     {
@@ -52,17 +52,17 @@ bool Canal::Connect()
     return true;
 }
 
-QByteArray Canal::RawRead(int bytes)
+QByteArray EUsbCom::RawRead(int bytes)
 {
     return port->read(bytes);
 }
 
-qint64 Canal::RawWrite(QByteArray &ba)
+qint64 EUsbCom::RawWrite(QByteArray &ba)
 {
     return port->write(ba);
 }
 
-void Canal::RawClose()
+void EUsbCom::RawClose()
 {
     if (!Connected)
         return;
@@ -78,7 +78,7 @@ void Canal::RawClose()
     }
 }
 
-bool Canal::InitializePort(QSerialPortInfo &pinfo, int baud)
+bool EUsbCom::InitializePort(QSerialPortInfo &pinfo, int baud)
 {
     port = new QSerialPort;
     port->setPort(pinfo);
@@ -104,7 +104,7 @@ bool Canal::InitializePort(QSerialPortInfo &pinfo, int baud)
     return true;
 }
 
-void Canal::ShowConnectDialog()
+void EUsbCom::ShowConnectDialog()
 {
     int i;
     QDialog *dlg = new QDialog(this);
@@ -144,7 +144,7 @@ void Canal::ShowConnectDialog()
     dlg->exec();
 }
 
-bool Canal::SetPort(const QString &port, QSerialPortInfo &info)
+bool EUsbCom::SetPort(const QString &port, QSerialPortInfo &info)
 {
     QList<QSerialPortInfo> infolist = QSerialPortInfo::availablePorts();
     if (infolist.size() == 0)
@@ -165,7 +165,7 @@ bool Canal::SetPort(const QString &port, QSerialPortInfo &info)
     return false;
 }
 
-void Canal::Error(QSerialPort::SerialPortError err)
+void EUsbCom::Error(QSerialPort::SerialPortError err)
 {
     if (!err) // нет ошибок
         return;
@@ -175,12 +175,12 @@ void Canal::Error(QSerialPort::SerialPortError err)
         Disconnect();
 }
 
-void Canal::SetCancelled()
+void EUsbCom::SetCancelled()
 {
     Cancelled = true;
 }
 
-void Canal::SetPortSlot(QString port)
+void EUsbCom::SetPortSlot(QString port)
 {
     pc.Port = port;
 }

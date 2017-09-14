@@ -10,12 +10,17 @@
 #endif
 #endif
 
-    int CM_GetBsi();
-    int CM_GetFile(quint32 filenum, QVector<publicclass::DataRec> *data);
-    int CM_WriteFile(void *ptr, quint32 filenum, QVector<publicclass::DataRec> *data);
-    int CM_GetBac(void *ptr, int ptrsize, int BacNum);
-    int CM_Connect();
-    void CM_Disconnect();
-    int CM_GetBd(int BdNum, void *BdPtr, int BdPtrSize);
+class Commands
+{
+public:
+    static int GetBsi();
+    static int GetFile(quint32 filenum, QVector<publicclass::DataRec> *data);
+    static int WriteFile(void *ptr, quint32 filenum, QVector<publicclass::DataRec> *data);
+    static int GetBac(void *ptr, int ptrsize, int BacNum);
+    static int Connect();
+    static void Disconnect();
+    static int GetBd(int BdNum, void *BdPtr, int BdPtrSize);
+    static bool isConnected();
+};
 
 #endif // COMMANDS_H

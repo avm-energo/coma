@@ -38,14 +38,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 #endif
     S2Config.clear();
     ConfB = ConfM = 0;
-    SetupMenubar();
     PrepareTimers();
     LoadSettings();
 #ifdef COMPORTENABLE
-    connect(cn,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
-    connect(cn,SIGNAL(osceraseremaining(quint32)),this,SLOT(SetProgressBar1(quint32)));
-    connect(cn,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
-    connect(cn,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar1(quint32)));
+    connect(cn,SIGNAL(SetDataSize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
+    connect(cn,SIGNAL(SetDataCount(quint32)),this,SLOT(SetProgressBar1(quint32)));
+    connect(cn,SIGNAL(SetDataSize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
+    connect(cn,SIGNAL(SetDataCount(quint32)),this,SLOT(SetProgressBar1(quint32)));
     connect(cn,SIGNAL(readbytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(cn,SIGNAL(writebytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
 //    connect(cn,SIGNAL(Disconnected()),this,SLOT(ContinueDisconnect()));
@@ -189,6 +188,9 @@ void MainWindow::SetupMenubar()
     act->setText("О программе");
     connect(act,SIGNAL(triggered()),this,SLOT(GetAbout()));
     menubar->addAction(act);
+
+    menubar->addSeparator();
+    AddActionsToMenuBar(menubar);
     setMenuBar(menubar);
 }
 
@@ -295,114 +297,25 @@ int MainWindow::CheckPassword()
 
 void MainWindow::Stage1()
 {
-    int i;
-    QDialog *dlg = new QDialog(this);
-    dlg->setMinimumWidth(150);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setObjectName("connectdlg");
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QComboBox *portscb = new QComboBox;
-    connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPort(QString)));
-    QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
-    if (info.size() == 0)
-    {
-        pc.ErMsg(USB_NOCOMER);
-        return;
-    }
-    QStringListModel *tmpmodel = new QStringListModel;
-    QStringList tmpsl;
-    for (i = 0; i < info.size(); i++)
-        tmpsl << info.at(i).portName();
-    SetPort(tmpsl.at(0));
-    tmpmodel->setStringList(tmpsl);
-    portscb->setModel(tmpmodel);
-    lyout->addWidget(portscb);
-
-    QPushButton *nextL = new QPushButton("Далее");
-    connect(nextL,SIGNAL(clicked()),this,SLOT(Stage1_5()));
-    connect(nextL, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    lyout->addWidget(nextL);
-    dlg->setLayout(lyout);
-    dlg->exec();
 }
 
 void MainWindow::Stage1_5()
 {
-#ifdef COMPORTENABLE
-    if (!cn->Connected)
-    {
-        pc.PrbMessage = "Загрузка данных...";
-
-        QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
-        if (info.size() == 0)
-        {
-            MessageBox2::error(this, "Ошибка", "В системе нет последовательных портов");
-            pc.ErMsg(USB_NOCOMER);
-            emit Retry();
-            return;
-        }
-        bool PortFound = false;
-        for (int i = 0; i < info.size(); i++)
-        {
-            if (info.at(i).portName() == pc.Port)
-            {
-                PortFound = true;
-                cn->info = info.at(i);
-            }
-        }
-        if (!PortFound)
-        {
-            MessageBox2::error(this, "Ошибка", "Порт не найден");
-            pc.ErMsg(USB_COMER);
-            emit Retry();
-            return;
-        }
-        cn->baud = 115200;
-        if (!cn->Connect())
-        {
-            MessageBox2::error(this, "Ошибка", "Связь не может быть установлена");
-            emit Retry();
-            return;
-        }
-        SaveSettings();
-    }
-#else
-#ifdef USBENABLE
-    if (!uh->Connected)
-    {
-        pc.PrbMessage = "Загрузка данных...";
-        if (!uh->Connect())
-        {
-            MessageBox2::error(this, "Ошибка", "Связь не может быть установлена");
-            return;
-        }
-        SaveSettings();
-    }
-#endif
-#endif
+    if (!Commands::Connect())
+        return;
+    SaveSettings();
     Stage2();
 }
 
 void MainWindow::Stage2()
 {
-#ifdef COMPORTENABLE
-    if (CN_GetBsi(&pc.ModuleBsi, sizeof(publicclass::Bsi)) != NOERROR)
+    if (Commands::GetBsi() != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
         cn->Disconnect();
         emit Retry();
         return;
     }
-#else
-#ifdef USBENABLE
-    if (CM_GetBsi() != NOERROR)
-    {
-        MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
-        CM_Disconnect();
-        return;
-    }
-#endif
-#endif
     pc.MType = ((pc.ModuleBsi.MTypeB & 0x000000FF) << 8) | (pc.ModuleBsi.MTypeM & 0x000000FF);
     pc.ModuleTypeString = "ПКДН-";
     pc.ModuleTypeString.append(QString::number(pc.MType, 16));
@@ -439,19 +352,6 @@ void MainWindow::UpdateMainTE(QByteArray &ba)
 }
 #endif
 
-void MainWindow::SetPort(QString str)
-{
-    QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
-    for (int i = 0; i < info.size(); i++)
-    {
-        if (info.at(i).portName() == str)
-        {
-            pc.Port = str;
-            return;
-        }
-    }
-}
-
 void MainWindow::PasswordCheck(QString &psw)
 {
     if (psw == "SE/7520A")
@@ -464,13 +364,7 @@ void MainWindow::PasswordCheck(QString &psw)
 #if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::OpenBhbDialog()
 {
-#ifdef COMPORTENABLE
-    if (!cn->Connected)
-#else
-#ifdef USBENABLE
-    if (!uh->Connected)
-#endif
-#endif
+    if (Commands::isConnected())
     {
         QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модулем" : "прибором");
         MessageBox2::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с "+tmps);
@@ -485,10 +379,10 @@ void MainWindow::OpenBhbDialog()
     pc.BoardBBhb.MType = pc.ModuleBsi.MTypeB;
     dlg->Fill(); // заполняем диалог из недавно присвоенных значений
     dlg->exec();
-    if (CM_GetBsi() != NOERROR)
+    if (Commands::GetBsi() != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
-        CM_Disconnect();
+        Commands::Disconnect();
     }
     emit BsiRefresh();
 }

@@ -1,13 +1,9 @@
-#ifndef ABSTRACTPROTOCOMCHANNEL_H
-#define ABSTRACTPROTOCOMCHANNEL_H
+#ifndef EEAbstractProtocomChannel_H
+#define EEAbstractProtocomChannel_H
 
 #include <QObject>
 #include <QByteArray>
 #include <QTimer>
-#include <QLabel>
-#include <QMutex>
-#include <QtSerialPort/QSerialPort>
-#include <QtSerialPort/QSerialPortInfo>
 
 #include "publicclass.h"
 #include "log.h"
@@ -56,46 +52,42 @@
 #define BT_BASE     1
 #define BT_MEZONIN  2
 
-class AbstractProtocomChannel : public QObject
+class EAbstractProtocomChannel : public QObject
 {
     Q_OBJECT
 public:
-    explicit AbstractProtocomChannel(QObject *parent = 0);
-    ~AbstractProtocomChannel();
+    explicit EAbstractProtocomChannel(QObject *parent = 0);
+    ~EAbstractProtocomChannel();
 
     int result;
-    QSerialPortInfo info;
     int baud;
     int ernum;
     bool FirstRun;
     bool NeedToSend, Busy, NeedToFinish;
-    bool Connected;
+    bool Connected, Cancelled;
 
     virtual bool Connect() = 0;
-    virtual bool Initialize() = 0;
     void Send(int command, int board_type=BT_NONE, void *ptr=NULL, quint32 ptrsize=0, quint16 filenum=0, \
               QVector<publicclass::DataRec> *DRptr=0);
+    virtual QByteArray RawRead(int bytes) = 0;
+    virtual qint64 RawWrite(QByteArray &ba) = 0;
+    virtual void RawClose() = 0;
 
 signals:
-    void writedatalength(quint32);
-    void writedatapos(quint32);
-    void bytesreceived(quint32);
-    void incomingdatalength(quint32);
-    void readbytessignal(QByteArray &);
-    void writebytessignal(QByteArray &);
-    void oscerasesize(quint32);
-    void osceraseremaining(quint32);
+    void SetDataSize(quint32); // сигналы для прогрессбаров - отслеживание принятых данных, стёртых осциллограмм и т.п.
+    void SetDataCount(quint32);
+    void readbytessignal(QByteArray &); // for TE updating
+    void writebytessignal(QByteArray &); // for TE updating
     void Disconnected();
 
 public slots:
     void Timeout();
     void Disconnect();
+    void ParseIncomeData(QByteArray ba);
 
 private slots:
     void CheckForData();
     void OscTimerTimeout();
-    void PortCloseTimeout();
-    void Error(QSerialPort::SerialPortError);
 
 private:
     char *outdata;
@@ -105,7 +97,6 @@ private:
     quint16 OscNum;
     int bStep;
     int cmd;
-    QLabel *lbl;
     quint16 fnum;
     quint32 RDLength; // длина всей посылки
     quint32 WRLength; // длина всей посылки
@@ -116,15 +107,10 @@ private:
     bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
     QVector<publicclass::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     quint8 BoardType;
-    bool PortCloseTimeoutSet;
-    QSerialPort *port;
     Log *log;
 
-    bool InitializePort(QSerialPortInfo &pinfo, int baud);
-    void ClosePort();
     void InitiateSend();
     void WriteDataToPort(QByteArray &ba);
-    void ParseIncomeData(QByteArray &ba);
     void Finish(int ernum);
     void SetWRSegNum();
     void WRCheckForNextSegment();
@@ -134,4 +120,4 @@ private:
     bool GetLength(bool ok=true); // ok = 1 -> обработка посылки вида SS OK ..., ok = 0 -> вида SS c L L ... возвращаемое значение = false -> неправильная длина
 };
 
-#endif // ABSTRACTPROTOCOMCHANNEL_H
+#endif // EEAbstractProtocomChannel_H

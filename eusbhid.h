@@ -10,6 +10,7 @@
 
 #include "publicclass.h"
 #include "log.h"
+#include "eabstractprotocomchannel.h"
 #include "hidapi/hidapi.h"
 
 // Канал связи с модулем
@@ -84,32 +85,19 @@ private:
     bool AboutToFinish;
 };
 
-class EUsbHid : public QObject
+class EUsbHid : public EAbstractProtocomChannel
 {
     Q_OBJECT
 public:
     explicit EUsbHid(QObject *parent = 0);
     ~EUsbHid();
 
-    int result;
-    int ernum;
     bool FirstRun;
-    bool NeedToSend, Busy, NeedToFinish;
     bool Connected;
 
     bool Connect();
-    void Send(int command, int board_type=BT_NONE, void *ptr=NULL, quint32 ptrsize=0, quint16 filenum=0, \
-              QVector<publicclass::DataRec> *DRptr=0);
 
 signals:
-    void writedatalength(quint32);
-    void writedatapos(quint32);
-    void bytesreceived(quint32);
-    void incomingdatalength(quint32);
-    void readbytessignal(QByteArray &);
-    void writebytessignal(QByteArray &);
-    void oscerasesize(quint32);
-    void osceraseremaining(quint32);
     void Disconnected();
     void StartUThread(QThread::Priority);
     void StopUThread();
@@ -118,45 +106,12 @@ public slots:
     void Disconnect();
 
 private slots:
-    void Timeout();
-    void OscTimerTimeout();
-    void ParseIncomeData(QByteArray ba);
 
 private:
-    char *outdata;
-    QByteArray ReadData, ReadDataChunk;
-    QByteArray WriteData;
-    QTimer *TTimer, *OscTimer;
-    quint16 OscNum;
-    int bStep;
-    int cmd;
-    QLabel *lbl;
-    quint16 fnum;
-    quint32 RDLength; // длина всей посылки
-    quint32 WRLength; // длина всей посылки
-    quint32 outdatasize; // размер приёмной области памяти
-    quint32 SegLeft; // количество оставшихся сегментов
-    quint32 SegEnd; // номер последнего байта в ReadData текущего сегмента
-    bool FirstSegment; // признак того, что передаётся первый сегмент (начало посылки MS, а не MS3)
-    bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
-    QVector<publicclass::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
-    quint8 BoardType;
-    bool PortCloseTimeoutSet;
     EUsbThread *UThread;
     QThread *UThr;
 
     void ClosePort();
-    void InitiateSend();
-    void WriteDataToPort(QByteArray &ba);
-    void Finish(int ernum);
-    void SetWRSegNum();
-    void WRCheckForNextSegment();
-    void AppendSize(QByteArray &ba, quint16 size);
-    void SendOk(bool cont=false); // cont = 1 -> send CN_MS3 instead CN_MS
-    void SendErr();
-    bool GetLength(bool ok=true); // ok = 1 -> обработка посылки вида SS OK ..., ok = 0 -> вида SS c L L ... возвращаемое значение = false -> неправильная длина
 };
-
-extern EUsbHid *uh;
 
 #endif // EUSBHID_H

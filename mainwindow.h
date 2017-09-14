@@ -64,8 +64,10 @@ public:
     }
 
     virtual void SetupUI() = 0;
+    virtual void AddActionsToMenuBar(QMenuBar *menubar) = 0;
     virtual void Stage3() = 0;
     void ClearTW();
+    void SetupMenubar();
     QWidget *MainInfoWidget();
     QWidget *HthWidget();
     QWidget *Least();
@@ -87,7 +89,6 @@ private:
     publicclass::Bsi Bsi_block;
     bool ok;
 
-    void SetupMenubar();
     void PrepareTimers();
     void LoadSettings();
     void SaveSettings();
@@ -105,7 +106,6 @@ private slots:
     void Stage2();
     void SetDefConf();
     void Fill();
-    void SetPort(QString str);
     void PasswordCheck(QString &psw);
     void StartSettingsDialog();
     void ShowErrorDialog();

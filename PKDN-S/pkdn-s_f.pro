@@ -26,7 +26,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         pkdn_s.cpp \
-    ../canal.cpp \
+    ../eusbcom.cpp \
     ../commands.cpp \
     ../log.cpp \
     ../publicclass.cpp \
@@ -66,10 +66,12 @@ SOURCES += main.cpp\
     ../mainwindow.cpp \
     ../dialogs/infodialog.cpp \
     ../widgets/lineeditfield.cpp \
-    ../eusbhid.cpp
+    ../eusbhid.cpp \
+    ../eabstractprotocomchannel.cpp \
+    ../reports/a1report.cpp
 
 HEADERS  += pkdn_s.h \
-    ../Canal.h \
+    ../eusbcom.h \
     ../commands.h \
     ../log.h \
     ../publicclass.h \
@@ -109,7 +111,9 @@ HEADERS  += pkdn_s.h \
     ../mainwindow.h \
     ../dialogs/infodialog.h \
     ../widgets/lineeditfield.h \
-    ../eusbhid.h
+    ../eusbhid.h \
+    ../eabstractprotocomchannel.h \
+    ../reports/a1report.h
 
 RESOURCES += \
     pkdn-s.qrc

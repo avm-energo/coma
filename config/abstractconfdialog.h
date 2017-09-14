@@ -10,7 +10,7 @@ class AbstractConfDialog : public QDialog
 {
     Q_OBJECT
 public:
-    AbstractConfDialog(QWidget *parent = 0);
+    explicit AbstractConfDialog(QWidget *parent = 0);
 
     QVector<publicclass::DataRec> *S2Config;
     QStringList CheckConfErrors;

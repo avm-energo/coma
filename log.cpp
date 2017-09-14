@@ -84,18 +84,6 @@ void Log::WriteRaw(const QByteArray &ba)
     mtx->unlock();
 }
 
-/*void Log::Info(QByteArray &ba)
-{
-    QString tmps = "[" + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss") + "]";
-    fp->write(tmps.toLocal8Bit());
-    tmps = "[Info] ";
-    fp->write(tmps.toLocal8Bit());
-    fp->write(ba);
-    fp->write("\n");
-    fp->flush();
-//    CheckAndGz();
-} */
-
 void Log::CheckAndGz()
 {
     QString GZippedLogFile = LogFile + ".xz";
