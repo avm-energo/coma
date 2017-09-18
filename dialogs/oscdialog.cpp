@@ -9,10 +9,10 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include "oscdialog.h"
-#include "../canal.h"
+#include "../commands.h"
 #include "../config/config.h"
 #include "../widgets/s_tqtableview.h"
-#include "../widgets/s_tablemodel.h"
+#include "../widgets/etablemodel.h"
 #include "../widgets/getoscpbdelegate.h"
 #include "../widgets/messagebox.h"
 
@@ -34,7 +34,7 @@ void oscdialog::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     s_tqTableView *tv = new s_tqTableView;
     tv->setObjectName("osctv");
-    tm = new s_tablemodel;
+    tm = new ETableModel;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Получить данные по осциллограммам в памяти "+tmps);
     connect(pb,SIGNAL(clicked()),this,SLOT(GetOscInfo()));
@@ -56,8 +56,7 @@ void oscdialog::GetOscInfo()
         delete OscInfo;
     OscInfo = new QByteArray;
     OscInfo->resize(MAXOSCBUFSIZE);
-    cn->Send(CN_GBo,BT_NONE,&(OscInfo->data()[0]));
-    if (cn->result == NOERROR)
+    if (Commands::GetBo(&(OscInfo->data()[0]), MAXOSCBUFSIZE) == NOERROR)
         ProcessOscInfo();
 }
 
@@ -278,6 +277,8 @@ void oscdialog::EndExtractOsc()
 
 void oscdialog::GetOsc(QModelIndex idx)
 {
+    // ПЕРЕВЕСТИ РАБОТУ С ОСЦИЛЛОГРАММАМИ НА РАБОТУ С ФАЙЛАМИ!
+    QVector<publicclass::DataRec> *S2Config = new QVector<publicclass::DataRec>;
     quint32 oscnum = tm->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(); // номер осциллограммы
     OscDateTime = tm->data(idx.sibling(idx.row(),1),Qt::DisplayRole).toString(); // дата и время создания осциллограммы
     OscInfo->resize(MAXOSCBUFSIZE);
@@ -286,16 +287,14 @@ void oscdialog::GetOsc(QModelIndex idx)
     GivenFilename.replace(":","_");
     GivenFilename.insert(0, " ");
     GivenFilename.insert(0, QString::number(oscnum));
-    cn->Send(CN_GF,BT_NONE,OscInfo->data(),0,oscnum);
-    if (cn->result == NOERROR)
+    if (Commands::GetFile(oscnum, S2Config) == NOERROR)
         EndExtractOsc();
 }
 
 void oscdialog::EraseOsc()
 {
     pc.PrbMessage = "Стёрто записей: ";
-    cn->Send(CN_OscEr);
-    if (cn->result == NOERROR)
+    if (Commands::EraseOsc() == NOERROR)
         MessageBox2::information(this, "Внимание", "Стёрто успешно");
     else
         MessageBox2::information(this, "Внимание", "Ошибка при стирании");

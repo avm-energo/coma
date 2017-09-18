@@ -70,7 +70,7 @@ void pkdn_s::SetupUI()
     act = new QAction(this);
     act->setToolTip("Разрыв соединения");
     act->setIcon(QIcon(":/pic/stop.png"));
-    connect(act,SIGNAL(triggered()),this,SLOT(Disconnect()));
+    connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndClear()));
     tb->addAction(act);
 #if PROGSIZE >= PROGSIZE_FULL
     tb->addSeparator();

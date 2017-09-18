@@ -27,8 +27,6 @@ public slots:
 
 private slots:
     void Error(QSerialPort::SerialPortError);
-    void SetCancelled();
-    void SetPortSlot(QString port);
 
 private:
     bool FirstPass;

@@ -1,15 +1,15 @@
-#ifndef s_tableitem_H
-#define s_tableitem_H
+#ifndef ETABLEITEM_H
+#define ETABLEITEM_H
 
 #include <QStringList>
 #include <QColor>
 #include <QFont>
 #include <QIcon>
 
-class s_tableitem
+class ETableItem
 {
 public:
-    explicit s_tableitem(s_tableitem *parent = 0);
+    explicit ETableItem(ETableItem *parent = 0);
 
     QString data(int column) const;
     void setData(int column, const QString &value);
@@ -27,4 +27,4 @@ private:
     QList<QIcon> itemIcon;
 };
 
-#endif // s_tableitem_H
+#endif // ETABLEITEM_H

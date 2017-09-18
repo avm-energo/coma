@@ -16,7 +16,6 @@
 #include "../widgets/wd_func.h"
 #include "../publicclass.h"
 #include "../config/config.h"
-#include "../canal.h"
 
 CheckDialogA1::CheckDialogA1(QWidget *parent) : AbstractCheckDialog(parent)
 {

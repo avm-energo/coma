@@ -67,11 +67,12 @@ public:
     bool Connected, Cancelled;
 
     virtual bool Connect() = 0;
-    void Send(int command, int board_type=BT_NONE, void *ptr=NULL, quint32 ptrsize=0, quint16 filenum=0, \
-              QVector<publicclass::DataRec> *DRptr=0);
     virtual QByteArray RawRead(int bytes) = 0;
     virtual qint64 RawWrite(QByteArray &ba) = 0;
     virtual void RawClose() = 0;
+
+    void Send(int command, int board_type=BT_NONE, void *ptr=NULL, quint32 ptrsize=0, quint16 filenum=0, \
+              QVector<publicclass::DataRec> *DRptr=0);
 
 signals:
     void SetDataSize(quint32); // сигналы для прогрессбаров - отслеживание принятых данных, стёртых осциллограмм и т.п.
@@ -79,11 +80,14 @@ signals:
     void readbytessignal(QByteArray &); // for TE updating
     void writebytessignal(QByteArray &); // for TE updating
     void Disconnected();
+    void Retry();
+    void ShowError(QString message);
 
 public slots:
     void Timeout();
     void Disconnect();
     void ParseIncomeData(QByteArray ba);
+    void SetCancelled();
 
 private slots:
     void CheckForData();

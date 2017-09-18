@@ -1,22 +1,20 @@
-#ifndef S_2CMODEL_H
-#define S_2CMODEL_H
+#ifndef ETABLEMODEL_H
+#define ETABLEMODEL_H
 
 #include <QAbstractTableModel>
 #include <QColor>
 #include <QFont>
 #include <QIcon>
-
-
 #include <QAbstractItemModel>
 #include <QStringList>
-#include "s_tableitem.h"
+#include "etableitem.h"
 
-class s_tablemodel : public QAbstractTableModel
+class ETableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit s_tablemodel(QObject *parent = 0);
-    ~s_tablemodel();
+    explicit ETableModel(QObject *parent = 0);
+    ~ETableModel();
 
     int result;
 
@@ -42,18 +40,18 @@ public:
     void fillModel(QList<QStringList> sl);
     QStringList cvalues(int column); // выдать значения по столбцу column в выходной QStringList
     QStringList rvalues(int row); // выдать значения по строке row в выходной QStringList
-//    s_tableitem item(const QModelIndex &);
+//    ETableItem item(const QModelIndex &);
 
 signals:
 
 public slots:
 
 private:
-    QList<s_tableitem *> maindata;
+    QList<ETableItem *> maindata;
     QStringList hdr;
     QColor colors[6]; // определение набора цветов шрифта
     QFont fonts[6]; // определение набора шрифтов
     QIcon icons[6]; // определение набора иконок
 };
 
-#endif // S_2CMODEL_H
+#endif // ETABLEMODEL_H

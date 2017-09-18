@@ -6,7 +6,7 @@
 #include <QHBoxLayout>
 #include <QByteArray>
 #include <QStringList>
-#include "abstracttunedialog.h"
+#include "eabstracttunedialog.h"
 #include "../config/configa1.h"
 #include "../check/checka1.h"
 
@@ -16,7 +16,7 @@
 #define CHECK_MA1   3
 #define CHECK_MA2   4
 
-class TuneDialogA1 : public AbstractTuneDialog
+class TuneDialogA1 : public EAbstractTuneDialog
 {
     Q_OBJECT
 public:

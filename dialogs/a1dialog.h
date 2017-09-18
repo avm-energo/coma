@@ -97,6 +97,7 @@ private:
         quint64 Time;
         quint32 GOST;
         quint64 SerNum;
+        quint64 DNFNum;
         float Temp;
         float Humidity;
         float THD;
@@ -129,7 +130,7 @@ private:
     void ShowProtocol();
     void SaveProtocolToPDF();
     void GenerateReport(); // сгенерировать протокол
-    void ConditionDataDialog(ResultsStruct &Results); // задание условий поверки
+    void ConditionDataDialog(ResultsStruct &Results, bool Autonomous = false); // задание условий поверки
     void DNDialog(publicclass::PovDevStruct &PovDev, ResultsStruct &Results); // задание параметров ДН(ТН)
     void UpdateItemInModel(int row, int column, QVariant value);
     void ShowTable();

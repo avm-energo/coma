@@ -10,7 +10,7 @@
 #include "hiddendialog.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/messagebox.h"
-#include "../canal.h"
+#include "../commands.h"
 
 HiddenDialog::HiddenDialog(int type, QWidget *parent) :
     QDialog(parent)
@@ -198,16 +198,14 @@ void HiddenDialog::GetVersion(quint32 &number, QString lename)
 
 void HiddenDialog::SendBhb()
 {
-    cn->Send(CN_WHv, BT_BASE, &pc.BoardBBhb, sizeof(pc.BoardBBhb));
-    if (cn->result != NOERROR)
+    if (Commands::WriteHiddenBlock(BT_BASE, &pc.BoardBBhb, sizeof(pc.BoardBBhb)) != NOERROR)
     {
         ERMSG("Проблема при записи блока Hidden block базовой платы");
         return;
     }
     if (pc.BoardMBhb.MType != MTM_00)
     {
-        cn->Send(CN_WHv, BT_MEZONIN, &pc.BoardMBhb, sizeof(pc.BoardMBhb));
-        if (cn->result != NOERROR)
+        if (Commands::WriteHiddenBlock(BT_MEZONIN, &pc.BoardMBhb, sizeof(pc.BoardMBhb)) != NOERROR)
         {
             ERMSG("Проблема при записи блока Hidden block мезонинной платы");
             return;

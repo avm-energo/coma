@@ -4,8 +4,8 @@
 #include <QStandardItem>
 #include <QMouseEvent>
 #include "getoscpbdelegate.h"
-#include "s_tablemodel.h"
-#include "s_tableitem.h"
+#include "etablemodel.h"
+#include "etableitem.h"
 
 GetOscPBDelegate::GetOscPBDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {
@@ -14,8 +14,8 @@ GetOscPBDelegate::GetOscPBDelegate(QObject *parent) : QStyledItemDelegate(parent
 
 void GetOscPBDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    const s_tablemodel *model = static_cast<const s_tablemodel*>(index.model());
-/*    s_tableitem *item = model->item(index.row());
+    const ETableModel *model = static_cast<const ETableModel*>(index.model());
+/*    etableitem *item = model->item(index.row());
     QString text = item->text(); */
     QString text = model->data(index, Qt::DisplayRole).toString();
     QRect rect = option.rect;

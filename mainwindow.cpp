@@ -29,37 +29,26 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     QDir dir(pc.HomeDir);
     if (!dir.exists())
         dir.mkpath(".");
-#ifdef COMPORTENABLE
-    cn = new Canal;
-#else
-#ifdef USBENABLE
-    uh = new EUsbHid;
-#endif
-#endif
     S2Config.clear();
     ConfB = ConfM = 0;
     PrepareTimers();
     LoadSettings();
+#ifdef USBENABLE
+    cn = new EUsbHid;
+#else
 #ifdef COMPORTENABLE
+    cn = new EUsbCom;
+#endif
+#endif
     connect(cn,SIGNAL(SetDataSize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
     connect(cn,SIGNAL(SetDataCount(quint32)),this,SLOT(SetProgressBar1(quint32)));
     connect(cn,SIGNAL(SetDataSize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
     connect(cn,SIGNAL(SetDataCount(quint32)),this,SLOT(SetProgressBar1(quint32)));
     connect(cn,SIGNAL(readbytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(cn,SIGNAL(writebytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
-//    connect(cn,SIGNAL(Disconnected()),this,SLOT(ContinueDisconnect()));
-#else
-#ifdef USBENABLE
-    connect(uh,SIGNAL(oscerasesize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
-    connect(uh,SIGNAL(osceraseremaining(quint32)),this,SLOT(SetProgressBar1(quint32)));
-    connect(uh,SIGNAL(incomingdatalength(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
-    connect(uh,SIGNAL(bytesreceived(quint32)),this,SLOT(SetProgressBar1(quint32)));
-    connect(uh,SIGNAL(readbytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
-    connect(uh,SIGNAL(writebytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
-//    connect(uh,SIGNAL(Disconnected()),this,SLOT(ContinueDisconnect()));
-#endif
-#endif
-    connect(this,SIGNAL(Retry()),this,SLOT(Stage1()));
+    connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
+    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
+    connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
 }
 
 QWidget *MainWindow::HthWidget()
@@ -295,14 +284,13 @@ int MainWindow::CheckPassword()
     return NOERROR;
 }
 
-void MainWindow::Stage1()
-{
-}
-
 void MainWindow::Stage1_5()
 {
-    if (!Commands::Connect())
+    if (Commands::Connect() != NOERROR)
+    {
+        MessageBox2::error(this, "Ошибка", "Не удалось установить связь");
         return;
+    }
     SaveSettings();
     Stage2();
 }
@@ -313,6 +301,7 @@ void MainWindow::Stage2()
     {
         MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
         cn->Disconnect();
+        ShowConnectDialog();
         emit Retry();
         return;
     }
@@ -398,14 +387,8 @@ void MainWindow::StartEmul()
     }
     pc.ModuleBsi.MTypeB = (MType & 0xFF00) >> 8;
     pc.ModuleBsi.MTypeM = MType & 0x00FF;
-#ifdef COMPORTENABLE
     if (cn->Connected)
-#else
-#ifdef USBENABLE
-    if (uh->Connected)
-#endif
-#endif
-        Disconnect();
+        DisconnectAndClear();
     pc.ModuleBsi.SerialNum = 0x12345678;
     pc.ModuleBsi.Hth = 0x00;
     pc.Emul = true;
@@ -474,6 +457,47 @@ void MainWindow::SetProgressBar(QString prbnum, quint32 cursize)
     }
 }
 
+void MainWindow::ShowConnectDialog()
+{
+    int i;
+    QDialog *dlg = new QDialog(this);
+    dlg->setMinimumWidth(150);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setObjectName("connectdlg");
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QList<QSerialPortInfo> infolist = QSerialPortInfo::availablePorts();
+    if (infolist.size() == 0)
+    {
+        QLabel *lbl = new QLabel("Ошибка, в системе нет последовательных портов");
+        lyout->addWidget(lbl);
+        pc.ErMsg(USB_NOCOMER);
+    }
+    else
+    {
+        QComboBox *portscb = new QComboBox;
+        connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPortSlot(QString)));
+        QList<QSerialPortInfo> infolist = QSerialPortInfo::availablePorts();
+        QStringListModel *tmpmodel = new QStringListModel;
+        QStringList tmpsl;
+        for (i = 0; i < infolist.size(); i++)
+            tmpsl << infolist.at(i).portName();
+        tmpmodel->setStringList(tmpsl);
+        portscb->setModel(tmpmodel);
+        lyout->addWidget(portscb);
+    }
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QPushButton *pb = new QPushButton("Далее");
+    connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    hlyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));
+    connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
+    hlyout->addWidget(pb);
+    lyout->addLayout(hlyout);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
 void MainWindow::GetAbout()
 {
     QDialog *dlg = new QDialog;
@@ -507,13 +531,7 @@ void MainWindow::GetAbout()
 void MainWindow::Disconnect()
 {
     if (!pc.Emul)
-#ifdef COMPORTENABLE
         cn->Disconnect();
-#else
-#ifdef USBENABLE
-        uh->Disconnect();
-#endif
-#endif
 }
 
 void MainWindow::DisconnectAndClear()
@@ -549,6 +567,11 @@ void MainWindow::MouseMove()
 }
 #endif
 
+void MainWindow::ShowErrorMessageBox(QString message)
+{
+    MessageBox2::error(this, "Ошибка", message);
+}
+
 void MainWindow::resizeEvent(QResizeEvent *e)
 {
     QMainWindow::resizeEvent(e);
@@ -568,4 +591,9 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
     if (e->key() == Qt::Key_Escape)
         pc.Cancelled = true;
     QMainWindow::keyPressEvent(e);
+}
+
+void MainWindow::SetPortSlot(QString port)
+{
+    pc.Port = port;
 }

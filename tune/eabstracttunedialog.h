@@ -1,5 +1,5 @@
-#ifndef ABSTRACTTUNEDIALOG_H
-#define ABSTRACTTUNEDIALOG_H
+#ifndef EABSTRACTTUNEDIALOG_H
+#define EABSTRACTTUNEDIALOG_H
 
 #include <QDialog>
 #include <QCloseEvent>
@@ -18,7 +18,7 @@
 #define TUNE_COUNTEND   120 // столько точек по
 #define TUNE_POINTSPER  500 // столько миллисекунд должно усредняться при регулировке
 
-class AbstractTuneDialog : public QDialog
+class EAbstractTuneDialog : public QDialog
 {
     Q_OBJECT
 public:
@@ -29,7 +29,7 @@ public:
         int BacBlockNum;
     };
 
-    explicit AbstractTuneDialog(QWidget *parent = 0);
+    explicit EAbstractTuneDialog(QWidget *parent = 0);
 
     BacStruct AbsBac;
     QStringList lbls;
@@ -37,7 +37,7 @@ public:
     QTimer *MeasurementTimer;
     QVector<publicclass::DataRec> S2Config;
     quint32 SecondsToEnd15SecondsInterval;
-    QHash <QString, int (AbstractTuneDialog::*)()> pf;
+    QHash <QString, int (EAbstractTuneDialog::*)()> pf;
     quint8 bStep;
 
     virtual void SetupUI() = 0;
@@ -72,7 +72,7 @@ signals:
 public slots:
     void CancelTune();
     void ReadTuneCoefs();
-    void WriteTuneCoefs();
+    bool WriteTuneCoefs();
     void SaveToFile();
     void Good();
     void NoGood();
@@ -93,4 +93,4 @@ protected:
     void keyPressEvent(QKeyEvent *e);
 };
 
-#endif // ABSTRACTTUNEDIALOG_H
+#endif // EABSTRACTTUNEDIALOG_H

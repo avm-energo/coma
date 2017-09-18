@@ -10,14 +10,14 @@
 #include <QCoreApplication>
 #include <QFileDialog>
 #include "tunedialoga1dn.h"
-#include "../canal.h"
+#include "../commands.h"
 #include "../dialogs/keypressdialog.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
 
 TuneDialogA1DN::TuneDialogA1DN(QWidget *parent) :
-    AbstractTuneDialog(parent)
+    EAbstractTuneDialog(parent)
 {
     CA1 = new ConfigA1(S2Config);
     ChA1 = new CheckA1;
@@ -50,40 +50,40 @@ void TuneDialogA1DN::SetLbls()
 void TuneDialogA1DN::SetPf()
 {
     int count = 0;
-    pf[lbls.at(count++)] = &AbstractTuneDialog::CheckPassword; // 7.2.2. Ввод пароля
-    int (AbstractTuneDialog::*func)() = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::ShowScheme); // 7.2.1. Отображение диалога проверки схемы подключения
+    pf[lbls.at(count++)] = &EAbstractTuneDialog::CheckPassword; // 7.2.2. Ввод пароля
+    int (EAbstractTuneDialog::*func)() = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::ShowScheme); // 7.2.1. Отображение диалога проверки схемы подключения
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_2); // 7.2.2. Приём конфигурации от прибора
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_2); // 7.2.2. Приём конфигурации от прибора
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::InputDNData); // Ввод данных по делителю
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::InputDNData); // Ввод данных по делителю
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_1); // 7.2.3. Установка 20%, проверка и сохранение
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_1); // 7.2.3. Установка 20%, проверка и сохранение
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_2); // 7.2.5. Установка 50%, проверка и сохранение
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_2); // 7.2.5. Установка 50%, проверка и сохранение
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_3); // 7.2.5. Установка 80%, проверка и сохранение
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_3); // 7.2.5. Установка 80%, проверка и сохранение
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_4); // 7.2.5. Установка 100%, проверка и сохранение
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_4); // 7.2.5. Установка 100%, проверка и сохранение
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_5); // 7.2.5. Установка 120%, проверка и сохранение
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_5); // 7.2.5. Установка 120%, проверка и сохранение
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_67); // 7.2.6. Запись настроечных коэффициентов и переход на новую конфигурацию
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_67); // 7.2.6. Запись настроечных коэффициентов и переход на новую конфигурацию
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_8); // 7.2.8. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_8); // 7.2.8. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_1); // 7.2.9.1. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_1); // 7.2.9.1. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_2); // 7.2.9.2. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_2); // 7.2.9.2. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_3); // 7.2.9.3. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_3); // 7.2.9.3. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_4); // 7.2.9.4. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_4); // 7.2.9.4. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_5); // 7.2.9.5. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_5); // 7.2.9.5. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_6); // 7.2.9.6. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_6); // 7.2.9.6. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_7); // 7.2.9.7. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_7); // 7.2.9.7. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
 }
 
@@ -255,7 +255,7 @@ void TuneDialogA1DN::SetupUI()
 
 int TuneDialogA1DN::InputDNData()
 {
-    cn->Send(CN_GBac, BT_MEZONIN, &Bac_block, sizeof(Bac));
+    Commands::GetBac(BT_MEZONIN, &Bac_block, sizeof(Bac));
     int row = 0;
     QDialog *dlg = new QDialog(this);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -410,8 +410,7 @@ void TuneDialogA1DN::AcceptDNData()
 {
     WDFunc::LENumber(this, "kdnle", Bac_block.K_DN);
     WDFunc::LENumber(this, "dnfnumle", Bac_block.DNFNum);
-    cn->Send(CN_WBac, BT_MEZONIN, &Bac_block, sizeof(Bac));
-    if (cn->result != NOERROR)
+    if (Commands::WriteBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Ошибка при записи коэффициентов");
         return;
@@ -425,8 +424,7 @@ void TuneDialogA1DN::AcceptDNData()
 
 int TuneDialogA1DN::Start7_2_2()
 {
-    cn->Send(CN_GF, BT_NONE,NULL,0,1,&S2Config);
-    if (cn->result == NOERROR)
+    if (Commands::GetFile(1,&S2Config) == NOERROR)
     {
         Bac_block.U1kDN[0] = 0;
         Bac_block.U2kDN[0] = 0;
@@ -490,8 +488,7 @@ int TuneDialogA1DN::Start7_2_345(int counter)
     emit StartPercents(TUNE_COUNTEND);
     while ((count < TUNE_COUNTEND) && !pc.Cancelled)
     {
-        cn->Send(CN_GBd, 1, &tmpst, sizeof(CheckA1::A1_Bd1));
-        if (cn->result == NOERROR)
+        if (Commands::GetBd(A1_BDA_IN_BN, &tmpst, sizeof(CheckA1::A1_Bd1)) == NOERROR)
             FillBdIn();
         else
         {
@@ -524,8 +521,7 @@ int TuneDialogA1DN::Start7_2_345(int counter)
 
 int TuneDialogA1DN::Start7_2_67()
 {
-    WriteTuneCoefs();
-    if (cn->result != NOERROR)
+    if (!WriteTuneCoefs())
         return GENERALERROR;
     return NOERROR;
 /*    if (cn->result == NOERROR)
@@ -630,8 +626,7 @@ int TuneDialogA1DN::Start7_2_9(int counter)
     emit StartPercents(TUNE_COUNTEND);
     while ((count < TUNE_COUNTEND) && !pc.Cancelled)
     {
-        cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
-        if (cn->result == NOERROR)
+        if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == NOERROR)
             FillBdOut();
         else
         {
@@ -677,8 +672,7 @@ int TuneDialogA1DN::Start7_2_9(int counter)
 int TuneDialogA1DN::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBda, BT_BASE, &ChA1->Bda_block, sizeof(CheckA1::Bda));
-    if (cn->result != NOERROR)
+    if (Commands::GetBda(BT_BASE, &ChA1->Bda_block, sizeof(CheckA1::Bda)) != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda");
         return GENERALERROR;
@@ -700,10 +694,8 @@ int TuneDialogA1DN::ShowScheme()
 
 void TuneDialogA1DN::GetBdAndFillMTT()
 {
-    cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
-    if (cn->result == NOERROR)
+    if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == NOERROR)
         FillBdOut();
-    cn->Send(CN_GBd, A1_BDA_IN_BN, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1));
-    if (cn->result == NOERROR)
+    if (Commands::GetBd(A1_BDA_IN_BN, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1)) == NOERROR)
         FillBdIn();
 }

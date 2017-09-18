@@ -6,13 +6,13 @@
 #include <QHBoxLayout>
 #include <QByteArray>
 #include <QStringList>
-#include "abstracttunedialog.h"
+#include "eabstracttunedialog.h"
 #include "../config/configa1.h"
 #include "../check/checka1.h"
 
 #define TUNEA1LEVELS    8
 
-class TuneDialogA1DN : public AbstractTuneDialog
+class TuneDialogA1DN : public EAbstractTuneDialog
 {
     Q_OBJECT
 

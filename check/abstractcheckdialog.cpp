@@ -16,7 +16,7 @@
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
 #include "../publicclass.h"
-#include "../canal.h"
+#include "../commands.h"
 
 AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) :
     QDialog(parent)
@@ -96,8 +96,7 @@ QWidget *AbstractCheckDialog::BottomUI()
 
 void AbstractCheckDialog::GetIP()
 {
-    cn->Send(CN_IP, BT_NONE, &Bip_block, sizeof(Bip));
-    if (cn->result != NOERROR)
+    if (Commands::GetIP(&Bip_block, sizeof(Bip)) != NOERROR)
         MessageBox2::error(this, "Ошибка", "Ошибка получения данных по IP адресу модуля");
     else
         CheckIP();
@@ -172,10 +171,7 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     {
         if (bdnum < Bd_blocks.size())
         {
-            cn->Send(CN_GBd, bdnum, Bd_blocks.at(bdnum)->block, Bd_blocks.at(bdnum)->blocknum);
-    //        if (bdnum == 3)
-    //            WARNMSG("");
-            if (cn->result != NOERROR)
+            if (Commands::GetBd(bdnum, Bd_blocks.at(bdnum)->block, Bd_blocks.at(bdnum)->blocknum) != NOERROR)
             {
                 WARNMSG("Ошибка при приёме данных");
                 return;

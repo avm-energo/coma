@@ -13,7 +13,7 @@
 #include <QTableView>
 #include <QTime>
 //#include "../canal.h"
-#include "a1dialog.h"
+#include "a1report.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
@@ -99,7 +99,7 @@ int A1Dialog::GetConf()
 //    if (cn->result == NOERROR)
     if (Commands::GetFile(1, &S2Config))
     {
-        if (Commands::GetBac(&Bac_block, sizeof(Bac), BT_MEZONIN) == NOERROR)
+        if (Commands::GetBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) == NOERROR)
 /*        cn->Send(CN_GBac, BT_MEZONIN, &Bac_block, sizeof(Bac));
         if (cn->result == NOERROR) */
         {

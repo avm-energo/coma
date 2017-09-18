@@ -5,7 +5,6 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QVBoxLayout>
-#include "../canal.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/s_tqcombobox.h"
 #include "../widgets/s_tqcheckbox.h"

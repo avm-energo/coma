@@ -9,22 +9,25 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 1.0.59
+VERSION = 1.0.72
 
-QT       += core gui xlsx serialport printsupport
+QT       += core gui serialport printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = pkdn-s_f
+TARGET = pkdn-s_l
+DEFINES += MODULE_TYPEB=0xA1
 DEFINES += PROGNAME='\\"PKDN-S\\"'
-DEFINES += PROGCAPTION='\\"PKDN-Service\\040v1.0.59\\"'
+DEFINES += PROGCAPTION='\\"PKDN-Service-L\\040v1.0.72\\"'
 DEFINES += DEVICETYPE=2 # 1 - module, 2 - pribor, for diagnostic messages
-DEFINES += PROGSIZE=4 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
+DEFINES += PROGSIZE=3 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
+DEFINES += COMPORTENABLE # enable virtual com port driver
+#DEFINES += USBENABLE # enable usb hid driver
 TEMPLATE = app
 
 SOURCES += main.cpp\
         pkdn_s.cpp \
-    ../canal.cpp \
+    ../eusbcom.cpp \
     ../commands.cpp \
     ../log.cpp \
     ../publicclass.cpp \
@@ -57,16 +60,18 @@ SOURCES += main.cpp\
     ../check/checka1.cpp \
     ../dialogs/settingsdialog.cpp \
     ../dialogs/downloaddialog.cpp \
-    ../tune/abstracttunedialog.cpp \
+    ../tune/eabstracttunedialog.cpp \
     ../tune/tunedialoga1dn.cpp \
     ../dialogs/a1dialog.cpp \
     ../report.cpp \
     ../mainwindow.cpp \
     ../dialogs/infodialog.cpp \
-    ../widgets/lineeditfield.cpp
+    ../widgets/lineeditfield.cpp \
+    ../eusbhid.cpp \
+    ../eabstractprotocomchannel.cpp
 
 HEADERS  += pkdn_s.h \
-    ../Canal.h \
+    ../eusbcom.h \
     ../commands.h \
     ../log.h \
     ../publicclass.h \
@@ -99,16 +104,20 @@ HEADERS  += pkdn_s.h \
     ../check/checka1.h \
     ../dialogs/settingsdialog.h \
     ../dialogs/downloaddialog.h \
-    ../tune/abstracttunedialog.h \
+    ../tune/eabstracttunedialog.h \
     ../tune/tunedialoga1dn.h \
     ../dialogs/a1dialog.h \
     ../report.h \
     ../mainwindow.h \
     ../dialogs/infodialog.h \
-    ../widgets/lineeditfield.h
+    ../widgets/lineeditfield.h \
+    ../eusbhid.h \
+    ../eabstractprotocomchannel.h
 
 RESOURCES += \
     pkdn-s.qrc
+
+INCLUDEPATH += $$PWD/../../includes
 
 win32 {
 
@@ -116,12 +125,12 @@ win32 {
 
     !contains(QMAKE_TARGET.arch, x86_64) {
         ## Windows x86 (32bit) specific build here
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../LimeReport-master/win32/release/ -llimereport
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../LimeReport-master/win32/debug/ -llimereport
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
     } else {
         ## Windows x64 (64bit) specific build here
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../LimeReport-master/win64/release/ -llimereport
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../LimeReport-master/win64/debug/ -llimereport
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
     }
 }
-unix: LIBS += -L$$PWD/LimeReport-master/build/5.5.1/win32/debug/lib/ -llimereport
+unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd

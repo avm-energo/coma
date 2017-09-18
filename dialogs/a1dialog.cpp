@@ -91,9 +91,6 @@ void A1Dialog::SetupUI()
     gb->setLayout(glyout);
     lyout->addWidget(gb);
 
-    pb = new QPushButton("Сформировать протокол из файла ПКДН");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(ParsePKDNFile()));
-    lyout->addWidget(pb);
     pb = new QPushButton("Начать поверку делителя");
     pb->setObjectName("StartWorkPb");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(StartWork()));
@@ -105,13 +102,9 @@ void A1Dialog::SetupUI()
 
 int A1Dialog::GetConf()
 {
-//    cn->Send(CN_GF, BT_NONE,NULL,0,1,&S2Config); // заполнение CA1->Bci_block
-//    if (cn->result == NOERROR)
     if (Commands::GetFile(1, &S2Config))
     {
-        if (Commands::GetBac(&Bac_block, sizeof(Bac), BT_MEZONIN) == NOERROR)
-/*        cn->Send(CN_GBac, BT_MEZONIN, &Bac_block, sizeof(Bac));
-        if (cn->result == NOERROR) */
+        if (Commands::GetBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) == NOERROR)
         {
             Bac_block.U1kDN[0] = 0;
             Bac_block.U2kDN[0] = 0;
@@ -141,68 +134,56 @@ void A1Dialog::FillMedian()
 
 void A1Dialog::GenerateReport()
 {
-    try
-    {
-        ResultsStruct Results;
-        Results.Frequency = Results.Humidity = Results.Temp = Results.THD = 0;
-        Results.GOST = Results.SerNum = Results.Time = 0;
-        ConditionDataDialog(Results); // задаём условия поверки
-        DNDialog(pc.PovDev, Results); // вводим данные по делителю
-        // данные в таблицу уже получены или из файла, или в процессе работы
-        // отобразим таблицу
-        ShowTable();
-        QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
-        report = new LimeReport::ReportEngine(this);
-        report->loadFromFile(pc.SystemHomeDir+"a1_"+GOST+".lrxml");
-        report->dataManager()->addModel("maindata", ReportModel, false);
-        // запрос блока Bda_h, чтобы выдать KNI в протокол
+    // данные в таблицу уже получены или из файла, или в процессе работы
+    // отобразим таблицу
+    ShowTable();
+    QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
+    report = new LimeReport::ReportEngine(this);
+    report->loadFromFile(pc.SystemHomeDir+"a1_"+GOST+".lrxml");
+    report->dataManager()->addModel("maindata", ReportModel, false);
+    // запрос блока Bda_h, чтобы выдать KNI в протокол
 //        if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd3)) != NOERROR)
 /*        cn->Send(CN_GBd, A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd3));
-        if (cn->result != NOERROR) */
-            report->dataManager()->setReportVariable("KNI", ChA1->Bda_h.HarmBuf[0][0]);
-        report->dataManager()->setReportVariable("Organization", pc.OrganizationString);
-        QString day = QDateTime::currentDateTime().toString("dd");
-        QString month = QDateTime::currentDateTime().toString("MM");
-        QString yr = QDateTime::currentDateTime().toString("yy");
-        report->dataManager()->setReportVariable("Day", day);
-        report->dataManager()->setReportVariable("Month", month);
-        report->dataManager()->setReportVariable("Yr", yr);
-        report->dataManager()->setReportVariable("DNNamePhase", ReportHeader.DNNamePhase);
-        report->dataManager()->setReportVariable("DNType", ReportHeader.DNType);
-        report->dataManager()->setReportVariable("DNSerNum", ReportHeader.DNSerNum);
-        report->dataManager()->setReportVariable("DNTol", ReportHeader.DNTol);
-        report->dataManager()->setReportVariable("DNU1", ReportHeader.DNU1);
-        report->dataManager()->setReportVariable("DNU2", ReportHeader.DNU2);
-        report->dataManager()->setReportVariable("DNP", ReportHeader.DNP);
-        report->dataManager()->setReportVariable("DNF", ReportHeader.DNF);
-        report->dataManager()->setReportVariable("DNOrganization", ReportHeader.DNOrganization);
-        report->dataManager()->setReportVariable("DNPlace", ReportHeader.DNPlace);
-        report->dataManager()->setReportVariable("DNDevices", ReportHeader.DNDevices);
-        report->dataManager()->setReportVariable("Temp", ReportHeader.Temp);
-        report->dataManager()->setReportVariable("Humidity", ReportHeader.Humidity);
-        report->dataManager()->setReportVariable("Pressure", ReportHeader.Pressure);
-        report->dataManager()->setReportVariable("Voltage", ReportHeader.Voltage);
-        report->dataManager()->setReportVariable("Freq", ReportHeader.Freq);
-        report->dataManager()->setReportVariable("OuterInsp", ReportHeader.OuterInsp);
-        report->dataManager()->setReportVariable("WindingsInsp", ReportHeader.WindingsInsp);
-        report->dataManager()->setReportVariable("PovDateTime", ReportHeader.PovDateTime);
-        QFileDialog *dlg = new QFileDialog;
-        dlg->setAttribute(Qt::WA_DeleteOnClose);
-        dlg->setFileMode(QFileDialog::AnyFile);
-        QString filename = dlg->getSaveFileName(this, "Сохранить файл", pc.HomeDir, "*.pdf", Q_NULLPTR, QFileDialog::DontUseNativeDialog);
-        dlg->close();
-        report->printToPDF(filename);
-    //    report->previewReport();
-    //    report->designReport();
-        delete report;
-    }
-    catch(...)
-    {
-        ERMSG("Report exception!");
-    }
+    if (cn->result != NOERROR) */
+        report->dataManager()->setReportVariable("KNI", ChA1->Bda_h.HarmBuf[0][0]);
+    report->dataManager()->setReportVariable("Organization", pc.OrganizationString);
+    QString day = QDateTime::currentDateTime().toString("dd");
+    QString month = QDateTime::currentDateTime().toString("MM");
+    QString yr = QDateTime::currentDateTime().toString("yy");
+    report->dataManager()->setReportVariable("Day", day);
+    report->dataManager()->setReportVariable("Month", month);
+    report->dataManager()->setReportVariable("Yr", yr);
+    report->dataManager()->setReportVariable("DNNamePhase", ReportHeader.DNNamePhase);
+    report->dataManager()->setReportVariable("DNType", ReportHeader.DNType);
+    report->dataManager()->setReportVariable("DNSerNum", ReportHeader.DNSerNum);
+    report->dataManager()->setReportVariable("DNTol", ReportHeader.DNTol);
+    report->dataManager()->setReportVariable("DNU1", ReportHeader.DNU1);
+    report->dataManager()->setReportVariable("DNU2", ReportHeader.DNU2);
+    report->dataManager()->setReportVariable("DNP", ReportHeader.DNP);
+    report->dataManager()->setReportVariable("DNF", ReportHeader.DNF);
+    report->dataManager()->setReportVariable("DNOrganization", ReportHeader.DNOrganization);
+    report->dataManager()->setReportVariable("DNPlace", ReportHeader.DNPlace);
+    report->dataManager()->setReportVariable("DNDevices", ReportHeader.DNDevices);
+    report->dataManager()->setReportVariable("Temp", ReportHeader.Temp);
+    report->dataManager()->setReportVariable("Humidity", ReportHeader.Humidity);
+    report->dataManager()->setReportVariable("Pressure", ReportHeader.Pressure);
+    report->dataManager()->setReportVariable("Voltage", ReportHeader.Voltage);
+    report->dataManager()->setReportVariable("Freq", ReportHeader.Freq);
+    report->dataManager()->setReportVariable("OuterInsp", ReportHeader.OuterInsp);
+    report->dataManager()->setReportVariable("WindingsInsp", ReportHeader.WindingsInsp);
+    report->dataManager()->setReportVariable("PovDateTime", ReportHeader.PovDateTime);
+    QFileDialog *dlg = new QFileDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setFileMode(QFileDialog::AnyFile);
+    QString filename = dlg->getSaveFileName(this, "Сохранить файл", pc.HomeDir, "*.pdf", Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    dlg->close();
+    report->printToPDF(filename);
+//    report->previewReport();
+//    report->designReport();
+    delete report;
 }
 
-void A1Dialog::ConditionDataDialog(ResultsStruct &Results)
+void A1Dialog::ConditionDataDialog(ResultsStruct &Results, bool Autonomous)
 {
     int row = 0;
     QDialog *dlg = new QDialog(this);
@@ -212,15 +193,25 @@ void A1Dialog::ConditionDataDialog(ResultsStruct &Results)
     lyout->addWidget(WDFunc::NewLBL(this, "Условия поверки"), Qt::AlignCenter);
     glyout->addWidget(WDFunc::NewLBL(this, "Дата поверки"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "PovDateTime", ReportHeader.PovDateTime), row++, 1, 1, 1, Qt::AlignLeft);
-    if ((CA1->Bci_block.DTCanal == 0)  || (ChA1->Bda_out_an.Tamb == FLT_MAX) || (Results.Temp != 0))
+    if ((Autonomous) && ((Results.Temp == 0) && (Results.Temp == FLT_MAX)))
     {
         glyout->addWidget(WDFunc::NewLBL(this, "Температура окружающей среды, °С"), row, 0, 1, 1, Qt::AlignRight);
-        glyout->addWidget(WDFunc::NewLE(this, "Temp", QString::number(Results.Temp,'f',5)), row++, 1, 1, 1, Qt::AlignLeft);
+        glyout->addWidget(WDFunc::NewLE(this, "Temp", ""), row++, 1, 1, 1, Qt::AlignLeft);
     }
-    if ((CA1->Bci_block.DHCanal == 0) || (ChA1->Bda_out_an.Hamb == FLT_MAX) || (Results.Humidity != 0))
+    if ((!Autonomous) && ((CA1->Bci_block.DTCanal == 0) || (ChA1->Bda_out_an.Tamb == FLT_MAX)))
+    {
+        glyout->addWidget(WDFunc::NewLBL(this, "Температура окружающей среды, °С"), row, 0, 1, 1, Qt::AlignRight);
+        glyout->addWidget(WDFunc::NewLE(this, "Temp", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    }
+    if ((Autonomous) && ((Results.Humidity == 0) || (Results.Humidity == FLT_MAX)))
     {
         glyout->addWidget(WDFunc::NewLBL(this, "Влажность воздуха, %"), row, 0, 1, 1, Qt::AlignRight);
-        glyout->addWidget(WDFunc::NewLE(this, "Humidity", QString::number(Results.Humidity,'f',5)), row++, 1, 1, 1, Qt::AlignLeft);
+        glyout->addWidget(WDFunc::NewLE(this, "Humidity", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    }
+    if ((!Autonomous) && ((CA1->Bci_block.DHCanal == 0) || (ChA1->Bda_out_an.Hamb == FLT_MAX)))
+    {
+        glyout->addWidget(WDFunc::NewLBL(this, "Влажность воздуха, %"), row, 0, 1, 1, Qt::AlignRight);
+        glyout->addWidget(WDFunc::NewLE(this, "Humidity", ""), row++, 1, 1, 1, Qt::AlignLeft);
     }
     glyout->addWidget(WDFunc::NewLBL(this, "Атмосферное давление, кПа"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "Pressure", ""), row++, 1, 1, 1, Qt::AlignLeft);
@@ -502,45 +493,39 @@ void A1Dialog::ParsePKDNFile()
         return;
     }
     // заполняем ReportHeader
-    QStringList sl = filename.split("-");
-    if (!sl.isEmpty())
-    {
-        filename = sl.at(0);
-        if (filename.size() < 5)
-        {
-            MessageBox2::error(this, "Ошибка", "Ошибка в имени файла");
-            return;
-        }
-        PovDev.DevSN = filename.right(filename.size()-4);
-    }
-    else
-    {
-        MessageBox2::error(this, "Ошибка", "Ошибка в имени файла");
-        return;
-    }
     PovDev.DevName = pc.PovDev.DevName;
     PovDev.DevPrecision = pc.PovDev.DevPrecision;
     if (ba.size() >= sizeof(ResultsStruct))
     {
         ResultsStruct Results;
         memcpy(&Results, &ba.data()[0], sizeof(ResultsStruct));
+        PovDev.DevSN = Results.DNFNum; // переписываем серийный номер установки для редактора полей протокола
         MainDataStruct MDS;
         int MDSCount;
         if (Results.GOST == 0) // GOST 1983
+        {
             MDSCount = 6;
+            RowCount = GOST1983ROWCOUNT;
+            ColumnCount = GOST1983COLCOUNT;
+            PovType = GOST_1983;
+        }
         else if (Results.GOST == 1) // GOST 23625
+        {
             MDSCount = 18;
+            RowCount = GOST23625ROWCOUNT;
+            ColumnCount = GOST23625COLCOUNT;
+            PovType = GOST_23625;
+        }
         else
         {
             MessageBox2::error(this, "Ошибка", "Ошибочный тип трансформатора в файле");
             return;
         }
         // разберём время
-        QDateTime tn = QDateTime::fromTime_t(Results.Time);
+        quint32 tmpi = Results.Time >> 32;
+        QDateTime tn = QDateTime::fromTime_t(tmpi);
         ReportHeader.PovDateTime = tn.toString("dd-MM-yyyy hh:mm:ss");
         ChA1->Bda_h.HarmBuf[0][0] = Results.THD;
-        RowCount = (Results.GOST == 0) ? GOST1983ROWCOUNT : GOST23625ROWCOUNT;
-        ColumnCount = (Results.GOST == 0) ? GOST1983COLCOUNT : GOST23625COLCOUNT;
         ReportModel->setColumnCount(ColumnCount);
         ViewModel->setColumnCount(ColumnCount);
         ReportModel->setRowCount(RowCount);
@@ -556,13 +541,14 @@ void A1Dialog::ParsePKDNFile()
             }
         }
         int memptr, MDSs;
-        memptr = MDSs = sizeof(MainDataStruct);
+        memptr = sizeof(ResultsStruct);
+        MDSs = sizeof(MainDataStruct);
         Index = 0;
         int endcounter = (PovType == GOST_1983) ? 3 : 9;
         for (int i=0; i<MDSCount; ++i)
         {
             int Pindex = (Index > 4) ? (8 - Index) : Index;
-            if (memptr >= (ba.size() - MDSs))
+            if (memptr > (ba.size() - MDSs))
             {
                 MessageBox2::error(this, "Ошибка", "Неожиданный конец файла");
                 return;
@@ -575,13 +561,14 @@ void A1Dialog::ParsePKDNFile()
             Bac_block.dU_cor[Pindex] = MDS.dUd;
             Bac_block.dPhy_cor[Pindex] = MDS.dPd;
             Dd_Block.dUrms = Dd_Block.Phy = Dd_Block.sPhy = Dd_Block.sU = 0;
+            FillModel();
             ++Index;
             if (Index >= endcounter)
                 Index = 0;
             memptr += MDSs;
         }
         DNDialog(PovDev, Results);
-        ConditionDataDialog(Results);
+        ConditionDataDialog(Results, true);
         GenerateReport();
     }
     else
@@ -635,6 +622,11 @@ void A1Dialog::Accept()
             FillHeaders();
             // запись файла протокола
             ReportHeader.PovDateTime = QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss");
+            ResultsStruct Results;
+            Results.Frequency = Results.Humidity = Results.Temp = Results.THD = 0;
+            Results.GOST = Results.SerNum = Results.Time = 0;
+            ConditionDataDialog(Results); // задаём условия поверки
+            DNDialog(pc.PovDev, Results); // вводим данные по делителю
             GenerateReport();
             // вывод протокола на экран
             // формирование отчёта
@@ -696,11 +688,11 @@ void A1Dialog::SetConditionData()
 {
 //    cn->Send(CN_GBd, A1_BDA_OUT_AN_BN, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
     Commands::GetBd(A1_BDA_OUT_AN_BN, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
-    if ((CA1->Bci_block.DTCanal == 0) || (ChA1->Bda_out_an.Tamb == FLT_MAX))
+    if ((CA1->Bci_block.DTCanal == 0) || (ChA1->Bda_out_an.Tamb == FLT_MAX) || (ReportHeader.Temp != 0))
         WDFunc::LEData(this, "Temp", ReportHeader.Temp);
     else
         ReportHeader.Temp = QString::number(ChA1->Bda_out_an.Tamb, 'f', 5);
-    if ((CA1->Bci_block.DHCanal == 0) || (ChA1->Bda_out_an.Hamb == FLT_MAX))
+    if ((CA1->Bci_block.DHCanal == 0) || (ChA1->Bda_out_an.Hamb == FLT_MAX) || (ReportHeader.Humidity != 0))
         WDFunc::LEData(this, "Humidity", ReportHeader.Humidity);
     else
         ReportHeader.Humidity = QString::number(ChA1->Bda_out_an.Hamb, 'f', 5);

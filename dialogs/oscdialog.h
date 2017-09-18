@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QByteArray>
 
-#include "../widgets/s_tablemodel.h"
+#include "../widgets/etablemodel.h"
 #include "../publicclass.h"
 
 #define MT_HEAD_ID      1000 // ID шапки осциллограммы равен 1000
@@ -24,7 +24,7 @@ public:
 private:
     void SetupUI();
 
-    s_tablemodel *tm;
+    ETableModel *tm;
     QByteArray *OscInfo;
     QString GivenFilename;
     QString OscDateTime;

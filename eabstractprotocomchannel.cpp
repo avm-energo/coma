@@ -14,6 +14,7 @@ EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(pa
     FirstSegment = true;
     OscNum = 0;
     Connected = false;
+    Cancelled = false;
     TTimer = new QTimer(this);
     TTimer->setInterval(CN_TIMEOUT);
     NeedToSend = false;
@@ -167,7 +168,7 @@ void EAbstractProtocomChannel::InitiateSend()
     RDLength = 0;
 }
 
-void EAbstractProtocomChannel::ParseIncomeData(QByteArray &ba)
+void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
 {
     if (pc.WriteUSBLog)
     {
@@ -245,6 +246,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray &ba)
         case CN_IP:
         case CN_OscPg:
         case CN_GBe:
+        case CN_GBo:
         case CN_GBTe:
         case CN_GF:
         {
@@ -292,6 +294,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray &ba)
         case CN_IP:
         case CN_GBe:
         case CN_GBTe:
+        case CN_GBo:
         {
             if (LastBlock)
             {
@@ -534,4 +537,9 @@ void EAbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
         tmpba = tmpba.remove(0, tmpi);
     }
     TTimer->start();
+}
+
+void EAbstractProtocomChannel::SetCancelled()
+{
+    Cancelled = true;
 }

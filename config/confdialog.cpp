@@ -8,7 +8,6 @@
 #include "../widgets/s_tqspinbox.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
-#include "../canal.h"
 #include "../publicclass.h"
 
 ConfDialog::ConfDialog(QVector<publicclass::DataRec> &S2Config, QWidget *parent) : AbstractConfDialog(parent)

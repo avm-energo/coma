@@ -101,7 +101,7 @@ private:
 
 
 private slots:
-    void Stage1();
+    void ShowConnectDialog();
     void Stage1_5();
     void Stage2();
     void SetDefConf();
@@ -122,6 +122,9 @@ private slots:
     void StartEmul();
     void MouseMove();
 #endif
+    void ShowErrorMessageBox(QString message);
+    void SetPortSlot(QString port);
+
 protected:
     void keyPressEvent(QKeyEvent *e);
     void resizeEvent(QResizeEvent *e);

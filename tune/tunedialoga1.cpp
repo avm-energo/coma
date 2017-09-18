@@ -10,14 +10,14 @@
 #include <QCoreApplication>
 #include <QFileDialog>
 #include "tunedialoga1.h"
-#include "../canal.h"
+#include "../commands.h"
 #include "../dialogs/keypressdialog.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
 
 TuneDialogA1::TuneDialogA1(QWidget *parent) :
-    AbstractTuneDialog(parent)
+    EAbstractTuneDialog(parent)
 {
     CA1 = new ConfigA1(S2Config);
     ChA1 = new CheckA1;
@@ -52,44 +52,44 @@ void TuneDialogA1::SetLbls()
 void TuneDialogA1::SetPf()
 {
     int count = 0;
-    pf[lbls.at(count++)] = &AbstractTuneDialog::CheckPassword; // 1. Ввод пароля
-    int (AbstractTuneDialog::*func)() = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::ShowScheme);
+    pf[lbls.at(count++)] = &EAbstractTuneDialog::CheckPassword; // 1. Ввод пароля
+    int (EAbstractTuneDialog::*func)() = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::ShowScheme);
     pf[lbls.at(count++)] = func; // 2. Отображение схемы подключения
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_1); // 6.3.1. Получение настроечных коэффициентов
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_1); // 6.3.1. Получение настроечных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_3_1); // 6.3.3.1. КТС: подтверждение установки 80 Ом
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_3_1); // 6.3.3.1. КТС: подтверждение установки 80 Ом
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_3_2); // 6.3.3.2. КТС: получение блока данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_3_2); // 6.3.3.2. КТС: получение блока данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_3_3); // 6.3.3.3. КТС: подтверждение установки 120 Ом
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_3_3); // 6.3.3.3. КТС: подтверждение установки 120 Ом
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_3_4); // 6.3.3.4. КТС: получение блока данных и расчёт регулировочных коэффициентов
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_3_4); // 6.3.3.4. КТС: получение блока данных и расчёт регулировочных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_4); // 6.3.4. КМТ2: подтверждение установки 4 мА
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_4); // 6.3.4. КМТ2: подтверждение установки 4 мА
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_5_1); // 6.3.5.1. КМТ2: получение блока данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_5_1); // 6.3.5.1. КМТ2: получение блока данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_5_2); // 6.3.5.2. КМТ2: подтверждение установки 20 мА
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_5_2); // 6.3.5.2. КМТ2: подтверждение установки 20 мА
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_5_3); // 6.3.5.3. КМТ2: получение блока данных и расчёт регулировочных коэффициентов
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_5_3); // 6.3.5.3. КМТ2: получение блока данных и расчёт регулировочных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_6); // 6.3.6. КМТ1: подтверждение установки 4 мА
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_6); // 6.3.6. КМТ1: подтверждение установки 4 мА
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_7_1); // 6.3.7.1. КМТ1: получение блока данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_7_1); // 6.3.7.1. КМТ1: получение блока данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_7_2); // 6.3.7.2. КМТ1: подтверждение установки 20 мА
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_7_2); // 6.3.7.2. КМТ1: подтверждение установки 20 мА
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_7_3); // 6.3.7.3. КМТ1: получение блока данных и расчёт регулировочных коэффициентов
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_7_3); // 6.3.7.3. КМТ1: получение блока данных и расчёт регулировочных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_2_1); // 6.3.2.1. КПТ: получение блока данных и усреднение
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_2_1); // 6.3.2.1. КПТ: получение блока данных и усреднение
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_2_2); // 6.3.2.2. КПТ: ввод данных от энергомонитора
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_2_2); // 6.3.2.2. КПТ: ввод данных от энергомонитора
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_2_3); // 6.3.2.3. КПТ: расчёт регулировочных коэффициентов
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_2_3); // 6.3.2.3. КПТ: расчёт регулировочных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_8); // 6.3.8. Запись настроечных коэффициентов и переход на новую конфигурацию
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_8); // 6.3.8. Запись настроечных коэффициентов и переход на новую конфигурацию
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((AbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_9); // 6.3.9. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_9); // 6.3.9. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
 }
 
@@ -171,8 +171,7 @@ void TuneDialogA1::SetupUI()
 
 int TuneDialogA1::Start6_3_1()
 {
-    cn->Send(CN_GBac, BT_BASE, &Bac_block, sizeof(Bac));
-    if (cn->result != NOERROR)
+    if (Commands::GetBac(BT_BASE, &Bac_block, sizeof(Bac)) != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bac");
         return GENERALERROR;
@@ -205,8 +204,7 @@ int TuneDialogA1::Start6_3_2_1()
     emit StartPercents(TUNE_COUNTEND);
     while ((count < TUNE_COUNTEND) && !pc.Cancelled)
     {
-        cn->Send(CN_GBd, 1, &tmpst, sizeof(CheckA1::A1_Bd1));
-        if (cn->result != NOERROR)
+        if (Commands::GetBd(A1_BDA_IN_BN, &tmpst, sizeof(CheckA1::A1_Bd1)) != NOERROR)
         {
             MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
             return GENERALERROR;
@@ -430,8 +428,7 @@ int TuneDialogA1::Start6_3_8()
         return GENERALERROR;
     FillBac();
     SaveToFileEx();
-    WriteTuneCoefs();
-    if (cn->result != NOERROR)
+    if (!WriteTuneCoefs())
         return GENERALERROR;
     return NOERROR;
 }
@@ -555,13 +552,10 @@ int TuneDialogA1::GetExternalData()
 
 void TuneDialogA1::GetBdAndFillMTT()
 {
-    cn->Send(CN_GBd, A1_BDA_IN_BN, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1));
-    if (cn->result == NOERROR)
+    if (Commands::GetBd(A1_BDA_IN_BN, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1)) == NOERROR)
         ChA1->FillBda_in(this);
-    cn->Send(CN_GBd, A1_BDA_IN_AN_BN, &ChA1->Bda_in_an, sizeof(CheckA1::A1_Bd3));
-    if (cn->result == NOERROR)
+    if (Commands::GetBd(A1_BDA_IN_AN_BN, &ChA1->Bda_in_an, sizeof(CheckA1::A1_Bd3)) == NOERROR)
         ChA1->FillBda_in_an(this);
-
 }
 
 // ####################### SLOTS #############################
@@ -569,8 +563,7 @@ void TuneDialogA1::GetBdAndFillMTT()
 int TuneDialogA1::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBda, BT_BASE, &ChA1->Bda_block, sizeof(CheckA1::Bda));
-    if (cn->result != NOERROR)
+    if (Commands::GetBda(BT_BASE, &ChA1->Bda_block, sizeof(CheckA1::Bda)) != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda");
         return GENERALERROR;

@@ -6,21 +6,38 @@
 #include "eusbhid.h"
 #else
 #ifdef COMPORTENABLE
-#include "canal.h"
+#include "eusbcom.h"
 #endif
 #endif
 
 class Commands
 {
+    explicit Commands();
 public:
     static int GetBsi();
     static int GetFile(quint32 filenum, QVector<publicclass::DataRec> *data);
+    static int GetBac(int BacNum, void *ptr, int ptrsize);
+    static int GetBd(int BdNum, void *BdPtr, int BdPtrSize);
+    static int GetBda(int board, void *BdPtr, int BdPtrSize);
+    static int GetBo(void *BoPtr, int BoPtrSize);
+    static int GetIP(void *IpPtr, int IpPtrSize);
+    static int WriteBac(int BacNum, void *BacPtr, int BacPtrSize);
     static int WriteFile(void *ptr, quint32 filenum, QVector<publicclass::DataRec> *data);
-    static int GetBac(void *ptr, int ptrsize, int BacNum);
+    static int WriteHiddenBlock(int board, void *HPtr, int HPtrSize);
+    static int EraseOsc();
     static int Connect();
     static void Disconnect();
-    static int GetBd(int BdNum, void *BdPtr, int BdPtrSize);
     static bool isConnected();
+
+private:
 };
+
+#ifdef USBENABLE
+    extern EUsbHid *cn;
+#else
+#ifdef COMPORTENABLE
+    extern EUsbCom *cn;
+#endif
+#endif
 
 #endif // COMMANDS_H

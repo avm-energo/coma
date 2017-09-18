@@ -30,10 +30,10 @@ bool EUsbCom::Connect()
                 FirstPass = false;
             else
             {
-                MessageBox2::error(this, "Ошибка", "Порт не найден");
+                emit ShowError("Порт не найден");
                 pc.ErMsg(USB_COMER);
             }
-            ShowConnectDialog();
+            emit Retry();
             continue;
         }
         int baud = 115200;
@@ -42,8 +42,8 @@ bool EUsbCom::Connect()
             if (FirstPass)
                 FirstPass = false;
             else
-                MessageBox2::error(this, "Ошибка", "Связь не может быть установлена");
-            ShowConnectDialog();
+                emit ShowError("Связь не может быть установлена");
+            emit Retry();
             continue;
         }
     }
@@ -104,52 +104,12 @@ bool EUsbCom::InitializePort(QSerialPortInfo &pinfo, int baud)
     return true;
 }
 
-void EUsbCom::ShowConnectDialog()
-{
-    int i;
-    QDialog *dlg = new QDialog(this);
-    dlg->setMinimumWidth(150);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setObjectName("connectdlg");
-    QVBoxLayout *lyout = new QVBoxLayout;
-    if (info.size() == 0)
-    {
-        QLabel *lbl = new QLabel("Ошибка, в системе нет последовательных портов");
-        lyout->addWidget(lbl);
-        pc.ErMsg(USB_NOCOMER);
-    }
-    else
-    {
-        QComboBox *portscb = new QComboBox;
-        connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPortSlot(QString)));
-        QList<QSerialPortInfo> info = QSerialPortInfo::availablePorts();
-        QStringListModel *tmpmodel = new QStringListModel;
-        QStringList tmpsl;
-        for (i = 0; i < info.size(); i++)
-            tmpsl << info.at(i).portName();
-        tmpmodel->setStringList(tmpsl);
-        portscb->setModel(tmpmodel);
-        lyout->addWidget(portscb);
-    }
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QPushButton *pb = new QPushButton("Далее");
-    connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb, SIGNAL(clicked(bool)),this, SLOT(SetCancelled()));
-    connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    dlg->setLayout(lyout);
-    dlg->exec();
-}
-
 bool EUsbCom::SetPort(const QString &port, QSerialPortInfo &info)
 {
     QList<QSerialPortInfo> infolist = QSerialPortInfo::availablePorts();
     if (infolist.size() == 0)
     {
-        MessageBox2::error(this, "Ошибка", "В системе нет последовательных портов");
+        emit ShowError("В системе нет последовательных портов");
         pc.ErMsg(USB_NOCOMER);
         return false;
     }
@@ -173,14 +133,4 @@ void EUsbCom::Error(QSerialPort::SerialPortError err)
     pc.ErMsg(ernum);
     if (Connected)
         Disconnect();
-}
-
-void EUsbCom::SetCancelled()
-{
-    Cancelled = true;
-}
-
-void EUsbCom::SetPortSlot(QString port)
-{
-    pc.Port = port;
 }

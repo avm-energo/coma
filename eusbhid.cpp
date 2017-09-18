@@ -3,7 +3,6 @@
 #include <QVBoxLayout>
 #include <QCoreApplication>
 #include <QTime>
-#include "canal.h"
 #include "eusbhid.h"
 #include "widgets/messagebox.h"
 
@@ -38,14 +37,18 @@ bool EUsbHid::Connect()
     return true;
 }
 
-void EUsbHid::Disconnect()
+QByteArray EUsbHid::RawRead(int bytes)
 {
-    Connected = false;
-    ClosePort();
-    emit Disconnected();
+    Q_UNUSED(bytes);
+    return QByteArray();
 }
 
-void EUsbHid::ClosePort()
+qint64 EUsbHid::RawWrite(QByteArray &ba)
+{
+    return UThread->WriteData(ba);
+}
+
+void EUsbHid::RawClose()
 {
     emit StopUThread();
 }
