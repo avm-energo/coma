@@ -56,8 +56,8 @@ SOURCES += main.cpp\
     ../widgets/messagebox.cpp \
     ../widgets/mystackedwidget.cpp \
     ../widgets/mytabwidget.cpp \
-    ../widgets/s_tableitem.cpp \
-    ../widgets/s_tablemodel.cpp \
+    ../widgets/etableitem.cpp \
+    ../widgets/etablemodel.cpp \
     ../widgets/s_tqcheckbox.cpp \
     ../widgets/s_tqcombobox.cpp \
     ../widgets/s_tqspinbox.cpp \
@@ -95,8 +95,8 @@ HEADERS  += pkdn_s.h \
     ../widgets/messagebox.h \
     ../widgets/mystackedwidget.h \
     ../widgets/mytabwidget.h \
-    ../widgets/s_tableitem.h \
-    ../widgets/s_tablemodel.h \
+    ../widgets/etableitem.h \
+    ../widgets/etablemodel.h \
     ../widgets/s_tqcheckbox.h \
     ../widgets/s_tqcombobox.h \
     ../widgets/s_tqspinbox.h \

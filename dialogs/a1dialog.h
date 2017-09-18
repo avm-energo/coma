@@ -9,8 +9,8 @@
 
 #define GOST1983ROWCOUNT    6 // 80, 100, 120 %
 #define GOST23625ROWCOUNT   10 // 20, 50, 80, 100, 120 %
-#define GOST1983COLCOUNT    12 // K, S, 3x(dU, dP), ddU, ddP, sU, sP
-#define GOST23625COLCOUNT   22 // K, S, 5x(dU, dP), dd, dD, 2x(ddU, ddP, sU, sP)
+#define GOST1983COLCOUNT    10 // K, S, 3x(dU, dP), sU, sP
+#define GOST23625COLCOUNT   18 // K, S, 5x(dU, dP), dd, dD, 2x(sU, sP)
 
 #define TUNE_COUNTEND   120 // столько точек по
 #define TUNE_POINTSPER  500 // столько миллисекунд должно усредняться при регулировке
@@ -121,6 +121,8 @@ private:
     int PovType, TempPovType; // тип поверяемого оборудования (по какому ГОСТу)
     QStandardItemModel *ReportModel, *ViewModel; // модель, в которую заносим данные для отчёта
     int RowCount, ColumnCount; // количество рядов и столбцов в модели
+    bool Autonomous; // =1, если производится формирование протокола из файла, =0 - при работе с прибором
+    bool TempFromLE, HumFromLE; // =1, если данные в протокол надо брать из поля ввода, =0 - если из прибора
 
     void SetupUI();
     int GetConf();
@@ -130,8 +132,8 @@ private:
     void ShowProtocol();
     void SaveProtocolToPDF();
     void GenerateReport(); // сгенерировать протокол
-    void ConditionDataDialog(ResultsStruct &Results, bool Autonomous = false); // задание условий поверки
-    void DNDialog(publicclass::PovDevStruct &PovDev, ResultsStruct &Results); // задание параметров ДН(ТН)
+    void ConditionDataDialog(); // задание условий поверки
+    void DNDialog(publicclass::PovDevStruct &PovDev); // задание параметров ДН(ТН)
     void UpdateItemInModel(int row, int column, QVariant value);
     void ShowTable();
     void FillModel();
