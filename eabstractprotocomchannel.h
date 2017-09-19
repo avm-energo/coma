@@ -48,10 +48,6 @@
 
 #define MAXLENGTH   0x300   // максимальный размер блока 768 байт
 
-#define BT_NONE     0
-#define BT_BASE     1
-#define BT_MEZONIN  2
-
 class EAbstractProtocomChannel : public QObject
 {
     Q_OBJECT

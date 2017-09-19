@@ -15,7 +15,7 @@
 #include "checkdialog21.h"
 #include "../widgets/messagebox.h"
 #include "../publicclass.h"
-#include "../canal.h"
+#include "../commands.h"
 
 a_checkdialog::a_checkdialog(QWidget *parent) :
     QDialog(parent)

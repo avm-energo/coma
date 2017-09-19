@@ -86,7 +86,6 @@ signals:
     void Finished();
 
 private:
-    publicclass::Bsi Bsi_block;
     bool ok;
 
     void PrepareTimers();

@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QRegExp>
 #include <QLineEdit>
+#include <QPainter>
 #include <QStringListModel>
 #include "wd_func.h"
 #include "s_tqtableview.h"
@@ -32,16 +33,6 @@ bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue
         le->setValidator(val);
     }
     return true;
-}
-
-LineEditField *WDFunc::NewLEF(QWidget *w, const QString &lename, const QString &letext, const QString &lestyle)
-{
-    LineEditField *le = new LineEditField(w);
-    le->setObjectName(lename);
-    le->setText(letext);
-    if (!lestyle.isEmpty())
-        le->setStyleSheet(lestyle);
-    return le;
 }
 
 bool WDFunc::SetLEColor(QWidget *w, const QString &lename, const QColor &color)
@@ -356,4 +347,29 @@ QVariant WDFunc::FloatValueWithCheck(float value)
     else
         tmps = value;
     return tmps;
+}
+
+QImage *WDFunc::TwoImages(const QString &first, const QString &second)
+{
+    QImage *image = new QImage;
+    QString FirstImage = ":/pic/"+first+".png";
+    QString SecondImage = ":/pic/"+second+".png";
+    QImage FirstI(FirstImage);
+    QImage SecondI(SecondImage);
+    if ((first.isEmpty()) && (!SecondI.isNull()))
+        *image = SecondI;
+    else if ((second.isEmpty()) && (!FirstI.isNull()))
+        *image = FirstI;
+    else if ((FirstI.isNull()) || (SecondI.isNull()))
+        image = new QImage(":/pic/cross.png");
+    else
+    {
+        *image = QImage((FirstI.width()+SecondI.width()), qMax(FirstI.height(), SecondI.height()), FirstI.format());
+        image->fill(0);
+        QPainter p(image);
+        p.drawImage(0, 0, FirstI);
+        p.drawImage(FirstI.width(), 0, SecondI);
+        p.end();
+    }
+    return image;
 }

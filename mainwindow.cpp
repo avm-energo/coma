@@ -203,6 +203,7 @@ void MainWindow::LoadSettings()
     pc.PovDev.DevPrecision = sets->value("PovDevPrecision", "0.05").toString();
     pc.OrganizationString = sets->value("Organization", "Р&К").toString();
     pc.WriteUSBLog = sets->value("WriteLog", "0").toBool();
+    pc.PovNumPoints = sets->value("PovNumPoints", "60").toInt();
 }
 
 void MainWindow::SaveSettings()
@@ -215,6 +216,7 @@ void MainWindow::SaveSettings()
     sets->setValue("PovDevPrecision", pc.PovDev.DevPrecision);
     sets->setValue("Organization", pc.OrganizationString);
     sets->setValue("WriteLog", pc.WriteUSBLog);
+    sets->setValue("PovNumPoints", QString::number(pc.PovNumPoints, 10));
 }
 
 void MainWindow::ClearTW()

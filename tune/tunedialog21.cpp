@@ -11,7 +11,7 @@
 #include "tunedialog21.h"
 #include "../widgets/messagebox.h"
 #include "../publicclass.h"
-#include "../canal.h"
+#include "../commands.h"
 
 TuneDialog21::TuneDialog21(int type, QWidget *parent) :
     QDialog(parent)
@@ -165,8 +165,7 @@ bool TuneDialog21::tune(int Type, int ChNum)
                                      "на всех\nвходах модуля и нажмите OK")\
                 == QMessageBox::Ok)
         {
-            cn->Send(CN_GBda, Canal::BT_NONE, &Bda0, sizeof(Bda));
-            if (cn->result == NOERROR)
+            if (Commands::GetBda(BT_NONE, &Bda0, sizeof(Bda)) == NOERROR)
                 CheckAndShowTune0(ChNum);
             else
             {
@@ -187,8 +186,7 @@ bool TuneDialog21::tune(int Type, int ChNum)
                                      "Переключите входные переключатели на ток,\nустановите ток 20 мА на всех" \
                                      "\nвходах модуля и нажмите OK") == QMessageBox::Ok)
         {
-            cn->Send(CN_GBda, Canal::BT_NONE, &Bda20, sizeof(Bda));
-            if (cn->result == NOERROR)
+            if (Commands::GetBda(BT_NONE, &Bda20, sizeof(Bda)) == NOERROR)
                 CheckAndShowTune20(ChNum);
             else
             {
@@ -210,8 +208,7 @@ bool TuneDialog21::tune(int Type, int ChNum)
                                      "5 В на всех\nвходах модуля и нажмите OK")\
                 == QMessageBox::Ok)
         {
-            cn->Send(CN_GBda, Canal::BT_NONE, &Bda5, sizeof(Bda));
-            if (cn->result == NOERROR)
+            if (Commands::GetBda(BT_NONE, &Bda5, sizeof(Bda)) == NOERROR)
                 CheckAndShowTune5(ChNum);
             else
             {
@@ -425,8 +422,7 @@ void TuneDialog21::RefreshTuneCoefs()
 
 void TuneDialog21::ReadTuneCoefs()
 {
-    cn->Send(CN_GBac, Canal::BT_BASE, &Bac_block, sizeof(Bac_block));
-    if (cn->result == NOERROR)
+    if (Commands::GetBac(BT_BASE, &Bac_block, sizeof(Bac_block)) == NOERROR)
         RefreshTuneFields();
     else
         MessageBox2::error(this, "ошибка", "Ошибка чтения регулировочных параметров из модуля");
@@ -437,8 +433,7 @@ void TuneDialog21::WriteTuneCoefs()
     RefreshTuneCoefs(); // принудительно читаем коэффициенты из полей ввода в структуру
     if (CheckTuneCoefs())
     {
-        cn->Send(CN_WBac, Canal::BT_NONE, &Bac_block, sizeof(Bac_block));
-        if (cn->result == NOERROR)
+        if (Commands::WriteBac(BT_NONE, &Bac_block, sizeof(Bac_block)) == NOERROR)
             MessageBox2::information(this,"Успешно!","Записано успешно!");
         else
         {
@@ -487,7 +482,8 @@ bool TuneDialog21::CheckTuneCoefs()
 
 void TuneDialog21::LoadFromFile()
 {
-    QByteArray ba = pc.LoadFile("Tune files (*.atn)");
+    QByteArray ba;
+    pc.LoadFile(this, "Tune files (*.atn)", ba);
     memcpy(&Bac_block,&(ba.data()[0]),sizeof(Bac_block));
     RefreshTuneFields();
     MessageBox2::information(this, "Внимание", "Загрузка прошла успешно!");
@@ -495,19 +491,21 @@ void TuneDialog21::LoadFromFile()
 
 void TuneDialog21::SaveToFile()
 {
-    int res = pc.SaveFile("Tune files (*.atn)", &Bac_block, sizeof(Bac_block));
+    QByteArray ba(sizeof(Bac_block), 0);
+    memcpy(&(ba.data()[0]), &Bac_block, sizeof(Bac_block));
+    int res = pc.SaveFile(this, "Tune files (*.tn)", "tn", ba, sizeof(Bac_block));
     switch (res)
     {
-    case 0:
+    case NOERROR:
         MessageBox2::information(this, "Внимание", "Записано успешно!");
         break;
-    case 1:
+    case ER_FILEWRITE:
         ERMSG("Ошибка при записи файла!");
         break;
-    case 2:
+    case ER_FILENAMEEMP:
         ERMSG("Пустое имя файла!");
         break;
-    case 3:
+    case ER_FILEOPEN:
         ERMSG("Ошибка открытия файла!");
         break;
     default:

@@ -17,7 +17,6 @@
 #include "confdialog21.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
-#include "../canal.h"
 
 ConfDialog21::ConfDialog21(QVector<publicclass::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
     AbstractConfDialog2x(parent)

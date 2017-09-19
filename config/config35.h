@@ -1,5 +1,5 @@
-#ifndef CONFIG31_H
-#define CONFIG31_H
+#ifndef CONFIG35_H
+#define CONFIG35_H
 
 #define AIN31_NUMCH 8
 
@@ -10,10 +10,10 @@
 #include "config3x.h"
 #include "../publicclass.h"
 
-class Config31
+class Config35
 {
 public:
-    Config31(QVector<publicclass::DataRec> &config, bool BaseBoard=true);
+    Config35(QVector<publicclass::DataRec> &config, bool BaseBoard=true);
 
     struct Bci
     {

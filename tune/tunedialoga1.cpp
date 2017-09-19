@@ -201,8 +201,8 @@ int TuneDialogA1::Start6_3_2_1()
     tmpst2.Frequency = tmpst2.Phy = tmpst2.UefNat_filt[0] = tmpst2.UefNat_filt[1] = \
             tmpst2.Uef_filt[0] = tmpst2.Uef_filt[1] = tmpst2.dU = tmpst2.dUrms = 0;
     int count = 0;
-    emit StartPercents(TUNE_COUNTEND);
-    while ((count < TUNE_COUNTEND) && !pc.Cancelled)
+    emit StartPercents(pc.PovNumPoints);
+    while ((count < pc.PovNumPoints) && !pc.Cancelled)
     {
         if (Commands::GetBd(A1_BDA_IN_BN, &tmpst, sizeof(CheckA1::A1_Bd1)) != NOERROR)
         {

@@ -1,6 +1,6 @@
-#include "Config31.h"
+#include "config35.h"
 
-Config31::Config31(QVector<publicclass::DataRec> &config, bool BaseBoard)
+Config35::Config35(QVector<publicclass::DataRec> &config, bool BaseBoard)
 {
     int Type = (BaseBoard) ? MTB_31 : MTM_31;
     Config3x::SetDInSize(Bci_block.inblk, Type);
@@ -26,7 +26,7 @@ Config31::Config31(QVector<publicclass::DataRec> &config, bool BaseBoard)
     }
 }
 
-void Config31::SetDefConf()
+void Config35::SetDefConf()
 {
     for (int i = 0; i < AIN31_NUMCH; i++)
     {

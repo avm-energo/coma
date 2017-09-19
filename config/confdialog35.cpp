@@ -1,9 +1,9 @@
-#include "confdialog31.h"
-#include "config31.h"
+#include "confdialog35.h"
+#include "config35.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
 
-ConfDialog31::ConfDialog31(QVector<publicclass::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
+ConfDialog35::ConfDialog35(QVector<publicclass::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
     AbstractConfDialog3x(parent)
 {
     this->S2Config = &S2Config;
@@ -14,7 +14,7 @@ ConfDialog31::ConfDialog31(QVector<publicclass::DataRec> &S2Config, bool BaseBoa
     PrereadConf();
 }
 
-void ConfDialog31::Fill()
+void ConfDialog35::Fill()
 {
     int i;
     for (i = 0; i < Params.NumCh; i++)
@@ -48,7 +48,7 @@ void ConfDialog31::Fill()
     CheckConf();
 }
 
-void ConfDialog31::SetPair(int firstch, int secondch)
+void ConfDialog35::SetPair(int firstch, int secondch)
 {
     if ((firstch > Params.NumCh) || (secondch > Params.NumCh) || (firstch < 0) || (secondch < 0))
     {
@@ -59,7 +59,7 @@ void ConfDialog31::SetPair(int firstch, int secondch)
     WDFunc::SetCBIndex(this, "chpaircb."+QString::number(secondch), firstch+1);
 }
 
-bool ConfDialog31::CheckConf()
+void ConfDialog35::CheckConf()
 {
     // проверяем, все ли пары соответствуют друг другу
     bool result = true;
@@ -84,10 +84,9 @@ bool ConfDialog31::CheckConf()
         else
             InPairs.append(second); // если всё хорошо с парой, добавить в список пропускаемых проверкой
     }
-    return result;
 }
 
-void ConfDialog31::SetChTypData(int value)
+void ConfDialog35::SetChTypData(int value)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());
     if (tmpi == GENERALERROR)
@@ -121,7 +120,7 @@ void ConfDialog31::SetChTypData(int value)
     }
 }
 
-void ConfDialog31::SetDly(double dly)
+void ConfDialog35::SetDly(double dly)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());
     if (tmpi == GENERALERROR)
@@ -130,7 +129,7 @@ void ConfDialog31::SetDly(double dly)
         C31->Bci_block.inblk.dly_time[tmpi] = static_cast<quint32>(dly)*4;
 }
 
-void ConfDialog31::SetPair(int ch)
+void ConfDialog35::SetPair(int ch)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());
     if (tmpi == GENERALERROR)

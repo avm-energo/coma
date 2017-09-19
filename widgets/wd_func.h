@@ -33,7 +33,6 @@ public:
         levalue = le->text().toDouble();
         return true;
     }
-    static LineEditField *NewLEF(QWidget *w, const QString &lename, const QString &letext="", const QString &lestyle="");
     static bool AppendTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool SetTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool TEData(QWidget *w, const QString &tename, QString &tevalue);
@@ -78,6 +77,7 @@ public:
     static void SetVisible(QWidget *w, const QString &wname, bool visible);
     static QString StringValueWithCheck(float value);
     static QVariant FloatValueWithCheck(float value);
+    static QImage *TwoImages(const QString &first, const QString &second);
 };
 
 #endif // WD_FUNC

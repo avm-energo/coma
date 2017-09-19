@@ -2,7 +2,7 @@
 #define TUNEDIALOG21_H
 
 #include <QDialog>
-#include "../canal.h"
+#include "../publicclass.h"
 
 #define ATUNENUMPOINTS  64 // количество точек, по которым выдаются значения в блоке Bda
 
@@ -17,7 +17,7 @@ class TuneDialog21 : public QDialog
 {
     Q_OBJECT
 public:
-    explicit TuneDialog21(int type = Canal::BT_BASE, QWidget *parent = 0);
+    explicit TuneDialog21(int type = BT_BASE, QWidget *parent = 0);
 
 signals:
 

@@ -16,7 +16,6 @@
 #include "abstractconfdialog3x.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
-#include "../canal.h"
 
 AbstractConfDialog3x::AbstractConfDialog3x(QWidget *parent) :
     AbstractConfDialog(parent)

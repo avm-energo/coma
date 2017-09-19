@@ -12,7 +12,6 @@
 #define GOST1983COLCOUNT    10 // K, S, 3x(dU, dP), sU, sP
 #define GOST23625COLCOUNT   18 // K, S, 5x(dU, dP), dd, dD, 2x(sU, sP)
 
-#define TUNE_COUNTEND   120 // столько точек по
 #define TUNE_POINTSPER  500 // столько миллисекунд должно усредняться при регулировке
 
 class A1Dialog : public QDialog

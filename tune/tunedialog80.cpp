@@ -9,11 +9,11 @@
 #include <QCoreApplication>
 #include "tunedialog80.h"
 #include "../publicclass.h"
-#include "../canal.h"
 #include "../config/config80.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
+#include "../commands.h"
 
 TuneDialog80::TuneDialog80(QVector<publicclass::DataRec> &S2Config, QWidget *parent) :
     QDialog(parent)
@@ -340,8 +340,7 @@ int TuneDialog80::Start7_3_1()
     if (!DefConfig) // если есть настроечные параметры в памяти модуля
     {
         // получение настроечных коэффициентов от модуля
-        cn->Send(CN_GBac, BT_NONE, &Bac_block, sizeof(Bac_block));
-        if (cn->result != NOERROR)
+        if (Commands::GetBac(BT_NONE, &Bac_block, sizeof(Bac_block)) != NOERROR)
         {
             MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");
             return GENERALERROR;
@@ -364,12 +363,10 @@ int TuneDialog80::Start7_3_1_1()
     {
         // запись настроечных коэффициентов в модуль
         SetDefCoefs();
-        cn->Send(CN_WBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
-        if (cn->result == NOERROR)
+        if (Commands::WriteBac(BT_NONE, &Bac_block, sizeof(Bac)) == NOERROR)
         {
             // получение настроечных коэффициентов от модуля
-            cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
-            if (cn->result != NOERROR)
+            if (Commands::GetBac(BT_NONE, &Bac_block, sizeof(Bac)) != NOERROR)
             {
                 WARNMSG("Ошибка при приёме данных");
                 return false;
@@ -423,7 +420,7 @@ int TuneDialog80::Start7_3_2()
 
 int TuneDialog80::Start7_3_3()
 {
-    GED_Type = TD_GED_D;
+/*    GED_Type = TD_GED_D;
     GetExternalData();
     Bac_newblock.DPsi[0] = 0;
     int k = (pc.ModuleBsi.MTypeM == MTM_82) ? 3 : 6;
@@ -433,17 +430,17 @@ int TuneDialog80::Start7_3_3()
     {
         for (int i=3; i<6; ++i)
             Bac_newblock.DPsi[i] += RealData.d[i-3];
-    }
+    } */
     return NOERROR;
 }
 
 int TuneDialog80::Start7_3_4()
 {
-    GED_Type = TD_GED_F;
+/*    GED_Type = TD_GED_F;
     if (!(GetExternalData() == GENERALERROR))
         Bac_newblock.K_freq = Bac_block.K_freq*RealData.f[0]/Bda_block.Frequency;
     else
-        return GENERALERROR;
+        return GENERALERROR; */
     return NOERROR;
 }
 
@@ -454,15 +451,15 @@ int TuneDialog80::Start7_3_5()
 
 int TuneDialog80::Start7_3_6_2()
 {
-    double fTmp = Bda_block.IUefNat_filt[0] / IUefNat_filt_old[0] + Bda_block.IUefNat_filt[3] / IUefNat_filt_old[3];
+/*    double fTmp = Bda_block.IUefNat_filt[0] / IUefNat_filt_old[0] + Bda_block.IUefNat_filt[3] / IUefNat_filt_old[3];
     fTmp /= 2;
-    Bac_newblock.Kinter = (fTmp * (1 + 6 * Bac_block.Kinter) - 1) / 6;
+    Bac_newblock.Kinter = (fTmp * (1 + 6 * Bac_block.Kinter) - 1) / 6; */
     return NOERROR;
 }
 
 int TuneDialog80::Start7_3_7_1()
 {
-    if (pc.ModuleBsi.MTypeM != MTM_81)
+/*    if (pc.ModuleBsi.MTypeM != MTM_81)
         return ER_RESEMPTY;
     GED_Type = TD_GED_U;
     if (GetExternalData() == GENERALERROR)
@@ -473,7 +470,7 @@ int TuneDialog80::Start7_3_7_1()
     {
         Bac_newblock.KmU[i] = Bac_block.KmU[i] * RealData.u[i] / Bda_block.IUefNat_filt[i];
         Bac_newblock.KmU[i+3] = Bac_block.KmU[i+3] * RealData.u[i] / Bda_block.IUefNat_filt[i+3];
-    }
+    } */
     return NOERROR;
 }
 
@@ -486,10 +483,9 @@ int TuneDialog80::Start7_3_7_2()
     for (int i=0; i<6; i++)
         C80->Bci_block.inom2[i] = I1;
     // послать новые коэффициенты по току в конфигурацию
-    cn->Send(CN_WF, Canal::BT_NONE, &C80->Bci_block, sizeof(Config80::Bci), 2, S2Config);
-    WaitNSeconds(2);
-    if (cn->result != NOERROR)
+    if (Commands::WriteFile(&C80->Bci_block, 2, S2Config) != NOERROR)
         return GENERALERROR;
+    WaitNSeconds(2);
     return NOERROR;
 }
 
@@ -513,7 +509,7 @@ int TuneDialog80::Start7_3_7_4()
 
 int TuneDialog80::Start7_3_7_5()
 {
-    if (pc.ModuleBsi.MTypeM == MTM_81)
+/*    if (pc.ModuleBsi.MTypeM == MTM_81)
         return ER_RESEMPTY;
     for (int i=0; i<3; ++i)
     {
@@ -522,7 +518,7 @@ int TuneDialog80::Start7_3_7_5()
         else
             Bac_newblock.KmI_1[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_block.IUefNat_filt[i];
         Bac_newblock.KmI_1[i+3] = Bac_block.KmI_1[i+3] * RealData.i[i] / Bda_block.IUefNat_filt[i+3];
-    }
+    } */
     return NOERROR;
 }
 
@@ -532,10 +528,9 @@ int TuneDialog80::Start7_3_7_6()
         return ER_RESEMPTY;
     for (int i=0; i<6; ++i)
         C80->Bci_block.inom2[i] = I5;
-    cn->Send(CN_WF, Canal::BT_NONE, &C80->Bci_block, sizeof(Config80::Bci), 2, S2Config);
-    WaitNSeconds(2);
-    if (cn->result != NOERROR)
+    if (Commands::WriteFile(&C80->Bci_block, 2, S2Config) != NOERROR)
         return GENERALERROR;
+    WaitNSeconds(2);
     return NOERROR;
 }
 
@@ -557,22 +552,19 @@ int TuneDialog80::Start7_3_7_8()
 
 int TuneDialog80::Start7_3_7_10()
 {
-    for (int i=0; i<3; ++i)
+/*    for (int i=0; i<3; ++i)
     {
         if (pc.ModuleBsi.MTypeM == MTM_81)
             Bac_newblock.KmI_5[i] = Bac_block.KmI_5[i] * RealData.i[i] / Bda_block.IUefNat_filt[i];
         Bac_newblock.KmI_5[i+3] = Bac_block.KmI_5[i+3] * RealData.i[i] / Bda_block.IUefNat_filt[i+3];
-    }
+    } */
     return NOERROR;
 }
 
 int TuneDialog80::Start7_3_8_1()
 {
     // 1. Отправляем настроечные параметры в модуль
-    cn->Send(CN_WBac, Canal::BT_NONE, &Bac_newblock, sizeof(Bac));
-    if (cn->result != NOERROR)
-        return GENERALERROR;
-    return NOERROR;
+    return Commands::WriteBac(BT_NONE, &Bac_newblock, sizeof(Bac));
 }
 
 int TuneDialog80::Start7_3_8_2()
@@ -600,8 +592,7 @@ int TuneDialog80::Start7_3_9()
     if (MessageBox2::question(this,"Вопрос","Очистить память осциллограмм?"))
     {
         pc.PrbMessage = "Стёрто записей: ";
-        cn->Send(CN_OscEr);
-        if (cn->result == NOERROR)
+        if (Commands::EraseOsc() == NOERROR)
             MessageBox2::information(this, "Внимание", "Стёрто успешно");
         else
             ERMSG("Ошибка при стирании");
@@ -611,9 +602,9 @@ int TuneDialog80::Start7_3_9()
 
 int TuneDialog80::SaveUeff()
 {
-    // сохраняем значения по п. 7.3.2 для выполнения п. 7.3.6
+/*    // сохраняем значения по п. 7.3.2 для выполнения п. 7.3.6
     for (int i=0; i<6; i++)
-        IUefNat_filt_old[i] = Bda_block.IUefNat_filt[i];
+        IUefNat_filt_old[i] = Bda_block.IUefNat_filt[i]; */
     return NOERROR;
 }
 
@@ -778,8 +769,7 @@ int TuneDialog80::GetExternalData()
 
 int TuneDialog80::SaveWorkConfig()
 {
-    cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,S2Config);
-    if (cn->result == NOERROR)
+    if (Commands::GetFile(1,S2Config) == NOERROR)
         memcpy(&Bci_block_work,&C80->Bci_block,sizeof(Config80::Bci));
     else
         return GENERALERROR;
@@ -790,8 +780,7 @@ int TuneDialog80::LoadWorkConfig()
 {
     // пишем ранее запомненный конфигурационный блок
     memcpy(&C80->Bci_block,&Bci_block_work,sizeof(Config80::Bci));
-    cn->Send(CN_WF, Canal::BT_NONE, &C80->Bci_block, sizeof(Config80::Bci), 2, S2Config);
-    if (cn->result != NOERROR)
+    if (Commands::WriteFile(&C80->Bci_block, 2, S2Config) != NOERROR)
         return GENERALERROR;
     return NOERROR;
 }
@@ -1017,16 +1006,14 @@ int TuneDialog80::CheckAnalogValues(double u, double i, double p, double q, doub
 
 void TuneDialog80::ReadTuneCoefs()
 {
-    cn->Send(CN_GBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
-    if (cn->result == NOERROR)
+    if (Commands::GetBac(BT_NONE, &Bac_block, sizeof(Bac)) == NOERROR)
         WriteTuneCoefsToGUI();
 }
 
 void TuneDialog80::WriteTuneCoefs()
 {
     ReadTuneCoefsFromGUI();
-    cn->Send(CN_WBac, Canal::BT_NONE, &Bac_block, sizeof(Bac));
-    if (cn->result == NOERROR)
+    if (Commands::WriteBac(BT_NONE, &Bac_block, sizeof(Bac)) == NOERROR)
         MessageBox2::information(this, "Внимание", "Записано успешно!");
 }
 
@@ -1093,13 +1080,12 @@ void TuneDialog80::ReadTuneCoefsFromGUI()
 
 void TuneDialog80::ReadAnalogMeasurements()
 {
-    // получение текущих аналоговых сигналов от модуля
-    cn->Send(CN_GBd, Canal::BT_NONE, &Bda_block, sizeof(Bda_block));
-    if (cn->result != NOERROR)
+/*    // получение текущих аналоговых сигналов от модуля
+    if (Commands::GetBd(BT_NONE, &Bda_block, sizeof(Bda_block)) != NOERROR)
     {
         MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");
         return;
-    }
+    }  */
 }
 
 void TuneDialog80::StartMip()
@@ -1311,7 +1297,8 @@ void TuneDialog80::CancelTune()
 
 void TuneDialog80::LoadFromFile()
 {
-    QByteArray ba = pc.LoadFile("Tune files (*.etn)");
+    QByteArray ba;
+    pc.LoadFile(this, "Tune files (*.etn)", ba);
     memcpy(&Bac_block,&(ba.data()[0]),sizeof(Bac_block));
     WriteTuneCoefsToGUI();
     MessageBox2::information(this, "Внимание", "Загрузка прошла успешно!");
@@ -1320,7 +1307,9 @@ void TuneDialog80::LoadFromFile()
 void TuneDialog80::SaveToFile()
 {
     ReadTuneCoefsFromGUI();
-    int res = pc.SaveFile("Tune files (*.etn)", &Bac_block, sizeof(Bac_block));
+    QByteArray ba(sizeof(Bac_block), 0);
+    memcpy(&(ba.data()[0]), &Bac_block, sizeof(Bac_block));
+    int res = pc.SaveFile(this, "Tune files (*.tn)", "tn", ba, sizeof(Bac_block));
     switch (res)
     {
     case NOERROR:

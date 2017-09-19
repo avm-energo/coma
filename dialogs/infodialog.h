@@ -27,8 +27,6 @@ private:
         map[MTB_80] = "АВТУК";
         return map;
     }
-
-
 };
 
 #endif // INFODIALOG_H

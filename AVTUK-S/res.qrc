@@ -34,5 +34,14 @@
         <file>../pic/8x.png</file>
         <file>../pic/85.png</file>
         <file>../pic/tunea1.png</file>
+        <file>../pic/21.png</file>
+        <file>../pic/22.png</file>
+        <file>../pic/31.png</file>
+        <file>../pic/35.png</file>
+        <file>../pic/81.png</file>
+        <file>../pic/82.png</file>
+        <file>../pic/83.png</file>
+        <file>../pic/84.png</file>
+        <file>../pic/00.png</file>
     </qresource>
 </RCC>

@@ -485,8 +485,8 @@ int TuneDialogA1DN::Start7_2_345(int counter)
     CheckA1::A1_Bd1 tmpst, tmpst2;
     tmpst2.Phy = tmpst2.Uef_filt[0] = tmpst2.Uef_filt[1] = 0;
     int count = 0;
-    emit StartPercents(TUNE_COUNTEND);
-    while ((count < TUNE_COUNTEND) && !pc.Cancelled)
+    emit StartPercents(pc.PovNumPoints);
+    while ((count < pc.PovNumPoints) && !pc.Cancelled)
     {
         if (Commands::GetBd(A1_BDA_IN_BN, &tmpst, sizeof(CheckA1::A1_Bd1)) == NOERROR)
             FillBdIn();
@@ -623,8 +623,8 @@ int TuneDialogA1DN::Start7_2_9(int counter)
     tmpst2.dUrms = tmpst2.Phy = tmpst2.sPhy = tmpst2.sU = 0;
     QList<float> sPhy, sU;
     int count = 0;
-    emit StartPercents(TUNE_COUNTEND);
-    while ((count < TUNE_COUNTEND) && !pc.Cancelled)
+    emit StartPercents(pc.PovNumPoints);
+    while ((count < pc.PovNumPoints) && !pc.Cancelled)
     {
         if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == NOERROR)
             FillBdOut();

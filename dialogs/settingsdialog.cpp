@@ -66,11 +66,13 @@ void SettingsDialog::SetupUI()
         hlyout->addWidget(le);
         vlyout->addLayout(hlyout);
     }
-#if PROGSIZE >= PROGSIZE_FULL
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewChB(this, "writelogchb", "Запись обмена данными в файл"));
     vlyout->addLayout(hlyout);
-#endif
+    hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBLT(this, "Количество точек усреднения для поверки"), 0);
+    hlyout->addWidget(WDFunc::NewSPB(this, "povnumpoints", 1, 65535, 1, 0), 1);
+    vlyout->addLayout(hlyout);
     pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),this,SLOT(AcceptSettings()));
     vlyout->addWidget(pb);
@@ -87,6 +89,7 @@ void SettingsDialog::Fill()
     QString restring = "^[0-2]{0,1}[0-9]{1,2}{\\.[0-2]{0,1}[0-9]{1,2}}{3}$";
     WDFunc::SetLEData(this,"miple",pc.MIPIP,restring);
     WDFunc::SetChBData(this, "writelogchb", pc.WriteUSBLog);
+    WDFunc::SetSPBData(this, "povnumpoints", pc.PovNumPoints);
 }
 
 void SettingsDialog::AcceptSettings()
@@ -98,6 +101,7 @@ void SettingsDialog::AcceptSettings()
     WDFunc::LEData(this, "povdevprecision", pc.PovDev.DevPrecision);
     WDFunc::LEData(this, "miple", pc.MIPIP);
     WDFunc::ChBData(this, "writelogchb", pc.WriteUSBLog);
+    WDFunc::SPBData(this, "povnumpoints", pc.PovNumPoints);
     this->close();
 }
 

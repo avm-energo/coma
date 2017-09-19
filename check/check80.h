@@ -83,8 +83,8 @@ public:
     QWidget *Bd_5W(int num, QWidget *parent);
     QWidget *Bd_6W(QWidget *parent);
     QWidget *Bd_7W(int num, QWidget *parent);
-    QWidget *Bd_8W(QWidget *parent);
-    QWidget *Bd_9W(QWidget *parent);
+    QWidget *Bd_8W(int num, QWidget *parent);
+    QWidget *Bd_9W(int num, QWidget *parent);
     QWidget *Bd_10W(QWidget *parent);
     void FillBd2W(const QString &begin, Bd2 &Bd, QWidget *parent);
     void FillBd4W(const QString &begin, Bd4 &Bd, QWidget *parent);

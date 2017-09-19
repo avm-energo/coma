@@ -15,7 +15,6 @@
 #define TD_FREQ 50 // Hz
 #define MEASTIMERINT    1000 // интервал проведения измерений - 1 с
 
-#define TUNE_COUNTEND   120 // столько точек по
 #define TUNE_POINTSPER  500 // столько миллисекунд должно усредняться при регулировке
 
 class EAbstractTuneDialog : public QDialog

@@ -16,7 +16,6 @@
 #include "../widgets/wd_func.h"
 #include "../publicclass.h"
 #include "../config/config.h"
-#include "../canal.h"
 
 CheckDialog80::CheckDialog80(QWidget *parent) : AbstractCheckDialog(parent)
 {
@@ -105,9 +104,9 @@ QWidget *CheckDialog80::BdUI(int bdnum)
     case 11:
     case 12:
     case 13:
-        return C80->Bd_7W(this);
-    case 8:
-        return C80->Bd_8W(this);
+//        return C80->Bd_7W(this);
+
+//        return C80->Bd_8W(this);
     default:
         return new QWidget;
     }

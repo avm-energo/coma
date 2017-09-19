@@ -1,5 +1,5 @@
-#ifndef CONFDIALOG31_H
-#define CONFDIALOG31_H
+#ifndef CONFDIALOG35_H
+#define CONFDIALOG35_H
 
 #include <QDialog>
 
@@ -12,18 +12,18 @@
 #define DBCI_PAIR       16
 #define DCONF_NUM       17
 
-class ConfDialog31 : public AbstractConfDialog3x
+class ConfDialog35 : public AbstractConfDialog3x
 {
     Q_OBJECT
 public:
-    explicit ConfDialog31(QVector<publicclass::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = 0);
+    explicit ConfDialog35(QVector<publicclass::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = 0);
 
 private:
     publicclass::DataRec Config[DCONF_NUM];
     Config31 *C31;
 
     void Fill();
-    bool CheckConf();
+    void CheckConf();
     void SetPair(int firstch, int secondch);
 
 signals:
@@ -37,4 +37,4 @@ private slots:
     void SetPair(int); // задать парность каналов
 };
 
-#endif // CONFDIALOG31_H
+#endif // CONFDIALOG35_H

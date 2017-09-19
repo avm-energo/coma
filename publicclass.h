@@ -175,6 +175,10 @@
 
 #define SLEEPINT    20
 
+#define BT_NONE     0
+#define BT_BASE     1
+#define BT_MEZONIN  2
+
 #define LOGFILE     "coma.log"
 
 #include <QStringList>
@@ -293,6 +297,7 @@ public:
     QString PrbMessage;
     QVector<DataRec> Config;
     bool Cancelled;
+    int PovNumPoints;
 
     QList<ermsg> ErMsgPool;
 
