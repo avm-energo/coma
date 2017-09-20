@@ -1,10 +1,10 @@
 #ifndef CHECKDIALOGA1_H
 #define CHECKDIALOGA1_H
 
-#include "abstractcheckdialog.h"
+#include "eabstractcheckdialog.h"
 #include "checka1.h"
 
-class CheckDialogA1 : public AbstractCheckDialog
+class CheckDialogA1 : public EAbstractCheckDialog
 {
     Q_OBJECT
 public:

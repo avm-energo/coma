@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include "publicclass.h"
 #include "../config/confdialog.h"
+#include "../tune/eabstracttunedialog.h"
+#include "../check/eabstractcheckdialog.h"
 
 #define C_TE_MAXSIZE    100
 
@@ -19,6 +21,9 @@ public:
     QRect SWGeometry;
     QVector<publicclass::DataRec> S2Config;
     AbstractConfDialog *ConfB, *ConfM;
+    EAbstractCheckDialog *CheckB, *CheckM;
+    EAbstractTuneDialog *TuneB, *TuneM;
+
     QWidget *Parent;
 
     static QStringList Hth()

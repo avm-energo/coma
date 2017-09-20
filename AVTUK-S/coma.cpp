@@ -37,8 +37,10 @@
 #include "../config/confdialog21.h"
 #include "../config/confdialog80.h"
 #include "../config/confdialoga1.h"
-#include "../dialogs/fwupdialog.h"
+#include "../dialogs/a1dialog.h"
 #include "../dialogs/downloaddialog.h"
+#include "../dialogs/fwupdialog.h"
+#include "../dialogs/infodialog.h"
 #include "../dialogs/oscdialog.h"
 #include "../dialogs/hiddendialog.h"
 #include "../dialogs/settingsdialog.h"
@@ -84,6 +86,27 @@ void Coma::Emul2x()
     menu->popup(QCursor::pos());
 }
 
+void Coma::Emul8x()
+{
+    QMenu *menu = new QMenu(this);
+    for (int i=81; i<=85; ++i)
+    {
+        QString tmps = QString::number(i);
+        QAction *act = new QAction(this);
+        act->setText(tmps);
+        act->setObjectName("80"+tmps);
+        act->setIcon(QIcon(QPixmap::fromImage(*(WDFunc::TwoImages(tmps, "00")))));
+        connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
+        menu->addAction(act);
+    }
+    menu->popup(QCursor::pos());
+}
+
+void Coma::EmulA1()
+{
+
+}
+
 void Coma::SetupUI()
 {
     setWindowTitle(PROGCAPTION);
@@ -109,6 +132,7 @@ void Coma::SetupUI()
     connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndClear()));
     tb->addAction(act);
     tb->addSeparator();
+#if PROGSIZE >= PROGSIZE_FULL
     act = new QAction(this);
     act->setToolTip("Эмуляция 21");
     act->setIcon(QIcon(":/pic/2x.png"));
@@ -122,9 +146,13 @@ void Coma::SetupUI()
     act = new QAction(this);
     act->setToolTip("Эмуляция A1");
     act->setIcon(QIcon(":/pic/a1.png"));
-    connect(act,SIGNAL(triggered()),this,SLOT(EmulA1()));
+    quint16 MType = MTB_A1;
+    MType = MType << 8 & MTM_00;
+    act->setObjectName(QString::number(MType, 16)); // для слота StartEmul
+    connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
     tb->addAction(act);
     tb->addSeparator();
+#endif
     act = new QAction(this);
     act->setToolTip("Настройки");
     act->setIcon(QIcon(":/pic/settings.png"));
@@ -136,90 +164,23 @@ void Coma::SetupUI()
     connect(act,SIGNAL(triggered(bool)),this,SLOT(ShowErrorDialog()));
     tb->addAction(act);
     hlyout->addWidget(tb);
-
-    for (int i = (MAXERRORFLAGNUM-1); i >= 0; i--)
-    {
-        QLabel *lbl = new QLabel(Hth().at(i));
-        lbl->setObjectName("hth"+QString::number(i));
-        lbl->setToolTip(HthToolTip().at(i));
-        lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);" \
-                           "background: 0px; margin: 0px; spacing: 0; padding: 0px;}");
-        hlyout->addWidget(lbl);
-    }
+    hlyout->addWidget(HthWidget());
     lyout->addLayout(hlyout);
-
-    QHBoxLayout *inlyout = new QHBoxLayout;
-    MyTabWidget *MainTW = new MyTabWidget;
-    MainTW->setObjectName("maintw");
-    MainTW->setTabPosition(QTabWidget::West);
-    inlyout->addWidget(MainTW, 60);
-    MainTW->hide();
-
-    lyout->addLayout(inlyout, 90);
-    lyout->addStretch(500);
-
-    QFrame *line = new QFrame;
-    line->setLineWidth(0);
-    line->setMidLineWidth(1);
-    line->setFrameStyle(QFrame::Sunken | QFrame::HLine);
-    lyout->addWidget(line);
-    inlyout = new QHBoxLayout;
-    QLabel *lbl = new QLabel;
-    lbl->setObjectName("prblbl");
-    inlyout->addWidget(lbl);
-    QProgressBar *prb = new QProgressBar;
-    prb->setObjectName("prbprb");
-    prb->setOrientation(Qt::Horizontal);
-    prb->setMinimumWidth(500);
-    inlyout->addWidget(prb);
-    lyout->addLayout(inlyout);
-
+    lyout->addWidget(Least());
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
-
-/*    if (pc.result)
-        MessageBox2::information(this, "Внимание", "Не найден файл с сообщениями об ошибках!"); */
-
-    QWidget *SlideWidget = new QWidget(this);
-    SlideWidget->setObjectName("slidew");
-    SlideWidget->setStyleSheet("QWidget {background-color: rgba(110,234,145,255);}");
-    QVBoxLayout *slyout = new QVBoxLayout;
-
-    WDFunc::AddLabelAndLineedit(slyout, "Модуль АВТУК-", "mtypele");
-    WDFunc::AddLabelAndLineedit(slyout, "Аппаратная версия базовой платы:", "hwverble");
-    WDFunc::AddLabelAndLineedit(slyout, "Аппаратная версия мезонинной платы:", "hwvermle");
-    WDFunc::AddLabelAndLineedit(slyout, "Серийный номер модуля:", "snle");
-    WDFunc::AddLabelAndLineedit(slyout, "Серийный номер базовой платы:", "snble");
-    WDFunc::AddLabelAndLineedit(slyout, "Серийный номер мезонинной платы:", "snmle");
-    WDFunc::AddLabelAndLineedit(slyout, "Версия ПО:", "fwverle");
-    WDFunc::AddLabelAndLineedit(slyout, "КС конфигурации:", "cfcrcle");
-    WDFunc::AddLabelAndLineedit(slyout, "Последний сброс:", "rstle");
-    WDFunc::AddLabelAndLineedit(slyout, "Количество сбросов:", "rstcountle");
-    WDFunc::AddLabelAndLineedit(slyout, "ИД процессора:", "cpuidle", true);
-    QTextEdit *MainTE = new QTextEdit;
-    MainTE->setObjectName("mainte");
-    slyout->addWidget(MainTE, 40);
-
-    SlideWidget->setLayout(slyout);
-    SlideWidget->setMinimumWidth(250);
-    SlideWidget->hide();
-    SWGeometry = SlideWidget->geometry();
-    SWHide = true;
+#if PROGSIZE >= PROGSIZE_LARGE
+        SetSlideWidget();
+#endif
 }
 
 void Coma::AddActionsToMenuBar(QMenuBar *menubar)
 {
     QMenu *menu = new QMenu;
-    menu->setTitle("Запуск...");
+    menu->setTitle("Автономная работа");
     QAction *act = new QAction(this);
-    act->setText("...в режиме А");
-    act->setIcon(QIcon(":/pic/a.png"));
-    connect(act,SIGNAL(triggered()),this,SLOT(EmulA()));
-    menu->addAction(act);
-    act = new QAction(this);
-    act->setIcon(QIcon(":/pic/e.png"));
-    act->setText("...в режиме Э");
-    connect(act,SIGNAL(triggered()),this,SLOT(EmulE()));
+    act->setText("Протокол из файла (A1)");
+    connect(act,SIGNAL(triggered()),this,SLOT(ProtocolFromFile()));
     menu->addAction(act);
     menubar->addMenu(menu);
 }
@@ -230,19 +191,26 @@ void Coma::Stage3()
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
         return;
-/*    DownDialog = new downloaddialog;
-    FwUpDialog = new fwupdialog;
-    OscDialog = new oscdialog; */
-/*    switch(pc.ModuleBsi.MTypeB)
+
+    InfoDialog *idlg = new InfoDialog;
+    connect(this,SIGNAL(BsiRefresh()),idlg,SLOT(FillBsi()));
+    connect(this,SIGNAL(ClearBsi()),idlg,SLOT(ClearBsi()));
+    MainTW->addTab(idlg, "Информация");
+
+    if (pc.ModuleBsi.MTypeB < 0xA0) // диапазон модулей АВ-ТУК
+    {
+        ConfDialog *MainConfDialog = new ConfDialog(S2Config);
+        MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
+    }
+    switch(pc.ModuleBsi.MTypeB)
     {
     case MTB_21:
     {
-        MainConfDialog = new ConfDialog(S2Config);
-        MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
-        ConfDialog21 *Dialog21 = new ConfDialog21(S2Config, true);
-        ConfB = Dialog21;
+        ConfDialog21 *CD21 = new ConfDialog21(S2Config, true);
+        ConfB = CD21;
         TuneDialog21 *TD21 = new TuneDialog21;
-        TuneD = TD21;
+        TuneB = TD21;
+        Chec
         break;
     }
     case MTB_80:
@@ -313,7 +281,13 @@ void Coma::Stage3()
     if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
         pc.ErMsg(ER_NOCONF);
     if (pc.ModuleBsi.Hth & HTH_REGPARS) // нет коэффициентов
-        pc.ErMsg(ER_NOTUNECOEF); */
+        pc.ErMsg(ER_NOTUNECOEF);
     MainTW->repaint();
     MainTW->show();
+}
+
+void Coma::ProtocolFromFile()
+{
+    A1Dialog *dlg = new A1Dialog(false);
+    delete dlg;
 }

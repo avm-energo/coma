@@ -21,6 +21,9 @@ public slots:
 
 private slots:
     void Emul2x();
+    void Emul8x();
+    void EmulA1();
+    void ProtocolFromFile();
 
 private:
     void SetupUI();

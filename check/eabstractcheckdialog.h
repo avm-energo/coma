@@ -11,8 +11,8 @@
  *      - в конце конструктора не забыть вызвать SetupUI()
  * */
 
-#ifndef ABSTRACTCHECKDIALOG_H
-#define ABSTRACTCHECKDIALOG_H
+#ifndef EABSTRACTCHECKDIALOG_H
+#define EABSTRACTCHECKDIALOG_H
 
 #include <QDialog>
 #include <QTimer>
@@ -20,11 +20,11 @@
 
 #define ANMEASINT   2000 // default timer interval to check analog values
 
-class AbstractCheckDialog : public QDialog
+class EAbstractCheckDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit AbstractCheckDialog(QWidget *parent = 0);
+    explicit EAbstractCheckDialog(QWidget *parent = 0);
     virtual void SetupUI()=0;
 
     virtual void RefreshAnalogValues(int bdnum) = 0; // обновление полей в GUI из полученного соответствующего Bd_block
@@ -76,4 +76,4 @@ private slots:
     void TimerTimeout();
 };
 
-#endif // ABSTRACTCHECKDIALOG_H
+#endif // EABSTRACTCHECKDIALOG_H

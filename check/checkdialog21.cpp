@@ -17,19 +17,9 @@
 #include "../publicclass.h"
 #include "../commands.h"
 
-a_checkdialog::a_checkdialog(QWidget *parent) :
-    QDialog(parent)
+CheckDialog21::CheckDialog21(QWidget *parent) : EAbstractCheckDialog(parent)
 {
-/*    BdMeasurementsActive = BdaMeasurementsActive = false;
-    timer = new QTimer;
-    timer->setObjectName("timer");
-    timer->setInterval(1000); // per / 2
-    OddTimeout = true;
-    XlsxWriting = false;
-    xlsx = 0;
-    ElapsedTimeCounter = 0;
-    connect(timer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));
-    timer->start();
+    BdMeasurementsActive = BdaMeasurementsActive = false;
     setAttribute(Qt::WA_DeleteOnClose);
     for (int i = 0; i < 16; i++)
     {
@@ -41,10 +31,10 @@ a_checkdialog::a_checkdialog(QWidget *parent) :
         Bd_block.ainx[i] = 0;
     }
     Bd_block.at = 0;
-    SetupUI();*/
+    SetupUI();
 }
 
-void a_checkdialog::SetupUI()
+void CheckDialog21::SetupUI()
 {
     /*int i;
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
@@ -63,143 +53,6 @@ void a_checkdialog::SetupUI()
     CheckTW->addTab(cp2,"Текущие измерения");
     CheckTW->addTab(cp3,"Прочее");
 
-    QFrame *line = new QFrame;
-    line->setFrameShape(QFrame::HLine);
-    line->setFrameShadow(QFrame::Sunken);
-    lbl = new QLabel("Тек. измерения, приведённые ко входу (ток)");
-    gb2lyout->addWidget(lbl,0);
-    gb2lyout->addWidget(line,1);
-    gb1lyout->addLayout(gb2lyout);
-    gb2lyout = new QHBoxLayout;
-    for (i = 0; i < 16; i++)
-    {
-        lbl = new QLabel(QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
-        lbl = new QLabel("");
-        lbl->setObjectName("bdinI"+QString::number(i));
-        lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 1);
-        if ((i>0)&&!((i+1)%6))
-        {
-            gb1lyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
-        }
-    }
-    if (gb2lyout->count())
-        gb1lyout->addLayout(gb2lyout);
-    gb2lyout = new QHBoxLayout;
-    line = new QFrame;
-    line->setFrameShape(QFrame::HLine);
-    line->setFrameShadow(QFrame::Sunken);
-    lbl = new QLabel("Тек. измерения, приведённые ко входу (напряжения)");
-    gb2lyout->addWidget(lbl,0);
-    gb2lyout->addWidget(line,1);
-    gb1lyout->addLayout(gb2lyout);
-    gb2lyout = new QHBoxLayout;
-    for (i = 0; i < 16; i++)
-    {
-        lbl = new QLabel(QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
-        lbl = new QLabel("");
-        lbl->setObjectName("bdinU"+QString::number(i));
-        lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 1);
-        if ((i>0)&&!((i+1)%6))
-        {
-            gb1lyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
-        }
-    }
-    if (gb2lyout->count())
-        gb1lyout->addLayout(gb2lyout);
-    gb2lyout = new QHBoxLayout;
-    line = new QFrame;
-    line->setFrameShape(QFrame::HLine);
-    line->setFrameShadow(QFrame::Sunken);
-    lbl = new QLabel("Тек. измерения в инженерных единицах");
-    gb2lyout->addWidget(lbl,0);
-    gb2lyout->addWidget(line,1);
-    gb1lyout->addLayout(gb2lyout);
-    gb2lyout = new QHBoxLayout;
-
-    for (i = 0; i < 16; i++)
-    {
-        lbl = new QLabel(QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
-        lbl = new QLabel("");
-        lbl->setObjectName("bdain"+QString::number(i));
-        lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 1);
-        if ((i>0)&&!((i+1)%6))
-        {
-            gb1lyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
-        }
-    }
-    if (gb2lyout->count())
-        gb1lyout->addLayout(gb2lyout);
-    gb2lyout = new QHBoxLayout;
-    line = new QFrame;
-    line->setFrameShape(QFrame::HLine);
-    line->setFrameShadow(QFrame::Sunken);
-    lbl = new QLabel("Текущие минимумы по каналам");
-    gb2lyout->addWidget(lbl,0);
-    gb2lyout->addWidget(line,1);
-    gb1lyout->addLayout(gb2lyout);
-    gb2lyout = new QHBoxLayout;
-
-    for (i = 0; i < 16; i++)
-    {
-        lbl = new QLabel(QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
-        lbl = new QLabel("");
-        lbl->setObjectName("bdainn"+QString::number(i));
-        lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 1);
-        if ((i>0)&&!((i+1)%6))
-        {
-            gb1lyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
-        }
-    }
-    if (gb2lyout->count())
-        gb1lyout->addLayout(gb2lyout);
-    gb2lyout = new QHBoxLayout;
-    line = new QFrame;
-    line->setFrameShape(QFrame::HLine);
-    line->setFrameShadow(QFrame::Sunken);
-    lbl = new QLabel("Текущие максимумы по каналам");
-    gb2lyout->addWidget(lbl,0);
-    gb2lyout->addWidget(line,1);
-    gb1lyout->addLayout(gb2lyout);
-    gb2lyout = new QHBoxLayout;
-
-    for (i = 0; i < 16; i++)
-    {
-        lbl = new QLabel(QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
-        lbl = new QLabel("");
-        lbl->setObjectName("bdainx"+QString::number(i));
-        lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 1);
-        if ((i>0)&&!((i+1)%6))
-        {
-            gb1lyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
-        }
-    }
-    if (gb2lyout->count())
-        gb1lyout->addLayout(gb2lyout);
-    lyout->addLayout(gb1lyout);
-    lbl = new QLabel("Температура в кристалле:");
-    gb2lyout = new QHBoxLayout;
-    gb1lyout = new QVBoxLayout;
-    gb2lyout->addWidget(lbl);
-    lbl = new QLabel("");
-    lbl->setStyleSheet(ValuesFormat);
-    lbl->setObjectName("bdat");
-    gb2lyout->addWidget(lbl);
-    gb1lyout->addLayout(gb2lyout);
     QPushButton *pb = new QPushButton("Запустить измерения");
     pb->setObjectName("pbmeasurements");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartMeasurements()));
@@ -217,27 +70,6 @@ void a_checkdialog::SetupUI()
     gb1lyout->addWidget(pb);
     lyout->addLayout(gb1lyout);
     cp2->setLayout(lyout);
-
-    lyout = new QVBoxLayout;
-    QGroupBox *gb = new QGroupBox("Данные без подстройки");
-    gb1lyout = new QVBoxLayout;
-    gb2lyout = new QHBoxLayout;
-    for (i = 0; i < 16; i++)
-    {
-        lbl = new QLabel(QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
-        lbl = new QLabel("");
-        lbl->setObjectName("bda"+QString::number(i));
-        lbl->setStyleSheet(ValuesFormat);
-        gb2lyout->addWidget(lbl, 5);
-        if ((i>1)&&!((i+1)%6))
-        {
-            gb1lyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
-        }
-    }
-    if (gb2lyout->count())
-        gb1lyout->addLayout(gb2lyout);
 
     gb2lyout = new QHBoxLayout;
     pb = new QPushButton("Запустить измерения");
@@ -359,7 +191,7 @@ void a_checkdialog::SetupUI()
     setLayout(lyout); */
 }
 
-void a_checkdialog::StartMeasurementsWithFile()
+void CheckDialog21::StartMeasurementsWithFile()
 {
 /*    aconf = new config_21;
     // читаем текущую конфигурацию
@@ -403,130 +235,36 @@ void a_checkdialog::StartMeasurementsWithFile()
     StartMeasurements(); */
 }
 
-void a_checkdialog::StartMeasurements()
-{
-    BdMeasurementsActive = true;
-}
-
-void a_checkdialog::StartBdaMeasurements()
+void CheckDialog21::StartBdaMeasurements()
 {
     BdaMeasurementsActive = true;
 }
 
-void a_checkdialog::StopMeasurements()
-{
-    if (XlsxWriting)
-    {
-        if (xlsx)
-        {
-            xlsx->save();
-            MessageBox2::information(this, "Внимание", "Файл создан успешно");
-            delete xlsx;
-        }
-        QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
-        if (pb != 0)
-        {
-            pb->setEnabled(true);
-            pb->setText("Запустить измерения с записью в файл");
-        }
-        pb = this->findChild<QPushButton *>("pbmeasurements");
-        if (pb != 0)
-            pb->setEnabled(true);
-        XlsxWriting = false;
-    }
-    BdMeasurementsActive = false;
-}
-
-void a_checkdialog::StopBdaMeasurements()
+void CheckDialog21::StopBdaMeasurements()
 {
     BdaMeasurementsActive = false;
 }
 
-void a_checkdialog::RefreshBd()
+void CheckDialog21::RefreshBd()
 {
-/*    int i;
-    for (i = 0; i < 16; i++)
-    {
-        QLabel *lbl = this->findChild<QLabel *>("bdinI"+QString::number(i));
-        if (lbl != 0)
-            lbl->setText(QString::number(Bd_block.inI[i],'f',5));
-        lbl = this->findChild<QLabel *>("bdinU"+QString::number(i));
-        if (lbl != 0)
-            lbl->setText(QString::number(Bd_block.inU[i],'f',5));
-        lbl = this->findChild<QLabel *>("bdain"+QString::number(i));
-        if (lbl != 0)
-            lbl->setText(QString::number(Bd_block.ain[i],'f',5));
-        lbl = this->findChild<QLabel *>("bdainn"+QString::number(i));
-        if (lbl != 0)
-            lbl->setText(QString::number(Bd_block.ainn[i],'f',5));
-        lbl = this->findChild<QLabel *>("bdainx"+QString::number(i));
-        if (lbl != 0)
-            lbl->setText(QString::number(Bd_block.ainx[i],'f',5));
-    }
-    QLabel *lbl = this->findChild<QLabel *>("bdat");
-    if (lbl != 0)
-        lbl->setText(QString::number(Bd_block.at,'f',5)); */
 }
 
-void a_checkdialog::RefreshBda()
-{
-    int i;
-    for (i = 0; i < 16; i++)
-    {
-        QLabel *lbl = this->findChild<QLabel *>("bda"+QString::number(i));
-        if (lbl != 0)
-            lbl->setText(QString::number(Bda_block.sin[i]/ACHECKNUMPOINTS,16));
-    }
-}
-
-void a_checkdialog::SetTimerPeriod()
-{
-    bool TimerIsActive = false;
-    if (timer->isActive())
-        TimerIsActive = true;
-    bool ok;
-    int per = sender()->objectName().toInt(&ok);
-    if (!ok)
-        return;
-    timer->stop();
-    timer->setInterval(per / 2); // /2, т.к. измерения проводятся за два раза - Bd и Bda
-    if (TimerIsActive)
-        timer->start();
-}
-
-void a_checkdialog::CheckLEDOn()
+void CheckDialog21::CheckLEDOn()
 {
 //    cn->Send(CN_Cln);
 }
 
-void a_checkdialog::CheckLEDOff()
+void CheckDialog21::CheckLEDOff()
 {
 //    cn->Send(CN_Clf);
 }
 
-void a_checkdialog::Check1PPS()
+void CheckDialog21::Check1PPS()
 {
 
 }
 
-void a_checkdialog::GetIP()
-{
-    cn->Send(CN_IP, BT_NONE, &Bip_block, sizeof(Bip));
-    if (cn->result == NOERROR)
-        CheckIP();
-}
-
-void a_checkdialog::CheckIP()
-{
-    QLabel *lbl = this->findChild<QLabel *>("ipl");
-    if (lbl == 0)
-        return;
-    for (int i = 0; i < 4; i++)
-        lbl->text().append(QString::number(Bip_block.ip[i], 16) + ".");
-    lbl->text().chop(1);
-}
-
-void a_checkdialog::TimerTimeout()
+void CheckDialog21::TimerTimeout()
 {
 /*    if ((BdMeasurementsActive) && (OddTimeout)) // текущие измерения проводим на первом проходе таймера
     {

@@ -17,8 +17,6 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 
 void AbstractConfDialog::ReadConf()
 {
-//    cn->Send(CN_GF,BT_NONE,NULL,0,1,S2Config);
-//    if (cn->result == NOERROR)
     int res;
     if ((res = Commands::GetFile(1, S2Config)) == NOERROR)
         emit NewConfLoaded();
@@ -49,8 +47,6 @@ void AbstractConfDialog::WriteConf()
         dlg->exec();
         return;
     }
-//    cn->Send(CN_WF, BT_NONE, NULL, 0, 1, S2Config);
-//    if (cn->result == NOERROR)
     if (Commands::WriteFile(NULL, 1, S2Config) == NOERROR)
     {
         emit BsiIsNeedToBeAcquiredAndChecked();

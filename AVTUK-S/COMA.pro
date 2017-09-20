@@ -14,7 +14,7 @@ VERSION = 2.0.73
 QT       += core gui network serialport printsupport
 
 TARGET = avtuk-s_f
-DEFINES += MODULE_TYPEB=0xA1
+#DEFINES += MODULE_TYPEB=0xA1
 DEFINES += PROGNAME='\\"AVTUK-S\\"'
 DEFINES += PROGCAPTION='\\"AVTUK-Service-F\\040v2.0.73\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
@@ -33,7 +33,6 @@ SOURCES += \
     ../log.cpp \
     ../mainwindow.cpp \
     ../publicclass.cpp \
-    ../check/abstractcheckdialog.cpp \
     ../check/check80.cpp \
     ../check/checka1.cpp \
     ../check/checkdialog21.cpp \
@@ -84,7 +83,8 @@ SOURCES += \
     ../widgets/s_tqspinbox.cpp \
     ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp
+    ../widgets/wd_func.cpp \
+    ../check/eabstractcheckdialog.cpp
 
 HEADERS  += \
     coma.h \
@@ -95,7 +95,6 @@ HEADERS  += \
     ../log.h \
     ../mainwindow.h \
     ../publicclass.h \
-    ../check/abstractcheckdialog.h \
     ../check/check80.h \
     ../check/checka1.h \
     ../check/checkdialog21.h \
@@ -146,7 +145,8 @@ HEADERS  += \
     ../widgets/s_tqspinbox.h \
     ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h
+    ../widgets/wd_func.h \
+    ../check/eabstractcheckdialog.h
 
 RESOURCES += \
     res.qrc

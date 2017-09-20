@@ -12,13 +12,13 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QLineEdit>
-#include "abstractcheckdialog.h"
+#include "eabstractcheckDialog.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
 #include "../publicclass.h"
 #include "../commands.h"
 
-AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) :
+EAbstractCheckDialog::EAbstractCheckDialog(QWidget *parent) :
     QDialog(parent)
 {
 //    Parent = parent;
@@ -33,12 +33,12 @@ AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) :
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void AbstractCheckDialog::Check1PPS()
+void EAbstractCheckDialog::Check1PPS()
 {
 
 }
 
-void AbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize)
+void EAbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize)
 {
     BdBlocks *bdblock = new BdBlocks;
     while (bdnum >= Bd_blocks.size())
@@ -48,7 +48,7 @@ void AbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize)
     Bd_blocks.replace(bdnum, bdblock);
 }
 
-QWidget *AbstractCheckDialog::BottomUI()
+QWidget *EAbstractCheckDialog::BottomUI()
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -94,7 +94,7 @@ QWidget *AbstractCheckDialog::BottomUI()
     return w;
 }
 
-void AbstractCheckDialog::GetIP()
+void EAbstractCheckDialog::GetIP()
 {
     if (Commands::GetIP(&Bip_block, sizeof(Bip)) != NOERROR)
         MessageBox2::error(this, "Ошибка", "Ошибка получения данных по IP адресу модуля");
@@ -102,7 +102,7 @@ void AbstractCheckDialog::GetIP()
         CheckIP();
 }
 
-void AbstractCheckDialog::CheckIP()
+void EAbstractCheckDialog::CheckIP()
 {
     QLabel *lbl = this->findChild<QLabel *>("ipl");
     if (lbl == 0)
@@ -112,7 +112,7 @@ void AbstractCheckDialog::CheckIP()
     lbl->text().chop(1);
 }
 
-void AbstractCheckDialog::StartAnalogMeasurementsToFile()
+void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
 {
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -151,7 +151,7 @@ void AbstractCheckDialog::StartAnalogMeasurementsToFile()
     StartAnalogMeasurements();
 }
 
-void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
+void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 {
 //    int Interval = ElapsedTimeCounter->elapsed();
 //    qDebug() << ElapsedTimeCounter->elapsed();
@@ -192,13 +192,13 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     WRow++;
 }
 
-void AbstractCheckDialog::StartAnalogMeasurements()
+void EAbstractCheckDialog::StartAnalogMeasurements()
 {
 //    CurBdNum = 1;
     timer->start();
 }
 
-void AbstractCheckDialog::StopAnalogMeasurements()
+void EAbstractCheckDialog::StopAnalogMeasurements()
 {
     if (XlsxWriting)
     {
@@ -222,7 +222,7 @@ void AbstractCheckDialog::StopAnalogMeasurements()
     timer->stop();
 }
 
-void AbstractCheckDialog::SetTimerPeriod()
+void EAbstractCheckDialog::SetTimerPeriod()
 {
     bool TimerIsActive = false;
     if (timer->isActive())
@@ -237,7 +237,7 @@ void AbstractCheckDialog::SetTimerPeriod()
         timer->start();
 }
 
-void AbstractCheckDialog::TimerTimeout()
+void EAbstractCheckDialog::TimerTimeout()
 {
     ReadAnalogMeasurementsAndWriteToFile();
 }
