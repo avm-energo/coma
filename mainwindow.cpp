@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 #else
 #ifdef COMPORTENABLE
     cn = new EUsbCom;
+    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
 #endif
 #endif
     connect(cn,SIGNAL(SetDataSize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
@@ -47,7 +48,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(cn,SIGNAL(readbytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(cn,SIGNAL(writebytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
-    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
     connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
 }
 
@@ -301,10 +301,15 @@ void MainWindow::Stage2()
 {
     if (Commands::GetBsi() != NOERROR)
     {
-        MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
-        cn->Disconnect();
-        ShowConnectDialog();
-        emit Retry();
+        if (MessageBox2::question(this, "Ошибка", \
+                                  "Блок Bsi не может быть прочитан, связь потеряна, повторить?") == 1) // Yes
+        {
+            cn->Disconnect();
+#ifdef COMPORTENABLE
+            ShowConnectDialog();
+#endif
+            emit Retry();
+        }
         return;
     }
     pc.MType = ((pc.ModuleBsi.MTypeB & 0x000000FF) << 8) | (pc.ModuleBsi.MTypeM & 0x000000FF);

@@ -66,7 +66,6 @@ void oscdialog::ProcessOscInfo()
     QList<QStringList> lsl;
     tm->ClearModel();
     tm->addColumn("#");
-    tm->addColumn("Канал");
     tm->addColumn("Дата/Время");
     tm->addColumn("Скачать");
     QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -83,7 +82,7 @@ void oscdialog::ProcessOscInfo()
         timens += static_cast<quint8>(OscInfo->at(i+13))*256;
         timens += static_cast<quint8>(OscInfo->at(i+14))*65536;
         timens += static_cast<quint8>(OscInfo->at(i+15))*16777216;
-        QDateTime tme = QDateTime::fromTime_t(unixtime, Qt::UTC);
+        QDateTime tme = QDateTime::fromTime_t(unixtime, Qt::LocalTime);
         QString ms = QString::number((timens/1000000));
         QString mcs = QString::number(((timens-ms.toInt()*1000000)/1000));
         QString ns = QString::number(timens-ms.toInt()*1000000-mcs.toInt()*1000);
