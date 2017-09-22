@@ -55,12 +55,13 @@ public:
     explicit EAbstractProtocomChannel(QObject *parent = 0);
     ~EAbstractProtocomChannel();
 
-    int result;
+    qint32 result;
     int baud;
     int ernum;
     bool FirstRun;
     bool NeedToSend, Busy, NeedToFinish;
     bool Connected, Cancelled;
+    quint32 RDSize;
 
     virtual bool Connect() = 0;
     virtual QByteArray RawRead(int bytes) = 0;

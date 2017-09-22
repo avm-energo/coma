@@ -29,6 +29,8 @@ private:
     QString GivenFilename;
     QString OscDateTime;
     publicclass::DataRec Config[32];
+    quint32 OscInfoSize; // размер считанного буфера с информацией об осциллограммах
+    bool SizeIsSet; // флаг, свидетельствующий о том, что длина ещё не установлена
 
     typedef struct
     {
@@ -48,6 +50,7 @@ private slots:
     void EndExtractOsc();
     void GetOsc(QModelIndex);
     void EraseOsc();
+    void SetOscBufSize(quint32 size);
 };
 
 #endif // OSCDIALOG_H

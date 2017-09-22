@@ -35,7 +35,7 @@ SOURCES += main.cpp\
     ../mainwindow.cpp \
     ../publicclass.cpp \
     ../report.cpp \
-    ../check/abstractcheckdialog.cpp \
+    ../check/eabstractcheckdialog.cpp \
     ../check/checka1.cpp \
     ../check/checkdialoga1.cpp \
     ../config/abstractconfdialog.cpp \
@@ -79,7 +79,7 @@ HEADERS  += pkdn_s.h \
     ../mainwindow.h \
     ../publicclass.h \
     ../report.h \
-    ../check/abstractcheckdialog.h \
+    ../check/eabstractcheckdialog.h \
     ../check/checka1.h \
     ../check/checkdialoga1.h \
     ../config/abstractconfdialog.h \

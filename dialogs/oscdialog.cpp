@@ -56,21 +56,21 @@ void oscdialog::GetOscInfo()
         delete OscInfo;
     OscInfo = new QByteArray;
     OscInfo->resize(MAXOSCBUFSIZE);
-    if (Commands::GetBo(&(OscInfo->data()[0]), MAXOSCBUFSIZE) == NOERROR)
+    SizeIsSet = false;
+    if ((OscInfoSize = Commands::GetBo(&(OscInfo->data()[0]), MAXOSCBUFSIZE)) > 0)
         ProcessOscInfo();
 }
 
 void oscdialog::ProcessOscInfo()
 {
-/*    QList<QStringList> lsl;
+    QList<QStringList> lsl;
     tm->ClearModel();
     tm->addColumn("#");
     tm->addColumn("Канал");
     tm->addColumn("Дата/Время");
     tm->addColumn("Скачать");
-    quint32 OscInfoSize = cn->RDSize;
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    QStringList Num, Cha, Tim, Dwld;
+    QStringList Num, Tim, Dwld;
     for (quint32 i = 0; i < OscInfoSize; i+= 16)
     {
         quint32 oscnum = static_cast<quint8>(OscInfo->at(i));
@@ -83,7 +83,7 @@ void oscdialog::ProcessOscInfo()
         timens += static_cast<quint8>(OscInfo->at(i+13))*256;
         timens += static_cast<quint8>(OscInfo->at(i+14))*65536;
         timens += static_cast<quint8>(OscInfo->at(i+15))*16777216;
-        QDateTime tme = QDateTime::fromTime_t(unixtime);
+        QDateTime tme = QDateTime::fromTime_t(unixtime, Qt::UTC);
         QString ms = QString::number((timens/1000000));
         QString mcs = QString::number(((timens-ms.toInt()*1000000)/1000));
         QString ns = QString::number(timens-ms.toInt()*1000000-mcs.toInt()*1000);
@@ -109,7 +109,7 @@ void oscdialog::ProcessOscInfo()
     connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(GetOsc(QModelIndex)));
     tv->setItemDelegateForColumn(2,dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
     tv->resizeRowsToContents();
-    tv->resizeColumnsToContents(); */
+    tv->resizeColumnsToContents();
 }
 
 void oscdialog::EndExtractOsc()
@@ -298,4 +298,9 @@ void oscdialog::EraseOsc()
         MessageBox2::information(this, "Внимание", "Стёрто успешно");
     else
         MessageBox2::information(this, "Внимание", "Ошибка при стирании");
+}
+
+void oscdialog::SetOscBufSize(quint32 size)
+{
+    OscInfoSize = size;
 }

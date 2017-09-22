@@ -27,92 +27,92 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         pkdn_s.cpp \
+    ../eabstractprotocomchannel.cpp \
     ../eusbcom.cpp \
+    ../eusbhid.cpp \
     ../commands.cpp \
     ../log.cpp \
+    ../mainwindow.cpp \
     ../publicclass.cpp \
-    ../widgets/errorprotocolwidget.cpp \
-    ../widgets/getoscpbdelegate.cpp \
-    ../widgets/messagebox.cpp \
-    ../widgets/mystackedwidget.cpp \
-    ../widgets/mytabwidget.cpp \
-    ../widgets/etableitem.cpp \
-    ../widgets/etablemodel.cpp \
-    ../widgets/s_tqcheckbox.cpp \
-    ../widgets/s_tqcombobox.cpp \
-    ../widgets/s_tqspinbox.cpp \
-    ../widgets/s_tqtableview.cpp \
-    ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp \
-    ../dialogs/errordialog.cpp \
-    ../dialogs/fwupdialog.cpp \
-    ../dialogs/hiddendialog.cpp \
-    ../dialogs/oscdialog.cpp \
-    ../check/abstractcheckdialog.cpp \
+    ../report.cpp \
+    ../check/checka1.cpp \
+    ../check/checkdialoga1.cpp \
+    ../check/eabstractcheckdialog.cpp \
     ../config/abstractconfdialog.cpp \
     ../config/confdialog.cpp \
     ../config/confdialoga1.cpp \
     ../config/config.cpp \
     ../config/configa1.cpp \
-    ../check/checkdialoga1.cpp \
-    ../tune/tunedialoga1.cpp \
-    ../dialogs/keypressdialog.cpp \
-    ../check/checka1.cpp \
-    ../dialogs/settingsdialog.cpp \
-    ../dialogs/downloaddialog.cpp \
-    ../tune/eabstracttunedialog.cpp \
-    ../tune/tunedialoga1dn.cpp \
     ../dialogs/a1dialog.cpp \
-    ../report.cpp \
-    ../mainwindow.cpp \
+    ../dialogs/downloaddialog.cpp \
+    ../dialogs/errordialog.cpp \
+    ../dialogs/fwupdialog.cpp \
+    ../dialogs/hiddendialog.cpp \
     ../dialogs/infodialog.cpp \
+    ../dialogs/keypressdialog.cpp \
+    ../dialogs/oscdialog.cpp \
+    ../dialogs/settingsdialog.cpp \
+    ../tune/eabstracttunedialog.cpp \
+    ../tune/tunedialoga1.cpp \
+    ../tune/tunedialoga1dn.cpp \
+    ../widgets/errorprotocolwidget.cpp \
+    ../widgets/etableitem.cpp \
+    ../widgets/etablemodel.cpp \
+    ../widgets/getoscpbdelegate.cpp \
     ../widgets/lineeditfield.cpp \
-    ../eusbhid.cpp \
-    ../eabstractprotocomchannel.cpp
+    ../widgets/messagebox.cpp \
+    ../widgets/mystackedwidget.cpp \
+    ../widgets/mytabwidget.cpp \
+    ../widgets/s_tqcheckbox.cpp \
+    ../widgets/s_tqcombobox.cpp \
+    ../widgets/s_tqspinbox.cpp \
+    ../widgets/s_tqtableview.cpp \
+    ../widgets/waitwidget.cpp \
+    ../widgets/wd_func.cpp
 
 HEADERS  += pkdn_s.h \
+    ../eabstractprotocomchannel.h \
     ../eusbcom.h \
+    ../eusbhid.h \
     ../commands.h \
     ../log.h \
+    ../mainwindow.h \
     ../publicclass.h \
-    ../widgets/errorprotocolwidget.h \
-    ../widgets/getoscpbdelegate.h \
-    ../widgets/messagebox.h \
-    ../widgets/mystackedwidget.h \
-    ../widgets/mytabwidget.h \
-    ../widgets/etableitem.h \
-    ../widgets/etablemodel.h \
-    ../widgets/s_tqcheckbox.h \
-    ../widgets/s_tqcombobox.h \
-    ../widgets/s_tqspinbox.h \
-    ../widgets/s_tqtableview.h \
-    ../widgets/waitwidget.h \
-    ../widgets/wd_func.h \
-    ../dialogs/errordialog.h \
-    ../dialogs/fwupdialog.h \
-    ../dialogs/hiddendialog.h \
-    ../dialogs/oscdialog.h \
-    ../check/abstractcheckdialog.h \
+    ../report.h \
+    ../check/checka1.h \
+    ../check/checkdialoga1.h \
+    ../check/eabstractcheckdialog.h \
     ../config/abstractconfdialog.h \
     ../config/confdialog.h \
     ../config/confdialoga1.h \
     ../config/config.h \
     ../config/configa1.h \
-    ../check/checkdialoga1.h \
-    ../tune/tunedialoga1.h \
-    ../dialogs/keypressdialog.h \
-    ../check/checka1.h \
-    ../dialogs/settingsdialog.h \
-    ../dialogs/downloaddialog.h \
-    ../tune/eabstracttunedialog.h \
-    ../tune/tunedialoga1dn.h \
     ../dialogs/a1dialog.h \
-    ../report.h \
-    ../mainwindow.h \
+    ../dialogs/downloaddialog.h \
+    ../dialogs/errordialog.h \
+    ../dialogs/fwupdialog.h \
+    ../dialogs/hiddendialog.h \
     ../dialogs/infodialog.h \
+    ../dialogs/keypressdialog.h \
+    ../dialogs/oscdialog.h \
+    ../dialogs/settingsdialog.h \
+    ../tune/eabstracttunedialog.h \
+    ../tune/tunedialoga1.h \
+    ../tune/tunedialoga1dn.h \
+    ../widgets/errorprotocolwidget.h \
+    ../widgets/etableitem.h \
+    ../widgets/etablemodel.h \
+    ../widgets/getoscpbdelegate.h \
     ../widgets/lineeditfield.h \
-    ../eusbhid.h \
-    ../eabstractprotocomchannel.h
+    ../widgets/messagebox.h \
+    ../widgets/mystackedwidget.h \
+    ../widgets/mytabwidget.h \
+    ../widgets/s_tqcheckbox.h \
+    ../widgets/s_tqcombobox.h \
+    ../widgets/s_tqspinbox.h \
+    ../widgets/s_tqtableview.h \
+    ../widgets/waitwidget.h \
+    ../widgets/wd_func.h 
 
 RESOURCES += \
     pkdn-s.qrc

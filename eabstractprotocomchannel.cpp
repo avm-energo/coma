@@ -58,6 +58,8 @@ void EAbstractProtocomChannel::Send(int command, int board_type, void *ptr, quin
         while (tme.elapsed() < CN_MAINLOOP_DELAY)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
+    if ((cmd == CN_GBo) && (RDSize > 0) && (result == NOERROR)) // для команды чтения информации об осциллограммах результат - количество считанных байт или ошибка
+        result = RDSize;
 }
 
 void EAbstractProtocomChannel::InitiateSend()
@@ -180,7 +182,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         return;
     int res;
     ReadDataChunk.append(ba);
-    quint32 RDSize = static_cast<quint32>(ReadDataChunk.size());
+    RDSize = static_cast<quint32>(ReadDataChunk.size());
     if (RDSize<3) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
         return;
     switch (bStep)
