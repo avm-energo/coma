@@ -38,6 +38,7 @@ SOURCES += \
     ../check/checkdialog21.cpp \
     ../check/checkdialog80.cpp \
     ../check/checkdialoga1.cpp \
+    ../check/eabstractcheckdialog.cpp \
     ../config/abstractconfdialog.cpp \
     ../config/abstractconfdialog2x.cpp \
     ../config/abstractconfdialog3x.cpp \
@@ -83,8 +84,7 @@ SOURCES += \
     ../widgets/s_tqspinbox.cpp \
     ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp \
-    ../check/eabstractcheckdialog.cpp
+    ../widgets/wd_func.cpp
 
 HEADERS  += \
     coma.h \
@@ -100,6 +100,7 @@ HEADERS  += \
     ../check/checkdialog21.h \
     ../check/checkdialog80.h \
     ../check/checkdialoga1.h \
+    ../check/eabstractcheckdialog.h \
     ../config/abstractconfdialog.h \
     ../config/abstractconfdialog2x.h \
     ../config/abstractconfdialog3x.h \
@@ -145,8 +146,7 @@ HEADERS  += \
     ../widgets/s_tqspinbox.h \
     ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h \
-    ../check/eabstractcheckdialog.h
+    ../widgets/wd_func.h
 
 RESOURCES += \
     res.qrc

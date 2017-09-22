@@ -2,7 +2,8 @@
 #define TUNEDIALOG21_H
 
 #include <QDialog>
-#include "../publicclass.h"
+#include "eabstracttunedialog.h"
+#include "../check/check21.h"
 
 #define ATUNENUMPOINTS  64 // количество точек, по которым выдаются значения в блоке Bda
 
@@ -13,7 +14,7 @@
 #define ATUNEWARN(a)    WARNMSG(publicclass::ER_ATUNE,__LINE__,a)
 #define ATUNEINFO(a)     INFOMSG(publicclass::ER_ATUNE,__LINE__,a)
 
-class TuneDialog21 : public QDialog
+class TuneDialog21 : public EAbstractTuneDialog
 {
     Q_OBJECT
 public:
@@ -24,12 +25,7 @@ signals:
 public slots:
 
 private:
-    struct Bda
-    {
-        quint32 sin[16];
-    };
-
-    Bda Bda0, Bda5, Bda20;
+    Check21::Bda Bda0, Bda5, Bda20;
 
     struct Bac
     {
@@ -39,9 +35,16 @@ private:
     };
 
     Bac Bac_block[16];
+
     int BoardType;
 
     void SetupUI();
+    void SetLbls();
+    void SetPf();
+    void FillBac();
+    void FillBackBac();
+    void GetBdAndFillMTT();
+
     bool tune(int Type, int ChNum);
     void ShowErrMsg(int);
     bool CalcNewTuneCoef(int ChNum);
@@ -55,12 +58,8 @@ private:
     bool CheckTuneCoefs();
 
 private slots:
-    void StartTune();
-    void ReadTuneCoefs();
-    void WriteTuneCoefs();
-    void SaveToFile();
-    void LoadFromFile();
     void SetDefCoefs();
+    int ReadAnalogMeasurements();
 };
 
 #endif // TUNEDIALOG21_H
