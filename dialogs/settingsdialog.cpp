@@ -8,7 +8,6 @@
 #include <QString>
 #include "settingsdialog.h"
 #include "../config/config.h"
-#include "../widgets/s_tqspinbox.h"
 #include "../widgets/wd_func.h"
 #include "../publicclass.h"
 
@@ -27,7 +26,7 @@ void SettingsDialog::SetupUI()
     QHBoxLayout *hlyout = new QHBoxLayout;
     QLabel *lbl;
     QLineEdit *le;
-    if (MODULE_TYPEB == MTB_A1)
+    if (pc.ModuleBsi.MTypeB == MTB_A1)
     {
         hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBLT(this, "Наименование организации, эксплуатирующей прибор"));
@@ -56,7 +55,7 @@ void SettingsDialog::SetupUI()
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetHomeDir()));
     hlyout->addWidget(pb, 0);
     vlyout->addLayout(hlyout);
-    if (MODULE_TYPEB == MTB_80)
+    if (pc.ModuleBsi.MTypeB == MTB_80)
     {
         hlyout = new QHBoxLayout;
         lbl = new QLabel("IP-адрес МИП:");

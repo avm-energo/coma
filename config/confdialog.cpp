@@ -5,7 +5,6 @@
 #include <QPushButton>
 #include "confdialog.h"
 #include "../widgets/s_tqcombobox.h"
-#include "../widgets/s_tqspinbox.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
 #include "../publicclass.h"
@@ -49,7 +48,7 @@ void ConfDialog::SetupUI()
     glyout->setColumnStretch(2, 50);
     QLabel *lbl = new QLabel("Адрес базовой станции:");
     glyout->addWidget(lbl,0,0,1,1,Qt::AlignRight);
-    s_tqSpinBox *dspbls = WDFunc::NewSPB(this, "spb.1", 0, 65535, 1, 0, ACONFGCLR);
+    QDoubleSpinBox *dspbls = WDFunc::NewSPB(this, "spb.1", 0, 65535, 1, 0, ACONFGCLR);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
     glyout->addWidget(dspbls, 0, 1, 1, 1, Qt::AlignLeft);
     lbl = new QLabel("Интервал циклического опроса:");

@@ -25,12 +25,9 @@ private:
     void SetupUI();
 
     ETableModel *tm;
-    QByteArray *OscInfo;
     QString GivenFilename;
     QString OscDateTime;
     publicclass::DataRec Config[32];
-    quint32 OscInfoSize; // размер считанного буфера с информацией об осциллограммах
-    bool SizeIsSet; // флаг, свидетельствующий о том, что длина ещё не установлена
 
     struct GBoStruct
     {
@@ -60,12 +57,11 @@ private:
 signals:
 
 private slots:
-    void GetOscInfo();
-    void ProcessOscInfo();
+    void GetAndProcessOscInfo();
+//    void ProcessOscInfo();
     void EndExtractOsc();
     void GetOsc(QModelIndex);
     void EraseOsc();
-    void SetOscBufSize(quint32 size);
 };
 
 #endif // OSCDIALOG_H

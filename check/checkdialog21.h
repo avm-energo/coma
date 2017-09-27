@@ -3,8 +3,7 @@
 
 #include "eabstractcheckdialog.h"
 #include "../config/config21.h"
-
-#define ACHECKNUMPOINTS  64 // количество точек, по которым выдаются значения в блоке Bda
+#include "check21.h"
 
 class CheckDialog21 : public EAbstractCheckDialog
 {
@@ -22,6 +21,11 @@ private:
     QTime *ElapsedTimeCounter;
 
     void SetupUI();
+    void RefreshAnalogValues(int bdnum); // обновление полей в GUI из полученного соответствующего Bd_block
+    void PrepareHeadersForFile(int row); // row - строка для записи заголовков
+    void WriteToFile(int row, int bdnum); // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
+    void ChooseValuesToWrite();
+    void SetDefaultValuesToWrite();
 
 private slots:
     void StartBdaMeasurements();

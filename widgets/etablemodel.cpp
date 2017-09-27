@@ -195,12 +195,11 @@ void ETableModel::addRow()
     insertRows(lastEntry, 1, QModelIndex());
 }
 
-void ETableModel::fillModel(QList<QStringList> lsl)
+void ETableModel::fillModel(QVector<QVector<QVariant> > lsl)
 {
 //    beginInsertRows(QModelindex(),0,lsl.at(0).size());
     int i;
     int j;
-    QString vl;
     result = 0;
     if (lsl.size()>hdr.size()) // в переданном списке больше колонок, чем в модели
     {
@@ -214,13 +213,10 @@ void ETableModel::fillModel(QList<QStringList> lsl)
         for (j = 0; j < lsl.size(); j++) // цикл по столбцам
         {
             if (i > lsl.at(j).size()) // если строк в текущем столбце меньше, чем текущий номер строки, пишем пустое значение
-            {
-                QVariant tmpv = QVariant("");
-                setData(index(i, j, QModelIndex()), tmpv, Qt::EditRole);
-            }
+                setData(index(i, j, QModelIndex()), QVariant(""), Qt::EditRole);
             else
             {
-                QVariant tmpv = QVariant(lsl.at(j).at(i));
+                QVariant tmpv = lsl.at(j).at(i);
                 setData(index(i, j, QModelIndex()), tmpv, Qt::EditRole);
             }
         }

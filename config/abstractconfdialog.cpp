@@ -5,7 +5,6 @@
 #include <QTextEdit>
 #include <QFileDialog>
 #include "abstractconfdialog.h"
-#include "../widgets/s_tqspinbox.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
 //#include "../canal.h"
@@ -47,11 +46,14 @@ void AbstractConfDialog::WriteConf()
         dlg->exec();
         return;
     }
-    if (Commands::WriteFile(NULL, 1, S2Config) == NOERROR)
+    int res;
+    if ((res = Commands::WriteFile(NULL, 1, S2Config)) == NOERROR)
     {
         emit BsiIsNeedToBeAcquiredAndChecked();
         MessageBox2::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
     }
+    else
+        MessageBox2::error(this, "Ошибка", "Ошибка записи конфигурации"+QString::number(res));
 }
 
 void AbstractConfDialog::SaveConfToFile()

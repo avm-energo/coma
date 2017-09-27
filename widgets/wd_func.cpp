@@ -1,9 +1,7 @@
 #include <QPalette>
 #include <QTextEdit>
 #include <QHBoxLayout>
-#include <QLabel>
 #include <QRegExp>
-#include <QLineEdit>
 #include <QPainter>
 #include <QStringListModel>
 #include "wd_func.h"
@@ -159,9 +157,9 @@ bool WDFunc::SetCBColor(QWidget *w, const QString &cbname, const QString &color)
     return true;
 }
 
-s_tqSpinBox *WDFunc::NewSPB(QWidget *parent, const QString &spbname, double min, double max, double step, int decimals, const QString &spbcolor)
+QDoubleSpinBox *WDFunc::NewSPB(QWidget *parent, const QString &spbname, double min, double max, double step, int decimals, const QString &spbcolor)
 {
-    s_tqSpinBox *dspbls = new s_tqSpinBox(parent);
+    QDoubleSpinBox *dspbls = new QDoubleSpinBox(parent);
     dspbls->setObjectName(spbname);
     dspbls->setSingleStep(step);
     dspbls->setDecimals(decimals);
@@ -177,7 +175,7 @@ s_tqSpinBox *WDFunc::NewSPB(QWidget *parent, const QString &spbname, double min,
 
 bool WDFunc::SetSPBData(QWidget *w, const QString &spbname, const double &spbvalue)
 {
-    s_tqSpinBox *spb = w->findChild<s_tqSpinBox *>(spbname);
+    QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
     if (spb == 0)
         return false;
     spb->setValue(spbvalue);
@@ -254,9 +252,9 @@ void WDFunc::TVAutoResize(QWidget *w, const QString &tvname)
     tv->resizeRowsToContents();
 }
 
-s_tqCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor)
+QCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor)
 {
-    s_tqCheckBox *chb = new s_tqCheckBox(parent);
+    QCheckBox *chb = new QCheckBox(parent);
     chb->setObjectName(chbname);
     chb->setText(chbtext);
     if (!chbcolor.isEmpty())
@@ -269,7 +267,7 @@ s_tqCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QStr
 
 bool WDFunc::ChBData(QWidget *w, const QString &chbname, bool &data)
 {
-    s_tqCheckBox *chb = w->findChild<s_tqCheckBox *>(chbname);
+    QCheckBox *chb = w->findChild<QCheckBox *>(chbname);
     if (chb == 0)
         return false;
     data = chb->isChecked();
@@ -278,7 +276,7 @@ bool WDFunc::ChBData(QWidget *w, const QString &chbname, bool &data)
 
 bool WDFunc::SetChBData(QWidget *w, const QString &chbname, bool data)
 {
-    s_tqCheckBox *chb = w->findChild<s_tqCheckBox *>(chbname);
+    QCheckBox *chb = w->findChild<QCheckBox *>(chbname);
     if (chb == 0)
         return false;
     chb->setChecked(data);

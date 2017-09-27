@@ -4,9 +4,10 @@
 
 EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(parent)
 {
+    QString tmps = "\n=== CLog started at " + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss") + " ===\n";
     log = new Log;
-    log->Init("EAbstractProtocomChannel.log");
-    log->WriteRaw("Log started!");
+    log->Init("canal.log");
+    log->WriteRaw(tmps.toUtf8());
     RDLength = 0;
     SegEnd = 0;
     SegLeft = 0;
@@ -139,7 +140,6 @@ void EAbstractProtocomChannel::InitiateSend()
 //        WRLength += 4; // + 4 bytes prefix
         WriteData.resize(WRLength);
         emit SetDataSize(WRLength); // сигнал для прогрессбара
-        FirstSegment = true;
         SetWRSegNum();
         WRCheckForNextSegment();
         break;
@@ -151,7 +151,6 @@ void EAbstractProtocomChannel::InitiateSend()
         WriteData.append(QByteArray::fromRawData((const char *)outdata, outdatasize));
         WRLength = outdatasize + 1;
         emit SetDataSize(WRLength); // сигнал для прогрессбара
-        FirstSegment = true;
         SetWRSegNum();
         WRCheckForNextSegment();
         break;
@@ -166,12 +165,14 @@ void EAbstractProtocomChannel::InitiateSend()
     ReadData.clear();
     ReadDataChunk.clear();
     LastBlock = false;
+    FirstSegment = true;
     bStep = 0;
     RDLength = 0;
 }
 
 void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
 {
+    emit readbytessignal(ba);
     if (pc.WriteUSBLog)
     {
         log->WriteRaw("<-");
@@ -185,23 +186,28 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
     RDSize = static_cast<quint32>(ReadDataChunk.size());
     if (RDSize<3) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
         return;
+    if (ReadDataChunk.at(0) != CN_SS)
+    {
+        Finish(CN_RCVDATAERROR);
+        return;
+    }
+    if (ReadDataChunk.at(1) == CN_ResErr)
+    {
+        if (RDSize < 5) // некорректная посылка
+            Finish(CN_RCVDATAERROR);
+        else
+            Finish(USO_NOERR + ReadDataChunk.at(4));
+        return;
+    }
+    if (!GetLength())
+    {
+        Finish(CN_RCVDATAERROR);
+        return;
+    }
     switch (bStep)
     {
     case 0: // первая порция
     {
-        if (ReadDataChunk.at(0) != CN_SS)
-        {
-            Finish(CN_RCVDATAERROR);
-            return;
-        }
-        if (ReadDataChunk.at(1) == CN_ResErr)
-        {
-            if (RDSize < 5) // некорректная посылка
-                Finish(CN_RCVDATAERROR);
-            else
-                Finish(USO_NOERR + ReadDataChunk.at(4));
-            return;
-        }
         switch (cmd)
         {
         // команды с ответом "ОК"
@@ -209,14 +215,9 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_OscEr:
         case CN_CtEr:
         {
-            if (GetLength())
-            {
-                if (cmd == CN_OscEr)
-                    OscTimer->start(); // start timer to send OscPg command periodically
-                Finish(NOERROR);
-            }
-            else
-                Finish(CN_RCVDATAERROR);
+            if (cmd == CN_OscEr)
+                OscTimer->start(); // start timer to send OscPg command periodically
+            Finish(NOERROR);
             return;
         }
         // команды с ответом "ОК" и с продолжением
@@ -224,21 +225,10 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_WBac:
         {
             if (!SegLeft)
-            {
-                if (GetLength())
-                    Finish(NOERROR);
-                else
-                    Finish(CN_RCVDATAERROR);
-                return;
-            }
-            if (GetLength())
-            {
-                ReadDataChunk.clear();
-                WRCheckForNextSegment();
-            }
-            else
-                Finish(CN_RCVDATAERROR);
-            break;
+                Finish(NOERROR);
+            ReadDataChunk.clear();
+            WRCheckForNextSegment();
+            return;
         }
         // команды с ответом SS c L L ... и продолжением
         case CN_GBsi:
@@ -252,17 +242,11 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_GBTe:
         case CN_GF:
         {
-            if (!GetLength(false)) // !ok = cmd
-            {
-                Finish(CN_RCVDATAERROR);
-                return;
-            }
-            emit SetDataSize(RDLength);
             ReadDataChunk.remove(0, 4); // убираем заголовок с < и длиной
             RDSize -= 4;
             if (cmd == CN_GF) // надо проверить, тот ли номер файла принимаем
             {
-                if (RDSize < 6) // не пришёл ещё номер файла
+                if (RDSize < 16) // не пришла ещё шапка файла
                     return;
                 quint16 filenum = static_cast<quint16>(ReadDataChunk[0])+static_cast<quint16>(ReadDataChunk[1])*256; // 0 & 1 because 4 bytes already removed
                 if (filenum != fnum)
@@ -270,7 +254,9 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                     Finish(USO_UNKNFILESENT);
                     return;
                 }
+                memcpy(&RDLength, &(ReadDataChunk.data()[4]), sizeof(RDLength));
             }
+            emit SetDataSize(RDLength);
             bStep++;
             break;
         }
@@ -281,8 +267,10 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
     }
     case 1:
     {
-        if (RDSize < RDLength)
+        if (RDSize < ReadDataChunkLength)
             return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
+        ReadDataChunk.remove(0, 4); // убираем заголовок с < и длиной
+        RDSize -= 4;
         ReadData += ReadDataChunk;
         RDSize = static_cast<quint32>(ReadData.size());
         emit SetDataCount(RDSize); // сигнал для прогрессбара
@@ -298,7 +286,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_GBTe:
         case CN_GBo:
         {
-            if (LastBlock)
+            if (RDSize >= RDLength)
             {
                 if (RDSize > outdatasize)
                     RDSize = outdatasize;
@@ -308,13 +296,13 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             else
             {
                 SendOk();
-                bStep = 0; // переход к проверке длины блока и т.п.
+//                bStep = 0; // переход к проверке длины блока и т.п.
             }
             break;
         }
         case CN_GF:
         {
-            if (LastBlock)
+            if (RDSize >= RDLength)
             {
                 res = pc.RestoreDataMem(ReadData.data(), RDSize, DR);
                 if (res == 0)
@@ -328,7 +316,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             else
             {
                 SendOk();
-                bStep = 0; // переход к проверке длины блока и т.п.
+//                bStep = 0; // переход к проверке длины блока и т.п.
             }
             break;
         }
@@ -377,13 +365,13 @@ bool EAbstractProtocomChannel::GetLength(bool ok)
         }
         if (ReadDataChunk.at(1) != cmd)
             return false;
-        RDLength = static_cast<quint8>(ReadDataChunk.at(2));
-        RDLength += static_cast<quint8>(ReadDataChunk.at(3))*256; // посчитали длину посылки
-        if (RDLength < CN_MAXSEGMENTLENGTH)
+        ReadDataChunkLength = static_cast<quint8>(ReadDataChunk.at(2));
+        ReadDataChunkLength += static_cast<quint8>(ReadDataChunk.at(3))*256; // посчитали длину посылки
+        if (ReadDataChunkLength <= CN_MAXSEGMENTLENGTH)
             LastBlock = true;
         else
             LastBlock = false;
-        if (RDLength > MAXLENGTH)
+        if (ReadDataChunkLength > MAXLENGTH)
             return false;
         else
             return true;
@@ -395,15 +383,10 @@ bool EAbstractProtocomChannel::GetLength(bool ok)
 void EAbstractProtocomChannel::SetWRSegNum()
 {
     if (WRLength > CN_MAXSEGMENTLENGTH)
-    {
         SegLeft = WRLength / CN_MAXSEGMENTLENGTH;
-        SegEnd = CN_MAXSEGMENTLENGTH;
-    }
     else
-    {
         SegLeft = 1;
-        SegEnd = WRLength;
-    }
+    SegEnd = 0;
 }
 
 void EAbstractProtocomChannel::WRCheckForNextSegment()
@@ -424,14 +407,15 @@ void EAbstractProtocomChannel::WRCheckForNextSegment()
     if (SegLeft)
     {
         AppendSize(tmpba, CN_MAXSEGMENTLENGTH);
-        tmpba += WriteData.mid(SegEnd, CN_MAXSEGMENTLENGTH);
+        tmpba += WriteData.mid(SegEnd, CN_MAXSEGMENTLENGTH); // -4 = '<', cmd, L, L
         SegEnd += CN_MAXSEGMENTLENGTH;
     }
     else
     {
-        AppendSize(tmpba, SegEnd);
-        tmpba += WriteData.right(SegEnd);
+        AppendSize(tmpba, (WriteData.size() - SegEnd));
+        tmpba += WriteData.right(WriteData.size() - SegEnd);
         WriteData.clear();
+        SegEnd = WriteData.size();
     }
     emit SetDataCount(SegEnd);
     WriteDataToPort(tmpba);
@@ -480,7 +464,7 @@ void EAbstractProtocomChannel::Finish(int ernum)
     {
         if (ernum < 0)
         {
-            log->WriteRaw("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###");
+            log->WriteRaw("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###\n");
             ERMSG("ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ!!!");
         }
         else if (ernum < pc.errmsgs.size())
@@ -495,6 +479,7 @@ void EAbstractProtocomChannel::Finish(int ernum)
 void EAbstractProtocomChannel::Disconnect()
 {
     RawClose();
+    log->WriteRaw("Disconnected!\n");
     emit Disconnected();
 }
 
@@ -506,7 +491,6 @@ void EAbstractProtocomChannel::OscTimerTimeout()
 void EAbstractProtocomChannel::CheckForData()
 {
     QByteArray ba = RawRead(1000);
-    emit readbytessignal(ba);
     ParseIncomeData(ba);
 }
 
@@ -532,7 +516,7 @@ void EAbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
         if (tmpi == GENERALERROR)
         {
             pc.ErMsg(COM_WRITEER);
-            return;
+            Disconnect();
         }
         byteswritten += tmpi;
         emit writebytessignal(tmpba.left(tmpi));

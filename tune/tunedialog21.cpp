@@ -14,7 +14,7 @@
 #include "../commands.h"
 
 TuneDialog21::TuneDialog21(int type, QWidget *parent) :
-    QDialog(parent)
+    EAbstractTuneDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     for (int i = 0; i < 16; i++)
@@ -154,6 +154,31 @@ void TuneDialog21::SetupUI()
         ReadTuneCoefs(); // считать их из модуля и показать на экране
 }
 
+void TuneDialog21::SetLbls()
+{
+
+}
+
+void TuneDialog21::SetPf()
+{
+
+}
+
+void TuneDialog21::FillBac()
+{
+
+}
+
+void TuneDialog21::FillBackBac()
+{
+
+}
+
+void TuneDialog21::GetBdAndFillMTT()
+{
+
+}
+
 bool TuneDialog21::tune(int Type, int ChNum)
 {
     switch (Type)
@@ -165,7 +190,7 @@ bool TuneDialog21::tune(int Type, int ChNum)
                                      "на всех\nвходах модуля и нажмите OK")\
                 == QMessageBox::Ok)
         {
-            if (Commands::GetBda(BT_NONE, &Bda0, sizeof(Bda)) == NOERROR)
+            if (Commands::GetBda(BT_NONE, &Bda0, sizeof(Check21::Bda)) == NOERROR)
                 CheckAndShowTune0(ChNum);
             else
             {
@@ -186,7 +211,7 @@ bool TuneDialog21::tune(int Type, int ChNum)
                                      "Переключите входные переключатели на ток,\nустановите ток 20 мА на всех" \
                                      "\nвходах модуля и нажмите OK") == QMessageBox::Ok)
         {
-            if (Commands::GetBda(BT_NONE, &Bda20, sizeof(Bda)) == NOERROR)
+            if (Commands::GetBda(BT_NONE, &Bda20, sizeof(Check21::Bda)) == NOERROR)
                 CheckAndShowTune20(ChNum);
             else
             {
@@ -208,7 +233,7 @@ bool TuneDialog21::tune(int Type, int ChNum)
                                      "5 В на всех\nвходах модуля и нажмите OK")\
                 == QMessageBox::Ok)
         {
-            if (Commands::GetBda(BT_NONE, &Bda5, sizeof(Bda)) == NOERROR)
+            if (Commands::GetBda(BT_NONE, &Bda5, sizeof(Check21::Bda)) == NOERROR)
                 CheckAndShowTune5(ChNum);
             else
             {
@@ -230,7 +255,7 @@ bool TuneDialog21::tune(int Type, int ChNum)
     return true;
 }
 
-void TuneDialog21::StartTune()
+/*void TuneDialog21::StartTune()
 {
     QString AllNum = sender()->objectName();
     if (!AllNum.isEmpty())
@@ -263,7 +288,7 @@ void TuneDialog21::StartTune()
     }
     else
         DBGMSG;
-}
+} */
 
 bool TuneDialog21::CheckAndShowTune0(int ChNum)
 {
@@ -338,6 +363,11 @@ void TuneDialog21::SetDefCoefs()
         Bac_block[i].fkuin = 1.0;
     }
     RefreshTuneFields();
+}
+
+int TuneDialog21::ReadAnalogMeasurements()
+{
+    return NOERROR;
 }
 
 bool TuneDialog21::RefreshTuneField(int ChNum)
@@ -420,34 +450,6 @@ void TuneDialog21::RefreshTuneCoefs()
         RefreshTuneCoef(i);
 }
 
-void TuneDialog21::ReadTuneCoefs()
-{
-    if (Commands::GetBac(BT_BASE, &Bac_block, sizeof(Bac_block)) == NOERROR)
-        RefreshTuneFields();
-    else
-        MessageBox2::error(this, "ошибка", "Ошибка чтения регулировочных параметров из модуля");
-}
-
-void TuneDialog21::WriteTuneCoefs()
-{
-    RefreshTuneCoefs(); // принудительно читаем коэффициенты из полей ввода в структуру
-    if (CheckTuneCoefs())
-    {
-        if (Commands::WriteBac(BT_NONE, &Bac_block, sizeof(Bac_block)) == NOERROR)
-            MessageBox2::information(this,"Успешно!","Записано успешно!");
-        else
-        {
-            MessageBox2::error(this, "Ошибка", "Ошибка записи регулировочных параметров в модуль");
-            return;
-        }
-    }
-    else
-    {
-        WARNMSG("Есть некорректные коэффициенты");
-        return;
-    }
-}
-
 bool TuneDialog21::CheckTuneCoefs()
 {
     for (int i=0; i<16; i++)
@@ -478,45 +480,4 @@ bool TuneDialog21::CheckTuneCoefs()
             return false;
     }
     return true;
-}
-
-void TuneDialog21::LoadFromFile()
-{
-    QByteArray ba;
-    pc.LoadFile(this, "Tune files (*.atn)", ba);
-    memcpy(&Bac_block,&(ba.data()[0]),sizeof(Bac_block));
-    RefreshTuneFields();
-    MessageBox2::information(this, "Внимание", "Загрузка прошла успешно!");
-}
-
-void TuneDialog21::SaveToFile()
-{
-    QByteArray ba(sizeof(Bac_block), 0);
-    memcpy(&(ba.data()[0]), &Bac_block, sizeof(Bac_block));
-    int res = pc.SaveFile(this, "Tune files (*.tn)", "tn", ba, sizeof(Bac_block));
-    switch (res)
-    {
-    case NOERROR:
-        MessageBox2::information(this, "Внимание", "Записано успешно!");
-        break;
-    case ER_FILEWRITE:
-        ERMSG("Ошибка при записи файла!");
-        break;
-    case ER_FILENAMEEMP:
-        ERMSG("Пустое имя файла!");
-        break;
-    case ER_FILEOPEN:
-        ERMSG("Ошибка открытия файла!");
-        break;
-    default:
-        break;
-    }
-}
-
-void TuneDialog21::ShowErrMsg(int ermsg)
-{
-    if (ermsg < pc.errmsgs.size())
-        ERMSG(pc.errmsgs.at(ermsg));
-    else
-        ERMSG("Произошла неведомая фигня #"+QString::number(ermsg,10));
 }

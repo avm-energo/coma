@@ -7,8 +7,6 @@
 #include <QVBoxLayout>
 #include "../widgets/messagebox.h"
 #include "../widgets/s_tqcombobox.h"
-#include "../widgets/s_tqcheckbox.h"
-#include "../widgets/s_tqspinbox.h"
 #include "../widgets/wd_func.h"
 #include "confdialoga1.h"
 

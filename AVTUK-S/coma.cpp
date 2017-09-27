@@ -51,7 +51,6 @@
 #include "../widgets/mytabwidget.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/messagebox.h"
-#include "../widgets/s_tqspinbox.h"
 #include "../widgets/wd_func.h"
 #include "../log.h"
 
@@ -187,6 +186,9 @@ void Coma::AddActionsToMenuBar(QMenuBar *menubar)
 
 void Coma::Stage3()
 {
+    ConfB = ConfM = 0;
+    CheckB = CheckM = 0;
+    TuneB = TuneM = 0;
     ClearTW();
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
@@ -206,52 +208,42 @@ void Coma::Stage3()
     {
     case MTB_21:
     {
-        ConfDialog21 *CD21 = new ConfDialog21(S2Config, true);
-        ConfB = CD21;
-        TuneDialog21 *TD21 = new TuneDialog21;
-        TuneB = TD21;
-        Chec
+        ConfB = new ConfDialog21(S2Config, true);
+        TuneB = new TuneDialog21;
+        CheckB = new CheckDialog21;
         break;
     }
     case MTB_80:
     {
-        MainConfDialog = new ConfDialog(S2Config);
-        MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
-        ConfDialog80 *D80 = new ConfDialog80(S2Config);
-        ConfB = D80;
-        TuneDialog80 *TD80 = new TuneDialog80(S2Config);
-        TuneD = TD80;
-        CheckDialog80 *CD80 = new CheckDialog80;
-        CheckD = CD80;
+        ConfB = new ConfDialog80(S2Config);
+        TuneB = new TuneDialog80(S2Config);
+        CheckB = new CheckDialog80;
         break;
     }
     case MTB_A1:
-    {
-        ConfDialogA1 *DialogA1 = new ConfDialogA1(S2Config);
-        ConfB = DialogA1;
-        CheckDialogA1 *CDA1 = new CheckDialogA1;
-        CheckD = CDA1;
-        TuneDialogA1 *TDA1 = new TuneDialogA1;
-        TuneD = TDA1;
+        ConfB = new ConfDialogA1(S2Config);
+        CheckB = new CheckDialogA1;
+        TuneB = new TuneDialogA1;
         break;
-    }
     }
     switch(pc.ModuleBsi.MTypeM)
     {
     case MTM_21:
     {
-        ConfDialog21 *Dialog21 = new ConfDialog21(S2Config, false);
-        ConfM = Dialog21;
+        ConfM = new ConfDialog21(S2Config, false);
         break;
     }
     case MTM_81:
     case MTM_82:
     case MTM_83:
-//        ConfDialog80 *Dialog80 = new ConfDialog80(S2Config);
     {
         ConfM = new ConfDialog80(S2Config);
-        TuneD = new TuneDialog80(S2Config);
+        TuneM = new TuneDialog80(S2Config);
         break;
+    }
+    case MTM_85:
+    {
+
     }
     default: // 0x00
         break;
@@ -268,10 +260,14 @@ void Coma::Stage3()
         connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
         connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
     }
-    if (TuneD != 0)
-        MainTW->addTab(TuneD, "Регулировка");
-    if (CheckD != 0)
-        MainTW->addTab(CheckD, "Проверка");
+    if (TuneB != 0)
+        MainTW->addTab(TuneB, "Регулировка\nБазовая");
+    if (CheckB != 0)
+        MainTW->addTab(CheckB, "Проверка\nБазовая");
+    if (TuneM != 0)
+        MainTW->addTab(TuneB, "Регулировка\nМезонин");
+    if (CheckM != 0)
+        MainTW->addTab(CheckB, "Проверка\nМезонин");
     oscdialog *OscD = new oscdialog;
     downloaddialog *DownD = new downloaddialog;
     fwupdialog *FwUpD = new fwupdialog;
@@ -284,6 +280,7 @@ void Coma::Stage3()
         pc.ErMsg(ER_NOTUNECOEF);
     MainTW->repaint();
     MainTW->show();
+    emit BsiRefresh();
 }
 
 void Coma::ProtocolFromFile()

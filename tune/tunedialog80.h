@@ -1,13 +1,13 @@
 #ifndef TUNEDIALOG80_H
 #define TUNEDIALOG80_H
 
-#include <QDialog>
 #include <QCloseEvent>
 #include <QHBoxLayout>
 #include <QByteArray>
 #include <QStringList>
 #include "../config/config80.h"
 #include "../iec104/iec104.h"
+#include "eabstracttunedialog.h"
 
 #define TUNEFILELENGTH  256
 
@@ -30,7 +30,7 @@
 #define TD_VBAT 3.0 // voltage
 #define TD_FREQ 50 // Hz
 
-class TuneDialog80 : public QDialog
+class TuneDialog80 : public EAbstractTuneDialog
 {
     Q_OBJECT
 public:
@@ -163,6 +163,11 @@ private:
     int GED_Type;
 
     void SetupUI();
+    void SetLbls();
+    void SetPf();
+    void FillBac();
+    void FillBackBac();
+    void GetBdAndFillMTT();
     void Tune3p();
     void WriteTuneCoefsToGUI();
     void ReadTuneCoefsFromGUI();
@@ -198,13 +203,8 @@ private:
     int CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct);
     bool SetConfA(int i2nom);
     int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта
-    void MsgSetVisible(int msg, bool Visible=true);
-    void OkMsgSetVisible(int msg, bool Visible=true);
-    void ErMsgSetVisible(int msg, bool Visible=true);
-    void SkMsgSetVisible(int msg, bool Visible=true);
     void MsgClear();
     int SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
-    void WaitNSeconds(int SecondsToWait);
     int SaveWorkConfig();
     int LoadWorkConfig();
     QHBoxLayout *MipPars(int parnum, const QString &groupname);
@@ -212,20 +212,15 @@ private:
 
 private slots:
     void StartTune();
-    void ReadTuneCoefs();
-    void WriteTuneCoefs();
-    void SaveToFile();
-    void LoadFromFile();
     void StartMip();
     void StopMip();
     void ParseMipData(Parse104::Signals104 &);
     void SetTuneMode();
-    void ReadAnalogMeasurements();
+    int ReadAnalogMeasurements();
     void SetDefCoefs();
     void SetExtData();
     void CancelExtData();
     void CancelTune();
-    void UpdateNSecondsWidget();
 
 protected:
     void closeEvent(QCloseEvent *e);

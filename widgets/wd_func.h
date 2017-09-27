@@ -3,10 +3,11 @@
 
 #include <QWidget>
 #include <QLabel>
-#include "s_tqcheckbox.h"
-#include "s_tqspinbox.h"
+#include <QCheckBox>
+#include <QLineEdit>
+#include <QLabel>
+#include <QDoubleSpinBox>
 #include "s_tqcombobox.h"
-#include "lineeditfield.h"
 
 class WDFunc
 {
@@ -49,11 +50,11 @@ public:
         index = cb->currentIndex();
         return true;
     }
-    static s_tqSpinBox *NewSPB(QWidget *parent, const QString &spbname, double min, double max, double step, int decimals, const QString &spbcolor="");
+    static QDoubleSpinBox *NewSPB(QWidget *parent, const QString &spbname, double min, double max, double step, int decimals, const QString &spbcolor="");
     static bool SetSPBData(QWidget *w, const QString &spbname, const double &spbvalue);
     template <typename T> static bool SPBData(QWidget *w, const QString &spbname, T &spbvalue)
     {
-        s_tqSpinBox *spb = w->findChild<s_tqSpinBox *>(spbname);
+        QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
         if (spb == 0)
             return false;
         spbvalue = spb->value();
@@ -68,7 +69,7 @@ public:
     static bool LBLText(QWidget *w, const QString &lblname, QString &text);
     static QString TVField(QWidget *w, const QString &tvname, int column, bool isid=false);
     static void TVAutoResize(QWidget *w, const QString &tvname);
-    static s_tqCheckBox *NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor="");
+    static QCheckBox *NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor="");
     static bool ChBData(QWidget *w, const QString &chbname, bool &data);
     static bool SetChBData(QWidget *w, const QString &chbname, bool data);
     static void AddLabelAndLineedit(QLayout *lyout, QString caption, QString lename, bool enabled=false);

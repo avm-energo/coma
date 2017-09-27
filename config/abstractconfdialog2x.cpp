@@ -12,7 +12,6 @@
 #include <QCheckBox>
 #include <QMessageBox>
 #include <QCoreApplication>
-#include <QDoubleSpinBox>
 #include <QTabBar>
 #include "abstractconfdialog2x.h"
 #include "../widgets/messagebox.h"
@@ -84,7 +83,7 @@ void AbstractConfDialog2x::SetupUI()
     {
         lbl=new QLabel(QString::number(i+1));
         glyout->addWidget(lbl,row,column++,1,1,Qt::AlignCenter);
-        s_tqCheckBox *chb = WDFunc::NewChB(this, "choscdi2."+QString::number(i), "", ACONFWCLR);
+        QCheckBox *chb = WDFunc::NewChB(this, "choscdi2."+QString::number(i), "", ACONFWCLR);
         connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
         glyout->addWidget(chb,row,column++,1,1,Qt::AlignCenter);
         chb = WDFunc::NewChB(this, "choscdi1."+QString::number(i), "", ACONFWCLRO);
@@ -105,7 +104,7 @@ void AbstractConfDialog2x::SetupUI()
     gblyout->addLayout(glyout);
     lbl = new QLabel("Задержка в мс начала фиксации максимумов:");
     gblyout->addWidget(lbl);
-    s_tqSpinBox *spb = WDFunc::NewSPB(this, "oscdlyspb", 0, 10000, 1, 0, ACONFWCLR);
+    QDoubleSpinBox *spb = WDFunc::NewSPB(this, "oscdlyspb", 0, 10000, 1, 0, ACONFWCLR);
 //    connect(spb,SIGNAL(valueChanged(double)),this,SLOT(SetOscDly(double)));
     gblyout->addWidget(spb);
     gb->setLayout(gblyout);

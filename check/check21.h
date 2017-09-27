@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#define ACHECKNUMPOINTS  64 // количество точек, по которым выдаются значения в блоке Bda
+
 class Check21
 {
 public:

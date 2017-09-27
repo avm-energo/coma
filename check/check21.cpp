@@ -42,21 +42,19 @@ QWidget *Check21::Bd1W(QWidget *parent)
     QWidget *w = new QWidget(parent);
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QGroupBox *gb = new QGroupBox(title);
-    QGridLayout *glyout = new QGridLayout;
     int i;
     QFrame *line = new QFrame;
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Sunken);
-    lbl = new QLabel("Тек. измерения, приведённые ко входу (ток)");
+    QLabel *lbl = new QLabel("Тек. измерения, приведённые ко входу (ток)");
     hlyout->addWidget(lbl,0);
     hlyout->addWidget(line,1);
     vlyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     for (i = 0; i < 16; ++i)
     {
-        hlyout->addWidget(WDFunc::NewLBLT(this, QString::number(i)+":"), 0);
-        hlyout->addWidget(WDFunc::NewLBLT(this, "", "bdinI"+QString::number(i), ValuesFormat), 1);
+        hlyout->addWidget(WDFunc::NewLBLT(parent, QString::number(i)+":"), 0);
+        hlyout->addWidget(WDFunc::NewLBLT(parent, "", "bdinI"+QString::number(i), ValuesFormat), 1);
         if ((i>0)&&!((i+1)%6))
         {
             vlyout->addLayout(hlyout);
@@ -76,8 +74,8 @@ QWidget *Check21::Bd1W(QWidget *parent)
     hlyout = new QHBoxLayout;
     for (i = 0; i < 16; ++i)
     {
-        hlyout->addWidget(WDFunc::NewLBLT(this, QString::number(i)+":"), 0);
-        hlyout->addWidget(WDFunc::NewLBLT(this, "", "bdinU"+QString::number(i), ValuesFormat), 1);
+        hlyout->addWidget(WDFunc::NewLBLT(parent, QString::number(i)+":"), 0);
+        hlyout->addWidget(WDFunc::NewLBLT(parent, "", "bdinU"+QString::number(i), ValuesFormat), 1);
         if ((i>0)&&!((i+1)%6))
         {
             vlyout->addLayout(hlyout);
@@ -97,8 +95,8 @@ QWidget *Check21::Bd1W(QWidget *parent)
     hlyout = new QHBoxLayout;
     for (i = 0; i < 16; ++i)
     {
-        hlyout->addWidget(WDFunc::NewLBLT(this, QString::number(i)+":"), 0);
-        hlyout->addWidget(WDFunc::NewLBLT(this, "", "bdain"+QString::number(i), ValuesFormat), 1);
+        hlyout->addWidget(WDFunc::NewLBLT(parent, QString::number(i)+":"), 0);
+        hlyout->addWidget(WDFunc::NewLBLT(parent, "", "bdain"+QString::number(i), ValuesFormat), 1);
         if ((i>0)&&!((i+1)%6))
         {
             vlyout->addLayout(hlyout);
@@ -118,8 +116,8 @@ QWidget *Check21::Bd1W(QWidget *parent)
     hlyout = new QHBoxLayout;
     for (i = 0; i < 16; ++i)
     {
-        hlyout->addWidget(WDFunc::NewLBLT(this, QString::number(i)+":"), 0);
-        hlyout->addWidget(WDFunc::NewLBLT(this, "", "bdainn"+QString::number(i), ValuesFormat), 1);
+        hlyout->addWidget(WDFunc::NewLBLT(parent, QString::number(i)+":"), 0);
+        hlyout->addWidget(WDFunc::NewLBLT(parent, "", "bdainn"+QString::number(i), ValuesFormat), 1);
         if ((i>0)&&!((i+1)%6))
         {
             vlyout->addLayout(hlyout);
@@ -139,8 +137,8 @@ QWidget *Check21::Bd1W(QWidget *parent)
     hlyout = new QHBoxLayout;
     for (i = 0; i < 16; ++i)
     {
-        hlyout->addWidget(WDFunc::NewLBLT(this, QString::number(i)+":"), 0);
-        hlyout->addWidget(WDFunc::NewLBLT(this, "", "bdainx"+QString::number(i), ValuesFormat), 1);
+        hlyout->addWidget(WDFunc::NewLBLT(parent, QString::number(i)+":"), 0);
+        hlyout->addWidget(WDFunc::NewLBLT(parent, "", "bdainx"+QString::number(i), ValuesFormat), 1);
         if ((i>0)&&!((i+1)%6))
         {
             vlyout->addLayout(hlyout);
@@ -149,9 +147,9 @@ QWidget *Check21::Bd1W(QWidget *parent)
     }
     if (hlyout->count())
         vlyout->addLayout(hlyout);
-    lyout->addLayout(vlyout);
-    hlyout->addWidget(WDFunc::NewLBLT(this, "Температура в кристалле:"), 0);
-    hlyout->addWidget(WDFunc::NewLBLT(this, "", "bdat", ValuesFormat), 1);
+    vlyout->addLayout(vlyout);
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "Температура в кристалле:"), 0);
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "bdat", ValuesFormat), 1);
     vlyout->addLayout(hlyout);
     vlyout->addStretch(100);
     w->setLayout(vlyout);

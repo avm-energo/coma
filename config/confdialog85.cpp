@@ -3,31 +3,34 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QRadioButton>
+#include <QButtonGroup>
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include "../widgets/messagebox.h"
 #include "../widgets/s_tqcombobox.h"
 #include "../widgets/wd_func.h"
-#include "confdialog80.h"
+#include "../widgets/mystackedwidget.h"
+#include "confdialog85.h"
 
-ConfDialog80::ConfDialog80(QVector<publicclass::DataRec> &S2Config, QWidget *parent) :
+ConfDialog85::ConfDialog85(QVector<publicclass::DataRec> &S2Config, QWidget *parent) :
     AbstractConfDialog(parent)
 {
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
     setStyleSheet(tmps);
     this->S2Config = &S2Config;
-    C80 = new Config80(S2Config);
+    C85 = new Config85(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
 
     SetupUI();
     PrereadConf();
 }
 
-ConfDialog80::~ConfDialog80()
+ConfDialog85::~ConfDialog85()
 {
 }
 
-void ConfDialog80::Fill()
+void ConfDialog85::Fill()
 {
 /*    int i;
     GeneralConf->Fill(); // заполнение общих полей
@@ -71,28 +74,94 @@ void ConfDialog80::Fill()
     SetSpinBox("thr.3", econf->Bci_block.duimin);*/
 }
 
-void ConfDialog80::FillBack()
+void ConfDialog85::FillBack()
 {
 
 }
 
-void ConfDialog80::SetupUI()
+void ConfDialog85::SetupUI()
 {
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
     QWidget *cp1 = new QWidget;
-    QString tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
+    QWidget *cp2 = new QWidget;
+    QWidget *cp3 = new QWidget;
+    QWidget *cp4 = new QWidget;
+    QString tmps = "QWidget {background-color: "+QString(ACONFGCLR)+";}";
     cp1->setStyleSheet(tmps);
+    cp2->setStyleSheet(tmps);
+    cp3->setStyleSheet(tmps);
+    cp4->setStyleSheet(tmps);
 
-    QLabel *lbl = new QLabel ("Тип контролируемого оборудования:");
-    hlyout->addWidget(lbl, 0);
-    QStringList cbl = QStringList() << "1ф трансформатор/АТ" << "3ф трансформатор/АТ" << "1ф реактор" << "3ф реактор";
+    glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутируемого оборудования:"), 0,0,1,1);
+    QStringList cbl = QStringList() << "0. Свободное конфигурирование" << "1. Конденсаторная батарея (фильтр)" \
+                                    << "2. Реактор шунтирующий" << "3. Силовой трансформатор" \
+                                    << "4. Линия электропередачи";
     s_tqComboBox *cb = WDFunc::NewCB(this, "eq_typecb", cbl, ACONFGCLR);
     cb->setMinimumWidth(70);
     connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetEqType(int)));
-    hlyout->addWidget(cb,10);
-    vlyout1->addLayout(hlyout);
+    glyout->addWidget(cb,0,1,1,1);
+
+    cbl = QStringList() << "Несинхронное" << "Синхронное";
+    glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутаций:"), 1,0,1,1);
+    hlyout->addWidget(WDFunc::NewLBL(this, "включение:"), 0);
+    hlyout->addWidget(WDFunc::NewCB(this, "cbvkl", cbl), 1);
+    hlyout->addWidget(WDFunc::NewLBL(this, "отключение:"), 0);
+    hlyout->addWidget(WDFunc::NewCB(this, "cbotkl", cbl), 1);
+    glyout->addLayout(hlyout,1,1,1,1);
+    hlyout = new QHBoxLayout;
+
+    glyout->addWidget(WDFunc::NewLBL(this, "Наличие напряжения на стороне нагрузки"),2,0,1,1);
+    QButtonGroup *bg = new QButtonGroup;
+    QRadioButton *rb = new QRadioButton("Есть");
+    rb->setObjectName("u2yes");
+    bg->addButton(rb);
+    hlyout->addWidget(rb);
+    rb = new QRadioButton("Нет");
+    rb->setObjectName("u2no");
+    bg->addButton(rb);
+    hlyout->addWidget(rb);
+    glyout->addLayout(hlyout, 2, 1, 1, 1);
+
+    glyout->addWidget(WDFunc::NewLBL(this, "Класс напряжения сети, кВ:"), 3,0,1,1);
+    cbl = QStringList() << "750" << "550" << "330" << "220" << "110" << "35" << "10";
+    glyout->addWidget(WDFunc::NewCB(this, "unomcb", cbl, ACONFGCLR),3,1,1,1);
+
+    hlyout = new QHBoxLayout;
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальный ток, А:"),4,0,1,1);
+    hlyout->addWidget(WDFunc::NewLBL(this, "первичный:"), 0);
+    hlyout->addWidget(WDFunc::NewSPB(this, "inom1", 10, 50000, 10, 0, ACONFGCLR), 1);
+    hlyout->addWidget(WDFunc::NewLBL(this, "вторичный:"), 0);
+    hlyout->addWidget(WDFunc::NewSPB(this, "inom2", 10, 50000, 10, 0, ACONFGCLR), 1);
+    glyout->addLayout(hlyout,4,1,1,1);
+
+    vlyout1->addLayout(glyout);
+    MyStackedWidget *stw = new MyStackedWidget;
+    stw->setObjectName("mainstw");
+    vlyout1->addWidget(stw, 1);
+    vlyout1->addStretch(1);
+    cp1->setLayout(vlyout1);
+
+    vlyout1 = new QVBoxLayout;
+    glyout = new QGridLayout;
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальный ток, А:"),0,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "inomspb", 10, 50000, 10, 0),0,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Максимальный коммутируемый ток, кА:"),1,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "ikzspb", 1, 150, 0.1, 1),1,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Минимальное время горения дуги, мс:"),2,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "tarcspb", 10, 50000, 10, 0),2,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Собственное время отключения (А,В,С), мс:"),3,0,1,1);
+    hlyout->addWidget(WDFunc::NewLBL(this, "А:"), 0);
+    hlyout->addWidget(WDFunc::NewSPB(this, "tsoff1", 1, 500, 0.1, 1, ACONFGCLR), 1);
+    hlyout->addWidget(WDFunc::NewLBL(this, "В:"), 0);
+    hlyout->addWidget(WDFunc::NewSPB(this, "tsoff2", 1, 500, 0.1, 1, ACONFGCLR), 1);
+    hlyout->addWidget(WDFunc::NewLBL(this, "С:"), 0);
+    hlyout->addWidget(WDFunc::NewSPB(this, "tsoff3", 1, 500, 0.1, 1, ACONFGCLR), 1);
+    glyout->addLayout(hlyout, 3, 1, 1, 1);
+
+
 
     QGroupBox *gb = new QGroupBox("Аналоговые");
     switch (pc.ModuleBsi.MTypeM)
@@ -132,7 +201,7 @@ void ConfDialog80::SetupUI()
     gb = new QGroupBox("Осциллограммы");
     vlyout2 = new QVBoxLayout;
     hlyout = new QHBoxLayout;
-    lbl = new QLabel("Запуск осциллограммы:");
+    QLabel *lbl = new QLabel("Запуск осциллограммы:");
     hlyout->addWidget(lbl);
     QCheckBox *chb = WDFunc::NewChB(this, "oscchb.0", "по команде Ц", ACONFWCLR);
     connect(chb,SIGNAL(statechanged(int)),this,SLOT(SetOsc(int)));
@@ -180,16 +249,19 @@ void ConfDialog80::SetupUI()
     ConfTW->setObjectName("conftw");
     QString ConfTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLOR)+";}";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
-    ConfTW->addTab(cp1,"Общие");
+    ConfTW->addTab(cp1,"Основные");
+    ConfTW->addTab(cp2,"Параметры выключателя");
+    ConfTW->addTab(cp1,"Доп. параметры");
+    ConfTW->addTab(cp1,"Уставки сигнализации");
     lyout->addWidget(ConfTW);
     setLayout(lyout);
 }
 
-void ConfDialog80::CheckConf()
+void ConfDialog85::CheckConf()
 {
 }
 
-QWidget *ConfDialog80::UNom(int numunom)
+QWidget *ConfDialog85::UNom(int numunom)
 {
     QWidget *w = new QWidget;
     QString NumUNomStr = QString::number(numunom);
@@ -207,10 +279,10 @@ QWidget *ConfDialog80::UNom(int numunom)
 
 // 1 - первичный ток первой группы, 2 - вторичный ток первой группы, 3,4 - то же по второй группе
 
-QWidget *ConfDialog80::INom(int numinom)
+QWidget *ConfDialog85::INom(int numinom)
 {
     QWidget *w = new QWidget;
-    QHBoxLayout *gb2lyout = new QHBoxLayout;
+/*    QHBoxLayout *gb2lyout = new QHBoxLayout;
     QString NumGroup = (numinom < 3) ? "1" : "2";
     QString Perv = (numinom%2) ? "первичные" : "вторичные";
     QString PervNum = (numinom%2) ? "1" : "2";
@@ -225,26 +297,26 @@ QWidget *ConfDialog80::INom(int numinom)
         connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(SetCurrent(double)));
         gb2lyout->addWidget(dspbls, 1);
     }
-    w->setLayout(gb2lyout);
+    w->setLayout(gb2lyout);*/
     return w;
 }
 
-QWidget *ConfDialog80::Threshold(QString str, int numthr)
+QWidget *ConfDialog85::Threshold(QString str, int numthr)
 {
     QWidget *w = new QWidget;
-    QHBoxLayout *gb2lyout = new QHBoxLayout;
+/*    QHBoxLayout *gb2lyout = new QHBoxLayout;
     QLabel *lbl = new QLabel(str);
     gb2lyout->addWidget(lbl);
     QDoubleSpinBox *dspbls = WDFunc::NewSPB(this, "thr."+QString::number(numthr), 0, 100, 0.1, 1, ACONFWCLR);
     connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(SetThreshold(double)));
     gb2lyout->addWidget(dspbls);
-    w->setLayout(gb2lyout);
+    w->setLayout(gb2lyout);*/
     return w;
 }
 
-void ConfDialog80::SetOsc(int isChecked)
+void ConfDialog85::SetOsc(int isChecked)
 {
-    int val;
+/*    int val;
     if ((val = GetChNumFromObjectName(sender()->objectName()) == GENERALERROR))
     {
         DBGMSG;
@@ -253,14 +325,14 @@ void ConfDialog80::SetOsc(int isChecked)
     quint16 tmpint = 0x0001;
     tmpint = tmpint << val;
     if (isChecked == Qt::Checked)
-        C80->Bci_block.ddosc |= tmpint;
+        C85->Bci_block.ddosc |= tmpint;
     else
-        C80->Bci_block.ddosc &= ~tmpint;
+        C85->Bci_block.ddosc &= ~tmpint;*/
 }
 
-void ConfDialog80::SetThreshold(double dbl)
+void ConfDialog85::SetThreshold(double dbl)
 {
-    int thr;
+/*    int thr;
     if ((thr = GetChNumFromObjectName(sender()->objectName()) == GENERALERROR))
     {
         DBGMSG;
@@ -270,41 +342,41 @@ void ConfDialog80::SetThreshold(double dbl)
     {
     case 1: // % напряжения
     {
-        C80->Bci_block.duosc = dbl;
+        C85->Bci_block.duosc = dbl;
         break;
     }
     case 2: // % тока
     {
-        C80->Bci_block.diosc = dbl;
+        C85->Bci_block.diosc = dbl;
         break;
     }
     case 3: // % частоты
     {
-        C80->Bci_block.duimin = dbl;
+        C85->Bci_block.duimin = dbl;
         break;
     }
     default:
         break;
-    }
+    }*/
 }
 
-void ConfDialog80::SetVoltageClass(int tmpi)
+void ConfDialog85::SetVoltageClass(int tmpi)
 {
-    int vnum;
+/*    int vnum;
     if ((vnum = GetChNumFromObjectName(sender()->objectName()) == GENERALERROR))
     {
         DBGMSG;
         return;
     }
     if (vnum == 2) // вторая тройка напряжений
-        C80->Bci_block.unom2 = tmpi;
+        C85->Bci_block.unom2 = tmpi;
     else
-        C80->Bci_block.unom1 = tmpi;
+        C85->Bci_block.unom1 = tmpi;*/
 }
 
-void ConfDialog80::SetCurrent(double dbl)
+void ConfDialog85::SetCurrent(double dbl)
 {
-    QStringList sl = sender()->objectName().split(".");
+/*   QStringList sl = sender()->objectName().split(".");
     if (sl.size() < 4) // name, group, perv, phase
     {
         DBGMSG;
@@ -322,37 +394,37 @@ void ConfDialog80::SetCurrent(double dbl)
             if (ok)
             {
                 if (perv == 1) // первичная группа
-                    C80->Bci_block.inom1[(group-1)*3+phase] = dbl;
+                    C85->Bci_block.inom1[(group-1)*3+phase] = dbl;
                 else
-                    C80->Bci_block.inom2[(group-1)*3+phase] = dbl;
+                    C85->Bci_block.inom2[(group-1)*3+phase] = dbl;
                 return;
             }
         }
     }
-    DBGMSG;
+    DBGMSG;*/
 }
 
-void ConfDialog80::SetEqType(int tmpi)
+void ConfDialog85::SetEqType(int tmpi)
 {
-    C80->Bci_block.eq_type = tmpi;
+//    C85->Bci_block.eq_type = tmpi;
 }
 
-void ConfDialog80::SetNPoints(QString tmpi)
+void ConfDialog85::SetNPoints(QString tmpi)
 {
-    C80->Bci_block.npoints = tmpi.toInt();
+//    C85->Bci_block.npoints = tmpi.toInt();
 }
 
-void ConfDialog80::SetNFiltr(int tmpi)
+void ConfDialog85::SetNFiltr(int tmpi)
 {
-    C80->Bci_block.nfiltr = tmpi;
+//    C85->Bci_block.nfiltr = tmpi;
 }
 
-void ConfDialog80::SetNHFiltr(int tmpi)
+void ConfDialog85::SetNHFiltr(int tmpi)
 {
-    C80->Bci_block.nhfiltr = tmpi;
+//    C85->Bci_block.nhfiltr = tmpi;
 }
 
-void ConfDialog80::SetDefConf()
+void ConfDialog85::SetDefConf()
 {
-    C80->SetDefConf();
+//    C85->SetDefConf();
 }

@@ -9,7 +9,7 @@ class s_tqComboBox : public QComboBox
 public:
     explicit s_tqComboBox(QWidget *parent = 0);
 
-    void insertItem(int index, const QString &text, const QVariant &userData);
+//    void insertItem(int index, const QString &text, const QVariant &userData);
 
 signals:
 

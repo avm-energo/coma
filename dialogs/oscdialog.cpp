@@ -20,13 +20,10 @@ oscdialog::oscdialog(QWidget *parent) :
     QDialog(parent)
 {
     SetupUI();
-    OscInfo = 0;
 }
 
 oscdialog::~oscdialog()
 {
-    if (OscInfo != 0)
-        delete OscInfo;
 }
 
 void oscdialog::SetupUI()
@@ -37,7 +34,7 @@ void oscdialog::SetupUI()
     tm = new ETableModel;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Получить данные по осциллограммам в памяти "+tmps);
-    connect(pb,SIGNAL(clicked()),this,SLOT(GetOscInfo()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(GetAndProcessOscInfo()));
     if (pc.Emul)
         pb->setEnabled(false);
     lyout->addWidget(pb);
@@ -50,65 +47,68 @@ void oscdialog::SetupUI()
     setLayout(lyout);
 }
 
-void oscdialog::GetOscInfo()
+void oscdialog::GetAndProcessOscInfo()
 {
-    if (OscInfo != 0)
-        delete OscInfo;
-    OscInfo = new QByteArray;
-    OscInfo->resize(MAXOSCBUFSIZE);
-    SizeIsSet = false;
-    if ((OscInfoSize = Commands::GetBo(&(OscInfo->data()[0]), MAXOSCBUFSIZE)) > 0)
-        ProcessOscInfo();
-}
-
-void oscdialog::ProcessOscInfo()
-{
-    QList<QStringList> lsl;
-    tm->ClearModel();
-    tm->addColumn("#");
-    tm->addColumn("Дата/Время");
-    tm->addColumn("Скачать");
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    QStringList Num, Tim, Dwld;
-    for (quint32 i = 0; i < OscInfoSize; i+= 16)
+    QVector<QVector<QVariant> > lsl;
+    QByteArray OscInfo;
+    quint32 OscInfoSize; // размер считанного буфера с информацией об осциллограммах
+    quint32 RecordSize = sizeof(GBoStruct);
+    OscInfo.resize(MAXOSCBUFSIZE);
+    if ((OscInfoSize = Commands::GetBo(&(OscInfo.data()[0]), MAXOSCBUFSIZE)) > 0)
     {
-        quint32 oscnum = static_cast<quint8>(OscInfo->at(i));
-        oscnum += static_cast<quint8>(OscInfo->at(i+1))*256;
-        quint32 unixtime = static_cast<quint8>(OscInfo->at(i+8));
-        unixtime += static_cast<quint8>(OscInfo->at(i+9))*256;
-        unixtime += static_cast<quint8>(OscInfo->at(i+10))*65536;
-        unixtime += static_cast<quint8>(OscInfo->at(i+11))*16777216;
-        quint32 timens = static_cast<quint8>(OscInfo->at(i+12));
-        timens += static_cast<quint8>(OscInfo->at(i+13))*256;
-        timens += static_cast<quint8>(OscInfo->at(i+14))*65536;
-        timens += static_cast<quint8>(OscInfo->at(i+15))*16777216;
-        QDateTime tme = QDateTime::fromTime_t(unixtime, Qt::LocalTime);
-        QString ms = QString::number((timens/1000000));
-        QString mcs = QString::number(((timens-ms.toInt()*1000000)/1000));
-        QString ns = QString::number(timens-ms.toInt()*1000000-mcs.toInt()*1000);
-        Num << QString::number(oscnum);
-        Tim << tme.toString("dd/MM/yyyy hh:mm:ss.")+ms+"."+mcs+"."+ns;
-        Dwld << "Скачать";
+        if (OscInfoSize < RecordSize)
+        {
+            MessageBox2::information(this, "Информация", "Присланное количество байт слишком мало");
+            return;
+        }
+        tm->ClearModel();
+        tm->addColumn("#");
+        tm->addColumn("ИД");
+        tm->addColumn("Дата/Время");
+        tm->addColumn("Длина");
+        tm->addColumn("Скачать");
+        QApplication::setOverrideCursor(Qt::WaitCursor);
+        QVector<QVariant> Num, IDs, Tim, Lngth, Dwld;
+        int counter = 0;
+        for (quint32 i = 0; i < OscInfoSize; i+= RecordSize)
+        {
+            GBoStruct gbos;
+            memcpy(&gbos, &OscInfo[i], RecordSize);
+            Num << QString::number(gbos.FileNum);
+            quint32 tmpi = gbos.UnixTime >> 32;
+            QDateTime tn = QDateTime::fromTime_t(tmpi, Qt::UTC);
+            quint32 timens = gbos.UnixTime & 0xFFFFFFFF;
+            QString ms = QString::number((timens/1000000));
+            QString mcs = QString::number(((timens-ms.toInt()*1000000)/1000));
+            QString ns = QString::number(timens-ms.toInt()*1000000-mcs.toInt()*1000);
+            Tim << tn.toString("dd/MM/yyyy hh:mm:ss.")+ms+"."+mcs+"."+ns;
+            IDs << gbos.ID;
+            Lngth << gbos.FileLength;
+            ++counter;
+        }
+        Dwld.fill("Скачать", counter);
+        lsl.append(Num);
+        lsl.append(IDs);
+        lsl.append(Tim);
+        lsl.append(Lngth);
+        lsl.append(Dwld);
+        tm->fillModel(lsl);
+        QApplication::restoreOverrideCursor();
+        s_tqTableView *tv = this->findChild<s_tqTableView *>("osctv");
+        if (tv == 0)
+        {
+            DBGMSG;
+            return; // !!! системная проблема
+        }
+        QItemSelectionModel *m = tv->selectionModel();
+        tv->setModel(tm);
+        delete m;
+        GetOscPBDelegate *dg = new GetOscPBDelegate;
+        connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(GetOsc(QModelIndex)));
+        tv->setItemDelegateForColumn(4,dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
+        tv->resizeRowsToContents();
+        tv->resizeColumnsToContents();
     }
-    lsl.append(Num);
-    lsl.append(Tim);
-    lsl.append(Dwld);
-    tm->fillModel(lsl);
-    QApplication::restoreOverrideCursor();
-    s_tqTableView *tv = this->findChild<s_tqTableView *>("osctv");
-    if (tv == 0)
-    {
-        DBGMSG;
-        return; // !!! системная проблема
-    }
-    QItemSelectionModel *m = tv->selectionModel();
-    tv->setModel(tm);
-    delete m;
-    GetOscPBDelegate *dg = new GetOscPBDelegate;
-    connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(GetOsc(QModelIndex)));
-    tv->setItemDelegateForColumn(2,dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
-    tv->resizeRowsToContents();
-    tv->resizeColumnsToContents();
 }
 
 void oscdialog::EndExtractOsc()
@@ -280,7 +280,7 @@ void oscdialog::GetOsc(QModelIndex idx)
     QVector<publicclass::DataRec> *S2Config = new QVector<publicclass::DataRec>;
     quint32 oscnum = tm->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(); // номер осциллограммы
     OscDateTime = tm->data(idx.sibling(idx.row(),1),Qt::DisplayRole).toString(); // дата и время создания осциллограммы
-    OscInfo->resize(MAXOSCBUFSIZE);
+//    OscInfo.resize(MAXOSCBUFSIZE);
     GivenFilename = OscDateTime;
     GivenFilename.replace("/","-");
     GivenFilename.replace(":","_");
@@ -297,9 +297,4 @@ void oscdialog::EraseOsc()
         MessageBox2::information(this, "Внимание", "Стёрто успешно");
     else
         MessageBox2::information(this, "Внимание", "Ошибка при стирании");
-}
-
-void oscdialog::SetOscBufSize(quint32 size)
-{
-    OscInfoSize = size;
 }

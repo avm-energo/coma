@@ -16,7 +16,7 @@
 #include "../commands.h"
 
 TuneDialog80::TuneDialog80(QVector<publicclass::DataRec> &S2Config, QWidget *parent) :
-    QDialog(parent)
+    EAbstractTuneDialog(parent)
 {
     this->S2Config = &S2Config;
     C80 = new Config80(S2Config);
@@ -231,6 +231,31 @@ void TuneDialog80::SetupUI()
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
+}
+
+void TuneDialog80::SetLbls()
+{
+
+}
+
+void TuneDialog80::SetPf()
+{
+
+}
+
+void TuneDialog80::FillBac()
+{
+
+}
+
+void TuneDialog80::FillBackBac()
+{
+
+}
+
+void TuneDialog80::GetBdAndFillMTT()
+{
+
 }
 
 void TuneDialog80::StartTune()
@@ -699,7 +724,7 @@ int TuneDialog80::GetExternalData()
             {
                 lbl = new QLabel("Uф" + QString::number(i+10,36).toUpper()+", В");
                 glyout->addWidget(lbl,row,column++,1,1);
-                s_tqSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i), 0, 200, 0.1, 5);
+                QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i), 0, 200, 0.1, 5);
                 spb->setValue(60.0);
                 glyout->addWidget(spb,row,column++,1,1);
             }
@@ -712,7 +737,7 @@ int TuneDialog80::GetExternalData()
             {
                 lbl = new QLabel("Iф" + QString::number(i+10,36).toUpper()+", A");
                 glyout->addWidget(lbl,row, column++,1,1);
-                s_tqSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i+3), 0, 6, 0.001, 5);
+                QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i+3), 0, 6, 0.001, 5);
                 spb->setValue(C80->Bci_block.inom2[i]);
                 glyout->addWidget(spb,row, column++,1,1);
             }
@@ -725,7 +750,7 @@ int TuneDialog80::GetExternalData()
             {
                 lbl = new QLabel("Уг.нагр. ф" + QString::number(i+10,36).toUpper()+", град");
                 glyout->addWidget(lbl,3,i*2,1,1);
-                s_tqSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i+6), -360, 360, 0.01, 3);
+                QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i+6), -360, 360, 0.01, 3);
                 spb->setValue(0.0);
                 glyout->addWidget(spb,row, column++,1,1);
             }
@@ -736,7 +761,7 @@ int TuneDialog80::GetExternalData()
         {
             lbl = new QLabel("Частота ");
             glyout->addWidget(lbl,row,column++,1,1);
-            s_tqSpinBox *spb = WDFunc::NewSPB(this, "spb73719", 40.0, 60.0, 0.01, 5);
+            QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb73719", 40.0, 60.0, 0.01, 5);
             spb->setValue(50.0);
             glyout->addWidget(spb,row, column++,1,1);
         }
@@ -825,17 +850,17 @@ void TuneDialog80::SetExtData()
         return;
     for (int i=0; i<3; ++i)
     {
-        s_tqSpinBox *spb = this->findChild<s_tqSpinBox *>("spb7371"+QString::number(i));
+        QDoubleSpinBox *spb = this->findChild<QDoubleSpinBox *>("spb7371"+QString::number(i));
         if (spb != 0)
             RealData.u[i] = spb->value();
-        spb = this->findChild<s_tqSpinBox *>("spb7371"+QString::number(i+3));
+        spb = this->findChild<QDoubleSpinBox *>("spb7371"+QString::number(i+3));
         if (spb != 0)
             RealData.i[i] = spb->value();
-        spb = this->findChild<s_tqSpinBox *>("spb7371"+QString::number(i+6));
+        spb = this->findChild<QDoubleSpinBox *>("spb7371"+QString::number(i+6));
         if (spb != 0)
             RealData.d[i] = spb->value();
     }
-    s_tqSpinBox *spb = this->findChild<s_tqSpinBox *>("spb73719");
+    QDoubleSpinBox *spb = this->findChild<QDoubleSpinBox *>("spb73719");
     if (spb != 0)
         RealData.f[0] = spb->value();
     Cancelled = false;
@@ -1004,19 +1029,6 @@ int TuneDialog80::CheckAnalogValues(double u, double i, double p, double q, doub
     return NOERROR;
 }
 
-void TuneDialog80::ReadTuneCoefs()
-{
-    if (Commands::GetBac(BT_NONE, &Bac_block, sizeof(Bac)) == NOERROR)
-        WriteTuneCoefsToGUI();
-}
-
-void TuneDialog80::WriteTuneCoefs()
-{
-    ReadTuneCoefsFromGUI();
-    if (Commands::WriteBac(BT_NONE, &Bac_block, sizeof(Bac)) == NOERROR)
-        MessageBox2::information(this, "Внимание", "Записано успешно!");
-}
-
 int TuneDialog80::SetNewTuneCoefs()
 {
     Bac_newblock.Kinter = Bac_block.Kinter;
@@ -1078,7 +1090,7 @@ void TuneDialog80::ReadTuneCoefsFromGUI()
     Bac_block.Kinter=ToFloat(tmps);
 }
 
-void TuneDialog80::ReadAnalogMeasurements()
+int TuneDialog80::ReadAnalogMeasurements()
 {
 /*    // получение текущих аналоговых сигналов от модуля
     if (Commands::GetBd(BT_NONE, &Bda_block, sizeof(Bda_block)) != NOERROR)
@@ -1086,6 +1098,7 @@ void TuneDialog80::ReadAnalogMeasurements()
         MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");
         return;
     }  */
+    return NOERROR;
 }
 
 void TuneDialog80::StartMip()
@@ -1264,90 +1277,7 @@ void TuneDialog80::MsgClear()
     } */
 }
 
-void TuneDialog80::MsgSetVisible(int msg, bool Visible)
-{
-    WDFunc::SetVisible(this, "tunemsg"+QString::number(msg), Visible);
-}
-
-void TuneDialog80::OkMsgSetVisible(int msg, bool Visible)
-{
-    QPixmap *pm = new QPixmap(":/pic/ok.png");
-    WDFunc::SetVisible(this, "tunemsgres"+QString::number(msg), Visible);
-    WDFunc::SetLBLImage(this, "tunemsgres"+QString::number(msg), pm);
-}
-
-void TuneDialog80::ErMsgSetVisible(int msg, bool Visible)
-{
-    QPixmap *pm = new QPixmap(":/pic/cross.png");
-    WDFunc::SetVisible(this, "tunemsgres"+QString::number(msg), Visible);
-    WDFunc::SetLBLImage(this, "tunemsgres"+QString::number(msg), pm);
-}
-
-void TuneDialog80::SkMsgSetVisible(int msg, bool Visible)
-{
-    QPixmap *pm = new QPixmap(":/pic/hr.png");
-    WDFunc::SetVisible(this, "tunemsgres"+QString::number(msg), Visible);
-    WDFunc::SetLBLImage(this, "tunemsgres"+QString::number(msg), pm);
-}
-
 void TuneDialog80::CancelTune()
 {
     Cancelled = true;
-}
-
-void TuneDialog80::LoadFromFile()
-{
-    QByteArray ba;
-    pc.LoadFile(this, "Tune files (*.etn)", ba);
-    memcpy(&Bac_block,&(ba.data()[0]),sizeof(Bac_block));
-    WriteTuneCoefsToGUI();
-    MessageBox2::information(this, "Внимание", "Загрузка прошла успешно!");
-}
-
-void TuneDialog80::SaveToFile()
-{
-    ReadTuneCoefsFromGUI();
-    QByteArray ba(sizeof(Bac_block), 0);
-    memcpy(&(ba.data()[0]), &Bac_block, sizeof(Bac_block));
-    int res = pc.SaveFile(this, "Tune files (*.tn)", "tn", ba, sizeof(Bac_block));
-    switch (res)
-    {
-    case NOERROR:
-        MessageBox2::information(this, "Внимание", "Записано успешно!");
-        break;
-    case ER_FILEWRITE:
-        MessageBox2::error(this, "Ошибка", "Ошибка при записи файла!");
-        break;
-    case ER_FILENAMEEMP:
-        MessageBox2::error(this, "Ошибка", "Пустое имя файла!");
-        break;
-    case ER_FILEOPEN:
-        MessageBox2::error(this, "Ошибка", "Ошибка открытия файла!");
-        break;
-    default:
-        break;
-    }
-}
-
-void TuneDialog80::WaitNSeconds(int Seconds)
-{
-    QTime tme;
-    SecondsToEnd15SecondsInterval = Seconds;
-    WaitWidget *w = new WaitWidget;
-    QTimer *tmr = new QTimer;
-    tmr->setInterval(1000);
-    connect(tmr,SIGNAL(timeout()),this,SLOT(UpdateNSecondsWidget()));
-    connect(this,SIGNAL(SecondsRemaining(QString)),w,SLOT(SetMessage(QString)));
-    tmr->start();
-    w->Start();
-    tme.start();
-    while (SecondsToEnd15SecondsInterval > 0);
-    tmr->stop();
-    w->Stop();
-}
-
-void TuneDialog80::UpdateNSecondsWidget()
-{
-    QString tmps = "Подождите " + QString::number(--SecondsToEnd15SecondsInterval) + " с";
-    emit SecondsRemaining(tmps);
 }

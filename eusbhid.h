@@ -25,7 +25,7 @@ class EUsbThread : public QObject
 {
     Q_OBJECT
 public:
-    explicit EUsbThread(QObject *parent = 0);
+    explicit EUsbThread(Log *logh, QObject *parent = 0);
     ~EUsbThread();
 
     Log *log;
@@ -53,7 +53,6 @@ public:
     ~EUsbHid();
 
     bool FirstRun;
-    bool Connected;
 
     bool Connect();
     QByteArray RawRead(int bytes);

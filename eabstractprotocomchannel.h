@@ -8,12 +8,18 @@
 #include "publicclass.h"
 #include "log.h"
 
+#ifdef COMPORTENABLE
+#define CN_MAXSEGMENTLENGTH 764 // 768-4 ('<',cmd,L,L) максимальная длина одного сегмента (0x300)
+#endif
+#ifdef USBENABLE
+#define CN_MAXSEGMENTLENGTH 60 // 64-4 ('<',cmd,L,L)
+#endif
+
 // Канал связи с модулем
 
 #define CN_TIMEOUT  2000 // таймаут по USB в мс
 #define CN_OSCT     1000 // таймаут посылки запроса нестёртых осциллограмм
 #define CN_MAXFILESIZE  30000 // максимальный размер выходного файла
-#define CN_MAXSEGMENTLENGTH 768 // максимальная длина одного сегмента (0x300)
 #define CN_MAINLOOP_DELAY   100 // 100 ms main loop sleep
 
 // Обмен с модулями
@@ -62,6 +68,7 @@ public:
     bool NeedToSend, Busy, NeedToFinish;
     bool Connected, Cancelled;
     quint32 RDSize;
+    Log *log;
 
     virtual bool Connect() = 0;
     virtual QByteArray RawRead(int bytes) = 0;
@@ -99,7 +106,7 @@ private:
     int bStep;
     int cmd;
     quint16 fnum;
-    quint32 RDLength; // длина всей посылки
+    quint32 ReadDataChunkLength, RDLength; // длина всей посылки
     quint32 WRLength; // длина всей посылки
     quint32 outdatasize; // размер приёмной области памяти
     quint32 SegLeft; // количество оставшихся сегментов
@@ -108,7 +115,6 @@ private:
     bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
     QVector<publicclass::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     quint8 BoardType;
-    Log *log;
 
     void InitiateSend();
     void WriteDataToPort(QByteArray &ba);

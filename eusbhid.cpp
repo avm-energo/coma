@@ -20,7 +20,7 @@ bool EUsbHid::Connect()
         pc.PrbMessage = "Загрузка данных...";
     else
         return true;
-    UThread = new EUsbThread;
+    UThread = new EUsbThread(log);
     UThr = new QThread;
     UThread->moveToThread(UThr);
 //    connect(this,SIGNAL(StartUThread(QThread::Priority)),thr,SLOT(start(QThread::Priority)));
@@ -45,19 +45,23 @@ QByteArray EUsbHid::RawRead(int bytes)
 
 qint64 EUsbHid::RawWrite(QByteArray &ba)
 {
-    return UThread->WriteData(ba);
+    qint64 res = UThread->WriteData(ba);
+    if (res < 0)
+        return GENERALERROR;
+    return res;
 }
 
 void EUsbHid::RawClose()
 {
+    Connected = false;
     emit StopUThread();
 }
 
-EUsbThread::EUsbThread(QObject *parent) : QObject(parent)
+EUsbThread::EUsbThread(Log *logh, QObject *parent) : QObject(parent)
 {
-    log = new Log;
-    log->Init("usb.log");
-    log->WriteRaw("=== Log started ===");
+    QString tmps = "=== ULog started at " + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss") + " ===";
+    log = logh;
+    log->WriteRaw(tmps.toUtf8());
     AboutToFinish = false;
 //    isRunning = false;
 }
@@ -87,8 +91,8 @@ void EUsbThread::Run()
         if (bytes < 0)
         {
             if (pc.WriteUSBLog)
-                log->WriteRaw("Unable to hid_read()");
-            continue;
+                log->WriteRaw("UsbThread: Unable to hid_read()");
+            AboutToFinish = true;
         }
         if (bytes > 0)
         {
@@ -108,11 +112,7 @@ qint64 EUsbThread::WriteData(QByteArray &ba)
     if (ba.size() > UH_MAXSEGMENTLENGTH)
     {
         if (pc.WriteUSBLog)
-        {
-            log->WriteRaw("WRONG SEGMENT LENGTH!\n");
-            log->WriteRaw(ba.toHex());
-            log->WriteRaw("WRONG SEGMENT LENGTH!\n");
-        }
+            log->WriteRaw("UsbThread: WRONG SEGMENT LENGTH!\n");
         ERMSG("Длина сегмента больше "+QString::number(UH_MAXSEGMENTLENGTH)+" байт");
         return GENERALERROR;
     }
@@ -121,7 +121,7 @@ qint64 EUsbThread::WriteData(QByteArray &ba)
     ba.prepend(static_cast<char>(0x00)); // inserting ID field
     if (pc.WriteUSBLog)
     {
-        log->WriteRaw("->");
+        log->WriteRaw("UsbThread: ->");
         log->WriteRaw(ba.toHex());
         log->WriteRaw("\n");
     }

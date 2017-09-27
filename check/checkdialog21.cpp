@@ -21,7 +21,8 @@ CheckDialog21::CheckDialog21(QWidget *parent) : EAbstractCheckDialog(parent)
 {
     BdMeasurementsActive = BdaMeasurementsActive = false;
     setAttribute(Qt::WA_DeleteOnClose);
-    for (int i = 0; i < 16; i++)
+    Check21 *Ch21 = new Check21;
+/*    for (int i = 0; i < 16; i++)
     {
         Bda_block.sin[i] = 0;
         Bd_block.inI[i] = 0;
@@ -30,7 +31,7 @@ CheckDialog21::CheckDialog21(QWidget *parent) : EAbstractCheckDialog(parent)
         Bd_block.ainn[i] = 0;
         Bd_block.ainx[i] = 0;
     }
-    Bd_block.at = 0;
+    Bd_block.at = 0; */
     SetupUI();
 }
 
@@ -191,9 +192,34 @@ void CheckDialog21::SetupUI()
     setLayout(lyout); */
 }
 
-void CheckDialog21::StartMeasurementsWithFile()
+void CheckDialog21::SetDefaultValuesToWrite()
 {
-/*    aconf = new config_21;
+
+}
+
+void CheckDialog21::ChooseValuesToWrite()
+{
+
+}
+
+void CheckDialog21::WriteToFile(int row, int bdnum)
+{
+
+}
+
+void CheckDialog21::PrepareHeadersForFile(int row)
+{
+
+}
+
+void CheckDialog21::RefreshAnalogValues(int bdnum)
+{
+
+}
+
+/*void CheckDialog21::StartMeasurementsWithFile()
+{
+    aconf = new config_21;
     // читаем текущую конфигурацию
     cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,aconf->Config->Config);
     if (cn->result != NOERROR)
@@ -232,8 +258,8 @@ void CheckDialog21::StartMeasurementsWithFile()
         pb->setEnabled(false);
     ElapsedTimeCounter = new QTime;
     ElapsedTimeCounter->start();
-    StartMeasurements(); */
-}
+    StartMeasurements();
+} */
 
 void CheckDialog21::StartBdaMeasurements()
 {
@@ -245,28 +271,10 @@ void CheckDialog21::StopBdaMeasurements()
     BdaMeasurementsActive = false;
 }
 
-void CheckDialog21::RefreshBd()
-{
-}
 
-void CheckDialog21::CheckLEDOn()
+/*void CheckDialog21::TimerTimeout()
 {
-//    cn->Send(CN_Cln);
-}
-
-void CheckDialog21::CheckLEDOff()
-{
-//    cn->Send(CN_Clf);
-}
-
-void CheckDialog21::Check1PPS()
-{
-
-}
-
-void CheckDialog21::TimerTimeout()
-{
-/*    if ((BdMeasurementsActive) && (OddTimeout)) // текущие измерения проводим на первом проходе таймера
+    if ((BdMeasurementsActive) && (OddTimeout)) // текущие измерения проводим на первом проходе таймера
     {
         cn->Send(CN_GBd, Canal::BT_NONE, &Bd_block, sizeof(Bd));
         if (cn->result == NOERROR)
@@ -303,5 +311,5 @@ void CheckDialog21::TimerTimeout()
         if (cn->result == NOERROR)
             RefreshBda();
     }
-    OddTimeout = !OddTimeout; */
-}
+    OddTimeout = !OddTimeout;
+} */

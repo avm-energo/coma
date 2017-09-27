@@ -37,7 +37,7 @@ public:
     QString getCellType(int row, int column);
     void setRowAttr(int fcset=0, int icon=-1);
     void ClearModel();
-    void fillModel(QList<QStringList> sl);
+    void fillModel(QVector<QVector<QVariant> > sl);
     QStringList cvalues(int column); // выдать значения по столбцу column в выходной QStringList
     QStringList rvalues(int row); // выдать значения по строке row в выходной QStringList
 //    ETableItem item(const QModelIndex &);
