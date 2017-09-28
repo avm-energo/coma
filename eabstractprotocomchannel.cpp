@@ -12,7 +12,7 @@ EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(pa
     SegEnd = 0;
     SegLeft = 0;
     FirstRun = true;
-    FirstSegment = true;
+//    FirstSegment = true;
     OscNum = 0;
     Connected = false;
     Cancelled = false;
@@ -74,7 +74,6 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_OscEr:  // команда стирания осциллограмм
     case CN_OscPg:  // запрос количества нестёртых страниц
     {
-//        WriteData.resize(4);
         WriteData.append(CN_MS);
         WriteData.append(cmd);
         AppendSize(WriteData, 0);
@@ -85,7 +84,6 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_GBda:   // чтение текущих данных без настройки
     case CN_GBd:    // запрос блока (подблока) текущих данных
     {
-//        WriteData.resize(5);
         WriteData.append(CN_MS);
         WriteData.append(cmd);
         AppendSize(WriteData, 1);
@@ -97,11 +95,9 @@ void EAbstractProtocomChannel::InitiateSend()
     {
         if (DR->isEmpty())
         {
-//            SendErr();
             Finish(CN_NULLDATAERROR);
             break;
         }
-//        WriteData.resize(6);
         WriteData.append(CN_MS);
         WriteData.append(cmd);
         AppendSize(WriteData, 2);
@@ -125,10 +121,6 @@ void EAbstractProtocomChannel::InitiateSend()
     {
         if (DR->isEmpty())
             Finish(CN_NULLDATAERROR);
-//        WriteData.resize(CN_MAXFILESIZE);
-//        WriteData.append(CN_MS);
-//        WriteData.append(cmd);
-//        AppendSize(WriteData, 0); // временно записываем нулевую длину, впоследствии поменяем
         WriteData.resize(CN_MAXFILESIZE);
         pc.StoreDataMem(&(WriteData.data()[0]), DR, fnum);
         // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
@@ -137,11 +129,10 @@ void EAbstractProtocomChannel::InitiateSend()
         WRLength += static_cast<quint8>(WriteData.at(5))*256;
         WRLength += static_cast<quint8>(WriteData.at(4));
         WRLength += sizeof(publicclass::FileHeader); // sizeof(FileHeader)
-//        WRLength += 4; // + 4 bytes prefix
         WriteData.resize(WRLength);
         emit SetDataSize(WRLength); // сигнал для прогрессбара
         SetWRSegNum();
-        WRCheckForNextSegment();
+        WRCheckForNextSegment(true);
         break;
     }
     case CN_WBac:
@@ -152,7 +143,7 @@ void EAbstractProtocomChannel::InitiateSend()
         WRLength = outdatasize + 1;
         emit SetDataSize(WRLength); // сигнал для прогрессбара
         SetWRSegNum();
-        WRCheckForNextSegment();
+        WRCheckForNextSegment(true);
         break;
     }
     default:
@@ -165,7 +156,7 @@ void EAbstractProtocomChannel::InitiateSend()
     ReadData.clear();
     ReadDataChunk.clear();
     LastBlock = false;
-    FirstSegment = true;
+//    FirstSegment = true;
     bStep = 0;
     RDLength = 0;
 }
@@ -184,7 +175,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
     int res;
     ReadDataChunk.append(ba);
     RDSize = static_cast<quint32>(ReadDataChunk.size());
-    if (RDSize<3) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
+    if (RDSize<4) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
         return;
     if (ReadDataChunk.at(0) != CN_SS)
     {
@@ -199,11 +190,6 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             Finish(USO_NOERR + ReadDataChunk.at(4));
         return;
     }
-    if (!GetLength())
-    {
-        Finish(CN_RCVDATAERROR);
-        return;
-    }
     switch (bStep)
     {
     case 0: // первая порция
@@ -215,6 +201,11 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_OscEr:
         case CN_CtEr:
         {
+            if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
+            {
+                Finish(CN_RCVDATAERROR);
+                return;
+            }
             if (cmd == CN_OscEr)
                 OscTimer->start(); // start timer to send OscPg command periodically
             Finish(NOERROR);
@@ -224,10 +215,15 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_WF:
         case CN_WBac:
         {
+            if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
+            {
+                Finish(CN_RCVDATAERROR);
+                return;
+            }
             if (!SegLeft)
                 Finish(NOERROR);
             ReadDataChunk.clear();
-            WRCheckForNextSegment();
+            WRCheckForNextSegment(false);
             return;
         }
         // команды с ответом SS c L L ... и продолжением
@@ -242,21 +238,26 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_GBTe:
         case CN_GF:
         {
-            ReadDataChunk.remove(0, 4); // убираем заголовок с < и длиной
-            RDSize -= 4;
+            if (!GetLength())
+            {
+                Finish(CN_RCVDATAERROR);
+                return;
+            }
             if (cmd == CN_GF) // надо проверить, тот ли номер файла принимаем
             {
                 if (RDSize < 16) // не пришла ещё шапка файла
                     return;
-                quint16 filenum = static_cast<quint16>(ReadDataChunk[0])+static_cast<quint16>(ReadDataChunk[1])*256; // 0 & 1 because 4 bytes already removed
+                quint16 filenum = static_cast<quint16>(ReadDataChunk[4])+static_cast<quint16>(ReadDataChunk[5])*256;
                 if (filenum != fnum)
                 {
                     Finish(USO_UNKNFILESENT);
                     return;
                 }
-                memcpy(&RDLength, &(ReadDataChunk.data()[4]), sizeof(RDLength));
+                memcpy(&RDLength, &(ReadDataChunk.data()[8]), sizeof(RDLength));
+                emit SetDataSize(RDLength+16);
             }
-            emit SetDataSize(RDLength);
+            else
+                emit SetDataSize(outdatasize);
             bStep++;
             break;
         }
@@ -270,7 +271,6 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         if (RDSize < ReadDataChunkLength)
             return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
         ReadDataChunk.remove(0, 4); // убираем заголовок с < и длиной
-        RDSize -= 4;
         ReadData += ReadDataChunk;
         RDSize = static_cast<quint32>(ReadData.size());
         emit SetDataCount(RDSize); // сигнал для прогрессбара
@@ -286,18 +286,14 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_GBTe:
         case CN_GBo:
         {
-            if (RDSize >= RDLength)
+            if (RDSize >= outdatasize)
             {
-                if (RDSize > outdatasize)
-                    RDSize = outdatasize;
+                RDSize = outdatasize; // если даже приняли больше, копируем только требуемый размер
                 memcpy(outdata,ReadData.data(),RDSize);
                 Finish(NOERROR);
             }
             else
-            {
-                SendOk();
-//                bStep = 0; // переход к проверке длины блока и т.п.
-            }
+                SendOk(true);
             break;
         }
         case CN_GF:
@@ -306,18 +302,15 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             {
                 res = pc.RestoreDataMem(ReadData.data(), RDSize, DR);
                 if (res == 0)
-                    Finish(NOERROR);
-                else
                 {
-//                    SendErr();
-                    Finish(res);
+//                    SendOk(false);
+                    Finish(NOERROR);
                 }
+                else
+                    Finish(res);
             }
             else
-            {
-                SendOk();
-//                bStep = 0; // переход к проверке длины блока и т.п.
-            }
+                SendOk(true);
             break;
         }
         case CN_OscPg:
@@ -350,34 +343,13 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
     }
 }
 
-bool EAbstractProtocomChannel::GetLength(bool ok)
+bool EAbstractProtocomChannel::GetLength()
 {
-    if (ReadDataChunk.size() < 4)
+    if (ReadDataChunk.at(1) != cmd)
         return false;
-    if (ReadDataChunk.at(0) == CN_SS)
-    {
-        if (ok)
-        {
-            if ((ReadDataChunk.at(1) == CN_ResOk) && (ReadDataChunk.at(2) == 0x00) && (ReadDataChunk.at(3) == 0x00))
-                return true;
-            else
-                return false;
-        }
-        if (ReadDataChunk.at(1) != cmd)
-            return false;
-        ReadDataChunkLength = static_cast<quint8>(ReadDataChunk.at(2));
-        ReadDataChunkLength += static_cast<quint8>(ReadDataChunk.at(3))*256; // посчитали длину посылки
-        if (ReadDataChunkLength <= CN_MAXSEGMENTLENGTH)
-            LastBlock = true;
-        else
-            LastBlock = false;
-        if (ReadDataChunkLength > MAXLENGTH)
-            return false;
-        else
-            return true;
-    }
-    else
-        return false;
+    ReadDataChunkLength = static_cast<quint8>(ReadDataChunk.at(2));
+    ReadDataChunkLength += static_cast<quint8>(ReadDataChunk.at(3))*256; // посчитали длину посылки
+    return true;
 }
 
 void EAbstractProtocomChannel::SetWRSegNum()
@@ -389,17 +361,14 @@ void EAbstractProtocomChannel::SetWRSegNum()
     SegEnd = 0;
 }
 
-void EAbstractProtocomChannel::WRCheckForNextSegment()
+void EAbstractProtocomChannel::WRCheckForNextSegment(int first)
 {
     QByteArray tmpba;
     if (SegLeft)
     {
         --SegLeft;
-        if (FirstSegment)
-        {
+        if (first)
             tmpba.append(CN_MS);
-            FirstSegment = false;
-        }
         else
             tmpba.append(CN_MS3);
         tmpba.append(cmd);
@@ -428,7 +397,7 @@ void EAbstractProtocomChannel::SendOk(bool cont)
         tmpba.append(CN_MS3);
     else
         tmpba.append(CN_MS);
-    tmpba.append(CN_ResOk);
+    tmpba.append(cmd);
     AppendSize(tmpba, 0);
     WriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
 }

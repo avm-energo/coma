@@ -36,6 +36,7 @@
 #include "../check/checkdialoga1.h"
 #include "../config/confdialog21.h"
 #include "../config/confdialog80.h"
+#include "../config/confdialog85.h"
 #include "../config/confdialoga1.h"
 #include "../dialogs/a1dialog.h"
 #include "../dialogs/downloaddialog.h"
@@ -243,7 +244,8 @@ void Coma::Stage3()
     }
     case MTM_85:
     {
-
+        ConfM = new ConfDialog85(S2Config);
+        break;
     }
     default: // 0x00
         break;

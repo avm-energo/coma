@@ -120,11 +120,11 @@ private:
     void WriteDataToPort(QByteArray &ba);
     void Finish(int ernum);
     void SetWRSegNum();
-    void WRCheckForNextSegment();
+    void WRCheckForNextSegment(int first);
     void AppendSize(QByteArray &ba, quint16 size);
     void SendOk(bool cont=false); // cont = 1 -> send CN_MS3 instead CN_MS
     void SendErr();
-    bool GetLength(bool ok=true); // ok = 1 -> обработка посылки вида SS OK ..., ok = 0 -> вида SS c L L ... возвращаемое значение = false -> неправильная длина
+    bool GetLength(); // ok = 1 -> обработка посылки вида SS OK ..., ok = 0 -> вида SS c L L ... возвращаемое значение = false -> неправильная длина
 };
 
 #endif // EEAbstractProtocomChannel_H

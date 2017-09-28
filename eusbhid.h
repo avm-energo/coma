@@ -34,6 +34,7 @@ public:
 
 signals:
     void NewDataReceived(QByteArray ba);
+    void Finished();
 
 public slots:
     void Run();

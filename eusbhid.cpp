@@ -19,15 +19,15 @@ bool EUsbHid::Connect()
     if (!Connected)
         pc.PrbMessage = "Загрузка данных...";
     else
-        return true;
+        Disconnect();
     UThread = new EUsbThread(log);
     UThr = new QThread;
     UThread->moveToThread(UThr);
 //    connect(this,SIGNAL(StartUThread(QThread::Priority)),thr,SLOT(start(QThread::Priority)));
     connect(UThr,SIGNAL(started()),UThread,SLOT(Run()));
     connect(UThread,SIGNAL(NewDataReceived(QByteArray)),this,SLOT(ParseIncomeData(QByteArray)));
-    connect(UThr,SIGNAL(finished()),UThread,SLOT(deleteLater()));
-    connect(UThr,SIGNAL(finished()),UThr,SLOT(deleteLater()));
+    connect(UThread,SIGNAL(Finished()),UThread,SLOT(deleteLater()));
+    connect(UThread,SIGNAL(Finished()),UThr,SLOT(deleteLater()));
     connect(this,SIGNAL(StopUThread()),UThread,SLOT(Finish()));
     if (UThread->Set() != NOERROR)
         return false;
@@ -55,6 +55,7 @@ void EUsbHid::RawClose()
 {
     Connected = false;
     emit StopUThread();
+    UThr->wait();
 }
 
 EUsbThread::EUsbThread(Log *logh, QObject *parent) : QObject(parent)
@@ -68,7 +69,6 @@ EUsbThread::EUsbThread(Log *logh, QObject *parent) : QObject(parent)
 
 EUsbThread::~EUsbThread()
 {
-    delete log;
 }
 
 int EUsbThread::Set()
@@ -105,6 +105,7 @@ void EUsbThread::Run()
             QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
     hid_close(HidDevice);
+    emit Finished();
 }
 
 qint64 EUsbThread::WriteData(QByteArray &ba)

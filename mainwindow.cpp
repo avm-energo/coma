@@ -43,8 +43,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 #endif
     connect(cn,SIGNAL(SetDataSize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
     connect(cn,SIGNAL(SetDataCount(quint32)),this,SLOT(SetProgressBar1(quint32)));
-    connect(cn,SIGNAL(SetDataSize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
-    connect(cn,SIGNAL(SetDataCount(quint32)),this,SLOT(SetProgressBar1(quint32)));
     connect(cn,SIGNAL(readbytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(cn,SIGNAL(writebytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
@@ -299,10 +297,11 @@ void MainWindow::Stage1_5()
 
 void MainWindow::Stage2()
 {
-    if (Commands::GetBsi() != NOERROR)
+    int res;
+    if ((res = Commands::GetBsi()) != NOERROR)
     {
         if (MessageBox2::question(this, "Ошибка", \
-                                  "Блок Bsi не может быть прочитан, связь потеряна, повторить?") == 1) // Yes
+                                  "Блок Bsi не может быть прочитан, ошибка " + QString::number(res) + ", повторить?") == 1) // Yes
         {
             cn->Disconnect();
 #ifdef COMPORTENABLE
@@ -375,9 +374,10 @@ void MainWindow::OpenBhbDialog()
     pc.BoardBBhb.MType = pc.ModuleBsi.MTypeB;
     dlg->Fill(); // заполняем диалог из недавно присвоенных значений
     dlg->exec();
-    if (Commands::GetBsi() != NOERROR)
+    int res;
+    if ((res = Commands::GetBsi()) != NOERROR)
     {
-        MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, связь потеряна");
+        MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, ошибка " + QString::number(res));
         Commands::Disconnect();
     }
     emit BsiRefresh();
