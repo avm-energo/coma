@@ -102,7 +102,6 @@ void ConfDialog85::SetupUI()
     cb->setMinimumWidth(70);
     connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetEqType(int)));
     glyout->addWidget(cb,0,1,1,1);
-
     cbl = QStringList() << "Несинхронное" << "Синхронное";
     glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутаций:"), 1,0,1,1);
     hlyout->addWidget(WDFunc::NewLBL(this, "включение:"), 0);
@@ -111,7 +110,6 @@ void ConfDialog85::SetupUI()
     hlyout->addWidget(WDFunc::NewCB(this, "cbotkl", cbl, ACONFYCLR), 1);
     glyout->addLayout(hlyout,1,1,1,1);
     hlyout = new QHBoxLayout;
-
     tmps = "QRadioButton {background-color: "+QString(ACONFYCLR)+";}";
     glyout->addWidget(WDFunc::NewLBL(this, "Наличие напряжения на стороне нагрузки"),2,0,1,1);
     QButtonGroup *bg = new QButtonGroup;
@@ -126,11 +124,9 @@ void ConfDialog85::SetupUI()
     bg->addButton(rb);
     hlyout->addWidget(rb);
     glyout->addLayout(hlyout, 2, 1, 1, 1);
-
     glyout->addWidget(WDFunc::NewLBL(this, "Класс напряжения сети, кВ:"), 3,0,1,1);
     cbl = QStringList() << "750" << "550" << "330" << "220" << "110" << "35" << "10";
     glyout->addWidget(WDFunc::NewCB(this, "unomcb", cbl, ACONFYCLR),3,1,1,1);
-
     hlyout = new QHBoxLayout;
     glyout->addWidget(WDFunc::NewLBL(this, "Номинальный ток, А:"),4,0,1,1);
     hlyout->addWidget(WDFunc::NewLBL(this, "первичный:"), 0);
@@ -138,10 +134,13 @@ void ConfDialog85::SetupUI()
     hlyout->addWidget(WDFunc::NewLBL(this, "вторичный:"), 0);
     hlyout->addWidget(WDFunc::NewSPB(this, "inom2", 10, 50000, 10, 0, ACONFYCLR), 1);
     glyout->addLayout(hlyout,4,1,1,1);
-
     vlyout1->addLayout(glyout);
     MyStackedWidget *stw = new MyStackedWidget;
-    stw->setObjectName("mainstw");
+    stw->setObjectName("eqtypestw");
+    // заполняем stackwidget
+    QWidget *w = new QWidget;
+    QGridLayout *iglyout = new QGridLayout;
+
     vlyout1->addWidget(stw, 1);
     vlyout1->addStretch(1);
     cp1->setLayout(vlyout1);
@@ -233,6 +232,38 @@ void ConfDialog85::SetupUI()
     vlyout1->addStretch(1);
     cp2->setLayout(vlyout1);
 
+    vlyout1 = new QVBoxLayout;
+    glyout = new QGridLayout;
+    hlyout = new QHBoxLayout;
+    glyout->addWidget(WDFunc::NewLBL(this, "Использовать адаптивный алгоритм:"),0,0,1,1);
+    glyout->addWidget(WDFunc::NewChB(this, "adapt", ""), 0, 1, 1, 1);
+    QGridLayout *glyout2 = new QGridLayout;
+    QGroupBox *gb = new QGroupBox("AUX");
+    QStringList fl = QStringList() << "Pc" << "Pb" << "Pa" << "Tc" << "Tb" << "Ta" << "To" << "Us";
+    QStringList tl = QStringList() << "Давление в гидроприводе ф. С" << "Давление в гидроприводе ф. B" << "Давление в гидроприводе ф. A" << \
+                                      "Температура в приводе ф. С" << "Температура в приводе ф. B" << "Температура в приводе ф. A" << \
+                                      "Температура окружающей среды" << "Напряжение питания соленоидов";
+    for (int i=0; i<fl.size(); ++i)
+    {
+        glyout2->addWidget(WDFunc::NewLBLT(this, fl.at(i), "", "", tl.at(i)),0,i,1,1);
+        glyout2->addWidget(WDFunc::NewChB(this, fl.at(i), ""),1,i,1,1);
+    }
+    gb->setLayout(glyout2);
+    glyout->addWidget(gb, 1, 0, 1, 2);
+    glyout->addWidget(WDFunc::NewLBL(this, "Уставка скачка напряжения для запуска осциллографирования, %:"),2,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "duosc", 0, 99, 0.1, 1, ACONFYCLR),2,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Уставка скачка тока для запуска осциллографирования, %:"),3,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "diosc", 0, 99, 0.1, 1, ACONFYCLR),3,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Уставка контроля минимума напряжения, %:"),4,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "dumin", 0, 99, 0.1, 1, ACONFYCLR),4,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Уставка контроля минимума тока, %:"),5,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "dimin", 0, 99, 0.1, 1, ACONFYCLR),5,1,1,1);
+    vlyout1->addLayout(glyout);
+    stw = new MyStackedWidget;
+    stw->setObjectName("adaptstw");
+    vlyout1->addWidget(stw, 1);
+    vlyout1->addStretch(1);
+    cp3->setLayout(vlyout1);
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
@@ -241,7 +272,7 @@ void ConfDialog85::SetupUI()
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
     ConfTW->addTab(cp1,"Основные");
     ConfTW->addTab(cp2,"Параметры выключателя");
-//    ConfTW->addTab(cp1,"Доп. параметры");
+    ConfTW->addTab(cp3,"Доп. параметры по алгоритму");
 //    ConfTW->addTab(cp1,"Уставки сигнализации");
     lyout->addWidget(ConfTW);
     setLayout(lyout);
