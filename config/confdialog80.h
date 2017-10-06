@@ -31,7 +31,7 @@ signals:
 public slots:
 
 private slots:
-    void SetOsc(int);
+    void SetOsc(bool);
     void SetThreshold(double);
     void SetVoltageClass(int);
     void SetCurrent(double);

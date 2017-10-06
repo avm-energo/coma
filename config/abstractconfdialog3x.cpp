@@ -52,10 +52,10 @@ void AbstractConfDialog3x::SetupUI()
         lbl = new QLabel(QString::number(i+1)+":");
         gblyout->addWidget(lbl, i+1, 0, 1, 1, Qt::AlignRight);
         s_tqComboBox *cb = WDFunc::NewCB(this, "chtypcb."+QString::number(i), Params.InTypes, DCONFWCLR);
-        connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChTypData()));
+        connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChTypData(int)));
         gblyout->addWidget(cb, i+1, 1, 1, 1, Qt::AlignCenter);
         QDoubleSpinBox *spb = WDFunc::NewSPB(this, "chdlyspb."+QString::number(i),1,20,1,0,DCONFWCLR);
-        connect(spb,SIGNAL(valueChanged(double)),this,SLOT(SetDly(double)));
+//        connect(spb,SIGNAL(valueChanged(double)),this,SLOT(SetDly(double)));
         gblyout->addWidget(cb, i+1, 2, 1, 1, Qt::AlignCenter);
         cb = WDFunc::NewCB(this, "chpaircb."+QString::number(i), chsl, DCONFWCLR);
         connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetPair(int)));

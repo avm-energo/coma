@@ -12,6 +12,7 @@
 #include <QPushButton>
 #include <QTableView>
 #include <QTime>
+#include <QTimer>
 #include "a1dialog.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/waitwidget.h"

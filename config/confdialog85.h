@@ -40,6 +40,7 @@ private slots:
     void SetNFiltr(int);
     void SetNHFiltr(int);
     void SetDefConf();
+    void ShowAdaptParams(bool isAdaptChecked);
 };
 
 #endif // CONFDIALOG85_H

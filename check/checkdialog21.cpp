@@ -21,7 +21,7 @@ CheckDialog21::CheckDialog21(QWidget *parent) : EAbstractCheckDialog(parent)
 {
     BdMeasurementsActive = BdaMeasurementsActive = false;
     setAttribute(Qt::WA_DeleteOnClose);
-    Check21 *Ch21 = new Check21;
+//    Check21 *Ch21 = new Check21;
 /*    for (int i = 0; i < 16; i++)
     {
         Bda_block.sin[i] = 0;

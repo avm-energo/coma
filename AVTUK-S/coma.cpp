@@ -115,24 +115,27 @@ void Coma::SetupUI()
     setMinimumSize(QSize(800, 600));
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
+    QAction *act;
     setMinimumHeight(650);
 
     QHBoxLayout *hlyout = new QHBoxLayout;
     QToolBar *tb = new QToolBar;
     tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
     tb->setIconSize(QSize(20,20));
-    QAction *act = new QAction(this);
+#if PROGSIZE != PROGSIZE_EMUL
+    act = new QAction(this);
     act->setToolTip("Соединение");
     act->setIcon(QIcon(":/pic/play.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
     tb->addAction(act);
+#endif
     act = new QAction(this);
     act->setToolTip("Разрыв соединения");
     act->setIcon(QIcon(":/pic/stop.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndClear()));
     tb->addAction(act);
     tb->addSeparator();
-#if PROGSIZE >= PROGSIZE_FULL
+#if PROGSIZE >= PROGSIZE_FULL || PROGSIZE == PROGSIZE_EMUL
     act = new QAction(this);
     act->setToolTip("Эмуляция 21");
     act->setIcon(QIcon(":/pic/2x.png"));
@@ -147,7 +150,7 @@ void Coma::SetupUI()
     act->setToolTip("Эмуляция A1");
     act->setIcon(QIcon(":/pic/a1.png"));
     quint16 MType = MTB_A1;
-    MType = MType << 8 & MTM_00;
+    MType = (MType << 8) | MTM_00;
     act->setObjectName(QString::number(MType, 16)); // для слота StartEmul
     connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
     tb->addAction(act);
@@ -189,7 +192,9 @@ void Coma::Stage3()
 {
     ConfB = ConfM = 0;
     CheckB = CheckM = 0;
+#if PROGSIZE != PROGSIZE_EMUL
     TuneB = TuneM = 0;
+#endif
     ClearTW();
     MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
     if (MainTW == 0)
@@ -199,7 +204,6 @@ void Coma::Stage3()
     connect(this,SIGNAL(BsiRefresh()),idlg,SLOT(FillBsi()));
     connect(this,SIGNAL(ClearBsi()),idlg,SLOT(ClearBsi()));
     MainTW->addTab(idlg, "Информация");
-
     if (pc.ModuleBsi.MTypeB < 0xA0) // диапазон модулей АВ-ТУК
     {
         ConfDialog *MainConfDialog = new ConfDialog(S2Config);
@@ -210,21 +214,27 @@ void Coma::Stage3()
     case MTB_21:
     {
         ConfB = new ConfDialog21(S2Config, true);
+#if PROGSIZE != PROGSIZE_EMUL
         TuneB = new TuneDialog21;
+#endif
         CheckB = new CheckDialog21;
         break;
     }
     case MTB_80:
     {
         ConfB = new ConfDialog80(S2Config);
+#if PROGSIZE != PROGSIZE_EMUL
         TuneB = new TuneDialog80(S2Config);
+#endif
         CheckB = new CheckDialog80;
         break;
     }
     case MTB_A1:
         ConfB = new ConfDialogA1(S2Config);
         CheckB = new CheckDialogA1;
+#if PROGSIZE != PROGSIZE_EMUL
         TuneB = new TuneDialogA1;
+#endif
         break;
     }
     switch(pc.ModuleBsi.MTypeM)
@@ -239,7 +249,9 @@ void Coma::Stage3()
     case MTM_83:
     {
         ConfM = new ConfDialog80(S2Config);
+#if PROGSIZE != PROGSIZE_EMUL
         TuneM = new TuneDialog80(S2Config);
+#endif
         break;
     }
     case MTM_85:
@@ -253,29 +265,39 @@ void Coma::Stage3()
     if (ConfB != 0)
     {
         MainTW->addTab(ConfB, "Конфигурирование\nБазовая");
+#if PROGSIZE != PROGSIZE_EMUL
         connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
         connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+#endif
     }
     if (ConfM != 0)
     {
         MainTW->addTab(ConfM, "Конфигурирование\nМезонин");
+#if PROGSIZE != PROGSIZE_EMUL
         connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
         connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+#endif
     }
+#if PROGSIZE != PROGSIZE_EMUL
     if (TuneB != 0)
         MainTW->addTab(TuneB, "Регулировка\nБазовая");
+#endif
     if (CheckB != 0)
         MainTW->addTab(CheckB, "Проверка\nБазовая");
+#if PROGSIZE != PROGSIZE_EMUL
     if (TuneM != 0)
         MainTW->addTab(TuneB, "Регулировка\nМезонин");
+#endif
     if (CheckM != 0)
         MainTW->addTab(CheckB, "Проверка\nМезонин");
+#if PROGSIZE != PROGSIZE_EMUL
     oscdialog *OscD = new oscdialog;
     downloaddialog *DownD = new downloaddialog;
     fwupdialog *FwUpD = new fwupdialog;
     MainTW->addTab(OscD, "Осциллограммы");
     MainTW->addTab(DownD, "События");
     MainTW->addTab(FwUpD, "Загрузка ВПО");
+#endif
     if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
         pc.ErMsg(ER_NOCONF);
     if (pc.ModuleBsi.Hth & HTH_REGPARS) // нет коэффициентов

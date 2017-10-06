@@ -5,6 +5,7 @@
 #define DEVICETYPE_DEVICE   2 // прибор
 
 // program sizes
+#define PROGSIZE_EMUL   0
 #define PROGSIZE_SMALL  1
 #define PROGSIZE_MEDIUM 2
 #define PROGSIZE_LARGE  3

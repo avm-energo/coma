@@ -4,9 +4,10 @@
 #include <QMainWindow>
 #include "publicclass.h"
 #include "../config/confdialog.h"
-#include "../tune/eabstracttunedialog.h"
 #include "../check/eabstractcheckdialog.h"
-
+#if PROGSIZE != PROGSIZE_EMUL
+#include "../tune/eabstracttunedialog.h"
+#endif
 #define C_TE_MAXSIZE    100
 
 class MainWindow : public QMainWindow
@@ -22,8 +23,10 @@ public:
     QVector<publicclass::DataRec> S2Config;
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
-    EAbstractTuneDialog *TuneB, *TuneM;
 
+#if PROGSIZE != PROGSIZE_EMUL
+    EAbstractTuneDialog *TuneB, *TuneM;
+#endif
     QWidget *Parent;
 
     static QStringList Hth()
@@ -93,37 +96,46 @@ signals:
 private:
     bool ok;
 
+#if PROGSIZE >= PROGSIZE_LARGE
     void PrepareTimers();
+#endif
     void LoadSettings();
     void SaveSettings();
 #if PROGSIZE >= PROGSIZE_LARGE
     void ShowOrHideSlideSW();
 #endif
     int CheckPassword();
+
+#if PROGSIZE != PROGSIZE_EMUL
     void SetProgressBarSize(QString prbnum, quint32 size);
     void SetProgressBar(QString prbnum, quint32 cursize);
-
+#endif
 
 private slots:
+    void StartSettingsDialog();
+    void ShowErrorDialog();
+    void GetAbout();
+    void DisconnectAndClear();
+
+#if PROGSIZE != PROGSIZE_EMUL
     void ShowConnectDialog();
     void Stage1_5();
     void Stage2();
     void SetDefConf();
     void Fill();
     void PasswordCheck(QString &psw);
-    void StartSettingsDialog();
-    void ShowErrorDialog();
     void SetProgressBar1Size(quint32 size);
     void SetProgressBar1(quint32 cursize);
     void SetProgressBar2Size(quint32 size);
     void SetProgressBar2(quint32 cursize);
-    void GetAbout();
     void Disconnect();
-    void DisconnectAndClear();
+#endif
+#if PROGSIZE >= PROGSIZE_LARGE || PROGSIZE == PROGSIZE_EMUL
+    void StartEmul();
+#endif
 #if PROGSIZE >= PROGSIZE_LARGE
     void UpdateMainTE(QByteArray &ba);
     void OpenBhbDialog();
-    void StartEmul();
     void MouseMove();
 #endif
     void ShowErrorMessageBox(QString message);

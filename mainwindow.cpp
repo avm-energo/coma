@@ -31,8 +31,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         dir.mkpath(".");
     S2Config.clear();
     ConfB = ConfM = 0;
+#if PROGSIZE >= PROGSIZE_LARGE
     PrepareTimers();
+#endif
     LoadSettings();
+#if PROGSIZE != PROGSIZE_EMUL
 #ifdef USBENABLE
     cn = new EUsbHid;
 #else
@@ -47,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(cn,SIGNAL(writebytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
     connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
     connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
+#endif
 }
 
 QWidget *MainWindow::HthWidget()
@@ -140,6 +144,7 @@ void MainWindow::SetupMenubar()
     act->setText("Выход");
     connect(act,SIGNAL(triggered()),this,SLOT(close()));
     menu->addAction(act);
+#if PROGSIZE != PROGSIZE_EMUL
     act = new QAction(this);
     act->setText("Соединение");
     act->setIcon(QIcon(":/pic/play.png"));
@@ -150,8 +155,8 @@ void MainWindow::SetupMenubar()
     act->setIcon(QIcon(":/pic/stop.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndClear()));
     menu->addAction(act);
+#endif
     menubar->addMenu(menu);
-
 #if PROGSIZE >= PROGSIZE_LARGE
     menu = new QMenu;
     menu->setTitle("Секретные операции");
@@ -181,14 +186,14 @@ void MainWindow::SetupMenubar()
     setMenuBar(menubar);
 }
 
+#if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::PrepareTimers()
 {
-#if PROGSIZE >= PROGSIZE_LARGE
     QTimer *MouseTimer = new QTimer;
     connect(MouseTimer,SIGNAL(timeout()),this,SLOT(MouseMove()));
     MouseTimer->start(50);
-#endif
 }
+#endif
 
 void MainWindow::LoadSettings()
 {
@@ -262,6 +267,7 @@ void MainWindow::ShowOrHideSlideSW()
     SWHide = !SWHide;
 }
 #endif
+#if PROGSIZE != PROGSIZE_EMUL
 int MainWindow::CheckPassword()
 {
     pc.Cancelled = ok = false;
@@ -382,7 +388,10 @@ void MainWindow::OpenBhbDialog()
     }
     emit BsiRefresh();
 }
+#endif
+#endif
 
+#if PROGSIZE >= PROGSIZE_LARGE || PROGSIZE == PROGSIZE_EMUL
 void MainWindow::StartEmul()
 {
     bool ok;
@@ -394,8 +403,10 @@ void MainWindow::StartEmul()
     }
     pc.ModuleBsi.MTypeB = (MType & 0xFF00) >> 8;
     pc.ModuleBsi.MTypeM = MType & 0x00FF;
+#if PROGSIZE != PROGSIZE_EMUL
     if (cn->Connected)
         DisconnectAndClear();
+#endif
     pc.ModuleBsi.SerialNum = 0x12345678;
     pc.ModuleBsi.Hth = 0x00;
     pc.Emul = true;
@@ -416,7 +427,7 @@ void MainWindow::ShowErrorDialog()
     ErrorDialog *dlg = new ErrorDialog;
     dlg->exec();
 }
-
+#if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::SetProgressBar1Size(quint32 size)
 {
     SetProgressBarSize("1", size);
@@ -504,7 +515,7 @@ void MainWindow::ShowConnectDialog()
     dlg->setLayout(lyout);
     dlg->exec();
 }
-
+#endif
 void MainWindow::GetAbout()
 {
     QDialog *dlg = new QDialog;
@@ -534,16 +545,18 @@ void MainWindow::GetAbout()
     dlg->setLayout(lyout);
     dlg->exec();
 }
-
+#if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Disconnect()
 {
     if (!pc.Emul)
         cn->Disconnect();
 }
-
+#endif
 void MainWindow::DisconnectAndClear()
 {
+#if PROGSIZE != PROGSIZE_EMUL
     Disconnect();
+#endif
     emit FinishAll();
     emit ClearBsi();
     ClearTW();

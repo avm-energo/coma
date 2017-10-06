@@ -135,13 +135,13 @@ void ConfDialog80::SetupUI()
     lbl = new QLabel("Запуск осциллограммы:");
     hlyout->addWidget(lbl);
     QCheckBox *chb = WDFunc::NewChB(this, "oscchb.0", "по команде Ц", ACONFWCLR);
-    connect(chb,SIGNAL(statechanged(int)),this,SLOT(SetOsc(int)));
+    connect(chb,SIGNAL(clicked(bool)),this,SLOT(SetOsc(int)));
     hlyout->addWidget(chb);
     chb = WDFunc::NewChB(this, "oscchb.1", "по дискр. входу PD1", ACONFWCLR);
-    connect(chb,SIGNAL(statechanged(int)),this,SLOT(SetOsc(int)));
+    connect(chb,SIGNAL(clicked(bool)),this,SLOT(SetOsc(int)));
     hlyout->addWidget(chb);
     chb = WDFunc::NewChB(this, "oscchb.2", "по резкому изменению", ACONFWCLR);
-    connect(chb,SIGNAL(statechanged(int)),this,SLOT(SetOsc(int)));
+    connect(chb,SIGNAL(clicked(bool)),this,SLOT(SetOsc(int)));
     hlyout->addWidget(chb);
     vlyout2->addLayout(hlyout);
     gb->setLayout(vlyout2);
@@ -199,7 +199,7 @@ QWidget *ConfDialog80::UNom(int numunom)
     QStringList cbl = QStringList() << "1150" << "750" << "500" << "330" << "220" << "110" << "35" << "21" << "15.75" << "11" << "10" << "6.3";
     s_tqComboBox *cb = WDFunc::NewCB(this, "unom."+NumUNomStr, cbl, ACONFWCLR);
     cb->setEditable(true);
-    connect(cb,SIGNAL(textChanged(int)),this,SLOT(SetVoltageClass(int)));
+    connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetVoltageClass(int)));
     gb2lyout->addWidget(cb);
     w->setLayout(gb2lyout);
     return w;
@@ -242,7 +242,7 @@ QWidget *ConfDialog80::Threshold(QString str, int numthr)
     return w;
 }
 
-void ConfDialog80::SetOsc(int isChecked)
+void ConfDialog80::SetOsc(bool isChecked)
 {
     int val;
     if ((val = GetChNumFromObjectName(sender()->objectName()) == GENERALERROR))

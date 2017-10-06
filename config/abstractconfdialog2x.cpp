@@ -41,7 +41,7 @@ void AbstractConfDialog2x::SetupUI()
     {
         QLabel *ChTypL = new QLabel(QString::number(i+1)+":");
         s_tqComboBox *cb = WDFunc::NewCB(this, "chtypcb."+QString::number(i), Params.InTypes, ACONFWCLR);
-        connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChTypData()));
+        connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChTypData(int)));
         hlyout->addWidget(ChTypL);
         hlyout->addWidget(cb, 1);
         if (((i+1) % 4) == 0)
@@ -84,16 +84,16 @@ void AbstractConfDialog2x::SetupUI()
         lbl=new QLabel(QString::number(i+1));
         glyout->addWidget(lbl,row,column++,1,1,Qt::AlignCenter);
         QCheckBox *chb = WDFunc::NewChB(this, "choscdi2."+QString::number(i), "", ACONFWCLR);
-        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
+//        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
         glyout->addWidget(chb,row,column++,1,1,Qt::AlignCenter);
         chb = WDFunc::NewChB(this, "choscdi1."+QString::number(i), "", ACONFWCLRO);
-        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
+//        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
         glyout->addWidget(chb,row,column++,1,1,Qt::AlignCenter);
         chb = WDFunc::NewChB(this, "choscthr."+QString::number(i), "", ACONFWCLR);
-        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
+//        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
         glyout->addWidget(chb,row,column++,1,1,Qt::AlignCenter);
         chb = WDFunc::NewChB(this, "chosccso0."+QString::number(i), "", ACONFWCLRO);
-        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
+//        connect(chb,SIGNAL(stateChanged(int)),this, SLOT(SetChOsc(int)));
         glyout->addWidget(chb,row,column++,1,1,Qt::AlignCenter);
         if ((i%2) != 0)
         {
