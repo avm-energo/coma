@@ -3,12 +3,14 @@
 #include <QPushButton>
 #include <QDir>
 #include <QMenu>
+#include <QApplication>
 #include <QTimer>
 #include <QMenuBar>
 #include <QEventLoop>
 #include <QScrollBar>
 #include <QProgressBar>
 #include <QSettings>
+#include <QCursor>
 #include <QStringListModel>
 #include <QStandardPaths>
 #include <QPropertyAnimation>
@@ -292,12 +294,15 @@ int MainWindow::CheckPassword()
 
 void MainWindow::Stage1_5()
 {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     if (Commands::Connect() != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Не удалось установить связь");
+        QApplication::restoreOverrideCursor();
         return;
     }
     SaveSettings();
+    QApplication::restoreOverrideCursor();
     Stage2();
 }
 
@@ -365,7 +370,7 @@ void MainWindow::PasswordCheck(QString &psw)
 #if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::OpenBhbDialog()
 {
-    if (Commands::isConnected())
+    if (!Commands::isConnected())
     {
         QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модулем" : "прибором");
         MessageBox2::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с "+tmps);
@@ -373,11 +378,8 @@ void MainWindow::OpenBhbDialog()
     }
     if (CheckPassword() == GENERALERROR)
         return;
-    HiddenDialog *dlg = new HiddenDialog(HiddenDialog::PKDN);
-    pc.BoardBBhb.HWVer = pc.ModuleBsi.HwverB;
-    pc.BoardBBhb.ModSerialNum = pc.ModuleBsi.SerialNum;
-    pc.BoardBBhb.SerialNum = pc.ModuleBsi.SerialNumB;
-    pc.BoardBBhb.MType = pc.ModuleBsi.MTypeB;
+
+    HiddenDialog *dlg = new HiddenDialog();
     dlg->Fill(); // заполняем диалог из недавно присвоенных значений
     dlg->exec();
     int res;

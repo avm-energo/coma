@@ -15,14 +15,14 @@ QT       += core gui serialport printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = pkdn-s_s
+TARGET = pkdn-s_s-hid
 DEFINES += MODULE_TYPEB=0xA1
 DEFINES += PROGNAME='\\"PKDN-S\\"'
 DEFINES += PROGCAPTION='\\"PKDN-Service-M\\040v1.0.83\\"'
 DEFINES += DEVICETYPE=2 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=1 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
-DEFINES += COMPORTENABLE # enable virtual com port driver
-#DEFINES += USBENABLE # enable usb hid driver
+#DEFINES += COMPORTENABLE # enable virtual com port driver
+DEFINES += USBENABLE # enable usb hid driver
 TEMPLATE = app
 
 SOURCES += main.cpp\

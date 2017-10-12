@@ -23,6 +23,7 @@ public slots:
 
 private slots:
     void Rotate();
+    void UpdateSeconds();
 
 private:
     QString Message;

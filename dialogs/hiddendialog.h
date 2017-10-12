@@ -8,30 +8,35 @@
 
 #define RSTTIMEOUT  5000 // таймаут на рестарт модуля после отправки ему блока Bhb
 
+#define BNMN    0x00
+#define BNMY    0x01
+#define BYMN    0x02
+#define BYMY    0x03
+
 class HiddenDialog : public QDialog
 {
     Q_OBJECT
 public:
-    enum BM
-    {
-        BYMY,
-        BNMY,
-        BYMN,
-        BNMN,
-        PKDN
-    };
-
     Config *HidConf;
 
-    explicit HiddenDialog(int type, QWidget *parent = 0);
+    explicit HiddenDialog(QWidget *parent = 0);
     void Fill();
 
 signals:
     void accepted();
 
 private:
+    struct Bhb_Main
+    {
+        quint32 MType;          // тип модуля
+        quint32 SerialNum;      // серийный номер платы
+        quint32 HWVer;          // версия аппаратного обеспечения модуля (платы)
+        quint32 ModSerialNum;   // серийный номер модуля целиком
+    };
     QString BGImage;
     int Type;
+    Bhb_Main BoardBBhb, BoardMBhb;
+
 
     void SetupUI();
     void SetVersion(quint32 number, QString lename);

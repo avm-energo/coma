@@ -262,14 +262,6 @@ public:
         ER_ECHECK
     };
 
-    struct Bhb_Main
-    {
-        quint32 MType;          // тип модуля
-        quint32 SerialNum;      // серийный номер платы
-        quint32 HWVer;          // версия аппаратного обеспечения модуля (платы)
-        quint32 ModSerialNum;   // серийный номер модуля целиком
-    };
-
     quint32 MType;
 
     struct PovDevStruct // данные об установке
@@ -294,7 +286,6 @@ public:
     QString ModuleTypeString;
     bool Emul;
     Bsi ModuleBsi;
-    Bhb_Main BoardBBhb, BoardMBhb;
     QString PrbMessage;
     QVector<DataRec> Config;
     bool Cancelled;

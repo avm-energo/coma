@@ -86,15 +86,15 @@ void Log::WriteRaw(const QByteArray &ba)
 
 void Log::CheckAndGz()
 {
-    QString GZippedLogFile = LogFile + ".xz";
+    QString GZippedLogFile = LogFile;
     if (fp->size() >= LOG_MAX_SIZE)
     {
         int i;
         // rotating
         for (i=9; i>0; --i)
         {
-            QString tmpsnew = GZippedLogFile + "." + QString::number(i);
-            QString tmpsold = GZippedLogFile + "." + QString::number(i-1);
+            QString tmpsnew = GZippedLogFile + "." + QString::number(i) + "xz";
+            QString tmpsold = GZippedLogFile + "." + QString::number(i-1) + "xz";
             QFile fn;
             fn.setFileName(tmpsnew);
             if (fn.exists())
@@ -109,7 +109,7 @@ void Log::CheckAndGz()
                 }
             }
         }
-        GZippedLogFile += ".0";
+        GZippedLogFile += ".0.xz";
         // gzip log file and clearing current one
         lzma_stream strm = LZMA_STREAM_INIT;
         lzma_ret ret = lzma_easy_encoder(&strm, 6, LZMA_CHECK_CRC64);

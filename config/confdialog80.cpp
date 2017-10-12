@@ -252,7 +252,7 @@ void ConfDialog80::SetOsc(bool isChecked)
     }
     quint16 tmpint = 0x0001;
     tmpint = tmpint << val;
-    if (isChecked == Qt::Checked)
+    if (isChecked)
         C80->Bci_block.ddosc |= tmpint;
     else
         C80->Bci_block.ddosc &= ~tmpint;

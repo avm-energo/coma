@@ -43,7 +43,6 @@
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/infodialog.h"
 #include "../dialogs/oscdialog.h"
-#include "../dialogs/hiddendialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../tune/tunedialog21.h"

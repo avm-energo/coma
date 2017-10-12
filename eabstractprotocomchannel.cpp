@@ -11,8 +11,6 @@ EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(pa
     RDLength = 0;
     SegEnd = 0;
     SegLeft = 0;
-    FirstRun = true;
-//    FirstSegment = true;
     OscNum = 0;
     Connected = false;
     Cancelled = false;
@@ -59,8 +57,6 @@ void EAbstractProtocomChannel::Send(int command, int board_type, void *ptr, quin
         while (tme.elapsed() < CN_MAINLOOP_DELAY)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
-    if ((cmd == CN_GBo) && (RDSize > 0) && (result == NOERROR)) // для команды чтения информации об осциллограммах результат - количество считанных байт или ошибка
-        result = RDSize;
 }
 
 void EAbstractProtocomChannel::InitiateSend()
@@ -156,7 +152,6 @@ void EAbstractProtocomChannel::InitiateSend()
     ReadData.clear();
     ReadDataChunk.clear();
     LastBlock = false;
-//    FirstSegment = true;
     bStep = 0;
     RDLength = 0;
 }
@@ -243,6 +238,16 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 Finish(CN_RCVDATAERROR);
                 return;
             }
+            if (ReadDataChunkLength == 0)
+            {
+                RDSize = 0;
+                Finish(NOERROR);
+                return;
+            }
+/*            if (ReadDataChunkLength < CN_MAXSEGMENTLENGTH)
+                LastBlock = true;
+            else
+                LastBlock = false; */
             if (cmd == CN_GF) // надо проверить, тот ли номер файла принимаем
             {
                 if (RDSize < 16) // не пришла ещё шапка файла
@@ -257,7 +262,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 emit SetDataSize(RDLength+16);
             }
             else
-                emit SetDataSize(outdatasize);
+                emit SetDataSize(0); // длина неизвестна для команд с ответами без длины
             bStep++;
             break;
         }
@@ -286,9 +291,10 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_GBTe:
         case CN_GBo:
         {
-            if (RDSize >= outdatasize)
+            if ((RDSize >= outdatasize) || (ReadDataChunkLength < CN_MAXSEGMENTLENGTH))
             {
-                RDSize = outdatasize; // если даже приняли больше, копируем только требуемый размер
+                emit SetDataSize(RDSize); // установка размера прогрессбара, чтобы не мелькал
+                RDSize = qMin(outdatasize, RDSize); // если даже приняли больше, копируем только требуемый размер
                 memcpy(outdata,ReadData.data(),RDSize);
                 Finish(NOERROR);
             }

@@ -53,8 +53,9 @@ void oscdialog::GetAndProcessOscInfo()
     QByteArray OscInfo;
     quint32 OscInfoSize; // размер считанного буфера с информацией об осциллограммах
     quint32 RecordSize = sizeof(GBoStruct);
-    OscInfo.resize(MAXOSCBUFSIZE);
-    if ((OscInfoSize = Commands::GetBo(&(OscInfo.data()[0]), MAXOSCBUFSIZE)) > 0)
+    OscInfoSize = MAXOSCBUFSIZE;
+    OscInfo.resize(OscInfoSize);
+    if ((Commands::GetBo(&(OscInfo.data()[0]), OscInfoSize)) == NOERROR)
     {
         if (OscInfoSize < RecordSize)
         {

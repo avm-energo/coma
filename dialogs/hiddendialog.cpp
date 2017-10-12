@@ -12,32 +12,50 @@
 #include "../widgets/messagebox.h"
 #include "../commands.h"
 
-HiddenDialog::HiddenDialog(int type, QWidget *parent) :
+HiddenDialog::HiddenDialog(QWidget *parent) :
     QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
+    Type = 0x00;
 //    setStyleSheet("QDialog {background-color: rgb(0,192,0);}");
-    Type = type;
-    switch (type)
+    if (pc.ModuleBsi.MTypeB != MTB_00)
     {
-    case BYMY:
-        BGImage=":/pic/BM.png";
-        break;
-    case BNMY:
-        BGImage=":/pic/BnM.png";
-        break;
-    case BYMN:
-        BGImage=":/pic/BMn.png";
-        break;
-    case BNMN:
-        BGImage=":/pic/BnMn.png";
-        break;
-    case PKDN:
+        BoardBBhb.HWVer = pc.ModuleBsi.HwverB;
+        BoardBBhb.SerialNum = pc.ModuleBsi.SerialNumB;
+        BoardBBhb.MType = pc.ModuleBsi.MTypeB;
+        Type |= BYMN;
+    }
+    if (pc.ModuleBsi.MTypeM != MTM_00)
+    {
+        BoardMBhb.HWVer = pc.ModuleBsi.HwverM;
+        BoardMBhb.SerialNum = pc.ModuleBsi.SerialNumM;
+        BoardMBhb.MType = pc.ModuleBsi.MTypeM;
+        Type |= BNMY;
+    }
+    BoardBBhb.ModSerialNum = pc.ModuleBsi.SerialNum;
+
+    if (BoardBBhb.MType == 0xA1)
         BGImage=":/pic/pkdn.png";
-        break;
-    default:
-        BGImage="";
-        break;
+    else
+    {
+        switch (Type)
+        {
+        case BYMY:
+            BGImage=":/pic/BM.png";
+            break;
+        case BNMY:
+            BGImage=":/pic/BnM.png";
+            break;
+        case BYMN:
+            BGImage=":/pic/BMn.png";
+            break;
+        case BNMN:
+            BGImage=":/pic/BnMn.png";
+            break;
+        default:
+            BGImage="";
+            break;
+        }
     }
     SetupUI();
 }
@@ -64,7 +82,7 @@ void HiddenDialog::SetupUI()
     hlyout->setStretch(1, 20);
     hlyout->addStretch(600);
     vlyout->addLayout(hlyout);
-    if (Type == BYMY) // ввод данных по мезонинной плате открывается только в случае её наличия
+    if ((Type == BYMY) || (Type == BNMY)) // ввод данных по мезонинной плате открывается только в случае её наличия
     {
         QGroupBox *gb = new QGroupBox("Мезонинная плата");
         QVBoxLayout *gblyout = new QVBoxLayout;
@@ -120,20 +138,20 @@ void HiddenDialog::SetupUI()
 
 void HiddenDialog::Fill()
 {
-    SetVersion(pc.BoardBBhb.HWVer, "bashw");
-    QString tmps = QString::number(pc.BoardBBhb.MType, 16);
+    SetVersion(BoardBBhb.HWVer, "bashw");
+    QString tmps = QString::number(BoardBBhb.MType, 16);
     tmps.truncate(8);
     WDFunc::SetLEData(this, "bastp", tmps);
-    WDFunc::SetLEData(this, "modsn", QString::number(pc.BoardBBhb.ModSerialNum, 16), "^[a-fA-F0-9]{1,8}$");
-    WDFunc::SetLEData(this, "bassn", QString::number(pc.BoardBBhb.SerialNum, 16), "^[a-fA-F0-9]{1,8}$");
-    tmps = QString::number(pc.BoardMBhb.MType, 16);
+    WDFunc::SetLEData(this, "modsn", QString::number(BoardBBhb.ModSerialNum, 16), "^[a-fA-F0-9]{1,8}$");
+    WDFunc::SetLEData(this, "bassn", QString::number(BoardBBhb.SerialNum, 16), "^[a-fA-F0-9]{1,8}$");
+    tmps = QString::number(BoardMBhb.MType, 16);
     tmps.truncate(8);
     WDFunc::SetLEData(this, "modtype", pc.ModuleTypeString);
-    pc.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
+    BoardMBhb.ModSerialNum = 0xFFFFFFFF;
     if (Type == BYMY) // ввод данных по мезонинной плате открывается только в случае её наличия
     {
-        SetVersion(pc.BoardMBhb.HWVer, "mezhw");
-        WDFunc::SetLEData(this, "mezsn", QString::number(pc.BoardMBhb.SerialNum, 16), "^[a-fA-F0-9]{1,8}$");
+        SetVersion(BoardMBhb.HWVer, "mezhw");
+        WDFunc::SetLEData(this, "mezsn", QString::number(BoardMBhb.SerialNum, 16), "^[a-fA-F0-9]{1,8}$");
         WDFunc::SetLEData(this, "meztp", tmps);
     }
 }
@@ -151,22 +169,22 @@ void HiddenDialog::SetVersion(quint32 number, QString lename)
 void HiddenDialog::AcceptChanges()
 {
     QPushButton *pb = qobject_cast<QPushButton *>(this->sender());
-    GetVersion(pc.BoardBBhb.HWVer, "bashw");
+    GetVersion(BoardBBhb.HWVer, "bashw");
     QString tmps;
     WDFunc::LEData(this, "modsn", tmps);
-    pc.BoardBBhb.ModSerialNum = tmps.toInt(Q_NULLPTR, 16);
+    BoardBBhb.ModSerialNum = tmps.toInt(Q_NULLPTR, 16);
     WDFunc::LEData(this, "bassn", tmps);
-    pc.BoardBBhb.SerialNum = tmps.toInt(Q_NULLPTR, 16);
+    BoardBBhb.SerialNum = tmps.toInt(Q_NULLPTR, 16);
     WDFunc::LEData(this, "bastp", tmps);
-    pc.BoardBBhb.MType = tmps.toInt(Q_NULLPTR, 16);
+    BoardBBhb.MType = tmps.toInt(Q_NULLPTR, 16);
     if (Type == BYMY) // ввод данных по мезонинной плате открывается только в случае её наличия
     {
-        GetVersion(pc.BoardMBhb.HWVer, "mezhw");
+        GetVersion(BoardMBhb.HWVer, "mezhw");
         WDFunc::LEData(this, "meztp", tmps);
-        pc.BoardMBhb.MType = tmps.toInt(Q_NULLPTR, 16);
+        BoardMBhb.MType = tmps.toInt(Q_NULLPTR, 16);
         WDFunc::LEData(this, "mezsn", tmps);
-        pc.BoardMBhb.SerialNum = tmps.toInt(Q_NULLPTR, 16);
-        pc.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
+        BoardMBhb.SerialNum = tmps.toInt(Q_NULLPTR, 16);
+        BoardMBhb.ModSerialNum = 0xFFFFFFFF;
     }
     SendBhb();
     QTime tme;
@@ -198,18 +216,15 @@ void HiddenDialog::GetVersion(quint32 &number, QString lename)
 
 void HiddenDialog::SendBhb()
 {
-    if (Commands::WriteHiddenBlock(BT_BASE, &pc.BoardBBhb, sizeof(pc.BoardBBhb)) != NOERROR)
+    if (Commands::WriteHiddenBlock(BT_BASE, &BoardBBhb, sizeof(BoardBBhb)) != NOERROR)
     {
         ERMSG("Проблема при записи блока Hidden block базовой платы");
         return;
     }
-    if (pc.BoardMBhb.MType != MTM_00)
+    if (Commands::WriteHiddenBlock(BT_MEZONIN, &BoardMBhb, sizeof(BoardMBhb)) != NOERROR)
     {
-        if (Commands::WriteHiddenBlock(BT_MEZONIN, &pc.BoardMBhb, sizeof(pc.BoardMBhb)) != NOERROR)
-        {
-            ERMSG("Проблема при записи блока Hidden block мезонинной платы");
-            return;
-        }
+        ERMSG("Проблема при записи блока Hidden block мезонинной платы");
+        return;
     }
     MessageBox2::information(this, "Успешно", "Записано успешно");
 }

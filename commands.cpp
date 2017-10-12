@@ -119,10 +119,11 @@ int Commands::GetBda(int board, void *BdPtr, int BdPtrSize)
 #endif
 }
 
-int Commands::GetBo(void *BoPtr, int BoPtrSize)
+int Commands::GetBo(void *BoPtr, quint32 &BoPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_GBo, BT_NONE, BoPtr, BoPtrSize);
+    BoPtrSize = cn->RDSize;
     return cn->result;
 #else
     Q_UNUSED(BoPtr);

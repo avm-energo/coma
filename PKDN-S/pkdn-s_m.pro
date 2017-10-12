@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 1.0.72
+VERSION = 1.0.83
 
 QT       += core gui serialport printsupport
 
@@ -18,7 +18,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = pkdn-s_m
 DEFINES += MODULE_TYPEB=0xA1
 DEFINES += PROGNAME='\\"PKDN-S\\"'
-DEFINES += PROGCAPTION='\\"PKDN-Service-S\\040v1.0.72\\"'
+DEFINES += PROGCAPTION='\\"PKDN-Service-S\\040v1.0.83\\"'
 DEFINES += DEVICETYPE=2 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=2 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
 DEFINES += COMPORTENABLE # enable virtual com port driver
@@ -58,9 +58,7 @@ SOURCES += main.cpp\
     ../widgets/mytabwidget.cpp \
     ../widgets/etableitem.cpp \
     ../widgets/etablemodel.cpp \
-    ../widgets/s_tqcheckbox.cpp \
     ../widgets/s_tqcombobox.cpp \
-    ../widgets/s_tqspinbox.cpp \
     ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp
@@ -97,9 +95,7 @@ HEADERS  += pkdn_s.h \
     ../widgets/mytabwidget.h \
     ../widgets/etableitem.h \
     ../widgets/etablemodel.h \
-    ../widgets/s_tqcheckbox.h \
     ../widgets/s_tqcombobox.h \
-    ../widgets/s_tqspinbox.h \
     ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h

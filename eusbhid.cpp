@@ -8,17 +8,17 @@
 
 EUsbHid::EUsbHid(QObject *parent) : EAbstractProtocomChannel(parent)
 {
+    ThreadRunning = false;
 }
 
 EUsbHid::~EUsbHid()
 {
+    emit StopUThread();
 }
 
 bool EUsbHid::Connect()
 {
-    if (!Connected)
-        pc.PrbMessage = "Загрузка данных...";
-    else
+    if (Connected)
         Disconnect();
     UThread = new EUsbThread(log);
     UThr = new QThread;
@@ -28,12 +28,14 @@ bool EUsbHid::Connect()
     connect(UThread,SIGNAL(NewDataReceived(QByteArray)),this,SLOT(ParseIncomeData(QByteArray)));
     connect(UThread,SIGNAL(Finished()),UThread,SLOT(deleteLater()));
     connect(UThread,SIGNAL(Finished()),UThr,SLOT(deleteLater()));
+    connect(UThread,SIGNAL(Finished()),this,SLOT(ThreadFinished()));
     connect(this,SIGNAL(StopUThread()),UThread,SLOT(Finish()));
     if (UThread->Set() != NOERROR)
         return false;
     Connected = true;
 //    emit StartUThread(QThread::InheritPriority);
     UThr->start();
+    ThreadRunning = true;
     return true;
 }
 
@@ -45,6 +47,8 @@ QByteArray EUsbHid::RawRead(int bytes)
 
 qint64 EUsbHid::RawWrite(QByteArray &ba)
 {
+    if (!ThreadRunning)
+        return GENERALERROR;
     qint64 res = UThread->WriteData(ba);
     if (res < 0)
         return GENERALERROR;
@@ -55,7 +59,13 @@ void EUsbHid::RawClose()
 {
     Connected = false;
     emit StopUThread();
-    UThr->wait();
+//    UThr->wait();
+    //    UThr->deleteLater();
+}
+
+void EUsbHid::ThreadFinished()
+{
+    ThreadRunning = false;
 }
 
 EUsbThread::EUsbThread(Log *logh, QObject *parent) : QObject(parent)
@@ -93,6 +103,8 @@ void EUsbThread::Run()
             if (pc.WriteUSBLog)
                 log->WriteRaw("UsbThread: Unable to hid_read()");
             AboutToFinish = true;
+            emit Finished();
+            return;
         }
         if (bytes > 0)
         {

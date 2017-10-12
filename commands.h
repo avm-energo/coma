@@ -19,7 +19,7 @@ public:
     static int GetBac(int BacNum, void *ptr, int ptrsize);
     static int GetBd(int BdNum, void *BdPtr, int BdPtrSize);
     static int GetBda(int board, void *BdPtr, int BdPtrSize);
-    static int GetBo(void *BoPtr, int BoPtrSize);
+    static int GetBo(void *BoPtr, quint32 &BoPtrSize);
     static int GetIP(void *IpPtr, int IpPtrSize);
     static int WriteBac(int BacNum, void *BacPtr, int BacPtrSize);
     static int WriteFile(void *ptr, quint32 filenum, QVector<publicclass::DataRec> *data);

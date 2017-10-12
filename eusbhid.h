@@ -53,7 +53,7 @@ public:
     explicit EUsbHid(QObject *parent = 0);
     ~EUsbHid();
 
-    bool FirstRun;
+    bool ThreadRunning;
 
     bool Connect();
     QByteArray RawRead(int bytes);
@@ -68,6 +68,7 @@ signals:
 public slots:
 
 private slots:
+    void ThreadFinished();
 
 private:
     EUsbThread *UThread;

@@ -41,6 +41,11 @@ void WaitWidget::Start()
     tmr->setInterval(10);
     connect(tmr,SIGNAL(timeout()),this,SLOT(Rotate()));
     tmr->start();
+    Seconds = 0;
+    QTimer *tmrs = new QTimer;
+    tmr->setInterval(100);
+    connect(tmrs,SIGNAL(timeout()),this,SLOT(UpdateSeconds()));
+    tmrs->start();
 }
 
 void WaitWidget::Stop()
@@ -68,6 +73,11 @@ void WaitWidget::Rotate()
     vel5 += (static_cast<float>(qrand()%100)-50)/5000; // числа от -0.01 до 0.01
     Message = QString::number(vel1); */
     update();
+}
+
+void WaitWidget::UpdateSeconds()
+{
+    ++Seconds;
 }
 
 void WaitWidget::paintEvent(QPaintEvent *e)

@@ -22,23 +22,12 @@ private:
     void SetupUI();
     void CheckConf();
 
-    QWidget *UNom(int numunom); // 1 - первая тройка напряжений, 2 - вторая
-    QWidget *INom(int numinom); // 1 - первичный ток первой группы, 2 - вторичный ток первой группы, 3,4 - то же по второй группе
-    QWidget *Threshold(QString str, int numthr);
-
 signals:
 
 public slots:
 
 private slots:
-    void SetOsc(int);
-    void SetThreshold(double);
-    void SetVoltageClass(int);
-    void SetCurrent(double);
     void SetEqType(int);
-    void SetNPoints(QString);
-    void SetNFiltr(int);
-    void SetNHFiltr(int);
     void SetDefConf();
     void ShowAdaptParams(bool isAdaptChecked);
 };

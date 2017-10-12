@@ -64,7 +64,6 @@ public:
     qint32 result;
     int baud;
     int ernum;
-    bool FirstRun;
     bool NeedToSend, Busy, NeedToFinish;
     bool Connected, Cancelled;
     quint32 RDSize;
@@ -111,7 +110,6 @@ private:
     quint32 outdatasize; // размер приёмной области памяти
     quint32 SegLeft; // количество оставшихся сегментов
     quint32 SegEnd; // номер последнего байта в ReadData текущего сегмента
-    bool FirstSegment; // признак того, что передаётся первый сегмент (начало посылки MS, а не MS3)
     bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
     QVector<publicclass::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     quint8 BoardType;

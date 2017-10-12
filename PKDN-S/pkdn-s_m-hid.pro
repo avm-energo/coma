@@ -15,14 +15,14 @@ QT       += core gui serialport printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = pkdn-s_s
+TARGET = pkdn-s_m-hid
 DEFINES += MODULE_TYPEB=0xA1
 DEFINES += PROGNAME='\\"PKDN-S\\"'
-DEFINES += PROGCAPTION='\\"PKDN-Service-M\\040v1.0.83\\"'
+DEFINES += PROGCAPTION='\\"PKDN-Service-S\\040v1.0.83\\"'
 DEFINES += DEVICETYPE=2 # 1 - module, 2 - pribor, for diagnostic messages
-DEFINES += PROGSIZE=1 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
-DEFINES += COMPORTENABLE # enable virtual com port driver
-#DEFINES += USBENABLE # enable usb hid driver
+DEFINES += PROGSIZE=2 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
+#DEFINES += COMPORTENABLE # enable virtual com port driver
+DEFINES += USBENABLE # enable usb hid driver
 TEMPLATE = app
 
 SOURCES += main.cpp\
@@ -48,6 +48,8 @@ SOURCES += main.cpp\
     ../dialogs/infodialog.cpp \
     ../dialogs/keypressdialog.cpp \
     ../dialogs/settingsdialog.cpp \
+    ../tune/eabstracttunedialog.cpp \
+    ../tune/tunedialoga1dn.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/getoscpbdelegate.cpp \
     ../widgets/lineeditfield.cpp \
@@ -83,6 +85,8 @@ HEADERS  += pkdn_s.h \
     ../dialogs/infodialog.h \
     ../dialogs/keypressdialog.h \
     ../dialogs/settingsdialog.h \
+    ../tune/eabstracttunedialog.h \
+    ../tune/tunedialoga1dn.h \
     ../widgets/errorprotocolwidget.h \
     ../widgets/getoscpbdelegate.h \
     ../widgets/lineeditfield.h \
