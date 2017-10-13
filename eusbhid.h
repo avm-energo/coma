@@ -61,7 +61,6 @@ public:
     void RawClose();
 
 signals:
-    void Disconnected();
     void StartUThread(QThread::Priority);
     void StopUThread();
 

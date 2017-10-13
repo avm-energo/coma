@@ -82,7 +82,6 @@ signals:
     void SetDataCount(quint32);
     void readbytessignal(QByteArray &); // for TE updating
     void writebytessignal(QByteArray &); // for TE updating
-    void Disconnected();
     void Retry();
     void ShowError(QString message);
 

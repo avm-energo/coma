@@ -18,23 +18,23 @@ HiddenDialog::HiddenDialog(QWidget *parent) :
     setAttribute(Qt::WA_DeleteOnClose);
     Type = 0x00;
 //    setStyleSheet("QDialog {background-color: rgb(0,192,0);}");
-    if (pc.ModuleBsi.MTypeB != MTB_00)
-    {
-        BoardBBhb.HWVer = pc.ModuleBsi.HwverB;
-        BoardBBhb.SerialNum = pc.ModuleBsi.SerialNumB;
-        BoardBBhb.MType = pc.ModuleBsi.MTypeB;
+/*    if (pc.ModuleBsi.MTypeB != MTB_00)
+    { */
+        Bhb.BoardBBhb.HWVer = pc.ModuleBsi.HwverB;
+        Bhb.BoardBBhb.SerialNum = pc.ModuleBsi.SerialNumB;
+        Bhb.BoardBBhb.MType = pc.ModuleBsi.MTypeB;
         Type |= BYMN;
-    }
+/*    }
     if (pc.ModuleBsi.MTypeM != MTM_00)
-    {
-        BoardMBhb.HWVer = pc.ModuleBsi.HwverM;
-        BoardMBhb.SerialNum = pc.ModuleBsi.SerialNumM;
-        BoardMBhb.MType = pc.ModuleBsi.MTypeM;
+    { */
+        Bhb.BoardMBhb.HWVer = pc.ModuleBsi.HwverM;
+        Bhb.BoardMBhb.SerialNum = pc.ModuleBsi.SerialNumM;
+        Bhb.BoardMBhb.MType = pc.ModuleBsi.MTypeM;
         Type |= BNMY;
-    }
-    BoardBBhb.ModSerialNum = pc.ModuleBsi.SerialNum;
+//    }
+    Bhb.BoardBBhb.ModSerialNum = pc.ModuleBsi.SerialNum;
 
-    if (BoardBBhb.MType == 0xA1)
+    if (Bhb.BoardBBhb.MType == 0xA1)
         BGImage=":/pic/pkdn.png";
     else
     {
@@ -138,20 +138,20 @@ void HiddenDialog::SetupUI()
 
 void HiddenDialog::Fill()
 {
-    SetVersion(BoardBBhb.HWVer, "bashw");
-    QString tmps = QString::number(BoardBBhb.MType, 16);
+    SetVersion(Bhb.BoardBBhb.HWVer, "bashw");
+    QString tmps = QString::number(Bhb.BoardBBhb.MType, 16);
     tmps.truncate(8);
     WDFunc::SetLEData(this, "bastp", tmps);
-    WDFunc::SetLEData(this, "modsn", QString::number(BoardBBhb.ModSerialNum, 16), "^[a-fA-F0-9]{1,8}$");
-    WDFunc::SetLEData(this, "bassn", QString::number(BoardBBhb.SerialNum, 16), "^[a-fA-F0-9]{1,8}$");
-    tmps = QString::number(BoardMBhb.MType, 16);
+    WDFunc::SetLEData(this, "modsn", QString::number(Bhb.BoardBBhb.ModSerialNum, 16), "^[a-fA-F0-9]{1,8}$");
+    WDFunc::SetLEData(this, "bassn", QString::number(Bhb.BoardBBhb.SerialNum, 16), "^[a-fA-F0-9]{1,8}$");
+    tmps = QString::number(Bhb.BoardMBhb.MType, 16);
     tmps.truncate(8);
     WDFunc::SetLEData(this, "modtype", pc.ModuleTypeString);
-    BoardMBhb.ModSerialNum = 0xFFFFFFFF;
+    Bhb.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
     if (Type == BYMY) // ввод данных по мезонинной плате открывается только в случае её наличия
     {
-        SetVersion(BoardMBhb.HWVer, "mezhw");
-        WDFunc::SetLEData(this, "mezsn", QString::number(BoardMBhb.SerialNum, 16), "^[a-fA-F0-9]{1,8}$");
+        SetVersion(Bhb.BoardMBhb.HWVer, "mezhw");
+        WDFunc::SetLEData(this, "mezsn", QString::number(Bhb.BoardMBhb.SerialNum, 16), "^[a-fA-F0-9]{1,8}$");
         WDFunc::SetLEData(this, "meztp", tmps);
     }
 }
@@ -169,22 +169,22 @@ void HiddenDialog::SetVersion(quint32 number, QString lename)
 void HiddenDialog::AcceptChanges()
 {
     QPushButton *pb = qobject_cast<QPushButton *>(this->sender());
-    GetVersion(BoardBBhb.HWVer, "bashw");
+    GetVersion(Bhb.BoardBBhb.HWVer, "bashw");
     QString tmps;
     WDFunc::LEData(this, "modsn", tmps);
-    BoardBBhb.ModSerialNum = tmps.toInt(Q_NULLPTR, 16);
+    Bhb.BoardBBhb.ModSerialNum = tmps.toInt(Q_NULLPTR, 16);
     WDFunc::LEData(this, "bassn", tmps);
-    BoardBBhb.SerialNum = tmps.toInt(Q_NULLPTR, 16);
+    Bhb.BoardBBhb.SerialNum = tmps.toInt(Q_NULLPTR, 16);
     WDFunc::LEData(this, "bastp", tmps);
-    BoardBBhb.MType = tmps.toInt(Q_NULLPTR, 16);
+    Bhb.BoardBBhb.MType = tmps.toInt(Q_NULLPTR, 16);
     if (Type == BYMY) // ввод данных по мезонинной плате открывается только в случае её наличия
     {
-        GetVersion(BoardMBhb.HWVer, "mezhw");
+        GetVersion(Bhb.BoardMBhb.HWVer, "mezhw");
         WDFunc::LEData(this, "meztp", tmps);
-        BoardMBhb.MType = tmps.toInt(Q_NULLPTR, 16);
+        Bhb.BoardMBhb.MType = tmps.toInt(Q_NULLPTR, 16);
         WDFunc::LEData(this, "mezsn", tmps);
-        BoardMBhb.SerialNum = tmps.toInt(Q_NULLPTR, 16);
-        BoardMBhb.ModSerialNum = 0xFFFFFFFF;
+        Bhb.BoardMBhb.SerialNum = tmps.toInt(Q_NULLPTR, 16);
+        Bhb.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
     }
     SendBhb();
     QTime tme;
@@ -216,14 +216,9 @@ void HiddenDialog::GetVersion(quint32 &number, QString lename)
 
 void HiddenDialog::SendBhb()
 {
-    if (Commands::WriteHiddenBlock(BT_BASE, &BoardBBhb, sizeof(BoardBBhb)) != NOERROR)
+    if (Commands::WriteHiddenBlock(BT_BSMZ, &Bhb, sizeof(Bhb)) != NOERROR)
     {
-        ERMSG("Проблема при записи блока Hidden block базовой платы");
-        return;
-    }
-    if (Commands::WriteHiddenBlock(BT_MEZONIN, &BoardMBhb, sizeof(BoardMBhb)) != NOERROR)
-    {
-        ERMSG("Проблема при записи блока Hidden block мезонинной платы");
+        ERMSG("Проблема при записи блока Hidden block");
         return;
     }
     MessageBox2::information(this, "Успешно", "Записано успешно");

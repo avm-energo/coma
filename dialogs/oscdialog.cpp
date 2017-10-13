@@ -280,7 +280,7 @@ void oscdialog::GetOsc(QModelIndex idx)
     // ПЕРЕВЕСТИ РАБОТУ С ОСЦИЛЛОГРАММАМИ НА РАБОТУ С ФАЙЛАМИ!
     QVector<publicclass::DataRec> *S2Config = new QVector<publicclass::DataRec>;
     quint32 oscnum = tm->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(); // номер осциллограммы
-    OscDateTime = tm->data(idx.sibling(idx.row(),1),Qt::DisplayRole).toString(); // дата и время создания осциллограммы
+    OscDateTime = tm->data(idx.sibling(idx.row(),2),Qt::DisplayRole).toString(); // дата и время создания осциллограммы
 //    OscInfo.resize(MAXOSCBUFSIZE);
     GivenFilename = OscDateTime;
     GivenFilename.replace("/","-");

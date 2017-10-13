@@ -455,7 +455,6 @@ void EAbstractProtocomChannel::Disconnect()
 {
     RawClose();
     log->WriteRaw("Disconnected!\n");
-    emit Disconnected();
 }
 
 void EAbstractProtocomChannel::OscTimerTimeout()

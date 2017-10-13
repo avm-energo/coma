@@ -13,7 +13,6 @@ EUsbHid::EUsbHid(QObject *parent) : EAbstractProtocomChannel(parent)
 
 EUsbHid::~EUsbHid()
 {
-    emit StopUThread();
 }
 
 bool EUsbHid::Connect()
@@ -23,17 +22,15 @@ bool EUsbHid::Connect()
     UThread = new EUsbThread(log);
     UThr = new QThread;
     UThread->moveToThread(UThr);
-//    connect(this,SIGNAL(StartUThread(QThread::Priority)),thr,SLOT(start(QThread::Priority)));
     connect(UThr,SIGNAL(started()),UThread,SLOT(Run()));
     connect(UThread,SIGNAL(NewDataReceived(QByteArray)),this,SLOT(ParseIncomeData(QByteArray)));
-    connect(UThread,SIGNAL(Finished()),UThread,SLOT(deleteLater()));
-    connect(UThread,SIGNAL(Finished()),UThr,SLOT(deleteLater()));
+    connect(UThr,SIGNAL(finished()),UThread,SLOT(deleteLater()));
+    connect(UThr,SIGNAL(finished()),UThr,SLOT(deleteLater()));
     connect(UThread,SIGNAL(Finished()),this,SLOT(ThreadFinished()));
     connect(this,SIGNAL(StopUThread()),UThread,SLOT(Finish()));
     if (UThread->Set() != NOERROR)
         return false;
     Connected = true;
-//    emit StartUThread(QThread::InheritPriority);
     UThr->start();
     ThreadRunning = true;
     return true;
@@ -57,10 +54,18 @@ qint64 EUsbHid::RawWrite(QByteArray &ba)
 
 void EUsbHid::RawClose()
 {
+    if (ThreadRunning)
+    {
+        emit StopUThread();
+        while (ThreadRunning)
+        {
+            QTime tme;
+            tme.start();
+            while (tme.elapsed() < UH_MAINLOOP_DELAY)
+                QCoreApplication::processEvents(QEventLoop::AllEvents);
+        }
+    }
     Connected = false;
-    emit StopUThread();
-//    UThr->wait();
-    //    UThr->deleteLater();
 }
 
 void EUsbHid::ThreadFinished()
@@ -92,32 +97,38 @@ int EUsbThread::Set()
 
 void EUsbThread::Run()
 {
-    char *data;
-    data = new char(UH_MAXSEGMENTLENGTH+1); // +1 to ID
-    while (!AboutToFinish)
+    try
     {
-        // check if there's any data in input buffer
-        int bytes = hid_read(HidDevice, reinterpret_cast<unsigned char *>(data), UH_MAXSEGMENTLENGTH+1);
-        if (bytes < 0)
+        unsigned char data[UH_MAXSEGMENTLENGTH+1]; // +1 to ID
+        while (!AboutToFinish)
         {
-            if (pc.WriteUSBLog)
-                log->WriteRaw("UsbThread: Unable to hid_read()");
-            AboutToFinish = true;
-            emit Finished();
-            return;
+            // check if there's any data in input buffer
+            int bytes = hid_read(HidDevice, data, UH_MAXSEGMENTLENGTH+1);
+            if (bytes < 0)
+            {
+                if (pc.WriteUSBLog)
+                    log->WriteRaw("UsbThread: Unable to hid_read()");
+                AboutToFinish = true;
+                emit Finished();
+                return;
+            }
+            if (bytes > 0)
+            {
+                QByteArray ba(reinterpret_cast<char*>(data), bytes);
+                emit NewDataReceived(ba);
+            }
+            QTime tme;
+            tme.start();
+            while (tme.elapsed() < UH_MAINLOOP_DELAY)
+                QCoreApplication::processEvents(QEventLoop::AllEvents);
         }
-        if (bytes > 0)
-        {
-            QByteArray ba(data, bytes);
-            emit NewDataReceived(ba);
-        }
-        QTime tme;
-        tme.start();
-        while (tme.elapsed() < UH_MAINLOOP_DELAY)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
+        hid_close(HidDevice);
+        emit Finished();
     }
-    hid_close(HidDevice);
-    emit Finished();
+    catch(...)
+    {
+        emit Finished();
+    }
 }
 
 qint64 EUsbThread::WriteData(QByteArray &ba)

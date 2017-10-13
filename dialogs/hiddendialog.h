@@ -6,7 +6,7 @@
 #include <QVBoxLayout>
 #include "../config/config.h"
 
-#define RSTTIMEOUT  5000 // таймаут на рестарт модуля после отправки ему блока Bhb
+#define RSTTIMEOUT  15000 // таймаут на рестарт модуля после отправки ему блока Bhb
 
 #define BNMN    0x00
 #define BNMY    0x01
@@ -35,8 +35,12 @@ private:
     };
     QString BGImage;
     int Type;
-    Bhb_Main BoardBBhb, BoardMBhb;
-
+    struct Bhb_Overall
+    {
+        Bhb_Main BoardBBhb;
+        Bhb_Main BoardMBhb;
+    };
+    Bhb_Overall Bhb;
 
     void SetupUI();
     void SetVersion(quint32 number, QString lename);

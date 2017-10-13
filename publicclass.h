@@ -176,9 +176,10 @@
 
 #define SLEEPINT    20
 
-#define BT_NONE     0
-#define BT_BASE     1
-#define BT_MEZONIN  2
+#define BT_NONE     0x00
+#define BT_BASE     0x01
+#define BT_MEZONIN  0x02
+#define BT_BSMZ     0x03
 
 #define LOGFILE     "coma.log"
 

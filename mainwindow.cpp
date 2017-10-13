@@ -55,6 +55,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 #endif
 }
 
+MainWindow::~MainWindow()
+{
+    Disconnect();
+}
+
 QWidget *MainWindow::HthWidget()
 {
     QWidget *w = new QWidget;
@@ -382,6 +387,15 @@ void MainWindow::OpenBhbDialog()
     HiddenDialog *dlg = new HiddenDialog();
     dlg->Fill(); // заполняем диалог из недавно присвоенных значений
     dlg->exec();
+    Disconnect();
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    if (Commands::Connect() != NOERROR)
+    {
+        MessageBox2::error(this, "Ошибка", "Не удалось установить связь");
+        QApplication::restoreOverrideCursor();
+        return;
+    }
+    QApplication::restoreOverrideCursor();
     int res;
     if ((res = Commands::GetBsi()) != NOERROR)
     {
