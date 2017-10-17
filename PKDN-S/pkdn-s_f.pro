@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 1.0.72
+VERSION = 1.0.85
 
 QT       += core gui serialport printsupport
 
@@ -18,11 +18,11 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = pkdn-s_f
 DEFINES += MODULE_TYPEB=0xA1
 DEFINES += PROGNAME='\\"PKDN-S\\"'
-DEFINES += PROGCAPTION='\\"PKDN-Service-F\\040v1.0.72\\"'
+DEFINES += PROGCAPTION='\\"PKDN-Service-F\\040v1.0.85\\"'
 DEFINES += DEVICETYPE=2 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=4 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
-DEFINES += COMPORTENABLE # enable virtual com port driver
-#DEFINES += USBENABLE # enable usb hid driver
+#DEFINES += COMPORTENABLE # enable virtual com port driver
+DEFINES += USBENABLE # enable usb hid driver
 TEMPLATE = app
 
 SOURCES += main.cpp\
@@ -63,9 +63,7 @@ SOURCES += main.cpp\
     ../widgets/messagebox.cpp \
     ../widgets/mystackedwidget.cpp \
     ../widgets/mytabwidget.cpp \
-    ../widgets/s_tqcheckbox.cpp \
     ../widgets/s_tqcombobox.cpp \
-    ../widgets/s_tqspinbox.cpp \
     ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp
@@ -107,9 +105,7 @@ HEADERS  += pkdn_s.h \
     ../widgets/messagebox.h \
     ../widgets/mystackedwidget.h \
     ../widgets/mytabwidget.h \
-    ../widgets/s_tqcheckbox.h \
     ../widgets/s_tqcombobox.h \
-    ../widgets/s_tqspinbox.h \
     ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h

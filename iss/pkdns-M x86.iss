@@ -1,19 +1,16 @@
-; -- pkdn-s_l-hid x86.iss --
+; -- pkdns-M x86.iss --
 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING .ISS SCRIPT FILES!
 
-#define Name "ПКДН-Сервис БР"
+#define Name "ПКДН-Сервис CР"
 #define GroupName "ПКДН-Сервис"
 #define EngName "PKDN-S"
 #define Version "1.0.85"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
-#define ExeName "pkdns-L.exe"
-#define SetupName "pkdns-L-1.0.85-x86"
+#define ExeName "pkdns-M.exe"
+#define SetupName "pkdns-M-1.0.85-x86"
 #define Prefix "D:\Progs\out"
-
-;[CustomMessages]
-;Version=1.0.83
 
 [Languages]
 Name: Russian; MessagesFile: "compiler:Languages\Russian.isl" 

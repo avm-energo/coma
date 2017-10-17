@@ -21,8 +21,12 @@ TuneDialogA1DN::TuneDialogA1DN(QWidget *parent) :
 {
     CA1 = new ConfigA1(S2Config);
     ChA1 = new CheckA1;
-    SetBac(&Bac_block, BT_MEZONIN, sizeof(Bac_block));
+    SetBac(&Bac_block, BT_MEZONIN, sizeof(Bac));
     SetupUI();
+}
+
+TuneDialogA1DN::~TuneDialogA1DN()
+{
 }
 
 void TuneDialogA1DN::SetLbls()
@@ -89,25 +93,28 @@ void TuneDialogA1DN::SetPf()
 
 void TuneDialogA1DN::SetupUI()
 {
-    int i;
     QWidget *cp1 = new QWidget;
-    QWidget *cp2 = new QWidget;
-    QWidget *cp3 = new QWidget;
+    QWidget *cp2 = CoefUI(0);
+    QWidget *cp3 = CoefUI(1);
+    QWidget *cp4 = CoefUI(2);
+    QWidget *cp5 = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *TuneTW = new QTabWidget;
 
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);
-    QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
-            "background-color: "+QString(UCONFWCLR)+"; font: bold 10px;}";
     tmps = "QWidget {background-color: "+QString(UCONFWCLR)+";}";
     cp1->setStyleSheet(tmps);
     cp2->setStyleSheet(tmps);
     cp3->setStyleSheet(tmps);
+    cp4->setStyleSheet(tmps);
+    cp5->setStyleSheet(tmps);
 
     TuneTW->addTab(cp1,"Настройка штатного ДН");
-    TuneTW->addTab(cp2,"Коэффициенты");
-    TuneTW->addTab(cp3,"Данные измерений");
+    TuneTW->addTab(cp2,"Коэф. 1");
+    TuneTW->addTab(cp3,"Коэф. 2");
+    TuneTW->addTab(cp4,"Коэф. 3");
+    TuneTW->addTab(cp5,"Данные измерений");
 
     // CP1 - НАСТРОЙКА ДН
 
@@ -185,47 +192,7 @@ void TuneDialogA1DN::SetupUI()
 //    lyout->addStretch(1);
     cp1->setLayout(lyout);
 
-    // CP2 - КОЭФФИЦИЕНТЫ МОДУЛЯ
-
-    lyout = new QVBoxLayout;
-    hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(this,"Заводской номер делителя:"), 0);
-    hlyout->addWidget(WDFunc::NewLE(this, "DividerSN", "", tmps),10);
-    hlyout->addWidget(WDFunc::NewLBL(this,"Номинальный коэффициент деления ДН:"), 0);
-    hlyout->addWidget(WDFunc::NewSPB(this,"K_DNSPB",1,10000,1,0,UCONFWCLR));
-    hlyout->addStretch(10);
-    lyout->addLayout(hlyout);
-
-    glyout = new QGridLayout;
-//    gb = new QGroupBox("Настроечные коэффициенты");
-    for (i = 0; i < 6; ++i)
-    {
-        glyout->addWidget(WDFunc::NewLBL(this, "U1kDN["+QString::number(i)+"]"),0,i,1,1);
-        glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+4), "", ValuesLEFormat),1,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(this, "U2kDN["+QString::number(i)+"]"),2,i,1,1);
-        glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+10), "", ValuesLEFormat),3,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(this, "PhyDN["+QString::number(i)+"]"),4,i,1,1);
-        glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+16), "", ValuesLEFormat),5,i,1,1);
-        if (i < 5)
-        {
-            glyout->addWidget(WDFunc::NewLBL(this, "δU["+QString::number(i)+"]"),6,i,1,1);
-            glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+22), "", ValuesLEFormat),7,i,1,1);
-            glyout->addWidget(WDFunc::NewLBL(this, "Δφ["+QString::number(i)+"]"),8,i,1,1);
-            glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+27), "", ValuesLEFormat),9,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "σU["+QString::number(i)+"]","","","СКО амплитудной погрешности"),10,i,1,1);
-            glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+32), "", ValuesLEFormat),11,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLT(this, "σφ["+QString::number(i)+"]","","","СКО фазовой погрешности"),12,i,1,1);
-            glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+37), "", ValuesLEFormat),13,i,1,1);
-        }
-    }
-//    gb->setLayout(glyout);
-    lyout->addLayout(glyout);
-//    lyout->addWidget(gb);
-    lyout->addWidget(BottomUI());
-    lyout->addStretch(1);
-    cp2->setLayout(lyout);
-
-    // CP3 - Данные измерений
+    // CP5 - Данные измерений
 
     lyout = new QVBoxLayout;
     gb = new QGroupBox("Данные измерений без настройки (Bda)");
@@ -245,12 +212,59 @@ void TuneDialogA1DN::SetupUI()
     lyout->addWidget(gb);
 
     lyout->addStretch(1);
-    cp3->setLayout(lyout);
+    cp5->setLayout(lyout);
 
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
-    WDFunc::SetLEData(this, "DividerSN", "00000000", "^\\d{8}$");
+    for (int i=0; i<TUNEVARIANTSNUM; ++i)
+        WDFunc::SetLEData(this, "DividerSN"+QString::number(i), "00000000", "^\\d{8}$");
+}
+
+QWidget *TuneDialogA1DN::CoefUI(int bac2num)
+{
+    QString Si = QString::number(bac2num);
+    QWidget *w = new QWidget;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    QString tmps = "QWidget {background-color: "+QString(UCONFWCLR)+";}";
+    QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
+            "background-color: "+QString(UCONFWCLR)+"; font: bold 10px;}";
+    hlyout->addWidget(WDFunc::NewLBL(this,"Заводской номер делителя:"), 0);
+    hlyout->addWidget(WDFunc::NewLE(this, "DividerSN"+Si, "", tmps),10);
+    hlyout->addWidget(WDFunc::NewLBL(this,"Номинальный коэффициент деления ДН:"), 0);
+    hlyout->addWidget(WDFunc::NewSPB(this,"K_DNSPB."+Si,1,10000,1,0,UCONFWCLR));
+    hlyout->addStretch(10);
+    lyout->addLayout(hlyout);
+
+    glyout = new QGridLayout;
+//    gb = new QGroupBox("Настроечные коэффициенты");
+    for (int i = 0; i < 6; ++i)
+    {
+        glyout->addWidget(WDFunc::NewLBL(this, "U1kDN["+QString::number(i)+"]"),0,i,1,1);
+        glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+4)+"."+Si, "", ValuesLEFormat),1,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(this, "U2kDN["+QString::number(i)+"]"),2,i,1,1);
+        glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+10)+"."+Si, "", ValuesLEFormat),3,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(this, "PhyDN["+QString::number(i)+"]"),4,i,1,1);
+        glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+16)+"."+Si, "", ValuesLEFormat),5,i,1,1);
+        if (i < 5)
+        {
+            glyout->addWidget(WDFunc::NewLBL(this, "δU["+QString::number(i)+"]"),6,i,1,1);
+            glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+22)+"."+Si, "", ValuesLEFormat),7,i,1,1);
+            glyout->addWidget(WDFunc::NewLBL(this, "Δφ["+QString::number(i)+"]"),8,i,1,1);
+            glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+27)+"."+Si, "", ValuesLEFormat),9,i,1,1);
+            glyout->addWidget(WDFunc::NewLBLT(this, "σU["+QString::number(i)+"]","","","СКО амплитудной погрешности"),10,i,1,1);
+            glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+32)+"."+Si, "", ValuesLEFormat),11,i,1,1);
+            glyout->addWidget(WDFunc::NewLBLT(this, "σφ["+QString::number(i)+"]","","","СКО фазовой погрешности"),12,i,1,1);
+            glyout->addWidget(WDFunc::NewLE(this, "tune"+QString::number(i+37)+"."+Si, "", ValuesLEFormat),13,i,1,1);
+        }
+    }
+    lyout->addLayout(glyout);
+    lyout->addWidget(BottomUI());
+    lyout->addStretch(1);
+    w->setLayout(lyout);
+    return w;
 }
 
 int TuneDialogA1DN::InputDNData()
@@ -260,68 +274,84 @@ int TuneDialogA1DN::InputDNData()
     QDialog *dlg = new QDialog(this);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Данные на ТН(ДН)"), Qt::AlignCenter);
     glyout->addWidget(WDFunc::NewLBL(this, "Коэффициент деления ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "kdnle", QString::number(Bac_block.K_DN)), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLE(this, "kdnle", QString::number(Bac_block.Bac_block[TuneVariant].K_DN)), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "dnfnumle", QString::number(Bac_block.DNFNum)), row++, 1, 1, 1, Qt::AlignLeft);
+
     glyout->setColumnStretch(1, 1);
     lyout->addLayout(glyout);
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(AcceptDNData()));
-    connect(this,SIGNAL(DNDataIsSet()),dlg,SLOT(close()));
-    lyout->addWidget(pb);
+    hlyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(CancelTune()));
+    hlyout->addWidget(pb);
+    lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
+    connect(this,SIGNAL(DNDataIsSet()),dlg,SLOT(close()));
     Accepted = false;
     dlg->show();
-    while (!Accepted)
+    while (!Accepted && !pc.Cancelled)
     {
         QTime tme;
         tme.start();
         while (tme.elapsed() < SLEEPINT)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
+    if (pc.Cancelled)
+        return GENERALERROR;
     return NOERROR;
 }
 
 void TuneDialogA1DN::FillBac()
 {
-    WDFunc::SetLEData(this, "DividerSN", QString::number(Bac_block.DNFNum));
-    WDFunc::SetSPBData(this, "K_DNSPB", Bac_block.K_DN);
-    for (int i = 0; i < 6; ++i)
+    for (int j=0; j<TUNEVARIANTSNUM; ++j)
     {
-        WDFunc::SetLEData(this, "tune"+QString::number(i+4), QString::number(Bac_block.U1kDN[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune"+QString::number(i+10), QString::number(Bac_block.U2kDN[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune"+QString::number(i+16), QString::number(Bac_block.PhyDN[i], 'f', 5));
-        if (i < 5)
+        QString Si = QString::number(j);
+        WDFunc::SetSPBData(this, "K_DNSPB."+Si, Bac_block.Bac_block[j].K_DN);
+        for (int i = 0; i < 6; ++i)
         {
-            WDFunc::SetLEData(this, "tune"+QString::number(i+22), QString::number(Bac_block.dU_cor[i], 'f', 5));
-            WDFunc::SetLEData(this, "tune"+QString::number(i+27), QString::number(Bac_block.dPhy_cor[i], 'f', 5));
-            WDFunc::SetLEData(this, "tune"+QString::number(i+32), QString::number(Bac_block.ddU_cor[i], 'f', 5));
-            WDFunc::SetLEData(this, "tune"+QString::number(i+37), QString::number(Bac_block.ddPhy_cor[i], 'f', 5));
+            WDFunc::SetLEData(this, "tune"+QString::number(i+4)+"."+Si, QString::number(Bac_block.Bac_block[j].U1kDN[i], 'f', 5));
+            WDFunc::SetLEData(this, "tune"+QString::number(i+10)+"."+Si, QString::number(Bac_block.Bac_block[j].U2kDN[i], 'f', 5));
+            WDFunc::SetLEData(this, "tune"+QString::number(i+16)+"."+Si, QString::number(Bac_block.Bac_block[j].PhyDN[i], 'f', 5));
+            if (i < 5)
+            {
+                WDFunc::SetLEData(this, "tune"+QString::number(i+22)+"."+Si, QString::number(Bac_block.Bac_block[j].dU_cor[i], 'f', 5));
+                WDFunc::SetLEData(this, "tune"+QString::number(i+27)+"."+Si, QString::number(Bac_block.Bac_block[j].dPhy_cor[i], 'f', 5));
+                WDFunc::SetLEData(this, "tune"+QString::number(i+32)+"."+Si, QString::number(Bac_block.Bac_block[j].ddU_cor[i], 'f', 5));
+                WDFunc::SetLEData(this, "tune"+QString::number(i+37)+"."+Si, QString::number(Bac_block.Bac_block[j].ddPhy_cor[i], 'f', 5));
+            }
         }
+        WDFunc::SetLEData(this, "DividerSN"+Si, QString::number(Bac_block.DNFNum));
     }
 }
 
 void TuneDialogA1DN::FillBackBac()
 {
     QString tmps;
-    WDFunc::LEData(this, "DividerSN", tmps);
-    Bac_block.DNFNum = tmps.toInt();
-    WDFunc::SPBData(this, "K_DNSPB", Bac_block.K_DN);
-    for (int i = 0; i < 6; i++)
+    for (int j=0; j<TUNEVARIANTSNUM; ++j)
     {
-        WDFunc::LENumber(this, "tune"+QString::number(i+4), Bac_block.U1kDN[i]);
-        WDFunc::LENumber(this, "tune"+QString::number(i+10), Bac_block.U2kDN[i]);
-        WDFunc::LENumber(this, "tune"+QString::number(i+16), Bac_block.PhyDN[i]);
-        if (i < 5)
+        QString Si = QString::number(j);
+        WDFunc::SPBData(this, "K_DNSPB."+Si, Bac_block.Bac_block[j].K_DN);
+        for (int i = 0; i < 6; i++)
         {
-            WDFunc::LENumber(this, "tune"+QString::number(i+22), Bac_block.dU_cor[i]);
-            WDFunc::LENumber(this, "tune"+QString::number(i+27), Bac_block.dPhy_cor[i]);
-            WDFunc::LENumber(this, "tune"+QString::number(i+32), Bac_block.ddU_cor[i]);
-            WDFunc::LENumber(this, "tune"+QString::number(i+37), Bac_block.ddPhy_cor[i]);
+            WDFunc::LENumber(this, "tune"+QString::number(i+4)+"."+Si, Bac_block.Bac_block[j].U1kDN[i]);
+            WDFunc::LENumber(this, "tune"+QString::number(i+10)+"."+Si, Bac_block.Bac_block[j].U2kDN[i]);
+            WDFunc::LENumber(this, "tune"+QString::number(i+16)+"."+Si, Bac_block.Bac_block[j].PhyDN[i]);
+            if (i < 5)
+            {
+                WDFunc::LENumber(this, "tune"+QString::number(i+22)+"."+Si, Bac_block.Bac_block[j].dU_cor[i]);
+                WDFunc::LENumber(this, "tune"+QString::number(i+27)+"."+Si, Bac_block.Bac_block[j].dPhy_cor[i]);
+                WDFunc::LENumber(this, "tune"+QString::number(i+32)+"."+Si, Bac_block.Bac_block[j].ddU_cor[i]);
+                WDFunc::LENumber(this, "tune"+QString::number(i+37)+"."+Si, Bac_block.Bac_block[j].ddPhy_cor[i]);
+            }
         }
+        WDFunc::LEData(this, "DividerSN"+Si, tmps);
+        Bac_block.DNFNum = tmps.toInt();
     }
 }
 
@@ -386,49 +416,62 @@ void TuneDialogA1DN::FillMedian(int index)
 
 void TuneDialogA1DN::SetDefCoefs()
 {
-    Bac_block.U1kDN[0] = 0;
-    Bac_block.U2kDN[0] = 0;
-    Bac_block.U1kDN[1] = Bac_block.U2kDN[1] = 12;
-    Bac_block.U1kDN[2] = Bac_block.U2kDN[2] = 30;
-    Bac_block.U1kDN[3] = Bac_block.U2kDN[3] = 48;
-    Bac_block.U1kDN[4] = Bac_block.U2kDN[4] = 60;
-    Bac_block.U1kDN[5] = Bac_block.U2kDN[5] = 71;
-    for (int i=0; i<5; ++i)
+    for (int j=0; j<TUNEVARIANTSNUM; ++j)
     {
-        Bac_block.PhyDN[i] = 0;
-        Bac_block.dU_cor[i] = 0;
-        Bac_block.dPhy_cor[i] = 0;
-        Bac_block.ddU_cor[i] = 0;
-        Bac_block.ddPhy_cor[i] = 0;
+        Bac_block.Bac_block[j].U1kDN[0] = 0;
+        Bac_block.Bac_block[j].U2kDN[0] = 0;
+        Bac_block.Bac_block[j].U1kDN[1] = Bac_block.Bac_block[j].U2kDN[1] = 12;
+        Bac_block.Bac_block[j].U1kDN[2] = Bac_block.Bac_block[j].U2kDN[2] = 30;
+        Bac_block.Bac_block[j].U1kDN[3] = Bac_block.Bac_block[j].U2kDN[3] = 48;
+        Bac_block.Bac_block[j].U1kDN[4] = Bac_block.Bac_block[j].U2kDN[4] = 60;
+        Bac_block.Bac_block[j].U1kDN[5] = Bac_block.Bac_block[j].U2kDN[5] = 71;
+        for (int i=0; i<5; ++i)
+        {
+            Bac_block.Bac_block[j].PhyDN[i] = 0;
+            Bac_block.Bac_block[j].dU_cor[i] = 0;
+            Bac_block.Bac_block[j].dPhy_cor[i] = 0;
+            Bac_block.Bac_block[j].ddU_cor[i] = 0;
+            Bac_block.Bac_block[j].ddPhy_cor[i] = 0;
+        }
+        if (j == 0)
+            Bac_block.Bac_block[j].K_DN = 1100;
+        else if (j == 1)
+            Bac_block.Bac_block[j].K_DN = 2200;
+        else
+            Bac_block.Bac_block[j].K_DN = 3300;
     }
-    Bac_block.K_DN = 2200;
     Bac_block.DNFNum = 0;
     FillBac();
 }
 
 void TuneDialogA1DN::AcceptDNData()
 {
-    WDFunc::LENumber(this, "kdnle", Bac_block.K_DN);
+    WDFunc::LENumber(this, "kdnle", Bac_block.Bac_block[TuneVariant].K_DN);
     WDFunc::LENumber(this, "dnfnumle", Bac_block.DNFNum);
     if (Commands::WriteBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Ошибка при записи коэффициентов");
-        return;
+        pc.Cancelled = true;
     }
     else
+    {
         MessageBox2::information(this, "Успешно", "Записано успешно!");
-    FillBac();
-    Accepted = true;
+        FillBac();
+        Accepted = true;
+    }
     emit DNDataIsSet();
 }
 
 int TuneDialogA1DN::Start7_2_2()
 {
+    InputTuneVariant(TUNEVARIANTSNUM);
+    if (Commands::SetUsingVariant(TuneVariant+1) != NOERROR)
+        return GENERALERROR;
     if (Commands::GetFile(1,&S2Config) == NOERROR)
     {
-        Bac_block.U1kDN[0] = 0;
-        Bac_block.U2kDN[0] = 0;
-        Bac_block.PhyDN[0] = 0;
+        Bac_block.Bac_block[TuneVariant].U1kDN[0] = 0;
+        Bac_block.Bac_block[TuneVariant].U2kDN[0] = 0;
+        Bac_block.Bac_block[TuneVariant].PhyDN[0] = 0;
         return NOERROR;
     }
     return GENERALERROR;
@@ -467,7 +510,7 @@ int TuneDialogA1DN::Start7_2_345(int counter)
     const int Percents[] = {20,50,80,100,120};
     if (counter > 4)
         return GENERALERROR;
-    float VoltageInkV = static_cast<float>(Bac_block.K_DN) * Percents[counter] / 1732;
+    float VoltageInkV = static_cast<float>(Bac_block.Bac_block[TuneVariant].K_DN) * Percents[counter] / 1732;
     float VoltageInV = 57.735 * Percents[counter] / 100;
     if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + \
                               QString::number(VoltageInkV, 'f', 1) + " кВ (" + QString::number(VoltageInV, 'f', 3) + " В)") == false)
@@ -512,9 +555,9 @@ int TuneDialogA1DN::Start7_2_345(int counter)
     tmpst2.Uef_filt[0] /= count;
     tmpst2.Uef_filt[1] /= count;
     // теперь в ChA1->Bda_block лежат нужные нам значения
-    Bac_block.U1kDN[counter+1] = tmpst2.Uef_filt[0];
-    Bac_block.U2kDN[counter+1] = tmpst2.Uef_filt[1];
-    Bac_block.PhyDN[counter+1] = tmpst2.Phy;
+    Bac_block.Bac_block[TuneVariant].U1kDN[counter+1] = tmpst2.Uef_filt[0];
+    Bac_block.Bac_block[TuneVariant].U2kDN[counter+1] = tmpst2.Uef_filt[1];
+    Bac_block.Bac_block[TuneVariant].PhyDN[counter+1] = tmpst2.Phy;
     FillBac();
     return NOERROR;
 }
@@ -580,20 +623,20 @@ int TuneDialogA1DN::Start7_2_9_7()
     if (Start7_2_9(7) != NOERROR)
         return GENERALERROR;
     // теперь считаем средние погрешности и СКО
-    Bac_block.dPhy_cor[0] = Dd_Block[0].Phy;
-    Bac_block.dU_cor[0] = Dd_Block[0].dUrms;
-    Bac_block.ddPhy_cor[0] = Dd_Block[0].sPhy;
-    Bac_block.ddU_cor[0] = Dd_Block[0].sU;
-    Bac_block.dPhy_cor[4] = Dd_Block[4].Phy;
-    Bac_block.dU_cor[4] = Dd_Block[4].dUrms;
-    Bac_block.ddPhy_cor[4] = Dd_Block[4].sPhy;
-    Bac_block.ddU_cor[4] = Dd_Block[4].sU;
+    Bac_block.Bac_block[TuneVariant].dPhy_cor[0] = Dd_Block[0].Phy;
+    Bac_block.Bac_block[TuneVariant].dU_cor[0] = Dd_Block[0].dUrms;
+    Bac_block.Bac_block[TuneVariant].ddPhy_cor[0] = Dd_Block[0].sPhy;
+    Bac_block.Bac_block[TuneVariant].ddU_cor[0] = Dd_Block[0].sU;
+    Bac_block.Bac_block[TuneVariant].dPhy_cor[4] = Dd_Block[4].Phy;
+    Bac_block.Bac_block[TuneVariant].dU_cor[4] = Dd_Block[4].dUrms;
+    Bac_block.Bac_block[TuneVariant].ddPhy_cor[4] = Dd_Block[4].sPhy;
+    Bac_block.Bac_block[TuneVariant].ddU_cor[4] = Dd_Block[4].sU;
     for (int i=1; i<4; ++i)
     {
-        Bac_block.dPhy_cor[i] = (Dd_Block[i].Phy + Dd_Block[TUNEA1LEVELS-i].Phy) / 2;
-        Bac_block.dU_cor[i] = (Dd_Block[i].dUrms + Dd_Block[TUNEA1LEVELS-i].dUrms) / 2;
-        Bac_block.ddPhy_cor[i] = (Dd_Block[i].sPhy + Dd_Block[TUNEA1LEVELS-i].sPhy) / 2;
-        Bac_block.ddU_cor[i] = (Dd_Block[i].sU + Dd_Block[TUNEA1LEVELS-i].sU) / 2;
+        Bac_block.Bac_block[TuneVariant].dPhy_cor[i] = (Dd_Block[i].Phy + Dd_Block[TUNEA1LEVELS-i].Phy) / 2;
+        Bac_block.Bac_block[TuneVariant].dU_cor[i] = (Dd_Block[i].dUrms + Dd_Block[TUNEA1LEVELS-i].dUrms) / 2;
+        Bac_block.Bac_block[TuneVariant].ddPhy_cor[i] = (Dd_Block[i].sPhy + Dd_Block[TUNEA1LEVELS-i].sPhy) / 2;
+        Bac_block.Bac_block[TuneVariant].ddU_cor[i] = (Dd_Block[i].sU + Dd_Block[TUNEA1LEVELS-i].sU) / 2;
     }
     FillBac();
     SaveToFile();
@@ -605,7 +648,7 @@ int TuneDialogA1DN::Start7_2_9(int counter)
     const int Percents[] = {120, 100, 80, 50, 20, 50, 80, 100};
     if (counter > 7)
         return GENERALERROR;
-    float VoltageInkV = static_cast<float>(Bac_block.K_DN) * Percents[counter] / 1732;
+    float VoltageInkV = static_cast<float>(Bac_block.Bac_block[TuneVariant].K_DN) * Percents[counter] / 1732;
     float VoltageInV = 57.735 * Percents[counter] / 100;
     if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + \
                               QString::number(VoltageInkV, 'f', 1) + " кВ (" + QString::number(VoltageInV, 'f', 3) + " В)") == false)

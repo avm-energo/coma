@@ -106,9 +106,9 @@ int A1Dialog::GetConf()
     {
         if (Commands::GetBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) == NOERROR)
         {
-            Bac_block.U1kDN[0] = 0;
-            Bac_block.U2kDN[0] = 0;
-            Bac_block.PhyDN[0] = 0;
+            Bac_block.Bac_block[TuneVariant].U1kDN[0] = 0;
+            Bac_block.Bac_block[TuneVariant].U2kDN[0] = 0;
+            Bac_block.Bac_block[TuneVariant].PhyDN[0] = 0;
             return NOERROR;
         }
     }
@@ -344,8 +344,8 @@ void A1Dialog::FillModel()
         float PhyM = (PhyU + Dd_Block.Phy) / 2;
         UpdateItemInModel(row, 6, QString::number(UrmsM,'f',5));
         UpdateItemInModel(row, 7, QString::number(PhyM,'f',5));
-        UpdateItemInModel(row, 8, QString::number(Bac_block.dU_cor[Pindex],'f',5));
-        UpdateItemInModel(row, 9, QString::number(Bac_block.dPhy_cor[Pindex],'f',5));
+        UpdateItemInModel(row, 8, QString::number(Bac_block.Bac_block[TuneVariant].dU_cor[Pindex],'f',5));
+        UpdateItemInModel(row, 9, QString::number(Bac_block.Bac_block[TuneVariant].dPhy_cor[Pindex],'f',5));
         UpdateItemInModel(row, 10, QString::number((Dd_Block.dUrms - dUrmsU),'f',5));
         UpdateItemInModel(row, 11, QString::number((Dd_Block.Phy - PhyU),'f',5));
         UpdateItemInModel(row, 12, QString::number(UrmsM,'f',5));
@@ -364,8 +364,8 @@ void A1Dialog::FillModel()
             column += 12;
         else
         {
-            UpdateItemInModel(row, column++, QString::number(Bac_block.dU_cor[Pindex],'f',5));
-            UpdateItemInModel(row, column++, QString::number(Bac_block.dPhy_cor[Pindex],'f',5));
+            UpdateItemInModel(row, column++, QString::number(Bac_block.Bac_block[TuneVariant].dU_cor[Pindex],'f',5));
+            UpdateItemInModel(row, column++, QString::number(Bac_block.Bac_block[TuneVariant].dPhy_cor[Pindex],'f',5));
             UpdateItemInModel(row, column++, QString::number(Dd_Block.dUrms,'f',5));
             UpdateItemInModel(row, column++, QString::number(Dd_Block.Phy,'f',5));
         }
@@ -409,6 +409,7 @@ void A1Dialog::FillHeaders()
 
 void A1Dialog::StartWork()
 {
+    TuneVariant = 0;
     Autonomous = false;
     float VoltageInkV, VoltageInV;
     pc.Cancelled = false;
@@ -419,6 +420,12 @@ void A1Dialog::StartWork()
     }
     WDFunc::SetEnabled(this, "StartWorkPb", false);
     PovType = TempPovType = GOST_NONE;
+    InputTuneVariant(TUNEVARIANTSNUM);
+    if (Commands::SetUsingVariant(TuneVariant+1) != NOERROR)
+    {
+        MessageBox2::error(this, "Ошибка", "Ошибка установки варианта использования");
+        return;
+    }
     QDialog *dlg = new QDialog(this);
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Выберите тип поверяемого оборудования"));
@@ -473,12 +480,12 @@ void A1Dialog::StartWork()
             CurrentS = 0.25;
             if (PovType == GOST_1983)
             {
-                VoltageInkV = static_cast<float>(Bac_block.K_DN) * 80 / 1732;
+                VoltageInkV = static_cast<float>(Bac_block.Bac_block[TuneVariant].K_DN) * 80 / 1732;
                 VoltageInV = static_cast<float>(1000 * 80) / 1732;
             }
             else
             {
-                VoltageInkV = static_cast<float>(Bac_block.K_DN) * 20 / 1732;
+                VoltageInkV = static_cast<float>(Bac_block.Bac_block[TuneVariant].K_DN) * 20 / 1732;
                 VoltageInV = static_cast<float>(1000 * 20) / 1732;
             }
             if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + \
@@ -586,8 +593,8 @@ void A1Dialog::ParsePKDNFile()
             Dd_Block.Phy = MDS.dPp;
             Dd_Block.sPhy = MDS.ddPp;
             Dd_Block.sU = MDS.ddUp;
-            Bac_block.dU_cor[Pindex] = MDS.dUd;
-            Bac_block.dPhy_cor[Pindex] = MDS.dPd;
+            Bac_block.Bac_block[TuneVariant].dU_cor[Pindex] = MDS.dUd;
+            Bac_block.Bac_block[TuneVariant].dPhy_cor[Pindex] = MDS.dPd;
             FillModel();
             ++Index;
             if (Index >= endcounter)
@@ -664,7 +671,7 @@ void A1Dialog::Accept()
         }
     }
     Pindex = (Index > 4) ? (8 - Index) : Index;
-    VoltageInkV = static_cast<float>(Bac_block.K_DN) * Percents[Pindex] / 1732;
+    VoltageInkV = static_cast<float>(Bac_block.Bac_block[TuneVariant].K_DN) * Percents[Pindex] / 1732;
     VoltageInV = static_cast<float>(1000 * Percents[Pindex]) / 1732;
     if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + \
                               QString::number(VoltageInkV, 'f', 1) + " кВ ("+QString::number(VoltageInV, 'f', 1)+" В)") == false)
@@ -817,4 +824,35 @@ void A1Dialog::TempRandomizeModel()
     }
     FillHeaders();
     GenerateReport();
+}
+
+void A1Dialog::SetTuneVariant()
+{
+    if (!WDFunc::CBIndex(this, "tunevariantcb", TuneVariant))
+        DBGMSG;
+}
+
+void A1Dialog::InputTuneVariant(int varnum)
+{
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QStringList sl;
+    for (int i=0; i<varnum; ++i)
+        sl << QString::number(i+1);
+    hlyout->addWidget(WDFunc::NewLBLT(this, "Выберите вариант использования"), 0);
+    hlyout->addWidget(WDFunc::NewCB(this, "tunevariantcb", sl), 1);
+    lyout->addLayout(hlyout);
+    QPushButton *pb = new QPushButton("Подтвердить");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetTuneVariant()));
+    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    hlyout = new QHBoxLayout;
+    hlyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(Cancel()));
+    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    hlyout->addWidget(pb);
+    lyout->addLayout(hlyout);
+    dlg->setLayout(lyout);
+    dlg->exec();
 }

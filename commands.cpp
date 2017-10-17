@@ -175,3 +175,14 @@ bool Commands::isConnected()
     return false;
 #endif
 }
+
+int Commands::SetUsingVariant(int variant)
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    cn->Send(CN_NVar, variant);
+    return cn->result;
+#else
+    Q_UNUSED(variant);
+    return 0;
+#endif
+}

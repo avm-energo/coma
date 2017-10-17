@@ -28,6 +28,7 @@ public:
     static int Connect();
     static void Disconnect();
     static bool isConnected();
+    static int SetUsingVariant(int variant); // задать вариант использования (выбор набора регулировочных параметров)
 
 private:
 };

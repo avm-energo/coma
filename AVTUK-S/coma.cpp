@@ -48,6 +48,7 @@
 #include "../tune/tunedialog21.h"
 #include "../tune/tunedialog80.h"
 #include "../tune/tunedialoga1.h"
+#include "../tune/tunedialoga1dn.h"
 #include "../widgets/mytabwidget.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/messagebox.h"
@@ -208,6 +209,59 @@ void Coma::Stage3()
         ConfDialog *MainConfDialog = new ConfDialog(S2Config);
         MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     }
+    PrepareDialogs();
+    if (ConfB != 0)
+    {
+        MainTW->addTab(ConfB, "Конфигурирование\nБазовая");
+#if PROGSIZE != PROGSIZE_EMUL
+        connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
+        connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+#endif
+    }
+    if (ConfM != 0)
+    {
+        MainTW->addTab(ConfM, "Конфигурирование\nМезонин");
+#if PROGSIZE != PROGSIZE_EMUL
+        connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
+        connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+#endif
+    }
+#if PROGSIZE != PROGSIZE_EMUL
+    if (TuneB != 0)
+        MainTW->addTab(TuneB, "Регулировка\nБазовая");
+#endif
+    if (CheckB != 0)
+        MainTW->addTab(CheckB, "Проверка\nБазовая");
+#if PROGSIZE != PROGSIZE_EMUL
+    if (TuneM != 0)
+        MainTW->addTab(TuneB, "Регулировка\nМезонин");
+#endif
+    if (CheckM != 0)
+        MainTW->addTab(CheckB, "Проверка\nМезонин");
+    if (pc.ModuleBsi.MTypeB == MTB_A1)
+    {
+        MainTW->addTab(new TuneDialogA1DN, "Настройка своего ДН");
+        MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
+    }
+#if PROGSIZE != PROGSIZE_EMUL
+    oscdialog *OscD = new oscdialog;
+    downloaddialog *DownD = new downloaddialog;
+    fwupdialog *FwUpD = new fwupdialog;
+    MainTW->addTab(OscD, "Осциллограммы");
+    MainTW->addTab(DownD, "События");
+    MainTW->addTab(FwUpD, "Загрузка ВПО");
+#endif
+    if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
+        pc.ErMsg(ER_NOCONF);
+    if (pc.ModuleBsi.Hth & HTH_REGPARS) // нет коэффициентов
+        pc.ErMsg(ER_NOTUNECOEF);
+    MainTW->repaint();
+    MainTW->show();
+    emit BsiRefresh();
+}
+
+void Coma::PrepareDialogs()
+{
     switch(pc.ModuleBsi.MTypeB)
     {
     case MTB_21:
@@ -261,49 +315,6 @@ void Coma::Stage3()
     default: // 0x00
         break;
     }
-    if (ConfB != 0)
-    {
-        MainTW->addTab(ConfB, "Конфигурирование\nБазовая");
-#if PROGSIZE != PROGSIZE_EMUL
-        connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
-        connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
-#endif
-    }
-    if (ConfM != 0)
-    {
-        MainTW->addTab(ConfM, "Конфигурирование\nМезонин");
-#if PROGSIZE != PROGSIZE_EMUL
-        connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
-        connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
-#endif
-    }
-#if PROGSIZE != PROGSIZE_EMUL
-    if (TuneB != 0)
-        MainTW->addTab(TuneB, "Регулировка\nБазовая");
-#endif
-    if (CheckB != 0)
-        MainTW->addTab(CheckB, "Проверка\nБазовая");
-#if PROGSIZE != PROGSIZE_EMUL
-    if (TuneM != 0)
-        MainTW->addTab(TuneB, "Регулировка\nМезонин");
-#endif
-    if (CheckM != 0)
-        MainTW->addTab(CheckB, "Проверка\nМезонин");
-#if PROGSIZE != PROGSIZE_EMUL
-    oscdialog *OscD = new oscdialog;
-    downloaddialog *DownD = new downloaddialog;
-    fwupdialog *FwUpD = new fwupdialog;
-    MainTW->addTab(OscD, "Осциллограммы");
-    MainTW->addTab(DownD, "События");
-    MainTW->addTab(FwUpD, "Загрузка ВПО");
-#endif
-    if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
-        pc.ErMsg(ER_NOCONF);
-    if (pc.ModuleBsi.Hth & HTH_REGPARS) // нет коэффициентов
-        pc.ErMsg(ER_NOTUNECOEF);
-    MainTW->repaint();
-    MainTW->show();
-    emit BsiRefresh();
 }
 
 void Coma::ProtocolFromFile()

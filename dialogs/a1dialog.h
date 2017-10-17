@@ -13,6 +13,7 @@
 #define GOST23625COLCOUNT   18 // K, S, 5x(dU, dP), dd, dD, 2x(sU, sP)
 
 #define TUNE_POINTSPER  500 // столько миллисекунд должно усредняться при регулировке
+#define TUNEVARIANTSNUM 3
 
 class A1Dialog : public QDialog
 {
@@ -27,7 +28,7 @@ public:
         GOST_1983 // по 3 точкам только туда
     };
 
-    struct Bac
+    struct Baci
     {
         float U1kDN[6];     // измеренные при калибровке напряжения на выходе своего ДН для значений вблизи 12, 30, 48, 60 и 72 В
         float U2kDN[6];     // и соответствующие им значения на выходе эталонного делителя
@@ -37,6 +38,11 @@ public:
         float ddU_cor[5];	// среднеквадратичное отклонение амплитудной погрешности
         float ddPhy_cor[5]; // среднеквадратичное отклонение фазовой погрешности
         float K_DN;         // номинальный коэффициент деления ДН
+    };
+
+    struct Bac
+    {
+        Baci Bac_block[TUNEVARIANTSNUM];
         quint32 DNFNum;     // заводской номер делителя
     };
 
@@ -156,6 +162,12 @@ private slots:
     void RBToggled();
     int GetStatistics();
     void TempRandomizeModel();
+    void SetTuneVariant();
+
+private:
+    int TuneVariant;
+
+    void InputTuneVariant(int varnum);
 };
 
 #endif // A1DIALOG_H

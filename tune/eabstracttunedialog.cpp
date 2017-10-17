@@ -22,6 +22,7 @@
 EAbstractTuneDialog::EAbstractTuneDialog(QWidget *parent) :
     QDialog(parent)
 {
+    TuneVariant = 0;
     setAttribute(Qt::WA_DeleteOnClose);
     MeasurementEnabled = false;
     MeasurementTimer = new QTimer;
@@ -303,6 +304,34 @@ int EAbstractTuneDialog::StartMeasurement()
     return NOERROR;
 }
 
+void EAbstractTuneDialog::InputTuneVariant(int varnum)
+{
+    QDialog *dlg = new QDialog(this);
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QStringList sl;
+    for (int i=0; i<varnum; ++i)
+        sl << QString::number(i+1);
+    hlyout->addWidget(WDFunc::NewLBLT(this, "Выберите вариант использования"), 0);
+    QComboBox *cb = WDFunc::NewCB(this, "tunevariantcb", sl);
+    cb->setMinimumWidth(50);
+    hlyout->addWidget(cb, 0);
+
+    lyout->addLayout(hlyout);
+    QPushButton *pb = new QPushButton("Подтвердить");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetTuneVariant()));
+    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    hlyout = new QHBoxLayout;
+    hlyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(CancelTune()));
+    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    hlyout->addWidget(pb);
+    lyout->addLayout(hlyout);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
 // ####################### SLOTS #############################
 
 void EAbstractTuneDialog::StartTune()
@@ -396,6 +425,12 @@ void EAbstractTuneDialog::MeasTimerTimeout()
         WDFunc::SetEnabled(this, "GoodDN", false);
         WDFunc::SetEnabled(this, "NoGoodDN", false);
     }
+}
+
+void EAbstractTuneDialog::SetTuneVariant()
+{
+    if (!WDFunc::CBIndex(this, "tunevariantcb", TuneVariant))
+        DBGMSG;
 }
 
 // ##################### PROTECTED ####################

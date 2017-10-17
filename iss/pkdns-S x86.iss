@@ -2,14 +2,14 @@
 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING .ISS SCRIPT FILES!
 
-#define Name "ПКДН-Сервис БР"
+#define Name "ПКДН-Сервис МР"
 #define GroupName "ПКДН-Сервис"
 #define EngName "PKDN-S"
 #define Version "1.0.85"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
-#define ExeName "pkdns-L.exe"
-#define SetupName "pkdns-L-1.0.85-x86"
+#define ExeName "pkdns-S.exe"
+#define SetupName "pkdns-S-1.0.85-x86"
 #define Prefix "D:\Progs\out"
 
 ;[CustomMessages]

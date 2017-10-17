@@ -11,6 +11,7 @@
 #include "../check/checka1.h"
 
 #define TUNEA1LEVELS    8
+#define TUNEVARIANTSNUM 3
 
 class TuneDialogA1DN : public EAbstractTuneDialog
 {
@@ -18,9 +19,10 @@ class TuneDialogA1DN : public EAbstractTuneDialog
 
 public:
     explicit TuneDialogA1DN(QWidget *parent = 0);
+    ~TuneDialogA1DN();
 
 private:
-    struct Bac
+    struct Baci
     {
         float U1kDN[6];     // измеренные при калибровке напряжения на выходе своего ДН для значений вблизи 12, 30, 48, 60 и 72 В
         float U2kDN[6];     // и соответствующие им значения на выходе эталонного делителя
@@ -30,6 +32,11 @@ private:
         float ddU_cor[5];	// среднеквадратичное отклонение амплитудной погрешности
         float ddPhy_cor[5]; // среднеквадратичное отклонение фазовой погрешности
         float K_DN;         // номинальный коэффициент деления ДН
+    };
+
+    struct Bac
+    {
+        Baci Bac_block[TUNEVARIANTSNUM];
         quint32 DNFNum;     // заводской номер делителя
     };
 
@@ -53,6 +60,7 @@ private:
     void SetPf();
     void SetupUI();
 
+    QWidget *CoefUI(int bac2num);
     int InputDNData();
     int Start7_2_2();
     int Start7_2_3_1();

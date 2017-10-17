@@ -119,6 +119,7 @@
 #define USO_NOTMEZZANINE    91 // отсутствует дополнительная плата
 #define USO_WRONGMTYPE      92 // неверный тип платы
 #define USO_NOTFILE         93 // нет файла с таким номером
+#define USO_WRONGBAC        94 // ошибка блока данных Bac
 
 // ошибки протокола МЭК 60870-5-104
 #define M104_ERROR          100

@@ -79,6 +79,7 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_GBac:   // чтение настроечных коэффициентов
     case CN_GBda:   // чтение текущих данных без настройки
     case CN_GBd:    // запрос блока (подблока) текущих данных
+    case CN_NVar:
     {
         WriteData.append(CN_MS);
         WriteData.append(cmd);
@@ -195,6 +196,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_WHv:
         case CN_OscEr:
         case CN_CtEr:
+        case CN_NVar:
         {
             if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
             {
@@ -361,7 +363,7 @@ bool EAbstractProtocomChannel::GetLength()
 void EAbstractProtocomChannel::SetWRSegNum()
 {
     if (WRLength > CN_MAXSEGMENTLENGTH)
-        SegLeft = WRLength / CN_MAXSEGMENTLENGTH;
+        SegLeft = (WRLength / CN_MAXSEGMENTLENGTH) + 1;
     else
         SegLeft = 1;
     SegEnd = 0;
@@ -440,12 +442,12 @@ void EAbstractProtocomChannel::Finish(int ernum)
         if (ernum < 0)
         {
             log->WriteRaw("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###\n");
-            ERMSG("ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ!!!");
+            WARNMSG("ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ!!!");
         }
         else if (ernum < pc.errmsgs.size())
-            ERMSG(pc.errmsgs.at(ernum));
+            WARNMSG(pc.errmsgs.at(ernum));
         else
-            ERMSG("Произошла неведомая фигня #"+QString::number(ernum,10));
+            WARNMSG("Произошла неведомая фигня #"+QString::number(ernum,10));
     }
     result = ernum;
     Busy = false;

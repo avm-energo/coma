@@ -38,6 +38,7 @@ public:
     quint32 SecondsToEnd15SecondsInterval;
     QHash <QString, int (EAbstractTuneDialog::*)()> pf;
     quint8 bStep;
+    int TuneVariant; // вариант регулировочных параметров
 
     virtual void SetupUI() = 0;
     QWidget *TuneUI();
@@ -60,6 +61,7 @@ public:
     void SaveToFileEx();
     int StartMeasurement();
     QByteArray *LoadFile(QString mask);
+    void InputTuneVariant(int varnum);
 
 signals:
     void PasswordChecked();
@@ -86,6 +88,7 @@ private slots:
     virtual void SetDefCoefs() = 0;
     void UpdateNSecondsWidget();
     void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
+    void SetTuneVariant();
 
 protected:
     void closeEvent(QCloseEvent *e);

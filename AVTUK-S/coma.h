@@ -29,6 +29,7 @@ private:
     void SetupUI();
     void AddActionsToMenuBar(QMenuBar *menubar);
     void Stage3();
+    void PrepareDialogs();
 };
 
 #endif // COMA_H
