@@ -36,6 +36,20 @@ int Commands::GetFile(quint32 filenum, QVector<publicclass::DataRec> *data)
 #endif
 }
 
+int Commands::GetOsc(quint32 filenum, void *ptr)
+{
+    if ((filenum < CN_MINOSCID) || (filenum > CN_MAXOSCID))
+        return GENERALERROR;
+#if PROGSIZE != PROGSIZE_EMUL
+    cn->Send(CN_GF, BT_NONE, ptr, 0, filenum);
+    return cn->result;
+#else
+    Q_UNUSED(filenum);
+    Q_UNUSED(ptr);
+    return 0;
+#endif
+}
+
 int Commands::WriteFile(void *ptr, quint32 filenum, QVector<publicclass::DataRec> *data)
 {
 #if PROGSIZE != PROGSIZE_EMUL

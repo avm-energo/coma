@@ -49,11 +49,8 @@
 #define CN_SS       0x3c // начало посылки модуля
 #define CN_L2       0x02 // length is 2 bytes
 
-// определение ошибок модуля - см. publicclass.h (USO_)
-
-#define CN_MER_UNKN_ERR     0xFF // неизвестная ошибка
-
-#define MAXLENGTH   0x300   // максимальный размер блока 768 байт
+#define CN_MINOSCID 1000 // минимальный ИД осциллограмм, нужно, т.к. файлы осциллограмм обрабатываются по-своему
+#define CN_MAXOSCID 2999 // максимальный ИД осциллограмм
 
 class EAbstractProtocomChannel : public QObject
 {

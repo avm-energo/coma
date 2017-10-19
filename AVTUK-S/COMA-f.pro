@@ -9,14 +9,14 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.0.82
+VERSION = 2.0.86
 
 QT       += core gui network serialport printsupport
 
-TARGET = avtuk-s_f
+TARGET = avtuks-F
 #DEFINES += MODULE_TYPEB=0xA1
 DEFINES += PROGNAME='\\"AVTUK-S\\"'
-DEFINES += PROGCAPTION='\\"AVTUK-Service-F\\040v2.0.82\\"'
+DEFINES += PROGCAPTION='\\"AVTUK\\040Service\\040F\\040v2.0.86\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=4 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
 #DEFINES += COMPORTENABLE # enable virtual com port driver
@@ -33,6 +33,7 @@ SOURCES += \
     ../log.cpp \
     ../mainwindow.cpp \
     ../publicclass.cpp \
+    ../check/check21.cpp \
     ../check/check80.cpp \
     ../check/checka1.cpp \
     ../check/checkdialog21.cpp \
@@ -47,6 +48,7 @@ SOURCES += \
     ../config/confdialog31.cpp \
     ../config/confdialog35.cpp \
     ../config/confdialog80.cpp \
+    ../config/confdialog85.cpp \
     ../config/confdialoga1.cpp \
     ../config/config.cpp \
     ../config/config21.cpp \
@@ -55,6 +57,7 @@ SOURCES += \
     ../config/config35.cpp \
     ../config/config3x.cpp \
     ../config/config80.cpp \
+    ../config/config85.cpp \
     ../config/configa1.cpp \
     ../dialogs/a1dialog.cpp \
     ../dialogs/downloaddialog.cpp \
@@ -65,6 +68,7 @@ SOURCES += \
     ../dialogs/keypressdialog.cpp \
     ../dialogs/oscdialog.cpp \
     ../dialogs/settingsdialog.cpp \
+    ../dialogs/trendviewdialog.cpp \
     ../iec104/iec104.cpp \
     ../iec104/ethernet.cpp \
     ../tune/eabstracttunedialog.cpp \
@@ -82,10 +86,7 @@ SOURCES += \
     ../widgets/s_tqcombobox.cpp \
     ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp \
-    ../check/check21.cpp \
-    ../config/confdialog85.cpp \
-    ../config/config85.cpp
+    ../widgets/wd_func.cpp
 
 HEADERS  += \
     coma.h \
@@ -96,6 +97,7 @@ HEADERS  += \
     ../log.h \
     ../mainwindow.h \
     ../publicclass.h \
+    ../check/check21.h \
     ../check/check80.h \
     ../check/checka1.h \
     ../check/checkdialog21.h \
@@ -110,6 +112,7 @@ HEADERS  += \
     ../config/confdialog31.h \
     ../config/confdialog35.h \
     ../config/confdialog80.h \
+    ../config/confdialog85.h \
     ../config/confdialoga1.h \
     ../config/config.h \
     ../config/config21.h \
@@ -118,6 +121,7 @@ HEADERS  += \
     ../config/config35.h \
     ../config/config3x.h \
     ../config/config80.h \
+    ../config/config85.h \
     ../config/configa1.h \
     ../dialogs/a1dialog.h \
     ../dialogs/downloaddialog.h \
@@ -128,6 +132,7 @@ HEADERS  += \
     ../dialogs/keypressdialog.h \
     ../dialogs/oscdialog.h \
     ../dialogs/settingsdialog.h \
+    ../dialogs/trendviewdialog.h \
     ../iec104/ethernet.h \
     ../iec104/iec104.h \
     ../tune/eabstracttunedialog.h \
@@ -145,10 +150,7 @@ HEADERS  += \
     ../widgets/s_tqcombobox.h \
     ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h \
-    ../check/check21.h \
-    ../config/confdialog85.h \
-    ../config/config85.h
+    ../widgets/wd_func.h
 
 RESOURCES += \
     res.qrc
@@ -161,12 +163,12 @@ win32 {
 
     !contains(QMAKE_TARGET.arch, x86_64) {
         ## Windows x86 (32bit) specific build here
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx -lqcustomplot
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd -lqcustomplotd
     } else {
         ## Windows x64 (64bit) specific build here
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx -lqcustomplot
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd -lqcustomplotd
     }
 }
-unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
+unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd -lqcustomplot

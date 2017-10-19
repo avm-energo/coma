@@ -308,6 +308,11 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         {
             if (RDSize >= RDLength)
             {
+                if ((fnum >= CN_MINOSCID) && (fnum <= CN_MAXOSCID)) // для осциллограмм особая обработка
+                {
+                    outdata = &(ReadData.data()[0]);
+                    Finish(NOERROR);
+                }
                 res = pc.RestoreDataMem(ReadData.data(), RDSize, DR);
                 if (res == 0)
                 {

@@ -16,6 +16,7 @@ class Commands
 public:
     static int GetBsi();
     static int GetFile(quint32 filenum, QVector<publicclass::DataRec> *data);
+    static int GetOsc(quint32 filenum, void *ptr); // приём осциллограмм, в ptr возвращается целиком весь считанный буфер
     static int GetBac(int BacNum, void *ptr, int ptrsize);
     static int GetBd(int BdNum, void *BdPtr, int BdPtrSize);
     static int GetBda(int board, void *BdPtr, int BdPtrSize);

@@ -63,7 +63,7 @@ void Log::intvarvalue(const QString &var, int value)
 
 void Log::WriteFile(const QString &Prepend, const QString &msg)
 {
-    QString tmps = "[" + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss") + "]";
+    QString tmps = "[" + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz") + "]";
     fp->write(tmps.toLocal8Bit());
     tmps = "["+Prepend+"] ";
     fp->write(tmps.toLocal8Bit());
@@ -77,7 +77,9 @@ void Log::WriteFile(const QString &Prepend, const QString &msg)
 
 void Log::WriteRaw(const QByteArray &ba)
 {
+    QString tmps = "[" + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz") + "]";
     mtx->lock();
+    fp->write(tmps.toLocal8Bit());
     fp->write(ba);
     fp->flush();
     CheckAndGz();

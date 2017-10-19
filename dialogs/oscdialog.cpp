@@ -11,6 +11,7 @@
 #include "oscdialog.h"
 #include "../commands.h"
 #include "../config/config.h"
+#include "trendviewdialog.h"
 #include "../widgets/s_tqtableview.h"
 #include "../widgets/etablemodel.h"
 #include "../widgets/getoscpbdelegate.h"
@@ -41,8 +42,8 @@ void oscdialog::SetupUI()
     lyout->addWidget(tv, 89);
     pb = new QPushButton("Стереть все осциллограммы в памяти "+tmps);
     connect(pb,SIGNAL(clicked()),this,SLOT(EraseOsc()));
-    if (pc.Emul)
-        pb->setEnabled(false);
+// !!!   if (pc.Emul)
+// !!!       pb->setEnabled(false);
     lyout->addWidget(pb);
     setLayout(lyout);
 }
@@ -277,25 +278,70 @@ void oscdialog::EndExtractOsc()
 
 void oscdialog::GetOsc(QModelIndex idx)
 {
-    // ПЕРЕВЕСТИ РАБОТУ С ОСЦИЛЛОГРАММАМИ НА РАБОТУ С ФАЙЛАМИ!
-    QVector<publicclass::DataRec> *S2Config = new QVector<publicclass::DataRec>;
-    quint32 oscnum = tm->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(); // номер осциллограммы
+    bool ok;
+    quint32 oscnum = tm->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(&ok); // номер осциллограммы
+    if (!ok)
+    {
+        WARNMSG("");
+        return;
+    }
+    quint32 oscid = tm->data(idx.sibling(idx.row(),1),Qt::DisplayRole).toInt(&ok); // ИД осциллограммы (9000, 9001 ...)
+    if (!ok)
+    {
+        WARNMSG("");
+        return;
+    }
     OscDateTime = tm->data(idx.sibling(idx.row(),2),Qt::DisplayRole).toString(); // дата и время создания осциллограммы
+    quint32 OscLength = tm->data(idx.sibling(idx.row(),3),Qt::DisplayRole).toInt(&ok);
+    if (!ok)
+    {
+        WARNMSG("");
+        return;
+    }
+//    OscLength -= sizeof(publicclass::DataRec) + sizeof(OscHeader_Data); // длина данных по осциллограммам без заголовков
+    oscid -= MT_HEAD_ID - 1; // одна осциллограмма = 1, две = 2, ...
+//    OscLength /= oscid; // считаем, что все осциллограммы в файле одинаковой длины, и нет повторяющихся ИД
 //    OscInfo.resize(MAXOSCBUFSIZE);
-    GivenFilename = OscDateTime;
-    GivenFilename.replace("/","-");
-    GivenFilename.replace(":","_");
-    GivenFilename.insert(0, " ");
-    GivenFilename.insert(0, QString::number(oscnum));
-    if (Commands::GetFile(oscnum, S2Config) == NOERROR)
-        EndExtractOsc();
+    QByteArray ba;
+    ba.resize(OscLength);
+    if (Commands::GetOsc(oscnum, &(ba.data()[0])) == NOERROR)
+    {
+        // разбираем осциллограмму
+        publicclass::FileHeader FH;
+        int pos = 0;
+        memcpy(&FH, &(ba.data()[pos]), sizeof(publicclass::FileHeader));
+        // проводим проверку, то ли получили
+        bool isOk = ((FH.fname == oscnum) && (FH.size == (OscLength - sizeof(publicclass::FileHeader))));
+        if (!isOk)
+        {
+            MessageBox2::error(this, "Ошибка", "Данные об осциллограмме не совпадают с заявленными");
+            return;
+        }
+        pos += sizeof(publicclass::FileHeader);
+        OscDataRec DR;
+        memcpy(&DR, &(ba.data()[pos]), sizeof(OscDataRec));
+        for (quint32 i=0; i<oscid; ++i)
+        {
+            // составляем имя файла осциллограммы
+            GivenFilename = OscDateTime;
+            GivenFilename.replace("/","-");
+            GivenFilename.replace(":","_");
+            GivenFilename.insert(0, " ");
+            GivenFilename.insert(0, QString::number(oscnum));
+            EndExtractOsc();
+        }
+    }
+    else
+        WARNMSG("");
 }
 
 void oscdialog::EraseOsc()
 {
-    pc.PrbMessage = "Стёрто записей: ";
+/* !!!   pc.PrbMessage = "Стёрто записей: ";
     if (Commands::EraseOsc() == NOERROR)
         MessageBox2::information(this, "Внимание", "Стёрто успешно");
     else
-        MessageBox2::information(this, "Внимание", "Ошибка при стирании");
+        MessageBox2::information(this, "Внимание", "Ошибка при стирании"); */
+    TrendViewDialog *dlg = new TrendViewDialog;
+    dlg->exec();
 }
