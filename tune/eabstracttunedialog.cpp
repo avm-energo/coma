@@ -246,7 +246,7 @@ void EAbstractTuneDialog::WaitNSeconds(int Seconds)
     QTimer *tmr = new QTimer;
     tmr->setInterval(1000);
     connect(tmr,SIGNAL(timeout()),this,SLOT(UpdateNSecondsWidget()));
-    connect(this,SIGNAL(SecondsRemaining(quint32)),w,SLOT(SetSeconds(quint32)));
+//    connect(this,SIGNAL(SecondsRemaining(quint32)),w,SLOT(SetSeconds(quint32)));
     w->SetMessage("Пожалуйста, подождите...");
     w->SetSeconds(Seconds);
     tmr->start();
@@ -409,7 +409,8 @@ void EAbstractTuneDialog::CancelTune()
 
 void EAbstractTuneDialog::UpdateNSecondsWidget()
 {
-    emit SecondsRemaining(--SecondsToEnd15SecondsInterval);
+//    emit SecondsRemaining(--SecondsToEnd15SecondsInterval);
+    --SecondsToEnd15SecondsInterval;
 }
 
 void EAbstractTuneDialog::MeasTimerTimeout()

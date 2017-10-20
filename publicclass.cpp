@@ -84,11 +84,12 @@ publicclass::publicclass()
 {
     Emul = false;
     ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
-    log.Init(LOGFILE);
 
     SystemHomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"+PROGNAME+"/";
     QFile file;
     QString ermsgspath = SystemHomeDir;
+    log.Init(SystemHomeDir + LOGFILE);
+    log.info("=== Log started ===\n");
     file.setFileName(ermsgspath+"ermsgs.dat");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {

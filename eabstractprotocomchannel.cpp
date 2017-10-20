@@ -4,7 +4,7 @@
 
 EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(parent)
 {
-    QString tmps = "\n=== CLog started at " + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss") + " ===\n";
+    QString tmps = "=== CLog started ===\n";
     log = new Log;
     log->Init("canal.log");
     log->WriteRaw(tmps.toUtf8());
@@ -162,9 +162,8 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
     emit readbytessignal(ba);
     if (pc.WriteUSBLog)
     {
-        log->WriteRaw("<-");
-        log->WriteRaw(ba.toHex());
-        log->WriteRaw("\n");
+        QByteArray tmps = "<-" + ba.toHex() + "\n";
+        log->WriteRaw(tmps);
     }
     if (cmd == CN_Unk) // игнорирование вызова процедуры, если не было послано никакой команды
         return;
@@ -489,9 +488,8 @@ void EAbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
     {
         if (pc.WriteUSBLog)
         {
-            log->WriteRaw("->");
-            log->WriteRaw(tmpba.toHex());
-            log->WriteRaw("\n");
+            QByteArray tmps = "->" + tmpba.toHex() + "\n";
+            log->WriteRaw(tmps);
         }
         qint64 tmpi = RawWrite(tmpba);
         if (tmpi == GENERALERROR)

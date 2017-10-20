@@ -48,15 +48,15 @@ void A1Dialog::SetupUI()
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QGridLayout *glyout = new QGridLayout;
     QGroupBox *gb = new QGroupBox("Измерения в первичном масштабе");
-    glyout->addWidget(WDFunc::NewLBL(this, "U1"), 0, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "U1, В"), 0, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu1", ValuesFormat, ""), 0, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "U2"), 0, 2, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "U2, В"), 0, 2, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednu2", ValuesFormat, ""), 0, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "δU, %"), 0, 4, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunepercent", ValuesFormat, ""), 0, 5, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "Phy"), 1, 4, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "Phy, град"), 1, 4, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednphy", ValuesFormat, ""), 1, 5, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "Freq"), 1, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "Freq, Гц"), 1, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunednfreq", ValuesFormat, ""), 1, 1, 1, 1);
     QPushButton *pb = new QPushButton("Подтвердить");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(Accept()));
@@ -205,7 +205,7 @@ void A1Dialog::ConditionDataDialog()
     }
     else
     {
-        if ((CA1->Bci_block.DTCanal == 0) || (ChA1->Bda_out_an.Tamb == FLT_MAX))
+        if (ChA1->Bda_out_an.Tamb == FLT_MAX)
             tmps = "";
         else
             tmps = ReportHeader.Temp;
@@ -221,7 +221,7 @@ void A1Dialog::ConditionDataDialog()
     }
     else
     {
-        if ((CA1->Bci_block.DHCanal == 0) || (ChA1->Bda_out_an.Hamb == FLT_MAX))
+        if (ChA1->Bda_out_an.Hamb == FLT_MAX)
             tmps = "";
         else
             tmps = ReportHeader.Humidity;
@@ -421,6 +421,8 @@ void A1Dialog::StartWork()
     WDFunc::SetEnabled(this, "StartWorkPb", false);
     PovType = TempPovType = GOST_NONE;
     InputTuneVariant(TUNEVARIANTSNUM);
+    if (pc.Cancelled)
+        return;
     if (Commands::SetUsingVariant(TuneVariant+1) != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Ошибка установки варианта использования");
@@ -694,6 +696,7 @@ void A1Dialog::Proceed()
 
 void A1Dialog::Cancel()
 {
+    WDFunc::SetEnabled(this, "StartWorkPb", true);
     pc.Cancelled = true;
 }
 
@@ -834,14 +837,16 @@ void A1Dialog::SetTuneVariant()
 
 void A1Dialog::InputTuneVariant(int varnum)
 {
-    QDialog *dlg = new QDialog;
+    QDialog *dlg = new QDialog(this);
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QStringList sl;
     for (int i=0; i<varnum; ++i)
         sl << QString::number(i+1);
     hlyout->addWidget(WDFunc::NewLBLT(this, "Выберите вариант использования"), 0);
-    hlyout->addWidget(WDFunc::NewCB(this, "tunevariantcb", sl), 1);
+    QComboBox *cb = WDFunc::NewCB(this, "tunevariantcb", sl);
+    cb->setMinimumWidth(50);
+    hlyout->addWidget(cb, 0);
     lyout->addLayout(hlyout);
     QPushButton *pb = new QPushButton("Подтвердить");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetTuneVariant()));

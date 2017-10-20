@@ -43,7 +43,7 @@ void WaitWidget::Start()
     tmr->start();
     Seconds = 0;
     QTimer *tmrs = new QTimer;
-    tmr->setInterval(100);
+    tmrs->setInterval(1000);
     connect(tmrs,SIGNAL(timeout()),this,SLOT(UpdateSeconds()));
     tmrs->start();
 }

@@ -75,9 +75,7 @@ void EUsbHid::ThreadFinished()
 
 EUsbThread::EUsbThread(Log *logh, QObject *parent) : QObject(parent)
 {
-    QString tmps = "=== ULog started at " + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss") + " ===";
     log = logh;
-    log->WriteRaw(tmps.toUtf8());
     AboutToFinish = false;
 //    isRunning = false;
 }
@@ -145,9 +143,8 @@ qint64 EUsbThread::WriteData(QByteArray &ba)
     ba.prepend(static_cast<char>(0x00)); // inserting ID field
     if (pc.WriteUSBLog)
     {
-        log->WriteRaw("UsbThread: ->");
-        log->WriteRaw(ba.toHex());
-        log->WriteRaw("\n");
+        QByteArray tmpba = "UsbThread: ->" + ba.toHex() + "\n";
+        log->WriteRaw(tmpba);
     }
     return hid_write(HidDevice, reinterpret_cast<unsigned char *>(ba.data()), ba.size());
 }

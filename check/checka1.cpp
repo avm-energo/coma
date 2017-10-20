@@ -44,21 +44,22 @@ QWidget *CheckA1::Bd1W(const QString &title, const QString &begin, QWidget *pare
     QVBoxLayout *lyout = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox(title);
     QGridLayout *glyout = new QGridLayout;
-    glyout->addWidget(WDFunc::NewLBL(parent, "1. UefNat_filt1, В"), 0, 0);
+    QString tmps = (begin == "Bda_out") ? "кВ" : "В";
+    glyout->addWidget(WDFunc::NewLBL(parent, "1. UefNat_filt1, "+tmps), 0, 0);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0", ValuesFormat, "Истинное действующее значение напряжения 1 (в В на входе прибора), В"), 0, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "2. UefNat_filt2, В"), 0, 2);
+    glyout->addWidget(WDFunc::NewLBL(parent, "2. UefNat_filt2, "+tmps), 0, 2);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1", ValuesFormat, "Истинное действующее значение напряжения 2 (в В на входе прибора), В"), 0, 3);
     glyout->addWidget(WDFunc::NewLBL(parent, "δUrms, %"), 0, 4);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"dU", ValuesFormat, "Относительная погрешность, %"), 0, 5);
-    glyout->addWidget(WDFunc::NewLBL(parent, "3. Uef_filt1, В"), 1, 0);
+    glyout->addWidget(WDFunc::NewLBL(parent, "3. Uef_filt1, "+tmps), 1, 0);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"2", ValuesFormat, "Действующие значения первых гармоник напряжения 1, В"), 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "4. Uef_filt2, В"), 1, 2);
+    glyout->addWidget(WDFunc::NewLBL(parent, "4. Uef_filt2, "+tmps), 1, 2);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"3", ValuesFormat, "Действующие значения первых гармоник напряжения 2, В"), 1, 3);
-    glyout->addWidget(WDFunc::NewLBL(parent, "δU, %"), 1, 4);
+    glyout->addWidget(WDFunc::NewLBL(parent, "5. δU, %"), 1, 4);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"dU2", ValuesFormat, "Относительная погрешность, %"), 1, 5);
-    glyout->addWidget(WDFunc::NewLBL(parent, "5. Phy, срад"), 2, 0);
+    glyout->addWidget(WDFunc::NewLBL(parent, "6. Phy, срад"), 2, 0);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"4", ValuesFormat, "Разность фаз первых гармоник напряжений, срад"), 2, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "6. Frequency, Гц"), 2, 2);
+    glyout->addWidget(WDFunc::NewLBL(parent, "7. Frequency, Гц"), 2, 2);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"5", ValuesFormat, "Частота в сети, Гц"), 2, 3);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
@@ -67,7 +68,7 @@ QWidget *CheckA1::Bd1W(const QString &title, const QString &begin, QWidget *pare
     lyout->addWidget(gb);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
+    tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
     w->setStyleSheet(tmps);
     return w;
 }

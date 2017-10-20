@@ -31,7 +31,6 @@
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/downloaddialog.h"
 #include "../dialogs/infodialog.h"
-#include "../dialogs/oscdialog.h"
 #include "../tune/tunedialoga1.h"
 #include "../tune/tunedialoga1dn.h"
 #include "../dialogs/a1dialog.h"
@@ -150,7 +149,6 @@ void pkdn_s::Stage3()
     MainTW->addTab(t2dlg, "Настройка своего ДН");
 #endif
     MainTW->addTab(chdlg, "Измерения");
-//    MainTW->addTab(OscD, "Осциллограммы");
 #if PROGSIZE >= PROGSIZE_LARGE
     downloaddialog *DownD = new downloaddialog;
     MainTW->addTab(DownD, "События");
