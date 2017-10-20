@@ -2,7 +2,7 @@
 #define TRENDVIEWDIALOG_H
 
 #include <QDialog>
-#include "qcustomplot/qcustomplot.h"
+#include "../qcustomplot.h"
 
 class TrendViewDialog : public QDialog
 {
