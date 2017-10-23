@@ -26,7 +26,7 @@ CheckDialogA1::CheckDialogA1(QWidget *parent) : EAbstractCheckDialog(parent)
     ChA1 = new CheckA1;
     SetBd(A1_BDA_IN_BN, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1));
     SetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
-    SetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2));
+    SetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2),false); // не пишем в режиме xlsx
     SetBd(A1_BDA_IN_AN_BN, &ChA1->Bda_in_an, sizeof(CheckA1::A1_Bd3));
     SetBd(A1_BDA_OUT_AN_BN, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
 //    SetBd(6, &ChA1->Bd_com, sizeof(CheckA1::A1_Bd6));

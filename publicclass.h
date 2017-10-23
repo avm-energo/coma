@@ -317,6 +317,7 @@ public:
     int SaveFile(QWidget *parent, const QString &mask, const QString &ext, QByteArray &src, unsigned int numbytes);
     int SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes);
     bool FloatInRange(float var, float value);
+    QString UnixTime64ToString(quint64 utime);
 
 private:
     void addmessage(QStringList &sl, QString mes);

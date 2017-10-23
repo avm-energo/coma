@@ -396,6 +396,18 @@ bool publicclass::FloatInRange(float var, float value)
         return false;
 }
 
+QString publicclass::UnixTime64ToString(quint64 utime)
+{
+    quint32 tmpi = utime >> 32;
+    QDateTime tn = QDateTime::fromTime_t(tmpi, Qt::UTC);
+    quint32 timens = utime & 0xFFFFFFFF;
+    QString ms = QString::number((timens/1000000));
+    QString mcs = QString::number(((timens-ms.toInt()*1000000)/1000));
+    QString ns = QString::number(timens-ms.toInt()*1000000-mcs.toInt()*1000);
+    QString time = tn.toString("dd/MM/yyyy hh:mm:ss.")+ms+"."+mcs+"."+ns;
+    return time;
+}
+
 void publicclass::ErMsg(int ermsgnum)
 {
     if (ermsgnum < pc.errmsgs.size())

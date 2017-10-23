@@ -11,11 +11,16 @@ public:
     TrendViewDialog(QWidget *parent=0);
     ~TrendViewDialog();
 
+    void Init(int GraphNum, int PointNum, float RangeMin, float RangeMax); // инициализация графиков
+                                                                           // количество самих графиков, количество точек, диапазон по оси X
+    void SetPoint(int GraphNum, float PointValue);
+    void PlotShow();
+
 private:
     QCustomPlot *Plot;
+    QVector<QVector<double> > MainData;
 
     void SetupUI();
-    void SetPlot();
 };
 
 #endif // TRENDVIEWDIALOG_H

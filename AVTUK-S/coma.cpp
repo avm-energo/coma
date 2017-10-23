@@ -244,7 +244,7 @@ void Coma::Stage3()
         MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
     }
 #if PROGSIZE != PROGSIZE_EMUL
-    oscdialog *OscD = new oscdialog;
+    OscDialog *OscD = new OscDialog;
     downloaddialog *DownD = new downloaddialog;
     fwupdialog *FwUpD = new fwupdialog;
     MainTW->addTab(OscD, "Осциллограммы");

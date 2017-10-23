@@ -9,6 +9,7 @@
 
 #define MT_HEAD_ID      9000 // ID осциллограммы
 #define MT_ID21         10001 // первый ID осциллограммы по модулю 21
+#define MT_ID21E        10016 // последний ID осциллограммы по модулю 21
 #define MT_ID81         10021 // ID осциллограммы по модулю 8081
 #define MT_ID82         10022 // ID осциллограммы по модулю 8082
 #define MT_ID83         10023 // ID осциллограммы по модулю 8083
@@ -16,20 +17,29 @@
 
 #define MAXOSCBUFSIZE   262144 // максимальный размер буфера для осциллограмм
 
-class oscdialog : public QDialog
+#define MT_FT_XLSX      0x01
+#define MT_FT_COMTRADE  0x02
+#define MT_FT_NONE      0x04
+
+class OscDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit oscdialog(QWidget *parent=0);
-    ~oscdialog();
+    explicit OscDialog(QWidget *parent=0);
+    ~OscDialog();
 
 private:
     void SetupUI();
+    bool PosPlusPlus(void *dst, void *src, int size);
+    int InputFileType();
 
     ETableModel *tm;
     QString GivenFilename;
     QString OscDateTime;
+    int BASize, BSize, Pos;
+    int OscFileType;
+    bool AcceptedOscFileType;
 
     struct GBoStruct
     {
@@ -90,9 +100,11 @@ signals:
 private slots:
     void GetAndProcessOscInfo();
 //    void ProcessOscInfo();
-    void EndExtractOsc();
+    void EndExtractOsc(quint32 id, QByteArray &ba, OscHeader_Data &OHD); // id - ИД осциллограммы (по табл. Приложения 2 "АВ-ТУК. Файлы")
     void GetOsc(QModelIndex);
     void EraseOsc();
+    void Accept();
+    void Cancel();
 };
 
 #endif // OSCDIALOG_H

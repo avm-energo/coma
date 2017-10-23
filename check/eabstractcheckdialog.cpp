@@ -23,6 +23,7 @@ EAbstractCheckDialog::EAbstractCheckDialog(QWidget *parent) :
 {
 //    Parent = parent;
     XlsxWriting = false;
+    Busy = false;
     xlsx = 0;
 //    CurBdNum = 1;
     WRow = 0;
@@ -38,13 +39,14 @@ void EAbstractCheckDialog::Check1PPS()
 
 }
 
-void EAbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize)
+void EAbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
 {
     BdBlocks *bdblock = new BdBlocks;
     while (bdnum >= Bd_blocks.size())
         Bd_blocks.append(new BdBlocks);
     bdblock->block = block;
     bdblock->blocknum = blocksize;
+    bdblock->toxlsxwrite = toxlsx;
     Bd_blocks.replace(bdnum, bdblock);
 }
 
@@ -156,6 +158,9 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 //    int Interval = ElapsedTimeCounter->elapsed();
 //    qDebug() << ElapsedTimeCounter->elapsed();
     // получение текущих аналоговых сигналов от модуля
+    if (Busy)
+        return;
+    Busy = true;
     if (XlsxWriting)
     {
         xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("hh:mm:ss.zzz")));
@@ -171,25 +176,31 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     {
         if (bdnum < Bd_blocks.size())
         {
-            if (Commands::GetBd(bdnum, Bd_blocks.at(bdnum)->block, Bd_blocks.at(bdnum)->blocknum) != NOERROR)
+            if (!XlsxWriting || (XlsxWriting && (Bd_blocks.at(bdnum)->toxlsxwrite)))
             {
-                WARNMSG("Ошибка при приёме данных");
-                return;
+                if (Commands::GetBd(bdnum, Bd_blocks.at(bdnum)->block, Bd_blocks.at(bdnum)->blocknum) != NOERROR)
+                {
+                    WARNMSG("Ошибка при приёме данных");
+                    Busy = false;
+                    return;
+                }
+                // обновление коэффициентов в соответствующих полях на экране
+                RefreshAnalogValues(bdnum);
+                if (XlsxWriting)
+                    WriteToFile(WRow, bdnum);
             }
-            // обновление коэффициентов в соответствующих полях на экране
-            RefreshAnalogValues(bdnum);
-            if (XlsxWriting)
-                WriteToFile(WRow, bdnum);
         }
         else
         {
             WARNMSG("Передан некорректный номер блока");
+            Busy = false;
             return;
         }
     }
 //    Interval = ElapsedTimeCounter->elapsed() - Interval;
 //    qDebug() << Interval;
     WRow++;
+    Busy = false;
 }
 
 void EAbstractCheckDialog::StartAnalogMeasurements()

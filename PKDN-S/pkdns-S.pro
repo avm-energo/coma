@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 1.0.85
+VERSION = 1.0.89
 
 QT       += core gui serialport printsupport
 
@@ -18,7 +18,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = pkdns-S
 DEFINES += MODULE_TYPEB=0xA1
 DEFINES += PROGNAME='\\"PKDN-S\\"'
-DEFINES += PROGCAPTION='\\"PKDN\\040Service\\040M\\040v1.0.85\\"'
+DEFINES += PROGCAPTION='\\"PKDN\\040Service\\040M\\040v1.0.89\\"'
 DEFINES += DEVICETYPE=2 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=1 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
 #DEFINES += COMPORTENABLE # enable virtual com port driver
@@ -49,7 +49,6 @@ SOURCES += main.cpp\
     ../dialogs/keypressdialog.cpp \
     ../dialogs/settingsdialog.cpp \
     ../widgets/errorprotocolwidget.cpp \
-    ../widgets/getoscpbdelegate.cpp \
     ../widgets/lineeditfield.cpp \
     ../widgets/messagebox.cpp \
     ../widgets/mystackedwidget.cpp \
@@ -84,7 +83,6 @@ HEADERS  += pkdn_s.h \
     ../dialogs/keypressdialog.h \
     ../dialogs/settingsdialog.h \
     ../widgets/errorprotocolwidget.h \
-    ../widgets/getoscpbdelegate.h \
     ../widgets/lineeditfield.h \
     ../widgets/messagebox.h \
     ../widgets/mystackedwidget.h \

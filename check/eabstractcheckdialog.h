@@ -32,7 +32,7 @@ public:
     virtual void WriteToFile(int row, int bdnum) = 0; // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
     virtual void ChooseValuesToWrite() = 0;
     virtual void SetDefaultValuesToWrite() = 0;
-    void SetBd(int bdnum, void *block, int blocksize);
+    void SetBd(int bdnum, void *block, int blocksize, bool toxlsx=true);
     QWidget *BottomUI();
 
     QXlsx::Document *xlsx;
@@ -50,6 +50,7 @@ private:
     {
         void *block;
         int blocknum;
+        bool toxlsxwrite;
     };
 
     QList<BdBlocks *> Bd_blocks;
@@ -59,7 +60,7 @@ private:
     };
 
     Bip Bip_block;
-    bool XlsxWriting;
+    bool XlsxWriting, Busy;
     QTime *ElapsedTimeCounter;
 //    QWidget *Parent;
 

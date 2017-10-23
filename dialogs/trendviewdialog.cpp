@@ -15,6 +15,30 @@ TrendViewDialog::~TrendViewDialog()
 
 }
 
+void TrendViewDialog::Init(int GraphNum, int PointNum, float RangeMin, float RangeMax)
+{
+    int count = 0;
+    MainData.resize(GraphNum);
+    while (count < GraphNum)
+    {
+        Plot->addGraph();
+        QVector np;
+        np.resize(PointNum);
+        MainData.append(np);
+    }
+    QVector xv;
+    for (int i=0; i<PointNum; ++i)
+        xv.append(i);
+    MainData.insert(0, xv);
+    Plot->xAxis->setRange(RangeMin, RangeMax);
+}
+
+void TrendViewDialog::SetPoint(int GraphNum, float PointValue)
+{
+    if (GraphNum < MainData.size())
+        MainData.at(GraphNum).append(PointValue);
+}
+
 void TrendViewDialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -28,22 +52,17 @@ void TrendViewDialog::SetupUI()
     hlyout->addStretch(10);
     lyout->addLayout(hlyout);
     setLayout(lyout);
-    SetPlot();
 }
 
-void TrendViewDialog::SetPlot()
+void TrendViewDialog::PlotShow()
 {
-    QVector<double> x, y; // initialize with entries 0..100
-    for (int i=0; i<101; ++i)
+    Plot->xAxis->setLabel("Points");
+    int count = 0;
+    while (count < GraphNum)
     {
-      x.append(i/50.0 - 1); // x goes from -1 to 1
-      y.append(x[i]*x[i]); // let's plot a quadratic function
+        Plot->graph(count)->setData(MainData.at(0), MainData.at(count));
     }
-    // create graph and assign data to it:
-    Plot->addGraph();
-    Plot->graph(0)->setData(x, y);
     // give the axes some labels:
-    Plot->xAxis->setLabel("x");
     Plot->yAxis->setLabel("y");
     // set axes ranges, so we see all data:
     Plot->xAxis->setRange(-1, 1);
