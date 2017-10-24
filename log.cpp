@@ -95,8 +95,8 @@ void Log::CheckAndGz()
         // rotating
         for (i=9; i>0; --i)
         {
-            QString tmpsnew = GZippedLogFile + "." + QString::number(i) + "xz";
-            QString tmpsold = GZippedLogFile + "." + QString::number(i-1) + "xz";
+            QString tmpsnew = GZippedLogFile + "." + QString::number(i) + ".xz";
+            QString tmpsold = GZippedLogFile + "." + QString::number(i-1) + ".xz";
             QFile fn;
             fn.setFileName(tmpsnew);
             if (fn.exists())

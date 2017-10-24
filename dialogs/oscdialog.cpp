@@ -68,7 +68,6 @@ int OscDialog::InputFileType()
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Вывод осциллограмм"), Qt::AlignCenter);
     lyout->addWidget(WDFunc::NewChB(this, "xlsxchb", "В файл .xlsx"));
     lyout->addWidget(WDFunc::NewChB(this, "comtradechb", "В файлы COMTRADE"));
@@ -197,7 +196,7 @@ void OscDialog::GetOsc(QModelIndex idx)
         if (!PosPlusPlus(&FH, &(ba.data()[Pos]), sizeof(publicclass::FileHeader)))
             return;
         // проводим проверку, то ли получили
-        bool isOk = ((FH.fname == oscnum) && (FH.size == (OscLength - bsize)));
+        bool isOk = ((FH.fname == oscnum) && (FH.size == (BASize - BSize)));
         if (!isOk)
         {
             MessageBox2::error(this, "Ошибка", "Данные об осциллограмме не совпадают с заявленными");
@@ -386,6 +385,7 @@ void OscDialog::EndExtractOsc(quint32 id, QByteArray &ba, OscHeader_Data &OHD)
         }
         case MT_ID85:
         {
+            TrendViewDialog *dlg = new TrendViewDialog;
             if (OscFileType & MT_FT_XLSX)
             {
                 for (int col = 2; col < 5; ++col)
@@ -403,7 +403,16 @@ void OscDialog::EndExtractOsc(quint32 id, QByteArray &ba, OscHeader_Data &OHD)
                 }
                 xlsx.write(4, 12, QVariant("CSC"));
                 xlsx.write(4, 13, QVariant("CSO"));
-
+            }
+            if (OscFileType & MT_FT_NONE)
+            {
+                QVector<QString> tmpdv, tmpav;
+                tmpdv << "OCNA" << "OCNB" << "OCNC" << "OCFA" << "OCFB" << "OCFC" << \
+                         "BKCA" << "BKCB" << "BKCC" << "BKOA" << "BKOB" << "BKOC" << \
+                         "CSC" << "CSO" << "CNA" << "CNB" << "CNC" << "CFA" << "CFB" << "CFC";
+                tmpav << "USA" << "USB" << "USC" << "IA" << "IB" << "IC" << "ULA" << "ULB" << "ULC";
+                dlg->Init(tmpdv, tmpav, OHD.len, -200, 200);
+                dlg->SetPointsAxis(0, OHD.step);
             }
             int row = 5;
             for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
@@ -411,24 +420,43 @@ void OscDialog::EndExtractOsc(quint32 id, QByteArray &ba, OscHeader_Data &OHD)
                 Point85 point;
                 if (!PosPlusPlus(&point, &(ba.data()[Pos]), sizeof(Point85)))
                     return;
-                int col = 21; // 21 = OCNA
+                int col = 2; // 2 = OCNA
                 point.Dis &= 0x000FFFFF; // оставляем только младшие 20 бит
                 if (OscFileType & MT_FT_XLSX)
                 {
                     while (point.Dis != 0)
                     {
                         if (point.Dis & 0x00000001)
-                            xlsx.write(row, col--, QVariant("1"));
+                            xlsx.write(row, col++, QVariant("1"));
                         else
-                            xlsx.write(row, col--, QVariant("0"));
+                            xlsx.write(row, col++, QVariant("0"));
+                        point.Dis >>= 1;
                     }
-                    while (col > 1)
-                        xlsx.write(row, col--, QVariant("0"));
+                    col = 22;
+                    while (col < 31)
+                        xlsx.write(row, col++, QVariant(QString::number(point.An[col-22], 'f', 6)));
                 }
-                col = 22;
-                while (col < 31)
-                    xlsx.write(row, col++, QVariant(QString::number(point.An[col-22], 'f', 6)));
+                point.Dis &= 0x000FFFFF; // оставляем только младшие 20 бит
+                int count = 0; // номер графика
+                if (OscFileType & MT_FT_NONE)
+                {
+                    while (point.Dis != 0)
+                    {
+                        if (point.Dis & 0x00000001)
+                            dlg->AddDigitalPoint(count, 1);
+                        else
+                            dlg->AddDigitalPoint(count, 0);
+                        point.Dis >>= 1;
+                        ++count;
+                    }
+                    for (count = 0; count < 9; ++count)
+                        dlg->AddAnalogPoint(count, point.An[count]);
+                }
             }
+            if (OscFileType & MT_FT_XLSX)
+                xlsx.save();
+            if (OscFileType & MT_FT_NONE)
+                dlg->exec();
             break;
         }
         default:
@@ -444,8 +472,6 @@ void OscDialog::EraseOsc()
         MessageBox2::information(this, "Внимание", "Стёрто успешно");
     else
         MessageBox2::information(this, "Внимание", "Ошибка при стирании"); */
-    TrendViewDialog *dlg = new TrendViewDialog;
-    dlg->exec();
 }
 
 void OscDialog::Accept()

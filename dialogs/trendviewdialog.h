@@ -11,14 +11,20 @@ public:
     TrendViewDialog(QWidget *parent=0);
     ~TrendViewDialog();
 
-    void Init(int GraphNum, int PointNum, float RangeMin, float RangeMax); // инициализация графиков
-                                                                           // количество самих графиков, количество точек, диапазон по оси X
-    void SetPoint(int GraphNum, float PointValue);
+     // инициализация графиков
+    void Init(QVector<QString> &DigitalTrendNames, QVector<QString> &AnalogTrendNames, int PointNum, float RangeMin, float RangeMax);
+    // имена графиков контактных/аналоговых сигналов, количество точек, диапазон по оси Y для аналоговых
+    void AddAnalogPoint(int GraphNum, float PointValue);
+    void AddDigitalPoint(int GraphNum, int PointValue);
     void PlotShow();
+    void SetPointsAxis(float start, float step);
 
 private:
     QCustomPlot *Plot;
-    QVector<QVector<double> > MainData;
+    QVector<QCPGraph *> *AnalogGraphs, *DigitalGraphs;
+    QVector<QVector<double> > AnalogMainData, DigitalMainData;
+    QVector<double> MainPoints;
+    int PointsNum;
 
     void SetupUI();
 };

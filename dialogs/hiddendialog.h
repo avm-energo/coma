@@ -28,7 +28,7 @@ signals:
 private:
     struct Bhb_Main
     {
-        quint32 MType;          // тип модуля
+        quint32 MType;          // тип платы
         quint32 SerialNum;      // серийный номер платы
         quint32 HWVer;          // версия аппаратного обеспечения модуля (платы)
         quint32 ModSerialNum;   // серийный номер модуля целиком

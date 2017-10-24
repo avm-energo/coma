@@ -5,11 +5,12 @@
 #define Name "АВТУК-Сервис БР"
 #define GroupName "АВТУК-Сервис"
 #define EngName "AVTUK-S"
-#define Version "2.0.84"
+#define Version "2.0.90"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "avtuks-L.exe"
-#define SetupName "avtuks-L-2.0.84-x86"
+#define SetupName "avtuks-L-2.0.90-x86"
+#define Prefix "D:\Progs\out"
 
 [CustomMessages]
 Version={#Version}
@@ -36,8 +37,8 @@ DefaultGroupName={#GroupName}
 ; UninstallDisplayIcon={app}\MyProg.exe
 Compression=lzma2
 SolidCompression=yes
-OutputDir="out\"
-LicenseFile="coma\license.txt"
+OutputDir="{#Prefix}\out\"
+LicenseFile="{#Prefix}\coma\license.txt"
 
 OutputBaseFilename={#SetupName}
 
@@ -45,13 +46,13 @@ OutputBaseFilename={#SetupName}
 Name: {userappdata}\{#EngName}
 
 [Files]
-Source: "coma\*.dll"; DestDir: "{app}"
-Source: "coma\platforms\qwindows.dll"; DestDir: "{app}\platforms"
-Source: "coma\{#ExeName}"; DestDir: "{app}"; DestName: {#ExeName}; Flags: ignoreversion
-Source: "coma\ermsgs.dat"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
-Source: "src\reports\*.*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
+Source: "{#Prefix}\coma\*.dll"; DestDir: "{app}"
+Source: "{#Prefix}\coma\platforms\qwindows.dll"; DestDir: "{app}\platforms"
+Source: "{#Prefix}\coma\{#ExeName}"; DestDir: "{app}"; DestName: {#ExeName}; Flags: ignoreversion
+Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
+Source: "{#Prefix}\src\reports\*.*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
 ; Source: "coma\pdf\КОМА Руководство пользователя.pdf"; DestDir: "{app}"
-Source: "src\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: not IsRequiredVC2015Detected
+Source: "{#Prefix}\src\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: not IsRequiredVC2015Detected
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
