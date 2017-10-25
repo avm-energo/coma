@@ -52,6 +52,8 @@
 #define CN_MINOSCID 1000 // минимальный ИД осциллограмм, нужно, т.к. файлы осциллограмм обрабатываются по-своему
 #define CN_MAXOSCID 2999 // максимальный ИД осциллограмм
 
+#define NOTIMEOUT
+
 class EAbstractProtocomChannel : public QObject
 {
     Q_OBJECT

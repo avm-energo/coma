@@ -41,6 +41,8 @@ private:
     int OscFileType;
     bool AcceptedOscFileType;
 
+#pragma pack(push)  /* push current alignment to stack */
+#pragma pack(1)     /* set alignment to 1 byte boundary */
     struct GBoStruct
     {
         quint32 FileNum; // номер файла осциллограмм
@@ -94,6 +96,8 @@ private:
         quint32 id;
         quint32 numbytes;
     };
+
+#pragma pack(pop)   /* restore original alignment from stack */
 
 signals:
 

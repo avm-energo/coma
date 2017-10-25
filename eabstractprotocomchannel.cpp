@@ -90,11 +90,6 @@ void EAbstractProtocomChannel::InitiateSend()
     }
     case CN_GF:     // запрос файла
     {
-        if (DR->isEmpty())
-        {
-            Finish(CN_NULLDATAERROR);
-            break;
-        }
         WriteData.append(CN_MS);
         WriteData.append(cmd);
         AppendSize(WriteData, 2);
@@ -274,10 +269,15 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
     }
     case 1:
     {
+        if (!GetLength())
+        {
+            Finish(CN_RCVDATAERROR);
+            return;
+        }
         if (RDSize < ReadDataChunkLength)
             return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
         ReadDataChunk.remove(0, 4); // убираем заголовок с < и длиной
-        ReadData += ReadDataChunk;
+        ReadData.append(ReadDataChunk.data(), ReadDataChunkLength);
         RDSize = static_cast<quint32>(ReadData.size());
         emit SetDataCount(RDSize); // сигнал для прогрессбара
         ReadDataChunk.clear();
@@ -311,6 +311,11 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 {
                     outdata = &(ReadData.data()[0]);
                     Finish(NOERROR);
+                }
+                if (DR->isEmpty())
+                {
+                    Finish(CN_NULLDATAERROR);
+                    break;
                 }
                 res = pc.RestoreDataMem(ReadData.data(), RDSize, DR);
                 if (res == 0)
@@ -351,6 +356,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             break;
         }
         }
+//        bStep = 0;
     }
     }
 }
@@ -440,6 +446,7 @@ void EAbstractProtocomChannel::Timeout()
 void EAbstractProtocomChannel::Finish(int ernum)
 {
     TTimer->stop();
+#ifdef NOTIMEOUT
     cmd = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
     if (ernum != NOERROR)
     {
@@ -455,6 +462,7 @@ void EAbstractProtocomChannel::Finish(int ernum)
     }
     result = ernum;
     Busy = false;
+#endif
 }
 
 void EAbstractProtocomChannel::Disconnect()

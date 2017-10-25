@@ -102,7 +102,7 @@ void OscDialog::GetAndProcessOscInfo()
     QVector<QVector<QVariant> > lsl;
     QByteArray OscInfo;
     quint32 OscInfoSize; // размер считанного буфера с информацией об осциллограммах
-    quint32 RecordSize = sizeof(GBoStruct);
+    quint32 RecordSize = sizeof(GBoStruct); // GBo struct size
     OscInfoSize = MAXOSCBUFSIZE;
     OscInfo.resize(OscInfoSize);
     if ((Commands::GetBo(&(OscInfo.data()[0]), OscInfoSize)) == NOERROR)
@@ -124,7 +124,7 @@ void OscDialog::GetAndProcessOscInfo()
         for (quint32 i = 0; i < OscInfoSize; i+= RecordSize)
         {
             GBoStruct gbos;
-            memcpy(&gbos, &OscInfo[i], RecordSize);
+            memcpy(&gbos, &(OscInfo.data()[i]), RecordSize);
             Num << QString::number(gbos.FileNum);
             Tim << pc.UnixTime64ToString(gbos.UnixTime);
             IDs << gbos.ID;
