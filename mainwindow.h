@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QModelIndex>
 #include "publicclass.h"
 #include "../config/confdialog.h"
 #include "../check/eabstractcheckdialog.h"
@@ -119,7 +120,9 @@ private slots:
     void DisconnectAndClear();
 
 #if PROGSIZE != PROGSIZE_EMUL
-    void ShowConnectDialog();
+    void ShowCOMConnectDialog();
+    void ShowUSBConnectDialog();
+    void GetDeviceFromTable(QModelIndex idx);
     void Stage1_5();
     void Stage2();
     void SetDefConf();

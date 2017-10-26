@@ -36,9 +36,10 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
             graph->valueAxis()->setRange(0, 1);
             graph->keyAxis()->setLabel("Time, ns");
             graph->valueAxis()->setLabel(DigitalTrendNames.at(count));
-            DigitalGraphs->append(graph);
+            DigitalGraphs.append(graph);
             QVector<double> np(PointNum);
             AnalogMainData.append(np);
+            ++count;
         }
     }
     if (AnalogGraphNum != 0)
@@ -55,9 +56,10 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
             graph->valueAxis()->setRange(RangeMin, RangeMax);
             graph->keyAxis()->setLabel("Time, ns");
             graph->valueAxis()->setLabel(AnalogTrendNames.at(count));
-            AnalogGraphs->append(graph);
+            AnalogGraphs.append(graph);
             QVector<double> np(PointNum);
             AnalogMainData.append(np);
+            ++count;
         }
     }
 }
@@ -100,15 +102,15 @@ void TrendViewDialog::SetupUI()
 void TrendViewDialog::PlotShow()
 {
     int count = 0;
-    while (count < AnalogGraphs->size())
+    while (count < AnalogGraphs.size())
     {
         if (count < AnalogMainData.size())
-            AnalogGraphs->at(count)->setData(MainPoints, AnalogMainData.at(count));
+            AnalogGraphs.at(count)->setData(MainPoints, AnalogMainData.at(count));
     }
-    while (count < DigitalGraphs->size())
+    while (count < DigitalGraphs.size())
     {
         if (count < DigitalMainData.size())
-            DigitalGraphs->at(count)->setData(MainPoints, DigitalMainData.at(count));
+            DigitalGraphs.at(count)->setData(MainPoints, DigitalMainData.at(count));
     }
     Plot->replot();
 }

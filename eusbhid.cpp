@@ -1,10 +1,6 @@
-#include <QDialog>
-#include <QLabel>
-#include <QVBoxLayout>
 #include <QCoreApplication>
 #include <QTime>
 #include "eusbhid.h"
-#include "widgets/messagebox.h"
 
 EUsbHid::EUsbHid(QObject *parent) : EAbstractProtocomChannel(parent)
 {
@@ -86,7 +82,10 @@ EUsbThread::~EUsbThread()
 
 int EUsbThread::Set()
 {
-    HidDevice = hid_open(UH_VID, UH_PID, NULL);
+    publicclass::DeviceConnectStruct dev = pc.DeviceInfo;
+    if ((dev.product_id == 0) || (dev.vendor_id == 0))
+        return GENERALERROR;
+    HidDevice = hid_open(pc.DeviceInfo.vendor_id, pc.DeviceInfo.product_id, pc.DeviceInfo.serial);
     if (!HidDevice)
         return GENERALERROR;
     hid_set_nonblocking(HidDevice, 1);

@@ -81,7 +81,6 @@ int OscDialog::InputFileType()
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
-    connect(this,SIGNAL(DNDataIsSet()),dlg,SLOT(close()));
     AcceptedOscFileType = false;
     pc.Cancelled = false;
     dlg->show();
@@ -92,6 +91,7 @@ int OscDialog::InputFileType()
         while (tme.elapsed() < SLEEPINT)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
+    dlg->close();
     if (pc.Cancelled)
         return GENERALERROR;
     return NOERROR;
@@ -196,7 +196,7 @@ void OscDialog::GetOsc(QModelIndex idx)
         if (!PosPlusPlus(&FH, &(ba.data()[Pos]), sizeof(publicclass::FileHeader)))
             return;
         // проводим проверку, то ли получили
-        bool isOk = ((FH.fname == oscnum) && (FH.size == (BASize - BSize)));
+        bool isOk = ((FH.fname == oscnum) && (FH.size == BASize));
         if (!isOk)
         {
             MessageBox2::error(this, "Ошибка", "Данные об осциллограмме не совпадают с заявленными");
@@ -211,6 +211,8 @@ void OscDialog::GetOsc(QModelIndex idx)
             return;
         }
         oscid -= MT_HEAD_ID - 1; // одна осциллограмма = 1, две = 2, ...
+        if (oscid > 8)
+            oscid = 1; // если что-то с количеством осциллограмм не так, принудительно выставляем в 1
         OscHeader_Data OHD;
         if (!PosPlusPlus(&OHD, &(ba.data()[Pos]), sizeof(OscHeader_Data)))
             return;

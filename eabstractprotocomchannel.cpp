@@ -248,7 +248,11 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             {
                 if (RDSize < 16) // не пришла ещё шапка файла
                     return;
-                quint16 filenum = static_cast<quint16>(ReadDataChunk[4])+static_cast<quint16>(ReadDataChunk[5])*256;
+                quint16 filenum;
+                quint8 tmpi= ReadDataChunk[5];
+                filenum = tmpi * 256;
+                tmpi = ReadDataChunk[4];
+                filenum += tmpi;
                 if (filenum != fnum)
                 {
                     Finish(USO_UNKNFILESENT);
@@ -309,8 +313,9 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             {
                 if ((fnum >= CN_MINOSCID) && (fnum <= CN_MAXOSCID)) // для осциллограмм особая обработка
                 {
-                    outdata = &(ReadData.data()[0]);
+                    memcpy(outdata,ReadData.data(),RDSize);
                     Finish(NOERROR);
+                    break;
                 }
                 if (DR->isEmpty())
                 {

@@ -187,6 +187,8 @@
 #include <QStringList>
 #include <QPointer>
 #include <QVector>
+#include <QTime>
+#include <QCoreApplication>
 #include "log.h"
 
 class publicclass
@@ -275,6 +277,15 @@ public:
 
     PovDevStruct PovDev;
 
+    struct DeviceConnectStruct
+    {
+        unsigned short vendor_id;
+        unsigned short product_id;
+        wchar_t serial[20];
+    };
+
+    DeviceConnectStruct DeviceInfo;
+
     Log log;
     bool WriteUSBLog; // надо ли писать лог обмена в файл
     QString HomeDir; // рабочий каталог программы
@@ -296,6 +307,14 @@ public:
     QList<ermsg> ErMsgPool;
 
     QString VerToStr(quint32);
+
+    inline void Wait(int ms)
+    {
+        QTime tme;
+        tme.start();
+        while (tme.elapsed() < ms)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+    }
 
     // S2: Сборщик в память:
     int StoreDataMem(void *, QVector<DataRec> *, quint16 fname); //0 - успешно, иначе код ошибки

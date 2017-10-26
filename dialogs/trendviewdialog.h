@@ -21,7 +21,7 @@ public:
 
 private:
     QCustomPlot *Plot;
-    QVector<QCPGraph *> *AnalogGraphs, *DigitalGraphs;
+    QVector<QCPGraph *> AnalogGraphs, DigitalGraphs;
     QVector<QVector<double> > AnalogMainData, DigitalMainData;
     QVector<double> MainPoints;
     int PointsNum;

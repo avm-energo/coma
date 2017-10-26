@@ -24,6 +24,8 @@
 #include "dialogs/hiddendialog.h"
 #include "dialogs/settingsdialog.h"
 #include "dialogs/keypressdialog.h"
+#include "widgets/etablemodel.h"
+#include "widgets/s_tqtableview.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -40,10 +42,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 #if PROGSIZE != PROGSIZE_EMUL
 #ifdef USBENABLE
     cn = new EUsbHid;
+    connect(cn,SIGNAL(Retry()),this,SLOT(ShowUSBConnectDialog()));
 #else
 #ifdef COMPORTENABLE
     cn = new EUsbCom;
-    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
+    connect(cn,SIGNAL(Retry()),this,SLOT(ShowCOMConnectDialog()));
 #endif
 #endif
     connect(cn,SIGNAL(SetDataSize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
@@ -300,6 +303,9 @@ int MainWindow::CheckPassword()
 void MainWindow::Stage1_5()
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
+#ifdef USBENABLE
+    ShowUSBConnectDialog();
+#endif
     if (Commands::Connect() != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Не удалось установить связь");
@@ -491,7 +497,7 @@ void MainWindow::SetProgressBar(QString prbnum, quint32 cursize)
     }
 }
 
-void MainWindow::ShowConnectDialog()
+void MainWindow::ShowCOMConnectDialog()
 {
     int i;
     QDialog *dlg = new QDialog(this);
@@ -581,6 +587,70 @@ void MainWindow::DisconnectAndClear()
         return;
     MainTW->hide();
     pc.Emul = false;
+}
+
+void MainWindow::ShowUSBConnectDialog()
+{
+    QDialog *dlg = new QDialog(this);
+    QVBoxLayout *lyout = new QVBoxLayout;
+    s_tqTableView *tv = new s_tqTableView;
+    ETableModel *mdl = new ETableModel;
+    struct hid_device_info *devs, *cur_dev;
+
+    pc.DeviceInfo.vendor_id = 0;
+    devs = hid_enumerate(0x0, 0x0);
+    cur_dev = devs;
+    lyout->addWidget(WDFunc::NewLBLT(this, "Найдены следующие устройства"));
+    mdl->addColumn("ИД производителя");
+    mdl->addColumn("ИД устройства");
+    mdl->addColumn("Путь");
+    mdl->addColumn("Серийный номер");
+    mdl->addColumn("Производитель");
+    mdl->addColumn("Устройство");
+    QVector<QVector<QVariant> > lsl;
+    QVector<QVariant> sl[6];
+    while (cur_dev)
+    {
+        sl[0].append(QString::number(cur_dev->vendor_id, 16));
+        sl[1].append(QString::number(cur_dev->product_id, 16));
+        sl[2].append(QString::fromLocal8Bit(cur_dev->path));
+        sl[3].append(QString::fromWCharArray(cur_dev->serial_number));
+        sl[4].append(QString::fromWCharArray(cur_dev->manufacturer_string));
+        sl[5].append(QString::fromWCharArray(cur_dev->product_string));
+        cur_dev = cur_dev->next;
+    }
+    for (int i=0; i<6; ++i)
+        lsl.append(sl[i]);
+    hid_free_enumeration(devs);
+    mdl->fillModel(lsl);
+    tv->setObjectName("devicetv");
+    tv->setModel(mdl);
+    connect(tv,SIGNAL(clicked(QModelIndex)),this,SLOT(GetDeviceFromTable(QModelIndex)));
+    lyout->addWidget(tv);
+    QPushButton *pb = new QPushButton("Далее");
+    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
+void MainWindow::GetDeviceFromTable(QModelIndex idx)
+{
+    Q_UNUSED(idx);
+    s_tqTableView *tv = this->findChild<s_tqTableView *>("devicetv");
+    if (tv == 0)
+    {
+        DBGMSG;
+        return;
+    }
+    QString tmps = tv->model()->index(tv->currentIndex().row(), 0, QModelIndex()).data(Qt::DisplayRole).toString();
+    pc.DeviceInfo.vendor_id = tmps.toInt(nullptr, 16);
+//    quint16 vid = tmps.toInt(nullptr, 16);
+    tmps = tv->model()->index(tv->currentIndex().row(), 1, QModelIndex()).data(Qt::DisplayRole).toString();
+    pc.DeviceInfo.product_id = tmps.toInt(nullptr, 16);
+//    quint16 pid = tmps.toInt(nullptr, 16);
+    tmps = tv->model()->index(tv->currentIndex().row(), 3, QModelIndex()).data(Qt::DisplayRole).toString();
+    tmps.toWCharArray(pc.DeviceInfo.serial);
 }
 
 #if PROGSIZE >= PROGSIZE_LARGE

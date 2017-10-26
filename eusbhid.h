@@ -43,7 +43,10 @@ public slots:
 
 private:
     hid_device *HidDevice;
-    bool AboutToFinish;
+    bool AboutToFinish, Device;
+
+
+private slots:
 };
 
 class EUsbHid : public EAbstractProtocomChannel
