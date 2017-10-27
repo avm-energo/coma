@@ -303,6 +303,7 @@ public:
     QVector<DataRec> Config;
     bool Cancelled;
     int PovNumPoints;
+    bool TEEnabled; // признак того, ведётся ли лог в правом выезжающем окне
 
     QList<ermsg> ErMsgPool;
 

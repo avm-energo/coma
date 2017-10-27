@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QCheckBox>
+#include <QRadioButton>
 #include <QLineEdit>
 #include <QLabel>
 #include <QDoubleSpinBox>
@@ -67,6 +68,7 @@ public:
     static bool SetLBLColor(QWidget *w, const QString &lblname, const QString &lblcolor);
     static bool SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext="", bool enabled=true);
     static bool LBLText(QWidget *w, const QString &lblname, QString &text);
+    static QRadioButton *NewRB(QWidget *parent, const QString &rbtext, const QString &rbname, const QString &rbcolor="");
     static QString TVField(QWidget *w, const QString &tvname, int column, bool isid=false);
     static void TVAutoResize(QWidget *w, const QString &tvname);
     static QCheckBox *NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor="");

@@ -126,6 +126,9 @@ void MainWindow::SetSlideWidget()
     SlideWidget->setObjectName("slidew");
     SlideWidget->setStyleSheet("QWidget {background-color: rgba(110,234,145,255);}");
     QVBoxLayout *slyout = new QVBoxLayout;
+    QCheckBox *chb = WDFunc::NewChB(this, "teenablechb", "Включить протокол");
+    connect(chb,SIGNAL(toggled(bool)),this,SLOT(SetTEEnabled(bool)));
+    slyout->addWidget(chb, 0, Qt::AlignLeft);
     QTextEdit *MainTE = new QTextEdit;
     MainTE->setObjectName("mainte");
     MainTE->setReadOnly(true);
@@ -217,6 +220,7 @@ void MainWindow::LoadSettings()
     pc.OrganizationString = sets->value("Organization", "Р&К").toString();
     pc.WriteUSBLog = sets->value("WriteLog", "0").toBool();
     pc.PovNumPoints = sets->value("PovNumPoints", "60").toInt();
+    pc.TEEnabled = sets->value("TEEnabled", "0").toBool();
 }
 
 void MainWindow::SaveSettings()
@@ -230,6 +234,7 @@ void MainWindow::SaveSettings()
     sets->setValue("Organization", pc.OrganizationString);
     sets->setValue("WriteLog", pc.WriteUSBLog);
     sets->setValue("PovNumPoints", QString::number(pc.PovNumPoints, 10));
+    sets->setValue("TEEnabled", pc.TEEnabled);
 }
 
 void MainWindow::ClearTW()
@@ -302,10 +307,10 @@ int MainWindow::CheckPassword()
 
 void MainWindow::Stage1_5()
 {
-    QApplication::setOverrideCursor(Qt::WaitCursor);
 #ifdef USBENABLE
     ShowUSBConnectDialog();
 #endif
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     if (Commands::Connect() != NOERROR)
     {
         MessageBox2::error(this, "Ошибка", "Не удалось установить связь");
@@ -363,9 +368,16 @@ void MainWindow::Fill()
 #if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::UpdateMainTE(QByteArray &ba)
 {
+    if (!pc.TEEnabled)
+        return;
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
         MainTE->append(ba.toHex());
+}
+
+void MainWindow::SetTEEnabled(bool enabled)
+{
+    pc.TEEnabled = enabled;
 }
 #endif
 
@@ -573,6 +585,23 @@ void MainWindow::Disconnect()
     if (!pc.Emul)
         cn->Disconnect();
 }
+
+void MainWindow::SetUSBDev()
+{
+    QString rbname = sender()->objectName();
+    QStringList sl = rbname.split(".");
+    if (sl.size() < 3)
+    {
+        DBGMSG;
+        return;
+    }
+    QString tmps = sl.at(0);
+    pc.DeviceInfo.vendor_id = tmps.toInt(nullptr, 16);
+    tmps = sl.at(1);
+    pc.DeviceInfo.product_id = tmps.toInt(nullptr, 16);
+    tmps = sl.at(2);
+    tmps.toWCharArray(pc.DeviceInfo.serial);
+}
 #endif
 void MainWindow::DisconnectAndClear()
 {
@@ -591,46 +620,50 @@ void MainWindow::DisconnectAndClear()
 
 void MainWindow::ShowUSBConnectDialog()
 {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     QDialog *dlg = new QDialog(this);
     QVBoxLayout *lyout = new QVBoxLayout;
-    s_tqTableView *tv = new s_tqTableView;
-    ETableModel *mdl = new ETableModel;
+/*    s_tqTableView *tv = new s_tqTableView;
+    ETableModel *mdl = new ETableModel; */
     struct hid_device_info *devs, *cur_dev;
 
     pc.DeviceInfo.vendor_id = 0;
     devs = hid_enumerate(0x0, 0x0);
     cur_dev = devs;
     lyout->addWidget(WDFunc::NewLBLT(this, "Найдены следующие устройства"));
-    mdl->addColumn("ИД производителя");
+/*    mdl->addColumn("ИД производителя");
     mdl->addColumn("ИД устройства");
     mdl->addColumn("Путь");
     mdl->addColumn("Серийный номер");
     mdl->addColumn("Производитель");
     mdl->addColumn("Устройство");
     QVector<QVector<QVariant> > lsl;
-    QVector<QVariant> sl[6];
+    QVector<QVariant> sl[6]; */
     while (cur_dev)
     {
-        sl[0].append(QString::number(cur_dev->vendor_id, 16));
-        sl[1].append(QString::number(cur_dev->product_id, 16));
-        sl[2].append(QString::fromLocal8Bit(cur_dev->path));
-        sl[3].append(QString::fromWCharArray(cur_dev->serial_number));
-        sl[4].append(QString::fromWCharArray(cur_dev->manufacturer_string));
-        sl[5].append(QString::fromWCharArray(cur_dev->product_string));
+        QString venid = QString::number(cur_dev->vendor_id, 16);
+        QString prodid = QString::number(cur_dev->product_id, 16);
+        QString sn = QString::fromWCharArray(cur_dev->serial_number);
+        QString tmps = "VEN_" + venid + " & DEV_" + prodid + " & SN_" + sn;
+        QString rbname = venid + "." + prodid + "." + sn;
+        QRadioButton *rb = WDFunc::NewRB(this, tmps, rbname);
+        connect(rb,SIGNAL(clicked(bool)),this,SLOT(SetUSBDev()));
+        lyout->addWidget(rb);
         cur_dev = cur_dev->next;
     }
-    for (int i=0; i<6; ++i)
-        lsl.append(sl[i]);
+/*    for (int i=0; i<6; ++i)
+        lsl.append(sl[i]); */
     hid_free_enumeration(devs);
-    mdl->fillModel(lsl);
+/*    mdl->fillModel(lsl);
     tv->setObjectName("devicetv");
     tv->setModel(mdl);
     connect(tv,SIGNAL(clicked(QModelIndex)),this,SLOT(GetDeviceFromTable(QModelIndex)));
-    lyout->addWidget(tv);
+    lyout->addWidget(tv); */
     QPushButton *pb = new QPushButton("Далее");
     connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
+    QApplication::restoreOverrideCursor();
     dlg->exec();
 }
 

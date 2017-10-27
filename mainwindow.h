@@ -133,12 +133,14 @@ private slots:
     void SetProgressBar2Size(quint32 size);
     void SetProgressBar2(quint32 cursize);
     void Disconnect();
+    void SetUSBDev();
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE || PROGSIZE == PROGSIZE_EMUL
     void StartEmul();
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE
     void UpdateMainTE(QByteArray &ba);
+    void SetTEEnabled(bool enabled);
     void OpenBhbDialog();
     void MouseMove();
 #endif

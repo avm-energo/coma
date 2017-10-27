@@ -423,32 +423,32 @@ void OscDialog::EndExtractOsc(quint32 id, QByteArray &ba, OscHeader_Data &OHD)
                 if (!PosPlusPlus(&point, &(ba.data()[Pos]), sizeof(Point85)))
                     return;
                 int col = 2; // 2 = OCNA
-                point.Dis &= 0x000FFFFF; // оставляем только младшие 20 бит
+                quint32 DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
                 if (OscFileType & MT_FT_XLSX)
                 {
-                    while (point.Dis != 0)
+                    for (int i=0; i<20; ++i)
                     {
-                        if (point.Dis & 0x00000001)
+                        if (DisPoint & 0x00000001)
                             xlsx.write(row, col++, QVariant("1"));
                         else
                             xlsx.write(row, col++, QVariant("0"));
-                        point.Dis >>= 1;
+                        DisPoint >>= 1;
                     }
                     col = 22;
                     while (col < 31)
                         xlsx.write(row, col++, QVariant(QString::number(point.An[col-22], 'f', 6)));
                 }
-                point.Dis &= 0x000FFFFF; // оставляем только младшие 20 бит
+                DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
                 int count = 0; // номер графика
                 if (OscFileType & MT_FT_NONE)
                 {
-                    while (point.Dis != 0)
+                    for (int i=0; i<20; ++i)
                     {
-                        if (point.Dis & 0x00000001)
+                        if (DisPoint & 0x00000001)
                             dlg->AddDigitalPoint(count, 1);
                         else
                             dlg->AddDigitalPoint(count, 0);
-                        point.Dis >>= 1;
+                        DisPoint >>= 1;
                         ++count;
                     }
                     for (count = 0; count < 9; ++count)
@@ -458,7 +458,10 @@ void OscDialog::EndExtractOsc(quint32 id, QByteArray &ba, OscHeader_Data &OHD)
             if (OscFileType & MT_FT_XLSX)
                 xlsx.save();
             if (OscFileType & MT_FT_NONE)
+            {
+                dlg->PlotShow();
                 dlg->exec();
+            }
             break;
         }
         default:

@@ -25,7 +25,7 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
     if (DigitalGraphNum != 0)
     {
         QCPAxisRect *DigitalAxisRect = new QCPAxisRect(Plot);
-        DigitalAxisRect->addAxes(QCPAxis::atBottom | QCPAxis::atLeft);
+//        DigitalAxisRect->addAxes(QCPAxis::atBottom | QCPAxis::atLeft);
         DigitalAxisRect->setBackground(QBrush(QColor(ACONFYCLR)));
         Plot->plotLayout()->addElement(row++, 0, DigitalAxisRect);
         DigitalMainData.resize(DigitalGraphNum);
@@ -37,15 +37,15 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
             graph->keyAxis()->setLabel("Time, ns");
             graph->valueAxis()->setLabel(DigitalTrendNames.at(count));
             DigitalGraphs.append(graph);
-            QVector<double> np(PointNum);
-            AnalogMainData.append(np);
+/*            QVector<double> np;
+            DigitalMainData.append(np); */
             ++count;
         }
     }
     if (AnalogGraphNum != 0)
     {
         QCPAxisRect *AnalogAxisRect = new QCPAxisRect(Plot);
-        AnalogAxisRect->addAxes(QCPAxis::atBottom | QCPAxis::atLeft);
+//        AnalogAxisRect->addAxes(QCPAxis::atBottom | QCPAxis::atLeft);
         AnalogAxisRect->setBackground(QBrush(QColor(ACONFYCLR)));
         Plot->plotLayout()->addElement(row++, 0, AnalogAxisRect);
         AnalogMainData.resize(AnalogGraphNum);
@@ -57,8 +57,8 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
             graph->keyAxis()->setLabel("Time, ns");
             graph->valueAxis()->setLabel(AnalogTrendNames.at(count));
             AnalogGraphs.append(graph);
-            QVector<double> np(PointNum);
-            AnalogMainData.append(np);
+/*            QVector<double> np;
+            AnalogMainData.append(np); */
             ++count;
         }
     }
@@ -106,13 +106,16 @@ void TrendViewDialog::PlotShow()
     {
         if (count < AnalogMainData.size())
             AnalogGraphs.at(count)->setData(MainPoints, AnalogMainData.at(count));
+        ++count;
     }
     while (count < DigitalGraphs.size())
     {
         if (count < DigitalMainData.size())
             DigitalGraphs.at(count)->setData(MainPoints, DigitalMainData.at(count));
+        ++count;
     }
     Plot->replot();
+    this->showMaximized();
 }
 
 void TrendViewDialog::SetPointsAxis(float start, float step)

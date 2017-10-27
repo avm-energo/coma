@@ -223,6 +223,19 @@ bool WDFunc::LBLText(QWidget *w, const QString &lblname, QString &text)
     return true;
 }
 
+QRadioButton *WDFunc::NewRB(QWidget *parent, const QString &rbtext, const QString &rbname, const QString &rbcolor)
+{
+    QRadioButton *rb = new QRadioButton(parent);
+    rb->setObjectName(rbname);
+    rb->setText(rbtext);
+    if (!rbcolor.isEmpty())
+    {
+        QString tmps = "QRadioButton {background-color: " + rbcolor + ";}";
+        rb->setStyleSheet(tmps);
+    }
+    return rb;
+}
+
 QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid)
 {
     s_tqTableView *tv = w->findChild<s_tqTableView *>(tvname);
