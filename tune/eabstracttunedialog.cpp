@@ -307,6 +307,7 @@ int EAbstractTuneDialog::StartMeasurement()
 void EAbstractTuneDialog::InputTuneVariant(int varnum)
 {
     QDialog *dlg = new QDialog(this);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QStringList sl;

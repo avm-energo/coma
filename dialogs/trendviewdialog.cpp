@@ -1,4 +1,5 @@
 #include <QVector>
+#include <QPen>
 #include "trendviewdialog.h"
 #include "../publicclass.h"
 
@@ -18,10 +19,20 @@ TrendViewDialog::~TrendViewDialog()
 
 void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString> &AnalogTrendNames, int PointNum, float RangeMin, float RangeMax)
 {
+    QPen pen;
     int row = 0;
     this->PointsNum = PointNum;
     int DigitalGraphNum = DigitalTrendNames.size();
     int AnalogGraphNum = AnalogTrendNames.size();
+    Plot->plotLayout()->clear();
+    Plot->legend = new QCPLegend;
+    Plot->axisRect()->insetLayout()->addElement(Plot->legend, Qt::AlignRight|Qt::AlignTop);
+    Plot->axisRect()->insetLayout()->setMargins(QMargins(12, 12, 12, 12));
+    Plot->legend->setLayer("legend");
+    Plot->legend->setVisible(true);
+    Plot->legend->setFont(QFont("Helvetica", 8));
+    Plot->setAutoAddPlottableToLegend(true);
+    Plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
     if (DigitalGraphNum != 0)
     {
         QCPAxisRect *DigitalAxisRect = new QCPAxisRect(Plot);
@@ -33,7 +44,9 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
         while (count < DigitalGraphNum)
         {
             QCPGraph *graph = Plot->addGraph(DigitalAxisRect->axis(QCPAxis::atBottom), DigitalAxisRect->axis(QCPAxis::atLeft));
-            graph->valueAxis()->setRange(0, 1);
+            pen.setColor(QColor(qSin(count*1+1.2)*80+80, qSin(count*0.3+0)*80+80, qSin(count*0.3+1.5)*80+80));
+            graph->setPen(pen);
+            graph->valueAxis()->setRange(-1, 2);
             graph->keyAxis()->setLabel("Time, ns");
             graph->valueAxis()->setLabel(DigitalTrendNames.at(count));
             DigitalGraphs.append(graph);
@@ -53,6 +66,8 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
         while (count < AnalogGraphNum)
         {
             QCPGraph *graph = Plot->addGraph(AnalogAxisRect->axis(QCPAxis::atBottom), AnalogAxisRect->axis(QCPAxis::atLeft));
+            pen.setColor(QColor(qSin(count*1+1.2)*80+80, qSin(count*0.3+0)*80+80, qSin(count*0.3+1.5)*80+80));
+            graph->setPen(pen);
             graph->valueAxis()->setRange(RangeMin, RangeMax);
             graph->keyAxis()->setLabel("Time, ns");
             graph->valueAxis()->setLabel(AnalogTrendNames.at(count));
@@ -105,13 +120,22 @@ void TrendViewDialog::PlotShow()
     while (count < AnalogGraphs.size())
     {
         if (count < AnalogMainData.size())
+        {
             AnalogGraphs.at(count)->setData(MainPoints, AnalogMainData.at(count));
+            AnalogGraphs.at(count)->rescaleKeyAxis();
+            AnalogGraphs.at(count)->rescaleValueAxis();
+        }
         ++count;
     }
+    count = 0;
     while (count < DigitalGraphs.size())
     {
         if (count < DigitalMainData.size())
+        {
             DigitalGraphs.at(count)->setData(MainPoints, DigitalMainData.at(count));
+            DigitalGraphs.at(count)->rescaleKeyAxis();
+            DigitalGraphs.at(count)->rescaleValueAxis();
+        }
         ++count;
     }
     Plot->replot();

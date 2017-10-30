@@ -31,6 +31,7 @@ private:
     void WriteToFile(int row, int bdnum); // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
     void ChooseValuesToWrite();
     void SetDefaultValuesToWrite();
+    void PrepareAnalogMeasurements();
 };
 
 #endif // CHECKDIALOG80_H

@@ -121,6 +121,10 @@ void TuneDialogA1DN::SetupUI()
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBL(this, "Вариант использования: "));
+    hlyout->addWidget(WDFunc::NewLBLT(this, "", "tune00", ValuesFormat));
+    lyout->addLayout(hlyout);
     QGridLayout *glyout = new QGridLayout;
     QGroupBox *gb = new QGroupBox("Измерения в первичном масштабе");
     glyout->addWidget(WDFunc::NewLBL(this, "U1, кВ"), 0, 0, 1, 1, Qt::AlignRight);
@@ -157,7 +161,7 @@ void TuneDialogA1DN::SetupUI()
     gb->setLayout(glyout);
     lyout->addWidget(gb);
 
-    QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout = new QHBoxLayout;
     hlyout->addStretch(5);
     QPushButton *pb = new QPushButton("Годится");
     pb->setObjectName("GoodDN");
@@ -470,6 +474,7 @@ int TuneDialogA1DN::Start7_2_2()
         return GENERALERROR;
     if (Commands::SetUsingVariant(TuneVariant+1) != NOERROR)
         return GENERALERROR;
+    WDFunc::SetLBLText(this, "tune00", QString::number(TuneVariant+1));
     if (Commands::GetFile(1,&S2Config) == NOERROR)
     {
         Bac_block.Bac_block[TuneVariant].U1kDN[0] = 0;

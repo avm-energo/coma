@@ -200,3 +200,16 @@ int Commands::SetUsingVariant(int variant)
     return 0;
 #endif
 }
+
+int Commands::GetUsingVariant(int &variant)
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    quint8 tmpi;
+    cn->Send(CN_GVar, BT_NONE, &tmpi, 1);
+    variant = tmpi;
+    return cn->result;
+#else
+    Q_UNUSED(variant);
+    return 0;
+#endif
+}

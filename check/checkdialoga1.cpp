@@ -16,6 +16,7 @@
 #include "../widgets/wd_func.h"
 #include "../publicclass.h"
 #include "../config/config.h"
+#include "../commands.h"
 
 CheckDialogA1::CheckDialogA1(QWidget *parent) : EAbstractCheckDialog(parent)
 {
@@ -219,4 +220,15 @@ void CheckDialogA1::ChooseValuesToWrite()
 void CheckDialogA1::SetDefaultValuesToWrite()
 {
 
+}
+
+void CheckDialogA1::PrepareAnalogMeasurements()
+{
+    if (Commands::GetUsingVariant(NVar) != NOERROR)
+    {
+        MessageBox2::error(this, "Ошибка!", "Ошибка чтения номера варианта использования");
+        return;
+    }
+    WDFunc::SetLBLText(this, "Bda_in00", QString::number(NVar));
+    WDFunc::SetLBLText(this, "Bda_out00", QString::number(NVar));
 }

@@ -248,3 +248,8 @@ void CheckDialog80::SetDefaultValuesToWrite()
 {
 
 }
+
+void CheckDialog80::PrepareAnalogMeasurements()
+{
+
+}

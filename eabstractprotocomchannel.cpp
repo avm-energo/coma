@@ -69,6 +69,7 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_IP:    // запрос ip-адреса модуля
     case CN_OscEr:  // команда стирания осциллограмм
     case CN_OscPg:  // запрос количества нестёртых страниц
+    case CN_GVar:
     {
         WriteData.append(CN_MS);
         WriteData.append(cmd);
@@ -228,6 +229,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_GBo:
         case CN_GBTe:
         case CN_GF:
+        case CN_GVar:
         {
             if (!GetLength())
             {
@@ -240,10 +242,6 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 Finish(NOERROR);
                 return;
             }
-/*            if (ReadDataChunkLength < CN_MAXSEGMENTLENGTH)
-                LastBlock = true;
-            else
-                LastBlock = false; */
             if (cmd == CN_GF) // надо проверить, тот ли номер файла принимаем
             {
                 if (RDSize < 16) // не пришла ещё шапка файла
@@ -295,6 +293,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_GBe:
         case CN_GBTe:
         case CN_GBo:
+        case CN_GVar:
         {
             if ((RDSize >= outdatasize) || (ReadDataChunkLength < CN_MAXSEGMENTLENGTH))
             {

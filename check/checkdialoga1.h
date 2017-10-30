@@ -17,6 +17,7 @@ public slots:
 private:
     CheckA1 *ChA1;
     const QString ValuesFormat = "QLabel {border: 1px solid red; border-radius: 4px; padding: 1px; color: red; font: bold 10px;}";
+    int NVar;
 
     QWidget *AutoCheckUI(); // UI для автоматической проверки модуля
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
@@ -26,6 +27,7 @@ private:
     void WriteToFile(int row, int bdnum); // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
     void ChooseValuesToWrite();
     void SetDefaultValuesToWrite();
+    void PrepareAnalogMeasurements();
 };
 
 #endif // CHECKDIALOGA1_H

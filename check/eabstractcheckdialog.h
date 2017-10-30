@@ -32,6 +32,7 @@ public:
     virtual void WriteToFile(int row, int bdnum) = 0; // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
     virtual void ChooseValuesToWrite() = 0;
     virtual void SetDefaultValuesToWrite() = 0;
+    virtual void PrepareAnalogMeasurements() = 0; // функция подготовки к измерениям (например, запрос постоянных данных)
     void SetBd(int bdnum, void *block, int blocksize, bool toxlsx=true);
     QWidget *BottomUI();
 

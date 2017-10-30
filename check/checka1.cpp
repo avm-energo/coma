@@ -42,6 +42,10 @@ QWidget *CheckA1::Bd1W(const QString &title, const QString &begin, QWidget *pare
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBL(parent, "0. Вариант использования: "));
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"00", ValuesFormat));
+    lyout->addLayout(hlyout);
     QGroupBox *gb = new QGroupBox(title);
     QGridLayout *glyout = new QGridLayout;
     QString tmps = (begin == "Bda_out") ? "кВ" : "В";

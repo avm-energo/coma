@@ -197,6 +197,11 @@ void CheckDialog21::SetDefaultValuesToWrite()
 
 }
 
+void CheckDialog21::PrepareAnalogMeasurements()
+{
+
+}
+
 void CheckDialog21::ChooseValuesToWrite()
 {
 
