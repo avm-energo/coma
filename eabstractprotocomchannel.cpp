@@ -312,6 +312,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             {
                 if ((fnum >= CN_MINOSCID) && (fnum <= CN_MAXOSCID)) // для осциллограмм особая обработка
                 {
+                    RDSize = qMin(RDLength, RDSize); // если даже приняли больше, копируем только требуемый размер
                     memcpy(outdata,ReadData.data(),RDSize);
                     Finish(NOERROR);
                     break;
@@ -450,7 +451,6 @@ void EAbstractProtocomChannel::Timeout()
 void EAbstractProtocomChannel::Finish(int ernum)
 {
     TTimer->stop();
-#ifdef NOTIMEOUT
     cmd = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
     if (ernum != NOERROR)
     {
@@ -466,7 +466,6 @@ void EAbstractProtocomChannel::Finish(int ernum)
     }
     result = ernum;
     Busy = false;
-#endif
 }
 
 void EAbstractProtocomChannel::Disconnect()
@@ -513,7 +512,9 @@ void EAbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
         emit writebytessignal(tmpba.left(tmpi));
         tmpba = tmpba.remove(0, tmpi);
     }
+#ifndef NOTIMEOUT
     TTimer->start();
+#endif
 }
 
 void EAbstractProtocomChannel::SetCancelled()

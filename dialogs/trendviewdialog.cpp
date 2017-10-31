@@ -26,8 +26,6 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
     int AnalogGraphNum = AnalogTrendNames.size();
     Plot->plotLayout()->clear();
     Plot->legend = new QCPLegend;
-    Plot->axisRect()->insetLayout()->addElement(Plot->legend, Qt::AlignRight|Qt::AlignTop);
-    Plot->axisRect()->insetLayout()->setMargins(QMargins(12, 12, 12, 12));
     Plot->legend->setLayer("legend");
     Plot->legend->setVisible(true);
     Plot->legend->setFont(QFont("Helvetica", 8));
@@ -54,6 +52,8 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
             DigitalMainData.append(np); */
             ++count;
         }
+        DigitalAxisRect->insetLayout()->addElement(Plot->legend, Qt::AlignRight|Qt::AlignTop);
+        DigitalAxisRect->insetLayout()->setMargins(QMargins(12, 12, 12, 12));
     }
     if (AnalogGraphNum != 0)
     {
@@ -76,6 +76,8 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
             AnalogMainData.append(np); */
             ++count;
         }
+        AnalogAxisRect->insetLayout()->addElement(Plot->legend, Qt::AlignRight|Qt::AlignTop);
+        AnalogAxisRect->insetLayout()->setMargins(QMargins(12, 12, 12, 12));
     }
 }
 

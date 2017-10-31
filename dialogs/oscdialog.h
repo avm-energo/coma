@@ -40,6 +40,7 @@ private:
     int BASize, BSize, Pos;
     int OscFileType;
     bool AcceptedOscFileType;
+    QByteArray BA;
 
 #pragma pack(push)  /* push current alignment to stack */
 #pragma pack(1)     /* set alignment to 1 byte boundary */
@@ -104,7 +105,7 @@ signals:
 private slots:
     void GetAndProcessOscInfo();
 //    void ProcessOscInfo();
-    void EndExtractOsc(quint32 id, QByteArray &ba, OscHeader_Data &OHD); // id - ИД осциллограммы (по табл. Приложения 2 "АВ-ТУК. Файлы")
+    void EndExtractOsc(quint32 id, OscHeader_Data &OHD); // id - ИД осциллограммы (по табл. Приложения 2 "АВ-ТУК. Файлы")
     void GetOsc(QModelIndex);
     void EraseOsc();
     void Accept();

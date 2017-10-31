@@ -77,7 +77,6 @@ int OscDialog::InputFileType()
     hlyout->addWidget(pb);
     pb = new QPushButton("Отмена");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(Cancel()));
-    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
@@ -181,9 +180,8 @@ void OscDialog::GetOsc(QModelIndex idx)
 //    OscLength -= sizeof(publicclass::DataRec) + sizeof(OscHeader_Data); // длина данных по осциллограммам без заголовков
 //    OscLength /= oscid; // считаем, что все осциллограммы в файле одинаковой длины, и нет повторяющихся ИД
 //    OscInfo.resize(MAXOSCBUFSIZE);
-    QByteArray ba;
-    ba.resize(BASize);
-    if (Commands::GetOsc(oscnum, &(ba.data()[0])) == NOERROR)
+    BA.resize(BASize);
+    if (Commands::GetOsc(oscnum, &(BA.data()[0])) == NOERROR)
     {
         if (InputFileType() == GENERALERROR)
         {
@@ -193,7 +191,7 @@ void OscDialog::GetOsc(QModelIndex idx)
         Pos = 0;
         // разбираем осциллограмму
         publicclass::FileHeader FH;
-        if (!PosPlusPlus(&FH, &(ba.data()[Pos]), sizeof(publicclass::FileHeader)))
+        if (!PosPlusPlus(&FH, &(BA.data()[Pos]), sizeof(publicclass::FileHeader)))
             return;
         // проводим проверку, то ли получили
         bool isOk = ((FH.fname == oscnum) && (FH.size == BASize));
@@ -203,7 +201,7 @@ void OscDialog::GetOsc(QModelIndex idx)
             return;
         }
         OscDataRec DR;
-        if (!PosPlusPlus(&DR, &(ba.data()[Pos]), sizeof(OscDataRec)))
+        if (!PosPlusPlus(&DR, &(BA.data()[Pos]), sizeof(OscDataRec)))
             return;
         if (DR.id != oscid)
         {
@@ -214,11 +212,11 @@ void OscDialog::GetOsc(QModelIndex idx)
         if (oscid > 8)
             oscid = 1; // если что-то с количеством осциллограмм не так, принудительно выставляем в 1
         OscHeader_Data OHD;
-        if (!PosPlusPlus(&OHD, &(ba.data()[Pos]), sizeof(OscHeader_Data)))
+        if (!PosPlusPlus(&OHD, &(BA.data()[Pos]), sizeof(OscHeader_Data)))
             return;
         for (quint32 i=0; i<oscid; ++i)
         {
-            if (!PosPlusPlus(&DR, &(ba.data()[Pos]), sizeof(OscDataRec)))
+            if (!PosPlusPlus(&DR, &(BA.data()[Pos]), sizeof(OscDataRec)))
                 return;
             // составляем имя файла осциллограммы
             GivenFilename = pc.UnixTime64ToString(OHD.unixtime);
@@ -229,16 +227,16 @@ void OscDialog::GetOsc(QModelIndex idx)
             GivenFilename.insert(0, "_");
             GivenFilename.insert(0, QString::number(DR.id));
             // пишем саму осциллограмму
-            EndExtractOsc(DR.id, ba, OHD);
+            EndExtractOsc(DR.id, OHD);
         }
     }
     else
         WARNMSG("");
 }
 
-void OscDialog::EndExtractOsc(quint32 id, QByteArray &ba, OscHeader_Data &OHD)
+void OscDialog::EndExtractOsc(quint32 id, OscHeader_Data &OHD)
 {
-    QString FileName = pc.HomeDir + GivenFilename;
+    QString FileName = pc.HomeDir + "/" + GivenFilename;
     QXlsx::Document xlsx(FileName);
     if (OscFileType & MT_FT_XLSX)
     {
@@ -420,7 +418,9 @@ void OscDialog::EndExtractOsc(quint32 id, QByteArray &ba, OscHeader_Data &OHD)
             for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
             {
                 Point85 point;
-                if (!PosPlusPlus(&point, &(ba.data()[Pos]), sizeof(Point85)))
+                if (i == (OHD.len-1))
+                    i = OHD.len - 1;
+                if (!PosPlusPlus(&point, &(BA.data()[Pos]), sizeof(Point85)))
                     return;
                 int col = 2; // 2 = OCNA
                 quint32 DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
