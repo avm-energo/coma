@@ -87,7 +87,8 @@ SOURCES += \
     ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp \
-    ../qcustomplot.cpp
+    ../qcustomplot.cpp \
+    ../gen/eoscillogram.cpp
 
 HEADERS  += \
     coma.h \
@@ -152,7 +153,8 @@ HEADERS  += \
     ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
-    ../qcustomplot.h
+    ../qcustomplot.h \
+    ../gen/eoscillogram.h
 
 RESOURCES += \
     res.qrc

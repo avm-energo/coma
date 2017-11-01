@@ -12,12 +12,14 @@ public:
     ~TrendViewDialog();
 
      // инициализация графиков
-    void Init(QVector<QString> &DigitalTrendNames, QVector<QString> &AnalogTrendNames, int PointNum, float RangeMin, float RangeMax);
+    void Init(QVector<QString> &DigitalTrendNames, QVector<QString> &AnalogTrendNames, int PointNum, \
+              float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax);
     // имена графиков контактных/аналоговых сигналов, количество точек, диапазон по оси Y для аналоговых
     void AddAnalogPoint(int GraphNum, float PointValue);
     void AddDigitalPoint(int GraphNum, int PointValue);
     void PlotShow();
-    void SetPointsAxis(float start, float step);
+    bool SetPointsAxis(float start, float step);
+    void SetFilename(const QString &fn);
 
 private:
     QCustomPlot *Plot;
@@ -25,8 +27,13 @@ private:
     QVector<QVector<double> > AnalogMainData, DigitalMainData;
     QVector<double> MainPoints;
     int PointsNum;
+    QString Filename;
 
     void SetupUI();
+
+private slots:
+    void SaveToExcel();
+    void SaveToComtrade();
 };
 
 #endif // TRENDVIEWDIALOG_H

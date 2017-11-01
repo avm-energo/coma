@@ -35,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         dir.mkpath(".");
     S2Config.clear();
     ConfB = ConfM = 0;
+    OscD = 0;
 #if PROGSIZE >= PROGSIZE_LARGE
     PrepareTimers();
 #endif
@@ -56,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
     connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
 #endif
+    OscFunc = new EOscillogram;
 }
 
 MainWindow::~MainWindow()
@@ -195,8 +197,16 @@ void MainWindow::SetupMenubar()
     menubar->addAction(act);
 
     menubar->addSeparator();
-    AddActionsToMenuBar(menubar);
+    menu = new QMenu;
+    menu->setObjectName("autonomousmenu");
+    menu->setTitle("Автономная работа");
+    act = new QAction(this);
+    act->setText("Загрузка осциллограммы");
+    connect(act,SIGNAL(triggered()),this,SLOT(LoadOsc()));
+    menu->addAction(act);
+    menubar->addMenu(menu);
     setMenuBar(menubar);
+    AddActionsToMenuBar(menubar);
 }
 
 #if PROGSIZE >= PROGSIZE_LARGE
@@ -339,7 +349,7 @@ void MainWindow::Stage2()
         return;
     }
     pc.MType = ((pc.ModuleBsi.MTypeB & 0x000000FF) << 8) | (pc.ModuleBsi.MTypeM & 0x000000FF);
-    pc.ModuleTypeString = "ПКДН-";
+    pc.ModuleTypeString = "АВТУК-";
     pc.ModuleTypeString.append(QString::number(pc.MType, 16));
 #if PROGSIZE >= PROGSIZE_LARGE
     if ((pc.ModuleBsi.SerialNumB == 0xFFFFFFFF) || ((pc.ModuleBsi.SerialNumM == 0xFFFFFFFF) && (pc.ModuleBsi.MTypeM != MTM_00)) || \
@@ -608,6 +618,9 @@ void MainWindow::DisconnectAndClear()
 #if PROGSIZE != PROGSIZE_EMUL
     Disconnect();
 #endif
+    OscD = 0;
+    TuneB = TuneM = 0;
+    CheckB = CheckM = 0;
     emit FinishAll();
     emit ClearBsi();
     ClearTW();
@@ -616,6 +629,12 @@ void MainWindow::DisconnectAndClear()
         return;
     MainTW->hide();
     pc.Emul = false;
+}
+
+void MainWindow::LoadOsc()
+{
+    pc.LoadFile(this, "Oscillogram files (*.osc)", OscFunc->BA);
+    OscFunc->ProcessOsc();
 }
 
 void MainWindow::ShowUSBConnectDialog()
