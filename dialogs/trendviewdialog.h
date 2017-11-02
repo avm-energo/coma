@@ -2,6 +2,7 @@
 #define TRENDVIEWDIALOG_H
 
 #include <QDialog>
+#include <QPoint>
 #include "../qcustomplot.h"
 
 class TrendViewDialog : public QDialog
@@ -34,6 +35,8 @@ private:
 private slots:
     void SaveToExcel();
     void SaveToComtrade();
+    void PlotContextMenu(QPoint pos);
+    void MoveLegend();
 };
 
 #endif // TRENDVIEWDIALOG_H

@@ -28,12 +28,13 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
     int DigitalGraphNum = DigitalTrendNames.size();
     int AnalogGraphNum = AnalogTrendNames.size();
     Plot->plotLayout()->clear();
-    Plot->legend = new QCPLegend;
+    QCPLegend *legend = new QCPLegend;
+    Plot->legend = legend;
     Plot->legend->setLayer("legend");
     Plot->legend->setVisible(true);
     Plot->legend->setFont(QFont("Helvetica", 8));
     Plot->setAutoAddPlottableToLegend(true);
-    Plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    Plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectLegend);
     if (DigitalGraphNum != 0)
     {
         QCPAxisRect *DigitalAxisRect = new QCPAxisRect(Plot);
@@ -48,7 +49,7 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
             graph->setPen(pen);
             graph->valueAxis()->setRange(-1, 2);
             graph->keyAxis()->setLabel("Time, ns");
-//            graph->keyAxis()->setRange(XRangeMin, XRangeMax);
+            graph->keyAxis()->setRange(XRangeMin, XRangeMax);
             graph->valueAxis()->setLabel(DigitalTrendNames.at(count));
             DigitalGraphs.append(graph);
             ++count;
@@ -70,7 +71,7 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
             graph->setPen(pen);
             graph->valueAxis()->setRange(YRangeMin, YRangeMax);
             graph->keyAxis()->setLabel("Time, ns");
-//            graph->keyAxis()->setRange(XRangeMin, XRangeMax);
+            graph->keyAxis()->setRange(XRangeMin, XRangeMax);
             graph->valueAxis()->setLabel(AnalogTrendNames.at(count));
             AnalogGraphs.append(graph);
             ++count;
@@ -105,6 +106,8 @@ void TrendViewDialog::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     Plot = new QCustomPlot;
+    Plot->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(Plot,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(PlotContextMenu(QPoint)));
     lyout->addWidget(Plot);
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(close()));
@@ -190,6 +193,45 @@ void TrendViewDialog::SaveToExcel()
 void TrendViewDialog::SaveToComtrade()
 {
 
+}
+
+void TrendViewDialog::PlotContextMenu(QPoint pos)
+{
+    QMenu *menu = new QMenu(this);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+
+    if (Plot->legend->selectTest(pos, false) >= 0) // context menu on legend requested
+    {
+      menu->addAction("Move to top left", this, SLOT(MoveLegend()))->setData((int)(Qt::AlignTop|Qt::AlignLeft));
+      menu->addAction("Move to top center", this, SLOT(MoveLegend()))->setData((int)(Qt::AlignTop|Qt::AlignHCenter));
+      menu->addAction("Move to top right", this, SLOT(MoveLegend()))->setData((int)(Qt::AlignTop|Qt::AlignRight));
+      menu->addAction("Move to bottom right", this, SLOT(MoveLegend()))->setData((int)(Qt::AlignBottom|Qt::AlignRight));
+      menu->addAction("Move to bottom left", this, SLOT(MoveLegend()))->setData((int)(Qt::AlignBottom|Qt::AlignLeft));
+    }
+/*    else  // general context menu on graphs requested
+    {
+      menu->addAction("Add random graph", this, SLOT(addRandomGraph()));
+      if (Plot->selectedGraphs().size() > 0)
+        menu->addAction("Remove selected graph", this, SLOT(removeSelectedGraph()));
+      if (Plot->graphCount() > 0)
+        menu->addAction("Remove all graphs", this, SLOT(removeAllGraphs()));
+    } */
+
+    menu->popup(Plot->mapToGlobal(pos));
+}
+
+void TrendViewDialog::MoveLegend()
+{
+    if (QAction* contextAction = qobject_cast<QAction*>(sender())) // make sure this slot is really called by a context menu action, so it carries the data we need
+    {
+      bool ok;
+      int dataInt = contextAction->data().toInt(&ok);
+      if (ok)
+      {
+        Plot->axisRect()->insetLayout()->setInsetAlignment(0, (Qt::Alignment)dataInt);
+        Plot->replot();
+      }
+    }
 }
 
 void TrendViewDialog::PlotShow()
