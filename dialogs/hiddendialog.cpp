@@ -35,22 +35,22 @@ HiddenDialog::HiddenDialog(QWidget *parent) :
     Bhb.BoardBBhb.ModSerialNum = pc.ModuleBsi.SerialNum;
 
     if (Bhb.BoardBBhb.MType == 0xA1)
-        BGImage=":/pic/pkdn.png";
+        BGImage="images/pkdn.png";
     else
     {
         switch (Type)
         {
         case BYMY:
-            BGImage=":/pic/BM.png";
+            BGImage="images/BM.png";
             break;
         case BNMY:
-            BGImage=":/pic/BnM.png";
+            BGImage="images/BnM.png";
             break;
         case BYMN:
-            BGImage=":/pic/BMn.png";
+            BGImage="images/BMn.png";
             break;
         case BNMN:
-            BGImage=":/pic/BnMn.png";
+            BGImage="images/BnMn.png";
             break;
         default:
             BGImage="";

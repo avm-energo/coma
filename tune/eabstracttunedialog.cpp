@@ -107,11 +107,11 @@ QWidget *EAbstractTuneDialog::BottomUI()
     lyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
-    pb->setIcon(QIcon(":/load.png"));
+    pb->setIcon(QIcon("../load.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadFromFile()));
     hlyout->addWidget(pb);
     pb = new QPushButton("Записать настроечные коэффициенты в файл");
-    pb->setIcon(QIcon(":/save.png"));
+    pb->setIcon(QIcon("../save.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
@@ -209,21 +209,21 @@ void EAbstractTuneDialog::MsgSetVisible(int msg, bool Visible)
 
 void EAbstractTuneDialog::OkMsgSetVisible(int msg, bool Visible)
 {
-    QPixmap *pm = new QPixmap(":/pic/ok.png");
+    QPixmap *pm = new QPixmap("images/ok.png");
     WDFunc::SetVisible(this, "tunemsgres"+QString::number(msg), Visible);
     WDFunc::SetLBLImage(this, "tunemsgres"+QString::number(msg), pm);
 }
 
 void EAbstractTuneDialog::ErMsgSetVisible(int msg, bool Visible)
 {
-    QPixmap *pm = new QPixmap(":/pic/cross.png");
+    QPixmap *pm = new QPixmap("images/cross.png");
     WDFunc::SetVisible(this, "tunemsgres"+QString::number(msg), Visible);
     WDFunc::SetLBLImage(this, "tunemsgres"+QString::number(msg), pm);
 }
 
 void EAbstractTuneDialog::SkMsgSetVisible(int msg, bool Visible)
 {
-    QPixmap *pm = new QPixmap(":/pic/hr.png");
+    QPixmap *pm = new QPixmap("images/hr.png");
     WDFunc::SetVisible(this, "tunemsgres"+QString::number(msg), Visible);
     WDFunc::SetLBLImage(this, "tunemsgres"+QString::number(msg), pm);
 }

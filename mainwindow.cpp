@@ -35,7 +35,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         dir.mkpath(".");
     S2Config.clear();
     ConfB = ConfM = 0;
+#ifndef MODULE_A1
     OscD = 0;
+#endif
 #if PROGSIZE >= PROGSIZE_LARGE
     PrepareTimers();
 #endif
@@ -57,7 +59,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
     connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
 #endif
+#ifndef MODULE_A1
     OscFunc = new EOscillogram;
+#endif
 }
 
 MainWindow::~MainWindow()
@@ -162,12 +166,12 @@ void MainWindow::SetupMenubar()
 #if PROGSIZE != PROGSIZE_EMUL
     act = new QAction(this);
     act->setText("Соединение");
-    act->setIcon(QIcon(":/pic/play.png"));
+    act->setIcon(QIcon("images/play.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
     menu->addAction(act);
     act = new QAction(this);
     act->setText("Разрыв соединения");
-    act->setIcon(QIcon(":/pic/stop.png"));
+    act->setIcon(QIcon("images/stop.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndClear()));
     menu->addAction(act);
 #endif
@@ -186,7 +190,7 @@ void MainWindow::SetupMenubar()
     menu->setTitle("Настройки");
     act = new QAction(this);
     act->setText("Настройки");
-    act->setIcon(QIcon(":/pic/settings.png"));
+    act->setIcon(QIcon("images/settings.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
     menu->addAction(act);
     menubar->addMenu(menu);
@@ -197,6 +201,7 @@ void MainWindow::SetupMenubar()
     menubar->addAction(act);
 
     menubar->addSeparator();
+#ifndef MODULE_A1
     menu = new QMenu;
     menu->setObjectName("autonomousmenu");
     menu->setTitle("Автономная работа");
@@ -205,6 +210,7 @@ void MainWindow::SetupMenubar()
     connect(act,SIGNAL(triggered()),this,SLOT(LoadOsc()));
     menu->addAction(act);
     menubar->addMenu(menu);
+#endif
     setMenuBar(menubar);
     AddActionsToMenuBar(menubar);
 }
@@ -576,7 +582,7 @@ void MainWindow::GetAbout()
     l2yout->addStretch(10);
     lbl = new QLabel;
     QPixmap pmp;
-    pmp.load(":/pic/evel.png");
+    pmp.load("images/evel.png");
     lbl->setPixmap(pmp);
     lbl->setMaximumSize(64,64);
     hlyout->addWidget(lbl,1);
@@ -618,7 +624,9 @@ void MainWindow::DisconnectAndClear()
 #if PROGSIZE != PROGSIZE_EMUL
     Disconnect();
 #endif
+#ifndef MODULE_A1
     OscD = 0;
+#endif
     TuneB = TuneM = 0;
     CheckB = CheckM = 0;
     emit FinishAll();
@@ -630,13 +638,13 @@ void MainWindow::DisconnectAndClear()
     MainTW->hide();
     pc.Emul = false;
 }
-
+#ifndef MODULE_A1
 void MainWindow::LoadOsc()
 {
     pc.LoadFile(this, "Oscillogram files (*.osc)", OscFunc->BA);
     OscFunc->ProcessOsc();
 }
-
+#endif
 void MainWindow::ShowUSBConnectDialog()
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);

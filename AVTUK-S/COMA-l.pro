@@ -9,14 +9,14 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.0.91
+VERSION = 2.0.97
 
 QT       += core gui network serialport printsupport
 
 TARGET = avtuks-L
 #DEFINES += MODULE_TYPEB=0xA1
 DEFINES += PROGNAME='\\"AVTUK-S\\"'
-DEFINES += PROGCAPTION='\\"AVTUK-Service-L\\040v2.0.91\\"'
+DEFINES += PROGCAPTION='\\"AVTUK-Service-L\\040v2.0.97\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=3 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
 #DEFINES += COMPORTENABLE # enable virtual com port driver
@@ -87,7 +87,8 @@ SOURCES += \
     ../widgets/s_tqcombobox.cpp \
     ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp
+    ../widgets/wd_func.cpp \
+    ../gen/eoscillogram.cpp
 
 HEADERS  += \
     coma.h \
@@ -152,10 +153,8 @@ HEADERS  += \
     ../widgets/s_tqcombobox.h \
     ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h
-
-RESOURCES += \
-    res.qrc
+    ../widgets/wd_func.h \
+    ../gen/eoscillogram.h
 
 INCLUDEPATH += $$PWD/../../includes
 

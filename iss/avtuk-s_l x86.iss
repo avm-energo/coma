@@ -5,11 +5,11 @@
 #define Name "АВТУК-Сервис БР"
 #define GroupName "АВТУК-Сервис"
 #define EngName "AVTUK-S"
-#define Version "2.0.91"
+#define Version "2.0.97"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "avtuks-L.exe"
-#define SetupName "avtuks-L-2.0.91-x86"
+#define SetupName "avtuks-L-2.0.97-x86"
 #define Prefix "D:\Progs\out"
 
 [CustomMessages]
@@ -51,18 +51,19 @@ Source: "{#Prefix}\coma\platforms\qwindows.dll"; DestDir: "{app}\platforms"
 Source: "{#Prefix}\coma\{#ExeName}"; DestDir: "{app}"; DestName: {#ExeName}; Flags: ignoreversion
 Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
 Source: "{#Prefix}\src\reports\*.*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
+Source: "{#Prefix}\images\coma\*.*"; DestDir: "{app}\images"; Flags: ignoreversion
+Source: "{#Prefix}\src\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 ; Source: "coma\pdf\КОМА Руководство пользователя.pdf"; DestDir: "{app}"
-Source: "{#Prefix}\src\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: not IsRequiredVC2015Detected
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
 ;Name: "{group}\Руководство пользователя КОМА"; Filename: "{app}\КОМА Руководство пользователя.pdf"
-Name: "{group}\Удалить программу"; Filename: "{uninstallexe}"
+Name: "{group}\Удалить программу {#Name}"; Filename: "{uninstallexe}"
 
 [Run]
 ; add the Parameters, WorkingDir and StatusMsg as you wish, just keep here
 ; the conditional installation Check
-Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; Check: IsRequiredVC2015Detected; StatusMsg: Устанавливается пакет MSVC2015 Redistributable...
+Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; Check: not IsRequiredVC2015Detected; StatusMsg: Устанавливается пакет MSVC2015 Redistributable...
 
 [Code]
 //-----------------------------------------------------------------------------

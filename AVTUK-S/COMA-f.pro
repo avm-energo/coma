@@ -9,14 +9,14 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.0.89
+VERSION = 2.0.97
 
 QT       += core gui network serialport printsupport
 
 TARGET = avtuks-F
 #DEFINES += MODULE_TYPEB=0xA1
 DEFINES += PROGNAME='\\"AVTUK-S\\"'
-DEFINES += PROGCAPTION='\\"AVTUK\\040Service\\040F\\040v2.0.89\\"'
+DEFINES += PROGCAPTION='\\"AVTUK\\040Service\\040F\\040v2.0.97\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=4 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
 #DEFINES += COMPORTENABLE # enable virtual com port driver
@@ -155,9 +155,6 @@ HEADERS  += \
     ../widgets/wd_func.h \
     ../qcustomplot.h \
     ../gen/eoscillogram.h
-
-RESOURCES += \
-    res.qrc
 
 INCLUDEPATH += $$PWD/../../includes
 

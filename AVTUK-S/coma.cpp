@@ -125,30 +125,30 @@ void Coma::SetupUI()
 #if PROGSIZE != PROGSIZE_EMUL
     act = new QAction(this);
     act->setToolTip("Соединение");
-    act->setIcon(QIcon(":/pic/play.png"));
+    act->setIcon(QIcon("images/play.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
     tb->addAction(act);
 #endif
     act = new QAction(this);
     act->setToolTip("Разрыв соединения");
-    act->setIcon(QIcon(":/pic/stop.png"));
+    act->setIcon(QIcon("images/stop.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndClear()));
     tb->addAction(act);
     tb->addSeparator();
 #if PROGSIZE >= PROGSIZE_FULL || PROGSIZE == PROGSIZE_EMUL
     act = new QAction(this);
     act->setToolTip("Эмуляция 21");
-    act->setIcon(QIcon(":/pic/2x.png"));
+    act->setIcon(QIcon("images/2x.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(Emul2x()));
     tb->addAction(act);
     act = new QAction(this);
     act->setToolTip("Эмуляция 8x");
-    act->setIcon(QIcon(":/pic/8x.png"));
+    act->setIcon(QIcon("images/8x.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(Emul8x()));
     tb->addAction(act);
     act = new QAction(this);
     act->setToolTip("Эмуляция A1");
-    act->setIcon(QIcon(":/pic/a1.png"));
+    act->setIcon(QIcon("images/a1.png"));
     quint16 MType = MTB_A1;
     MType = (MType << 8) | MTM_00;
     act->setObjectName(QString::number(MType, 16)); // для слота StartEmul
@@ -158,12 +158,12 @@ void Coma::SetupUI()
 #endif
     act = new QAction(this);
     act->setToolTip("Настройки");
-    act->setIcon(QIcon(":/pic/settings.png"));
+    act->setIcon(QIcon("images/settings.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
     tb->addAction(act);
     act = new QAction(this);
     act->setToolTip("Протокол ошибок");
-    act->setIcon(QIcon(":/pic/skull-and-bones.png"));
+    act->setIcon(QIcon("images/skull-and-bones.png"));
     connect(act,SIGNAL(triggered(bool)),this,SLOT(ShowErrorDialog()));
     tb->addAction(act);
     hlyout->addWidget(tb);

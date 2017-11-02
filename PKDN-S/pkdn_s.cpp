@@ -63,12 +63,12 @@ void pkdn_s::SetupUI()
     tb->setIconSize(QSize(20,20));
     QAction *act = new QAction(this);
     act->setToolTip("Соединение");
-    act->setIcon(QIcon(":/pic/play.png"));
+    act->setIcon(QIcon("images/play.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
     tb->addAction(act);
     act = new QAction(this);
     act->setToolTip("Разрыв соединения");
-    act->setIcon(QIcon(":/pic/stop.png"));
+    act->setIcon(QIcon("images/stop.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndClear()));
     tb->addAction(act);
 #if PROGSIZE >= PROGSIZE_FULL
@@ -78,19 +78,19 @@ void pkdn_s::SetupUI()
     quint16 MType = MTB_A1;
     MType = MType << 8 & MTM_00;
     act->setObjectName(QString::number(MType, 16)); // для слота StartEmul
-    act->setIcon(QIcon(":/pic/a1.png"));
+    act->setIcon(QIcon("images/a1.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
     tb->addAction(act);
 #endif
     tb->addSeparator();
     act = new QAction(this);
     act->setToolTip("Настройки");
-    act->setIcon(QIcon(":/pic/settings.png"));
+    act->setIcon(QIcon("images/settings.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
     tb->addAction(act);
     act = new QAction(this);
     act->setToolTip("Протокол ошибок");
-    act->setIcon(QIcon(":/pic/skull-and-bones.png"));
+    act->setIcon(QIcon("images/skull-and-bones.png"));
     connect(act,SIGNAL(triggered(bool)),this,SLOT(ShowErrorDialog()));
     tb->addAction(act);
     hlyout->addWidget(tb);

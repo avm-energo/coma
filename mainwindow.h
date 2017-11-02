@@ -6,8 +6,10 @@
 #include "publicclass.h"
 #include "../config/confdialog.h"
 #include "../check/eabstractcheckdialog.h"
+#ifndef MODULE_A1
 #include "../dialogs/oscdialog.h"
 #include "gen/eoscillogram.h"
+#endif
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../tune/eabstracttunedialog.h"
 #endif
@@ -27,8 +29,10 @@ public:
     QVector<publicclass::DataRec> S2Config;
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
+#ifndef MODULE_A1
     OscDialog *OscD;
     EOscillogram *OscFunc;
+#endif
 
 #if PROGSIZE != PROGSIZE_EMUL
     EAbstractTuneDialog *TuneB, *TuneM;
@@ -122,7 +126,9 @@ private slots:
     void ShowErrorDialog();
     void GetAbout();
     void DisconnectAndClear();
+#ifndef MODULE_A1
     void LoadOsc();
+#endif
 
 #if PROGSIZE != PROGSIZE_EMUL
     void ShowCOMConnectDialog();

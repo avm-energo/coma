@@ -130,13 +130,13 @@ QVariant ErrorProtocolModel::data(const QModelIndex &index, int role) const
             else if ((role == Qt::DecorationRole) && (index.column() == 4))
             {
                 if (ertypedata.at(index.row()) == publicclass::ER_MSG)
-                    return QVariant::fromValue(QIcon(":/pic/er_msg.png"));
+                    return QVariant::fromValue(QIcon("images/er_msg.png"));
                 else if (ertypedata.at(index.row()) == publicclass::WARN_MSG)
-                    return QVariant::fromValue(QIcon(":/pic/warn_msg.png"));
+                    return QVariant::fromValue(QIcon("images/warn_msg.png"));
                 else if (ertypedata.at(index.row()) == publicclass::INFO_MSG)
-                    return QVariant::fromValue(QIcon(":/pic/info_msg.png"));
+                    return QVariant::fromValue(QIcon("images/info_msg.png"));
                 else if (ertypedata.at(index.row()) == publicclass::DBG_MSG)
-                    return QVariant::fromValue(QIcon(":/pic/dbg_msg.png"));
+                    return QVariant::fromValue(QIcon("images/dbg_msg.png"));
                 else
                     return QVariant();
             }

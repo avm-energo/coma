@@ -5,11 +5,11 @@
 #define Name "ПКДН-Сервис БР"
 #define GroupName "ПКДН-Сервис"
 #define EngName "PKDN-S"
-#define Version "1.0.90"
+#define Version "1.0.97"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "pkdns-L.exe"
-#define SetupName "pkdns-L-1.0.90-x86"
+#define SetupName "pkdns-L-1.0.97-x86"
 #define Prefix "D:\Progs\out"
 
 [Languages]
@@ -48,8 +48,9 @@ Source: "{#Prefix}\coma\platforms\qwindows.dll"; DestDir: "{app}\platforms"
 Source: "{#Prefix}\coma\{#ExeName}"; DestDir: "{app}"; DestName: {#ExeName}; Flags: ignoreversion
 Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
 Source: "{#Prefix}\src\reports\*.*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
+Source: "{#Prefix}\images\coma\*.*"; DestDir: "{app}\images"; Flags: ignoreversion
 ; Source: "{#Prefix}\coma\pdf\КОМА Руководство пользователя.pdf"; DestDir: "{app}"
-Source: "{#Prefix}\src\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: not IsRequiredVC2015Detected
+Source: "{#Prefix}\src\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"

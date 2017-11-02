@@ -135,11 +135,11 @@ void TuneDialog80::SetupUI()
         pb->setEnabled(false);
     glyout->addWidget(pb, 11, 0, 1, 6);
     pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
-    pb->setIcon(QIcon(":/load.png"));
+    pb->setIcon(QIcon("../load.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadFromFile()));
     glyout->addWidget(pb, 12, 0, 1, 6);
     pb = new QPushButton("Записать настроечные коэффициенты в файл");
-    pb->setIcon(QIcon(":/save.png"));
+    pb->setIcon(QIcon("../save.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
     glyout->addWidget(pb, 13, 0, 1, 6);
     gb->setLayout(glyout);
@@ -1221,17 +1221,17 @@ int TuneDialog80::Show3PhaseScheme()
     {
     case MTM_81: // 2t0n
     {
-        pmp.load(":/tune81.png");
+        pmp.load("../tune81.png");
         break;
     }
     case MTM_82:
     {
-        pmp.load(":/tune82.png");
+        pmp.load("../tune82.png");
         break;
     }
     case MTM_83:
     {
-        pmp.load(":/tune83.png");
+        pmp.load("../tune83.png");
         break;
     }
     default:

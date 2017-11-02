@@ -363,8 +363,8 @@ QVariant WDFunc::FloatValueWithCheck(float value)
 QImage *WDFunc::TwoImages(const QString &first, const QString &second)
 {
     QImage *image = new QImage;
-    QString FirstImage = ":/pic/"+first+".png";
-    QString SecondImage = ":/pic/"+second+".png";
+    QString FirstImage = "images/"+first+".png";
+    QString SecondImage = "images/"+second+".png";
     QImage FirstI(FirstImage);
     QImage SecondI(SecondImage);
     if ((first.isEmpty()) && (!SecondI.isNull()))
@@ -372,7 +372,7 @@ QImage *WDFunc::TwoImages(const QString &first, const QString &second)
     else if ((second.isEmpty()) && (!FirstI.isNull()))
         *image = FirstI;
     else if ((FirstI.isNull()) || (SecondI.isNull()))
-        image = new QImage(":/pic/cross.png");
+        image = new QImage("images/cross.png");
     else
     {
         *image = QImage((FirstI.width()+SecondI.width()), qMax(FirstI.height(), SecondI.height()), FirstI.format());
