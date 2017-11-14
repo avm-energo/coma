@@ -83,6 +83,13 @@ void Coma::Emul2x()
     connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
     menu->addAction(act);
 
+    act = new QAction(this);
+    act->setText("2135");
+    act->setObjectName("2135");
+    act->setIcon(QIcon(QPixmap::fromImage(*(WDFunc::TwoImages("21", "35")))));
+    connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
+    menu->addAction(act);
+
     menu->popup(QCursor::pos());
 }
 
@@ -206,7 +213,7 @@ void Coma::Stage3()
     MainTW->addTab(idlg, "Информация");
     if (pc.ModuleBsi.MTypeB < 0xA0) // диапазон модулей АВ-ТУК
     {
-        ConfDialog *MainConfDialog = new ConfDialog(S2Config);
+        MainConfDialog = new ConfDialog(S2Config);
         MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     }
     PrepareDialogs();
@@ -238,7 +245,7 @@ void Coma::Stage3()
 #endif
     if (CheckM != 0)
         MainTW->addTab(CheckB, "Проверка\nМезонин");
-    if (pc.ModuleBsi.MTypeB == MTB_A1)
+    if ((pc.ModuleBsi.MTypeB << 8) == MTB_A1)
     {
         MainTW->addTab(new TuneDialogA1DN, "Настройка своего ДН");
         MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
@@ -262,7 +269,8 @@ void Coma::Stage3()
 
 void Coma::PrepareDialogs()
 {
-    switch(pc.ModuleBsi.MTypeB)
+    quint32 MTypeB = pc.ModuleBsi.MTypeB << 8;
+    switch(MTypeB)
     {
     case MTB_21:
     {
@@ -271,6 +279,10 @@ void Coma::PrepareDialogs()
         TuneB = new TuneDialog21;
 #endif
         CheckB = new CheckDialog21;
+        break;
+    }
+    case MTB_35:
+    {
         break;
     }
     case MTB_80:
@@ -295,6 +307,10 @@ void Coma::PrepareDialogs()
     case MTM_21:
     {
         ConfM = new ConfDialog21(S2Config, false);
+        break;
+    }
+    case MTM_35:
+    {
         break;
     }
     case MTM_81:

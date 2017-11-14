@@ -56,7 +56,8 @@ void EOscillogram::SaveToExcel()
     xlsx.write(2,1,QVariant("Дата: "+OscDateTime.split(" ").at(0)));
     xlsx.write(3,1,QVariant("Время: "+OscDateTime.split(" ").at(1)));
     xlsx.write(4,1,QVariant("Смещение, мс"));
-    switch(pc.ModuleBsi.MTypeB)
+    quint32 MTypeB = pc.ModuleBsi.MTypeB << 8;
+    switch(MTypeB)
     {
     case MTB_85:
     {

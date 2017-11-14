@@ -60,7 +60,7 @@ void AbstractConfDialog::SaveConfToFile()
 {
     QByteArray ba;
     ba.resize(MAXBYTEARRAY);
-    pc.StoreDataMem(&(ba.data()[0]), S2Config, 0x0001); // 0x101 - номер файла конфигурации
+    pc.StoreDataMem(&(ba.data()[0]), S2Config, 0x0001); // 0x0001 - номер файла конфигурации
     quint32 BaLength = static_cast<quint8>(ba.data()[4]);
     BaLength += static_cast<quint8>(ba.data()[5])*256;
     BaLength += static_cast<quint8>(ba.data()[6])*65536;

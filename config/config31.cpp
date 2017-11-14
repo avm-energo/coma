@@ -6,24 +6,21 @@ Config31::Config31(QVector<publicclass::DataRec> &config, bool BaseBoard)
     Config3x::SetDInSize(Bci_block.inblk, Type);
     // параметры входных сигналов
     quint32 StartInIndex = Config3x::ModTypeMap().value(Type).DInStart;
-    publicclass::DataRec configelement;
-    bool FFound = false;
-    foreach (configelement, config)
+    for (int i=0; i<config.size(); ++i)
     {
-        if (configelement.id == 0xFFFFFFFF)
+        if (config.at(i).id == 0xFFFFFFFF)
         {
-            FFound = true;
-            break;
+            config.remove(i);
+            --i;
         }
     }
-    if (!FFound)
-        config.append({0xFFFFFFFF, 0, NULL});
     if (StartInIndex != 0)
     {
         config.append({StartInIndex, sizeof(Bci_block.inblk.in_type), Bci_block.inblk.in_type.data()});
         config.append({StartInIndex+1, sizeof(Bci_block.inblk.dly_time), Bci_block.inblk.dly_time.data()});
         config.append({StartInIndex+2, sizeof(Bci_block.inblk.pair), Bci_block.inblk.pair.data()});
     }
+    config.append({0xFFFFFFFF, 0, NULL});
 }
 
 void Config31::SetDefConf()

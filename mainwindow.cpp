@@ -367,6 +367,7 @@ void MainWindow::Stage2()
 
 void MainWindow::SetDefConf()
 {
+    MainConfDialog->SetDefConf();
     ConfB->SetDefConf();
     if (ConfM != 0)
         ConfM->SetDefConf();
@@ -376,6 +377,7 @@ void MainWindow::SetDefConf()
 
 void MainWindow::Fill()
 {
+    MainConfDialog->Fill();
     ConfB->Fill();
     if (ConfM != 0)
         ConfM->Fill();

@@ -6,18 +6,14 @@ Config21::Config21(QVector<publicclass::DataRec> &config, bool BaseBoard)
     Config2x::SetAInSize(Bci_block.inblk, Type);
     // параметры входных сигналов
     quint32 StartInIndex = Config2x::ModTypeMap().value(Type).AInStart;
-    publicclass::DataRec configelement;
-    bool FFound = false;
-    foreach (configelement, config)
+    for (int i=0; i<config.size(); ++i)
     {
-        if (configelement.id == 0xFFFFFFFF)
+        if (config.at(i).id == 0xFFFFFFFF)
         {
-            FFound = true;
-            break;
+            config.remove(i);
+            --i;
         }
     }
-    if (!FFound)
-        config.append({0xFFFFFFFF, 0, NULL});
     if (StartInIndex != 0)
     {
         config.append({StartInIndex, sizeof(Bci_block.inblk.in_type), Bci_block.inblk.in_type.data()});
@@ -36,6 +32,7 @@ Config21::Config21(QVector<publicclass::DataRec> &config, bool BaseBoard)
         config.append({StartInIndex+13, sizeof(Bci_block.inblk.filtern), &Bci_block.inblk.filtern});
         config.append({StartInIndex+14, sizeof(Bci_block.inblk.hysteresis), &Bci_block.inblk.hysteresis});
     }
+    config.append({0xFFFFFFFF, 0, NULL});
 }
 
 void Config21::SetDefConf()

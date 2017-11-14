@@ -4,18 +4,14 @@ Config85::Config85(QVector<publicclass::DataRec> &config)
 {
     // параметры входных сигналов
     quint32 StartInIndex = ID8085_START;
-    publicclass::DataRec configelement;
-    bool FFound = false;
-    foreach (configelement, config)
+    for (int i=0; i<config.size(); ++i)
     {
-        if (configelement.id == 0xFFFFFFFF)
+        if (config.at(i).id == 0xFFFFFFFF)
         {
-            FFound = true;
-            break;
+            config.remove(i);
+            --i;
         }
     }
-    if (!FFound)
-        config.append({0xFFFFFFFF, 0, NULL});
     if (StartInIndex != 0)
     {
         config.append({StartInIndex, sizeof(Bci_block.Eq_type), &Bci_block.Eq_type});
@@ -83,6 +79,7 @@ Config85::Config85(QVector<publicclass::DataRec> &config)
         config.append({StartInIndex+62, sizeof(Bci_block.TsolON), &Bci_block.TsolON});
         config.append({StartInIndex+63, sizeof(Bci_block.TsolOFF), &Bci_block.TsolOFF});
     }
+    config.append({0xFFFFFFFF, 0, NULL});
 }
 
 void Config85::SetDefConf()

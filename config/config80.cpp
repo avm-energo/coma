@@ -4,18 +4,14 @@ Config80::Config80(QVector<publicclass::DataRec> &config)
 {
     // параметры входных сигналов
     quint32 StartInIndex = ID808X_START;
-    publicclass::DataRec configelement;
-    bool FFound = false;
-    foreach (configelement, config)
+    for (int i=0; i<config.size(); ++i)
     {
-        if (configelement.id == 0xFFFFFFFF)
+        if (config.at(i).id == 0xFFFFFFFF)
         {
-            FFound = true;
-            break;
+            config.remove(i);
+            --i;
         }
     }
-    if (!FFound)
-        config.append({0xFFFFFFFF, 0, NULL});
     if (StartInIndex != 0)
     {
         config.append({StartInIndex, sizeof(Bci_block.eq_type), &Bci_block.eq_type});
@@ -31,6 +27,7 @@ Config80::Config80(QVector<publicclass::DataRec> &config)
         config.append({StartInIndex+10, sizeof(Bci_block.diosc), &Bci_block.diosc});
         config.append({StartInIndex+11, sizeof(Bci_block.duimin), &Bci_block.duimin});
     }
+    config.append({0xFFFFFFFF, 0, NULL});
 }
 
 void Config80::SetDefConf()

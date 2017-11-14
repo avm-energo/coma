@@ -7,9 +7,7 @@ ConfDialog35::ConfDialog35(QVector<publicclass::DataRec> &S2Config, bool BaseBoa
     AbstractConfDialog3x(parent)
 {
     this->S2Config = &S2Config;
-    C31 = new Config31(S2Config, BaseBoard);
-    Params.InTypes = QStringList() << "Не исп." << "Обычный" << "Инверсия";
-    Params.NumCh = AIN31_NUMCH;
+    C35 = new Config35(S2Config, BaseBoard);
     SetupUI();
     PrereadConf();
 }

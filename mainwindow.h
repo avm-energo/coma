@@ -27,6 +27,7 @@ public:
     bool SWHide;
     QRect SWGeometry;
     QVector<publicclass::DataRec> S2Config;
+    ConfDialog *MainConfDialog;
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
 #ifndef MODULE_A1

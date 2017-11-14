@@ -1,11 +1,9 @@
 #ifndef CONFIG35_H
 #define CONFIG35_H
 
-#define AIN31_NUMCH 8
-
-#define AIN31_DEF_DLY       2
-#define AIN31_DEF_PAIR      0xFFFF
-#define AIN31_DEF_INTYPE    0
+#define AIN35_DEF_WDTYPE    0
+#define AIN35_DEF_WDNOUT    2
+#define AIN35_DEF_WDTM      0
 
 #include "config3x.h"
 #include "../publicclass.h"
