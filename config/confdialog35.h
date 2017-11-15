@@ -16,7 +16,9 @@ private:
     Config35 *C35;
 
     void Fill();
+    void FillBack();
     void CheckConf();
+    void SetDefConf();
 
 signals:
     void BsiIsNeedToBeAcquiredAndChecked();
@@ -24,6 +26,9 @@ signals:
 public slots:
 
 private slots:
+    void SetChTypData(int); // задать тип канала (номер канала - в objectName.aplit(".").at(1)
+    void SetDly(double); // задать задержку для контроля дребезга
+    void SetPair(int); // задать парность каналов
 };
 
 #endif // CONFDIALOG35_H

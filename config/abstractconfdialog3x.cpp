@@ -34,35 +34,58 @@ void AbstractConfDialog3x::SetupUI()
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
     QVBoxLayout *lyout = new QVBoxLayout;
 
-    QGroupBox *gb = new QGroupBox("Свойства каналов");
-    QGridLayout *gblyout = new QGridLayout;
-    QLabel *lbl = new QLabel("#");
-    gblyout->addWidget(lbl, 0, 0, 1, 1, Qt::AlignRight);
-    lbl = new QLabel("Тип канала");
-    gblyout->addWidget(lbl, 0, 1, 1, 1, Qt::AlignCenter);
-    lbl = new QLabel("Задержка на дребезг, мс");
-    gblyout->addWidget(lbl, 0, 2, 1, 1, Qt::AlignCenter);
-    lbl = new QLabel("Парный канал");
-    gblyout->addWidget(lbl, 0, 3, 1, 1, Qt::AlignCenter);
-    QStringList chsl = QStringList() << "X"; // "x" - нет пары
-    for (i=0; i<Params.NumCh; ++i)
-        chsl << QString::number(i);
-    for (i = 0; i < Params.NumCh; ++i)
+    if (Params.InNumCh > 0)
     {
-        lbl = new QLabel(QString::number(i+1)+":");
-        gblyout->addWidget(lbl, i+1, 0, 1, 1, Qt::AlignRight);
-        s_tqComboBox *cb = WDFunc::NewCB(this, "chtypcb."+QString::number(i), Params.InTypes, DCONFWCLR);
-        connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChTypData(int)));
-        gblyout->addWidget(cb, i+1, 1, 1, 1, Qt::AlignCenter);
-        QDoubleSpinBox *spb = WDFunc::NewSPB(this, "chdlyspb."+QString::number(i),1,20,1,0,DCONFWCLR);
-//        connect(spb,SIGNAL(valueChanged(double)),this,SLOT(SetDly(double)));
-        gblyout->addWidget(spb, i+1, 2, 1, 1, Qt::AlignCenter);
-        cb = WDFunc::NewCB(this, "chpaircb."+QString::number(i), chsl, DCONFWCLR);
-        connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetPair(int)));
-        gblyout->addWidget(cb, i+1, 3, 1, 1, Qt::AlignCenter);
+        QGroupBox *gb = new QGroupBox("Входные каналы");
+        QGridLayout *gblyout = new QGridLayout;
+        QLabel *lbl = new QLabel("#");
+        gblyout->addWidget(lbl, 0, 0, 1, 1, Qt::AlignRight);
+        lbl = new QLabel("Тип канала");
+        gblyout->addWidget(lbl, 0, 1, 1, 1, Qt::AlignCenter);
+        lbl = new QLabel("Задержка на дребезг, мс");
+        gblyout->addWidget(lbl, 0, 2, 1, 1, Qt::AlignCenter);
+        lbl = new QLabel("Парный канал");
+        gblyout->addWidget(lbl, 0, 3, 1, 1, Qt::AlignCenter);
+        QStringList chsl = QStringList() << "X"; // "x" - нет пары
+        for (i=0; i<Params.InNumCh; ++i)
+            chsl << QString::number(i+1);
+        for (i = 0; i < Params.InNumCh; ++i)
+        {
+            lbl = new QLabel(QString::number(i+1)+":");
+            gblyout->addWidget(lbl, i+1, 0, 1, 1, Qt::AlignRight);
+            s_tqComboBox *cb = WDFunc::NewCB(this, "inchtypcb."+QString::number(i), Params.InTypes, DCONFWCLR);
+            connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChTypData(int)));
+            gblyout->addWidget(cb, i+1, 1, 1, 1, Qt::AlignCenter);
+            QDoubleSpinBox *spb = WDFunc::NewSPB(this, "chdlyspb."+QString::number(i),1,20,1,0,DCONFWCLR);
+            connect(spb,SIGNAL(valueChanged(double)),this,SLOT(SetDly(double)));
+            gblyout->addWidget(spb, i+1, 2, 1, 1, Qt::AlignCenter);
+            cb = WDFunc::NewCB(this, "chpaircb."+QString::number(i), chsl, DCONFWCLR);
+            connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetPair(int)));
+            gblyout->addWidget(cb, i+1, 3, 1, 1, Qt::AlignCenter);
+        }
+        gb->setLayout(gblyout);
+        lyout->addWidget(gb);
     }
-    gb->setLayout(gblyout);
-    lyout->addWidget(gb);
+    if (Params.OutNumCh > 0)
+    {
+        QGroupBox *gb = new QGroupBox("Выходные каналы");
+        QGridLayout *gblyout = new QGridLayout;
+        QLabel *lbl = new QLabel("#");
+        gblyout->addWidget(lbl, 0, 0, 1, 1, Qt::AlignRight);
+        lbl = new QLabel("Тип канала");
+        gblyout->addWidget(lbl, 0, 1, 1, 1, Qt::AlignCenter);
+        for (i = 0; i < Params.OutNumCh; ++i)
+        {
+            lbl = new QLabel(QString::number(i+1)+":");
+            gblyout->addWidget(lbl, i+1, 0, 1, 1, Qt::AlignRight);
+            s_tqComboBox *cb = WDFunc::NewCB(this, "outchtypcb."+QString::number(i), Params.OutTypes, DCONFWCLR);
+            connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChTypData(int)));
+            gblyout->addWidget(cb, i+1, 1, 1, 1, Qt::AlignCenter);
+        }
+
+        gb->setLayout(gblyout);
+        lyout->addWidget(gb);
+    }
     QWidget *cp = new QWidget;
     tmps = "QWidget {background-color: "+QString(DCONFGCLR)+";}";
     cp->setStyleSheet(tmps);
@@ -74,6 +97,18 @@ void AbstractConfDialog3x::SetupUI()
     QWidget *wdgt = ConfButtons();
     lyout->addWidget(wdgt);
     setLayout(lyout);
+}
+
+void AbstractConfDialog3x::SetInputs(QStringList InputsTypes, int InputsNum)
+{
+    Params.InNumCh = InputsNum;
+    Params.InTypes = InputsTypes;
+}
+
+void AbstractConfDialog3x::SetOutputs(QStringList OutputsTypes, int OutputsNum)
+{
+    Params.OutNumCh = OutputsNum;
+    Params.OutTypes = OutputsTypes;
 }
 
 void AbstractConfDialog3x::DisableChannel(int chnum, bool disable)

@@ -51,6 +51,7 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
             graph->keyAxis()->setLabel("Time, ns");
             graph->keyAxis()->setRange(XRangeMin, XRangeMax);
             graph->valueAxis()->setLabel(DigitalTrendNames.at(count));
+            graph->setName(DigitalTrendNames.at(count));
             DigitalGraphs.append(graph);
             ++count;
         }
@@ -73,10 +74,11 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
             graph->keyAxis()->setLabel("Time, ns");
             graph->keyAxis()->setRange(XRangeMin, XRangeMax);
             graph->valueAxis()->setLabel(AnalogTrendNames.at(count));
+            graph->setName(AnalogTrendNames.at(count));
             AnalogGraphs.append(graph);
             ++count;
         }
-        AnalogAxisRect->insetLayout()->addElement(Plot->legend, Qt::AlignRight|Qt::AlignTop);
+//        AnalogAxisRect->insetLayout()->addElement(Plot->legend, Qt::AlignRight|Qt::AlignTop);
         AnalogAxisRect->insetLayout()->setMargins(QMargins(12, 12, 12, 12));
     }
 }

@@ -26,6 +26,8 @@ private slots:
     void ProtocolFromFile();
 
 private:
+    const QVector<int> MTBs = {0x21, 0x22, 0x31, 0x35};
+
     void SetupUI();
     void AddActionsToMenuBar(QMenuBar *menubar);
     void Stage3();

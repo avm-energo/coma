@@ -1,9 +1,13 @@
 #ifndef CONFIG35_H
 #define CONFIG35_H
 
-#define AIN35_DEF_WDTYPE    0
-#define AIN35_DEF_WDNOUT    2
-#define AIN35_DEF_WDTM      0
+#define D35_CHNUM       4
+#define D35_DEF_WDTYPE  0
+#define D35_DEF_WDNOUT  2
+#define D35_DEF_WDTM    0
+#define D35_DEF_PULSH   100
+#define D35_DEF_PULLN   500
+#define D35_DEF_OUTTP   0
 
 #include "config3x.h"
 #include "../publicclass.h"
@@ -13,13 +17,7 @@ class Config35
 public:
     Config35(QVector<publicclass::DataRec> &config, bool BaseBoard=true);
 
-    struct Bci
-    {
-        Config3x::Bci_DIn inblk;    // Блок с определениями входов
-        Config3x::Bci_DOut outblk;  // Блок с определениями выходов
-    };
-
-    Bci Bci_block;
+    Config3x::Bci_DOut Bci_block;  // Блок с определениями выходов
 
     void SetDefConf();
 };

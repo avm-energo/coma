@@ -6,12 +6,6 @@
 #include "abstractconfdialog3x.h"
 #include "config31.h"
 
-// Описание блока Bci
-#define DBCI_INTYPE     11
-#define DBCI_DLY        12
-#define DBCI_PAIR       16
-#define DCONF_NUM       17
-
 class ConfDialog31 : public AbstractConfDialog3x
 {
     Q_OBJECT
@@ -22,6 +16,7 @@ private:
     Config31 *C31;
 
     void Fill();
+    void FillBack();
     void CheckConf();
     void SetDefConf();
     void SetPair(int firstch, int secondch);

@@ -35,6 +35,8 @@
 #include "../check/checkdialog80.h"
 #include "../check/checkdialoga1.h"
 #include "../config/confdialog21.h"
+#include "../config/confdialog31.h"
+#include "../config/confdialog35.h"
 #include "../config/confdialog80.h"
 #include "../config/confdialog85.h"
 #include "../config/confdialoga1.h"
@@ -69,13 +71,25 @@ Coma::~Coma()
 void Coma::Emul2x()
 {
     QMenu *menu = new QMenu(this);
-    QAction *act = new QAction(this);
-    act->setText("2100");
-    act->setObjectName("2100");
-    act->setIcon(QIcon(QPixmap::fromImage(*(WDFunc::TwoImages("21", "00")))));
-    connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
-    menu->addAction(act);
-
+    for (int i=0; i<MTBs.size(); ++i)
+    {
+        QMenu *inmenu = new QMenu(this);
+        QString prefix = QString::number(MTBs.at(i), 16);
+        inmenu->setTitle(prefix);
+        for (int j=0; j<MTBs.size(); ++j)
+        {
+            QAction *act = new QAction(this);
+            QString suffix = QString::number(MTBs.at(j), 16);
+            QString tmps = prefix + suffix;
+            act->setText(tmps);
+            act->setObjectName(tmps);
+            act->setIcon(QIcon(QPixmap::fromImage(*(WDFunc::TwoImages(prefix, suffix)))));
+            connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
+            inmenu->addAction(act);
+        }
+        menu->addMenu(inmenu);
+    }
+/*
     act = new QAction(this);
     act->setText("2121");
     act->setObjectName("2121");
@@ -88,7 +102,7 @@ void Coma::Emul2x()
     act->setObjectName("2135");
     act->setIcon(QIcon(QPixmap::fromImage(*(WDFunc::TwoImages("21", "35")))));
     connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
-    menu->addAction(act);
+    menu->addAction(act); */
 
     menu->popup(QCursor::pos());
 }
@@ -281,8 +295,14 @@ void Coma::PrepareDialogs()
         CheckB = new CheckDialog21;
         break;
     }
+    case MTB_31:
+    {
+        ConfB = new ConfDialog31(S2Config, true);
+        break;
+    }
     case MTB_35:
     {
+        ConfB = new ConfDialog35(S2Config, true);
         break;
     }
     case MTB_80:
@@ -309,8 +329,14 @@ void Coma::PrepareDialogs()
         ConfM = new ConfDialog21(S2Config, false);
         break;
     }
+    case MTM_31:
+    {
+        ConfM = new ConfDialog31(S2Config, true);
+        break;
+    }
     case MTM_35:
     {
+        ConfM = new ConfDialog35(S2Config, true);
         break;
     }
     case MTM_81:

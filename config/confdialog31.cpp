@@ -8,8 +8,8 @@ ConfDialog31::ConfDialog31(QVector<publicclass::DataRec> &S2Config, bool BaseBoa
 {
     this->S2Config = &S2Config;
     C31 = new Config31(S2Config, BaseBoard);
-    Params.InTypes = QStringList() << "Не исп." << "Обычный" << "Инверсия";
-    Params.NumCh = AIN31_NUMCH;
+    QStringList sl = QStringList() << "Не исп." << "Обычный" << "Инверсия";
+    SetInputs(sl, DIN31_NUMCH);
     SetupUI();
     PrereadConf();
 }
@@ -17,40 +17,45 @@ ConfDialog31::ConfDialog31(QVector<publicclass::DataRec> &S2Config, bool BaseBoa
 void ConfDialog31::Fill()
 {
     int i;
-    for (i = 0; i < Params.NumCh; i++)
+    for (i = 0; i < DIN31_NUMCH; i++)
     {
         int Intype = C31->Bci_block.inblk.in_type[i];
-        if (Intype == Config3x::DIT_NONE)
+        if (Intype & D_INTYPE_NONE)
         {
             WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), 0);
             DisableChannel(i, true);
             continue;
         }
-        if (Intype == Config3x::DIT_NORM)
+        if (Intype == D_INTYPE_NORM)
         {
             WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), 1);
             DisableChannel(i, false);
         }
-        if (Intype == Config3x::DIT_INV)
+        if (Intype & D_INTYPE_INV)
         {
             WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), 2);
             DisableChannel(i, false);
         }
         WDFunc::SetSPBData(this, "chdlyspb."+QString::number(i), static_cast<double>(C31->Bci_block.inblk.dly_time[i])/4);
     }
-    quint16 pair;
-    foreach(pair, C31->Bci_block.inblk.pair)
+    int numpair = DIN31_NUMCH / 2;
+    for (int i=0; i<numpair; ++i)
     {
-        quint8 first = static_cast<quint8>((pair&0xFF00)>>8);
-        quint8 second = static_cast<quint8>(pair&0x00FF);
+        quint8 first = static_cast<quint8>((C31->Bci_block.inblk.pair[i]&0xFF00)>>8);
+        quint8 second = static_cast<quint8>(C31->Bci_block.inblk.pair[i]&0x00FF);
         SetPair(first, second);
     }
     CheckConf();
 }
 
+void ConfDialog31::FillBack()
+{
+
+}
+
 void ConfDialog31::SetPair(int firstch, int secondch)
 {
-    if ((firstch > Params.NumCh) || (secondch > Params.NumCh) || (firstch < 0) || (secondch < 0))
+    if ((firstch > DIN31_NUMCH) || (secondch > DIN31_NUMCH) || (firstch < 0) || (secondch < 0))
     {
         MessageBox2::information(this, "Предупреждение", "Ошибка при чтении пары каналов из конфигурации");
         return;
@@ -64,7 +69,7 @@ void ConfDialog31::CheckConf()
     CheckConfErrors.clear();
     // проверяем, все ли пары соответствуют друг другу
     QList<int> InPairs;
-    for (int first=0; first<Params.NumCh; ++first)
+    for (int first=0; first<DIN31_NUMCH; ++first)
     {
         WDFunc::SetCBColor(this, "chpaircb."+QString::number(first), DCONFWCLR);
         if (InPairs.contains(first)) // if current index is in Pairs already
@@ -91,27 +96,27 @@ void ConfDialog31::SetChTypData(int value)
     int tmpi = GetChNumFromObjectName(sender()->objectName());
     if (tmpi == GENERALERROR)
         return;
-    if (tmpi < C31->Bci_block.inblk.in_type.size())
+    if (tmpi < DIN31_NUMCH)
     {
         switch (value)
         {
         case 0: // не исп.
         {
-            WDFunc::SetCBIndex(this, "chpaircb."+QString::number(tmpi), 0); // убираем пару у канала
+            WDFunc::SetCBIndex(this, "inchpaircb."+QString::number(tmpi), 0); // убираем пару у канала
             DisableChannel(tmpi, true); // отключаем все поля для данного канала
-            C31->Bci_block.inblk.in_type[tmpi] = Config3x::DIT_NONE;
+            C31->Bci_block.inblk.in_type[tmpi] |= D_INTYPE_NONE;
             break;
         }
         case 1: // обычный
         {
             DisableChannel(tmpi, false); // отключаем все поля для данного канала
-            C31->Bci_block.inblk.in_type[tmpi] = Config3x::DIT_NORM;
+            C31->Bci_block.inblk.in_type[tmpi] |= D_INTYPE_NORM;
             break;
         }
         case 2: // инверсия
         {
             DisableChannel(tmpi, false); // отключаем все поля для данного канала
-            C31->Bci_block.inblk.in_type[tmpi] = Config3x::DIT_INV;
+            C31->Bci_block.inblk.in_type[tmpi] |= D_INTYPE_INV;
             break;
         }
         default:
@@ -125,7 +130,7 @@ void ConfDialog31::SetDly(double dly)
     int tmpi = GetChNumFromObjectName(sender()->objectName());
     if (tmpi == GENERALERROR)
         return;
-    if (tmpi < C31->Bci_block.inblk.dly_time.size())
+    if (tmpi < DIN31_NUMCH)
         C31->Bci_block.inblk.dly_time[tmpi] = static_cast<quint32>(dly)*4;
 }
 
