@@ -117,7 +117,7 @@ void TrendViewDialog::SetupUI()
     act->setToolTip("Выбор осциллограмм");
     act->setIcon(QIcon("images/play.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
-    tb->addAction(act);
+    bar->addAction(act);
 
     lyout->addWidget(bar);
     Plot = new QCustomPlot;

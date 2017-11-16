@@ -594,10 +594,10 @@ void TuneDialogA1::FillBac()
     WDFunc::SetLEData(this, "tune28", QString::number(Bac_block.Bma1, 'f', 5));
     WDFunc::SetLEData(this, "tune29", QString::number(Bac_block.Ama2, 'f', 5));
     WDFunc::SetLEData(this, "tune30", QString::number(Bac_block.Bma2, 'f', 5));
-    WDFunc::SetLEData(this, "tune31", QString::number(Bac_block.TKUa[0], 'f', 5));
-    WDFunc::SetLEData(this, "tune32", QString::number(Bac_block.TKUa[1], 'f', 5));
-    WDFunc::SetLEData(this, "tune33", QString::number(Bac_block.TKUb[0], 'f', 5));
-    WDFunc::SetLEData(this, "tune34", QString::number(Bac_block.TKUb[1], 'f', 5));
+    WDFunc::SetLEData(this, "tune31", QString::number(Bac_block.TKUa[0], 'e', 5));
+    WDFunc::SetLEData(this, "tune32", QString::number(Bac_block.TKUa[1], 'e', 5));
+    WDFunc::SetLEData(this, "tune33", QString::number(Bac_block.TKUb[0], 'e', 5));
+    WDFunc::SetLEData(this, "tune34", QString::number(Bac_block.TKUb[1], 'e', 5));
     WDFunc::SetLEData(this, "tune35", QString::number(Bac_block.Tmk0, 'f', 5));
 }
 

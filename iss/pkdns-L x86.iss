@@ -1,15 +1,15 @@
-; -- pkdn-s_l-hid x86.iss --
+; -- pkdns-L x86.iss --
 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING .ISS SCRIPT FILES!
 
 #define Name "ПКДН-Сервис БР"
 #define GroupName "ПКДН-Сервис"
 #define EngName "PKDN-S"
-#define Version "1.0.97"
+#define Version "1.0.101"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "pkdns-L.exe"
-#define SetupName "pkdns-L-1.0.97-x86"
+#define SetupName "pkdns-L-1.0.101-x86"
 #define Prefix "D:\Progs\out"
 
 [Languages]

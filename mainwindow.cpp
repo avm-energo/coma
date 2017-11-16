@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     if (!dir.exists())
         dir.mkpath(".");
     S2Config.clear();
+    MainConfDialog = 0;
     ConfB = ConfM = 0;
 #ifndef MODULE_A1
     OscD = 0;
@@ -367,7 +368,8 @@ void MainWindow::Stage2()
 
 void MainWindow::SetDefConf()
 {
-    MainConfDialog->SetDefConf();
+    if (MainConfDialog != 0)
+        MainConfDialog->SetDefConf();
     ConfB->SetDefConf();
     if (ConfM != 0)
         ConfM->SetDefConf();
@@ -377,7 +379,8 @@ void MainWindow::SetDefConf()
 
 void MainWindow::Fill()
 {
-    MainConfDialog->Fill();
+    if (MainConfDialog != 0)
+        MainConfDialog->Fill();
     ConfB->Fill();
     if (ConfM != 0)
         ConfM->Fill();
