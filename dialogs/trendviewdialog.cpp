@@ -1,5 +1,7 @@
 #include <QVector>
 #include <QPen>
+#include <QToolBar>
+#include <QAction>
 #include "QtXlsx/xlsxdocument.h"
 #include "../config/config.h"
 #include "trendviewdialog.h"
@@ -105,8 +107,19 @@ void TrendViewDialog::AddDigitalPoint(int GraphNum, int PointValue)
 
 void TrendViewDialog::SetupUI()
 {
+    QToolBar *bar = new QToolBar;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
+
+    bar->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
+    bar->setIconSize(QSize(20,20));
+    QAction *act = new QAction(this);
+    act->setToolTip("Выбор осциллограмм");
+    act->setIcon(QIcon("images/play.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
+    tb->addAction(act);
+
+    lyout->addWidget(bar);
     Plot = new QCustomPlot;
     Plot->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(Plot,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(PlotContextMenu(QPoint)));
@@ -235,6 +248,11 @@ void TrendViewDialog::MoveLegend()
         Plot->replot();
       }
     }
+}
+
+void TrendViewDialog::ChooseGraphsToDisplay()
+{
+
 }
 
 void TrendViewDialog::PlotShow()

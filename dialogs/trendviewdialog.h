@@ -37,6 +37,7 @@ private slots:
     void SaveToComtrade();
     void PlotContextMenu(QPoint pos);
     void MoveLegend();
+    void ChooseGraphsToDisplay();
 };
 
 #endif // TRENDVIEWDIALOG_H

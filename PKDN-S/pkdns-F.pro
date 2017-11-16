@@ -16,7 +16,7 @@ QT       += core gui serialport printsupport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = pkdns-F
-DEFINES += MODULE_TYPEB=0xA1
+DEFINES += MODULE_A1
 DEFINES += PROGNAME='\\"PKDN-S\\"'
 DEFINES += PROGCAPTION='\\"PKDN\\040Service\\040F\\040v1.0.96\\"'
 DEFINES += DEVICETYPE=2 # 1 - module, 2 - pribor, for diagnostic messages

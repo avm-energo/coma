@@ -140,12 +140,16 @@ void TuneDialogA1::SetupUI()
     glyout->addWidget(WDFunc::NewLE(this, "tune29", "", ValuesLEFormat), 4, 1, 1, 2);
     glyout->addWidget(WDFunc::NewLBL(this, "Bma2"), 4, 2, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "tune30", "", ValuesLEFormat), 4, 3, 1, 2);
-    glyout->addWidget(WDFunc::NewLBL(this, "TKU[0]"), 5, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "TKUa[0]"), 5, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "tune31", "", ValuesLEFormat), 5, 1, 1, 2);
-    glyout->addWidget(WDFunc::NewLBL(this, "TKU[1]"), 5, 2, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "TKUa[1]"), 5, 2, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "tune32", "", ValuesLEFormat), 5, 3, 1, 2);
-    glyout->addWidget(WDFunc::NewLBL(this, "Tmk0"), 6, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "TKUb[0]"), 6, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "tune33", "", ValuesLEFormat), 6, 1, 1, 2);
+    glyout->addWidget(WDFunc::NewLBL(this, "TKUb[1]"), 6, 2, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "tune34", "", ValuesLEFormat), 6, 3, 1, 2);
+    glyout->addWidget(WDFunc::NewLBL(this, "Tmk0"), 7, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "tune35", "", ValuesLEFormat), 7, 1, 1, 2);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
     lyout->addWidget(BottomUI());
@@ -590,9 +594,11 @@ void TuneDialogA1::FillBac()
     WDFunc::SetLEData(this, "tune28", QString::number(Bac_block.Bma1, 'f', 5));
     WDFunc::SetLEData(this, "tune29", QString::number(Bac_block.Ama2, 'f', 5));
     WDFunc::SetLEData(this, "tune30", QString::number(Bac_block.Bma2, 'f', 5));
-    WDFunc::SetLEData(this, "tune31", QString::number(Bac_block.TKU[0], 'f', 5));
-    WDFunc::SetLEData(this, "tune32", QString::number(Bac_block.TKU[1], 'f', 5));
-    WDFunc::SetLEData(this, "tune33", QString::number(Bac_block.Tmk0, 'f', 5));
+    WDFunc::SetLEData(this, "tune31", QString::number(Bac_block.TKUa[0], 'f', 5));
+    WDFunc::SetLEData(this, "tune32", QString::number(Bac_block.TKUa[1], 'f', 5));
+    WDFunc::SetLEData(this, "tune33", QString::number(Bac_block.TKUb[0], 'f', 5));
+    WDFunc::SetLEData(this, "tune34", QString::number(Bac_block.TKUb[1], 'f', 5));
+    WDFunc::SetLEData(this, "tune35", QString::number(Bac_block.Tmk0, 'f', 5));
 }
 
 void TuneDialogA1::FillBackBac()
@@ -607,9 +613,11 @@ void TuneDialogA1::FillBackBac()
     WDFunc::LENumber(this, "tune28", Bac_block.Bma1);
     WDFunc::LENumber(this, "tune29", Bac_block.Ama2);
     WDFunc::LENumber(this, "tune30", Bac_block.Bma2);
-    WDFunc::LENumber(this, "tune31", Bac_block.TKU[0]);
-    WDFunc::LENumber(this, "tune32", Bac_block.TKU[1]);
-    WDFunc::LENumber(this, "tune33", Bac_block.Tmk0);
+    WDFunc::LENumber(this, "tune31", Bac_block.TKUa[0]);
+    WDFunc::LENumber(this, "tune32", Bac_block.TKUa[1]);
+    WDFunc::LENumber(this, "tune33", Bac_block.TKUb[0]);
+    WDFunc::LENumber(this, "tune34", Bac_block.TKUb[1]);
+    WDFunc::LENumber(this, "tune35", Bac_block.Tmk0);
 }
 
 void TuneDialogA1::SetDefCoefs()
@@ -624,7 +632,7 @@ void TuneDialogA1::SetDefCoefs()
     Bac_block.Bma1 = static_cast<float>(-0.4125);
     Bac_block.Ama2 = static_cast<float>(163.6494);
     Bac_block.Bma2 = static_cast<float>(-0.8425);
-    Bac_block.TKU[0] = Bac_block.TKU[1] = 0;
+    Bac_block.TKUa[0] = Bac_block.TKUa[1] = Bac_block.TKUb[0] = Bac_block.TKUb[1] = 0;
     Bac_block.Tmk0 = 32;
     FillBac();
 }
