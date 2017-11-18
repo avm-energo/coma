@@ -314,7 +314,6 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
         }
         case MT_ID85:
         {
-            TrendViewDialog *dlg = new TrendViewDialog;
             QVector<QString> tmpdv, tmpav;
             tmpdv << "OCNA" << "OCNB" << "OCNC" << "OCFA" << "OCFB" << "OCFC" << \
                      "BKCA" << "BKCB" << "BKCC" << "BKOA" << "BKOB" << "BKOC" << \
@@ -322,8 +321,8 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
             tmpav << "USA" << "USB" << "USC" << "IA" << "IB" << "IC" << "ULA" << "ULB" << "ULC";
             float xmax = (static_cast<float>(OHD.len/2));
             float xmin = -xmax;
-            dlg->Init(tmpdv, tmpav, OHD.len, xmin, xmax, -200, 200);
             xmin = -(OHD.step * 512);
+            TrendViewDialog *dlg = new TrendViewDialog(tmpdv, tmpav, OHD.len, xmin, xmax, -200, 200);
             if (!dlg->SetPointsAxis(xmin, OHD.step))
                 return GENERALERROR;
             for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам

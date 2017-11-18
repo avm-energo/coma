@@ -3,18 +3,18 @@
 
 #include <QDialog>
 #include <QPoint>
+#include <QToolBar>
 #include "../qcustomplot.h"
 
 class TrendViewDialog : public QDialog
 {
     Q_OBJECT
 public:
-    TrendViewDialog(QWidget *parent=0);
+    TrendViewDialog(QVector<QString> &DigitalTrendNames, QVector<QString> &AnalogTrendNames, int PointNum, \
+                    float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax, QWidget *parent=0);
     ~TrendViewDialog();
 
      // инициализация графиков
-    void Init(QVector<QString> &DigitalTrendNames, QVector<QString> &AnalogTrendNames, int PointNum, \
-              float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax);
     // имена графиков контактных/аналоговых сигналов, количество точек, диапазон по оси Y для аналоговых
     void AddAnalogPoint(int GraphNum, float PointValue);
     void AddDigitalPoint(int GraphNum, int PointValue);
@@ -23,19 +23,22 @@ public:
     void SetFilename(const QString &fn);
 
 private:
-    QCustomPlot *Plot;
+    QCustomPlot *AnalogPlot, *DiscretePlot;
     QVector<QCPGraph *> AnalogGraphs, DigitalGraphs;
     QVector<QVector<double> > AnalogMainData, DigitalMainData;
     QVector<double> MainPoints;
     int PointsNum;
     QString Filename;
+    bool NoDiscrete, NoAnalog;
 
     void SetupUI();
+    QToolBar *PlotToolBar();
 
 private slots:
     void SaveToExcel();
     void SaveToComtrade();
-    void PlotContextMenu(QPoint pos);
+    void AnalogPlotContextMenu(QPoint pos);
+    void DiscretePlotContextMenu(QPoint pos);
     void MoveLegend();
     void ChooseGraphsToDisplay();
 };

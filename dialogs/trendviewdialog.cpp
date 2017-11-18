@@ -1,52 +1,63 @@
 #include <QVector>
 #include <QPen>
-#include <QToolBar>
 #include <QAction>
 #include "QtXlsx/xlsxdocument.h"
 #include "../config/config.h"
 #include "trendviewdialog.h"
 #include "../publicclass.h"
 
-TrendViewDialog::TrendViewDialog(QWidget *parent) : QDialog(parent)
+TrendViewDialog::TrendViewDialog(QVector<QString> &DigitalTrendNames, QVector<QString> &AnalogTrendNames, \
+                                 int PointNum, float XRangeMin, float XRangeMax, float YRangeMin, \
+                                 float YRangeMax, QWidget *parent) : QDialog(parent)
 {
     PointsNum = 0;
     QString tmps = "QDialog {background-color: "+QString(MAINWINCLRA1)+";}";
     setStyleSheet(tmps);
     setAttribute(Qt::WA_DeleteOnClose);
-    SetupUI();
-}
-
-TrendViewDialog::~TrendViewDialog()
-{
-
-}
-
-void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString> &AnalogTrendNames, int PointNum, \
-                           float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax)
-{
+    NoDiscrete = NoAnalog = false;
     QPen pen;
     int row = 0;
     this->PointsNum = PointNum;
     int DigitalGraphNum = DigitalTrendNames.size();
     int AnalogGraphNum = AnalogTrendNames.size();
-    Plot->plotLayout()->clear();
+
+    AnalogPlot = new QCustomPlot;
+    AnalogPlot->setBackground(QBrush(QColor(ACONFYCLR)));
+    AnalogPlot->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(AnalogPlot,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(AnalogPlotContextMenu(QPoint)));
+    AnalogPlot->plotLayout()->clear();
     QCPLegend *legend = new QCPLegend;
-    Plot->legend = legend;
-    Plot->legend->setLayer("legend");
-    Plot->legend->setVisible(true);
-    Plot->legend->setFont(QFont("Helvetica", 8));
-    Plot->setAutoAddPlottableToLegend(true);
-    Plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectLegend);
+    AnalogPlot->legend = legend;
+    AnalogPlot->legend->setLayer("legend");
+    AnalogPlot->legend->setVisible(true);
+    AnalogPlot->legend->setFont(QFont("Helvetica", 8));
+    AnalogPlot->setAutoAddPlottableToLegend(true);
+    AnalogPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectLegend);
+
     if (DigitalGraphNum != 0)
     {
-        QCPAxisRect *DigitalAxisRect = new QCPAxisRect(Plot);
-        DigitalAxisRect->setBackground(QBrush(QColor(ACONFOCLR)));
-        Plot->plotLayout()->addElement(row++, 0, DigitalAxisRect);
+        DiscretePlot = new QCustomPlot;
+        DiscretePlot->setBackground(QBrush(QColor(ACONFYCLR)));
+        DiscretePlot->setContextMenuPolicy(Qt::CustomContextMenu);
+        connect(DiscretePlot,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(DiscretePlotContextMenu(QPoint)));
+        QCPAxisRect *DigitalAxisRect = new QCPAxisRect(DiscretePlot);
+        DiscretePlot->plotLayout()->clear();
+        DiscretePlot->plotLayout()->addElement(0, 0, DigitalAxisRect);
+        QCPLegend *dlegend = new QCPLegend;
+        DigitalAxisRect->insetLayout()->addElement(dlegend, Qt::AlignTop | Qt::AlignRight);
+        DiscretePlot->legend = dlegend;
+        DiscretePlot->legend->setLayer("legend");
+        DiscretePlot->legend->setVisible(true);
+        DiscretePlot->legend->setFont(QFont("Helvetica", 8));
+        DiscretePlot->setAutoAddPlottableToLegend(true);
+        DiscretePlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectLegend);
+        DigitalAxisRect->setBackground(QBrush(QColor(ACONFYCLR)));
+        DiscretePlot->plotLayout()->addElement(row++, 0, DigitalAxisRect);
         DigitalMainData.resize(DigitalGraphNum);
         int count = 0;
         while (count < DigitalGraphNum)
         {
-            QCPGraph *graph = Plot->addGraph(DigitalAxisRect->axis(QCPAxis::atBottom), DigitalAxisRect->axis(QCPAxis::atLeft));
+            QCPGraph *graph = DiscretePlot->addGraph(DigitalAxisRect->axis(QCPAxis::atBottom), DigitalAxisRect->axis(QCPAxis::atLeft));
             pen.setColor(QColor(qSin(count*1+1.2)*80+80, qSin(count*0.3+0)*80+80, qSin(count*0.3+1.5)*80+80));
             graph->setPen(pen);
             graph->valueAxis()->setRange(-1, 2);
@@ -57,19 +68,21 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
             DigitalGraphs.append(graph);
             ++count;
         }
-        DigitalAxisRect->insetLayout()->addElement(Plot->legend, Qt::AlignRight|Qt::AlignTop);
+        DigitalAxisRect->insetLayout()->addElement(DiscretePlot->legend, Qt::AlignRight|Qt::AlignTop);
         DigitalAxisRect->insetLayout()->setMargins(QMargins(12, 12, 12, 12));
     }
+    else
+        NoDiscrete = true;
     if (AnalogGraphNum != 0)
     {
-        QCPAxisRect *AnalogAxisRect = new QCPAxisRect(Plot);
+        QCPAxisRect *AnalogAxisRect = new QCPAxisRect(AnalogPlot);
         AnalogAxisRect->setBackground(QBrush(QColor(ACONFYCLR)));
-        Plot->plotLayout()->addElement(row++, 0, AnalogAxisRect);
+        AnalogPlot->plotLayout()->addElement(row++, 0, AnalogAxisRect);
         AnalogMainData.resize(AnalogGraphNum);
         int count = 0;
         while (count < AnalogGraphNum)
         {
-            QCPGraph *graph = Plot->addGraph(AnalogAxisRect->axis(QCPAxis::atBottom), AnalogAxisRect->axis(QCPAxis::atLeft));
+            QCPGraph *graph = AnalogPlot->addGraph(AnalogAxisRect->axis(QCPAxis::atBottom), AnalogAxisRect->axis(QCPAxis::atLeft));
             pen.setColor(QColor(qSin(count*1+1.2)*80+80, qSin(count*0.3+0)*80+80, qSin(count*0.3+1.5)*80+80));
             graph->setPen(pen);
             graph->valueAxis()->setRange(YRangeMin, YRangeMax);
@@ -80,9 +93,17 @@ void TrendViewDialog::Init(QVector<QString> &DigitalTrendNames, QVector<QString>
             AnalogGraphs.append(graph);
             ++count;
         }
-//        AnalogAxisRect->insetLayout()->addElement(Plot->legend, Qt::AlignRight|Qt::AlignTop);
+        AnalogAxisRect->insetLayout()->addElement(AnalogPlot->legend, Qt::AlignRight|Qt::AlignTop);
         AnalogAxisRect->insetLayout()->setMargins(QMargins(12, 12, 12, 12));
     }
+    else
+        NoAnalog = true;
+    SetupUI();
+}
+
+TrendViewDialog::~TrendViewDialog()
+{
+
 }
 
 void TrendViewDialog::AddAnalogPoint(int GraphNum, float PointValue)
@@ -107,23 +128,19 @@ void TrendViewDialog::AddDigitalPoint(int GraphNum, int PointValue)
 
 void TrendViewDialog::SetupUI()
 {
-    QToolBar *bar = new QToolBar;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
 
-    bar->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
-    bar->setIconSize(QSize(20,20));
-    QAction *act = new QAction(this);
-    act->setToolTip("Выбор осциллограмм");
-    act->setIcon(QIcon("images/play.png"));
-    connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
-    bar->addAction(act);
-
-    lyout->addWidget(bar);
-    Plot = new QCustomPlot;
-    Plot->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(Plot,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(PlotContextMenu(QPoint)));
-    lyout->addWidget(Plot);
+    if (!NoDiscrete)
+    {
+        lyout->addWidget(PlotToolBar(), 0);
+        lyout->addWidget(DiscretePlot, 100);
+    }
+    if (!NoAnalog)
+    {
+        lyout->addWidget(PlotToolBar(), 0);
+        lyout->addWidget(AnalogPlot, 100);
+    }
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(close()));
     hlyout->addStretch(10);
@@ -139,6 +156,19 @@ void TrendViewDialog::SetupUI()
     hlyout->addStretch(10);
     lyout->addLayout(hlyout);
     setLayout(lyout);
+}
+
+QToolBar *TrendViewDialog::PlotToolBar()
+{
+    QToolBar *bar = new QToolBar;
+    bar->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
+    bar->setIconSize(QSize(20,20));
+    QAction *act = new QAction(this);
+    act->setToolTip("Выбор осциллограмм");
+    act->setIcon(QIcon("images/oscillogramm.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
+    bar->addAction(act);
+    return bar;
 }
 
 void TrendViewDialog::SaveToExcel()
@@ -211,12 +241,12 @@ void TrendViewDialog::SaveToComtrade()
 
 }
 
-void TrendViewDialog::PlotContextMenu(QPoint pos)
+void TrendViewDialog::AnalogPlotContextMenu(QPoint pos)
 {
     QMenu *menu = new QMenu(this);
     menu->setAttribute(Qt::WA_DeleteOnClose);
 
-    if (Plot->legend->selectTest(pos, false) >= 0) // context menu on legend requested
+    if (AnalogPlot->legend->selectTest(pos, false) >= 0) // context menu on legend requested
     {
       menu->addAction("Move to top left", this, SLOT(MoveLegend()))->setData((int)(Qt::AlignTop|Qt::AlignLeft));
       menu->addAction("Move to top center", this, SLOT(MoveLegend()))->setData((int)(Qt::AlignTop|Qt::AlignHCenter));
@@ -233,7 +263,12 @@ void TrendViewDialog::PlotContextMenu(QPoint pos)
         menu->addAction("Remove all graphs", this, SLOT(removeAllGraphs()));
     } */
 
-    menu->popup(Plot->mapToGlobal(pos));
+    menu->popup(AnalogPlot->mapToGlobal(pos));
+}
+
+void TrendViewDialog::DiscretePlotContextMenu(QPoint pos)
+{
+
 }
 
 void TrendViewDialog::MoveLegend()
@@ -244,8 +279,8 @@ void TrendViewDialog::MoveLegend()
       int dataInt = contextAction->data().toInt(&ok);
       if (ok)
       {
-        Plot->axisRect()->insetLayout()->setInsetAlignment(0, (Qt::Alignment)dataInt);
-        Plot->replot();
+        AnalogPlot->axisRect()->insetLayout()->setInsetAlignment(0, (Qt::Alignment)dataInt);
+        AnalogPlot->replot();
       }
     }
 }
@@ -279,7 +314,8 @@ void TrendViewDialog::PlotShow()
         }
         ++count;
     }
-    Plot->replot();
+    AnalogPlot->replot();
+    DiscretePlot->replot();
     this->showMaximized();
 }
 
