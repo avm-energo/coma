@@ -39,6 +39,7 @@ public:
     EAbstractTuneDialog *TuneB, *TuneM;
 #endif
     QWidget *Parent;
+    QSplashScreen *StartWindowSplashScreen;
 
     static QStringList Hth()
     {

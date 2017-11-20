@@ -29,6 +29,10 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
+    QPixmap StartWindowSplashPixmap("images/2.1.x.png");
+    StartWindowSplashScreen = new QSplashScreen(StartWindowSplashPixmap);
+    StartWindowSplashScreen->show();
+    StartWindowSplashScreen->showMessage("Подготовка окружения...", Qt::AlignRight, Qt::white);
     // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
     QDir dir(pc.HomeDir);
     if (!dir.exists())

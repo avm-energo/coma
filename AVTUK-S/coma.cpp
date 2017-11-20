@@ -62,6 +62,11 @@ Coma::Coma(QWidget *parent)
 {
     SetupMenubar();
     SetupUI();
+    QTime tme;
+    tme.start();
+    while (tme.elapsed() < 2000)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    StartWindowSplashScreen->finish(this);
 }
 
 Coma::~Coma()
