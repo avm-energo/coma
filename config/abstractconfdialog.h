@@ -29,6 +29,7 @@ public slots:
 private:
 
     virtual void SetupUI() = 0;
+    bool PrepareConfToWrite();
 
 private slots:
     void SaveConfToFile();

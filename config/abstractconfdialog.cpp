@@ -28,24 +28,8 @@ void AbstractConfDialog::ReadConf()
 
 void AbstractConfDialog::WriteConf()
 {
-    FillBack();
-    CheckConf();
-    if (!CheckConfErrors.isEmpty())
-    {
-        QDialog *dlg = new QDialog;
-        QVBoxLayout *vlyout = new QVBoxLayout;
-        QLabel *lbl = new QLabel("В конфигурации есть ошибки, проверьте и исправьте");
-        vlyout->addWidget(lbl, 0, Qt::AlignLeft);
-        QTextEdit *te = new QTextEdit;
-        te->setPlainText(CheckConfErrors.join("\n"));
-        vlyout->addWidget(te, 0, Qt::AlignCenter);
-        QPushButton *pb = new QPushButton("Хорошо");
-        connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
-        vlyout->addWidget(pb);
-        dlg->setLayout(vlyout);
-        dlg->exec();
+    if (!PrepareConfToWrite())
         return;
-    }
     int res;
     if ((res = Commands::WriteFile(NULL, 1, S2Config)) == NOERROR)
     {
@@ -59,6 +43,8 @@ void AbstractConfDialog::WriteConf()
 void AbstractConfDialog::SaveConfToFile()
 {
     QByteArray ba;
+    if (!PrepareConfToWrite())
+        return;
     ba.resize(MAXBYTEARRAY);
     pc.StoreDataMem(&(ba.data()[0]), S2Config, 0x0001); // 0x0001 - номер файла конфигурации
     quint32 BaLength = static_cast<quint8>(ba.data()[4]);
@@ -158,4 +144,27 @@ int AbstractConfDialog::GetChNumFromObjectName(QString ObjectName)
     if (!ok)
         return GENERALERROR;
     return ChNum;
+}
+
+bool AbstractConfDialog::PrepareConfToWrite()
+{
+    FillBack();
+    CheckConf();
+    if (!CheckConfErrors.isEmpty())
+    {
+        QDialog *dlg = new QDialog;
+        QVBoxLayout *vlyout = new QVBoxLayout;
+        QLabel *lbl = new QLabel("В конфигурации есть ошибки, проверьте и исправьте");
+        vlyout->addWidget(lbl, 0, Qt::AlignLeft);
+        QTextEdit *te = new QTextEdit;
+        te->setPlainText(CheckConfErrors.join("\n"));
+        vlyout->addWidget(te, 0, Qt::AlignCenter);
+        QPushButton *pb = new QPushButton("Хорошо");
+        connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
+        vlyout->addWidget(pb);
+        dlg->setLayout(vlyout);
+        dlg->exec();
+        return false;
+    }
+    return true;
 }
