@@ -2,7 +2,7 @@
 #define ERRORDIALOG_H
 
 #include <QDialog>
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 #include "../widgets/errorprotocolwidget.h"
 
 class ErrorDialog : public QDialog

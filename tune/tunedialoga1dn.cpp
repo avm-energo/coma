@@ -10,7 +10,7 @@
 #include <QCoreApplication>
 #include <QFileDialog>
 #include "tunedialoga1dn.h"
-#include "../commands.h"
+#include "../gen/commands.h"
 #include "../dialogs/keypressdialog.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/messagebox.h"

@@ -7,6 +7,7 @@
 #include <QThread>
 #include <QLabel>
 #include <QMutex>
+#include <QWaitCondition>
 
 #include "publicclass.h"
 #include "log.h"
@@ -44,9 +45,12 @@ public slots:
 private:
     hid_device *HidDevice;
     bool AboutToFinish, Device;
-
+    bool RunWait;
+    QMutex RunMutex;
+    QWaitCondition QWC;
 
 private slots:
+    void RunWaitFinished();
 };
 
 class EUsbHid : public EAbstractProtocomChannel

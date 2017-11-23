@@ -17,7 +17,7 @@
 #include "../widgets/messagebox.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
-#include "../commands.h"
+#include "../gen/commands.h"
 
 A1Dialog::A1Dialog(bool WithGUI, QWidget *parent) : QDialog(parent)
 {

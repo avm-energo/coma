@@ -8,7 +8,7 @@
 #include <QGridLayout>
 
 #include "abstractconfdialog.h"
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 
 class AbstractConfDialog2x : public AbstractConfDialog
 {

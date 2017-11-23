@@ -4,7 +4,7 @@
 #define IDA100_START    1101
 
 #include "config.h"
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 
 class ConfigA1
 {

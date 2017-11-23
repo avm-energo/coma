@@ -26,9 +26,7 @@ TEMPLATE = app
 SOURCES += \
     main.cpp\
     coma.cpp \
-    ../log.cpp \
-    ../mainwindow.cpp \
-    ../publicclass.cpp \
+    ../check/check21.cpp \
     ../check/check80.cpp \
     ../check/checka1.cpp \
     ../check/checkdialog21.cpp \
@@ -43,6 +41,7 @@ SOURCES += \
     ../config/confdialog31.cpp \
     ../config/confdialog35.cpp \
     ../config/confdialog80.cpp \
+    ../config/confdialog85.cpp \
     ../config/confdialoga1.cpp \
     ../config/config.cpp \
     ../config/config21.cpp \
@@ -51,11 +50,16 @@ SOURCES += \
     ../config/config35.cpp \
     ../config/config3x.cpp \
     ../config/config80.cpp \
+    ../config/config85.cpp \
     ../config/configa1.cpp \
     ../dialogs/a1dialog.cpp \
     ../dialogs/errordialog.cpp \
     ../dialogs/infodialog.cpp \
     ../dialogs/settingsdialog.cpp \
+    ../gen/commands.cpp \
+    ../gen/log.cpp \
+    ../gen/mainwindow.cpp \
+    ../gen/publicclass.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/getoscpbdelegate.cpp \
     ../widgets/messagebox.cpp \
@@ -66,17 +70,11 @@ SOURCES += \
     ../widgets/s_tqcombobox.cpp \
     ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp \
-    ../check/check21.cpp \
-    ../config/confdialog85.cpp \
-    ../config/config85.cpp \
-    ../commands.cpp
+    ../widgets/wd_func.cpp 
 
 HEADERS  += \
     coma.h \
-    ../log.h \
-    ../mainwindow.h \
-    ../publicclass.h \
+    ../check/check21.h \
     ../check/check80.h \
     ../check/checka1.h \
     ../check/checkdialog21.h \
@@ -91,6 +89,7 @@ HEADERS  += \
     ../config/confdialog31.h \
     ../config/confdialog35.h \
     ../config/confdialog80.h \
+    ../config/confdialog85.h \
     ../config/confdialoga1.h \
     ../config/config.h \
     ../config/config21.h \
@@ -99,11 +98,16 @@ HEADERS  += \
     ../config/config35.h \
     ../config/config3x.h \
     ../config/config80.h \
+    ../config/config85.h \
     ../config/configa1.h \
     ../dialogs/a1dialog.h \
     ../dialogs/errordialog.h \
     ../dialogs/infodialog.h \
     ../dialogs/settingsdialog.h \
+    ../gen/commands.h \
+    ../gen/log.h \
+    ../gen/mainwindow.h \
+    ../gen/publicclass.h \
     ../widgets/getoscpbdelegate.h \
     ../widgets/mytabwidget.h \
     ../widgets/errorprotocolwidget.h \
@@ -114,11 +118,7 @@ HEADERS  += \
     ../widgets/s_tqcombobox.h \
     ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h \
-    ../check/check21.h \
-    ../config/confdialog85.h \
-    ../config/config85.h \
-    ../commands.h
+    ../widgets/wd_func.h
 
 RESOURCES += \
     res.qrc

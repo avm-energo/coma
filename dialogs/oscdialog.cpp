@@ -9,7 +9,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include "oscdialog.h"
-#include "../commands.h"
+#include "../gen/commands.h"
 #include "../config/config.h"
 #include "../widgets/s_tqtableview.h"
 #include "../widgets/etablemodel.h"

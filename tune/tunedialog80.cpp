@@ -8,12 +8,11 @@
 #include <QInputDialog>
 #include <QCoreApplication>
 #include "tunedialog80.h"
-#include "../publicclass.h"
 #include "../config/config80.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
-#include "../commands.h"
+#include "../gen/commands.h"
 
 TuneDialog80::TuneDialog80(QVector<publicclass::DataRec> &S2Config, QWidget *parent) :
     EAbstractTuneDialog(parent)

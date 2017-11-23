@@ -4,8 +4,8 @@
 #include <QMainWindow>
 #include <QResizeEvent>
 #include "../config/confdialog.h"
-#include "../mainwindow.h"
-#include "../publicclass.h"
+#include "../gen/mainwindow.h"
+#include "../gen/publicclass.h"
 
 class Coma : public MainWindow
 {
@@ -22,7 +22,6 @@ public slots:
 private slots:
     void Emul2x();
     void Emul8x();
-    void EmulA1();
     void ProtocolFromFile();
 
 private:

@@ -4,7 +4,7 @@
 #define ID808X_START    1001
 
 #include "config.h"
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 
 class Config80
 {

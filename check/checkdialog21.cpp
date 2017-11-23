@@ -14,8 +14,8 @@
 #include <QDateTime>
 #include "checkdialog21.h"
 #include "../widgets/messagebox.h"
-#include "../publicclass.h"
-#include "../commands.h"
+#include "../gen/publicclass.h"
+#include "../gen/commands.h"
 
 CheckDialog21::CheckDialog21(QWidget *parent) : EAbstractCheckDialog(parent)
 {

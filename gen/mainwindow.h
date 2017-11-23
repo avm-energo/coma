@@ -8,7 +8,7 @@
 #include "../check/eabstractcheckdialog.h"
 #ifndef MODULE_A1
 #include "../dialogs/oscdialog.h"
-#include "gen/eoscillogram.h"
+#include "eoscillogram.h"
 #endif
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../tune/eabstracttunedialog.h"

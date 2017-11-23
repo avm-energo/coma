@@ -8,7 +8,7 @@
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
 //#include "../canal.h"
-#include "../commands.h"
+#include "../gen/commands.h"
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {

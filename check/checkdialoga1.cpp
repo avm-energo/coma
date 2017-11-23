@@ -14,17 +14,19 @@
 #include "checkdialoga1.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 #include "../config/config.h"
-#include "../commands.h"
+#include "../gen/commands.h"
 
 CheckDialogA1::CheckDialogA1(QWidget *parent) : EAbstractCheckDialog(parent)
 {
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);
-    BdNum = 5; // количество блоков данных 6
-    BdUINum = 8; // количество вкладок - 8 (блок Bda_h разделён ввиду его огромности на четыре вкладки)
+    BdNum = 6; // количество блоков данных 6
+    BdUINum = 9; // количество вкладок - 9 (блок Bda_h разделён ввиду его огромности на четыре вкладки)
     ChA1 = new CheckA1;
+    Ch = new Check;
+    SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
     SetBd(A1_BDA_IN_BN, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1));
     SetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
     SetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2),false); // не пишем в режиме xlsx
@@ -83,21 +85,23 @@ QWidget *CheckDialogA1::BdUI(int bdnum)
 {
     switch (bdnum)
     {
-    case 0: // Блок #1
+    case 0:
+        return Ch->Bd0W(this);
+    case 1: // Блок #1
         return ChA1->Bda_inW(this);
-    case 1:
-        return ChA1->Bda_in_anW(this);
     case 2:
-        return ChA1->Bda_h0W(this);
+        return ChA1->Bda_in_anW(this);
     case 3:
-        return ChA1->Bda_h1W(this);
+        return ChA1->Bda_h0W(this);
     case 4:
-        return ChA1->Bda_h2W(this);
+        return ChA1->Bda_h1W(this);
     case 5:
-        return ChA1->Bda_h3W(this);
+        return ChA1->Bda_h2W(this);
     case 6:
-        return ChA1->Bda_outW(this);
+        return ChA1->Bda_h3W(this);
     case 7:
+        return ChA1->Bda_outW(this);
+    case 8:
         return ChA1->Bda_out_anW(this);
     default:
         return new QWidget;
@@ -106,7 +110,7 @@ QWidget *CheckDialogA1::BdUI(int bdnum)
 
 void CheckDialogA1::SetupUI()
 {
-    QStringList sl = QStringList() << "Uin" << "Ain" << "Harm1" << "Harm2" << "Harm3" << \
+    QStringList sl = QStringList() << "Общ" << "Uin" << "Ain" << "Harm1" << "Harm2" << "Harm3" << \
                                       "Harm4" << "Uout" << "Aout";
     if (sl.size() < BdUINum)
     {
@@ -139,6 +143,8 @@ void CheckDialogA1::RefreshAnalogValues(int bdnum)
 {
     switch (bdnum)
     {
+    case BD_COMMON:
+        Ch->FillBd0(this);
     case A1_BDA_IN_BN: // Блок #1
         ChA1->FillBda_in(this);
     case A1_BDA_IN_AN_BN:
@@ -183,6 +189,9 @@ void CheckDialogA1::WriteToFile(int row, int bdnum)
     format.setNumberFormat(Precision);
     switch (bdnum)
     {
+    case 0:
+        xlsx->write(row,16,WDFunc::FloatValueWithCheck(Ch->Bd_block0.Tmk), format);
+        xlsx->write(row,17,WDFunc::FloatValueWithCheck(Ch->Bd_block0.Vbat), format);
     case 1:
         xlsx->write(row,2,WDFunc::FloatValueWithCheck(ChA1->Bda_in.UefNat_filt[0]),format);
         xlsx->write(row,3,WDFunc::FloatValueWithCheck(ChA1->Bda_in.UefNat_filt[1]),format);
@@ -202,8 +211,6 @@ void CheckDialogA1::WriteToFile(int row, int bdnum)
         xlsx->write(row,15,WDFunc::FloatValueWithCheck(ChA1->Bda_out.Frequency), format);
         break;
     case 5:
-        xlsx->write(row,16,WDFunc::FloatValueWithCheck(ChA1->Bda_out_an.Tmk), format);
-        xlsx->write(row,17,WDFunc::FloatValueWithCheck(ChA1->Bda_out_an.Vbat), format);
         xlsx->write(row,18,WDFunc::FloatValueWithCheck(ChA1->Bda_out_an.Tamb), format);
         xlsx->write(row,19,WDFunc::FloatValueWithCheck(ChA1->Bda_out_an.Hamb), format);
         break;

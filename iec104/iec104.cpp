@@ -4,7 +4,6 @@
 
 #include "iec104.h"
 #include "ethernet.h"
-#include "../publicclass.h"
 
 iec104::iec104(QObject *parent) : QObject(parent)
 {

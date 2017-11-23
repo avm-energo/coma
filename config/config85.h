@@ -4,7 +4,7 @@
 #define ID8085_START    1101
 
 #include "config.h"
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 
 class Config85
 {

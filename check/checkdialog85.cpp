@@ -22,9 +22,7 @@ CheckDialog80::CheckDialog80(QWidget *parent) : EAbstractCheckDialog(parent)
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);
     C80 = new Check_80;
-    Ch = new Check;
-    BdNum = 9;
-    SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
+    BdNum = 8;
     SetBd(1, &C80->Bd_block1, sizeof(Check_80::Bd1));
     SetBd(2, &C80->Bd_block2, sizeof(Check_80::Bd2));
     SetBd(3, &C80->Bd_block3, sizeof(Check_80::Bd2));
@@ -87,8 +85,6 @@ QWidget *CheckDialog80::BdUI(int bdnum)
 {
     switch (bdnum)
     {
-    case 0:
-        return Ch->Bd0W(this);
     case 1: // Блок #1
         return C80->Bd_1W(this);
     case 2:
@@ -118,23 +114,6 @@ QWidget *CheckDialog80::BdUI(int bdnum)
 
 void CheckDialog80::RefreshAnalogValues(int bdnum)
 {
-    switch (bdnum)
-    {
-    case BD_COMMON:
-        Ch->FillBd0(this);
-    case A1_BDA_IN_BN: // Блок #1
-        C80->FillBda_in(this);
-    case A1_BDA_IN_AN_BN:
-        ChA1->FillBda_in_an(this);
-    case A1_BDA_H_BN:
-        ChA1->FillBda_h(this);
-    case A1_BDA_OUT_BN:
-        ChA1->FillBda_out(this);
-    case A1_BDA_OUT_AN_BN:
-        ChA1->FillBda_out_an(this);
-    default:
-        return;
-    }
 /*    QLabel *lbl;
     WDFunc::SetLBLText(this, "value0", QString::number(Bda_block.Tmk, 'f', 1));
     WDFunc::SetLBLText(this, "value1", QString::number(Bda_block.Vbat, 'f', 1));

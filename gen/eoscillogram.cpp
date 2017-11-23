@@ -1,7 +1,6 @@
 #include <QVector>
 #include "../config/config.h"
 #include "eoscillogram.h"
-#include "../publicclass.h"
 #include "../dialogs/trendviewdialog.h"
 
 EOscillogram::EOscillogram(QObject *parent) : QObject(parent)

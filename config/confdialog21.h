@@ -8,7 +8,7 @@
 #include <QGridLayout>
 
 #include "abstractconfdialog2x.h"
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 #include "../config/config21.h"
 
 class ConfDialog21 : public AbstractConfDialog2x

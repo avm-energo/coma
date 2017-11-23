@@ -26,14 +26,6 @@ TEMPLATE = app
 SOURCES += \
     main.cpp\
     coma.cpp \
-    ../commands.cpp \
-    ../eabstractprotocomchannel.cpp \
-    ../eusbcom.cpp \
-    ../eusbhid.cpp \
-    ../log.cpp \
-    ../mainwindow.cpp \
-    ../publicclass.cpp \
-    ../qcustomplot.cpp \
     ../check/check21.cpp \
     ../check/check80.cpp \
     ../check/checka1.cpp \
@@ -70,6 +62,15 @@ SOURCES += \
     ../dialogs/oscdialog.cpp \
     ../dialogs/settingsdialog.cpp \
     ../dialogs/trendviewdialog.cpp \
+    ../gen/commands.cpp \
+    ../gen/eabstractprotocomchannel.cpp \
+    ../gen/eoscillogram.cpp \
+    ../gen/eusbcom.cpp \
+    ../gen/eusbhid.cpp \
+    ../gen/log.cpp \
+    ../gen/mainwindow.cpp \
+    ../gen/publicclass.cpp \
+    ../gen/qcustomplot.cpp \
     ../iec104/iec104.cpp \
     ../iec104/ethernet.cpp \
     ../tune/eabstracttunedialog.cpp \
@@ -87,19 +88,10 @@ SOURCES += \
     ../widgets/s_tqcombobox.cpp \
     ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp \
-    ../gen/eoscillogram.cpp
+    ../widgets/wd_func.cpp
 
 HEADERS  += \
     coma.h \
-    ../commands.h \
-    ../eabstractprotocomchannel.h \
-    ../eusbcom.h \
-    ../eusbhid.h \
-    ../log.h \
-    ../mainwindow.h \
-    ../publicclass.h \
-    ../qcustomplot.h \
     ../check/check21.h \
     ../check/check80.h \
     ../check/checka1.h \
@@ -136,6 +128,15 @@ HEADERS  += \
     ../dialogs/oscdialog.h \
     ../dialogs/settingsdialog.h \
     ../dialogs/trendviewdialog.h \
+    ../gen/commands.h \
+    ../gen/eabstractprotocomchannel.h \
+    ../gen/eoscillogram.h \
+    ../gen/eusbcom.h \
+    ../gen/eusbhid.h \
+    ../gen/log.h \
+    ../gen/mainwindow.h \
+    ../gen/publicclass.h \
+    ../gen/qcustomplot.h \
     ../iec104/ethernet.h \
     ../iec104/iec104.h \
     ../tune/eabstracttunedialog.h \
@@ -153,8 +154,7 @@ HEADERS  += \
     ../widgets/s_tqcombobox.h \
     ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h \
-    ../gen/eoscillogram.h
+    ../widgets/wd_func.h
 
 INCLUDEPATH += $$PWD/../../includes
 

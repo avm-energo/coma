@@ -1,20 +1,16 @@
-#ifndef CHECK80_H
-#define CHECK80_H
+#ifndef CHECK85_H
+#define CHECK85_H
 
 #include <QWidget>
 
-#define C80_BDA_IN_BN        1
-#define C80_BDA_IN_AN_BN     2
-#define C80_BDA_H_BN         3
-#define C80_BDA_OUT_BN       4
-#define C80_BDA_OUT_AN_BN    5
-
-class Check_80
+class Check_85
 {
 public:
 
     struct Bd1
     {
+        float Tmk;                  // 0 Температура кристалла микроконтроллера
+        float Vbat;                 // 1 напряжение батареи, В
         float Frequency;            // 2 частота сигналов, Гц,
         float IUefNat_filt[6];      // 3-8 Истинные действующие значения сигналов в вольтах и амперах
         float IUeff_filtered[6];    // 9-14 Действующие значения сигналов по 1-й гармонике
@@ -73,7 +69,7 @@ public:
     Bd6 Bd_block6, Bd_block7;
     Bd8 Bd_block8;
 
-    Check_80();
+    Check_85();
     QWidget *Bd1W(QWidget *parent);
     QWidget *Bd2W(const QString &title, const QString &begin, QWidget *parent);
     QWidget *Bd4W(const QString &title, const QString &begin, QWidget *parent);
@@ -106,4 +102,4 @@ private:
     QString ValuesFormat, WidgetFormat;
 };
 
-#endif // CHECK80_H
+#endif // CHECK85_H

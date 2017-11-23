@@ -10,6 +10,13 @@
 #endif
 #endif
 
+//#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением батареи
+#define TECH_Bo     1   // технологический блок осциллограмм
+#define TECH_Be     2   // технологический блок событий
+#define TECH_Bte    3   // технологический блок технологических событий
+#define TECH_SWJ    4   // технологический блок журнала переключений
+#define TECH_RA     5   // технологический блок рабочего архива
+
 class Commands
 {
     explicit Commands();
@@ -21,7 +28,6 @@ public:
     static int GetBd(int BdNum, void *BdPtr, int BdPtrSize);
     static int GetBda(int board, void *BdPtr, int BdPtrSize);
     static int GetBo(void *BoPtr, quint32 &BoPtrSize);
-    static int GetIP(void *IpPtr, int IpPtrSize);
     static int WriteBac(int BacNum, void *BacPtr, int BacPtrSize);
     static int WriteFile(void *ptr, quint32 filenum, QVector<publicclass::DataRec> *data);
     static int WriteHiddenBlock(int board, void *HPtr, int HPtrSize);

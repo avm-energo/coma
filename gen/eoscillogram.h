@@ -1,7 +1,7 @@
 #ifndef EOSCILLOGRAM_H
 #define EOSCILLOGRAM_H
 
-#include "../qcustomplot.h"
+#include "qcustomplot.h"
 
 #define MT_HEAD_ID      9000 // ID осциллограммы
 #define MT_ID21         10001 // первый ID осциллограммы по модулю 21

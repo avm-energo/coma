@@ -136,24 +136,12 @@ int Commands::GetBda(int board, void *BdPtr, int BdPtrSize)
 int Commands::GetBo(void *BoPtr, quint32 &BoPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    cn->Send(CN_GBo, BT_NONE, BoPtr, BoPtrSize);
+    cn->Send(CN_GBt, TECH_Bo, BoPtr, BoPtrSize);
     BoPtrSize = cn->RDSize;
     return cn->result;
 #else
     Q_UNUSED(BoPtr);
     Q_UNUSED(BoPtrSize);
-    return 0;
-#endif
-}
-
-int Commands::GetIP(void *IpPtr, int IpPtrSize)
-{
-#if PROGSIZE != PROGSIZE_EMUL
-    cn->Send(CN_IP, BT_NONE, IpPtr, IpPtrSize);
-    return cn->result;
-#else
-    Q_UNUSED(IpPtr);
-    Q_UNUSED(IpPtrSize);
     return 0;
 #endif
 }
@@ -174,7 +162,7 @@ int Commands::WriteBac(int BacNum, void *BacPtr, int BacPtrSize)
 int Commands::EraseOsc()
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    cn->Send(CN_OscEr);
+    cn->Send(CN_Ert, TECH_Bo);
     return cn->result;
 #else
     return 0;

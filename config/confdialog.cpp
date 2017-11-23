@@ -7,7 +7,7 @@
 #include "../widgets/s_tqcombobox.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 
 ConfDialog::ConfDialog(QVector<publicclass::DataRec> &S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {

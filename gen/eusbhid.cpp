@@ -114,10 +114,18 @@ void EUsbThread::Run()
                 QByteArray ba(reinterpret_cast<char*>(data), bytes);
                 emit NewDataReceived(ba);
             }
-            QTime tme;
+/*            QTime tme;
             tme.start();
             while (tme.elapsed() < UH_MAINLOOP_DELAY)
-                QCoreApplication::processEvents(QEventLoop::AllEvents);
+                QCoreApplication::processEvents(QEventLoop::AllEvents); */
+            QTimer *tmr = new QTimer;
+            tmr->setInterval(UH_MAINLOOP_DELAY);
+            connect(tmr,SIGNAL(timeout()),this,SLOT(RunWaitFinished()));
+            tmr->start();
+            RunMutex.lock();
+            QWC.wait(&RunMutex);
+            RunMutex.unlock();
+            tmr->deleteLater();
         }
         hid_close(HidDevice);
         emit Finished();
@@ -151,4 +159,9 @@ qint64 EUsbThread::WriteData(QByteArray &ba)
 void EUsbThread::Finish()
 {
     AboutToFinish = true;
+}
+
+void EUsbThread::RunWaitFinished()
+{
+    QWC.wakeOne();
 }

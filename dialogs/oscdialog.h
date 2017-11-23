@@ -6,7 +6,7 @@
 
 #include "../gen/eoscillogram.h"
 #include "../widgets/etablemodel.h"
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 
 #define MAXOSCBUFSIZE   262144 // максимальный размер буфера для осциллограмм
 

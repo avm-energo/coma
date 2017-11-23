@@ -3,6 +3,7 @@
 
 #include "eabstractcheckdialog.h"
 #include "check80.h"
+#include "check.h"
 
 class CheckDialog80 : public EAbstractCheckDialog
 {
@@ -15,6 +16,7 @@ signals:
 public slots:
 
 private:
+    Check *Ch;
     Check_80 *C80;
     QTimer *timer;
     QXlsx::Document *xlsx;

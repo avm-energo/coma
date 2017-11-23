@@ -6,7 +6,7 @@
 #define AIN21_DEF_OSCDLY    0
 #define AIN21_DEF_OSCTHR    0.05f
 #define AIN21_DEF_FILTERN   10
-#define AIN21_DEF_FILTERTHR 0.5
+#define AIN21_DEF_FILTERTHR 16
 #define AIN21_DEF_HYSTERS   0.02f
 #define AIN21_DEF_INMIN     4
 #define AIN21_DEF_INMAX     20

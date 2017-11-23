@@ -3,7 +3,6 @@
 
 #include <QDialog>
 
-#include "../publicclass.h"
 #include "../config/config85.h"
 #include "abstractconfdialog.h"
 

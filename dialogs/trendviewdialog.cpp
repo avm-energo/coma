@@ -4,7 +4,6 @@
 #include "QtXlsx/xlsxdocument.h"
 #include "../config/config.h"
 #include "trendviewdialog.h"
-#include "../publicclass.h"
 
 TrendViewDialog::TrendViewDialog(QVector<QString> &DigitalTrendNames, QVector<QString> &AnalogTrendNames, \
                                  int PointNum, float XRangeMin, float XRangeMax, float YRangeMin, \

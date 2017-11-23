@@ -12,11 +12,11 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QLineEdit>
-#include "eabstractcheckDialog.h"
+#include "eabstractcheckdialog.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
-#include "../publicclass.h"
-#include "../commands.h"
+#include "../gen/publicclass.h"
+#include "../gen/commands.h"
 
 EAbstractCheckDialog::EAbstractCheckDialog(QWidget *parent) :
     QDialog(parent)
@@ -96,7 +96,7 @@ QWidget *EAbstractCheckDialog::BottomUI()
     return w;
 }
 
-void EAbstractCheckDialog::GetIP()
+/*void EAbstractCheckDialog::GetIP()
 {
     if (Commands::GetIP(&Bip_block, sizeof(Bip)) != NOERROR)
         MessageBox2::error(this, "Ошибка", "Ошибка получения данных по IP адресу модуля");
@@ -112,7 +112,7 @@ void EAbstractCheckDialog::CheckIP()
     for (int i = 0; i < 4; i++)
         lbl->text().append(QString::number(Bip_block.ip[i], 16) + ".");
     lbl->text().chop(1);
-}
+} */
 
 void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
 {
@@ -172,7 +172,7 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
             pb->setText("Идёт запись: "+TimeElapsed);
         }
     }
-    for (int bdnum = 1; bdnum <= BdNum; ++bdnum)
+    for (int bdnum = 0; bdnum <= BdNum; ++bdnum)
     {
         if (bdnum < Bd_blocks.size())
         {

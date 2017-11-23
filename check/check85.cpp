@@ -1,24 +1,28 @@
 // checka1.cpp
 #include <QGridLayout>
 #include <QGroupBox>
-#include "check80.h"
+#include "check85.h"
 #include "../gen/publicclass.h"
 #include "../widgets/wd_func.h"
 
-Check_80::Check_80()
+Check_85::Check_85()
 {
     ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
                 "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     WidgetFormat = "QWidget {background-color: "+QString(UCONFCLR)+";}";
 }
 
-QWidget *Check_80::Bd1W(QWidget *parent)
+QWidget *Check_85::Bd1W(QWidget *parent)
 {
     int i;
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBL(parent, "0.Температура:"));
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Температура кристалла микроконтроллера, °С"));
+    hlyout->addWidget(WDFunc::NewLBL(parent, "1.Батарея:"));
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value1", ValuesFormat, "Напряжение аккумуляторной батареи, В"));
     hlyout->addWidget(WDFunc::NewLBL(parent, "2.Частота:"));
     hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value2", ValuesFormat, "Частота сигналов, Гц"));
     lyout->addLayout(hlyout);
@@ -73,7 +77,7 @@ QWidget *Check_80::Bd1W(QWidget *parent)
     return w;
 }
 
-QWidget *Check_80::Bd2W(const QString &title, const QString &begin, QWidget *parent)
+QWidget *Check_85::Bd2W(const QString &title, const QString &begin, QWidget *parent)
 {
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -103,7 +107,7 @@ QWidget *Check_80::Bd2W(const QString &title, const QString &begin, QWidget *par
     return w;
 }
 
-QWidget *Check_80::Bd4W(const QString &title, const QString &begin, QWidget *parent)
+QWidget *Check_85::Bd4W(const QString &title, const QString &begin, QWidget *parent)
 {
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -132,7 +136,7 @@ QWidget *Check_80::Bd4W(const QString &title, const QString &begin, QWidget *par
     return w;
 }
 
-QWidget *Check_80::Bd5W(const QString &title, const QString &begin, QWidget *parent)
+QWidget *Check_85::Bd5W(const QString &title, const QString &begin, QWidget *parent)
 {
     int Beg = (begin.at(begin.size()-1).digitValue())*15;
     int End = Beg + 15;
@@ -159,7 +163,7 @@ QWidget *Check_80::Bd5W(const QString &title, const QString &begin, QWidget *par
     return w;
 }
 
-QWidget *Check_80::Bd8W(const QString &title, const QString &begin, QWidget *parent)
+QWidget *Check_85::Bd8W(const QString &title, const QString &begin, QWidget *parent)
 {
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -182,7 +186,7 @@ QWidget *Check_80::Bd8W(const QString &title, const QString &begin, QWidget *par
     return w;
 }
 
-QWidget *Check_80::Bd10W(QWidget *parent)
+QWidget *Check_85::Bd10W(QWidget *parent)
 {
     int i;
     QWidget *w = new QWidget(parent);
@@ -219,72 +223,72 @@ QWidget *Check_80::Bd10W(QWidget *parent)
     return w;
 }
 
-QWidget *Check_80::Bd_1W(QWidget *parent)
+QWidget *Check_85::Bd_1W(QWidget *parent)
 {
     return Bd1W(parent);
 }
 
-QWidget *Check_80::Bd_2W(QWidget *parent)
+QWidget *Check_85::Bd_2W(QWidget *parent)
 {
     return Bd2W("Действующие значения сигналов 1-й тройки", "Bd_2", parent);
 }
 
-QWidget *Check_80::Bd_3W(QWidget *parent)
+QWidget *Check_85::Bd_3W(QWidget *parent)
 {
     return Bd2W("Действующие значения сигналов 2-й тройки", "Bd_3", parent);
 }
 
-QWidget *Check_80::Bd_4W(QWidget *parent)
+QWidget *Check_85::Bd_4W(QWidget *parent)
 {
     return Bd4W("Данные по несимметрии и искажениям 1-й тройки", "Bd_4", parent);
 }
 
-QWidget *Check_80::Bd_5W(int num, QWidget *parent)
+QWidget *Check_85::Bd_5W(int num, QWidget *parent)
 {
     return Bd5W("Данные по гармоническому составу 1-й тройки", "Bd_5"+QString::number(num), parent);
 }
 
-QWidget *Check_80::Bd_6W(QWidget *parent)
+QWidget *Check_85::Bd_6W(QWidget *parent)
 {
     return Bd4W("Данные по несимметрии и искажениям 2-й тройки", "Bd_6", parent);
 }
 
-QWidget *Check_80::Bd_7W(int num, QWidget *parent)
+QWidget *Check_85::Bd_7W(int num, QWidget *parent)
 {
     return Bd5W("Данные по гармоническому составу 2-й тройки", "Bd_7"+QString::number(num), parent);
 }
 
-QWidget *Check_80::Bd_8W(int num, QWidget *parent)
+QWidget *Check_85::Bd_8W(int num, QWidget *parent)
 {
     return Bd8W("Линейные напряжения 1-й тройки в кВ", "Bd_8"+QString::number(num), parent);
 }
 
-QWidget *Check_80::Bd_9W(int num, QWidget *parent)
+QWidget *Check_85::Bd_9W(int num, QWidget *parent)
 {
     return Bd8W("Линейные напряжения 2-й тройки в кВ", "Bd_9"+QString::number(num), parent);
 }
 
-QWidget *Check_80::Bd_10W(QWidget *parent)
+QWidget *Check_85::Bd_10W(QWidget *parent)
 {
     return Bd10W(parent);
 }
 
-void Check_80::FillBd2W(const QString &begin, Check_80::Bd2 &Bd, QWidget *parent)
+void Check_85::FillBd2W(const QString &begin, Check_85::Bd2 &Bd, QWidget *parent)
 {
 
 }
 
-void Check_80::FillBd4W(const QString &begin, Check_80::Bd4 &Bd, QWidget *parent)
+void Check_85::FillBd4W(const QString &begin, Check_85::Bd4 &Bd, QWidget *parent)
 {
 
 }
 
-void Check_80::FillBd6W(const QString &begin, Check_80::Bd6 &Bd, QWidget *parent)
+void Check_85::FillBd6W(const QString &begin, Check_85::Bd6 &Bd, QWidget *parent)
 {
 
 }
 
-void Check_80::FillBd1(QWidget *parent)
+void Check_85::FillBd1(QWidget *parent)
 {
 /*    WDFunc::SetLBLText(parent, begin+"0", WDFunc::StringValueWithCheck(Bda.UefNat_filt[0]));
     WDFunc::SetLBLText(parent, begin+"1", WDFunc::StringValueWithCheck(Bda.UefNat_filt[1]));
@@ -294,37 +298,37 @@ void Check_80::FillBd1(QWidget *parent)
     WDFunc::SetLBLText(parent, begin+"5", WDFunc::StringValueWithCheck(Bda.Frequency)); */
 }
 
-void Check_80::FillBd2(QWidget *parent)
+void Check_85::FillBd2(QWidget *parent)
 {
 
 }
 
-void Check_80::FillBd3(QWidget *parent)
+void Check_85::FillBd3(QWidget *parent)
 {
 
 }
 
-void Check_80::FillBd4(QWidget *parent)
+void Check_85::FillBd4(QWidget *parent)
 {
 
 }
 
-void Check_80::FillBd5(QWidget *parent)
+void Check_85::FillBd5(QWidget *parent)
 {
 
 }
 
-void Check_80::FillBd6(QWidget *parent)
+void Check_85::FillBd6(QWidget *parent)
 {
 
 }
 
-void Check_80::FillBd7(QWidget *parent)
+void Check_85::FillBd7(QWidget *parent)
 {
 
 }
 
-void Check_80::FillBd8(QWidget *parent)
+void Check_85::FillBd8(QWidget *parent)
 {
 
 }

@@ -17,15 +17,15 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include "mainwindow.h"
 #include "commands.h"
-#include "widgets/wd_func.h"
-#include "widgets/mytabwidget.h"
-#include "widgets/messagebox.h"
-#include "dialogs/errordialog.h"
-#include "dialogs/hiddendialog.h"
-#include "dialogs/settingsdialog.h"
-#include "dialogs/keypressdialog.h"
-#include "widgets/etablemodel.h"
-#include "widgets/s_tqtableview.h"
+#include "../widgets/wd_func.h"
+#include "../widgets/mytabwidget.h"
+#include "../widgets/messagebox.h"
+#include "../dialogs/errordialog.h"
+#include "../dialogs/hiddendialog.h"
+#include "../dialogs/settingsdialog.h"
+#include "../dialogs/keypressdialog.h"
+#include "../widgets/etablemodel.h"
+#include "../widgets/s_tqtableview.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {

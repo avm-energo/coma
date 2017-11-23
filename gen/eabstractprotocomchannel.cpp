@@ -65,10 +65,7 @@ void EAbstractProtocomChannel::InitiateSend()
     switch (cmd)
     {
     case CN_GBsi:   // запрос блока стартовой информации
-    case CN_GBo:    // чтение осциллограмм
-    case CN_IP:    // запрос ip-адреса модуля
-    case CN_OscEr:  // команда стирания осциллограмм
-    case CN_OscPg:  // запрос количества нестёртых страниц
+    case CN_ErPg:  // запрос текущего прогресса
     case CN_GVar:
     {
         WriteData.append(CN_MS);
@@ -81,6 +78,8 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_GBda:   // чтение текущих данных без настройки
     case CN_GBd:    // запрос блока (подблока) текущих данных
     case CN_NVar:
+    case CN_GBt:    // чтение технологического блока
+    case CN_Ert:  // команда стирания технологического блока
     {
         WriteData.append(CN_MS);
         WriteData.append(cmd);
@@ -130,6 +129,7 @@ void EAbstractProtocomChannel::InitiateSend()
     }
     case CN_WBac:
     case CN_CtEr:
+    case CN_WBt:
     {
         WriteData.append(BoardType);
         WriteData.append(QByteArray::fromRawData((const char *)outdata, outdatasize));
@@ -189,7 +189,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         {
         // команды с ответом "ОК"
         case CN_WHv:
-        case CN_OscEr:
+        case CN_Ert:
         case CN_CtEr:
         case CN_NVar:
         {
@@ -198,7 +198,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 Finish(CN_RCVDATAERROR);
                 return;
             }
-            if (cmd == CN_OscEr)
+            if (cmd == CN_Ert)
                 OscTimer->start(); // start timer to send OscPg command periodically
             Finish(NOERROR);
             return;
@@ -206,6 +206,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         // команды с ответом "ОК" и с продолжением
         case CN_WF:
         case CN_WBac:
+        case CN_WBt:
         {
             if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
             {
@@ -223,11 +224,8 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_GBda:
         case CN_GBac:
         case CN_GBd:
-        case CN_IP:
-        case CN_OscPg:
-        case CN_GBe:
-        case CN_GBo:
-        case CN_GBTe:
+        case CN_ErPg:
+        case CN_GBt:
         case CN_GF:
         case CN_GVar:
         {
@@ -259,6 +257,8 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 memcpy(&RDLength, &(ReadDataChunk.data()[8]), sizeof(RDLength));
                 emit SetDataSize(RDLength+16);
             }
+            else if (cmd == CN_ErPg)
+                emit SetDataSize(100);
             else
                 emit SetDataSize(0); // длина неизвестна для команд с ответами без длины
             bStep++;
@@ -289,10 +289,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_GBda:
         case CN_GBac:
         case CN_GBd:
-        case CN_IP:
-        case CN_GBe:
-        case CN_GBTe:
-        case CN_GBo:
+        case CN_GBt:
         case CN_GVar:
         {
             if ((RDSize >= outdatasize) || (ReadDataChunkLength < CN_MAXSEGMENTLENGTH))
@@ -335,24 +332,16 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 SendOk(true);
             break;
         }
-        case CN_OscPg:
+        case CN_ErPg:
         {
-            quint16 OscNumRemaining = static_cast<quint8>(ReadData.at(0))+static_cast<quint8>(ReadData.at(1))*256;
-            if (OscNumRemaining == 0)
+            quint16 OscNum = static_cast<quint8>(ReadData.at(0))+static_cast<quint8>(ReadData.at(1))*256;
+            emit SetDataCount(OscNum);
+            if (OscNum == 100)
             {
-                emit SetDataCount(OscNum);
-                OscNum = 0;
                 Finish(NOERROR);
                 OscTimer->stop();
                 break;
             }
-            if (OscNum == 0)
-            {
-                emit SetDataSize(OscNumRemaining);
-                OscNum = OscNumRemaining; // максимальный диапазон для прогрессбара
-            }
-            else
-                emit SetDataCount(OscNum - OscNumRemaining);
             break;
         }
         default:
@@ -476,7 +465,7 @@ void EAbstractProtocomChannel::Disconnect()
 
 void EAbstractProtocomChannel::OscTimerTimeout()
 {
-    Send(CN_OscPg);
+    Send(CN_ErPg);
 }
 
 void EAbstractProtocomChannel::CheckForData()

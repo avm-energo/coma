@@ -30,7 +30,7 @@
 #include <QDialog>
 #include <QCursor>
 #include "coma.h"
-#include "../commands.h"
+#include "../gen/commands.h"
 #include "../check/checkdialog21.h"
 #include "../check/checkdialog80.h"
 #include "../check/checkdialoga1.h"
@@ -55,7 +55,7 @@
 #include "../widgets/waitwidget.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
-#include "../log.h"
+#include "../gen/log.h"
 
 Coma::Coma(QWidget *parent)
     : MainWindow(parent)
@@ -94,21 +94,6 @@ void Coma::Emul2x()
         }
         menu->addMenu(inmenu);
     }
-/*
-    act = new QAction(this);
-    act->setText("2121");
-    act->setObjectName("2121");
-    act->setIcon(QIcon(QPixmap::fromImage(*(WDFunc::TwoImages("21", "21")))));
-    connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
-    menu->addAction(act);
-
-    act = new QAction(this);
-    act->setText("2135");
-    act->setObjectName("2135");
-    act->setIcon(QIcon(QPixmap::fromImage(*(WDFunc::TwoImages("21", "35")))));
-    connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
-    menu->addAction(act); */
-
     menu->popup(QCursor::pos());
 }
 
@@ -126,11 +111,6 @@ void Coma::Emul8x()
         menu->addAction(act);
     }
     menu->popup(QCursor::pos());
-}
-
-void Coma::EmulA1()
-{
-
 }
 
 void Coma::SetupUI()

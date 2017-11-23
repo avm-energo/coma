@@ -3,7 +3,7 @@
 
 #include <QAbstractTableModel>
 #include <QWidget>
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 
 class ErrorProtocolModel : public QAbstractTableModel
 {

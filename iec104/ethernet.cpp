@@ -2,7 +2,7 @@
 #include <QCoreApplication>
 
 #include "ethernet.h"
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 
 ethernet::ethernet(QObject *parent) :
     QObject(parent)

@@ -11,7 +11,7 @@
 #include <QFontMetrics>
 #include <math.h>
 #include "waitwidget.h"
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 
 WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)
 {

@@ -26,13 +26,6 @@ TEMPLATE = app
 SOURCES += \
     main.cpp\
     coma.cpp \
-    ../commands.cpp \
-    ../eabstractprotocomchannel.cpp \
-    ../eusbcom.cpp \
-    ../eusbhid.cpp \
-    ../log.cpp \
-    ../mainwindow.cpp \
-    ../publicclass.cpp \
     ../check/check21.cpp \
     ../check/check80.cpp \
     ../check/checka1.cpp \
@@ -69,6 +62,15 @@ SOURCES += \
     ../dialogs/oscdialog.cpp \
     ../dialogs/settingsdialog.cpp \
     ../dialogs/trendviewdialog.cpp \
+    ../gen/commands.cpp \
+    ../gen/eabstractprotocomchannel.cpp \
+    ../gen/eoscillogram.cpp \
+    ../gen/eusbcom.cpp \
+    ../gen/eusbhid.cpp \
+    ../gen/log.cpp \
+    ../gen/mainwindow.cpp \
+    ../gen/publicclass.cpp \
+    ../gen/qcustomplot.cpp \
     ../iec104/iec104.cpp \
     ../iec104/ethernet.cpp \
     ../tune/eabstracttunedialog.cpp \
@@ -87,18 +89,12 @@ SOURCES += \
     ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp \
-    ../qcustomplot.cpp \
-    ../gen/eoscillogram.cpp
+    ../check/check85.cpp \
+    ../check/checkdialog85.cpp \
+    ../check/check.cpp
 
 HEADERS  += \
     coma.h \
-    ../commands.h \
-    ../eabstractprotocomchannel.h \
-    ../eusbcom.h \
-    ../eusbhid.h \
-    ../log.h \
-    ../mainwindow.h \
-    ../publicclass.h \
     ../check/check21.h \
     ../check/check80.h \
     ../check/checka1.h \
@@ -135,6 +131,15 @@ HEADERS  += \
     ../dialogs/oscdialog.h \
     ../dialogs/settingsdialog.h \
     ../dialogs/trendviewdialog.h \
+    ../gen/commands.h \
+    ../gen/eabstractprotocomchannel.h \
+    ../gen/eoscillogram.h \
+    ../gen/eusbcom.h \
+    ../gen/eusbhid.h \
+    ../gen/log.h \
+    ../gen/mainwindow.h \
+    ../gen/publicclass.h \
+    ../gen/qcustomplot.h \
     ../iec104/ethernet.h \
     ../iec104/iec104.h \
     ../tune/eabstracttunedialog.h \
@@ -153,8 +158,9 @@ HEADERS  += \
     ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
-    ../qcustomplot.h \
-    ../gen/eoscillogram.h
+    ../check/check85.h \
+    ../check/checkdialog85.h \
+    ../check/check.h
 
 INCLUDEPATH += $$PWD/../../includes
 

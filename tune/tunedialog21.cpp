@@ -10,8 +10,7 @@
 #include <QCoreApplication>
 #include "tunedialog21.h"
 #include "../widgets/messagebox.h"
-#include "../publicclass.h"
-#include "../commands.h"
+#include "../gen/commands.h"
 
 TuneDialog21::TuneDialog21(int type, QWidget *parent) :
     EAbstractTuneDialog(parent)

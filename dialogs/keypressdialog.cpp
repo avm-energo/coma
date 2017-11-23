@@ -1,5 +1,5 @@
 #include "keypressdialog.h"
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 
 KeyPressDialog::KeyPressDialog(QWidget *parent) :
     QDialog(parent)

@@ -8,7 +8,7 @@
 #define DIN31_DEF_INTYPE    0
 
 #include "config3x.h"
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 
 class Config31
 {

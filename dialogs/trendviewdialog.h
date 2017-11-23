@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QPoint>
 #include <QToolBar>
-#include "../qcustomplot.h"
+#include "../gen/qcustomplot.h"
 
 class TrendViewDialog : public QDialog
 {

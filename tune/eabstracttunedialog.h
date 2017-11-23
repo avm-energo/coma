@@ -6,7 +6,7 @@
 #include <QHBoxLayout>
 #include <QByteArray>
 #include <QStringList>
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 
 #define MAXTUNESIZE 1024 // максимальный размер файла с данными настройки
 

@@ -12,8 +12,7 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include "eabstracttunedialog.h"
-#include "../publicclass.h"
-#include "../commands.h"
+#include "../gen/commands.h"
 #include "../dialogs/keypressdialog.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/messagebox.h"

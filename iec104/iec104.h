@@ -72,7 +72,7 @@
 #include <QTimer>
 #include <QMutex>
 
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 
 class Parse104 : public QObject
 {

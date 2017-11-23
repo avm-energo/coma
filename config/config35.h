@@ -10,7 +10,7 @@
 #define D35_DEF_OUTTP   0
 
 #include "config3x.h"
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 
 class Config35
 {

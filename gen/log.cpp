@@ -6,7 +6,6 @@
 
 #include "log.h"
 #include "publicclass.h"
-#include "widgets/messagebox.h"
 
 Log::Log(QObject *parent) : QObject(parent)
 {

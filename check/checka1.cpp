@@ -2,7 +2,7 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include "checka1.h"
-#include "../publicclass.h"
+#include "../gen/publicclass.h"
 #include "../widgets/wd_func.h"
 
 CheckA1::CheckA1()
@@ -143,18 +143,12 @@ QWidget *CheckA1::Bd4W(const QString &begin, QWidget *parent)
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    glyout->addWidget(WDFunc::NewLBL(parent, "1. Tmk, °С:"), 0, 0);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0", ValuesFormat, "Температура кристалла микроконтроллера, °С"), 0, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "2. VBAT, В:"), 0, 2);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1", ValuesFormat, "Напряжение аккумуляторной батареи, В"), 0, 3);
-    glyout->addWidget(WDFunc::NewLBL(parent, "3. Tamb, °С:"), 0, 4);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"2", ValuesFormat, "Температура окружающей среды, °С"), 0, 5);
-    glyout->addWidget(WDFunc::NewLBL(parent, "4. Hamb, %:"), 0, 6);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"3", ValuesFormat, "Относительная влажность окружающей среды, %"), 0, 7);
+    glyout->addWidget(WDFunc::NewLBL(parent, "3. Tamb, °С:"), 0, 0);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"2", ValuesFormat, "Температура окружающей среды, °С"), 0, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "4. Hamb, %:"), 0, 2);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"3", ValuesFormat, "Относительная влажность окружающей среды, %"), 0, 3);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
-    glyout->setColumnStretch(5, 10);
-    glyout->setColumnStretch(7, 10);
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
@@ -266,8 +260,6 @@ void CheckA1::FillBda_in_an(QWidget *parent)
 
 void CheckA1::FillBda_out_an(QWidget *parent)
 {
-    WDFunc::SetLBLText(parent, "Bda_out_an0", WDFunc::StringValueWithCheck(Bda_out_an.Tmk));
-    WDFunc::SetLBLText(parent, "Bda_out_an1", WDFunc::StringValueWithCheck(Bda_out_an.Vbat));
     WDFunc::SetLBLText(parent, "Bda_out_an2", WDFunc::StringValueWithCheck(Bda_out_an.Tamb));
     WDFunc::SetLBLText(parent, "Bda_out_an3", WDFunc::StringValueWithCheck(Bda_out_an.Hamb));
 }

@@ -9,7 +9,6 @@
 #include "settingsdialog.h"
 #include "../config/config.h"
 #include "../widgets/wd_func.h"
-#include "../publicclass.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent)
