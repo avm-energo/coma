@@ -199,7 +199,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 return;
             }
             if (cmd == CN_Ert)
-                OscTimer->start(); // start timer to send OscPg command periodically
+                OscTimer->start(); // start timer to send ErPg command periodically
             Finish(NOERROR);
             return;
         }

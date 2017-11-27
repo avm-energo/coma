@@ -133,15 +133,15 @@ int Commands::GetBda(int board, void *BdPtr, int BdPtrSize)
 #endif
 }
 
-int Commands::GetBo(void *BoPtr, quint32 &BoPtrSize)
+int Commands::GetBt(int BtNum, void *BtPtr, quint32 &BtPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    cn->Send(CN_GBt, TECH_Bo, BoPtr, BoPtrSize);
-    BoPtrSize = cn->RDSize;
+    cn->Send(CN_GBt, BtNum, BtPtr, BtPtrSize);
+    BtPtrSize = cn->RDSize;
     return cn->result;
 #else
-    Q_UNUSED(BoPtr);
-    Q_UNUSED(BoPtrSize);
+    Q_UNUSED(BtPtr);
+    Q_UNUSED(BtPtrSize);
     return 0;
 #endif
 }
@@ -159,10 +159,10 @@ int Commands::WriteBac(int BacNum, void *BacPtr, int BacPtrSize)
 #endif
 }
 
-int Commands::EraseOsc()
+int Commands::EraseTechBlock(int block)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    cn->Send(CN_Ert, TECH_Bo);
+    cn->Send(CN_Ert, block);
     return cn->result;
 #else
     return 0;

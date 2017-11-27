@@ -27,11 +27,11 @@ public:
     static int GetBac(int BacNum, void *ptr, int ptrsize);
     static int GetBd(int BdNum, void *BdPtr, int BdPtrSize);
     static int GetBda(int board, void *BdPtr, int BdPtrSize);
-    static int GetBo(void *BoPtr, quint32 &BoPtrSize);
+    static int GetBt(int BtNum, void *BoPtr, quint32 &BoPtrSize);
     static int WriteBac(int BacNum, void *BacPtr, int BacPtrSize);
     static int WriteFile(void *ptr, quint32 filenum, QVector<publicclass::DataRec> *data);
     static int WriteHiddenBlock(int board, void *HPtr, int HPtrSize);
-    static int EraseOsc();
+    static int EraseTechBlock(int block);
     static int Connect();
     static void Disconnect();
     static bool isConnected();

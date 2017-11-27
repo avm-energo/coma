@@ -92,7 +92,7 @@ void OscDialog::GetAndProcessOscInfo()
     quint32 RecordSize = sizeof(GBoStruct); // GBo struct size
     OscInfoSize = MAXOSCBUFSIZE;
     OscInfo.resize(OscInfoSize);
-    if ((Commands::GetBo(&(OscInfo.data()[0]), OscInfoSize)) == NOERROR)
+    if ((Commands::GetBt(TECH_Bo, &(OscInfo.data()[0]), OscInfoSize)) == NOERROR)
     {
         if (OscInfoSize < RecordSize)
         {
@@ -182,7 +182,7 @@ void OscDialog::GetOsc(QModelIndex idx)
 void OscDialog::EraseOsc()
 {
     pc.PrbMessage = "Стёрто записей: ";
-    if (Commands::EraseOsc() == NOERROR)
+    if (Commands::EraseTechBlock(TECH_Bo) == NOERROR)
         MessageBox2::information(this, "Внимание", "Стёрто успешно");
     else
         MessageBox2::information(this, "Внимание", "Ошибка при стирании");
