@@ -339,14 +339,14 @@ void WDFunc::SetVisible(QWidget *w, const QString &wname, bool visible)
     }
 }
 
-QString WDFunc::StringValueWithCheck(float value)
+QString WDFunc::StringValueWithCheck(float value, int precision)
 {
     QString tmps;
     QLocale russian(QLocale::Russian, QLocale::Russia);
     if (value == FLT_MAX)
         tmps = "***";
     else
-        tmps = russian.toString(value, 'f', 5);
+        tmps = russian.toString(value, 'f', precision);
     return tmps;
 }
 

@@ -8,6 +8,7 @@
 #include "../check/eabstractcheckdialog.h"
 #ifndef MODULE_A1
 #include "../dialogs/oscdialog.h"
+#include "../dialogs/switchjournal.h"
 #include "eoscillogram.h"
 #endif
 #if PROGSIZE != PROGSIZE_EMUL
@@ -31,6 +32,7 @@ public:
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
 #ifndef MODULE_A1
+    SwitchJournal *SwjD;
     OscDialog *OscD;
     EOscillogram *OscFunc;
 #endif

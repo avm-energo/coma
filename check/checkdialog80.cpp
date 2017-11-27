@@ -21,18 +21,20 @@ CheckDialog80::CheckDialog80(QWidget *parent) : EAbstractCheckDialog(parent)
 {
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);
-    C80 = new Check_80;
+    Ch80 = new Check_80;
     Ch = new Check;
-    BdNum = 9;
+    BdNum = 11;
     SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
-    SetBd(1, &C80->Bd_block1, sizeof(Check_80::Bd1));
-    SetBd(2, &C80->Bd_block2, sizeof(Check_80::Bd2));
-    SetBd(3, &C80->Bd_block3, sizeof(Check_80::Bd2));
-    SetBd(4, &C80->Bd_block4, sizeof(Check_80::Bd4));
-    SetBd(5, &C80->Bd_block5, sizeof(Check_80::Bd4));
-    SetBd(6, &C80->Bd_block6, sizeof(Check_80::Bd6));
-    SetBd(7, &C80->Bd_block7, sizeof(Check_80::Bd6));
-    SetBd(8, &C80->Bd_block8, sizeof(Check_80::Bd8));
+    SetBd(1, &Ch80->Bd_block1, sizeof(Check_80::Bd1));
+    SetBd(2, &Ch80->Bd_block2, sizeof(Check_80::Bd2));
+    SetBd(3, &Ch80->Bd_block3, sizeof(Check_80::Bd2));
+    SetBd(4, &Ch80->Bd_block4, sizeof(Check_80::Bd4));
+    SetBd(5, &Ch80->Bd_block5, sizeof(Check_80::Bd5));
+    SetBd(6, &Ch80->Bd_block6, sizeof(Check_80::Bd4));
+    SetBd(7, &Ch80->Bd_block7, sizeof(Check_80::Bd5));
+    SetBd(8, &Ch80->Bd_block8, sizeof(Check_80::Bd8));
+    SetBd(9, &Ch80->Bd_block9, sizeof(Check_80::Bd8));
+    SetBd(10, &Ch80->Bd_block10, sizeof(Check_80::Bd10));
     SetupUI();
 }
 
@@ -90,27 +92,31 @@ QWidget *CheckDialog80::BdUI(int bdnum)
     case 0:
         return Ch->Bd0W(this);
     case 1: // Блок #1
-        return C80->Bd_1W(this);
+        return Ch80->Bd_1W(this);
     case 2:
-        return C80->Bd_2W(this);
+        return Ch80->Bd_2W(this);
     case 3:
-        return C80->Bd_3W(this);
+        return Ch80->Bd_3W(this);
     case 4:
-        return C80->Bd_4W(this);
+        return Ch80->Bd_4W(this);
     case 5:
     case 6:
     case 7:
     case 8:
-        return C80->Bd_5W(bdnum-5, this);
+        return Ch80->Bd_5W(bdnum-5, this);
     case 9:
-        return C80->Bd_6W(this);
+        return Ch80->Bd_6W(this);
     case 10:
     case 11:
     case 12:
     case 13:
-//        return C80->Bd_7W(this);
-
-//        return C80->Bd_8W(this);
+        return Ch80->Bd_7W(bdnum-10, this);
+    case 14:
+        return Ch80->Bd_8W(this);
+    case 15:
+        return Ch80->Bd_9W(this);
+    case 16:
+        return Ch80->Bd_10W(this);
     default:
         return new QWidget;
     }
@@ -122,94 +128,29 @@ void CheckDialog80::RefreshAnalogValues(int bdnum)
     {
     case BD_COMMON:
         Ch->FillBd0(this);
-    case A1_BDA_IN_BN: // Блок #1
-        C80->FillBda_in(this);
-    case A1_BDA_IN_AN_BN:
-        ChA1->FillBda_in_an(this);
-    case A1_BDA_H_BN:
-        ChA1->FillBda_h(this);
-    case A1_BDA_OUT_BN:
-        ChA1->FillBda_out(this);
-    case A1_BDA_OUT_AN_BN:
-        ChA1->FillBda_out_an(this);
+    case C80_BDA_IN: // Блок #1
+        Ch80->FillBd1(this);
+    case C80_BD_31:
+        Ch80->FillBd2(this);
+    case C80_BD_32:
+        Ch80->FillBd3(this);
+    case C80_BDNS_31:
+        Ch80->FillBd4(this);
+    case C80_BDH_31:
+        Ch80->FillBd5(this);
+    case C80_BDNS_32:
+        Ch80->FillBd6(this);
+    case C80_BDH_32:
+        Ch80->FillBd7(this);
+    case C80_BDL_31:
+        Ch80->FillBd8(this);
+    case C80_BDL_32:
+        Ch80->FillBd9(this);
+    case C80_BDPWR:
+        Ch80->FillBd10(this);
     default:
         return;
     }
-/*    QLabel *lbl;
-    WDFunc::SetLBLText(this, "value0", QString::number(Bda_block.Tmk, 'f', 1));
-    WDFunc::SetLBLText(this, "value1", QString::number(Bda_block.Vbat, 'f', 1));
-    WDFunc::SetLBLText(this, "value2", QString::number(Bda_block.Frequency, 'f', 1));
-    for (int i = 0; i < 3; i++)
-    {
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+3));
-        if (lbl == 0)
-            return;
-        int Precision = (pc.ModuleBsi.MTypeB != MTE_2T0N) ? 3 : 4;
-        lbl->setText(QString::number(Bda_block.IUefNat_filt[i], 'f', Precision));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+6));
-        if (lbl == 0)
-            return;
-        Precision = (pc.ModuleBsi.MType1 != MTE_0T2N) ? 4 : 3;
-        lbl->setText(QString::number(Bda_block.IUefNat_filt[i+3], 'f', Precision));
-
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+9));
-        if (lbl == 0)
-            return;
-        Precision = (pc.ModuleBsi.MType1 != MTE_2T0N) ? 3 : 4;
-        lbl->setText(QString::number(Bda_block.IUeff_filtered[i], 'f', Precision));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+12));
-        if (lbl == 0)
-            return;
-        Precision = (pc.ModuleBsi.MType1 != MTE_0T2N) ? 4 : 3;
-        lbl->setText(QString::number(Bda_block.IUeff_filtered[i+3], 'f', Precision));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+15));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.phi_next_f[i], 'f', 3));
-    }
-    for (int i=0; i<3; i++)
-    {
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+21));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.PNatf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+24));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.SNatf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+27));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.QNatf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+30));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.CosPhiNat[i], 'f', 4));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+33));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.Pf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+36));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.Qf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+39));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.Sf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+42));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.CosPhi[i], 'f', 4));
-    }
-    for (int i=0; i<3; i++)
-    {
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+45));
-        if (lbl == 0)
-            return;
-        float PHI = (180*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
-        lbl->setText(QString::number(PHI, 'f', 3));
-    } */
 }
 
 void CheckDialog80::PrepareHeadersForFile(int row)

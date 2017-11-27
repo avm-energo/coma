@@ -78,7 +78,7 @@ public:
     static void AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lename, bool enabled=false);
     static void SetEnabled(QWidget *w, const QString &wname, bool enabled);
     static void SetVisible(QWidget *w, const QString &wname, bool visible);
-    static QString StringValueWithCheck(float value);
+    static QString StringValueWithCheck(float value, int precision = 5);
     static QVariant FloatValueWithCheck(float value);
     static QImage *TwoImages(const QString &first, const QString &second);
 };

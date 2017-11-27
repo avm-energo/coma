@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     ConfB = ConfM = 0;
 #ifndef MODULE_A1
     OscD = 0;
+    SwjD = 0;
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE
     PrepareTimers();

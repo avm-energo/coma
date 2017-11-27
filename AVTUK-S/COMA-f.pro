@@ -53,7 +53,6 @@ SOURCES += \
     ../config/config85.cpp \
     ../config/configa1.cpp \
     ../dialogs/a1dialog.cpp \
-    ../dialogs/downloaddialog.cpp \
     ../dialogs/errordialog.cpp \
     ../dialogs/fwupdialog.cpp \
     ../dialogs/hiddendialog.cpp \
@@ -91,7 +90,8 @@ SOURCES += \
     ../widgets/wd_func.cpp \
     ../check/check85.cpp \
     ../check/checkdialog85.cpp \
-    ../check/check.cpp
+    ../check/check.cpp \
+    ../dialogs/switchjournal.cpp
 
 HEADERS  += \
     coma.h \
@@ -122,7 +122,6 @@ HEADERS  += \
     ../config/config85.h \
     ../config/configa1.h \
     ../dialogs/a1dialog.h \
-    ../dialogs/downloaddialog.h \
     ../dialogs/errordialog.h \
     ../dialogs/fwupdialog.h \
     ../dialogs/hiddendialog.h \
@@ -160,7 +159,8 @@ HEADERS  += \
     ../widgets/wd_func.h \
     ../check/check85.h \
     ../check/checkdialog85.h \
-    ../check/check.h
+    ../check/check.h \
+    ../dialogs/switchjournal.h
 
 INCLUDEPATH += $$PWD/../../includes
 

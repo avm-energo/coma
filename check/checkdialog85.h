@@ -1,21 +1,23 @@
-#ifndef CHECKDIALOG80_H
-#define CHECKDIALOG80_H
+#ifndef CHECKDIALOG85_H
+#define CHECKDIALOG85_H
 
 #include "eabstractcheckdialog.h"
-#include "check80.h"
+#include "check85.h"
+#include "check.h"
 
-class CheckDialog80 : public EAbstractCheckDialog
+class CheckDialog85 : public EAbstractCheckDialog
 {
     Q_OBJECT
 public:
-    explicit CheckDialog80(QWidget *parent = 0);
+    explicit CheckDialog85(QWidget *parent = 0);
 
 signals:
 
 public slots:
 
 private:
-    Check_80 *C80;
+    Check_85 *Ch85;
+    Check *Ch;
     QTimer *timer;
     QXlsx::Document *xlsx;
     bool XlsxWriting;
@@ -34,4 +36,4 @@ private:
     void PrepareAnalogMeasurements();
 };
 
-#endif // CHECKDIALOG80_H
+#endif // CHECKDIALOG85_H

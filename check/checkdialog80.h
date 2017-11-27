@@ -17,7 +17,7 @@ public slots:
 
 private:
     Check *Ch;
-    Check_80 *C80;
+    Check_80 *Ch80;
     QTimer *timer;
     QXlsx::Document *xlsx;
     bool XlsxWriting;

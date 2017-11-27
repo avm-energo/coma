@@ -33,6 +33,7 @@
 #include "../gen/commands.h"
 #include "../check/checkdialog21.h"
 #include "../check/checkdialog80.h"
+#include "../check/checkdialog85.h"
 #include "../check/checkdialoga1.h"
 #include "../config/confdialog21.h"
 #include "../config/confdialog31.h"
@@ -41,10 +42,8 @@
 #include "../config/confdialog85.h"
 #include "../config/confdialoga1.h"
 #include "../dialogs/a1dialog.h"
-#include "../dialogs/downloaddialog.h"
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/infodialog.h"
-#include "../dialogs/oscdialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../tune/tunedialog21.h"
@@ -251,10 +250,10 @@ void Coma::Stage3()
     }
 #if PROGSIZE != PROGSIZE_EMUL
     OscD = new OscDialog(OscFunc);
-    downloaddialog *DownD = new downloaddialog;
     fwupdialog *FwUpD = new fwupdialog;
     MainTW->addTab(OscD, "Осциллограммы");
-    MainTW->addTab(DownD, "События");
+    if (SwjD != 0)
+        MainTW->addTab(SwjD, "Журнал переключений");
     MainTW->addTab(FwUpD, "Загрузка ВПО");
 #endif
     if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
@@ -337,6 +336,10 @@ void Coma::PrepareDialogs()
     case MTM_85:
     {
         ConfM = new ConfDialog85(S2Config);
+        CheckM = new CheckDialog85;
+#if PROGSIZE != PROGSIZE_EMUL
+        SwjD = new SwitchJournal;
+#endif
         break;
     }
     default: // 0x00

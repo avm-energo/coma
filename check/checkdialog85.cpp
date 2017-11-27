@@ -11,30 +11,25 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QLineEdit>
-#include "checkdialog80.h"
+#include "checkdialog85.h"
 #include "../widgets/messagebox.h"
 #include "../widgets/wd_func.h"
 #include "../gen/publicclass.h"
 #include "../config/config.h"
 
-CheckDialog80::CheckDialog80(QWidget *parent) : EAbstractCheckDialog(parent)
+CheckDialog85::CheckDialog85(QWidget *parent) : EAbstractCheckDialog(parent)
 {
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);
-    C80 = new Check_80;
-    BdNum = 8;
-    SetBd(1, &C80->Bd_block1, sizeof(Check_80::Bd1));
-    SetBd(2, &C80->Bd_block2, sizeof(Check_80::Bd2));
-    SetBd(3, &C80->Bd_block3, sizeof(Check_80::Bd2));
-    SetBd(4, &C80->Bd_block4, sizeof(Check_80::Bd4));
-    SetBd(5, &C80->Bd_block5, sizeof(Check_80::Bd4));
-    SetBd(6, &C80->Bd_block6, sizeof(Check_80::Bd6));
-    SetBd(7, &C80->Bd_block7, sizeof(Check_80::Bd6));
-    SetBd(8, &C80->Bd_block8, sizeof(Check_80::Bd8));
+    Ch85 = new Check_85;
+    Ch = new Check;
+    BdNum = 2;
+    SetBd(0, &Ch->Bd_block0, sizeof(Check::Bd0));
+    SetBd(1, &Ch85->Bd_block1, sizeof(Check_85::Bd1));
     SetupUI();
 }
 
-QWidget *CheckDialog80::AutoCheckUI()
+QWidget *CheckDialog85::AutoCheckUI()
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -76,180 +71,93 @@ QWidget *CheckDialog80::AutoCheckUI()
     return w;
 }
 
-void CheckDialog80::SetupUI()
+void CheckDialog85::SetupUI()
 {
 
 }
 
-QWidget *CheckDialog80::BdUI(int bdnum)
+QWidget *CheckDialog85::BdUI(int bdnum)
 {
     switch (bdnum)
     {
+    case 0:
+        return Ch->Bd0W(this);
     case 1: // Блок #1
-        return C80->Bd_1W(this);
-    case 2:
-        return C80->Bd_2W(this);
-    case 3:
-        return C80->Bd_3W(this);
-    case 4:
-        return C80->Bd_4W(this);
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-        return C80->Bd_5W(bdnum-5, this);
-    case 9:
-        return C80->Bd_6W(this);
-    case 10:
-    case 11:
-    case 12:
-    case 13:
-//        return C80->Bd_7W(this);
-
-//        return C80->Bd_8W(this);
+        return Ch85->Bd1W(this);
     default:
         return new QWidget;
     }
 }
 
-void CheckDialog80::RefreshAnalogValues(int bdnum)
+void CheckDialog85::RefreshAnalogValues(int bdnum)
 {
-/*    QLabel *lbl;
-    WDFunc::SetLBLText(this, "value0", QString::number(Bda_block.Tmk, 'f', 1));
-    WDFunc::SetLBLText(this, "value1", QString::number(Bda_block.Vbat, 'f', 1));
-    WDFunc::SetLBLText(this, "value2", QString::number(Bda_block.Frequency, 'f', 1));
-    for (int i = 0; i < 3; i++)
+    switch (bdnum)
     {
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+3));
-        if (lbl == 0)
-            return;
-        int Precision = (pc.ModuleBsi.MTypeB != MTE_2T0N) ? 3 : 4;
-        lbl->setText(QString::number(Bda_block.IUefNat_filt[i], 'f', Precision));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+6));
-        if (lbl == 0)
-            return;
-        Precision = (pc.ModuleBsi.MType1 != MTE_0T2N) ? 4 : 3;
-        lbl->setText(QString::number(Bda_block.IUefNat_filt[i+3], 'f', Precision));
-
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+9));
-        if (lbl == 0)
-            return;
-        Precision = (pc.ModuleBsi.MType1 != MTE_2T0N) ? 3 : 4;
-        lbl->setText(QString::number(Bda_block.IUeff_filtered[i], 'f', Precision));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+12));
-        if (lbl == 0)
-            return;
-        Precision = (pc.ModuleBsi.MType1 != MTE_0T2N) ? 4 : 3;
-        lbl->setText(QString::number(Bda_block.IUeff_filtered[i+3], 'f', Precision));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+15));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.phi_next_f[i], 'f', 3));
+    case BD_COMMON:
+        Ch->FillBd0(this);
+    case 1: // Блок #1
+        Ch85->FillBd1(this);
+    default:
+        return;
     }
-    for (int i=0; i<3; i++)
-    {
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+21));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.PNatf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+24));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.SNatf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+27));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.QNatf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+30));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.CosPhiNat[i], 'f', 4));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+33));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.Pf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+36));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.Qf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+39));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.Sf[i], 'f', 3));
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+42));
-        if (lbl == 0)
-            return;
-        lbl->setText(QString::number(Bda_block.CosPhi[i], 'f', 4));
-    }
-    for (int i=0; i<3; i++)
-    {
-        lbl = this->findChild<QLabel *>("value"+QString::number(i+45));
-        if (lbl == 0)
-            return;
-        float PHI = (180*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
-        lbl->setText(QString::number(PHI, 'f', 3));
-    } */
 }
 
-void CheckDialog80::PrepareHeadersForFile(int row)
+void CheckDialog85::PrepareHeadersForFile(int row)
 {
     for (int i=0; i<3; i++)
     {
-        if (pc.ModuleBsi.MTypeM != MTM_81)
-            xlsx->write(row,i+2,QVariant(("U1 ф")+QString::number(i+10, 36)+", В"));
-        else
-            xlsx->write(row,i+2,QVariant("I1 ф"+QString::number(i+10, 36)+", А"));
-        if (pc.ModuleBsi.MTypeM != MTM_83)
-            xlsx->write(row,i+5,QVariant("I2 ф"+QString::number(i+10, 36)+", А"));
-        else
-            xlsx->write(row,i+5,QVariant("U2 ф"+QString::number(i+10, 36)+", В"));
-        xlsx->write(row,i+8,QVariant("Phi ф"+QString::number(i+10, 36)+", град"));
-        xlsx->write(row,i+11,QVariant("Pf ф"+QString::number(i+10, 36)+", Вт"));
-        xlsx->write(row,i+14,QVariant("Qf ф"+QString::number(i+10, 36)+", ВА"));
-        xlsx->write(row,i+17,QVariant("Sf ф"+QString::number(i+10, 36)+", ВА"));
+        xlsx->write(row,i+2,QVariant(("U1 ф")+QString::number(i+10, 36)+", В"));
+        xlsx->write(row,i+5,QVariant(("I1 ф")+QString::number(i+10, 36)+", A"));
+        xlsx->write(row,i+8,QVariant(("U2 ф")+QString::number(i+10, 36)+", В"));
+        xlsx->write(row,i+11,QVariant("CosPhi ф"+QString::number(i+10, 36)));
+        xlsx->write(row,i+14,QVariant("Pf ф"+QString::number(i+10, 36)+", Вт"));
+        xlsx->write(row,i+17,QVariant("Qf ф"+QString::number(i+10, 36)+", ВА"));
+        xlsx->write(row,i+20,QVariant("Sf ф"+QString::number(i+10, 36)+", ВА"));
     }
-    xlsx->write(row,20,QVariant("f, Гц"));
-    xlsx->write(row,21,QVariant("t, град"));
+    xlsx->write(row,23,QVariant("f, Гц"));
+    xlsx->write(row,24,QVariant("t, град"));
+    xlsx->write(row, 25, QVariant("Ubat, В"));
 }
 
-void CheckDialog80::WriteToFile(int row, int bdnum)
+void CheckDialog85::WriteToFile(int row, int bdnum)
 {
-/*    // получение текущих аналоговых сигналов от модуля
+    // получение текущих аналоговых сигналов от модуля
     QXlsx::Format format;
-    for (int i=0; i<3; i++)
+    QString Precision = "0.0000";
+    format.setNumberFormat(Precision);
+    switch (bdnum)
     {
-        QString Precision = (pc.ModuleBsi.MTypeM != MTM_81) ? "0.000" : "0.0000";
-        format.setNumberFormat(Precision);
-        xlsx->write(WRow,i+2,Bda_block.IUeff_filtered[i],format);
-
-        Precision = (pc.ModuleBsi.MTypeM != MTM_83) ? "0.0000" : "0.000";
-        format.setNumberFormat(Precision);
-        xlsx->write(WRow,i+5,Bda_block.IUeff_filtered[i+3],format);
-
-        format.setNumberFormat("0.000");
-        float Phi = (static_cast<float>(180)*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
-        xlsx->write(WRow,i+8,Phi,format);
-        xlsx->write(WRow,i+11,Bda_block.Pf[i],format);
-        xlsx->write(WRow,i+14,Bda_block.Qf[i],format);
-        xlsx->write(WRow,i+17,Bda_block.Sf[i],format);
+    case 0:
+        xlsx->write(row,24,WDFunc::FloatValueWithCheck(Ch->Bd_block0.Tmk), format);
+        xlsx->write(row,25,WDFunc::FloatValueWithCheck(Ch->Bd_block0.Vbat), format);
+    case 1:
+    {
+        for (int i=0; i<3; i++)
+        {
+            xlsx->write(row,i+2,WDFunc::FloatValueWithCheck(Ch85->Bd_block1.IUefNat_filt[i]), format);
+            xlsx->write(row,i+5,WDFunc::FloatValueWithCheck(Ch85->Bd_block1.IUefNat_filt[i+3]), format);
+            xlsx->write(row,i+8,WDFunc::FloatValueWithCheck(Ch85->Bd_block1.IUefNat_filt[i+6]), format);
+            xlsx->write(row,i+11,WDFunc::StringValueWithCheck(Ch85->Bd_block1.PNatf[i], 3));
+            xlsx->write(row,i+14,WDFunc::StringValueWithCheck(Ch85->Bd_block1.QNatf[i], 3));
+            xlsx->write(row,i+17,WDFunc::StringValueWithCheck(Ch85->Bd_block1.SNatf[i], 3));
+            xlsx->write(row,i+20,WDFunc::StringValueWithCheck(Ch85->Bd_block1.CosPhiNat[i], 5));
+        }
+        xlsx->write(WRow,23,Ch85->Bd_block1.Frequency,format);
     }
-    format.setNumberFormat("0.0000");
-    xlsx->write(WRow,20,Bda_block.Frequency,format);
-    format.setNumberFormat("0.0");
-    xlsx->write(WRow,21,Bda_block.Tmk,format); */
+    }
 }
 
-void CheckDialog80::ChooseValuesToWrite()
+void CheckDialog85::ChooseValuesToWrite()
 {
 
 }
 
-void CheckDialog80::SetDefaultValuesToWrite()
+void CheckDialog85::SetDefaultValuesToWrite()
 {
 
 }
 
-void CheckDialog80::PrepareAnalogMeasurements()
+void CheckDialog85::PrepareAnalogMeasurements()
 {
 
 }
