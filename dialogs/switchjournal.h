@@ -43,8 +43,11 @@ private:
 
     ETableModel *TableModel;
     s_tqTableView *SwjTableView;
+    QVector<quint64> OscNums;
+
     void SetupUI();
     void ProcessSWJournal(QByteArray &ba);
+    void ProcessOscillograms();
 
 private slots:
     void LoadJournals();

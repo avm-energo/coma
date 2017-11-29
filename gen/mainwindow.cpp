@@ -72,7 +72,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 MainWindow::~MainWindow()
 {
+#if PROGSIZE != PROGSIZE_EMUL
     Disconnect();
+#endif
 }
 
 QWidget *MainWindow::HthWidget()
@@ -628,33 +630,7 @@ void MainWindow::SetUSBDev()
     tmps = sl.at(2);
     tmps.toWCharArray(pc.DeviceInfo.serial);
 }
-#endif
-void MainWindow::DisconnectAndClear()
-{
-#if PROGSIZE != PROGSIZE_EMUL
-    Disconnect();
-#endif
-#ifndef MODULE_A1
-    OscD = 0;
-#endif
-    TuneB = TuneM = 0;
-    CheckB = CheckM = 0;
-    emit FinishAll();
-    emit ClearBsi();
-    ClearTW();
-    MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
-    if (MainTW == 0)
-        return;
-    MainTW->hide();
-    pc.Emul = false;
-}
-#ifndef MODULE_A1
-void MainWindow::LoadOsc()
-{
-    pc.LoadFile(this, "Oscillogram files (*.osc)", OscFunc->BA);
-    OscFunc->ProcessOsc();
-}
-#endif
+
 void MainWindow::ShowUSBConnectDialog()
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -722,7 +698,33 @@ void MainWindow::GetDeviceFromTable(QModelIndex idx)
     tmps = tv->model()->index(tv->currentIndex().row(), 3, QModelIndex()).data(Qt::DisplayRole).toString();
     tmps.toWCharArray(pc.DeviceInfo.serial);
 }
-
+#endif
+void MainWindow::DisconnectAndClear()
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    Disconnect();
+    TuneB = TuneM = 0;
+#endif
+#ifndef MODULE_A1
+    OscD = 0;
+#endif
+    CheckB = CheckM = 0;
+    emit FinishAll();
+    emit ClearBsi();
+    ClearTW();
+    MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
+    if (MainTW == 0)
+        return;
+    MainTW->hide();
+    pc.Emul = false;
+}
+#ifndef MODULE_A1
+void MainWindow::LoadOsc()
+{
+    pc.LoadFile(this, "Oscillogram files (*.osc)", OscFunc->BA);
+    OscFunc->ProcessOsc();
+}
+#endif
 #if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::MouseMove()
 {

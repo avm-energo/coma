@@ -70,7 +70,14 @@ SOURCES += \
     ../widgets/s_tqcombobox.cpp \
     ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp 
+    ../widgets/wd_func.cpp \ 
+    ../check/check.cpp \
+    ../check/check85.cpp \
+    ../check/checkdialog85.cpp \
+    ../dialogs/oscdialog.cpp \
+    ../dialogs/trendviewdialog.cpp \
+    ../gen/qcustomplot.cpp \
+    ../gen/eoscillogram.cpp
 
 HEADERS  += \
     coma.h \
@@ -118,10 +125,14 @@ HEADERS  += \
     ../widgets/s_tqcombobox.h \
     ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h
-
-RESOURCES += \
-    res.qrc
+    ../widgets/wd_func.h \
+    ../check/check.h \
+    ../check/check85.h \
+    ../check/checkdialog85.h \
+    ../dialogs/oscdialog.h \
+    ../dialogs/trendviewdialog.h \
+    ../gen/qcustomplot.h \
+    ../gen/eoscillogram.h
 
 INCLUDEPATH += $$PWD/../../includes
 

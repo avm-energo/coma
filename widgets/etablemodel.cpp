@@ -88,6 +88,11 @@ bool ETableModel::setData(const QModelIndex &index, QVariant &value, int role)
             maindata.at(index.row())->setFont(index.column(), value.value<QFont>());
             return true;
         }
+        else if (role == Qt::DecorationRole)
+        {
+            maindata.at(index.row())->setIcon(index.column(), value.value<QIcon>());
+            return true;
+        }
     }
     return false;
 }

@@ -243,12 +243,12 @@ void Coma::Stage3()
 #endif
     if (CheckM != 0)
         MainTW->addTab(CheckB, "Проверка\nМезонин");
+#if PROGSIZE != PROGSIZE_EMUL
     if ((pc.ModuleBsi.MTypeB << 8) == MTB_A1)
     {
         MainTW->addTab(new TuneDialogA1DN, "Настройка своего ДН");
         MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
     }
-#if PROGSIZE != PROGSIZE_EMUL
     OscD = new OscDialog(OscFunc);
     fwupdialog *FwUpD = new fwupdialog;
     MainTW->addTab(OscD, "Осциллограммы");

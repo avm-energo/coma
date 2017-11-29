@@ -1,8 +1,6 @@
 #ifndef EOSCILLOGRAM_H
 #define EOSCILLOGRAM_H
 
-#include "qcustomplot.h"
-
 #define MT_HEAD_ID      9000 // ID осциллограммы
 #define MT_ID21         10001 // первый ID осциллограммы по модулю 21
 #define MT_ID21E        10016 // последний ID осциллограммы по модулю 21
@@ -10,6 +8,12 @@
 #define MT_ID82         10022 // ID осциллограммы по модулю 8082
 #define MT_ID83         10023 // ID осциллограммы по модулю 8083
 #define MT_ID85         10030 // ID осциллограммы по модулю 8085
+
+#define MAXOSCBUFSIZE   262144 // максимальный размер буфера для осциллограмм
+
+#include <QByteArray>
+#include <QVector>
+#include <QObject>
 
 class EOscillogram : public QObject
 {
@@ -20,6 +24,14 @@ public:
 
 #pragma pack(push)  /* push current alignment to stack */
 #pragma pack(1)     /* set alignment to 1 byte boundary */
+    struct GBoStruct
+    {
+        quint32 FileNum; // номер файла осциллограмм
+        quint32 FileLength; // длина файла за исключением FileHeader (16 байт)
+        quint32 ID; // Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...)
+        quint64 UnixTime; // Время начала записи осциллограммы
+        quint32 IDo1; // ID первой осциллограммы в файле (определяет структуру точки и номер канала)
+    };
 
     struct OscHeader_Data
     {

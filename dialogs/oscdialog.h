@@ -8,8 +8,6 @@
 #include "../widgets/etablemodel.h"
 #include "../gen/publicclass.h"
 
-#define MAXOSCBUFSIZE   262144 // максимальный размер буфера для осциллограмм
-
 #define MT_FT_XLSX      0x01
 #define MT_FT_COMTRADE  0x02
 #define MT_FT_NONE      0x04
@@ -30,18 +28,6 @@ private:
 //    int OscFileType;
 //    bool AcceptedOscFileType;
     EOscillogram *OscFunc;
-
-#pragma pack(push)  /* push current alignment to stack */
-#pragma pack(1)     /* set alignment to 1 byte boundary */
-    struct GBoStruct
-    {
-        quint32 FileNum; // номер файла осциллограмм
-        quint32 FileLength; // длина файла за исключением FileHeader (16 байт)
-        quint32 ID; // Тип файла - осциллограмма и количество осциллограмм в файле (10000, 10001 ...)
-        quint64 UnixTime; // Время начала записи осциллограммы
-        quint32 IDo1; // ID первой осциллограммы в файле (определяет структуру точки и номер канала)
-    };
-#pragma pack(pop)   /* restore original alignment from stack */
 
 signals:
 

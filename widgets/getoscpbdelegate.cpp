@@ -18,18 +18,22 @@ void GetOscPBDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 /*    etableitem *item = model->item(index.row());
     QString text = item->text(); */
     QString text = model->data(index, Qt::DisplayRole).toString();
+    QIcon icon = model->data(index, Qt::DecorationRole).value<QIcon>();
     QRect rect = option.rect;
 
-    QRect textRect(rect);
+//    QRect textRect(rect);
 //    textRect.setHeight(30);
-    painter->drawText(textRect,text);
+//    painter->drawText(textRect,text);
 
     QRect buttonRect(rect);
 //    buttonRect.setY(textRect.y()+35);
 //    buttonRect.setHeight(30);
     QStyleOptionButton button;
     button.rect = buttonRect;
-    button.text = text;
+    if (!text.isEmpty())
+        button.text = text;
+    else
+        button.icon = icon;
     button.state = _state | QStyle::State_Enabled;
     QApplication::style()->drawControl(QStyle::CE_PushButton, &button, painter);
 }

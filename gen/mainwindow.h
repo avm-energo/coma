@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QModelIndex>
+#include <QSplashScreen>
 #include "publicclass.h"
 #include "../config/confdialog.h"
 #include "../check/eabstractcheckdialog.h"

@@ -616,7 +616,7 @@ int TuneDialog80::Start7_3_9()
     if (MessageBox2::question(this,"Вопрос","Очистить память осциллограмм?"))
     {
         pc.PrbMessage = "Стёрто записей: ";
-        if (Commands::EraseOsc() == NOERROR)
+        if (Commands::EraseTechBlock(TECH_Bo) == NOERROR)
             MessageBox2::information(this, "Внимание", "Стёрто успешно");
         else
             ERMSG("Ошибка при стирании");
