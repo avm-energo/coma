@@ -5,15 +5,16 @@
 #include "../gen/commands.h"
 #include "../gen/eoscillogram.h"
 #include "../widgets/getoscpbdelegate.h"
-#include "switchjournal.h"
+#include "../widgets/wd_func.h"
+#include "switchjournaldialog.h"
 
-SwitchJournal::SwitchJournal(QWidget *parent) : QDialog(parent)
+SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
 }
 
-void SwitchJournal::SetupUI()
+void SwitchJournalDialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -37,7 +38,7 @@ void SwitchJournal::SetupUI()
     setLayout(lyout);
 }
 
-void SwitchJournal::ProcessSWJournal(QByteArray &ba)
+void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
 {
     SWJournalRecordStruct tmpswj;
     int SWJRecordSize = sizeof(SWJournalRecordStruct);
@@ -47,6 +48,7 @@ void SwitchJournal::ProcessSWJournal(QByteArray &ba)
     while ((BaPos + SWJRecordSize) < BaSize)
     {
         memcpy(&tmpswj, &(ba.data()[BaPos]), SWJRecordSize);
+        SWJMap[tmpswj.Num] = tmpswj;
         TableModel->addRow();
         TableModel->setData(TableModel->index(CurRow, 0, QModelIndex()), QVariant(tmpswj.Num), Qt::EditRole);
         TableModel->setData(TableModel->index(CurRow, 1, QModelIndex()), QVariant(pc.UnixTime64ToString(tmpswj.Time)), Qt::EditRole);
@@ -61,15 +63,16 @@ void SwitchJournal::ProcessSWJournal(QByteArray &ba)
         else
             tmps = "images/hr.png";
         TableModel->setData(TableModel->index(CurRow, 5, QModelIndex()), QVariant(QIcon(tmps)), Qt::DecorationRole);
+        TableModel->setData(TableModel->index(CurRow, 6, QModelIndex()), QVariant("Далее"), Qt::EditRole);
     }
-/*    GetOscPBDelegate *dg = new GetOscPBDelegate;
-    connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(GetOsc(QModelIndex)));
-    tv->setItemDelegateForColumn(4,dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
+    GetOscPBDelegate *dg = new GetOscPBDelegate;
+    connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(ShowJournal(QModelIndex)));
+    tv->setItemDelegateForColumn(6,dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
     tv->resizeRowsToContents();
-    tv->resizeColumnsToContents(); */
+    tv->resizeColumnsToContents();
 }
 
-void SwitchJournal::ProcessOscillograms()
+void SwitchJournalDialog::ProcessOscillograms()
 {
     QByteArray OscInfo;
     quint32 OscInfoSize; // размер считанного буфера с информацией об осциллограммах
@@ -89,7 +92,7 @@ void SwitchJournal::ProcessOscillograms()
     }
 }
 
-void SwitchJournal::LoadJournals()
+void SwitchJournalDialog::LoadJournals()
 {
     TableModel->addColumn("#");
     TableModel->addColumn("Time");
@@ -97,13 +100,14 @@ void SwitchJournal::LoadJournals()
     TableModel->addColumn("NumA");
     TableModel->addColumn("Options");
     TableModel->addColumn("Osc");
+    TableModel->addColumn("Next");
     TableModel->addRow();
     TableModel->setData(TableModel->index(0, 0, QModelIndex()), QVariant("#"), Qt::EditRole);
     TableModel->setData(TableModel->index(0, 1, QModelIndex()), QVariant("Дата, время"), Qt::EditRole);
     TableModel->setData(TableModel->index(0, 2, QModelIndex()), QVariant("Аппарат"), Qt::EditRole);
     TableModel->setData(TableModel->index(0, 4, QModelIndex()), QVariant("Переключение"), Qt::EditRole);
     SwjTableView->setSpan(0, 2, 1, 2); // объединение 2 и 3 столбцов в 0 ряду
-    SwjTableView->setSpan(0, 4, 1, 2); // объединение 2 и 3 столбцов в 0 ряду
+    SwjTableView->setSpan(0, 4, 1, 2); // объединение 4 и 5 столбцов в 0 ряду
     QByteArray SWJournal;
     quint32 SWJSize = sizeof(SWJournalRecordStruct) * MAXSWJNUM;
     SWJournal.resize(SWJSize);
@@ -112,12 +116,49 @@ void SwitchJournal::LoadJournals()
     ProcessSWJournal(SWJournal);
 }
 
-void SwitchJournal::ShowJournal(QModelIndex idx)
+void SwitchJournalDialog::ShowJournal(QModelIndex idx)
 {
+    quint32 SWJNum = TableModel->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(&ok); // номер осциллограммы    if (!ok)
+    {
+        WARNMSG("");
+        return;
+    }
+    SWJournalRecordStruct tmpswj = SWJMap[SWJNum];
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    glyout->addWidget(WDFunc::NewLBL(this, "Номер"), 0,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Дата, время"),0,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Аппарат"),0,2,1,2);
+    glyout->addWidget(WDFunc::NewLBL(this, "Переключение"),0,4,1,2);
+    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(tmpswj.Num)), 1,0,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(this, pc.UnixTime64ToString(tmpswj.Time)),1,1,1,1);
+    QStringList tmpsl = QStringList() << "D" << "G" << "CB";
+    QString tmps = (tmpswj.TypeA < tmpsl.size()) ? tmpsl.at(tmpswj.TypeA) : "N/A";
+    glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,2,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(tmpswj.NumA)),1,3,1,1);
+    tmps = (tmpswj.Options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
+    glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,4,1,2);
+    glyout->addWidget(WDFunc::NewLBL(this, "Результат переключения"),2,0,1,6);
+    glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации и коммутируемые фазы"),3,0,1,4);
+    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(tmpswj.OpResult)),3,4,1,1);
+    if (OscNums.contains(tmpswj.OscTime))
+    {
+        QPushButton *pb = new QPushButton;
+        pb->setIcon(QIcon("images/oscillogramm.png"));
+        connect(pb,SIGNAL(clicked(bool)),this,SLOT(ShowOsc()));
+        glyout->addWidget(pb,3,5,1,1);
+    }
+    else
+        glyout->addWidget(WDFunc::NewLBL(this, "", "", "", QPixmap("images/hr.png")),3,5,1,1);
+    vlyout->addLayout(glyout);
 
+    dlg->setLayout(vlyout);
+    dlg->exec();
 }
 
-void SwitchJournal::EraseJournals()
+void SwitchJournalDialog::EraseJournals()
 {
     if (Commands::EraseTechBlock(TECH_SWJ) == NOERROR)
         MessageBox2::information(this, "Внимание", "Стёрто успешно");

@@ -1,5 +1,5 @@
-#ifndef SWITCHJOURNAL_H
-#define SWITCHJOURNAL_H
+#ifndef SWITCHJOURNALDIALOG_H
+#define SWITCHJOURNALDIALOG_H
 
 #include <QDialog>
 #include <QModelIndex>
@@ -8,11 +8,11 @@
 
 #define MAXSWJNUM   512
 
-class SwitchJournal : public QDialog
+class SwitchJournalDialog : public QDialog
 {
     Q_OBJECT
 public:
-    SwitchJournal(QWidget *parent=0);
+    SwitchJournalDialog(QWidget *parent=0);
 
 private:
 #pragma pack(push)  /* push current alignment to stack */
@@ -44,6 +44,7 @@ private:
     ETableModel *TableModel;
     s_tqTableView *SwjTableView;
     QVector<quint64> OscNums;
+    QMap<quint32, SWJournalRecordStruct> SWJMap;
 
     void SetupUI();
     void ProcessSWJournal(QByteArray &ba);
@@ -53,6 +54,7 @@ private slots:
     void LoadJournals();
     void ShowJournal(QModelIndex idx);
     void EraseJournals();
+    void ShowOsc();
 };
 
-#endif // SWITCHJOURNAL_H
+#endif // SWITCHJOURNALDIALOG_H
