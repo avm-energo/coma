@@ -46,11 +46,8 @@ private:
     hid_device *HidDevice;
     bool AboutToFinish, Device;
     bool RunWait;
-    QMutex RunMutex;
-    QWaitCondition QWC;
 
 private slots:
-    void RunWaitFinished();
 };
 
 class EUsbHid : public EAbstractProtocomChannel
@@ -74,6 +71,7 @@ signals:
 public slots:
 
 private slots:
+    void RunWaitFinished();
     void ThreadFinished();
 
 private:

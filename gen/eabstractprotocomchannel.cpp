@@ -40,7 +40,7 @@ void EAbstractProtocomChannel::Send(int command, int board_type, void *ptr, quin
     cmd = command;
     fnum = filenum;
     DR = DRptr;
-    Busy = true;
+//    Busy = true;
     if (board_type == BT_BASE)
         BoardType = 0x01;
     else if (board_type == BT_MEZONIN)
@@ -50,13 +50,19 @@ void EAbstractProtocomChannel::Send(int command, int board_type, void *ptr, quin
     else
         BoardType = board_type; // in GBd command it is a block number
     InitiateSend();
-    while (Busy)
+    QEventLoop loop;
+    connect(this, SIGNAL(QueryFinished()), &loop, SLOT(quit()));
+    loop.exec();
+/*    BusyMutex.lock();
+    BusyWC.wait(&BusyMutex);
+    BusyMutex.unlock(); */
+/*    while (Busy)
     {
         QTime tme;
         tme.start();
         while (tme.elapsed() < CN_MAINLOOP_DELAY)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
-    }
+    } */
 }
 
 void EAbstractProtocomChannel::InitiateSend()
@@ -454,7 +460,8 @@ void EAbstractProtocomChannel::Finish(int ernum)
             WARNMSG("Произошла неведомая фигня #"+QString::number(ernum,10));
     }
     result = ernum;
-    Busy = false;
+    emit QueryFinished();
+//    Busy = false;
 }
 
 void EAbstractProtocomChannel::Disconnect()

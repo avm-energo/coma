@@ -338,7 +338,7 @@ void Coma::PrepareDialogs()
         ConfM = new ConfDialog85(S2Config);
         CheckM = new CheckDialog85;
 #if PROGSIZE != PROGSIZE_EMUL
-        SwjD = new SwitchJournal;
+        SwjD = new SwitchJournalDialog;
 #endif
         break;
     }

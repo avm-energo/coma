@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QByteArray>
 #include <QTimer>
+#include <QMutex>
+#include <QWaitCondition>
 
 #include "publicclass.h"
 #include "log.h"
@@ -65,6 +67,8 @@ public:
     int baud;
     int ernum;
     bool NeedToSend, Busy, NeedToFinish;
+    QMutex BusyMutex;
+    QWaitCondition BusyWC;
     bool Connected, Cancelled;
     quint32 RDSize;
     Log *log;
@@ -84,6 +88,7 @@ signals:
     void writebytessignal(QByteArray &); // for TE updating
     void Retry();
     void ShowError(QString message);
+    void QueryFinished();
 
 public slots:
     void Timeout();

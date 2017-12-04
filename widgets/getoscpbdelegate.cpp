@@ -15,27 +15,37 @@ GetOscPBDelegate::GetOscPBDelegate(QObject *parent) : QStyledItemDelegate(parent
 void GetOscPBDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     const ETableModel *model = static_cast<const ETableModel*>(index.model());
-/*    etableitem *item = model->item(index.row());
-    QString text = item->text(); */
     QString text = model->data(index, Qt::DisplayRole).toString();
     QIcon icon = model->data(index, Qt::DecorationRole).value<QIcon>();
     QRect rect = option.rect;
 
-//    QRect textRect(rect);
-//    textRect.setHeight(30);
-//    painter->drawText(textRect,text);
-
-    QRect buttonRect(rect);
-//    buttonRect.setY(textRect.y()+35);
-//    buttonRect.setHeight(30);
-    QStyleOptionButton button;
-    button.rect = buttonRect;
-    if (!text.isEmpty())
-        button.text = text;
-    else
-        button.icon = icon;
-    button.state = _state | QStyle::State_Enabled;
-    QApplication::style()->drawControl(QStyle::CE_PushButton, &button, painter);
+/*    if (!text.isEmpty())
+    {
+        QRect textRect(rect);
+//        textRect.setHeight(30);
+        QFontMetrics fm(painter->font);
+        int w = fm.width(text);
+        int h = fm.height();
+        float TextPosX = textRect.center().x()-w/2;
+        float TextPosY = textRect.center().y()-h/2;
+        QPointF TextPos(TextPosX, TextPosY);
+        painter->drawText(TextPos,text);
+    }
+    else */
+    if (!text.isEmpty() || !icon.isNull())
+    {
+        QRect buttonRect(rect);
+    //    buttonRect.setY(textRect.y()+35);
+    //    buttonRect.setHeight(30);
+        QStyleOptionButton button;
+        button.rect = buttonRect;
+        if (!text.isEmpty())
+            button.text = text;
+        else if (!icon.isNull())
+            button.icon = icon;
+        button.state = _state | QStyle::State_Enabled;
+        QApplication::style()->drawControl(QStyle::CE_PushButton, &button, painter);
+    }
 }
 
 bool GetOscPBDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)

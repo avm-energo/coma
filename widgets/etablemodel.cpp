@@ -116,6 +116,8 @@ bool ETableModel::insertColumns(int position, int columns, const QModelIndex &in
     beginInsertColumns(QModelIndex(), position, position+columns-1);
     if (!maindata.isEmpty()) // если в модели есть какие-то данные, то уже нельзя менять размерность таблицы по столбцам
         return false;
+    while (position >= hdr.size())
+        hdr.append("");
     for (int i = 0; i < columns; i++)
         hdr.insert(position, "");
     endInsertColumns();

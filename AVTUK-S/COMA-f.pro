@@ -91,7 +91,7 @@ SOURCES += \
     ../check/check85.cpp \
     ../check/checkdialog85.cpp \
     ../check/check.cpp \
-    ../dialogs/switchjournal.cpp
+    ../dialogs/switchjournaldialog.cpp
 
 HEADERS  += \
     coma.h \
@@ -160,7 +160,7 @@ HEADERS  += \
     ../check/check85.h \
     ../check/checkdialog85.h \
     ../check/check.h \
-    ../dialogs/switchjournal.h
+    ../dialogs/switchjournaldialog.h
 
 INCLUDEPATH += $$PWD/../../includes
 

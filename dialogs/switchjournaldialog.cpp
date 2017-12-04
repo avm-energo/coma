@@ -3,10 +3,10 @@
 #include <QPushButton>
 #include "../widgets/messagebox.h"
 #include "../gen/commands.h"
-#include "../gen/eoscillogram.h"
 #include "../widgets/getoscpbdelegate.h"
 #include "../widgets/wd_func.h"
 #include "switchjournaldialog.h"
+#include "trendviewdialog.h"
 
 SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : QDialog(parent)
 {
@@ -48,6 +48,8 @@ void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
     while ((BaPos + SWJRecordSize) < BaSize)
     {
         memcpy(&tmpswj, &(ba.data()[BaPos]), SWJRecordSize);
+        if (tmpswj.Num == 0)  // пропуск пустых записей
+            continue;
         SWJMap[tmpswj.Num] = tmpswj;
         TableModel->addRow();
         TableModel->setData(TableModel->index(CurRow, 0, QModelIndex()), QVariant(tmpswj.Num), Qt::EditRole);
@@ -58,18 +60,19 @@ void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
         TableModel->setData(TableModel->index(CurRow, 3, QModelIndex()), QVariant(QString::number(tmpswj.NumA)), Qt::EditRole);
         tmps = (tmpswj.Options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
         TableModel->setData(TableModel->index(CurRow, 4, QModelIndex()), QVariant(tmps), Qt::EditRole);
-        if (OscNums.contains(tmpswj.OscTime))
+        if (OscMap.keys().contains(tmpswj.OscTime))
             tmps = "images/oscillogramm.png";
         else
             tmps = "images/hr.png";
         TableModel->setData(TableModel->index(CurRow, 5, QModelIndex()), QVariant(QIcon(tmps)), Qt::DecorationRole);
         TableModel->setData(TableModel->index(CurRow, 6, QModelIndex()), QVariant("Далее"), Qt::EditRole);
+        BaPos += SWJRecordSize;
     }
-    GetOscPBDelegate *dg = new GetOscPBDelegate;
+    GetOscPBDelegate *dg = new GetOscPBDelegate(this);
     connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(ShowJournal(QModelIndex)));
-    tv->setItemDelegateForColumn(6,dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
-    tv->resizeRowsToContents();
-    tv->resizeColumnsToContents();
+    SwjTableView->setItemDelegateForColumn(6,dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
+    SwjTableView->resizeRowsToContents();
+    SwjTableView->resizeColumnsToContents();
 }
 
 void SwitchJournalDialog::ProcessOscillograms()
@@ -88,7 +91,7 @@ void SwitchJournalDialog::ProcessOscillograms()
     {
         EOscillogram::GBoStruct gbos;
         memcpy(&gbos, &(OscInfo.data()[i]), RecordSize);
-        OscNums.push_back(gbos.UnixTime);
+        OscMap[gbos.UnixTime] = gbos;
     }
 }
 
@@ -112,21 +115,23 @@ void SwitchJournalDialog::LoadJournals()
     quint32 SWJSize = sizeof(SWJournalRecordStruct) * MAXSWJNUM;
     SWJournal.resize(SWJSize);
     Commands::GetBt(TECH_SWJ, &(SWJournal.data()[0]), SWJSize); // в SWJSize - реальная длина в байтах
+    SWJournal.resize(SWJSize);
     ProcessOscillograms();
     ProcessSWJournal(SWJournal);
 }
 
 void SwitchJournalDialog::ShowJournal(QModelIndex idx)
 {
-    quint32 SWJNum = TableModel->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(&ok); // номер осциллограммы    if (!ok)
+    bool ok;
+    quint32 SWJNum = TableModel->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(&ok); // номер осциллограммы
+    if (!ok)
     {
         WARNMSG("");
         return;
     }
-    SWJournalRecordStruct tmpswj = SWJMap[SWJNum];
+    tmpswj = SWJMap[SWJNum];
     QDialog *dlg = new QDialog;
     QVBoxLayout *vlyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     glyout->addWidget(WDFunc::NewLBL(this, "Номер"), 0,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "Дата, время"),0,1,1,1);
@@ -143,7 +148,7 @@ void SwitchJournalDialog::ShowJournal(QModelIndex idx)
     glyout->addWidget(WDFunc::NewLBL(this, "Результат переключения"),2,0,1,6);
     glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации и коммутируемые фазы"),3,0,1,4);
     glyout->addWidget(WDFunc::NewLBLT(this, QString::number(tmpswj.OpResult)),3,4,1,1);
-    if (OscNums.contains(tmpswj.OscTime))
+    if (OscMap.keys().contains(tmpswj.OscTime))
     {
         QPushButton *pb = new QPushButton;
         pb->setIcon(QIcon("images/oscillogramm.png"));
@@ -151,9 +156,56 @@ void SwitchJournalDialog::ShowJournal(QModelIndex idx)
         glyout->addWidget(pb,3,5,1,1);
     }
     else
-        glyout->addWidget(WDFunc::NewLBL(this, "", "", "", QPixmap("images/hr.png")),3,5,1,1);
+    {
+        QPixmap *pm = new QPixmap("images/hr.png");
+        glyout->addWidget(WDFunc::NewLBL(this, "", "", "", pm),3,5,1,1);
+    }
     vlyout->addLayout(glyout);
-
+    vlyout->addStretch(10);
+    glyout = new QGridLayout;
+    QStringList sl = QStringList() << "Значение тока при коммутации, А" << "Значение напряжения при коммутации, кВ" << \
+                                      "Собственное время коммутации, мс" << "Полное время коммутации, мс" << \
+                                      "Время перемещения главного контакта, мс" << "Время горения дуги, мс" << \
+                                      "Время безоперационного простоя к моменту коммутации, ч" << \
+                                      "Погрешность синхронной коммутации, мс";
+    glyout->addWidget(WDFunc::NewLBL(this, "Измеренное значение"),0,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "A"),0,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "B"),0,2,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "C"),0,3,1,1);
+    glyout->setColumnStretch(0, 10);
+    int row = 1;
+    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+    for (int i=0; i<3; ++i)
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(tmpswj.I[i], 'f', 1)),row,i+1,1,1);
+    ++row;
+    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+    for (int i=0; i<3; ++i)
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(tmpswj.U[i], 'f', 1)),row,i+1,1,1);
+    ++row;
+    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+    for (int i=0; i<3; ++i)
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(tmpswj.OwnTime[i], 'f', 1)),row,i+1,1,1);
+    ++row;
+    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+    for (int i=0; i<3; ++i)
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(tmpswj.FullTime[i], 'f', 1)),row,i+1,1,1);
+    ++row;
+    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+    for (int i=0; i<3; ++i)
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(tmpswj.MovTime[i], 'f', 1)),row,i+1,1,1);
+    ++row;
+    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+    for (int i=0; i<3; ++i)
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(tmpswj.ArchTime[i], 'f', 1)),row,i+1,1,1);
+    ++row;
+    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+    for (int i=0; i<3; ++i)
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(tmpswj.IdleTime[i], 'f', 0)),row,i+1,1,1);
+    ++row;
+    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+    for (int i=0; i<3; ++i)
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(tmpswj.Inaccuracy[i], 'f', 1)),row,i+1,1,1);
+    vlyout->addLayout(glyout);
     dlg->setLayout(vlyout);
     dlg->exec();
 }
@@ -164,4 +216,19 @@ void SwitchJournalDialog::EraseJournals()
         MessageBox2::information(this, "Внимание", "Стёрто успешно");
     else
         MessageBox2::information(this, "Внимание", "Ошибка при стирании");
+}
+
+void SwitchJournalDialog::ShowOsc()
+{
+    EOscillogram::GBoStruct gbos = OscMap[tmpswj.OscTime];
+    EOscillogram *OscFunc = new EOscillogram;
+    OscFunc->BA.resize(gbos.FileLength);
+    if (Commands::GetOsc(gbos.FileNum, &(OscFunc->BA.data()[0])) == NOERROR)
+    {
+        QString tmps = pc.SystemHomeDir+"/temporary.osc";
+        pc.SaveToFile(tmps, OscFunc->BA, gbos.FileLength);
+        OscFunc->ProcessOsc();
+    }
+    else
+        WARNMSG("");
 }

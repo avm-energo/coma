@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QModelIndex>
+#include "../gen/eoscillogram.h"
 #include "../widgets/s_tqtableview.h"
 #include "../widgets/etablemodel.h"
 
@@ -43,7 +44,8 @@ private:
 
     ETableModel *TableModel;
     s_tqTableView *SwjTableView;
-    QVector<quint64> OscNums;
+    SWJournalRecordStruct tmpswj;
+    QMap<quint64, EOscillogram::GBoStruct> OscMap;
     QMap<quint32, SWJournalRecordStruct> SWJMap;
 
     void SetupUI();
