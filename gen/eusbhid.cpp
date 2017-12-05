@@ -2,9 +2,6 @@
 #include <QTime>
 #include "eusbhid.h"
 
-QMutex RunMutex;
-QWaitCondition QWC;
-
 EUsbHid::EUsbHid(QObject *parent) : EAbstractProtocomChannel(parent)
 {
     ThreadRunning = false;
@@ -19,13 +16,7 @@ bool EUsbHid::Connect()
     if (Connected)
         Disconnect();
     UThread = new EUsbThread(log);
-/*    UThr = new QThread;
-    UThread->moveToThread(UThr);
-    connect(UThr,SIGNAL(started()),UThread,SLOT(Run())); */
     connect(UThread,SIGNAL(NewDataReceived(QByteArray)),this,SLOT(ParseIncomeData(QByteArray)));
-/*    connect(UThr,SIGNAL(finished()),UThread,SLOT(deleteLater()));
-    connect(UThr,SIGNAL(finished()),UThr,SLOT(deleteLater()));
-    connect(UThread,SIGNAL(Finished()),this,SLOT(ThreadFinished())); */
     connect(this,SIGNAL(StopUThread()),UThread,SLOT(Finish()));
     if (UThread->Set() != NOERROR)
         return false;
@@ -34,7 +25,7 @@ bool EUsbHid::Connect()
     tmr->setInterval(UH_MAINLOOP_DELAY);
     connect(tmr,SIGNAL(timeout()),UThread,SLOT(Run()));
     tmr->start();
-//    UThr->start();
+    connect(this,SIGNAL(StopUThread()),tmr,SLOT(stop()));
     ThreadRunning = true;
     return true;
 }
@@ -60,27 +51,15 @@ void EUsbHid::RawClose()
     if (ThreadRunning)
     {
         emit StopUThread();
-/*        while (ThreadRunning)
-        {
-            QTime tme;
-            tme.start();
-            while (tme.elapsed() < UH_MAINLOOP_DELAY)
-                QCoreApplication::processEvents(QEventLoop::AllEvents);
-        } */
+        ThreadRunning = false;
     }
     Connected = false;
-}
-
-void EUsbHid::ThreadFinished()
-{
-    ThreadRunning = false;
 }
 
 EUsbThread::EUsbThread(Log *logh, QObject *parent) : QObject(parent)
 {
     log = logh;
     AboutToFinish = false;
-//    isRunning = false;
 }
 
 EUsbThread::~EUsbThread()
@@ -104,8 +83,8 @@ void EUsbThread::Run()
     try
     {
         unsigned char data[UH_MAXSEGMENTLENGTH+1]; // +1 to ID
-/*        while (!AboutToFinish)
-        { */
+        if (!AboutToFinish)
+        {
             // check if there's any data in input buffer
             int bytes = hid_read(HidDevice, data, UH_MAXSEGMENTLENGTH+1);
             if (bytes < 0)
@@ -128,7 +107,7 @@ void EUsbThread::Run()
             RunMutex.lock();
             QWC.wait(&RunMutex);
             RunMutex.unlock(); */
-//        }
+        }
     }
     catch(...)
     {
@@ -160,10 +139,5 @@ void EUsbThread::Finish()
 {
     hid_close(HidDevice);
     emit Finished();
-//    AboutToFinish = true;
-}
-
-void EUsbHid::RunWaitFinished()
-{
-//    QWC.wakeOne();
+    AboutToFinish = true;
 }

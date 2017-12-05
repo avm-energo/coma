@@ -4,10 +4,7 @@
 #include <QObject>
 #include <QByteArray>
 #include <QTimer>
-#include <QThread>
 #include <QLabel>
-#include <QMutex>
-#include <QWaitCondition>
 
 #include "publicclass.h"
 #include "log.h"
@@ -65,18 +62,14 @@ public:
     void RawClose();
 
 signals:
-    void StartUThread(QThread::Priority);
     void StopUThread();
 
 public slots:
 
 private slots:
-    void RunWaitFinished();
-    void ThreadFinished();
 
 private:
     EUsbThread *UThread;
-    QThread *UThr;
 
     void ClosePort();
 };

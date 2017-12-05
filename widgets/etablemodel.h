@@ -40,7 +40,7 @@ public:
     void fillModel(QVector<QVector<QVariant> > sl);
     QStringList cvalues(int column); // выдать значения по столбцу column в выходной QStringList
     QStringList rvalues(int row); // выдать значения по строке row в выходной QStringList
-//    ETableItem item(const QModelIndex &);
+    void SetRowTextAlignment(int row, int alignment);
 
 signals:
 

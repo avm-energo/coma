@@ -91,7 +91,9 @@ SOURCES += \
     ../check/check85.cpp \
     ../check/checkdialog85.cpp \
     ../check/check.cpp \
-    ../dialogs/switchjournaldialog.cpp
+    ../dialogs/switchjournaldialog.cpp \
+    ../models/trendviewmodel.cpp \
+    ../widgets/signalchoosewidget.cpp
 
 HEADERS  += \
     coma.h \
@@ -160,7 +162,9 @@ HEADERS  += \
     ../check/check85.h \
     ../check/checkdialog85.h \
     ../check/check.h \
-    ../dialogs/switchjournaldialog.h
+    ../dialogs/switchjournaldialog.h \
+    ../models/trendviewmodel.h \
+    ../widgets/signalchoosewidget.h
 
 INCLUDEPATH += $$PWD/../../includes
 

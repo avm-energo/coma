@@ -113,17 +113,15 @@ private:
 
 #if PROGSIZE >= PROGSIZE_LARGE
     void PrepareTimers();
+    void ShowOrHideSlideSW();
 #endif
     void LoadSettings();
     void SaveSettings();
-#if PROGSIZE >= PROGSIZE_LARGE
-    void ShowOrHideSlideSW();
-#endif
     int CheckPassword();
-
 #if PROGSIZE != PROGSIZE_EMUL
     void SetProgressBarSize(QString prbnum, quint32 size);
     void SetProgressBar(QString prbnum, quint32 cursize);
+    void SetUSB(int venid, int prodid, const QString &sn);
 #endif
 
 private slots:

@@ -1,6 +1,7 @@
 #include <QVector>
 #include "../config/config.h"
 #include "eoscillogram.h"
+#include "../models/trendviewmodel.h"
 #include "../dialogs/trendviewdialog.h"
 
 EOscillogram::EOscillogram(QObject *parent) : QObject(parent)
@@ -313,7 +314,7 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
         }
         case MT_ID85:
         {
-            QVector<QString> tmpdv, tmpav;
+            QStringList tmpdv, tmpav;
             tmpdv << "OCNA" << "OCNB" << "OCNC" << "OCFA" << "OCFB" << "OCFC" << \
                      "BKCA" << "BKCB" << "BKCC" << "BKOA" << "BKOB" << "BKOC" << \
                      "CSC" << "CSO" << "CNA" << "CNB" << "CNC" << "CFA" << "CFB" << "CFC";
@@ -321,8 +322,15 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
             float xmax = (static_cast<float>(OHD.len/2));
             float xmin = -xmax;
             xmin = -(OHD.step * 512);
-            TrendViewDialog *dlg = new TrendViewDialog(tmpdv, tmpav, OHD.len, xmin, xmax, -200, 200);
-            if (!dlg->SetPointsAxis(xmin, OHD.step))
+            TrendViewModel *TModel = new TrendViewModel(tmpdv.size(), tmpav.size(), OHD.len);
+            TrendViewDialog *dlg = new TrendViewDialog;
+            dlg->SetModel(TModel);
+            dlg->SetAnalogNames(tmpav);
+            dlg->SetDigitalNames(tmpdv);
+            dlg->SetRanges(xmin, xmax, -200, 200);
+            dlg->SetupPlots();
+            dlg->SetupUI();
+            if (!TModel->SetPointsAxis(xmin, OHD.step))
                 return GENERALERROR;
             for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
             {
@@ -337,16 +345,16 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
                 for (int i=0; i<20; ++i)
                 {
                     if (DisPoint & 0x00000001)
-                        dlg->AddDigitalPoint(count, 1);
+                        TModel->AddDigitalPoint(count, 1);
                     else
-                        dlg->AddDigitalPoint(count, 0);
+                        TModel->AddDigitalPoint(count, 0);
                     DisPoint >>= 1;
                     ++count;
                 }
                 for (count = 0; count < 9; ++count)
-                    dlg->AddAnalogPoint(count, point.An[count]);
+                    TModel->AddAnalogPoint(count, point.An[count]);
             }
-            dlg->SetFilename(fn);
+            TModel->SetFilename(fn);
             dlg->PlotShow();
             dlg->exec();
             break;

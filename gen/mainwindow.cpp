@@ -537,6 +537,13 @@ void MainWindow::SetProgressBar(QString prbnum, quint32 cursize)
     }
 }
 
+void MainWindow::SetUSB(int venid, int prodid, const QString &sn)
+{
+    pc.DeviceInfo.vendor_id = venid;
+    pc.DeviceInfo.product_id = prodid;
+    sn.toWCharArray(pc.DeviceInfo.serial);
+}
+
 void MainWindow::ShowCOMConnectDialog()
 {
     int i;
@@ -624,11 +631,11 @@ void MainWindow::SetUSBDev()
         return;
     }
     QString tmps = sl.at(0);
-    pc.DeviceInfo.vendor_id = tmps.toInt(nullptr, 16);
+    int venid = tmps.toInt(nullptr, 16);
     tmps = sl.at(1);
-    pc.DeviceInfo.product_id = tmps.toInt(nullptr, 16);
+    int prodid = tmps.toInt(nullptr, 16);
     tmps = sl.at(2);
-    tmps.toWCharArray(pc.DeviceInfo.serial);
+    SetUSB(venid, prodid, tmps);
 }
 
 void MainWindow::ShowUSBConnectDialog()
@@ -636,48 +643,50 @@ void MainWindow::ShowUSBConnectDialog()
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QDialog *dlg = new QDialog(this);
     QVBoxLayout *lyout = new QVBoxLayout;
-/*    s_tqTableView *tv = new s_tqTableView;
-    ETableModel *mdl = new ETableModel; */
     struct hid_device_info *devs, *cur_dev;
 
     pc.DeviceInfo.vendor_id = 0;
     devs = hid_enumerate(0x0, 0x0);
     cur_dev = devs;
-    lyout->addWidget(WDFunc::NewLBLT(this, "Найдены следующие устройства"));
-/*    mdl->addColumn("ИД производителя");
-    mdl->addColumn("ИД устройства");
-    mdl->addColumn("Путь");
-    mdl->addColumn("Серийный номер");
-    mdl->addColumn("Производитель");
-    mdl->addColumn("Устройство");
-    QVector<QVector<QVariant> > lsl;
-    QVector<QVariant> sl[6]; */
+    int venid, prodid;
+    QString sn;
+    QStringList RBDescription, RBName;
     while (cur_dev)
     {
-        QString venid = QString::number(cur_dev->vendor_id, 16);
-        QString prodid = QString::number(cur_dev->product_id, 16);
-        QString sn = QString::fromWCharArray(cur_dev->serial_number);
-        QString tmps = "VEN_" + venid + " & DEV_" + prodid + " & SN_" + sn;
-        QString rbname = venid + "." + prodid + "." + sn;
-        QRadioButton *rb = WDFunc::NewRB(this, tmps, rbname);
-        connect(rb,SIGNAL(clicked(bool)),this,SLOT(SetUSBDev()));
-        lyout->addWidget(rb);
+        if (cur_dev->vendor_id == 0xC251)
+        {
+            venid = cur_dev->vendor_id;
+            prodid = cur_dev->product_id;
+            sn = QString::fromWCharArray(cur_dev->serial_number);
+            QString tmps = "VEN_" + QString::number(venid, 16) + " & DEV_" + QString::number(prodid, 16) + \
+                    " & SN_" + sn;
+            QString rbname = QString::number(venid,16) + "." + QString::number(prodid,16) + "." + sn;
+            RBDescription << tmps;
+            RBName << rbname;
+        }
         cur_dev = cur_dev->next;
     }
-/*    for (int i=0; i<6; ++i)
-        lsl.append(sl[i]); */
     hid_free_enumeration(devs);
-/*    mdl->fillModel(lsl);
-    tv->setObjectName("devicetv");
-    tv->setModel(mdl);
-    connect(tv,SIGNAL(clicked(QModelIndex)),this,SLOT(GetDeviceFromTable(QModelIndex)));
-    lyout->addWidget(tv); */
-    QPushButton *pb = new QPushButton("Далее");
-    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    lyout->addWidget(pb);
-    dlg->setLayout(lyout);
+    if (RBDescription.size() > 1) // если найденных устройств с нужным VID больше одного
+    {
+        lyout->addWidget(WDFunc::NewLBLT(this, "Найдены следующие устройства"));
+        for (int i=0; i<RBDescription.size(); ++i)
+        {
+            QRadioButton *rb = WDFunc::NewRB(this, RBDescription.at(i), RBName.at(i));
+            connect(rb,SIGNAL(clicked(bool)),this,SLOT(SetUSBDev()));
+            lyout->addWidget(rb);
+        }
+        QPushButton *pb = new QPushButton("Далее");
+        connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
+        lyout->addWidget(pb);
+        dlg->setLayout(lyout);
+        QApplication::restoreOverrideCursor();
+        dlg->exec();
+        return;
+    }
+    else
+        SetUSB(venid, prodid, sn);
     QApplication::restoreOverrideCursor();
-    dlg->exec();
 }
 
 void MainWindow::GetDeviceFromTable(QModelIndex idx)

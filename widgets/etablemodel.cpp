@@ -52,6 +52,8 @@ QVariant ETableModel::data(const QModelIndex &index, int role) const
                 return QVariant::fromValue(QColor(maindata.at(index.row())->color(index.column())));
             else if (role == Qt::DecorationRole)
                 return QVariant::fromValue(QIcon(maindata.at(index.row())->icon(index.column())));
+            else if (role == Qt::TextAlignmentRole)
+                return maindata.at(index.row())->TextAlignment(index.column());
         }
     }
     return QVariant();
@@ -91,6 +93,11 @@ bool ETableModel::setData(const QModelIndex &index, QVariant &value, int role)
         else if (role == Qt::DecorationRole)
         {
             maindata.at(index.row())->setIcon(index.column(), value.value<QIcon>());
+            return true;
+        }
+        else if (role == Qt::TextAlignmentRole)
+        {
+            maindata.at(index.row())->setTextAlignment(index.column(), value.toInt());
             return true;
         }
     }
@@ -255,6 +262,14 @@ QStringList ETableModel::rvalues(int row)
     for (int column = 0; column<columnCount(); column++)
         tmpsl.append(data(index(row,column,QModelIndex()),Qt::DisplayRole).toString());
     return tmpsl;
+}
+
+void ETableModel::SetRowTextAlignment(int row, int alignment)
+{
+    while (row >= rowCount())
+        insertRows(rowCount(), (row-rowCount()));
+    for (int i=0; i<columnCount(); ++i)
+        setData(index(row, i, QModelIndex()), QVariant(alignment), Qt::TextAlignmentRole);
 }
 
 void ETableModel::setCellAttr(QModelIndex index, int fcset, int icon)
