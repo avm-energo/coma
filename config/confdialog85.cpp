@@ -51,10 +51,64 @@ void ConfDialog85::Fill()
         WDFunc::SetSPBData(this, "tson"+QString::number(i+1), C85->Bci_block.Ts_ON[i]);
         WDFunc::SetSPBData(this, "tbkoff"+QString::number(i+1), C85->Bci_block.Tbk_OFF[i]);
         WDFunc::SetSPBData(this, "tbkon"+QString::number(i+1), C85->Bci_block.Tbk_ON[i]);
-        WDFunc::SetSPBData(this, "resnomoff"+QString::number(i+1), C85->Bci_block.RESnom_OFF[i]);
-        WDFunc::SetSPBData(this, "resnomon"+QString::number(i+1), C85->Bci_block.RESnom_ON[i]);
-        WDFunc::SetSPBData(this, "reskz"+QString::number(i+1), C85->Bci_block.RESkz[i]);
+//        WDFunc::SetSPBData(this, "resnomoff"+QString::number(i+1), C85->Bci_block.RESnom_OFF[i]);
+//        WDFunc::SetSPBData(this, "resnomon"+QString::number(i+1), C85->Bci_block.RESnom_ON[i]);
+//        WDFunc::SetSPBData(this, "reskz"+QString::number(i+1), C85->Bci_block.RESkz[i]);
     }
+    WDFunc::SetCBIndex(this, "core_type", C85->Bci_block.Core_type);
+    WDFunc::SetCBIndex(this, "d_win", C85->Bci_block.D_win);
+    WDFunc::SetCBIndex(this, "n_type", C85->Bci_block.N_Type);
+    WDFunc::SetCBIndex(this, "residue", C85->Bci_block.Residue);
+    WDFunc::SetSPBData(this, "inomspb", C85->Bci_block.Inom);
+    WDFunc::SetSPBData(this, "ikzspb", C85->Bci_block.Ikz);
+    WDFunc::SetSPBData(this, "tarcspb", C85->Bci_block.T_arc);
+    WDFunc::SetSPBData(this, "rddsspb", C85->Bci_block.RDDS);
+    WDFunc::SetSPBData(this, "tsolonspb", C85->Bci_block.TsolON);
+    WDFunc::SetSPBData(this, "tsoloffspb", C85->Bci_block.TsolOFF);
+    WDFunc::SetSPBData(this, "resnommaxspb", C85->Bci_block.RESnom_max);
+    WDFunc::SetSPBData(this, "reskzmaxspb", C85->Bci_block.RESkz_max);
+    WDFunc.SetChBData(this, "adapt", (C85->Bci_block.Adapt == 1));
+    QStringList fl = QStringList() << "Pa" << "Pb" << "Pc" << "Ta" << "Tb" << "Tc" << "To" << "Us";
+    quint32 bitinbyte = 0x00000001;
+    for (int i=0; i<fl.size(); ++i)
+    {
+        WDFunc::SetChBData(this, fl.at(i), (C85->Bci_block.Aux & bitinbyte));
+        bitinbyte <<= 1;
+    }
+    WDFunc::SetSPBData(this, "duosc", C85->Bci_block.DUosc);
+    WDFunc::SetSPBData(this, "diosc", C85->Bci_block.DIosc);
+    WDFunc::SetSPBData(this, "dumin", C85->Bci_block.DUmin);
+    WDFunc::SetSPBData(this, "dimin", C85->Bci_block.DImin);
+    WDFunc::SetSPBData(this, "k_on_volt", C85->Bci_block.K_on_volt);
+    WDFunc::SetSPBData(this, "k_off_volt", C85->Bci_block.K_off_volt);
+    WDFunc::SetSPBData(this, "k_on_amb", C85->Bci_block.K_on_tamb);
+    WDFunc::SetSPBData(this, "k_off_amb", C85->Bci_block.K_off_tamb);
+    WDFunc::SetSPBData(this, "k_on_tdr", C85->Bci_block.K_on_tdr);
+    WDFunc::SetSPBData(this, "k_off_tdr", C85->Bci_block.K_off_tdr);
+    WDFunc::SetSPBData(this, "k_on_hdr", C85->Bci_block.K_on_hdr);
+    WDFunc::SetSPBData(this, "k_off_hdr", C85->Bci_block.K_off_hdr);
+    WDFunc::SetSPBData(this, "ts_offpred", C85->Bci_block.Ts_OFFpred);
+    WDFunc::SetSPBData(this, "ts_offalarm", C85->Bci_block.Ts_OFFalarm);
+    WDFunc::SetSPBData(this, "ts_onpred", C85->Bci_block.Ts_ONpred);
+    WDFunc::SetSPBData(this, "ts_onalarm", C85->Bci_block.Ts_ONalarm);
+    WDFunc::SetSPBData(this, "tmain_offpred", C85->Bci_block.Tmain_OFFpred);
+    WDFunc::SetSPBData(this, "tmain_offalarm", C85->Bci_block.Tmain_OFFalarm);
+    WDFunc::SetSPBData(this, "tmain_onpred", C85->Bci_block.Tmain_ONpred);
+    WDFunc::SetSPBData(this, "tmain_onalarm", C85->Bci_block.Tmain_ONalarm);
+    WDFunc::SetSPBData(this, "dt_offpred", C85->Bci_block.dT_OFFpred);
+    WDFunc::SetSPBData(this, "dt_offalarm", C85->Bci_block.dT_OFFalarm);
+    WDFunc::SetSPBData(this, "dt_offpred", C85->Bci_block.dT_ONpred);
+    WDFunc::SetSPBData(this, "dt_offalarm", C85->Bci_block.dT_ONalarm);
+    WDFunc::SetSPBData(this, "traspred", C85->Bci_block.Tras_pred);
+    WDFunc::SetSPBData(this, "trasalarm", C85->Bci_block.Tras_alarm);
+    WDFunc::SetSPBData(this, "tarcpred", C85->Bci_block.Tarc_pred);
+    WDFunc::SetSPBData(this, "tarcalarm", C85->Bci_block.Tarc_alarm);
+    WDFunc::SetSPBData(this, "resnompred", C85->Bci_block.RESnom_pred);
+    WDFunc::SetSPBData(this, "resnomalarm", C85->Bci_block.RESnom_alarm);
+    WDFunc::SetSPBData(this, "reskzpred", C85->Bci_block.RESkz_pred);
+    WDFunc::SetSPBData(this, "reskzalarm", C85->Bci_block.RESkz_alarm);
+    WDFunc::SetSPBData(this, "ipred", C85->Bci_block.I_pred);
+    WDFunc::SetSPBData(this, "ialarm", C85->Bci_block.I_alarm);
 }
 
 void ConfDialog85::FillBack()
@@ -231,7 +285,7 @@ void ConfDialog85::SetupUI()
     glyout->addWidget(WDFunc::NewSPB(this, "tsolonspb", 10, 50000, 10, 0,paramcolor),9,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "Допустимое время включения соленоида откл., мс:"),10,0,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "tsoloffspb", 10, 50000, 10, 0,paramcolor),10,1,1,1);
-    glyout->addWidget(WDFunc::NewLBL(this, "Начальное количество операций отключения (А,В,С):"),11,0,1,1);
+/*    glyout->addWidget(WDFunc::NewLBL(this, "Начальное количество операций отключения (А,В,С):"),11,0,1,1);
     hlyout->addWidget(WDFunc::NewLBL(this, "А:"), 0);
     hlyout->addWidget(WDFunc::NewSPB(this, "resnomoff1", 0, 1000000, 1, 0, paramcolor), 1);
     hlyout->addWidget(WDFunc::NewLBL(this, "В:"), 0);
@@ -256,7 +310,7 @@ void ConfDialog85::SetupUI()
     hlyout->addWidget(WDFunc::NewSPB(this, "reskz2", 0, 100000, 1, 0, paramcolor), 1);
     hlyout->addWidget(WDFunc::NewLBL(this, "С:"), 0);
     hlyout->addWidget(WDFunc::NewSPB(this, "reskz3", 0, 100000, 1, 0, paramcolor), 1);
-    glyout->addLayout(hlyout, 13, 1, 1, 1);
+    glyout->addLayout(hlyout, 13, 1, 1, 1); */
     glyout->addWidget(WDFunc::NewLBL(this, "Предельное значение мех. ресурса:"),14,0,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "resnommaxspb", 1000, 1000000, 1, 0,paramcolor),14,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "Предельное значение комм. ресурса, кА²:"),15,0,1,1);

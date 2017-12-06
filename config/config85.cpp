@@ -21,9 +21,9 @@ Config85::Config85(QVector<publicclass::DataRec> &config)
         config.append({StartInIndex+4, sizeof(Bci_block.Op_type), &Bci_block.Op_type});
         config.append({StartInIndex+5, sizeof(Bci_block.Is_U2), &Bci_block.Is_U2});
         config.append({StartInIndex+6, sizeof(Bci_block.Residue), &Bci_block.Residue});
-        config.append({StartInIndex+7, sizeof(Bci_block.RESnom_OFF), Bci_block.RESnom_OFF});
-        config.append({StartInIndex+8, sizeof(Bci_block.RESnom_ON), Bci_block.RESnom_ON});
-        config.append({StartInIndex+9, sizeof(Bci_block.RESkz), &Bci_block.RESkz});
+//        config.append({StartInIndex+7, sizeof(Bci_block.RESnom_OFF), Bci_block.RESnom_OFF});
+//        config.append({StartInIndex+8, sizeof(Bci_block.RESnom_ON), Bci_block.RESnom_ON});
+//        config.append({StartInIndex+9, sizeof(Bci_block.RESkz), &Bci_block.RESkz});
         config.append({StartInIndex+10, sizeof(Bci_block.RESnom_max), &Bci_block.RESnom_max});
         config.append({StartInIndex+11, sizeof(Bci_block.RESkz_max), &Bci_block.RESkz_max});
         config.append({StartInIndex+12, sizeof(Bci_block.Unom), &Bci_block.Unom});
@@ -95,7 +95,7 @@ void Config85::SetDefConf()
     Bci_block.Residue = 0;	// 0 – остаточный поток в трансформаторе не учитывается
     for (int i=0; i<3; ++i)
     {
-        Bci_block.RESnom_OFF[i] = Bci_block.RESnom_ON[i] = Bci_block.RESkz[i]  = 0;
+//        Bci_block.RESnom_OFF[i] = Bci_block.RESnom_ON[i] = Bci_block.RESkz[i]  = 0;
         Bci_block.Ts_OFF[i] = Bci_block.Ts_ON[i] = 20;
         Bci_block.Tbk_OFF[i] = Bci_block.Tbk_ON[i] = 1;
     }
