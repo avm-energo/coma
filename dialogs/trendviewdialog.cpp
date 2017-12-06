@@ -3,6 +3,7 @@
 #include <QAction>
 #include "QtXlsx/xlsxdocument.h"
 #include "../config/config.h"
+#include "../widgets/signalchoosewidget.h"
 #include "trendviewdialog.h"
 
 TrendViewDialog::TrendViewDialog(QWidget *parent) : QDialog(parent)
@@ -21,18 +22,28 @@ TrendViewDialog::~TrendViewDialog()
 void TrendViewDialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-
 
     if (!NoDiscrete)
     {
-        lyout->addWidget(PlotToolBar(), 0);
-        lyout->addWidget(DiscretePlot, 100);
+        SignalChooseWidget *scw = new SignalChooseWidget(DigitalNames);
+
+        hlyout->addWidget(new SignalChooseWidget(DigitalNames));
+        vlyout->addWidget(PlotToolBar(), 0);
+        vlyout->addWidget(DiscretePlot, 100);
+        hlyout->addLayout(vlyout);
+        lyout->addLayout(hlyout);
     }
     if (!NoAnalog)
     {
-        lyout->addWidget(PlotToolBar(), 0);
-        lyout->addWidget(AnalogPlot, 100);
+        hlyout = new QHBoxLayout;
+        vlyout = new QVBoxLayout;
+        hlyout->addWidget(new SignalChooseWidget(AnalogNames));
+        vlyout->addWidget(PlotToolBar(), 0);
+        vlyout->addWidget(AnalogPlot, 100);
+        hlyout->addLayout(vlyout);
+        lyout->addLayout(hlyout);
     }
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(close()));

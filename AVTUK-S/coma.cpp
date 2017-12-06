@@ -104,8 +104,16 @@ void Coma::Emul8x()
         QString tmps = QString::number(i);
         QAction *act = new QAction(this);
         act->setText(tmps);
-        act->setObjectName("80"+tmps);
-        act->setIcon(QIcon(QPixmap::fromImage(*(WDFunc::TwoImages(tmps, "00")))));
+        if (i < 84)
+        {
+            act->setObjectName("80"+tmps);
+            act->setIcon(QIcon(QPixmap::fromImage(*(WDFunc::TwoImages("80", tmps)))));
+        }
+        else
+        {
+            act->setObjectName(tmps+tmps);
+            act->setIcon(QIcon(QPixmap::fromImage(*(WDFunc::TwoImages(tmps, tmps)))));
+        }
         connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
         menu->addAction(act);
     }

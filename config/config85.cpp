@@ -78,6 +78,8 @@ Config85::Config85(QVector<publicclass::DataRec> &config)
         config.append({StartInIndex+61, sizeof(Bci_block.Adapt), &Bci_block.Adapt});
         config.append({StartInIndex+62, sizeof(Bci_block.TsolON), &Bci_block.TsolON});
         config.append({StartInIndex+63, sizeof(Bci_block.TsolOFF), &Bci_block.TsolOFF});
+        config.append({StartInIndex+64, sizeof(Bci_block.NumA), &Bci_block.NumA});
+        config.append({StartInIndex+65, sizeof(Bci_block.TypeA), &Bci_block.TypeA});
     }
     config.append({0xFFFFFFFF, 0, NULL});
 }
@@ -148,4 +150,6 @@ void Config85::SetDefConf()
     Bci_block.Adapt  = 0; 	// Адаптивный алгоритм не используется
     Bci_block.TsolOFF = 300;
     Bci_block.TsolON = 300;
+    Bci_block.NumA = 1;
+    Bci_block.TypeA = 0x01; // выключатель
 }

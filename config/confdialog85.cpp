@@ -33,6 +33,28 @@ ConfDialog85::~ConfDialog85()
 
 void ConfDialog85::Fill()
 {
+    int cbidx = (C85->Bci_block.TypeA & 0x04) ? 2 : ((C85->Bci_block.TypeA & 0x02) ? 1 : 0);
+    WDFunc::SetCBIndex(this, "typea", cbidx);
+    WDFunc::SetSPBData(this, "numa", C85->Bci_block.NumA);
+    WDFunc::SetCBIndex(this, "eq_type", C85->Bci_block.Eq_type);
+    WDFunc::SetCBIndex(this, "optype", C85->Bci_block.Op_type);
+    WDFunc::SetRBData(this, "u2yes", (C85->Bci_block.Is_U2 == 1));
+    WDFunc::SetRBData(this, "u2no", (C85->Bci_block.Is_U2 == 0));
+    WDFunc::SetCBData(this, "unomcb", QString::number(C85->Bci_block.Unom));
+    WDFunc::SetSPBData(this, "inom1", C85->Bci_block.ITT1nom);
+    WDFunc::SetCBData(this, "inom2", QString::number(C85->Bci_block.ITT2nom));
+    for (int i=0; i<3; ++i)
+    {
+        WDFunc::SetSPBData(this, "tzadoff"+QString::number(i+1), C85->Bci_block.Tzad_OFF[i]);
+        WDFunc::SetSPBData(this, "tzadon"+QString::number(i+1), C85->Bci_block.Tzad_ON[i]);
+        WDFunc::SetSPBData(this, "tsoff"+QString::number(i+1), C85->Bci_block.Ts_OFF[i]);
+        WDFunc::SetSPBData(this, "tson"+QString::number(i+1), C85->Bci_block.Ts_ON[i]);
+        WDFunc::SetSPBData(this, "tbkoff"+QString::number(i+1), C85->Bci_block.Tbk_OFF[i]);
+        WDFunc::SetSPBData(this, "tbkon"+QString::number(i+1), C85->Bci_block.Tbk_ON[i]);
+        WDFunc::SetSPBData(this, "resnomoff"+QString::number(i+1), C85->Bci_block.RESnom_OFF[i]);
+        WDFunc::SetSPBData(this, "resnomon"+QString::number(i+1), C85->Bci_block.RESnom_ON[i]);
+        WDFunc::SetSPBData(this, "reskz"+QString::number(i+1), C85->Bci_block.RESkz[i]);
+    }
 }
 
 void ConfDialog85::FillBack()
@@ -56,22 +78,31 @@ void ConfDialog85::SetupUI()
     cp4->setStyleSheet(tmps);
 
     QString paramcolor = MAINWINCLR;
-    glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутируемого оборудования:"), 0,0,1,1);
-    QStringList cbl = QStringList() << "0. Свободное конфигурирование" << "1. Конденсаторная батарея (фильтр)" \
+    int row = 0;
+    glyout->addWidget(WDFunc::NewLBL(this, "Тип аппарата:"), row,0,1,1);
+    QStringList cbl = QStringList() << "0. Выключатель CB" << "1. Заземлитель G" << "2. Резъединитель D";
+    s_tqComboBox *cb = WDFunc::NewCB(this, "typea", cbl, paramcolor);
+    cb->setMinimumWidth(70);
+    glyout->addWidget(cb,row,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номер аппарата:"), row,2,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "numa", 1, 999, 1, 0, paramcolor), row,3,1,1);
+    ++row;
+    glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутируемого оборудования:"), row,0,1,1);
+    cbl = QStringList() << "0. Свободное конфигурирование" << "1. Конденсаторная батарея (фильтр)" \
                                     << "2. Реактор шунтирующий" << "3. Силовой трансформатор" \
                                     << "4. Линия электропередачи";
-    s_tqComboBox *cb = WDFunc::NewCB(this, "eq_typecb", cbl, paramcolor);
+    cb = WDFunc::NewCB(this, "eq_typecb", cbl, paramcolor);
     cb->setMinimumWidth(70);
     connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetEqType(int)));
-    glyout->addWidget(cb,0,1,1,1);
+    glyout->addWidget(cb,row++,1,1,1);
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутаций:"), 1,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутаций:"), row,0,1,1);
     cbl = QStringList() << "Несинхронные включение и отключение" << "Cинхронное включение" << \
                            "Синхронное отключение" << "Синхронное включение и отключение";
-    glyout->addWidget(WDFunc::NewCB(this, "optype", cbl, paramcolor),1,1,1,1);
+    glyout->addWidget(WDFunc::NewCB(this, "optype", cbl, paramcolor),row++,1,1,1);
     hlyout = new QHBoxLayout;
     tmps = "QRadioButton {background-color: "+QString(paramcolor)+";}";
-    glyout->addWidget(WDFunc::NewLBL(this, "Наличие напряжения на стороне нагрузки"),2,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Наличие напряжения на стороне нагрузки"),row,0,1,1);
     QButtonGroup *bg = new QButtonGroup;
     QRadioButton *rb = new QRadioButton("Есть");
     rb->setObjectName("u2yes");
@@ -83,18 +114,18 @@ void ConfDialog85::SetupUI()
 //    rb->setStyleSheet(tmps);
     bg->addButton(rb);
     hlyout->addWidget(rb);
-    glyout->addLayout(hlyout, 2, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "Класс напряжения сети, кВ:"), 3,0,1,1);
+    glyout->addLayout(hlyout, row++, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Класс напряжения сети, кВ:"), row,0,1,1);
     cbl = QStringList() << "750" << "550" << "330" << "220" << "110" << "35" << "10";
-    glyout->addWidget(WDFunc::NewCB(this, "unomcb", cbl, paramcolor),3,1,1,1);
+    glyout->addWidget(WDFunc::NewCB(this, "unomcb", cbl, paramcolor),row++,1,1,1);
     hlyout = new QHBoxLayout;
-    glyout->addWidget(WDFunc::NewLBL(this, "Номинальный ток, А:"),4,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальный ток, А:"),row,0,1,1);
     hlyout->addWidget(WDFunc::NewLBL(this, "первичный:"), 0);
     hlyout->addWidget(WDFunc::NewSPB(this, "inom1", 10, 50000, 10, 0, paramcolor), 1);
     hlyout->addWidget(WDFunc::NewLBL(this, "вторичный:"), 0);
     cbl = QStringList() << "1" << "5";
     hlyout->addWidget(WDFunc::NewCB(this, "inom2", cbl, paramcolor), 1);
-    glyout->addLayout(hlyout,4,1,1,1);
+    glyout->addLayout(hlyout,row,1,1,1);
     vlyout1->addLayout(glyout);
     MyStackedWidget *stw = new MyStackedWidget;
     stw->setObjectName("eqtypestw");
@@ -359,6 +390,7 @@ void ConfDialog85::SetEqType(int tmpi)
 void ConfDialog85::SetDefConf()
 {
     C85->SetDefConf();
+    FillBack();
 }
 
 void ConfDialog85::ShowAdaptParams(bool isAdaptChecked)

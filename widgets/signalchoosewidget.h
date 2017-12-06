@@ -1,8 +1,7 @@
 #ifndef SIGNALCHOOSEWIDGET_H
 #define SIGNALCHOOSEWIDGET_H
 
-#include <QWidget>
-#include <QPaintEvent>
+#include <QLabel>
 #include <QMouseEvent>
 
 class SignalChooseWidget : public QWidget
@@ -12,22 +11,28 @@ public:
     explicit SignalChooseWidget(QStringList &snames, QWidget *parent = nullptr);
 
 signals:
+    void SignalChoosed(QString signame); // при выборе сигнала - требуется выделить тренд
+    void SignalToggled(QString signame, bool isChecked); // при включении или отключении \
+                                                         // вставить или убрать из осциллограммы
 
 public slots:
+
+private slots:
+    void SignalClicked();
+    void SignalChecked(bool isChecked);
 };
 
-class MarkSignalWidget : public QWidget
+class MarkSignalWidget : public QLabel
 {
     Q_OBJECT
 public:
-    explicit MarkSignalWidget(QWidget *parent = nullptr);
+    explicit MarkSignalWidget(const QString &text, QWidget *parent = nullptr);
 
 signals:
     void Clicked();
 
 protected:
-    void paintEvent(QPaintEvent *e);
     void mouseMoveEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
-}
+};
 #endif // SIGNALCHOOSEWIDGET_H

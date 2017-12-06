@@ -72,7 +72,7 @@ void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
     }
     GetOscPBDelegate *dg = new GetOscPBDelegate(this);
     connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(ShowJournal(QModelIndex)));
-    SwjTableView->setItemDelegateForColumn(6,dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
+    SwjTableView->setItemDelegateForColumn(5,dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
     SwjTableView->resizeRowsToContents();
     SwjTableView->resizeColumnsToContents();
 }

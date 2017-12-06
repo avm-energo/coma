@@ -74,6 +74,8 @@ public:
     static QCheckBox *NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor="");
     static bool ChBData(QWidget *w, const QString &chbname, bool &data);
     static bool SetChBData(QWidget *w, const QString &chbname, bool data);
+    static bool RBData(QWidget *w, const QString &rbname, bool &data);
+    static bool SetRBData(QWidget *w, const QString &rbname, bool data);
     static void AddLabelAndLineedit(QLayout *lyout, QString caption, QString lename, bool enabled=false);
     static void AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lename, bool enabled=false);
     static void SetEnabled(QWidget *w, const QString &wname, bool enabled);

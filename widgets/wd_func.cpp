@@ -236,6 +236,24 @@ QRadioButton *WDFunc::NewRB(QWidget *parent, const QString &rbtext, const QStrin
     return rb;
 }
 
+bool WDFunc::RBData(QWidget *w, const QString &rbname, bool &data)
+{
+    QRadioButton *rb = w->findChild<QRadioButton *>(rbname);
+    if (rb == 0)
+        return false;
+    data = rb->isChecked();
+    return true;
+}
+
+bool WDFunc::SetRBData(QWidget *w, const QString &rbname, bool data)
+{
+    QRadioButton *rb = w->findChild<QRadioButton *>(rbname);
+    if (rb == 0)
+        return false;
+    rb->setChecked(data);
+    return true;
+}
+
 QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid)
 {
     s_tqTableView *tv = w->findChild<s_tqTableView *>(tvname);
