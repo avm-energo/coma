@@ -67,6 +67,7 @@ void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
                 tmps = "images/hr.png";
             TableModel->setData(TableModel->index(CurRow, 4, QModelIndex()), QVariant(QIcon(tmps)), Qt::DecorationRole);
             TableModel->setData(TableModel->index(CurRow, 5, QModelIndex()), QVariant("Далее"), Qt::EditRole);
+            ++CurRow;
         }
         BaPos += SWJRecordSize;
     }
