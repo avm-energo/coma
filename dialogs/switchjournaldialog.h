@@ -44,7 +44,7 @@ private:
 
     ETableModel *TableModel;
     s_tqTableView *SwjTableView;
-    SWJournalRecordStruct tmpswj;
+    SWJournalRecordStruct SWJRecord;
     QMap<quint64, EOscillogram::GBoStruct> OscMap;
     QMap<quint32, SWJournalRecordStruct> SWJMap;
 

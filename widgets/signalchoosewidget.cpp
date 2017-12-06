@@ -15,3 +15,19 @@ SignalChooseWidget::SignalChooseWidget(QStringList &snames, QWidget *parent) : Q
 
     }
 }
+
+MarkSignalWidget::MarkSignalWidget(QWidget *parent)
+{
+    setMouseTracking(true);
+}
+
+void MarkSignalWidget::mouseMoveEvent(QMouseEvent *e)
+{
+
+}
+
+void MarkSignalWidget::mousePressEvent(QMouseEvent *e)
+{
+    emit Clicked();
+    e->accept();
+}
