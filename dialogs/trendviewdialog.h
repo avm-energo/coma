@@ -26,13 +26,14 @@ public:
 
 private:
     QCustomPlot *AnalogPlot, *DiscretePlot;
-    QVector<QCPGraph *> AnalogGraphs, DigitalGraphs;
+    QMap<QString, QCPGraph *> AnalogGraphs, DigitalGraphs;
     QStringList AnalogNames, DigitalNames;
     float XMin, XMax, YMin, YMax;
     bool NoDiscrete, NoAnalog;
     TrendViewModel *TrendModel;
 
     QToolBar *PlotToolBar();
+    QCPGraph *GraphByName(QCustomPlot *plot, const QString &name);
 
 private slots:
     void AnalogPlotContextMenu(QPoint pos);
@@ -40,6 +41,11 @@ private slots:
     void MoveLegend();
     void ChooseGraphsToDisplay();
     void graphClicked(QCPAbstractPlottable *plot, int dataIndex);
+    void ASignalChoosed(QString signame);
+    void ASignalToggled(QString signame, bool isChecked);
+    void DSignalChoosed(QString signame);
+    void DSignalToggled(QString signame, bool isChecked);
+    void GraphSetVisible(QCustomPlot *plot, const QString &graphname, bool visible);
 };
 
 #endif // TRENDVIEWDIALOG_H

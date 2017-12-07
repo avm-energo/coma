@@ -322,7 +322,7 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
             float xmax = (static_cast<float>(OHD.len/2));
             float xmin = -xmax;
             xmin = -(OHD.step * 512);
-            TrendViewModel *TModel = new TrendViewModel(tmpdv.size(), tmpav.size(), OHD.len);
+            TrendViewModel *TModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
             TrendViewDialog *dlg = new TrendViewDialog;
             dlg->SetModel(TModel);
             dlg->SetAnalogNames(tmpav);

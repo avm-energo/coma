@@ -377,7 +377,8 @@ void MainWindow::SetDefConf()
 {
     if (MainConfDialog != 0)
         MainConfDialog->SetDefConf();
-    ConfB->SetDefConf();
+    if (ConfB != 0)
+        ConfB->SetDefConf();
     if (ConfM != 0)
         ConfM->SetDefConf();
     Fill();
@@ -388,7 +389,8 @@ void MainWindow::Fill()
 {
     if (MainConfDialog != 0)
         MainConfDialog->Fill();
-    ConfB->Fill();
+    if (ConfB != 0)
+        ConfB->Fill();
     if (ConfM != 0)
         ConfM->Fill();
 }

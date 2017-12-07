@@ -2,14 +2,15 @@
 #define TRENDVIEWMODEL_H
 
 #include <QVector>
+#include <QMap>
 
 class TrendViewModel
 {
 public:
-    TrendViewModel(int digsize, int ansize, int pointsnum);
+    TrendViewModel(const QStringList &dlist, const QStringList &alist, int pointsnum);
     ~TrendViewModel();
 
-    QVector<QVector<double> > AnalogMainData, DigitalMainData;
+    QMap<QString, QVector<double> > AnalogMainData, DigitalMainData;
     QVector<double> MainPoints;
 
      // инициализация графиков
@@ -18,8 +19,8 @@ public:
     void AddDigitalPoint(int GraphNum, int PointValue);
     bool SetPointsAxis(float start, float step);
     void SetFilename(const QString &fn);
-    int DSize();
-    int ASize();
+    int DContains(const QString &key);
+    int AContains(const QString &key);
 
 private:
     int PointsNum;

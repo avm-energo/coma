@@ -5,13 +5,15 @@
 #include "../config/config.h"
 #include "trendviewmodel.h"
 
-TrendViewModel::TrendViewModel(int digsize, int ansize, \
+TrendViewModel::TrendViewModel(const QStringList &dlist, const QStringList &alist, \
                                  int pointsnum)
 
 {
     this->PointsNum = pointsnum;
-    DigitalMainData.resize(digsize);
-    AnalogMainData.resize(ansize);
+    for (int i=0; i<dlist.size(); ++i)
+        DigitalMainData[dlist.at(i)] = QVector<double>();
+    for (int i=0; i<alist.size(); ++i)
+        AnalogMainData[alist.at(i)] = QVector<double>();
 }
 
 TrendViewModel::~TrendViewModel()
@@ -23,9 +25,10 @@ void TrendViewModel::AddAnalogPoint(int GraphNum, float PointValue)
 {
     if (GraphNum < AnalogMainData.size())
     {
-        QVector<double> tmpv = AnalogMainData.at(GraphNum);
+        QString tmps = AnalogMainData.keys().at(GraphNum);
+        QVector<double> tmpv = AnalogMainData[tmps];
         tmpv.append(PointValue);
-        AnalogMainData.replace(GraphNum, tmpv);
+        AnalogMainData[tmps] = tmpv;
     }
 }
 
@@ -33,9 +36,10 @@ void TrendViewModel::AddDigitalPoint(int GraphNum, int PointValue)
 {
     if (GraphNum < DigitalMainData.size())
     {
-        QVector<double> tmpv = DigitalMainData.at(GraphNum);
+        QString tmps = DigitalMainData.keys().at(GraphNum);
+        QVector<double> tmpv = DigitalMainData[tmps];
         tmpv.append(PointValue);
-        DigitalMainData.replace(GraphNum, tmpv);
+        DigitalMainData[tmps] = tmpv;
     }
 }
 
@@ -132,12 +136,12 @@ void TrendViewModel::SetFilename(const QString &fn)
     Filename = fn;
 }
 
-int TrendViewModel::DSize()
+int TrendViewModel::DContains(const QString &key)
 {
-    return DigitalMainData.size();
+    return DigitalMainData.keys().contains(key);
 }
 
-int TrendViewModel::ASize()
+int TrendViewModel::AContains(const QString &key)
 {
-    return AnalogMainData.size();
+    return AnalogMainData.keys().contains(key);
 }

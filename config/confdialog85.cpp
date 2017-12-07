@@ -67,7 +67,7 @@ void ConfDialog85::Fill()
     WDFunc::SetSPBData(this, "tsoloffspb", C85->Bci_block.TsolOFF);
     WDFunc::SetSPBData(this, "resnommaxspb", C85->Bci_block.RESnom_max);
     WDFunc::SetSPBData(this, "reskzmaxspb", C85->Bci_block.RESkz_max);
-    WDFunc.SetChBData(this, "adapt", (C85->Bci_block.Adapt == 1));
+    WDFunc::SetChBData(this, "adapt", (C85->Bci_block.Adapt == 1));
     QStringList fl = QStringList() << "Pa" << "Pb" << "Pc" << "Ta" << "Tb" << "Tc" << "To" << "Us";
     quint32 bitinbyte = 0x00000001;
     for (int i=0; i<fl.size(); ++i)
@@ -113,6 +113,91 @@ void ConfDialog85::Fill()
 
 void ConfDialog85::FillBack()
 {
+    int cbidx;
+    QString tmps;
+    bool tmpb;
+    WDFunc::CBIndex(this, "typea", cbidx);
+    C85->Bci_block.TypeA = 0x00000001 << cbidx;
+    WDFunc::SPBData(this, "numa", C85->Bci_block.NumA);
+    WDFunc::CBIndex(this, "eq_type", C85->Bci_block.Eq_type);
+    WDFunc::CBIndex(this, "optype", C85->Bci_block.Op_type);
+    WDFunc::RBData(this, "u2yes", tmpb);
+    C85->Bci_block.Is_U2 = (tmpb) ? 1 : 0;
+    WDFunc::CBData(this, "unomcb", tmps);
+    C85->Bci_block.Unom = tmps.toInt();
+    WDFunc::SPBData(this, "inom1", C85->Bci_block.ITT1nom);
+    WDFunc::CBData(this, "inom2", tmps);
+    C85->Bci_block.ITT2nom = tmps.toInt();
+    for (int i=0; i<3; ++i)
+    {
+        WDFunc::SPBData(this, "tzadoff"+QString::number(i+1), C85->Bci_block.Tzad_OFF[i]);
+        WDFunc::SPBData(this, "tzadon"+QString::number(i+1), C85->Bci_block.Tzad_ON[i]);
+        WDFunc::SPBData(this, "tsoff"+QString::number(i+1), C85->Bci_block.Ts_OFF[i]);
+        WDFunc::SPBData(this, "tson"+QString::number(i+1), C85->Bci_block.Ts_ON[i]);
+        WDFunc::SPBData(this, "tbkoff"+QString::number(i+1), C85->Bci_block.Tbk_OFF[i]);
+        WDFunc::SPBData(this, "tbkon"+QString::number(i+1), C85->Bci_block.Tbk_ON[i]);
+//        WDFunc::SPBData(this, "resnomoff"+QString::number(i+1), C85->Bci_block.RESnom_OFF[i]);
+//        WDFunc::SPBData(this, "resnomon"+QString::number(i+1), C85->Bci_block.RESnom_ON[i]);
+//        WDFunc::SPBData(this, "reskz"+QString::number(i+1), C85->Bci_block.RESkz[i]);
+    }
+    WDFunc::CBIndex(this, "core_type", C85->Bci_block.Core_type);
+    WDFunc::CBIndex(this, "d_win", C85->Bci_block.D_win);
+    WDFunc::CBIndex(this, "n_type", C85->Bci_block.N_Type);
+    WDFunc::CBIndex(this, "residue", C85->Bci_block.Residue);
+    WDFunc::SPBData(this, "inomspb", C85->Bci_block.Inom);
+    WDFunc::SPBData(this, "ikzspb", C85->Bci_block.Ikz);
+    WDFunc::SPBData(this, "tarcspb", C85->Bci_block.T_arc);
+    WDFunc::SPBData(this, "rddsspb", C85->Bci_block.RDDS);
+    WDFunc::SPBData(this, "tsolonspb", C85->Bci_block.TsolON);
+    WDFunc::SPBData(this, "tsoloffspb", C85->Bci_block.TsolOFF);
+    WDFunc::SPBData(this, "resnommaxspb", C85->Bci_block.RESnom_max);
+    WDFunc::SPBData(this, "reskzmaxspb", C85->Bci_block.RESkz_max);
+    WDFunc::ChBData(this, "adapt", tmpb);
+    C85->Bci_block.Adapt = (tmpb) ? 1 : 0;
+    QStringList fl = QStringList() << "Pa" << "Pb" << "Pc" << "Ta" << "Tb" << "Tc" << "To" << "Us";
+    quint32 bitinbyte = 0x00000001;
+    C85->Bci_block.Aux = 0;
+    for (int i=0; i<fl.size(); ++i)
+    {
+        WDFunc::ChBData(this, fl.at(i), tmpb);
+        if (tmpb)
+            C85->Bci_block.Aux |= bitinbyte;
+        bitinbyte <<= 1;
+    }
+    WDFunc::SPBData(this, "duosc", C85->Bci_block.DUosc);
+    WDFunc::SPBData(this, "diosc", C85->Bci_block.DIosc);
+    WDFunc::SPBData(this, "dumin", C85->Bci_block.DUmin);
+    WDFunc::SPBData(this, "dimin", C85->Bci_block.DImin);
+    WDFunc::SPBData(this, "k_on_volt", C85->Bci_block.K_on_volt);
+    WDFunc::SPBData(this, "k_off_volt", C85->Bci_block.K_off_volt);
+    WDFunc::SPBData(this, "k_on_amb", C85->Bci_block.K_on_tamb);
+    WDFunc::SPBData(this, "k_off_amb", C85->Bci_block.K_off_tamb);
+    WDFunc::SPBData(this, "k_on_tdr", C85->Bci_block.K_on_tdr);
+    WDFunc::SPBData(this, "k_off_tdr", C85->Bci_block.K_off_tdr);
+    WDFunc::SPBData(this, "k_on_hdr", C85->Bci_block.K_on_hdr);
+    WDFunc::SPBData(this, "k_off_hdr", C85->Bci_block.K_off_hdr);
+    WDFunc::SPBData(this, "ts_offpred", C85->Bci_block.Ts_OFFpred);
+    WDFunc::SPBData(this, "ts_offalarm", C85->Bci_block.Ts_OFFalarm);
+    WDFunc::SPBData(this, "ts_onpred", C85->Bci_block.Ts_ONpred);
+    WDFunc::SPBData(this, "ts_onalarm", C85->Bci_block.Ts_ONalarm);
+    WDFunc::SPBData(this, "tmain_offpred", C85->Bci_block.Tmain_OFFpred);
+    WDFunc::SPBData(this, "tmain_offalarm", C85->Bci_block.Tmain_OFFalarm);
+    WDFunc::SPBData(this, "tmain_onpred", C85->Bci_block.Tmain_ONpred);
+    WDFunc::SPBData(this, "tmain_onalarm", C85->Bci_block.Tmain_ONalarm);
+    WDFunc::SPBData(this, "dt_offpred", C85->Bci_block.dT_OFFpred);
+    WDFunc::SPBData(this, "dt_offalarm", C85->Bci_block.dT_OFFalarm);
+    WDFunc::SPBData(this, "dt_offpred", C85->Bci_block.dT_ONpred);
+    WDFunc::SPBData(this, "dt_offalarm", C85->Bci_block.dT_ONalarm);
+    WDFunc::SPBData(this, "traspred", C85->Bci_block.Tras_pred);
+    WDFunc::SPBData(this, "trasalarm", C85->Bci_block.Tras_alarm);
+    WDFunc::SPBData(this, "tarcpred", C85->Bci_block.Tarc_pred);
+    WDFunc::SPBData(this, "tarcalarm", C85->Bci_block.Tarc_alarm);
+    WDFunc::SPBData(this, "resnompred", C85->Bci_block.RESnom_pred);
+    WDFunc::SPBData(this, "resnomalarm", C85->Bci_block.RESnom_alarm);
+    WDFunc::SPBData(this, "reskzpred", C85->Bci_block.RESkz_pred);
+    WDFunc::SPBData(this, "reskzalarm", C85->Bci_block.RESkz_alarm);
+    WDFunc::SPBData(this, "ipred", C85->Bci_block.I_pred);
+    WDFunc::SPBData(this, "ialarm", C85->Bci_block.I_alarm);
 
 }
 
@@ -415,6 +500,8 @@ void ConfDialog85::SetupUI()
     ConfTW->addTab(cp3,"Доп. параметры по алгоритму");
     ConfTW->addTab(cp4,"Уставки сигнализации");
     lyout->addWidget(ConfTW);
+    QWidget *wdgt = ConfButtons();
+    lyout->addWidget(wdgt);
     setLayout(lyout);
 }
 
@@ -444,7 +531,7 @@ void ConfDialog85::SetEqType(int tmpi)
 void ConfDialog85::SetDefConf()
 {
     C85->SetDefConf();
-    FillBack();
+    Fill();
 }
 
 void ConfDialog85::ShowAdaptParams(bool isAdaptChecked)

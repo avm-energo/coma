@@ -43,14 +43,14 @@ MarkSignalWidget::MarkSignalWidget(const QString &text, QWidget *parent) : QLabe
 
 void MarkSignalWidget::mouseMoveEvent(QMouseEvent *e)
 {
-    QString Hover = "* {border: 2px;}";
-    QString NoHover = "* {border: none;}";
-    if (e->type() == QEvent::HoverEnter)
+    QString Hover = "QLabel::hover {border: 1px solid lightgray;}";
+    QString NoHover = "QLabel {border: 0px;}";
+    if (this->rect().contains(e->pos()))
     {
         setCursor(Qt::PointingHandCursor);
         setStyleSheet(Hover);
     }
-    else if (e->type() == QEvent::HoverLeave)
+    else
     {
         setCursor(Qt::ArrowCursor);
         setStyleSheet(NoHover);

@@ -89,6 +89,7 @@ void ConfDialog31::CheckConf()
 void ConfDialog31::SetDefConf()
 {
     C31->SetDefConf();
+    Fill();
 }
 
 void ConfDialog31::SetChTypData(int value)
