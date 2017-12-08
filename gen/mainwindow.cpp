@@ -764,7 +764,10 @@ void MainWindow::LoadSWJ()
     else
         haveosc = true;
     SWJDialog *dlg = new SWJDialog(SWJDialog::SWJ_MODE_OFFLINE);
-    dlg->Init(swjr, );
+    dlg->Init(swjr, haveosc, gbos);
+    if (!ba.isEmpty())
+        dlg->LoadOsc(ba);
+    dlg->exec();
 }
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE

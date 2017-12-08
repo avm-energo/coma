@@ -6,6 +6,7 @@
 #include "../gen/eoscillogram.h"
 #include "../widgets/s_tqtableview.h"
 #include "../widgets/etablemodel.h"
+#include "swjdialog.h"
 
 #define MAXSWJNUM   512
 
@@ -20,7 +21,7 @@ private:
     ETableModel *TableModel;
     s_tqTableView *SwjTableView;
     QMap<quint64, EOscillogram::GBoStruct> OscMap;
-    QMap<quint32, SWJournalRecordStruct> SWJMap;
+    QMap<quint32, SWJDialog::SWJournalRecordStruct> SWJMap;
 
     void SetupUI();
     void ProcessSWJournal(QByteArray &ba);

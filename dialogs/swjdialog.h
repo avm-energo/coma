@@ -43,6 +43,7 @@ public:
     SWJournalRecordStruct SWJRecord;
     EOscillogram::GBoStruct GBOs;
     EOscillogram *OscFunc;
+    bool Mode;
 
     SWJDialog(int mode=SWJ_MODE_ONLINE, QWidget *parent = 0);
     void Init(SWJournalRecordStruct &swjr, bool haveosc, EOscillogram::GBoStruct &gbos);

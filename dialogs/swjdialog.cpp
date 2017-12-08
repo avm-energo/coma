@@ -8,7 +8,8 @@
 
 SWJDialog::SWJDialog(int mode, QWidget *parent) : QDialog(parent)
 {
-    EOscillogram *OscFunc = new EOscillogram;
+    Mode = mode;
+    OscFunc = new EOscillogram;
 }
 
 void SWJDialog::Init(SWJournalRecordStruct &swjr, bool haveosc, EOscillogram::GBoStruct &gbos)
@@ -90,8 +91,9 @@ void SWJDialog::Init(SWJournalRecordStruct &swjr, bool haveosc, EOscillogram::GB
     for (int i=0; i<3; ++i)
         glyout->addWidget(WDFunc::NewLBLT(this, QString::number(swjr.Inaccuracy[i], 'f', 1)),row,i+1,1,1);
     vlyout->addLayout(glyout);
-    QPushButton *pb = new QPushButton;
+    QPushButton *pb = new QPushButton("Сохранить журнал в файл");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SaveSWJ()));
+    vlyout->addWidget(pb);
     setLayout(vlyout);
 }
 
@@ -102,13 +104,12 @@ void SWJDialog::LoadOsc(QByteArray &ba)
 
 void SWJDialog::SaveSWJ()
 {
-    int OscTime = SWJRecord.OscTime;
     QByteArray ba;
     int SWJSize = sizeof(SWJournalRecordStruct);
     int GBOSize = sizeof(EOscillogram::GBoStruct);
     ba.resize(SWJSize + GBOSize + GBOs.FileLength);
-    memcpy(&(ba.data()[0]), SWJRecord, SWJSize);
-    memcpy(&(ba.data()[SWJSize]), GBOs, GBOSize);
+    memcpy(&(ba.data()[0]), &SWJRecord, SWJSize);
+    memcpy(&(ba.data()[SWJSize]), &GBOs, GBOSize);
     if (Commands::GetOsc(GBOs.FileNum, &(ba.data()[SWJSize+GBOSize])) == NOERROR)
         pc.SaveFile(this, "Файлы жуналов (*.swj)", "swj", ba, ba.size());
     else
@@ -117,13 +118,16 @@ void SWJDialog::SaveSWJ()
 
 void SWJDialog::ShowOsc()
 {
-    OscFunc->BA.resize(GBOs.FileLength);
-    if (Commands::GetOsc(GBOs.FileNum, &(OscFunc->BA.data()[0])) == NOERROR)
+    if (Mode == SWJ_MODE_ONLINE)
     {
+        OscFunc->BA.resize(GBOs.FileLength);
+        if (Commands::GetOsc(GBOs.FileNum, &(OscFunc->BA.data()[0])) != NOERROR)
+        {
+            WARNMSG("");
+            return;
+        }
         QString tmps = pc.SystemHomeDir+"/temporary.osc";
         pc.SaveToFile(tmps, OscFunc->BA, GBOs.FileLength);
-        OscFunc->ProcessOsc();
     }
-    else
-        WARNMSG("");
+    OscFunc->ProcessOsc();
 }

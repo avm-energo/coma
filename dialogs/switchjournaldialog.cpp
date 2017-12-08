@@ -6,7 +6,6 @@
 #include "../widgets/getoscpbdelegate.h"
 #include "../widgets/wd_func.h"
 #include "switchjournaldialog.h"
-#include "swjdialog.h"
 #include "trendviewdialog.h"
 
 SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : QDialog(parent)
@@ -41,8 +40,8 @@ void SwitchJournalDialog::SetupUI()
 
 void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
 {
-    SWJournalRecordStruct tmpswj;
-    int SWJRecordSize = sizeof(SWJournalRecordStruct);
+    SWJDialog::SWJournalRecordStruct tmpswj;
+    int SWJRecordSize = sizeof(SWJDialog::SWJournalRecordStruct);
     int BaSize = ba.size();
     int BaPos = 0;
     int CurRow = 1;
@@ -117,7 +116,7 @@ void SwitchJournalDialog::LoadJournals()
     TableModel->setData(TableModel->index(0, 4, QModelIndex()), QVariant("Осц"), Qt::EditRole);
 //    SwjTableView->setSpan(0, 3, 1, 2); // объединение 3 и 4 столбцов в 0 ряду
     QByteArray SWJournal;
-    quint32 SWJSize = sizeof(SWJournalRecordStruct) * MAXSWJNUM;
+    quint32 SWJSize = sizeof(SWJDialog::SWJournalRecordStruct) * MAXSWJNUM;
     SWJournal.resize(SWJSize);
     Commands::GetBt(TECH_SWJ, &(SWJournal.data()[0]), SWJSize); // в SWJSize - реальная длина в байтах
     SWJournal.resize(SWJSize);
