@@ -23,6 +23,11 @@ SignalChooseWidget::SignalChooseWidget(QStringList &snames, QWidget *parent) : Q
     setLayout(lyout);
 }
 
+void SignalChooseWidget::SetChecked(QString signame, bool checked)
+{
+    WDFunc::SetChBData(this, signame, checked);
+}
+
 void SignalChooseWidget::SignalClicked()
 {
     QString name = sender()->objectName();

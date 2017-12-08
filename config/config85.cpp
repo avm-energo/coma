@@ -109,9 +109,9 @@ void Config85::SetDefConf()
     Bci_block.T_arc = 5.0;     // минимальное время горения дуги – 5 мс
     Bci_block.RDDS = 70.0;	// скорость снижения электрической прочности контактов при включении – 70 кВ/мс
     Bci_block.RRDS = 70.0;	// скорость роста электрической прочности контактов при включении – 70 кВ/мс
-    Bci_block.Tzad_OFF[0] = Bci_block.Tzad_OFF[0] = 0;
-    Bci_block.Tzad_OFF[1] = Bci_block.Tzad_OFF[1] = static_cast<float>(3.33);
-    Bci_block.Tzad_OFF[2] = Bci_block.Tzad_OFF[2] = static_cast<float>(6.67);
+    Bci_block.Tzad_ON[0] = Bci_block.Tzad_OFF[0] = 0;
+    Bci_block.Tzad_ON[1] = Bci_block.Tzad_OFF[1] = static_cast<float>(3.33);
+    Bci_block.Tzad_ON[2] = Bci_block.Tzad_OFF[2] = static_cast<float>(6.67);
     Bci_block.DUosc = 10;         // уставка скачка напряжения 10%
     Bci_block.DIosc = 20;           // уставка скачка тока 20%
     Bci_block.DUmin =10;         // уставка минимума напряжения 10%

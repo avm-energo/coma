@@ -16,6 +16,7 @@ signals:
                                                          // вставить или убрать из осциллограммы
 
 public slots:
+    void SetChecked(QString signame, bool checked);
 
 private slots:
     void SignalClicked();

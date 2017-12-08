@@ -131,6 +131,7 @@ private slots:
     void DisconnectAndClear();
 #ifndef MODULE_A1
     void LoadOsc();
+    void LoadSWJ();
 #endif
 
 #if PROGSIZE != PROGSIZE_EMUL

@@ -93,7 +93,8 @@ SOURCES += \
     ../check/check.cpp \
     ../dialogs/switchjournaldialog.cpp \
     ../models/trendviewmodel.cpp \
-    ../widgets/signalchoosewidget.cpp
+    ../widgets/signalchoosewidget.cpp \
+    ../dialogs/swjdialog.cpp
 
 HEADERS  += \
     coma.h \
@@ -164,7 +165,8 @@ HEADERS  += \
     ../check/check.h \
     ../dialogs/switchjournaldialog.h \
     ../models/trendviewmodel.h \
-    ../widgets/signalchoosewidget.h
+    ../widgets/signalchoosewidget.h \
+    ../dialogs/swjdialog.h
 
 INCLUDEPATH += $$PWD/../../includes
 

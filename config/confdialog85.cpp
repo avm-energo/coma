@@ -274,20 +274,20 @@ void ConfDialog85::SetupUI()
     QHBoxLayout *ihlyout = new QHBoxLayout;
     iglyout->addWidget(WDFunc::NewLBL(this, "Задержка отключения относительно перехода\nчерез ноль напряжения (А,В,С), мс:"),0,0,1,1);
     ihlyout->addWidget(WDFunc::NewLBL(this, "А:"), 0);
-    ihlyout->addWidget(WDFunc::NewSPB(this, "tzadoff1", 1, 500, 0.1, 1, paramcolor), 1);
+    ihlyout->addWidget(WDFunc::NewSPB(this, "tzadoff1", 0, 500, 0.1, 1, paramcolor), 1);
     ihlyout->addWidget(WDFunc::NewLBL(this, "В:"), 0);
-    ihlyout->addWidget(WDFunc::NewSPB(this, "tzadoff2", 1, 500, 0.1, 1, paramcolor), 1);
+    ihlyout->addWidget(WDFunc::NewSPB(this, "tzadoff2", 0, 500, 0.1, 1, paramcolor), 1);
     ihlyout->addWidget(WDFunc::NewLBL(this, "С:"), 0);
-    ihlyout->addWidget(WDFunc::NewSPB(this, "tzadoff3", 1, 500, 0.1, 1, paramcolor), 1);
+    ihlyout->addWidget(WDFunc::NewSPB(this, "tzadoff3", 0, 500, 0.1, 1, paramcolor), 1);
     iglyout->addLayout(ihlyout, 0, 1, 1, 1);
     ihlyout = new QHBoxLayout;
     iglyout->addWidget(WDFunc::NewLBL(this, "Задержка включения относительно перехода\nчерез ноль напряжения (А,В,С), мс:"),1,0,1,1);
     ihlyout->addWidget(WDFunc::NewLBL(this, "А:"), 0);
-    ihlyout->addWidget(WDFunc::NewSPB(this, "tzadon1", 1, 500, 0.1, 1, paramcolor), 1);
+    ihlyout->addWidget(WDFunc::NewSPB(this, "tzadon1", 0, 500, 0.1, 1, paramcolor), 1);
     ihlyout->addWidget(WDFunc::NewLBL(this, "В:"), 0);
-    ihlyout->addWidget(WDFunc::NewSPB(this, "tzadon2", 1, 500, 0.1, 1, paramcolor), 1);
+    ihlyout->addWidget(WDFunc::NewSPB(this, "tzadon2", 0, 500, 0.1, 1, paramcolor), 1);
     ihlyout->addWidget(WDFunc::NewLBL(this, "С:"), 0);
-    ihlyout->addWidget(WDFunc::NewSPB(this, "tzadon3", 1, 500, 0.1, 1, paramcolor), 1);
+    ihlyout->addWidget(WDFunc::NewSPB(this, "tzadon3", 0, 500, 0.1, 1, paramcolor), 1);
     iglyout->addLayout(ihlyout, 1, 1, 1, 1);
     w->setLayout(iglyout);
     stw->insertWidget(0, w); // eq_type = 0 => свободно конфигурируемый режим

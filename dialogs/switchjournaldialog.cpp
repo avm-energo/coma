@@ -6,6 +6,7 @@
 #include "../widgets/getoscpbdelegate.h"
 #include "../widgets/wd_func.h"
 #include "switchjournaldialog.h"
+#include "swjdialog.h"
 #include "trendviewdialog.h"
 
 SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : QDialog(parent)
@@ -18,7 +19,7 @@ void SwitchJournalDialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QPushButton *pb = new QPushButton("Получить журнал переключений");
+    QPushButton *pb = new QPushButton("Получить журналы переключений");
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadJournals()));
     if (pc.Emul)
         pb->setEnabled(false);
@@ -133,84 +134,13 @@ void SwitchJournalDialog::ShowJournal(QModelIndex idx)
         WARNMSG("");
         return;
     }
-    SWJRecord = SWJMap[SWJNum];
-    QDialog *dlg = new QDialog;
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    glyout->addWidget(WDFunc::NewLBL(this, "Номер"), 0,0,1,1);
-    glyout->addWidget(WDFunc::NewLBL(this, "Дата, время"),0,1,1,1);
-    glyout->addWidget(WDFunc::NewLBL(this, "Аппарат"),0,2,1,2);
-    glyout->addWidget(WDFunc::NewLBL(this, "Переключение"),0,4,1,2);
-    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.Num)), 1,0,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(this, pc.UnixTime64ToString(SWJRecord.Time)),1,1,1,1);
-    QStringList tmpsl = QStringList() << "D" << "G" << "CB";
-    QString tmps = (SWJRecord.TypeA < tmpsl.size()) ? tmpsl.at(SWJRecord.TypeA) : "N/A";
-    glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,2,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.NumA)),1,3,1,1);
-    tmps = (SWJRecord.Options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
-    glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,4,1,2);
-    glyout->addWidget(WDFunc::NewLBL(this, "Результат переключения"),2,0,1,6);
-    glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации и коммутируемые фазы"),3,0,1,4);
-    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.OpResult)),3,4,1,1);
-    if (OscMap.keys().contains(SWJRecord.OscTime))
-    {
-        QPushButton *pb = new QPushButton;
-        pb->setIcon(QIcon("images/oscillogramm.png"));
-        connect(pb,SIGNAL(clicked(bool)),this,SLOT(ShowOsc()));
-        glyout->addWidget(pb,3,5,1,1);
-    }
-    else
-    {
-        QPixmap *pm = new QPixmap("images/hr.png");
-        glyout->addWidget(WDFunc::NewLBL(this, "", "", "", pm),3,5,1,1);
-    }
-    vlyout->addLayout(glyout);
-    vlyout->addStretch(10);
-    glyout = new QGridLayout;
-    QStringList sl = QStringList() << "Значение тока при коммутации, А" << "Значение напряжения при коммутации, кВ" << \
-                                      "Собственное время коммутации, мс" << "Полное время коммутации, мс" << \
-                                      "Время перемещения главного контакта, мс" << "Время горения дуги, мс" << \
-                                      "Время безоперационного простоя к моменту коммутации, ч" << \
-                                      "Погрешность синхронной коммутации, мс";
-    glyout->addWidget(WDFunc::NewLBL(this, "Измеренное значение"),0,0,1,1);
-    glyout->addWidget(WDFunc::NewLBL(this, "A"),0,1,1,1);
-    glyout->addWidget(WDFunc::NewLBL(this, "B"),0,2,1,1);
-    glyout->addWidget(WDFunc::NewLBL(this, "C"),0,3,1,1);
-    glyout->setColumnStretch(0, 10);
-    int row = 1;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
-    for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.I[i], 'f', 1)),row,i+1,1,1);
-    ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
-    for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.U[i], 'f', 1)),row,i+1,1,1);
-    ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
-    for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.OwnTime[i], 'f', 1)),row,i+1,1,1);
-    ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
-    for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.FullTime[i], 'f', 1)),row,i+1,1,1);
-    ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
-    for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.MovTime[i], 'f', 1)),row,i+1,1,1);
-    ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
-    for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.ArchTime[i], 'f', 1)),row,i+1,1,1);
-    ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
-    for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.IdleTime[i], 'f', 0)),row,i+1,1,1);
-    ++row;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
-    for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.Inaccuracy[i], 'f', 1)),row,i+1,1,1);
-    vlyout->addLayout(glyout);
-    dlg->setLayout(vlyout);
+    SWJDialog::SWJournalRecordStruct swjr = SWJMap[SWJNum];
+    EOscillogram::GBoStruct gbos;
+    bool oscexist = OscMap.keys().contains(swjr.OscTime);
+    if (oscexist)
+        gbos = OscMap[swjr.OscTime];
+    SWJDialog *dlg = new SWJDialog;
+    dlg->Init(swjr, oscexist, gbos);
     dlg->exec();
 }
 
@@ -222,17 +152,3 @@ void SwitchJournalDialog::EraseJournals()
         MessageBox2::information(this, "Внимание", "Ошибка при стирании");
 }
 
-void SwitchJournalDialog::ShowOsc()
-{
-    EOscillogram::GBoStruct gbos = OscMap[SWJRecord.OscTime];
-    EOscillogram *OscFunc = new EOscillogram;
-    OscFunc->BA.resize(gbos.FileLength);
-    if (Commands::GetOsc(gbos.FileNum, &(OscFunc->BA.data()[0])) == NOERROR)
-    {
-        QString tmps = pc.SystemHomeDir+"/temporary.osc";
-        pc.SaveToFile(tmps, OscFunc->BA, gbos.FileLength);
-        OscFunc->ProcessOsc();
-    }
-    else
-        WARNMSG("");
-}

@@ -24,6 +24,7 @@
 #include "../dialogs/hiddendialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/keypressdialog.h"
+#include "../dialogs/swjdialog.h"
 #include "../widgets/etablemodel.h"
 #include "../widgets/s_tqtableview.h"
 
@@ -216,6 +217,10 @@ void MainWindow::SetupMenubar()
     act = new QAction(this);
     act->setText("Загрузка осциллограммы");
     connect(act,SIGNAL(triggered()),this,SLOT(LoadOsc()));
+    menu->addAction(act);
+    act = new QAction(this);
+    act->setText("Загрузка журнала переключений");
+    connect(act,SIGNAL(triggered()),this,SLOT(LoadSWJ()));
     menu->addAction(act);
     menubar->addMenu(menu);
 #endif
@@ -734,6 +739,32 @@ void MainWindow::LoadOsc()
 {
     pc.LoadFile(this, "Oscillogram files (*.osc)", OscFunc->BA);
     OscFunc->ProcessOsc();
+}
+
+void MainWindow::LoadSWJ()
+{
+    QByteArray ba;
+    bool haveosc;
+    int SWJRSize = sizeof(SWJDialog::SWJournalRecordStruct);
+    int GBOSize = sizeof(EOscillogram::GBoStruct);
+
+    pc.LoadFile(this, "Switch journal files (*.swj)", ba);
+    if (ba.size() < (SWJRSize + GBOSize))
+    {
+        MessageBox2::error(this, "Ошибка", "Некорректная структура файла журнала");
+        return;
+    }
+    SWJDialog::SWJournalRecordStruct swjr;
+    memcpy(&swjr, &(ba.data()[0]), SWJRSize); // копируем информацию о переключении
+    EOscillogram::GBoStruct gbos;
+    memcpy(&gbos, &(ba.data()[SWJRSize]), GBOSize); // копируем информацию об осциллограмме
+    ba.remove(0, (SWJRSize+GBOSize)); // оставляем только саму осциллограмму
+    if (ba.isEmpty()) // осциллограммы в журнале нет
+        haveosc = false;
+    else
+        haveosc = true;
+    SWJDialog *dlg = new SWJDialog(SWJDialog::SWJ_MODE_OFFLINE);
+    dlg->Init(swjr, );
 }
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE

@@ -36,10 +36,6 @@ private:
     QCPGraph *GraphByName(QCustomPlot *plot, const QString &name);
 
 private slots:
-    void AnalogPlotContextMenu(QPoint pos);
-    void DiscretePlotContextMenu(QPoint pos);
-    void MoveLegend();
-    void ChooseGraphsToDisplay();
     void graphClicked(QCPAbstractPlottable *plot, int dataIndex);
     void ASignalChoosed(QString signame);
     void ASignalToggled(QString signame, bool isChecked);
