@@ -15,8 +15,8 @@ public:
 
      // инициализация графиков
     // имена графиков контактных/аналоговых сигналов, количество точек, диапазон по оси Y для аналоговых
-    void AddAnalogPoint(int GraphNum, float PointValue);
-    void AddDigitalPoint(int GraphNum, int PointValue);
+    void AddAnalogPoint(const QString &GraphNum, float PointValue);
+    void AddDigitalPoint(const QString &GraphNum, int PointValue);
     bool SetPointsAxis(float start, float step);
     void SetFilename(const QString &fn);
     int DContains(const QString &key);
@@ -26,6 +26,7 @@ private:
     int PointsNum;
     QString Filename;
     bool NoDiscrete, NoAnalog;
+    QStringList DigitalNames, AnalogNames;
 
 private slots:
     void SaveToExcel();

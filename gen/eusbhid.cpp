@@ -137,7 +137,10 @@ qint64 EUsbThread::WriteData(QByteArray &ba)
 
 void EUsbThread::Finish()
 {
-    hid_close(HidDevice);
-    emit Finished();
-    AboutToFinish = true;
+    if (!AboutToFinish)
+    {
+        hid_close(HidDevice);
+        emit Finished();
+        AboutToFinish = true;
+    }
 }

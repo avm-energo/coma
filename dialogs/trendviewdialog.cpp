@@ -14,6 +14,8 @@ TrendViewDialog::TrendViewDialog(QWidget *parent) : QDialog(parent)
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowFlags(Qt::WindowMinMaxButtonsHint);
     TrendModel = 0;
+    RangeChangeInProgress = false;
+    Starting = true;
 }
 
 TrendViewDialog::~TrendViewDialog()
@@ -29,7 +31,7 @@ void TrendViewDialog::SetupUI()
 
     if (!NoDiscrete)
     {
-        vlyout->addWidget(WDFunc::NewLBL(this, "Дискретные сигналы"), 0);
+        vlyout->addWidget(WDFunc::NewLBL(this, "Дискретные сигналы"), 0, Qt::AlignCenter);
         SignalChooseWidget *scw = new SignalChooseWidget(DigitalNames);
         scw->setObjectName("digital");
         connect(scw,SIGNAL(SignalChoosed(QString)),this,SLOT(DSignalChoosed(QString)));
@@ -156,7 +158,6 @@ void TrendViewDialog::GraphSetVisible(QCustomPlot *plot, const QString &graphnam
             graph->setName(graphname);
             if (plot->objectName() == "digital")
             {
-                graph->valueAxis()->setRange(-1, 2);
                 graph->setData(TrendModel->MainPoints, TrendModel->DigitalMainData[graphname]);
                 graph->setLineStyle(QCPGraph::lsStepLeft); // импульсы
             }
@@ -170,6 +171,30 @@ void TrendViewDialog::GraphSetVisible(QCustomPlot *plot, const QString &graphnam
         }
     }
     plot->replot();
+}
+
+void TrendViewDialog::DigitalRangeChanged(QCPRange range)
+{
+    if (RangeChangeInProgress || Starting)
+    {
+        RangeChangeInProgress = false;
+        return;
+    }
+    RangeChangeInProgress = true;
+    AnalogPlot->xAxis->setRange(range);
+    AnalogPlot->replot();
+}
+
+void TrendViewDialog::AnalogRangeChanged(QCPRange range)
+{
+    if (RangeChangeInProgress || Starting)
+    {
+        RangeChangeInProgress = false;
+        return;
+    }
+    RangeChangeInProgress = true;
+    DiscretePlot->xAxis->setRange(range);
+    DiscretePlot->replot();
 }
 
 void TrendViewDialog::PlotShow()
@@ -244,6 +269,7 @@ void TrendViewDialog::SetupPlots()
         DiscretePlot->plotLayout()->clear();
         DiscretePlot->plotLayout()->addElement(0, 0, DigitalAxisRect);
         DiscretePlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+        connect(DiscretePlot->xAxis, SIGNAL(rangeChanged(QCPRange)),this,SLOT(DigitalRangeChanged(QCPRange)));
         DigitalAxisRect->setBackground(QBrush(QColor(ACONFYCLR)));
         int count = 0;
         while (count < DigitalGraphNum)
@@ -275,6 +301,7 @@ void TrendViewDialog::SetupPlots()
         AnalogPlot->plotLayout()->addElement(0, 0, AnalogAxisRect);
         AnalogPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
         connect(AnalogPlot, SIGNAL(plottableClick(QCPAbstractPlottable*,int,QMouseEvent*)), this, SLOT(graphClicked(QCPAbstractPlottable*,int)));
+        connect(AnalogPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(AnalogRangeChanged(QCPRange)));
         AnalogAxisRect->setBackground(QBrush(QColor(ACONFYCLR)));
         int count = 0;
         while (count < AnalogGraphNum)
@@ -295,4 +322,5 @@ void TrendViewDialog::SetupPlots()
     }
     else
         NoAnalog = true;
+    Starting = false;
 }

@@ -31,6 +31,7 @@ private:
     float XMin, XMax, YMin, YMax;
     bool NoDiscrete, NoAnalog;
     TrendViewModel *TrendModel;
+    bool RangeChangeInProgress, Starting;
 
     QToolBar *PlotToolBar();
     QCPGraph *GraphByName(QCustomPlot *plot, const QString &name);
@@ -42,6 +43,8 @@ private slots:
     void DSignalChoosed(QString signame);
     void DSignalToggled(QString signame, bool isChecked);
     void GraphSetVisible(QCustomPlot *plot, const QString &graphname, bool visible);
+    void DigitalRangeChanged(QCPRange range);
+    void AnalogRangeChanged(QCPRange range);
 };
 
 #endif // TRENDVIEWDIALOG_H

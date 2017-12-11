@@ -149,6 +149,7 @@ int AbstractConfDialog::GetChNumFromObjectName(QString ObjectName)
 bool AbstractConfDialog::PrepareConfToWrite()
 {
     FillBack();
+    CheckConfErrors.clear();
     CheckConf();
     if (!CheckConfErrors.isEmpty())
     {

@@ -139,8 +139,9 @@ void SwitchJournalDialog::ShowJournal(QModelIndex idx)
     if (oscexist)
         gbos = OscMap[swjr.OscTime];
     SWJDialog *dlg = new SWJDialog;
+    dlg->setModal(false);
     dlg->Init(swjr, oscexist, gbos);
-    dlg->exec();
+    dlg->show();
 }
 
 void SwitchJournalDialog::EraseJournals()

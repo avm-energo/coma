@@ -1,15 +1,15 @@
-; -- pkdn-s_l-hid x86.iss --
+; -- avtuks-L x86.iss --
 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING .ISS SCRIPT FILES!
 
 #define Name "АВТУК-Сервис БР"
 #define GroupName "АВТУК-Сервис"
 #define EngName "AVTUK-S"
-#define Version "2.1.104"
+#define Version "2.1.206"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "avtuks-L.exe"
-#define SetupName "avtuks-L-2.1.104-x86"
+#define SetupName "avtuks-L-2.1.206-x86"
 #define Prefix "D:\Progs\out"
 
 [CustomMessages]

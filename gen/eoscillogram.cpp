@@ -341,22 +341,23 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
                     return GENERALERROR;
                 quint32 DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
                 DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
-                int count = 0; // номер графика
+//                int count = 0; // номер графика
                 for (int i=0; i<20; ++i)
                 {
                     if (DisPoint & 0x00000001)
-                        TModel->AddDigitalPoint(count, 1);
+                        TModel->AddDigitalPoint(tmpdv.at(i), 1);
                     else
-                        TModel->AddDigitalPoint(count, 0);
+                        TModel->AddDigitalPoint(tmpdv.at(i), 0);
                     DisPoint >>= 1;
-                    ++count;
+//                    ++count;
                 }
-                for (count = 0; count < 9; ++count)
-                    TModel->AddAnalogPoint(count, point.An[count]);
+                for (int i=0; i<9; ++i)
+                    TModel->AddAnalogPoint(tmpav.at(i), point.An[i]);
             }
             TModel->SetFilename(fn);
+            dlg->setModal(false);
             dlg->PlotShow();
-            dlg->exec();
+            dlg->show();
             break;
         }
         default:

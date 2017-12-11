@@ -261,7 +261,8 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                     return;
                 }
                 memcpy(&RDLength, &(ReadDataChunk.data()[8]), sizeof(RDLength));
-                emit SetDataSize(RDLength+16);
+                RDLength += 16;
+                emit SetDataSize(RDLength);
             }
             else if (cmd == CN_ErPg)
                 emit SetDataSize(100);

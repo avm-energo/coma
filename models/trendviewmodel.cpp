@@ -10,6 +10,8 @@ TrendViewModel::TrendViewModel(const QStringList &dlist, const QStringList &alis
 
 {
     this->PointsNum = pointsnum;
+    DigitalNames = dlist;
+    AnalogNames = alist;
     for (int i=0; i<dlist.size(); ++i)
         DigitalMainData[dlist.at(i)] = QVector<double>();
     for (int i=0; i<alist.size(); ++i)
@@ -21,25 +23,24 @@ TrendViewModel::~TrendViewModel()
 
 }
 
-void TrendViewModel::AddAnalogPoint(int GraphNum, float PointValue)
+void TrendViewModel::AddAnalogPoint(const QString &GraphNum, float PointValue)
 {
-    if (GraphNum < AnalogMainData.size())
+    if (AnalogMainData.contains(GraphNum))
     {
-        QString tmps = AnalogMainData.keys().at(GraphNum);
-        QVector<double> tmpv = AnalogMainData[tmps];
+        QVector<double> tmpv = AnalogMainData[GraphNum];
         tmpv.append(PointValue);
-        AnalogMainData[tmps] = tmpv;
+        AnalogMainData[GraphNum] = tmpv;
     }
 }
 
-void TrendViewModel::AddDigitalPoint(int GraphNum, int PointValue)
+void TrendViewModel::AddDigitalPoint(const QString &GraphNum, int PointValue)
 {
-    if (GraphNum < DigitalMainData.size())
+    if (DigitalMainData.contains(GraphNum))
     {
-        QString tmps = DigitalMainData.keys().at(GraphNum);
-        QVector<double> tmpv = DigitalMainData[tmps];
+        QVector<double> tmpv = DigitalMainData[GraphNum];
+        PointValue += DigitalNames.indexOf(GraphNum) * 1.5f;
         tmpv.append(PointValue);
-        DigitalMainData[tmps] = tmpv;
+        DigitalMainData[GraphNum] = tmpv;
     }
 }
 

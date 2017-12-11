@@ -9,7 +9,7 @@
 SWJDialog::SWJDialog(int mode, QWidget *parent) : QDialog(parent)
 {
     Mode = mode;
-    OscFunc = new EOscillogram;
+    OscFunc = new EOscillogram(this);
 }
 
 void SWJDialog::Init(SWJournalRecordStruct &swjr, bool haveosc, EOscillogram::GBoStruct &gbos)

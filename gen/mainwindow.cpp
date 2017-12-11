@@ -767,7 +767,7 @@ void MainWindow::LoadSWJ()
     dlg->Init(swjr, haveosc, gbos);
     if (!ba.isEmpty())
         dlg->LoadOsc(ba);
-    dlg->exec();
+    dlg->show();
 }
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE
