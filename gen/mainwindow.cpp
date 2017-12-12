@@ -19,7 +19,7 @@
 #include "commands.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/mytabwidget.h"
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/hiddendialog.h"
 #include "../dialogs/settingsdialog.h"

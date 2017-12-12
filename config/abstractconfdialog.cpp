@@ -5,7 +5,7 @@
 #include <QTextEdit>
 #include <QFileDialog>
 #include "abstractconfdialog.h"
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 //#include "../canal.h"
 #include "../gen/commands.h"

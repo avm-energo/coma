@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QPushButton>
 #include <QMessageBox>
-#include "messagebox.h"
+#include "emessagebox.h"
 
 #if QT_VERSION >= 0x040600
 #include <QScopedPointer>
@@ -23,7 +23,7 @@
     the GNU General Public License for more details.
 */
 
-namespace MessageBox2
+namespace EMessageBox
 {
 
 void information(QWidget *parent, const QString &title,

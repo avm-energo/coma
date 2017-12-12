@@ -5,7 +5,7 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QVBoxLayout>
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/s_tqcombobox.h"
 #include "../widgets/wd_func.h"
 #include "confdialog80.h"

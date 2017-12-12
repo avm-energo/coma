@@ -1,7 +1,7 @@
 #include <QVBoxLayout>
 #include <QHeaderView>
 #include <QPushButton>
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../gen/commands.h"
 #include "../widgets/getoscpbdelegate.h"
 #include "../widgets/wd_func.h"

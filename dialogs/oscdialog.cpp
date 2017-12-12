@@ -14,7 +14,7 @@
 #include "../widgets/s_tqtableview.h"
 #include "../widgets/etablemodel.h"
 #include "../widgets/getoscpbdelegate.h"
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 OscDialog::OscDialog(EOscillogram *osc, QWidget *parent) :

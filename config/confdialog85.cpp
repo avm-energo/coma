@@ -8,7 +8,7 @@
 #include <QButtonGroup>
 #include <QGridLayout>
 #include <QVBoxLayout>
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/s_tqcombobox.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/mystackedwidget.h"

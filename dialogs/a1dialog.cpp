@@ -14,7 +14,7 @@
 #include <QTime>
 #include <QTimer>
 #include "a1dialog.h"
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
 #include "../gen/commands.h"

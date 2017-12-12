@@ -1,6 +1,6 @@
 #include "confdialog31.h"
 #include "config31.h"
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 ConfDialog31::ConfDialog31(QVector<publicclass::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :

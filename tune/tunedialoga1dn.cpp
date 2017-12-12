@@ -13,7 +13,7 @@
 #include "../gen/commands.h"
 #include "../dialogs/keypressdialog.h"
 #include "../widgets/waitwidget.h"
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 TuneDialogA1DN::TuneDialogA1DN(QWidget *parent) :

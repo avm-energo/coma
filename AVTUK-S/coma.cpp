@@ -52,7 +52,7 @@
 #include "../tune/tunedialoga1dn.h"
 #include "../widgets/mytabwidget.h"
 #include "../widgets/waitwidget.h"
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 #include "../gen/log.h"
 

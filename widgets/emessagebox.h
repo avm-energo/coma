@@ -1,5 +1,5 @@
-#ifndef MESSAGEBOX_H
-#define MESSAGEBOX_H
+#ifndef EMESSAGEBOX_H
+#define EMESSAGEBOX_H
 
 /*
     Copyright (c) 2009-10 Qtrac Ltd. All rights reserved.
@@ -15,7 +15,7 @@
 */
 
 
-namespace MessageBox2
+namespace EMessageBox
 {
 
 void information(QWidget *parent, const QString &title,
@@ -30,4 +30,4 @@ bool question(QWidget *parent, const QString &title,
               const QString &noText=QObject::tr("&Отмена"));
 }
 
-#endif // MESSAGEBOX_H
+#endif // EMESSAGEBOX_H

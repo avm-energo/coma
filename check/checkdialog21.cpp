@@ -13,7 +13,7 @@
 #include <QFileDialog>
 #include <QDateTime>
 #include "checkdialog21.h"
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../gen/publicclass.h"
 #include "../gen/commands.h"
 

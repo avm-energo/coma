@@ -14,7 +14,7 @@
 #include <QDoubleSpinBox>
 #include <QTabBar>
 #include "abstractconfdialog3x.h"
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 AbstractConfDialog3x::AbstractConfDialog3x(QWidget *parent) :

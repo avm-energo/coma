@@ -14,7 +14,7 @@
 #include <QCoreApplication>
 #include <QTabBar>
 #include "abstractconfdialog2x.h"
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 AbstractConfDialog2x::AbstractConfDialog2x(QWidget *parent) :

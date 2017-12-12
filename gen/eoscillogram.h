@@ -52,8 +52,8 @@ public:
 
     struct Point85
     {
-        quint32 Dis;
         float An[9];    // Ua,Ub,Uc (напряжение источника), Ia, Ib, Ic (ток ВВ), Ua,Ub,Uc (напряжение нагрузки)
+        quint32 Dis;
     };
                         // Dis:
                         // 31-29:	nOx – НО блок-контакты полюсов А, В, С (нефильтр.)

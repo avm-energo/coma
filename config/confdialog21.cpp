@@ -15,7 +15,7 @@
 #include <QDoubleSpinBox>
 #include <QTabBar>
 #include "confdialog21.h"
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 ConfDialog21::ConfDialog21(QVector<publicclass::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :

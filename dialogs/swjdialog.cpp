@@ -3,7 +3,7 @@
 #include "../gen/publicclass.h"
 #include "../gen/commands.h"
 #include "../widgets/wd_func.h"
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "swjdialog.h"
 
 SWJDialog::SWJDialog(int mode, QWidget *parent) : QDialog(parent)

@@ -10,7 +10,7 @@
 #include "tunedialog80.h"
 #include "../config/config80.h"
 #include "../widgets/waitwidget.h"
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 #include "../gen/commands.h"
 

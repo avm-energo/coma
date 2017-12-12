@@ -12,7 +12,7 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include "checkdialog85.h"
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 #include "../gen/publicclass.h"
 #include "../config/config.h"

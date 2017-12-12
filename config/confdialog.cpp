@@ -5,7 +5,7 @@
 #include <QPushButton>
 #include "confdialog.h"
 #include "../widgets/s_tqcombobox.h"
-#include "../widgets/messagebox.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 #include "../gen/publicclass.h"
 

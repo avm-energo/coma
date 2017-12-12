@@ -87,14 +87,14 @@ SOURCES += \
     ../widgets/etableitem.cpp \
     ../widgets/etablemodel.cpp \
     ../widgets/getoscpbdelegate.cpp \
-    ../widgets/messagebox.cpp \
     ../widgets/mytabwidget.cpp \
     ../widgets/mystackedwidget.cpp \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/s_tqcombobox.cpp \
     ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp
+    ../widgets/wd_func.cpp \
+    ../widgets/emessagebox.cpp
 
 HEADERS  += \
     coma.h \
@@ -160,13 +160,13 @@ HEADERS  += \
     ../widgets/getoscpbdelegate.h \
     ../widgets/mytabwidget.h \
     ../widgets/errorprotocolwidget.h \
-    ../widgets/messagebox.h \
     ../widgets/mystackedwidget.h \
     ../widgets/signalchoosewidget.h \
     ../widgets/s_tqcombobox.h \
     ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h
+    ../widgets/wd_func.h \
+    ../widgets/emessagebox.h
 
 INCLUDEPATH += $$PWD/../../includes
 
