@@ -8,7 +8,7 @@ ConfDialog31::ConfDialog31(QVector<publicclass::DataRec> &S2Config, bool BaseBoa
 {
     this->S2Config = &S2Config;
     C31 = new Config31(S2Config, BaseBoard);
-    QStringList sl = QStringList() << "Не исп." << "Обычный" << "Инверсия";
+    QStringList sl = QStringList() << "Обычный" << "Не исп." << "Инверсия";
     SetInputs(sl, DIN31_NUMCH);
     SetupUI();
     PrereadConf();
@@ -19,23 +19,9 @@ void ConfDialog31::Fill()
     int i;
     for (i = 0; i < DIN31_NUMCH; i++)
     {
-        int Intype = C31->Bci_block.inblk.in_type[i];
-        if (Intype & D_INTYPE_NONE)
-        {
-            WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), 0);
-            DisableChannel(i, true);
-            continue;
-        }
-        if (Intype == D_INTYPE_NORM)
-        {
-            WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), 1);
-            DisableChannel(i, false);
-        }
-        if (Intype & D_INTYPE_INV)
-        {
-            WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), 2);
-            DisableChannel(i, false);
-        }
+        int intype = C31->Bci_block.inblk.in_type[i];
+        WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), pc.IndexByBit(intype));
+        DisableChannel(i, (intype == D_INTYPE_NONE));
         WDFunc::SetSPBData(this, "chdlyspb."+QString::number(i), static_cast<double>(C31->Bci_block.inblk.dly_time[i])/4);
     }
     int numpair = DIN31_NUMCH / 2;
@@ -57,7 +43,7 @@ void ConfDialog31::SetPair(int firstch, int secondch)
 {
     if ((firstch > DIN31_NUMCH) || (secondch > DIN31_NUMCH) || (firstch < 0) || (secondch < 0))
     {
-        MessageBox2::information(this, "Предупреждение", "Ошибка при чтении пары каналов из конфигурации");
+        EMessageBox::information(this, "Предупреждение", "Ошибка при чтении пары каналов из конфигурации");
         return;
     }
     WDFunc::SetCBIndex(this, "chpaircb."+QString::number(firstch), secondch+1); // +1 из-за 0-го элемента "нет пары"

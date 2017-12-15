@@ -96,7 +96,7 @@ void OscDialog::GetAndProcessOscInfo()
     {
         if (OscInfoSize < RecordSize)
         {
-            MessageBox2::information(this, "Информация", "Присланное количество байт слишком мало");
+            EMessageBox::information(this, "Информация", "Присланное количество байт слишком мало");
             return;
         }
         tm->ClearModel();
@@ -167,7 +167,7 @@ void OscDialog::GetOsc(QModelIndex idx)
         OscFunc->ProcessOsc();
 /*        if (InputFileType() == GENERALERROR)
         {
-            MessageBox2::error(this, "Ошибка", "Ошибка при задании типа файла осциллограмм");
+            EMessageBox::error(this, "Ошибка", "Ошибка при задании типа файла осциллограмм");
             return;
         } */
     }
@@ -183,9 +183,9 @@ void OscDialog::EraseOsc()
 {
     pc.PrbMessage = "Стёрто записей: ";
     if (Commands::EraseTechBlock(TECH_Bo) == NOERROR)
-        MessageBox2::information(this, "Внимание", "Стёрто успешно");
+        EMessageBox::information(this, "Внимание", "Стёрто успешно");
     else
-        MessageBox2::information(this, "Внимание", "Ошибка при стирании");
+        EMessageBox::information(this, "Внимание", "Ошибка при стирании");
 }
 
 /*void OscDialog::Accept()

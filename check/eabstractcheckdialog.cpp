@@ -34,6 +34,38 @@ EAbstractCheckDialog::EAbstractCheckDialog(QWidget *parent) :
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
+void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
+{
+    if (tabnames.size() < BdUINum)
+    {
+        ERMSG("Wrong BdTab size");
+        return;
+    }
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QTabWidget *CheckTW = new QTabWidget;
+    QString ConfTWss = "QTabBar::tab {margin-right: 0px; margin-left: 0px; padding: 5px;}"
+                       "QTabBar::tab:selected {background-color: "+QString(TABCOLORA1)+";"
+                        "border: 1px solid #000000;"
+                        "border-top-left-radius: 4px;"
+                        "border-top-right-radius: 4px;"
+                        "padding: 2px;"
+                        "margin-left: -4px; margin-right: -4px;}" \
+                       "QTabBar::tab:first:selected {margin-left: 0;}" \
+                       "QTabBar::tab:last:selected {margin-right: 0;}" \
+                       "QTabBar::tab:only-one {margin: 0;}";
+    CheckTW->tabBar()->setStyleSheet(ConfTWss);
+//    CheckTW->addTab(AutoCheckUI(),"  Автоматическая проверка  ");
+    for (int i=0; i<BdUINum; ++i)
+        CheckTW->addTab(BdUI(i),"  "+tabnames.at(i)+"  ");
+    QWidget *w = CustomTab();
+    if (w != 0)
+        CheckTW->addTab(w, "  Прочее  ");
+    lyout = new QVBoxLayout;
+    lyout->addWidget(CheckTW);
+    lyout->addWidget(BottomUI());
+    setLayout(lyout);
+}
+
 void EAbstractCheckDialog::Check1PPS()
 {
 
@@ -99,7 +131,7 @@ QWidget *EAbstractCheckDialog::BottomUI()
 /*void EAbstractCheckDialog::GetIP()
 {
     if (Commands::GetIP(&Bip_block, sizeof(Bip)) != NOERROR)
-        MessageBox2::error(this, "Ошибка", "Ошибка получения данных по IP адресу модуля");
+        EMessageBox::error(this, "Ошибка", "Ошибка получения данных по IP адресу модуля");
     else
         CheckIP();
 }
@@ -216,7 +248,7 @@ void EAbstractCheckDialog::StopAnalogMeasurements()
         if (xlsx)
         {
             xlsx->save();
-            MessageBox2::information(this, "Внимание", "Файл создан успешно");
+            EMessageBox::information(this, "Внимание", "Файл создан успешно");
             delete xlsx;
         }
         QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");

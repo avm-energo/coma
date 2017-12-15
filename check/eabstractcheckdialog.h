@@ -25,14 +25,16 @@ class EAbstractCheckDialog : public QDialog
     Q_OBJECT
 public:
     explicit EAbstractCheckDialog(QWidget *parent = 0);
-    virtual void SetupUI()=0;
+    void SetupUI(QStringList &tabnames);
 
+    virtual QWidget *BdUI(int bdnum) = 0; // визуализация наборов текущих данных от модуля
     virtual void RefreshAnalogValues(int bdnum) = 0; // обновление полей в GUI из полученного соответствующего Bd_block
     virtual void PrepareHeadersForFile(int row) = 0; // row - строка для записи заголовков
     virtual void WriteToFile(int row, int bdnum) = 0; // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
     virtual void ChooseValuesToWrite() = 0;
     virtual void SetDefaultValuesToWrite() = 0;
     virtual void PrepareAnalogMeasurements() = 0; // функция подготовки к измерениям (например, запрос постоянных данных)
+    virtual QWidget *CustomTab() = 0; // если требуется для модуля специфичный вывод данных
     void SetBd(int bdnum, void *block, int blocksize, bool toxlsx=true);
     QWidget *BottomUI();
 

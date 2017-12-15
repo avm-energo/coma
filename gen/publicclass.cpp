@@ -408,6 +408,22 @@ QString publicclass::UnixTime64ToString(quint64 utime)
     return time;
 }
 
+int publicclass::IndexByBit(quint32 dword)
+{
+    quint32 bit = 0x00000001;
+    for (int i=0; i<32; ++i)
+        if (dword & bit)
+            return (i+1);
+    return 0;
+}
+
+quint32 publicclass::BitByIndex(int idx)
+{
+    if ((idx == 0) || (idx > 31))
+        return 0;
+    return (0x00000001 << (idx-1));
+}
+
 void publicclass::ErMsg(int ermsgnum)
 {
     if (ermsgnum < pc.errmsgs.size())

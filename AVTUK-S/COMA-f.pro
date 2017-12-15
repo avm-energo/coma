@@ -83,6 +83,7 @@ SOURCES += \
     ../tune/tunedialog80.cpp \
     ../tune/tunedialoga1.cpp \
     ../tune/tunedialoga1dn.cpp \
+    ../widgets/emessagebox.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/etableitem.cpp \
     ../widgets/etablemodel.cpp \
@@ -93,8 +94,7 @@ SOURCES += \
     ../widgets/s_tqcombobox.cpp \
     ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp \
-    ../widgets/emessagebox.cpp
+    ../widgets/wd_func.cpp
 
 HEADERS  += \
     coma.h \
@@ -155,6 +155,7 @@ HEADERS  += \
     ../tune/tunedialog80.h \
     ../tune/tunedialoga1.h \
     ../tune/tunedialoga1dn.h \
+    ../widgets/emessagebox.h \
     ../widgets/etableitem.h \
     ../widgets/etablemodel.h \
     ../widgets/getoscpbdelegate.h \
@@ -165,8 +166,7 @@ HEADERS  += \
     ../widgets/s_tqcombobox.h \
     ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h \
-    ../widgets/emessagebox.h
+    ../widgets/wd_func.h
 
 INCLUDEPATH += $$PWD/../../includes
 

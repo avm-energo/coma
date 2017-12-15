@@ -147,8 +147,8 @@ void SwitchJournalDialog::ShowJournal(QModelIndex idx)
 void SwitchJournalDialog::EraseJournals()
 {
     if (Commands::EraseTechBlock(TECH_SWJ) == NOERROR)
-        MessageBox2::information(this, "Внимание", "Стёрто успешно");
+        EMessageBox::information(this, "Внимание", "Стёрто успешно");
     else
-        MessageBox2::information(this, "Внимание", "Ошибка при стирании");
+        EMessageBox::information(this, "Внимание", "Ошибка при стирании");
 }
 

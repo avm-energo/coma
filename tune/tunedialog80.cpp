@@ -344,7 +344,7 @@ void TuneDialog80::StartTune()
     if (res)
     {
         SetTunePbEnabled(true);
-        MessageBox2::information(this, "Внимание", "Настройка проведена успешно!");
+        EMessageBox::information(this, "Внимание", "Настройка проведена успешно!");
         OkMsgSetVisible(MSG_END);
     }*/
 }
@@ -366,7 +366,7 @@ int TuneDialog80::Start7_3_1()
         // получение настроечных коэффициентов от модуля
         if (Commands::GetBac(BT_NONE, &Bac_block, sizeof(Bac_block)) != NOERROR)
         {
-            MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");
+            EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
             return GENERALERROR;
         }
         // обновление коэффициентов в соответствующих полях на экране
@@ -600,7 +600,7 @@ int TuneDialog80::Start7_3_8_2()
 
 int TuneDialog80::Start7_3_9()
 {
-    if (MessageBox2::question(this,"Закончить?","Закончить настройку?"))
+    if (EMessageBox::question(this,"Закончить?","Закончить настройку?"))
     {
         if (!LoadWorkConfig())
             return GENERALERROR;
@@ -613,11 +613,11 @@ int TuneDialog80::Start7_3_9()
     }
     else
         return false;
-    if (MessageBox2::question(this,"Вопрос","Очистить память осциллограмм?"))
+    if (EMessageBox::question(this,"Вопрос","Очистить память осциллограмм?"))
     {
         pc.PrbMessage = "Стёрто записей: ";
         if (Commands::EraseTechBlock(TECH_Bo) == NOERROR)
-            MessageBox2::information(this, "Внимание", "Стёрто успешно");
+            EMessageBox::information(this, "Внимание", "Стёрто успешно");
         else
             ERMSG("Ошибка при стирании");
     }
@@ -896,7 +896,7 @@ int TuneDialog80::CheckTuneCoefs()
             return GENERALERROR;
         if (!IsWithinLimits(tmpd, *VTC, *TTC))
         {
-            MessageBox2::information(this, "Внимание", "Настроечные по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
+            EMessageBox::information(this, "Внимание", "Настроечные по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
                       ", должно быть: "+QString::number(*VTC,'f',4)+\
                       " +/- "+QString::number(*TTC,'f',4));
             res=GENERALERROR;
@@ -934,7 +934,7 @@ int TuneDialog80::CheckMip()
             return GENERALERROR;
         if (!IsWithinLimits(tmpd, *VTC, *TTC))
         {
-            MessageBox2::information(this, "Внимание", "Несовпадение МИП по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
+            EMessageBox::information(this, "Внимание", "Несовпадение МИП по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
                       ", должно быть: "+QString::number(*VTC,'f',4)+\
                       " +/- "+QString::number(*TTC,'f',4));
             return GENERALERROR;
@@ -967,7 +967,7 @@ int TuneDialog80::CheckAnalogValues(double u, double i, double p, double q, doub
 
         if (!IsWithinLimits(tmpd,*VTC,*TTC))
         {
-            MessageBox2::information(this, "Внимание", "Несовпадение по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
+            EMessageBox::information(this, "Внимание", "Несовпадение по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
                       ", должно быть: "+QString::number(*VTC,'f',4)+ " +/- " + QString::number(*TTC,'f',4));
             return GENERALERROR;
         }
@@ -1094,7 +1094,7 @@ int TuneDialog80::ReadAnalogMeasurements()
 /*    // получение текущих аналоговых сигналов от модуля
     if (Commands::GetBd(BT_NONE, &Bda_block, sizeof(Bda_block)) != NOERROR)
     {
-        MessageBox2::information(this, "Внимание", "Ошибка при приёме данных");
+        EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
         return;
     }  */
     return NOERROR;

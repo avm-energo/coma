@@ -24,6 +24,7 @@ CheckDialog80::CheckDialog80(QWidget *parent) : EAbstractCheckDialog(parent)
     Ch80 = new Check_80;
     Ch = new Check;
     BdNum = 11;
+    BdUINum = 17;
     SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
     SetBd(1, &Ch80->Bd_block1, sizeof(Check_80::Bd1));
     SetBd(2, &Ch80->Bd_block2, sizeof(Check_80::Bd2));
@@ -35,7 +36,9 @@ CheckDialog80::CheckDialog80(QWidget *parent) : EAbstractCheckDialog(parent)
     SetBd(8, &Ch80->Bd_block8, sizeof(Check_80::Bd8));
     SetBd(9, &Ch80->Bd_block9, sizeof(Check_80::Bd8));
     SetBd(10, &Ch80->Bd_block10, sizeof(Check_80::Bd10));
-    SetupUI();
+    QStringList sl = QStringList() << "Общ" << "In" << "IUEF1" << "IUEF2" << "NS1" << "H11" << "H12" << "H13" << "H14" << \
+                                      "NS2" << "H21" << "H22" << "H23" << "H24" << "Lin1" << "Lin2" << "PQS";
+    SetupUI(sl);
 }
 
 QWidget *CheckDialog80::AutoCheckUI()
@@ -78,11 +81,6 @@ QWidget *CheckDialog80::AutoCheckUI()
     lyout->addStretch(99);
     w->setLayout(lyout);
     return w;
-}
-
-void CheckDialog80::SetupUI()
-{
-
 }
 
 QWidget *CheckDialog80::BdUI(int bdnum)
@@ -214,4 +212,9 @@ void CheckDialog80::SetDefaultValuesToWrite()
 void CheckDialog80::PrepareAnalogMeasurements()
 {
 
+}
+
+QWidget *CheckDialog80::CustomTab()
+{
+    return 0;
 }

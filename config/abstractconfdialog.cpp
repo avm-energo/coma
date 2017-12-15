@@ -22,7 +22,7 @@ void AbstractConfDialog::ReadConf()
     else
     {
         QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
-        MessageBox2::error(this, "ошибка", "Ошибка чтения конфигурации из " + tmps + QString::number(res));
+        EMessageBox::error(this, "ошибка", "Ошибка чтения конфигурации из " + tmps + QString::number(res));
     }
 }
 
@@ -34,10 +34,10 @@ void AbstractConfDialog::WriteConf()
     if ((res = Commands::WriteFile(NULL, 1, S2Config)) == NOERROR)
     {
         emit BsiIsNeedToBeAcquiredAndChecked();
-        MessageBox2::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
+        EMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
     }
     else
-        MessageBox2::error(this, "Ошибка", "Ошибка записи конфигурации"+QString::number(res));
+        EMessageBox::error(this, "Ошибка", "Ошибка записи конфигурации"+QString::number(res));
 }
 
 void AbstractConfDialog::SaveConfToFile()
@@ -56,7 +56,7 @@ void AbstractConfDialog::SaveConfToFile()
     switch (res)
     {
     case NOERROR:
-        MessageBox2::information(this, "Внимание", "Записано успешно!");
+        EMessageBox::information(this, "Внимание", "Записано успешно!");
         break;
     case ER_FILEWRITE:
         ERMSG("Ошибка при записи файла!");
@@ -87,7 +87,7 @@ void AbstractConfDialog::LoadConfFromFile()
         return;
     }
     emit NewConfLoaded();
-    MessageBox2::information(this, "Успешно", "Загрузка прошла успешно!");
+    EMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
 }
 
 QWidget *AbstractConfDialog::ConfButtons()

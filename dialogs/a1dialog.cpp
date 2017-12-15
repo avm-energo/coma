@@ -181,7 +181,7 @@ void A1Dialog::GenerateReport()
 //    report->previewReport();
 //    report->designReport();
     delete report;
-    MessageBox2::information(this, "Успешно!", "Записано успешно!");
+    EMessageBox::information(this, "Успешно!", "Записано успешно!");
 }
 
 void A1Dialog::ConditionDataDialog()
@@ -415,7 +415,7 @@ void A1Dialog::StartWork()
     pc.Cancelled = false;
     if (GetConf() != NOERROR)
     {
-        MessageBox2::error(this, "Ошибка", "Ошибка чтения конфигурации или настроечных параметров из модуля");
+        EMessageBox::error(this, "Ошибка", "Ошибка чтения конфигурации или настроечных параметров из модуля");
         return;
     }
     WDFunc::SetEnabled(this, "StartWorkPb", false);
@@ -425,7 +425,7 @@ void A1Dialog::StartWork()
         return;
     if (Commands::SetUsingVariant(TuneVariant+1) != NOERROR)
     {
-        MessageBox2::error(this, "Ошибка", "Ошибка установки варианта использования");
+        EMessageBox::error(this, "Ошибка", "Ошибка установки варианта использования");
         return;
     }
     QDialog *dlg = new QDialog(this);
@@ -475,7 +475,7 @@ void A1Dialog::StartWork()
     }
     if (!pc.Cancelled)
     {
-        if (MessageBox2::question(this, "Подтверждение", "Подключите вывод нижнего плеча \"своего\" делителя напряжения ко входу U1 прибора\n"
+        if (EMessageBox::question(this, "Подтверждение", "Подключите вывод нижнего плеча \"своего\" делителя напряжения ко входу U1 прибора\n"
                                   "Вывод нижнего плеча поверяемого делителя или выход низшего напряжения поверяемого ТН - ко входу U2\n"
                                   "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное 0,25·Sном") == true)
         {
@@ -490,7 +490,7 @@ void A1Dialog::StartWork()
                 VoltageInkV = static_cast<float>(Bac_block.Bac_block[TuneVariant].K_DN) * 20 / 1732;
                 VoltageInV = static_cast<float>(1000 * 20) / 1732;
             }
-            if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + \
+            if (EMessageBox::question(this, "Подтверждение", "Подайте на делители напряжение " + \
                                       QString::number(VoltageInkV, 'f', 1) + " кВ ("+QString::number(VoltageInV, 'f', 1)+" В)") == true)
             {
                 Index = 0;
@@ -503,7 +503,7 @@ void A1Dialog::StartWork()
         }
     }
     WDFunc::SetEnabled(this, "StartWorkPb", true);
-    MessageBox2::information(this, "Информация", "Операция прервана");
+    EMessageBox::information(this, "Информация", "Операция прервана");
     return;
 }
 
@@ -520,7 +520,7 @@ void A1Dialog::ParsePKDNFile()
     int res = pc.LoadFromFile(filename, ba);
     if (res != NOERROR)
     {
-        MessageBox2::error(this, "Ошибка", "Ошибка загрузки файла");
+        EMessageBox::error(this, "Ошибка", "Ошибка загрузки файла");
         return;
     }
     // заполняем ReportHeader
@@ -549,7 +549,7 @@ void A1Dialog::ParsePKDNFile()
         }
         else
         {
-            MessageBox2::error(this, "Ошибка", "Ошибочный тип трансформатора в файле");
+            EMessageBox::error(this, "Ошибка", "Ошибочный тип трансформатора в файле");
             return;
         }
         // разберём время
@@ -585,7 +585,7 @@ void A1Dialog::ParsePKDNFile()
             int Pindex = (Index > 4) ? (8 - Index) : Index;
             if (memptr > (ba.size() - MDSs))
             {
-                MessageBox2::error(this, "Ошибка", "Неожиданный конец файла");
+                EMessageBox::error(this, "Ошибка", "Неожиданный конец файла");
                 return;
             }
             memcpy(&MDS, &ba.data()[memptr], MDSs);
@@ -610,7 +610,7 @@ void A1Dialog::ParsePKDNFile()
     }
     else
     {
-        MessageBox2::error(this, "Ошибка", "Неожиданный конец файла");
+        EMessageBox::error(this, "Ошибка", "Неожиданный конец файла");
         return;
     }
 }
@@ -648,7 +648,7 @@ void A1Dialog::Accept()
         {
             Index = 0;
             CurrentS = 1;
-            if (MessageBox2::question(this, "Подтверждение", "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное 1,0·Sном") == false)
+            if (EMessageBox::question(this, "Подтверждение", "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное 1,0·Sном") == false)
             {
                 pc.Cancelled = true;
                 Decline();
@@ -675,7 +675,7 @@ void A1Dialog::Accept()
     Pindex = (Index > 4) ? (8 - Index) : Index;
     VoltageInkV = static_cast<float>(Bac_block.Bac_block[TuneVariant].K_DN) * Percents[Pindex] / 1732;
     VoltageInV = static_cast<float>(1000 * Percents[Pindex]) / 1732;
-    if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + \
+    if (EMessageBox::question(this, "Подтверждение", "Подайте на делители напряжение " + \
                               QString::number(VoltageInkV, 'f', 1) + " кВ ("+QString::number(VoltageInV, 'f', 1)+" В)") == false)
         Decline();
     MeasurementTimer->start();
@@ -763,7 +763,7 @@ int A1Dialog::GetStatistics()
         else
         {
             w->close();
-            MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda_out");
+            EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_out");
             return GENERALERROR;
         }
         tmpst2.dUrms += ChA1->Bda_out.dUrms;

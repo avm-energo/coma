@@ -142,7 +142,7 @@
 #define MAINWINCLRA1    "#FFFFE0"
 #define DCONFCLR    "#DDDDAA"
 //#define DCONFCLR    "#D0FFFF"
-#define DCONFWCLR   "#C0FFE0"
+#define DCONFWCLR   "#EEEECC"
 #define DCONFGCLR   "#CCCC99"
 #define DCONFRCLR   "#FFCCCC"
 #define DCONFYCLR   "#FFFFCC"
@@ -338,6 +338,8 @@ public:
     int SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes);
     bool FloatInRange(float var, float value);
     QString UnixTime64ToString(quint64 utime);
+    int IndexByBit(quint32 dword); // возвращение номера первого, начиная с младшего, установленного бита, нумерация с 1, dword=0 => return 0
+    quint32 BitByIndex(int idx); // возвращение битовой маски по индексу (0 => 0, 1 => 1, 2 => 2, 3 => 4, ...)
 
 private:
     void addmessage(QStringList &sl, QString mes);

@@ -113,7 +113,7 @@ void SWJDialog::SaveSWJ()
     if (Commands::GetOsc(GBOs.FileNum, &(ba.data()[SWJSize+GBOSize])) == NOERROR)
         pc.SaveFile(this, "Файлы жуналов (*.swj)", "swj", ba, ba.size());
     else
-        MessageBox2::error(this, "Ошибка", "Ошибка чтения осциллограммы из модуля");
+        EMessageBox::error(this, "Ошибка", "Ошибка чтения осциллограммы из модуля");
 }
 
 void SWJDialog::ShowOsc()

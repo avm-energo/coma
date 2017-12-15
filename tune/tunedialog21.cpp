@@ -270,7 +270,7 @@ bool TuneDialog21::tune(int Type, int ChNum)
                 {
                     if (pb != 0)
                         pb->setStyleSheet("QPushButton {background-color: #FFE0C0;}");
-                    MessageBox2::information(this, "Внимание", "Успешно");
+                    EMessageBox::information(this, "Внимание", "Успешно");
                 }
                 else
                 {

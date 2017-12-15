@@ -328,7 +328,7 @@ int MainWindow::CheckPassword()
         return GENERALERROR;
     if (!ok)
     {
-        MessageBox2::error(this, "Неправильно", "Пароль введён неверно");
+        EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
         return GENERALERROR;
     }
     return NOERROR;
@@ -342,7 +342,7 @@ void MainWindow::Stage1_5()
     QApplication::setOverrideCursor(Qt::WaitCursor);
     if (Commands::Connect() != NOERROR)
     {
-        MessageBox2::error(this, "Ошибка", "Не удалось установить связь");
+        EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
         QApplication::restoreOverrideCursor();
         return;
     }
@@ -356,7 +356,7 @@ void MainWindow::Stage2()
     int res;
     if ((res = Commands::GetBsi()) != NOERROR)
     {
-        if (MessageBox2::question(this, "Ошибка", \
+        if (EMessageBox::question(this, "Ошибка", \
                                   "Блок Bsi не может быть прочитан, ошибка " + QString::number(res) + ", повторить?") == 1) // Yes
         {
             cn->Disconnect();
@@ -387,7 +387,7 @@ void MainWindow::SetDefConf()
     if (ConfM != 0)
         ConfM->SetDefConf();
     Fill();
-    MessageBox2::information(this, "Успешно", "Задана конфигурация по умолчанию");
+    EMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
 }
 
 void MainWindow::Fill()
@@ -431,7 +431,7 @@ void MainWindow::OpenBhbDialog()
     if (!Commands::isConnected())
     {
         QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модулем" : "прибором");
-        MessageBox2::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с "+tmps);
+        EMessageBox::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с "+tmps);
         return;
     }
     if (CheckPassword() == GENERALERROR)
@@ -444,7 +444,7 @@ void MainWindow::OpenBhbDialog()
     QApplication::setOverrideCursor(Qt::WaitCursor);
     if (Commands::Connect() != NOERROR)
     {
-        MessageBox2::error(this, "Ошибка", "Не удалось установить связь");
+        EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
         QApplication::restoreOverrideCursor();
         return;
     }
@@ -452,7 +452,7 @@ void MainWindow::OpenBhbDialog()
     int res;
     if ((res = Commands::GetBsi()) != NOERROR)
     {
-        MessageBox2::error(this, "Ошибка", "Блок Bsi не может быть прочитан, ошибка " + QString::number(res));
+        EMessageBox::error(this, "Ошибка", "Блок Bsi не может быть прочитан, ошибка " + QString::number(res));
         Commands::Disconnect();
     }
     emit BsiRefresh();
@@ -751,7 +751,7 @@ void MainWindow::LoadSWJ()
     pc.LoadFile(this, "Switch journal files (*.swj)", ba);
     if (ba.size() < (SWJRSize + GBOSize))
     {
-        MessageBox2::error(this, "Ошибка", "Некорректная структура файла журнала");
+        EMessageBox::error(this, "Ошибка", "Некорректная структура файла журнала");
         return;
     }
     SWJDialog::SWJournalRecordStruct swjr;
@@ -792,7 +792,7 @@ void MainWindow::MouseMove()
 
 void MainWindow::ShowErrorMessageBox(QString message)
 {
-    MessageBox2::error(this, "Ошибка", message);
+    EMessageBox::error(this, "Ошибка", message);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *e)

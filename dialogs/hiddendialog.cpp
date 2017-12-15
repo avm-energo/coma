@@ -221,5 +221,5 @@ void HiddenDialog::SendBhb()
         ERMSG("Проблема при записи блока Hidden block");
         return;
     }
-    MessageBox2::information(this, "Успешно", "Записано успешно");
+    EMessageBox::information(this, "Успешно", "Записано успешно");
 }

@@ -455,12 +455,12 @@ void TuneDialogA1DN::AcceptDNData()
     WDFunc::LENumber(this, "dnfnumle", Bac_block.DNFNum);
     if (Commands::WriteBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) != NOERROR)
     {
-        MessageBox2::error(this, "Ошибка", "Ошибка при записи коэффициентов");
+        EMessageBox::error(this, "Ошибка", "Ошибка при записи коэффициентов");
         pc.Cancelled = true;
     }
     else
     {
-        MessageBox2::information(this, "Успешно", "Записано успешно!");
+        EMessageBox::information(this, "Успешно", "Записано успешно!");
         FillBac();
         Accepted = true;
     }
@@ -520,7 +520,7 @@ int TuneDialogA1DN::Start7_2_345(int counter)
         return GENERALERROR;
     float VoltageInkV = static_cast<float>(Bac_block.Bac_block[TuneVariant].K_DN) * Percents[counter] / 1732;
     float VoltageInV = 57.735 * Percents[counter] / 100;
-    if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + \
+    if (EMessageBox::question(this, "Подтверждение", "Подайте на делители напряжение " + \
                               QString::number(VoltageInkV, 'f', 1) + " кВ (" + QString::number(VoltageInV, 'f', 3) + " В)") == false)
     {
         pc.Cancelled = true;
@@ -543,7 +543,7 @@ int TuneDialogA1DN::Start7_2_345(int counter)
             FillBdIn();
         else
         {
-            MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
+            EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
             return GENERALERROR;
         }
         tmpst2.Phy += tmpst.Phy;
@@ -577,7 +577,7 @@ int TuneDialogA1DN::Start7_2_67()
     return NOERROR;
 /*    if (cn->result == NOERROR)
     {
-        MessageBox2::information(this, "Внимание", "Записано успешно!");
+        EMessageBox::information(this, "Внимание", "Записано успешно!");
         return NOERROR;
     }
     return GENERALERROR; */
@@ -585,7 +585,7 @@ int TuneDialogA1DN::Start7_2_67()
 
 int TuneDialogA1DN::Start7_2_8()
 {
-    if (MessageBox2::question(this, "Подтверждение", "Теперь необходимо подтвердить погрешности установки") == false)
+    if (EMessageBox::question(this, "Подтверждение", "Теперь необходимо подтвердить погрешности установки") == false)
     {
         pc.Cancelled = true;
         return GENERALERROR;
@@ -658,7 +658,7 @@ int TuneDialogA1DN::Start7_2_9(int counter)
         return GENERALERROR;
     float VoltageInkV = static_cast<float>(Bac_block.Bac_block[TuneVariant].K_DN) * Percents[counter] / 1732;
     float VoltageInV = 57.735 * Percents[counter] / 100;
-    if (MessageBox2::question(this, "Подтверждение", "Подайте на делители напряжение " + \
+    if (EMessageBox::question(this, "Подтверждение", "Подайте на делители напряжение " + \
                               QString::number(VoltageInkV, 'f', 1) + " кВ (" + QString::number(VoltageInV, 'f', 3) + " В)") == false)
     {
         pc.Cancelled = true;
@@ -681,7 +681,7 @@ int TuneDialogA1DN::Start7_2_9(int counter)
             FillBdOut();
         else
         {
-            MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda_out");
+            EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_out");
             return GENERALERROR;
         }
         tmpst2.dUrms += ChA1->Bda_out.dUrms;
@@ -725,7 +725,7 @@ int TuneDialogA1DN::ReadAnalogMeasurements()
     // получение текущих аналоговых сигналов от модуля
     if (Commands::GetBda(BT_BASE, &ChA1->Bda_block, sizeof(CheckA1::Bda)) != NOERROR)
     {
-        MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda");
+        EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda");
         return GENERALERROR;
     }
     ChA1->FillBda(this);
@@ -734,7 +734,7 @@ int TuneDialogA1DN::ReadAnalogMeasurements()
 
 int TuneDialogA1DN::ShowScheme()
 {
-    if (MessageBox2::question(this, "Подтверждение", "Подключите выход своего делителя напряжения ко входу U1 прибора\n"
+    if (EMessageBox::question(this, "Подтверждение", "Подключите выход своего делителя напряжения ко входу U1 прибора\n"
                               "Выход эталонного делителя - ко входу U2") == false)
     {
         pc.Cancelled = true;

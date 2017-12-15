@@ -33,7 +33,9 @@ CheckDialogA1::CheckDialogA1(QWidget *parent) : EAbstractCheckDialog(parent)
     SetBd(A1_BDA_IN_AN_BN, &ChA1->Bda_in_an, sizeof(CheckA1::A1_Bd3));
     SetBd(A1_BDA_OUT_AN_BN, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
 //    SetBd(6, &ChA1->Bd_com, sizeof(CheckA1::A1_Bd6));
-    SetupUI();
+    QStringList sl = QStringList() << "Общ" << "Uin" << "Ain" << "Harm1" << "Harm2" << "Harm3" << \
+                                      "Harm4" << "Uout" << "Aout";
+    SetupUI(sl);
     timer->setInterval(ANMEASINT);
 }
 
@@ -106,37 +108,6 @@ QWidget *CheckDialogA1::BdUI(int bdnum)
     default:
         return new QWidget;
     }
-}
-
-void CheckDialogA1::SetupUI()
-{
-    QStringList sl = QStringList() << "Общ" << "Uin" << "Ain" << "Harm1" << "Harm2" << "Harm3" << \
-                                      "Harm4" << "Uout" << "Aout";
-    if (sl.size() < BdUINum)
-    {
-        ERMSG("Wrong BdTab size");
-        return;
-    }
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QTabWidget *CheckTW = new QTabWidget;
-    QString ConfTWss = "QTabBar::tab {margin-right: 0px; margin-left: 0px; padding: 5px;}"
-                       "QTabBar::tab:selected {background-color: "+QString(TABCOLORA1)+";"
-                        "border: 1px solid #000000;"
-                        "border-top-left-radius: 4px;"
-                        "border-top-right-radius: 4px;"
-                        "padding: 2px;"
-                        "margin-left: -4px; margin-right: -4px;}" \
-                       "QTabBar::tab:first:selected {margin-left: 0;}" \
-                       "QTabBar::tab:last:selected {margin-right: 0;}" \
-                       "QTabBar::tab:only-one {margin: 0;}";
-    CheckTW->tabBar()->setStyleSheet(ConfTWss);
-//    CheckTW->addTab(AutoCheckUI(),"  Автоматическая проверка  ");
-    for (int i=0; i<BdUINum; ++i)
-        CheckTW->addTab(BdUI(i),"  "+sl.at(i)+"  ");
-    lyout = new QVBoxLayout;
-    lyout->addWidget(CheckTW);
-    lyout->addWidget(BottomUI());
-    setLayout(lyout);
 }
 
 void CheckDialogA1::RefreshAnalogValues(int bdnum)
@@ -233,9 +204,14 @@ void CheckDialogA1::PrepareAnalogMeasurements()
 {
     if (Commands::GetUsingVariant(NVar) != NOERROR)
     {
-        MessageBox2::error(this, "Ошибка!", "Ошибка чтения номера варианта использования");
+        EMessageBox::error(this, "Ошибка!", "Ошибка чтения номера варианта использования");
         return;
     }
     WDFunc::SetLBLText(this, "Bda_in00", QString::number(NVar));
     WDFunc::SetLBLText(this, "Bda_out00", QString::number(NVar));
+}
+
+QWidget *CheckDialogA1::CustomTab()
+{
+    return 0;
 }

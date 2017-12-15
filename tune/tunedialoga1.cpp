@@ -183,7 +183,7 @@ int TuneDialogA1::Start6_3_1()
 {
     if (Commands::GetBac(BT_BASE, &Bac_block, sizeof(Bac)) != NOERROR)
     {
-        MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bac");
+        EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bac");
         return GENERALERROR;
     }
     FillBac();
@@ -193,12 +193,12 @@ int TuneDialogA1::Start6_3_1()
 int TuneDialogA1::Start6_3_2_1()
 {
     Skipped = false;
-    if (MessageBox2::question(this, "Вопрос", "Будет проведена регулировка по напряжениям, выполнить?") == false)
+    if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по напряжениям, выполнить?") == false)
     {
         Skipped = true;
         return ER_RESEMPTY;
     }
-    MessageBox2::information(this, "Требование", "Установите на РЕТОМ значение напряжения 60 В");
+    EMessageBox::information(this, "Требование", "Установите на РЕТОМ значение напряжения 60 В");
     // получение текущих аналоговых сигналов от модуля
     WaitNSeconds(10);
     if (pc.Cancelled)
@@ -216,7 +216,7 @@ int TuneDialogA1::Start6_3_2_1()
     {
         if (Commands::GetBd(A1_BDA_IN_BN, &tmpst, sizeof(CheckA1::A1_Bd1)) != NOERROR)
         {
-            MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
+            EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
             return GENERALERROR;
         }
         tmpst2.Frequency += tmpst.Frequency;
@@ -273,12 +273,12 @@ int TuneDialogA1::Start6_3_2_3()
 int TuneDialogA1::Start6_3_3_1()
 {
     Skipped = false;
-    if (MessageBox2::question(this, "Вопрос", "Будет проведена регулировка по входу Pt100, выполнить?") == false)
+    if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по входу Pt100, выполнить?") == false)
     {
         Skipped = true;
         return ER_RESEMPTY;
     }
-    MessageBox2::information(this, "Требование", "Установите на магазине сопротивлений значение 80 Ом");
+    EMessageBox::information(this, "Требование", "Установите на магазине сопротивлений значение 80 Ом");
     WaitNSeconds(10);
     if (pc.Cancelled)
         return GENERALERROR;
@@ -304,7 +304,7 @@ int TuneDialogA1::Start6_3_3_3()
 {
     if (Skipped)
         return ER_RESEMPTY;
-    MessageBox2::information(this, "Требование", "Установите на магазине сопротивлений значение 120 Ом");
+    EMessageBox::information(this, "Требование", "Установите на магазине сопротивлений значение 120 Ом");
     return NOERROR;
 }
 
@@ -327,12 +327,12 @@ int TuneDialogA1::Start6_3_3_4()
 int TuneDialogA1::Start6_3_4()
 {
     Skipped = false;
-    if (MessageBox2::question(this, "Вопрос", "Будет проведена регулировка по входу EXTmA2, выполнить?") == false)
+    if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по входу EXTmA2, выполнить?") == false)
     {
         Skipped = true;
         return ER_RESEMPTY;
     }
-    MessageBox2::information(this, "Требование", "Задайте ток 20,000мА в канале EXTmA2");
+    EMessageBox::information(this, "Требование", "Задайте ток 20,000мА в канале EXTmA2");
     WaitNSeconds(10);
     if (pc.Cancelled)
         return GENERALERROR;
@@ -358,7 +358,7 @@ int TuneDialogA1::Start6_3_5_2()
 {
     if (Skipped)
         return ER_RESEMPTY;
-    MessageBox2::information(this, "Требование", "Задайте ток 4,000мА в канале EXTmA2");
+    EMessageBox::information(this, "Требование", "Задайте ток 4,000мА в канале EXTmA2");
     return NOERROR;
 }
 
@@ -381,12 +381,12 @@ int TuneDialogA1::Start6_3_5_3()
 int TuneDialogA1::Start6_3_6()
 {
     Skipped = false;
-    if (MessageBox2::question(this, "Вопрос", "Будет проведена регулировка по входу EXTmA1, выполнить?") == false)
+    if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по входу EXTmA1, выполнить?") == false)
     {
         Skipped = true;
         return ER_RESEMPTY;
     }
-    MessageBox2::information(this, "Требование", "Задайте ток 4,000мА в канале EXTmA1");
+    EMessageBox::information(this, "Требование", "Задайте ток 4,000мА в канале EXTmA1");
     WaitNSeconds(10);
     if (pc.Cancelled)
         return GENERALERROR;
@@ -412,7 +412,7 @@ int TuneDialogA1::Start6_3_7_2()
 {
     if (Skipped)
         return ER_RESEMPTY;
-    MessageBox2::information(this, "Требование", "Задайте ток 20,000мА в канале EXTmA1");
+    EMessageBox::information(this, "Требование", "Задайте ток 20,000мА в канале EXTmA1");
     return NOERROR;
 }
 
@@ -434,7 +434,7 @@ int TuneDialogA1::Start6_3_7_3()
 
 int TuneDialogA1::Start6_3_8()
 {
-    if (MessageBox2::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?") == false)
+    if (EMessageBox::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?") == false)
         return GENERALERROR;
     FillBac();
     SaveToFileEx();
@@ -451,7 +451,7 @@ int TuneDialogA1::Start6_3_9()
         tmps += "\nЕсли в процессе регулировки произошла ошибка, сохранённые коэффициенты\n"
                 "Вы можете загрузить из файла "+pc.SystemHomeDir+"temptune.tn1";
     tmps += "\nПосле окончания проверки нажмите Enter для завершения процедуры регулировки";
-    MessageBox2::information(this, "Завершение регулировки", tmps);
+    EMessageBox::information(this, "Завершение регулировки", tmps);
     QTabWidget *TuneTW = this->findChild<QTabWidget *>("tunetw");
     if (TuneTW != 0)
         TuneTW->setCurrentIndex(2); // показ данных измерений
@@ -575,7 +575,7 @@ int TuneDialogA1::ReadAnalogMeasurements()
     // получение текущих аналоговых сигналов от модуля
     if (Commands::GetBda(BT_BASE, &ChA1->Bda_block, sizeof(CheckA1::Bda)) != NOERROR)
     {
-        MessageBox2::information(this, "Внимание", "Ошибка при приёме блока Bda");
+        EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda");
         return GENERALERROR;
     }
     ChA1->FillBda(this);

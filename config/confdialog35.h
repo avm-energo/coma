@@ -1,6 +1,8 @@
 #ifndef CONFDIALOG35_H
 #define CONFDIALOG35_H
 
+#define D35_NUMCH   4
+
 #include <QDialog>
 
 #include "abstractconfdialog3x.h"

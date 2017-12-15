@@ -4,6 +4,8 @@
 #include <QWidget>
 
 #define ACHECKNUMPOINTS  64 // количество точек, по которым выдаются значения в блоке Bda
+#define A21_BD  1
+#define A21_BDA 2
 
 class Check21
 {

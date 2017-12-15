@@ -296,7 +296,7 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
                 }
                 else if (res == S2_NOIDS)
                 {
-                    MessageBox2::information(this, "Внимание", "Не найден блок с ID = "+QString::number(j+MT_START_OSC));
+                    EMessageBox::information(this, "Внимание", "Не найден блок с ID = "+QString::number(j+MT_START_OSC));
                     continue;
                 }
                 else

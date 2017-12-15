@@ -70,19 +70,32 @@ void AbstractConfDialog3x::SetupUI()
     {
         QGroupBox *gb = new QGroupBox("Выходные каналы");
         QGridLayout *gblyout = new QGridLayout;
-        QLabel *lbl = new QLabel("#");
-        gblyout->addWidget(lbl, 0, 0, 1, 1, Qt::AlignRight);
-        lbl = new QLabel("Тип канала");
-        gblyout->addWidget(lbl, 0, 1, 1, 1, Qt::AlignCenter);
+        int col = 0;
+        gblyout->addWidget(WDFunc::NewLBL(this, "#"), 0, col++, 1, 1, Qt::AlignRight);
+        gblyout->addWidget(WDFunc::NewLBL(this, "Тип канала"), 0, col++, 1, 1, Qt::AlignCenter);
         for (i = 0; i < Params.OutNumCh; ++i)
         {
-            lbl = new QLabel(QString::number(i+1)+":");
-            gblyout->addWidget(lbl, i+1, 0, 1, 1, Qt::AlignRight);
+            col = 0;
+            gblyout->addWidget(WDFunc::NewLBL(this, QString::number(i)+":"), i+1, col++, 1, 1, Qt::AlignRight);
             s_tqComboBox *cb = WDFunc::NewCB(this, "outchtypcb."+QString::number(i), Params.OutTypes, DCONFWCLR);
             connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChTypData(int)));
-            gblyout->addWidget(cb, i+1, 1, 1, 1, Qt::AlignCenter);
+            gblyout->addWidget(cb, i+1, col++, 1, 1);
         }
-
+        ++i;
+        gblyout->addWidget(WDFunc::NewLBL(this, "Мин. импульс, мс"), i, 0, 1, 1, Qt::AlignRight);
+        gblyout->addWidget(WDFunc::NewSPB(this, "minimp", 50, 1000, 1, 0, DCONFWCLR), i++, 1, 1, 1);
+        gblyout->addWidget(WDFunc::NewLBL(this, "Макс. импульс, мс"), i, 0, 1, 1, Qt::AlignRight);
+        gblyout->addWidget(WDFunc::NewSPB(this, "maximp", 50, 1000, 1, 0, DCONFWCLR), i++, 1, 1, 1);
+        gblyout->addWidget(WDFunc::NewLBL(this, "Тип Watchdog"), i, 0, 1, 1, Qt::AlignRight);
+        gblyout->addWidget(WDFunc::NewSPB(this, "wdgtype", 0, 255, 1, 0, DCONFWCLR), i++, 1, 1, 1);
+        gblyout->addWidget(WDFunc::NewLBL(this, "Номер выхода для Watchdog"), i, 0, 1, 1, Qt::AlignRight);
+        QStringList tmpsl;
+        for (int j=0; j<Params.OutNumCh; ++j)
+            tmpsl << QString::number(j+1);
+        gblyout->addWidget(WDFunc::NewCB(this, "wdgout", tmpsl, DCONFWCLR), i++, 1, 1, 1);
+        gblyout->addWidget(WDFunc::NewLBL(this, "Время Watchdog, с"), i, 0, 1, 1, Qt::AlignRight);
+        gblyout->addWidget(WDFunc::NewSPB(this, "wdgtime", 0, 255, 1, 0, DCONFWCLR), i++, 1, 1, 1);
+        gblyout->setColumnStretch(1, 10);
         gb->setLayout(gblyout);
         lyout->addWidget(gb);
     }

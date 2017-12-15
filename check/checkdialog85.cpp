@@ -23,10 +23,11 @@ CheckDialog85::CheckDialog85(QWidget *parent) : EAbstractCheckDialog(parent)
     setStyleSheet(tmps);
     Ch85 = new Check_85;
     Ch = new Check;
-    BdNum = 2;
+    BdNum = BdUINum = 2;
     SetBd(0, &Ch->Bd_block0, sizeof(Check::Bd0));
     SetBd(1, &Ch85->Bd_block1, sizeof(Check_85::Bd1));
-    SetupUI();
+    QStringList sl = QStringList() << "Общ" << "Все";
+    SetupUI(sl);
 }
 
 QWidget *CheckDialog85::AutoCheckUI()
@@ -69,11 +70,6 @@ QWidget *CheckDialog85::AutoCheckUI()
     lyout->addStretch(99);
     w->setLayout(lyout);
     return w;
-}
-
-void CheckDialog85::SetupUI()
-{
-
 }
 
 QWidget *CheckDialog85::BdUI(int bdnum)
@@ -160,4 +156,9 @@ void CheckDialog85::SetDefaultValuesToWrite()
 void CheckDialog85::PrepareAnalogMeasurements()
 {
 
+}
+
+QWidget *CheckDialog85::CustomTab()
+{
+    return 0;
 }

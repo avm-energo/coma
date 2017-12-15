@@ -159,7 +159,7 @@ void EAbstractTuneDialog::ProcessTune()
     MsgSetVisible(bStep); // выдаём надпись "Настройка завершена!"
     MeasurementTimer->stop();
     WDFunc::SetEnabled(this, "starttune", true);
-    MessageBox2::information(this, "Готово", "Настройка завершена!");
+    EMessageBox::information(this, "Готово", "Настройка завершена!");
 }
 
 int EAbstractTuneDialog::CheckPassword()
@@ -175,7 +175,7 @@ int EAbstractTuneDialog::CheckPassword()
     PasswordLoop.exec();
     if (!ok)
     {
-        MessageBox2::error(this, "Неправильно", "Пароль введён неверно");
+        EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
         return GENERALERROR;
     }
     return NOERROR;
@@ -195,7 +195,7 @@ bool EAbstractTuneDialog::IsWithinLimits(double number, double base, double thre
         return true;
     else
     {
-        MessageBox2::error(this, "Ошибка", "Ошибочное значение: должно быть "+QString::number(base, 'f', 5) + \
+        EMessageBox::error(this, "Ошибка", "Ошибочное значение: должно быть "+QString::number(base, 'f', 5) + \
                            ", а получили: "+QString::number(number, 'f', 5));
         return false;
     }
@@ -272,16 +272,16 @@ void EAbstractTuneDialog::SaveToFileEx()
     switch (res)
     {
     case NOERROR:
-        MessageBox2::information(this, "Внимание", "Файл коэффициентов записан успешно!");
+        EMessageBox::information(this, "Внимание", "Файл коэффициентов записан успешно!");
         break;
     case ER_FILEWRITE:
-        MessageBox2::error(this, "Ошибка", "Ошибка при записи файла!");
+        EMessageBox::error(this, "Ошибка", "Ошибка при записи файла!");
         break;
     case ER_FILENAMEEMP:
-        MessageBox2::error(this, "Ошибка", "Пустое имя файла!");
+        EMessageBox::error(this, "Ошибка", "Пустое имя файла!");
         break;
     case ER_FILEOPEN:
-        MessageBox2::error(this, "Ошибка", "Ошибка открытия файла!");
+        EMessageBox::error(this, "Ошибка", "Ошибка открытия файла!");
         break;
     default:
         break;
@@ -362,10 +362,10 @@ bool EAbstractTuneDialog::WriteTuneCoefs()
     FillBackBac();
     if (Commands::WriteBac(AbsBac.BacBlockNum, AbsBac.BacBlock, AbsBac.BacBlockSize) == NOERROR)
     {
-        MessageBox2::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
+        EMessageBox::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
         return true;
     }
-    MessageBox2::error(this, "Ошибка", "Ошибка записи коэффициентов в " + tmps + "!");
+    EMessageBox::error(this, "Ошибка", "Ошибка записи коэффициентов в " + tmps + "!");
     return false;
 }
 
@@ -383,12 +383,12 @@ void EAbstractTuneDialog::LoadFromFile()
     int res = pc.LoadFile(this, "Tune files (*.tn"+tunenum+")", ba);
     if (res != NOERROR)
     {
-        MessageBox2::error(this, "Ошибка", "Ошибка при загрузке файла");
+        EMessageBox::error(this, "Ошибка", "Ошибка при загрузке файла");
         return;
     }
     memcpy(AbsBac.BacBlock,&(ba.data()[0]),ba.size());
     FillBac();
-    MessageBox2::information(this, "Внимание", "Загрузка прошла успешно!");
+    EMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
 void EAbstractTuneDialog::Good()
