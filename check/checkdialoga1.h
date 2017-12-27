@@ -9,7 +9,7 @@ class CheckDialogA1 : public EAbstractCheckDialog
 {
     Q_OBJECT
 public:
-    explicit CheckDialogA1(QWidget *parent = 0);
+    explicit CheckDialogA1(int board, QWidget *parent = 0);
 
 signals:
 

@@ -7,11 +7,11 @@
 #include <QDialog>
 #include <QGridLayout>
 
-#include "abstractconfdialog2x.h"
+#include "abstractconfdialog.h"
 #include "../gen/publicclass.h"
 #include "../config/config21.h"
 
-class ConfDialog21 : public AbstractConfDialog2x
+class ConfDialog21 : public AbstractConfDialog
 {
     Q_OBJECT
 public:
@@ -29,6 +29,15 @@ public:
     explicit ConfDialog21(QVector<publicclass::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = 0);
 
 private:
+    struct SpecificParams
+    {
+        QStringList InTypes;
+        QStringList RangeTypes;
+        int NumCh;
+    };
+
+    QByteArray confba;
+    SpecificParams Params;
     Config21 *C21;
     QVector<float> RangeInMins;
     QVector<float> RangeInMaxs;
@@ -38,16 +47,15 @@ private:
     void CheckConf();
     void SetDefConf();
     void SetMinMax(int i); // установка значений виджетов в соответствии с конфигурацией
+    void SetupUI();
+    void DisableChannel(int chnum, bool disable);
 
 signals:
 
 public slots:
 
 private slots:
-    void SetChTypData(int);
-//    void SetChOsc(int);
-//    void SetIn();
-//    void SetOscDly(double);
+    void SetChTypData(int); // задать тип канала (номер канала - в objectName.aplit(".").at(1)
     void SetRange(int RangeType);
 };
 

@@ -34,7 +34,7 @@ private:
         float fkiin;
     };
 
-    Bac Bac_block[16];
+    Bac Bac_block[AIN21_NUMCH];
 
     int BoardType;
 
@@ -44,14 +44,11 @@ private:
     void FillBac();
     void FillBackBac();
     void GetBdAndFillMTT();
+    void StartTune();
 
     bool tune(int Type, int ChNum);
     void ShowErrMsg(int);
     bool CalcNewTuneCoef(int ChNum);
-    bool RefreshTuneField(int ChNum);
-    void RefreshTuneFields();
-    bool RefreshTuneCoef(int ChNum);
-    void RefreshTuneCoefs();
     bool CheckAndShowTune0(int ChNum);
     bool CheckAndShowTune5(int ChNum);
     bool CheckAndShowTune20(int ChNum);

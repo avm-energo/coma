@@ -16,8 +16,9 @@
 #include "../widgets/emessagebox.h"
 #include "../gen/publicclass.h"
 #include "../gen/commands.h"
+#include "../widgets/wd_func.h"
 
-CheckDialog21::CheckDialog21(QWidget *parent) : EAbstractCheckDialog(parent)
+CheckDialog21::CheckDialog21(int board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     Ch21 = new Check21;
@@ -69,7 +70,7 @@ void CheckDialog21::StopBdaMeasurements()
 
 void CheckDialog21::BdaTimerTimeout()
 {
-    if (Commands::GetBda(BT_NONE, &Ch21->Bda_block, sizeof(Check21::Bda)) == NOERROR)
+    if (Commands::GetBda(Board, &Ch21->Bda_block, sizeof(Check21::Bda)) == NOERROR)
         Ch21->FillBda(this);
 }
 
@@ -80,62 +81,49 @@ void CheckDialog21::ChooseValuesToWrite()
 
 void CheckDialog21::WriteToFile(int row, int bdnum)
 {
-
+    // получение текущих аналоговых сигналов от модуля
+    QXlsx::Format format;
+    QString Precision = "0.0000";
+    format.setNumberFormat(Precision);
+    switch (bdnum)
+    {
+    case 0:
+        xlsx->write(row,2+AIN21_NUMCH*2,WDFunc::FloatValueWithCheck(Ch->Bd_block0.Tmk), format);
+        xlsx->write(row,3+AIN21_NUMCH*2,WDFunc::FloatValueWithCheck(Ch->Bd_block0.Vbat), format);
+    case 1:
+    {
+        for (int i=0; i<AIN21_NUMCH; ++i)
+        {
+            xlsx->write(row,i+2,WDFunc::FloatValueWithCheck(Ch21->Bd_block.inI[i]), format);
+            xlsx->write(row,i+2+AIN21_NUMCH,WDFunc::FloatValueWithCheck(Ch21->Bd_block.inU[i]), format);
+        }
+    }
+    }
 }
 
 void CheckDialog21::PrepareHeadersForFile(int row)
 {
-
+    for (int i=0; i<AIN21_NUMCH; ++i)
+    {
+        xlsx->write(row,i+2,QVariant(("Ain")+QString::number(i+10, 36)+", мА"));
+        xlsx->write(row,i+2+AIN21_NUMCH,QVariant(("Ain")+QString::number(i+10, 36)+", В"));
+    }
+    xlsx->write(row, 2+AIN21_NUMCH*2,QVariant("t, град"));
+    xlsx->write(row, 3+AIN21_NUMCH*2, QVariant("Ubat, В"));
 }
 
 void CheckDialog21::RefreshAnalogValues(int bdnum)
 {
-
-}
-
-/*void CheckDialog21::StartMeasurementsWithFile()
-{
-    aconf = new config_21;
-    // читаем текущую конфигурацию
-    cn->Send(CN_GF,Canal::BT_NONE,NULL,0,1,aconf->Config->Config);
-    if (cn->result != NOERROR)
+    switch (bdnum)
     {
-        ERMSG("Ошибка приёма данных конфигурации");
+    case BD_COMMON:
+        Ch->FillBd0(this);
+    case 1: // Блок #1
+        Ch21->FillBd1W(this);
+    default:
         return;
     }
-    QString Filename = QFileDialog::getSaveFileName(this,"Сохранить данные","","Excel files (*.xlsx)");
-    if (Filename == "")
-    {
-        ERMSG("Не задано имя файла");
-        return; // !!! ошибка - не задано имя файла
-    }
-    XlsxWriting = true;
-    xlsx = new QXlsx::Document(Filename);
-    xlsx->write(1,1,QVariant("Модуль: "+pc.ModuleTypeString+" сер. ном. "+QString::number(pc.ModuleBsi.SerialNum,10)));
-    xlsx->write(2,1,QVariant("Дата начала записи: "+QDateTime::currentDateTime().toString("dd-MM-yyyy")));
-    xlsx->write(3,1,QVariant("Время начала записи: "+QDateTime::currentDateTime().toString("hh:mm:ss")));
-    xlsx->write(5,1,QVariant("Дата и время отсчёта"));
-    for (int i=0; i<16; i++)
-    {
-        if (aconf->Config->Bci_block.in_type[i] == Config2x::AIT_MA)
-            xlsx->write(5,i+3,"I"+QString::number(i)+", мА");
-        else if (aconf->Config->Bci_block.in_type[i] == Config2x::AIT_V)
-            xlsx->write(5,i+3,"U"+QString::number(i)+", В");
-        else
-            continue;
-    }
-    xlsx->write(5,2,QVariant("t, град"));
-    WRow = 6;
-    QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
-    if (pb != 0)
-        pb->setEnabled(false);
-    pb = this->findChild<QPushButton *>("pbmeasurements");
-    if (pb != 0)
-        pb->setEnabled(false);
-    ElapsedTimeCounter = new QTime;
-    ElapsedTimeCounter->start();
-    StartMeasurements();
-} */
+}
 
 QWidget *CheckDialog21::CustomTab()
 {

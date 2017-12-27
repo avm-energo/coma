@@ -182,6 +182,9 @@
 #define BT_MEZONIN  0x02
 #define BT_BSMZ     0x03
 
+#define BT_STARTBD_BASE 1 // блоки Bd для базовой платы нумеруются с 1
+#define BT_STARTBD_MEZ  101 // блоки Bd для мезонинной платы нумеруются с 101
+
 #define LOGFILE     "coma.log"
 
 #include <QStringList>

@@ -10,6 +10,7 @@
 #include <QCoreApplication>
 #include "tunedialog21.h"
 #include "../widgets/emessagebox.h"
+#include "../widgets/wd_func.h"
 #include "../gen/commands.h"
 
 TuneDialog21::TuneDialog21(int type, QWidget *parent) :
@@ -49,7 +50,7 @@ void TuneDialog21::SetupUI()
     TuneTW->addTab(cp1,"Коэффициенты");
     TuneTW->addTab(cp2,"Настройка");
     QGroupBox *gb = new QGroupBox("Настроечные коэффициенты");
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < AIN21_NUMCH; i++)
     {
         lbl = new QLabel("b"+QString::number(i)+":");
         gb2lyout->addWidget(lbl);
@@ -118,7 +119,7 @@ void TuneDialog21::SetupUI()
     glyout->setColumnStretch(2, 1);
     glyout->setColumnStretch(3, 1);
     glyout->setColumnStretch(4, 1);
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < AIN21_NUMCH; i++)
     {
         lbl = new QLabel(QString::number(i));
         glyout->addWidget(lbl,i+1,0,1,1,Qt::AlignCenter);
@@ -165,12 +166,35 @@ void TuneDialog21::SetPf()
 
 void TuneDialog21::FillBac()
 {
-
+    for (int i=0; i<AIN21_NUMCH; ++i)
+    {
+        WDFunc::SetLEData(this, "tunebcoef"+QString::number(i), QString::number(Bac_block[i].fbin, 'f', 5));
+        WDFunc::SetLEData(this, "tunek1coef"+QString::number(i), QString::number(Bac_block[i].fkiin, 'f', 5));
+        WDFunc::SetLEData(this, "tunek2coef"+QString::number(i), QString::number(Bac_block[i].fkuin, 'f', 5));
+    }
 }
 
 void TuneDialog21::FillBackBac()
 {
-
+    QString tmps;
+    for (int i=0; i<AIN21_NUMCH; ++i)
+    {
+        WDFunc::LEData(this, "tunebcoef"+QString::number(i), tmps);
+        Bac_block[i].fbin = tmps.toFloat(&ok);
+        if (ok)
+        {
+            WDFunc::LEData(this, "tunek1coef"+QString::number(i), tmps);
+            Bac_block[i].fkiin = tmps.toFloat(&ok);
+            if (ok)
+            {
+                WDFunc::LEData(this, "tunek2coef"+QString::number(i), tmps);
+                Bac_block[i].fkuin = tmps.toFloat(&ok);
+                if (ok)
+                    continue;
+            }
+        }
+        WARNMSG("Ошибка при переводе во float");
+    }
 }
 
 void TuneDialog21::GetBdAndFillMTT()
@@ -189,7 +213,7 @@ bool TuneDialog21::tune(int Type, int ChNum)
                                      "на всех\nвходах модуля и нажмите OK")\
                 == QMessageBox::Ok)
         {
-            if (Commands::GetBda(BT_NONE, &Bda0, sizeof(Check21::Bda)) == NOERROR)
+            if (Commands::GetBda(BoardType, &Bda0, sizeof(Check21::Bda)) == NOERROR)
                 CheckAndShowTune0(ChNum);
             else
             {
@@ -210,7 +234,7 @@ bool TuneDialog21::tune(int Type, int ChNum)
                                      "Переключите входные переключатели на ток,\nустановите ток 20 мА на всех" \
                                      "\nвходах модуля и нажмите OK") == QMessageBox::Ok)
         {
-            if (Commands::GetBda(BT_NONE, &Bda20, sizeof(Check21::Bda)) == NOERROR)
+            if (Commands::GetBda(BoardType, &Bda20, sizeof(Check21::Bda)) == NOERROR)
                 CheckAndShowTune20(ChNum);
             else
             {
@@ -232,7 +256,7 @@ bool TuneDialog21::tune(int Type, int ChNum)
                                      "5 В на всех\nвходах модуля и нажмите OK")\
                 == QMessageBox::Ok)
         {
-            if (Commands::GetBda(BT_NONE, &Bda5, sizeof(Check21::Bda)) == NOERROR)
+            if (Commands::GetBda(BoardType, &Bda5, sizeof(Check21::Bda)) == NOERROR)
                 CheckAndShowTune5(ChNum);
             else
             {
@@ -254,7 +278,7 @@ bool TuneDialog21::tune(int Type, int ChNum)
     return true;
 }
 
-/*void TuneDialog21::StartTune()
+void TuneDialog21::StartTune()
 {
     QString AllNum = sender()->objectName();
     if (!AllNum.isEmpty())
@@ -287,81 +311,57 @@ bool TuneDialog21::tune(int Type, int ChNum)
     }
     else
         DBGMSG;
-} */
+}
 
 bool TuneDialog21::CheckAndShowTune0(int ChNum)
 {
-    QLabel *lbl = this->findChild<QLabel *>("tunech"+QString::number(ChNum));
-    if (lbl == 0)
-    {
-        DBGMSG;
-        return false;
-    }
-    lbl->setText(QString::number(Bda0.sin[ChNum]/ATUNENUMPOINTS,16));
+    WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda0.sin[ChNum]/ATUNENUMPOINTS,16));
     if (!CalcNewTuneCoef(ChNum))
         return false;
-    if (!RefreshTuneField(ChNum))
-        return false;
+    FillBac();
     return true;
 }
 
 bool TuneDialog21::CheckAndShowTune5(int ChNum)
 {
-    QLabel *lbl = this->findChild<QLabel *>("tunech"+QString::number(ChNum));
-    if (lbl == 0)
-    {
-        DBGMSG;
-        return false;
-    }
-    lbl->setText(QString::number(Bda5.sin[ChNum]/ATUNENUMPOINTS,16));
+    WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda5.sin[ChNum]/ATUNENUMPOINTS,16));
     if (!CalcNewTuneCoef(ChNum))
         return false;
-    if (!RefreshTuneField(ChNum))
-        return false;
+    FillBac();
     return true;
 }
 
 bool TuneDialog21::CheckAndShowTune20(int ChNum)
 {
-    QLabel *lbl = this->findChild<QLabel *>("tunech"+QString::number(ChNum));
-    if (lbl == 0)
-    {
-        DBGMSG;
-        return false;
-    }
-    lbl->setText(QString::number(Bda20.sin[ChNum]/ATUNENUMPOINTS,16));
+    WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda20.sin[ChNum]/ATUNENUMPOINTS,16));
     if (!CalcNewTuneCoef(ChNum))
         return false;
-    if (!RefreshTuneField(ChNum))
-        return false;
+    FillBac();
     return true;
 }
 
 bool TuneDialog21::CalcNewTuneCoef(int ChNum)
 {
-    Bac_block[ChNum].fbin = 1.25 - (static_cast<float>(Bda0.sin[ChNum]) / \
-                                        (ATUNENUMPOINTS*1638.0));
+    Bac_block[ChNum].fbin = 1.25 - (static_cast<float>(Bda0.sin[ChNum]) / (ATUNENUMPOINTS*1638.0));
     if ((Bda0.sin[ChNum] == Bda5.sin[ChNum]) || (Bda0.sin[ChNum] == Bda20.sin[ChNum]))
     {
         WARNMSG("Ошибка в настроечных коэффициентах, деление на ноль");
         return false;
     }
-    Bac_block[ChNum].fkuin = ATUNENUMPOINTS*1638.0 / \
-            static_cast<float>(Bda0.sin[ChNum]-Bda5.sin[ChNum]);
-    Bac_block[ChNum].fkiin = ATUNENUMPOINTS*1638.0 / \
-            static_cast<float>(Bda0.sin[ChNum]-Bda20.sin[ChNum]);
+    Bac_block[ChNum].fkuin = ATUNENUMPOINTS*1638.0 / static_cast<float>(Bda0.sin[ChNum]-Bda5.sin[ChNum]);
+    Bac_block[ChNum].fkiin = ATUNENUMPOINTS*1638.0 / static_cast<float>(Bda0.sin[ChNum]-Bda20.sin[ChNum]);
     return true;
 }
 
 void TuneDialog21::SetDefCoefs()
 {
-    for (int i=0; i<16; i++)
+    for (int i=0; i<AIN21_NUMCH; i++)
     {
         Bac_block[i].fbin = 0.0;
         Bac_block[i].fkiin = 1.0;
         Bac_block[i].fkuin = 1.0;
     }
-    RefreshTuneFields();
+    FillBac();
 }
 
 int TuneDialog21::ReadAnalogMeasurements()
@@ -369,113 +369,19 @@ int TuneDialog21::ReadAnalogMeasurements()
     return NOERROR;
 }
 
-bool TuneDialog21::RefreshTuneField(int ChNum)
-{
-    QLineEdit *le = this->findChild<QLineEdit *>("tunebcoef"+QString::number(ChNum));
-    if (le == 0)
-    {
-        DBGMSG;
-        return false;
-    }
-    le->setText(QString::number(Bac_block[ChNum].fbin, 'f', 5));
-    le = this->findChild<QLineEdit *>("tunek1coef"+QString::number(ChNum));
-    if (le == 0)
-    {
-        DBGMSG;
-        return false;
-    }
-    le->setText(QString("%1").arg(Bac_block[ChNum].fkuin, 0, 'f', 5));
-    le = this->findChild<QLineEdit *>("tunek2coef"+QString::number(ChNum));
-    if (le == 0)
-    {
-        DBGMSG;
-        return false;
-    }
-    le->setText(QString::number(Bac_block[ChNum].fkiin, 'f', 5));
-    return true;
-}
-
-void TuneDialog21::RefreshTuneFields()
-{
-    for (int i=0; i<16; i++)
-        RefreshTuneField(i);
-}
-
-bool TuneDialog21::RefreshTuneCoef(int ChNum)
-{
-    QLineEdit *le = this->findChild<QLineEdit *>("tunebcoef"+QString::number(ChNum));
-    if (le == 0)
-    {
-        DBGMSG;
-        return false;
-    }
-    bool ok;
-    Bac_block[ChNum].fbin = le->text().toFloat(&ok);
-    if (!ok)
-    {
-        WARNMSG("Ошибка при переводе во float");
-        return false;
-    }
-    le = this->findChild<QLineEdit *>("tunek1coef"+QString::number(ChNum));
-    if (le == 0)
-    {
-        DBGMSG;
-        return false;
-    }
-    Bac_block[ChNum].fkiin = le->text().toFloat(&ok);
-    if (!ok)
-    {
-        WARNMSG("Ошибка при переводе во float");
-        return false;
-    }
-    le = this->findChild<QLineEdit *>("tunek2coef"+QString::number(ChNum));
-    if (le == 0)
-    {
-        DBGMSG;
-        return false;
-    }
-    Bac_block[ChNum].fkuin = le->text().toFloat(&ok);
-    if (!ok)
-    {
-        WARNMSG("Ошибка при переводе во float");
-        return false;
-    }
-    return true;
-}
-
-void TuneDialog21::RefreshTuneCoefs()
-{
-    for (int i=0; i<16; i++)
-        RefreshTuneCoef(i);
-}
-
 bool TuneDialog21::CheckTuneCoefs()
 {
-    for (int i=0; i<16; i++)
+    for (int i=0; i<AIN21_NUMCH; i++)
     {
-        QLineEdit *le = this->findChild<QLineEdit *>("tunebcoef"+QString::number(i));
-        if (le == 0)
-        {
-            DBGMSG;
+        QString tmps;
+        WDFunc::LEData(this, "tunebcoef"+QString::number(i), tmps);
+        if (tmps.isEmpty() || (tmps.toInt() == -1))
             return false;
-        }
-        if (le->text().isEmpty() || (le->text().toInt() == -1))
+        WDFunc::LEData(this, "tunek1coef"+QString::number(i), tmps);
+        if (tmps.isEmpty() || (tmps.toInt() == -1))
             return false;
-        le = this->findChild<QLineEdit *>("tunek1coef"+QString::number(i));
-        if (le == 0)
-        {
-            DBGMSG;
-            return false;
-        }
-        if (le->text().isEmpty() || (le->text().toInt() == -1))
-            return false;
-        le = this->findChild<QLineEdit *>("tunek2coef"+QString::number(i));
-        if (le == 0)
-        {
-            DBGMSG;
-            return false;
-        }
-        if (le->text().isEmpty() || (le->text().toInt() == -1))
+        WDFunc::LEData(this, "tunek2coef"+QString::number(i), tmps);
+        if (tmps.isEmpty() || (tmps.toInt() == -1))
             return false;
     }
     return true;

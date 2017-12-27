@@ -37,10 +37,10 @@ SOURCES += \
     ../check/checkdialoga1.cpp \
     ../check/eabstractcheckdialog.cpp \
     ../config/abstractconfdialog.cpp \
-    ../config/abstractconfdialog2x.cpp \
     ../config/abstractconfdialog3x.cpp \
     ../config/confdialog.cpp \
     ../config/confdialog21.cpp \
+    ../config/confdialog22.cpp \
     ../config/confdialog31.cpp \
     ../config/confdialog35.cpp \
     ../config/confdialog80.cpp \
@@ -48,7 +48,7 @@ SOURCES += \
     ../config/confdialoga1.cpp \
     ../config/config.cpp \
     ../config/config21.cpp \
-    ../config/config2x.cpp \
+    ../config/config22.cpp \
     ../config/config31.cpp \
     ../config/config35.cpp \
     ../config/config3x.cpp \
@@ -109,10 +109,10 @@ HEADERS  += \
     ../check/checkdialoga1.h \
     ../check/eabstractcheckdialog.h \
     ../config/abstractconfdialog.h \
-    ../config/abstractconfdialog2x.h \
     ../config/abstractconfdialog3x.h \
     ../config/confdialog.h \
     ../config/confdialog21.h \
+    ../config/confdialog22.h \
     ../config/confdialog31.h \
     ../config/confdialog35.h \
     ../config/confdialog80.h \
@@ -120,7 +120,7 @@ HEADERS  += \
     ../config/confdialoga1.h \
     ../config/config.h \
     ../config/config21.h \
-    ../config/config2x.h \
+    ../config/config22.h \
     ../config/config31.h \
     ../config/config35.h \
     ../config/config3x.h \

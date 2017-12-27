@@ -17,11 +17,11 @@ QWidget *Check21::BdaW(QWidget *parent)
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QWidget *w = new QWidget(parent);
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < AIN21_NUMCH; i++)
     {
         hlyout->addWidget(WDFunc::NewLBLT(parent, QString::number(i)+":"), 0);
         hlyout->addWidget(WDFunc::NewLBLT(parent, "", "bda"+QString::number(i), ValuesFormat), 1);
-        if ((i>1)&&!((i+1)%6))
+        if ((i>1)&&!((i+1)%4))
         {
             vlyout->addLayout(hlyout);
             hlyout = new QHBoxLayout;
@@ -51,11 +51,11 @@ QWidget *Check21::Bd1W(QWidget *parent)
     hlyout->addWidget(line,1);
     vlyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    for (i = 0; i < 16; ++i)
+    for (i = 0; i < AIN21_NUMCH; ++i)
     {
         hlyout->addWidget(WDFunc::NewLBLT(parent, QString::number(i)+":"), 0);
         hlyout->addWidget(WDFunc::NewLBLT(parent, "", "bdinI"+QString::number(i), ValuesFormat), 1);
-        if ((i>0)&&!((i+1)%6))
+        if ((i>0)&&!((i+1)%4))
         {
             vlyout->addLayout(hlyout);
             hlyout = new QHBoxLayout;
@@ -72,11 +72,11 @@ QWidget *Check21::Bd1W(QWidget *parent)
     hlyout->addWidget(line,1);
     vlyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    for (i = 0; i < 16; ++i)
+    for (i = 0; i < AIN21_NUMCH; ++i)
     {
         hlyout->addWidget(WDFunc::NewLBLT(parent, QString::number(i)+":"), 0);
         hlyout->addWidget(WDFunc::NewLBLT(parent, "", "bdinU"+QString::number(i), ValuesFormat), 1);
-        if ((i>0)&&!((i+1)%6))
+        if ((i>0)&&!((i+1)%4))
         {
             vlyout->addLayout(hlyout);
             hlyout = new QHBoxLayout;
@@ -93,11 +93,11 @@ QWidget *Check21::Bd1W(QWidget *parent)
     hlyout->addWidget(line,1);
     vlyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    for (i = 0; i < 16; ++i)
+    for (i = 0; i < AIN21_NUMCH; ++i)
     {
         hlyout->addWidget(WDFunc::NewLBLT(parent, QString::number(i)+":"), 0);
         hlyout->addWidget(WDFunc::NewLBLT(parent, "", "bdain"+QString::number(i), ValuesFormat), 1);
-        if ((i>0)&&!((i+1)%6))
+        if ((i>0)&&!((i+1)%4))
         {
             vlyout->addLayout(hlyout);
             hlyout = new QHBoxLayout;
@@ -105,7 +105,7 @@ QWidget *Check21::Bd1W(QWidget *parent)
     }
     if (hlyout->count())
         vlyout->addLayout(hlyout);
-    hlyout = new QHBoxLayout;
+/*    hlyout = new QHBoxLayout;
     line = new QFrame;
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Sunken);
@@ -114,11 +114,11 @@ QWidget *Check21::Bd1W(QWidget *parent)
     hlyout->addWidget(line,1);
     vlyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    for (i = 0; i < 16; ++i)
+    for (i = 0; i < AIN21_NUMCH; ++i)
     {
         hlyout->addWidget(WDFunc::NewLBLT(parent, QString::number(i)+":"), 0);
         hlyout->addWidget(WDFunc::NewLBLT(parent, "", "bdainn"+QString::number(i), ValuesFormat), 1);
-        if ((i>0)&&!((i+1)%6))
+        if ((i>0)&&!((i+1)%4))
         {
             vlyout->addLayout(hlyout);
             hlyout = new QHBoxLayout;
@@ -135,11 +135,11 @@ QWidget *Check21::Bd1W(QWidget *parent)
     hlyout->addWidget(line,1);
     vlyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    for (i = 0; i < 16; ++i)
+    for (i = 0; i < AIN21_NUMCH; ++i)
     {
         hlyout->addWidget(WDFunc::NewLBLT(parent, QString::number(i)+":"), 0);
         hlyout->addWidget(WDFunc::NewLBLT(parent, "", "bdainx"+QString::number(i), ValuesFormat), 1);
-        if ((i>0)&&!((i+1)%6))
+        if ((i>0)&&!((i+1)%4))
         {
             vlyout->addLayout(hlyout);
             hlyout = new QHBoxLayout;
@@ -147,10 +147,10 @@ QWidget *Check21::Bd1W(QWidget *parent)
     }
     if (hlyout->count())
         vlyout->addLayout(hlyout);
-    vlyout->addLayout(vlyout);
-    hlyout->addWidget(WDFunc::NewLBLT(parent, "Температура в кристалле:"), 0);
+    vlyout->addLayout(vlyout); */
+/*    hlyout->addWidget(WDFunc::NewLBLT(parent, "Температура в кристалле:"), 0);
     hlyout->addWidget(WDFunc::NewLBLT(parent, "", "bdat", ValuesFormat), 1);
-    vlyout->addLayout(hlyout);
+    vlyout->addLayout(hlyout); */
     vlyout->addStretch(100);
     w->setLayout(vlyout);
     QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
@@ -161,21 +161,21 @@ QWidget *Check21::Bd1W(QWidget *parent)
 void Check21::FillBda(QWidget *parent)
 {
     int i;
-    for (i = 0; i < 16; ++i)
+    for (i = 0; i < AIN21_NUMCH; ++i)
         WDFunc::SetLEData(parent, "bda"+QString::number(i), QString::number(Bda_block.sin[i]/ACHECKNUMPOINTS,16));
 }
 
 void Check21::FillBd1W(QWidget *parent)
 {
     int i;
-    for (i = 0; i < 16; ++i)
+    for (i = 0; i < AIN21_NUMCH; ++i)
     {
         QString tmps = QString::number(i);
         WDFunc::SetLEData(parent, "bdinI"+tmps, QString::number(Bd_block.inI[i],'f',5));
         WDFunc::SetLEData(parent, "bdinU"+tmps, QString::number(Bd_block.inU[i],'f',5));
         WDFunc::SetLEData(parent, "bdain"+tmps, QString::number(Bd_block.ain[i],'f',5));
-        WDFunc::SetLEData(parent, "bdainn"+tmps, QString::number(Bd_block.ainn[i],'f',5));
-        WDFunc::SetLEData(parent, "bdainx"+tmps, QString::number(Bd_block.ainx[i],'f',5));
+//        WDFunc::SetLEData(parent, "bdainn"+tmps, QString::number(Bd_block.ainn[i],'f',5));
+//        WDFunc::SetLEData(parent, "bdainx"+tmps, QString::number(Bd_block.ainx[i],'f',5));
     }
-    WDFunc::SetLEData(parent, "bdat", QString::number(Bd_block.at,'f',5));
+//    WDFunc::SetLEData(parent, "bdat", QString::number(Bd_block.at,'f',5));
 }

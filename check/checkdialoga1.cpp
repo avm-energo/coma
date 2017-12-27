@@ -18,7 +18,7 @@
 #include "../config/config.h"
 #include "../gen/commands.h"
 
-CheckDialogA1::CheckDialogA1(QWidget *parent) : EAbstractCheckDialog(parent)
+CheckDialogA1::CheckDialogA1(int board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);

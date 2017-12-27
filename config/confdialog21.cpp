@@ -19,7 +19,7 @@
 #include "../widgets/wd_func.h"
 
 ConfDialog21::ConfDialog21(QVector<publicclass::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
-    AbstractConfDialog2x(parent)
+    AbstractConfDialog(parent)
 {
     RangeInMins = {4.0, 0.0, 0.0, -5.0, 0.0};
     RangeInMaxs = {20.0, 20.0, 5.0, 5.0, 5.0};
@@ -31,6 +31,187 @@ ConfDialog21::ConfDialog21(QVector<publicclass::DataRec> &S2Config, bool BaseBoa
     Params.NumCh = AIN21_NUMCH;
     SetupUI();
     PrereadConf();
+}
+
+void ConfDialog21::SetupUI()
+{
+    int i;
+    QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
+    setStyleSheet(tmps);
+    QTabWidget *ConfTW = new QTabWidget;
+    ConfTW->setObjectName("conftw");
+    QString ConfTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLOR)+";}";
+    ConfTW->tabBar()->setStyleSheet(ConfTWss);
+    QVBoxLayout *lyout = new QVBoxLayout;
+
+    QGroupBox *gb = new QGroupBox("Типы каналов");
+    QVBoxLayout *gblyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    for (i = 0; i < Params.NumCh; ++i)
+    {
+        QLabel *ChTypL = new QLabel(QString::number(i+1)+":");
+        s_tqComboBox *cb = WDFunc::NewCB(this, "chtypcb."+QString::number(i), Params.InTypes, ACONFWCLR);
+        connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChTypData(int)));
+        hlyout->addWidget(ChTypL);
+        hlyout->addWidget(cb, 1);
+        if (((i+1) % 4) == 0)
+        {
+            gblyout->addLayout(hlyout);
+            hlyout = new QHBoxLayout;
+        }
+    }
+    gb->setLayout(gblyout);
+    lyout->addWidget(gb);
+    gb = new QGroupBox("Осциллограммы");
+    gblyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    QLabel *lbl = new QLabel("Источники записи осциллограмм:");
+    gblyout->addWidget(lbl);
+    lbl = new QLabel("#");
+    glyout->addWidget(lbl,0,0,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Вход DI2");
+    glyout->addWidget(lbl,0,1,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Вход DI1");
+    glyout->addWidget(lbl,0,2,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Превыш. oscthr");
+    glyout->addWidget(lbl,0,3,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Команда Cso0");
+    glyout->addWidget(lbl,0,4,1,1,Qt::AlignCenter);
+    lbl = new QLabel("#");
+    glyout->addWidget(lbl,0,5,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Вход DI2");
+    glyout->addWidget(lbl,0,6,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Вход DI1");
+    glyout->addWidget(lbl,0,7,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Превыш. oscthr");
+    glyout->addWidget(lbl,0,8,1,1,Qt::AlignCenter);
+    lbl = new QLabel("Команда Cso0");
+    glyout->addWidget(lbl,0,9,1,1,Qt::AlignCenter);
+    int row = 1;
+    int column = 0;
+    for (i=0; i<Params.NumCh; ++i)
+    {
+        lbl=new QLabel(QString::number(i+1));
+        glyout->addWidget(lbl,row,column++,1,1,Qt::AlignCenter);
+        QCheckBox *chb = WDFunc::NewChB(this, "choscdi2."+QString::number(i), "", ACONFWCLR);
+        glyout->addWidget(chb,row,column++,1,1,Qt::AlignCenter);
+        chb = WDFunc::NewChB(this, "choscdi1."+QString::number(i), "", ACONFWCLRO);
+        glyout->addWidget(chb,row,column++,1,1,Qt::AlignCenter);
+        chb = WDFunc::NewChB(this, "choscthr."+QString::number(i), "", ACONFWCLR);
+        glyout->addWidget(chb,row,column++,1,1,Qt::AlignCenter);
+        chb = WDFunc::NewChB(this, "chosccso0."+QString::number(i), "", ACONFWCLRO);
+        glyout->addWidget(chb,row,column++,1,1,Qt::AlignCenter);
+        if ((i%2) != 0)
+        {
+            ++row;
+            column = 0;
+        }
+    }
+    gblyout->addLayout(glyout);
+    lbl = new QLabel("Задержка в мс начала фиксации максимумов:");
+    gblyout->addWidget(lbl);
+    gblyout->addWidget(WDFunc::NewSPB(this, "oscdlyspb", 0, 10000, 1, 0, ACONFWCLR));
+    gb->setLayout(gblyout);
+    lyout->addWidget(gb);
+    QWidget *cp = new QWidget;
+    tmps = "QWidget {background-color: "+QString(ACONFGCLR)+";}";
+    cp->setStyleSheet(tmps);
+    cp->setLayout(lyout);
+    ConfTW->addTab(cp,"Общие");
+
+    lyout = new QVBoxLayout;
+    gb = new QGroupBox("Входные сигналы");
+    gb->setObjectName("RangeGB");
+    glyout = new QGridLayout;
+    glyout->setColumnStretch(0,0);
+    glyout->setColumnStretch(1,10);
+    glyout->setColumnStretch(2,5);
+    glyout->setColumnStretch(3,5);
+    glyout->setColumnStretch(4,5);
+    glyout->setColumnStretch(5,5);
+    glyout->addWidget(WDFunc::NewLBL(this, "№ канала", ACONFWCLR),0,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Диапазон", ACONFWCLRO),0,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Границы сигнала", ACONFWCLR),0,2,1,2);
+    glyout->addWidget(WDFunc::NewLBL(this, "Мин. инж.", ACONFWCLRO),0,3,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Макс. инж.", ACONFWCLR),0,4,1,1);
+    for (i = 0; i < Params.NumCh; ++i)
+    {
+        row = i+1;
+        hlyout = new QHBoxLayout;
+        glyout->addWidget(WDFunc::NewLBL(this, QString::number(i+1), ACONFWCLR),row,0,1,1);
+        QComboBox *mcb = WDFunc::NewCB(this, "inrange."+QString::number(i), Params.RangeTypes, ACONFWCLRO);
+        connect(mcb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetRange(int)));
+        glyout->addWidget(mcb, row,1,1,1);
+        hlyout->addWidget(WDFunc::NewSPB(this, "0."+QString::number(i), -20.0, 20.0, 0.01, 2, ACONFWCLR));
+        hlyout->addWidget(WDFunc::NewSPB(this, "1."+QString::number(i), -20.0, 20.0, 0.01, 2, ACONFWCLR));
+        hlyout->addWidget(WDFunc::NewLBL(this, "мА", ACONFWCLR, "units"));
+        glyout->addLayout(hlyout, row, 2, 1, 1);
+        glyout->addWidget(WDFunc::NewSPB(this, "2."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFWCLRO),row,3,1,1);
+        glyout->addWidget(WDFunc::NewSPB(this, "3."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFWCLR),row,4,1,1);
+    }
+    gb->setLayout(glyout);
+    lyout->addWidget(gb);
+    cp = new QWidget;
+    tmps = "QWidget {background-color: "+QString(ACONFGCLR)+";}";
+    cp->setStyleSheet(tmps);
+    cp->setLayout(lyout);
+    ConfTW->addTab(cp,"Диапазоны");
+
+    lyout = new QVBoxLayout;
+    gb = new QGroupBox("Уставки");
+    glyout = new QGridLayout;
+    glyout->setColumnStretch(0,0);
+    glyout->setColumnStretch(1,5);
+    glyout->setColumnStretch(2,5);
+    glyout->setColumnStretch(3,5);
+    glyout->setColumnStretch(4,5);
+    glyout->addWidget(WDFunc::NewLBL(this, "№ канала"),0,0,1,1,Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "Мин. авар."),0,1,1,1,Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBL(this, "Мин. пред."),0,2,1,1,Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBL(this, "Макс. пред."),0,3,1,1,Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBL(this, "Макс. авар."),0,4,1,1,Qt::AlignCenter);
+    for (i = 0; i < Params.NumCh; ++i)
+    {
+        row = i+1;
+        glyout->addWidget(WDFunc::NewLBL(this, QString::number(i+1)),row,0,1,1,Qt::AlignRight);
+        glyout->addWidget(WDFunc::NewSPB(this, "4."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFRCLR),row,1,1,1,Qt::AlignCenter); // setminmin
+        glyout->addWidget(WDFunc::NewSPB(this, "5."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFRCLR),row,2,1,1,Qt::AlignCenter); // setmin
+        glyout->addWidget(WDFunc::NewSPB(this, "6."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFRCLR),row,3,1,1,Qt::AlignCenter); // setmax
+        glyout->addWidget(WDFunc::NewSPB(this, "7."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFRCLR),row,4,1,1,Qt::AlignCenter); // setmaxmax
+    }
+    gb->setLayout(glyout);
+    lyout->addWidget(gb);
+    cp = new QWidget;
+    tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
+    cp->setStyleSheet(tmps);
+    cp->setLayout(lyout);
+    ConfTW->addTab(cp,"Уставки");
+
+    lyout = new QVBoxLayout;
+    lyout->addWidget(ConfTW);
+
+    QWidget *wdgt = ConfButtons();
+    lyout->addWidget(wdgt);
+    setLayout(lyout);
+}
+
+void ConfDialog21::DisableChannel(int chnum, bool disable)
+{
+    bool Enabled = !disable;
+    WDFunc::SetEnabled(this, "chtypcb."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "choscdi1."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "choscdi2."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "choscthr."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "chosccso0."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "inrange."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "0."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "1."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "2."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "3."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "4."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "5."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "6."+QString::number(chnum), Enabled);
+    WDFunc::SetEnabled(this, "7."+QString::number(chnum), Enabled);
 }
 
 void ConfDialog21::SetRange(int RangeType)
@@ -54,40 +235,40 @@ void ConfDialog21::SetRange(int RangeType)
     }
     if (RangeType < 5) // predefined ranges
     {
-        C21->Bci_block.inblk.in_min[ChNum] = RangeInMins.at(RangeType);
-        C21->Bci_block.inblk.in_max[ChNum] = RangeInMaxs.at(RangeType);
+        C21->Bci_block.in_min[ChNum] = RangeInMins.at(RangeType);
+        C21->Bci_block.in_max[ChNum] = RangeInMaxs.at(RangeType);
     }
 }
 
 void ConfDialog21::Fill()
 {
     int i;
-    WDFunc::SetSPBData(this, "oscdlyspb", C21->Bci_block.inblk.oscdly);
+    WDFunc::SetSPBData(this, "oscdlyspb", C21->Bci_block.oscdly);
     for (i = 0; i < AIN21_NUMCH; i++)
     {
-        WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), C21->Bci_block.inblk.in_type[i]);
-        quint8 Osc = C21->Bci_block.inblk.osc[i];
+        WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), C21->Bci_block.in_type[i]);
+        quint8 Osc = C21->Bci_block.osc[i];
         WDFunc::SetChBData(this, "choscdi2."+QString::number(i), Osc&0x20);
         WDFunc::SetChBData(this, "choscdi1."+QString::number(i), Osc&0x10);
         WDFunc::SetChBData(this, "choscthr."+QString::number(i), Osc&0x04);
         WDFunc::SetChBData(this, "chosccso0."+QString::number(i), Osc&0x01);
         SetMinMax(i);
-        WDFunc::SetSPBData(this, "2."+QString::number(i), C21->Bci_block.inblk.in_vmin[i]); // in_vmin
-        WDFunc::SetSPBData(this, "3."+QString::number(i), C21->Bci_block.inblk.in_vmax[i]); // in_vmax
-        WDFunc::SetSPBData(this, "4."+QString::number(i), C21->Bci_block.inblk.setminmin[i]); // setminmin
-        WDFunc::SetSPBData(this, "5."+QString::number(i), C21->Bci_block.inblk.setmin[i]); // setmin
-        WDFunc::SetSPBData(this, "6."+QString::number(i), C21->Bci_block.inblk.setmax[i]); // setmax
-        WDFunc::SetSPBData(this, "7."+QString::number(i), C21->Bci_block.inblk.setmaxmax[i]); // setmaxmax
-        DisableChannel(i, (C21->Bci_block.inblk.in_type[i] == Config2x::AIT_NONE));
+        WDFunc::SetSPBData(this, "2."+QString::number(i), C21->Bci_block.in_vmin[i]); // in_vmin
+        WDFunc::SetSPBData(this, "3."+QString::number(i), C21->Bci_block.in_vmax[i]); // in_vmax
+        WDFunc::SetSPBData(this, "4."+QString::number(i), C21->Bci_block.setminmin[i]); // setminmin
+        WDFunc::SetSPBData(this, "5."+QString::number(i), C21->Bci_block.setmin[i]); // setmin
+        WDFunc::SetSPBData(this, "6."+QString::number(i), C21->Bci_block.setmax[i]); // setmax
+        WDFunc::SetSPBData(this, "7."+QString::number(i), C21->Bci_block.setmaxmax[i]); // setmaxmax
+        DisableChannel(i, (C21->Bci_block.in_type[i] == AIN21_AIT_NONE));
     }
 }
 
 void ConfDialog21::FillBack()
 {
-    WDFunc::SPBData(this, "oscdlyspb", C21->Bci_block.inblk.oscdly);
+    WDFunc::SPBData(this, "oscdlyspb", C21->Bci_block.oscdly);
     for (int i=0; i<AIN21_NUMCH; ++i)
     {
-        WDFunc::CBIndex(this, "chtypcb."+QString::number(i), C21->Bci_block.inblk.in_type[i]);
+        WDFunc::CBIndex(this, "chtypcb."+QString::number(i), C21->Bci_block.in_type[i]);
         bool tmpb;
         quint8 Osc = 0;
         WDFunc::ChBData(this, "choscdi2."+QString::number(i), tmpb);
@@ -98,13 +279,13 @@ void ConfDialog21::FillBack()
         if (tmpb) Osc |= 0x04;
         WDFunc::ChBData(this, "chosccso0."+QString::number(i), tmpb);
         if (tmpb) Osc |= 0x01;
-        C21->Bci_block.inblk.osc[i] = Osc;
-        WDFunc::SPBData(this, "2."+QString::number(i), C21->Bci_block.inblk.in_vmin[i]); // in_vmin
-        WDFunc::SPBData(this, "3."+QString::number(i), C21->Bci_block.inblk.in_vmax[i]); // in_vmax
-        WDFunc::SPBData(this, "4."+QString::number(i), C21->Bci_block.inblk.setminmin[i]); // setminmin
-        WDFunc::SPBData(this, "5."+QString::number(i), C21->Bci_block.inblk.setmin[i]); // setmin
-        WDFunc::SPBData(this, "6."+QString::number(i), C21->Bci_block.inblk.setmax[i]); // setmax
-        WDFunc::SPBData(this, "7."+QString::number(i), C21->Bci_block.inblk.setmaxmax[i]); // setmaxmax
+        C21->Bci_block.osc[i] = Osc;
+        WDFunc::SPBData(this, "2."+QString::number(i), C21->Bci_block.in_vmin[i]); // in_vmin
+        WDFunc::SPBData(this, "3."+QString::number(i), C21->Bci_block.in_vmax[i]); // in_vmax
+        WDFunc::SPBData(this, "4."+QString::number(i), C21->Bci_block.setminmin[i]); // setminmin
+        WDFunc::SPBData(this, "5."+QString::number(i), C21->Bci_block.setmin[i]); // setmin
+        WDFunc::SPBData(this, "6."+QString::number(i), C21->Bci_block.setmax[i]); // setmax
+        WDFunc::SPBData(this, "7."+QString::number(i), C21->Bci_block.setmaxmax[i]); // setmaxmax
     }
 }
 
@@ -116,25 +297,25 @@ void ConfDialog21::SetMinMax(int i)
         DBGMSG;
         return;
     }
-    switch (C21->Bci_block.inblk.in_type[i])
+    switch (C21->Bci_block.in_type[i])
     {
-    case Config2x::AIT_MA: // канал с мА
+    case AIN21_AIT_MA: // канал с мА
     {
-        if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],20.0))
+        if (pc.FloatInRange(C21->Bci_block.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.in_max[i],20.0))
             cb->setCurrentIndex(RT_I020);
-        else if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],4.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],20.0))
+        else if (pc.FloatInRange(C21->Bci_block.in_min[i],4.0) && pc.FloatInRange(C21->Bci_block.in_max[i],20.0))
             cb->setCurrentIndex(RT_I420);
-        else if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],5.0))
+        else if (pc.FloatInRange(C21->Bci_block.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.in_max[i],5.0))
             cb->setCurrentIndex(RT_I05);
         else
             cb->setCurrentIndex(RT_IMANUAL);
         break;
     }
-    case Config2x::AIT_V: // канал с В
+    case AIN21_AIT_V: // канал с В
     {
-        if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],5.0))
+        if (pc.FloatInRange(C21->Bci_block.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.in_max[i],5.0))
             cb->setCurrentIndex(RT_V05);
-        else if (pc.FloatInRange(C21->Bci_block.inblk.in_min[i], -5.0) && pc.FloatInRange(C21->Bci_block.inblk.in_max[i],5.0))
+        else if (pc.FloatInRange(C21->Bci_block.in_min[i], -5.0) && pc.FloatInRange(C21->Bci_block.in_max[i],5.0))
             cb->setCurrentIndex(RT_V55);
         else
             cb->setCurrentIndex(RT_VMANUAL);
@@ -150,57 +331,31 @@ void ConfDialog21::SetChTypData(int value)
     int tmpi = GetChNumFromObjectName(sender()->objectName());
     if (tmpi == GENERALERROR)
         return;
-    C21->Bci_block.inblk.in_type[tmpi] = value;
+    C21->Bci_block.in_type[tmpi] = value;
     DisableChannel(tmpi, (value == 0));
 }
-
-/*void ConfDialog21::SetOscDly(double dly)
-{
-    C21->Bci_block.inblk.oscdly = static_cast<quint16>(dly);
-} */
-
-/*void ConfDialog21::SetChOsc(int isChecked)
-{
-    int ChNum = GetChNumFromObjectName(sender()->objectName());
-    if (ChNum == -1)
-        return;
-    int Mask;
-    QString ObjName = sender()->objectName().split(".").at(0);
-    if (ObjName.compare("choscdi1") == 0)
-        Mask = 0x10;
-    if (ObjName.compare("choscdi2") == 0)
-        Mask = 0x20;
-    if (ObjName.compare("choscthr") == 0)
-        Mask = 0x04;
-    if (ObjName.compare("chosccso0") == 0)
-        Mask = 0x10;
-    if (isChecked == Qt::Checked)
-        C21->Bci_block.inblk.osc[ChNum] |= Mask;
-    else
-        C21->Bci_block.inblk.osc[ChNum] &= ~Mask;
-}*/
 
 void ConfDialog21::CheckConf()
 {
     for (int i=0; i<Params.NumCh; ++i)
     {
-        if (C21->Bci_block.inblk.in_min[i] > C21->Bci_block.inblk.in_max[i])
+        if (C21->Bci_block.in_min[i] > C21->Bci_block.in_max[i])
             CheckConfErrors.append("IN_MIN["+QString::number(i)+"] > IN_MAX["+QString::number(i)+"]");
-        if (C21->Bci_block.inblk.in_vmin[i] > C21->Bci_block.inblk.in_vmax[i])
+        if (C21->Bci_block.in_vmin[i] > C21->Bci_block.in_vmax[i])
             CheckConfErrors.append("IN_VMIN["+QString::number(i)+"] > IN_VMAX["+QString::number(i)+"]");
-        if (C21->Bci_block.inblk.setminmin[i] > C21->Bci_block.inblk.setmin[i])
+        if (C21->Bci_block.setminmin[i] > C21->Bci_block.setmin[i])
             CheckConfErrors.append("SETMINMIN["+QString::number(i)+"] > SETMIN["+QString::number(i)+"]");
-        if (C21->Bci_block.inblk.setminmin[i] < C21->Bci_block.inblk.in_vmin[i])
+        if (C21->Bci_block.setminmin[i] < C21->Bci_block.in_vmin[i])
             CheckConfErrors.append("SETMINMIN["+QString::number(i)+"] < IN_VMIN["+QString::number(i)+"]");
-        if (C21->Bci_block.inblk.setmin[i] < C21->Bci_block.inblk.in_vmin[i])
+        if (C21->Bci_block.setmin[i] < C21->Bci_block.in_vmin[i])
             CheckConfErrors.append("SETMIN["+QString::number(i)+"] < IN_VMIN["+QString::number(i)+"]");
-        if (C21->Bci_block.inblk.setmax[i] < C21->Bci_block.inblk.setmin[i])
+        if (C21->Bci_block.setmax[i] < C21->Bci_block.setmin[i])
             CheckConfErrors.append("SETMAX["+QString::number(i)+"] < SETMIN["+QString::number(i)+"]");
-        if (C21->Bci_block.inblk.setmax[i] > C21->Bci_block.inblk.setmaxmax[i])
+        if (C21->Bci_block.setmax[i] > C21->Bci_block.setmaxmax[i])
             CheckConfErrors.append("SETMAX["+QString::number(i)+"] > SETMAXMAX["+QString::number(i)+"]");
-        if (C21->Bci_block.inblk.setmax[i] > C21->Bci_block.inblk.in_vmax[i])
+        if (C21->Bci_block.setmax[i] > C21->Bci_block.in_vmax[i])
             CheckConfErrors.append("SETMAX["+QString::number(i)+"] > IN_VMAX["+QString::number(i)+"]");
-        if (C21->Bci_block.inblk.setmaxmax[i] > C21->Bci_block.inblk.in_vmax[i])
+        if (C21->Bci_block.setmaxmax[i] > C21->Bci_block.in_vmax[i])
             CheckConfErrors.append("SETMAXMAX["+QString::number(i)+"] > IN_VMAX["+QString::number(i)+"]");
     }
 }
@@ -209,60 +364,3 @@ void ConfDialog21::SetDefConf()
 {
     C21->SetDefConf();
 }
-
-/*void ConfDialog21::SetIn()
-{
-    s_tqSpinBox *spb = qobject_cast<s_tqSpinBox *>(sender());
-    QString ObjectName = spb->objectName().split(".").at(0);
-    int idx = ObjectName.toInt();
-    if (idx == GENERALERROR)
-    {
-        DBGMSG;
-        return;
-    }
-    int chnum = GetChNumFromObjectName(sender()->objectName());
-    if (chnum <= 0)
-    {
-        DBGMSG;
-        return;
-    }
-    QString tmps;
-    switch(idx)
-    {
-    case 0: // inmin
-        C21->Bci_block.inblk.in_min[chnum] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
-        break;
-    case 1: // inmax
-        C21->Bci_block.inblk.in_max[chnum] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
-        break;
-    case 2: // invmin
-        C21->Bci_block.inblk.in_vmin[chnum] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
-        break;
-    case 3: // invmax
-        C21->Bci_block.inblk.in_vmax[chnum] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFGCLR)+";}";
-        break;
-    case 4: // setminmin
-        C21->Bci_block.inblk.setminmin[chnum] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFRCLR)+";}";
-        break;
-    case 5: // setmin
-        C21->Bci_block.inblk.setmin[chnum] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFYCLR)+";}";
-        break;
-    case 6: // setmax
-        C21->Bci_block.inblk.setmax[chnum] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFYCLR)+";}";
-        break;
-    case 7: // setmaxmax
-        C21->Bci_block.inblk.setmaxmax[chnum] = spb->value();
-        tmps = "QDoubleSpinBox {background-color: "+QString(ACONFRCLR)+";}";
-        break;
-    }
-    if (CheckConf())
-        tmps = "QDoubleSpinBox {color: "+QString(ERRCLR)+"; font: bold;}";
-    spb->setStyleSheet(tmps);
-} */

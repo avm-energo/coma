@@ -18,7 +18,7 @@
 #include "../gen/publicclass.h"
 #include "../gen/commands.h"
 
-EAbstractCheckDialog::EAbstractCheckDialog(QWidget *parent) :
+EAbstractCheckDialog::EAbstractCheckDialog(int board, QWidget *parent) :
     QDialog(parent)
 {
 //    Parent = parent;
@@ -27,6 +27,8 @@ EAbstractCheckDialog::EAbstractCheckDialog(QWidget *parent) :
     xlsx = 0;
 //    CurBdNum = 1;
     WRow = 0;
+    StartBd = (board == BT_BASE) ? BT_STARTBD_BASE : BT_STARTBD_MEZ; // стартовый номер блока данных - 1 для базовой платы, 101 - для мезонинной
+    Board = board;
     Bd_blocks.clear();
     timer = new QTimer;
     timer->setObjectName("checktimer");
@@ -210,7 +212,7 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
         {
             if (!XlsxWriting || (XlsxWriting && (Bd_blocks.at(bdnum)->toxlsxwrite)))
             {
-                if (Commands::GetBd(bdnum, Bd_blocks.at(bdnum)->block, Bd_blocks.at(bdnum)->blocknum) != NOERROR)
+                if (Commands::GetBd(StartBd + bdnum, Bd_blocks.at(bdnum)->block, Bd_blocks.at(bdnum)->blocknum) != NOERROR)
                 {
                     WARNMSG("Ошибка при приёме данных");
                     Busy = false;

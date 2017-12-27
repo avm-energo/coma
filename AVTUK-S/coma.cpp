@@ -36,6 +36,7 @@
 #include "../check/checkdialog85.h"
 #include "../check/checkdialoga1.h"
 #include "../config/confdialog21.h"
+#include "../config/confdialog22.h"
 #include "../config/confdialog31.h"
 #include "../config/confdialog35.h"
 #include "../config/confdialog80.h"
@@ -282,9 +283,14 @@ void Coma::PrepareDialogs()
     {
         ConfB = new ConfDialog21(S2Config, true);
 #if PROGSIZE != PROGSIZE_EMUL
-        TuneB = new TuneDialog21;
+        TuneB = new TuneDialog21(BT_BASE);
 #endif
-        CheckB = new CheckDialog21;
+        CheckB = new CheckDialog21(BT_BASE);
+        break;
+    }
+    case MTB_22:
+    {
+        ConfB = new ConfDialog22(S2Config, true);
         break;
     }
     case MTB_31:
@@ -303,12 +309,12 @@ void Coma::PrepareDialogs()
 #if PROGSIZE != PROGSIZE_EMUL
         TuneB = new TuneDialog80(S2Config);
 #endif
-        CheckB = new CheckDialog80;
+        CheckB = new CheckDialog80(BT_BASE);
         break;
     }
     case MTB_A1:
         ConfB = new ConfDialogA1(S2Config);
-        CheckB = new CheckDialogA1;
+        CheckB = new CheckDialogA1(BT_BASE);
 #if PROGSIZE != PROGSIZE_EMUL
         TuneB = new TuneDialogA1;
 #endif
@@ -319,6 +325,13 @@ void Coma::PrepareDialogs()
     case MTM_21:
     {
         ConfM = new ConfDialog21(S2Config, false);
+        CheckM = new CheckDialog21(BT_MEZONIN);
+        TuneM = new TuneDialog21(BT_MEZONIN);
+        break;
+    }
+    case MTM_22:
+    {
+        ConfM = new ConfDialog22(S2Config, false);
         break;
     }
     case MTM_31:
@@ -344,7 +357,7 @@ void Coma::PrepareDialogs()
     case MTM_85:
     {
         ConfM = new ConfDialog85(S2Config);
-        CheckM = new CheckDialog85;
+        CheckM = new CheckDialog85(BT_BASE);
 #if PROGSIZE != PROGSIZE_EMUL
         SwjD = new SwitchJournalDialog;
 #endif

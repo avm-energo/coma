@@ -24,7 +24,7 @@ class EAbstractCheckDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit EAbstractCheckDialog(QWidget *parent = 0);
+    explicit EAbstractCheckDialog(int board, QWidget *parent = 0);
     void SetupUI(QStringList &tabnames);
 
     virtual QWidget *BdUI(int bdnum) = 0; // визуализация наборов текущих данных от модуля
@@ -42,6 +42,9 @@ public:
     QTimer *timer;
     int WRow, BdNum, BdUINum; // BdNum - количество блоков данных модуля, BdUINum - количество вкладок с выводом блоков данных модуля
                                         // BdUINum >= BdNum, т.е. один блок может быть разделён на несколько вкладок
+    int StartBd; // стартовый номер блока
+    int Board; // тип платы
+
 // CurBdNum,
 
 signals:
