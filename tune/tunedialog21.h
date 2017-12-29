@@ -44,9 +44,11 @@ private:
     void FillBac();
     void FillBackBac();
     void GetBdAndFillMTT();
+    int ShowScheme();
     void StartTune();
 
-    bool tune(int Type, int ChNum);
+    int Tune();
+    bool TuneChannel(int Type, int ChNum);
     void ShowErrMsg(int);
     bool CalcNewTuneCoef(int ChNum);
     bool CheckAndShowTune0(int ChNum);

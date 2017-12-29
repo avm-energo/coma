@@ -232,6 +232,12 @@ void Coma::Stage3()
         connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
 #endif
     }
+#if PROGSIZE != PROGSIZE_EMUL
+    if (TuneB != 0)
+        MainTW->addTab(TuneB, "Регулировка\nБазовая");
+#endif
+    if (CheckB != 0)
+        MainTW->addTab(CheckB, "Проверка\nБазовая");
     if (ConfM != 0)
     {
         MainTW->addTab(ConfM, "Конфигурирование\nМезонин");
@@ -241,17 +247,11 @@ void Coma::Stage3()
 #endif
     }
 #if PROGSIZE != PROGSIZE_EMUL
-    if (TuneB != 0)
-        MainTW->addTab(TuneB, "Регулировка\nБазовая");
-#endif
-    if (CheckB != 0)
-        MainTW->addTab(CheckB, "Проверка\nБазовая");
-#if PROGSIZE != PROGSIZE_EMUL
     if (TuneM != 0)
-        MainTW->addTab(TuneB, "Регулировка\nМезонин");
+        MainTW->addTab(TuneM, "Регулировка\nМезонин");
 #endif
     if (CheckM != 0)
-        MainTW->addTab(CheckB, "Проверка\nМезонин");
+        MainTW->addTab(CheckM, "Проверка\nМезонин");
 #if PROGSIZE != PROGSIZE_EMUL
     if ((pc.ModuleBsi.MTypeB << 8) == MTB_A1)
     {

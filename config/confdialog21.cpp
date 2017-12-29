@@ -175,8 +175,8 @@ void ConfDialog21::SetupUI()
         row = i+1;
         glyout->addWidget(WDFunc::NewLBL(this, QString::number(i+1)),row,0,1,1,Qt::AlignRight);
         glyout->addWidget(WDFunc::NewSPB(this, "4."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFRCLR),row,1,1,1,Qt::AlignCenter); // setminmin
-        glyout->addWidget(WDFunc::NewSPB(this, "5."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFRCLR),row,2,1,1,Qt::AlignCenter); // setmin
-        glyout->addWidget(WDFunc::NewSPB(this, "6."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFRCLR),row,3,1,1,Qt::AlignCenter); // setmax
+        glyout->addWidget(WDFunc::NewSPB(this, "5."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFYCLR),row,2,1,1,Qt::AlignCenter); // setmin
+        glyout->addWidget(WDFunc::NewSPB(this, "6."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFYCLR),row,3,1,1,Qt::AlignCenter); // setmax
         glyout->addWidget(WDFunc::NewSPB(this, "7."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFRCLR),row,4,1,1,Qt::AlignCenter); // setmaxmax
     }
     gb->setLayout(glyout);

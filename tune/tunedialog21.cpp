@@ -24,6 +24,7 @@ TuneDialog21::TuneDialog21(int type, QWidget *parent) :
         Bda20.sin[i] = UINT_MAX;
     }
     BoardType = type;
+    SetBac(&Bac_block, BoardType, sizeof(Bac_block));
     SetupUI();
 }
 
@@ -36,8 +37,9 @@ void TuneDialog21::SetupUI()
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
-    QWidget *cp1 = new QWidget;
+    QWidget *cp1 = TuneUI();
     QWidget *cp2 = new QWidget;
+//    QWidget *cp3 = new QWidget;
     tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     cp1->setStyleSheet(tmps);
     cp2->setStyleSheet(tmps);
@@ -47,8 +49,9 @@ void TuneDialog21::SetupUI()
     QHBoxLayout *gb2lyout = new QHBoxLayout;
 
     QTabWidget *TuneTW = new QTabWidget;
-    TuneTW->addTab(cp1,"Коэффициенты");
-    TuneTW->addTab(cp2,"Настройка");
+    TuneTW->addTab(cp1,"Настройка");
+    TuneTW->addTab(cp2,"Коэффициенты");
+//    TuneTW->addTab(cp3,"Настройка");
     QGroupBox *gb = new QGroupBox("Настроечные коэффициенты");
     for (i = 0; i < AIN21_NUMCH; i++)
     {
@@ -78,7 +81,8 @@ void TuneDialog21::SetupUI()
     }
     if (gb2lyout->count())
         gb1lyout->addLayout(gb2lyout);
-    QPushButton *pb = new QPushButton("Установить настроечные коэффициенты по умолчанию");
+    gb1lyout->addWidget(BottomUI());
+/*    QPushButton *pb = new QPushButton("Установить настроечные коэффициенты по умолчанию");
     connect(pb,SIGNAL(clicked()),this,SLOT(SetDefCoefs()));
     gb1lyout->addWidget(pb);
     pb = new QPushButton("Прочитать настроечные коэффициенты из модуля");
@@ -98,12 +102,12 @@ void TuneDialog21::SetupUI()
     pb = new QPushButton("Записать настроечные коэффициенты в файл");
     pb->setIcon(QIcon("images/save.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
-    gb1lyout->addWidget(pb);
+    gb1lyout->addWidget(pb); */
     gb->setLayout(gb1lyout);
     lyout->addWidget(gb);
-    cp1->setLayout(lyout);
+    cp2->setLayout(lyout);
 
-    QGridLayout *glyout = new QGridLayout;
+/*    QGridLayout *glyout = new QGridLayout;
     lbl = new QLabel("Канал");
     glyout->addWidget(lbl,0,0,1,1,Qt::AlignCenter);
     lbl = new QLabel("Значение");
@@ -146,7 +150,7 @@ void TuneDialog21::SetupUI()
             pb->setEnabled(false);
         glyout->addWidget(pb,i+1,4,1,1,Qt::AlignCenter);
     }
-    cp2->setLayout(glyout);
+    cp3->setLayout(glyout); */
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
@@ -156,12 +160,19 @@ void TuneDialog21::SetupUI()
 
 void TuneDialog21::SetLbls()
 {
-
+    lbls.append("1. Ввод пароля...");
+    lbls.append("2. Отображение схемы подключения...");
+    lbls.append("3. Регулировка...");
 }
 
 void TuneDialog21::SetPf()
 {
-
+    int count = 0;
+    pf[lbls.at(count++)] = &EAbstractTuneDialog::CheckPassword; // 1. Ввод пароля
+    int (EAbstractTuneDialog::*func)() = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog21::ShowScheme);
+    pf[lbls.at(count++)] = func; // 2. Отображение схемы подключения
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog21::Tune);
+    pf[lbls.at(count++)] = func; // 3. Регулировка
 }
 
 void TuneDialog21::FillBac()
@@ -202,16 +213,34 @@ void TuneDialog21::GetBdAndFillMTT()
 
 }
 
-bool TuneDialog21::tune(int Type, int ChNum)
+int TuneDialog21::ShowScheme()
+{
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    lyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/tune21.png")));
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+    if (pc.Cancelled == true)
+        return GENERALERROR;
+    return NOERROR;
+}
+
+bool TuneDialog21::TuneChannel(int Type, int ChNum)
 {
     switch (Type)
     {
     case 0: // настройка нуля
     {
         if (QMessageBox::information(this,"Настройка",\
-                                     "Переключите входные переключатели на напряжение,\nустановите напряжение 0 В " \
-                                     "на всех\nвходах модуля и нажмите OK")\
-                == QMessageBox::Ok)
+                                     "На калибраторе задайте напряжение 0 В на\nвходе "+\
+                                     QString::number(ChNum)+" модуля и нажмите OK") == QMessageBox::Ok)
         {
             if (Commands::GetBda(BoardType, &Bda0, sizeof(Check21::Bda)) == NOERROR)
                 CheckAndShowTune0(ChNum);
@@ -311,6 +340,14 @@ void TuneDialog21::StartTune()
     }
     else
         DBGMSG;
+}
+
+int TuneDialog21::Tune()
+{
+    for (int i=0; i<AIN21_NUMCH; ++i)
+    {
+
+    }
 }
 
 bool TuneDialog21::CheckAndShowTune0(int ChNum)
