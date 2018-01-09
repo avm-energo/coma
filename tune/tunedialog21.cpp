@@ -24,12 +24,16 @@ TuneDialog21::TuneDialog21(int type, QWidget *parent) :
         Bda20.sin[i] = UINT_MAX;
     }
     BoardType = type;
+    ChNum = 0;
     SetBac(&Bac_block, BoardType, sizeof(Bac_block));
     SetupUI();
 }
 
 void TuneDialog21::SetupUI()
 {
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *gb1lyout = new QVBoxLayout;
+    QHBoxLayout *gb2lyout = new QHBoxLayout;
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
     setStyleSheet(tmps);
     int i;
@@ -37,21 +41,36 @@ void TuneDialog21::SetupUI()
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
-    QWidget *cp1 = TuneUI();
+    QWidget *tuneui = TuneUI();
+    lyout->addWidget(tuneui);
+    tuneui = new QWidget;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QStringList cbsl;
+    for (i=0; i<AIN21_NUMCH; ++i)
+        cbsl << QString::number(i);
+    hlyout->addStretch(10);
+    hlyout->addWidget(WDFunc::NewLBL(this, "Номер канала: "));
+    hlyout->addWidget(WDFunc::NewCB(this, "tunechnum", cbsl), 2);
+    QPushButton *pb = new QPushButton("Настроить");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(TuneOneChannel()));
+    hlyout->addWidget(pb);
+    hlyout->addStretch(10);
+    lyout->addLayout(hlyout);
+    QWidget *cp1 = new QWidget;
+    cp1->setLayout(lyout);
+    // cb + pb
     QWidget *cp2 = new QWidget;
 //    QWidget *cp3 = new QWidget;
     tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     cp1->setStyleSheet(tmps);
     cp2->setStyleSheet(tmps);
-    QVBoxLayout *lyout = new QVBoxLayout;
     QLabel *lbl;
-    QVBoxLayout *gb1lyout = new QVBoxLayout;
-    QHBoxLayout *gb2lyout = new QHBoxLayout;
 
     QTabWidget *TuneTW = new QTabWidget;
     TuneTW->addTab(cp1,"Настройка");
     TuneTW->addTab(cp2,"Коэффициенты");
 //    TuneTW->addTab(cp3,"Настройка");
+    lyout = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox("Настроечные коэффициенты");
     for (i = 0; i < AIN21_NUMCH; i++)
     {
@@ -232,152 +251,118 @@ int TuneDialog21::ShowScheme()
     return NOERROR;
 }
 
-bool TuneDialog21::TuneChannel(int Type, int ChNum)
+int TuneDialog21::ShowU0()
+{
+    if (QMessageBox::information(this,"Настройка",\
+                                 "На калибраторе задайте напряжение 0 В на\nвходе "+\
+                                 QString::number(ChNum)+" модуля и нажмите OK") == QMessageBox::Ok)
+        return NOERROR;
+    return GENERALERROR;
+}
+
+int TuneDialog21::ShowI20()
+{
+    if (QMessageBox::information(this,"Настройка",\
+                                 "Переключите входные переключатели на ток,\nустановите ток 20 мА на\n" \
+                                 "входе " + QString::number(ChNum) + " модуля и нажмите OK") == QMessageBox::Ok)
+        return NOERROR;
+    return GENERALERROR;
+}
+
+int TuneDialog21::ShowU5()
+{
+    if (QMessageBox::information(this,"Настройка",\
+                                 "Переключите входные переключатели на напряжение,\nустановите напряжение" \
+                                 "5 В на \nвходе " + QString::number(ChNum) + " модуля и нажмите OK") == QMessageBox::Ok)
+        return NOERROR;
+    return GENERALERROR;
+}
+
+int TuneDialog21::TuneChannel(int Type)
 {
     switch (Type)
     {
-    case 0: // настройка нуля
+    case ATUNE_U0: // настройка нуля
     {
-        if (QMessageBox::information(this,"Настройка",\
-                                     "На калибраторе задайте напряжение 0 В на\nвходе "+\
-                                     QString::number(ChNum)+" модуля и нажмите OK") == QMessageBox::Ok)
+        if (Commands::GetBda(BoardType, &Bda0, sizeof(Check21::Bda)) == NOERROR)
         {
-            if (Commands::GetBda(BoardType, &Bda0, sizeof(Check21::Bda)) == NOERROR)
-                CheckAndShowTune0(ChNum);
-            else
-            {
-                WARNMSG("");
-                return false;
-            }
+            CheckAndShowTune0();
+            return NOERROR;
         }
-        else
-        {
-            WARNMSG("Настройка прервана");
-            return false;
-        }
-        break;
+        return GENERALERROR;
     }
-    case 1: // настройка 20 мА
+    case ATUNE_I20: // настройка 20 мА
     {
-        if (QMessageBox::information(this,"Настройка",\
-                                     "Переключите входные переключатели на ток,\nустановите ток 20 мА на всех" \
-                                     "\nвходах модуля и нажмите OK") == QMessageBox::Ok)
+        if (Commands::GetBda(BoardType, &Bda20, sizeof(Check21::Bda)) == NOERROR)
         {
-            if (Commands::GetBda(BoardType, &Bda20, sizeof(Check21::Bda)) == NOERROR)
-                CheckAndShowTune20(ChNum);
-            else
-            {
-                WARNMSG("");
-                return false;
-            }
+            CheckAndShowTune20();
+            return NOERROR;
         }
-        else
-        {
-            WARNMSG("Настройка прервана");
-            return false;
-        }
-        break;
+        return GENERALERROR;
     }
-    case 2: // настройка 5 В
+    case ATUNE_U5: // настройка 5 В
     {
-        if (QMessageBox::information(this,"Настройка",\
-                                     "Переключите входные переключатели на напряжение,\nустановите напряжение" \
-                                     "5 В на всех\nвходах модуля и нажмите OK")\
-                == QMessageBox::Ok)
+        if (Commands::GetBda(BoardType, &Bda5, sizeof(Check21::Bda)) == NOERROR)
         {
-            if (Commands::GetBda(BoardType, &Bda5, sizeof(Check21::Bda)) == NOERROR)
-                CheckAndShowTune5(ChNum);
-            else
-            {
-                WARNMSG("");
-                return false;
-            }
+            CheckAndShowTune5();
+            return NOERROR;
         }
-        else
-        {
-            WARNMSG("Настройка прервана");
-            return false;
-        }
-        break;
+        return GENERALERROR;
     }
     default:
-        return false;
         break;
     }
-    return true;
-}
-
-void TuneDialog21::StartTune()
-{
-    QString AllNum = sender()->objectName();
-    if (!AllNum.isEmpty())
-    {
-        int Type = AllNum.at(0).digitValue();
-        if (Type != -1)
-        {
-            int ChNum = AllNum.right(AllNum.size()-1).toInt();
-            if (ChNum != -1)
-            {
-                QPushButton *pb = qobject_cast<QPushButton *>(sender());
-                if (tune(Type, ChNum))
-                {
-                    if (pb != 0)
-                        pb->setStyleSheet("QPushButton {background-color: #FFE0C0;}");
-                    EMessageBox::information(this, "Внимание", "Успешно");
-                }
-                else
-                {
-                    if (pb != 0)
-                        pb->setStyleSheet("QPushButton {background-color: #D0D0D0;}");
-                    WARNMSG("Настройка не удалась");
-                }
-            }
-            else
-                DBGMSG;
-        }
-        else
-            DBGMSG;
-    }
-    else
-        DBGMSG;
+    return GENERALERROR;
 }
 
 int TuneDialog21::Tune()
 {
-    for (int i=0; i<AIN21_NUMCH; ++i)
+    for (ChNum=0; ChNum<AIN21_NUMCH; ++ChNum)
     {
-
+        ShowU0();
+        if (!TuneChannel(ATUNE_U0))
+            return GENERALERROR;
+        ShowI20();
+        if (!TuneChannel(ATUNE_I20))
+            return GENERALERROR;
     }
+    for (ChNum=0; ChNum<AIN21_NUMCH; ++ChNum)
+    {
+        ShowU5();
+        if (TuneChannel(ATUNE_U5) != NOERROR)
+            return GENERALERROR;
+    }
+    return NOERROR;
 }
 
-bool TuneDialog21::CheckAndShowTune0(int ChNum)
+bool TuneDialog21::CheckAndShowTune0()
 {
     WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda0.sin[ChNum]/ATUNENUMPOINTS,16));
-    if (!CalcNewTuneCoef(ChNum))
+    if (!CalcNewTuneCoef())
         return false;
     FillBac();
     return true;
 }
 
-bool TuneDialog21::CheckAndShowTune5(int ChNum)
+bool TuneDialog21::CheckAndShowTune5()
 {
     WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda5.sin[ChNum]/ATUNENUMPOINTS,16));
-    if (!CalcNewTuneCoef(ChNum))
+    if (!CalcNewTuneCoef())
         return false;
     FillBac();
     return true;
 }
 
-bool TuneDialog21::CheckAndShowTune20(int ChNum)
+bool TuneDialog21::CheckAndShowTune20()
 {
     WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda20.sin[ChNum]/ATUNENUMPOINTS,16));
-    if (!CalcNewTuneCoef(ChNum))
+    if (!CalcNewTuneCoef())
         return false;
     FillBac();
     return true;
 }
 
-bool TuneDialog21::CalcNewTuneCoef(int ChNum)
+bool TuneDialog21::CalcNewTuneCoef()
 {
     Bac_block[ChNum].fbin = 1.25 - (static_cast<float>(Bda0.sin[ChNum]) / (ATUNENUMPOINTS*1638.0));
     if ((Bda0.sin[ChNum] == Bda5.sin[ChNum]) || (Bda0.sin[ChNum] == Bda20.sin[ChNum]))
@@ -406,19 +391,30 @@ int TuneDialog21::ReadAnalogMeasurements()
     return NOERROR;
 }
 
+void TuneDialog21::TuneOneChannel()
+{
+    WDFunc::CBIndex(this, "tunenumch", ChNum);
+    ShowU0();
+    if (TuneChannel(ATUNE_U0) != NOERROR)
+        return;
+    ShowI20();
+    if (TuneChannel(ATUNE_I20) != NOERROR)
+        return;
+    ShowU5();
+    if (TuneChannel(ATUNE_U5) != NOERROR)
+        return;
+}
+
 bool TuneDialog21::CheckTuneCoefs()
 {
     for (int i=0; i<AIN21_NUMCH; i++)
     {
-        QString tmps;
-        WDFunc::LEData(this, "tunebcoef"+QString::number(i), tmps);
-        if (tmps.isEmpty() || (tmps.toInt() == -1))
+        int tmpi;
+        if (!WDFunc::LEData(this, "tunebcoef"+QString::number(i), tmpi))
             return false;
-        WDFunc::LEData(this, "tunek1coef"+QString::number(i), tmps);
-        if (tmps.isEmpty() || (tmps.toInt() == -1))
+        if (!WDFunc::LEData(this, "tunek1coef"+QString::number(i), tmpi))
             return false;
-        WDFunc::LEData(this, "tunek2coef"+QString::number(i), tmps);
-        if (tmps.isEmpty() || (tmps.toInt() == -1))
+        if (!WDFunc::LEData(this, "tunek2coef"+QString::number(i), tmpi))
             return false;
     }
     return true;

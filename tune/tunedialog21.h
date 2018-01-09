@@ -14,6 +14,10 @@
 #define ATUNEWARN(a)    WARNMSG(publicclass::ER_ATUNE,__LINE__,a)
 #define ATUNEINFO(a)     INFOMSG(publicclass::ER_ATUNE,__LINE__,a)
 
+#define ATUNE_U0    0
+#define ATUNE_I20   1
+#define ATUNE_U5    2
+
 class TuneDialog21 : public EAbstractTuneDialog
 {
     Q_OBJECT
@@ -37,6 +41,7 @@ private:
     Bac Bac_block[AIN21_NUMCH];
 
     int BoardType;
+    int ChNum;
 
     void SetupUI();
     void SetLbls();
@@ -45,20 +50,23 @@ private:
     void FillBackBac();
     void GetBdAndFillMTT();
     int ShowScheme();
-    void StartTune();
+    int ShowU0();
+    int ShowI20();
+    int ShowU5();
 
     int Tune();
-    bool TuneChannel(int Type, int ChNum);
+    int TuneChannel(int Type);
     void ShowErrMsg(int);
-    bool CalcNewTuneCoef(int ChNum);
-    bool CheckAndShowTune0(int ChNum);
-    bool CheckAndShowTune5(int ChNum);
-    bool CheckAndShowTune20(int ChNum);
+    bool CalcNewTuneCoef();
+    bool CheckAndShowTune0();
+    bool CheckAndShowTune5();
+    bool CheckAndShowTune20();
     bool CheckTuneCoefs();
 
 private slots:
     void SetDefCoefs();
     int ReadAnalogMeasurements();
+    void TuneOneChannel();
 };
 
 #endif // TUNEDIALOG21_H

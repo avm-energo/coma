@@ -24,7 +24,11 @@ public:
         QLineEdit *le = w->findChild<QLineEdit *>(lename);
         if (le == 0)
             return false;
-        levalue = le->text();
+        QVariant tmpv = QVariant(le->text());
+        bool ok = tmpv.convert(qMetaTypeId<T>());
+        if (!ok)
+            return false;
+        levalue = tmpv.value<T>();
         return true;
     }
     template <typename T> static bool LENumber(QWidget *w, const QString &lename, T &levalue)

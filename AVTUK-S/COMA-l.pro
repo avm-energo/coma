@@ -26,18 +26,21 @@ TEMPLATE = app
 SOURCES += \
     main.cpp\
     coma.cpp \
+    ../check/check.cpp \
     ../check/check21.cpp \
     ../check/check80.cpp \
+    ../check/check85.cpp \
     ../check/checka1.cpp \
     ../check/checkdialog21.cpp \
     ../check/checkdialog80.cpp \
+    ../check/checkdialog85.cpp \
     ../check/checkdialoga1.cpp \
     ../check/eabstractcheckdialog.cpp \
     ../config/abstractconfdialog.cpp \
-    ../config/abstractconfdialog2x.cpp \
     ../config/abstractconfdialog3x.cpp \
     ../config/confdialog.cpp \
     ../config/confdialog21.cpp \
+    ../config/confdialog22.cpp \
     ../config/confdialog31.cpp \
     ../config/confdialog35.cpp \
     ../config/confdialog80.cpp \
@@ -45,7 +48,7 @@ SOURCES += \
     ../config/confdialoga1.cpp \
     ../config/config.cpp \
     ../config/config21.cpp \
-    ../config/config2x.cpp \
+    ../config/config22.cpp \
     ../config/config31.cpp \
     ../config/config35.cpp \
     ../config/config3x.cpp \
@@ -60,6 +63,8 @@ SOURCES += \
     ../dialogs/keypressdialog.cpp \
     ../dialogs/oscdialog.cpp \
     ../dialogs/settingsdialog.cpp \
+    ../dialogs/switchjournaldialog.cpp \
+    ../dialogs/swjdialog.cpp \
     ../dialogs/trendviewdialog.cpp \
     ../gen/commands.cpp \
     ../gen/eabstractprotocomchannel.cpp \
@@ -72,45 +77,42 @@ SOURCES += \
     ../gen/qcustomplot.cpp \
     ../iec104/iec104.cpp \
     ../iec104/ethernet.cpp \
+    ../models/trendviewmodel.cpp \
     ../tune/eabstracttunedialog.cpp \
     ../tune/tunedialog21.cpp \
     ../tune/tunedialog80.cpp \
     ../tune/tunedialoga1.cpp \
     ../tune/tunedialoga1dn.cpp \
+    ../widgets/emessagebox.cpp \
     ../widgets/errorprotocolwidget.cpp \
-    ../widgets/getoscpbdelegate.cpp \
-    ../widgets/messagebox.cpp \
-    ../widgets/mytabwidget.cpp \
-    ../widgets/mystackedwidget.cpp \
     ../widgets/etableitem.cpp \
     ../widgets/etablemodel.cpp \
+    ../widgets/getoscpbdelegate.cpp \
+    ../widgets/mytabwidget.cpp \
+    ../widgets/mystackedwidget.cpp \
+    ../widgets/signalchoosewidget.cpp \
     ../widgets/s_tqcombobox.cpp \
     ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp \
-    ../check/check85.cpp \
-    ../check/checkdialog85.cpp \
-    ../check/check.cpp \
-    ../dialogs/switchjournaldialog.cpp \
-    ../models/trendviewmodel.cpp \
-    ../widgets/signalchoosewidget.cpp \
-    ../dialogs/swjdialog.cpp
-
+    ../widgets/wd_func.cpp
 
 HEADERS  += \
     coma.h \
+    ../check/check.h \
     ../check/check21.h \
     ../check/check80.h \
+    ../check/check85.h \
     ../check/checka1.h \
     ../check/checkdialog21.h \
     ../check/checkdialog80.h \
+    ../check/checkdialog85.h \
     ../check/checkdialoga1.h \
     ../check/eabstractcheckdialog.h \
     ../config/abstractconfdialog.h \
-    ../config/abstractconfdialog2x.h \
     ../config/abstractconfdialog3x.h \
     ../config/confdialog.h \
     ../config/confdialog21.h \
+    ../config/confdialog22.h \
     ../config/confdialog31.h \
     ../config/confdialog35.h \
     ../config/confdialog80.h \
@@ -118,7 +120,7 @@ HEADERS  += \
     ../config/confdialoga1.h \
     ../config/config.h \
     ../config/config21.h \
-    ../config/config2x.h \
+    ../config/config22.h \
     ../config/config31.h \
     ../config/config35.h \
     ../config/config3x.h \
@@ -133,6 +135,8 @@ HEADERS  += \
     ../dialogs/keypressdialog.h \
     ../dialogs/oscdialog.h \
     ../dialogs/settingsdialog.h \
+    ../dialogs/switchjournaldialog.h \
+    ../dialogs/swjdialog.h \
     ../dialogs/trendviewdialog.h \
     ../gen/commands.h \
     ../gen/eabstractprotocomchannel.h \
@@ -145,30 +149,24 @@ HEADERS  += \
     ../gen/qcustomplot.h \
     ../iec104/ethernet.h \
     ../iec104/iec104.h \
+    ../models/trendviewmodel.h \
     ../tune/eabstracttunedialog.h \
     ../tune/tunedialog21.h \
     ../tune/tunedialog80.h \
     ../tune/tunedialoga1.h \
     ../tune/tunedialoga1dn.h \
+    ../widgets/emessagebox.h \
+    ../widgets/etableitem.h \
+    ../widgets/etablemodel.h \
     ../widgets/getoscpbdelegate.h \
     ../widgets/mytabwidget.h \
     ../widgets/errorprotocolwidget.h \
-    ../widgets/messagebox.h \
     ../widgets/mystackedwidget.h \
-    ../widgets/etableitem.h \
-    ../widgets/etablemodel.h \
+    ../widgets/signalchoosewidget.h \
     ../widgets/s_tqcombobox.h \
     ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h \
-    ../check/check85.h \
-    ../check/checkdialog85.h \
-    ../check/check.h \
-    ../dialogs/switchjournaldialog.h \
-    ../models/trendviewmodel.h \
-    ../widgets/signalchoosewidget.h \
-    ../dialogs/swjdialog.h
-
+    ../widgets/wd_func.h
 
 INCLUDEPATH += $$PWD/../../includes
 
