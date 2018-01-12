@@ -20,6 +20,10 @@
 
 #define ANMEASINT   2000 // default timer interval to check analog values
 
+#define BT_STARTBD_BASE 0 // блоки Bd для базовой платы нумеруются с 0 (0-й блок - общий для всех)
+#define BT_STARTBD_MEZ  100 // блоки Bd для мезонинной платы нумеруются с 101 (100 base + 1st block)
+
+
 class EAbstractCheckDialog : public QDialog
 {
     Q_OBJECT
@@ -40,9 +44,7 @@ public:
 
     QXlsx::Document *xlsx;
     QTimer *timer;
-    int WRow, BdNum, BdUINum; // BdNum - количество блоков данных модуля, BdUINum - количество вкладок с выводом блоков данных модуля
-                                        // BdUINum >= BdNum, т.е. один блок может быть разделён на несколько вкладок
-    int StartBd; // стартовый номер блока
+    int WRow, BdUINum; // BdUINum - количество вкладок с выводом блоков данных модуля, один блок может быть разделён на несколько вкладок
     int Board; // тип платы
 
 // CurBdNum,
@@ -59,7 +61,7 @@ private:
         bool toxlsxwrite;
     };
 
-    QList<BdBlocks *> Bd_blocks;
+    QMap<int, BdBlocks *> Bd_blocks;
     struct Bip
     {
         quint8 ip[4];

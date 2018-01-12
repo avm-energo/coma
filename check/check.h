@@ -4,6 +4,7 @@
 #include <QWidget>
 
 #define BD_COMMON   0
+#define BD_MEZONIN  100
 
 class Check
 {

@@ -50,7 +50,7 @@ void TuneDialog21::SetupUI()
         cbsl << QString::number(i);
     hlyout->addStretch(10);
     hlyout->addWidget(WDFunc::NewLBL(this, "Номер канала: "));
-    hlyout->addWidget(WDFunc::NewCB(this, "tunechnum", cbsl), 2);
+    hlyout->addWidget(WDFunc::NewCB(this, "tunenumch", cbsl), 2);
     QPushButton *pb = new QPushButton("Настроить");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(TuneOneChannel()));
     hlyout->addWidget(pb);

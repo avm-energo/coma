@@ -22,7 +22,7 @@ CheckDialogA1::CheckDialogA1(int board, QWidget *parent) : EAbstractCheckDialog(
 {
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);
-    BdNum = 6; // количество блоков данных 6
+//    BdNum = 6; // количество блоков данных 6
     BdUINum = 9; // количество вкладок - 9 (блок Bda_h разделён ввиду его огромности на четыре вкладки)
     ChA1 = new CheckA1;
     Ch = new Check;

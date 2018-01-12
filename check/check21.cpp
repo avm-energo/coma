@@ -162,7 +162,7 @@ void Check21::FillBda(QWidget *parent)
 {
     int i;
     for (i = 0; i < AIN21_NUMCH; ++i)
-        WDFunc::SetLEData(parent, "bda"+QString::number(i), QString::number(Bda_block.sin[i]/ACHECKNUMPOINTS,16));
+        WDFunc::SetLBLText(parent, "bda"+QString::number(i), QString::number(Bda_block.sin[i]/ACHECKNUMPOINTS,16));
 }
 
 void Check21::FillBd1W(QWidget *parent)
@@ -171,9 +171,9 @@ void Check21::FillBd1W(QWidget *parent)
     for (i = 0; i < AIN21_NUMCH; ++i)
     {
         QString tmps = QString::number(i);
-        WDFunc::SetLEData(parent, "bdinI"+tmps, QString::number(Bd_block.inI[i],'f',5));
-        WDFunc::SetLEData(parent, "bdinU"+tmps, QString::number(Bd_block.inU[i],'f',5));
-        WDFunc::SetLEData(parent, "bdain"+tmps, QString::number(Bd_block.ain[i],'f',5));
+        WDFunc::SetLBLText(parent, "bdinI"+tmps, QString::number(Bd_block.inI[i],'f',5));
+        WDFunc::SetLBLText(parent, "bdinU"+tmps, QString::number(Bd_block.inU[i],'f',5));
+        WDFunc::SetLBLText(parent, "bdain"+tmps, QString::number(Bd_block.ain[i],'f',5));
 //        WDFunc::SetLEData(parent, "bdainn"+tmps, QString::number(Bd_block.ainn[i],'f',5));
 //        WDFunc::SetLEData(parent, "bdainx"+tmps, QString::number(Bd_block.ainx[i],'f',5));
     }

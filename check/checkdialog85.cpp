@@ -23,7 +23,7 @@ CheckDialog85::CheckDialog85(int board, QWidget *parent) : EAbstractCheckDialog(
     setStyleSheet(tmps);
     Ch85 = new Check_85;
     Ch = new Check;
-    BdNum = BdUINum = 2;
+    BdUINum = 2;
     SetBd(0, &Ch->Bd_block0, sizeof(Check::Bd0));
     SetBd(1, &Ch85->Bd_block1, sizeof(Check_85::Bd1));
     QStringList sl = QStringList() << "Общ" << "Все";

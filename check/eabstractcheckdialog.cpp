@@ -21,13 +21,10 @@
 EAbstractCheckDialog::EAbstractCheckDialog(int board, QWidget *parent) :
     QDialog(parent)
 {
-//    Parent = parent;
     XlsxWriting = false;
     Busy = false;
     xlsx = 0;
-//    CurBdNum = 1;
     WRow = 0;
-    StartBd = (board == BT_BASE) ? BT_STARTBD_BASE : BT_STARTBD_MEZ; // стартовый номер блока данных - 1 для базовой платы, 101 - для мезонинной
     Board = board;
     Bd_blocks.clear();
     timer = new QTimer;
@@ -76,12 +73,10 @@ void EAbstractCheckDialog::Check1PPS()
 void EAbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
 {
     BdBlocks *bdblock = new BdBlocks;
-    while (bdnum >= Bd_blocks.size())
-        Bd_blocks.append(new BdBlocks);
     bdblock->block = block;
     bdblock->blocknum = blocksize;
     bdblock->toxlsxwrite = toxlsx;
-    Bd_blocks.replace(bdnum, bdblock);
+    Bd_blocks[bdnum] = bdblock;
 }
 
 QWidget *EAbstractCheckDialog::BottomUI()
@@ -206,13 +201,13 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
             pb->setText("Идёт запись: "+TimeElapsed);
         }
     }
-    for (int bdnum = 0; bdnum <= BdNum; ++bdnum)
+    for (int bdnum = 0; bdnum <= Bd_blocks.keys().size(); ++bdnum)
     {
-        if (bdnum < Bd_blocks.size())
+        if (Bd_blocks.keys().contains(bdnum))
         {
-            if (!XlsxWriting || (XlsxWriting && (Bd_blocks.at(bdnum)->toxlsxwrite)))
+            if (!XlsxWriting || (XlsxWriting && (Bd_blocks[bdnum]->toxlsxwrite)))
             {
-                if (Commands::GetBd(StartBd + bdnum, Bd_blocks.at(bdnum)->block, Bd_blocks.at(bdnum)->blocknum) != NOERROR)
+                if (Commands::GetBd(Bd_blocks.keys().at(bdnum), Bd_blocks[bdnum]->block, Bd_blocks[bdnum]->blocknum) != NOERROR)
                 {
                     WARNMSG("Ошибка при приёме данных");
                     Busy = false;

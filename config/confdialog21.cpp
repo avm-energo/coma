@@ -198,7 +198,7 @@ void ConfDialog21::SetupUI()
 void ConfDialog21::DisableChannel(int chnum, bool disable)
 {
     bool Enabled = !disable;
-    WDFunc::SetEnabled(this, "chtypcb."+QString::number(chnum), Enabled);
+//    WDFunc::SetEnabled(this, "chtypcb."+QString::number(chnum), Enabled);
     WDFunc::SetEnabled(this, "choscdi1."+QString::number(chnum), Enabled);
     WDFunc::SetEnabled(this, "choscdi2."+QString::number(chnum), Enabled);
     WDFunc::SetEnabled(this, "choscthr."+QString::number(chnum), Enabled);

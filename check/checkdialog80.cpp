@@ -23,7 +23,7 @@ CheckDialog80::CheckDialog80(int board, QWidget *parent) : EAbstractCheckDialog(
     setStyleSheet(tmps);
     Ch80 = new Check_80;
     Ch = new Check;
-    BdNum = 11;
+//    BdNum = 11;
     BdUINum = 17;
     SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
     SetBd(1, &Ch80->Bd_block1, sizeof(Check_80::Bd1));

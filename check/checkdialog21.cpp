@@ -23,10 +23,11 @@ CheckDialog21::CheckDialog21(int board, QWidget *parent) : EAbstractCheckDialog(
     setAttribute(Qt::WA_DeleteOnClose);
     Ch21 = new Check21;
     Ch = new Check;
-    BdNum = 2; // количество блоков данных 1
+//    BdNum = 2; // количество блоков данных 1
     BdUINum = 2; // количество вкладок - 1
+    int StartBd = (board == BT_BASE) ? BT_STARTBD_BASE : BT_STARTBD_MEZ; // стартовый номер блока данных - 1 для базовой платы, 101 - для мезонинной
     SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
-    SetBd(A21_BD, &Ch21->Bd_block, sizeof(Check21::Bd1));
+    SetBd(StartBd + A21_BD, &Ch21->Bd_block, sizeof(Check21::Bd1));
     QStringList sl = QStringList() << "Общ" << "Все";
     SetupUI(sl);
     timer->setInterval(ANMEASINT);
