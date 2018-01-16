@@ -53,7 +53,7 @@ void AbstractConfDialog3x::SetupUI()
         {
             lbl = new QLabel(QString::number(i+1)+":");
             gblyout->addWidget(lbl, i+1, 0, 1, 1, Qt::AlignRight);
-            s_tqComboBox *cb = WDFunc::NewCB(this, "inchtypcb."+QString::number(i), Params.InTypes, DCONFWCLR);
+            EComboBox *cb = WDFunc::NewCB(this, "inchtypcb."+QString::number(i), Params.InTypes, DCONFWCLR);
             connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChTypData(int)));
             gblyout->addWidget(cb, i+1, 1, 1, 1, Qt::AlignCenter);
             QDoubleSpinBox *spb = WDFunc::NewSPB(this, "chdlyspb."+QString::number(i),1,20,1,0,DCONFWCLR);
@@ -77,7 +77,7 @@ void AbstractConfDialog3x::SetupUI()
         {
             col = 0;
             gblyout->addWidget(WDFunc::NewLBL(this, QString::number(i)+":"), i+1, col++, 1, 1, Qt::AlignRight);
-            s_tqComboBox *cb = WDFunc::NewCB(this, "outchtypcb."+QString::number(i), Params.OutTypes, DCONFWCLR);
+            EComboBox *cb = WDFunc::NewCB(this, "outchtypcb."+QString::number(i), Params.OutTypes, DCONFWCLR);
             connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChTypData(int)));
             gblyout->addWidget(cb, i+1, col++, 1, 1);
         }

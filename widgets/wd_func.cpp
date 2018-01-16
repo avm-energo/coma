@@ -5,7 +5,7 @@
 #include <QPainter>
 #include <QStringListModel>
 #include "wd_func.h"
-#include "s_tqtableview.h"
+#include "etableview.h"
 
 QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letext, const QString &lestyle)
 {
@@ -99,9 +99,9 @@ bool WDFunc::TEData(QWidget *w, const QString &tename, QString &tevalue)
     return true;
 }
 
-s_tqComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, QStringList &cbsl, const QString &cbcolor)
+EComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, QStringList &cbsl, const QString &cbcolor)
 {
-    s_tqComboBox *cb = new s_tqComboBox(parent);
+    EComboBox *cb = new EComboBox(parent);
     cb->setObjectName(cbname);
     QStringListModel *cblm = new QStringListModel;
     cblm->setStringList(cbsl);
@@ -116,7 +116,7 @@ s_tqComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, QStringList 
 
 bool WDFunc::CBData(QWidget *w, const QString &cbname, QString &cbvalue)
 {
-    s_tqComboBox *cb = w->findChild<s_tqComboBox *>(cbname);
+    EComboBox *cb = w->findChild<EComboBox *>(cbname);
     if (cb == 0)
         return false;
     cbvalue = cb->currentText();
@@ -125,7 +125,7 @@ bool WDFunc::CBData(QWidget *w, const QString &cbname, QString &cbvalue)
 
 bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue)
 {
-    s_tqComboBox *cb = w->findChild<s_tqComboBox *>(cbname);
+    EComboBox *cb = w->findChild<EComboBox *>(cbname);
     if (cb == 0)
         return false;
     cb->setCurrentText(cbvalue);
@@ -134,7 +134,7 @@ bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue
 
 bool WDFunc::SetCBIndex(QWidget *w, const QString &cbname, int index)
 {
-    s_tqComboBox *cb = w->findChild<s_tqComboBox *>(cbname);
+    EComboBox *cb = w->findChild<EComboBox *>(cbname);
     if (cb == 0)
         return false;
     if (index < cb->count())
@@ -147,7 +147,7 @@ bool WDFunc::SetCBIndex(QWidget *w, const QString &cbname, int index)
 
 bool WDFunc::SetCBColor(QWidget *w, const QString &cbname, const QString &color)
 {
-    s_tqComboBox *cb = w->findChild<s_tqComboBox *>(cbname);
+    EComboBox *cb = w->findChild<EComboBox *>(cbname);
     if (cb == 0)
         return false;
     // http://forum.sources.ru/index.php?showtopic=313950
@@ -256,7 +256,7 @@ bool WDFunc::SetRBData(QWidget *w, const QString &rbname, bool data)
 
 QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid)
 {
-    s_tqTableView *tv = w->findChild<s_tqTableView *>(tvname);
+    ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == 0)
         return QString();
     QString tmps = tv->model()->data(tv->model()->index(tv->currentIndex().row(),column,QModelIndex()),Qt::DisplayRole).toString();
@@ -276,7 +276,7 @@ QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid
 
 void WDFunc::TVAutoResize(QWidget *w, const QString &tvname)
 {
-    s_tqTableView *tv = w->findChild<s_tqTableView *>(tvname);
+    ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == 0)
         return;
     tv->resizeColumnsToContents();

@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QModelIndex>
 #include "../gen/eoscillogram.h"
-#include "../widgets/s_tqtableview.h"
+#include "../widgets/etableview.h"
 #include "../widgets/etablemodel.h"
 #include "swjdialog.h"
 
@@ -19,7 +19,7 @@ public:
 private:
 
     ETableModel *TableModel;
-    s_tqTableView *SwjTableView;
+    ETableView *SwjTableView;
     QMap<quint64, EOscillogram::GBoStruct> OscMap;
     QMap<quint32, SWJDialog::SWJournalRecordStruct> SWJMap;
 

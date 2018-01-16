@@ -4,7 +4,7 @@
 #include <QHeaderView>
 #include <QDateTime>
 #include "errorprotocolwidget.h"
-#include "s_tqtableview.h"
+#include "etableview.h"
 
 ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
 {
@@ -12,7 +12,7 @@ ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
     QWidget *w = new QWidget;
     QString ErrWss = "QWidget {background-color: "+QString(ERPROTCLR)+";}";
     w->setStyleSheet(ErrWss);
-    s_tqTableView *tv = new s_tqTableView;
+    ETableView *tv = new ETableView;
     Model = new ErrorProtocolModel;
     Model->setHeaderData(0, Qt::Horizontal, "Номер",Qt::EditRole);
     Model->setHeaderData(1, Qt::Horizontal, "Дата/время",Qt::EditRole);

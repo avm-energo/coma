@@ -6,7 +6,7 @@
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include "../widgets/emessagebox.h"
-#include "../widgets/s_tqcombobox.h"
+#include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
 #include "confdialog80.h"
 
@@ -88,7 +88,7 @@ void ConfDialog80::SetupUI()
     QLabel *lbl = new QLabel ("Тип контролируемого оборудования:");
     hlyout->addWidget(lbl, 0);
     QStringList cbl = QStringList() << "1ф трансформатор/АТ" << "3ф трансформатор/АТ" << "1ф реактор" << "3ф реактор";
-    s_tqComboBox *cb = WDFunc::NewCB(this, "eq_typecb", cbl, ACONFGCLR);
+    EComboBox *cb = WDFunc::NewCB(this, "eq_typecb", cbl, ACONFGCLR);
     cb->setMinimumWidth(70);
     connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetEqType(int)));
     hlyout->addWidget(cb,10);
@@ -197,7 +197,7 @@ QWidget *ConfDialog80::UNom(int numunom)
     QLabel *lbl=new QLabel("Класс напряжения "+NumUNomStr+"-й группы, кВ:");
     gb2lyout->addWidget(lbl);
     QStringList cbl = QStringList() << "1150" << "750" << "500" << "330" << "220" << "110" << "35" << "21" << "15.75" << "11" << "10" << "6.3";
-    s_tqComboBox *cb = WDFunc::NewCB(this, "unom."+NumUNomStr, cbl, ACONFWCLR);
+    EComboBox *cb = WDFunc::NewCB(this, "unom."+NumUNomStr, cbl, ACONFWCLR);
     cb->setEditable(true);
     connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetVoltageClass(int)));
     gb2lyout->addWidget(cb);

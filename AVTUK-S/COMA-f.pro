@@ -9,13 +9,13 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.1.212
+VERSION = 2.1.213
 
 QT       += core gui network serialport printsupport
 
 TARGET = avtuks-F
 DEFINES += PROGNAME='\\"AVTUK-S\\"'
-DEFINES += PROGCAPTION='\\"AVTUK\\040Service\\040F\\040v2.1.212\\"'
+DEFINES += PROGCAPTION='\\"AVTUK\\040Service\\040F\\040v2.1.213\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=4 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
 #DEFINES += COMPORTENABLE # enable virtual com port driver
@@ -82,16 +82,16 @@ SOURCES += \
     ../tune/tunedialog80.cpp \
     ../tune/tunedialoga1.cpp \
     ../tune/tunedialoga1dn.cpp \
+    ../widgets/ecombobox.cpp \
     ../widgets/emessagebox.cpp \
     ../widgets/errorprotocolwidget.cpp \
+    ../widgets/estackedwidget.cpp \
     ../widgets/etableitem.cpp \
     ../widgets/etablemodel.cpp \
+    ../widgets/etableview.cpp \
+    ../widgets/etabwidget.cpp \
     ../widgets/getoscpbdelegate.cpp \
-    ../widgets/mytabwidget.cpp \
-    ../widgets/mystackedwidget.cpp \
     ../widgets/signalchoosewidget.cpp \
-    ../widgets/s_tqcombobox.cpp \
-    ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp
 
@@ -154,16 +154,16 @@ HEADERS  += \
     ../tune/tunedialog80.h \
     ../tune/tunedialoga1.h \
     ../tune/tunedialoga1dn.h \
+    ../widgets/ecombobox.h \
     ../widgets/emessagebox.h \
+    ../widgets/estackedwidget.h \
     ../widgets/etableitem.h \
     ../widgets/etablemodel.h \
+    ../widgets/etableview.h \
+    ../widgets/etabwidget.h \
     ../widgets/getoscpbdelegate.h \
-    ../widgets/mytabwidget.h \
     ../widgets/errorprotocolwidget.h \
-    ../widgets/mystackedwidget.h \
     ../widgets/signalchoosewidget.h \
-    ../widgets/s_tqcombobox.h \
-    ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h
 

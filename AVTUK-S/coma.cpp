@@ -51,7 +51,7 @@
 #include "../tune/tunedialog80.h"
 #include "../tune/tunedialoga1.h"
 #include "../tune/tunedialoga1dn.h"
-#include "../widgets/mytabwidget.h"
+#include "../widgets/etabwidget.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
@@ -210,7 +210,7 @@ void Coma::Stage3()
     TuneB = TuneM = 0;
 #endif
     ClearTW();
-    MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
+    ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == 0)
         return;
 

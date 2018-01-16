@@ -1,22 +1,22 @@
-#include "mystackedwidget.h"
+#include "estackedwidget.h"
 
-MyStackedWidget::MyStackedWidget (QWidget *parent) : QStackedWidget(parent)
+EStackedWidget::EStackedWidget (QWidget *parent) : QStackedWidget(parent)
 {
     connect(this,SIGNAL(currentChanged(int)),this,SLOT(onCurrentChanged(int)));
 }
 
-MyStackedWidget::~MyStackedWidget()
+EStackedWidget::~EStackedWidget()
 {
 
 }
 
-void MyStackedWidget::addWidget(QWidget *w)
+void EStackedWidget::addWidget(QWidget *w)
 {
     w->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
     QStackedWidget::addWidget(w);
 }
 
-void MyStackedWidget::onCurrentChanged(int index)
+void EStackedWidget::onCurrentChanged(int index)
 {
     QWidget *w = widget(index);
     Q_ASSERT(w);

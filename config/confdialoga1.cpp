@@ -6,7 +6,7 @@
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include "../widgets/emessagebox.h"
-#include "../widgets/s_tqcombobox.h"
+#include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
 #include "confdialoga1.h"
 
@@ -92,7 +92,7 @@ void ConfDialogA1::SetupUI()
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Канал датчика Tокр:"));
     QStringList sl = QStringList() << "0. Нет датчика" << "1. Канал Pt100" << "2. Канал А1" << "3. Канал А2";
-    s_tqComboBox *cb = WDFunc::NewCB(this, "TokrCB", sl, UCONFCLR);
+    EComboBox *cb = WDFunc::NewCB(this, "TokrCB", sl, UCONFCLR);
     hlyout->addWidget(cb, 10);
     hlyout->addWidget(WDFunc::NewLBL(this, "W100:"));
     hlyout->addWidget(WDFunc::NewSPB(this, "TokrW100", 0.1, 3, 0.001, 3, UCONFCLR));

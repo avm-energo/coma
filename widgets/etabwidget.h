@@ -1,5 +1,5 @@
-#ifndef MYTABWIDGET_H
-#define MYTABWIDGET_H
+#ifndef ETABWIDGET_H
+#define ETABWIDGET_H
 
 #include <QTabWidget>
 #include <QTabBar>
@@ -8,11 +8,11 @@
 #include <QPainter>
 #include <QIcon>
 
-class TabBar : public QTabBar
+class ETabBar : public QTabBar
 {
 public:
 
-    explicit TabBar(QWidget* parent=0) : QTabBar(parent)
+    explicit ETabBar(QWidget* parent=0) : QTabBar(parent)
     {
         setIconSize(QSize(18, 18));
     }
@@ -45,11 +45,11 @@ protected:
     }
 };
 
-class MyTabWidget : public QTabWidget
+class ETabWidget : public QTabWidget
 {
     Q_OBJECT
 public:
-    explicit MyTabWidget(QWidget *parent = 0);
+    explicit ETabWidget(QWidget *parent = 0);
 
 signals:
 
@@ -61,4 +61,4 @@ private slots:
 };
 
 
-#endif // MYTABWIDGET_H
+#endif // ETABWIDGET_H

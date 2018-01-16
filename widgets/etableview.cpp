@@ -2,9 +2,9 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDialog>
-#include "s_tqtableview.h"
+#include "etableview.h"
 
-s_tqTableView::s_tqTableView(QWidget *parent) :
+ETableView::ETableView(QWidget *parent) :
     QTableView(parent)
 {
     setAttribute(Qt::WA_TranslucentBackground, true);
@@ -15,17 +15,17 @@ s_tqTableView::s_tqTableView(QWidget *parent) :
     connect(this,SIGNAL(datachanged()), this, SLOT(resizeColumnsToContents()));
 }
 
-/*void s_tqTableView::setAData(QVariant dat)
+/*void ETableView::setAData(QVariant dat)
 {
     this->adata = dat;
 }
 
-QVariant s_tqTableView::getAData()
+QVariant ETableView::getAData()
 {
     return this->adata;
 } */
 
-void s_tqTableView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
+void ETableView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
 {
     Q_UNUSED(topLeft);
     Q_UNUSED(bottomRight);

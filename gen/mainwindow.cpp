@@ -18,7 +18,7 @@
 #include "mainwindow.h"
 #include "commands.h"
 #include "../widgets/wd_func.h"
-#include "../widgets/mytabwidget.h"
+#include "../widgets/etabwidget.h"
 #include "../widgets/emessagebox.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/hiddendialog.h"
@@ -26,7 +26,7 @@
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/swjdialog.h"
 #include "../widgets/etablemodel.h"
-#include "../widgets/s_tqtableview.h"
+#include "../widgets/etableview.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -97,7 +97,7 @@ QWidget *MainWindow::Least()
 //    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *inlyout = new QHBoxLayout;
-    MyTabWidget *MainTW = new MyTabWidget;
+    ETabWidget *MainTW = new ETabWidget;
     MainTW->setObjectName("maintw");
     MainTW->setTabPosition(QTabWidget::West);
 //    MainTW->tabBar()->setStyleSheet("QTabBar::tab {background-color: yellow;}");
@@ -269,7 +269,7 @@ void MainWindow::SaveSettings()
 void MainWindow::ClearTW()
 {
     S2Config.clear();
-    MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
+    ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == 0)
         return;
     while (MainTW->count())
@@ -699,7 +699,7 @@ void MainWindow::ShowUSBConnectDialog()
 void MainWindow::GetDeviceFromTable(QModelIndex idx)
 {
     Q_UNUSED(idx);
-    s_tqTableView *tv = this->findChild<s_tqTableView *>("devicetv");
+    ETableView *tv = this->findChild<ETableView *>("devicetv");
     if (tv == 0)
     {
         DBGMSG;
@@ -728,7 +728,7 @@ void MainWindow::DisconnectAndClear()
     emit FinishAll();
     emit ClearBsi();
     ClearTW();
-    MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
+    ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == 0)
         return;
     MainTW->hide();

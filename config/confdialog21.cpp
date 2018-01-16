@@ -50,7 +50,7 @@ void ConfDialog21::SetupUI()
     for (i = 0; i < Params.NumCh; ++i)
     {
         QLabel *ChTypL = new QLabel(QString::number(i+1)+":");
-        s_tqComboBox *cb = WDFunc::NewCB(this, "chtypcb."+QString::number(i), Params.InTypes, ACONFWCLR);
+        EComboBox *cb = WDFunc::NewCB(this, "chtypcb."+QString::number(i), Params.InTypes, ACONFWCLR);
         connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetChTypData(int)));
         hlyout->addWidget(ChTypL);
         hlyout->addWidget(cb, 1);

@@ -8,7 +8,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QDoubleSpinBox>
-#include "s_tqcombobox.h"
+#include "ecombobox.h"
 
 class WDFunc
 {
@@ -42,14 +42,14 @@ public:
     static bool AppendTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool SetTEData(QWidget *w, const QString &tename, const QString &tetext);
     static bool TEData(QWidget *w, const QString &tename, QString &tevalue);
-    static s_tqComboBox *NewCB(QWidget *parent, const QString &cbname, QStringList &cbsl, const QString &cbcolor="");
+    static EComboBox *NewCB(QWidget *parent, const QString &cbname, QStringList &cbsl, const QString &cbcolor="");
     static bool SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue);
     static bool SetCBIndex(QWidget *w, const QString &cbname, int index);
     static bool SetCBColor(QWidget *w, const QString &cbname, const QString &color);
     static bool CBData(QWidget *w, const QString &cbname, QString &cbvalue);
     template <typename T> static bool CBIndex(QWidget *w, const QString &cbname, T &index)
     {
-        s_tqComboBox *cb = w->findChild<s_tqComboBox *>(cbname);
+        EComboBox *cb = w->findChild<EComboBox *>(cbname);
         if (cb == 0)
             return false;
         index = cb->currentIndex();

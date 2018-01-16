@@ -11,7 +11,7 @@
 #include "oscdialog.h"
 #include "../gen/commands.h"
 #include "../config/config.h"
-#include "../widgets/s_tqtableview.h"
+#include "../widgets/etableview.h"
 #include "../widgets/etablemodel.h"
 #include "../widgets/getoscpbdelegate.h"
 #include "../widgets/emessagebox.h"
@@ -31,7 +31,7 @@ void OscDialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    s_tqTableView *tv = new s_tqTableView;
+    ETableView *tv = new ETableView;
     tv->setObjectName("osctv");
     tm = new ETableModel;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
@@ -126,7 +126,7 @@ void OscDialog::GetAndProcessOscInfo()
         lsl.append(Dwld);
         tm->fillModel(lsl);
         QApplication::restoreOverrideCursor();
-        s_tqTableView *tv = this->findChild<s_tqTableView *>("osctv");
+        ETableView *tv = this->findChild<ETableView *>("osctv");
         if (tv == 0)
         {
             DBGMSG;

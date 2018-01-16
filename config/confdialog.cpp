@@ -4,7 +4,7 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include "confdialog.h"
-#include "../widgets/s_tqcombobox.h"
+#include "../widgets/ecombobox.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 #include "../gen/publicclass.h"
@@ -96,7 +96,7 @@ void ConfDialog::SetupUI()
     lbl = new QLabel("Тип синхр. времени:");
     glyout->addWidget(lbl,7,0,1,1,Qt::AlignRight);
     QStringList cbl = QStringList() << "SNTP+PPS" << "SNTP";
-    s_tqComboBox *cb = WDFunc::NewCB(this, "spb.8", cbl, ACONFGCLR);
+    EComboBox *cb = WDFunc::NewCB(this, "spb.8", cbl, ACONFGCLR);
     cb->setMinimumWidth(70);
     connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
     glyout->addWidget(cb, 7, 1, 1, 2);

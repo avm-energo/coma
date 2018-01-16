@@ -9,9 +9,9 @@
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include "../widgets/emessagebox.h"
-#include "../widgets/s_tqcombobox.h"
+#include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
-#include "../widgets/mystackedwidget.h"
+#include "../widgets/estackedwidget.h"
 #include "confdialog85.h"
 
 ConfDialog85::ConfDialog85(QVector<publicclass::DataRec> &S2Config, QWidget *parent) :
@@ -220,7 +220,7 @@ void ConfDialog85::SetupUI()
     int row = 0;
     glyout->addWidget(WDFunc::NewLBL(this, "Тип аппарата:"), row,0,1,1);
     QStringList cbl = QStringList() << "0. Выключатель CB" << "1. Заземлитель G" << "2. Резъединитель D";
-    s_tqComboBox *cb = WDFunc::NewCB(this, "typea", cbl, paramcolor);
+    EComboBox *cb = WDFunc::NewCB(this, "typea", cbl, paramcolor);
     cb->setMinimumWidth(70);
     glyout->addWidget(cb,row,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "Номер аппарата:"), row,2,1,1);
@@ -266,7 +266,7 @@ void ConfDialog85::SetupUI()
     hlyout->addWidget(WDFunc::NewCB(this, "inom2", cbl, paramcolor), 1);
     glyout->addLayout(hlyout,row,1,1,1);
     vlyout1->addLayout(glyout);
-    MyStackedWidget *stw = new MyStackedWidget;
+    EStackedWidget *stw = new EStackedWidget;
     stw->setObjectName("eqtypestw");
     // заполняем stackwidget
     QWidget *w = new QWidget;
@@ -434,7 +434,7 @@ void ConfDialog85::SetupUI()
     glyout->addWidget(WDFunc::NewLBL(this, "Уставка контроля минимума тока, %:"),5,0,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "dimin", 0, 99, 0.1, 1, paramcolor),5,1,1,1);
     vlyout1->addLayout(glyout);
-    stw = new MyStackedWidget;
+    stw = new EStackedWidget;
     stw->setObjectName("adaptstw");
     w = new QWidget;
     stw->insertWidget(0, w); // неадаптивный - пусто
@@ -520,7 +520,7 @@ void ConfDialog85::CheckConf()
 
 void ConfDialog85::SetEqType(int tmpi)
 {
-    MyStackedWidget *stw = this->findChild<MyStackedWidget *>("eqtypestw");
+    EStackedWidget *stw = this->findChild<EStackedWidget *>("eqtypestw");
     if (stw != 0)
     {
         if (tmpi < stw->count())
@@ -536,7 +536,7 @@ void ConfDialog85::SetDefConf()
 
 void ConfDialog85::ShowAdaptParams(bool isAdaptChecked)
 {
-    MyStackedWidget *stw = this->findChild<MyStackedWidget *>("adaptstw");
+    EStackedWidget *stw = this->findChild<EStackedWidget *>("adaptstw");
     if (stw != 0)
     {
         if (isAdaptChecked)

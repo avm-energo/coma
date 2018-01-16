@@ -1,6 +1,6 @@
-#include "s_tqcombobox.h"
+#include "ecombobox.h"
 
-s_tqComboBox::s_tqComboBox(QWidget *parent) :
+EComboBox::EComboBox(QWidget *parent) :
     QComboBox(parent)
 {
     setStyleSheet("QComboBox {background-color: rgba(0,0,0,0); border: 1px solid gray; border-radius: 5px;}"

@@ -1,13 +1,13 @@
-#include "mytabwidget.h"
+#include "etabwidget.h"
 
-MyTabWidget::MyTabWidget(QWidget *parent) :
+ETabWidget::ETabWidget(QWidget *parent) :
     QTabWidget(parent)
 {
-    setTabBar(new TabBar());
+    setTabBar(new ETabBar());
     connect(this,SIGNAL(tabBarClicked(int)),this,SLOT(TabClicked()));
 }
 
-void MyTabWidget::TabClicked()
+void ETabWidget::TabClicked()
 {
     int res = 0;
     Q_UNUSED(res);

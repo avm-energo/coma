@@ -29,7 +29,7 @@ void SwitchJournalDialog::SetupUI()
         pb->setEnabled(false);
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
-    SwjTableView = new s_tqTableView;
+    SwjTableView = new ETableView;
     TableModel = new ETableModel;
     SwjTableView->setModel(TableModel);
     SwjTableView->horizontalHeader()->setVisible(false);

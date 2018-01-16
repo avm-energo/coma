@@ -1,13 +1,13 @@
-#ifndef S_TQCOMBOBOX_H
-#define S_TQCOMBOBOX_H
+#ifndef ECOMBOBOX_H
+#define ECOMBOBOX_H
 
 #include <QComboBox>
 
-class s_tqComboBox : public QComboBox
+class EComboBox : public QComboBox
 {
     Q_OBJECT
 public:
-    explicit s_tqComboBox(QWidget *parent = 0);
+    explicit EComboBox(QWidget *parent = 0);
 
 //    void insertItem(int index, const QString &text, const QVariant &userData);
 
@@ -20,4 +20,4 @@ private:
 private slots:
 };
 
-#endif // S_TQCOMBOBOX_H
+#endif // ECOMBOBOX_H
