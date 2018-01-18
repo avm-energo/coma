@@ -29,13 +29,12 @@
 #include "../check/checkdialoga1.h"
 #include "../config/confdialoga1.h"
 #include "../dialogs/fwupdialog.h"
-#include "../dialogs/downloaddialog.h"
 #include "../dialogs/infodialog.h"
 #include "../tune/tunedialoga1.h"
 #include "../tune/tunedialoga1dn.h"
 #include "../dialogs/a1dialog.h"
-#include "../widgets/mytabwidget.h"
-
+#include "../widgets/etabwidget.h"
+#include "../widgets/emessagebox.h"
 
 pkdn_s::pkdn_s(QWidget *parent)
     : MainWindow(parent)
@@ -118,8 +117,14 @@ void pkdn_s::AddActionsToMenuBar(QMenuBar *menubar)
 
 void pkdn_s::Stage3()
 {
+    if (pc.ModuleBsi.MTypeB != MTB_A1) // не тот тип модуля
+    {
+        EMessageBox::error(this, "Ошибка", "Неверный тип модуля");
+        Disconnect();
+        return;
+    }
     ClearTW();
-    MyTabWidget *MainTW = this->findChild<MyTabWidget *>("maintw");
+    ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == 0)
         return;
     InfoDialog *idlg = new InfoDialog;
@@ -131,7 +136,7 @@ void pkdn_s::Stage3()
     MainTW->addTab(ConfB, "Конфигурирование");
     connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
     connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
-    CheckDialogA1 *chdlg = new CheckDialogA1;
+    CheckDialogA1 *chdlg = new CheckDialogA1(BT_BASE);
 //    oscdialog *OscD = new oscdialog;
 //    fwupdialog *FwUpD = new fwupdialog;
 #if PROGSIZE >= PROGSIZE_LARGE
@@ -149,10 +154,6 @@ void pkdn_s::Stage3()
     MainTW->addTab(t2dlg, "Настройка своего ДН");
 #endif
     MainTW->addTab(chdlg, "Измерения");
-#if PROGSIZE >= PROGSIZE_LARGE
-    downloaddialog *DownD = new downloaddialog;
-    MainTW->addTab(DownD, "События");
-#endif
     A1Dialog *extdlg = new A1Dialog;
     connect(extdlg,SIGNAL(StartPercents(quint32)),this,SLOT(SetProgressBar2Size(quint32)));
     connect(extdlg,SIGNAL(SetPercent(quint32)),this,SLOT(SetProgressBar2(quint32)));

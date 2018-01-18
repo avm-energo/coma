@@ -40,6 +40,7 @@ public:
 
 #if PROGSIZE != PROGSIZE_EMUL
     EAbstractTuneDialog *TuneB, *TuneM;
+    void Disconnect();
 #endif
     QWidget *Parent;
     QSplashScreen *StartWindowSplashScreen;
@@ -147,7 +148,6 @@ private slots:
     void SetProgressBar1(quint32 cursize);
     void SetProgressBar2Size(quint32 size);
     void SetProgressBar2(quint32 cursize);
-    void Disconnect();
     void SetUSBDev();
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE || PROGSIZE == PROGSIZE_EMUL

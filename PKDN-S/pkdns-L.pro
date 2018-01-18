@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 1.0.101
+VERSION = 2.1.213
 
 QT       += core gui serialport printsupport
 
@@ -18,7 +18,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = pkdns-L
 DEFINES += MODULE_A1
 DEFINES += PROGNAME='\\"PKDN-S\\"'
-DEFINES += PROGCAPTION='\\"PKDN\\040Service\\040L\\040v1.0.101\\"'
+DEFINES += PROGCAPTION='\\"PKDN\\040Service\\040L\\040v2.1.213\\"'
 DEFINES += DEVICETYPE=2 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=3 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
 #DEFINES += COMPORTENABLE # enable virtual com port driver
@@ -27,14 +27,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         pkdn_s.cpp \
-    ../eabstractprotocomchannel.cpp \
-    ../eusbcom.cpp \
-    ../eusbhid.cpp \
-    ../commands.cpp \
-    ../log.cpp \
-    ../mainwindow.cpp \
-    ../publicclass.cpp \
-    ../report.cpp \
+    ../check/check.cpp \
     ../check/checka1.cpp \
     ../check/checkdialoga1.cpp \
     ../check/eabstractcheckdialog.cpp \
@@ -44,37 +37,37 @@ SOURCES += main.cpp\
     ../config/config.cpp \
     ../config/configa1.cpp \
     ../dialogs/a1dialog.cpp \
-    ../dialogs/downloaddialog.cpp \
     ../dialogs/errordialog.cpp \
     ../dialogs/fwupdialog.cpp \
     ../dialogs/hiddendialog.cpp \
     ../dialogs/infodialog.cpp \
     ../dialogs/keypressdialog.cpp \
     ../dialogs/settingsdialog.cpp \
+    ../gen/eabstractprotocomchannel.cpp \
+    ../gen/eusbcom.cpp \
+    ../gen/eusbhid.cpp \
+    ../gen/commands.cpp \
+    ../gen/log.cpp \
+    ../gen/mainwindow.cpp \
+    ../gen/publicclass.cpp \
+    ../gen/report.cpp \
     ../tune/eabstracttunedialog.cpp \
     ../tune/tunedialoga1.cpp \
     ../tune/tunedialoga1dn.cpp \
+    ../widgets/ecombobox.cpp \
     ../widgets/errorprotocolwidget.cpp \
+    ../widgets/estackedwidget.cpp \
     ../widgets/etableitem.cpp \
     ../widgets/etablemodel.cpp \
+    ../widgets/etableview.cpp \
+    ../widgets/etabwidget.cpp \
     ../widgets/lineeditfield.cpp \
-    ../widgets/messagebox.cpp \
-    ../widgets/mystackedwidget.cpp \
-    ../widgets/mytabwidget.cpp \
-    ../widgets/s_tqcombobox.cpp \
-    ../widgets/s_tqtableview.cpp \
+    ../widgets/emessagebox.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp
 
 HEADERS  += pkdn_s.h \
-    ../eabstractprotocomchannel.h \
-    ../eusbcom.h \
-    ../eusbhid.h \
-    ../commands.h \
-    ../log.h \
-    ../mainwindow.h \
-    ../publicclass.h \
-    ../report.h \
+    ../check/check.h \
     ../check/checka1.h \
     ../check/checkdialoga1.h \
     ../check/eabstractcheckdialog.h \
@@ -84,27 +77,34 @@ HEADERS  += pkdn_s.h \
     ../config/config.h \
     ../config/configa1.h \
     ../dialogs/a1dialog.h \
-    ../dialogs/downloaddialog.h \
     ../dialogs/errordialog.h \
     ../dialogs/fwupdialog.h \
     ../dialogs/hiddendialog.h \
     ../dialogs/infodialog.h \
     ../dialogs/keypressdialog.h \
     ../dialogs/settingsdialog.h \
+    ../gen/eabstractprotocomchannel.h \
+    ../gen/eusbcom.h \
+    ../gen/eusbhid.h \
+    ../gen/commands.h \
+    ../gen/log.h \
+    ../gen/mainwindow.h \
+    ../gen/publicclass.h \
+    ../gen/report.h \
     ../tune/eabstracttunedialog.h \
     ../tune/tunedialoga1.h \
     ../tune/tunedialoga1dn.h \
+    ../widgets/ecombobox.h \
     ../widgets/errorprotocolwidget.h \
+    ../widgets/estackedwidget.h \
     ../widgets/etableitem.h \
     ../widgets/etablemodel.h \
+    ../widgets/etableview.h \
+    ../widgets/etabwidget.h \
     ../widgets/lineeditfield.h \
-    ../widgets/messagebox.h \
-    ../widgets/mystackedwidget.h \
-    ../widgets/mytabwidget.h \
-    ../widgets/s_tqcombobox.h \
-    ../widgets/s_tqtableview.h \
+    ../widgets/emessagebox.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h 
+    ../widgets/wd_func.h
 
 INCLUDEPATH += $$PWD/../../includes
 

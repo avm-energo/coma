@@ -17,9 +17,11 @@
 TuneDialog80::TuneDialog80(QVector<publicclass::DataRec> &S2Config, QWidget *parent) :
     EAbstractTuneDialog(parent)
 {
-    this->S2Config = &S2Config;
     C80 = new Config80(S2Config);
+//    Ch80 = new Check80;
+    SetBac(&Bac_block, BT_BASE, sizeof(Bac_block));
     setAttribute(Qt::WA_DeleteOnClose);
+    PrepareConsts();
     SetupUI();
 }
 
@@ -32,7 +34,7 @@ void TuneDialog80::SetupUI()
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
-    QWidget *cp1 = new QWidget;
+    QWidget *cp1 = TuneUI();
     QWidget *cp2 = new QWidget;
     QWidget *cp3 = new QWidget;
     tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
@@ -47,32 +49,6 @@ void TuneDialog80::SetupUI()
     TuneTW->addTab(cp1,"Настройка");
     TuneTW->addTab(cp2,"Коэффициенты");
     TuneTW->addTab(cp3,"Данные МИП");
-
-    // CP1 - НАСТРОЙКА МОДУЛЯ
-
-    lyout = new QVBoxLayout;
-    QPushButton *pb = new QPushButton("Начать настройку");
-    pb->setObjectName("starttune");
-    connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
-    if (pc.Emul)
-        pb->setEnabled(false);
-    lyout->addWidget(pb);
-    for (int i = 0; i < lbls().size(); ++i)
-    {
-        QHBoxLayout *hlyout = new QHBoxLayout;
-        lbl=new QLabel(lbls().at(i));
-        lbl->setVisible(false);
-        lbl->setObjectName("tunemsg"+QString::number(i));
-        hlyout->addWidget(lbl);
-        lbl=new QLabel("");
-        lbl->setVisible(false);
-        lbl->setObjectName("tunemsgres"+QString::number(i));
-        hlyout->addWidget(lbl);
-        hlyout->addStretch(1);
-        lyout->addLayout(hlyout);
-    }
-    lyout->addStretch(1);
-    cp1->setLayout(lyout);
 
     // CP2 - КОЭФФИЦИЕНТЫ МОДУЛЯ
 
@@ -119,30 +95,9 @@ void TuneDialog80::SetupUI()
     le->setObjectName("tune25");
     le->setStyleSheet(ValuesLEFormat);
     glyout->addWidget(le,8,4,1,2);
-
-    pb = new QPushButton("Установить настроечные коэффициенты по умолчанию");
-    connect(pb,SIGNAL(clicked()),this,SLOT(SetDefCoefs()));
-    glyout->addWidget(pb, 9, 0, 1, 6);
-    pb = new QPushButton("Прочитать настроечные коэффициенты из модуля");
-    connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs()));
-    if (pc.Emul)
-        pb->setEnabled(false);
-    glyout->addWidget(pb, 10, 0, 1, 6);
-    pb = new QPushButton("Записать настроечные коэффициенты в модуль");
-    connect(pb,SIGNAL(clicked()),this,SLOT(WriteTuneCoefs()));
-    if (pc.Emul)
-        pb->setEnabled(false);
-    glyout->addWidget(pb, 11, 0, 1, 6);
-    pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
-    pb->setIcon(QIcon("../load.png"));
-    connect(pb,SIGNAL(clicked()),this,SLOT(LoadFromFile()));
-    glyout->addWidget(pb, 12, 0, 1, 6);
-    pb = new QPushButton("Записать настроечные коэффициенты в файл");
-    pb->setIcon(QIcon("../save.png"));
-    connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
-    glyout->addWidget(pb, 13, 0, 1, 6);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
+    lyout->addWidget(BottomUI());
     lyout->addStretch(1);
     cp2->setLayout(lyout);
 
@@ -234,22 +189,124 @@ void TuneDialog80::SetupUI()
 
 void TuneDialog80::SetLbls()
 {
-
+    lbls.append("1. Ввод пароля...");
+    lbls.append("2. Сохранение текущей конфигурации...");
+    lbls.append("3. Отображение диалога выбора режима контроля показаний...");
+    lbls.append("4. Отображение схемы подключения...");
+    lbls.append("5. 7.2.3. Проверка связи РЕТОМ и МИП...");
+    lbls.append("6. 7.3.1. Получение настроечных коэффициентов...");
+    lbls.append("7. 7.3.1.1. Установка настроечных коэффициентов по умолчанию...");
+    lbls.append("8. Установка коэффициентов...");
+    lbls.append("9. 7.3.2. Получение текущих аналоговых данных...");
+    lbls.append("10. Сохранение значений фильтра...");
+    lbls.append("11. 7.3.3. Расчёт коррекции смещений сигналов по фазе...");
+    lbls.append("12. 7.3.4. Расчёт коррекции по частоте...");
+    lbls.append("13. 7.3.5. Отображение ввода трёхфазных значений...");
+    lbls.append("14. 7.3.6.1. Получение текущих аналоговых данных...");
+    lbls.append("15. 7.3.6.2. Расчёт коррекции взаимного влияния каналов...");
+    lbls.append("16. 7.3.7.1. Получение текущих аналоговых данных и расчёт настроечных коэффициентов по напряжениям...");
+    lbls.append("17. 7.3.7.2. Сохранение конфигурации...");
+    lbls.append("18. 7.3.7.3. Получение текущих аналоговых данных...");
+    lbls.append("19. 7.3.7.4. Ввод измеренных значений...");
+    lbls.append("20. 7.3.7.5. Расчёт настроечных коэффициентов по токам, напряжениям и углам...");
+    lbls.append("21. 7.3.7.6. Сохранение конфигурации...");
+    lbls.append("22. 7.3.7.7. Отображение ввода трёхфазных значений...");
+    lbls.append("23. 7.3.7.8. Получение текущих аналоговых данных...");
+    lbls.append("24. 7.3.7.10. Расчёт настроечных коэффициентов по токам, напряжениям и углам...");
+    lbls.append("25. 7.3.8.1. Запись настроечных коэффициентов и переход на новую конфигурацию...");
+    lbls.append("26. 7.3.8.2. Проверка аналоговых данных...");
+    lbls.append("27. 7.3.9. Восстановление сохранённой конфигурации и проверка...");
 }
 
 void TuneDialog80::SetPf()
 {
-
+    int count = 0;
+    pf[lbls.at(count++)] = &EAbstractTuneDialog::CheckPassword; // Ввод пароля
+    int (EAbstractTuneDialog::*func)() = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::SaveWorkConfig); // Сохранение текущей конфигурации
+    pf[lbls.at(count++)] = func; // 2. Отображение схемы подключения
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::ShowControlChooseDialog); // Отображение диалога выбора режима контроля показаний
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Show3PhaseScheme); // Отображение схемы подключения
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_2_3); // Проверка связи РЕТОМ и МИП
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_1); // Получение настроечных коэффициентов
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_1_1); // Установка настроечных коэффициентов по умолчанию
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::SetNewTuneCoefs); // Установка коэффициентов
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_2); // Получение текущих аналоговых данных
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::SaveUeff); // Сохранение значений фильтра
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_3); // Расчёт коррекции по фазе
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_4); // Расчёт коррекции по частоте
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_5); // Отображение ввода трёхфазных значений
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_2); // Получение текущих аналоговых данных
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_6_2); // Расчёт коррекции взаимного влияния каналов
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_7_1); // Получение текущих аналоговых данных и расчёт настроечных коэффициентов по напряжениям
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_7_2); // Сохранение конфигурации
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_7_3); // Получение текущих аналоговых данных
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_7_4); // Ввод измеренных значений
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_7_5); // Расчёт настроечных коэффициентов по токам, напряжениям и углам
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_7_6); // Сохранение конфигурации
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_7_7); // Отображение ввода трёхфазных значений
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_7_8); // Получение текущих аналоговых данных
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_7_10); // Расчёт настроечных коэффициентов по токам, напряжениям и углам
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_8_1); // Запись настроечных коэффициентов и переход на новую конфигурацию
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_8_2); // Проверка аналоговых данных
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog80::Start7_3_9); // Восстановление сохранённой конфигурации и проверка
+    pf[lbls.at(count++)] = func;
 }
 
 void TuneDialog80::FillBac()
 {
-
+    for (int i = 0; i < 6; i++)
+    {
+        WDFunc::SetLEData(this, "tune"+QString::number(i), QString::number(Bac_block.KmU[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+6), QString::number(Bac_block.KmI_5[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+12), QString::number(Bac_block.KmI_1[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+18), QString::number(Bac_block.DPsi[i], 'f', 5));
+    }
+    WDFunc::SetLEData(this, "tune24", QString::number(Bac_block.K_freq, 'f', 5));
+    WDFunc::SetLEData(this, "tune25", QString::number(Bac_block.Kinter, 'f', 5));
 }
 
 void TuneDialog80::FillBackBac()
 {
-
+    QString tmps;
+    for (int i = 0; i < 6; i++)
+    {
+        WDFunc::LEData(this, "tune"+QString::number(i), tmps);
+        Bac_block.KmU[i]=ToFloat(tmps);
+        WDFunc::LEData(this, "tune"+QString::number(i+6), tmps);
+        Bac_block.KmI_5[i]=ToFloat(tmps);
+        WDFunc::LEData(this, "tune"+QString::number(i+12), tmps);
+        Bac_block.KmI_1[i]=ToFloat(tmps);
+        WDFunc::LEData(this, "tune"+QString::number(i+18), tmps);
+        Bac_block.DPsi[i]=ToFloat(tmps);
+    }
+    WDFunc::LEData(this, "tune24", tmps);
+    Bac_block.K_freq=ToFloat(tmps);
+    WDFunc::LEData(this, "tune25", tmps);
+    Bac_block.Kinter=ToFloat(tmps);
 }
 
 void TuneDialog80::GetBdAndFillMTT()
@@ -257,10 +314,8 @@ void TuneDialog80::GetBdAndFillMTT()
 
 }
 
-void TuneDialog80::StartTune()
+void TuneDialog80::PrepareConsts()
 {
-    WDFunc::SetEnabled(this, "starttune", false);
-
     // подготовка констант для проверки данных МИПа
     MVTC.u = (pc.ModuleBsi.MTypeM == MTM_83) ? S0 : V60;
     MTTC.u = (pc.ModuleBsi.MTypeM == MTM_83) ? FLT_MAX : TH005;
@@ -276,77 +331,6 @@ void TuneDialog80::StartTune()
         MVTC.i[2] = C80->Bci_block.inom2[2];
         MTTC.i = TH005;
     }
-
-    DefConfig = pc.ModuleBsi.Hth & HTH_REGPARS; // наличие настроечных коэффициентов в памяти модуля
-
-    int count = 0;
-    pf[lbls().at(count++)] = &TuneDialog80::SaveWorkConfig; // 1. Сохранение текущей конфигурации
-    pf[lbls().at(count++)] = &TuneDialog80::ShowControlChooseDialog; // 2. Отображение диалога выбора режима контроля показаний
-    pf[lbls().at(count++)] = &TuneDialog80::Show3PhaseScheme; // 3. Отображение схемы подключения
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_2_3; // 7.2.3. Проверка связи РЕТОМ и МИП
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_1; // 7.3.1. Получение настроечных коэффициентов
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_1_1; // 7.3.1.1. Установка настроечных коэффициентов по умолчанию
-    pf[lbls().at(count++)] = &TuneDialog80::SetNewTuneCoefs; // 4. Установка коэффициентов
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_2; // 7.3.2. Получение текущих аналоговых данных
-    pf[lbls().at(count++)] = &TuneDialog80::SaveUeff; // 5. Сохранение значений фильтра
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_3; // 7.3.3. расчёт коррекции по фазе
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_4; // 7.3.4. расчёт коррекции по частоте
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_5; // 7.3.5. Отображение ввода трёхфазных значений
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_2; // 7.3.6.1. Получение текущих аналоговых данных
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_6_2; // 7.3.6.2. Расчёт коррекции взаимного влияния каналов
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_7_1; // 7.3.7.1. Получение текущих аналоговых данных и расчёт настроечных коэффициентов по напряжениям
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_7_2; // 7.3.7.2. Сохранение конфигурации
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_7_3; // 7.3.7.3. Получение текущих аналоговых данных
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_7_4; // 7.3.7.4. Ввод измеренных значений
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_7_5; // 7.3.7.5. Расчёт настроечных коэффициентов по токам, напряжениям и углам
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_7_6; // 7.3.7.6. Сохранение конфигурации
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_7_7; // 7.3.7.7. Отображение ввода трёхфазных значений
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_7_8; // 7.3.7.8. Получение текущих аналоговых данных
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_7_10; // 7.3.7.10. Расчёт настроечных коэффициентов по токам, напряжениям и углам
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_8_1; // 7.3.8.1. Запись настроечных коэффициентов и переход на новую конфигурацию
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_8_2; // 7.3.8.2. Проверка аналоговых данных
-    pf[lbls().at(count++)] = &TuneDialog80::Start7_3_9; // 7.3.9. Восстановление сохранённой конфигурации и проверка
-
-    Cancelled = false;
-    StopMip(); // останавливаем измерения МИП
-    MsgClear(); // очистка экрана с сообщениями
-    count = 0;
-    for (QHash<QString, int (TuneDialog80::*)()>::iterator it = pf.begin(); it != pf.end(); ++it)
-    {
-        MsgSetVisible(count);
-        int res = (this->*pf[it.key()])();
-        if ((res == GENERALERROR) || (Cancelled))
-        {
-            ErMsgSetVisible(count);
-            WDFunc::SetEnabled(this, "starttune", false);
-            WARNMSG(it.key());
-            LoadWorkConfig();
-            return;
-        }
-        else if (res == ER_RESEMPTY)
-            SkMsgSetVisible(count);
-        else
-            OkMsgSetVisible(count);
-        ++count;
-    }
-
-/*    int res = true;
-
-    res = Start7_3_8();
-    if (!res)
-    {
-        SetTunePbEnabled(true);
-        WARNMSG("");
-        LoadWorkConfig();
-        return;
-    }
-    res = Start7_3_9();
-    if (res)
-    {
-        SetTunePbEnabled(true);
-        EMessageBox::information(this, "Внимание", "Настройка проведена успешно!");
-        OkMsgSetVisible(MSG_END);
-    }*/
 }
 
 int TuneDialog80::Start7_2_3()
@@ -361,7 +345,9 @@ int TuneDialog80::Start7_2_3()
 
 int TuneDialog80::Start7_3_1()
 {
-    if (!DefConfig) // если есть настроечные параметры в памяти модуля
+    if (pc.ModuleBsi.Hth & HTH_REGPARS) // если нет настроечных параметров в памяти модуля
+        return ER_RESEMPTY;
+    else
     {
         // получение настроечных коэффициентов от модуля
         if (Commands::GetBac(BT_NONE, &Bac_block, sizeof(Bac_block)) != NOERROR)
@@ -377,13 +363,13 @@ int TuneDialog80::Start7_3_1()
         else
             return GENERALERROR;
     }
-    else
-        return ER_RESEMPTY;
 }
 
 int TuneDialog80::Start7_3_1_1()
 {
-    if (DefConfig)
+    if (pc.ModuleBsi.Hth & HTH_REGPARS) // если нет настроечных параметров в памяти модуля
+        return ER_RESEMPTY;
+    else
     {
         // запись настроечных коэффициентов в модуль
         SetDefCoefs();
@@ -402,8 +388,6 @@ int TuneDialog80::Start7_3_1_1()
         else
             return GENERALERROR;
     }
-    else
-        return ER_RESEMPTY;
 }
 
 int TuneDialog80::Start7_3_2()
@@ -1054,39 +1038,6 @@ void TuneDialog80::SetDefCoefs()
         Bac_block.KmU[i] = 1.0;
     }
     WriteTuneCoefsToGUI();
-}
-
-void TuneDialog80::WriteTuneCoefsToGUI()
-{
-    for (int i = 0; i < 6; i++)
-    {
-        WDFunc::SetLEData(this, "tune"+QString::number(i), QString::number(Bac_block.KmU[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune"+QString::number(i+6), QString::number(Bac_block.KmI_5[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune"+QString::number(i+12), QString::number(Bac_block.KmI_1[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune"+QString::number(i+18), QString::number(Bac_block.DPsi[i], 'f', 5));
-    }
-    WDFunc::SetLEData(this, "tune24", QString::number(Bac_block.K_freq, 'f', 5));
-    WDFunc::SetLEData(this, "tune25", QString::number(Bac_block.Kinter, 'f', 5));
-}
-
-void TuneDialog80::ReadTuneCoefsFromGUI()
-{
-    QString tmps;
-    for (int i = 0; i < 6; i++)
-    {
-        WDFunc::LEData(this, "tune"+QString::number(i), tmps);
-        Bac_block.KmU[i]=ToFloat(tmps);
-        WDFunc::LEData(this, "tune"+QString::number(i+6), tmps);
-        Bac_block.KmI_5[i]=ToFloat(tmps);
-        WDFunc::LEData(this, "tune"+QString::number(i+12), tmps);
-        Bac_block.KmI_1[i]=ToFloat(tmps);
-        WDFunc::LEData(this, "tune"+QString::number(i+18), tmps);
-        Bac_block.DPsi[i]=ToFloat(tmps);
-    }
-    WDFunc::LEData(this, "tune24", tmps);
-    Bac_block.K_freq=ToFloat(tmps);
-    WDFunc::LEData(this, "tune25", tmps);
-    Bac_block.Kinter=ToFloat(tmps);
 }
 
 int TuneDialog80::ReadAnalogMeasurements()

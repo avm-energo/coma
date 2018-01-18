@@ -162,7 +162,8 @@ void Check21::FillBda(QWidget *parent)
 {
     int i;
     for (i = 0; i < AIN21_NUMCH; ++i)
-        WDFunc::SetLBLText(parent, "bda"+QString::number(i), QString::number(Bda_block.sin[i]/ACHECKNUMPOINTS,16));
+//        WDFunc::SetLBLText(parent, "bda"+QString::number(i), QString::number(Bda_block.sin[i]/ACHECKNUMPOINTS,16));
+        WDFunc::SetLBLText(parent, "bda"+QString::number(i), QString::number(Bda_block.sin[i]));
 }
 
 void Check21::FillBd1W(QWidget *parent)

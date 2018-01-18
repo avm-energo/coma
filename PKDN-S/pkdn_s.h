@@ -2,7 +2,7 @@
 #define PKDN_S_H
 
 #include <QResizeEvent>
-#include "../mainwindow.h"
+#include "../gen/mainwindow.h"
 
 class pkdn_s : public MainWindow
 {

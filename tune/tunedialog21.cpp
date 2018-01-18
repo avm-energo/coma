@@ -20,8 +20,8 @@ TuneDialog21::TuneDialog21(int type, QWidget *parent) :
     for (int i = 0; i < 16; i++)
     {
         Bda0.sin[i] = 0;
-        Bda5.sin[i] = UINT_MAX;
-        Bda20.sin[i] = UINT_MAX;
+        Bda5.sin[i] = 1.0;
+        Bda20.sin[i] = 1.0;
     }
     BoardType = type;
     ChNum = 0;
@@ -337,7 +337,8 @@ int TuneDialog21::Tune()
 
 bool TuneDialog21::CheckAndShowTune0()
 {
-    WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda0.sin[ChNum]/ATUNENUMPOINTS,16));
+//    WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda0.sin[ChNum]/ATUNENUMPOINTS,16));
+    WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda0.sin[ChNum]));
     if (!CalcNewTuneCoef())
         return false;
     FillBac();
@@ -346,7 +347,8 @@ bool TuneDialog21::CheckAndShowTune0()
 
 bool TuneDialog21::CheckAndShowTune5()
 {
-    WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda5.sin[ChNum]/ATUNENUMPOINTS,16));
+//    WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda5.sin[ChNum]/ATUNENUMPOINTS,16));
+    WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda5.sin[ChNum]));
     if (!CalcNewTuneCoef())
         return false;
     FillBac();
@@ -355,7 +357,8 @@ bool TuneDialog21::CheckAndShowTune5()
 
 bool TuneDialog21::CheckAndShowTune20()
 {
-    WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda20.sin[ChNum]/ATUNENUMPOINTS,16));
+//    WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda20.sin[ChNum]/ATUNENUMPOINTS,16));
+    WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda20.sin[ChNum]));
     if (!CalcNewTuneCoef())
         return false;
     FillBac();
@@ -364,14 +367,23 @@ bool TuneDialog21::CheckAndShowTune20()
 
 bool TuneDialog21::CalcNewTuneCoef()
 {
-    Bac_block[ChNum].fbin = 1.25 - (static_cast<float>(Bda0.sin[ChNum]) / (ATUNENUMPOINTS*1638.0));
+/*    Bac_block[ChNum].fbin = 1.25 - (static_cast<float>(Bda0.sin[ChNum]) / (ATUNENUMPOINTS*1638.0));
     if ((Bda0.sin[ChNum] == Bda5.sin[ChNum]) || (Bda0.sin[ChNum] == Bda20.sin[ChNum]))
     {
         WARNMSG("Ошибка в настроечных коэффициентах, деление на ноль");
         return false;
     }
     Bac_block[ChNum].fkuin = ATUNENUMPOINTS*1638.0 / static_cast<float>(Bda0.sin[ChNum]-Bda5.sin[ChNum]);
-    Bac_block[ChNum].fkiin = ATUNENUMPOINTS*1638.0 / static_cast<float>(Bda0.sin[ChNum]-Bda20.sin[ChNum]);
+    Bac_block[ChNum].fkiin = ATUNENUMPOINTS*1638.0 / static_cast<float>(Bda0.sin[ChNum]-Bda20.sin[ChNum]); */
+    Bac_block[ChNum].fbin = 1.25 - Bda0.sin[ChNum];
+    if ((Bda0.sin[ChNum] == Bda5.sin[ChNum]) || (Bda0.sin[ChNum] == Bda20.sin[ChNum]))
+    {
+        WARNMSG("Ошибка в настроечных коэффициентах, деление на ноль");
+        return false;
+    }
+    Bac_block[ChNum].fkuin = 1 / (Bda0.sin[ChNum]-Bda5.sin[ChNum]);
+    Bac_block[ChNum].fkiin = 1 / (Bda0.sin[ChNum]-Bda20.sin[ChNum]);
+
     return true;
 }
 

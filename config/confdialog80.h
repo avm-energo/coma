@@ -31,14 +31,6 @@ signals:
 public slots:
 
 private slots:
-    void SetOsc(bool);
-    void SetThreshold(double);
-    void SetVoltageClass(int);
-    void SetCurrent(double);
-    void SetEqType(int);
-    void SetNPoints(QString);
-    void SetNFiltr(int);
-    void SetNHFiltr(int);
     void SetDefConf();
 };
 

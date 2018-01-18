@@ -201,29 +201,22 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
             pb->setText("Идёт запись: "+TimeElapsed);
         }
     }
-    for (int bdnum = 0; bdnum <= Bd_blocks.keys().size(); ++bdnum)
+    int bdkeyssize = Bd_blocks.keys().size();
+    for (int bdnum = 0; bdnum < bdkeyssize; ++bdnum)
     {
-        if (Bd_blocks.keys().contains(bdnum))
+        if (!XlsxWriting || (XlsxWriting && (Bd_blocks[bdnum]->toxlsxwrite)))
         {
-            if (!XlsxWriting || (XlsxWriting && (Bd_blocks[bdnum]->toxlsxwrite)))
+            int tmpi = Bd_blocks.keys().at(bdnum);
+            if (Commands::GetBd(tmpi, Bd_blocks[tmpi]->block, Bd_blocks[tmpi]->blocknum) != NOERROR)
             {
-                if (Commands::GetBd(Bd_blocks.keys().at(bdnum), Bd_blocks[bdnum]->block, Bd_blocks[bdnum]->blocknum) != NOERROR)
-                {
-                    WARNMSG("Ошибка при приёме данных");
-                    Busy = false;
-                    return;
-                }
-                // обновление коэффициентов в соответствующих полях на экране
-                RefreshAnalogValues(bdnum);
-                if (XlsxWriting)
-                    WriteToFile(WRow, bdnum);
+                WARNMSG("Ошибка при приёме данных");
+                Busy = false;
+                return;
             }
-        }
-        else
-        {
-            WARNMSG("Передан некорректный номер блока");
-            Busy = false;
-            return;
+            // обновление коэффициентов в соответствующих полях на экране
+            RefreshAnalogValues(bdnum);
+            if (XlsxWriting)
+                WriteToFile(WRow, bdnum);
         }
     }
 //    Interval = ElapsedTimeCounter->elapsed() - Interval;

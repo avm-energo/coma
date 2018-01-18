@@ -25,7 +25,7 @@ public:
     // Блок Bdа – оцифрованные сигналы в масштабах АЦП и частота в Гц
     struct Bda
     {
-        quint32 sin[AIN21_NUMCH];
+        float sin[AIN21_NUMCH];
     };
 
     Bda Bda_block;
