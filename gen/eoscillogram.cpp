@@ -97,156 +97,8 @@ void EOscillogram::SaveToExcel()
         break;
     }
         xlsx.save(); */
-}
-
-void EOscillogram::SaveToComtrade()
-{
-
-}
-
-void EOscillogram::SetFilename(const QString &fn)
-{
-    Filename = fn;
-}
-
-bool EOscillogram::PosPlusPlus(void *dst, int size)
-{
-    BSize = size;
-    if (Pos > (BASize-BSize))
-    {
-        ERMSG("pos > ba.size");
-        return false;
-    }
-    memcpy(dst, &(BA.data()[Pos]), BSize);
-    Pos += BSize;
-    return true;
-}
-
-//int EOscillogram::ProcessOsc(quint32 oscid, quint32 oscnum, const QString &OscDateTime)
-int EOscillogram::ProcessOsc()
-{
-    Pos = 0;
-    BASize = BA.size();
-    // разбираем осциллограмму
-    publicclass::FileHeader FH;
-    if (!PosPlusPlus(&FH, sizeof(publicclass::FileHeader)))
-        return GENERALERROR;
-    // проводим проверку, то ли получили
-/*    bool isOk = ((FH.fname == oscnum) && (FH.size == BASize));
-    if (!isOk)
-    {
-        WARNMSG("Данные об осциллограмме не совпадают с заявленными");
-        return GENERALERROR;
-    } */
-    OscDataRec DR;
-    if (!PosPlusPlus(&DR, sizeof(OscDataRec)))
-        return GENERALERROR;
-    quint32 oscid = DR.id;
-/*    if (DR.id != oscid)
-    {
-        WARNMSG("Данные об осциллограмме не совпадают с заявленными");
-        return GENERALERROR;
-    } */
-    oscid -= MT_HEAD_ID - 1; // одна осциллограмма = 1, две = 2, ...
-    if (oscid > 8)
-        oscid = 1; // если что-то с количеством осциллограмм не так, принудительно выставляем в 1
-    OscHeader_Data OHD;
-    if (!PosPlusPlus(&OHD, sizeof(OscHeader_Data)))
-        return GENERALERROR;
-    for (quint32 i=0; i<oscid; ++i)
-    {
-        if (!PosPlusPlus(&DR, sizeof(OscDataRec)))
-            return GENERALERROR;
-        // составляем имя файла осциллограммы
-        QString tmps = pc.UnixTime64ToString(OHD.unixtime);
-        tmps.replace("/","-");
-        tmps.replace(":","_");
-        tmps.insert(0, "_");
-        tmps.insert(0, QString::number(i));
-        tmps.insert(0, "_");
-        tmps.insert(0, QString::number(DR.id));
-        // пишем саму осциллограмму
-        if (ProcessOneOsc(DR.id, OHD, tmps) != NOERROR)
-            return GENERALERROR;
-    }
-    return NOERROR;
-}
-
-int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, const QString &fn)
-{
-    if ((id >= MT_ID21) && (id <= MT_ID21E))
-    {
-        // осциллограмма 21 модуля
-        /*quint32 IDFound = 0;
-        for (j=MT_START_OSC; j<MT_END_OSC; j++) // цикл по возможным осциллограммам
-        {
-            Config[0] = {j&0xFFFFFFFF, OscSize, &(OscData.data()[0])};
-            Config[1] = {0xFFFFFFFF, 0, NULL};
-            int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +FileHeader
-            if (!res)
-            {
-                IDFound = j;
-                break;
-            }
-            else if (res == S2_NOIDS)
-                continue;
-            else
-            {
-                if (res < pc.errmsgs.size())
-                    ERMSG(pc.errmsgs.at(res));
-                else
-                    ERMSG("Произошла неведомая фигня #"+QString::number(res,10));
-                return; // !!! ошибка разбора формата С2
-            }
-        }
-        if (!IDFound) // так и не найдено ни одного ID
-        {
-            ERMSG("Не найдено ни одного известного ID в принятом блоке осциллограмм");
-            return;
-        }
-        // обработка принятой осциллограммы и запись её в файл
-        if (OscHeader.NsTime > 999999999L)
-            OscHeader.NsTime = 0; // !!! ошибка - число наносекунд не может быть больше 999 млн 999 тыс 999
-        GivenFilename.insert(0, pc.ModuleTypeString+"-");
-        QString filename = QFileDialog::getSaveFileName(this,"Сохранить осциллограмму",GivenFilename,"Excel files (*.xlsx)");
-        if (filename == "")
-        {
-            ERMSG("Не задано имя файла");
-            return; // !!! ошибка - не задано имя файла
-        }
-        QXlsx::Document xlsx(filename.toUtf8());
-        xlsx.write(1,1,QVariant("Модуль: "+pc.ModuleTypeString));
-        xlsx.write(3,1,QVariant("Дата: "+OscDateTime.split(" ").at(0)));
-        xlsx.write(4,1,QVariant("Время: "+OscDateTime.split(" ").at(1)));
-        xlsx.write(5,1,QVariant("Смещение, мс"));
-        xlsx.write(5,2,QVariant("Значение по каналу " + QString::number(IDFound-MT_START_OSC)));
-        quint32 i = 0; // указатель внутри OscData
-        float tmpf;
-        int WRow = 6;
-        int WCol = 1;
-        float StartTime = 0; // нулевое смещение относительно начала записи осциллограммы
-        while (i < OscHeader.Len)
-        {
-            xlsx.write(WRow,WCol,QVariant(StartTime));
-            memcpy(&tmpf,&(OscData.data()[i*4]),sizeof(tmpf));
-            xlsx.write(WRow,WCol+1,QVariant(tmpf));
-            WRow++;
-            StartTime += OscHeader.Step;
-            i++; // отсчёт++
-        }
-        xlsx.save();
-        QMessageBox::information(this,"Успешно!","Записано успешно!");
-        return; */
-    }
-    else
-    {
-        switch(id)
-        {
-        case MT_ID81:
-        case MT_ID82:
-        case MT_ID83:
-        {
-            /*if (OscHeader.NsTime > 999999999L)
+    /* из 8х
+     *             /*if (OscHeader.NsTime > 999999999L)
                 OscHeader.NsTime = 0; // !!! ошибка - число наносекунд не может быть больше 999 млн 999 тыс 999
             GivenFilename.insert(0, pc.ModuleTypeString+"-");
             QString filename = QFileDialog::getSaveFileName(this,"Сохранить осциллограмму",GivenFilename,"Excel files (*.xlsx)");
@@ -311,10 +163,206 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
             xlsx.save();
             QMessageBox::information(this,"Успешно!","Записано успешно!");
             break; */
+    // осциллограмма 21 модуля
+    /*quint32 IDFound = 0;
+    for (j=MT_START_OSC; j<MT_END_OSC; j++) // цикл по возможным осциллограммам
+    {
+        Config[0] = {j&0xFFFFFFFF, OscSize, &(OscData.data()[0])};
+        Config[1] = {0xFFFFFFFF, 0, NULL};
+        int res = pc.RestoreDataMem(OscInfo->data(),OscLength+12,Config); // 12 = +FileHeader
+        if (!res)
+        {
+            IDFound = j;
+            break;
+        }
+        else if (res == S2_NOIDS)
+            continue;
+        else
+        {
+            if (res < pc.errmsgs.size())
+                ERMSG(pc.errmsgs.at(res));
+            else
+                ERMSG("Произошла неведомая фигня #"+QString::number(res,10));
+            return; // !!! ошибка разбора формата С2
+        }
+    }
+    if (!IDFound) // так и не найдено ни одного ID
+    {
+        ERMSG("Не найдено ни одного известного ID в принятом блоке осциллограмм");
+        return;
+    }
+    // обработка принятой осциллограммы и запись её в файл
+    if (OscHeader.NsTime > 999999999L)
+        OscHeader.NsTime = 0; // !!! ошибка - число наносекунд не может быть больше 999 млн 999 тыс 999
+    GivenFilename.insert(0, pc.ModuleTypeString+"-");
+    QString filename = QFileDialog::getSaveFileName(this,"Сохранить осциллограмму",GivenFilename,"Excel files (*.xlsx)");
+    if (filename == "")
+    {
+        ERMSG("Не задано имя файла");
+        return; // !!! ошибка - не задано имя файла
+    }
+    QXlsx::Document xlsx(filename.toUtf8());
+    xlsx.write(1,1,QVariant("Модуль: "+pc.ModuleTypeString));
+    xlsx.write(3,1,QVariant("Дата: "+OscDateTime.split(" ").at(0)));
+    xlsx.write(4,1,QVariant("Время: "+OscDateTime.split(" ").at(1)));
+    xlsx.write(5,1,QVariant("Смещение, мс"));
+    xlsx.write(5,2,QVariant("Значение по каналу " + QString::number(IDFound-MT_START_OSC)));
+    quint32 i = 0; // указатель внутри OscData
+    float tmpf;
+    int WRow = 6;
+    int WCol = 1;
+    float StartTime = 0; // нулевое смещение относительно начала записи осциллограммы
+    while (i < OscHeader.Len)
+    {
+        xlsx.write(WRow,WCol,QVariant(StartTime));
+        memcpy(&tmpf,&(OscData.data()[i*4]),sizeof(tmpf));
+        xlsx.write(WRow,WCol+1,QVariant(tmpf));
+        WRow++;
+        StartTime += OscHeader.Step;
+        i++; // отсчёт++
+    }
+    xlsx.save();
+    QMessageBox::information(this,"Успешно!","Записано успешно!");
+    return; */
+}
+
+void EOscillogram::SaveToComtrade()
+{
+
+}
+
+void EOscillogram::SetFilename(const QString &fn)
+{
+    Filename = fn;
+}
+
+bool EOscillogram::PosPlusPlus(void *dst, int size)
+{
+    BSize = size;
+    if (Pos > (BASize-BSize))
+    {
+        ERMSG("pos > ba.size");
+        return false;
+    }
+    memcpy(dst, &(BA.data()[Pos]), BSize);
+    Pos += BSize;
+    return true;
+}
+
+int EOscillogram::ProcessOsc()
+{
+    Pos = 0;
+    BASize = BA.size();
+    // разбираем осциллограмму
+    publicclass::FileHeader FH;
+    if (!PosPlusPlus(&FH, sizeof(publicclass::FileHeader)))
+        return GENERALERROR;
+    OscDataRec DR;
+    if (!PosPlusPlus(&DR, sizeof(OscDataRec)))
+        return GENERALERROR;
+    quint32 oscid = DR.id;
+    oscid -= MT_HEAD_ID - 1; // одна осциллограмма = 1, две = 2, ...
+    if (oscid > 8)
+        oscid = 1; // если что-то с количеством осциллограмм не так, принудительно выставляем в 1
+    OscHeader_Data OHD;
+    if (!PosPlusPlus(&OHD, sizeof(OscHeader_Data)))
+        return GENERALERROR;
+    for (quint32 i=0; i<oscid; ++i)
+    {
+        if (!PosPlusPlus(&DR, sizeof(OscDataRec)))
+            return GENERALERROR;
+        // составляем имя файла осциллограммы
+        QString tmps = pc.UnixTime64ToString(OHD.unixtime);
+        tmps.replace("/","-");
+        tmps.replace(":","_");
+        tmps.insert(0, "_");
+        tmps.insert(0, QString::number(i));
+        tmps.insert(0, "_");
+        tmps.insert(0, QString::number(DR.id));
+        // пишем саму осциллограмму
+        if (ProcessOneOsc(DR.id, OHD, tmps) != NOERROR)
+            return GENERALERROR;
+    }
+    return NOERROR;
+}
+
+int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, const QString &fn)
+{
+    QStringList tmpav, tmpdv;
+    if ((id >= MT_ID21) && (id <= MT_ID21E))
+    {
+        // период отсчётов - 20 мс, длительность записи осциллограммы 10 сек, итого 500 точек по 4 байта на каждую
+        tmpav << QString::number(id); // пока сделано для одного канала в осциллограмме
+        TrendViewModel *TModel = new TrendViewModel(QStringList(), tmpav, OHD.len);
+        TrendViewDialog *dlg = new TrendViewDialog;
+        dlg->SetModel(TModel);
+        dlg->SetAnalogNames(tmpav);
+        dlg->SetRanges(0, 10000, -20, 20); // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
+        dlg->SetupPlots();
+        dlg->SetupUI();
+        if (!TModel->SetPointsAxis(0, OHD.step))
+            return GENERALERROR;
+        for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
+        {
+            Point21 point;
+            if (!PosPlusPlus(&point, sizeof(Point21)))
+                return GENERALERROR;
+            TModel->AddAnalogPoint(tmpav.at(0), point.An);
+        }
+        TModel->SetFilename(fn);
+        dlg->setModal(false);
+        dlg->PlotShow();
+        dlg->show();
+    }
+    else
+    {
+        switch(id)
+        {
+        case MT_ID81:
+        case MT_ID82:
+        case MT_ID83:
+        {
+            tmpav << "UA" << "UB" << "UC" << "IA" << "IB" << "IC";
+//            int np = C80
+            float xmax = (static_cast<float>(OHD.len/2));
+            float xmin = -xmax;
+            xmin = -(OHD.step * 512);
+            TrendViewModel *TModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
+            TrendViewDialog *dlg = new TrendViewDialog;
+            dlg->SetModel(TModel);
+            dlg->SetAnalogNames(tmpav);
+            dlg->SetDigitalNames(tmpdv);
+            dlg->SetRanges(xmin, xmax, -200, 200);
+            dlg->SetupPlots();
+            dlg->SetupUI();
+            if (!TModel->SetPointsAxis(xmin, OHD.step))
+                return GENERALERROR;
+            for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
+            {
+                Point85 point;
+                if (!PosPlusPlus(&point, sizeof(Point85)))
+                    return GENERALERROR;
+                quint32 DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
+                DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
+                for (int i=0; i<20; ++i)
+                {
+                    if (DisPoint & 0x00000001)
+                        TModel->AddDigitalPoint(tmpdv.at(i), 1);
+                    else
+                        TModel->AddDigitalPoint(tmpdv.at(i), 0);
+                    DisPoint >>= 1;
+                }
+                for (int i=0; i<9; ++i)
+                    TModel->AddAnalogPoint(tmpav.at(i), point.An[i]);
+            }
+            TModel->SetFilename(fn);
+            dlg->setModal(false);
+            dlg->PlotShow();
+            dlg->show();
+            break;
         }
         case MT_ID85:
         {
-            QStringList tmpdv, tmpav;
             tmpdv << "OCNA" << "OCNB" << "OCNC" << "OCFA" << "OCFB" << "OCFC" << \
                      "BKCA" << "BKCB" << "BKCC" << "BKOA" << "BKOB" << "BKOC" << \
                      "CSC" << "CSO" << "CNA" << "CNB" << "CNC" << "CFA" << "CFB" << "CFC";
@@ -335,13 +383,10 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
             for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
             {
                 Point85 point;
-                if (i == (OHD.len-1))
-                    i = OHD.len - 1;
                 if (!PosPlusPlus(&point, sizeof(Point85)))
                     return GENERALERROR;
                 quint32 DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
                 DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
-//                int count = 0; // номер графика
                 for (int i=0; i<20; ++i)
                 {
                     if (DisPoint & 0x00000001)
@@ -349,7 +394,6 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
                     else
                         TModel->AddDigitalPoint(tmpdv.at(i), 0);
                     DisPoint >>= 1;
-//                    ++count;
                 }
                 for (int i=0; i<9; ++i)
                     TModel->AddAnalogPoint(tmpav.at(i), point.An[i]);

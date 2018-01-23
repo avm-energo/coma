@@ -173,7 +173,7 @@ void TuneDialog80::SetupUI()
     gb->setLayout(gblyout);
     vlyout->addWidget(gb);
     hlyout = new QHBoxLayout;
-    pb = new QPushButton("Запустить связь с МИП");
+    QPushButton *pb = new QPushButton("Запустить связь с МИП");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartMip()));
     hlyout->addWidget(pb);
     pb = new QPushButton("Остановить связь с МИП");
@@ -356,7 +356,7 @@ int TuneDialog80::Start7_3_1()
             return GENERALERROR;
         }
         // обновление коэффициентов в соответствующих полях на экране
-        WriteTuneCoefsToGUI();
+        FillBac();
         // проверка коэффициентов на правильность в соотв. с п. 7.3.1 "Д2"
         if (CheckTuneCoefs())
             return NOERROR;
@@ -382,7 +382,7 @@ int TuneDialog80::Start7_3_1_1()
                 return false;
             }
             // обновление коэффициентов в соответствующих полях на экране
-            WriteTuneCoefsToGUI();
+            FillBac();
             return NOERROR;
         }
         else
@@ -1037,7 +1037,7 @@ void TuneDialog80::SetDefCoefs()
         Bac_block.KmI_5[i] = 1.0;
         Bac_block.KmU[i] = 1.0;
     }
-    WriteTuneCoefsToGUI();
+    FillBac();
 }
 
 int TuneDialog80::ReadAnalogMeasurements()

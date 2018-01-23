@@ -25,7 +25,6 @@
 #define AIN21_AIT_MA        1
 #define AIN21_AIT_V         2
 
-//#include "config2x.h"
 #include "config.h"
 #include <QVector>
 
