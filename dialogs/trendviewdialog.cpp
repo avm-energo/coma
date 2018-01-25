@@ -181,8 +181,11 @@ void TrendViewDialog::DigitalRangeChanged(QCPRange range)
         return;
     }
     RangeChangeInProgress = true;
-    AnalogPlot->xAxis->setRange(range);
-    AnalogPlot->replot();
+    if (!NoAnalog)
+    {
+        AnalogPlot->xAxis->setRange(range);
+        AnalogPlot->replot();
+    }
 }
 
 void TrendViewDialog::AnalogRangeChanged(QCPRange range)
@@ -193,41 +196,50 @@ void TrendViewDialog::AnalogRangeChanged(QCPRange range)
         return;
     }
     RangeChangeInProgress = true;
-    DiscretePlot->xAxis->setRange(range);
-    DiscretePlot->replot();
+    if (!NoDiscrete)
+    {
+        DiscretePlot->xAxis->setRange(range);
+        DiscretePlot->replot();
+    }
 }
 
 void TrendViewDialog::PlotShow()
 {
-    for (int i=0; i<AnalogGraphs.keys().size(); ++i)
+    if (!NoAnalog)
     {
-        QString tmps = AnalogGraphs.keys().at(i);
-        if (TrendModel->AContains(tmps))
+        for (int i=0; i<AnalogGraphs.keys().size(); ++i)
         {
-            AnalogGraphs[tmps]->setData(TrendModel->MainPoints, TrendModel->AnalogMainData[tmps]);
-            AnalogGraphs[tmps]->rescaleAxes();
-            AnalogGraphs[tmps]->rescaleValueAxis(true, true);
-            AnalogGraphs[tmps]->rescaleKeyAxis();
-            SignalChooseWidget *scw = this->findChild<SignalChooseWidget *>("analog");
-            if ((scw != 0) && (i < AnalogNames.size()))
-                scw->SetChecked(AnalogNames.at(i), true);
+            QString tmps = AnalogGraphs.keys().at(i);
+            if (TrendModel->AContains(tmps))
+            {
+                AnalogGraphs[tmps]->setData(TrendModel->MainPoints, TrendModel->AnalogMainData[tmps]);
+                AnalogGraphs[tmps]->rescaleAxes();
+                AnalogGraphs[tmps]->rescaleValueAxis(true, true);
+                AnalogGraphs[tmps]->rescaleKeyAxis();
+                SignalChooseWidget *scw = this->findChild<SignalChooseWidget *>("analog");
+                if ((scw != 0) && (i < AnalogNames.size()))
+                    scw->SetChecked(AnalogNames.at(i), true);
+            }
         }
+        AnalogPlot->replot();
     }
-    for (int i=0; i<DigitalGraphs.keys().size(); ++i)
+    if (!NoDiscrete)
     {
-        QString tmps = DigitalGraphs.keys().at(i);
-        if (TrendModel->DContains(tmps))
+        for (int i=0; i<DigitalGraphs.keys().size(); ++i)
         {
-            DigitalGraphs[tmps]->setData(TrendModel->MainPoints, TrendModel->DigitalMainData[tmps]);
-            DigitalGraphs[tmps]->rescaleValueAxis(true, true);
-            DigitalGraphs[tmps]->rescaleKeyAxis();
-            SignalChooseWidget *scw = this->findChild<SignalChooseWidget *>("digital");
-            if ((scw != 0) && (i < DigitalNames.size()))
-                scw->SetChecked(DigitalNames.at(i), true);
+            QString tmps = DigitalGraphs.keys().at(i);
+            if (TrendModel->DContains(tmps))
+            {
+                DigitalGraphs[tmps]->setData(TrendModel->MainPoints, TrendModel->DigitalMainData[tmps]);
+                DigitalGraphs[tmps]->rescaleValueAxis(true, true);
+                DigitalGraphs[tmps]->rescaleKeyAxis();
+                SignalChooseWidget *scw = this->findChild<SignalChooseWidget *>("digital");
+                if ((scw != 0) && (i < DigitalNames.size()))
+                    scw->SetChecked(DigitalNames.at(i), true);
+            }
         }
+        DiscretePlot->replot();
     }
-    AnalogPlot->replot();
-    DiscretePlot->replot();
     this->showMaximized();
 }
 

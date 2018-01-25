@@ -158,6 +158,7 @@ void OscDialog::GetOsc(QModelIndex idx)
         WARNMSG("");
         return;
     }
+    basize += sizeof(publicclass::FileHeader);
     OscFunc->BA.resize(basize);
     if (Commands::GetOsc(oscnum, &(OscFunc->BA.data()[0])) == NOERROR)
     {
@@ -172,7 +173,7 @@ void OscDialog::GetOsc(QModelIndex idx)
         } */
     }
     else
-        WARNMSG("");
+        WARNMSG("Номер файла не соответствует диапазону, принятому для осциллограмм");
 }
 
 /*void OscDialog::EndExtractOsc(quint32 id, OscHeader_Data &OHD, const QString &fn)

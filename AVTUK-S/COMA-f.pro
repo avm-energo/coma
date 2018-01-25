@@ -77,6 +77,7 @@ SOURCES += \
     ../iec104/iec104.cpp \
     ../iec104/ethernet.cpp \
     ../models/trendviewmodel.cpp \
+    ../modules/eabstractmodule.cpp \
     ../tune/eabstracttunedialog.cpp \
     ../tune/tunedialog21.cpp \
     ../tune/tunedialog80.cpp \
@@ -93,7 +94,7 @@ SOURCES += \
     ../widgets/getoscpbdelegate.cpp \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp
+    ../widgets/wd_func.cpp 
 
 HEADERS  += \
     coma.h \
@@ -149,6 +150,7 @@ HEADERS  += \
     ../iec104/ethernet.h \
     ../iec104/iec104.h \
     ../models/trendviewmodel.h \
+    ../modules/eabstractmodule.h \
     ../tune/eabstracttunedialog.h \
     ../tune/tunedialog21.h \
     ../tune/tunedialog80.h \
@@ -165,7 +167,7 @@ HEADERS  += \
     ../widgets/errorprotocolwidget.h \
     ../widgets/signalchoosewidget.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h
+    ../widgets/wd_func.h 
 
 INCLUDEPATH += $$PWD/../../includes
 
