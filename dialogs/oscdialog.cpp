@@ -50,39 +50,23 @@ void OscDialog::SetupUI()
     setLayout(lyout);
 }
 
-/*int OscDialog::InputFileType()
+void OscDialog::UpdateModel()
 {
-    QDialog *dlg = new QDialog(this);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    lyout->addWidget(WDFunc::NewLBL(this, "Вывод осциллограмм"), Qt::AlignCenter);
-    lyout->addWidget(WDFunc::NewChB(this, "xlsxchb", "В файл .xlsx"));
-    lyout->addWidget(WDFunc::NewChB(this, "comtradechb", "В файлы COMTRADE"));
-    lyout->addWidget(WDFunc::NewChB(this, "nonechb", "На экран"));
-    QPushButton *pb = new QPushButton("Продолжить");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(Accept()));
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(Cancel()));
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    dlg->setLayout(lyout);
-    AcceptedOscFileType = false;
-    pc.Cancelled = false;
-    dlg->show();
-    while (!AcceptedOscFileType && !pc.Cancelled)
+    ETableView *tv = this->findChild<ETableView *>("osctv");
+    if (tv == 0)
     {
-        QTime tme;
-        tme.start();
-        while (tme.elapsed() < SLEEPINT)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
+        DBGMSG;
+        return; // !!! системная проблема
     }
-    dlg->close();
-    if (pc.Cancelled)
-        return GENERALERROR;
-    return NOERROR;
-} */
+    QItemSelectionModel *m = tv->selectionModel();
+    tv->setModel(tm);
+    delete m;
+    GetOscPBDelegate *dg = new GetOscPBDelegate;
+    connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(GetOsc(QModelIndex)));
+    tv->setItemDelegateForColumn(4, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
+    tv->resizeRowsToContents();
+    tv->resizeColumnsToContents();
+}
 
 void OscDialog::GetAndProcessOscInfo()
 {
@@ -94,17 +78,18 @@ void OscDialog::GetAndProcessOscInfo()
     OscInfo.resize(OscInfoSize);
     if ((Commands::GetBt(TECH_Bo, &(OscInfo.data()[0]), OscInfoSize)) == NOERROR)
     {
-        if (OscInfoSize < RecordSize)
-        {
-            EMessageBox::information(this, "Информация", "Присланное количество байт слишком мало");
-            return;
-        }
         tm->ClearModel();
         tm->addColumn("#");
         tm->addColumn("ИД");
         tm->addColumn("Дата/Время");
         tm->addColumn("Длина");
         tm->addColumn("Скачать");
+        if (OscInfoSize < RecordSize)
+        {
+            EMessageBox::information(this, "Информация", "В памяти модуля нет осциллограмм");
+            UpdateModel();
+            return;
+        }
         QApplication::setOverrideCursor(Qt::WaitCursor);
         QVector<QVariant> Num, IDs, Tim, Lngth, Dwld;
         int counter = 0;
@@ -125,21 +110,8 @@ void OscDialog::GetAndProcessOscInfo()
         lsl.append(Lngth);
         lsl.append(Dwld);
         tm->fillModel(lsl);
+        UpdateModel();
         QApplication::restoreOverrideCursor();
-        ETableView *tv = this->findChild<ETableView *>("osctv");
-        if (tv == 0)
-        {
-            DBGMSG;
-            return; // !!! системная проблема
-        }
-        QItemSelectionModel *m = tv->selectionModel();
-        tv->setModel(tm);
-        delete m;
-        GetOscPBDelegate *dg = new GetOscPBDelegate;
-        connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(GetOsc(QModelIndex)));
-        tv->setItemDelegateForColumn(4,dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
-        tv->resizeRowsToContents();
-        tv->resizeColumnsToContents();
     }
 }
 
@@ -164,21 +136,11 @@ void OscDialog::GetOsc(QModelIndex idx)
     {
         QString tmps = pc.SystemHomeDir+"/temporary.osc";
         pc.SaveToFile(tmps, OscFunc->BA, basize);
-//        OscFunc->ProcessOsc(oscid, oscnum, OscDateTime);
         OscFunc->ProcessOsc();
-/*        if (InputFileType() == GENERALERROR)
-        {
-            EMessageBox::error(this, "Ошибка", "Ошибка при задании типа файла осциллограмм");
-            return;
-        } */
     }
     else
         WARNMSG("Номер файла не соответствует диапазону, принятому для осциллограмм");
 }
-
-/*void OscDialog::EndExtractOsc(quint32 id, OscHeader_Data &OHD, const QString &fn)
-{
-}*/
 
 void OscDialog::EraseOsc()
 {
@@ -188,24 +150,3 @@ void OscDialog::EraseOsc()
     else
         EMessageBox::information(this, "Внимание", "Ошибка при стирании");
 }
-
-/*void OscDialog::Accept()
-{
-    OscFileType = 0;
-    bool isChecked;
-    WDFunc::ChBData(this, "xlsxchb", isChecked);
-    if (isChecked)
-        OscFileType |= MT_FT_XLSX;
-    WDFunc::ChBData(this, "comtradechb", isChecked);
-    if (isChecked)
-        OscFileType |= MT_FT_COMTRADE;
-    WDFunc::ChBData(this, "nonechb", isChecked);
-    if (isChecked)
-        OscFileType |= MT_FT_NONE;
-    AcceptedOscFileType = true;
-}
-
-void OscDialog::Cancel()
-{
-    pc.Cancelled = true;
-} */

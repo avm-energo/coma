@@ -22,11 +22,9 @@ public:
 
 private:
     void SetupUI();
-//    int InputFileType();
+    void UpdateModel();
 
     ETableModel *tm;
-//    int OscFileType;
-//    bool AcceptedOscFileType;
     EOscillogram *OscFunc;
 
 signals:
@@ -35,12 +33,8 @@ public slots:
 
 private slots:
     void GetAndProcessOscInfo();
-//    void ProcessOscInfo();
-//    void EndExtractOsc(quint32 id, OscHeader_Data &OHD, const QString &fn); // id - ИД осциллограммы (по табл. Приложения 2 "АВ-ТУК. Файлы")
     void GetOsc(QModelIndex);
     void EraseOsc();
-//    void Accept();
-//    void Cancel();
 };
 
 #endif // OSCDIALOG_H

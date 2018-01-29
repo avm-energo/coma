@@ -108,11 +108,29 @@ void ConfDialog21::SetupUI()
         }
     }
     gblyout->addLayout(glyout);
-    lbl = new QLabel("Задержка в мс начала фиксации максимумов:");
-    gblyout->addWidget(lbl);
-    gblyout->addWidget(WDFunc::NewSPB(this, "oscdlyspb", 0, 10000, 1, 0, ACONFWCLR));
+    hlyout = new QHBoxLayout;
+    lbl = new QLabel();
+    hlyout->addWidget(WDFunc::NewLBLT(this, "Задержка в мс начала фиксации максимумов:"));
+    hlyout->addWidget(WDFunc::NewSPB(this, "oscdly", 0, 10000, 1, 0, ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewLBLT(this, "Гистерезис осциллограмм:", "", "", "Доля от диапазона, при превышении которой начинается запись осциллограмм"));
+    hlyout->addWidget(WDFunc::NewSPB(this, "oscthr", 0, 1, 0.001, 3, ACONFWCLR));
+    gblyout->addLayout(hlyout);
     gb->setLayout(gblyout);
     lyout->addWidget(gb);
+
+    gblyout = new QVBoxLayout;
+    hlyout = new QHBoxLayout;
+    hlyout->addStretch(10);
+    hlyout->addWidget(WDFunc::NewLBLT(this, "Степень фильтрации:", "", "", "Степень фильтрации (0 - отсутствует)"));
+    hlyout->addWidget(WDFunc::NewSPB(this, "filtern", 0, 10000, 1, 0, ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewLBLT(this, "Гистерезис фильтрации:", "", "", "Доля от диапазона, при превышении которой между замерами фильтр не работает"));
+    hlyout->addWidget(WDFunc::NewSPB(this, "filterthr", 0, 1, 0.001, 3, ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewLBLT(this, "Гистерезис уставок:", "", "", "Значение гистерезиса на сравнение с уставками (доля от диапазона)"));
+    hlyout->addWidget(WDFunc::NewSPB(this, "hysteresis", 0, 1, 0.001, 3, ACONFWCLR));
+    hlyout->addStretch(10);
+    gblyout->addLayout(hlyout);
+    lyout->addLayout(gblyout);
+
     QWidget *cp = new QWidget;
     tmps = "QWidget {background-color: "+QString(ACONFGCLR)+";}";
     cp->setStyleSheet(tmps);
@@ -198,7 +216,6 @@ void ConfDialog21::SetupUI()
 void ConfDialog21::DisableChannel(int chnum, bool disable)
 {
     bool Enabled = !disable;
-//    WDFunc::SetEnabled(this, "chtypcb."+QString::number(chnum), Enabled);
     WDFunc::SetEnabled(this, "choscdi1."+QString::number(chnum), Enabled);
     WDFunc::SetEnabled(this, "choscdi2."+QString::number(chnum), Enabled);
     WDFunc::SetEnabled(this, "choscthr."+QString::number(chnum), Enabled);
@@ -243,7 +260,11 @@ void ConfDialog21::SetRange(int RangeType)
 void ConfDialog21::Fill()
 {
     int i;
-    WDFunc::SetSPBData(this, "oscdlyspb", C21->Bci_block.oscdly);
+    WDFunc::SetSPBData(this, "oscdly", C21->Bci_block.oscdly);
+    WDFunc::SetSPBData(this, "oscthr", C21->Bci_block.oscthr);
+    WDFunc::SetSPBData(this, "filtern", C21->Bci_block.filtern);
+    WDFunc::SetSPBData(this, "filterthr", C21->Bci_block.filterthr);
+    WDFunc::SetSPBData(this, "hysteresis", C21->Bci_block.hysteresis);
     for (i = 0; i < AIN21_NUMCH; i++)
     {
         WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), C21->Bci_block.in_type[i]);
@@ -265,7 +286,11 @@ void ConfDialog21::Fill()
 
 void ConfDialog21::FillBack()
 {
-    WDFunc::SPBData(this, "oscdlyspb", C21->Bci_block.oscdly);
+    WDFunc::SPBData(this, "oscdly", C21->Bci_block.oscdly);
+    WDFunc::SPBData(this, "oscthr", C21->Bci_block.oscthr);
+    WDFunc::SPBData(this, "filtern", C21->Bci_block.filtern);
+    WDFunc::SPBData(this, "filterthr", C21->Bci_block.filterthr);
+    WDFunc::SPBData(this, "hysteresis", C21->Bci_block.hysteresis);
     for (int i=0; i<AIN21_NUMCH; ++i)
     {
         WDFunc::CBIndex(this, "chtypcb."+QString::number(i), C21->Bci_block.in_type[i]);

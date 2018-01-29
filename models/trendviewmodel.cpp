@@ -38,8 +38,8 @@ void TrendViewModel::AddDigitalPoint(const QString &GraphNum, int PointValue)
     if (DigitalMainData.contains(GraphNum))
     {
         QVector<double> tmpv = DigitalMainData[GraphNum];
-        PointValue += DigitalNames.indexOf(GraphNum) * 1.5f;
-        tmpv.append(PointValue);
+        double value = static_cast<double>(PointValue) + static_cast<double>(DigitalNames.indexOf(GraphNum)) * 1.5f;
+        tmpv.append(value);
         DigitalMainData[GraphNum] = tmpv;
     }
 }
@@ -116,9 +116,9 @@ void TrendViewModel::SaveToComtrade()
 
 bool TrendViewModel::SetPointsAxis(float start, float step)
 {
-    if (step < 0)
+    if (step <= 0)
     {
-        WARNMSG("Ошибка в принятой осциллограмме, шаг отрицательный");
+        WARNMSG("Ошибка в принятой осциллограмме, шаг отрицательный или равен нулю");
         return false;
     }
     if (PointsNum == 0)

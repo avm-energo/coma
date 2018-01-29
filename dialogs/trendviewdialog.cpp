@@ -152,7 +152,7 @@ void TrendViewDialog::GraphSetVisible(QCustomPlot *plot, const QString &graphnam
             QPen pen;
             pen.setColor(QColor(qSin(count*1+1.2)*80+80, qSin(count*0.3+0)*80+80, qSin(count*0.3+1.5)*80+80));
             graph->setPen(pen);
-            graph->keyAxis()->setLabel("Time, ns");
+            graph->keyAxis()->setLabel("Time, ms");
             graph->keyAxis()->setRange(XMin, XMax);
             graph->valueAxis()->setLabel(graphname);
             graph->setName(graphname);
@@ -290,10 +290,10 @@ void TrendViewDialog::SetupPlots()
             pen.setColor(QColor(qSin(count*1+1.2)*80+80, qSin(count*0.3+0)*80+80, qSin(count*0.3+1.5)*80+80));
             graph->setPen(pen);
             graph->valueAxis()->setRange(-1, 2);
-            graph->keyAxis()->setLabel("Time, ns");
+            graph->keyAxis()->setLabel("Time, ms");
             graph->keyAxis()->setRange(XMin, XMax);
             QString tmps = DigitalNames.at(count);
-            graph->valueAxis()->setLabel(tmps);
+//            graph->valueAxis()->setLabel(tmps);
             graph->setName(tmps);
             graph->setLineStyle(QCPGraph::lsStepLeft); // импульсы
             DigitalGraphs[tmps] = graph;
@@ -322,7 +322,7 @@ void TrendViewDialog::SetupPlots()
             pen.setColor(QColor(qSin(count*1+1.2)*80+80, qSin(count*0.3+0)*80+80, qSin(count*0.3+1.5)*80+80));
             graph->setPen(pen);
             graph->valueAxis()->setRange(YMin, YMax);
-            graph->keyAxis()->setLabel("Time, ns");
+            graph->keyAxis()->setLabel("Time, ms");
             graph->keyAxis()->setRange(XMin, XMax);
             QString tmps = AnalogNames.at(count);
             graph->valueAxis()->setLabel(tmps);
