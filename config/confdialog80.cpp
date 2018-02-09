@@ -214,6 +214,9 @@ void ConfDialog80::SetupUI()
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
     ConfTW->addTab(cp1,"Общие");
     lyout->addWidget(ConfTW);
+
+    QWidget *wdgt = ConfButtons();
+    lyout->addWidget(wdgt);
     setLayout(lyout);
 }
 

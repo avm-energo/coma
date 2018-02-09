@@ -94,7 +94,9 @@ SOURCES += \
     ../widgets/getoscpbdelegate.cpp \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp 
+    ../widgets/wd_func.cpp \ 
+    ../check/check22.cpp \
+    ../check/checkdialog22.cpp
 
 HEADERS  += \
     coma.h \
@@ -167,7 +169,9 @@ HEADERS  += \
     ../widgets/errorprotocolwidget.h \
     ../widgets/signalchoosewidget.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h 
+    ../widgets/wd_func.h \ 
+    ../check/check22.h \
+    ../check/checkdialog22.h
 
 INCLUDEPATH += $$PWD/../../includes
 
