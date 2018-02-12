@@ -73,7 +73,7 @@ void HiddenDialog::SetupUI()
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
-    WDFunc::AddLabelAndLineeditH(hlyout, "Тип "+tmps+":", "modtype");
+    WDFunc::AddLabelAndLineeditH(hlyout, "Тип "+tmps+" (hex):", "modtype");
     hlyout->setStretch(1, 20);
     hlyout->addStretch(600);
     vlyout->addLayout(hlyout);
@@ -87,7 +87,7 @@ void HiddenDialog::SetupUI()
         QGroupBox *gb = new QGroupBox("Мезонинная плата");
         QVBoxLayout *gblyout = new QVBoxLayout;
         hlyout = new QHBoxLayout;
-        WDFunc::AddLabelAndLineeditH(hlyout, "Тип платы:", "meztp", true);
+        WDFunc::AddLabelAndLineeditH(hlyout, "Тип платы (hex):", "meztp", true);
         gblyout->addLayout(hlyout);
         hlyout = new QHBoxLayout;
         WDFunc::AddLabelAndLineeditH(hlyout, "Версия платы:", "mezhwmv", true);

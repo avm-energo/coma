@@ -6,7 +6,7 @@
 #include <QVBoxLayout>
 #include "../config/config.h"
 
-#define RSTTIMEOUT  15000 // таймаут на рестарт модуля после отправки ему блока Bhb
+#define RSTTIMEOUT  5000 // таймаут на рестарт модуля после отправки ему блока Bhb
 
 #define BNMN    0x00
 #define BNMY    0x01

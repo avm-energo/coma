@@ -27,10 +27,12 @@ SOURCES += \
     coma.cpp \
     ../check/check.cpp \
     ../check/check21.cpp \
+    ../check/check22.cpp \
     ../check/check80.cpp \
     ../check/check85.cpp \
     ../check/checka1.cpp \
     ../check/checkdialog21.cpp \
+    ../check/checkdialog22.cpp \
     ../check/checkdialog80.cpp \
     ../check/checkdialog85.cpp \
     ../check/checkdialoga1.cpp \
@@ -79,6 +81,7 @@ SOURCES += \
     ../models/trendviewmodel.cpp \
     ../tune/eabstracttunedialog.cpp \
     ../tune/tunedialog21.cpp \
+    ../tune/tunedialog22.cpp \
     ../tune/tunedialog80.cpp \
     ../tune/tunedialoga1.cpp \
     ../tune/tunedialoga1dn.cpp \
@@ -99,10 +102,12 @@ HEADERS  += \
     coma.h \
     ../check/check.h \
     ../check/check21.h \
+    ../check/check22.h \
     ../check/check80.h \
     ../check/check85.h \
     ../check/checka1.h \
     ../check/checkdialog21.h \
+    ../check/checkdialog22.h \
     ../check/checkdialog80.h \
     ../check/checkdialog85.h \
     ../check/checkdialoga1.h \
@@ -151,6 +156,7 @@ HEADERS  += \
     ../models/trendviewmodel.h \
     ../tune/eabstracttunedialog.h \
     ../tune/tunedialog21.h \
+    ../tune/tunedialog22.h \
     ../tune/tunedialog80.h \
     ../tune/tunedialoga1.h \
     ../tune/tunedialoga1dn.h \

@@ -201,3 +201,27 @@ int Commands::GetUsingVariant(int &variant)
     return 0;
 #endif
 }
+
+int Commands::SetMode(int mode)
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    cn->Send(CN_SMode, mode);
+    return cn->result;
+#else
+    Q_UNUSED(mode);
+    return 0;
+#endif
+}
+
+int Commands::GetMode(int &mode)
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    quint8 tmpi;
+    cn->Send(CN_GMode, BT_NONE, &tmpi, 1);
+    mode = tmpi;
+    return cn->result;
+#else
+    Q_UNUSED(variant);
+    return 0;
+#endif
+}

@@ -17,6 +17,11 @@
 #define TECH_SWJ    4   // технологический блок журнала переключений
 #define TECH_RA     5   // технологический блок рабочего архива
 
+#define CM_CONFIGFILE   1
+#define CM_FIRMWAREFILE 3
+#define CM_SWJFILE      17
+#define CM_EVENTSFILE   18
+
 class Commands
 {
     explicit Commands();
@@ -37,6 +42,8 @@ public:
     static bool isConnected();
     static int SetUsingVariant(int variant); // задать вариант использования (выбор набора регулировочных параметров)
     static int GetUsingVariant(int &variant); // получить вариант использования (выбор набора регулировочных параметров)
+    static int SetMode(int mode); // задать режим работы (коэффициенты при регулировке/рабочий режим)
+    static int GetMode(int &mode); // прочитать текущий режим работы
 
 private:
 };

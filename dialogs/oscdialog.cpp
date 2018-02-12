@@ -139,7 +139,7 @@ void OscDialog::GetOsc(QModelIndex idx)
         OscFunc->ProcessOsc();
     }
     else
-        WARNMSG("Номер файла не соответствует диапазону, принятому для осциллограмм");
+        WARNMSG("Номер файла не соответствует диапазону, принятому для осциллограмм: "+QString::number(oscnum));
 }
 
 void OscDialog::EraseOsc()

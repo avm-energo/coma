@@ -73,6 +73,7 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_GBsi:   // запрос блока стартовой информации
     case CN_ErPg:  // запрос текущего прогресса
     case CN_GVar:
+    case CN_GMode:
     {
         WriteData.append(CN_MS);
         WriteData.append(cmd);
@@ -84,6 +85,7 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_GBda:   // чтение текущих данных без настройки
     case CN_GBd:    // запрос блока (подблока) текущих данных
     case CN_NVar:
+    case CN_SMode:
     case CN_GBt:    // чтение технологического блока
     case CN_Ert:  // команда стирания технологического блока
     {
@@ -198,6 +200,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_Ert:
         case CN_CtEr:
         case CN_NVar:
+        case CN_SMode:
         {
             if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
             {
@@ -234,6 +237,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_GBt:
         case CN_GF:
         case CN_GVar:
+        case CN_GMode:
         {
             if (!GetLength())
             {
@@ -298,6 +302,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_GBd:
         case CN_GBt:
         case CN_GVar:
+        case CN_GMode:
         {
             if ((RDSize >= outdatasize) || (ReadDataChunkLength < CN_MAXSEGMENTLENGTH))
             {

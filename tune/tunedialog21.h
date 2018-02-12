@@ -5,8 +5,6 @@
 #include "eabstracttunedialog.h"
 #include "../check/check21.h"
 
-#define ATUNENUMPOINTS  64 // количество точек, по которым выдаются значения в блоке Bda
-
 #define TUNEFILELENGTH  256
 
 #define ATUNEER(a)       ERMSG(publicclass::ER_ATUNE,__LINE__,a)

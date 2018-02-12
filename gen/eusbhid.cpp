@@ -60,6 +60,7 @@ EUsbThread::EUsbThread(Log *logh, QObject *parent) : QObject(parent)
 {
     log = logh;
     AboutToFinish = false;
+    HidDevice = 0;
 }
 
 EUsbThread::~EUsbThread()
@@ -86,20 +87,23 @@ void EUsbThread::Run()
         if (!AboutToFinish)
         {
             // check if there's any data in input buffer
-            int bytes = hid_read(HidDevice, data, UH_MAXSEGMENTLENGTH+1);
-            if (bytes < 0)
+            int bytes;
+            if (HidDevice != 0)
             {
-                if (pc.WriteUSBLog)
-                    log->WriteRaw("UsbThread: Unable to hid_read()");
-                AboutToFinish = true;
-                emit Finished();
-                return;
-            }
-            if (bytes > 0)
-            {
-                QByteArray ba(reinterpret_cast<char*>(data), bytes);
-                emit NewDataReceived(ba);
-            }
+                bytes = hid_read(HidDevice, data, UH_MAXSEGMENTLENGTH+1);
+                if (bytes < 0)
+                {
+                    if (pc.WriteUSBLog)
+                        log->WriteRaw("UsbThread: Unable to hid_read()");
+                    AboutToFinish = true;
+                    emit Finished();
+                    return;
+                }
+                if (bytes > 0)
+                {
+                    QByteArray ba(reinterpret_cast<char*>(data), bytes);
+                    emit NewDataReceived(ba);
+                }
 /*            QTime tme;
             tme.start();
             while (tme.elapsed() < UH_MAINLOOP_DELAY)
@@ -107,6 +111,7 @@ void EUsbThread::Run()
             RunMutex.lock();
             QWC.wait(&RunMutex);
             RunMutex.unlock(); */
+            }
         }
     }
     catch(...)
@@ -117,29 +122,37 @@ void EUsbThread::Run()
 
 qint64 EUsbThread::WriteData(QByteArray &ba)
 {
-    if (ba.size() > UH_MAXSEGMENTLENGTH)
+    if (HidDevice != 0)
     {
+        if (ba.size() > UH_MAXSEGMENTLENGTH)
+        {
+            if (pc.WriteUSBLog)
+                log->WriteRaw("UsbThread: WRONG SEGMENT LENGTH!\n");
+            ERMSG("Длина сегмента больше "+QString::number(UH_MAXSEGMENTLENGTH)+" байт");
+            return GENERALERROR;
+        }
+        if (ba.size() < UH_MAXSEGMENTLENGTH)
+            ba.append(UH_MAXSEGMENTLENGTH - ba.size(), static_cast<char>(0x00));
+        ba.prepend(static_cast<char>(0x00)); // inserting ID field
         if (pc.WriteUSBLog)
-            log->WriteRaw("UsbThread: WRONG SEGMENT LENGTH!\n");
-        ERMSG("Длина сегмента больше "+QString::number(UH_MAXSEGMENTLENGTH)+" байт");
-        return GENERALERROR;
+        {
+            QByteArray tmpba = "UsbThread: ->" + ba.toHex() + "\n";
+            log->WriteRaw(tmpba);
+        }
+        return hid_write(HidDevice, reinterpret_cast<unsigned char *>(ba.data()), ba.size());
     }
-    if (ba.size() < UH_MAXSEGMENTLENGTH)
-        ba.append(UH_MAXSEGMENTLENGTH - ba.size(), static_cast<char>(0x00));
-    ba.prepend(static_cast<char>(0x00)); // inserting ID field
-    if (pc.WriteUSBLog)
-    {
-        QByteArray tmpba = "UsbThread: ->" + ba.toHex() + "\n";
-        log->WriteRaw(tmpba);
-    }
-    return hid_write(HidDevice, reinterpret_cast<unsigned char *>(ba.data()), ba.size());
+    return 0;
 }
 
 void EUsbThread::Finish()
 {
     if (!AboutToFinish)
     {
-        hid_close(HidDevice);
+        if (HidDevice != 0)
+        {
+            hid_close(HidDevice);
+            HidDevice = 0;
+        }
         emit Finished();
         AboutToFinish = true;
     }

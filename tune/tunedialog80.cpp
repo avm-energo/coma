@@ -777,7 +777,7 @@ int TuneDialog80::GetExternalData()
 
 int TuneDialog80::SaveWorkConfig()
 {
-    if (Commands::GetFile(1,S2Config) == NOERROR)
+    if (Commands::GetFile(CM_CONFIGFILE,S2Config) == NOERROR)
         memcpy(&Bci_block_work,&C80->Bci_block,sizeof(Config80::Bci));
     else
         return GENERALERROR;
@@ -788,7 +788,7 @@ int TuneDialog80::LoadWorkConfig()
 {
     // пишем ранее запомненный конфигурационный блок
     memcpy(&C80->Bci_block,&Bci_block_work,sizeof(Config80::Bci));
-    if (Commands::WriteFile(&C80->Bci_block, 2, S2Config) != NOERROR)
+    if (Commands::WriteFile(&C80->Bci_block, CM_CONFIGFILE, S2Config) != NOERROR)
         return GENERALERROR;
     return NOERROR;
 }

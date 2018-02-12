@@ -123,7 +123,7 @@ bool ETableModel::insertColumns(int position, int columns, const QModelIndex &in
     beginInsertColumns(QModelIndex(), position, position+columns-1);
     if (!maindata.isEmpty()) // если в модели есть какие-то данные, то уже нельзя менять размерность таблицы по столбцам
         return false;
-    while (position >= hdr.size())
+    while (position > hdr.size())
         hdr.append("");
     for (int i = 0; i < columns; i++)
         hdr.insert(position, "");
@@ -198,7 +198,7 @@ int ETableModel::getHeaderPosition(QVariant hdrtext, Qt::Orientation orientation
 
 void ETableModel::addColumn(const QString hdrtext)
 {
-    int lastEntry = hdr.size();
+    int lastEntry = columnCount();
     insertColumns(lastEntry, 1, QModelIndex());
     hdr.replace(lastEntry, hdrtext);
 }
