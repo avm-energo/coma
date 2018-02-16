@@ -318,11 +318,10 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
     {
         switch(id)
         {
-        case MT_ID81:
-        case MT_ID82:
-        case MT_ID83:
+        case MT_ID80:
         {
             tmpav << "UA" << "UB" << "UC" << "IA" << "IB" << "IC";
+            tmpdv.clear();
 //            int np = C80
             float xmax = (static_cast<float>(OHD.len/2));
             float xmin = -xmax;
@@ -339,20 +338,10 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
                 return GENERALERROR;
             for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
             {
-                Point85 point;
-                if (!PosPlusPlus(&point, sizeof(Point85)))
+                Point8x point;
+                if (!PosPlusPlus(&point, sizeof(Point8x)))
                     return GENERALERROR;
-                quint32 DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
-                DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
-                for (int i=0; i<20; ++i)
-                {
-                    if (DisPoint & 0x00000001)
-                        TModel->AddDigitalPoint(tmpdv.at(i), 1);
-                    else
-                        TModel->AddDigitalPoint(tmpdv.at(i), 0);
-                    DisPoint >>= 1;
-                }
-                for (int i=0; i<9; ++i)
+                for (int i=0; i<6; ++i)
                     TModel->AddAnalogPoint(tmpav.at(i), point.An[i]);
             }
             TModel->SetFilename(fn);
@@ -405,6 +394,7 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
             break;
         }
         default:
+            WARNMSG("ИД осциллограммы не определён");
             break;
         }
     }

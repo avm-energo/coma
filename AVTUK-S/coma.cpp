@@ -32,6 +32,7 @@
 #include "coma.h"
 #include "../gen/commands.h"
 #include "../check/checkdialog21.h"
+#include "../check/checkdialog22.h"
 #include "../check/checkdialog80.h"
 #include "../check/checkdialog85.h"
 #include "../check/checkdialoga1.h"
@@ -48,6 +49,7 @@
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../tune/tunedialog21.h"
+#include "../tune/tunedialog22.h"
 #include "../tune/tunedialog80.h"
 #include "../tune/tunedialoga1.h"
 #include "../tune/tunedialoga1dn.h"
@@ -291,6 +293,10 @@ void Coma::PrepareDialogs()
     case MTB_22:
     {
         ConfB = new ConfDialog22(S2Config, true);
+#if PROGSIZE != PROGSIZE_EMUL
+        TuneB = new TuneDialog22(BT_BASE);
+#endif
+        CheckB = new CheckDialog22(BT_BASE);
         break;
     }
     case MTB_31:
@@ -332,6 +338,8 @@ void Coma::PrepareDialogs()
     case MTM_22:
     {
         ConfM = new ConfDialog22(S2Config, false);
+        CheckM = new CheckDialog22(BT_MEZONIN);
+        TuneM = new TuneDialog22(BT_MEZONIN);
         break;
     }
     case MTM_31:

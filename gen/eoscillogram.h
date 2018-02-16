@@ -4,9 +4,7 @@
 #define MT_HEAD_ID      9000 // ID осциллограммы
 #define MT_ID21         10001 // первый ID осциллограммы по модулю 21
 #define MT_ID21E        10016 // последний ID осциллограммы по модулю 21
-#define MT_ID81         10021 // ID осциллограммы по модулю 8081
-#define MT_ID82         10022 // ID осциллограммы по модулю 8082
-#define MT_ID83         10023 // ID осциллограммы по модулю 8083
+#define MT_ID80         10020 // ID осциллограммы по модулю 808x
 #define MT_ID85         10030 // ID осциллограммы по модулю 8085
 
 #define MAXOSCBUFSIZE   262144 // максимальный размер буфера для осциллограмм
@@ -76,8 +74,7 @@ public:
 
     struct Point8x
     {
-        float U1[3];
-        float U2[3];
+        float An[6];
     };
 
 #pragma pack(pop)   /* restore original alignment from stack */
