@@ -71,7 +71,7 @@ void TuneDialog22::SetupUI()
         le->setObjectName("tunebcoef"+QString::number(i));
         le->setStyleSheet(ValuesLEFormat);
         gb2lyout->addWidget(le, 1);
-        lbl = new QLabel("u"+QString::number(i)+":");
+        lbl = new QLabel("k"+QString::number(i)+":");
         gb2lyout->addWidget(lbl);
         le = new QLineEdit("");
         le->setObjectName("tunekcoef"+QString::number(i));

@@ -1,6 +1,7 @@
 #include <QVector>
 #include <QPen>
 #include <QAction>
+#include <algorithm>
 #include "QtXlsx/xlsxdocument.h"
 #include "../config/config.h"
 #include "../widgets/signalchoosewidget.h"
@@ -69,6 +70,10 @@ void TrendViewDialog::SetupUI()
     hlyout->addStretch(10);
     pb = new QPushButton("Сохранить в Comtrade");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SaveToComtrade()));
+    hlyout->addWidget(pb);
+    hlyout->addStretch(10);
+    pb = new QPushButton("Сохранить в файл .osc");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(SaveToOsc()));
     hlyout->addWidget(pb);
     hlyout->addStretch(10);
     lyout->addLayout(hlyout);
@@ -163,7 +168,11 @@ void TrendViewDialog::GraphSetVisible(QCustomPlot *plot, const QString &graphnam
             }
             else
             {
-                graph->valueAxis()->setRange(YMin, YMax);
+                double min = *std::min_element(TrendModel->AnalogMainData[graphname].constBegin(), \
+                                               TrendModel->AnalogMainData[graphname].constEnd());
+                double max = *std::max_element(TrendModel->AnalogMainData[graphname].constBegin(), \
+                                               TrendModel->AnalogMainData[graphname].constEnd());
+                graph->valueAxis()->setRange(min, max);
                 graph->setData(TrendModel->MainPoints, TrendModel->AnalogMainData[graphname]);
             }
             graph->rescaleValueAxis(true, true);
@@ -201,6 +210,21 @@ void TrendViewDialog::AnalogRangeChanged(QCPRange range)
         DiscretePlot->xAxis->setRange(range);
         DiscretePlot->replot();
     }
+}
+
+void TrendViewDialog::SaveToExcel()
+{
+
+}
+
+void TrendViewDialog::SaveToComtrade()
+{
+
+}
+
+void TrendViewDialog::SaveToOsc()
+{
+
 }
 
 void TrendViewDialog::PlotShow()

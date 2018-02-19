@@ -45,6 +45,9 @@ private slots:
     void GraphSetVisible(QCustomPlot *plot, const QString &graphname, bool visible);
     void DigitalRangeChanged(QCPRange range);
     void AnalogRangeChanged(QCPRange range);
+    void SaveToExcel();
+    void SaveToComtrade();
+    void SaveToOsc();
 };
 
 #endif // TRENDVIEWDIALOG_H
