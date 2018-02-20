@@ -86,6 +86,9 @@ publicclass::publicclass()
     ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
 
     SystemHomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"+PROGNAME+"/";
+    QDir dir(SystemHomeDir);
+    if (!dir.exists())
+        dir.mkdir(SystemHomeDir);
     QFile file;
     QString ermsgspath = SystemHomeDir;
     log.Init(SystemHomeDir + LOGFILE);

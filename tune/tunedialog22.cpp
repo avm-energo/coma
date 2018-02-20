@@ -24,16 +24,39 @@ TuneDialog22::TuneDialog22(int type, QWidget *parent) :
     SetupUI();
 }
 
+QGroupBox * TuneDialog22::CoeffGB(const QString &title, const QString &coeff)
+{
+    int i;
+    QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
+            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QGroupBox *gb = new QGroupBox(title);
+    for (i = 0; i < AIN22_NUMCH; i++)
+    {
+        hlyout->addWidget(WDFunc::NewLBL(this, "k"+coeff+"["+QString::number(i)+"]:"));
+        hlyout->addWidget(WDFunc::NewLE(this, "k"+coeff+"."+QString::number(i), "", ValuesLEFormat), 1);
+        hlyout->addWidget(WDFunc::NewLBL(this, "b"+coeff+"["+QString::number(i)+"]:"));
+        hlyout->addWidget(WDFunc::NewLE(this, "b"+coeff+"."+QString::number(i), "", ValuesLEFormat), 1);
+        if ((i>0)&&!((i+1)%2))
+        {
+            vlyout->addLayout(hlyout);
+            hlyout = new QHBoxLayout;
+        }
+    }
+    if (hlyout->count())
+        vlyout->addLayout(hlyout);
+    gb->setLayout(vlyout);
+    return gb;
+}
+
 void TuneDialog22::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *gb1lyout = new QVBoxLayout;
-    QHBoxLayout *gb2lyout = new QHBoxLayout;
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
     setStyleSheet(tmps);
     int i;
-    QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
-            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QWidget *tuneui = TuneUI();
     lyout->addWidget(tuneui);
     tuneui = new QWidget;
@@ -56,38 +79,14 @@ void TuneDialog22::SetupUI()
     tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     cp1->setStyleSheet(tmps);
     cp2->setStyleSheet(tmps);
-    QLabel *lbl;
-
     QTabWidget *TuneTW = new QTabWidget;
     TuneTW->addTab(cp1,"Настройка");
     TuneTW->addTab(cp2,"Коэффициенты");
     lyout = new QVBoxLayout;
-    QGroupBox *gb = new QGroupBox("Настроечные коэффициенты");
-    for (i = 0; i < AIN22_NUMCH; i++)
-    {
-        lbl = new QLabel("b"+QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
-        QLineEdit *le = new QLineEdit("");
-        le->setObjectName("tunebcoef"+QString::number(i));
-        le->setStyleSheet(ValuesLEFormat);
-        gb2lyout->addWidget(le, 1);
-        lbl = new QLabel("k"+QString::number(i)+":");
-        gb2lyout->addWidget(lbl);
-        le = new QLineEdit("");
-        le->setObjectName("tunekcoef"+QString::number(i));
-        le->setStyleSheet(ValuesLEFormat);
-        gb2lyout->addWidget(le, 1);
-        if ((i>0)&&!((i+1)%2))
-        {
-            gb1lyout->addLayout(gb2lyout);
-            gb2lyout = new QHBoxLayout;
-        }
-    }
-    if (gb2lyout->count())
-        gb1lyout->addLayout(gb2lyout);
+    gb1lyout->addWidget(CoeffGB("Настроечные коэффициенты при усилении 1x", "1"));
+    gb1lyout->addWidget(CoeffGB("Настроечные коэффициенты при усилении 16x", "2"));
     gb1lyout->addWidget(BottomUI());
-    gb->setLayout(gb1lyout);
-    lyout->addWidget(gb);
+    lyout->addLayout(gb1lyout);
     cp2->setLayout(lyout);
 
     lyout = new QVBoxLayout;
@@ -116,28 +115,34 @@ void TuneDialog22::SetPf()
 
 void TuneDialog22::FillBac()
 {
-    for (int i=0; i<AIN22_NUMCH; ++i)
+    for (int j=0; j<COEFSNUM; ++j)
     {
-        WDFunc::SetLEData(this, "tunebcoef"+QString::number(i), QString::number(Bac_block[i].fb, 'f', 5));
-        WDFunc::SetLEData(this, "tunekcoef"+QString::number(i), QString::number(Bac_block[i].fk, 'f', 5));
+        for (int i=0; i<AIN22_NUMCH; ++i)
+        {
+            WDFunc::SetLEData(this, "b"+QString::number(j)+"."+QString::number(i), QString::number(Bac_block[j].fbin[i], 'f', 5));
+            WDFunc::SetLEData(this, "k"+QString::number(j)+"."+QString::number(i), QString::number(Bac_block[j].fkin[i], 'f', 5));
+        }
     }
 }
 
 void TuneDialog22::FillBackBac()
 {
     QString tmps;
-    for (int i=0; i<AIN22_NUMCH; ++i)
+    for (int j=0; j<COEFSNUM; ++j)
     {
-        WDFunc::LEData(this, "tunebcoef"+QString::number(i), tmps);
-        Bac_block[i].fb = tmps.toFloat(&ok);
-        if (ok)
+        for (int i=0; i<AIN22_NUMCH; ++i)
         {
-            WDFunc::LEData(this, "tunekcoef"+QString::number(i), tmps);
-            Bac_block[i].fk = tmps.toFloat(&ok);
+            WDFunc::LEData(this, "b"+QString::number(j)+"."+QString::number(i), tmps);
+            Bac_block[j].fbin[i] = tmps.toFloat(&ok);
             if (ok)
-                continue;
+            {
+                WDFunc::LEData(this, "k"+QString::number(j)+"."+QString::number(i), tmps);
+                Bac_block[i].fkin[i] = tmps.toFloat(&ok);
+                if (ok)
+                    continue;
+            }
+            WARNMSG("Ошибка при переводе во float");
         }
-        WARNMSG("Ошибка при переводе во float");
     }
 }
 
@@ -165,21 +170,30 @@ int TuneDialog22::ShowScheme()
     return NOERROR;
 }
 
-int TuneDialog22::Show0()
+int TuneDialog22::Show0(int coef)
 {
-    if (QMessageBox::information(this,"Настройка",\
-                                 "Задайте значение сопротивления "+QString::number(C22->Bci_block.RzeroT[ChNum]) + " Ом на\nвходе "+\
-                                 QString::number(ChNum)+" модуля и нажмите OK") == QMessageBox::Ok)
-        return NOERROR;
+    if (coef < 2)
+    {
+        if (QMessageBox::information(this,"Настройка",\
+                                     "Задайте значение сопротивления "+QString::number(R0[coef], 'f', 2) + \
+                                     " Ом\nна входе "+QString::number(ChNum)+\
+                                     " модуля и нажмите OK") == QMessageBox::Ok)
+            return NOERROR;
+    }
     return GENERALERROR;
 }
 
-int TuneDialog22::ShowW100()
+int TuneDialog22::ShowW100(int coef)
 {
-    if (QMessageBox::information(this,"Настройка",\
-                                 "Переключите входные переключатели на ток,\nустановите ток 20 мА на\n" \
-                                 "входе " + QString::number(ChNum) + " модуля и нажмите OK") == QMessageBox::Ok)
-        return NOERROR;
+    if (coef < 2)
+    {
+        float R100 = R0[coef]*C22->Bci_block.W100[ChNum];
+        if (QMessageBox::information(this,"Настройка",\
+                                     "Задайте значение сопротивления"+QString::number(R100) + \
+                                     " Ом\nна входе "+QString::number(ChNum)+\
+                                     " модуля и нажмите OK") == QMessageBox::Ok)
+            return NOERROR;
+    }
     return GENERALERROR;
 }
 
@@ -215,11 +229,7 @@ int TuneDialog22::Tune()
 {
     for (ChNum=0; ChNum<AIN22_NUMCH; ++ChNum)
     {
-        Show0();
-        if (!TuneChannel(TTUNE_0))
-            return GENERALERROR;
-        ShowW100();
-        if (!TuneChannel(TTUNE_W100))
+        if (TuneOneChannel() == GENERALERROR)
             return GENERALERROR;
     }
     return NOERROR;
@@ -253,17 +263,20 @@ bool TuneDialog22::CalcNewTuneCoef()
         WARNMSG("Ошибка в настроечных коэффициентах, деление на ноль");
         return false;
     }
-    Bac_block[ChNum].fb = R0 - Bda0.sin[ChNum] * (R100 - R0) / (BdaW100.sin[ChNum] - Bda0.sin[ChNum]);
-    Bac_block[ChNum].fk = (R100 - R0) / (Rk * (BdaW100.sin[ChNum] - Bda0.sin[ChNum]));
+    Bac_block[CoefNum].fbin[ChNum] = R0 - Bda0.sin[ChNum] * (R100 - R0) / (BdaW100.sin[ChNum] - Bda0.sin[ChNum]);
+    Bac_block[CoefNum].fkin[ChNum] = (R100 - R0) / (Rk * (BdaW100.sin[ChNum] - Bda0.sin[ChNum]));
     return true;
 }
 
 void TuneDialog22::SetDefCoefs()
 {
-    for (int i=0; i<AIN22_NUMCH; i++)
+    for (int j = 0; j < COEFSNUM; ++j)
     {
-        Bac_block[i].fb = 0.0;
-        Bac_block[i].fk = 1.0;
+        for (int i=0; i<AIN22_NUMCH; i++)
+        {
+            Bac_block[j].fbin[i] = 0.0;
+            Bac_block[j].fkin[i] = 1.0;
+        }
     }
     FillBac();
 }
@@ -273,28 +286,33 @@ int TuneDialog22::ReadAnalogMeasurements()
     return NOERROR;
 }
 
-void TuneDialog22::TuneOneChannel()
+int TuneDialog22::TuneOneChannel()
 {
-    WDFunc::CBIndex(this, "tunenumch", ChNum);
-    Show0();
-    if (TuneChannel(TTUNE_0) != NOERROR)
-        return;
-    ShowW100();
-    if (TuneChannel(TTUNE_W100) != NOERROR)
-        return;
+    for (CoefNum=0; CoefNum<2; ++CoefNum)
+    {
+        WDFunc::CBIndex(this, "tunenumch", ChNum);
+        Show0(CoefNum);
+        if (TuneChannel(TTUNE_0) != NOERROR)
+            return GENERALERROR;
+        ShowW100(CoefNum);
+        if (TuneChannel(TTUNE_W100) != NOERROR)
+            return GENERALERROR;
+    }
+    return NOERROR;
 }
 
 bool TuneDialog22::CheckTuneCoefs()
 {
-    for (int i=0; i<AIN22_NUMCH; i++)
+    for (int j=0; j<COEFSNUM; ++j)
     {
-        int tmpi;
-        if (!WDFunc::LEData(this, "tunebcoef"+QString::number(i), tmpi))
-            return false;
-        if (!WDFunc::LEData(this, "tunek1coef"+QString::number(i), tmpi))
-            return false;
-        if (!WDFunc::LEData(this, "tunek2coef"+QString::number(i), tmpi))
-            return false;
+        for (int i=0; i<AIN22_NUMCH; i++)
+        {
+            float tmpf;
+            if (!WDFunc::LEData(this, "k"+QString::number(j)+"."+QString::number(i), tmpf))
+                return false;
+            if (!WDFunc::LEData(this, "b"+QString::number(j)+"."+QString::number(i), tmpf))
+                return false;
+        }
     }
     return true;
 }

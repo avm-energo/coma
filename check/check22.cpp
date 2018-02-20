@@ -29,6 +29,7 @@ QWidget *Check22::BdaW(QWidget *parent)
     }
     if (hlyout->count())
         vlyout->addLayout(hlyout);
+    vlyout->addStretch(100);
     w->setLayout(vlyout);
     QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
     w->setStyleSheet(tmps);

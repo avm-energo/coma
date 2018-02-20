@@ -11,6 +11,10 @@
 #define TTUNE_0     1
 #define TTUNE_W100  2
 
+#define COEFSNUM    2
+
+class QGroupBox;
+
 class TuneDialog22 : public EAbstractTuneDialog
 {
     Q_OBJECT
@@ -26,15 +30,16 @@ private:
 
     struct Bac
     {
-        float fb;
-        float fk;
+        float fbin[AIN22_NUMCH];
+        float fkin[AIN22_NUMCH];
     };
 
-    Bac Bac_block[AIN22_NUMCH];
+    Bac Bac_block[COEFSNUM];
 
     int BoardType;
-    int ChNum;
+    int ChNum, CoefNum;
     Config22 *C22;
+    const float R0[COEFSNUM] = {100, 1000};
 
     void SetupUI();
     void SetLbls();
@@ -43,8 +48,8 @@ private:
     void FillBackBac();
     void GetBdAndFillMTT();
     int ShowScheme();
-    int Show0();
-    int ShowW100();
+    int Show0(int coef);
+    int ShowW100(int coef);
 
     int Tune();
     int TuneChannel(int Type);
@@ -54,10 +59,12 @@ private:
     bool CheckAndShowTuneW100();
     bool CheckTuneCoefs();
 
+    QGroupBox *CoeffGB(const QString &title, const QString &coeff);
+    
 private slots:
     void SetDefCoefs();
     int ReadAnalogMeasurements();
-    void TuneOneChannel();
+    int TuneOneChannel();
 };
 
 #endif // TUNEDIALOG22_H

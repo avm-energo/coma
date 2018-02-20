@@ -293,9 +293,9 @@ void Coma::PrepareDialogs()
     case MTB_22:
     {
         ConfB = new ConfDialog22(S2Config, true);
-#if PROGSIZE != PROGSIZE_EMUL
+//#if PROGSIZE != PROGSIZE_EMUL
         TuneB = new TuneDialog22(BT_BASE);
-#endif
+//#endif
         CheckB = new CheckDialog22(BT_BASE);
         break;
     }
