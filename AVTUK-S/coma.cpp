@@ -62,17 +62,34 @@
 Coma::Coma(QWidget *parent)
     : MainWindow(parent)
 {
-    SetupMenubar();
-    SetupUI();
 /*    QTime tme;
     tme.start();
     while (tme.elapsed() < 2000)
         QCoreApplication::processEvents(QEventLoop::AllEvents); */
     StartWindowSplashScreen->finish(this);
+    Autonomous = false;
 }
 
 Coma::~Coma()
 {
+}
+
+void Coma::SetMode(int mode)
+{
+    Mode = mode;
+}
+
+int Coma::GetMode()
+{
+    return Mode;
+}
+
+void Coma::Go()
+{
+    if (Mode != COMA_GENERALMODE)
+        Autonomous = true;
+    SetupUI();
+    show();
 }
 
 void Coma::Emul2x()
@@ -138,40 +155,25 @@ void Coma::SetupUI()
     QToolBar *tb = new QToolBar;
     tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
     tb->setIconSize(QSize(20,20));
-#if PROGSIZE != PROGSIZE_EMUL
-    act = new QAction(this);
-    act->setToolTip("Соединение");
-    act->setIcon(QIcon("images/play.png"));
-    connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
-    tb->addAction(act);
-#endif
+    if (!Autonomous)
+    {
+        act = new QAction(this);
+        act->setToolTip("Соединение");
+        act->setIcon(QIcon("images/play.png"));
+        connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
+        tb->addAction(act);
+    }
     act = new QAction(this);
     act->setToolTip("Разрыв соединения");
     act->setIcon(QIcon("images/stop.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndClear()));
     tb->addAction(act);
     tb->addSeparator();
-#if PROGSIZE >= PROGSIZE_FULL || PROGSIZE == PROGSIZE_EMUL
-    act = new QAction(this);
-    act->setToolTip("Эмуляция 21");
-    act->setIcon(QIcon("images/2x.png"));
-    connect(act,SIGNAL(triggered()),this,SLOT(Emul2x()));
-    tb->addAction(act);
-    act = new QAction(this);
-    act->setToolTip("Эмуляция 8x");
-    act->setIcon(QIcon("images/8x.png"));
-    connect(act,SIGNAL(triggered()),this,SLOT(Emul8x()));
-    tb->addAction(act);
-    act = new QAction(this);
-    act->setToolTip("Эмуляция A1");
-    act->setIcon(QIcon("images/a1.png"));
-    quint16 MType = MTB_A1;
-    MType = (MType << 8) | MTM_00;
-    act->setObjectName(QString::number(MType, 16)); // для слота StartEmul
-    connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
-    tb->addAction(act);
-    tb->addSeparator();
+#if PROGSIZE >= PROGSIZE_FULL
+    AddUIToToolbar(tb);
 #endif
+    if (Autonomous)
+        AddUIToToolbar(tb);
     act = new QAction(this);
     act->setToolTip("Настройки");
     act->setIcon(QIcon("images/settings.png"));
@@ -191,6 +193,30 @@ void Coma::SetupUI()
 #if PROGSIZE >= PROGSIZE_LARGE
         SetSlideWidget();
 #endif
+    SetupMenubar();
+}
+
+void Coma::AddUIToToolbar(QToolBar *tb)
+{
+    QAction *act = new QAction(this);
+    act->setToolTip("Эмуляция 21");
+    act->setIcon(QIcon("images/2x.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(Emul2x()));
+    tb->addAction(act);
+    act = new QAction(this);
+    act->setToolTip("Эмуляция 8x");
+    act->setIcon(QIcon("images/8x.png"));
+    connect(act,SIGNAL(triggered()),this,SLOT(Emul8x()));
+    tb->addAction(act);
+    act = new QAction(this);
+    act->setToolTip("Эмуляция A1");
+    act->setIcon(QIcon("images/a1.png"));
+    quint16 MType = MTB_A1;
+    MType = (MType << 8) | MTM_00;
+    act->setObjectName(QString::number(MType, 16)); // для слота StartEmul
+    connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
+    tb->addAction(act);
+    tb->addSeparator();
 }
 
 void Coma::AddActionsToMenuBar(QMenuBar *menubar)
@@ -208,9 +234,8 @@ void Coma::Stage3()
 {
     ConfB = ConfM = 0;
     CheckB = CheckM = 0;
-#if PROGSIZE != PROGSIZE_EMUL
-    TuneB = TuneM = 0;
-#endif
+    if (!Autonomous)
+        TuneB = TuneM = 0;
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == 0)
@@ -229,44 +254,49 @@ void Coma::Stage3()
     if (ConfB != 0)
     {
         MainTW->addTab(ConfB, "Конфигурирование\nБазовая");
-#if PROGSIZE != PROGSIZE_EMUL
-        connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
-        connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
-#endif
+        if (!Autonomous)
+        {
+            connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
+            connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+        }
     }
-#if PROGSIZE != PROGSIZE_EMUL
-    if (TuneB != 0)
-        MainTW->addTab(TuneB, "Регулировка\nБазовая");
-#endif
+    if (!Autonomous)
+    {
+        if (TuneB != 0)
+            MainTW->addTab(TuneB, "Регулировка\nБазовая");
+    }
     if (CheckB != 0)
         MainTW->addTab(CheckB, "Проверка\nБазовая");
     if (ConfM != 0)
     {
         MainTW->addTab(ConfM, "Конфигурирование\nМезонин");
-#if PROGSIZE != PROGSIZE_EMUL
-        connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
-        connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
-#endif
+        if (!Autonomous)
+        {
+            connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
+            connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+        }
     }
-#if PROGSIZE != PROGSIZE_EMUL
-    if (TuneM != 0)
-        MainTW->addTab(TuneM, "Регулировка\nМезонин");
-#endif
+    if (!Autonomous)
+    {
+        if (TuneM != 0)
+            MainTW->addTab(TuneM, "Регулировка\nМезонин");
+    }
     if (CheckM != 0)
         MainTW->addTab(CheckM, "Проверка\nМезонин");
-#if PROGSIZE != PROGSIZE_EMUL
-    if ((pc.ModuleBsi.MTypeB << 8) == MTB_A1)
+    if (!Autonomous)
     {
-        MainTW->addTab(new TuneDialogA1DN, "Настройка своего ДН");
-        MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
+        if ((pc.ModuleBsi.MTypeB << 8) == MTB_A1)
+        {
+            MainTW->addTab(new TuneDialogA1DN, "Настройка своего ДН");
+            MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
+        }
+        OscD = new OscDialog(OscFunc);
+        fwupdialog *FwUpD = new fwupdialog;
+        MainTW->addTab(OscD, "Осциллограммы");
+        if (SwjD != 0)
+            MainTW->addTab(SwjD, "Журнал переключений");
+        MainTW->addTab(FwUpD, "Загрузка ВПО");
     }
-    OscD = new OscDialog(OscFunc);
-    fwupdialog *FwUpD = new fwupdialog;
-    MainTW->addTab(OscD, "Осциллограммы");
-    if (SwjD != 0)
-        MainTW->addTab(SwjD, "Журнал переключений");
-    MainTW->addTab(FwUpD, "Загрузка ВПО");
-#endif
     if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
         pc.ErMsg(ER_NOCONF);
     if (pc.ModuleBsi.Hth & HTH_REGPARS) // нет коэффициентов
@@ -284,18 +314,16 @@ void Coma::PrepareDialogs()
     case MTB_21:
     {
         ConfB = new ConfDialog21(S2Config, true);
-#if PROGSIZE != PROGSIZE_EMUL
-        TuneB = new TuneDialog21(BT_BASE);
-#endif
+        if (!Autonomous)
+            TuneB = new TuneDialog21(BT_BASE);
         CheckB = new CheckDialog21(BT_BASE);
         break;
     }
     case MTB_22:
     {
         ConfB = new ConfDialog22(S2Config, true);
-//#if PROGSIZE != PROGSIZE_EMUL
-        TuneB = new TuneDialog22(BT_BASE);
-//#endif
+//        if (!Autonomous)
+            TuneB = new TuneDialog22(BT_BASE);
         CheckB = new CheckDialog22(BT_BASE);
         break;
     }
@@ -312,18 +340,16 @@ void Coma::PrepareDialogs()
     case MTB_80:
     {
         ConfB = new ConfDialog80(S2Config);
-#if PROGSIZE != PROGSIZE_EMUL
-        TuneB = new TuneDialog80(S2Config);
-#endif
+        if (!Autonomous)
+            TuneB = new TuneDialog80(S2Config);
         CheckB = new CheckDialog80(BT_BASE);
         break;
     }
     case MTB_A1:
         ConfB = new ConfDialogA1(S2Config);
         CheckB = new CheckDialogA1(BT_BASE);
-#if PROGSIZE != PROGSIZE_EMUL
-        TuneB = new TuneDialogA1;
-#endif
+        if (!Autonomous)
+            TuneB = new TuneDialogA1;
         break;
     }
     switch(pc.ModuleBsi.MTypeM)
@@ -357,18 +383,16 @@ void Coma::PrepareDialogs()
     case MTM_83:
     {
         ConfM = new ConfDialog80(S2Config);
-#if PROGSIZE != PROGSIZE_EMUL
-        TuneM = new TuneDialog80(S2Config);
-#endif
+        if (!Autonomous)
+            TuneM = new TuneDialog80(S2Config);
         break;
     }
     case MTM_85:
     {
         ConfM = new ConfDialog85(S2Config);
         CheckM = new CheckDialog85(BT_BASE);
-#if PROGSIZE != PROGSIZE_EMUL
-        SwjD = new SwitchJournalDialog;
-#endif
+        if (!Autonomous)
+            SwjD = new SwitchJournalDialog;
         break;
     }
     default: // 0x00

@@ -164,6 +164,8 @@ private slots:
     void SetPortSlot(QString port);
 
 protected:
+    bool Autonomous; // признак автономного режима
+
     void keyPressEvent(QKeyEvent *e);
     void resizeEvent(QResizeEvent *e);
 };

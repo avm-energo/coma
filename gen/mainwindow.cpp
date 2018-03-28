@@ -172,18 +172,19 @@ void MainWindow::SetupMenubar()
     act->setText("Выход");
     connect(act,SIGNAL(triggered()),this,SLOT(close()));
     menu->addAction(act);
-#if PROGSIZE != PROGSIZE_EMUL
-    act = new QAction(this);
-    act->setText("Соединение");
-    act->setIcon(QIcon("images/play.png"));
-    connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
-    menu->addAction(act);
-    act = new QAction(this);
-    act->setText("Разрыв соединения");
-    act->setIcon(QIcon("images/stop.png"));
-    connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndClear()));
-    menu->addAction(act);
-#endif
+    if (!Autonomous)
+    {
+        act = new QAction(this);
+        act->setText("Соединение");
+        act->setIcon(QIcon("images/play.png"));
+        connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
+        menu->addAction(act);
+        act = new QAction(this);
+        act->setText("Разрыв соединения");
+        act->setIcon(QIcon("images/stop.png"));
+        connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndClear()));
+        menu->addAction(act);
+    }
     menubar->addMenu(menu);
 #if PROGSIZE >= PROGSIZE_LARGE
     menu = new QMenu;
