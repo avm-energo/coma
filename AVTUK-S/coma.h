@@ -17,7 +17,7 @@ public:
 
     void SetMode(int mode);
     int GetMode();
-    void Go();
+    void Go(const QString &parameter="");
 
     enum Modes
     {
@@ -46,6 +46,7 @@ private:
     void AddActionsToMenuBar(QMenuBar *menubar);
     void Stage3();
     void PrepareDialogs();
+    void StartA1Dialog(const QString &filename);
 };
 
 #endif // COMA_H

@@ -36,6 +36,8 @@ public:
     SwitchJournalDialog *SwjD;
     OscDialog *OscD;
     EOscillogram *OscFunc;
+    void LoadOscFromFile(const QString &filename);
+    void LoadSwjFromFile(const QString &filename);
 #endif
 
 #if PROGSIZE != PROGSIZE_EMUL

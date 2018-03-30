@@ -333,14 +333,14 @@ void publicclass::AddErrMsg(ermsgtype msgtype, QString file, int line, QString m
     ErMsgPool.append(tmpm);
 }
 
-int publicclass::LoadFile(QWidget *parent, QString mask, QByteArray &ba)
+QString publicclass::ChooseFileForOpen(QWidget *parent, QString mask)
 {
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
     QString filename = dlg->getOpenFileName(parent, "Открыть файл", HomeDir, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     dlg->close();
-    return LoadFromFile(filename, ba);
+    return filename;
 }
 
 int publicclass::LoadFromFile(const QString &filename, QByteArray &ba)
@@ -362,7 +362,7 @@ int publicclass::LoadFromFile(const QString &filename, QByteArray &ba)
     return NOERROR;
 }
 
-int publicclass::SaveFile(QWidget *parent, const QString &mask, const QString &ext, QByteArray &src, unsigned int numbytes)
+QString publicclass::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext)
 {
     QString MTypeM = (ModuleBsi.MTypeM == 0) ? "00" : QString::number(ModuleBsi.MTypeM, 16);
     QString tmps = HomeDir + "/" + QString::number(ModuleBsi.MTypeB, 16)+MTypeM+"-"+\
@@ -372,7 +372,7 @@ int publicclass::SaveFile(QWidget *parent, const QString &mask, const QString &e
     dlg->setFileMode(QFileDialog::AnyFile);
     QString filename = dlg->getSaveFileName(parent, "Сохранить файл", tmps, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     dlg->close();
-    return SaveToFile(filename, src, numbytes);
+    return filename;
 }
 
 int publicclass::SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes)

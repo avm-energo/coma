@@ -29,6 +29,7 @@
 #include <QSettings>
 #include <QDialog>
 #include <QCursor>
+#include <QFileDialog>
 #include "coma.h"
 #include "../gen/commands.h"
 #include "../check/checkdialog21.h"
@@ -84,12 +85,32 @@ int Coma::GetMode()
     return Mode;
 }
 
-void Coma::Go()
+void Coma::Go(const QString &parameter)
 {
     if (Mode != COMA_GENERALMODE)
         Autonomous = true;
     SetupUI();
     show();
+    switch (Mode)
+    {
+    case COMA_AUTON_OSCMODE:
+    {
+        LoadOscFromFile(parameter);
+        break;
+    }
+    case COMA_AUTON_PROTMODE:
+    {
+        StartA1Dialog(parameter);
+        break;
+    }
+    case COMA_AUTON_SWJMODE:
+    {
+        LoadSwjFromFile(parameter);
+        break;
+    }
+    default:
+        break;
+    }
 }
 
 void Coma::Emul2x()
@@ -400,8 +421,18 @@ void Coma::PrepareDialogs()
     }
 }
 
+void Coma::StartA1Dialog(const QString &filename)
+{
+    A1Dialog *adlg = new A1Dialog(filename);
+    delete adlg;
+}
+
 void Coma::ProtocolFromFile()
 {
-    A1Dialog *dlg = new A1Dialog(false);
-    delete dlg;
+    QFileDialog *dlg = new QFileDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setFileMode(QFileDialog::AnyFile);
+    QString filename = dlg->getOpenFileName(this, "Открыть файл", pc.HomeDir, "PKDN verification files (*.vrf)", Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    dlg->close();
+    StartA1Dialog(filename);
 }

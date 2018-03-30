@@ -335,6 +335,43 @@ int MainWindow::CheckPassword()
     return NOERROR;
 }
 
+#ifndef MODULE_A1
+void MainWindow::LoadOscFromFile(const QString &filename)
+{
+    pc.LoadFromFile(filename, OscFunc->BA);
+    OscFunc->ProcessOsc();
+}
+
+void MainWindow::LoadSwjFromFile(const QString &filename)
+{
+    QByteArray ba;
+    bool haveosc;
+    int SWJRSize = sizeof(SWJDialog::SWJournalRecordStruct);
+    int GBOSize = sizeof(EOscillogram::GBoStruct);
+
+    pc.LoadFromFile(filename, ba);
+    if (ba.size() < (SWJRSize + GBOSize))
+    {
+        EMessageBox::error(this, "Ошибка", "Некорректная структура файла журнала");
+        return;
+    }
+    SWJDialog::SWJournalRecordStruct swjr;
+    memcpy(&swjr, &(ba.data()[0]), SWJRSize); // копируем информацию о переключении
+    EOscillogram::GBoStruct gbos;
+    memcpy(&gbos, &(ba.data()[SWJRSize]), GBOSize); // копируем информацию об осциллограмме
+    ba.remove(0, (SWJRSize+GBOSize)); // оставляем только саму осциллограмму
+    if (ba.isEmpty()) // осциллограммы в журнале нет
+        haveosc = false;
+    else
+        haveosc = true;
+    SWJDialog *dlg = new SWJDialog(SWJDialog::SWJ_MODE_OFFLINE);
+    dlg->Init(swjr, haveosc, gbos);
+    if (!ba.isEmpty())
+        dlg->LoadOsc(ba);
+    dlg->show();
+}
+#endif
+
 void MainWindow::Stage1_5()
 {
 #ifdef USBENABLE
@@ -738,37 +775,13 @@ void MainWindow::DisconnectAndClear()
 #ifndef MODULE_A1
 void MainWindow::LoadOsc()
 {
-    pc.LoadFile(this, "Oscillogram files (*.osc)", OscFunc->BA);
-    OscFunc->ProcessOsc();
+    QString filename = pc.ChooseFileForOpen(this, "Oscillogram files (*.osc)");
+    LoadOscFromFile(filename);
 }
 
 void MainWindow::LoadSWJ()
 {
-    QByteArray ba;
-    bool haveosc;
-    int SWJRSize = sizeof(SWJDialog::SWJournalRecordStruct);
-    int GBOSize = sizeof(EOscillogram::GBoStruct);
-
-    pc.LoadFile(this, "Switch journal files (*.swj)", ba);
-    if (ba.size() < (SWJRSize + GBOSize))
-    {
-        EMessageBox::error(this, "Ошибка", "Некорректная структура файла журнала");
-        return;
-    }
-    SWJDialog::SWJournalRecordStruct swjr;
-    memcpy(&swjr, &(ba.data()[0]), SWJRSize); // копируем информацию о переключении
-    EOscillogram::GBoStruct gbos;
-    memcpy(&gbos, &(ba.data()[SWJRSize]), GBOSize); // копируем информацию об осциллограмме
-    ba.remove(0, (SWJRSize+GBOSize)); // оставляем только саму осциллограмму
-    if (ba.isEmpty()) // осциллограммы в журнале нет
-        haveosc = false;
-    else
-        haveosc = true;
-    SWJDialog *dlg = new SWJDialog(SWJDialog::SWJ_MODE_OFFLINE);
-    dlg->Init(swjr, haveosc, gbos);
-    if (!ba.isEmpty())
-        dlg->LoadOsc(ba);
-    dlg->show();
+    LoadSwjFromFile(pc.ChooseFileForOpen(this, "Switch journal files (*.swj)"));
 }
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE

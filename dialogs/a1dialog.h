@@ -19,7 +19,7 @@ class A1Dialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit A1Dialog(bool WithGUI = true, QWidget *parent = 0);
+    explicit A1Dialog(const QString &filename = "", QWidget *parent = 0);
 
     enum PovTypes
     {
@@ -151,7 +151,7 @@ signals:
 
 private slots:
     void StartWork();
-    void ParsePKDNFile();
+    void ParsePKDNFile(const QString &filename);
     void MeasTimerTimeout();
     void Accept();
     void Decline();

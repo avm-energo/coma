@@ -268,7 +268,7 @@ void EAbstractTuneDialog::SaveToFileEx()
     QByteArray ba;
     ba.resize(AbsBac.BacBlockSize);
     memcpy(&(ba.data()[0]), AbsBac.BacBlock, AbsBac.BacBlockSize);
-    res = pc.SaveFile(this, "Tune files (*.tn"+tunenum+")", "tn"+tunenum, ba, AbsBac.BacBlockSize);
+    res = pc.SaveToFile(pc.ChooseFileForSave(this, "Tune files (*.tn"+tunenum+")", "tn"+tunenum), ba, AbsBac.BacBlockSize);
     switch (res)
     {
     case NOERROR:
@@ -380,7 +380,7 @@ void EAbstractTuneDialog::LoadFromFile()
     QByteArray ba;
     ba.resize(MAXTUNESIZE);
     QString tunenum = QString::number(AbsBac.BacBlockNum, 16);
-    int res = pc.LoadFile(this, "Tune files (*.tn"+tunenum+")", ba);
+    int res = pc.LoadFromFile(pc.ChooseFileForOpen(this, "Tune files (*.tn"+tunenum+")"), ba);
     if (res != NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка при загрузке файла");

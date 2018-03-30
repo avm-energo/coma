@@ -111,7 +111,7 @@ void SWJDialog::SaveSWJ()
     memcpy(&(ba.data()[0]), &SWJRecord, SWJSize);
     memcpy(&(ba.data()[SWJSize]), &GBOs, GBOSize);
     if (Commands::GetOsc(GBOs.FileNum, &(ba.data()[SWJSize+GBOSize])) == NOERROR)
-        pc.SaveFile(this, "Файлы жуналов (*.swj)", "swj", ba, ba.size());
+        pc.SaveToFile(pc.ChooseFileForSave(this, "Файлы жуналов (*.swj)", "swj"), ba, ba.size());
     else
         EMessageBox::error(this, "Ошибка", "Ошибка чтения осциллограммы из модуля");
 }

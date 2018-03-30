@@ -4,6 +4,7 @@
 
 int main(int argc, char *argv[])
 {
+    QString Parameter;
     QApplication a(argc, argv);
     Coma w;
     w.SetMode(Coma::COMA_GENERALMODE);
@@ -12,28 +13,34 @@ int main(int argc, char *argv[])
     if (argc > 1) // есть аргументы запуска
     {
         QCommandLineParser parser;
-        parser.setApplicationDescription("COMA");
+/*        parser.setApplicationDescription("COMA");
         parser.addHelpOption();
-        parser.addVersionOption();
+        parser.addVersionOption(); */
         parser.addPositionalArgument("file", "file with oscillogramm (*.osc) or with switch journal (*.swj)");
+        parser.process(QCoreApplication::arguments());
         const QStringList files = parser.positionalArguments();
         // file is files.at(0)
         if (!files.isEmpty())
         {
-            QString file = files.at(0);
-            QString filestail = file.right(3);
+            Parameter = files.at(0);
+            QString filestail = Parameter.right(3);
             if (filestail == "osc")
                 w.SetMode(Coma::COMA_AUTON_OSCMODE);
             else if (filestail == "swj")
                 w.SetMode(Coma::COMA_AUTON_SWJMODE);
             else if (filestail == "vrf")
                 w.SetMode(Coma::COMA_AUTON_PROTMODE);
+            else
+            {
+                w.SetMode(Coma::COMA_AUTON_MODE);
+                Parameter.clear();
+            }
         }
     }
 #if PROGSIZE == PROGSIZE_EMUL
     w.SetMode(Coma::COMA_AUTON_MODE);
 #endif
-    w.Go();
+    w.Go(Parameter);
 
     return a.exec();
 }

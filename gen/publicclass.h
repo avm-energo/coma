@@ -332,9 +332,9 @@ public:
     QString NsTimeToString (quint64 nstime);
     void AddErrMsg(ermsgtype msgtype, QString file=0, int line=0, QString msg="");
     void ErMsg(int ermsgnum);
-    int LoadFile(QWidget *parent, QString mask, QByteArray &ba);
+    QString ChooseFileForOpen(QWidget *parent, QString mask);
     int LoadFromFile(const QString &filename, QByteArray &ba);
-    int SaveFile(QWidget *parent, const QString &mask, const QString &ext, QByteArray &src, unsigned int numbytes);
+    QString ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext);
     int SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes);
     bool FloatInRange(float var, float value);
     QString UnixTime64ToString(quint64 utime);

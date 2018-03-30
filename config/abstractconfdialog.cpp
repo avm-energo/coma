@@ -52,7 +52,7 @@ void AbstractConfDialog::SaveConfToFile()
     BaLength += static_cast<quint8>(ba.data()[6])*65536;
     BaLength += static_cast<quint8>(ba.data()[7])*16777216;
     BaLength += sizeof(publicclass::FileHeader); // FileHeader
-    int res = pc.SaveFile(this, "Config files (*.cf)", "cf", ba, BaLength);
+    int res = pc.SaveToFile(pc.ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba, BaLength);
     switch (res)
     {
     case NOERROR:
@@ -75,7 +75,7 @@ void AbstractConfDialog::SaveConfToFile()
 void AbstractConfDialog::LoadConfFromFile()
 {
     QByteArray ba;
-    int res = pc.LoadFile(this, "Config files (*.cf)", ba);
+    int res = pc.LoadFromFile(pc.ChooseFileForOpen(this, "Config files (*.cf)"), ba);
     if (res != NOERROR)
     {
         WARNMSG("Ошибка при загрузке файла конфигурации");

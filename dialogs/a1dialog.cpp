@@ -8,7 +8,6 @@
 #include <QGroupBox>
 #include <QRadioButton>
 #include <QStringListModel>
-#include <QFileDialog>
 #include <QPushButton>
 #include <QTableView>
 #include <QTime>
@@ -19,18 +18,18 @@
 #include "../widgets/wd_func.h"
 #include "../gen/commands.h"
 
-A1Dialog::A1Dialog(bool WithGUI, QWidget *parent) : QDialog(parent)
+A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     ChA1 = new CheckA1;
     CA1 = new ConfigA1(S2Config);
     ReportModel = new QStandardItemModel;
     ViewModel = new QStandardItemModel;
-    if (WithGUI)
+    if (filename.isEmpty())
         SetupUI();
     else
     {
-        ParsePKDNFile();
+        ParsePKDNFile(filename);
         this->close();
         return;
     }
@@ -172,11 +171,7 @@ void A1Dialog::GenerateReport()
     report->dataManager()->setReportVariable("OuterInsp", ReportHeader.OuterInsp);
     report->dataManager()->setReportVariable("WindingsInsp", ReportHeader.WindingsInsp);
     report->dataManager()->setReportVariable("PovDateTime", ReportHeader.PovDateTime);
-    QFileDialog *dlg = new QFileDialog;
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setFileMode(QFileDialog::AnyFile);
-    QString filename = dlg->getSaveFileName(this, "Сохранить файл", pc.HomeDir, "*.pdf", Q_NULLPTR, QFileDialog::DontUseNativeDialog);
-    dlg->close();
+    QString filename = pc.ChooseFileForSave(this, "*.pdf", "pdf");
     report->printToPDF(filename);
 //    report->previewReport();
 //    report->designReport();
@@ -507,16 +502,11 @@ void A1Dialog::StartWork()
     return;
 }
 
-void A1Dialog::ParsePKDNFile()
+void A1Dialog::ParsePKDNFile(const QString &filename)
 {
     Autonomous = true;
     QByteArray ba;
     publicclass::PovDevStruct PovDev;
-    QFileDialog *dlg = new QFileDialog;
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setFileMode(QFileDialog::AnyFile);
-    QString filename = dlg->getOpenFileName(this, "Открыть файл", pc.HomeDir, "PKDN verification files (*.vrf)", Q_NULLPTR, QFileDialog::DontUseNativeDialog);
-    dlg->close();
     int res = pc.LoadFromFile(filename, ba);
     if (res != NOERROR)
     {

@@ -60,7 +60,7 @@ public:
     void WaitNSeconds(int SecondsToWait);
     void SaveToFileEx();
     int StartMeasurement();
-    QByteArray *LoadFile(QString mask);
+//    QByteArray *ChooseFileForOpen(QString mask);
     void InputTuneVariant(int varnum);
 
 signals:
