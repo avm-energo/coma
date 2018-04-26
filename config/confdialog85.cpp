@@ -230,7 +230,7 @@ void ConfDialog85::SetupUI()
     cbl = QStringList() << "0. Свободное конфигурирование" << "1. Конденсаторная батарея (фильтр)" \
                                     << "2. Реактор шунтирующий" << "3. Силовой трансформатор" \
                                     << "4. Линия электропередачи";
-    cb = WDFunc::NewCB(this, "eq_typecb", cbl, paramcolor);
+    cb = WDFunc::NewCB(this, "eq_type", cbl, paramcolor);
     cb->setMinimumWidth(70);
     connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetEqType(int)));
     glyout->addWidget(cb,row++,1,1,1);

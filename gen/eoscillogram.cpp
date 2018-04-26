@@ -289,12 +289,12 @@ int EOscillogram::ProcessOsc()
 int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, const QString &fn)
 {
     QStringList tmpav, tmpdv;
+    TrendViewDialog *dlg = new TrendViewDialog(BA);
     if ((id >= MT_ID21) && (id <= MT_ID21E))
     {
         // период отсчётов - 20 мс, длительность записи осциллограммы 10 сек, итого 500 точек по 4 байта на каждую
         tmpav << QString::number(id); // пока сделано для одного канала в осциллограмме
         TrendViewModel *TModel = new TrendViewModel(QStringList(), tmpav, OHD.len);
-        TrendViewDialog *dlg = new TrendViewDialog;
         dlg->SetModel(TModel);
         dlg->SetAnalogNames(tmpav);
         dlg->SetRanges(0, 10000, -20, 20); // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
@@ -327,7 +327,6 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
             float xmin = -xmax;
             xmin = -(OHD.step * 512);
             TrendViewModel *TModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
-            TrendViewDialog *dlg = new TrendViewDialog;
             dlg->SetModel(TModel);
             dlg->SetAnalogNames(tmpav);
             dlg->SetDigitalNames(tmpdv);
@@ -360,7 +359,6 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
             float xmin = -xmax;
             xmin = -(OHD.step * 512);
             TrendViewModel *TModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
-            TrendViewDialog *dlg = new TrendViewDialog;
             dlg->SetModel(TModel);
             dlg->SetAnalogNames(tmpav);
             dlg->SetDigitalNames(tmpdv);

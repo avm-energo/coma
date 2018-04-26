@@ -8,7 +8,7 @@
 #include "../widgets/wd_func.h"
 #include "trendviewdialog.h"
 
-TrendViewDialog::TrendViewDialog(QWidget *parent) : QDialog(parent)
+TrendViewDialog::TrendViewDialog(QByteArray &ba, QWidget *parent) : QDialog(parent)
 {
     QString tmps = "QDialog {background-color: "+QString(MAINWINCLRA1)+";}";
     setStyleSheet(tmps);
@@ -17,6 +17,7 @@ TrendViewDialog::TrendViewDialog(QWidget *parent) : QDialog(parent)
     TrendModel = 0;
     RangeChangeInProgress = false;
     Starting = true;
+    BAToSave = ba;
 }
 
 TrendViewDialog::~TrendViewDialog()
@@ -59,12 +60,7 @@ void TrendViewDialog::SetupUI()
         lyout->addLayout(hlyout);
     }
     hlyout = new QHBoxLayout;
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(close()));
-    hlyout->addStretch(10);
-    hlyout->addWidget(pb);
-    hlyout->addStretch(10);
-    pb = new QPushButton("Сохранить в Excel");
+    QPushButton *pb = new QPushButton("Сохранить в Excel");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SaveToExcel()));
     hlyout->addWidget(pb);
     hlyout->addStretch(10);
@@ -76,6 +72,9 @@ void TrendViewDialog::SetupUI()
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SaveToOsc()));
     hlyout->addWidget(pb);
     hlyout->addStretch(10);
+    pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(close()));
+    hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     setLayout(lyout);
 }
@@ -224,7 +223,8 @@ void TrendViewDialog::SaveToComtrade()
 
 void TrendViewDialog::SaveToOsc()
 {
-
+    QString filename = pc.ChooseFileForSave(this, "Файлы осциллограмм (*.osc)", "osc");
+    pc.SaveToFile(filename, BAToSave, BAToSave.size());
 }
 
 void TrendViewDialog::PlotShow()

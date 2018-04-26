@@ -118,6 +118,7 @@ void OscDialog::GetAndProcessOscInfo()
 void OscDialog::GetOsc(QModelIndex idx)
 {
     bool ok;
+    pc.PrbMessage = "Загружено, байт: ";
     quint32 oscnum = tm->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(&ok); // номер осциллограммы
     if (!ok)
     {

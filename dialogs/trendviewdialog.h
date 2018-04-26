@@ -11,7 +11,7 @@ class TrendViewDialog : public QDialog
 {
     Q_OBJECT
 public:
-    TrendViewDialog(QWidget *parent=0);
+    TrendViewDialog(QByteArray &ba, QWidget *parent=0);
     ~TrendViewDialog();
 
     // инициализация графиков
@@ -32,6 +32,7 @@ private:
     bool NoDiscrete, NoAnalog;
     TrendViewModel *TrendModel;
     bool RangeChangeInProgress, Starting;
+    QByteArray BAToSave;
 
     QToolBar *PlotToolBar();
     QCPGraph *GraphByName(QCustomPlot *plot, const QString &name);

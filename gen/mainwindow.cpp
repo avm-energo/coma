@@ -338,8 +338,8 @@ int MainWindow::CheckPassword()
 #ifndef MODULE_A1
 void MainWindow::LoadOscFromFile(const QString &filename)
 {
-    pc.LoadFromFile(filename, OscFunc->BA);
-    OscFunc->ProcessOsc();
+    if (pc.LoadFromFile(filename, OscFunc->BA) == NOERROR)
+        OscFunc->ProcessOsc();
 }
 
 void MainWindow::LoadSwjFromFile(const QString &filename)
@@ -349,26 +349,28 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
     int SWJRSize = sizeof(SWJDialog::SWJournalRecordStruct);
     int GBOSize = sizeof(EOscillogram::GBoStruct);
 
-    pc.LoadFromFile(filename, ba);
-    if (ba.size() < (SWJRSize + GBOSize))
+    if (pc.LoadFromFile(filename, ba) == NOERROR)
     {
-        EMessageBox::error(this, "Ошибка", "Некорректная структура файла журнала");
-        return;
+        if (ba.size() < (SWJRSize + GBOSize))
+        {
+            EMessageBox::error(this, "Ошибка", "Некорректная структура файла журнала");
+            return;
+        }
+        SWJDialog::SWJournalRecordStruct swjr;
+        memcpy(&swjr, &(ba.data()[0]), SWJRSize); // копируем информацию о переключении
+        EOscillogram::GBoStruct gbos;
+        memcpy(&gbos, &(ba.data()[SWJRSize]), GBOSize); // копируем информацию об осциллограмме
+        ba.remove(0, (SWJRSize+GBOSize)); // оставляем только саму осциллограмму
+        if (ba.isEmpty()) // осциллограммы в журнале нет
+            haveosc = false;
+        else
+            haveosc = true;
+        SWJDialog *dlg = new SWJDialog(SWJDialog::SWJ_MODE_OFFLINE);
+        dlg->Init(swjr, haveosc, gbos);
+        if (!ba.isEmpty())
+            dlg->LoadOsc(ba);
+        dlg->show();
     }
-    SWJDialog::SWJournalRecordStruct swjr;
-    memcpy(&swjr, &(ba.data()[0]), SWJRSize); // копируем информацию о переключении
-    EOscillogram::GBoStruct gbos;
-    memcpy(&gbos, &(ba.data()[SWJRSize]), GBOSize); // копируем информацию об осциллограмме
-    ba.remove(0, (SWJRSize+GBOSize)); // оставляем только саму осциллограмму
-    if (ba.isEmpty()) // осциллограммы в журнале нет
-        haveosc = false;
-    else
-        haveosc = true;
-    SWJDialog *dlg = new SWJDialog(SWJDialog::SWJ_MODE_OFFLINE);
-    dlg->Init(swjr, haveosc, gbos);
-    if (!ba.isEmpty())
-        dlg->LoadOsc(ba);
-    dlg->show();
 }
 #endif
 

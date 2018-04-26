@@ -339,6 +339,8 @@ QString publicclass::ChooseFileForOpen(QWidget *parent, QString mask)
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
     QString filename = dlg->getOpenFileName(parent, "Открыть файл", HomeDir, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    QFileInfo info(filename);
+    pc.HomeDir = info.absolutePath();
     dlg->close();
     return filename;
 }
@@ -362,6 +364,9 @@ int publicclass::LoadFromFile(const QString &filename, QByteArray &ba)
     return NOERROR;
 }
 
+// Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)"; QString ext - расширение по умолчанию
+// Output: QString filename
+
 QString publicclass::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext)
 {
     QString MTypeM = (ModuleBsi.MTypeM == 0) ? "00" : QString::number(ModuleBsi.MTypeM, 16);
@@ -371,6 +376,8 @@ QString publicclass::ChooseFileForSave(QWidget *parent, const QString &mask, con
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
     QString filename = dlg->getSaveFileName(parent, "Сохранить файл", tmps, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    QFileInfo info(filename);
+    pc.HomeDir = info.absolutePath();
     dlg->close();
     return filename;
 }
