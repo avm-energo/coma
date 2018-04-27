@@ -48,7 +48,7 @@ private:
         float Tmk0;         // начальная температура в микроконтроллера при калибровке
     };
 
-    Bac Bac_block;
+    Bac Bac_block, Bac_block_old;
 
     struct EMData
     {
@@ -81,7 +81,10 @@ private:
     int Start6_3_7_3();
     int Start6_3_8();
     int Start6_3_9();
+    int Start6_3_10();
+    int Start6_3_11();
 
+    int Start60PointsMeasurements(CheckA1::A1_Bd1 &st, CheckA1::A1_Bd4 &st4);
     int ShowScheme();
     int CheckBdaValues(int checktype);
     int CheckAnalogValues(bool isPrecise); // проверка Bda_in на корректность

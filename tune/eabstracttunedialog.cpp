@@ -99,7 +99,7 @@ QWidget *EAbstractTuneDialog::BottomUI()
     tmps = "Записать настроечные коэффициенты в ";
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     pb = new QPushButton(tmps);
-    connect(pb,SIGNAL(clicked()),this,SLOT(WriteTuneCoefs()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(WriteTuneCoefsSlot()));
     if (pc.Emul)
         pb->setEnabled(false);
     hlyout->addWidget(pb);
@@ -354,6 +354,13 @@ void EAbstractTuneDialog::ReadTuneCoefs()
 {
     if (Commands::GetBac(AbsBac.BacBlockNum, AbsBac.BacBlock, AbsBac.BacBlockSize) == NOERROR)
         FillBac();
+}
+
+bool EAbstractTuneDialog::WriteTuneCoefsSlot()
+{
+    if (CheckPassword() != NOERROR)
+        return false;
+    WriteTuneCoefs();
 }
 
 bool EAbstractTuneDialog::WriteTuneCoefs()

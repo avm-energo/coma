@@ -62,6 +62,7 @@ public:
     int StartMeasurement();
 //    QByteArray *ChooseFileForOpen(QString mask);
     void InputTuneVariant(int varnum);
+    bool WriteTuneCoefs();
 
 signals:
     void PasswordChecked();
@@ -73,7 +74,7 @@ signals:
 public slots:
     void CancelTune();
     void ReadTuneCoefs();
-    bool WriteTuneCoefs();
+    bool WriteTuneCoefsSlot();
     void SaveToFile();
     void Good();
     void NoGood();

@@ -45,8 +45,10 @@ void TuneDialogA1::SetLbls()
     lbls.append("6.3.2.1. КПТ: получение блока данных и усреднение...");
     lbls.append("6.3.2.2. КПТ: ввод данных от энергомонитора...");
     lbls.append("6.3.2.3. КПТ: расчёт регулировочных коэффициентов...");
-    lbls.append("6.3.8. Запись настроечных коэффициентов и переход на новую конфигурацию...");
-    lbls.append("6.3.9. Проверка аналоговых данных...");
+    lbls.append("6.3.8. Проверка данных блока Bda_out_an...");
+    lbls.append("6.3.9. Настройка температурной коррекции...");
+    lbls.append("6.3.10. Запись настроечных коэффициентов и переход на новую конфигурацию...");
+    lbls.append("6.3.11. Проверка аналоговых данных...");
 }
 
 void TuneDialogA1::SetPf()
@@ -87,9 +89,13 @@ void TuneDialogA1::SetPf()
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_2_3); // 6.3.2.3. КПТ: расчёт регулировочных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_8); // 6.3.8. Запись настроечных коэффициентов и переход на новую конфигурацию
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_8); // 6.3.8. Проверка данных блока Bda_out_an
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_9); // 6.3.9. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_9); // 6.3.9. Настройка температурной коррекции
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_10); // 6.3.10. Запись настроечных коэффициентов и переход на новую конфигурацию
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_11); // 6.3.11. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
 }
 
@@ -181,7 +187,7 @@ void TuneDialogA1::SetupUI()
 
 int TuneDialogA1::Start6_3_1()
 {
-    if (Commands::GetBac(BT_BASE, &Bac_block, sizeof(Bac)) != NOERROR)
+    if (Commands::GetBac(BT_BASE, &Bac_block_old, sizeof(Bac)) != NOERROR)
     {
         EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bac");
         return GENERALERROR;
@@ -207,44 +213,10 @@ int TuneDialogA1::Start6_3_2_1()
         return GENERALERROR;
     if (CheckBdaValues(CHECK_VOLT) == GENERALERROR)
         return GENERALERROR;
-    CheckA1::A1_Bd1 tmpst, tmpst2;
-    tmpst2.Frequency = tmpst2.Phy = tmpst2.UefNat_filt[0] = tmpst2.UefNat_filt[1] = \
-            tmpst2.Uef_filt[0] = tmpst2.Uef_filt[1] = tmpst2.dU = tmpst2.dUrms = 0;
-    int count = 0;
-    emit StartPercents(pc.PovNumPoints);
-    while ((count < pc.PovNumPoints) && !pc.Cancelled)
-    {
-        if (Commands::GetBd(A1_BDA_IN_BN, &tmpst, sizeof(CheckA1::A1_Bd1)) != NOERROR)
-        {
-            EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
-            return GENERALERROR;
-        }
-        tmpst2.Frequency += tmpst.Frequency;
-        tmpst2.Phy += tmpst.Phy;
-        tmpst2.UefNat_filt[0] += tmpst.UefNat_filt[0];
-        tmpst2.UefNat_filt[1] += tmpst.UefNat_filt[1];
-        tmpst2.Uef_filt[0] += tmpst.Uef_filt[0];
-        tmpst2.Uef_filt[1] += tmpst.Uef_filt[1];
-        tmpst2.dU += tmpst.dU;
-        tmpst2.dUrms += tmpst.dUrms;
-        QTime tme;
-        tme.start();
-        while (tme.elapsed() < TUNE_POINTSPER)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-        ++count;
-        emit SetPercent(count);
-    }
-    if (pc.Cancelled)
+    CheckA1::A1_Bd1 tmpst2;
+    CheckA1::A1_Bd4 tmpst4; // фиктивная вещь, нужна для универсализации функции Start60PointsMeasurements
+    if (Start60PointsMeasurements(tmpst2, tmpst4) == NOERROR)
         return GENERALERROR;
-    // усреднение
-    tmpst2.Frequency /= count;
-    tmpst2.Phy /= count;
-    tmpst2.UefNat_filt[0] /= count;
-    tmpst2.UefNat_filt[1] /= count;
-    tmpst2.Uef_filt[0] /= count;
-    tmpst2.Uef_filt[1] /= count;
-    tmpst2.dU /= count;
-    tmpst2.dUrms /= count;
     memcpy(&ChA1->Bda_in, &tmpst2, sizeof(CheckA1::A1_Bd1));
     ChA1->FillBda_in(this);
     return NOERROR;
@@ -263,10 +235,10 @@ int TuneDialogA1::Start6_3_2_3()
 {
     if (Skipped)
         return ER_RESEMPTY;
-    Bac_block.KmU[0] = Bac_block.KmU[0] * RealData.u / ChA1->Bda_in.UefNat_filt[0];
-    Bac_block.KmU[1] = Bac_block.KmU[1] * RealData.u / ChA1->Bda_in.UefNat_filt[1];
-    Bac_block.K_freq = Bac_block.K_freq * RealData.freq / ChA1->Bda_in.Frequency;
-    Bac_block.DPhy = Bac_block.DPhy - ChA1->Bda_in.Phy;
+    Bac_block.KmU[0] = Bac_block_old.KmU[0] * RealData.u / ChA1->Bda_in.UefNat_filt[0];
+    Bac_block.KmU[1] = Bac_block_old.KmU[1] * RealData.u / ChA1->Bda_in.UefNat_filt[1];
+    Bac_block.K_freq = Bac_block_old.K_freq * RealData.freq / ChA1->Bda_in.Frequency;
+    Bac_block.DPhy = Bac_block_old.DPhy - ChA1->Bda_in.Phy;
     return NOERROR;
 }
 
@@ -434,6 +406,56 @@ int TuneDialogA1::Start6_3_7_3()
 
 int TuneDialogA1::Start6_3_8()
 {
+    CheckA1::A1_Bd4 tmpst;
+    if (Skipped)
+        return ER_RESEMPTY;
+    if (Commands::GetBd(A1_BDA_OUT_AN_BN, &tmpst, sizeof(CheckA1::A1_Bd4)) != NOERROR)
+    {
+        EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_out_an");
+        return GENERALERROR;
+    }
+    if ((tmpst.Tmk < 20) || (tmpst.Tmk > 40)) // температура на 5...12 градусов выше температуры в камере (20 град)
+    {
+        EMessageBox::information(this, "Внимание", "Температура Tmk находится вне пределов (20...40) град. С");
+        return GENERALERROR;
+    }
+    if ((tmpst.Vbat < 1.7f) || (tmpst.Vbat > 3.4f)) // напряжение батареи
+    {
+        EMessageBox::information(this, "Внимание", "Напряжение батарейки находится вне пределов (1,7...3,4) В");
+        return GENERALERROR;
+    }
+    if ((tmpst.Tamb < 51.85f) || (tmpst.Tamb > 52.05f)) // Температура окр воздуха 51,95+/-0,1 град С при установленном 120 Ом
+    {
+        EMessageBox::information(this, "Внимание", "Температура окр воздуха вне пределов (51,85...52,02) град С");
+        return GENERALERROR;
+    }
+    if ((tmpst.Hamb < 0) || (tmpst.Vbat > 0.1f)) // Влажность
+    {
+        EMessageBox::information(this, "Внимание", "Влажность находится вне пределов (0...0,1) %");
+        return GENERALERROR;
+    }
+    return NOERROR;
+}
+
+int TuneDialogA1::Start6_3_9()
+{
+    Bac_block.TKUa[0] = Bac_block.TKUb[0] = Bac_block.TKUa[1] = Bac_block.TKUb[1] = 0;
+    if (Commands::WriteBac(BT_BASE, &Bac_block, sizeof(Bac_block)) != NOERROR)
+    {
+        EMessageBox::information(this, "Внимание", "Ошибка при записи регулировочных коэффициентов");
+        return GENERALERROR;
+    }
+    CheckA1::A1_Bd1 tmpst;
+    CheckA1::A1_Bd4 tmpst4;
+    if (Start60PointsMeasurements(tmpst, tmpst4) == NOERROR)
+        return GENERALERROR;
+    memcpy(&ChA1->Bda_in, &tmpst2, sizeof(CheckA1::A1_Bd1));
+    ChA1->FillBda_in(this);
+
+}
+
+int TuneDialogA1::Start6_3_10()
+{
     if (EMessageBox::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?") == false)
         return GENERALERROR;
     FillBac();
@@ -443,7 +465,7 @@ int TuneDialogA1::Start6_3_8()
     return NOERROR;
 }
 
-int TuneDialogA1::Start6_3_9()
+int TuneDialogA1::Start6_3_11()
 {
 //    WaitNSeconds(10);
     QString tmps = "Пожалуйста, после нажатия \"ОК\" просмотрите текущие данные после регулировки в соответствующих окнах";
@@ -458,7 +480,67 @@ int TuneDialogA1::Start6_3_9()
     connect(this,SIGNAL(Finished()),this,SLOT(Good()));
     StartMeasurement();
     if (TuneTW != 0)
-        TuneTW->setCurrentIndex(0); // показ данных измерений
+        TuneTW->setCurrentIndex(0);
+    return NOERROR;
+}
+
+// принимаем в течение PovNumPoints точек по TUNE_POINTSPER секунд данные по Bda_in и усредняем их
+
+int TuneDialogA1::Start60PointsMeasurements(CheckA1::A1_Bd1 &st, CheckA1::A1_Bd4 &st4)
+{
+    CheckA1::A1_Bd1 tmpst;
+    CheckA1::A1_Bd4 tmpst4;
+    st.Frequency = st.Phy = st.UefNat_filt[0] = st.UefNat_filt[1] = \
+            st.Uef_filt[0] = st.Uef_filt[1] = st.dU = st.dUrms = 0;
+    st4.Hamb = st4.Tamb = st4.Tmk = st4.Vbat = 0;
+    int count = 0;
+    emit StartPercents(pc.PovNumPoints);
+    while ((count < pc.PovNumPoints) && !pc.Cancelled)
+    {
+        if (Commands::GetBd(A1_BDA_IN_BN, &tmpst, sizeof(CheckA1::A1_Bd1)) != NOERROR)
+        {
+            EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
+            return GENERALERROR;
+        }
+        st.Frequency += tmpst.Frequency;
+        st.Phy += tmpst.Phy;
+        st.UefNat_filt[0] += tmpst.UefNat_filt[0];
+        st.UefNat_filt[1] += tmpst.UefNat_filt[1];
+        st.Uef_filt[0] += tmpst.Uef_filt[0];
+        st.Uef_filt[1] += tmpst.Uef_filt[1];
+        st.dU += tmpst.dU;
+        st.dUrms += tmpst.dUrms;
+        if (Commands::GetBd(A1_BDA_OUT_AN_BN, &tmpst4, sizeof(CheckA1::A1_Bd4)) != NOERROR)
+        {
+            EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_out_an");
+            return GENERALERROR;
+        }
+        st4.Hamb += tmpst4.Hamb;
+        st4.Tamb += tmpst4.Tamb;
+        st4.Tmk += tmpst4.Tmk;
+        st4.Vbat += tmpst4.Vbat;
+        QTime tme;
+        tme.start();
+        while (tme.elapsed() < TUNE_POINTSPER)
+            QCoreApplication::processEvents(QEventLoop::AllEvents);
+        ++count;
+        emit SetPercent(count);
+    }
+    if (pc.Cancelled)
+        return GENERALERROR;
+    // усреднение
+    st.Frequency /= count;
+    st.Phy /= count;
+    st.UefNat_filt[0] /= count;
+    st.UefNat_filt[1] /= count;
+    st.Uef_filt[0] /= count;
+    st.Uef_filt[1] /= count;
+    st.dU /= count;
+    st.dUrms /= count;
+    st4.Hamb /= count;
+    st4.Tamb /= count;
+    st4.Tmk /= count;
+    st4.Vbat /= count;
     return NOERROR;
 }
 
