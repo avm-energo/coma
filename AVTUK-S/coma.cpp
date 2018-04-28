@@ -55,18 +55,28 @@
 #include "../tune/tunedialoga1.h"
 #include "../tune/tunedialoga1dn.h"
 #include "../widgets/etabwidget.h"
-#include "../widgets/waitwidget.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
+#include "../widgets/waitwidget.h"
 #include "../gen/log.h"
 
 Coma::Coma(QWidget *parent)
     : MainWindow(parent)
 {
-/*    QTime tme;
+/*    WaitWidget *w = new WaitWidget;
+    w->SetMessage("Пожалуйста, подождите...");
+    QTime tme;
     tme.start();
-    while (tme.elapsed() < 2000)
-        QCoreApplication::processEvents(QEventLoop::AllEvents); */
+    WaitWidget::ww_struct ww;
+    ww.isincrement = true;
+    ww.isallowedtostop = true;
+    ww.format = WaitWidget::WW_TIME;
+    ww.initialseconds = 0;
+    w->Init(ww);
+    w->Start();
+    while (tme.elapsed() < 100000)
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+    w->close(); */
     StartWindowSplashScreen->finish(this);
     Autonomous = false;
 }

@@ -240,8 +240,19 @@ void EAbstractTuneDialog::MsgClear()
 
 void EAbstractTuneDialog::WaitNSeconds(int Seconds)
 {
-    SecondsToEnd15SecondsInterval = Seconds;
+//    SecondsToEnd15SecondsInterval = Seconds;
     WaitWidget *w = new WaitWidget;
+    WaitWidget::ww_struct ww;
+    ww.isincrement = false;
+    ww.isallowedtostop = true;
+    ww.format = WaitWidget::WW_TIME;
+    ww.initialseconds = Seconds;
+    w->Init(ww);
+    QEventLoop el;
+    connect(w, SIGNAL(CountZero()), &el,SLOT(quit()));
+    w->Start();
+    el.exec();
+/*
     QTimer *tmr = new QTimer;
     tmr->setInterval(1000);
     connect(tmr,SIGNAL(timeout()),this,SLOT(UpdateNSecondsWidget()));
@@ -258,7 +269,7 @@ void EAbstractTuneDialog::WaitNSeconds(int Seconds)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
     tmr->stop();
-    w->close();
+    w->close(); */
 }
 
 void EAbstractTuneDialog::SaveToFileEx()
@@ -414,11 +425,11 @@ void EAbstractTuneDialog::CancelTune()
     pc.Cancelled = true;
 }
 
-void EAbstractTuneDialog::UpdateNSecondsWidget()
+/*void EAbstractTuneDialog::UpdateNSecondsWidget()
 {
 //    emit SecondsRemaining(--SecondsToEnd15SecondsInterval);
     --SecondsToEnd15SecondsInterval;
-}
+} */
 
 void EAbstractTuneDialog::MeasTimerTimeout()
 {

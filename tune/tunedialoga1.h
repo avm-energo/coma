@@ -9,6 +9,7 @@
 #include "eabstracttunedialog.h"
 #include "../config/configa1.h"
 #include "../check/checka1.h"
+#include "../widgets/waitwidget.h"
 
 // определения для процедуры проверки CheckBdaValues
 #define CHECK_VOLT  1
@@ -25,6 +26,8 @@ public:
 signals:
     void StartPercents(quint32 Percent);
     void SetPercent(quint32 Percent);
+    void Degrees50Completed();
+    void Degrees0Completed();
 
 public slots:
 
@@ -58,6 +61,13 @@ private:
 
     EMData RealData;
     float RegData;
+    int result;
+    struct TKUSourceDataStruct
+    {
+        CheckA1::A1_Bd1 Bda_in[3];
+        CheckA1::A1_Bd4 Bda_out_an[3];
+    };
+    TKUSourceDataStruct TKUSourceData;
 
     void SetLbls();
     void SetPf();
@@ -98,7 +108,8 @@ private slots:
     void SetDefCoefs();
     void SetExtData();
     void CancelExtData();
-
+    void Cont6_3_9_50();
+    void Cont6_3_9_0();
 };
 
 #endif // TUNEDIALOGA1_H

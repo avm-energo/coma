@@ -15,23 +15,31 @@
 
 WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)
 {
-    setAttribute(Qt::WA_TranslucentBackground);
+//    setAttribute(Qt::WA_TranslucentBackground);
+    setStyleSheet("QWidget {background: rgb(0, 186, 144);}");
     setAttribute(Qt::WA_DeleteOnClose);
     gamma = 0.0;
     Message = "";
-    resize(800, 220);
+    resize(310, 380);
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     qsrand(QDateTime::currentDateTime().toTime_t());
     vel1 = 0.5;
-    vel2 = -1;
-    vel3 = 1;
-    vel4 = static_cast<float>(-0.2);
-    vel5 = 3.5;
 }
 
 WaitWidget::~WaitWidget()
 {
 
+}
+
+void WaitWidget::Init(WaitWidget::ww_struct &ww)
+{
+    this->IsAllowedToStop = ww.isallowedtostop;
+    this->IsIncrement = ww.isincrement;
+    this->TimeFormat = ww.format;
+    this->Seconds = ww.initialseconds;
+    QFont font;
+    QFontMetrics fm(font);
+    PressAnyKeyStringWidth = fm.width(PressAnyKeyString);//+10;
 }
 
 void WaitWidget::Start()
@@ -41,7 +49,6 @@ void WaitWidget::Start()
     tmr->setInterval(10);
     connect(tmr,SIGNAL(timeout()),this,SLOT(Rotate()));
     tmr->start();
-    Seconds = 0;
     QTimer *tmrs = new QTimer;
     tmrs->setInterval(1000);
     connect(tmrs,SIGNAL(timeout()),this,SLOT(UpdateSeconds()));
@@ -66,25 +73,29 @@ void WaitWidget::SetSeconds(quint32 seconds)
 void WaitWidget::Rotate()
 {
     gamma += 0.5;
-/*    vel1 += (static_cast<float>(qrand()%100)-50)/5000; // числа от -0.01 до 0.01
-    vel2 += (static_cast<float>(qrand()%100)-50)/5000; // числа от -0.01 до 0.01
-    vel3 += (static_cast<float>(qrand()%100)-50)/5000; // числа от -0.01 до 0.01
-    vel4 += (static_cast<float>(qrand()%100)-50)/5000; // числа от -0.01 до 0.01
-    vel5 += (static_cast<float>(qrand()%100)-50)/5000; // числа от -0.01 до 0.01
-    Message = QString::number(vel1); */
     update();
 }
 
 void WaitWidget::UpdateSeconds()
 {
-    ++Seconds;
+    if (IsIncrement)
+        ++Seconds;
+    else
+    {
+        --Seconds;
+        if (Seconds == 0)
+        {
+            emit CountZero();
+            this->close();
+        }
+    }
 }
 
 void WaitWidget::paintEvent(QPaintEvent *e)
 {
-    QPixmap rotatedPixmap("images/Object1-0.png");
+    QPixmap rotatedPixmap("images/Koma.png");
     QSize size = rotatedPixmap.size();
-    QSize wsize = QSize(800,220);
+    QSize wsize = QSize(310,380);
     int left = wsize.width()/2-size.width()/2;
     QPainter p1(this);
     p1.setRenderHint(QPainter::Antialiasing);
@@ -93,38 +104,6 @@ void WaitWidget::paintEvent(QPaintEvent *e)
     p1.translate(-wsize.width()/2,-size.height()/2);
     p1.drawPixmap(left, 0, rotatedPixmap);
     p1.end();
-    QPixmap rotatedPixmap2("images/Object2.png");
-    QPainter p2(this);
-    p2.setRenderHint(QPainter::Antialiasing);
-    p2.translate(wsize.width()/2,size.height()/2);
-    p2.rotate(gamma*vel2);
-    p2.translate(-wsize.width()/2,-size.height()/2);
-    p2.drawPixmap(left, 0, rotatedPixmap2);
-    p2.end();
-    QPixmap rotatedPixmap3("images/Object3.png");
-    QPainter p3(this);
-    p3.setRenderHint(QPainter::Antialiasing);
-    p3.translate(wsize.width()/2,size.height()/2);
-    p3.rotate(gamma*vel3);
-    p3.translate(-wsize.width()/2,-size.height()/2);
-    p3.drawPixmap(left, 0, rotatedPixmap3);
-    p3.end();
-    QPixmap rotatedPixmap4("images/Object4.png");
-    QPainter p4(this);
-    p4.setRenderHint(QPainter::Antialiasing);
-    p4.translate(wsize.width()/2,size.height()/2);
-    p4.rotate(gamma*vel4);
-    p4.translate(-wsize.width()/2,-size.height()/2);
-    p4.drawPixmap(left, 0, rotatedPixmap4);
-    p4.end();
-    QPixmap rotatedPixmap5("images/Object5.png");
-    QPainter p5(this);
-    p5.setRenderHint(QPainter::Antialiasing);
-    p5.translate(wsize.width()/2,size.height()/2);
-    p5.rotate(gamma*vel5);
-    p5.translate(-wsize.width()/2,-size.height()/2);
-    p5.drawPixmap(left, 0, rotatedPixmap5);
-    p5.end();
     QPainter p(this);
 //    p.translate(wsize.width()/2,size.height()/2);
     QFont font;
@@ -133,12 +112,15 @@ void WaitWidget::paintEvent(QPaintEvent *e)
     int msgwidth = fm.width(Message);//+10;
     left = center - msgwidth/2;
     QRect mrect = QRect(left,height()-20,msgwidth,20);
-    p.setPen(Qt::blue);
-    QBrush brush(Qt::lightGray, Qt::SolidPattern);
-    p.drawRect(mrect);
-    p.fillRect(mrect, brush);
+//    p.setPen(Qt::blue);
+//    QBrush brush(Qt::lightGray, Qt::SolidPattern);
+//    p.drawRect(mrect);
+//    p.fillRect(mrect, brush);
     p.setPen(Qt::black);
     p.drawText(mrect, Qt::AlignCenter, Message);
+    left = center - PressAnyKeyStringWidth/2;
+    mrect = QRect(left,height()-40,PressAnyKeyStringWidth,20);
+    p.drawText(mrect, Qt::AlignCenter, PressAnyKeyString);
     p.end();
     QPainter ps(this);
     QPen pen(Qt::darkGreen, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
@@ -146,18 +128,22 @@ void WaitWidget::paintEvent(QPaintEvent *e)
     font.setFamily("Helvetica");
     font.setPointSize(20);
     ps.setFont(font);
-    QRect srect = QRect(0,height()/2-20,width(),20);
-    ps.drawText(srect, Qt::AlignCenter, QString::number(Seconds));
+    QRect srect = QRect(0,height()-65,width(),24);
+    QString SecondsString = (TimeFormat == WW_TIME) ? (QString::number(Seconds/60)+":"+QString::number(Seconds%60)) : \
+                                                      QString::number(Seconds);
+    ps.drawText(srect, Qt::AlignCenter, SecondsString);
     ps.end();
     e->accept();
 }
 
 void WaitWidget::keyPressEvent(QKeyEvent *e)
 {
-    if (e->key() == Qt::Key_Escape)
+    if ((e->key() == Qt::Key_Escape) && IsAllowedToStop)
     {
         pc.Cancelled = true;
         Stop();
+        emit CountZero();
+        this->close();
     }
     QWidget::keyPressEvent(e);
 }

@@ -742,6 +742,12 @@ int A1Dialog::GetStatistics()
     emit StartPercents(pc.PovNumPoints);
     WaitWidget *w = new WaitWidget;
     w->SetMessage("Пожалуйста, подождите...");
+    WaitWidget::ww_struct ww;
+    ww.isincrement = true;
+    ww.isallowedtostop = false;
+    ww.format = WaitWidget::WW_SIMPLE;
+    ww.initialseconds = 0;
+    w->Init(ww);
     w->Start();
     while ((count < pc.PovNumPoints) && !pc.Cancelled)
     {

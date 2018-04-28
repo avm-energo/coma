@@ -12,7 +12,6 @@
 #include "tunedialoga1.h"
 #include "../gen/commands.h"
 #include "../dialogs/keypressdialog.h"
-#include "../widgets/waitwidget.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
@@ -445,13 +444,86 @@ int TuneDialogA1::Start6_3_9()
         EMessageBox::information(this, "Внимание", "Ошибка при записи регулировочных коэффициентов");
         return GENERALERROR;
     }
-    CheckA1::A1_Bd1 tmpst;
-    CheckA1::A1_Bd4 tmpst4;
-    if (Start60PointsMeasurements(tmpst, tmpst4) == NOERROR)
+    if (Start60PointsMeasurements(TKUSourceData.Bda_in[0], TKUSourceData.Bda_out_an[0]) == NOERROR)
         return GENERALERROR;
-    memcpy(&ChA1->Bda_in, &tmpst2, sizeof(CheckA1::A1_Bd1));
+    memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[0], sizeof(CheckA1::A1_Bd1));
     ChA1->FillBda_in(this);
+    memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_out_an[0], sizeof(CheckA1::A1_Bd4));
+    ChA1->FillBda_out_an(this);
+    EMessageBox::information(this, "Требование", "Задайте температуру в термокамере +50±5 °С");
+    WaitWidget *w = new WaitWidget;
+    WaitWidget::ww_struct ww;
+    ww.isincrement = false;
+    ww.isallowedtostop = true;
+    ww.format = WaitWidget::WW_TIME;
+    ww.initialseconds = 30 * 60;
+    w->Init(ww);
+    QEventLoop el;
+    connect(w, SIGNAL(CountZero()), this, SLOT(Cont6_3_9_50()));
+    connect(this,SIGNAL(Degrees50Completed()),&el,SLOT(quit()));
+    el.exec();
+    return result;
+}
 
+void TuneDialogA1::Cont6_3_9_50()
+{
+    if (Start60PointsMeasurements(TKUSourceData.Bda_in[1], TKUSourceData.Bda_out_an[1]) == NOERROR)
+    {
+        result = GENERALERROR;
+        emit Degrees50Completed();
+    }
+    memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[1], sizeof(CheckA1::A1_Bd1));
+    ChA1->FillBda_in(this);
+    memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_in[1], sizeof(CheckA1::A1_Bd4));
+    ChA1->FillBda_out_an(this);
+    EMessageBox::information(this, "Требование", "Задайте температуру в термокамере 0±5 °С");
+    WaitWidget *w = new WaitWidget;
+    WaitWidget::ww_struct ww;
+    ww.isincrement = false;
+    ww.isallowedtostop = true;
+    ww.format = WaitWidget::WW_TIME;
+    ww.initialseconds = 30 * 60;
+    w->Init(ww);
+    QEventLoop el;
+    connect(w, SIGNAL(CountZero()), this, SLOT(Cont6_3_9_0()));
+    connect(this,SIGNAL(Degrees0Completed()),&el,SLOT(quit()));
+    el.exec();
+    emit Degrees50Completed(); // result is ready in Cont6_3_9_0
+}
+
+void TuneDialogA1::Cont6_3_9_0()
+{
+    if (Start60PointsMeasurements(TKUSourceData.Bda_in[2], TKUSourceData.Bda_out_an[2]) == NOERROR)
+    {
+        result = GENERALERROR;
+        emit Degrees0Completed();
+    }
+    memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[2], sizeof(CheckA1::A1_Bd1));
+    ChA1->FillBda_in(this);
+    memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_in[2], sizeof(CheckA1::A1_Bd4));
+    ChA1->FillBda_out_an(this);
+    float Um[2], Up[2], Uo[2], Tmkm, Tmkp, Tmko;
+    Uo[0] = TKUSourceData.Bda_in[0].UefNat_filt[0];
+    Uo[1] = TKUSourceData.Bda_in[0].UefNat_filt[1];
+    Up[0] = TKUSourceData.Bda_in[1].UefNat_filt[0];
+    Up[1] = TKUSourceData.Bda_in[1].UefNat_filt[1];
+    Um[0] = TKUSourceData.Bda_in[2].UefNat_filt[0];
+    Um[1] = TKUSourceData.Bda_in[2].UefNat_filt[1];
+    Tmko = TKUSourceData.Bda_out_an[0].Tmk;
+    Tmkp = TKUSourceData.Bda_out_an[1].Tmk;
+    Tmkm = TKUSourceData.Bda_out_an[2].Tmk;
+    double dUm0 = Um[0] / Uo[0] - 1;
+    double dUp0 = Up[0] / Uo[0] - 1;
+    double dUm1 = Um[1] / Uo[1] - 1;
+    double dUp1 = Up[1] / Uo[1] - 1;
+    double dTm = Tmkm - Tmko;
+    double dTp = Tmkp - Tmko;
+    Bac_block.TKUa[0] = (dUm0 * dTp * dTp - dUp0 * dTm * dTm) / (dTp * dTm * (dTp - dTm));
+    Bac_block.TKUa[1] = (dUm1 * dTp * dTp - dUp1 * dTm * dTm) / (dTp * dTm * (dTp - dTm));
+    Bac_block.TKUb[0] = (dUp0 * dTm - dUm0 * dTp) / (dTp * dTm * (dTp - dTm));
+    Bac_block.TKUb[1] = (dUp1 * dTm - dUm1 * dTp) / (dTp * dTm * (dTp - dTm));
+    result = NOERROR;
+    emit Degrees0Completed();
 }
 
 int TuneDialogA1::Start6_3_10()

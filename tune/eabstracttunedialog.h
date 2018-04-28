@@ -68,7 +68,7 @@ signals:
     void PasswordChecked();
     void stopall();
     void dataready(QByteArray);
-    void SecondsRemaining(quint32);
+//    void SecondsRemaining(quint32);
     void Finished();
 
 public slots:
@@ -87,7 +87,7 @@ private slots:
     void LoadFromFile();
     virtual int ReadAnalogMeasurements() = 0;
     virtual void SetDefCoefs() = 0;
-    void UpdateNSecondsWidget();
+//    void UpdateNSecondsWidget();
     void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
     void SetTuneVariant();
 

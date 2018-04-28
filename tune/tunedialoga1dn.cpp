@@ -12,7 +12,6 @@
 #include "tunedialoga1dn.h"
 #include "../gen/commands.h"
 #include "../dialogs/keypressdialog.h"
-#include "../widgets/waitwidget.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
