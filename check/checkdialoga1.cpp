@@ -139,13 +139,13 @@ void CheckDialogA1::PrepareHeadersForFile(int row)
     xlsx->write(row,5,QVariant("Uef_filt1, В"));
     xlsx->write(row,6,QVariant("Uef_filt2, В"));
     xlsx->write(row,7,QVariant("δU, В"));
-    xlsx->write(row,8,QVariant("Phy, срад"));
+    xlsx->write(row,8,QVariant("Phy, мин"));
     xlsx->write(row,9,QVariant("Freq, Гц"));
     xlsx->write(row,10,QVariant("UefNat_filt1, кВ"));
     xlsx->write(row,11,QVariant("UefNat_filt2, кВ"));
     xlsx->write(row,12,QVariant("Uef_filt1, кВ"));
     xlsx->write(row,13,QVariant("Uef_filt2, кВ"));
-    xlsx->write(row,14,QVariant("Phy, срад"));
+    xlsx->write(row,14,QVariant("Phy, мин"));
     xlsx->write(row,15,QVariant("Freq, Гц"));
     xlsx->write(row,16,QVariant("Tmk, град. С"));
     xlsx->write(row,17,QVariant("Vbat, В"));

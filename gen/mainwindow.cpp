@@ -317,12 +317,9 @@ int MainWindow::CheckPassword()
 {
     pc.Cancelled = ok = false;
     QEventLoop PasswordLoop;
-    KeyPressDialog *dlg = new KeyPressDialog;
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    vlyout->addWidget(WDFunc::NewLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc"));
+    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
     connect(dlg,SIGNAL(Finished(QString &)),this,SLOT(PasswordCheck(QString &)));
     connect(this,SIGNAL(PasswordChecked()),&PasswordLoop,SLOT(quit()));
-    dlg->setLayout(vlyout);
     dlg->show();
     PasswordLoop.exec();
     if (pc.Cancelled)
@@ -643,7 +640,7 @@ void MainWindow::GetAbout()
     l2yout->addWidget(lbl);
     lbl = new QLabel("ООО \"АВМ-Энерго\"");
     l2yout->addWidget(lbl);
-    lbl = new QLabel("2015-2017 гг.");
+    lbl = new QLabel("2015-2018 гг.");
     l2yout->addWidget(lbl);
     l2yout->addStretch(10);
     lbl = new QLabel;

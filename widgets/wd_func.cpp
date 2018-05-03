@@ -17,6 +17,15 @@ QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letex
     return le;
 }
 
+PasswordLineEdit *WDFunc::NewPswLE(QWidget *w, const QString &lename, QLineEdit::EchoMode echostyle, const QString &lestyle)
+{
+    PasswordLineEdit *le = new PasswordLineEdit(w, echostyle);
+    le->setObjectName(lename);
+    if (!lestyle.isEmpty())
+        le->setStyleSheet(lestyle);
+    return le;
+}
+
 bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);

@@ -28,7 +28,7 @@ void TuneDialogA1::SetLbls()
 {
     lbls.append("1. Ввод пароля...");
     lbls.append("2. Отображение схемы подключения...");
-    lbls.append("6.3.1. Получение настроечных коэффициентов...");
+    lbls.append("6.3.2. Получение настроечных коэффициентов...");
     lbls.append("6.3.3.1. КТС: подтверждение установки 80 Ом...");
     lbls.append("6.3.3.2. КТС: получение блока данных...");
     lbls.append("6.3.3.3. КТС: подтверждение установки 120 Ом...");
@@ -41,13 +41,13 @@ void TuneDialogA1::SetLbls()
     lbls.append("6.3.7.1. КМТ1: получение блока данных...");
     lbls.append("6.3.7.2. КМТ1: подтверждение установки 20 мА...");
     lbls.append("6.3.7.3. КМТ1: получение блока данных и расчёт регулировочных коэффициентов...");
-    lbls.append("6.3.2.1. КПТ: получение блока данных и усреднение...");
-    lbls.append("6.3.2.2. КПТ: ввод данных от энергомонитора...");
-    lbls.append("6.3.2.3. КПТ: расчёт регулировочных коэффициентов...");
     lbls.append("6.3.8. Проверка данных блока Bda_out_an...");
-    lbls.append("6.3.9. Настройка температурной коррекции...");
-    lbls.append("6.3.10. Запись настроечных коэффициентов и переход на новую конфигурацию...");
-    lbls.append("6.3.11. Проверка аналоговых данных...");
+    lbls.append("6.3.9.1. КПТ: получение блока данных и усреднение...");
+    lbls.append("6.3.9.2. КПТ: ввод данных от энергомонитора...");
+    lbls.append("6.3.9.3. КПТ: расчёт регулировочных коэффициентов...");
+    lbls.append("6.3.10. Настройка температурной коррекции...");
+    lbls.append("6.3.11. Запись настроечных коэффициентов и переход на новую конфигурацию...");
+    lbls.append("6.3.12. Проверка аналоговых данных...");
 }
 
 void TuneDialogA1::SetPf()
@@ -56,7 +56,7 @@ void TuneDialogA1::SetPf()
     pf[lbls.at(count++)] = &EAbstractTuneDialog::CheckPassword; // 1. Ввод пароля
     int (EAbstractTuneDialog::*func)() = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::ShowScheme);
     pf[lbls.at(count++)] = func; // 2. Отображение схемы подключения
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_1); // 6.3.1. Получение настроечных коэффициентов
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_2); // 6.3.2. Получение настроечных коэффициентов
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_3_1); // 6.3.3.1. КТС: подтверждение установки 80 Ом
     pf[lbls.at(count++)] = func;
@@ -82,19 +82,19 @@ void TuneDialogA1::SetPf()
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_7_3); // 6.3.7.3. КМТ1: получение блока данных и расчёт регулировочных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_2_1); // 6.3.2.1. КПТ: получение блока данных и усреднение
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_2_2); // 6.3.2.2. КПТ: ввод данных от энергомонитора
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_2_3); // 6.3.2.3. КПТ: расчёт регулировочных коэффициентов
-    pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_8); // 6.3.8. Проверка данных блока Bda_out_an
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_9); // 6.3.9. Настройка температурной коррекции
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_9_1); // 6.3.9.1. КПТ: получение блока данных и усреднение
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_10); // 6.3.10. Запись настроечных коэффициентов и переход на новую конфигурацию
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_9_2); // 6.3.9.2. КПТ: ввод данных от энергомонитора
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_11); // 6.3.11. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_9_3); // 6.3.9.3. КПТ: расчёт регулировочных коэффициентов
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_10); // 6.3.10. Настройка температурной коррекции
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_11); // 6.3.11. Запись настроечных коэффициентов и переход на новую конфигурацию
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_12); // 6.3.12. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
 }
 
@@ -184,7 +184,7 @@ void TuneDialogA1::SetupUI()
     setLayout(lyout);
 }
 
-int TuneDialogA1::Start6_3_1()
+int TuneDialogA1::Start6_3_2()
 {
     if (Commands::GetBac(BT_BASE, &Bac_block_old, sizeof(Bac)) != NOERROR)
     {
@@ -192,52 +192,6 @@ int TuneDialogA1::Start6_3_1()
         return GENERALERROR;
     }
     FillBac();
-    return NOERROR;
-}
-
-int TuneDialogA1::Start6_3_2_1()
-{
-    Skipped = false;
-    if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по напряжениям, выполнить?") == false)
-    {
-        Skipped = true;
-        return ER_RESEMPTY;
-    }
-    EMessageBox::information(this, "Требование", "Установите на РЕТОМ значение напряжения 60 В");
-    // получение текущих аналоговых сигналов от модуля
-    WaitNSeconds(10);
-    if (pc.Cancelled)
-        return GENERALERROR;
-    if (ReadAnalogMeasurements() == GENERALERROR)
-        return GENERALERROR;
-    if (CheckBdaValues(CHECK_VOLT) == GENERALERROR)
-        return GENERALERROR;
-    CheckA1::A1_Bd1 tmpst2;
-    CheckA1::A1_Bd4 tmpst4; // фиктивная вещь, нужна для универсализации функции Start60PointsMeasurements
-    if (Start60PointsMeasurements(tmpst2, tmpst4) == NOERROR)
-        return GENERALERROR;
-    memcpy(&ChA1->Bda_in, &tmpst2, sizeof(CheckA1::A1_Bd1));
-    ChA1->FillBda_in(this);
-    return NOERROR;
-}
-
-int TuneDialogA1::Start6_3_2_2()
-{
-    if (Skipped)
-        return ER_RESEMPTY;
-    if (GetExternalData() != NOERROR)
-        return GENERALERROR;
-    return CheckAnalogValues(false);
-}
-
-int TuneDialogA1::Start6_3_2_3()
-{
-    if (Skipped)
-        return ER_RESEMPTY;
-    Bac_block.KmU[0] = Bac_block_old.KmU[0] * RealData.u / ChA1->Bda_in.UefNat_filt[0];
-    Bac_block.KmU[1] = Bac_block_old.KmU[1] * RealData.u / ChA1->Bda_in.UefNat_filt[1];
-    Bac_block.K_freq = Bac_block_old.K_freq * RealData.freq / ChA1->Bda_in.Frequency;
-    Bac_block.DPhy = Bac_block_old.DPhy - ChA1->Bda_in.Phy;
     return NOERROR;
 }
 
@@ -436,7 +390,53 @@ int TuneDialogA1::Start6_3_8()
     return NOERROR;
 }
 
-int TuneDialogA1::Start6_3_9()
+int TuneDialogA1::Start6_3_9_1()
+{
+    Skipped = false;
+    if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по напряжениям, выполнить?") == false)
+    {
+        Skipped = true;
+        return ER_RESEMPTY;
+    }
+    EMessageBox::information(this, "Требование", "Установите на РЕТОМ значение напряжения 100 В");
+    // получение текущих аналоговых сигналов от модуля
+    WaitNSeconds(10);
+    if (pc.Cancelled)
+        return GENERALERROR;
+    if (ReadAnalogMeasurements() == GENERALERROR)
+        return GENERALERROR;
+    if (CheckBdaValues(CHECK_VOLT) == GENERALERROR)
+        return GENERALERROR;
+    CheckA1::A1_Bd1 tmpst2;
+    CheckA1::A1_Bd4 tmpst4; // фиктивная вещь, нужна для универсализации функции Start60PointsMeasurements
+    if (Start60PointsMeasurements(tmpst2, tmpst4) != NOERROR)
+        return GENERALERROR;
+    memcpy(&ChA1->Bda_in, &tmpst2, sizeof(CheckA1::A1_Bd1));
+    ChA1->FillBda_in(this);
+    return NOERROR;
+}
+
+int TuneDialogA1::Start6_3_9_2()
+{
+    if (Skipped)
+        return ER_RESEMPTY;
+    if (GetExternalData() != NOERROR)
+        return GENERALERROR;
+    return CheckAnalogValues(false);
+}
+
+int TuneDialogA1::Start6_3_9_3()
+{
+    if (Skipped)
+        return ER_RESEMPTY;
+    Bac_block.KmU[0] = Bac_block_old.KmU[0] * RealData.u / ChA1->Bda_in.UefNat_filt[0];
+    Bac_block.KmU[1] = Bac_block_old.KmU[1] * RealData.u / ChA1->Bda_in.UefNat_filt[1];
+    Bac_block.K_freq = Bac_block_old.K_freq * RealData.freq / ChA1->Bda_in.Frequency;
+    Bac_block.DPhy = Bac_block_old.DPhy - ChA1->Bda_in.Phy;
+    return NOERROR;
+}
+
+int TuneDialogA1::Start6_3_10()
 {
     Bac_block.TKUa[0] = Bac_block.TKUb[0] = Bac_block.TKUa[1] = Bac_block.TKUb[1] = 0;
     if (Commands::WriteBac(BT_BASE, &Bac_block, sizeof(Bac_block)) != NOERROR)
@@ -459,13 +459,13 @@ int TuneDialogA1::Start6_3_9()
     ww.initialseconds = 30 * 60;
     w->Init(ww);
     QEventLoop el;
-    connect(w, SIGNAL(CountZero()), this, SLOT(Cont6_3_9_50()));
+    connect(w, SIGNAL(CountZero()), this, SLOT(Cont6_3_10_50()));
     connect(this,SIGNAL(Degrees50Completed()),&el,SLOT(quit()));
     el.exec();
     return result;
 }
 
-void TuneDialogA1::Cont6_3_9_50()
+void TuneDialogA1::Cont6_3_10_50()
 {
     if (Start60PointsMeasurements(TKUSourceData.Bda_in[1], TKUSourceData.Bda_out_an[1]) == NOERROR)
     {
@@ -485,13 +485,13 @@ void TuneDialogA1::Cont6_3_9_50()
     ww.initialseconds = 30 * 60;
     w->Init(ww);
     QEventLoop el;
-    connect(w, SIGNAL(CountZero()), this, SLOT(Cont6_3_9_0()));
+    connect(w, SIGNAL(CountZero()), this, SLOT(Cont6_3_10_0()));
     connect(this,SIGNAL(Degrees0Completed()),&el,SLOT(quit()));
     el.exec();
-    emit Degrees50Completed(); // result is ready in Cont6_3_9_0
+    emit Degrees50Completed(); // result is ready in Cont6_3_10_0
 }
 
-void TuneDialogA1::Cont6_3_9_0()
+void TuneDialogA1::Cont6_3_10_0()
 {
     if (Start60PointsMeasurements(TKUSourceData.Bda_in[2], TKUSourceData.Bda_out_an[2]) == NOERROR)
     {
@@ -526,7 +526,7 @@ void TuneDialogA1::Cont6_3_9_0()
     emit Degrees0Completed();
 }
 
-int TuneDialogA1::Start6_3_10()
+int TuneDialogA1::Start6_3_11()
 {
     if (EMessageBox::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?") == false)
         return GENERALERROR;
@@ -537,7 +537,7 @@ int TuneDialogA1::Start6_3_10()
     return NOERROR;
 }
 
-int TuneDialogA1::Start6_3_11()
+int TuneDialogA1::Start6_3_12()
 {
 //    WaitNSeconds(10);
     QString tmps = "Пожалуйста, после нажатия \"ОК\" просмотрите текущие данные после регулировки в соответствующих окнах";
@@ -698,7 +698,7 @@ int TuneDialogA1::GetExternalData()
     QGridLayout *glyout = new QGridLayout;
     glyout->addWidget(WDFunc::NewLBL(dlg, "Введите значения сигналов по приборам"),0,0,1,4);
     glyout->addWidget(WDFunc::NewLBL(dlg, "Значение напряжения, В"), 1,0,1,1);
-    glyout->addWidget(WDFunc::NewSPB(dlg, "u", -100, 100, 0.00001, 5), 1,1,1,1);
+    glyout->addWidget(WDFunc::NewSPB(dlg, "u", -125, 125, 0.00001, 5), 1,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(dlg, "Частота, Гц"), 2,2,1,1);
     glyout->addWidget(WDFunc::NewSPB(dlg, "freq", -100, 100, 0.00001, 5), 2,3,1,1);
     QPushButton *pb = new QPushButton("Готово");

@@ -228,6 +228,7 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 void EAbstractCheckDialog::StartAnalogMeasurements()
 {
 //    CurBdNum = 1;
+    PrepareAnalogMeasurements();
     timer->start();
 }
 

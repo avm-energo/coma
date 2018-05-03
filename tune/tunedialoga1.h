@@ -73,10 +73,7 @@ private:
     void SetPf();
     void SetupUI();
 
-    int Start6_3_1();
-    int Start6_3_2_1();
-    int Start6_3_2_2();
-    int Start6_3_2_3();
+    int Start6_3_2();
     int Start6_3_3_1();
     int Start6_3_3_2();
     int Start6_3_3_3();
@@ -90,9 +87,12 @@ private:
     int Start6_3_7_2();
     int Start6_3_7_3();
     int Start6_3_8();
-    int Start6_3_9();
+    int Start6_3_9_1();
+    int Start6_3_9_2();
+    int Start6_3_9_3();
     int Start6_3_10();
     int Start6_3_11();
+    int Start6_3_12();
 
     int Start60PointsMeasurements(CheckA1::A1_Bd1 &st, CheckA1::A1_Bd4 &st4);
     int ShowScheme();
@@ -108,8 +108,8 @@ private slots:
     void SetDefCoefs();
     void SetExtData();
     void CancelExtData();
-    void Cont6_3_9_50();
-    void Cont6_3_9_0();
+    void Cont6_3_10_50();
+    void Cont6_3_10_0();
 };
 
 #endif // TUNEDIALOGA1_H

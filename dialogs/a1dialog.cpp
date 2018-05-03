@@ -79,11 +79,11 @@ void A1Dialog::SetupUI()
     gb = new QGroupBox("СКО");
     glyout->addWidget(WDFunc::NewLBL(this, "dUrms(m), В"), 0, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunedurmsm", ValuesFormat, ""), 0, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "φ(m), срад"), 0, 2, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "φ(m), мин"), 0, 2, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunephym", ValuesFormat, ""), 0, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "σUrms, %"), 1, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunesurms", ValuesFormat, ""), 1, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "σφ, срад"), 1, 2, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLBL(this, "σφ, мин"), 1, 2, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(this, "", "tunesphy", ValuesFormat, ""), 1, 3, 1, 1);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);

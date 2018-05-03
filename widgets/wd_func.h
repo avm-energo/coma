@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QDoubleSpinBox>
 #include "ecombobox.h"
+#include "passwordlineedit.h"
 
 class WDFunc
 {
@@ -17,7 +18,10 @@ public:
     static bool SetCWData(QWidget *w, const QString &cwname, const QString &cwvalue);
     static QString CWData(QWidget *w, const QString &cwname);
     static bool SetCWColor(QWidget *w, const QString &cwname, const QColor &color);
-    static QLineEdit *NewLE(QWidget *w, const QString &lename, const QString &letext="", const QString &lestyle="");
+    static QLineEdit *NewLE(QWidget *w, const QString &lename, const QString &letext="", \
+                            const QString &lestyle="");
+    static PasswordLineEdit *NewPswLE(QWidget *w, const QString &lename, QLineEdit::EchoMode echostyle=QLineEdit::Normal, \
+                               const QString &lestyle="");
     static bool SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring="");
     template <typename T> static bool LEData(QWidget *w, const QString &lename, T &levalue)
     {

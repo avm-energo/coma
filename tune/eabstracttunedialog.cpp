@@ -165,12 +165,9 @@ void EAbstractTuneDialog::ProcessTune()
 int EAbstractTuneDialog::CheckPassword()
 {
     QEventLoop PasswordLoop;
-    KeyPressDialog *dlg = new KeyPressDialog;
-    QVBoxLayout *vlyout = new QVBoxLayout;
-    vlyout->addWidget(WDFunc::NewLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc"));
+    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
     connect(dlg,SIGNAL(Finished(QString &)),this,SLOT(PasswordCheck(QString &)));
     connect(this,SIGNAL(PasswordChecked()),&PasswordLoop,SLOT(quit()));
-    dlg->setLayout(vlyout);
     dlg->show();
     PasswordLoop.exec();
     if (!ok)
@@ -240,11 +237,10 @@ void EAbstractTuneDialog::MsgClear()
 
 void EAbstractTuneDialog::WaitNSeconds(int Seconds)
 {
-//    SecondsToEnd15SecondsInterval = Seconds;
     WaitWidget *w = new WaitWidget;
     WaitWidget::ww_struct ww;
     ww.isincrement = false;
-    ww.isallowedtostop = true;
+    ww.isallowedtostop = false;
     ww.format = WaitWidget::WW_TIME;
     ww.initialseconds = Seconds;
     w->Init(ww);
@@ -252,24 +248,6 @@ void EAbstractTuneDialog::WaitNSeconds(int Seconds)
     connect(w, SIGNAL(CountZero()), &el,SLOT(quit()));
     w->Start();
     el.exec();
-/*
-    QTimer *tmr = new QTimer;
-    tmr->setInterval(1000);
-    connect(tmr,SIGNAL(timeout()),this,SLOT(UpdateNSecondsWidget()));
-//    connect(this,SIGNAL(SecondsRemaining(quint32)),w,SLOT(SetSeconds(quint32)));
-    w->SetMessage("Пожалуйста, подождите...");
-    w->SetSeconds(Seconds);
-    tmr->start();
-    w->Start();
-    while ((SecondsToEnd15SecondsInterval > 0) && !pc.Cancelled)
-    {
-        QTime tme;
-        tme.start();
-        while (tme.elapsed() < 20)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-    }
-    tmr->stop();
-    w->close(); */
 }
 
 void EAbstractTuneDialog::SaveToFileEx()
@@ -371,7 +349,7 @@ bool EAbstractTuneDialog::WriteTuneCoefsSlot()
 {
     if (CheckPassword() != NOERROR)
         return false;
-    WriteTuneCoefs();
+    return WriteTuneCoefs();
 }
 
 bool EAbstractTuneDialog::WriteTuneCoefs()

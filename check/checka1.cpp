@@ -61,8 +61,8 @@ QWidget *CheckA1::Bd1W(const QString &title, const QString &begin, QWidget *pare
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"3", ValuesFormat, "Действующие значения первых гармоник напряжения 2, В"), 1, 3);
     glyout->addWidget(WDFunc::NewLBL(parent, "5. δU, %"), 1, 4);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"dU2", ValuesFormat, "Относительная погрешность, %"), 1, 5);
-    glyout->addWidget(WDFunc::NewLBL(parent, "6. Phy, срад"), 2, 0);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"4", ValuesFormat, "Разность фаз первых гармоник напряжений, срад"), 2, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "6. Phy, мин"), 2, 0);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"4", ValuesFormat, "Разность фаз первых гармоник напряжений, мин"), 2, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "7. Frequency, Гц"), 2, 2);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"5", ValuesFormat, "Частота в сети, Гц"), 2, 3);
     glyout->setColumnStretch(1, 10);
