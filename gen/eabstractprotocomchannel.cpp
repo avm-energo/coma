@@ -223,7 +223,10 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 return;
             }
             if (!SegLeft)
+            {
                 Finish(NOERROR);
+                return;
+            }
             ReadDataChunk.clear();
             WRCheckForNextSegment(false);
             return;
@@ -407,8 +410,8 @@ void EAbstractProtocomChannel::WRCheckForNextSegment(int first)
     {
         AppendSize(tmpba, (WriteData.size() - SegEnd));
         tmpba += WriteData.right(WriteData.size() - SegEnd);
-        WriteData.clear();
         SegEnd = WriteData.size();
+        WriteData.clear();
     }
     emit SetDataCount(SegEnd);
     WriteDataToPort(tmpba);

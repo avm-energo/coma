@@ -193,7 +193,7 @@ bool EAbstractTuneDialog::IsWithinLimits(double number, double base, double thre
     else
     {
         EMessageBox::error(this, "Ошибка", "Ошибочное значение: должно быть "+QString::number(base, 'f', 5) + \
-                           ", а получили: "+QString::number(number, 'f', 5));
+                           "±"+QString::number(threshold, 'f', 5)+", а получили: "+QString::number(number, 'f', 5));
         return false;
     }
 }

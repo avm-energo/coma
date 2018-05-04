@@ -284,7 +284,8 @@ void Coma::Stage3()
     PrepareDialogs();
     if (ConfB != 0)
     {
-        MainTW->addTab(ConfB, "Конфигурирование\nБазовая");
+        QString str = (ConfM == 0) ? "Конфигурирование" : "Конфигурирование\nБазовая";
+        MainTW->addTab(ConfB, str);
         if (!Autonomous)
         {
             connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
@@ -300,7 +301,8 @@ void Coma::Stage3()
         MainTW->addTab(CheckB, "Проверка\nБазовая");
     if (ConfM != 0)
     {
-        MainTW->addTab(ConfM, "Конфигурирование\nМезонин");
+        QString str = (ConfB == 0) ? "Конфигурирование" : "Конфигурирование\nМезонин";
+        MainTW->addTab(ConfM, str);
         if (!Autonomous)
         {
             connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));

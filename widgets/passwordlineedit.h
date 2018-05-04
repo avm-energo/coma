@@ -8,7 +8,8 @@ class PasswordLineEdit : public QWidget
     Q_OBJECT
 
 public:
-    PasswordLineEdit(QWidget *parent = Q_NULLPTR, QLineEdit::EchoMode echostyle = QLineEdit::Password);
+    explicit PasswordLineEdit(QWidget *parent = Q_NULLPTR);
+    explicit PasswordLineEdit(QLineEdit::EchoMode echostyle = QLineEdit::Password, QWidget *parent = Q_NULLPTR);
 
 private slots:
     void PswLEToggleEchoMode();

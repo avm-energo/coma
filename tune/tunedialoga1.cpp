@@ -420,9 +420,10 @@ int TuneDialogA1::Start6_3_9_2()
 {
     if (Skipped)
         return ER_RESEMPTY;
-    if (GetExternalData() != NOERROR)
+/*    if (GetExternalData() != NOERROR)
         return GENERALERROR;
-    return CheckAnalogValues(false);
+    return CheckAnalogValues(false); */
+    return GetExternalData();
 }
 
 int TuneDialogA1::Start6_3_9_3()
@@ -444,7 +445,7 @@ int TuneDialogA1::Start6_3_10()
         EMessageBox::information(this, "Внимание", "Ошибка при записи регулировочных коэффициентов");
         return GENERALERROR;
     }
-    if (Start60PointsMeasurements(TKUSourceData.Bda_in[0], TKUSourceData.Bda_out_an[0]) == NOERROR)
+    if (Start60PointsMeasurements(TKUSourceData.Bda_in[0], TKUSourceData.Bda_out_an[0]) != NOERROR)
         return GENERALERROR;
     memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[0], sizeof(CheckA1::A1_Bd1));
     ChA1->FillBda_in(this);
@@ -460,14 +461,16 @@ int TuneDialogA1::Start6_3_10()
     w->Init(ww);
     QEventLoop el;
     connect(w, SIGNAL(CountZero()), this, SLOT(Cont6_3_10_50()));
+    connect(w,SIGNAL(CountZero()),w,SLOT(close()));
     connect(this,SIGNAL(Degrees50Completed()),&el,SLOT(quit()));
+    w->Start();
     el.exec();
     return result;
 }
 
 void TuneDialogA1::Cont6_3_10_50()
 {
-    if (Start60PointsMeasurements(TKUSourceData.Bda_in[1], TKUSourceData.Bda_out_an[1]) == NOERROR)
+    if (Start60PointsMeasurements(TKUSourceData.Bda_in[1], TKUSourceData.Bda_out_an[1]) != NOERROR)
     {
         result = GENERALERROR;
         emit Degrees50Completed();
@@ -486,14 +489,16 @@ void TuneDialogA1::Cont6_3_10_50()
     w->Init(ww);
     QEventLoop el;
     connect(w, SIGNAL(CountZero()), this, SLOT(Cont6_3_10_0()));
+    connect(w,SIGNAL(CountZero()),w,SLOT(close()));
     connect(this,SIGNAL(Degrees0Completed()),&el,SLOT(quit()));
+    w->Start();
     el.exec();
     emit Degrees50Completed(); // result is ready in Cont6_3_10_0
 }
 
 void TuneDialogA1::Cont6_3_10_0()
 {
-    if (Start60PointsMeasurements(TKUSourceData.Bda_in[2], TKUSourceData.Bda_out_an[2]) == NOERROR)
+    if (Start60PointsMeasurements(TKUSourceData.Bda_in[2], TKUSourceData.Bda_out_an[2]) != NOERROR)
     {
         result = GENERALERROR;
         emit Degrees0Completed();
@@ -621,11 +626,15 @@ int TuneDialogA1::ShowScheme()
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/tunea1.png")));
-    lyout->addWidget(WDFunc::NewLBL(this, "1. На выходах РЕТОМ задайте частоту 51,0 Гц, уровень напряжения фазы А 60 В с фазой 0 градусов, включите режим однофазного выхода;"));
-    lyout->addWidget(WDFunc::NewLBL(this, "2. Включите питание прибора Энергомонитор-3.1КМ и настройте его на режим измерения напряжений в диапазоне 0...100 В и частоты;"));
-    lyout->addWidget(WDFunc::NewLBL(this, "3. На магазине сопротивлений установите значение сопротивления 100,0 Ом;"));
-    lyout->addWidget(WDFunc::NewLBL(this, "4. Подключите калибратор токовой петли на вход 2 и установите выходной ток 20 мА;"));
-    lyout->addWidget(WDFunc::NewLBL(this, "5. Включите выходы РЕТОМ."));
+    lyout->addWidget(WDFunc::NewLBL(this, "1. На выходах РЕТОМ задайте частоту 51,0 Гц, уровень напряжения фазы А 100 В с фазой 0 градусов, включите режим однофазного выхода;"));
+    lyout->addWidget(WDFunc::NewLBL(this, "2. Включите питание прибора Энергомонитор-3.1КМ и настройте его следующим образом:"));
+    lyout->addWidget(WDFunc::NewLBL(this, "  2.1. Схема подключения: однофазная двухпроводная;"));
+    lyout->addWidget(WDFunc::NewLBL(this, "  2.2. Режим измерения: диапазон 0...240 В;"));
+    lyout->addWidget(WDFunc::NewLBL(this, "3. Перейдите в окно Энергомонитора \"Измерения - Переменного тока - Гармоники\";"));
+    lyout->addWidget(WDFunc::NewLBL(this, "4. На магазине сопротивлений установите значение сопротивления 100,0 Ом (при необходимости регулировки канала Pt100);"));
+    lyout->addWidget(WDFunc::NewLBL(this, "5. Подключите калибратор токовой петли на вход 2 и установите выходной ток 20 мА (при необходимости регулировки каналов 4..20 мА);"));
+    lyout->addWidget(WDFunc::NewLBL(this, "6. Включите выходы РЕТОМ;"));
+    lyout->addWidget(WDFunc::NewLBL(this, "7. Задайте нормальную температуру в термокамере +20±5 °C."));
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(pb);

@@ -97,7 +97,8 @@ SOURCES += \
     ../widgets/getoscpbdelegate.cpp \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp
+    ../widgets/wd_func.cpp \
+    ../widgets/passwordlineedit.cpp
 
 HEADERS  += \
     coma.h \
@@ -172,7 +173,8 @@ HEADERS  += \
     ../widgets/getoscpbdelegate.h \
     ../widgets/signalchoosewidget.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h
+    ../widgets/wd_func.h \
+    ../widgets/passwordlineedit.h
 
 INCLUDEPATH += $$PWD/../../includes
 

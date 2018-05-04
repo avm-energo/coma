@@ -54,6 +54,7 @@ private:
 protected:
     void paintEvent(QPaintEvent *e);
     void keyPressEvent(QKeyEvent *e);
+    void closeEvent(QCloseEvent *e);
 };
 
 #endif // WAITWIDGET_H

@@ -86,7 +86,7 @@ void WaitWidget::UpdateSeconds()
         if (Seconds == 0)
         {
             emit CountZero();
-            this->close();
+//            this->close();
         }
     }
 }
@@ -143,7 +143,12 @@ void WaitWidget::keyPressEvent(QKeyEvent *e)
         pc.Cancelled = true;
         Stop();
         emit CountZero();
-        this->close();
+//        this->close();
     }
     QWidget::keyPressEvent(e);
+}
+
+void WaitWidget::closeEvent(QCloseEvent *e)
+{
+    e->accept();
 }

@@ -3,7 +3,11 @@
 #include "wd_func.h"
 #include "passwordlineedit.h"
 
-PasswordLineEdit::PasswordLineEdit(QWidget *parent, QLineEdit::EchoMode echostyle)
+PasswordLineEdit::PasswordLineEdit(QWidget *parent) : QWidget(parent)
+{
+}
+
+PasswordLineEdit::PasswordLineEdit(QLineEdit::EchoMode echostyle, QWidget *parent)
 {
     QHBoxLayout *hlyout = new QHBoxLayout;
     QLineEdit *le = WDFunc::NewLE(parent, "pswle");
