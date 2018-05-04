@@ -235,12 +235,12 @@ void EAbstractTuneDialog::MsgClear()
     MsgSetVisible(i, false);
 }
 
-void EAbstractTuneDialog::WaitNSeconds(int Seconds)
+void EAbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
 {
     WaitWidget *w = new WaitWidget;
     WaitWidget::ww_struct ww;
     ww.isincrement = false;
-    ww.isallowedtostop = false;
+    ww.isallowedtostop = isAllowedToStop;
     ww.format = WaitWidget::WW_TIME;
     ww.initialseconds = Seconds;
     w->Init(ww);

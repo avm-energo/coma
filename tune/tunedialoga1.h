@@ -61,7 +61,7 @@ private:
 
     EMData RealData;
     float RegData;
-    int result;
+//    int result;
     struct TKUSourceDataStruct
     {
         CheckA1::A1_Bd1 Bda_in[3];
@@ -90,7 +90,9 @@ private:
     int Start6_3_9_1();
     int Start6_3_9_2();
     int Start6_3_9_3();
-    int Start6_3_10();
+    int Start6_3_10_1();
+    int Start6_3_10_2();
+    int Start6_3_10_3();
     int Start6_3_11();
     int Start6_3_12();
 
@@ -108,8 +110,6 @@ private slots:
     void SetDefCoefs();
     void SetExtData();
     void CancelExtData();
-    void Cont6_3_10_50();
-    void Cont6_3_10_0();
 };
 
 #endif // TUNEDIALOGA1_H

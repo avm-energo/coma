@@ -26,28 +26,30 @@ TuneDialogA1::TuneDialogA1(QWidget *parent) :
 
 void TuneDialogA1::SetLbls()
 {
-    lbls.append("1. Ввод пароля...");
-    lbls.append("2. Отображение схемы подключения...");
-    lbls.append("6.3.2. Получение настроечных коэффициентов...");
-    lbls.append("6.3.3.1. КТС: подтверждение установки 80 Ом...");
-    lbls.append("6.3.3.2. КТС: получение блока данных...");
-    lbls.append("6.3.3.3. КТС: подтверждение установки 120 Ом...");
-    lbls.append("6.3.3.4. КТС: получение блока данных и расчёт регулировочных коэффициентов...");
-    lbls.append("6.3.4. КМТ2: подтверждение установки 4 мА...");
-    lbls.append("6.3.5.1. КМТ2: получение блока данных...");
-    lbls.append("6.3.5.2. КМТ2: подтверждение установки 20 мА...");
-    lbls.append("6.3.5.3. КМТ2: получение блока данных и расчёт регулировочных коэффициентов...");
-    lbls.append("6.3.6. КМТ1: подтверждение установки 4 мА...");
-    lbls.append("6.3.7.1. КМТ1: получение блока данных...");
-    lbls.append("6.3.7.2. КМТ1: подтверждение установки 20 мА...");
-    lbls.append("6.3.7.3. КМТ1: получение блока данных и расчёт регулировочных коэффициентов...");
-    lbls.append("6.3.8. Проверка данных блока Bda_out_an...");
-    lbls.append("6.3.9.1. КПТ: получение блока данных и усреднение...");
-    lbls.append("6.3.9.2. КПТ: ввод данных от энергомонитора...");
-    lbls.append("6.3.9.3. КПТ: расчёт регулировочных коэффициентов...");
-    lbls.append("6.3.10. Настройка температурной коррекции...");
-    lbls.append("6.3.11. Запись настроечных коэффициентов и переход на новую конфигурацию...");
-    lbls.append("6.3.12. Проверка аналоговых данных...");
+    lbls.append("1 Ввод пароля...");
+    lbls.append("2 Отображение схемы подключения...");
+    lbls.append("6.3.2 Получение настроечных коэффициентов...");
+    lbls.append("6.3.3.1 КТС: подтверждение установки 80 Ом...");
+    lbls.append("6.3.3.2 КТС: получение блока данных...");
+    lbls.append("6.3.3.3 КТС: подтверждение установки 120 Ом...");
+    lbls.append("6.3.3.4 КТС: получение блока данных и расчёт регулировочных коэффициентов...");
+    lbls.append("6.3.4 КМТ2: подтверждение установки 4 мА...");
+    lbls.append("6.3.5.1 КМТ2: получение блока данных...");
+    lbls.append("6.3.5.2 КМТ2: подтверждение установки 20 мА...");
+    lbls.append("6.3.5.3 КМТ2: получение блока данных и расчёт регулировочных коэффициентов...");
+    lbls.append("6.3.6 КМТ1: подтверждение установки 4 мА...");
+    lbls.append("6.3.7.1 КМТ1: получение блока данных...");
+    lbls.append("6.3.7.2 КМТ1: подтверждение установки 20 мА...");
+    lbls.append("6.3.7.3 КМТ1: получение блока данных и расчёт регулировочных коэффициентов...");
+    lbls.append("6.3.8 Проверка данных блока Bda_out_an...");
+    lbls.append("6.3.9.1 КПТ: получение блока данных и усреднение...");
+    lbls.append("6.3.9.2 КПТ: ввод данных от энергомонитора...");
+    lbls.append("6.3.9.3 КПТ: расчёт регулировочных коэффициентов...");
+    lbls.append("6.3.10.1 Настройка температурной коррекции по 20 градусам ...");
+    lbls.append("6.3.10.2 Настройка температурной коррекции по 50 градусам ...");
+    lbls.append("6.3.10.3 Настройка температурной коррекции по 0 градусам ...");
+    lbls.append("6.3.11 Запись настроечных коэффициентов и переход на новую конфигурацию...");
+    lbls.append("6.3.12 Проверка аналоговых данных...");
 }
 
 void TuneDialogA1::SetPf()
@@ -90,7 +92,11 @@ void TuneDialogA1::SetPf()
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_9_3); // 6.3.9.3. КПТ: расчёт регулировочных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_10); // 6.3.10. Настройка температурной коррекции
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_10_1); // 6.3.10.1 Настройка температурной коррекции по 20 градусам
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_10_2); // 6.3.10.2 Настройка температурной коррекции по 50 градусам
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_10_3); // 6.3.10.3 Настройка температурной коррекции по 0 градусам
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_11); // 6.3.11. Запись настроечных коэффициентов и переход на новую конфигурацию
     pf[lbls.at(count++)] = func;
@@ -437,7 +443,7 @@ int TuneDialogA1::Start6_3_9_3()
     return NOERROR;
 }
 
-int TuneDialogA1::Start6_3_10()
+int TuneDialogA1::Start6_3_10_1()
 {
     Bac_block.TKUa[0] = Bac_block.TKUb[0] = Bac_block.TKUa[1] = Bac_block.TKUb[1] = 0;
     if (Commands::WriteBac(BT_BASE, &Bac_block, sizeof(Bac_block)) != NOERROR)
@@ -451,72 +457,47 @@ int TuneDialogA1::Start6_3_10()
     ChA1->FillBda_in(this);
     memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_out_an[0], sizeof(CheckA1::A1_Bd4));
     ChA1->FillBda_out_an(this);
-    EMessageBox::information(this, "Требование", "Задайте температуру в термокамере +50±5 °С");
-    WaitWidget *w = new WaitWidget;
-    WaitWidget::ww_struct ww;
-    ww.isincrement = false;
-    ww.isallowedtostop = true;
-    ww.format = WaitWidget::WW_TIME;
-    ww.initialseconds = 30 * 60;
-    w->Init(ww);
-    QEventLoop el;
-    connect(w, SIGNAL(CountZero()), this, SLOT(Cont6_3_10_50()));
-    connect(w,SIGNAL(CountZero()),w,SLOT(close()));
-    connect(this,SIGNAL(Degrees50Completed()),&el,SLOT(quit()));
-    w->Start();
-    el.exec();
-    return result;
+    return NOERROR;
 }
 
-void TuneDialogA1::Cont6_3_10_50()
+int TuneDialogA1::Start6_3_10_2()
 {
+    EMessageBox::information(this, "Требование", "Задайте температуру в термокамере +50±5 °С");
+    WaitNSeconds(30*60, true);
+    pc.Cancelled = false; // если прервали 30-минутный отсчёт, это дело пользователя
     if (Start60PointsMeasurements(TKUSourceData.Bda_in[1], TKUSourceData.Bda_out_an[1]) != NOERROR)
-    {
-        result = GENERALERROR;
-        emit Degrees50Completed();
-    }
+        return GENERALERROR;
     memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[1], sizeof(CheckA1::A1_Bd1));
     ChA1->FillBda_in(this);
     memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_in[1], sizeof(CheckA1::A1_Bd4));
     ChA1->FillBda_out_an(this);
-    EMessageBox::information(this, "Требование", "Задайте температуру в термокамере 0±5 °С");
-    WaitWidget *w = new WaitWidget;
-    WaitWidget::ww_struct ww;
-    ww.isincrement = false;
-    ww.isallowedtostop = true;
-    ww.format = WaitWidget::WW_TIME;
-    ww.initialseconds = 30 * 60;
-    w->Init(ww);
-    QEventLoop el;
-    connect(w, SIGNAL(CountZero()), this, SLOT(Cont6_3_10_0()));
-    connect(w,SIGNAL(CountZero()),w,SLOT(close()));
-    connect(this,SIGNAL(Degrees0Completed()),&el,SLOT(quit()));
-    w->Start();
-    el.exec();
-    emit Degrees50Completed(); // result is ready in Cont6_3_10_0
+    return NOERROR;
 }
 
-void TuneDialogA1::Cont6_3_10_0()
+int TuneDialogA1::Start6_3_10_3()
 {
+    EMessageBox::information(this, "Требование", "Задайте температуру в термокамере 0±5 °С");
+    WaitNSeconds(30*60, true);
+    pc.Cancelled = false; // если прервали 30-минутный отсчёт, это дело пользователя
     if (Start60PointsMeasurements(TKUSourceData.Bda_in[2], TKUSourceData.Bda_out_an[2]) != NOERROR)
-    {
-        result = GENERALERROR;
-        emit Degrees0Completed();
-    }
+        return GENERALERROR;
     memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[2], sizeof(CheckA1::A1_Bd1));
     ChA1->FillBda_in(this);
     memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_in[2], sizeof(CheckA1::A1_Bd4));
     ChA1->FillBda_out_an(this);
     float Um[2], Up[2], Uo[2], Tmkm, Tmkp, Tmko;
+    Tmkm = 7; // !!! УБРАТЬ ПОСЛЕ ТЕСТИРОВАНИЯ !!!
+    Tmkp = 57; // !!! УБРАТЬ ПОСЛЕ ТЕСТИРОВАНИЯ !!!
+    Tmko = 36; // !!! УБРАТЬ ПОСЛЕ ТЕСТИРОВАНИЯ !!!
     Uo[0] = TKUSourceData.Bda_in[0].UefNat_filt[0];
     Uo[1] = TKUSourceData.Bda_in[0].UefNat_filt[1];
     Up[0] = TKUSourceData.Bda_in[1].UefNat_filt[0];
     Up[1] = TKUSourceData.Bda_in[1].UefNat_filt[1];
     Um[0] = TKUSourceData.Bda_in[2].UefNat_filt[0];
     Um[1] = TKUSourceData.Bda_in[2].UefNat_filt[1];
-    Tmko = TKUSourceData.Bda_out_an[0].Tmk;
-    Tmkp = TKUSourceData.Bda_out_an[1].Tmk;
-    Tmkm = TKUSourceData.Bda_out_an[2].Tmk;
+//    Tmko = TKUSourceData.Bda_out_an[0].Tmk; // !!! УБРАТЬ КОММЕНТАРИИ ПОСЛЕ ТЕСТИРОВАНИЯ !!!
+//    Tmkp = TKUSourceData.Bda_out_an[1].Tmk; // !!! УБРАТЬ КОММЕНТАРИИ ПОСЛЕ ТЕСТИРОВАНИЯ !!!
+//    Tmkm = TKUSourceData.Bda_out_an[2].Tmk; // !!! УБРАТЬ КОММЕНТАРИИ ПОСЛЕ ТЕСТИРОВАНИЯ !!!
     double dUm0 = Um[0] / Uo[0] - 1;
     double dUp0 = Up[0] / Uo[0] - 1;
     double dUm1 = Um[1] / Uo[1] - 1;
@@ -527,8 +508,7 @@ void TuneDialogA1::Cont6_3_10_0()
     Bac_block.TKUa[1] = (dUm1 * dTp * dTp - dUp1 * dTm * dTm) / (dTp * dTm * (dTp - dTm));
     Bac_block.TKUb[0] = (dUp0 * dTm - dUm0 * dTp) / (dTp * dTm * (dTp - dTm));
     Bac_block.TKUb[1] = (dUp1 * dTm - dUm1 * dTp) / (dTp * dTm * (dTp - dTm));
-    result = NOERROR;
-    emit Degrees0Completed();
+    return NOERROR;
 }
 
 int TuneDialogA1::Start6_3_11()

@@ -58,6 +58,7 @@ void WaitWidget::Start()
 void WaitWidget::Stop()
 {
     emit finished();
+    close();
 }
 
 void WaitWidget::SetMessage(QString msg)
@@ -85,8 +86,8 @@ void WaitWidget::UpdateSeconds()
         --Seconds;
         if (Seconds == 0)
         {
-            emit CountZero();
-//            this->close();
+//            emit CountZero();
+            Stop();
         }
     }
 }
@@ -118,9 +119,12 @@ void WaitWidget::paintEvent(QPaintEvent *e)
 //    p.fillRect(mrect, brush);
     p.setPen(Qt::black);
     p.drawText(mrect, Qt::AlignCenter, Message);
-    left = center - PressAnyKeyStringWidth/2;
-    mrect = QRect(left,height()-40,PressAnyKeyStringWidth,20);
-    p.drawText(mrect, Qt::AlignCenter, PressAnyKeyString);
+    if (IsAllowedToStop)
+    {
+        left = center - PressAnyKeyStringWidth/2;
+        mrect = QRect(left,height()-40,PressAnyKeyStringWidth,20);
+        p.drawText(mrect, Qt::AlignCenter, PressAnyKeyString);
+    }
     p.end();
     QPainter ps(this);
     QPen pen(Qt::darkGreen, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
@@ -142,13 +146,13 @@ void WaitWidget::keyPressEvent(QKeyEvent *e)
     {
         pc.Cancelled = true;
         Stop();
-        emit CountZero();
-//        this->close();
+//        emit CountZero();
     }
     QWidget::keyPressEvent(e);
 }
 
 void WaitWidget::closeEvent(QCloseEvent *e)
 {
+    emit CountZero();
     e->accept();
 }

@@ -57,7 +57,7 @@ public:
     void ErMsgSetVisible(int msg, bool Visible=true);
     void SkMsgSetVisible(int msg, bool Visible=true);
     void MsgClear();
-    void WaitNSeconds(int SecondsToWait);
+    void WaitNSeconds(int SecondsToWait, bool isAllowedToStop=false);
     void SaveToFileEx();
     int StartMeasurement();
 //    QByteArray *ChooseFileForOpen(QString mask);
