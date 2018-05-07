@@ -57,6 +57,7 @@ private:
     {
         float u;
         float freq;
+        float t;
     };
 
     EMData RealData;
@@ -66,6 +67,7 @@ private:
     {
         CheckA1::A1_Bd1 Bda_in[3];
         CheckA1::A1_Bd4 Bda_out_an[3];
+        float Tmk[3];
     };
     TKUSourceDataStruct TKUSourceData;
 
@@ -101,6 +103,7 @@ private:
     int CheckBdaValues(int checktype);
     int CheckAnalogValues(bool isPrecise); // проверка Bda_in на корректность
     int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта
+    int GetExternalTemp(); // ввод текущей температуры окр. среды для настройки на термокамеру
     void GetBdAndFillMTT();
 
 private slots:
@@ -110,6 +113,9 @@ private slots:
     void SetDefCoefs();
     void SetExtData();
     void CancelExtData();
+    void SetExtTemp();
+    void CancelExtTemp();
+    void CancelExt(const QString &dlgname);
 };
 
 #endif // TUNEDIALOGA1_H

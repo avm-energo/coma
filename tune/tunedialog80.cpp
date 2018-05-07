@@ -706,7 +706,7 @@ int TuneDialog80::GetExternalData()
             {
                 lbl = new QLabel("Uф" + QString::number(i+10,36).toUpper()+", В");
                 glyout->addWidget(lbl,row,column++,1,1);
-                QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i), 0, 200, 0.1, 5);
+                QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i), 0, 200, 2);
                 spb->setValue(60.0);
                 glyout->addWidget(spb,row,column++,1,1);
             }
@@ -719,7 +719,7 @@ int TuneDialog80::GetExternalData()
             {
                 lbl = new QLabel("Iф" + QString::number(i+10,36).toUpper()+", A");
                 glyout->addWidget(lbl,row, column++,1,1);
-                QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i+3), 0, 6, 0.001, 5);
+                QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i+3), 0, 6, 3);
                 spb->setValue(C80->Bci_block.inom2[i]);
                 glyout->addWidget(spb,row, column++,1,1);
             }
@@ -732,7 +732,7 @@ int TuneDialog80::GetExternalData()
             {
                 lbl = new QLabel("Уг.нагр. ф" + QString::number(i+10,36).toUpper()+", град");
                 glyout->addWidget(lbl,3,i*2,1,1);
-                QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i+6), -360, 360, 0.01, 3);
+                QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i+6), -360, 360, 2);
                 spb->setValue(0.0);
                 glyout->addWidget(spb,row, column++,1,1);
             }
@@ -743,7 +743,7 @@ int TuneDialog80::GetExternalData()
         {
             lbl = new QLabel("Частота ");
             glyout->addWidget(lbl,row,column++,1,1);
-            QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb73719", 40.0, 60.0, 0.01, 5);
+            QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb73719", 40.0, 60.0, 3);
             spb->setValue(50.0);
             glyout->addWidget(spb,row, column++,1,1);
         }

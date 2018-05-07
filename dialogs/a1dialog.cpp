@@ -94,6 +94,8 @@ void A1Dialog::SetupUI()
     pb->setObjectName("StartWorkPb");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(StartWork()));
 //    connect(pb,SIGNAL(clicked(bool)),this,SLOT(TempRandomizeModel()));
+    if (pc.Emul)
+        pb->setEnabled(false);
     lyout->addWidget(pb);
     lyout->addStretch(10);
     setLayout(lyout);

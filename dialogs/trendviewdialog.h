@@ -25,7 +25,7 @@ public:
     void SetupUI();
 
 private:
-    QCustomPlot *AnalogPlot, *DiscretePlot;
+    QCustomPlot *AnalogPlot, *DiscretePlot, *MainPlot;
     QMap<QString, QCPGraph *> AnalogGraphs, DigitalGraphs;
     QStringList AnalogNames, DigitalNames;
     float XMin, XMax, YMin, YMax;

@@ -53,24 +53,24 @@ void ConfDialog22::SetupUI()
         int column = 0;
         int row = i+1;
         glyout->addWidget(WDFunc::NewLBL(this, QString::number(i+1), ACONFWCLRO),row,column++,1,1);
-        glyout->addWidget(WDFunc::NewSPB(this, "0."+QString::number(i), 20, 5000, 1, 0, ACONFWCLR),row,column++,1,1);
-        glyout->addWidget(WDFunc::NewSPB(this, "1."+QString::number(i), 0.001, 9.999, 0.001, 3, ACONFWCLRO),row,column++,1,1);
-        glyout->addWidget(WDFunc::NewSPB(this, "2."+QString::number(i), -1000.0, 1000.0, 1, 0, ACONFWCLR),row,column++,1,1);
-        glyout->addWidget(WDFunc::NewSPB(this, "3."+QString::number(i), -1000.0, 1000.0, 1, 0, ACONFWCLR),row,column++,1,1);
+        glyout->addWidget(WDFunc::NewSPB(this, "0."+QString::number(i), 20, 5000, 0, ACONFWCLR),row,column++,1,1);
+        glyout->addWidget(WDFunc::NewSPB(this, "1."+QString::number(i), 0.001, 9.999, 3, ACONFWCLRO),row,column++,1,1);
+        glyout->addWidget(WDFunc::NewSPB(this, "2."+QString::number(i), -1000.0, 1000.0, 0, ACONFWCLR),row,column++,1,1);
+        glyout->addWidget(WDFunc::NewSPB(this, "3."+QString::number(i), -1000.0, 1000.0, 0, ACONFWCLR),row,column++,1,1);
     }
     gb->setLayout(glyout);
     lyout->addWidget(gb);
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBLT(this, "kf_filtrT", "", "", "Пороговое значение, при превышении которого между замерами фильтр не работает"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "kf_filtrT", 0, 1000, 0.1, 1, ACONFWCLRO));
+    hlyout->addWidget(WDFunc::NewSPB(this, "kf_filtrT", 0, 1000, 1, ACONFWCLRO));
     lyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBLT(this, "cnt_filtrT", "", "", "Степень фильтрации (0 - отсутствует)"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "cnt_filtrT", 0, 1000, 1, 0, ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "cnt_filtrT", 0, 1000, 0, ACONFWCLR));
     lyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBLT(this, "hysteresisT", "", "", "Значение гистерезиса на сравнение с уставками (доля от диапазона)"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "hysteresisT", 0, 100, 0.1, 1, ACONFWCLRO));
+    hlyout->addWidget(WDFunc::NewSPB(this, "hysteresisT", 0, 100, 1, ACONFWCLRO));
     lyout->addLayout(hlyout);
     QWidget *cp = new QWidget;
     tmps = "QWidget {background-color: "+QString(ACONFGCLR)+";}";
@@ -95,10 +95,10 @@ void ConfDialog22::SetupUI()
         int column = 0;
         int row = i+1;
         glyout->addWidget(WDFunc::NewLBL(this, QString::number(i+1)),row,column++,1,1,Qt::AlignRight);
-        glyout->addWidget(WDFunc::NewSPB(this, "4."+QString::number(i), -1000.0, 1000.0, 0.1, 1, ACONFRCLR),row,column++,1,1,Qt::AlignCenter);
-        glyout->addWidget(WDFunc::NewSPB(this, "5."+QString::number(i), -1000.0, 1000.0, 0.1, 1, ACONFYCLR),row,column++,1,1,Qt::AlignCenter);
-        glyout->addWidget(WDFunc::NewSPB(this, "6."+QString::number(i), -1000.0, 1000.0, 0.1, 1, ACONFYCLR),row,column++,1,1,Qt::AlignCenter);
-        glyout->addWidget(WDFunc::NewSPB(this, "7."+QString::number(i), -1000.0, 1000.0, 0.1, 1, ACONFRCLR),row,column++,1,1,Qt::AlignCenter);
+        glyout->addWidget(WDFunc::NewSPB(this, "4."+QString::number(i), -1000.0, 1000.0, 1, ACONFRCLR),row,column++,1,1,Qt::AlignCenter);
+        glyout->addWidget(WDFunc::NewSPB(this, "5."+QString::number(i), -1000.0, 1000.0, 1, ACONFYCLR),row,column++,1,1,Qt::AlignCenter);
+        glyout->addWidget(WDFunc::NewSPB(this, "6."+QString::number(i), -1000.0, 1000.0, 1, ACONFYCLR),row,column++,1,1,Qt::AlignCenter);
+        glyout->addWidget(WDFunc::NewSPB(this, "7."+QString::number(i), -1000.0, 1000.0, 1, ACONFRCLR),row,column++,1,1,Qt::AlignCenter);
     }
     lyout->addLayout(glyout);
     cp = new QWidget;

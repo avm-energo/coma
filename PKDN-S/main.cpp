@@ -4,6 +4,8 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QCoreApplication::setApplicationName("PKDN-S");
+    QCoreApplication::setApplicationVersion(COMAVERSION);
     pkdn_s w;
     w.show();
 

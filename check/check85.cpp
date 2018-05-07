@@ -19,48 +19,57 @@ QWidget *Check_85::Bd1W(QWidget *parent)
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(parent, "2.Частота:"));
-    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value2", ValuesFormat, "Частота сигналов, Гц"));
+    int count = 0;
+    glyout->addWidget(WDFunc::NewLBL(parent, "2.Частота:"),count,0,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value2", ValuesFormat, "Частота сигналов, Гц"),count++,1,1,1);
     lyout->addLayout(hlyout);
     for (i = 0; i < 3; ++i)
     {
+        count = 1;
         QString IndexStr = "[" + QString::number(i) + "]";
-        glyout->addWidget(WDFunc::NewLBL(parent, "IUNF1"+IndexStr),0,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "IUNF1"+IndexStr),count,i*2,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+3), ValuesFormat, \
-                                          QString::number(i+3)+".Истинные действующие значения напряжений 1-й тройки"),1,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "IUNF2"+IndexStr),2,i,1,1);
+                                          QString::number(i+3)+".Истинные действующие значения напряжений 1-й тройки"),count++,i*2+1,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "IUNF2"+IndexStr),count,i*2,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+3), ValuesFormat, \
-                                          QString::number(i+6)+".Истинные действующие значения токов"),3,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "IUNF3"+IndexStr),4,i,1,1);
+                                          QString::number(i+6)+".Истинные действующие значения токов"),count++,i*2+1,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "IUNF3"+IndexStr),count,i*2,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+3), ValuesFormat, \
-                                          QString::number(i+9)+".Истинные действующие значения напряжений 2-й тройки"),5,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "UNL1"+IndexStr),6,i,1,1);
+                                          QString::number(i+9)+".Истинные действующие значения напряжений 2-й тройки"),count++,i*2+1,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "UNL1"+IndexStr),count,i*2,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+12), ValuesFormat, \
-                                          QString::number(i+12)+".Действующие значения линейных напряжений 1-й тройки"),7,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "UNL2"+IndexStr),8,i,1,1);
+                                          QString::number(i+12)+".Действующие значения линейных напряжений 1-й тройки"),count++,i*2+1,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "UNL2"+IndexStr),count,i*2,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+15), ValuesFormat, \
-                                          QString::number(i+15)+".Действующие значения линейных напряжений 2-й тройки"),8,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "PNATF"+IndexStr),9,i,1,1);
+                                          QString::number(i+15)+".Действующие значения линейных напряжений 2-й тройки"),count++,i*2+1,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "PNATF"+IndexStr),count,i*2,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+18), ValuesFormat, \
-                                          QString::number(i+18)+".Истинная активная мощность"),10,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "QNATF"+IndexStr),11,i,1,1);
+                                          QString::number(i+18)+".Истинная активная мощность"),count++,i*2+1,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "QNATF"+IndexStr),count,i*2,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+21), ValuesFormat, \
-                                          QString::number(i+21)+".Реактивная мощность"),12,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "SNATF"+IndexStr),13,i,1,1);
+                                          QString::number(i+21)+".Реактивная мощность"),count++,i*2+1,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "SNATF"+IndexStr),count,i*2,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+24), ValuesFormat, \
-                                          QString::number(i+24)+".Полная мощность"),14,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "COSPHI"+IndexStr),15,i,1,1);
+                                          QString::number(i+24)+".Полная мощность"),count++,i*2+1,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "COSPHI"+IndexStr),count,i*2,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+27), ValuesFormat, \
-                                          QString::number(i+27)+".Cos φ"),16,i,1,1);
+                                          QString::number(i+27)+".Cos φ"),count++,i*2+1,1,1);
     }
+    glyout->setColumnStretch(0, 0);
+    glyout->setColumnStretch(1, 10);
+    glyout->setColumnStretch(2, 0);
+    glyout->setColumnStretch(3, 10);
+    glyout->setColumnStretch(4, 0);
+    glyout->setColumnStretch(5, 10);
     lyout->addLayout(glyout);
     glyout = new QGridLayout;
+    glyout->addWidget(WDFunc::NewLBL(parent, "Состояние входных контактных сигналов"),0,0,1,32);
     for (i=0; i<32; ++i)
     {
         QLabel *lbl=new QLabel(QString::number(31-i));
-        glyout->addWidget(lbl,0,i,1,1,Qt::AlignCenter);
+        glyout->addWidget(lbl,1,i,1,1,Qt::AlignCenter);
         QCheckBox *chb = WDFunc::NewChB(parent, "value"+QString::number(i+30), "", ACONFOCLR);
-        glyout->addWidget(chb,1,i,1,1,Qt::AlignCenter);
+        glyout->addWidget(chb,2,i,1,1,Qt::AlignCenter);
     }
     lyout->addLayout(glyout);
     lyout->addStretch(100);

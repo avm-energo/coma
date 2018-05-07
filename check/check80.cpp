@@ -100,6 +100,7 @@ QWidget *Check_80::Bd2W(const QString &title, const QString &begin, QWidget *par
     }
     gb->setLayout(glyout);
     lyout->addWidget(gb);
+    lyout->addStretch(100);
     w->setLayout(lyout);
     w->setStyleSheet(WidgetFormat);
     return w;
@@ -111,24 +112,25 @@ QWidget *Check_80::Bd4W(const QString &title, const QString &begin, QWidget *par
     QVBoxLayout *lyout = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox(title);
     QGridLayout *glyout = new QGridLayout;
-    glyout->addWidget(WDFunc::NewLBL(parent, "U0"),0,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "U0"),0,0,1,1,Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"U0", ValuesFormat, "Сигнал нулевой последовательности"),0,1,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "U1"),0,2,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "U1"),0,2,1,1,Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"U1", ValuesFormat, "Сигнал прямой последовательности"),0,3,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "U2"),0,4,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "U2"),0,4,1,1,Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"U2", ValuesFormat, "Сигнал обратной последовательности"),0,5,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim0"),1,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim0"),1,0,1,1,Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"Kunsim0", ValuesFormat, "Коэф. несимм. по нулевой последовательности"),1,1,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim2"),1,2,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim2"),1,2,1,1,Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"Kunsim2", ValuesFormat, "Коэф. несимм. по обратной последовательности"),1,3,1,1);
     for (int i = 0; i < 3; ++i)
     {
         QString IndexStr = "[" + QString::number(i) + "]";
-        glyout->addWidget(WDFunc::NewLBL(parent, "THD"+IndexStr),2,i,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"THD"+QString::number(i), ValuesFormat, "Коэфф. гарм. искажений ф. "+QString::number(i+10,16)),3,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "THD"+IndexStr),2,i*2,1,1,Qt::AlignRight);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"THD"+QString::number(i), ValuesFormat, "Коэфф. гарм. искажений ф. "+QString::number(i+10,16)),2,i*2+1,1,1);
     }
     gb->setLayout(glyout);
     lyout->addWidget(gb);
+    lyout->addStretch(100);
     w->setLayout(lyout);
     w->setStyleSheet(WidgetFormat);
     return w;
@@ -179,6 +181,7 @@ QWidget *Check_80::Bd8W(const QString &title, const QString &begin, QWidget *par
     }
     gb->setLayout(glyout);
     lyout->addWidget(gb);
+    lyout->addStretch(100);
     w->setLayout(lyout);
     w->setStyleSheet(WidgetFormat);
     return w;

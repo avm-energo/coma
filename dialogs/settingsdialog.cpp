@@ -70,7 +70,7 @@ void SettingsDialog::SetupUI()
     vlyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBLT(this, "Количество точек усреднения для поверки"), 0);
-    hlyout->addWidget(WDFunc::NewSPB(this, "povnumpoints", 1, 65535, 1, 0), 1);
+    hlyout->addWidget(WDFunc::NewSPB(this, "povnumpoints", 1, 65535, 0), 1);
     vlyout->addLayout(hlyout);
     pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),this,SLOT(AcceptSettings()));

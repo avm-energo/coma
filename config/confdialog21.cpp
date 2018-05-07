@@ -111,9 +111,9 @@ void ConfDialog21::SetupUI()
     hlyout = new QHBoxLayout;
     lbl = new QLabel();
     hlyout->addWidget(WDFunc::NewLBLT(this, "Задержка в мс начала фиксации максимумов:"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "oscdly", 0, 10000, 1, 0, ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "oscdly", 0, 10000, 0, ACONFWCLR));
     hlyout->addWidget(WDFunc::NewLBLT(this, "Гистерезис осциллограмм:", "", "", "Доля от диапазона, при превышении которой начинается запись осциллограмм"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "oscthr", 0, 1, 0.001, 3, ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "oscthr", 0, 1, 3, ACONFWCLR));
     gblyout->addLayout(hlyout);
     gb->setLayout(gblyout);
     lyout->addWidget(gb);
@@ -122,11 +122,11 @@ void ConfDialog21::SetupUI()
     hlyout = new QHBoxLayout;
     hlyout->addStretch(10);
     hlyout->addWidget(WDFunc::NewLBLT(this, "Степень фильтрации:", "", "", "Степень фильтрации (0 - отсутствует)"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "filtern", 0, 10000, 1, 0, ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "filtern", 0, 10000, 0, ACONFWCLR));
     hlyout->addWidget(WDFunc::NewLBLT(this, "Гистерезис фильтрации:", "", "", "Доля от диапазона, при превышении которой между замерами фильтр не работает"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "filterthr", 0, 1, 0.001, 3, ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "filterthr", 0, 1, 3, ACONFWCLR));
     hlyout->addWidget(WDFunc::NewLBLT(this, "Гистерезис уставок:", "", "", "Значение гистерезиса на сравнение с уставками (доля от диапазона)"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "hysteresis", 0, 1, 0.001, 3, ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "hysteresis", 0, 1, 3, ACONFWCLR));
     hlyout->addStretch(10);
     gblyout->addLayout(hlyout);
     lyout->addLayout(gblyout);
@@ -160,12 +160,12 @@ void ConfDialog21::SetupUI()
         QComboBox *mcb = WDFunc::NewCB(this, "inrange."+QString::number(i), Params.RangeTypes, ACONFWCLRO);
         connect(mcb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetRange(int)));
         glyout->addWidget(mcb, row,1,1,1);
-        hlyout->addWidget(WDFunc::NewSPB(this, "0."+QString::number(i), -20.0, 20.0, 0.01, 2, ACONFWCLR));
-        hlyout->addWidget(WDFunc::NewSPB(this, "1."+QString::number(i), -20.0, 20.0, 0.01, 2, ACONFWCLR));
+        hlyout->addWidget(WDFunc::NewSPB(this, "0."+QString::number(i), -20.0, 20.0, 2, ACONFWCLR));
+        hlyout->addWidget(WDFunc::NewSPB(this, "1."+QString::number(i), -20.0, 20.0, 2, ACONFWCLR));
         hlyout->addWidget(WDFunc::NewLBL(this, "мА", ACONFWCLR, "units"));
         glyout->addLayout(hlyout, row, 2, 1, 1);
-        glyout->addWidget(WDFunc::NewSPB(this, "2."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFWCLRO),row,3,1,1);
-        glyout->addWidget(WDFunc::NewSPB(this, "3."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFWCLR),row,4,1,1);
+        glyout->addWidget(WDFunc::NewSPB(this, "2."+QString::number(i), -100000.0, 100000.0, 2, ACONFWCLRO),row,3,1,1);
+        glyout->addWidget(WDFunc::NewSPB(this, "3."+QString::number(i), -100000.0, 100000.0, 2, ACONFWCLR),row,4,1,1);
     }
     gb->setLayout(glyout);
     lyout->addWidget(gb);
@@ -192,10 +192,10 @@ void ConfDialog21::SetupUI()
     {
         row = i+1;
         glyout->addWidget(WDFunc::NewLBL(this, QString::number(i+1)),row,0,1,1,Qt::AlignRight);
-        glyout->addWidget(WDFunc::NewSPB(this, "4."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFRCLR),row,1,1,1,Qt::AlignCenter); // setminmin
-        glyout->addWidget(WDFunc::NewSPB(this, "5."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFYCLR),row,2,1,1,Qt::AlignCenter); // setmin
-        glyout->addWidget(WDFunc::NewSPB(this, "6."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFYCLR),row,3,1,1,Qt::AlignCenter); // setmax
-        glyout->addWidget(WDFunc::NewSPB(this, "7."+QString::number(i), -100000.0, 100000.0, 0.01, 2, ACONFRCLR),row,4,1,1,Qt::AlignCenter); // setmaxmax
+        glyout->addWidget(WDFunc::NewSPB(this, "4."+QString::number(i), -100000.0, 100000.0, 2, ACONFRCLR),row,1,1,1,Qt::AlignCenter); // setminmin
+        glyout->addWidget(WDFunc::NewSPB(this, "5."+QString::number(i), -100000.0, 100000.0, 2, ACONFYCLR),row,2,1,1,Qt::AlignCenter); // setmin
+        glyout->addWidget(WDFunc::NewSPB(this, "6."+QString::number(i), -100000.0, 100000.0, 2, ACONFYCLR),row,3,1,1,Qt::AlignCenter); // setmax
+        glyout->addWidget(WDFunc::NewSPB(this, "7."+QString::number(i), -100000.0, 100000.0, 2, ACONFRCLR),row,4,1,1,Qt::AlignCenter); // setmaxmax
     }
     gb->setLayout(glyout);
     lyout->addWidget(gb);

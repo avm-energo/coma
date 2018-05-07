@@ -237,7 +237,7 @@ QWidget *TuneDialogA1DN::CoefUI(int bac2num)
     hlyout->addWidget(WDFunc::NewLBL(this,"Заводской номер делителя:"), 0);
     hlyout->addWidget(WDFunc::NewLE(this, "DividerSN"+Si, "", tmps),10);
     hlyout->addWidget(WDFunc::NewLBL(this,"Номинальный коэффициент деления ДН:"), 0);
-    hlyout->addWidget(WDFunc::NewSPB(this,"K_DNSPB."+Si,1,10000,1,0,UCONFWCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this,"K_DNSPB."+Si,1,10000,0,UCONFWCLR));
     hlyout->addStretch(10);
     lyout->addLayout(hlyout);
 

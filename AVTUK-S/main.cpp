@@ -7,6 +7,7 @@ int main(int argc, char *argv[])
     QString Parameter;
     QApplication a(argc, argv);
     Coma w;
+//    w.setAttribute(Qt::WA_AlwaysShowToolTips);
     w.SetMode(Coma::COMA_GENERALMODE);
     QCoreApplication::setApplicationName("COMA");
     QCoreApplication::setApplicationVersion(COMAVERSION);

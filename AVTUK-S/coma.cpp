@@ -98,7 +98,10 @@ int Coma::GetMode()
 void Coma::Go(const QString &parameter)
 {
     if (Mode != COMA_GENERALMODE)
-        Autonomous = true;
+    {
+        pc.Emul = true;
+//        Autonomous = true;
+    }
     SetupUI();
     show();
     switch (Mode)
@@ -242,9 +245,9 @@ void Coma::AddUIToToolbar(QToolBar *tb)
     act = new QAction(this);
     act->setToolTip("Эмуляция A1");
     act->setIcon(QIcon("images/a1.png"));
-    quint16 MType = MTB_A1;
-    MType = (MType << 8) | MTM_00;
-    act->setObjectName(QString::number(MType, 16)); // для слота StartEmul
+//    quint16 MType = MTB_A1;
+//    MType = (MType << 8) | MTM_00;
+    act->setObjectName(QString::number(MTB_A1, 16)); // для слота StartEmul
     connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
     tb->addAction(act);
     tb->addSeparator();
@@ -263,6 +266,7 @@ void Coma::AddActionsToMenuBar(QMenuBar *menubar)
 
 void Coma::Stage3()
 {
+    QString str;
     ConfB = ConfM = 0;
     CheckB = CheckM = 0;
     if (!Autonomous)
@@ -284,7 +288,7 @@ void Coma::Stage3()
     PrepareDialogs();
     if (ConfB != 0)
     {
-        QString str = (ConfM == 0) ? "Конфигурирование" : "Конфигурирование\nБазовая";
+        str = (ConfM == 0) ? "Конфигурирование" : "Конфигурирование\nБазовая";
         MainTW->addTab(ConfB, str);
         if (!Autonomous)
         {
@@ -292,16 +296,9 @@ void Coma::Stage3()
             connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
         }
     }
-    if (!Autonomous)
-    {
-        if (TuneB != 0)
-            MainTW->addTab(TuneB, "Регулировка\nБазовая");
-    }
-    if (CheckB != 0)
-        MainTW->addTab(CheckB, "Проверка\nБазовая");
     if (ConfM != 0)
     {
-        QString str = (ConfB == 0) ? "Конфигурирование" : "Конфигурирование\nМезонин";
+        str = (ConfB == 0) ? "Конфигурирование" : "Конфигурирование\nМезонин";
         MainTW->addTab(ConfM, str);
         if (!Autonomous)
         {
@@ -309,27 +306,29 @@ void Coma::Stage3()
             connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
         }
     }
-    if (!Autonomous)
-    {
-        if (TuneM != 0)
-            MainTW->addTab(TuneM, "Регулировка\nМезонин");
-    }
+    str = (TuneM == 0) ? "Регулировка" : "Регулировка\nБазовая";
+    if (TuneB != 0)
+        MainTW->addTab(TuneB, str);
+    str = (TuneB == 0) ? "Регулировка" : "Регулировка\nМезонин";
+    if (TuneM != 0)
+        MainTW->addTab(TuneM, str);
+    str = (CheckM == 0) ? "Проверка" : "Проверка\nБазовая";
+    if (CheckB != 0)
+        MainTW->addTab(CheckB, str);
+    str = (CheckB == 0) ? "Проверка" : "Проверка\nМезонин";
     if (CheckM != 0)
-        MainTW->addTab(CheckM, "Проверка\nМезонин");
-    if (!Autonomous)
+        MainTW->addTab(CheckM, str);
+    if ((pc.ModuleBsi.MTypeB << 8) == MTB_A1)
     {
-        if ((pc.ModuleBsi.MTypeB << 8) == MTB_A1)
-        {
-            MainTW->addTab(new TuneDialogA1DN, "Настройка своего ДН");
-            MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
-        }
-        OscD = new OscDialog(OscFunc);
-        fwupdialog *FwUpD = new fwupdialog;
-        MainTW->addTab(OscD, "Осциллограммы");
-        if (SwjD != 0)
-            MainTW->addTab(SwjD, "Журнал переключений");
-        MainTW->addTab(FwUpD, "Загрузка ВПО");
+        MainTW->addTab(new TuneDialogA1DN, "Настройка своего ДН");
+        MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
     }
+    OscD = new OscDialog(OscFunc);
+    fwupdialog *FwUpD = new fwupdialog;
+    MainTW->addTab(OscD, "Осциллограммы");
+    if (SwjD != 0)
+        MainTW->addTab(SwjD, "Журнал переключений");
+    MainTW->addTab(FwUpD, "Загрузка ВПО");
     if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
         pc.ErMsg(ER_NOCONF);
     if (pc.ModuleBsi.Hth & HTH_REGPARS) // нет коэффициентов
@@ -347,16 +346,14 @@ void Coma::PrepareDialogs()
     case MTB_21:
     {
         ConfB = new ConfDialog21(S2Config, true);
-        if (!Autonomous)
-            TuneB = new TuneDialog21(BT_BASE);
+        TuneB = new TuneDialog21(BT_BASE);
         CheckB = new CheckDialog21(BT_BASE);
         break;
     }
     case MTB_22:
     {
         ConfB = new ConfDialog22(S2Config, true);
-//        if (!Autonomous)
-            TuneB = new TuneDialog22(BT_BASE);
+        TuneB = new TuneDialog22(BT_BASE);
         CheckB = new CheckDialog22(BT_BASE);
         break;
     }
@@ -372,17 +369,19 @@ void Coma::PrepareDialogs()
     }
     case MTB_80:
     {
-        ConfB = new ConfDialog80(S2Config);
-        if (!Autonomous)
-            TuneB = new TuneDialog80(S2Config);
+//        ConfB = new ConfDialog80(S2Config);
+//        TuneB = new TuneDialog80(S2Config);
         CheckB = new CheckDialog80(BT_BASE);
         break;
     }
     case MTB_A1:
+    {
         ConfB = new ConfDialogA1(S2Config);
         CheckB = new CheckDialogA1(BT_BASE);
-        if (!Autonomous)
-            TuneB = new TuneDialogA1;
+        TuneB = new TuneDialogA1;
+        break;
+    }
+    default:
         break;
     }
     switch(pc.ModuleBsi.MTypeM)
@@ -416,16 +415,14 @@ void Coma::PrepareDialogs()
     case MTM_83:
     {
         ConfM = new ConfDialog80(S2Config);
-        if (!Autonomous)
-            TuneM = new TuneDialog80(S2Config);
+        TuneM = new TuneDialog80(S2Config);
         break;
     }
     case MTM_85:
     {
         ConfM = new ConfDialog85(S2Config);
         CheckM = new CheckDialog85(BT_BASE);
-        if (!Autonomous)
-            SwjD = new SwitchJournalDialog;
+        SwjD = new SwitchJournalDialog;
         break;
     }
     default: // 0x00

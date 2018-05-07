@@ -45,9 +45,9 @@ void TuneDialogA1::SetLbls()
     lbls.append("6.3.9.1 КПТ: получение блока данных и усреднение...");
     lbls.append("6.3.9.2 КПТ: ввод данных от энергомонитора...");
     lbls.append("6.3.9.3 КПТ: расчёт регулировочных коэффициентов...");
-    lbls.append("6.3.10.1 Настройка температурной коррекции по 20 градусам ...");
-    lbls.append("6.3.10.2 Настройка температурной коррекции по 50 градусам ...");
-    lbls.append("6.3.10.3 Настройка температурной коррекции по 0 градусам ...");
+    lbls.append("6.3.10.1 Настройка температурной коррекции по нормальной температуре...");
+    lbls.append("6.3.10.2 Настройка температурной коррекции по повышенной температуре...");
+    lbls.append("6.3.10.3 Настройка температурной коррекции по пониженной температуре...");
     lbls.append("6.3.11 Запись настроечных коэффициентов и переход на новую конфигурацию...");
     lbls.append("6.3.12 Проверка аналоговых данных...");
 }
@@ -132,35 +132,39 @@ void TuneDialogA1::SetupUI()
     QGridLayout *glyout = new QGridLayout;
     QGroupBox *gb = new QGroupBox("Настроечные коэффициенты");
     glyout->addWidget(WDFunc::NewLBL(this, "KmU[0]"), 0, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune0", "", ValuesLEFormat), 0, 1, 1, 2);
+    glyout->addWidget(WDFunc::NewLE(this, "tune0", "", ValuesLEFormat), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "KmU[1]"), 0, 2, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune1", "", ValuesLEFormat), 0, 3, 1, 2);
+    glyout->addWidget(WDFunc::NewLE(this, "tune1", "", ValuesLEFormat), 0, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "K_freq"), 1, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune2", "", ValuesLEFormat), 1, 1, 1, 2);
+    glyout->addWidget(WDFunc::NewLE(this, "tune2", "", ValuesLEFormat), 1, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "DPhy"), 1, 2, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune3", "", ValuesLEFormat), 1, 3, 1, 2);
+    glyout->addWidget(WDFunc::NewLE(this, "tune3", "", ValuesLEFormat), 1, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Art"), 2, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune25", "", ValuesLEFormat), 2, 1, 1, 2);
+    glyout->addWidget(WDFunc::NewLE(this, "tune25", "", ValuesLEFormat), 2, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Brt"), 2, 2, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune26", "", ValuesLEFormat), 2, 3, 1, 2);
+    glyout->addWidget(WDFunc::NewLE(this, "tune26", "", ValuesLEFormat), 2, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Ama1"), 3, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune27", "", ValuesLEFormat), 3, 1, 1, 2);
+    glyout->addWidget(WDFunc::NewLE(this, "tune27", "", ValuesLEFormat), 3, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Bma1"), 3, 2, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune28", "", ValuesLEFormat), 3, 3, 1, 2);
+    glyout->addWidget(WDFunc::NewLE(this, "tune28", "", ValuesLEFormat), 3, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Ama2"), 4, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune29", "", ValuesLEFormat), 4, 1, 1, 2);
+    glyout->addWidget(WDFunc::NewLE(this, "tune29", "", ValuesLEFormat), 4, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Bma2"), 4, 2, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune30", "", ValuesLEFormat), 4, 3, 1, 2);
+    glyout->addWidget(WDFunc::NewLE(this, "tune30", "", ValuesLEFormat), 4, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "TKUa[0]"), 5, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune31", "", ValuesLEFormat), 5, 1, 1, 2);
+    glyout->addWidget(WDFunc::NewLE(this, "tune31", "", ValuesLEFormat), 5, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "TKUa[1]"), 5, 2, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune32", "", ValuesLEFormat), 5, 3, 1, 2);
+    glyout->addWidget(WDFunc::NewLE(this, "tune32", "", ValuesLEFormat), 5, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "TKUb[0]"), 6, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune33", "", ValuesLEFormat), 6, 1, 1, 2);
+    glyout->addWidget(WDFunc::NewLE(this, "tune33", "", ValuesLEFormat), 6, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "TKUb[1]"), 6, 2, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune34", "", ValuesLEFormat), 6, 3, 1, 2);
+    glyout->addWidget(WDFunc::NewLE(this, "tune34", "", ValuesLEFormat), 6, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Tmk0"), 7, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune35", "", ValuesLEFormat), 7, 1, 1, 2);
+    glyout->addWidget(WDFunc::NewLE(this, "tune35", "", ValuesLEFormat), 7, 1, 1, 1);
+    glyout->setColumnStretch(0, 0);
+    glyout->setColumnStretch(1, 10);
+    glyout->setColumnStretch(2, 0);
+    glyout->setColumnStretch(3, 10);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
     lyout->addWidget(BottomUI());
@@ -445,6 +449,12 @@ int TuneDialogA1::Start6_3_9_3()
 
 int TuneDialogA1::Start6_3_10_1()
 {
+    Skipped = false;
+    if (EMessageBox::question(this, "Вопрос", "Будет проведена температурная регулировка, выполнить?") == false)
+    {
+        Skipped = true;
+        return ER_RESEMPTY;
+    }
     Bac_block.TKUa[0] = Bac_block.TKUb[0] = Bac_block.TKUa[1] = Bac_block.TKUb[1] = 0;
     if (Commands::WriteBac(BT_BASE, &Bac_block, sizeof(Bac_block)) != NOERROR)
     {
@@ -453,6 +463,9 @@ int TuneDialogA1::Start6_3_10_1()
     }
     if (Start60PointsMeasurements(TKUSourceData.Bda_in[0], TKUSourceData.Bda_out_an[0]) != NOERROR)
         return GENERALERROR;
+    if (GetExternalTemp() == GENERALERROR)
+        return GENERALERROR;
+    TKUSourceData.Tmk[0] = RealData.t;
     memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[0], sizeof(CheckA1::A1_Bd1));
     ChA1->FillBda_in(this);
     memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_out_an[0], sizeof(CheckA1::A1_Bd4));
@@ -462,11 +475,20 @@ int TuneDialogA1::Start6_3_10_1()
 
 int TuneDialogA1::Start6_3_10_2()
 {
-    EMessageBox::information(this, "Требование", "Задайте температуру в термокамере +50±5 °С");
+    if (Skipped)
+        return ER_RESEMPTY;
+    if (EMessageBox::question(this, "Требование", "Задайте повышенную температуру в термокамере (+50) °С") == false)
+    {
+        Skipped = true;
+        return ER_RESEMPTY;
+    }
     WaitNSeconds(30*60, true);
     pc.Cancelled = false; // если прервали 30-минутный отсчёт, это дело пользователя
     if (Start60PointsMeasurements(TKUSourceData.Bda_in[1], TKUSourceData.Bda_out_an[1]) != NOERROR)
         return GENERALERROR;
+    if (GetExternalTemp() == GENERALERROR)
+        return GENERALERROR;
+    TKUSourceData.Tmk[1] = RealData.t;
     memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[1], sizeof(CheckA1::A1_Bd1));
     ChA1->FillBda_in(this);
     memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_in[1], sizeof(CheckA1::A1_Bd4));
@@ -476,34 +498,45 @@ int TuneDialogA1::Start6_3_10_2()
 
 int TuneDialogA1::Start6_3_10_3()
 {
-    EMessageBox::information(this, "Требование", "Задайте температуру в термокамере 0±5 °С");
+    if (Skipped)
+        return ER_RESEMPTY;
+    if (EMessageBox::question(this, "Требование", "Задайте пониженную температуру в термокамере (0) °С") == false)
+    {
+        Skipped = true;
+        return ER_RESEMPTY;
+    }
     WaitNSeconds(30*60, true);
     pc.Cancelled = false; // если прервали 30-минутный отсчёт, это дело пользователя
     if (Start60PointsMeasurements(TKUSourceData.Bda_in[2], TKUSourceData.Bda_out_an[2]) != NOERROR)
         return GENERALERROR;
+    if (GetExternalTemp() == GENERALERROR)
+        return GENERALERROR;
+    TKUSourceData.Tmk[2] = RealData.t;
     memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[2], sizeof(CheckA1::A1_Bd1));
     ChA1->FillBda_in(this);
     memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_in[2], sizeof(CheckA1::A1_Bd4));
     ChA1->FillBda_out_an(this);
     float Um[2], Up[2], Uo[2], Tmkm, Tmkp, Tmko;
-    Tmkm = 7; // !!! УБРАТЬ ПОСЛЕ ТЕСТИРОВАНИЯ !!!
-    Tmkp = 57; // !!! УБРАТЬ ПОСЛЕ ТЕСТИРОВАНИЯ !!!
-    Tmko = 36; // !!! УБРАТЬ ПОСЛЕ ТЕСТИРОВАНИЯ !!!
+    Tmkm = TKUSourceData.Tmk[2];
+    Tmkp = TKUSourceData.Tmk[1];
+    Tmko = TKUSourceData.Tmk[0];
     Uo[0] = TKUSourceData.Bda_in[0].UefNat_filt[0];
     Uo[1] = TKUSourceData.Bda_in[0].UefNat_filt[1];
     Up[0] = TKUSourceData.Bda_in[1].UefNat_filt[0];
     Up[1] = TKUSourceData.Bda_in[1].UefNat_filt[1];
     Um[0] = TKUSourceData.Bda_in[2].UefNat_filt[0];
     Um[1] = TKUSourceData.Bda_in[2].UefNat_filt[1];
-//    Tmko = TKUSourceData.Bda_out_an[0].Tmk; // !!! УБРАТЬ КОММЕНТАРИИ ПОСЛЕ ТЕСТИРОВАНИЯ !!!
-//    Tmkp = TKUSourceData.Bda_out_an[1].Tmk; // !!! УБРАТЬ КОММЕНТАРИИ ПОСЛЕ ТЕСТИРОВАНИЯ !!!
-//    Tmkm = TKUSourceData.Bda_out_an[2].Tmk; // !!! УБРАТЬ КОММЕНТАРИИ ПОСЛЕ ТЕСТИРОВАНИЯ !!!
     double dUm0 = Um[0] / Uo[0] - 1;
     double dUp0 = Up[0] / Uo[0] - 1;
     double dUm1 = Um[1] / Uo[1] - 1;
     double dUp1 = Up[1] / Uo[1] - 1;
     double dTm = Tmkm - Tmko;
     double dTp = Tmkp - Tmko;
+    if ((qAbs(dTm) < 1.0f) || (qAbs(dTp) < 1.0f))
+    {
+        EMessageBox::error(this, "Ошибка", "Разница температур слишком маленькая");
+        return GENERALERROR;
+    }
     Bac_block.TKUa[0] = (dUm0 * dTp * dTp - dUp0 * dTm * dTm) / (dTp * dTm * (dTp - dTm));
     Bac_block.TKUa[1] = (dUm1 * dTp * dTp - dUp1 * dTm * dTm) / (dTp * dTm * (dTp - dTm));
     Bac_block.TKUb[0] = (dUp0 * dTm - dUm0 * dTp) / (dTp * dTm * (dTp - dTm));
@@ -687,9 +720,30 @@ int TuneDialogA1::GetExternalData()
     QGridLayout *glyout = new QGridLayout;
     glyout->addWidget(WDFunc::NewLBL(dlg, "Введите значения сигналов по приборам"),0,0,1,4);
     glyout->addWidget(WDFunc::NewLBL(dlg, "Значение напряжения, В"), 1,0,1,1);
-    glyout->addWidget(WDFunc::NewSPB(dlg, "u", -125, 125, 0.00001, 5), 1,1,1,1);
+    glyout->addWidget(WDFunc::NewSPB(dlg, "u", -125, 125, 5), 1,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(dlg, "Частота, Гц"), 2,2,1,1);
-    glyout->addWidget(WDFunc::NewSPB(dlg, "freq", -100, 100, 0.00001, 5), 2,3,1,1);
+    glyout->addWidget(WDFunc::NewSPB(dlg, "freq", -100, 100, 5), 2,3,1,1);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SetExtData()));
+    glyout->addWidget(pb,4,0,1,3);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked()),this,SLOT(CancelExtData()));
+    glyout->addWidget(pb,4,3,1,3);
+    dlg->setLayout(glyout);
+    dlg->exec();
+    if (pc.Cancelled)
+        return GENERALERROR;
+    return NOERROR;
+}
+
+int TuneDialogA1::GetExternalTemp()
+{
+    QDialog *dlg = new QDialog(this);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setObjectName("extdatat");
+    QGridLayout *glyout = new QGridLayout;
+    glyout->addWidget(WDFunc::NewLBL(dlg, "Введите текущее значение температуры в камере:"),0,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(dlg, "t", -125, 125, 3),0,1,1,1);
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),this,SLOT(SetExtData()));
     glyout->addWidget(pb,4,0,1,3);
@@ -793,7 +847,27 @@ void TuneDialogA1::SetExtData()
 
 void TuneDialogA1::CancelExtData()
 {
-    QDialog *dlg = this->findChild<QDialog *>("extdatad");
+    CancelExt("extdatad");
+}
+
+void TuneDialogA1::SetExtTemp()
+{
+    QDialog *dlg = this->findChild<QDialog *>("extdatat");
+    if (dlg == 0)
+        return;
+    WDFunc::SPBData(dlg, "t", RealData.t);
+    pc.Cancelled = false;
+    dlg->close();
+}
+
+void TuneDialogA1::CancelExtTemp()
+{
+    CancelExt("extdatat");
+}
+
+void TuneDialogA1::CancelExt(const QString &dlgname)
+{
+    QDialog *dlg = this->findChild<QDialog *>(dlgname);
     if (dlg == 0)
         return;
     pc.Cancelled = true;

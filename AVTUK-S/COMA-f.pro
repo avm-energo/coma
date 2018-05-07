@@ -9,13 +9,14 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.1.213
+VERSION = 2.1.231
 
 QT       += core gui network serialport printsupport
 
 TARGET = avtuks-F
 DEFINES += PROGNAME='\\"AVTUK-S\\"'
-DEFINES += PROGCAPTION='\\"AVTUK\\040Service\\040F\\040v2.1.213\\"'
+DEFINES += PROGCAPTION='\\"AVTUK-Service-F\\040v"$$VERSION"\\"'
+DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=4 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
 #DEFINES += COMPORTENABLE # enable virtual com port driver
@@ -97,7 +98,8 @@ SOURCES += \
     ../widgets/wd_func.cpp \ 
     ../check/check22.cpp \
     ../check/checkdialog22.cpp \
-    ../tune/tunedialog22.cpp
+    ../tune/tunedialog22.cpp \
+    ../widgets/passwordlineedit.cpp
 
 HEADERS  += \
     coma.h \
@@ -173,7 +175,8 @@ HEADERS  += \
     ../widgets/wd_func.h \ 
     ../check/check22.h \
     ../check/checkdialog22.h \
-    ../tune/tunedialog22.h
+    ../tune/tunedialog22.h \
+    ../widgets/passwordlineedit.h
 
 INCLUDEPATH += $$PWD/../../includes
 

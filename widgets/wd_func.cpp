@@ -4,6 +4,7 @@
 #include <QRegExp>
 #include <QPainter>
 #include <QStringListModel>
+#include <QtMath>
 #include "wd_func.h"
 #include "etableview.h"
 
@@ -166,9 +167,10 @@ bool WDFunc::SetCBColor(QWidget *w, const QString &cbname, const QString &color)
     return true;
 }
 
-QDoubleSpinBox *WDFunc::NewSPB(QWidget *parent, const QString &spbname, double min, double max, double step, int decimals, const QString &spbcolor)
+QDoubleSpinBox *WDFunc::NewSPB(QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor)
 {
     QDoubleSpinBox *dspbls = new QDoubleSpinBox(parent);
+    double step = qPow(0.1f, decimals);
     dspbls->setObjectName(spbname);
     dspbls->setSingleStep(step);
     dspbls->setDecimals(decimals);

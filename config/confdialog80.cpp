@@ -174,6 +174,7 @@ void ConfDialog80::SetupUI()
         break;
     }
     vlyout2->addWidget(Threshold("Уставка порога мин. уровня для определения частоты, %", 3));
+    vlyout2->addWidget(new QPushButton("123"));
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
 
@@ -197,11 +198,11 @@ void ConfDialog80::SetupUI()
     vlyout2->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Постоянная времени фильтрации:"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "nfiltrspb", 1, 1000, 1, 0, ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "nfiltrspb", 1, 1000, 0, ACONFWCLR));
     vlyout2->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Постоянная времени гармоник:"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "nhfiltrspb", 1, 100, 1, 0, ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "nhfiltrspb", 1, 100, 0, ACONFWCLR));
     vlyout2->addLayout(hlyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
@@ -226,7 +227,7 @@ void ConfDialog80::CheckConf()
 
 QWidget *ConfDialog80::UNom(int numunom)
 {
-    QWidget *w = new QWidget;
+    QWidget *w = new QWidget(this);
     QString NumUNomStr = QString::number(numunom);
     QHBoxLayout *gb2lyout = new QHBoxLayout;
     QLabel *lbl=new QLabel("Класс напряжения "+NumUNomStr+"-й группы, кВ:");
@@ -252,7 +253,7 @@ QWidget *ConfDialog80::INom(int numinom)
     for (int i = 0; i < 3; i++)
     {
         gb2lyout->addWidget(WDFunc::NewLBL(this, QString::number(i+10, 16).toUpper() + ":"), 1, Qt::AlignRight); // A, B, C
-        gb2lyout->addWidget(WDFunc::NewSPB(this, "inom."+PervNum+"."+QString::number(i+Group*3), 1, 50000, 1, 0, ACONFWCLR), 1);
+        gb2lyout->addWidget(WDFunc::NewSPB(this, "inom."+PervNum+"."+QString::number(i+Group*3), 1, 50000, 0, ACONFWCLR), 1);
     }
     w->setLayout(gb2lyout);
     return w;
@@ -263,7 +264,7 @@ QWidget *ConfDialog80::Threshold(QString str, int numthr)
     QWidget *w = new QWidget;
     QHBoxLayout *gb2lyout = new QHBoxLayout;
     gb2lyout->addWidget(WDFunc::NewLBL(this, str));
-    gb2lyout->addWidget(WDFunc::NewSPB(this, "thr."+QString::number(numthr), 0, 100, 0.1, 1, ACONFWCLR));
+    gb2lyout->addWidget(WDFunc::NewSPB(this, "thr."+QString::number(numthr), 0, 100, 1, ACONFWCLR));
     w->setLayout(gb2lyout);
     return w;
 }

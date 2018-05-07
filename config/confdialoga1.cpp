@@ -85,7 +85,7 @@ void ConfDialogA1::SetupUI()
 /*    hlyout->addWidget(WDFunc::NewLBL(this,"Заводской номер делителя:"), 0);
     hlyout->addWidget(WDFunc::NewLE(this, "DividerSN", "", tmps),10);
     hlyout->addWidget(WDFunc::NewLBL(this,"Номинальный коэффициент деления ДН:"), 0);
-    hlyout->addWidget(WDFunc::NewSPB(this,"K_DNSPB",1,10000,1,0,UCONFWCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this,"K_DNSPB",1,10000,0,UCONFWCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout); */
 
@@ -95,14 +95,14 @@ void ConfDialogA1::SetupUI()
     EComboBox *cb = WDFunc::NewCB(this, "TokrCB", sl, UCONFCLR);
     hlyout->addWidget(cb, 10);
     hlyout->addWidget(WDFunc::NewLBL(this, "W100:"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "TokrW100", 0.1, 3, 0.001, 3, UCONFCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "TokrW100", 0.1, 3, 3, UCONFCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Значение при 4 мА:"), 0, Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewSPB(this, "TokrSPB4", -200, 100, 0.1, 1, UCONFCLR), 10);
+    hlyout->addWidget(WDFunc::NewSPB(this, "TokrSPB4", -200, 100, 1, UCONFCLR), 10);
     hlyout->addWidget(WDFunc::NewLBL(this, "Значение при 20 мА:"), 0, Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewSPB(this, "TokrSPB20", -200, 100, 0.1, 1, UCONFCLR), 10);
+    hlyout->addWidget(WDFunc::NewSPB(this, "TokrSPB20", -200, 100, 1, UCONFCLR), 10);
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
 
@@ -115,21 +115,21 @@ void ConfDialogA1::SetupUI()
     vlyout1->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Значение при 4 мА:"), 0, Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewSPB(this, "HumiditySPB4", 0, 100, 0.1, 1, UCONFCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "HumiditySPB4", 0, 100, 1, UCONFCLR));
     hlyout->addWidget(WDFunc::NewLBL(this, "Значение при 20 мА:"), 0, Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewSPB(this, "HumiditySPB20", 0, 100, 0.1, 1, UCONFCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "HumiditySPB20", 0, 100, 1, UCONFCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
 
 #if PROGSIZE >= PROGSIZE_LARGE
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Уставка скачка напряжения для запуска осциллографирования, %"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "thr.1", 0, 100, 0.1, 1, UCONFWCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "thr.1", 0, 100, 1, UCONFWCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Уставка контроля минимума напряжения для частоты и фазового сдвига, %"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "thr.2", 0, 100, 0.1, 1, UCONFWCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "thr.2", 0, 100, 1, UCONFWCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
 
@@ -142,13 +142,13 @@ void ConfDialogA1::SetupUI()
     vlyout1->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBLT(this, "Постоянная фильтрации:", "", "", "Задаётся в тактах, один такт - 20 мс"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "NFilterSPB", 1, 1000, 1, 0, UCONFCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "NFilterSPB", 1, 1000, 0, UCONFCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBLT(this, "Постоянная фильтрации гармоник:", "", "", "Задаётся в циклах, каждый цикл равен количеству гармоник, \n"
                                                                                        "умноженному на длину одного такта (20 мс), по умолчанию 61 такт"));
-    hlyout->addWidget(WDFunc::NewSPB(this, "NHarmFiltSPB", 1, 1000, 1, 0, UCONFCLR));
+    hlyout->addWidget(WDFunc::NewSPB(this, "NHarmFiltSPB", 1, 1000, 0, UCONFCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);
 #endif

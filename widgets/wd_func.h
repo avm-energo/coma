@@ -59,7 +59,7 @@ public:
         index = cb->currentIndex();
         return true;
     }
-    static QDoubleSpinBox *NewSPB(QWidget *parent, const QString &spbname, double min, double max, double step, int decimals, const QString &spbcolor="");
+    static QDoubleSpinBox *NewSPB(QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor="");
     static bool SetSPBData(QWidget *w, const QString &spbname, const double &spbvalue);
     template <typename T> static bool SPBData(QWidget *w, const QString &spbname, T &spbvalue)
     {
