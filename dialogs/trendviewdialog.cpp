@@ -1,3 +1,30 @@
+/* TrendViewDialog - dialog with trendview to show the oscillogram
+ * Using:
+ *          TrendViewModel *TModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
+ *          dlg->SetModel(TModel);
+ *          dlg->SetAnalogNames(tmpav);
+ *          dlg->SetDigitalNames(tmpdv);
+ *          dlg->SetAnalogColors(acolors);
+ *          dlg->SetDigitalColors(dcolors);
+ *          dlg->SetRanges(xmin, xmax, -200, 200);
+ *          dlg->SetupPlots();
+ *          dlg->SetupUI();
+ *          if (!TModel->SetPointsAxis(xmin, OHD.step))
+ *              return GENERALERROR;
+ *          for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
+ *          {
+ *              Point8x point;
+ *              if (!PosPlusPlus(&point, sizeof(Point8x)))
+ *                  return GENERALERROR;
+ *              for (int i=0; i<6; ++i)
+ *                  TModel->AddAnalogPoint(tmpav.at(i), point.An[i]);
+ *          }
+ *          TModel->SetFilename(fn);
+ *          dlg->setModal(false);
+ *          dlg->PlotShow();
+ *          dlg->show();
+ */
+
 #include <QVector>
 #include <QPen>
 #include <QAction>
@@ -33,35 +60,26 @@ void TrendViewDialog::SetupUI()
 
     if (!NoDiscrete)
     {
-//        vlyout->addWidget(WDFunc::NewLBL(this, "Дискретные сигналы"), 0, Qt::AlignCenter);
-        SignalChooseWidget *scw = new SignalChooseWidget(DigitalNames);
+        SignalChooseWidget *scw = new SignalChooseWidget(DigitalDescription.Names);
         scw->setObjectName("digital");
         connect(scw,SIGNAL(SignalChoosed(QString)),this,SLOT(DSignalChoosed(QString)));
         connect(scw,SIGNAL(SignalToggled(QString,bool)),this,SLOT(DSignalToggled(QString,bool)));
-//        hlyout->addWidget(scw);
         vlyout->addWidget(scw);
-//        vlyout->addWidget(PlotToolBar(), 0);
-//        vlyout->addWidget(DiscretePlot, 100);
-//        hlyout->addLayout(vlyout, 100);
-//        lyout->addLayout(hlyout);
     }
     if (!NoAnalog)
     {
-/*        hlyout = new QHBoxLayout;
-        vlyout = new QVBoxLayout;
-        vlyout->addWidget(WDFunc::NewLBL(this, "Аналоговые сигналы"), 0, Qt::AlignCenter); */
-        SignalChooseWidget *scw = new SignalChooseWidget(AnalogNames);
+        SignalChooseWidget *scw = new SignalChooseWidget(AnalogDescription.Names);
         scw->setObjectName("analog");
         connect(scw,SIGNAL(SignalChoosed(QString)),this,SLOT(ASignalChoosed(QString)));
         connect(scw,SIGNAL(SignalToggled(QString,bool)),this,SLOT(ASignalToggled(QString,bool)));
-//        hlyout->addWidget(scw);
         vlyout->addWidget(scw);
-//        vlyout->addWidget(PlotToolBar(), 0);
-//        vlyout->addWidget(AnalogPlot, 100);
-/*        hlyout->addLayout(vlyout, 100);
-        lyout->addLayout(hlyout); */
     }
     hlyout->addLayout(vlyout);
+    if (MainPlot.isNull())
+    {
+        DBGMSG;
+        return;
+    }
     hlyout->addWidget(MainPlot, 100);
     lyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
@@ -97,15 +115,48 @@ QToolBar *TrendViewDialog::PlotToolBar()
     return bar;
 }
 
-QCPGraph *TrendViewDialog::GraphByName(QCustomPlot *plot, const QString &name)
+QCPGraph *TrendViewDialog::GraphByName(const QString &name)
 {
-    for (int i=0; i<plot->graphCount(); ++i)
+    for (int i=0; i<MainPlot->graphCount(); ++i)
     {
-        QCPGraph *graph = plot->graph(i);
+        QCPGraph *graph = MainPlot->graph(i);
         if (graph->name() == name)
             return graph;
     }
     return 0;
+}
+
+void TrendViewDialog::ChangeRange(QCPRange range)
+{
+    if (RangeChangeInProgress || Starting)
+    {
+        RangeChangeInProgress = false;
+        return;
+    }
+    RangeChangeInProgress = true;
+    QList<QCPAxisRect *> axisrects = MainPlot->axisRects();
+    foreach(QCPAxisRect *rect, axisrects)
+        rect->axis(QCPAxis::atBottom)->setRange(range);
+    MainPlot->replot();
+}
+
+QCPLegend *TrendViewDialog::SetLegend(int rectindex)
+{
+    // setup an extra legend for that axis rect:
+    QCPLegend *rectlegend = new QCPLegend;
+    // now we move the legend from the inset layout of the axis rect into the main grid layout.
+    // We create a sub layout so we can generate a small gap between the plot layout cell border
+    // and the legend border:
+    QCPLayoutGrid *subLayout = new QCPLayoutGrid;
+    MainPlot->plotLayout()->addElement(rectindex, 0, subLayout);
+    subLayout->setMargins(QMargins(5, 0, 5, 5));
+    subLayout->addElement(0, 0, rectlegend);
+    // change the fill order of the legend, so it's filled left to right in columns:
+    rectlegend->setFillOrder(QCPLegend::foColumnsFirst);
+    // set legend's row stretch factor very small so it ends up with minimum height:
+    MainPlot->plotLayout()->setRowStretchFactor(rectindex, 0.001);
+    rectlegend->setLayer("legend");
+    return rectlegend;
 }
 
 void TrendViewDialog::graphClicked(QCPAbstractPlottable *plot, int dataIndex)
@@ -116,8 +167,7 @@ void TrendViewDialog::graphClicked(QCPAbstractPlottable *plot, int dataIndex)
 
 void TrendViewDialog::ASignalChoosed(QString signame)
 {
-//    QCPGraph *graph = GraphByName(AnalogPlot, signame);
-    QCPGraph *graph = GraphByName(MainPlot, signame);
+    QCPGraph *graph = GraphByName(signame);
     if (graph == 0)
         return;
     graph->setSelection(QCPDataSelection(QCPDataRange()));
@@ -125,14 +175,12 @@ void TrendViewDialog::ASignalChoosed(QString signame)
 
 void TrendViewDialog::ASignalToggled(QString signame, bool isChecked)
 {
-//    GraphSetVisible(AnalogPlot, signame, isChecked);
-    GraphSetVisible(MainPlot, signame, isChecked);
+    GraphSetVisible(AnalogRectIndex, signame, isChecked);
 }
 
 void TrendViewDialog::DSignalChoosed(QString signame)
 {
-//    QCPGraph *graph = GraphByName(DiscretePlot, signame);
-    QCPGraph *graph = GraphByName(MainPlot, signame);
+    QCPGraph *graph = GraphByName(signame);
     if (graph == 0)
         return;
     graph->setSelection(QCPDataSelection(QCPDataRange()));
@@ -140,96 +188,97 @@ void TrendViewDialog::DSignalChoosed(QString signame)
 
 void TrendViewDialog::DSignalToggled(QString signame, bool isChecked)
 {
-//    GraphSetVisible(DiscretePlot, signame, isChecked);
-    GraphSetVisible(MainPlot, signame, isChecked);
+    GraphSetVisible(DiscreteRectIndex, signame, isChecked);
 }
 
-void TrendViewDialog::GraphSetVisible(QCustomPlot *plot, const QString &graphname, bool visible)
+void TrendViewDialog::GraphSetVisible(int rectindex, const QString &graphname, bool visible)
 {
     if (!visible)
     {
-        QCPGraph *graph = GraphByName(plot, graphname);
+        QCPGraph *graph = GraphByName(graphname);
         if (graph == 0)
             return;
-        plot->removeGraph(graph);
-        plot->replot();
+        MainPlot->removeGraph(graph);
+        if (rectindex == AnalogRectIndex)
+        {
+            AnalogGraphs.remove(graphname);
+            AnalogLegend->remove(AnalogLegend->itemWithPlottable(graph));
+        }
+        else if (rectindex == DiscreteRectIndex)
+        {
+            DigitalGraphs.remove(graphname);
+            DiscreteLegend->remove(DiscreteLegend->itemWithPlottable(graph));
+        }
+        else
+            DBGMSG;
+        MainPlot->replot();
     }
     else
     {
-        QCPGraph *graph = GraphByName(plot, graphname);
-        if (graph == 0)
+        SignalChooseWidget *scw = this->findChild<SignalChooseWidget *>("digital");
+        if (((rectindex == DiscreteRectIndex) && (DigitalGraphs.size() < MAXGRAPHSPERPLOT)) || \
+                ((rectindex == AnalogRectIndex) && (AnalogGraphs.size() < MAXGRAPHSPERPLOT)))
         {
-            int count = plot->graphCount();
-            QCPAxisRect *AxisRect = plot->axisRect();
-            QCPGraph *graph = plot->addGraph(AxisRect->axis(QCPAxis::atBottom), AxisRect->axis(QCPAxis::atLeft));
-            QPen pen;
-            pen.setColor(QColor(qSin(count*1+1.2)*80+80, qSin(count*0.3+0)*80+80, qSin(count*0.3+1.5)*80+80));
-            graph->setPen(pen);
-            graph->keyAxis()->setLabel("Time, ms");
-            graph->keyAxis()->setRange(XMin, XMax);
-            graph->valueAxis()->setLabel(graphname);
-            graph->setName(graphname);
-            if (plot->objectName() == "digital")
+            if (scw != 0)
+                scw->SetChecked(graphname, true);
+            QCPGraph *graph = GraphByName(graphname);
+            if (graph == 0)
             {
-                graph->setData(TrendModel->MainPoints, TrendModel->DigitalMainData[graphname]);
-                graph->setLineStyle(QCPGraph::lsStepLeft); // импульсы
+                int count = MainPlot->graphCount();
+                QCPAxisRect *AxisRect = MainPlot->axisRect(rectindex);
+                QCPGraph *graph = MainPlot->addGraph(AxisRect->axis(QCPAxis::atBottom), AxisRect->axis(QCPAxis::atLeft));
+                QPen pen;
+/*                graph->keyAxis()->setLabel("Time, ms");
+                graph->keyAxis()->setRange(XMin, XMax);
+                graph->valueAxis()->setLabel(graphname); */
+                graph->setName(graphname);
+                if (rectindex == DiscreteRectIndex)
+                {
+                    graph->setData(TrendModel->MainPoints, TrendModel->DigitalMainData[graphname]);
+                    graph->setLineStyle(QCPGraph::lsStepLeft); // импульсы
+                    DiscreteLegend->addItem(new QCPPlottableLegendItem(DiscreteLegend, graph));
+                    DigitalGraphs[graphname] = graph;
+                    if (!DigitalDescription.Colors[graphname].isEmpty())
+                        pen.setColor(QColor(DigitalDescription.Colors[graphname]));
+                    else
+                        pen.setColor(QColor(qSin(count*1+1.2)*80+80, qSin(count*0.3+0)*80+80, qSin(count*0.3+1.5)*80+80));
+                }
+                else
+                {
+/*                    double min = *std::min_element(TrendModel->AnalogMainData[graphname].constBegin(), \
+                                                   TrendModel->AnalogMainData[graphname].constEnd());
+                    double max = *std::max_element(TrendModel->AnalogMainData[graphname].constBegin(), \
+                                                   TrendModel->AnalogMainData[graphname].constEnd());
+                    graph->valueAxis()->setRange(min, max); */
+                    graph->setData(TrendModel->MainPoints, TrendModel->AnalogMainData[graphname]);
+                    AnalogLegend->addItem(new QCPPlottableLegendItem(AnalogLegend, graph));
+                    AnalogGraphs[graphname] = graph;
+                    if (!AnalogDescription.Colors[graphname].isEmpty())
+                        pen.setColor(QColor(AnalogDescription.Colors[graphname]));
+                    else
+                        pen.setColor(QColor(qSin(count*1+1.2)*80+80, qSin(count*0.3+0)*80+80, qSin(count*0.3+1.5)*80+80));
+                }
+                graph->setPen(pen);
+//                graph->rescaleValueAxis(true, true);
+//                graph->rescaleKeyAxis();
             }
-            else
-            {
-                double min = *std::min_element(TrendModel->AnalogMainData[graphname].constBegin(), \
-                                               TrendModel->AnalogMainData[graphname].constEnd());
-                double max = *std::max_element(TrendModel->AnalogMainData[graphname].constBegin(), \
-                                               TrendModel->AnalogMainData[graphname].constEnd());
-                graph->valueAxis()->setRange(min, max);
-                graph->setData(TrendModel->MainPoints, TrendModel->AnalogMainData[graphname]);
-            }
-            graph->rescaleValueAxis(true, true);
-            graph->rescaleKeyAxis();
         }
+        else
+            scw->SetChecked(graphname, false);
     }
-    plot->replot();
+    MainPlot->replot();
 }
 
 void TrendViewDialog::DigitalRangeChanged(QCPRange range)
 {
-    if (RangeChangeInProgress || Starting)
-    {
-        RangeChangeInProgress = false;
-        return;
-    }
-    RangeChangeInProgress = true;
     if (!NoAnalog)
-    {
-/*        AnalogPlot->xAxis->setRange(range);
-        AnalogPlot->replot(); */
-        QList<QCPAxisRect *> axisrects = MainPlot->axisRects();
-        foreach(QCPAxisRect *rect, axisrects)
-        {
-            rect->axis(QCPAxis::atBottom)->setRange(range);
-        }
-    }
-    MainPlot->replot();
+        ChangeRange(range);
 }
 
 void TrendViewDialog::AnalogRangeChanged(QCPRange range)
 {
-    if (RangeChangeInProgress || Starting)
-    {
-        RangeChangeInProgress = false;
-        return;
-    }
-    RangeChangeInProgress = true;
     if (!NoDiscrete)
-    {
-/*        DiscretePlot->xAxis->setRange(range);
-        DiscretePlot->replot(); */
-        QList<QCPAxisRect *> axisrects = MainPlot->axisRects();
-        foreach(QCPAxisRect *rect, axisrects)
-        {
-            rect->axis(QCPAxis::atBottom)->setRange(range);
-        }
-    }
-    MainPlot->replot();
+        ChangeRange(range);
 }
 
 void TrendViewDialog::SaveToExcel()
@@ -250,7 +299,6 @@ void TrendViewDialog::SaveToOsc()
 
 void TrendViewDialog::PlotShow()
 {
-//    QCPMarginGroup *group = new QCPMarginGroup(customPlot);
     if (!NoAnalog)
     {
         for (int i=0; i<AnalogGraphs.keys().size(); ++i)
@@ -263,13 +311,12 @@ void TrendViewDialog::PlotShow()
                 AnalogGraphs[tmps]->rescaleValueAxis(true, true);
                 AnalogGraphs[tmps]->rescaleKeyAxis();
                 SignalChooseWidget *scw = this->findChild<SignalChooseWidget *>("analog");
-                if ((scw != 0) && (i < AnalogNames.size()))
-                    scw->SetChecked(AnalogNames.at(i), true);
+                if ((scw != 0) && (i < AnalogDescription.Names.size()))
+                    scw->SetChecked(AnalogDescription.Names.at(i), true);
             }
         }
 /*        QCPItemTracer *itr = new QCPItemTracer(AnalogPlot);
         itr->position->setCoords(0, 0); */
-//        AnalogPlot->replot();
     }
     if (!NoDiscrete)
     {
@@ -282,14 +329,16 @@ void TrendViewDialog::PlotShow()
                 DigitalGraphs[tmps]->rescaleValueAxis(true, true);
                 DigitalGraphs[tmps]->rescaleKeyAxis();
                 SignalChooseWidget *scw = this->findChild<SignalChooseWidget *>("digital");
-                if ((scw != 0) && (i < DigitalNames.size()))
-                    scw->SetChecked(DigitalNames.at(i), true);
+                if ((scw != 0) && (i < DigitalDescription.Names.size()))
+                    scw->SetChecked(DigitalDescription.Names.at(i), true);
             }
         }
 /*        QCPItemTracer *itr = new QCPItemTracer(DiscretePlot);
         itr->position->setCoords(0, 0); */
-//        DiscretePlot->replot();
     }
+    QCPMarginGroup *group = new QCPMarginGroup(MainPlot);
+    MainPlot->axisRect(0)->setMarginGroup(QCP::msLeft, group);
+    MainPlot->axisRect(1)->setMarginGroup(QCP::msLeft, group);
     MainPlot->replot();
     this->showMaximized();
 }
@@ -309,52 +358,80 @@ void TrendViewDialog::SetRanges(float XRangeMin, float XRangeMax, float YRangeMi
 
 void TrendViewDialog::SetDigitalNames(QStringList &names)
 {
-    DigitalNames = names;
+    DigitalDescription.Names = names;
 }
 
 void TrendViewDialog::SetAnalogNames(QStringList &names)
 {
-    AnalogNames = names;
+    AnalogDescription.Names = names;
+}
+
+void TrendViewDialog::SetDigitalColors(QStringList &colors)
+{
+    for (int i=0; i<DigitalDescription.Names.size(); ++i)
+    {
+        QString tmps = DigitalDescription.Names.at(i);
+        if (i < colors.size())
+            DigitalDescription.Colors[tmps] = colors.at(i);
+        else
+            DigitalDescription.Colors[tmps] = "";
+    }
+}
+
+void TrendViewDialog::SetAnalogColors(QStringList &colors)
+{
+    for (int i=0; i<AnalogDescription.Names.size(); ++i)
+    {
+        QString tmps = AnalogDescription.Names.at(i);
+        if (i < colors.size())
+            AnalogDescription.Colors[tmps] = colors.at(i);
+        else
+            AnalogDescription.Colors[tmps] = "";
+    }
 }
 
 void TrendViewDialog::SetupPlots()
 {
     NoDiscrete = NoAnalog = false;
     QPen pen;
-    int DigitalGraphNum = DigitalNames.size();
-    int AnalogGraphNum = AnalogNames.size();
+    int DigitalGraphNum = DigitalDescription.Names.size();
+    int AnalogGraphNum = AnalogDescription.Names.size();
     MainPlot = new QCustomPlot;
     MainPlot->setBackground(QBrush(QColor(ACONFYCLR)));
     MainPlot->plotLayout()->clear();
     MainPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    MainPlot->setAutoAddPlottableToLegend(false);
+    int MainPlotLayoutRow = 0;
+    int RectIndex = 0;
     if (DigitalGraphNum != 0)
     {
-/*        DiscretePlot = new QCustomPlot;
-        DiscretePlot->setObjectName("digital");
-        DiscretePlot->setBackground(QBrush(QColor(ACONFYCLR))); */
-//        QCPAxisRect *DigitalAxisRect = new QCPAxisRect(DiscretePlot);
+        QCPTextElement *title = new QCPTextElement(MainPlot);
+        title->setText("Дискретные сигналы");
+        title->setFont(QFont("sans", 12, QFont::Bold));
+        MainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, title); // place the title in the empty cell we've just created
         QCPAxisRect *DigitalAxisRect = new QCPAxisRect(MainPlot);
-/*        DiscretePlot->plotLayout()->clear();
-        DiscretePlot->plotLayout()->addElement(0, 0, DigitalAxisRect); */
-        MainPlot->plotLayout()->addElement(0, 0, DigitalAxisRect);
-//        DiscretePlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-//        connect(DiscretePlot->xAxis, SIGNAL(rangeChanged(QCPRange)),this,SLOT(DigitalRangeChanged(QCPRange)));
+        DiscreteRectIndex = RectIndex++;
+        MainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, DigitalAxisRect);
+        DiscreteLegend = SetLegend(MainPlotLayoutRow++);
         DigitalAxisRect->setBackground(QBrush(QColor(ACONFYCLR)));
         int count = 0;
-        while (count < DigitalGraphNum)
+        while ((count < DigitalGraphNum) && (DigitalGraphs.size() < MAXGRAPHSPERPLOT))
         {
-//            QCPGraph *graph = DiscretePlot->addGraph(DigitalAxisRect->axis(QCPAxis::atBottom), DigitalAxisRect->axis(QCPAxis::atLeft));
+            QString tmps = DigitalDescription.Names.at(count);
             QCPGraph *graph = MainPlot->addGraph(DigitalAxisRect->axis(QCPAxis::atBottom), DigitalAxisRect->axis(QCPAxis::atLeft));
-            pen.setColor(QColor(qSin(count*1+1.2)*80+80, qSin(count*0.3+0)*80+80, qSin(count*0.3+1.5)*80+80));
+            if (!DigitalDescription.Colors[tmps].isEmpty())
+                pen.setColor(QColor(DigitalDescription.Colors[tmps]));
+            else
+                pen.setColor(QColor(qSin(count*1+1.2)*80+80, qSin(count*0.3+0)*80+80, qSin(count*0.3+1.5)*80+80));
             graph->setPen(pen);
             graph->valueAxis()->setRange(-1, 2);
             graph->keyAxis()->setLabel("Time, ms");
             graph->keyAxis()->setRange(XMin, XMax);
-            QString tmps = DigitalNames.at(count);
 //            graph->valueAxis()->setLabel(tmps);
             graph->setName(tmps);
             graph->setLineStyle(QCPGraph::lsStepLeft); // импульсы
             DigitalGraphs[tmps] = graph;
+            DiscreteLegend->addItem(new QCPPlottableLegendItem(DiscreteLegend, graph));
             ++count;
         }
         DigitalAxisRect->insetLayout()->setMargins(QMargins(12, 12, 12, 12));
@@ -364,32 +441,32 @@ void TrendViewDialog::SetupPlots()
         NoDiscrete = true;
     if (AnalogGraphNum != 0)
     {
-/*        AnalogPlot = new QCustomPlot;
-        AnalogPlot->setObjectName("analog");
-        AnalogPlot->setBackground(QBrush(QColor(ACONFYCLR)));
-        QCPAxisRect *AnalogAxisRect = new QCPAxisRect(AnalogPlot); */
+        QCPTextElement *title = new QCPTextElement(MainPlot);
+        title->setText("Аналоговые сигналы");
+        title->setFont(QFont("sans", 12, QFont::Bold));
+        MainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, title); // place the title in the empty cell we've just created
         QCPAxisRect *AnalogAxisRect = new QCPAxisRect(MainPlot);
-/*        AnalogPlot->plotLayout()->clear();
-        AnalogPlot->plotLayout()->addElement(0, 0, AnalogAxisRect);
-        AnalogPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-        connect(AnalogPlot, SIGNAL(plottableClick(QCPAbstractPlottable*,int,QMouseEvent*)), this, SLOT(graphClicked(QCPAbstractPlottable*,int)));
-        connect(AnalogPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(AnalogRangeChanged(QCPRange))); */
-        MainPlot->plotLayout()->addElement(1, 0, AnalogAxisRect);
+        AnalogRectIndex = RectIndex++;
+        MainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, AnalogAxisRect);
+        AnalogLegend = SetLegend(MainPlotLayoutRow++);
         AnalogAxisRect->setBackground(QBrush(QColor(ACONFYCLR)));
         int count = 0;
-        while (count < AnalogGraphNum)
+        while ((count < AnalogGraphNum) && (AnalogGraphs.size() < MAXGRAPHSPERPLOT))
         {
-//            QCPGraph *graph = AnalogPlot->addGraph(AnalogAxisRect->axis(QCPAxis::atBottom), AnalogAxisRect->axis(QCPAxis::atLeft));
+            QString tmps = AnalogDescription.Names.at(count);
             QCPGraph *graph = MainPlot->addGraph(AnalogAxisRect->axis(QCPAxis::atBottom), AnalogAxisRect->axis(QCPAxis::atLeft));
-            pen.setColor(QColor(qSin(count*1+1.2)*80+80, qSin(count*0.3+0)*80+80, qSin(count*0.3+1.5)*80+80));
+            if (!AnalogDescription.Colors[tmps].isEmpty())
+                pen.setColor(QColor(AnalogDescription.Colors[tmps]));
+            else
+                pen.setColor(QColor(qSin(count*1+1.2)*80+80, qSin(count*0.3+0)*80+80, qSin(count*0.3+1.5)*80+80));
             graph->setPen(pen);
             graph->valueAxis()->setRange(YMin, YMax);
             graph->keyAxis()->setLabel("Time, ms");
             graph->keyAxis()->setRange(XMin, XMax);
-            QString tmps = AnalogNames.at(count);
 //            graph->valueAxis()->setLabel(tmps);
             graph->setName(tmps);
             AnalogGraphs[tmps] = graph;
+            AnalogLegend->addItem(new QCPPlottableLegendItem(AnalogLegend, graph));
             ++count;
         }
         AnalogAxisRect->insetLayout()->setMargins(QMargins(12, 12, 12, 12));

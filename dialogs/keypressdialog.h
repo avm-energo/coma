@@ -24,8 +24,6 @@ signals:
 public slots:
 
 private:
-    QString KeyPressString;
-
     void SetupUI();
     void SetPhrase(const QString &Phrase);
 

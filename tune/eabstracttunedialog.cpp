@@ -331,11 +331,11 @@ void EAbstractTuneDialog::StartTune()
 
 void EAbstractTuneDialog::PasswordCheck(QString &psw)
 {
-    ok = true;
+    ok = false;
     if (psw.isEmpty())
         pc.Cancelled = true;
-    else if (psw != "121941")
-        ok = false;
+    else if (psw == "121941")
+        ok = true;
     emit PasswordChecked();
 }
 

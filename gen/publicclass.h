@@ -157,6 +157,17 @@
 #define UCONFCLR    "#FFFFD0"
 #define UCONFWCLR   "#FFFFC0"
 #define ERRCLR      "#FF0000"
+#define REDCOLOR    "#FF2222"
+#define RDLCOLOR    "#FF4444"
+#define RDDCOLOR    "#FF0000"
+#define GRNCOLOR    "#22FF22"
+#define GRLCOLOR    "#44FF44"
+#define GRDCOLOR    "#00FF00"
+#define YLWCOLOR    "#CCCC22"
+#define YLLCOLOR    "#CCCC44"
+#define YLDCOLOR    "#CCCC00"
+#define BLDCOLOR    "#0000FF"
+#define BLUCOLOR    "#2222FF"
 
 // thresholds
 #define TMAX    FLT_MAX

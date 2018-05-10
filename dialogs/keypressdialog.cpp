@@ -31,7 +31,6 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
         return;
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
     {
-//        emit Finished(KeyPressString);
         if (WDFunc::LEData(this, "pswle", str))
             emit Finished(str);
         this->close();
@@ -42,6 +41,5 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
         pc.Cancelled = true;
         this->close();
     }
-//    KeyPressString.append(e->key());
     QDialog::keyPressEvent(e);
 }

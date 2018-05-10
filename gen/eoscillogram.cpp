@@ -353,7 +353,9 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
         {
             tmpdv << "OCNA" << "OCNB" << "OCNC" << "OCFA" << "OCFB" << "OCFC" << \
                      "BKCA" << "BKCB" << "BKCC" << "BKOA" << "BKOB" << "BKOC" << \
-                     "CSC" << "CSO" << "CNA" << "CNB" << "CNC" << "CFA" << "CFB" << "CFC";
+                     "CSC" << "CSO" << "CNA" << "CNB" << "CNC" << "CFA" << "CFB" << "CFC" << \
+                     "nNA" << "nNB" << "nNC" << "nFA" << "nFB" << "nFC" << "nCA" << "nCB" << "nCC" << \
+                     "nOA" << "nOB" << "nOC";
             tmpav << "USA" << "USB" << "USC" << "IA" << "IB" << "IC" << "ULA" << "ULB" << "ULC";
             float xmax = (static_cast<float>(OHD.len/2));
             float xmin = -xmax;
@@ -362,6 +364,22 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
             dlg->SetModel(TModel);
             dlg->SetAnalogNames(tmpav);
             dlg->SetDigitalNames(tmpdv);
+            QStringList acolors = QStringList() << YLWCOLOR << GRNCOLOR << REDCOLOR << \
+                                                   YLLCOLOR << GRLCOLOR << RDLCOLOR << \
+                                                   YLDCOLOR << GRDCOLOR << RDDCOLOR;
+            QStringList dcolors = QStringList() << YLWCOLOR << GRNCOLOR << REDCOLOR << \
+                                                   YLLCOLOR << GRLCOLOR << RDLCOLOR << \
+                                                   YLDCOLOR << GRDCOLOR << RDDCOLOR << \
+                                                   YLWCOLOR << GRNCOLOR << REDCOLOR << \
+                                                   BLUCOLOR << BLDCOLOR << \
+                                                   YLLCOLOR << GRLCOLOR << RDLCOLOR << \
+                                                   YLDCOLOR << GRDCOLOR << RDDCOLOR << \
+                                                   YLWCOLOR << GRNCOLOR << REDCOLOR << \
+                                                   YLLCOLOR << GRLCOLOR << RDLCOLOR << \
+                                                   YLDCOLOR << GRDCOLOR << RDDCOLOR << \
+                                                   YLWCOLOR << GRNCOLOR << REDCOLOR;
+            dlg->SetDigitalColors(dcolors);
+            dlg->SetAnalogColors(acolors);
             dlg->SetRanges(xmin, xmax, -200, 200);
             dlg->SetupPlots();
             dlg->SetupUI();
@@ -372,9 +390,9 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
                 Point85 point;
                 if (!PosPlusPlus(&point, sizeof(Point85)))
                     return GENERALERROR;
-                quint32 DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
-                DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
-                for (int i=0; i<20; ++i)
+//                quint32 DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
+                quint32 DisPoint = point.Dis;
+                for (int i=0; i<32; ++i)
                 {
                     if (DisPoint & 0x00000001)
                         TModel->AddDigitalPoint(tmpdv.at(i), 1);

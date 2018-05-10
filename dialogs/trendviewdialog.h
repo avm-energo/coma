@@ -7,6 +7,8 @@
 #include "../models/trendviewmodel.h"
 #include "../gen/qcustomplot.h"
 
+#define MAXGRAPHSPERPLOT    16
+
 class TrendViewDialog : public QDialog
 {
     Q_OBJECT
@@ -21,13 +23,22 @@ public:
     void SetRanges(float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax);
     void SetDigitalNames(QStringList &names);
     void SetAnalogNames(QStringList &names);
+    void SetDigitalColors(QStringList &colors);
+    void SetAnalogColors(QStringList &colors);
     void SetupPlots();
     void SetupUI();
 
 private:
-    QCustomPlot *AnalogPlot, *DiscretePlot, *MainPlot;
+    struct AnalogDescriptionStruct
+    {
+        QStringList Names;
+        QMap<QString, QString> Colors;
+    };
+    int AnalogRectIndex, DiscreteRectIndex;
+    QPointer<QCustomPlot> MainPlot;
+    QCPLegend *AnalogLegend, *DiscreteLegend;
     QMap<QString, QCPGraph *> AnalogGraphs, DigitalGraphs;
-    QStringList AnalogNames, DigitalNames;
+    AnalogDescriptionStruct AnalogDescription, DigitalDescription;
     float XMin, XMax, YMin, YMax;
     bool NoDiscrete, NoAnalog;
     TrendViewModel *TrendModel;
@@ -35,7 +46,9 @@ private:
     QByteArray BAToSave;
 
     QToolBar *PlotToolBar();
-    QCPGraph *GraphByName(QCustomPlot *plot, const QString &name);
+    QCPGraph *GraphByName(const QString &name);
+    void ChangeRange(QCPRange range);
+    QCPLegend *SetLegend(int rectindex);
 
 private slots:
     void graphClicked(QCPAbstractPlottable *plot, int dataIndex);
@@ -43,7 +56,7 @@ private slots:
     void ASignalToggled(QString signame, bool isChecked);
     void DSignalChoosed(QString signame);
     void DSignalToggled(QString signame, bool isChecked);
-    void GraphSetVisible(QCustomPlot *plot, const QString &graphname, bool visible);
+    void GraphSetVisible(int rectindex, const QString &graphname, bool visible);
     void DigitalRangeChanged(QCPRange range);
     void AnalogRangeChanged(QCPRange range);
     void SaveToExcel();
