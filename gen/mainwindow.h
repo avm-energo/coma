@@ -39,6 +39,7 @@ public:
     void LoadOscFromFile(const QString &filename);
     void LoadSwjFromFile(const QString &filename);
 #endif
+    int CheckPassword();
 
 #if PROGSIZE != PROGSIZE_EMUL
     EAbstractTuneDialog *TuneB, *TuneM;
@@ -120,7 +121,6 @@ private:
 #endif
     void LoadSettings();
     void SaveSettings();
-    int CheckPassword();
 #if PROGSIZE != PROGSIZE_EMUL
     void SetProgressBarSize(QString prbnum, quint32 size);
     void SetProgressBar(QString prbnum, quint32 cursize);

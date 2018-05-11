@@ -455,7 +455,7 @@ void MainWindow::SetTEEnabled(bool enabled)
 
 void MainWindow::PasswordCheck(QString &psw)
 {
-    if (psw == "SE/7520A")
+    if (psw == "se/7520a")
         ok = true;
     else
         ok = false;

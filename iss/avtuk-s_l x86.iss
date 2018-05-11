@@ -5,11 +5,11 @@
 #define Name "АВТУК-Сервис БР"
 #define GroupName "АВТУК-Сервис"
 #define EngName "AVTUK-S"
-#define Version "2.1.220"
+#define Version "2.1.232"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "avtuks-L.exe"
-#define SetupName "avtuks-L-2.1.220-x86"
+#define SetupName "avtuks-L-2.1.232-x86"
 #define Prefix "D:\Progs\out"
 
 [CustomMessages]
@@ -75,14 +75,19 @@ function IsVC2015Detected(): boolean;
 var 
     reg_key: string; // Просматриваемый подраздел системного реестра
     success: boolean; // Флаг наличия запрашиваемой версии VC
+    success2: boolean; // Временный флаг
     key_value: string; // Прочитанное из реестра значение ключа
 
 begin
     success := false;
     reg_key := 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64';
-    
     success := RegQueryStringValue(HKLM, reg_key, 'Version', key_value);
-    success := success and (Pos('v14.0.24215', key_value) = 1);
+    success := success and ((Pos('v14.0.24215', key_value) = 1) or (Pos('v14.0.24210', key_value) = 1));
+    reg_key := 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86';
+    success2 := RegQueryStringValue(HKLM, reg_key, 'Version', key_value);
+    success2 := success2 and ((Pos('v14.0.24215', key_value) = 1) or (Pos('v14.0.24210', key_value) = 1));
+    success := success or success2;
+
     result := success;
 end;
 
