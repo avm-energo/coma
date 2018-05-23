@@ -9,6 +9,7 @@
 #include "../widgets/wd_func.h"
 //#include "../canal.h"
 #include "../gen/commands.h"
+#include "../gen/publicclass.h"
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
@@ -46,12 +47,12 @@ void AbstractConfDialog::SaveConfToFile()
     if (!PrepareConfToWrite())
         return;
     ba.resize(MAXBYTEARRAY);
-    pc.StoreDataMem(&(ba.data()[0]), S2Config, 0x0001); // 0x0001 - номер файла конфигурации
+    S2::StoreDataMem(&(ba.data()[0]), S2Config, 0x0001); // 0x0001 - номер файла конфигурации
     quint32 BaLength = static_cast<quint8>(ba.data()[4]);
     BaLength += static_cast<quint8>(ba.data()[5])*256;
     BaLength += static_cast<quint8>(ba.data()[6])*65536;
     BaLength += static_cast<quint8>(ba.data()[7])*16777216;
-    BaLength += sizeof(publicclass::FileHeader); // FileHeader
+    BaLength += sizeof(S2::FileHeader); // FileHeader
     int res = pc.SaveToFile(pc.ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba, BaLength);
     switch (res)
     {
@@ -81,7 +82,7 @@ void AbstractConfDialog::LoadConfFromFile()
         WARNMSG("Ошибка при загрузке файла конфигурации");
         return;
     }
-    if (pc.RestoreDataMem(&(ba.data()[0]), ba.size(), S2Config))
+    if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), S2Config))
     {
         WARNMSG("Ошибка при разборе файла конфигурации");
         return;

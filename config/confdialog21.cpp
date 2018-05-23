@@ -15,10 +15,11 @@
 #include <QDoubleSpinBox>
 #include <QTabBar>
 #include "confdialog21.h"
+#include "../gen/publicclass.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
-ConfDialog21::ConfDialog21(QVector<publicclass::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
+ConfDialog21::ConfDialog21(QVector<S2::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
     AbstractConfDialog(parent)
 {
     RangeInMins = {4.0, 0.0, 0.0, -5.0, 0.0};

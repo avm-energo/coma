@@ -1,6 +1,6 @@
 #include "config22.h"
 
-Config22::Config22(QVector<publicclass::DataRec> &config, bool BaseBoard)
+Config22::Config22(QVector<S2::DataRec> &config, bool BaseBoard)
 {
     // параметры входных сигналов
     quint32 StartInIndex = (BaseBoard) ? AIN22_MTB_STARTIDX : AIN22_MTM_STARTIDX;

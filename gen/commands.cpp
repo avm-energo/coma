@@ -24,7 +24,7 @@ int Commands::GetBsi()
 #endif
 }
 
-int Commands::GetFile(quint32 filenum, QVector<publicclass::DataRec> *data)
+int Commands::GetFile(quint32 filenum, QVector<S2::DataRec> *data)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_GF, BT_NONE, NULL, 0, filenum, data);
@@ -50,7 +50,7 @@ int Commands::GetOsc(quint32 filenum, void *ptr)
 #endif
 }
 
-int Commands::WriteFile(void *ptr, quint32 filenum, QVector<publicclass::DataRec> *data)
+int Commands::WriteFile(void *ptr, quint32 filenum, QVector<S2::DataRec> *data)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_WF, BT_NONE, ptr, 0, filenum, data);
@@ -140,6 +140,7 @@ int Commands::GetBt(int BtNum, void *BtPtr, quint32 &BtPtrSize)
     BtPtrSize = cn->RDSize;
     return cn->result;
 #else
+    Q_UNUSED(BtNum);
     Q_UNUSED(BtPtr);
     Q_UNUSED(BtPtrSize);
     return 0;
@@ -165,6 +166,7 @@ int Commands::EraseTechBlock(int block)
     cn->Send(CN_Ert, block);
     return cn->result;
 #else
+    Q_UNUSED(block);
     return 0;
 #endif
 }
@@ -221,7 +223,7 @@ int Commands::GetMode(int &mode)
     mode = tmpi;
     return cn->result;
 #else
-    Q_UNUSED(variant);
+    Q_UNUSED(mode);
     return 0;
 #endif
 }

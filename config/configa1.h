@@ -4,12 +4,11 @@
 #define IDA100_START    1101
 
 #include "config.h"
-#include "../gen/publicclass.h"
 
 class ConfigA1
 {
 public:
-    explicit ConfigA1(QVector<publicclass::DataRec> &config);
+    explicit ConfigA1(QVector<S2::DataRec> &config);
 
     typedef struct
     {

@@ -4,16 +4,15 @@
 #define DIN31_NUMCH 11
 
 #define DIN31_DEF_DLY       2
-#define DIN31_DEF_PAIR      0xFFFF
+#define DIN31_DEF_PAIR      0
 #define DIN31_DEF_INTYPE    0
 
 #include "config3x.h"
-#include "../gen/publicclass.h"
 
 class Config31
 {
 public:
-    Config31(QVector<publicclass::DataRec> &config, bool BaseBoard=true);
+    Config31(QVector<S2::DataRec> &config, bool BaseBoard=true);
 
     struct Bci
     {

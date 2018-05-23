@@ -10,12 +10,11 @@
 #define D35_DEF_OUTTP   0
 
 #include "config3x.h"
-#include "../gen/publicclass.h"
 
 class Config35
 {
 public:
-    Config35(QVector<publicclass::DataRec> &config, bool BaseBoard=true);
+    Config35(QVector<S2::DataRec> &config, bool BaseBoard=true);
 
     Config3x::Bci_DOut Bci_block;  // Блок с определениями выходов
 

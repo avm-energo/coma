@@ -19,7 +19,7 @@ class TuneDialog22 : public EAbstractTuneDialog
 {
     Q_OBJECT
 public:
-    explicit TuneDialog22(int type = BT_BASE, QWidget *parent = 0);
+    explicit TuneDialog22(int type = 0x01, QWidget *parent = 0);
 
 signals:
 

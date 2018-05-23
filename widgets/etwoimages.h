@@ -1,6 +1,7 @@
 #ifndef ETWOIMAGES_H
 #define ETWOIMAGES_H
 
+#include <QImage>
 
 class ETwoImages : public QImage
 {

@@ -207,25 +207,6 @@ class publicclass
 public:
     publicclass();
 
-    // S2: Определение типа заголовка
-    typedef struct
-    {
-        quint16 fname;
-        quint16 service;
-        quint32 size;
-        quint32 crc32;
-        quint32 thetime;
-    } FileHeader;
-
-    // S2: Определение типа записи
-
-    typedef struct DataRec
-    {
-      quint32 id;
-      quint32 num_byte;
-      void *thedata;
-    } DataRec;
-
     typedef struct
     {
         quint32 MTypeB;
@@ -279,15 +260,6 @@ public:
 
     quint32 MType;
 
-    struct PovDevStruct // данные об установке
-    {
-        QString DevName; // наименование установки
-        QString DevSN; // серийный (заводской) номер
-        QString DevPrecision; // точность
-    };
-
-    PovDevStruct PovDev;
-
     struct DeviceConnectStruct
     {
         unsigned short vendor_id;
@@ -301,7 +273,6 @@ public:
     bool WriteUSBLog; // надо ли писать лог обмена в файл
     QString HomeDir; // рабочий каталог программы
     QString SystemHomeDir; // системный каталог программы
-    QString OrganizationString; // наименование организации, работающей с программой
     quint16 MIPASDU;
     QString MIPIP;
     QString Port;
@@ -311,9 +282,7 @@ public:
     bool Emul;
     Bsi ModuleBsi;
     QString PrbMessage;
-    QVector<DataRec> Config;
     bool Cancelled;
-    int PovNumPoints;
     bool TEEnabled; // признак того, ведётся ли лог в правом выезжающем окне
 
     QList<ermsg> ErMsgPool;
@@ -328,18 +297,6 @@ public:
             QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
 
-    // S2: Сборщик в память:
-    int StoreDataMem(void *, QVector<DataRec> *, quint16 fname); //0 - успешно, иначе код ошибки
-    // S2: получение размера:
-    int StoreDataSize(FileHeader *, DataRec *); //>0 - успешно, иначе код ошибки
-    // S2: Разборщик из памяти:
-    int RestoreDataMem(void *, quint32, QVector<DataRec> *); //0 - успешно, иначе код ошибки
-    // S2: Поиск элемента в массиве описаний
-    DataRec *FindElem(QVector<DataRec> *, quint16);
-
-    quint32 GetCRC32(char *, quint32);
-    void updCRC32(const quint8 byte, quint32 *dwCRC32);
-    quint32 getTime32();
     QString NsTimeToString (quint64 nstime);
     void AddErrMsg(ermsgtype msgtype, QString file=0, int line=0, QString msg="");
     void ErMsg(int ermsgnum);

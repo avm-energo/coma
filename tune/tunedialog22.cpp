@@ -11,6 +11,7 @@
 #include "tunedialog22.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
+#include "../gen/publicclass.h"
 #include "../gen/commands.h"
 
 TuneDialog22::TuneDialog22(int type, QWidget *parent) :

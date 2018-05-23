@@ -2,7 +2,7 @@
 #define CONFIG
 
 #include <QVector>
-#include "../gen/publicclass.h"
+#include "../gen/s2.h"
 
 #define BCI_MTYPEB      1
 #define BCI_MTYPEM      2
@@ -60,7 +60,7 @@ class Config
 {
 public:
 
-    explicit Config(QVector<publicclass::DataRec> &config);
+    explicit Config(QVector<S2::DataRec> &config);
 
     struct Bci_Main
     {

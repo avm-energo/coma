@@ -4,12 +4,11 @@
 #define ID808X_START    1001
 
 #include "config.h"
-#include "../gen/publicclass.h"
 
 class Config80
 {
 public:
-    explicit Config80(QVector<publicclass::DataRec> &config);
+    explicit Config80(QVector<S2::DataRec> &config);
 
     typedef struct
     {

@@ -12,7 +12,7 @@ class AbstractConfDialog : public QDialog
 public:
     explicit AbstractConfDialog(QWidget *parent = 0);
 
-    QVector<publicclass::DataRec> *S2Config;
+    QVector<S2::DataRec> *S2Config;
     QStringList CheckConfErrors;
 
     QWidget *ConfButtons();

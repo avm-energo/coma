@@ -16,6 +16,7 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
+#include "../gen/publicclass.h"
 #include "../gen/commands.h"
 
 A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : QDialog(parent)
@@ -25,6 +26,7 @@ A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : QDialog(parent)
     CA1 = new ConfigA1(S2Config);
     ReportModel = new QStandardItemModel;
     ViewModel = new QStandardItemModel;
+    LoadSettings();
     if (filename.isEmpty())
         SetupUI();
     else
@@ -147,7 +149,7 @@ void A1Dialog::GenerateReport()
 /*        cn->Send(CN_GBd, A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd3));
     if (cn->result != NOERROR) */
         report->dataManager()->setReportVariable("KNI", ChA1->Bda_h.HarmBuf[0][0]);
-    report->dataManager()->setReportVariable("Organization", pc.OrganizationString);
+    report->dataManager()->setReportVariable("Organization", OrganizationString);
     QString day = QDateTime::currentDateTime().toString("dd");
     QString month = QDateTime::currentDateTime().toString("MM");
     QString yr = QDateTime::currentDateTime().toString("yy");
@@ -240,7 +242,7 @@ void A1Dialog::ConditionDataDialog()
     dlg->exec();
 }
 
-void A1Dialog::DNDialog(publicclass::PovDevStruct &PovDev)
+void A1Dialog::DNDialog(PovDevStruct &PovDev)
 {
     int row = 0;
     QDialog *dlg = new QDialog(this);
@@ -249,7 +251,7 @@ void A1Dialog::DNDialog(publicclass::PovDevStruct &PovDev)
     QGridLayout *glyout = new QGridLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Данные ТН(ДН)"), Qt::AlignCenter);
     glyout->addWidget(WDFunc::NewLBL(this, "Организация, проводившая поверку"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "UKDNOrganization", pc.OrganizationString), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLE(this, "UKDNOrganization", OrganizationString), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Тип ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "DNType", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Обозначение по схеме, фаза"), row, 0, 1, 1, Qt::AlignRight);
@@ -508,7 +510,7 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
 {
     Autonomous = true;
     QByteArray ba;
-    publicclass::PovDevStruct PovDev;
+    PovDevStruct PovDev;
     int res = pc.LoadFromFile(filename, ba);
     if (res != NOERROR)
     {
@@ -516,8 +518,8 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
         return;
     }
     // заполняем ReportHeader
-    PovDev.DevName = pc.PovDev.DevName;
-    PovDev.DevPrecision = pc.PovDev.DevPrecision;
+    PovDev.DevName = this->PovDev.DevName;
+    PovDev.DevPrecision = this->PovDev.DevPrecision;
     if (ba.size() >= sizeof(ResultsStruct))
     {
         ResultsStruct Results;
@@ -656,7 +658,7 @@ void A1Dialog::Accept()
             ReportHeader.Humidity = ChA1->Bda_out_an.Hamb;
             ReportHeader.Temp = ChA1->Bda_out_an.Tamb;
             ConditionDataDialog(); // задаём условия поверки
-            DNDialog(pc.PovDev); // вводим данные по делителю
+            DNDialog(PovDev); // вводим данные по делителю
             GenerateReport();
             // вывод протокола на экран
             // формирование отчёта
@@ -695,7 +697,7 @@ void A1Dialog::Cancel()
 void A1Dialog::SetDNData()
 {
     QString PovDev, PovDevSN, PovDevPrecision;
-    WDFunc::LEData(this, "UKDNOrganization", pc.OrganizationString);
+    WDFunc::LEData(this, "UKDNOrganization", OrganizationString);
     WDFunc::LEData(this, "DNType", ReportHeader.DNType);
     WDFunc::LEData(this, "DNNamePhase", ReportHeader.DNNamePhase);
     WDFunc::LEData(this, "DNSerialNum", ReportHeader.DNSerNum);
@@ -741,7 +743,7 @@ int A1Dialog::GetStatistics()
     tmpst2.dUrms = tmpst2.Phy = tmpst2.sPhy = tmpst2.sU = 0;
     QList<float> sPhy, sU;
     int count = 0;
-    emit StartPercents(pc.PovNumPoints);
+    emit StartPercents(PovNumPoints);
     WaitWidget *w = new WaitWidget;
     w->SetMessage("Пожалуйста, подождите...");
     WaitWidget::ww_struct ww;
@@ -751,9 +753,9 @@ int A1Dialog::GetStatistics()
     ww.initialseconds = 0;
     w->Init(ww);
     w->Start();
-    while ((count < pc.PovNumPoints) && !pc.Cancelled)
+    while ((count < PovNumPoints) && !pc.Cancelled)
     {
-        w->SetSeconds(pc.PovNumPoints-count);
+        w->SetSeconds(PovNumPoints-count);
 /*        cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
         if (cn->result == NOERROR) */
         if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == NOERROR)
@@ -858,4 +860,30 @@ void A1Dialog::InputTuneVariant(int varnum)
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
     dlg->exec();
+}
+
+void A1Dialog::LoadSettings()
+{
+    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    PovDev.DevName = sets->value("PovDevName", "UPTN").toString();
+    PovDev.DevSN = sets->value("PovDevSN", "00000001").toString();
+    PovDev.DevPrecision = sets->value("PovDevPrecision", "0.05").toString();
+    PovNumPoints = sets->value("PovNumPoints", "60").toInt();
+    OrganizationString = sets->value("Organization", "Р&К").toString();
+}
+
+void A1Dialog::SaveSettings()
+{
+    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    sets->setValue("PovDevName", PovDev.DevName);
+    sets->setValue("PovDevSN", PovDev.DevSN);
+    sets->setValue("PovDevPrecision", PovDev.DevPrecision);
+    sets->setValue("PovNumPoints", QString::number(PovNumPoints, 10));
+    sets->setValue("Organization", OrganizationString);
+}
+
+void A1Dialog::closeEvent(QCloseEvent *e)
+{
+    SaveSettings();
+    e->accept();
 }

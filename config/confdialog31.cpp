@@ -2,8 +2,9 @@
 #include "config31.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
+#include "../gen/publicclass.h"
 
-ConfDialog31::ConfDialog31(QVector<publicclass::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
+ConfDialog31::ConfDialog31(QVector<S2::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
     AbstractConfDialog3x(parent)
 {
     this->S2Config = &S2Config;

@@ -25,7 +25,7 @@
 class Config22
 {
 public:
-    Config22(QVector<publicclass::DataRec> &config, bool BaseBoard=true);
+    Config22(QVector<S2::DataRec> &config, bool BaseBoard=true);
 
     struct Bci
     {

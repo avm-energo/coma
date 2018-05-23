@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <QModelIndex>
 #include <QSplashScreen>
-#include "publicclass.h"
 #include "../config/confdialog.h"
 #include "../check/eabstractcheckdialog.h"
 #ifndef MODULE_A1
@@ -12,9 +11,8 @@
 #include "../dialogs/switchjournaldialog.h"
 #include "eoscillogram.h"
 #endif
-#if PROGSIZE != PROGSIZE_EMUL
 #include "../tune/eabstracttunedialog.h"
-#endif
+#include "../gen/publicclass.h"
 #define C_TE_MAXSIZE    100
 
 class MainWindow : public QMainWindow
@@ -28,7 +26,7 @@ public:
 
     bool SWHide;
     QRect SWGeometry;
-    QVector<publicclass::DataRec> S2Config;
+    QVector<S2::DataRec> S2Config;
     ConfDialog *MainConfDialog;
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
@@ -41,10 +39,8 @@ public:
 #endif
     int CheckPassword();
 
-#if PROGSIZE != PROGSIZE_EMUL
     EAbstractTuneDialog *TuneB, *TuneM;
     void Disconnect();
-#endif
     QWidget *Parent;
     QSplashScreen *StartWindowSplashScreen;
 
@@ -137,14 +133,14 @@ private slots:
     void LoadSWJ();
 #endif
 
+    void SetDefConf();
+    void Fill();
 #if PROGSIZE != PROGSIZE_EMUL
     void ShowCOMConnectDialog();
     void ShowUSBConnectDialog();
     void GetDeviceFromTable(QModelIndex idx);
     void Stage1_5();
     void Stage2();
-    void SetDefConf();
-    void Fill();
     void PasswordCheck(QString &psw);
     void SetProgressBar1Size(quint32 size);
     void SetProgressBar1(quint32 cursize);

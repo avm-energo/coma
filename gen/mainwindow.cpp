@@ -25,6 +25,7 @@
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/swjdialog.h"
+#include "../gen/publicclass.h"
 #include "../widgets/etablemodel.h"
 #include "../widgets/etableview.h"
 
@@ -244,12 +245,7 @@ void MainWindow::LoadSettings()
     QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
     pc.Port = sets->value("Port", "COM1").toString();
     pc.HomeDir = sets->value("Homedir", HomeDir).toString();
-    pc.PovDev.DevName = sets->value("PovDevName", "UPTN").toString();
-    pc.PovDev.DevSN = sets->value("PovDevSN", "00000001").toString();
-    pc.PovDev.DevPrecision = sets->value("PovDevPrecision", "0.05").toString();
-    pc.OrganizationString = sets->value("Organization", "Р&К").toString();
     pc.WriteUSBLog = sets->value("WriteLog", "0").toBool();
-    pc.PovNumPoints = sets->value("PovNumPoints", "60").toInt();
     pc.TEEnabled = sets->value("TEEnabled", "0").toBool();
 }
 
@@ -258,12 +254,7 @@ void MainWindow::SaveSettings()
     QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
     sets->setValue("Port", pc.Port);
     sets->setValue("Homedir", pc.HomeDir);
-    sets->setValue("PovDevName", pc.PovDev.DevName);
-    sets->setValue("PovDevSN", pc.PovDev.DevSN);
-    sets->setValue("PovDevPrecision", pc.PovDev.DevPrecision);
-    sets->setValue("Organization", pc.OrganizationString);
     sets->setValue("WriteLog", pc.WriteUSBLog);
-    sets->setValue("PovNumPoints", QString::number(pc.PovNumPoints, 10));
     sets->setValue("TEEnabled", pc.TEEnabled);
 }
 
@@ -331,7 +322,7 @@ int MainWindow::CheckPassword()
     }
     return NOERROR;
 }
-
+#endif
 #ifndef MODULE_A1
 void MainWindow::LoadOscFromFile(const QString &filename)
 {
@@ -371,6 +362,7 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
 }
 #endif
 
+#if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Stage1_5()
 {
 #ifdef USBENABLE
@@ -414,6 +406,7 @@ void MainWindow::Stage2()
 #endif
     Stage3();
 }
+#endif
 
 void MainWindow::SetDefConf()
 {
@@ -453,6 +446,7 @@ void MainWindow::SetTEEnabled(bool enabled)
 }
 #endif
 
+#if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::PasswordCheck(QString &psw)
 {
     if (psw == "se/7520a")
@@ -461,6 +455,7 @@ void MainWindow::PasswordCheck(QString &psw)
         ok = false;
     emit PasswordChecked();
 }
+#endif
 
 #if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::OpenBhbDialog()
@@ -494,7 +489,6 @@ void MainWindow::OpenBhbDialog()
     }
     emit BsiRefresh();
 }
-#endif
 #endif
 
 #if PROGSIZE >= PROGSIZE_LARGE || PROGSIZE == PROGSIZE_EMUL

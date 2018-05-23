@@ -1,7 +1,7 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-#include "publicclass.h"
+#include "s2.h"
 #ifdef USBENABLE
 #include "eusbhid.h"
 #else
@@ -27,14 +27,14 @@ class Commands
     explicit Commands();
 public:
     static int GetBsi();
-    static int GetFile(quint32 filenum, QVector<publicclass::DataRec> *data);
+    static int GetFile(quint32 filenum, QVector<S2::DataRec> *data);
     static int GetOsc(quint32 filenum, void *ptr); // приём осциллограмм, в ptr возвращается целиком весь считанный буфер
     static int GetBac(int BacNum, void *ptr, int ptrsize);
     static int GetBd(int BdNum, void *BdPtr, int BdPtrSize);
     static int GetBda(int board, void *BdPtr, int BdPtrSize);
     static int GetBt(int BtNum, void *BoPtr, quint32 &BoPtrSize);
     static int WriteBac(int BacNum, void *BacPtr, int BacPtrSize);
-    static int WriteFile(void *ptr, quint32 filenum, QVector<publicclass::DataRec> *data);
+    static int WriteFile(void *ptr, quint32 filenum, QVector<S2::DataRec> *data);
     static int WriteHiddenBlock(int board, void *HPtr, int HPtrSize);
     static int EraseTechBlock(int block);
     static int Connect();

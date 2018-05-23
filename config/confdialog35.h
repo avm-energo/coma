@@ -12,7 +12,7 @@ class ConfDialog35 : public AbstractConfDialog3x
 {
     Q_OBJECT
 public:
-    explicit ConfDialog35(QVector<publicclass::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = 0);
+    explicit ConfDialog35(QVector<S2::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = 0);
 
 private:
     Config35 *C35;

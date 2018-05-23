@@ -1,6 +1,6 @@
 #include "config35.h"
 
-Config35::Config35(QVector<publicclass::DataRec> &config, bool BaseBoard)
+Config35::Config35(QVector<S2::DataRec> &config, bool BaseBoard)
 {
     int Type = (BaseBoard) ? MTB_35 : MTM_35;
     // параметры входных сигналов

@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QStandardItemModel>
+#include <QCloseEvent>
 #include "limereport/lrreportengine.h"
 #include "../config/configa1.h"
 #include "../check/checka1.h"
@@ -95,7 +96,7 @@ private:
     CheckA1 *ChA1;
     ConfigA1 *CA1;
     LimeReport::ReportEngine *report;
-    QVector<publicclass::DataRec> S2Config;
+    QVector<S2::DataRec> S2Config;
     QTimer *MeasurementTimer;
     struct ResultsStruct
     {
@@ -121,6 +122,16 @@ private:
         float ddUd; // Среднеквадратичное отклонение dUd
         float ddPd; // Среднеквадратичное отклонение dPd
     };
+
+    struct PovDevStruct // данные об установке
+    {
+        QString DevName; // наименование установки
+        QString DevSN; // серийный (заводской) номер
+        QString DevPrecision; // точность
+    };
+
+    PovDevStruct PovDev;
+
     int Index, Counter;
     float CurrentS; // текущее значение нагрузки
     int PovType, TempPovType; // тип поверяемого оборудования (по какому ГОСТу)
@@ -138,7 +149,7 @@ private:
     void SaveProtocolToPDF();
     void GenerateReport(); // сгенерировать протокол
     void ConditionDataDialog(); // задание условий поверки
-    void DNDialog(publicclass::PovDevStruct &PovDev); // задание параметров ДН(ТН)
+    void DNDialog(PovDevStruct &PovDev); // задание параметров ДН(ТН)
     void UpdateItemInModel(int row, int column, QVariant value);
     void ShowTable();
     void FillModel();
@@ -166,8 +177,15 @@ private slots:
 
 private:
     int TuneVariant;
+    int PovNumPoints;
+    QString OrganizationString; // наименование организации, работающей с программой
 
     void InputTuneVariant(int varnum);
+    void LoadSettings();
+    void SaveSettings();
+
+protected:
+    void closeEvent(QCloseEvent *e);
 };
 
 #endif // A1DIALOG_H

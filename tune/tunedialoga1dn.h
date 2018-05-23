@@ -55,6 +55,7 @@ private:
     ConfigA1 *CA1;
     CheckA1 *ChA1;
     bool Accepted;
+    int PovNumPoints;
 
     void SetLbls();
     void SetPf();
@@ -83,6 +84,7 @@ private:
     int ReadAnalogMeasurements();
     int ShowScheme();
     void GetBdAndFillMTT();
+    void LoadSettings();
 
 private slots:
     void FillBac();

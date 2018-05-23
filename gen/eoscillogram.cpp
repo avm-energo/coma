@@ -2,6 +2,7 @@
 #include "../config/config.h"
 #include "eoscillogram.h"
 #include "../models/trendviewmodel.h"
+#include "../gen/publicclass.h"
 #include "../dialogs/trendviewdialog.h"
 
 EOscillogram::EOscillogram(QObject *parent) : QObject(parent)
@@ -254,8 +255,8 @@ int EOscillogram::ProcessOsc()
     Pos = 0;
     BASize = BA.size();
     // разбираем осциллограмму
-    publicclass::FileHeader FH;
-    if (!PosPlusPlus(&FH, sizeof(publicclass::FileHeader)))
+    S2::FileHeader FH;
+    if (!PosPlusPlus(&FH, sizeof(S2::FileHeader)))
         return GENERALERROR;
     OscDataRec DR;
     if (!PosPlusPlus(&DR, sizeof(OscDataRec)))

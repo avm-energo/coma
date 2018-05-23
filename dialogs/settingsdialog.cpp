@@ -8,6 +8,7 @@
 #include <QString>
 #include "settingsdialog.h"
 #include "../config/config.h"
+#include "../gen/publicclass.h"
 #include "../widgets/wd_func.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
@@ -23,9 +24,7 @@ void SettingsDialog::SetupUI()
 {
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QLabel *lbl;
-    QLineEdit *le;
-    quint32 MTypeB = pc.ModuleBsi.MTypeB << 8;
+/*    quint32 MTypeB = pc.ModuleBsi.MTypeB << 8;
     if (MTypeB == MTB_A1)
     {
         hlyout = new QHBoxLayout;
@@ -44,25 +43,19 @@ void SettingsDialog::SetupUI()
         hlyout->addWidget(WDFunc::NewLBLT(this, "Класс точности средства поверки"));
         hlyout->addWidget(WDFunc::NewLE(this, "povdevprecision"));
         vlyout->addLayout(hlyout);
-    }
+    } */
     hlyout = new QHBoxLayout;
-    lbl = new QLabel("Рабочий каталог программы");
-    hlyout->addWidget(lbl, 0);
-    le = new QLineEdit;
-    le->setObjectName("pathle");
-    hlyout->addWidget(le, 1);
+    hlyout->addWidget(WDFunc::NewLBL(this, "Рабочий каталог программы"), 0);
+    hlyout->addWidget(WDFunc::NewLE(this, "pathle"), 1);
     QPushButton *pb = new QPushButton("...");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetHomeDir()));
     hlyout->addWidget(pb, 0);
     vlyout->addLayout(hlyout);
-    if (MTypeB == MTB_80)
+    if (pc.ModuleBsi.MTypeB == MTB_80)
     {
         hlyout = new QHBoxLayout;
-        lbl = new QLabel("IP-адрес МИП:");
-        hlyout->addWidget(lbl);
-        le = new QLineEdit;
-        le->setObjectName("miple");
-        hlyout->addWidget(le);
+        hlyout->addWidget(WDFunc::NewLBL(this, "IP-адрес МИП:"));
+        hlyout->addWidget(WDFunc::NewLE(this, "miple"));
         vlyout->addLayout(hlyout);
     }
     hlyout = new QHBoxLayout;
@@ -80,27 +73,27 @@ void SettingsDialog::SetupUI()
 
 void SettingsDialog::Fill()
 {
-    WDFunc::SetLEData(this,"orgle",pc.OrganizationString);
+//    WDFunc::SetLEData(this,"orgle",pc.OrganizationString);
     WDFunc::SetLEData(this,"pathle",pc.HomeDir);
-    WDFunc::SetLEData(this,"povdev",pc.PovDev.DevName);
+/*    WDFunc::SetLEData(this,"povdev",pc.PovDev.DevName);
     WDFunc::SetLEData(this,"povdevsn",pc.PovDev.DevSN);
-    WDFunc::SetLEData(this,"povdevprecision",pc.PovDev.DevPrecision);
+    WDFunc::SetLEData(this,"povdevprecision",pc.PovDev.DevPrecision); */
     QString restring = "^[0-2]{0,1}[0-9]{1,2}{\\.[0-2]{0,1}[0-9]{1,2}}{3}$";
     WDFunc::SetLEData(this,"miple",pc.MIPIP,restring);
     WDFunc::SetChBData(this, "writelogchb", pc.WriteUSBLog);
-    WDFunc::SetSPBData(this, "povnumpoints", pc.PovNumPoints);
+//    WDFunc::SetSPBData(this, "povnumpoints", pc.PovNumPoints);
 }
 
 void SettingsDialog::AcceptSettings()
 {
-    WDFunc::LEData(this, "orgle", pc.OrganizationString);
+//    WDFunc::LEData(this, "orgle", pc.OrganizationString);
     WDFunc::LEData(this, "pathle", pc.HomeDir);
-    WDFunc::LEData(this, "povdev", pc.PovDev.DevName);
+/*    WDFunc::LEData(this, "povdev", pc.PovDev.DevName);
     WDFunc::LEData(this, "povdevsn", pc.PovDev.DevSN);
-    WDFunc::LEData(this, "povdevprecision", pc.PovDev.DevPrecision);
+    WDFunc::LEData(this, "povdevprecision", pc.PovDev.DevPrecision); */
     WDFunc::LEData(this, "miple", pc.MIPIP);
     WDFunc::ChBData(this, "writelogchb", pc.WriteUSBLog);
-    WDFunc::SPBData(this, "povnumpoints", pc.PovNumPoints);
+//    WDFunc::SPBData(this, "povnumpoints", pc.PovNumPoints);
     this->close();
 }
 

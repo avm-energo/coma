@@ -6,6 +6,7 @@
 #include <QCoreApplication>
 #include <QTime>
 #include "eusbcom.h"
+#include "publicclass.h"
 #include "../widgets/emessagebox.h"
 
 EUsbCom::EUsbCom(QObject *parent) : EAbstractProtocomChannel(parent)

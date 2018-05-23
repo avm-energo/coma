@@ -1,6 +1,6 @@
 #include "config85.h"
 
-Config85::Config85(QVector<publicclass::DataRec> &config)
+Config85::Config85(QVector<S2::DataRec> &config)
 {
     // параметры входных сигналов
     quint32 StartInIndex = ID8085_START;

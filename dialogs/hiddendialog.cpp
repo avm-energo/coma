@@ -10,7 +10,9 @@
 #include "hiddendialog.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/emessagebox.h"
+#include "../gen/publicclass.h"
 #include "../gen/commands.h"
+
 
 HiddenDialog::HiddenDialog(QWidget *parent) :
     QDialog(parent)

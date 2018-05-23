@@ -5,7 +5,6 @@
 #include <QResizeEvent>
 #include "../config/confdialog.h"
 #include "../gen/mainwindow.h"
-#include "../gen/publicclass.h"
 
 class Coma : public MainWindow
 {
@@ -42,7 +41,7 @@ private:
     int Mode; // режим запуска программы
 
     void SetupUI();
-    void AddUIToToolbar(QToolBar *tb);
+    void AddEmulToToolbar(QToolBar *tb);
     void AddActionsToMenuBar(QMenuBar *menubar);
     void Stage3();
     void PrepareDialogs();

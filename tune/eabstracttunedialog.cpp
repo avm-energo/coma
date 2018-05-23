@@ -1,4 +1,5 @@
 #include <QTime>
+#include <QTimer>
 #include <QtMath>
 #include <QTabWidget>
 #include <QEventLoop>
@@ -12,6 +13,7 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include "eabstracttunedialog.h"
+#include "../gen/publicclass.h"
 #include "../gen/commands.h"
 #include "../dialogs/keypressdialog.h"
 #include "../widgets/waitwidget.h"
@@ -27,6 +29,11 @@ EAbstractTuneDialog::EAbstractTuneDialog(QWidget *parent) :
     MeasurementTimer = new QTimer;
     MeasurementTimer->setInterval(MEASTIMERINT);
     connect(MeasurementTimer,SIGNAL(timeout()),this,SLOT(MeasTimerTimeout()));
+}
+
+EAbstractTuneDialog::~EAbstractTuneDialog()
+{
+
 }
 
 QWidget *EAbstractTuneDialog::TuneUI()

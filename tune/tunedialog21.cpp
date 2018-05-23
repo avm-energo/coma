@@ -11,6 +11,7 @@
 #include "tunedialog21.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
+#include "../gen/publicclass.h"
 #include "../gen/commands.h"
 
 TuneDialog21::TuneDialog21(int type, QWidget *parent) :
@@ -29,6 +30,11 @@ TuneDialog21::TuneDialog21(int type, QWidget *parent) :
     SetupUI();
 }
 
+TuneDialog21::~TuneDialog21()
+{
+
+}
+
 void TuneDialog21::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -44,6 +50,7 @@ void TuneDialog21::SetupUI()
     QWidget *tuneui = TuneUI();
     lyout->addWidget(tuneui);
     tuneui = new QWidget;
+#if PROGSIZE != PROGSIZE_EMUL
     QHBoxLayout *hlyout = new QHBoxLayout;
     QStringList cbsl;
     for (i=0; i<AIN21_NUMCH; ++i)
@@ -56,6 +63,7 @@ void TuneDialog21::SetupUI()
     hlyout->addWidget(pb);
     hlyout->addStretch(10);
     lyout->addLayout(hlyout);
+#endif
     QWidget *cp1 = new QWidget;
     cp1->setLayout(lyout);
     // cb + pb

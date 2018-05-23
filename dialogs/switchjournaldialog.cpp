@@ -6,6 +6,7 @@
 #include "../widgets/getoscpbdelegate.h"
 #include "../widgets/wd_func.h"
 #include "switchjournaldialog.h"
+#include "../gen/publicclass.h"
 #include "trendviewdialog.h"
 
 SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : QDialog(parent)

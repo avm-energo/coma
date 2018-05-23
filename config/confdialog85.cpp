@@ -12,9 +12,10 @@
 #include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/estackedwidget.h"
+#include "../gen/publicclass.h"
 #include "confdialog85.h"
 
-ConfDialog85::ConfDialog85(QVector<publicclass::DataRec> &S2Config, QWidget *parent) :
+ConfDialog85::ConfDialog85(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     AbstractConfDialog(parent)
 {
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";

@@ -7,7 +7,7 @@
 #include <QMutex>
 #include <QWaitCondition>
 
-#include "publicclass.h"
+#include "s2.h"
 #include "log.h"
 
 #ifdef COMPORTENABLE
@@ -80,8 +80,8 @@ public:
     virtual qint64 RawWrite(QByteArray &ba) = 0;
     virtual void RawClose() = 0;
 
-    void Send(int command, int board_type=BT_NONE, void *ptr=NULL, quint32 ptrsize=0, quint16 filenum=0, \
-              QVector<publicclass::DataRec> *DRptr=0);
+    void Send(int command, int board_type=0, void *ptr=NULL, quint32 ptrsize=0, quint16 filenum=0, \
+              QVector<S2::DataRec> *DRptr=0);
 
 signals:
     void SetDataSize(quint32); // сигналы для прогрессбаров - отслеживание принятых данных, стёртых осциллограмм и т.п.
@@ -117,7 +117,7 @@ private:
     quint32 SegLeft; // количество оставшихся сегментов
     quint32 SegEnd; // номер последнего байта в ReadData текущего сегмента
     bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
-    QVector<publicclass::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
+    QVector<S2::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     quint8 BoardType;
 
     void InitiateSend();

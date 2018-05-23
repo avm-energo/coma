@@ -1,7 +1,8 @@
 // config.cpp
 #include "config.h"
+#include "../gen/publicclass.h"
 
-Config::Config(QVector<publicclass::DataRec> &config)
+Config::Config(QVector<S2::DataRec> &config)
 {
     // общая часть
     config.append({BCI_MTYPEB, sizeof(pc.ModuleBsi.MTypeB), &(pc.ModuleBsi.MTypeB)});

@@ -11,9 +11,10 @@
 #include "../config/config80.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
+#include "../gen/publicclass.h"
 #include "../gen/commands.h"
 
-TuneDialog80::TuneDialog80(QVector<publicclass::DataRec> &S2Config, QWidget *parent) :
+TuneDialog80::TuneDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     EAbstractTuneDialog(parent)
 {
     C80 = new Config80(S2Config);
@@ -171,6 +172,7 @@ void TuneDialog80::SetupUI()
     gblyout->addLayout(hlyout);
     gb->setLayout(gblyout);
     vlyout->addWidget(gb);
+#if PROGSIZE != PROGSIZE_EMUL
     hlyout = new QHBoxLayout;
     QPushButton *pb = new QPushButton("Запустить связь с МИП");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartMip()));
@@ -179,6 +181,7 @@ void TuneDialog80::SetupUI()
     connect(pb,SIGNAL(clicked()),this,SLOT(StopMip()));
     hlyout->addWidget(pb);
     vlyout->addLayout(hlyout);
+#endif
     cp3->setLayout(vlyout);
 
     lyout = new QVBoxLayout;
@@ -670,6 +673,7 @@ int TuneDialog80::StartCheckAnalogValues(double u, double i, double deg, bool to
 
 int TuneDialog80::GetExternalData()
 {
+#if PROGSIZE != PROGSIZE_EMUL
     switch (TuneControlType)
     {
     case TUNEMIP:
@@ -772,6 +776,9 @@ int TuneDialog80::GetExternalData()
     }
     }
     return GENERALERROR;
+#else
+    return NOERROR;
+#endif
 }
 
 int TuneDialog80::SaveWorkConfig()
@@ -1050,13 +1057,14 @@ int TuneDialog80::ReadAnalogMeasurements()
     return NOERROR;
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void TuneDialog80::StartMip()
 {
     mipcanal = new iec104;
     connect(mipcanal,SIGNAL(signalsready(Parse104::Signals104&)),this,SLOT(ParseMipData(Parse104::Signals104&)));
     connect(this,SIGNAL(stopall()),mipcanal,SLOT(Stop()));
 }
-
+#endif
 void TuneDialog80::ParseMipData(Parse104::Signals104 &Signal)
 {
     // precision
@@ -1077,10 +1085,12 @@ void TuneDialog80::SetTuneMode()
     TuneControlType = sender()->objectName().toInt();
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void TuneDialog80::StopMip()
 {
     emit stopall();
 }
+#endif
 
 void TuneDialog80::closeEvent(QCloseEvent *e)
 {

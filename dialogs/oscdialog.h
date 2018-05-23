@@ -6,7 +6,6 @@
 
 #include "../gen/eoscillogram.h"
 #include "../widgets/etablemodel.h"
-#include "../gen/publicclass.h"
 
 #define MT_FT_XLSX      0x01
 #define MT_FT_COMTRADE  0x02

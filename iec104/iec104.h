@@ -72,8 +72,6 @@
 #include <QTimer>
 #include <QMutex>
 
-#include "../gen/publicclass.h"
-
 class Parse104 : public QObject
 {
     Q_OBJECT

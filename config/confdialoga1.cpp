@@ -8,9 +8,10 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
+#include "../gen/publicclass.h"
 #include "confdialoga1.h"
 
-ConfDialogA1::ConfDialogA1(QVector<publicclass::DataRec> &S2Config, QWidget *parent) :
+ConfDialogA1::ConfDialogA1(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     AbstractConfDialog(parent)
 {
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";

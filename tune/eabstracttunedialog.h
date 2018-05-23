@@ -3,10 +3,9 @@
 
 #include <QDialog>
 #include <QCloseEvent>
-#include <QHBoxLayout>
 #include <QByteArray>
-#include <QStringList>
-#include "../gen/publicclass.h"
+#include "../gen/s2.h"
+//#include "../gen/publicclass.h"
 
 #define MAXTUNESIZE 1024 // максимальный размер файла с данными настройки
 
@@ -29,12 +28,13 @@ public:
     };
 
     explicit EAbstractTuneDialog(QWidget *parent = 0);
+    ~EAbstractTuneDialog();
 
     BacStruct AbsBac;
     QStringList lbls;
     bool Skipped, MeasurementEnabled, ok, TuneFileSaved;
     QTimer *MeasurementTimer;
-    QVector<publicclass::DataRec> S2Config;
+    QVector<S2::DataRec> S2Config;
     quint32 SecondsToEnd15SecondsInterval;
     QHash <QString, int (EAbstractTuneDialog::*)()> pf;
     quint8 bStep;

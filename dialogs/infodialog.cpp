@@ -1,5 +1,6 @@
 #include <QVBoxLayout>
 #include "infodialog.h"
+#include "../gen/publicclass.h"
 #include "../widgets/wd_func.h"
 
 InfoDialog::InfoDialog(QWidget *parent) :

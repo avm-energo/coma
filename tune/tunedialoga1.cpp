@@ -1,5 +1,6 @@
 #include <QTime>
 #include <QtMath>
+#include <QSettings>
 #include <QTabWidget>
 #include <QEventLoop>
 #include <QGridLayout>
@@ -13,6 +14,7 @@
 #include "../gen/commands.h"
 #include "../dialogs/keypressdialog.h"
 #include "../widgets/emessagebox.h"
+#include "../gen/publicclass.h"
 #include "../widgets/wd_func.h"
 
 TuneDialogA1::TuneDialogA1(QWidget *parent) :
@@ -22,6 +24,7 @@ TuneDialogA1::TuneDialogA1(QWidget *parent) :
     ChA1 = new CheckA1;
     SetBac(&Bac_block, BT_BASE, sizeof(Bac_block));
     SetupUI();
+
 }
 
 void TuneDialogA1::SetLbls()
@@ -584,8 +587,8 @@ int TuneDialogA1::Start60PointsMeasurements(CheckA1::A1_Bd1 &st, CheckA1::A1_Bd4
             st.Uef_filt[0] = st.Uef_filt[1] = st.dU = st.dUrms = 0;
     st4.Hamb = st4.Tamb = st4.Tmk = st4.Vbat = 0;
     int count = 0;
-    emit StartPercents(pc.PovNumPoints);
-    while ((count < pc.PovNumPoints) && !pc.Cancelled)
+    emit StartPercents(PovNumPoints);
+    while ((count < PovNumPoints) && !pc.Cancelled)
     {
         if (Commands::GetBd(A1_BDA_IN_BN, &tmpst, sizeof(CheckA1::A1_Bd1)) != NOERROR)
         {
@@ -763,6 +766,12 @@ void TuneDialogA1::GetBdAndFillMTT()
         ChA1->FillBda_in(this);
     if (Commands::GetBd(A1_BDA_IN_AN_BN, &ChA1->Bda_in_an, sizeof(CheckA1::A1_Bd3)) == NOERROR)
         ChA1->FillBda_in_an(this);
+}
+
+void TuneDialogA1::LoadSettings()
+{
+    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    sets->setValue("PovNumPoints", QString::number(PovNumPoints, 10));
 }
 
 // ####################### SLOTS #############################

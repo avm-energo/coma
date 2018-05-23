@@ -9,7 +9,7 @@
 #include "../widgets/wd_func.h"
 #include "../gen/publicclass.h"
 
-ConfDialog::ConfDialog(QVector<publicclass::DataRec> &S2Config, QWidget *parent) : AbstractConfDialog(parent)
+ConfDialog::ConfDialog(QVector<S2::DataRec> &S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {
     ConfigMain = new Config(S2Config); // добавляем к переданному S2Config общую часть
     SetupUI();

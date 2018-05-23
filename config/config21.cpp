@@ -1,6 +1,6 @@
 #include "config21.h"
 
-Config21::Config21(QVector<publicclass::DataRec> &config, bool BaseBoard)
+Config21::Config21(QVector<S2::DataRec> &config, bool BaseBoard)
 {
     // параметры входных сигналов
     quint32 StartInIndex = (BaseBoard) ? AIN21_MTB_STARTIDX : AIN21_MTM_STARTIDX;

@@ -33,6 +33,7 @@
 #include "../config/config.h"
 #include "../widgets/signalchoosewidget.h"
 #include "../widgets/wd_func.h"
+#include "../gen/publicclass.h"
 #include "trendviewdialog.h"
 
 TrendViewDialog::TrendViewDialog(QByteArray &ba, QWidget *parent) : QDialog(parent)

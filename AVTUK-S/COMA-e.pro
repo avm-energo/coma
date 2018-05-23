@@ -9,14 +9,15 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.0.82
+VERSION = 2.1.233
 
 QT       += core gui printsupport
 
-TARGET = avtuk-s_e
-#DEFINES += MODULE_TYPEB=0xA1
+TARGET = avtuks-E
+#DEFINES += MODULE_A1
 DEFINES += PROGNAME='\\"AVTUK-S\\"'
-DEFINES += PROGCAPTION='\\"AVTUK-Service-E\\040v2.0.82\\"'
+DEFINES += PROGCAPTION='\\"AVTUK-Service-E\\040v\\040"$$VERSION"\\040\\"'
+DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=0 # 0 - EMULATION ONLY, 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
 #DEFINES += COMPORTENABLE # enable virtual com port driver
@@ -34,7 +35,6 @@ SOURCES += \
     ../check/checkdialoga1.cpp \
     ../check/eabstractcheckdialog.cpp \
     ../config/abstractconfdialog.cpp \
-    ../config/abstractconfdialog2x.cpp \
     ../config/abstractconfdialog3x.cpp \
     ../config/confdialog.cpp \
     ../config/confdialog21.cpp \
@@ -45,7 +45,6 @@ SOURCES += \
     ../config/confdialoga1.cpp \
     ../config/config.cpp \
     ../config/config21.cpp \
-    ../config/config2x.cpp \
     ../config/config31.cpp \
     ../config/config35.cpp \
     ../config/config3x.cpp \
@@ -62,13 +61,9 @@ SOURCES += \
     ../gen/publicclass.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/getoscpbdelegate.cpp \
-    ../widgets/messagebox.cpp \
-    ../widgets/mytabwidget.cpp \
-    ../widgets/mystackedwidget.cpp \
+    ../widgets/emessagebox.cpp \
     ../widgets/etableitem.cpp \
     ../widgets/etablemodel.cpp \
-    ../widgets/s_tqcombobox.cpp \
-    ../widgets/s_tqtableview.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp \ 
     ../check/check.cpp \
@@ -77,7 +72,90 @@ SOURCES += \
     ../dialogs/oscdialog.cpp \
     ../dialogs/trendviewdialog.cpp \
     ../gen/qcustomplot.cpp \
-    ../gen/eoscillogram.cpp
+    ../gen/eoscillogram.cpp \
+    ../widgets/estackedwidget.cpp \
+    ../widgets/etableview.cpp \
+    ../widgets/etabwidget.cpp \
+    ../widgets/etwoimages.cpp \
+    ../widgets/ecombobox.cpp \
+    ../dialogs/switchjournaldialog.cpp \
+    ../dialogs/swjdialog.cpp \
+    ../check/checkdialog22.cpp \
+    coma.cpp \
+    main.cpp \
+    ../check/check.cpp \
+    ../check/check21.cpp \
+    ../check/check22.cpp \
+    ../check/check80.cpp \
+    ../check/check85.cpp \
+    ../check/checka1.cpp \
+    ../check/checkdialog21.cpp \
+    ../check/checkdialog22.cpp \
+    ../check/checkdialog80.cpp \
+    ../check/checkdialog85.cpp \
+    ../check/checkdialoga1.cpp \
+    ../check/eabstractcheckdialog.cpp \
+    ../config/abstractconfdialog.cpp \
+    ../config/abstractconfdialog3x.cpp \
+    ../config/confdialog.cpp \
+    ../config/confdialog21.cpp \
+    ../config/confdialog22.cpp \
+    ../config/confdialog31.cpp \
+    ../config/confdialog35.cpp \
+    ../config/confdialog80.cpp \
+    ../config/confdialog85.cpp \
+    ../config/confdialoga1.cpp \
+    ../config/config.cpp \
+    ../config/config21.cpp \
+    ../config/config22.cpp \
+    ../config/config31.cpp \
+    ../config/config35.cpp \
+    ../config/config3x.cpp \
+    ../config/config80.cpp \
+    ../config/config85.cpp \
+    ../config/configa1.cpp \
+    ../dialogs/a1dialog.cpp \
+    ../dialogs/errordialog.cpp \
+    ../dialogs/fwupdialog.cpp \
+    ../dialogs/hiddendialog.cpp \
+    ../dialogs/infodialog.cpp \
+    ../dialogs/keypressdialog.cpp \
+    ../dialogs/oscdialog.cpp \
+    ../dialogs/settingsdialog.cpp \
+    ../dialogs/switchjournaldialog.cpp \
+    ../dialogs/swjdialog.cpp \
+    ../dialogs/trendviewdialog.cpp \
+    ../gen/commands.cpp \
+    ../gen/eoscillogram.cpp \
+    ../gen/log.cpp \
+    ../gen/mainwindow.cpp \
+    ../gen/publicclass.cpp \
+    ../gen/qcustomplot.cpp \
+    ../gen/report.cpp \
+    ../models/trendviewmodel.cpp \
+    ../modules/eabstractmodule.cpp \
+    ../tune/eabstracttunedialog.cpp \
+    ../tune/tunedialog21.cpp \
+    ../tune/tunedialog22.cpp \
+    ../tune/tunedialog80.cpp \
+    ../tune/tunedialoga1.cpp \
+    ../tune/tunedialoga1dn.cpp \
+    ../widgets/ecombobox.cpp \
+    ../widgets/emessagebox.cpp \
+    ../widgets/errorprotocolwidget.cpp \
+    ../widgets/estackedwidget.cpp \
+    ../widgets/etableitem.cpp \
+    ../widgets/etablemodel.cpp \
+    ../widgets/etableview.cpp \
+    ../widgets/etabwidget.cpp \
+    ../widgets/etwoimages.cpp \
+    ../widgets/getoscpbdelegate.cpp \
+    ../widgets/lineeditfield.cpp \
+    ../widgets/passwordlineedit.cpp \
+    ../widgets/signalchoosewidget.cpp \
+    ../widgets/waitwidget.cpp \
+    ../widgets/wd_func.cpp \
+    ../gen/s2.cpp
 
 HEADERS  += \
     coma.h \
@@ -89,7 +167,6 @@ HEADERS  += \
     ../check/checkdialoga1.h \
     ../check/eabstractcheckdialog.h \
     ../config/abstractconfdialog.h \
-    ../config/abstractconfdialog2x.h \
     ../config/abstractconfdialog3x.h \
     ../config/confdialog.h \
     ../config/confdialog21.h \
@@ -100,7 +177,6 @@ HEADERS  += \
     ../config/confdialoga1.h \
     ../config/config.h \
     ../config/config21.h \
-    ../config/config2x.h \
     ../config/config31.h \
     ../config/config35.h \
     ../config/config3x.h \
@@ -116,14 +192,10 @@ HEADERS  += \
     ../gen/mainwindow.h \
     ../gen/publicclass.h \
     ../widgets/getoscpbdelegate.h \
-    ../widgets/mytabwidget.h \
     ../widgets/errorprotocolwidget.h \
-    ../widgets/messagebox.h \
-    ../widgets/mystackedwidget.h \
+    ../widgets/emessagebox.h \
     ../widgets/etableitem.h \
     ../widgets/etablemodel.h \
-    ../widgets/s_tqcombobox.h \
-    ../widgets/s_tqtableview.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
     ../check/check.h \
@@ -132,7 +204,90 @@ HEADERS  += \
     ../dialogs/oscdialog.h \
     ../dialogs/trendviewdialog.h \
     ../gen/qcustomplot.h \
-    ../gen/eoscillogram.h
+    ../gen/eoscillogram.h \
+    ../widgets/estackedwidget.h \
+    ../widgets/etableview.h \
+    ../widgets/etabwidget.h \
+    ../widgets/etwoimages.h \
+    ../widgets/ecombobox.h \
+    ../dialogs/switchjournaldialog.h \
+    ../dialogs/swjdialog.h \
+    ../check/checkdialog22.h \
+    coma.h \
+    ../check/check.h \
+    ../check/check21.h \
+    ../check/check22.h \
+    ../check/check80.h \
+    ../check/check85.h \
+    ../check/checka1.h \
+    ../check/checkdialog21.h \
+    ../check/checkdialog22.h \
+    ../check/checkdialog80.h \
+    ../check/checkdialog85.h \
+    ../check/checkdialoga1.h \
+    ../check/eabstractcheckdialog.h \
+    ../config/abstractconfdialog.h \
+    ../config/abstractconfdialog3x.h \
+    ../config/confdialog.h \
+    ../config/confdialog21.h \
+    ../config/confdialog22.h \
+    ../config/confdialog31.h \
+    ../config/confdialog35.h \
+    ../config/confdialog80.h \
+    ../config/confdialog85.h \
+    ../config/confdialoga1.h \
+    ../config/config.h \
+    ../config/config21.h \
+    ../config/config22.h \
+    ../config/config31.h \
+    ../config/config35.h \
+    ../config/config3x.h \
+    ../config/config80.h \
+    ../config/config85.h \
+    ../config/configa1.h \
+    ../dialogs/a1dialog.h \
+    ../dialogs/errordialog.h \
+    ../dialogs/fwupdialog.h \
+    ../dialogs/hiddendialog.h \
+    ../dialogs/infodialog.h \
+    ../dialogs/keypressdialog.h \
+    ../dialogs/oscdialog.h \
+    ../dialogs/settingsdialog.h \
+    ../dialogs/switchjournaldialog.h \
+    ../dialogs/swjdialog.h \
+    ../dialogs/trendviewdialog.h \
+    ../gen/commands.h \
+    ../gen/eoscillogram.h \
+    ../gen/log.h \
+    ../gen/mainwindow.h \
+    ../gen/publicclass.h \
+    ../gen/qcustomplot.h \
+    ../gen/report.h \
+    ../models/trendviewmodel.h \
+    ../modules/eabstractmodule.h \
+    ../tune/eabstracttunedialog.h \
+    ../tune/tunedialog21.h \
+    ../tune/tunedialog22.h \
+    ../tune/tunedialog80.h \
+    ../tune/tunedialoga1.h \
+    ../tune/tunedialoga1dn.h \
+    ../widgets/ecombobox.h \
+    ../widgets/emessagebox.h \
+    ../widgets/errorprotocolwidget.h \
+    ../widgets/estackedwidget.h \
+    ../widgets/etableitem.h \
+    ../widgets/etablemodel.h \
+    ../widgets/etableview.h \
+    ../widgets/etabwidget.h \
+    ../widgets/etwoimages.h \
+    ../widgets/getoscpbdelegate.h \
+    ../widgets/keypress.h \
+    ../widgets/lineeditfield.h \
+    ../widgets/passwordlineedit.h \
+    ../widgets/signalchoosewidget.h \
+    ../widgets/waitwidget.h \
+    ../widgets/wd_func.h \
+    ../gen/s2.h
 
 INCLUDEPATH += $$PWD/../../includes
 

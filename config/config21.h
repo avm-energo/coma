@@ -31,7 +31,7 @@
 class Config21
 {
 public:
-    Config21(QVector<publicclass::DataRec> &config, bool BaseBoard=true);
+    Config21(QVector<S2::DataRec> &config, bool BaseBoard=true);
 
     struct Bci
     {

@@ -1,7 +1,7 @@
 #include "configa1.h"
 #include "config80.h"
 
-ConfigA1::ConfigA1(QVector<publicclass::DataRec> &config)
+ConfigA1::ConfigA1(QVector<S2::DataRec> &config)
 {
     // параметры входных сигналов
     quint32 StartInIndex = IDA100_START;

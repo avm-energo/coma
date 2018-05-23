@@ -34,7 +34,7 @@ class TuneDialog80 : public EAbstractTuneDialog
 {
     Q_OBJECT
 public:
-    explicit TuneDialog80(QVector<publicclass::DataRec> &S2Config, QWidget *parent = 0);
+    explicit TuneDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent = 0);
 
 signals:
     void stopall();
@@ -54,7 +54,7 @@ private:
 
     bool Cancelled, DefConfig;
     Config80 *C80;
-    QVector<publicclass::DataRec> *S2Config;
+    QVector<S2::DataRec> *S2Config;
     Config80::Bci Bci_block_work;
     iec104 *mipcanal;
     int TuneControlType;
@@ -177,8 +177,10 @@ private:
     float ToFloat(QString text);
 
 private slots:
+#if PROGSIZE != PROGSIZE_EMUL
     void StartMip();
     void StopMip();
+#endif
     void ParseMipData(Parse104::Signals104 &);
     void SetTuneMode();
     int ReadAnalogMeasurements();

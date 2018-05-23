@@ -1,5 +1,6 @@
 #include <QCoreApplication>
 #include <QTime>
+#include "publicclass.h"
 #include "eabstractprotocomchannel.h"
 
 EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(parent)
@@ -122,7 +123,7 @@ void EAbstractProtocomChannel::InitiateSend()
         if (DR->isEmpty())
             Finish(CN_NULLDATAERROR);
         WriteData.resize(CN_MAXFILESIZE);
-        pc.StoreDataMem(&(WriteData.data()[0]), DR, fnum);
+        S2::StoreDataMem(&(WriteData.data()[0]), DR, fnum);
         // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
         WRLength = static_cast<quint8>(WriteData.at(7))*16777216; // с 4 байта начинается FileHeader.size
         WRLength += static_cast<quint8>(WriteData.at(6))*65536;
@@ -334,7 +335,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                     Finish(CN_NULLDATAERROR);
                     break;
                 }
-                res = pc.RestoreDataMem(ReadData.data(), RDSize, DR);
+                res = S2::RestoreDataMem(ReadData.data(), RDSize, DR);
                 if (res == 0)
                 {
 //                    SendOk(false);

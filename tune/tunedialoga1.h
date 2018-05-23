@@ -70,6 +70,7 @@ private:
         float Tmk[3];
     };
     TKUSourceDataStruct TKUSourceData;
+    int PovNumPoints;
 
     void SetLbls();
     void SetPf();
@@ -105,6 +106,7 @@ private:
     int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта
     int GetExternalTemp(); // ввод текущей температуры окр. среды для настройки на термокамеру
     void GetBdAndFillMTT();
+    void LoadSettings();
 
 private slots:
     int ReadAnalogMeasurements();

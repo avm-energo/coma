@@ -1,5 +1,6 @@
 #include <QTime>
 #include <QtMath>
+#include <QSettings>
 #include <QTabWidget>
 #include <QEventLoop>
 #include <QGridLayout>
@@ -13,6 +14,7 @@
 #include "../gen/commands.h"
 #include "../dialogs/keypressdialog.h"
 #include "../widgets/emessagebox.h"
+#include "../gen/publicclass.h"
 #include "../widgets/wd_func.h"
 
 TuneDialogA1DN::TuneDialogA1DN(QWidget *parent) :
@@ -22,6 +24,7 @@ TuneDialogA1DN::TuneDialogA1DN(QWidget *parent) :
     ChA1 = new CheckA1;
     SetBac(&Bac_block, BT_MEZONIN, sizeof(Bac));
     SetupUI();
+    LoadSettings();
 }
 
 TuneDialogA1DN::~TuneDialogA1DN()
@@ -535,8 +538,8 @@ int TuneDialogA1DN::Start7_2_345(int counter)
     CheckA1::A1_Bd1 tmpst, tmpst2;
     tmpst2.Phy = tmpst2.Uef_filt[0] = tmpst2.Uef_filt[1] = 0;
     int count = 0;
-    emit StartPercents(pc.PovNumPoints);
-    while ((count < pc.PovNumPoints) && !pc.Cancelled)
+    emit StartPercents(PovNumPoints);
+    while ((count < PovNumPoints) && !pc.Cancelled)
     {
         if (Commands::GetBd(A1_BDA_IN_BN, &tmpst, sizeof(CheckA1::A1_Bd1)) == NOERROR)
             FillBdIn();
@@ -673,8 +676,8 @@ int TuneDialogA1DN::Start7_2_9(int counter)
     tmpst2.dUrms = tmpst2.Phy = tmpst2.sPhy = tmpst2.sU = 0;
     QList<float> sPhy, sU;
     int count = 0;
-    emit StartPercents(pc.PovNumPoints);
-    while ((count < pc.PovNumPoints) && !pc.Cancelled)
+    emit StartPercents(PovNumPoints);
+    while ((count < PovNumPoints) && !pc.Cancelled)
     {
         if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == NOERROR)
             FillBdOut();
@@ -748,4 +751,10 @@ void TuneDialogA1DN::GetBdAndFillMTT()
         FillBdOut();
     if (Commands::GetBd(A1_BDA_IN_BN, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1)) == NOERROR)
         FillBdIn();
+}
+
+void TuneDialogA1DN::LoadSettings()
+{
+    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    sets->setValue("PovNumPoints", QString::number(PovNumPoints, 10));
 }

@@ -58,6 +58,7 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/waitwidget.h"
+#include "../gen/publicclass.h"
 #include "../gen/log.h"
 
 Coma::Coma(QWidget *parent)
@@ -100,7 +101,7 @@ void Coma::Go(const QString &parameter)
     if (Mode != COMA_GENERALMODE)
     {
         pc.Emul = true;
-//        Autonomous = true;
+        Autonomous = true;
     }
     SetupUI();
     show();
@@ -207,7 +208,7 @@ void Coma::SetupUI()
     AddUIToToolbar(tb);
 #endif
     if (Autonomous)
-        AddUIToToolbar(tb);
+        AddEmulToToolbar(tb);
     act = new QAction(this);
     act->setToolTip("Настройки");
     act->setIcon(QIcon("images/settings.png"));
@@ -230,7 +231,7 @@ void Coma::SetupUI()
     SetupMenubar();
 }
 
-void Coma::AddUIToToolbar(QToolBar *tb)
+void Coma::AddEmulToToolbar(QToolBar *tb)
 {
     QAction *act = new QAction(this);
     act->setToolTip("Эмуляция 21");
@@ -269,8 +270,8 @@ void Coma::Stage3()
     QString str;
     ConfB = ConfM = 0;
     CheckB = CheckM = 0;
-    if (!Autonomous)
-        TuneB = TuneM = 0;
+//    if (!Autonomous)
+    TuneB = TuneM = 0;
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == 0)
@@ -290,21 +291,15 @@ void Coma::Stage3()
     {
         str = (ConfM == 0) ? "Конфигурирование" : "Конфигурирование\nБазовая";
         MainTW->addTab(ConfB, str);
-        if (!Autonomous)
-        {
-            connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
-            connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
-        }
+        connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
+        connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
     }
     if (ConfM != 0)
     {
         str = (ConfB == 0) ? "Конфигурирование" : "Конфигурирование\nМезонин";
         MainTW->addTab(ConfM, str);
-        if (!Autonomous)
-        {
-            connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
-            connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
-        }
+        connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
+        connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
     }
     str = (TuneM == 0) ? "Регулировка" : "Регулировка\nБазовая";
     if (TuneB != 0)

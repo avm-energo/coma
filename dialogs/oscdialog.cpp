@@ -15,6 +15,7 @@
 #include "../widgets/etablemodel.h"
 #include "../widgets/getoscpbdelegate.h"
 #include "../widgets/emessagebox.h"
+#include "../gen/publicclass.h"
 #include "../widgets/wd_func.h"
 
 OscDialog::OscDialog(EOscillogram *osc, QWidget *parent) :
@@ -131,7 +132,7 @@ void OscDialog::GetOsc(QModelIndex idx)
         WARNMSG("");
         return;
     }
-    basize += sizeof(publicclass::FileHeader);
+    basize += sizeof(S2::FileHeader);
     OscFunc->BA.resize(basize);
     if (Commands::GetOsc(oscnum, &(OscFunc->BA.data()[0])) == NOERROR)
     {
