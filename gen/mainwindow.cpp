@@ -15,6 +15,7 @@
 #include <QStandardPaths>
 #include <QPropertyAnimation>
 #include <QtSerialPort/QSerialPortInfo>
+#include <QFileDialog>
 #include "mainwindow.h"
 #include "commands.h"
 #include "../widgets/wd_func.h"
@@ -28,6 +29,7 @@
 #include "../gen/publicclass.h"
 #include "../widgets/etablemodel.h"
 #include "../widgets/etableview.h"
+#include "../dialogs/a1dialog.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -77,6 +79,49 @@ MainWindow::~MainWindow()
 #if PROGSIZE != PROGSIZE_EMUL
     Disconnect();
 #endif
+}
+
+void MainWindow::SetMode(int mode)
+{
+    Mode = mode;
+}
+
+int MainWindow::GetMode()
+{
+    return Mode;
+}
+
+void MainWindow::Go(const QString &parameter)
+{
+    if (Mode != COMA_GENERALMODE)
+    {
+        pc.Emul = true;
+        Autonomous = true;
+    }
+    SetupUI();
+    show();
+    switch (Mode)
+    {
+#ifndef MODULE_A1
+    case COMA_AUTON_OSCMODE:
+    {
+        LoadOscFromFile(parameter);
+        break;
+    }
+    case COMA_AUTON_SWJMODE:
+    {
+        LoadSwjFromFile(parameter);
+        break;
+    }
+#endif
+    case COMA_AUTON_PROTMODE:
+    {
+        StartA1Dialog(parameter);
+        break;
+    }
+    default:
+        break;
+    }
 }
 
 QWidget *MainWindow::HthWidget()
@@ -152,7 +197,6 @@ void MainWindow::SetSlideWidget()
     MainTE->setWordWrapMode(QTextOption::WrapAnywhere);
     MainTE->document()->setMaximumBlockCount(C_TE_MAXSIZE);
     slyout->addWidget(MainTE, 40);
-
     SlideWidget->setLayout(slyout);
     SlideWidget->setMinimumWidth(250);
     SlideWidget->hide();
@@ -243,7 +287,6 @@ void MainWindow::LoadSettings()
 {
     QString HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"+PROGNAME+"/";
     QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
-    pc.Port = sets->value("Port", "COM1").toString();
     pc.HomeDir = sets->value("Homedir", HomeDir).toString();
     pc.WriteUSBLog = sets->value("WriteLog", "0").toBool();
     pc.TEEnabled = sets->value("TEEnabled", "0").toBool();
@@ -252,7 +295,6 @@ void MainWindow::LoadSettings()
 void MainWindow::SaveSettings()
 {
     QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
-    sets->setValue("Port", pc.Port);
     sets->setValue("Homedir", pc.HomeDir);
     sets->setValue("WriteLog", pc.WriteUSBLog);
     sets->setValue("TEEnabled", pc.TEEnabled);
@@ -446,7 +488,6 @@ void MainWindow::SetTEEnabled(bool enabled)
 }
 #endif
 
-#if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::PasswordCheck(QString &psw)
 {
     if (psw == "se/7520a")
@@ -455,7 +496,6 @@ void MainWindow::PasswordCheck(QString &psw)
         ok = false;
     emit PasswordChecked();
 }
-#endif
 
 #if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::OpenBhbDialog()
@@ -517,7 +557,6 @@ void MainWindow::StartEmul()
 void MainWindow::StartSettingsDialog()
 {
     SettingsDialog *dlg = new SettingsDialog;
-//    dlg->Fill();
     dlg->exec();
     SaveSettings();
 }
@@ -826,4 +865,20 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 void MainWindow::SetPortSlot(QString port)
 {
     pc.Port = port;
+}
+
+void MainWindow::StartA1Dialog(const QString &filename)
+{
+    A1Dialog *adlg = new A1Dialog(filename);
+    delete adlg;
+}
+
+void MainWindow::ProtocolFromFile()
+{
+    QFileDialog *dlg = new QFileDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setFileMode(QFileDialog::AnyFile);
+    QString filename = dlg->getOpenFileName(this, "Открыть файл", pc.HomeDir, "PKDN verification files (*.vrf)", Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    dlg->close();
+    StartA1Dialog(filename);
 }

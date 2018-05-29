@@ -1,25 +1,3 @@
 <RCC>
-    <qresource prefix="/">
-        <file>../pic/a1.png</file>
-        <file>../pic/cross.png</file>
-        <file>../pic/dbg_msg.png</file>
-        <file>../pic/er_msg.png</file>
-        <file>../pic/evel.png</file>
-        <file>../pic/hr.png</file>
-        <file>../pic/info_msg.png</file>
-        <file>../pic/Object1-0.png</file>
-        <file>../pic/Object2.png</file>
-        <file>../pic/Object3.png</file>
-        <file>../pic/Object4.png</file>
-        <file>../pic/Object5.png</file>
-        <file>../pic/ok.png</file>
-        <file>../pic/play.png</file>
-        <file>../pic/save.png</file>
-        <file>../pic/settings.png</file>
-        <file>../pic/skull-and-bones.png</file>
-        <file>../pic/stop.png</file>
-        <file>../pic/tunea1.png</file>
-        <file>../pic/warn_msg.png</file>
-        <file>../pic/pkdn.png</file>
-    </qresource>
+    <qresource prefix="/"/>
 </RCC>

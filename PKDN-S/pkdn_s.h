@@ -19,7 +19,7 @@ signals:
 private:
 
 private slots:
-    void ProtocolFromFile();
+//    void ProtocolFromFile();
 };
 
 #endif // PKDN_S_H

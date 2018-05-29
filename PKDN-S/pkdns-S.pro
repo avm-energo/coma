@@ -9,16 +9,17 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 1.0.90
+VERSION = 2.1.235
 
 QT       += core gui serialport printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = pkdns-S
-DEFINES += MODULE_TYPEB=0xA1
-DEFINES += PROGNAME='\\"PKDN-S\\"'
-DEFINES += PROGCAPTION='\\"PKDN\\040Service\\040M\\040v1.0.90\\"'
+DEFINES += MODULE_A1
+DEFINES += PROGNAME='\\"PKDN-S-S\\"'
+DEFINES += PROGCAPTION='\\"PKDN-Service-S\\040v"$$VERSION"\\"'
+DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=2 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=1 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
 #DEFINES += COMPORTENABLE # enable virtual com port driver
@@ -27,14 +28,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         pkdn_s.cpp \
-    ../eabstractprotocomchannel.cpp \
-    ../eusbcom.cpp \
-    ../eusbhid.cpp \
-    ../commands.cpp \
-    ../log.cpp \
-    ../mainwindow.cpp \
-    ../publicclass.cpp \
-    ../report.cpp \
+    ../gen/eabstractprotocomchannel.cpp \
+    ../gen/eusbcom.cpp \
+    ../gen/eusbhid.cpp \
+    ../gen/commands.cpp \
+    ../gen/log.cpp \
+    ../gen/mainwindow.cpp \
+    ../gen/publicclass.cpp \
     ../check/eabstractcheckdialog.cpp \
     ../check/checka1.cpp \
     ../check/checkdialoga1.cpp \
@@ -50,25 +50,27 @@ SOURCES += main.cpp\
     ../dialogs/settingsdialog.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/lineeditfield.cpp \
-    ../widgets/messagebox.cpp \
-    ../widgets/mystackedwidget.cpp \
-    ../widgets/mytabwidget.cpp \
+    ../widgets/emessagebox.cpp \
+    ../widgets/estackedwidget.cpp \
+    ../widgets/etabwidget.cpp \
     ../widgets/etableitem.cpp \
     ../widgets/etablemodel.cpp \
-    ../widgets/s_tqcombobox.cpp \
-    ../widgets/s_tqtableview.cpp \
+    ../widgets/ecombobox.cpp \
+    ../widgets/etableview.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp
+    ../widgets/wd_func.cpp \
+    ../widgets/passwordlineedit.cpp \
+    ../check/check.cpp \
+    ../gen/s2.cpp
 
 HEADERS  += pkdn_s.h \
-    ../eabstractprotocomchannel.h \
-    ../eusbcom.h \
-    ../eusbhid.h \
-    ../commands.h \
-    ../log.h \
-    ../mainwindow.h \
-    ../publicclass.h \
-    ../report.h \
+    ../gen/eabstractprotocomchannel.h \
+    ../gen/eusbcom.h \
+    ../gen/eusbhid.h \
+    ../gen/commands.h \
+    ../gen/log.h \
+    ../gen/mainwindow.h \
+    ../gen/publicclass.h \
     ../check/eabstractcheckdialog.h \
     ../check/checka1.h \
     ../check/checkdialoga1.h \
@@ -84,18 +86,18 @@ HEADERS  += pkdn_s.h \
     ../dialogs/settingsdialog.h \
     ../widgets/errorprotocolwidget.h \
     ../widgets/lineeditfield.h \
-    ../widgets/messagebox.h \
-    ../widgets/mystackedwidget.h \
-    ../widgets/mytabwidget.h \
+    ../widgets/emessagebox.h \
+    ../widgets/estackedwidget.h \
+    ../widgets/etabwidget.h \
     ../widgets/etableitem.h \
     ../widgets/etablemodel.h \
-    ../widgets/s_tqcombobox.h \
-    ../widgets/s_tqtableview.h \
+    ../widgets/ecombobox.h \
+    ../widgets/etableview.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h
-
-RESOURCES += \
-    pkdn-s.qrc
+    ../widgets/wd_func.h \
+    ../widgets/passwordlineedit.h \
+    ../check/check.h \
+    ../gen/s2.h
 
 INCLUDEPATH += $$PWD/../../includes
 

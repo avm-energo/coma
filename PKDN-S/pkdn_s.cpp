@@ -100,7 +100,7 @@ void pkdn_s::SetupUI()
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
 #if PROGSIZE >= PROGSIZE_LARGE
-        SetSlideWidget();
+    SetSlideWidget();
 #endif
 }
 
@@ -169,8 +169,9 @@ void pkdn_s::Stage3()
     emit BsiRefresh();
 }
 
-void pkdn_s::ProtocolFromFile()
+/*void pkdn_s::ProtocolFromFile()
 {
     A1Dialog *dlg = new A1Dialog(false);
     delete dlg;
 }
+*/

@@ -4,12 +4,12 @@
 
 #define Name "ПКДН-Сервис БР"
 #define GroupName "ПКДН-Сервис"
-#define EngName "PKDN-S"
-#define Version "2.1.231"
+#define EngName "PKDN-S-L"
+#define Version "2.1.235"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "pkdns-L.exe"
-#define SetupName "pkdns-L-2.1.231-x86"
+#define SetupName "pkdns-L-2.1.235-x86"
 #define Prefix "D:\Progs\out"
 
 [Languages]
@@ -29,7 +29,7 @@ AppPublisher={#Publisher}
 AppPublisherURL={#URL}
 AppSupportURL={#URL}
 AppUpdatesURL={#URL}
-DefaultDirName={pf}\{#EngName}
+DefaultDirName={pf}\{#Publisher}\{#Name}
 DefaultGroupName={#GroupName}
 ; UninstallDisplayIcon={app}\MyProg.exe
 Compression=lzma2
@@ -56,6 +56,14 @@ Source: "{#Prefix}\src\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafteri
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
 ;Name: "{group}\Руководство пользователя КОМА"; Filename: "{app}\КОМА Руководство пользователя.pdf"
 Name: "{group}\Удалить программу"; Filename: "{uninstallexe}"
+
+[Registry]
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovDevName"; ValueData: "UPTN"; Flags: createvalueifdoesntexist
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovDevPrecision"; ValueData: "0.05"; Flags: createvalueifdoesntexist
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovDevSN"; ValueData: "00000001"; Flags: createvalueifdoesntexist
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovNumPoints"; ValueData: "60"; Flags: createvalueifdoesntexist
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "WriteLog"; ValueData: "true"; Flags: createvalueifdoesntexist
 
 [Run]
 ; add the Parameters, WorkingDir and StatusMsg as you wish, just keep here

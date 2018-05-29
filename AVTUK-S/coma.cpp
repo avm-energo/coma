@@ -29,7 +29,7 @@
 #include <QSettings>
 #include <QDialog>
 #include <QCursor>
-#include <QFileDialog>
+//#include <QFileDialog>
 #include "coma.h"
 #include "../gen/commands.h"
 #include "../check/checkdialog21.h"
@@ -86,7 +86,7 @@ Coma::~Coma()
 {
 }
 
-void Coma::SetMode(int mode)
+/*void Coma::SetMode(int mode)
 {
     Mode = mode;
 }
@@ -125,7 +125,7 @@ void Coma::Go(const QString &parameter)
     default:
         break;
     }
-}
+}*/
 
 void Coma::Emul2x()
 {
@@ -205,10 +205,9 @@ void Coma::SetupUI()
     tb->addAction(act);
     tb->addSeparator();
 #if PROGSIZE >= PROGSIZE_FULL
-    AddUIToToolbar(tb);
-#endif
     if (Autonomous)
         AddEmulToToolbar(tb);
+#endif
     act = new QAction(this);
     act->setToolTip("Настройки");
     act->setIcon(QIcon("images/settings.png"));
@@ -423,20 +422,4 @@ void Coma::PrepareDialogs()
     default: // 0x00
         break;
     }
-}
-
-void Coma::StartA1Dialog(const QString &filename)
-{
-    A1Dialog *adlg = new A1Dialog(filename);
-    delete adlg;
-}
-
-void Coma::ProtocolFromFile()
-{
-    QFileDialog *dlg = new QFileDialog;
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setFileMode(QFileDialog::AnyFile);
-    QString filename = dlg->getOpenFileName(this, "Открыть файл", pc.HomeDir, "PKDN verification files (*.vrf)", Q_NULLPTR, QFileDialog::DontUseNativeDialog);
-    dlg->close();
-    StartA1Dialog(filename);
 }

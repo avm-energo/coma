@@ -1,15 +1,15 @@
-; -- pkdn-s_l-hid x86.iss --
+; -- pkdn-S x86.iss --
 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING .ISS SCRIPT FILES!
 
 #define Name "ПКДН-Сервис МР"
 #define GroupName "ПКДН-Сервис"
-#define EngName "PKDN-S"
-#define Version "1.0.90"
+#define EngName "PKDN-S-S"
+#define Version "2.1.235"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "pkdns-S.exe"
-#define SetupName "pkdns-S-{#Version}-x86"
+#define SetupName "pkdns-S-2.1.235-x86"
 #define Prefix "D:\Progs\out"
 
 [Languages]
@@ -29,7 +29,7 @@ AppPublisher={#Publisher}
 AppPublisherURL={#URL}
 AppSupportURL={#URL}
 AppUpdatesURL={#URL}
-DefaultDirName={pf}\{#EngName}
+DefaultDirName={pf}\{#Publisher}\{#Name}
 DefaultGroupName={#GroupName}
 ; UninstallDisplayIcon={app}\MyProg.exe
 Compression=lzma2
@@ -48,6 +48,7 @@ Source: "{#Prefix}\coma\platforms\qwindows.dll"; DestDir: "{app}\platforms"
 Source: "{#Prefix}\coma\{#ExeName}"; DestDir: "{app}"; DestName: {#ExeName}; Flags: ignoreversion
 Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
 Source: "{#Prefix}\src\reports\*.*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
+Source: "{#Prefix}\images\coma\*.*"; DestDir: "{app}\images"; Flags: ignoreversion
 ; Source: "{#Prefix}\coma\pdf\КОМА Руководство пользователя.pdf"; DestDir: "{app}"
 Source: "{#Prefix}\src\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: not IsRequiredVC2015Detected
 
@@ -55,6 +56,14 @@ Source: "{#Prefix}\src\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafteri
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
 ;Name: "{group}\Руководство пользователя КОМА"; Filename: "{app}\КОМА Руководство пользователя.pdf"
 Name: "{group}\Удалить программу"; Filename: "{uninstallexe}"
+
+[Registry]
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovDevName"; ValueData: "UPTN"; Flags: createvalueifdoesntexist
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovDevPrecision"; ValueData: "0.05"; Flags: createvalueifdoesntexist
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovDevSN"; ValueData: "00000001"; Flags: createvalueifdoesntexist
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovNumPoints"; ValueData: "60"; Flags: createvalueifdoesntexist
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "WriteLog"; ValueData: "true"; Flags: createvalueifdoesntexist
 
 [Run]
 ; add the Parameters, WorkingDir and StatusMsg as you wish, just keep here
@@ -71,14 +80,19 @@ function IsVC2015Detected(): boolean;
 var 
     reg_key: string; // Просматриваемый подраздел системного реестра
     success: boolean; // Флаг наличия запрашиваемой версии VC
+    success2: boolean; // Временный флаг
     key_value: string; // Прочитанное из реестра значение ключа
 
 begin
     success := false;
     reg_key := 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64';
-    
     success := RegQueryStringValue(HKLM, reg_key, 'Version', key_value);
-    success := success and (Pos('v14.0.24215', key_value) = 1);
+    success := success and ((Pos('v14.0.24215', key_value) = 1) or (Pos('v14.0.24210', key_value) = 1));
+    reg_key := 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86';
+    success2 := RegQueryStringValue(HKLM, reg_key, 'Version', key_value);
+    success2 := success2 and ((Pos('v14.0.24215', key_value) = 1) or (Pos('v14.0.24210', key_value) = 1));
+    success := success or success2;
+
     result := success;
 end;
 

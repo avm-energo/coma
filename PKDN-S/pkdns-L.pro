@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.1.231
+VERSION = 2.1.235
 
 QT       += core gui serialport printsupport
 
@@ -17,8 +17,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = pkdns-L
 DEFINES += MODULE_A1
-DEFINES += PROGNAME='\\"PKDN-S\\"'
-DEFINES += PROGCAPTION='\\"AVTUK-Service-F\\040v"$$VERSION"\\"'
+DEFINES += PROGNAME='\\"PKDN-S-L\\"'
+DEFINES += PROGCAPTION='\\"PKDN-Service-L\\040v"$$VERSION"\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=2 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=3 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
@@ -51,7 +51,6 @@ SOURCES += main.cpp\
     ../gen/log.cpp \
     ../gen/mainwindow.cpp \
     ../gen/publicclass.cpp \
-    ../gen/report.cpp \
     ../tune/eabstracttunedialog.cpp \
     ../tune/tunedialoga1.cpp \
     ../tune/tunedialoga1dn.cpp \
@@ -66,7 +65,8 @@ SOURCES += main.cpp\
     ../widgets/emessagebox.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp \
-    ../widgets/passwordlineedit.cpp
+    ../widgets/passwordlineedit.cpp \
+    ../gen/s2.cpp
 
 HEADERS  += pkdn_s.h \
     ../check/check.h \
@@ -92,7 +92,6 @@ HEADERS  += pkdn_s.h \
     ../gen/log.h \
     ../gen/mainwindow.h \
     ../gen/publicclass.h \
-    ../gen/report.h \
     ../tune/eabstracttunedialog.h \
     ../tune/tunedialoga1.h \
     ../tune/tunedialoga1dn.h \
@@ -107,7 +106,8 @@ HEADERS  += pkdn_s.h \
     ../widgets/emessagebox.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
-    ../widgets/passwordlineedit.h
+    ../widgets/passwordlineedit.h \
+    ../gen/s2.h
 
 INCLUDEPATH += $$PWD/../../includes
 

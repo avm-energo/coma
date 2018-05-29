@@ -99,7 +99,8 @@ SOURCES += \
     ../check/check22.cpp \
     ../check/checkdialog22.cpp \
     ../tune/tunedialog22.cpp \
-    ../widgets/passwordlineedit.cpp
+    ../widgets/passwordlineedit.cpp \
+    ../gen/s2.cpp
 
 HEADERS  += \
     coma.h \
@@ -176,7 +177,8 @@ HEADERS  += \
     ../check/check22.h \
     ../check/checkdialog22.h \
     ../tune/tunedialog22.h \
-    ../widgets/passwordlineedit.h
+    ../widgets/passwordlineedit.h \
+    ../gen/s2.h
 
 INCLUDEPATH += $$PWD/../../includes
 

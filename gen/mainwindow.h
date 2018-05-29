@@ -24,6 +24,20 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void SetMode(int mode);
+    int GetMode();
+    void Go(const QString &parameter="");
+
+    enum Modes
+    {
+        COMA_GENERALMODE, // обычный режим
+        COMA_AUTON_OSCMODE, // автономный режим с отображением сохранённой осциллограммы
+        COMA_AUTON_PROTMODE, // автономный режим с отображением протокола из прибора
+        COMA_AUTON_SWJMODE, // автономный режим с отображением сохранённого журнала
+        COMA_AUTON_MODE // просто автономный режим
+    };
+
+    int Mode; // режим запуска программы
     bool SWHide;
     QRect SWGeometry;
     QVector<S2::DataRec> S2Config;
@@ -132,6 +146,8 @@ private slots:
     void LoadOsc();
     void LoadSWJ();
 #endif
+    void ProtocolFromFile();
+    void StartA1Dialog(const QString &filename);
 
     void SetDefConf();
     void Fill();

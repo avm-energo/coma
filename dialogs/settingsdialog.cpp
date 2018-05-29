@@ -5,6 +5,7 @@
 #include <QCheckBox>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QSettings>
 #include <QString>
 #include "settingsdialog.h"
 #include "../config/config.h"
@@ -24,7 +25,7 @@ void SettingsDialog::SetupUI()
 {
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-/*    quint32 MTypeB = pc.ModuleBsi.MTypeB << 8;
+    quint32 MTypeB = pc.ModuleBsi.MTypeB;
     if (MTypeB == MTB_A1)
     {
         hlyout = new QHBoxLayout;
@@ -43,7 +44,11 @@ void SettingsDialog::SetupUI()
         hlyout->addWidget(WDFunc::NewLBLT(this, "Класс точности средства поверки"));
         hlyout->addWidget(WDFunc::NewLE(this, "povdevprecision"));
         vlyout->addLayout(hlyout);
-    } */
+        hlyout = new QHBoxLayout;
+        hlyout->addWidget(WDFunc::NewLBLT(this, "Количество точек усреднения для поверки"), 0);
+        hlyout->addWidget(WDFunc::NewSPB(this, "povnumpoints", 1, 65535, 0), 1);
+        vlyout->addLayout(hlyout);
+    }
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Рабочий каталог программы"), 0);
     hlyout->addWidget(WDFunc::NewLE(this, "pathle"), 1);
@@ -61,10 +66,6 @@ void SettingsDialog::SetupUI()
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewChB(this, "writelogchb", "Запись обмена данными в файл"));
     vlyout->addLayout(hlyout);
-    hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBLT(this, "Количество точек усреднения для поверки"), 0);
-    hlyout->addWidget(WDFunc::NewSPB(this, "povnumpoints", 1, 65535, 0), 1);
-    vlyout->addLayout(hlyout);
     pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),this,SLOT(AcceptSettings()));
     vlyout->addWidget(pb);
@@ -73,27 +74,41 @@ void SettingsDialog::SetupUI()
 
 void SettingsDialog::Fill()
 {
-//    WDFunc::SetLEData(this,"orgle",pc.OrganizationString);
+    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    QString DevName = sets->value("PovDevName", "UPTN").toString();
+    QString DevSN = sets->value("PovDevSN", "00000001").toString();
+    QString DevPrecision = sets->value("PovDevPrecision", "0.05").toString();
+    quint32 PovNumPoints = sets->value("PovNumPoints", "60").toInt();
+    QString OrganizationString = sets->value("Organization", "Р&К").toString();
+    WDFunc::SetLEData(this,"orgle", OrganizationString);
     WDFunc::SetLEData(this,"pathle",pc.HomeDir);
-/*    WDFunc::SetLEData(this,"povdev",pc.PovDev.DevName);
-    WDFunc::SetLEData(this,"povdevsn",pc.PovDev.DevSN);
-    WDFunc::SetLEData(this,"povdevprecision",pc.PovDev.DevPrecision); */
+    WDFunc::SetLEData(this,"povdev", DevName);
+    WDFunc::SetLEData(this,"povdevsn", DevSN);
+    WDFunc::SetLEData(this,"povdevprecision", DevPrecision);
     QString restring = "^[0-2]{0,1}[0-9]{1,2}{\\.[0-2]{0,1}[0-9]{1,2}}{3}$";
     WDFunc::SetLEData(this,"miple",pc.MIPIP,restring);
     WDFunc::SetChBData(this, "writelogchb", pc.WriteUSBLog);
-//    WDFunc::SetSPBData(this, "povnumpoints", pc.PovNumPoints);
+    WDFunc::SetSPBData(this, "povnumpoints", PovNumPoints);
 }
 
 void SettingsDialog::AcceptSettings()
 {
-//    WDFunc::LEData(this, "orgle", pc.OrganizationString);
+    QString DevName, DevSN, DevPrecision, OrganizationString;
+    quint32 PovNumPoints;
+    WDFunc::LEData(this, "orgle", OrganizationString);
     WDFunc::LEData(this, "pathle", pc.HomeDir);
-/*    WDFunc::LEData(this, "povdev", pc.PovDev.DevName);
-    WDFunc::LEData(this, "povdevsn", pc.PovDev.DevSN);
-    WDFunc::LEData(this, "povdevprecision", pc.PovDev.DevPrecision); */
+    WDFunc::LEData(this, "povdev", DevName);
+    WDFunc::LEData(this, "povdevsn", DevSN);
+    WDFunc::LEData(this, "povdevprecision", DevPrecision);
     WDFunc::LEData(this, "miple", pc.MIPIP);
     WDFunc::ChBData(this, "writelogchb", pc.WriteUSBLog);
-//    WDFunc::SPBData(this, "povnumpoints", pc.PovNumPoints);
+    WDFunc::SPBData(this, "povnumpoints", PovNumPoints);
+    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    sets->setValue("PovDevName", DevName);
+    sets->setValue("PovDevSN", DevSN);
+    sets->setValue("PovDevPrecision", DevPrecision);
+    sets->setValue("PovNumPoints", QString::number(PovNumPoints, 10));
+    sets->setValue("Organization", OrganizationString);
     this->close();
 }
 

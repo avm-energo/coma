@@ -29,7 +29,7 @@ EAbstractProtocomChannel::~EAbstractProtocomChannel()
 {
 }
 
-void EAbstractProtocomChannel::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint16 filenum, QVector<publicclass::DataRec> *DRptr)
+void EAbstractProtocomChannel::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint16 filenum, QVector<S2::DataRec> *DRptr)
 {
     if (!Connected)
     {
@@ -54,16 +54,6 @@ void EAbstractProtocomChannel::Send(int command, int board_type, void *ptr, quin
     QEventLoop loop;
     connect(this, SIGNAL(QueryFinished()), &loop, SLOT(quit()));
     loop.exec();
-/*    BusyMutex.lock();
-    BusyWC.wait(&BusyMutex);
-    BusyMutex.unlock(); */
-/*    while (Busy)
-    {
-        QTime tme;
-        tme.start();
-        while (tme.elapsed() < CN_MAINLOOP_DELAY)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-    } */
 }
 
 void EAbstractProtocomChannel::InitiateSend()
@@ -129,7 +119,7 @@ void EAbstractProtocomChannel::InitiateSend()
         WRLength += static_cast<quint8>(WriteData.at(6))*65536;
         WRLength += static_cast<quint8>(WriteData.at(5))*256;
         WRLength += static_cast<quint8>(WriteData.at(4));
-        WRLength += sizeof(publicclass::FileHeader); // sizeof(FileHeader)
+        WRLength += sizeof(S2::FileHeader); // sizeof(FileHeader)
         WriteData.resize(WRLength);
         emit SetDataSize(WRLength); // сигнал для прогрессбара
         SetWRSegNum();

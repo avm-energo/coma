@@ -756,5 +756,5 @@ void TuneDialogA1DN::GetBdAndFillMTT()
 void TuneDialogA1DN::LoadSettings()
 {
     QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
-    sets->setValue("PovNumPoints", QString::number(PovNumPoints, 10));
+    PovNumPoints = sets->value("PovNumPoints", "60").toInt();
 }

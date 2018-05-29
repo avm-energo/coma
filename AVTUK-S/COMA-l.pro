@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.1.233
+VERSION = 2.1.235
 
 QT       += core gui network serialport printsupport
 
@@ -98,7 +98,8 @@ SOURCES += \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp \
-    ../widgets/passwordlineedit.cpp
+    ../widgets/passwordlineedit.cpp \
+    ../gen/s2.cpp
 
 HEADERS  += \
     coma.h \
@@ -174,7 +175,8 @@ HEADERS  += \
     ../widgets/signalchoosewidget.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
-    ../widgets/passwordlineedit.h
+    ../widgets/passwordlineedit.h \
+    ../gen/s2.h
 
 INCLUDEPATH += $$PWD/../../includes
 
