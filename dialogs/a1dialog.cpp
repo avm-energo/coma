@@ -402,8 +402,8 @@ void A1Dialog::FillModel()
             UpdateItemInModel(row, column++, QString::number(Dd_Block.dUrms,'f',5));
             UpdateItemInModel(row, column++, QString::number(Dd_Block.Phy,'f',5));
         }
-        UpdateItemInModel(row, column++, QString::number(Dd_Block.sPhy,'f',5));
         UpdateItemInModel(row, column++, QString::number(Dd_Block.sU,'f',5));
+        UpdateItemInModel(row, column++, QString::number(Dd_Block.sPhy,'f',5));
     }
 }
 

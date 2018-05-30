@@ -72,6 +72,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 #ifndef MODULE_A1
     OscFunc = new EOscillogram;
 #endif
+    StartWindowSplashScreen->finish(this);
 }
 
 MainWindow::~MainWindow()
@@ -439,8 +440,12 @@ void MainWindow::Stage2()
         return;
     }
     pc.MType = ((pc.ModuleBsi.MTypeB & 0x000000FF) << 8) | (pc.ModuleBsi.MTypeM & 0x000000FF);
+#ifndef MODULE_A1
     pc.ModuleTypeString = "АВТУК-";
-    pc.ModuleTypeString.append(QString::number(pc.MType, 16));
+    pc.ModuleTypeString.append(QString::number(pc.ModuleBsi.MTypeB + pc.ModuleBsi.MTypeM, 16));
+#else
+    pc.ModuleTypeString = "ПКС-1";
+#endif
 #if PROGSIZE >= PROGSIZE_LARGE
     if ((pc.ModuleBsi.SerialNumB == 0xFFFFFFFF) || ((pc.ModuleBsi.SerialNumM == 0xFFFFFFFF) && (pc.ModuleBsi.MTypeM != MTM_00)) || \
             (pc.ModuleBsi.SerialNum == 0xFFFFFFFF)) // серийный номер не задан, выдадим предупреждение
