@@ -105,6 +105,7 @@ private:
         quint32 GOST;
         quint64 SerNum;
         quint64 DNFNum;
+        quint32 VarNum;
         float Temp;
         float Humidity;
         float THD;
@@ -112,8 +113,8 @@ private:
     };
     struct MainDataStruct
     {
-        float U; // Относительное значение напряжения
         float S; // Значение мощности нагрузки, установленное на i-м испытании
+        float U; // Относительное значение напряжения
         float dUp; // Относительная погрешность измерения по rms
         float ddUp; // Среднеквадратическое отклонение dUp
         float dPp; // Абсолютная погрешность по углу
@@ -184,6 +185,8 @@ private:
     void InputTuneVariant(int varnum);
     void LoadSettings();
     void SaveSettings();
+
+    void TemplateCheck();
 
 protected:
     void closeEvent(QCloseEvent *e);

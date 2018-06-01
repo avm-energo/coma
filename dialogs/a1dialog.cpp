@@ -173,7 +173,12 @@ void A1Dialog::GenerateReport()
     report->loadFromFile(path);
     report->dataManager()->addModel("maindata", ReportModel, false);
     // запрос блока Bda_h, чтобы выдать KNI в протокол
-    if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2)) == NOERROR)
+    if (!Autonomous)
+    {
+        if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2)) == NOERROR)
+            report->dataManager()->setReportVariable("KNI", QString::number(ChA1->Bda_h.HarmBuf[0][0], 'g', 5));
+    }
+    else
         report->dataManager()->setReportVariable("KNI", QString::number(ChA1->Bda_h.HarmBuf[0][0], 'g', 5));
     report->dataManager()->setReportVariable("Organization", OrganizationString);
     QString day = QDateTime::currentDateTime().toString("dd");
@@ -288,7 +293,7 @@ void A1Dialog::DNDialog(PovDevStruct &PovDev)
     glyout->addWidget(WDFunc::NewLBL(this, "Обозначение по схеме, фаза"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "DNNamePhase", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNSerialNum", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLE(this, "DNSerialNum", ReportHeader.DNSerNum), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Класс точности, %"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "DNTolerance", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Номинальное первичное напряжение, кВ"), row, 0, 1, 1, Qt::AlignRight);
@@ -440,12 +445,8 @@ void A1Dialog::FillHeaders()
     ViewModel->setHeaderData(section++, Qt::Horizontal, "sPhy(u)");
 }
 
-void A1Dialog::StartWork()
+void A1Dialog::TemplateCheck()
 {
-    TuneVariant = 0;
-    Autonomous = false;
-    float VoltageInkV, VoltageInV;
-    pc.Cancelled = false;
     QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
     QString path = pc.SystemHomeDir+"a1_"+GOST+".lrxml";
     QFile file(path);
@@ -456,6 +457,15 @@ void A1Dialog::StartWork()
         EMessageBox::information(this, "Предупреждение", tmps);
     }
     LoadSettings();
+}
+
+void A1Dialog::StartWork()
+{
+    TuneVariant = 0;
+    Autonomous = false;
+    float VoltageInkV, VoltageInV;
+    pc.Cancelled = false;
+    TemplateCheck();
     if (GetConf() != NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка чтения конфигурации или настроечных параметров из модуля");
@@ -561,15 +571,7 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
         EMessageBox::error(this, "Ошибка", "Ошибка загрузки файла");
         return;
     }
-    QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
-    QString path = pc.SystemHomeDir+"a1_"+GOST+".lrxml";
-    QFile file(path);
-    if (!file.exists()) // нет файла шаблона
-    {
-        QString tmps = "Файл шаблона не найден по указанному пути:" + path + \
-                "Выходной протокол не будет сформирован. Рекомендуется переустановка ПКДН-Сервис";
-        EMessageBox::information(this, "Предупреждение", tmps);
-    }
+    TemplateCheck();
     // заполняем ReportHeader
     PovDev.DevName = this->PovDev.DevName;
     PovDev.DevPrecision = this->PovDev.DevPrecision;
@@ -604,6 +606,7 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
         QDateTime tn = QDateTime::fromTime_t(tmpi, Qt::UTC);
         ReportHeader.PovDateTime = tn.toString("dd-MM-yyyy hh:mm:ss");
         ChA1->Bda_h.HarmBuf[0][0] = Results.THD;
+        TuneVariant = (Results.VarNum >= TUNEVARIANTSNUM) ? 0 : Results.VarNum;
         ReportHeader.Freq = QString::number(Results.Frequency, 'f', 5);
         ReportHeader.Humidity = QString::number(Results.Humidity, 'f', 5);
         ReportHeader.Temp = QString::number(Results.Temp, 'f', 5);

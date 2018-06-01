@@ -5,11 +5,11 @@
 #define Name "ПКДН-Сервис CР"
 #define GroupName "ПКДН-Сервис"
 #define EngName "PKDN-S-M"
-#define Version "2.1.236"
+#define Version "2.1.238"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "pkdns-M.exe"
-#define SetupName "pkdns-M-2.1.236-x86"
+#define SetupName "pkdns-M-2.1.238-x86"
 #define Prefix "D:\Progs\out"
 
 [Languages]
