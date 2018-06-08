@@ -328,10 +328,10 @@ int TuneDialog21::Tune()
     for (ChNum=0; ChNum<AIN21_NUMCH; ++ChNum)
     {
         ShowU0();
-        if (!TuneChannel(ATUNE_U0))
+        if (TuneChannel(ATUNE_U0) != NOERROR)
             return GENERALERROR;
         ShowI20();
-        if (!TuneChannel(ATUNE_I20))
+        if (TuneChannel(ATUNE_I20) != NOERROR)
             return GENERALERROR;
     }
     for (ChNum=0; ChNum<AIN21_NUMCH; ++ChNum)
