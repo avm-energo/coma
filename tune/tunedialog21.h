@@ -40,7 +40,6 @@ private:
     Bac Bac_block[AIN21_NUMCH];
 
     int BoardType;
-    int ChNum;
 
     void SetupUI();
     void SetLbls();
@@ -49,17 +48,14 @@ private:
     void FillBackBac();
     void GetBdAndFillMTT();
     int ShowScheme();
-    int ShowU0();
-    int ShowI20();
-    int ShowU5();
+    int ShowU0(int ChNum);
+    int ShowI20(int ChNum);
+    int ShowU5(int ChNum);
 
     int Tune();
-    int TuneChannel(int Type);
+    int TuneChannel(Check21::Bda &Bda);
     void ShowErrMsg(int);
-    bool CalcNewTuneCoef();
-    bool CheckAndShowTune0();
-    bool CheckAndShowTune5();
-    bool CheckAndShowTune20();
+    bool CalcNewTuneCoef(int NumCh);
     bool CheckTuneCoefs();
 
 private slots:

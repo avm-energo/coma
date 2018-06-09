@@ -25,7 +25,6 @@ TuneDialog21::TuneDialog21(int type, QWidget *parent) :
         Bda20.sin[i] = 1.0;
     }
     BoardType = type;
-    ChNum = 0;
     SetBac(&Bac_block, BoardType, sizeof(Bac_block));
     SetupUI();
 }
@@ -88,13 +87,13 @@ void TuneDialog21::SetupUI()
         le->setObjectName("tunebcoef"+QString::number(i));
         le->setStyleSheet(ValuesLEFormat);
         gb2lyout->addWidget(le, 1);
-        lbl = new QLabel("u"+QString::number(i)+":");
+        lbl = new QLabel("i"+QString::number(i)+":");
         gb2lyout->addWidget(lbl);
         le = new QLineEdit("");
         le->setObjectName("tunek1coef"+QString::number(i));
         le->setStyleSheet(ValuesLEFormat);
         gb2lyout->addWidget(le, 1);
-        lbl = new QLabel("i"+QString::number(i)+":");
+        lbl = new QLabel("u"+QString::number(i)+":");
         gb2lyout->addWidget(lbl);
         le = new QLineEdit("");
         le->setObjectName("tunek2coef"+QString::number(i));
@@ -109,75 +108,10 @@ void TuneDialog21::SetupUI()
     if (gb2lyout->count())
         gb1lyout->addLayout(gb2lyout);
     gb1lyout->addWidget(BottomUI());
-/*    QPushButton *pb = new QPushButton("Установить настроечные коэффициенты по умолчанию");
-    connect(pb,SIGNAL(clicked()),this,SLOT(SetDefCoefs()));
-    gb1lyout->addWidget(pb);
-    pb = new QPushButton("Прочитать настроечные коэффициенты из модуля");
-    connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs()));
-    if (pc.Emul)
-        pb->setEnabled(false);
-    gb1lyout->addWidget(pb);
-    pb = new QPushButton("Записать настроечные коэффициенты в модуль");
-    connect(pb,SIGNAL(clicked()),this,SLOT(WriteTuneCoefs()));
-    if (pc.Emul)
-        pb->setEnabled(false);
-    gb1lyout->addWidget(pb);
-    pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
-    pb->setIcon(QIcon("images/load.png"));
-    connect(pb,SIGNAL(clicked()),this,SLOT(LoadFromFile()));
-    gb1lyout->addWidget(pb);
-    pb = new QPushButton("Записать настроечные коэффициенты в файл");
-    pb->setIcon(QIcon("images/save.png"));
-    connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
-    gb1lyout->addWidget(pb); */
     gb->setLayout(gb1lyout);
     lyout->addWidget(gb);
     cp2->setLayout(lyout);
 
-/*    QGridLayout *glyout = new QGridLayout;
-    lbl = new QLabel("Канал");
-    glyout->addWidget(lbl,0,0,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Значение");
-    glyout->addWidget(lbl,0,1,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Настройка нуля");
-    glyout->addWidget(lbl,0,2,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Настройка 20 мА");
-    glyout->addWidget(lbl,0,3,1,1,Qt::AlignCenter);
-    lbl = new QLabel("Настройка 5 В");
-    glyout->addWidget(lbl,0,4,1,1,Qt::AlignCenter);
-    glyout->setColumnStretch(0, 0);
-    glyout->setColumnStretch(1, 3);
-    glyout->setColumnStretch(2, 1);
-    glyout->setColumnStretch(3, 1);
-    glyout->setColumnStretch(4, 1);
-    for (i = 0; i < AIN21_NUMCH; i++)
-    {
-        lbl = new QLabel(QString::number(i));
-        glyout->addWidget(lbl,i+1,0,1,1,Qt::AlignCenter);
-        lbl = new QLabel("");
-        lbl->setObjectName("tunech"+QString::number(i));
-        lbl->setStyleSheet(ValuesFormat);
-        glyout->addWidget(lbl,i+1,1,1,1);
-        pb = new QPushButton("Запуск");
-        pb->setObjectName("0"+QString::number(i));
-        connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
-        if (pc.Emul)
-            pb->setEnabled(false);
-        glyout->addWidget(pb,i+1,2,1,1,Qt::AlignCenter);
-        pb = new QPushButton("Запуск");
-        pb->setObjectName("1"+QString::number(i));
-        connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
-        if (pc.Emul)
-            pb->setEnabled(false);
-        glyout->addWidget(pb,i+1,3,1,1,Qt::AlignCenter);
-        pb = new QPushButton("Запуск");
-        pb->setObjectName("2"+QString::number(i));
-        connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
-        if (pc.Emul)
-            pb->setEnabled(false);
-        glyout->addWidget(pb,i+1,4,1,1,Qt::AlignCenter);
-    }
-    cp3->setLayout(glyout); */
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
@@ -259,16 +193,16 @@ int TuneDialog21::ShowScheme()
     return NOERROR;
 }
 
-int TuneDialog21::ShowU0()
+int TuneDialog21::ShowU0(int ChNum)
 {
     if (QMessageBox::information(this,"Настройка",\
-                                 "На калибраторе задайте напряжение 0 В на\nвходе "+\
+                                 "На калибраторе задайте напряжение 0 В (или ток 0 мА) на\nвходе "+\
                                  QString::number(ChNum)+" модуля и нажмите OK") == QMessageBox::Ok)
         return NOERROR;
     return GENERALERROR;
 }
 
-int TuneDialog21::ShowI20()
+int TuneDialog21::ShowI20(int ChNum)
 {
     if (QMessageBox::information(this,"Настройка",\
                                  "Переключите входные переключатели на ток,\nустановите ток 20 мА на\n" \
@@ -277,7 +211,7 @@ int TuneDialog21::ShowI20()
     return GENERALERROR;
 }
 
-int TuneDialog21::ShowU5()
+int TuneDialog21::ShowU5(int ChNum)
 {
     if (QMessageBox::information(this,"Настройка",\
                                  "Переключите входные переключатели на напряжение,\nустановите напряжение" \
@@ -286,101 +220,48 @@ int TuneDialog21::ShowU5()
     return GENERALERROR;
 }
 
-int TuneDialog21::TuneChannel(int Type)
+int TuneDialog21::TuneChannel(Check21::Bda &Bda)
 {
-    switch (Type)
-    {
-    case ATUNE_U0: // настройка нуля
-    {
-        if (Commands::GetBda(BoardType, &Bda0, sizeof(Check21::Bda)) == NOERROR)
-        {
-            CheckAndShowTune0();
-            return NOERROR;
-        }
-        return GENERALERROR;
-    }
-    case ATUNE_I20: // настройка 20 мА
-    {
-        if (Commands::GetBda(BoardType, &Bda20, sizeof(Check21::Bda)) == NOERROR)
-        {
-            CheckAndShowTune20();
-            return NOERROR;
-        }
-        return GENERALERROR;
-    }
-    case ATUNE_U5: // настройка 5 В
-    {
-        if (Commands::GetBda(BoardType, &Bda5, sizeof(Check21::Bda)) == NOERROR)
-        {
-            CheckAndShowTune5();
-            return NOERROR;
-        }
-        return GENERALERROR;
-    }
-    default:
-        break;
-    }
-    return GENERALERROR;
+    return Commands::GetBda(BoardType, &Bda, sizeof(Check21::Bda));
 }
 
 int TuneDialog21::Tune()
 {
-    for (ChNum=0; ChNum<AIN21_NUMCH; ++ChNum)
+    int i;
+    for (i=0; i<AIN21_NUMCH; ++i)
     {
-        ShowU0();
-        if (TuneChannel(ATUNE_U0) != NOERROR)
-            return GENERALERROR;
-        ShowI20();
-        if (TuneChannel(ATUNE_I20) != NOERROR)
+        ShowU0(i);
+        if (TuneChannel(Bda0) != NOERROR)
             return GENERALERROR;
     }
-    for (ChNum=0; ChNum<AIN21_NUMCH; ++ChNum)
+    for (i=0; i<AIN21_NUMCH; ++i)
     {
-        ShowU5();
-        if (TuneChannel(ATUNE_U5) != NOERROR)
+        ShowI20(i);
+        if (TuneChannel(Bda20) != NOERROR)
+            return GENERALERROR;
+    }
+    for (i=0; i<AIN21_NUMCH; ++i)
+    {
+        ShowU5(i);
+        if (TuneChannel(Bda5) != NOERROR)
+            return GENERALERROR;
+        if (!CalcNewTuneCoef(i))
             return GENERALERROR;
     }
     return NOERROR;
 }
 
-bool TuneDialog21::CheckAndShowTune0()
+bool TuneDialog21::CalcNewTuneCoef(int NumCh)
 {
-    WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda0.sin[ChNum]));
-    if (!CalcNewTuneCoef())
-        return false;
-    FillBac();
-    return true;
-}
-
-bool TuneDialog21::CheckAndShowTune5()
-{
-    WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda5.sin[ChNum]));
-    if (!CalcNewTuneCoef())
-        return false;
-    FillBac();
-    return true;
-}
-
-bool TuneDialog21::CheckAndShowTune20()
-{
-    WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda20.sin[ChNum]));
-    if (!CalcNewTuneCoef())
-        return false;
-    FillBac();
-    return true;
-}
-
-bool TuneDialog21::CalcNewTuneCoef()
-{
-    Bac_block[ChNum].fbin = 1.25 - Bda0.sin[ChNum];
-    if ((Bda0.sin[ChNum] == Bda5.sin[ChNum]) || (Bda0.sin[ChNum] == Bda20.sin[ChNum]))
+    Bac_block[NumCh].fbin = 1.25 - Bda0.sin[NumCh];
+    if ((Bda0.sin[NumCh] == Bda5.sin[NumCh]) || (Bda0.sin[NumCh] == Bda20.sin[NumCh]))
     {
         WARNMSG("Ошибка в настроечных коэффициентах, деление на ноль");
         return false;
     }
-    Bac_block[ChNum].fkuin = 1 / (Bda0.sin[ChNum]-Bda5.sin[ChNum]);
-    Bac_block[ChNum].fkiin = 1 / (Bda0.sin[ChNum]-Bda20.sin[ChNum]);
-
+    Bac_block[NumCh].fkuin = 1 / (Bda0.sin[NumCh]-Bda5.sin[NumCh]);
+    Bac_block[NumCh].fkiin = 1 / (Bda0.sin[NumCh]-Bda20.sin[NumCh]);
+    FillBac();
     return true;
 }
 
@@ -402,16 +283,19 @@ int TuneDialog21::ReadAnalogMeasurements()
 
 void TuneDialog21::TuneOneChannel()
 {
-    WDFunc::CBIndex(this, "tunenumch", ChNum);
-    ShowU0();
-    if (TuneChannel(ATUNE_U0) != NOERROR)
+    int NumCh;
+    WDFunc::CBIndex(this, "tunenumch", NumCh);
+    ShowU0(NumCh);
+    if (TuneChannel(Bda0) != NOERROR)
         return;
-    ShowI20();
-    if (TuneChannel(ATUNE_I20) != NOERROR)
+    ShowI20(NumCh);
+    if (TuneChannel(Bda20) != NOERROR)
         return;
-    ShowU5();
-    if (TuneChannel(ATUNE_U5) != NOERROR)
+    ShowU5(NumCh);
+    if (TuneChannel(Bda5) != NOERROR)
         return;
+    CalcNewTuneCoef(NumCh);
+    FillBac();
 }
 
 bool TuneDialog21::CheckTuneCoefs()
