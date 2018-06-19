@@ -27,6 +27,7 @@ private:
     EOscillogram *OscFunc;
 
 signals:
+    void StopCheckTimer();
 
 public slots:
 

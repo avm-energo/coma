@@ -20,7 +20,7 @@ QWidget *Check_85::Bd1W(QWidget *parent)
     QGridLayout *glyout = new QGridLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     int count = 0;
-    glyout->addWidget(WDFunc::NewLBL(parent, "2.Частота:"),count,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Частота:"),count,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value2", ValuesFormat, "Частота сигналов, Гц"),count++,1,1,1);
     lyout->addLayout(hlyout);
     for (i = 0; i < 3; ++i)
@@ -31,10 +31,10 @@ QWidget *Check_85::Bd1W(QWidget *parent)
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+3), ValuesFormat, \
                                           QString::number(i+3)+".Истинные действующие значения напряжений 1-й тройки"),count++,i*2+1,1,1);
         glyout->addWidget(WDFunc::NewLBL(parent, "IUNF2"+IndexStr),count,i*2,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+3), ValuesFormat, \
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+6), ValuesFormat, \
                                           QString::number(i+6)+".Истинные действующие значения токов"),count++,i*2+1,1,1);
         glyout->addWidget(WDFunc::NewLBL(parent, "IUNF3"+IndexStr),count,i*2,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+3), ValuesFormat, \
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+9), ValuesFormat, \
                                           QString::number(i+9)+".Истинные действующие значения напряжений 2-й тройки"),count++,i*2+1,1,1);
         glyout->addWidget(WDFunc::NewLBL(parent, "UNL1"+IndexStr),count,i*2,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+12), ValuesFormat, \
@@ -100,5 +100,6 @@ void Check_85::FillBd1(QWidget *parent)
             WDFunc::SetChBData(parent, "value"+QString::number(i+30), true);
         else
             WDFunc::SetChBData(parent, "value"+QString::number(i+30), false);
+        tmpui >>= 1;
     }
 }

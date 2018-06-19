@@ -2,8 +2,18 @@
 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING .ISS SCRIPT FILES!
 
+#define Name "АВТУК-Сервис Эмуляция"
+#define GroupName "АВТУК-Сервис"
+#define EngName "AVTUK-S"
+#define Version "2.1.241"
+#define Publisher "EvelSoft"
+#define URL "http://www.avmenergo.ru"
+#define ExeName "avtuks-E.exe"
+#define SetupName "avtuks-E-2.1.241-x86"
+#define Prefix "D:\Progs\out"
+
 [CustomMessages]
-Version=2.0.82
+Version={#Version}
 
 [Languages]
 Name: Russian; MessagesFile: "compiler:Languages\Russian.isl" 
@@ -11,85 +21,97 @@ Name: Russian; MessagesFile: "compiler:Languages\Russian.isl"
 [InstallDelete]
 Type: files; Name: "{app}\*.dll"
 Type: filesandordirs; Name: "{app}\platforms"
-Type: files; Name: "{app}\avtuk-s_e.exe"
+Type: files; Name: "{app}\{#ExeName}"
 ; Type: files; Name: "{app}\КОМА Руководство пользователя.pdf"
 
 [Setup]
 UsePreviousLanguage=No
-AppName="АВТУК-Сервис Эмуляция"
-AppVersion="2.0.72"
-DefaultDirName={pf}\AVTUK-S
-DefaultGroupName=АВТУК-Сервис
+AppName={#Name}
+AppVersion={#Version}
+AppPublisher={#Publisher}
+AppPublisherURL={#URL}
+AppSupportURL={#URL}
+AppUpdatesURL={#URL}
+DefaultDirName={pf}\{#EngName}
+DefaultGroupName={#GroupName}
 ; UninstallDisplayIcon={app}\MyProg.exe
 Compression=lzma2
 SolidCompression=yes
-OutputDir="out\"
-LicenseFile="coma\license.txt"
+OutputDir="{#Prefix}\out\"
+LicenseFile="{#Prefix}\coma\license.txt"
 
-OutputBaseFilename="avtuk-s_e-2.0.82-x86"
+OutputBaseFilename={#SetupName}
 
 [Dirs]
-Name: {userappdata}\AVTUK-S
+Name: {userappdata}\{#EngName}
 
 [Files]
-Source: "coma\*.dll"; DestDir: "{app}"
-Source: "coma\platforms\qwindows.dll"; DestDir: "{app}\platforms"
-Source: "coma\avtuk-s_e.exe"; DestDir: "{app}"; DestName: "avtuk-s_e.exe"; Flags: ignoreversion
-Source: "coma\ermsgs.dat"; DestDir: "{userappdata}\AVTUK-S"; Flags: ignoreversion
-Source: "src\reports\*.*"; DestDir: "{userappdata}\AVTUK-S"; Flags: ignoreversion
+Source: "{#Prefix}\coma\*.dll"; DestDir: "{app}"
+Source: "{#Prefix}\coma\platforms\qwindows.dll"; DestDir: "{app}\platforms"
+Source: "{#Prefix}\coma\{#ExeName}"; DestDir: "{app}"; DestName: {#ExeName}; Flags: ignoreversion
+Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
+Source: "{#Prefix}\src\reports\*.*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
+Source: "{#Prefix}\images\coma\*.*"; DestDir: "{app}\images"; Flags: ignoreversion
+Source: "{#Prefix}\src\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 ; Source: "coma\pdf\КОМА Руководство пользователя.pdf"; DestDir: "{app}"
-Source: "src\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
 [Icons]
-Name: "{group}\АВТУК-Сервис Е"; Filename: "{app}\avtuk-s_e.exe"
+Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
 ;Name: "{group}\Руководство пользователя КОМА"; Filename: "{app}\КОМА Руководство пользователя.pdf"
-Name: "{group}\Удалить АВТУК-Сервис"; Filename: "{uninstallexe}"
+Name: "{group}\Удалить программу {#Name}"; Filename: "{uninstallexe}"
 
 [Run]
 ; add the Parameters, WorkingDir and StatusMsg as you wish, just keep here
 ; the conditional installation Check
-Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; Check: VCRedistNeedsInstall
+Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; Check: not IsRequiredVC2015Detected; StatusMsg: Устанавливается пакет MSVC2015 Redistributable...
 
 [Code]
-#IFDEF UNICODE
-  #DEFINE AW "W"
-#ELSE
-  #DEFINE AW "A"
-#ENDIF
-type
-  INSTALLSTATE = Longint;
-const
-  INSTALLSTATE_INVALIDARG = -2;  { An invalid parameter was passed to the function. }
-  INSTALLSTATE_UNKNOWN = -1;     { The product is neither advertised or installed. }
-  INSTALLSTATE_ADVERTISED = 1;   { The product is advertised but not installed. }
-  INSTALLSTATE_ABSENT = 2;       { The product is installed for a different user. }
-  INSTALLSTATE_DEFAULT = 5;      { The product is installed for the current user. }
+//-----------------------------------------------------------------------------
+//  Проверка наличия нужной версии VC2015
+//  https://habrahabr.ru/post/255807/
+//-----------------------------------------------------------------------------
+function IsVC2015Detected(): boolean;
 
-  { Visual C++ 2015 Redistributable 14.0.23026 }
-  VC_2015_REDIST_X86_MIN = '{A2563E55-3BEC-3828-8D67-E5E8B9E8B675}';
-  VC_2015_REDIST_X64_MIN = '{0D3E9E15-DE7A-300B-96F1-B4AF12B96488}';
+var 
+    reg_key: string; // Просматриваемый подраздел системного реестра
+    success: boolean; // Флаг наличия запрашиваемой версии VC
+    success2: boolean; // Временный флаг
+    key_value: string; // Прочитанное из реестра значение ключа
 
-  VC_2015_REDIST_X86_ADD = '{BE960C1C-7BAD-3DE6-8B1A-2616FE532845}';
-  VC_2015_REDIST_X64_ADD = '{BC958BD2-5DAC-3862-BB1A-C1BE0790438D}';
-
-  { Visual C++ 2015 Redistributable 14.0.24210 }
-  VC_2015_REDIST_X86 = '{8FD71E98-EE44-3844-9DAD-9CB0BBBC603C}';
-  VC_2015_REDIST_X64 = '{C0B2C673-ECAA-372D-94E5-E89440D087AD}';
-
-function MsiQueryProductState(szProduct: string): INSTALLSTATE; 
-  external 'MsiQueryProductState{#AW}@msi.dll stdcall';
-
-function VCVersionInstalled(const ProductID: string): Boolean;
 begin
-  Result := MsiQueryProductState(ProductID) = INSTALLSTATE_DEFAULT;
+    success := false;
+    reg_key := 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64';
+    success := RegQueryStringValue(HKLM, reg_key, 'Version', key_value);
+    success := success and ((Pos('v14.0.24215', key_value) = 1) or (Pos('v14.0.24210', key_value) = 1));
+    reg_key := 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86';
+    success2 := RegQueryStringValue(HKLM, reg_key, 'Version', key_value);
+    success2 := success2 and ((Pos('v14.0.24215', key_value) = 1) or (Pos('v14.0.24210', key_value) = 1));
+    success := success or success2;
+
+    result := success;
 end;
 
-function VCRedistNeedsInstall: Boolean;
+//-----------------------------------------------------------------------------
+//  Функция-обертка для детектирования конкретной нужной нам версии
+//-----------------------------------------------------------------------------
+function IsRequiredVC2015Detected(): boolean;
 begin
-  { here the Result must be True when you need to install your VCRedist }
-  { or False when you don't need to, so now it's upon you how you build }
-  { this statement, the following won't install your VC redist only when }
-  { the Visual C++ 2010 Redist (x86) and Visual C++ 2010 SP1 Redist(x86) }
-  { are installed for the current user }
-  Result := not (VCVersionInstalled(VC_2015_REDIST_X86_MIN));
+    result := IsVC2015Detected();
+end;
+
+//-----------------------------------------------------------------------------
+//    Callback-функция, вызываемая при инициализации установки
+//-----------------------------------------------------------------------------
+function InitializeSetup(): boolean;
+begin
+
+  // Если нет тербуемой версии .NET выводим сообщение о том, что инсталлятор
+  // попытается установить её на данный компьютер
+//  if not IsVC2015Detected() then
+//    begin
+//      MsgBox('{#Name} требует установки Microsoft VC2015 redistributable v14.0.24215'#13#13
+//             'Установщик запустит установку MSVC после установки основного пакета', mbInformation, MB_OK);
+//    end;   
+
+  result := true;
 end;

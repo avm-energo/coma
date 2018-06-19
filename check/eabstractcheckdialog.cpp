@@ -30,6 +30,7 @@ EAbstractCheckDialog::EAbstractCheckDialog(int board, QWidget *parent) :
     timer = new QTimer;
     timer->setObjectName("checktimer");
     connect(timer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));
+    timer->setInterval(1000);
     setAttribute(Qt::WA_DeleteOnClose);
 }
 

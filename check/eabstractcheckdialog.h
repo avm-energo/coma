@@ -52,6 +52,7 @@ public:
 signals:
 
 public slots:
+    void StopAnalogMeasurements();
 
 private:
     struct BdBlocks
@@ -80,7 +81,6 @@ private:
 private slots:
     void StartAnalogMeasurementsToFile();
     void StartAnalogMeasurements();
-    void StopAnalogMeasurements();
     void SetTimerPeriod();
     void TimerTimeout();
 };

@@ -71,6 +71,7 @@ void OscDialog::UpdateModel()
 
 void OscDialog::GetAndProcessOscInfo()
 {
+    emit StopCheckTimer();
     QVector<QVector<QVariant> > lsl;
     QByteArray OscInfo;
     quint32 OscInfoSize; // размер считанного буфера с информацией об осциллограммах
@@ -118,6 +119,7 @@ void OscDialog::GetAndProcessOscInfo()
 
 void OscDialog::GetOsc(QModelIndex idx)
 {
+    emit StopCheckTimer();
     bool ok;
     pc.PrbMessage = "Загружено, байт: ";
     quint32 oscnum = tm->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(&ok); // номер осциллограммы

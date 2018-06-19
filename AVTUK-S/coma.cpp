@@ -64,20 +64,6 @@
 Coma::Coma(QWidget *parent)
     : MainWindow(parent)
 {
-/*    WaitWidget *w = new WaitWidget;
-    w->SetMessage("Пожалуйста, подождите...");
-    QTime tme;
-    tme.start();
-    WaitWidget::ww_struct ww;
-    ww.isincrement = true;
-    ww.isallowedtostop = true;
-    ww.format = WaitWidget::WW_TIME;
-    ww.initialseconds = 0;
-    w->Init(ww);
-    w->Start();
-    while (tme.elapsed() < 100000)
-        QCoreApplication::processEvents(QEventLoop::AllEvents);
-    w->close(); */
     StartWindowSplashScreen->finish(this);
     Autonomous = false;
 }
@@ -204,7 +190,7 @@ void Coma::SetupUI()
     connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndClear()));
     tb->addAction(act);
     tb->addSeparator();
-#if PROGSIZE >= PROGSIZE_FULL
+#if PROGSIZE == PROGSIZE_EMUL
     if (Autonomous)
         AddEmulToToolbar(tb);
 #endif
@@ -269,7 +255,6 @@ void Coma::Stage3()
     QString str;
     ConfB = ConfM = 0;
     CheckB = CheckM = 0;
-//    if (!Autonomous)
     TuneB = TuneM = 0;
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
@@ -422,4 +407,8 @@ void Coma::PrepareDialogs()
     default: // 0x00
         break;
     }
+    if (CheckB != 0)
+        connect(OscD, SIGNAL(StopCheckTimer()), CheckB, SLOT(StopAnalogMeasurements()));
+    if (CheckM != 0)
+        connect(OscD, SIGNAL(StopCheckTimer()), CheckM, SLOT(StopAnalogMeasurements()));
 }

@@ -151,13 +151,13 @@ private slots:
 
     void SetDefConf();
     void Fill();
+    void PasswordCheck(QString &psw);
 #if PROGSIZE != PROGSIZE_EMUL
     void ShowCOMConnectDialog();
     void ShowUSBConnectDialog();
     void GetDeviceFromTable(QModelIndex idx);
     void Stage1_5();
     void Stage2();
-    void PasswordCheck(QString &psw);
     void SetProgressBar1Size(quint32 size);
     void SetProgressBar1(quint32 cursize);
     void SetProgressBar2Size(quint32 size);

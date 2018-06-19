@@ -61,7 +61,7 @@ void AbstractConfDialog3x::SetupUI()
             connect(spb,SIGNAL(valueChanged(double)),this,SLOT(SetDly(double)));
             gblyout->addWidget(spb, i+1, 2, 1, 1, Qt::AlignCenter);
             cb = WDFunc::NewCB(this, "chpaircb."+QString::number(i), chsl, DCONFWCLR);
-            connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetPair(int)));
+//            connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetPair(int)));
             gblyout->addWidget(cb, i+1, 3, 1, 1, Qt::AlignCenter);
         }
         gb->setLayout(gblyout);
