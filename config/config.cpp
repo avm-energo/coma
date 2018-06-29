@@ -1,12 +1,11 @@
 // config.cpp
 #include "config.h"
-#include "../gen/publicclass.h"
+//#include "../gen/publicclass.h"
+#include "../gen/modulebsi.h"
 
 Config::Config(QVector<S2::DataRec> &config)
 {
     // общая часть
-    config.append({BCI_MTYPEB, sizeof(pc.ModuleBsi.MTypeB), &(pc.ModuleBsi.MTypeB)});
-    config.append({BCI_MTYPEM, sizeof(pc.ModuleBsi.MTypeM), &(pc.ModuleBsi.MTypeM)});
     config.append({BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype});
     config.append({BCI_ABS_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104});
     config.append({BCI_CYCLE_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104});

@@ -9,6 +9,7 @@
 #include "eusbcom.h"
 #endif
 #endif
+#include "modulebsi.h"
 
 //#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением батареи
 #define TECH_Bo     1   // технологический блок осциллограмм
@@ -26,7 +27,7 @@ class Commands
 {
     explicit Commands();
 public:
-    static int GetBsi();
+    static int GetBsi(ModuleBSI::Bsi &bsi);
     static int GetFile(quint32 filenum, QVector<S2::DataRec> *data);
     static int GetOsc(quint32 filenum, void *ptr); // приём осциллограмм, в ptr возвращается целиком весь считанный буфер
     static int GetBac(int BacNum, void *ptr, int ptrsize);

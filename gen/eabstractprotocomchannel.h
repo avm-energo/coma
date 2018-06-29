@@ -65,6 +65,13 @@ public:
     explicit EAbstractProtocomChannel(QObject *parent = 0);
     ~EAbstractProtocomChannel();
 
+    struct DeviceConnectStruct
+    {
+        unsigned short vendor_id;
+        unsigned short product_id;
+        wchar_t serial[20];
+    };
+
     qint32 result;
     int baud;
     int ernum;
@@ -73,7 +80,7 @@ public:
     QWaitCondition BusyWC;
     bool Connected, Cancelled;
     quint32 RDSize;
-    Log *log;
+    Log *CnLog;
 
     virtual bool Connect() = 0;
     virtual QByteArray RawRead(int bytes) = 0;
@@ -82,6 +89,8 @@ public:
 
     void Send(int command, int board_type=0, void *ptr=NULL, quint32 ptrsize=0, quint16 filenum=0, \
               QVector<S2::DataRec> *DRptr=0);
+    static void SetWriteUSBLog(bool bit);
+    static bool IsWriteUSBLog();
 
 signals:
     void SetDataSize(quint32); // сигналы для прогрессбаров - отслеживание принятых данных, стёртых осциллограмм и т.п.
@@ -119,6 +128,7 @@ private:
     bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
     QVector<S2::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     quint8 BoardType;
+    static bool WriteUSBLog;
 
     void InitiateSend();
     void WriteDataToPort(QByteArray &ba);

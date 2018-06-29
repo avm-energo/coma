@@ -2,7 +2,7 @@
 #include "config35.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
 
 ConfDialog35::ConfDialog35(QVector<S2::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
     AbstractConfDialog3x(parent)
@@ -19,7 +19,7 @@ ConfDialog35::ConfDialog35(QVector<S2::DataRec> &S2Config, bool BaseBoard, QWidg
 void ConfDialog35::Fill()
 {
     for (int i=0; i<D35_CHNUM; ++i)
-        WDFunc::SetCBIndex(this, "outchtypcb."+QString::number(i), pc.IndexByBit(C35->Bci_block.out_type[i]));
+        WDFunc::SetCBIndex(this, "outchtypcb."+QString::number(i), StdFunc::IndexByBit(C35->Bci_block.out_type[i]));
     WDFunc::SetSPBData(this, "minimp", C35->Bci_block.pulse_short);
     WDFunc::SetSPBData(this, "maximp", C35->Bci_block.pulse_long);
     WDFunc::SetSPBData(this, "wdgtype", C35->Bci_block.wd_type);
@@ -34,7 +34,7 @@ void ConfDialog35::FillBack()
     for (int i=0; i<D35_CHNUM; ++i)
     {
         WDFunc::CBIndex(this, "outchtypcb."+QString::number(i), tmpi);
-        C35->Bci_block.out_type[i] = pc.BitByIndex(tmpi);
+        C35->Bci_block.out_type[i] = StdFunc::BitByIndex(tmpi);
     }
     WDFunc::SPBData(this, "minimp", C35->Bci_block.pulse_short);
     WDFunc::SPBData(this, "maximp", C35->Bci_block.pulse_long);

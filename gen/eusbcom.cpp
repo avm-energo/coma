@@ -6,7 +6,8 @@
 #include <QCoreApplication>
 #include <QTime>
 #include "eusbcom.h"
-#include "publicclass.h"
+#include "stdfunc.h"
+#include "error.h"
 #include "../widgets/emessagebox.h"
 
 EUsbCom::EUsbCom(QObject *parent) : EAbstractProtocomChannel(parent)
@@ -22,17 +23,17 @@ bool EUsbCom::Connect()
 {
     while ((!Connected) && (!Cancelled))
     {
-        pc.PrbMessage = "Загрузка данных...";
+        StdFunc::PrbMessage = "Загрузка данных...";
 
         QSerialPortInfo info;
-        if (!SetPort(pc.Port, info))
+        if (!SetPort(StdFunc::Port, info))
         {
             if (FirstPass)
                 FirstPass = false;
             else
             {
                 emit ShowError("Порт не найден");
-                pc.ErMsg(USB_COMER);
+                Error::ShowErMsg(USB_COMER);
             }
             emit Retry();
             continue;
@@ -111,14 +112,14 @@ bool EUsbCom::SetPort(const QString &port, QSerialPortInfo &info)
     if (infolist.size() == 0)
     {
         emit ShowError("В системе нет последовательных портов");
-        pc.ErMsg(USB_NOCOMER);
+        Error::ShowErMsg(USB_NOCOMER);
         return false;
     }
     for (int i = 0; i < infolist.size(); i++)
     {
         if (infolist.at(i).portName() == port)
         {
-            pc.Port = port;
+            StdFunc::Port = port;
             info = infolist.at(i);
             return true;
         }
@@ -131,7 +132,7 @@ void EUsbCom::Error(QSerialPort::SerialPortError err)
     if (!err) // нет ошибок
         return;
     quint16 ernum = err + COM_ERROR;
-    pc.ErMsg(ernum);
+    Error::ShowErMsg(ernum);
     if (Connected)
         Disconnect();
 }

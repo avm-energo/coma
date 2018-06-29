@@ -33,7 +33,9 @@
 #include "../config/config.h"
 #include "../widgets/signalchoosewidget.h"
 #include "../widgets/wd_func.h"
-#include "../gen/publicclass.h"
+#include "../gen/error.h"
+#include "../gen/colors.h"
+#include "../gen/files.h"
 #include "trendviewdialog.h"
 
 TrendViewDialog::TrendViewDialog(QByteArray &ba, QWidget *parent) : QDialog(parent)
@@ -294,8 +296,8 @@ void TrendViewDialog::SaveToComtrade()
 
 void TrendViewDialog::SaveToOsc()
 {
-    QString filename = pc.ChooseFileForSave(this, "Файлы осциллограмм (*.osc)", "osc");
-    pc.SaveToFile(filename, BAToSave, BAToSave.size());
+    QString filename = Files::ChooseFileForSave(this, "Файлы осциллограмм (*.osc)", "osc");
+    Files::SaveToFile(filename, BAToSave, BAToSave.size());
 }
 
 void TrendViewDialog::PlotShow()

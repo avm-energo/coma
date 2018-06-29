@@ -4,13 +4,9 @@
 #include <QDialog>
 #include "eabstracttunedialog.h"
 #include "../check/check21.h"
+#include "../gen/modulebsi.h"
 
 #define TUNEFILELENGTH  256
-
-#define ATUNEER(a)       ERMSG(publicclass::ER_ATUNE,__LINE__,a)
-#define ATUNEDBG         DBGMSG(publicclass::ER_ATUNE,__LINE__)
-#define ATUNEWARN(a)    WARNMSG(publicclass::ER_ATUNE,__LINE__,a)
-#define ATUNEINFO(a)     INFOMSG(publicclass::ER_ATUNE,__LINE__,a)
 
 #define ATUNE_U0    0
 #define ATUNE_I20   1
@@ -20,7 +16,7 @@ class TuneDialog21 : public EAbstractTuneDialog
 {
     Q_OBJECT
 public:
-    explicit TuneDialog21(int type = 0x01, QWidget *parent = 0);
+    explicit TuneDialog21(BoardTypes type = BoardTypes::BT_BASE, QWidget *parent = 0);
     ~TuneDialog21();
 
 signals:

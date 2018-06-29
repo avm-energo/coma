@@ -3,7 +3,7 @@
 #include <QAction>
 #include "QtXlsx/xlsxdocument.h"
 #include "../config/config.h"
-#include "../gen/publicclass.h"
+#include "../gen/error.h"
 #include "trendviewmodel.h"
 
 TrendViewModel::TrendViewModel(const QStringList &dlist, const QStringList &alist, \

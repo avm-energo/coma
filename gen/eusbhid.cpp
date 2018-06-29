@@ -1,6 +1,8 @@
 #include <QCoreApplication>
 #include <QTime>
 #include "eusbhid.h"
+#include "error.h"
+#include "stdfunc.h"
 
 EUsbHid::EUsbHid(QObject *parent) : EAbstractProtocomChannel(parent)
 {
@@ -15,10 +17,10 @@ bool EUsbHid::Connect()
 {
     if (Connected)
         Disconnect();
-    UThread = new EUsbThread(log);
+    UThread = new EUsbThread(DevInf, CnLog, IsWriteUSBLog());
     connect(UThread,SIGNAL(NewDataReceived(QByteArray)),this,SLOT(ParseIncomeData(QByteArray)));
     connect(this,SIGNAL(StopUThread()),UThread,SLOT(Finish()));
-    if (UThread->Set() != NOERROR)
+    if (UThread->Set() != Error::ER_NOERROR)
         return false;
     Connected = true;
     QTimer *tmr = new QTimer;
@@ -39,10 +41,10 @@ QByteArray EUsbHid::RawRead(int bytes)
 qint64 EUsbHid::RawWrite(QByteArray &ba)
 {
     if (!ThreadRunning)
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     qint64 res = UThread->WriteData(ba);
     if (res < 0)
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     return res;
 }
 
@@ -56,11 +58,20 @@ void EUsbHid::RawClose()
     Connected = false;
 }
 
-EUsbThread::EUsbThread(Log *logh, QObject *parent) : QObject(parent)
+void EUsbHid::SetDeviceInfo(int venid, int prodid, const QString &sn)
+{
+    DevInf.vendor_id = venid;
+    DevInf.product_id = prodid;
+    sn.toWCharArray(DevInf.serial);
+}
+
+EUsbThread::EUsbThread(EAbstractProtocomChannel::DeviceConnectStruct &devinfo, Log *logh, bool writelog, QObject *parent) : QObject(parent)
 {
     log = logh;
     AboutToFinish = false;
     HidDevice = 0;
+    WriteUSBLog = writelog;
+    DeviceInfo = devinfo;
 }
 
 EUsbThread::~EUsbThread()
@@ -69,14 +80,13 @@ EUsbThread::~EUsbThread()
 
 int EUsbThread::Set()
 {
-    publicclass::DeviceConnectStruct dev = pc.DeviceInfo;
-    if ((dev.product_id == 0) || (dev.vendor_id == 0))
-        return GENERALERROR;
-    HidDevice = hid_open(pc.DeviceInfo.vendor_id, pc.DeviceInfo.product_id, pc.DeviceInfo.serial);
+    if ((DeviceInfo.product_id == 0) || (DeviceInfo.vendor_id == 0))
+        return Error::ER_GENERALERROR;
+    HidDevice = hid_open(DeviceInfo.vendor_id, DeviceInfo.product_id, DeviceInfo.serial);
     if (!HidDevice)
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     hid_set_nonblocking(HidDevice, 1);
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 void EUsbThread::Run()
@@ -93,7 +103,7 @@ void EUsbThread::Run()
                 bytes = hid_read(HidDevice, data, UH_MAXSEGMENTLENGTH+1);
                 if (bytes < 0)
                 {
-                    if (pc.WriteUSBLog)
+                    if (WriteUSBLog)
                         log->WriteRaw("UsbThread: Unable to hid_read()");
                     AboutToFinish = true;
                     emit Finished();
@@ -126,15 +136,15 @@ qint64 EUsbThread::WriteData(QByteArray &ba)
     {
         if (ba.size() > UH_MAXSEGMENTLENGTH)
         {
-            if (pc.WriteUSBLog)
+            if (WriteUSBLog)
                 log->WriteRaw("UsbThread: WRONG SEGMENT LENGTH!\n");
             ERMSG("Длина сегмента больше "+QString::number(UH_MAXSEGMENTLENGTH)+" байт");
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
         }
         if (ba.size() < UH_MAXSEGMENTLENGTH)
             ba.append(UH_MAXSEGMENTLENGTH - ba.size(), static_cast<char>(0x00));
         ba.prepend(static_cast<char>(0x00)); // inserting ID field
-        if (pc.WriteUSBLog)
+        if (WriteUSBLog)
         {
             QByteArray tmpba = "UsbThread: ->" + ba.toHex() + "\n";
             log->WriteRaw(tmpba);

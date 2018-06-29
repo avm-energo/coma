@@ -11,10 +11,12 @@
 #include "tunedialog22.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
+#include "../gen/colors.h"
+#include "../gen/error.h"
 #include "../gen/commands.h"
 
-TuneDialog22::TuneDialog22(int type, QWidget *parent) :
+TuneDialog22::TuneDialog22(BoardTypes type, QWidget *parent) :
     EAbstractTuneDialog(parent)
 {
     C22 = new Config22(S2Config);
@@ -23,6 +25,7 @@ TuneDialog22::TuneDialog22(int type, QWidget *parent) :
     ChNum = 0;
     SetBac(&Bac_block, BoardType, sizeof(Bac_block));
     SetupUI();
+    PrereadConf();
 }
 
 QGroupBox * TuneDialog22::CoeffGB(const QString &title, const QString &coeff)
@@ -93,7 +96,7 @@ void TuneDialog22::SetupUI()
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
-    if ((!(pc.ModuleBsi.Hth & HTH_REGPARS)) && !pc.Emul) // есть настроечные коэффициенты в памяти модуля
+    if ((!(ModuleBSI::GetHealth() & HTH_REGPARS)) && !StdFunc::IsInEmulateMode()) // есть настроечные коэффициенты в памяти модуля
         ReadTuneCoefs(); // считать их из модуля и показать на экране
 }
 
@@ -156,7 +159,7 @@ int TuneDialog22::ShowScheme()
 {
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
-    lyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/tune21.png")));
+    lyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/tune22.png")));
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(pb);
@@ -166,9 +169,9 @@ int TuneDialog22::ShowScheme()
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
     dlg->exec();
-    if (pc.Cancelled == true)
-        return GENERALERROR;
-    return NOERROR;
+    if (StdFunc::IsCancelled() == true)
+        return Error::ER_GENERALERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog22::Show0(int coef)
@@ -179,9 +182,9 @@ int TuneDialog22::Show0(int coef)
                                      "Задайте значение сопротивления "+QString::number(R0[coef], 'f', 2) + \
                                      " Ом\nна входе "+QString::number(ChNum)+\
                                      " модуля и нажмите OK") == QMessageBox::Ok)
-            return NOERROR;
+            return Error::ER_NOERROR;
     }
-    return GENERALERROR;
+    return Error::ER_GENERALERROR;
 }
 
 int TuneDialog22::ShowW100(int coef)
@@ -193,9 +196,9 @@ int TuneDialog22::ShowW100(int coef)
                                      "Задайте значение сопротивления"+QString::number(R100) + \
                                      " Ом\nна входе "+QString::number(ChNum)+\
                                      " модуля и нажмите OK") == QMessageBox::Ok)
-            return NOERROR;
+            return Error::ER_NOERROR;
     }
-    return GENERALERROR;
+    return Error::ER_GENERALERROR;
 }
 
 int TuneDialog22::TuneChannel(int Type)
@@ -204,36 +207,36 @@ int TuneDialog22::TuneChannel(int Type)
     {
     case TTUNE_0: // настройка нуля
     {
-        if (Commands::GetBda(BoardType, &Bda0, sizeof(Check22::Bda)) == NOERROR)
+        if (Commands::GetBda(BoardType, &Bda0, sizeof(Check22::Bda)) == Error::ER_NOERROR)
         {
             CheckAndShowTune0();
-            return NOERROR;
+            return Error::ER_NOERROR;
         }
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     }
     case TTUNE_W100: // настройка W100
     {
-        if (Commands::GetBda(BoardType, &BdaW100, sizeof(Check22::Bda)) == NOERROR)
+        if (Commands::GetBda(BoardType, &BdaW100, sizeof(Check22::Bda)) == Error::ER_NOERROR)
         {
             CheckAndShowTuneW100();
-            return NOERROR;
+            return Error::ER_NOERROR;
         }
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     }
     default:
         break;
     }
-    return GENERALERROR;
+    return Error::ER_GENERALERROR;
 }
 
 int TuneDialog22::Tune()
 {
     for (ChNum=0; ChNum<AIN22_NUMCH; ++ChNum)
     {
-        if (TuneOneChannel() == GENERALERROR)
-            return GENERALERROR;
+        if (TuneOneChannel() == Error::ER_GENERALERROR)
+            return Error::ER_GENERALERROR;
     }
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 bool TuneDialog22::CheckAndShowTune0()
@@ -284,7 +287,7 @@ void TuneDialog22::SetDefCoefs()
 
 int TuneDialog22::ReadAnalogMeasurements()
 {
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog22::TuneOneChannel()
@@ -293,13 +296,13 @@ int TuneDialog22::TuneOneChannel()
     {
         WDFunc::CBIndex(this, "tunenumch", ChNum);
         Show0(CoefNum);
-        if (TuneChannel(TTUNE_0) != NOERROR)
-            return GENERALERROR;
+        if (TuneChannel(TTUNE_0) != Error::ER_NOERROR)
+            return Error::ER_GENERALERROR;
         ShowW100(CoefNum);
-        if (TuneChannel(TTUNE_W100) != NOERROR)
-            return GENERALERROR;
+        if (TuneChannel(TTUNE_W100) != Error::ER_NOERROR)
+            return Error::ER_GENERALERROR;
     }
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 bool TuneDialog22::CheckTuneCoefs()

@@ -17,10 +17,10 @@ TARGET = avtuks-L
 DEFINES += PROGNAME='\\"AVTUK-S\\"'
 DEFINES += PROGCAPTION='\\"AVTUK-Service-L\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
-DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=3 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
 #DEFINES += COMPORTENABLE # enable virtual com port driver
 DEFINES += USBENABLE # enable usb hid driver
+DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 TEMPLATE = app
 
 SOURCES += \
@@ -75,7 +75,6 @@ SOURCES += \
     ../gen/eusbhid.cpp \
     ../gen/log.cpp \
     ../gen/mainwindow.cpp \
-    ../gen/publicclass.cpp \
     ../gen/qcustomplot.cpp \
     ../iec104/iec104.cpp \
     ../iec104/ethernet.cpp \
@@ -99,7 +98,12 @@ SOURCES += \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp \
     ../widgets/passwordlineedit.cpp \
-    ../gen/s2.cpp
+    ../gen/s2.cpp \
+    ../gen/modulebsi.cpp \
+    ../gen/error.cpp \
+    ../gen/timefunc.cpp \
+    ../gen/files.cpp \
+    ../gen/stdfunc.cpp
 
 HEADERS  += \
     coma.h \
@@ -152,7 +156,6 @@ HEADERS  += \
     ../gen/eusbhid.h \
     ../gen/log.h \
     ../gen/mainwindow.h \
-    ../gen/publicclass.h \
     ../gen/qcustomplot.h \
     ../iec104/ethernet.h \
     ../iec104/iec104.h \
@@ -176,7 +179,13 @@ HEADERS  += \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
     ../widgets/passwordlineedit.h \
-    ../gen/s2.h
+    ../gen/s2.h \
+    ../gen/modulebsi.h \
+    ../gen/error.h \
+    ../gen/timefunc.h \
+    ../gen/files.h \
+    ../gen/colors.h \
+    ../gen/stdfunc.h
 
 INCLUDEPATH += $$PWD/../../includes
 

@@ -2,7 +2,8 @@
 #include <QThread>
 #include <QCoreApplication>
 
-#include "../gen/publicclass.h"
+//#include "../gen/stdfunc.h"
+#include "../gen/error.h"
 #include "iec104.h"
 #include "ethernet.h"
 

@@ -2,7 +2,8 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include "check85.h"
-#include "../gen/publicclass.h"
+// #include "../gen/publicclass.h"
+#include "../gen/colors.h"
 #include "../widgets/wd_func.h"
 
 Check_85::Check_85()

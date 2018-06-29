@@ -2,7 +2,9 @@
 #include "config31.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
+#include "../gen/error.h"
+#include "../gen/colors.h"
 
 ConfDialog31::ConfDialog31(QVector<S2::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
     AbstractConfDialog3x(parent)
@@ -21,7 +23,7 @@ void ConfDialog31::Fill()
     for (i = 0; i < DIN31_NUMCH; i++)
     {
         int intype = C31->Bci_block.inblk.in_type[i];
-        WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), pc.IndexByBit(intype));
+        WDFunc::SetCBIndex(this, "chtypcb."+QString::number(i), StdFunc::IndexByBit(intype));
         DisableChannel(i, (intype == D_INTYPE_NONE));
         WDFunc::SetSPBData(this, "chdlyspb."+QString::number(i), static_cast<double>(C31->Bci_block.inblk.dly_time[i])/4);
     }
@@ -82,7 +84,7 @@ void ConfDialog31::SetDefConf()
 void ConfDialog31::SetChTypData(int value)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());
-    if (tmpi == GENERALERROR)
+    if (tmpi == Error::ER_GENERALERROR)
         return;
     if (tmpi < DIN31_NUMCH)
     {
@@ -116,7 +118,7 @@ void ConfDialog31::SetChTypData(int value)
 void ConfDialog31::SetDly(double dly)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());
-    if (tmpi == GENERALERROR)
+    if (tmpi == Error::ER_GENERALERROR)
         return;
     if (tmpi < DIN31_NUMCH)
         C31->Bci_block.inblk.dly_time[tmpi] = static_cast<quint32>(dly)*4;
@@ -125,7 +127,7 @@ void ConfDialog31::SetDly(double dly)
 void ConfDialog31::SetPair(int ch)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());
-    if (tmpi == GENERALERROR)
+    if (tmpi == Error::ER_GENERALERROR)
         return;
     SetPair(tmpi, ch);
 }

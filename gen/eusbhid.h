@@ -6,7 +6,6 @@
 #include <QTimer>
 #include <QLabel>
 
-#include "publicclass.h"
 #include "log.h"
 #include "eabstractprotocomchannel.h"
 #include "hidapi/hidapi.h"
@@ -23,7 +22,7 @@ class EUsbThread : public QObject
 {
     Q_OBJECT
 public:
-    explicit EUsbThread(Log *logh, QObject *parent = 0);
+    explicit EUsbThread(EAbstractProtocomChannel::DeviceConnectStruct &devinfo, Log *logh, bool writelog = false, QObject *parent = 0);
     ~EUsbThread();
 
     Log *log;
@@ -40,9 +39,12 @@ public slots:
     void Finish();
 
 private:
+    EAbstractProtocomChannel::DeviceConnectStruct DeviceInfo;
+
     hid_device *HidDevice;
     bool AboutToFinish, Device;
     bool RunWait;
+    bool WriteUSBLog;
 
 private slots:
 };
@@ -60,6 +62,7 @@ public:
     QByteArray RawRead(int bytes);
     qint64 RawWrite(QByteArray &ba);
     void RawClose();
+    void SetDeviceInfo(int venid, int prodid, const QString &sn);
 
 signals:
     void StopUThread();
@@ -70,6 +73,7 @@ private slots:
 
 private:
     EUsbThread *UThread;
+    EAbstractProtocomChannel::DeviceConnectStruct DevInf;
 
     void ClosePort();
 };

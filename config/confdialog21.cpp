@@ -15,7 +15,9 @@
 #include <QDoubleSpinBox>
 #include <QTabBar>
 #include "confdialog21.h"
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
+#include "../gen/colors.h"
+#include "../gen/error.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
@@ -327,11 +329,11 @@ void ConfDialog21::SetMinMax(int i)
     {
     case AIN21_AIT_MA: // канал с мА
     {
-        if (pc.FloatInRange(C21->Bci_block.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.in_max[i],20.0))
+        if (StdFunc::FloatInRange(C21->Bci_block.in_min[i],0.0) && StdFunc::FloatInRange(C21->Bci_block.in_max[i],20.0))
             cb->setCurrentIndex(RT_I020);
-        else if (pc.FloatInRange(C21->Bci_block.in_min[i],4.0) && pc.FloatInRange(C21->Bci_block.in_max[i],20.0))
+        else if (StdFunc::FloatInRange(C21->Bci_block.in_min[i],4.0) && StdFunc::FloatInRange(C21->Bci_block.in_max[i],20.0))
             cb->setCurrentIndex(RT_I420);
-        else if (pc.FloatInRange(C21->Bci_block.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.in_max[i],5.0))
+        else if (StdFunc::FloatInRange(C21->Bci_block.in_min[i],0.0) && StdFunc::FloatInRange(C21->Bci_block.in_max[i],5.0))
             cb->setCurrentIndex(RT_I05);
         else
             cb->setCurrentIndex(RT_IMANUAL);
@@ -339,9 +341,9 @@ void ConfDialog21::SetMinMax(int i)
     }
     case AIN21_AIT_V: // канал с В
     {
-        if (pc.FloatInRange(C21->Bci_block.in_min[i],0.0) && pc.FloatInRange(C21->Bci_block.in_max[i],5.0))
+        if (StdFunc::FloatInRange(C21->Bci_block.in_min[i],0.0) && StdFunc::FloatInRange(C21->Bci_block.in_max[i],5.0))
             cb->setCurrentIndex(RT_V05);
-        else if (pc.FloatInRange(C21->Bci_block.in_min[i], -5.0) && pc.FloatInRange(C21->Bci_block.in_max[i],5.0))
+        else if (StdFunc::FloatInRange(C21->Bci_block.in_min[i], -5.0) && StdFunc::FloatInRange(C21->Bci_block.in_max[i],5.0))
             cb->setCurrentIndex(RT_V55);
         else
             cb->setCurrentIndex(RT_VMANUAL);
@@ -355,7 +357,7 @@ void ConfDialog21::SetMinMax(int i)
 void ConfDialog21::SetChTypData(int value)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());
-    if (tmpi == GENERALERROR)
+    if (tmpi == Error::ER_GENERALERROR)
         return;
     C21->Bci_block.in_type[tmpi] = value;
     DisableChannel(tmpi, (value == 0));

@@ -13,8 +13,11 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include "eabstracttunedialog.h"
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
 #include "../gen/commands.h"
+#include "../gen/files.h"
+#include "../gen/timefunc.h"
+#include "../gen/error.h"
 #include "../dialogs/keypressdialog.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/emessagebox.h"
@@ -49,7 +52,7 @@ QWidget *EAbstractTuneDialog::TuneUI()
     QPushButton *pb = new QPushButton("Начать настройку");
     pb->setObjectName("starttune");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
-    if (pc.Emul)
+    if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     else
         pb->setEnabled(true);
@@ -100,14 +103,14 @@ QWidget *EAbstractTuneDialog::BottomUI()
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     pb = new QPushButton(tmps);
     connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs()));
-    if (pc.Emul)
+    if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
     tmps = "Записать настроечные коэффициенты в ";
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     pb = new QPushButton(tmps);
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteTuneCoefsSlot()));
-    if (pc.Emul)
+    if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
@@ -138,19 +141,19 @@ void EAbstractTuneDialog::ProcessTune()
     QByteArray ba;
     ba.resize(AbsBac.BacBlockSize);
     memcpy(&(ba.data()[0]), AbsBac.BacBlock, AbsBac.BacBlockSize);
-    if (pc.SaveToFile(pc.SystemHomeDir+"temptune.tn"+tunenum, ba, AbsBac.BacBlockSize) == NOERROR)
+    if (Files::SaveToFile(StdFunc::GetSystemHomeDir()+"temptune.tn"+tunenum, ba, AbsBac.BacBlockSize) == Error::ER_NOERROR)
         TuneFileSaved = true;
     else
         TuneFileSaved = false;
     ReadTuneCoefs();
     MeasurementTimer->start();
-    pc.Cancelled = Skipped = false;
+    Cancelled = Skipped = false;
     MsgClear(); // очистка экрана с сообщениями
     for (bStep=0; bStep<lbls.size(); ++bStep)
     {
         MsgSetVisible(bStep);
         int res = (this->*pf[lbls.at(bStep)])();
-        if ((res == GENERALERROR) || (pc.Cancelled))
+        if ((res == Error::ER_GENERALERROR) || (Cancelled))
         {
             ErMsgSetVisible(bStep);
             WDFunc::SetEnabled(this, "starttune", true);
@@ -158,7 +161,7 @@ void EAbstractTuneDialog::ProcessTune()
             MeasurementTimer->stop();
             return;
         }
-        else if (res == ER_RESEMPTY)
+        else if (res == Error::ER_RESEMPTY)
             SkMsgSetVisible(bStep);
         else
             OkMsgSetVisible(bStep);
@@ -180,9 +183,9 @@ int EAbstractTuneDialog::CheckPassword()
     if (!ok)
     {
         EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     }
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 void EAbstractTuneDialog::SetBac(void *block, int blocknum, int blocksize)
@@ -259,24 +262,24 @@ void EAbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
 
 void EAbstractTuneDialog::SaveToFileEx()
 {
-    int res = NOERROR;
+    int res = Error::ER_NOERROR;
     QString tunenum = QString::number(AbsBac.BacBlockNum, 16);
     QByteArray ba;
     ba.resize(AbsBac.BacBlockSize);
     memcpy(&(ba.data()[0]), AbsBac.BacBlock, AbsBac.BacBlockSize);
-    res = pc.SaveToFile(pc.ChooseFileForSave(this, "Tune files (*.tn"+tunenum+")", "tn"+tunenum), ba, AbsBac.BacBlockSize);
+    res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.tn"+tunenum+")", "tn"+tunenum), ba, AbsBac.BacBlockSize);
     switch (res)
     {
-    case NOERROR:
+    case Files::ER_NOERROR:
         EMessageBox::information(this, "Внимание", "Файл коэффициентов записан успешно!");
         break;
-    case ER_FILEWRITE:
+    case Files::ER_FILEWRITE:
         EMessageBox::error(this, "Ошибка", "Ошибка при записи файла!");
         break;
-    case ER_FILENAMEEMP:
+    case Files::ER_FILENAMEEMP:
         EMessageBox::error(this, "Ошибка", "Пустое имя файла!");
         break;
-    case ER_FILEOPEN:
+    case Files::ER_FILEOPEN:
         EMessageBox::error(this, "Ошибка", "Ошибка открытия файла!");
         break;
     default:
@@ -287,16 +290,11 @@ void EAbstractTuneDialog::SaveToFileEx()
 int EAbstractTuneDialog::StartMeasurement()
 {
     MeasurementEnabled = true;
-    while (MeasurementEnabled && !pc.Cancelled)
-    {
-        QTime tme;
-        tme.start();
-        while (tme.elapsed() < SLEEPINT)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-    }
-    if (pc.Cancelled)
-        return GENERALERROR;
-    return NOERROR;
+    while (MeasurementEnabled && !Cancelled)
+        TimeFunc::Wait();
+    if (Cancelled)
+        return Error::ER_GENERALERROR;
+    return Error::ER_NOERROR;
 }
 
 void EAbstractTuneDialog::InputTuneVariant(int varnum)
@@ -340,7 +338,7 @@ void EAbstractTuneDialog::PasswordCheck(QString &psw)
 {
     ok = false;
     if (psw.isEmpty())
-        pc.Cancelled = true;
+        Cancelled = true;
     else if (psw == "121941")
         ok = true;
     emit PasswordChecked();
@@ -348,13 +346,13 @@ void EAbstractTuneDialog::PasswordCheck(QString &psw)
 
 void EAbstractTuneDialog::ReadTuneCoefs()
 {
-    if (Commands::GetBac(AbsBac.BacBlockNum, AbsBac.BacBlock, AbsBac.BacBlockSize) == NOERROR)
+    if (Commands::GetBac(AbsBac.BacBlockNum, AbsBac.BacBlock, AbsBac.BacBlockSize) == Error::ER_NOERROR)
         FillBac();
 }
 
 bool EAbstractTuneDialog::WriteTuneCoefsSlot()
 {
-    if (CheckPassword() != NOERROR)
+    if (CheckPassword() != Error::ER_NOERROR)
         return false;
     return WriteTuneCoefs();
 }
@@ -363,13 +361,27 @@ bool EAbstractTuneDialog::WriteTuneCoefs()
 {
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     FillBackBac();
-    if (Commands::WriteBac(AbsBac.BacBlockNum, AbsBac.BacBlock, AbsBac.BacBlockSize) == NOERROR)
+    if (Commands::WriteBac(AbsBac.BacBlockNum, AbsBac.BacBlock, AbsBac.BacBlockSize) == Error::ER_NOERROR)
     {
         EMessageBox::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
         return true;
     }
     EMessageBox::error(this, "Ошибка", "Ошибка записи коэффициентов в " + tmps + "!");
     return false;
+}
+
+void EAbstractTuneDialog::PrereadConf()
+{
+    if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
+        emit LoadDefConf();
+    else // иначе заполнить значениями из модуля
+    {
+        if ((Commands::GetFile(1, &S2Config)) != Error::ER_NOERROR)
+        {
+            QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
+            EMessageBox::error(this, "ошибка", "Ошибка чтения конфигурации из " + tmps);
+        }
+    }
 }
 
 void EAbstractTuneDialog::SaveToFile()
@@ -383,8 +395,8 @@ void EAbstractTuneDialog::LoadFromFile()
     QByteArray ba;
     ba.resize(MAXTUNESIZE);
     QString tunenum = QString::number(AbsBac.BacBlockNum, 16);
-    int res = pc.LoadFromFile(pc.ChooseFileForOpen(this, "Tune files (*.tn"+tunenum+")"), ba);
-    if (res != NOERROR)
+    int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.tn"+tunenum+")"), ba);
+    if (res != Files::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка при загрузке файла");
         return;
@@ -401,13 +413,13 @@ void EAbstractTuneDialog::Good()
 
 void EAbstractTuneDialog::NoGood()
 {
-    pc.Cancelled = true;
+    Cancelled = true;
     MeasurementEnabled = false;
 }
 
 void EAbstractTuneDialog::CancelTune()
 {
-    pc.Cancelled = true;
+    Cancelled = true;
 }
 
 /*void EAbstractTuneDialog::UpdateNSecondsWidget()
@@ -450,6 +462,6 @@ void EAbstractTuneDialog::keyPressEvent(QKeyEvent *e)
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
         emit Finished();
     if (e->key() == Qt::Key_Escape)
-        pc.Cancelled = true;
+        Cancelled = true;
     QDialog::keyPressEvent(e);
 }

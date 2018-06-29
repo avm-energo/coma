@@ -1,14 +1,16 @@
 #include <QCoreApplication>
 #include <QTime>
-#include "publicclass.h"
+//#include "publicclass.h"
+#include "error.h"
+#include "modulebsi.h"
 #include "eabstractprotocomchannel.h"
 
 EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(parent)
 {
     QString tmps = "=== CLog started ===\n";
-    log = new Log;
-    log->Init("canal.log");
-    log->WriteRaw(tmps.toUtf8());
+    CnLog = new Log;
+    CnLog->Init("canal.log");
+    CnLog->WriteRaw(tmps.toUtf8());
     RDLength = 0;
     SegEnd = 0;
     SegLeft = 0;
@@ -42,11 +44,11 @@ void EAbstractProtocomChannel::Send(int command, int board_type, void *ptr, quin
     fnum = filenum;
     DR = DRptr;
 //    Busy = true;
-    if (board_type == BT_BASE)
+    if (board_type == BoardTypes::BT_BASE)
         BoardType = 0x01;
-    else if (board_type == BT_MEZONIN)
+    else if (board_type == BoardTypes::BT_MEZONIN)
         BoardType = 0x02;
-    else if (board_type == BT_NONE)
+    else if (board_type == BoardTypes::BT_NONE)
         BoardType = 0x00;
     else
         BoardType = board_type; // in GBd command it is a block number
@@ -54,6 +56,16 @@ void EAbstractProtocomChannel::Send(int command, int board_type, void *ptr, quin
     QEventLoop loop;
     connect(this, SIGNAL(QueryFinished()), &loop, SLOT(quit()));
     loop.exec();
+}
+
+void EAbstractProtocomChannel::SetWriteUSBLog(bool bit)
+{
+    WriteUSBLog = bit;
+}
+
+bool EAbstractProtocomChannel::IsWriteUSBLog()
+{
+    return WriteUSBLog;
 }
 
 void EAbstractProtocomChannel::InitiateSend()
@@ -155,10 +167,10 @@ void EAbstractProtocomChannel::InitiateSend()
 void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
 {
     emit readbytessignal(ba);
-    if (pc.WriteUSBLog)
+    if (WriteUSBLog)
     {
         QByteArray tmps = "<-" + ba.toHex() + "\n";
-        log->WriteRaw(tmps);
+        CnLog->WriteRaw(tmps);
     }
     if (cmd == CN_Unk) // игнорирование вызова процедуры, если не было послано никакой команды
         return;
@@ -200,7 +212,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             }
             if (cmd == CN_Ert)
                 OscTimer->start(); // start timer to send ErPg command periodically
-            Finish(NOERROR);
+            Finish(Error::ER_NOERROR);
             return;
         }
         // команды с ответом "ОК" и с продолжением
@@ -215,7 +227,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             }
             if (!SegLeft)
             {
-                Finish(NOERROR);
+                Finish(Error::ER_NOERROR);
                 return;
             }
             ReadDataChunk.clear();
@@ -241,7 +253,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             if (ReadDataChunkLength == 0)
             {
                 RDSize = 0;
-                Finish(NOERROR);
+                Finish(Error::ER_NOERROR);
                 return;
             }
             if (cmd == CN_GF) // надо проверить, тот ли номер файла принимаем
@@ -303,7 +315,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 emit SetDataSize(RDSize); // установка размера прогрессбара, чтобы не мелькал
                 RDSize = qMin(outdatasize, RDSize); // если даже приняли больше, копируем только требуемый размер
                 memcpy(outdata,ReadData.data(),RDSize);
-                Finish(NOERROR);
+                Finish(Error::ER_NOERROR);
             }
             else
                 SendOk(true);
@@ -317,7 +329,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 {
                     RDSize = qMin(RDLength, RDSize); // если даже приняли больше, копируем только требуемый размер
                     memcpy(outdata,ReadData.data(),RDSize);
-                    Finish(NOERROR);
+                    Finish(Error::ER_NOERROR);
                     break;
                 }
                 if (DR->isEmpty())
@@ -329,7 +341,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 if (res == 0)
                 {
 //                    SendOk(false);
-                    Finish(NOERROR);
+                    Finish(Error::ER_NOERROR);
                 }
                 else
                     Finish(res);
@@ -344,7 +356,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             emit SetDataCount(OscNum);
             if (OscNum == 100)
             {
-                Finish(NOERROR);
+                Finish(Error::ER_NOERROR);
                 OscTimer->stop();
                 break;
             }
@@ -447,17 +459,15 @@ void EAbstractProtocomChannel::Finish(int ernum)
 {
     TTimer->stop();
     cmd = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
-    if (ernum != NOERROR)
+    if (ernum != Error::ER_NOERROR)
     {
         if (ernum < 0)
         {
-            log->WriteRaw("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###\n");
+            CnLog->WriteRaw("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###\n");
             WARNMSG("ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ!!!");
         }
-        else if (ernum < pc.errmsgs.size())
-            WARNMSG(pc.errmsgs.at(ernum));
         else
-            WARNMSG("Произошла неведомая фигня #"+QString::number(ernum,10));
+            Error::ShowErMsg(ernum);
     }
     result = ernum;
     emit QueryFinished();
@@ -467,7 +477,7 @@ void EAbstractProtocomChannel::Finish(int ernum)
 void EAbstractProtocomChannel::Disconnect()
 {
     RawClose();
-    log->WriteRaw("Disconnected!\n");
+    CnLog->WriteRaw("Disconnected!\n");
 }
 
 void EAbstractProtocomChannel::OscTimerTimeout()
@@ -486,22 +496,22 @@ void EAbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
     QByteArray tmpba = ba;
     if (cmd == CN_Unk) // игнорируем вызовы процедуры без команды
     {
-        pc.ErMsg(USB_WRONGCOMER);
+        Error::ShowErMsg(USB_WRONGCOMER);
         return;
     }
     quint64 byteswritten = 0;
     quint64 basize = tmpba.size();
     while ((byteswritten < basize) && (!tmpba.isEmpty()))
     {
-        if (pc.WriteUSBLog)
+        if (WriteUSBLog)
         {
             QByteArray tmps = "->" + tmpba.toHex() + "\n";
-            log->WriteRaw(tmps);
+            CnLog->WriteRaw(tmps);
         }
         qint64 tmpi = RawWrite(tmpba);
-        if (tmpi == GENERALERROR)
+        if (tmpi == Error::ER_GENERALERROR)
         {
-            pc.ErMsg(COM_WRITEER);
+            Error::ShowErMsg(COM_WRITEER);
             Disconnect();
         }
         byteswritten += tmpi;

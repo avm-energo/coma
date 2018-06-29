@@ -10,7 +10,9 @@
 #include "hiddendialog.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/emessagebox.h"
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
+#include "../gen/modulebsi.h"
+#include "../gen/error.h"
 #include "../gen/commands.h"
 
 
@@ -20,21 +22,22 @@ HiddenDialog::HiddenDialog(QWidget *parent) :
     setAttribute(Qt::WA_DeleteOnClose);
     Type = 0x00;
 //    setStyleSheet("QDialog {background-color: rgb(0,192,0);}");
-/*    if (pc.ModuleBsi.MTypeB != MTB_00)
-    { */
-        Bhb.BoardBBhb.HWVer = pc.ModuleBsi.HwverB;
-        Bhb.BoardBBhb.SerialNum = pc.ModuleBsi.SerialNumB;
-        Bhb.BoardBBhb.MType = pc.ModuleBsi.MTypeB;
+    ModuleBSI::Bsi bsi = ModuleBSI::GetBsi();
+    if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != MTB_00)
+    {
+        Bhb.BoardBBhb.HWVer = bsi.HwverB;
+        Bhb.BoardBBhb.SerialNum = bsi.SerialNumB;
+        Bhb.BoardBBhb.MType = bsi.MTypeB;
         Type |= BYMN;
-/*    }
-    if (pc.ModuleBsi.MTypeM != MTM_00)
-    { */
-        Bhb.BoardMBhb.HWVer = pc.ModuleBsi.HwverM;
-        Bhb.BoardMBhb.SerialNum = pc.ModuleBsi.SerialNumM;
-        Bhb.BoardMBhb.MType = pc.ModuleBsi.MTypeM;
+    }
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_00)
+    {
+        Bhb.BoardMBhb.HWVer = bsi.HwverM;
+        Bhb.BoardMBhb.SerialNum = bsi.SerialNumM;
+        Bhb.BoardMBhb.MType = bsi.MTypeM;
         Type |= BNMY;
-//    }
-    Bhb.BoardBBhb.ModSerialNum = pc.ModuleBsi.SerialNum;
+    }
+    Bhb.BoardBBhb.ModSerialNum = bsi.SerialNum;
 
     if (Bhb.BoardBBhb.MType == 0xA1)
         BGImage="images/pkdn.png";
@@ -148,7 +151,7 @@ void HiddenDialog::Fill()
     WDFunc::SetLEData(this, "bassn", QString::number(Bhb.BoardBBhb.SerialNum, 16), "^[a-fA-F0-9]{1,8}$");
     tmps = QString::number(Bhb.BoardMBhb.MType, 16);
     tmps.truncate(8);
-    WDFunc::SetLEData(this, "modtype", pc.ModuleTypeString);
+    WDFunc::SetLEData(this, "modtype", ModuleBSI::GetModuleTypeString());
     Bhb.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
     if (Type == BYMY) // ввод данных по мезонинной плате открывается только в случае её наличия
     {
@@ -218,7 +221,7 @@ void HiddenDialog::GetVersion(quint32 &number, QString lename)
 
 void HiddenDialog::SendBhb()
 {
-    if (Commands::WriteHiddenBlock(BT_BSMZ, &Bhb, sizeof(Bhb)) != NOERROR)
+    if (Commands::WriteHiddenBlock(BT_BSMZ, &Bhb, sizeof(Bhb)) != Error::ER_NOERROR)
     {
         ERMSG("Проблема при записи блока Hidden block");
         return;

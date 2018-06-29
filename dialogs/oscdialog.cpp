@@ -15,8 +15,11 @@
 #include "../widgets/etablemodel.h"
 #include "../widgets/getoscpbdelegate.h"
 #include "../widgets/emessagebox.h"
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
+#include "../gen/error.h"
+#include "../gen/files.h"
 #include "../widgets/wd_func.h"
+#include "../gen/timefunc.h"
 
 OscDialog::OscDialog(EOscillogram *osc, QWidget *parent) :
     QDialog(parent), OscFunc(osc)
@@ -38,12 +41,12 @@ void OscDialog::SetupUI()
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Получить данные по осциллограммам в памяти "+tmps);
     connect(pb,SIGNAL(clicked()),this,SLOT(GetAndProcessOscInfo()));
-    if (pc.Emul)
+    if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
     pb = new QPushButton("Стереть все осциллограммы в памяти "+tmps);
     connect(pb,SIGNAL(clicked()),this,SLOT(EraseOsc()));
-    if (pc.Emul)
+    if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
@@ -78,7 +81,7 @@ void OscDialog::GetAndProcessOscInfo()
     quint32 RecordSize = sizeof(EOscillogram::GBoStruct); // GBo struct size
     OscInfoSize = MAXOSCBUFSIZE;
     OscInfo.resize(OscInfoSize);
-    if ((Commands::GetBt(TECH_Bo, &(OscInfo.data()[0]), OscInfoSize)) == NOERROR)
+    if ((Commands::GetBt(TECH_Bo, &(OscInfo.data()[0]), OscInfoSize)) == Error::ER_NOERROR)
     {
         tm->ClearModel();
         tm->addColumn("#");
@@ -100,7 +103,7 @@ void OscDialog::GetAndProcessOscInfo()
             EOscillogram::GBoStruct gbos;
             memcpy(&gbos, &(OscInfo.data()[i]), RecordSize);
             Num << QString::number(gbos.FileNum);
-            Tim << pc.UnixTime64ToString(gbos.UnixTime);
+            Tim << TimeFunc::UnixTime64ToString(gbos.UnixTime);
             IDs << gbos.ID;
             Lngth << gbos.FileLength;
             ++counter;
@@ -121,7 +124,7 @@ void OscDialog::GetOsc(QModelIndex idx)
 {
     emit StopCheckTimer();
     bool ok;
-    pc.PrbMessage = "Загружено, байт: ";
+    StdFunc::PrbMessage = "Загружено, байт: ";
     quint32 oscnum = tm->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(&ok); // номер осциллограммы
     if (!ok)
     {
@@ -136,10 +139,10 @@ void OscDialog::GetOsc(QModelIndex idx)
     }
     basize += sizeof(S2::FileHeader);
     OscFunc->BA.resize(basize);
-    if (Commands::GetOsc(oscnum, &(OscFunc->BA.data()[0])) == NOERROR)
+    if (Commands::GetOsc(oscnum, &(OscFunc->BA.data()[0])) == Error::ER_NOERROR)
     {
-        QString tmps = pc.SystemHomeDir+"/temporary.osc";
-        pc.SaveToFile(tmps, OscFunc->BA, basize);
+        QString tmps = StdFunc::GetSystemHomeDir()+"/temporary.osc";
+        Files::SaveToFile(tmps, OscFunc->BA, basize);
         OscFunc->ProcessOsc();
     }
     else
@@ -148,8 +151,8 @@ void OscDialog::GetOsc(QModelIndex idx)
 
 void OscDialog::EraseOsc()
 {
-    pc.PrbMessage = "Стёрто записей: ";
-    if (Commands::EraseTechBlock(TECH_Bo) == NOERROR)
+    StdFunc::PrbMessage = "Стёрто записей: ";
+    if (Commands::EraseTechBlock(TECH_Bo) == Error::ER_NOERROR)
         EMessageBox::information(this, "Внимание", "Стёрто успешно");
     else
         EMessageBox::information(this, "Внимание", "Ошибка при стирании");

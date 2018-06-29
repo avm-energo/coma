@@ -14,11 +14,13 @@
 #include "checkdialoga1.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "../gen/publicclass.h"
+// #include "../gen/publicclass.h"
+#include "../gen/colors.h"
+#include "../gen/error.h"
 #include "../config/config.h"
 #include "../gen/commands.h"
 
-CheckDialogA1::CheckDialogA1(int board, QWidget *parent) : EAbstractCheckDialog(board, parent)
+CheckDialogA1::CheckDialogA1(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);
@@ -202,7 +204,7 @@ void CheckDialogA1::SetDefaultValuesToWrite()
 
 void CheckDialogA1::PrepareAnalogMeasurements()
 {
-    if (Commands::GetUsingVariant(NVar) != NOERROR)
+    if (Commands::GetUsingVariant(NVar) != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка!", "Ошибка чтения номера варианта использования");
         return;

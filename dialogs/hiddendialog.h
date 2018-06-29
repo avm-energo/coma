@@ -17,8 +17,6 @@ class HiddenDialog : public QDialog
 {
     Q_OBJECT
 public:
-    Config *HidConf;
-
     explicit HiddenDialog(QWidget *parent = 0);
     void Fill();
 

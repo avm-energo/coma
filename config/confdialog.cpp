@@ -7,7 +7,9 @@
 #include "../widgets/ecombobox.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "../gen/publicclass.h"
+// #include "../gen/publicclass.h"
+#include "../gen/colors.h"
+#include "../gen/error.h"
 
 ConfDialog::ConfDialog(QVector<S2::DataRec> &S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {

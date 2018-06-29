@@ -11,10 +11,12 @@
 #include "tunedialog21.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "../gen/publicclass.h"
+#include "../gen/colors.h"
+#include "../gen/stdfunc.h"
+#include "../gen/error.h"
 #include "../gen/commands.h"
 
-TuneDialog21::TuneDialog21(int type, QWidget *parent) :
+TuneDialog21::TuneDialog21(BoardTypes type, QWidget *parent) :
     EAbstractTuneDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -115,7 +117,7 @@ void TuneDialog21::SetupUI()
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
-    if ((!(pc.ModuleBsi.Hth & HTH_REGPARS)) && !pc.Emul) // есть настроечные коэффициенты в памяти модуля
+    if ((!(ModuleBSI::GetHealth() & HTH_REGPARS)) && !StdFunc::IsInEmulateMode()) // есть настроечные коэффициенты в памяти модуля
         ReadTuneCoefs(); // считать их из модуля и показать на экране
 }
 
@@ -188,9 +190,9 @@ int TuneDialog21::ShowScheme()
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
     dlg->exec();
-    if (pc.Cancelled == true)
-        return GENERALERROR;
-    return NOERROR;
+    if (StdFunc::IsCancelled() == true)
+        return Error::ER_GENERALERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog21::ShowU0(int ChNum)
@@ -198,8 +200,8 @@ int TuneDialog21::ShowU0(int ChNum)
     if (QMessageBox::information(this,"Настройка",\
                                  "На калибраторе задайте напряжение 0 В (или ток 0 мА) на\nвходе "+\
                                  QString::number(ChNum)+" модуля и нажмите OK") == QMessageBox::Ok)
-        return NOERROR;
-    return GENERALERROR;
+        return Error::ER_NOERROR;
+    return Error::ER_GENERALERROR;
 }
 
 int TuneDialog21::ShowI20(int ChNum)
@@ -207,8 +209,8 @@ int TuneDialog21::ShowI20(int ChNum)
     if (QMessageBox::information(this,"Настройка",\
                                  "Переключите входные переключатели на ток,\nустановите ток 20 мА на\n" \
                                  "входе " + QString::number(ChNum) + " модуля и нажмите OK") == QMessageBox::Ok)
-        return NOERROR;
-    return GENERALERROR;
+        return Error::ER_NOERROR;
+    return Error::ER_GENERALERROR;
 }
 
 int TuneDialog21::ShowU5(int ChNum)
@@ -216,8 +218,8 @@ int TuneDialog21::ShowU5(int ChNum)
     if (QMessageBox::information(this,"Настройка",\
                                  "Переключите входные переключатели на напряжение,\nустановите напряжение" \
                                  "5 В на \nвходе " + QString::number(ChNum) + " модуля и нажмите OK") == QMessageBox::Ok)
-        return NOERROR;
-    return GENERALERROR;
+        return Error::ER_NOERROR;
+    return Error::ER_GENERALERROR;
 }
 
 int TuneDialog21::TuneChannel(Check21::Bda &Bda)
@@ -231,24 +233,24 @@ int TuneDialog21::Tune()
     for (i=0; i<AIN21_NUMCH; ++i)
     {
         ShowU0(i);
-        if (TuneChannel(Bda0) != NOERROR)
-            return GENERALERROR;
+        if (TuneChannel(Bda0) != Error::ER_NOERROR)
+            return Error::ER_GENERALERROR;
     }
     for (i=0; i<AIN21_NUMCH; ++i)
     {
         ShowI20(i);
-        if (TuneChannel(Bda20) != NOERROR)
-            return GENERALERROR;
+        if (TuneChannel(Bda20) != Error::ER_NOERROR)
+            return Error::ER_GENERALERROR;
     }
     for (i=0; i<AIN21_NUMCH; ++i)
     {
         ShowU5(i);
-        if (TuneChannel(Bda5) != NOERROR)
-            return GENERALERROR;
+        if (TuneChannel(Bda5) != Error::ER_NOERROR)
+            return Error::ER_GENERALERROR;
         if (!CalcNewTuneCoef(i))
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
     }
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 bool TuneDialog21::CalcNewTuneCoef(int NumCh)
@@ -278,7 +280,7 @@ void TuneDialog21::SetDefCoefs()
 
 int TuneDialog21::ReadAnalogMeasurements()
 {
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 void TuneDialog21::TuneOneChannel()
@@ -286,13 +288,13 @@ void TuneDialog21::TuneOneChannel()
     int NumCh;
     WDFunc::CBIndex(this, "tunenumch", NumCh);
     ShowU0(NumCh);
-    if (TuneChannel(Bda0) != NOERROR)
+    if (TuneChannel(Bda0) != Error::ER_NOERROR)
         return;
     ShowI20(NumCh);
-    if (TuneChannel(Bda20) != NOERROR)
+    if (TuneChannel(Bda20) != Error::ER_NOERROR)
         return;
     ShowU5(NumCh);
-    if (TuneChannel(Bda5) != NOERROR)
+    if (TuneChannel(Bda5) != Error::ER_NOERROR)
         return;
     CalcNewTuneCoef(NumCh);
     FillBac();

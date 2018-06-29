@@ -1,10 +1,13 @@
 #include <QVBoxLayout>
 #include <QPushButton>
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
 #include "../gen/commands.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/emessagebox.h"
 #include "swjdialog.h"
+#include "../gen/timefunc.h"
+#include "../gen/error.h"
+#include "../gen/files.h"
 
 SWJDialog::SWJDialog(int mode, QWidget *parent) : QDialog(parent)
 {
@@ -23,7 +26,7 @@ void SWJDialog::Init(SWJournalRecordStruct &swjr, bool haveosc, EOscillogram::GB
     glyout->addWidget(WDFunc::NewLBL(this, "Аппарат"),0,2,1,2);
     glyout->addWidget(WDFunc::NewLBL(this, "Переключение"),0,4,1,2);
     glyout->addWidget(WDFunc::NewLBLT(this, QString::number(swjr.Num)), 1,0,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(this, pc.UnixTime64ToString(swjr.Time)),1,1,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(this, TimeFunc::UnixTime64ToString(swjr.Time)),1,1,1,1);
     QStringList tmpsl = QStringList() << "D" << "G" << "CB";
     QString tmps = (swjr.TypeA < tmpsl.size()) ? tmpsl.at(swjr.TypeA) : "N/A";
     glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,2,1,1);
@@ -110,8 +113,8 @@ void SWJDialog::SaveSWJ()
     ba.resize(SWJSize + GBOSize + GBOs.FileLength);
     memcpy(&(ba.data()[0]), &SWJRecord, SWJSize);
     memcpy(&(ba.data()[SWJSize]), &GBOs, GBOSize);
-    if (Commands::GetOsc(GBOs.FileNum, &(ba.data()[SWJSize+GBOSize])) == NOERROR)
-        pc.SaveToFile(pc.ChooseFileForSave(this, "Файлы жуналов (*.swj)", "swj"), ba, ba.size());
+    if (Commands::GetOsc(GBOs.FileNum, &(ba.data()[SWJSize+GBOSize])) == Error::ER_NOERROR)
+        Files::SaveToFile(Files::ChooseFileForSave(this, "Файлы жуналов (*.swj)", "swj"), ba, ba.size());
     else
         EMessageBox::error(this, "Ошибка", "Ошибка чтения осциллограммы из модуля");
 }
@@ -121,13 +124,13 @@ void SWJDialog::ShowOsc()
     if (Mode == SWJ_MODE_ONLINE)
     {
         OscFunc->BA.resize(GBOs.FileLength);
-        if (Commands::GetOsc(GBOs.FileNum, &(OscFunc->BA.data()[0])) != NOERROR)
+        if (Commands::GetOsc(GBOs.FileNum, &(OscFunc->BA.data()[0])) != Error::ER_NOERROR)
         {
             WARNMSG("");
             return;
         }
-        QString tmps = pc.SystemHomeDir+"/temporary.osc";
-        pc.SaveToFile(tmps, OscFunc->BA, GBOs.FileLength);
+        QString tmps = StdFunc::GetSystemHomeDir()+"/temporary.osc";
+        Files::SaveToFile(tmps, OscFunc->BA, GBOs.FileLength);
     }
     OscFunc->ProcessOsc();
 }

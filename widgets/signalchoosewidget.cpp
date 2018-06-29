@@ -1,5 +1,5 @@
 #include <QVBoxLayout>
-#include "../gen/publicclass.h"
+#include "../gen/colors.h"
 #include "../widgets/wd_func.h"
 #include "signalchoosewidget.h"
 

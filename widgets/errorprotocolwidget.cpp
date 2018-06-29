@@ -4,6 +4,7 @@
 #include <QHeaderView>
 #include <QDateTime>
 #include "errorprotocolwidget.h"
+#include "../gen/colors.h"
 #include "etableview.h"
 
 ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
@@ -57,7 +58,7 @@ ErrorProtocolWidget::~ErrorProtocolWidget()
 
 }
 
-void ErrorProtocolWidget::AddRowToProt(publicclass::ermsg ermsg)
+void ErrorProtocolWidget::AddRowToProt(Error::ErMsg ermsg)
 {
     Model->AddRow(ermsg);
 }
@@ -103,39 +104,39 @@ QVariant ErrorProtocolModel::data(const QModelIndex &index, int role) const
                 return erdata.at(index.row()).at(index.column());
             else if (role == Qt::ForegroundRole)
             {
-                if (ertypedata.at(index.row()) == publicclass::ER_MSG)
+                if (ertypedata.at(index.row()) == Error::ER_MSG)
                     return QVariant::fromValue(QColor(255,0,0));
-                else if (ertypedata.at(index.row()) == publicclass::WARN_MSG)
+                else if (ertypedata.at(index.row()) == Error::WARN_MSG)
                     return QVariant::fromValue(QColor(255,0,255));
-                else if (ertypedata.at(index.row()) == publicclass::INFO_MSG)
+                else if (ertypedata.at(index.row()) == Error::INFO_MSG)
                     return QVariant::fromValue(QColor(0,150,67));
-                else if (ertypedata.at(index.row()) == publicclass::DBG_MSG)
+                else if (ertypedata.at(index.row()) == Error::DBG_MSG)
                     return QVariant::fromValue(QColor(0,0,255));
                 else
                     return QVariant();
             }
             else if (role == Qt::BackgroundRole)
             {
-                if (ertypedata.at(index.row()) == publicclass::ER_MSG)
+                if (ertypedata.at(index.row()) == Error::ER_MSG)
                     return QVariant::fromValue(QColor(255,233,255)); // red
-                else if (ertypedata.at(index.row()) == publicclass::WARN_MSG)
+                else if (ertypedata.at(index.row()) == Error::WARN_MSG)
                     return QVariant::fromValue(QColor(255,190,255)); // magenta
-                else if (ertypedata.at(index.row()) == publicclass::INFO_MSG)
+                else if (ertypedata.at(index.row()) == Error::INFO_MSG)
                     return QVariant::fromValue(QColor(204,253,243)); // green
-                else if (ertypedata.at(index.row()) == publicclass::DBG_MSG)
+                else if (ertypedata.at(index.row()) == Error::DBG_MSG)
                     return QVariant::fromValue(QColor(190,255,255)); // blue
                 else
                     return QVariant();
             }
             else if ((role == Qt::DecorationRole) && (index.column() == 4))
             {
-                if (ertypedata.at(index.row()) == publicclass::ER_MSG)
+                if (ertypedata.at(index.row()) == Error::ER_MSG)
                     return QVariant::fromValue(QIcon("images/er_msg.png"));
-                else if (ertypedata.at(index.row()) == publicclass::WARN_MSG)
+                else if (ertypedata.at(index.row()) == Error::WARN_MSG)
                     return QVariant::fromValue(QIcon("images/warn_msg.png"));
-                else if (ertypedata.at(index.row()) == publicclass::INFO_MSG)
+                else if (ertypedata.at(index.row()) == Error::INFO_MSG)
                     return QVariant::fromValue(QIcon("images/info_msg.png"));
-                else if (ertypedata.at(index.row()) == publicclass::DBG_MSG)
+                else if (ertypedata.at(index.row()) == Error::DBG_MSG)
                     return QVariant::fromValue(QIcon("images/dbg_msg.png"));
                 else
                     return QVariant();
@@ -162,7 +163,7 @@ int ErrorProtocolModel::columnCount(const QModelIndex &index) const
     return 5;
 }
 
-void ErrorProtocolModel::AddRow(publicclass::ermsg msg)
+void ErrorProtocolModel::AddRow(Error::ErMsg msg)
 {
 //    beginResetModel();
     if (rowCount()<MAX_MSG)
@@ -184,12 +185,12 @@ void ErrorProtocolModel::AddRow(publicclass::ermsg msg)
 void ErrorProtocolModel::InitModel()
 {
     beginResetModel();
-    int beg = pc.ErMsgPool.size()-1;
+    int beg = Error::ErMsgPoolSize()-1;
     int end = (beg > MAX_MSG) ? (beg-MAX_MSG) : 0;
     insertRows(0,(beg-end+1),QModelIndex());
     for (int i = beg; i >= end; --i)
     {
-        publicclass::ermsg msg = pc.ErMsgPool.at(i);
+        Error::ErMsg msg = Error::ErMsgAt(i);
         QStringList tmpsl = QStringList() << "#"+QString::number(MsgCount) << msg.DateTime << msg.file << QString::number(msg.line,10) << msg.msg;
         ++MsgCount;
         erdata.append(tmpsl);

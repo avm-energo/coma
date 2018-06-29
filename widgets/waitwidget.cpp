@@ -11,7 +11,7 @@
 #include <QFontMetrics>
 #include <math.h>
 #include "waitwidget.h"
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
 
 WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)
 {
@@ -144,7 +144,7 @@ void WaitWidget::keyPressEvent(QKeyEvent *e)
 {
     if ((e->key() == Qt::Key_Escape) && IsAllowedToStop)
     {
-        pc.Cancelled = true;
+        StdFunc::Cancel();
         Stop();
 //        emit CountZero();
     }

@@ -15,10 +15,12 @@
 #include "eabstractcheckdialog.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
+#include "../gen/error.h"
+#include "../gen/colors.h"
 #include "../gen/commands.h"
 
-EAbstractCheckDialog::EAbstractCheckDialog(int board, QWidget *parent) :
+EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent) :
     QDialog(parent)
 {
     XlsxWriting = false;
@@ -108,18 +110,18 @@ QWidget *EAbstractCheckDialog::BottomUI()
     QPushButton *pb = new QPushButton("Запустить чтение аналоговых сигналов");
     pb->setObjectName("pbmeasurements");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurements()));
-    if (pc.Emul)
+    if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
     pb = new QPushButton("Запустить чтение аналоговых сигналов в файл");
     pb->setObjectName("pbfilemeasurements");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurementsToFile()));
-    if (pc.Emul)
+    if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
     pb = new QPushButton("Остановить чтение аналоговых сигналов");
     connect(pb,SIGNAL(clicked()),this,SLOT(StopAnalogMeasurements()));
-    if (pc.Emul)
+    if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
     w->setLayout(lyout);
@@ -128,7 +130,7 @@ QWidget *EAbstractCheckDialog::BottomUI()
 
 /*void EAbstractCheckDialog::GetIP()
 {
-    if (Commands::GetIP(&Bip_block, sizeof(Bip)) != NOERROR)
+    if (Commands::GetIP(&Bip_block, sizeof(Bip)) != Error::NOERROR)
         EMessageBox::error(this, "Ошибка", "Ошибка получения данных по IP адресу модуля");
     else
         CheckIP();
@@ -149,7 +151,8 @@ void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    QString Filename = dlg->getSaveFileName(this, "Сохранить данные",pc.HomeDir,"Excel files (*.xlsx)", Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    QString Filename = dlg->getSaveFileName(this, "Сохранить данные",StdFunc::GetHomeDir(),"Excel files (*.xlsx)", \
+                                            Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     dlg->close();
     if (Filename == "")
     {
@@ -166,7 +169,8 @@ void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
     XlsxWriting = true;
     xlsx = new QXlsx::Document(Filename);
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "Модуль" : "Прибор");
-    xlsx->write(1,1,QVariant(tmps + ": "+pc.ModuleTypeString+" сер. ном. "+QString::number(pc.ModuleBsi.SerialNum,10)));
+    xlsx->write(1,1,QVariant(tmps + ": "+ModuleBSI::GetModuleTypeString()+" сер. ном. " + \
+                             QString::number(ModuleBSI::SerialNum(BoardTypes::BT_MODULE),10)));
     xlsx->write(2,1,QVariant("Дата начала записи: "+QDateTime::currentDateTime().toString("dd-MM-yyyy")));
     xlsx->write(3,1,QVariant("Время начала записи: "+QDateTime::currentDateTime().toString("hh:mm:ss")));
     xlsx->write(5,1,QVariant("Дата и время отсчёта"));
@@ -208,7 +212,7 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
         if (!XlsxWriting || (XlsxWriting && (Bd_blocks[bdnum]->toxlsxwrite)))
         {
             int tmpi = Bd_blocks.keys().at(bdnum);
-            if (Commands::GetBd(tmpi, Bd_blocks[tmpi]->block, Bd_blocks[tmpi]->blocknum) != NOERROR)
+            if (Commands::GetBd(tmpi, Bd_blocks[tmpi]->block, Bd_blocks[tmpi]->blocknum) != Error::ER_NOERROR)
             {
                 WARNMSG("Ошибка при приёме данных");
                 Busy = false;

@@ -8,7 +8,9 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
-#include "../gen/publicclass.h"
+//#include "../gen/publicclass.h"
+#include "../gen/colors.h"
+#include "../gen/modulebsi.h"
 #include "confdialog80.h"
 
 ConfDialog80::ConfDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent) :
@@ -38,7 +40,7 @@ void ConfDialog80::Fill()
     WDFunc::SetSPBData(this, "npointspb", C80->Bci_block.npoints);
     WDFunc::SetSPBData(this, "nfiltrspb", C80->Bci_block.nfiltr);
     WDFunc::SetSPBData(this, "nhfiltrspb", C80->Bci_block.nhfiltr);
-    switch (pc.ModuleBsi.MTypeM)
+    switch (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN))
     {
     case MTM_81: // 2 напряжения, 0 токов
     {
@@ -87,7 +89,7 @@ void ConfDialog80::FillBack()
     WDFunc::SPBData(this, "npointspb", C80->Bci_block.npoints);
     WDFunc::SPBData(this, "nfiltrspb", C80->Bci_block.nfiltr);
     WDFunc::SPBData(this, "nhfiltrspb", C80->Bci_block.nhfiltr);
-    switch (pc.ModuleBsi.MTypeM)
+    switch (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN))
     {
     case MTM_81: // 2 напряжения, 0 токов
     {
@@ -144,7 +146,7 @@ void ConfDialog80::SetupUI()
     vlyout1->addLayout(hlyout);
 
     QGroupBox *gb = new QGroupBox("Аналоговые");
-    switch (pc.ModuleBsi.MTypeM)
+    switch (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN))
     {
     case MTM_81: // 6U0I
     {

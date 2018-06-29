@@ -2,7 +2,9 @@
 #include "../config/config.h"
 #include "eoscillogram.h"
 #include "../models/trendviewmodel.h"
-#include "../gen/publicclass.h"
+#include "../gen/error.h"
+#include "../gen/timefunc.h"
+#include "../gen/colors.h"
 #include "../dialogs/trendviewdialog.h"
 
 EOscillogram::EOscillogram(QObject *parent) : QObject(parent)
@@ -257,23 +259,23 @@ int EOscillogram::ProcessOsc()
     // разбираем осциллограмму
     S2::FileHeader FH;
     if (!PosPlusPlus(&FH, sizeof(S2::FileHeader)))
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     OscDataRec DR;
     if (!PosPlusPlus(&DR, sizeof(OscDataRec)))
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     quint32 oscid = DR.id;
     oscid -= MT_HEAD_ID - 1; // одна осциллограмма = 1, две = 2, ...
     if (oscid > 8)
         oscid = 1; // если что-то с количеством осциллограмм не так, принудительно выставляем в 1
     OscHeader_Data OHD;
     if (!PosPlusPlus(&OHD, sizeof(OscHeader_Data)))
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     for (quint32 i=0; i<oscid; ++i)
     {
         if (!PosPlusPlus(&DR, sizeof(OscDataRec)))
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
         // составляем имя файла осциллограммы
-        QString tmps = pc.UnixTime64ToString(OHD.unixtime);
+        QString tmps = TimeFunc::UnixTime64ToString(OHD.unixtime);
         tmps.replace("/","-");
         tmps.replace(":","_");
         tmps.insert(0, "_");
@@ -281,10 +283,10 @@ int EOscillogram::ProcessOsc()
         tmps.insert(0, "_");
         tmps.insert(0, QString::number(DR.id));
         // пишем саму осциллограмму
-        if (ProcessOneOsc(DR.id, OHD, tmps) != NOERROR)
-            return GENERALERROR;
+        if (ProcessOneOsc(DR.id, OHD, tmps) != Error::ER_NOERROR)
+            return Error::ER_GENERALERROR;
     }
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, const QString &fn)
@@ -302,12 +304,12 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
         dlg->SetupPlots();
         dlg->SetupUI();
         if (!TModel->SetPointsAxis(0, OHD.step))
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
         for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
         {
             Point21 point;
             if (!PosPlusPlus(&point, sizeof(Point21)))
-                return GENERALERROR;
+                return Error::ER_GENERALERROR;
             TModel->AddAnalogPoint(tmpav.at(0), point.An);
         }
         TModel->SetFilename(fn);
@@ -335,12 +337,12 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
             dlg->SetupPlots();
             dlg->SetupUI();
             if (!TModel->SetPointsAxis(xmin, OHD.step))
-                return GENERALERROR;
+                return Error::ER_GENERALERROR;
             for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
             {
                 Point8x point;
                 if (!PosPlusPlus(&point, sizeof(Point8x)))
-                    return GENERALERROR;
+                    return Error::ER_GENERALERROR;
                 for (int i=0; i<6; ++i)
                     TModel->AddAnalogPoint(tmpav.at(i), point.An[i]);
             }
@@ -385,12 +387,12 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
             dlg->SetupPlots();
             dlg->SetupUI();
             if (!TModel->SetPointsAxis(xmin, OHD.step))
-                return GENERALERROR;
+                return Error::ER_GENERALERROR;
             for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
             {
                 Point85 point;
                 if (!PosPlusPlus(&point, sizeof(Point85)))
-                    return GENERALERROR;
+                    return Error::ER_GENERALERROR;
 //                quint32 DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
                 quint32 DisPoint = point.Dis;
                 for (int i=0; i<32; ++i)
@@ -415,5 +417,5 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
             break;
         }
     }
-    return NOERROR;
+    return Error::ER_NOERROR;
 }

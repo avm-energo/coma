@@ -4,7 +4,9 @@
 #include <QtMath>
 #include "check80.h"
 #include "../config/config.h"
-#include "../gen/publicclass.h"
+//#include "../gen/publicclass.h"
+#include "../gen/colors.h"
+#include "../gen/modulebsi.h"
 #include "../widgets/wd_func.h"
 
 Check_80::Check_80()
@@ -338,10 +340,10 @@ void Check_80::FillBd1(QWidget *parent)
     WDFunc::SetLBLText(parent, "value2", WDFunc::StringValueWithCheck(Bd_block1.Frequency, 3));
     for (int i = 0; i < 3; i++)
     {
-        int Precision = (pc.ModuleBsi.MTypeM != MTM_81) ? 3 : 4;
+        int Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_81) ? 3 : 4;
         WDFunc::SetLBLText(parent, "value"+QString::number(i+3), WDFunc::StringValueWithCheck(Bd_block1.IUefNat_filt[i], Precision));
         WDFunc::SetLBLText(parent, "value"+QString::number(i+9), WDFunc::StringValueWithCheck(Bd_block1.IUeff_filtered[i], Precision));
-        Precision = (pc.ModuleBsi.MTypeM != MTM_83) ? 4 : 3;
+        Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83) ? 4 : 3;
         WDFunc::SetLBLText(parent, "value"+QString::number(i+6), WDFunc::StringValueWithCheck(Bd_block1.IUefNat_filt[i+3], Precision));
         WDFunc::SetLBLText(parent, "value"+QString::number(i+12), WDFunc::StringValueWithCheck(Bd_block1.IUeff_filtered[i+3], Precision));
         WDFunc::SetLBLText(parent, "value"+QString::number(i+15), WDFunc::StringValueWithCheck(Bd_block1.phi_next_f[i], 4));

@@ -9,7 +9,10 @@
 #include "../widgets/wd_func.h"
 //#include "../canal.h"
 #include "../gen/commands.h"
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
+#include "../gen/files.h"
+#include "../gen/error.h"
+#include "../gen/modulebsi.h"
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
@@ -18,7 +21,7 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 void AbstractConfDialog::ReadConf()
 {
     int res;
-    if ((res = Commands::GetFile(1, S2Config)) == NOERROR)
+    if ((res = Commands::GetFile(1, S2Config)) == Error::ER_NOERROR)
         emit NewConfLoaded();
     else
     {
@@ -32,7 +35,7 @@ void AbstractConfDialog::WriteConf()
     if (!PrepareConfToWrite())
         return;
     int res;
-    if ((res = Commands::WriteFile(NULL, 1, S2Config)) == NOERROR)
+    if ((res = Commands::WriteFile(NULL, 1, S2Config)) == Error::ER_NOERROR)
     {
         emit BsiIsNeedToBeAcquiredAndChecked();
         EMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
@@ -53,19 +56,19 @@ void AbstractConfDialog::SaveConfToFile()
     BaLength += static_cast<quint8>(ba.data()[6])*65536;
     BaLength += static_cast<quint8>(ba.data()[7])*16777216;
     BaLength += sizeof(S2::FileHeader); // FileHeader
-    int res = pc.SaveToFile(pc.ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba, BaLength);
+    int res = Files::SaveToFile(Files::ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba, BaLength);
     switch (res)
     {
-    case NOERROR:
+    case Files::ER_NOERROR:
         EMessageBox::information(this, "Внимание", "Записано успешно!");
         break;
-    case ER_FILEWRITE:
+    case Files::ER_FILEWRITE:
         ERMSG("Ошибка при записи файла!");
         break;
-    case ER_FILENAMEEMP:
+    case Files::ER_FILENAMEEMP:
         ERMSG("Пустое имя файла!");
         break;
-    case ER_FILEOPEN:
+    case Files::ER_FILEOPEN:
         ERMSG("Ошибка открытия файла!");
         break;
     default:
@@ -76,8 +79,8 @@ void AbstractConfDialog::SaveConfToFile()
 void AbstractConfDialog::LoadConfFromFile()
 {
     QByteArray ba;
-    int res = pc.LoadFromFile(pc.ChooseFileForOpen(this, "Config files (*.cf)"), ba);
-    if (res != NOERROR)
+    int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Config files (*.cf)"), ba);
+    if (res != Files::ER_NOERROR)
     {
         WARNMSG("Ошибка при загрузке файла конфигурации");
         return;
@@ -98,14 +101,14 @@ QWidget *AbstractConfDialog::ConfButtons()
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Прочитать из " + tmps);
     connect(pb,SIGNAL(clicked()),this,SLOT(ReadConf()));
-    if (pc.Emul)
+    if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 0, 1, 1);
     tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     pb = new QPushButton("Записать в " + tmps);
     pb->setObjectName("WriteConfPB");
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteConf()));
-    if (pc.Emul)
+    if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 1, 1, 1);
     pb = new QPushButton("Прочитать из файла");
@@ -125,7 +128,7 @@ QWidget *AbstractConfDialog::ConfButtons()
 
 void AbstractConfDialog::PrereadConf()
 {
-    if ((pc.ModuleBsi.Hth & HTH_CONFIG) || (pc.Emul)) // если в модуле нет конфигурации, заполнить поля по умолчанию
+    if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
         emit LoadDefConf();
     else // иначе заполнить значениями из модуля
         ReadConf();
@@ -141,9 +144,9 @@ int AbstractConfDialog::GetChNumFromObjectName(QString ObjectName)
     if (ObjectNameSl.size()>1)
         ChNum = ObjectNameSl.at(1).toInt(&ok);
     else
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     if (!ok)
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     return ChNum;
 }
 

@@ -15,7 +15,8 @@
 #include <QTabBar>
 #include "confdialog22.h"
 #include "../widgets/emessagebox.h"
-#include "../gen/publicclass.h"
+//#include "../gen/publicclass.h"
+#include "../gen/colors.h"
 #include "../widgets/wd_func.h"
 
 ConfDialog22::ConfDialog22(QVector<S2::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :

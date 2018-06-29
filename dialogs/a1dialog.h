@@ -141,6 +141,7 @@ private:
     int RowCount, ColumnCount; // количество рядов и столбцов в модели
     bool Autonomous; // =1, если производится формирование протокола из файла, =0 - при работе с прибором
     bool TempFromLE, HumFromLE; // =1, если данные в протокол надо брать из поля ввода, =0 - если из прибора
+    bool Cancelled;
 
     void SetupUI();
     int GetConf();

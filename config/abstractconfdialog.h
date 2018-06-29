@@ -1,6 +1,8 @@
 #ifndef ABSTRACTCONFDIALOG_H
 #define ABSTRACTCONFDIALOG_H
 
+#define MAXBYTEARRAY    65535
+
 #include <QDialog>
 #include "config.h"
 

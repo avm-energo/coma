@@ -38,6 +38,7 @@ public:
     quint32 SecondsToEnd15SecondsInterval;
     QHash <QString, int (EAbstractTuneDialog::*)()> pf;
     quint8 bStep;
+    bool Cancelled;
     int TuneVariant; // вариант регулировочных параметров
 
     virtual void SetupUI() = 0;
@@ -63,6 +64,7 @@ public:
 //    QByteArray *ChooseFileForOpen(QString mask);
     void InputTuneVariant(int varnum);
     bool WriteTuneCoefs();
+    void PrereadConf();
 
 signals:
     void PasswordChecked();
@@ -70,6 +72,7 @@ signals:
     void dataready(QByteArray);
 //    void SecondsRemaining(quint32);
     void Finished();
+    void LoadDefConf();
 
 public slots:
     void CancelTune();

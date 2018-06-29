@@ -16,7 +16,11 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
+#include "../gen/colors.h"
+#include "../gen/error.h"
+#include "../gen/files.h"
+#include "../gen/timefunc.h"
 #include "../gen/commands.h"
 
 A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : QDialog(parent)
@@ -40,7 +44,7 @@ A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : QDialog(parent)
     connect(MeasurementTimer,SIGNAL(timeout()),this,SLOT(MeasTimerTimeout()));
 //    ReportHeader.DNDevices = "УКДН сер. номер " + QString::number(pc.ModuleBsi.SerialNum) + ", кл. точн. 0,05";
     // считать варианты использования и соответствующие им коэффициенты из модуля
-    if (GetConf() != NOERROR)
+    if (GetConf() != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка чтения конфигурации или настроечных параметров из модуля");
         return;
@@ -123,7 +127,7 @@ void A1Dialog::SetupUI()
     pb->setObjectName("StartWorkPb");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(StartWork()));
 //    connect(pb,SIGNAL(clicked(bool)),this,SLOT(TempRandomizeModel()));
-    if (pc.Emul)
+    if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
     lyout->addStretch(10);
@@ -132,17 +136,17 @@ void A1Dialog::SetupUI()
 
 int A1Dialog::GetConf()
 {
-    if (Commands::GetFile(1, &S2Config) == NOERROR)
+    if (Commands::GetFile(1, &S2Config) == Error::ER_NOERROR)
     {
-        if (Commands::GetBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) == NOERROR)
+        if (Commands::GetBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) == Error::ER_NOERROR)
         {
             Bac_block.Bac_block[TuneVariant].U1kDN[0] = 0;
             Bac_block.Bac_block[TuneVariant].U2kDN[0] = 0;
             Bac_block.Bac_block[TuneVariant].PhyDN[0] = 0;
-            return NOERROR;
+            return Error::ER_NOERROR;
         }
     }
-    return GENERALERROR;
+    return Error::ER_GENERALERROR;
 }
 
 void A1Dialog::FillBdOut()
@@ -169,13 +173,13 @@ void A1Dialog::GenerateReport()
     ShowTable();
     QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
     report = new LimeReport::ReportEngine(this);
-    QString path = pc.SystemHomeDir+"a1_"+GOST+".lrxml";
+    QString path = StdFunc::GetSystemHomeDir()+"a1_"+GOST+".lrxml";
     report->loadFromFile(path);
     report->dataManager()->addModel("maindata", ReportModel, false);
     // запрос блока Bda_h, чтобы выдать KNI в протокол
     if (!Autonomous)
     {
-        if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2)) == NOERROR)
+        if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2)) == Error::ER_NOERROR)
             report->dataManager()->setReportVariable("KNI", QString::number(ChA1->Bda_h.HarmBuf[0][0], 'g', 5));
     }
     else
@@ -206,7 +210,7 @@ void A1Dialog::GenerateReport()
     report->dataManager()->setReportVariable("OuterInsp", ReportHeader.OuterInsp);
     report->dataManager()->setReportVariable("WindingsInsp", ReportHeader.WindingsInsp);
     report->dataManager()->setReportVariable("PovDateTime", ReportHeader.PovDateTime);
-    QString filename = pc.ChooseFileForSave(this, "*.pdf", "pdf");
+    QString filename = Files::ChooseFileForSave(this, "*.pdf", "pdf");
     if (!filename.isEmpty())
     {
         report->printToPDF(filename);
@@ -448,7 +452,7 @@ void A1Dialog::FillHeaders()
 void A1Dialog::TemplateCheck()
 {
     QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
-    QString path = pc.SystemHomeDir+"a1_"+GOST+".lrxml";
+    QString path = StdFunc::GetSystemHomeDir()+"a1_"+GOST+".lrxml";
     QFile file(path);
     if (!file.exists()) // нет файла шаблона
     {
@@ -464,9 +468,9 @@ void A1Dialog::StartWork()
     TuneVariant = 0;
     Autonomous = false;
     float VoltageInkV, VoltageInV;
-    pc.Cancelled = false;
+    Cancelled = false;
     TemplateCheck();
-    if (GetConf() != NOERROR)
+    if (GetConf() != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка чтения конфигурации или настроечных параметров из модуля");
         return;
@@ -474,9 +478,9 @@ void A1Dialog::StartWork()
     WDFunc::SetEnabled(this, "StartWorkPb", false);
     PovType = TempPovType = GOST_NONE;
     InputTuneVariant(TUNEVARIANTSNUM);
-    if (pc.Cancelled)
+    if (Cancelled)
         return;
-    if (Commands::SetUsingVariant(TuneVariant+1) != NOERROR)
+    if (Commands::SetUsingVariant(TuneVariant+1) != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка установки варианта использования");
         return;
@@ -502,13 +506,8 @@ void A1Dialog::StartWork()
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
     dlg->show();
-    while ((PovType == GOST_NONE) && !pc.Cancelled)
-    {
-        QTime tme;
-        tme.start();
-        while (tme.elapsed() < SLEEPINT)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-    }
+    while ((PovType == GOST_NONE) && !Cancelled)
+        TimeFunc::Wait();
     dlg->close();
     RowCount = (PovType == GOST_1983) ? GOST1983ROWCOUNT : GOST23625ROWCOUNT;
     ColumnCount = (PovType == GOST_1983) ? GOST1983COLCOUNT : GOST23625COLCOUNT;
@@ -526,7 +525,7 @@ void A1Dialog::StartWork()
             ViewModel->setItem(i, j, item);
         }
     }
-    if (!pc.Cancelled)
+    if (!Cancelled)
     {
         if (EMessageBox::question(this, "Подтверждение", "Подключите вывод нижнего плеча \"своего\" делителя напряжения ко входу U1 прибора\n"
                                   "Вывод нижнего плеча поверяемого делителя или выход низшего напряжения поверяемого ТН - ко входу U2\n"
@@ -557,7 +556,6 @@ void A1Dialog::StartWork()
     }
     WDFunc::SetEnabled(this, "StartWorkPb", true);
     EMessageBox::information(this, "Информация", "Операция прервана");
-    return;
 }
 
 void A1Dialog::ParsePKDNFile(const QString &filename)
@@ -565,8 +563,8 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
     Autonomous = true;
     QByteArray ba;
     PovDevStruct PovDev;
-    int res = pc.LoadFromFile(filename, ba);
-    if (res != NOERROR)
+    int res = Files::LoadFromFile(filename, ba);
+    if (res != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка загрузки файла");
         return;
@@ -667,7 +665,7 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
 
 void A1Dialog::MeasTimerTimeout()
 {
-    if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == NOERROR)
+    if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == Error::ER_NOERROR)
         FillBdOut();
 }
 
@@ -682,9 +680,9 @@ void A1Dialog::Accept()
     const int *Percents = (PovType == GOST_1983) ? Percents1983 : Percents23625;
 
     // заполняем модель по полученным измерениям:
-    if (GetStatistics() == GENERALERROR) // набираем статистику измерений и вычисляем средние значения
+    if (GetStatistics() == Error::ER_GENERALERROR) // набираем статистику измерений и вычисляем средние значения
     {
-        pc.Cancelled = true;
+        Cancelled = true;
         Decline();
         return;
     }
@@ -698,7 +696,7 @@ void A1Dialog::Accept()
             CurrentS = 1;
             if (EMessageBox::question(this, "Подтверждение", "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное 1,0·Sном") == false)
             {
-                pc.Cancelled = true;
+                Cancelled = true;
                 Decline();
             }
         }
@@ -745,7 +743,7 @@ void A1Dialog::Proceed()
 void A1Dialog::Cancel()
 {
     WDFunc::SetEnabled(this, "StartWorkPb", true);
-    pc.Cancelled = true;
+    Cancelled = true;
 }
 
 void A1Dialog::SetDNData()
@@ -807,18 +805,18 @@ int A1Dialog::GetStatistics()
     ww.initialseconds = 0;
     w->Init(ww);
     w->Start();
-    while ((count < PovNumPoints) && !pc.Cancelled)
+    while ((count < PovNumPoints) && !Cancelled)
     {
 //        w->SetSeconds(PovNumPoints-count);
 /*        cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
-        if (cn->result == NOERROR) */
-        if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == NOERROR)
+        if (cn->result == Error::NOERROR) */
+        if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == Error::ER_NOERROR)
             FillBdOut();
         else
         {
             w->close();
             EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_out");
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
         }
         tmpst2.dUrms += ChA1->Bda_out.dUrms;
         tmpst2.Phy += ChA1->Bda_out.Phy;
@@ -832,8 +830,8 @@ int A1Dialog::GetStatistics()
         emit SetPercent(count);
     }
     w->close();
-    if (pc.Cancelled)
-        return GENERALERROR;
+    if (Cancelled)
+        return Error::ER_GENERALERROR;
     // усреднение
     float Um = tmpst2.dUrms / count; // среднее значение погрешности по напряжению
     float Phym = tmpst2.Phy / count; // среднее значение погрешности по углу
@@ -854,7 +852,7 @@ int A1Dialog::GetStatistics()
     Dd_Block.sPhy = sPhyo;
     Dd_Block.sU = sUo;
     FillMedian();
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 void A1Dialog::TempRandomizeModel()

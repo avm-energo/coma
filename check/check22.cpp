@@ -2,7 +2,8 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include "check22.h"
-#include "../gen/publicclass.h"
+// #include "../gen/publicclass.h"
+#include "../gen/colors.h"
 #include "../widgets/wd_func.h"
 
 Check22::Check22()

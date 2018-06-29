@@ -1,4 +1,6 @@
-#include "publicclass.h"
+#include <QDateTime>
+
+#include "error.h"
 #include "s2.h"
 
 S2::S2()
@@ -42,7 +44,7 @@ int S2::StoreDataMem(void *mem, QVector<DataRec> *dr, quint16 fname) //0 - ус�
     D.service=0xFFFF;
     D.fname=fname;
     memcpy(mem,&D,sizeof(D));
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
@@ -129,7 +131,7 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
       ERMSG("Не найдено ни одного элемента с заданным ID"); // не найдено ни одного ИД
       return S2_NOIDS;
   }
-  return NOERROR;
+  return Error::ER_NOERROR;
 }
 
 S2::DataRec *S2::FindElem(QVector<DataRec> *dr, quint16 id)
@@ -142,7 +144,7 @@ S2::DataRec *S2::FindElem(QVector<DataRec> *dr, quint16 id)
         if(R.id==static_cast<quint16>(0xFFFF))
             return 0;
     }
-    return NOERROR;
+    return 0;
 }
 
 void inline S2::updCRC32(const quint8 byte, quint32 *dwCRC32)

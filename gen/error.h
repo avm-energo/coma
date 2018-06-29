@@ -1,35 +1,16 @@
-#ifndef PUBLICCLASS_H
-#define PUBLICCLASS_H
+#ifndef ERROR_H
+#define ERROR_H
 
-#define DEVICETYPE_MODULE   1 // модуль
-#define DEVICETYPE_DEVICE   2 // прибор
+#include <QString>
+#include <QList>
 
-// program sizes
-#define PROGSIZE_EMUL   0
-#define PROGSIZE_SMALL  1
-#define PROGSIZE_MEDIUM 2
-#define PROGSIZE_LARGE  3
-#define PROGSIZE_FULL   4
+#include "log.h"
 
 // Макросы для выдачи сообщений
-#define ERMSG(a)    pc.AddErrMsg(publicclass::ER_MSG,__FILE__,__LINE__,a)
-#define DBGMSG      pc.AddErrMsg(publicclass::DBG_MSG,__FILE__,__LINE__,"")
-#define INFOMSG(a)  pc.AddErrMsg(publicclass::INFO_MSG,__FILE__,__LINE__,a)
-#define WARNMSG(a)  pc.AddErrMsg(publicclass::WARN_MSG,__FILE__,__LINE__,a)
-
-#define MAXERRORFLAGNUM 32
-#define MAXBYTEARRAY    65535
-#define MAX_MSG     1000
-#define ER_BUFMAX   16
-#define SIZEMAX     128 // максимальный размер массивов конфигурационных параметров
-
-// определение ошибок
-#define NOERROR         0 // нет ошибок
-#define GENERALERROR    -1 // возвращённое значение - ошибка
-#define ER_RESEMPTY     1 // пустой результат
-#define ER_FILEWRITE    1 // ошибка записи файла
-#define ER_FILENAMEEMP  2 // пустое имя файла
-#define ER_FILEOPEN     3 // ошибка открытия файла
+#define ERMSG(a)    Error::AddErrMsg(Error::ER_MSG,__FILE__,__LINE__,a)
+#define DBGMSG      Error::AddErrMsg(Error::DBG_MSG,__FILE__,__LINE__,"")
+#define INFOMSG(a)  Error::AddErrMsg(Error::INFO_MSG,__FILE__,__LINE__,a)
+#define WARNMSG(a)  Error::AddErrMsg(Error::WARN_MSG,__FILE__,__LINE__,a)
 
 #define USB_COMER           1 // USB: Ошибка открытия COM-порта
 #define USB_NOCOMER         2 // USB: В системе нет COM-портов
@@ -126,107 +107,13 @@
 #define M104_LENGTHER       101 // ошибка длины в блоке APDU
 #define M104_NUMER          102 // ошибка номеров сообщений
 
-#define HTH_FNC             0x00000200 // частота не в допуске (Э)
-#define HTH_LS              0x00000100 // сигналы малы (Э)
-#define HTH_CONFIG          0x00000080 // в модуле нет конфигурации
-#define HTH_REGPARS         0x00000040 // в модуле нет настроечных параметров
-#define HTH_ADC             0x00000020 // проблема с АЦП (Э)
-#define HTH_1PPS            0x00000010 // нет сигнала 1PPS
-#define HTH_REL             0x00000008 // неисправность выходных реле (Д)
-#define HTH_TUPP            0x00000004 // перегрев модуля
-
-#define TABCOLOR    "#AFFFAF"
-#define TABCOLORA1  "#FFFF5F"
-#define ERPROTCLR   "rgba(255,234,255,255)"
-#define MAINWINCLR  "#E0FFE0"
-#define MAINWINCLRA1    "#FFFFE0"
-#define DCONFCLR    "#DDDDAA"
-//#define DCONFCLR    "#D0FFFF"
-#define DCONFWCLR   "#EEEECC"
-#define DCONFGCLR   "#CCCC99"
-#define DCONFRCLR   "#FFCCCC"
-#define DCONFYCLR   "#FFFFCC"
-#define DCONFOCLR   "#FFCC99"
-#define ACONFCLR    "#D0FFD0"
-#define ACONFWCLR   "#C0FFC0"
-#define ACONFWCLRO  "#E0FFE0"
-#define ACONFGCLR   "#B0FFB0"
-#define ACONFRCLR   "#FFDDDD"
-#define ACONFYCLR   "#FFFFDD"
-#define ACONFOCLR   "#FFDDAA"
-#define UCONFCLR    "#FFFFD0"
-#define UCONFWCLR   "#FFFFC0"
-#define ERRCLR      "#FF0000"
-#define REDCOLOR    "#FF2222"
-#define RDLCOLOR    "#FF4444"
-#define RDDCOLOR    "#FF0000"
-#define GRNCOLOR    "#22FF22"
-#define GRLCOLOR    "#44FF44"
-#define GRDCOLOR    "#00FF00"
-#define YLWCOLOR    "#CCCC22"
-#define YLLCOLOR    "#CCCC44"
-#define YLDCOLOR    "#CCCC00"
-#define BLDCOLOR    "#0000FF"
-#define BLUCOLOR    "#2222FF"
-
-// thresholds
-#define TMAX    FLT_MAX
-#define T25     25.0
-#define T5      5.0
-#define TH1     1.0
-#define TH05    0.5
-#define TH01    0.1
-#define TH005   0.05
-#define TH002   0.02
-#define TH0005  0.005
-
-// signals
-#define S0      0.0
-#define S1      1.0
-#define S4      4.0
-#define S20     20.0
-
-#define SLEEPINT    20
-
-#define BT_NONE     0x00
-#define BT_BASE     0x01
-#define BT_MEZONIN  0x02
-#define BT_BSMZ     0x03
-
+#define ER_BUFMAX   16
 #define LOGFILE     "coma.log"
 
-#include <QStringList>
-#include <QPointer>
-#include <QVector>
-#include <QTime>
-#include <QCoreApplication>
-#include "log.h"
-
-class publicclass
+class Error
 {
 public:
-    publicclass();
-
-    typedef struct
-    {
-        quint32 MTypeB;
-        quint32 MTypeM;
-        quint32 HwverB;
-        quint32 Fwver;
-        quint32 Rst;
-        quint32 RstCount;
-        quint32 UIDLow;
-        quint32 UIDMid;
-        quint32 UIDHigh;
-        quint32 SerialNumB;
-        quint32 SerialNumM;
-        quint32 HwverM;
-        quint32 SerialNum;
-        quint32 Cfcrc;
-        quint32 Hth;
-    } Bsi;
-
-    enum ermsgtype
+    enum ErMsgType
     {
         ER_MSG,
         WARN_MSG,
@@ -234,16 +121,16 @@ public:
         DBG_MSG
     };
 
-    struct ermsg
+    struct ErMsg
     {
         QString DateTime;
-        ermsgtype type;
+        ErMsgType type;
         QString file;
         int line;
         QString msg;
     };
 
-    enum errors
+    enum Errors
     {
         ER_MAIN,
         ER_CANAL,
@@ -255,65 +142,25 @@ public:
         ER_OSC,
         ER_PUB,
         ER_ACHECK,
-        ER_ECHECK
+        ER_ECHECK,
+        ER_NOERROR, // нет ошибок
+        ER_GENERALERROR, // возвращённое значение - ошибка
+        ER_RESEMPTY // пустой результат
     };
 
-    quint32 MType;
-
-    struct DeviceConnectStruct
-    {
-        unsigned short vendor_id;
-        unsigned short product_id;
-        wchar_t serial[20];
-    };
-
-    DeviceConnectStruct DeviceInfo;
-
-    Log log;
-    bool WriteUSBLog; // надо ли писать лог обмена в файл
-    QString HomeDir; // рабочий каталог программы
-    QString SystemHomeDir; // системный каталог программы
-    quint16 MIPASDU;
-    QString MIPIP;
-    QString Port;
-    int result;
-    QStringList errmsgs;
-    QString ModuleTypeString;
-    bool Emul;
-    Bsi ModuleBsi;
-    QString PrbMessage;
-    bool Cancelled;
-    bool TEEnabled; // признак того, ведётся ли лог в правом выезжающем окне
-
-    QList<ermsg> ErMsgPool;
-
-    QString VerToStr(quint32);
-
-    inline void Wait(int ms)
-    {
-        QTime tme;
-        tme.start();
-        while (tme.elapsed() < ms)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-    }
-
-    QString NsTimeToString (quint64 nstime);
-    void AddErrMsg(ermsgtype msgtype, QString file=0, int line=0, QString msg="");
-    void ErMsg(int ermsgnum);
-    QString ChooseFileForOpen(QWidget *parent, QString mask);
-    int LoadFromFile(const QString &filename, QByteArray &ba);
-    QString ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext);
-    int SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes);
-    bool FloatInRange(float var, float value);
-    QString UnixTime64ToString(quint64 utime);
-    int IndexByBit(quint32 dword); // возвращение номера первого, начиная с младшего, установленного бита, нумерация с 1, dword=0 => return 0
-    quint32 BitByIndex(int idx); // возвращение битовой маски по индексу (0 => 0, 1 => 1, 2 => 2, 3 => 4, ...)
+    Error();
+    static void AddErrMsg(ErMsgType msgtype, QString file=0, int line=0, QString msg="");
+    static void ShowErMsg(int ermsgnum);
+    static int ErMsgPoolSize();
+    static ErMsg ErMsgAt(int idx);
 
 private:
+    static QStringList ErrMsgs;
+    static QList<ErMsg> ErMsgPool;
+    static Log LogFile;
+
     void addmessage(QStringList &sl, QString mes);
     void SetErMsg(int ernum);
 };
 
-extern publicclass pc;
-
-#endif // PUBLICCLASS_H
+#endif // ERROR_H

@@ -1,6 +1,6 @@
 #include <QVBoxLayout>
 #include "keypressdialog.h"
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
 
 KeyPressDialog::KeyPressDialog(const QString &PswPhrase, QWidget *parent) :
@@ -38,7 +38,7 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
     if (e->key() == Qt::Key_Escape)
     {
         emit Finished(QString());
-        pc.Cancelled = true;
+        StdFunc::Cancel();
         this->close();
     }
     QDialog::keyPressEvent(e);

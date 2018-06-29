@@ -5,7 +5,8 @@
 #include "lzma/lzma.h"
 
 #include "log.h"
-#include "publicclass.h"
+#include "stdfunc.h"
+#include "error.h"
 
 Log::Log(QObject *parent) : QObject(parent)
 {
@@ -25,7 +26,7 @@ Log::~Log()
 
 void Log::Init(const QString &Filename)
 {
-    LogFile = pc.SystemHomeDir + Filename;
+    LogFile = StdFunc::GetSystemHomeDir() + Filename;
     // тестовая проверка открытия файла на запись
     fp = new QFile(LogFile);
     if (!fp->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))

@@ -4,8 +4,6 @@
 #include <QVector>
 #include "../gen/s2.h"
 
-#define BCI_MTYPEB      1
-#define BCI_MTYPEM      2
 #define BCI_CTYPE       3
 #define BCI_ABS_104     4
 #define BCI_CYCLE_104   5
@@ -16,8 +14,8 @@
 #define BCI_W_104       10
 //#define CONF_NUM        10
 
-#define DEF_ABS_104     205
 #define DEF_CTYPE       2
+#define DEF_ABS_104     205
 #define DEF_CYCLE_104   5
 #define DEF_T1_104      15
 #define DEF_T2_104      10

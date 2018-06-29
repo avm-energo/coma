@@ -11,7 +11,9 @@
 #include "../config/config80.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
+#include "../gen/colors.h"
+#include "../gen/error.h"
 #include "../gen/commands.h"
 
 TuneDialog80::TuneDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent) :
@@ -319,9 +321,9 @@ void TuneDialog80::GetBdAndFillMTT()
 void TuneDialog80::PrepareConsts()
 {
     // подготовка констант для проверки данных МИПа
-    MVTC.u = (pc.ModuleBsi.MTypeM == MTM_83) ? S0 : V60;
-    MTTC.u = (pc.ModuleBsi.MTypeM == MTM_83) ? FLT_MAX : TH005;
-    if (pc.ModuleBsi.MTypeM == MTM_81)
+    MVTC.u = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_83) ? S0 : V60;
+    MTTC.u = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_83) ? FLT_MAX : TH005;
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81)
     {
         MVTC.i[0] = MVTC.i[1] = MVTC.i[2] = S0;
         MTTC.i = FLT_MAX;
@@ -342,53 +344,53 @@ int TuneDialog80::Start7_2_3()
         GED_Type = TD_GED_U; // любой параметр для проверки связи сгодится
         return GetExternalData();
     }
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog80::Start7_3_1()
 {
-    if (pc.ModuleBsi.Hth & HTH_REGPARS) // если нет настроечных параметров в памяти модуля
-        return ER_RESEMPTY;
+    if (ModuleBSI::GetHealth() & HTH_REGPARS) // если нет настроечных параметров в памяти модуля
+        return Error::ER_RESEMPTY;
     else
     {
         // получение настроечных коэффициентов от модуля
-        if (Commands::GetBac(BT_NONE, &Bac_block, sizeof(Bac_block)) != NOERROR)
+        if (Commands::GetBac(BT_NONE, &Bac_block, sizeof(Bac_block)) != Error::ER_NOERROR)
         {
             EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
         }
         // обновление коэффициентов в соответствующих полях на экране
         FillBac();
         // проверка коэффициентов на правильность в соотв. с п. 7.3.1 "Д2"
         if (CheckTuneCoefs())
-            return NOERROR;
+            return Error::ER_NOERROR;
         else
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
     }
 }
 
 int TuneDialog80::Start7_3_1_1()
 {
-    if (pc.ModuleBsi.Hth & HTH_REGPARS) // если нет настроечных параметров в памяти модуля
-        return ER_RESEMPTY;
+    if (ModuleBSI::GetHealth() & HTH_REGPARS) // если нет настроечных параметров в памяти модуля
+        return Error::ER_RESEMPTY;
     else
     {
         // запись настроечных коэффициентов в модуль
         SetDefCoefs();
-        if (Commands::WriteBac(BT_NONE, &Bac_block, sizeof(Bac)) == NOERROR)
+        if (Commands::WriteBac(BT_NONE, &Bac_block, sizeof(Bac)) == Error::ER_NOERROR)
         {
             // получение настроечных коэффициентов от модуля
-            if (Commands::GetBac(BT_NONE, &Bac_block, sizeof(Bac)) != NOERROR)
+            if (Commands::GetBac(BT_NONE, &Bac_block, sizeof(Bac)) != Error::ER_NOERROR)
             {
                 WARNMSG("Ошибка при приёме данных");
                 return false;
             }
             // обновление коэффициентов в соответствующих полях на экране
             FillBac();
-            return NOERROR;
+            return Error::ER_NOERROR;
         }
         else
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
     }
 }
 
@@ -441,17 +443,17 @@ int TuneDialog80::Start7_3_3()
         for (int i=3; i<6; ++i)
             Bac_newblock.DPsi[i] += RealData.d[i-3];
     } */
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog80::Start7_3_4()
 {
 /*    GED_Type = TD_GED_F;
-    if (!(GetExternalData() == GENERALERROR))
+    if (!(GetExternalData() == Error::GENERALERROR))
         Bac_newblock.K_freq = Bac_block.K_freq*RealData.f[0]/Bda_block.Frequency;
     else
-        return GENERALERROR; */
-    return NOERROR;
+        return Error::GENERALERROR; */
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog80::Start7_3_5()
@@ -464,63 +466,63 @@ int TuneDialog80::Start7_3_6_2()
 /*    double fTmp = Bda_block.IUefNat_filt[0] / IUefNat_filt_old[0] + Bda_block.IUefNat_filt[3] / IUefNat_filt_old[3];
     fTmp /= 2;
     Bac_newblock.Kinter = (fTmp * (1 + 6 * Bac_block.Kinter) - 1) / 6; */
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog80::Start7_3_7_1()
 {
 /*    if (pc.ModuleBsi.MTypeM != MTM_81)
-        return ER_RESEMPTY;
+        return Error::ER_RESEMPTY;
     GED_Type = TD_GED_U;
-    if (GetExternalData() == GENERALERROR)
-        return GENERALERROR;
-    if (Start7_3_2() == GENERALERROR)
-        return GENERALERROR;
+    if (GetExternalData() == Error::GENERALERROR)
+        return Error::GENERALERROR;
+    if (Start7_3_2() == Error::GENERALERROR)
+        return Error::GENERALERROR;
     for (int i=0; i<3; i++)
     {
         Bac_newblock.KmU[i] = Bac_block.KmU[i] * RealData.u[i] / Bda_block.IUefNat_filt[i];
         Bac_newblock.KmU[i+3] = Bac_block.KmU[i+3] * RealData.u[i] / Bda_block.IUefNat_filt[i+3];
     } */
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog80::Start7_3_7_2()
 {
-    if (pc.ModuleBsi.MTypeM == MTM_81)
-        return ER_RESEMPTY;
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81)
+        return Error::ER_RESEMPTY;
 
    // Установить в конфигурации токи i2nom в 1 А
     for (int i=0; i<6; i++)
         C80->Bci_block.inom2[i] = I1;
     // послать новые коэффициенты по току в конфигурацию
-    if (Commands::WriteFile(&C80->Bci_block, 2, S2Config) != NOERROR)
-        return GENERALERROR;
+    if (Commands::WriteFile(&C80->Bci_block, 2, S2Config) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
     WaitNSeconds(2);
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog80::Start7_3_7_3()
 {
-    if (pc.ModuleBsi.MTypeM == MTM_81)
-        return ER_RESEMPTY;
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81)
+        return Error::ER_RESEMPTY;
     ShowRetomDialog(V60, I1);
-    if (Start7_3_2() == GENERALERROR)
-        return GENERALERROR;
-    return NOERROR;
+    if (Start7_3_2() == Error::ER_GENERALERROR)
+        return Error::ER_GENERALERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog80::Start7_3_7_4()
 {
-    if (pc.ModuleBsi.MTypeM == MTM_81)
-        return ER_RESEMPTY;
-    GED_Type = (pc.ModuleBsi.MTypeM == MTM_82) ? (TD_GED_I | TD_GED_U) : TD_GED_I;
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81)
+        return Error::ER_RESEMPTY;
+    GED_Type = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_82) ? (TD_GED_I | TD_GED_U) : TD_GED_I;
     return GetExternalData();
 }
 
 int TuneDialog80::Start7_3_7_5()
 {
 /*    if (pc.ModuleBsi.MTypeM == MTM_81)
-        return ER_RESEMPTY;
+        return Error::ER_RESEMPTY;
     for (int i=0; i<3; ++i)
     {
         if (pc.ModuleBsi.MTypeM == MTM_82)
@@ -529,19 +531,19 @@ int TuneDialog80::Start7_3_7_5()
             Bac_newblock.KmI_1[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_block.IUefNat_filt[i];
         Bac_newblock.KmI_1[i+3] = Bac_block.KmI_1[i+3] * RealData.i[i] / Bda_block.IUefNat_filt[i+3];
     } */
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog80::Start7_3_7_6()
 {
-    if (pc.ModuleBsi.MTypeM == MTM_81)
-        return ER_RESEMPTY;
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81)
+        return Error::ER_RESEMPTY;
     for (int i=0; i<6; ++i)
         C80->Bci_block.inom2[i] = I5;
-    if (Commands::WriteFile(&C80->Bci_block, 2, S2Config) != NOERROR)
-        return GENERALERROR;
+    if (Commands::WriteFile(&C80->Bci_block, 2, S2Config) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
     WaitNSeconds(2);
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog80::Start7_3_7_7()
@@ -554,8 +556,8 @@ int TuneDialog80::Start7_3_7_8()
     WaitNSeconds(15);
     ReadAnalogMeasurements();
     int res = StartCheckAnalogValues(V60, I5, S0, false);
-    if (res == GENERALERROR)
-        return GENERALERROR;
+    if (res == Error::ER_GENERALERROR)
+        return Error::ER_GENERALERROR;
     GED_Type = TD_GED_D | TD_GED_U;
     return GetExternalData();
 }
@@ -568,7 +570,7 @@ int TuneDialog80::Start7_3_7_10()
             Bac_newblock.KmI_5[i] = Bac_block.KmI_5[i] * RealData.i[i] / Bda_block.IUefNat_filt[i];
         Bac_newblock.KmI_5[i+3] = Bac_block.KmI_5[i+3] * RealData.i[i] / Bda_block.IUefNat_filt[i+3];
     } */
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog80::Start7_3_8_1()
@@ -589,7 +591,7 @@ int TuneDialog80::Start7_3_9()
     if (EMessageBox::question(this,"Закончить?","Закончить настройку?"))
     {
         if (!LoadWorkConfig())
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
         // переходим на прежнюю конфигурацию
         // измеряем и проверяем
         ShowRetomDialog(V57, C80->Bci_block.inom2[0]); // I = 1.0 or 5.0 A
@@ -601,8 +603,8 @@ int TuneDialog80::Start7_3_9()
         return false;
     if (EMessageBox::question(this,"Вопрос","Очистить память осциллограмм?"))
     {
-        pc.PrbMessage = "Стёрто записей: ";
-        if (Commands::EraseTechBlock(TECH_Bo) == NOERROR)
+        StdFunc::PrbMessage = "Стёрто записей: ";
+        if (Commands::EraseTechBlock(TECH_Bo) == Error::ER_NOERROR)
             EMessageBox::information(this, "Внимание", "Стёрто успешно");
         else
             ERMSG("Ошибка при стирании");
@@ -615,7 +617,7 @@ int TuneDialog80::SaveUeff()
 /*    // сохраняем значения по п. 7.3.2 для выполнения п. 7.3.6
     for (int i=0; i<6; i++)
         IUefNat_filt_old[i] = Bda_block.IUefNat_filt[i]; */
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog80::ShowRetomDialog(double U, double I)
@@ -635,7 +637,7 @@ int TuneDialog80::ShowRetomDialog(double U, double I)
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
     dlg->exec();
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog80::StartCheckAnalogValues(double u, double i, double deg, bool tol)
@@ -654,7 +656,7 @@ int TuneDialog80::StartCheckAnalogValues(double u, double i, double deg, bool to
         utol = TH05; itol = TH005; ptol = TH05; dtol = TH1; ctol = TH005;
     }
     int res;
-    switch (pc.ModuleBsi.MTypeM)
+    switch (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN))
     {
     case MTM_81: // 2t0n
         res = CheckAnalogValues(i, i, S0, S0, S0, S0, S0, utol, itol, ptol, dtol, ctol);
@@ -666,7 +668,7 @@ int TuneDialog80::StartCheckAnalogValues(double u, double i, double deg, bool to
         res = CheckAnalogValues(u, u, S0, S0, S0, S0, S0, utol, itol, ptol, dtol, ctol);
         break;
     default:
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     }
     return res;
 }
@@ -690,9 +692,9 @@ int TuneDialog80::GetExternalData()
                 RealData.i[i] = MipDat[i+6];
                 RealData.d[i] = MipDat[i+10];
             }
-            return NOERROR;
+            return Error::ER_NOERROR;
         }
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     }
     case TUNEMAN:
     {
@@ -760,8 +762,8 @@ int TuneDialog80::GetExternalData()
         dlg->setLayout(glyout);
         dlg->exec();
         if (Cancelled)
-            return GENERALERROR;
-        return NOERROR;
+            return Error::ER_GENERALERROR;
+        return Error::ER_NOERROR;
     }
     case TUNERET:
     {
@@ -772,31 +774,31 @@ int TuneDialog80::GetExternalData()
             RealData.d[i] = 0.0;
             RealData.f[i] = 50.0;
         }
-        return NOERROR;
+        return Error::ER_NOERROR;
     }
     }
-    return GENERALERROR;
+    return Error::ER_GENERALERROR;
 #else
-    return NOERROR;
+    return Error::NOERROR;
 #endif
 }
 
 int TuneDialog80::SaveWorkConfig()
 {
-    if (Commands::GetFile(CM_CONFIGFILE,S2Config) == NOERROR)
+    if (Commands::GetFile(CM_CONFIGFILE,S2Config) == Error::ER_NOERROR)
         memcpy(&Bci_block_work,&C80->Bci_block,sizeof(Config80::Bci));
     else
-        return GENERALERROR;
-    return NOERROR;
+        return Error::ER_GENERALERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog80::LoadWorkConfig()
 {
     // пишем ранее запомненный конфигурационный блок
     memcpy(&C80->Bci_block,&Bci_block_work,sizeof(Config80::Bci));
-    if (Commands::WriteFile(&C80->Bci_block, CM_CONFIGFILE, S2Config) != NOERROR)
-        return GENERALERROR;
-    return NOERROR;
+    if (Commands::WriteFile(&C80->Bci_block, CM_CONFIGFILE, S2Config) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
+    return Error::ER_NOERROR;
 }
 
 QHBoxLayout *TuneDialog80::MipPars(int parnum, const QString &groupname)
@@ -875,7 +877,7 @@ int TuneDialog80::CheckTuneCoefs()
                                    TH002,TH002,TH002,TH002,TH002,TH002,TH1,TH1,TH1,TH1,TH1,TH1,TH002,TH0005};
     double *VTC = ValuesToCheck;
     double *TTC = ThresholdsToCheck;
-    int res = NOERROR;
+    int res = Error::ER_NOERROR;
     for (int i = 0; i < 26; i++)
     {
         QString tmps;
@@ -883,13 +885,13 @@ int TuneDialog80::CheckTuneCoefs()
         bool ok;
         double tmpd = tmps.toDouble(&ok);
         if (!ok)
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
         if (!IsWithinLimits(tmpd, *VTC, *TTC))
         {
             EMessageBox::information(this, "Внимание", "Настроечные по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
                       ", должно быть: "+QString::number(*VTC,'f',4)+\
                       " +/- "+QString::number(*TTC,'f',4));
-            res=GENERALERROR;
+            res=Error::ER_GENERALERROR;
             WDFunc::SetLBLColor(this, "tune"+QString::number(i), "red");
             VTC++;
             TTC++;
@@ -921,24 +923,24 @@ int TuneDialog80::CheckMip()
         bool ok;
         double tmpd = tmps.toDouble(&ok);
         if (!ok)
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
         if (!IsWithinLimits(tmpd, *VTC, *TTC))
         {
             EMessageBox::information(this, "Внимание", "Несовпадение МИП по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
                       ", должно быть: "+QString::number(*VTC,'f',4)+\
                       " +/- "+QString::number(*TTC,'f',4));
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
         }
         ++VTC;
         ++TTC;
     }
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog80::CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct)
 {
-    double it = (pc.ModuleBsi.MTypeM == MTM_83) ? utol : itol; // 0t2n
-    double ut = (pc.ModuleBsi.MTypeM == MTM_81) ? itol : utol; // 2t0n
+    double it = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_83) ? utol : itol; // 0t2n
+    double ut = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81) ? itol : utol; // 2t0n
     double ValuesToCheck[45] = {TD_TMK,TD_VBAT,TD_FREQ,u,u,u,i,i,i,u,u,u,i,i,i,phi,phi,phi,phi,phi,phi,p,p,p,s,s,s,q,q,q, \
                                 cosphi,cosphi,cosphi,p,p,p,q,q,q,s,s,s,cosphi,cosphi,cosphi};
     double ThresholdsToCheck[45] = {T25,TH05,TH0005,ut,ut,ut,it,it,it,ut,ut,ut,it,it,it,pht,pht,pht,pht,pht,pht,pt,pt,pt,pt,pt,pt,pt,pt,pt,\
@@ -953,13 +955,13 @@ int TuneDialog80::CheckAnalogValues(double u, double i, double p, double q, doub
         bool ok;
         double tmpd = tmps.toDouble(&ok);
         if (!ok)
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
 
         if (!IsWithinLimits(tmpd,*VTC,*TTC))
         {
             EMessageBox::information(this, "Внимание", "Несовпадение по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
                       ", должно быть: "+QString::number(*VTC,'f',4)+ " +/- " + QString::number(*TTC,'f',4));
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
         }
         ++VTC;
         ++TTC;
@@ -1015,7 +1017,7 @@ int TuneDialog80::CheckAnalogValues(double u, double i, double p, double q, doub
     }
     }
 */
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialog80::SetNewTuneCoefs()
@@ -1029,7 +1031,7 @@ int TuneDialog80::SetNewTuneCoefs()
         Bac_newblock.KmI_5[i] = Bac_block.KmI_5[i];
         Bac_newblock.KmU[i] = Bac_block.KmU[i];
     }
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 void TuneDialog80::SetDefCoefs()
@@ -1049,12 +1051,12 @@ void TuneDialog80::SetDefCoefs()
 int TuneDialog80::ReadAnalogMeasurements()
 {
 /*    // получение текущих аналоговых сигналов от модуля
-    if (Commands::GetBd(BT_NONE, &Bda_block, sizeof(Bda_block)) != NOERROR)
+    if (Commands::GetBd(BT_NONE, &Bda_block, sizeof(Bda_block)) != Error::NOERROR)
     {
         EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
         return;
     }  */
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 #if PROGSIZE != PROGSIZE_EMUL
@@ -1127,9 +1129,9 @@ int TuneDialog80::ShowControlChooseDialog()
     dlg->setLayout(lyout);
     dlg->exec();
     if (Cancelled)
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     else
-        return NOERROR;
+        return Error::ER_NOERROR;
 }
 
 void TuneDialog80::Show1RetomDialog(float U, float A)
@@ -1176,7 +1178,7 @@ int TuneDialog80::Show3PhaseScheme()
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     QPixmap pmp;
-    switch(pc.ModuleBsi.MTypeM) // выводим окно с предупреждением о включении РЕТОМ-а по схеме в зависимости от исполнения
+    switch(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN)) // выводим окно с предупреждением о включении РЕТОМ-а по схеме в зависимости от исполнения
     {
     case MTM_81: // 2t0n
     {
@@ -1194,7 +1196,7 @@ int TuneDialog80::Show3PhaseScheme()
         break;
     }
     default:
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     }
     QLabel *lblpmp = new QLabel;
     lblpmp->setPixmap(pmp);
@@ -1208,7 +1210,7 @@ int TuneDialog80::Show3PhaseScheme()
     lyout->addWidget(lbl);
     lbl=new QLabel("4. Задайте на РЕТОМ значения напряжений по фазам 60 В;");
     lyout->addWidget(lbl);
-    if (pc.ModuleBsi.MTypeM != MTM_83)
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83)
     {
         lbl=new QLabel("   Задайте на РЕТОМ значения токов по фазам 1 А;");
         lyout->addWidget(lbl);
@@ -1224,7 +1226,7 @@ int TuneDialog80::Show3PhaseScheme()
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
     dlg->exec();
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 void TuneDialog80::MsgClear()

@@ -14,10 +14,11 @@
 #include "checkdialog85.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "../gen/publicclass.h"
+//#include "../gen/publicclass.h"
+#include "../gen/colors.h"
 #include "../config/config.h"
 
-CheckDialog85::CheckDialog85(int board, QWidget *parent) : EAbstractCheckDialog(board, parent)
+CheckDialog85::CheckDialog85(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);

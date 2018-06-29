@@ -14,7 +14,10 @@
 #include "../gen/commands.h"
 #include "../dialogs/keypressdialog.h"
 #include "../widgets/emessagebox.h"
-#include "../gen/publicclass.h"
+#include "../gen/error.h"
+#include "../gen/colors.h"
+#include "../gen/stdfunc.h"
+#include "../gen/timefunc.h"
 #include "../widgets/wd_func.h"
 
 TuneDialogA1DN::TuneDialogA1DN(QWidget *parent) :
@@ -302,16 +305,11 @@ int TuneDialogA1DN::InputDNData()
     connect(this,SIGNAL(DNDataIsSet()),dlg,SLOT(close()));
     Accepted = false;
     dlg->show();
-    while (!Accepted && !pc.Cancelled)
-    {
-        QTime tme;
-        tme.start();
-        while (tme.elapsed() < SLEEPINT)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-    }
-    if (pc.Cancelled)
-        return GENERALERROR;
-    return NOERROR;
+    while (!Accepted && !StdFunc::IsCancelled())
+        TimeFunc::Wait();
+    if (StdFunc::IsCancelled())
+        return Error::ER_GENERALERROR;
+    return Error::ER_NOERROR;
 }
 
 void TuneDialogA1DN::FillBac()
@@ -455,10 +453,10 @@ void TuneDialogA1DN::AcceptDNData()
 {
     WDFunc::LENumber(this, "kdnle", Bac_block.Bac_block[TuneVariant].K_DN);
     WDFunc::LENumber(this, "dnfnumle", Bac_block.DNFNum);
-    if (Commands::WriteBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) != NOERROR)
+    if (Commands::WriteBac(BoardTypes::BT_MEZONIN, &Bac_block, sizeof(Bac)) != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка при записи коэффициентов");
-        pc.Cancelled = true;
+        StdFunc::Cancel();
     }
     else
     {
@@ -472,19 +470,19 @@ void TuneDialogA1DN::AcceptDNData()
 int TuneDialogA1DN::Start7_2_2()
 {
     InputTuneVariant(TUNEVARIANTSNUM);
-    if (pc.Cancelled)
-        return GENERALERROR;
-    if (Commands::SetUsingVariant(TuneVariant+1) != NOERROR)
-        return GENERALERROR;
+    if (StdFunc::IsCancelled())
+        return Error::ER_GENERALERROR;
+    if (Commands::SetUsingVariant(TuneVariant+1) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
     WDFunc::SetLBLText(this, "tune00", QString::number(TuneVariant+1));
-    if (Commands::GetFile(1,&S2Config) == NOERROR)
+    if (Commands::GetFile(1,&S2Config) == Error::ER_NOERROR)
     {
         Bac_block.Bac_block[TuneVariant].U1kDN[0] = 0;
         Bac_block.Bac_block[TuneVariant].U2kDN[0] = 0;
         Bac_block.Bac_block[TuneVariant].PhyDN[0] = 0;
-        return NOERROR;
+        return Error::ER_NOERROR;
     }
-    return GENERALERROR;
+    return Error::ER_GENERALERROR;
 }
 
 int TuneDialogA1DN::Start7_2_3_1()
@@ -519,34 +517,34 @@ int TuneDialogA1DN::Start7_2_345(int counter)
 {
     const int Percents[] = {20,50,80,100,120};
     if (counter > 4)
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     float VoltageInkV = static_cast<float>(Bac_block.Bac_block[TuneVariant].K_DN) * Percents[counter] / 1732;
     float VoltageInV = 57.735 * Percents[counter] / 100;
     if (EMessageBox::question(this, "Подтверждение", "Подайте на делители напряжение " + \
                               QString::number(VoltageInkV, 'f', 1) + " кВ (" + QString::number(VoltageInV, 'f', 3) + " В)") == false)
     {
-        pc.Cancelled = true;
-        return GENERALERROR;
+        StdFunc::Cancel();
+        return Error::ER_GENERALERROR;
     }
     WaitNSeconds(10);
-    if (pc.Cancelled)
-        return GENERALERROR;
+    if (StdFunc::IsCancelled())
+        return Error::ER_GENERALERROR;
     // проверка, что установлены напряжения правильно
-    if (StartMeasurement() != NOERROR)
-        return GENERALERROR;
+    if (StartMeasurement() != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
     // накопление измерений
     CheckA1::A1_Bd1 tmpst, tmpst2;
     tmpst2.Phy = tmpst2.Uef_filt[0] = tmpst2.Uef_filt[1] = 0;
     int count = 0;
     emit StartPercents(PovNumPoints);
-    while ((count < PovNumPoints) && !pc.Cancelled)
+    while ((count < PovNumPoints) && !StdFunc::IsCancelled())
     {
-        if (Commands::GetBd(A1_BDA_IN_BN, &tmpst, sizeof(CheckA1::A1_Bd1)) == NOERROR)
+        if (Commands::GetBd(A1_BDA_IN_BN, &tmpst, sizeof(CheckA1::A1_Bd1)) == Error::ER_NOERROR)
             FillBdIn();
         else
         {
             EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
         }
         tmpst2.Phy += tmpst.Phy;
         tmpst2.Uef_filt[0] += tmpst.Uef_filt[0];
@@ -558,8 +556,8 @@ int TuneDialogA1DN::Start7_2_345(int counter)
         ++count;
         emit SetPercent(count);
     }
-    if (pc.Cancelled)
-        return GENERALERROR;
+    if (StdFunc::IsCancelled())
+        return Error::ER_GENERALERROR;
     // усреднение
     tmpst2.Phy /= count;
     tmpst2.Uef_filt[0] /= count;
@@ -569,28 +567,28 @@ int TuneDialogA1DN::Start7_2_345(int counter)
     Bac_block.Bac_block[TuneVariant].U2kDN[counter+1] = tmpst2.Uef_filt[1];
     Bac_block.Bac_block[TuneVariant].PhyDN[counter+1] = tmpst2.Phy;
     FillBac();
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialogA1DN::Start7_2_67()
 {
     if (!WriteTuneCoefs())
-        return GENERALERROR;
-    return NOERROR;
-/*    if (cn->result == NOERROR)
+        return Error::ER_GENERALERROR;
+    return Error::ER_NOERROR;
+/*    if (cn->result == Error::NOERROR)
     {
         EMessageBox::information(this, "Внимание", "Записано успешно!");
-        return NOERROR;
+        return Error::NOERROR;
     }
-    return GENERALERROR; */
+    return Error::GENERALERROR; */
 }
 
 int TuneDialogA1DN::Start7_2_8()
 {
     if (EMessageBox::question(this, "Подтверждение", "Теперь необходимо подтвердить погрешности установки") == false)
     {
-        pc.Cancelled = true;
-        return GENERALERROR;
+        StdFunc::Cancel();
+        return Error::ER_GENERALERROR;
     }
     QPushButton *pb = this->findChild<QPushButton *>("GoodDN");
     if (pb != 0)
@@ -630,8 +628,8 @@ int TuneDialogA1DN::Start7_2_9_6()
 
 int TuneDialogA1DN::Start7_2_9_7()
 {
-    if (Start7_2_9(7) != NOERROR)
-        return GENERALERROR;
+    if (Start7_2_9(7) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
     // теперь считаем средние погрешности и СКО
     Bac_block.Bac_block[TuneVariant].dPhy_cor[0] = Dd_Block[0].Phy;
     Bac_block.Bac_block[TuneVariant].dU_cor[0] = Dd_Block[0].dUrms;
@@ -657,18 +655,18 @@ int TuneDialogA1DN::Start7_2_9(int counter)
 {
     const int Percents[] = {120, 100, 80, 50, 20, 50, 80, 100};
     if (counter > 7)
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     float VoltageInkV = static_cast<float>(Bac_block.Bac_block[TuneVariant].K_DN) * Percents[counter] / 1732;
     float VoltageInV = 57.735 * Percents[counter] / 100;
     if (EMessageBox::question(this, "Подтверждение", "Подайте на делители напряжение " + \
                               QString::number(VoltageInkV, 'f', 1) + " кВ (" + QString::number(VoltageInV, 'f', 3) + " В)") == false)
     {
-        pc.Cancelled = true;
-        return GENERALERROR;
+        StdFunc::Cancel();
+        return Error::ER_GENERALERROR;
     }
     WaitNSeconds(10);
-    if (StartMeasurement() != NOERROR)
-        return GENERALERROR;
+    if (StartMeasurement() != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
     FillBackBdOut();
 
     // накопление измерений
@@ -677,14 +675,14 @@ int TuneDialogA1DN::Start7_2_9(int counter)
     QList<float> sPhy, sU;
     int count = 0;
     emit StartPercents(PovNumPoints);
-    while ((count < PovNumPoints) && !pc.Cancelled)
+    while ((count < PovNumPoints) && !StdFunc::IsCancelled())
     {
-        if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == NOERROR)
+        if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == Error::ER_NOERROR)
             FillBdOut();
         else
         {
             EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_out");
-            return GENERALERROR;
+            return Error::ER_GENERALERROR;
         }
         tmpst2.dUrms += ChA1->Bda_out.dUrms;
         tmpst2.Phy += ChA1->Bda_out.Phy;
@@ -697,8 +695,8 @@ int TuneDialogA1DN::Start7_2_9(int counter)
         ++count;
         emit SetPercent(count);
     }
-    if (pc.Cancelled)
-        return GENERALERROR;
+    if (StdFunc::IsCancelled())
+        return Error::ER_GENERALERROR;
     // усреднение
     float Um = tmpst2.dUrms / count; // среднее значение погрешности по напряжению
     float Phym = tmpst2.Phy / count; // среднее значение погрешности по углу
@@ -719,19 +717,19 @@ int TuneDialogA1DN::Start7_2_9(int counter)
     Dd_Block[counter].sPhy = sPhyo;
     Dd_Block[counter].sU = sUo;
     FillMedian(counter);
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialogA1DN::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
-    if (Commands::GetBda(BT_BASE, &ChA1->Bda_block, sizeof(CheckA1::Bda)) != NOERROR)
+    if (Commands::GetBda(BT_BASE, &ChA1->Bda_block, sizeof(CheckA1::Bda)) != Error::ER_NOERROR)
     {
         EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda");
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     }
     ChA1->FillBda(this);
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 int TuneDialogA1DN::ShowScheme()
@@ -739,17 +737,17 @@ int TuneDialogA1DN::ShowScheme()
     if (EMessageBox::question(this, "Подтверждение", "Подключите выход своего делителя напряжения ко входу U1 прибора\n"
                               "Выход эталонного делителя - ко входу U2") == false)
     {
-        pc.Cancelled = true;
-        return GENERALERROR;
+        StdFunc::Cancel();
+        return Error::ER_GENERALERROR;
     }
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 
 void TuneDialogA1DN::GetBdAndFillMTT()
 {
-    if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == NOERROR)
+    if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == Error::ER_NOERROR)
         FillBdOut();
-    if (Commands::GetBd(A1_BDA_IN_BN, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1)) == NOERROR)
+    if (Commands::GetBd(A1_BDA_IN_BN, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1)) == Error::ER_NOERROR)
         FillBdIn();
 }
 

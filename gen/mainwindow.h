@@ -12,7 +12,10 @@
 #include "eoscillogram.h"
 #endif
 #include "../tune/eabstracttunedialog.h"
-#include "../gen/publicclass.h"
+#include "../gen/modulebsi.h"
+
+#include "eabstractprotocomchannel.h"
+
 #define C_TE_MAXSIZE    100
 
 class MainWindow : public QMainWindow
@@ -124,6 +127,10 @@ signals:
 
 private:
     bool ok;
+    bool TEEnabled; // признак того, ведётся ли лог в правом выезжающем окне
+#ifdef USBENABLE
+    EAbstractProtocomChannel::DeviceConnectStruct DevInfo;
+#endif
 
 #if PROGSIZE >= PROGSIZE_LARGE
     void PrepareTimers();
@@ -134,7 +141,6 @@ private:
 #if PROGSIZE != PROGSIZE_EMUL
     void SetProgressBarSize(QString prbnum, quint32 size);
     void SetProgressBar(QString prbnum, quint32 cursize);
-    void SetUSB(int venid, int prodid, const QString &sn);
 #endif
 
 private slots:
@@ -150,11 +156,15 @@ private slots:
     void StartA1Dialog(const QString &filename);
 
     void SetDefConf();
+    void SetMainDefConf();
+    void SetBDefConf();
+    void SetMDefConf();
     void Fill();
     void PasswordCheck(QString &psw);
 #if PROGSIZE != PROGSIZE_EMUL
+#ifdef COMPORTENABLE
     void ShowCOMConnectDialog();
-    void ShowUSBConnectDialog();
+#endif
     void GetDeviceFromTable(QModelIndex idx);
     void Stage1_5();
     void Stage2();
@@ -162,7 +172,10 @@ private slots:
     void SetProgressBar1(quint32 cursize);
     void SetProgressBar2Size(quint32 size);
     void SetProgressBar2(quint32 cursize);
+#ifdef USBENABLE
+    void ShowUSBConnectDialog();
     void SetUSBDev();
+#endif
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE || PROGSIZE == PROGSIZE_EMUL
     void StartEmul();

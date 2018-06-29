@@ -26,7 +26,10 @@
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/swjdialog.h"
-#include "../gen/publicclass.h"
+#include "../gen/error.h"
+#include "../gen/stdfunc.h"
+#include "../gen/colors.h"
+#include "../gen/files.h"
 #include "../widgets/etablemodel.h"
 #include "../widgets/etableview.h"
 #include "../dialogs/a1dialog.h"
@@ -38,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     StartWindowSplashScreen->show();
     StartWindowSplashScreen->showMessage("Подготовка окружения...", Qt::AlignRight, Qt::white);
     // http://stackoverflow.com/questions/2241808/checking-if-a-folder-exists-and-creating-folders-in-qt-c
-    QDir dir(pc.HomeDir);
+    QDir dir(StdFunc::GetHomeDir());
     if (!dir.exists())
         dir.mkpath(".");
     S2Config.clear();
@@ -96,7 +99,7 @@ void MainWindow::Go(const QString &parameter)
 {
     if (Mode != COMA_GENERALMODE)
     {
-        pc.Emul = true;
+        StdFunc::SetEmulated(true);
         Autonomous = true;
     }
     SetupUI();
@@ -288,17 +291,17 @@ void MainWindow::LoadSettings()
 {
     QString HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"+PROGNAME+"/";
     QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
-    pc.HomeDir = sets->value("Homedir", HomeDir).toString();
-    pc.WriteUSBLog = sets->value("WriteLog", "0").toBool();
-    pc.TEEnabled = sets->value("TEEnabled", "0").toBool();
+    StdFunc::SetHomeDir(sets->value("Homedir", HomeDir).toString());
+    EAbstractProtocomChannel::SetWriteUSBLog(sets->value("WriteLog", "0").toBool());
+    TEEnabled = sets->value("TEEnabled", "0").toBool();
 }
 
 void MainWindow::SaveSettings()
 {
     QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
-    sets->setValue("Homedir", pc.HomeDir);
-    sets->setValue("WriteLog", pc.WriteUSBLog);
-    sets->setValue("TEEnabled", pc.TEEnabled);
+    sets->setValue("Homedir", StdFunc::GetHomeDir());
+    sets->setValue("WriteLog", EAbstractProtocomChannel::IsWriteUSBLog());
+    sets->setValue("TEEnabled", TEEnabled);
 }
 
 void MainWindow::ClearTW()
@@ -349,27 +352,28 @@ void MainWindow::ShowOrHideSlideSW()
 #if PROGSIZE != PROGSIZE_EMUL
 int MainWindow::CheckPassword()
 {
-    pc.Cancelled = ok = false;
+    ok = false;
+    StdFunc::ClearCancel();
     QEventLoop PasswordLoop;
     KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
     connect(dlg,SIGNAL(Finished(QString &)),this,SLOT(PasswordCheck(QString &)));
     connect(this,SIGNAL(PasswordChecked()),&PasswordLoop,SLOT(quit()));
     dlg->show();
     PasswordLoop.exec();
-    if (pc.Cancelled)
-        return GENERALERROR;
+    if (StdFunc::IsCancelled())
+        return Error::ER_GENERALERROR;
     if (!ok)
     {
         EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
-        return GENERALERROR;
+        return Error::ER_GENERALERROR;
     }
-    return NOERROR;
+    return Error::ER_NOERROR;
 }
 #endif
 #ifndef MODULE_A1
 void MainWindow::LoadOscFromFile(const QString &filename)
 {
-    if (pc.LoadFromFile(filename, OscFunc->BA) == NOERROR)
+    if (Files::LoadFromFile(filename, OscFunc->BA) == Error::ER_NOERROR)
         OscFunc->ProcessOsc();
 }
 
@@ -380,7 +384,7 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
     int SWJRSize = sizeof(SWJDialog::SWJournalRecordStruct);
     int GBOSize = sizeof(EOscillogram::GBoStruct);
 
-    if (pc.LoadFromFile(filename, ba) == NOERROR)
+    if (Files::LoadFromFile(filename, ba) == Error::ER_NOERROR)
     {
         if (ba.size() < (SWJRSize + GBOSize))
         {
@@ -412,7 +416,7 @@ void MainWindow::Stage1_5()
     ShowUSBConnectDialog();
 #endif
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    if (Commands::Connect() != NOERROR)
+    if (Commands::Connect() != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
         QApplication::restoreOverrideCursor();
@@ -425,8 +429,8 @@ void MainWindow::Stage1_5()
 
 void MainWindow::Stage2()
 {
-    int res;
-    if ((res = Commands::GetBsi()) != NOERROR)
+    int res = ModuleBSI::SetupBSI();
+    if (res == Error::ER_CANAL)
     {
         if (EMessageBox::question(this, "Ошибка", \
                                   "Блок Bsi не может быть прочитан, ошибка " + QString::number(res) + ", повторить?") == 1) // Yes
@@ -439,32 +443,28 @@ void MainWindow::Stage2()
         }
         return;
     }
-    pc.MType = ((pc.ModuleBsi.MTypeB & 0x000000FF) << 8) | (pc.ModuleBsi.MTypeM & 0x000000FF);
-#ifndef MODULE_A1
-    pc.ModuleTypeString = "АВТУК-";
-    pc.ModuleTypeString.append(QString::number(pc.ModuleBsi.MTypeB + pc.ModuleBsi.MTypeM, 16));
-#else
-    pc.ModuleTypeString = "ПКС-1";
-#endif
-#if PROGSIZE >= PROGSIZE_LARGE
-    if ((pc.ModuleBsi.SerialNumB == 0xFFFFFFFF) || ((pc.ModuleBsi.SerialNumM == 0xFFFFFFFF) && (pc.ModuleBsi.MTypeM != MTM_00)) || \
-            (pc.ModuleBsi.SerialNum == 0xFFFFFFFF)) // серийный номер не задан, выдадим предупреждение
+    else if (res == Error::ER_RESEMPTY)
         OpenBhbDialog();
-#endif
     Stage3();
 }
 #endif
 
-void MainWindow::SetDefConf()
+void MainWindow::SetMainDefConf()
 {
     if (MainConfDialog != 0)
         MainConfDialog->SetDefConf();
+}
+
+void MainWindow::SetBDefConf()
+{
     if (ConfB != 0)
         ConfB->SetDefConf();
+}
+
+void MainWindow::SetMDefConf()
+{
     if (ConfM != 0)
         ConfM->SetDefConf();
-    Fill();
-    EMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
 }
 
 void MainWindow::Fill()
@@ -480,7 +480,7 @@ void MainWindow::Fill()
 #if PROGSIZE >= PROGSIZE_LARGE
 void MainWindow::UpdateMainTE(QByteArray &ba)
 {
-    if (!pc.TEEnabled)
+    if (!TEEnabled)
         return;
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != 0)
@@ -489,7 +489,7 @@ void MainWindow::UpdateMainTE(QByteArray &ba)
 
 void MainWindow::SetTEEnabled(bool enabled)
 {
-    pc.TEEnabled = enabled;
+    TEEnabled = enabled;
 }
 #endif
 
@@ -511,7 +511,7 @@ void MainWindow::OpenBhbDialog()
         EMessageBox::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с "+tmps);
         return;
     }
-    if (CheckPassword() == GENERALERROR)
+    if (CheckPassword() == Error::ER_GENERALERROR)
         return;
 
     HiddenDialog *dlg = new HiddenDialog();
@@ -519,7 +519,7 @@ void MainWindow::OpenBhbDialog()
     dlg->exec();
     Disconnect();
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    if (Commands::Connect() != NOERROR)
+    if (Commands::Connect() != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
         QApplication::restoreOverrideCursor();
@@ -527,7 +527,7 @@ void MainWindow::OpenBhbDialog()
     }
     QApplication::restoreOverrideCursor();
     int res;
-    if ((res = Commands::GetBsi()) != NOERROR)
+    if ((res = ModuleBSI::SetupBSI()) == Error::ER_CANAL)
     {
         EMessageBox::error(this, "Ошибка", "Блок Bsi не может быть прочитан, ошибка " + QString::number(res));
         Commands::Disconnect();
@@ -546,15 +546,17 @@ void MainWindow::StartEmul()
         ERMSG("Wrong object name in StartEmul()");
         return;
     }
-    pc.ModuleBsi.MTypeB = (MType & 0xFF00) >> 8;
-    pc.ModuleBsi.MTypeM = MType & 0x00FF;
+    ModuleBSI::Bsi bsi;
+    bsi.MTypeB = (MType & 0xFF00) >> 8;
+    bsi.MTypeM = MType & 0x00FF;
 #if PROGSIZE != PROGSIZE_EMUL
     if (cn->Connected)
         DisconnectAndClear();
 #endif
-    pc.ModuleBsi.SerialNum = 0x12345678;
-    pc.ModuleBsi.Hth = 0x00;
-    pc.Emul = true;
+    bsi.SerialNum = 0x12345678;
+    bsi.Hth = 0x00;
+    ModuleBSI::SetupEmulatedBsi(bsi);
+    StdFunc::SetEmulated(true);
     Stage3();
 }
 #endif
@@ -602,7 +604,7 @@ void MainWindow::SetProgressBarSize(QString prbnum, quint32 size)
         DBGMSG;
         return;
     }
-    WDFunc::SetLBLText(this, lblname,pc.PrbMessage + QString::number(size), false);
+    WDFunc::SetLBLText(this, lblname,StdFunc::PrbMessage + QString::number(size), false);
     prb->setMinimum(0);
     prb->setMaximum(size);
 }
@@ -615,17 +617,11 @@ void MainWindow::SetProgressBar(QString prbnum, quint32 cursize)
     if (prb != 0)
     {
         prb->setValue(cursize);
-        WDFunc::SetLBLText(this, lblname, pc.PrbMessage + QString::number(cursize) + " из " + QString::number(prb->maximum()));
+        WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage + QString::number(cursize) + " из " + QString::number(prb->maximum()));
     }
 }
 
-void MainWindow::SetUSB(int venid, int prodid, const QString &sn)
-{
-    pc.DeviceInfo.vendor_id = venid;
-    pc.DeviceInfo.product_id = prodid;
-    sn.toWCharArray(pc.DeviceInfo.serial);
-}
-
+#ifdef COMPORTENABLE
 void MainWindow::ShowCOMConnectDialog()
 {
     int i;
@@ -639,7 +635,7 @@ void MainWindow::ShowCOMConnectDialog()
     {
         QLabel *lbl = new QLabel("Ошибка, в системе нет последовательных портов");
         lyout->addWidget(lbl);
-        pc.ErMsg(USB_NOCOMER);
+        Error::ErMsg(USB_NOCOMER);
     }
     else
     {
@@ -666,6 +662,7 @@ void MainWindow::ShowCOMConnectDialog()
     dlg->setLayout(lyout);
     dlg->exec();
 }
+#endif
 #endif
 void MainWindow::GetAbout()
 {
@@ -699,10 +696,11 @@ void MainWindow::GetAbout()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Disconnect()
 {
-    if (!pc.Emul)
+    if (!StdFunc::IsInEmulateMode())
         cn->Disconnect();
 }
 
+#ifdef USBENABLE
 void MainWindow::SetUSBDev()
 {
     QString rbname = sender()->objectName();
@@ -717,7 +715,9 @@ void MainWindow::SetUSBDev()
     tmps = sl.at(1);
     int prodid = tmps.toInt(nullptr, 16);
     tmps = sl.at(2);
-    SetUSB(venid, prodid, tmps);
+    EUsbHid *tmpcn = qobject_cast<EUsbHid *>(cn);
+    if (tmpcn != 0)
+        tmpcn->SetDeviceInfo(venid, prodid, tmps);
 }
 
 void MainWindow::ShowUSBConnectDialog()
@@ -727,7 +727,7 @@ void MainWindow::ShowUSBConnectDialog()
     QVBoxLayout *lyout = new QVBoxLayout;
     struct hid_device_info *devs, *cur_dev;
 
-    pc.DeviceInfo.vendor_id = 0;
+    DevInfo.vendor_id = 0;
     devs = hid_enumerate(0x0, 0x0);
     cur_dev = devs;
     int venid, prodid;
@@ -767,9 +767,14 @@ void MainWindow::ShowUSBConnectDialog()
         return;
     }
     else
-        SetUSB(venid, prodid, sn);
+    {
+        EUsbHid *tmpcn = qobject_cast<EUsbHid *>(cn);
+        if (tmpcn != 0)
+            tmpcn->SetDeviceInfo(venid, prodid, sn);
+    }
     QApplication::restoreOverrideCursor();
 }
+#endif
 
 void MainWindow::GetDeviceFromTable(QModelIndex idx)
 {
@@ -781,13 +786,13 @@ void MainWindow::GetDeviceFromTable(QModelIndex idx)
         return;
     }
     QString tmps = tv->model()->index(tv->currentIndex().row(), 0, QModelIndex()).data(Qt::DisplayRole).toString();
-    pc.DeviceInfo.vendor_id = tmps.toInt(nullptr, 16);
+    DevInfo.vendor_id = tmps.toInt(nullptr, 16);
 //    quint16 vid = tmps.toInt(nullptr, 16);
     tmps = tv->model()->index(tv->currentIndex().row(), 1, QModelIndex()).data(Qt::DisplayRole).toString();
-    pc.DeviceInfo.product_id = tmps.toInt(nullptr, 16);
+    DevInfo.product_id = tmps.toInt(nullptr, 16);
 //    quint16 pid = tmps.toInt(nullptr, 16);
     tmps = tv->model()->index(tv->currentIndex().row(), 3, QModelIndex()).data(Qt::DisplayRole).toString();
-    tmps.toWCharArray(pc.DeviceInfo.serial);
+    tmps.toWCharArray(DevInfo.serial);
 }
 #endif
 void MainWindow::DisconnectAndClear()
@@ -807,18 +812,18 @@ void MainWindow::DisconnectAndClear()
     if (MainTW == 0)
         return;
     MainTW->hide();
-    pc.Emul = false;
+    StdFunc::SetEmulated(false);
 }
 #ifndef MODULE_A1
 void MainWindow::LoadOsc()
 {
-    QString filename = pc.ChooseFileForOpen(this, "Oscillogram files (*.osc)");
+    QString filename = Files::ChooseFileForOpen(this, "Oscillogram files (*.osc)");
     LoadOscFromFile(filename);
 }
 
 void MainWindow::LoadSWJ()
 {
-    LoadSwjFromFile(pc.ChooseFileForOpen(this, "Switch journal files (*.swj)"));
+    LoadSwjFromFile(Files::ChooseFileForOpen(this, "Switch journal files (*.swj)"));
 }
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE
@@ -863,13 +868,13 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
         emit Finished();
     if (e->key() == Qt::Key_Escape)
-        pc.Cancelled = true;
+        StdFunc::Cancel();
     QMainWindow::keyPressEvent(e);
 }
 
 void MainWindow::SetPortSlot(QString port)
 {
-    pc.Port = port;
+    StdFunc::Port = port;
 }
 
 void MainWindow::StartA1Dialog(const QString &filename)
@@ -878,12 +883,22 @@ void MainWindow::StartA1Dialog(const QString &filename)
     delete adlg;
 }
 
+void MainWindow::SetDefConf()
+{
+    SetMainDefConf();
+    SetBDefConf();
+    SetMDefConf();
+    Fill();
+    EMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
+}
+
 void MainWindow::ProtocolFromFile()
 {
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    QString filename = dlg->getOpenFileName(this, "Открыть файл", pc.HomeDir, "PKDN verification files (*.vrf)", Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    QString filename = dlg->getOpenFileName(this, "Открыть файл", StdFunc::GetHomeDir(), \
+                                            "PKDN verification files (*.vrf)", Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     dlg->close();
     StartA1Dialog(filename);
 }

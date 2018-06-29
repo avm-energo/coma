@@ -4,6 +4,7 @@
 #include <QDialog>
 #include "eabstracttunedialog.h"
 #include "../check/check22.h"
+#include "../gen/modulebsi.h"
 
 #define ATUNENUMPOINTS  1 // количество точек, по которым выдаются значения в блоке Bda
 #define TUNEFILELENGTH  256
@@ -19,7 +20,7 @@ class TuneDialog22 : public EAbstractTuneDialog
 {
     Q_OBJECT
 public:
-    explicit TuneDialog22(int type = 0x01, QWidget *parent = 0);
+    explicit TuneDialog22(BoardTypes type = BoardTypes::BT_BASE, QWidget *parent = 0);
 
 signals:
 

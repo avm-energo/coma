@@ -4,12 +4,13 @@
 #include "eabstractcheckdialog.h"
 #include "checka1.h"
 #include "check.h"
+#include "../gen/modulebsi.h"
 
 class CheckDialogA1 : public EAbstractCheckDialog
 {
     Q_OBJECT
 public:
-    explicit CheckDialogA1(int board, QWidget *parent = 0);
+    explicit CheckDialogA1(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = 0);
 
 signals:
 

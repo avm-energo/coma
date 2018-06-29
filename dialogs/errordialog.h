@@ -2,7 +2,6 @@
 #define ERRORDIALOG_H
 
 #include <QDialog>
-#include "../gen/publicclass.h"
 #include "../widgets/errorprotocolwidget.h"
 
 class ErrorDialog : public QDialog
@@ -16,7 +15,7 @@ public:
 signals:
 
 public slots:
-    void AddErrMsg(publicclass::ermsg msg);
+    void AddErrMsg(Error::ErMsg msg);
 
 private:
     ErrorProtocolWidget *ErrorWidget;

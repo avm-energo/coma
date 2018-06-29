@@ -14,18 +14,19 @@
 #include <QDateTime>
 #include "checkdialog21.h"
 #include "../widgets/emessagebox.h"
-#include "../gen/publicclass.h"
+//#include "../gen/publicclass.h"
+#include "../gen/error.h"
 #include "../gen/commands.h"
 #include "../widgets/wd_func.h"
 
-CheckDialog21::CheckDialog21(int board, QWidget *parent) : EAbstractCheckDialog(board, parent)
+CheckDialog21::CheckDialog21(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     Ch21 = new Check21;
     Ch = new Check;
 //    BdNum = 2; // количество блоков данных 1
     BdUINum = 2; // количество вкладок - 1
-    int StartBd = (board == BT_BASE) ? BT_STARTBD_BASE : BT_STARTBD_MEZ; // стартовый номер блока данных - 1 для базовой платы, 101 - для мезонинной
+    int StartBd = (board == BoardTypes::BT_BASE) ? BT_STARTBD_BASE : BT_STARTBD_MEZ; // стартовый номер блока данных - 1 для базовой платы, 101 - для мезонинной
     SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
     SetBd(StartBd + A21_BD, &Ch21->Bd_block, sizeof(Check21::Bd1));
     QStringList sl = QStringList() << "Общ" << "Все";
@@ -71,7 +72,7 @@ void CheckDialog21::StopBdaMeasurements()
 
 void CheckDialog21::BdaTimerTimeout()
 {
-    if (Commands::GetBda(Board, &Ch21->Bda_block, sizeof(Check21::Bda)) == NOERROR)
+    if (Commands::GetBda(Board, &Ch21->Bda_block, sizeof(Check21::Bda)) == Error::ER_NOERROR)
         Ch21->FillBda(this);
 }
 

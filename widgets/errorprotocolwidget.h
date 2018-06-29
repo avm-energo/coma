@@ -3,7 +3,9 @@
 
 #include <QAbstractTableModel>
 #include <QWidget>
-#include "../gen/publicclass.h"
+#include "../gen/error.h"
+
+#define MAX_MSG     1000
 
 class ErrorProtocolModel : public QAbstractTableModel
 {
@@ -16,12 +18,12 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     int rowCount(const QModelIndex &index = QModelIndex()) const;
     int columnCount(const QModelIndex &index = QModelIndex()) const;
-    void AddRow(publicclass::ermsg ermsg);
+    void AddRow(Error::ErMsg ermsg);
     void InitModel();
 
 private:
     QList<QStringList> erdata;
-    QList<publicclass::ermsgtype> ertypedata;
+    QList<Error::ErMsgType> ertypedata;
     QStringList hdr;
     int MsgCount;
 
@@ -35,7 +37,7 @@ public:
     explicit ErrorProtocolWidget(QWidget *parent = 0);
     ~ErrorProtocolWidget();
 
-    void AddRowToProt(publicclass::ermsg ermsg);
+    void AddRowToProt(Error::ErMsg ermsg);
     void InitModel();
 
 signals:

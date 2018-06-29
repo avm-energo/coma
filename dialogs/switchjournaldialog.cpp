@@ -6,8 +6,10 @@
 #include "../widgets/getoscpbdelegate.h"
 #include "../widgets/wd_func.h"
 #include "switchjournaldialog.h"
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
+#include "../gen/error.h"
 #include "trendviewdialog.h"
+#include "../gen/timefunc.h"
 
 SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : QDialog(parent)
 {
@@ -21,12 +23,12 @@ void SwitchJournalDialog::SetupUI()
     QHBoxLayout *hlyout = new QHBoxLayout;
     QPushButton *pb = new QPushButton("Получить журналы переключений");
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadJournals()));
-    if (pc.Emul)
+    if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
     pb = new QPushButton("Стереть журнал переключений");
     connect(pb,SIGNAL(clicked()),this,SLOT(EraseJournals()));
-    if (pc.Emul)
+    if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
@@ -55,7 +57,7 @@ void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
             SWJMap[tmpswj.Num] = tmpswj;
             TableModel->addRow();
             TableModel->setData(TableModel->index(CurRow, 0, QModelIndex()), QVariant(tmpswj.Num), Qt::EditRole);
-            TableModel->setData(TableModel->index(CurRow, 1, QModelIndex()), QVariant(pc.UnixTime64ToString(tmpswj.Time)), Qt::EditRole);
+            TableModel->setData(TableModel->index(CurRow, 1, QModelIndex()), QVariant(TimeFunc::UnixTime64ToString(tmpswj.Time)), Qt::EditRole);
             QStringList tmpsl = QStringList() << "D" << "G" << "CB";
             QString tmps = (tmpswj.TypeA < tmpsl.size()) ? tmpsl.at(tmpswj.TypeA) : "N/A";
             tmps += QString::number(tmpswj.NumA);

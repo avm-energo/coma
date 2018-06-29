@@ -17,6 +17,7 @@
 #include <QDialog>
 #include <QTimer>
 #include "QtXlsx/xlsxdocument.h"
+#include "../gen/modulebsi.h"
 
 #define ANMEASINT   2000 // default timer interval to check analog values
 
@@ -28,7 +29,7 @@ class EAbstractCheckDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit EAbstractCheckDialog(int board, QWidget *parent = 0);
+    explicit EAbstractCheckDialog(BoardTypes board, QWidget *parent = 0);
     void SetupUI(QStringList &tabnames);
 
     virtual QWidget *BdUI(int bdnum) = 0; // визуализация наборов текущих данных от модуля

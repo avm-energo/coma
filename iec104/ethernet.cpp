@@ -2,7 +2,8 @@
 #include <QCoreApplication>
 
 #include "ethernet.h"
-#include "../gen/publicclass.h"
+#include "../gen/stdfunc.h"
+#include "../gen/error.h"
 
 ethernet::ethernet(QObject *parent) :
     QObject(parent)
@@ -17,7 +18,7 @@ void ethernet::Run()
     connect(sock,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(seterr(QAbstractSocket::SocketError)));
     connect(sock,SIGNAL(connected()),this,SIGNAL(connected()));
     connect(sock,SIGNAL(disconnected()),this,SIGNAL(disconnected()));
-    sock->connectToHost(pc.MIPIP,PORT104,QIODevice::ReadWrite,QAbstractSocket::IPv4Protocol);
+    sock->connectToHost(StdFunc::MIPIP,PORT104,QIODevice::ReadWrite,QAbstractSocket::IPv4Protocol);
     connect(sock,SIGNAL(readyRead()),this,SLOT(CheckForData()));
     while (1)
     {

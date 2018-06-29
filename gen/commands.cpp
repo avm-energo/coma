@@ -1,6 +1,7 @@
 // commands.cpp
 #include <QCoreApplication>
 #include "commands.h"
+#include "error.h"
 
 #ifdef USBENABLE
     EUsbHid *cn;
@@ -14,10 +15,10 @@ Commands::Commands()
 {
 }
 
-int Commands::GetBsi()
+int Commands::GetBsi(ModuleBSI::Bsi &bsi)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    cn->Send(CN_GBsi, BT_NONE, &pc.ModuleBsi, sizeof(publicclass::Bsi));
+    cn->Send(CN_GBsi, BoardTypes::BT_NONE, &bsi, sizeof(ModuleBSI::Bsi));
     return cn->result;
 #else
     return 0;
@@ -27,7 +28,7 @@ int Commands::GetBsi()
 int Commands::GetFile(quint32 filenum, QVector<S2::DataRec> *data)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    cn->Send(CN_GF, BT_NONE, NULL, 0, filenum, data);
+    cn->Send(CN_GF, BoardTypes::BT_NONE, NULL, 0, filenum, data);
     return cn->result;
 #else
     Q_UNUSED(filenum);
@@ -40,8 +41,8 @@ int Commands::GetOsc(quint32 filenum, void *ptr)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     if ((filenum < CN_MINOSCID) || (filenum > CN_MAXOSCID))
-        return GENERALERROR;
-    cn->Send(CN_GF, BT_NONE, ptr, 0, filenum);
+        return Error::ER_GENERALERROR;
+    cn->Send(CN_GF, BoardTypes::BT_NONE, ptr, 0, filenum);
     return cn->result;
 #else
     Q_UNUSED(filenum);
@@ -53,7 +54,7 @@ int Commands::GetOsc(quint32 filenum, void *ptr)
 int Commands::WriteFile(void *ptr, quint32 filenum, QVector<S2::DataRec> *data)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    cn->Send(CN_WF, BT_NONE, ptr, 0, filenum, data);
+    cn->Send(CN_WF, BoardTypes::BT_NONE, ptr, 0, filenum, data);
     return cn->result;
 #else
     Q_UNUSED(ptr);
@@ -93,8 +94,8 @@ int Commands::Connect()
 {
 #if PROGSIZE != PROGSIZE_EMUL
     if (cn->Connect())
-        return NOERROR;
-    return GENERALERROR;
+        return Error::ER_NOERROR;
+    return Error::ER_GENERALERROR;
 #else
     return 0;
 #endif
@@ -195,7 +196,7 @@ int Commands::GetUsingVariant(int &variant)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     quint8 tmpi;
-    cn->Send(CN_GVar, BT_NONE, &tmpi, 1);
+    cn->Send(CN_GVar, BoardTypes::BT_NONE, &tmpi, 1);
     variant = tmpi;
     return cn->result;
 #else
@@ -219,7 +220,7 @@ int Commands::GetMode(int &mode)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     quint8 tmpi;
-    cn->Send(CN_GMode, BT_NONE, &tmpi, 1);
+    cn->Send(CN_GMode, BoardTypes::BT_NONE, &tmpi, 1);
     mode = tmpi;
     return cn->result;
 #else

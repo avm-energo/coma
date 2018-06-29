@@ -2,7 +2,8 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include "checka1.h"
-#include "../gen/publicclass.h"
+//#include "../gen/publicclass.h"
+#include "../gen/colors.h"
 #include "../widgets/wd_func.h"
 
 CheckA1::CheckA1()

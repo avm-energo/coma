@@ -14,10 +14,11 @@
 #include "checkdialog80.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "../gen/publicclass.h"
+//#include "../gen/publicclass.h"
+#include "../gen/colors.h"
 #include "../config/config.h"
 
-CheckDialog80::CheckDialog80(int board, QWidget *parent) : EAbstractCheckDialog(board, parent)
+CheckDialog80::CheckDialog80(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);
@@ -155,11 +156,11 @@ void CheckDialog80::PrepareHeadersForFile(int row)
 {
     for (int i=0; i<3; i++)
     {
-        if (pc.ModuleBsi.MTypeM != MTM_81)
+        if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_81)
             xlsx->write(row,i+2,QVariant(("U1 ф")+QString::number(i+10, 36)+", В"));
         else
             xlsx->write(row,i+2,QVariant("I1 ф"+QString::number(i+10, 36)+", А"));
-        if (pc.ModuleBsi.MTypeM != MTM_83)
+        if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83)
             xlsx->write(row,i+5,QVariant("I2 ф"+QString::number(i+10, 36)+", А"));
         else
             xlsx->write(row,i+5,QVariant("U2 ф"+QString::number(i+10, 36)+", В"));
@@ -178,11 +179,11 @@ void CheckDialog80::WriteToFile(int row, int bdnum)
     QXlsx::Format format;
     for (int i=0; i<3; i++)
     {
-        QString Precision = (pc.ModuleBsi.MTypeM != MTM_81) ? "0.000" : "0.0000";
+        QString Precision = (ModuleBSI::MType(ModuleBSI::BT_MEZONIN) != MTM_81) ? "0.000" : "0.0000";
         format.setNumberFormat(Precision);
         xlsx->write(WRow,i+2,Bda_block.IUeff_filtered[i],format);
 
-        Precision = (pc.ModuleBsi.MTypeM != MTM_83) ? "0.0000" : "0.000";
+        Precision = (ModuleBSI::MType(ModuleBSI::BT_MEZONIN) != MTM_83) ? "0.0000" : "0.000";
         format.setNumberFormat(Precision);
         xlsx->write(WRow,i+5,Bda_block.IUeff_filtered[i+3],format);
 

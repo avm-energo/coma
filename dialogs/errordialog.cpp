@@ -3,6 +3,7 @@
 #include <QPushButton>
 #include <QWidget>
 #include "errordialog.h"
+#include "../gen/colors.h"
 
 ErrorDialog::ErrorDialog(QWidget *parent) :
     QDialog(parent)
@@ -36,7 +37,7 @@ void ErrorDialog::SetupUI()
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void ErrorDialog::AddErrMsg(publicclass::ermsg msg)
+void ErrorDialog::AddErrMsg(Error::ErMsg msg)
 {
     ErrorWidget->AddRowToProt(msg);
 }
