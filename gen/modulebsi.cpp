@@ -3,6 +3,10 @@
 #include "error.h"
 #include "commands.h"
 
+quint32 ModuleBSI::MType = 0;
+ModuleBSI::Bsi ModuleBSI::ModuleBsi;
+QString ModuleBSI::ModuleTypeString = "";
+
 ModuleBSI::ModuleBSI()
 {
     ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;

@@ -603,7 +603,7 @@ int TuneDialog80::Start7_3_9()
         return false;
     if (EMessageBox::question(this,"Вопрос","Очистить память осциллограмм?"))
     {
-        StdFunc::PrbMessage = "Стёрто записей: ";
+        StdFunc::SetPrbMessage("Стёрто записей: ");
         if (Commands::EraseTechBlock(TECH_Bo) == Error::ER_NOERROR)
             EMessageBox::information(this, "Внимание", "Стёрто успешно");
         else

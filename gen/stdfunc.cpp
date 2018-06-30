@@ -6,6 +6,14 @@
 #include <QStandardPaths>
 #include "stdfunc.h"
 
+QString StdFunc::HomeDir = ""; // рабочий каталог программы
+QString StdFunc::SystemHomeDir = ""; // системный каталог программы
+bool StdFunc::Emul = false;
+bool StdFunc::Cancelled = false;
+QString StdFunc::PrbMsg = "";
+QString StdFunc::MIPIP = "";
+QString StdFunc::Port = "";
+
 StdFunc::StdFunc()
 {
     Emul = false;
@@ -87,4 +95,14 @@ quint32 StdFunc::BitByIndex(int idx)
     if ((idx == 0) || (idx > 31))
         return 0;
     return (0x00000001 << (idx-1));
+}
+
+QString StdFunc::PrbMessage()
+{
+    return PrbMsg;
+}
+
+void StdFunc::SetPrbMessage(const QString &msg)
+{
+    PrbMsg = msg;
 }

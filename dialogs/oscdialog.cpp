@@ -124,7 +124,7 @@ void OscDialog::GetOsc(QModelIndex idx)
 {
     emit StopCheckTimer();
     bool ok;
-    StdFunc::PrbMessage = "Загружено, байт: ";
+    StdFunc::SetPrbMessage("Загружено, байт: ");
     quint32 oscnum = tm->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(&ok); // номер осциллограммы
     if (!ok)
     {
@@ -151,7 +151,7 @@ void OscDialog::GetOsc(QModelIndex idx)
 
 void OscDialog::EraseOsc()
 {
-    StdFunc::PrbMessage = "Стёрто записей: ";
+    StdFunc::SetPrbMessage("Стёрто записей: ");
     if (Commands::EraseTechBlock(TECH_Bo) == Error::ER_NOERROR)
         EMessageBox::information(this, "Внимание", "Стёрто успешно");
     else

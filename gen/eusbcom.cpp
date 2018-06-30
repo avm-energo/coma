@@ -23,7 +23,7 @@ bool EUsbCom::Connect()
 {
     while ((!Connected) && (!Cancelled))
     {
-        StdFunc::PrbMessage = "Загрузка данных...";
+        StdFunc::SetPrbMessage("Загрузка данных...");
 
         QSerialPortInfo info;
         if (!SetPort(StdFunc::Port, info))

@@ -604,7 +604,7 @@ void MainWindow::SetProgressBarSize(QString prbnum, quint32 size)
         DBGMSG;
         return;
     }
-    WDFunc::SetLBLText(this, lblname,StdFunc::PrbMessage + QString::number(size), false);
+    WDFunc::SetLBLText(this, lblname,StdFunc::PrbMessage() + QString::number(size), false);
     prb->setMinimum(0);
     prb->setMaximum(size);
 }
@@ -617,7 +617,7 @@ void MainWindow::SetProgressBar(QString prbnum, quint32 cursize)
     if (prb != 0)
     {
         prb->setValue(cursize);
-        WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage + QString::number(cursize) + " из " + QString::number(prb->maximum()));
+        WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage() + QString::number(cursize) + " из " + QString::number(prb->maximum()));
     }
 }
 
@@ -671,20 +671,13 @@ void MainWindow::GetAbout()
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *l2yout = new QVBoxLayout;
     QString tmps = QString(PROGCAPTION);
-    QLabel *lbl = new QLabel(tmps);
-    l2yout->addWidget(lbl);
-    lbl = new QLabel("ООО \"АВМ-Энерго\"");
-    l2yout->addWidget(lbl);
-    lbl = new QLabel("2015-2018 гг.");
-    l2yout->addWidget(lbl);
+
+    l2yout->addWidget(WDFunc::NewLBL(this, tmps));
+    l2yout->addWidget(WDFunc::NewLBL(this, "ООО \"АВМ-Энерго\""));
+    l2yout->addWidget(WDFunc::NewLBL(this, "2015-2018 гг."));
+    l2yout->addWidget(WDFunc::NewLBL(this, "info@avmenergo.ru"));
     l2yout->addStretch(10);
-    lbl = new QLabel;
-    QPixmap pmp;
-    pmp.load("images/evel.png");
-    lbl->setPixmap(pmp);
-    lbl->setMaximumSize(64,64);
-    hlyout->addWidget(lbl,1);
-    hlyout->setAlignment(lbl,Qt::AlignTop);
+    hlyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/evel.png")), 1, Qt::AlignVCenter);
     hlyout->addLayout(l2yout,100);
     lyout->addLayout(hlyout,1);
     QPushButton *pb = new QPushButton("Готово");

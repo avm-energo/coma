@@ -5,6 +5,8 @@
 #include "modulebsi.h"
 #include "eabstractprotocomchannel.h"
 
+bool EAbstractProtocomChannel::WriteUSBLog = false;
+
 EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(parent)
 {
     QString tmps = "=== CLog started ===\n";

@@ -5,6 +5,10 @@
 #include <QStandardPaths>
 #include "error.h"
 
+QStringList Error::ErrMsgs;
+QList<Error::ErMsg> Error::ErMsgPool;
+Log Error::LogFile;
+
 Error::Error()
 {
     LogFile.Init(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"+PROGNAME+"/" + LOGFILE);
