@@ -111,6 +111,7 @@ QWidget *CheckDialogA1::BdUI(int bdnum)
     }
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void CheckDialogA1::RefreshAnalogValues(int bdnum)
 {
     switch (bdnum)
@@ -211,7 +212,7 @@ void CheckDialogA1::PrepareAnalogMeasurements()
     WDFunc::SetLBLText(this, "Bda_in00", QString::number(NVar));
     WDFunc::SetLBLText(this, "Bda_out00", QString::number(NVar));
 }
-
+#endif
 QWidget *CheckDialogA1::CustomTab()
 {
     return 0;

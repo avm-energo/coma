@@ -86,10 +86,10 @@ private:
 #endif
 
 private slots:
+    void SetTimerPeriod();
 #if PROGSIZE != PROGSIZE_EMUL
     void StartAnalogMeasurementsToFile();
     void StartAnalogMeasurements();
-    void SetTimerPeriod();
     void TimerTimeout();
 #endif
 };

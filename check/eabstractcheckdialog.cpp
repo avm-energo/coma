@@ -264,6 +264,12 @@ void EAbstractCheckDialog::StopAnalogMeasurements()
     timer->stop();
 }
 
+void EAbstractCheckDialog::TimerTimeout()
+{
+    ReadAnalogMeasurementsAndWriteToFile();
+}
+#endif
+
 void EAbstractCheckDialog::SetTimerPeriod()
 {
     bool TimerIsActive = false;
@@ -278,9 +284,3 @@ void EAbstractCheckDialog::SetTimerPeriod()
     if (TimerIsActive)
         timer->start();
 }
-
-void EAbstractCheckDialog::TimerTimeout()
-{
-    ReadAnalogMeasurementsAndWriteToFile();
-}
-#endif

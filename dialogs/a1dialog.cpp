@@ -39,6 +39,7 @@ A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : QDialog(parent)
         return;
     }
     TuneVariant = 0;
+#if PROGSIZE != PROGSIZE_EMUL
     MeasurementTimer = new QTimer;
     MeasurementTimer->setInterval(500);
     connect(MeasurementTimer,SIGNAL(timeout()),this,SLOT(MeasTimerTimeout()));
@@ -49,6 +50,7 @@ A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : QDialog(parent)
         EMessageBox::error(this, "Ошибка", "Ошибка чтения конфигурации или настроечных параметров из модуля");
         return;
     }
+#endif
     WDFunc::SetLBLText(this, "tunevarcoef1", QString::number(Bac_block.Bac_block[0].K_DN, 'f', 0));
     WDFunc::SetLBLText(this, "tunevarcoef2", QString::number(Bac_block.Bac_block[1].K_DN, 'f', 0));
     WDFunc::SetLBLText(this, "tunevarcoef3", QString::number(Bac_block.Bac_block[2].K_DN, 'f', 0));
@@ -125,7 +127,9 @@ void A1Dialog::SetupUI()
 
     pb = new QPushButton("Начать поверку делителя");
     pb->setObjectName("StartWorkPb");
+#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(StartWork()));
+#endif
 //    connect(pb,SIGNAL(clicked(bool)),this,SLOT(TempRandomizeModel()));
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
@@ -463,6 +467,7 @@ void A1Dialog::TemplateCheck()
     LoadSettings();
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void A1Dialog::StartWork()
 {
     TuneVariant = 0;
@@ -557,7 +562,7 @@ void A1Dialog::StartWork()
     WDFunc::SetEnabled(this, "StartWorkPb", true);
     EMessageBox::information(this, "Информация", "Операция прервана");
 }
-
+#endif
 void A1Dialog::ParsePKDNFile(const QString &filename)
 {
     Autonomous = true;
@@ -663,6 +668,7 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
     }
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void A1Dialog::MeasTimerTimeout()
 {
     if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == Error::ER_NOERROR)
@@ -739,6 +745,7 @@ void A1Dialog::Proceed()
 {
     PovType = TempPovType;
 }
+#endif
 
 void A1Dialog::Cancel()
 {
@@ -788,6 +795,7 @@ void A1Dialog::RBToggled()
         TempPovType = GOST_1983;
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 int A1Dialog::GetStatistics()
 {
     // накопление измерений
@@ -854,7 +862,7 @@ int A1Dialog::GetStatistics()
     FillMedian();
     return Error::ER_NOERROR;
 }
-
+#endif
 void A1Dialog::TempRandomizeModel()
 {
     // 1983

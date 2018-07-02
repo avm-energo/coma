@@ -30,10 +30,12 @@ CheckDialog22::CheckDialog22(BoardTypes board, QWidget *parent) : EAbstractCheck
     SetBd(StartBd + A22_BD, &Ch22->Bd_block, sizeof(Check22::Bd1));
     QStringList sl = QStringList() << "Общ" << "Все";
     SetupUI(sl);
+#if PROGSIZE != PROGSIZE_EMUL
     timer->setInterval(ANMEASINT);
     BdaTimer = new QTimer;
     BdaTimer->setInterval(ANMEASINT);
     connect(BdaTimer,SIGNAL(timeout()),this,SLOT(BdaTimerTimeout()));
+#endif
 }
 
 QWidget *CheckDialog22::BdUI(int bdnum)
@@ -49,6 +51,7 @@ QWidget *CheckDialog22::BdUI(int bdnum)
     }
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void CheckDialog22::SetDefaultValuesToWrite()
 {
 
@@ -125,7 +128,7 @@ void CheckDialog22::RefreshAnalogValues(int bdnum)
         return;
     }
 }
-
+#endif
 QWidget *CheckDialog22::CustomTab()
 {
     QWidget *w = new QWidget;

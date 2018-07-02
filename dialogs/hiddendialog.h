@@ -5,6 +5,7 @@
 #include <QPaintEvent>
 #include <QVBoxLayout>
 #include "../config/config.h"
+#include "../gen/maindef.h"
 
 #define RSTTIMEOUT  5000 // таймаут на рестарт модуля после отправки ему блока Bhb
 

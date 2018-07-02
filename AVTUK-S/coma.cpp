@@ -30,7 +30,6 @@
 #include <QDialog>
 #include <QCursor>
 #include "coma.h"
-#include "../gen/commands.h"
 #include "../check/checkdialog21.h"
 #include "../check/checkdialog22.h"
 #include "../check/checkdialog80.h"

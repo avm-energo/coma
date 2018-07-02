@@ -164,17 +164,19 @@ signals:
     void SetPercent(quint32 Percent);
 
 private slots:
+#if PROGSIZE != PROGSIZE_EMUL
     void StartWork();
-    void ParsePKDNFile(const QString &filename);
     void MeasTimerTimeout();
     void Accept();
     void Decline();
     void Proceed();
+    int GetStatistics();
+#endif
     void Cancel();
+    void ParsePKDNFile(const QString &filename);
     void SetDNData();
     void SetConditionData();
     void RBToggled();
-    int GetStatistics();
     void TempRandomizeModel();
     void SetTuneVariant();
 

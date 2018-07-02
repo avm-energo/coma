@@ -12,6 +12,7 @@ ModuleBSI::ModuleBSI()
     ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 int ModuleBSI::SetupBSI()
 {
     if (Commands::GetBsi(ModuleBsi) != Error::ER_NOERROR)
@@ -30,7 +31,7 @@ int ModuleBSI::SetupBSI()
 #endif
     return Error::ER_NOERROR;
 }
-
+#endif
 void ModuleBSI::SetupEmulatedBsi(ModuleBSI::Bsi &bsi)
 {
     ModuleBsi = bsi;
