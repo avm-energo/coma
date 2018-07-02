@@ -13,6 +13,7 @@
 #endif
 #include "../tune/eabstracttunedialog.h"
 #include "../gen/modulebsi.h"
+#include "../gen/maindef.h"
 
 #include "eabstractprotocomchannel.h"
 

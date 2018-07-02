@@ -15,6 +15,7 @@
 #include "eabstractcheckdialog.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
+#include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
 #include "../gen/error.h"
 #include "../gen/colors.h"
@@ -145,6 +146,8 @@ void EAbstractCheckDialog::CheckIP()
         lbl->text().append(QString::number(Bip_block.ip[i], 16) + ".");
     lbl->text().chop(1);
 } */
+
+#if PROGSIZE != PROGSIZE_EMUL
 
 void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
 {
@@ -280,3 +283,4 @@ void EAbstractCheckDialog::TimerTimeout()
 {
     ReadAnalogMeasurementsAndWriteToFile();
 }
+#endif

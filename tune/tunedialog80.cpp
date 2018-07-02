@@ -12,6 +12,7 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 #include "../gen/stdfunc.h"
+#include "../gen/maindef.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/commands.h"
@@ -779,7 +780,7 @@ int TuneDialog80::GetExternalData()
     }
     return Error::ER_GENERALERROR;
 #else
-    return Error::NOERROR;
+    return Error::ER_NOERROR;
 #endif
 }
 

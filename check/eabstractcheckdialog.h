@@ -33,12 +33,14 @@ public:
     void SetupUI(QStringList &tabnames);
 
     virtual QWidget *BdUI(int bdnum) = 0; // визуализация наборов текущих данных от модуля
+#if PROGSIZE != PROGSIZE_EMUL
     virtual void RefreshAnalogValues(int bdnum) = 0; // обновление полей в GUI из полученного соответствующего Bd_block
     virtual void PrepareHeadersForFile(int row) = 0; // row - строка для записи заголовков
     virtual void WriteToFile(int row, int bdnum) = 0; // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
     virtual void ChooseValuesToWrite() = 0;
     virtual void SetDefaultValuesToWrite() = 0;
     virtual void PrepareAnalogMeasurements() = 0; // функция подготовки к измерениям (например, запрос постоянных данных)
+#endif
     virtual QWidget *CustomTab() = 0; // если требуется для модуля специфичный вывод данных
     void SetBd(int bdnum, void *block, int blocksize, bool toxlsx=true);
     QWidget *BottomUI();
@@ -53,7 +55,9 @@ public:
 signals:
 
 public slots:
+#if PROGSIZE != PROGSIZE_EMUL
     void StopAnalogMeasurements();
+#endif
 
 private:
     struct BdBlocks
@@ -77,13 +81,17 @@ private:
     void CheckIP();
     void GetIP();
     void Check1PPS();
+#if PROGSIZE != PROGSIZE_EMUL
     void ReadAnalogMeasurementsAndWriteToFile();
+#endif
 
 private slots:
+#if PROGSIZE != PROGSIZE_EMUL
     void StartAnalogMeasurementsToFile();
     void StartAnalogMeasurements();
     void SetTimerPeriod();
     void TimerTimeout();
+#endif
 };
 
 #endif // EABSTRACTCHECKDIALOG_H

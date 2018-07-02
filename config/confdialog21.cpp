@@ -16,6 +16,7 @@
 #include <QTabBar>
 #include "confdialog21.h"
 #include "../gen/stdfunc.h"
+#include "../gen/maindef.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../widgets/emessagebox.h"

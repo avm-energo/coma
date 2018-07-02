@@ -14,6 +14,7 @@
 #include <QScrollBar>
 #include "eabstracttunedialog.h"
 #include "../gen/stdfunc.h"
+#include "../gen/maindef.h"
 #include "../gen/commands.h"
 #include "../gen/files.h"
 #include "../gen/timefunc.h"

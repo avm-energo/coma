@@ -9,6 +9,7 @@
 #include "../widgets/wd_func.h"
 //#include "../canal.h"
 #include "../gen/commands.h"
+#include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
 #include "../gen/files.h"
 #include "../gen/error.h"

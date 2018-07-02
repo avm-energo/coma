@@ -10,7 +10,7 @@
 #include "hiddendialog.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/emessagebox.h"
-#include "../gen/stdfunc.h"
+#include "../gen/maindef.h"
 #include "../gen/modulebsi.h"
 #include "../gen/error.h"
 #include "../gen/commands.h"

@@ -16,6 +16,7 @@
 #include "../widgets/getoscpbdelegate.h"
 #include "../widgets/emessagebox.h"
 #include "../gen/stdfunc.h"
+#include "../gen/maindef.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../widgets/wd_func.h"

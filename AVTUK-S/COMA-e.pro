@@ -69,11 +69,9 @@ SOURCES += \
     ../dialogs/switchjournaldialog.cpp \
     ../dialogs/swjdialog.cpp \
     ../dialogs/trendviewdialog.cpp \
-    ../gen/commands.cpp \
     ../gen/eoscillogram.cpp \
     ../gen/log.cpp \
     ../gen/mainwindow.cpp \
-    ../gen/publicclass.cpp \
     ../gen/qcustomplot.cpp \
     ../models/trendviewmodel.cpp \
     ../modules/eabstractmodule.cpp \
@@ -98,7 +96,12 @@ SOURCES += \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp \
-    ../gen/s2.cpp
+    ../gen/s2.cpp \
+    ../gen/modulebsi.cpp \
+    ../gen/error.cpp \
+    ../gen/timefunc.cpp \
+    ../gen/files.cpp \
+    ../gen/stdfunc.cpp
 
 HEADERS  += \
     coma.h \
@@ -144,11 +147,9 @@ HEADERS  += \
     ../dialogs/switchjournaldialog.h \
     ../dialogs/swjdialog.h \
     ../dialogs/trendviewdialog.h \
-    ../gen/commands.h \
     ../gen/eoscillogram.h \
     ../gen/log.h \
     ../gen/mainwindow.h \
-    ../gen/publicclass.h \
     ../gen/qcustomplot.h \
     ../models/trendviewmodel.h \
     ../modules/eabstractmodule.h \
@@ -174,7 +175,14 @@ HEADERS  += \
     ../widgets/signalchoosewidget.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
-    ../gen/s2.h
+    ../gen/s2.h \
+    ../gen/modulebsi.h \
+    ../gen/error.h \
+    ../gen/timefunc.h \
+    ../gen/files.h \
+    ../gen/colors.h \
+    ../gen/stdfunc.h \
+    ../gen/maindef.h
 
 INCLUDEPATH += $$PWD/../../includes
 

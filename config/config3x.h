@@ -13,6 +13,8 @@
 #define D_OUTTYPE_PFM   0x02
 #define D_OUTTYPE_PWM   0x04
 
+#define SIZEMAX     128 // максимальный размер массивов конфигурационных параметров
+
 #include <QVector>
 #include <QMap>
 #include "config.h"

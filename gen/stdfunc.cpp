@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QStandardPaths>
 #include "stdfunc.h"
+#include "maindef.h"
 
 QString StdFunc::HomeDir = ""; // рабочий каталог программы
 QString StdFunc::SystemHomeDir = ""; // системный каталог программы

@@ -14,7 +14,6 @@
 #include <QDateTime>
 #include "checkdialog21.h"
 #include "../widgets/emessagebox.h"
-//#include "../gen/publicclass.h"
 #include "../gen/error.h"
 #include "../gen/commands.h"
 #include "../widgets/wd_func.h"
@@ -31,10 +30,12 @@ CheckDialog21::CheckDialog21(BoardTypes board, QWidget *parent) : EAbstractCheck
     SetBd(StartBd + A21_BD, &Ch21->Bd_block, sizeof(Check21::Bd1));
     QStringList sl = QStringList() << "Общ" << "Все";
     SetupUI(sl);
+#if PROGSIZE != PROGSIZE_EMUL
     timer->setInterval(ANMEASINT);
     BdaTimer = new QTimer;
     BdaTimer->setInterval(ANMEASINT);
     connect(BdaTimer,SIGNAL(timeout()),this,SLOT(BdaTimerTimeout()));
+#endif
 }
 
 QWidget *CheckDialog21::BdUI(int bdnum)
@@ -49,7 +50,7 @@ QWidget *CheckDialog21::BdUI(int bdnum)
         return new QWidget;
     }
 }
-
+#if PROGSIZE != PROGSIZE_EMUL
 void CheckDialog21::SetDefaultValuesToWrite()
 {
 
@@ -126,7 +127,7 @@ void CheckDialog21::RefreshAnalogValues(int bdnum)
         return;
     }
 }
-
+#endif
 QWidget *CheckDialog21::CustomTab()
 {
     QWidget *w = new QWidget;

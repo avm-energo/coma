@@ -29,7 +29,6 @@
 #include <QSettings>
 #include <QDialog>
 #include <QCursor>
-//#include <QFileDialog>
 #include "coma.h"
 #include "../gen/commands.h"
 #include "../check/checkdialog21.h"
@@ -58,7 +57,6 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/waitwidget.h"
-//#include "../gen/publicclass.h"
 #include "../gen/colors.h"
 #include "../gen/modulebsi.h"
 #include "../gen/log.h"
