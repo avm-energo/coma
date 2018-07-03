@@ -38,11 +38,9 @@ private:
     int BoardType;
 
     void SetupUI();
+#if PROGSIZE != PROGSIZE_EMUL
     void SetLbls();
     void SetPf();
-    void FillBac();
-    void FillBackBac();
-    void GetBdAndFillMTT();
     int ShowScheme();
     int ShowU0(int ChNum);
     int ShowI20(int ChNum);
@@ -53,11 +51,17 @@ private:
     void ShowErrMsg(int);
     bool CalcNewTuneCoef(int NumCh);
     bool CheckTuneCoefs();
+#endif
+    void FillBac();
+    void FillBackBac();
+    void GetBdAndFillMTT();
 
 private slots:
     void SetDefCoefs();
+#if PROGSIZE != PROGSIZE_EMUL
     int ReadAnalogMeasurements();
     void TuneOneChannel();
+#endif
 };
 
 #endif // TUNEDIALOG21_H

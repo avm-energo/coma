@@ -25,12 +25,14 @@ private:
 
     void SetupUI();
     void ProcessSWJournal(QByteArray &ba);
+#if PROGSIZE != PROGSIZE_EMUL
     void ProcessOscillograms();
 
 private slots:
     void LoadJournals();
     void ShowJournal(QModelIndex idx);
     void EraseJournals();
+#endif
 };
 
 #endif // SWITCHJOURNALDIALOG_H

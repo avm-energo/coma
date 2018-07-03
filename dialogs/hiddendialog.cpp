@@ -12,8 +12,9 @@
 #include "../widgets/emessagebox.h"
 #include "../gen/modulebsi.h"
 #include "../gen/error.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
-
+#endif
 
 HiddenDialog::HiddenDialog(QWidget *parent) :
     QDialog(parent)
@@ -190,7 +191,9 @@ void HiddenDialog::AcceptChanges()
         Bhb.BoardMBhb.SerialNum = tmps.toInt(Q_NULLPTR, 16);
         Bhb.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
     }
+#if PROGSIZE != PROGSIZE_EMUL
     SendBhb();
+#endif
     QTime tme;
     tme.start();
     int endcounter = RSTTIMEOUT / 1000;
@@ -218,6 +221,7 @@ void HiddenDialog::GetVersion(quint32 &number, QString lename)
     number += static_cast<quint32>(tmps.toInt());
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void HiddenDialog::SendBhb()
 {
     if (Commands::WriteHiddenBlock(BT_BSMZ, &Bhb, sizeof(Bhb)) != Error::ER_NOERROR)
@@ -227,3 +231,4 @@ void HiddenDialog::SendBhb()
     }
     EMessageBox::information(this, "Успешно", "Записано успешно");
 }
+#endif

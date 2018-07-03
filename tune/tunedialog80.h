@@ -130,12 +130,14 @@ private:
     int GED_Type;
 
     void SetupUI();
-    void SetLbls();
-    void SetPf();
+    QHBoxLayout *MipPars(int parnum, const QString &groupname);
     void FillBac();
     void FillBackBac();
-    void GetBdAndFillMTT();
     void PrepareConsts();
+#if PROGSIZE != PROGSIZE_EMUL
+    void SetLbls();
+    void SetPf();
+    void GetBdAndFillMTT();
     void Tune3p();
     int CheckTuneCoefs();
     int CheckMip();
@@ -173,21 +175,20 @@ private:
     int SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
     int SaveWorkConfig();
     int LoadWorkConfig();
-    QHBoxLayout *MipPars(int parnum, const QString &groupname);
+#endif
     float ToFloat(QString text);
-
 private slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void StartMip();
     void StopMip();
-#endif
     void ParseMipData(Parse104::Signals104 &);
     void SetTuneMode();
     int ReadAnalogMeasurements();
-    void SetDefCoefs();
     void SetExtData();
     void CancelExtData();
     void CancelTune();
+#endif
+    void SetDefCoefs();
 
 protected:
     void closeEvent(QCloseEvent *e);

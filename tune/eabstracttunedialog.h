@@ -44,14 +44,12 @@ public:
     virtual void SetupUI() = 0;
     QWidget *TuneUI();
     QWidget *BottomUI();
+    void SetBac(void *block, int blocknum, int blocksize); // установка указателя на блок Bac
+#if PROGSIZE != PROGSIZE_EMUL
     void ProcessTune();
     int CheckPassword();
     virtual void SetLbls() = 0; // заполнить список сообщений
     virtual void SetPf() = 0; // заполнить список функций настройки
-    void SetBac(void *block, int blocknum, int blocksize); // установка указателя на блок Bac
-    virtual void FillBac() = 0;
-    virtual void FillBackBac() = 0;
-    virtual void GetBdAndFillMTT() = 0;
     bool IsWithinLimits(double number, double base, double threshold);
     void MsgSetVisible(int msg, bool Visible=true);
     void OkMsgSetVisible(int msg, bool Visible=true);
@@ -59,12 +57,16 @@ public:
     void SkMsgSetVisible(int msg, bool Visible=true);
     void MsgClear();
     void WaitNSeconds(int SecondsToWait, bool isAllowedToStop=false);
-    void SaveToFileEx();
     int StartMeasurement();
 //    QByteArray *ChooseFileForOpen(QString mask);
     void InputTuneVariant(int varnum);
     bool WriteTuneCoefs();
     void PrereadConf();
+    virtual void GetBdAndFillMTT() = 0;
+#endif
+    virtual void FillBac() = 0;
+    virtual void FillBackBac() = 0;
+    void SaveToFileEx();
 
 signals:
     void PasswordChecked();
@@ -75,24 +77,28 @@ signals:
     void LoadDefConf();
 
 public slots:
+#if PROGSIZE != PROGSIZE_EMUL
     void CancelTune();
     void ReadTuneCoefs();
     bool WriteTuneCoefsSlot();
-    void SaveToFile();
     void Good();
     void NoGood();
+#endif
+    void SaveToFile();
 
 private:
 
 private slots:
+#if PROGSIZE != PROGSIZE_EMUL
     void StartTune();
     void PasswordCheck(QString &psw);
-    void LoadFromFile();
     virtual int ReadAnalogMeasurements() = 0;
+    //    void UpdateNSecondsWidget();
+        void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
+        void SetTuneVariant();
+#endif
+    void LoadFromFile();
     virtual void SetDefCoefs() = 0;
-//    void UpdateNSecondsWidget();
-    void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
-    void SetTuneVariant();
 
 protected:
     void closeEvent(QCloseEvent *e);

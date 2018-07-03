@@ -11,11 +11,14 @@
 #include <QCoreApplication>
 #include <QFileDialog>
 #include "tunedialoga1.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
+#endif
 #include "../dialogs/keypressdialog.h"
 #include "../widgets/emessagebox.h"
 #include "../gen/stdfunc.h"
 #include "../gen/colors.h"
+#include "../gen/modulebsi.h"
 #include "../gen/error.h"
 #include "../widgets/wd_func.h"
 
@@ -24,11 +27,12 @@ TuneDialogA1::TuneDialogA1(QWidget *parent) :
 {
     CA1 = new ConfigA1(S2Config);
     ChA1 = new CheckA1;
-    SetBac(&Bac_block, BT_BASE, sizeof(Bac_block));
+    SetBac(&Bac_block, BoardTypes::BT_BASE, sizeof(Bac_block));
     SetupUI();
 
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void TuneDialogA1::SetLbls()
 {
     lbls.append("1 Ввод пароля...");
@@ -108,6 +112,7 @@ void TuneDialogA1::SetPf()
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1::Start6_3_12); // 6.3.12. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
 }
+#endif
 
 void TuneDialogA1::SetupUI()
 {
@@ -199,6 +204,7 @@ void TuneDialogA1::SetupUI()
     setLayout(lyout);
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 int TuneDialogA1::Start6_3_2()
 {
     if (Commands::GetBac(BT_BASE, &Bac_block_old, sizeof(Bac)) != Error::ER_NOERROR)
@@ -789,6 +795,7 @@ int TuneDialogA1::ReadAnalogMeasurements()
     ChA1->FillBda(this);
     return Error::ER_NOERROR;
 }
+#endif
 
 void TuneDialogA1::FillBac()
 {
@@ -845,6 +852,7 @@ void TuneDialogA1::SetDefCoefs()
     FillBac();
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void TuneDialogA1::SetExtData()
 {
     QDialog *dlg = this->findChild<QDialog *>("extdatad");
@@ -884,3 +892,4 @@ void TuneDialogA1::CancelExt(const QString &dlgname)
     StdFunc::Cancel();
     dlg->close();
 }
+#endif

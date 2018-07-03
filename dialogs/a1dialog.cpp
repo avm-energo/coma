@@ -21,7 +21,9 @@
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/timefunc.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
+#endif
 
 A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : QDialog(parent)
 {
@@ -138,6 +140,7 @@ void A1Dialog::SetupUI()
     setLayout(lyout);
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 int A1Dialog::GetConf()
 {
     if (Commands::GetFile(1, &S2Config) == Error::ER_NOERROR)
@@ -152,7 +155,7 @@ int A1Dialog::GetConf()
     }
     return Error::ER_GENERALERROR;
 }
-
+#endif
 void A1Dialog::FillBdOut()
 {
     WDFunc::SetLBLText(this, "tunednu1", QString::number(ChA1->Bda_out.Uef_filt[0], 'f', 5));
@@ -181,12 +184,14 @@ void A1Dialog::GenerateReport()
     report->loadFromFile(path);
     report->dataManager()->addModel("maindata", ReportModel, false);
     // запрос блока Bda_h, чтобы выдать KNI в протокол
+#if PROGSIZE != PROGSIZE_EMUL
     if (!Autonomous)
     {
         if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2)) == Error::ER_NOERROR)
             report->dataManager()->setReportVariable("KNI", QString::number(ChA1->Bda_h.HarmBuf[0][0], 'g', 5));
     }
     else
+#endif
         report->dataManager()->setReportVariable("KNI", QString::number(ChA1->Bda_h.HarmBuf[0][0], 'g', 5));
     report->dataManager()->setReportVariable("Organization", OrganizationString);
     QString day = QDateTime::currentDateTime().toString("dd");

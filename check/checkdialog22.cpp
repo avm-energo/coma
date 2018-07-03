@@ -16,8 +16,10 @@
 #include "../widgets/emessagebox.h"
 //#include "../gen/publicclass.h"
 #include "../gen/error.h"
-#include "../gen/commands.h"
 #include "../widgets/wd_func.h"
+#if PROGSIZE != PROGSIZE_EMUL
+#include "../gen/commands.h"
+#endif
 
 CheckDialog22::CheckDialog22(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {

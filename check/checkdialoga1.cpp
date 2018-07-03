@@ -17,7 +17,9 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../config/config.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
+#endif
 
 CheckDialogA1::CheckDialogA1(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {

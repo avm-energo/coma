@@ -72,10 +72,11 @@ private:
     TKUSourceDataStruct TKUSourceData;
     int PovNumPoints;
 
-    void SetLbls();
-    void SetPf();
     void SetupUI();
 
+#if PROGSIZE != PROGSIZE_EMUL
+    void SetLbls();
+    void SetPf();
     int Start6_3_2();
     int Start6_3_3_1();
     int Start6_3_3_2();
@@ -107,17 +108,20 @@ private:
     int GetExternalTemp(); // ввод текущей температуры окр. среды для настройки на термокамеру
     void GetBdAndFillMTT();
     void LoadSettings();
+#endif
 
 private slots:
+#if PROGSIZE != PROGSIZE_EMUL
     int ReadAnalogMeasurements();
-    void FillBac();
-    void FillBackBac();
-    void SetDefCoefs();
     void SetExtData();
     void CancelExtData();
     void SetExtTemp();
     void CancelExtTemp();
     void CancelExt(const QString &dlgname);
+#endif
+    void FillBac();
+    void FillBackBac();
+    void SetDefCoefs();
 };
 
 #endif // TUNEDIALOGA1_H

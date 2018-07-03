@@ -34,7 +34,9 @@ ConfDialog21::ConfDialog21(QVector<S2::DataRec> &S2Config, bool BaseBoard, QWidg
                                          "(-5..5) В" << "(0..5) В" << "Произвольный мА" << "Произвольный В";
     Params.NumCh = AIN21_NUMCH;
     SetupUI();
+#if PROGSIZE != PROGSIZE_EMUL
     PrereadConf();
+#endif
 }
 
 void ConfDialog21::SetupUI()

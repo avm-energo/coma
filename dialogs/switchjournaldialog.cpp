@@ -2,7 +2,9 @@
 #include <QHeaderView>
 #include <QPushButton>
 #include "../widgets/emessagebox.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
+#endif
 #include "../widgets/getoscpbdelegate.h"
 #include "../widgets/wd_func.h"
 #include "switchjournaldialog.h"
@@ -81,6 +83,7 @@ void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
     SwjTableView->resizeColumnsToContents();
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void SwitchJournalDialog::ProcessOscillograms()
 {
     QByteArray OscInfo;
@@ -154,4 +157,4 @@ void SwitchJournalDialog::EraseJournals()
     else
         EMessageBox::information(this, "Внимание", "Ошибка при стирании");
 }
-
+#endif

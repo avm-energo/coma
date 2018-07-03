@@ -13,7 +13,9 @@ ConfDialog35::ConfDialog35(QVector<S2::DataRec> &S2Config, bool BaseBoard, QWidg
     QStringList sl = QStringList() << "Не исп." << "Обычный";
     SetOutputs(sl, D35_NUMCH);
     SetupUI();
+#if PROGSIZE != PROGSIZE_EMUL
     PrereadConf();
+#endif
 }
 
 void ConfDialog35::Fill()

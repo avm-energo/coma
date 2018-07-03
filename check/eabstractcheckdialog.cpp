@@ -19,7 +19,9 @@
 #include "../gen/stdfunc.h"
 #include "../gen/error.h"
 #include "../gen/colors.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
+#endif
 
 EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent) :
     QDialog(parent)

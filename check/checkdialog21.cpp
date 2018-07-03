@@ -15,8 +15,10 @@
 #include "checkdialog21.h"
 #include "../widgets/emessagebox.h"
 #include "../gen/error.h"
-#include "../gen/commands.h"
 #include "../widgets/wd_func.h"
+#if PROGSIZE != PROGSIZE_EMUL
+#include "../gen/commands.h"
+#endif
 
 CheckDialog21::CheckDialog21(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {
@@ -135,10 +137,14 @@ QWidget *CheckDialog21::CustomTab()
     QHBoxLayout *hlyout = new QHBoxLayout;
     lyout->addWidget(Ch21->BdaW(this));
     QPushButton *pb = new QPushButton("Начать измерения Bda");
+#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(StartBdaMeasurements()));
+#endif
     hlyout->addWidget(pb);
     pb = new QPushButton("Остановить измерения Bda");
+#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(StopBdaMeasurements()));
+#endif
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     w->setLayout(lyout);

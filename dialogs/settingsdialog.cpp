@@ -89,7 +89,9 @@ void SettingsDialog::Fill()
     WDFunc::SetLEData(this,"povdevprecision", DevPrecision);
     QString restring = "^[0-2]{0,1}[0-9]{1,2}{\\.[0-2]{0,1}[0-9]{1,2}}{3}$";
     WDFunc::SetLEData(this,"miple",StdFunc::MIPIP,restring);
+#if PROGSIZE != PROGSIZE_EMUL
     WDFunc::SetChBData(this, "writelogchb", EAbstractProtocomChannel::IsWriteUSBLog());
+#endif
     WDFunc::SetSPBData(this, "povnumpoints", PovNumPoints);
 }
 
@@ -105,7 +107,9 @@ void SettingsDialog::AcceptSettings()
     WDFunc::LEData(this, "povdevprecision", DevPrecision);
     WDFunc::LEData(this, "miple", StdFunc::MIPIP);
     WDFunc::ChBData(this, "writelogchb", tmpb);
+#if PROGSIZE != PROGSIZE_EMUL
     EAbstractProtocomChannel::SetWriteUSBLog(tmpb);
+#endif
     WDFunc::SPBData(this, "povnumpoints", PovNumPoints);
     QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
     sets->setValue("PovDevName", DevName);

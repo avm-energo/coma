@@ -50,8 +50,10 @@ public:
     void LoadOsc(QByteArray &ba); // для оффлайн режима
 
 private slots:
+#if PROGSIZE != PROGSIZE_EMUL
     void SaveSWJ();
     void ShowOsc();
+#endif
 };
 
 #endif // SWJDIALOG_H

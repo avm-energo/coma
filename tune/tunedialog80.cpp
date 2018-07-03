@@ -13,16 +13,19 @@
 #include "../widgets/wd_func.h"
 #include "../gen/stdfunc.h"
 #include "../gen/maindef.h"
+#include "../gen/modulebsi.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
+#endif
 
 TuneDialog80::TuneDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     EAbstractTuneDialog(parent)
 {
     C80 = new Config80(S2Config);
 //    Ch80 = new Check80;
-    SetBac(&Bac_block, BT_BASE, sizeof(Bac_block));
+    SetBac(&Bac_block, BoardTypes::BT_BASE, sizeof(Bac_block));
     setAttribute(Qt::WA_DeleteOnClose);
     PrepareConsts();
     SetupUI();
@@ -192,6 +195,27 @@ void TuneDialog80::SetupUI()
     setLayout(lyout);
 }
 
+QHBoxLayout *TuneDialog80::MipPars(int parnum, const QString &groupname)
+{
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
+            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
+    QLabel *lbl = new QLabel(QString::number(parnum) + "." + groupname + ": ");
+    hlyout->addWidget(lbl);
+    for (int i = 0; i < 3; i++)
+    {
+        QLabel *lbl = new QLabel(QString::number(i+10,36).toUpper());
+        hlyout->addWidget(lbl);
+        lbl = new QLabel("");
+        lbl->setObjectName("mip"+QString::number(i+parnum));
+        lbl->setToolTip("Параметр "+QString::number(i+parnum));
+        lbl->setStyleSheet(ValuesFormat);
+        hlyout->addWidget(lbl,10);
+    }
+    return hlyout;
+}
+
+#if PROGSIZE != PROGSIZE_EMUL
 void TuneDialog80::SetLbls()
 {
     lbls.append("1. Ввод пароля...");
@@ -281,6 +305,12 @@ void TuneDialog80::SetPf()
     pf[lbls.at(count++)] = func;
 }
 
+void TuneDialog80::GetBdAndFillMTT()
+{
+
+}
+#endif
+
 void TuneDialog80::FillBac()
 {
     for (int i = 0; i < 6; i++)
@@ -314,9 +344,18 @@ void TuneDialog80::FillBackBac()
     Bac_block.Kinter=ToFloat(tmps);
 }
 
-void TuneDialog80::GetBdAndFillMTT()
+void TuneDialog80::SetDefCoefs()
 {
-
+    Bac_block.Kinter = 0.0;
+    Bac_block.K_freq = 1.0;
+    for (int i=0; i<6; i++)
+    {
+        Bac_block.DPsi[i] = 0.0;
+        Bac_block.KmI_1[i] = 1.0;
+        Bac_block.KmI_5[i] = 1.0;
+        Bac_block.KmU[i] = 1.0;
+    }
+    FillBac();
 }
 
 void TuneDialog80::PrepareConsts()
@@ -338,6 +377,7 @@ void TuneDialog80::PrepareConsts()
     }
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 int TuneDialog80::Start7_2_3()
 {
     if (TuneControlType == TUNEMIP)
@@ -802,39 +842,6 @@ int TuneDialog80::LoadWorkConfig()
     return Error::ER_NOERROR;
 }
 
-QHBoxLayout *TuneDialog80::MipPars(int parnum, const QString &groupname)
-{
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
-            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
-    QLabel *lbl = new QLabel(QString::number(parnum) + "." + groupname + ": ");
-    hlyout->addWidget(lbl);
-    for (int i = 0; i < 3; i++)
-    {
-        QLabel *lbl = new QLabel(QString::number(i+10,36).toUpper());
-        hlyout->addWidget(lbl);
-        lbl = new QLabel("");
-        lbl->setObjectName("mip"+QString::number(i+parnum));
-        lbl->setToolTip("Параметр "+QString::number(i+parnum));
-        lbl->setStyleSheet(ValuesFormat);
-        hlyout->addWidget(lbl,10);
-    }
-    return hlyout;
-}
-
-float TuneDialog80::ToFloat(QString text)
-{
-    bool ok;
-    float tmpf;
-    tmpf = text.toFloat(&ok);
-    if (!ok)
-    {
-        ERMSG("Значение "+text+" не может быть переведено во float");
-        return 0;
-    }
-    return tmpf;
-}
-
 void TuneDialog80::SetExtData()
 {
     QDialog *dlg = this->findChild<QDialog *>("dlg7371");
@@ -1035,20 +1042,6 @@ int TuneDialog80::SetNewTuneCoefs()
     return Error::ER_NOERROR;
 }
 
-void TuneDialog80::SetDefCoefs()
-{
-    Bac_block.Kinter = 0.0;
-    Bac_block.K_freq = 1.0;
-    for (int i=0; i<6; i++)
-    {
-        Bac_block.DPsi[i] = 0.0;
-        Bac_block.KmI_1[i] = 1.0;
-        Bac_block.KmI_5[i] = 1.0;
-        Bac_block.KmU[i] = 1.0;
-    }
-    FillBac();
-}
-
 int TuneDialog80::ReadAnalogMeasurements()
 {
 /*    // получение текущих аналоговых сигналов от модуля
@@ -1088,17 +1081,9 @@ void TuneDialog80::SetTuneMode()
     TuneControlType = sender()->objectName().toInt();
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void TuneDialog80::StopMip()
 {
     emit stopall();
-}
-#endif
-
-void TuneDialog80::closeEvent(QCloseEvent *e)
-{
-    emit stopall();
-    e->accept();
 }
 
 int TuneDialog80::ShowControlChooseDialog()
@@ -1242,4 +1227,24 @@ void TuneDialog80::MsgClear()
 void TuneDialog80::CancelTune()
 {
     Cancelled = true;
+}
+#endif
+
+void TuneDialog80::closeEvent(QCloseEvent *e)
+{
+    emit stopall();
+    e->accept();
+}
+
+float TuneDialog80::ToFloat(QString text)
+{
+    bool ok;
+    float tmpf;
+    tmpf = text.toFloat(&ok);
+    if (!ok)
+    {
+        ERMSG("Значение "+text+" не может быть переведено во float");
+        return 0;
+    }
+    return tmpf;
 }

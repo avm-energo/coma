@@ -14,7 +14,9 @@
 #include "../gen/colors.h"
 #include "../gen/stdfunc.h"
 #include "../gen/error.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
+#endif
 
 TuneDialog21::TuneDialog21(BoardTypes type, QWidget *parent) :
     EAbstractTuneDialog(parent)
@@ -117,10 +119,13 @@ void TuneDialog21::SetupUI()
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
+#if PROGSIZE != PROGSIZE_EMUL
     if ((!(ModuleBSI::GetHealth() & HTH_REGPARS)) && !StdFunc::IsInEmulateMode()) // есть настроечные коэффициенты в памяти модуля
         ReadTuneCoefs(); // считать их из модуля и показать на экране
+#endif
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void TuneDialog21::SetLbls()
 {
     lbls.append("1. Ввод пароля...");
@@ -136,44 +141,6 @@ void TuneDialog21::SetPf()
     pf[lbls.at(count++)] = func; // 2. Отображение схемы подключения
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog21::Tune);
     pf[lbls.at(count++)] = func; // 3. Регулировка
-}
-
-void TuneDialog21::FillBac()
-{
-    for (int i=0; i<AIN21_NUMCH; ++i)
-    {
-        WDFunc::SetLEData(this, "tunebcoef"+QString::number(i), QString::number(Bac_block[i].fbin, 'f', 5));
-        WDFunc::SetLEData(this, "tunek1coef"+QString::number(i), QString::number(Bac_block[i].fkiin, 'f', 5));
-        WDFunc::SetLEData(this, "tunek2coef"+QString::number(i), QString::number(Bac_block[i].fkuin, 'f', 5));
-    }
-}
-
-void TuneDialog21::FillBackBac()
-{
-    QString tmps;
-    for (int i=0; i<AIN21_NUMCH; ++i)
-    {
-        WDFunc::LEData(this, "tunebcoef"+QString::number(i), tmps);
-        Bac_block[i].fbin = tmps.toFloat(&ok);
-        if (ok)
-        {
-            WDFunc::LEData(this, "tunek1coef"+QString::number(i), tmps);
-            Bac_block[i].fkiin = tmps.toFloat(&ok);
-            if (ok)
-            {
-                WDFunc::LEData(this, "tunek2coef"+QString::number(i), tmps);
-                Bac_block[i].fkuin = tmps.toFloat(&ok);
-                if (ok)
-                    continue;
-            }
-        }
-        WARNMSG("Ошибка при переводе во float");
-    }
-}
-
-void TuneDialog21::GetBdAndFillMTT()
-{
-
 }
 
 int TuneDialog21::ShowScheme()
@@ -267,17 +234,6 @@ bool TuneDialog21::CalcNewTuneCoef(int NumCh)
     return true;
 }
 
-void TuneDialog21::SetDefCoefs()
-{
-    for (int i=0; i<AIN21_NUMCH; i++)
-    {
-        Bac_block[i].fbin = 0.0;
-        Bac_block[i].fkiin = 1.0;
-        Bac_block[i].fkuin = 1.0;
-    }
-    FillBac();
-}
-
 int TuneDialog21::ReadAnalogMeasurements()
 {
     return Error::ER_NOERROR;
@@ -313,4 +269,54 @@ bool TuneDialog21::CheckTuneCoefs()
             return false;
     }
     return true;
+}
+#endif
+
+void TuneDialog21::FillBac()
+{
+    for (int i=0; i<AIN21_NUMCH; ++i)
+    {
+        WDFunc::SetLEData(this, "tunebcoef"+QString::number(i), QString::number(Bac_block[i].fbin, 'f', 5));
+        WDFunc::SetLEData(this, "tunek1coef"+QString::number(i), QString::number(Bac_block[i].fkiin, 'f', 5));
+        WDFunc::SetLEData(this, "tunek2coef"+QString::number(i), QString::number(Bac_block[i].fkuin, 'f', 5));
+    }
+}
+
+void TuneDialog21::FillBackBac()
+{
+    QString tmps;
+    for (int i=0; i<AIN21_NUMCH; ++i)
+    {
+        WDFunc::LEData(this, "tunebcoef"+QString::number(i), tmps);
+        Bac_block[i].fbin = tmps.toFloat(&ok);
+        if (ok)
+        {
+            WDFunc::LEData(this, "tunek1coef"+QString::number(i), tmps);
+            Bac_block[i].fkiin = tmps.toFloat(&ok);
+            if (ok)
+            {
+                WDFunc::LEData(this, "tunek2coef"+QString::number(i), tmps);
+                Bac_block[i].fkuin = tmps.toFloat(&ok);
+                if (ok)
+                    continue;
+            }
+        }
+        WARNMSG("Ошибка при переводе во float");
+    }
+}
+
+void TuneDialog21::GetBdAndFillMTT()
+{
+
+}
+
+void TuneDialog21::SetDefCoefs()
+{
+    for (int i=0; i<AIN21_NUMCH; i++)
+    {
+        Bac_block[i].fbin = 0.0;
+        Bac_block[i].fkiin = 1.0;
+        Bac_block[i].fkuin = 1.0;
+    }
+    FillBac();
 }

@@ -1,7 +1,9 @@
 #include "../config/config.h"
 #include "modulebsi.h"
 #include "error.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "commands.h"
+#endif
 
 quint32 ModuleBSI::MType = 0;
 ModuleBSI::Bsi ModuleBSI::ModuleBsi;

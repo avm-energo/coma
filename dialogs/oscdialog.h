@@ -32,9 +32,11 @@ signals:
 public slots:
 
 private slots:
+#if PROGSIZE != PROGSIZE_EMUL
     void GetAndProcessOscInfo();
     void GetOsc(QModelIndex);
     void EraseOsc();
+#endif
 };
 
 #endif // OSCDIALOG_H

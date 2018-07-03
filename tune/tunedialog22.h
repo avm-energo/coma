@@ -43,11 +43,10 @@ private:
     const float R0[COEFSNUM] = {100, 1000};
 
     void SetupUI();
+    QGroupBox *CoeffGB(const QString &title, const QString &coeff);
+#if PROGSIZE != PROGSIZE_EMUL
     void SetLbls();
     void SetPf();
-    void FillBac();
-    void FillBackBac();
-    void GetBdAndFillMTT();
     int ShowScheme();
     int Show0(int coef);
     int ShowW100(int coef);
@@ -59,13 +58,18 @@ private:
     bool CheckAndShowTune0();
     bool CheckAndShowTuneW100();
     bool CheckTuneCoefs();
-
-    QGroupBox *CoeffGB(const QString &title, const QString &coeff);
+    void GetBdAndFillMTT();
+#endif
     
+    void FillBac();
+    void FillBackBac();
+
 private slots:
     void SetDefCoefs();
+#if PROGSIZE != PROGSIZE_EMUL
     int ReadAnalogMeasurements();
     int TuneOneChannel();
+#endif
 };
 
 #endif // TUNEDIALOG22_H

@@ -25,7 +25,9 @@ ConfDialog22::ConfDialog22(QVector<S2::DataRec> &S2Config, bool BaseBoard, QWidg
     this->S2Config = &S2Config;
     C22 = new Config22(S2Config, BaseBoard);
     SetupUI();
+#if PROGSIZE != PROGSIZE_EMUL
     PrereadConf();
+#endif
 }
 
 void ConfDialog22::SetupUI()

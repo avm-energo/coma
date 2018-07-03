@@ -57,12 +57,14 @@ private:
     bool Accepted;
     int PovNumPoints;
 
-    void SetLbls();
-    void SetPf();
     void SetupUI();
 
     QWidget *CoefUI(int bac2num);
+
+#if PROGSIZE != PROGSIZE_EMUL
     int InputDNData();
+    void SetLbls();
+    void SetPf();
     int Start7_2_2();
     int Start7_2_3_1();
     int Start7_2_3_2();
@@ -83,20 +85,22 @@ private:
     int Start7_2_9(int counter);
     int ReadAnalogMeasurements();
     int ShowScheme();
+#endif
     void GetBdAndFillMTT();
     void LoadSettings();
 
 private slots:
     void FillBac();
     void FillBackBac();
+    void SetDefCoefs();
+#if PROGSIZE != PROGSIZE_EMUL
+    void AcceptDNData();
     void FillBdOut();
     void FillBackBdOut();
     void FillBdIn();
     void FillBackBdIn();
     void FillMedian(int index); // заполнение значений по средним показателям - медианам и СКО
-    void SetDefCoefs();
-    void AcceptDNData();
-
+#endif
 signals:
     void DNDataIsSet();
     void StartPercents(quint32 Percent);

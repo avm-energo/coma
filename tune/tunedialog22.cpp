@@ -14,7 +14,9 @@
 #include "../gen/stdfunc.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
+#endif
 
 TuneDialog22::TuneDialog22(BoardTypes type, QWidget *parent) :
     EAbstractTuneDialog(parent)
@@ -25,7 +27,9 @@ TuneDialog22::TuneDialog22(BoardTypes type, QWidget *parent) :
     ChNum = 0;
     SetBac(&Bac_block, BoardType, sizeof(Bac_block));
     SetupUI();
+#if PROGSIZE != PROGSIZE_EMUL
     PrereadConf();
+#endif
 }
 
 QGroupBox * TuneDialog22::CoeffGB(const QString &title, const QString &coeff)
@@ -96,9 +100,13 @@ void TuneDialog22::SetupUI()
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
+#if PROGSIZE != PROGSIZE_EMUL
     if ((!(ModuleBSI::GetHealth() & HTH_REGPARS)) && !StdFunc::IsInEmulateMode()) // есть настроечные коэффициенты в памяти модуля
         ReadTuneCoefs(); // считать их из модуля и показать на экране
+#endif
 }
+
+#if PROGSIZE != PROGSIZE_EMUL
 
 void TuneDialog22::SetLbls()
 {
@@ -115,44 +123,6 @@ void TuneDialog22::SetPf()
     pf[lbls.at(count++)] = func; // 2. Отображение схемы подключения
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog22::Tune);
     pf[lbls.at(count++)] = func; // 3. Регулировка
-}
-
-void TuneDialog22::FillBac()
-{
-    for (int j=0; j<COEFSNUM; ++j)
-    {
-        for (int i=0; i<AIN22_NUMCH; ++i)
-        {
-            WDFunc::SetLEData(this, "b"+QString::number(j)+"."+QString::number(i), QString::number(Bac_block[j].fbin[i], 'f', 5));
-            WDFunc::SetLEData(this, "k"+QString::number(j)+"."+QString::number(i), QString::number(Bac_block[j].fkin[i], 'f', 5));
-        }
-    }
-}
-
-void TuneDialog22::FillBackBac()
-{
-    QString tmps;
-    for (int j=0; j<COEFSNUM; ++j)
-    {
-        for (int i=0; i<AIN22_NUMCH; ++i)
-        {
-            WDFunc::LEData(this, "b"+QString::number(j)+"."+QString::number(i), tmps);
-            Bac_block[j].fbin[i] = tmps.toFloat(&ok);
-            if (ok)
-            {
-                WDFunc::LEData(this, "k"+QString::number(j)+"."+QString::number(i), tmps);
-                Bac_block[i].fkin[i] = tmps.toFloat(&ok);
-                if (ok)
-                    continue;
-            }
-            WARNMSG("Ошибка при переводе во float");
-        }
-    }
-}
-
-void TuneDialog22::GetBdAndFillMTT()
-{
-
 }
 
 int TuneDialog22::ShowScheme()
@@ -272,19 +242,6 @@ bool TuneDialog22::CalcNewTuneCoef()
     return true;
 }
 
-void TuneDialog22::SetDefCoefs()
-{
-    for (int j = 0; j < COEFSNUM; ++j)
-    {
-        for (int i=0; i<AIN22_NUMCH; i++)
-        {
-            Bac_block[j].fbin[i] = 0.0;
-            Bac_block[j].fkin[i] = 1.0;
-        }
-    }
-    FillBac();
-}
-
 int TuneDialog22::ReadAnalogMeasurements()
 {
     return Error::ER_NOERROR;
@@ -319,4 +276,56 @@ bool TuneDialog22::CheckTuneCoefs()
         }
     }
     return true;
+}
+
+void TuneDialog22::GetBdAndFillMTT()
+{
+
+}
+#endif
+
+void TuneDialog22::FillBac()
+{
+    for (int j=0; j<COEFSNUM; ++j)
+    {
+        for (int i=0; i<AIN22_NUMCH; ++i)
+        {
+            WDFunc::SetLEData(this, "b"+QString::number(j)+"."+QString::number(i), QString::number(Bac_block[j].fbin[i], 'f', 5));
+            WDFunc::SetLEData(this, "k"+QString::number(j)+"."+QString::number(i), QString::number(Bac_block[j].fkin[i], 'f', 5));
+        }
+    }
+}
+
+void TuneDialog22::FillBackBac()
+{
+    QString tmps;
+    for (int j=0; j<COEFSNUM; ++j)
+    {
+        for (int i=0; i<AIN22_NUMCH; ++i)
+        {
+            WDFunc::LEData(this, "b"+QString::number(j)+"."+QString::number(i), tmps);
+            Bac_block[j].fbin[i] = tmps.toFloat(&ok);
+            if (ok)
+            {
+                WDFunc::LEData(this, "k"+QString::number(j)+"."+QString::number(i), tmps);
+                Bac_block[i].fkin[i] = tmps.toFloat(&ok);
+                if (ok)
+                    continue;
+            }
+            WARNMSG("Ошибка при переводе во float");
+        }
+    }
+}
+
+void TuneDialog22::SetDefCoefs()
+{
+    for (int j = 0; j < COEFSNUM; ++j)
+    {
+        for (int i=0; i<AIN22_NUMCH; i++)
+        {
+            Bac_block[j].fbin[i] = 0.0;
+            Bac_block[j].fkin[i] = 1.0;
+        }
+    }
+    FillBac();
 }

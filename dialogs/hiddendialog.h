@@ -44,7 +44,9 @@ private:
     void SetupUI();
     void SetVersion(quint32 number, QString lename);
     void GetVersion(quint32 &number, QString lename);
+#if PROGSIZE != PROGSIZE_EMUL
     void SendBhb();
+#endif
 
 private slots:
     void AcceptChanges();

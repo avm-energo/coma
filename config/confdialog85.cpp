@@ -26,7 +26,9 @@ ConfDialog85::ConfDialog85(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     setAttribute(Qt::WA_DeleteOnClose);
 
     SetupUI();
+#if PROGSIZE != PROGSIZE_EMUL
     PrereadConf();
+#endif
 }
 
 ConfDialog85::~ConfDialog85()

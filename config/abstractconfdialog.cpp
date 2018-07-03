@@ -8,7 +8,9 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 //#include "../canal.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
+#endif
 #include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
 #include "../gen/files.h"

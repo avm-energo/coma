@@ -144,7 +144,9 @@ private:
     bool Cancelled;
 
     void SetupUI();
+#if PROGSIZE != PROGSIZE_EMUL
     int GetConf();
+#endif
     void FillBdOut();
     void FillMedian();
     void WriteProtocolToFile();

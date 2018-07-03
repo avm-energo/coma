@@ -1,7 +1,9 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include "../gen/stdfunc.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
+#endif
 #include "../widgets/wd_func.h"
 #include "../widgets/emessagebox.h"
 #include "swjdialog.h"
@@ -105,6 +107,7 @@ void SWJDialog::LoadOsc(QByteArray &ba)
     OscFunc->BA = ba;
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void SWJDialog::SaveSWJ()
 {
     QByteArray ba;
@@ -134,3 +137,4 @@ void SWJDialog::ShowOsc()
     }
     OscFunc->ProcessOsc();
 }
+#endif

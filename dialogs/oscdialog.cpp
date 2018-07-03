@@ -9,7 +9,9 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include "oscdialog.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
+#endif
 #include "../config/config.h"
 #include "../widgets/etableview.h"
 #include "../widgets/etablemodel.h"
@@ -73,6 +75,7 @@ void OscDialog::UpdateModel()
     tv->resizeColumnsToContents();
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void OscDialog::GetAndProcessOscInfo()
 {
     emit StopCheckTimer();
@@ -158,3 +161,4 @@ void OscDialog::EraseOsc()
     else
         EMessageBox::information(this, "Внимание", "Ошибка при стирании");
 }
+#endif

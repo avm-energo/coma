@@ -17,7 +17,9 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QFileDialog>
 #include "mainwindow.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "commands.h"
+#endif
 #include "../widgets/wd_func.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/emessagebox.h"
@@ -292,7 +294,9 @@ void MainWindow::LoadSettings()
     QString HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"+PROGNAME+"/";
     QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
     StdFunc::SetHomeDir(sets->value("Homedir", HomeDir).toString());
+#if PROGSIZE != PROGSIZE_EMUL
     EAbstractProtocomChannel::SetWriteUSBLog(sets->value("WriteLog", "0").toBool());
+#endif
     TEEnabled = sets->value("TEEnabled", "0").toBool();
 }
 
@@ -300,7 +304,9 @@ void MainWindow::SaveSettings()
 {
     QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
     sets->setValue("Homedir", StdFunc::GetHomeDir());
+#if PROGSIZE != PROGSIZE_EMUL
     sets->setValue("WriteLog", EAbstractProtocomChannel::IsWriteUSBLog());
+#endif
     sets->setValue("TEEnabled", TEEnabled);
 }
 

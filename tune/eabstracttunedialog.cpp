@@ -15,7 +15,9 @@
 #include "eabstracttunedialog.h"
 #include "../gen/stdfunc.h"
 #include "../gen/maindef.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
+#endif
 #include "../gen/files.h"
 #include "../gen/timefunc.h"
 #include "../gen/error.h"
@@ -44,8 +46,10 @@ QWidget *EAbstractTuneDialog::TuneUI()
 {
     lbls.clear();
     pf.clear();
+#if PROGSIZE != PROGSIZE_EMUL
     SetLbls();
     SetPf();
+#endif
     int i;
     // CP1 - НАСТРОЙКА ПРИБОРА/МОДУЛЯ
     QWidget *w = new QWidget;
@@ -103,14 +107,18 @@ QWidget *EAbstractTuneDialog::BottomUI()
     QString tmps = "Прочитать настроечные коэффициенты из ";
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     pb = new QPushButton(tmps);
+#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs()));
+#endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
     tmps = "Записать настроечные коэффициенты в ";
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     pb = new QPushButton(tmps);
+#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteTuneCoefsSlot()));
+#endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
@@ -129,6 +137,14 @@ QWidget *EAbstractTuneDialog::BottomUI()
     return w;
 }
 
+void EAbstractTuneDialog::SetBac(void *block, int blocknum, int blocksize)
+{
+    AbsBac.BacBlock = block;
+    AbsBac.BacBlockSize = blocksize;
+    AbsBac.BacBlockNum = blocknum;
+}
+
+#if PROGSIZE != PROGSIZE_EMUL
 void EAbstractTuneDialog::ProcessTune()
 {
     if (lbls.size() > pf.size())
@@ -187,13 +203,6 @@ int EAbstractTuneDialog::CheckPassword()
         return Error::ER_GENERALERROR;
     }
     return Error::ER_NOERROR;
-}
-
-void EAbstractTuneDialog::SetBac(void *block, int blocknum, int blocksize)
-{
-    AbsBac.BacBlock = block;
-    AbsBac.BacBlockSize = blocksize;
-    AbsBac.BacBlockNum = blocknum;
 }
 
 bool EAbstractTuneDialog::IsWithinLimits(double number, double base, double threshold)
@@ -259,33 +268,6 @@ void EAbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
     connect(w, SIGNAL(CountZero()), &el,SLOT(quit()));
     w->Start();
     el.exec();
-}
-
-void EAbstractTuneDialog::SaveToFileEx()
-{
-    int res = Error::ER_NOERROR;
-    QString tunenum = QString::number(AbsBac.BacBlockNum, 16);
-    QByteArray ba;
-    ba.resize(AbsBac.BacBlockSize);
-    memcpy(&(ba.data()[0]), AbsBac.BacBlock, AbsBac.BacBlockSize);
-    res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.tn"+tunenum+")", "tn"+tunenum), ba, AbsBac.BacBlockSize);
-    switch (res)
-    {
-    case Files::ER_NOERROR:
-        EMessageBox::information(this, "Внимание", "Файл коэффициентов записан успешно!");
-        break;
-    case Files::ER_FILEWRITE:
-        EMessageBox::error(this, "Ошибка", "Ошибка при записи файла!");
-        break;
-    case Files::ER_FILENAMEEMP:
-        EMessageBox::error(this, "Ошибка", "Пустое имя файла!");
-        break;
-    case Files::ER_FILEOPEN:
-        EMessageBox::error(this, "Ошибка", "Ошибка открытия файла!");
-        break;
-    default:
-        break;
-    }
 }
 
 int EAbstractTuneDialog::StartMeasurement()
@@ -384,6 +366,34 @@ void EAbstractTuneDialog::PrereadConf()
         }
     }
 }
+#endif
+
+void EAbstractTuneDialog::SaveToFileEx()
+{
+    int res = Error::ER_NOERROR;
+    QString tunenum = QString::number(AbsBac.BacBlockNum, 16);
+    QByteArray ba;
+    ba.resize(AbsBac.BacBlockSize);
+    memcpy(&(ba.data()[0]), AbsBac.BacBlock, AbsBac.BacBlockSize);
+    res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.tn"+tunenum+")", "tn"+tunenum), ba, AbsBac.BacBlockSize);
+    switch (res)
+    {
+    case Files::ER_NOERROR:
+        EMessageBox::information(this, "Внимание", "Файл коэффициентов записан успешно!");
+        break;
+    case Files::ER_FILEWRITE:
+        EMessageBox::error(this, "Ошибка", "Ошибка при записи файла!");
+        break;
+    case Files::ER_FILENAMEEMP:
+        EMessageBox::error(this, "Ошибка", "Пустое имя файла!");
+        break;
+    case Files::ER_FILEOPEN:
+        EMessageBox::error(this, "Ошибка", "Ошибка открытия файла!");
+        break;
+    default:
+        break;
+    }
+}
 
 void EAbstractTuneDialog::SaveToFile()
 {
@@ -407,6 +417,7 @@ void EAbstractTuneDialog::LoadFromFile()
     EMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void EAbstractTuneDialog::Good()
 {
     MeasurementEnabled = false;
@@ -449,7 +460,7 @@ void EAbstractTuneDialog::SetTuneVariant()
     if (!WDFunc::CBIndex(this, "tunevariantcb", TuneVariant))
         DBGMSG;
 }
-
+#endif
 // ##################### PROTECTED ####################
 
 void EAbstractTuneDialog::closeEvent(QCloseEvent *e)
