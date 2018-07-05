@@ -1,11 +1,14 @@
 // config.cpp
 #include "config.h"
-//#include "../gen/publicclass.h"
 #include "../gen/modulebsi.h"
 
-Config::Config(QVector<S2::DataRec> &config)
+Config::Config(QVector<S2::DataRec> &config, quint32 MTypeB, quint32 MTypeM)
 {
+    MainBlk.MTypeB = MTypeB;
+    MainBlk.MTypeM = MTypeM;
     // общая часть
+    config.append({BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB});
+    config.append({BCI_MTYPEM, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM});
     config.append({BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype});
     config.append({BCI_ABS_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104});
     config.append({BCI_CYCLE_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104});
@@ -18,6 +21,8 @@ Config::Config(QVector<S2::DataRec> &config)
 
 void Config::SetDefBlock()
 {
+    MainBlk.MTypeB = DEF_MTYPEB;
+    MainBlk.MTypeM = DEF_MTYPEM;
     MainBlk.Ctype = DEF_CTYPE;
     MainBlk.Abs_104 = DEF_ABS_104;
     MainBlk.Cycle_104 = DEF_CYCLE_104;

@@ -4,25 +4,6 @@
 #include <QVector>
 #include "../gen/s2.h"
 
-#define BCI_CTYPE       3
-#define BCI_ABS_104     4
-#define BCI_CYCLE_104   5
-#define BCI_T1_104      6
-#define BCI_T2_104      7
-#define BCI_T3_104      8
-#define BCI_K_104       9
-#define BCI_W_104       10
-//#define CONF_NUM        10
-
-#define DEF_CTYPE       2
-#define DEF_ABS_104     205
-#define DEF_CYCLE_104   5
-#define DEF_T1_104      15
-#define DEF_T2_104      10
-#define DEF_T3_104      20
-#define DEF_K_104       12
-#define DEF_W_104       8
-
 // определение базовых плат
 #define MTB_00      0x00    // нет базовой платы
 #define MTB_12      0x1200 // процессорный, не комбинируется
@@ -47,6 +28,29 @@
 #define MTM_83      0x0083 // 6U0I, комбинируется с 80,84
 #define MTM_85      0x0085 // 3U3I УСК (перегрузка по току 20х), комбинируется с 85
 
+#define BCI_MTYPEB      1
+#define BCI_MTYPEM      2
+#define BCI_CTYPE       3
+#define BCI_ABS_104     4
+#define BCI_CYCLE_104   5
+#define BCI_T1_104      6
+#define BCI_T2_104      7
+#define BCI_T3_104      8
+#define BCI_K_104       9
+#define BCI_W_104       10
+//#define CONF_NUM        10
+
+#define DEF_MTYPEB      MTB_00
+#define DEF_MTYPEM      MTM_00
+#define DEF_CTYPE       2
+#define DEF_ABS_104     205
+#define DEF_CYCLE_104   5
+#define DEF_T1_104      15
+#define DEF_T2_104      10
+#define DEF_T3_104      20
+#define DEF_K_104       12
+#define DEF_W_104       8
+
 // определение файлов
 #define FILE_CONF   1 // configuration
 #define FILE_FW     3 // firmware
@@ -58,10 +62,12 @@ class Config
 {
 public:
 
-    explicit Config(QVector<S2::DataRec> &config);
+    explicit Config(QVector<S2::DataRec> &config, quint32 MTypeB, quint32 MTypeM);
 
     struct Bci_Main
     {
+        quint32 MTypeB;
+        quint32 MTypeM;
         quint32 Ctype;   		// Тип синхронизации времени от модуля Ц
         quint32 Abs_104;     	// Адрес базовой станции для протокола 104
         quint32 Cycle_104;      // Интервал циклического опроса по протоколу МЭК 60870-5-104

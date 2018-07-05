@@ -264,10 +264,11 @@ void Coma::Stage3()
     connect(this,SIGNAL(BsiRefresh()),idlg,SLOT(FillBsi()));
     connect(this,SIGNAL(ClearBsi()),idlg,SLOT(ClearBsi()));
     MainTW->addTab(idlg, "Информация");
-    quint32 MType = ModuleBSI::GetMType(BoardTypes::BT_BASE);
-    if (MType < 0xA0) // диапазон модулей АВ-ТУК
+    quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
+    quint32 MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
+    if (MTypeB < 0xA0) // диапазон модулей АВ-ТУК
     {
-        MainConfDialog = new ConfDialog(S2Config);
+        MainConfDialog = new ConfDialog(S2Config, MTypeB, MTypeM);
         MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     }
     PrepareDialogs();

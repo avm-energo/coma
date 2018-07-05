@@ -8,7 +8,7 @@ class ConfDialog : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    ConfDialog(QVector<S2::DataRec> &S2Config, QWidget *parent = 0);
+    ConfDialog(QVector<S2::DataRec> &S2Config, quint32 MTypeB, quint32 MTypeM, QWidget *parent = 0);
 
     void SetDefConf();
     void Fill();
