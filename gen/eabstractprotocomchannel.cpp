@@ -1,6 +1,5 @@
 #include <QCoreApplication>
 #include <QTime>
-//#include "publicclass.h"
 #include "error.h"
 #include "modulebsi.h"
 #include "eabstractprotocomchannel.h"

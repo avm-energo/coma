@@ -163,9 +163,6 @@ private slots:
     void Fill();
     void PasswordCheck(QString &psw);
 #if PROGSIZE != PROGSIZE_EMUL
-#ifdef COMPORTENABLE
-    void ShowCOMConnectDialog();
-#endif
     void GetDeviceFromTable(QModelIndex idx);
     void Stage1_5();
     void Stage2();
@@ -173,6 +170,7 @@ private slots:
     void SetProgressBar1(quint32 cursize);
     void SetProgressBar2Size(quint32 size);
     void SetProgressBar2(quint32 cursize);
+    void ShowConnectDialog();
 #ifdef USBENABLE
     void ShowUSBConnectDialog();
     void SetUSBDev();

@@ -600,6 +600,39 @@ void MainWindow::SetProgressBar2(quint32 cursize)
     SetProgressBar("2", cursize);
 }
 
+void MainWindow::ShowConnectDialog()
+{
+    int i;
+    QDialog *dlg = new QDialog(this);
+    QStringList sl = cn->DevicesFound();
+    QStringListModel *tmpmodel = new QStringListModel;
+    dlg->setMinimumWidth(150);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setObjectName("connectdlg");
+    QVBoxLayout *lyout = new QVBoxLayout;
+    if (sl.size() == 0)
+    {
+        lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
+        Error::ErMsg(CN_NOPORTSERROR);
+    }
+    tmpmodel->setStringList(sl);
+    QComboBox *portscb = new QComboBox;
+    connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPortSlot(QString)));
+    portscb->setModel(tmpmodel);
+    lyout->addWidget(portscb);
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QPushButton *pb = new QPushButton("Далее");
+    connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    hlyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));
+    connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
+    hlyout->addWidget(pb);
+    lyout->addLayout(hlyout);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
 void MainWindow::SetProgressBarSize(QString prbnum, quint32 size)
 {
     QString prbname = "prb"+prbnum+"prb";
@@ -626,50 +659,8 @@ void MainWindow::SetProgressBar(QString prbnum, quint32 cursize)
         WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage() + QString::number(cursize) + " из " + QString::number(prb->maximum()));
     }
 }
+#endif
 
-#ifdef COMPORTENABLE
-void MainWindow::ShowCOMConnectDialog()
-{
-    int i;
-    QDialog *dlg = new QDialog(this);
-    dlg->setMinimumWidth(150);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setObjectName("connectdlg");
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QList<QSerialPortInfo> infolist = QSerialPortInfo::availablePorts();
-    if (infolist.size() == 0)
-    {
-        QLabel *lbl = new QLabel("Ошибка, в системе нет последовательных портов");
-        lyout->addWidget(lbl);
-        Error::ErMsg(USB_NOCOMER);
-    }
-    else
-    {
-        QComboBox *portscb = new QComboBox;
-        connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPortSlot(QString)));
-        QList<QSerialPortInfo> infolist = QSerialPortInfo::availablePorts();
-        QStringListModel *tmpmodel = new QStringListModel;
-        QStringList tmpsl;
-        for (i = 0; i < infolist.size(); i++)
-            tmpsl << infolist.at(i).portName();
-        tmpmodel->setStringList(tmpsl);
-        portscb->setModel(tmpmodel);
-        lyout->addWidget(portscb);
-    }
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QPushButton *pb = new QPushButton("Далее");
-    connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));
-    connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    dlg->setLayout(lyout);
-    dlg->exec();
-}
-#endif
-#endif
 void MainWindow::GetAbout()
 {
     QDialog *dlg = new QDialog;
@@ -724,47 +715,6 @@ void MainWindow::ShowUSBConnectDialog()
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QDialog *dlg = new QDialog(this);
     QVBoxLayout *lyout = new QVBoxLayout;
-    struct hid_device_info *devs, *cur_dev;
-
-    DevInfo.vendor_id = 0;
-    devs = hid_enumerate(0x0, 0x0);
-    cur_dev = devs;
-    int venid, prodid;
-    QString sn;
-    QStringList RBDescription, RBName;
-    while (cur_dev)
-    {
-        if (cur_dev->vendor_id == 0xC251)
-        {
-            venid = cur_dev->vendor_id;
-            prodid = cur_dev->product_id;
-            sn = QString::fromWCharArray(cur_dev->serial_number);
-            QString tmps = "VEN_" + QString::number(venid, 16) + " & DEV_" + QString::number(prodid, 16) + \
-                    " & SN_" + sn;
-            QString rbname = QString::number(venid,16) + "." + QString::number(prodid,16) + "." + sn;
-            RBDescription << tmps;
-            RBName << rbname;
-        }
-        cur_dev = cur_dev->next;
-    }
-    hid_free_enumeration(devs);
-    if (RBDescription.size() > 1) // если найденных устройств с нужным VID больше одного
-    {
-        lyout->addWidget(WDFunc::NewLBLT(this, "Найдены следующие устройства"));
-        for (int i=0; i<RBDescription.size(); ++i)
-        {
-            QRadioButton *rb = WDFunc::NewRB(this, RBDescription.at(i), RBName.at(i));
-            connect(rb,SIGNAL(clicked(bool)),this,SLOT(SetUSBDev()));
-            lyout->addWidget(rb);
-        }
-        QPushButton *pb = new QPushButton("Далее");
-        connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
-        lyout->addWidget(pb);
-        dlg->setLayout(lyout);
-        QApplication::restoreOverrideCursor();
-        dlg->exec();
-        return;
-    }
     else
     {
         EUsbHid *tmpcn = qobject_cast<EUsbHid *>(cn);
@@ -873,7 +823,14 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 
 void MainWindow::SetPortSlot(QString port)
 {
+#ifdef COMPORTENABLE
     StdFunc::Port = port;
+#else
+#ifdef USBENABLE
+
+#endif
+#endif
+
 }
 
 void MainWindow::StartA1Dialog(const QString &filename)

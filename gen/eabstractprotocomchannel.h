@@ -91,6 +91,8 @@ public:
               QVector<S2::DataRec> *DRptr=0);
     static void SetWriteUSBLog(bool bit);
     static bool IsWriteUSBLog();
+    virtual QStringList DevicesFound() = 0; // функция, возвращающая список найденных устройств (COM-портов, устройств USB)
+    virtual QStringList TranslateDevice() = 0; // функция, разбивающая строку устройства и складывающая в соотв. структуру
 
 signals:
     void SetDataSize(quint32); // сигналы для прогрессбаров - отслеживание принятых данных, стёртых осциллограмм и т.п.

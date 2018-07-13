@@ -80,6 +80,22 @@ void EUsbCom::RawClose()
     }
 }
 
+QStringList EUsbCom::DevicesFound()
+{
+    QList<QSerialPortInfo> infolist = QSerialPortInfo::availablePorts();
+    if (infolist.size() == 0)
+        return QStringList();
+    QStringList tmpsl;
+    for (i = 0; i < infolist.size(); i++)
+        tmpsl << infolist.at(i).portName();
+    return tmpsl;
+}
+
+QStringList EUsbCom::TranslateDevice()
+{
+
+}
+
 bool EUsbCom::InitializePort(QSerialPortInfo &pinfo, int baud)
 {
     port = new QSerialPort;

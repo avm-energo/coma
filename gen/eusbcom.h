@@ -20,6 +20,8 @@ public:
     QByteArray RawRead(int bytes);
     qint64 RawWrite(QByteArray &ba);
     void RawClose();
+    QStringList DevicesFound();
+    QStringList TranslateDevice();
 
 signals:
 

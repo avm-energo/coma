@@ -22,12 +22,12 @@ class EUsbThread : public QObject
 {
     Q_OBJECT
 public:
-    explicit EUsbThread(EAbstractProtocomChannel::DeviceConnectStruct &devinfo, Log *logh, bool writelog = false, QObject *parent = 0);
+    explicit EUsbThread(Log *logh, bool writelog = false, QObject *parent = 0);
     ~EUsbThread();
 
     Log *log;
 
-    int Set();
+    int Set(EAbstractProtocomChannel::DeviceConnectStruct &devinfo);
 
 signals:
     void NewDataReceived(QByteArray ba);
@@ -39,8 +39,6 @@ public slots:
     void Finish();
 
 private:
-    EAbstractProtocomChannel::DeviceConnectStruct DeviceInfo;
-
     hid_device *HidDevice;
     bool AboutToFinish, Device;
     bool RunWait;
@@ -63,6 +61,8 @@ public:
     qint64 RawWrite(QByteArray &ba);
     void RawClose();
     void SetDeviceInfo(int venid, int prodid, const QString &sn);
+    QStringList DevicesFound();
+    QStringList TranslateDevice();
 
 signals:
     void StopUThread();
