@@ -12,7 +12,6 @@ public:
     StdFunc();
 
     static QString MIPIP;
-    static QString Port;
 
     static QString VerToStr(quint32);
     static bool FloatInRange(float var, float value);

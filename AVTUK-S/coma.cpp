@@ -26,7 +26,6 @@
 #include <QMenuBar>
 #include <QTextEdit>
 #include <QToolBar>
-#include <QSettings>
 #include <QDialog>
 #include <QCursor>
 #include "coma.h"

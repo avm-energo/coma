@@ -171,10 +171,6 @@ private slots:
     void SetProgressBar2Size(quint32 size);
     void SetProgressBar2(quint32 cursize);
     void ShowConnectDialog();
-#ifdef USBENABLE
-    void ShowUSBConnectDialog();
-    void SetUSBDev();
-#endif
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE || PROGSIZE == PROGSIZE_EMUL
     void StartEmul();

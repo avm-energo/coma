@@ -21,7 +21,6 @@ public:
     qint64 RawWrite(QByteArray &ba);
     void RawClose();
     QStringList DevicesFound();
-    QStringList TranslateDevice();
 
 signals:
 
@@ -36,7 +35,7 @@ private:
 
     bool InitializePort(QSerialPortInfo &pinfo, int baud);
     void ShowConnectDialog();
-    bool SetPort(const QString &port, QSerialPortInfo &info);
+    bool SetPort(QSerialPortInfo &info);
 };
 
 #endif // EUSBCOM_H

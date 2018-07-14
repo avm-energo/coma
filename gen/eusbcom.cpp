@@ -4,6 +4,7 @@
 #include <QComboBox>
 #include <QStringListModel>
 #include <QCoreApplication>
+#include <QSettings>
 #include <QTime>
 #include "eusbcom.h"
 #include "stdfunc.h"
@@ -13,6 +14,8 @@
 EUsbCom::EUsbCom(QObject *parent) : EAbstractProtocomChannel(parent)
 {
     FirstPass = true;
+    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    ComPort = sets->value("Port", "COM1").toString();
 }
 
 EUsbCom::~EUsbCom()
@@ -26,7 +29,7 @@ bool EUsbCom::Connect()
         StdFunc::SetPrbMessage("Загрузка данных...");
 
         QSerialPortInfo info;
-        if (!SetPort(StdFunc::Port, info))
+        if (!SetPort(info))
         {
             if (FirstPass)
                 FirstPass = false;
@@ -86,14 +89,9 @@ QStringList EUsbCom::DevicesFound()
     if (infolist.size() == 0)
         return QStringList();
     QStringList tmpsl;
-    for (i = 0; i < infolist.size(); i++)
+    for (int i = 0; i < infolist.size(); i++)
         tmpsl << infolist.at(i).portName();
     return tmpsl;
-}
-
-QStringList EUsbCom::TranslateDevice()
-{
-
 }
 
 bool EUsbCom::InitializePort(QSerialPortInfo &pinfo, int baud)
@@ -122,7 +120,7 @@ bool EUsbCom::InitializePort(QSerialPortInfo &pinfo, int baud)
     return true;
 }
 
-bool EUsbCom::SetPort(const QString &port, QSerialPortInfo &info)
+bool EUsbCom::SetPort(QSerialPortInfo &info)
 {
     QList<QSerialPortInfo> infolist = QSerialPortInfo::availablePorts();
     if (infolist.size() == 0)
@@ -133,9 +131,8 @@ bool EUsbCom::SetPort(const QString &port, QSerialPortInfo &info)
     }
     for (int i = 0; i < infolist.size(); i++)
     {
-        if (infolist.at(i).portName() == port)
+        if (infolist.at(i).portName() == ComPort)
         {
-            StdFunc::Port = port;
             info = infolist.at(i);
             return true;
         }

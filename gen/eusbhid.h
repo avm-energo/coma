@@ -60,9 +60,7 @@ public:
     QByteArray RawRead(int bytes);
     qint64 RawWrite(QByteArray &ba);
     void RawClose();
-    void SetDeviceInfo(int venid, int prodid, const QString &sn);
     QStringList DevicesFound();
-    QStringList TranslateDevice();
 
 signals:
     void StopUThread();
@@ -73,7 +71,6 @@ private slots:
 
 private:
     EUsbThread *UThread;
-    EAbstractProtocomChannel::DeviceConnectStruct DevInf;
 
     void ClosePort();
 };

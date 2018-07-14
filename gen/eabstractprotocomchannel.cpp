@@ -44,7 +44,6 @@ void EAbstractProtocomChannel::Send(int command, int board_type, void *ptr, quin
     cmd = command;
     fnum = filenum;
     DR = DRptr;
-//    Busy = true;
     if (board_type == BoardTypes::BT_BASE)
         BoardType = 0x01;
     else if (board_type == BoardTypes::BT_MEZONIN)
@@ -67,6 +66,31 @@ void EAbstractProtocomChannel::SetWriteUSBLog(bool bit)
 bool EAbstractProtocomChannel::IsWriteUSBLog()
 {
     return WriteUSBLog;
+}
+
+void EAbstractProtocomChannel::TranslateDeviceAndSave(const QString &str)
+{
+#ifdef COMPORTENABLE
+    ComPort = str;
+    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    sets->setValue("Port", ComPort);
+#endif
+#ifdef USBENABLE
+    // формат строки: "VEN_" + QString::number(venid, 16) + "_ & DEV_" + QString::number(prodid, 16) + "_ & SN_" + sn;
+    QStringList sl = str.split("_"); // 1, 3 и 5 - полезная нагрузка
+    if (sl.size() < 6)
+    {
+        DBGMSG;
+        return;
+    }
+    QString tmps = sl.at(1);
+    UsbPort.vendor_id = tmps.toInt(nullptr, 16);
+    tmps = sl.at(3);
+    UsbPort.product_id = tmps.toInt(nullptr, 16);
+    tmps = sl.at(5);
+    int z = tmps.toWCharArray(UsbPort.serial);
+    UsbPort.serial[z] = '\x0';
+#endif
 }
 
 void EAbstractProtocomChannel::InitiateSend()

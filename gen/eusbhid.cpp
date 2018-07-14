@@ -20,7 +20,7 @@ bool EUsbHid::Connect()
     UThread = new EUsbThread(CnLog, IsWriteUSBLog());
     connect(UThread,SIGNAL(NewDataReceived(QByteArray)),this,SLOT(ParseIncomeData(QByteArray)));
     connect(this,SIGNAL(StopUThread()),UThread,SLOT(Finish()));
-    if (UThread->Set(DevInf) != Error::ER_NOERROR)
+    if (UThread->Set(UsbPort) != Error::ER_NOERROR)
         return false;
     Connected = true;
     QTimer *tmr = new QTimer;
@@ -58,13 +58,6 @@ void EUsbHid::RawClose()
     Connected = false;
 }
 
-void EUsbHid::SetDeviceInfo(int venid, int prodid, const QString &sn)
-{
-    DevInf.vendor_id = venid;
-    DevInf.product_id = prodid;
-    sn.toWCharArray(DevInf.serial);
-}
-
 QStringList EUsbHid::DevicesFound()
 {
     struct hid_device_info *devs, *cur_dev;
@@ -81,19 +74,14 @@ QStringList EUsbHid::DevicesFound()
             venid = cur_dev->vendor_id;
             prodid = cur_dev->product_id;
             sn = QString::fromWCharArray(cur_dev->serial_number);
-            QString tmps = "VEN_" + QString::number(venid, 16) + " & DEV_" + QString::number(prodid, 16) + \
-                    " & SN_" + sn;
+            QString tmps = "VEN_" + QString::number(venid, 16) + "_ & DEV_" + QString::number(prodid, 16) + \
+                    "_ & SN_" + sn;
             sl << tmps;
         }
         cur_dev = cur_dev->next;
     }
     hid_free_enumeration(devs);
     return sl;
-}
-
-QStringList EUsbHid::TranslateDevice()
-{
-
 }
 
 EUsbThread::EUsbThread(Log *logh, bool writelog, QObject *parent) : QObject(parent)

@@ -60,11 +60,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 #if PROGSIZE != PROGSIZE_EMUL
 #ifdef USBENABLE
     cn = new EUsbHid;
-    connect(cn,SIGNAL(Retry()),this,SLOT(ShowUSBConnectDialog()));
+    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
 #else
 #ifdef COMPORTENABLE
     cn = new EUsbCom;
-    connect(cn,SIGNAL(Retry()),this,SLOT(ShowCOMConnectDialog()));
+    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
 #endif
 #endif
     connect(cn,SIGNAL(SetDataSize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
@@ -419,7 +419,7 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
 void MainWindow::Stage1_5()
 {
 #ifdef USBENABLE
-    ShowUSBConnectDialog();
+    ShowConnectDialog();
 #endif
     QApplication::setOverrideCursor(Qt::WaitCursor);
     if (Commands::Connect() != Error::ER_NOERROR)
@@ -602,7 +602,6 @@ void MainWindow::SetProgressBar2(quint32 cursize)
 
 void MainWindow::ShowConnectDialog()
 {
-    int i;
     QDialog *dlg = new QDialog(this);
     QStringList sl = cn->DevicesFound();
     QStringListModel *tmpmodel = new QStringListModel;
@@ -613,7 +612,7 @@ void MainWindow::ShowConnectDialog()
     if (sl.size() == 0)
     {
         lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
-        Error::ErMsg(CN_NOPORTSERROR);
+        Error::ShowErMsg(CN_NOPORTSERROR);
     }
     tmpmodel->setStringList(sl);
     QComboBox *portscb = new QComboBox;
@@ -689,41 +688,6 @@ void MainWindow::Disconnect()
     if (!StdFunc::IsInEmulateMode())
         cn->Disconnect();
 }
-
-#ifdef USBENABLE
-void MainWindow::SetUSBDev()
-{
-    QString rbname = sender()->objectName();
-    QStringList sl = rbname.split(".");
-    if (sl.size() < 3)
-    {
-        DBGMSG;
-        return;
-    }
-    QString tmps = sl.at(0);
-    int venid = tmps.toInt(nullptr, 16);
-    tmps = sl.at(1);
-    int prodid = tmps.toInt(nullptr, 16);
-    tmps = sl.at(2);
-    EUsbHid *tmpcn = qobject_cast<EUsbHid *>(cn);
-    if (tmpcn != 0)
-        tmpcn->SetDeviceInfo(venid, prodid, tmps);
-}
-
-void MainWindow::ShowUSBConnectDialog()
-{
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    QDialog *dlg = new QDialog(this);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    else
-    {
-        EUsbHid *tmpcn = qobject_cast<EUsbHid *>(cn);
-        if (tmpcn != 0)
-            tmpcn->SetDeviceInfo(venid, prodid, sn);
-    }
-    QApplication::restoreOverrideCursor();
-}
-#endif
 
 void MainWindow::GetDeviceFromTable(QModelIndex idx)
 {
@@ -823,14 +787,9 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 
 void MainWindow::SetPortSlot(QString port)
 {
-#ifdef COMPORTENABLE
-    StdFunc::Port = port;
-#else
-#ifdef USBENABLE
-
+#if PROGSIZE != PROGSIZE_EMUL
+    cn->TranslateDeviceAndSave(port);
 #endif
-#endif
-
 }
 
 void MainWindow::StartA1Dialog(const QString &filename)

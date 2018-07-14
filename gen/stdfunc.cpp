@@ -13,7 +13,6 @@ bool StdFunc::Emul = false;
 bool StdFunc::Cancelled = false;
 QString StdFunc::PrbMsg = "";
 QString StdFunc::MIPIP = "";
-QString StdFunc::Port = "";
 
 StdFunc::StdFunc()
 {
