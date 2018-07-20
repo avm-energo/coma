@@ -5,11 +5,11 @@
 #define Name "АВТУК-Сервис Эмуляция"
 #define GroupName "АВТУК-Сервис"
 #define EngName "AVTUK-S"
-#define Version "2.1.241"
+#define Version "2.2.249"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "avtuks-E.exe"
-#define SetupName "avtuks-E-2.1.241-x86"
+#define SetupName "avtuks-E-2.2.249-x86"
 #define Prefix "D:\Progs\out"
 
 [CustomMessages]
