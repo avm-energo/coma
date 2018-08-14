@@ -2,7 +2,7 @@
 
 Config35::Config35(QVector<S2::DataRec> &config, bool BaseBoard)
 {
-    int Type = (BaseBoard) ? MTB_35 : MTM_35;
+    int Type = (BaseBoard == BoardTypes::BT_BASE) ? MTB_35 : MTM_35;
     // параметры входных сигналов
     quint32 StartInIndex = Config3x::ModTypeMap().value(Type).DOutStart;
     for (int i=0; i<config.size(); ++i)
@@ -22,7 +22,7 @@ Config35::Config35(QVector<S2::DataRec> &config, bool BaseBoard)
         config.append({StartInIndex+4, sizeof(Bci_block.pulse_long), &(Bci_block.pulse_long)});
         config.append({StartInIndex+5, sizeof(Bci_block.out_type), &(Bci_block.out_type)});
     }
-    config.append({0xFFFFFFFF, 0, NULL});
+    config.append({0xFFFFFFFF, 0, nullptr});
 }
 
 void Config35::SetDefConf()

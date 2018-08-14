@@ -13,6 +13,7 @@
 #include "../gen/modulebsi.h"
 #include "../gen/eabstractprotocomchannel.h"
 #include "../widgets/wd_func.h"
+#include "../gen/maindef.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent)
@@ -80,7 +81,7 @@ void SettingsDialog::Fill()
     QString DevName = sets->value("PovDevName", "UPTN").toString();
     QString DevSN = sets->value("PovDevSN", "00000001").toString();
     QString DevPrecision = sets->value("PovDevPrecision", "0.05").toString();
-    quint32 PovNumPoints = sets->value("PovNumPoints", "60").toInt();
+    quint32 PovNumPoints = sets->value("PovNumPoints", "60").toUInt();
     QString OrganizationString = sets->value("Organization", "Р&К").toString();
     WDFunc::SetLEData(this,"orgle", OrganizationString);
     WDFunc::SetLEData(this,"pathle",StdFunc::GetHomeDir());
@@ -97,11 +98,12 @@ void SettingsDialog::Fill()
 
 void SettingsDialog::AcceptSettings()
 {
-    QString DevName, DevSN, DevPrecision, OrganizationString;
+    QString DevName, DevSN, DevPrecision, OrganizationString, dir;
     quint32 PovNumPoints;
     bool tmpb;
     WDFunc::LEData(this, "orgle", OrganizationString);
-    WDFunc::LEData(this, "pathle", StdFunc::GetHomeDir());
+    WDFunc::LEData(this, "pathle", dir);
+    StdFunc::SetHomeDir(dir);
     WDFunc::LEData(this, "povdev", DevName);
     WDFunc::LEData(this, "povdevsn", DevSN);
     WDFunc::LEData(this, "povdevprecision", DevPrecision);

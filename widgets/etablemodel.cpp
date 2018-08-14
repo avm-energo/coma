@@ -67,7 +67,7 @@ QVariant ETableModel::data(const QModelIndex &index, int role) const
 // value должен представлять из себя запись вида: <value>.<links>, где links - вспомогательное поле, определяющее
 // порядок работы с полем - подставляемый делегат, ссылку на списки и формат отображения
 
-bool ETableModel::setData(const QModelIndex &index, QVariant &value, int role)
+bool ETableModel::setData(const QModelIndex &index, QVariant value, int role)
 {
     if (index.isValid())
     {

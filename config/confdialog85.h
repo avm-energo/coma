@@ -10,7 +10,7 @@ class ConfDialog85 : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    explicit ConfDialog85(QVector<S2::DataRec> &S2Config, QWidget *parent = 0);
+    explicit ConfDialog85(QVector<S2::DataRec> &S2Config, QWidget *parent = nullptr);
     ~ConfDialog85();
 
 private:

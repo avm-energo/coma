@@ -14,6 +14,7 @@
 #include "../gen/colors.h"
 #include "../gen/stdfunc.h"
 #include "../gen/error.h"
+#include "../gen/maindef.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -137,9 +138,9 @@ void TuneDialog21::SetPf()
 {
     int count = 0;
     pf[lbls.at(count++)] = &EAbstractTuneDialog::CheckPassword; // 1. Ввод пароля
-    int (EAbstractTuneDialog::*func)() = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog21::ShowScheme);
+    int (EAbstractTuneDialog::*func)() = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog21::ShowScheme);
     pf[lbls.at(count++)] = func; // 2. Отображение схемы подключения
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog21::Tune);
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog21::Tune);
     pf[lbls.at(count++)] = func; // 3. Регулировка
 }
 
@@ -164,30 +165,34 @@ int TuneDialog21::ShowScheme()
 
 int TuneDialog21::ShowU0(int ChNum)
 {
-    if (QMessageBox::information(this,"Настройка",\
+    if (EMessageBox::question(this,"Настройка",\
                                  "На калибраторе задайте напряжение 0 В (или ток 0 мА) на\nвходе "+\
-                                 QString::number(ChNum)+" модуля и нажмите OK") == QMessageBox::Ok)
+                                 QString::number(ChNum)+" модуля и нажмите OK", nullptr, "Ok" , "Close"))
         return Error::ER_NOERROR;
-    return Error::ER_GENERALERROR;
+    else
+        return Error::ER_GENERALERROR;
 }
 
 int TuneDialog21::ShowI20(int ChNum)
 {
-    if (QMessageBox::information(this,"Настройка",\
+    if (EMessageBox::question(this,"Настройка",\
                                  "Переключите входные переключатели на ток,\nустановите ток 20 мА на\n" \
-                                 "входе " + QString::number(ChNum) + " модуля и нажмите OK") == QMessageBox::Ok)
+                                 "входе " + QString::number(ChNum) + " модуля и нажмите OK", nullptr, "Ok" , "Close"))
         return Error::ER_NOERROR;
-    return Error::ER_GENERALERROR;
+        else
+        return Error::ER_GENERALERROR;
 }
 
 int TuneDialog21::ShowU5(int ChNum)
 {
-    if (QMessageBox::information(this,"Настройка",\
+    if (EMessageBox::question(this,"Настройка",\
                                  "Переключите входные переключатели на напряжение,\nустановите напряжение" \
-                                 "5 В на \nвходе " + QString::number(ChNum) + " модуля и нажмите OK") == QMessageBox::Ok)
+                                 "5 В на \nвходе " + QString::number(ChNum) + " модуля и нажмите OK", nullptr, "Ok" , "Close"))
         return Error::ER_NOERROR;
-    return Error::ER_GENERALERROR;
+        else
+        return Error::ER_GENERALERROR;
 }
+
 
 int TuneDialog21::TuneChannel(Check21::Bda &Bda)
 {
@@ -199,19 +204,22 @@ int TuneDialog21::Tune()
     int i;
     for (i=0; i<AIN21_NUMCH; ++i)
     {
-        ShowU0(i);
+        if(ShowU0(i) == Error::ER_GENERALERROR)
+           return Error::ER_GENERALERROR;
         if (TuneChannel(Bda0) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
     }
     for (i=0; i<AIN21_NUMCH; ++i)
     {
-        ShowI20(i);
+        if(ShowI20(i) == Error::ER_GENERALERROR)
+            return Error::ER_GENERALERROR;
         if (TuneChannel(Bda20) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
     }
     for (i=0; i<AIN21_NUMCH; ++i)
     {
-        ShowU5(i);
+        if(ShowU5(i) == Error::ER_GENERALERROR)
+            return Error::ER_GENERALERROR;
         if (TuneChannel(Bda5) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
         if (!CalcNewTuneCoef(i))
@@ -222,8 +230,8 @@ int TuneDialog21::Tune()
 
 bool TuneDialog21::CalcNewTuneCoef(int NumCh)
 {
-    Bac_block[NumCh].fbin = 1.25 - Bda0.sin[NumCh];
-    if ((Bda0.sin[NumCh] == Bda5.sin[NumCh]) || (Bda0.sin[NumCh] == Bda20.sin[NumCh]))
+    Bac_block[NumCh].fbin = 1.25f - Bda0.sin[NumCh];
+    if (StdFunc::FloatInRange(Bda0.sin[NumCh], Bda5.sin[NumCh]) || StdFunc::FloatInRange(Bda0.sin[NumCh], Bda20.sin[NumCh]))
     {
         WARNMSG("Ошибка в настроечных коэффициентах, деление на ноль");
         return false;
@@ -243,24 +251,34 @@ void TuneDialog21::TuneOneChannel()
 {
     int NumCh;
     WDFunc::CBIndex(this, "tunenumch", NumCh);
-    ShowU0(NumCh);
+    if (ShowU0(NumCh) == Error::ER_GENERALERROR)
+        return;
     if (TuneChannel(Bda0) != Error::ER_NOERROR)
         return;
-    ShowI20(NumCh);
+    if(ShowI20(NumCh) == Error::ER_GENERALERROR)
+        return;
     if (TuneChannel(Bda20) != Error::ER_NOERROR)
         return;
-    ShowU5(NumCh);
+    if(ShowU5(NumCh) == Error::ER_GENERALERROR)
+        return;
     if (TuneChannel(Bda5) != Error::ER_NOERROR)
         return;
     CalcNewTuneCoef(NumCh);
     FillBac();
 }
 
+void TuneDialog21::Cancel()
+{
+    emit close();
+
+}
+
+
 bool TuneDialog21::CheckTuneCoefs()
 {
     for (int i=0; i<AIN21_NUMCH; i++)
     {
-        int tmpi;
+        int tmpi = 0;
         if (!WDFunc::LEData(this, "tunebcoef"+QString::number(i), tmpi))
             return false;
         if (!WDFunc::LEData(this, "tunek1coef"+QString::number(i), tmpi))

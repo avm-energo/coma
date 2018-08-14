@@ -150,7 +150,7 @@ void EUsbThread::Run()
 
 qint64 EUsbThread::WriteData(QByteArray &ba)
 {
-    if (HidDevice != 0)
+    if (HidDevice != nullptr)
     {
         if (ba.size() > UH_MAXSEGMENTLENGTH)
         {
@@ -176,10 +176,10 @@ void EUsbThread::Finish()
 {
     if (!AboutToFinish)
     {
-        if (HidDevice != 0)
+        if (HidDevice != nullptr)
         {
             hid_close(HidDevice);
-            HidDevice = 0;
+            HidDevice = nullptr;
         }
         emit Finished();
         AboutToFinish = true;

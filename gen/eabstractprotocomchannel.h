@@ -62,7 +62,7 @@ class EAbstractProtocomChannel : public QObject
 {
     Q_OBJECT
 public:
-    explicit EAbstractProtocomChannel(QObject *parent = 0);
+    explicit EAbstractProtocomChannel(QObject *parent = nullptr);
     ~EAbstractProtocomChannel();
 
     struct DeviceConnectStruct
@@ -89,8 +89,8 @@ public:
     virtual qint64 RawWrite(QByteArray &ba) = 0;
     virtual void RawClose() = 0;
 
-    void Send(int command, int board_type=0, void *ptr=NULL, quint32 ptrsize=0, quint16 filenum=0, \
-              QVector<S2::DataRec> *DRptr=0);
+    void Send(int command, int board_type=0, void *ptr=nullptr, quint32 ptrsize=0, quint16 filenum=0, \
+              QVector<S2::DataRec> *DRptr=nullptr);
     static void SetWriteUSBLog(bool bit);
     static bool IsWriteUSBLog();
     virtual QStringList DevicesFound() = 0; // функция, возвращающая список найденных устройств (COM-портов, устройств USB)
@@ -99,8 +99,8 @@ public:
 signals:
     void SetDataSize(quint32); // сигналы для прогрессбаров - отслеживание принятых данных, стёртых осциллограмм и т.п.
     void SetDataCount(quint32);
-    void readbytessignal(QByteArray &); // for TE updating
-    void writebytessignal(QByteArray &); // for TE updating
+    void readbytessignal(QByteArray ); // for TE updating
+    void writebytessignal(QByteArray ); // for TE updating
     void Retry();
     void ShowError(QString message);
     void QueryFinished();

@@ -8,6 +8,7 @@
 #define DIN31_DEF_INTYPE    0
 
 #include "config3x.h"
+#include "../gen/modulebsi.h"
 
 class Config31
 {

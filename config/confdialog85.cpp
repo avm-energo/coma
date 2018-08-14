@@ -71,6 +71,11 @@ void ConfDialog85::Fill()
     WDFunc::SetSPBData(this, "tsoloffspb", C85->Bci_block.TsolOFF);
     WDFunc::SetSPBData(this, "resnommaxspb", C85->Bci_block.RESnom_max);
     WDFunc::SetSPBData(this, "reskzmaxspb", C85->Bci_block.RESkz_max);
+    WDFunc::SetSPBData(this, "resmaxmex", C85->Bci_block.RES_max);
+    WDFunc::SetSPBData(this, "tsoltime", C85->Bci_block.SolTime);
+    WDFunc::SetSPBData(this, "pdrivenom", C85->Bci_block.Pdrive_nom);
+    WDFunc::SetSPBData(this, "pdrivepred", C85->Bci_block.Pdrive_pred);
+    WDFunc::SetSPBData(this, "pdrivealarm", C85->Bci_block.Pdrive_alarm);
     WDFunc::SetChBData(this, "adapt", (C85->Bci_block.Adapt == 1));
     QStringList fl = QStringList() << "Pa" << "Pb" << "Pc" << "Ta" << "Tb" << "Tc" << "To" << "Us";
     quint32 bitinbyte = 0x00000001;
@@ -156,6 +161,11 @@ void ConfDialog85::FillBack()
     WDFunc::SPBData(this, "tsoloffspb", C85->Bci_block.TsolOFF);
     WDFunc::SPBData(this, "resnommaxspb", C85->Bci_block.RESnom_max);
     WDFunc::SPBData(this, "reskzmaxspb", C85->Bci_block.RESkz_max);
+    WDFunc::SPBData(this, "resmaxmex", C85->Bci_block.RES_max);
+    WDFunc::SPBData(this, "tsoltime", C85->Bci_block.SolTime);
+    WDFunc::SPBData(this, "pdrivenom", C85->Bci_block.Pdrive_nom);
+    WDFunc::SPBData(this, "pdrivepred", C85->Bci_block.Pdrive_pred);
+    WDFunc::SPBData(this, "pdrivealarm", C85->Bci_block.Pdrive_alarm);
     WDFunc::ChBData(this, "adapt", tmpb);
     C85->Bci_block.Adapt = (tmpb) ? 1 : 0;
     QStringList fl = QStringList() << "Pa" << "Pb" << "Pc" << "Ta" << "Tb" << "Tc" << "To" << "Us";
@@ -400,10 +410,21 @@ void ConfDialog85::SetupUI()
     hlyout->addWidget(WDFunc::NewLBL(this, "С:"), 0);
     hlyout->addWidget(WDFunc::NewSPB(this, "reskz3", 0, 100000, 0, paramcolor), 1);
     glyout->addLayout(hlyout, 13, 1, 1, 1); */
-    glyout->addWidget(WDFunc::NewLBL(this, "Предельное значение мех. ресурса:"),14,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Значение ком. ресурса при номинальном токе:"),14,0,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "resnommaxspb", 1000, 1000000, 0,paramcolor),14,1,1,1);
-    glyout->addWidget(WDFunc::NewLBL(this, "Предельное значение комм. ресурса, кА²:"),15,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Значение комм. ресурса при токе кз, кА²:"),15,0,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "reskzmaxspb", 100, 50000, 0,paramcolor),15,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Предельное значение мех. ресурса, кА²:"),16,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "resmaxmex", 100, 1000000, 0,paramcolor),16,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Время через которое снимается напряжение с соленоида:"),17,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "tsoltime", 100, 50000, 0,paramcolor),17,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное значение давления в гидроприводе, МПа:"),18,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "pdrivenom", 100, 50000, 0,paramcolor),18,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Предупредительная уставка давления в гидроприводе, МПа:"),19,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "pdrivepred", 100, 50000, 0,paramcolor),19,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Аварийная уставка давления в гидроприводе, МПа:"),20,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "pdrivealarm", 100, 50000, 0,paramcolor),20,1,1,1);
+
     vlyout1->addLayout(glyout);
     vlyout1->addStretch(1);
     cp2->setLayout(vlyout1);

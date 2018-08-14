@@ -29,7 +29,7 @@ ConfigA1::ConfigA1(QVector<S2::DataRec> &config)
         if (config.at(i).id == 0xFFFFFFFF)
             config.removeAt(i);
     }
-    config.append({0xFFFFFFFF, 0, NULL});
+    config.append({0xFFFFFFFF, 0, nullptr});
 }
 
 void ConfigA1::SetDefConf()

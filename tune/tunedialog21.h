@@ -5,6 +5,7 @@
 #include "eabstracttunedialog.h"
 #include "../check/check21.h"
 #include "../gen/modulebsi.h"
+#include "../gen/maindef.h"
 
 #define TUNEFILELENGTH  256
 
@@ -16,7 +17,7 @@ class TuneDialog21 : public EAbstractTuneDialog
 {
     Q_OBJECT
 public:
-    explicit TuneDialog21(BoardTypes type = BoardTypes::BT_BASE, QWidget *parent = 0);
+    explicit TuneDialog21(BoardTypes type = BoardTypes::BT_BASE, QWidget *parent = nullptr);
     ~TuneDialog21();
 
 signals:
@@ -61,6 +62,7 @@ private slots:
 #if PROGSIZE != PROGSIZE_EMUL
     int ReadAnalogMeasurements();
     void TuneOneChannel();
+    void Cancel();
 #endif
 };
 

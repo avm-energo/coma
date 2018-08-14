@@ -68,7 +68,7 @@ private slots:
     void SetDefCoefs();
 #if PROGSIZE != PROGSIZE_EMUL
     int ReadAnalogMeasurements();
-    int TuneOneChannel();
+    int TuneOneChannel(int Ch);
 #endif
 };
 

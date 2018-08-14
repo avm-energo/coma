@@ -10,6 +10,7 @@
 #define D35_DEF_OUTTP   0
 
 #include "config3x.h"
+#include "../gen/modulebsi.h"
 
 class Config35
 {

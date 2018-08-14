@@ -24,7 +24,7 @@ Config85::Config85(QVector<S2::DataRec> &config)
 //        config.append({StartInIndex+7, sizeof(Bci_block.RESnom_OFF), Bci_block.RESnom_OFF});
 //        config.append({StartInIndex+8, sizeof(Bci_block.RESnom_ON), Bci_block.RESnom_ON});
 //        config.append({StartInIndex+9, sizeof(Bci_block.RESkz), &Bci_block.RESkz});
-        config.append({StartInIndex+10, sizeof(Bci_block.RESnom_max), &Bci_block.RESnom_max});
+        config.append({StartInIndex+10, sizeof(Bci_block.RES_max), &Bci_block.RES_max});
         config.append({StartInIndex+11, sizeof(Bci_block.RESkz_max), &Bci_block.RESkz_max});
         config.append({StartInIndex+12, sizeof(Bci_block.Unom), &Bci_block.Unom});
         config.append({StartInIndex+13, sizeof(Bci_block.Inom), &Bci_block.Inom});
@@ -80,8 +80,13 @@ Config85::Config85(QVector<S2::DataRec> &config)
         config.append({StartInIndex+63, sizeof(Bci_block.TsolOFF), &Bci_block.TsolOFF});
         config.append({StartInIndex+64, sizeof(Bci_block.NumA), &Bci_block.NumA});
         config.append({StartInIndex+65, sizeof(Bci_block.TypeA), &Bci_block.TypeA});
+        config.append({StartInIndex+66, sizeof(Bci_block.SolTime), &Bci_block.SolTime});
+        config.append({StartInIndex+67, sizeof(Bci_block.RESnom_max), &Bci_block.RESnom_max});
+        config.append({StartInIndex+68, sizeof(Bci_block.Pdrive_nom), &Bci_block.Pdrive_nom});
+        config.append({StartInIndex+69, sizeof(Bci_block.Pdrive_pred), &Bci_block.Pdrive_pred});
+        config.append({StartInIndex+70, sizeof(Bci_block.Pdrive_alarm), &Bci_block.Pdrive_alarm});
     }
-    config.append({0xFFFFFFFF, 0, NULL});
+    config.append({0xFFFFFFFF, 0, nullptr});
 }
 
 void Config85::SetDefConf()

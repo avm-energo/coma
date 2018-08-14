@@ -10,13 +10,13 @@
 
 Log::Log(QObject *parent) : QObject(parent)
 {
-    fp = 0;
+    fp = nullptr;
     mtx = new QMutex;
 }
 
 Log::~Log()
 {
-    if (fp != 0)
+    if (fp != nullptr)
     {
         fp->flush();
         fp->close();

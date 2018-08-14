@@ -19,6 +19,7 @@
 #include "../gen/timefunc.h"
 #include "../gen/modulebsi.h"
 #include "../widgets/wd_func.h"
+#include "../gen/maindef.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif

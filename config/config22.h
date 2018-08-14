@@ -21,11 +21,12 @@
 #define AIN22_MTM_STARTIDX  321
 
 #include "config.h"
+#include "../gen/modulebsi.h"
 
 class Config22
 {
 public:
-    Config22(QVector<S2::DataRec> &config, bool BaseBoard=true);
+    Config22(QVector<S2::DataRec> &config, int BaseBoard=BoardTypes::BT_BASE);
 
     struct Bci
     {

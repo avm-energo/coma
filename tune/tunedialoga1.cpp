@@ -11,6 +11,7 @@
 #include <QCoreApplication>
 #include <QFileDialog>
 #include "tunedialoga1.h"
+#include "../gen/maindef.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif

@@ -18,6 +18,7 @@
 #include <QVector>
 #include <QMap>
 #include "config.h"
+#include "../gen/modulebsi.h"
 
 class Config3x
 {

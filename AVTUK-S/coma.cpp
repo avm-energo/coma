@@ -84,7 +84,7 @@ void Coma::Go(const QString &parameter)
 {
     if (Mode != COMA_GENERALMODE)
     {
-        PublicClass::SetEmulated(true);
+        StdFunc::SetEmulated(true);
         Autonomous = true;
     }
     SetupUI();
@@ -251,12 +251,12 @@ void Coma::AddActionsToMenuBar(QMenuBar *menubar)
 void Coma::Stage3()
 {
     QString str;
-    ConfB = ConfM = 0;
-    CheckB = CheckM = 0;
-    TuneB = TuneM = 0;
+    ConfB = ConfM = nullptr;
+    CheckB = CheckM = nullptr;
+    TuneB = TuneM = nullptr;
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-    if (MainTW == 0)
+    if (MainTW == nullptr)
         return;
 
     InfoDialog *idlg = new InfoDialog;
@@ -270,48 +270,48 @@ void Coma::Stage3()
         MainConfDialog = new ConfDialog(S2Config, MTypeB, MTypeM);
         MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     }
+    OscD = new OscDialog(OscFunc);
     PrepareDialogs();
-    if (ConfB != 0)
+    if (ConfB != nullptr)
     {
-        str = (ConfM == 0) ? "Конфигурирование" : "Конфигурирование\nБазовая";
+        str = (ConfM == nullptr) ? "Конфигурирование" : "Конфигурирование\nБазовая";
         MainTW->addTab(ConfB, str);
         connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
         connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
     }
-    if (ConfM != 0)
+    if (ConfM != nullptr)
     {
-        str = (ConfB == 0) ? "Конфигурирование" : "Конфигурирование\nМезонин";
+        str = (ConfB == nullptr) ? "Конфигурирование" : "Конфигурирование\nМезонин";
         MainTW->addTab(ConfM, str);
         connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
         connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
     }
-    str = (TuneM == 0) ? "Регулировка" : "Регулировка\nБазовая";
-    if (TuneB != 0)
+    str = (TuneM == nullptr) ? "Регулировка" : "Регулировка\nБазовая";
+    if (TuneB != nullptr)
     {
         MainTW->addTab(TuneB, str);
         connect(TuneB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
     }
-    str = (TuneB == 0) ? "Регулировка" : "Регулировка\nМезонин";
-    if (TuneM != 0)
+    str = (TuneB == nullptr) ? "Регулировка" : "Регулировка\nМезонин";
+    if (TuneM != nullptr)
     {
         MainTW->addTab(TuneM, str);
         connect(TuneM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
     }
-    str = (CheckM == 0) ? "Проверка" : "Проверка\nБазовая";
-    if (CheckB != 0)
+    str = (CheckM == nullptr) ? "Проверка" : "Проверка\nБазовая";
+    if (CheckB != nullptr)
         MainTW->addTab(CheckB, str);
-    str = (CheckB == 0) ? "Проверка" : "Проверка\nМезонин";
-    if (CheckM != 0)
+    str = (CheckB == nullptr) ? "Проверка" : "Проверка\nМезонин";
+    if (CheckM != nullptr)
         MainTW->addTab(CheckM, str);
     if ((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == MTB_A1)
     {
         MainTW->addTab(new TuneDialogA1DN, "Настройка своего ДН");
         MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
     }
-    OscD = new OscDialog(OscFunc);
     fwupdialog *FwUpD = new fwupdialog;
     MainTW->addTab(OscD, "Осциллограммы");
-    if (SwjD != 0)
+    if (SwjD != nullptr)
         MainTW->addTab(SwjD, "Журнал переключений");
     MainTW->addTab(FwUpD, "Загрузка ВПО");
     if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
@@ -413,8 +413,8 @@ void Coma::PrepareDialogs()
     default: // 0x00
         break;
     }
-    if (CheckB != 0)
+    if (CheckB != nullptr)
         connect(OscD, SIGNAL(StopCheckTimer()), CheckB, SLOT(StopAnalogMeasurements()));
-    if (CheckM != 0)
+    if (CheckM != nullptr)
         connect(OscD, SIGNAL(StopCheckTimer()), CheckM, SLOT(StopAnalogMeasurements()));
 }

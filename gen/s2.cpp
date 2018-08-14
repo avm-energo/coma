@@ -91,7 +91,7 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
       if(R.id==0xFFFFFFFF)
           break;
       r=FindElem(dr,R.id);
-      if(r == 0) //элемент не найден в описании, пропускаем
+      if(r == nullptr) //элемент не найден в описании, пропускаем
       {
           tmpi = R.num_byte;
           pos += tmpi;
@@ -142,9 +142,9 @@ S2::DataRec *S2::FindElem(QVector<DataRec> *dr, quint16 id)
         if(R.id==id)
             return it;
         if(R.id==static_cast<quint16>(0xFFFF))
-            return 0;
+            return nullptr;
     }
-    return 0;
+    return nullptr;
 }
 
 void inline S2::updCRC32(const quint8 byte, quint32 *dwCRC32)

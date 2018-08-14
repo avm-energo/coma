@@ -2,6 +2,7 @@
 #define MODULEBSI_H
 
 #include <QtGlobal>
+#include "maindef.h"
 
 #define MAXERRORFLAGNUM 32
 

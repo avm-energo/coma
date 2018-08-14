@@ -25,13 +25,14 @@
 #define AIN21_AIT_MA        1
 #define AIN21_AIT_V         2
 
-#include "config.h"
 #include <QVector>
+#include "config.h"
+#include "../gen/modulebsi.h"
 
 class Config21
 {
 public:
-    Config21(QVector<S2::DataRec> &config, bool BaseBoard=true);
+    Config21(QVector<S2::DataRec> &config, int BaseBoard=BoardTypes::BT_BASE);
 
     struct Bci
     {

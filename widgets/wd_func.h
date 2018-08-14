@@ -26,7 +26,7 @@ public:
     template <typename T> static bool LEData(QWidget *w, const QString &lename, T &levalue)
     {
         QLineEdit *le = w->findChild<QLineEdit *>(lename);
-        if (le == 0)
+        if (le == nullptr)
             return false;
         QVariant tmpv = QVariant(le->text());
         bool ok = tmpv.convert(qMetaTypeId<T>());
@@ -38,7 +38,7 @@ public:
     template <typename T> static bool LENumber(QWidget *w, const QString &lename, T &levalue)
     {
         QLineEdit *le = w->findChild<QLineEdit *>(lename);
-        if (le == 0)
+        if (le == nullptr)
             return false;
         levalue = le->text().toDouble();
         return true;
@@ -54,7 +54,7 @@ public:
     template <typename T> static bool CBIndex(QWidget *w, const QString &cbname, T &index)
     {
         EComboBox *cb = w->findChild<EComboBox *>(cbname);
-        if (cb == 0)
+        if (cb == nullptr)
             return false;
         index = cb->currentIndex();
         return true;
@@ -64,7 +64,7 @@ public:
     template <typename T> static bool SPBData(QWidget *w, const QString &spbname, T &spbvalue)
     {
         QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
-        if (spb == 0)
+        if (spb == nullptr)
             return false;
         spbvalue = spb->value();
         return true;

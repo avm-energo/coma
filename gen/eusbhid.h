@@ -51,7 +51,7 @@ class EUsbHid : public EAbstractProtocomChannel
 {
     Q_OBJECT
 public:
-    explicit EUsbHid(QObject *parent = 0);
+    explicit EUsbHid(QObject *parent = nullptr);
     ~EUsbHid();
 
     bool ThreadRunning;

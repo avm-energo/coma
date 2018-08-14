@@ -28,7 +28,7 @@ int Commands::GetBsi(ModuleBSI::Bsi &bsi)
 int Commands::GetFile(quint32 filenum, QVector<S2::DataRec> *data)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    cn->Send(CN_GF, BoardTypes::BT_NONE, NULL, 0, filenum, data);
+    cn->Send(CN_GF, BoardTypes::BT_NONE, nullptr, 0, filenum, data);
     return cn->result;
 #else
     Q_UNUSED(filenum);

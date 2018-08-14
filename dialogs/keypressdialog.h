@@ -18,7 +18,7 @@ public:
     explicit KeyPressDialog(const QString &PswPhrase, QWidget *parent = 0); // PswPhrase - фраза, которую надо написать пользователю
 
 signals:
-    void Finished(QString &str);
+    void Finished(QString str);
     void Cancelled();
 
 public slots:

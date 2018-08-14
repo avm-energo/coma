@@ -176,7 +176,7 @@ private slots:
     void StartEmul();
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE
-    void UpdateMainTE(QByteArray &ba);
+    void UpdateMainTE(QByteArray ba);
     void SetTEEnabled(bool enabled);
     void OpenBhbDialog();
     void MouseMove();

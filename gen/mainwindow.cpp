@@ -47,11 +47,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     if (!dir.exists())
         dir.mkpath(".");
     S2Config.clear();
-    MainConfDialog = 0;
-    ConfB = ConfM = 0;
+    MainConfDialog = nullptr;
+    ConfB = ConfM = nullptr;
 #ifndef MODULE_A1
-    OscD = 0;
-    SwjD = 0;
+    OscD = nullptr;
+    SwjD = nullptr;
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE
     PrepareTimers();
@@ -69,8 +69,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 #endif
     connect(cn,SIGNAL(SetDataSize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
     connect(cn,SIGNAL(SetDataCount(quint32)),this,SLOT(SetProgressBar1(quint32)));
-    connect(cn,SIGNAL(readbytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
-    connect(cn,SIGNAL(writebytessignal(QByteArray &)),this,SLOT(UpdateMainTE(QByteArray &)));
+    connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+    connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
     connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
 #endif
@@ -484,12 +484,12 @@ void MainWindow::Fill()
 }
 
 #if PROGSIZE >= PROGSIZE_LARGE
-void MainWindow::UpdateMainTE(QByteArray &ba)
+void MainWindow::UpdateMainTE(QByteArray ba)
 {
     if (!TEEnabled)
         return;
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
-    if (MainTE != 0)
+    if (MainTE != nullptr)
         MainTE->append(ba.toHex());
 }
 
@@ -637,7 +637,7 @@ void MainWindow::SetProgressBarSize(QString prbnum, quint32 size)
     QString prbname = "prb"+prbnum+"prb";
     QString lblname = "prb"+prbnum+"lbl";
     QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
-    if (prb == 0)
+    if (prb == nullptr)
     {
         DBGMSG;
         return;
@@ -652,7 +652,7 @@ void MainWindow::SetProgressBar(QString prbnum, quint32 cursize)
     QString prbname = "prb"+prbnum+"prb";
     QString lblname = "prb"+prbnum+"lbl";
     QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
-    if (prb != 0)
+    if (prb != nullptr)
     {
         prb->setValue(cursize);
         WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage() + QString::number(cursize) + " из " + QString::number(prb->maximum()));
@@ -693,7 +693,7 @@ void MainWindow::GetDeviceFromTable(QModelIndex idx)
 {
     Q_UNUSED(idx);
     ETableView *tv = this->findChild<ETableView *>("devicetv");
-    if (tv == 0)
+    if (tv == nullptr)
     {
         DBGMSG;
         return;

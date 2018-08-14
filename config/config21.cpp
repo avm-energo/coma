@@ -1,9 +1,9 @@
 #include "config21.h"
 
-Config21::Config21(QVector<S2::DataRec> &config, bool BaseBoard)
+Config21::Config21(QVector<S2::DataRec> &config, int BaseBoard)
 {
     // параметры входных сигналов
-    quint32 StartInIndex = (BaseBoard) ? AIN21_MTB_STARTIDX : AIN21_MTM_STARTIDX;
+    quint32 StartInIndex = (BaseBoard == BoardTypes::BT_BASE) ? AIN21_MTB_STARTIDX : AIN21_MTM_STARTIDX;
     for (int i=0; i<config.size(); ++i)
     {
         if (config.at(i).id == 0xFFFFFFFF)
@@ -27,7 +27,7 @@ Config21::Config21(QVector<S2::DataRec> &config, bool BaseBoard)
     config.append({StartInIndex++, sizeof(Bci_block.filterthr), &Bci_block.filterthr});
     config.append({StartInIndex++, sizeof(Bci_block.filtern), &Bci_block.filtern});
     config.append({StartInIndex++, sizeof(Bci_block.hysteresis), &Bci_block.hysteresis});
-    config.append({0xFFFFFFFF, 0, NULL});
+    config.append({0xFFFFFFFF, 0, nullptr});
 }
 
 void Config21::SetDefConf()

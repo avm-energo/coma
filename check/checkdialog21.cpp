@@ -123,8 +123,10 @@ void CheckDialog21::RefreshAnalogValues(int bdnum)
     {
     case BD_COMMON:
         Ch->FillBd0(this);
+        break;
     case 1: // Блок #1
         Ch21->FillBd1W(this);
+        break;
     default:
         return;
     }

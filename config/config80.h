@@ -4,6 +4,7 @@
 #define ID808X_START    1001
 
 #include "config.h"
+#include "../gen/modulebsi.h"
 
 class Config80
 {

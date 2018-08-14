@@ -127,26 +127,37 @@ void CheckDialog80::RefreshAnalogValues(int bdnum)
     {
     case BD_COMMON:
         Ch->FillBd0(this);
+        break;
     case C80_BDA_IN: // Блок #1
         Ch80->FillBd1(this);
+        break;
     case C80_BD_31:
         Ch80->FillBd2(this);
+        break;
     case C80_BD_32:
         Ch80->FillBd3(this);
+        break;
     case C80_BDNS_31:
         Ch80->FillBd4(this);
+        break;
     case C80_BDH_31:
         Ch80->FillBd5(this);
+        break;
     case C80_BDNS_32:
         Ch80->FillBd6(this);
+        break;
     case C80_BDH_32:
         Ch80->FillBd7(this);
+        break;
     case C80_BDL_31:
         Ch80->FillBd8(this);
+        break;
     case C80_BDL_32:
         Ch80->FillBd9(this);
+        break;
     case C80_BDPWR:
         Ch80->FillBd10(this);
+        break;
     default:
         return;
     }
@@ -217,5 +228,5 @@ void CheckDialog80::PrepareAnalogMeasurements()
 
 QWidget *CheckDialog80::CustomTab()
 {
-    return 0;
+    return nullptr;
 }

@@ -39,7 +39,7 @@ void AbstractConfDialog::WriteConf()
     if (!PrepareConfToWrite())
         return;
     int res;
-    if ((res = Commands::WriteFile(NULL, 1, S2Config)) == Error::ER_NOERROR)
+    if ((res = Commands::WriteFile(nullptr, 1, S2Config)) == Error::ER_NOERROR)
     {
         emit BsiIsNeedToBeAcquiredAndChecked();
         EMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");

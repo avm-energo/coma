@@ -13,14 +13,14 @@
 
 // thresholds
 #define TMAX    FLT_MAX
-#define T25     25.0
-#define T5      5.0
-#define TH1     1.0
-#define TH05    0.5
-#define TH01    0.1
-#define TH005   0.05
-#define TH002   0.02
-#define TH0005  0.005
+#define T25     25.0f
+#define T5      5.0f
+#define TH1     1.0f
+#define TH05    0.5f
+#define TH01    0.1f
+#define TH005   0.05f
+#define TH002   0.02f
+#define TH0005  0.005f
 
 // signals
 #define S0      0.0

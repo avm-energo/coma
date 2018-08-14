@@ -1,9 +1,9 @@
 #include "config22.h"
 
-Config22::Config22(QVector<S2::DataRec> &config, bool BaseBoard)
+Config22::Config22(QVector<S2::DataRec> &config, int BaseBoard)
 {
     // параметры входных сигналов
-    quint32 StartInIndex = (BaseBoard) ? AIN22_MTB_STARTIDX : AIN22_MTM_STARTIDX;
+    quint32 StartInIndex = (BaseBoard == BoardTypes::BT_BASE) ? AIN22_MTB_STARTIDX : AIN22_MTM_STARTIDX;
     for (int i=0; i<config.size(); ++i)
     {
         if (config.at(i).id == 0xFFFFFFFF)
@@ -23,7 +23,7 @@ Config22::Config22(QVector<S2::DataRec> &config, bool BaseBoard)
     config.append({StartInIndex++, sizeof(Bci_block.cnt_filtrT), &Bci_block.cnt_filtrT});
     config.append({StartInIndex++, sizeof(Bci_block.hysteresisT), &Bci_block.hysteresisT});
     config.append({StartInIndex++, AIN22_NUMCH * sizeof(quint32), &Bci_block.RzeroT});
-    config.append({0xFFFFFFFF, 0, NULL});
+    config.append({0xFFFFFFFF, 0, nullptr});
 }
 
 void Config22::SetDefConf()

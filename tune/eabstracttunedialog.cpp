@@ -193,7 +193,7 @@ int EAbstractTuneDialog::CheckPassword()
 {
     QEventLoop PasswordLoop;
     KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    connect(dlg,SIGNAL(Finished(QString &)),this,SLOT(PasswordCheck(QString &)));
+    connect(dlg,SIGNAL(Finished(QString)),this,SLOT(PasswordCheck(QString)));
     connect(this,SIGNAL(PasswordChecked()),&PasswordLoop,SLOT(quit()));
     dlg->show();
     PasswordLoop.exec();
@@ -317,7 +317,7 @@ void EAbstractTuneDialog::StartTune()
     ProcessTune();
 }
 
-void EAbstractTuneDialog::PasswordCheck(QString &psw)
+void EAbstractTuneDialog::PasswordCheck(QString psw)
 {
     ok = false;
     if (psw.isEmpty())

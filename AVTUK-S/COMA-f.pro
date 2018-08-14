@@ -28,10 +28,12 @@ SOURCES += \
     coma.cpp \
     ../check/check.cpp \
     ../check/check21.cpp \
+    ../check/check22.cpp \
     ../check/check80.cpp \
     ../check/check85.cpp \
     ../check/checka1.cpp \
     ../check/checkdialog21.cpp \
+    ../check/checkdialog22.cpp \
     ../check/checkdialog80.cpp \
     ../check/checkdialog85.cpp \
     ../check/checkdialoga1.cpp \
@@ -73,14 +75,13 @@ SOURCES += \
     ../gen/eusbhid.cpp \
     ../gen/log.cpp \
     ../gen/mainwindow.cpp \
-    ../gen/publicclass.cpp \
     ../gen/qcustomplot.cpp \
     ../iec104/iec104.cpp \
     ../iec104/ethernet.cpp \
     ../models/trendviewmodel.cpp \
-    ../modules/eabstractmodule.cpp \
     ../tune/eabstracttunedialog.cpp \
     ../tune/tunedialog21.cpp \
+    ../tune/tunedialog22.cpp \
     ../tune/tunedialog80.cpp \
     ../tune/tunedialoga1.cpp \
     ../tune/tunedialoga1dn.cpp \
@@ -95,21 +96,25 @@ SOURCES += \
     ../widgets/getoscpbdelegate.cpp \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp \ 
-    ../check/check22.cpp \
-    ../check/checkdialog22.cpp \
-    ../tune/tunedialog22.cpp \
+    ../widgets/wd_func.cpp \
     ../widgets/passwordlineedit.cpp \
-    ../gen/s2.cpp
+    ../gen/s2.cpp \
+    ../gen/modulebsi.cpp \
+    ../gen/error.cpp \
+    ../gen/timefunc.cpp \
+    ../gen/files.cpp \
+    ../gen/stdfunc.cpp
 
 HEADERS  += \
     coma.h \
     ../check/check.h \
     ../check/check21.h \
+    ../check/check22.h \
     ../check/check80.h \
     ../check/check85.h \
     ../check/checka1.h \
     ../check/checkdialog21.h \
+    ../check/checkdialog22.h \
     ../check/checkdialog80.h \
     ../check/checkdialog85.h \
     ../check/checkdialoga1.h \
@@ -151,34 +156,36 @@ HEADERS  += \
     ../gen/eusbhid.h \
     ../gen/log.h \
     ../gen/mainwindow.h \
-    ../gen/publicclass.h \
     ../gen/qcustomplot.h \
     ../iec104/ethernet.h \
     ../iec104/iec104.h \
     ../models/trendviewmodel.h \
-    ../modules/eabstractmodule.h \
     ../tune/eabstracttunedialog.h \
     ../tune/tunedialog21.h \
+    ../tune/tunedialog22.h \
     ../tune/tunedialog80.h \
     ../tune/tunedialoga1.h \
     ../tune/tunedialoga1dn.h \
     ../widgets/ecombobox.h \
     ../widgets/emessagebox.h \
+    ../widgets/errorprotocolwidget.h \
     ../widgets/estackedwidget.h \
     ../widgets/etableitem.h \
     ../widgets/etablemodel.h \
     ../widgets/etableview.h \
     ../widgets/etabwidget.h \
     ../widgets/getoscpbdelegate.h \
-    ../widgets/errorprotocolwidget.h \
     ../widgets/signalchoosewidget.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h \ 
-    ../check/check22.h \
-    ../check/checkdialog22.h \
-    ../tune/tunedialog22.h \
+    ../widgets/wd_func.h \
     ../widgets/passwordlineedit.h \
-    ../gen/s2.h
+    ../gen/s2.h \
+    ../gen/modulebsi.h \
+    ../gen/error.h \
+    ../gen/timefunc.h \
+    ../gen/files.h \
+    ../gen/colors.h \
+    ../gen/stdfunc.h
 
 INCLUDEPATH += $$PWD/../../includes
 

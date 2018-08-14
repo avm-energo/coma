@@ -30,7 +30,7 @@ PasswordLineEdit *WDFunc::NewPswLE(QWidget *w, const QString &lename, QLineEdit:
 bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);
-    if (le == 0)
+    if (le == nullptr)
         return false;
     le->setText(levalue);
     if (!restring.isEmpty())
@@ -46,7 +46,7 @@ bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue
 bool WDFunc::SetLEColor(QWidget *w, const QString &lename, const QColor &color)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);
-    if (le == 0)
+    if (le == nullptr)
         return false;
     // http://forum.sources.ru/index.php?showtopic=313950
     QPalette pal = le->palette();
@@ -85,7 +85,7 @@ QLabel *WDFunc::NewLBLT(QWidget *w, const QString &text, const QString &lblname,
 bool WDFunc::SetTEData(QWidget *w, const QString &tename, const QString &tetext)
 {
     QTextEdit *te = w->findChild<QTextEdit *>(tename);
-    if (te == 0)
+    if (te == nullptr)
         return false;
     te->setText(tetext);
     return true;
@@ -94,7 +94,7 @@ bool WDFunc::SetTEData(QWidget *w, const QString &tename, const QString &tetext)
 bool WDFunc::AppendTEData(QWidget *w, const QString &tename, const QString &tetext)
 {
     QTextEdit *te = w->findChild<QTextEdit *>(tename);
-    if (te == 0)
+    if (te == nullptr)
         return false;
     te->append(tetext);
     return true;
@@ -103,7 +103,7 @@ bool WDFunc::AppendTEData(QWidget *w, const QString &tename, const QString &tete
 bool WDFunc::TEData(QWidget *w, const QString &tename, QString &tevalue)
 {
     QTextEdit *te = w->findChild<QTextEdit *>(tename);
-    if (te == 0)
+    if (te == nullptr)
         return false;
     tevalue = te->toPlainText();
     return true;
@@ -127,7 +127,7 @@ EComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, QStringList &cb
 bool WDFunc::CBData(QWidget *w, const QString &cbname, QString &cbvalue)
 {
     EComboBox *cb = w->findChild<EComboBox *>(cbname);
-    if (cb == 0)
+    if (cb == nullptr)
         return false;
     cbvalue = cb->currentText();
     return true;
@@ -136,7 +136,7 @@ bool WDFunc::CBData(QWidget *w, const QString &cbname, QString &cbvalue)
 bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue)
 {
     EComboBox *cb = w->findChild<EComboBox *>(cbname);
-    if (cb == 0)
+    if (cb == nullptr)
         return false;
     cb->setCurrentText(cbvalue);
     return true;
@@ -145,7 +145,7 @@ bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue
 bool WDFunc::SetCBIndex(QWidget *w, const QString &cbname, int index)
 {
     EComboBox *cb = w->findChild<EComboBox *>(cbname);
-    if (cb == 0)
+    if (cb == nullptr)
         return false;
     if (index < cb->count())
     {
@@ -158,7 +158,7 @@ bool WDFunc::SetCBIndex(QWidget *w, const QString &cbname, int index)
 bool WDFunc::SetCBColor(QWidget *w, const QString &cbname, const QString &color)
 {
     EComboBox *cb = w->findChild<EComboBox *>(cbname);
-    if (cb == 0)
+    if (cb == nullptr)
         return false;
     // http://forum.sources.ru/index.php?showtopic=313950
     QPalette pal = cb->palette();
@@ -187,7 +187,7 @@ QDoubleSpinBox *WDFunc::NewSPB(QWidget *parent, const QString &spbname, double m
 bool WDFunc::SetSPBData(QWidget *w, const QString &spbname, const double &spbvalue)
 {
     QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
-    if (spb == 0)
+    if (spb == nullptr)
         return false;
     spb->setValue(spbvalue);
     return true;
@@ -196,7 +196,7 @@ bool WDFunc::SetSPBData(QWidget *w, const QString &spbname, const double &spbval
 bool WDFunc::SetLBLImage(QWidget *w, const QString &lblname, QPixmap *pm)
 {
     QLabel *lbl = w->findChild<QLabel *>(lblname);
-    if (lbl == 0)
+    if (lbl == nullptr)
         return false;
     lbl->setPixmap(*pm);
     return true;
@@ -205,7 +205,7 @@ bool WDFunc::SetLBLImage(QWidget *w, const QString &lblname, QPixmap *pm)
 bool WDFunc::SetLBLColor(QWidget *w, const QString &lblname, const QString &lblcolor)
 {
     QLabel *lbl = w->findChild<QLabel *>(lblname);
-    if (lbl == 0)
+    if (lbl == nullptr)
         return false;
     // http://forum.sources.ru/index.php?showtopic=313950
     QPalette pal = lbl->palette();
@@ -217,7 +217,7 @@ bool WDFunc::SetLBLColor(QWidget *w, const QString &lblname, const QString &lblc
 bool WDFunc::SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext, bool enabled)
 {
     QLabel *lbl = w->findChild<QLabel *>(lblname);
-    if (lbl == 0)
+    if (lbl == nullptr)
         return false;
     if (!lbltext.isEmpty()) // if label text is empty save previous text in QLabel
         lbl->setText(lbltext);
@@ -228,7 +228,7 @@ bool WDFunc::SetLBLText(QWidget *w, const QString &lblname, const QString &lblte
 bool WDFunc::LBLText(QWidget *w, const QString &lblname, QString &text)
 {
     QLabel *lbl = w->findChild<QLabel *>(lblname);
-    if (lbl == 0)
+    if (lbl == nullptr)
         return false;
     text = lbl->text();
     return true;
@@ -250,7 +250,7 @@ QRadioButton *WDFunc::NewRB(QWidget *parent, const QString &rbtext, const QStrin
 bool WDFunc::RBData(QWidget *w, const QString &rbname, bool &data)
 {
     QRadioButton *rb = w->findChild<QRadioButton *>(rbname);
-    if (rb == 0)
+    if (rb == nullptr)
         return false;
     data = rb->isChecked();
     return true;
@@ -259,7 +259,7 @@ bool WDFunc::RBData(QWidget *w, const QString &rbname, bool &data)
 bool WDFunc::SetRBData(QWidget *w, const QString &rbname, bool data)
 {
     QRadioButton *rb = w->findChild<QRadioButton *>(rbname);
-    if (rb == 0)
+    if (rb == nullptr)
         return false;
     rb->setChecked(data);
     return true;
@@ -268,7 +268,7 @@ bool WDFunc::SetRBData(QWidget *w, const QString &rbname, bool data)
 QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid)
 {
     ETableView *tv = w->findChild<ETableView *>(tvname);
-    if (tv == 0)
+    if (tv == nullptr)
         return QString();
     QString tmps = tv->model()->data(tv->model()->index(tv->currentIndex().row(),column,QModelIndex()),Qt::DisplayRole).toString();
     if (isid) // если поле с ИД, надо убрать первую цифру - номер таблицы и разделяющую точку, если они присутствуют
@@ -288,7 +288,7 @@ QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid
 void WDFunc::TVAutoResize(QWidget *w, const QString &tvname)
 {
     ETableView *tv = w->findChild<ETableView *>(tvname);
-    if (tv == 0)
+    if (tv == nullptr)
         return;
     tv->resizeColumnsToContents();
     tv->resizeRowsToContents();
@@ -310,7 +310,7 @@ QCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString
 bool WDFunc::ChBData(QWidget *w, const QString &chbname, bool &data)
 {
     QCheckBox *chb = w->findChild<QCheckBox *>(chbname);
-    if (chb == 0)
+    if (chb == nullptr)
         return false;
     data = chb->isChecked();
     return true;
@@ -319,7 +319,7 @@ bool WDFunc::ChBData(QWidget *w, const QString &chbname, bool &data)
 bool WDFunc::SetChBData(QWidget *w, const QString &chbname, bool data)
 {
     QCheckBox *chb = w->findChild<QCheckBox *>(chbname);
-    if (chb == 0)
+    if (chb == nullptr)
         return false;
     chb->setChecked(data);
     return true;
@@ -352,14 +352,14 @@ void WDFunc::AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lenam
 void WDFunc::SetEnabled(QWidget *w, const QString &wname, bool enabled)
 {
     QWidget *wdgt = w->findChild<QWidget *>(wname);
-    if (wdgt != 0)
+    if (wdgt != nullptr)
         wdgt->setEnabled(enabled);
 }
 
 void WDFunc::SetVisible(QWidget *w, const QString &wname, bool visible)
 {
     QWidget *wdgt = w->findChild<QWidget *>(wname);
-    if (wdgt != 0)
+    if (wdgt != nullptr)
     {
         if (visible)
             wdgt->show();

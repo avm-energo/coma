@@ -91,7 +91,7 @@ private:
 private slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void StartTune();
-    void PasswordCheck(QString &psw);
+    void PasswordCheck(QString psw);
     virtual int ReadAnalogMeasurements() = 0;
     //    void UpdateNSecondsWidget();
         void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные

@@ -14,6 +14,7 @@
 #include "../gen/stdfunc.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
+#include "../gen/maindef.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -21,7 +22,7 @@
 TuneDialog22::TuneDialog22(BoardTypes type, QWidget *parent) :
     EAbstractTuneDialog(parent)
 {
-    C22 = new Config22(S2Config);
+    C22 = new Config22(S2Config, type);
     setAttribute(Qt::WA_DeleteOnClose);
     BoardType = type;
     ChNum = 0;
@@ -44,7 +45,7 @@ QGroupBox * TuneDialog22::CoeffGB(const QString &title, const QString &coeff)
     {
         hlyout->addWidget(WDFunc::NewLBL(this, "k"+coeff+"["+QString::number(i)+"]:"));
         hlyout->addWidget(WDFunc::NewLE(this, "k"+coeff+"."+QString::number(i), "", ValuesLEFormat), 1);
-        hlyout->addWidget(WDFunc::NewLBL(this, "b"+coeff+"["+QString::number(i)+"]:"));
+        hlyout->addWidget(WDFunc::NewLBLT(this, "b"+coeff+"["+QString::number(i)+"]:", "", "", "b"+coeff+"."+QString::number(i)));
         hlyout->addWidget(WDFunc::NewLE(this, "b"+coeff+"."+QString::number(i), "", ValuesLEFormat), 1);
         if ((i>0)&&!((i+1)%2))
         {
@@ -91,8 +92,8 @@ void TuneDialog22::SetupUI()
     TuneTW->addTab(cp1,"Настройка");
     TuneTW->addTab(cp2,"Коэффициенты");
     lyout = new QVBoxLayout;
-    gb1lyout->addWidget(CoeffGB("Настроечные коэффициенты при усилении 1x", "1"));
-    gb1lyout->addWidget(CoeffGB("Настроечные коэффициенты при усилении 16x", "2"));
+    gb1lyout->addWidget(CoeffGB("Настроечные коэффициенты при усилении 1x", "0"));
+    gb1lyout->addWidget(CoeffGB("Настроечные коэффициенты при усилении 16x", "1"));
     gb1lyout->addWidget(BottomUI());
     lyout->addLayout(gb1lyout);
     cp2->setLayout(lyout);
@@ -101,7 +102,7 @@ void TuneDialog22::SetupUI()
     lyout->addWidget(TuneTW);
     setLayout(lyout);
 #if PROGSIZE != PROGSIZE_EMUL
-    if ((!(ModuleBSI::GetHealth() & HTH_REGPARS)) && !StdFunc::IsInEmulateMode()) // есть настроечные коэффициенты в памяти модуля
+     if ((!(ModuleBSI::GetHealth() & HTH_REGPARS)) && !StdFunc::IsInEmulateMode()) // есть настроечные коэффициенты в памяти модуля
         ReadTuneCoefs(); // считать их из модуля и показать на экране
 #endif
 }
@@ -119,9 +120,9 @@ void TuneDialog22::SetPf()
 {
     int count = 0;
     pf[lbls.at(count++)] = &EAbstractTuneDialog::CheckPassword; // 1. Ввод пароля
-    int (EAbstractTuneDialog::*func)() = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog22::ShowScheme);
+    int (EAbstractTuneDialog::*func)() = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog22::ShowScheme);
     pf[lbls.at(count++)] = func; // 2. Отображение схемы подключения
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialog22::Tune);
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog22::Tune);
     pf[lbls.at(count++)] = func; // 3. Регулировка
 }
 
@@ -148,12 +149,15 @@ int TuneDialog22::Show0(int coef)
 {
     if (coef < 2)
     {
-        if (QMessageBox::information(this,"Настройка",\
+        if(EMessageBox::question(this,"Настройка",\
                                      "Задайте значение сопротивления "+QString::number(R0[coef], 'f', 2) + \
                                      " Ом\nна входе "+QString::number(ChNum)+\
-                                     " модуля и нажмите OK") == QMessageBox::Ok)
+                                     " модуля и нажмите OK", nullptr, "Ok" , "Close"))   //StdFunc::FloatInRange(R0[coef],0)
             return Error::ER_NOERROR;
+                else
+            return Error::ER_GENERALERROR;
     }
+
     return Error::ER_GENERALERROR;
 }
 
@@ -162,12 +166,15 @@ int TuneDialog22::ShowW100(int coef)
     if (coef < 2)
     {
         float R100 = R0[coef]*C22->Bci_block.W100[ChNum];
-        if (QMessageBox::information(this,"Настройка",\
+        if (EMessageBox::question(this,"Настройка",\
                                      "Задайте значение сопротивления"+QString::number(R100) + \
                                      " Ом\nна входе "+QString::number(ChNum)+\
-                                     " модуля и нажмите OK") == QMessageBox::Ok)
+                                     " модуля и нажмите OK", nullptr, "Ok" , "Close"))
             return Error::ER_NOERROR;
+                else
+            return Error::ER_GENERALERROR;
     }
+
     return Error::ER_GENERALERROR;
 }
 
@@ -203,7 +210,7 @@ int TuneDialog22::Tune()
 {
     for (ChNum=0; ChNum<AIN22_NUMCH; ++ChNum)
     {
-        if (TuneOneChannel() == Error::ER_GENERALERROR)
+        if (TuneOneChannel(ChNum) == Error::ER_GENERALERROR)
             return Error::ER_GENERALERROR;
     }
     return Error::ER_NOERROR;
@@ -212,8 +219,8 @@ int TuneDialog22::Tune()
 bool TuneDialog22::CheckAndShowTune0()
 {
     WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda0.sin[ChNum]));
-    if (!CalcNewTuneCoef())
-        return false;
+//    if (!CalcNewTuneCoef())
+//        return false;
     FillBac();
     return true;
 }
@@ -247,15 +254,17 @@ int TuneDialog22::ReadAnalogMeasurements()
     return Error::ER_NOERROR;
 }
 
-int TuneDialog22::TuneOneChannel()
+int TuneDialog22::TuneOneChannel(int Ch)
 {
-    for (CoefNum=0; CoefNum<2; ++CoefNum)
+    for (CoefNum=0; CoefNum<2; CoefNum++)
     {
-        WDFunc::CBIndex(this, "tunenumch", ChNum);
-        Show0(CoefNum);
+        WDFunc::CBIndex(this, "tunenumch", Ch);
+        if(Show0(CoefNum) == Error::ER_GENERALERROR)
+            return Error::ER_GENERALERROR;
         if (TuneChannel(TTUNE_0) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
-        ShowW100(CoefNum);
+        if(ShowW100(CoefNum) == Error::ER_GENERALERROR)
+            return Error::ER_GENERALERROR;
         if (TuneChannel(TTUNE_W100) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
     }
@@ -308,7 +317,7 @@ void TuneDialog22::FillBackBac()
             if (ok)
             {
                 WDFunc::LEData(this, "k"+QString::number(j)+"."+QString::number(i), tmps);
-                Bac_block[i].fkin[i] = tmps.toFloat(&ok);
+                Bac_block[j].fkin[i] = tmps.toFloat(&ok);
                 if (ok)
                     continue;
             }
