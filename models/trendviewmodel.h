@@ -28,7 +28,7 @@ private:
     bool NoDiscrete, NoAnalog;
     QStringList DigitalNames, AnalogNames;
 
-private slots:
+public slots:
     void SaveToExcel();
     void SaveToComtrade();
 };
