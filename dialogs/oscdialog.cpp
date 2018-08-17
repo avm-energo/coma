@@ -60,7 +60,7 @@ void OscDialog::SetupUI()
 void OscDialog::UpdateModel()
 {
     ETableView *tv = this->findChild<ETableView *>("osctv");
-    if (tv == 0)
+    if (tv == nullptr)
     {
         DBGMSG;
         return; // !!! системная проблема

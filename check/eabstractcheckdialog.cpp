@@ -28,7 +28,7 @@ EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board = BoardTypes::BT_BAS
 {
     XlsxWriting = false;
     Busy = false;
-    xlsx = 0;
+    xlsx = nullptr;
     WRow = 0;
     Board = board;
     Bd_blocks.clear();
@@ -63,7 +63,7 @@ void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
     for (int i=0; i<BdUINum; ++i)
         CheckTW->addTab(BdUI(i),"  "+tabnames.at(i)+"  ");
     QWidget *w = CustomTab();
-    if (w != 0)
+    if (w != nullptr)
         CheckTW->addTab(w, "  Прочее  ");
     lyout = new QVBoxLayout;
     lyout->addWidget(CheckTW);
@@ -182,10 +182,10 @@ void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
     PrepareHeadersForFile(6); // в 6 ряду пишем заголовки
     WRow = 7;
     QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
-    if (pb != 0)
+    if (pb != nullptr)
         pb->setEnabled(false);
     pb = this->findChild<QPushButton *>("pbmeasurements");
-    if (pb != 0)
+    if (pb != nullptr)
         pb->setEnabled(false);
     ElapsedTimeCounter = new QTime;
     ElapsedTimeCounter->start();
@@ -204,7 +204,7 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     {
         xlsx->write(WRow,1,QVariant(QDateTime::currentDateTime().toString("hh:mm:ss.zzz")));
         QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
-        if (pb != 0)
+        if (pb != nullptr)
         {
             int MSecs = ElapsedTimeCounter->elapsed();
             QString TimeElapsed = QTime::fromMSecsSinceStartOfDay(MSecs).toString("hh:mm:ss.zzz");
@@ -253,13 +253,13 @@ void EAbstractCheckDialog::StopAnalogMeasurements()
             delete xlsx;
         }
         QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
-        if (pb != 0)
+        if (pb != nullptr)
         {
             pb->setEnabled(true);
             pb->setText("Запустить чтение аналоговых сигналов в файл");
         }
         pb = this->findChild<QPushButton *>("pbmeasurements");
-        if (pb != 0)
+        if (pb != nullptr)
             pb->setEnabled(true);
         XlsxWriting = false;
     }

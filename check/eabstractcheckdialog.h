@@ -29,7 +29,7 @@ class EAbstractCheckDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit EAbstractCheckDialog(BoardTypes board, QWidget *parent = 0);
+    explicit EAbstractCheckDialog(BoardTypes board, QWidget *parent = nullptr);
     void SetupUI(QStringList &tabnames);
 
     virtual QWidget *BdUI(int bdnum) = 0; // визуализация наборов текущих данных от модуля

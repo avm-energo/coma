@@ -549,7 +549,7 @@ void ConfDialog85::CheckConf()
 void ConfDialog85::SetEqType(int tmpi)
 {
     EStackedWidget *stw = this->findChild<EStackedWidget *>("eqtypestw");
-    if (stw != 0)
+    if (stw != nullptr)
     {
         if (tmpi < stw->count())
             stw->setCurrentIndex(tmpi);
@@ -565,7 +565,7 @@ void ConfDialog85::SetDefConf()
 void ConfDialog85::ShowAdaptParams(bool isAdaptChecked)
 {
     EStackedWidget *stw = this->findChild<EStackedWidget *>("adaptstw");
-    if (stw != 0)
+    if (stw != nullptr)
     {
         if (isAdaptChecked)
             stw->setCurrentIndex(1);

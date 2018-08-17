@@ -29,7 +29,6 @@
 #include <QPen>
 #include <QAction>
 #include <algorithm>
-#include "QtXlsx/xlsxdocument.h"
 #include "../config/config.h"
 #include "../widgets/signalchoosewidget.h"
 #include "../widgets/wd_func.h"
@@ -37,6 +36,8 @@
 #include "../gen/colors.h"
 #include "../gen/files.h"
 #include "trendviewdialog.h"
+#include "../gen/stdfunc.h"
+#include "../check/checkdialog85.h"
 
 TrendViewDialog::TrendViewDialog(QByteArray &ba, QWidget *parent) : QDialog(parent)
 {
@@ -44,7 +45,7 @@ TrendViewDialog::TrendViewDialog(QByteArray &ba, QWidget *parent) : QDialog(pare
     setStyleSheet(tmps);
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowFlags(Qt::WindowMinMaxButtonsHint);
-    TrendModel = 0;
+    TrendModel = nullptr;
     RangeChangeInProgress = false;
     Starting = true;
     BAToSave = ba;
@@ -126,7 +127,7 @@ QCPGraph *TrendViewDialog::GraphByName(const QString &name)
         if (graph->name() == name)
             return graph;
     }
-    return 0;
+    return nullptr;
 }
 
 void TrendViewDialog::ChangeRange(QCPRange range)
@@ -171,7 +172,7 @@ void TrendViewDialog::graphClicked(QCPAbstractPlottable *plot, int dataIndex)
 void TrendViewDialog::ASignalChoosed(QString signame)
 {
     QCPGraph *graph = GraphByName(signame);
-    if (graph == 0)
+    if (graph == nullptr)
         return;
     graph->setSelection(QCPDataSelection(QCPDataRange()));
 }
@@ -184,7 +185,7 @@ void TrendViewDialog::ASignalToggled(QString signame, bool isChecked)
 void TrendViewDialog::DSignalChoosed(QString signame)
 {
     QCPGraph *graph = GraphByName(signame);
-    if (graph == 0)
+    if (graph == nullptr)
         return;
     graph->setSelection(QCPDataSelection(QCPDataRange()));
 }
@@ -199,7 +200,7 @@ void TrendViewDialog::GraphSetVisible(int rectindex, const QString &graphname, b
     if (!visible)
     {
         QCPGraph *graph = GraphByName(graphname);
-        if (graph == 0)
+        if (graph == nullptr)
             return;
         MainPlot->removeGraph(graph);
         if (rectindex == AnalogRectIndex)
@@ -222,10 +223,10 @@ void TrendViewDialog::GraphSetVisible(int rectindex, const QString &graphname, b
         if (((rectindex == DiscreteRectIndex) && (DigitalGraphs.size() < MAXGRAPHSPERPLOT)) || \
                 ((rectindex == AnalogRectIndex) && (AnalogGraphs.size() < MAXGRAPHSPERPLOT)))
         {
-            if (scw != 0)
+            if (scw != nullptr)
                 scw->SetChecked(graphname, true);
             QCPGraph *graph = GraphByName(graphname);
-            if (graph == 0)
+            if (graph == nullptr)
             {
                 int count = MainPlot->graphCount();
                 QCPAxisRect *AxisRect = MainPlot->axisRect(rectindex);
@@ -286,6 +287,24 @@ void TrendViewDialog::AnalogRangeChanged(QCPRange range)
 
 void TrendViewDialog::SaveToExcel()
 {
+    QXlsx::Document *xlsx;
+    QFileDialog *dlg = new QFileDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setFileMode(QFileDialog::AnyFile);
+    QString Filename = dlg->getSaveFileName(this, "Сохранить данные",StdFunc::GetHomeDir(),"Excel files (*.xlsx)", \
+                                            Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    xlsx = new QXlsx::Document(Filename);
+    QStringList sl = Filename.split("#"); // отделяем имя файла от даты-времени
+    Filename = sl.at(0);
+    QString OscDateTime = sl.at(1);
+    xlsx->write(1,1,QVariant("Модуль: 85"));
+    xlsx->write(2,1,QVariant("Дата: "+OscDateTime.split(" ").at(0)));
+    xlsx->write(3,1,QVariant("Время: "+OscDateTime.split(" ").at(1)));
+    xlsx->write(4,1,QVariant("Смещение, мс"));
+
+    WriteToFile(WRow, xlsx);
+    WRow++;
+
 
 }
 
@@ -314,7 +333,7 @@ void TrendViewDialog::PlotShow()
                 AnalogGraphs[tmps]->rescaleValueAxis(true, true);
                 AnalogGraphs[tmps]->rescaleKeyAxis();
                 SignalChooseWidget *scw = this->findChild<SignalChooseWidget *>("analog");
-                if ((scw != 0) && (i < AnalogDescription.Names.size()))
+                if ((scw != nullptr) && (i < AnalogDescription.Names.size()))
                     scw->SetChecked(AnalogDescription.Names.at(i), true);
             }
         }
@@ -332,7 +351,7 @@ void TrendViewDialog::PlotShow()
                 DigitalGraphs[tmps]->rescaleValueAxis(true, true);
                 DigitalGraphs[tmps]->rescaleKeyAxis();
                 SignalChooseWidget *scw = this->findChild<SignalChooseWidget *>("digital");
-                if ((scw != 0) && (i < DigitalDescription.Names.size()))
+                if ((scw != nullptr) && (i < DigitalDescription.Names.size()))
                     scw->SetChecked(DigitalDescription.Names.at(i), true);
             }
         }
@@ -479,4 +498,42 @@ void TrendViewDialog::SetupPlots()
         NoAnalog = true;
     connect(MainPlot, SIGNAL(plottableClick(QCPAbstractPlottable*,int,QMouseEvent*)), this, SLOT(graphClicked(QCPAbstractPlottable*,int)));
     Starting = false;
+}
+
+void TrendViewDialog::WriteToFile(int row, QXlsx::Document *xls)
+{
+    QXlsx::Format format;
+    QString Precision = "0.0000";
+    format.setNumberFormat(Precision);
+
+        for (int i=0; i<3; i++)
+        {
+            xls->write(row,i+2,WDFunc::FloatValueWithCheck(Bd_block1.IUefNat_filt[i]), format);
+            xls->write(row,i+5,WDFunc::FloatValueWithCheck(Bd_block1.IUefNat_filt[i+3]), format);
+            xls->write(row,i+8,WDFunc::FloatValueWithCheck(Bd_block1.IUefNat_filt[i+6]), format);
+
+        }
+        xls->write(row,23,Bd_block1.Frequency,format);
+
+        row = 5;
+        /*for (int i = 0; i < MainPoints.size(); ++i) // цикл по точкам
+        {
+            int col = 2; // 2 = OCNA
+            for (int i=0; i<14; ++i)
+            {
+                if (point.Dis & 0x00000001)
+                    xls->write(row, col++, QVariant("1"));
+                else
+                    xls->write(row, col++, QVariant("0"));
+                point.Dis >>= 1;
+            }
+            col = 16;
+
+            while (col < 31)
+            {
+            xls->write(row, col, QVariant(QString::number(point.An[col-16], 'f', 6)));
+            col++;
+            }
+       }*/
+
 }

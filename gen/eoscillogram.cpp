@@ -101,7 +101,7 @@ void EOscillogram::SaveToExcel()
     }
         xlsx.save(); */
     /* из 8х
-     *             /*if (OscHeader.NsTime > 999999999L)
+                 if (OscHeader.NsTime > 999999999L)
                 OscHeader.NsTime = 0; // !!! ошибка - число наносекунд не может быть больше 999 млн 999 тыс 999
             GivenFilename.insert(0, pc.ModuleTypeString+"-");
             QString filename = QFileDialog::getSaveFileName(this,"Сохранить осциллограмму",GivenFilename,"Excel files (*.xlsx)");
