@@ -47,6 +47,7 @@ void TrendViewModel::AddDigitalPoint(const QString &GraphNum, int PointValue)
 
 void TrendViewModel::SaveToExcel()
 {
+    QStringList sl;
 /*    if (Filename.isEmpty())
     {
         DBGMSG;

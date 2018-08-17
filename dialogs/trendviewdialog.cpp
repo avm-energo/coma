@@ -286,7 +286,7 @@ void TrendViewDialog::AnalogRangeChanged(QCPRange range)
 
 void TrendViewDialog::SaveToExcel()
 {
-
+    TrendModel->SaveToExcel();
 }
 
 void TrendViewDialog::SaveToComtrade()
