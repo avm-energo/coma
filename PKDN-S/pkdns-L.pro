@@ -50,7 +50,6 @@ SOURCES += main.cpp\
     ../gen/commands.cpp \
     ../gen/log.cpp \
     ../gen/mainwindow.cpp \
-    ../gen/publicclass.cpp \
     ../tune/eabstracttunedialog.cpp \
     ../tune/tunedialoga1.cpp \
     ../tune/tunedialoga1dn.cpp \
@@ -66,7 +65,12 @@ SOURCES += main.cpp\
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp \
     ../widgets/passwordlineedit.cpp \
-    ../gen/s2.cpp
+    ../gen/s2.cpp \
+    ../gen/error.cpp \
+    ../gen/files.cpp \
+    ../gen/stdfunc.cpp \
+    ../gen/timefunc.cpp \
+    ../gen/modulebsi.cpp
 
 HEADERS  += pkdn_s.h \
     ../check/check.h \
@@ -91,7 +95,6 @@ HEADERS  += pkdn_s.h \
     ../gen/commands.h \
     ../gen/log.h \
     ../gen/mainwindow.h \
-    ../gen/publicclass.h \
     ../tune/eabstracttunedialog.h \
     ../tune/tunedialoga1.h \
     ../tune/tunedialoga1dn.h \
@@ -107,7 +110,13 @@ HEADERS  += pkdn_s.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
     ../widgets/passwordlineedit.h \
-    ../gen/s2.h
+    ../gen/s2.h \
+    ../gen/error.h \
+    ../gen/files.h \
+    ../gen/stdfunc.h \
+    ../gen/timefunc.h \
+    ../gen/colors.h \
+    ../gen/modulebsi.h
 
 INCLUDEPATH += $$PWD/../../includes
 

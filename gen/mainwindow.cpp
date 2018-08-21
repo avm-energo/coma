@@ -449,8 +449,10 @@ void MainWindow::Stage2()
         }
         return;
     }
+#if PROGSIZE >= PROGSIZE_LARGE
     else if (res == Error::ER_RESEMPTY)
         OpenBhbDialog();
+#endif
     Stage3();
 }
 #endif

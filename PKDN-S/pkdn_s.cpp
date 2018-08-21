@@ -35,6 +35,9 @@
 #include "../dialogs/a1dialog.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/emessagebox.h"
+#include "../gen/error.h"
+#include "../gen/colors.h"
+#include "../gen/modulebsi.h"
 
 pkdn_s::pkdn_s(QWidget *parent)
     : MainWindow(parent)
@@ -117,7 +120,7 @@ void pkdn_s::AddActionsToMenuBar(QMenuBar *menubar)
 
 void pkdn_s::Stage3()
 {
-    if (pc.ModuleBsi.MTypeB != MTB_A1) // не тот тип модуля
+    if (ModuleBSI::GetMType(BT_BASE) != MTB_A1) // не тот тип модуля
     {
         EMessageBox::error(this, "Ошибка", "Неверный тип модуля");
         Disconnect();
@@ -160,10 +163,10 @@ void pkdn_s::Stage3()
 //    connect(this,SIGNAL(Finished()),extdlg,SIGNAL(Finished()));
     MainTW->addTab(extdlg, "Поверка внешнего ДН/ТН");
 //    MainTW->addTab(FwUpD, "Загрузка ВПО");
-    if (pc.ModuleBsi.Hth & HTH_CONFIG) // нет конфигурации
-        pc.ErMsg(ER_NOCONF);
-    if (pc.ModuleBsi.Hth & HTH_REGPARS) // нет коэффициентов
-        pc.ErMsg(ER_NOTUNECOEF);
+    if (ModuleBSI::GetHealth() & HTH_CONFIG) // нет конфигурации
+        Error::ShowErMsg(ER_NOCONF);
+    if (ModuleBSI::GetHealth() & HTH_REGPARS) // нет коэффициентов
+        Error::ShowErMsg(ER_NOTUNECOEF);
     MainTW->repaint();
     MainTW->show();
     emit BsiRefresh();
