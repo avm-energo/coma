@@ -5,11 +5,11 @@
 #define Name "ПКДН-Сервис CР"
 #define GroupName "ПКДН-Сервис"
 #define EngName "PKDN-S-M"
-#define Version "2.2.250"
+#define Version "2.2.251"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "pkdns-M.exe"
-#define SetupName "pkdns-M-2.2.250-x86"
+#define SetupName "pkdns-M-2.2.251-x86"
 #define Prefix "D:\Progs\out"
 
 [Languages]
@@ -59,11 +59,11 @@ Name: "{group}\Удалить программу"; Filename: "{uninstallexe}"
 
 [Registry]
 Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; Flags: uninsdeletekey
-Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovDevName"; ValueData: "UPTN"; Flags: createvalueifdoesntexist
-Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovDevPrecision"; ValueData: "0.05"; Flags: createvalueifdoesntexist
-Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovDevSN"; ValueData: "00000001"; Flags: createvalueifdoesntexist
-Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovNumPoints"; ValueData: "60"; Flags: createvalueifdoesntexist
-Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "WriteLog"; ValueData: "true"; Flags: createvalueifdoesntexist
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovDevName"; ValueData: "UPTN"; Flags: deletevalue
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovDevPrecision"; ValueData: "0.05"; Flags: deletevalue
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovDevSN"; ValueData: "00000001"; Flags: deletevalue
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "PovNumPoints"; ValueData: "60"; Flags: deletevalue
+Root: HKCU; Subkey: "Software\EvelSoft\{#EngName}"; ValueType: String; ValueName: "WriteLog"; ValueData: "true"; Flags: deletevalue
 
 [Run]
 ; add the Parameters, WorkingDir and StatusMsg as you wish, just keep here

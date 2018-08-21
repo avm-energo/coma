@@ -16,9 +16,13 @@ QString StdFunc::MIPIP = "";
 
 StdFunc::StdFunc()
 {
+}
+
+void StdFunc::Init()
+{
     Emul = false;
 
-    SystemHomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"+PROGNAME+"/";
+    SystemHomeDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/" + PROGNAME + "/";
     QDir dir(SystemHomeDir);
     if (!dir.exists())
         dir.mkdir(SystemHomeDir);

@@ -1,11 +1,13 @@
 #include <QApplication>
 #include <QCommandLineParser>
 #include "pkdn_s.h"
+#include "../gen/stdfunc.h"
 
 int main(int argc, char *argv[])
 {
     QString Parameter;
     QApplication a(argc, argv);
+    StdFunc::Init();
     pkdn_s w;
 //    w.setAttribute(Qt::WA_AlwaysShowToolTips);
     w.SetMode(MainWindow::COMA_GENERALMODE);

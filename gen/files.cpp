@@ -39,7 +39,7 @@ int Files::LoadFromFile(const QString &filename, QByteArray &ba)
     }
     ba = file->readAll();
     file->close();
-    return Error::ER_NOERROR;
+    return ER_NOERROR;
 }
 
 // Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)"; QString ext - расширение по умолчанию

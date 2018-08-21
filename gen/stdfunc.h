@@ -13,6 +13,7 @@ public:
 
     static QString MIPIP;
 
+    static void Init();
     static QString VerToStr(quint32);
     static bool FloatInRange(float var, float value);
     static void SetHomeDir(const QString &dir);

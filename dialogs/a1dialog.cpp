@@ -60,7 +60,7 @@ A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : QDialog(parent)
 
 A1Dialog::~A1Dialog()
 {
-    SaveSettings();
+//    SaveSettings();
 }
 
 void A1Dialog::SetupUI()
@@ -760,7 +760,7 @@ void A1Dialog::Cancel()
 
 void A1Dialog::SetDNData()
 {
-    QString PovDev, PovDevSN, PovDevPrecision;
+//    QString PovDev, PovDevSN, PovDevPrecision;
     WDFunc::LEData(this, "UKDNOrganization", OrganizationString);
     WDFunc::LEData(this, "DNType", ReportHeader.DNType);
     WDFunc::LEData(this, "DNNamePhase", ReportHeader.DNNamePhase);
@@ -774,10 +774,11 @@ void A1Dialog::SetDNData()
     WDFunc::LEData(this, "DNPlace", ReportHeader.DNPlace);
     WDFunc::LEData(this, "DNInspection", ReportHeader.OuterInsp);
     WDFunc::LEData(this, "DNWindingInspection", ReportHeader.WindingsInsp);
-    WDFunc::LEData(this, "PovDev", PovDev);
-    WDFunc::LEData(this, "PovDevSN", PovDevSN);
-    WDFunc::LEData(this, "PovDevPrecision", PovDevPrecision);
-    ReportHeader.DNDevices = PovDev + " сер. номер " + PovDevSN + ", кл. точн. " + PovDevPrecision;
+    WDFunc::LEData(this, "PovDev", PovDev.DevName);
+    WDFunc::LEData(this, "PovDevSN", PovDev.DevSN);
+    WDFunc::LEData(this, "PovDevPrecision", PovDev.DevPrecision);
+    ReportHeader.DNDevices = PovDev.DevName + " сер. номер " + PovDev.DevSN + ", кл. точн. " + PovDev.DevPrecision;
+    SaveSettings();
     emit CloseDialog();
 }
 
