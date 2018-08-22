@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.1.238
+VERSION = 2.2.252
 
 QT       += core gui serialport printsupport
 
@@ -34,7 +34,6 @@ SOURCES += main.cpp\
     ../gen/commands.cpp \
     ../gen/log.cpp \
     ../gen/mainwindow.cpp \
-    ../gen/publicclass.cpp \
     ../check/eabstractcheckdialog.cpp \
     ../check/checka1.cpp \
     ../check/checkdialoga1.cpp \
@@ -61,7 +60,12 @@ SOURCES += main.cpp\
     ../widgets/wd_func.cpp \
     ../widgets/passwordlineedit.cpp \
     ../check/check.cpp \
-    ../gen/s2.cpp
+    ../gen/s2.cpp \
+    ../gen/error.cpp \
+    ../gen/files.cpp \
+    ../gen/modulebsi.cpp \
+    ../gen/stdfunc.cpp \
+    ../gen/timefunc.cpp
 
 HEADERS  += pkdn_s.h \
     ../gen/eabstractprotocomchannel.h \
@@ -70,7 +74,6 @@ HEADERS  += pkdn_s.h \
     ../gen/commands.h \
     ../gen/log.h \
     ../gen/mainwindow.h \
-    ../gen/publicclass.h \
     ../check/eabstractcheckdialog.h \
     ../check/checka1.h \
     ../check/checkdialoga1.h \
@@ -97,7 +100,14 @@ HEADERS  += pkdn_s.h \
     ../widgets/wd_func.h \
     ../widgets/passwordlineedit.h \
     ../check/check.h \
-    ../gen/s2.h
+    ../gen/s2.h \
+    ../gen/colors.h \
+    ../gen/error.h \
+    ../gen/files.h \
+    ../gen/maindef.h \
+    ../gen/modulebsi.h \
+    ../gen/stdfunc.h \
+    ../gen/timefunc.h
 
 INCLUDEPATH += $$PWD/../../includes
 
