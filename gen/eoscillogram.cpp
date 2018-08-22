@@ -17,7 +17,7 @@ EOscillogram::~EOscillogram()
 
 }
 
-void EOscillogram::AddAnalogPoint(int GraphNum, float PointValue)
+/*void EOscillogram::AddAnalogPoint(int GraphNum, float PointValue)
 {
     if (GraphNum < AnalogMainData.size())
     {
@@ -35,10 +35,10 @@ void EOscillogram::AddDigitalPoint(int GraphNum, int PointValue)
         tmpv.append(PointValue);
         DigitalMainData.replace(GraphNum, tmpv);
     }
-}
+} */
 
-void EOscillogram::SaveToExcel()
-{
+//void EOscillogram::SaveToExcel()
+//{
 /*    if (Filename.isEmpty())
     {
         DBGMSG;
@@ -227,9 +227,9 @@ void EOscillogram::SaveToExcel()
     xlsx.save();
     QMessageBox::information(this,"Успешно!","Записано успешно!");
     return; */
-}
+//}
 
-void EOscillogram::SaveToComtrade()
+/*void EOscillogram::SaveToComtrade()
 {
 
 }
@@ -237,7 +237,7 @@ void EOscillogram::SaveToComtrade()
 void EOscillogram::SetFilename(const QString &fn)
 {
     Filename = fn;
-}
+} */
 
 bool EOscillogram::PosPlusPlus(void *dst, int size)
 {

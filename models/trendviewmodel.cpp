@@ -1,10 +1,14 @@
 #include <QVector>
 #include <QPen>
 #include <QAction>
+#include <QFileDialog>
 #include "QtXlsx/xlsxdocument.h"
 #include "../config/config.h"
 #include "../gen/error.h"
+#include "../gen/files.h"
+#include "../gen/stdfunc.h"
 #include "trendviewmodel.h"
+#include "../widgets/wd_func.h"
 
 TrendViewModel::TrendViewModel(const QStringList &dlist, const QStringList &alist, \
                                  int pointsnum)
@@ -45,70 +49,25 @@ void TrendViewModel::AddDigitalPoint(const QString &GraphNum, int PointValue)
     }
 }
 
-void TrendViewModel::SaveToExcel()
+void TrendViewModel::SaveToExcel(QWidget *parent)
 {
-    QStringList sl;
-/*    if (Filename.isEmpty())
-    {
-        DBGMSG;
-        return;
-    }
+    QXlsx::Document *xlsx;
+    QFileDialog *dlg = new QFileDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setFileMode(QFileDialog::AnyFile);
+    QString Filename = dlg->getSaveFileName(parent, "Сохранить данные",StdFunc::GetHomeDir(),"Excel files (*.xlsx)", \
+                                            nullptr, QFileDialog::DontUseNativeDialog);
+    xlsx = new QXlsx::Document(Filename);
     QStringList sl = Filename.split("#"); // отделяем имя файла от даты-времени
-    if (sl.size() < 2)
-    {
-        DBGMSG;
-        return;
-    }
     Filename = sl.at(0);
     QString OscDateTime = sl.at(1);
-    QString tmps = pc.HomeDir + "/";
-    Filename.insert(0, tmps);
-    QXlsx::Document xlsx(Filename);
-    xlsx.write(1,1,QVariant("Модуль: "+pc.ModuleTypeString));
-    xlsx.write(2,1,QVariant("Дата: "+OscDateTime.split(" ").at(0)));
-    xlsx.write(3,1,QVariant("Время: "+OscDateTime.split(" ").at(1)));
-    xlsx.write(4,1,QVariant("Смещение, мс"));
-    quint32 MTypeB = pc.ModuleBsi.MTypeB << 8;
-    switch(MTypeB)
-    {
-    case MTB_85:
-    {
-        for (int col = 2; col < 5; ++col)
-        {
-            QString phase = QString::number(8+col, 16); // A,B,C
-            xlsx.write(4,col,QVariant("OCN"+phase));
-            xlsx.write(4,col+3,QVariant("OCF"+phase));
-            xlsx.write(4,col+6,QVariant("BKC"+phase));
-            xlsx.write(4,col+9,QVariant("BKO"+phase));
-            xlsx.write(4,col+14,QVariant("CN"+phase));
-            xlsx.write(4,col+17,QVariant("CF"+phase));
-            xlsx.write(4,col+20,QVariant("US"+phase));
-            xlsx.write(4,col+23,QVariant("I"+phase));
-            xlsx.write(4,col+26,QVariant("UL"+phase));
-        }
-        xlsx.write(4, 12, QVariant("CSC"));
-        xlsx.write(4, 13, QVariant("CSO"));
-        int row = 5;
-        for (int i = 0; i < MainPoints.size(); ++i) // цикл по точкам
-        {
-            int col = 2; // 2 = OCNA
-            for (int i=0; i<20; ++i)
-            {
-                if (DisPoint & 0x00000001)
-                    xlsx.write(row, col++, QVariant("1"));
-                else
-                    xlsx.write(row, col++, QVariant("0"));
-                DisPoint >>= 1;
-            }
-            col = 22;
-            while (col < 31)
-                xlsx.write(row, col++, QVariant(QString::number(point.An[col-22], 'f', 6)));
-        break;
-    }
-    default:
-        break;
-    }
-        xlsx.save(); */
+    xlsx->write(1,1,QVariant("Модуль: 85"));
+    xlsx->write(2,1,QVariant("Дата: "+OscDateTime.split(" ").at(0)));
+    xlsx->write(3,1,QVariant("Время: "+OscDateTime.split(" ").at(1)));
+    xlsx->write(4,1,QVariant("Смещение, мс"));
+
+    WriteToFile(5, xlsx);
+    //xlsx->save();
 }
 
 void TrendViewModel::SaveToComtrade()
@@ -147,4 +106,85 @@ int TrendViewModel::DContains(const QString &key)
 int TrendViewModel::AContains(const QString &key)
 {
     return AnalogMainData.keys().contains(key);
+}
+
+void TrendViewModel::WriteToFile(int row, QXlsx::Document *xls)
+{
+    QXlsx::Format format;
+    QString Precision = "0.0000";
+    format.setNumberFormat(Precision);
+
+     quint32 Digitalpointscurkey;
+     float Analogpointscurkey;
+
+     int col = 2;// 2 = OCNA
+     for (int j=0; j<14; ++j)  //j<tmpdv->size() используем только 14 бит
+     {
+         QVector<double> tmpv = DigitalMainData.value(tmpdv[j]);
+
+         for (int i=0; i<tmpv.size(); ++i)
+         {
+           Digitalpointscurkey = static_cast<quint32>(tmpv.at(i));
+
+           if (Digitalpointscurkey & 0x00000001)
+               xls->write((row+i), col, QVariant("1"));
+           else
+               xls->write((row+i), col, QVariant("0"));
+
+         }
+
+         col++;
+     }
+     col = 16;
+
+     for (int j=0; j<tmpav->size(); ++j)
+     {
+         QVector<double> tmpa = AnalogMainData.value(tmpav[j]);
+
+         for (int i=0; i<tmpa.size(); ++i)
+         {
+             Analogpointscurkey = static_cast<float>(tmpa.at(i));
+
+             xls->write((row+i), col, QVariant(QString::number(Analogpointscurkey, 'f', 6)));
+
+         }
+
+         col++;
+     }
+
+
+
+
+       /* for (int i=0; i<3; i++)
+        {
+            xls->write(row,i+2, QVariant(QString::number(AnalogMainData.value(&"USA"[40*i]))));
+            xls->write(row,i+5,WDFunc::FloatValueWithCheck(Bd_block1.IUefNat_filt[i+3]), format);
+            xls->write(row,i+8,WDFunc::FloatValueWithCheck(Bd_block1.IUefNat_filt[i+6]), format);
+
+        }
+        xls->write(row,23,Bd_block1.Frequency,format);
+
+        AnalogMainData.values();
+
+        row = 5;
+        for (int i = 0; i < MainPoints.size(); ++i) // цикл по точкам
+        {
+            int col = 2; // 2 = OCNA
+            for (int i=0; i<14; ++i)
+            {
+                if (DigitalMainData.value("OCNA") & 0x00000001)
+                    xls->write(row, col++, QVariant("1"));
+                else
+                    xls->write(row, col++, QVariant("0"));
+                point.Dis >>= 1;
+            }
+            col = 16;
+
+            while (col < 31)
+            {
+            xls->write(row, col, QVariant(QString::number(point.An[col-16], 'f', 6)));
+            col++;
+            }
+       }*/
+
 }

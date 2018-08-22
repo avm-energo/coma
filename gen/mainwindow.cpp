@@ -314,7 +314,7 @@ void MainWindow::ClearTW()
 {
     S2Config.clear();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-    if (MainTW == 0)
+    if (MainTW == nullptr)
         return;
     while (MainTW->count())
     {
@@ -323,7 +323,7 @@ void MainWindow::ClearTW()
         wdgt->deleteLater();
     }
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
-    if (MainTE != 0)
+    if (MainTE != nullptr)
         MainTE->clear();
 }
 
@@ -331,7 +331,7 @@ void MainWindow::ClearTW()
 void MainWindow::ShowOrHideSlideSW()
 {
     QWidget *w = this->findChild<QWidget *>("slidew");
-    if (w == 0)
+    if (w == nullptr)
         return;
     if (w->isHidden())
         w->show();
@@ -457,29 +457,29 @@ void MainWindow::Stage2()
 
 void MainWindow::SetMainDefConf()
 {
-    if (MainConfDialog != 0)
+    if (MainConfDialog != nullptr)
         MainConfDialog->SetDefConf();
 }
 
 void MainWindow::SetBDefConf()
 {
-    if (ConfB != 0)
+    if (ConfB != nullptr)
         ConfB->SetDefConf();
 }
 
 void MainWindow::SetMDefConf()
 {
-    if (ConfM != 0)
+    if (ConfM != nullptr)
         ConfM->SetDefConf();
 }
 
 void MainWindow::Fill()
 {
-    if (MainConfDialog != 0)
+    if (MainConfDialog != nullptr)
         MainConfDialog->Fill();
-    if (ConfB != 0)
+    if (ConfB != nullptr)
         ConfB->Fill();
-    if (ConfM != 0)
+    if (ConfM != nullptr)
         ConfM->Fill();
 }
 
@@ -712,17 +712,17 @@ void MainWindow::DisconnectAndClear()
 {
 #if PROGSIZE != PROGSIZE_EMUL
     Disconnect();
-    TuneB = TuneM = 0;
+    TuneB = TuneM = nullptr;
 #endif
 #ifndef MODULE_A1
-    OscD = 0;
+    OscD = nullptr;
 #endif
-    CheckB = CheckM = 0;
+    CheckB = CheckM = nullptr;
     emit FinishAll();
     emit ClearBsi();
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-    if (MainTW == 0)
+    if (MainTW == nullptr)
         return;
     MainTW->hide();
     StdFunc::SetEmulated(false);
@@ -744,7 +744,7 @@ void MainWindow::MouseMove()
 {
     QPoint curPos = mapFromGlobal(QCursor::pos());
     QWidget *sww = this->findChild<QWidget *>("slidew");
-    if (sww == 0)
+    if (sww == nullptr)
         return;
     if ((abs(curPos.x() - width()) < 10) && (curPos.y() > 0) && (curPos.y() < height()))
     {
@@ -770,7 +770,7 @@ void MainWindow::resizeEvent(QResizeEvent *e)
     if (!SWHide)
     {
         QWidget *sww = this->findChild<QWidget *>("slidew");
-        if (sww == 0)
+        if (sww == nullptr)
             return;
         sww->setGeometry(QRect(width()-sww->width(), 0, sww->width(), height()));
     }

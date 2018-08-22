@@ -6,7 +6,6 @@
 #include <QToolBar>
 #include "../models/trendviewmodel.h"
 #include "../gen/qcustomplot.h"
-#include "QtXlsx/xlsxdocument.h"
 #include "../gen/eoscillogram.h"
 
 #define MAXGRAPHSPERPLOT    16
