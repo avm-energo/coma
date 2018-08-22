@@ -3,6 +3,7 @@
 
 #include <QVector>
 #include <QMap>
+#include "QtXlsx/xlsxdocument.h"
 
 class TrendViewModel
 {
@@ -27,9 +28,20 @@ private:
     QString Filename;
     bool NoDiscrete, NoAnalog;
     QStringList DigitalNames, AnalogNames;
+    int WRow;
+    QString tmpdv[32] = {"OCNA","OCNB","OCNC","OCFA","OCFB","OCFC",
+             "BKCA", "BKCB","BKCC","BKOA","BKOB","BKOC",
+             "CSC","CSO","CNA","CNB","CNC","CFA","CFB","CFC",
+             "nNA","nNB","nNC","nFA","nFB","nFC","nCA","nCB","nCC",
+             "nOA","nOB","nOC"};
+    QString tmpav[9]={ "USA","USB","USC","IA","IB","IC","ULA","ULB","ULC"};
+
+
+
+    void WriteToFile(int row, QXlsx::Document *xls);
 
 public slots:
-    void SaveToExcel();
+    void SaveToExcel(QWidget *parent);
     void SaveToComtrade();
 };
 

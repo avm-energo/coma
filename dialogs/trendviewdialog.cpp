@@ -287,24 +287,7 @@ void TrendViewDialog::AnalogRangeChanged(QCPRange range)
 
 void TrendViewDialog::SaveToExcel()
 {
-    QXlsx::Document *xlsx;
-    QFileDialog *dlg = new QFileDialog;
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setFileMode(QFileDialog::AnyFile);
-    QString Filename = dlg->getSaveFileName(this, "Сохранить данные",StdFunc::GetHomeDir(),"Excel files (*.xlsx)", \
-                                            Q_NULLPTR, QFileDialog::DontUseNativeDialog);
-    xlsx = new QXlsx::Document(Filename);
-    QStringList sl = Filename.split("#"); // отделяем имя файла от даты-времени
-    Filename = sl.at(0);
-    QString OscDateTime = sl.at(1);
-    xlsx->write(1,1,QVariant("Модуль: 85"));
-    xlsx->write(2,1,QVariant("Дата: "+OscDateTime.split(" ").at(0)));
-    xlsx->write(3,1,QVariant("Время: "+OscDateTime.split(" ").at(1)));
-    xlsx->write(4,1,QVariant("Смещение, мс"));
-
-    WriteToFile(WRow, xlsx);
-    WRow++;
-
+    TrendModel->SaveToExcel(this);
 }
 
 void TrendViewDialog::SaveToComtrade()
@@ -497,42 +480,4 @@ void TrendViewDialog::SetupPlots()
         NoAnalog = true;
     connect(MainPlot, SIGNAL(plottableClick(QCPAbstractPlottable*,int,QMouseEvent*)), this, SLOT(graphClicked(QCPAbstractPlottable*,int)));
     Starting = false;
-}
-
-void TrendViewDialog::WriteToFile(int row, QXlsx::Document *xls)
-{
-    QXlsx::Format format;
-    QString Precision = "0.0000";
-    format.setNumberFormat(Precision);
-
-        for (int i=0; i<3; i++)
-        {
-            xls->write(row,i+2,WDFunc::FloatValueWithCheck(Bd_block1.IUefNat_filt[i]), format);
-            xls->write(row,i+5,WDFunc::FloatValueWithCheck(Bd_block1.IUefNat_filt[i+3]), format);
-            xls->write(row,i+8,WDFunc::FloatValueWithCheck(Bd_block1.IUefNat_filt[i+6]), format);
-
-        }
-        xls->write(row,23,Bd_block1.Frequency,format);
-
-        row = 5;
-        /*for (int i = 0; i < MainPoints.size(); ++i) // цикл по точкам
-        {
-            int col = 2; // 2 = OCNA
-            for (int i=0; i<14; ++i)
-            {
-                if (point.Dis & 0x00000001)
-                    xls->write(row, col++, QVariant("1"));
-                else
-                    xls->write(row, col++, QVariant("0"));
-                point.Dis >>= 1;
-            }
-            col = 16;
-
-            while (col < 31)
-            {
-            xls->write(row, col, QVariant(QString::number(point.An[col-16], 'f', 6)));
-            col++;
-            }
-       }*/
-
 }

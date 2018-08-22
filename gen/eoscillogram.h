@@ -79,9 +79,9 @@ public:
 
 #pragma pack(pop)   /* restore original alignment from stack */
 
-    void AddAnalogPoint(int GraphNum, float PointValue);
+/*    void AddAnalogPoint(int GraphNum, float PointValue);
     void AddDigitalPoint(int GraphNum, int PointValue);
-    void SetFilename(const QString &fn);
+    void SetFilename(const QString &fn); */
     bool PosPlusPlus(void *dst, int size);
 //    int ProcessOsc(quint32 oscid, quint32 oscnum, const QString &OscDateTime); // сама осциллограмма в BA
     int ProcessOsc();
@@ -96,8 +96,8 @@ private:
 public slots:
 
 private slots:
-    void SaveToExcel();
-    void SaveToComtrade();
+/*    void SaveToExcel();
+    void SaveToComtrade(); */
 };
 
 #endif // EOSCILLOGRAM_H
