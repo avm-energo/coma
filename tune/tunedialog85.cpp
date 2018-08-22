@@ -15,6 +15,7 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/maindef.h"
+#include "../check/check85.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -208,57 +209,57 @@ void TuneDialog85::SetPf()
     int count = 0;
     pf[lbls.at(count++)] = &EAbstractTuneDialog::CheckPassword; // Ввод пароля
     int (EAbstractTuneDialog::*func)() = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::SaveWorkConfig); // Сохранение текущей конфигурации
-    /*pf[lbls.at(count++)] = func; // 2. Отображение схемы подключения
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::ShowControlChooseDialog); // Отображение диалога выбора режима контроля показаний
+    pf[lbls.at(count++)] = func; // 2. Отображение схемы подключения
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::ShowControlChooseDialog); // Отображение диалога выбора режима контроля показаний
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Show3PhaseScheme); // Отображение схемы подключения
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Show3PhaseScheme); // Отображение схемы подключения
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_2_3); // Проверка связи РЕТОМ и МИП
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_2_3); // Проверка связи РЕТОМ и МИП
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_1); // Получение настроечных коэффициентов
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_1); // Получение настроечных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_1_1); // Установка настроечных коэффициентов по умолчанию
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_1_1); // Установка настроечных коэффициентов по умолчанию
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::SetNewTuneCoefs); // Установка коэффициентов
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::SetNewTuneCoefs); // Установка коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_2); // Получение текущих аналоговых данных
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_2); // Получение текущих аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::SaveUeff); // Сохранение значений фильтра
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::SaveUeff); // Сохранение значений фильтра
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_3); // Расчёт коррекции по фазе
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_3); // Расчёт коррекции по фазе
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_4); // Расчёт коррекции по частоте
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_4); // Расчёт коррекции по частоте
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_5); // Отображение ввода трёхфазных значений
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_5); // Отображение ввода трёхфазных значений
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_2); // Получение текущих аналоговых данных
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_2); // Получение текущих аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_6_2); // Расчёт коррекции взаимного влияния каналов
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_6_2); // Расчёт коррекции взаимного влияния каналов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_7_1); // Получение текущих аналоговых данных и расчёт настроечных коэффициентов по напряжениям
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_7_1); // Получение текущих аналоговых данных и расчёт настроечных коэффициентов по напряжениям
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_7_2); // Сохранение конфигурации
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_7_2); // Сохранение конфигурации
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_7_3); // Получение текущих аналоговых данных
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_7_3); // Получение текущих аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_7_4); // Ввод измеренных значений
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_7_4); // Ввод измеренных значений
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_7_5); // Расчёт настроечных коэффициентов по токам, напряжениям и углам
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_7_5); // Расчёт настроечных коэффициентов по токам, напряжениям и углам
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_7_6); // Сохранение конфигурации
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_7_6); // Сохранение конфигурации
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_7_7); // Отображение ввода трёхфазных значений
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_7_7); // Отображение ввода трёхфазных значений
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_7_8); // Получение текущих аналоговых данных
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_7_8); // Получение текущих аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_7_10); // Расчёт настроечных коэффициентов по токам, напряжениям и углам
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_7_10); // Расчёт настроечных коэффициентов по токам, напряжениям и углам
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_8_1); // Запись настроечных коэффициентов и переход на новую конфигурацию
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_8_1); // Запись настроечных коэффициентов и переход на новую конфигурацию
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_8_2); // Проверка аналоговых данных
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_8_2); // Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog80::Start7_3_9); // Восстановление сохранённой конфигурации и проверка
-    pf[lbls.at(count++)] = func;*/
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_9); // Восстановление сохранённой конфигурации и проверка
+    pf[lbls.at(count++)] = func;
 }
 
 #if PROGSIZE != PROGSIZE_EMUL
@@ -324,6 +325,170 @@ int TuneDialog85::Start7_3_2()
     ReadAnalogMeasurements();
     return StartCheckAnalogValues(V60, I1, S0, false);
 }
+
+int TuneDialog85::Start7_3_3()
+{
+/*    GED_Type = TD_GED_D;
+    GetExternalData();
+    Bac_newblock.DPsi[0] = 0;
+    int k = (pc.ModuleBsi.MTypeM == MTM_82) ? 3 : 6;
+    for (int i=1; i<k; ++i)
+        Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - Bda_block.phi_next_f[i];
+    if (pc.ModuleBsi.MTypeM == MTM_82)
+    {
+        for (int i=3; i<6; ++i)
+            Bac_newblock.DPsi[i] += RealData.d[i-3];
+    } */
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog85::Start7_3_4()
+{
+   GED_Type = TD_GED_F;
+    if (!(GetExternalData() == Error::ER_GENERALERROR))
+        New_Bac_block.K_freq = Bac_block.K_freq*RealData.f[0] / Bda_Block.Frequency;
+    else
+        return Error::ER_GENERALERROR;
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog85::Start7_3_5()
+{
+    return ShowRetomDialog(60.0, 1.0);
+}
+
+int TuneDialog85::Start7_3_6_2()
+{
+/*    double fTmp = Bda_block.IUefNat_filt[0] / IUefNat_filt_old[0] + Bda_block.IUefNat_filt[3] / IUefNat_filt_old[3];
+    fTmp /= 2;
+    Bac_newblock.Kinter = (fTmp * (1 + 6 * Bac_block.Kinter) - 1) / 6; */
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog85::Start7_3_7_1()
+{
+    GED_Type = TD_GED_U;
+    if (GetExternalData() == Error::ER_GENERALERROR)
+        return Error::ER_GENERALERROR;
+    if (Start7_3_2() == Error::ER_GENERALERROR)
+        return Error::ER_GENERALERROR;
+    for (int i=0; i<3; i++)
+    {
+        New_Bac_block.KmU[i] = Bac_block.KmU[i] * RealData.u[i] / Bda_Block.IUefNat_filt[i];
+        New_Bac_block.KmU2[i] = Bac_block.KmU2[i] * RealData.u[i] / Bda_Block.IUefNat_filt[i+6];
+    }
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog85::Start7_3_7_2()
+{
+   // Установить в конфигурации токи i2nom в 1 А
+        C85->Bci_block.ITT2nom = I1;
+    // послать новые коэффициенты по току в конфигурацию
+    if (Commands::WriteFile(&C85->Bci_block, 2, S2Config) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
+    WaitNSeconds(2);
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog85::Start7_3_7_3()
+{
+    ShowRetomDialog(V60, I1);
+    if (Start7_3_2() == Error::ER_GENERALERROR)
+        return Error::ER_GENERALERROR;
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog85::Start7_3_7_4()
+{
+    GED_Type = (TD_GED_I | TD_GED_U);
+    return GetExternalData();
+}
+
+int TuneDialog85::Start7_3_7_5()
+{
+    for (int i=0; i<3; ++i)
+    {
+      New_Bac_block.KmI_1[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_Block.IUefNat_filt[i];
+      //New_Bac_block.KmI_4[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_Block.IUefNat_filt[i];
+    }
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog85::Start7_3_7_6()
+{
+        C85->Bci_block.ITT2nom = I4;
+    if (Commands::WriteFile(&C85->Bci_block, 2, S2Config) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
+    WaitNSeconds(2);
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog85::Start7_3_7_7()
+{
+    return ShowRetomDialog(V60, I4);
+}
+
+int TuneDialog85::Start7_3_7_8()
+{
+    WaitNSeconds(15);
+    ReadAnalogMeasurements();
+    int res = StartCheckAnalogValues(V60, I4, S0, false);
+    if (res == Error::ER_GENERALERROR)
+        return Error::ER_GENERALERROR;
+    GED_Type = TD_GED_D | TD_GED_U;
+    return GetExternalData();
+}
+
+int TuneDialog85::Start7_3_7_10()
+{
+    for (int i=0; i<3; ++i)
+    {
+       New_Bac_block.KmI_4[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_Block.IUefNat_filt[i];
+    }
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog85::Start7_3_8_1()
+{
+    // 1. Отправляем настроечные параметры в модуль
+    return Commands::WriteBac(BT_NONE, &New_Bac_block, sizeof(Bac));
+}
+
+int TuneDialog85::Start7_3_8_2()
+{
+    WaitNSeconds(15);
+    ReadAnalogMeasurements();
+    return StartCheckAnalogValues(V60, I4, S0, true);
+}
+
+int TuneDialog85::Start7_3_9()
+{
+    if (EMessageBox::question(this,"Закончить?","Закончить настройку?"))
+    {
+        if (!LoadWorkConfig())
+            return Error::ER_GENERALERROR;
+        // переходим на прежнюю конфигурацию
+        // измеряем и проверяем
+        ShowRetomDialog(V57, C85->Bci_block.ITT2nom); // I = 1.0 or 5 or 4.0 A???
+        WaitNSeconds(15);
+        ReadAnalogMeasurements();
+        return StartCheckAnalogValues(V57, C85->Bci_block.ITT2nom, S0, true);
+    }
+    else
+        return false;
+    if (EMessageBox::question(this,"Вопрос","Очистить память осциллограмм?"))
+    {
+        StdFunc::SetPrbMessage("Стёрто записей: ");
+        if (Commands::EraseTechBlock(TECH_Bo) == Error::ER_NOERROR)
+            EMessageBox::information(this, "Внимание", "Стёрто успешно");
+        else
+            ERMSG("Ошибка при стирании");
+    }
+    return true;
+}
+
+
 #endif
 
 void TuneDialog85::FillBac()
@@ -409,4 +574,256 @@ int TuneDialog85::SaveWorkConfig()
     else
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
+}
+
+int TuneDialog85::StartCheckAnalogValues(double u, double i, double deg, bool tol)
+{
+    double utol, itol, ptol, dtol, ctol;
+    if (tol) // точные погрешности
+    {
+        utol = TH01; itol = TH0005; ptol = TH01; dtol = TH01; ctol = TH0005;
+    }
+    else
+    {
+        utol = TH05; itol = TH005; ptol = TH05; dtol = TH1; ctol = TH005;
+    }
+    int res;
+
+    res = CheckAnalogValues(u, u, S0, S0, S0, S0, S0, utol, itol, ptol, dtol, ctol);
+
+
+    return res;
+}
+
+int TuneDialog85::GetExternalData()
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    switch (TuneControlType)
+    {
+    case TUNEMIP:
+    {
+        StartMip();
+        WaitNSeconds(5);
+        StopMip();
+        if (CheckMip())
+        {
+            for (int i=1; i<4; ++i)
+            {
+                RealData.f[i] = MipDat[i];
+                RealData.u[i] = MipDat[i+3];
+                RealData.i[i] = MipDat[i+6];
+                RealData.d[i] = MipDat[i+10];
+            }
+            return Error::ER_NOERROR;
+        }
+        return Error::ER_GENERALERROR;
+    }
+    case TUNEMAN:
+    {
+        QDialog *dlg = new QDialog(this);
+        dlg->setAttribute(Qt::WA_DeleteOnClose);
+        dlg->setObjectName("dlg7371");
+        QGridLayout *glyout = new QGridLayout;
+        QLabel *lbl = new QLabel("Введите значения сигналов по приборам");
+        glyout->addWidget(lbl,0,0,1,6);
+        int row = 1;
+        int column = 0;
+        if (GED_Type & TD_GED_U)
+        {
+            for (int i=0; i<3; i++) // for A to C
+            {
+                lbl = new QLabel("Uф" + QString::number(i+10,36).toUpper()+", В");
+                glyout->addWidget(lbl,row,column++,1,1);
+                QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i), 0, 200, 2);
+                spb->setValue(60.0);
+                glyout->addWidget(spb,row,column++,1,1);
+            }
+            ++row;
+            column = 0;
+        }
+        if (GED_Type & TD_GED_I)
+        {
+            for (int i=0; i<3; i++) // for A to C
+            {
+                lbl = new QLabel("Iф" + QString::number(i+10,36).toUpper()+", A");
+                glyout->addWidget(lbl,row, column++,1,1);
+                QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i+3), 0, 6, 3);
+                spb->setValue(C85->Bci_block.ITT2nom);
+                glyout->addWidget(spb,row, column++,1,1);
+            }
+            ++row;
+            column = 0;
+        }
+        if (GED_Type & TD_GED_D)
+        {
+            for (int i=0; i<3; i++) // for A to C
+            {
+                lbl = new QLabel("Уг.нагр. ф" + QString::number(i+10,36).toUpper()+", град");
+                glyout->addWidget(lbl,3,i*2,1,1);
+                QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i+6), -360, 360, 2);
+                spb->setValue(0.0);
+                glyout->addWidget(spb,row, column++,1,1);
+            }
+            ++row;
+            column = 0;
+        }
+        if (GED_Type & TD_GED_F)
+        {
+            lbl = new QLabel("Частота ");
+            glyout->addWidget(lbl,row,column++,1,1);
+            QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb73719", 40.0, 60.0, 3);
+            spb->setValue(50.0);
+            glyout->addWidget(spb,row, column++,1,1);
+        }
+        QPushButton *pb = new QPushButton("Готово");
+        connect(pb,SIGNAL(clicked()),this,SLOT(SetExtData()));
+        glyout->addWidget(pb,4,0,1,3);
+        pb = new QPushButton("Отмена");
+        connect(pb,SIGNAL(clicked()),this,SLOT(CancelExtData()));
+        glyout->addWidget(pb,4,3,1,3);
+        dlg->setLayout(glyout);
+        dlg->exec();
+        if (Cancelled)
+            return Error::ER_GENERALERROR;
+        return Error::ER_NOERROR;
+    }
+    case TUNERET:
+    {
+        for (int i=0; i<3; i++)
+        {
+            RealData.u[i] = 60.0;
+            RealData.i[i] = C85->Bci_block.ITT2nom;
+            RealData.d[i] = 0.0;
+            RealData.f[i] = 50.0;
+        }
+        return Error::ER_NOERROR;
+    }
+    }
+    return Error::ER_GENERALERROR;
+#else
+    return Error::ER_NOERROR;
+#endif
+}
+
+int TuneDialog85::CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct)
+{
+    double ValuesToCheck[30] = {TD_TMK,TD_VBAT,TD_FREQ,u,u,u,u,u,u,i,i,i,p,p,p,s,s,s,q,q,q, \
+                                p,p,p,q,q,q,s,s,s};
+    double ThresholdsToCheck[30] = {T25,TH05,TH0005,utol,utol,utol,utol,utol,utol,itol,itol,itol,pt,pt,pt,pt,pt,pt,pt,pt,pt,\
+                                    pt,pt,pt,pt,pt,pt,pt,pt,pt};
+    double *VTC = ValuesToCheck;
+    double *TTC = ThresholdsToCheck;
+
+    for (int i = 0; i < 30; i++)
+    {
+        QString tmps;
+        WDFunc::LBLText(this, "value"+QString::number(i), tmps);
+        bool ok;
+        double tmpd = tmps.toDouble(&ok);
+        if (!ok)
+            return Error::ER_GENERALERROR;
+
+        if (!IsWithinLimits(tmpd,*VTC,*TTC))
+        {
+            EMessageBox::information(this, "Внимание", "Несовпадение по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
+                      ", должно быть: "+QString::number(*VTC,'f',4)+ " +/- " + QString::number(*TTC,'f',4));
+            return Error::ER_GENERALERROR;
+        }
+        ++VTC;
+        ++TTC;
+    }
+
+
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog85::SetNewTuneCoefs()
+{
+    New_Bac_block.K_freq = Bac_block.K_freq;
+    for (int i=0; i<3; i++)
+    {
+        New_Bac_block.KmU[i] = Bac_block.KmU[i];
+        New_Bac_block.KmI_1[i] = Bac_block.KmI_1[i];
+        New_Bac_block.KmI_4[i] = Bac_block.KmI_4[i];
+        New_Bac_block.KmU2[i] = Bac_block.KmU2[i];
+    }
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog85::ReadAnalogMeasurements()
+{
+    // получение текущих аналоговых сигналов от модуля
+     if (Commands::GetBda(BT_NONE, &Bda_Block, sizeof(Bda_Block)) != Error::ER_NOERROR)
+     {
+         EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
+         return Error::ER_GENERALERROR;
+     }
+    return Error::ER_NOERROR;
+}
+
+#if PROGSIZE != PROGSIZE_EMUL
+void TuneDialog85::StartMip()
+{
+    mipcanal = new iec104;
+    connect(mipcanal,SIGNAL(signalsready(Parse104::Signals104&)),this,SLOT(ParseMipData(Parse104::Signals104&)));
+    connect(this,SIGNAL(stopall()),mipcanal,SLOT(Stop()));
+}
+#endif
+void TuneDialog85::ParseMipData(Parse104::Signals104 &Signal)
+{
+    // precision
+    static int Precisions[34] = {0,4,4,4,3,3,3,4,4,4,4,3,3,3,3,3,3,1,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3};
+    // приём из mipcanal::Signal номера сигнала (SigNum) и его значения (SigVal) и его дальнейшая обработка
+    quint32 index = Signal.SigNum;
+    if (index != quint32(-1))
+    {
+        if ((index >= 11) && (index <= 13))
+            MipDat[index] = -MipDat[index]; // у МИП-а знак угла отрицательный
+        WDFunc::SetLBLText(this, "mip"+QString::number(index), QString::number(Signal.SigVal, 'f', Precisions[index]));
+        MipDat[index] = Signal.SigVal;
+    }
+}
+
+void TuneDialog85::SetTuneMode()
+{
+    TuneControlType = sender()->objectName().toInt();
+}
+
+void TuneDialog85::StopMip()
+{
+    emit stopall();
+}
+
+int TuneDialog85::ShowControlChooseDialog()
+{
+    TuneControlType = TUNERET; // по-умолчанию тип контроля - по РЕТОМу
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QLabel *lbl = new QLabel("Выберите метод подтверждения измеряемых данных:");
+    lyout->addWidget(lbl);
+    QPushButton *pb = new QPushButton("Автоматически по показаниям МИП-02");
+    pb->setObjectName(QString::number(TUNEMIP));
+    connect(pb,SIGNAL(clicked()),this,SLOT(SetTuneMode()));
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    pb = new QPushButton("Вручную");
+    pb->setObjectName(QString::number(TUNEMAN));
+    connect(pb,SIGNAL(clicked()),this,SLOT(SetTuneMode()));
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    pb = new QPushButton("Автоматически по прибору РЕТОМ");
+    pb->setObjectName(QString::number(TUNERET));
+    connect(pb,SIGNAL(clicked()),this,SLOT(SetTuneMode()));
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+    if (Cancelled)
+        return Error::ER_GENERALERROR;
+    else
+        return Error::ER_NOERROR;
 }

@@ -219,184 +219,183 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
     }
     switch (bStep)
     {
-    case 0: // первая порция
-    {
-        switch (cmd)
+        case 0: // первая порция
         {
-        // команды с ответом "ОК"
-        case CN_WHv:
-        case CN_Ert:
-        case CN_CtEr:
-        case CN_NVar:
-        case CN_SMode:
-        {
-            if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
+            switch (cmd)
             {
-                Finish(CN_RCVDATAERROR);
-                return;
-            }
-            if (cmd == CN_Ert)
-                OscTimer->start(); // start timer to send ErPg command periodically
-            Finish(Error::ER_NOERROR);
-            return;
-        }
-        // команды с ответом "ОК" и с продолжением
-        case CN_WF:
-        case CN_WBac:
-        case CN_WBt:
-        {
-            if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
+            // команды с ответом "ОК"
+            case CN_WHv:
+            case CN_Ert:
+            case CN_CtEr:
+            case CN_NVar:
+            case CN_SMode:
             {
-                Finish(CN_RCVDATAERROR);
-                return;
-            }
-            if (!SegLeft)
-            {
+                if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
+                {
+                    Finish(CN_RCVDATAERROR);
+                    return;
+                }
+                if (cmd == CN_Ert)
+                    OscTimer->start(); // start timer to send ErPg command periodically
                 Finish(Error::ER_NOERROR);
                 return;
             }
-            ReadDataChunk.clear();
-            WRCheckForNextSegment(false);
-            return;
+            // команды с ответом "ОК" и с продолжением
+            case CN_WF:
+            case CN_WBac:
+            case CN_WBt:
+            {
+                if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
+                {
+                    Finish(CN_RCVDATAERROR);
+                    return;
+                }
+                if (!SegLeft)
+                {
+                    Finish(Error::ER_NOERROR);
+                    return;
+                }
+                ReadDataChunk.clear();
+                WRCheckForNextSegment(false);
+                return;
+            }
+            // команды с ответом SS c L L ... и продолжением
+            case CN_GBsi:
+            case CN_GBda:
+            case CN_GBac:
+            case CN_GBd:
+            case CN_ErPg:
+            case CN_GBt:
+            case CN_GF:
+            case CN_GVar:
+            case CN_GMode:
+            {
+                if (!GetLength())
+                {
+                    Finish(CN_RCVDATAERROR);
+                    return;
+                }
+                if (ReadDataChunkLength == 0)
+                {
+                    RDSize = 0;
+                    Finish(Error::ER_NOERROR);
+                    return;
+                }
+                if (cmd == CN_GF) // надо проверить, тот ли номер файла принимаем
+                {
+                    if (RDSize < 16) // не пришла ещё шапка файла
+                        return;
+                    quint16 filenum;
+                    quint8 tmpi= ReadDataChunk[5];
+                    filenum = tmpi * 256;
+                    tmpi = ReadDataChunk[4];
+                    filenum += tmpi;
+                    if (filenum != fnum)
+                    {
+                        Finish(USO_UNKNFILESENT);
+                        return;
+                    }
+                    memcpy(&RDLength, &(ReadDataChunk.data()[8]), sizeof(RDLength));
+                    RDLength += 16;
+                    emit SetDataSize(RDLength);
+                }
+                else if (cmd == CN_ErPg)
+                    emit SetDataSize(100);
+                else
+                    emit SetDataSize(0); // длина неизвестна для команд с ответами без длины
+                bStep++;
+                break;
+            }
+            default:
+                Finish(CN_UNKNOWNCMDERROR);
+                break;
+            }
         }
-        // команды с ответом SS c L L ... и продолжением
-        case CN_GBsi:
-        case CN_GBda:
-        case CN_GBac:
-        case CN_GBd:
-        case CN_ErPg:
-        case CN_GBt:
-        case CN_GF:
-        case CN_GVar:
-        case CN_GMode:
+
+        [[clang::fallthrough]]; case 1:
         {
             if (!GetLength())
             {
                 Finish(CN_RCVDATAERROR);
                 return;
             }
-            if (ReadDataChunkLength == 0)
+            if (RDSize < ReadDataChunkLength)
+                return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
+            ReadDataChunk.remove(0, 4); // убираем заголовок с < и длиной
+            ReadData.append(ReadDataChunk.data(), ReadDataChunkLength);
+            RDSize = static_cast<quint32>(ReadData.size());
+            emit SetDataCount(RDSize); // сигнал для прогрессбара
+            ReadDataChunk.clear();
+            switch (cmd)
             {
-                RDSize = 0;
-                Finish(Error::ER_NOERROR);
-                return;
-            }
-            if (cmd == CN_GF) // надо проверить, тот ли номер файла принимаем
+            case CN_GBsi:
+            case CN_GBda:
+            case CN_GBac:
+            case CN_GBd:
+            case CN_GBt:
+            case CN_GVar:
+            case CN_GMode:
             {
-                if (RDSize < 16) // не пришла ещё шапка файла
-                    return;
-                quint16 filenum;
-                quint8 tmpi= ReadDataChunk[5];
-                filenum = tmpi * 256;
-                tmpi = ReadDataChunk[4];
-                filenum += tmpi;
-                if (filenum != fnum)
+                if ((RDSize >= outdatasize) || (ReadDataChunkLength < CN_MAXSEGMENTLENGTH))
                 {
-                    Finish(USO_UNKNFILESENT);
-                    return;
-                }
-                memcpy(&RDLength, &(ReadDataChunk.data()[8]), sizeof(RDLength));
-                RDLength += 16;
-                emit SetDataSize(RDLength);
-            }
-            else if (cmd == CN_ErPg)
-                emit SetDataSize(100);
-            else
-                emit SetDataSize(0); // длина неизвестна для команд с ответами без длины
-            bStep++;
-            break;
-        }
-        default:
-            Finish(CN_UNKNOWNCMDERROR);
-            break;
-        }
-    }
-    break;
-
-    case 1:
-    {
-        if (!GetLength())
-        {
-            Finish(CN_RCVDATAERROR);
-            return;
-        }
-        if (RDSize < ReadDataChunkLength)
-            return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
-        ReadDataChunk.remove(0, 4); // убираем заголовок с < и длиной
-        ReadData.append(ReadDataChunk.data(), ReadDataChunkLength);
-        RDSize = static_cast<quint32>(ReadData.size());
-        emit SetDataCount(RDSize); // сигнал для прогрессбара
-        ReadDataChunk.clear();
-        switch (cmd)
-        {
-        case CN_GBsi:
-        case CN_GBda:
-        case CN_GBac:
-        case CN_GBd:
-        case CN_GBt:
-        case CN_GVar:
-        case CN_GMode:
-        {
-            if ((RDSize >= outdatasize) || (ReadDataChunkLength < CN_MAXSEGMENTLENGTH))
-            {
-                emit SetDataSize(RDSize); // установка размера прогрессбара, чтобы не мелькал
-                RDSize = qMin(outdatasize, RDSize); // если даже приняли больше, копируем только требуемый размер
-                memcpy(outdata,ReadData.data(),RDSize);
-                Finish(Error::ER_NOERROR);
-            }
-            else
-                SendOk(true);
-            break;
-        }
-        case CN_GF:
-        {
-            if (RDSize >= RDLength)
-            {
-                if ((fnum >= CN_MINOSCID) && (fnum <= CN_MAXOSCID)) // для осциллограмм особая обработка
-                {
-                    RDSize = qMin(RDLength, RDSize); // если даже приняли больше, копируем только требуемый размер
+                    emit SetDataSize(RDSize); // установка размера прогрессбара, чтобы не мелькал
+                    RDSize = qMin(outdatasize, RDSize); // если даже приняли больше, копируем только требуемый размер
                     memcpy(outdata,ReadData.data(),RDSize);
-                    Finish(Error::ER_NOERROR);
-                    break;
-                }
-                if (DR->isEmpty())
-                {
-                    Finish(CN_NULLDATAERROR);
-                    break;
-                }
-                res = S2::RestoreDataMem(ReadData.data(), RDSize, DR);
-                if (res == 0)
-                {
-//                    SendOk(false);
                     Finish(Error::ER_NOERROR);
                 }
                 else
-                    Finish(res);
-            }
-            else
-                SendOk(true);
-            break;
-        }
-        case CN_ErPg:
-        {
-            quint16 OscNum = static_cast<quint8>(ReadData.at(0))+static_cast<quint8>(ReadData.at(1))*256;
-            emit SetDataCount(OscNum);
-            if (OscNum == 100)
-            {
-                Finish(Error::ER_NOERROR);
-                OscTimer->stop();
+                    SendOk(true);
                 break;
             }
-            break;
+            case CN_GF:
+            {
+                if (RDSize >= RDLength)
+                {
+                    if ((fnum >= CN_MINOSCID) && (fnum <= CN_MAXOSCID)) // для осциллограмм особая обработка
+                    {
+                        RDSize = qMin(RDLength, RDSize); // если даже приняли больше, копируем только требуемый размер
+                        memcpy(outdata,ReadData.data(),RDSize);
+                        Finish(Error::ER_NOERROR);
+                        break;
+                    }
+                    if (DR->isEmpty())
+                    {
+                        Finish(CN_NULLDATAERROR);
+                        break;
+                    }
+                    res = S2::RestoreDataMem(ReadData.data(), RDSize, DR);
+                    if (res == 0)
+                    {
+    //                    SendOk(false);
+                        Finish(Error::ER_NOERROR);
+                    }
+                    else
+                        Finish(res);
+                }
+                else
+                    SendOk(true);
+                break;
+            }
+            case CN_ErPg:
+            {
+                quint16 OscNum = static_cast<quint8>(ReadData.at(0))+static_cast<quint8>(ReadData.at(1))*256;
+                emit SetDataCount(OscNum);
+                if (OscNum == 100)
+                {
+                    Finish(Error::ER_NOERROR);
+                    OscTimer->stop();
+                    break;
+                }
+                break;
+            }
+            default:
+            {
+                Finish(CN_UNKNOWNCMDERROR);
+                break;
+            }
+            }
+    //        bStep = 0;
         }
-        default:
-        {
-            Finish(CN_UNKNOWNCMDERROR);
-            break;
-        }
-        }
-//        bStep = 0;
-    }
     }
 }
 

@@ -49,6 +49,7 @@
 #include "../tune/tunedialog21.h"
 #include "../tune/tunedialog22.h"
 #include "../tune/tunedialog80.h"
+#include "../tune/tunedialog85.h"
 #include "../tune/tunedialoga1.h"
 #include "../tune/tunedialoga1dn.h"
 #include "../widgets/etabwidget.h"
@@ -408,6 +409,7 @@ void Coma::PrepareDialogs()
         ConfM = new ConfDialog85(S2Config);
         CheckM = new CheckDialog85(BoardTypes::BT_BASE);
         SwjD = new SwitchJournalDialog;
+        //TuneM = new TuneDialog85(S2Config);           Не понятно, что за ошибка!
         break;
     }
     default: // 0x00
