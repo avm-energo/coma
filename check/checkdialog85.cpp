@@ -92,8 +92,10 @@ void CheckDialog85::RefreshAnalogValues(int bdnum)
     {
     case BD_COMMON:
         Ch->FillBd0(this);
+        break;
     case 1: // Блок #1
         Ch85->FillBd1(this);
+        break;
     default:
         return;
     }
@@ -122,26 +124,16 @@ void CheckDialog85::WriteToFile(int row, int bdnum)
     QXlsx::Format format;
     QString Precision = "0.0000";
     format.setNumberFormat(Precision);
-    switch (bdnum)
-    {
-    case 0:
-        xlsx->write(row,24,WDFunc::FloatValueWithCheck(Ch->Bd_block0.Tmk), format);
-        xlsx->write(row,25,WDFunc::FloatValueWithCheck(Ch->Bd_block0.Vbat), format);
-    case 1:
-    {
+
         for (int i=0; i<3; i++)
         {
             xlsx->write(row,i+2,WDFunc::FloatValueWithCheck(Ch85->Bd_block1.IUefNat_filt[i]), format);
             xlsx->write(row,i+5,WDFunc::FloatValueWithCheck(Ch85->Bd_block1.IUefNat_filt[i+3]), format);
             xlsx->write(row,i+8,WDFunc::FloatValueWithCheck(Ch85->Bd_block1.IUefNat_filt[i+6]), format);
-            xlsx->write(row,i+11,WDFunc::StringValueWithCheck(Ch85->Bd_block1.PNatf[i], 3));
-            xlsx->write(row,i+14,WDFunc::StringValueWithCheck(Ch85->Bd_block1.QNatf[i], 3));
-            xlsx->write(row,i+17,WDFunc::StringValueWithCheck(Ch85->Bd_block1.SNatf[i], 3));
-            xlsx->write(row,i+20,WDFunc::StringValueWithCheck(Ch85->Bd_block1.CosPhiNat[i], 5));
+
         }
         xlsx->write(WRow,23,Ch85->Bd_block1.Frequency,format);
-    }
-    }
+
 }
 
 void CheckDialog85::ChooseValuesToWrite()
@@ -161,5 +153,5 @@ void CheckDialog85::PrepareAnalogMeasurements()
 
 QWidget *CheckDialog85::CustomTab()
 {
-    return 0;
+    return nullptr;
 }

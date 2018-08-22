@@ -9,7 +9,7 @@ class CheckDialog85 : public EAbstractCheckDialog
 {
     Q_OBJECT
 public:
-    explicit CheckDialog85(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = 0);
+    explicit CheckDialog85(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
 signals:
 
@@ -29,7 +29,7 @@ private:
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
     void RefreshAnalogValues(int bdnum); // обновление полей в GUI из полученного соответствующего Bd_block
     void PrepareHeadersForFile(int row); // row - строка для записи заголовков
-    void WriteToFile(int row, int bdnum); // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
+    void WriteToFile(int row, int bdnum = 0); // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
     void ChooseValuesToWrite();
     void SetDefaultValuesToWrite();
     void PrepareAnalogMeasurements();

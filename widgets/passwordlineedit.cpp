@@ -24,7 +24,7 @@ PasswordLineEdit::PasswordLineEdit(QLineEdit::EchoMode echostyle, QWidget *paren
 void PasswordLineEdit::PswLEToggleEchoMode()
 {
     QLineEdit *le = this->findChild<QLineEdit *>("pswle");
-    if (le == 0)
+    if (le == nullptr)
         return;
     if (le->echoMode() == QLineEdit::Normal)
         le->setEchoMode(QLineEdit::Password);

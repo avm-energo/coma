@@ -17,7 +17,7 @@ class EOscillogram : public QObject
 {
     Q_OBJECT
 public:
-    EOscillogram(QObject *parent=0);
+    EOscillogram(QObject *parent=nullptr);
     ~EOscillogram();
 
 #pragma pack(push)  /* push current alignment to stack */

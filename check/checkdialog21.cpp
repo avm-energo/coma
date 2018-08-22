@@ -95,6 +95,7 @@ void CheckDialog21::WriteToFile(int row, int bdnum)
     case 0:
         xlsx->write(row,2+AIN21_NUMCH*2,WDFunc::FloatValueWithCheck(Ch->Bd_block0.Tmk), format);
         xlsx->write(row,3+AIN21_NUMCH*2,WDFunc::FloatValueWithCheck(Ch->Bd_block0.Vbat), format);
+        break;
     case 1:
     {
         for (int i=0; i<AIN21_NUMCH; ++i)
@@ -103,6 +104,7 @@ void CheckDialog21::WriteToFile(int row, int bdnum)
             xlsx->write(row,i+2+AIN21_NUMCH,WDFunc::FloatValueWithCheck(Ch21->Bd_block.inU[i]), format);
         }
     }
+        break;
     }
 }
 

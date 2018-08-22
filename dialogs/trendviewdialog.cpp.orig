@@ -287,6 +287,7 @@ void TrendViewDialog::AnalogRangeChanged(QCPRange range)
 
 void TrendViewDialog::SaveToExcel()
 {
+<<<<<<< HEAD
     QXlsx::Document *xlsx;
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -305,6 +306,10 @@ void TrendViewDialog::SaveToExcel()
     WriteToFile(WRow, xlsx);
     WRow++;
 
+
+=======
+    TrendModel->SaveToExcel();
+>>>>>>> origin/dev
 }
 
 void TrendViewDialog::SaveToComtrade()

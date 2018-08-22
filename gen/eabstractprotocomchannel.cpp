@@ -311,6 +311,8 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             break;
         }
     }
+    break;
+
     case 1:
     {
         if (!GetLength())
