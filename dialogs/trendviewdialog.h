@@ -26,7 +26,7 @@ public:
     void SetAnalogNames(QStringList &names);
     void SetDigitalColors(QStringList &colors);
     void SetAnalogColors(QStringList &colors);
-    void SetupPlots();
+    void SetupPlots(quint32 id);
     void SetupUI();
     void WriteToFile(int row, QXlsx::Document *xls); // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
     int WRow;
@@ -69,11 +69,13 @@ private:
     bool NoDiscrete, NoAnalog;
     TrendViewModel *TrendModel;
     bool RangeChangeInProgress, Starting;
+    bool RangeAxisInProgress, StartingAx;
     QByteArray BAToSave;
 
     QToolBar *PlotToolBar();
     QCPGraph *GraphByName(const QString &name);
     void ChangeRange(QCPRange range);
+    void ChangeAxisRange(QCPRange range);
     QCPLegend *SetLegend(int rectindex);
 
 
@@ -86,6 +88,7 @@ private slots:
     void GraphSetVisible(int rectindex, const QString &graphname, bool visible);
     void DigitalRangeChanged(QCPRange range);
     void AnalogRangeChanged(QCPRange range);
+    void AxisRangeChanged(QCPRange range);
     void SaveToExcel();
     void SaveToComtrade();
     void SaveToOsc();

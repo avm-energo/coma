@@ -323,7 +323,7 @@ void ConfDialog21::FillBack()
 void ConfDialog21::SetMinMax(int i)
 {
     QComboBox *cb = this->findChild<QComboBox *>("inrange."+QString::number(i));
-    if (cb == 0)
+    if (cb == nullptr)
     {
         DBGMSG;
         return;

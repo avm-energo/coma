@@ -47,6 +47,7 @@ TrendViewDialog::TrendViewDialog(QByteArray &ba, QWidget *parent) : QDialog(pare
     setWindowFlags(Qt::WindowMinMaxButtonsHint);
     TrendModel = nullptr;
     RangeChangeInProgress = false;
+    RangeAxisInProgress = false;
     Starting = true;
     BAToSave = ba;
 }
@@ -141,6 +142,20 @@ void TrendViewDialog::ChangeRange(QCPRange range)
     QList<QCPAxisRect *> axisrects = MainPlot->axisRects();
     foreach(QCPAxisRect *rect, axisrects)
         rect->axis(QCPAxis::atBottom)->setRange(range);
+    MainPlot->replot();
+}
+
+void TrendViewDialog::ChangeAxisRange(QCPRange range)
+{
+    if (RangeAxisInProgress || Starting)
+    {
+        RangeAxisInProgress = false;
+        return;
+    }
+    RangeAxisInProgress = true;
+    QList<QCPAxisRect *> axisrects = MainPlot->axisRects();
+    foreach(QCPAxisRect *rect, axisrects)
+      // rect->axis(QCPAxis::atLeft,1)->setRange(range);
     MainPlot->replot();
 }
 
@@ -279,6 +294,13 @@ void TrendViewDialog::DigitalRangeChanged(QCPRange range)
         ChangeRange(range);
 }
 
+void TrendViewDialog::AxisRangeChanged(QCPRange range)
+{
+        if(!NoDiscrete)
+        ChangeAxisRange(range);
+}
+
+
 void TrendViewDialog::AnalogRangeChanged(QCPRange range)
 {
     if (!NoDiscrete)
@@ -394,7 +416,7 @@ void TrendViewDialog::SetAnalogColors(QStringList &colors)
     }
 }
 
-void TrendViewDialog::SetupPlots()
+void TrendViewDialog::SetupPlots(quint32 id)
 {
     NoDiscrete = NoAnalog = false;
     QPen pen;
@@ -413,6 +435,7 @@ void TrendViewDialog::SetupPlots()
         title->setText("Дискретные сигналы");
         title->setFont(QFont("sans", 12, QFont::Bold));
         MainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, title); // place the title in the empty cell we've just created
+
         QCPAxisRect *DigitalAxisRect = new QCPAxisRect(MainPlot);
         DiscreteRectIndex = RectIndex++;
         MainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, DigitalAxisRect);
@@ -422,7 +445,7 @@ void TrendViewDialog::SetupPlots()
         while ((count < DigitalGraphNum) && (DigitalGraphs.size() < MAXGRAPHSPERPLOT))
         {
             QString tmps = DigitalDescription.Names.at(count);
-            QCPGraph *graph = MainPlot->addGraph(DigitalAxisRect->axis(QCPAxis::atBottom), DigitalAxisRect->axis(QCPAxis::atLeft));
+            QCPGraph *graph = MainPlot->addGraph(DigitalAxisRect->axis(QCPAxis::atBottom), DigitalAxisRect->axis(QCPAxis::atLeft, 0));
             if (!DigitalDescription.Colors[tmps].isEmpty())
                 pen.setColor(QColor(DigitalDescription.Colors[tmps]));
             else
@@ -436,10 +459,15 @@ void TrendViewDialog::SetupPlots()
             graph->setLineStyle(QCPGraph::lsStepLeft); // импульсы
             DigitalGraphs[tmps] = graph;
             DiscreteLegend->addItem(new QCPPlottableLegendItem(DiscreteLegend, graph));
+
+
+
+
             ++count;
         }
         DigitalAxisRect->insetLayout()->setMargins(QMargins(12, 12, 12, 12));
         connect(DigitalAxisRect->axis(QCPAxis::atBottom), SIGNAL(rangeChanged(QCPRange)),this,SLOT(DigitalRangeChanged(QCPRange)));
+        connect(DigitalAxisRect->axis(QCPAxis::atLeft), SIGNAL(rangeChanged(QCPRange)),this,SLOT(AxisRangeChanged(QCPRange)));
     }
     else
         NoDiscrete = true;
@@ -450,6 +478,7 @@ void TrendViewDialog::SetupPlots()
         title->setFont(QFont("sans", 12, QFont::Bold));
         MainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, title); // place the title in the empty cell we've just created
         QCPAxisRect *AnalogAxisRect = new QCPAxisRect(MainPlot);
+        QCPAxis *newAxis = AnalogAxisRect->addAxis(QCPAxis::atLeft);
         AnalogRectIndex = RectIndex++;
         MainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, AnalogAxisRect);
         AnalogLegend = SetLegend(MainPlotLayoutRow++);
@@ -459,6 +488,7 @@ void TrendViewDialog::SetupPlots()
         {
             QString tmps = AnalogDescription.Names.at(count);
             QCPGraph *graph = MainPlot->addGraph(AnalogAxisRect->axis(QCPAxis::atBottom), AnalogAxisRect->axis(QCPAxis::atLeft));
+            QCPGraph *graph2 = MainPlot->addGraph(AnalogAxisRect->axis(QCPAxis::atBottom),  AnalogAxisRect->axis(QCPAxis::atLeft, 1));
             if (!AnalogDescription.Colors[tmps].isEmpty())
                 pen.setColor(QColor(AnalogDescription.Colors[tmps]));
             else
@@ -471,10 +501,14 @@ void TrendViewDialog::SetupPlots()
             graph->setName(tmps);
             AnalogGraphs[tmps] = graph;
             AnalogLegend->addItem(new QCPPlottableLegendItem(AnalogLegend, graph));
+
+            graph2->valueAxis()->setRange(1, 20);
+
             ++count;
         }
         AnalogAxisRect->insetLayout()->setMargins(QMargins(12, 12, 12, 12));
         connect(AnalogAxisRect->axis(QCPAxis::atBottom), SIGNAL(rangeChanged(QCPRange)),this,SLOT(AnalogRangeChanged(QCPRange)));
+        connect(AnalogAxisRect->axis(QCPAxis::atLeft, 0), SIGNAL(rangeChanged(QCPRange)),this,SLOT(AxisRangeChanged(QCPRange)));
     }
     else
         NoAnalog = true;

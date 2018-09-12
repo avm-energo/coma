@@ -104,7 +104,9 @@ SOURCES += \
     ../gen/timefunc.cpp \
     ../gen/files.cpp \
     ../gen/stdfunc.cpp \
-    ../tune/tunedialog85.cpp
+    ../tune/tunedialog85.cpp \
+    ../config/config87.cpp \
+    ../config/confdialog87.cpp
 
 HEADERS  += \
     coma.h \
@@ -187,7 +189,9 @@ HEADERS  += \
     ../gen/files.h \
     ../gen/colors.h \
     ../gen/stdfunc.h \
-    ../tune/tunedialog85.h
+    ../tune/tunedialog85.h \
+    ../config/config87.h \
+    ../config/confdialog87.h
 
 INCLUDEPATH += $$PWD/../../includes
 
