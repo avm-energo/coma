@@ -409,7 +409,7 @@ void Coma::PrepareDialogs()
         ConfM = new ConfDialog85(S2Config);
         CheckM = new CheckDialog85(BoardTypes::BT_BASE);
         SwjD = new SwitchJournalDialog;
-        //TuneM = new TuneDialog85(S2Config);           Не понятно, что за ошибка!
+        TuneM = new TuneDialog85(S2Config); //          Не понятно, что за ошибка!
         break;
     }
     default: // 0x00

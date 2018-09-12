@@ -20,6 +20,11 @@
 #include "../gen/commands.h"
 #endif
 
+TuneDialog85::TuneDialog85(QVector<S2::DataRec> &S2Config, QWidget *parent) : EAbstractTuneDialog(parent)
+{
+    C85 = new Config85(S2Config);
+    SetupUI();
+}
 
 void TuneDialog85::SetupUI()
 {
@@ -204,6 +209,7 @@ QHBoxLayout *TuneDialog85::MipPars(int parnum, const QString &groupname)
 }
 
 
+#if PROGSIZE != PROGSIZE_EMUL
 void TuneDialog85::SetPf()
 {
     int count = 0;
@@ -261,7 +267,7 @@ void TuneDialog85::SetPf()
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_9); // Восстановление сохранённой конфигурации и проверка
     pf[lbls.at(count++)] = func;
 }
-
+#endif
 #if PROGSIZE != PROGSIZE_EMUL
 int TuneDialog85::Start7_2_3()
 {
