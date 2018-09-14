@@ -21,7 +21,7 @@ public:
         int OutNumCh;
     };
 
-    explicit AbstractConfDialog3x(QWidget *parent = 0);
+    explicit AbstractConfDialog3x(QWidget *parent = nullptr);
 
     void DisableChannel(int chnum, bool disable);
     void SetupUI();

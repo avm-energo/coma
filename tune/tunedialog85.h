@@ -36,7 +36,6 @@ class TuneDialog85 : public EAbstractTuneDialog
 {
     Q_OBJECT
 public:
-   // explicit TuneDialog85(BoardTypes type = BoardTypes::BT_BASE, QWidget *parent = nullptr);
     explicit TuneDialog85(QVector<S2::DataRec> &S2Config, QWidget *parent = nullptr);
     //~TuneDialog85();
 
@@ -200,7 +199,7 @@ private slots:
     int ReadAnalogMeasurements();
     void SetExtData();
     void CancelExtData();
-    int TuneOneChannel(int Ch);
+    //int TuneOneChannel(int Ch);
 #endif
 
     void SetDefCoefs();

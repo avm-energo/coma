@@ -1,3 +1,6 @@
+#include <QTime>
+#include <QtMath>
+#include <QInputDialog>
 #include <QTabWidget>
 #include <QGridLayout>
 #include <QVBoxLayout>
@@ -16,6 +19,8 @@
 #include "../gen/error.h"
 #include "../gen/maindef.h"
 #include "../check/check85.h"
+#include "../gen/maindef.h"
+#include "../gen/modulebsi.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -23,8 +28,11 @@
 TuneDialog85::TuneDialog85(QVector<S2::DataRec> &S2Config, QWidget *parent) : EAbstractTuneDialog(parent)
 {
     C85 = new Config85(S2Config);
+    SetBac(&Bac_block, BoardTypes::BT_BASE, sizeof(Bac_block));
+    setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
 }
+
 
 void TuneDialog85::SetupUI()
 {
@@ -549,6 +557,8 @@ void TuneDialog85::SetDefCoefs()
     FillBac();
 }
 
+
+
 void TuneDialog85::CancelTune()
 {
     Cancelled = true;
@@ -573,6 +583,7 @@ float TuneDialog85::ToFloat(QString text)
     return tmpf;
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 int TuneDialog85::SaveWorkConfig()
 {
     if (Commands::GetFile(CM_CONFIGFILE,S2Config) == Error::ER_NOERROR)
@@ -600,6 +611,8 @@ int TuneDialog85::StartCheckAnalogValues(double u, double i, double deg, bool to
 
     return res;
 }
+
+#endif
 
 int TuneDialog85::GetExternalData()
 {
@@ -711,6 +724,76 @@ int TuneDialog85::GetExternalData()
 #endif
 }
 
+int TuneDialog85::CheckTuneCoefs()
+{
+    double ValuesToCheck[26] = {S1,S1,S1,S1,S1,S1,S1,S1,S1,S1,S1,S1,S1,S1,S1,S1,S1,S1,\
+                               S0,S0,S0,S0,S0,S0,S1,S0};
+    double ThresholdsToCheck[26] = {TH002,TH002,TH002,TH002,TH002,TH002,TH002,TH002,TH002,TH002,TH002,TH002,\
+                                   TH002,TH002,TH002,TH002,TH002,TH002,TH1,TH1,TH1,TH1,TH1,TH1,TH002,TH0005};
+    double *VTC = ValuesToCheck;
+    double *TTC = ThresholdsToCheck;
+    int res = Error::ER_NOERROR;
+    for (int i = 0; i < 26; i++)
+    {
+        QString tmps;
+        WDFunc::LBLText(this, "tune"+QString::number(i), tmps);
+        bool ok;
+        double tmpd = tmps.toDouble(&ok);
+        if (!ok)
+            return Error::ER_GENERALERROR;
+        if (!IsWithinLimits(tmpd, *VTC, *TTC))
+        {
+            EMessageBox::information(this, "Внимание", "Настроечные по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
+                      ", должно быть: "+QString::number(*VTC,'f',4)+\
+                      " +/- "+QString::number(*TTC,'f',4));
+            res=Error::ER_GENERALERROR;
+            WDFunc::SetLBLColor(this, "tune"+QString::number(i), "red");
+            VTC++;
+            TTC++;
+        }
+    }
+    return res;
+}
+
+bool TuneDialog85::IsWithinLimits(double number, double base, double threshold)
+{
+    float tmpf = fabs(number-base);
+    if (tmpf<fabs(threshold))
+        return true;
+    else
+        return false;
+}
+
+int TuneDialog85::CheckMip()
+{
+    double ValuesToCheck[10] = {S0,HZ50,HZ50,HZ50,MVTC.u,MVTC.u,MVTC.u,MVTC.i[0],MVTC.i[1],MVTC.i[2]};
+    double ThresholdsToCheck[10] = {S0,TH005,TH005,TH005,MTTC.u,MTTC.u,MTTC.u,MTTC.i,MTTC.i,MTTC.i};
+    double *VTC, *TTC;
+    VTC = ValuesToCheck;
+    TTC = ThresholdsToCheck;
+    for (int i = 1; i < 10; i++)
+    {
+        QString tmps;
+        WDFunc::LBLText(this, "mip"+QString::number(i), tmps);
+        bool ok;
+        double tmpd = tmps.toDouble(&ok);
+        if (!ok)
+            return Error::ER_GENERALERROR;
+        if (!IsWithinLimits(tmpd, *VTC, *TTC))
+        {
+            EMessageBox::information(this, "Внимание", "Несовпадение МИП по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
+                      ", должно быть: "+QString::number(*VTC,'f',4)+\
+                      " +/- "+QString::number(*TTC,'f',4));
+            return Error::ER_GENERALERROR;
+        }
+        ++VTC;
+        ++TTC;
+    }
+    return Error::ER_NOERROR;
+}
+
+
+#if PROGSIZE != PROGSIZE_EMUL
 int TuneDialog85::CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct)
 {
     double ValuesToCheck[30] = {TD_TMK,TD_VBAT,TD_FREQ,u,u,u,u,u,u,i,i,i,p,p,p,s,s,s,q,q,q, \
@@ -767,6 +850,8 @@ int TuneDialog85::ReadAnalogMeasurements()
     return Error::ER_NOERROR;
 }
 
+#endif
+
 #if PROGSIZE != PROGSIZE_EMUL
 void TuneDialog85::StartMip()
 {
@@ -774,7 +859,7 @@ void TuneDialog85::StartMip()
     connect(mipcanal,SIGNAL(signalsready(Parse104::Signals104&)),this,SLOT(ParseMipData(Parse104::Signals104&)));
     connect(this,SIGNAL(stopall()),mipcanal,SLOT(Stop()));
 }
-#endif
+
 void TuneDialog85::ParseMipData(Parse104::Signals104 &Signal)
 {
     // precision
@@ -833,3 +918,126 @@ int TuneDialog85::ShowControlChooseDialog()
     else
         return Error::ER_NOERROR;
 }
+
+int TuneDialog85::Show3PhaseScheme()
+{
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QPixmap pmp;
+
+    pmp.load("../tune81.png");
+
+    QLabel *lblpmp = new QLabel;
+    lblpmp->setPixmap(pmp);
+    lyout->addWidget(lblpmp);
+    QLabel *lbl = new QLabel("1. Отключите выходы РЕТОМ;");
+    lyout->addWidget(lbl);
+    lbl = new QLabel("2. Соберите схему подключения по вышеприведённой картинке;");
+    lyout->addWidget(lbl);
+    lbl=new QLabel("3. Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc) с углами "\
+                   "сдвига по всем фазам 0 град.;");
+    lyout->addWidget(lbl);
+    lbl=new QLabel("4. Задайте на РЕТОМ значения напряжений по фазам 60 В;");
+    lyout->addWidget(lbl);
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83)
+    {
+        lbl=new QLabel("   Задайте на РЕТОМ значения токов по фазам 1 А;");
+        lyout->addWidget(lbl);
+    }
+    lbl = new QLabel("5. Включите выходы РЕТОМ");
+    lyout->addWidget(lbl);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog85::SaveUeff()
+{
+/*    // сохраняем значения по п. 7.3.2 для выполнения п. 7.3.6
+    for (int i=0; i<6; i++)
+        IUefNat_filt_old[i] = Bda_block.IUefNat_filt[i]; */
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog85::ShowRetomDialog(double U, double I)
+{
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QLabel *lbl=new QLabel("Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc) с углами "\
+                   "сдвига по фазам: А - 0 град., В - 240 град., С - 120 град.,\n"\
+                   "Значения напряжений: "+QString::number(U, 'g', 2)+" В, токов: "+QString::number(I, 'g', 2)+" А");
+    lyout->addWidget(lbl);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog85::LoadWorkConfig()
+{
+    // пишем ранее запомненный конфигурационный блок
+    memcpy(&C85->Bci_block,&Bci_block_work,sizeof(Config85::Bci));
+    if (Commands::WriteFile(&C85->Bci_block, CM_CONFIGFILE, S2Config) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
+    return Error::ER_NOERROR;
+}
+
+void TuneDialog85::SetExtData()
+{
+    QDialog *dlg = this->findChild<QDialog *>("dlg7371");
+    if (dlg == nullptr)
+        return;
+    for (int i=0; i<3; ++i)
+    {
+        QDoubleSpinBox *spb = this->findChild<QDoubleSpinBox *>("spb7371"+QString::number(i));
+        if (spb != nullptr)
+            RealData.u[i] = spb->value();
+        spb = this->findChild<QDoubleSpinBox *>("spb7371"+QString::number(i+3));
+        if (spb != nullptr)
+            RealData.i[i] = spb->value();
+        spb = this->findChild<QDoubleSpinBox *>("spb7371"+QString::number(i+6));
+        if (spb != nullptr)
+            RealData.d[i] = spb->value();
+    }
+    QDoubleSpinBox *spb = this->findChild<QDoubleSpinBox *>("spb73719");
+    if (spb != nullptr)
+        RealData.f[0] = spb->value();
+    Cancelled = false;
+    dlg->close();
+}
+
+void TuneDialog85::CancelExtData()
+{
+    QDialog *dlg = this->findChild<QDialog *>("dlg7371");
+    if (dlg == nullptr)
+        return;
+    Cancelled = true;
+    dlg->close();
+}
+
+void TuneDialog85::SetLbls()
+{
+
+
+}
+
+void TuneDialog85::GetBdAndFillMTT()
+{
+
+
+}
+
+#endif

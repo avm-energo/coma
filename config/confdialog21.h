@@ -25,7 +25,7 @@ public:
         RT_VMANUAL
     };
 
-    explicit ConfDialog21(QVector<S2::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = 0);
+    explicit ConfDialog21(QVector<S2::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = nullptr);
 
 private:
     struct SpecificParams

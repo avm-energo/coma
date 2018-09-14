@@ -17,10 +17,11 @@
 #include "config.h"
 #include "../gen/modulebsi.h"
 
+
 class Config87
 {
 public:
-    Config87(QVector<S2::DataRec> &config, int BaseBoard=BoardTypes::BT_BASE);
+    explicit Config87(QVector<S2::DataRec> &config);
 
     struct Bci
     {

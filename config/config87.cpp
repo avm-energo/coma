@@ -1,6 +1,6 @@
 #include "config87.h"
 
-Config87::Config87(QVector<S2::DataRec> &config, int BaseBoard)
+Config87::Config87(QVector<S2::DataRec> &config)
 {
     // параметры входных сигналов
     quint32 StartInIndex = CHR87_MTB_STARTIDX;
@@ -20,6 +20,8 @@ Config87::Config87(QVector<S2::DataRec> &config, int BaseBoard)
     config.append({StartInIndex++, sizeof(float), &Bci_block.F_up});
     config.append({StartInIndex++, sizeof(float), &Bci_block.A_down});
     config.append({StartInIndex++, sizeof(float), &Bci_block.A_up});
+
+    config.append({0xFFFFFFFF, 0, nullptr});
 
 }
 

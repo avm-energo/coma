@@ -36,6 +36,13 @@ private:
              "nOA","nOB","nOC"};
     QString tmpav[9]={ "USA","USB","USC","IA","IB","IC","ULA","ULB","ULC"};
 
+    struct OscDataRec
+    {
+        quint32 id;
+        quint32 numbytes;
+    };
+    OscDataRec DR;
+
 
 
     void WriteToFile(int row, QXlsx::Document *xls);

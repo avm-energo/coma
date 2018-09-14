@@ -26,6 +26,7 @@ public:
     };
 
     explicit ConfDialog87(QVector<S2::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = nullptr);
+    //~ConfDialog87();
 
 private:
     struct SpecificParams
