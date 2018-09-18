@@ -6,6 +6,7 @@
 #include "../check/check85.h"
 #include "../gen/modulebsi.h"
 #include "../config/config85.h"
+#include "../iec104/iec104.h"
 #include <QHBoxLayout>
 
 #define TUNEFILELENGTH  256
@@ -17,7 +18,7 @@
 #define HZ50    50.0
 // currents
 #define I1      1.0
-#define I5      5.0
+#define I4      4.0
 
 // parameters for GetExtData
 #define TD_GED_U    0x01 // напряжение
@@ -35,7 +36,8 @@ class TuneDialog85 : public EAbstractTuneDialog
 {
     Q_OBJECT
 public:
-    explicit TuneDialog85(BoardTypes type = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    explicit TuneDialog85(QVector<S2::DataRec> &S2Config, QWidget *parent = nullptr);
+    //~TuneDialog85();
 
 signals:
 
@@ -49,6 +51,8 @@ private:
         TUNEMAN
     };
     int GED_Type;
+    float IUefNat_filt_old[6];      // для сохранения значений по п. 7.3.2
+    float MipDat[41];
 
     //bool Cancelled, DefConfig;
     Config85 *C85;
@@ -70,6 +74,75 @@ private:
     };
 
     Bac Bac_block, New_Bac_block;
+
+    struct MipValues
+    {
+        double u;
+        double i[3];
+    };
+
+    MipValues MVTC;
+
+    struct MipTolerances
+    {
+        double u;
+        double i;
+    };
+
+    MipTolerances MTTC;
+
+    struct BdaValues
+    {
+        double tmk;
+        double bat;
+        double freq;
+        double v1;
+        double v2;
+        double phi;
+        double p;
+        double s;
+        double q;
+        double cosphi;
+    };
+
+    BdaValues VTCG;
+
+    struct BdaTolerances
+    {
+        double v1;
+        double v2;
+        double phi;
+        double p;
+        double cosphi;
+    };
+
+    BdaTolerances TTCG;
+
+    struct RealDataStruct
+    {
+        float f[3]; // frequencies
+        float u[3]; // voltages
+        float i[3]; // currents
+        float d[3]; // load phase
+    };
+
+    RealDataStruct RealData;
+
+    struct Bda_in_struct{
+        float Frequency;            // Частота в сети
+        float IUefNat_filt[9];  	// Истинные действующие значения сигналов (в вольтах или амперах на входе)
+        float UefNatLin_filt[6];	// Истинные действующие значения линейных напряжений 1-й и 2-й групп
+        float PNatf[3];             // истинная активная мощность по фазам
+        float QNatf[3];             // реактивная мощность по кажущейся полной и истинной активной
+        float SNatf[3];             // кажущаяся полная мощность по эфф. токам и напряжениям
+        float CosPhiNat[3];         // cos phi по истинной активной мощности, по фазам
+        quint32 DD_in;
+
+
+    };
+
+    Bda_in_struct Bda_Block;
+    iec104 *mipcanal;
 
     float ToFloat(QString text);
     void CancelTune();
@@ -121,12 +194,12 @@ private slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void StartMip();
     void StopMip();
-    //void ParseMipData(Parse104::Signals104 &);
+    void ParseMipData(Parse104::Signals104 &);
     void SetTuneMode();
     int ReadAnalogMeasurements();
     void SetExtData();
     void CancelExtData();
-    int TuneOneChannel(int Ch);
+    //int TuneOneChannel(int Ch);
 #endif
 
     void SetDefCoefs();

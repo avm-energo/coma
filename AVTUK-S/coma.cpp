@@ -40,6 +40,7 @@
 #include "../config/confdialog35.h"
 #include "../config/confdialog80.h"
 #include "../config/confdialog85.h"
+#include "../config/confdialog87.h"
 #include "../config/confdialoga1.h"
 #include "../dialogs/a1dialog.h"
 #include "../dialogs/fwupdialog.h"
@@ -49,6 +50,7 @@
 #include "../tune/tunedialog21.h"
 #include "../tune/tunedialog22.h"
 #include "../tune/tunedialog80.h"
+#include "../tune/tunedialog85.h"
 #include "../tune/tunedialoga1.h"
 #include "../tune/tunedialoga1dn.h"
 #include "../widgets/etabwidget.h"
@@ -138,7 +140,7 @@ void Coma::Emul2x()
 void Coma::Emul8x()
 {
     QMenu *menu = new QMenu(this);
-    for (int i=81; i<=85; ++i)
+    for (int i=81; i<=87; ++i)
     {
         QString tmps = QString::number(i);
         QAction *act = new QAction(this);
@@ -359,6 +361,12 @@ void Coma::PrepareDialogs()
         CheckB = new CheckDialog80(BoardTypes::BT_BASE);
         break;
     }
+
+    case MTB_87:
+        ConfB = new ConfDialog87(S2Config, true);
+
+        break;
+
     case MTB_A1:
     {
         ConfB = new ConfDialogA1(S2Config);
@@ -408,6 +416,7 @@ void Coma::PrepareDialogs()
         ConfM = new ConfDialog85(S2Config);
         CheckM = new CheckDialog85(BoardTypes::BT_BASE);
         SwjD = new SwitchJournalDialog;
+        TuneM = new TuneDialog85(S2Config); //          Не понятно, что за ошибка!
         break;
     }
     default: // 0x00

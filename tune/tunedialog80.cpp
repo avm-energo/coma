@@ -845,22 +845,22 @@ int TuneDialog80::LoadWorkConfig()
 void TuneDialog80::SetExtData()
 {
     QDialog *dlg = this->findChild<QDialog *>("dlg7371");
-    if (dlg == 0)
+    if (dlg == nullptr)
         return;
     for (int i=0; i<3; ++i)
     {
         QDoubleSpinBox *spb = this->findChild<QDoubleSpinBox *>("spb7371"+QString::number(i));
-        if (spb != 0)
+        if (spb != nullptr)
             RealData.u[i] = spb->value();
         spb = this->findChild<QDoubleSpinBox *>("spb7371"+QString::number(i+3));
-        if (spb != 0)
+        if (spb != nullptr)
             RealData.i[i] = spb->value();
         spb = this->findChild<QDoubleSpinBox *>("spb7371"+QString::number(i+6));
-        if (spb != 0)
+        if (spb != nullptr)
             RealData.d[i] = spb->value();
     }
     QDoubleSpinBox *spb = this->findChild<QDoubleSpinBox *>("spb73719");
-    if (spb != 0)
+    if (spb != nullptr)
         RealData.f[0] = spb->value();
     Cancelled = false;
     dlg->close();
@@ -869,7 +869,7 @@ void TuneDialog80::SetExtData()
 void TuneDialog80::CancelExtData()
 {
     QDialog *dlg = this->findChild<QDialog *>("dlg7371");
-    if (dlg == 0)
+    if (dlg == nullptr)
         return;
     Cancelled = true;
     dlg->close();

@@ -9,6 +9,7 @@
 #include "../gen/stdfunc.h"
 #include "trendviewmodel.h"
 #include "../widgets/wd_func.h"
+#include "../gen/modulebsi.h"
 
 TrendViewModel::TrendViewModel(const QStringList &dlist, const QStringList &alist, \
                                  int pointsnum)
@@ -51,23 +52,30 @@ void TrendViewModel::AddDigitalPoint(const QString &GraphNum, int PointValue)
 
 void TrendViewModel::SaveToExcel(QWidget *parent)
 {
-    QXlsx::Document *xlsx;
-    QFileDialog *dlg = new QFileDialog;
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setFileMode(QFileDialog::AnyFile);
-    QString Filename = dlg->getSaveFileName(parent, "Сохранить данные",StdFunc::GetHomeDir(),"Excel files (*.xlsx)", \
-                                            nullptr, QFileDialog::DontUseNativeDialog);
-    xlsx = new QXlsx::Document(Filename);
-    QStringList sl = Filename.split("#"); // отделяем имя файла от даты-времени
-    Filename = sl.at(0);
-    QString OscDateTime = sl.at(1);
-    xlsx->write(1,1,QVariant("Модуль: 85"));
-    xlsx->write(2,1,QVariant("Дата: "+OscDateTime.split(" ").at(0)));
-    xlsx->write(3,1,QVariant("Время: "+OscDateTime.split(" ").at(1)));
-    xlsx->write(4,1,QVariant("Смещение, мс"));
+    switch (ModuleBSI::GetMType(BoardTypes::BT_BASE))
+    {
+        case MTB_85: // настройка нуля
 
-    WriteToFile(5, xlsx);
-    //xlsx->save();
+            QXlsx::Document *xlsx;
+            QFileDialog *dlg = new QFileDialog;
+            dlg->setAttribute(Qt::WA_DeleteOnClose);
+            dlg->setFileMode(QFileDialog::AnyFile);
+            QString Filename = dlg->getSaveFileName(parent, "Сохранить данные",StdFunc::GetHomeDir(),"Excel files (*.xlsx)", \
+                                                    nullptr, QFileDialog::DontUseNativeDialog);
+            xlsx = new QXlsx::Document(Filename);
+            QStringList sl = Filename.split("#"); // отделяем имя файла от даты-времени
+            Filename = sl.at(0);
+            QString OscDateTime = sl.at(1);
+            xlsx->write(1,1,QVariant("Модуль: 85"));
+            xlsx->write(2,1,QVariant("Дата: "+OscDateTime.split(" ").at(0)));
+            xlsx->write(3,1,QVariant("Время: "+OscDateTime.split(" ").at(1)));
+            xlsx->write(4,1,QVariant("Смещение, мс"));
+
+            WriteToFile(5, xlsx);
+            //xlsx->save();
+            break;
+
+    }
 }
 
 void TrendViewModel::SaveToComtrade()

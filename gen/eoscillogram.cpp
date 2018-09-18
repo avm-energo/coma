@@ -301,7 +301,7 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
         dlg->SetModel(TModel);
         dlg->SetAnalogNames(tmpav);
         dlg->SetRanges(0, 10000, -20, 20); // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
-        dlg->SetupPlots();
+        dlg->SetupPlots(id);
         dlg->SetupUI();
         if (!TModel->SetPointsAxis(0, OHD.step))
             return Error::ER_GENERALERROR;
@@ -334,7 +334,7 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
             dlg->SetAnalogNames(tmpav);
             dlg->SetDigitalNames(tmpdv);
             dlg->SetRanges(xmin, xmax, -200, 200);
-            dlg->SetupPlots();
+            dlg->SetupPlots(id);
             dlg->SetupUI();
             if (!TModel->SetPointsAxis(xmin, OHD.step))
                 return Error::ER_GENERALERROR;
@@ -384,7 +384,7 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
             dlg->SetDigitalColors(dcolors);
             dlg->SetAnalogColors(acolors);
             dlg->SetRanges(xmin, xmax, -200, 200);
-            dlg->SetupPlots();
+            dlg->SetupPlots(id);
             dlg->SetupUI();
             if (!TModel->SetPointsAxis(xmin, OHD.step))
                 return Error::ER_GENERALERROR;

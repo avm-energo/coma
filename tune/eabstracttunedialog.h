@@ -27,7 +27,7 @@ public:
         int BacBlockNum;
     };
 
-    explicit EAbstractTuneDialog(QWidget *parent = 0);
+    explicit EAbstractTuneDialog(QWidget *parent = nullptr);
     ~EAbstractTuneDialog();
 
     BacStruct AbsBac;

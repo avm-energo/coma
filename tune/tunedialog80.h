@@ -34,7 +34,7 @@ class TuneDialog80 : public EAbstractTuneDialog
 {
     Q_OBJECT
 public:
-    explicit TuneDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent = 0);
+    explicit TuneDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent = nullptr);
 
 signals:
     void stopall();

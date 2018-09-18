@@ -13702,12 +13702,12 @@ QCPGraph *QCustomPlot::addGraph(QCPAxis *keyAxis, QCPAxis *valueAxis)
   if (!keyAxis || !valueAxis)
   {
     qDebug() << Q_FUNC_INFO << "can't use default QCustomPlot xAxis or yAxis, because at least one is invalid (has been deleted)";
-    return 0;
+    return nullptr;
   }
   if (keyAxis->parentPlot() != this || valueAxis->parentPlot() != this)
   {
     qDebug() << Q_FUNC_INFO << "passed keyAxis or valueAxis doesn't have this QCustomPlot as parent";
-    return 0;
+    return nullptr;
   }
   
   QCPGraph *newGraph = new QCPGraph(keyAxis, valueAxis);

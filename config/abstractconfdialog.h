@@ -12,7 +12,7 @@ class AbstractConfDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit AbstractConfDialog(QWidget *parent = 0);
+    explicit AbstractConfDialog(QWidget *parent = nullptr);
 
     QVector<S2::DataRec> *S2Config;
     QStringList CheckConfErrors;

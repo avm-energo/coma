@@ -1,16 +1,16 @@
-/* Файл предназначен для конфигурирования модулей аналоговых АВ-ТУК-2xхх, хх2x и последующих
- */
+#ifndef CONFDIALOG87_H
+#define CONFDIALOG87_H
 
-#ifndef CONFDIALOG21_H
-#define CONFDIALOG21_H
+/* Файл предназначен для конфигурирования модулей ЧР АВ-ТУК-87
+ */
 
 #include <QDialog>
 #include <QGridLayout>
 
 #include "abstractconfdialog.h"
-#include "../config/config21.h"
+#include "../config/config87.h"
 
-class ConfDialog21 : public AbstractConfDialog
+class ConfDialog87 : public AbstractConfDialog
 {
     Q_OBJECT
 public:
@@ -25,7 +25,8 @@ public:
         RT_VMANUAL
     };
 
-    explicit ConfDialog21(QVector<S2::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = nullptr);
+    explicit ConfDialog87(QVector<S2::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = nullptr);
+    //~ConfDialog87();
 
 private:
     struct SpecificParams
@@ -37,7 +38,7 @@ private:
 
     QByteArray confba;
     SpecificParams Params;
-    Config21 *C21;
+    Config87 *C87;
     QVector<float> RangeInMins;
     QVector<float> RangeInMaxs;
 
@@ -58,4 +59,4 @@ private slots:
     void SetRange(int RangeType);
 };
 
-#endif // CONFDIALOG21_H
+#endif // CONFDIALOG87_H

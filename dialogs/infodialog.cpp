@@ -69,7 +69,7 @@ void InfoDialog::FillBsi()
     for (int i = 0; i < MAXERRORFLAGNUM; i++)
     {
         QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
-        if (lbl == 0)
+        if (lbl == nullptr)
             return;
         quint32 tmpui = (0x00000001 << i) & bsi.Hth;
         if (tmpui)

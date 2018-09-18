@@ -11,7 +11,7 @@ class Coma : public MainWindow
     Q_OBJECT
 
 public:
-    Coma(QWidget *parent = 0);
+    Coma(QWidget *parent = nullptr);
     ~Coma();
 
 /*    void SetMode(int mode);

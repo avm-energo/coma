@@ -103,7 +103,10 @@ SOURCES += \
     ../gen/error.cpp \
     ../gen/timefunc.cpp \
     ../gen/files.cpp \
-    ../gen/stdfunc.cpp
+    ../gen/stdfunc.cpp \
+    ../config/confdialog87.cpp \
+    ../tune/tunedialog85.cpp \
+    ../config/config87.cpp
 
 HEADERS  += \
     coma.h \
@@ -185,22 +188,26 @@ HEADERS  += \
     ../gen/timefunc.h \
     ../gen/files.h \
     ../gen/colors.h \
-    ../gen/stdfunc.h
+    ../gen/stdfunc.h \
+    ../config/confdialog87.h \
+    ../tune/tunedialog85.h \
+    ../config/config87.h
 
 INCLUDEPATH += $$PWD/../../includes
 
-win32 {
-
-    ## Windows common build here
-
-    !contains(QMAKE_TARGET.arch, x86_64) {
+equals(QMAKE_PLATFORM, win32)
+{
+    contains(QMAKE_TARGET.arch, x86_64) {
+        message("x64 build")
+       ## Windows x64 (64bit) specific build here
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
+    } else {
+        message("x86 build")
         ## Windows x86 (32bit) specific build here
         CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
         CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
-    } else {
-        ## Windows x64 (64bit) specific build here
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
     }
 }
+
 unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd

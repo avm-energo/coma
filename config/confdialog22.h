@@ -14,7 +14,7 @@ class ConfDialog22 : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    explicit ConfDialog22(QVector<S2::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = 0);
+    explicit ConfDialog22(QVector<S2::DataRec> &S2Config, bool BaseBoard=true, QWidget *parent = nullptr);
 
 private:
     Config22 *C22;
