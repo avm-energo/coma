@@ -15,7 +15,7 @@ class KeyPressDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit KeyPressDialog(const QString &PswPhrase, QWidget *parent = 0); // PswPhrase - фраза, которую надо написать пользователю
+    explicit KeyPressDialog(const QString &PswPhrase, QWidget *parent = nullptr); // PswPhrase - фраза, которую надо написать пользователю
 
 signals:
     void Finished(QString str);

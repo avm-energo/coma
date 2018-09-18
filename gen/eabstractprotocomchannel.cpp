@@ -312,7 +312,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             }
         }
 
-        [[clang::fallthrough]]; case 1:
+        case 1:
         {
             if (!GetLength())
             {

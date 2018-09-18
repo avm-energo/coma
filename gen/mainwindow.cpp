@@ -362,7 +362,7 @@ int MainWindow::CheckPassword()
     StdFunc::ClearCancel();
     QEventLoop PasswordLoop;
     KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    connect(dlg,SIGNAL(Finished(QString &)),this,SLOT(PasswordCheck(QString &)));
+    connect(dlg,SIGNAL(Finished(QString)),this,SLOT(PasswordCheck(QString)));
     connect(this,SIGNAL(PasswordChecked()),&PasswordLoop,SLOT(quit()));
     dlg->show();
     PasswordLoop.exec();
@@ -499,7 +499,7 @@ void MainWindow::SetTEEnabled(bool enabled)
 }
 #endif
 
-void MainWindow::PasswordCheck(QString &psw)
+void MainWindow::PasswordCheck(QString psw)
 {
     if (psw == "se/7520a")
         ok = true;

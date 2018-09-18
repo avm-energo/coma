@@ -161,7 +161,7 @@ private slots:
     void SetBDefConf();
     void SetMDefConf();
     void Fill();
-    void PasswordCheck(QString &psw);
+    void PasswordCheck(QString psw);
 #if PROGSIZE != PROGSIZE_EMUL
     void GetDeviceFromTable(QModelIndex idx);
     void Stage1_5();
