@@ -5,12 +5,12 @@
 #define Name "ÀÂÒÓÊ-Ñåğâèñ ÏĞ"
 #define GroupName "ÀÂÒÓÊ-Ñåğâèñ"
 #define EngName "AVTUK-S"
-#define Version "2.1.209"
+#define Version "2.1.250"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "avtuks-F.exe"
-#define SetupName "avtuks-F-2.1.209-x86"
-#define Prefix "D:\Progs\out"
+#define SetupName "avtuks-F-2.1.250-x86"
+#define Prefix "D:\out"
 
 [CustomMessages]
 Version={#Version}

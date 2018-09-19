@@ -89,15 +89,38 @@ void ConfDialog87::SetupUI()
     lyout = new QVBoxLayout;
     gb = new QGroupBox("Параметры");
     gb->setObjectName("RangeGB");
+
+    int row;
+
     glyout = new QGridLayout;
-    /*glyout->setColumnStretch(0,0);
+    glyout->setColumnStretch(0,0);
     glyout->setColumnStretch(1,10);
     glyout->setColumnStretch(2,5);
     glyout->setColumnStretch(3,5);
     glyout->setColumnStretch(4,5);
-    glyout->setColumnStretch(5,5);*/
+    glyout->setColumnStretch(5,5);
+    glyout->addWidget(WDFunc::NewLBL(this, "№ канала"),0,0,1,1,Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBLT(this, "Num points", "", tmps, "Количество точек выше порога, %"),0,1,1,1,Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBLT(this, "T down", "", tmps,"Нижняя граница длительности сигнала, мкс"),0,2,1,1,Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBLT(this, "T up", "", tmps,"Верхняя граница длительности сигнала, мкс"),0,3,1,1,Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBLT(this, "F down", "", tmps,"Нижняя частотная граница сигнала, Гц"),0,4,1,1,Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBLT(this, "F up", "", tmps,"Верхняя частотная граница сигнала, Гц"),0,5,1,1,Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBLT(this, "A down", "", tmps,"Уровень низкой степени опасности, мВ"),0,6,1,1,Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBLT(this, "A up", "", tmps,"Уровень высокой степени опасности, мВ"),0,7,1,1,Qt::AlignCenter);
+    for (i = 0; i < CHR87_NUMCH; ++i)
+    {
+        row = i+1;
+        glyout->addWidget(WDFunc::NewLBL(this, QString::number(i+1)),row,0,1,1);
+        glyout->addWidget(WDFunc::NewSPB(this, "percentLimit"+QString::number(i), -100000.0, 100000.0, 2, ACONFYCLR),row,1,1,1);
+        glyout->addWidget(WDFunc::NewSPB(this, "Tdown"+QString::number(i), -100000.0, 100000.0, 2, ACONFYCLR),row,2,1,1);
+        glyout->addWidget(WDFunc::NewSPB(this, "Tup"+QString::number(i), -100000.0, 100000.0, 2, ACONFRCLR),row,3,1,1);
+        glyout->addWidget(WDFunc::NewSPB(this, "Fdown"+QString::number(i), -100000.0, 100000.0, 2, ACONFYCLR),row,4,1,1);
+        glyout->addWidget(WDFunc::NewSPB(this, "Fup"+QString::number(i), -100000.0, 100000.0, 2, ACONFRCLR),row,5,1,1);
+        glyout->addWidget(WDFunc::NewSPB(this, "Adown"+QString::number(i), -100000.0, 100000.0, 2, ACONFYCLR),row,6,1,1);
+        glyout->addWidget(WDFunc::NewSPB(this, "Aup"+QString::number(i), -100000.0, 100000.0, 2, ACONFRCLR),row,7,1,1);
+    }
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Количество точек выше порога, %:"),0,0,1,1);
+    /*glyout->addWidget(WDFunc::NewLBL(this, "Количество точек выше порога, %:"),0,0,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "percentLimit", 0, 50000, 0,MAINWINCLR),0,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "Нижняя граница длительности сигнала, мкс"),1,0,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "Tdown", 0, 50000, 1,MAINWINCLR),1,1,1,1);
@@ -110,7 +133,7 @@ void ConfDialog87::SetupUI()
     glyout->addWidget(WDFunc::NewLBL(this, "Уровень низкой степени опасности, мВ"),5,0,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "Adown", 0, 50000, 1,MAINWINCLR),5,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "Уровень высокой степени опасности, мВ"),6,0,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Aup", 0, 50000, 1,MAINWINCLR),6,1,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "Aup", 0, 50000, 1,MAINWINCLR),6,1,1,1);*/
     gb->setLayout(glyout);
     lyout->addWidget(gb);
     cp = new QWidget;
@@ -141,26 +164,32 @@ void ConfDialog87::SetRange(int RangeType)
 
 void ConfDialog87::Fill()
 {
-    WDFunc::SetSPBData(this, "percentLimit", C87->Bci_block.percentLimit);
-    WDFunc::SetSPBData(this, "Tdown", C87->Bci_block.T_down);
-    WDFunc::SetSPBData(this, "Tup", C87->Bci_block.T_up);
-    WDFunc::SetSPBData(this, "Fdown", C87->Bci_block.F_down);
-    WDFunc::SetSPBData(this, "Fup", C87->Bci_block.F_up);
-    WDFunc::SetSPBData(this, "Adown", C87->Bci_block.A_down);
-    WDFunc::SetSPBData(this, "Aup", C87->Bci_block.A_up);
+    for (int i = 0; i < CHR87_NUMCH; i++)
+    {
+        WDFunc::SetSPBData(this, "percentLimit"+QString::number(i), C87->Bci_block.percentLimit[i]);
+        WDFunc::SetSPBData(this, "Tdown"+QString::number(i), C87->Bci_block.T_down[i]);
+        WDFunc::SetSPBData(this, "Tup"+QString::number(i), C87->Bci_block.T_up[i]);
+        WDFunc::SetSPBData(this, "Fdown"+QString::number(i), C87->Bci_block.F_down[i]);
+        WDFunc::SetSPBData(this, "Fup"+QString::number(i), C87->Bci_block.F_up[i]);
+        WDFunc::SetSPBData(this, "Adown"+QString::number(i), C87->Bci_block.A_down[i]);
+        WDFunc::SetSPBData(this, "Aup"+QString::number(i), C87->Bci_block.A_up[i]);
+    }
 
 }
 
 void ConfDialog87::FillBack()
 {
-    WDFunc::SetSPBData(this, "percentLimit", C87->Bci_block.percentLimit);
-    WDFunc::SetSPBData(this, "Tdown", C87->Bci_block.T_down);
-    WDFunc::SetSPBData(this, "Tup", C87->Bci_block.T_up);
-    WDFunc::SetSPBData(this, "Fdown", C87->Bci_block.F_down);
-    WDFunc::SetSPBData(this, "Fup", C87->Bci_block.F_up);
-    WDFunc::SetSPBData(this, "Adown", C87->Bci_block.A_down);
-    WDFunc::SetSPBData(this, "Aup", C87->Bci_block.A_up);
+    for (int i = 0; i < CHR87_NUMCH; i++)
+    {
+        WDFunc::SetSPBData(this, "percentLimit"+QString::number(i), C87->Bci_block.percentLimit[i]);
+        WDFunc::SetSPBData(this, "Tdown"+QString::number(i), C87->Bci_block.T_down[i]);
+        WDFunc::SetSPBData(this, "Tup"+QString::number(i), C87->Bci_block.T_up[i]);
+        WDFunc::SetSPBData(this, "Fdown"+QString::number(i), C87->Bci_block.F_down[i]);
+        WDFunc::SetSPBData(this, "Fup"+QString::number(i), C87->Bci_block.F_up[i]);
+        WDFunc::SetSPBData(this, "Adown"+QString::number(i), C87->Bci_block.A_down[i]);
+        WDFunc::SetSPBData(this, "Aup"+QString::number(i), C87->Bci_block.A_up[i]);
 
+    }
 }
 
 void ConfDialog87::SetMinMax(int i)
@@ -181,4 +210,5 @@ void ConfDialog87::CheckConf()
 void ConfDialog87::SetDefConf()
 {
     C87->SetDefConf();
+    Fill();
 }

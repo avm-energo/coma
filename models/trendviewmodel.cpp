@@ -10,6 +10,9 @@
 #include "trendviewmodel.h"
 #include "../widgets/wd_func.h"
 #include "../gen/modulebsi.h"
+#include "../gen/eoscillogram.h"
+
+quint32 TrendViewModel::idOsc;
 
 TrendViewModel::TrendViewModel(const QStringList &dlist, const QStringList &alist, \
                                  int pointsnum)
@@ -52,9 +55,9 @@ void TrendViewModel::AddDigitalPoint(const QString &GraphNum, int PointValue)
 
 void TrendViewModel::SaveToExcel(QWidget *parent)
 {
-    switch (ModuleBSI::GetMType(BoardTypes::BT_BASE))
+    switch(idOsc)
     {
-        case MTB_85: // настройка нуля
+        case MT_ID85: // настройка нуля
 
             QXlsx::Document *xlsx;
             QFileDialog *dlg = new QFileDialog;
@@ -195,4 +198,9 @@ void TrendViewModel::WriteToFile(int row, QXlsx::Document *xls)
             }
        }*/
 
+}
+
+ void TrendViewModel::SaveID(quint32 id)
+{
+    idOsc = id;
 }

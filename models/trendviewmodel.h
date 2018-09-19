@@ -1,4 +1,4 @@
-#ifndef TRENDVIEWMODEL_H
+ #ifndef TRENDVIEWMODEL_H
 #define TRENDVIEWMODEL_H
 
 #include <QVector>
@@ -21,9 +21,13 @@ public:
     bool SetPointsAxis(float start, float step);
     void SetFilename(const QString &fn);
     int DContains(const QString &key);
-    int AContains(const QString &key);
+    int AContains(const QString &key);    
+    static void SaveID(quint32 id);
+    static quint32 idOsc;
 
 private:
+
+
     int PointsNum;
     QString Filename;
     bool NoDiscrete, NoAnalog;
@@ -35,14 +39,6 @@ private:
              "nNA","nNB","nNC","nFA","nFB","nFC","nCA","nCB","nCC",
              "nOA","nOB","nOC"};
     QString tmpav[9]={ "USA","USB","USC","IA","IB","IC","ULA","ULB","ULC"};
-
-    struct OscDataRec
-    {
-        quint32 id;
-        quint32 numbytes;
-    };
-    OscDataRec DR;
-
 
 
     void WriteToFile(int row, QXlsx::Document *xls);
