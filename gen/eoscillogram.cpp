@@ -7,6 +7,8 @@
 #include "../gen/colors.h"
 #include "../dialogs/trendviewdialog.h"
 
+
+
 EOscillogram::EOscillogram(QObject *parent) : QObject(parent)
 {
     PointsNum = 0;
@@ -264,6 +266,9 @@ int EOscillogram::ProcessOsc()
     if (!PosPlusPlus(&DR, sizeof(OscDataRec)))
         return Error::ER_GENERALERROR;
     quint32 oscid = DR.id;
+
+    TrendViewModel::SaveID(DR.id); // для выбора
+
     oscid -= MT_HEAD_ID - 1; // одна осциллограмма = 1, две = 2, ...
     if (oscid > 8)
         oscid = 1; // если что-то с количеством осциллограмм не так, принудительно выставляем в 1
