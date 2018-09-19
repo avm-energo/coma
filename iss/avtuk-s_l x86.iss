@@ -5,11 +5,11 @@
 #define Name "АВТУК-Сервис БР"
 #define GroupName "АВТУК-Сервис"
 #define EngName "AVTUK-S"
-#define Version "2.2.250"
+#define Version "2.2.254"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "avtuks-L.exe"
-#define SetupName "avtuks-L-2.2.250-x86"
+#define SetupName "avtuks-L-2.2.254-x86"
 #define Prefix "D:\Progs\out"
 
 [CustomMessages]
@@ -63,14 +63,14 @@ Name: "{group}\Удалить программу {#Name}"; Filename: "{uninstallexe}"
 [Run]
 ; add the Parameters, WorkingDir and StatusMsg as you wish, just keep here
 ; the conditional installation Check
-Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; Check: not IsRequiredVC2015Detected; StatusMsg: Устанавливается пакет MSVC2015 Redistributable...
+Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; Check: not IsRequiredVC2017Detected; StatusMsg: Устанавливается пакет MSVC2017 Redistributable...
 
 [Code]
 //-----------------------------------------------------------------------------
-//  Проверка наличия нужной версии VC2015
+//  Проверка наличия нужной версии VC2017
 //  https://habrahabr.ru/post/255807/
 //-----------------------------------------------------------------------------
-function IsVC2015Detected(): boolean;
+function IsVC2017Detected(): boolean;
 
 var 
     reg_key: string; // Просматриваемый подраздел системного реестра
@@ -80,12 +80,12 @@ var
 
 begin
     success := false;
-    reg_key := 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64';
+    reg_key := 'SOFTWARE\Wow6432Node\Microsoft\DevDiv\vc\Servicing\14.0\RuntimeAdditional'; // 64bit
     success := RegQueryStringValue(HKLM, reg_key, 'Version', key_value);
-    success := success and ((Pos('v14.0.24215', key_value) = 1) or (Pos('v14.0.24210', key_value) = 1));
-    reg_key := 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86';
+    success := success and (Pos('v14.14.26405', key_value) = 1);
+    reg_key := 'SOFTWARE\Microsoft\DevDiv\vc\Servicing\14.0\RuntimeAdditional'; // 32bit
     success2 := RegQueryStringValue(HKLM, reg_key, 'Version', key_value);
-    success2 := success2 and ((Pos('v14.0.24215', key_value) = 1) or (Pos('v14.0.24210', key_value) = 1));
+    success2 := success2 and (Pos('v14.14.26405', key_value) = 1);
     success := success or success2;
 
     result := success;
@@ -94,9 +94,9 @@ end;
 //-----------------------------------------------------------------------------
 //  Функция-обертка для детектирования конкретной нужной нам версии
 //-----------------------------------------------------------------------------
-function IsRequiredVC2015Detected(): boolean;
+function IsRequiredVC2017Detected(): boolean;
 begin
-    result := IsVC2015Detected();
+    result := IsVC2017Detected();
 end;
 
 //-----------------------------------------------------------------------------

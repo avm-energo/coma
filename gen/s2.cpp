@@ -152,7 +152,7 @@ S2::DataRec *S2::FindElem(QVector<DataRec> *dr, quint32 id)
 
 void inline S2::updCRC32(char byte, quint32 *dwCRC32)
 {
-    *dwCRC32 = (( *dwCRC32 ) >> 8 )^ _crc32_t[static_cast<unsigned int>( byte )^(( *dwCRC32 ) & 0x000000FF )];
+    *dwCRC32 = (( *dwCRC32 ) >> 8 )^ _crc32_t[static_cast<quint8>( byte )^(( *dwCRC32 ) & 0x000000FF )];
 }
 
 quint32 S2::GetCRC32(char *data, quint32 len)

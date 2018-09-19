@@ -63,7 +63,7 @@ Name: "{group}\Удалить программу {#Name}"; Filename: "{uninstallexe}"
 [Run]
 ; add the Parameters, WorkingDir and StatusMsg as you wish, just keep here
 ; the conditional installation Check
-Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; Check: not IsRequiredVC2015Detected; StatusMsg: Устанавливается пакет MSVC2017 Redistributable...
+Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; Check: not IsRequiredVC2017Detected; StatusMsg: Устанавливается пакет MSVC2017 Redistributable...
 
 [Code]
 //-----------------------------------------------------------------------------
