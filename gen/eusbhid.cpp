@@ -38,11 +38,11 @@ QByteArray EUsbHid::RawRead(int bytes)
     return QByteArray();
 }
 
-qint64 EUsbHid::RawWrite(QByteArray &ba)
+int EUsbHid::RawWrite(QByteArray &ba)
 {
     if (!ThreadRunning)
         return Error::ER_GENERALERROR;
-    qint64 res = UThread->WriteData(ba);
+    int res = UThread->WriteData(ba);
     if (res < 0)
         return Error::ER_GENERALERROR;
     return res;
@@ -88,7 +88,7 @@ EUsbThread::EUsbThread(Log *logh, bool writelog, QObject *parent) : QObject(pare
 {
     log = logh;
     AboutToFinish = false;
-    HidDevice = 0;
+    HidDevice = nullptr;
     WriteUSBLog = writelog;
 }
 
@@ -116,7 +116,7 @@ void EUsbThread::Run()
         {
             // check if there's any data in input buffer
             int bytes;
-            if (HidDevice != 0)
+            if (HidDevice != nullptr)
             {
                 bytes = hid_read(HidDevice, data, UH_MAXSEGMENTLENGTH+1);
                 if (bytes < 0)
@@ -148,7 +148,7 @@ void EUsbThread::Run()
     }
 }
 
-qint64 EUsbThread::WriteData(QByteArray &ba)
+int EUsbThread::WriteData(QByteArray &ba)
 {
     if (HidDevice != nullptr)
     {
@@ -167,7 +167,8 @@ qint64 EUsbThread::WriteData(QByteArray &ba)
             QByteArray tmpba = "UsbThread: ->" + ba.toHex() + "\n";
             log->WriteRaw(tmpba);
         }
-        return hid_write(HidDevice, reinterpret_cast<unsigned char *>(ba.data()), ba.size());
+        size_t tmpt = static_cast<size_t>(ba.size());
+        return hid_write(HidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt);
     }
     return 0;
 }

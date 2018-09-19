@@ -32,7 +32,7 @@ EAbstractProtocomChannel::~EAbstractProtocomChannel()
 {
 }
 
-void EAbstractProtocomChannel::Send(int command, int board_type, void *ptr, quint32 ptrsize, quint16 filenum, QVector<S2::DataRec> *DRptr)
+void EAbstractProtocomChannel::Send(char command, char board_type, void *ptr, int ptrsize, int filenum, QVector<S2::DataRec> *DRptr)
 {
     if (!Connected)
     {
@@ -84,9 +84,9 @@ void EAbstractProtocomChannel::TranslateDeviceAndSave(const QString &str)
         return;
     }
     QString tmps = sl.at(1);
-    UsbPort.vendor_id = tmps.toInt(nullptr, 16);
+    UsbPort.vendor_id = tmps.toUShort(nullptr, 16);
     tmps = sl.at(3);
-    UsbPort.product_id = tmps.toInt(nullptr, 16);
+    UsbPort.product_id = tmps.toUShort(nullptr, 16);
     tmps = sl.at(5);
     int z = tmps.toWCharArray(UsbPort.serial);
     UsbPort.serial[z] = '\x0';
@@ -138,10 +138,12 @@ void EAbstractProtocomChannel::InitiateSend()
     {
         WriteData.append(CN_MS);
         WriteData.append(cmd);
-        AppendSize(WriteData, 17); // BoardType(1), HiddenBlock(16)
+        int size = (BoardType == BoardTypes::BT_BSMZ) ? WHV_SIZE_TWOBOARDS : WHV_SIZE_ONEBOARD;
+        AppendSize(WriteData, size); // BoardType(1), HiddenBlock(16)
         WriteData.append(BoardType);
         WriteData.resize(WriteData.size()+outdatasize);
-        memcpy(&(WriteData.data()[5]), &outdata[0], outdatasize);
+        size_t tmpi = static_cast<size_t>(outdatasize);
+        memcpy(&(WriteData.data()[5]), &outdata[0], tmpi);
         WriteDataToPort(WriteData);
         break;
     }
@@ -168,7 +170,7 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_WBt:
     {
         WriteData.append(BoardType);
-        WriteData.append(QByteArray::fromRawData((const char *)outdata, outdatasize));
+        WriteData.append(QByteArray::fromRawData(static_cast<const char *>(outdata), outdatasize));
         WRLength = outdatasize + 1;
         emit SetDataSize(WRLength); // сигнал для прогрессбара
         SetWRSegNum();
@@ -179,7 +181,6 @@ void EAbstractProtocomChannel::InitiateSend()
     {
         Finish(CN_UNKNOWNCMDERROR);
         return;
-        break;
     }
     }
     ReadData.clear();
@@ -201,7 +202,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         return;
     int res;
     ReadDataChunk.append(ba);
-    RDSize = static_cast<quint32>(ReadDataChunk.size());
+    RDSize = ReadDataChunk.size();
     if (RDSize<4) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
         return;
     if (ReadDataChunk.at(0) != CN_SS)
@@ -286,8 +287,8 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                     if (RDSize < 16) // не пришла ещё шапка файла
                         return;
                     quint16 filenum;
-                    quint8 tmpi= ReadDataChunk[5];
-                    filenum = tmpi * 256;
+                    char tmpi= ReadDataChunk[5];
+                    filenum = static_cast<unsigned short>(tmpi) * 256;
                     tmpi = ReadDataChunk[4];
                     filenum += tmpi;
                     if (filenum != fnum)
@@ -312,7 +313,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             }
         }
 
-        case 1:
+        [[clang::fallthrough]]; case 1:
         {
             if (!GetLength())
             {
@@ -323,7 +324,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
             ReadDataChunk.remove(0, 4); // убираем заголовок с < и длиной
             ReadData.append(ReadDataChunk.data(), ReadDataChunkLength);
-            RDSize = static_cast<quint32>(ReadData.size());
+            RDSize = ReadData.size();
             emit SetDataCount(RDSize); // сигнал для прогрессбара
             ReadDataChunk.clear();
             switch (cmd)
@@ -340,7 +341,8 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 {
                     emit SetDataSize(RDSize); // установка размера прогрессбара, чтобы не мелькал
                     RDSize = qMin(outdatasize, RDSize); // если даже приняли больше, копируем только требуемый размер
-                    memcpy(outdata,ReadData.data(),RDSize);
+                    size_t tmpi = static_cast<size_t>(RDSize);
+                    memcpy(outdata,ReadData.data(),tmpi);
                     Finish(Error::ER_NOERROR);
                 }
                 else
@@ -354,7 +356,8 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                     if ((fnum >= CN_MINOSCID) && (fnum <= CN_MAXOSCID)) // для осциллограмм особая обработка
                     {
                         RDSize = qMin(RDLength, RDSize); // если даже приняли больше, копируем только требуемый размер
-                        memcpy(outdata,ReadData.data(),RDSize);
+                        size_t tmpi = static_cast<size_t>(RDSize);
+                        memcpy(outdata,ReadData.data(),tmpi);
                         Finish(Error::ER_NOERROR);
                         break;
                     }
@@ -458,11 +461,11 @@ void EAbstractProtocomChannel::SendOk(bool cont)
     WriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
 }
 
-void EAbstractProtocomChannel::AppendSize(QByteArray &ba, quint16 size)
+void EAbstractProtocomChannel::AppendSize(QByteArray &ba, int size)
 {
-    quint8 byte = static_cast<quint8>(size%0x100);
+    char byte = static_cast<char>(size%0x100);
     ba.append(byte);
-    byte = static_cast<quint8>(size/0x100);
+    byte = static_cast<char>(size/0x100);
     ba.append(byte);
 }
 
@@ -525,8 +528,8 @@ void EAbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
         Error::ShowErMsg(USB_WRONGCOMER);
         return;
     }
-    quint64 byteswritten = 0;
-    quint64 basize = tmpba.size();
+    int byteswritten = 0;
+    int basize = tmpba.size();
     while ((byteswritten < basize) && (!tmpba.isEmpty()))
     {
         if (WriteUSBLog)
@@ -534,7 +537,7 @@ void EAbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
             QByteArray tmps = "->" + tmpba.toHex() + "\n";
             CnLog->WriteRaw(tmps);
         }
-        qint64 tmpi = RawWrite(tmpba);
+        int tmpi = RawWrite(tmpba);
         if (tmpi == Error::ER_GENERALERROR)
         {
             Error::ShowErMsg(COM_WRITEER);

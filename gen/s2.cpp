@@ -8,7 +8,7 @@ S2::S2()
 
 }
 
-int S2::StoreDataMem(void *mem, QVector<DataRec> *dr, quint16 fname) //0 - успешно, иначе код ошибки
+int S2::StoreDataMem(void *mem, QVector<DataRec> *dr, int fname) //0 - успешно, иначе код ошибки
 {
     quint32 crc=0xFFFFFFFF;
     FileHeader D;
@@ -25,7 +25,7 @@ int S2::StoreDataMem(void *mem, QVector<DataRec> *dr, quint16 fname) //0 - ус�
         memcpy(m,&R,tmpi);
         D.size += tmpi;
         for(i=0;i<tmpi;i++)
-            updCRC32((static_cast<unsigned char *>(Rptr))[i],&crc);
+            updCRC32((static_cast<char *>(Rptr))[i],&crc);
         if(R.id==0xFFFFFFFF)
             break;
         m+=tmpi;
@@ -33,7 +33,7 @@ int S2::StoreDataMem(void *mem, QVector<DataRec> *dr, quint16 fname) //0 - ус�
         {
             tmpi = R.num_byte;
             for(i=0;i<tmpi;i++)
-                updCRC32((static_cast<unsigned char *>(R.thedata))[i],&crc);
+                updCRC32((static_cast<char *>(R.thedata))[i],&crc);
             D.size += tmpi;
             memcpy(m,R.thedata,tmpi);
             m+=tmpi;
@@ -42,32 +42,33 @@ int S2::StoreDataMem(void *mem, QVector<DataRec> *dr, quint16 fname) //0 - ус�
     D.crc32=crc;
     D.thetime=getTime32();
     D.service=0xFFFF;
-    D.fname=fname;
+    D.fname=static_cast<quint16>(fname);
     memcpy(mem,&D,sizeof(D));
     return Error::ER_NOERROR;
 }
 
-int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
+int S2::RestoreDataMem(void *mem, int memsize, QVector<DataRec> *dr)
 {
   quint32 crc;
-  quint32 sz=0;
+  int sz=0;
   char *m=static_cast<char *>(mem);
   DataRec R;
   DataRec *r;
   FileHeader dh;
-  quint32 i;
+  int i;
   bool NoIDs=true; // признак того, что не встретился ни один из ID в dr
 
   crc=0xFFFFFFFF;
 
-  quint32 tmpi = sizeof(FileHeader);
-  quint32 pos = tmpi;
+  int tmpi = sizeof(FileHeader);
+  int pos = tmpi;
   if (pos > memsize)
   {
       ERMSG("S2: выход за границу принятых байт"); // выход за границу принятых байт
       return S2_SIZEERROR;
   }
-  memcpy(&dh,m,tmpi);
+  size_t tmpt = static_cast<size_t>(tmpi);
+  memcpy(&dh,m,tmpt);
   m+=tmpi;
   for (i=0; i<(memsize-tmpi); i++)
       updCRC32(m[i], &crc);
@@ -85,7 +86,8 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
           ERMSG("S2: выход за границу принятых байт"); // выход за границу принятых байт
           return S2_SIZEERROR;
       }
-      memcpy(&R,m,tmpi);
+      size_t tmpt = static_cast<size_t>(tmpi);
+      memcpy(&R,m,tmpt);
       sz+=tmpi;
       m+=tmpi;
       if(R.id==0xFFFFFFFF)
@@ -93,7 +95,7 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
       r=FindElem(dr,R.id);
       if(r == nullptr) //элемент не найден в описании, пропускаем
       {
-          tmpi = R.num_byte;
+          tmpi = static_cast<int>(R.num_byte);
           pos += tmpi;
           if (pos > memsize)
           {
@@ -110,18 +112,19 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
           ERMSG("Несовпадение описаний одного и того же блока"); // несовпадение описаний одного и того же блока
           return S2_DESCERROR;
       }
-      tmpi = r->num_byte;
+      tmpi = static_cast<int>(r->num_byte);
       pos += tmpi;
       if (pos > memsize)
       {
           ERMSG("S2: выход за границу принятых байт"); // выход за границу принятых байт
           return S2_SIZEERROR;
       }
-      memcpy(r->thedata,m,tmpi);
+      tmpt = static_cast<size_t>(tmpi);
+      memcpy(r->thedata,m,tmpt);
       sz += tmpi;
       m += tmpi;
   }
-  if(dh.size!=sz)
+  if(dh.size!=static_cast<quint32>(sz))
   {
       ERMSG("S2: ошибка длины"); // ошибка длины
       return S2_DHSZERROR;
@@ -134,22 +137,22 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
   return Error::ER_NOERROR;
 }
 
-S2::DataRec *S2::FindElem(QVector<DataRec> *dr, quint16 id)
+S2::DataRec *S2::FindElem(QVector<DataRec> *dr, quint32 id)
 {
     for(QVector<DataRec>::iterator it=dr->begin(); it!=dr->end(); ++it)
     {
         DataRec R = *it;
         if(R.id==id)
             return it;
-        if(R.id==static_cast<quint16>(0xFFFF))
+        if(R.id==static_cast<quint32>(0xFFFF))
             return nullptr;
     }
     return nullptr;
 }
 
-void inline S2::updCRC32(const quint8 byte, quint32 *dwCRC32)
+void inline S2::updCRC32(char byte, quint32 *dwCRC32)
 {
-    *dwCRC32 = (( *dwCRC32 ) >> 8 )^ _crc32_t[( byte )^(( *dwCRC32 ) & 0x000000FF )];
+    *dwCRC32 = (( *dwCRC32 ) >> 8 )^ _crc32_t[static_cast<unsigned int>( byte )^(( *dwCRC32 ) & 0x000000FF )];
 }
 
 quint32 S2::GetCRC32(char *data, quint32 len)

@@ -544,13 +544,13 @@ void TuneDialog85::SetDefCoefs()
         Bac_block.KmI_1[i] = 1.0;
         Bac_block.KmI_4[i] = 1.0;
     }
-    Bac_block.KmU[0] = 0.978;
-    Bac_block.KmU[1] = 0.977;
-    Bac_block.KmU[2] = 0.977;
+    Bac_block.KmU[0] = static_cast<float>(0.978);
+    Bac_block.KmU[1] = static_cast<float>(0.977);
+    Bac_block.KmU[2] = static_cast<float>(0.977);
 
-    Bac_block.KmU2[0] = 0.97507;
-    Bac_block.KmU2[1] = 0.97507;
-    Bac_block.KmU2[2] = 0.97507;
+    Bac_block.KmU2[0] = static_cast<float>(0.97507);
+    Bac_block.KmU2[1] = static_cast<float>(0.97507);
+    Bac_block.KmU2[2] = static_cast<float>(0.97507);
 
 
 

@@ -53,10 +53,12 @@ void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
     SWJMap.clear();
     while ((BaPos + SWJRecordSize) < BaSize)
     {
-        memcpy(&tmpswj, &(ba.data()[BaPos]), SWJRecordSize);
-        if ((tmpswj.Num != 0) && (!SWJMap.keys().contains(tmpswj.Num))) // пропуск пустых записей
+        size_t tmpt = static_cast<size_t>(SWJRecordSize);
+        memcpy(&tmpswj, &(ba.data()[BaPos]), tmpt);
+        int tmpi = static_cast<int>(tmpswj.Num);
+        if ((tmpswj.Num != 0) && (!SWJMap.keys().contains(tmpi))) // пропуск пустых записей
         {
-            SWJMap[tmpswj.Num] = tmpswj;
+            SWJMap[tmpi] = tmpswj;
             TableModel->addRow();
             TableModel->setData(TableModel->index(CurRow, 0, QModelIndex()), QVariant(tmpswj.Num), Qt::EditRole);
             TableModel->setData(TableModel->index(CurRow, 1, QModelIndex()), QVariant(TimeFunc::UnixTime64ToString(tmpswj.Time)), Qt::EditRole);
@@ -87,8 +89,8 @@ void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
 void SwitchJournalDialog::ProcessOscillograms()
 {
     QByteArray OscInfo;
-    quint32 OscInfoSize; // размер считанного буфера с информацией об осциллограммах
-    quint32 RecordSize = sizeof(EOscillogram::GBoStruct); // GBo struct size
+    int OscInfoSize; // размер считанного буфера с информацией об осциллограммах
+    int RecordSize = sizeof(EOscillogram::GBoStruct); // GBo struct size
     OscInfoSize = MAXOSCBUFSIZE;
     OscInfo.resize(OscInfoSize);
     if ((Commands::GetBt(TECH_Bo, &(OscInfo.data()[0]), OscInfoSize)) != NOERROR)
@@ -96,10 +98,11 @@ void SwitchJournalDialog::ProcessOscillograms()
         WARNMSG("Ошибка при приёме буфера осциллограмм");
         return;
     }
-    for (quint32 i = 0; i < OscInfoSize; i+= RecordSize)
+    for (int i = 0; i < OscInfoSize; i+= RecordSize)
     {
         EOscillogram::GBoStruct gbos;
-        memcpy(&gbos, &(OscInfo.data()[i]), RecordSize);
+        size_t tmpt = static_cast<size_t>(RecordSize);
+        memcpy(&gbos, &(OscInfo.data()[i]), tmpt);
         OscMap[gbos.UnixTime] = gbos;
     }
 }
@@ -122,7 +125,7 @@ void SwitchJournalDialog::LoadJournals()
     TableModel->setData(TableModel->index(0, 4, QModelIndex()), QVariant("Осц"), Qt::EditRole);
 //    SwjTableView->setSpan(0, 3, 1, 2); // объединение 3 и 4 столбцов в 0 ряду
     QByteArray SWJournal;
-    quint32 SWJSize = sizeof(SWJDialog::SWJournalRecordStruct) * MAXSWJNUM;
+    int SWJSize = sizeof(SWJDialog::SWJournalRecordStruct) * MAXSWJNUM;
     SWJournal.resize(SWJSize);
     Commands::GetBt(TECH_SWJ, &(SWJournal.data()[0]), SWJSize); // в SWJSize - реальная длина в байтах
     SWJournal.resize(SWJSize);
@@ -133,7 +136,7 @@ void SwitchJournalDialog::LoadJournals()
 void SwitchJournalDialog::ShowJournal(QModelIndex idx)
 {
     bool ok;
-    quint32 SWJNum = TableModel->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(&ok); // номер осциллограммы
+    int SWJNum = TableModel->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(&ok); // номер осциллограммы
     if (!ok)
     {
         WARNMSG("");

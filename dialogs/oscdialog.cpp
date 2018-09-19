@@ -81,8 +81,8 @@ void OscDialog::GetAndProcessOscInfo()
     emit StopCheckTimer();
     QVector<QVector<QVariant> > lsl;
     QByteArray OscInfo;
-    quint32 OscInfoSize; // размер считанного буфера с информацией об осциллограммах
-    quint32 RecordSize = sizeof(EOscillogram::GBoStruct); // GBo struct size
+    int OscInfoSize; // размер считанного буфера с информацией об осциллограммах
+    int RecordSize = sizeof(EOscillogram::GBoStruct); // GBo struct size
     OscInfoSize = MAXOSCBUFSIZE;
     OscInfo.resize(OscInfoSize);
     if ((Commands::GetBt(TECH_Bo, &(OscInfo.data()[0]), OscInfoSize)) == Error::ER_NOERROR)
@@ -102,10 +102,11 @@ void OscDialog::GetAndProcessOscInfo()
         QApplication::setOverrideCursor(Qt::WaitCursor);
         QVector<QVariant> Num, IDs, Tim, Lngth, Dwld;
         int counter = 0;
-        for (quint32 i = 0; i < OscInfoSize; i+= RecordSize)
+        for (int i = 0; i < OscInfoSize; i+= RecordSize)
         {
             EOscillogram::GBoStruct gbos;
-            memcpy(&gbos, &(OscInfo.data()[i]), RecordSize);
+            size_t tmpt = static_cast<size_t>(RecordSize);
+            memcpy(&gbos, &(OscInfo.data()[i]), tmpt);
             Num << QString::number(gbos.FileNum);
             Tim << TimeFunc::UnixTime64ToString(gbos.UnixTime);
             IDs << gbos.ID;
@@ -129,7 +130,7 @@ void OscDialog::GetOsc(QModelIndex idx)
     emit StopCheckTimer();
     bool ok;
     StdFunc::SetPrbMessage("Загружено, байт: ");
-    quint32 oscnum = tm->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(&ok); // номер осциллограммы
+    int oscnum = tm->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(&ok); // номер осциллограммы
     if (!ok)
     {
         WARNMSG("");

@@ -140,8 +140,8 @@ private:
     void LoadSettings();
     void SaveSettings();
 #if PROGSIZE != PROGSIZE_EMUL
-    void SetProgressBarSize(QString prbnum, quint32 size);
-    void SetProgressBar(QString prbnum, quint32 cursize);
+    void SetProgressBarSize(QString prbnum, int size);
+    void SetProgressBar(QString prbnum, int cursize);
 #endif
 
 private slots:
@@ -166,9 +166,9 @@ private slots:
     void GetDeviceFromTable(QModelIndex idx);
     void Stage1_5();
     void Stage2();
-    void SetProgressBar1Size(quint32 size);
+    void SetProgressBar1Size(int size);
     void SetProgressBar1(quint32 cursize);
-    void SetProgressBar2Size(quint32 size);
+    void SetProgressBar2Size(int size);
     void SetProgressBar2(quint32 cursize);
     void ShowConnectDialog();
 #endif

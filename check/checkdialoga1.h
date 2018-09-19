@@ -10,7 +10,7 @@ class CheckDialogA1 : public EAbstractCheckDialog
 {
     Q_OBJECT
 public:
-    explicit CheckDialogA1(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = 0);
+    explicit CheckDialogA1(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
 signals:
 
@@ -20,7 +20,7 @@ private:
     CheckA1 *ChA1;
     Check *Ch;
     const QString ValuesFormat = "QLabel {border: 1px solid red; border-radius: 4px; padding: 1px; color: red; font: bold 10px;}";
-    int NVar;
+    char NVar;
 
     QWidget *AutoCheckUI(); // UI для автоматической проверки модуля
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля

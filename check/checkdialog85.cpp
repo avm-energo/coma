@@ -120,6 +120,7 @@ void CheckDialog85::PrepareHeadersForFile(int row)
 
 void CheckDialog85::WriteToFile(int row, int bdnum)
 {
+    Q_UNUSED(bdnum);
     // получение текущих аналоговых сигналов от модуля
     QXlsx::Format format;
     QString Precision = "0.0000";

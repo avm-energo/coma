@@ -56,6 +56,9 @@
 #define CN_MINOSCID 1000 // минимальный ИД осциллограмм, нужно, т.к. файлы осциллограмм обрабатываются по-своему
 #define CN_MAXOSCID 2999 // максимальный ИД осциллограмм
 
+#define WHV_SIZE_ONEBOARD   17
+#define WHV_SIZE_TWOBOARDS  33
+
 //#define NOTIMEOUT
 
 class EAbstractProtocomChannel : public QObject
@@ -79,17 +82,17 @@ public:
     QMutex BusyMutex;
     QWaitCondition BusyWC;
     bool Connected, Cancelled;
-    quint32 RDSize;
+    int RDSize;
     Log *CnLog;
     QString ComPort;
     DeviceConnectStruct UsbPort;
 
     virtual bool Connect() = 0;
     virtual QByteArray RawRead(int bytes) = 0;
-    virtual qint64 RawWrite(QByteArray &ba) = 0;
+    virtual int RawWrite(QByteArray &ba) = 0;
     virtual void RawClose() = 0;
 
-    void Send(int command, int board_type=0, void *ptr=nullptr, quint32 ptrsize=0, quint16 filenum=0, \
+    void Send(char command, char board_type=0, void *ptr=nullptr, int ptrsize=0, int filenum=0, \
               QVector<S2::DataRec> *DRptr=nullptr);
     static void SetWriteUSBLog(bool bit);
     static bool IsWriteUSBLog();
@@ -97,8 +100,8 @@ public:
     void TranslateDeviceAndSave(const QString &str); // функция, разбивающая строку устройства и складывающая в соотв. структуру
 
 signals:
-    void SetDataSize(quint32); // сигналы для прогрессбаров - отслеживание принятых данных, стёртых осциллограмм и т.п.
-    void SetDataCount(quint32);
+    void SetDataSize(int); // сигналы для прогрессбаров - отслеживание принятых данных, стёртых осциллограмм и т.п.
+    void SetDataCount(int);
     void readbytessignal(QByteArray ); // for TE updating
     void writebytessignal(QByteArray ); // for TE updating
     void Retry();
@@ -121,17 +124,17 @@ private:
     QByteArray WriteData;
     QTimer *TTimer, *OscTimer;
     quint16 OscNum;
-    int bStep;
-    int cmd;
-    quint16 fnum;
-    quint32 ReadDataChunkLength, RDLength; // длина всей посылки
-    quint32 WRLength; // длина всей посылки
-    quint32 outdatasize; // размер приёмной области памяти
-    quint32 SegLeft; // количество оставшихся сегментов
-    quint32 SegEnd; // номер последнего байта в ReadData текущего сегмента
+    quint8 bStep;
+    char cmd;
+    int fnum;
+    int ReadDataChunkLength, RDLength; // длина всей посылки
+    int WRLength; // длина всей посылки
+    int outdatasize; // размер приёмной области памяти
+    int SegLeft; // количество оставшихся сегментов
+    int SegEnd; // номер последнего байта в ReadData текущего сегмента
     bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
     QVector<S2::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
-    quint8 BoardType;
+    char BoardType;
     static bool WriteUSBLog;
 
     void InitiateSend();
@@ -139,7 +142,7 @@ private:
     void Finish(int ernum);
     void SetWRSegNum();
     void WRCheckForNextSegment(int first);
-    void AppendSize(QByteArray &ba, quint16 size);
+    void AppendSize(QByteArray &ba, int size);
     void SendOk(bool cont=false); // cont = 1 -> send CN_MS3 instead CN_MS
     void SendErr();
     bool GetLength(); // ok = 1 -> обработка посылки вида SS OK ..., ok = 0 -> вида SS c L L ... возвращаемое значение = false -> неправильная длина

@@ -18,7 +18,7 @@ public:
 
     bool Connect();
     QByteArray RawRead(int bytes);
-    qint64 RawWrite(QByteArray &ba);
+    int RawWrite(QByteArray &ba);
     void RawClose();
     QStringList DevicesFound();
 

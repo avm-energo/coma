@@ -62,9 +62,9 @@ QByteArray EUsbCom::RawRead(int bytes)
     return port->read(bytes);
 }
 
-qint64 EUsbCom::RawWrite(QByteArray &ba)
+int EUsbCom::RawWrite(QByteArray &ba)
 {
-    return port->write(ba);
+    return static_cast<int>(port->write(ba));
 }
 
 void EUsbCom::RawClose()

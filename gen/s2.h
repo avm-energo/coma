@@ -28,16 +28,16 @@ public:
     QVector<DataRec> Config;
     S2();
     // S2: Сборщик в память:
-    static int StoreDataMem(void *, QVector<DataRec> *, quint16 fname); //0 - успешно, иначе код ошибки
+    static int StoreDataMem(void *, QVector<DataRec> *, int fname); //0 - успешно, иначе код ошибки
     // S2: получение размера:
     static int StoreDataSize(FileHeader *, DataRec *); //>0 - успешно, иначе код ошибки
     // S2: Разборщик из памяти:
-    static int RestoreDataMem(void *, quint32, QVector<DataRec> *); //0 - успешно, иначе код ошибки
+    static int RestoreDataMem(void *, int, QVector<DataRec> *); //0 - успешно, иначе код ошибки
     // S2: Поиск элемента в массиве описаний
-    static DataRec *FindElem(QVector<DataRec> *, quint16);
+    static DataRec *FindElem(QVector<DataRec> *, quint32);
     static quint32 getTime32();
     static quint32 GetCRC32(char *, quint32);
-    static void updCRC32(const quint8 byte, quint32 *dwCRC32);
+    static void updCRC32(char byte, quint32 *dwCRC32);
 
 private:
 //    const unsigned long dwPolynomial = 0xEDB88320;

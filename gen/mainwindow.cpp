@@ -67,8 +67,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
 #endif
 #endif
-    connect(cn,SIGNAL(SetDataSize(quint32)),this,SLOT(SetProgressBar1Size(quint32)));
-    connect(cn,SIGNAL(SetDataCount(quint32)),this,SLOT(SetProgressBar1(quint32)));
+    connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
+    connect(cn,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
     connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
@@ -398,9 +398,11 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
             return;
         }
         SWJDialog::SWJournalRecordStruct swjr;
-        memcpy(&swjr, &(ba.data()[0]), SWJRSize); // копируем информацию о переключении
+        size_t tmpi = static_cast<size_t>(SWJRSize);
+        memcpy(&swjr, &(ba.data()[0]), tmpi); // копируем информацию о переключении
         EOscillogram::GBoStruct gbos;
-        memcpy(&gbos, &(ba.data()[SWJRSize]), GBOSize); // копируем информацию об осциллограмме
+        tmpi = static_cast<size_t>(GBOSize);
+        memcpy(&gbos, &(ba.data()[SWJRSize]), tmpi); // копируем информацию об осциллограмме
         ba.remove(0, (SWJRSize+GBOSize)); // оставляем только саму осциллограмму
         if (ba.isEmpty()) // осциллограммы в журнале нет
             haveosc = false;
@@ -548,7 +550,7 @@ void MainWindow::OpenBhbDialog()
 void MainWindow::StartEmul()
 {
     bool ok;
-    quint16 MType = sender()->objectName().toInt(&ok, 16);
+    quint16 MType = sender()->objectName().toUShort(&ok, 16);
     if (!ok)
     {
         ERMSG("Wrong object name in StartEmul()");
@@ -582,7 +584,7 @@ void MainWindow::ShowErrorDialog()
     dlg->exec();
 }
 #if PROGSIZE != PROGSIZE_EMUL
-void MainWindow::SetProgressBar1Size(quint32 size)
+void MainWindow::SetProgressBar1Size(int size)
 {
     SetProgressBarSize("1", size);
 }
@@ -592,7 +594,7 @@ void MainWindow::SetProgressBar1(quint32 cursize)
     SetProgressBar("1", cursize);
 }
 
-void MainWindow::SetProgressBar2Size(quint32 size)
+void MainWindow::SetProgressBar2Size(int size)
 {
     SetProgressBarSize("2", size);
 }
@@ -634,7 +636,7 @@ void MainWindow::ShowConnectDialog()
     dlg->exec();
 }
 
-void MainWindow::SetProgressBarSize(QString prbnum, quint32 size)
+void MainWindow::SetProgressBarSize(QString prbnum, int size)
 {
     QString prbname = "prb"+prbnum+"prb";
     QString lblname = "prb"+prbnum+"lbl";
@@ -649,7 +651,7 @@ void MainWindow::SetProgressBarSize(QString prbnum, quint32 size)
     prb->setMaximum(size);
 }
 
-void MainWindow::SetProgressBar(QString prbnum, quint32 cursize)
+void MainWindow::SetProgressBar(QString prbnum, int cursize)
 {
     QString prbname = "prb"+prbnum+"prb";
     QString lblname = "prb"+prbnum+"lbl";

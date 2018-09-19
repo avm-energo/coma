@@ -35,7 +35,7 @@ signals:
 
 public slots:
     void Run();
-    qint64 WriteData(QByteArray &ba);
+    int WriteData(QByteArray &ba);
     void Finish();
 
 private:
@@ -58,7 +58,7 @@ public:
 
     bool Connect();
     QByteArray RawRead(int bytes);
-    qint64 RawWrite(QByteArray &ba);
+    int RawWrite(QByteArray &ba);
     void RawClose();
     QStringList DevicesFound();
 

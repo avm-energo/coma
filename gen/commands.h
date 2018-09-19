@@ -28,22 +28,22 @@ class Commands
     explicit Commands();
 public:
     static int GetBsi(ModuleBSI::Bsi &bsi);
-    static int GetFile(quint32 filenum, QVector<S2::DataRec> *data);
-    static int GetOsc(quint32 filenum, void *ptr); // приём осциллограмм, в ptr возвращается целиком весь считанный буфер
-    static int GetBac(int BacNum, void *ptr, int ptrsize);
-    static int GetBd(int BdNum, void *BdPtr, int BdPtrSize);
-    static int GetBda(int board, void *BdPtr, int BdPtrSize);
-    static int GetBt(int BtNum, void *BoPtr, quint32 &BoPtrSize);
-    static int WriteBac(int BacNum, void *BacPtr, int BacPtrSize);
-    static int WriteFile(void *ptr, quint32 filenum, QVector<S2::DataRec> *data);
-    static int WriteHiddenBlock(int board, void *HPtr, int HPtrSize);
-    static int EraseTechBlock(int block);
+    static int GetFile(int filenum, QVector<S2::DataRec> *data);
+    static int GetOsc(int filenum, void *ptr); // приём осциллограмм, в ptr возвращается целиком весь считанный буфер
+    static int GetBac(char BacNum, void *ptr, int ptrsize);
+    static int GetBd(char BdNum, void *BdPtr, int BdPtrSize);
+    static int GetBda(char board, void *BdPtr, int BdPtrSize);
+    static int GetBt(char BtNum, void *BoPtr, int &BoPtrSize);
+    static int WriteBac(char BacNum, void *BacPtr, int BacPtrSize);
+    static int WriteFile(void *ptr, int filenum, QVector<S2::DataRec> *data);
+    static int WriteHiddenBlock(char board, void *HPtr, int HPtrSize);
+    static int EraseTechBlock(char block);
     static int Connect();
     static void Disconnect();
     static bool isConnected();
-    static int SetUsingVariant(int variant); // задать вариант использования (выбор набора регулировочных параметров)
-    static int GetUsingVariant(int &variant); // получить вариант использования (выбор набора регулировочных параметров)
-    static int SetMode(int mode); // задать режим работы (коэффициенты при регулировке/рабочий режим)
+    static int SetUsingVariant(char variant); // задать вариант использования (выбор набора регулировочных параметров)
+    static int GetUsingVariant(char &variant); // получить вариант использования (выбор набора регулировочных параметров)
+    static int SetMode(char mode); // задать режим работы (коэффициенты при регулировке/рабочий режим)
     static int GetMode(int &mode); // прочитать текущий режим работы
 
 private:

@@ -120,16 +120,22 @@ void CheckDialogA1::RefreshAnalogValues(int bdnum)
     {
     case BD_COMMON:
         Ch->FillBd0(this);
+        break;
     case A1_BDA_IN_BN: // Блок #1
         ChA1->FillBda_in(this);
+        break;
     case A1_BDA_IN_AN_BN:
         ChA1->FillBda_in_an(this);
+        break;
     case A1_BDA_H_BN:
         ChA1->FillBda_h(this);
+        break;
     case A1_BDA_OUT_BN:
         ChA1->FillBda_out(this);
+        break;
     case A1_BDA_OUT_AN_BN:
         ChA1->FillBda_out_an(this);
+        break;
     default:
         return;
     }
@@ -167,6 +173,7 @@ void CheckDialogA1::WriteToFile(int row, int bdnum)
     case 0:
         xlsx->write(row,16,WDFunc::FloatValueWithCheck(Ch->Bd_block0.Tmk), format);
         xlsx->write(row,17,WDFunc::FloatValueWithCheck(Ch->Bd_block0.Vbat), format);
+        break;
     case 1:
         xlsx->write(row,2,WDFunc::FloatValueWithCheck(ChA1->Bda_in.UefNat_filt[0]),format);
         xlsx->write(row,3,WDFunc::FloatValueWithCheck(ChA1->Bda_in.UefNat_filt[1]),format);
@@ -217,5 +224,5 @@ void CheckDialogA1::PrepareAnalogMeasurements()
 #endif
 QWidget *CheckDialogA1::CustomTab()
 {
-    return 0;
+    return nullptr;
 }

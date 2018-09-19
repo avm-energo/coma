@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QModelIndex>
+#include "../gen/maindef.h"
 #include "../gen/eoscillogram.h"
 #include "../widgets/etableview.h"
 #include "../widgets/etablemodel.h"
@@ -14,14 +15,14 @@ class SwitchJournalDialog : public QDialog
 {
     Q_OBJECT
 public:
-    SwitchJournalDialog(QWidget *parent=0);
+    SwitchJournalDialog(QWidget *parent=nullptr);
 
 private:
 
     ETableModel *TableModel;
     ETableView *SwjTableView;
     QMap<quint64, EOscillogram::GBoStruct> OscMap;
-    QMap<quint32, SWJDialog::SWJournalRecordStruct> SWJMap;
+    QMap<int, SWJDialog::SWJournalRecordStruct> SWJMap;
 
     void SetupUI();
     void ProcessSWJournal(QByteArray &ba);

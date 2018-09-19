@@ -25,7 +25,7 @@ int Commands::GetBsi(ModuleBSI::Bsi &bsi)
 #endif
 }
 
-int Commands::GetFile(quint32 filenum, QVector<S2::DataRec> *data)
+int Commands::GetFile(int filenum, QVector<S2::DataRec> *data)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_GF, BoardTypes::BT_NONE, nullptr, 0, filenum, data);
@@ -37,7 +37,7 @@ int Commands::GetFile(quint32 filenum, QVector<S2::DataRec> *data)
 #endif
 }
 
-int Commands::GetOsc(quint32 filenum, void *ptr)
+int Commands::GetOsc(int filenum, void *ptr)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     if ((filenum < CN_MINOSCID) || (filenum > CN_MAXOSCID))
@@ -51,7 +51,7 @@ int Commands::GetOsc(quint32 filenum, void *ptr)
 #endif
 }
 
-int Commands::WriteFile(void *ptr, quint32 filenum, QVector<S2::DataRec> *data)
+int Commands::WriteFile(void *ptr, int filenum, QVector<S2::DataRec> *data)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_WF, BoardTypes::BT_NONE, ptr, 0, filenum, data);
@@ -64,7 +64,7 @@ int Commands::WriteFile(void *ptr, quint32 filenum, QVector<S2::DataRec> *data)
 #endif
 }
 
-int Commands::WriteHiddenBlock(int board, void *HPtr, int HPtrSize)
+int Commands::WriteHiddenBlock(char board, void *HPtr, int HPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_WHv, board, HPtr, HPtrSize);
@@ -77,7 +77,7 @@ int Commands::WriteHiddenBlock(int board, void *HPtr, int HPtrSize)
 #endif
 }
 
-int Commands::GetBac(int BacNum, void *BacPtr, int BacPtrSize)
+int Commands::GetBac(char BacNum, void *BacPtr, int BacPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_GBac, BacNum, BacPtr, BacPtrSize);
@@ -108,7 +108,7 @@ void Commands::Disconnect()
 #endif
 }
 
-int Commands::GetBd(int BdNum, void *BdPtr, int BdPtrSize)
+int Commands::GetBd(char BdNum, void *BdPtr, int BdPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_GBd, BdNum, BdPtr, BdPtrSize);
@@ -121,7 +121,7 @@ int Commands::GetBd(int BdNum, void *BdPtr, int BdPtrSize)
 #endif
 }
 
-int Commands::GetBda(int board, void *BdPtr, int BdPtrSize)
+int Commands::GetBda(char board, void *BdPtr, int BdPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_GBda, board, BdPtr, BdPtrSize);
@@ -134,7 +134,7 @@ int Commands::GetBda(int board, void *BdPtr, int BdPtrSize)
 #endif
 }
 
-int Commands::GetBt(int BtNum, void *BtPtr, quint32 &BtPtrSize)
+int Commands::GetBt(char BtNum, void *BtPtr, int &BtPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_GBt, BtNum, BtPtr, BtPtrSize);
@@ -148,7 +148,7 @@ int Commands::GetBt(int BtNum, void *BtPtr, quint32 &BtPtrSize)
 #endif
 }
 
-int Commands::WriteBac(int BacNum, void *BacPtr, int BacPtrSize)
+int Commands::WriteBac(char BacNum, void *BacPtr, int BacPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_WBac, BacNum, BacPtr, BacPtrSize);
@@ -161,7 +161,7 @@ int Commands::WriteBac(int BacNum, void *BacPtr, int BacPtrSize)
 #endif
 }
 
-int Commands::EraseTechBlock(int block)
+int Commands::EraseTechBlock(char block)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_Ert, block);
@@ -181,7 +181,7 @@ bool Commands::isConnected()
 #endif
 }
 
-int Commands::SetUsingVariant(int variant)
+int Commands::SetUsingVariant(char variant)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_NVar, variant);
@@ -192,10 +192,10 @@ int Commands::SetUsingVariant(int variant)
 #endif
 }
 
-int Commands::GetUsingVariant(int &variant)
+int Commands::GetUsingVariant(char &variant)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    quint8 tmpi;
+    char tmpi;
     cn->Send(CN_GVar, BoardTypes::BT_NONE, &tmpi, 1);
     variant = tmpi;
     return cn->result;
@@ -205,7 +205,7 @@ int Commands::GetUsingVariant(int &variant)
 #endif
 }
 
-int Commands::SetMode(int mode)
+int Commands::SetMode(char mode)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_SMode, mode);

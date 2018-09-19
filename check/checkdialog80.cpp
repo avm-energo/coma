@@ -186,6 +186,8 @@ void CheckDialog80::PrepareHeadersForFile(int row)
 
 void CheckDialog80::WriteToFile(int row, int bdnum)
 {
+    Q_UNUSED(row);
+    Q_UNUSED(bdnum);
 /*    // получение текущих аналоговых сигналов от модуля
     QXlsx::Format format;
     for (int i=0; i<3; i++)
