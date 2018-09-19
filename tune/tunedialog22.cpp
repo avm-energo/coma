@@ -206,11 +206,30 @@ int TuneDialog22::TuneChannel(int Type)
     return Error::ER_GENERALERROR;
 }
 
+int TuneDialog22::TuneOneChannelFunc(int Ch)
+{
+    for (CoefNum=0; CoefNum<2; CoefNum++)
+    {
+        //WDFunc::CBIndex(this, "tunenumch", Ch);
+        if(Show0(CoefNum) == Error::ER_GENERALERROR)
+            return Error::ER_GENERALERROR;
+        if (TuneChannel(TTUNE_0) != Error::ER_NOERROR)
+            return Error::ER_GENERALERROR;
+        if(ShowW100(CoefNum) == Error::ER_GENERALERROR)
+            return Error::ER_GENERALERROR;
+        if (TuneChannel(TTUNE_W100) != Error::ER_NOERROR)
+            return Error::ER_GENERALERROR;
+    }
+    return Error::ER_NOERROR;
+
+
+}
+
 int TuneDialog22::Tune()
 {
     for (ChNum=0; ChNum<AIN22_NUMCH; ++ChNum)
     {
-        if (TuneOneChannel(ChNum) == Error::ER_GENERALERROR)
+        if (TuneOneChannelFunc(ChNum) == Error::ER_GENERALERROR)
             return Error::ER_GENERALERROR;
     }
     return Error::ER_NOERROR;
@@ -219,8 +238,8 @@ int TuneDialog22::Tune()
 bool TuneDialog22::CheckAndShowTune0()
 {
     WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda0.sin[ChNum]));
-//    if (!CalcNewTuneCoef())
-//        return false;
+    //if (!CalcNewTuneCoef())
+     //   return false;
     FillBac();
     return true;
 }
@@ -254,11 +273,12 @@ int TuneDialog22::ReadAnalogMeasurements()
     return Error::ER_NOERROR;
 }
 
-int TuneDialog22::TuneOneChannel(int Ch)
+int TuneDialog22::TuneOneChannel()
 {
+    int Ch;
     for (CoefNum=0; CoefNum<2; CoefNum++)
     {
-        WDFunc::CBIndex(this, "tunenumch", Ch);
+        WDFunc::CBIndex(this, "tunenumch", ChNum);
         if(Show0(CoefNum) == Error::ER_GENERALERROR)
             return Error::ER_GENERALERROR;
         if (TuneChannel(TTUNE_0) != Error::ER_NOERROR)

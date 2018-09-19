@@ -89,7 +89,7 @@ void AbstractConfDialog::LoadConfFromFile()
         WARNMSG("Ошибка при загрузке файла конфигурации");
         return;
     }
-    if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), S2Config))
+    if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), S2Config) != Error::ER_NOERROR)
     {
         WARNMSG("Ошибка при разборе файла конфигурации");
         return;

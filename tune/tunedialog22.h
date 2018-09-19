@@ -59,6 +59,7 @@ private:
     bool CheckAndShowTuneW100();
     bool CheckTuneCoefs();
     void GetBdAndFillMTT();
+    int TuneOneChannelFunc(int Ch);
 #endif
     
     void FillBac();
@@ -68,7 +69,7 @@ private slots:
     void SetDefCoefs();
 #if PROGSIZE != PROGSIZE_EMUL
     int ReadAnalogMeasurements();
-    int TuneOneChannel(int Ch);
+    int TuneOneChannel();
 #endif
 };
 
