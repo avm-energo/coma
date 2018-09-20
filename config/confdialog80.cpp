@@ -152,14 +152,14 @@ void ConfDialog80::SetupUI()
     {
     case MTM_81: // 6U0I
     {
-        vlyout2->addWidget(UNom(1));
-        vlyout2->addWidget(UNom(2));
+        vlyout2->addWidget(UNom(this, 1));
+        vlyout2->addWidget(UNom(this, 2));
         vlyout2->addWidget(Threshold("Уставка скачка напряжения для запуска осциллографирования, %", 1));
         break;
     }
     case MTM_82: // 3U3I
     {
-        vlyout2->addWidget(UNom(1));
+        vlyout2->addWidget(UNom(this, 1));
         vlyout2->addWidget(INom(3), 10);
         vlyout2->addWidget(INom(4), 10);
         vlyout2->addWidget(Threshold("Уставка скачка напряжения для запуска осциллографирования, %", 1));
@@ -230,9 +230,9 @@ void ConfDialog80::CheckConf()
 {
 }
 
-QWidget *ConfDialog80::UNom(int numunom)
+QWidget *ConfDialog80::UNom(QWidget *parent, int numunom)
 {
-    QWidget *w = new QWidget(this);
+    QWidget *w = new QWidget(parent);
     QString NumUNomStr = QString::number(numunom);
     QHBoxLayout *gb2lyout = new QHBoxLayout;
     QLabel *lbl=new QLabel("Класс напряжения "+NumUNomStr+"-й группы, кВ:");
