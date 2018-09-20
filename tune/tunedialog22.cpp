@@ -15,6 +15,7 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/maindef.h"
+#include "../gen/timefunc.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -124,6 +125,7 @@ void TuneDialog22::SetPf()
     pf[lbls.at(count++)] = func; // 2. Отображение схемы подключения
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog22::Tune);
     pf[lbls.at(count++)] = func; // 3. Регулировка
+    //Commands::SetMode(WORK_MODE);
 }
 
 int TuneDialog22::ShowScheme()
@@ -180,33 +182,35 @@ int TuneDialog22::ShowW100(int coef)
 
 int TuneDialog22::TuneChannel(int Type)
 {
+
+
     switch (Type)
     {
-    case TTUNE_0: // настройка нуля
-    {
-        if (Commands::GetBda(BoardType, &Bda0, sizeof(Check22::Bda)) == Error::ER_NOERROR)
+        case TTUNE_0: // настройка нуля
         {
-            CheckAndShowTune0();
-            return Error::ER_NOERROR;
+            if (Commands::GetBda(BoardType, &Bda0, sizeof(Check22::Bda)) == Error::ER_NOERROR)
+            {
+                CheckAndShowTune0();
+                return Error::ER_NOERROR;
+            }
+            return Error::ER_GENERALERROR;
         }
-        return Error::ER_GENERALERROR;
-    }
-    case TTUNE_W100: // настройка W100
-    {
-        if (Commands::GetBda(BoardType, &BdaW100, sizeof(Check22::Bda)) == Error::ER_NOERROR)
+        case TTUNE_W100: // настройка W100
         {
-            CheckAndShowTuneW100();
-            return Error::ER_NOERROR;
+            if (Commands::GetBda(BoardType, &BdaW100, sizeof(Check22::Bda)) == Error::ER_NOERROR)
+            {
+                CheckAndShowTuneW100();
+                return Error::ER_NOERROR;
+            }
+            return Error::ER_GENERALERROR;
         }
-        return Error::ER_GENERALERROR;
-    }
-    default:
-        break;
+        default:
+            break;
     }
     return Error::ER_GENERALERROR;
 }
 
-int TuneDialog22::TuneOneChannelFunc(int Ch)
+int TuneDialog22::TuneOneChannelFunc()
 {
     for (CoefNum=0; CoefNum<2; CoefNum++)
     {
@@ -229,9 +233,9 @@ int TuneDialog22::Tune()
 {
     for (ChNum=0; ChNum<AIN22_NUMCH; ++ChNum)
     {
-        if (TuneOneChannelFunc(ChNum) == Error::ER_GENERALERROR)
-            return Error::ER_GENERALERROR;
+      TuneOneChannelFunc();
     }
+    Commands::SetMode(WORK_MODE);
     return Error::ER_NOERROR;
 }
 
@@ -255,16 +259,28 @@ bool TuneDialog22::CheckAndShowTuneW100()
 
 bool TuneDialog22::CalcNewTuneCoef()
 {
-    double Rk = 1.2 / (1.5 * 0.0002 * 8388608);
-    double R0 = C22->Bci_block.RzeroT[ChNum];
-    double R100 = C22->Bci_block.W100[ChNum] * C22->Bci_block.RzeroT[ChNum];
+   // double Rk = 1.2 / (1.5 * 0.0002 * 8388608);
+    double R0 = Rcoef.RzeroT[CoefNum];
+    double R100 = C22->Bci_block.W100[ChNum] * Rcoef.RzeroT[CoefNum];
     if (Bda0.sin[ChNum] == BdaW100.sin[ChNum])
     {
+        Commands::SetMode(WORK_MODE);
         WARNMSG("Ошибка в настроечных коэффициентах, деление на ноль");
         return false;
     }
     Bac_block[CoefNum].fbin[ChNum] = R0 - Bda0.sin[ChNum] * (R100 - R0) / (BdaW100.sin[ChNum] - Bda0.sin[ChNum]);
-    Bac_block[CoefNum].fkin[ChNum] = (R100 - R0) / (Rk * (BdaW100.sin[ChNum] - Bda0.sin[ChNum]));
+    Bac_block[CoefNum].fkin[ChNum] = (R100 - R0) / (BdaW100.sin[ChNum] - Bda0.sin[ChNum]);
+
+    if(CoefNum == 0)
+    {
+        Commands::SetMode(TUNE_MODE_1000);
+        TimeFunc::Wait(20);
+    }
+    else
+    {
+        Commands::SetMode(WORK_MODE);
+        TimeFunc::Wait(20);
+    }
     return true;
 }
 
@@ -275,9 +291,15 @@ int TuneDialog22::ReadAnalogMeasurements()
 
 int TuneDialog22::TuneOneChannel()
 {
-    int Ch;
+
     for (CoefNum=0; CoefNum<2; CoefNum++)
     {
+        if(CoefNum == 0)
+        {
+            Commands::SetMode(TUNE_MODE_100);
+            TimeFunc::Wait(20);
+        }
+
         WDFunc::CBIndex(this, "tunenumch", ChNum);
         if(Show0(CoefNum) == Error::ER_GENERALERROR)
             return Error::ER_GENERALERROR;

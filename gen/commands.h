@@ -22,6 +22,9 @@
 #define CM_FIRMWAREFILE 3
 #define CM_SWJFILE      17
 #define CM_EVENTSFILE   18
+#define WORK_MODE       0
+#define TUNE_MODE_1000  1
+#define TUNE_MODE_100   2
 
 class Commands
 {
