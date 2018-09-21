@@ -135,10 +135,13 @@ void ConfDialog80::SetupUI()
 {
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
+    QVBoxLayout *vlyout3 = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QWidget *cp1 = new QWidget;
+    QWidget *analog = new QWidget;
     QString tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     cp1->setStyleSheet(tmps);
+    analog->setStyleSheet(tmps);
 
     hlyout->addWidget(WDFunc::NewLBL(this, "Тип контролируемого оборудования:"), 0);
     QStringList cbl = QStringList() << "1ф трансформатор/АТ" << "3ф трансформатор/АТ" << "1ф реактор" << "3ф реактор";
@@ -147,41 +150,48 @@ void ConfDialog80::SetupUI()
     hlyout->addWidget(cb,10);
     vlyout1->addLayout(hlyout);
 
-    QGroupBox *gb = new QGroupBox("Аналоговые");
+    QGroupBox *gb = new QGroupBox("Аналоговые параметры");
+    //gb->updateGeometry();
     switch (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN))
     {
     case MTM_81: // 6U0I
     {
-        vlyout2->addWidget(UNom(this, 1));
-        vlyout2->addWidget(UNom(this, 2));
-        vlyout2->addWidget(Threshold("Уставка скачка напряжения для запуска осциллографирования, %", 1));
+        //vlyout2->addWidget(UNom(this, 1));
+        //vlyout2->addWidget(UNom(this, 2));
+        vlyout3->addWidget(Threshold("Уставка скачка напряжения для запуска осциллографирования, %", 1));
         break;
     }
     case MTM_82: // 3U3I
     {
-        vlyout2->addWidget(UNom(this, 1));
+        //vlyout2->addWidget(Threshold("Уставка порога мин. уровня для определения частоты, %", 3));
+        //vlyout2->addWidget(new QPushButton("123"));
+        UNom(vlyout3, 1);
+        INom(vlyout3, 3);
+        INom(vlyout3, 4);
+        //vlyout2->addWidget(Threshold("Уставка скачка напряжения для запуска осциллографирования, %", 1));
+        //vlyout2->addWidget(Threshold("Уставка скачка тока для запуска осциллографирования, %", 2));
+        /*vlyout2->addWidget(UNom(this, 1));
         vlyout2->addWidget(INom(3), 10);
         vlyout2->addWidget(INom(4), 10);
         vlyout2->addWidget(Threshold("Уставка скачка напряжения для запуска осциллографирования, %", 1));
-        vlyout2->addWidget(Threshold("Уставка скачка тока для запуска осциллографирования, %", 2));
+        vlyout2->addWidget(Threshold("Уставка скачка тока для запуска осциллографирования, %", 2));*/
         break;
     }
     case MTM_83: // 0U6I
     {
-        vlyout2->addWidget(INom(1), 10);
-        vlyout2->addWidget(INom(2), 10);
-        vlyout2->addWidget(INom(3), 10);
-        vlyout2->addWidget(INom(4), 10);
-        vlyout2->addWidget(Threshold("Уставка скачка тока для запуска осциллографирования, %", 2));
+        INom(vlyout3, 1);
+        INom(vlyout3, 2);
+        INom(vlyout3, 3);
+        INom(vlyout3, 4);
+        vlyout3->addWidget(Threshold("Уставка скачка тока для запуска осциллографирования, %", 2));
         break;
     }
     default:
         break;
     }
-    vlyout2->addWidget(Threshold("Уставка порога мин. уровня для определения частоты, %", 3));
-    vlyout2->addWidget(new QPushButton("123"));
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);
+
+    //gb->setLayout(vlyout3);
+    analog->setLayout(vlyout3);
 
     gb = new QGroupBox("Осциллограммы");
     vlyout2 = new QVBoxLayout;
@@ -219,6 +229,7 @@ void ConfDialog80::SetupUI()
     QString ConfTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLOR)+";}";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
     ConfTW->addTab(cp1,"Общие");
+    ConfTW->addTab(analog,"Аналоговые");
     lyout->addWidget(ConfTW);
 
     QWidget *wdgt = ConfButtons();
@@ -230,38 +241,43 @@ void ConfDialog80::CheckConf()
 {
 }
 
-QWidget *ConfDialog80::UNom(QWidget *parent, int numunom)
+void ConfDialog80::UNom(QVBoxLayout *vlyout, int numunom)
 {
-    QWidget *w = new QWidget(parent);
+    //hlyout->addStretch(10);
+    //QWidget *w = new QWidget(parent);
     QString NumUNomStr = QString::number(numunom);
-    QHBoxLayout *gb2lyout = new QHBoxLayout;
+    //QHBoxLayout *gb2lyout = new QHBoxLayout;
     QLabel *lbl=new QLabel("Класс напряжения "+NumUNomStr+"-й группы, кВ:");
-    gb2lyout->addWidget(lbl);
+    vlyout->addWidget(lbl);
     QStringList cbl = QStringList() << "1150" << "750" << "500" << "330" << "220" << "110" << "35" << "21" << "15.75" << "11" << "10" << "6.3";
     EComboBox *cb = WDFunc::NewCB(this, "unom."+NumUNomStr, cbl, ACONFWCLR);
     cb->setEditable(true);
-    gb2lyout->addWidget(cb);
-    w->setLayout(gb2lyout);
-    return w;
+    vlyout->addWidget(cb);
+
+   // w->setLayout(hlyout);
+  //  return 1;
 }
 
 // 1 - первичный ток первой группы, 2 - вторичный ток первой группы, 3,4 - то же по второй группе
 
-QWidget *ConfDialog80::INom(int numinom)
+void ConfDialog80::INom(QVBoxLayout *vlyout, int numinom)
 {
-    QWidget *w = new QWidget;
-    QHBoxLayout *gb2lyout = new QHBoxLayout;
+    //QWidget *w = new QWidget;
+    //QHBoxLayout *gb2lyout = new QHBoxLayout;
+
     int Group = (numinom < 3) ? 0 : 1;
     QString Perv = (numinom%2) ? "первичные" : "вторичные";
     QString PervNum = (numinom%2) ? "1" : "2";
-    gb2lyout->addWidget(WDFunc::NewLBL(this, "Номинальные "+Perv+" токи ТТ "+QString::number(Group+1)+"-й группы, А: "), 0);
+    vlyout->addWidget(WDFunc::NewLBL(this, "Номинальные "+Perv+" токи ТТ "+QString::number(Group+1)+"-й группы, А: "), 0);
     for (int i = 0; i < 3; i++)
     {
-        gb2lyout->addWidget(WDFunc::NewLBL(this, QString::number(i+10, 16).toUpper() + ":"), 1, Qt::AlignRight); // A, B, C
-        gb2lyout->addWidget(WDFunc::NewSPB(this, "inom."+PervNum+"."+QString::number(i+Group*3), 1, 50000, 0, ACONFWCLR), 1);
+        vlyout->addWidget(WDFunc::NewLBL(this, QString::number(i+10, 16).toUpper() + ":"), 1, Qt::AlignLeft); // A, B, C
+        vlyout->addWidget(WDFunc::NewSPB(this, "inom."+PervNum+"."+QString::number(i+Group*3), 1, 50000, 0, ACONFWCLR), 1);
+        //hlyout->addStretch(10);
     }
-    w->setLayout(gb2lyout);
-    return w;
+
+   // w->setLayout(gb2lyout);
+   // return w;
 }
 
 QWidget *ConfDialog80::Threshold(QString str, int numthr)

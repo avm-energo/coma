@@ -5,6 +5,7 @@
 
 #include "../config/config80.h"
 #include "abstractconfdialog.h"
+#include <QVBoxLayout>
 
 class ConfDialog80 : public AbstractConfDialog
 {
@@ -21,8 +22,8 @@ private:
     void SetupUI();
     void CheckConf();
 
-    QWidget *UNom(QWidget *parent, int numunom); // 1 - первая тройка напряжений, 2 - вторая
-    QWidget *INom(int numinom); // 1 - первичный ток первой группы, 2 - вторичный ток первой группы, 3,4 - то же по второй группе
+    void UNom(QVBoxLayout *vlyout, int numunom); // 1 - первая тройка напряжений, 2 - вторая
+    void INom(QVBoxLayout *vlyout, int numinom); // 1 - первичный ток первой группы, 2 - вторичный ток первой группы, 3,4 - то же по второй группе
     QWidget *Threshold(QString str, int numthr);
 
 signals:
