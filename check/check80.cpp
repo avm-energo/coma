@@ -149,11 +149,11 @@ QWidget *Check_80::Bd5W(const QString &title, const QString &begin, QWidget *par
     for (int i=Beg; i<End; ++i)
     {
         glyout->addWidget(WDFunc::NewLBL(parent, "Ф А, Гм "+QString::number(i+2)+":"), i, 0);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0"+QString::number(i), ValuesFormat), i, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0"+QString::number(i), ValuesFormat,begin+"0"+QString::number(i)), i, 1);
         glyout->addWidget(WDFunc::NewLBL(parent, "Ф В, Гм "+QString::number(i+2)+":"), i, 2);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1"+QString::number(i), ValuesFormat), i, 3);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1"+QString::number(i), ValuesFormat, begin+"1"+QString::number(i)), i, 3);
         glyout->addWidget(WDFunc::NewLBL(parent, "Ф С, Гм "+QString::number(i+2)+":"), i, 4);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"2"+QString::number(i), ValuesFormat), i, 5);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"2"+QString::number(i), ValuesFormat, begin+"2"+QString::number(i)), i, 5);
     }
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
@@ -303,26 +303,26 @@ void Check_80::FillBd5W(const QString &begin, Check_80::Bd5 &Bd, QWidget *parent
     for (int i=0; i<16; ++i)
     {
         QString begins = begin + "0";
-        WDFunc::SetLBLText(parent, begin+"0"+QString::number(i), WDFunc::StringValueWithCheck(Bd.Harm[0][i]));
-        WDFunc::SetLBLText(parent, begin+"1"+QString::number(i), WDFunc::StringValueWithCheck(Bd.Harm[1][i]));
-        WDFunc::SetLBLText(parent, begin+"2"+QString::number(i), WDFunc::StringValueWithCheck(Bd.Harm[2][i]));
-        int count = 16+i;
+        WDFunc::SetLBLText(parent, begins+"0"+QString::number(i), WDFunc::StringValueWithCheck(Bd.Harm[0][i]));
+        WDFunc::SetLBLText(parent, begins+"1"+QString::number(i), WDFunc::StringValueWithCheck(Bd.Harm[1][i]));
+        WDFunc::SetLBLText(parent, begins+"2"+QString::number(i), WDFunc::StringValueWithCheck(Bd.Harm[2][i]));
+        int count = 15+i;
         begins = begin + "1";
-        WDFunc::SetLBLText(parent, begin+"0"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[0][count]));
-        WDFunc::SetLBLText(parent, begin+"1"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[1][count]));
-        WDFunc::SetLBLText(parent, begin+"2"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[2][count]));
-        count = 32+i;
+        WDFunc::SetLBLText(parent, begins+"0"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[0][count]));
+        WDFunc::SetLBLText(parent, begins+"1"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[1][count]));
+        WDFunc::SetLBLText(parent, begins+"2"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[2][count]));
+        count = 30+i;
         begins = begin + "2";
-        WDFunc::SetLBLText(parent, begin+"0"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[0][count]));
-        WDFunc::SetLBLText(parent, begin+"1"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[1][count]));
-        WDFunc::SetLBLText(parent, begin+"2"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[2][count]));
-        count = 48+i;
+        WDFunc::SetLBLText(parent, begins+"0"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[0][count]));
+        WDFunc::SetLBLText(parent, begins+"1"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[1][count]));
+        WDFunc::SetLBLText(parent, begins+"2"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[2][count]));
+        count = 45+i;
         if (count > C80_MAXHARMINDEX)
             continue;
         begins = begin + "3";
-        WDFunc::SetLBLText(parent, begin+"0"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[0][count]));
-        WDFunc::SetLBLText(parent, begin+"1"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[1][count]));
-        WDFunc::SetLBLText(parent, begin+"2"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[2][count]));
+        WDFunc::SetLBLText(parent, begins+"0"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[0][count]));
+        WDFunc::SetLBLText(parent, begins+"1"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[1][count]));
+        WDFunc::SetLBLText(parent, begins+"2"+QString::number(count), WDFunc::StringValueWithCheck(Bd.Harm[2][count]));
     }
 }
 

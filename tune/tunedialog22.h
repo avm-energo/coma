@@ -20,7 +20,7 @@ class TuneDialog22 : public EAbstractTuneDialog
 {
     Q_OBJECT
 public:
-    explicit TuneDialog22(BoardTypes type = BoardTypes::BT_BASE, QWidget *parent = 0);
+    explicit TuneDialog22(BoardTypes type = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
 signals:
 
@@ -34,6 +34,13 @@ private:
         float fbin[AIN22_NUMCH];
         float fkin[AIN22_NUMCH];
     };
+
+    struct BacRCoef
+    {
+        float RzeroT[COEFSNUM] = {100, 1000};
+    };
+
+    BacRCoef Rcoef;
 
     Bac Bac_block[COEFSNUM];
 
@@ -59,6 +66,7 @@ private:
     bool CheckAndShowTuneW100();
     bool CheckTuneCoefs();
     void GetBdAndFillMTT();
+    int TuneOneChannelFunc();
 #endif
     
     void FillBac();
@@ -68,7 +76,7 @@ private slots:
     void SetDefCoefs();
 #if PROGSIZE != PROGSIZE_EMUL
     int ReadAnalogMeasurements();
-    int TuneOneChannel(int Ch);
+    int TuneOneChannel();
 #endif
 };
 
