@@ -73,6 +73,6 @@ int Files::SaveToFile(const QString &filename, QByteArray &src, unsigned int num
     delete file;
     if (res == Error::ER_GENERALERROR)
         return ER_FILEWRITE; // ошибка записи
-    return Error::ER_NOERROR; // нет ошибок
+    return ER_NOERROR; // нет ошибок
 }
 
