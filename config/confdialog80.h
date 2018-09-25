@@ -11,10 +11,12 @@ class ConfDialog80 : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    explicit ConfDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent = 0);
+    explicit ConfDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent = nullptr);
     ~ConfDialog80();
 
+    //static Config80 *C80;
 private:
+
     Config80 *C80;
 
     void Fill();

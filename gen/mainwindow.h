@@ -25,7 +25,7 @@ class MainWindow : public QMainWindow
 
 public:
 
-    MainWindow(QWidget *parent = 0);
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
     void SetMode(int mode);
@@ -167,7 +167,7 @@ private slots:
     void Stage1_5();
     void Stage2();
     void SetProgressBar1Size(int size);
-    void SetProgressBar1(quint32 cursize);
+    void SetProgressBar1(int cursize);
     void SetProgressBar2Size(int size);
     void SetProgressBar2(quint32 cursize);
     void ShowConnectDialog();

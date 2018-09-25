@@ -356,7 +356,7 @@ void Coma::PrepareDialogs()
     }
     case MTB_80:
     {
-//        ConfB = new ConfDialog80(S2Config);
+        //ConfB = new ConfDialog80(S2Config);
 //        TuneB = new TuneDialog80(S2Config);
         CheckB = new CheckDialog80(BoardTypes::BT_BASE);
         break;

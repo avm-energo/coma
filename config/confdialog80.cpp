@@ -13,6 +13,8 @@
 #include "../gen/modulebsi.h"
 #include "confdialog80.h"
 
+//Config80 *ConfDialog80::C80;
+
 ConfDialog80::ConfDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     AbstractConfDialog(parent)
 {
@@ -35,11 +37,11 @@ ConfDialog80::~ConfDialog80()
 void ConfDialog80::Fill()
 {
     int i;
-    WDFunc::SetCBIndex(this, "eq_typecb", C80->Bci_block.eq_type);
+    WDFunc::SetCBData(this, "eq_typecb", QString::number(C80->Bci_block.eq_type));
     WDFunc::SetChBData(this, "oscchb.0", (C80->Bci_block.ddosc & 0x0001));
     WDFunc::SetChBData(this, "oscchb.1", (C80->Bci_block.ddosc & 0x0002));
     WDFunc::SetChBData(this, "oscchb.2", (C80->Bci_block.ddosc & 0x0004));
-    WDFunc::SetSPBData(this, "npointspb", C80->Bci_block.npoints);
+    WDFunc::SetCBData(this, "npointscb", QString::number(C80->Bci_block.npoints));
     WDFunc::SetSPBData(this, "nfiltrspb", C80->Bci_block.nfiltr);
     WDFunc::SetSPBData(this, "nhfiltrspb", C80->Bci_block.nhfiltr);
     switch (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN))
@@ -81,14 +83,16 @@ void ConfDialog80::FillBack()
     int i;
     QString tmps;
     bool tmpb;
-    WDFunc::CBIndex(this, "eq_typecb", C80->Bci_block.eq_type);
+    WDFunc::CBData(this, "eq_typecb", tmps);
+    C80->Bci_block.eq_type = tmps.toUInt();
     WDFunc::ChBData(this, "oscchb.0", tmpb);
     C80->Bci_block.ddosc |= (tmpb) ? 0x0001 : 0x0000;
     WDFunc::ChBData(this, "oscchb.1", tmpb);
     C80->Bci_block.ddosc |= (tmpb) ? 0x0002 : 0x0000;
     WDFunc::ChBData(this, "oscchb.2", tmpb);
     C80->Bci_block.ddosc |= (tmpb) ? 0x0004 : 0x0000;
-    WDFunc::SPBData(this, "npointspb", C80->Bci_block.npoints);
+    WDFunc::CBData(this, "npointscb", tmps);
+    C80->Bci_block.npoints = tmps.toUInt();
     WDFunc::SPBData(this, "nfiltrspb", C80->Bci_block.nfiltr);
     WDFunc::SPBData(this, "nhfiltrspb", C80->Bci_block.nhfiltr);
     switch (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN))

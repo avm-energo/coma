@@ -20,7 +20,7 @@ Config31::Config31(QVector<S2::DataRec> &config, bool BaseBoard)
         config.append({StartInIndex+1, sizeof(Bci_block.inblk.dly_time), &(Bci_block.inblk.dly_time)});
         config.append({StartInIndex+2, sizeof(Bci_block.inblk.pair), &(Bci_block.inblk.pair)});
     }
-    config.append({0xFFFFFFFF, 0, NULL});
+    config.append({0xFFFFFFFF, 0, nullptr});
 }
 
 void Config31::SetDefConf()

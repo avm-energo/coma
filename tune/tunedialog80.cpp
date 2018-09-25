@@ -19,11 +19,13 @@
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
+#include "../config/confdialog80.h"
 
 TuneDialog80::TuneDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     EAbstractTuneDialog(parent)
 {
-    C80 = new Config80(S2Config);
+    S2TConfig = S2Config;
+    C80 = new Config80(S2TConfig);
 //    Ch80 = new Check80;
     SetBac(&Bac_block, BoardTypes::BT_BASE, sizeof(Bac_block));
     setAttribute(Qt::WA_DeleteOnClose);
@@ -370,6 +372,9 @@ void TuneDialog80::PrepareConsts()
     }
     else
     {
+       /*MVTC.i[0] = ConfDialog80::C80->Bci_block.inom2[0];
+        MVTC.i[1] = ConfDialog80::C80->Bci_block.inom2[1];
+        MVTC.i[2] = ConfDialog80::C80->Bci_block.inom2[2];*/
         MVTC.i[0] = C80->Bci_block.inom2[0];
         MVTC.i[1] = C80->Bci_block.inom2[1];
         MVTC.i[2] = C80->Bci_block.inom2[2];
@@ -536,7 +541,7 @@ int TuneDialog80::Start7_3_7_2()
     for (int i=0; i<6; i++)
         C80->Bci_block.inom2[i] = I1;
     // послать новые коэффициенты по току в конфигурацию
-    if (Commands::WriteFile(&C80->Bci_block, 2, S2Config) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&C80->Bci_block, 2, &S2TConfig) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     WaitNSeconds(2);
     return Error::ER_NOERROR;
@@ -581,7 +586,7 @@ int TuneDialog80::Start7_3_7_6()
         return Error::ER_RESEMPTY;
     for (int i=0; i<6; ++i)
         C80->Bci_block.inom2[i] = I5;
-    if (Commands::WriteFile(&C80->Bci_block, 2, S2Config) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&C80->Bci_block, 2, &S2TConfig) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     WaitNSeconds(2);
     return Error::ER_NOERROR;
@@ -826,7 +831,7 @@ int TuneDialog80::GetExternalData()
 
 int TuneDialog80::SaveWorkConfig()
 {
-    if (Commands::GetFile(CM_CONFIGFILE,S2Config) == Error::ER_NOERROR)
+    if (Commands::GetFile(CM_CONFIGFILE,&S2TConfig) == Error::ER_NOERROR)
         memcpy(&Bci_block_work,&C80->Bci_block,sizeof(Config80::Bci));
     else
         return Error::ER_GENERALERROR;
@@ -837,7 +842,7 @@ int TuneDialog80::LoadWorkConfig()
 {
     // пишем ранее запомненный конфигурационный блок
     memcpy(&C80->Bci_block,&Bci_block_work,sizeof(Config80::Bci));
-    if (Commands::WriteFile(&C80->Bci_block, CM_CONFIGFILE, S2Config) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&C80->Bci_block, CM_CONFIGFILE, &S2TConfig) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
 }
@@ -1114,9 +1119,9 @@ int TuneDialog80::ShowControlChooseDialog()
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
     dlg->exec();
-    if (Cancelled)
+    /*if (Cancelled)
         return Error::ER_GENERALERROR;
-    else
+    else*/
         return Error::ER_NOERROR;
 }
 

@@ -8,6 +8,8 @@
 #include "../config/config80.h"
 #include "../iec104/iec104.h"
 #include "eabstracttunedialog.h"
+#include <QDialog>
+#include "../config/config.h"
 
 #define TUNEFILELENGTH  256
 
@@ -35,7 +37,6 @@ class TuneDialog80 : public EAbstractTuneDialog
     Q_OBJECT
 public:
     explicit TuneDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent = nullptr);
-
 signals:
     void stopall();
     void SendMip(QByteArray);
@@ -54,12 +55,13 @@ private:
 
     bool Cancelled, DefConfig;
     Config80 *C80;
-    QVector<S2::DataRec> *S2Config;
+    //QVector<S2::DataRec> *S2Config;
+    QVector<S2::DataRec> S2TConfig;  // для регулировки
     Config80::Bci Bci_block_work;
     iec104 *mipcanal;
     int TuneControlType;
     int SecondsToEnd15SecondsInterval;
-    QHash <QString, int (TuneDialog80::*)()> pf;
+    //QHash <QString, int (TuneDialog80::*)()> pf;
 
     struct Bac
     {

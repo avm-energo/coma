@@ -12,7 +12,8 @@ Config80::Config80(QVector<S2::DataRec> &config)
             --i;
         }
     }
-    if (StartInIndex != 0)
+
+    if ((StartInIndex != 0) && (config.size() != NUMELEMENTS))
     {
         config.append({StartInIndex, sizeof(Bci_block.eq_type), &Bci_block.eq_type});
         config.append({StartInIndex+1, sizeof(Bci_block.npoints), &Bci_block.npoints});
@@ -27,13 +28,14 @@ Config80::Config80(QVector<S2::DataRec> &config)
         config.append({StartInIndex+10, sizeof(Bci_block.diosc), &Bci_block.diosc});
         config.append({StartInIndex+11, sizeof(Bci_block.duimin), &Bci_block.duimin});
     }
-    config.append({0xFFFFFFFF, 0, NULL});
+    config.append({0xFFFFFFFF, 0, nullptr});
+
 }
 
 void Config80::SetDefConf()
 {
     Bci_block.eq_type = 1;
-    Bci_block.npoints = 128;
+    Bci_block.npoints = 256;
     Bci_block.nfiltr = 100;
     Bci_block.nhfiltr = 3;
     Bci_block.ddosc = 1;

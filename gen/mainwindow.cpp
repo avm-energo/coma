@@ -589,7 +589,7 @@ void MainWindow::SetProgressBar1Size(int size)
     SetProgressBarSize("1", size);
 }
 
-void MainWindow::SetProgressBar1(quint32 cursize)
+void MainWindow::SetProgressBar1(int cursize)
 {
     SetProgressBar("1", cursize);
 }
