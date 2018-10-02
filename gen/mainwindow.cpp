@@ -379,7 +379,7 @@ int MainWindow::CheckPassword()
 #ifndef MODULE_A1
 void MainWindow::LoadOscFromFile(const QString &filename)
 {
-    if (Files::LoadFromFile(filename, OscFunc->BA) == Error::ER_NOERROR)
+    if (Files::LoadFromFile(filename, OscFunc->BA) == Files::ER_NOERROR)
         OscFunc->ProcessOsc();
 }
 

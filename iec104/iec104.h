@@ -77,7 +77,7 @@ class Parse104 : public QObject
     Q_OBJECT
 
 public:
-    Parse104(QObject *parent=0);
+    Parse104(QObject *parent=nullptr);
     ~Parse104();
 
     typedef struct
@@ -146,7 +146,7 @@ class iec104 : public QObject
     Q_OBJECT
 
 public:
-    iec104(QObject *parent = 0);
+    iec104(QObject *parent = nullptr);
     ~iec104();
 
     typedef struct

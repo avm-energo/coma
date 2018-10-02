@@ -57,7 +57,10 @@ void ConfDialog80::Fill()
     {
         WDFunc::SetCBData(this, "unom.1", QString::number(C80->Bci_block.unom1));
         for (i = 3; i < 6; i++)
-            WDFunc::SetSPBData(this, "inom.2."+QString::number(i), C80->Bci_block.inom2[i]);
+        {
+            WDFunc::SetSPBData(this, "inom.1"+QString::number(i), C80->Bci_block.inom1[i]);
+            WDFunc::SetSPBData(this, "inom.2"+QString::number(i), C80->Bci_block.inom2[i]);
+        }
         WDFunc::SetSPBData(this, "thr.1", C80->Bci_block.duosc);
         WDFunc::SetSPBData(this, "thr.2", C80->Bci_block.diosc);
         break;
@@ -66,8 +69,8 @@ void ConfDialog80::Fill()
     {
         for (i = 0; i < 6; i++)
         {
-            WDFunc::SetSPBData(this, "inom.1."+QString::number(i), C80->Bci_block.inom1[i]);
-            WDFunc::SetSPBData(this, "inom.2."+QString::number(i), C80->Bci_block.inom2[i]);
+            WDFunc::SetSPBData(this, "inom.1"+QString::number(i), C80->Bci_block.inom1[i]);
+            WDFunc::SetSPBData(this, "inom.2"+QString::number(i), C80->Bci_block.inom2[i]);
         }
         WDFunc::SetSPBData(this, "thr.2", C80->Bci_block.diosc);
        break;
@@ -112,8 +115,8 @@ void ConfDialog80::FillBack()
         C80->Bci_block.unom1 = tmps.toFloat();
         for (i = 3; i < 6; i++)
         {
-            WDFunc::SPBData(this, "inom.1."+QString::number(i), C80->Bci_block.inom1[i]);
-            WDFunc::SPBData(this, "inom.2."+QString::number(i), C80->Bci_block.inom2[i]);
+            WDFunc::SPBData(this, "inom.1"+QString::number(i), C80->Bci_block.inom1[i]);
+            WDFunc::SPBData(this, "inom.2"+QString::number(i), C80->Bci_block.inom2[i]);
         }
         WDFunc::SPBData(this, "thr.1", C80->Bci_block.duosc);
         WDFunc::SPBData(this, "thr.2", C80->Bci_block.diosc);
@@ -123,8 +126,8 @@ void ConfDialog80::FillBack()
     {
         for (i = 0; i < 6; i++)
         {
-            WDFunc::SPBData(this, "inom.1."+QString::number(i), C80->Bci_block.inom1[i]);
-            WDFunc::SPBData(this, "inom.2."+QString::number(i), C80->Bci_block.inom2[i]);
+            WDFunc::SPBData(this, "inom.1"+QString::number(i), C80->Bci_block.inom1[i]);
+            WDFunc::SPBData(this, "inom.2"+QString::number(i), C80->Bci_block.inom2[i]);
         }
         WDFunc::SPBData(this, "thr.2", C80->Bci_block.diosc);
        break;
@@ -149,7 +152,7 @@ void ConfDialog80::SetupUI()
 
     hlyout->addWidget(WDFunc::NewLBL(this, "Тип контролируемого оборудования:"), 0);
     QStringList cbl = QStringList() << "1ф трансформатор/АТ" << "3ф трансформатор/АТ" << "1ф реактор" << "3ф реактор";
-    EComboBox *cb = WDFunc::NewCB(this, "eq_typecb", cbl, ACONFGCLR);
+    EComboBox *cb = WDFunc::NewCB(this, "eq_typecb", cbl, ACONFWCLR);
     cb->setMinimumWidth(70);
     hlyout->addWidget(cb,10);
     vlyout1->addLayout(hlyout);
@@ -276,7 +279,7 @@ void ConfDialog80::INom(QVBoxLayout *vlyout, int numinom)
     for (int i = 0; i < 3; i++)
     {
         vlyout->addWidget(WDFunc::NewLBL(this, QString::number(i+10, 16).toUpper() + ":"), 1, Qt::AlignLeft); // A, B, C
-        vlyout->addWidget(WDFunc::NewSPB(this, "inom."+PervNum+"."+QString::number(i+Group*3), 1, 50000, 0, ACONFWCLR), 1);
+        vlyout->addWidget(WDFunc::NewSPB(this, "inom."+PervNum+QString::number(i+Group*3), 1, 50000, 0, ACONFWCLR), 1);
         //hlyout->addStretch(10);
     }
 

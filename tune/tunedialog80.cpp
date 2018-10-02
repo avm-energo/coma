@@ -20,6 +20,7 @@
 #include "../gen/commands.h"
 #endif
 #include "../config/confdialog80.h"
+#include "../iec104/iec104.h"
 
 TuneDialog80::TuneDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     EAbstractTuneDialog(parent)
@@ -52,7 +53,6 @@ void TuneDialog80::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QLabel *lbl;
     QGridLayout *glyout = new QGridLayout;
-
     QTabWidget *TuneTW = new QTabWidget;
     TuneTW->addTab(cp1,"Настройка");
     TuneTW->addTab(cp2,"Коэффициенты");
@@ -447,7 +447,7 @@ int TuneDialog80::Start7_3_2()
 }
 
 /*    if (num == MSG_7_3_2) maxval=602; // 3~7.3.2, 6~7.3.6.1, 12~7.3.7.3
-/*    else if (num == MSG_7_3_7_8)
+    else if (num == MSG_7_3_7_8)
     {
         if (!GetExternalData(MSG_7_3_7_8))
             return false;
@@ -478,27 +478,27 @@ int TuneDialog80::Start7_3_2()
 
 int TuneDialog80::Start7_3_3()
 {
-/*    GED_Type = TD_GED_D;
+    GED_Type = TD_GED_D;
     GetExternalData();
     Bac_newblock.DPsi[0] = 0;
-    int k = (pc.ModuleBsi.MTypeM == MTM_82) ? 3 : 6;
+    int k = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_82) ? 3 : 6;
     for (int i=1; i<k; ++i)
         Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - Bda_block.phi_next_f[i];
-    if (pc.ModuleBsi.MTypeM == MTM_82)
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_82)
     {
         for (int i=3; i<6; ++i)
             Bac_newblock.DPsi[i] += RealData.d[i-3];
-    } */
+    }
     return Error::ER_NOERROR;
 }
 
 int TuneDialog80::Start7_3_4()
 {
-/*    GED_Type = TD_GED_F;
-    if (!(GetExternalData() == Error::GENERALERROR))
+    GED_Type = TD_GED_F;
+    if (!(GetExternalData() == Error::ER_GENERALERROR))
         Bac_newblock.K_freq = Bac_block.K_freq*RealData.f[0]/Bda_block.Frequency;
     else
-        return Error::GENERALERROR; */
+        return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
 }
 
@@ -509,9 +509,9 @@ int TuneDialog80::Start7_3_5()
 
 int TuneDialog80::Start7_3_6_2()
 {
-/*    double fTmp = Bda_block.IUefNat_filt[0] / IUefNat_filt_old[0] + Bda_block.IUefNat_filt[3] / IUefNat_filt_old[3];
+    double fTmp = Bda_block.IUefNat_filt[0] / IUefNat_filt_old[0] + Bda_block.IUefNat_filt[3] / IUefNat_filt_old[3];
     fTmp /= 2;
-    Bac_newblock.Kinter = (fTmp * (1 + 6 * Bac_block.Kinter) - 1) / 6; */
+    Bac_newblock.Kinter = (fTmp * (1 + 6 * Bac_block.Kinter) - 1) / 6;
     return Error::ER_NOERROR;
 }
 
@@ -1049,12 +1049,12 @@ int TuneDialog80::SetNewTuneCoefs()
 
 int TuneDialog80::ReadAnalogMeasurements()
 {
-/*    // получение текущих аналоговых сигналов от модуля
-    if (Commands::GetBd(BT_NONE, &Bda_block, sizeof(Bda_block)) != Error::NOERROR)
+    // получение текущих аналоговых сигналов от модуля
+     if (Commands::GetBd(BT_BASE, &Bda_block, sizeof(Bda_block)) != Error::ER_NOERROR)
     {
         EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
-        return;
-    }  */
+        return Error::ER_GENERALERROR;
+    }
     return Error::ER_NOERROR;
 }
 
