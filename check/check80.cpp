@@ -23,6 +23,10 @@ QWidget *Check_80::Bd1W(QWidget *parent)
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBL(parent, "0. Tmk, °С:"), 0);
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Температура кристалла микроконтроллера, °С"), 0);
+    hlyout->addWidget(WDFunc::NewLBL(parent, "1. VBAT, В:"), 0);
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value1", ValuesFormat, "Напряжение аккумуляторной батареи, В"), 0);
     hlyout->addWidget(WDFunc::NewLBL(parent, "2.Частота:"));
     hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value2", ValuesFormat, "Частота сигналов, Гц"));
     lyout->addLayout(hlyout);

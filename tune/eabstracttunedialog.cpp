@@ -182,6 +182,7 @@ void EAbstractTuneDialog::ProcessTune()
             SkMsgSetVisible(bStep);
         else
             OkMsgSetVisible(bStep);
+
     }
     MsgSetVisible(bStep); // выдаём надпись "Настройка завершена!"
     MeasurementTimer->stop();

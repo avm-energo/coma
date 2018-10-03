@@ -144,6 +144,14 @@ private:
         float d[3]; // load phase
     };
 
+    struct Bd0
+    {
+        float Tmk;	// Температура кристалла микроконтроллера, °С
+        float Vbat;	// Напряжение аккумуляторной батареи, В
+    };
+
+    Bd0 Bd_block0;
+
     RealDataStruct RealData;
     float IUefNat_filt_old[6];      // для сохранения значений по п. 7.3.2
     float MipDat[41];
@@ -195,8 +203,14 @@ private:
     int SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
     int SaveWorkConfig();
     int LoadWorkConfig();
+    QWidget *Bd1W(QWidget *parent);
+    void FillBd1(QWidget *parent);
+    void RefreshAnalogValues(int bdnum);
 #endif
     float ToFloat(QString text);
+
+    QString ValuesFormat, WidgetFormat;
+
 private slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void StartMip();
