@@ -13,7 +13,7 @@ Config80::Config80(QVector<S2::DataRec> &config)
         }
     }
 
-    if ((StartInIndex != 0) && (config.size() != NUMELEMENTS))
+    if ((StartInIndex != 0))
     {
         config.append({StartInIndex, sizeof(Bci_block.eq_type), &Bci_block.eq_type});
         config.append({StartInIndex+1, sizeof(Bci_block.npoints), &Bci_block.npoints});

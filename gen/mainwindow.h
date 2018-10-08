@@ -45,7 +45,9 @@ public:
     bool SWHide;
     QRect SWGeometry;
     QVector<S2::DataRec> S2Config;
+    QVector<S2::DataRec> S2ConfigForTune;
     ConfDialog *MainConfDialog;
+    ConfDialog *MainTuneDialog;
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
 #ifndef MODULE_A1

@@ -15,6 +15,7 @@ public:
     explicit AbstractConfDialog(QWidget *parent = nullptr);
 
     QVector<S2::DataRec> *S2Config;
+
     QStringList CheckConfErrors;
 
     QWidget *ConfButtons();

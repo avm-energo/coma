@@ -22,7 +22,7 @@ ConfDialog80::ConfDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     setStyleSheet(tmps);
     this->S2Config = &S2Config;
     C80 = new Config80(S2Config);
-    setAttribute(Qt::WA_DeleteOnClose);
+     setAttribute(Qt::WA_DeleteOnClose);
 
     SetupUI();
 #if PROGSIZE != PROGSIZE_EMUL
@@ -37,7 +37,8 @@ ConfDialog80::~ConfDialog80()
 void ConfDialog80::Fill()
 {
     int i;
-    WDFunc::SetCBData(this, "eq_typecb", QString::number(C80->Bci_block.eq_type));
+    QStringList cbl = QStringList() << "1ф трансформатор/АТ" << "3ф трансформатор/АТ" << "1ф реактор" << "3ф реактор";
+    WDFunc::SetCBData(this, "eq_typecb", cbl.at(C80->Bci_block.eq_type));
     WDFunc::SetChBData(this, "oscchb.0", (C80->Bci_block.ddosc & 0x0001));
     WDFunc::SetChBData(this, "oscchb.1", (C80->Bci_block.ddosc & 0x0002));
     WDFunc::SetChBData(this, "oscchb.2", (C80->Bci_block.ddosc & 0x0004));
@@ -153,8 +154,9 @@ void ConfDialog80::SetupUI()
     hlyout->addWidget(WDFunc::NewLBL(this, "Тип контролируемого оборудования:"), 0);
     QStringList cbl = QStringList() << "1ф трансформатор/АТ" << "3ф трансформатор/АТ" << "1ф реактор" << "3ф реактор";
     EComboBox *cb = WDFunc::NewCB(this, "eq_typecb", cbl, ACONFWCLR);
+    cb->setEditable(true);
     cb->setMinimumWidth(70);
-    hlyout->addWidget(cb,10);
+    hlyout->addWidget(cb);
     vlyout1->addLayout(hlyout);
 
     QGroupBox *gb = new QGroupBox("Аналоговые параметры");

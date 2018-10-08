@@ -26,8 +26,9 @@
 TuneDialog80::TuneDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     EAbstractTuneDialog(parent)
 {
-    S2TConfig = S2Config;
-    C80 = new Config80(S2TConfig);
+    this->S2ConfigForTune = &S2Config;
+
+    C80 = new Config80(*S2ConfigForTune);
 //    Ch80 = new Check80;
     SetBac(&Bac_block, BoardTypes::BT_MEZONIN, sizeof(Bac_block));
     setAttribute(Qt::WA_DeleteOnClose);
@@ -57,9 +58,10 @@ void TuneDialog80::SetupUI()
     QGridLayout *glyout = new QGridLayout;
     QTabWidget *TuneTW = new QTabWidget;
     TuneTW->addTab(cp1,"Настройка");
+    TuneTW->addTab(cp4,"Регулировочные параметры");
     TuneTW->addTab(cp2,"Коэффициенты");
     TuneTW->addTab(cp3,"Данные МИП");
-    TuneTW->addTab(cp4,"Регулировка");
+
 
     // CP2 - КОЭФФИЦИЕНТЫ МОДУЛЯ
 
@@ -330,6 +332,19 @@ void TuneDialog80::FillBac()
     WDFunc::SetLEData(this, "tune25", QString::number(Bac_block.Kinter, 'f', 5));
 }
 
+void TuneDialog80::FillNewBac()
+{
+    for (int i = 0; i < 6; i++)
+    {
+        WDFunc::SetLEData(this, "tune"+QString::number(i), QString::number(Bac_newblock.KmU[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+6), QString::number(Bac_newblock.KmI_5[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+12), QString::number(Bac_newblock.KmI_1[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+18), QString::number(Bac_newblock.DPsi[i], 'f', 5));
+    }
+    WDFunc::SetLEData(this, "tune24", QString::number(Bac_newblock.K_freq, 'f', 5));
+    WDFunc::SetLEData(this, "tune25", QString::number(Bac_newblock.Kinter, 'f', 5));
+}
+
 void TuneDialog80::FillBackBac()
 {
     QString tmps;
@@ -404,7 +419,7 @@ int TuneDialog80::Start7_3_1()
     else
     {
         // получение настроечных коэффициентов от модуля
-        if (Commands::GetBac(BT_NONE, &Bac_block, sizeof(Bac_block)) != Error::ER_NOERROR)
+        if (Commands::GetBac(BT_MEZONIN, &Bac_block, sizeof(Bac_block)) != Error::ER_NOERROR)
         {
             EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
             return Error::ER_GENERALERROR;
@@ -545,7 +560,7 @@ int TuneDialog80::Start7_3_7_2()
     for (int i=0; i<6; i++)
         C80->Bci_block.inom2[i] = I1;
     // послать новые коэффициенты по току в конфигурацию
-    if (Commands::WriteFile(&C80->Bci_block, 1, &S2TConfig) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&C80->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     WaitNSeconds(2);
     return Error::ER_NOERROR;
@@ -590,7 +605,7 @@ int TuneDialog80::Start7_3_7_6()
         return Error::ER_RESEMPTY;
     for (int i=0; i<6; ++i)
         C80->Bci_block.inom2[i] = I5;
-    if (Commands::WriteFile(&C80->Bci_block, 1, &S2TConfig) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&C80->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     WaitNSeconds(2);
     return Error::ER_NOERROR;
@@ -625,6 +640,7 @@ int TuneDialog80::Start7_3_7_10()
 
 int TuneDialog80::Start7_3_8_1()
 {
+    FillNewBac();
     // 1. Отправляем настроечные параметры в модуль
     return Commands::WriteBac(BT_MEZONIN, &Bac_newblock, sizeof(Bac));
 }
@@ -835,7 +851,7 @@ int TuneDialog80::GetExternalData()
 
 int TuneDialog80::SaveWorkConfig()
 {
-    if (Commands::GetFile(CM_CONFIGFILE,&S2TConfig) == Error::ER_NOERROR)
+    if (Commands::GetFile(CM_CONFIGFILE,S2ConfigForTune) == Error::ER_NOERROR)
         memcpy(&Bci_block_work,&C80->Bci_block,sizeof(Config80::Bci));
     else
         return Error::ER_GENERALERROR;
@@ -846,7 +862,7 @@ int TuneDialog80::LoadWorkConfig()
 {
     // пишем ранее запомненный конфигурационный блок
     memcpy(&C80->Bci_block,&Bci_block_work,sizeof(Config80::Bci));
-    if (Commands::WriteFile(&C80->Bci_block, CM_CONFIGFILE, &S2TConfig) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&C80->Bci_block, CM_CONFIGFILE, S2ConfigForTune) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
 }
@@ -1280,20 +1296,20 @@ QWidget *TuneDialog80::Bd1W(QWidget *parent)
     hlyout->addWidget(WDFunc::NewLBL(parent, "VBAT, В:"), 0);
     hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value1", ValuesFormat, "Напряжение аккумуляторной батареи, В"), 0);*/
     hlyout->addWidget(WDFunc::NewLBL(parent, "Частота:"));
-    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Частота сигналов, Гц"));
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Частота сигналов, Гц"), Qt::AlignLeft);
     lyout->addLayout(hlyout);
     for (i = 1; i < 7; ++i)
     {
         QString IndexStr = "[" + QString::number(i) + "]";
-        glyout->addWidget(WDFunc::NewLBL(parent, "IUNF"+IndexStr),0,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "IUNF"+IndexStr),0,(i-1),1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i), ValuesFormat, \
-                                          QString::number(i)+"IUNF"+IndexStr+".Истинные действующие значения сигналов"),1,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "IUF"+IndexStr),2,i,1,1);
+                                          QString::number(i)+"IUNF"+IndexStr+".Истинные действующие значения сигналов"),1,(i-1),1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "IUF"+IndexStr),2,(i-1),1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+6), ValuesFormat, \
-                                          QString::number(i+6)+"IUF"+IndexStr+".Действующие значения сигналов по 1-й гармонике\nотносительно ф. А 1-й группы"),3,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "PHF"+IndexStr),4,i,1,1);
+                                          QString::number(i+6)+"IUF"+IndexStr+".Действующие значения сигналов по 1-й гармонике\nотносительно ф. А 1-й группы"),3,(i-1),1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "PHF"+IndexStr),4,(i-1),1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+12), ValuesFormat, \
-                                          QString::number(i+12)+"PHF"+IndexStr+".Угол сдвига между сигналами по первой гармонике\nотносительно ф. А 1-й группы"),5,i,1,1);
+                                          QString::number(i+12)+"PHF"+IndexStr+".Угол сдвига между сигналами по первой гармонике\nотносительно ф. А 1-й группы"),5,(i-1),1,1);
     }
     for (i = 0; i < 3; ++i)
     {

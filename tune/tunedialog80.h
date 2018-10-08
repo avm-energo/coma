@@ -56,7 +56,7 @@ private:
     bool Cancelled, DefConfig;
     Config80 *C80;
     //QVector<S2::DataRec> *S2Config;
-    QVector<S2::DataRec> S2TConfig;  // для регулировки
+    //QVector<S2::DataRec> *S2ConfigForTune;  // для регулировки
     Config80::Bci Bci_block_work;
     iec104 *mipcanal;
     int TuneControlType;
@@ -162,6 +162,7 @@ private:
     void FillBac();
     void FillBackBac();
     void PrepareConsts();
+    void FillNewBac();
 #if PROGSIZE != PROGSIZE_EMUL
     void SetLbls();
     void SetPf();

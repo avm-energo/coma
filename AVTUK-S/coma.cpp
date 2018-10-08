@@ -270,6 +270,7 @@ void Coma::Stage3()
     if (MTypeB < 0xA0) // диапазон модулей АВ-ТУК
     {
         MainConfDialog = new ConfDialog(S2Config, MTypeB, MTypeM);
+        MainTuneDialog = new ConfDialog(S2ConfigForTune, MTypeB, MTypeM);
         MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     }
     OscD = new OscDialog(OscFunc);
@@ -408,7 +409,7 @@ void Coma::PrepareDialogs()
     case MTM_83:
     {
         ConfM = new ConfDialog80(S2Config);
-        TuneM = new TuneDialog80(S2Config);
+        TuneM = new TuneDialog80(S2ConfigForTune);
         break;
     }
     case MTM_85:
@@ -416,7 +417,7 @@ void Coma::PrepareDialogs()
         ConfM = new ConfDialog85(S2Config);
         CheckM = new CheckDialog85(BoardTypes::BT_BASE);
         SwjD = new SwitchJournalDialog;
-        TuneM = new TuneDialog85(S2Config); //          Не понятно, что за ошибка!
+        TuneM = new TuneDialog85(S2ConfigForTune); //          Не понятно, что за ошибка!
         break;
     }
     default: // 0x00

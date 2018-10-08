@@ -40,6 +40,7 @@ public:
     quint8 bStep;
     bool Cancelled;
     int TuneVariant; // вариант регулировочных параметров
+     QVector<S2::DataRec> *S2ConfigForTune;
 
     virtual void SetupUI() = 0;
     QWidget *TuneUI();
