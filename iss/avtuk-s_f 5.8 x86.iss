@@ -10,7 +10,7 @@
 #define URL "http://www.avmenergo.ru"
 #define ExeName "avtuks-F.exe"
 #define SetupName "avtuks-F-2.2.254-x86"
-#define Prefix "D:\Progs\out"
+#define Prefix "D:\out-5.8_x32"
 
 [CustomMessages]
 Version={#Version}
@@ -47,7 +47,7 @@ Name: {userappdata}\{#EngName}
 
 [Files]
 Source: "{#Prefix}\coma\*.dll"; DestDir: "{app}"
-; Source: "{#Prefix}\coma\platforms\qwindows.dll"; DestDir: "{app}\platforms"
+Source: "{#Prefix}\coma\platforms\qwindows.dll"; DestDir: "{app}\platforms"
 Source: "{#Prefix}\coma\{#ExeName}"; DestDir: "{app}"; DestName: {#ExeName}; Flags: ignoreversion
 Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
 Source: "{#Prefix}\coma\reports\*.*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
@@ -79,7 +79,7 @@ var
 
 begin
     success := false;
-    reg_key := 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64';
+    reg_key := 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86';
     
     success := RegQueryStringValue(HKLM, reg_key, 'Version', key_value);
     success := success and (Pos('v14.0.24215', key_value) = 1);
