@@ -119,6 +119,7 @@ void SettingsDialog::AcceptSettings()
     sets->setValue("PovDevPrecision", DevPrecision);
     sets->setValue("PovNumPoints", QString::number(PovNumPoints, 10));
     sets->setValue("Organization", OrganizationString);
+    sets->setValue("MIPIP", StdFunc::MIPIP);
     this->close();
 }
 
