@@ -506,7 +506,7 @@ int TuneDialog80::Start7_3_3()
     if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_82)
     {
         for (int i=3; i<6; ++i)
-            Bac_newblock.DPsi[i] += RealData.d[i-3];
+             Bac_newblock.DPsi[i] += RealData.d[i-3];
     }
     return Error::ER_NOERROR;
 }
@@ -753,10 +753,10 @@ int TuneDialog80::GetExternalData()
         {
             for (int i=1; i<4; ++i)
             {
-                RealData.f[i] = MipDat[i];
-                RealData.u[i] = MipDat[i+3];
-                RealData.i[i] = MipDat[i+6];
-                RealData.d[i] = MipDat[i+10];
+                RealData.f[i-1] = MipDat[i];
+                RealData.u[i-1] = MipDat[i+3];
+                RealData.i[i-1] = MipDat[i+6];
+                RealData.d[i-1] = MipDat[i+10];
             }
             return Error::ER_NOERROR;
         }
@@ -949,7 +949,7 @@ int TuneDialog80::CheckMip()
     double *VTC, *TTC;
     VTC = ValuesToCheck;
     TTC = ThresholdsToCheck;
-    for (int i = 1; i < 10; i++)
+    for (int i = 0; i < 10; i++)
     {
         QString tmps;
         WDFunc::LBLText(this, "mip"+QString::number(i), tmps);

@@ -336,8 +336,8 @@ void EAbstractTuneDialog::ReadTuneCoefs()
 
 bool EAbstractTuneDialog::WriteTuneCoefsSlot()
 {
-    if (CheckPassword() != Error::ER_NOERROR)
-        return false;
+    //if (CheckPassword() != Error::ER_NOERROR)   На время отладки!!!
+    //    return false;
     return WriteTuneCoefs();
 }
 
