@@ -279,8 +279,14 @@ void Coma::Stage3()
     {
         str = (ConfM == nullptr) ? "Конфигурирование" : "Конфигурирование\nБазовая";
         MainTW->addTab(ConfB, str);
+       // if(IsNeededDefConf)
+        //{
+       //     MainWindow::SetDefConf();;
+
+       // }
         connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
         connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+        //AbstractConfDialog::PrereadConf();
     }
     if (ConfM != nullptr)
     {

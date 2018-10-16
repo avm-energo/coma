@@ -502,7 +502,7 @@ int TuneDialog80::Start7_3_3()
     Bac_newblock.DPsi[0] = 0;
     int k = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_82) ? 3 : 6;
     for (int i=1; i<k; ++i)
-        Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - Bda_block.phi_next_f[i];
+        Bac_newblock.DPsi[i-1] = Bac_block.DPsi[i-1] - Bda_block.phi_next_f[i];
     if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_82)
     {
         for (int i=3; i<6; ++i)
@@ -523,7 +523,7 @@ int TuneDialog80::Start7_3_4()
 
 int TuneDialog80::Start7_3_5()
 {
-    return ShowRetomDialog(60.0, 1.0);
+    return ShowRetomDialog(V60, I1);
 }
 
 int TuneDialog80::Start7_3_6_2()
@@ -570,7 +570,7 @@ int TuneDialog80::Start7_3_7_3()
 {
     if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81)
         return Error::ER_RESEMPTY;
-    ShowRetomDialog(V60, I1);
+    //ShowRetomDialog(V60, I1);
     if (Start7_3_2() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
@@ -658,6 +658,9 @@ int TuneDialog80::Start7_3_9()
     {
         if (!LoadWorkConfig())
             return Error::ER_GENERALERROR;
+        // Пишем в модуль посчитанные регулировочные коэффициенты
+        //if (Commands::WriteBac(BT_MEZONIN, &Bac_newblock, sizeof(Bac)) != Error::ER_NOERROR)  // Григорий матвеевич попросил писать коэффициенты сразу в модуль
+        //    return Error::ER_GENERALERROR;
         // переходим на прежнюю конфигурацию
         // измеряем и проверяем
         ShowRetomDialog(V57, C80->Bci_block.inom2[0]); // I = 1.0 or 5.0 A
@@ -758,6 +761,8 @@ int TuneDialog80::GetExternalData()
                 RealData.i[i-1] = MipDat[i+6];
                 RealData.d[i-1] = MipDat[i+10];
             }
+            RealData.dpsiU[0] = -MipDat[43];
+            RealData.dpsiU[1] = -MipDat[44];
             return Error::ER_NOERROR;
         }
         return Error::ER_GENERALERROR;
@@ -1099,10 +1104,11 @@ void TuneDialog80::ParseMipData(Parse104::Signals104 &Signal)
     quint32 index = Signal.SigNum;
     if (index != -1)
     {
-        if ((index >= 11) && (index <= 13))
-            MipDat[index] = -MipDat[index]; // у МИП-а знак угла отрицательный
+         MipDat[index] = Signal.SigVal;
+        //if ((index >= 11) && (index <= 13))
+        //    MipDat[index] = -MipDat[index]; // у МИП-а знак угла отрицательный
         WDFunc::SetLBLText(this, "mip"+QString::number(index), QString::number(Signal.SigVal, 'f', Precisions[index]));
-        MipDat[index] = Signal.SigVal;
+
     }
 }
 

@@ -84,11 +84,19 @@ void ConfDialog80::Fill()
 
 void ConfDialog80::FillBack()
 {
-    int i;
+    int i,index;
     QString tmps;
     bool tmpb;
-    WDFunc::CBData(this, "eq_typecb", tmps);
-    C80->Bci_block.eq_type = tmps.toUInt();
+    QStringList cbl = QStringList() << "1ф трансформатор/АТ" << "3ф трансформатор/АТ" << "1ф реактор" << "3ф реактор";
+    index = WDFunc::CBData(this, "eq_typecb", tmps);
+    for(i=0; i<cbl.size(); i++)
+    {
+        if(cbl.at(i) == tmps)
+        {
+          C80->Bci_block.eq_type = i;
+        }
+
+    }
     WDFunc::ChBData(this, "oscchb.0", tmpb);
     C80->Bci_block.ddosc |= (tmpb) ? 0x0001 : 0x0000;
     WDFunc::ChBData(this, "oscchb.1", tmpb);

@@ -17,6 +17,7 @@ public:
     QVector<S2::DataRec> *S2Config;
 
     QStringList CheckConfErrors;
+    bool IsNeededDefConf;
 
     QWidget *ConfButtons();
     virtual void Fill() = 0; // заполнить значения полей вывода из структуры конфигурации

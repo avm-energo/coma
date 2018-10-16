@@ -168,6 +168,7 @@ void EAbstractTuneDialog::ProcessTune()
     MsgClear(); // очистка экрана с сообщениями
     for (bStep=0; bStep<lbls.size(); ++bStep)
     {
+        WaitNSeconds(2);
         MsgSetVisible(bStep);
         int res = (this->*pf[lbls.at(bStep)])();
         if ((res == Error::ER_GENERALERROR) || (Cancelled))

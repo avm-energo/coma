@@ -130,7 +130,7 @@ bool WDFunc::CBData(QWidget *w, const QString &cbname, QString &cbvalue)
     if (cb == nullptr)
         return false;
     cbvalue = cb->currentText();
-    return true;
+    return cb->currentIndex();
 }
 
 bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue)

@@ -142,6 +142,7 @@ private:
         float u[3]; // voltages
         float i[3]; // currents
         float d[3]; // load phase
+        float dpsiU[2];//interphase voltages angles (B-A, C-B)
     };
 
     struct Bd0
@@ -154,7 +155,7 @@ private:
 
     RealDataStruct RealData;
     float IUefNat_filt_old[6];      // для сохранения значений по п. 7.3.2
-    float MipDat[41];
+    float MipDat[46];
     int GED_Type;
 
     void SetupUI();

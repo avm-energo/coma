@@ -350,7 +350,13 @@ void Check_80::FillBd1(QWidget *parent)
         Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83) ? 4 : 3;
         WDFunc::SetLBLText(parent, "value"+QString::number(i+6), WDFunc::StringValueWithCheck(Bd_block1.IUefNat_filt[i+3], Precision));
         WDFunc::SetLBLText(parent, "value"+QString::number(i+12), WDFunc::StringValueWithCheck(Bd_block1.IUeff_filtered[i+3], Precision));
-        WDFunc::SetLBLText(parent, "value"+QString::number(i+15), WDFunc::StringValueWithCheck(Bd_block1.phi_next_f[i], 4));
+
+        //WDFunc::SetLBLText(parent, "value"+QString::number(i+15), WDFunc::StringValueWithCheck(Bd_block1.phi_next_f[i], 4));
+    }
+    for (int i = 0; i < 6; i++)
+    {
+      WDFunc::SetLBLText(parent, "value"+QString::number(i+15), WDFunc::StringValueWithCheck(Bd_block1.phi_next_f[i], 4));
+
     }
     for (int i=0; i<3; i++)
     {
