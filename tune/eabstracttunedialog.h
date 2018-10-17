@@ -30,6 +30,7 @@ public:
     explicit EAbstractTuneDialog(QWidget *parent = nullptr);
     ~EAbstractTuneDialog();
 
+    bool IsNeededDefConf = false;
     BacStruct AbsBac;
     QStringList lbls;
     bool Skipped, MeasurementEnabled, ok, TuneFileSaved;

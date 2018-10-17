@@ -138,7 +138,7 @@ QWidget *AbstractConfDialog::ConfButtons()
 void AbstractConfDialog::PrereadConf()
 {
     if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
-     IsNeededDefConf = 1;  // emit LoadDefConf();
+     IsNeededDefConf = true;  // emit LoadDefConf();
     else // иначе заполнить значениями из модуля
      ReadConf();
 }

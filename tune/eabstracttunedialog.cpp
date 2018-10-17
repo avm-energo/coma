@@ -358,7 +358,7 @@ bool EAbstractTuneDialog::WriteTuneCoefs()
 void EAbstractTuneDialog::PrereadConf()
 {
     if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
-        emit LoadDefConf();
+      IsNeededDefConf = true; // emit LoadDefConf();
     else // иначе заполнить значениями из модуля
     {
         if ((Commands::GetFile(1, &S2Config)) != Error::ER_NOERROR)

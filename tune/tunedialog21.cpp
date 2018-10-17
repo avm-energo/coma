@@ -32,6 +32,9 @@ TuneDialog21::TuneDialog21(BoardTypes type, QWidget *parent) :
     BoardType = type;
     SetBac(&Bac_block, BoardType, sizeof(Bac_block));
     SetupUI();
+#if PROGSIZE != PROGSIZE_EMUL
+    PrereadConf();
+#endif
 }
 
 TuneDialog21::~TuneDialog21()

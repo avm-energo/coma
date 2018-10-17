@@ -146,7 +146,7 @@ void OscDialog::GetOsc(QModelIndex idx)
     OscFunc->BA.resize(basize);
     if (Commands::GetOsc(oscnum, &(OscFunc->BA.data()[0])) == Error::ER_NOERROR)
     {
-        QString tmps = StdFunc::GetSystemHomeDir()+"/temporary.osc";
+        QString tmps = StdFunc::GetHomeDir()+"/temporary.osc";
         Files::SaveToFile(tmps, OscFunc->BA, basize);
         OscFunc->ProcessOsc();
     }

@@ -127,7 +127,7 @@ void TuneDialog80::SetupUI()
     gblyout->addLayout(hlyout);
     hlyout = MipPars(11, "Угол нагрузки");
     gblyout->addLayout(hlyout);
-    hlyout = MipPars(14, "Фазовый угол напряжения");
+    hlyout = MipPars(43, "Фазовый угол напряжения");
     gblyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     lbl = new QLabel("10. Ток N");
@@ -497,16 +497,23 @@ int TuneDialog80::Start7_3_2()
 
 int TuneDialog80::Start7_3_3()
 {
+    float phiMip[6];
     GED_Type = TD_GED_D;
     GetExternalData();
     Bac_newblock.DPsi[0] = 0;
+    phiMip[0] = 0;
+    phiMip[1] = RealData.dpsiU[0];
+    phiMip[2] = RealData.dpsiU[0]+RealData.dpsiU[1];
+    phiMip[3] = RealData.d[0];
+    phiMip[4] = RealData.d[1]+RealData.dpsiU[0];
+    phiMip[5] = RealData.d[2]+RealData.dpsiU[0]+RealData.dpsiU[1];
     int k = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_82) ? 3 : 6;
     for (int i=1; i<k; ++i)
-        Bac_newblock.DPsi[i-1] = Bac_block.DPsi[i-1] - Bda_block.phi_next_f[i];
+        Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - phiMip[i] - Bda_block.phi_next_f[i];
     if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_82)
     {
         for (int i=3; i<6; ++i)
-             Bac_newblock.DPsi[i] += RealData.d[i-3];
+             Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - phiMip[i] - Bda_block.phi_next_f[i];
     }
     return Error::ER_NOERROR;
 }
@@ -654,19 +661,20 @@ int TuneDialog80::Start7_3_8_2()
 
 int TuneDialog80::Start7_3_9()
 {
-    if (EMessageBox::question(this,"Закончить?","Закончить настройку?"))
+    if (EMessageBox::question(this,"Закончить?","Закончить настройку и записать коэффициенты в модуль?"))
     {
         if (!LoadWorkConfig())
             return Error::ER_GENERALERROR;
         // Пишем в модуль посчитанные регулировочные коэффициенты
-        //if (Commands::WriteBac(BT_MEZONIN, &Bac_newblock, sizeof(Bac)) != Error::ER_NOERROR)  // Григорий матвеевич попросил писать коэффициенты сразу в модуль
-        //    return Error::ER_GENERALERROR;
+        if (Commands::WriteBac(BT_MEZONIN, &Bac_newblock, sizeof(Bac)) != Error::ER_NOERROR)  // Григорий матвеевич попросил писать коэффициенты сразу в модуль
+            return Error::ER_GENERALERROR;
         // переходим на прежнюю конфигурацию
         // измеряем и проверяем
-        ShowRetomDialog(V57, C80->Bci_block.inom2[0]); // I = 1.0 or 5.0 A
-        WaitNSeconds(15);
-        ReadAnalogMeasurements();
-        return StartCheckAnalogValues(V57, C80->Bci_block.inom2[0], S0, true);
+        //ShowRetomDialog(V57, C80->Bci_block.inom2[0]); // I = 1.0 or 5.0 A
+        //WaitNSeconds(15);
+        //ReadAnalogMeasurements();
+        //return StartCheckAnalogValues(V57, C80->Bci_block.inom2[0], S0, true);
+        return Error::ER_NOERROR;
     }
     else
         return false;
@@ -761,8 +769,8 @@ int TuneDialog80::GetExternalData()
                 RealData.i[i-1] = MipDat[i+6];
                 RealData.d[i-1] = MipDat[i+10];
             }
-            RealData.dpsiU[0] = -MipDat[43];
-            RealData.dpsiU[1] = -MipDat[44];
+            RealData.dpsiU[0] = MipDat[43];
+            RealData.dpsiU[1] = MipDat[44];
             return Error::ER_NOERROR;
         }
         return Error::ER_GENERALERROR;
@@ -1106,7 +1114,7 @@ void TuneDialog80::ParseMipData(Parse104::Signals104 &Signal)
     {
          MipDat[index] = Signal.SigVal;
         //if ((index >= 11) && (index <= 13))
-        //    MipDat[index] = -MipDat[index]; // у МИП-а знак угла отрицательный
+        //   MipDat[index] = -MipDat[index]; // у МИП-а знак угла отрицательный
         WDFunc::SetLBLText(this, "mip"+QString::number(index), QString::number(Signal.SigVal, 'f', Precisions[index]));
 
     }

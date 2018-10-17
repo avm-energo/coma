@@ -279,11 +279,13 @@ void Coma::Stage3()
     {
         str = (ConfM == nullptr) ? "Конфигурирование" : "Конфигурирование\nБазовая";
         MainTW->addTab(ConfB, str);
-       // if(IsNeededDefConf)
-        //{
-       //     MainWindow::SetDefConf();;
+        if(ConfB->IsNeededDefConf)
+        {
+            ConfB->SetDefConf();
+            ConfB->Fill();
+            EMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
 
-       // }
+        }
         connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
         connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
         //AbstractConfDialog::PrereadConf();
@@ -292,6 +294,15 @@ void Coma::Stage3()
     {
         str = (ConfB == nullptr) ? "Конфигурирование" : "Конфигурирование\nМезонин";
         MainTW->addTab(ConfM, str);
+
+        if(ConfM->IsNeededDefConf)
+        {
+            ConfM->SetDefConf();
+            ConfM->Fill();
+            EMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
+
+        }
+
         connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
         connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
     }
