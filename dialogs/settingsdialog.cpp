@@ -28,7 +28,7 @@ void SettingsDialog::SetupUI()
 {
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
+    quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8;
     if (MTypeB == MTB_A1)
     {
         hlyout = new QHBoxLayout;
@@ -88,7 +88,8 @@ void SettingsDialog::Fill()
     WDFunc::SetLEData(this,"povdev", DevName);
     WDFunc::SetLEData(this,"povdevsn", DevSN);
     WDFunc::SetLEData(this,"povdevprecision", DevPrecision);
-    QString restring = "^[0-2]{0,1}[0-9]{1,2}{\\.[0-2]{0,1}[0-9]{1,2}}{3}$";
+//    QString restring = "^[0-2]{0,1}[0-9]{1,2}{\\.[0-2]{0,1}[0-9]{1,2}}{3}$";
+    QString restring = "";
     WDFunc::SetLEData(this,"miple",StdFunc::MIPIP,restring);
 #if PROGSIZE != PROGSIZE_EMUL
     WDFunc::SetChBData(this, "writelogchb", EAbstractProtocomChannel::IsWriteUSBLog());

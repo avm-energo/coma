@@ -20,7 +20,7 @@ class A1Dialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit A1Dialog(const QString &filename = "", QWidget *parent = 0);
+    explicit A1Dialog(const QString &filename = "", QWidget *parent = nullptr);
     ~A1Dialog();
 
     enum PovTypes
