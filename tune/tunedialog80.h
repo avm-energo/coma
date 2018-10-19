@@ -5,6 +5,9 @@
 #include <QHBoxLayout>
 #include <QByteArray>
 #include <QStringList>
+#include <QStandardItemModel>
+#include <QCloseEvent>
+#include "limereport/lrreportengine.h"
 #include "../config/config80.h"
 #include "../iec104/iec104.h"
 #include "eabstracttunedialog.h"
@@ -38,7 +41,7 @@ class TuneDialog80 : public EAbstractTuneDialog
 public:
     explicit TuneDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent = nullptr);
 signals:
-    void stopall();
+    //void stopall();
     void SendMip(QByteArray);
     void dataready(QByteArray);
     void SecondsRemaining(QString);
@@ -52,6 +55,12 @@ private:
         TUNERET,
         TUNEMAN
     };
+    enum PovTypes
+    {
+        GOST_NONE, // не задано
+        GOST_23625, // по 5 точкам туда-сюда
+        GOST_1983 // по 3 точкам только туда
+    };
 
     bool Cancelled, DefConfig;
     Config80 *C80;
@@ -62,6 +71,7 @@ private:
     int TuneControlType;
     int SecondsToEnd15SecondsInterval;
     //QHash <QString, int (TuneDialog80::*)()> pf;
+    LimeReport::ReportEngine *report;
 
     struct Bac
     {
@@ -153,6 +163,52 @@ private:
 
     Bd0 Bd_block0;
 
+    struct PovDevStruct // данные об установке
+    {
+        QString DevName; // наименование установки
+        QString DevSN; // серийный (заводской) номер
+        QString DevPrecision; // точность
+    };
+
+    PovDevStruct PovDev;
+
+    struct ReportHeaderStructure
+    {
+        QString Organization;   // организация, проводившая проверку
+        QString Day;            // день месяца проведения проверки
+        QString Month;          // месяц
+        QString Yr;             // две последние цифры года (20хх)
+        QString Freq;           // обозначение частоты
+        QString UA;             // напряжение фазы А
+        QString UB;             // напряжение фазы B
+        QString UC;             // напряжение фазы С
+        QString IA;             // ток фазы А
+        QString IB;             // ток фазы B
+        QString IC;             // ток фазы C
+        QString PhiloadA;       // угол нагрузки фазы А
+        QString PhiloadB;       // угол нагрузки фазы B
+        QString PhiloadC;       // угол нагрузки фазы C
+        QString PhiUAB;         // угол между напряжениями фаз А и B
+        QString PhiUBC;         // угол между напряжениями фаз B и C
+       // QString PhiIab;         // угол между токами фаз А и B
+       // QString PhiIbc;         // угол между токами фаз B и C
+
+    };
+
+    QStringList TableItem;      // строка таблицы с данными вывода
+    QList<QStringList *> MainData; // полные данные таблицы для модели
+
+    ReportHeaderStructure ReportHeader;
+
+    int Index, Counter;
+    float CurrentS; // текущее значение нагрузки
+    int PovType, TempPovType; // тип поверяемого оборудования (по какому ГОСТу)
+    QStandardItemModel *ReportModel, *ViewModel; // модель, в которую заносим данные для отчёта
+    int RowCount, ColumnCount; // количество рядов и столбцов в модели
+    bool Autonomous; // =1, если производится формирование протокола из файла, =0 - при работе с прибором
+    bool TempFromLE, HumFromLE; // =1, если данные в протокол надо брать из поля ввода, =0 - если из прибора
+
+
     RealDataStruct RealData;
     float IUefNat_filt_old[6];      // для сохранения значений по п. 7.3.2
     float MipDat[46];
@@ -208,6 +264,11 @@ private:
     QWidget *Bd1W(QWidget *parent);
     void FillBd1(QWidget *parent);
     void RefreshAnalogValues(int bdnum);
+    void ShowTable();
+    void UpdateItemInModel(int row, int column, QVariant value);
+    void CheckData(PovDevStruct &PovDev);
+    void GenerateReport();
+    void ReportDialog(PovDevStruct &PovDev);
 #endif
     float ToFloat(QString text);
 
@@ -223,6 +284,7 @@ private slots:
     void SetExtData();
     void CancelExtData();
     void CancelTune();
+    void SetReportData();
 #endif
     void SetDefCoefs();
 

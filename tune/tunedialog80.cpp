@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QInputDialog>
 #include <QCoreApplication>
+#include <QTableView>
 #include "tunedialog80.h"
 #include "../config/config80.h"
 #include "../widgets/emessagebox.h"
@@ -16,6 +17,7 @@
 #include "../gen/modulebsi.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
+#include "../gen/files.h"
 #include "../check/check80.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
@@ -29,6 +31,8 @@ TuneDialog80::TuneDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     this->S2ConfigForTune = &S2Config;
 
     C80 = new Config80(*S2ConfigForTune);
+    ReportModel = new QStandardItemModel;
+    ViewModel = new QStandardItemModel;
 //    Ch80 = new Check80;
     SetBac(&Bac_block, BoardTypes::BT_MEZONIN, sizeof(Bac_block));
     setAttribute(Qt::WA_DeleteOnClose);
@@ -58,7 +62,7 @@ void TuneDialog80::SetupUI()
     QGridLayout *glyout = new QGridLayout;
     QTabWidget *TuneTW = new QTabWidget;
     TuneTW->addTab(cp1,"Настройка");
-    TuneTW->addTab(cp4,"Регулировочные параметры");
+    TuneTW->addTab(cp4,"Измеренные параметры");
     TuneTW->addTab(cp2,"Коэффициенты");
     TuneTW->addTab(cp3,"Данные МИП");
 
@@ -514,7 +518,9 @@ int TuneDialog80::Start7_3_3()
     {
         for (int i=3; i<6; ++i)
              Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - phiMip[i] - Bda_block.phi_next_f[i];
+
     }
+
     return Error::ER_NOERROR;
 }
 
@@ -1396,6 +1402,12 @@ void TuneDialog80::FillBd1(QWidget *parent)
         float PHI = (180*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
         WDFunc::SetLBLText(parent, "value"+QString::number(i+43), WDFunc::StringValueWithCheck(PHI, 4));
     }
+
+    ReportHeader.PhiloadA = Bda_block.phi_next_f[3];
+    ReportHeader.PhiloadB = Bda_block.phi_next_f[4] - Bda_block.phi_next_f[1];
+    ReportHeader.PhiloadC = Bda_block.phi_next_f[5] - Bda_block.phi_next_f[2];
+    ReportHeader.PhiUAB   = Bda_block.phi_next_f[1] - Bda_block.phi_next_f[0];
+    ReportHeader.PhiUBC   = Bda_block.phi_next_f[2] - Bda_block.phi_next_f[1];
 }
 
 void TuneDialog80::RefreshAnalogValues(int bdnum)
@@ -1411,3 +1423,202 @@ void TuneDialog80::RefreshAnalogValues(int bdnum)
         return;
     }
 }
+
+void TuneDialog80::GenerateReport()
+{
+    // данные в таблицу уже получены или из файла, или в процессе работы
+    // отобразим таблицу
+    ShowTable();
+   // QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
+    report = new LimeReport::ReportEngine(this);
+    QString path = StdFunc::GetSystemHomeDir()+"82report.lrxml";
+    report->loadFromFile(path);
+    report->dataManager()->addModel("maindata", ReportModel, false);
+
+    report->dataManager()->setReportVariable("Organization", ReportHeader.Organization);
+    QString day = QDateTime::currentDateTime().toString("dd");
+    QString month = QDateTime::currentDateTime().toString("MM");
+    QString yr = QDateTime::currentDateTime().toString("yy");
+    report->dataManager()->setReportVariable("Day", day);
+    report->dataManager()->setReportVariable("Month", month);
+    report->dataManager()->setReportVariable("Yr", yr);
+    report->dataManager()->setReportVariable("DNNamePhase", ReportHeader.Freq);
+    report->dataManager()->setReportVariable("DNType", ReportHeader.UA);
+    report->dataManager()->setReportVariable("DNSerNum", ReportHeader.UB);
+    report->dataManager()->setReportVariable("DNTol", ReportHeader.UC);
+    report->dataManager()->setReportVariable("DNU1", ReportHeader.IA);
+    report->dataManager()->setReportVariable("DNU2", ReportHeader.IB);
+    report->dataManager()->setReportVariable("DNP", ReportHeader.IC);
+    report->dataManager()->setReportVariable("DNF", ReportHeader.PhiloadA);
+    report->dataManager()->setReportVariable("DNOrganization", ReportHeader.PhiloadB);
+    report->dataManager()->setReportVariable("DNPlace", ReportHeader.PhiloadC);
+    report->dataManager()->setReportVariable("DNDevices", ReportHeader.PhiUAB);
+    report->dataManager()->setReportVariable("Temp", ReportHeader.PhiUBC);
+
+    QString filename = Files::ChooseFileForSave(this, "*.pdf", "pdf");
+    if (!filename.isEmpty())
+    {
+        report->printToPDF(filename);
+//        report->previewReport();
+//        report->designReport();
+        EMessageBox::information(this, "Успешно!", "Записано успешно!");
+    }
+    else
+        EMessageBox::information(this, "Отменено", "Действие отменено");
+    delete report;
+}
+
+
+void TuneDialog80::CheckData(PovDevStruct &PovDev)
+{
+    int row = 0;
+    QDialog *dlg = new QDialog(this);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    lyout->addWidget(WDFunc::NewLBL(this, "Данные ТН(ДН)"), Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBL(this, "Организация, проводившая поверку"), row, 0, 1, 1, Qt::AlignRight);
+   // glyout->addWidget(WDFunc::NewLE(this, "UKDNOrganization", OrganizationString), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Тип ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNType", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Обозначение по схеме, фаза"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNNamePhase", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер"), row, 0, 1, 1, Qt::AlignRight);
+    //glyout->addWidget(WDFunc::NewLE(this, "DNSerialNum", ReportHeader.DNSerNum), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности, %"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNTolerance", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное первичное напряжение, кВ"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNU1", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение, В"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNU2", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальная мощность нагрузки, ВА"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNP", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальная частота, Гц"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNFreq", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Предприятие-изготовитель"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNOrganization", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Место установки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNPlace", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Наименование средства поверки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "PovDev", PovDev.DevName), row++, 1, 1, 1, Qt::AlignLeft);
+    WDFunc::SetEnabled(this, "PovDev", false);
+    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер средства поверки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "PovDevSN", PovDev.DevSN), row++, 1, 1, 1, Qt::AlignLeft);
+    WDFunc::SetEnabled(this, "PovDevSN", false);
+    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности средства поверки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "PovDevPrecision", PovDev.DevPrecision), row++, 1, 1, 1, Qt::AlignLeft);
+    WDFunc::SetEnabled(this, "PovDevPrecision", false);
+    glyout->addWidget(WDFunc::NewLBL(this, "Результаты внешнего осмотра"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Результаты проверки правильности обозначения\nвыводов и групп соединений обмоток"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNWindingInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->setColumnStretch(1, 1);
+    lyout->addLayout(glyout);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetReportData()));
+    connect(this,SIGNAL(CloseDialog()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
+void TuneDialog80::UpdateItemInModel(int row, int column, QVariant value)
+{
+    QStandardItem *item = ReportModel->item(row, column);
+    item->setText(value.toString());
+    ReportModel->setItem(row, column, item);
+    item = ViewModel->item(row, column);
+    item->setText(value.toString());
+    ViewModel->setItem(row, column, item);
+}
+
+void TuneDialog80::ShowTable()
+{
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QTableView *tw = new QTableView;
+    tw->setModel(ViewModel);
+    lyout->addWidget(tw);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
+void TuneDialog80::SetReportData()
+{
+//    QString PovDev, PovDevSN, PovDevPrecision;
+    /*WDFunc::LEData(this, "UKDNOrganization", OrganizationString);
+    WDFunc::LEData(this, "DNType", ReportHeader.DNType);
+    WDFunc::LEData(this, "DNNamePhase", ReportHeader.DNNamePhase);
+    WDFunc::LEData(this, "DNSerialNum", ReportHeader.DNSerNum);
+    WDFunc::LEData(this, "DNTolerance", ReportHeader.DNTol);
+    WDFunc::LEData(this, "DNU1", ReportHeader.DNU1);
+    WDFunc::LEData(this, "DNU2", ReportHeader.DNU2);
+    WDFunc::LEData(this, "DNP", ReportHeader.DNP);
+    WDFunc::LEData(this, "DNFreq", ReportHeader.DNF);
+    WDFunc::LEData(this, "DNOrganization", ReportHeader.DNOrganization);
+    WDFunc::LEData(this, "DNPlace", ReportHeader.DNPlace);
+    WDFunc::LEData(this, "DNInspection", ReportHeader.OuterInsp);
+    WDFunc::LEData(this, "DNWindingInspection", ReportHeader.WindingsInsp);
+    WDFunc::LEData(this, "PovDev", PovDev.DevName);
+    WDFunc::LEData(this, "PovDevSN", PovDev.DevSN);
+    WDFunc::LEData(this, "PovDevPrecision", PovDev.DevPrecision);
+    ReportHeader.DNDevices = PovDev.DevName + " сер. номер " + PovDev.DevSN + ", кл. точн. " + PovDev.DevPrecision;
+    //SaveSettings();
+    emit CloseDialog();*/
+}
+
+void TuneDialog80::ReportDialog(PovDevStruct &PovDev)
+{
+    int row = 0;
+    QDialog *dlg = new QDialog(this);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    lyout->addWidget(WDFunc::NewLBL(this, "Данные АВ-ТУК-82"), Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBL(this, "Организация, проводившая поверку"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "Organization", ReportHeader.Organization), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Обозначение по схеме, фаза"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNNamePhase", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер"), row, 0, 1, 1, Qt::AlignRight);
+    //glyout->addWidget(WDFunc::NewLE(this, "DNSerialNum", ReportHeader.DNSerNum), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности, %"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNTolerance", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное первичное напряжение, кВ"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNU1", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение, В"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNU2", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальная мощность нагрузки, ВА"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNP", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальная частота, Гц"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNFreq", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Предприятие-изготовитель"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNOrganization", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Место установки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNPlace", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Наименование средства поверки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "PovDev", PovDev.DevName), row++, 1, 1, 1, Qt::AlignLeft);
+    WDFunc::SetEnabled(this, "PovDev", false);
+    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер средства поверки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "PovDevSN", PovDev.DevSN), row++, 1, 1, 1, Qt::AlignLeft);
+    WDFunc::SetEnabled(this, "PovDevSN", false);
+    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности средства поверки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "PovDevPrecision", PovDev.DevPrecision), row++, 1, 1, 1, Qt::AlignLeft);
+    WDFunc::SetEnabled(this, "PovDevPrecision", false);
+    glyout->addWidget(WDFunc::NewLBL(this, "Результаты внешнего осмотра"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Результаты проверки правильности обозначения\nвыводов и групп соединений обмоток"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNWindingInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->setColumnStretch(1, 1);
+    lyout->addLayout(glyout);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetDNData()));
+    connect(this,SIGNAL(CloseDialog()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
+
