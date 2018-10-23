@@ -190,9 +190,18 @@ private:
         QString PhiloadC;       // угол нагрузки фазы C
         QString PhiUAB;         // угол между напряжениями фаз А и B
         QString PhiUBC;         // угол между напряжениями фаз B и C
-       // QString PhiIab;         // угол между токами фаз А и B
-       // QString PhiIbc;         // угол между токами фаз B и C
-
+        QString OffsetF;        // Погрешности
+        QString OffsetUA;
+        QString OffsetUB;
+        QString OffsetUC;
+        QString OffsetIA;
+        QString OffsetIB;
+        QString OffsetIC;
+        QString OffsetPhiloadA;
+        QString OffsetPhiloadB;
+        QString OffsetPhiloadC;
+        QString OffsetPhiUAB;
+        QString OffsetPhiUBC;
     };
 
     QStringList TableItem;      // строка таблицы с данными вывода
@@ -208,6 +217,9 @@ private:
     bool Autonomous; // =1, если производится формирование протокола из файла, =0 - при работе с прибором
     bool TempFromLE, HumFromLE; // =1, если данные в протокол надо брать из поля ввода, =0 - если из прибора
 
+    double U[21] =       {60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 72, 48, 36, 24, 12, 60, 60, 60, 60 };
+    double I[21] =       {0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1, 2, 3, 4, 5, 6,  5, 5, 5, 5, 5, 5, 5, 5, 5 };
+    double PhiLoad[21] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 90, 180, 270 };
 
     RealDataStruct RealData;
     float IUefNat_filt_old[6];      // для сохранения значений по п. 7.3.2
@@ -284,7 +296,7 @@ private slots:
     void SetExtData();
     void CancelExtData();
     void CancelTune();
-    void SetReportData();
+
 #endif
     void SetDefCoefs();
 

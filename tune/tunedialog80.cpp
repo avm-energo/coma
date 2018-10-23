@@ -38,6 +38,7 @@ TuneDialog80::TuneDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     setAttribute(Qt::WA_DeleteOnClose);
     PrepareConsts();
     SetupUI();
+    GenerateReport();
 }
 
 void TuneDialog80::SetupUI()
@@ -672,10 +673,14 @@ int TuneDialog80::Start7_3_9()
         if (!LoadWorkConfig())
             return Error::ER_GENERALERROR;
         // Пишем в модуль посчитанные регулировочные коэффициенты
-        if (Commands::WriteBac(BT_MEZONIN, &Bac_newblock, sizeof(Bac)) != Error::ER_NOERROR)  // Григорий матвеевич попросил писать коэффициенты сразу в модуль
+        if (Commands::WriteBac(BT_MEZONIN, &Bac_newblock, sizeof(Bac)) != Error::ER_NOERROR)  // Григорий Матвеевич попросил писать коэффициенты сразу в модуль
             return Error::ER_GENERALERROR;
         // переходим на прежнюю конфигурацию
         // измеряем и проверяем
+        if (EMessageBox::question(this,"Протокол поверки","Начать поверку?"))
+        {
+           GenerateReport();
+        }
         //ShowRetomDialog(V57, C80->Bci_block.inom2[0]); // I = 1.0 or 5.0 A
         //WaitNSeconds(15);
         //ReadAnalogMeasurements();
@@ -1403,11 +1408,7 @@ void TuneDialog80::FillBd1(QWidget *parent)
         WDFunc::SetLBLText(parent, "value"+QString::number(i+43), WDFunc::StringValueWithCheck(PHI, 4));
     }
 
-    ReportHeader.PhiloadA = Bda_block.phi_next_f[3];
-    ReportHeader.PhiloadB = Bda_block.phi_next_f[4] - Bda_block.phi_next_f[1];
-    ReportHeader.PhiloadC = Bda_block.phi_next_f[5] - Bda_block.phi_next_f[2];
-    ReportHeader.PhiUAB   = Bda_block.phi_next_f[1] - Bda_block.phi_next_f[0];
-    ReportHeader.PhiUBC   = Bda_block.phi_next_f[2] - Bda_block.phi_next_f[1];
+
 }
 
 void TuneDialog80::RefreshAnalogValues(int bdnum)
@@ -1428,13 +1429,14 @@ void TuneDialog80::GenerateReport()
 {
     // данные в таблицу уже получены или из файла, или в процессе работы
     // отобразим таблицу
-    ShowTable();
+   // ShowTable();
    // QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
     report = new LimeReport::ReportEngine(this);
     QString path = StdFunc::GetSystemHomeDir()+"82report.lrxml";
     report->loadFromFile(path);
     report->dataManager()->addModel("maindata", ReportModel, false);
 
+    ReportHeader.Organization = "ООО АСУ-ВЭИ";
     report->dataManager()->setReportVariable("Organization", ReportHeader.Organization);
     QString day = QDateTime::currentDateTime().toString("dd");
     QString month = QDateTime::currentDateTime().toString("MM");
@@ -1442,183 +1444,114 @@ void TuneDialog80::GenerateReport()
     report->dataManager()->setReportVariable("Day", day);
     report->dataManager()->setReportVariable("Month", month);
     report->dataManager()->setReportVariable("Yr", yr);
-    report->dataManager()->setReportVariable("DNNamePhase", ReportHeader.Freq);
-    report->dataManager()->setReportVariable("DNType", ReportHeader.UA);
-    report->dataManager()->setReportVariable("DNSerNum", ReportHeader.UB);
-    report->dataManager()->setReportVariable("DNTol", ReportHeader.UC);
-    report->dataManager()->setReportVariable("DNU1", ReportHeader.IA);
-    report->dataManager()->setReportVariable("DNU2", ReportHeader.IB);
-    report->dataManager()->setReportVariable("DNP", ReportHeader.IC);
-    report->dataManager()->setReportVariable("DNF", ReportHeader.PhiloadA);
-    report->dataManager()->setReportVariable("DNOrganization", ReportHeader.PhiloadB);
-    report->dataManager()->setReportVariable("DNPlace", ReportHeader.PhiloadC);
-    report->dataManager()->setReportVariable("DNDevices", ReportHeader.PhiUAB);
-    report->dataManager()->setReportVariable("Temp", ReportHeader.PhiUBC);
 
-    QString filename = Files::ChooseFileForSave(this, "*.pdf", "pdf");
-    if (!filename.isEmpty())
+    for(int i=0; i<21; i++) // 21 таблица!
     {
-        report->printToPDF(filename);
-//        report->previewReport();
-//        report->designReport();
-        EMessageBox::information(this, "Успешно!", "Записано успешно!");
+
+            QDialog *dlg = new QDialog;
+            QVBoxLayout *lyout = new QVBoxLayout;
+            QLabel *lbl = new QLabel;
+            lbl=new QLabel("Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc) с углами "\
+                           "сдвига по всем фазам " +QString::number(PhiLoad[i])+ " град. и частотой 51 Гц;");
+            lyout->addWidget(lbl);
+            lbl=new QLabel("Значения напряжений по фазам " +QString::number(U[i])+ " В;");
+            lyout->addWidget(lbl);
+            if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83)
+            {
+                lbl=new QLabel("Значения токов по фазам " +QString::number(I[i])+ " А;");
+                lyout->addWidget(lbl);
+            }
+            QPushButton *pb = new QPushButton("Готово");
+            connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+            lyout->addWidget(pb);
+            pb = new QPushButton("Отмена");
+            connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
+            connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+            lyout->addWidget(pb);
+            dlg->setLayout(lyout);
+            dlg->exec();
+
+           if(Cancelled)
+           break;
+
+        TuneControlType = 0;
+        GetExternalData();
+        ReadAnalogMeasurements();
+        WaitNSeconds(1);
+        FillBd1(this);
+
+        ReportHeader.PhiloadA = QString::number(Bda_block.phi_next_f[3]);
+        ReportHeader.PhiloadB = QString::number(Bda_block.phi_next_f[4] - Bda_block.phi_next_f[1]);
+        ReportHeader.PhiloadC = QString::number(Bda_block.phi_next_f[5] - Bda_block.phi_next_f[2]);
+        ReportHeader.PhiUAB   = QString::number(Bda_block.phi_next_f[1] - Bda_block.phi_next_f[0]);
+        ReportHeader.PhiUBC   = QString::number(Bda_block.phi_next_f[2] - Bda_block.phi_next_f[1]);
+        ReportHeader.OffsetF  = QString::number(100*((Bda_block.Frequency/RealData.f[i])-1));
+        ReportHeader.OffsetUA = QString::number(100*((Bda_block.IUefNat_filt[0]/RealData.u[0])-1));
+        ReportHeader.OffsetUB = QString::number(100*((Bda_block.IUefNat_filt[1]/RealData.u[1])-1));
+        ReportHeader.OffsetUC = QString::number(100*((Bda_block.IUefNat_filt[2]/RealData.u[2])-1));
+        ReportHeader.OffsetIA = QString::number(100*((Bda_block.IUefNat_filt[3]/RealData.i[0])-1));
+        ReportHeader.OffsetIB = QString::number(100*((Bda_block.IUefNat_filt[4]/RealData.i[1])-1));
+        ReportHeader.OffsetIC = QString::number(100*((Bda_block.IUefNat_filt[5]/RealData.i[2])-1));
+        ReportHeader.OffsetPhiloadA = QString::number(RealData.d[0] - ReportHeader.PhiloadA.toInt());
+        ReportHeader.OffsetPhiloadB = QString::number(RealData.d[1] - ReportHeader.PhiloadB.toInt());
+        ReportHeader.OffsetPhiloadC = QString::number(RealData.d[2] - ReportHeader.PhiloadC.toInt());
+        ReportHeader.OffsetPhiUAB = QString::number(RealData.dpsiU[0] - ReportHeader.PhiUAB.toInt());
+        ReportHeader.OffsetPhiUBC = QString::number(RealData.dpsiU[1] - ReportHeader.PhiUBC.toInt());
+
+        report->dataManager()->setReportVariable("FreqMIP", RealData.f[i]);
+        report->dataManager()->setReportVariable("UA_MIP."+QString::number(i), RealData.u[0]);
+        report->dataManager()->setReportVariable("UB_MIP."+QString::number(i), RealData.u[1]);
+        report->dataManager()->setReportVariable("UC_MIP."+QString::number(i), RealData.u[2]);
+        report->dataManager()->setReportVariable("IA_MIP."+QString::number(i), RealData.i[0]);
+        report->dataManager()->setReportVariable("IB_MIP."+QString::number(i), RealData.i[1]);
+        report->dataManager()->setReportVariable("IC_MIP."+QString::number(i), RealData.i[2]);
+        report->dataManager()->setReportVariable("PhiLA_MIP."+QString::number(i), RealData.d[0]);
+        report->dataManager()->setReportVariable("PhiLB_MIP."+QString::number(i), RealData.d[1]);
+        report->dataManager()->setReportVariable("PhiLC_MIP."+QString::number(i), RealData.d[2]);
+        report->dataManager()->setReportVariable("PhiUab_MIP."+QString::number(i), RealData.dpsiU[0]);
+        report->dataManager()->setReportVariable("PhiUbc_MIP."+QString::number(i), RealData.dpsiU[1]);
+        report->dataManager()->setReportVariable("Freq."+QString::number(i), Bda_block.Frequency);
+        report->dataManager()->setReportVariable("UA."+QString::number(i), Bda_block.IUefNat_filt[0]);
+        report->dataManager()->setReportVariable("UB."+QString::number(i), Bda_block.IUefNat_filt[1]);
+        report->dataManager()->setReportVariable("UC."+QString::number(i), Bda_block.IUefNat_filt[2]);
+        report->dataManager()->setReportVariable("IA."+QString::number(i), Bda_block.IUefNat_filt[3]);
+        report->dataManager()->setReportVariable("IB."+QString::number(i), Bda_block.IUefNat_filt[4]);
+        report->dataManager()->setReportVariable("IC."+QString::number(i), Bda_block.IUefNat_filt[5]);
+        report->dataManager()->setReportVariable("PhiLA."+QString::number(i), ReportHeader.PhiloadA);
+        report->dataManager()->setReportVariable("PhiLB."+QString::number(i), ReportHeader.PhiloadB);
+        report->dataManager()->setReportVariable("PhiLC."+QString::number(i), ReportHeader.PhiloadC);
+        report->dataManager()->setReportVariable("PhiUab."+QString::number(i), ReportHeader.PhiUAB);
+        report->dataManager()->setReportVariable("PhiUbc."+QString::number(i), ReportHeader.PhiUBC);
+        report->dataManager()->setReportVariable("OffsetF."+QString::number(i), ReportHeader.OffsetF);
+        report->dataManager()->setReportVariable("OffsetUA."+QString::number(i), ReportHeader.OffsetUA);
+        report->dataManager()->setReportVariable("OffsetUB."+QString::number(i), ReportHeader.OffsetUB);
+        report->dataManager()->setReportVariable("OffsetUC."+QString::number(i), ReportHeader.OffsetUC);
+        report->dataManager()->setReportVariable("OffsetIA."+QString::number(i), ReportHeader.OffsetIA);
+        report->dataManager()->setReportVariable("OffsetIB."+QString::number(i), ReportHeader.OffsetIB);
+        report->dataManager()->setReportVariable("OffsetIC."+QString::number(i), ReportHeader.OffsetIC);
+        report->dataManager()->setReportVariable("OffsetPhiloadA."+QString::number(i), ReportHeader.OffsetPhiloadA);
+        report->dataManager()->setReportVariable("OffsetPhiloadB."+QString::number(i), ReportHeader.OffsetPhiloadB);
+        report->dataManager()->setReportVariable("OffsetPhiloadC."+QString::number(i), ReportHeader.OffsetPhiloadC);
+        report->dataManager()->setReportVariable("OffsetPhiUAB."+QString::number(i), ReportHeader.OffsetPhiUAB);
+        report->dataManager()->setReportVariable("OffsetPhiUBC."+QString::number(i), ReportHeader.OffsetPhiUBC);
+
     }
-    else
-        EMessageBox::information(this, "Отменено", "Действие отменено");
+
+    if (EMessageBox::question(this,"Сохранить","Сохранить протокол поверки?"))
+    {
+        QString filename = Files::ChooseFileForSave(this, "*.pdf", "pdf");
+        if (!filename.isEmpty())
+        {
+            report->printToPDF(filename);
+    //        report->previewReport();
+            //report->designReport();
+            EMessageBox::information(this, "Успешно!", "Записано успешно!");
+        }
+        else
+            EMessageBox::information(this, "Отменено", "Действие отменено");
+    }
     delete report;
 }
 
-
-void TuneDialog80::CheckData(PovDevStruct &PovDev)
-{
-    int row = 0;
-    QDialog *dlg = new QDialog(this);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    lyout->addWidget(WDFunc::NewLBL(this, "Данные ТН(ДН)"), Qt::AlignCenter);
-    glyout->addWidget(WDFunc::NewLBL(this, "Организация, проводившая поверку"), row, 0, 1, 1, Qt::AlignRight);
-   // glyout->addWidget(WDFunc::NewLE(this, "UKDNOrganization", OrganizationString), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Тип ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNType", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Обозначение по схеме, фаза"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNNamePhase", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер"), row, 0, 1, 1, Qt::AlignRight);
-    //glyout->addWidget(WDFunc::NewLE(this, "DNSerialNum", ReportHeader.DNSerNum), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности, %"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNTolerance", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное первичное напряжение, кВ"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNU1", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение, В"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNU2", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Номинальная мощность нагрузки, ВА"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNP", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Номинальная частота, Гц"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNFreq", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Предприятие-изготовитель"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNOrganization", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Место установки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNPlace", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Наименование средства поверки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "PovDev", PovDev.DevName), row++, 1, 1, 1, Qt::AlignLeft);
-    WDFunc::SetEnabled(this, "PovDev", false);
-    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер средства поверки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "PovDevSN", PovDev.DevSN), row++, 1, 1, 1, Qt::AlignLeft);
-    WDFunc::SetEnabled(this, "PovDevSN", false);
-    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности средства поверки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "PovDevPrecision", PovDev.DevPrecision), row++, 1, 1, 1, Qt::AlignLeft);
-    WDFunc::SetEnabled(this, "PovDevPrecision", false);
-    glyout->addWidget(WDFunc::NewLBL(this, "Результаты внешнего осмотра"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Результаты проверки правильности обозначения\nвыводов и групп соединений обмоток"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNWindingInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->setColumnStretch(1, 1);
-    lyout->addLayout(glyout);
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetReportData()));
-    connect(this,SIGNAL(CloseDialog()),dlg,SLOT(close()));
-    lyout->addWidget(pb);
-    dlg->setLayout(lyout);
-    dlg->exec();
-}
-
-void TuneDialog80::UpdateItemInModel(int row, int column, QVariant value)
-{
-    QStandardItem *item = ReportModel->item(row, column);
-    item->setText(value.toString());
-    ReportModel->setItem(row, column, item);
-    item = ViewModel->item(row, column);
-    item->setText(value.toString());
-    ViewModel->setItem(row, column, item);
-}
-
-void TuneDialog80::ShowTable()
-{
-    QDialog *dlg = new QDialog;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QTableView *tw = new QTableView;
-    tw->setModel(ViewModel);
-    lyout->addWidget(tw);
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    lyout->addWidget(pb);
-    dlg->setLayout(lyout);
-    dlg->exec();
-}
-
-void TuneDialog80::SetReportData()
-{
-//    QString PovDev, PovDevSN, PovDevPrecision;
-    /*WDFunc::LEData(this, "UKDNOrganization", OrganizationString);
-    WDFunc::LEData(this, "DNType", ReportHeader.DNType);
-    WDFunc::LEData(this, "DNNamePhase", ReportHeader.DNNamePhase);
-    WDFunc::LEData(this, "DNSerialNum", ReportHeader.DNSerNum);
-    WDFunc::LEData(this, "DNTolerance", ReportHeader.DNTol);
-    WDFunc::LEData(this, "DNU1", ReportHeader.DNU1);
-    WDFunc::LEData(this, "DNU2", ReportHeader.DNU2);
-    WDFunc::LEData(this, "DNP", ReportHeader.DNP);
-    WDFunc::LEData(this, "DNFreq", ReportHeader.DNF);
-    WDFunc::LEData(this, "DNOrganization", ReportHeader.DNOrganization);
-    WDFunc::LEData(this, "DNPlace", ReportHeader.DNPlace);
-    WDFunc::LEData(this, "DNInspection", ReportHeader.OuterInsp);
-    WDFunc::LEData(this, "DNWindingInspection", ReportHeader.WindingsInsp);
-    WDFunc::LEData(this, "PovDev", PovDev.DevName);
-    WDFunc::LEData(this, "PovDevSN", PovDev.DevSN);
-    WDFunc::LEData(this, "PovDevPrecision", PovDev.DevPrecision);
-    ReportHeader.DNDevices = PovDev.DevName + " сер. номер " + PovDev.DevSN + ", кл. точн. " + PovDev.DevPrecision;
-    //SaveSettings();
-    emit CloseDialog();*/
-}
-
-void TuneDialog80::ReportDialog(PovDevStruct &PovDev)
-{
-    int row = 0;
-    QDialog *dlg = new QDialog(this);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    lyout->addWidget(WDFunc::NewLBL(this, "Данные АВ-ТУК-82"), Qt::AlignCenter);
-    glyout->addWidget(WDFunc::NewLBL(this, "Организация, проводившая поверку"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "Organization", ReportHeader.Organization), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Обозначение по схеме, фаза"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNNamePhase", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер"), row, 0, 1, 1, Qt::AlignRight);
-    //glyout->addWidget(WDFunc::NewLE(this, "DNSerialNum", ReportHeader.DNSerNum), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности, %"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNTolerance", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное первичное напряжение, кВ"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNU1", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение, В"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNU2", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Номинальная мощность нагрузки, ВА"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNP", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Номинальная частота, Гц"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNFreq", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Предприятие-изготовитель"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNOrganization", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Место установки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNPlace", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Наименование средства поверки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "PovDev", PovDev.DevName), row++, 1, 1, 1, Qt::AlignLeft);
-    WDFunc::SetEnabled(this, "PovDev", false);
-    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер средства поверки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "PovDevSN", PovDev.DevSN), row++, 1, 1, 1, Qt::AlignLeft);
-    WDFunc::SetEnabled(this, "PovDevSN", false);
-    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности средства поверки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "PovDevPrecision", PovDev.DevPrecision), row++, 1, 1, 1, Qt::AlignLeft);
-    WDFunc::SetEnabled(this, "PovDevPrecision", false);
-    glyout->addWidget(WDFunc::NewLBL(this, "Результаты внешнего осмотра"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Результаты проверки правильности обозначения\nвыводов и групп соединений обмоток"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNWindingInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->setColumnStretch(1, 1);
-    lyout->addLayout(glyout);
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetDNData()));
-    connect(this,SIGNAL(CloseDialog()),dlg,SLOT(close()));
-    lyout->addWidget(pb);
-    dlg->setLayout(lyout);
-    dlg->exec();
-}
 
 
