@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     if (!dir.exists())
         dir.mkpath(".");
     S2Config.clear();
+    S2ConfigForTune.clear();
     MainConfDialog = nullptr;
     ConfB = ConfM = nullptr;
 #ifndef MODULE_A1

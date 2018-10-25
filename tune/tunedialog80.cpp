@@ -38,7 +38,6 @@ TuneDialog80::TuneDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     setAttribute(Qt::WA_DeleteOnClose);
     PrepareConsts();
     SetupUI();
-    GenerateReport();
 }
 
 void TuneDialog80::SetupUI()
@@ -673,6 +672,7 @@ int TuneDialog80::Start7_3_9()
         if (!LoadWorkConfig())
             return Error::ER_GENERALERROR;
         // Пишем в модуль посчитанные регулировочные коэффициенты
+        WaitNSeconds(2);
         if (Commands::WriteBac(BT_MEZONIN, &Bac_newblock, sizeof(Bac)) != Error::ER_NOERROR)  // Григорий Матвеевич попросил писать коэффициенты сразу в модуль
             return Error::ER_GENERALERROR;
         // переходим на прежнюю конфигурацию
@@ -1447,12 +1447,21 @@ void TuneDialog80::GenerateReport()
 
     for(int i=0; i<21; i++) // 21 таблица!
     {
+        if(i==0)
+        {
+         Start7_3_7_2();  // Переход на конфигурацию 1А
+        }
+
+        if(i==6)
+        {
+         Start7_3_7_6();  // Переход на конфигурацию 5А
+        }
 
             QDialog *dlg = new QDialog;
             QVBoxLayout *lyout = new QVBoxLayout;
             QLabel *lbl = new QLabel;
             lbl=new QLabel("Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc) с углами "\
-                           "сдвига по всем фазам " +QString::number(PhiLoad[i])+ " град. и частотой 51 Гц;");
+                           "нагрузки по всем фазам " +QString::number(PhiLoad[i])+ " град. и частотой 51 Гц;");
             lyout->addWidget(lbl);
             lbl=new QLabel("Значения напряжений по фазам " +QString::number(U[i])+ " В;");
             lyout->addWidget(lbl);
@@ -1480,43 +1489,43 @@ void TuneDialog80::GenerateReport()
         WaitNSeconds(1);
         FillBd1(this);
 
-        ReportHeader.PhiloadA = QString::number(Bda_block.phi_next_f[3]);
-        ReportHeader.PhiloadB = QString::number(Bda_block.phi_next_f[4] - Bda_block.phi_next_f[1]);
-        ReportHeader.PhiloadC = QString::number(Bda_block.phi_next_f[5] - Bda_block.phi_next_f[2]);
-        ReportHeader.PhiUAB   = QString::number(Bda_block.phi_next_f[1] - Bda_block.phi_next_f[0]);
-        ReportHeader.PhiUBC   = QString::number(Bda_block.phi_next_f[2] - Bda_block.phi_next_f[1]);
-        ReportHeader.OffsetF  = QString::number(100*((Bda_block.Frequency/RealData.f[i])-1));
-        ReportHeader.OffsetUA = QString::number(100*((Bda_block.IUefNat_filt[0]/RealData.u[0])-1));
-        ReportHeader.OffsetUB = QString::number(100*((Bda_block.IUefNat_filt[1]/RealData.u[1])-1));
-        ReportHeader.OffsetUC = QString::number(100*((Bda_block.IUefNat_filt[2]/RealData.u[2])-1));
-        ReportHeader.OffsetIA = QString::number(100*((Bda_block.IUefNat_filt[3]/RealData.i[0])-1));
-        ReportHeader.OffsetIB = QString::number(100*((Bda_block.IUefNat_filt[4]/RealData.i[1])-1));
-        ReportHeader.OffsetIC = QString::number(100*((Bda_block.IUefNat_filt[5]/RealData.i[2])-1));
-        ReportHeader.OffsetPhiloadA = QString::number(RealData.d[0] - ReportHeader.PhiloadA.toInt());
-        ReportHeader.OffsetPhiloadB = QString::number(RealData.d[1] - ReportHeader.PhiloadB.toInt());
-        ReportHeader.OffsetPhiloadC = QString::number(RealData.d[2] - ReportHeader.PhiloadC.toInt());
-        ReportHeader.OffsetPhiUAB = QString::number(RealData.dpsiU[0] - ReportHeader.PhiUAB.toInt());
-        ReportHeader.OffsetPhiUBC = QString::number(RealData.dpsiU[1] - ReportHeader.PhiUBC.toInt());
+        ReportHeader.PhiloadA = QString::number(Bda_block.phi_next_f[3], 'f', 3);
+        ReportHeader.PhiloadB = QString::number(Bda_block.phi_next_f[4] - Bda_block.phi_next_f[1], 'f', 3);
+        ReportHeader.PhiloadC = QString::number(Bda_block.phi_next_f[5] - Bda_block.phi_next_f[2], 'f', 3);
+        ReportHeader.PhiUAB   = QString::number((-Bda_block.phi_next_f[1]), 'f', 3);
+        ReportHeader.PhiUBC   = QString::number((360 - Bda_block.phi_next_f[2] + Bda_block.phi_next_f[1]), 'f', 3);
+        ReportHeader.OffsetF  = QString::number(100*((Bda_block.Frequency/RealData.f[i])-1), 'f', 3);
+        ReportHeader.OffsetUA = QString::number(100*((Bda_block.IUefNat_filt[0]/RealData.u[0])-1), 'f', 3);
+        ReportHeader.OffsetUB = QString::number(100*((Bda_block.IUefNat_filt[1]/RealData.u[1])-1), 'f', 3);
+        ReportHeader.OffsetUC = QString::number(100*((Bda_block.IUefNat_filt[2]/RealData.u[2])-1), 'f', 3);
+        ReportHeader.OffsetIA = QString::number(100*((Bda_block.IUefNat_filt[3]/RealData.i[0])-1), 'f', 3);
+        ReportHeader.OffsetIB = QString::number(100*((Bda_block.IUefNat_filt[4]/RealData.i[1])-1), 'f', 3);
+        ReportHeader.OffsetIC = QString::number(100*((Bda_block.IUefNat_filt[5]/RealData.i[2])-1), 'f', 3);
+        ReportHeader.OffsetPhiloadA = QString::number(RealData.d[0] + ReportHeader.PhiloadA.toFloat(), 'f', 3);
+        ReportHeader.OffsetPhiloadB = QString::number(RealData.d[1] + ReportHeader.PhiloadB.toFloat(), 'f', 3);
+        ReportHeader.OffsetPhiloadC = QString::number(RealData.d[2] + ReportHeader.PhiloadC.toFloat(), 'f', 3);
+        ReportHeader.OffsetPhiUAB = QString::number(RealData.dpsiU[0] - ReportHeader.PhiUAB.toFloat(), 'f', 3);
+        ReportHeader.OffsetPhiUBC = QString::number(RealData.dpsiU[1] - ReportHeader.PhiUBC.toFloat(), 'f', 3);
 
-        report->dataManager()->setReportVariable("FreqMIP", RealData.f[i]);
-        report->dataManager()->setReportVariable("UA_MIP."+QString::number(i), RealData.u[0]);
-        report->dataManager()->setReportVariable("UB_MIP."+QString::number(i), RealData.u[1]);
-        report->dataManager()->setReportVariable("UC_MIP."+QString::number(i), RealData.u[2]);
-        report->dataManager()->setReportVariable("IA_MIP."+QString::number(i), RealData.i[0]);
-        report->dataManager()->setReportVariable("IB_MIP."+QString::number(i), RealData.i[1]);
-        report->dataManager()->setReportVariable("IC_MIP."+QString::number(i), RealData.i[2]);
-        report->dataManager()->setReportVariable("PhiLA_MIP."+QString::number(i), RealData.d[0]);
-        report->dataManager()->setReportVariable("PhiLB_MIP."+QString::number(i), RealData.d[1]);
-        report->dataManager()->setReportVariable("PhiLC_MIP."+QString::number(i), RealData.d[2]);
-        report->dataManager()->setReportVariable("PhiUab_MIP."+QString::number(i), RealData.dpsiU[0]);
-        report->dataManager()->setReportVariable("PhiUbc_MIP."+QString::number(i), RealData.dpsiU[1]);
-        report->dataManager()->setReportVariable("Freq."+QString::number(i), Bda_block.Frequency);
-        report->dataManager()->setReportVariable("UA."+QString::number(i), Bda_block.IUefNat_filt[0]);
-        report->dataManager()->setReportVariable("UB."+QString::number(i), Bda_block.IUefNat_filt[1]);
-        report->dataManager()->setReportVariable("UC."+QString::number(i), Bda_block.IUefNat_filt[2]);
-        report->dataManager()->setReportVariable("IA."+QString::number(i), Bda_block.IUefNat_filt[3]);
-        report->dataManager()->setReportVariable("IB."+QString::number(i), Bda_block.IUefNat_filt[4]);
-        report->dataManager()->setReportVariable("IC."+QString::number(i), Bda_block.IUefNat_filt[5]);
+        report->dataManager()->setReportVariable("FreqMIP", QString::number(RealData.f[0], 'f', 3));
+        report->dataManager()->setReportVariable("UA_MIP."+QString::number(i), QString::number(RealData.u[0], 'f', 3));
+        report->dataManager()->setReportVariable("UB_MIP."+QString::number(i), QString::number(RealData.u[1], 'f', 3));
+        report->dataManager()->setReportVariable("UC_MIP."+QString::number(i), QString::number(RealData.u[2], 'f', 3));
+        report->dataManager()->setReportVariable("IA_MIP."+QString::number(i), QString::number(RealData.i[0], 'f', 3));
+        report->dataManager()->setReportVariable("IB_MIP."+QString::number(i), QString::number(RealData.i[1], 'f', 3));
+        report->dataManager()->setReportVariable("IC_MIP."+QString::number(i), QString::number(RealData.i[2], 'f', 3));
+        report->dataManager()->setReportVariable("PhiLA_MIP."+QString::number(i), QString::number(RealData.d[0], 'f', 3));
+        report->dataManager()->setReportVariable("PhiLB_MIP."+QString::number(i), QString::number(RealData.d[1], 'f', 3));
+        report->dataManager()->setReportVariable("PhiLC_MIP."+QString::number(i), QString::number(RealData.d[2], 'f', 3));
+        report->dataManager()->setReportVariable("PhiUab_MIP."+QString::number(i), QString::number(RealData.dpsiU[0], 'f', 3));
+        report->dataManager()->setReportVariable("PhiUbc_MIP."+QString::number(i), QString::number(RealData.dpsiU[1], 'f', 3));
+        report->dataManager()->setReportVariable("Freq."+QString::number(i), QString::number(Bda_block.Frequency, 'f', 3));
+        report->dataManager()->setReportVariable("UA."+QString::number(i), QString::number(Bda_block.IUefNat_filt[0], 'f', 3));
+        report->dataManager()->setReportVariable("UB."+QString::number(i), QString::number(Bda_block.IUefNat_filt[1], 'f', 3));
+        report->dataManager()->setReportVariable("UC."+QString::number(i), QString::number(Bda_block.IUefNat_filt[2], 'f', 3));
+        report->dataManager()->setReportVariable("IA."+QString::number(i), QString::number(Bda_block.IUefNat_filt[3], 'f', 3));
+        report->dataManager()->setReportVariable("IB."+QString::number(i), QString::number(Bda_block.IUefNat_filt[4], 'f', 3));
+        report->dataManager()->setReportVariable("IC."+QString::number(i), QString::number(Bda_block.IUefNat_filt[5], 'f', 3));
         report->dataManager()->setReportVariable("PhiLA."+QString::number(i), ReportHeader.PhiloadA);
         report->dataManager()->setReportVariable("PhiLB."+QString::number(i), ReportHeader.PhiloadB);
         report->dataManager()->setReportVariable("PhiLC."+QString::number(i), ReportHeader.PhiloadC);
@@ -1544,7 +1553,7 @@ void TuneDialog80::GenerateReport()
         {
             report->printToPDF(filename);
     //        report->previewReport();
-            //report->designReport();
+          //  report->designReport();
             EMessageBox::information(this, "Успешно!", "Записано успешно!");
         }
         else
