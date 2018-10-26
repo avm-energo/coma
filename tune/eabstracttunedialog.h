@@ -39,7 +39,7 @@ public:
     quint32 SecondsToEnd15SecondsInterval;
     QHash <QString, int (EAbstractTuneDialog::*)()> pf;
     quint8 bStep;
-    bool Cancelled;
+    bool Cancelled = false;
     int TuneVariant; // вариант регулировочных параметров
      QVector<S2::DataRec> *S2ConfigForTune;
 
@@ -85,6 +85,7 @@ public slots:
     bool WriteTuneCoefsSlot();
     void Good();
     void NoGood();
+
 #endif
     void SaveToFile();
 

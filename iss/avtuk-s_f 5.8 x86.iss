@@ -9,7 +9,7 @@
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "avtuks-F.exe"
-#define SetupName "avtuks-F-2.2.254-x86"
+#define SetupName "avtuks-F-2.2.255-x86"
 #define Prefix "D:\out-5.8_x32"
 
 [CustomMessages]

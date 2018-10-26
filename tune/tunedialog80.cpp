@@ -38,6 +38,7 @@ TuneDialog80::TuneDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     setAttribute(Qt::WA_DeleteOnClose);
     PrepareConsts();
     SetupUI();
+    //GenerateReport();
 }
 
 void TuneDialog80::SetupUI()
@@ -49,7 +50,17 @@ void TuneDialog80::SetupUI()
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
-    QWidget *cp1 = TuneUI();
+    QWidget *cp1 = new QWidget;// = TuneUI();
+
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QPushButton *pb = new QPushButton("Начать поверку");
+    connect(pb,SIGNAL(clicked()),this,SLOT(GenerateReport()));
+    lyout->addWidget(TuneUI());
+    //lyout->addStretch(10);
+    lyout->addWidget(pb, Qt::AlignRight|Qt::AlignTop);
+
+    cp1->setLayout(lyout);
+
     QWidget *cp2 = new QWidget;
     QWidget *cp3 = new QWidget;
     QWidget *cp4 = Bd1W(this);
@@ -57,10 +68,11 @@ void TuneDialog80::SetupUI()
     cp1->setStyleSheet(tmps);
     cp2->setStyleSheet(tmps);
     cp3->setStyleSheet(tmps);
-    QVBoxLayout *lyout = new QVBoxLayout;
+
     QLabel *lbl;
     QGridLayout *glyout = new QGridLayout;
     QTabWidget *TuneTW = new QTabWidget;
+
     TuneTW->addTab(cp1,"Настройка");
     TuneTW->addTab(cp4,"Измеренные параметры");
     TuneTW->addTab(cp2,"Коэффициенты");
@@ -191,7 +203,7 @@ void TuneDialog80::SetupUI()
     vlyout->addWidget(gb);
 #if PROGSIZE != PROGSIZE_EMUL
     hlyout = new QHBoxLayout;
-    QPushButton *pb = new QPushButton("Запустить связь с МИП");
+    pb = new QPushButton("Запустить связь с МИП");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartMip()));
     hlyout->addWidget(pb);
     pb = new QPushButton("Остановить связь с МИП");
@@ -1449,12 +1461,20 @@ void TuneDialog80::GenerateReport()
     {
         if(i==0)
         {
-         Start7_3_7_2();  // Переход на конфигурацию 1А
+            if (Commands::GetFile(CM_CONFIGFILE,S2ConfigForTune) == Error::ER_NOERROR)
+            {
+               WaitNSeconds(1);
+               Start7_3_7_2();  // Переход на конфигурацию 1А
+            }
         }
 
         if(i==6)
         {
-         Start7_3_7_6();  // Переход на конфигурацию 5А
+            if (Commands::GetFile(CM_CONFIGFILE,S2ConfigForTune) == Error::ER_NOERROR)
+            {
+               WaitNSeconds(1);
+               Start7_3_7_6();  // Переход на конфигурацию 5А
+            }
         }
 
             QDialog *dlg = new QDialog;
@@ -1489,21 +1509,62 @@ void TuneDialog80::GenerateReport()
         WaitNSeconds(1);
         FillBd1(this);
 
-        ReportHeader.PhiloadA = QString::number(Bda_block.phi_next_f[3], 'f', 3);
+        if(PhiLoad[i] >= 180)
+        {
+            ReportHeader.PhiloadA = QString::number(360 + Bda_block.phi_next_f[3], 'f', 3);
+            RealData.d[0] = 360 - RealData.d[0];
+            RealData.d[1] = 360 - RealData.d[1];
+            RealData.d[2] = 360 - RealData.d[2];
+        }
+        else
+        {
+            ReportHeader.PhiloadA = QString::number(Bda_block.phi_next_f[3], 'f', 3);
+        }
+
         ReportHeader.PhiloadB = QString::number(Bda_block.phi_next_f[4] - Bda_block.phi_next_f[1], 'f', 3);
-        ReportHeader.PhiloadC = QString::number(Bda_block.phi_next_f[5] - Bda_block.phi_next_f[2], 'f', 3);
+        if(PhiLoad[i] >= 90)
+        {
+           ReportHeader.PhiloadC = QString::number(360 + Bda_block.phi_next_f[5] - Bda_block.phi_next_f[2], 'f', 3);
+        }
+        else
+        {
+           ReportHeader.PhiloadC = QString::number(Bda_block.phi_next_f[5] - Bda_block.phi_next_f[2], 'f', 3);
+        }
         ReportHeader.PhiUAB   = QString::number((-Bda_block.phi_next_f[1]), 'f', 3);
         ReportHeader.PhiUBC   = QString::number((360 - Bda_block.phi_next_f[2] + Bda_block.phi_next_f[1]), 'f', 3);
-        ReportHeader.OffsetF  = QString::number(100*((Bda_block.Frequency/RealData.f[i])-1), 'f', 3);
+        ReportHeader.OffsetF  = QString::number(100*((Bda_block.Frequency/RealData.f[0])-1), 'f', 3);
         ReportHeader.OffsetUA = QString::number(100*((Bda_block.IUefNat_filt[0]/RealData.u[0])-1), 'f', 3);
         ReportHeader.OffsetUB = QString::number(100*((Bda_block.IUefNat_filt[1]/RealData.u[1])-1), 'f', 3);
         ReportHeader.OffsetUC = QString::number(100*((Bda_block.IUefNat_filt[2]/RealData.u[2])-1), 'f', 3);
         ReportHeader.OffsetIA = QString::number(100*((Bda_block.IUefNat_filt[3]/RealData.i[0])-1), 'f', 3);
         ReportHeader.OffsetIB = QString::number(100*((Bda_block.IUefNat_filt[4]/RealData.i[1])-1), 'f', 3);
         ReportHeader.OffsetIC = QString::number(100*((Bda_block.IUefNat_filt[5]/RealData.i[2])-1), 'f', 3);
-        ReportHeader.OffsetPhiloadA = QString::number(RealData.d[0] + ReportHeader.PhiloadA.toFloat(), 'f', 3);
-        ReportHeader.OffsetPhiloadB = QString::number(RealData.d[1] + ReportHeader.PhiloadB.toFloat(), 'f', 3);
-        ReportHeader.OffsetPhiloadC = QString::number(RealData.d[2] + ReportHeader.PhiloadC.toFloat(), 'f', 3);
+
+        // Играемся с углами, чтобы все было в одних значениях и с одинаковыми знаками
+        if((RealData.d[0]>0 && ReportHeader.PhiloadA.toFloat() < 0) || (RealData.d[0]<0 && ReportHeader.PhiloadA.toFloat() > 0))
+        {
+           ReportHeader.OffsetPhiloadA = QString::number(RealData.d[0] + ReportHeader.PhiloadA.toFloat(), 'f', 3);
+           RealData.d[0] = -RealData.d[0];
+        }
+        else
+           ReportHeader.OffsetPhiloadA = QString::number(RealData.d[0] - ReportHeader.PhiloadA.toFloat(), 'f', 3);
+
+        if((RealData.d[1]>0 && ReportHeader.PhiloadB.toFloat() < 0) || (RealData.d[1]<0 && ReportHeader.PhiloadB.toFloat() > 0))
+        {
+           ReportHeader.OffsetPhiloadB = QString::number(RealData.d[1] + ReportHeader.PhiloadB.toFloat(), 'f', 3);
+           RealData.d[1] = -RealData.d[1];
+        }
+        else
+           ReportHeader.OffsetPhiloadB = QString::number(RealData.d[1] - ReportHeader.PhiloadB.toFloat(), 'f', 3);
+
+        if((RealData.d[2]>0 && ReportHeader.PhiloadC.toFloat() < 0) || (RealData.d[2]<0 && ReportHeader.PhiloadC.toFloat() > 0))
+        {
+           ReportHeader.OffsetPhiloadC = QString::number(RealData.d[2] + ReportHeader.PhiloadC.toFloat(), 'f', 3);
+           RealData.d[2] = -RealData.d[2];
+        }
+        else
+           ReportHeader.OffsetPhiloadC = QString::number(RealData.d[2] - ReportHeader.PhiloadC.toFloat(), 'f', 3);
+
         ReportHeader.OffsetPhiUAB = QString::number(RealData.dpsiU[0] - ReportHeader.PhiUAB.toFloat(), 'f', 3);
         ReportHeader.OffsetPhiUBC = QString::number(RealData.dpsiU[1] - ReportHeader.PhiUBC.toFloat(), 'f', 3);
 
@@ -1551,6 +1612,7 @@ void TuneDialog80::GenerateReport()
         QString filename = Files::ChooseFileForSave(this, "*.pdf", "pdf");
         if (!filename.isEmpty())
         {
+            report->designReport();
             report->printToPDF(filename);
     //        report->previewReport();
           //  report->designReport();
