@@ -37,6 +37,8 @@ public:
         float 	Tins[3];       	// Температура внутри привода
         float 	Phyd[3];		// Давление в гидросистеме привода
         quint64 OscTime;		// Время старта осциллограммы
+        quint8 Rezerv[4];	    // Резерв
+        quint32 timeF;		    // Время записи в журнал
     };
 #pragma pack(pop)   /* restore original alignment from stack */
 
@@ -45,7 +47,7 @@ public:
     EOscillogram *OscFunc;
     bool Mode;
 
-    SWJDialog(int mode=SWJ_MODE_ONLINE, QWidget *parent = 0);
+    SWJDialog(int mode=SWJ_MODE_ONLINE, QWidget *parent = nullptr);
     void Init(SWJournalRecordStruct &swjr, bool haveosc, EOscillogram::GBoStruct &gbos);
     void LoadOsc(QByteArray &ba); // для оффлайн режима
 
