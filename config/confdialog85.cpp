@@ -88,14 +88,17 @@ void ConfDialog85::Fill()
     WDFunc::SetSPBData(this, "diosc", C85->Bci_block.DIosc);
     WDFunc::SetSPBData(this, "dumin", C85->Bci_block.DUmin);
     WDFunc::SetSPBData(this, "dimin", C85->Bci_block.DImin);
-    WDFunc::SetSPBData(this, "k_on_volt", C85->Bci_block.K_on_volt);
-    WDFunc::SetSPBData(this, "k_off_volt", C85->Bci_block.K_off_volt);
-    WDFunc::SetSPBData(this, "k_on_amb", C85->Bci_block.K_on_tamb);
-    WDFunc::SetSPBData(this, "k_off_amb", C85->Bci_block.K_off_tamb);
-    WDFunc::SetSPBData(this, "k_on_tdr", C85->Bci_block.K_on_tdr);
-    WDFunc::SetSPBData(this, "k_off_tdr", C85->Bci_block.K_off_tdr);
-    WDFunc::SetSPBData(this, "k_on_hdr", C85->Bci_block.K_on_hdr);
-    WDFunc::SetSPBData(this, "k_off_hdr", C85->Bci_block.K_off_hdr);
+    for (int i=0; i<3; ++i)
+    {
+       WDFunc::SetSPBData(this, "k_on_volt."+QString::number(i), C85->Bci_block.K_on_volt[i]);
+       WDFunc::SetSPBData(this, "k_off_volt."+QString::number(i), C85->Bci_block.K_off_volt[i]);
+       WDFunc::SetSPBData(this, "k_on_amb."+QString::number(i), C85->Bci_block.K_on_tamb[i]);
+       WDFunc::SetSPBData(this, "k_off_amb."+QString::number(i), C85->Bci_block.K_off_tamb[i]);
+       WDFunc::SetSPBData(this, "k_on_tdr."+QString::number(i), C85->Bci_block.K_on_tdr[i]);
+       WDFunc::SetSPBData(this, "k_off_tdr."+QString::number(i), C85->Bci_block.K_off_tdr[i]);
+       WDFunc::SetSPBData(this, "k_on_hdr."+QString::number(i), C85->Bci_block.K_on_hdr[i]);
+       WDFunc::SetSPBData(this, "k_off_hdr."+QString::number(i), C85->Bci_block.K_off_hdr[i]);
+    }
     WDFunc::SetSPBData(this, "ts_offpred", C85->Bci_block.Ts_OFFpred);
     WDFunc::SetSPBData(this, "ts_offalarm", C85->Bci_block.Ts_OFFalarm);
     WDFunc::SetSPBData(this, "ts_onpred", C85->Bci_block.Ts_ONpred);
@@ -182,14 +185,17 @@ void ConfDialog85::FillBack()
     WDFunc::SPBData(this, "diosc", C85->Bci_block.DIosc);
     WDFunc::SPBData(this, "dumin", C85->Bci_block.DUmin);
     WDFunc::SPBData(this, "dimin", C85->Bci_block.DImin);
-    WDFunc::SPBData(this, "k_on_volt", C85->Bci_block.K_on_volt);
-    WDFunc::SPBData(this, "k_off_volt", C85->Bci_block.K_off_volt);
-    WDFunc::SPBData(this, "k_on_amb", C85->Bci_block.K_on_tamb);
-    WDFunc::SPBData(this, "k_off_amb", C85->Bci_block.K_off_tamb);
-    WDFunc::SPBData(this, "k_on_tdr", C85->Bci_block.K_on_tdr);
-    WDFunc::SPBData(this, "k_off_tdr", C85->Bci_block.K_off_tdr);
-    WDFunc::SPBData(this, "k_on_hdr", C85->Bci_block.K_on_hdr);
-    WDFunc::SPBData(this, "k_off_hdr", C85->Bci_block.K_off_hdr);
+    for (int i=0; i<3; ++i)
+    {
+        WDFunc::SPBData(this, "k_on_volt."+QString::number(i), C85->Bci_block.K_on_volt[i]);
+        WDFunc::SPBData(this, "k_off_volt."+QString::number(i), C85->Bci_block.K_off_volt[i]);
+        WDFunc::SPBData(this, "k_on_amb."+QString::number(i), C85->Bci_block.K_on_tamb[i]);
+        WDFunc::SPBData(this, "k_off_amb."+QString::number(i), C85->Bci_block.K_off_tamb[i]);
+        WDFunc::SPBData(this, "k_on_tdr."+QString::number(i), C85->Bci_block.K_on_tdr[i]);
+        WDFunc::SPBData(this, "k_off_tdr."+QString::number(i), C85->Bci_block.K_off_tdr[i]);
+        WDFunc::SPBData(this, "k_on_hdr."+QString::number(i), C85->Bci_block.K_on_hdr[i]);
+        WDFunc::SPBData(this, "k_off_hdr."+QString::number(i), C85->Bci_block.K_off_hdr[i]);
+    }
     WDFunc::SPBData(this, "ts_offpred", C85->Bci_block.Ts_OFFpred);
     WDFunc::SPBData(this, "ts_offalarm", C85->Bci_block.Ts_OFFalarm);
     WDFunc::SPBData(this, "ts_onpred", C85->Bci_block.Ts_ONpred);
@@ -424,6 +430,8 @@ void ConfDialog85::SetupUI()
     glyout->addWidget(WDFunc::NewSPB(this, "pdrivepred", 100, 50000, 0,paramcolor),19,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "Аварийная уставка давления в гидроприводе, МПа:"),20,0,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "pdrivealarm", 100, 50000, 0,paramcolor),20,1,1,1);
+    //glyout->addWidget(WDFunc::NewLBL(this, "Допустимое отклонение собственного времени отключения, мс:"),21,0,1,1);
+    //glyout->addWidget(WDFunc::NewSPB(this, "dTsOFF", 100, 50000, 0,paramcolor),21,1,1,1); next page
 
     vlyout1->addLayout(glyout);
     vlyout1->addStretch(1);
@@ -465,22 +473,54 @@ void ConfDialog85::SetupUI()
     stw->insertWidget(0, w); // неадаптивный - пусто
     w = new QWidget;
     iglyout = new QGridLayout;
-    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по U соленоида:"),0,0,1,1);
-    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_volt", -1000, 1000, 1, paramcolor),0,1,1,1);
-    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по U соленоида:"),0,2,1,1);
-    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_volt", -1000, 1000, 1, paramcolor),0,3,1,1);
-    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по T окр. среды:"),1,0,1,1);
-    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_tamb", -1000, 1000, 1, paramcolor),1,1,1,1);
-    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по T окр. среды:"),1,2,1,1);
-    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_tamb", -1000, 1000, 1, paramcolor),1,3,1,1);
-    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по T в приводе:"),2,0,1,1);
-    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_tdr", -1000, 1000, 1, paramcolor),2,1,1,1);
-    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по T в приводе:"),2,2,1,1);
-    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_tdr", -1000, 1000, 1, paramcolor),2,3,1,1);
-    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по P в приводе:"),3,0,1,1);
-    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_hdr", -1000, 1000, 1, paramcolor),3,1,1,1);
-    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по P в приводе:"),3,2,1,1);
-    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_hdr", -1000, 1000, 1, paramcolor),3,3,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по U соленоида,фаза А:"),0,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_volt.0", -1000, 1000, 1, paramcolor),0,1,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по U соленоида,фаза B:"),0,2,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_volt.1", -1000, 1000, 1, paramcolor),0,3,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по U соленоида,фаза C:"),0,4,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_volt.2", -1000, 1000, 1, paramcolor),0,5,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по U соленоида,фаза A:"),1,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_volt.0", -1000, 1000, 1, paramcolor),1,1,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по U соленоида,фаза B:"),1,2,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_volt.1", -1000, 1000, 1, paramcolor),1,3,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по U соленоида,фаза С:"),1,4,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_volt.2", -1000, 1000, 1, paramcolor),1,5,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по T окр. среды,фаза А:"),2,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_tamb.0", -1000, 1000, 1, paramcolor),2,1,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по T окр. среды,фаза B:"),2,2,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_tamb.1", -1000, 1000, 1, paramcolor),2,3,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по T окр. среды,фаза B:"),2,4,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_tamb.2", -1000, 1000, 1, paramcolor),2,5,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по T окр. среды,фаза А:"),3,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_tamb.0", -1000, 1000, 1, paramcolor),3,1,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по T окр. среды,фаза B:"),3,2,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_tamb.1", -1000, 1000, 1, paramcolor),3,3,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по T окр. среды,фаза C:"),3,4,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_tamb.2", -1000, 1000, 1, paramcolor),3,5,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по T в приводе,фаза А:"),4,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_tdr.0", -1000, 1000, 1, paramcolor),4,1,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по T в приводе,фаза B:"),4,2,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_tdr.1", -1000, 1000, 1, paramcolor),4,3,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по T в приводе,фаза C:"),4,4,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_tdr.2", -1000, 1000, 1, paramcolor),4,5,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по T в приводе,фаза А:"),5,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_tdr.0", -1000, 1000, 1, paramcolor),5,1,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по T в приводе,фаза B:"),5,2,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_tdr.1", -1000, 1000, 1, paramcolor),5,3,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по T в приводе,фаза C:"),5,4,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_tdr.2", -1000, 1000, 1, paramcolor),5,5,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по P в приводе,фаза A:"),6,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_hdr.0", -1000, 1000, 1, paramcolor),6,1,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по P в приводе,фаза B:"),6,2,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_hdr.1", -1000, 1000, 1, paramcolor),6,3,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по P в приводе,фаза C:"),6,4,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_hdr.2", -1000, 1000, 1, paramcolor),6,5,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по P в приводе,фаза A:"),7,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_hdr.0", -1000, 1000, 1, paramcolor),7,1,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по P в приводе,фаза B:"),7,2,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_hdr.1", -1000, 1000, 1, paramcolor),7,3,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по P в приводе,фаза C:"),7,4,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_hdr.2", -1000, 1000, 1, paramcolor),7,5,1,1);
     iglyout->setColumnStretch(0, 0);
     iglyout->setColumnStretch(1, 10);
     iglyout->setColumnStretch(2, 0);

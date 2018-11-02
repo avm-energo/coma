@@ -44,6 +44,7 @@ public:
 
     SWJournalRecordStruct SWJRecord;
     EOscillogram::GBoStruct GBOs;
+    EOscillogram::DataRecSwj SwRec;
     EOscillogram *OscFunc;
     bool Mode;
 
