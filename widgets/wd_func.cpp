@@ -130,7 +130,7 @@ bool WDFunc::CBData(QWidget *w, const QString &cbname, QString &cbvalue)
     if (cb == nullptr)
         return false;
     cbvalue = cb->currentText();
-    return true;
+    return cb->currentIndex();
 }
 
 bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue)
@@ -342,11 +342,26 @@ void WDFunc::AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lenam
 {
     QHBoxLayout *hlyout = static_cast<QHBoxLayout *>(lyout);
     QLabel *lbl = new QLabel(caption);
-    hlyout->addWidget(lbl,1);
+    hlyout->addWidget(lbl,0);
     QLineEdit *le = new QLineEdit("");
     le->setObjectName(lename);
     le->setEnabled(enabled);
-    hlyout->addWidget(le,1);
+    hlyout->addWidget(le,10);
+}
+
+QWidget *WDFunc::NewLBLAndLE(QWidget *parent, QString caption, QString lename, bool enabled)
+{
+    QWidget *w = new QWidget(parent);
+    w->setContentsMargins(0,0,0,0);
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QLabel *lbl = new QLabel(caption);
+    hlyout->addWidget(lbl,0);
+    QLineEdit *le = new QLineEdit("");
+    le->setObjectName(lename);
+    le->setEnabled(enabled);
+    hlyout->addWidget(le,10);
+    w->setLayout(hlyout);
+    return w;
 }
 
 void WDFunc::SetEnabled(QWidget *w, const QString &wname, bool enabled)

@@ -1,16 +1,16 @@
-; -- avtuk-s_f x86.iss --
+; -- avtuk-s_f5.11 x64.iss --
 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING .ISS SCRIPT FILES!
 
 #define Name "АВТУК-Сервис ПР"
 #define GroupName "АВТУК-Сервис"
 #define EngName "AVTUK-S"
-#define Version "2.1.250"
+#define Version "2.2.254"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "avtuks-F.exe"
-#define SetupName "avtuks-F-2.1.250-x86"
-#define Prefix "D:\out"
+#define SetupName "avtuks-F-2.2.254-x64"
+#define Prefix "D:\out-5.11_x64"
 
 [CustomMessages]
 Version={#Version}
@@ -50,9 +50,9 @@ Source: "{#Prefix}\coma\*.dll"; DestDir: "{app}"
 Source: "{#Prefix}\coma\platforms\qwindows.dll"; DestDir: "{app}\platforms"
 Source: "{#Prefix}\coma\{#ExeName}"; DestDir: "{app}"; DestName: {#ExeName}; Flags: ignoreversion
 Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
-Source: "{#Prefix}\src\reports\*.*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
-Source: "{#Prefix}\images\coma\*.*"; DestDir: "{app}\images"; Flags: ignoreversion
-Source: "{#Prefix}\src\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "{#Prefix}\coma\reports\*.*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
+Source: "{#Prefix}\coma\images\*.*"; DestDir: "{app}\images"; Flags: ignoreversion
+Source: "{#Prefix}\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 ; Source: "coma\pdf\КОМА Руководство пользователя.pdf"; DestDir: "{app}"
 
 [Icons]
@@ -63,7 +63,7 @@ Name: "{group}\Удалить программу {#Name}"; Filename: "{uninstallexe}"
 [Run]
 ; add the Parameters, WorkingDir and StatusMsg as you wish, just keep here
 ; the conditional installation Check
-Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; Check: not IsRequiredVC2015Detected; StatusMsg: Устанавливается пакет MSVC2015 Redistributable...
+Filename: "{tmp}\vcredist_x64.exe"; Parameters: "/install /quiet /norestart"; Check: not IsRequiredVC2015Detected; StatusMsg: Устанавливается пакет MSVC2015 Redistributable...
 
 [Code]
 //-----------------------------------------------------------------------------

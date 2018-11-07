@@ -2,6 +2,7 @@
 #define CONFIG80_H
 
 #define ID808X_START    1001
+#define NUMELEMENTS    22
 
 #include "config.h"
 #include "../gen/modulebsi.h"
@@ -30,6 +31,7 @@ public:
     Bci Bci_block;
 
     void SetDefConf();
+
 };
 
 #endif // CONFIG80_H

@@ -168,6 +168,7 @@ void EAbstractTuneDialog::ProcessTune()
     MsgClear(); // очистка экрана с сообщениями
     for (bStep=0; bStep<lbls.size(); ++bStep)
     {
+        WaitNSeconds(2);
         MsgSetVisible(bStep);
         int res = (this->*pf[lbls.at(bStep)])();
         if ((res == Error::ER_GENERALERROR) || (Cancelled))
@@ -182,6 +183,7 @@ void EAbstractTuneDialog::ProcessTune()
             SkMsgSetVisible(bStep);
         else
             OkMsgSetVisible(bStep);
+
     }
     MsgSetVisible(bStep); // выдаём надпись "Настройка завершена!"
     MeasurementTimer->stop();
@@ -335,8 +337,8 @@ void EAbstractTuneDialog::ReadTuneCoefs()
 
 bool EAbstractTuneDialog::WriteTuneCoefsSlot()
 {
-    if (CheckPassword() != Error::ER_NOERROR)
-        return false;
+    //if (CheckPassword() != Error::ER_NOERROR)   На время отладки!!!
+    //    return false;
     return WriteTuneCoefs();
 }
 
@@ -356,7 +358,7 @@ bool EAbstractTuneDialog::WriteTuneCoefs()
 void EAbstractTuneDialog::PrereadConf()
 {
     if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
-        emit LoadDefConf();
+      IsNeededDefConf = true; // emit LoadDefConf();
     else // иначе заполнить значениями из модуля
     {
         if ((Commands::GetFile(1, &S2Config)) != Error::ER_NOERROR)

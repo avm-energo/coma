@@ -23,6 +23,10 @@ QWidget *Check_80::Bd1W(QWidget *parent)
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBL(parent, "0. Tmk, °С:"), 0);
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Температура кристалла микроконтроллера, °С"), 0);
+    hlyout->addWidget(WDFunc::NewLBL(parent, "1. VBAT, В:"), 0);
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value1", ValuesFormat, "Напряжение аккумуляторной батареи, В"), 0);
     hlyout->addWidget(WDFunc::NewLBL(parent, "2.Частота:"));
     hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value2", ValuesFormat, "Частота сигналов, Гц"));
     lyout->addLayout(hlyout);
@@ -346,7 +350,13 @@ void Check_80::FillBd1(QWidget *parent)
         Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83) ? 4 : 3;
         WDFunc::SetLBLText(parent, "value"+QString::number(i+6), WDFunc::StringValueWithCheck(Bd_block1.IUefNat_filt[i+3], Precision));
         WDFunc::SetLBLText(parent, "value"+QString::number(i+12), WDFunc::StringValueWithCheck(Bd_block1.IUeff_filtered[i+3], Precision));
-        WDFunc::SetLBLText(parent, "value"+QString::number(i+15), WDFunc::StringValueWithCheck(Bd_block1.phi_next_f[i], 4));
+
+        //WDFunc::SetLBLText(parent, "value"+QString::number(i+15), WDFunc::StringValueWithCheck(Bd_block1.phi_next_f[i], 4));
+    }
+    for (int i = 0; i < 6; i++)
+    {
+      WDFunc::SetLBLText(parent, "value"+QString::number(i+15), WDFunc::StringValueWithCheck(Bd_block1.phi_next_f[i], 4));
+
     }
     for (int i=0; i<3; i++)
     {

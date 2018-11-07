@@ -78,21 +78,17 @@ void HiddenDialog::SetupUI()
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
-    WDFunc::AddLabelAndLineeditH(hlyout, "Тип "+tmps+" (hex):", "modtype");
-    hlyout->setStretch(1, 20);
-    hlyout->addStretch(600);
+    hlyout->addWidget(WDFunc::NewLBLAndLE(this, "Тип "+tmps+" (hex):", "modtype"), 10);
     vlyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер "+tmps+":", "modsn", true);
-    hlyout->setStretch(1, 20);
-    hlyout->addStretch(600);
+    hlyout->addWidget(WDFunc::NewLBLAndLE(this, "Серийный номер "+tmps+":", "modsn", true), 10);
     vlyout->addLayout(hlyout);
     if ((Type == BYMY) || (Type == BNMY)) // ввод данных по мезонинной плате открывается только в случае её наличия
     {
         QGroupBox *gb = new QGroupBox("Мезонинная плата");
         QVBoxLayout *gblyout = new QVBoxLayout;
         hlyout = new QHBoxLayout;
-        WDFunc::AddLabelAndLineeditH(hlyout, "Тип платы (hex):", "meztp", true);
+        hlyout->addWidget(WDFunc::NewLBLAndLE(this, "Тип платы (hex):", "meztp", true));
         gblyout->addLayout(hlyout);
         hlyout = new QHBoxLayout;
         WDFunc::AddLabelAndLineeditH(hlyout, "Версия платы:", "mezhwmv", true);
@@ -177,18 +173,18 @@ void HiddenDialog::AcceptChanges()
     GetVersion(Bhb.BoardBBhb.HWVer, "bashw");
     QString tmps;
     WDFunc::LEData(this, "modsn", tmps);
-    Bhb.BoardBBhb.ModSerialNum = tmps.toInt(Q_NULLPTR, 16);
+    Bhb.BoardBBhb.ModSerialNum = tmps.toUInt(Q_NULLPTR, 16);
     WDFunc::LEData(this, "bassn", tmps);
-    Bhb.BoardBBhb.SerialNum = tmps.toInt(Q_NULLPTR, 16);
+    Bhb.BoardBBhb.SerialNum = tmps.toUInt(Q_NULLPTR, 16);
     WDFunc::LEData(this, "bastp", tmps);
-    Bhb.BoardBBhb.MType = tmps.toInt(Q_NULLPTR, 16);
+    Bhb.BoardBBhb.MType = tmps.toUInt(Q_NULLPTR, 16);
     if (Type == BYMY) // ввод данных по мезонинной плате открывается только в случае её наличия
     {
         GetVersion(Bhb.BoardMBhb.HWVer, "mezhw");
         WDFunc::LEData(this, "meztp", tmps);
-        Bhb.BoardMBhb.MType = tmps.toInt(Q_NULLPTR, 16);
+        Bhb.BoardMBhb.MType = tmps.toUInt(Q_NULLPTR, 16);
         WDFunc::LEData(this, "mezsn", tmps);
-        Bhb.BoardMBhb.SerialNum = tmps.toInt(Q_NULLPTR, 16);
+        Bhb.BoardMBhb.SerialNum = tmps.toUInt(Q_NULLPTR, 16);
         Bhb.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
     }
 #if PROGSIZE != PROGSIZE_EMUL

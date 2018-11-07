@@ -262,6 +262,11 @@ int EOscillogram::ProcessOsc()
     S2::FileHeader FH;
     if (!PosPlusPlus(&FH, sizeof(S2::FileHeader)))
         return Error::ER_GENERALERROR;
+
+    DataRecSwj Sw;
+    if (!PosPlusPlus(&Sw, sizeof(DataRecSwj)))
+        return Error::ER_GENERALERROR;
+
     OscDataRec DR;
     if (!PosPlusPlus(&DR, sizeof(OscDataRec)))
         return Error::ER_GENERALERROR;

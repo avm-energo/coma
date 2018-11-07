@@ -270,6 +270,7 @@ void Coma::Stage3()
     if (MTypeB < 0xA0) // диапазон модулей АВ-ТУК
     {
         MainConfDialog = new ConfDialog(S2Config, MTypeB, MTypeM);
+        MainTuneDialog = new ConfDialog(S2ConfigForTune, MTypeB, MTypeM);
         MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     }
     OscD = new OscDialog(OscFunc);
@@ -278,13 +279,30 @@ void Coma::Stage3()
     {
         str = (ConfM == nullptr) ? "Конфигурирование" : "Конфигурирование\nБазовая";
         MainTW->addTab(ConfB, str);
+        if(ConfB->IsNeededDefConf)
+        {
+            ConfB->SetDefConf();
+            ConfB->Fill();
+            EMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
+
+        }
         connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
         connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+        //AbstractConfDialog::PrereadConf();
     }
     if (ConfM != nullptr)
     {
         str = (ConfB == nullptr) ? "Конфигурирование" : "Конфигурирование\nМезонин";
         MainTW->addTab(ConfM, str);
+
+        if(ConfM->IsNeededDefConf)
+        {
+            ConfM->SetDefConf();
+            ConfM->Fill();
+            EMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
+
+        }
+
         connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
         connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
     }
@@ -356,7 +374,7 @@ void Coma::PrepareDialogs()
     }
     case MTB_80:
     {
-//        ConfB = new ConfDialog80(S2Config);
+        //ConfB = new ConfDialog80(S2Config);
 //        TuneB = new TuneDialog80(S2Config);
         CheckB = new CheckDialog80(BoardTypes::BT_BASE);
         break;
@@ -408,7 +426,7 @@ void Coma::PrepareDialogs()
     case MTM_83:
     {
         ConfM = new ConfDialog80(S2Config);
-        TuneM = new TuneDialog80(S2Config);
+        TuneM = new TuneDialog80(S2ConfigForTune);
         break;
     }
     case MTM_85:
@@ -416,7 +434,7 @@ void Coma::PrepareDialogs()
         ConfM = new ConfDialog85(S2Config);
         CheckM = new CheckDialog85(BoardTypes::BT_BASE);
         SwjD = new SwitchJournalDialog;
-        TuneM = new TuneDialog85(S2Config); //          Не понятно, что за ошибка!
+        TuneM = new TuneDialog85(S2ConfigForTune); //          Не понятно, что за ошибка!
         break;
     }
     default: // 0x00

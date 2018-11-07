@@ -30,6 +30,7 @@ public:
     explicit EAbstractTuneDialog(QWidget *parent = nullptr);
     ~EAbstractTuneDialog();
 
+    bool IsNeededDefConf = false;
     BacStruct AbsBac;
     QStringList lbls;
     bool Skipped, MeasurementEnabled, ok, TuneFileSaved;
@@ -38,8 +39,9 @@ public:
     quint32 SecondsToEnd15SecondsInterval;
     QHash <QString, int (EAbstractTuneDialog::*)()> pf;
     quint8 bStep;
-    bool Cancelled;
+    bool Cancelled = false;
     int TuneVariant; // вариант регулировочных параметров
+     QVector<S2::DataRec> *S2ConfigForTune;
 
     virtual void SetupUI() = 0;
     QWidget *TuneUI();
@@ -83,6 +85,7 @@ public slots:
     bool WriteTuneCoefsSlot();
     void Good();
     void NoGood();
+
 #endif
     void SaveToFile();
 

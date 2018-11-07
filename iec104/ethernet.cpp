@@ -1,3 +1,4 @@
+#include <QSettings>
 #include <QThread>
 #include <QCoreApplication>
 
@@ -14,6 +15,8 @@ ethernet::ethernet(QObject *parent) :
 
 void ethernet::Run()
 {
+    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    StdFunc::MIPIP = sets->value("MIPIP", "172.16.31.178").toString();
     sock = new QTcpSocket(this);
     connect(sock,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(seterr(QAbstractSocket::SocketError)));
     connect(sock,SIGNAL(connected()),this,SIGNAL(connected()));

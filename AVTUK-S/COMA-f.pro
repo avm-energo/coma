@@ -9,13 +9,14 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.1.231
+VERSION = 2.2.254
 
-QT       += core gui network serialport printsupport
+QT       += core gui printsupport network
 
 TARGET = avtuks-F
+#DEFINES += MODULE_A1
 DEFINES += PROGNAME='\\"AVTUK-S\\"'
-DEFINES += PROGCAPTION='\\"AVTUK-Service-F\\040v"$$VERSION"\\"'
+DEFINES += PROGCAPTION='\\"AVTUK-Service-E\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=4 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
@@ -24,8 +25,8 @@ DEFINES += USBENABLE # enable usb hid driver
 TEMPLATE = app
 
 SOURCES += \
-    main.cpp\
     coma.cpp \
+    main.cpp \
     ../check/check.cpp \
     ../check/check21.cpp \
     ../check/check22.cpp \
@@ -68,17 +69,12 @@ SOURCES += \
     ../dialogs/switchjournaldialog.cpp \
     ../dialogs/swjdialog.cpp \
     ../dialogs/trendviewdialog.cpp \
-    ../gen/commands.cpp \
-    ../gen/eabstractprotocomchannel.cpp \
     ../gen/eoscillogram.cpp \
-    ../gen/eusbcom.cpp \
-    ../gen/eusbhid.cpp \
     ../gen/log.cpp \
     ../gen/mainwindow.cpp \
     ../gen/qcustomplot.cpp \
-    ../iec104/iec104.cpp \
-    ../iec104/ethernet.cpp \
     ../models/trendviewmodel.cpp \
+    ../modules/eabstractmodule.cpp \
     ../tune/eabstracttunedialog.cpp \
     ../tune/tunedialog21.cpp \
     ../tune/tunedialog22.cpp \
@@ -93,11 +89,13 @@ SOURCES += \
     ../widgets/etablemodel.cpp \
     ../widgets/etableview.cpp \
     ../widgets/etabwidget.cpp \
+    ../widgets/etwoimages.cpp \
     ../widgets/getoscpbdelegate.cpp \
+    ../widgets/lineeditfield.cpp \
+    ../widgets/passwordlineedit.cpp \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp \
-    ../widgets/passwordlineedit.cpp \
     ../gen/s2.cpp \
     ../gen/modulebsi.cpp \
     ../gen/error.cpp \
@@ -105,8 +103,13 @@ SOURCES += \
     ../gen/files.cpp \
     ../gen/stdfunc.cpp \
     ../tune/tunedialog85.cpp \
+    ../config/confdialog87.cpp \
     ../config/config87.cpp \
-    ../config/confdialog87.cpp
+    ../gen/commands.cpp \
+    ../gen/eabstractprotocomchannel.cpp \
+    ../gen/eusbhid.cpp \
+    ../iec104/ethernet.cpp \
+    ../iec104/iec104.cpp
 
 HEADERS  += \
     coma.h \
@@ -152,17 +155,12 @@ HEADERS  += \
     ../dialogs/switchjournaldialog.h \
     ../dialogs/swjdialog.h \
     ../dialogs/trendviewdialog.h \
-    ../gen/commands.h \
-    ../gen/eabstractprotocomchannel.h \
     ../gen/eoscillogram.h \
-    ../gen/eusbcom.h \
-    ../gen/eusbhid.h \
     ../gen/log.h \
     ../gen/mainwindow.h \
     ../gen/qcustomplot.h \
-    ../iec104/ethernet.h \
-    ../iec104/iec104.h \
     ../models/trendviewmodel.h \
+    ../modules/eabstractmodule.h \
     ../tune/eabstracttunedialog.h \
     ../tune/tunedialog21.h \
     ../tune/tunedialog22.h \
@@ -177,11 +175,14 @@ HEADERS  += \
     ../widgets/etablemodel.h \
     ../widgets/etableview.h \
     ../widgets/etabwidget.h \
+    ../widgets/etwoimages.h \
     ../widgets/getoscpbdelegate.h \
+    ../widgets/keypress.h \
+    ../widgets/lineeditfield.h \
+    ../widgets/passwordlineedit.h \
     ../widgets/signalchoosewidget.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
-    ../widgets/passwordlineedit.h \
     ../gen/s2.h \
     ../gen/modulebsi.h \
     ../gen/error.h \
@@ -189,24 +190,31 @@ HEADERS  += \
     ../gen/files.h \
     ../gen/colors.h \
     ../gen/stdfunc.h \
+    ../gen/maindef.h \
     ../tune/tunedialog85.h \
+    ../config/confdialog87.h \
     ../config/config87.h \
-    ../config/confdialog87.h
+    ../gen/commands.h \
+    ../gen/eabstractprotocomchannel.h \
+    ../gen/eusbhid.h \
+    ../iec104/ethernet.h \
+    ../iec104/iec104.h
 
 INCLUDEPATH += $$PWD/../../includes
 
-win32 {
-
-    ## Windows common build here
-
-    !contains(QMAKE_TARGET.arch, x86_64) {
+equals(QMAKE_PLATFORM, win32)
+{
+    contains(QMAKE_TARGET.arch, x86_64) {
+        message("x64 build")
+       ## Windows x64 (64bit) specific build here
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
+    } else {
+        message("x86 build")
         ## Windows x86 (32bit) specific build here
         CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
         CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
-    } else {
-        ## Windows x64 (64bit) specific build here
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
     }
 }
-unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
+
+unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereport -lliblzma -lqt5xlsxd

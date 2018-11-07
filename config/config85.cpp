@@ -143,18 +143,25 @@ void Config85::SetDefConf()
     Bci_block.RESkz_alarm =2; 		// Остаточный коммутационный ресурс (пониженное значение / аварийная уставка)
     Bci_block.I_pred = 3000; 	// Ток в выключателе при выполнении коммутации (повышенное значение / предупредительная уставка)
     Bci_block.I_alarm = 4000; 	// Ток в выключателе при выполнении коммутации (повышенное значение / аварийная уставка)
-    Bci_block.Aux = 0;		// вспомогательные аналоговые сигналы не используются
-    Bci_block.K_on_volt = 0;
-    Bci_block.K_off_volt = 0;
-    Bci_block.K_on_tamb = 0;
-    Bci_block.K_off_tamb = 0;
-    Bci_block.K_on_tdr = 0;
-    Bci_block.K_off_tdr = 0;
-    Bci_block.K_on_hdr = 0;
-    Bci_block.K_off_hdr = 0;
+    Bci_block.Aux = 0;
+    for (int i=0; i<3; ++i)
+    {// вспомогательные аналоговые сигналы не используются
+        Bci_block.K_on_volt[i] = 0;
+        Bci_block.K_off_volt[i] = 0;
+        Bci_block.K_on_tamb[i] = 0;
+        Bci_block.K_off_tamb[i] = 0;
+        Bci_block.K_on_tdr[i] = 0;
+        Bci_block.K_off_tdr[i] = 0;
+        Bci_block.K_on_hdr[i] = 0;
+        Bci_block.K_off_hdr[i] = 0;
+    }
     Bci_block.Adapt  = 0; 	// Адаптивный алгоритм не используется
     Bci_block.TsolOFF = 300;
     Bci_block.TsolON = 300;
     Bci_block.NumA = 1;
     Bci_block.TypeA = 0x01; // выключатель
+    Bci_block.dTs_OFF = 1;   // допустимое отклонение собственного времени отключения, мс
+    Bci_block.dTs_ON = 1;   // допустимое отклонение собственного времени включения, мс
+    Bci_block.Tdis_OFF = 0;  //дополнительное смещение момента отключения во избежании повторного зажигания, мс
+    Bci_block.Tdis_ON = 0; //дополнительное смещение момента включения для снижения перенапряжений, мс
 }

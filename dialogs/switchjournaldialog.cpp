@@ -93,7 +93,7 @@ void SwitchJournalDialog::ProcessOscillograms()
     int RecordSize = sizeof(EOscillogram::GBoStruct); // GBo struct size
     OscInfoSize = MAXOSCBUFSIZE;
     OscInfo.resize(OscInfoSize);
-    if ((Commands::GetBt(TECH_Bo, &(OscInfo.data()[0]), OscInfoSize)) != NOERROR)
+    if ((Commands::GetBt(TECH_Bo, &(OscInfo.data()[0]), OscInfoSize)) != Error::ER_NOERROR)
     {
         WARNMSG("Ошибка при приёме буфера осциллограмм");
         return;
@@ -155,7 +155,7 @@ void SwitchJournalDialog::ShowJournal(QModelIndex idx)
 
 void SwitchJournalDialog::EraseJournals()
 {
-    if (Commands::EraseTechBlock(TECH_SWJ) == NOERROR)
+    if (Commands::EraseTechBlock(TECH_SWJ) == Error::ER_NOERROR)
         EMessageBox::information(this, "Внимание", "Стёрто успешно");
     else
         EMessageBox::information(this, "Внимание", "Ошибка при стирании");

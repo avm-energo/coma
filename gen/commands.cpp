@@ -54,7 +54,7 @@ int Commands::GetOsc(int filenum, void *ptr)
 int Commands::WriteFile(void *ptr, int filenum, QVector<S2::DataRec> *data)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    cn->Send(CN_WF, BoardTypes::BT_NONE, ptr, 0, filenum, data);
+    cn->Send(CN_WF, BoardTypes::BT_BASE, ptr, 0, filenum, data);
     return cn->result;
 #else
     Q_UNUSED(ptr);

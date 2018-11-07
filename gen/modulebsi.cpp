@@ -19,13 +19,16 @@ int ModuleBSI::SetupBSI()
 {
     if (Commands::GetBsi(ModuleBsi) != Error::ER_NOERROR)
         return Error::ER_CANAL;
-    MType = ((ModuleBsi.MTypeB & 0x000000FF) << 8) | (ModuleBsi.MTypeM & 0x000000FF);
+    quint32 mtype;
+    QString mtypestring;
+    mtype = ((ModuleBsi.MTypeB & 0x000000FF) << 8) | (ModuleBsi.MTypeM & 0x000000FF);
 #ifndef MODULE_A1
-    ModuleTypeString = "АВТУК-";
-    ModuleTypeString.append(QString::number(ModuleBsi.MTypeB + ModuleBsi.MTypeM, 16));
+    mtypestring = "АВТУК-";
+    mtypestring.append(QString::number(mtype, 16));
 #else
-    ModuleTypeString = "ПКС-1";
+    mtypestring = "ПКС-1";
 #endif
+    ModuleTypeString = mtypestring;
 #if PROGSIZE >= PROGSIZE_LARGE
     if ((ModuleBsi.SerialNumB == 0xFFFFFFFF) || ((ModuleBsi.SerialNumM == 0xFFFFFFFF) && (ModuleBsi.MTypeM != MTM_00)) || \
             (ModuleBsi.SerialNum == 0xFFFFFFFF)) // серийный номер не задан, выдадим предупреждение

@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     if (!dir.exists())
         dir.mkpath(".");
     S2Config.clear();
+    S2ConfigForTune.clear();
     MainConfDialog = nullptr;
     ConfB = ConfM = nullptr;
 #ifndef MODULE_A1
@@ -379,7 +380,7 @@ int MainWindow::CheckPassword()
 #ifndef MODULE_A1
 void MainWindow::LoadOscFromFile(const QString &filename)
 {
-    if (Files::LoadFromFile(filename, OscFunc->BA) == Error::ER_NOERROR)
+    if (Files::LoadFromFile(filename, OscFunc->BA) == Files::ER_NOERROR)
         OscFunc->ProcessOsc();
 }
 
@@ -589,7 +590,7 @@ void MainWindow::SetProgressBar1Size(int size)
     SetProgressBarSize("1", size);
 }
 
-void MainWindow::SetProgressBar1(quint32 cursize)
+void MainWindow::SetProgressBar1(int cursize)
 {
     SetProgressBar("1", cursize);
 }
