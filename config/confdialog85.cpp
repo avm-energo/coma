@@ -121,6 +121,11 @@ void ConfDialog85::Fill()
     WDFunc::SetSPBData(this, "reskzalarm", C85->Bci_block.RESkz_alarm);
     WDFunc::SetSPBData(this, "ipred", C85->Bci_block.I_pred);
     WDFunc::SetSPBData(this, "ialarm", C85->Bci_block.I_alarm);
+    WDFunc::SetSPBData(this, "dtsoff", C85->Bci_block.dTs_OFF);
+    WDFunc::SetSPBData(this, "dtson", C85->Bci_block.dTs_ON);
+    WDFunc::SetSPBData(this, "tdisoff", C85->Bci_block.Tdis_OFF);
+    WDFunc::SetSPBData(this, "tdison", C85->Bci_block.Tdis_ON);
+
 }
 
 void ConfDialog85::FillBack()
@@ -218,6 +223,10 @@ void ConfDialog85::FillBack()
     WDFunc::SPBData(this, "reskzalarm", C85->Bci_block.RESkz_alarm);
     WDFunc::SPBData(this, "ipred", C85->Bci_block.I_pred);
     WDFunc::SPBData(this, "ialarm", C85->Bci_block.I_alarm);
+    WDFunc::SPBData(this, "dtsoff", C85->Bci_block.dTs_OFF);
+    WDFunc::SPBData(this, "dtson", C85->Bci_block.dTs_ON);
+    WDFunc::SPBData(this, "tdisoff", C85->Bci_block.Tdis_OFF);
+    WDFunc::SPBData(this, "tdison", C85->Bci_block.Tdis_ON);
 
 }
 
@@ -425,13 +434,19 @@ void ConfDialog85::SetupUI()
     glyout->addWidget(WDFunc::NewLBL(this, "Время через которое снимается напряжение с соленоида:"),17,0,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "tsoltime", 100, 50000, 0,paramcolor),17,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "Номинальное значение давления в гидроприводе, МПа:"),18,0,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "pdrivenom", 100, 50000, 0,paramcolor),18,1,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "pdrivenom", 0, 50000, 0,paramcolor),18,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "Предупредительная уставка давления в гидроприводе, МПа:"),19,0,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "pdrivepred", 100, 50000, 0,paramcolor),19,1,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "pdrivepred", 0, 50000, 0,paramcolor),19,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "Аварийная уставка давления в гидроприводе, МПа:"),20,0,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "pdrivealarm", 100, 50000, 0,paramcolor),20,1,1,1);
-    //glyout->addWidget(WDFunc::NewLBL(this, "Допустимое отклонение собственного времени отключения, мс:"),21,0,1,1);
-    //glyout->addWidget(WDFunc::NewSPB(this, "dTsOFF", 100, 50000, 0,paramcolor),21,1,1,1); next page
+    glyout->addWidget(WDFunc::NewSPB(this, "pdrivealarm", 0, 50000, 0,paramcolor),20,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Допустимое отклонение собственного времени отключения, мс:"),21,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "dtsoff", 0, 50000, 0,paramcolor),21,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Допустимое отклонение собственного времени включения, мс:"),22,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "dtson", 0, 50000, 0,paramcolor),22,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Дополнительное смещение момента отключения во избежании повторного зажигания, мс:"),23,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "tdisoff", 0, 50000, 0,paramcolor),23,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Дополнительное смещение момента включения для снижения перенапряжений, мс:"),24,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "tdison", 0, 50000, 0,paramcolor),24,1,1,1);
 
     vlyout1->addLayout(glyout);
     vlyout1->addStretch(1);
@@ -489,7 +504,7 @@ void ConfDialog85::SetupUI()
     iglyout->addWidget(WDFunc::NewSPB(this, "k_on_tamb.0", -1000, 1000, 1, paramcolor),2,1,1,1);
     iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по T окр. среды,фаза B:"),2,2,1,1);
     iglyout->addWidget(WDFunc::NewSPB(this, "k_on_tamb.1", -1000, 1000, 1, paramcolor),2,3,1,1);
-    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по T окр. среды,фаза B:"),2,4,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t вкл. по T окр. среды,фаза C:"),2,4,1,1);
     iglyout->addWidget(WDFunc::NewSPB(this, "k_on_tamb.2", -1000, 1000, 1, paramcolor),2,5,1,1);
     iglyout->addWidget(WDFunc::NewLBL(this, "Коэф. корр. t откл. по T окр. среды,фаза А:"),3,0,1,1);
     iglyout->addWidget(WDFunc::NewSPB(this, "k_off_tamb.0", -1000, 1000, 1, paramcolor),3,1,1,1);

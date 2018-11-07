@@ -170,7 +170,7 @@ void Coma::SetupUI()
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QAction *act;
-    setMinimumHeight(650);
+    //setMinimumHeight(650);
 
     QHBoxLayout *hlyout = new QHBoxLayout;
     QToolBar *tb = new QToolBar;
@@ -431,6 +431,7 @@ void Coma::PrepareDialogs()
     }
     case MTM_85:
     {
+        setMinimumSize(QSize(1200, 800));
         ConfM = new ConfDialog85(S2Config);
         CheckM = new CheckDialog85(BoardTypes::BT_BASE);
         SwjD = new SwitchJournalDialog;
