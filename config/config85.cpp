@@ -85,6 +85,10 @@ Config85::Config85(QVector<S2::DataRec> &config)
         config.append({StartInIndex+68, sizeof(Bci_block.Pdrive_nom), &Bci_block.Pdrive_nom});
         config.append({StartInIndex+69, sizeof(Bci_block.Pdrive_pred), &Bci_block.Pdrive_pred});
         config.append({StartInIndex+70, sizeof(Bci_block.Pdrive_alarm), &Bci_block.Pdrive_alarm});
+        config.append({StartInIndex+71, sizeof(Bci_block.dTs_OFF), &Bci_block.dTs_OFF});
+        config.append({StartInIndex+72, sizeof(Bci_block.dTs_ON), &Bci_block.dTs_ON});
+        config.append({StartInIndex+73, sizeof(Bci_block.Tdis_OFF), &Bci_block.Tdis_OFF});
+        config.append({StartInIndex+74, sizeof(Bci_block.Tdis_ON), &Bci_block.Tdis_ON});
     }
     config.append({0xFFFFFFFF, 0, nullptr});
 }
@@ -155,6 +159,9 @@ void Config85::SetDefConf()
         Bci_block.K_on_hdr[i] = 0;
         Bci_block.K_off_hdr[i] = 0;
     }
+    Bci_block.Pdrive_nom = 32;
+    Bci_block.Pdrive_pred = 33;
+    Bci_block.Pdrive_alarm = 34;
     Bci_block.Adapt  = 0; 	// Адаптивный алгоритм не используется
     Bci_block.TsolOFF = 300;
     Bci_block.TsolON = 300;
