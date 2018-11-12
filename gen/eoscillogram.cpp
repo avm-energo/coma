@@ -272,8 +272,6 @@ int EOscillogram::ProcessOsc()
         return Error::ER_GENERALERROR;
     quint32 oscid = DR.id;
 
-    TrendViewModel::SaveID(DR.id); // для выбора
-
     oscid -= MT_HEAD_ID - 1; // одна осциллограмма = 1, две = 2, ...
     if (oscid > 8)
         oscid = 1; // если что-то с количеством осциллограмм не так, принудительно выставляем в 1
@@ -284,6 +282,8 @@ int EOscillogram::ProcessOsc()
     {
         if (!PosPlusPlus(&DR, sizeof(OscDataRec)))
             return Error::ER_GENERALERROR;
+
+        TrendViewModel::SaveID(DR.id); // для выбора
         // составляем имя файла осциллограммы
         QString tmps = TimeFunc::UnixTime64ToString(OHD.unixtime);
         tmps.replace("/","-");

@@ -66,8 +66,8 @@ void TrendViewModel::SaveToExcel(QWidget *parent)
             QString Filename = dlg->getSaveFileName(parent, "Сохранить данные",StdFunc::GetHomeDir(),"Excel files (*.xlsx)", \
                                                     nullptr, QFileDialog::DontUseNativeDialog);
             xlsx = new QXlsx::Document(Filename);
-            QStringList sl = Filename.split("#"); // отделяем имя файла от даты-времени
-            Filename = sl.at(0);
+            QStringList sl = this->Filename.split("#"); // отделяем имя файла от даты-времени
+            Filename = sl.at(0).at(0);
             QString OscDateTime = sl.at(1);
             xlsx->write(1,1,QVariant("Модуль: 85"));
             xlsx->write(2,1,QVariant("Дата: "+OscDateTime.split(" ").at(0)));
@@ -75,7 +75,7 @@ void TrendViewModel::SaveToExcel(QWidget *parent)
             xlsx->write(4,1,QVariant("Смещение, мс"));
 
             WriteToFile(5, xlsx);
-            //xlsx->save();
+            xlsx->save();
             break;
 
     }
