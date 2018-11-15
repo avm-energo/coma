@@ -6,6 +6,7 @@
 #include "../gen/timefunc.h"
 #include "../gen/colors.h"
 #include "../dialogs/trendviewdialog.h"
+#include "modulebsi.h"
 
 
 
@@ -260,43 +261,74 @@ int EOscillogram::ProcessOsc()
     BASize = BA.size();
     // разбираем осциллограмму
     S2::FileHeader FH;
+
     if (!PosPlusPlus(&FH, sizeof(S2::FileHeader)))
         return Error::ER_GENERALERROR;
 
-    DataRecSwj Sw;
-    if (!PosPlusPlus(&Sw, sizeof(DataRecSwj)))
+    quint32 id = 0;
+    quint32 oscid = 0;
+    if (!PosPlusPlus(&id, sizeof(id)))
         return Error::ER_GENERALERROR;
+    switch (id) {
 
-    OscDataRec DR;
-    if (!PosPlusPlus(&DR, sizeof(OscDataRec)))
-        return Error::ER_GENERALERROR;
-    quint32 oscid = DR.id;
+       case MT_HEAD_ID:
 
-    oscid -= MT_HEAD_ID - 1; // одна осциллограмма = 1, две = 2, ...
-    if (oscid > 8)
-        oscid = 1; // если что-то с количеством осциллограмм не так, принудительно выставляем в 1
-    OscHeader_Data OHD;
-    if (!PosPlusPlus(&OHD, sizeof(OscHeader_Data)))
-        return Error::ER_GENERALERROR;
-    for (quint32 i=0; i<oscid; ++i)
-    {
-        if (!PosPlusPlus(&DR, sizeof(OscDataRec)))
+        OscDataRec DR;
+        if (!PosPlusPlus(&DR.numbytes, (sizeof(OscDataRec)-sizeof(id))))
+            return Error::ER_GENERALERROR;
+       oscid = DR.id;
+
+        oscid -= MT_HEAD_ID - 1; // одна осциллограмма = 1, две = 2, ...
+        if (oscid > 8)
+            oscid = 1; // если что-то с количеством осциллограмм не так, принудительно выставляем в 1
+        OscHeader_Data OHD;
+        if (!PosPlusPlus(&OHD, sizeof(OscHeader_Data)))
+            return Error::ER_GENERALERROR;
+        for (quint32 i=0; i<oscid; ++i)
+        {
+            if (!PosPlusPlus(&DR, sizeof(OscDataRec)))
+                return Error::ER_GENERALERROR;
+
+            TrendViewModel::SaveID(DR.id); // для выбора
+            // составляем имя файла осциллограммы
+            QString tmps = TimeFunc::UnixTime64ToString(OHD.unixtime);
+            tmps.replace("/","-");
+            tmps.replace(":","_");
+            tmps.insert(0, "_");
+            tmps.insert(0, QString::number(i));
+            tmps.insert(0, "_");
+            tmps.insert(0, QString::number(DR.id));
+            // пишем саму осциллограмму
+            if (ProcessOneOsc(DR.id, OHD, tmps) != Error::ER_NOERROR)
+                return Error::ER_GENERALERROR;
+        }
+
+
+
+
+        break;
+
+       case SWJ_ID85:
+
+        DataRecSwj Sw;
+        Sw.id = id;
+        if (!PosPlusPlus(&Sw.numbytes, (sizeof(DataRecSwj)-sizeof(id))))
             return Error::ER_GENERALERROR;
 
-        TrendViewModel::SaveID(DR.id); // для выбора
-        // составляем имя файла осциллограммы
-        QString tmps = TimeFunc::UnixTime64ToString(OHD.unixtime);
-        tmps.replace("/","-");
-        tmps.replace(":","_");
-        tmps.insert(0, "_");
-        tmps.insert(0, QString::number(i));
-        tmps.insert(0, "_");
-        tmps.insert(0, QString::number(DR.id));
-        // пишем саму осциллограмму
-        if (ProcessOneOsc(DR.id, OHD, tmps) != Error::ER_NOERROR)
-            return Error::ER_GENERALERROR;
+
+       break;
+
+       case MT_ID87:
+
+
+        break;
+
     }
-    return Error::ER_NOERROR;
+
+
+
+   return Error::ER_NOERROR;
+
 }
 
 int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, const QString &fn)
