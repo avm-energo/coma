@@ -9,6 +9,7 @@
 #include "../gen/eoscillogram.h"
 
 #define MAXGRAPHSPERPLOT    16
+#define MT_ID85         10030 // ID осциллограммы по модулю 8085
 
 class TrendViewDialog : public QDialog
 {

@@ -1,6 +1,10 @@
 #include <QVector>
 #include "../config/config.h"
 #include "eoscillogram.h"
+#include "parsemodule.h"
+#include "parseid9000.h"
+#include "parseid9050.h"
+#include "parseid10031.h"
 #include "../models/trendviewmodel.h"
 #include "../gen/error.h"
 #include "../gen/timefunc.h"
@@ -261,6 +265,48 @@ int EOscillogram::ProcessOsc()
     BASize = BA.size();
     // разбираем осциллограмму
     S2::FileHeader FH;
+    if (Pos > BASize)
+        return Error::ER_GENERALERROR;
+    memcpy(&FH, &(BA.data()[0]), sizeof(FH));
+    Pos += sizeof (FH);
+
+    //char *BAlink = &BA.data()[sizeof(FH.service) + sizeof(FH.fname)];
+
+    DataRecHeader DR;
+    if (Pos > BASize)
+        return Error::ER_GENERALERROR;
+    memcpy(&DR, &(BA.data()[Pos]), sizeof(DR));
+
+    while (DR.id != 0xFFFFFFFF)
+    {
+        ParseModule *PM;
+        Pos += sizeof (DR);
+        switch (DR.id)
+        {
+            case MT_HEAD_ID:
+                PM = new ParseID9000(BA);
+            break;
+
+            case MT_HEAD87:
+                PM = new ParseID9050(BA);
+            break;
+
+            case SWJ_ID85:
+                PM = new ParseID10031(BA);
+            break;
+        }
+        if (PM -> Parse(Pos) != Error::ER_NOERROR)
+            return Error::ER_GENERALERROR;
+        if (Pos > BASize)
+            return Error::ER_GENERALERROR;
+        memcpy(&DR, &(BA.data()[Pos]), sizeof(DR));
+
+    }
+    /*
+    Pos = 0;
+    BASize = BA.size();
+    // разбираем осциллограмму
+    S2::FileHeader FH;
 
     if (!PosPlusPlus(&FH, sizeof(S2::FileHeader)))
         return Error::ER_GENERALERROR;
@@ -326,12 +372,12 @@ int EOscillogram::ProcessOsc()
     }
 
 
-
+*/
    return Error::ER_NOERROR;
 
 }
 
-int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, const QString &fn)
+/*int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, const QString &fn)
 {
     QStringList tmpav, tmpdv;
     TrendViewDialog *dlg = new TrendViewDialog(BA);
@@ -460,4 +506,4 @@ int EOscillogram::ProcessOneOsc(quint32 id, EOscillogram::OscHeader_Data &OHD, c
         }
     }
     return Error::ER_NOERROR;
-}
+}*/
