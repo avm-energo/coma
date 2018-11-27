@@ -7,6 +7,8 @@
 #include "../gen/modulebsi.h"
 #include "../config/config85.h"
 #include "../iec104/iec104.h"
+#include <QStandardItemModel>
+#include "limereport/lrreportengine.h"
 #include <QHBoxLayout>
 
 #define TUNEFILELENGTH  256
@@ -53,7 +55,7 @@ private:
     int GED_Type;
     float IUefNat_filt_old[6];      // для сохранения значений по п. 7.3.2
     float MipDat[41];
-
+    LimeReport::ReportEngine *report;
     //bool Cancelled, DefConfig;
     Config85 *C85;
     QVector<S2::DataRec> *S2Config;
@@ -143,9 +145,47 @@ private:
 
     Bda_in_struct Bda_Block;
     iec104 *mipcanal;
+    QStandardItemModel *ReportModel, *ViewModel; // модель, в которую заносим данные для отчёта
+
+    double U[21] =       {60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 72, 48, 36, 24, 12, 60, 60, 60, 60 };
+    double I[21] =       {0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1, 2, 3, 4, 5, 6,  5, 5, 5, 5, 5, 5, 5, 5, 5 };
+    double PhiLoad[21] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 90, 180, 270 };
+
+    struct ReportHeaderStructure
+    {
+        QString Organization;   // организация, проводившая проверку
+        QString Day;            // день месяца проведения проверки
+        QString Month;          // месяц
+        QString Yr;             // две последние цифры года (20хх)
+        QString Freq;           // обозначение частоты
+        QString UA;             // напряжение фазы А
+        QString UB;             // напряжение фазы B
+        QString UC;             // напряжение фазы С
+        QString IA;             // ток фазы А
+        QString IB;             // ток фазы B
+        QString IC;             // ток фазы C
+        QString PhiloadA;       // угол нагрузки фазы А
+        QString PhiloadB;       // угол нагрузки фазы B
+        QString PhiloadC;       // угол нагрузки фазы C
+        QString PhiUAB;         // угол между напряжениями фаз А и B
+        QString PhiUBC;         // угол между напряжениями фаз B и C
+        QString OffsetF;        // Погрешности
+        QString OffsetUA;
+        QString OffsetUB;
+        QString OffsetUC;
+        QString OffsetIA;
+        QString OffsetIB;
+        QString OffsetIC;
+        QString OffsetPhiloadA;
+        QString OffsetPhiloadB;
+        QString OffsetPhiloadC;
+        QString OffsetPhiUAB;
+        QString OffsetPhiUBC;
+    };
+
+    ReportHeaderStructure ReportHeader;
 
     float ToFloat(QString text);
-    void CancelTune();
     void closeEvent(QCloseEvent *e);
     int SaveWorkConfig();
     void SetLbls();
@@ -188,7 +228,7 @@ private:
     int SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
     int LoadWorkConfig();
     int StartCheckAnalogValues(double u, double i, double deg, bool tol); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0: начальная точность, 1 - повышенная
-
+    void PrepareConsts();
 
 private slots:
 #if PROGSIZE != PROGSIZE_EMUL
@@ -199,6 +239,8 @@ private slots:
     int ReadAnalogMeasurements();
     void SetExtData();
     void CancelExtData();
+    void CancelTune();
+    void GenerateReport();
     //int TuneOneChannel(int Ch);
 #endif
 
