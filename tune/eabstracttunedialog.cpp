@@ -34,7 +34,9 @@ EAbstractTuneDialog::EAbstractTuneDialog(QWidget *parent) :
     MeasurementEnabled = false;
     MeasurementTimer = new QTimer;
     MeasurementTimer->setInterval(MEASTIMERINT);
+#if PROGSIZE != PROGSIZE_EMUL
     connect(MeasurementTimer,SIGNAL(timeout()),this,SLOT(MeasTimerTimeout()));
+#endif
 }
 
 EAbstractTuneDialog::~EAbstractTuneDialog()
@@ -56,7 +58,9 @@ QWidget *EAbstractTuneDialog::TuneUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QPushButton *pb = new QPushButton("Начать настройку");
     pb->setObjectName("starttune");
+#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(StartTune()));
+#endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     else

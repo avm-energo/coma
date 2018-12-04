@@ -54,7 +54,9 @@ void TuneDialog80::SetupUI()
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QPushButton *pb = new QPushButton("Начать поверку");
+#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(GenerateReport()));
+#endif
     lyout->addWidget(TuneUI());
     //lyout->addStretch(10);
     lyout->addWidget(pb, Qt::AlignRight|Qt::AlignTop);
@@ -63,7 +65,9 @@ void TuneDialog80::SetupUI()
 
     QWidget *cp2 = new QWidget;
     QWidget *cp3 = new QWidget;
+#if PROGSIZE != PROGSIZE_EMUL
     QWidget *cp4 = Bd1W(this);
+#endif
     tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     cp1->setStyleSheet(tmps);
     cp2->setStyleSheet(tmps);
@@ -74,7 +78,9 @@ void TuneDialog80::SetupUI()
     QTabWidget *TuneTW = new QTabWidget;
 
     TuneTW->addTab(cp1,"Настройка");
+#if PROGSIZE != PROGSIZE_EMUL
     TuneTW->addTab(cp4,"Измеренные параметры");
+#endif
     TuneTW->addTab(cp2,"Коэффициенты");
     TuneTW->addTab(cp3,"Данные МИП");
 
@@ -1317,6 +1323,7 @@ float TuneDialog80::ToFloat(QString text)
     return tmpf;
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 QWidget *TuneDialog80::Bd1W(QWidget *parent)
 {
     int i;
@@ -1436,6 +1443,7 @@ void TuneDialog80::RefreshAnalogValues(int bdnum)
         return;
     }
 }
+
 
 void TuneDialog80::GenerateReport()
 {
@@ -1623,6 +1631,4 @@ void TuneDialog80::GenerateReport()
     }
     delete report;
 }
-
-
-
+#endif

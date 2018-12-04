@@ -34,7 +34,9 @@ EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board = BoardTypes::BT_BAS
     Bd_blocks.clear();
     timer = new QTimer;
     timer->setObjectName("checktimer");
+#if PROGSIZE != PROGSIZE_EMUL
     connect(timer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));
+#endif
     timer->setInterval(1000);
     setAttribute(Qt::WA_DeleteOnClose);
 }
@@ -112,18 +114,24 @@ QWidget *EAbstractCheckDialog::BottomUI()
 
     QPushButton *pb = new QPushButton("Запустить чтение аналоговых сигналов");
     pb->setObjectName("pbmeasurements");
+#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurements()));
+#endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
     pb = new QPushButton("Запустить чтение аналоговых сигналов в файл");
     pb->setObjectName("pbfilemeasurements");
+#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurementsToFile()));
+#endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
     pb = new QPushButton("Остановить чтение аналоговых сигналов");
+#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(StopAnalogMeasurements()));
+#endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);

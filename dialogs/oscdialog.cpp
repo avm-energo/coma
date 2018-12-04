@@ -43,12 +43,16 @@ void OscDialog::SetupUI()
     tm = new ETableModel;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Получить данные по осциллограммам в памяти "+tmps);
+#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(GetAndProcessOscInfo()));
+#endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
     pb = new QPushButton("Стереть все осциллограммы в памяти "+tmps);
+#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(EraseOsc()));
+#endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
