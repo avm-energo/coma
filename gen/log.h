@@ -12,7 +12,7 @@ class Log : public QObject
     Q_OBJECT
 
 public:
-    explicit Log(QObject *parent=0);
+    explicit Log(QObject *parent=nullptr);
     ~Log();
     void Init(const QString &Filename);
     void error(const QString &str);

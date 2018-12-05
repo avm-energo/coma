@@ -1,6 +1,8 @@
  #ifndef TRENDVIEWMODEL_H
 #define TRENDVIEWMODEL_H
 
+#define MT_ID85         10030 // ID осциллограммы по модулю 8085
+
 #include <QVector>
 #include <QMap>
 #include "QtXlsx/xlsxdocument.h"

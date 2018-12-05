@@ -1,4 +1,5 @@
 #include <QVector>
+#include <cstring>
 #include "../config/config.h"
 #include "eoscillogram.h"
 #include "parsemodule.h"
@@ -269,8 +270,6 @@ int EOscillogram::ProcessOsc()
         return Error::ER_GENERALERROR;
     memcpy(&FH, &(BA.data()[0]), sizeof(FH));
     Pos += sizeof (FH);
-
-    //char *BAlink = &BA.data()[sizeof(FH.service) + sizeof(FH.fname)];
 
     DataRecHeader DR;
     if (Pos > BASize)

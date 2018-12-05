@@ -19,7 +19,7 @@ public:
         quint32 numbytes;  // количество байт
     };
 
-    /*int*/ void PosPlusPlus(void *dst, int &count, int size);
+    int PosPlusPlus(void *dst, int &count, int size);
     virtual int Parse(int &count) = 0;
 
 

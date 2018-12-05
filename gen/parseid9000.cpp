@@ -19,10 +19,12 @@ ParseID9000::ParseID9000(QByteArray &BA) : ParseModule(BA)
 int ParseID9000::Parse(int &count)
 {
     OscHeader_Data OHD;
-    PosPlusPlus(&OHD, count, sizeof(OHD));
+    if (!PosPlusPlus(&OHD, count, sizeof(OHD)))
+        return Error::ER_GENERALERROR;
 
     DataRecHeader DR;
-    PosPlusPlus(&DR, count, sizeof(DR));
+    if (!PosPlusPlus(&DR, count, sizeof(DR)))
+        return Error::ER_GENERALERROR;
 
     TrendViewModel::SaveID(DR.id); // для выбора
     // составляем имя файла осциллограммы
@@ -53,17 +55,17 @@ int ParseID9000::Parse(int &count)
         case 10014:
         case 10015:
         case MT_ID21E:
-        if (!ParseID21(DR.id, OHD, tmps, tmpav, dlg, count))
+        if (ParseID21(DR.id, OHD, tmps, tmpav, dlg, count) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
         break;
 
         case MT_ID80:
-        if (!ParseID8x(DR.id, OHD, tmps, tmpav, tmpdv, dlg, count))
+        if (ParseID8x(DR.id, OHD, tmps, tmpav, tmpdv, dlg, count) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
         break;
 
         case MT_ID85:
-        if (!ParseID85(DR.id, OHD, tmps, tmpav, tmpdv, dlg, count))
+        if (ParseID85(DR.id, OHD, tmps, tmpav, tmpdv, dlg, count) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
         break;
     }
@@ -85,12 +87,13 @@ int ParseID9000::ParseID21(quint32 id, OscHeader_Data &OHD, const QString &fn, Q
     for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
     {
         Point21 point;
-        PosPlusPlus(&point, count, sizeof(Point21));
+        if (!PosPlusPlus(&point, count, sizeof(Point21)))
+            return Error::ER_GENERALERROR;
         TModel->AddAnalogPoint(tmpav.at(0), point.An);
     }
     TModel->SetFilename(fn);
     dlg->setModal(false);
-    dlg->PlotShow();
+    dlg->PlotShow(id);
     dlg->show();
     return Error::ER_NOERROR;
 }
@@ -115,13 +118,14 @@ int ParseID9000::ParseID8x(quint32 id, OscHeader_Data &OHD, const QString &fn, Q
     for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
     {
         Point8x point;
-        PosPlusPlus(&point, count, sizeof(Point8x));
+        if (!PosPlusPlus(&point, count, sizeof(Point8x)))
+            return Error::ER_GENERALERROR;
         for (int i=0; i<6; ++i)
             TModel->AddAnalogPoint(tmpav.at(i), point.An[i]);
     }
     TModel->SetFilename(fn);
     dlg->setModal(false);
-    dlg->PlotShow();
+    dlg->PlotShow(id);
     dlg->show();
     return Error::ER_NOERROR;
 }
@@ -165,7 +169,8 @@ int ParseID9000::ParseID85(quint32 id, OscHeader_Data &OHD, const QString &fn, Q
     for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
     {
         Point85 point;
-        PosPlusPlus(&point, count, sizeof(Point85));
+        if (!PosPlusPlus(&point, count, sizeof(Point85)))
+            return Error::ER_GENERALERROR;
 //                quint32 DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
         quint32 DisPoint = point.Dis;
         for (int i=0; i<32; ++i)
@@ -181,7 +186,7 @@ int ParseID9000::ParseID85(quint32 id, OscHeader_Data &OHD, const QString &fn, Q
     }
     TModel->SetFilename(fn);
     dlg->setModal(false);
-    dlg->PlotShow();
+    dlg->PlotShow(id);
     dlg->show();
     return Error::ER_NOERROR;
 }
