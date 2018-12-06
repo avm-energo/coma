@@ -619,10 +619,12 @@ void TuneDialog85::PrepareConsts()
     }
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void TuneDialog85::CancelTune()
 {
     Cancelled = true;
 }
+#endif
 
 void TuneDialog85::closeEvent(QCloseEvent *e)
 {

@@ -477,7 +477,7 @@ void TrendViewDialog::SetupPlots(quint32 id)
         title->setFont(QFont("sans", 12, QFont::Bold));
         MainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, title); // place the title in the empty cell we've just created
         QCPAxisRect *AnalogAxisRect = new QCPAxisRect(MainPlot);
-        AnalogAxisRect->addAxis(QCPAxis::atLeft);
+        //AnalogAxisRect->addAxis(QCPAxis::atLeft);
         AnalogRectIndex = RectIndex++;
         MainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, AnalogAxisRect);
         AnalogLegend = SetLegend(MainPlotLayoutRow++);
@@ -489,7 +489,7 @@ void TrendViewDialog::SetupPlots(quint32 id)
 
             while ((count < AnalogGraphNum) && (AnalogGraphs.size() < MAXGRAPHSPERPLOT))
             {
-                QString tmps = DigitalDescription.Names.at(count);
+                QString tmps = AnalogDescription.Names.at(count);
                 /*if(count<3 || count>5)
                 QString tmpsU = AnalogDescription.Names.at(count);
                 else
