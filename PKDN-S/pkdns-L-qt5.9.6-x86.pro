@@ -120,18 +120,5 @@ HEADERS  += pkdn_s.h \
 
 INCLUDEPATH += $$PWD/../../includes
 
-win32 {
-
-    ## Windows common build here
-
-    !contains(QMAKE_TARGET.arch, x86_64) {
-        ## Windows x86 (32bit) specific build here
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
-    } else {
-        ## Windows x64 (64bit) specific build here
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
-    }
-}
-unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
+CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs-5.9.6/win32/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx -llibmysql -llibeay32 -lssleay32
+CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs-5.9.6/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd -llibmysqld -llibeay32 -lssleay32
