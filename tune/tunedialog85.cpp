@@ -21,6 +21,7 @@
 #include "../check/check85.h"
 #include "../gen/maindef.h"
 #include "../gen/modulebsi.h"
+#include "../gen/files.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -43,14 +44,22 @@ void TuneDialog85::SetupUI()
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
-    QWidget *cp1 = TuneUI();
+    QWidget *cp1 = new QWidget;
+
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QPushButton *pb = new QPushButton("Начать поверку");
+    connect(pb,SIGNAL(clicked()),this,SLOT(GenerateReport()));
+    lyout->addWidget(TuneUI());
+    //lyout->addStretch(10);
+    lyout->addWidget(pb, Qt::AlignRight|Qt::AlignTop);
+    cp1->setLayout(lyout);
+
     QWidget *cp2 = new QWidget;
     QWidget *cp3 = new QWidget;
     tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     cp1->setStyleSheet(tmps);
     cp2->setStyleSheet(tmps);
     cp3->setStyleSheet(tmps);
-    QVBoxLayout *lyout = new QVBoxLayout;
     QLabel *lbl;
     QGridLayout *glyout = new QGridLayout;
 
@@ -176,7 +185,7 @@ void TuneDialog85::SetupUI()
     vlyout->addWidget(gb);
 #if PROGSIZE != PROGSIZE_EMUL
     hlyout = new QHBoxLayout;
-    QPushButton *pb = new QPushButton("Запустить связь с МИП");
+    pb = new QPushButton("Запустить связь с МИП");
     connect(pb,SIGNAL(clicked()),this,SLOT(StartMip()));
     hlyout->addWidget(pb);
     pb = new QPushButton("Остановить связь с МИП");
@@ -588,12 +597,34 @@ void TuneDialog85::SetDefCoefs()
     FillBac();
 }
 
+void TuneDialog85::PrepareConsts()
+{
+    // подготовка констант для проверки данных МИПа
+    MVTC.u = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_83) ? S0 : V60;
+    MTTC.u = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_83) ? FLT_MAX : TH005;
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81)
+    {
+        MVTC.i[0] = MVTC.i[1] = MVTC.i[2] = S0;
+        MTTC.i = FLT_MAX;
+    }
+    else
+    {
+       /*MVTC.i[0] = ConfDialog80::C80->Bci_block.inom2[0];
+        MVTC.i[1] = ConfDialog80::C80->Bci_block.inom2[1];
+        MVTC.i[2] = ConfDialog80::C80->Bci_block.inom2[2];*/
+        MVTC.i[0] = C85->Bci_block.Inom;
+        MVTC.i[1] = C85->Bci_block.Inom;
+        MVTC.i[2] = C85->Bci_block.Inom;
+        MTTC.i = TH005;
+    }
+}
 
-
+#if PROGSIZE != PROGSIZE_EMUL
 void TuneDialog85::CancelTune()
 {
     Cancelled = true;
 }
+#endif
 
 void TuneDialog85::closeEvent(QCloseEvent *e)
 {
@@ -1064,6 +1095,93 @@ void TuneDialog85::GetBdAndFillMTT()
 {
 
 
+}
+
+void TuneDialog85::GenerateReport()
+{
+    // данные в таблицу уже получены или из файла, или в процессе работы
+    // отобразим таблицу
+   // ShowTable();
+   // QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
+    report = new LimeReport::ReportEngine(this);
+    QString path = StdFunc::GetSystemHomeDir()+"85report.lrxml";
+    report->loadFromFile(path);
+    report->dataManager()->addModel("maindata", ReportModel, false);
+
+    ReportHeader.Organization = "ООО АСУ-ВЭИ";
+    report->dataManager()->setReportVariable("Organization", ReportHeader.Organization);
+    QString day = QDateTime::currentDateTime().toString("dd");
+    QString month = QDateTime::currentDateTime().toString("MM");
+    QString yr = QDateTime::currentDateTime().toString("yy");
+    report->dataManager()->setReportVariable("Day", day);
+    report->dataManager()->setReportVariable("Month", month);
+    report->dataManager()->setReportVariable("Yr", yr);
+
+    for(int i=0; i<21; i++) // 21 таблица!
+    {
+        if(i==0)
+        {
+            if (Commands::GetFile(CM_CONFIGFILE,S2ConfigForTune) == Error::ER_NOERROR)
+            {
+               WaitNSeconds(1);
+               Start7_3_7_2();  // Переход на конфигурацию 1А
+            }
+        }
+
+        if(i==6)
+        {
+            if (Commands::GetFile(CM_CONFIGFILE,S2ConfigForTune) == Error::ER_NOERROR)
+            {
+               WaitNSeconds(1);
+               Start7_3_7_6();  // Переход на конфигурацию 5А
+            }
+        }
+
+            QDialog *dlg = new QDialog;
+            QVBoxLayout *lyout = new QVBoxLayout;
+            QLabel *lbl = new QLabel;
+            lbl=new QLabel("Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc) с углами "\
+                           "нагрузки по всем фазам " +QString::number(PhiLoad[i])+ " град. и частотой 51 Гц;");
+            lyout->addWidget(lbl);
+            lbl=new QLabel("Значения напряжений по фазам " +QString::number(U[i])+ " В;");
+            lyout->addWidget(lbl);
+            if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83)
+            {
+                lbl=new QLabel("Значения токов по фазам " +QString::number(I[i])+ " А;");
+                lyout->addWidget(lbl);
+            }
+            QPushButton *pb = new QPushButton("Готово");
+            connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+            lyout->addWidget(pb);
+            pb = new QPushButton("Отмена");
+            connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
+            connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+            lyout->addWidget(pb);
+            dlg->setLayout(lyout);
+            dlg->exec();
+
+           if(Cancelled)
+           break;
+
+
+
+    }
+
+    if (EMessageBox::question(this,"Сохранить","Сохранить протокол поверки?"))
+    {
+        QString filename = Files::ChooseFileForSave(this, "*.pdf", "pdf");
+        if (!filename.isEmpty())
+        {
+            report->designReport();
+            report->printToPDF(filename);
+    //        report->previewReport();
+          //  report->designReport();
+            EMessageBox::information(this, "Успешно!", "Записано успешно!");
+        }
+        else
+            EMessageBox::information(this, "Отменено", "Действие отменено");
+    }
+    delete report;
 }
 
 #endif

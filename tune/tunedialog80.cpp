@@ -65,9 +65,9 @@ void TuneDialog80::SetupUI()
 
     QWidget *cp2 = new QWidget;
     QWidget *cp3 = new QWidget;
-#if PROGSIZE != PROGSIZE_EMUL
+    #if PROGSIZE != PROGSIZE_EMUL
     QWidget *cp4 = Bd1W(this);
-#endif
+    #endif
     tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     cp1->setStyleSheet(tmps);
     cp2->setStyleSheet(tmps);
@@ -78,9 +78,9 @@ void TuneDialog80::SetupUI()
     QTabWidget *TuneTW = new QTabWidget;
 
     TuneTW->addTab(cp1,"Настройка");
-#if PROGSIZE != PROGSIZE_EMUL
+    #if PROGSIZE != PROGSIZE_EMUL
     TuneTW->addTab(cp4,"Измеренные параметры");
-#endif
+    #endif
     TuneTW->addTab(cp2,"Коэффициенты");
     TuneTW->addTab(cp3,"Данные МИП");
 
@@ -690,7 +690,7 @@ int TuneDialog80::Start7_3_9()
         if (!LoadWorkConfig())
             return Error::ER_GENERALERROR;
         // Пишем в модуль посчитанные регулировочные коэффициенты
-        WaitNSeconds(2);
+        WaitNSeconds(5);
         if (Commands::WriteBac(BT_MEZONIN, &Bac_newblock, sizeof(Bac)) != Error::ER_NOERROR)  // Григорий Матвеевич попросил писать коэффициенты сразу в модуль
             return Error::ER_GENERALERROR;
         // переходим на прежнюю конфигурацию
@@ -1304,11 +1304,15 @@ void TuneDialog80::CancelTune()
 }
 #endif
 
+
 void TuneDialog80::closeEvent(QCloseEvent *e)
 {
     emit stopall();
     e->accept();
 }
+
+
+
 
 float TuneDialog80::ToFloat(QString text)
 {

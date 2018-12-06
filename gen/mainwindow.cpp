@@ -431,6 +431,8 @@ void MainWindow::Stage1_5()
         QApplication::restoreOverrideCursor();
         return;
     }
+    S2ConfigForTune.clear();
+    S2Config.clear();
     SaveSettings();
     QApplication::restoreOverrideCursor();
     Stage2();
