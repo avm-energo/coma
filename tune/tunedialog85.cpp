@@ -56,15 +56,22 @@ void TuneDialog85::SetupUI()
 
     QWidget *cp2 = new QWidget;
     QWidget *cp3 = new QWidget;
+    #if PROGSIZE != PROGSIZE_EMUL
+    QWidget *cp4 = Bd1W(this);
+    #endif
     tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     cp1->setStyleSheet(tmps);
     cp2->setStyleSheet(tmps);
     cp3->setStyleSheet(tmps);
+
     QLabel *lbl;
     QGridLayout *glyout = new QGridLayout;
-
     QTabWidget *TuneTW = new QTabWidget;
+
     TuneTW->addTab(cp1,"Настройка");
+    #if PROGSIZE != PROGSIZE_EMUL
+    TuneTW->addTab(cp4,"Измеренные параметры");
+    #endif
     TuneTW->addTab(cp2,"Коэффициенты");
     TuneTW->addTab(cp3,"Данные МИП");
 
@@ -400,7 +407,7 @@ int TuneDialog85::Start7_3_4()
 {
    GED_Type = TD_GED_F;
     if (!(GetExternalData() == Error::ER_GENERALERROR))
-        New_Bac_block.K_freq = Bac_block.K_freq*RealData.f[0] / Bda_Block.Frequency;
+        New_Bac_block.K_freq = Bac_block.K_freq*RealData.f[0] / Bda_block.Frequency;
     else
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
@@ -428,8 +435,8 @@ int TuneDialog85::Start7_3_7_1()
         return Error::ER_GENERALERROR;
     for (int i=0; i<3; i++)
     {
-        New_Bac_block.KmU[i] = Bac_block.KmU[i] * RealData.u[i] / Bda_Block.IUefNat_filt[i];
-        New_Bac_block.KmU2[i] = Bac_block.KmU2[i] * RealData.u[i] / Bda_Block.IUefNat_filt[i+6];
+        New_Bac_block.KmU[i] = Bac_block.KmU[i] * RealData.u[i] / Bda_block.IUefNat_filt[i];
+        New_Bac_block.KmU2[i] = Bac_block.KmU2[i] * RealData.u[i] / Bda_block.IUefNat_filt[i+6];
     }
     return Error::ER_NOERROR;
 }
@@ -463,7 +470,7 @@ int TuneDialog85::Start7_3_7_5()
 {
     for (int i=0; i<3; ++i)
     {
-      New_Bac_block.KmI_1[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_Block.IUefNat_filt[i];
+      New_Bac_block.KmI_1[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_block.IUefNat_filt[i];
       //New_Bac_block.KmI_4[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_Block.IUefNat_filt[i];
     }
     return Error::ER_NOERROR;
@@ -498,7 +505,7 @@ int TuneDialog85::Start7_3_7_10()
 {
     for (int i=0; i<3; ++i)
     {
-       New_Bac_block.KmI_4[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_Block.IUefNat_filt[i];
+       New_Bac_block.KmI_4[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_block.IUefNat_filt[i];
     }
     return Error::ER_NOERROR;
 }
@@ -904,7 +911,7 @@ int TuneDialog85::SetNewTuneCoefs()
 int TuneDialog85::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
-     if (Commands::GetBda(BT_NONE, &Bda_Block, sizeof(Bda_Block)) != Error::ER_NOERROR)
+     if (Commands::GetBda(BT_NONE, &Bda_block, sizeof(Bda_block)) != Error::ER_NOERROR)
      {
          EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
          return Error::ER_GENERALERROR;
@@ -1097,6 +1104,132 @@ void TuneDialog85::GetBdAndFillMTT()
 
 }
 
+QWidget *TuneDialog85::Bd1W(QWidget *parent)
+{
+    int i;
+    WidgetFormat = "QWidget {background-color: "+QString(UCONFCLR)+";}";
+    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
+            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
+
+    QWidget *w = new QWidget(parent);
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    /*hlyout->addWidget(WDFunc::NewLBL(parent, "Tmk, °С:"), 0);
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Температура кристалла микроконтроллера, °С"), 0);
+    hlyout->addWidget(WDFunc::NewLBL(parent, "VBAT, В:"), 0);
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value1", ValuesFormat, "Напряжение аккумуляторной батареи, В"), 0);*/
+    hlyout->addWidget(WDFunc::NewLBL(parent, "Частота:"));
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Частота сигналов, Гц"), Qt::AlignLeft);
+    lyout->addLayout(hlyout);
+    for (i = 1; i < 7; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "IUNF_1GR"+IndexStr),0,(i-1),1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i), ValuesFormat, \
+                                          QString::number(i)+"IUNF"+IndexStr+".Истинные действующие значения сигналов"),1,(i-1),1,1);
+    }
+
+    for (i = 0; i < 3; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "UNF_2GR"+IndexStr),2,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+7), ValuesFormat, \
+                                          QString::number(i+7)+"IUF"+IndexStr+".Действующие значения сигналов по 1-й гармонике\nотносительно ф. А 1-й группы"),3,(i-1),1,1);
+    }
+
+    for (i = 0; i < 6; ++i)
+    {
+
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "UNF_LIN"+IndexStr),4,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+10), ValuesFormat, \
+                                          QString::number(i+10)+"PHF"+IndexStr+".Истинные действующие значения линейных напряжений 1-й и 2-й групп"),5,(i-1),1,1);
+    }
+
+    for (i = 0; i < 3; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "PNF"+IndexStr),6,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+15), ValuesFormat, \
+                                          QString::number(i+15)+".Истинная активная мощность"),7,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "SNF"+IndexStr),6,i+3,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+18), ValuesFormat, \
+                                          QString::number(i+18)+".Кажущаяся полная мощность"),7,i+3,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "QNF"+IndexStr),8,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+21), ValuesFormat, \
+                                          QString::number(i+21)+".Реактивная мощность"),9,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Cos"+IndexStr),8,i+3,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+24), ValuesFormat, \
+                                          QString::number(i+24)+".Cos phi по истинной активной мощности"),9,i+3,1,1);
+    }
+
+    for (i = 0; i < 14; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "DD_in"+IndexStr),10,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+27), ValuesFormat, \
+                                          QString::number(i+27)+".Активная мощность по 1-й гармонике"),11,i,1,1);
+    }
+    lyout->addLayout(glyout);
+    lyout->addStretch(100);
+    w->setLayout(lyout);
+    w->setStyleSheet(WidgetFormat);
+    return w;
+}
+
+void TuneDialog85::FillBd1(QWidget *parent)
+{
+    //WDFunc::SetLBLText(parent, "value0", WDFunc::StringValueWithCheck(Bd_block0.Tmk));
+    //WDFunc::SetLBLText(parent, "value1", WDFunc::StringValueWithCheck(Bd_block0.Vbat));
+    /*WDFunc::SetLBLText(parent, "value0", WDFunc::StringValueWithCheck(Bda_block.Frequency, 3));
+    for (int i = 1; i < 4; i++)
+    {
+        int Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_81) ? 3 : 4;
+        WDFunc::SetLBLText(parent, "value"+QString::number(i), WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i-1], Precision));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+6), WDFunc::StringValueWithCheck(Bda_block.IUeff_filtered[i-1], Precision));
+        Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83) ? 4 : 3;
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+3), WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i+2], Precision));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+9), WDFunc::StringValueWithCheck(Bda_block.IUeff_filtered[i+2], Precision));
+
+    }
+    for (int i = 1; i < 7; i++)
+    {
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+12), WDFunc::StringValueWithCheck(Bda_block.phi_next_f[i-1], 4));
+    }
+
+    for (int i=0; i<3; i++)
+    {
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+19), WDFunc::StringValueWithCheck(Bda_block.PNatf[i], 3));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+22), WDFunc::StringValueWithCheck(Bda_block.SNatf[i], 3));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+25), WDFunc::StringValueWithCheck(Bda_block.QNatf[i], 3));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+28), WDFunc::StringValueWithCheck(Bda_block.CosPhiNat[i], 4));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+31), WDFunc::StringValueWithCheck(Bda_block.Pf[i], 3));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+34), WDFunc::StringValueWithCheck(Bda_block.Qf[i], 3));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+37), WDFunc::StringValueWithCheck(Bda_block.Sf[i], 3));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+40), WDFunc::StringValueWithCheck(Bda_block.CosPhi[i], 4));
+        float PHI = (180*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+43), WDFunc::StringValueWithCheck(PHI, 4));
+    }
+
+*/
+}
+
+void TuneDialog85::RefreshAnalogValues(int bdnum)
+{
+    switch (bdnum)
+    {
+
+    case C85_BDA_IN: // Блок #1
+        FillBd1(this);
+        break;
+
+    default:
+        return;
+    }
+}
+
+
 void TuneDialog85::GenerateReport()
 {
     // данные в таблицу уже получены или из файла, или в процессе работы
@@ -1104,7 +1237,7 @@ void TuneDialog85::GenerateReport()
    // ShowTable();
    // QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
     report = new LimeReport::ReportEngine(this);
-    QString path = StdFunc::GetSystemHomeDir()+"85report.lrxml";
+    QString path = StdFunc::GetSystemHomeDir()+"82report.lrxml";
     report->loadFromFile(path);
     report->dataManager()->addModel("maindata", ReportModel, false);
 
@@ -1163,8 +1296,108 @@ void TuneDialog85::GenerateReport()
            if(Cancelled)
            break;
 
+        TuneControlType = 0;
+        GetExternalData();
+        ReadAnalogMeasurements();
+        WaitNSeconds(1);
+        FillBd1(this);
 
+        /*if(PhiLoad[i] >= 180)
+        {
+            ReportHeader.PhiloadA = QString::number(360 + Bda_block.phi_next_f[3], 'f', 3);
+            RealData.d[0] = 360 - RealData.d[0];
+            RealData.d[1] = 360 - RealData.d[1];
+            RealData.d[2] = 360 - RealData.d[2];
+        }
+        else
+        {
+            ReportHeader.PhiloadA = QString::number(Bda_block.phi_next_f[3], 'f', 3);
+        }
 
+        ReportHeader.PhiloadB = QString::number(Bda_block.phi_next_f[4] - Bda_block.phi_next_f[1], 'f', 3);
+        if(PhiLoad[i] >= 90)
+        {
+           ReportHeader.PhiloadC = QString::number(360 + Bda_block.phi_next_f[5] - Bda_block.phi_next_f[2], 'f', 3);
+        }
+        else
+        {
+           ReportHeader.PhiloadC = QString::number(Bda_block.phi_next_f[5] - Bda_block.phi_next_f[2], 'f', 3);
+        }
+        ReportHeader.PhiUAB   = QString::number((-Bda_block.phi_next_f[1]), 'f', 3);
+        ReportHeader.PhiUBC   = QString::number((360 - Bda_block.phi_next_f[2] + Bda_block.phi_next_f[1]), 'f', 3);
+        ReportHeader.OffsetF  = QString::number(100*((Bda_block.Frequency/RealData.f[0])-1), 'f', 3);
+        ReportHeader.OffsetUA = QString::number(100*((Bda_block.IUefNat_filt[0]/RealData.u[0])-1), 'f', 3);
+        ReportHeader.OffsetUB = QString::number(100*((Bda_block.IUefNat_filt[1]/RealData.u[1])-1), 'f', 3);
+        ReportHeader.OffsetUC = QString::number(100*((Bda_block.IUefNat_filt[2]/RealData.u[2])-1), 'f', 3);
+        ReportHeader.OffsetIA = QString::number(100*((Bda_block.IUefNat_filt[3]/RealData.i[0])-1), 'f', 3);
+        ReportHeader.OffsetIB = QString::number(100*((Bda_block.IUefNat_filt[4]/RealData.i[1])-1), 'f', 3);
+        ReportHeader.OffsetIC = QString::number(100*((Bda_block.IUefNat_filt[5]/RealData.i[2])-1), 'f', 3);
+
+        // Играемся с углами, чтобы все было в одних значениях и с одинаковыми знаками
+        if((RealData.d[0]>0 && ReportHeader.PhiloadA.toFloat() < 0) || (RealData.d[0]<0 && ReportHeader.PhiloadA.toFloat() > 0))
+        {
+           ReportHeader.OffsetPhiloadA = QString::number(RealData.d[0] + ReportHeader.PhiloadA.toFloat(), 'f', 3);
+           RealData.d[0] = -RealData.d[0];
+        }
+        else
+           ReportHeader.OffsetPhiloadA = QString::number(RealData.d[0] - ReportHeader.PhiloadA.toFloat(), 'f', 3);
+
+        if((RealData.d[1]>0 && ReportHeader.PhiloadB.toFloat() < 0) || (RealData.d[1]<0 && ReportHeader.PhiloadB.toFloat() > 0))
+        {
+           ReportHeader.OffsetPhiloadB = QString::number(RealData.d[1] + ReportHeader.PhiloadB.toFloat(), 'f', 3);
+           RealData.d[1] = -RealData.d[1];
+        }
+        else
+           ReportHeader.OffsetPhiloadB = QString::number(RealData.d[1] - ReportHeader.PhiloadB.toFloat(), 'f', 3);
+
+        if((RealData.d[2]>0 && ReportHeader.PhiloadC.toFloat() < 0) || (RealData.d[2]<0 && ReportHeader.PhiloadC.toFloat() > 0))
+        {
+           ReportHeader.OffsetPhiloadC = QString::number(RealData.d[2] + ReportHeader.PhiloadC.toFloat(), 'f', 3);
+           RealData.d[2] = -RealData.d[2];
+        }
+        else
+           ReportHeader.OffsetPhiloadC = QString::number(RealData.d[2] - ReportHeader.PhiloadC.toFloat(), 'f', 3);
+
+        ReportHeader.OffsetPhiUAB = QString::number(RealData.dpsiU[0] - ReportHeader.PhiUAB.toFloat(), 'f', 3);
+        ReportHeader.OffsetPhiUBC = QString::number(RealData.dpsiU[1] - ReportHeader.PhiUBC.toFloat(), 'f', 3);
+
+        report->dataManager()->setReportVariable("FreqMIP", QString::number(RealData.f[0], 'f', 3));
+        report->dataManager()->setReportVariable("UA_MIP."+QString::number(i), QString::number(RealData.u[0], 'f', 3));
+        report->dataManager()->setReportVariable("UB_MIP."+QString::number(i), QString::number(RealData.u[1], 'f', 3));
+        report->dataManager()->setReportVariable("UC_MIP."+QString::number(i), QString::number(RealData.u[2], 'f', 3));
+        report->dataManager()->setReportVariable("IA_MIP."+QString::number(i), QString::number(RealData.i[0], 'f', 3));
+        report->dataManager()->setReportVariable("IB_MIP."+QString::number(i), QString::number(RealData.i[1], 'f', 3));
+        report->dataManager()->setReportVariable("IC_MIP."+QString::number(i), QString::number(RealData.i[2], 'f', 3));
+        report->dataManager()->setReportVariable("PhiLA_MIP."+QString::number(i), QString::number(RealData.d[0], 'f', 3));
+        report->dataManager()->setReportVariable("PhiLB_MIP."+QString::number(i), QString::number(RealData.d[1], 'f', 3));
+        report->dataManager()->setReportVariable("PhiLC_MIP."+QString::number(i), QString::number(RealData.d[2], 'f', 3));
+        report->dataManager()->setReportVariable("PhiUab_MIP."+QString::number(i), QString::number(RealData.dpsiU[0], 'f', 3));
+        report->dataManager()->setReportVariable("PhiUbc_MIP."+QString::number(i), QString::number(RealData.dpsiU[1], 'f', 3));
+        report->dataManager()->setReportVariable("Freq."+QString::number(i), QString::number(Bda_block.Frequency, 'f', 3));
+        report->dataManager()->setReportVariable("UA."+QString::number(i), QString::number(Bda_block.IUefNat_filt[0], 'f', 3));
+        report->dataManager()->setReportVariable("UB."+QString::number(i), QString::number(Bda_block.IUefNat_filt[1], 'f', 3));
+        report->dataManager()->setReportVariable("UC."+QString::number(i), QString::number(Bda_block.IUefNat_filt[2], 'f', 3));
+        report->dataManager()->setReportVariable("IA."+QString::number(i), QString::number(Bda_block.IUefNat_filt[3], 'f', 3));
+        report->dataManager()->setReportVariable("IB."+QString::number(i), QString::number(Bda_block.IUefNat_filt[4], 'f', 3));
+        report->dataManager()->setReportVariable("IC."+QString::number(i), QString::number(Bda_block.IUefNat_filt[5], 'f', 3));
+        report->dataManager()->setReportVariable("PhiLA."+QString::number(i), ReportHeader.PhiloadA);
+        report->dataManager()->setReportVariable("PhiLB."+QString::number(i), ReportHeader.PhiloadB);
+        report->dataManager()->setReportVariable("PhiLC."+QString::number(i), ReportHeader.PhiloadC);
+        report->dataManager()->setReportVariable("PhiUab."+QString::number(i), ReportHeader.PhiUAB);
+        report->dataManager()->setReportVariable("PhiUbc."+QString::number(i), ReportHeader.PhiUBC);
+        report->dataManager()->setReportVariable("OffsetF."+QString::number(i), ReportHeader.OffsetF);
+        report->dataManager()->setReportVariable("OffsetUA."+QString::number(i), ReportHeader.OffsetUA);
+        report->dataManager()->setReportVariable("OffsetUB."+QString::number(i), ReportHeader.OffsetUB);
+        report->dataManager()->setReportVariable("OffsetUC."+QString::number(i), ReportHeader.OffsetUC);
+        report->dataManager()->setReportVariable("OffsetIA."+QString::number(i), ReportHeader.OffsetIA);
+        report->dataManager()->setReportVariable("OffsetIB."+QString::number(i), ReportHeader.OffsetIB);
+        report->dataManager()->setReportVariable("OffsetIC."+QString::number(i), ReportHeader.OffsetIC);
+        report->dataManager()->setReportVariable("OffsetPhiloadA."+QString::number(i), ReportHeader.OffsetPhiloadA);
+        report->dataManager()->setReportVariable("OffsetPhiloadB."+QString::number(i), ReportHeader.OffsetPhiloadB);
+        report->dataManager()->setReportVariable("OffsetPhiloadC."+QString::number(i), ReportHeader.OffsetPhiloadC);
+        report->dataManager()->setReportVariable("OffsetPhiUAB."+QString::number(i), ReportHeader.OffsetPhiUAB);
+        report->dataManager()->setReportVariable("OffsetPhiUBC."+QString::number(i), ReportHeader.OffsetPhiUBC);
+    */
     }
 
     if (EMessageBox::question(this,"Сохранить","Сохранить протокол поверки?"))
@@ -1183,5 +1416,4 @@ void TuneDialog85::GenerateReport()
     }
     delete report;
 }
-
 #endif

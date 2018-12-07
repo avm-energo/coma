@@ -143,7 +143,7 @@ private:
 
     };
 
-    Bda_in_struct Bda_Block;
+    Bda_in_struct Bda_block;
     iec104 *mipcanal;
     QStandardItemModel *ReportModel, *ViewModel; // модель, в которую заносим данные для отчёта
 
@@ -229,6 +229,11 @@ private:
     int LoadWorkConfig();
     int StartCheckAnalogValues(double u, double i, double deg, bool tol); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0: начальная точность, 1 - повышенная
     void PrepareConsts();
+    void RefreshAnalogValues(int bdnum);
+    QWidget *Bd1W(QWidget *parent);
+    void FillBd1(QWidget *parent);
+
+    QString ValuesFormat, WidgetFormat;
 
 private slots:
 #if PROGSIZE != PROGSIZE_EMUL
