@@ -28,7 +28,11 @@
 
 TuneDialog85::TuneDialog85(QVector<S2::DataRec> &S2Config, QWidget *parent) : EAbstractTuneDialog(parent)
 {
-    C85 = new Config85(S2Config);
+    this->S2ConfigForTune = &S2Config;
+
+    C85 = new Config85(*S2ConfigForTune);
+    ReportModel = new QStandardItemModel;
+    ViewModel = new QStandardItemModel;
     SetBac(&Bac_block, BoardTypes::BT_BASE, sizeof(Bac_block));
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
@@ -655,7 +659,7 @@ float TuneDialog85::ToFloat(QString text)
 #if PROGSIZE != PROGSIZE_EMUL
 int TuneDialog85::SaveWorkConfig()
 {
-    if (Commands::GetFile(CM_CONFIGFILE,S2Config) == Error::ER_NOERROR)
+    if (Commands::GetFile(CM_CONFIGFILE,S2ConfigForTune) == Error::ER_NOERROR)
         memcpy(&Bci_block_work,&C85->Bci_block,sizeof(Config85::Bci));
     else
         return Error::ER_GENERALERROR;
@@ -1059,7 +1063,7 @@ int TuneDialog85::LoadWorkConfig()
 {
     // пишем ранее запомненный конфигурационный блок
     memcpy(&C85->Bci_block,&Bci_block_work,sizeof(Config85::Bci));
-    if (Commands::WriteFile(&C85->Bci_block, CM_CONFIGFILE, S2Config) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&C85->Bci_block, CM_CONFIGFILE, S2ConfigForTune) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
 }
@@ -1124,10 +1128,10 @@ QWidget *TuneDialog85::Bd1W(QWidget *parent)
     lyout->addLayout(hlyout);
     for (i = 1; i < 7; ++i)
     {
-        QString IndexStr = "[" + QString::number(i) + "]";
+        QString IndexStr = "[" + QString::number(i-1) + "]";
         glyout->addWidget(WDFunc::NewLBL(parent, "IUNF_1GR"+IndexStr),0,(i-1),1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i), ValuesFormat, \
-                                          QString::number(i)+"IUNF"+IndexStr+".Истинные действующие значения сигналов"),1,(i-1),1,1);
+                                          QString::number(i)+"IUNF_1GR"+IndexStr+".Истинные действующие значения сигналов 1-й группы"),1,(i-1),1,1);
     }
 
     for (i = 0; i < 3; ++i)
@@ -1135,7 +1139,7 @@ QWidget *TuneDialog85::Bd1W(QWidget *parent)
         QString IndexStr = "[" + QString::number(i) + "]";
         glyout->addWidget(WDFunc::NewLBL(parent, "UNF_2GR"+IndexStr),2,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+7), ValuesFormat, \
-                                          QString::number(i+7)+"IUF"+IndexStr+".Действующие значения сигналов по 1-й гармонике\nотносительно ф. А 1-й группы"),3,(i-1),1,1);
+                                          QString::number(i+7)+"UNF_2GR"+IndexStr+".Действующие значения сигналов напряжений 2-й группы"),3,i,1,1);
     }
 
     for (i = 0; i < 6; ++i)
@@ -1144,7 +1148,7 @@ QWidget *TuneDialog85::Bd1W(QWidget *parent)
         QString IndexStr = "[" + QString::number(i) + "]";
         glyout->addWidget(WDFunc::NewLBL(parent, "UNF_LIN"+IndexStr),4,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+10), ValuesFormat, \
-                                          QString::number(i+10)+"PHF"+IndexStr+".Истинные действующие значения линейных напряжений 1-й и 2-й групп"),5,(i-1),1,1);
+                                          QString::number(i+10)+"UNF_LIN"+IndexStr+".Истинные действующие значения линейных напряжений 1-й и 2-й групп"),5,i,1,1);
     }
 
     for (i = 0; i < 3; ++i)
@@ -1164,13 +1168,13 @@ QWidget *TuneDialog85::Bd1W(QWidget *parent)
                                           QString::number(i+24)+".Cos phi по истинной активной мощности"),9,i+3,1,1);
     }
 
-    for (i = 0; i < 14; ++i)
+    /*for (i = 0; i < 14; ++i)
     {
         QString IndexStr = "[" + QString::number(i) + "]";
         glyout->addWidget(WDFunc::NewLBL(parent, "DD_in"+IndexStr),10,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+27), ValuesFormat, \
-                                          QString::number(i+27)+".Активная мощность по 1-й гармонике"),11,i,1,1);
-    }
+                                          QString::number(i+27)+".Дискреты"),11,i,1,1);
+    }*/
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
@@ -1182,37 +1186,33 @@ void TuneDialog85::FillBd1(QWidget *parent)
 {
     //WDFunc::SetLBLText(parent, "value0", WDFunc::StringValueWithCheck(Bd_block0.Tmk));
     //WDFunc::SetLBLText(parent, "value1", WDFunc::StringValueWithCheck(Bd_block0.Vbat));
-    /*WDFunc::SetLBLText(parent, "value0", WDFunc::StringValueWithCheck(Bda_block.Frequency, 3));
-    for (int i = 1; i < 4; i++)
-    {
-        int Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_81) ? 3 : 4;
-        WDFunc::SetLBLText(parent, "value"+QString::number(i), WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i-1], Precision));
-        WDFunc::SetLBLText(parent, "value"+QString::number(i+6), WDFunc::StringValueWithCheck(Bda_block.IUeff_filtered[i-1], Precision));
-        Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83) ? 4 : 3;
-        WDFunc::SetLBLText(parent, "value"+QString::number(i+3), WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i+2], Precision));
-        WDFunc::SetLBLText(parent, "value"+QString::number(i+9), WDFunc::StringValueWithCheck(Bda_block.IUeff_filtered[i+2], Precision));
-
-    }
+    WDFunc::SetLBLText(parent, "value0", WDFunc::StringValueWithCheck(Bda_block.Frequency, 3));
     for (int i = 1; i < 7; i++)
     {
-        WDFunc::SetLBLText(parent, "value"+QString::number(i+12), WDFunc::StringValueWithCheck(Bda_block.phi_next_f[i-1], 4));
+        int Precision = 4;
+        WDFunc::SetLBLText(parent, "value"+QString::number(i), WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i-1], Precision));
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+7), WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i+7], 4));
+    }
+
+    for (int i = 0; i < 6; ++i)
+    {
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+10), WDFunc::StringValueWithCheck(Bda_block.UefNatLin_filt[i], 4));
+
     }
 
     for (int i=0; i<3; i++)
     {
-        WDFunc::SetLBLText(parent, "value"+QString::number(i+19), WDFunc::StringValueWithCheck(Bda_block.PNatf[i], 3));
-        WDFunc::SetLBLText(parent, "value"+QString::number(i+22), WDFunc::StringValueWithCheck(Bda_block.SNatf[i], 3));
-        WDFunc::SetLBLText(parent, "value"+QString::number(i+25), WDFunc::StringValueWithCheck(Bda_block.QNatf[i], 3));
-        WDFunc::SetLBLText(parent, "value"+QString::number(i+28), WDFunc::StringValueWithCheck(Bda_block.CosPhiNat[i], 4));
-        WDFunc::SetLBLText(parent, "value"+QString::number(i+31), WDFunc::StringValueWithCheck(Bda_block.Pf[i], 3));
-        WDFunc::SetLBLText(parent, "value"+QString::number(i+34), WDFunc::StringValueWithCheck(Bda_block.Qf[i], 3));
-        WDFunc::SetLBLText(parent, "value"+QString::number(i+37), WDFunc::StringValueWithCheck(Bda_block.Sf[i], 3));
-        WDFunc::SetLBLText(parent, "value"+QString::number(i+40), WDFunc::StringValueWithCheck(Bda_block.CosPhi[i], 4));
-        float PHI = (180*qAsin(Bda_block.Qf[i]/Bda_block.Sf[i])/M_PI);
-        WDFunc::SetLBLText(parent, "value"+QString::number(i+43), WDFunc::StringValueWithCheck(PHI, 4));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+15), WDFunc::StringValueWithCheck(Bda_block.PNatf[i], 3));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+18), WDFunc::StringValueWithCheck(Bda_block.SNatf[i], 3));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+21), WDFunc::StringValueWithCheck(Bda_block.QNatf[i], 3));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+24), WDFunc::StringValueWithCheck(Bda_block.CosPhiNat[i], 4));
     }
 
-*/
+
 }
 
 void TuneDialog85::RefreshAnalogValues(int bdnum)

@@ -1348,7 +1348,7 @@ QWidget *TuneDialog80::Bd1W(QWidget *parent)
     lyout->addLayout(hlyout);
     for (i = 1; i < 7; ++i)
     {
-        QString IndexStr = "[" + QString::number(i) + "]";
+        QString IndexStr = "[" + QString::number(i-1) + "]";
         glyout->addWidget(WDFunc::NewLBL(parent, "IUNF"+IndexStr),0,(i-1),1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i), ValuesFormat, \
                                           QString::number(i)+"IUNF"+IndexStr+".Истинные действующие значения сигналов"),1,(i-1),1,1);
