@@ -16,6 +16,7 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
+#include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
@@ -246,14 +247,14 @@ void A1Dialog::ConditionDataDialog()
     QString tmps;
     if (Autonomous)
     {
-        if (ReportHeader.Temp.toFloat() == FLT_MAX)
+        if (StdFunc::FloatInRange(ReportHeader.Temp.toFloat(), FLT_MAX))
             tmps = "";
         else
             tmps = ReportHeader.Temp;
     }
     else
     {
-        if (ChA1->Bda_out_an.Tamb == FLT_MAX)
+        if (StdFunc::FloatInRange(ChA1->Bda_out_an.Tamb, FLT_MAX))
             tmps = "";
         else
             tmps = ReportHeader.Temp;
@@ -262,14 +263,14 @@ void A1Dialog::ConditionDataDialog()
     glyout->addWidget(WDFunc::NewLBL(this, "Влажность воздуха, %"), row, 0, 1, 1, Qt::AlignRight);
     if (Autonomous)
     {
-        if (ReportHeader.Humidity.toFloat() == FLT_MAX)
+        if (StdFunc::FloatInRange(ReportHeader.Humidity.toFloat(), FLT_MAX))
             tmps = "";
         else
             tmps = ReportHeader.Humidity;
     }
     else
     {
-        if (ChA1->Bda_out_an.Hamb == FLT_MAX)
+        if (StdFunc::FloatInRange(ChA1->Bda_out_an.Hamb, FLT_MAX))
             tmps = "";
         else
             tmps = ReportHeader.Humidity;

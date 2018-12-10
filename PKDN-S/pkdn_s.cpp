@@ -35,6 +35,7 @@
 #include "../dialogs/a1dialog.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/emessagebox.h"
+#include "../gen/maindef.h"
 #include "../gen/error.h"
 #include "../gen/colors.h"
 #include "../gen/modulebsi.h"
@@ -42,7 +43,6 @@
 pkdn_s::pkdn_s(QWidget *parent)
     : MainWindow(parent)
 {
-//    SetParent(this);
     SetupMenubar();
     SetupUI();
 }
@@ -55,8 +55,6 @@ void pkdn_s::SetupUI()
     setMinimumSize(QSize(800, 600));
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
-//    lyout->setSpacing(0);
-//    lyout->setMargin(0);
     setMinimumHeight(650);
 
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -98,7 +96,6 @@ void pkdn_s::SetupUI()
     hlyout->addWidget(tb);
     hlyout->addWidget(HthWidget());
     lyout->addLayout(hlyout);
-//    lyout->addWidget(HthWidget());
     lyout->addWidget(Least());
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
@@ -120,7 +117,8 @@ void pkdn_s::AddActionsToMenuBar(QMenuBar *menubar)
 
 void pkdn_s::Stage3()
 {
-    if (ModuleBSI::GetMType(BT_BASE) != MTB_A1) // не тот тип модуля
+    quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8;
+    if ((MTypeB != MTB_A1) && (ModuleBSI::GetMType(BoardTypes::BT_BASE) != MTB_A1)) // не тот тип модуля
     {
         EMessageBox::error(this, "Ошибка", "Неверный тип модуля");
         Disconnect();
@@ -128,7 +126,7 @@ void pkdn_s::Stage3()
     }
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-    if (MainTW == 0)
+    if (MainTW == nullptr)
         return;
     InfoDialog *idlg = new InfoDialog;
     connect(this,SIGNAL(BsiRefresh()),idlg,SLOT(FillBsi()));
@@ -140,7 +138,6 @@ void pkdn_s::Stage3()
     connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
     connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
     CheckDialogA1 *chdlg = new CheckDialogA1(BT_BASE);
-//    oscdialog *OscD = new oscdialog;
 //    fwupdialog *FwUpD = new fwupdialog;
 #if PROGSIZE >= PROGSIZE_LARGE
     TuneDialogA1 *tdlg = new TuneDialogA1;
