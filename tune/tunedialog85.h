@@ -20,7 +20,7 @@
 #define HZ50    50.0
 // currents
 #define I1      1.0
-#define I4      4.0
+#define I5      5.0
 
 // parameters for GetExtData
 #define TD_GED_U    0x01 // напряжение
@@ -69,8 +69,8 @@ private:
     struct Bac
     {
         float KmU[3];
-        float KmI_1[3];
-        float KmI_4[3];
+        float KmI_1[3];   // Коррекция тока при коэффициенте АЦП = 1 при Iном = 5А
+        float KmI_4[3];   // Коррекция тока при коэффициенте АЦП = 4 при Iном = 1А
         float K_freq;
         float KmU2[3];
     };
@@ -220,6 +220,7 @@ private:
     int Start7_3_9();
     int SaveUeff();
     int ShowRetomDialog(double U, double I);
+    int ShowRetomDialog2(double U);
     //int TuneDialog85::StartCheckAnalogValues(double u, double i, double deg, bool tol); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0: начальная точность, 1 - повышенная
     int CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct);
     bool SetConfA(int i2nom);
@@ -232,6 +233,7 @@ private:
     void RefreshAnalogValues(int bdnum);
     QWidget *Bd1W(QWidget *parent);
     void FillBd1(QWidget *parent);
+    void FillNewBac();
 
     QString ValuesFormat, WidgetFormat;
 
