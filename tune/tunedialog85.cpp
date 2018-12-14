@@ -36,6 +36,7 @@ TuneDialog85::TuneDialog85(QVector<S2::DataRec> &S2Config, QWidget *parent) : EA
     SetBac(&Bac_block, BoardTypes::BT_BASE, sizeof(Bac_block));
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
+    GenerateReport();
 }
 
 
@@ -393,7 +394,8 @@ int TuneDialog85::Start7_3_2()
 
 int TuneDialog85::Start7_3_3()
 {
-    ShowRetomDialog(60.0, I1);
+    EMessageBox::question(this,"Сообщение","Подключите напряженческие выходы РЕТОМа ко входам ПЕРВОЙ тройки напряжений модуля!");
+    ShowRetomDialog(V60, I1);
     return Error::ER_NOERROR;
 }
 
@@ -416,7 +418,9 @@ int TuneDialog85::Start7_3_4()
 
 int TuneDialog85::Start7_3_5()
 {
-    return ShowRetomDialog2(60.0);
+    EMessageBox::question(this,"Сообщение","Подключите напряженческие выходы РЕТОМа ко входам ВТОРОЙ тройки напряжений модуля!");
+
+    return ShowRetomDialog2(V60);
 }
 
 int TuneDialog85::Start7_3_6_2()
@@ -454,6 +458,7 @@ int TuneDialog85::Start7_3_7_2()
 
 int TuneDialog85::Start7_3_7_3()
 {
+    EMessageBox::question(this,"Сообщение","Подключите напряженческие выходы РЕТОМа ко входам ПЕРВОЙ тройки напряжений модуля!");
     ShowRetomDialog(V60, I1);
     if (Start7_3_2() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
@@ -1278,7 +1283,7 @@ void TuneDialog85::GenerateReport()
    // ShowTable();
    // QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
     report = new LimeReport::ReportEngine(this);
-    QString path = StdFunc::GetSystemHomeDir()+"82report.lrxml";
+    QString path = StdFunc::GetSystemHomeDir()+"85report.lrxml";
     report->loadFromFile(path);
     report->dataManager()->addModel("maindata", ReportModel, false);
 
@@ -1291,7 +1296,7 @@ void TuneDialog85::GenerateReport()
     report->dataManager()->setReportVariable("Month", month);
     report->dataManager()->setReportVariable("Yr", yr);
 
-    for(int i=0; i<21; i++) // 21 таблица!
+    /*for(int i=0; i<21; i++) // 21 таблица!
     {
         if(i==0)
         {
@@ -1438,8 +1443,8 @@ void TuneDialog85::GenerateReport()
         report->dataManager()->setReportVariable("OffsetPhiloadC."+QString::number(i), ReportHeader.OffsetPhiloadC);
         report->dataManager()->setReportVariable("OffsetPhiUAB."+QString::number(i), ReportHeader.OffsetPhiUAB);
         report->dataManager()->setReportVariable("OffsetPhiUBC."+QString::number(i), ReportHeader.OffsetPhiUBC);
-    */
-    }
+
+    }*/
 
     if (EMessageBox::question(this,"Сохранить","Сохранить протокол поверки?"))
     {
