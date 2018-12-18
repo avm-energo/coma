@@ -1296,7 +1296,7 @@ void TuneDialog85::GenerateReport()
     report->dataManager()->setReportVariable("Month", month);
     report->dataManager()->setReportVariable("Yr", yr);
 
-    /*for(int i=0; i<21; i++) // 21 таблица!
+    for(int i=0; i<22; i++)
     {
         if(i==0)
         {
@@ -1305,6 +1305,8 @@ void TuneDialog85::GenerateReport()
                WaitNSeconds(1);
                Start7_3_7_2();  // Переход на конфигурацию 1А
             }
+
+            EMessageBox::question(this,"Сообщение","Подключите напряженческие выходы РЕТОМа ко входам ПЕРВОЙ тройки напряжений модуля!");
         }
 
         if(i==6)
@@ -1316,11 +1318,17 @@ void TuneDialog85::GenerateReport()
             }
         }
 
+        if(i==17)
+        {
+            EMessageBox::question(this,"Сообщение","Подключите напряженческие выходы РЕТОМа ко входам ВТОРОЙ тройки напряжений модуля!");
+
+        }
+
             QDialog *dlg = new QDialog;
             QVBoxLayout *lyout = new QVBoxLayout;
             QLabel *lbl = new QLabel;
             lbl=new QLabel("Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc) с углами "\
-                           "нагрузки по всем фазам " +QString::number(PhiLoad[i])+ " град. и частотой 51 Гц;");
+                           "нагрузки по всем фазам 0 град. и частотой 51 Гц;");
             lyout->addWidget(lbl);
             lbl=new QLabel("Значения напряжений по фазам " +QString::number(U[i])+ " В;");
             lyout->addWidget(lbl);
@@ -1370,7 +1378,7 @@ void TuneDialog85::GenerateReport()
            ReportHeader.PhiloadC = QString::number(Bda_block.phi_next_f[5] - Bda_block.phi_next_f[2], 'f', 3);
         }
         ReportHeader.PhiUAB   = QString::number((-Bda_block.phi_next_f[1]), 'f', 3);
-        ReportHeader.PhiUBC   = QString::number((360 - Bda_block.phi_next_f[2] + Bda_block.phi_next_f[1]), 'f', 3);
+        ReportHeader.PhiUBC   = QString::number((360 - Bda_block.phi_next_f[2] + Bda_block.phi_next_f[1]), 'f', 3);*/
         ReportHeader.OffsetF  = QString::number(100*((Bda_block.Frequency/RealData.f[0])-1), 'f', 3);
         ReportHeader.OffsetUA = QString::number(100*((Bda_block.IUefNat_filt[0]/RealData.u[0])-1), 'f', 3);
         ReportHeader.OffsetUB = QString::number(100*((Bda_block.IUefNat_filt[1]/RealData.u[1])-1), 'f', 3);
@@ -1379,7 +1387,7 @@ void TuneDialog85::GenerateReport()
         ReportHeader.OffsetIB = QString::number(100*((Bda_block.IUefNat_filt[4]/RealData.i[1])-1), 'f', 3);
         ReportHeader.OffsetIC = QString::number(100*((Bda_block.IUefNat_filt[5]/RealData.i[2])-1), 'f', 3);
 
-        // Играемся с углами, чтобы все было в одних значениях и с одинаковыми знаками
+        /*// Играемся с углами, чтобы все было в одних значениях и с одинаковыми знаками
         if((RealData.d[0]>0 && ReportHeader.PhiloadA.toFloat() < 0) || (RealData.d[0]<0 && ReportHeader.PhiloadA.toFloat() > 0))
         {
            ReportHeader.OffsetPhiloadA = QString::number(RealData.d[0] + ReportHeader.PhiloadA.toFloat(), 'f', 3);
@@ -1406,7 +1414,7 @@ void TuneDialog85::GenerateReport()
 
         ReportHeader.OffsetPhiUAB = QString::number(RealData.dpsiU[0] - ReportHeader.PhiUAB.toFloat(), 'f', 3);
         ReportHeader.OffsetPhiUBC = QString::number(RealData.dpsiU[1] - ReportHeader.PhiUBC.toFloat(), 'f', 3);
-
+*/
         report->dataManager()->setReportVariable("FreqMIP", QString::number(RealData.f[0], 'f', 3));
         report->dataManager()->setReportVariable("UA_MIP."+QString::number(i), QString::number(RealData.u[0], 'f', 3));
         report->dataManager()->setReportVariable("UB_MIP."+QString::number(i), QString::number(RealData.u[1], 'f', 3));
@@ -1414,11 +1422,6 @@ void TuneDialog85::GenerateReport()
         report->dataManager()->setReportVariable("IA_MIP."+QString::number(i), QString::number(RealData.i[0], 'f', 3));
         report->dataManager()->setReportVariable("IB_MIP."+QString::number(i), QString::number(RealData.i[1], 'f', 3));
         report->dataManager()->setReportVariable("IC_MIP."+QString::number(i), QString::number(RealData.i[2], 'f', 3));
-        report->dataManager()->setReportVariable("PhiLA_MIP."+QString::number(i), QString::number(RealData.d[0], 'f', 3));
-        report->dataManager()->setReportVariable("PhiLB_MIP."+QString::number(i), QString::number(RealData.d[1], 'f', 3));
-        report->dataManager()->setReportVariable("PhiLC_MIP."+QString::number(i), QString::number(RealData.d[2], 'f', 3));
-        report->dataManager()->setReportVariable("PhiUab_MIP."+QString::number(i), QString::number(RealData.dpsiU[0], 'f', 3));
-        report->dataManager()->setReportVariable("PhiUbc_MIP."+QString::number(i), QString::number(RealData.dpsiU[1], 'f', 3));
         report->dataManager()->setReportVariable("Freq."+QString::number(i), QString::number(Bda_block.Frequency, 'f', 3));
         report->dataManager()->setReportVariable("UA."+QString::number(i), QString::number(Bda_block.IUefNat_filt[0], 'f', 3));
         report->dataManager()->setReportVariable("UB."+QString::number(i), QString::number(Bda_block.IUefNat_filt[1], 'f', 3));
@@ -1426,11 +1429,6 @@ void TuneDialog85::GenerateReport()
         report->dataManager()->setReportVariable("IA."+QString::number(i), QString::number(Bda_block.IUefNat_filt[3], 'f', 3));
         report->dataManager()->setReportVariable("IB."+QString::number(i), QString::number(Bda_block.IUefNat_filt[4], 'f', 3));
         report->dataManager()->setReportVariable("IC."+QString::number(i), QString::number(Bda_block.IUefNat_filt[5], 'f', 3));
-        report->dataManager()->setReportVariable("PhiLA."+QString::number(i), ReportHeader.PhiloadA);
-        report->dataManager()->setReportVariable("PhiLB."+QString::number(i), ReportHeader.PhiloadB);
-        report->dataManager()->setReportVariable("PhiLC."+QString::number(i), ReportHeader.PhiloadC);
-        report->dataManager()->setReportVariable("PhiUab."+QString::number(i), ReportHeader.PhiUAB);
-        report->dataManager()->setReportVariable("PhiUbc."+QString::number(i), ReportHeader.PhiUBC);
         report->dataManager()->setReportVariable("OffsetF."+QString::number(i), ReportHeader.OffsetF);
         report->dataManager()->setReportVariable("OffsetUA."+QString::number(i), ReportHeader.OffsetUA);
         report->dataManager()->setReportVariable("OffsetUB."+QString::number(i), ReportHeader.OffsetUB);
@@ -1438,13 +1436,8 @@ void TuneDialog85::GenerateReport()
         report->dataManager()->setReportVariable("OffsetIA."+QString::number(i), ReportHeader.OffsetIA);
         report->dataManager()->setReportVariable("OffsetIB."+QString::number(i), ReportHeader.OffsetIB);
         report->dataManager()->setReportVariable("OffsetIC."+QString::number(i), ReportHeader.OffsetIC);
-        report->dataManager()->setReportVariable("OffsetPhiloadA."+QString::number(i), ReportHeader.OffsetPhiloadA);
-        report->dataManager()->setReportVariable("OffsetPhiloadB."+QString::number(i), ReportHeader.OffsetPhiloadB);
-        report->dataManager()->setReportVariable("OffsetPhiloadC."+QString::number(i), ReportHeader.OffsetPhiloadC);
-        report->dataManager()->setReportVariable("OffsetPhiUAB."+QString::number(i), ReportHeader.OffsetPhiUAB);
-        report->dataManager()->setReportVariable("OffsetPhiUBC."+QString::number(i), ReportHeader.OffsetPhiUBC);
 
-    }*/
+    }
 
     if (EMessageBox::question(this,"Сохранить","Сохранить протокол поверки?"))
     {
