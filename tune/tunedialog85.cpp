@@ -36,7 +36,6 @@ TuneDialog85::TuneDialog85(QVector<S2::DataRec> &S2Config, QWidget *parent) : EA
     SetBac(&Bac_block, BoardTypes::BT_BASE, sizeof(Bac_block));
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
-    GenerateReport();
 }
 
 
@@ -137,7 +136,7 @@ void TuneDialog85::SetupUI()
     gblyout->addLayout(hlyout);
     hlyout = MipPars(11, "Угол нагрузки");
     gblyout->addLayout(hlyout);
-    hlyout = MipPars(14, "Фазовый угол напряжения");
+    hlyout = MipPars(43, "Фазовый угол напряжения");
     gblyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     lbl = new QLabel("10. Ток N");
@@ -369,7 +368,7 @@ int TuneDialog85::Start7_3_1_1()
     {
         // запись настроечных коэффициентов в модуль
         SetDefCoefs();
-        if (Commands::WriteBac(BT_NONE, &Bac_block, sizeof(Bac)) == Error::ER_NOERROR)
+        if (Commands::WriteBac(BT_BASE, &Bac_block, sizeof(Bac)) == Error::ER_NOERROR)
         {
             // получение настроечных коэффициентов от модуля
             if (Commands::GetBac(BT_NONE, &Bac_block, sizeof(Bac)) != Error::ER_NOERROR)
@@ -519,7 +518,7 @@ int TuneDialog85::Start7_3_8_1()
 {
     FillNewBac();
     // 1. Отправляем настроечные параметры в модуль
-    return Commands::WriteBac(BT_MEZONIN, &New_Bac_block, sizeof(Bac));
+    return Error::ER_NOERROR;//Commands::WriteBac(BT_BASE, &New_Bac_block, sizeof(Bac));
 }
 
 int TuneDialog85::Start7_3_8_2()
@@ -537,7 +536,7 @@ int TuneDialog85::Start7_3_9()
             return Error::ER_GENERALERROR;
         // Пишем в модуль посчитанные регулировочные коэффициенты
         WaitNSeconds(5);
-        if (Commands::WriteBac(BT_MEZONIN, &New_Bac_block, sizeof(Bac)) != Error::ER_NOERROR)  // Григорий Матвеевич попросил писать коэффициенты сразу в модуль
+        if (Commands::WriteBac(BT_BASE, &New_Bac_block, sizeof(Bac)) != Error::ER_NOERROR)  // Григорий Матвеевич попросил писать коэффициенты сразу в модуль
             return Error::ER_GENERALERROR;
         // переходим на прежнюю конфигурацию
         // измеряем и проверяем
@@ -724,10 +723,10 @@ int TuneDialog85::GetExternalData()
         {
             for (int i=1; i<4; ++i)
             {
-                RealData.f[i] = MipDat[i];
-                RealData.u[i] = MipDat[i+3];
-                RealData.i[i] = MipDat[i+6];
-                RealData.d[i] = MipDat[i+10];
+                RealData.f[i-1] = MipDat[i];
+                RealData.u[i-1] = MipDat[i+3];
+                RealData.i[i-1] = MipDat[i+6];
+                RealData.d[i-1] = MipDat[i+10];
             }
             return Error::ER_NOERROR;
         }
@@ -867,7 +866,7 @@ int TuneDialog85::CheckMip()
     double *VTC, *TTC;
     VTC = ValuesToCheck;
     TTC = ThresholdsToCheck;
-    for (int i = 1; i < 10; i++)
+    for (int i = 0; i < 10; i++)
     {
         QString tmps;
         WDFunc::LBLText(this, "mip"+QString::number(i), tmps);
@@ -962,15 +961,16 @@ void TuneDialog85::StartMip()
 void TuneDialog85::ParseMipData(Parse104::Signals104 &Signal)
 {
     // precision
-    static int Precisions[34] = {0,4,4,4,3,3,3,4,4,4,4,3,3,3,3,3,3,1,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3};
+    static int Precisions[46] = {0,4,4,4,3,3,3,4,4,4,4,3,3,3,3,3,3,1,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3};
     // приём из mipcanal::Signal номера сигнала (SigNum) и его значения (SigVal) и его дальнейшая обработка
     quint32 index = Signal.SigNum;
     if (index != quint32(-1))
     {
-        if ((index >= 11) && (index <= 13))
-            MipDat[index] = -MipDat[index]; // у МИП-а знак угла отрицательный
-        WDFunc::SetLBLText(this, "mip"+QString::number(index), QString::number(Signal.SigVal, 'f', Precisions[index]));
         MipDat[index] = Signal.SigVal;
+        /*if ((index >= 11) && (index <= 13))
+            MipDat[index] = -MipDat[index]; // у МИП-а знак угла отрицательный*/
+        WDFunc::SetLBLText(this, "mip"+QString::number(index), QString::number(Signal.SigVal, 'f', Precisions[index]));
+
     }
 }
 
@@ -1380,9 +1380,19 @@ void TuneDialog85::GenerateReport()
         ReportHeader.PhiUAB   = QString::number((-Bda_block.phi_next_f[1]), 'f', 3);
         ReportHeader.PhiUBC   = QString::number((360 - Bda_block.phi_next_f[2] + Bda_block.phi_next_f[1]), 'f', 3);*/
         ReportHeader.OffsetF  = QString::number(100*((Bda_block.Frequency/RealData.f[0])-1), 'f', 3);
-        ReportHeader.OffsetUA = QString::number(100*((Bda_block.IUefNat_filt[0]/RealData.u[0])-1), 'f', 3);
-        ReportHeader.OffsetUB = QString::number(100*((Bda_block.IUefNat_filt[1]/RealData.u[1])-1), 'f', 3);
-        ReportHeader.OffsetUC = QString::number(100*((Bda_block.IUefNat_filt[2]/RealData.u[2])-1), 'f', 3);
+
+        if(i < 17)
+        {
+            ReportHeader.OffsetUA = QString::number(100*((Bda_block.IUefNat_filt[0]/RealData.u[0])-1), 'f', 3);
+            ReportHeader.OffsetUB = QString::number(100*((Bda_block.IUefNat_filt[1]/RealData.u[1])-1), 'f', 3);
+            ReportHeader.OffsetUC = QString::number(100*((Bda_block.IUefNat_filt[2]/RealData.u[2])-1), 'f', 3);
+        }
+        else
+        {
+            ReportHeader.OffsetUA = QString::number(100*((Bda_block.IUefNat_filt[6]/RealData.u[0])-1), 'f', 3);
+            ReportHeader.OffsetUB = QString::number(100*((Bda_block.IUefNat_filt[7]/RealData.u[1])-1), 'f', 3);
+            ReportHeader.OffsetUC = QString::number(100*((Bda_block.IUefNat_filt[8]/RealData.u[2])-1), 'f', 3);
+        }
         ReportHeader.OffsetIA = QString::number(100*((Bda_block.IUefNat_filt[3]/RealData.i[0])-1), 'f', 3);
         ReportHeader.OffsetIB = QString::number(100*((Bda_block.IUefNat_filt[4]/RealData.i[1])-1), 'f', 3);
         ReportHeader.OffsetIC = QString::number(100*((Bda_block.IUefNat_filt[5]/RealData.i[2])-1), 'f', 3);
@@ -1423,9 +1433,18 @@ void TuneDialog85::GenerateReport()
         report->dataManager()->setReportVariable("IB_MIP."+QString::number(i), QString::number(RealData.i[1], 'f', 3));
         report->dataManager()->setReportVariable("IC_MIP."+QString::number(i), QString::number(RealData.i[2], 'f', 3));
         report->dataManager()->setReportVariable("Freq."+QString::number(i), QString::number(Bda_block.Frequency, 'f', 3));
-        report->dataManager()->setReportVariable("UA."+QString::number(i), QString::number(Bda_block.IUefNat_filt[0], 'f', 3));
-        report->dataManager()->setReportVariable("UB."+QString::number(i), QString::number(Bda_block.IUefNat_filt[1], 'f', 3));
-        report->dataManager()->setReportVariable("UC."+QString::number(i), QString::number(Bda_block.IUefNat_filt[2], 'f', 3));
+        if(i < 17)
+        {
+            report->dataManager()->setReportVariable("UA."+QString::number(i), QString::number(Bda_block.IUefNat_filt[0], 'f', 3));
+            report->dataManager()->setReportVariable("UB."+QString::number(i), QString::number(Bda_block.IUefNat_filt[1], 'f', 3));
+            report->dataManager()->setReportVariable("UC."+QString::number(i), QString::number(Bda_block.IUefNat_filt[2], 'f', 3));
+        }
+        else
+        {
+            report->dataManager()->setReportVariable("UA."+QString::number(i), QString::number(Bda_block.IUefNat_filt[6], 'f', 3));
+            report->dataManager()->setReportVariable("UB."+QString::number(i), QString::number(Bda_block.IUefNat_filt[7], 'f', 3));
+            report->dataManager()->setReportVariable("UC."+QString::number(i), QString::number(Bda_block.IUefNat_filt[8], 'f', 3));
+        }
         report->dataManager()->setReportVariable("IA."+QString::number(i), QString::number(Bda_block.IUefNat_filt[3], 'f', 3));
         report->dataManager()->setReportVariable("IB."+QString::number(i), QString::number(Bda_block.IUefNat_filt[4], 'f', 3));
         report->dataManager()->setReportVariable("IC."+QString::number(i), QString::number(Bda_block.IUefNat_filt[5], 'f', 3));

@@ -673,7 +673,7 @@ int TuneDialog80::Start7_3_8_1()
 {
     FillNewBac();
     // 1. Отправляем настроечные параметры в модуль
-    return Commands::WriteBac(BT_MEZONIN, &Bac_newblock, sizeof(Bac));
+    return Error::ER_NOERROR;//Commands::WriteBac(BT_MEZONIN, &Bac_newblock, sizeof(Bac));
 }
 
 int TuneDialog80::Start7_3_8_2()
@@ -1136,7 +1136,7 @@ void TuneDialog80::StartMip()
 void TuneDialog80::ParseMipData(Parse104::Signals104 &Signal)
 {
     // precision
-    static int Precisions[34] = {0,4,4,4,3,3,3,4,4,4,4,3,3,3,3,3,3,1,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3};
+    static int Precisions[46] = {0,4,4,4,3,3,3,4,4,4,4,3,3,3,3,3,3,1,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3};
     // приём из mipcanal::Signal номера сигнала (SigNum) и его значения (SigVal) и его дальнейшая обработка
     quint32 index = Signal.SigNum;
     if (index != -1)

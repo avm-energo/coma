@@ -54,7 +54,7 @@ private:
     };
     int GED_Type;
     float IUefNat_filt_old[6];      // для сохранения значений по п. 7.3.2
-    float MipDat[41];
+    float MipDat[46];
     LimeReport::ReportEngine *report;
     //bool Cancelled, DefConfig;
     Config85 *C85;
