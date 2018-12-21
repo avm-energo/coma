@@ -33,7 +33,7 @@ TuneDialog85::TuneDialog85(QVector<S2::DataRec> &S2Config, QWidget *parent) : EA
     C85 = new Config85(*S2ConfigForTune);
     ReportModel = new QStandardItemModel;
     ViewModel = new QStandardItemModel;
-    SetBac(&Bac_block, BoardTypes::BT_BASE, sizeof(Bac_block));
+    SetBac(&Bac_block, BoardTypes::BT_NONE, sizeof(Bac_block));
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
 }
@@ -368,7 +368,7 @@ int TuneDialog85::Start7_3_1_1()
     {
         // запись настроечных коэффициентов в модуль
         SetDefCoefs();
-        if (Commands::WriteBac(BT_BASE, &Bac_block, sizeof(Bac)) == Error::ER_NOERROR)
+        if (Commands::WriteBac(BT_NONE, &Bac_block, sizeof(Bac)) == Error::ER_NOERROR)
         {
             // получение настроечных коэффициентов от модуля
             if (Commands::GetBac(BT_NONE, &Bac_block, sizeof(Bac)) != Error::ER_NOERROR)
@@ -536,7 +536,7 @@ int TuneDialog85::Start7_3_9()
             return Error::ER_GENERALERROR;
         // Пишем в модуль посчитанные регулировочные коэффициенты
         WaitNSeconds(5);
-        if (Commands::WriteBac(BT_BASE, &New_Bac_block, sizeof(Bac)) != Error::ER_NOERROR)  // Григорий Матвеевич попросил писать коэффициенты сразу в модуль
+        if (Commands::WriteBac(BT_NONE, &New_Bac_block.K_freq, sizeof(Bac)) != Error::ER_NOERROR)  // Григорий Матвеевич попросил писать коэффициенты сразу в модуль
             return Error::ER_GENERALERROR;
         // переходим на прежнюю конфигурацию
         // измеряем и проверяем
@@ -552,7 +552,7 @@ int TuneDialog85::Start7_3_9()
     }
     else
         return false;
-    if (EMessageBox::question(this,"Вопрос","Очистить память осциллограмм?"))
+   /* if (EMessageBox::question(this,"Вопрос","Очистить память осциллограмм?"))
     {
         StdFunc::SetPrbMessage("Стёрто записей: ");
         if (Commands::EraseTechBlock(TECH_Bo) == Error::ER_NOERROR)
@@ -560,7 +560,7 @@ int TuneDialog85::Start7_3_9()
         else
             ERMSG("Ошибка при стирании");
     }
-    return true;
+    return true;*/
 }
 
 #endif
