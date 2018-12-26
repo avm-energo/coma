@@ -5,7 +5,6 @@
 #include <QFileDialog>
 #include <QStandardPaths>
 #include "stdfunc.h"
-#include "maindef.h"
 
 QString StdFunc::HomeDir = ""; // рабочий каталог программы
 QString StdFunc::SystemHomeDir = "D:\\coma\\reports\\"; // системный каталог программы
@@ -37,9 +36,9 @@ QString StdFunc::VerToStr(quint32 num)
     return tmpString;
 }
 
-bool StdFunc::FloatInRange(float var, float value)
+bool StdFunc::FloatInRange(float var, float value, float tolerance)
 {
-    if ((var > (value-TH01)) && (var < (value+TH01)))
+    if ((var >= (value-tolerance)) && (var <= (value+tolerance)))
         return true;
     else
         return false;

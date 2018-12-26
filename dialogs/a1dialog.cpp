@@ -61,7 +61,6 @@ A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : QDialog(parent)
 
 A1Dialog::~A1Dialog()
 {
-//    SaveSettings();
 }
 
 void A1Dialog::SetupUI()
@@ -233,7 +232,7 @@ void A1Dialog::GenerateReport()
     delete report;
 }
 
-void A1Dialog::ConditionDataDialog()
+bool A1Dialog::ConditionDataDialog()
 {
     int row = 0;
     QDialog *dlg = new QDialog(this);
@@ -247,14 +246,14 @@ void A1Dialog::ConditionDataDialog()
     QString tmps;
     if (Autonomous)
     {
-        if (StdFunc::FloatInRange(ReportHeader.Temp.toFloat(), FLT_MAX))
+        if (StdFunc::FloatInRange(ReportHeader.Temp.toFloat(), FLT_MAX, TH1))
             tmps = "";
         else
             tmps = ReportHeader.Temp;
     }
     else
     {
-        if (StdFunc::FloatInRange(ChA1->Bda_out_an.Tamb, FLT_MAX))
+        if (StdFunc::FloatInRange(ChA1->Bda_out_an.Tamb, FLT_MAX, TH1))
             tmps = "";
         else
             tmps = ReportHeader.Temp;
@@ -263,14 +262,14 @@ void A1Dialog::ConditionDataDialog()
     glyout->addWidget(WDFunc::NewLBL(this, "Влажность воздуха, %"), row, 0, 1, 1, Qt::AlignRight);
     if (Autonomous)
     {
-        if (StdFunc::FloatInRange(ReportHeader.Humidity.toFloat(), FLT_MAX))
+        if (StdFunc::FloatInRange(ReportHeader.Humidity.toFloat(), FLT_MAX, TH1))
             tmps = "";
         else
             tmps = ReportHeader.Humidity;
     }
     else
     {
-        if (StdFunc::FloatInRange(ChA1->Bda_out_an.Hamb, FLT_MAX))
+        if (StdFunc::FloatInRange(ChA1->Bda_out_an.Hamb, FLT_MAX, TH1))
             tmps = "";
         else
             tmps = ReportHeader.Humidity;
@@ -286,13 +285,17 @@ void A1Dialog::ConditionDataDialog()
     lyout->addLayout(glyout);
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetConditionData()));
-    connect(this,SIGNAL(CloseDialog()),dlg,SLOT(close()));
     lyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(Cancel()));
+    lyout->addWidget(pb);
+    connect(this,SIGNAL(CloseDialog()),dlg,SLOT(close()));
     dlg->setLayout(lyout);
     dlg->exec();
+    return Cancelled;
 }
 
-void A1Dialog::DNDialog(PovDevStruct &PovDev)
+bool A1Dialog::DNDialog(PovDevStruct &PovDev)
 {
     int row = 0;
     QDialog *dlg = new QDialog(this);
@@ -339,10 +342,14 @@ void A1Dialog::DNDialog(PovDevStruct &PovDev)
     lyout->addLayout(glyout);
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetDNData()));
-    connect(this,SIGNAL(CloseDialog()),dlg,SLOT(close()));
     lyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(Cancel()));
+    lyout->addWidget(pb);
+    connect(this,SIGNAL(CloseDialog()),dlg,SLOT(close()));
     dlg->setLayout(lyout);
     dlg->exec();
+    return Cancelled;
 }
 
 void A1Dialog::UpdateItemInModel(int row, int column, QVariant value)
@@ -379,7 +386,7 @@ void A1Dialog::FillModel()
     // заполняем модель по полученным измерениям:
     // 0 - U/Un (%), 1 - S, 2 -
     int row = Pindex;
-    if (CurrentS == 1)
+    if (StdFunc::FloatInRange(CurrentS, 1))
     {
         if (PovType == GOST_1983)
             row += GOST1983ROWCOUNT/2;
@@ -575,7 +582,7 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
     QByteArray ba;
     PovDevStruct PovDev;
     int res = Files::LoadFromFile(filename, ba);
-    if (res != Error::ER_NOERROR)
+    if (res != Files::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка загрузки файла");
         return;
@@ -663,8 +670,16 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
             memptr += MDSs;
         }
         FillHeaders();
-        DNDialog(PovDev);
-        ConditionDataDialog();
+        if (DNDialog(PovDev))
+        {
+            EMessageBox::information(this, "Отменено", "Операция отменена");
+            return;
+        }
+        if (ConditionDataDialog())
+        {
+            EMessageBox::information(this, "Отменено", "Операция отменена");
+            return;
+        }
         GenerateReport();
     }
     else
@@ -702,7 +717,7 @@ void A1Dialog::Accept()
     ++Index;
     if (Index >= endcounter)
     {
-        if (CurrentS == 0.25)
+        if (StdFunc::FloatInRange(CurrentS, 0.25))
         {
             Index = 0;
             CurrentS = 1;
@@ -721,8 +736,16 @@ void A1Dialog::Accept()
             ReportHeader.Freq = QString::number(ChA1->Bda_out.Frequency, 'g', 4);
             ReportHeader.Humidity = QString::number(ChA1->Bda_out_an.Hamb, 'g', 3);
             ReportHeader.Temp = QString::number(ChA1->Bda_out_an.Tamb, 'g', 2);
-            ConditionDataDialog(); // задаём условия поверки
-            DNDialog(PovDev); // вводим данные по делителю
+            if (DNDialog(PovDev)) // вводим данные по делителю
+            {
+                EMessageBox::information(this, "Отменено", "Операция отменена");
+                return;
+            }
+            if (ConditionDataDialog()) // задаём условия поверки
+            {
+                EMessageBox::information(this, "Отменено", "Операция отменена");
+                return;
+            }
             GenerateReport();
             // вывод протокола на экран
             // формирование отчёта
@@ -757,6 +780,7 @@ void A1Dialog::Cancel()
 {
     WDFunc::SetEnabled(this, "StartWorkPb", true);
     Cancelled = true;
+    emit CloseDialog();
 }
 
 void A1Dialog::SetDNData()

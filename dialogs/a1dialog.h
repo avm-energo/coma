@@ -153,8 +153,8 @@ private:
     void ShowProtocol();
     void SaveProtocolToPDF();
     void GenerateReport(); // сгенерировать протокол
-    void ConditionDataDialog(); // задание условий поверки
-    void DNDialog(PovDevStruct &PovDev); // задание параметров ДН(ТН)
+    bool ConditionDataDialog(); // задание условий поверки
+    bool DNDialog(PovDevStruct &PovDev); // задание параметров ДН(ТН)
     void UpdateItemInModel(int row, int column, QVariant value);
     void ShowTable();
     void FillModel();

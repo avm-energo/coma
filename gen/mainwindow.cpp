@@ -70,8 +70,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 #endif
     connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
     connect(cn,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
+#if PROGSIZE >= PROGSIZE_LARGE
     connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+#endif
     connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
     connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
 #endif
