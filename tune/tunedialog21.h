@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "eabstracttunedialog.h"
+#include "../config/config21.h"
 #include "../check/check21.h"
 #include "../gen/modulebsi.h"
 #include "../gen/maindef.h"

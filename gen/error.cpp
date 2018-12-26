@@ -2,7 +2,6 @@
 #include <QStandardPaths>
 #include <QTextStream>
 #include <QFile>
-#include <QStandardPaths>
 #include "error.h"
 
 QStringList Error::ErrMsgs;
