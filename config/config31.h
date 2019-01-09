@@ -6,6 +6,7 @@
 #define DIN31_DEF_DLY       2
 #define DIN31_DEF_PAIR      0
 #define DIN31_DEF_INTYPE    0
+#define DIN31_DEF_SIGNAL_TYPE    0
 
 #include "config3x.h"
 #include "../gen/modulebsi.h"

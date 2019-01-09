@@ -198,7 +198,8 @@ HEADERS  += \
     ../gen/eabstractprotocomchannel.h \
     ../gen/eusbhid.h \
     ../iec104/ethernet.h \
-    ../iec104/iec104.h
+    ../iec104/iec104.h \
+    ../config/config84.h
 
 INCLUDEPATH += $$PWD/../../includes
 
