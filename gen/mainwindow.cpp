@@ -46,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     QDir dir(StdFunc::GetHomeDir());
     if (!dir.exists())
         dir.mkpath(".");
+    StdFunc::Init();
+    Error::Init();
     S2Config.clear();
     S2ConfigForTune.clear();
     MainConfDialog = nullptr;

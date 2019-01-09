@@ -149,6 +149,7 @@ public:
     };
 
     Error();
+    static void Init();
     static void AddErrMsg(ErMsgType msgtype, QString file=nullptr, int line=0, QString msg="");
     static void ShowErMsg(int ermsgnum);
     static int ErMsgPoolSize();

@@ -11,6 +11,7 @@ ConfDialog35::ConfDialog35(QVector<S2::DataRec> &S2Config, bool BaseBoard, QWidg
     C35 = new Config35(S2Config, BaseBoard);
     SetInputs(QStringList(), 0); // нет входов
     QStringList sl = QStringList() << "Не исп." << "Обычный";
+    SetInputs(QStringList(), 0);
     SetOutputs(sl, D35_NUMCH);
     SetupUI();
 #if PROGSIZE != PROGSIZE_EMUL
