@@ -395,6 +395,7 @@ void Coma::PrepareDialogs()
     default:
         break;
     }
+    INFOMSG("Mezonin parsing");
     switch(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN))
     {
     case MTM_21:
@@ -413,12 +414,14 @@ void Coma::PrepareDialogs()
     }
     case MTM_31:
     {
-        ConfM = new ConfDialog31(S2Config, true);
+        INFOMSG("Mezonin 0x31 start");
+        ConfM = new ConfDialog31(S2Config, false);
+        INFOMSG("Mezonin 0x31 stop");
         break;
     }
     case MTM_35:
     {
-        ConfM = new ConfDialog35(S2Config, true);
+        ConfM = new ConfDialog35(S2Config, false);
         break;
     }
     case MTM_81:

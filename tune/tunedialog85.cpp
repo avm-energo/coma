@@ -28,8 +28,12 @@
 
 TuneDialog85::TuneDialog85(QVector<S2::DataRec> &S2Config, QWidget *parent) : EAbstractTuneDialog(parent)
 {
-    C85 = new Config85(S2Config);
-    SetBac(&Bac_block, BoardTypes::BT_BASE, sizeof(Bac_block));
+    this->S2ConfigForTune = &S2Config;
+
+    C85 = new Config85(*S2ConfigForTune);
+    ReportModel = new QStandardItemModel;
+    ViewModel = new QStandardItemModel;
+    SetBac(&Bac_block, BoardTypes::BT_NONE, sizeof(Bac_block));
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
 }
@@ -56,15 +60,22 @@ void TuneDialog85::SetupUI()
 
     QWidget *cp2 = new QWidget;
     QWidget *cp3 = new QWidget;
+    #if PROGSIZE != PROGSIZE_EMUL
+    QWidget *cp4 = Bd1W(this);
+    #endif
     tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     cp1->setStyleSheet(tmps);
     cp2->setStyleSheet(tmps);
     cp3->setStyleSheet(tmps);
+
     QLabel *lbl;
     QGridLayout *glyout = new QGridLayout;
-
     QTabWidget *TuneTW = new QTabWidget;
+
     TuneTW->addTab(cp1,"Настройка");
+    #if PROGSIZE != PROGSIZE_EMUL
+    TuneTW->addTab(cp4,"Измеренные параметры");
+    #endif
     TuneTW->addTab(cp2,"Коэффициенты");
     TuneTW->addTab(cp3,"Данные МИП");
 
@@ -125,7 +136,7 @@ void TuneDialog85::SetupUI()
     gblyout->addLayout(hlyout);
     hlyout = MipPars(11, "Угол нагрузки");
     gblyout->addLayout(hlyout);
-    hlyout = MipPars(14, "Фазовый угол напряжения");
+    hlyout = MipPars(43, "Фазовый угол напряжения");
     gblyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
     lbl = new QLabel("10. Ток N");
@@ -239,20 +250,20 @@ void TuneDialog85::SetLbls()
     lbls.append("8. Установка коэффициентов...");
     lbls.append("9. 7.3.2. Получение текущих аналоговых данных...");
     lbls.append("10. Сохранение значений фильтра...");
-    lbls.append("11. 7.3.3. Расчёт коррекции смещений сигналов по фазе...");
-    lbls.append("12. 7.3.4. Расчёт коррекции по частоте...");
+    lbls.append("11. 7.3.3. Расчёт коррекции по частоте...");
+    lbls.append("12. 7.3.4. Расчёт настроечных коэффициентов по напряжениям 1-ой тройки...");
     lbls.append("13. 7.3.5. Отображение ввода трёхфазных значений...");
     lbls.append("14. 7.3.6.1. Получение текущих аналоговых данных...");
     lbls.append("15. 7.3.6.2. Расчёт коррекции взаимного влияния каналов...");
-    lbls.append("16. 7.3.7.1. Получение текущих аналоговых данных и расчёт настроечных коэффициентов по напряжениям...");
+    lbls.append("16. 7.3.7.1. Расчёт настроечных коэффициентов по напряжениям 2-ой тройки...");
     lbls.append("17. 7.3.7.2. Сохранение конфигурации...");
     lbls.append("18. 7.3.7.3. Получение текущих аналоговых данных...");
     lbls.append("19. 7.3.7.4. Ввод измеренных значений...");
-    lbls.append("20. 7.3.7.5. Расчёт настроечных коэффициентов по токам, напряжениям и углам...");
+    lbls.append("20. 7.3.7.5. Расчёт настроечных коэффициентов по токам...");
     lbls.append("21. 7.3.7.6. Сохранение конфигурации...");
     lbls.append("22. 7.3.7.7. Отображение ввода трёхфазных значений...");
     lbls.append("23. 7.3.7.8. Получение текущих аналоговых данных...");
-    lbls.append("24. 7.3.7.10. Расчёт настроечных коэффициентов по токам, напряжениям и углам...");
+    lbls.append("24. 7.3.7.10. Расчёт настроечных коэффициентов по токам...");
     lbls.append("25. 7.3.8.1. Запись настроечных коэффициентов и переход на новую конфигурацию...");
     lbls.append("26. 7.3.8.2. Проверка аналоговых данных...");
     lbls.append("27. 7.3.9. Восстановление сохранённой конфигурации и проверка...");
@@ -382,17 +393,8 @@ int TuneDialog85::Start7_3_2()
 
 int TuneDialog85::Start7_3_3()
 {
-/*    GED_Type = TD_GED_D;
-    GetExternalData();
-    Bac_newblock.DPsi[0] = 0;
-    int k = (pc.ModuleBsi.MTypeM == MTM_82) ? 3 : 6;
-    for (int i=1; i<k; ++i)
-        Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - Bda_block.phi_next_f[i];
-    if (pc.ModuleBsi.MTypeM == MTM_82)
-    {
-        for (int i=3; i<6; ++i)
-            Bac_newblock.DPsi[i] += RealData.d[i-3];
-    } */
+    EMessageBox::question(this,"Сообщение","Подключите напряженческие выходы РЕТОМа ко входам ПЕРВОЙ тройки напряжений модуля!");
+    ShowRetomDialog(V60, I1);
     return Error::ER_NOERROR;
 }
 
@@ -400,7 +402,14 @@ int TuneDialog85::Start7_3_4()
 {
    GED_Type = TD_GED_F;
     if (!(GetExternalData() == Error::ER_GENERALERROR))
-        New_Bac_block.K_freq = Bac_block.K_freq*RealData.f[0] / Bda_Block.Frequency;
+    {
+        New_Bac_block.K_freq = Bac_block.K_freq*RealData.f[0] / Bda_block.Frequency;
+
+        for (int i=0; i<3; i++)
+        {
+            New_Bac_block.KmU[i] = Bac_block.KmU[i] * RealData.u[i] / Bda_block.IUefNat_filt[i];
+        }
+    }
     else
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
@@ -408,7 +417,9 @@ int TuneDialog85::Start7_3_4()
 
 int TuneDialog85::Start7_3_5()
 {
-    return ShowRetomDialog(60.0, 1.0);
+    EMessageBox::question(this,"Сообщение","Подключите напряженческие выходы РЕТОМа ко входам ВТОРОЙ тройки напряжений модуля!");
+
+    return ShowRetomDialog2(V60);
 }
 
 int TuneDialog85::Start7_3_6_2()
@@ -428,8 +439,7 @@ int TuneDialog85::Start7_3_7_1()
         return Error::ER_GENERALERROR;
     for (int i=0; i<3; i++)
     {
-        New_Bac_block.KmU[i] = Bac_block.KmU[i] * RealData.u[i] / Bda_Block.IUefNat_filt[i];
-        New_Bac_block.KmU2[i] = Bac_block.KmU2[i] * RealData.u[i] / Bda_Block.IUefNat_filt[i+6];
+        New_Bac_block.KmU2[i] = Bac_block.KmU2[i] * RealData.u[i] / Bda_block.IUefNat_filt[i+6];
     }
     return Error::ER_NOERROR;
 }
@@ -439,7 +449,7 @@ int TuneDialog85::Start7_3_7_2()
    // Установить в конфигурации токи i2nom в 1 А
         C85->Bci_block.ITT2nom = I1;
     // послать новые коэффициенты по току в конфигурацию
-    if (Commands::WriteFile(&C85->Bci_block, 2, S2Config) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&C85->Bci_block, CM_CONFIGFILE, S2ConfigForTune) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     WaitNSeconds(2);
     return Error::ER_NOERROR;
@@ -447,6 +457,7 @@ int TuneDialog85::Start7_3_7_2()
 
 int TuneDialog85::Start7_3_7_3()
 {
+    EMessageBox::question(this,"Сообщение","Подключите напряженческие выходы РЕТОМа ко входам ПЕРВОЙ тройки напряжений модуля!");
     ShowRetomDialog(V60, I1);
     if (Start7_3_2() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
@@ -463,7 +474,7 @@ int TuneDialog85::Start7_3_7_5()
 {
     for (int i=0; i<3; ++i)
     {
-      New_Bac_block.KmI_1[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_Block.IUefNat_filt[i];
+      New_Bac_block.KmI_4[i] = Bac_block.KmI_4[i] * RealData.i[i] / Bda_block.IUefNat_filt[i+3];
       //New_Bac_block.KmI_4[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_Block.IUefNat_filt[i];
     }
     return Error::ER_NOERROR;
@@ -471,8 +482,8 @@ int TuneDialog85::Start7_3_7_5()
 
 int TuneDialog85::Start7_3_7_6()
 {
-        C85->Bci_block.ITT2nom = I4;
-    if (Commands::WriteFile(&C85->Bci_block, 2, S2Config) != Error::ER_NOERROR)
+        C85->Bci_block.ITT2nom = I5;
+    if (Commands::WriteFile(&C85->Bci_block, CM_CONFIGFILE, S2ConfigForTune) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     WaitNSeconds(2);
     return Error::ER_NOERROR;
@@ -480,14 +491,14 @@ int TuneDialog85::Start7_3_7_6()
 
 int TuneDialog85::Start7_3_7_7()
 {
-    return ShowRetomDialog(V60, I4);
+    return ShowRetomDialog(V60, I5);
 }
 
 int TuneDialog85::Start7_3_7_8()
 {
     WaitNSeconds(15);
     ReadAnalogMeasurements();
-    int res = StartCheckAnalogValues(V60, I4, S0, false);
+    int res = StartCheckAnalogValues(V60, I5, S0, false);
     if (res == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
     GED_Type = TD_GED_D | TD_GED_U;
@@ -498,40 +509,50 @@ int TuneDialog85::Start7_3_7_10()
 {
     for (int i=0; i<3; ++i)
     {
-       New_Bac_block.KmI_4[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_Block.IUefNat_filt[i];
+       New_Bac_block.KmI_1[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_block.IUefNat_filt[i+3];
     }
     return Error::ER_NOERROR;
 }
 
 int TuneDialog85::Start7_3_8_1()
 {
+    FillNewBac();
     // 1. Отправляем настроечные параметры в модуль
-    return Commands::WriteBac(BT_NONE, &New_Bac_block, sizeof(Bac));
+    return Error::ER_NOERROR;//Commands::WriteBac(BT_BASE, &New_Bac_block, sizeof(Bac));
 }
 
 int TuneDialog85::Start7_3_8_2()
 {
     WaitNSeconds(15);
     ReadAnalogMeasurements();
-    return StartCheckAnalogValues(V60, I4, S0, true);
+    return StartCheckAnalogValues(V60, I5, S0, true);
 }
 
 int TuneDialog85::Start7_3_9()
 {
-    if (EMessageBox::question(this,"Закончить?","Закончить настройку?"))
+    if (EMessageBox::question(this,"Закончить?","Закончить настройку и записать коэффициенты в модуль?"))
     {
         if (!LoadWorkConfig())
             return Error::ER_GENERALERROR;
+        // Пишем в модуль посчитанные регулировочные коэффициенты
+        WaitNSeconds(5);
+        if (Commands::WriteBac(BT_NONE, &New_Bac_block.K_freq, sizeof(Bac)) != Error::ER_NOERROR)  // Григорий Матвеевич попросил писать коэффициенты сразу в модуль
+            return Error::ER_GENERALERROR;
         // переходим на прежнюю конфигурацию
         // измеряем и проверяем
-        ShowRetomDialog(V57, C85->Bci_block.ITT2nom); // I = 1.0 or 5 or 4.0 A???
-        WaitNSeconds(15);
-        ReadAnalogMeasurements();
-        return StartCheckAnalogValues(V57, C85->Bci_block.ITT2nom, S0, true);
+        if (EMessageBox::question(this,"Протокол поверки","Начать поверку?"))
+        {
+           GenerateReport();
+        }
+        //ShowRetomDialog(V57, C80->Bci_block.inom2[0]); // I = 1.0 or 5.0 A
+        //WaitNSeconds(15);
+        //ReadAnalogMeasurements();
+        //return StartCheckAnalogValues(V57, C80->Bci_block.inom2[0], S0, true);
+        return Error::ER_NOERROR;
     }
     else
         return false;
-    if (EMessageBox::question(this,"Вопрос","Очистить память осциллограмм?"))
+   /* if (EMessageBox::question(this,"Вопрос","Очистить память осциллограмм?"))
     {
         StdFunc::SetPrbMessage("Стёрто записей: ");
         if (Commands::EraseTechBlock(TECH_Bo) == Error::ER_NOERROR)
@@ -539,9 +560,8 @@ int TuneDialog85::Start7_3_9()
         else
             ERMSG("Ошибка при стирании");
     }
-    return true;
+    return true;*/
 }
-
 
 #endif
 
@@ -555,6 +575,19 @@ void TuneDialog85::FillBac()
         WDFunc::SetLEData(this, "tune"+QString::number(i+9), QString::number(Bac_block.KmU2[i], 'f', 5));
     }
     WDFunc::SetLEData(this, "tune13", QString::number(Bac_block.K_freq, 'f', 5));
+
+}
+
+void TuneDialog85::FillNewBac()
+{
+    for (int i = 0; i < 3; i++)
+    {
+        WDFunc::SetLEData(this, "tune"+QString::number(i), QString::number(New_Bac_block.KmU[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+3), QString::number(New_Bac_block.KmI_1[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+6), QString::number(New_Bac_block.KmI_4[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+9), QString::number(New_Bac_block.KmU2[i], 'f', 5));
+    }
+    WDFunc::SetLEData(this, "tune13", QString::number(New_Bac_block.K_freq, 'f', 5));
 
 }
 
@@ -648,7 +681,7 @@ float TuneDialog85::ToFloat(QString text)
 #if PROGSIZE != PROGSIZE_EMUL
 int TuneDialog85::SaveWorkConfig()
 {
-    if (Commands::GetFile(CM_CONFIGFILE,S2Config) == Error::ER_NOERROR)
+    if (Commands::GetFile(CM_CONFIGFILE,S2ConfigForTune) == Error::ER_NOERROR)
         memcpy(&Bci_block_work,&C85->Bci_block,sizeof(Config85::Bci));
     else
         return Error::ER_GENERALERROR;
@@ -690,10 +723,10 @@ int TuneDialog85::GetExternalData()
         {
             for (int i=1; i<4; ++i)
             {
-                RealData.f[i] = MipDat[i];
-                RealData.u[i] = MipDat[i+3];
-                RealData.i[i] = MipDat[i+6];
-                RealData.d[i] = MipDat[i+10];
+                RealData.f[i-1] = MipDat[i];
+                RealData.u[i-1] = MipDat[i+3];
+                RealData.i[i-1] = MipDat[i+6];
+                RealData.d[i-1] = MipDat[i+10];
             }
             return Error::ER_NOERROR;
         }
@@ -833,7 +866,7 @@ int TuneDialog85::CheckMip()
     double *VTC, *TTC;
     VTC = ValuesToCheck;
     TTC = ThresholdsToCheck;
-    for (int i = 1; i < 10; i++)
+    for (int i = 0; i < 10; i++)
     {
         QString tmps;
         WDFunc::LBLText(this, "mip"+QString::number(i), tmps);
@@ -858,19 +891,22 @@ int TuneDialog85::CheckMip()
 #if PROGSIZE != PROGSIZE_EMUL
 int TuneDialog85::CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct)
 {
-    double ValuesToCheck[30] = {TD_TMK,TD_VBAT,TD_FREQ,u,u,u,u,u,u,i,i,i,p,p,p,s,s,s,q,q,q, \
+    double ValuesToCheck[30] = {/*TD_TMK,TD_VBAT,*/TD_FREQ,u,u,u,i,i,i,u,u,u,p,p,p,s,s,s,q,q,q, \
                                 p,p,p,q,q,q,s,s,s};
-    double ThresholdsToCheck[30] = {T25,TH05,TH0005,utol,utol,utol,utol,utol,utol,itol,itol,itol,pt,pt,pt,pt,pt,pt,pt,pt,pt,\
+    double ThresholdsToCheck[30] = {/*T25,TH05,*/TH0005,utol,utol,utol,itol,itol,itol,utol,utol,utol,pt,pt,pt,pt,pt,pt,pt,pt,pt,\
                                     pt,pt,pt,pt,pt,pt,pt,pt,pt};
     double *VTC = ValuesToCheck;
     double *TTC = ThresholdsToCheck;
+    QLocale german(QLocale::German);
 
-    for (int i = 0; i < 30; i++)
+    FillBd1(this);
+
+    /*for (int i = 0; i < 28; i++)
     {
         QString tmps;
         WDFunc::LBLText(this, "value"+QString::number(i), tmps);
         bool ok;
-        double tmpd = tmps.toDouble(&ok);
+        double tmpd = german.toDouble(tmps, &ok);
         if (!ok)
             return Error::ER_GENERALERROR;
 
@@ -882,7 +918,7 @@ int TuneDialog85::CheckAnalogValues(double u, double i, double p, double q, doub
         }
         ++VTC;
         ++TTC;
-    }
+    }*/
 
 
     return Error::ER_NOERROR;
@@ -904,7 +940,7 @@ int TuneDialog85::SetNewTuneCoefs()
 int TuneDialog85::ReadAnalogMeasurements()
 {
     // получение текущих аналоговых сигналов от модуля
-     if (Commands::GetBda(BT_NONE, &Bda_Block, sizeof(Bda_Block)) != Error::ER_NOERROR)
+     if (Commands::GetBda(BT_NONE, &Bda_block, sizeof(Bda_block)) != Error::ER_NOERROR)
      {
          EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
          return Error::ER_GENERALERROR;
@@ -925,15 +961,16 @@ void TuneDialog85::StartMip()
 void TuneDialog85::ParseMipData(Parse104::Signals104 &Signal)
 {
     // precision
-    static int Precisions[34] = {0,4,4,4,3,3,3,4,4,4,4,3,3,3,3,3,3,1,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3};
+    static int Precisions[46] = {0,4,4,4,3,3,3,4,4,4,4,3,3,3,3,3,3,1,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3};
     // приём из mipcanal::Signal номера сигнала (SigNum) и его значения (SigVal) и его дальнейшая обработка
     quint32 index = Signal.SigNum;
     if (index != quint32(-1))
     {
-        if ((index >= 11) && (index <= 13))
-            MipDat[index] = -MipDat[index]; // у МИП-а знак угла отрицательный
-        WDFunc::SetLBLText(this, "mip"+QString::number(index), QString::number(Signal.SigVal, 'f', Precisions[index]));
         MipDat[index] = Signal.SigVal;
+        /*if ((index >= 11) && (index <= 13))
+            MipDat[index] = -MipDat[index]; // у МИП-а знак угла отрицательный*/
+        WDFunc::SetLBLText(this, "mip"+QString::number(index), QString::number(Signal.SigVal, 'f', Precisions[index]));
+
     }
 }
 
@@ -1032,9 +1069,29 @@ int TuneDialog85::ShowRetomDialog(double U, double I)
 {
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl=new QLabel("Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc) с углами "\
+    QLabel *lbl=new QLabel("Задайте на РЕТОМ трёхфазный режим токов и напряжений 1-ой тройки (Uabc, Iabc) с углами "\
                    "сдвига по фазам: А - 0 град., В - 240 град., С - 120 град.,\n"\
                    "Значения напряжений: "+QString::number(U, 'g', 2)+" В, токов: "+QString::number(I, 'g', 2)+" А");
+    lyout->addWidget(lbl);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog85::ShowRetomDialog2(double U)
+{
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QLabel *lbl=new QLabel("Задайте на РЕТОМ трёхфазный режим напряжений 2-ой тройки (Uabc) с углами "\
+                   "сдвига по фазам: А - 0 град., В - 240 град., С - 120 град.,\n"\
+                   "Значения напряжений: "+QString::number(U, 'g', 2)+" В");
     lyout->addWidget(lbl);
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
@@ -1052,7 +1109,7 @@ int TuneDialog85::LoadWorkConfig()
 {
     // пишем ранее запомненный конфигурационный блок
     memcpy(&C85->Bci_block,&Bci_block_work,sizeof(Config85::Bci));
-    if (Commands::WriteFile(&C85->Bci_block, CM_CONFIGFILE, S2Config) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&C85->Bci_block, CM_CONFIGFILE, S2ConfigForTune) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
 }
@@ -1097,6 +1154,128 @@ void TuneDialog85::GetBdAndFillMTT()
 
 }
 
+QWidget *TuneDialog85::Bd1W(QWidget *parent)
+{
+    int i;
+    WidgetFormat = "QWidget {background-color: "+QString(UCONFCLR)+";}";
+    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
+            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
+
+    QWidget *w = new QWidget(parent);
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    /*hlyout->addWidget(WDFunc::NewLBL(parent, "Tmk, °С:"), 0);
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Температура кристалла микроконтроллера, °С"), 0);
+    hlyout->addWidget(WDFunc::NewLBL(parent, "VBAT, В:"), 0);
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value1", ValuesFormat, "Напряжение аккумуляторной батареи, В"), 0);*/
+    hlyout->addWidget(WDFunc::NewLBL(parent, "Частота:"));
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Частота сигналов, Гц"), Qt::AlignLeft);
+    lyout->addLayout(hlyout);
+    for (i = 1; i < 7; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i-1) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "IUNF_1GR"+IndexStr),0,(i-1),1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i), ValuesFormat, \
+                                          QString::number(i)+"IUNF_1GR"+IndexStr+".Истинные действующие значения сигналов 1-й группы"),1,(i-1),1,1);
+    }
+
+    for (i = 0; i < 3; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "UNF_2GR"+IndexStr),2,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+7), ValuesFormat, \
+                                          QString::number(i+7)+"UNF_2GR"+IndexStr+".Действующие значения сигналов напряжений 2-й группы"),3,i,1,1);
+    }
+
+    for (i = 0; i < 6; ++i)
+    {
+
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "UNF_LIN"+IndexStr),4,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+10), ValuesFormat, \
+                                          QString::number(i+10)+"UNF_LIN"+IndexStr+".Истинные действующие значения линейных напряжений 1-й и 2-й групп"),5,i,1,1);
+    }
+
+    for (i = 0; i < 3; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "PNF"+IndexStr),6,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+16), ValuesFormat, \
+                                          QString::number(i+16)+".Истинная активная мощность"),7,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "SNF"+IndexStr),6,i+3,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+19), ValuesFormat, \
+                                          QString::number(i+19)+".Кажущаяся полная мощность"),7,i+3,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "QNF"+IndexStr),8,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+22), ValuesFormat, \
+                                          QString::number(i+22)+".Реактивная мощность"),9,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Cos"+IndexStr),8,i+3,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+25), ValuesFormat, \
+                                          QString::number(i+25)+".Cos phi по истинной активной мощности"),9,i+3,1,1);
+    }
+
+    /*for (i = 0; i < 14; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "DD_in"+IndexStr),10,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+27), ValuesFormat, \
+                                          QString::number(i+27)+".Дискреты"),11,i,1,1);
+    }*/
+    lyout->addLayout(glyout);
+    lyout->addStretch(100);
+    w->setLayout(lyout);
+    w->setStyleSheet(WidgetFormat);
+    return w;
+}
+
+void TuneDialog85::FillBd1(QWidget *parent)
+{
+    //WDFunc::SetLBLText(parent, "value0", WDFunc::StringValueWithCheck(Bd_block0.Tmk));
+    //WDFunc::SetLBLText(parent, "value1", WDFunc::StringValueWithCheck(Bd_block0.Vbat));
+    WDFunc::SetLBLText(parent, "value0", WDFunc::StringValueWithCheck(Bda_block.Frequency, 3));
+    for (int i = 1; i < 7; i++)
+    {
+        int Precision = 4;
+        WDFunc::SetLBLText(parent, "value"+QString::number(i), WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i-1], Precision));
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+7), WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i+7], 4));
+    }
+
+    for (int i = 0; i < 6; ++i)
+    {
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+10), WDFunc::StringValueWithCheck(Bda_block.UefNatLin_filt[i], 4));
+
+    }
+
+    for (int i=0; i<3; i++)
+    {
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+16), WDFunc::StringValueWithCheck(Bda_block.PNatf[i], 3));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+19), WDFunc::StringValueWithCheck(Bda_block.SNatf[i], 3));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+22), WDFunc::StringValueWithCheck(Bda_block.QNatf[i], 3));
+        WDFunc::SetLBLText(parent, "value"+QString::number(i+25), WDFunc::StringValueWithCheck(Bda_block.CosPhiNat[i], 4));
+    }
+
+
+}
+
+void TuneDialog85::RefreshAnalogValues(int bdnum)
+{
+    switch (bdnum)
+    {
+
+    case C85_BDA_IN: // Блок #1
+        FillBd1(this);
+        break;
+
+    default:
+        return;
+    }
+}
+
+
 void TuneDialog85::GenerateReport()
 {
     // данные в таблицу уже получены или из файла, или в процессе работы
@@ -1117,7 +1296,7 @@ void TuneDialog85::GenerateReport()
     report->dataManager()->setReportVariable("Month", month);
     report->dataManager()->setReportVariable("Yr", yr);
 
-    for(int i=0; i<21; i++) // 21 таблица!
+    for(int i=0; i<22; i++)
     {
         if(i==0)
         {
@@ -1126,6 +1305,8 @@ void TuneDialog85::GenerateReport()
                WaitNSeconds(1);
                Start7_3_7_2();  // Переход на конфигурацию 1А
             }
+
+            EMessageBox::question(this,"Сообщение","Подключите напряженческие выходы РЕТОМа ко входам ПЕРВОЙ тройки напряжений модуля!");
         }
 
         if(i==6)
@@ -1137,11 +1318,17 @@ void TuneDialog85::GenerateReport()
             }
         }
 
+        if(i==17)
+        {
+            EMessageBox::question(this,"Сообщение","Подключите напряженческие выходы РЕТОМа ко входам ВТОРОЙ тройки напряжений модуля!");
+
+        }
+
             QDialog *dlg = new QDialog;
             QVBoxLayout *lyout = new QVBoxLayout;
             QLabel *lbl = new QLabel;
             lbl=new QLabel("Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc) с углами "\
-                           "нагрузки по всем фазам " +QString::number(PhiLoad[i])+ " град. и частотой 51 Гц;");
+                           "нагрузки по всем фазам 0 град. и частотой 51 Гц;");
             lyout->addWidget(lbl);
             lbl=new QLabel("Значения напряжений по фазам " +QString::number(U[i])+ " В;");
             lyout->addWidget(lbl);
@@ -1163,7 +1350,111 @@ void TuneDialog85::GenerateReport()
            if(Cancelled)
            break;
 
+        TuneControlType = 0;
+        GetExternalData();
+        ReadAnalogMeasurements();
+        WaitNSeconds(1);
+        FillBd1(this);
 
+        /*if(PhiLoad[i] >= 180)
+        {
+            ReportHeader.PhiloadA = QString::number(360 + Bda_block.phi_next_f[3], 'f', 3);
+            RealData.d[0] = 360 - RealData.d[0];
+            RealData.d[1] = 360 - RealData.d[1];
+            RealData.d[2] = 360 - RealData.d[2];
+        }
+        else
+        {
+            ReportHeader.PhiloadA = QString::number(Bda_block.phi_next_f[3], 'f', 3);
+        }
+
+        ReportHeader.PhiloadB = QString::number(Bda_block.phi_next_f[4] - Bda_block.phi_next_f[1], 'f', 3);
+        if(PhiLoad[i] >= 90)
+        {
+           ReportHeader.PhiloadC = QString::number(360 + Bda_block.phi_next_f[5] - Bda_block.phi_next_f[2], 'f', 3);
+        }
+        else
+        {
+           ReportHeader.PhiloadC = QString::number(Bda_block.phi_next_f[5] - Bda_block.phi_next_f[2], 'f', 3);
+        }
+        ReportHeader.PhiUAB   = QString::number((-Bda_block.phi_next_f[1]), 'f', 3);
+        ReportHeader.PhiUBC   = QString::number((360 - Bda_block.phi_next_f[2] + Bda_block.phi_next_f[1]), 'f', 3);*/
+        ReportHeader.OffsetF  = QString::number(100*((Bda_block.Frequency/RealData.f[0])-1), 'f', 3);
+
+        if(i < 17)
+        {
+            ReportHeader.OffsetUA = QString::number(100*((Bda_block.IUefNat_filt[0]/RealData.u[0])-1), 'f', 3);
+            ReportHeader.OffsetUB = QString::number(100*((Bda_block.IUefNat_filt[1]/RealData.u[1])-1), 'f', 3);
+            ReportHeader.OffsetUC = QString::number(100*((Bda_block.IUefNat_filt[2]/RealData.u[2])-1), 'f', 3);
+        }
+        else
+        {
+            ReportHeader.OffsetUA = QString::number(100*((Bda_block.IUefNat_filt[6]/RealData.u[0])-1), 'f', 3);
+            ReportHeader.OffsetUB = QString::number(100*((Bda_block.IUefNat_filt[7]/RealData.u[1])-1), 'f', 3);
+            ReportHeader.OffsetUC = QString::number(100*((Bda_block.IUefNat_filt[8]/RealData.u[2])-1), 'f', 3);
+        }
+        ReportHeader.OffsetIA = QString::number(100*((Bda_block.IUefNat_filt[3]/RealData.i[0])-1), 'f', 3);
+        ReportHeader.OffsetIB = QString::number(100*((Bda_block.IUefNat_filt[4]/RealData.i[1])-1), 'f', 3);
+        ReportHeader.OffsetIC = QString::number(100*((Bda_block.IUefNat_filt[5]/RealData.i[2])-1), 'f', 3);
+
+        /*// Играемся с углами, чтобы все было в одних значениях и с одинаковыми знаками
+        if((RealData.d[0]>0 && ReportHeader.PhiloadA.toFloat() < 0) || (RealData.d[0]<0 && ReportHeader.PhiloadA.toFloat() > 0))
+        {
+           ReportHeader.OffsetPhiloadA = QString::number(RealData.d[0] + ReportHeader.PhiloadA.toFloat(), 'f', 3);
+           RealData.d[0] = -RealData.d[0];
+        }
+        else
+           ReportHeader.OffsetPhiloadA = QString::number(RealData.d[0] - ReportHeader.PhiloadA.toFloat(), 'f', 3);
+
+        if((RealData.d[1]>0 && ReportHeader.PhiloadB.toFloat() < 0) || (RealData.d[1]<0 && ReportHeader.PhiloadB.toFloat() > 0))
+        {
+           ReportHeader.OffsetPhiloadB = QString::number(RealData.d[1] + ReportHeader.PhiloadB.toFloat(), 'f', 3);
+           RealData.d[1] = -RealData.d[1];
+        }
+        else
+           ReportHeader.OffsetPhiloadB = QString::number(RealData.d[1] - ReportHeader.PhiloadB.toFloat(), 'f', 3);
+
+        if((RealData.d[2]>0 && ReportHeader.PhiloadC.toFloat() < 0) || (RealData.d[2]<0 && ReportHeader.PhiloadC.toFloat() > 0))
+        {
+           ReportHeader.OffsetPhiloadC = QString::number(RealData.d[2] + ReportHeader.PhiloadC.toFloat(), 'f', 3);
+           RealData.d[2] = -RealData.d[2];
+        }
+        else
+           ReportHeader.OffsetPhiloadC = QString::number(RealData.d[2] - ReportHeader.PhiloadC.toFloat(), 'f', 3);
+
+        ReportHeader.OffsetPhiUAB = QString::number(RealData.dpsiU[0] - ReportHeader.PhiUAB.toFloat(), 'f', 3);
+        ReportHeader.OffsetPhiUBC = QString::number(RealData.dpsiU[1] - ReportHeader.PhiUBC.toFloat(), 'f', 3);
+*/
+        report->dataManager()->setReportVariable("FreqMIP", QString::number(RealData.f[0], 'f', 3));
+        report->dataManager()->setReportVariable("UA_MIP."+QString::number(i), QString::number(RealData.u[0], 'f', 3));
+        report->dataManager()->setReportVariable("UB_MIP."+QString::number(i), QString::number(RealData.u[1], 'f', 3));
+        report->dataManager()->setReportVariable("UC_MIP."+QString::number(i), QString::number(RealData.u[2], 'f', 3));
+        report->dataManager()->setReportVariable("IA_MIP."+QString::number(i), QString::number(RealData.i[0], 'f', 3));
+        report->dataManager()->setReportVariable("IB_MIP."+QString::number(i), QString::number(RealData.i[1], 'f', 3));
+        report->dataManager()->setReportVariable("IC_MIP."+QString::number(i), QString::number(RealData.i[2], 'f', 3));
+        report->dataManager()->setReportVariable("Freq."+QString::number(i), QString::number(Bda_block.Frequency, 'f', 3));
+        if(i < 17)
+        {
+            report->dataManager()->setReportVariable("UA."+QString::number(i), QString::number(Bda_block.IUefNat_filt[0], 'f', 3));
+            report->dataManager()->setReportVariable("UB."+QString::number(i), QString::number(Bda_block.IUefNat_filt[1], 'f', 3));
+            report->dataManager()->setReportVariable("UC."+QString::number(i), QString::number(Bda_block.IUefNat_filt[2], 'f', 3));
+        }
+        else
+        {
+            report->dataManager()->setReportVariable("UA."+QString::number(i), QString::number(Bda_block.IUefNat_filt[6], 'f', 3));
+            report->dataManager()->setReportVariable("UB."+QString::number(i), QString::number(Bda_block.IUefNat_filt[7], 'f', 3));
+            report->dataManager()->setReportVariable("UC."+QString::number(i), QString::number(Bda_block.IUefNat_filt[8], 'f', 3));
+        }
+        report->dataManager()->setReportVariable("IA."+QString::number(i), QString::number(Bda_block.IUefNat_filt[3], 'f', 3));
+        report->dataManager()->setReportVariable("IB."+QString::number(i), QString::number(Bda_block.IUefNat_filt[4], 'f', 3));
+        report->dataManager()->setReportVariable("IC."+QString::number(i), QString::number(Bda_block.IUefNat_filt[5], 'f', 3));
+        report->dataManager()->setReportVariable("OffsetF."+QString::number(i), ReportHeader.OffsetF);
+        report->dataManager()->setReportVariable("OffsetUA."+QString::number(i), ReportHeader.OffsetUA);
+        report->dataManager()->setReportVariable("OffsetUB."+QString::number(i), ReportHeader.OffsetUB);
+        report->dataManager()->setReportVariable("OffsetUC."+QString::number(i), ReportHeader.OffsetUC);
+        report->dataManager()->setReportVariable("OffsetIA."+QString::number(i), ReportHeader.OffsetIA);
+        report->dataManager()->setReportVariable("OffsetIB."+QString::number(i), ReportHeader.OffsetIB);
+        report->dataManager()->setReportVariable("OffsetIC."+QString::number(i), ReportHeader.OffsetIC);
 
     }
 
@@ -1183,5 +1474,4 @@ void TuneDialog85::GenerateReport()
     }
     delete report;
 }
-
 #endif

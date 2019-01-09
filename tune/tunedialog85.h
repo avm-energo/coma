@@ -20,7 +20,7 @@
 #define HZ50    50.0
 // currents
 #define I1      1.0
-#define I4      4.0
+#define I5      5.0
 
 // parameters for GetExtData
 #define TD_GED_U    0x01 // напряжение
@@ -54,7 +54,7 @@ private:
     };
     int GED_Type;
     float IUefNat_filt_old[6];      // для сохранения значений по п. 7.3.2
-    float MipDat[41];
+    float MipDat[46];
     LimeReport::ReportEngine *report;
     //bool Cancelled, DefConfig;
     Config85 *C85;
@@ -69,8 +69,8 @@ private:
     struct Bac
     {
         float KmU[3];
-        float KmI_1[3];
-        float KmI_4[3];
+        float KmI_1[3];   // Коррекция тока при коэффициенте АЦП = 1 при Iном = 5А
+        float KmI_4[3];   // Коррекция тока при коэффициенте АЦП = 4 при Iном = 1А
         float K_freq;
         float KmU2[3];
     };
@@ -143,13 +143,13 @@ private:
 
     };
 
-    Bda_in_struct Bda_Block;
+    Bda_in_struct Bda_block;
     iec104 *mipcanal;
     QStandardItemModel *ReportModel, *ViewModel; // модель, в которую заносим данные для отчёта
 
-    double U[21] =       {60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 72, 48, 36, 24, 12, 60, 60, 60, 60 };
-    double I[21] =       {0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1, 2, 3, 4, 5, 6,  5, 5, 5, 5, 5, 5, 5, 5, 5 };
-    double PhiLoad[21] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 90, 180, 270 };
+    double U[22] =       {60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 72, 48, 36, 24, 12, 72, 48, 36, 24, 12 };
+    double I[22] =       {0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1, 2, 3, 4, 5, 6,  5, 5, 5, 5, 5, 5, 5, 5, 5, 5 };
+    //double PhiLoad[21] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 90, 180, 270 };
 
     struct ReportHeaderStructure
     {
@@ -220,6 +220,7 @@ private:
     int Start7_3_9();
     int SaveUeff();
     int ShowRetomDialog(double U, double I);
+    int ShowRetomDialog2(double U);
     //int TuneDialog85::StartCheckAnalogValues(double u, double i, double deg, bool tol); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0: начальная точность, 1 - повышенная
     int CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct);
     bool SetConfA(int i2nom);
@@ -229,6 +230,12 @@ private:
     int LoadWorkConfig();
     int StartCheckAnalogValues(double u, double i, double deg, bool tol); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0: начальная точность, 1 - повышенная
     void PrepareConsts();
+    void RefreshAnalogValues(int bdnum);
+    QWidget *Bd1W(QWidget *parent);
+    void FillBd1(QWidget *parent);
+    void FillNewBac();
+
+    QString ValuesFormat, WidgetFormat;
 
 private slots:
 #if PROGSIZE != PROGSIZE_EMUL

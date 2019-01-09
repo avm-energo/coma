@@ -13,9 +13,12 @@ ConfDialog31::ConfDialog31(QVector<S2::DataRec> &S2Config, bool BaseBoard, QWidg
     C31 = new Config31(S2Config, BaseBoard);
     QStringList sl = QStringList() << "Обычный" << "Не исп." << "Инверсия";
     SetInputs(sl, DIN31_NUMCH);
+    SetOutputs(QStringList(), 0);
     SetupUI();
 #if PROGSIZE != PROGSIZE_EMUL
+    INFOMSG("Start readconf 0x31");
     PrereadConf();
+    INFOMSG("End readconf 0x31");
 #endif
 }
 

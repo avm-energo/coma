@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#define C85_BDA_IN  1
+
 class Check_85
 {
 public:

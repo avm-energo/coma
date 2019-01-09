@@ -48,6 +48,7 @@ public:
         qint8 in_type[16];     // Тип входа (бит 0 - не исп., бит 1 - инверсия)
         quint32 dly_time[16];  // Время задержки для контроля дребезга
         quint16 pair[8];      // Номера каналов в парах
+        quint16 SignalType;   // Тип сигнала
     } Bci_DIn;
 
     typedef struct

@@ -1,5 +1,6 @@
 #include <QCoreApplication>
 #include <QTime>
+#include <QStandardPaths>
 #include "error.h"
 #include "modulebsi.h"
 #include "eabstractprotocomchannel.h"
@@ -10,6 +11,7 @@ EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(pa
 {
     QString tmps = "=== CLog started ===\n";
     CnLog = new Log;
+//    CnLog->Init(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/canal.log");
     CnLog->Init("canal.log");
     CnLog->WriteRaw(tmps.toUtf8());
     RDLength = 0;

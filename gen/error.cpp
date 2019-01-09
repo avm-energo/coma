@@ -11,10 +11,14 @@ Log Error::LogFile;
 
 Error::Error()
 {
-    LogFile.Init(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"+PROGNAME+"/" + LOGFILE);
+}
+
+void Error::Init()
+{
+    LogFile.Init(LOGFILE);
     LogFile.info("=== Log started ===\n");
     QFile file;
-    QString ermsgspath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"+PROGNAME+"/";
+    QString ermsgspath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/";
     file.setFileName(ermsgspath+"ermsgs.dat");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
@@ -29,7 +33,6 @@ Error::Error()
         else if (tmpString.at(0) != '#')
             ErrMsgs << tmpString;
     } while (!streamfile.atEnd());
-
 }
 
 void Error::AddErrMsg(ErMsgType msgtype, QString file, int line, QString msg)
