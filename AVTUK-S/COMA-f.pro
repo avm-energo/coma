@@ -109,7 +109,9 @@ SOURCES += \
     ../gen/eabstractprotocomchannel.cpp \
     ../gen/eusbhid.cpp \
     ../iec104/ethernet.cpp \
-    ../iec104/iec104.cpp
+    ../iec104/iec104.cpp \
+    ../config/config84.cpp \
+    ../config/confdialog84.cpp
 
 HEADERS  += \
     coma.h \
@@ -199,7 +201,8 @@ HEADERS  += \
     ../gen/eusbhid.h \
     ../iec104/ethernet.h \
     ../iec104/iec104.h \
-    ../config/config84.h
+    ../config/config84.h \
+    ../config/confdialog84.h
 
 INCLUDEPATH += $$PWD/../../includes
 
