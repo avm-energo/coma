@@ -1,15 +1,15 @@
-#ifndef CHECKDIALOG80_H
-#define CHECKDIALOG80_H
+#ifndef CHECKDIALOG84_H
+#define CHECKDIALOG84_H
 
 #include "eabstractcheckdialog.h"
-#include "check80.h"
+#include "check84.h"
 #include "check.h"
 
-class CheckDialog80 : public EAbstractCheckDialog
+class CheckDialog84 : public EAbstractCheckDialog
 {
     Q_OBJECT
 public:
-    explicit CheckDialog80(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    explicit CheckDialog84(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
 signals:
 
@@ -17,7 +17,7 @@ public slots:
 
 private:
     Check *Ch;
-    Check_80 *Ch80;
+    Check_84 *Ch84;
     QTimer *timer;
     QXlsx::Document *xlsx;
     bool XlsxWriting;
@@ -35,5 +35,4 @@ private:
     void PrepareAnalogMeasurements();
     QWidget *CustomTab();
 };
-
-#endif // CHECKDIALOG80_H
+#endif // CHECKDIALOG84_H

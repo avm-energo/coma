@@ -47,6 +47,7 @@ SOURCES += \
     ../config/confdialog31.cpp \
     ../config/confdialog35.cpp \
     ../config/confdialog80.cpp \
+    ../config/confdialog84.cpp \
     ../config/confdialog85.cpp \
     ../config/confdialoga1.cpp \
     ../config/config.cpp \
@@ -56,6 +57,7 @@ SOURCES += \
     ../config/config35.cpp \
     ../config/config3x.cpp \
     ../config/config80.cpp \
+    ../config/config84.cpp \
     ../config/config85.cpp \
     ../config/configa1.cpp \
     ../dialogs/a1dialog.cpp \
@@ -104,7 +106,9 @@ SOURCES += \
     ../gen/stdfunc.cpp \
     ../tune/tunedialog85.cpp \
     ../config/confdialog87.cpp \
-    ../config/config87.cpp
+    ../config/config87.cpp \
+    ../check/checkdialog84.cpp \
+    ../check/check84.cpp
 
 HEADERS  += \
     coma.h \
@@ -129,6 +133,7 @@ HEADERS  += \
     ../config/confdialog35.h \
     ../config/confdialog80.h \
     ../config/confdialog85.h \
+    ../config/confdialog84.h \
     ../config/confdialoga1.h \
     ../config/config.h \
     ../config/config21.h \
@@ -137,6 +142,7 @@ HEADERS  += \
     ../config/config35.h \
     ../config/config3x.h \
     ../config/config80.h \
+    ../config/config84.h \
     ../config/config85.h \
     ../config/configa1.h \
     ../dialogs/a1dialog.h \
@@ -188,7 +194,9 @@ HEADERS  += \
     ../gen/maindef.h \
     ../tune/tunedialog85.h \
     ../config/confdialog87.h \
-    ../config/config87.h
+    ../config/config87.h \
+    ../check/checkdialog84.h \
+    ../check/check84.h
 
 INCLUDEPATH += $$PWD/../../includes
 

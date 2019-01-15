@@ -32,6 +32,7 @@
 #include "../check/checkdialog21.h"
 #include "../check/checkdialog22.h"
 #include "../check/checkdialog80.h"
+#include "../check/checkdialog84.h"
 #include "../check/checkdialog85.h"
 #include "../check/checkdialoga1.h"
 #include "../config/confdialog21.h"
@@ -39,6 +40,7 @@
 #include "../config/confdialog31.h"
 #include "../config/confdialog35.h"
 #include "../config/confdialog80.h"
+#include "../config/confdialog84.h"
 #include "../config/confdialog85.h"
 #include "../config/confdialog87.h"
 #include "../config/confdialoga1.h"
@@ -380,6 +382,12 @@ void Coma::PrepareDialogs()
         break;
     }
 
+    case MTB_81:
+    {
+        CheckB = new CheckDialog84(BoardTypes::BT_BASE);
+        break;
+    }
+
     case MTB_87:
         ConfB = new ConfDialog87(S2Config, true);
 
@@ -432,13 +440,18 @@ void Coma::PrepareDialogs()
         TuneM = new TuneDialog80(S2ConfigForTune);
         break;
     }
+    case MTM_84:
+    {
+        ConfM = new ConfDialog84(S2Config);
+        break;
+    }
     case MTM_85:
     {
         setMinimumSize(QSize(1200, 800));
         ConfM = new ConfDialog85(S2Config);
         CheckM = new CheckDialog85(BoardTypes::BT_BASE);
         SwjD = new SwitchJournalDialog;
-        TuneM = new TuneDialog85(S2ConfigForTune); //          Не понятно, что за ошибка!
+        TuneM = new TuneDialog85(S2ConfigForTune);
         break;
     }
     default: // 0x00

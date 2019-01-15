@@ -36,7 +36,7 @@ private slots:
     void Emul8x();
 
 private:
-    const QVector<int> MTBs = {0x21, 0x22, 0x31, 0x35};
+    const QVector<int> MTBs = {0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84};
 //    int Mode; // режим запуска программы
 
     void SetupUI();

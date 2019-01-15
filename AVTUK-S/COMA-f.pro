@@ -111,7 +111,9 @@ SOURCES += \
     ../iec104/ethernet.cpp \
     ../iec104/iec104.cpp \
     ../config/config84.cpp \
-    ../config/confdialog84.cpp
+    ../config/confdialog84.cpp \
+    ../check/checkdialog84.cpp \
+    ../check/check84.cpp
 
 HEADERS  += \
     coma.h \
@@ -202,7 +204,9 @@ HEADERS  += \
     ../iec104/ethernet.h \
     ../iec104/iec104.h \
     ../config/config84.h \
-    ../config/confdialog84.h
+    ../config/confdialog84.h \
+    ../check/check84.h \
+    ../check/checkdialog84.h
 
 INCLUDEPATH += $$PWD/../../includes
 
