@@ -99,9 +99,6 @@ void pkdn_s::SetupUI()
     lyout->addWidget(Least());
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
-#if PROGSIZE >= PROGSIZE_LARGE
-    SetSlideWidget();
-#endif
 }
 
 void pkdn_s::AddActionsToMenuBar(QMenuBar *menubar)
@@ -141,8 +138,8 @@ void pkdn_s::Stage3()
 //    fwupdialog *FwUpD = new fwupdialog;
 #if PROGSIZE >= PROGSIZE_LARGE
     TuneDialogA1 *tdlg = new TuneDialogA1;
-    connect(tdlg,SIGNAL(StartPercents(quint32)),this,SLOT(SetProgressBar2Size(quint32)));
-    connect(tdlg,SIGNAL(SetPercent(quint32)),this,SLOT(SetProgressBar2(quint32)));
+    connect(tdlg,SIGNAL(StartPercents(int)),this,SLOT(SetProgressBar2Size(int)));
+    connect(tdlg,SIGNAL(SetPercent(int)),this,SLOT(SetProgressBar2(int)));
     connect(this,SIGNAL(Finished()),tdlg,SIGNAL(Finished()));
     connect(this,SIGNAL(FinishAll()),tdlg,SLOT(CancelTune()));
     MainTW->addTab(tdlg, "Регулировка");
@@ -166,6 +163,9 @@ void pkdn_s::Stage3()
         Error::ShowErMsg(ER_NOTUNECOEF);
     MainTW->repaint();
     MainTW->show();
+#if PROGSIZE >= PROGSIZE_LARGE
+    SetSlideWidget();
+#endif
     emit BsiRefresh();
 }
 

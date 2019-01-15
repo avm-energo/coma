@@ -193,6 +193,7 @@ QWidget *MainWindow::Least()
 void MainWindow::SetSlideWidget()
 {
     QWidget *SlideWidget = new QWidget(this);
+    SlideWidget->setWindowFlags(Qt::FramelessWindowHint);
     SlideWidget->setObjectName("slidew");
     SlideWidget->setStyleSheet("QWidget {background-color: rgba(110,234,145,255);}");
     QVBoxLayout *slyout = new QVBoxLayout;

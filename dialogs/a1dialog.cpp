@@ -234,6 +234,7 @@ void A1Dialog::GenerateReport()
 
 bool A1Dialog::ConditionDataDialog()
 {
+    Cancelled = false;
     int row = 0;
     QDialog *dlg = new QDialog(this);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -297,6 +298,7 @@ bool A1Dialog::ConditionDataDialog()
 
 bool A1Dialog::DNDialog(PovDevStruct &PovDev)
 {
+    Cancelled = false;
     int row = 0;
     QDialog *dlg = new QDialog(this);
     dlg->setAttribute(Qt::WA_DeleteOnClose);

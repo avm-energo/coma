@@ -163,7 +163,7 @@ private:
 signals:
     void CloseDialog();
     void StartPercents(quint32 Percent);
-    void SetPercent(quint32 Percent);
+    void SetPercent(int Percent);
 
 private slots:
 #if PROGSIZE != PROGSIZE_EMUL
