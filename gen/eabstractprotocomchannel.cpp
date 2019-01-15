@@ -1,5 +1,6 @@
 #include <QCoreApplication>
 #include <QTime>
+#include <QStandardPaths>
 #include "error.h"
 #include "modulebsi.h"
 #include "eabstractprotocomchannel.h"
@@ -10,6 +11,7 @@ EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(pa
 {
     QString tmps = "=== CLog started ===\n";
     CnLog = new Log;
+//    CnLog->Init(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/canal.log");
     CnLog->Init("canal.log");
     CnLog->WriteRaw(tmps.toUtf8());
     RDLength = 0;
@@ -287,7 +289,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                     if (RDSize < 16) // не пришла ещё шапка файла
                         return;
                     quint16 filenum;
-                    unsigned char tmpi= ReadDataChunk[5];
+                    char tmpi= ReadDataChunk[5];
                     filenum = static_cast<unsigned short>(tmpi) * 256;
                     tmpi = ReadDataChunk[4];
                     filenum += tmpi;

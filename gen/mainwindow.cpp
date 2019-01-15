@@ -46,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     QDir dir(StdFunc::GetHomeDir());
     if (!dir.exists())
         dir.mkpath(".");
+    StdFunc::Init();
+    Error::Init();
     S2Config.clear();
     S2ConfigForTune.clear();
     MainConfDialog = nullptr;
@@ -70,10 +72,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 #endif
     connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
     connect(cn,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
-#if PROGSIZE >= PROGSIZE_LARGE
     connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
     connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-#endif
     connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
     connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
 #endif
@@ -604,7 +604,7 @@ void MainWindow::SetProgressBar2Size(int size)
     SetProgressBarSize("2", size);
 }
 
-void MainWindow::SetProgressBar2(quint32 cursize)
+void MainWindow::SetProgressBar2(int cursize)
 {
     SetProgressBar("2", cursize);
 }
@@ -679,7 +679,7 @@ void MainWindow::GetAbout()
 
     l2yout->addWidget(WDFunc::NewLBL(this, tmps));
     l2yout->addWidget(WDFunc::NewLBL(this, "ООО \"АВМ-Энерго\""));
-    l2yout->addWidget(WDFunc::NewLBL(this, "2015-2018 гг."));
+    l2yout->addWidget(WDFunc::NewLBL(this, "2015-2019 гг."));
     l2yout->addWidget(WDFunc::NewLBL(this, "info@avmenergo.ru"));
     l2yout->addStretch(10);
     hlyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/evel.png")), 1, Qt::AlignVCenter);
@@ -708,10 +708,10 @@ void MainWindow::GetDeviceFromTable(QModelIndex idx)
         return;
     }
     QString tmps = tv->model()->index(tv->currentIndex().row(), 0, QModelIndex()).data(Qt::DisplayRole).toString();
-    DevInfo.vendor_id = tmps.toInt(nullptr, 16);
+    DevInfo.vendor_id = tmps.toUShort(nullptr, 16);
 //    quint16 vid = tmps.toInt(nullptr, 16);
     tmps = tv->model()->index(tv->currentIndex().row(), 1, QModelIndex()).data(Qt::DisplayRole).toString();
-    DevInfo.product_id = tmps.toInt(nullptr, 16);
+    DevInfo.product_id = tmps.toUShort(nullptr, 16);
 //    quint16 pid = tmps.toInt(nullptr, 16);
     tmps = tv->model()->index(tv->currentIndex().row(), 3, QModelIndex()).data(Qt::DisplayRole).toString();
     tmps.toWCharArray(DevInfo.serial);

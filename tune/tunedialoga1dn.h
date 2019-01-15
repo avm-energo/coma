@@ -103,8 +103,8 @@ private slots:
 #endif
 signals:
     void DNDataIsSet();
-    void StartPercents(quint32 Percent);
-    void SetPercent(quint32 Percent);
+    void StartPercents(int Percent);
+    void SetPercent(int Percent);
 };
 
 #endif // TUNEDIALOGA1DN_H

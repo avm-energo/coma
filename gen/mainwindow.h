@@ -171,7 +171,7 @@ private slots:
     void SetProgressBar1Size(int size);
     void SetProgressBar1(int cursize);
     void SetProgressBar2Size(int size);
-    void SetProgressBar2(quint32 cursize);
+    void SetProgressBar2(int cursize);
     void ShowConnectDialog();
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE || PROGSIZE == PROGSIZE_EMUL
