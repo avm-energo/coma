@@ -18,10 +18,9 @@ public slots:
 private:
     Check *Ch;
     Check_84 *Ch84;
-    QTimer *timer;
-    QXlsx::Document *xlsx;
+    QTimer *BdTimer;
+    int BdNum;
     bool XlsxWriting;
-    int WRow;
     QTime *ElapsedTimeCounter;
     const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
 
@@ -34,5 +33,8 @@ private:
     void SetDefaultValuesToWrite();
     void PrepareAnalogMeasurements();
     QWidget *CustomTab();
+    void StartBdMeasurements();
+    void StopBdMeasurements();
+    void BdTimerTimeout();
 };
 #endif // CHECKDIALOG84_H

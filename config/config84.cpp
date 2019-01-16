@@ -53,11 +53,11 @@ void Config84::SetDefConf()
     Bci_block.dTg_alarm = 1.5;
     Bci_block.dIunb_pred = 1;
     Bci_block.dIunb_alarm = 1.5;
-    Bci_block.GdС = 0.1;
-    Bci_block.GdTg = 0.2;
-    Bci_block.GdIunb = 0.2;
+    Bci_block.GdС = 0.1f;
+    Bci_block.GdTg = 0.2f;
+    Bci_block.GdIunb = 0.2f;
     Bci_block.RTerm = 100;
-    Bci_block.W100 = 1.385;
+    Bci_block.W100 = 1.385f;
     Bci_block.Iunb_init = 0;
     Bci_block.Phy_unb_init = 0;
     Bci_block.NFiltr = 100;

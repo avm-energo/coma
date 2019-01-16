@@ -2,7 +2,8 @@
 #define CHECK84_H
 #include <QWidget>
 
-#define C84_BDA_IN  1
+#define C84_BDA_IN   1
+#define C84_BDA_IN2  2
 
 class Check_84
 {
@@ -37,6 +38,7 @@ public:
     QWidget *Bd1W(QWidget *parent);
     QWidget *Bd2W(QWidget *parent);
     void FillBd1(QWidget *parent);
+    void FillBd2(QWidget *parent);
 
 private:
     QString ValuesFormat, WidgetFormat;

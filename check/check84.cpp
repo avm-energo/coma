@@ -67,37 +67,37 @@ QWidget *Check_84::Bd2W(QWidget *parent)
     QGridLayout *glyout = new QGridLayout;
 
     glyout->addWidget(WDFunc::NewLBL(parent, "U0"),0,0,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(21), ValuesFormat, \
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value21", ValuesFormat, \
                                       QString::number(21)+".Напряжение нулевой последовательности"),1,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "U1"),0,1,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(22), ValuesFormat, \
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value22", ValuesFormat, \
                                       QString::number(22)+".Напряжение прямой последовательности"),1,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "U2"),0,2,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(23), ValuesFormat, \
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value23", ValuesFormat, \
                                       QString::number(23)+".Напряжение обратной последовательности"),1,2,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "I0"),2,0,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(24), ValuesFormat, \
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value24", ValuesFormat, \
                                       QString::number(24)+".Ток нулевой последовательности"),3,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "I1"),2,1,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(25), ValuesFormat, \
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value25", ValuesFormat, \
                                       QString::number(25)+".Ток прямой последовательности"),3,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "I2"),2,2,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(26), ValuesFormat, \
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value26", ValuesFormat, \
                                       QString::number(26)+".Ток обратной последовательности"),3,2,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "Iunb"),4,0,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(27), ValuesFormat, \
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value27", ValuesFormat, \
                                       QString::number(27)+".Ток обратной последовательности"),5,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "Phy_unb"),4,1,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(28), ValuesFormat, \
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value28", ValuesFormat, \
                                       QString::number(28)+".Угол тока небаланса относительно тока ф.А, град."),5,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "Time"),4,2,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(29), ValuesFormat, \
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value29", ValuesFormat, \
                                       QString::number(29)+".Время записи, с"),5,2,1,1);
 
     if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != MTB_81)
     {
         glyout->addWidget(WDFunc::NewLBL(parent, "Tamb"),6,0,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(30), ValuesFormat, \
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value30", ValuesFormat, \
                                           QString::number(30)+".Температура окружающей среды, °С"),7,0,1,1);
     }
 
@@ -112,6 +112,8 @@ QWidget *Check_84::Bd2W(QWidget *parent)
 
 void Check_84::FillBd1(QWidget *parent)
 {
+    WDFunc::SetLBLText(parent, "value0", WDFunc::StringValueWithCheck(Bd_block1.NUM, 3));
+    WDFunc::SetLBLText(parent, "value1", WDFunc::StringValueWithCheck(Bd_block1.Tmk, 3));
     WDFunc::SetLBLText(parent, "value2", WDFunc::StringValueWithCheck(Bd_block1.Frequency, 3));
     for (int i = 0; i < 3; i++)
     {
@@ -124,4 +126,39 @@ void Check_84::FillBd1(QWidget *parent)
         WDFunc::SetLBLText(parent, "value"+QString::number(i+18), WDFunc::StringValueWithCheck(Bd_block1.dTg_d[i], 3));
     }
 
+    WDFunc::SetLBLText(parent, "value21", WDFunc::StringValueWithCheck(Bd_block1.U0, 3));
+    WDFunc::SetLBLText(parent, "value22", WDFunc::StringValueWithCheck(Bd_block1.U1, 3));
+    WDFunc::SetLBLText(parent, "value23", WDFunc::StringValueWithCheck(Bd_block1.U2, 3));
+    WDFunc::SetLBLText(parent, "value24", WDFunc::StringValueWithCheck(Bd_block1.I0, 3));
+    WDFunc::SetLBLText(parent, "value25", WDFunc::StringValueWithCheck(Bd_block1.I1, 3));
+    WDFunc::SetLBLText(parent, "value26", WDFunc::StringValueWithCheck(Bd_block1.I2, 3));
+    WDFunc::SetLBLText(parent, "value27", WDFunc::StringValueWithCheck(Bd_block1.Iunb, 3));
+    WDFunc::SetLBLText(parent, "value28", WDFunc::StringValueWithCheck(Bd_block1.Phy_unb, 3));
+    WDFunc::SetLBLText(parent, "value29", WDFunc::StringValueWithCheck(Bd_block1.Time, 3));
+
+
+    if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != MTB_81)
+    {
+        WDFunc::SetLBLText(parent, "value30", WDFunc::StringValueWithCheck(Bd_block1.Tamb, 3));
+    }
+
+}
+
+void Check_84::FillBd2(QWidget *parent)
+{
+    WDFunc::SetLBLText(parent, "value21", WDFunc::StringValueWithCheck(Bd_block1.U0, 3));
+    WDFunc::SetLBLText(parent, "value22", WDFunc::StringValueWithCheck(Bd_block1.U1, 3));
+    WDFunc::SetLBLText(parent, "value23", WDFunc::StringValueWithCheck(Bd_block1.U2, 3));
+    WDFunc::SetLBLText(parent, "value24", WDFunc::StringValueWithCheck(Bd_block1.I0, 3));
+    WDFunc::SetLBLText(parent, "value25", WDFunc::StringValueWithCheck(Bd_block1.I1, 3));
+    WDFunc::SetLBLText(parent, "value26", WDFunc::StringValueWithCheck(Bd_block1.I2, 3));
+    WDFunc::SetLBLText(parent, "value27", WDFunc::StringValueWithCheck(Bd_block1.Iunb, 3));
+    WDFunc::SetLBLText(parent, "value28", WDFunc::StringValueWithCheck(Bd_block1.Phy_unb, 3));
+    WDFunc::SetLBLText(parent, "value29", WDFunc::StringValueWithCheck(Bd_block1.Time, 3));
+
+
+    if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != MTB_81)
+    {
+        WDFunc::SetLBLText(parent, "value30", WDFunc::StringValueWithCheck(Bd_block1.Tamb, 3));
+    }
 }
