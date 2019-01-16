@@ -63,7 +63,7 @@ public:
 //    QByteArray *ChooseFileForOpen(QString mask);
     void InputTuneVariant(int varnum);
     bool WriteTuneCoefs();
-    void PrereadConf();
+    int PrereadConf();
     virtual void GetBdAndFillMTT() = 0;
 #endif
     virtual void FillBac() = 0;

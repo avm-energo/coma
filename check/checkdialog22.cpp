@@ -96,14 +96,15 @@ void CheckDialog22::WriteToFile(int row, int bdnum)
     case 0:
         xlsx->write(row,2+AIN21_NUMCH*2,WDFunc::FloatValueWithCheck(Ch->Bd_block0.Tmk), format);
         xlsx->write(row,3+AIN21_NUMCH*2,WDFunc::FloatValueWithCheck(Ch->Bd_block0.Vbat), format);
+        break;
     case 1:
-    {
-        for (int i=0; i<AIN22_NUMCH; ++i)
         {
-            xlsx->write(row,i+2,WDFunc::FloatValueWithCheck(Ch22->Bd_block.Dmed[i]), format);
-            xlsx->write(row,i+2+AIN22_NUMCH,WDFunc::FloatValueWithCheck(Ch22->Bd_block.Tmed[i]), format);
+            for (int i=0; i<AIN22_NUMCH; ++i)
+            {
+                xlsx->write(row,i+2,WDFunc::FloatValueWithCheck(Ch22->Bd_block.Dmed[i]), format);
+                xlsx->write(row,i+2+AIN22_NUMCH,WDFunc::FloatValueWithCheck(Ch22->Bd_block.Tmed[i]), format);
+            }
         }
-    }
     }
 }
 
@@ -124,8 +125,10 @@ void CheckDialog22::RefreshAnalogValues(int bdnum)
     {
     case BD_COMMON:
         Ch->FillBd0(this);
+        break;
     case 1: // Блок #1
         Ch22->FillBd1W(this);
+        break;
     default:
         return;
     }
