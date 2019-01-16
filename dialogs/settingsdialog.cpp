@@ -29,7 +29,7 @@ void SettingsDialog::SetupUI()
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8;
-    if (MTypeB == MTB_A1)
+    if (MTypeB == Config::MTB_A1)
     {
         hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBLT(this, "Наименование организации, эксплуатирующей прибор"));
@@ -59,7 +59,7 @@ void SettingsDialog::SetupUI()
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetHomeDir()));
     hlyout->addWidget(pb, 0);
     vlyout->addLayout(hlyout);
-    if (MTypeB == MTB_80)
+    if (MTypeB == Config::MTB_80)
     {
         hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(this, "IP-адрес МИП:"));

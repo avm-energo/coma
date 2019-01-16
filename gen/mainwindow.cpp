@@ -143,6 +143,7 @@ QWidget *MainWindow::HthWidget()
                                           "QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);" \
                                           "background: 0px; margin: 0px; spacing: 0; padding: 0px;}", HthToolTip().at(i)));
     w->setLayout(hlyout);
+    connect(this,SIGNAL(BsiRefresh()), this, SLOT(UpdateHthWidget()));
     return w;
 }
 
@@ -193,6 +194,7 @@ QWidget *MainWindow::Least()
 void MainWindow::SetSlideWidget()
 {
     QWidget *SlideWidget = new QWidget(this);
+    SlideWidget->setWindowFlags(Qt::FramelessWindowHint);
     SlideWidget->setObjectName("slidew");
     SlideWidget->setStyleSheet("QWidget {background-color: rgba(110,234,145,255);}");
     QVBoxLayout *slyout = new QVBoxLayout;
@@ -458,9 +460,31 @@ void MainWindow::Stage2()
     }
 #if PROGSIZE >= PROGSIZE_LARGE
     else if (res == Error::ER_RESEMPTY)
-        OpenBhbDialog();
+    {
+        if (OpenBhbDialog() != Error::ER_NOERROR)
+        {
+            EMessageBox::error(this, "Ошибка", "Ошибка при работе с Hidden block");
+            return;
+        }
+    }
 #endif
     Stage3();
+}
+
+void MainWindow::UpdateHthWidget()
+{
+    ModuleBSI::Bsi bsi = ModuleBSI::GetBsi();
+    for (int i = 0; i < MAXERRORFLAGNUM; i++)
+    {
+        QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
+        if (lbl == nullptr)
+            return;
+        quint32 tmpui = (0x00000001 << i) & bsi.Hth;
+        if (tmpui)
+            lbl->setStyleSheet("QLabel {background-color: rgba(255,10,10,255); color: rgba(255,255,255,255);}");
+        else
+            lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
+    }
 }
 #endif
 
@@ -518,27 +542,29 @@ void MainWindow::PasswordCheck(QString psw)
 }
 
 #if PROGSIZE >= PROGSIZE_LARGE
-void MainWindow::OpenBhbDialog()
+int MainWindow::OpenBhbDialog()
 {
     if (!Commands::isConnected())
     {
         QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модулем" : "прибором");
         EMessageBox::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с "+tmps);
-        return;
+        return Error::ER_GENERALERROR;
     }
     if (CheckPassword() == Error::ER_GENERALERROR)
-        return;
+        return Error::ER_GENERALERROR;
 
     HiddenDialog *dlg = new HiddenDialog();
     dlg->Fill(); // заполняем диалог из недавно присвоенных значений
     dlg->exec();
+    if (!dlg->ResultOk)
+        return Error::ER_GENERALERROR;
     Disconnect();
     QApplication::setOverrideCursor(Qt::WaitCursor);
     if (Commands::Connect() != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
         QApplication::restoreOverrideCursor();
-        return;
+        return Error::ER_GENERALERROR;
     }
     QApplication::restoreOverrideCursor();
     int res;
@@ -546,8 +572,10 @@ void MainWindow::OpenBhbDialog()
     {
         EMessageBox::error(this, "Ошибка", "Блок Bsi не может быть прочитан, ошибка " + QString::number(res));
         Commands::Disconnect();
+        return Error::ER_GENERALERROR;
     }
     emit BsiRefresh();
+    return Error::ER_NOERROR;
 }
 #endif
 
@@ -604,7 +632,7 @@ void MainWindow::SetProgressBar2Size(int size)
     SetProgressBarSize("2", size);
 }
 
-void MainWindow::SetProgressBar2(quint32 cursize)
+void MainWindow::SetProgressBar2(int cursize)
 {
     SetProgressBar("2", cursize);
 }
@@ -679,7 +707,7 @@ void MainWindow::GetAbout()
 
     l2yout->addWidget(WDFunc::NewLBL(this, tmps));
     l2yout->addWidget(WDFunc::NewLBL(this, "ООО \"АВМ-Энерго\""));
-    l2yout->addWidget(WDFunc::NewLBL(this, "2015-2018 гг."));
+    l2yout->addWidget(WDFunc::NewLBL(this, "2015-2019 гг."));
     l2yout->addWidget(WDFunc::NewLBL(this, "info@avmenergo.ru"));
     l2yout->addStretch(10);
     hlyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/evel.png")), 1, Qt::AlignVCenter);
@@ -708,10 +736,10 @@ void MainWindow::GetDeviceFromTable(QModelIndex idx)
         return;
     }
     QString tmps = tv->model()->index(tv->currentIndex().row(), 0, QModelIndex()).data(Qt::DisplayRole).toString();
-    DevInfo.vendor_id = tmps.toInt(nullptr, 16);
+    DevInfo.vendor_id = tmps.toUShort(nullptr, 16);
 //    quint16 vid = tmps.toInt(nullptr, 16);
     tmps = tv->model()->index(tv->currentIndex().row(), 1, QModelIndex()).data(Qt::DisplayRole).toString();
-    DevInfo.product_id = tmps.toInt(nullptr, 16);
+    DevInfo.product_id = tmps.toUShort(nullptr, 16);
 //    quint16 pid = tmps.toInt(nullptr, 16);
     tmps = tv->model()->index(tv->currentIndex().row(), 3, QModelIndex()).data(Qt::DisplayRole).toString();
     tmps.toWCharArray(DevInfo.serial);

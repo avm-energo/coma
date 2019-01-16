@@ -210,9 +210,6 @@ void Coma::SetupUI()
     lyout->addWidget(Least());
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
-#if PROGSIZE >= PROGSIZE_LARGE
-        SetSlideWidget();
-#endif
     SetupMenubar();
 }
 
@@ -340,6 +337,9 @@ void Coma::Stage3()
         Error::ShowErMsg(ER_NOTUNECOEF);
     MainTW->repaint();
     MainTW->show();
+#if PROGSIZE >= PROGSIZE_LARGE
+    SetSlideWidget();
+#endif
     emit BsiRefresh();
 }
 

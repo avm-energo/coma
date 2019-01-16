@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.2.258
+VERSION = 2.2.259
 
 QT       += core gui serialport printsupport
 
@@ -44,16 +44,23 @@ SOURCES += main.cpp\
     ../dialogs/infodialog.cpp \
     ../dialogs/keypressdialog.cpp \
     ../dialogs/settingsdialog.cpp \
+    ../gen/commands.cpp \
     ../gen/eabstractprotocomchannel.cpp \
+    ../gen/error.cpp \
     ../gen/eusbcom.cpp \
     ../gen/eusbhid.cpp \
-    ../gen/commands.cpp \
+    ../gen/files.cpp \
     ../gen/log.cpp \
     ../gen/mainwindow.cpp \
+    ../gen/modulebsi.cpp \
+    ../gen/s2.cpp \
+    ../gen/stdfunc.cpp \
+    ../gen/timefunc.cpp \
     ../tune/eabstracttunedialog.cpp \
     ../tune/tunedialoga1.cpp \
     ../tune/tunedialoga1dn.cpp \
     ../widgets/ecombobox.cpp \
+    ../widgets/emessagebox.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/estackedwidget.cpp \
     ../widgets/etableitem.cpp \
@@ -61,16 +68,9 @@ SOURCES += main.cpp\
     ../widgets/etableview.cpp \
     ../widgets/etabwidget.cpp \
     ../widgets/lineeditfield.cpp \
-    ../widgets/emessagebox.cpp \
-    ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp \
     ../widgets/passwordlineedit.cpp \
-    ../gen/s2.cpp \
-    ../gen/error.cpp \
-    ../gen/files.cpp \
-    ../gen/stdfunc.cpp \
-    ../gen/timefunc.cpp \
-    ../gen/modulebsi.cpp
+    ../widgets/waitwidget.cpp \
+    ../widgets/wd_func.cpp
 
 HEADERS  += pkdn_s.h \
     ../check/check.h \
@@ -89,16 +89,25 @@ HEADERS  += pkdn_s.h \
     ../dialogs/infodialog.h \
     ../dialogs/keypressdialog.h \
     ../dialogs/settingsdialog.h \
+    ../gen/colors.h \
     ../gen/eabstractprotocomchannel.h \
+    ../gen/error.h \
     ../gen/eusbcom.h \
     ../gen/eusbhid.h \
+    ../gen/files.h \
     ../gen/commands.h \
     ../gen/log.h \
+    ../gen/maindef.h \
     ../gen/mainwindow.h \
+    ../gen/modulebsi.h \
+    ../gen/s2.h \
+    ../gen/stdfunc.h \
+    ../gen/timefunc.h \
     ../tune/eabstracttunedialog.h \
     ../tune/tunedialoga1.h \
     ../tune/tunedialoga1dn.h \
     ../widgets/ecombobox.h \
+    ../widgets/emessagebox.h \
     ../widgets/errorprotocolwidget.h \
     ../widgets/estackedwidget.h \
     ../widgets/etableitem.h \
@@ -106,18 +115,9 @@ HEADERS  += pkdn_s.h \
     ../widgets/etableview.h \
     ../widgets/etabwidget.h \
     ../widgets/lineeditfield.h \
-    ../widgets/emessagebox.h \
-    ../widgets/waitwidget.h \
-    ../widgets/wd_func.h \
     ../widgets/passwordlineedit.h \
-    ../gen/s2.h \
-    ../gen/error.h \
-    ../gen/files.h \
-    ../gen/stdfunc.h \
-    ../gen/timefunc.h \
-    ../gen/colors.h \
-    ../gen/modulebsi.h \
-    ../gen/maindef.h
+    ../widgets/waitwidget.h \
+    ../widgets/wd_func.h
 
 INCLUDEPATH += $$PWD/../../includes
 

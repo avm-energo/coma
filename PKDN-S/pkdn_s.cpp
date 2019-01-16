@@ -99,9 +99,6 @@ void pkdn_s::SetupUI()
     lyout->addWidget(Least());
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
-#if PROGSIZE >= PROGSIZE_LARGE
-    SetSlideWidget();
-#endif
 }
 
 void pkdn_s::AddActionsToMenuBar(QMenuBar *menubar)
@@ -117,13 +114,13 @@ void pkdn_s::AddActionsToMenuBar(QMenuBar *menubar)
 
 void pkdn_s::Stage3()
 {
-    quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8;
+/*    quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8;
     if ((MTypeB != MTB_A1) && (ModuleBSI::GetMType(BoardTypes::BT_BASE) != MTB_A1)) // не тот тип модуля
     {
         EMessageBox::error(this, "Ошибка", "Неверный тип модуля");
         Disconnect();
         return;
-    }
+    } */
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
@@ -141,16 +138,16 @@ void pkdn_s::Stage3()
 //    fwupdialog *FwUpD = new fwupdialog;
 #if PROGSIZE >= PROGSIZE_LARGE
     TuneDialogA1 *tdlg = new TuneDialogA1;
-    connect(tdlg,SIGNAL(StartPercents(quint32)),this,SLOT(SetProgressBar2Size(quint32)));
-    connect(tdlg,SIGNAL(SetPercent(quint32)),this,SLOT(SetProgressBar2(quint32)));
+    connect(tdlg,SIGNAL(StartPercents(int)),this,SLOT(SetProgressBar2Size(int)));
+    connect(tdlg,SIGNAL(SetPercent(int)),this,SLOT(SetProgressBar2(int)));
     connect(this,SIGNAL(Finished()),tdlg,SIGNAL(Finished()));
     connect(this,SIGNAL(FinishAll()),tdlg,SLOT(CancelTune()));
     MainTW->addTab(tdlg, "Регулировка");
 #endif
 #if PROGSIZE >= PROGSIZE_MEDIUM
     TuneDialogA1DN *t2dlg = new TuneDialogA1DN;
-    connect(t2dlg,SIGNAL(StartPercents(quint32)),this,SLOT(SetProgressBar2Size(quint32)));
-    connect(t2dlg,SIGNAL(SetPercent(quint32)),this,SLOT(SetProgressBar2(quint32)));
+    connect(t2dlg,SIGNAL(StartPercents(int)),this,SLOT(SetProgressBar2Size(int)));
+    connect(t2dlg,SIGNAL(SetPercent(int)),this,SLOT(SetProgressBar2(int)));
     MainTW->addTab(t2dlg, "Настройка своего ДН");
 #endif
     MainTW->addTab(chdlg, "Измерения");
@@ -166,6 +163,9 @@ void pkdn_s::Stage3()
         Error::ShowErMsg(ER_NOTUNECOEF);
     MainTW->repaint();
     MainTW->show();
+#if PROGSIZE >= PROGSIZE_LARGE
+    SetSlideWidget();
+#endif
     emit BsiRefresh();
 }
 

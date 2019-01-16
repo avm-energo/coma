@@ -598,7 +598,7 @@ int TuneDialogA1DN::Start7_2_8()
         return Error::ER_GENERALERROR;
     }
     QPushButton *pb = this->findChild<QPushButton *>("GoodDN");
-    if (pb != 0)
+    if (pb != nullptr)
         pb->setText("Запомнить погрешность");
     return Start7_2_9(0);
 }

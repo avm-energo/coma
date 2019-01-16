@@ -19,7 +19,8 @@ void InfoDialog::SetupUI()
     setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *slyout = new QGridLayout;
-    slyout->addWidget(WDFunc::NewLBL(this, ModuleNames()[ModuleBSI::GetMType(BoardTypes::BT_BASE)]), 0, 0, 1, 1, Qt::AlignRight);
+    slyout->addWidget(WDFunc::NewLBL(this, "Тип устройства:"), 0, 0, 1, 1, Qt::AlignRight);
+    slyout->addWidget(WDFunc::NewLBL(this, ModuleBSI::GetModuleTypeString()), 0, 1, 1, 1, Qt::AlignRight);
     slyout->addWidget(WDFunc::NewLBL(this, "Серийный номер устройства:"), 1, 0, 1, 1, Qt::AlignRight);
     slyout->addWidget(WDFunc::NewLBLT(this, "", "snle"), 1, 1, 1, 1);
     slyout->addWidget(WDFunc::NewLBL(this, "Версия ПО:"), 2, 0, 1, 1, Qt::AlignRight);
@@ -66,17 +67,6 @@ void InfoDialog::FillBsi()
     WDFunc::SetLBLText(this, "snmle", QString::number(bsi.SerialNumM, 16));
     WDFunc::SetLBLText(this, "hwmle", StdFunc::VerToStr(bsi.HwverM));
     // расшифровка Hth
-    for (int i = 0; i < MAXERRORFLAGNUM; i++)
-    {
-        QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
-        if (lbl == nullptr)
-            return;
-        quint32 tmpui = (0x00000001 << i) & bsi.Hth;
-        if (tmpui)
-            lbl->setStyleSheet("QLabel {background-color: rgba(255,10,10,255); color: rgba(255,255,255,255);}");
-        else
-            lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
-    }
 }
 
 void InfoDialog::ClearBsi()
@@ -97,7 +87,7 @@ void InfoDialog::ClearBsi()
     for (int i = 0; i < 32; i++)
     {
         QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
-        if (lbl == 0)
+        if (lbl == nullptr)
         {
             DBGMSG;
             return;

@@ -21,11 +21,11 @@ class TuneDialogA1 : public EAbstractTuneDialog
 {
     Q_OBJECT
 public:
-    explicit TuneDialogA1(QWidget *parent = 0);
+    explicit TuneDialogA1(QWidget *parent = nullptr);
 
 signals:
-    void StartPercents(quint32 Percent);
-    void SetPercent(quint32 Percent);
+    void StartPercents(int Percent);
+    void SetPercent(int Percent);
     void Degrees50Completed();
     void Degrees0Completed();
 

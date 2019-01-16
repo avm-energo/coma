@@ -42,7 +42,7 @@ void information(QWidget *parent, const QString &title,
         messageBox->setInformativeText(detailedText);
     messageBox->setIcon(QMessageBox::Information);
     messageBox->addButton(QMessageBox::Ok);
-    messageBox->addButton(QMessageBox::Close);
+//    messageBox->addButton(QMessageBox::Close);
     messageBox->exec();
 }
 

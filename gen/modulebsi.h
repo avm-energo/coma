@@ -58,6 +58,7 @@ public:
     static quint32 SerialNum(BoardTypes type); // возвращает серийный номер, по-умолчанию номер модуля
     static Bsi GetBsi();
     static quint32 GetHealth();
+    static bool IsKnownModule();
 
 private:
     static quint32 MType;

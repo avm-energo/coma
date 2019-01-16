@@ -5,6 +5,7 @@
 #include <QPointer>
 #include <QVector>
 #include <QCoreApplication>
+#include "maindef.h"
 
 class StdFunc
 {
@@ -15,7 +16,7 @@ public:
 
     static void Init();
     static QString VerToStr(quint32);
-    static bool FloatInRange(float var, float value);
+    static bool FloatInRange(float var, float value, float tolerance=TH01);
     static void SetHomeDir(const QString &dir);
     static QString GetHomeDir();
     static QString GetSystemHomeDir();
