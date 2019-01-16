@@ -349,7 +349,7 @@ bool EAbstractTuneDialog::WriteTuneCoefsSlot()
 bool EAbstractTuneDialog::WriteTuneCoefs()
 {
     if (EMessageBox::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?\n(Результаты предыдущей регулировки будут потеряны)") == false)
-        return Error::ER_GENERALERROR;
+        return false;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     FillBackBac();
     if (Commands::WriteBac(AbsBac.BacBlockNum, AbsBac.BacBlock, AbsBac.BacBlockSize) == Error::ER_NOERROR)

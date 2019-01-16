@@ -114,13 +114,13 @@ void pkdn_s::AddActionsToMenuBar(QMenuBar *menubar)
 
 void pkdn_s::Stage3()
 {
-    quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8;
+/*    quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8;
     if ((MTypeB != MTB_A1) && (ModuleBSI::GetMType(BoardTypes::BT_BASE) != MTB_A1)) // не тот тип модуля
     {
         EMessageBox::error(this, "Ошибка", "Неверный тип модуля");
         Disconnect();
         return;
-    }
+    } */
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)

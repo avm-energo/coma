@@ -168,6 +168,7 @@ private slots:
     void GetDeviceFromTable(QModelIndex idx);
     void Stage1_5();
     void Stage2();
+    void UpdateHthWidget();
     void SetProgressBar1Size(int size);
     void SetProgressBar1(int cursize);
     void SetProgressBar2Size(int size);
@@ -180,7 +181,7 @@ private slots:
 #if PROGSIZE >= PROGSIZE_LARGE
     void UpdateMainTE(QByteArray ba);
     void SetTEEnabled(bool enabled);
-    void OpenBhbDialog();
+    int OpenBhbDialog();
     void MouseMove();
 
 #endif

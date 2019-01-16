@@ -143,6 +143,7 @@ QWidget *MainWindow::HthWidget()
                                           "QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);" \
                                           "background: 0px; margin: 0px; spacing: 0; padding: 0px;}", HthToolTip().at(i)));
     w->setLayout(hlyout);
+    connect(this,SIGNAL(BsiRefresh()), this, SLOT(UpdateHthWidget()));
     return w;
 }
 
@@ -459,9 +460,31 @@ void MainWindow::Stage2()
     }
 #if PROGSIZE >= PROGSIZE_LARGE
     else if (res == Error::ER_RESEMPTY)
-        OpenBhbDialog();
+    {
+        if (OpenBhbDialog() != Error::ER_NOERROR)
+        {
+            EMessageBox::error(this, "Ошибка", "Ошибка при работе с Hidden block");
+            return;
+        }
+    }
 #endif
     Stage3();
+}
+
+void MainWindow::UpdateHthWidget()
+{
+    ModuleBSI::Bsi bsi = ModuleBSI::GetBsi();
+    for (int i = 0; i < MAXERRORFLAGNUM; i++)
+    {
+        QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
+        if (lbl == nullptr)
+            return;
+        quint32 tmpui = (0x00000001 << i) & bsi.Hth;
+        if (tmpui)
+            lbl->setStyleSheet("QLabel {background-color: rgba(255,10,10,255); color: rgba(255,255,255,255);}");
+        else
+            lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
+    }
 }
 #endif
 
@@ -519,27 +542,29 @@ void MainWindow::PasswordCheck(QString psw)
 }
 
 #if PROGSIZE >= PROGSIZE_LARGE
-void MainWindow::OpenBhbDialog()
+int MainWindow::OpenBhbDialog()
 {
     if (!Commands::isConnected())
     {
         QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модулем" : "прибором");
         EMessageBox::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с "+tmps);
-        return;
+        return Error::ER_GENERALERROR;
     }
     if (CheckPassword() == Error::ER_GENERALERROR)
-        return;
+        return Error::ER_GENERALERROR;
 
     HiddenDialog *dlg = new HiddenDialog();
     dlg->Fill(); // заполняем диалог из недавно присвоенных значений
     dlg->exec();
+    if (!dlg->ResultOk)
+        return Error::ER_GENERALERROR;
     Disconnect();
     QApplication::setOverrideCursor(Qt::WaitCursor);
     if (Commands::Connect() != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
         QApplication::restoreOverrideCursor();
-        return;
+        return Error::ER_GENERALERROR;
     }
     QApplication::restoreOverrideCursor();
     int res;
@@ -547,8 +572,10 @@ void MainWindow::OpenBhbDialog()
     {
         EMessageBox::error(this, "Ошибка", "Блок Bsi не может быть прочитан, ошибка " + QString::number(res));
         Commands::Disconnect();
+        return Error::ER_GENERALERROR;
     }
     emit BsiRefresh();
+    return Error::ER_NOERROR;
 }
 #endif
 

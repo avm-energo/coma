@@ -24,7 +24,7 @@ public:
     {
         void *BacBlock;
         int BacBlockSize;
-        int BacBlockNum;
+        char BacBlockNum;
     };
 
     explicit EAbstractTuneDialog(QWidget *parent = nullptr);
