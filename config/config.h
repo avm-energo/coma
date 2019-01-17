@@ -18,6 +18,7 @@
 #define MTB_A1      0xA100
 #define MTB_A2      0xA200
 #define MTB_87      0x8700 */
+#define MTB_81      0x8100 // МНК3
 
 // определение мезонинов
 /*#define MTM_00      0x00
@@ -28,7 +29,8 @@
 #define MTM_81      0x0081
 #define MTM_82      0x0082
 #define MTM_83      0x0083
-#define MTM_85      0x0085 */
+#define MTM_84      0x0084 // mnk, комбинируется с 80,84
+#define MTM_85      0x0085 // 3U3I УСК (перегрузка по току 20х), комбинируется с 85
 
 #define BCI_MTYPEB      1
 #define BCI_MTYPEM      2

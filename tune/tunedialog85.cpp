@@ -599,9 +599,9 @@ void TuneDialog85::FillBackBac()
         WDFunc::LEData(this, "tune"+QString::number(i), tmps);
         Bac_block.KmU[i]=ToFloat(tmps);
         WDFunc::LEData(this, "tune"+QString::number(i+3), tmps);
-        Bac_block.KmI_4[i]=ToFloat(tmps);
-        WDFunc::LEData(this, "tune"+QString::number(i+6), tmps);
         Bac_block.KmI_1[i]=ToFloat(tmps);
+        WDFunc::LEData(this, "tune"+QString::number(i+6), tmps);
+        Bac_block.KmI_4[i]=ToFloat(tmps);
         WDFunc::LEData(this, "tune"+QString::number(i+9), tmps);
         Bac_block.KmU2[i]=ToFloat(tmps);
     }

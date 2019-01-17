@@ -1030,9 +1030,9 @@ int TuneDialog80::CheckAnalogValues(double u, double i, double p, double q, doub
     {
         QString tmps;
         WDFunc::LBLText(this, "value"+QString::number(i), tmps);
-        bool ok;
+        bool ok = false;
 
-        double tmpd = german.toDouble( tmps, &ok );   //для чисел с запятой
+        //double tmpd = german.toDouble( tmps, &ok );   //для чисел с запятой
         //double tmpd = tmps.toDouble(&ok);           //для чисел с точкой
         if (!ok)
             return Error::ER_GENERALERROR;

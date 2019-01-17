@@ -105,7 +105,7 @@ void CheckDialog85::PrepareHeadersForFile(int row)
 {
     for (int i=0; i<3; i++)
     {
-        xlsx->write(row,i+2,QVariant(("U1 ф")+QString::number(i+10, 36)+", В"));
+        xlsx->write(row,i+2,QVariant(("U1 ф), В")));
         xlsx->write(row,i+5,QVariant(("I1 ф")+QString::number(i+10, 36)+", A"));
         xlsx->write(row,i+8,QVariant(("U2 ф")+QString::number(i+10, 36)+", В"));
         xlsx->write(row,i+11,QVariant("CosPhi ф"+QString::number(i+10, 36)));
