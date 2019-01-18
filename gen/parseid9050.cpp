@@ -12,14 +12,14 @@
 
 ParseID9050::ParseID9050(QByteArray &BA) : ParseModule(BA)
 {
-    Channel["Channel_0"] = ID_OSC_CH0; Channel["Channel_0"] = ID_SPECTR_CH0;
-    Channel["Channel_1"] = ID_OSC_CH1; Channel["Channel_1"] = ID_SPECTR_CH1;
-    Channel["Channel_2"] = ID_OSC_CH2; Channel["Channel_2"] = ID_SPECTR_CH2;
-    Channel["Channel_3"] = ID_OSC_CH3; Channel["Channel_3"] = ID_SPECTR_CH3;
-    Channel["Channel_4"] = ID_OSC_CH4; Channel["Channel_4"] = ID_SPECTR_CH4;
-    Channel["Channel_5"] = ID_OSC_CH5; Channel["Channel_5"] = ID_SPECTR_CH5;
-    Channel["Channel_6"] = ID_OSC_CH6; Channel["Channel_6"] = ID_SPECTR_CH6;
-    Channel["Channel_7"] = ID_OSC_CH7; Channel["Channel_7"] = ID_SPECTR_CH7;
+    Channel.insert("Channel_0", ID_OSC_CH0); Channel.insert("Channel_0", ID_SPECTR_CH0);
+    Channel.insert("Channel_1", ID_OSC_CH1); Channel.insert("Channel_1", ID_SPECTR_CH1);
+    Channel.insert("Channel_2", ID_OSC_CH2); Channel.insert("Channel_2", ID_SPECTR_CH2);
+    Channel.insert("Channel_3", ID_OSC_CH3); Channel.insert("Channel_3", ID_SPECTR_CH3);
+    Channel.insert("Channel_4", ID_OSC_CH4); Channel.insert("Channel_4", ID_SPECTR_CH4);
+    Channel.insert("Channel_5", ID_OSC_CH5); Channel.insert("Channel_5", ID_SPECTR_CH5);
+    Channel.insert("Channel_6", ID_OSC_CH6); Channel.insert("Channel_6", ID_SPECTR_CH6);
+    Channel.insert("Channel_7", ID_OSC_CH7); Channel.insert("Channel_7", ID_SPECTR_CH7);
 }
 
 int ParseID9050::Parse(int &count)

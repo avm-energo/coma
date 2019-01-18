@@ -65,9 +65,15 @@ void TuneDialog80::SetupUI()
 
     QWidget *cp2 = new QWidget;
     QWidget *cp3 = new QWidget;
+<<<<<<< HEAD
+    #if PROGSIZE != PROGSIZE_EMUL
+    QWidget *cp4 = Bd1W(this);
+    #endif
+=======
 #if PROGSIZE != PROGSIZE_EMUL
     QWidget *cp4 = Bd1W(this);
 #endif
+>>>>>>> origin/master
     tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     cp1->setStyleSheet(tmps);
     cp2->setStyleSheet(tmps);
@@ -78,9 +84,15 @@ void TuneDialog80::SetupUI()
     QTabWidget *TuneTW = new QTabWidget;
 
     TuneTW->addTab(cp1,"Настройка");
+<<<<<<< HEAD
+    #if PROGSIZE != PROGSIZE_EMUL
+    TuneTW->addTab(cp4,"Измеренные параметры");
+    #endif
+=======
 #if PROGSIZE != PROGSIZE_EMUL
     TuneTW->addTab(cp4,"Измеренные параметры");
 #endif
+>>>>>>> origin/master
     TuneTW->addTab(cp2,"Коэффициенты");
     TuneTW->addTab(cp3,"Данные МИП");
 
@@ -1635,5 +1647,9 @@ void TuneDialog80::GenerateReport()
     }
     delete report;
 }
-#endif
+<<<<<<< HEAD
 
+
+=======
+>>>>>>> origin/master
+#endif

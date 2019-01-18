@@ -22,7 +22,6 @@
 #include <QByteArray>
 #include <QVector>
 #include <QObject>
-#include <QHash>
 #include "parsemodule.h"
 #include "../models/trendviewmodel.h"
 #include "../dialogs/trendviewdialog.h"
@@ -32,7 +31,7 @@ class ParseID9050 : public ParseModule
 public:
     ParseID9050(QByteArray &BA);
 
-    QMap<QString, int> Channel;
+    QMultiMap<QString, int> Channel;
 
     struct OscHeader_Data
     {
@@ -49,7 +48,7 @@ public:
         float Umax;           // Значение максимума события
         float Fmax;           // Максимальная частотная составляющая
         float step;           // шаг по частоте
-        quint32 len;          // длина спектрограммы в количестве точек по частоте
+        float len;          // длина спектрограммы в количестве точек по частоте
     };
 
     struct Point87
