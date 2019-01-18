@@ -39,22 +39,26 @@ void TuneDialogA1::SetLbls()
     lbls.append("1 Ввод пароля...");
     lbls.append("2 Отображение схемы подключения...");
     lbls.append("6.3.2 Получение настроечных коэффициентов...");
-    lbls.append("6.3.3.1 КТС: подтверждение установки 80 Ом...");
-    lbls.append("6.3.3.2 КТС: получение блока данных...");
-    lbls.append("6.3.3.3 КТС: подтверждение установки 120 Ом...");
-    lbls.append("6.3.3.4 КТС: получение блока данных и расчёт регулировочных коэффициентов...");
-    lbls.append("6.3.4 КМТ2: подтверждение установки 4 мА...");
-    lbls.append("6.3.5.1 КМТ2: получение блока данных...");
-    lbls.append("6.3.5.2 КМТ2: подтверждение установки 20 мА...");
-    lbls.append("6.3.5.3 КМТ2: получение блока данных и расчёт регулировочных коэффициентов...");
-    lbls.append("6.3.6 КМТ1: подтверждение установки 4 мА...");
-    lbls.append("6.3.7.1 КМТ1: получение блока данных...");
-    lbls.append("6.3.7.2 КМТ1: подтверждение установки 20 мА...");
-    lbls.append("6.3.7.3 КМТ1: получение блока данных и расчёт регулировочных коэффициентов...");
-    lbls.append("6.3.8 Проверка данных блока Bda_out_an...");
-    lbls.append("6.3.9.1 КПТ: получение блока данных и усреднение...");
-    lbls.append("6.3.9.2 КПТ: ввод данных от энергомонитора...");
-    lbls.append("6.3.9.3 КПТ: расчёт регулировочных коэффициентов...");
+    lbls.append("6.3.3.1 КПТ: выдача предупреждения...");
+    lbls.append("6.3.3.2 КПТ: опрос постоянных напряжений...");
+    lbls.append("6.3.3.3 КПТ: вычисление смещения...");
+    lbls.append("6.3.3.4 КПТ: выдача предупреждения...");
+    lbls.append("6.3.3.5 КПТ: получение блока данных и усреднение...");
+    lbls.append("6.3.3.6 КПТ: ввод данных от энергомонитора...");
+    lbls.append("6.3.3.7 КПТ: расчёт регулировочных коэффициентов...");
+    lbls.append("6.3.4.1 КТС: подтверждение установки 80 Ом...");
+    lbls.append("6.3.4.2 КТС: получение блока данных...");
+    lbls.append("6.3.4.3 КТС: подтверждение установки 120 Ом...");
+    lbls.append("6.3.4.4 КТС: получение блока данных и расчёт регулировочных коэффициентов...");
+    lbls.append("6.3.5 КМТ2: подтверждение установки 4 мА...");
+    lbls.append("6.3.6.1 КМТ2: получение блока данных...");
+    lbls.append("6.3.6.2 КМТ2: подтверждение установки 20 мА...");
+    lbls.append("6.3.6.3 КМТ2: получение блока данных и расчёт регулировочных коэффициентов...");
+    lbls.append("6.3.7 КМТ1: подтверждение установки 4 мА...");
+    lbls.append("6.3.8.1 КМТ1: получение блока данных...");
+    lbls.append("6.3.8.2 КМТ1: подтверждение установки 20 мА...");
+    lbls.append("6.3.8.3 КМТ1: получение блока данных и расчёт регулировочных коэффициентов...");
+    lbls.append("6.3.9 Проверка данных блока Bda_out_an...");
     lbls.append("6.3.10.1 Настройка температурной коррекции по нормальной температуре...");
     lbls.append("6.3.10.2 Настройка температурной коррекции по повышенной температуре...");
     lbls.append("6.3.10.3 Настройка температурной коррекции по пониженной температуре...");
@@ -70,37 +74,43 @@ void TuneDialogA1::SetPf()
     pf[lbls.at(count++)] = func; // 2. Отображение схемы подключения
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_2); // 6.3.2. Получение настроечных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_1); // 6.3.3.1. КТС: подтверждение установки 80 Ом
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_1); // 6.3.3.1. КПТ: выдача предупреждения
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_2); // 6.3.3.2. КТС: получение блока данных
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_2); // 6.3.3.2. КПТ: опрос постоянных напряжений
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_3); // 6.3.3.3. КТС: подтверждение установки 120 Ом
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_3); // 6.3.3.3. КПТ: вычисление смещения
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_4); // 6.3.3.4. КТС: получение блока данных и расчёт регулировочных коэффициентов
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_4); // 6.3.3.4. КПТ: выдача предупреждения
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_4); // 6.3.4. КМТ2: подтверждение установки 4 мА
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_5); // 6.3.3.5. КПТ: получение блока данных и усреднение
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_5_1); // 6.3.5.1. КМТ2: получение блока данных
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_6); // 6.3.3.6. КПТ: ввод данных от энергомонитора
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_5_2); // 6.3.5.2. КМТ2: подтверждение установки 20 мА
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_3_7); // 6.3.3.7. КПТ: расчёт регулировочных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_5_3); // 6.3.5.3. КМТ2: получение блока данных и расчёт регулировочных коэффициентов
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_4_1); // 6.3.4.1. КТС: подтверждение установки 80 Ом
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_6); // 6.3.6. КМТ1: подтверждение установки 4 мА
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_4_3); // 6.3.4.3. КТС: подтверждение установки 120 Ом
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_7_1); // 6.3.7.1. КМТ1: получение блока данных
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_4_4); // 6.3.4.4. КТС: получение блока данных и расчёт регулировочных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_7_2); // 6.3.7.2. КМТ1: подтверждение установки 20 мА
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_5); // 6.3.5. КМТ2: подтверждение установки 4 мА
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_7_3); // 6.3.7.3. КМТ1: получение блока данных и расчёт регулировочных коэффициентов
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_6_1); // 6.3.6.1. КМТ2: получение блока данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_8); // 6.3.8. Проверка данных блока Bda_out_an
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_6_2); // 6.3.6.2. КМТ2: подтверждение установки 20 мА
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_9_1); // 6.3.9.1. КПТ: получение блока данных и усреднение
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_6_3); // 6.3.6.3. КМТ2: получение блока данных и расчёт регулировочных коэффициентов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_9_2); // 6.3.9.2. КПТ: ввод данных от энергомонитора
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_7); // 6.3.7. КМТ1: подтверждение установки 4 мА
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_9_3); // 6.3.9.3. КПТ: расчёт регулировочных коэффициентов
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_8_1); // 6.3.8.1. КМТ1: получение блока данных
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_8_2); // 6.3.8.2. КМТ1: подтверждение установки 20 мА
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_8_3); // 6.3.8.3. КМТ1: получение блока данных и расчёт регулировочных коэффициентов
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_9); // 6.3.9. Проверка данных блока Bda_out_an
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogA1::Start6_3_10_1); // 6.3.10.1 Настройка температурной коррекции по 20 градусам
     pf[lbls.at(count++)] = func;
@@ -220,38 +230,34 @@ int TuneDialogA1::Start6_3_2()
 int TuneDialogA1::Start6_3_3_1()
 {
     Skipped = false;
-    if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по входу Pt100, выполнить?") == false)
+    if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по напряжениям, выполнить?") == false)
     {
         Skipped = true;
-        return Error::Error::ER_RESEMPTY;
+        return Error::ER_RESEMPTY;
     }
-    EMessageBox::information(this, "Требование", "Установите на магазине сопротивлений значение 80 Ом");
-    WaitNSeconds(10);
-    if (StdFunc::IsCancelled())
-        return Error::ER_GENERALERROR;
-    if (ReadAnalogMeasurements() == Error::ER_GENERALERROR)
-        return Error::ER_GENERALERROR;
-    return CheckBdaValues(CHECK_PT100);
+    EMessageBox::information(this, "Требование", "отключите РЕТОМ и закоротите входы U1 и U2");
+    WaitNSeconds(2);
+    return Error::ER_NOERROR;
 }
 
 int TuneDialogA1::Start6_3_3_2()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
-//    WaitNSeconds(10);
-    if (StdFunc::IsCancelled())
+    CheckA1::Bda tmpbda;
+    if (Start60PointsMeasurements(TDA1_BDA, &tmpbda) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
-    int res = ReadAnalogMeasurements();
-    if (res == Error::ER_NOERROR)
-        RegData = ChA1->Bda_block.Pt100;
-    return res;
+    memcpy(&ChA1->Bda_block, &tmpbda, sizeof(CheckA1::Bda));
+    ChA1->FillBda(this);
+    return Error::ER_NOERROR;
 }
 
 int TuneDialogA1::Start6_3_3_3()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
-    EMessageBox::information(this, "Требование", "Установите на магазине сопротивлений значение 120 Ом");
+    Bac_block.ch_offset[0] = Bac_block_old.ch_offset[0] + ChA1->Bda_block.Middle_ADC[0];
+    Bac_block.ch_offset[1] = Bac_block_old.ch_offset[1] + ChA1->Bda_block.Middle_ADC[1];
     return Error::ER_NOERROR;
 }
 
@@ -259,7 +265,86 @@ int TuneDialogA1::Start6_3_3_4()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
-    WaitNSeconds(10);
+    EMessageBox::information(this, "Требование", "Снимите закоротку с РЕТОМ, подключите РЕТОМ ко входам U1 и U2 \n "
+                             "и задайте на выходе напряжения фазы А напряжение 100,0 В при частоте 51 Гц");
+    WaitNSeconds(2);
+    return Error::ER_NOERROR;
+}
+
+int TuneDialogA1::Start6_3_3_5()
+{
+    if (Skipped)
+        return Error::ER_RESEMPTY;
+    EMessageBox::information(this, "Требование", "Установите на РЕТОМ значение напряжения 100 В");
+    // получение текущих аналоговых сигналов от модуля
+    WaitNSeconds(4);
+    if (StdFunc::IsCancelled())
+        return Error::ER_GENERALERROR;
+    if (ReadAnalogMeasurements() == Error::ER_GENERALERROR)
+        return Error::ER_GENERALERROR;
+    if (CheckBdaValues(CHECK_VOLT) == Error::ER_GENERALERROR)
+        return Error::ER_GENERALERROR;
+    CheckA1::A1_Bd1 tmpbd1;
+    if (Start60PointsMeasurements(TDA1_BD1, &tmpbd1) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
+    memcpy(&ChA1->Bda_in, &tmpbd1, sizeof(CheckA1::A1_Bd1));
+    ChA1->FillBda_in(this);
+    return Error::ER_NOERROR;
+}
+
+int TuneDialogA1::Start6_3_3_6()
+{
+    if (Skipped)
+        return Error::ER_RESEMPTY;
+/*    if (GetExternalData() != Error::NOERROR)
+        return Error::GENERALERROR;
+    return CheckAnalogValues(false); */
+    return GetExternalData();
+}
+
+int TuneDialogA1::Start6_3_3_7()
+{
+    if (Skipped)
+        return Error::ER_RESEMPTY;
+    Bac_block.KmU[0] = Bac_block_old.KmU[0] * RealData.u / ChA1->Bda_in.UefNat_filt[0];
+    Bac_block.KmU[1] = Bac_block_old.KmU[1] * RealData.u / ChA1->Bda_in.UefNat_filt[1];
+    Bac_block.K_freq = Bac_block_old.K_freq * RealData.freq / ChA1->Bda_in.Frequency;
+    Bac_block.DPhy = Bac_block_old.DPhy - ChA1->Bda_in.Phy;
+    return Error::ER_NOERROR;
+}
+
+int TuneDialogA1::Start6_3_4_1()
+{
+    Skipped = false;
+    if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по входу Pt100, выполнить?") == false)
+    {
+        Skipped = true;
+        return Error::Error::ER_RESEMPTY;
+    }
+    EMessageBox::information(this, "Требование", "Установите на магазине сопротивлений значение 80 Ом");
+    WaitNSeconds(4);
+    if (StdFunc::IsCancelled())
+        return Error::ER_GENERALERROR;
+    if (ReadAnalogMeasurements() == Error::ER_GENERALERROR)
+        return Error::ER_GENERALERROR;
+    RegData = ChA1->Bda_block.Pt100;
+//    return CheckBdaValues(CHECK_PT100);
+    return Error::ER_NOERROR;
+}
+
+int TuneDialogA1::Start6_3_4_3()
+{
+    if (Skipped)
+        return Error::ER_RESEMPTY;
+    EMessageBox::information(this, "Требование", "Установите на магазине сопротивлений значение 120 Ом");
+    return Error::ER_NOERROR;
+}
+
+int TuneDialogA1::Start6_3_4_4()
+{
+    if (Skipped)
+        return Error::ER_RESEMPTY;
+    WaitNSeconds(4);
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     int res = ReadAnalogMeasurements();
@@ -271,7 +356,7 @@ int TuneDialogA1::Start6_3_3_4()
     return res;
 }
 
-int TuneDialogA1::Start6_3_4()
+int TuneDialogA1::Start6_3_5()
 {
     Skipped = false;
     if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по входу EXTmA2, выполнить?") == false)
@@ -280,7 +365,7 @@ int TuneDialogA1::Start6_3_4()
         return Error::ER_RESEMPTY;
     }
     EMessageBox::information(this, "Требование", "Задайте ток 20,000мА в канале EXTmA2");
-    WaitNSeconds(10);
+    WaitNSeconds(4);
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     if (ReadAnalogMeasurements() == Error::ER_GENERALERROR)
@@ -288,7 +373,7 @@ int TuneDialogA1::Start6_3_4()
     return CheckBdaValues(CHECK_MA2);
 }
 
-int TuneDialogA1::Start6_3_5_1()
+int TuneDialogA1::Start6_3_6_1()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
@@ -301,7 +386,7 @@ int TuneDialogA1::Start6_3_5_1()
     return res;
 }
 
-int TuneDialogA1::Start6_3_5_2()
+int TuneDialogA1::Start6_3_6_2()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
@@ -309,7 +394,7 @@ int TuneDialogA1::Start6_3_5_2()
     return Error::ER_NOERROR;
 }
 
-int TuneDialogA1::Start6_3_5_3()
+int TuneDialogA1::Start6_3_6_3()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
@@ -325,7 +410,7 @@ int TuneDialogA1::Start6_3_5_3()
     return res;
 }
 
-int TuneDialogA1::Start6_3_6()
+int TuneDialogA1::Start6_3_7()
 {
     Skipped = false;
     if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по входу EXTmA1, выполнить?") == false)
@@ -342,7 +427,7 @@ int TuneDialogA1::Start6_3_6()
     return CheckBdaValues(CHECK_MA1);
 }
 
-int TuneDialogA1::Start6_3_7_1()
+int TuneDialogA1::Start6_3_8_1()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
@@ -355,7 +440,7 @@ int TuneDialogA1::Start6_3_7_1()
     return res;
 }
 
-int TuneDialogA1::Start6_3_7_2()
+int TuneDialogA1::Start6_3_8_2()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
@@ -363,7 +448,7 @@ int TuneDialogA1::Start6_3_7_2()
     return Error::ER_NOERROR;
 }
 
-int TuneDialogA1::Start6_3_7_3()
+int TuneDialogA1::Start6_3_8_3()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
@@ -379,7 +464,7 @@ int TuneDialogA1::Start6_3_7_3()
     return res;
 }
 
-int TuneDialogA1::Start6_3_8()
+int TuneDialogA1::Start6_3_9()
 {
     CheckA1::A1_Bd4 tmpst;
     if (Skipped)
@@ -412,53 +497,6 @@ int TuneDialogA1::Start6_3_8()
     return Error::ER_NOERROR;
 }
 
-int TuneDialogA1::Start6_3_9_1()
-{
-    Skipped = false;
-    if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по напряжениям, выполнить?") == false)
-    {
-        Skipped = true;
-        return Error::ER_RESEMPTY;
-    }
-    EMessageBox::information(this, "Требование", "Установите на РЕТОМ значение напряжения 100 В");
-    // получение текущих аналоговых сигналов от модуля
-    WaitNSeconds(10);
-    if (StdFunc::IsCancelled())
-        return Error::ER_GENERALERROR;
-    if (ReadAnalogMeasurements() == Error::ER_GENERALERROR)
-        return Error::ER_GENERALERROR;
-/*    if (CheckBdaValues(CHECK_VOLT) == Error::ER_GENERALERROR)
-        return Error::ER_GENERALERROR; */
-    CheckA1::A1_Bd1 tmpst2;
-    CheckA1::A1_Bd4 tmpst4; // фиктивная вещь, нужна для универсализации функции Start60PointsMeasurements
-    if (Start60PointsMeasurements(tmpst2, tmpst4) != Error::ER_NOERROR)
-        return Error::ER_GENERALERROR;
-    memcpy(&ChA1->Bda_in, &tmpst2, sizeof(CheckA1::A1_Bd1));
-    ChA1->FillBda_in(this);
-    return Error::ER_NOERROR;
-}
-
-int TuneDialogA1::Start6_3_9_2()
-{
-    if (Skipped)
-        return Error::ER_RESEMPTY;
-/*    if (GetExternalData() != Error::NOERROR)
-        return Error::GENERALERROR;
-    return CheckAnalogValues(false); */
-    return GetExternalData();
-}
-
-int TuneDialogA1::Start6_3_9_3()
-{
-    if (Skipped)
-        return Error::ER_RESEMPTY;
-    Bac_block.KmU[0] = Bac_block_old.KmU[0] * RealData.u / ChA1->Bda_in.UefNat_filt[0];
-    Bac_block.KmU[1] = Bac_block_old.KmU[1] * RealData.u / ChA1->Bda_in.UefNat_filt[1];
-    Bac_block.K_freq = Bac_block_old.K_freq * RealData.freq / ChA1->Bda_in.Frequency;
-    Bac_block.DPhy = Bac_block_old.DPhy - ChA1->Bda_in.Phy;
-    return Error::ER_NOERROR;
-}
-
 int TuneDialogA1::Start6_3_10_1()
 {
     Skipped = false;
@@ -473,7 +511,7 @@ int TuneDialogA1::Start6_3_10_1()
         EMessageBox::information(this, "Внимание", "Ошибка при записи регулировочных коэффициентов");
         return Error::ER_GENERALERROR;
     }
-    if (Start60PointsMeasurements(TKUSourceData.Bda_in[0], TKUSourceData.Bda_out_an[0]) != Error::ER_NOERROR)
+    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[0], &TKUSourceData.Bda_out_an[0]) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     if (GetExternalTemp() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
@@ -496,7 +534,7 @@ int TuneDialogA1::Start6_3_10_2()
     }
     WaitNSeconds(30*60, true);
     StdFunc::ClearCancel(); // если прервали 30-минутный отсчёт, это дело пользователя
-    if (Start60PointsMeasurements(TKUSourceData.Bda_in[1], TKUSourceData.Bda_out_an[1]) != Error::ER_NOERROR)
+    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[1], &TKUSourceData.Bda_out_an[1]) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     if (GetExternalTemp() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
@@ -519,7 +557,7 @@ int TuneDialogA1::Start6_3_10_3()
     }
     WaitNSeconds(30*60, true);
     StdFunc::ClearCancel(); // если прервали 30-минутный отсчёт, это дело пользователя
-    if (Start60PointsMeasurements(TKUSourceData.Bda_in[2], TKUSourceData.Bda_out_an[2]) != Error::ER_NOERROR)
+    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[2], &TKUSourceData.Bda_out_an[2]) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     if (GetExternalTemp() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
@@ -588,39 +626,63 @@ int TuneDialogA1::Start6_3_12()
 
 // принимаем в течение PovNumPoints точек по TUNE_POINTSPER секунд данные по Bda_in и усредняем их
 
-int TuneDialogA1::Start60PointsMeasurements(CheckA1::A1_Bd1 &st, CheckA1::A1_Bd4 &st4)
+int TuneDialogA1::Start60PointsMeasurements(int whichtomeasure, void *dst1, void *dst2, void *dst3)
 {
-    CheckA1::A1_Bd1 tmpst;
-    CheckA1::A1_Bd4 tmpst4;
-    st.Frequency = st.Phy = st.UefNat_filt[0] = st.UefNat_filt[1] = \
-            st.Uef_filt[0] = st.Uef_filt[1] = st.dU = st.dUrms = 0;
-    st4.Hamb = st4.Tamb = st4.Tmk = st4.Vbat = 0;
+    CheckA1::A1_Bd1 *out1;
+    CheckA1::A1_Bd4 *out2;
+    CheckA1::Bda *out3;
+    bool out1busy, out2busy;
+
+    out1busy = out2busy = false;
+
+    if (whichtomeasure & TDA1_BD1)
+    {
+        out1 = static_cast<CheckA1::A1_Bd1 *>(dst1);
+        out1->Frequency = out1->Phy = out1->UefNat_filt[0] = out1->UefNat_filt[1] = \
+                out1->Uef_filt[0] = out1->Uef_filt[1] = out1->dU = out1->dUrms = 0;
+        out1busy = true;
+    }
+    if (whichtomeasure & TDA1_BD4)
+    {
+        if (out1busy)
+        {
+            out2 = static_cast<CheckA1::A1_Bd4 *>(dst2);
+            out2busy = true;
+        }
+        else
+        {
+            out2 = static_cast<CheckA1::A1_Bd4 *>(dst1);
+            out1busy = true;
+        }
+        out2->Hamb = out2->Tamb = out2->Tmk = out2->Vbat = 0;
+    }
+    if (whichtomeasure & TDA1_BDA)
+    {
+        if (out1busy)
+        {
+            if (out2busy)
+                out3 = static_cast<CheckA1::Bda *>(dst3);
+            else
+                out3 = static_cast<CheckA1::Bda *>(dst2);
+        }
+        else
+            out3 = static_cast<CheckA1::Bda *>(dst1);
+        out3->EXTmA1 = out3->EXTmA2 = out3->Frequency = out3->Middle_ADC[0] = out3->Middle_ADC[1] = \
+                out3->Pt100 = out3->Ueff_ADC[0] = out3->Ueff_ADC[1] = 0;
+    }
     int count = 0;
+    int res = Error::ER_NOERROR;
     emit StartPercents(PovNumPoints);
     while ((count < PovNumPoints) && !StdFunc::IsCancelled())
     {
-        if (Commands::GetBd(A1_BDA_IN_BN, &tmpst, sizeof(CheckA1::A1_Bd1)) != Error::ER_NOERROR)
-        {
-            EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
+        if (whichtomeasure & TDA1_BD1)
+            res += MeasureBd1(out1);
+        if (whichtomeasure & TDA1_BD4)
+            res += MeasureBd4(out2);
+        if (whichtomeasure & TDA1_BDA)
+            res += MeasureBda(out3);
+        if (res != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
-        }
-        st.Frequency += tmpst.Frequency;
-        st.Phy += tmpst.Phy;
-        st.UefNat_filt[0] += tmpst.UefNat_filt[0];
-        st.UefNat_filt[1] += tmpst.UefNat_filt[1];
-        st.Uef_filt[0] += tmpst.Uef_filt[0];
-        st.Uef_filt[1] += tmpst.Uef_filt[1];
-        st.dU += tmpst.dU;
-        st.dUrms += tmpst.dUrms;
-        if (Commands::GetBd(A1_BDA_OUT_AN_BN, &tmpst4, sizeof(CheckA1::A1_Bd4)) != Error::ER_NOERROR)
-        {
-            EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_out_an");
-            return Error::ER_GENERALERROR;
-        }
-        st4.Hamb += tmpst4.Hamb;
-        st4.Tamb += tmpst4.Tamb;
-        st4.Tmk += tmpst4.Tmk;
-        st4.Vbat += tmpst4.Vbat;
         QTime tme;
         tme.start();
         while (tme.elapsed() < TUNE_POINTSPER)
@@ -630,20 +692,99 @@ int TuneDialogA1::Start60PointsMeasurements(CheckA1::A1_Bd1 &st, CheckA1::A1_Bd4
     }
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
-    // усреднение
-    st.Frequency /= count;
-    st.Phy /= count;
-    st.UefNat_filt[0] /= count;
-    st.UefNat_filt[1] /= count;
-    st.Uef_filt[0] /= count;
-    st.Uef_filt[1] /= count;
-    st.dU /= count;
-    st.dUrms /= count;
-    st4.Hamb /= count;
-    st4.Tamb /= count;
-    st4.Tmk /= count;
-    st4.Vbat /= count;
+    if (whichtomeasure & TDA1_BD1)
+        Bd1Mean(count, out1);
+    if (whichtomeasure & TDA1_BD4)
+        Bd4Mean(count, out2);
+    if (whichtomeasure & TDA1_BDA)
+        BdaMean(count, out3);
     return Error::ER_NOERROR;
+}
+
+int TuneDialogA1::MeasureBd1(CheckA1::A1_Bd1 *result)
+{
+    CheckA1::A1_Bd1 tmpbd1;
+
+    if (Commands::GetBd(A1_BDA_IN_BN, &tmpbd1, sizeof(CheckA1::A1_Bd1)) != Error::ER_NOERROR)
+    {
+        EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
+        return Error::ER_GENERALERROR;
+    }
+    result->Frequency += tmpbd1.Frequency;
+    result->Phy += tmpbd1.Phy;
+    result->UefNat_filt[0] += tmpbd1.UefNat_filt[0];
+    result->UefNat_filt[1] += tmpbd1.UefNat_filt[1];
+    result->Uef_filt[0] += tmpbd1.Uef_filt[0];
+    result->Uef_filt[1] += tmpbd1.Uef_filt[1];
+    result->dU += tmpbd1.dU;
+    result->dUrms += tmpbd1.dUrms;
+    return 0;
+}
+
+int TuneDialogA1::MeasureBd4(CheckA1::A1_Bd4 *result)
+{
+    CheckA1::A1_Bd4 tmpbd4;
+
+    if (Commands::GetBd(A1_BDA_OUT_AN_BN, &tmpbd4, sizeof(CheckA1::A1_Bd4)) != Error::ER_NOERROR)
+    {
+        EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_out_an");
+        return Error::ER_GENERALERROR;
+    }
+    result->Hamb += tmpbd4.Hamb;
+    result->Tamb += tmpbd4.Tamb;
+    result->Tmk += tmpbd4.Tmk;
+    result->Vbat += tmpbd4.Vbat;
+    return 0;
+}
+
+int TuneDialogA1::MeasureBda(CheckA1::Bda *result)
+{
+    CheckA1::Bda tmpbda;
+
+    if (Commands::GetBda(BT_BASE, &tmpbda, sizeof(CheckA1::Bda)) != Error::ER_NOERROR)
+    {
+        EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda");
+        return Error::ER_GENERALERROR;
+    }
+    result->EXTmA1 += tmpbda.EXTmA1;
+    result->EXTmA2 += tmpbda.EXTmA2;
+    result->Frequency += tmpbda.Frequency;
+    result->Pt100 += tmpbda.Pt100;
+    result->Middle_ADC[0] += tmpbda.Middle_ADC[0]; result->Middle_ADC[1] += tmpbda.Middle_ADC[1];
+    result->Ueff_ADC[0] += tmpbda.Ueff_ADC[0]; result->Ueff_ADC[1] += tmpbda.Ueff_ADC[1];
+    return 0;
+}
+
+void TuneDialogA1::Bd1Mean(int count, CheckA1::A1_Bd1 *result)
+{
+    result->Frequency /= count;
+    result->Phy /= count;
+    result->UefNat_filt[0] /= count;
+    result->UefNat_filt[1] /= count;
+    result->Uef_filt[0] /= count;
+    result->Uef_filt[1] /= count;
+    result->dU /= count;
+    result->dUrms /= count;
+}
+
+void TuneDialogA1::Bd4Mean(int count, CheckA1::A1_Bd4 *result)
+{
+    result->Hamb /= count;
+    result->Tamb /= count;
+    result->Tmk /= count;
+    result->Vbat /= count;
+}
+
+void TuneDialogA1::BdaMean(int count, CheckA1::Bda *result)
+{
+    result->EXTmA1 /= count;
+    result->EXTmA2 /= count;
+    result->Frequency /= count;
+    result->Pt100 /= count;
+    result->Middle_ADC[0] /= count;
+    result->Middle_ADC[1] /= count;
+    result->Ueff_ADC[0] /= count;
+    result->Ueff_ADC[1] /= count;
 }
 
 int TuneDialogA1::ShowScheme()

@@ -5,6 +5,7 @@
 #include <QStandardItemModel>
 #include <QCloseEvent>
 #include "limereport/lrreportengine.h"
+#include "../gen/maindef.h"
 #include "../config/configa1.h"
 #include "../check/checka1.h"
 

@@ -9,6 +9,7 @@
 #include "eabstracttunedialog.h"
 #include "../config/configa1.h"
 #include "../check/checka1.h"
+#include "../gen/maindef.h"
 #include "../widgets/waitwidget.h"
 
 // определения для процедуры проверки CheckBdaValues
@@ -16,6 +17,10 @@
 #define CHECK_PT100 2
 #define CHECK_MA1   3
 #define CHECK_MA2   4
+
+#define TDA1_BDA    0x01
+#define TDA1_BD1    0x02
+#define TDA1_BD4    0x04
 
 class TuneDialogA1 : public EAbstractTuneDialog
 {
@@ -46,9 +51,10 @@ private:
         float Bma1; 		// смещение в канале A1, ед.
         float Ama2; 		// коэффициент в канале A2, ед./мА
         float Bma2; 		// смещение в канале A2, ед.
-        float TKUa[2];       // температурные коэффициенты линейной коррекции изменения KmU [1/градус]
-        float TKUb[2];       // температурные коэффициенты квадратичной коррекции изменения KmU [1/градус²]
+        float TKUa[2];      // температурные коэффициенты линейной коррекции изменения KmU [1/градус]
+        float TKUb[2];      // температурные коэффициенты квадратичной коррекции изменения KmU [1/градус²]
         float Tmk0;         // начальная температура в микроконтроллера при калибровке
+        float ch_offset[2]; // смещения в каналах (в кодах АЦП)
     };
 
     Bac Bac_block, Bac_block_old;
@@ -82,25 +88,34 @@ private:
     int Start6_3_3_2();
     int Start6_3_3_3();
     int Start6_3_3_4();
-    int Start6_3_4();
-    int Start6_3_5_1();
-    int Start6_3_5_2();
-    int Start6_3_5_3();
-    int Start6_3_6();
-    int Start6_3_7_1();
-    int Start6_3_7_2();
-    int Start6_3_7_3();
-    int Start6_3_8();
-    int Start6_3_9_1();
-    int Start6_3_9_2();
-    int Start6_3_9_3();
+    int Start6_3_3_5();
+    int Start6_3_3_6();
+    int Start6_3_3_7();
+    int Start6_3_4_1();
+    int Start6_3_4_3();
+    int Start6_3_4_4();
+    int Start6_3_5();
+    int Start6_3_6_1();
+    int Start6_3_6_2();
+    int Start6_3_6_3();
+    int Start6_3_7();
+    int Start6_3_8_1();
+    int Start6_3_8_2();
+    int Start6_3_8_3();
+    int Start6_3_9();
     int Start6_3_10_1();
     int Start6_3_10_2();
     int Start6_3_10_3();
     int Start6_3_11();
     int Start6_3_12();
 
-    int Start60PointsMeasurements(CheckA1::A1_Bd1 &st, CheckA1::A1_Bd4 &st4);
+    int Start60PointsMeasurements(int whichtomeasure, void *dst1, void *dst2=nullptr, void *dst3=nullptr); // whichtomeasure - by mask, dst[i] - dest buffers
+    int MeasureBd1(CheckA1::A1_Bd1 *result);
+    int MeasureBd4(CheckA1::A1_Bd4 *result);
+    int MeasureBda(CheckA1::Bda *result);
+    void Bd1Mean(int count, CheckA1::A1_Bd1 *result);
+    void Bd4Mean(int count, CheckA1::A1_Bd4 *result);
+    void BdaMean(int count, CheckA1::Bda *result);
     int ShowScheme();
     int CheckBdaValues(int checktype);
     int CheckAnalogValues(bool isPrecise); // проверка Bda_in на корректность

@@ -29,6 +29,10 @@ QWidget *CheckA1::BdaW(QWidget *parent)
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value4", ValuesFormat, "Значение первого сигнала (4-20) мА"), 2, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "6. EXTmA2:"), 2, 2);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value5", ValuesFormat, "Значение второго сигнала (4-20) мА"), 2, 3);
+    glyout->addWidget(WDFunc::NewLBL(parent, "7. UeffADC1:"), 3, 0);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value6", ValuesFormat, "Среднее значение напряжения 1 в единицах АЦП"), 3, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "8. UeffADC2:"), 3, 2);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value7", ValuesFormat, "Среднее значение напряжения 2 в единицах АЦП"), 3, 3);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
     w->setLayout(glyout);
@@ -206,6 +210,8 @@ void CheckA1::FillBda(QWidget *parent)
     WDFunc::SetLBLText(parent, "value3", WDFunc::StringValueWithCheck(Bda_block.Pt100));
     WDFunc::SetLBLText(parent, "value4", WDFunc::StringValueWithCheck(Bda_block.EXTmA1));
     WDFunc::SetLBLText(parent, "value5", WDFunc::StringValueWithCheck(Bda_block.EXTmA2));
+    WDFunc::SetLBLText(parent, "value6", WDFunc::StringValueWithCheck(Bda_block.Middle_ADC[0]));
+    WDFunc::SetLBLText(parent, "value7", WDFunc::StringValueWithCheck(Bda_block.Middle_ADC[1]));
 }
 
 void CheckA1::FillBd1W(const QString &begin, A1_Bd1 Bda, QWidget *parent)
