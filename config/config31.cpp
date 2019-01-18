@@ -2,7 +2,7 @@
 
 Config31::Config31(QVector<S2::DataRec> &config, bool BaseBoard)
 {
-    int Type = (BaseBoard == BoardTypes::BT_BASE) ? MTB_31 : MTM_31;
+    int Type = (BaseBoard == BoardTypes::BT_BASE) ? Config::MTB_31 : Config::MTM_31;
 //    Config3x::SetDInSize(Bci_block.inblk, Type);
     // параметры входных сигналов
     quint32 StartInIndex = Config3x::ModTypeMap().value(Type).DInStart;

@@ -167,11 +167,11 @@ void CheckDialog80::PrepareHeadersForFile(int row)
 {
     for (int i=0; i<3; i++)
     {
-        if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_81)
+        if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_81)
             xlsx->write(row,i+2,QVariant(("U1 ф")+QString::number(i+10, 36)+", В"));
         else
             xlsx->write(row,i+2,QVariant("I1 ф"+QString::number(i+10, 36)+", А"));
-        if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83)
+        if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_83)
             xlsx->write(row,i+5,QVariant("I2 ф"+QString::number(i+10, 36)+", А"));
         else
             xlsx->write(row,i+5,QVariant("U2 ф"+QString::number(i+10, 36)+", В"));

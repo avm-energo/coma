@@ -404,9 +404,9 @@ void TuneDialog80::SetDefCoefs()
 void TuneDialog80::PrepareConsts()
 {
     // подготовка констант для проверки данных МИПа
-    MVTC.u = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_83) ? S0 : V60;
-    MTTC.u = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_83) ? FLT_MAX : TH005;
-    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81)
+    MVTC.u = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_83) ? S0 : V60;
+    MTTC.u = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_83) ? FLT_MAX : TH005;
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_81)
     {
         MVTC.i[0] = MVTC.i[1] = MVTC.i[2] = S0;
         MTTC.i = FLT_MAX;
@@ -529,10 +529,10 @@ int TuneDialog80::Start7_3_3()
     phiMip[3] = RealData.d[0];
     phiMip[4] = RealData.d[1]+RealData.dpsiU[0];
     phiMip[5] = RealData.d[2]+RealData.dpsiU[0]+RealData.dpsiU[1];
-    int k = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_82) ? 3 : 6;
+    int k = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_82) ? 3 : 6;
     for (int i=1; i<k; ++i)
         Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - phiMip[i] - Bda_block.phi_next_f[i];
-    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_82)
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_82)
     {
         for (int i=3; i<6; ++i)
              Bac_newblock.DPsi[i] = Bac_block.DPsi[i] - phiMip[i] - Bda_block.phi_next_f[i];
@@ -567,7 +567,7 @@ int TuneDialog80::Start7_3_6_2()
 
 int TuneDialog80::Start7_3_7_1()
 {
-    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_81)
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_81)
         return Error::ER_RESEMPTY;
     GED_Type = TD_GED_U;
     if (GetExternalData() == Error::ER_GENERALERROR)
@@ -584,7 +584,7 @@ int TuneDialog80::Start7_3_7_1()
 
 int TuneDialog80::Start7_3_7_2()
 {
-    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81)
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_81)
         return Error::ER_RESEMPTY;
 
    // Установить в конфигурации токи i2nom в 1 А
@@ -599,7 +599,7 @@ int TuneDialog80::Start7_3_7_2()
 
 int TuneDialog80::Start7_3_7_3()
 {
-    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81)
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_81)
         return Error::ER_RESEMPTY;
     //ShowRetomDialog(V60, I1);
     if (Start7_3_2() == Error::ER_GENERALERROR)
@@ -609,19 +609,19 @@ int TuneDialog80::Start7_3_7_3()
 
 int TuneDialog80::Start7_3_7_4()
 {
-    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81)
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_81)
         return Error::ER_RESEMPTY;
-    GED_Type = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_82) ? (TD_GED_I | TD_GED_U) : TD_GED_I;
+    GED_Type = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_82) ? (TD_GED_I | TD_GED_U) : TD_GED_I;
     return GetExternalData();
 }
 
 int TuneDialog80::Start7_3_7_5()
 {
-    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81)
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_81)
         return Error::ER_RESEMPTY;
     for (int i=0; i<3; ++i)
     {
-        if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_82)
+        if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_82)
             Bac_newblock.KmU[i] = Bac_block.KmU[i] * RealData.u[i] / Bda_block.IUefNat_filt[i];
         else
             Bac_newblock.KmI_1[i] = Bac_block.KmI_1[i] * RealData.i[i] / Bda_block.IUefNat_filt[i];
@@ -632,7 +632,7 @@ int TuneDialog80::Start7_3_7_5()
 
 int TuneDialog80::Start7_3_7_6()
 {
-    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81)
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_81)
         return Error::ER_RESEMPTY;
     for (int i=0; i<6; ++i)
         C80->Bci_block.inom2[i] = I5;
@@ -662,7 +662,7 @@ int TuneDialog80::Start7_3_7_10()
 {
     for (int i=0; i<3; ++i)
     {
-        if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81)
+        if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_81)
             Bac_newblock.KmI_5[i] = Bac_block.KmI_5[i] * RealData.i[i] / Bda_block.IUefNat_filt[i];
         Bac_newblock.KmI_5[i+3] = Bac_block.KmI_5[i+3] * RealData.i[i] / Bda_block.IUefNat_filt[i+3];
     }
@@ -764,13 +764,13 @@ int TuneDialog80::StartCheckAnalogValues(double u, double i, double deg, bool to
     int res;
     switch (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN))
     {
-    case MTM_81: // 2t0n
+    case Config::MTM_81: // 2t0n
         res = CheckAnalogValues(i, i, S0, S0, S0, S0, S0, utol, itol, ptol, dtol, ctol);
         break;
-    case MTM_82:
+    case Config::MTM_82:
         res = CheckAnalogValues(u, i, p, q, s, phi, qCos(phi), utol, itol, ptol, dtol, ctol);
         break;
-    case MTM_83: // 0t2n
+    case Config::MTM_83: // 0t2n
         res = CheckAnalogValues(u, u, S0, S0, S0, S0, S0, utol, itol, ptol, dtol, ctol);
         break;
     default:
@@ -1014,8 +1014,8 @@ int TuneDialog80::CheckMip()
 
 int TuneDialog80::CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct)
 {
-    double it = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_83) ? utol : itol; // 0t2n
-    double ut = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81) ? itol : utol; // 2t0n
+    double it = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_83) ? utol : itol; // 0t2n
+    double ut = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_81) ? itol : utol; // 2t0n
     double ValuesToCheck[45] = {/*TD_TMK,TD_VBAT,*/TD_FREQ,u,u,u,i,i,i,u,u,u,i,i,i,phi,phi,phi,phi,phi,phi,p,p,p,s,s,s,q,q,q, \
                                 cosphi,cosphi,cosphi,p,p,p,q,q,q,s,s,s,cosphi,cosphi,cosphi};
     double ThresholdsToCheck[45] = {/*T25,TH05,*/TH0005,ut,ut,ut,it,it,it,ut,ut,ut,it,it,it,pht,pht,pht,pht,pht,pht,pt,pt,pt,pt,pt,pt,pt,pt,pt,\
@@ -1240,17 +1240,17 @@ int TuneDialog80::Show3PhaseScheme()
     QPixmap pmp;
     switch(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN)) // выводим окно с предупреждением о включении РЕТОМ-а по схеме в зависимости от исполнения
     {
-    case MTM_81: // 2t0n
+    case Config::MTM_81: // 2t0n
     {
         pmp.load("../tune81.png");
         break;
     }
-    case MTM_82:
+    case Config::MTM_82:
     {
         pmp.load("../tune82.png");
         break;
     }
-    case MTM_83:
+    case Config::MTM_83:
     {
         pmp.load("../tune83.png");
         break;
@@ -1270,7 +1270,7 @@ int TuneDialog80::Show3PhaseScheme()
     lyout->addWidget(lbl);
     lbl=new QLabel("4. Задайте на РЕТОМ значения напряжений по фазам 60 В;");
     lyout->addWidget(lbl);
-    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83)
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_83)
     {
         lbl=new QLabel("   Задайте на РЕТОМ значения токов по фазам 1 А;");
         lyout->addWidget(lbl);
@@ -1404,10 +1404,10 @@ void TuneDialog80::FillBd1(QWidget *parent)
     WDFunc::SetLBLText(parent, "value0", WDFunc::StringValueWithCheck(Bda_block.Frequency, 3));
     for (int i = 1; i < 4; i++)
     {
-        int Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_81) ? 3 : 4;
+        int Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_81) ? 3 : 4;
         WDFunc::SetLBLText(parent, "value"+QString::number(i), WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i-1], Precision));
         WDFunc::SetLBLText(parent, "value"+QString::number(i+6), WDFunc::StringValueWithCheck(Bda_block.IUeff_filtered[i-1], Precision));
-        Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83) ? 4 : 3;
+        Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_83) ? 4 : 3;
         WDFunc::SetLBLText(parent, "value"+QString::number(i+3), WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i+2], Precision));
         WDFunc::SetLBLText(parent, "value"+QString::number(i+9), WDFunc::StringValueWithCheck(Bda_block.IUeff_filtered[i+2], Precision));
 
@@ -1497,7 +1497,7 @@ void TuneDialog80::GenerateReport()
             lyout->addWidget(lbl);
             lbl=new QLabel("Значения напряжений по фазам " +QString::number(U[i])+ " В;");
             lyout->addWidget(lbl);
-            if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83)
+            if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_83)
             {
                 lbl=new QLabel("Значения токов по фазам " +QString::number(I[i])+ " А;");
                 lyout->addWidget(lbl);

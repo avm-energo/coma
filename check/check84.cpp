@@ -94,7 +94,7 @@ QWidget *Check_84::Bd2W(QWidget *parent)
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value29", ValuesFormat, \
                                       QString::number(29)+".Время записи, с"),5,2,1,1);
 
-    if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != MTB_81)
+    if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != Config::MTB_A2)
     {
         glyout->addWidget(WDFunc::NewLBL(parent, "Tamb"),6,0,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value30", ValuesFormat, \
@@ -137,14 +137,14 @@ void Check_84::FillBd1(QWidget *parent)
     WDFunc::SetLBLText(parent, "value29", WDFunc::StringValueWithCheck(Bd_block1.Time, 3));
 
 
-    if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != MTB_81)
+    if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != Config::MTB_A2)
     {
         WDFunc::SetLBLText(parent, "value30", WDFunc::StringValueWithCheck(Bd_block1.Tamb, 3));
     }
 
 }
 
-void Check_84::FillBd2(QWidget *parent)
+/*void Check_84::FillBd2(QWidget *parent)
 {
     WDFunc::SetLBLText(parent, "value21", WDFunc::StringValueWithCheck(Bd_block1.U0, 3));
     WDFunc::SetLBLText(parent, "value22", WDFunc::StringValueWithCheck(Bd_block1.U1, 3));
@@ -157,8 +157,8 @@ void Check_84::FillBd2(QWidget *parent)
     WDFunc::SetLBLText(parent, "value29", WDFunc::StringValueWithCheck(Bd_block1.Time, 3));
 
 
-    if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != MTB_81)
+    if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != Config::MTB_A2)
     {
         WDFunc::SetLBLText(parent, "value30", WDFunc::StringValueWithCheck(Bd_block1.Tamb, 3));
     }
-}
+}*/
