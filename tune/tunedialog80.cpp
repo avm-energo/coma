@@ -1636,3 +1636,4 @@ void TuneDialog80::GenerateReport()
     delete report;
 }
 #endif
+
