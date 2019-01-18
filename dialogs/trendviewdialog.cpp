@@ -323,7 +323,7 @@ void TrendViewDialog::SaveToOsc()
     Files::SaveToFile(filename, BAToSave, BAToSave.size());
 }
 
-void TrendViewDialog::PlotShow()
+void TrendViewDialog::PlotShow(quint32 id)
 {
     if (!NoAnalog)
     {
@@ -364,7 +364,12 @@ void TrendViewDialog::PlotShow()
     }
     QCPMarginGroup *group = new QCPMarginGroup(MainPlot);
     MainPlot->axisRect(0)->setMarginGroup(QCP::msLeft, group);
-    MainPlot->axisRect(1)->setMarginGroup(QCP::msLeft, group);
+    switch (id)
+    {
+        case MT_ID85:
+            MainPlot->axisRect(1)->setMarginGroup(QCP::msLeft, group);
+        break;
+    }
     MainPlot->replot();
     this->showMaximized();
 }
@@ -536,7 +541,14 @@ void TrendViewDialog::SetupPlots(quint32 id)
                     pen.setColor(QColor(qSin(count*1+1.2)*80+80, qSin(count*0.3+0)*80+80, qSin(count*0.3+1.5)*80+80));
                 graph->setPen(pen);
                 graph->valueAxis()->setRange(YMin, YMax);
-                graph->keyAxis()->setLabel("Time, ms");
+                if ((id > ID_OSC_CH0) && (id < ID_OSC_CH7))
+                {
+                    graph->keyAxis()->setLabel("Time, mcs");
+                }
+                else
+                {
+                    graph->keyAxis()->setLabel("Time, ms");
+                }
                 graph->keyAxis()->setRange(XMin, XMax);
     //            graph->valueAxis()->setLabel(tmps);
                 graph->setName(tmps);

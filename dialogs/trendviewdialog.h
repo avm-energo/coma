@@ -9,6 +9,9 @@
 #include "../gen/eoscillogram.h"
 
 #define MAXGRAPHSPERPLOT    16
+#define MT_ID85            10030 // ID осциллограммы по модулю 8085
+#define ID_OSC_CH0         10040 // ID осциллограммы канала 0 модуля 87
+#define ID_OSC_CH7         10047 // ID осциллограммы канала 7 модуля 87
 
 class TrendViewDialog : public QDialog
 {
@@ -19,7 +22,7 @@ public:
 
     // инициализация графиков
     // имена графиков контактных/аналоговых сигналов, количество точек, диапазон по оси Y для аналоговых
-    void PlotShow();
+    void PlotShow(quint32 id);
     void SetModel(TrendViewModel *model);
     void SetRanges(float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax);
     void SetDigitalNames(QStringList &names);
