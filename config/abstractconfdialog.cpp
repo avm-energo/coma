@@ -24,14 +24,8 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 #if PROGSIZE != PROGSIZE_EMUL
 void AbstractConfDialog::ReadConf()
 {
-    int res;
-    if ((res = Commands::GetFile(1, S2Config)) == Error::ER_NOERROR)
+    if (ModuleBSI::PrereadConf(this, S2Config) == Error::ER_RESEMPTY)
         emit NewConfLoaded();
-    else
-    {
-        QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
-        EMessageBox::error(this, "ошибка", "Ошибка чтения конфигурации из " + tmps + QString::number(res));
-    }
 }
 
 void AbstractConfDialog::WriteConf()

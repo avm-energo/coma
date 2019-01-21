@@ -5,7 +5,6 @@
 #include <QCloseEvent>
 #include <QByteArray>
 #include "../gen/s2.h"
-//#include "../gen/publicclass.h"
 
 #define MAXTUNESIZE 1024 // максимальный размер файла с данными настройки
 
@@ -30,7 +29,7 @@ public:
     explicit EAbstractTuneDialog(QWidget *parent = nullptr);
     ~EAbstractTuneDialog();
 
-    bool IsNeededDefConf = false;
+    bool IsNeededDefConf;
     BacStruct AbsBac;
     QStringList lbls;
     bool Skipped, MeasurementEnabled, ok, TuneFileSaved;
@@ -39,9 +38,8 @@ public:
     quint32 SecondsToEnd15SecondsInterval;
     QHash <QString, int (EAbstractTuneDialog::*)()> pf;
     quint8 bStep;
-    bool Cancelled = false;
     int TuneVariant; // вариант регулировочных параметров
-     QVector<S2::DataRec> *S2ConfigForTune;
+    QVector<S2::DataRec> *S2ConfigForTune;
 
     virtual void SetupUI() = 0;
     QWidget *TuneUI();
@@ -61,9 +59,8 @@ public:
     void WaitNSeconds(int SecondsToWait, bool isAllowedToStop=false);
     int StartMeasurement();
 //    QByteArray *ChooseFileForOpen(QString mask);
-    void InputTuneVariant(int varnum);
     bool WriteTuneCoefs();
-    int PrereadConf();
+    void PrereadConf();
     virtual void GetBdAndFillMTT() = 0;
 #endif
     virtual void FillBac() = 0;
@@ -97,8 +94,7 @@ private slots:
     void PasswordCheck(QString psw);
     virtual int ReadAnalogMeasurements() = 0;
     //    void UpdateNSecondsWidget();
-        void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
-        void SetTuneVariant();
+    void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
 #endif
     void LoadFromFile();
     virtual void SetDefCoefs() = 0;

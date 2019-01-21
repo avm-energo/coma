@@ -22,9 +22,15 @@ public:
     ~TuneDialogA1DN();
 
 private:
+    enum UModes
+    {
+        MODE_ALTERNATIVE = 0,
+        MODE_DIRECT = 1
+    };
+
     struct Baci
     {
-        float U1kDN[6];     // измеренные при калибровке напряжения на выходе своего ДН для значений вблизи 12, 30, 48, 60 и 72 В
+        float U1kDN[6];     // измеренные при калибровке напряжения на выходе своего ДН для значений 0 и вблизи 12, 30, 48, 60 и 72 В
         float U2kDN[6];     // и соответствующие им значения на выходе эталонного делителя
         float PhyDN[6]; 	// фазовый сдвиг ДН на частоте 50 Гц для значений напряжения U1kDN[6]
         float dU_cor[5];    // относительная ампл. погрешность установки после коррекции, в %
@@ -40,7 +46,24 @@ private:
         quint32 DNFNum;     // заводской номер делителя
     };
 
-    Bac Bac_block;
+    Bac Bac_block, Bac_block_old;
+
+    struct Baci3
+    {
+        float U1kDN[6];     // измеренные при калибровке напряжения на выходе своего ДН для значений 0 и вблизи 20, 50, 80, 100, 120 В
+        float U2kDN[6];     // и соответствующие им значения на выходе эталонного делителя
+        float dU_cor[5];    // относительная ампл. погрешность установки после коррекции, в %
+        float ddU_cor[5];	// среднеквадратичное отклонение амплитудной погрешности
+        float K_DN;         // номинальный коэффициент деления ДН
+    };
+
+    struct Bac3
+    {
+        Baci3 Bac_block3[TUNEVARIANTSNUM];
+        quint32 DNFNum;
+    };
+
+    Bac3 Bac_block3, Bac_block_old3;
 
     struct DdStruct
     {
@@ -56,22 +79,26 @@ private:
     CheckA1 *ChA1;
     bool Accepted;
     int PovNumPoints;
+    int Mode; // 0 - переменный, 1 - постоянный ток
 
     void SetupUI();
 
     QWidget *CoefUI(int bac2num);
+    QWidget *CoefUI3(int bac3num);
 
 #if PROGSIZE != PROGSIZE_EMUL
-    int InputDNData();
     void SetLbls();
     void SetPf();
-    int Start7_2_2();
     int Start7_2_3_1();
     int Start7_2_3_2();
     int Start7_2_3_3();
     int Start7_2_3_4();
     int Start7_2_3_5();
     int Start7_2_345(int counter);
+    int Start7_2_3();
+    int Start7_2_5();
+    void InputTuneVariant(int varnum);
+    int Start7_2_6();
     int Start7_2_67();
     int Start7_2_8();
     int Start7_2_9_1();
@@ -86,13 +113,17 @@ private:
     int ReadAnalogMeasurements();
     int ShowScheme();
 #endif
+    void WriteBacBlock();
     void GetBdAndFillMTT();
     void LoadSettings();
 
 private slots:
     void FillBac();
+    void FillBac3();
     void FillBackBac();
+    void FillBackBac3();
     void SetDefCoefs();
+    void SetDefCoefs3();
 #if PROGSIZE != PROGSIZE_EMUL
     void AcceptDNData();
     void FillBdOut();
@@ -100,6 +131,7 @@ private slots:
     void FillBdIn();
     void FillBackBdIn();
     void FillMedian(int index); // заполнение значений по средним показателям - медианам и СКО
+    void SetTuneVariant();
 #endif
 signals:
     void DNDataIsSet();

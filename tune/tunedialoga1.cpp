@@ -182,6 +182,10 @@ void TuneDialogA1::SetupUI()
     glyout->addWidget(WDFunc::NewLE(this, "tune34", "", ValuesLEFormat), 6, 3, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Tmk0"), 7, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "tune35", "", ValuesLEFormat), 7, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Offset0"), 8, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "tune36", "", ValuesLEFormat), 8, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Offset1"), 8, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "tune37", "", ValuesLEFormat), 8, 1, 1, 1);
     glyout->setColumnStretch(0, 0);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(2, 0);
@@ -377,7 +381,6 @@ int TuneDialogA1::Start6_3_6_1()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
-//    WaitNSeconds(10);
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     int res = ReadAnalogMeasurements();
@@ -398,7 +401,7 @@ int TuneDialogA1::Start6_3_6_3()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
-    WaitNSeconds(10);
+    WaitNSeconds(4);
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     int res = ReadAnalogMeasurements();
@@ -431,7 +434,6 @@ int TuneDialogA1::Start6_3_8_1()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
-//    WaitNSeconds(10);
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     int res = ReadAnalogMeasurements();
@@ -452,7 +454,7 @@ int TuneDialogA1::Start6_3_8_3()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
-    WaitNSeconds(10);
+    WaitNSeconds(4);
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     int res = ReadAnalogMeasurements();
@@ -511,7 +513,8 @@ int TuneDialogA1::Start6_3_10_1()
         EMessageBox::information(this, "Внимание", "Ошибка при записи регулировочных коэффициентов");
         return Error::ER_GENERALERROR;
     }
-    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[0], &TKUSourceData.Bda_out_an[0]) != Error::ER_NOERROR)
+    return Start6_3_10_60(0);
+/*    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[0], &TKUSourceData.Bda_out_an[0]) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     if (GetExternalTemp() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
@@ -520,7 +523,7 @@ int TuneDialogA1::Start6_3_10_1()
     ChA1->FillBda_in(this);
     memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_out_an[0], sizeof(CheckA1::A1_Bd4));
     ChA1->FillBda_out_an(this);
-    return Error::ER_NOERROR;
+    return Error::ER_NOERROR; */
 }
 
 int TuneDialogA1::Start6_3_10_2()
@@ -534,7 +537,8 @@ int TuneDialogA1::Start6_3_10_2()
     }
     WaitNSeconds(30*60, true);
     StdFunc::ClearCancel(); // если прервали 30-минутный отсчёт, это дело пользователя
-    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[1], &TKUSourceData.Bda_out_an[1]) != Error::ER_NOERROR)
+    return Start6_3_10_60(1);
+/*    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[1], &TKUSourceData.Bda_out_an[1]) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     if (GetExternalTemp() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
@@ -543,7 +547,7 @@ int TuneDialogA1::Start6_3_10_2()
     ChA1->FillBda_in(this);
     memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_in[1], sizeof(CheckA1::A1_Bd4));
     ChA1->FillBda_out_an(this);
-    return Error::ER_NOERROR;
+    return Error::ER_NOERROR; */
 }
 
 int TuneDialogA1::Start6_3_10_3()
@@ -557,7 +561,8 @@ int TuneDialogA1::Start6_3_10_3()
     }
     WaitNSeconds(30*60, true);
     StdFunc::ClearCancel(); // если прервали 30-минутный отсчёт, это дело пользователя
-    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[2], &TKUSourceData.Bda_out_an[2]) != Error::ER_NOERROR)
+    Start6_3_10_60(2);
+/*    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[2], &TKUSourceData.Bda_out_an[2]) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     if (GetExternalTemp() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
@@ -565,8 +570,8 @@ int TuneDialogA1::Start6_3_10_3()
     memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[2], sizeof(CheckA1::A1_Bd1));
     ChA1->FillBda_in(this);
     memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_in[2], sizeof(CheckA1::A1_Bd4));
-    ChA1->FillBda_out_an(this);
-    float Um[2], Up[2], Uo[2], Tmkm, Tmkp, Tmko;
+    ChA1->FillBda_out_an(this); */
+/*    float Um[2], Up[2], Uo[2], Tmkm, Tmkp, Tmko;
     Tmkm = TKUSourceData.Tmk[2];
     Tmkp = TKUSourceData.Tmk[1];
     Tmko = TKUSourceData.Tmk[0];
@@ -575,16 +580,17 @@ int TuneDialogA1::Start6_3_10_3()
     Up[0] = TKUSourceData.Bda_in[1].UefNat_filt[0];
     Up[1] = TKUSourceData.Bda_in[1].UefNat_filt[1];
     Um[0] = TKUSourceData.Bda_in[2].UefNat_filt[0];
-    Um[1] = TKUSourceData.Bda_in[2].UefNat_filt[1];
-    double dUm0 = Um[0] / Uo[0] - 1;
-    double dUp0 = Up[0] / Uo[0] - 1;
-    double dUm1 = Um[1] / Uo[1] - 1;
-    double dUp1 = Up[1] / Uo[1] - 1;
-    double dTm = Tmkm - Tmko;
-    double dTp = Tmkp - Tmko;
+    Um[1] = TKUSourceData.Bda_in[2].UefNat_filt[1]; */
+    double dUm0 = TKUSourceData.Bda_in[2].UefNat_filt[0] / TKUSourceData.Bda_in[0].UefNat_filt[0] - 1;
+    double dUp0 = TKUSourceData.Bda_in[1].UefNat_filt[0] / TKUSourceData.Bda_in[0].UefNat_filt[0] - 1;
+    double dUm1 = TKUSourceData.Bda_in[2].UefNat_filt[1] / TKUSourceData.Bda_in[0].UefNat_filt[1] - 1;
+    double dUp1 = TKUSourceData.Bda_in[1].UefNat_filt[1] / TKUSourceData.Bda_in[0].UefNat_filt[1] - 1;
+    double dTm = TKUSourceData.Tmk[2] - TKUSourceData.Tmk[0];
+    double dTp = TKUSourceData.Tmk[1] - TKUSourceData.Tmk[0];
     if ((qAbs(dTm) < 1.0f) || (qAbs(dTp) < 1.0f))
     {
-        EMessageBox::error(this, "Ошибка", "Разница температур слишком маленькая");
+        EMessageBox::error(this, "Ошибка", "Разница измеренных температур в опытах \n"
+                                           "повышенной и пониженной температур слишком маленькая");
         return Error::ER_GENERALERROR;
     }
     Bac_block.TKUa[0] = (dUm0 * dTp * dTp - dUp0 * dTm * dTm) / (dTp * dTm * (dTp - dTm));
@@ -594,11 +600,25 @@ int TuneDialogA1::Start6_3_10_3()
     return Error::ER_NOERROR;
 }
 
+int TuneDialogA1::Start6_3_10_60(int index)
+{
+    if (Start60PointsMeasurements(TDA1_BD1 | TDA1_BD4, &TKUSourceData.Bda_in[index], &TKUSourceData.Bda_out_an[index]) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
+    if (GetExternalTemp() == Error::ER_GENERALERROR)
+        return Error::ER_GENERALERROR;
+    TKUSourceData.Tmk[index] = RealData.t;
+    memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[index], sizeof(CheckA1::A1_Bd1));
+    ChA1->FillBda_in(this);
+    memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_out_an[index], sizeof(CheckA1::A1_Bd4));
+    ChA1->FillBda_out_an(this);
+    return Error::ER_NOERROR;
+}
+
 int TuneDialogA1::Start6_3_11()
 {
+    FillBac();
     if (EMessageBox::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?") == false)
         return Error::ER_GENERALERROR;
-    FillBac();
     SaveToFileEx();
     if (!WriteTuneCoefs())
         return Error::ER_GENERALERROR;
@@ -607,7 +627,6 @@ int TuneDialogA1::Start6_3_11()
 
 int TuneDialogA1::Start6_3_12()
 {
-//    WaitNSeconds(10);
     QString tmps = "Пожалуйста, после нажатия \"ОК\" просмотрите текущие данные после регулировки в соответствующих окнах";
     if (TuneFileSaved)
         tmps += "\nЕсли в процессе регулировки произошла ошибка, сохранённые коэффициенты\n"
@@ -956,6 +975,8 @@ void TuneDialogA1::FillBac()
     WDFunc::SetLEData(this, "tune33", QString::number(Bac_block.TKUb[0], 'e', 5));
     WDFunc::SetLEData(this, "tune34", QString::number(Bac_block.TKUb[1], 'e', 5));
     WDFunc::SetLEData(this, "tune35", QString::number(Bac_block.Tmk0, 'f', 5));
+    WDFunc::SetLEData(this, "tune36", QString::number(Bac_block.ch_offset[0], 'f', 5));
+    WDFunc::SetLEData(this, "tune37", QString::number(Bac_block.ch_offset[1], 'f', 5));
 }
 
 void TuneDialogA1::FillBackBac()
@@ -975,6 +996,8 @@ void TuneDialogA1::FillBackBac()
     WDFunc::LENumber(this, "tune33", Bac_block.TKUb[0]);
     WDFunc::LENumber(this, "tune34", Bac_block.TKUb[1]);
     WDFunc::LENumber(this, "tune35", Bac_block.Tmk0);
+    WDFunc::LENumber(this, "tune36", Bac_block.ch_offset[0]);
+    WDFunc::LENumber(this, "tune37", Bac_block.ch_offset[1]);
 }
 
 void TuneDialogA1::SetDefCoefs()

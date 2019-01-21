@@ -34,6 +34,7 @@ EAbstractTuneDialog::EAbstractTuneDialog(QWidget *parent) :
     MeasurementEnabled = false;
     MeasurementTimer = new QTimer;
     MeasurementTimer->setInterval(MEASTIMERINT);
+    IsNeededDefConf = false;
 #if PROGSIZE != PROGSIZE_EMUL
     connect(MeasurementTimer,SIGNAL(timeout()),this,SLOT(MeasTimerTimeout()));
 #endif
@@ -168,14 +169,15 @@ void EAbstractTuneDialog::ProcessTune()
         TuneFileSaved = false;
     ReadTuneCoefs();
     MeasurementTimer->start();
-    Cancelled = Skipped = false;
+    StdFunc::ClearCancel();
+    Skipped = false;
     MsgClear(); // очистка экрана с сообщениями
     for (bStep=0; bStep<lbls.size(); ++bStep)
     {
         WaitNSeconds(2);
         MsgSetVisible(bStep);
         int res = (this->*pf[lbls.at(bStep)])();
-        if ((res == Error::ER_GENERALERROR) || (Cancelled))
+        if ((res == Error::ER_GENERALERROR) || (StdFunc::IsCancelled()))
         {
             ErMsgSetVisible(bStep);
             WDFunc::SetEnabled(this, "starttune", true);
@@ -279,40 +281,11 @@ void EAbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
 int EAbstractTuneDialog::StartMeasurement()
 {
     MeasurementEnabled = true;
-    while (MeasurementEnabled && !Cancelled)
+    while (MeasurementEnabled && !StdFunc::IsCancelled())
         TimeFunc::Wait();
-    if (Cancelled)
+    if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
-}
-
-void EAbstractTuneDialog::InputTuneVariant(int varnum)
-{
-    QDialog *dlg = new QDialog(this);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QStringList sl;
-    for (int i=0; i<varnum; ++i)
-        sl << QString::number(i+1);
-    hlyout->addWidget(WDFunc::NewLBLT(this, "Выберите вариант использования"), 0);
-    QComboBox *cb = WDFunc::NewCB(this, "tunevariantcb", sl);
-    cb->setMinimumWidth(50);
-    hlyout->addWidget(cb, 0);
-
-    lyout->addLayout(hlyout);
-    QPushButton *pb = new QPushButton("Подтвердить");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetTuneVariant()));
-    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    hlyout = new QHBoxLayout;
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(CancelTune()));
-    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    dlg->setLayout(lyout);
-    dlg->exec();
 }
 
 // ####################### SLOTS #############################
@@ -327,7 +300,7 @@ void EAbstractTuneDialog::PasswordCheck(QString psw)
 {
     ok = false;
     if (psw.isEmpty())
-        Cancelled = true;
+        StdFunc::Cancel();
     else if (psw == "121941")
         ok = true;
     emit PasswordChecked();
@@ -363,16 +336,7 @@ bool EAbstractTuneDialog::WriteTuneCoefs()
 
 void EAbstractTuneDialog::PrereadConf()
 {
-    if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
-      IsNeededDefConf = true; // emit LoadDefConf();
-    else // иначе заполнить значениями из модуля
-    {
-        if ((Commands::GetFile(1, &S2Config)) != Error::ER_NOERROR)
-        {
-            QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
-            EMessageBox::error(this, "ошибка", "Ошибка чтения конфигурации из " + tmps);
-        }
-    }
+    IsNeededDefConf = (ModuleBSI::PrereadConf(this, &S2Config) == Error::ER_RESEMPTY) ? true : false;
 }
 #endif
 
@@ -433,20 +397,14 @@ void EAbstractTuneDialog::Good()
 
 void EAbstractTuneDialog::NoGood()
 {
-    Cancelled = true;
     MeasurementEnabled = false;
+    StdFunc::Cancel();
 }
 
 void EAbstractTuneDialog::CancelTune()
 {
-    Cancelled = true;
+    StdFunc::Cancel();
 }
-
-/*void EAbstractTuneDialog::UpdateNSecondsWidget()
-{
-//    emit SecondsRemaining(--SecondsToEnd15SecondsInterval);
-    --SecondsToEnd15SecondsInterval;
-} */
 
 void EAbstractTuneDialog::MeasTimerTimeout()
 {
@@ -462,12 +420,6 @@ void EAbstractTuneDialog::MeasTimerTimeout()
         WDFunc::SetEnabled(this, "NoGoodDN", false);
     }
 }
-
-void EAbstractTuneDialog::SetTuneVariant()
-{
-    if (!WDFunc::CBIndex(this, "tunevariantcb", TuneVariant))
-        DBGMSG;
-}
 #endif
 // ##################### PROTECTED ####################
 
@@ -482,6 +434,6 @@ void EAbstractTuneDialog::keyPressEvent(QKeyEvent *e)
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
         emit Finished();
     if (e->key() == Qt::Key_Escape)
-        Cancelled = true;
+        StdFunc::Cancel();
     QDialog::keyPressEvent(e);
 }

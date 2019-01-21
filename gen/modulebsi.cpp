@@ -1,6 +1,8 @@
+#include "../widgets/emessagebox.h"
 #include "../config/config.h"
 #include "modulebsi.h"
 #include "error.h"
+#include "stdfunc.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "commands.h"
 #endif
@@ -102,5 +104,22 @@ bool ModuleBSI::IsKnownModule()
         return true;
     }
     return false;
+}
+
+int ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
+{
+    int res;
+
+    if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
+        return Error::ER_RESEMPTY;
+    else // иначе заполнить значениями из модуля
+    {
+        if ((res = Commands::GetFile(1, S2Config)) != Error::ER_NOERROR)
+        {
+            QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
+            EMessageBox::error(w, "ошибка", "Ошибка чтения конфигурации из " + tmps + QString::number(res));
+        }
+    }
+    return Error::ER_NOERROR;
 }
 

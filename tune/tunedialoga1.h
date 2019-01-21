@@ -106,6 +106,7 @@ private:
     int Start6_3_10_1();
     int Start6_3_10_2();
     int Start6_3_10_3();
+    int Start6_3_10_60(int index); // вспомогательная функция для приёма 60 точек и усреднения
     int Start6_3_11();
     int Start6_3_12();
 
