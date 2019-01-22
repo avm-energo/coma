@@ -14,6 +14,7 @@
 #define MEASTIMERINT    1000 // интервал проведения измерений - 1 с
 
 #define TUNE_POINTSPER  500 // столько миллисекунд должно усредняться при регулировке
+#define WAITFORCONST    4 // seconds to let voltages be constant
 
 class EAbstractTuneDialog : public QDialog
 {
@@ -23,14 +24,14 @@ public:
     {
         void *BacBlock;
         int BacBlockSize;
-        char BacBlockNum;
+//        char BacBlockNum;
     };
 
     explicit EAbstractTuneDialog(QWidget *parent = nullptr);
     ~EAbstractTuneDialog();
 
     bool IsNeededDefConf;
-    BacStruct AbsBac;
+    QMap <int, BacStruct> AbsBac;
     QStringList lbls;
     bool Skipped, MeasurementEnabled, ok, TuneFileSaved;
     QTimer *MeasurementTimer;
@@ -43,7 +44,7 @@ public:
 
     virtual void SetupUI() = 0;
     QWidget *TuneUI();
-    QWidget *BottomUI();
+    QWidget *BottomUI(int bacnum);
     void SetBac(void *block, int blocknum, int blocksize); // установка указателя на блок Bac
 #if PROGSIZE != PROGSIZE_EMUL
     void ProcessTune();
@@ -59,13 +60,14 @@ public:
     void WaitNSeconds(int SecondsToWait, bool isAllowedToStop=false);
     int StartMeasurement();
 //    QByteArray *ChooseFileForOpen(QString mask);
-    bool WriteTuneCoefs();
+    bool WriteTuneCoefs(int bacnum);
+    int SaveAllTuneCoefs();
     void PrereadConf();
     virtual void GetBdAndFillMTT() = 0;
 #endif
-    virtual void FillBac() = 0;
-    virtual void FillBackBac() = 0;
-    void SaveToFileEx();
+    virtual void FillBac(int bacnum) = 0;
+    virtual void FillBackBac(int bacnum) = 0;
+    void SaveToFileEx(int bacnum);
 
 signals:
     void PasswordChecked();
@@ -78,15 +80,17 @@ signals:
 public slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void CancelTune();
-    void ReadTuneCoefs();
-    bool WriteTuneCoefsSlot();
+    void ReadAllTuneCoefs();
+    void ReadTuneCoefs(int bacnum);
+    bool WriteTuneCoefsSlot(int bacnum);
     void Good();
     void NoGood();
 
 #endif
-    void SaveToFile();
+    void SaveToFile(int bacnum);
 
 private:
+    void SetMeasurementEnabled(bool enabled);
 
 private slots:
 #if PROGSIZE != PROGSIZE_EMUL
@@ -96,8 +100,8 @@ private slots:
     //    void UpdateNSecondsWidget();
     void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
 #endif
-    void LoadFromFile();
-    virtual void SetDefCoefs() = 0;
+    void LoadFromFile(int bacnum);
+    virtual void SetDefCoefs(int bacnum) = 0;
 
 protected:
     void closeEvent(QCloseEvent *e);

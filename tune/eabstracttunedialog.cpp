@@ -31,7 +31,7 @@ EAbstractTuneDialog::EAbstractTuneDialog(QWidget *parent) :
 {
     TuneVariant = 0;
     setAttribute(Qt::WA_DeleteOnClose);
-    MeasurementEnabled = false;
+    SetMeasurementEnabled(false);
     MeasurementTimer = new QTimer;
     MeasurementTimer->setInterval(MEASTIMERINT);
     IsNeededDefConf = false;
@@ -101,7 +101,7 @@ QWidget *EAbstractTuneDialog::TuneUI()
     return w;
 }
 
-QWidget *EAbstractTuneDialog::BottomUI()
+QWidget *EAbstractTuneDialog::BottomUI(int bacnum)
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -113,7 +113,7 @@ QWidget *EAbstractTuneDialog::BottomUI()
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     pb = new QPushButton(tmps);
 #if PROGSIZE != PROGSIZE_EMUL
-    connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs(bacnum)));
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
@@ -144,9 +144,10 @@ QWidget *EAbstractTuneDialog::BottomUI()
 
 void EAbstractTuneDialog::SetBac(void *block, int blocknum, int blocksize)
 {
-    AbsBac.BacBlock = block;
-    AbsBac.BacBlockSize = blocksize;
-    AbsBac.BacBlockNum = blocknum;
+    BacStruct Bac;
+    Bac.BacBlock = block;
+    Bac.BacBlockSize = blocksize;
+    AbsBac[blocknum] = Bac;
 }
 
 #if PROGSIZE != PROGSIZE_EMUL
@@ -159,15 +160,11 @@ void EAbstractTuneDialog::ProcessTune()
         return;
     }
     // сохраняем на всякий случай настроечные коэффициенты
-    QString tunenum = QString::number(AbsBac.BacBlockNum, 16);
-    QByteArray ba;
-    ba.resize(AbsBac.BacBlockSize);
-    memcpy(&(ba.data()[0]), AbsBac.BacBlock, AbsBac.BacBlockSize);
-    if (Files::SaveToFile(StdFunc::GetSystemHomeDir()+"temptune.tn"+tunenum, ba, AbsBac.BacBlockSize) == Error::ER_NOERROR)
+    if (SaveAllTuneCoefs() == Error::ER_NOERROR)
         TuneFileSaved = true;
     else
         TuneFileSaved = false;
-    ReadTuneCoefs();
+    ReadAllTuneCoefs();
     MeasurementTimer->start();
     StdFunc::ClearCancel();
     Skipped = false;
@@ -280,7 +277,7 @@ void EAbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
 
 int EAbstractTuneDialog::StartMeasurement()
 {
-    MeasurementEnabled = true;
+    SetMeasurementEnabled(true);
     while (MeasurementEnabled && !StdFunc::IsCancelled())
         TimeFunc::Wait();
     if (StdFunc::IsCancelled())
@@ -306,32 +303,53 @@ void EAbstractTuneDialog::PasswordCheck(QString psw)
     emit PasswordChecked();
 }
 
-void EAbstractTuneDialog::ReadTuneCoefs()
+void EAbstractTuneDialog::ReadTuneCoefs(int bacnum)
 {
-    if (Commands::GetBac(AbsBac.BacBlockNum, AbsBac.BacBlock, AbsBac.BacBlockSize) == Error::ER_NOERROR)
-        FillBac();
+    if (AbsBac.keys().contains(bacnum))
+    {
+        if (Commands::GetBac(bacnum, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize) == Error::ER_NOERROR)
+            FillBac(bacnum);
+    }
 }
 
-bool EAbstractTuneDialog::WriteTuneCoefsSlot()
+bool EAbstractTuneDialog::WriteTuneCoefsSlot(int bacnum)
 {
     //if (CheckPassword() != Error::ER_NOERROR)   На время отладки!!!
     //    return false;
-    return WriteTuneCoefs();
+    return WriteTuneCoefs(bacnum);
 }
 
-bool EAbstractTuneDialog::WriteTuneCoefs()
+bool EAbstractTuneDialog::WriteTuneCoefs(int bacnum)
 {
     if (EMessageBox::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?\n(Результаты предыдущей регулировки будут потеряны)") == false)
         return false;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
-    FillBackBac();
-    if (Commands::WriteBac(AbsBac.BacBlockNum, AbsBac.BacBlock, AbsBac.BacBlockSize) == Error::ER_NOERROR)
+    FillBackBac(bacnum);
+    if (AbsBac.keys().contains(bacnum))
     {
-        EMessageBox::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
-        return true;
+        if (Commands::WriteBac(bacnum, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize) == Error::ER_NOERROR)
+        {
+            EMessageBox::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
+            return true;
+        }
     }
     EMessageBox::error(this, "Ошибка", "Ошибка записи коэффициентов в " + tmps + "!");
     return false;
+}
+
+int EAbstractTuneDialog::SaveAllTuneCoefs()
+{
+    QString tunenum;
+    for (QMap<int, BacStruct>::Iterator it = AbsBac.begin(); it != AbsBac.end(); ++it)
+    {
+        tunenum = QString::number(it.key(), 16); // key is the number of Bac block
+        QByteArray ba;
+        ba.resize(it.value().BacBlockSize);
+        memcpy(&(ba.data()[0]), it.value().BacBlock, it.value().BacBlockSize);
+        if (Files::SaveToFile(StdFunc::GetSystemHomeDir()+"temptune.tn"+tunenum, ba, it.value().BacBlockSize) != Error::ER_NOERROR)
+            return Error::ER_GENERALERROR;
+    }
+    return Error::ER_NOERROR;
 }
 
 void EAbstractTuneDialog::PrereadConf()
@@ -340,14 +358,19 @@ void EAbstractTuneDialog::PrereadConf()
 }
 #endif
 
-void EAbstractTuneDialog::SaveToFileEx()
+void EAbstractTuneDialog::SaveToFileEx(int bacnum)
 {
     int res = Error::ER_NOERROR;
-    QString tunenum = QString::number(AbsBac.BacBlockNum, 16);
+    QString tunenum = QString::number(bacnum, 16);
+    if (!AbsBac.keys().contains(bacnum))
+    {
+        EMessageBox::error(this, "Ошибка", "Блок Bac с индексом " + tunenum + " не найден!");
+        return;
+    }
     QByteArray ba;
-    ba.resize(AbsBac.BacBlockSize);
-    memcpy(&(ba.data()[0]), AbsBac.BacBlock, AbsBac.BacBlockSize);
-    res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.tn"+tunenum+")", "tn"+tunenum), ba, AbsBac.BacBlockSize);
+    ba.resize(AbsBac[bacnum].BacBlockSize);
+    memcpy(&(ba.data()[0]), AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize);
+    res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.tn"+tunenum+")", "tn"+tunenum), ba, AbsBac[bacnum].BacBlockSize);
     switch (res)
     {
     case Files::ER_NOERROR:
@@ -367,37 +390,58 @@ void EAbstractTuneDialog::SaveToFileEx()
     }
 }
 
-void EAbstractTuneDialog::SaveToFile()
+void EAbstractTuneDialog::SaveToFile(int bacnum)
 {
-    FillBackBac();
-    SaveToFileEx();
+    FillBackBac(bacnum);
+    SaveToFileEx(bacnum);
 }
 
-void EAbstractTuneDialog::LoadFromFile()
+void EAbstractTuneDialog::SetMeasurementEnabled(bool enabled)
+{
+    if (enabled)
+    {
+        WDFunc::SetEnabled(this, "GoodDN", true);
+        WDFunc::SetEnabled(this, "NoGoodDN", true);
+        MeasurementEnabled = true;
+    }
+    else
+    {
+        WDFunc::SetEnabled(this, "GoodDN", false);
+        WDFunc::SetEnabled(this, "NoGoodDN", false);
+        MeasurementEnabled = false;
+    }
+}
+
+void EAbstractTuneDialog::LoadFromFile(int bacnum)
 {
     QByteArray ba;
     ba.resize(MAXTUNESIZE);
-    QString tunenum = QString::number(AbsBac.BacBlockNum, 16);
+    QString tunenum = QString::number(bacnum, 16);
+    if (!AbsBac.keys().contains(bacnum))
+    {
+        EMessageBox::error(this, "Ошибка", "Блок Bac с индексом " + tunenum + " не найден!");
+        return;
+    }
     int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.tn"+tunenum+")"), ba);
     if (res != Files::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка при загрузке файла");
         return;
     }
-    memcpy(AbsBac.BacBlock,&(ba.data()[0]),ba.size());
-    FillBac();
+    memcpy(AbsBac[bacnum].BacBlock,&(ba.data()[0]),ba.size());
+    FillBac(bacnum);
     EMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
 #if PROGSIZE != PROGSIZE_EMUL
 void EAbstractTuneDialog::Good()
 {
-    MeasurementEnabled = false;
+    SetMeasurementEnabled(false);
 }
 
 void EAbstractTuneDialog::NoGood()
 {
-    MeasurementEnabled = false;
+    SetMeasurementEnabled(false);
     StdFunc::Cancel();
 }
 
@@ -406,19 +450,15 @@ void EAbstractTuneDialog::CancelTune()
     StdFunc::Cancel();
 }
 
+void EAbstractTuneDialog::ReadAllTuneCoefs()
+{
+
+}
+
 void EAbstractTuneDialog::MeasTimerTimeout()
 {
     if (MeasurementEnabled)
-    {
-        WDFunc::SetEnabled(this, "GoodDN", true);
-        WDFunc::SetEnabled(this, "NoGoodDN", true);
         GetBdAndFillMTT();
-    }
-    else
-    {
-        WDFunc::SetEnabled(this, "GoodDN", false);
-        WDFunc::SetEnabled(this, "NoGoodDN", false);
-    }
 }
 #endif
 // ##################### PROTECTED ####################

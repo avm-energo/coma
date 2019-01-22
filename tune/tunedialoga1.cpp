@@ -281,7 +281,7 @@ int TuneDialogA1::Start6_3_3_5()
         return Error::ER_RESEMPTY;
     EMessageBox::information(this, "Требование", "Установите на РЕТОМ значение напряжения 100 В");
     // получение текущих аналоговых сигналов от модуля
-    WaitNSeconds(4);
+    WaitNSeconds(WAITFORCONST);
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     if (ReadAnalogMeasurements() == Error::ER_GENERALERROR)
@@ -326,7 +326,7 @@ int TuneDialogA1::Start6_3_4_1()
         return Error::Error::ER_RESEMPTY;
     }
     EMessageBox::information(this, "Требование", "Установите на магазине сопротивлений значение 80 Ом");
-    WaitNSeconds(4);
+    WaitNSeconds(WAITFORCONST);
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     if (ReadAnalogMeasurements() == Error::ER_GENERALERROR)
@@ -348,7 +348,7 @@ int TuneDialogA1::Start6_3_4_4()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
-    WaitNSeconds(4);
+    WaitNSeconds(WAITFORCONST);
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     int res = ReadAnalogMeasurements();
@@ -369,7 +369,7 @@ int TuneDialogA1::Start6_3_5()
         return Error::ER_RESEMPTY;
     }
     EMessageBox::information(this, "Требование", "Задайте ток 20,000мА в канале EXTmA2");
-    WaitNSeconds(4);
+    WaitNSeconds(WAITFORCONST);
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     if (ReadAnalogMeasurements() == Error::ER_GENERALERROR)
@@ -401,7 +401,7 @@ int TuneDialogA1::Start6_3_6_3()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
-    WaitNSeconds(4);
+    WaitNSeconds(WAITFORCONST);
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     int res = ReadAnalogMeasurements();
@@ -422,7 +422,7 @@ int TuneDialogA1::Start6_3_7()
         return Error::ER_RESEMPTY;
     }
     EMessageBox::information(this, "Требование", "Задайте ток 4,000мА в канале EXTmA1");
-    WaitNSeconds(10);
+    WaitNSeconds(WAITFORCONST);
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     if (ReadAnalogMeasurements() == Error::ER_GENERALERROR)
@@ -454,7 +454,7 @@ int TuneDialogA1::Start6_3_8_3()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
-    WaitNSeconds(4);
+    WaitNSeconds(WAITFORCONST);
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     int res = ReadAnalogMeasurements();

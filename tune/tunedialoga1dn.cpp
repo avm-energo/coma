@@ -29,7 +29,8 @@ TuneDialogA1DN::TuneDialogA1DN(QWidget *parent) :
 {
     CA1 = new ConfigA1(S2Config);
     ChA1 = new CheckA1;
-    SetBac(&Bac_block, BoardTypes::BT_MEZONIN, sizeof(Bac));
+    SetBac(&Bac_block, 2, sizeof(Bac));
+    SetBac(&Bac_block3, 3, sizeof(Bac3));
     SetupUI();
     LoadSettings();
 }
@@ -46,15 +47,13 @@ void TuneDialogA1DN::SetLbls()
     lbls.append("7.2.3. Ввод данных по делителю и приём настроечных параметров...");
     lbls.append("7.2.5. Задание варианта включения ДН...");
     lbls.append("7.2.6. Запись варианта включения в прибор...");
-
-    lbls.append("7.2.2. Приём конфигурации от прибора...");
-    lbls.append("7.2.3. Установка 20%, проверка и сохранение...");
-    lbls.append("7.2.5. Установка 50%, проверка и сохранение...");
-    lbls.append("7.2.5. Установка 80%, проверка и сохранение...");
-    lbls.append("7.2.5. Установка 100%, проверка и сохранение...");
-    lbls.append("7.2.5. Установка 120%, проверка и сохранение...");
-    lbls.append("7.2.6. Запись настроечных коэффициентов и переход на новую конфигурацию...");
-    lbls.append("7.2.8. Проверка аналоговых данных...");
+    lbls.append("7.2.7. Установка 20%, проверка и сохранение...");
+    lbls.append("7.2.7. Установка 50%, проверка и сохранение...");
+    lbls.append("7.2.7. Установка 80%, проверка и сохранение...");
+    lbls.append("7.2.7. Установка 100%, проверка и сохранение...");
+    lbls.append("7.2.7. Установка 120%, проверка и сохранение...");
+    lbls.append("7.2.11. Запись настроечных коэффициентов и переход на новую конфигурацию...");
+    lbls.append("7.2.12. Проверка аналоговых данных...");
     lbls.append("7.2.9.1. Проверка аналоговых данных...");
     lbls.append("7.2.9.2. Проверка аналоговых данных...");
     lbls.append("7.2.9.3. Проверка аналоговых данных...");
@@ -76,23 +75,23 @@ void TuneDialogA1DN::SetPf()
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_6);
     pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_1); // 7.2.7. Установка 20%, проверка и сохранение
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_2); // 7.2.7. Установка 50%, проверка и сохранение
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_3); // 7.2.7. Установка 80%, проверка и сохранение
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_4); // 7.2.7. Установка 100%, проверка и сохранение
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_5); // 7.2.7. Установка 120%, проверка и сохранение
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_11); // 7.2.11. Запись настроечных коэффициентов и переход на новую конфигурацию
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_12); // 7.2.12. Проверка аналоговых данных
+    pf[lbls.at(count++)] = func;
 
 
 
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_1); // 7.2.3. Установка 20%, проверка и сохранение
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_2); // 7.2.5. Установка 50%, проверка и сохранение
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_3); // 7.2.5. Установка 80%, проверка и сохранение
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_4); // 7.2.5. Установка 100%, проверка и сохранение
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3_5); // 7.2.5. Установка 120%, проверка и сохранение
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_67); // 7.2.6. Запись настроечных коэффициентов и переход на новую конфигурацию
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_8); // 7.2.8. Проверка аналоговых данных
-    pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_1); // 7.2.9.1. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_2); // 7.2.9.2. Проверка аналоговых данных
@@ -290,88 +289,155 @@ QWidget *TuneDialogA1DN::CoefUI(int bac2num)
         }
     }
     lyout->addLayout(glyout);
-    lyout->addWidget(BottomUI());
+    lyout->addWidget(BottomUI(1)); // блок Bac2 - первый по счёту в EAbstractTuneDialog
     lyout->addStretch(1);
     w->setLayout(lyout);
     return w;
 }
 
-void TuneDialogA1DN::FillBac()
+void TuneDialogA1DN::FillBac(int bacnum)
 {
-    for (int j=0; j<TUNEVARIANTSNUM; ++j)
+    if (bacnum == BLOCK_ALTERNATIVE)
     {
-        QString Si = QString::number(j);
-        WDFunc::SetSPBData(this, "K_DNSPB."+Si, Bac_block.Bac_block[j].K_DN);
-        for (int i = 0; i < 6; ++i)
+        for (int j=0; j<TUNEVARIANTSNUM; ++j)
         {
-            WDFunc::SetLEData(this, "tune"+QString::number(i+4)+"."+Si, QString::number(Bac_block.Bac_block[j].U1kDN[i], 'f', 5));
-            WDFunc::SetLEData(this, "tune"+QString::number(i+10)+"."+Si, QString::number(Bac_block.Bac_block[j].U2kDN[i], 'f', 5));
-            WDFunc::SetLEData(this, "tune"+QString::number(i+16)+"."+Si, QString::number(Bac_block.Bac_block[j].PhyDN[i], 'f', 5));
-            if (i < 5)
+            QString Si = QString::number(j);
+            WDFunc::SetSPBData(this, "K_DNSPB."+Si, Bac_block.Bac_block[j].K_DN);
+            for (int i = 0; i < 6; ++i)
             {
-                WDFunc::SetLEData(this, "tune"+QString::number(i+22)+"."+Si, QString::number(Bac_block.Bac_block[j].dU_cor[i], 'f', 5));
-                WDFunc::SetLEData(this, "tune"+QString::number(i+27)+"."+Si, QString::number(Bac_block.Bac_block[j].dPhy_cor[i], 'f', 5));
-                WDFunc::SetLEData(this, "tune"+QString::number(i+32)+"."+Si, QString::number(Bac_block.Bac_block[j].ddU_cor[i], 'f', 5));
-                WDFunc::SetLEData(this, "tune"+QString::number(i+37)+"."+Si, QString::number(Bac_block.Bac_block[j].ddPhy_cor[i], 'f', 5));
+                WDFunc::SetLEData(this, "tune"+QString::number(i+4)+"."+Si, QString::number(Bac_block.Bac_block[j].U1kDN[i], 'f', 5));
+                WDFunc::SetLEData(this, "tune"+QString::number(i+10)+"."+Si, QString::number(Bac_block.Bac_block[j].U2kDN[i], 'f', 5));
+                WDFunc::SetLEData(this, "tune"+QString::number(i+16)+"."+Si, QString::number(Bac_block.Bac_block[j].PhyDN[i], 'f', 5));
+                if (i < 5)
+                {
+                    WDFunc::SetLEData(this, "tune"+QString::number(i+22)+"."+Si, QString::number(Bac_block.Bac_block[j].dU_cor[i], 'f', 5));
+                    WDFunc::SetLEData(this, "tune"+QString::number(i+27)+"."+Si, QString::number(Bac_block.Bac_block[j].dPhy_cor[i], 'f', 5));
+                    WDFunc::SetLEData(this, "tune"+QString::number(i+32)+"."+Si, QString::number(Bac_block.Bac_block[j].ddU_cor[i], 'f', 5));
+                    WDFunc::SetLEData(this, "tune"+QString::number(i+37)+"."+Si, QString::number(Bac_block.Bac_block[j].ddPhy_cor[i], 'f', 5));
+                }
             }
+            WDFunc::SetLEData(this, "DividerSN"+Si, QString::number(Bac_block.DNFNum));
         }
-        WDFunc::SetLEData(this, "DividerSN"+Si, QString::number(Bac_block.DNFNum));
+    }
+    else
+    {
+        for (int j=0; j<TUNEVARIANTSNUM; ++j)
+        {
+            QString Si = QString::number(j+3);
+            WDFunc::SetSPBData(this, "K_DNSPB."+Si, Bac_block3.Bac_block3[j].K_DN);
+            for (int i = 0; i < 6; ++i)
+            {
+                WDFunc::SetLEData(this, "tune"+QString::number(i+4)+"."+Si, QString::number(Bac_block3.Bac_block3[j].U1kDN[i], 'f', 5));
+                WDFunc::SetLEData(this, "tune"+QString::number(i+10)+"."+Si, QString::number(Bac_block3.Bac_block3[j].U2kDN[i], 'f', 5));
+                if (i < 5)
+                {
+                    WDFunc::SetLEData(this, "tune"+QString::number(i+22)+"."+Si, QString::number(Bac_block3.Bac_block3[j].dU_cor[i], 'f', 5));
+                    WDFunc::SetLEData(this, "tune"+QString::number(i+32)+"."+Si, QString::number(Bac_block3.Bac_block3[j].ddU_cor[i], 'f', 5));
+                }
+            }
+            WDFunc::SetLEData(this, "DividerSN"+Si, QString::number(Bac_block3.DNFNum));
+        }
     }
 }
 
-void TuneDialogA1DN::FillBackBac()
+void TuneDialogA1DN::FillBackBac(int bacnum)
 {
     QString tmps;
-    for (int j=0; j<TUNEVARIANTSNUM; ++j)
+    if (bacnum == BLOCK_ALTERNATIVE)
     {
-        QString Si = QString::number(j);
-        WDFunc::SPBData(this, "K_DNSPB."+Si, Bac_block.Bac_block[j].K_DN);
-        for (int i = 0; i < 6; i++)
+        for (int j=0; j<TUNEVARIANTSNUM; ++j)
         {
-            WDFunc::LENumber(this, "tune"+QString::number(i+4)+"."+Si, Bac_block.Bac_block[j].U1kDN[i]);
-            WDFunc::LENumber(this, "tune"+QString::number(i+10)+"."+Si, Bac_block.Bac_block[j].U2kDN[i]);
-            WDFunc::LENumber(this, "tune"+QString::number(i+16)+"."+Si, Bac_block.Bac_block[j].PhyDN[i]);
-            if (i < 5)
+            QString Si = QString::number(j);
+            WDFunc::SPBData(this, "K_DNSPB."+Si, Bac_block.Bac_block[j].K_DN);
+            for (int i = 0; i < 6; i++)
             {
-                WDFunc::LENumber(this, "tune"+QString::number(i+22)+"."+Si, Bac_block.Bac_block[j].dU_cor[i]);
-                WDFunc::LENumber(this, "tune"+QString::number(i+27)+"."+Si, Bac_block.Bac_block[j].dPhy_cor[i]);
-                WDFunc::LENumber(this, "tune"+QString::number(i+32)+"."+Si, Bac_block.Bac_block[j].ddU_cor[i]);
-                WDFunc::LENumber(this, "tune"+QString::number(i+37)+"."+Si, Bac_block.Bac_block[j].ddPhy_cor[i]);
+                WDFunc::LENumber(this, "tune"+QString::number(i+4)+"."+Si, Bac_block.Bac_block[j].U1kDN[i]);
+                WDFunc::LENumber(this, "tune"+QString::number(i+10)+"."+Si, Bac_block.Bac_block[j].U2kDN[i]);
+                WDFunc::LENumber(this, "tune"+QString::number(i+16)+"."+Si, Bac_block.Bac_block[j].PhyDN[i]);
+                if (i < 5)
+                {
+                    WDFunc::LENumber(this, "tune"+QString::number(i+22)+"."+Si, Bac_block.Bac_block[j].dU_cor[i]);
+                    WDFunc::LENumber(this, "tune"+QString::number(i+27)+"."+Si, Bac_block.Bac_block[j].dPhy_cor[i]);
+                    WDFunc::LENumber(this, "tune"+QString::number(i+32)+"."+Si, Bac_block.Bac_block[j].ddU_cor[i]);
+                    WDFunc::LENumber(this, "tune"+QString::number(i+37)+"."+Si, Bac_block.Bac_block[j].ddPhy_cor[i]);
+                }
             }
+            WDFunc::LEData(this, "DividerSN"+Si, tmps);
+            Bac_block.DNFNum = tmps.toInt();
         }
-        WDFunc::LEData(this, "DividerSN"+Si, tmps);
-        Bac_block.DNFNum = tmps.toInt();
+    }
+    else
+    {
+        for (int j=0; j<TUNEVARIANTSNUM; ++j)
+        {
+            QString Si = QString::number(j+3);
+            WDFunc::SPBData(this, "K_DNSPB."+Si, Bac_block3.Bac_block3[j].K_DN);
+            for (int i = 0; i < 6; i++)
+            {
+                WDFunc::LENumber(this, "tune"+QString::number(i+4)+"."+Si, Bac_block3.Bac_block3[j].U1kDN[i]);
+                WDFunc::LENumber(this, "tune"+QString::number(i+10)+"."+Si, Bac_block3.Bac_block3[j].U2kDN[i]);
+                if (i < 5)
+                {
+                    WDFunc::LENumber(this, "tune"+QString::number(i+22)+"."+Si, Bac_block3.Bac_block3[j].dU_cor[i]);
+                    WDFunc::LENumber(this, "tune"+QString::number(i+32)+"."+Si, Bac_block3.Bac_block3[j].ddU_cor[i]);
+                }
+            }
+            WDFunc::LEData(this, "DividerSN"+Si, tmps);
+            Bac_block3.DNFNum = tmps.toInt();
+        }
     }
 }
 
-void TuneDialogA1DN::SetDefCoefs()
+void TuneDialogA1DN::SetDefCoefs(int bacnum)
 {
-    for (int j=0; j<TUNEVARIANTSNUM; ++j)
+    if (bacnum == BLOCK_ALTERNATIVE)
     {
-        Bac_block.Bac_block[j].U1kDN[0] = 0;
-        Bac_block.Bac_block[j].U2kDN[0] = 0;
-        Bac_block.Bac_block[j].U1kDN[1] = Bac_block.Bac_block[j].U2kDN[1] = 12;
-        Bac_block.Bac_block[j].U1kDN[2] = Bac_block.Bac_block[j].U2kDN[2] = 30;
-        Bac_block.Bac_block[j].U1kDN[3] = Bac_block.Bac_block[j].U2kDN[3] = 48;
-        Bac_block.Bac_block[j].U1kDN[4] = Bac_block.Bac_block[j].U2kDN[4] = 60;
-        Bac_block.Bac_block[j].U1kDN[5] = Bac_block.Bac_block[j].U2kDN[5] = 71;
-        for (int i=0; i<5; ++i)
+        for (int j=0; j<TUNEVARIANTSNUM; ++j)
         {
-            Bac_block.Bac_block[j].PhyDN[i] = 0;
-            Bac_block.Bac_block[j].dU_cor[i] = 0;
-            Bac_block.Bac_block[j].dPhy_cor[i] = 0;
-            Bac_block.Bac_block[j].ddU_cor[i] = 0;
-            Bac_block.Bac_block[j].ddPhy_cor[i] = 0;
+            Bac_block.Bac_block[j].U1kDN[0] = 0;
+            Bac_block.Bac_block[j].U2kDN[0] = 0;
+            Bac_block.Bac_block[j].U1kDN[1] = Bac_block.Bac_block[j].U2kDN[1] = 12;
+            Bac_block.Bac_block[j].U1kDN[2] = Bac_block.Bac_block[j].U2kDN[2] = 30;
+            Bac_block.Bac_block[j].U1kDN[3] = Bac_block.Bac_block[j].U2kDN[3] = 48;
+            Bac_block.Bac_block[j].U1kDN[4] = Bac_block.Bac_block[j].U2kDN[4] = 60;
+            Bac_block.Bac_block[j].U1kDN[5] = Bac_block.Bac_block[j].U2kDN[5] = 71;
+            for (int i=0; i<5; ++i)
+            {
+                Bac_block.Bac_block[j].PhyDN[i] = 0;
+                Bac_block.Bac_block[j].dU_cor[i] = 0;
+                Bac_block.Bac_block[j].dPhy_cor[i] = 0;
+                Bac_block.Bac_block[j].ddU_cor[i] = 0;
+                Bac_block.Bac_block[j].ddPhy_cor[i] = 0;
+            }
         }
-        if (j == 0)
-            Bac_block.Bac_block[j].K_DN = 1100;
-        else if (j == 1)
-            Bac_block.Bac_block[j].K_DN = 2200;
-        else
-            Bac_block.Bac_block[j].K_DN = 3300;
+        Bac_block.Bac_block[0].K_DN = 350;
+        Bac_block.Bac_block[1].K_DN = 1100;
+        Bac_block.Bac_block[2].K_DN = 2200;
+        Bac_block.DNFNum = 1;
     }
-    Bac_block.DNFNum = 1;
-    FillBac();
+    else
+    {
+        for (int j=0; j<TUNEVARIANTSNUM; ++j)
+        {
+            Bac_block3.Bac_block3[j].U1kDN[0] = 0;
+            Bac_block3.Bac_block3[j].U2kDN[0] = 0;
+            Bac_block3.Bac_block3[j].U1kDN[1] = Bac_block3.Bac_block3[j].U2kDN[1] = 16;
+            Bac_block3.Bac_block3[j].U1kDN[2] = Bac_block3.Bac_block3[j].U2kDN[2] = 40;
+            Bac_block3.Bac_block3[j].U1kDN[3] = Bac_block3.Bac_block3[j].U2kDN[3] = 64;
+            Bac_block3.Bac_block3[j].U1kDN[4] = Bac_block3.Bac_block3[j].U2kDN[4] = 80;
+            Bac_block3.Bac_block3[j].U1kDN[5] = Bac_block3.Bac_block3[j].U2kDN[5] = 100;
+            for (int i=0; i<5; ++i)
+            {
+                Bac_block3.Bac_block3[j].dU_cor[i] = 0;
+                Bac_block3.Bac_block3[j].ddU_cor[i] = 0;
+            }
+        }
+        Bac_block3.Bac_block3[0].K_DN = 350;
+        Bac_block3.Bac_block3[1].K_DN = 1100;
+        Bac_block3.Bac_block3[2].K_DN = 2200;
+        Bac_block3.DNFNum = 1;
+    }
+    FillBac(bacnum);
 }
 
 QWidget *TuneDialogA1DN::CoefUI3(int bac3num)
@@ -408,79 +474,10 @@ QWidget *TuneDialogA1DN::CoefUI3(int bac3num)
         }
     }
     lyout->addLayout(glyout);
-    lyout->addWidget(BottomUI());
+    lyout->addWidget(BottomUI(2));
     lyout->addStretch(1);
     w->setLayout(lyout);
     return w;
-}
-
-void TuneDialogA1DN::FillBac3()
-{
-    for (int j=0; j<TUNEVARIANTSNUM; ++j)
-    {
-        QString Si = QString::number(j+3);
-        WDFunc::SetSPBData(this, "K_DNSPB."+Si, Bac_block3.Bac_block3[j].K_DN);
-        for (int i = 0; i < 6; ++i)
-        {
-            WDFunc::SetLEData(this, "tune"+QString::number(i+4)+"."+Si, QString::number(Bac_block3.Bac_block3[j].U1kDN[i], 'f', 5));
-            WDFunc::SetLEData(this, "tune"+QString::number(i+10)+"."+Si, QString::number(Bac_block3.Bac_block3[j].U2kDN[i], 'f', 5));
-            if (i < 5)
-            {
-                WDFunc::SetLEData(this, "tune"+QString::number(i+22)+"."+Si, QString::number(Bac_block3.Bac_block3[j].dU_cor[i], 'f', 5));
-                WDFunc::SetLEData(this, "tune"+QString::number(i+32)+"."+Si, QString::number(Bac_block3.Bac_block3[j].ddU_cor[i], 'f', 5));
-            }
-        }
-        WDFunc::SetLEData(this, "DividerSN"+Si, QString::number(Bac_block3.DNFNum));
-    }
-}
-
-void TuneDialogA1DN::FillBackBac3()
-{
-    QString tmps;
-    for (int j=0; j<TUNEVARIANTSNUM; ++j)
-    {
-        QString Si = QString::number(j+3);
-        WDFunc::SPBData(this, "K_DNSPB."+Si, Bac_block3.Bac_block3[j].K_DN);
-        for (int i = 0; i < 6; i++)
-        {
-            WDFunc::LENumber(this, "tune"+QString::number(i+4)+"."+Si, Bac_block3.Bac_block3[j].U1kDN[i]);
-            WDFunc::LENumber(this, "tune"+QString::number(i+10)+"."+Si, Bac_block3.Bac_block3[j].U2kDN[i]);
-            if (i < 5)
-            {
-                WDFunc::LENumber(this, "tune"+QString::number(i+22)+"."+Si, Bac_block3.Bac_block3[j].dU_cor[i]);
-                WDFunc::LENumber(this, "tune"+QString::number(i+32)+"."+Si, Bac_block3.Bac_block3[j].ddU_cor[i]);
-            }
-        }
-        WDFunc::LEData(this, "DividerSN"+Si, tmps);
-        Bac_block3.DNFNum = tmps.toInt();
-    }
-}
-
-void TuneDialogA1DN::SetDefCoefs3()
-{
-    for (int j=0; j<TUNEVARIANTSNUM; ++j)
-    {
-        Bac_block3.Bac_block3[j].U1kDN[0] = 0;
-        Bac_block3.Bac_block3[j].U2kDN[0] = 0;
-        Bac_block3.Bac_block3[j].U1kDN[1] = Bac_block3.Bac_block3[j].U2kDN[1] = 16;
-        Bac_block3.Bac_block3[j].U1kDN[2] = Bac_block3.Bac_block3[j].U2kDN[2] = 40;
-        Bac_block3.Bac_block3[j].U1kDN[3] = Bac_block3.Bac_block3[j].U2kDN[3] = 64;
-        Bac_block3.Bac_block3[j].U1kDN[4] = Bac_block3.Bac_block3[j].U2kDN[4] = 80;
-        Bac_block3.Bac_block3[j].U1kDN[5] = Bac_block3.Bac_block3[j].U2kDN[5] = 100;
-        for (int i=0; i<5; ++i)
-        {
-            Bac_block3.Bac_block3[j].dU_cor[i] = 0;
-            Bac_block3.Bac_block3[j].ddU_cor[i] = 0;
-        }
-        if (j == 0)
-            Bac_block3.Bac_block3[j].K_DN = 350;
-        else if (j == 1)
-            Bac_block3.Bac_block3[j].K_DN = 1100;
-        else
-            Bac_block3.Bac_block3[j].K_DN = 2200;
-    }
-    Bac_block3.DNFNum = 1;
-    FillBac();
 }
 
 #if PROGSIZE != PROGSIZE_EMUL
@@ -546,8 +543,7 @@ void TuneDialogA1DN::FillMedian(int index)
 int TuneDialogA1DN::Start7_2_3()
 {
     Commands::GetBac(2, &Bac_block, sizeof(Bac));
-    Commands::GetBac(2, &Bac_block_old, sizeof(Bac)); // 7.2.4
-    Commands::GetBac(3, &Bac_block_old3, sizeof(Bac3)); // 7.2.4
+    Commands::GetBac(3, &Bac_block3, sizeof(Bac3)); // 7.2.4
     int row = 0;
     QDialog *dlg = new QDialog(this);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -604,11 +600,13 @@ int TuneDialogA1DN::Start7_2_5()
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
 /*    if (Commands::GetFile(1,&S2Config) == Error::ER_NOERROR)
-    {
+    { */
         Bac_block.Bac_block[TuneVariant].U1kDN[0] = 0;
         Bac_block.Bac_block[TuneVariant].U2kDN[0] = 0;
         Bac_block.Bac_block[TuneVariant].PhyDN[0] = 0;
-        return Error::ER_NOERROR;
+        Bac_block3.Bac_block3[TuneVariant].U1kDN[0] = 0;
+        Bac_block3.Bac_block3[TuneVariant].U2kDN[0] = 0;
+/*        return Error::ER_NOERROR;
     }
     return Error::ER_GENERALERROR; */
     return Error::ER_NOERROR;
@@ -658,48 +656,51 @@ int TuneDialogA1DN::Start7_2_6()
     return Error::ER_NOERROR;
 }
 
-int TuneDialogA1DN::Start7_2_3_1()
+int TuneDialogA1DN::Start7_2_7_1()
 {
     QPushButton *pb = this->findChild<QPushButton *>("GoodDN");
-    if (pb != 0)
+    if (pb != nullptr)
         pb->setText("Годится");
-    return Start7_2_345(0);
+    return Start7_2_78910(0);
 }
 
-int TuneDialogA1DN::Start7_2_3_2()
+int TuneDialogA1DN::Start7_2_7_2()
 {
-    return Start7_2_345(1);
+    return Start7_2_78910(1);
 }
 
-int TuneDialogA1DN::Start7_2_3_3()
+int TuneDialogA1DN::Start7_2_7_3()
 {
-    return Start7_2_345(2);
+    return Start7_2_78910(2);
 }
 
-int TuneDialogA1DN::Start7_2_3_4()
+int TuneDialogA1DN::Start7_2_7_4()
 {
-    return Start7_2_345(3);
+    return Start7_2_78910(3);
 }
 
-int TuneDialogA1DN::Start7_2_3_5()
+int TuneDialogA1DN::Start7_2_7_5()
 {
-    return Start7_2_345(4);
+    return Start7_2_78910(4);
 }
 
-int TuneDialogA1DN::Start7_2_345(int counter)
+int TuneDialogA1DN::Start7_2_78910(int counter)
 {
     const int Percents[] = {20,50,80,100,120};
     if (counter > 4)
         return Error::ER_GENERALERROR;
-    float VoltageInkV = static_cast<float>(Bac_block.Bac_block[TuneVariant].K_DN) * Percents[counter] / 1732;
-    float VoltageInV = 57.735 * Percents[counter] / 100;
+    float VoltageInV = (Mode == MODE_ALTERNATIVE) ? (100 / qSqrt(3)) : (100 * qSqrt(2) / qSqrt(3));
+    VoltageInV *= Percents[counter] / 100;
+    float VoltageInkV = (Mode == MODE_ALTERNATIVE) ? Bac_block.Bac_block[TuneVariant].K_DN : Bac_block3.Bac_block3[TuneVariant].K_DN;
+    VoltageInkV *= VoltageInV / 1000;
     if (EMessageBox::question(this, "Подтверждение", "Подайте на делители напряжение " + \
-                              QString::number(VoltageInkV, 'f', 1) + " кВ (" + QString::number(VoltageInV, 'f', 3) + " В)") == false)
+                              QString::number(VoltageInkV, 'f', 1) + " кВ (" + QString::number(VoltageInV, 'f', 3) + " В) \n"
+                              "и нажмите кнопку \"Годится\", когда напряжения установятся") == false)
     {
         StdFunc::Cancel();
         return Error::ER_GENERALERROR;
     }
-    WaitNSeconds(10);
+//    WaitNSeconds(WAITFORCONST);
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     // проверка, что установлены напряжения правильно
@@ -720,8 +721,8 @@ int TuneDialogA1DN::Start7_2_345(int counter)
             return Error::ER_GENERALERROR;
         }
         tmpst2.Phy += tmpst.Phy;
-        tmpst2.Uef_filt[0] += tmpst.Uef_filt[0];
-        tmpst2.Uef_filt[1] += tmpst.Uef_filt[1];
+        tmpst2.UefNat_filt[0] += tmpst.UefNat_filt[0];
+        tmpst2.UefNat_filt[1] += tmpst.UefNat_filt[1];
         QTime tme;
         tme.start();
         while (tme.elapsed() < TUNE_POINTSPER)
@@ -736,16 +737,25 @@ int TuneDialogA1DN::Start7_2_345(int counter)
     tmpst2.Uef_filt[0] /= count;
     tmpst2.Uef_filt[1] /= count;
     // теперь в ChA1->Bda_block лежат нужные нам значения
-    Bac_block.Bac_block[TuneVariant].U1kDN[counter+1] = tmpst2.Uef_filt[0];
-    Bac_block.Bac_block[TuneVariant].U2kDN[counter+1] = tmpst2.Uef_filt[1];
-    Bac_block.Bac_block[TuneVariant].PhyDN[counter+1] = tmpst2.Phy;
-    FillBac();
+    if (Mode == MODE_ALTERNATIVE)
+    {
+        Bac_block.Bac_block[TuneVariant].U1kDN[counter+1] = tmpst2.UefNat_filt[0];
+        Bac_block.Bac_block[TuneVariant].U2kDN[counter+1] = tmpst2.UefNat_filt[1];
+        Bac_block.Bac_block[TuneVariant].PhyDN[counter+1] = tmpst2.Phy;
+        FillBac(BLOCK_ALTERNATIVE);
+    }
+    else
+    {
+        Bac_block3.Bac_block3[TuneVariant].U1kDN[counter+1] = tmpst2.UefNat_filt[0];
+        Bac_block3.Bac_block3[TuneVariant].U2kDN[counter+1] = tmpst2.UefNat_filt[1];
+        FillBac(BLOCK_DIRECT);
+    }
     return Error::ER_NOERROR;
 }
 
-int TuneDialogA1DN::Start7_2_67()
+int TuneDialogA1DN::Start7_2_11()
 {
-    if (!WriteTuneCoefs())
+    if (!WriteTuneCoefs(Mode + 1)) // MODE = BLOCK + 1
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
 /*    if (cn->result == Error::NOERROR)
@@ -756,7 +766,7 @@ int TuneDialogA1DN::Start7_2_67()
     return Error::GENERALERROR; */
 }
 
-int TuneDialogA1DN::Start7_2_8()
+int TuneDialogA1DN::Start7_2_12()
 {
     if (EMessageBox::question(this, "Подтверждение", "Теперь необходимо подтвердить погрешности установки") == false)
     {
@@ -821,7 +831,7 @@ int TuneDialogA1DN::Start7_2_9_7()
     }
     FillBac();
     SaveToFile();
-    return Start7_2_67();
+    return Start7_2_11();
 }
 
 int TuneDialogA1DN::Start7_2_9(int counter)
@@ -829,15 +839,18 @@ int TuneDialogA1DN::Start7_2_9(int counter)
     const int Percents[] = {120, 100, 80, 50, 20, 50, 80, 100};
     if (counter > 7)
         return Error::ER_GENERALERROR;
-    float VoltageInkV = static_cast<float>(Bac_block.Bac_block[TuneVariant].K_DN) * Percents[counter] / 1732;
-    float VoltageInV = 57.735 * Percents[counter] / 100;
+    float VoltageInV = (Mode == MODE_ALTERNATIVE) ? (100 / qSqrt(3)) : (100 * qSqrt(2) / qSqrt(3));
+    VoltageInV *= Percents[counter] / 100;
+    float VoltageInkV = (Mode == MODE_ALTERNATIVE) ? Bac_block.Bac_block[TuneVariant].K_DN : Bac_block3.Bac_block3[TuneVariant].K_DN;
+    VoltageInkV *= VoltageInV / 1000;
     if (EMessageBox::question(this, "Подтверждение", "Подайте на делители напряжение " + \
-                              QString::number(VoltageInkV, 'f', 1) + " кВ (" + QString::number(VoltageInV, 'f', 3) + " В)") == false)
+                              QString::number(VoltageInkV, 'f', 1) + " кВ (" + QString::number(VoltageInV, 'f', 3) + " В) \n"
+                              "и нажмите кнопку \"Запомнить погрешность\", когда напряжения установятся") == false)
     {
         StdFunc::Cancel();
         return Error::ER_GENERALERROR;
     }
-    WaitNSeconds(10);
+    WaitNSeconds(WAITFORCONST);
     if (StartMeasurement() != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     FillBackBdOut();
@@ -928,7 +941,7 @@ void TuneDialogA1DN::WriteBacBlock()
         else
         {
             EMessageBox::information(this, "Успешно", "Записано успешно!");
-            FillBac();
+            FillBac(BLOCK_ALTERNATIVE);
             Accepted = true;
         }
     }
@@ -942,7 +955,7 @@ void TuneDialogA1DN::WriteBacBlock()
         else
         {
             EMessageBox::information(this, "Успешно", "Записано успешно!");
-            FillBac3();
+            FillBac(BLOCK_DIRECT);
             Accepted = true;
         }
     }
