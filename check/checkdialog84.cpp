@@ -39,15 +39,15 @@ CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent) : EAbstractCheck
    // sl = QStringList() << "Общ" << "In1" << "Temperature";
    // else
     sl = QStringList() << "Общ" << "In1" << "In2";
-    BdUINum =sl.size();
+    BdUINum = sl.size();
 
     SetupUI(sl);
 
     #if PROGSIZE != PROGSIZE_EMUL
     timer->setInterval(ANMEASINT);
-    BdTimer = new QTimer;
-    BdTimer->setInterval(ANMEASINT);
-    connect(BdTimer,SIGNAL(timeout()),this,SLOT(BdTimerTimeout()));
+   // BdTimer = new QTimer;
+   // BdTimer->setInterval(ANMEASINT);
+   // connect(BdTimer,SIGNAL(timeout()),this,SLOT(BdTimerTimeout()));
    #endif
 
 }

@@ -222,7 +222,7 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     int bdkeyssize = Bd_blocks.keys().size();
     for (int bdnum = 0; bdnum < bdkeyssize; ++bdnum)
     {
-        if (!XlsxWriting || (XlsxWriting && (Bd_blocks[bdnum]->toxlsxwrite)))
+        if (!XlsxWriting || (XlsxWriting && (Bd_blocks[Bd_blocks.keys().at(bdnum)]->toxlsxwrite)))
         {
             int tmpi = Bd_blocks.keys().at(bdnum);
             if (Commands::GetBd(tmpi, Bd_blocks[tmpi]->block, Bd_blocks[tmpi]->blocknum) != Error::ER_NOERROR)
