@@ -47,14 +47,14 @@ void ConfDialog80::Fill()
     WDFunc::SetSPBData(this, "nhfiltrspb", C80->Bci_block.nhfiltr);
     switch (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN))
     {
-    case MTM_81: // 2 напряжения, 0 токов
+    case Config::MTM_81: // 2 напряжения, 0 токов
     {
         WDFunc::SetCBData(this, "unom.1", QString::number(C80->Bci_block.unom1));
         WDFunc::SetCBData(this, "unom.2", QString::number(C80->Bci_block.unom2));
         WDFunc::SetSPBData(this, "thr.1", C80->Bci_block.duosc);
        break;
     }
-    case MTM_82:
+    case Config::MTM_82:
     {
         WDFunc::SetCBData(this, "unom.1", QString::number(C80->Bci_block.unom1));
         for (i = 3; i < 6; i++)
@@ -66,7 +66,7 @@ void ConfDialog80::Fill()
         WDFunc::SetSPBData(this, "thr.2", C80->Bci_block.diosc);
         break;
     }
-    case MTM_83:
+    case Config::MTM_83:
     {
         for (i = 0; i < 6; i++)
         {
@@ -109,7 +109,7 @@ void ConfDialog80::FillBack()
     WDFunc::SPBData(this, "nhfiltrspb", C80->Bci_block.nhfiltr);
     switch (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN))
     {
-    case MTM_81: // 2 напряжения, 0 токов
+    case Config::MTM_81: // 2 напряжения, 0 токов
     {
         WDFunc::CBData(this, "unom.1", tmps);
         C80->Bci_block.unom1 = tmps.toFloat();
@@ -118,7 +118,7 @@ void ConfDialog80::FillBack()
         WDFunc::SPBData(this, "thr.1", C80->Bci_block.duosc);
        break;
     }
-    case MTM_82:
+    case Config::MTM_82:
     {
         WDFunc::CBData(this, "unom.1", tmps);
         C80->Bci_block.unom1 = tmps.toFloat();
@@ -131,7 +131,7 @@ void ConfDialog80::FillBack()
         WDFunc::SPBData(this, "thr.2", C80->Bci_block.diosc);
         break;
     }
-    case MTM_83:
+    case Config::MTM_83:
     {
         for (i = 0; i < 6; i++)
         {
@@ -171,14 +171,14 @@ void ConfDialog80::SetupUI()
     //gb->updateGeometry();
     switch (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN))
     {
-    case MTM_81: // 6U0I
+    case Config::MTM_81: // 6U0I
     {
         //vlyout2->addWidget(UNom(this, 1));
         //vlyout2->addWidget(UNom(this, 2));
         vlyout3->addWidget(Threshold("Уставка скачка напряжения для запуска осциллографирования, %", 1));
         break;
     }
-    case MTM_82: // 3U3I
+    case Config::MTM_82: // 3U3I
     {
         //vlyout2->addWidget(Threshold("Уставка порога мин. уровня для определения частоты, %", 3));
         //vlyout2->addWidget(new QPushButton("123"));
@@ -194,7 +194,7 @@ void ConfDialog80::SetupUI()
         vlyout2->addWidget(Threshold("Уставка скачка тока для запуска осциллографирования, %", 2));*/
         break;
     }
-    case MTM_83: // 0U6I
+    case Config::MTM_83: // 0U6I
     {
         INom(vlyout3, 1);
         INom(vlyout3, 2);

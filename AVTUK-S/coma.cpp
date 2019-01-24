@@ -232,7 +232,7 @@ void Coma::AddEmulToToolbar(QToolBar *tb)
     act->setIcon(QIcon("images/a1.png"));
 //    quint16 MType = MTB_A1;
 //    MType = (MType << 8) | MTM_00;
-    act->setObjectName(QString::number(MTB_A1, 16)); // для слота StartEmul
+    act->setObjectName(QString::number(Config::MTB_A1, 16)); // для слота StartEmul
     connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));
     tb->addAction(act);
     tb->addSeparator();
@@ -323,7 +323,7 @@ void Coma::Stage3()
     str = (CheckB == nullptr) ? "Проверка" : "Проверка\nМезонин";
     if (CheckM != nullptr)
         MainTW->addTab(CheckM, str);
-    if ((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == MTB_A1)
+    if ((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A1)
     {
         MainTW->addTab(new TuneDialogA1DN, "Настройка своего ДН");
         MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
@@ -350,31 +350,31 @@ void Coma::PrepareDialogs()
     quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8;
     switch(MTypeB)
     {
-    case MTB_21:
+    case Config::MTB_21:
     {
         ConfB = new ConfDialog21(S2Config, true);
         TuneB = new TuneDialog21(BoardTypes::BT_BASE);
         CheckB = new CheckDialog21(BoardTypes::BT_BASE);
         break;
     }
-    case MTB_22:
+    case Config::MTB_22:
     {
         ConfB = new ConfDialog22(S2Config, true);
         TuneB = new TuneDialog22(BoardTypes::BT_BASE);
         CheckB = new CheckDialog22(BoardTypes::BT_BASE);
         break;
     }
-    case MTB_31:
+    case Config::MTB_31:
     {
         ConfB = new ConfDialog31(S2Config, true);
         break;
     }
-    case MTB_35:
+    case Config::MTB_35:
     {
         ConfB = new ConfDialog35(S2Config, true);
         break;
     }
-    case MTB_80:
+    case Config::MTB_80:
     {
         //ConfB = new ConfDialog80(S2Config);
 //        TuneB = new TuneDialog80(S2Config);
@@ -382,18 +382,18 @@ void Coma::PrepareDialogs()
         break;
     }
 
-    case MTB_81:
+    case Config::MTB_A2:
     {
         CheckB = new CheckDialog84(BoardTypes::BT_BASE);
         break;
     }
 
-    case MTB_87:
+    case Config::MTB_87:
         ConfB = new ConfDialog87(S2Config, true);
 
         break;
 
-    case MTB_A1:
+    case Config::MTB_A1:
     {
         ConfB = new ConfDialogA1(S2Config);
         CheckB = new CheckDialogA1(BoardTypes::BT_BASE);
@@ -406,46 +406,46 @@ void Coma::PrepareDialogs()
     INFOMSG("Mezonin parsing");
     switch(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN))
     {
-    case MTM_21:
+    case Config::MTM_21:
     {
         ConfM = new ConfDialog21(S2Config, false);
         CheckM = new CheckDialog21(BoardTypes::BT_MEZONIN);
         TuneM = new TuneDialog21(BoardTypes::BT_MEZONIN);
         break;
     }
-    case MTM_22:
+    case Config::MTM_22:
     {
         ConfM = new ConfDialog22(S2Config, false);
         CheckM = new CheckDialog22(BoardTypes::BT_MEZONIN);
         TuneM = new TuneDialog22(BoardTypes::BT_MEZONIN);
         break;
     }
-    case MTM_31:
+    case Config::MTM_31:
     {
         INFOMSG("Mezonin 0x31 start");
         ConfM = new ConfDialog31(S2Config, false);
         INFOMSG("Mezonin 0x31 stop");
         break;
     }
-    case MTM_35:
+    case Config::MTM_35:
     {
         ConfM = new ConfDialog35(S2Config, false);
         break;
     }
-    case MTM_81:
-    case MTM_82:
-    case MTM_83:
+    case Config::MTM_81:
+    case Config::MTM_82:
+    case Config::MTM_83:
     {
         ConfM = new ConfDialog80(S2Config);
         TuneM = new TuneDialog80(S2ConfigForTune);
         break;
     }
-    case MTM_84:
+    case Config::MTM_84:
     {
         ConfM = new ConfDialog84(S2Config);
         break;
     }
-    case MTM_85:
+    case Config::MTM_85:
     {
         setMinimumSize(QSize(1200, 800));
         ConfM = new ConfDialog85(S2Config);

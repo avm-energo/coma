@@ -209,19 +209,19 @@ QWidget *Check_80::Bd10W(QWidget *parent)
         glyout->addWidget(WDFunc::NewLBL(parent, "PNATF:"), 1, 0, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "B10PNATF"+IndexStr, ValuesFormat, "Истинная активная мощность"), 1, i+1, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(parent, "QNATF:"), 2, 0, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "B10QNATF", ValuesFormat, "Реактивная мощность"), 2, i+1, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "B10QNATF"+IndexStr, ValuesFormat, "Реактивная мощность"), 2, i+1, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(parent, "SNATF:"), 3, 0, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "B10SNATF", ValuesFormat, "Полная мощность"), 3, i+1, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "B10SNATF"+IndexStr, ValuesFormat, "Полная мощность"), 3, i+1, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(parent, "COSPHINAT:"), 4, 0, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "B10COSPHINAT", ValuesFormat, "Cos phi"), 4, i+1, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "B10COSPHINAT"+IndexStr, ValuesFormat, "Cos phi"), 4, i+1, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(parent, "PF:"), 5, 0, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "B10PF"+IndexStr, ValuesFormat, "Активная мощность по 1 гарм."), 5, i+1, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(parent, "QF:"), 6, 0, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "B10QF", ValuesFormat, "Реактивная мощность по 1 гарм."), 6, i+1, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "B10QF"+IndexStr, ValuesFormat, "Реактивная мощность по 1 гарм."), 6, i+1, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(parent, "SF:"), 7, 0, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "B10SF", ValuesFormat, "Полная мощность по 1 гарм."), 7, i+1, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "B10SF"+IndexStr, ValuesFormat, "Полная мощность по 1 гарм."), 7, i+1, 1, 1);
         glyout->addWidget(WDFunc::NewLBL(parent, "COSPHI:"), 8, 0, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "B10COSPHI", ValuesFormat, "Cos phi по 1 гарм."), 8, i+1, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "B10COSPHI"+IndexStr, ValuesFormat, "Cos phi по 1 гарм."), 8, i+1, 1, 1);
     }
     lyout->addLayout(glyout);
     lyout->addStretch(100);
@@ -344,10 +344,10 @@ void Check_80::FillBd1(QWidget *parent)
     WDFunc::SetLBLText(parent, "value2", WDFunc::StringValueWithCheck(Bd_block1.Frequency, 3));
     for (int i = 0; i < 3; i++)
     {
-        int Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_81) ? 3 : 4;
+        int Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_81) ? 3 : 4;
         WDFunc::SetLBLText(parent, "value"+QString::number(i+3), WDFunc::StringValueWithCheck(Bd_block1.IUefNat_filt[i], Precision));
         WDFunc::SetLBLText(parent, "value"+QString::number(i+9), WDFunc::StringValueWithCheck(Bd_block1.IUeff_filtered[i], Precision));
-        Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83) ? 4 : 3;
+        Precision = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_83) ? 4 : 3;
         WDFunc::SetLBLText(parent, "value"+QString::number(i+6), WDFunc::StringValueWithCheck(Bd_block1.IUefNat_filt[i+3], Precision));
         WDFunc::SetLBLText(parent, "value"+QString::number(i+12), WDFunc::StringValueWithCheck(Bd_block1.IUeff_filtered[i+3], Precision));
 

@@ -33,6 +33,9 @@ private:
     void SetDefaultValuesToWrite();
     void PrepareAnalogMeasurements();
     QWidget *CustomTab();
+
+
+private slots:
     void StartBdMeasurements();
     void StopBdMeasurements();
     void BdTimerTimeout();

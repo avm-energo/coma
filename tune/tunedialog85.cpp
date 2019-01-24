@@ -633,9 +633,9 @@ void TuneDialog85::SetDefCoefs()
 void TuneDialog85::PrepareConsts()
 {
     // подготовка констант для проверки данных МИПа
-    MVTC.u = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_83) ? S0 : V60;
-    MTTC.u = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_83) ? FLT_MAX : TH005;
-    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == MTM_81)
+    MVTC.u = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_83) ? S0 : V60;
+    MTTC.u = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_83) ? FLT_MAX : TH005;
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_81)
     {
         MVTC.i[0] = MVTC.i[1] = MVTC.i[2] = S0;
         MTTC.i = FLT_MAX;
@@ -1038,7 +1038,7 @@ int TuneDialog85::Show3PhaseScheme()
     lyout->addWidget(lbl);
     lbl=new QLabel("4. Задайте на РЕТОМ значения напряжений по фазам 60 В;");
     lyout->addWidget(lbl);
-    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83)
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_83)
     {
         lbl=new QLabel("   Задайте на РЕТОМ значения токов по фазам 1 А;");
         lyout->addWidget(lbl);
@@ -1332,7 +1332,7 @@ void TuneDialog85::GenerateReport()
             lyout->addWidget(lbl);
             lbl=new QLabel("Значения напряжений по фазам " +QString::number(U[i])+ " В;");
             lyout->addWidget(lbl);
-            if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != MTM_83)
+            if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_83)
             {
                 lbl=new QLabel("Значения токов по фазам " +QString::number(I[i])+ " А;");
                 lyout->addWidget(lbl);
