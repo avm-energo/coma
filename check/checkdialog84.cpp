@@ -35,10 +35,11 @@ CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent) : EAbstractCheck
     SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
     SetBd(6, &Ch84->Bd_block1, sizeof(Check_84::Bd1));
 
-    //if(ModuleBSI::GetMType(BoardTypes::BT_BASE) == MTB_A2)
-   // sl = QStringList() << "Общ" << "In1" << "Temperature";
-   // else
+    if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
+    sl = QStringList() << "Общ" << "In1" << "Temperature";
+    else
     sl = QStringList() << "Общ" << "In1" << "In2";
+
     BdUINum = sl.size();
 
     SetupUI(sl);
@@ -107,7 +108,7 @@ void CheckDialog84::PrepareHeadersForFile(int row)
     xlsx->write(row,27,QVariant("Phy_unb, град"));
     xlsx->write(row,28,QVariant("Tmk, °С"));
 
-    if(ModuleBSI::GetMType(BoardTypes::BT_BASE) == Config::MTB_A2)
+    if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     xlsx->write(row,29,QVariant("Tamb, °С"));
 }
 
@@ -137,7 +138,7 @@ void CheckDialog84::WriteToFile(int row, int bdnum)
     xlsx->write(WRow,27,Ch84->Bd_block1.Phy_unb,format);
     xlsx->write(WRow,28,Ch84->Bd_block1.Tmk,format);
 
-    if(ModuleBSI::GetMType(BoardTypes::BT_BASE) == Config::MTB_A2)
+    if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     xlsx->write(WRow,29,Ch84->Bd_block1.Tamb,format);
 }
 #endif

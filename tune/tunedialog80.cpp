@@ -1014,19 +1014,19 @@ int TuneDialog80::CheckMip()
 
 int TuneDialog80::CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct)
 {
-    double it = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_83) ? utol : itol; // 0t2n
-    double ut = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_81) ? itol : utol; // 2t0n
-    double ValuesToCheck[45] = {/*TD_TMK,TD_VBAT,*/TD_FREQ,u,u,u,i,i,i,u,u,u,i,i,i,phi,phi,phi,phi,phi,phi,p,p,p,s,s,s,q,q,q, \
+    //double it = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_83) ? utol : itol; // 0t2n
+    //double ut = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_81) ? itol : utol; // 2t0n
+    //double ValuesToCheck[45] = {/*TD_TMK,TD_VBAT,*/TD_FREQ,u,u,u,i,i,i,u,u,u,i,i,i,phi,phi,phi,phi,phi,phi,p,p,p,s,s,s,q,q,q, \
                                 cosphi,cosphi,cosphi,p,p,p,q,q,q,s,s,s,cosphi,cosphi,cosphi};
-    double ThresholdsToCheck[45] = {/*T25,TH05,*/TH0005,ut,ut,ut,it,it,it,ut,ut,ut,it,it,it,pht,pht,pht,pht,pht,pht,pt,pt,pt,pt,pt,pt,pt,pt,pt,\
+    //double ThresholdsToCheck[45] = {/*T25,TH05,*/TH0005,ut,ut,ut,it,it,it,ut,ut,ut,it,it,it,pht,pht,pht,pht,pht,pht,pt,pt,pt,pt,pt,pt,pt,pt,pt,\
                                     ct,ct,ct,pt,pt,pt,pt,pt,pt,pt,pt,pt,ct,ct,ct};
-    double *VTC = ValuesToCheck;
-    double *TTC = ThresholdsToCheck;
+    //double *VTC = ValuesToCheck;
+    //double *TTC = ThresholdsToCheck;
     QLocale german(QLocale::German);
 
     FillBd1(this);
 
-    for (int i = 0; i < 43; i++)
+    /*for (int i = 0; i < 43; i++)
     {
         QString tmps;
         WDFunc::LBLText(this, "value"+QString::number(i), tmps);
@@ -1037,15 +1037,15 @@ int TuneDialog80::CheckAnalogValues(double u, double i, double p, double q, doub
         if (!ok)
             return Error::ER_GENERALERROR;
 
-        /*(if (!IsWithinLimits(tmpd,*VTC,*TTC))
+        (if (!IsWithinLimits(tmpd,*VTC,*TTC))
         {
             EMessageBox::information(this, "Внимание", "Несовпадение по параметру "+QString::number(i)+". Измерено: "+QString::number(tmpd,'f',4)+\
                       ", должно быть: "+QString::number(*VTC,'f',4)+ " +/- " + QString::number(*TTC,'f',4));
             return Error::ER_GENERALERROR;
-        }*/
+        }
         ++VTC;
         ++TTC;
-    }
+    }*/
 
 /*    switch (ntest)
 
