@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QStandardItemModel>
 #include <QCloseEvent>
-#include "limereport/lrreportengine.h"
+#include "../gen/report.h"
 #include "../gen/maindef.h"
 #include "../config/configa1.h"
 #include "../check/checka1.h"
@@ -97,7 +97,6 @@ public:
 private:
     CheckA1 *ChA1;
     ConfigA1 *CA1;
-    LimeReport::ReportEngine *report;
     QVector<S2::DataRec> S2Config;
     QTimer *MeasurementTimer;
     struct ResultsStruct
@@ -138,8 +137,8 @@ private:
     int Index, Counter;
     float CurrentS; // текущее значение нагрузки
     int PovType, TempPovType; // тип поверяемого оборудования (по какому ГОСТу)
-    QStandardItemModel *ReportModel, *ViewModel; // модель, в которую заносим данные для отчёта
-    int RowCount, ColumnCount; // количество рядов и столбцов в модели
+    ReportModel *RepModel; // модель, в которую заносим данные для отчёта
+
     bool Autonomous; // =1, если производится формирование протокола из файла, =0 - при работе с прибором
     bool TempFromLE, HumFromLE; // =1, если данные в протокол надо брать из поля ввода, =0 - если из прибора
     bool Cancelled;
@@ -156,9 +155,8 @@ private:
     void GenerateReport(); // сгенерировать протокол
     bool ConditionDataDialog(); // задание условий поверки
     bool DNDialog(PovDevStruct &PovDev); // задание параметров ДН(ТН)
-    void UpdateItemInModel(int row, int column, QVariant value);
     void ShowTable();
-    void FillModel();
+    void FillModelRow(int row);
     void FillHeaders();
 
 signals:

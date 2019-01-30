@@ -18,6 +18,7 @@
 #include "../widgets/wd_func.h"
 #include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
+#include "../gen/report.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
@@ -31,8 +32,8 @@ A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : QDialog(parent)
     setAttribute(Qt::WA_DeleteOnClose);
     ChA1 = new CheckA1;
     CA1 = new ConfigA1(S2Config);
-    ReportModel = new QStandardItemModel;
-    ViewModel = new QStandardItemModel;
+    RepModel = new ReportModel;
+//    ViewModel = new QStandardItemModel;
     if (filename.isEmpty())
         SetupUI();
     else
@@ -179,52 +180,48 @@ void A1Dialog::GenerateReport()
     // отобразим таблицу
     ShowTable();
     QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
-    report = new LimeReport::ReportEngine(this);
-    QString path = StdFunc::GetSystemHomeDir()+"a1_"+GOST+".lrxml";
-    report->loadFromFile(path);
-    report->dataManager()->addModel("maindata", ReportModel, false);
+    Report *report = new Report(GOST, this);
+    report->AddModel("maindata", RepModel);
     // запрос блока Bda_h, чтобы выдать KNI в протокол
 #if PROGSIZE != PROGSIZE_EMUL
     if (!Autonomous)
     {
         if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2)) == Error::ER_NOERROR)
-            report->dataManager()->setReportVariable("KNI", QString::number(ChA1->Bda_h.HarmBuf[0][0], 'g', 5));
+            report->SetVar("KNI", ChA1->Bda_h.HarmBuf[0][0], 5);
     }
     else
 #endif
-        report->dataManager()->setReportVariable("KNI", QString::number(ChA1->Bda_h.HarmBuf[0][0], 'g', 5));
-    report->dataManager()->setReportVariable("Organization", OrganizationString);
+        report->SetVar("KNI", ChA1->Bda_h.HarmBuf[0][0], 5);
+    report->SetVar("Organization", OrganizationString);
     QString day = QDateTime::currentDateTime().toString("dd");
     QString month = QDateTime::currentDateTime().toString("MM");
     QString yr = QDateTime::currentDateTime().toString("yy");
-    report->dataManager()->setReportVariable("Day", day);
-    report->dataManager()->setReportVariable("Month", month);
-    report->dataManager()->setReportVariable("Yr", yr);
-    report->dataManager()->setReportVariable("DNNamePhase", ReportHeader.DNNamePhase);
-    report->dataManager()->setReportVariable("DNType", ReportHeader.DNType);
-    report->dataManager()->setReportVariable("DNSerNum", ReportHeader.DNSerNum);
-    report->dataManager()->setReportVariable("DNTol", ReportHeader.DNTol);
-    report->dataManager()->setReportVariable("DNU1", ReportHeader.DNU1);
-    report->dataManager()->setReportVariable("DNU2", ReportHeader.DNU2);
-    report->dataManager()->setReportVariable("DNP", ReportHeader.DNP);
-    report->dataManager()->setReportVariable("DNF", ReportHeader.DNF);
-    report->dataManager()->setReportVariable("DNOrganization", ReportHeader.DNOrganization);
-    report->dataManager()->setReportVariable("DNPlace", ReportHeader.DNPlace);
-    report->dataManager()->setReportVariable("DNDevices", ReportHeader.DNDevices);
-    report->dataManager()->setReportVariable("Temp", ReportHeader.Temp);
-    report->dataManager()->setReportVariable("Humidity", ReportHeader.Humidity);
-    report->dataManager()->setReportVariable("Pressure", ReportHeader.Pressure);
-    report->dataManager()->setReportVariable("Voltage", ReportHeader.Voltage);
-    report->dataManager()->setReportVariable("Freq", ReportHeader.Freq);
-    report->dataManager()->setReportVariable("OuterInsp", ReportHeader.OuterInsp);
-    report->dataManager()->setReportVariable("WindingsInsp", ReportHeader.WindingsInsp);
-    report->dataManager()->setReportVariable("PovDateTime", ReportHeader.PovDateTime);
+    report->SetVar("Day", day);
+    report->SetVar("Month", month);
+    report->SetVar("Yr", yr);
+    report->SetVar("DNNamePhase", ReportHeader.DNNamePhase);
+    report->SetVar("DNType", ReportHeader.DNType);
+    report->SetVar("DNSerNum", ReportHeader.DNSerNum);
+    report->SetVar("DNTol", ReportHeader.DNTol);
+    report->SetVar("DNU1", ReportHeader.DNU1);
+    report->SetVar("DNU2", ReportHeader.DNU2);
+    report->SetVar("DNP", ReportHeader.DNP);
+    report->SetVar("DNF", ReportHeader.DNF);
+    report->SetVar("DNOrganization", ReportHeader.DNOrganization);
+    report->SetVar("DNPlace", ReportHeader.DNPlace);
+    report->SetVar("DNDevices", ReportHeader.DNDevices);
+    report->SetVar("Temp", ReportHeader.Temp);
+    report->SetVar("Humidity", ReportHeader.Humidity);
+    report->SetVar("Pressure", ReportHeader.Pressure);
+    report->SetVar("Voltage", ReportHeader.Voltage);
+    report->SetVar("Freq", ReportHeader.Freq);
+    report->SetVar("OuterInsp", ReportHeader.OuterInsp);
+    report->SetVar("WindingsInsp", ReportHeader.WindingsInsp);
+    report->SetVar("PovDateTime", ReportHeader.PovDateTime);
     QString filename = Files::ChooseFileForSave(this, "*.pdf", "pdf");
     if (!filename.isEmpty())
     {
-        report->printToPDF(filename);
-//        report->previewReport();
-//        report->designReport();
+        report->Generate(filename);
         EMessageBox::information(this, "Успешно!", "Записано успешно!");
     }
     else
@@ -354,22 +351,12 @@ bool A1Dialog::DNDialog(PovDevStruct &PovDev)
     return Cancelled;
 }
 
-void A1Dialog::UpdateItemInModel(int row, int column, QVariant value)
-{
-    QStandardItem *item = ReportModel->item(row, column);
-    item->setText(value.toString());
-    ReportModel->setItem(row, column, item);
-    item = ViewModel->item(row, column);
-    item->setText(value.toString());
-    ViewModel->setItem(row, column, item);
-}
-
 void A1Dialog::ShowTable()
 {
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     QTableView *tw = new QTableView;
-    tw->setModel(ViewModel);
+    tw->setModel(RepModel);
     lyout->addWidget(tw);
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
@@ -378,16 +365,15 @@ void A1Dialog::ShowTable()
     dlg->exec();
 }
 
-void A1Dialog::FillModel()
+void A1Dialog::FillModelRow(int row)
 {
-    int Pindex = (Index > 4) ? (8 - Index) : Index;
+    row = (row > 4) ? (8 - row) : row;
     const int Percents23625[] = {20, 50, 80, 100, 120};
     const int Percents1983[] = {80, 100, 120};
     const int *Percents = (PovType == GOST_1983) ? Percents1983 : Percents23625;
 
     // заполняем модель по полученным измерениям:
     // 0 - U/Un (%), 1 - S, 2 -
-    int row = Pindex;
     if (StdFunc::FloatInRange(CurrentS, 1))
     {
         if (PovType == GOST_1983)
@@ -397,75 +383,54 @@ void A1Dialog::FillModel()
     }
     if (Index > 4) // на нисходящем отрезке по ГОСТ 23625
     {
-        UpdateItemInModel(row, 4, QString::number(Dd_Block.dUrms,'f',5));
-        UpdateItemInModel(row, 5, QString::number(Dd_Block.Phy,'f',5));
-        float dUrmsU = ReportModel->item(row, 2)->text().toFloat();
-        float PhyU = ReportModel->item(row, 3)->text().toFloat();
+        RepModel->UpdateItem(row, 4, Dd_Block.dUrms, 5);
+        RepModel->UpdateItem(row, 5, Dd_Block.Phy, 5);
+        float dUrmsU = RepModel->Item(row, 2);
+        float PhyU = RepModel->Item(row, 3);
         float UrmsM = (dUrmsU + Dd_Block.dUrms) / 2;
         float PhyM = (PhyU + Dd_Block.Phy) / 2;
-        UpdateItemInModel(row, 6, QString::number(UrmsM,'f',5));
-        UpdateItemInModel(row, 7, QString::number(PhyM,'f',5));
-        UpdateItemInModel(row, 8, QString::number(Bac_block.Bac_block[TuneVariant].dU_cor[Pindex],'f',5));
-        UpdateItemInModel(row, 9, QString::number(Bac_block.Bac_block[TuneVariant].dPhy_cor[Pindex],'f',5));
-        UpdateItemInModel(row, 10, QString::number((Dd_Block.dUrms - dUrmsU),'f',5));
-        UpdateItemInModel(row, 11, QString::number((Dd_Block.Phy - PhyU),'f',5));
-        UpdateItemInModel(row, 12, QString::number(UrmsM,'f',5));
-        UpdateItemInModel(row, 13, QString::number(PhyM,'f',5));
-        UpdateItemInModel(row, 14, QString::number(Dd_Block.sPhy,'f',5));
-        UpdateItemInModel(row, 15, QString::number(Dd_Block.sU,'f',5));
+        RepModel->UpdateItem(row, 6, UrmsM, 5);
+        RepModel->UpdateItem(row, 7, PhyM, 5);
+        RepModel->UpdateItem(row, 8, Bac_block.Bac_block[TuneVariant].dU_cor[row], 5);
+        RepModel->UpdateItem(row, 9, Bac_block.Bac_block[TuneVariant].dPhy_cor[row], 5);
+        RepModel->UpdateItem(row, 10, (Dd_Block.dUrms - dUrmsU), 5);
+        RepModel->UpdateItem(row, 11, (Dd_Block.Phy - PhyU), 5);
+        RepModel->UpdateItem(row, 12, UrmsM, 5);
+        RepModel->UpdateItem(row, 13, PhyM, 5);
+        RepModel->UpdateItem(row, 14, Dd_Block.sPhy, 5);
+        RepModel->UpdateItem(row, 15, Dd_Block.sU, 5);
     }
     else
     {
         int column = 0;
-        UpdateItemInModel(row, column++, QString::number(Percents[Pindex], 10));
-        UpdateItemInModel(row, column++, QString::number(CurrentS, 'f', 3));
-        UpdateItemInModel(row, column++, QString::number(Dd_Block.dUrms, 'f', 5));
-        UpdateItemInModel(row, column++, QString::number(Dd_Block.Phy, 'f', 5));
+        RepModel->UpdateItem(row, column++, Percents[row], 0);
+        RepModel->UpdateItem(row, column++, CurrentS,  3);
+        RepModel->UpdateItem(row, column++, Dd_Block.dUrms, 5);
+        RepModel->UpdateItem(row, column++, Dd_Block.Phy, 5);
         if (PovType == GOST_23625)
             column += 12;
         else
         {
-            UpdateItemInModel(row, column++, QString::number(Bac_block.Bac_block[TuneVariant].dU_cor[Pindex],'f',5));
-            UpdateItemInModel(row, column++, QString::number(Bac_block.Bac_block[TuneVariant].dPhy_cor[Pindex],'f',5));
-            UpdateItemInModel(row, column++, QString::number(Dd_Block.dUrms,'f',5));
-            UpdateItemInModel(row, column++, QString::number(Dd_Block.Phy,'f',5));
+            RepModel->UpdateItem(row, column++, Bac_block.Bac_block[TuneVariant].dU_cor[row], 5);
+            RepModel->UpdateItem(row, column++, Bac_block.Bac_block[TuneVariant].dPhy_cor[row], 5);
+            RepModel->UpdateItem(row, column++, Dd_Block.dUrms, 5);
+            RepModel->UpdateItem(row, column++, Dd_Block.Phy, 5);
         }
-        UpdateItemInModel(row, column++, QString::number(Dd_Block.sU,'f',5));
-        UpdateItemInModel(row, column++, QString::number(Dd_Block.sPhy,'f',5));
+        RepModel->UpdateItem(row, column++, Dd_Block.sU, 5);
+        RepModel->UpdateItem(row, column++, Dd_Block.sPhy, 5);
     }
 }
 
 void A1Dialog::FillHeaders()
 {
-    int section = 0;
-    ViewModel->setHeaderData(section++, Qt::Horizontal, "Проц");
-    ViewModel->setHeaderData(section++, Qt::Horizontal, "S/Sном");
-    ViewModel->setHeaderData(section++, Qt::Horizontal, "dUrms(u)");
-    ViewModel->setHeaderData(section++, Qt::Horizontal, "Phy(u)");
+    QStringList sl = QStringList() << "Проц" << "S/Sном" <<  "dUrms(u)" <<  "Phy(u)";
     if (PovType == GOST_23625)
-    {
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "dUrms(d)");
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "Phy(d)");
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "dUrms(ud)");
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "Phy(ud)");
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "dUrms(md)");
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "Phy(md)");
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "dUrms(u-d)");
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "Phy(u-d)");
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "dUrms");
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "Phy");
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "sUrms(d)");
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "sPhy(d)");
-    }
+        sl << "dUrms(d)" << "Phy(d)" << "dUrms(ud)" << "Phy(ud)" << "dUrms(md)" << "Phy(md)" << \
+              "dUrms(u-d)" << "Phy(u-d)" << "dUrms" << "Phy" << "sUrms(d)" << "sPhy(d)";
     else
-    {
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "dUcor");
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "dPhycor");
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "dUrms");
-        ViewModel->setHeaderData(section++, Qt::Horizontal, "Phy");
-    }
-    ViewModel->setHeaderData(section++, Qt::Horizontal, "sUrms(u)");
-    ViewModel->setHeaderData(section++, Qt::Horizontal, "sPhy(u)");
+        sl << "dUcor" << "dPhycor" << "dUrms" << "Phy";
+    sl << "sUrms(u)" << "sPhy(u)";
+    RepModel->SetHeader(sl);
 }
 
 void A1Dialog::TemplateCheck()
@@ -529,22 +494,9 @@ void A1Dialog::StartWork()
     while ((PovType == GOST_NONE) && !Cancelled)
         TimeFunc::Wait();
     dlg->close();
-    RowCount = (PovType == GOST_1983) ? GOST1983ROWCOUNT : GOST23625ROWCOUNT;
-    ColumnCount = (PovType == GOST_1983) ? GOST1983COLCOUNT : GOST23625COLCOUNT;
-    ReportModel->setColumnCount(ColumnCount);
-    ViewModel->setColumnCount(ColumnCount);
-    ReportModel->setRowCount(RowCount);
-    ViewModel->setRowCount(RowCount);
-    for (int i=0; i<RowCount; ++i)
-    {
-        for (int j=0; j<ColumnCount; ++j)
-        {
-            QStandardItem *item = new QStandardItem("");
-            ReportModel->setItem(i, j, item);
-            item = new QStandardItem("");
-            ViewModel->setItem(i, j, item);
-        }
-    }
+    int rowcount = (PovType == GOST_1983) ? GOST1983ROWCOUNT : GOST23625ROWCOUNT;
+    int columncount = (PovType == GOST_1983) ? GOST1983COLCOUNT : GOST23625COLCOUNT;
+    RepModel->SetModel(rowcount, columncount);
     if (!Cancelled)
     {
         if (EMessageBox::question(this, "Подтверждение", "Подключите вывод нижнего плеча \"своего\" делителя напряжения ко входу U1 прибора\n"
@@ -580,6 +532,7 @@ void A1Dialog::StartWork()
 #endif
 void A1Dialog::ParsePKDNFile(const QString &filename)
 {
+    int rowcount, columncount;
     Autonomous = true;
     QByteArray ba;
     PovDevStruct PovDev;
@@ -603,15 +556,15 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
         if (Results.GOST == 0) // GOST 1983
         {
             MDSCount = 6;
-            RowCount = GOST1983ROWCOUNT;
-            ColumnCount = GOST1983COLCOUNT;
+            rowcount = GOST1983ROWCOUNT;
+            columncount = GOST1983COLCOUNT;
             PovType = GOST_1983;
         }
         else if (Results.GOST == 1) // GOST 23625
         {
             MDSCount = 18;
-            RowCount = GOST23625ROWCOUNT;
-            ColumnCount = GOST23625COLCOUNT;
+            rowcount = GOST23625ROWCOUNT;
+            columncount = GOST23625COLCOUNT;
             PovType = GOST_23625;
         }
         else
@@ -629,20 +582,7 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
         ReportHeader.Humidity = QString::number(Results.Humidity, 'f', 5);
         ReportHeader.Temp = QString::number(Results.Temp, 'f', 5);
         ReportHeader.DNSerNum = QString::number(Results.SerNum);
-        ReportModel->setColumnCount(ColumnCount);
-        ViewModel->setColumnCount(ColumnCount);
-        ReportModel->setRowCount(RowCount);
-        ViewModel->setRowCount(RowCount);
-        for (int i=0; i<RowCount; ++i)
-        {
-            for (int j=0; j<ColumnCount; ++j)
-            {
-                QStandardItem *item = new QStandardItem("");
-                ReportModel->setItem(i, j, item);
-                item = new QStandardItem("");
-                ViewModel->setItem(i, j, item);
-            }
-        }
+        RepModel->SetModel(rowcount, columncount);
         int memptr, MDSs;
         memptr = sizeof(ResultsStruct);
         MDSs = sizeof(MainDataStruct);
@@ -665,7 +605,7 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
             Dd_Block.sU = MDS.ddUp;
             Bac_block.Bac_block[TuneVariant].dU_cor[Pindex] = MDS.dUd;
             Bac_block.Bac_block[TuneVariant].dPhy_cor[Pindex] = MDS.dPd;
-            FillModel();
+            FillModelRow(Index);
             ++Index;
             if (Index >= endcounter)
                 Index = 0;
@@ -715,7 +655,7 @@ void A1Dialog::Accept()
         Decline();
         return;
     }
-    FillModel();
+    FillModelRow(Index);
     ++Index;
     if (Index >= endcounter)
     {
@@ -900,22 +840,15 @@ void A1Dialog::TempRandomizeModel()
 {
     // 1983
     PovType = GOST_1983;
-    RowCount = GOST1983ROWCOUNT;
-    ColumnCount = GOST1983COLCOUNT;
-    ReportModel->setColumnCount(ColumnCount);
-    ReportModel->setRowCount(RowCount);
-    ViewModel->setColumnCount(ColumnCount);
-    ViewModel->setRowCount(RowCount);
-    for (int i=0; i<RowCount; ++i)
+    RepModel->SetSize(GOST1983ROWCOUNT, GOST1983COLCOUNT);
+    for (int i=0; i<GOST1983ROWCOUNT; ++i)
     {
-        for (int j=0; j<ColumnCount; ++j)
+        for (int j=0; j<GOST1983COLCOUNT; ++j)
         {
             QStandardItem *item = new QStandardItem("");
             float RandomizeValue = static_cast<float>(qrand())/RAND_MAX;
             item->setText(QString::number(RandomizeValue,'f',5));
-            ReportModel->setItem(i, j, item);
-            item = new QStandardItem(QString::number(RandomizeValue,'f',5));
-            ViewModel->setItem(i, j, item);
+            RepModel->setItem(i, j, item);
         }
     }
     FillHeaders();

@@ -15,6 +15,7 @@
 #include "../widgets/emessagebox.h"
 #include "../gen/error.h"
 #include "../gen/colors.h"
+#include "../gen/report.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../gen/modulebsi.h"
@@ -92,19 +93,19 @@ void TuneDialogA1DN::SetPf()
 
 
 
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_1); // 7.2.9.1. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_1); // 7.2.9.1. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_2); // 7.2.9.2. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_2); // 7.2.9.2. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_3); // 7.2.9.3. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_3); // 7.2.9.3. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_4); // 7.2.9.4. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_4); // 7.2.9.4. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_5); // 7.2.9.5. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_5); // 7.2.9.5. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_6); // 7.2.9.6. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_6); // 7.2.9.6. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_9_7); // 7.2.9.7. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_7); // 7.2.9.7. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
 }
 #endif
@@ -776,68 +777,84 @@ int TuneDialogA1DN::Start7_2_12()
     QPushButton *pb = this->findChild<QPushButton *>("GoodDN");
     if (pb != nullptr)
         pb->setText("Запомнить погрешность");
-    return Start7_2_9(0);
+    return Start7_2_13(0);
 }
 
-int TuneDialogA1DN::Start7_2_9_1()
+int TuneDialogA1DN::Start7_2_13_1()
 {
-    return Start7_2_9(1);
+    return Start7_2_13(1);
 }
 
-int TuneDialogA1DN::Start7_2_9_2()
+int TuneDialogA1DN::Start7_2_13_2()
 {
-    return Start7_2_9(2);
+    return Start7_2_13(2);
 }
 
-int TuneDialogA1DN::Start7_2_9_3()
+int TuneDialogA1DN::Start7_2_13_3()
 {
-    return Start7_2_9(3);
+    return Start7_2_13(3);
 }
 
-int TuneDialogA1DN::Start7_2_9_4()
+int TuneDialogA1DN::Start7_2_13_4()
 {
-    return Start7_2_9(4);
+    return Start7_2_13(4);
 }
 
-int TuneDialogA1DN::Start7_2_9_5()
+int TuneDialogA1DN::Start7_2_13_5()
 {
-    return Start7_2_9(5);
+    return Start7_2_13(5);
 }
 
-int TuneDialogA1DN::Start7_2_9_6()
+int TuneDialogA1DN::Start7_2_13_6()
 {
-    return Start7_2_9(6);
+    return Start7_2_13(6);
 }
 
-int TuneDialogA1DN::Start7_2_9_7()
+int TuneDialogA1DN::Start7_2_13_7()
 {
-    if (Start7_2_9(7) != Error::ER_NOERROR)
+    return Start7_2_13(7);
+}
+
+int TuneDialogA1DN::Start7_2_13_8()
+{
+    if (Start7_2_13(8) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     // теперь считаем средние погрешности и СКО
-    Bac_block.Bac_block[TuneVariant].dPhy_cor[0] = Dd_Block[0].Phy;
-    Bac_block.Bac_block[TuneVariant].dU_cor[0] = Dd_Block[0].dUrms;
-    Bac_block.Bac_block[TuneVariant].ddPhy_cor[0] = Dd_Block[0].sPhy;
-    Bac_block.Bac_block[TuneVariant].ddU_cor[0] = Dd_Block[0].sU;
-    Bac_block.Bac_block[TuneVariant].dPhy_cor[4] = Dd_Block[4].Phy;
-    Bac_block.Bac_block[TuneVariant].dU_cor[4] = Dd_Block[4].dUrms;
-    Bac_block.Bac_block[TuneVariant].ddPhy_cor[4] = Dd_Block[4].sPhy;
-    Bac_block.Bac_block[TuneVariant].ddU_cor[4] = Dd_Block[4].sU;
-    for (int i=1; i<4; ++i)
+    if (Mode == MODE_ALTERNATIVE)
     {
-        Bac_block.Bac_block[TuneVariant].dPhy_cor[i] = (Dd_Block[i].Phy + Dd_Block[TUNEA1LEVELS-i].Phy) / 2;
-        Bac_block.Bac_block[TuneVariant].dU_cor[i] = (Dd_Block[i].dUrms + Dd_Block[TUNEA1LEVELS-i].dUrms) / 2;
-        Bac_block.Bac_block[TuneVariant].ddPhy_cor[i] = (Dd_Block[i].sPhy + Dd_Block[TUNEA1LEVELS-i].sPhy) / 2;
-        Bac_block.Bac_block[TuneVariant].ddU_cor[i] = (Dd_Block[i].sU + Dd_Block[TUNEA1LEVELS-i].sU) / 2;
+        Bac_block.Bac_block[TuneVariant].dPhy_cor[0] = Dd_Block[4].Phy;
+        Bac_block.Bac_block[TuneVariant].dU_cor[0] = Dd_Block[4].dUrms;
+        Bac_block.Bac_block[TuneVariant].ddPhy_cor[0] = Dd_Block[4].sPhy;
+        Bac_block.Bac_block[TuneVariant].ddU_cor[0] = Dd_Block[4].sU;
+        for (int i=0; i<4; ++i)
+        {
+            Bac_block.Bac_block[TuneVariant].dPhy_cor[4-i] = (Dd_Block[i].Phy + Dd_Block[TUNEA1LEVELS-i-1].Phy) / 2;
+            Bac_block.Bac_block[TuneVariant].dU_cor[4-i] = (Dd_Block[i].dUrms + Dd_Block[TUNEA1LEVELS-i-1].dUrms) / 2;
+            Bac_block.Bac_block[TuneVariant].ddPhy_cor[4-i] = (Dd_Block[i].sPhy + Dd_Block[TUNEA1LEVELS-i-1].sPhy) / 2;
+            Bac_block.Bac_block[TuneVariant].ddU_cor[4-i] = (Dd_Block[i].sU + Dd_Block[TUNEA1LEVELS-i-1].sU) / 2;
+        }
+        FillBac(BLOCK_ALTERNATIVE);
+        SaveToFile(BLOCK_ALTERNATIVE);
     }
-    FillBac();
-    SaveToFile();
+    else
+    {
+        Bac_block3.Bac_block3[TuneVariant].dU_cor[0] = Dd_Block[4].dUrms;
+        Bac_block3.Bac_block3[TuneVariant].ddU_cor[0] = Dd_Block[4].sU;
+        for (int i=0; i<4; ++i)
+        {
+            Bac_block3.Bac_block3[TuneVariant].dU_cor[4-i] = (Dd_Block[i].dUrms + Dd_Block[TUNEA1LEVELS-i-1].dUrms) / 2;
+            Bac_block3.Bac_block3[TuneVariant].ddU_cor[4-i] = (Dd_Block[i].sU + Dd_Block[TUNEA1LEVELS-i-1].sU) / 2;
+        }
+        FillBac(BLOCK_DIRECT);
+        SaveToFile(BLOCK_DIRECT);
+    }
     return Start7_2_11();
 }
 
-int TuneDialogA1DN::Start7_2_9(int counter)
+int TuneDialogA1DN::Start7_2_13(int counter)
 {
-    const int Percents[] = {120, 100, 80, 50, 20, 50, 80, 100};
-    if (counter > 7)
+    const int Percents[] = {120, 100, 80, 50, 20, 50, 80, 100, 120};
+    if (counter >= TUNEA1LEVELS)
         return Error::ER_GENERALERROR;
     float VoltageInV = (Mode == MODE_ALTERNATIVE) ? (100 / qSqrt(3)) : (100 * qSqrt(2) / qSqrt(3));
     VoltageInV *= Percents[counter] / 100;
@@ -885,6 +902,11 @@ int TuneDialogA1DN::Start7_2_9(int counter)
         return Error::ER_GENERALERROR;
     // усреднение
     float Um = tmpst2.dUrms / count; // среднее значение погрешности по напряжению
+    if (!StdFunc::FloatInRange(Um, 0, TH005))
+    {
+        EMessageBox::error(this, "Ошибка", "Среднее значение погрешности за пределами 0,05 %");
+        return Error::ER_GENERALERROR;
+    }
     float Phym = tmpst2.Phy / count; // среднее значение погрешности по углу
     Dd_Block[counter].dUrms = Um;
     Dd_Block[counter].Phy = Phym;
@@ -900,9 +922,22 @@ int TuneDialogA1DN::Start7_2_9(int counter)
     }
     sUo = qSqrt(sUo/count);
     sPhyo = qSqrt(sPhyo/count);
+    if (!StdFunc::FloatInRange(sUo, 0, TH005) || !StdFunc::FloatInRange(sPhyo, 0, TH05))
+    {
+        EMessageBox::error(this, "Ошибка", "Среднее значение погрешности за пределами 0,05 % или по углу - за 0,5");
+        return Error::ER_GENERALERROR;
+    }
     Dd_Block[counter].sPhy = sPhyo;
     Dd_Block[counter].sU = sUo;
     FillMedian(counter);
+    return Error::ER_NOERROR;
+}
+
+int TuneDialogA1DN::Start7_2_14()
+{
+    if (!WriteTuneCoefs(Mode + 1)) // MODE = BLOCK + 1
+        return Error::ER_GENERALERROR;
+    GenerateReport();
     return Error::ER_NOERROR;
 }
 
@@ -987,4 +1022,59 @@ void TuneDialogA1DN::LoadSettings()
 {
     QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
     PovNumPoints = sets->value("PovNumPoints", "60").toInt();
+}
+
+void TuneDialogA1DN::GenerateReport()
+{
+    // данные в таблицу уже получены или из файла, или в процессе работы
+    // отобразим таблицу
+    ShowTable();
+    QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
+    Report *report = new Report(GOST, this);
+    report->AddModel("maindata", RepModel);
+    // запрос блока Bda_h, чтобы выдать KNI в протокол
+#if PROGSIZE != PROGSIZE_EMUL
+    if (!Autonomous)
+    {
+        if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2)) == Error::ER_NOERROR)
+            report->SetVar("KNI", ChA1->Bda_h.HarmBuf[0][0], 5);
+    }
+    else
+#endif
+        report->SetVar("KNI", ChA1->Bda_h.HarmBuf[0][0], 5);
+    report->SetVar("Organization", OrganizationString);
+    QString day = QDateTime::currentDateTime().toString("dd");
+    QString month = QDateTime::currentDateTime().toString("MM");
+    QString yr = QDateTime::currentDateTime().toString("yy");
+    report->SetVar("Day", day);
+    report->SetVar("Month", month);
+    report->SetVar("Yr", yr);
+    report->SetVar("DNNamePhase", ReportHeader.DNNamePhase);
+    report->SetVar("DNType", ReportHeader.DNType);
+    report->SetVar("DNSerNum", ReportHeader.DNSerNum);
+    report->SetVar("DNTol", ReportHeader.DNTol);
+    report->SetVar("DNU1", ReportHeader.DNU1);
+    report->SetVar("DNU2", ReportHeader.DNU2);
+    report->SetVar("DNP", ReportHeader.DNP);
+    report->SetVar("DNF", ReportHeader.DNF);
+    report->SetVar("DNOrganization", ReportHeader.DNOrganization);
+    report->SetVar("DNPlace", ReportHeader.DNPlace);
+    report->SetVar("DNDevices", ReportHeader.DNDevices);
+    report->SetVar("Temp", ReportHeader.Temp);
+    report->SetVar("Humidity", ReportHeader.Humidity);
+    report->SetVar("Pressure", ReportHeader.Pressure);
+    report->SetVar("Voltage", ReportHeader.Voltage);
+    report->SetVar("Freq", ReportHeader.Freq);
+    report->SetVar("OuterInsp", ReportHeader.OuterInsp);
+    report->SetVar("WindingsInsp", ReportHeader.WindingsInsp);
+    report->SetVar("PovDateTime", ReportHeader.PovDateTime);
+    QString filename = Files::ChooseFileForSave(this, "*.pdf", "pdf");
+    if (!filename.isEmpty())
+    {
+        report->Generate(filename);
+        EMessageBox::information(this, "Успешно!", "Записано успешно!");
+    }
+    else
+        EMessageBox::information(this, "Отменено", "Действие отменено");
+    delete report;
 }

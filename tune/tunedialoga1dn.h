@@ -10,7 +10,7 @@
 #include "../config/configa1.h"
 #include "../check/checka1.h"
 
-#define TUNEA1LEVELS    8
+#define TUNEA1LEVELS    9
 #define TUNEVARIANTSNUM 3
 
 class TuneDialogA1DN : public EAbstractTuneDialog
@@ -65,7 +65,7 @@ private:
 
     struct Bac3
     {
-        Baci Bac_block3[TUNEVARIANTSNUM];
+        Baci3 Bac_block3[TUNEVARIANTSNUM];
         quint32 DNFNum;
     };
 
@@ -106,22 +106,23 @@ private:
     int Start7_2_78910(int counter);
     int Start7_2_11();
     int Start7_2_12();
-
-    int Start7_2_9_1();
-    int Start7_2_9_2();
-    int Start7_2_9_3();
-    int Start7_2_9_4();
-    int Start7_2_9_5();
-    int Start7_2_9_6();
-    int Start7_2_9_7();
-    int Start7_2_9_8();
-    int Start7_2_9(int counter);
+    int Start7_2_13_1();
+    int Start7_2_13_2();
+    int Start7_2_13_3();
+    int Start7_2_13_4();
+    int Start7_2_13_5();
+    int Start7_2_13_6();
+    int Start7_2_13_7();
+    int Start7_2_13_8();
+    int Start7_2_13(int counter);
+    int Start7_2_14();
     int ReadAnalogMeasurements();
     int ShowScheme();
 #endif
     void WriteBacBlock();
     void GetBdAndFillMTT();
     void LoadSettings();
+    void GenerateReport();
 
 private slots:
     void FillBac(int bacnum);

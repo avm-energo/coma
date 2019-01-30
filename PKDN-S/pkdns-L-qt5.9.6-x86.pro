@@ -70,7 +70,8 @@ SOURCES += main.cpp\
     ../widgets/lineeditfield.cpp \
     ../widgets/passwordlineedit.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp
+    ../widgets/wd_func.cpp \
+    ../gen/report.cpp
 
 HEADERS  += pkdn_s.h \
     ../check/check.h \
@@ -117,7 +118,8 @@ HEADERS  += pkdn_s.h \
     ../widgets/lineeditfield.h \
     ../widgets/passwordlineedit.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h
+    ../widgets/wd_func.h \
+    ../gen/report.h
 
 INCLUDEPATH += $$PWD/../../includes
 
