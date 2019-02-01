@@ -71,7 +71,8 @@ SOURCES += main.cpp\
     ../widgets/passwordlineedit.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp \
-    ../gen/report.cpp
+    ../gen/report.cpp \
+    ../tune/eabstracttunedialoga1dn.cpp
 
 HEADERS  += pkdn_s.h \
     ../check/check.h \
@@ -119,7 +120,8 @@ HEADERS  += pkdn_s.h \
     ../widgets/passwordlineedit.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
-    ../gen/report.h
+    ../gen/report.h \
+    ../tune/eabstracttunedialoga1dn.h
 
 INCLUDEPATH += $$PWD/../../includes
 

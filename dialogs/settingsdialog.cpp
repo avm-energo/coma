@@ -82,15 +82,14 @@ void SettingsDialog::Fill()
     QString DevSN = sets->value("PovDevSN", "00000001").toString();
     QString DevPrecision = sets->value("PovDevPrecision", "0.05").toString();
     quint32 PovNumPoints = sets->value("PovNumPoints", "60").toUInt();
-    QString OrganizationString = sets->value("Organization", "Р&К").toString();
-    WDFunc::SetLEData(this,"orgle", OrganizationString);
+    WDFunc::SetLEData(this,"orgle", StdFunc::OrganizationString());
     WDFunc::SetLEData(this,"pathle",StdFunc::GetHomeDir());
     WDFunc::SetLEData(this,"povdev", DevName);
     WDFunc::SetLEData(this,"povdevsn", DevSN);
     WDFunc::SetLEData(this,"povdevprecision", DevPrecision);
 //    QString restring = "^[0-2]{0,1}[0-9]{1,2}{\\.[0-2]{0,1}[0-9]{1,2}}{3}$";
     QString restring = "";
-    WDFunc::SetLEData(this,"miple",StdFunc::MIPIP,restring);
+    WDFunc::SetLEData(this,"miple",StdFunc::MIPIP(),restring);
 #if PROGSIZE != PROGSIZE_EMUL
     WDFunc::SetChBData(this, "writelogchb", EAbstractProtocomChannel::IsWriteUSBLog());
 #endif
@@ -99,16 +98,18 @@ void SettingsDialog::Fill()
 
 void SettingsDialog::AcceptSettings()
 {
-    QString DevName, DevSN, DevPrecision, OrganizationString, dir;
+    QString DevName, DevSN, DevPrecision, tmps, dir;
     quint32 PovNumPoints;
     bool tmpb;
-    WDFunc::LEData(this, "orgle", OrganizationString);
+    WDFunc::LEData(this, "orgle", tmps);
+    StdFunc::SetOrganizationString(tmps);
     WDFunc::LEData(this, "pathle", dir);
     StdFunc::SetHomeDir(dir);
     WDFunc::LEData(this, "povdev", DevName);
     WDFunc::LEData(this, "povdevsn", DevSN);
     WDFunc::LEData(this, "povdevprecision", DevPrecision);
-    WDFunc::LEData(this, "miple", StdFunc::MIPIP);
+    WDFunc::LEData(this, "miple", tmps);
+    StdFunc::SetMIPIP(tmps);
     WDFunc::ChBData(this, "writelogchb", tmpb);
 #if PROGSIZE != PROGSIZE_EMUL
     EAbstractProtocomChannel::SetWriteUSBLog(tmpb);
@@ -119,8 +120,8 @@ void SettingsDialog::AcceptSettings()
     sets->setValue("PovDevSN", DevSN);
     sets->setValue("PovDevPrecision", DevPrecision);
     sets->setValue("PovNumPoints", QString::number(PovNumPoints, 10));
-    sets->setValue("Organization", OrganizationString);
-    sets->setValue("MIPIP", StdFunc::MIPIP);
+    sets->setValue("Organization", StdFunc::OrganizationString());
+    sets->setValue("MIPIP", StdFunc::MIPIP());
     this->close();
 }
 

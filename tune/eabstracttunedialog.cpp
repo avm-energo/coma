@@ -1,6 +1,7 @@
 #include <QTime>
 #include <QTimer>
 #include <QtMath>
+#include <QTableView>
 #include <QTabWidget>
 #include <QEventLoop>
 #include <QGridLayout>
@@ -283,6 +284,20 @@ int EAbstractTuneDialog::StartMeasurement()
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
+}
+
+void EAbstractTuneDialog::ShowTable()
+{
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QTableView *tw = new QTableView;
+    tw->setModel(RepModel);
+    lyout->addWidget(tw);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
 }
 
 // ####################### SLOTS #############################

@@ -1,5 +1,4 @@
 #include <QTime>
-#include <QtMath>
 #include <QSettings>
 #include <QTabWidget>
 #include <QEventLoop>
@@ -15,7 +14,7 @@
 #include "../widgets/emessagebox.h"
 #include "../gen/error.h"
 #include "../gen/colors.h"
-#include "../gen/report.h"
+#include "../gen/files.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../gen/modulebsi.h"
@@ -26,12 +25,13 @@
 #endif
 
 TuneDialogA1DN::TuneDialogA1DN(QWidget *parent) :
-    EAbstractTuneDialog(parent)
+    EAbstractTuneDialogA1DN(parent)
 {
     CA1 = new ConfigA1(S2Config);
     ChA1 = new CheckA1;
     SetBac(&Bac_block, 2, sizeof(Bac));
     SetBac(&Bac_block3, 3, sizeof(Bac3));
+    RepModel = new ReportModel;
     SetupUI();
     LoadSettings();
 }
@@ -188,7 +188,7 @@ void TuneDialogA1DN::SetupUI()
 
     hlyout = new QHBoxLayout;
     hlyout->addStretch(5);
-    QPushButton *pb = new QPushButton("Годится");
+    QPushButton *pb = new QPushButton("Продолжить");
     pb->setObjectName("GoodDN");
     pb->setEnabled(false);
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(Good()));
@@ -482,63 +482,17 @@ QWidget *TuneDialogA1DN::CoefUI3(int bac3num)
 }
 
 #if PROGSIZE != PROGSIZE_EMUL
-void TuneDialogA1DN::FillBdOut()
+void TuneDialogA1DN::AcceptDNData()
 {
-    WDFunc::SetLBLText(this, "tunednu1", QString::number(ChA1->Bda_out.Uef_filt[0], 'f', 5));
-    WDFunc::SetLBLText(this, "tunednu2", QString::number(ChA1->Bda_out.Uef_filt[1], 'f', 5));
-    WDFunc::SetLBLText(this, "tunednphy", QString::number(ChA1->Bda_out.Phy, 'f', 5));
-    WDFunc::SetLBLText(this, "tunednfreq", QString::number(ChA1->Bda_out.Frequency, 'f', 5));
-    WDFunc::SetLBLText(this, "tunepercent", QString::number(ChA1->Bda_out.dUrms, 'f', 5));
-}
-
-void TuneDialogA1DN::FillBackBdOut()
-{
-    QString tmps;
-    WDFunc::LBLText(this, "tunednu1", tmps);
-    ChA1->Bda_out.Uef_filt[0] = tmps.toFloat();
-    WDFunc::LBLText(this, "tunednu2", tmps);
-    ChA1->Bda_out.Uef_filt[1] = tmps.toFloat();
-    WDFunc::LBLText(this, "tunednphy", tmps);
-    ChA1->Bda_out.Phy = tmps.toFloat();
-    WDFunc::LBLText(this, "tunednfreq", tmps);
-    ChA1->Bda_out.Frequency = tmps.toFloat();
-    WDFunc::LBLText(this, "tunepercent", tmps);
-    ChA1->Bda_out.dUrms = tmps.toFloat();
-}
-
-void TuneDialogA1DN::FillBdIn()
-{
-    WDFunc::SetLBLText(this, "tunednu1i", QString::number(ChA1->Bda_in.Uef_filt[0], 'f', 5));
-    WDFunc::SetLBLText(this, "tunednu2i", QString::number(ChA1->Bda_in.Uef_filt[1], 'f', 5));
-    WDFunc::SetLBLText(this, "tunednphyi", QString::number(ChA1->Bda_in.Phy, 'f', 5));
-    WDFunc::SetLBLText(this, "tunednfreqi", QString::number(ChA1->Bda_in.Frequency, 'f', 5));
-    WDFunc::SetLBLText(this, "tunepercenti", QString::number(ChA1->Bda_in.dUrms, 'f', 5));
-}
-
-void TuneDialogA1DN::FillBackBdIn()
-{
-    QString tmps;
-    WDFunc::LBLText(this, "tunednu1i", tmps);
-    ChA1->Bda_in.Uef_filt[0] = tmps.toFloat();
-    WDFunc::LBLText(this, "tunednu2i", tmps);
-    ChA1->Bda_in.Uef_filt[1] = tmps.toFloat();
-    WDFunc::LBLText(this, "tunednphyi", tmps);
-    ChA1->Bda_in.Phy = tmps.toFloat();
-    WDFunc::LBLText(this, "tunednfreqi", tmps);
-    ChA1->Bda_in.Frequency = tmps.toFloat();
-    WDFunc::LBLText(this, "tunepercenti", tmps);
-    ChA1->Bda_in.dUrms = tmps.toFloat();
-}
-
-void TuneDialogA1DN::FillMedian(int index)
-{
-    if (index < TUNEA1LEVELS)
-    {
-        WDFunc::SetLBLText(this, "tunedurmsm", QString::number(Dd_Block[index].dUrms, 'f', 5));
-        WDFunc::SetLBLText(this, "tunephym", QString::number(Dd_Block[index].Phy, 'f', 5));
-        WDFunc::SetLBLText(this, "tunesurms", QString::number(Dd_Block[index].sU, 'f', 5));
-        WDFunc::SetLBLText(this, "tunesphy", QString::number(Dd_Block[index].sPhy, 'f', 5));
-    }
+    WDFunc::CBIndex(this, "dnutype", Mode);
+    if (Mode > 0)
+        Commands::SetMode(Mode); // устанавливаем род напряжения (0 - переменный, 1 - постоянный)
+    if (Mode == MODE_ALTERNATIVE)
+        WDFunc::LENumber(this, "dnfnumle", Bac_block.DNFNum);
+    else
+        WDFunc::LENumber(this, "dnfnumle", Bac_block3.DNFNum);
+    WriteBacBlock();
+    emit Finished();
 }
 
 int TuneDialogA1DN::Start7_2_3()
@@ -569,7 +523,7 @@ int TuneDialogA1DN::Start7_2_3()
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
-    connect(this,SIGNAL(DNDataIsSet()),dlg,SLOT(close()));
+    connect(this,SIGNAL(Finished()),dlg,SLOT(close()));
     Accepted = false;
     dlg->show();
     while (!Accepted && !StdFunc::IsCancelled())
@@ -577,19 +531,6 @@ int TuneDialogA1DN::Start7_2_3()
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
-}
-
-void TuneDialogA1DN::AcceptDNData()
-{
-    WDFunc::CBIndex(this, "dnutype", Mode);
-    if (Mode > 0)
-        Commands::SetMode(Mode); // устанавливаем род напряжения (0 - переменный, 1 - постоянный)
-    if (Mode == MODE_ALTERNATIVE)
-        WDFunc::LENumber(this, "dnfnumle", Bac_block.DNFNum);
-    else
-        WDFunc::LENumber(this, "dnfnumle", Bac_block3.DNFNum);
-    WriteBacBlock();
-    emit DNDataIsSet();
 }
 
 int TuneDialogA1DN::Start7_2_5()
@@ -613,42 +554,6 @@ int TuneDialogA1DN::Start7_2_5()
     return Error::ER_NOERROR;
 }
 
-void TuneDialogA1DN::InputTuneVariant(int varnum)
-{
-    QDialog *dlg = new QDialog(this);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QStringList sl;
-    for (int i=0; i<varnum; ++i)
-        sl << QString::number(i+1);
-    hlyout->addWidget(WDFunc::NewLBLT(this, "Выберите вариант использования"), 0);
-    QComboBox *cb = WDFunc::NewCB(this, "tunevariantcb", sl);
-    cb->setMinimumWidth(50);
-    hlyout->addWidget(cb, 0);
-
-    lyout->addLayout(hlyout);
-    hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(this, "Коэффициент деления для данного варианта: "));
-    hlyout->addWidget(WDFunc::NewSPB(this, "kdnspb", 5, 1200, 0));
-    lyout->addLayout(hlyout);
-    hlyout = new QHBoxLayout;
-    QPushButton *pb = new QPushButton("Подтвердить");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetTuneVariant()));
-    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(CancelTune()));
-    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    dlg->setLayout(lyout);
-    Accepted = false;
-    dlg->show();
-    while (!Accepted && !StdFunc::IsCancelled())
-        TimeFunc::Wait();
-}
-
 int TuneDialogA1DN::Start7_2_6()
 {
     if (Commands::SetUsingVariant(TuneVariant+1) != Error::ER_NOERROR)
@@ -661,7 +566,7 @@ int TuneDialogA1DN::Start7_2_7_1()
 {
     QPushButton *pb = this->findChild<QPushButton *>("GoodDN");
     if (pb != nullptr)
-        pb->setText("Годится");
+        pb->setText("Продолжить");
     return Start7_2_78910(0);
 }
 
@@ -687,10 +592,17 @@ int TuneDialogA1DN::Start7_2_7_5()
 
 int TuneDialogA1DN::Start7_2_78910(int counter)
 {
+    CheckA1::A1_Bd1 tmpst2;
     const int Percents[] = {20,50,80,100,120};
+
     if (counter > 4)
         return Error::ER_GENERALERROR;
-    float VoltageInV = (Mode == MODE_ALTERNATIVE) ? (100 / qSqrt(3)) : (100 * qSqrt(2) / qSqrt(3));
+    if (GetAndAverage(Percents[counter], GAAT_BDA_IN, &tmpst2) == Error::ER_GENERALERROR)
+    {
+        EMessageBox::error(this, "Ошибка", "Ошибка при проведении процедуры усреднения");
+        return Error::ER_GENERALERROR;
+    }
+/*    float VoltageInV = (Mode == MODE_ALTERNATIVE) ? (100 / qSqrt(3)) : (100 * qSqrt(2) / qSqrt(3));
     VoltageInV *= Percents[counter] / 100;
     float VoltageInkV = (Mode == MODE_ALTERNATIVE) ? Bac_block.Bac_block[TuneVariant].K_DN : Bac_block3.Bac_block3[TuneVariant].K_DN;
     VoltageInkV *= VoltageInV / 1000;
@@ -736,8 +648,9 @@ int TuneDialogA1DN::Start7_2_78910(int counter)
     // усреднение
     tmpst2.Phy /= count;
     tmpst2.Uef_filt[0] /= count;
-    tmpst2.Uef_filt[1] /= count;
-    // теперь в ChA1->Bda_block лежат нужные нам значения
+    tmpst2.Uef_filt[1] /= count; */
+
+    // теперь в tmpst2 лежат нужные нам значения
     if (Mode == MODE_ALTERNATIVE)
     {
         Bac_block.Bac_block[TuneVariant].U1kDN[counter+1] = tmpst2.UefNat_filt[0];
@@ -776,7 +689,8 @@ int TuneDialogA1DN::Start7_2_12()
     }
     QPushButton *pb = this->findChild<QPushButton *>("GoodDN");
     if (pb != nullptr)
-        pb->setText("Запомнить погрешность");
+        pb->setText("Продолжить");
+    RepModel->SetModel(GOST23625ROWCOUNT, GOST23625COLCOUNT);
     return Start7_2_13(0);
 }
 
@@ -856,89 +770,143 @@ int TuneDialogA1DN::Start7_2_13(int counter)
     const int Percents[] = {120, 100, 80, 50, 20, 50, 80, 100, 120};
     if (counter >= TUNEA1LEVELS)
         return Error::ER_GENERALERROR;
-    float VoltageInV = (Mode == MODE_ALTERNATIVE) ? (100 / qSqrt(3)) : (100 * qSqrt(2) / qSqrt(3));
-    VoltageInV *= Percents[counter] / 100;
-    float VoltageInkV = (Mode == MODE_ALTERNATIVE) ? Bac_block.Bac_block[TuneVariant].K_DN : Bac_block3.Bac_block3[TuneVariant].K_DN;
-    VoltageInkV *= VoltageInV / 1000;
-    if (EMessageBox::question(this, "Подтверждение", "Подайте на делители напряжение " + \
-                              QString::number(VoltageInkV, 'f', 1) + " кВ (" + QString::number(VoltageInV, 'f', 3) + " В) \n"
-                              "и нажмите кнопку \"Запомнить погрешность\", когда напряжения установятся") == false)
-    {
-        StdFunc::Cancel();
-        return Error::ER_GENERALERROR;
-    }
-    WaitNSeconds(WAITFORCONST);
-    if (StartMeasurement() != Error::ER_NOERROR)
-        return Error::ER_GENERALERROR;
-    FillBackBdOut();
-
-    // накопление измерений
-    DdStruct tmpst2;
-    tmpst2.dUrms = tmpst2.Phy = tmpst2.sPhy = tmpst2.sU = 0;
-    QList<float> sPhy, sU;
-    int count = 0;
-    emit StartPercents(PovNumPoints);
-    while ((count < PovNumPoints) && !StdFunc::IsCancelled())
-    {
-        if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == Error::ER_NOERROR)
-            FillBdOut();
-        else
-        {
-            EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_out");
-            return Error::ER_GENERALERROR;
-        }
-        tmpst2.dUrms += ChA1->Bda_out.dUrms;
-        tmpst2.Phy += ChA1->Bda_out.Phy;
-        sU.append(ChA1->Bda_out.dUrms);
-        sPhy.append(ChA1->Bda_out.Phy);
-        QTime tme;
-        tme.start();
-        while (tme.elapsed() < TUNE_POINTSPER)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-        ++count;
-        emit SetPercent(count);
-    }
-    if (StdFunc::IsCancelled())
-        return Error::ER_GENERALERROR;
-    // усреднение
-    float Um = tmpst2.dUrms / count; // среднее значение погрешности по напряжению
-    if (!StdFunc::FloatInRange(Um, 0, TH005))
-    {
-        EMessageBox::error(this, "Ошибка", "Среднее значение погрешности за пределами 0,05 %");
-        return Error::ER_GENERALERROR;
-    }
-    float Phym = tmpst2.Phy / count; // среднее значение погрешности по углу
-    Dd_Block[counter].dUrms = Um;
-    Dd_Block[counter].Phy = Phym;
-    float sUo, sPhyo; // временные накопительные СКО
-    sUo = sPhyo = 0;
-    for (int i=0; i<count; ++i)
-    {
-        if ((i < sPhy.size()) && (i < sU.size()))
-        {
-            sUo += qPow((sU.at(i) - Um), 2);
-            sPhyo += qPow((sPhy.at(i) - Phym), 2);
-        }
-    }
-    sUo = qSqrt(sUo/count);
-    sPhyo = qSqrt(sPhyo/count);
-    if (!StdFunc::FloatInRange(sUo, 0, TH005) || !StdFunc::FloatInRange(sPhyo, 0, TH05))
-    {
-        EMessageBox::error(this, "Ошибка", "Среднее значение погрешности за пределами 0,05 % или по углу - за 0,5");
-        return Error::ER_GENERALERROR;
-    }
-    Dd_Block[counter].sPhy = sPhyo;
-    Dd_Block[counter].sU = sUo;
-    FillMedian(counter);
-    return Error::ER_NOERROR;
+    return GetAndAverage(Percents[counter], GAAT_BDA_OUT, &Dd_Block[counter]);
 }
 
 int TuneDialogA1DN::Start7_2_14()
 {
     if (!WriteTuneCoefs(Mode + 1)) // MODE = BLOCK + 1
         return Error::ER_GENERALERROR;
+    FillHeaders();
+    // запись файла протокола
+    ReportHeader.PovDateTime = QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss");
+    Commands::GetBd(A1_BDA_OUT_AN_BN, &ChA1->Bda_out_an, sizeof(CheckA1::A1_Bd4));
+    ReportHeader.Freq = QString::number(ChA1->Bda_out.Frequency, 'g', 4);
+    ReportHeader.Humidity = QString::number(ChA1->Bda_out_an.Hamb, 'g', 3);
+    ReportHeader.Temp = QString::number(ChA1->Bda_out_an.Tamb, 'g', 2);
+    if (DNDialog(PovDev)) // вводим данные по делителю
+    {
+        EMessageBox::information(this, "Отменено", "Операция отменена");
+        return Error::ER_GENERALERROR;
+    }
+    if (ConditionDataDialog()) // задаём условия поверки
+    {
+        EMessageBox::information(this, "Отменено", "Операция отменена");
+        return Error::ER_GENERALERROR;
+    }
     GenerateReport();
     return Error::ER_NOERROR;
+}
+
+void TuneDialogA1DN::FillHeaders()
+{
+    QStringList sl = QStringList() << "Проц" << "S/Sном" <<  "dUrms(u)" <<  "Phy(u)";
+    sl << "dUrms(d)" << "Phy(d)" << "dUrms(ud)" << "Phy(ud)" << "dUrms(md)" << "Phy(md)" << \
+          "dUrms(u-d)" << "Phy(u-d)" << "dUrms" << "Phy" << "sUrms(d)" << "sPhy(d)";
+    sl << "sUrms(u)" << "sPhy(u)";
+    RepModel->SetHeader(sl);
+}
+
+bool TuneDialogA1DN::ConditionDataDialog()
+{
+    Cancelled = false;
+    int row = 0;
+    QDialog *dlg = new QDialog(this);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    lyout->addWidget(WDFunc::NewLBL(this, "Условия поверки"), Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBL(this, "Дата поверки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "PovDateTime", ReportHeader.PovDateTime), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Температура окружающей среды, °С"), row, 0, 1, 1, Qt::AlignRight);
+    QString tmps;
+    if (StdFunc::FloatInRange(ChA1->Bda_out_an.Tamb, FLT_MAX, TH1))
+        tmps = "";
+    else
+        tmps = ReportHeader.Temp;
+    glyout->addWidget(WDFunc::NewLE(this, "Temp", tmps), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Влажность воздуха, %"), row, 0, 1, 1, Qt::AlignRight);
+    if (StdFunc::FloatInRange(ChA1->Bda_out_an.Hamb, FLT_MAX, TH1))
+        tmps = "";
+    else
+        tmps = ReportHeader.Humidity;
+    glyout->addWidget(WDFunc::NewLE(this, "Humidity", tmps), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Атмосферное давление, кПа"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "Pressure", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Напряжение питания сети, В"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "Voltage", ""), row++, 1, 1, 1, Qt::AlignLeft);
+/*    glyout->addWidget(WDFunc::NewLBL(this, "Частота питания сети, Гц"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "Frequency", ReportHeader.Freq), row++, 1, 1, 1, Qt::AlignLeft); */
+    glyout->setColumnStretch(1, 1);
+    lyout->addLayout(glyout);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetConditionData()));
+    lyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(CancelTune()));
+    lyout->addWidget(pb);
+    connect(this,SIGNAL(Finished()),dlg,SLOT(close()));
+    dlg->setLayout(lyout);
+    dlg->exec();
+    return Cancelled;
+}
+
+bool TuneDialogA1DN::DNDialog(PovDevStruct &PovDev)
+{
+    Cancelled = false;
+    int row = 0;
+    QDialog *dlg = new QDialog(this);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    lyout->addWidget(WDFunc::NewLBL(this, "Данные ТН(ДН)"), Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBL(this, "Организация, проводившая поверку"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "UKDNOrganization", StdFunc::OrganizationString()), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Тип ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNType", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Обозначение по схеме, фаза"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNNamePhase", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNSerialNum", ReportHeader.DNSerNum), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности, %"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNTolerance", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное первичное напряжение, кВ"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNU1", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение, В"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNU2", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальная мощность нагрузки, ВА"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNP", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальная частота, Гц"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNFreq", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Предприятие-изготовитель"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNOrganization", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Место установки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNPlace", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Наименование средства поверки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "PovDev", PovDev.DevName), row++, 1, 1, 1, Qt::AlignLeft);
+    WDFunc::SetEnabled(this, "PovDev", false);
+    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер средства поверки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "PovDevSN", PovDev.DevSN), row++, 1, 1, 1, Qt::AlignLeft);
+    WDFunc::SetEnabled(this, "PovDevSN", false);
+    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности средства поверки"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "PovDevPrecision", PovDev.DevPrecision), row++, 1, 1, 1, Qt::AlignLeft);
+    WDFunc::SetEnabled(this, "PovDevPrecision", false);
+    glyout->addWidget(WDFunc::NewLBL(this, "Результаты внешнего осмотра"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLBL(this, "Результаты проверки правильности обозначения\nвыводов и групп соединений обмоток"), row, 0, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "DNWindingInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->setColumnStretch(1, 1);
+    lyout->addLayout(glyout);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetDNData()));
+    lyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(Cancel()));
+    lyout->addWidget(pb);
+    connect(this,SIGNAL(CloseDialog()),dlg,SLOT(close()));
+    dlg->setLayout(lyout);
+    dlg->exec();
+    return Cancelled;
 }
 
 int TuneDialogA1DN::ReadAnalogMeasurements()
@@ -995,27 +963,7 @@ void TuneDialogA1DN::WriteBacBlock()
         }
     }
 }
-void TuneDialogA1DN::GetBdAndFillMTT()
-{
-    if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == Error::ER_NOERROR)
-        FillBdOut();
-    if (Commands::GetBd(A1_BDA_IN_BN, &ChA1->Bda_in, sizeof(CheckA1::A1_Bd1)) == Error::ER_NOERROR)
-        FillBdIn();
-}
 
-void TuneDialogA1DN::SetTuneVariant()
-{
-    float kdn;
-    if (!WDFunc::CBIndex(this, "tunevariantcb", TuneVariant))
-        DBGMSG;
-    if (!WDFunc::SPBData(this, "kdnspb", kdn))
-        DBGMSG;
-    if (Mode == MODE_ALTERNATIVE)
-        Bac_block.Bac_block->K_DN = kdn;
-    else
-        Bac_block3.Bac_block3->K_DN = kdn;
-    Accepted = true;
-}
 #endif
 
 void TuneDialogA1DN::LoadSettings()
@@ -1029,20 +977,14 @@ void TuneDialogA1DN::GenerateReport()
     // данные в таблицу уже получены или из файла, или в процессе работы
     // отобразим таблицу
     ShowTable();
-    QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
-    Report *report = new Report(GOST, this);
+    Report *report = new Report("23625", this);
     report->AddModel("maindata", RepModel);
     // запрос блока Bda_h, чтобы выдать KNI в протокол
 #if PROGSIZE != PROGSIZE_EMUL
-    if (!Autonomous)
-    {
-        if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2)) == Error::ER_NOERROR)
-            report->SetVar("KNI", ChA1->Bda_h.HarmBuf[0][0], 5);
-    }
-    else
-#endif
+    if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2)) == Error::ER_NOERROR)
         report->SetVar("KNI", ChA1->Bda_h.HarmBuf[0][0], 5);
-    report->SetVar("Organization", OrganizationString);
+#endif
+    report->SetVar("Organization", StdFunc::OrganizationString());
     QString day = QDateTime::currentDateTime().toString("dd");
     QString month = QDateTime::currentDateTime().toString("MM");
     QString yr = QDateTime::currentDateTime().toString("yy");
@@ -1064,7 +1006,8 @@ void TuneDialogA1DN::GenerateReport()
     report->SetVar("Humidity", ReportHeader.Humidity);
     report->SetVar("Pressure", ReportHeader.Pressure);
     report->SetVar("Voltage", ReportHeader.Voltage);
-    report->SetVar("Freq", ReportHeader.Freq);
+    if (Mode == MODE_ALTERNATIVE)
+        report->SetVar("Freq", ReportHeader.Freq);
     report->SetVar("OuterInsp", ReportHeader.OuterInsp);
     report->SetVar("WindingsInsp", ReportHeader.WindingsInsp);
     report->SetVar("PovDateTime", ReportHeader.PovDateTime);

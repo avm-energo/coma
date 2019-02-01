@@ -4,20 +4,16 @@
 #include <QDialog>
 #include <QStandardItemModel>
 #include <QCloseEvent>
+#include "../tune/eabstracttunedialoga1dn.h"
 #include "../gen/report.h"
 #include "../gen/maindef.h"
 #include "../config/configa1.h"
 #include "../check/checka1.h"
 
-#define GOST1983ROWCOUNT    6 // 80, 100, 120 %
-#define GOST23625ROWCOUNT   10 // 20, 50, 80, 100, 120 %
-#define GOST1983COLCOUNT    10 // K, S, 3x(dU, dP), sU, sP
-#define GOST23625COLCOUNT   18 // K, S, 5x(dU, dP), dd, dD, 2x(sU, sP)
-
 #define TUNE_POINTSPER  500 // столько миллисекунд должно усредняться при регулировке
 #define TUNEVARIANTSNUM 3
 
-class A1Dialog : public QDialog
+class A1Dialog : public EAbstractTuneDialogA1DN
 {
     Q_OBJECT
 public:
@@ -182,9 +178,9 @@ private slots:
     void SetTuneVariant();
 
 private:
-    int TuneVariant;
+//    int TuneVariant;
     int PovNumPoints;
-    QString OrganizationString; // наименование организации, работающей с программой
+//    QString OrganizationString; // наименование организации, работающей с программой
 
     void InputTuneVariant(int varnum);
     void LoadSettings();

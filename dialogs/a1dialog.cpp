@@ -18,7 +18,6 @@
 #include "../widgets/wd_func.h"
 #include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
-#include "../gen/report.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
@@ -27,7 +26,7 @@
 #include "../gen/commands.h"
 #endif
 
-A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : QDialog(parent)
+A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : EAbstractTuneDialogA1DN(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     ChA1 = new CheckA1;
@@ -192,7 +191,7 @@ void A1Dialog::GenerateReport()
     else
 #endif
         report->SetVar("KNI", ChA1->Bda_h.HarmBuf[0][0], 5);
-    report->SetVar("Organization", OrganizationString);
+    report->SetVar("Organization", StdFunc::OrganizationString());
     QString day = QDateTime::currentDateTime().toString("dd");
     QString month = QDateTime::currentDateTime().toString("MM");
     QString yr = QDateTime::currentDateTime().toString("yy");
@@ -303,7 +302,7 @@ bool A1Dialog::DNDialog(PovDevStruct &PovDev)
     QGridLayout *glyout = new QGridLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Данные ТН(ДН)"), Qt::AlignCenter);
     glyout->addWidget(WDFunc::NewLBL(this, "Организация, проводившая поверку"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "UKDNOrganization", OrganizationString), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLE(this, "UKDNOrganization", StdFunc::OrganizationString()), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Тип ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "DNType", ""), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Обозначение по схеме, фаза"), row, 0, 1, 1, Qt::AlignRight);
@@ -504,7 +503,11 @@ void A1Dialog::StartWork()
                                   "На нагрузочном устройстве поверяемого ТН установите значение мощности, равное 0,25·Sном") == true)
         {
             CurrentS = 0.25;
-            if (PovType == GOST_1983)
+            Index = 0;
+            Counter = 0;
+            WDFunc::SetEnabled(this, "cancelpb", true);
+            WDFunc::SetEnabled(this, "acceptpb", true);
+/*            if (PovType == GOST_1983)
             {
                 VoltageInkV = static_cast<float>(Bac_block.Bac_block[TuneVariant].K_DN) * 80 / 1732;
                 VoltageInV = static_cast<float>(1000 * 80) / 1732;
@@ -517,13 +520,9 @@ void A1Dialog::StartWork()
             if (EMessageBox::question(this, "Подтверждение", "Подайте на делители напряжение " + \
                                       QString::number(VoltageInkV, 'f', 1) + " кВ ("+QString::number(VoltageInV, 'f', 1)+" В)") == true)
             {
-                Index = 0;
-                Counter = 0;
                 MeasurementTimer->start();
-                WDFunc::SetEnabled(this, "cancelpb", true);
-                WDFunc::SetEnabled(this, "acceptpb", true);
                 return;
-            }
+            } */
         }
     }
     WDFunc::SetEnabled(this, "StartWorkPb", true);
@@ -648,13 +647,20 @@ void A1Dialog::Accept()
     const int Percents1983[] = {80, 100, 120};
     const int *Percents = (PovType == GOST_1983) ? Percents1983 : Percents23625;
 
-    // заполняем модель по полученным измерениям:
-    if (GetStatistics() == Error::ER_GENERALERROR) // набираем статистику измерений и вычисляем средние значения
+    if (GetAndAverage(Percents[Pindex], GAAT_BDA_OUT, &Dd_Block) == Error::ER_GENERALERROR)
     {
         Cancelled = true;
         Decline();
         return;
     }
+    FillMedian();
+/*    // заполняем модель по полученным измерениям:
+    if (GetStatistics() == Error::ER_GENERALERROR) // набираем статистику измерений и вычисляем средние значения
+    {
+        Cancelled = true;
+        Decline();
+        return;
+    } */
     FillModelRow(Index);
     ++Index;
     if (Index >= endcounter)
@@ -728,7 +734,9 @@ void A1Dialog::Cancel()
 void A1Dialog::SetDNData()
 {
 //    QString PovDev, PovDevSN, PovDevPrecision;
-    WDFunc::LEData(this, "UKDNOrganization", OrganizationString);
+    QString tmps;
+    WDFunc::LEData(this, "UKDNOrganization", tmps);
+    StdFunc::SetOrganizationString(tmps);
     WDFunc::LEData(this, "DNType", ReportHeader.DNType);
     WDFunc::LEData(this, "DNNamePhase", ReportHeader.DNNamePhase);
     WDFunc::LEData(this, "DNSerialNum", ReportHeader.DNSerNum);
@@ -771,7 +779,7 @@ void A1Dialog::RBToggled()
 #if PROGSIZE != PROGSIZE_EMUL
 int A1Dialog::GetStatistics()
 {
-    // накопление измерений
+/*    // накопление измерений
     DdStruct tmpst2;
     tmpst2.dUrms = tmpst2.Phy = tmpst2.sPhy = tmpst2.sU = 0;
     QList<float> sPhy, sU;
@@ -789,8 +797,7 @@ int A1Dialog::GetStatistics()
     while ((count < PovNumPoints) && !Cancelled)
     {
 //        w->SetSeconds(PovNumPoints-count);
-/*        cn->Send(CN_GBd, A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1));
-        if (cn->result == Error::NOERROR) */
+
         if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == Error::ER_NOERROR)
             FillBdOut();
         else
@@ -831,7 +838,7 @@ int A1Dialog::GetStatistics()
     sUo = qSqrt(sUo/count);
     sPhyo = qSqrt(sPhyo/count);
     Dd_Block.sPhy = sPhyo;
-    Dd_Block.sU = sUo;
+    Dd_Block.sU = sUo; */
     FillMedian();
     return Error::ER_NOERROR;
 }
@@ -844,12 +851,7 @@ void A1Dialog::TempRandomizeModel()
     for (int i=0; i<GOST1983ROWCOUNT; ++i)
     {
         for (int j=0; j<GOST1983COLCOUNT; ++j)
-        {
-            QStandardItem *item = new QStandardItem("");
-            float RandomizeValue = static_cast<float>(qrand())/RAND_MAX;
-            item->setText(QString::number(RandomizeValue,'f',5));
-            RepModel->setItem(i, j, item);
-        }
+            RepModel->UpdateItem(i, j, static_cast<float>(qrand())/RAND_MAX, 5);
     }
     FillHeaders();
     GenerateReport();
@@ -891,14 +893,14 @@ void A1Dialog::InputTuneVariant(int varnum)
 
 void A1Dialog::LoadSettings()
 {
-    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    QSettings *sets = new QSettings ("EvelSoft", PROGNAME);
     PovDev.DevName = sets->value("PovDevName", "UPTN").toString();
     PovDev.DevSN = sets->value("PovDevSN", "00000001").toString();
     PovDev.DevPrecision = sets->value("PovDevPrecision", "0.05").toString();
     PovNumPoints = sets->value("PovNumPoints", "60").toInt();
     if ((PovNumPoints <= 0) || (PovNumPoints > 1000))
         PovNumPoints = 60;
-    OrganizationString = sets->value("Organization", "Р&К").toString();
+//    OrganizationString = sets->value("Organization", "Р&К").toString();
 }
 
 void A1Dialog::SaveSettings()
@@ -908,7 +910,7 @@ void A1Dialog::SaveSettings()
     sets->setValue("PovDevSN", PovDev.DevSN);
     sets->setValue("PovDevPrecision", PovDev.DevPrecision);
     sets->setValue("PovNumPoints", QString::number(PovNumPoints, 10));
-    sets->setValue("Organization", OrganizationString);
+//    sets->setValue("Organization", OrganizationString);
 }
 
 void A1Dialog::closeEvent(QCloseEvent *e)

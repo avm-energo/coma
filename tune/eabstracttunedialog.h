@@ -5,6 +5,7 @@
 #include <QCloseEvent>
 #include <QByteArray>
 #include "../gen/s2.h"
+#include "../gen/report.h"
 
 #define MAXTUNESIZE 1024 // максимальный размер файла с данными настройки
 
@@ -33,7 +34,7 @@ public:
     bool IsNeededDefConf;
     QMap <int, BacStruct> AbsBac;
     QStringList lbls;
-    bool Skipped, MeasurementEnabled, ok, TuneFileSaved;
+    bool Cancelled, Skipped, MeasurementEnabled, ok, TuneFileSaved;
     QTimer *MeasurementTimer;
     QVector<S2::DataRec> S2Config;
     quint32 SecondsToEnd15SecondsInterval;
@@ -41,6 +42,8 @@ public:
     quint8 bStep;
     int TuneVariant; // вариант регулировочных параметров
     QVector<S2::DataRec> *S2ConfigForTune;
+    ReportModel *RepModel; // модель, в которую заносим данные для отчёта
+//    QString OrganizationString; // наименование организации, работающей с программой
 
     virtual void SetupUI() = 0;
     QWidget *TuneUI();
@@ -68,6 +71,7 @@ public:
     virtual void FillBac(int bacnum) = 0;
     virtual void FillBackBac(int bacnum) = 0;
     void SaveToFileEx(int bacnum);
+    void ShowTable();
 
 signals:
     void PasswordChecked();
