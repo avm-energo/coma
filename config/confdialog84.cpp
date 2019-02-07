@@ -35,14 +35,101 @@ ConfDialog84::~ConfDialog84()
 
 void ConfDialog84::Fill()
 {
+    int i;
+    WDFunc::SetSPBData(this, "Unom", C84->Bci_block.Unom);
+    WDFunc::SetSPBData(this, "Umin", C84->Bci_block.Umin);
+    WDFunc::SetSPBData(this, "Imin", C84->Bci_block.Imin);
+
+    for (i = 0; i < 3; i++)
+    {
+      WDFunc::SetSPBData(this, "Imax."+QString::number(i), C84->Bci_block.Imax[i]);
+      WDFunc::SetSPBData(this, "C_init."+QString::number(i), C84->Bci_block.C_init[i]);
+      WDFunc::SetSPBData(this, "Tg_init."+QString::number(i), C84->Bci_block.Tg_init[i]);
+      WDFunc::SetSPBData(this, "corTg."+QString::number(i), C84->Bci_block.corTg[i]);
+    }
+
+    WDFunc::SetSPBData(this, "dС_pred", C84->Bci_block.dС_pred);
+    WDFunc::SetSPBData(this, "dС_alarm", C84->Bci_block.dС_alarm);
+    WDFunc::SetSPBData(this, "dTg_pred", C84->Bci_block.dTg_pred);
+    WDFunc::SetSPBData(this, "dTg_alarm", C84->Bci_block.dTg_alarm);
+    WDFunc::SetSPBData(this, "dIunb_pred", C84->Bci_block.dIunb_pred);
+    WDFunc::SetSPBData(this, "dIunb_alarm", C84->Bci_block.dIunb_alarm);
+    WDFunc::SetSPBData(this, "GdС", C84->Bci_block.GdС);
+    WDFunc::SetSPBData(this, "GdTg", C84->Bci_block.GdTg);
+    WDFunc::SetSPBData(this, "GdIunb", C84->Bci_block.GdIunb);
+    WDFunc::SetSPBData(this, "NFiltr", C84->Bci_block.NFiltr);
+    WDFunc::SetSPBData(this, "T_Data_Rec", C84->Bci_block.T_Data_Rec);
+
+    if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
+    {
+        WDFunc::SetSPBData(this, "RTerm", C84->Bci_block.RTerm);
+        WDFunc::SetSPBData(this, "W100", C84->Bci_block.W100);
+
+        for (i = 0; i < 4; i++)
+        {
+         WDFunc::SetSPBData(this, "IP"+QString::number(i), C84->Com_param.IP[i]);
+         WDFunc::SetSPBData(this, "Mask"+QString::number(i), C84->Com_param.Mask[i]);
+         WDFunc::SetSPBData(this, "GateWay"+QString::number(i), C84->Com_param.GateWay[i]);
+         WDFunc::SetSPBData(this, "Port"+QString::number(i), C84->Com_param.Port[i]);
+         WDFunc::SetSPBData(this, "SNTP"+QString::number(i), C84->Com_param.SNTP[i]);
+        }
+
+        WDFunc::SetSPBData(this, "Baud", C84->Com_param.baud);
+        WDFunc::SetSPBData(this, "Parity", C84->Com_param.parity);
+        WDFunc::SetSPBData(this, "StopBit", C84->Com_param.stopbit);
+        WDFunc::SetSPBData(this, "adrMB", C84->Com_param.adrMB);
+    }
 
 }
 
 void ConfDialog84::FillBack()
 {
-    int i,index;
+    int i;
     QString tmps;
-    bool tmpb;
+
+    WDFunc::SPBData(this, "Unom", C84->Bci_block.Unom);
+    WDFunc::SPBData(this, "Umin", C84->Bci_block.Umin);
+    WDFunc::SPBData(this, "Imin", C84->Bci_block.Imin);
+
+    for (i = 0; i < 3; i++)
+    {
+      WDFunc::SPBData(this, "Imax."+QString::number(i), C84->Bci_block.Imax[i]);
+      WDFunc::SPBData(this, "C_init."+QString::number(i), C84->Bci_block.C_init[i]);
+      WDFunc::SPBData(this, "Tg_init."+QString::number(i), C84->Bci_block.Tg_init[i]);
+      WDFunc::SPBData(this, "corTg."+QString::number(i), C84->Bci_block.corTg[i]);
+    }
+
+    WDFunc::SPBData(this, "dС_pred", C84->Bci_block.dС_pred);
+    WDFunc::SPBData(this, "dС_alarm", C84->Bci_block.dС_alarm);
+    WDFunc::SPBData(this, "dTg_pred", C84->Bci_block.dTg_pred);
+    WDFunc::SPBData(this, "dTg_alarm", C84->Bci_block.dTg_alarm);
+    WDFunc::SPBData(this, "dIunb_pred", C84->Bci_block.dIunb_pred);
+    WDFunc::SPBData(this, "dIunb_alarm", C84->Bci_block.dIunb_alarm);
+    WDFunc::SPBData(this, "GdС", C84->Bci_block.GdС);
+    WDFunc::SPBData(this, "GdTg", C84->Bci_block.GdTg);
+    WDFunc::SPBData(this, "GdIunb", C84->Bci_block.GdIunb);
+    WDFunc::SPBData(this, "NFiltr", C84->Bci_block.NFiltr);
+    WDFunc::SPBData(this, "T_Data_Rec", C84->Bci_block.T_Data_Rec);
+
+    if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
+    {
+        WDFunc::SPBData(this, "RTerm", C84->Bci_block.RTerm);
+        WDFunc::SPBData(this, "W100", C84->Bci_block.W100);
+
+        for (i = 0; i < 4; i++)
+        {
+         WDFunc::SPBData(this, "IP"+QString::number(i), C84->Com_param.IP[i]);
+         WDFunc::SPBData(this, "Mask"+QString::number(i), C84->Com_param.Mask[i]);
+         WDFunc::SPBData(this, "GateWay"+QString::number(i), C84->Com_param.GateWay[i]);
+         WDFunc::SPBData(this, "Port"+QString::number(i), C84->Com_param.Port[i]);
+         WDFunc::SPBData(this, "SNTP"+QString::number(i), C84->Com_param.SNTP[i]);
+        }
+
+        WDFunc::SPBData(this, "Baud", C84->Com_param.baud);
+        WDFunc::SPBData(this, "Parity", C84->Com_param.parity);
+        WDFunc::SPBData(this, "StopBit", C84->Com_param.stopbit);
+        WDFunc::SPBData(this, "adrMB", C84->Com_param.adrMB);
+    }
 
 }
 
@@ -53,7 +140,6 @@ void ConfDialog84::SetupUI()
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
     QWidget *analog1 = new QWidget;
     QWidget *analog2 = new QWidget;
     QWidget *extraconf = new QWidget;
@@ -67,13 +153,13 @@ void ConfDialog84::SetupUI()
     QGroupBox *gb = new QGroupBox("Аналоговые параметры");
 
     glyout->addWidget(WDFunc::NewLBL(this, "Номинальное линейное первичное напряжение, кВ:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Unom", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "Unom", 0, 10000, 0, paramcolor), row,2,1,3);
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Уставка контроля минимума напряжения (в % от номинального):"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Umin", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "Umin", 0, 10000, 1, paramcolor), row,2,1,3);
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Уставка контроля минимума тока (в % от Imax):"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Imin", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "Imin", 0, 10000, 1, paramcolor), row,2,1,3);
     row++;
 
     for (int i = 0; i < 3; i++)
@@ -84,7 +170,7 @@ void ConfDialog84::SetupUI()
     glyout->addWidget(WDFunc::NewLBL(this, "Максимальные действующие значение токов вводов, мА:"), row,1,1,1);
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "Imax."+QString::number(i), 1, 1000, 0, paramcolor), row,2+i,1,1);
+     glyout->addWidget(WDFunc::NewSPB(this, "Imax."+QString::number(i), 0, 10000, 0, paramcolor), row,2+i,1,1);
     }
     row++;
 
@@ -92,41 +178,41 @@ void ConfDialog84::SetupUI()
 
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "C_init."+QString::number(i), 1, 1000, 0, paramcolor), row,2+i,1,1);
+     glyout->addWidget(WDFunc::NewSPB(this, "C_init."+QString::number(i), 0, 10000, 0, paramcolor), row,2+i,1,1);
     }
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения tg δ вводов:"), row,1,1,1);
 
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "Tg_init."+QString::number(i), 1, 1000, 0, paramcolor), row,2+i,1,1);
+     glyout->addWidget(WDFunc::NewSPB(this, "Tg_init."+QString::number(i), 0, 10000, 1, paramcolor), row,2+i,1,1);
     }
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Коррекция  tg δ вводов:"), row,1,1,1);
 
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "corTg ."+QString::number(i), 1, 1000, 0, paramcolor), row, 2+i, 1, 1);
+     glyout->addWidget(WDFunc::NewSPB(this, "corTg."+QString::number(i), 0, 10000, 1, paramcolor), row, 2+i, 1, 1);
     }
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Гистерезис на отключение сигнализации по dC, % от уставки:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "GdС", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "GdС", 0, 10000, 1, paramcolor), row,2,1,3);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Гистерезис на отключение сигнализации по dTg, % от уставки:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "GdTg", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "GdTg", 0, 10000, 1, paramcolor), row,2,1,3);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Гистерезис на отключение сигнализации по небалансу токов:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "GdIunb", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "GdIunb", 0, 10000, 1, paramcolor), row,2,1,3);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Начальное действ. значение тока небаланса:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Iunb_init", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "Iunb_init", 0, 10000, 1, paramcolor), row,2,1,3);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Начальное значение угла тока небаланса:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Phy_unb_init", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "Phy_unb_init", 0, 10000, 1, paramcolor), row,2,1,3);
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
@@ -142,9 +228,6 @@ void ConfDialog84::SetupUI()
     vlyout2->addLayout(hlyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);*/
-
-
-
     analog1->setLayout(vlyout1);
 
 
@@ -155,43 +238,43 @@ void ConfDialog84::SetupUI()
     row = 0;
 
     glyout->addWidget(WDFunc::NewLBL(this, "Уставка предупредительной сигнализации по изменению емкости:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "dС_pred", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "dС_pred", 0, 10000, 1, paramcolor), row,2,1,3);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Уставка аварийной сигнализации по изменению емкости:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "dС_alarm", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "dС_alarm", 0, 10000, 1, paramcolor), row,2,1,3);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Уставка предупредительной сигнализации по изменению tg δ:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "dTg_pred", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "dTg_pred", 0, 1000, 1, paramcolor), row,2,1,3);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Уставка аварийной сигнализации по изменению tg δ:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "dTg_alarm", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "dTg_alarm", 0, 10000, 1, paramcolor), row,2,1,3);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, " Уставка предупредительной сигнализации по изменению небаланса токов:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "dIunb_pred", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "dIunb_pred", 0, 10000, 1, paramcolor), row,2,1,3);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Уставка аварийной сигнализации по изменению небаланса токов:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "dIunb _alarm", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "dIunb _alarm", 0, 10000, 1, paramcolor), row,2,1,3);
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
 
-    gb = new QGroupBox("Аналоговые");
+    gb = new QGroupBox("Параметры записи");
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Интервал усреднения данных  (в периодах основной частоты):"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "NFiltr", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "NFiltr", 0, 10000, 0, paramcolor), row,2,1,3);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Интервал записи данных в ПЗУ (тренд), в секундах:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "T_Data_Rec", 1, 1000, 0, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "T_Data_Rec", 0, 10000, 0, paramcolor), row,2,1,3);
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
@@ -205,11 +288,11 @@ void ConfDialog84::SetupUI()
 
         row++;
         glyout->addWidget(WDFunc::NewLBL(this, "Сопротивление термометра при 0°С, Ом (только для МНК3):"), row,1,1,1);
-        glyout->addWidget(WDFunc::NewSPB(this, "RTerm", 1, 1000, 0, paramcolor), row,2,1,3);
+        glyout->addWidget(WDFunc::NewSPB(this, "RTerm", 0, 10000, 1, paramcolor), row,2,1,3);
 
         row++;
         glyout->addWidget(WDFunc::NewLBL(this, "Температурный коэффициент термометра (только для МНК3):"), row,1,1,1);
-        glyout->addWidget(WDFunc::NewSPB(this, "W100", 1, 1000, 0, paramcolor), row,2,1,3);
+        glyout->addWidget(WDFunc::NewSPB(this, "W100", 0, 10000, 3, paramcolor), row,2,1,3);
 
         vlyout2->addLayout(glyout);
         gb->setLayout(vlyout2);
@@ -228,7 +311,7 @@ void ConfDialog84::SetupUI()
 
     for (int i = 0; i < 4; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "IP"+QString::number(i), 1, 1000, 0, paramcolor), row,2+i,1,1, Qt::AlignLeft);
+     glyout->addWidget(WDFunc::NewSPB(this, "IP"+QString::number(i), 0, 10000, 0, paramcolor), row,2+i,1,1, Qt::AlignLeft);
     }
 
     row++;
@@ -236,7 +319,7 @@ void ConfDialog84::SetupUI()
 
     for (int i = 0; i < 4; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "Mask"+QString::number(i), 1, 1000, 0, paramcolor), row,2+i,1,1, Qt::AlignLeft);
+     glyout->addWidget(WDFunc::NewSPB(this, "Mask"+QString::number(i), 0, 10000, 0, paramcolor), row,2+i,1,1, Qt::AlignLeft);
     }
 
     row++;
@@ -244,15 +327,15 @@ void ConfDialog84::SetupUI()
 
     for (int i = 0; i < 4; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "GateWay"+QString::number(i), 1, 1000, 0, paramcolor), row,2+i,1,1, Qt::AlignLeft);
+     glyout->addWidget(WDFunc::NewSPB(this, "GateWay"+QString::number(i), 0, 10000, 0, paramcolor), row,2+i,1,1, Qt::AlignLeft);
     }
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Порт протокола 104:"), row,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Порты протоколов:"), row,1,1,1);
 
     for (int i = 0; i < 4; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "Port"+QString::number(i), 1, 1000, 0, paramcolor), row,2+i,1,1, Qt::AlignLeft);
+     glyout->addWidget(WDFunc::NewSPB(this, "Port"+QString::number(i), 0, 10000, 0, paramcolor), row,2+i,1,1, Qt::AlignLeft);
     }
 
     row++;
@@ -260,26 +343,26 @@ void ConfDialog84::SetupUI()
 
     for (int i = 0; i < 4; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "SNTP"+QString::number(i), 1, 1000, 0, paramcolor), row,2+i,1,1, Qt::AlignLeft);
+     glyout->addWidget(WDFunc::NewSPB(this, "SNTP"+QString::number(i), 0, 10000, 0, paramcolor), row,2+i,1,1, Qt::AlignLeft);
     }
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Скорость передачи данных:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Baud", 1, 1000, 0, paramcolor), row,2,1,4);
+    glyout->addWidget(WDFunc::NewLBL(this, "Скорость 485 интерфейса:"), row,1,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "Baud", 0, 100000, 0, paramcolor), row,2,1,4);
 
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Чётность:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Parity", 1, 1000, 0, paramcolor), row,2,1,4);
+    glyout->addWidget(WDFunc::NewSPB(this, "Parity", 0, 10000, 0, paramcolor), row,2,1,4);
 
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Стоповый бит:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "StopBit", 1, 1000, 0, paramcolor), row,2,1,4);
+    glyout->addWidget(WDFunc::NewLBL(this, "Количество стоповых битов:"), row,1,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "StopBit", 0, 10000, 0, paramcolor), row,2,1,4);
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Адрес базовой станции:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "adrMB", 1, 1000, 0, paramcolor), row,2,1,4);
+    glyout->addWidget(WDFunc::NewLBL(this, "Адрес устройства для Modbus:"), row,1,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "adrMB", 0, 10000, 0, paramcolor), row,2,1,4);
 
 
     vlyout2->addLayout(glyout);
