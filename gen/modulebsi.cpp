@@ -118,6 +118,7 @@ int ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
         {
             QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
             EMessageBox::error(w, "ошибка", "Ошибка чтения конфигурации из " + tmps + QString::number(res));
+            return Error::ER_GENERALERROR;
         }
     }
     return Error::ER_NOERROR;

@@ -46,8 +46,8 @@ private slots:
 #endif
 signals:
     void BsiIsNeedToBeAcquiredAndChecked(); // signal to reload start block emitted when new configuration has been sent to module
-    void NewConfLoaded(); // signal to load configuration in all appropriate windows (main conf, base conf, mez conf)
-    void LoadDefConf(); // signal to load default configuration
+    void NewConfToBeLoaded(); // signal to load configuration in all appropriate windows (main conf, base conf, mez conf)
+    void DefConfToBeLoaded(); // signal to load default configuration
 };
 
 #endif // ABSTRACTCONFDIALOG_H

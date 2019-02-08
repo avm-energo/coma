@@ -107,14 +107,16 @@ QWidget *EAbstractTuneDialog::BottomUI(int bacnum)
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QPushButton *pb = new QPushButton("Установить настроечные коэффициенты по умолчанию");
+    pb->setObjectName(QString::number(bacnum));
     connect(pb,SIGNAL(clicked()),this,SLOT(SetDefCoefs()));
     lyout->addWidget(pb);
     QHBoxLayout *hlyout = new QHBoxLayout;
     QString tmps = "Прочитать настроечные коэффициенты из ";
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     pb = new QPushButton(tmps);
+    pb->setObjectName(QString::number(bacnum));
 #if PROGSIZE != PROGSIZE_EMUL
-    connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs(bacnum)));
+    connect(pb,SIGNAL(clicked()),this,SLOT(ReadTuneCoefs()));
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
@@ -122,6 +124,7 @@ QWidget *EAbstractTuneDialog::BottomUI(int bacnum)
     tmps = "Записать настроечные коэффициенты в ";
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     pb = new QPushButton(tmps);
+    pb->setObjectName(QString::number(bacnum));
 #if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteTuneCoefsSlot()));
 #endif
@@ -132,10 +135,12 @@ QWidget *EAbstractTuneDialog::BottomUI(int bacnum)
     hlyout = new QHBoxLayout;
     pb = new QPushButton("Прочитать настроечные коэффициенты из файла");
     pb->setIcon(QIcon("../load.png"));
+    pb->setObjectName(QString::number(bacnum));
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadFromFile()));
     hlyout->addWidget(pb);
     pb = new QPushButton("Записать настроечные коэффициенты в файл");
     pb->setIcon(QIcon("../save.png"));
+    pb->setObjectName(QString::number(bacnum));
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
@@ -172,7 +177,7 @@ void EAbstractTuneDialog::ProcessTune()
     MsgClear(); // очистка экрана с сообщениями
     for (bStep=0; bStep<lbls.size(); ++bStep)
     {
-        WaitNSeconds(2);
+//        WaitNSeconds(2);
         MsgSetVisible(bStep);
         int res = (this->*pf[lbls.at(bStep)])();
         if ((res == Error::ER_GENERALERROR) || (StdFunc::IsCancelled()))
@@ -278,6 +283,7 @@ void EAbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
 
 int EAbstractTuneDialog::StartMeasurement()
 {
+    MeasurementTimer->start();
     SetMeasurementEnabled(true);
     while (MeasurementEnabled && !StdFunc::IsCancelled())
         TimeFunc::Wait();
@@ -318,17 +324,20 @@ void EAbstractTuneDialog::PasswordCheck(QString psw)
     emit PasswordChecked();
 }
 
-void EAbstractTuneDialog::ReadTuneCoefs(int bacnum)
+void EAbstractTuneDialog::ReadTuneCoefs()
 {
+    int bacnum = sender()->objectName().toInt();
     if (AbsBac.keys().contains(bacnum))
     {
-        if (Commands::GetBac(bacnum, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize) == Error::ER_NOERROR)
+        int res = Commands::GetBac(bacnum, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize);
+        if (res == Error::ER_NOERROR)
             FillBac(bacnum);
     }
 }
 
-bool EAbstractTuneDialog::WriteTuneCoefsSlot(int bacnum)
+bool EAbstractTuneDialog::WriteTuneCoefsSlot()
 {
+    int bacnum = sender()->objectName().toInt();
     //if (CheckPassword() != Error::ER_NOERROR)   На время отладки!!!
     //    return false;
     return WriteTuneCoefs(bacnum);
@@ -405,8 +414,9 @@ void EAbstractTuneDialog::SaveToFileEx(int bacnum)
     }
 }
 
-void EAbstractTuneDialog::SaveToFile(int bacnum)
+void EAbstractTuneDialog::SaveToFile()
 {
+    int bacnum = sender()->objectName().toInt();
     FillBackBac(bacnum);
     SaveToFileEx(bacnum);
 }
@@ -415,20 +425,21 @@ void EAbstractTuneDialog::SetMeasurementEnabled(bool enabled)
 {
     if (enabled)
     {
-        WDFunc::SetEnabled(this, "GoodDN", true);
-        WDFunc::SetEnabled(this, "NoGoodDN", true);
+        WDFunc::SetEnabled(this, "Good", true);
+        WDFunc::SetEnabled(this, "NoGood", true);
         MeasurementEnabled = true;
     }
     else
     {
-        WDFunc::SetEnabled(this, "GoodDN", false);
-        WDFunc::SetEnabled(this, "NoGoodDN", false);
+        WDFunc::SetEnabled(this, "Good", false);
+        WDFunc::SetEnabled(this, "NoGood", false);
         MeasurementEnabled = false;
     }
 }
 
-void EAbstractTuneDialog::LoadFromFile(int bacnum)
+void EAbstractTuneDialog::LoadFromFile()
 {
+    int bacnum = sender()->objectName().toInt();
     QByteArray ba;
     ba.resize(MAXTUNESIZE);
     QString tunenum = QString::number(bacnum, 16);

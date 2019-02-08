@@ -34,7 +34,8 @@ public:
     bool IsNeededDefConf;
     QMap <int, BacStruct> AbsBac;
     QStringList lbls;
-    bool Cancelled, Skipped, MeasurementEnabled, ok, TuneFileSaved;
+    bool Skipped, MeasurementEnabled, ok, TuneFileSaved;
+//    bool Cancelled;
     QTimer *MeasurementTimer;
     QVector<S2::DataRec> S2Config;
     quint32 SecondsToEnd15SecondsInterval;
@@ -61,7 +62,6 @@ public:
     void SkMsgSetVisible(int msg, bool Visible=true);
     void MsgClear();
     void WaitNSeconds(int SecondsToWait, bool isAllowedToStop=false);
-    int StartMeasurement();
 //    QByteArray *ChooseFileForOpen(QString mask);
     bool WriteTuneCoefs(int bacnum);
     int SaveAllTuneCoefs();
@@ -85,13 +85,15 @@ public slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void CancelTune();
     void ReadAllTuneCoefs();
-    void ReadTuneCoefs(int bacnum);
-    bool WriteTuneCoefsSlot(int bacnum);
+    void ReadTuneCoefs();
+    bool WriteTuneCoefsSlot();
     void Good();
     void NoGood();
+    int StartMeasurement();
+    virtual void SetDefCoefs() = 0;
 
 #endif
-    void SaveToFile(int bacnum);
+    void SaveToFile();
 
 private:
     void SetMeasurementEnabled(bool enabled);
@@ -104,8 +106,7 @@ private slots:
     //    void UpdateNSecondsWidget();
     void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
 #endif
-    void LoadFromFile(int bacnum);
-    virtual void SetDefCoefs(int bacnum) = 0;
+    void LoadFromFile();
 
 protected:
     void closeEvent(QCloseEvent *e);

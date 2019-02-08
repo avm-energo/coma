@@ -126,6 +126,8 @@ private:
     void LoadSettings();
 #endif
 
+    QWidget *BdaBottomUI();
+
 private slots:
 #if PROGSIZE != PROGSIZE_EMUL
     int ReadAnalogMeasurements();
@@ -135,8 +137,8 @@ private slots:
     void CancelExtTemp();
     void CancelExt(const QString &dlgname);
 #endif
-    void FillBac();
-    void FillBackBac();
+    void FillBac(int bacnum);
+    void FillBackBac(int bacnum);
     void SetDefCoefs();
 };
 

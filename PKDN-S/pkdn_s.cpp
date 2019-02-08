@@ -132,8 +132,8 @@ void pkdn_s::Stage3()
     ConfDialogA1 *DialogA1 = new ConfDialogA1(S2Config);
     ConfB = DialogA1;
     MainTW->addTab(ConfB, "Конфигурирование");
-    connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
-    connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+    connect(ConfB,SIGNAL(NewConfToBeLoaded()),this,SLOT(Fill()));
+    connect(ConfB,SIGNAL(DefConfToBeLoaded()),this,SLOT(SetDefConf()));
     CheckDialogA1 *chdlg = new CheckDialogA1(BT_BASE);
 //    fwupdialog *FwUpD = new fwupdialog;
 #if PROGSIZE >= PROGSIZE_LARGE
@@ -152,8 +152,8 @@ void pkdn_s::Stage3()
 #endif
     MainTW->addTab(chdlg, "Измерения");
     A1Dialog *extdlg = new A1Dialog;
-    connect(extdlg,SIGNAL(StartPercents(quint32)),this,SLOT(SetProgressBar2Size(quint32)));
-    connect(extdlg,SIGNAL(SetPercent(quint32)),this,SLOT(SetProgressBar2(quint32)));
+    connect(extdlg,SIGNAL(StartPercents(int)),this,SLOT(SetProgressBar2Size(int)));
+    connect(extdlg,SIGNAL(SetPercent(int)),this,SLOT(SetProgressBar2(int)));
 //    connect(this,SIGNAL(Finished()),extdlg,SIGNAL(Finished()));
     MainTW->addTab(extdlg, "Поверка внешнего ДН/ТН");
 //    MainTW->addTab(FwUpD, "Загрузка ВПО");

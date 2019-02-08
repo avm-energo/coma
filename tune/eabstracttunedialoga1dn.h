@@ -20,6 +20,19 @@ class EAbstractTuneDialogA1DN : public EAbstractTuneDialog
 
 public:
 
+    enum PovTypes
+    {
+        GOST_NONE, // не задано
+        GOST_23625, // по 5 точкам туда-сюда
+        GOST_1983 // по 3 точкам только туда
+    };
+
+    enum DNTypes
+    {
+        DNT_OWN, // свой ДН
+        DNT_FOREIGN
+    };
+
     enum GetAndAverageTypes
     {
         GAAT_BDA_OUT,
@@ -34,8 +47,8 @@ public:
 
     enum UModesBlocks
     {
-        BLOCK_ALTERNATIVE = 1,
-        BLOCK_DIRECT = 2
+        BLOCK_ALTERNATIVE = 2,
+        BLOCK_DIRECT = 3
     };
 
     struct ReportHeaderStructure
@@ -73,7 +86,7 @@ public:
         QString DevPrecision; // точность
     };
 
-    struct Baci
+    struct Baci2
     {
         float U1kDN[6];     // измеренные при калибровке напряжения на выходе своего ДН для значений 0 и вблизи 12, 30, 48, 60 и 72 В
         float U2kDN[6];     // и соответствующие им значения на выходе эталонного делителя
@@ -85,9 +98,9 @@ public:
         float K_DN;         // номинальный коэффициент деления ДН
     };
 
-    struct Bac
+    struct Bac2
     {
-        Baci Bac_block[TUNEVARIANTSNUM];
+        Baci2 Bac_block2[TUNEVARIANTSNUM];
         quint32 DNFNum;     // заводской номер делителя
     };
 
@@ -114,7 +127,7 @@ public:
         quint32 DNFNum;
     };
 
-    Bac Bac_block;
+    Bac2 Bac_block2;
     Bac3 Bac_block3;
     ConfigA1 *CA1;
     CheckA1 *ChA1;
@@ -124,24 +137,41 @@ public:
     ReportHeaderStructure ReportHeader;
     PovDevStruct PovDev;
     DdStruct Dd_Block[TUNEA1LEVELS];
-    int TuneVariant;
+    int TuneVariant, VoltageType, DNType;
+    int Index;
+    float CurrentS; // текущее значение нагрузки
+    int PovType; // тип поверяемого оборудования (по какому ГОСТу)
 
     EAbstractTuneDialogA1DN(QWidget *parent = nullptr);
 
-    void InputTuneVariant(int varnum);
+    void InputTuneParameters(int dntype);
     void GetBdAndFillMTT();
-    int GetAndAverage(int percent, int type, void *out); // type = GAAT_BDA_OUT, GAAT_BDA_IN
+    int GetAndAverage(int type, void *out); // type = GAAT_BDA_OUT, GAAT_BDA_IN
+    int ShowVoltageDialog(int percent);
+    void FillMedian(int index);
 
+    bool ConditionDataDialog();
+    bool DNDialog(PovDevStruct &PovDev);
+    void LoadSettings();
+    void SaveSettings();
+    void FillModelRow(int row);
+    void FillHeaders();
+    void TemplateCheck();
 signals:
     void StartPercents(int Percent);
     void SetPercent(int Percent);
 
 public slots:
-    void SetTuneVariant();
+    void SetTuneParameters();
     void SetConditionData();
+    void FillBac(int bacnum);
+    void FillBackBac(int bacnum);
+    void SetDefCoefs();
+//    void AcceptDNData();
+    void SetDNData();
 
+private slots:
 private:
-    void FillMedian(int index);
     void FillBackBdIn();
     void FillBdIn();
     void FillBackBdOut();

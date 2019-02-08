@@ -29,7 +29,7 @@ TuneDialogA1DN::TuneDialogA1DN(QWidget *parent) :
 {
     CA1 = new ConfigA1(S2Config);
     ChA1 = new CheckA1;
-    SetBac(&Bac_block, 2, sizeof(Bac));
+    SetBac(&Bac_block2, 2, sizeof(Bac2));
     SetBac(&Bac_block3, 3, sizeof(Bac3));
     RepModel = new ReportModel;
     SetupUI();
@@ -48,20 +48,22 @@ void TuneDialogA1DN::SetLbls()
     lbls.append("7.2.3. Ввод данных по делителю и приём настроечных параметров...");
     lbls.append("7.2.5. Задание варианта включения ДН...");
     lbls.append("7.2.6. Запись варианта включения в прибор...");
-    lbls.append("7.2.7. Установка 20%, проверка и сохранение...");
+/*    lbls.append("7.2.7. Установка 20%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 50%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 80%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 100%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 120%, проверка и сохранение...");
-    lbls.append("7.2.11. Запись настроечных коэффициентов и переход на новую конфигурацию...");
+    lbls.append("7.2.11. Запись настроечных коэффициентов и переход на новую конфигурацию..."); */
     lbls.append("7.2.12. Проверка аналоговых данных...");
-    lbls.append("7.2.9.1. Проверка аналоговых данных...");
-    lbls.append("7.2.9.2. Проверка аналоговых данных...");
-    lbls.append("7.2.9.3. Проверка аналоговых данных...");
-    lbls.append("7.2.9.4. Проверка аналоговых данных...");
-    lbls.append("7.2.9.5. Проверка аналоговых данных...");
-    lbls.append("7.2.9.6. Проверка аналоговых данных...");
-    lbls.append("7.2.9.7. Проверка аналоговых данных...");
+    lbls.append("7.2.13.1. Проверка аналоговых данных...");
+    lbls.append("7.2.13.2. Проверка аналоговых данных...");
+    lbls.append("7.2.13.3. Проверка аналоговых данных...");
+    lbls.append("7.2.13.4. Проверка аналоговых данных...");
+    lbls.append("7.2.13.5. Проверка аналоговых данных...");
+    lbls.append("7.2.13.6. Проверка аналоговых данных...");
+    lbls.append("7.2.13.7. Проверка аналоговых данных...");
+    lbls.append("7.2.13.8. Проверка аналоговых данных...");
+    lbls.append("7.2.14. Запись результатов и формирование протокола...");
 }
 
 void TuneDialogA1DN::SetPf()
@@ -76,7 +78,7 @@ void TuneDialogA1DN::SetPf()
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_6);
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_1); // 7.2.7. Установка 20%, проверка и сохранение
+/*    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_1); // 7.2.7. Установка 20%, проверка и сохранение
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_2); // 7.2.7. Установка 50%, проверка и сохранение
     pf[lbls.at(count++)] = func;
@@ -87,25 +89,26 @@ void TuneDialogA1DN::SetPf()
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_5); // 7.2.7. Установка 120%, проверка и сохранение
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_11); // 7.2.11. Запись настроечных коэффициентов и переход на новую конфигурацию
-    pf[lbls.at(count++)] = func;
+    pf[lbls.at(count++)] = func; */
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_12); // 7.2.12. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-
-
-
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_1); // 7.2.9.1. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_1); // 7.2.13.1. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_2); // 7.2.9.2. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_2); // 7.2.13.2. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_3); // 7.2.9.3. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_3); // 7.2.13.3. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_4); // 7.2.9.4. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_4); // 7.2.13.4. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_5); // 7.2.9.5. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_5); // 7.2.13.5. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_6); // 7.2.9.6. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_6); // 7.2.13.6. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_7); // 7.2.9.7. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_7); // 7.2.13.7. Проверка аналоговых данных
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_8); // 7.2.13.8. Проверка аналоговых данных
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_14); // 7.2.14
     pf[lbls.at(count++)] = func;
 }
 #endif
@@ -131,6 +134,9 @@ void TuneDialogA1DN::SetupUI()
     cp3->setStyleSheet(tmps);
     cp4->setStyleSheet(tmps);
     cp5->setStyleSheet(tmps);
+    cp6->setStyleSheet(tmps);
+    cp7->setStyleSheet(tmps);
+    cp8->setStyleSheet(tmps);
 
     TuneTW->addTab(cp1,"Настройка штатного ДН");
     TuneTW->addTab(cp2,"Коэф~ 1");
@@ -189,13 +195,13 @@ void TuneDialogA1DN::SetupUI()
     hlyout = new QHBoxLayout;
     hlyout->addStretch(5);
     QPushButton *pb = new QPushButton("Продолжить");
-    pb->setObjectName("GoodDN");
+    pb->setObjectName("Good");
     pb->setEnabled(false);
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(Good()));
     hlyout->addWidget(pb);
     hlyout->addStretch(10);
     pb = new QPushButton("Отмена");
-    pb->setObjectName("NoGoodDN");
+    pb->setObjectName("NoGood");
     pb->setEnabled(false);
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(NoGood()));
     hlyout->addWidget(pb);
@@ -290,155 +296,10 @@ QWidget *TuneDialogA1DN::CoefUI(int bac2num)
         }
     }
     lyout->addLayout(glyout);
-    lyout->addWidget(BottomUI(1)); // блок Bac2 - первый по счёту в EAbstractTuneDialog
+    lyout->addWidget(BottomUI(2)); // блок Bac2 - первый по счёту в EAbstractTuneDialog
     lyout->addStretch(1);
     w->setLayout(lyout);
     return w;
-}
-
-void TuneDialogA1DN::FillBac(int bacnum)
-{
-    if (bacnum == BLOCK_ALTERNATIVE)
-    {
-        for (int j=0; j<TUNEVARIANTSNUM; ++j)
-        {
-            QString Si = QString::number(j);
-            WDFunc::SetSPBData(this, "K_DNSPB."+Si, Bac_block.Bac_block[j].K_DN);
-            for (int i = 0; i < 6; ++i)
-            {
-                WDFunc::SetLEData(this, "tune"+QString::number(i+4)+"."+Si, QString::number(Bac_block.Bac_block[j].U1kDN[i], 'f', 5));
-                WDFunc::SetLEData(this, "tune"+QString::number(i+10)+"."+Si, QString::number(Bac_block.Bac_block[j].U2kDN[i], 'f', 5));
-                WDFunc::SetLEData(this, "tune"+QString::number(i+16)+"."+Si, QString::number(Bac_block.Bac_block[j].PhyDN[i], 'f', 5));
-                if (i < 5)
-                {
-                    WDFunc::SetLEData(this, "tune"+QString::number(i+22)+"."+Si, QString::number(Bac_block.Bac_block[j].dU_cor[i], 'f', 5));
-                    WDFunc::SetLEData(this, "tune"+QString::number(i+27)+"."+Si, QString::number(Bac_block.Bac_block[j].dPhy_cor[i], 'f', 5));
-                    WDFunc::SetLEData(this, "tune"+QString::number(i+32)+"."+Si, QString::number(Bac_block.Bac_block[j].ddU_cor[i], 'f', 5));
-                    WDFunc::SetLEData(this, "tune"+QString::number(i+37)+"."+Si, QString::number(Bac_block.Bac_block[j].ddPhy_cor[i], 'f', 5));
-                }
-            }
-            WDFunc::SetLEData(this, "DividerSN"+Si, QString::number(Bac_block.DNFNum));
-        }
-    }
-    else
-    {
-        for (int j=0; j<TUNEVARIANTSNUM; ++j)
-        {
-            QString Si = QString::number(j+3);
-            WDFunc::SetSPBData(this, "K_DNSPB."+Si, Bac_block3.Bac_block3[j].K_DN);
-            for (int i = 0; i < 6; ++i)
-            {
-                WDFunc::SetLEData(this, "tune"+QString::number(i+4)+"."+Si, QString::number(Bac_block3.Bac_block3[j].U1kDN[i], 'f', 5));
-                WDFunc::SetLEData(this, "tune"+QString::number(i+10)+"."+Si, QString::number(Bac_block3.Bac_block3[j].U2kDN[i], 'f', 5));
-                if (i < 5)
-                {
-                    WDFunc::SetLEData(this, "tune"+QString::number(i+22)+"."+Si, QString::number(Bac_block3.Bac_block3[j].dU_cor[i], 'f', 5));
-                    WDFunc::SetLEData(this, "tune"+QString::number(i+32)+"."+Si, QString::number(Bac_block3.Bac_block3[j].ddU_cor[i], 'f', 5));
-                }
-            }
-            WDFunc::SetLEData(this, "DividerSN"+Si, QString::number(Bac_block3.DNFNum));
-        }
-    }
-}
-
-void TuneDialogA1DN::FillBackBac(int bacnum)
-{
-    QString tmps;
-    if (bacnum == BLOCK_ALTERNATIVE)
-    {
-        for (int j=0; j<TUNEVARIANTSNUM; ++j)
-        {
-            QString Si = QString::number(j);
-            WDFunc::SPBData(this, "K_DNSPB."+Si, Bac_block.Bac_block[j].K_DN);
-            for (int i = 0; i < 6; i++)
-            {
-                WDFunc::LENumber(this, "tune"+QString::number(i+4)+"."+Si, Bac_block.Bac_block[j].U1kDN[i]);
-                WDFunc::LENumber(this, "tune"+QString::number(i+10)+"."+Si, Bac_block.Bac_block[j].U2kDN[i]);
-                WDFunc::LENumber(this, "tune"+QString::number(i+16)+"."+Si, Bac_block.Bac_block[j].PhyDN[i]);
-                if (i < 5)
-                {
-                    WDFunc::LENumber(this, "tune"+QString::number(i+22)+"."+Si, Bac_block.Bac_block[j].dU_cor[i]);
-                    WDFunc::LENumber(this, "tune"+QString::number(i+27)+"."+Si, Bac_block.Bac_block[j].dPhy_cor[i]);
-                    WDFunc::LENumber(this, "tune"+QString::number(i+32)+"."+Si, Bac_block.Bac_block[j].ddU_cor[i]);
-                    WDFunc::LENumber(this, "tune"+QString::number(i+37)+"."+Si, Bac_block.Bac_block[j].ddPhy_cor[i]);
-                }
-            }
-            WDFunc::LEData(this, "DividerSN"+Si, tmps);
-            Bac_block.DNFNum = tmps.toInt();
-        }
-    }
-    else
-    {
-        for (int j=0; j<TUNEVARIANTSNUM; ++j)
-        {
-            QString Si = QString::number(j+3);
-            WDFunc::SPBData(this, "K_DNSPB."+Si, Bac_block3.Bac_block3[j].K_DN);
-            for (int i = 0; i < 6; i++)
-            {
-                WDFunc::LENumber(this, "tune"+QString::number(i+4)+"."+Si, Bac_block3.Bac_block3[j].U1kDN[i]);
-                WDFunc::LENumber(this, "tune"+QString::number(i+10)+"."+Si, Bac_block3.Bac_block3[j].U2kDN[i]);
-                if (i < 5)
-                {
-                    WDFunc::LENumber(this, "tune"+QString::number(i+22)+"."+Si, Bac_block3.Bac_block3[j].dU_cor[i]);
-                    WDFunc::LENumber(this, "tune"+QString::number(i+32)+"."+Si, Bac_block3.Bac_block3[j].ddU_cor[i]);
-                }
-            }
-            WDFunc::LEData(this, "DividerSN"+Si, tmps);
-            Bac_block3.DNFNum = tmps.toInt();
-        }
-    }
-}
-
-void TuneDialogA1DN::SetDefCoefs(int bacnum)
-{
-    if (bacnum == BLOCK_ALTERNATIVE)
-    {
-        for (int j=0; j<TUNEVARIANTSNUM; ++j)
-        {
-            Bac_block.Bac_block[j].U1kDN[0] = 0;
-            Bac_block.Bac_block[j].U2kDN[0] = 0;
-            Bac_block.Bac_block[j].U1kDN[1] = Bac_block.Bac_block[j].U2kDN[1] = 12;
-            Bac_block.Bac_block[j].U1kDN[2] = Bac_block.Bac_block[j].U2kDN[2] = 30;
-            Bac_block.Bac_block[j].U1kDN[3] = Bac_block.Bac_block[j].U2kDN[3] = 48;
-            Bac_block.Bac_block[j].U1kDN[4] = Bac_block.Bac_block[j].U2kDN[4] = 60;
-            Bac_block.Bac_block[j].U1kDN[5] = Bac_block.Bac_block[j].U2kDN[5] = 71;
-            for (int i=0; i<5; ++i)
-            {
-                Bac_block.Bac_block[j].PhyDN[i] = 0;
-                Bac_block.Bac_block[j].dU_cor[i] = 0;
-                Bac_block.Bac_block[j].dPhy_cor[i] = 0;
-                Bac_block.Bac_block[j].ddU_cor[i] = 0;
-                Bac_block.Bac_block[j].ddPhy_cor[i] = 0;
-            }
-        }
-        Bac_block.Bac_block[0].K_DN = 350;
-        Bac_block.Bac_block[1].K_DN = 1100;
-        Bac_block.Bac_block[2].K_DN = 2200;
-        Bac_block.DNFNum = 1;
-    }
-    else
-    {
-        for (int j=0; j<TUNEVARIANTSNUM; ++j)
-        {
-            Bac_block3.Bac_block3[j].U1kDN[0] = 0;
-            Bac_block3.Bac_block3[j].U2kDN[0] = 0;
-            Bac_block3.Bac_block3[j].U1kDN[1] = Bac_block3.Bac_block3[j].U2kDN[1] = 16;
-            Bac_block3.Bac_block3[j].U1kDN[2] = Bac_block3.Bac_block3[j].U2kDN[2] = 40;
-            Bac_block3.Bac_block3[j].U1kDN[3] = Bac_block3.Bac_block3[j].U2kDN[3] = 64;
-            Bac_block3.Bac_block3[j].U1kDN[4] = Bac_block3.Bac_block3[j].U2kDN[4] = 80;
-            Bac_block3.Bac_block3[j].U1kDN[5] = Bac_block3.Bac_block3[j].U2kDN[5] = 100;
-            for (int i=0; i<5; ++i)
-            {
-                Bac_block3.Bac_block3[j].dU_cor[i] = 0;
-                Bac_block3.Bac_block3[j].ddU_cor[i] = 0;
-            }
-        }
-        Bac_block3.Bac_block3[0].K_DN = 350;
-        Bac_block3.Bac_block3[1].K_DN = 1100;
-        Bac_block3.Bac_block3[2].K_DN = 2200;
-        Bac_block3.DNFNum = 1;
-    }
-    FillBac(bacnum);
 }
 
 QWidget *TuneDialogA1DN::CoefUI3(int bac3num)
@@ -475,31 +336,18 @@ QWidget *TuneDialogA1DN::CoefUI3(int bac3num)
         }
     }
     lyout->addLayout(glyout);
-    lyout->addWidget(BottomUI(2));
+    lyout->addWidget(BottomUI(3));
     lyout->addStretch(1);
     w->setLayout(lyout);
     return w;
 }
 
 #if PROGSIZE != PROGSIZE_EMUL
-void TuneDialogA1DN::AcceptDNData()
-{
-    WDFunc::CBIndex(this, "dnutype", Mode);
-    if (Mode > 0)
-        Commands::SetMode(Mode); // устанавливаем род напряжения (0 - переменный, 1 - постоянный)
-    if (Mode == MODE_ALTERNATIVE)
-        WDFunc::LENumber(this, "dnfnumle", Bac_block.DNFNum);
-    else
-        WDFunc::LENumber(this, "dnfnumle", Bac_block3.DNFNum);
-    WriteBacBlock();
-    emit Finished();
-}
-
 int TuneDialogA1DN::Start7_2_3()
 {
-    Commands::GetBac(2, &Bac_block, sizeof(Bac));
+    Commands::GetBac(2, &Bac_block2, sizeof(Bac2));
     Commands::GetBac(3, &Bac_block3, sizeof(Bac3)); // 7.2.4
-    int row = 0;
+/*    int row = 0;
     QDialog *dlg = new QDialog(this);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -507,7 +355,7 @@ int TuneDialogA1DN::Start7_2_3()
     QGridLayout *glyout = new QGridLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Данные на ТН(ДН)"), Qt::AlignCenter);
     glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "dnfnumle", QString::number(Bac_block.DNFNum)), row++, 1, 1, 1, Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewLE(this, "dnfnumle", QString::number(Bac_block2.DNFNum)), row++, 1, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLBL(this, "Род напряжения"), row, 0, 1, 1, Qt::AlignRight);
     QStringList sl = QStringList() << "Переменный" << "Постоянный";
     glyout->addWidget(WDFunc::NewCB(this, "dnutype", sl), row++, 1, 1, 1, Qt::AlignLeft);
@@ -529,13 +377,13 @@ int TuneDialogA1DN::Start7_2_3()
     while (!Accepted && !StdFunc::IsCancelled())
         TimeFunc::Wait();
     if (StdFunc::IsCancelled())
-        return Error::ER_GENERALERROR;
+        return Error::ER_GENERALERROR; */
     return Error::ER_NOERROR;
 }
 
 int TuneDialogA1DN::Start7_2_5()
 {
-    InputTuneVariant(TUNEVARIANTSNUM);
+    InputTuneParameters(DNT_OWN);
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     WriteBacBlock();
@@ -543,9 +391,9 @@ int TuneDialogA1DN::Start7_2_5()
         return Error::ER_GENERALERROR;
 /*    if (Commands::GetFile(1,&S2Config) == Error::ER_NOERROR)
     { */
-        Bac_block.Bac_block[TuneVariant].U1kDN[0] = 0;
-        Bac_block.Bac_block[TuneVariant].U2kDN[0] = 0;
-        Bac_block.Bac_block[TuneVariant].PhyDN[0] = 0;
+        Bac_block2.Bac_block2[TuneVariant].U1kDN[0] = 0;
+        Bac_block2.Bac_block2[TuneVariant].U2kDN[0] = 0;
+        Bac_block2.Bac_block2[TuneVariant].PhyDN[0] = 0;
         Bac_block3.Bac_block3[TuneVariant].U1kDN[0] = 0;
         Bac_block3.Bac_block3[TuneVariant].U2kDN[0] = 0;
 /*        return Error::ER_NOERROR;
@@ -564,9 +412,9 @@ int TuneDialogA1DN::Start7_2_6()
 
 int TuneDialogA1DN::Start7_2_7_1()
 {
-    QPushButton *pb = this->findChild<QPushButton *>("GoodDN");
+/*    QPushButton *pb = this->findChild<QPushButton *>("Good");
     if (pb != nullptr)
-        pb->setText("Продолжить");
+        pb->setText("Продолжить"); */
     return Start7_2_78910(0);
 }
 
@@ -597,11 +445,29 @@ int TuneDialogA1DN::Start7_2_78910(int counter)
 
     if (counter > 4)
         return Error::ER_GENERALERROR;
-    if (GetAndAverage(Percents[counter], GAAT_BDA_IN, &tmpst2) == Error::ER_GENERALERROR)
+    if (ShowVoltageDialog(Percents[counter]) == Error::ER_NOERROR)
     {
-        EMessageBox::error(this, "Ошибка", "Ошибка при проведении процедуры усреднения");
-        return Error::ER_GENERALERROR;
+        if (GetAndAverage(GAAT_BDA_IN, &tmpst2) == Error::ER_NOERROR)
+        {
+            // теперь в tmpst2 лежат нужные нам значения
+            if (Mode == MODE_ALTERNATIVE)
+            {
+                Bac_block2.Bac_block2[TuneVariant].U1kDN[counter+1] = tmpst2.UefNat_filt[0];
+                Bac_block2.Bac_block2[TuneVariant].U2kDN[counter+1] = tmpst2.UefNat_filt[1];
+                Bac_block2.Bac_block2[TuneVariant].PhyDN[counter+1] = tmpst2.Phy;
+                FillBac(BLOCK_ALTERNATIVE);
+            }
+            else
+            {
+                Bac_block3.Bac_block3[TuneVariant].U1kDN[counter+1] = tmpst2.UefNat_filt[0];
+                Bac_block3.Bac_block3[TuneVariant].U2kDN[counter+1] = tmpst2.UefNat_filt[1];
+                FillBac(BLOCK_DIRECT);
+            }
+            return Error::ER_NOERROR;
+        }
     }
+    EMessageBox::error(this, "Ошибка", "Ошибка при проведении процедуры усреднения");
+    return Error::ER_GENERALERROR;
 /*    float VoltageInV = (Mode == MODE_ALTERNATIVE) ? (100 / qSqrt(3)) : (100 * qSqrt(2) / qSqrt(3));
     VoltageInV *= Percents[counter] / 100;
     float VoltageInkV = (Mode == MODE_ALTERNATIVE) ? Bac_block.Bac_block[TuneVariant].K_DN : Bac_block3.Bac_block3[TuneVariant].K_DN;
@@ -650,26 +516,11 @@ int TuneDialogA1DN::Start7_2_78910(int counter)
     tmpst2.Uef_filt[0] /= count;
     tmpst2.Uef_filt[1] /= count; */
 
-    // теперь в tmpst2 лежат нужные нам значения
-    if (Mode == MODE_ALTERNATIVE)
-    {
-        Bac_block.Bac_block[TuneVariant].U1kDN[counter+1] = tmpst2.UefNat_filt[0];
-        Bac_block.Bac_block[TuneVariant].U2kDN[counter+1] = tmpst2.UefNat_filt[1];
-        Bac_block.Bac_block[TuneVariant].PhyDN[counter+1] = tmpst2.Phy;
-        FillBac(BLOCK_ALTERNATIVE);
-    }
-    else
-    {
-        Bac_block3.Bac_block3[TuneVariant].U1kDN[counter+1] = tmpst2.UefNat_filt[0];
-        Bac_block3.Bac_block3[TuneVariant].U2kDN[counter+1] = tmpst2.UefNat_filt[1];
-        FillBac(BLOCK_DIRECT);
-    }
-    return Error::ER_NOERROR;
 }
 
 int TuneDialogA1DN::Start7_2_11()
 {
-    if (!WriteTuneCoefs(Mode + 1)) // MODE = BLOCK + 1
+    if (!WriteTuneCoefs(Mode + 2)) // MODE = BLOCK + 1
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
 /*    if (cn->result == Error::NOERROR)
@@ -687,9 +538,9 @@ int TuneDialogA1DN::Start7_2_12()
         StdFunc::Cancel();
         return Error::ER_GENERALERROR;
     }
-    QPushButton *pb = this->findChild<QPushButton *>("GoodDN");
+/*    QPushButton *pb = this->findChild<QPushButton *>("Good");
     if (pb != nullptr)
-        pb->setText("Продолжить");
+        pb->setText("Продолжить"); */
     RepModel->SetModel(GOST23625ROWCOUNT, GOST23625COLCOUNT);
     return Start7_2_13(0);
 }
@@ -736,19 +587,19 @@ int TuneDialogA1DN::Start7_2_13_8()
     // теперь считаем средние погрешности и СКО
     if (Mode == MODE_ALTERNATIVE)
     {
-        Bac_block.Bac_block[TuneVariant].dPhy_cor[0] = Dd_Block[4].Phy;
-        Bac_block.Bac_block[TuneVariant].dU_cor[0] = Dd_Block[4].dUrms;
-        Bac_block.Bac_block[TuneVariant].ddPhy_cor[0] = Dd_Block[4].sPhy;
-        Bac_block.Bac_block[TuneVariant].ddU_cor[0] = Dd_Block[4].sU;
+        Bac_block2.Bac_block2[TuneVariant].dPhy_cor[0] = Dd_Block[4].Phy;
+        Bac_block2.Bac_block2[TuneVariant].dU_cor[0] = Dd_Block[4].dUrms;
+        Bac_block2.Bac_block2[TuneVariant].ddPhy_cor[0] = Dd_Block[4].sPhy;
+        Bac_block2.Bac_block2[TuneVariant].ddU_cor[0] = Dd_Block[4].sU;
         for (int i=0; i<4; ++i)
         {
-            Bac_block.Bac_block[TuneVariant].dPhy_cor[4-i] = (Dd_Block[i].Phy + Dd_Block[TUNEA1LEVELS-i-1].Phy) / 2;
-            Bac_block.Bac_block[TuneVariant].dU_cor[4-i] = (Dd_Block[i].dUrms + Dd_Block[TUNEA1LEVELS-i-1].dUrms) / 2;
-            Bac_block.Bac_block[TuneVariant].ddPhy_cor[4-i] = (Dd_Block[i].sPhy + Dd_Block[TUNEA1LEVELS-i-1].sPhy) / 2;
-            Bac_block.Bac_block[TuneVariant].ddU_cor[4-i] = (Dd_Block[i].sU + Dd_Block[TUNEA1LEVELS-i-1].sU) / 2;
+            Bac_block2.Bac_block2[TuneVariant].dPhy_cor[4-i] = (Dd_Block[i].Phy + Dd_Block[TUNEA1LEVELS-i-1].Phy) / 2;
+            Bac_block2.Bac_block2[TuneVariant].dU_cor[4-i] = (Dd_Block[i].dUrms + Dd_Block[TUNEA1LEVELS-i-1].dUrms) / 2;
+            Bac_block2.Bac_block2[TuneVariant].ddPhy_cor[4-i] = (Dd_Block[i].sPhy + Dd_Block[TUNEA1LEVELS-i-1].sPhy) / 2;
+            Bac_block2.Bac_block2[TuneVariant].ddU_cor[4-i] = (Dd_Block[i].sU + Dd_Block[TUNEA1LEVELS-i-1].sU) / 2;
         }
         FillBac(BLOCK_ALTERNATIVE);
-        SaveToFile(BLOCK_ALTERNATIVE);
+        SaveToFileEx(BLOCK_ALTERNATIVE);
     }
     else
     {
@@ -760,7 +611,7 @@ int TuneDialogA1DN::Start7_2_13_8()
             Bac_block3.Bac_block3[TuneVariant].ddU_cor[4-i] = (Dd_Block[i].sU + Dd_Block[TUNEA1LEVELS-i-1].sU) / 2;
         }
         FillBac(BLOCK_DIRECT);
-        SaveToFile(BLOCK_DIRECT);
+        SaveToFileEx(BLOCK_DIRECT);
     }
     return Start7_2_11();
 }
@@ -770,13 +621,15 @@ int TuneDialogA1DN::Start7_2_13(int counter)
     const int Percents[] = {120, 100, 80, 50, 20, 50, 80, 100, 120};
     if (counter >= TUNEA1LEVELS)
         return Error::ER_GENERALERROR;
-    return GetAndAverage(Percents[counter], GAAT_BDA_OUT, &Dd_Block[counter]);
+    if (ShowVoltageDialog(Percents[counter]) == Error::ER_NOERROR)
+        return GetAndAverage(GAAT_BDA_OUT, &Dd_Block[counter]);
+    return Error::ER_GENERALERROR;
 }
 
 int TuneDialogA1DN::Start7_2_14()
 {
-    if (!WriteTuneCoefs(Mode + 1)) // MODE = BLOCK + 1
-        return Error::ER_GENERALERROR;
+/*    if (!WriteTuneCoefs(Mode + 2)) // MODE = BLOCK + 1
+        return Error::ER_GENERALERROR; */
     FillHeaders();
     // запись файла протокола
     ReportHeader.PovDateTime = QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss");
@@ -798,116 +651,14 @@ int TuneDialogA1DN::Start7_2_14()
     return Error::ER_NOERROR;
 }
 
-void TuneDialogA1DN::FillHeaders()
+/*void TuneDialogA1DN::FillHeaders()
 {
     QStringList sl = QStringList() << "Проц" << "S/Sном" <<  "dUrms(u)" <<  "Phy(u)";
     sl << "dUrms(d)" << "Phy(d)" << "dUrms(ud)" << "Phy(ud)" << "dUrms(md)" << "Phy(md)" << \
           "dUrms(u-d)" << "Phy(u-d)" << "dUrms" << "Phy" << "sUrms(d)" << "sPhy(d)";
     sl << "sUrms(u)" << "sPhy(u)";
     RepModel->SetHeader(sl);
-}
-
-bool TuneDialogA1DN::ConditionDataDialog()
-{
-    Cancelled = false;
-    int row = 0;
-    QDialog *dlg = new QDialog(this);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    lyout->addWidget(WDFunc::NewLBL(this, "Условия поверки"), Qt::AlignCenter);
-    glyout->addWidget(WDFunc::NewLBL(this, "Дата поверки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "PovDateTime", ReportHeader.PovDateTime), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Температура окружающей среды, °С"), row, 0, 1, 1, Qt::AlignRight);
-    QString tmps;
-    if (StdFunc::FloatInRange(ChA1->Bda_out_an.Tamb, FLT_MAX, TH1))
-        tmps = "";
-    else
-        tmps = ReportHeader.Temp;
-    glyout->addWidget(WDFunc::NewLE(this, "Temp", tmps), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Влажность воздуха, %"), row, 0, 1, 1, Qt::AlignRight);
-    if (StdFunc::FloatInRange(ChA1->Bda_out_an.Hamb, FLT_MAX, TH1))
-        tmps = "";
-    else
-        tmps = ReportHeader.Humidity;
-    glyout->addWidget(WDFunc::NewLE(this, "Humidity", tmps), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Атмосферное давление, кПа"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "Pressure", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Напряжение питания сети, В"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "Voltage", ""), row++, 1, 1, 1, Qt::AlignLeft);
-/*    glyout->addWidget(WDFunc::NewLBL(this, "Частота питания сети, Гц"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "Frequency", ReportHeader.Freq), row++, 1, 1, 1, Qt::AlignLeft); */
-    glyout->setColumnStretch(1, 1);
-    lyout->addLayout(glyout);
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetConditionData()));
-    lyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(CancelTune()));
-    lyout->addWidget(pb);
-    connect(this,SIGNAL(Finished()),dlg,SLOT(close()));
-    dlg->setLayout(lyout);
-    dlg->exec();
-    return Cancelled;
-}
-
-bool TuneDialogA1DN::DNDialog(PovDevStruct &PovDev)
-{
-    Cancelled = false;
-    int row = 0;
-    QDialog *dlg = new QDialog(this);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    lyout->addWidget(WDFunc::NewLBL(this, "Данные ТН(ДН)"), Qt::AlignCenter);
-    glyout->addWidget(WDFunc::NewLBL(this, "Организация, проводившая поверку"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "UKDNOrganization", StdFunc::OrganizationString()), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Тип ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNType", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Обозначение по схеме, фаза"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNNamePhase", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNSerialNum", ReportHeader.DNSerNum), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности, %"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNTolerance", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное первичное напряжение, кВ"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNU1", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение, В"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNU2", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Номинальная мощность нагрузки, ВА"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNP", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Номинальная частота, Гц"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNFreq", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Предприятие-изготовитель"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNOrganization", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Место установки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNPlace", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Наименование средства поверки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "PovDev", PovDev.DevName), row++, 1, 1, 1, Qt::AlignLeft);
-    WDFunc::SetEnabled(this, "PovDev", false);
-    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер средства поверки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "PovDevSN", PovDev.DevSN), row++, 1, 1, 1, Qt::AlignLeft);
-    WDFunc::SetEnabled(this, "PovDevSN", false);
-    glyout->addWidget(WDFunc::NewLBL(this, "Класс точности средства поверки"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "PovDevPrecision", PovDev.DevPrecision), row++, 1, 1, 1, Qt::AlignLeft);
-    WDFunc::SetEnabled(this, "PovDevPrecision", false);
-    glyout->addWidget(WDFunc::NewLBL(this, "Результаты внешнего осмотра"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Результаты проверки правильности обозначения\nвыводов и групп соединений обмоток"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "DNWindingInspection", ""), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->setColumnStretch(1, 1);
-    lyout->addLayout(glyout);
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetDNData()));
-    lyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(Cancel()));
-    lyout->addWidget(pb);
-    connect(this,SIGNAL(CloseDialog()),dlg,SLOT(close()));
-    dlg->setLayout(lyout);
-    dlg->exec();
-    return Cancelled;
-}
+}*/
 
 int TuneDialogA1DN::ReadAnalogMeasurements()
 {
@@ -923,6 +674,9 @@ int TuneDialogA1DN::ReadAnalogMeasurements()
 
 int TuneDialogA1DN::ShowScheme()
 {
+    TemplateCheck(); // проверка наличия шаблонов протоколов
+    PovType = GOST_23625;
+    Index = 0;
     if (EMessageBox::question(this, "Подтверждение", "Подключите выход своего делителя напряжения ко входу U1 прибора\n"
                               "Выход эталонного делителя - ко входу U2") == false)
     {
@@ -936,7 +690,7 @@ void TuneDialogA1DN::WriteBacBlock()
 {
     if (Mode == MODE_ALTERNATIVE)
     {
-        if (Commands::WriteBac(2, &Bac_block, sizeof(Bac)) != Error::ER_NOERROR)
+        if (Commands::WriteBac(2, &Bac_block2, sizeof(Bac2)) != Error::ER_NOERROR)
         {
             EMessageBox::error(this, "Ошибка", "Ошибка при записи коэффициентов");
             StdFunc::Cancel();
@@ -1021,3 +775,17 @@ void TuneDialogA1DN::GenerateReport()
         EMessageBox::information(this, "Отменено", "Действие отменено");
     delete report;
 }
+
+/*void TuneDialogA1DN::AcceptDNData()
+{
+    WDFunc::CBIndex(this, "dnutype", Mode);
+    if (Mode > 0)
+        Commands::SetMode(Mode); // устанавливаем род напряжения (0 - переменный, 1 - постоянный)
+    if (Mode == MODE_ALTERNATIVE)
+        WDFunc::LENumber(this, "dnfnumle", Bac_block2.DNFNum);
+    else
+        WDFunc::LENumber(this, "dnfnumle", Bac_block3.DNFNum);
+    WriteBacBlock();
+    emit Finished();
+}
+*/

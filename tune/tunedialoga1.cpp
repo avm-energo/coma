@@ -28,9 +28,9 @@ TuneDialogA1::TuneDialogA1(QWidget *parent) :
 {
     CA1 = new ConfigA1(S2Config);
     ChA1 = new CheckA1;
-    SetBac(&Bac_block, BoardTypes::BT_BASE, sizeof(Bac_block));
+    SetBac(&Bac_block, 1, sizeof(Bac_block));
     SetupUI();
-
+    LoadSettings();
 }
 
 #if PROGSIZE != PROGSIZE_EMUL
@@ -47,7 +47,6 @@ void TuneDialogA1::SetLbls()
     lbls.append("6.3.3.6 КПТ: ввод данных от энергомонитора...");
     lbls.append("6.3.3.7 КПТ: расчёт регулировочных коэффициентов...");
     lbls.append("6.3.4.1 КТС: подтверждение установки 80 Ом...");
-    lbls.append("6.3.4.2 КТС: получение блока данных...");
     lbls.append("6.3.4.3 КТС: подтверждение установки 120 Ом...");
     lbls.append("6.3.4.4 КТС: получение блока данных и расчёт регулировочных коэффициентов...");
     lbls.append("6.3.5 КМТ2: подтверждение установки 4 мА...");
@@ -184,15 +183,15 @@ void TuneDialogA1::SetupUI()
     glyout->addWidget(WDFunc::NewLE(this, "tune35", "", ValuesLEFormat), 7, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(this, "Offset0"), 8, 0, 1, 1, Qt::AlignRight);
     glyout->addWidget(WDFunc::NewLE(this, "tune36", "", ValuesLEFormat), 8, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(this, "Offset1"), 8, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "tune37", "", ValuesLEFormat), 8, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Offset1"), 8, 2, 1, 1, Qt::AlignRight);
+    glyout->addWidget(WDFunc::NewLE(this, "tune37", "", ValuesLEFormat), 8, 3, 1, 1);
     glyout->setColumnStretch(0, 0);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(2, 0);
     glyout->setColumnStretch(3, 10);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
-    lyout->addWidget(BottomUI());
+    lyout->addWidget(BottomUI(1));
     lyout->addStretch(1);
     cp2->setLayout(lyout);
 
@@ -210,6 +209,7 @@ void TuneDialogA1::SetupUI()
     vlyout->addWidget(ChA1->Bda_in_anW(this));
     gb->setLayout(vlyout);
     lyout->addWidget(gb);
+    lyout->addWidget(BdaBottomUI());
 
     lyout->addStretch(1);
     cp3->setLayout(lyout);
@@ -217,6 +217,30 @@ void TuneDialogA1::SetupUI()
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
     setLayout(lyout);
+}
+
+QWidget *TuneDialogA1::BdaBottomUI()
+{
+    QWidget *w = new QWidget;
+    QVBoxLayout *lyout = new QVBoxLayout;
+
+    QPushButton *pb = new QPushButton("Запустить чтение сигналов");
+    pb->setObjectName("pbmeasurements");
+#if PROGSIZE != PROGSIZE_EMUL
+    connect(pb,SIGNAL(clicked()),this,SLOT(StartMeasurement()));
+#endif
+    if (StdFunc::IsInEmulateMode())
+        pb->setEnabled(false);
+    lyout->addWidget(pb);
+    pb = new QPushButton("Остановить чтение сигналов");
+#if PROGSIZE != PROGSIZE_EMUL
+    connect(pb,SIGNAL(clicked()),this,SLOT(Good()));
+#endif
+    if (StdFunc::IsInEmulateMode())
+        pb->setEnabled(false);
+    lyout->addWidget(pb);
+    w->setLayout(lyout);
+    return w;
 }
 
 #if PROGSIZE != PROGSIZE_EMUL
@@ -227,7 +251,7 @@ int TuneDialogA1::Start6_3_2()
         EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bac");
         return Error::ER_GENERALERROR;
     }
-    FillBac();
+    FillBac(1);
     return Error::ER_NOERROR;
 }
 
@@ -236,6 +260,12 @@ int TuneDialogA1::Start6_3_3_1()
     Skipped = false;
     if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по напряжениям, выполнить?") == false)
     {
+        Bac_block.KmU[0] = Bac_block_old.KmU[0];
+        Bac_block.KmU[1] = Bac_block_old.KmU[1];
+        Bac_block.K_freq = Bac_block_old.K_freq;
+        Bac_block.DPhy = Bac_block_old.DPhy;
+        Bac_block.ch_offset[0] = Bac_block_old.ch_offset[0];
+        Bac_block.ch_offset[1] = Bac_block_old.ch_offset[1];
         Skipped = true;
         return Error::ER_RESEMPTY;
     }
@@ -271,7 +301,6 @@ int TuneDialogA1::Start6_3_3_4()
         return Error::ER_RESEMPTY;
     EMessageBox::information(this, "Требование", "Снимите закоротку с РЕТОМ, подключите РЕТОМ ко входам U1 и U2 \n "
                              "и задайте на выходе напряжения фазы А напряжение 100,0 В при частоте 51 Гц");
-    WaitNSeconds(2);
     return Error::ER_NOERROR;
 }
 
@@ -279,7 +308,7 @@ int TuneDialogA1::Start6_3_3_5()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
-    EMessageBox::information(this, "Требование", "Установите на РЕТОМ значение напряжения 100 В");
+//    EMessageBox::information(this, "Требование", "Установите на РЕТОМ значение напряжения 100 В");
     // получение текущих аналоговых сигналов от модуля
     WaitNSeconds(WAITFORCONST);
     if (StdFunc::IsCancelled())
@@ -322,6 +351,8 @@ int TuneDialogA1::Start6_3_4_1()
     Skipped = false;
     if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по входу Pt100, выполнить?") == false)
     {
+        Bac_block.Art = Bac_block_old.Art;
+        Bac_block.Brt = Bac_block_old.Brt;
         Skipped = true;
         return Error::Error::ER_RESEMPTY;
     }
@@ -365,6 +396,8 @@ int TuneDialogA1::Start6_3_5()
     Skipped = false;
     if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по входу EXTmA2, выполнить?") == false)
     {
+        Bac_block.Ama2 = Bac_block_old.Ama2;
+        Bac_block.Bma2 = Bac_block_old.Bma2;
         Skipped = true;
         return Error::ER_RESEMPTY;
     }
@@ -418,6 +451,8 @@ int TuneDialogA1::Start6_3_7()
     Skipped = false;
     if (EMessageBox::question(this, "Вопрос", "Будет проведена регулировка по входу EXTmA1, выполнить?") == false)
     {
+        Bac_block.Ama1 = Bac_block_old.Ama1;
+        Bac_block.Bma1 = Bac_block_old.Bma1;
         Skipped = true;
         return Error::ER_RESEMPTY;
     }
@@ -504,6 +539,10 @@ int TuneDialogA1::Start6_3_10_1()
     Skipped = false;
     if (EMessageBox::question(this, "Вопрос", "Будет проведена температурная регулировка, выполнить?") == false)
     {
+        Bac_block.TKUa[0] = Bac_block_old.TKUa[0];
+        Bac_block.TKUa[1] = Bac_block_old.TKUa[1];
+        Bac_block.TKUb[0] = Bac_block_old.TKUb[0];
+        Bac_block.TKUb[1] = Bac_block_old.TKUb[1];
         Skipped = true;
         return Error::ER_RESEMPTY;
     }
@@ -616,11 +655,11 @@ int TuneDialogA1::Start6_3_10_60(int index)
 
 int TuneDialogA1::Start6_3_11()
 {
-    FillBac();
+    FillBac(1);
     if (EMessageBox::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?") == false)
         return Error::ER_GENERALERROR;
-    SaveToFileEx();
-    if (!WriteTuneCoefs())
+    SaveToFileEx(1);
+    if (!WriteTuneCoefs(1))
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
 }
@@ -692,6 +731,15 @@ int TuneDialogA1::Start60PointsMeasurements(int whichtomeasure, void *dst1, void
     int count = 0;
     int res = Error::ER_NOERROR;
     emit StartPercents(PovNumPoints);
+    WaitWidget *w = new WaitWidget;
+    w->SetMessage("Пожалуйста, подождите...");
+    WaitWidget::ww_struct ww;
+    ww.isincrement = true;
+    ww.isallowedtostop = false;
+    ww.format = WaitWidget::WW_SIMPLE;
+    ww.initialseconds = 0;
+    w->Init(ww);
+    w->Start();
     while ((count < PovNumPoints) && !StdFunc::IsCancelled())
     {
         if (whichtomeasure & TDA1_BD1)
@@ -701,7 +749,10 @@ int TuneDialogA1::Start60PointsMeasurements(int whichtomeasure, void *dst1, void
         if (whichtomeasure & TDA1_BDA)
             res += MeasureBda(out3);
         if (res != Error::ER_NOERROR)
+        {
+            w->Stop();
             return Error::ER_GENERALERROR;
+        }
         QTime tme;
         tme.start();
         while (tme.elapsed() < TUNE_POINTSPER)
@@ -710,13 +761,17 @@ int TuneDialogA1::Start60PointsMeasurements(int whichtomeasure, void *dst1, void
         emit SetPercent(count);
     }
     if (StdFunc::IsCancelled())
+    {
+        w->Stop();
         return Error::ER_GENERALERROR;
+    }
     if (whichtomeasure & TDA1_BD1)
         Bd1Mean(count, out1);
     if (whichtomeasure & TDA1_BD4)
         Bd4Mean(count, out2);
     if (whichtomeasure & TDA1_BDA)
         BdaMean(count, out3);
+    w->Stop();
     return Error::ER_NOERROR;
 }
 
@@ -935,6 +990,8 @@ void TuneDialogA1::GetBdAndFillMTT()
         ChA1->FillBda_in(this);
     if (Commands::GetBd(A1_BDA_IN_AN_BN, &ChA1->Bda_in_an, sizeof(CheckA1::A1_Bd3)) == Error::ER_NOERROR)
         ChA1->FillBda_in_an(this);
+    if (Commands::GetBda(BT_BASE, &ChA1->Bda_block, sizeof(CheckA1::Bda)) == Error::ER_NOERROR)
+        ChA1->FillBda(this);
 }
 
 void TuneDialogA1::LoadSettings()
@@ -958,8 +1015,9 @@ int TuneDialogA1::ReadAnalogMeasurements()
 }
 #endif
 
-void TuneDialogA1::FillBac()
+void TuneDialogA1::FillBac(int bacnum)
 {
+    Q_UNUSED(bacnum);
     WDFunc::SetLEData(this, "tune0", QString::number(Bac_block.KmU[0], 'f', 5));
     WDFunc::SetLEData(this, "tune1", QString::number(Bac_block.KmU[1], 'f', 5));
     WDFunc::SetLEData(this, "tune2", QString::number(Bac_block.K_freq, 'f', 5));
@@ -979,8 +1037,9 @@ void TuneDialogA1::FillBac()
     WDFunc::SetLEData(this, "tune37", QString::number(Bac_block.ch_offset[1], 'f', 5));
 }
 
-void TuneDialogA1::FillBackBac()
+void TuneDialogA1::FillBackBac(int bacnum)
 {
+    Q_UNUSED(bacnum);
     WDFunc::LENumber(this, "tune0", Bac_block.KmU[0]);
     WDFunc::LENumber(this, "tune1", Bac_block.KmU[1]);
     WDFunc::LENumber(this, "tune2", Bac_block.K_freq);
@@ -1000,21 +1059,24 @@ void TuneDialogA1::FillBackBac()
     WDFunc::LENumber(this, "tune37", Bac_block.ch_offset[1]);
 }
 
+// для своей калибровки блок Bac только один, и bacnum = 1
 void TuneDialogA1::SetDefCoefs()
 {
-    Bac_block.KmU[0] = static_cast<float>(0.974);
-    Bac_block.KmU[1] = static_cast<float>(0.98307);
-    Bac_block.K_freq = 1;
-    Bac_block.DPhy = static_cast<float>(0.00919);
-    Bac_block.Art = static_cast<float>(82.0875);
-    Bac_block.Brt = static_cast<float>(6023.3);
-    Bac_block.Ama1 = static_cast<float>(163.839);
-    Bac_block.Bma1 = static_cast<float>(-0.4125);
-    Bac_block.Ama2 = static_cast<float>(163.6494);
+    Bac_block.KmU[0] = static_cast<float>(0.97330302);
+    Bac_block.KmU[1] = static_cast<float>(0.98191289);
+    Bac_block.K_freq = static_cast<float>(0.999962);
+    Bac_block.DPhy = static_cast<float>(-0.009118);
+    Bac_block.Art = static_cast<float>(82.00767);
+    Bac_block.Brt = static_cast<float>(6010.39014);
+    Bac_block.Ama1 = static_cast<float>(163.76575);
+    Bac_block.Bma1 = static_cast<float>(-0.58002);
+    Bac_block.Ama2 = static_cast<float>(163.2626);
     Bac_block.Bma2 = static_cast<float>(-0.8425);
     Bac_block.TKUa[0] = Bac_block.TKUa[1] = Bac_block.TKUb[0] = Bac_block.TKUb[1] = 0;
-    Bac_block.Tmk0 = 32;
-    FillBac();
+    Bac_block.Tmk0 = 31;
+    Bac_block.ch_offset[0] = 2649.0;
+    Bac_block.ch_offset[1] = 1835.0;
+    FillBac(1);
 }
 
 #if PROGSIZE != PROGSIZE_EMUL

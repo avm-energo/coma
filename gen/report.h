@@ -20,7 +20,6 @@ public:
 
 class Report
 {
-    Q_OBJECT
 
 public:
     Report(const QString &templatepath, QWidget *parent=nullptr);

@@ -302,8 +302,8 @@ void Coma::Stage3()
 
         }
 
-        connect(ConfM,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
-        connect(ConfM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+        connect(ConfM,SIGNAL(NewConfToBeLoaded()),this,SLOT(Fill()));
+        connect(ConfM,SIGNAL(DefConfToBeLoaded()),this,SLOT(SetDefConf()));
     }
     str = (TuneM == nullptr) ? "Регулировка" : "Регулировка\nБазовая";
     if (TuneB != nullptr)

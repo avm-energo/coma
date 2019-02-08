@@ -52,21 +52,16 @@ private:
     void WriteBacBlock();
     void LoadSettings();
     void GenerateReport();
-    void FillHeaders();
-    bool DNDialog(PovDevStruct &PovDev);
-    bool ConditionDataDialog();
+//    void FillHeaders();
 
 private slots:
-    void FillBac(int bacnum);
-    void FillBackBac(int bacnum);
-    void SetDefCoefs(int bacnum);
 #if PROGSIZE != PROGSIZE_EMUL
-    void FillBdOut();
+/*    void FillBdOut();
     void FillBackBdOut();
     void FillBdIn();
     void FillBackBdIn();
-    void FillMedian(int index); // заполнение значений по средним показателям - медианам и СКО
-    void AcceptDNData();
+    void FillMedian(int index); // заполнение значений по средним показателям - медианам и СКО */
+//    void AcceptDNData();
 
 #endif
 };
