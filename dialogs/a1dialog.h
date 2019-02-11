@@ -169,7 +169,6 @@ private slots:
 //    void SetDNData();
 //    void SetConditionData();
     void RBToggled();
-    void TempRandomizeModel();
 //    void SetTuneParameters();
     int ReadAnalogMeasurements();
 

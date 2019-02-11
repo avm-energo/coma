@@ -735,19 +735,6 @@ void A1Dialog::RBToggled()
     return Error::ER_NOERROR;
 }*/
 #endif
-void A1Dialog::TempRandomizeModel()
-{
-    // 1983
-    PovType = GOST_1983;
-    RepModel->SetSize(GOST1983ROWCOUNT, GOST1983COLCOUNT);
-    for (int i=0; i<GOST1983ROWCOUNT; ++i)
-    {
-        for (int j=0; j<GOST1983COLCOUNT; ++j)
-            RepModel->UpdateItem(i, j, static_cast<float>(qrand())/RAND_MAX, 5);
-    }
-    FillHeaders();
-    GenerateReport();
-}
 
 int A1Dialog::ReadAnalogMeasurements()
 {

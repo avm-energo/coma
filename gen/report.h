@@ -27,7 +27,7 @@ public:
     void AddModel(const QString &modelname, QStandardItemModel *model);
     void SetVar(const QString &varname, const QString &varvalue);
     void SetVar(const QString &varname, float varvalue, int tolerance);
-    void Generate(const QString &filename);
+    int Generate(const QString &filename);
 
 private:
     LimeReport::ReportEngine *Rep;

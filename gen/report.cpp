@@ -1,5 +1,6 @@
 #include <QStandardItem>
 #include "stdfunc.h"
+#include "error.h"
 #include "report.h"
 
 ReportModel::ReportModel(QObject *parent) :
@@ -77,9 +78,14 @@ void Report::SetVar(const QString &varname, float varvalue, int tolerance)
     Rep->dataManager()->setReportVariable(varname, QString::number(varvalue, 'g', tolerance));
 }
 
-void Report::Generate(const QString &filename)
+int Report::Generate(const QString &filename)
 {
-    Rep->printToPDF(filename);
-//        report->previewReport();
-//        report->designReport();
+    bool rep;
+    Rep->previewReport();
+    Rep->designReport();
+    rep = Rep->printToPDF(filename);
+    if (!rep)
+        return Error::ER_GENERALERROR;
+    else
+        return Error::ER_NOERROR;
 }

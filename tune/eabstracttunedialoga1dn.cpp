@@ -687,3 +687,17 @@ void EAbstractTuneDialogA1DN::FillMedian(int index)
         WDFunc::SetLBLText(this, "tunesphy", QString::number(Dd_Block[index].sPhy, 'f', 5));
     }
 }
+
+void EAbstractTuneDialogA1DN::TempRandomizeModel()
+{
+    // 1983
+    PovType = GOST_23625;
+    RepModel->SetModel(GOST23625ROWCOUNT, GOST23625COLCOUNT);
+    for (int i=0; i<GOST23625ROWCOUNT; ++i)
+    {
+        for (int j=0; j<GOST23625COLCOUNT; ++j)
+            RepModel->UpdateItem(i, j, static_cast<float>(qrand())/RAND_MAX, 5);
+    }
+    float tmps = RepModel->Item(0, 0);
+    FillHeaders();
+}

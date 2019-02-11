@@ -39,6 +39,7 @@ EAbstractTuneDialog::EAbstractTuneDialog(QWidget *parent) :
 #if PROGSIZE != PROGSIZE_EMUL
     connect(MeasurementTimer,SIGNAL(timeout()),this,SLOT(MeasTimerTimeout()));
 #endif
+    RepModel = new ReportModel;
 }
 
 EAbstractTuneDialog::~EAbstractTuneDialog()
@@ -298,6 +299,8 @@ void EAbstractTuneDialog::ShowTable()
     QVBoxLayout *lyout = new QVBoxLayout;
     QTableView *tw = new QTableView;
     tw->setModel(RepModel);
+    tw->resizeColumnsToContents();
+    tw->resizeRowsToContents();
     lyout->addWidget(tw);
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));

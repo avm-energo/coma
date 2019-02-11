@@ -169,6 +169,7 @@ public slots:
     void SetDefCoefs();
 //    void AcceptDNData();
     void SetDNData();
+    void TempRandomizeModel();
 
 private slots:
 private:

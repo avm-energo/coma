@@ -46,6 +46,7 @@ private:
     int Start7_2_13_8();
     int Start7_2_13(int counter);
     int Start7_2_14();
+    int StartTempRandomizeModel();
     int ReadAnalogMeasurements();
     int ShowScheme();
 #endif
