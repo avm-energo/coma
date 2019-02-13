@@ -33,13 +33,13 @@ public:
     {
         QMap<int, ModuleDesc> map;
         ModuleDesc MTB31MD = {11, 0, 201, 0}; // InputsNum, OutputsNum, DInStart, DOutStart
-        map.insert(MTB_31, MTB31MD);
+        map.insert(Config::MTB_31, MTB31MD);
         ModuleDesc MTM31MD = {11, 0, 231, 0};
-        map.insert(MTM_31, MTM31MD);
+        map.insert(Config::MTM_31, MTM31MD);
         ModuleDesc MTB35MD = {0, 4, 0, 401};
-        map.insert(MTB_35, MTB35MD);
+        map.insert(Config::MTB_35, MTB35MD);
         ModuleDesc MTM35MD = {0, 4, 0, 421};
-        map.insert(MTM_35, MTM35MD);
+        map.insert(Config::MTM_35, MTM35MD);
         return map;
     }
 

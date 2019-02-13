@@ -81,8 +81,8 @@ void Report::SetVar(const QString &varname, float varvalue, int tolerance)
 int Report::Generate(const QString &filename)
 {
     bool rep;
-    Rep->previewReport();
-    Rep->designReport();
+/*    Rep->previewReport();
+    Rep->designReport(); */
     rep = Rep->printToPDF(filename);
     if (!rep)
         return Error::ER_GENERALERROR;

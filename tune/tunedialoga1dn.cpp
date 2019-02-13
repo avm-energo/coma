@@ -44,16 +44,16 @@ void TuneDialogA1DN::SetLbls()
 {
     lbls.append("7.2.2. Ввод пароля...");
     lbls.append("7.2.1. Отображение диалога проверки схемы подключения...");
-/*    lbls.append("7.2.3. Ввод данных по делителю и приём настроечных параметров...");
+    lbls.append("7.2.3. Ввод данных по делителю и приём настроечных параметров...");
     lbls.append("7.2.5. Задание варианта включения ДН...");
-    lbls.append("7.2.6. Запись варианта включения в прибор..."); */
+    lbls.append("7.2.6. Запись варианта включения в прибор...");
 /*    lbls.append("7.2.7. Установка 20%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 50%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 80%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 100%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 120%, проверка и сохранение...");
     lbls.append("7.2.11. Запись настроечных коэффициентов и переход на новую конфигурацию..."); */
-/*    lbls.append("7.2.12. Проверка аналоговых данных...");
+    lbls.append("7.2.12. Проверка аналоговых данных...");
     lbls.append("7.2.13.1. Проверка аналоговых данных...");
     lbls.append("7.2.13.2. Проверка аналоговых данных...");
     lbls.append("7.2.13.3. Проверка аналоговых данных...");
@@ -61,7 +61,7 @@ void TuneDialogA1DN::SetLbls()
     lbls.append("7.2.13.5. Проверка аналоговых данных...");
     lbls.append("7.2.13.6. Проверка аналоговых данных...");
     lbls.append("7.2.13.7. Проверка аналоговых данных...");
-    lbls.append("7.2.13.8. Проверка аналоговых данных..."); */
+    lbls.append("7.2.13.8. Проверка аналоговых данных...");
     lbls.append("7.2.14. Запись результатов и формирование протокола...");
 }
 
@@ -71,12 +71,12 @@ void TuneDialogA1DN::SetPf()
     pf[lbls.at(count++)] = &EAbstractTuneDialog::CheckPassword; // 7.2.2. Ввод пароля
     int (EAbstractTuneDialog::*func)() = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::ShowScheme); // 7.2.1. Отображение диалога проверки схемы подключения
     pf[lbls.at(count++)] = func;
-/*    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3); // 7.2.3. Ввод данных по делителю
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_3); // 7.2.3. Ввод данных по делителю
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_5);
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_6);
-    pf[lbls.at(count++)] = func; */
+    pf[lbls.at(count++)] = func;
 /*    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_1); // 7.2.7. Установка 20%, проверка и сохранение
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_2); // 7.2.7. Установка 50%, проверка и сохранение
@@ -89,7 +89,7 @@ void TuneDialogA1DN::SetPf()
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_11); // 7.2.11. Запись настроечных коэффициентов и переход на новую конфигурацию
     pf[lbls.at(count++)] = func; */
-/*    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_12); // 7.2.12. Проверка аналоговых данных
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_12); // 7.2.12. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_1); // 7.2.13.1. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
@@ -108,9 +108,9 @@ void TuneDialogA1DN::SetPf()
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_8); // 7.2.13.8. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_14); // 7.2.14
-    pf[lbls.at(count++)] = func; */
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::StartTempRandomizeModel); // TempRandomizeModel
     pf[lbls.at(count++)] = func;
+/*    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::StartTempRandomizeModel); // TempRandomizeModel
+    pf[lbls.at(count++)] = func; */
 }
 #endif
 
