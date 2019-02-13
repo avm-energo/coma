@@ -53,10 +53,10 @@ private:
     void ShowErrMsg(int);
     bool CalcNewTuneCoef(int NumCh);
     bool CheckTuneCoefs();
-#endif
-    void FillBac();
-    void FillBackBac();
     void GetBdAndFillMTT();
+#endif
+    void FillBac(int bacnum);
+    void FillBackBac(int bacnum);
 
 private slots:
     void SetDefCoefs();
