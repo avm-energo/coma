@@ -106,7 +106,11 @@ SOURCES += \
     ../gen/stdfunc.cpp \
     ../config/confdialog87.cpp \
     ../tune/tunedialog85.cpp \
-    ../config/config87.cpp
+    ../config/config87.cpp \
+    ../gen/parsemodule.cpp \
+    ../gen/parseid9000.cpp \
+    ../gen/parseid9050.cpp \
+    ../gen/parseid10031.cpp
 
 HEADERS  += \
     coma.h \
@@ -191,7 +195,11 @@ HEADERS  += \
     ../gen/stdfunc.h \
     ../config/confdialog87.h \
     ../tune/tunedialog85.h \
-    ../config/config87.h
+    ../config/config87.h \
+    ../gen/parsemodule.h \
+    ../gen/parseid9000.h \
+    ../gen/parseid9050.h \
+    ../gen/parseid10031.h
 
 INCLUDEPATH += $$PWD/../../includes
 
