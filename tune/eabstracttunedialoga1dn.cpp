@@ -67,10 +67,16 @@ void EAbstractTuneDialogA1DN::InputTuneParameters(int dntype)
 void EAbstractTuneDialogA1DN::SetTuneParameters()
 {
     float kdn;
-    if (!WDFunc::CBIndex(this, "tunevariantcb", TuneVariant))
+    if ((TuneVariant = WDFunc::CBIndex(this, "tunevariantcb")) == -1)
+    {
         DBGMSG;
-    if (!WDFunc::CBIndex(this, "voltagetype", VoltageType))
+        return;
+    }
+    if ((VoltageType = WDFunc::CBIndex(this, "voltagetype")) == -1)
+    {
         DBGMSG;
+        return;
+    }
     Mode = VoltageType;
     if (DNType == DNT_OWN)
     {

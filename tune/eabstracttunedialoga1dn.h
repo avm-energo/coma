@@ -39,12 +39,6 @@ public:
         GAAT_BDA_IN
     };
 
-    enum UModes
-    {
-        MODE_ALTERNATIVE = 0,
-        MODE_DIRECT = 1
-    };
-
     enum UModesBlocks
     {
         BLOCK_ALTERNATIVE = 2,

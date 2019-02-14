@@ -15,11 +15,13 @@ public:
     void Stage3();
 
 signals:
+    void VoltageTypeChanged(int mode);
 
 private:
+    QDialog *ChangeVoltageTypeDialog();
 
 private slots:
-//    void ProtocolFromFile();
+    void AcceptVoltageType();
 };
 
 #endif // PKDN_S_H
