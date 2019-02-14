@@ -42,6 +42,19 @@ CheckDialogA1::CheckDialogA1(BoardTypes board, QWidget *parent) : EAbstractCheck
     timer->setInterval(ANMEASINT);
 }
 
+void CheckDialogA1::SetMode(int mode)
+{
+    bool visible = (mode == MODE_ALTERNATIVE);
+    {
+        for (int i=0; i<4; ++i)
+        {
+            WDFunc::SetVisible(this, "Bda_in"+QString::number(i+2), visible);
+            WDFunc::SetVisible(this, "Bda_h"+QString::number(i), visible);
+        }
+        WDFunc::SetVisible(this, "Bda_indU2", visible);
+    }
+}
+
 QWidget *CheckDialogA1::AutoCheckUI()
 {
     QWidget *w = new QWidget;

@@ -11,6 +11,9 @@
 #define A1_BDA_OUT_BN       4
 #define A1_BDA_OUT_AN_BN    5
 
+#define MODE_ALTERNATIVE    0
+#define MODE_DIRECT         1
+
 class CheckA1
 {
 public:

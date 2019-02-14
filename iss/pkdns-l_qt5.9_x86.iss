@@ -5,11 +5,11 @@
 #define Name "ПКДН-Сервис БР"
 #define GroupName "ПКДН-Сервис"
 #define EngName "PKDN-S-L"
-#define Version "2.2.258"
+#define Version "2.2.259"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "pkdns-L.exe"
-#define SetupName "pkdns-L-2.2.258-x86"
+#define SetupName "pkdns-L-2.2.259-x86"
 #define Prefix "D:\Progs\out"
 
 [Languages]
@@ -48,8 +48,8 @@ Source: "{#Prefix}\3rdparty-x86\liblzma.dll"; DestDir: "{app}"
 Source: "{#Prefix}\qt5.9.6-x86\*.dll"; DestDir: "{app}"
 Source: "{#Prefix}\qt5.9.6-x86\platforms\qwindows.dll"; DestDir: "{app}\platforms"
 Source: "{#Prefix}\coma\{#ExeName}"; DestDir: "{app}"; DestName: {#ExeName}; Flags: ignoreversion
-Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
-Source: "{#Prefix}\coma\reports\*.*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
+Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{localappdata}\{#EngName}"; Flags: ignoreversion
+Source: "{#Prefix}\coma\reports\*.*"; DestDir: "{localappdata}\{#EngName}"; Flags: ignoreversion
 Source: "{#Prefix}\coma\images\*.*"; DestDir: "{app}\images"; Flags: ignoreversion
 ; Source: "{#Prefix}\coma\pdf\КОМА Руководство пользователя.pdf"; DestDir: "{app}"
 Source: "{#Prefix}\common\vc2015\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall

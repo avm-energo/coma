@@ -35,9 +35,12 @@
 #include "../dialogs/a1dialog.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/emessagebox.h"
+#include "../widgets/wd_func.h"
 #include "../gen/maindef.h"
 #include "../gen/error.h"
+#include "../gen/files.h"
 #include "../gen/colors.h"
+#include "../gen/commands.h"
 #include "../gen/modulebsi.h"
 
 pkdn_s::pkdn_s(QWidget *parent)
@@ -134,7 +137,6 @@ void pkdn_s::Stage3()
     MainTW->addTab(ConfB, "Конфигурирование");
     connect(ConfB,SIGNAL(NewConfToBeLoaded()),this,SLOT(Fill()));
     connect(ConfB,SIGNAL(DefConfToBeLoaded()),this,SLOT(SetDefConf()));
-    CheckDialogA1 *chdlg = new CheckDialogA1(BT_BASE);
 //    fwupdialog *FwUpD = new fwupdialog;
 #if PROGSIZE >= PROGSIZE_LARGE
     TuneDialogA1 *tdlg = new TuneDialogA1;
@@ -150,7 +152,9 @@ void pkdn_s::Stage3()
     connect(t2dlg,SIGNAL(SetPercent(int)),this,SLOT(SetProgressBar2(int)));
     MainTW->addTab(t2dlg, "Настройка своего ДН");
 #endif
+    CheckDialogA1 *chdlg = new CheckDialogA1(BT_BASE);
     MainTW->addTab(chdlg, "Измерения");
+    connect(this, SIGNAL(VoltageTypeChanged(int)), chdlg, SLOT(SetMode(int)));
     A1Dialog *extdlg = new A1Dialog;
     connect(extdlg,SIGNAL(StartPercents(int)),this,SLOT(SetProgressBar2Size(int)));
     connect(extdlg,SIGNAL(SetPercent(int)),this,SLOT(SetProgressBar2(int)));
@@ -169,9 +173,31 @@ void pkdn_s::Stage3()
     emit BsiRefresh();
 }
 
-/*void pkdn_s::ProtocolFromFile()
+QDialog *pkdn_s::ChangeVoltageTypeDialog()
 {
-    A1Dialog *dlg = new A1Dialog(false);
-    delete dlg;
+    QDialog *dlg = new QDialog;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QVBoxLayout *lyout = new QVBoxLayout;
+
+    QStringList sl = QStringList() << "Переменный" << "Постоянный";
+    hlyout->addWidget(WDFunc::NewLBL(this, "Род напряжения:"), 0, Qt::AlignRight);
+    hlyout->addWidget(WDFunc::NewCB(this, "voltagetype", sl), 10);
+    lyout->addLayout(hlyout);
+
+    hlyout = new QHBoxLayout;
+    hlyout->addStretch(100);
+    hlyout->addWidget(WDFunc::NewPB(this, "Подтвердить", this, SLOT(AcceptVoltageType())), 0);
+    hlyout->addStretch(100);
+    lyout->addLayout(hlyout);
+    dlg->setLayout(lyout);
+    return dlg;
 }
-*/
+
+void pkdn_s::AcceptVoltageType()
+{
+    int tmpi = WDFunc::CBIndex(this, "voltagetype");
+    if (Commands::SetMode(tmpi) != Error::ER_NOERROR)
+        EMessageBox::error(this, "Ошибка", "Ошибка установки рода напряжения");
+    emit VoltageTypeChanged(tmpi);
+}
+

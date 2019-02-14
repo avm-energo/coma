@@ -19,7 +19,7 @@ void ReportModel::UpdateItem(int row, int column, const QString &value)
 void ReportModel::UpdateItem(int row, int column, float value, int tolerance)
 {
     QStandardItem *item = this->item(row, column);
-    item->setText(QString::number(value, 'g', tolerance));
+    item->setText(QString::number(value, 'f', tolerance));
     setItem(row, column, item);
 }
 

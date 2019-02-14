@@ -55,9 +55,9 @@ QWidget *CheckA1::Bd1W(const QString &title, const QString &begin, QWidget *pare
     QGridLayout *glyout = new QGridLayout;
     QString tmps = (begin == "Bda_out") ? "кВ" : "В";
     glyout->addWidget(WDFunc::NewLBL(parent, "1. UefNat_filt1, "+tmps), 0, 0);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0", ValuesFormat, "Истинное действующее значение напряжения 1, "+tmps), 0, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0", ValuesFormat, "Значение напряжения 1, "+tmps), 0, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "2. UefNat_filt2, "+tmps), 0, 2);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1", ValuesFormat, "Истинное действующее значение напряжения 2, "+tmps), 0, 3);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1", ValuesFormat, "Значение напряжения 2, "+tmps), 0, 3);
     glyout->addWidget(WDFunc::NewLBL(parent, "δUrms, %"), 0, 4);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"dU", ValuesFormat, "Относительная погрешность, %"), 0, 5);
     glyout->addWidget(WDFunc::NewLBL(parent, "3. Uef_filt1, "+tmps), 1, 0);
@@ -114,6 +114,7 @@ QWidget *CheckA1::Bd2W(const QString &begin, QWidget *parent)
     w->setLayout(glyout);
     QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
     w->setStyleSheet(tmps);
+    w->setObjectName(begin);
     return w;
 }
 
@@ -164,12 +165,12 @@ QWidget *CheckA1::Bd4W(const QString &begin, QWidget *parent)
 
 QWidget *CheckA1::Bda_inW(QWidget *parent)
 {
-    return Bd1W("Переменные напряжения на входах", "Bda_in", parent);
+    return Bd1W("Напряжения на входах", "Bda_in", parent);
 }
 
 QWidget *CheckA1::Bda_outW(QWidget *parent)
 {
-    return Bd1W("Переменные напряжения в первичном масштабе", "Bda_out", parent);
+    return Bd1W("Напряжения в первичном масштабе", "Bda_out", parent);
 }
 
 QWidget *CheckA1::Bda_h0W(QWidget *parent)

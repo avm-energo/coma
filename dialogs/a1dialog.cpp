@@ -164,6 +164,11 @@ void A1Dialog::StartWork()
         EMessageBox::error(this, "Ошибка", "Ошибка установки варианта использования");
         return;
     }
+    if (Commands::SetMode(Mode) != Error::ER_NOERROR)
+    {
+        EMessageBox::error(this, "Ошибка", "Ошибка установки рода напряжения");
+        return;
+    }
     QDialog *dlg = new QDialog(this);
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "Выберите тип поверяемого оборудования"));
