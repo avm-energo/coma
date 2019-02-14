@@ -95,7 +95,7 @@ void TuneDialog22::SetupUI()
     lyout = new QVBoxLayout;
     gb1lyout->addWidget(CoeffGB("Настроечные коэффициенты при усилении 1x", "0"));
     gb1lyout->addWidget(CoeffGB("Настроечные коэффициенты при усилении 16x", "1"));
-    gb1lyout->addWidget(BottomUI());
+    gb1lyout->addWidget(BottomUI(BoardTypes::BT_BASE));
     lyout->addLayout(gb1lyout);
     cp2->setLayout(lyout);
 
@@ -335,8 +335,9 @@ void TuneDialog22::GetBdAndFillMTT()
 }
 #endif
 
-void TuneDialog22::FillBac()
+void TuneDialog22::FillBac(int bacnum)
 {
+    Q_UNUSED(bacnum);
     for (int j=0; j<COEFSNUM; ++j)
     {
         for (int i=0; i<AIN22_NUMCH; ++i)
@@ -347,8 +348,9 @@ void TuneDialog22::FillBac()
     }
 }
 
-void TuneDialog22::FillBackBac()
+void TuneDialog22::FillBackBac(int bacnum)
 {
+    Q_UNUSED(bacnum);
     QString tmps;
     for (int j=0; j<COEFSNUM; ++j)
     {
@@ -378,5 +380,5 @@ void TuneDialog22::SetDefCoefs()
             Bac_block[j].fkin[i] = 1.0;
         }
     }
-    FillBac();
+    FillBac(BoardTypes::BT_BASE);
 }

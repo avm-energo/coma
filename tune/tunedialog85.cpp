@@ -60,9 +60,9 @@ void TuneDialog85::SetupUI()
 
     QWidget *cp2 = new QWidget;
     QWidget *cp3 = new QWidget;
-    #if PROGSIZE != PROGSIZE_EMUL
+//    #if PROGSIZE != PROGSIZE_EMUL
     QWidget *cp4 = Bd1W(this);
-    #endif
+//    #endif
     tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     cp1->setStyleSheet(tmps);
     cp2->setStyleSheet(tmps);
@@ -73,9 +73,9 @@ void TuneDialog85::SetupUI()
     QTabWidget *TuneTW = new QTabWidget;
 
     TuneTW->addTab(cp1,"Настройка");
-    #if PROGSIZE != PROGSIZE_EMUL
+//    #if PROGSIZE != PROGSIZE_EMUL
     TuneTW->addTab(cp4,"Измеренные параметры");
-    #endif
+//    #endif
     TuneTW->addTab(cp2,"Коэффициенты");
     TuneTW->addTab(cp3,"Данные МИП");
 
@@ -119,7 +119,7 @@ void TuneDialog85::SetupUI()
     glyout->addWidget(le,8,1,1,2);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
-    lyout->addWidget(BottomUI());
+    lyout->addWidget(BottomUI(BoardTypes::BT_BASE));
     lyout->addStretch(1);
     cp2->setLayout(lyout);
 
@@ -565,8 +565,9 @@ int TuneDialog85::Start7_3_9()
 
 #endif
 
-void TuneDialog85::FillBac()
+void TuneDialog85::FillBac(int bacnum)
 {
+    Q_UNUSED(bacnum);
     for (int i = 0; i < 3; i++)
     {
         WDFunc::SetLEData(this, "tune"+QString::number(i), QString::number(Bac_block.KmU[i], 'f', 5));
@@ -591,8 +592,9 @@ void TuneDialog85::FillNewBac()
 
 }
 
-void TuneDialog85::FillBackBac()
+void TuneDialog85::FillBackBac(int bacnum)
 {
+    Q_UNUSED(bacnum);
     QString tmps;
     for (int i = 0; i < 3; i++)
     {
@@ -627,7 +629,7 @@ void TuneDialog85::SetDefCoefs()
 
 
 
-    FillBac();
+    FillBac(BoardTypes::BT_BASE);
 }
 
 void TuneDialog85::PrepareConsts()
@@ -887,6 +889,79 @@ int TuneDialog85::CheckMip()
     return Error::ER_NOERROR;
 }
 
+QWidget *TuneDialog85::Bd1W(QWidget *parent)
+{
+    int i;
+    WidgetFormat = "QWidget {background-color: "+QString(UCONFCLR)+";}";
+    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
+            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
+
+    QWidget *w = new QWidget(parent);
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    /*hlyout->addWidget(WDFunc::NewLBL(parent, "Tmk, °С:"), 0);
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Температура кристалла микроконтроллера, °С"), 0);
+    hlyout->addWidget(WDFunc::NewLBL(parent, "VBAT, В:"), 0);
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value1", ValuesFormat, "Напряжение аккумуляторной батареи, В"), 0);*/
+    hlyout->addWidget(WDFunc::NewLBL(parent, "Частота:"));
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Частота сигналов, Гц"), Qt::AlignLeft);
+    lyout->addLayout(hlyout);
+    for (i = 1; i < 7; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i-1) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "IUNF_1GR"+IndexStr),0,(i-1),1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i), ValuesFormat, \
+                                          QString::number(i)+"IUNF_1GR"+IndexStr+".Истинные действующие значения сигналов 1-й группы"),1,(i-1),1,1);
+    }
+
+    for (i = 0; i < 3; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "UNF_2GR"+IndexStr),2,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+7), ValuesFormat, \
+                                          QString::number(i+7)+"UNF_2GR"+IndexStr+".Действующие значения сигналов напряжений 2-й группы"),3,i,1,1);
+    }
+
+    for (i = 0; i < 6; ++i)
+    {
+
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "UNF_LIN"+IndexStr),4,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+10), ValuesFormat, \
+                                          QString::number(i+10)+"UNF_LIN"+IndexStr+".Истинные действующие значения линейных напряжений 1-й и 2-й групп"),5,i,1,1);
+    }
+
+    for (i = 0; i < 3; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "PNF"+IndexStr),6,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+16), ValuesFormat, \
+                                          QString::number(i+16)+".Истинная активная мощность"),7,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "SNF"+IndexStr),6,i+3,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+19), ValuesFormat, \
+                                          QString::number(i+19)+".Кажущаяся полная мощность"),7,i+3,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "QNF"+IndexStr),8,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+22), ValuesFormat, \
+                                          QString::number(i+22)+".Реактивная мощность"),9,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Cos"+IndexStr),8,i+3,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+25), ValuesFormat, \
+                                          QString::number(i+25)+".Cos phi по истинной активной мощности"),9,i+3,1,1);
+    }
+
+    /*for (i = 0; i < 14; ++i)
+    {
+        QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "DD_in"+IndexStr),10,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+27), ValuesFormat, \
+                                          QString::number(i+27)+".Дискреты"),11,i,1,1);
+    }*/
+    lyout->addLayout(glyout);
+    lyout->addStretch(100);
+    w->setLayout(lyout);
+    w->setStyleSheet(WidgetFormat);
+    return w;
+}
 
 #if PROGSIZE != PROGSIZE_EMUL
 int TuneDialog85::CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct)
@@ -1154,79 +1229,20 @@ void TuneDialog85::GetBdAndFillMTT()
 
 }
 
-QWidget *TuneDialog85::Bd1W(QWidget *parent)
+void TuneDialog85::RefreshAnalogValues(int bdnum)
 {
-    int i;
-    WidgetFormat = "QWidget {background-color: "+QString(UCONFCLR)+";}";
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
-            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
-
-    QWidget *w = new QWidget(parent);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    /*hlyout->addWidget(WDFunc::NewLBL(parent, "Tmk, °С:"), 0);
-    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Температура кристалла микроконтроллера, °С"), 0);
-    hlyout->addWidget(WDFunc::NewLBL(parent, "VBAT, В:"), 0);
-    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value1", ValuesFormat, "Напряжение аккумуляторной батареи, В"), 0);*/
-    hlyout->addWidget(WDFunc::NewLBL(parent, "Частота:"));
-    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Частота сигналов, Гц"), Qt::AlignLeft);
-    lyout->addLayout(hlyout);
-    for (i = 1; i < 7; ++i)
+    switch (bdnum)
     {
-        QString IndexStr = "[" + QString::number(i-1) + "]";
-        glyout->addWidget(WDFunc::NewLBL(parent, "IUNF_1GR"+IndexStr),0,(i-1),1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i), ValuesFormat, \
-                                          QString::number(i)+"IUNF_1GR"+IndexStr+".Истинные действующие значения сигналов 1-й группы"),1,(i-1),1,1);
+
+    case C85_BDA_IN: // Блок #1
+        FillBd1(this);
+        break;
+
+    default:
+        return;
     }
-
-    for (i = 0; i < 3; ++i)
-    {
-        QString IndexStr = "[" + QString::number(i) + "]";
-        glyout->addWidget(WDFunc::NewLBL(parent, "UNF_2GR"+IndexStr),2,i,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+7), ValuesFormat, \
-                                          QString::number(i+7)+"UNF_2GR"+IndexStr+".Действующие значения сигналов напряжений 2-й группы"),3,i,1,1);
-    }
-
-    for (i = 0; i < 6; ++i)
-    {
-
-        QString IndexStr = "[" + QString::number(i) + "]";
-        glyout->addWidget(WDFunc::NewLBL(parent, "UNF_LIN"+IndexStr),4,i,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+10), ValuesFormat, \
-                                          QString::number(i+10)+"UNF_LIN"+IndexStr+".Истинные действующие значения линейных напряжений 1-й и 2-й групп"),5,i,1,1);
-    }
-
-    for (i = 0; i < 3; ++i)
-    {
-        QString IndexStr = "[" + QString::number(i) + "]";
-        glyout->addWidget(WDFunc::NewLBL(parent, "PNF"+IndexStr),6,i,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+16), ValuesFormat, \
-                                          QString::number(i+16)+".Истинная активная мощность"),7,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "SNF"+IndexStr),6,i+3,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+19), ValuesFormat, \
-                                          QString::number(i+19)+".Кажущаяся полная мощность"),7,i+3,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "QNF"+IndexStr),8,i,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+22), ValuesFormat, \
-                                          QString::number(i+22)+".Реактивная мощность"),9,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Cos"+IndexStr),8,i+3,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+25), ValuesFormat, \
-                                          QString::number(i+25)+".Cos phi по истинной активной мощности"),9,i+3,1,1);
-    }
-
-    /*for (i = 0; i < 14; ++i)
-    {
-        QString IndexStr = "[" + QString::number(i) + "]";
-        glyout->addWidget(WDFunc::NewLBL(parent, "DD_in"+IndexStr),10,i,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+27), ValuesFormat, \
-                                          QString::number(i+27)+".Дискреты"),11,i,1,1);
-    }*/
-    lyout->addLayout(glyout);
-    lyout->addStretch(100);
-    w->setLayout(lyout);
-    w->setStyleSheet(WidgetFormat);
-    return w;
 }
+
 
 void TuneDialog85::FillBd1(QWidget *parent)
 {
@@ -1260,21 +1276,6 @@ void TuneDialog85::FillBd1(QWidget *parent)
 
 
 }
-
-void TuneDialog85::RefreshAnalogValues(int bdnum)
-{
-    switch (bdnum)
-    {
-
-    case C85_BDA_IN: // Блок #1
-        FillBd1(this);
-        break;
-
-    default:
-        return;
-    }
-}
-
 
 void TuneDialog85::GenerateReport()
 {

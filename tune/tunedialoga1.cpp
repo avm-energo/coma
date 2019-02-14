@@ -994,12 +994,6 @@ void TuneDialogA1::GetBdAndFillMTT()
         ChA1->FillBda(this);
 }
 
-void TuneDialogA1::LoadSettings()
-{
-    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
-    PovNumPoints = sets->value("PovNumPoints", "60").toInt();
-}
-
 // ####################### SLOTS #############################
 
 int TuneDialogA1::ReadAnalogMeasurements()
@@ -1014,6 +1008,12 @@ int TuneDialogA1::ReadAnalogMeasurements()
     return Error::ER_NOERROR;
 }
 #endif
+
+void TuneDialogA1::LoadSettings()
+{
+    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    PovNumPoints = sets->value("PovNumPoints", "60").toInt();
+}
 
 void TuneDialogA1::FillBac(int bacnum)
 {

@@ -115,7 +115,7 @@ void TuneDialog21::SetupUI()
     }
     if (gb2lyout->count())
         gb1lyout->addLayout(gb2lyout);
-    gb1lyout->addWidget(BottomUI());
+    gb1lyout->addWidget(BottomUI(BoardType));
     gb->setLayout(gb1lyout);
     lyout->addWidget(gb);
     cp2->setLayout(lyout);
@@ -291,10 +291,17 @@ bool TuneDialog21::CheckTuneCoefs()
     }
     return true;
 }
+
+void TuneDialog21::GetBdAndFillMTT()
+{
+
+}
+
 #endif
 
-void TuneDialog21::FillBac()
+void TuneDialog21::FillBac(int bacnum)
 {
+    Q_UNUSED(bacnum);
     for (int i=0; i<AIN21_NUMCH; ++i)
     {
         WDFunc::SetLEData(this, "tunebcoef"+QString::number(i), QString::number(Bac_block[i].fbin, 'f', 5));
@@ -303,8 +310,9 @@ void TuneDialog21::FillBac()
     }
 }
 
-void TuneDialog21::FillBackBac()
+void TuneDialog21::FillBackBac(int bacnum)
 {
+    Q_UNUSED(bacnum);
     QString tmps;
     for (int i=0; i<AIN21_NUMCH; ++i)
     {
@@ -326,11 +334,6 @@ void TuneDialog21::FillBackBac()
     }
 }
 
-void TuneDialog21::GetBdAndFillMTT()
-{
-
-}
-
 void TuneDialog21::SetDefCoefs()
 {
     for (int i=0; i<AIN21_NUMCH; i++)
@@ -339,5 +342,5 @@ void TuneDialog21::SetDefCoefs()
         Bac_block[i].fkiin = 1.0;
         Bac_block[i].fkuin = 1.0;
     }
-    FillBac();
+    FillBac(BoardType);
 }

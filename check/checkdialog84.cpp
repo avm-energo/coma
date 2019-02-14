@@ -70,6 +70,7 @@ QWidget *CheckDialog84::BdUI(int bdnum)
     }
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void CheckDialog84::RefreshAnalogValues(int bdnum)
 {
     switch (bdnum)
@@ -86,7 +87,6 @@ void CheckDialog84::RefreshAnalogValues(int bdnum)
     }
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void CheckDialog84::PrepareHeadersForFile(int row)
 {
     for (int i=0; i<3; i++)
@@ -164,6 +164,7 @@ QWidget *CheckDialog84::CustomTab()
     return nullptr;
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void CheckDialog84::ChooseValuesToWrite()
 {
 
@@ -195,3 +196,4 @@ void CheckDialog84::BdTimerTimeout()
        // Ch84->FillBd2(this);
     }
 }
+#endif

@@ -123,9 +123,9 @@ private:
     int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта
     int GetExternalTemp(); // ввод текущей температуры окр. среды для настройки на термокамеру
     void GetBdAndFillMTT();
-    void LoadSettings();
 #endif
 
+    void LoadSettings();
     QWidget *BdaBottomUI();
 
 private slots:

@@ -139,8 +139,10 @@ public:
     EAbstractTuneDialogA1DN(QWidget *parent = nullptr);
 
     void InputTuneParameters(int dntype);
+#if PROGSIZE != PROGSIZE_EMUL
     void GetBdAndFillMTT();
     int GetAndAverage(int type, void *out); // type = GAAT_BDA_OUT, GAAT_BDA_IN
+#endif
     int ShowVoltageDialog(int percent);
     void FillMedian(int index);
 

@@ -69,10 +69,10 @@ void ConfDialog31::CheckConf()
         if (InPairs.contains(first)) // if current index is in Pairs already
             continue;
         int second, firstcheck;
-        WDFunc::CBIndex(this, "chpaircb."+QString::number(first), second);
+        second = WDFunc::CBIndex(this, "chpaircb."+QString::number(first));
         if (second == 0) // нет пары
             continue;
-        WDFunc::CBIndex(this, "chpaircb."+QString::number(--second), firstcheck); // -- из-за 0-го элемента "нет пары"
+        firstcheck = WDFunc::CBIndex(this, "chpaircb."+QString::number(--second)); // -- из-за 0-го элемента "нет пары"
         if (first != firstcheck)
             CheckConfErrors.append("Несоответствие в парах: "+QString::number(first)+", "+QString::number(second));
         else

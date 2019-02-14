@@ -228,8 +228,8 @@ private:
 
     void SetupUI();
     QHBoxLayout *MipPars(int parnum, const QString &groupname);
-    void FillBac();
-    void FillBackBac();
+    void FillBac(int bacnum);
+    void FillBackBac(int bacnum);
     void PrepareConsts();
     void FillNewBac();
 #if PROGSIZE != PROGSIZE_EMUL

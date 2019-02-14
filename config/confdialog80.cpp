@@ -84,11 +84,11 @@ void ConfDialog80::Fill()
 
 void ConfDialog80::FillBack()
 {
-    int i,index;
+    int i;
     QString tmps;
     bool tmpb;
     QStringList cbl = QStringList() << "1ф трансформатор/АТ" << "3ф трансформатор/АТ" << "1ф реактор" << "3ф реактор";
-    index = WDFunc::CBData(this, "eq_typecb", tmps);
+    tmps = WDFunc::CBData(this, "eq_typecb");
     for(i=0; i<cbl.size(); i++)
     {
         if(cbl.at(i) == tmps)
@@ -103,7 +103,7 @@ void ConfDialog80::FillBack()
     C80->Bci_block.ddosc |= (tmpb) ? 0x0002 : 0x0000;
     WDFunc::ChBData(this, "oscchb.2", tmpb);
     C80->Bci_block.ddosc |= (tmpb) ? 0x0004 : 0x0000;
-    WDFunc::CBData(this, "npointscb", tmps);
+    tmps = WDFunc::CBData(this, "npointscb");
     C80->Bci_block.npoints = tmps.toUInt();
     WDFunc::SPBData(this, "nfiltrspb", C80->Bci_block.nfiltr);
     WDFunc::SPBData(this, "nhfiltrspb", C80->Bci_block.nhfiltr);
@@ -111,16 +111,16 @@ void ConfDialog80::FillBack()
     {
     case Config::MTM_81: // 2 напряжения, 0 токов
     {
-        WDFunc::CBData(this, "unom.1", tmps);
+        tmps = WDFunc::CBData(this, "unom.1");
         C80->Bci_block.unom1 = tmps.toFloat();
-        WDFunc::CBData(this, "unom.2", tmps);
+        tmps = WDFunc::CBData(this, "unom.2");
         C80->Bci_block.unom2 = tmps.toFloat();
         WDFunc::SPBData(this, "thr.1", C80->Bci_block.duosc);
        break;
     }
     case Config::MTM_82:
     {
-        WDFunc::CBData(this, "unom.1", tmps);
+        tmps = WDFunc::CBData(this, "unom.1");
         C80->Bci_block.unom1 = tmps.toFloat();
         for (i = 3; i < 6; i++)
         {
