@@ -106,6 +106,7 @@ bool ModuleBSI::IsKnownModule()
     return false;
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 int ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
 {
     int res;
@@ -123,4 +124,4 @@ int ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
     }
     return Error::ER_NOERROR;
 }
-
+#endif

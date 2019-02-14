@@ -15,7 +15,6 @@ ParseID9000::ParseID9000(QByteArray &BA) : ParseModule(BA)
 
 }
 
-
 int ParseID9000::Parse(int &count)
 {
     OscHeader_Data OHD;

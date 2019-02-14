@@ -301,6 +301,7 @@ void TuneDialog21::GetBdAndFillMTT()
 
 void TuneDialog21::FillBac(int bacnum)
 {
+    Q_UNUSED(bacnum);
     for (int i=0; i<AIN21_NUMCH; ++i)
     {
         WDFunc::SetLEData(this, "tunebcoef"+QString::number(i), QString::number(Bac_block[i].fbin, 'f', 5));
@@ -311,6 +312,7 @@ void TuneDialog21::FillBac(int bacnum)
 
 void TuneDialog21::FillBackBac(int bacnum)
 {
+    Q_UNUSED(bacnum);
     QString tmps;
     for (int i=0; i<AIN21_NUMCH; ++i)
     {

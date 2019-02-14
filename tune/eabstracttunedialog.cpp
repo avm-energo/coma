@@ -157,6 +157,37 @@ void EAbstractTuneDialog::SetBac(void *block, int blocknum, int blocksize)
     AbsBac[blocknum] = Bac;
 }
 
+void EAbstractTuneDialog::ShowTable()
+{
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QTableView *tw = new QTableView;
+    tw->setModel(RepModel);
+    tw->resizeColumnsToContents();
+    tw->resizeRowsToContents();
+    lyout->addWidget(tw);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
+void EAbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
+{
+    WaitWidget *w = new WaitWidget;
+    WaitWidget::ww_struct ww;
+    ww.isincrement = false;
+    ww.isallowedtostop = isAllowedToStop;
+    ww.format = WaitWidget::WW_TIME;
+    ww.initialseconds = Seconds;
+    w->Init(ww);
+    QEventLoop el;
+    connect(w, SIGNAL(CountZero()), &el,SLOT(quit()));
+    w->Start();
+    el.exec();
+}
+
 #if PROGSIZE != PROGSIZE_EMUL
 void EAbstractTuneDialog::ProcessTune()
 {
@@ -267,21 +298,6 @@ void EAbstractTuneDialog::MsgClear()
     MsgSetVisible(i, false);
 }
 
-void EAbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
-{
-    WaitWidget *w = new WaitWidget;
-    WaitWidget::ww_struct ww;
-    ww.isincrement = false;
-    ww.isallowedtostop = isAllowedToStop;
-    ww.format = WaitWidget::WW_TIME;
-    ww.initialseconds = Seconds;
-    w->Init(ww);
-    QEventLoop el;
-    connect(w, SIGNAL(CountZero()), &el,SLOT(quit()));
-    w->Start();
-    el.exec();
-}
-
 int EAbstractTuneDialog::StartMeasurement()
 {
     MeasurementTimer->start();
@@ -291,22 +307,6 @@ int EAbstractTuneDialog::StartMeasurement()
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
-}
-
-void EAbstractTuneDialog::ShowTable()
-{
-    QDialog *dlg = new QDialog;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QTableView *tw = new QTableView;
-    tw->setModel(RepModel);
-    tw->resizeColumnsToContents();
-    tw->resizeRowsToContents();
-    lyout->addWidget(tw);
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    lyout->addWidget(pb);
-    dlg->setLayout(lyout);
-    dlg->exec();
 }
 
 // ####################### SLOTS #############################

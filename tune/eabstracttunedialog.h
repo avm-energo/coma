@@ -50,6 +50,7 @@ public:
     QWidget *TuneUI();
     QWidget *BottomUI(int bacnum);
     void SetBac(void *block, int blocknum, int blocksize); // установка указателя на блок Bac
+    void WaitNSeconds(int SecondsToWait, bool isAllowedToStop=false);
 #if PROGSIZE != PROGSIZE_EMUL
     void ProcessTune();
     int CheckPassword();
@@ -61,7 +62,6 @@ public:
     void ErMsgSetVisible(int msg, bool Visible=true);
     void SkMsgSetVisible(int msg, bool Visible=true);
     void MsgClear();
-    void WaitNSeconds(int SecondsToWait, bool isAllowedToStop=false);
 //    QByteArray *ChooseFileForOpen(QString mask);
     bool WriteTuneCoefs(int bacnum);
     int SaveAllTuneCoefs();

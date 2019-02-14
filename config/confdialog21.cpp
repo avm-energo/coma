@@ -299,7 +299,7 @@ void ConfDialog21::FillBack()
     WDFunc::SPBData(this, "hysteresis", C21->Bci_block.hysteresis);
     for (int i=0; i<AIN21_NUMCH; ++i)
     {
-        WDFunc::CBIndex(this, "chtypcb."+QString::number(i), C21->Bci_block.in_type[i]);
+        C21->Bci_block.in_type[i] = WDFunc::CBIndex(this, "chtypcb."+QString::number(i));
         bool tmpb;
         quint8 Osc = 0;
         WDFunc::ChBData(this, "choscdi2."+QString::number(i), tmpb);

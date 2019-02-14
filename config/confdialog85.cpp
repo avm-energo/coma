@@ -133,17 +133,17 @@ void ConfDialog85::FillBack()
     int cbidx;
     QString tmps;
     bool tmpb;
-    WDFunc::CBIndex(this, "typea", cbidx);
+    cbidx = WDFunc::CBIndex(this, "typea");
     C85->Bci_block.TypeA = 0x00000001 << cbidx;
     WDFunc::SPBData(this, "numa", C85->Bci_block.NumA);
-    WDFunc::CBIndex(this, "eq_type", C85->Bci_block.Eq_type);
-    WDFunc::CBIndex(this, "optype", C85->Bci_block.Op_type);
+    C85->Bci_block.Eq_type = WDFunc::CBIndex(this, "eq_type");
+    C85->Bci_block.Op_type = WDFunc::CBIndex(this, "optype");
     WDFunc::RBData(this, "u2yes", tmpb);
     C85->Bci_block.Is_U2 = (tmpb) ? 1 : 0;
-    WDFunc::CBData(this, "unomcb", tmps);
+    tmps = WDFunc::CBData(this, "unomcb");
     C85->Bci_block.Unom = tmps.toInt();
     WDFunc::SPBData(this, "inom1", C85->Bci_block.ITT1nom);
-    WDFunc::CBData(this, "inom2", tmps);
+    tmps = WDFunc::CBData(this, "inom2");
     C85->Bci_block.ITT2nom = tmps.toInt();
     for (int i=0; i<3; ++i)
     {
@@ -157,10 +157,10 @@ void ConfDialog85::FillBack()
 //        WDFunc::SPBData(this, "resnomon"+QString::number(i+1), C85->Bci_block.RESnom_ON[i]);
 //        WDFunc::SPBData(this, "reskz"+QString::number(i+1), C85->Bci_block.RESkz[i]);
     }
-    WDFunc::CBIndex(this, "core_type", C85->Bci_block.Core_type);
-    WDFunc::CBIndex(this, "d_win", C85->Bci_block.D_win);
-    WDFunc::CBIndex(this, "n_type", C85->Bci_block.N_Type);
-    WDFunc::CBIndex(this, "residue", C85->Bci_block.Residue);
+    C85->Bci_block.Core_type = WDFunc::CBIndex(this, "core_type");
+    C85->Bci_block.D_win = WDFunc::CBIndex(this, "d_win");
+    C85->Bci_block.N_Type = WDFunc::CBIndex(this, "n_type");
+    C85->Bci_block.Residue = WDFunc::CBIndex(this, "residue");
     WDFunc::SPBData(this, "inomspb", C85->Bci_block.Inom);
     WDFunc::SPBData(this, "ikzspb", C85->Bci_block.Ikz);
     WDFunc::SPBData(this, "tarcspb", C85->Bci_block.T_arc);

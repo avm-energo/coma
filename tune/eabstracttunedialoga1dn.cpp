@@ -8,7 +8,9 @@
 #include "../gen/timefunc.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
+#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
+#endif
 #include "../widgets/wd_func.h"
 
 EAbstractTuneDialogA1DN::EAbstractTuneDialogA1DN(QWidget *parent) :
@@ -515,6 +517,7 @@ void EAbstractTuneDialogA1DN::SaveSettings()
 //    sets->setValue("Organization", OrganizationString);
 }
 
+#if PROGSIZE != PROGSIZE_EMUL
 void EAbstractTuneDialogA1DN::GetBdAndFillMTT()
 {
     if (Commands::GetBd(A1_BDA_OUT_BN, &ChA1->Bda_out, sizeof(CheckA1::A1_Bd1)) == Error::ER_NOERROR)
@@ -639,6 +642,7 @@ int EAbstractTuneDialogA1DN::GetAndAverage(int type, void *out)
     Index++;
     return Error::ER_NOERROR;
 }
+#endif
 
 int EAbstractTuneDialogA1DN::ShowVoltageDialog(int percent)
 {
