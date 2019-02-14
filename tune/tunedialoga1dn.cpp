@@ -47,12 +47,12 @@ void TuneDialogA1DN::SetLbls()
     lbls.append("7.2.3. Ввод данных по делителю и приём настроечных параметров...");
     lbls.append("7.2.5. Задание варианта включения ДН...");
     lbls.append("7.2.6. Запись варианта включения в прибор...");
-/*    lbls.append("7.2.7. Установка 20%, проверка и сохранение...");
+    lbls.append("7.2.7. Установка 20%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 50%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 80%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 100%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 120%, проверка и сохранение...");
-    lbls.append("7.2.11. Запись настроечных коэффициентов и переход на новую конфигурацию..."); */
+    lbls.append("7.2.11. Запись настроечных коэффициентов и переход на новую конфигурацию...");
     lbls.append("7.2.12. Проверка аналоговых данных...");
     lbls.append("7.2.13.1. Проверка аналоговых данных...");
     lbls.append("7.2.13.2. Проверка аналоговых данных...");
@@ -77,7 +77,7 @@ void TuneDialogA1DN::SetPf()
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_6);
     pf[lbls.at(count++)] = func;
-/*    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_1); // 7.2.7. Установка 20%, проверка и сохранение
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_1); // 7.2.7. Установка 20%, проверка и сохранение
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_2); // 7.2.7. Установка 50%, проверка и сохранение
     pf[lbls.at(count++)] = func;
@@ -88,7 +88,7 @@ void TuneDialogA1DN::SetPf()
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_5); // 7.2.7. Установка 120%, проверка и сохранение
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_11); // 7.2.11. Запись настроечных коэффициентов и переход на новую конфигурацию
-    pf[lbls.at(count++)] = func; */
+    pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_12); // 7.2.12. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_1); // 7.2.13.1. Проверка аналоговых данных
@@ -388,6 +388,8 @@ int TuneDialogA1DN::Start7_2_5()
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     WriteBacBlock();
+    if (Commands::SetMode(Mode) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
 /*    if (Commands::GetFile(1,&S2Config) == Error::ER_NOERROR)
@@ -416,6 +418,7 @@ int TuneDialogA1DN::Start7_2_7_1()
 /*    QPushButton *pb = this->findChild<QPushButton *>("Good");
     if (pb != nullptr)
         pb->setText("Продолжить"); */
+    RepModel->SetModel(GOST23625ROWCOUNT, GOST23625COLCOUNT);
     return Start7_2_78910(0);
 }
 
@@ -542,7 +545,7 @@ int TuneDialogA1DN::Start7_2_12()
 /*    QPushButton *pb = this->findChild<QPushButton *>("Good");
     if (pb != nullptr)
         pb->setText("Продолжить"); */
-    RepModel->SetModel(GOST23625ROWCOUNT, GOST23625COLCOUNT);
+    Index = 0;
     return Start7_2_13(0);
 }
 
@@ -739,7 +742,7 @@ void TuneDialogA1DN::GenerateReport()
     // данные в таблицу уже получены или из файла, или в процессе работы
     // отобразим таблицу
     ShowTable();
-    Report *report = new Report("a1_23625", this);
+    Report *report = new Report("a1_dn", this);
     report->AddModel("maindata", RepModel);
     // запрос блока Bda_h, чтобы выдать KNI в протокол
 #if PROGSIZE != PROGSIZE_EMUL
@@ -759,10 +762,8 @@ void TuneDialogA1DN::GenerateReport()
     report->SetVar("DNTol", ReportHeader.DNTol);
     report->SetVar("DNU1", ReportHeader.DNU1);
     report->SetVar("DNU2", ReportHeader.DNU2);
-    report->SetVar("DNP", ReportHeader.DNP);
     report->SetVar("DNF", ReportHeader.DNF);
     report->SetVar("DNOrganization", ReportHeader.DNOrganization);
-    report->SetVar("DNPlace", ReportHeader.DNPlace);
     report->SetVar("DNDevices", ReportHeader.DNDevices);
     report->SetVar("Temp", ReportHeader.Temp);
     report->SetVar("Humidity", ReportHeader.Humidity);
@@ -771,7 +772,6 @@ void TuneDialogA1DN::GenerateReport()
     if (Mode == MODE_ALTERNATIVE)
         report->SetVar("Freq", ReportHeader.Freq);
     report->SetVar("OuterInsp", ReportHeader.OuterInsp);
-    report->SetVar("WindingsInsp", ReportHeader.WindingsInsp);
     report->SetVar("PovDateTime", ReportHeader.PovDateTime);
     QString filename = Files::ChooseFileForSave(this, "*.pdf", "pdf");
     if (!filename.isEmpty())
