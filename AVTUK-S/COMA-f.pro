@@ -9,14 +9,14 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.2.254
+VERSION = 2.2.259
 
 QT       += core gui printsupport network
 
 TARGET = avtuks-F
 #DEFINES += MODULE_A1
 DEFINES += PROGNAME='\\"AVTUK-S\\"'
-DEFINES += PROGCAPTION='\\"AVTUK-Service-E\\040v\\040"$$VERSION"\\040\\"'
+DEFINES += PROGCAPTION='\\"AVTUK-Service-F\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=4 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)

@@ -266,7 +266,7 @@ void Coma::Stage3()
     MainTW->addTab(idlg, "Информация");
     quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
     quint32 MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
-    if (MTypeB < 0xA0) // диапазон модулей АВ-ТУК
+    if (MTypeB <= 0xA2) // диапазон модулей АВ-ТУК
     {
         MainConfDialog = new ConfDialog(S2Config, MTypeB, MTypeM);
         MainTuneDialog = new ConfDialog(S2ConfigForTune, MTypeB, MTypeM);
@@ -442,6 +442,7 @@ void Coma::PrepareDialogs()
     }
     case Config::MTM_84:
     {
+        setMinimumSize(QSize(800, 650));
         ConfM = new ConfDialog84(S2Config);
         break;
     }

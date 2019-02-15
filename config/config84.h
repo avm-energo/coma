@@ -2,6 +2,7 @@
 #define CONFIG84_H
 
 #define ID8084_START    1012
+#define ID8084_COM    20
 
 #include "config.h"
 #include "../gen/modulebsi.h"
@@ -43,9 +44,22 @@ public:
         quint32 NFiltr;	  // Интервал усреднения данных  (в периодах основной частоты)
         quint32 T_Data_Rec;  // Интервал записи данных в ПЗУ (тренд), в секундах
 
-
     } Bci;
 
+    typedef struct
+    {
+        quint8		IP[4];
+        quint8		Mask[4];
+        quint8  	GateWay[4];
+        quint16		Port[4];
+        quint8		SNTP[4];
+        quint32		baud;
+        quint8		parity;
+        quint8		stopbit;
+        quint16     adrMB;
+    } Com;
+
+    Com Com_param;
     Bci Bci_block;
 
     void SetDefConf();
