@@ -26,16 +26,27 @@ signals:
 public slots:
 
 private:
-    Check21::Bda Bda0, Bda5, Bda20;
+    Check21::Bda BdaI0, BdaU0, Bda5, Bda20;
 
-    struct Bac
+    struct Bac_Old
     {
-        float fbin;
+        float fbin_I;
         float fkuin;
         float fkiin;
     };
 
-    Bac Bac_block[AIN21_NUMCH];
+    struct Bac_ExtraNew
+    {
+        float fbin_U;
+    };
+
+    struct Bac
+    {
+       Bac_Old      Bac1[AIN21_NUMCH];
+       Bac_ExtraNew Bac2[AIN21_NUMCH];
+    };
+
+    Bac Bac_block;
 
     int BoardType;
 
@@ -45,6 +56,7 @@ private:
     void SetPf();
     int ShowScheme();
     int ShowU0(int ChNum);
+    int ShowI0(int ChNum);
     int ShowI20(int ChNum);
     int ShowU5(int ChNum);
 

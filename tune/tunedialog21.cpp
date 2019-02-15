@@ -25,7 +25,8 @@ TuneDialog21::TuneDialog21(BoardTypes type, QWidget *parent) :
     setAttribute(Qt::WA_DeleteOnClose);
     for (int i = 0; i < 16; i++)
     {
-        Bda0.sin[i] = 0;
+        BdaU0.sin[i] = 0;
+        BdaI0.sin[i] = 0;
         Bda5.sin[i] = 1.0;
         Bda20.sin[i] = 1.0;
     }
@@ -92,7 +93,11 @@ void TuneDialog21::SetupUI()
         lbl = new QLabel("b"+QString::number(i)+":");
         gb2lyout->addWidget(lbl);
         QLineEdit *le = new QLineEdit("");
-        le->setObjectName("tunebcoef"+QString::number(i));
+        le->setObjectName("tunebcoefI"+QString::number(i));
+        le->setStyleSheet(ValuesLEFormat);
+        gb2lyout->addWidget(le, 1);
+        le = new QLineEdit("");
+        le->setObjectName("tunebcoefU"+QString::number(i));
         le->setStyleSheet(ValuesLEFormat);
         gb2lyout->addWidget(le, 1);
         lbl = new QLabel("i"+QString::number(i)+":");
@@ -169,7 +174,19 @@ int TuneDialog21::ShowScheme()
 int TuneDialog21::ShowU0(int ChNum)
 {
     if (EMessageBox::question(this,"Настройка",\
-                                 "На калибраторе задайте напряжение 0 В (или ток 0 мА) на\nвходе "+\
+                                 "Включите на модуле режим измерения напряжений\n"
+                                 "На калибраторе задайте напряжение 0 В на\nвходе "+\
+                                 QString::number(ChNum)+" модуля и нажмите OK", nullptr, "Ok" , "Close"))
+        return Error::ER_NOERROR;
+    else
+        return Error::ER_GENERALERROR;
+}
+
+int TuneDialog21::ShowI0(int ChNum)
+{
+    if (EMessageBox::question(this,"Настройка",\
+                                 "Включите на модуле режим измерения токов\n"
+                                 "На калибраторе задайте ток 0 мА на\nвходе "+\
                                  QString::number(ChNum)+" модуля и нажмите OK", nullptr, "Ok" , "Close"))
         return Error::ER_NOERROR;
     else
@@ -209,7 +226,11 @@ int TuneDialog21::Tune()
     {
         if(ShowU0(i) == Error::ER_GENERALERROR)
            return Error::ER_GENERALERROR;
-        if (TuneChannel(Bda0) != Error::ER_NOERROR)
+        if (TuneChannel(BdaU0) != Error::ER_NOERROR)
+            return Error::ER_GENERALERROR;
+        if(ShowI0(i) == Error::ER_GENERALERROR)
+           return Error::ER_GENERALERROR;
+        if (TuneChannel(BdaI0) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
     }
     for (i=0; i<AIN21_NUMCH; ++i)
@@ -233,14 +254,15 @@ int TuneDialog21::Tune()
 
 bool TuneDialog21::CalcNewTuneCoef(int NumCh)
 {
-    Bac_block[NumCh].fbin = 1.25f - Bda0.sin[NumCh];
-    if (StdFunc::FloatInRange(Bda0.sin[NumCh], Bda5.sin[NumCh]) || StdFunc::FloatInRange(Bda0.sin[NumCh], Bda20.sin[NumCh]))
+    Bac_block.Bac1[NumCh].fbin_I = 1.25f - BdaI0.sin[NumCh];
+    Bac_block.Bac2[NumCh].fbin_U  = 1.25f - BdaU0.sin[NumCh];
+    if (StdFunc::FloatInRange(BdaU0.sin[NumCh], Bda5.sin[NumCh]) || StdFunc::FloatInRange(BdaI0.sin[NumCh], Bda20.sin[NumCh]))
     {
         WARNMSG("Ошибка в настроечных коэффициентах, деление на ноль");
         return false;
     }
-    Bac_block[NumCh].fkuin = 1 / (Bda0.sin[NumCh]-Bda5.sin[NumCh]);
-    Bac_block[NumCh].fkiin = 1 / (Bda0.sin[NumCh]-Bda20.sin[NumCh]);
+    Bac_block.Bac1[NumCh].fkuin = 1 / (BdaU0.sin[NumCh]-Bda5.sin[NumCh]);
+    Bac_block.Bac1[NumCh].fkiin = 1 / (BdaI0.sin[NumCh]-Bda20.sin[NumCh]);
     FillBac();
     return true;
 }
@@ -256,7 +278,11 @@ void TuneDialog21::TuneOneChannel()
     WDFunc::CBIndex(this, "tunenumch", NumCh);
     if (ShowU0(NumCh) == Error::ER_GENERALERROR)
         return;
-    if (TuneChannel(Bda0) != Error::ER_NOERROR)
+    if (TuneChannel(BdaU0) != Error::ER_NOERROR)
+        return;
+    if (ShowI0(NumCh) == Error::ER_GENERALERROR)
+        return;
+    if (TuneChannel(BdaI0) != Error::ER_NOERROR)
         return;
     if(ShowI20(NumCh) == Error::ER_GENERALERROR)
         return;
@@ -282,7 +308,9 @@ bool TuneDialog21::CheckTuneCoefs()
     for (int i=0; i<AIN21_NUMCH; i++)
     {
         int tmpi = 0;
-        if (!WDFunc::LEData(this, "tunebcoef"+QString::number(i), tmpi))
+        if (!WDFunc::LEData(this, "tunebcoefI"+QString::number(i), tmpi))
+            return false;
+        if (!WDFunc::LEData(this, "tunebcoefU"+QString::number(i), tmpi))
             return false;
         if (!WDFunc::LEData(this, "tunek1coef"+QString::number(i), tmpi))
             return false;
@@ -297,9 +325,10 @@ void TuneDialog21::FillBac()
 {
     for (int i=0; i<AIN21_NUMCH; ++i)
     {
-        WDFunc::SetLEData(this, "tunebcoef"+QString::number(i), QString::number(Bac_block[i].fbin, 'f', 5));
-        WDFunc::SetLEData(this, "tunek1coef"+QString::number(i), QString::number(Bac_block[i].fkiin, 'f', 5));
-        WDFunc::SetLEData(this, "tunek2coef"+QString::number(i), QString::number(Bac_block[i].fkuin, 'f', 5));
+        WDFunc::SetLEData(this, "tunebcoefI"+QString::number(i), QString::number(Bac_block.Bac1[i].fbin_I, 'f', 5));
+        WDFunc::SetLEData(this, "tunebcoefU"+QString::number(i), QString::number(Bac_block.Bac2[i].fbin_U, 'f', 5));
+        WDFunc::SetLEData(this, "tunek1coef"+QString::number(i), QString::number(Bac_block.Bac1[i].fkiin, 'f', 5));
+        WDFunc::SetLEData(this, "tunek2coef"+QString::number(i), QString::number(Bac_block.Bac1[i].fkuin, 'f', 5));
     }
 }
 
@@ -308,16 +337,18 @@ void TuneDialog21::FillBackBac()
     QString tmps;
     for (int i=0; i<AIN21_NUMCH; ++i)
     {
-        WDFunc::LEData(this, "tunebcoef"+QString::number(i), tmps);
-        Bac_block[i].fbin = tmps.toFloat(&ok);
+        WDFunc::LEData(this, "tunebcoefI"+QString::number(i), tmps);
+        Bac_block.Bac1[i].fbin_I = tmps.toFloat(&ok);
+        WDFunc::LEData(this, "tunebcoefU"+QString::number(i), tmps);
+        Bac_block.Bac2[i].fbin_U = tmps.toFloat(&ok);
         if (ok)
         {
             WDFunc::LEData(this, "tunek1coef"+QString::number(i), tmps);
-            Bac_block[i].fkiin = tmps.toFloat(&ok);
+            Bac_block.Bac1[i].fkiin = tmps.toFloat(&ok);
             if (ok)
             {
                 WDFunc::LEData(this, "tunek2coef"+QString::number(i), tmps);
-                Bac_block[i].fkuin = tmps.toFloat(&ok);
+                Bac_block.Bac1[i].fkuin = tmps.toFloat(&ok);
                 if (ok)
                     continue;
             }
@@ -335,9 +366,10 @@ void TuneDialog21::SetDefCoefs()
 {
     for (int i=0; i<AIN21_NUMCH; i++)
     {
-        Bac_block[i].fbin = 0.0;
-        Bac_block[i].fkiin = 1.0;
-        Bac_block[i].fkuin = 1.0;
+        Bac_block.Bac1[i].fbin_I = 0.0;
+        Bac_block.Bac2[i].fbin_U = 0.0;
+        Bac_block.Bac1[i].fkiin = 1.0;
+        Bac_block.Bac1[i].fkuin = 1.0;
     }
     FillBac();
 }

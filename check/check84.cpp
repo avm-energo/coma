@@ -94,12 +94,7 @@ QWidget *Check_84::Bd2W(QWidget *parent)
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value29", ValuesFormat, \
                                       QString::number(29)+".Время записи, с"),5,2,1,1);
 
-    if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != Config::MTB_A2)
-    {
-        glyout->addWidget(WDFunc::NewLBL(parent, "Tamb"),6,0,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value30", ValuesFormat, \
-                                          QString::number(30)+".Температура окружающей среды, °С"),7,0,1,1);
-    }
+
 
     lyout->addLayout(glyout);
     lyout->addStretch(100);
@@ -109,8 +104,29 @@ QWidget *Check_84::Bd2W(QWidget *parent)
 
 }
 
+QWidget *Check_84::Bd3W(QWidget *parent)
+{
+    QWidget *w = new QWidget(parent);
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
 
-void Check_84::FillBd1(QWidget *parent)
+    if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != Config::MTB_A2)
+    {
+        glyout->addWidget(WDFunc::NewLBL(parent, "Tamb"),6,0,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", "value30", ValuesFormat, \
+                                          QString::number(30)+".Температура окружающей среды, °С"),7,0,1,1);
+    }
+
+
+    lyout->addLayout(glyout);
+    lyout->addStretch(100);
+    w->setLayout(lyout);
+    w->setStyleSheet(WidgetFormat);
+    return w;
+}
+
+
+void Check_84::FillBd(QWidget *parent)
 {
     WDFunc::SetLBLText(parent, "value0", WDFunc::StringValueWithCheck(Bd_block1.NUM, 3));
     WDFunc::SetLBLText(parent, "value1", WDFunc::StringValueWithCheck(Bd_block1.Tmk, 3));

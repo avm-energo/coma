@@ -36,9 +36,9 @@ CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent) : EAbstractCheck
     SetBd(6, &Ch84->Bd_block1, sizeof(Check_84::Bd1));
 
     if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
-    sl = QStringList() << "Общ" << "In1" << "Temperature";
+    sl = QStringList() << "Общие" << "Аналоговые" << "Несимметрия" << "Температура";
     else
-    sl = QStringList() << "Общ" << "In1" << "In2";
+    sl = QStringList() << "Общие" << "Аналоговые" << "Несимметрия";
 
     BdUINum = sl.size();
 
@@ -64,6 +64,8 @@ QWidget *CheckDialog84::BdUI(int bdnum)
         return Ch84->Bd1W(this);
     case 2: // Блок #1
         return Ch84->Bd2W(this);
+    case 3: // Блок #1
+        return Ch84->Bd3W(this);
 
     default:
         return new QWidget;
@@ -77,8 +79,8 @@ void CheckDialog84::RefreshAnalogValues(int bdnum)
     case BD_COMMON:
         Ch->FillBd0(this);
         break;
-    case C84_BDA_IN: // Блок #1
-        Ch84->FillBd1(this);
+    case C84_BDA_IN:
+        Ch84->FillBd(this);
         break;
 
     default:
@@ -89,14 +91,16 @@ void CheckDialog84::RefreshAnalogValues(int bdnum)
 #if PROGSIZE != PROGSIZE_EMUL
 void CheckDialog84::PrepareHeadersForFile(int row)
 {
+    QString phase[3] = {"A:","B:","C:"};
+
     for (int i=0; i<3; i++)
     {
-        xlsx->write(row,i+2,QVariant(("Ueff ф")+QString::number(i)+", кВ"));
-        xlsx->write(row,i+5,QVariant("Ieff ф"+QString::number(i)+", А"));
-        xlsx->write(row,i+8,QVariant("Cbush ф"+QString::number(i)+", пФ"));
-        xlsx->write(row,i+11,QVariant("Tg_d ф"+QString::number(i)+", %"));
-        xlsx->write(row,i+14,QVariant("dCbush ф"+QString::number(i)+", пФ"));
-        xlsx->write(row,i+17,QVariant("dTg_d ф"+QString::number(i)+", %"));
+        xlsx->write(row,i+2,QVariant(("Ueff ф")+phase[i]+", кВ"));
+        xlsx->write(row,i+5,QVariant("Ieff ф"+phase[i]+", А"));
+        xlsx->write(row,i+8,QVariant("Cbush ф"+phase[i]+", пФ"));
+        xlsx->write(row,i+11,QVariant("Tg_d ф"+phase[i]+", %"));
+        xlsx->write(row,i+14,QVariant("dCbush ф"+phase[i]+", пФ"));
+        xlsx->write(row,i+17,QVariant("dTg_d ф"+phase[i]+", %"));
     }
     xlsx->write(row,20,QVariant("U0"));
     xlsx->write(row,21,QVariant("U1"));
@@ -110,6 +114,8 @@ void CheckDialog84::PrepareHeadersForFile(int row)
 
     if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     xlsx->write(row,29,QVariant("Tamb, °С"));
+
+    xlsx->write(row,30,QVariant("Freq, Гц"));
 }
 
 void CheckDialog84::WriteToFile(int row, int bdnum)
@@ -140,6 +146,8 @@ void CheckDialog84::WriteToFile(int row, int bdnum)
 
     if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     xlsx->write(WRow,29,Ch84->Bd_block1.Tamb,format);
+
+    xlsx->write(WRow,30,Ch84->Bd_block1.Frequency,format);
 }
 #endif
 
@@ -191,7 +199,7 @@ void CheckDialog84::BdTimerTimeout()
 {
     if (Commands::GetBd(BdNum, &Ch84->Bd_block1, sizeof(Check_84::Bd1)) == Error::ER_NOERROR)
     {
-        Ch84->FillBd1(this);
+        Ch84->FillBd(this);
        // Ch84->FillBd2(this);
     }
 }
