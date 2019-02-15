@@ -36,13 +36,13 @@ void ConfDialog35::FillBack()
     quint32 tmpi;
     for (int i=0; i<D35_CHNUM; ++i)
     {
-        WDFunc::CBIndex(this, "outchtypcb."+QString::number(i), tmpi);
+        tmpi = WDFunc::CBIndex(this, "outchtypcb."+QString::number(i));
         C35->Bci_block.out_type[i] = StdFunc::BitByIndex(tmpi);
     }
     WDFunc::SPBData(this, "minimp", C35->Bci_block.pulse_short);
     WDFunc::SPBData(this, "maximp", C35->Bci_block.pulse_long);
     WDFunc::SPBData(this, "wdgtype", C35->Bci_block.wd_type);
-    WDFunc::CBIndex(this, "wdgout", C35->Bci_block.wd_nout);
+    C35->Bci_block.wd_nout = WDFunc::CBIndex(this, "wdgout");
     WDFunc::SPBData(this, "wdgtime", C35->Bci_block.wd_tm);
 }
 

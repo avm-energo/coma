@@ -35,9 +35,12 @@
 #include "../dialogs/a1dialog.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/emessagebox.h"
+#include "../widgets/wd_func.h"
 #include "../gen/maindef.h"
 #include "../gen/error.h"
+#include "../gen/files.h"
 #include "../gen/colors.h"
+#include "../gen/commands.h"
 #include "../gen/modulebsi.h"
 
 pkdn_s::pkdn_s(QWidget *parent)
@@ -132,9 +135,8 @@ void pkdn_s::Stage3()
     ConfDialogA1 *DialogA1 = new ConfDialogA1(S2Config);
     ConfB = DialogA1;
     MainTW->addTab(ConfB, "Конфигурирование");
-    connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
-    connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
-    CheckDialogA1 *chdlg = new CheckDialogA1(BT_BASE);
+    connect(ConfB,SIGNAL(NewConfToBeLoaded()),this,SLOT(Fill()));
+    connect(ConfB,SIGNAL(DefConfToBeLoaded()),this,SLOT(SetDefConf()));
 //    fwupdialog *FwUpD = new fwupdialog;
 #if PROGSIZE >= PROGSIZE_LARGE
     TuneDialogA1 *tdlg = new TuneDialogA1;
@@ -150,10 +152,12 @@ void pkdn_s::Stage3()
     connect(t2dlg,SIGNAL(SetPercent(int)),this,SLOT(SetProgressBar2(int)));
     MainTW->addTab(t2dlg, "Настройка своего ДН");
 #endif
+    CheckDialogA1 *chdlg = new CheckDialogA1(BT_BASE);
     MainTW->addTab(chdlg, "Измерения");
+    connect(this, SIGNAL(VoltageTypeChanged(int)), chdlg, SLOT(SetMode(int)));
     A1Dialog *extdlg = new A1Dialog;
-    connect(extdlg,SIGNAL(StartPercents(quint32)),this,SLOT(SetProgressBar2Size(quint32)));
-    connect(extdlg,SIGNAL(SetPercent(quint32)),this,SLOT(SetProgressBar2(quint32)));
+    connect(extdlg,SIGNAL(StartPercents(int)),this,SLOT(SetProgressBar2Size(int)));
+    connect(extdlg,SIGNAL(SetPercent(int)),this,SLOT(SetProgressBar2(int)));
 //    connect(this,SIGNAL(Finished()),extdlg,SIGNAL(Finished()));
     MainTW->addTab(extdlg, "Поверка внешнего ДН/ТН");
 //    MainTW->addTab(FwUpD, "Загрузка ВПО");
@@ -161,6 +165,10 @@ void pkdn_s::Stage3()
         Error::ShowErMsg(ER_NOCONF);
     if (ModuleBSI::GetHealth() & HTH_REGPARS) // нет коэффициентов
         Error::ShowErMsg(ER_NOTUNECOEF);
+
+    // диалог выбора рода напряжения
+    MainTW->addTab(ChangeVoltageTypeDialog(), "Род напряжения");
+
     MainTW->repaint();
     MainTW->show();
 #if PROGSIZE >= PROGSIZE_LARGE
@@ -169,9 +177,38 @@ void pkdn_s::Stage3()
     emit BsiRefresh();
 }
 
-/*void pkdn_s::ProtocolFromFile()
+QDialog *pkdn_s::ChangeVoltageTypeDialog()
 {
-    A1Dialog *dlg = new A1Dialog(false);
-    delete dlg;
+    QDialog *dlg = new QDialog;
+    dlg->setStyleSheet("QDialog {background-color: "+QString(UCONFCLR)+";}");
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QVBoxLayout *lyout = new QVBoxLayout;
+
+    QStringList sl = QStringList() << "Переменный" << "Постоянный";
+    hlyout->addWidget(WDFunc::NewLBL(this, "Род напряжения:"), 0, Qt::AlignRight);
+    hlyout->addWidget(WDFunc::NewCB(this, "voltagetype", sl), 10);
+    lyout->addLayout(hlyout);
+
+    hlyout = new QHBoxLayout;
+    hlyout->addStretch(100);
+    hlyout->addWidget(WDFunc::NewPB(this, "Подтвердить", this, SLOT(AcceptVoltageType())), 0);
+    hlyout->addStretch(100);
+    lyout->addLayout(hlyout);
+    lyout->addStretch(100);
+    dlg->setLayout(lyout);
+    return dlg;
 }
-*/
+
+void pkdn_s::AcceptVoltageType()
+{
+    int tmpi = WDFunc::CBIndex(this, "voltagetype");
+    if (Commands::SetMode(tmpi) != Error::ER_NOERROR)
+        EMessageBox::error(this, "Ошибка", "Ошибка установки рода напряжения");
+    else
+    {
+        QString tmps = (tmpi == MODE_ALTERNATIVE) ? "переменный" : "постоянный";
+        EMessageBox::information(this, "Информация", "Род напряжения: " + tmps);
+    }
+    emit VoltageTypeChanged(tmpi);
+}
+

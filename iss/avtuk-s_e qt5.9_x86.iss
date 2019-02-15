@@ -1,15 +1,15 @@
-; -- pkdns-L x86.iss --
+; -- avtuk-s_e x86.iss --
 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING .ISS SCRIPT FILES!
 
-#define Name "ПКДН-Сервис БР"
-#define GroupName "ПКДН-Сервис"
-#define EngName "PKDN-S-L"
-#define Version "2.2.261"
+#define Name "АВТУК-Сервис Эмуляция"
+#define GroupName "АВТУК-Сервис"
+#define EngName "AVTUK-S"
+#define Version "2.2.260"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
-#define ExeName "pkdns-L.exe"
-#define SetupName "pkdns-L-2.2.261-x86"
+#define ExeName "avtuks-E.exe"
+#define SetupName "avtuks-E-2.2.260-x86"
 #define Prefix "D:\Progs\out"
 
 [Languages]
@@ -29,7 +29,7 @@ AppPublisher={#Publisher}
 AppPublisherURL={#URL}
 AppSupportURL={#URL}
 AppUpdatesURL={#URL}
-DefaultDirName={pf}\{#Publisher}\{#Name}
+DefaultDirName={pf}\{#Publisher}\{#EngName}
 DefaultGroupName={#GroupName}
 ; UninstallDisplayIcon={app}\MyProg.exe
 Compression=lzma2
@@ -48,11 +48,11 @@ Source: "{#Prefix}\3rdparty-x86\liblzma.dll"; DestDir: "{app}"
 Source: "{#Prefix}\qt5.9.6-x86\*.dll"; DestDir: "{app}"
 Source: "{#Prefix}\qt5.9.6-x86\platforms\qwindows.dll"; DestDir: "{app}\platforms"
 Source: "{#Prefix}\coma\{#ExeName}"; DestDir: "{app}"; DestName: {#ExeName}; Flags: ignoreversion
-Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{localappdata}\{#EngName}"; Flags: ignoreversion
-Source: "{#Prefix}\coma\reports\*.*"; DestDir: "{localappdata}\{#EngName}"; Flags: ignoreversion
+Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
+Source: "{#Prefix}\coma\reports\*.*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
 Source: "{#Prefix}\coma\images\*.*"; DestDir: "{app}\images"; Flags: ignoreversion
-; Source: "{#Prefix}\coma\pdf\КОМА Руководство пользователя.pdf"; DestDir: "{app}"
 Source: "{#Prefix}\common\vc2015\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
+; Source: "coma\pdf\КОМА Руководство пользователя.pdf"; DestDir: "{app}"
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
@@ -105,20 +105,3 @@ function IsRequiredVC2015Detected(): boolean;
 begin
     result := IsVC2015Detected();
 end;
-
-//-----------------------------------------------------------------------------
-//    Callback-функция, вызываемая при инициализации установки
-//-----------------------------------------------------------------------------
-//function InitializeSetup(): boolean;
-//begin
-
-  // Если нет тербуемой версии .NET выводим сообщение о том, что инсталлятор
-  // попытается установить её на данный компьютер
-//  if not IsVC2015Detected() then
-    //begin
-//      MsgBox('{#Name} требует установки Microsoft VC2015 redistributable v14.0.24215'#13#13
-             //'Установщик запустит установку MSVC после установки основного пакета', mbInformation, MB_OK);
-    //end;   
-
-//  result := true;
-//end;

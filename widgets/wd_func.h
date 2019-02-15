@@ -8,12 +8,22 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QDoubleSpinBox>
+#include <QPushButton>
 #include "ecombobox.h"
 #include "passwordlineedit.h"
 
 class WDFunc
 {
 public:
+    enum CBSignals
+    {
+        CT_TEXTCHANGED,
+        CT_INDEXCHANGED,
+        CT_CLICKED,
+        CT_DCLICKED,
+        CT_CONTEXT
+    };
+
     WDFunc();
     static bool SetCWData(QWidget *w, const QString &cwname, const QString &cwvalue);
     static QString CWData(QWidget *w, const QString &cwname);
@@ -50,15 +60,16 @@ public:
     static bool SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue);
     static bool SetCBIndex(QWidget *w, const QString &cbname, int index);
     static bool SetCBColor(QWidget *w, const QString &cbname, const QString &color);
-    static bool CBData(QWidget *w, const QString &cbname, QString &cbvalue);
-    template <typename T> static bool CBIndex(QWidget *w, const QString &cbname, T &index)
+    static QString CBData(QWidget *w, const QString &cbname);
+    static int CBIndex(QWidget *w, const QString &cbname)
     {
         EComboBox *cb = w->findChild<EComboBox *>(cbname);
         if (cb == nullptr)
-            return false;
-        index = cb->currentIndex();
-        return true;
+            return -1;
+        return cb->currentIndex();
     }
+    static QMetaObject::Connection CBConnect(QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method);
+
     static QDoubleSpinBox *NewSPB(QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor="");
     static bool SetSPBData(QWidget *w, const QString &spbname, const double &spbvalue);
     template <typename T> static bool SPBData(QWidget *w, const QString &spbname, T &spbvalue)
@@ -92,6 +103,8 @@ public:
     static QString StringValueWithCheck(float value, int precision = 5);
     static QVariant FloatValueWithCheck(float value);
     static QImage *TwoImages(const QString &first, const QString &second);
+    static QPushButton *NewPB(QWidget *parent, const QString &text, \
+                      const QObject *receiver, const char *method, const QString &pbtooltip="");
 };
 
 #endif // WD_FUNC

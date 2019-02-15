@@ -11,6 +11,9 @@
 #define A1_BDA_OUT_BN       4
 #define A1_BDA_OUT_AN_BN    5
 
+#define MODE_ALTERNATIVE    0
+#define MODE_DIRECT         1
+
 class CheckA1
 {
 public:
@@ -65,6 +68,7 @@ public:
         float Pt100;                // 3 значение температурного сигнала
         float EXTmA1;               // 4 значение первого сигнала (4-20) мА
         float EXTmA2;               // 5 значение второго сигнала (4-20) мА
+        float Middle_ADC[2];        // 6-7 среднее значение эээ... ммм... измеренных напряжений в единицах АЦП
     };
 
     Bda Bda_block;

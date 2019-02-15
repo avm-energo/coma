@@ -15,6 +15,7 @@ public:
 signals:
 
 public slots:
+    void SetMode(int mode);
 
 private:
     CheckA1 *ChA1;

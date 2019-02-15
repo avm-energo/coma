@@ -4,33 +4,23 @@
 #include <QDialog>
 #include <QStandardItemModel>
 #include <QCloseEvent>
-#include "limereport/lrreportengine.h"
+#include "../tune/eabstracttunedialoga1dn.h"
+#include "../gen/report.h"
+#include "../gen/maindef.h"
 #include "../config/configa1.h"
 #include "../check/checka1.h"
-
-#define GOST1983ROWCOUNT    6 // 80, 100, 120 %
-#define GOST23625ROWCOUNT   10 // 20, 50, 80, 100, 120 %
-#define GOST1983COLCOUNT    10 // K, S, 3x(dU, dP), sU, sP
-#define GOST23625COLCOUNT   18 // K, S, 5x(dU, dP), dd, dD, 2x(sU, sP)
 
 #define TUNE_POINTSPER  500 // столько миллисекунд должно усредняться при регулировке
 #define TUNEVARIANTSNUM 3
 
-class A1Dialog : public QDialog
+class A1Dialog : public EAbstractTuneDialogA1DN
 {
     Q_OBJECT
 public:
     explicit A1Dialog(const QString &filename = "", QWidget *parent = nullptr);
     ~A1Dialog();
 
-    enum PovTypes
-    {
-        GOST_NONE, // не задано
-        GOST_23625, // по 5 точкам туда-сюда
-        GOST_1983 // по 3 точкам только туда
-    };
-
-    struct Baci
+/*    struct Baci
     {
         float U1kDN[6];     // измеренные при калибровке напряжения на выходе своего ДН для значений вблизи 12, 30, 48, 60 и 72 В
         float U2kDN[6];     // и соответствующие им значения на выходе эталонного делителя
@@ -91,14 +81,13 @@ public:
     QStringList TableItem;      // строка таблицы с данными вывода
     QList<QStringList *> MainData; // полные данные таблицы для модели
 
-    ReportHeaderStructure ReportHeader;
+    ReportHeaderStructure ReportHeader; */
 
 private:
     CheckA1 *ChA1;
     ConfigA1 *CA1;
-    LimeReport::ReportEngine *report;
     QVector<S2::DataRec> S2Config;
-    QTimer *MeasurementTimer;
+//    QTimer *MeasurementTimer;
     struct ResultsStruct
     {
         quint64 Time;
@@ -125,73 +114,74 @@ private:
         float ddPd; // Среднеквадратичное отклонение dPd
     };
 
-    struct PovDevStruct // данные об установке
+/*    struct PovDevStruct // данные об установке
     {
         QString DevName; // наименование установки
         QString DevSN; // серийный (заводской) номер
         QString DevPrecision; // точность
     };
 
-    PovDevStruct PovDev;
+    PovDevStruct PovDev; */
 
     int Index, Counter;
     float CurrentS; // текущее значение нагрузки
     int PovType, TempPovType; // тип поверяемого оборудования (по какому ГОСТу)
-    QStandardItemModel *ReportModel, *ViewModel; // модель, в которую заносим данные для отчёта
-    int RowCount, ColumnCount; // количество рядов и столбцов в модели
+    ReportModel *RepModel; // модель, в которую заносим данные для отчёта
+
     bool Autonomous; // =1, если производится формирование протокола из файла, =0 - при работе с прибором
     bool TempFromLE, HumFromLE; // =1, если данные в протокол надо брать из поля ввода, =0 - если из прибора
-    bool Cancelled;
+//    bool Cancelled;
 
     void SetupUI();
 #if PROGSIZE != PROGSIZE_EMUL
     int GetConf();
 #endif
-    void FillBdOut();
-    void FillMedian();
+    void SetLbls() {}; // заполнить список сообщений
+    void SetPf() {}; // заполнить список функций настройки
+//    void FillBdOut();
+//    void FillMedian();
     void WriteProtocolToFile();
     void ShowProtocol();
     void SaveProtocolToPDF();
     void GenerateReport(); // сгенерировать протокол
-    bool ConditionDataDialog(); // задание условий поверки
-    bool DNDialog(PovDevStruct &PovDev); // задание параметров ДН(ТН)
-    void UpdateItemInModel(int row, int column, QVariant value);
-    void ShowTable();
-    void FillModel();
-    void FillHeaders();
+//    bool ConditionDataDialog(); // задание условий поверки
+//    bool DNDialog(PovDevStruct &PovDev); // задание параметров ДН(ТН)
+//    void ShowTable();
+//    void FillModelRow(int row);
+//    void FillHeaders();
 
 signals:
-    void CloseDialog();
-    void StartPercents(quint32 Percent);
-    void SetPercent(int Percent);
+//    void CloseDialog();
+//    void StartPercents(quint32 Percent);
+//    void SetPercent(int Percent);
 
 private slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void StartWork();
-    void MeasTimerTimeout();
+//    void MeasTimerTimeout();
     void Accept();
     void Decline();
     void Proceed();
-    int GetStatistics();
+//    int GetStatistics();
 #endif
     void Cancel();
     void ParsePKDNFile(const QString &filename);
-    void SetDNData();
-    void SetConditionData();
+//    void SetDNData();
+//    void SetConditionData();
     void RBToggled();
-    void TempRandomizeModel();
-    void SetTuneVariant();
+//    void SetTuneParameters();
+    int ReadAnalogMeasurements();
 
 private:
-    int TuneVariant;
+//    int TuneVariant;
     int PovNumPoints;
-    QString OrganizationString; // наименование организации, работающей с программой
+//    QString OrganizationString; // наименование организации, работающей с программой
 
-    void InputTuneVariant(int varnum);
-    void LoadSettings();
-    void SaveSettings();
+//    void InputTuneParameters(int varnum);
+//    void LoadSettings();
+//    void SaveSettings();
 
-    void TemplateCheck();
+//    void TemplateCheck();
 
 protected:
     void closeEvent(QCloseEvent *e);

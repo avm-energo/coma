@@ -12,7 +12,8 @@ class StdFunc
 public:
     StdFunc();
 
-    static QString MIPIP;
+    static QString s_MIPIP;
+    static QString s_OrganizationString;
 
     static void Init();
     static QString VerToStr(quint32);
@@ -20,6 +21,10 @@ public:
     static void SetHomeDir(const QString &dir);
     static QString GetHomeDir();
     static QString GetSystemHomeDir();
+    static void SetMIPIP(const QString &ip);
+    static QString MIPIP();
+    static void SetOrganizationString(const QString &str);
+    static QString OrganizationString();
     static void Cancel();
     static void ClearCancel();
     static bool IsCancelled();

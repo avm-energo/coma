@@ -20,7 +20,7 @@ void InfoDialog::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *slyout = new QGridLayout;
     slyout->addWidget(WDFunc::NewLBL(this, "Тип устройства:"), 0, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBL(this, ModuleBSI::GetModuleTypeString()), 0, 1, 1, 1, Qt::AlignRight);
+    slyout->addWidget(WDFunc::NewLBL(this, ModuleBSI::GetModuleTypeString()), 0, 1, 1, 1);
     slyout->addWidget(WDFunc::NewLBL(this, "Серийный номер устройства:"), 1, 0, 1, 1, Qt::AlignRight);
     slyout->addWidget(WDFunc::NewLBLT(this, "", "snle"), 1, 1, 1, 1);
     slyout->addWidget(WDFunc::NewLBL(this, "Версия ПО:"), 2, 0, 1, 1, Qt::AlignRight);

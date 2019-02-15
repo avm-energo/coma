@@ -1,6 +1,7 @@
 #ifndef EMESSAGEBOX_H
 #define EMESSAGEBOX_H
 
+#include <QWidget>
 /*
     Copyright (c) 2009-10 Qtrac Ltd. All rights reserved.
 

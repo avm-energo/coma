@@ -132,7 +132,7 @@ void TuneDialog80::SetupUI()
     glyout->addWidget(le,8,4,1,2);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
-    lyout->addWidget(BottomUI());
+    lyout->addWidget(BottomUI(BoardTypes::BT_BASE));
     lyout->addStretch(1);
     cp2->setLayout(lyout);
 
@@ -341,8 +341,9 @@ void TuneDialog80::GetBdAndFillMTT()
 }
 #endif
 
-void TuneDialog80::FillBac()
+void TuneDialog80::FillBac(int bacnum)
 {
+    Q_UNUSED(bacnum);
     for (int i = 0; i < 6; i++)
     {
         WDFunc::SetLEData(this, "tune"+QString::number(i), QString::number(Bac_block.KmU[i], 'f', 5));
@@ -367,8 +368,9 @@ void TuneDialog80::FillNewBac()
     WDFunc::SetLEData(this, "tune25", QString::number(Bac_newblock.Kinter, 'f', 5));
 }
 
-void TuneDialog80::FillBackBac()
+void TuneDialog80::FillBackBac(int bacnum)
 {
+    Q_UNUSED(bacnum);
     QString tmps;
     for (int i = 0; i < 6; i++)
     {
@@ -398,7 +400,7 @@ void TuneDialog80::SetDefCoefs()
         Bac_block.KmI_5[i] = 1.0;
         Bac_block.KmU[i] = 1.0;
     }
-    FillBac();
+    FillBac(BoardTypes::BT_BASE);
 }
 
 void TuneDialog80::PrepareConsts()
@@ -1016,10 +1018,8 @@ int TuneDialog80::CheckAnalogValues(double u, double i, double p, double q, doub
 {
     //double it = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_83) ? utol : itol; // 0t2n
     //double ut = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_81) ? itol : utol; // 2t0n
-    //double ValuesToCheck[45] = {/*TD_TMK,TD_VBAT,*/TD_FREQ,u,u,u,i,i,i,u,u,u,i,i,i,phi,phi,phi,phi,phi,phi,p,p,p,s,s,s,q,q,q, \
-                                cosphi,cosphi,cosphi,p,p,p,q,q,q,s,s,s,cosphi,cosphi,cosphi};
-    //double ThresholdsToCheck[45] = {/*T25,TH05,*/TH0005,ut,ut,ut,it,it,it,ut,ut,ut,it,it,it,pht,pht,pht,pht,pht,pht,pt,pt,pt,pt,pt,pt,pt,pt,pt,\
-                                    ct,ct,ct,pt,pt,pt,pt,pt,pt,pt,pt,pt,ct,ct,ct};
+    //double ValuesToCheck[45] = {/*TD_TMK,TD_VBAT,*/TD_FREQ,u,u,u,i,i,i,u,u,u,i,i,i,phi,phi,phi,phi,phi,phi,p,p,p,s,s,s,q,q,q,cosphi,cosphi,cosphi,p,p,p,q,q,q,s,s,s,cosphi,cosphi,cosphi};
+    //double ThresholdsToCheck[45] = {/*T25,TH05,*/TH0005,ut,ut,ut,it,it,it,ut,ut,ut,it,it,it,pht,pht,pht,pht,pht,pht,pt,pt,pt,pt,pt,pt,pt,pt,pt,ct,ct,ct,pt,pt,pt,pt,pt,pt,pt,pt,pt,ct,ct,ct};
     //double *VTC = ValuesToCheck;
     //double *TTC = ThresholdsToCheck;
     QLocale german(QLocale::German);

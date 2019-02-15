@@ -28,6 +28,7 @@
 ConfDialog87::ConfDialog87(QVector<S2::DataRec> &S2Config, bool BaseBoard, QWidget *parent) :
     AbstractConfDialog(parent)
 {
+    Q_UNUSED(BaseBoard);
     //RangeInMins = {4.0, 0.0, 0.0, -5.0, 0.0};
     //RangeInMaxs = {20.0, 20.0, 5.0, 5.0, 5.0};
     this->S2Config = &S2Config;
@@ -154,12 +155,13 @@ void ConfDialog87::SetupUI()
 
 void ConfDialog87::DisableChannel(int chnum, bool disable)
 {
-
+    Q_UNUSED(chnum);
+    Q_UNUSED(disable);
 }
 
 void ConfDialog87::SetRange(int RangeType)
 {
-
+    Q_UNUSED(RangeType);
 }
 
 void ConfDialog87::Fill()
@@ -194,12 +196,12 @@ void ConfDialog87::FillBack()
 
 void ConfDialog87::SetMinMax(int i)
 {
-
+    Q_UNUSED(i);
 }
 
 void ConfDialog87::SetChTypData(int value)
 {
-
+    Q_UNUSED(value);
 }
 
 void ConfDialog87::CheckConf()

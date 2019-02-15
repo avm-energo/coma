@@ -40,9 +40,9 @@ void ConfDialog84::Fill()
 
 void ConfDialog84::FillBack()
 {
-    int i,index;
+/*    int i,index;
     QString tmps;
-    bool tmpb;
+    bool tmpb;*/
 
 }
 
@@ -53,7 +53,7 @@ void ConfDialog84::SetupUI()
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
+//    QHBoxLayout *hlyout = new QHBoxLayout;
     QWidget *analog1 = new QWidget;
     QWidget *analog2 = new QWidget;
     QWidget *extraconf = new QWidget;

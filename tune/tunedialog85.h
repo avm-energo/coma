@@ -63,8 +63,8 @@ private:
     int TuneControlType;
     void SetupUI();
     QHBoxLayout *MipPars(int parnum, const QString &groupname);
-    void FillBac();
-    void FillBackBac();
+    void FillBac(int bacnum);
+    void FillBackBac(int bacnum);
 
     struct Bac
     {
@@ -187,17 +187,11 @@ private:
 
     float ToFloat(QString text);
     void closeEvent(QCloseEvent *e);
+#if PROGSIZE != PROGSIZE_EMUL
     int SaveWorkConfig();
     void SetLbls();
     void SetPf();
     void GetBdAndFillMTT();
-    void Tune3p();
-    int CheckTuneCoefs();
-    int CheckMip();
-    bool IsWithinLimits(double number, double base, double threshold);
-    int ShowControlChooseDialog();
-    int Show3PhaseScheme();
-    void Show1RetomDialog(float U, float A);
     int Start7_2_3();
     int Start7_3_1();
     int Start7_3_1_1();
@@ -218,21 +212,29 @@ private:
     int Start7_3_8_1();
     int Start7_3_8_2();
     int Start7_3_9();
+    int StartCheckAnalogValues(double u, double i, double deg, bool tol); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0: начальная точность, 1 - повышенная
+    int CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct);
+    int SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
+    int ShowControlChooseDialog();
+    int Show3PhaseScheme();
     int SaveUeff();
     int ShowRetomDialog(double U, double I);
     int ShowRetomDialog2(double U);
+    int LoadWorkConfig();
+    void FillBd1(QWidget *parent);
+#endif
+    void Tune3p();
+    int CheckTuneCoefs();
+    int CheckMip();
+    bool IsWithinLimits(double number, double base, double threshold);
+    void Show1RetomDialog(float U, float A);
     //int TuneDialog85::StartCheckAnalogValues(double u, double i, double deg, bool tol); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0: начальная точность, 1 - повышенная
-    int CheckAnalogValues(double u, double i, double p, double q, double s, double phi, double cosphi, double utol, double itol, double pht, double pt, double ct);
     bool SetConfA(int i2nom);
     int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта
     void MsgClear();
-    int SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
-    int LoadWorkConfig();
-    int StartCheckAnalogValues(double u, double i, double deg, bool tol); // deg - угол в градусах между токами и напряжениями одной фазы, tol - 0: начальная точность, 1 - повышенная
     void PrepareConsts();
     void RefreshAnalogValues(int bdnum);
     QWidget *Bd1W(QWidget *parent);
-    void FillBd1(QWidget *parent);
     void FillNewBac();
 
     QString ValuesFormat, WidgetFormat;

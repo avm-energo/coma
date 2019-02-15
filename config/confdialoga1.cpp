@@ -60,18 +60,18 @@ void ConfDialogA1::FillBack()
 //    WDFunc::LEData(this, "DividerSN", tmps);
 //    CA1->Bci_block.DNFNum = tmps.toInt();
 //    WDFunc::SPBData(this, "K_DNSPB", CA1->Bci_block.K_DN);
-    WDFunc::CBIndex(this, "TokrCB", CA1->Bci_block.DTCanal);
+    CA1->Bci_block.DTCanal = WDFunc::CBIndex(this, "TokrCB");
     WDFunc::SPBData(this, "TokrSPB4", CA1->Bci_block.T4);
     WDFunc::SPBData(this, "TokrSPB20", CA1->Bci_block.T20);
     WDFunc::SPBData(this, "TokrW100", CA1->Bci_block.W100);
-    WDFunc::CBIndex(this, "HumidityCB", tmpi);
+    tmpi = WDFunc::CBIndex(this, "HumidityCB");
     CA1->Bci_block.DHCanal = (tmpi > 0) ? (tmpi+1) : 0;
     WDFunc::SPBData(this, "HumiditySPB4", CA1->Bci_block.H4);
     WDFunc::SPBData(this, "HumiditySPB20", CA1->Bci_block.H20);
 #if PROGSIZE >= PROGSIZE_LARGE
     WDFunc::SPBData(this, "thr.1", CA1->Bci_block.DUosc);
     WDFunc::SPBData(this, "thr.2", CA1->Bci_block.DUmin);
-    WDFunc::CBData(this, "NPointsCB", tmps);
+    tmps = WDFunc::CBData(this, "NPointsCB");
     CA1->Bci_block.NPoints = tmps.toInt();
     WDFunc::SPBData(this, "NFilterSPB", CA1->Bci_block.Filter);
     WDFunc::SPBData(this, "NHarmFiltSPB", CA1->Bci_block.NHarmFilt);

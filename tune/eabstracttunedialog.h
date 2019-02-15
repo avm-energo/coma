@@ -5,7 +5,7 @@
 #include <QCloseEvent>
 #include <QByteArray>
 #include "../gen/s2.h"
-//#include "../gen/publicclass.h"
+#include "../gen/report.h"
 
 #define MAXTUNESIZE 1024 // максимальный размер файла с данными настройки
 
@@ -15,6 +15,7 @@
 #define MEASTIMERINT    1000 // интервал проведения измерений - 1 с
 
 #define TUNE_POINTSPER  500 // столько миллисекунд должно усредняться при регулировке
+#define WAITFORCONST    4 // seconds to let voltages be constant
 
 class EAbstractTuneDialog : public QDialog
 {
@@ -24,29 +25,32 @@ public:
     {
         void *BacBlock;
         int BacBlockSize;
-        char BacBlockNum;
+//        char BacBlockNum;
     };
 
     explicit EAbstractTuneDialog(QWidget *parent = nullptr);
     ~EAbstractTuneDialog();
 
-    bool IsNeededDefConf = false;
-    BacStruct AbsBac;
+    bool IsNeededDefConf;
+    QMap <int, BacStruct> AbsBac;
     QStringList lbls;
     bool Skipped, MeasurementEnabled, ok, TuneFileSaved;
+//    bool Cancelled;
     QTimer *MeasurementTimer;
     QVector<S2::DataRec> S2Config;
     quint32 SecondsToEnd15SecondsInterval;
     QHash <QString, int (EAbstractTuneDialog::*)()> pf;
     quint8 bStep;
-    bool Cancelled = false;
     int TuneVariant; // вариант регулировочных параметров
-     QVector<S2::DataRec> *S2ConfigForTune;
+    QVector<S2::DataRec> *S2ConfigForTune;
+    ReportModel *RepModel; // модель, в которую заносим данные для отчёта
+//    QString OrganizationString; // наименование организации, работающей с программой
 
     virtual void SetupUI() = 0;
     QWidget *TuneUI();
-    QWidget *BottomUI();
+    QWidget *BottomUI(int bacnum);
     void SetBac(void *block, int blocknum, int blocksize); // установка указателя на блок Bac
+    void WaitNSeconds(int SecondsToWait, bool isAllowedToStop=false);
 #if PROGSIZE != PROGSIZE_EMUL
     void ProcessTune();
     int CheckPassword();
@@ -58,17 +62,16 @@ public:
     void ErMsgSetVisible(int msg, bool Visible=true);
     void SkMsgSetVisible(int msg, bool Visible=true);
     void MsgClear();
-    void WaitNSeconds(int SecondsToWait, bool isAllowedToStop=false);
-    int StartMeasurement();
 //    QByteArray *ChooseFileForOpen(QString mask);
-    void InputTuneVariant(int varnum);
-    bool WriteTuneCoefs();
+    bool WriteTuneCoefs(int bacnum);
+    int SaveAllTuneCoefs();
     void PrereadConf();
     virtual void GetBdAndFillMTT() = 0;
 #endif
-    virtual void FillBac() = 0;
-    virtual void FillBackBac() = 0;
-    void SaveToFileEx();
+    virtual void FillBac(int bacnum) = 0;
+    virtual void FillBackBac(int bacnum) = 0;
+    void SaveToFileEx(int bacnum);
+    void ShowTable();
 
 signals:
     void PasswordChecked();
@@ -81,15 +84,19 @@ signals:
 public slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void CancelTune();
+    void ReadAllTuneCoefs();
     void ReadTuneCoefs();
     bool WriteTuneCoefsSlot();
     void Good();
     void NoGood();
+    int StartMeasurement();
+    virtual void SetDefCoefs() = 0;
 
 #endif
     void SaveToFile();
 
 private:
+    void SetMeasurementEnabled(bool enabled);
 
 private slots:
 #if PROGSIZE != PROGSIZE_EMUL
@@ -97,11 +104,9 @@ private slots:
     void PasswordCheck(QString psw);
     virtual int ReadAnalogMeasurements() = 0;
     //    void UpdateNSecondsWidget();
-        void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
-        void SetTuneVariant();
+    void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные
 #endif
     void LoadFromFile();
-    virtual void SetDefCoefs() = 0;
 
 protected:
     void closeEvent(QCloseEvent *e);

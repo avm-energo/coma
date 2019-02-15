@@ -6,105 +6,65 @@
 #include <QHBoxLayout>
 #include <QByteArray>
 #include <QStringList>
+#include "eabstracttunedialoga1dn.h"
 #include "eabstracttunedialog.h"
-#include "../config/configa1.h"
-#include "../check/checka1.h"
 
-#define TUNEA1LEVELS    8
-#define TUNEVARIANTSNUM 3
-
-class TuneDialogA1DN : public EAbstractTuneDialog
+class TuneDialogA1DN : public EAbstractTuneDialogA1DN
 {
     Q_OBJECT
 
 public:
-    explicit TuneDialogA1DN(QWidget *parent = 0);
+    explicit TuneDialogA1DN(QWidget *parent = nullptr);
     ~TuneDialogA1DN();
 
 private:
-    struct Baci
-    {
-        float U1kDN[6];     // измеренные при калибровке напряжения на выходе своего ДН для значений вблизи 12, 30, 48, 60 и 72 В
-        float U2kDN[6];     // и соответствующие им значения на выходе эталонного делителя
-        float PhyDN[6]; 	// фазовый сдвиг ДН на частоте 50 Гц для значений напряжения U1kDN[6]
-        float dU_cor[5];    // относительная ампл. погрешность установки после коррекции, в %
-        float dPhy_cor[5];  // абс. фазовая погрешность установки после коррекции, мин
-        float ddU_cor[5];	// среднеквадратичное отклонение амплитудной погрешности
-        float ddPhy_cor[5]; // среднеквадратичное отклонение фазовой погрешности
-        float K_DN;         // номинальный коэффициент деления ДН
-    };
-
-    struct Bac
-    {
-        Baci Bac_block[TUNEVARIANTSNUM];
-        quint32 DNFNum;     // заводской номер делителя
-    };
-
-    Bac Bac_block;
-
-    struct DdStruct
-    {
-        float dUrms;
-        float Phy;
-        float sU;
-        float sPhy;
-    };
-
-    DdStruct Dd_Block[TUNEA1LEVELS];
-
-    ConfigA1 *CA1;
-    CheckA1 *ChA1;
-    bool Accepted;
-    int PovNumPoints;
-
     void SetupUI();
-
     QWidget *CoefUI(int bac2num);
+    QWidget *CoefUI3(int bac3num);
 
 #if PROGSIZE != PROGSIZE_EMUL
-    int InputDNData();
     void SetLbls();
     void SetPf();
-    int Start7_2_2();
-    int Start7_2_3_1();
-    int Start7_2_3_2();
-    int Start7_2_3_3();
-    int Start7_2_3_4();
-    int Start7_2_3_5();
-    int Start7_2_345(int counter);
-    int Start7_2_67();
-    int Start7_2_8();
-    int Start7_2_9_1();
-    int Start7_2_9_2();
-    int Start7_2_9_3();
-    int Start7_2_9_4();
-    int Start7_2_9_5();
-    int Start7_2_9_6();
-    int Start7_2_9_7();
-    int Start7_2_9_8();
-    int Start7_2_9(int counter);
+    int Start7_2_3();
+    int Start7_2_5();
+    int Start7_2_6();
+    int Start7_2_7_1();
+    int Start7_2_7_2();
+    int Start7_2_7_3();
+    int Start7_2_7_4();
+    int Start7_2_7_5();
+    int Start7_2_78910(int counter);
+    int Start7_2_11();
+    int Start7_2_12();
+    int Start7_2_13_1();
+    int Start7_2_13_2();
+    int Start7_2_13_3();
+    int Start7_2_13_4();
+    int Start7_2_13_5();
+    int Start7_2_13_6();
+    int Start7_2_13_7();
+    int Start7_2_13_8();
+    int Start7_2_13(int counter);
+    int Start7_2_14();
+    int StartTempRandomizeModel();
     int ReadAnalogMeasurements();
     int ShowScheme();
 #endif
-    void GetBdAndFillMTT();
+    void WriteBacBlock();
     void LoadSettings();
+    void GenerateReport();
+//    void FillHeaders();
 
 private slots:
-    void FillBac();
-    void FillBackBac();
-    void SetDefCoefs();
 #if PROGSIZE != PROGSIZE_EMUL
-    void AcceptDNData();
-    void FillBdOut();
+/*    void FillBdOut();
     void FillBackBdOut();
     void FillBdIn();
     void FillBackBdIn();
-    void FillMedian(int index); // заполнение значений по средним показателям - медианам и СКО
+    void FillMedian(int index); // заполнение значений по средним показателям - медианам и СКО */
+//    void AcceptDNData();
+
 #endif
-signals:
-    void DNDataIsSet();
-    void StartPercents(int Percent);
-    void SetPercent(int Percent);
 };
 
 #endif // TUNEDIALOGA1DN_H

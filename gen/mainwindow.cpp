@@ -395,7 +395,7 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
     int SWJRSize = sizeof(SWJDialog::SWJournalRecordStruct);
     int GBOSize = sizeof(EOscillogram::GBoStruct);
 
-    if (Files::LoadFromFile(filename, ba) == Error::ER_NOERROR)
+    if (Files::LoadFromFile(filename, ba) == Files::ER_NOERROR)
     {
         if (ba.size() < (SWJRSize + GBOSize))
         {

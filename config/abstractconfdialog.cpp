@@ -24,14 +24,11 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 #if PROGSIZE != PROGSIZE_EMUL
 void AbstractConfDialog::ReadConf()
 {
-    int res;
-    if ((res = Commands::GetFile(1, S2Config)) == Error::ER_NOERROR)
-        emit NewConfLoaded();
-    else
-    {
-        QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
-        EMessageBox::error(this, "ошибка", "Ошибка чтения конфигурации из " + tmps + QString::number(res));
-    }
+    int res = ModuleBSI::PrereadConf(this, S2Config);
+    if (res == Error::ER_RESEMPTY)
+        emit DefConfToBeLoaded();
+    else if (res == Error::ER_NOERROR)
+        emit NewConfToBeLoaded();
 }
 
 void AbstractConfDialog::WriteConf()
@@ -94,7 +91,7 @@ void AbstractConfDialog::LoadConfFromFile()
         WARNMSG("Ошибка при разборе файла конфигурации");
         return;
     }
-    emit NewConfLoaded();
+    emit NewConfToBeLoaded();
     EMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
 }
 
@@ -128,7 +125,7 @@ QWidget *AbstractConfDialog::ConfButtons()
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveConfToFile()));
     wdgtlyout->addWidget(pb, 1, 1, 1, 1);
     pb = new QPushButton("Задать конфигурацию по умолчанию");
-    connect(pb,SIGNAL(clicked()),this,SIGNAL(LoadDefConf()));
+    connect(pb,SIGNAL(clicked()),this,SIGNAL(DefConfToBeLoaded()));
     wdgtlyout->addWidget(pb, 2, 0, 1, 2);
     wdgt->setLayout(wdgtlyout);
     return wdgt;

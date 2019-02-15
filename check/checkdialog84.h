@@ -26,18 +26,22 @@ private:
 
     QWidget *AutoCheckUI(); // UI для автоматической проверки модуля
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
+#if PROGSIZE != PROGSIZE_EMUL
     void RefreshAnalogValues(int bdnum); // обновление полей в GUI из полученного соответствующего Bd_block
     void PrepareHeadersForFile(int row); // row - строка для записи заголовков
     void WriteToFile(int row, int bdnum); // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
     void ChooseValuesToWrite();
     void SetDefaultValuesToWrite();
     void PrepareAnalogMeasurements();
+#endif
     QWidget *CustomTab();
 
 
 private slots:
+#if PROGSIZE != PROGSIZE_EMUL
     void StartBdMeasurements();
     void StopBdMeasurements();
     void BdTimerTimeout();
+#endif
 };
 #endif // CHECKDIALOG84_H

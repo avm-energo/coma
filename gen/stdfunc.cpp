@@ -3,6 +3,7 @@
 #include <QTextStream>
 #include <QDir>
 #include <QFileDialog>
+#include <QSettings>
 #include <QStandardPaths>
 #include "stdfunc.h"
 #include "maindef.h"
@@ -12,7 +13,8 @@ QString StdFunc::SystemHomeDir = ""; // системный каталог про
 bool StdFunc::Emul = false;
 bool StdFunc::Cancelled = false;
 QString StdFunc::PrbMsg = "";
-QString StdFunc::MIPIP = "";
+QString StdFunc::s_MIPIP = "";
+QString StdFunc::s_OrganizationString = "";
 
 StdFunc::StdFunc()
 {
@@ -26,6 +28,9 @@ void StdFunc::Init()
     QDir dir(SystemHomeDir);
     if (!dir.exists())
         dir.mkdir(SystemHomeDir);
+    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    SetOrganizationString(sets->value("OrganizationString", "Р&К").toString());
+    SetMIPIP(sets->value("MIPIP", "172.16.11.12").toString());
 }
 
 QString StdFunc::VerToStr(quint32 num)
@@ -58,6 +63,30 @@ QString StdFunc::GetHomeDir()
 QString StdFunc::GetSystemHomeDir()
 {
     return SystemHomeDir;
+}
+
+void StdFunc::SetMIPIP(const QString &ip)
+{
+    s_MIPIP = ip;
+    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    sets->setValue("MIPIP", ip);
+}
+
+QString StdFunc::MIPIP()
+{
+    return s_MIPIP;
+}
+
+void StdFunc::SetOrganizationString(const QString &str)
+{
+    s_OrganizationString = str;
+    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    sets->setValue("OrganizationString", str);
+}
+
+QString StdFunc::OrganizationString()
+{
+    return s_OrganizationString;
 }
 
 void StdFunc::Cancel()

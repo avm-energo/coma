@@ -69,8 +69,8 @@ private:
     int TuneOneChannelFunc();
 #endif
     
-    void FillBac();
-    void FillBackBac();
+    void FillBac(int bacnum);
+    void FillBackBac(int bacnum);
 
 private slots:
     void SetDefCoefs();

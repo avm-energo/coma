@@ -43,3 +43,13 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
     }
     QDialog::keyPressEvent(e);
 }
+
+void KeyPressDialog::closeEvent(QCloseEvent *e)
+{
+    QString str;
+    if (WDFunc::LEData(this, "pswle", str))
+        emit Finished(str);
+    else
+        emit Finished(QString());
+    e->accept();
+}

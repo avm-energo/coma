@@ -9,6 +9,7 @@
 #define KEYPRESSDIALOG_H
 
 #include <QDialog>
+#include <QCloseEvent>
 #include <QKeyEvent>
 
 class KeyPressDialog : public QDialog
@@ -29,6 +30,7 @@ private:
 
 protected:
     void keyPressEvent(QKeyEvent *e);
+    void closeEvent(QCloseEvent *e);
 };
 
 #endif // KEYPRESSDIALOG_H

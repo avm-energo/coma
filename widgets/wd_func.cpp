@@ -124,13 +124,29 @@ EComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, QStringList &cb
     return cb;
 }
 
-bool WDFunc::CBData(QWidget *w, const QString &cbname, QString &cbvalue)
+QString WDFunc::CBData(QWidget *w, const QString &cbname)
 {
     EComboBox *cb = w->findChild<EComboBox *>(cbname);
     if (cb == nullptr)
-        return false;
-    cbvalue = cb->currentText();
-    return cb->currentIndex();
+        return QString();
+    return cb->currentText();
+}
+
+QMetaObject::Connection WDFunc::CBConnect(QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method)
+{
+    QComboBox *cb = w->findChild<QComboBox *>(cbname);
+    if (cb == nullptr)
+        return QMetaObject::Connection();
+    switch (cbconnecttype)
+    {
+    case CT_INDEXCHANGED:
+        return QObject::connect(cb, SIGNAL(currentIndexChanged(int)), receiver, method);
+    case CT_TEXTCHANGED:
+        return QObject::connect(cb, SIGNAL(currentTextChanged(QString &)), receiver, method);
+    default:
+        break;
+    }
+    return QMetaObject::Connection();
 }
 
 bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue)
@@ -427,4 +443,15 @@ QImage *WDFunc::TwoImages(const QString &first, const QString &second)
         p.end();
     }
     return image;
+}
+
+QPushButton *WDFunc::NewPB(QWidget *parent, const QString &text, \
+                           const QObject *receiver, const char *method, const QString &pbtooltip)
+{
+    QPushButton *pb = new QPushButton(parent);
+    pb->setText(text);
+    pb->setToolTip(pbtooltip);
+    if (receiver != nullptr)
+        QObject::connect(pb,SIGNAL(clicked(bool)),receiver,method);
+    return pb;
 }

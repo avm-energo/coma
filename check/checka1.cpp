@@ -29,6 +29,10 @@ QWidget *CheckA1::BdaW(QWidget *parent)
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value4", ValuesFormat, "Значение первого сигнала (4-20) мА"), 2, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "6. EXTmA2:"), 2, 2);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value5", ValuesFormat, "Значение второго сигнала (4-20) мА"), 2, 3);
+    glyout->addWidget(WDFunc::NewLBL(parent, "7. UeffADC1:"), 3, 0);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value6", ValuesFormat, "Среднее значение напряжения 1 в единицах АЦП"), 3, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "8. UeffADC2:"), 3, 2);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "value7", ValuesFormat, "Среднее значение напряжения 2 в единицах АЦП"), 3, 3);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
     w->setLayout(glyout);
@@ -43,28 +47,28 @@ QWidget *CheckA1::Bd1W(const QString &title, const QString &begin, QWidget *pare
             "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(parent, "0. Вариант использования: "));
+/*    QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewLBL(parent, "Вариант использования: "));
     hlyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"00", ValuesFormat));
-    lyout->addLayout(hlyout);
+    lyout->addLayout(hlyout); */
     QGroupBox *gb = new QGroupBox(title);
     QGridLayout *glyout = new QGridLayout;
     QString tmps = (begin == "Bda_out") ? "кВ" : "В";
     glyout->addWidget(WDFunc::NewLBL(parent, "1. UefNat_filt1, "+tmps), 0, 0);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0", ValuesFormat, "Истинное действующее значение напряжения 1, "+tmps), 0, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0", ValuesFormat, "Значение напряжения 1, "+tmps), 0, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "2. UefNat_filt2, "+tmps), 0, 2);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1", ValuesFormat, "Истинное действующее значение напряжения 2, "+tmps), 0, 3);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1", ValuesFormat, "Значение напряжения 2, "+tmps), 0, 3);
     glyout->addWidget(WDFunc::NewLBL(parent, "δUrms, %"), 0, 4);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"dU", ValuesFormat, "Относительная погрешность, %"), 0, 5);
-    glyout->addWidget(WDFunc::NewLBL(parent, "3. Uef_filt1, "+tmps), 1, 0);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "3. Uef_filt1, "+tmps, begin+"2l"), 1, 0);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"2", ValuesFormat, "Действующие значения первых гармоник напряжения 1, "+tmps), 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "4. Uef_filt2, "+tmps), 1, 2);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "4. Uef_filt2, "+tmps, begin+"3l"), 1, 2);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"3", ValuesFormat, "Действующие значения первых гармоник напряжения 2, "+tmps), 1, 3);
-    glyout->addWidget(WDFunc::NewLBL(parent, "5. δU, %"), 1, 4);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "5. δU, %", begin+"dU2l"), 1, 4);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"dU2", ValuesFormat, "Относительная погрешность, %"), 1, 5);
-    glyout->addWidget(WDFunc::NewLBL(parent, "6. Phy, мин"), 2, 0);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "6. Phy, мин", begin+"4l"), 2, 0);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"4", ValuesFormat, "Разность фаз первых гармоник напряжений, мин"), 2, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "7. Frequency, Гц"), 2, 2);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "7. Frequency, Гц", begin+"5l"), 2, 2);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"5", ValuesFormat, "Частота в сети, Гц"), 2, 3);
     glyout->setColumnStretch(1, 10);
     glyout->setColumnStretch(3, 10);
@@ -90,18 +94,18 @@ QWidget *CheckA1::Bd2W(const QString &begin, QWidget *parent)
     {
         if (i == 0)
         {
-            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 0, КГИ, %"), i, 0);
+            glyout->addWidget(WDFunc::NewLBLT(parent, "Канал 0, КГИ, %", begin+"0"+QString::number(i)+"l"), i, 0);
             glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0"+QString::number(i), ValuesFormat), i, 1);
-            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 1, КГИ, %"), i, 2);
+            glyout->addWidget(WDFunc::NewLBLT(parent, "Канал 1, КГИ, %", begin+"1"+QString::number(i)+"l"), i, 2);
             glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1"+QString::number(i), ValuesFormat), i, 3);
         }
         else if (i > MAXHARMINDEX)
             break;
         else
         {
-            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 0, гарм. "+QString::number(i+1) + ", %"), i, 0);
+            glyout->addWidget(WDFunc::NewLBLT(parent, "Канал 0, гарм. "+QString::number(i+1) + ", %", begin+"0"+QString::number(i)+"l"), i, 0);
             glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"0"+QString::number(i), ValuesFormat), i, 1);
-            glyout->addWidget(WDFunc::NewLBL(parent, "Канал 1, гарм. "+QString::number(i+1) + ", %"), i, 2);
+            glyout->addWidget(WDFunc::NewLBLT(parent, "Канал 1, гарм. "+QString::number(i+1) + ", %", begin+"1"+QString::number(i)+"l"), i, 2);
             glyout->addWidget(WDFunc::NewLBLT(parent, "", begin+"1"+QString::number(i), ValuesFormat), i, 3);
         }
     }
@@ -110,6 +114,7 @@ QWidget *CheckA1::Bd2W(const QString &begin, QWidget *parent)
     w->setLayout(glyout);
     QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
     w->setStyleSheet(tmps);
+    w->setObjectName(begin);
     return w;
 }
 
@@ -160,12 +165,12 @@ QWidget *CheckA1::Bd4W(const QString &begin, QWidget *parent)
 
 QWidget *CheckA1::Bda_inW(QWidget *parent)
 {
-    return Bd1W("Переменные напряжения на входах", "Bda_in", parent);
+    return Bd1W("Напряжения на входах", "Bda_in", parent);
 }
 
 QWidget *CheckA1::Bda_outW(QWidget *parent)
 {
-    return Bd1W("Переменные напряжения в первичном масштабе", "Bda_out", parent);
+    return Bd1W("Напряжения в первичном масштабе", "Bda_out", parent);
 }
 
 QWidget *CheckA1::Bda_h0W(QWidget *parent)
@@ -206,6 +211,8 @@ void CheckA1::FillBda(QWidget *parent)
     WDFunc::SetLBLText(parent, "value3", WDFunc::StringValueWithCheck(Bda_block.Pt100));
     WDFunc::SetLBLText(parent, "value4", WDFunc::StringValueWithCheck(Bda_block.EXTmA1));
     WDFunc::SetLBLText(parent, "value5", WDFunc::StringValueWithCheck(Bda_block.EXTmA2));
+    WDFunc::SetLBLText(parent, "value6", WDFunc::StringValueWithCheck(Bda_block.Middle_ADC[0]));
+    WDFunc::SetLBLText(parent, "value7", WDFunc::StringValueWithCheck(Bda_block.Middle_ADC[1]));
 }
 
 void CheckA1::FillBd1W(const QString &begin, A1_Bd1 Bda, QWidget *parent)

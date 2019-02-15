@@ -2,7 +2,9 @@
 #define MODULEBSI_H
 
 #include <QtGlobal>
+#include <QWidget>
 #include "maindef.h"
+#include "../gen/s2.h"
 
 #define MAXERRORFLAGNUM 32
 
@@ -59,6 +61,7 @@ public:
     static Bsi GetBsi();
     static quint32 GetHealth();
     static bool IsKnownModule();
+    static int PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config);
 
 private:
     static quint32 MType;
