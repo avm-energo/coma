@@ -132,6 +132,23 @@ QString WDFunc::CBData(QWidget *w, const QString &cbname)
     return cb->currentText();
 }
 
+QMetaObject::Connection WDFunc::CBConnect(QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method)
+{
+    QComboBox *cb = w->findChild<QComboBox *>(cbname);
+    if (cb == nullptr)
+        return QMetaObject::Connection();
+    switch (cbconnecttype)
+    {
+    case CT_INDEXCHANGED:
+        return QObject::connect(cb, SIGNAL(currentIndexChanged(int)), receiver, method);
+    case CT_TEXTCHANGED:
+        return QObject::connect(cb, SIGNAL(currentTextChanged(QString &)), receiver, method);
+    default:
+        break;
+    }
+    return QMetaObject::Connection();
+}
+
 bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue)
 {
     EComboBox *cb = w->findChild<EComboBox *>(cbname);

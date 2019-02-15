@@ -48,9 +48,14 @@ A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : EAbstractTuneDial
     connect(MeasurementTimer,SIGNAL(timeout()),this,SLOT(MeasTimerTimeout())); */
 //    ReportHeader.DNDevices = "УКДН сер. номер " + QString::number(pc.ModuleBsi.SerialNum) + ", кл. точн. 0,05";
     // считать варианты использования и соответствующие им коэффициенты из модуля
-    if (GetConf() != Error::ER_NOERROR)
+    if (Commands::GetFile(1, &S2Config) != Error::ER_NOERROR)
     {
-        EMessageBox::error(this, "Ошибка", "Ошибка чтения конфигурации или настроечных параметров из модуля");
+        EMessageBox::error(this, "Ошибка", "Ошибка чтения конфигурации из модуля");
+        return;
+    }
+    if (GetBacAndClearInitialValues() != Error::ER_NOERROR)
+    {
+        EMessageBox::error(this, "Ошибка", "Ошибка чтения настроечных параметров из модуля");
         return;
     }
 #endif
@@ -149,9 +154,14 @@ void A1Dialog::StartWork()
 //    Cancelled = false;
     StdFunc::ClearCancel();
     TemplateCheck();
-    if (GetConf() != Error::ER_NOERROR)
+    if (Commands::GetFile(1, &S2Config) != Error::ER_NOERROR)
     {
-        EMessageBox::error(this, "Ошибка", "Ошибка чтения конфигурации или настроечных параметров из модуля");
+        EMessageBox::error(this, "Ошибка", "Ошибка чтения конфигурации из модуля");
+        return;
+    }
+    if (GetBacAndClearInitialValues() != Error::ER_NOERROR)
+    {
+        EMessageBox::error(this, "Ошибка", "Ошибка чтения настроечных параметров из модуля");
         return;
     }
     WDFunc::SetEnabled(this, "StartWorkPb", false);
@@ -210,7 +220,7 @@ void A1Dialog::StartWork()
             int percent = (PovType == GOST_1983) ? 80 : 20;
             if (ShowVoltageDialog(percent) == Error::ER_NOERROR)
             {
-                MeasurementTimer->start();
+                Accept();
                 return;
             }
 /*            if (PovType == GOST_1983)
@@ -239,17 +249,7 @@ void A1Dialog::StartWork()
 #if PROGSIZE != PROGSIZE_EMUL
 int A1Dialog::GetConf()
 {
-    if (Commands::GetFile(1, &S2Config) == Error::ER_NOERROR)
-    {
-        if (Commands::GetBac(2, &Bac_block2, sizeof(Bac2)) == Error::ER_NOERROR)
-        {
-            Bac_block2.Bac_block2[TuneVariant].U1kDN[0] = 0;
-            Bac_block2.Bac_block2[TuneVariant].U2kDN[0] = 0;
-            Bac_block2.Bac_block2[TuneVariant].PhyDN[0] = 0;
-            return Error::ER_NOERROR;
-        }
-    }
-    return Error::ER_GENERALERROR;
+    return Commands::GetFile(1, &S2Config);
 }
 #endif
 /*void A1Dialog::FillBdOut()
@@ -538,7 +538,7 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
             Dd_Block[Index].sU = MDS.ddUp;
             Bac_block2.Bac_block2[TuneVariant].dU_cor[Pindex] = MDS.dUd;
             Bac_block2.Bac_block2[TuneVariant].dPhy_cor[Pindex] = MDS.dPd;
-            FillModelRow(Index);
+            FillModelRow();
             ++Index;
             if (Index >= endcounter)
                 Index = 0;
@@ -575,7 +575,6 @@ void A1Dialog::Accept()
 {
 //    float VoltageInkV, VoltageInV;
     int endcounter = (PovType == GOST_1983) ? 3 : 9;
-    MeasurementTimer->stop();
     int Pindex = (Index > 4) ? (8 - Index) : Index;
     const int Percents23625[] = {20, 50, 80, 100, 120};
     const int Percents1983[] = {80, 100, 120};
@@ -591,7 +590,7 @@ void A1Dialog::Accept()
                 Decline();
                 return;
             } */
-        FillModelRow(Index);
+        FillModelRow();
         ++Index;
         if (Index >= endcounter)
         {

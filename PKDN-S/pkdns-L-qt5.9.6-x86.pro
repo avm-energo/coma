@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.2.259
+VERSION = 2.2.261
 
 QT       += core gui serialport printsupport
 

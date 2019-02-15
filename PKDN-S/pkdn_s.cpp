@@ -165,6 +165,10 @@ void pkdn_s::Stage3()
         Error::ShowErMsg(ER_NOCONF);
     if (ModuleBSI::GetHealth() & HTH_REGPARS) // нет коэффициентов
         Error::ShowErMsg(ER_NOTUNECOEF);
+
+    // диалог выбора рода напряжения
+    MainTW->addTab(ChangeVoltageTypeDialog(), "Род напряжения");
+
     MainTW->repaint();
     MainTW->show();
 #if PROGSIZE >= PROGSIZE_LARGE
@@ -176,6 +180,7 @@ void pkdn_s::Stage3()
 QDialog *pkdn_s::ChangeVoltageTypeDialog()
 {
     QDialog *dlg = new QDialog;
+    dlg->setStyleSheet("QDialog {background-color: "+QString(UCONFCLR)+";}");
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *lyout = new QVBoxLayout;
 
@@ -189,6 +194,7 @@ QDialog *pkdn_s::ChangeVoltageTypeDialog()
     hlyout->addWidget(WDFunc::NewPB(this, "Подтвердить", this, SLOT(AcceptVoltageType())), 0);
     hlyout->addStretch(100);
     lyout->addLayout(hlyout);
+    lyout->addStretch(100);
     dlg->setLayout(lyout);
     return dlg;
 }
@@ -198,6 +204,11 @@ void pkdn_s::AcceptVoltageType()
     int tmpi = WDFunc::CBIndex(this, "voltagetype");
     if (Commands::SetMode(tmpi) != Error::ER_NOERROR)
         EMessageBox::error(this, "Ошибка", "Ошибка установки рода напряжения");
+    else
+    {
+        QString tmps = (tmpi == MODE_ALTERNATIVE) ? "переменный" : "постоянный";
+        EMessageBox::information(this, "Информация", "Род напряжения: " + tmps);
+    }
     emit VoltageTypeChanged(tmpi);
 }
 

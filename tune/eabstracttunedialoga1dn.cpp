@@ -33,21 +33,24 @@ void EAbstractTuneDialogA1DN::InputTuneParameters(int dntype)
     for (int i=0; i<TUNEVARIANTSNUM; ++i)
         sl << QString::number(i+1);
     hlyout->addWidget(WDFunc::NewLBLT(this, "Вариант включения делителя"), 0);
-    QComboBox *cb = WDFunc::NewCB(this, "tunevariantcb", sl);
-    cb->setMinimumWidth(50);
-    hlyout->addWidget(cb, 10);
+    hlyout->addWidget(WDFunc::NewCB(this, "tunevariantcb", sl), 10);
+    WDFunc::CBConnect(this, "tunevariantcb", WDFunc::CT_INDEXCHANGED, this, SLOT(SetKDNByTuneVariant(int)));
     lyout->addLayout(hlyout);
     if (DNType == DNT_OWN)
     {
         hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(this, "Коэффициент деления для данного варианта: "));
-        hlyout->addWidget(WDFunc::NewSPB(this, "kdnspb", 5, 1200, 0), 10);
+        hlyout->addWidget(WDFunc::NewSPB(this, "kdnspb", 5, 99999, 0), 10);
         lyout->addLayout(hlyout);
     }
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBLT(this, "Род напряжения"), 0);
     sl = QStringList() << "Переменное" << "Постоянное";
     hlyout->addWidget(WDFunc::NewCB(this, "voltagetype", sl), 10);
+#if PROGSIZE != PROGSIZE_EMUL
+    if (Commands::GetMode(Mode) == Error::ER_NOERROR)
+        WDFunc::SetCBIndex(this, "voltagetype", Mode);
+#endif
     lyout->addLayout(hlyout);
     QPushButton *pb = new QPushButton("Подтвердить");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetTuneParameters()));
@@ -60,7 +63,7 @@ void EAbstractTuneDialogA1DN::InputTuneParameters(int dntype)
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
     Accepted = false;
-    WDFunc::SetSPBData(this, "kdnspb", Bac_block2.Bac_block2->K_DN);
+    WDFunc::SetSPBData(this, "kdnspb", Bac_block2.Bac_block2[WDFunc::CBIndex(this, "tunevariantcb")].K_DN);
     dlg->show();
     while (!Accepted && !StdFunc::IsCancelled())
         TimeFunc::Wait();
@@ -236,19 +239,19 @@ void EAbstractTuneDialogA1DN::SetConditionData()
     emit Finished();
 }
 
-void EAbstractTuneDialogA1DN::FillModelRow(int row)
+void EAbstractTuneDialogA1DN::FillModelRow()
 {
+    int row;
     const int Percents23625[] = {20, 50, 80, 100, 120};
     const int Percents1983[] = {80, 100, 120};
     const int *Percents = (PovType == GOST_1983) ? Percents1983 : Percents23625;
 
-    int idx = (row > 4) ? (8 - row) : row;
-
     if (DNType == DNT_OWN) // для собственного ДН PovType = GOST_23625 и проценты идут задом наперёд
-        row = 4 - idx;
+        row = (Index > 4) ? (Index - 4) : (4 - Index);
     else
-        row = idx;
+        row = Index;
 
+    float sign = (DNType == DNT_OWN) ? -1.0 : 1.0;
     // заполняем модель по полученным измерениям:
     if ((StdFunc::FloatInRange(CurrentS, 1)) && (DNType == DNT_FOREIGN))
     {
@@ -257,26 +260,68 @@ void EAbstractTuneDialogA1DN::FillModelRow(int row)
         else
             row += GOST23625ROWCOUNT/2;
     }
-    if (Index >= 4) // на нисходящем отрезке по ГОСТ 23625
+    if (Index <= 4) // на нисходящем отрезке по ГОСТ 23625
     {
-        RepModel->UpdateItem(row, 4, Dd_Block[idx].dUrms, 5);
+        int column = 0;
+        RepModel->UpdateItem(row, column++, Percents[row], 0);
+
+        if (DNType == DNT_OWN)
+            RepModel->UpdateItem(row, column++, "");
+        else
+            RepModel->UpdateItem(row, column++, CurrentS,  3);
+
+        RepModel->UpdateItem(row, column++, Dd_Block[Index].dUrms*sign, 5);
+
+        if (Mode == MODE_ALTERNATIVE)
+            RepModel->UpdateItem(row, column++, Dd_Block[Index].Phy*sign, 5);
+        else
+            RepModel->UpdateItem(row, column++, "");
+
+        if (PovType == GOST_23625)
+            column += 12;
+        else
+        {
+            RepModel->UpdateItem(row, column++, Bac_block2.Bac_block2[TuneVariant].dU_cor[Index]*sign, 5);
+
+            if (Mode == MODE_ALTERNATIVE)
+                RepModel->UpdateItem(row, column++, Bac_block2.Bac_block2[TuneVariant].dPhy_cor[Index]*sign, 5);
+            else
+                RepModel->UpdateItem(row, column++, "");
+
+            RepModel->UpdateItem(row, column++, Dd_Block[Index].dUrms*sign, 5);
+
+            if (Mode == MODE_ALTERNATIVE)
+                RepModel->UpdateItem(row, column++, Dd_Block[Index].Phy*sign, 5);
+            else
+                RepModel->UpdateItem(row, column++, "");
+        }
+        RepModel->UpdateItem(row, column++, Dd_Block[Index].sU, 5);
+
+        if (Mode == MODE_ALTERNATIVE)
+            RepModel->UpdateItem(row, column++, Dd_Block[Index].sPhy, 5);
+        else
+            RepModel->UpdateItem(row, column++, "");
+    }
+    if (Index >= 4)
+    {
+        RepModel->UpdateItem(row, 4, Dd_Block[Index].dUrms*sign, 5);
         float dUrmsU = RepModel->Item(row, 2);
-        float UrmsM = (dUrmsU + Dd_Block[idx].dUrms) / 2;
+        float UrmsM = (dUrmsU + Dd_Block[Index].dUrms*sign) / 2;
         RepModel->UpdateItem(row, 6, UrmsM, 5);
-        RepModel->UpdateItem(row, 8, Bac_block2.Bac_block2[TuneVariant].dU_cor[idx], 5);
-        RepModel->UpdateItem(row, 10, (Dd_Block[idx].dUrms - dUrmsU), 5);
+        RepModel->UpdateItem(row, 8, Bac_block2.Bac_block2[TuneVariant].dU_cor[Index-4]*sign, 5);
+        RepModel->UpdateItem(row, 10, (Dd_Block[Index].dUrms*sign - dUrmsU), 5);
         RepModel->UpdateItem(row, 12, UrmsM, 5);
-        RepModel->UpdateItem(row, 14, Dd_Block[idx].sU, 5);
+        RepModel->UpdateItem(row, 14, Dd_Block[Index].sU, 5);
         if (Mode == MODE_ALTERNATIVE)
         {
-            RepModel->UpdateItem(row, 5, Dd_Block[idx].Phy, 5);
+            RepModel->UpdateItem(row, 5, Dd_Block[Index].Phy*sign, 5);
             float PhyU = RepModel->Item(row, 3);
-            float PhyM = (PhyU + Dd_Block[idx].Phy) / 2;
+            float PhyM = (PhyU + Dd_Block[Index].Phy*sign) / 2;
             RepModel->UpdateItem(row, 7, PhyM, 5);
-            RepModel->UpdateItem(row, 9, Bac_block2.Bac_block2[TuneVariant].dPhy_cor[idx], 5);
-            RepModel->UpdateItem(row, 11, (Dd_Block[idx].Phy - PhyU), 5);
+            RepModel->UpdateItem(row, 9, Bac_block2.Bac_block2[TuneVariant].dPhy_cor[Index-4]*sign, 5);
+            RepModel->UpdateItem(row, 11, (Dd_Block[Index].Phy*sign - PhyU), 5);
             RepModel->UpdateItem(row, 13, PhyM, 5);
-            RepModel->UpdateItem(row, 15, Dd_Block[idx].sPhy, 5);
+            RepModel->UpdateItem(row, 15, Dd_Block[Index].sPhy, 5);
         }
         else
         {
@@ -287,40 +332,6 @@ void EAbstractTuneDialogA1DN::FillModelRow(int row)
             RepModel->UpdateItem(row, 13, "");
             RepModel->UpdateItem(row, 15, "");
         }
-    }
-    if (Index <= 4)
-    {
-        int column = 0;
-        RepModel->UpdateItem(row, column++, Percents[idx], 0);
-        if (DNType == DNT_OWN)
-            RepModel->UpdateItem(row, column++, "");
-        else
-            RepModel->UpdateItem(row, column++, CurrentS,  3);
-        RepModel->UpdateItem(row, column++, Dd_Block[idx].dUrms, 5);
-        if (Mode == MODE_ALTERNATIVE)
-            RepModel->UpdateItem(row, column++, Dd_Block[idx].Phy, 5);
-        else
-            RepModel->UpdateItem(row, column++, "");
-        if (PovType == GOST_23625)
-            column += 12;
-        else
-        {
-            RepModel->UpdateItem(row, column++, Bac_block2.Bac_block2[TuneVariant].dU_cor[idx], 5);
-            if (Mode == MODE_ALTERNATIVE)
-                RepModel->UpdateItem(row, column++, Bac_block2.Bac_block2[TuneVariant].dPhy_cor[idx], 5);
-            else
-                RepModel->UpdateItem(row, column++, "");
-            RepModel->UpdateItem(row, column++, Dd_Block[idx].dUrms, 5);
-            if (Mode == MODE_ALTERNATIVE)
-                RepModel->UpdateItem(row, column++, Dd_Block[idx].Phy, 5);
-            else
-                RepModel->UpdateItem(row, column++, "");
-        }
-        RepModel->UpdateItem(row, column++, Dd_Block[idx].sU, 5);
-        if (Mode == MODE_ALTERNATIVE)
-            RepModel->UpdateItem(row, column++, Dd_Block[idx].sPhy, 5);
-        else
-            RepModel->UpdateItem(row, column++, "");
     }
 }
 
@@ -638,8 +649,22 @@ int EAbstractTuneDialogA1DN::GetAndAverage(int type, void *out)
         Bd->UefNat_filt[0] /= count;
         Bd->UefNat_filt[1] /= count;
     }
-    FillModelRow(Index);
+    FillModelRow();
     Index++;
+    return Error::ER_NOERROR;
+}
+
+int EAbstractTuneDialogA1DN::GetBacAndClearInitialValues()
+{
+    if (Commands::GetBac(2, &Bac_block2, sizeof(Bac2)) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
+    if (Commands::GetBac(3, &Bac_block3, sizeof(Bac3)) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
+    Bac_block2.Bac_block2[TuneVariant].U1kDN[0] = 0;
+    Bac_block2.Bac_block2[TuneVariant].U2kDN[0] = 0;
+    Bac_block2.Bac_block2[TuneVariant].PhyDN[0] = 0;
+    Bac_block3.Bac_block3[TuneVariant].U1kDN[0] = 0;
+    Bac_block3.Bac_block3[TuneVariant].U2kDN[0] = 0;
     return Error::ER_NOERROR;
 }
 #endif
@@ -730,4 +755,10 @@ void EAbstractTuneDialogA1DN::TempRandomizeModel()
             RepModel->UpdateItem(i, j, static_cast<float>(qrand())/RAND_MAX, 5);
     }
     FillHeaders();
+}
+
+void EAbstractTuneDialogA1DN::SetKDNByTuneVariant(int index)
+{
+    if (index < 3)
+        WDFunc::SetSPBData(this, "kdnspb", Bac_block2.Bac_block2[index].K_DN);
 }

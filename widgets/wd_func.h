@@ -15,6 +15,15 @@
 class WDFunc
 {
 public:
+    enum CBSignals
+    {
+        CT_TEXTCHANGED,
+        CT_INDEXCHANGED,
+        CT_CLICKED,
+        CT_DCLICKED,
+        CT_CONTEXT
+    };
+
     WDFunc();
     static bool SetCWData(QWidget *w, const QString &cwname, const QString &cwvalue);
     static QString CWData(QWidget *w, const QString &cwname);
@@ -59,6 +68,8 @@ public:
             return -1;
         return cb->currentIndex();
     }
+    static QMetaObject::Connection CBConnect(QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method);
+
     static QDoubleSpinBox *NewSPB(QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor="");
     static bool SetSPBData(QWidget *w, const QString &spbname, const double &spbvalue);
     template <typename T> static bool SPBData(QWidget *w, const QString &spbname, T &spbvalue)

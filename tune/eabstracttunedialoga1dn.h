@@ -142,6 +142,7 @@ public:
 #if PROGSIZE != PROGSIZE_EMUL
     void GetBdAndFillMTT();
     int GetAndAverage(int type, void *out); // type = GAAT_BDA_OUT, GAAT_BDA_IN
+    int GetBacAndClearInitialValues();
 #endif
     int ShowVoltageDialog(int percent);
     void FillMedian(int index);
@@ -150,7 +151,7 @@ public:
     bool DNDialog(PovDevStruct &PovDev);
     void LoadSettings();
     void SaveSettings();
-    void FillModelRow(int row);
+    void FillModelRow();
     void FillHeaders();
     void TemplateCheck();
 signals:
@@ -168,6 +169,8 @@ public slots:
     void TempRandomizeModel();
 
 private slots:
+    void SetKDNByTuneVariant(int index);
+
 private:
     void FillBackBdIn();
     void FillBdIn();

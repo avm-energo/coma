@@ -346,40 +346,10 @@ QWidget *TuneDialogA1DN::CoefUI3(int bac3num)
 #if PROGSIZE != PROGSIZE_EMUL
 int TuneDialogA1DN::Start7_2_3()
 {
-    Commands::GetBac(2, &Bac_block2, sizeof(Bac2));
-    Commands::GetBac(3, &Bac_block3, sizeof(Bac3)); // 7.2.4
-/*    int row = 0;
-    QDialog *dlg = new QDialog(this);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    lyout->addWidget(WDFunc::NewLBL(this, "Данные на ТН(ДН)"), Qt::AlignCenter);
-    glyout->addWidget(WDFunc::NewLBL(this, "Заводской номер ТН(ДН)"), row, 0, 1, 1, Qt::AlignRight);
-    glyout->addWidget(WDFunc::NewLE(this, "dnfnumle", QString::number(Bac_block2.DNFNum)), row++, 1, 1, 1, Qt::AlignLeft);
-    glyout->addWidget(WDFunc::NewLBL(this, "Род напряжения"), row, 0, 1, 1, Qt::AlignRight);
-    QStringList sl = QStringList() << "Переменный" << "Постоянный";
-    glyout->addWidget(WDFunc::NewCB(this, "dnutype", sl), row++, 1, 1, 1, Qt::AlignLeft);
-
-    glyout->setColumnStretch(1, 1);
-    lyout->addLayout(glyout);
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(AcceptDNData()));
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(CancelTune()));
-    connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    dlg->setLayout(lyout);
-    connect(this,SIGNAL(Finished()),dlg,SLOT(close()));
-    Accepted = false;
-    dlg->show();
-    while (!Accepted && !StdFunc::IsCancelled())
-        TimeFunc::Wait();
-    if (StdFunc::IsCancelled())
-        return Error::ER_GENERALERROR; */
-    return Error::ER_NOERROR;
+    TemplateCheck(); // проверка наличия шаблонов протоколов
+    PovType = GOST_23625;
+    Index = 0;
+    return GetBacAndClearInitialValues();
 }
 
 int TuneDialogA1DN::Start7_2_5()
@@ -392,16 +362,6 @@ int TuneDialogA1DN::Start7_2_5()
         return Error::ER_GENERALERROR;
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
-/*    if (Commands::GetFile(1,&S2Config) == Error::ER_NOERROR)
-    { */
-        Bac_block2.Bac_block2[TuneVariant].U1kDN[0] = 0;
-        Bac_block2.Bac_block2[TuneVariant].U2kDN[0] = 0;
-        Bac_block2.Bac_block2[TuneVariant].PhyDN[0] = 0;
-        Bac_block3.Bac_block3[TuneVariant].U1kDN[0] = 0;
-        Bac_block3.Bac_block3[TuneVariant].U2kDN[0] = 0;
-/*        return Error::ER_NOERROR;
-    }
-    return Error::ER_GENERALERROR; */
     return Error::ER_NOERROR;
 }
 
@@ -415,9 +375,6 @@ int TuneDialogA1DN::Start7_2_6()
 
 int TuneDialogA1DN::Start7_2_7_1()
 {
-/*    QPushButton *pb = this->findChild<QPushButton *>("Good");
-    if (pb != nullptr)
-        pb->setText("Продолжить"); */
     RepModel->SetModel(GOST23625ROWCOUNT, GOST23625COLCOUNT);
     return Start7_2_78910(0);
 }
@@ -685,9 +642,6 @@ int TuneDialogA1DN::ReadAnalogMeasurements()
 
 int TuneDialogA1DN::ShowScheme()
 {
-    TemplateCheck(); // проверка наличия шаблонов протоколов
-    PovType = GOST_23625;
-    Index = 0;
     if (EMessageBox::question(this, "Подтверждение", "Подключите выход своего делителя напряжения ко входу U1 прибора\n"
                               "Выход эталонного делителя - ко входу U2") == false)
     {
@@ -746,8 +700,11 @@ void TuneDialogA1DN::GenerateReport()
     report->AddModel("maindata", RepModel);
     // запрос блока Bda_h, чтобы выдать KNI в протокол
 #if PROGSIZE != PROGSIZE_EMUL
-    if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2)) == Error::ER_NOERROR)
-        report->SetVar("KNI", ChA1->Bda_h.HarmBuf[0][0], 5);
+    if (Mode == MODE_ALTERNATIVE)
+    {
+        if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2)) == Error::ER_NOERROR)
+            report->SetVar("KNI", ChA1->Bda_h.HarmBuf[0][0], 5);
+    }
 #endif
     report->SetVar("Organization", StdFunc::OrganizationString());
     QString day = QDateTime::currentDateTime().toString("dd");
