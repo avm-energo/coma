@@ -37,8 +37,10 @@ public:
     Check_84();
     QWidget *Bd1W(QWidget *parent);
     QWidget *Bd2W(QWidget *parent);
-    void FillBd1(QWidget *parent);
-    void FillBd2(QWidget *parent);
+    QWidget *Bd3W(QWidget *parent);
+    void FillBd(QWidget *parent);
+    //void FillBd2(QWidget *parent);
+    //void FillBd3(QWidget *parent);
 
 private:
     QString ValuesFormat, WidgetFormat;
