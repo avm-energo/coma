@@ -53,7 +53,7 @@ A1Dialog::A1Dialog(const QString &filename, QWidget *parent) : EAbstractTuneDial
         EMessageBox::error(this, "Ошибка", "Ошибка чтения конфигурации из модуля");
         return;
     }
-    if (GetBacAndClearInitialValues() != Error::ER_NOERROR)
+    if (GetBac() != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка чтения настроечных параметров из модуля");
         return;
@@ -159,14 +159,15 @@ void A1Dialog::StartWork()
         EMessageBox::error(this, "Ошибка", "Ошибка чтения конфигурации из модуля");
         return;
     }
-    if (GetBacAndClearInitialValues() != Error::ER_NOERROR)
+    WDFunc::SetEnabled(this, "StartWorkPb", false);
+    PovType = TempPovType = GOST_NONE;
+    if (GetBac() != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка чтения настроечных параметров из модуля");
         return;
     }
-    WDFunc::SetEnabled(this, "StartWorkPb", false);
-    PovType = TempPovType = GOST_NONE;
     InputTuneParameters(DNT_FOREIGN);
+    AndClearInitialValues();
     if (StdFunc::IsCancelled())
         return;
     if (Commands::SetUsingVariant(TuneVariant+1) != Error::ER_NOERROR)
@@ -280,14 +281,19 @@ void A1Dialog::GenerateReport()
     report->AddModel("maindata", RepModel);
     // запрос блока Bda_h, чтобы выдать KNI в протокол
 #if PROGSIZE != PROGSIZE_EMUL
-    if (!Autonomous)
+    if (Mode == MODE_ALTERNATIVE)
     {
-        if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2)) == Error::ER_NOERROR)
+        if (!Autonomous)
+        {
+            if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2)) == Error::ER_NOERROR)
+                report->SetVar("KNI", ChA1->Bda_h.HarmBuf[0][0], 5);
+        }
+        else
             report->SetVar("KNI", ChA1->Bda_h.HarmBuf[0][0], 5);
     }
     else
-#endif
-        report->SetVar("KNI", ChA1->Bda_h.HarmBuf[0][0], 5);
+        report->SetVar("KNI", "");
+    #endif
     report->SetVar("Organization", StdFunc::OrganizationString());
     QString day = QDateTime::currentDateTime().toString("dd");
     QString month = QDateTime::currentDateTime().toString("MM");

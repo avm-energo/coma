@@ -142,7 +142,8 @@ public:
 #if PROGSIZE != PROGSIZE_EMUL
     void GetBdAndFillMTT();
     int GetAndAverage(int type, void *out); // type = GAAT_BDA_OUT, GAAT_BDA_IN
-    int GetBacAndClearInitialValues();
+    int GetBac();
+    int AndClearInitialValues();
 #endif
     int ShowVoltageDialog(int percent);
     void FillMedian(int index);

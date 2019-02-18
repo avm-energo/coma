@@ -53,6 +53,7 @@ private:
     void WriteBacBlock();
     void LoadSettings();
     void GenerateReport();
+    void FillDdWithNumbers();
 //    void FillHeaders();
 
 private slots:

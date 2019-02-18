@@ -88,9 +88,9 @@ void EAbstractTuneDialogA1DN::SetTuneParameters()
         if (!WDFunc::SPBData(this, "kdnspb", kdn))
             DBGMSG;
         if (Mode == MODE_ALTERNATIVE)
-            Bac_block2.Bac_block2->K_DN = kdn;
+            Bac_block2.Bac_block2[TuneVariant].K_DN = kdn;
         else
-            Bac_block3.Bac_block3->K_DN = kdn;
+            Bac_block3.Bac_block3[TuneVariant].K_DN = kdn;
         if (Mode == MODE_ALTERNATIVE)
             WDFunc::LENumber(this, "dnfnumle", Bac_block2.DNFNum);
         else
@@ -195,7 +195,7 @@ bool EAbstractTuneDialogA1DN::DNDialog(PovDevStruct &PovDev)
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetDNData()));
     lyout->addWidget(pb);
     pb = new QPushButton("Отмена");
-    connect(pb,SIGNAL(clicked(bool)),this,SLOT(Cancel()));
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(CancelTune()));
     lyout->addWidget(pb);
     connect(this,SIGNAL(Finished()),dlg,SLOT(close()));
     dlg->setLayout(lyout);
@@ -281,10 +281,18 @@ void EAbstractTuneDialogA1DN::FillModelRow()
             column += 12;
         else
         {
-            RepModel->UpdateItem(row, column++, Bac_block2.Bac_block2[TuneVariant].dU_cor[Index]*sign, 5);
+            if (DNType == DNT_FOREIGN)
+                RepModel->UpdateItem(row, column++, Bac_block2.Bac_block2[TuneVariant].dU_cor[Index]*sign, 5);
+            else
+                RepModel->UpdateItem(row, column++, Dd_Block[Index].dUrms*sign, 5);
 
             if (Mode == MODE_ALTERNATIVE)
-                RepModel->UpdateItem(row, column++, Bac_block2.Bac_block2[TuneVariant].dPhy_cor[Index]*sign, 5);
+            {
+                if (DNType == DNT_FOREIGN)
+                    RepModel->UpdateItem(row, column++, Bac_block2.Bac_block2[TuneVariant].dPhy_cor[Index]*sign, 5);
+                else
+                    RepModel->UpdateItem(row, column++, Dd_Block[Index].Phy*sign, 5);
+            }
             else
                 RepModel->UpdateItem(row, column++, "");
 
@@ -308,7 +316,10 @@ void EAbstractTuneDialogA1DN::FillModelRow()
         float dUrmsU = RepModel->Item(row, 2);
         float UrmsM = (dUrmsU + Dd_Block[Index].dUrms*sign) / 2;
         RepModel->UpdateItem(row, 6, UrmsM, 5);
-        RepModel->UpdateItem(row, 8, Bac_block2.Bac_block2[TuneVariant].dU_cor[Index-4]*sign, 5);
+        if (DNType == DNT_FOREIGN)
+            RepModel->UpdateItem(row, 8, Bac_block2.Bac_block2[TuneVariant].dU_cor[Index-4]*sign, 5);
+        else
+            RepModel->UpdateItem(row, 8, UrmsM, 5);
         RepModel->UpdateItem(row, 10, (Dd_Block[Index].dUrms*sign - dUrmsU), 5);
         RepModel->UpdateItem(row, 12, UrmsM, 5);
         RepModel->UpdateItem(row, 14, Dd_Block[Index].sU, 5);
@@ -318,7 +329,10 @@ void EAbstractTuneDialogA1DN::FillModelRow()
             float PhyU = RepModel->Item(row, 3);
             float PhyM = (PhyU + Dd_Block[Index].Phy*sign) / 2;
             RepModel->UpdateItem(row, 7, PhyM, 5);
-            RepModel->UpdateItem(row, 9, Bac_block2.Bac_block2[TuneVariant].dPhy_cor[Index-4]*sign, 5);
+            if (DNType == DNT_FOREIGN)
+                RepModel->UpdateItem(row, 9, Bac_block2.Bac_block2[TuneVariant].dPhy_cor[Index-4]*sign, 5);
+            else
+                RepModel->UpdateItem(row, 9, PhyM, 5);
             RepModel->UpdateItem(row, 11, (Dd_Block[Index].Phy*sign - PhyU), 5);
             RepModel->UpdateItem(row, 13, PhyM, 5);
             RepModel->UpdateItem(row, 15, Dd_Block[Index].sPhy, 5);
@@ -654,11 +668,18 @@ int EAbstractTuneDialogA1DN::GetAndAverage(int type, void *out)
     return Error::ER_NOERROR;
 }
 
-int EAbstractTuneDialogA1DN::GetBacAndClearInitialValues()
+int EAbstractTuneDialogA1DN::GetBac()
 {
     if (Commands::GetBac(2, &Bac_block2, sizeof(Bac2)) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     if (Commands::GetBac(3, &Bac_block3, sizeof(Bac3)) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
+    return Error::ER_NOERROR;
+}
+
+int EAbstractTuneDialogA1DN::AndClearInitialValues()
+{
+    if ((TuneVariant > 2) || (TuneVariant < 0))
         return Error::ER_GENERALERROR;
     Bac_block2.Bac_block2[TuneVariant].U1kDN[0] = 0;
     Bac_block2.Bac_block2[TuneVariant].U2kDN[0] = 0;

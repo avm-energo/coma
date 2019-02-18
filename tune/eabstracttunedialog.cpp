@@ -343,6 +343,7 @@ bool EAbstractTuneDialog::WriteTuneCoefsSlot()
     int bacnum = sender()->objectName().toInt();
     //if (CheckPassword() != Error::ER_NOERROR)   На время отладки!!!
     //    return false;
+    FillBackBac(bacnum);
     return WriteTuneCoefs(bacnum);
 }
 
@@ -351,7 +352,6 @@ bool EAbstractTuneDialog::WriteTuneCoefs(int bacnum)
     if (EMessageBox::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?\n(Результаты предыдущей регулировки будут потеряны)") == false)
         return false;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
-    FillBackBac(bacnum);
     if (AbsBac.keys().contains(bacnum))
     {
         if (Commands::WriteBac(bacnum, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize) == Error::ER_NOERROR)
@@ -477,6 +477,7 @@ void EAbstractTuneDialog::NoGood()
 void EAbstractTuneDialog::CancelTune()
 {
     StdFunc::Cancel();
+    emit Finished();
 }
 
 void EAbstractTuneDialog::ReadAllTuneCoefs()

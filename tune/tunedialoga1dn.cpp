@@ -47,7 +47,7 @@ void TuneDialogA1DN::SetLbls()
     lbls.append("7.2.3. Ввод данных по делителю и приём настроечных параметров...");
     lbls.append("7.2.5. Задание варианта включения ДН...");
     lbls.append("7.2.6. Запись варианта включения в прибор...");
-    lbls.append("7.2.7. Установка 20%, проверка и сохранение...");
+/*    lbls.append("7.2.7. Установка 20%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 50%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 80%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 100%, проверка и сохранение...");
@@ -60,7 +60,7 @@ void TuneDialogA1DN::SetLbls()
     lbls.append("7.2.13.4. Проверка аналоговых данных...");
     lbls.append("7.2.13.5. Проверка аналоговых данных...");
     lbls.append("7.2.13.6. Проверка аналоговых данных...");
-    lbls.append("7.2.13.7. Проверка аналоговых данных...");
+    lbls.append("7.2.13.7. Проверка аналоговых данных..."); */
     lbls.append("7.2.13.8. Проверка аналоговых данных...");
     lbls.append("7.2.14. Запись результатов и формирование протокола...");
 }
@@ -77,7 +77,7 @@ void TuneDialogA1DN::SetPf()
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_6);
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_1); // 7.2.7. Установка 20%, проверка и сохранение
+/*    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_1); // 7.2.7. Установка 20%, проверка и сохранение
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_2); // 7.2.7. Установка 50%, проверка и сохранение
     pf[lbls.at(count++)] = func;
@@ -104,7 +104,7 @@ void TuneDialogA1DN::SetPf()
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_6); // 7.2.13.6. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_7); // 7.2.13.7. Проверка аналоговых данных
-    pf[lbls.at(count++)] = func;
+    pf[lbls.at(count++)] = func; */
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_8); // 7.2.13.8. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_14); // 7.2.14
@@ -349,12 +349,15 @@ int TuneDialogA1DN::Start7_2_3()
     TemplateCheck(); // проверка наличия шаблонов протоколов
     PovType = GOST_23625;
     Index = 0;
-    return GetBacAndClearInitialValues();
+    return Error::ER_NOERROR;
 }
 
 int TuneDialogA1DN::Start7_2_5()
 {
+    if (GetBac() != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
     InputTuneParameters(DNT_OWN);
+    AndClearInitialValues();
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     WriteBacBlock();
@@ -543,8 +546,9 @@ int TuneDialogA1DN::Start7_2_13_7()
 
 int TuneDialogA1DN::Start7_2_13_8()
 {
-    if (Start7_2_13(8) != Error::ER_NOERROR)
-        return Error::ER_GENERALERROR;
+/*    if (Start7_2_13(8) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR; */
+    FillDdWithNumbers();
     // теперь считаем средние погрешности и СКО
     if (Mode == MODE_ALTERNATIVE)
     {
@@ -574,7 +578,8 @@ int TuneDialogA1DN::Start7_2_13_8()
         FillBac(BLOCK_DIRECT);
         SaveToFileEx(BLOCK_DIRECT);
     }
-    return Start7_2_11();
+//    return Start7_2_11();
+    return Error::ER_NOERROR;
 }
 
 int TuneDialogA1DN::Start7_2_13(int counter)
@@ -705,6 +710,8 @@ void TuneDialogA1DN::GenerateReport()
         if (Commands::GetBd(A1_BDA_H_BN, &ChA1->Bda_h, sizeof(CheckA1::A1_Bd2)) == Error::ER_NOERROR)
             report->SetVar("KNI", ChA1->Bda_h.HarmBuf[0][0], 5);
     }
+    else
+        report->SetVar("KNI", "");
 #endif
     report->SetVar("Organization", StdFunc::OrganizationString());
     QString day = QDateTime::currentDateTime().toString("dd");
@@ -741,6 +748,15 @@ void TuneDialogA1DN::GenerateReport()
     else
         EMessageBox::information(this, "Отменено", "Действие отменено");
     delete report;
+}
+
+void TuneDialogA1DN::FillDdWithNumbers()
+{
+    for (int j=0; j<9; ++j)
+    {
+        Dd_Block[j].dUrms = j;
+        Dd_Block[j].Phy = j+9;
+    }
 }
 
 /*void TuneDialogA1DN::AcceptDNData()
