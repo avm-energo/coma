@@ -308,6 +308,11 @@ int TuneDialogA1::Start6_3_3_5()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
+    if (Commands::SetMode(MODE_ALTERNATIVE) != Error::ER_NOERROR)
+    {
+        EMessageBox::error(this, "Ошибка", "Ошибка установки рода напряжения");
+        return Error::ER_GENERALERROR;
+    }
 //    EMessageBox::information(this, "Требование", "Установите на РЕТОМ значение напряжения 100 В");
     // получение текущих аналоговых сигналов от модуля
     WaitNSeconds(WAITFORCONST);
