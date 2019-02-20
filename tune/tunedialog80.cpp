@@ -132,7 +132,7 @@ void TuneDialog80::SetupUI()
     glyout->addWidget(le,8,4,1,2);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
-    lyout->addWidget(BottomUI(BoardTypes::BT_BASE));
+    lyout->addWidget(BottomUI(BoardTypes::BT_MEZONIN));
     lyout->addStretch(1);
     cp2->setLayout(lyout);
 

@@ -330,6 +330,11 @@ void EAbstractTuneDialog::PasswordCheck(QString psw)
 void EAbstractTuneDialog::ReadTuneCoefs()
 {
     int bacnum = sender()->objectName().toInt();
+    ReadTuneCoefsByBac(bacnum);
+}
+
+void EAbstractTuneDialog::ReadTuneCoefsByBac(int bacnum)
+{
     if (AbsBac.keys().contains(bacnum))
     {
         int res = Commands::GetBac(bacnum, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize);

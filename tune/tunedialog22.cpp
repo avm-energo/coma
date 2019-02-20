@@ -95,7 +95,7 @@ void TuneDialog22::SetupUI()
     lyout = new QVBoxLayout;
     gb1lyout->addWidget(CoeffGB("Настроечные коэффициенты при усилении 1x", "0"));
     gb1lyout->addWidget(CoeffGB("Настроечные коэффициенты при усилении 16x", "1"));
-    gb1lyout->addWidget(BottomUI(BoardTypes::BT_BASE));
+    gb1lyout->addWidget(BottomUI(BoardType - 1));
     lyout->addLayout(gb1lyout);
     cp2->setLayout(lyout);
 
@@ -104,7 +104,7 @@ void TuneDialog22::SetupUI()
     setLayout(lyout);
 #if PROGSIZE != PROGSIZE_EMUL
      if ((!(ModuleBSI::GetHealth() & HTH_REGPARS)) && !StdFunc::IsInEmulateMode()) // есть настроечные коэффициенты в памяти модуля
-        ReadTuneCoefs(); // считать их из модуля и показать на экране
+        ReadTuneCoefsByBac(0); // считать их из модуля и показать на экране
 #endif
 }
 
