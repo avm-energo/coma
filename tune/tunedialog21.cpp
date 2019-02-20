@@ -263,7 +263,7 @@ bool TuneDialog21::CalcNewTuneCoef(int NumCh)
     }
     Bac_block.Bac1[NumCh].fkuin = 1 / (BdaU0.sin[NumCh]-Bda5.sin[NumCh]);
     Bac_block.Bac1[NumCh].fkiin = 1 / (BdaI0.sin[NumCh]-Bda20.sin[NumCh]);
-    FillBac();
+    FillBac(0);
     return true;
 }
 
@@ -274,8 +274,8 @@ int TuneDialog21::ReadAnalogMeasurements()
 
 void TuneDialog21::TuneOneChannel()
 {
-    int NumCh;
-    WDFunc::CBIndex(this, "tunenumch", NumCh);
+    int NumCh = 0;
+    NumCh = WDFunc::CBIndex(this, "tunenumch");
     if (ShowU0(NumCh) == Error::ER_GENERALERROR)
         return;
     if (TuneChannel(BdaU0) != Error::ER_NOERROR)
@@ -293,7 +293,7 @@ void TuneDialog21::TuneOneChannel()
     if (TuneChannel(Bda5) != Error::ER_NOERROR)
         return;
     CalcNewTuneCoef(NumCh);
-    FillBac();
+    FillBac(0);
 }
 
 void TuneDialog21::Cancel()

@@ -351,7 +351,7 @@ int TuneDialog85::Start7_3_1()
             return Error::ER_GENERALERROR;
         }
         // обновление коэффициентов в соответствующих полях на экране
-        FillBac();
+        FillBac(0);
         // проверка коэффициентов на правильность в соотв. с п. 7.3.1 "Д2"
         if (CheckTuneCoefs())
             return Error::ER_NOERROR;
@@ -377,7 +377,7 @@ int TuneDialog85::Start7_3_1_1()
                 return false;
             }
             // обновление коэффициентов в соответствующих полях на экране
-            FillBac();
+            FillBac(0);
             return Error::ER_NOERROR;
         }
         else

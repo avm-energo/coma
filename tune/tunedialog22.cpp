@@ -244,7 +244,7 @@ bool TuneDialog22::CheckAndShowTune0()
     WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda0.sin[ChNum]));
     //if (!CalcNewTuneCoef())
      //   return false;
-    FillBac();
+    FillBac(0);
     return true;
 }
 
@@ -253,7 +253,7 @@ bool TuneDialog22::CheckAndShowTuneW100()
     WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(BdaW100.sin[ChNum]));
     if (!CalcNewTuneCoef())
         return false;
-    FillBac();
+    FillBac(0);
     return true;
 }
 
@@ -300,7 +300,7 @@ int TuneDialog22::TuneOneChannel()
             TimeFunc::Wait(20);
         }
 
-        WDFunc::CBIndex(this, "tunenumch", ChNum);
+        ChNum = WDFunc::CBIndex(this, "tunenumch");
         if(Show0(CoefNum) == Error::ER_GENERALERROR)
             return Error::ER_GENERALERROR;
         if (TuneChannel(TTUNE_0) != Error::ER_NOERROR)
