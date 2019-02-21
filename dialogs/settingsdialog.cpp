@@ -29,8 +29,8 @@ void SettingsDialog::SetupUI()
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8;
-    if (MTypeB == Config::MTB_A1)
-    {
+/*    if (MTypeB == Config::MTB_A1)
+    { */
         hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBLT(this, "Наименование организации, эксплуатирующей прибор"));
         hlyout->addWidget(WDFunc::NewLE(this, "orgle"));
@@ -51,7 +51,7 @@ void SettingsDialog::SetupUI()
         hlyout->addWidget(WDFunc::NewLBLT(this, "Количество точек усреднения для поверки"), 0);
         hlyout->addWidget(WDFunc::NewSPB(this, "povnumpoints", 1, 65535, 0), 1);
         vlyout->addLayout(hlyout);
-    }
+//    }
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(this, "Рабочий каталог программы"), 0);
     hlyout->addWidget(WDFunc::NewLE(this, "pathle"), 1);
@@ -59,13 +59,13 @@ void SettingsDialog::SetupUI()
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SetHomeDir()));
     hlyout->addWidget(pb, 0);
     vlyout->addLayout(hlyout);
-    if (MTypeB == Config::MTB_80)
-    {
+/*    if (MTypeB == Config::MTB_80)
+    { */
         hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(this, "IP-адрес МИП:"));
         hlyout->addWidget(WDFunc::NewLE(this, "miple"));
         vlyout->addLayout(hlyout);
-    }
+//    }
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewChB(this, "writelogchb", "Запись обмена данными в файл"));
     vlyout->addLayout(hlyout);

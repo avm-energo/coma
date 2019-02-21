@@ -349,6 +349,7 @@ void A1Dialog::ParsePKDNFile(const QString &filename)
         memptr = sizeof(ResultsStruct);
         MDSs = sizeof(MainDataStruct);
         int index = 0;
+        DNType = DNT_FOREIGN;
         int endcounter = (PovType == GOST_1983) ? 3 : 9;
         for (int i=0; i<MDSCount; ++i)
         {
