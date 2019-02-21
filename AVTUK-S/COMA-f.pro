@@ -113,7 +113,13 @@ SOURCES += \
     ../config/config84.cpp \
     ../config/confdialog84.cpp \
     ../check/checkdialog84.cpp \
-    ../check/check84.cpp
+    ../check/check84.cpp \
+    ../tune/eabstracttunedialoga1dn.cpp \
+    ../gen/parseid9000.cpp \
+    ../gen/parseid9050.cpp \
+    ../gen/parseid10031.cpp \
+    ../gen/report.cpp \
+    ../gen/parsemodule.cpp
 
 HEADERS  += \
     coma.h \
@@ -206,7 +212,13 @@ HEADERS  += \
     ../config/config84.h \
     ../config/confdialog84.h \
     ../check/check84.h \
-    ../check/checkdialog84.h
+    ../check/checkdialog84.h \
+    ../tune/eabstracttunedialoga1dn.h \
+    ../gen/parseid9000.h \
+    ../gen/parseid10031.h \
+    ../gen/parseid9050.h \
+    ../gen/report.h \
+    ../gen/parsemodule.h
 
 INCLUDEPATH += $$PWD/../../includes
 

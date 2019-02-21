@@ -278,7 +278,7 @@ int EOscillogram::ProcessOsc()
 
     while (DR.id != 0xFFFFFFFF)
     {
-        ParseModule *PM;
+        ParseModule *PM = nullptr;
         Pos += sizeof (DR);
         switch (DR.id)
         {

@@ -40,9 +40,24 @@ public:
         quint8 Rezerv[4];	    // Резерв
         quint32 timeF;		    // Время записи в журнал
     };
+
+    struct SWJINFStruct
+    {
+        quint16 FileNum;        // Номер файла
+        quint32 Num;        	// Порядковый номер переключения
+        quint8 	NumA;           // Порядковый номер аппарата
+        quint8 	TypeA;          // Тип аппарата
+        quint64 Time;           // Время, когда произведено переключение
+        quint32 Options;        // Направление переключения, тип коммутации и коммутируемые фазы
+    };
+
+
 #pragma pack(pop)   /* restore original alignment from stack */
 
+
+
     SWJournalRecordStruct SWJRecord;
+    SWJINFStruct SWJInf;
     EOscillogram::GBoStruct GBOs;
     EOscillogram::DataRecSwj SwRec;
     EOscillogram *OscFunc;

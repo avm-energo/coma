@@ -72,6 +72,7 @@ public:
     virtual void FillBackBac(int bacnum) = 0;
     void SaveToFileEx(int bacnum);
     void ShowTable();
+    void ReadTuneCoefsByBac(int bacnum);
 
 signals:
     void PasswordChecked();

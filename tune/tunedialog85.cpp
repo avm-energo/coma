@@ -119,7 +119,7 @@ void TuneDialog85::SetupUI()
     glyout->addWidget(le,8,1,1,2);
     gb->setLayout(glyout);
     lyout->addWidget(gb);
-    lyout->addWidget(BottomUI(BoardTypes::BT_BASE));
+    lyout->addWidget(BottomUI(BoardTypes::BT_NONE));
     lyout->addStretch(1);
     cp2->setLayout(lyout);
 
@@ -212,7 +212,7 @@ void TuneDialog85::SetupUI()
 
 #if PROGSIZE != PROGSIZE_EMUL
      if ((!(ModuleBSI::GetHealth() & HTH_REGPARS)) && !StdFunc::IsInEmulateMode()) // есть настроечные коэффициенты в памяти модуля
-        ReadTuneCoefs(); // считать их из модуля и показать на экране
+        ReadTuneCoefsByBac(0); // считать их из модуля и показать на экране
 #endif
 }
 
@@ -351,7 +351,7 @@ int TuneDialog85::Start7_3_1()
             return Error::ER_GENERALERROR;
         }
         // обновление коэффициентов в соответствующих полях на экране
-        FillBac();
+        FillBac(0);
         // проверка коэффициентов на правильность в соотв. с п. 7.3.1 "Д2"
         if (CheckTuneCoefs())
             return Error::ER_NOERROR;
@@ -377,7 +377,7 @@ int TuneDialog85::Start7_3_1_1()
                 return false;
             }
             // обновление коэффициентов в соответствующих полях на экране
-            FillBac();
+            FillBac(0);
             return Error::ER_NOERROR;
         }
         else

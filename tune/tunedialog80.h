@@ -62,7 +62,7 @@ private:
         GOST_1983 // по 3 точкам только туда
     };
 
-    //bool Cancelled = false, DefConfig;
+    bool Cancelled = false, DefConfig;
     Config80 *C80;
     //QVector<S2::DataRec> *S2Config;
     //QVector<S2::DataRec> *S2ConfigForTune;  // для регулировки

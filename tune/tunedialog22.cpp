@@ -95,7 +95,7 @@ void TuneDialog22::SetupUI()
     lyout = new QVBoxLayout;
     gb1lyout->addWidget(CoeffGB("Настроечные коэффициенты при усилении 1x", "0"));
     gb1lyout->addWidget(CoeffGB("Настроечные коэффициенты при усилении 16x", "1"));
-    gb1lyout->addWidget(BottomUI(BoardTypes::BT_BASE));
+    gb1lyout->addWidget(BottomUI(BoardType - 1));
     lyout->addLayout(gb1lyout);
     cp2->setLayout(lyout);
 
@@ -104,7 +104,7 @@ void TuneDialog22::SetupUI()
     setLayout(lyout);
 #if PROGSIZE != PROGSIZE_EMUL
      if ((!(ModuleBSI::GetHealth() & HTH_REGPARS)) && !StdFunc::IsInEmulateMode()) // есть настроечные коэффициенты в памяти модуля
-        ReadTuneCoefs(); // считать их из модуля и показать на экране
+        ReadTuneCoefsByBac(0); // считать их из модуля и показать на экране
 #endif
 }
 
@@ -244,7 +244,7 @@ bool TuneDialog22::CheckAndShowTune0()
     WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(Bda0.sin[ChNum]));
     //if (!CalcNewTuneCoef())
      //   return false;
-    FillBac();
+    FillBac(0);
     return true;
 }
 
@@ -253,7 +253,7 @@ bool TuneDialog22::CheckAndShowTuneW100()
     WDFunc::SetLBLText(this, "tunech"+QString::number(ChNum), QString::number(BdaW100.sin[ChNum]));
     if (!CalcNewTuneCoef())
         return false;
-    FillBac();
+    FillBac(0);
     return true;
 }
 
@@ -300,7 +300,7 @@ int TuneDialog22::TuneOneChannel()
             TimeFunc::Wait(20);
         }
 
-        WDFunc::CBIndex(this, "tunenumch", ChNum);
+        ChNum = WDFunc::CBIndex(this, "tunenumch");
         if(Show0(CoefNum) == Error::ER_GENERALERROR)
             return Error::ER_GENERALERROR;
         if (TuneChannel(TTUNE_0) != Error::ER_NOERROR)

@@ -9,7 +9,7 @@
 #include "../widgets/etablemodel.h"
 #include "swjdialog.h"
 
-#define MAXSWJNUM   512
+#define MAXSWJNUM   262144
 
 class SwitchJournalDialog : public QDialog
 {
@@ -22,7 +22,7 @@ private:
     ETableModel *TableModel;
     ETableView *SwjTableView;
     QMap<quint64, EOscillogram::GBoStruct> OscMap;
-    QMap<int, SWJDialog::SWJournalRecordStruct> SWJMap;
+    QMap<int, SWJDialog::SWJINFStruct> SWJMap;
 
     void SetupUI();
     void ProcessSWJournal(QByteArray &ba);

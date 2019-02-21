@@ -59,8 +59,8 @@ private:
 #if PROGSIZE != PROGSIZE_EMUL
     int GetConf();
 #endif
-    void SetLbls() {}; // заполнить список сообщений
-    void SetPf() {}; // заполнить список функций настройки
+    void SetLbls() {} // заполнить список сообщений
+    void SetPf() {} // заполнить список функций настройки
     void GenerateReport(); // сгенерировать протокол
     void Go();
 

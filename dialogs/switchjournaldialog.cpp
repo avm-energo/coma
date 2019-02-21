@@ -45,8 +45,8 @@ void SwitchJournalDialog::SetupUI()
 
 void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
 {
-    SWJDialog::SWJournalRecordStruct tmpswj;
-    int SWJRecordSize = sizeof(SWJDialog::SWJournalRecordStruct);
+    SWJDialog::SWJINFStruct tmpswj;
+    int SWJRecordSize = sizeof(SWJDialog::SWJINFStruct);
     int BaSize = ba.size();
     int BaPos = 0;
     int CurRow = 1;
@@ -60,20 +60,21 @@ void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
         {
             SWJMap[tmpi] = tmpswj;
             TableModel->addRow();
-            TableModel->setData(TableModel->index(CurRow, 0, QModelIndex()), QVariant(tmpswj.Num), Qt::EditRole);
-            TableModel->setData(TableModel->index(CurRow, 1, QModelIndex()), QVariant(TimeFunc::UnixTime64ToString(tmpswj.Time)), Qt::EditRole);
+            TableModel->setData(TableModel->index(CurRow, 0, QModelIndex()), QVariant(tmpswj.FileNum), Qt::EditRole);
+            TableModel->setData(TableModel->index(CurRow, 1, QModelIndex()), QVariant(tmpswj.Num), Qt::EditRole);
+            TableModel->setData(TableModel->index(CurRow, 2, QModelIndex()), QVariant(TimeFunc::UnixTime64ToString(tmpswj.Time)), Qt::EditRole);
             QStringList tmpsl = QStringList() << "D" << "G" << "CB";
             QString tmps = (tmpswj.TypeA < tmpsl.size()) ? tmpsl.at(tmpswj.TypeA) : "N/A";
             tmps += QString::number(tmpswj.NumA);
-            TableModel->setData(TableModel->index(CurRow, 2, QModelIndex()), QVariant(tmps), Qt::EditRole);
-            tmps = (tmpswj.Options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
             TableModel->setData(TableModel->index(CurRow, 3, QModelIndex()), QVariant(tmps), Qt::EditRole);
-            if (OscMap.keys().contains(tmpswj.OscTime))
+            tmps = (tmpswj.Options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
+            TableModel->setData(TableModel->index(CurRow, 4, QModelIndex()), QVariant(tmps), Qt::EditRole);
+            if (OscMap.keys().contains(tmpswj.Time))
                 tmps = "images/oscillogramm.png";
             else
                 tmps = "images/hr.png";
-            TableModel->setData(TableModel->index(CurRow, 4, QModelIndex()), QVariant(QIcon(tmps)), Qt::DecorationRole);
-            TableModel->setData(TableModel->index(CurRow, 5, QModelIndex()), QVariant("Далее"), Qt::EditRole);
+            TableModel->setData(TableModel->index(CurRow, 5, QModelIndex()), QVariant(QIcon(tmps)), Qt::DecorationRole);
+            TableModel->setData(TableModel->index(CurRow, 6, QModelIndex()), QVariant("Далее"), Qt::EditRole);
             ++CurRow;
         }
         BaPos += SWJRecordSize;
@@ -118,19 +119,20 @@ void SwitchJournalDialog::LoadJournals()
     TableModel->addColumn("Next");
     TableModel->addRow();
     TableModel->SetRowTextAlignment(0, Qt::AlignVCenter | Qt::AlignCenter);
-    TableModel->setData(TableModel->index(0, 0, QModelIndex()), QVariant("#"), Qt::EditRole);
-    TableModel->setData(TableModel->index(0, 1, QModelIndex()), QVariant("Дата, время"), Qt::EditRole);
-    TableModel->setData(TableModel->index(0, 2, QModelIndex()), QVariant("Аппарат"), Qt::EditRole);
-    TableModel->setData(TableModel->index(0, 3, QModelIndex()), QVariant("Переключение"), Qt::EditRole);
-    TableModel->setData(TableModel->index(0, 4, QModelIndex()), QVariant("Осц"), Qt::EditRole);
+    TableModel->setData(TableModel->index(0, 0, QModelIndex()), QVariant("Номер файла"), Qt::EditRole);
+    TableModel->setData(TableModel->index(0, 1, QModelIndex()), QVariant("Номер переключения"), Qt::EditRole);
+    TableModel->setData(TableModel->index(0, 2, QModelIndex()), QVariant("Дата, время"), Qt::EditRole);
+    TableModel->setData(TableModel->index(0, 3, QModelIndex()), QVariant("Аппарат"), Qt::EditRole);
+    TableModel->setData(TableModel->index(0, 4, QModelIndex()), QVariant("Переключение"), Qt::EditRole);
+    //TableModel->setData(TableModel->index(0, 5, QModelIndex()), QVariant("Осц"), Qt::EditRole);
 //    SwjTableView->setSpan(0, 3, 1, 2); // объединение 3 и 4 столбцов в 0 ряду
-    QByteArray SWJournal;
-    int SWJSize = sizeof(SWJDialog::SWJournalRecordStruct) * MAXSWJNUM;
-    SWJournal.resize(SWJSize);
-    Commands::GetBt(TECH_SWJ, &(SWJournal.data()[0]), SWJSize); // в SWJSize - реальная длина в байтах
-    SWJournal.resize(SWJSize);
-    ProcessOscillograms();
-    ProcessSWJournal(SWJournal);
+    QByteArray SWJournals_INF;
+    int SWJINFSIZE = sizeof(SWJDialog::SWJINFStruct) * MAXSWJNUM;
+    SWJournals_INF.resize(SWJINFSIZE);
+    Commands::GetBt(TECH_SWJ, &(SWJournals_INF.data()[0]), SWJINFSIZE); // в SWJSize - реальная длина в байтах
+    SWJournals_INF.resize(SWJINFSIZE);
+    //ProcessOscillograms();
+    ProcessSWJournal(SWJournals_INF);
 }
 
 void SwitchJournalDialog::ShowJournal(QModelIndex idx)
@@ -142,7 +144,7 @@ void SwitchJournalDialog::ShowJournal(QModelIndex idx)
         WARNMSG("");
         return;
     }
-    SWJDialog::SWJournalRecordStruct swjr = SWJMap[SWJNum];
+    /*SWJDialog::SWJournalRecordStruct swjr = SWJMap[SWJNum];
     EOscillogram::GBoStruct gbos;
     bool oscexist = OscMap.keys().contains(swjr.OscTime);
     if (oscexist)
@@ -150,7 +152,7 @@ void SwitchJournalDialog::ShowJournal(QModelIndex idx)
     SWJDialog *dlg = new SWJDialog;
     dlg->setModal(false);
     dlg->Init(swjr, oscexist, gbos);
-    dlg->show();
+    dlg->show();*/
 }
 
 void SwitchJournalDialog::EraseJournals()

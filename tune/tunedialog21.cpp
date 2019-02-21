@@ -120,7 +120,7 @@ void TuneDialog21::SetupUI()
     }
     if (gb2lyout->count())
         gb1lyout->addLayout(gb2lyout);
-    gb1lyout->addWidget(BottomUI(BoardType));
+    gb1lyout->addWidget(BottomUI(BoardType - 1));
     gb->setLayout(gb1lyout);
     lyout->addWidget(gb);
     cp2->setLayout(lyout);
@@ -130,7 +130,7 @@ void TuneDialog21::SetupUI()
     setLayout(lyout);
 #if PROGSIZE != PROGSIZE_EMUL
     if ((!(ModuleBSI::GetHealth() & HTH_REGPARS)) && !StdFunc::IsInEmulateMode()) // есть настроечные коэффициенты в памяти модуля
-        ReadTuneCoefs(); // считать их из модуля и показать на экране
+        ReadTuneCoefsByBac(0); // считать их из модуля и показать на экране
 #endif
 }
 
@@ -263,7 +263,7 @@ bool TuneDialog21::CalcNewTuneCoef(int NumCh)
     }
     Bac_block.Bac1[NumCh].fkuin = 1 / (BdaU0.sin[NumCh]-Bda5.sin[NumCh]);
     Bac_block.Bac1[NumCh].fkiin = 1 / (BdaI0.sin[NumCh]-Bda20.sin[NumCh]);
-    FillBac();
+    FillBac(0);
     return true;
 }
 
@@ -274,8 +274,8 @@ int TuneDialog21::ReadAnalogMeasurements()
 
 void TuneDialog21::TuneOneChannel()
 {
-    int NumCh;
-    WDFunc::CBIndex(this, "tunenumch", NumCh);
+    int NumCh = 0;
+    NumCh = WDFunc::CBIndex(this, "tunenumch");
     if (ShowU0(NumCh) == Error::ER_GENERALERROR)
         return;
     if (TuneChannel(BdaU0) != Error::ER_NOERROR)
@@ -293,7 +293,7 @@ void TuneDialog21::TuneOneChannel()
     if (TuneChannel(Bda5) != Error::ER_NOERROR)
         return;
     CalcNewTuneCoef(NumCh);
-    FillBac();
+    FillBac(0);
 }
 
 void TuneDialog21::Cancel()

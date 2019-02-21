@@ -56,7 +56,7 @@ private:
     float IUefNat_filt_old[6];      // для сохранения значений по п. 7.3.2
     float MipDat[46];
     LimeReport::ReportEngine *report;
-    //bool Cancelled, DefConfig;
+    bool Cancelled, DefConfig;
     Config85 *C85;
     QVector<S2::DataRec> *S2Config;
     Config85::Bci Bci_block_work;
