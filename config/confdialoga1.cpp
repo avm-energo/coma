@@ -127,7 +127,7 @@ void ConfDialogA1::SetupUI()
 
 #if PROGSIZE >= PROGSIZE_LARGE
     hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(this, "Уставка скачка напряжения для запуска осциллографирования, %"));
+    hlyout->addWidget(WDFunc::NewLBL(this, "Уставка скачка напряжения для переинициализации фильтра, %"));
     hlyout->addWidget(WDFunc::NewSPB(this, "thr.1", 0, 100, 1, UCONFWCLR));
     hlyout->addStretch(10);
     vlyout1->addLayout(hlyout);

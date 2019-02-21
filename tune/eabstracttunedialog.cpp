@@ -203,7 +203,7 @@ void EAbstractTuneDialog::ProcessTune()
     else
         TuneFileSaved = false;
     ReadAllTuneCoefs();
-    MeasurementTimer->start();
+//    MeasurementTimer->start();
     StdFunc::ClearCancel();
     Skipped = false;
     MsgClear(); // очистка экрана с сообщениями
@@ -217,7 +217,7 @@ void EAbstractTuneDialog::ProcessTune()
             ErMsgSetVisible(bStep);
             WDFunc::SetEnabled(this, "starttune", true);
             WARNMSG(lbls.at(bStep));
-            MeasurementTimer->stop();
+ //           MeasurementTimer->stop();
             return;
         }
         else if (res == Error::ER_RESEMPTY)
@@ -227,7 +227,7 @@ void EAbstractTuneDialog::ProcessTune()
 
     }
     MsgSetVisible(bStep); // выдаём надпись "Настройка завершена!"
-    MeasurementTimer->stop();
+//    MeasurementTimer->stop();
     WDFunc::SetEnabled(this, "starttune", true);
     EMessageBox::information(this, "Готово", "Настройка завершена!");
 }
@@ -304,6 +304,7 @@ int EAbstractTuneDialog::StartMeasurement()
     SetMeasurementEnabled(true);
     while (MeasurementEnabled && !StdFunc::IsCancelled())
         TimeFunc::Wait();
+    MeasurementTimer->stop();
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
@@ -346,8 +347,8 @@ void EAbstractTuneDialog::ReadTuneCoefsByBac(int bacnum)
 bool EAbstractTuneDialog::WriteTuneCoefsSlot()
 {
     int bacnum = sender()->objectName().toInt();
-    //if (CheckPassword() != Error::ER_NOERROR)   На время отладки!!!
-    //    return false;
+    if (CheckPassword() != Error::ER_NOERROR)
+        return false;
     FillBackBac(bacnum);
     return WriteTuneCoefs(bacnum);
 }

@@ -5,11 +5,11 @@
 #define Name "ПКДН-Сервис МР"
 #define GroupName "ПКДН-Сервис"
 #define EngName "PKDN-S-S"
-#define Version "2.2.260"
+#define Version "2.2.265"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "pkdns-S.exe"
-#define SetupName "pkdns-S-2.2.260-x86"
+#define SetupName "pkdns-S-2.2.265-x86"
 #define Prefix "D:\Progs\out"
 
 [Languages]
@@ -105,20 +105,3 @@ function IsRequiredVC2015Detected(): boolean;
 begin
     result := IsVC2015Detected();
 end;
-
-//-----------------------------------------------------------------------------
-//    Callback-функция, вызываемая при инициализации установки
-//-----------------------------------------------------------------------------
-//function InitializeSetup(): boolean;
-//begin
-
-  // Если нет тербуемой версии .NET выводим сообщение о том, что инсталлятор
-  // попытается установить её на данный компьютер
-//  if not IsVC2015Detected() then
-    //begin
-//      MsgBox('{#Name} требует установки Microsoft VC2015 redistributable v14.0.24215'#13#13
-             //'Установщик запустит установку MSVC после установки основного пакета', mbInformation, MB_OK);
-    //end;   
-
-//  result := true;
-//end;
