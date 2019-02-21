@@ -110,7 +110,16 @@ SOURCES += \
     ../gen/parsemodule.cpp \
     ../gen/parseid9000.cpp \
     ../gen/parseid9050.cpp \
-    ../gen/parseid10031.cpp
+    ../gen/parseid10031.cpp \
+    ../check/check84.cpp \
+    ../check/checkdialog84.cpp \
+    ../tune/eabstracttunedialoga1dn.cpp \
+    ../config/confdialog84.cpp \
+    ../config/config84.cpp \
+    ../gen/parseid9000.cpp \
+    ../gen/parseid9050.cpp \
+    ../gen/parseid10031.cpp \
+    ../gen/report.cpp
 
 HEADERS  += \
     coma.h \
@@ -199,7 +208,16 @@ HEADERS  += \
     ../gen/parsemodule.h \
     ../gen/parseid9000.h \
     ../gen/parseid9050.h \
-    ../gen/parseid10031.h
+    ../gen/parseid10031.h \
+    ../check/check84.h \
+    ../check/checkdialog84.h \
+    ../tune/eabstracttunedialoga1dn.h \
+    ../config/confdialog84.h \
+    ../config/config84.h \
+    ../gen/parseid9000.h \
+    ../gen/parseid9050.h \
+    ../gen/parseid10031.h \
+    ../gen/report.h
 
 INCLUDEPATH += $$PWD/../../includes
 
