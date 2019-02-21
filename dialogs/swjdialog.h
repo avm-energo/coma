@@ -64,8 +64,9 @@ public:
     bool Mode;
 
     SWJDialog(int mode=SWJ_MODE_ONLINE, QWidget *parent = nullptr);
-    void Init(SWJournalRecordStruct &swjr, bool haveosc, EOscillogram::GBoStruct &gbos);
+    void Init(bool haveosc, EOscillogram::GBoStruct &gbos);
     void LoadOsc(QByteArray &ba); // для оффлайн режима
+    void GetSwjOscData();
 
 private slots:
 #if PROGSIZE != PROGSIZE_EMUL

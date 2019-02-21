@@ -31,7 +31,7 @@ TuneDialog85::TuneDialog85(QVector<S2::DataRec> &S2Config, QWidget *parent) : EA
     this->S2ConfigForTune = &S2Config;
 
     C85 = new Config85(*S2ConfigForTune);
-    ReportModel = new QStandardItemModel;
+    //ReportModel = new QStandardItemModel;
     ViewModel = new QStandardItemModel;
     SetBac(&Bac_block, BoardTypes::BT_NONE, sizeof(Bac_block));
     setAttribute(Qt::WA_DeleteOnClose);
@@ -1286,7 +1286,7 @@ void TuneDialog85::GenerateReport()
     report = new LimeReport::ReportEngine(this);
     QString path = StdFunc::GetSystemHomeDir()+"85report.lrxml";
     report->loadFromFile(path);
-    report->dataManager()->addModel("maindata", ReportModel, false);
+    //report->dataManager()->addModel("maindata", ReportModel, false);
 
     ReportHeader.Organization = "ООО АСУ-ВЭИ";
     report->dataManager()->setReportVariable("Organization", ReportHeader.Organization);

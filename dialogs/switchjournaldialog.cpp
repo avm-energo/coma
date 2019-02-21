@@ -144,15 +144,16 @@ void SwitchJournalDialog::ShowJournal(QModelIndex idx)
         WARNMSG("");
         return;
     }
-    /*SWJDialog::SWJournalRecordStruct swjr = SWJMap[SWJNum];
+    SWJDialog::SWJINFStruct swjr = SWJMap[SWJNum];
     EOscillogram::GBoStruct gbos;
-    bool oscexist = OscMap.keys().contains(swjr.OscTime);
+
+    bool oscexist = OscMap.keys().contains(swjr.Time);
     if (oscexist)
-        gbos = OscMap[swjr.OscTime];
+        gbos = OscMap[swjr.Time];
     SWJDialog *dlg = new SWJDialog;
     dlg->setModal(false);
-    dlg->Init(swjr, oscexist, gbos);
-    dlg->show();*/
+    dlg->Init(oscexist, gbos);
+    dlg->show();
 }
 
 void SwitchJournalDialog::EraseJournals()

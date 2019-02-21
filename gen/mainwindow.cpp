@@ -414,7 +414,8 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
         else
             haveosc = true;
         SWJDialog *dlg = new SWJDialog(SWJDialog::SWJ_MODE_OFFLINE);
-        dlg->Init(swjr, haveosc, gbos);
+        //dlg->Init(swjr, haveosc, gbos);
+        dlg->Init(haveosc, gbos);
         if (!ba.isEmpty())
             dlg->LoadOsc(ba);
         dlg->show();

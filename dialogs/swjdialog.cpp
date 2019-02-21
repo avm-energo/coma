@@ -17,27 +17,30 @@ SWJDialog::SWJDialog(int mode, QWidget *parent) : QDialog(parent)
     OscFunc = new EOscillogram(this);
 }
 
-void SWJDialog::Init(SWJournalRecordStruct &swjr, bool haveosc, EOscillogram::GBoStruct &gbos)
+void SWJDialog::Init(bool haveosc, EOscillogram::GBoStruct &gbos)
 {
-    SWJRecord = swjr;
     GBOs = gbos;
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
+
+    GetSwjOscData();
+    memcpy(&SWJRecord, &(OscFunc->BA.data()[0]), sizeof(SWJournalRecordStruct));
+
     glyout->addWidget(WDFunc::NewLBL(this, "Номер"), 0,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "Дата, время"),0,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "Аппарат"),0,2,1,2);
     glyout->addWidget(WDFunc::NewLBL(this, "Переключение"),0,4,1,2);
-    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(swjr.Num)), 1,0,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(this, TimeFunc::UnixTime64ToString(swjr.Time)),1,1,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.Num)), 1,0,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(this, TimeFunc::UnixTime64ToString(SWJRecord.Time)),1,1,1,1);
     QStringList tmpsl = QStringList() << "D" << "G" << "CB";
-    QString tmps = (swjr.TypeA < tmpsl.size()) ? tmpsl.at(swjr.TypeA) : "N/A";
+    QString tmps = (SWJRecord.TypeA < tmpsl.size()) ? tmpsl.at(SWJRecord.TypeA) : "N/A";
     glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,2,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(swjr.NumA)),1,3,1,1);
-    tmps = (swjr.Options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
+    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.NumA)),1,3,1,1);
+    tmps = (SWJRecord.Options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
     glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,4,1,2);
     glyout->addWidget(WDFunc::NewLBL(this, "Результат переключения"),2,0,1,6);
     glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации и коммутируемые фазы"),3,0,1,4);
-    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(swjr.OpResult)),3,4,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.OpResult)),3,4,1,1);
     if (haveosc)
     {
         QPushButton *pb = new QPushButton;
@@ -66,35 +69,35 @@ void SWJDialog::Init(SWJournalRecordStruct &swjr, bool haveosc, EOscillogram::GB
     int row = 1;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(swjr.I[i], 'f', 1)),row,i+1,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.I[i], 'f', 1)),row,i+1,1,1);
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(swjr.U[i], 'f', 1)),row,i+1,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.U[i], 'f', 1)),row,i+1,1,1);
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(swjr.OwnTime[i], 'f', 1)),row,i+1,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.OwnTime[i], 'f', 1)),row,i+1,1,1);
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(swjr.FullTime[i], 'f', 1)),row,i+1,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.FullTime[i], 'f', 1)),row,i+1,1,1);
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(swjr.MovTime[i], 'f', 1)),row,i+1,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.MovTime[i], 'f', 1)),row,i+1,1,1);
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(swjr.ArchTime[i], 'f', 1)),row,i+1,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.ArchTime[i], 'f', 1)),row,i+1,1,1);
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(swjr.IdleTime[i], 'f', 0)),row,i+1,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.IdleTime[i], 'f', 0)),row,i+1,1,1);
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(swjr.Inaccuracy[i], 'f', 1)),row,i+1,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJRecord.Inaccuracy[i], 'f', 1)),row,i+1,1,1);
     vlyout->addLayout(glyout);
     QPushButton *pb = new QPushButton("Сохранить журнал в файл");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SaveSWJ()));
@@ -124,8 +127,11 @@ void SWJDialog::SaveSWJ()
 
 void SWJDialog::ShowOsc()
 {
-    if (Mode == SWJ_MODE_ONLINE)
-    {
+}
+
+void SWJDialog::GetSwjOscData()
+{
+
         OscFunc->BA.resize(GBOs.FileLength);
         if (Commands::GetOsc(GBOs.FileNum, &(OscFunc->BA.data()[0])) != Error::ER_NOERROR)
         {
@@ -134,7 +140,7 @@ void SWJDialog::ShowOsc()
         }
         QString tmps = StdFunc::GetSystemHomeDir()+"/temporary.osc";
         Files::SaveToFile(tmps, OscFunc->BA, GBOs.FileLength);
-    }
-    OscFunc->ProcessOsc();
+        OscFunc->ProcessOsc();
+
 }
 #endif

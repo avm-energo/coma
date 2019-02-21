@@ -120,7 +120,7 @@ void TuneDialog21::SetupUI()
     }
     if (gb2lyout->count())
         gb1lyout->addLayout(gb2lyout);
-    gb1lyout->addWidget(BottomUI(BoardType - 1));
+    gb1lyout->addWidget(BottomUI(BoardType));
     gb->setLayout(gb1lyout);
     lyout->addWidget(gb);
     cp2->setLayout(lyout);
