@@ -131,8 +131,8 @@ public:
     ReportHeaderStructure ReportHeader;
     PovDevStruct PovDev;
     DdStruct Dd_Block[TUNEA1LEVELS];
-    int TuneVariant, VoltageType, DNType;
-    int Index;
+    int VoltageType, DNType;
+//    int Index;
     float CurrentS; // текущее значение нагрузки
     int PovType; // тип поверяемого оборудования (по какому ГОСТу)
 
@@ -141,7 +141,7 @@ public:
     void InputTuneParameters(int dntype);
 #if PROGSIZE != PROGSIZE_EMUL
     void GetBdAndFillMTT();
-    int GetAndAverage(int type, void *out); // type = GAAT_BDA_OUT, GAAT_BDA_IN
+    int GetAndAverage(int type, void *out, int index); // type = GAAT_BDA_OUT, GAAT_BDA_IN
     int GetBac();
     int AndClearInitialValues();
 #endif
@@ -152,7 +152,7 @@ public:
     bool DNDialog(PovDevStruct &PovDev);
     void LoadSettings();
     void SaveSettings();
-    void FillModelRow();
+    void FillModelRow(int index);
     void FillHeaders();
     void TemplateCheck();
 signals:

@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.2.260
+VERSION = 2.2.265
 
 QT       += core gui serialport printsupport
 
@@ -65,7 +65,10 @@ SOURCES += main.cpp\
     ../gen/files.cpp \
     ../gen/modulebsi.cpp \
     ../gen/stdfunc.cpp \
-    ../gen/timefunc.cpp
+    ../gen/timefunc.cpp \
+    ../gen/report.cpp \
+    ../tune/eabstracttunedialog.cpp \
+    ../tune/eabstracttunedialoga1dn.cpp
 
 HEADERS  += pkdn_s.h \
     ../gen/eabstractprotocomchannel.h \
@@ -107,7 +110,10 @@ HEADERS  += pkdn_s.h \
     ../gen/maindef.h \
     ../gen/modulebsi.h \
     ../gen/stdfunc.h \
-    ../gen/timefunc.h
+    ../gen/timefunc.h \
+    ../gen/report.h \
+    ../tune/eabstracttunedialog.h \
+    ../tune/eabstracttunedialoga1dn.h
 
 INCLUDEPATH += $$PWD/../../includes
 

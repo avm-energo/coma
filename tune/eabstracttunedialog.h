@@ -15,7 +15,7 @@
 #define MEASTIMERINT    1000 // интервал проведения измерений - 1 с
 
 #define TUNE_POINTSPER  500 // столько миллисекунд должно усредняться при регулировке
-#define WAITFORCONST    4 // seconds to let voltages be constant
+#define WAITFORCONST    1 // seconds to let voltages be constant
 
 class EAbstractTuneDialog : public QDialog
 {

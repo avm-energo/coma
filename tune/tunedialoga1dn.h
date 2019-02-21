@@ -54,18 +54,8 @@ private:
     void LoadSettings();
     void GenerateReport();
     void FillDdWithNumbers();
-//    void FillHeaders();
 
 private slots:
-#if PROGSIZE != PROGSIZE_EMUL
-/*    void FillBdOut();
-    void FillBackBdOut();
-    void FillBdIn();
-    void FillBackBdIn();
-    void FillMedian(int index); // заполнение значений по средним показателям - медианам и СКО */
-//    void AcceptDNData();
-
-#endif
 };
 
 #endif // TUNEDIALOGA1DN_H

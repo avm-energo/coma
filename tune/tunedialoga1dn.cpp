@@ -47,7 +47,7 @@ void TuneDialogA1DN::SetLbls()
     lbls.append("7.2.3. Ввод данных по делителю и приём настроечных параметров...");
     lbls.append("7.2.5. Задание варианта включения ДН...");
     lbls.append("7.2.6. Запись варианта включения в прибор...");
-/*    lbls.append("7.2.7. Установка 20%, проверка и сохранение...");
+    lbls.append("7.2.7. Установка 20%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 50%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 80%, проверка и сохранение...");
     lbls.append("7.2.7. Установка 100%, проверка и сохранение...");
@@ -60,7 +60,7 @@ void TuneDialogA1DN::SetLbls()
     lbls.append("7.2.13.4. Проверка аналоговых данных...");
     lbls.append("7.2.13.5. Проверка аналоговых данных...");
     lbls.append("7.2.13.6. Проверка аналоговых данных...");
-    lbls.append("7.2.13.7. Проверка аналоговых данных..."); */
+    lbls.append("7.2.13.7. Проверка аналоговых данных...");
     lbls.append("7.2.13.8. Проверка аналоговых данных...");
     lbls.append("7.2.14. Запись результатов и формирование протокола...");
 }
@@ -77,7 +77,7 @@ void TuneDialogA1DN::SetPf()
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_6);
     pf[lbls.at(count++)] = func;
-/*    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_1); // 7.2.7. Установка 20%, проверка и сохранение
+    func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_1); // 7.2.7. Установка 20%, проверка и сохранение
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_7_2); // 7.2.7. Установка 50%, проверка и сохранение
     pf[lbls.at(count++)] = func;
@@ -104,7 +104,7 @@ void TuneDialogA1DN::SetPf()
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_6); // 7.2.13.6. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_7); // 7.2.13.7. Проверка аналоговых данных
-    pf[lbls.at(count++)] = func; */
+    pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_13_8); // 7.2.13.8. Проверка аналоговых данных
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int ((EAbstractTuneDialog::*)())>(&TuneDialogA1DN::Start7_2_14); // 7.2.14
@@ -348,7 +348,6 @@ int TuneDialogA1DN::Start7_2_3()
 {
     TemplateCheck(); // проверка наличия шаблонов протоколов
     PovType = GOST_23625;
-    Index = 0;
     return Error::ER_NOERROR;
 }
 
@@ -411,7 +410,7 @@ int TuneDialogA1DN::Start7_2_78910(int counter)
         return Error::ER_GENERALERROR;
     if (ShowVoltageDialog(Percents[counter]) == Error::ER_NOERROR)
     {
-        if (GetAndAverage(GAAT_BDA_IN, &tmpst2) == Error::ER_NOERROR)
+        if (GetAndAverage(GAAT_BDA_IN, &tmpst2, counter) == Error::ER_NOERROR)
         {
             // теперь в tmpst2 лежат нужные нам значения
             if (Mode == MODE_ALTERNATIVE)
@@ -432,54 +431,6 @@ int TuneDialogA1DN::Start7_2_78910(int counter)
     }
     EMessageBox::error(this, "Ошибка", "Ошибка при проведении процедуры усреднения");
     return Error::ER_GENERALERROR;
-/*    float VoltageInV = (Mode == MODE_ALTERNATIVE) ? (100 / qSqrt(3)) : (100 * qSqrt(2) / qSqrt(3));
-    VoltageInV *= Percents[counter] / 100;
-    float VoltageInkV = (Mode == MODE_ALTERNATIVE) ? Bac_block.Bac_block[TuneVariant].K_DN : Bac_block3.Bac_block3[TuneVariant].K_DN;
-    VoltageInkV *= VoltageInV / 1000;
-    if (EMessageBox::question(this, "Подтверждение", "Подайте на делители напряжение " + \
-                              QString::number(VoltageInkV, 'f', 1) + " кВ (" + QString::number(VoltageInV, 'f', 3) + " В) \n"
-                              "и нажмите кнопку \"Годится\", когда напряжения установятся") == false)
-    {
-        StdFunc::Cancel();
-        return Error::ER_GENERALERROR;
-    }
-//    WaitNSeconds(WAITFORCONST);
-    if (StdFunc::IsCancelled())
-        return Error::ER_GENERALERROR;
-    // проверка, что установлены напряжения правильно
-    if (StartMeasurement() != Error::ER_NOERROR)
-        return Error::ER_GENERALERROR;
-    // накопление измерений
-    CheckA1::A1_Bd1 tmpst, tmpst2;
-    tmpst2.Phy = tmpst2.Uef_filt[0] = tmpst2.Uef_filt[1] = 0;
-    int count = 0;
-    emit StartPercents(PovNumPoints);
-    while ((count < PovNumPoints) && !StdFunc::IsCancelled())
-    {
-        if (Commands::GetBd(A1_BDA_IN_BN, &tmpst, sizeof(CheckA1::A1_Bd1)) == Error::ER_NOERROR)
-            FillBdIn();
-        else
-        {
-            EMessageBox::information(this, "Внимание", "Ошибка при приёме блока Bda_in");
-            return Error::ER_GENERALERROR;
-        }
-        tmpst2.Phy += tmpst.Phy;
-        tmpst2.UefNat_filt[0] += tmpst.UefNat_filt[0];
-        tmpst2.UefNat_filt[1] += tmpst.UefNat_filt[1];
-        QTime tme;
-        tme.start();
-        while (tme.elapsed() < TUNE_POINTSPER)
-            QCoreApplication::processEvents(QEventLoop::AllEvents);
-        ++count;
-        emit SetPercent(count);
-    }
-    if (StdFunc::IsCancelled())
-        return Error::ER_GENERALERROR;
-    // усреднение
-    tmpst2.Phy /= count;
-    tmpst2.Uef_filt[0] /= count;
-    tmpst2.Uef_filt[1] /= count; */
-
 }
 
 int TuneDialogA1DN::Start7_2_11()
@@ -487,12 +438,6 @@ int TuneDialogA1DN::Start7_2_11()
     if (!WriteTuneCoefs(Mode + 2)) // MODE = BLOCK + 1
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
-/*    if (cn->result == Error::NOERROR)
-    {
-        EMessageBox::information(this, "Внимание", "Записано успешно!");
-        return Error::NOERROR;
-    }
-    return Error::GENERALERROR; */
 }
 
 int TuneDialogA1DN::Start7_2_12()
@@ -502,10 +447,6 @@ int TuneDialogA1DN::Start7_2_12()
         StdFunc::Cancel();
         return Error::ER_GENERALERROR;
     }
-/*    QPushButton *pb = this->findChild<QPushButton *>("Good");
-    if (pb != nullptr)
-        pb->setText("Продолжить"); */
-    Index = 0;
     return Start7_2_13(0);
 }
 
@@ -546,9 +487,9 @@ int TuneDialogA1DN::Start7_2_13_7()
 
 int TuneDialogA1DN::Start7_2_13_8()
 {
-/*    if (Start7_2_13(8) != Error::ER_NOERROR)
-        return Error::ER_GENERALERROR; */
-    FillDdWithNumbers();
+    if (Start7_2_13(8) != Error::ER_NOERROR)
+        return Error::ER_GENERALERROR;
+//    FillDdWithNumbers();
     // теперь считаем средние погрешности и СКО
     if (Mode == MODE_ALTERNATIVE)
     {
@@ -578,8 +519,7 @@ int TuneDialogA1DN::Start7_2_13_8()
         FillBac(BLOCK_DIRECT);
         SaveToFileEx(BLOCK_DIRECT);
     }
-//    return Start7_2_11();
-    return Error::ER_NOERROR;
+    return Start7_2_11();
 }
 
 int TuneDialogA1DN::Start7_2_13(int counter)
@@ -588,7 +528,10 @@ int TuneDialogA1DN::Start7_2_13(int counter)
     if (counter >= TUNEA1LEVELS)
         return Error::ER_GENERALERROR;
     if (ShowVoltageDialog(Percents[counter]) == Error::ER_NOERROR)
-        return GetAndAverage(GAAT_BDA_OUT, &Dd_Block[counter]);
+    {
+        int res = GetAndAverage(GAAT_BDA_OUT, &Dd_Block[counter], counter);
+        return res;
+    }
     return Error::ER_GENERALERROR;
 }
 
@@ -623,15 +566,6 @@ int TuneDialogA1DN::StartTempRandomizeModel()
     GenerateReport();
     return Error::ER_NOERROR;
 }
-
-/*void TuneDialogA1DN::FillHeaders()
-{
-    QStringList sl = QStringList() << "Проц" << "S/Sном" <<  "dUrms(u)" <<  "Phy(u)";
-    sl << "dUrms(d)" << "Phy(d)" << "dUrms(ud)" << "Phy(ud)" << "dUrms(md)" << "Phy(md)" << \
-          "dUrms(u-d)" << "Phy(u-d)" << "dUrms" << "Phy" << "sUrms(d)" << "sPhy(d)";
-    sl << "sUrms(u)" << "sPhy(u)";
-    RepModel->SetHeader(sl);
-}*/
 
 int TuneDialogA1DN::ReadAnalogMeasurements()
 {
@@ -758,17 +692,3 @@ void TuneDialogA1DN::FillDdWithNumbers()
         Dd_Block[j].Phy = j+9;
     }
 }
-
-/*void TuneDialogA1DN::AcceptDNData()
-{
-    WDFunc::CBIndex(this, "dnutype", Mode);
-    if (Mode > 0)
-        Commands::SetMode(Mode); // устанавливаем род напряжения (0 - переменный, 1 - постоянный)
-    if (Mode == MODE_ALTERNATIVE)
-        WDFunc::LENumber(this, "dnfnumle", Bac_block2.DNFNum);
-    else
-        WDFunc::LENumber(this, "dnfnumle", Bac_block3.DNFNum);
-    WriteBacBlock();
-    emit Finished();
-}
-*/

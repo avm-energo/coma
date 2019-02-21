@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = PKDN-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.2.258
+VERSION = 2.2.265
 
 QT       += core gui serialport printsupport
 
@@ -67,7 +67,9 @@ SOURCES += main.cpp\
     ../widgets/lineeditfield.cpp \
     ../widgets/passwordlineedit.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp
+    ../widgets/wd_func.cpp \
+    ../tune/eabstracttunedialoga1dn.cpp \
+    ../gen/report.cpp
 
 HEADERS  += pkdn_s.h \
     ../check/check.h \
@@ -111,7 +113,9 @@ HEADERS  += pkdn_s.h \
     ../widgets/lineeditfield.h \
     ../widgets/passwordlineedit.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h
+    ../widgets/wd_func.h \
+    ../tune/eabstracttunedialoga1dn.h \
+    ../gen/report.h
 
 INCLUDEPATH += $$PWD/../../includes
 

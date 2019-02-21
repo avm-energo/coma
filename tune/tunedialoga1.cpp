@@ -308,6 +308,11 @@ int TuneDialogA1::Start6_3_3_5()
 {
     if (Skipped)
         return Error::ER_RESEMPTY;
+    if (Commands::SetMode(MODE_ALTERNATIVE) != Error::ER_NOERROR)
+    {
+        EMessageBox::error(this, "Ошибка", "Ошибка установки рода напряжения");
+        return Error::ER_GENERALERROR;
+    }
 //    EMessageBox::information(this, "Требование", "Установите на РЕТОМ значение напряжения 100 В");
     // получение текущих аналоговых сигналов от модуля
     WaitNSeconds(WAITFORCONST);
@@ -543,9 +548,11 @@ int TuneDialogA1::Start6_3_10_1()
         Bac_block.TKUa[1] = Bac_block_old.TKUa[1];
         Bac_block.TKUb[0] = Bac_block_old.TKUb[0];
         Bac_block.TKUb[1] = Bac_block_old.TKUb[1];
+        Bac_block.Tmk0 = Bac_block_old.Tmk0;
         Skipped = true;
         return Error::ER_RESEMPTY;
     }
+    ShowScheme();
     Bac_block.TKUa[0] = Bac_block.TKUb[0] = Bac_block.TKUa[1] = Bac_block.TKUb[1] = 0;
     if (Commands::WriteBac(BT_BASE, &Bac_block, sizeof(Bac_block)) != Error::ER_NOERROR)
     {
@@ -624,8 +631,8 @@ int TuneDialogA1::Start6_3_10_3()
     double dUp0 = TKUSourceData.Bda_in[1].UefNat_filt[0] / TKUSourceData.Bda_in[0].UefNat_filt[0] - 1;
     double dUm1 = TKUSourceData.Bda_in[2].UefNat_filt[1] / TKUSourceData.Bda_in[0].UefNat_filt[1] - 1;
     double dUp1 = TKUSourceData.Bda_in[1].UefNat_filt[1] / TKUSourceData.Bda_in[0].UefNat_filt[1] - 1;
-    double dTm = TKUSourceData.Tmk[2] - TKUSourceData.Tmk[0];
-    double dTp = TKUSourceData.Tmk[1] - TKUSourceData.Tmk[0];
+    double dTm = TKUSourceData.Bda_out_an[2].Tmk - TKUSourceData.Bda_out_an[0].Tmk;
+    double dTp = TKUSourceData.Bda_out_an[1].Tmk - TKUSourceData.Bda_out_an[0].Tmk;
     if ((qAbs(dTm) < 1.0f) || (qAbs(dTp) < 1.0f))
     {
         EMessageBox::error(this, "Ошибка", "Разница измеренных температур в опытах \n"
@@ -636,6 +643,7 @@ int TuneDialogA1::Start6_3_10_3()
     Bac_block.TKUa[1] = (dUm1 * dTp * dTp - dUp1 * dTm * dTm) / (dTp * dTm * (dTp - dTm));
     Bac_block.TKUb[0] = (dUp0 * dTm - dUm0 * dTp) / (dTp * dTm * (dTp - dTm));
     Bac_block.TKUb[1] = (dUp1 * dTm - dUm1 * dTp) / (dTp * dTm * (dTp - dTm));
+    Bac_block.Tmk0 = TKUSourceData.Bda_out_an[0].Tmk;
     return Error::ER_NOERROR;
 }
 
@@ -645,7 +653,7 @@ int TuneDialogA1::Start6_3_10_60(int index)
         return Error::ER_GENERALERROR;
     if (GetExternalTemp() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
-    TKUSourceData.Tmk[index] = RealData.t;
+//    TKUSourceData.Tmk[index] = RealData.t;
     memcpy(&ChA1->Bda_in, &TKUSourceData.Bda_in[index], sizeof(CheckA1::A1_Bd1));
     ChA1->FillBda_in(this);
     memcpy(&ChA1->Bda_out_an, &TKUSourceData.Bda_out_an[index], sizeof(CheckA1::A1_Bd4));
@@ -972,7 +980,7 @@ int TuneDialogA1::GetExternalTemp()
     glyout->addWidget(WDFunc::NewLBL(dlg, "Введите текущее значение температуры в камере:"),0,0,1,1);
     glyout->addWidget(WDFunc::NewSPB(dlg, "t", -125, 125, 3),0,1,1,1);
     QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked()),this,SLOT(SetExtData()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(SetExtTemp()));
     glyout->addWidget(pb,4,0,1,3);
     pb = new QPushButton("Отмена");
     connect(pb,SIGNAL(clicked()),this,SLOT(CancelExtData()));
