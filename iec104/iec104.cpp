@@ -297,7 +297,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
     DUI.cause.test = ba[2]>>7;
     DUI.cause.initiator = ba[3];
     DUI.commonAdrASDU = ba[4] + ba[5]*256;
-    quint32 ObjectAdr;
+    quint32 ObjectAdr = 0;
     quint32 index = 6;
     int i;
     for (i = 0; i < DUI.qualifier.Number; i++)

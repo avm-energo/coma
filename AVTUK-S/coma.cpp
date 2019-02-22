@@ -285,8 +285,8 @@ void Coma::Stage3()
             EMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
 
         }
-        connect(ConfB,SIGNAL(NewConfLoaded()),this,SLOT(Fill()));
-        connect(ConfB,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+        connect(ConfB,SIGNAL(NewConfToBeLoaded()),this,SLOT(Fill()));
+        connect(ConfB,SIGNAL(DefConfToBeLoaded()),this,SLOT(SetDefConf()));
         //AbstractConfDialog::PrereadConf();
     }
     if (ConfM != nullptr)

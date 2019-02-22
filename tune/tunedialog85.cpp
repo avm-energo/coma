@@ -285,7 +285,7 @@ void TuneDialog85::SetPf()
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_1_1); // Установка настроечных коэффициентов по умолчанию
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::SetNewTuneCoefs); // Установка коэффициентов
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_7_2); // Установка коэффициентов
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_2); // Получение текущих аналоговых данных
     pf[lbls.at(count++)] = func;
@@ -449,9 +449,10 @@ int TuneDialog85::Start7_3_7_2()
    // Установить в конфигурации токи i2nom в 1 А
         C85->Bci_block.ITT2nom = I1;
     // послать новые коэффициенты по току в конфигурацию
+
     if (Commands::WriteFile(&C85->Bci_block, CM_CONFIGFILE, S2ConfigForTune) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
-    WaitNSeconds(2);
+    WaitNSeconds(16);
     return Error::ER_NOERROR;
 }
 
@@ -485,7 +486,7 @@ int TuneDialog85::Start7_3_7_6()
         C85->Bci_block.ITT2nom = I5;
     if (Commands::WriteFile(&C85->Bci_block, CM_CONFIGFILE, S2ConfigForTune) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
-    WaitNSeconds(2);
+    WaitNSeconds(16);
     return Error::ER_NOERROR;
 }
 
@@ -535,8 +536,8 @@ int TuneDialog85::Start7_3_9()
         if (!LoadWorkConfig())
             return Error::ER_GENERALERROR;
         // Пишем в модуль посчитанные регулировочные коэффициенты
-        WaitNSeconds(5);
-        if (Commands::WriteBac(BT_NONE, &New_Bac_block.K_freq, sizeof(Bac)) != Error::ER_NOERROR)  // Григорий Матвеевич попросил писать коэффициенты сразу в модуль
+        WaitNSeconds(16);
+        if (Commands::WriteBac(BT_NONE, &New_Bac_block, sizeof(Bac)) != Error::ER_NOERROR)  // Григорий Матвеевич попросил писать коэффициенты сразу в модуль
             return Error::ER_GENERALERROR;
         // переходим на прежнюю конфигурацию
         // измеряем и проверяем
