@@ -4,6 +4,8 @@
 #include <QByteArray>
 #include <QVector>
 #include <QObject>
+#include "../models/trendviewmodel.h"
+#include "../dialogs/trendviewdialog.h"
 
 class ParseModule
 {
@@ -11,7 +13,9 @@ public:
     ParseModule(QByteArray &BA);
 
     QByteArray BArray;
-
+    TrendViewModel *TModel;
+    TrendViewDialog *dlg;
+    quint32 id;
 
     struct DataRecHeader
     {
@@ -21,6 +25,7 @@ public:
 
     int PosPlusPlus(void *dst, int &count, int size);
     virtual int Parse(int &count) = 0;
+    virtual void Save(quint32 &len) = 0;
 
 
 

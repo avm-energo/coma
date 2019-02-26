@@ -1,12 +1,21 @@
 #ifndef PARSEID10031_H
 #define PARSEID10031_H
 
+#include <QByteArray>
+#include <QVector>
+#include <QObject>
 #include "parsemodule.h"
+#include "../models/trendviewmodel.h"
+
+
 
 class ParseID10031 : public ParseModule
 {
 public:
     ParseID10031(QByteArray &BA);
+
+    static quint32 len;
+
 
     struct SWJournalRecordStruct
     {
@@ -33,8 +42,23 @@ public:
         quint32 timeF;		    // Время записи в журнал
     };
 
+    struct OscHeader_Data
+    {
+        quint64 unixtime; // время первой точки в Unix-формате
+        float step; // шаг по времени в мс
+        quint32 len; // длина осциллограммы в количестве точек по времени
+    };
+
+    struct Point85
+    {
+        float An[9];    // Ua,Ub,Uc (напряжение источника), Ia, Ib, Ic (ток ВВ), Ua,Ub,Uc (напряжение нагрузки)
+        quint32 Dis;
+    };
 
     int Parse(int &count);
+    void Save(quint32 &len);
+
+     int ParseID85(OscHeader_Data &OHD, const QString &fn, int &count);
 };
 
 #endif // PARSEID10031_H

@@ -152,7 +152,7 @@ void OscDialog::GetOsc(QModelIndex idx)
     {
         QString tmps = StdFunc::GetHomeDir()+"/temporary.osc";
         Files::SaveToFile(tmps, OscFunc->BA, basize);
-        OscFunc->ProcessOsc();
+        //OscFunc->ProcessOsc();
     }
     else
         WARNMSG("Номер файла не соответствует диапазону, принятому для осциллограмм: "+QString::number(oscnum));

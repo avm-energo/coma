@@ -40,8 +40,8 @@ int Commands::GetFile(int filenum, QVector<S2::DataRec> *data)
 int Commands::GetOsc(int filenum, void *ptr)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    if ((filenum < CN_MINOSCID) || (filenum > CN_MAXOSCID))
-        return Error::ER_GENERALERROR;
+    /*if ((filenum < CN_MINOSCID) || (filenum > CN_MAXOSCID))
+        return Error::ER_GENERALERROR;*/
     cn->Send(CN_GF, BoardTypes::BT_NONE, ptr, 0, filenum);
     return cn->result;
 #else

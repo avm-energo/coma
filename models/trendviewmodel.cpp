@@ -131,7 +131,7 @@ void TrendViewModel::WriteToFile(int row, QXlsx::Document *xls)
      int col = 2;// 2 = OCNA
      for (int j=0; j<14; ++j)  //j<tmpdv->size() используем только 14 бит
      {
-         QVector<double> tmpv = DigitalMainData.value(tmpdv[j]);
+         QVector<double> tmpv = DigitalMainData.value(tmpdv_85.at(j));
 
          for (int i=0; i<tmpv.size(); ++i)
          {
@@ -148,9 +148,9 @@ void TrendViewModel::WriteToFile(int row, QXlsx::Document *xls)
      }
      col = 16;
 
-     for (int j=0; j<tmpav->size(); ++j)
+     for (int j=0; j<tmpav_85.size(); ++j)
      {
-         QVector<double> tmpa = AnalogMainData.value(tmpav[j]);
+         QVector<double> tmpa = AnalogMainData.value(tmpav_85.at(j));
 
          for (int i=0; i<tmpa.size(); ++i)
          {

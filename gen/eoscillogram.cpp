@@ -6,7 +6,6 @@
 #include "parseid9000.h"
 #include "parseid9050.h"
 #include "parseid10031.h"
-#include "../models/trendviewmodel.h"
 #include "../gen/error.h"
 #include "../gen/timefunc.h"
 #include "../gen/colors.h"
@@ -260,17 +259,17 @@ bool EOscillogram::PosPlusPlus(void *dst, int size)
     return true;
 }
 
-int EOscillogram::ProcessOsc()
+int EOscillogram::ProcessOsc(TrendViewModel *mdl, quint32 *len)
 {
     Pos = 0;
     BASize = BA.size();
+    EOscillogram::SWJournalRecordStruct SWJRecord;
     // разбираем осциллограмму
     S2::FileHeader FH;
     if (Pos > BASize)
         return Error::ER_GENERALERROR;
     memcpy(&FH, &(BA.data()[0]), sizeof(FH));
     Pos += sizeof (FH);
-
     DataRecHeader DR;
     if (Pos > BASize)
         return Error::ER_GENERALERROR;
@@ -291,14 +290,21 @@ int EOscillogram::ProcessOsc()
             break;
 
             case SWJ_ID85:
+            {
+                memcpy(&SWJRecord, &(BA.data()[Pos]), sizeof(SWJournalRecordStruct));
+                Pos += sizeof(SWJournalRecordStruct);
                 PM = new ParseID10031(BA);
+            }
             break;
         }
         if (PM -> Parse(Pos) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
-        if (Pos > BASize)
+        /*if (Pos > BASize)
             return Error::ER_GENERALERROR;
-        memcpy(&DR, &(BA.data()[Pos]), sizeof(DR));
+        memcpy(&DR, &(BA.data()[Pos]), sizeof(DR));*/
+        mdl = PM->TModel;
+        PM->Save(*len);
+        //*len = PM->len;
 
     }
     /*

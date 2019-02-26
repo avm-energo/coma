@@ -11,7 +11,10 @@
 #include <QVector>
 #include <QObject>
 
+#include "../models/trendviewmodel.h"
 //#include "../dialogs/swjdialog.h"
+
+
 
 class EOscillogram : public QObject
 {
@@ -122,7 +125,7 @@ public:
     void SetFilename(const QString &fn); */
     bool PosPlusPlus(void *dst, int size);
 //    int ProcessOsc(quint32 oscid, quint32 oscnum, const QString &OscDateTime); // сама осциллограмма в BA
-    int ProcessOsc();
+    int ProcessOsc(TrendViewModel *mdl, quint32 *len);
     //int ProcessOneOsc(quint32 id, OscHeader_Data &OHD, const QString &fn); // id - ИД осциллограммы (по табл. Приложения 2 "АВ-ТУК. Файлы"), осциллограмма в BA[Pos]
 
 private:

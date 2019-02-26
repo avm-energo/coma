@@ -57,6 +57,7 @@ public:
     };
 
     int Parse(int &count);
+    void Save(quint32 &len);
     int ParseOsc(quint32 id, OscHeader_Data &OHD, const QString &fn, QStringList tmpav, TrendViewDialog *dlg, int &count);
     int ParseSpectr(quint32 id, SpectHeader_Data &SHD, const QString &fn, QStringList tmpav, TrendViewDialog *dlg, int &count);
 };

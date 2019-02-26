@@ -8,10 +8,15 @@
 #include "../gen/qcustomplot.h"
 #include "../gen/eoscillogram.h"
 
+
 #define MAXGRAPHSPERPLOT    16
 #define MT_ID85            10030 // ID осциллограммы по модулю 8085
 #define ID_OSC_CH0         10040 // ID осциллограммы канала 0 модуля 87
 #define ID_OSC_CH7         10047 // ID осциллограммы канала 7 модуля 87
+#define MT_ID21         10001 // первый ID осциллограммы по модулю 21
+#define MT_ID21E        10016 // последний ID осциллограммы по модулю 21
+#define MT_ID80         10020 // ID осциллограммы по модулю 808x
+#define MT_ID85         10030 // ID осциллограммы по модулю 8085
 
 class TrendViewDialog : public QDialog
 {
@@ -22,17 +27,18 @@ public:
 
     // инициализация графиков
     // имена графиков контактных/аналоговых сигналов, количество точек, диапазон по оси Y для аналоговых
-    void PlotShow(quint32 id);
+    void PlotShow();
     void SetModel(TrendViewModel *model);
     void SetRanges(float XRangeMin, float XRangeMax, float YRangeMin, float YRangeMax);
     void SetDigitalNames(QStringList &names);
     void SetAnalogNames(QStringList &names);
     void SetDigitalColors(QStringList &colors);
     void SetAnalogColors(QStringList &colors);
-    void SetupPlots(quint32 id);
+    void SetupPlots();
     void SetupUI();
     void WriteToFile(int row, QXlsx::Document *xls); // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
     int WRow;
+//    quint32 id;
 
     struct Bd1
     {
@@ -56,6 +62,8 @@ public:
     };
 
     Point85 point;
+    TrendViewModel *TrendModel;
+
 
 private:
     struct AnalogDescriptionStruct
@@ -70,7 +78,6 @@ private:
     AnalogDescriptionStruct AnalogDescription, DigitalDescription;
     float XMin, XMax, YMin, YMax;
     bool NoDiscrete, NoAnalog;
-    TrendViewModel *TrendModel;
     bool RangeChangeInProgress, Starting;
     bool RangeAxisInProgress, StartingAx;
     QByteArray BAToSave;

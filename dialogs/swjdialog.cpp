@@ -4,12 +4,14 @@
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
+#include "../models/trendviewmodel.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/emessagebox.h"
 #include "swjdialog.h"
 #include "../gen/timefunc.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
+#include "../gen/colors.h"
 
 SWJDialog::SWJDialog(int mode, QWidget *parent) : QDialog(parent)
 {
@@ -24,7 +26,6 @@ void SWJDialog::Init(bool haveosc, EOscillogram::GBoStruct &gbos)
     QGridLayout *glyout = new QGridLayout;
 
     GetSwjOscData();
-    memcpy(&SWJRecord, &(OscFunc->BA.data()[0]), sizeof(SWJournalRecordStruct));
 
     glyout->addWidget(WDFunc::NewLBL(this, "Номер"), 0,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "Дата, время"),0,1,1,1);
@@ -127,10 +128,14 @@ void SWJDialog::SaveSWJ()
 
 void SWJDialog::ShowOsc()
 {
+    dlg->PlotShow();
+    dlg->show();
 }
 
 void SWJDialog::GetSwjOscData()
 {
+    QStringList tmpav, tmpdv;
+    quint32 *len = nullptr;
 
         OscFunc->BA.resize(GBOs.FileLength);
         if (Commands::GetOsc(GBOs.FileNum, &(OscFunc->BA.data()[0])) != Error::ER_NOERROR)
@@ -140,7 +145,73 @@ void SWJDialog::GetSwjOscData()
         }
         QString tmps = StdFunc::GetSystemHomeDir()+"/temporary.osc";
         Files::SaveToFile(tmps, OscFunc->BA, GBOs.FileLength);
-        OscFunc->ProcessOsc();
+        dlg = new TrendViewDialog(OscFunc->BA);
+        TrendViewModel *mdl = nullptr;
+        OscFunc->ProcessOsc(mdl, len);
+        mdl->xmax = (static_cast<float>(*len/2));
+        mdl->xmin = -mdl->xmax;
+        dlg->TrendModel = mdl;
+
+        switch(mdl->idOsc)
+        {
+          case MT_ID85:
+          {
+
+            dlg->SetAnalogNames(mdl->tmpav_85);
+            dlg->SetDigitalNames(mdl->tmpdv_85);
+            dlg->SetDigitalColors(mdl->dcolors_85);
+            dlg->SetAnalogColors(mdl->acolors_85);
+            dlg->SetRanges(mdl->xmin, mdl->xmax, -200, 200);
+            break;
+          }
+          case MT_ID80:
+          {
+            mdl->tmpdv_80.clear();
+            dlg->SetAnalogNames(mdl->tmpav_80);
+            dlg->SetDigitalNames(mdl->tmpdv_80);
+            dlg->SetDigitalColors(mdl->dcolors_80);
+            dlg->SetAnalogColors(mdl->acolors_80);
+            dlg->SetRanges(mdl->xmin, mdl->xmax, -200, 200);
+            break;
+          }
+
+         case MT_ID21:
+         {
+            // период отсчётов - 20 мс, длительность записи осциллограммы 10 сек, итого 500 точек по 4 байта на каждую
+            mdl->tmpav_21 << QString::number(mdl->idOsc); // пока сделано для одного канала в осциллограмме
+            //TrendViewModel *TModel = new TrendViewModel(QStringList(), tmpav, *len);
+            //dlg->SetModel(TModel);
+            dlg->SetAnalogNames(mdl->tmpav_21);
+            dlg->SetRanges(0, 10000, -20, 20); // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
+
+           break;
+         }
+
+         case ID_OSC_CH0:
+         case ID_OSC_CH0+1:
+         case ID_OSC_CH0+2:
+         case ID_OSC_CH0+3:
+         case ID_OSC_CH0+4:
+         case ID_OSC_CH0+5:
+         case ID_OSC_CH0+6:
+         case ID_OSC_CH0+7:
+         {
+
+           dlg->SetAnalogNames(mdl->tmpav_85);
+           dlg->SetDigitalNames(mdl->tmpdv_85);
+           dlg->SetDigitalColors(mdl->dcolors_85);
+           dlg->SetAnalogColors(mdl->acolors_85);
+           dlg->SetRanges(mdl->xmin, mdl->xmax, -200, 200);
+           break;
+         }
+
+
+        }
+
+            dlg->SetupPlots();
+            dlg->SetupUI();
+            dlg->setModal(false);
+
 
 }
 #endif

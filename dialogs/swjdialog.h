@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "../gen/eoscillogram.h"
+#include "../dialogs/trendviewdialog.h"
 
 class SWJDialog : public QDialog
 {
@@ -56,12 +57,13 @@ public:
 
 
 
-    SWJournalRecordStruct SWJRecord;
+    EOscillogram::SWJournalRecordStruct SWJRecord;
     SWJINFStruct SWJInf;
     EOscillogram::GBoStruct GBOs;
     EOscillogram::DataRecSwj SwRec;
     EOscillogram *OscFunc;
     bool Mode;
+    TrendViewDialog *dlg;
 
     SWJDialog(int mode=SWJ_MODE_ONLINE, QWidget *parent = nullptr);
     void Init(bool haveosc, EOscillogram::GBoStruct &gbos);

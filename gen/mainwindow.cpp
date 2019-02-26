@@ -35,6 +35,7 @@
 #include "../widgets/etablemodel.h"
 #include "../widgets/etableview.h"
 #include "../dialogs/a1dialog.h"
+#include "../dialogs/trendviewdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -384,8 +385,77 @@ int MainWindow::CheckPassword()
 #ifndef MODULE_A1
 void MainWindow::LoadOscFromFile(const QString &filename)
 {
+    quint32 *len = nullptr;
+
     if (Files::LoadFromFile(filename, OscFunc->BA) == Files::ER_NOERROR)
-        OscFunc->ProcessOsc();
+    {
+        TrendViewDialog *dlg = new TrendViewDialog(OscFunc->BA);
+        TrendViewModel *mdl = nullptr;
+        OscFunc->ProcessOsc(mdl, len);
+        mdl->xmax = (static_cast<float>(*len/2));
+        mdl->xmin = -mdl->xmax;
+        dlg->TrendModel = mdl;
+
+        switch(mdl->idOsc)
+        {
+          case MT_ID85:
+          {
+
+            dlg->SetAnalogNames(mdl->tmpav_85);
+            dlg->SetDigitalNames(mdl->tmpdv_85);
+            dlg->SetDigitalColors(mdl->dcolors_85);
+            dlg->SetAnalogColors(mdl->acolors_85);
+            dlg->SetRanges(mdl->xmin, mdl->xmax, -200, 200);
+            break;
+          }
+          case MT_ID80:
+          {
+            mdl->tmpdv_80.clear();
+            dlg->SetAnalogNames(mdl->tmpav_80);
+            dlg->SetDigitalNames(mdl->tmpdv_80);
+            dlg->SetDigitalColors(mdl->dcolors_80);
+            dlg->SetAnalogColors(mdl->acolors_80);
+            dlg->SetRanges(mdl->xmin, mdl->xmax, -200, 200);
+            break;
+          }
+
+         case MT_ID21:
+         {
+            // период отсчётов - 20 мс, длительность записи осциллограммы 10 сек, итого 500 точек по 4 байта на каждую
+            mdl->tmpav_21 << QString::number(mdl->idOsc); // пока сделано для одного канала в осциллограмме
+            //TrendViewModel *TModel = new TrendViewModel(QStringList(), tmpav, *len);
+            //dlg->SetModel(TModel);
+            dlg->SetAnalogNames(mdl->tmpav_21);
+            dlg->SetRanges(0, 10000, -20, 20); // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
+
+           break;
+         }
+
+         case ID_OSC_CH0:
+         case ID_OSC_CH0+1:
+         case ID_OSC_CH0+2:
+         case ID_OSC_CH0+3:
+         case ID_OSC_CH0+4:
+         case ID_OSC_CH0+5:
+         case ID_OSC_CH0+6:
+         case ID_OSC_CH0+7:
+         {
+
+           dlg->SetAnalogNames(mdl->tmpav_85);
+           dlg->SetDigitalNames(mdl->tmpdv_85);
+           dlg->SetDigitalColors(mdl->dcolors_85);
+           dlg->SetAnalogColors(mdl->acolors_85);
+           dlg->SetRanges(mdl->xmin, mdl->xmax, -200, 200);
+           break;
+         }
+
+
+        }
+
+            dlg->SetupPlots();
+            dlg->SetupUI();
+            dlg->setModal(false);
+    }
 }
 
 void MainWindow::LoadSwjFromFile(const QString &filename)

@@ -247,7 +247,7 @@ void TuneDialog85::SetLbls()
     lbls.append("5. 7.2.3. Проверка связи РЕТОМ и МИП...");
     lbls.append("6. 7.3.1. Получение настроечных коэффициентов...");
     lbls.append("7. 7.3.1.1. Установка настроечных коэффициентов по умолчанию...");
-    lbls.append("8. Установка коэффициентов...");
+    lbls.append("8. 7.3.1.2. Смена конфигурации...");
     lbls.append("9. 7.3.2. Получение текущих аналоговых данных...");
     lbls.append("10. Сохранение значений фильтра...");
     lbls.append("11. 7.3.3. Расчёт коррекции по частоте...");
@@ -260,7 +260,7 @@ void TuneDialog85::SetLbls()
     lbls.append("18. 7.3.7.3. Получение текущих аналоговых данных...");
     lbls.append("19. 7.3.7.4. Ввод измеренных значений...");
     lbls.append("20. 7.3.7.5. Расчёт настроечных коэффициентов по токам...");
-    lbls.append("21. 7.3.7.6. Сохранение конфигурации...");
+    lbls.append("21. 7.3.7.6. Смена конфигурации...");
     lbls.append("22. 7.3.7.7. Отображение ввода трёхфазных значений...");
     lbls.append("23. 7.3.7.8. Получение текущих аналоговых данных...");
     lbls.append("24. 7.3.7.10. Расчёт настроечных коэффициентов по токам...");
@@ -285,7 +285,7 @@ void TuneDialog85::SetPf()
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_1_1); // Установка настроечных коэффициентов по умолчанию
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_7_2); // Установка коэффициентов
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_1_2); // Смена конфигурации
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_2); // Получение текущих аналоговых данных
     pf[lbls.at(count++)] = func;
@@ -302,8 +302,6 @@ void TuneDialog85::SetPf()
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_6_2); // Расчёт коррекции взаимного влияния каналов
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_7_1); // Получение текущих аналоговых данных и расчёт настроечных коэффициентов по напряжениям
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_7_2); // Сохранение конфигурации
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog85::Start7_3_7_3); // Получение текущих аналоговых данных
     pf[lbls.at(count++)] = func;
@@ -376,6 +374,7 @@ int TuneDialog85::Start7_3_1_1()
                 WARNMSG("Ошибка при приёме данных");
                 return false;
             }
+            SetNewTuneCoefs();
             // обновление коэффициентов в соответствующих полях на экране
             FillBac(0);
             return Error::ER_NOERROR;
@@ -444,7 +443,7 @@ int TuneDialog85::Start7_3_7_1()
     return Error::ER_NOERROR;
 }
 
-int TuneDialog85::Start7_3_7_2()
+int TuneDialog85::Start7_3_1_2()
 {
    // Установить в конфигурации токи i2nom в 1 А
         C85->Bci_block.ITT2nom = I1;
@@ -1305,7 +1304,7 @@ void TuneDialog85::GenerateReport()
             if (Commands::GetFile(CM_CONFIGFILE,S2ConfigForTune) == Error::ER_NOERROR)
             {
                WaitNSeconds(1);
-               Start7_3_7_2();  // Переход на конфигурацию 1А
+               Start7_3_1_2();  // Переход на конфигурацию 1А
             }
 
             EMessageBox::question(this,"Сообщение","Подключите напряженческие выходы РЕТОМа ко входам ПЕРВОЙ тройки напряжений модуля!");

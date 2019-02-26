@@ -72,7 +72,7 @@ int ParseID9050::ParseOsc(quint32 id, ParseID9050::OscHeader_Data &OHD, const QS
     dlg->SetModel(TModel);
     dlg->SetAnalogNames(tmpav);
     dlg->SetRanges(0, 10000, -1250, 1250); // 10000 мкс, 1250 мВ (сделать автонастройку в зависимости от конфигурации по данному каналу)
-    dlg->SetupPlots(id);
+    dlg->SetupPlots();
     dlg->SetupUI();
     if (!TModel->SetPointsAxis(0, OHD.step))
         return Error::ER_GENERALERROR;
@@ -85,7 +85,7 @@ int ParseID9050::ParseOsc(quint32 id, ParseID9050::OscHeader_Data &OHD, const QS
     }
     TModel->SetFilename(fn);
     dlg->setModal(false);
-    dlg->PlotShow(id);
+    dlg->PlotShow();
     dlg->show();
 
     return Error::ER_NOERROR;
@@ -98,7 +98,7 @@ int ParseID9050::ParseSpectr(quint32 id, ParseID9050::SpectHeader_Data &SHD, con
     dlg->SetModel(TModel);
     dlg->SetAnalogNames(tmpav);
     dlg->SetRanges(0, 1000000, 0, 2); // 1000000 Гц, 2 о.е. (сделать автонастройку в зависимости от конфигурации по данному каналу)
-    dlg->SetupPlots(id);
+    dlg->SetupPlots();
     dlg->SetupUI();
     if (!TModel->SetPointsAxis(0, SHD.step))
         return Error::ER_GENERALERROR;
@@ -111,8 +111,14 @@ int ParseID9050::ParseSpectr(quint32 id, ParseID9050::SpectHeader_Data &SHD, con
     }
     TModel->SetFilename(fn);
     dlg->setModal(false);
-    dlg->PlotShow(id);
+    dlg->PlotShow();
     dlg->show();
 
     return Error::ER_NOERROR;
+}
+
+void ParseID9050::Save(quint32 &len)
+{
+
+
 }

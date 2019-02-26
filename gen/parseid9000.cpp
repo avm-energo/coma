@@ -54,33 +54,26 @@ int ParseID9000::Parse(int &count)
         case 10014:
         case 10015:
         case MT_ID21E:
-        if (ParseID21(DR.id, OHD, tmps, tmpav, dlg, count) != Error::ER_NOERROR)
+        if (ParseID21(DR.id, OHD, tmps, dlg, count) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
         break;
 
         case MT_ID80:
-        if (ParseID8x(DR.id, OHD, tmps, tmpav, tmpdv, dlg, count) != Error::ER_NOERROR)
+        if (ParseID8x(DR.id, OHD, tmps, dlg, count) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
         break;
 
         case MT_ID85:
-        if (ParseID85(DR.id, OHD, tmps, tmpav, tmpdv, dlg, count) != Error::ER_NOERROR)
-            return Error::ER_GENERALERROR;
+        //if (ParseID85(DR.id, OHD, tmps, tmpav, tmpdv, dlg, count) != Error::ER_NOERROR)
+        //    return Error::ER_GENERALERROR;
         break;
     }
     return Error::ER_NOERROR;
 }
 
-int ParseID9000::ParseID21(quint32 id, OscHeader_Data &OHD, const QString &fn, QStringList tmpav, TrendViewDialog *dlg, int &count)
+int ParseID9000::ParseID21(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
 {
-    // период отсчётов - 20 мс, длительность записи осциллограммы 10 сек, итого 500 точек по 4 байта на каждую
-    tmpav << QString::number(id); // пока сделано для одного канала в осциллограмме
-    TrendViewModel *TModel = new TrendViewModel(QStringList(), tmpav, OHD.len);
-    dlg->SetModel(TModel);
-    dlg->SetAnalogNames(tmpav);
-    dlg->SetRanges(0, 10000, -20, 20); // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
-    dlg->SetupPlots(id);
-    dlg->SetupUI();
+
     if (!TModel->SetPointsAxis(0, OHD.step))
         return Error::ER_GENERALERROR;
     for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
@@ -88,30 +81,24 @@ int ParseID9000::ParseID21(quint32 id, OscHeader_Data &OHD, const QString &fn, Q
         Point21 point;
         if (!PosPlusPlus(&point, count, sizeof(Point21)))
             return Error::ER_GENERALERROR;
-        TModel->AddAnalogPoint(tmpav.at(0), point.An);
+        TModel->AddAnalogPoint(TModel->tmpav_21.at(0), point.An);
     }
     TModel->SetFilename(fn);
     dlg->setModal(false);
-    dlg->PlotShow(id);
+    dlg->PlotShow();
     dlg->show();
     return Error::ER_NOERROR;
 }
 
-int ParseID9000::ParseID8x(quint32 id, OscHeader_Data &OHD, const QString &fn, QStringList tmpav, QStringList tmpdv, TrendViewDialog *dlg, int &count)
+int ParseID9000::ParseID8x(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
 {
-    tmpav << "UA" << "UB" << "UC" << "IA" << "IB" << "IC";
-    tmpdv.clear();
+    //tmpav << "UA" << "UB" << "UC" << "IA" << "IB" << "IC";
+   // tmpdv.clear();
 //            int np = C80
     float xmax = (static_cast<float>(OHD.len/2));
     float xmin = -xmax;
     xmin = -(OHD.step * 512);
-    TrendViewModel *TModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
-    dlg->SetModel(TModel);
-    dlg->SetAnalogNames(tmpav);
-    dlg->SetDigitalNames(tmpdv);
-    dlg->SetRanges(xmin, xmax, -200, 200);
-    dlg->SetupPlots(id);
-    dlg->SetupUI();
+
     if (!TModel->SetPointsAxis(xmin, OHD.step))
         return Error::ER_GENERALERROR;
     for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
@@ -120,18 +107,18 @@ int ParseID9000::ParseID8x(quint32 id, OscHeader_Data &OHD, const QString &fn, Q
         if (!PosPlusPlus(&point, count, sizeof(Point8x)))
             return Error::ER_GENERALERROR;
         for (int i=0; i<6; ++i)
-            TModel->AddAnalogPoint(tmpav.at(i), point.An[i]);
+            TModel->AddAnalogPoint(TModel->tmpav_80.at(i), point.An[i]);
     }
     TModel->SetFilename(fn);
     dlg->setModal(false);
-    dlg->PlotShow(id);
+    dlg->PlotShow();
     dlg->show();
     return Error::ER_NOERROR;
 }
 
-int ParseID9000::ParseID85(quint32 id, OscHeader_Data &OHD, const QString &fn, QStringList tmpav, QStringList tmpdv, TrendViewDialog *dlg, int &count)
+int ParseID9000::ParseID85(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
 {
-    tmpdv << "OCNA" << "OCNB" << "OCNC" << "OCFA" << "OCFB" << "OCFC" << \
+    /*tmpdv << "OCNA" << "OCNB" << "OCNC" << "OCFA" << "OCFB" << "OCFC" << \
              "BKCA" << "BKCB" << "BKCC" << "BKOA" << "BKOB" << "BKOC" << \
              "CSC" << "CSO" << "CNA" << "CNB" << "CNC" << "CFA" << "CFB" << "CFC" << \
              "nNA" << "nNB" << "nNC" << "nFA" << "nFB" << "nFC" << "nCA" << "nCB" << "nCC" << \
@@ -161,7 +148,7 @@ int ParseID9000::ParseID85(quint32 id, OscHeader_Data &OHD, const QString &fn, Q
     dlg->SetDigitalColors(dcolors);
     dlg->SetAnalogColors(acolors);
     dlg->SetRanges(xmin, xmax, -200, 200);
-    dlg->SetupPlots(id);
+    dlg->SetupPlots();
     dlg->SetupUI();
     if (!TModel->SetPointsAxis(xmin, OHD.step))
         return Error::ER_GENERALERROR;
@@ -185,7 +172,14 @@ int ParseID9000::ParseID85(quint32 id, OscHeader_Data &OHD, const QString &fn, Q
     }
     TModel->SetFilename(fn);
     dlg->setModal(false);
-    dlg->PlotShow(id);
-    dlg->show();
+    dlg->PlotShow();
+    dlg->show();*/
     return Error::ER_NOERROR;
+}
+
+
+void ParseID9000::Save(quint32 &len)
+{
+
+
 }

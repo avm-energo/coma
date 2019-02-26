@@ -195,13 +195,13 @@ private:
     int Start7_2_3();
     int Start7_3_1();
     int Start7_3_1_1();
+    int Start7_3_1_2();
     int Start7_3_2();
     int Start7_3_3();
     int Start7_3_4();
     int Start7_3_5();
     int Start7_3_6_2();
     int Start7_3_7_1();
-    int Start7_3_7_2();
     int Start7_3_7_3();
     int Start7_3_7_4();
     int Start7_3_7_5();

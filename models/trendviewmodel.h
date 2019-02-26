@@ -1,4 +1,4 @@
- #ifndef TRENDVIEWMODEL_H
+#ifndef TRENDVIEWMODEL_H
 #define TRENDVIEWMODEL_H
 
 #define MT_ID85         10030 // ID осциллограммы по модулю 8085
@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QMap>
 #include "QtXlsx/xlsxdocument.h"
+#include "../gen/colors.h"
 
 class TrendViewModel
 {
@@ -26,6 +27,50 @@ public:
     int AContains(const QString &key);    
     static void SaveID(quint32 id);
     static quint32 idOsc;
+    float xmax, xmin;
+
+    QStringList acolors_85 = QStringList() << YLWCOLOR << GRNCOLOR << REDCOLOR << \
+                                           YLLCOLOR << GRLCOLOR << RDLCOLOR << \
+                                           YLDCOLOR << GRDCOLOR << RDDCOLOR;
+    QStringList dcolors_85 = QStringList() << YLWCOLOR << GRNCOLOR << REDCOLOR << \
+                                           YLLCOLOR << GRLCOLOR << RDLCOLOR << \
+                                           YLDCOLOR << GRDCOLOR << RDDCOLOR << \
+                                           YLWCOLOR << GRNCOLOR << REDCOLOR << \
+                                           BLUCOLOR << BLDCOLOR << \
+                                           YLLCOLOR << GRLCOLOR << RDLCOLOR << \
+                                           YLDCOLOR << GRDCOLOR << RDDCOLOR << \
+                                           YLWCOLOR << GRNCOLOR << REDCOLOR << \
+                                           YLLCOLOR << GRLCOLOR << RDLCOLOR << \
+                                           YLDCOLOR << GRDCOLOR << RDDCOLOR << \
+                                           YLWCOLOR << GRNCOLOR << REDCOLOR;
+
+    QStringList tmpdv_85 = QStringList() << "OCNA" << "OCNB" << "OCNC" << "OCFA" << "OCFB" << "OCFC" \
+                                         << "BKCA" << "BKCB" << "BKCC" << "BKOA" << "BKOB" << "BKOC" \
+                                         << "CSC" << "CSO" << "CNA" << "CNB" << "CNC" << "CFA" << "CFB" << "CFC" \
+                                         << "nNA" << "nNB" << "nNC" << "nFA" << "nFB" << "nFC" << "nCA" << "nCB" << "nCC" \
+                                         << "nOA" << "nOB" << "nOC";
+    QStringList tmpav_85 = QStringList() << "USA" << "USB" << "USC" << "IA" << "IB" << "IC" << "ULA" << "ULB" << "ULC";
+
+    QStringList acolors_80 = QStringList() << YLWCOLOR << GRNCOLOR << REDCOLOR << \
+                                           YLLCOLOR << GRLCOLOR << RDLCOLOR << \
+                                           YLDCOLOR << GRDCOLOR << RDDCOLOR;
+    QStringList dcolors_80 = QStringList() << YLWCOLOR << GRNCOLOR << REDCOLOR << \
+                                           YLLCOLOR << GRLCOLOR << RDLCOLOR << \
+                                           YLDCOLOR << GRDCOLOR << RDDCOLOR << \
+                                           YLWCOLOR << GRNCOLOR << REDCOLOR << \
+                                           BLUCOLOR << BLDCOLOR << \
+                                           YLLCOLOR << GRLCOLOR << RDLCOLOR << \
+                                           YLDCOLOR << GRDCOLOR << RDDCOLOR << \
+                                           YLWCOLOR << GRNCOLOR << REDCOLOR << \
+                                           YLLCOLOR << GRLCOLOR << RDLCOLOR << \
+                                           YLDCOLOR << GRDCOLOR << RDDCOLOR << \
+                                           YLWCOLOR << GRNCOLOR << REDCOLOR;
+
+    QStringList tmpdv_80 = QStringList();
+    QStringList tmpav_80 = QStringList() << "USA" << "USB" << "USC" << "IA" << "IB" << "IC" << "ULA" << "ULB" << "ULC";
+
+
+    QStringList tmpav_21 = QStringList() << "UA" << "UB" << "UC" << "IA" << "IB" << "IC";
 
 private:
 
@@ -35,12 +80,7 @@ private:
     bool NoDiscrete, NoAnalog;
     QStringList DigitalNames, AnalogNames;
     int WRow;
-    QString tmpdv[32] = {"OCNA","OCNB","OCNC","OCFA","OCFB","OCFC",
-             "BKCA", "BKCB","BKCC","BKOA","BKOB","BKOC",
-             "CSC","CSO","CNA","CNB","CNC","CFA","CFB","CFC",
-             "nNA","nNB","nNC","nFA","nFB","nFC","nCA","nCB","nCC",
-             "nOA","nOB","nOC"};
-    QString tmpav[9]={ "USA","USB","USC","IA","IB","IC","ULA","ULB","ULC"};
+
 
 
     void WriteToFile(int row, QXlsx::Document *xls);
