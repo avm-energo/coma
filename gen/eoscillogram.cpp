@@ -259,16 +259,20 @@ bool EOscillogram::PosPlusPlus(void *dst, int size)
     return true;
 }
 
-int EOscillogram::ProcessOsc(TrendViewModel *mdl, quint32 *len)
+int EOscillogram::ProcessOsc(TrendViewModel *mdl)
 {
+    //*len=20;
     Pos = 0;
-    BASize = BA.size();
-    EOscillogram::SWJournalRecordStruct SWJRecord;
     // разбираем осциллограмму
     S2::FileHeader FH;
+
+    BASize = (BA.size()+sizeof(FH));
+    //EOscillogram::SWJournalRecordStruct SWJRecord;
+
     if (Pos > BASize)
         return Error::ER_GENERALERROR;
     memcpy(&FH, &(BA.data()[0]), sizeof(FH));
+
     Pos += sizeof (FH);
     DataRecHeader DR;
     if (Pos > BASize)
@@ -277,34 +281,46 @@ int EOscillogram::ProcessOsc(TrendViewModel *mdl, quint32 *len)
 
     while (DR.id != 0xFFFFFFFF)
     {
-        ParseModule *PM = nullptr;
-        Pos += sizeof (DR);
-        switch (DR.id)
+        if(Pos < BASize)
         {
-            case MT_HEAD_ID:
-                PM = new ParseID9000(BA);
-            break;
-
-            case MT_HEAD87:
-                PM = new ParseID9050(BA);
-            break;
-
-            case SWJ_ID85:
+            ParseModule *PM = nullptr;
+            Pos += sizeof (DR);
+            switch (DR.id)
             {
-                memcpy(&SWJRecord, &(BA.data()[Pos]), sizeof(SWJournalRecordStruct));
-                Pos += sizeof(SWJournalRecordStruct);
-                PM = new ParseID10031(BA);
+                case MT_HEAD_ID:
+                    PM = new ParseID9000(BA);
+                break;
+
+                case MT_HEAD87:
+                    PM = new ParseID9050(BA);
+                break;
+
+                case SWJ_ID85:
+                {
+                    memcpy(&SWJRecord, &(BA.data()[Pos]), sizeof(SWJournalRecordStruct));
+                    if(DR.numbytes == sizeof(SWJournalRecordStruct))
+                    {
+                     Pos += sizeof(SWJournalRecordStruct);
+                     PM = new ParseID10031(BA);
+                    }
+                    else
+                    return Error::ER_GENERALERROR;
+                }
+                break;
             }
-            break;
+            if (PM -> Parse(Pos) != Error::ER_NOERROR)
+                return Error::ER_GENERALERROR;
+
+            if (Pos > BASize)
+                return Error::ER_GENERALERROR;
+            memcpy(&DR, &(BA.data()[Pos]), sizeof(DR));
+            Pos += sizeof (DR);
+            *mdl = *(PM->TModel);
+//            PM->Save(len);
+            //len = PM->len;
         }
-        if (PM -> Parse(Pos) != Error::ER_NOERROR)
-            return Error::ER_GENERALERROR;
-        /*if (Pos > BASize)
-            return Error::ER_GENERALERROR;
-        memcpy(&DR, &(BA.data()[Pos]), sizeof(DR));*/
-        mdl = PM->TModel;
-        PM->Save(*len);
-        //*len = PM->len;
+        else
+        break;
 
     }
     /*

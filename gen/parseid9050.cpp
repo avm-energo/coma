@@ -117,8 +117,9 @@ int ParseID9050::ParseSpectr(quint32 id, ParseID9050::SpectHeader_Data &SHD, con
     return Error::ER_NOERROR;
 }
 
-void ParseID9050::Save(quint32 &len)
+/*void ParseID9050::Save(quint32 *len)
 {
 
 
 }
+*/

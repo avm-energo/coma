@@ -14,7 +14,8 @@ class ParseID10031 : public ParseModule
 public:
     ParseID10031(QByteArray &BA);
 
-    static quint32 len;
+//    static quint32 len2;
+
 
 
     struct SWJournalRecordStruct
@@ -56,9 +57,12 @@ public:
     };
 
     int Parse(int &count);
-    void Save(quint32 &len);
+//    void Save(quint32 *len);
 
      int ParseID85(OscHeader_Data &OHD, const QString &fn, int &count);
+
+private:
+//     quint32 Len;
 };
 
 #endif // PARSEID10031_H

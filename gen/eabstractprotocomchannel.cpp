@@ -288,7 +288,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                     if (RDSize < 16) // не пришла ещё шапка файла
                         return;
                     quint16 filenum;
-                    char tmpi= ReadDataChunk[5];
+                    quint8 tmpi= ReadDataChunk[5];
                     filenum = static_cast<unsigned short>(tmpi) * 256;
                     tmpi = ReadDataChunk[4];
                     filenum += tmpi;

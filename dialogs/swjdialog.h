@@ -45,6 +45,7 @@ public:
     struct SWJINFStruct
     {
         quint16 FileNum;        // Номер файла
+        quint32 FileLength;     // Размер файла
         quint32 Num;        	// Порядковый номер переключения
         quint8 	NumA;           // Порядковый номер аппарата
         quint8 	TypeA;          // Тип аппарата
@@ -57,16 +58,17 @@ public:
 
 
 
-    EOscillogram::SWJournalRecordStruct SWJRecord;
+
     SWJINFStruct SWJInf;
-    EOscillogram::GBoStruct GBOs;
+    //EOscillogram::GBoStruct GBOs;
     EOscillogram::DataRecSwj SwRec;
     EOscillogram *OscFunc;
     bool Mode;
     TrendViewDialog *dlg;
+    TrendViewModel *mdl;
 
     SWJDialog(int mode=SWJ_MODE_ONLINE, QWidget *parent = nullptr);
-    void Init(bool haveosc, EOscillogram::GBoStruct &gbos);
+    void Init(SWJDialog::SWJINFStruct swj);
     void LoadOsc(QByteArray &ba); // для оффлайн режима
     void GetSwjOscData();
 

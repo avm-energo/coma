@@ -69,7 +69,7 @@ void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
             TableModel->setData(TableModel->index(CurRow, 3, QModelIndex()), QVariant(tmps), Qt::EditRole);
             tmps = (tmpswj.Options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
             TableModel->setData(TableModel->index(CurRow, 4, QModelIndex()), QVariant(tmps), Qt::EditRole);
-            if (OscMap.keys().contains(tmpswj.Time))
+            if (SWJMap.keys().contains(tmpswj.Time))
                 tmps = "images/oscillogramm.png";
             else
                 tmps = "images/hr.png";
@@ -125,7 +125,7 @@ void SwitchJournalDialog::LoadJournals()
     TableModel->setData(TableModel->index(0, 3, QModelIndex()), QVariant("Аппарат"), Qt::EditRole);
     TableModel->setData(TableModel->index(0, 4, QModelIndex()), QVariant("Переключение"), Qt::EditRole);
     //TableModel->setData(TableModel->index(0, 5, QModelIndex()), QVariant("Осц"), Qt::EditRole);
-//    SwjTableView->setSpan(0, 3, 1, 2); // объединение 3 и 4 столбцов в 0 ряду
+    //SwjTableView->setSpan(0, 3, 1, 2); // объединение 3 и 4 столбцов в 0 ряду
     QByteArray SWJournals_INF;
     int SWJINFSIZE = sizeof(SWJDialog::SWJINFStruct) * MAXSWJNUM;
     SWJournals_INF.resize(SWJINFSIZE);
@@ -138,22 +138,25 @@ void SwitchJournalDialog::LoadJournals()
 void SwitchJournalDialog::ShowJournal(QModelIndex idx)
 {
     bool ok;
-    int SWJNum = TableModel->data(idx.sibling(idx.row(),0),Qt::DisplayRole).toInt(&ok); // номер осциллограммы
+    int SWJNum = TableModel->data(idx.sibling(idx.row(),1),Qt::DisplayRole).toInt(&ok); // номер осциллограммы
     if (!ok)
     {
         WARNMSG("");
         return;
     }
     SWJDialog::SWJINFStruct swjr = SWJMap[SWJNum];
-    EOscillogram::GBoStruct gbos;
+    //EOscillogram::GBoStruct gbos;
+    if(swjr.FileNum)
+    {
+        SWJDialog *dlg = new SWJDialog;
+        dlg->setModal(false);
+        dlg->Init(swjr);
+        dlg->show();
+    }
 
-    bool oscexist = OscMap.keys().contains(swjr.Time);
-    if (oscexist)
-        gbos = OscMap[swjr.Time];
-    SWJDialog *dlg = new SWJDialog;
-    dlg->setModal(false);
-    dlg->Init(oscexist, gbos);
-    dlg->show();
+   // bool oscexist = OscMap.keys().contains(swjr.Time);
+   // if (oscexist)
+   //     gbos = OscMap[swjr.Time];
 }
 
 void SwitchJournalDialog::EraseJournals()

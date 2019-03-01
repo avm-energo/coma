@@ -10,7 +10,7 @@
 #include "../dialogs/trendviewdialog.h"
 #include "modulebsi.h"
 
-quint32 ParseID10031::len;
+//quint32 ParseID10031::len2;
 
 ParseID10031::ParseID10031(QByteArray &BA) : ParseModule(BA)
 {
@@ -19,6 +19,13 @@ ParseID10031::ParseID10031(QByteArray &BA) : ParseModule(BA)
 
 int ParseID10031::Parse(int &count)
 {
+    QStringList tmpdv = QStringList() << "OCNA" << "OCNB" << "OCNC" << "OCFA" << "OCFB" << "OCFC" \
+                                         << "BKCA" << "BKCB" << "BKCC" << "BKOA" << "BKOB" << "BKOC" \
+                                         << "CSC" << "CSO" << "CNA" << "CNB" << "CNC" << "CFA" << "CFB" << "CFC" \
+                                         << "nNA" << "nNB" << "nNC" << "nFA" << "nFB" << "nFC" << "nCA" << "nCB" << "nCC" \
+                                         << "nOA" << "nOB" << "nOC";
+    QStringList tmpav = QStringList() << "USA" << "USB" << "USC" << "IA" << "IB" << "IC" << "ULA" << "ULB" << "ULC";
+
     //ParseID10031::SWJournalRecordStruct SWJ;
     //PosPlusPlus(&SWJ, count, sizeof(SWJ));
     DataRecHeader DR;
@@ -28,7 +35,7 @@ int ParseID10031::Parse(int &count)
     OscHeader_Data OHD;
     if (!PosPlusPlus(&OHD, count, sizeof(OHD)))
         return Error::ER_GENERALERROR;
-    ParseID10031::len = OHD.len;
+//    ParseID10031::len2 = OHD.len;
 
     if (!PosPlusPlus(&DR, count, sizeof(DR)))
         return Error::ER_GENERALERROR;
@@ -40,6 +47,12 @@ int ParseID10031::Parse(int &count)
     tmps.replace(":","_");
     tmps.insert(0, "_");
     tmps.insert(0, QString::number(DR.id));
+
+    TModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
+
+    TModel->Len = OHD.len;
+    TModel->tmpdv_85 = tmpdv;
+    TModel->tmpav_85 = tmpav;
 
     switch (DR.id)
     {
@@ -82,7 +95,8 @@ int ParseID10031::ParseID85(OscHeader_Data &OHD, const QString &fn, int &count)
     return Error::ER_NOERROR;
 }
 
-void ParseID10031::Save(quint32 &len)
+/*void ParseID10031::Save(quint32 *len)
 {
-    len = ParseID10031::len;
-}
+//    len = &ParseID10031::len2;
+    TModel->Len =
+} */

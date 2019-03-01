@@ -88,7 +88,8 @@ public:
    // OscHeader_Data OscHeader;
     int BASize, BSize, Pos;
     QByteArray BA;
-
+    SWJournalRecordStruct SWJRecord;
+    //TrendViewModel mdl;
    /* struct Point85
     {
         float An[9];    // Ua,Ub,Uc (напряжение источника), Ia, Ib, Ic (ток ВВ), Ua,Ub,Uc (напряжение нагрузки)
@@ -125,7 +126,7 @@ public:
     void SetFilename(const QString &fn); */
     bool PosPlusPlus(void *dst, int size);
 //    int ProcessOsc(quint32 oscid, quint32 oscnum, const QString &OscDateTime); // сама осциллограмма в BA
-    int ProcessOsc(TrendViewModel *mdl, quint32 *len);
+    int ProcessOsc(TrendViewModel *mdl);
     //int ProcessOneOsc(quint32 id, OscHeader_Data &OHD, const QString &fn); // id - ИД осциллограммы (по табл. Приложения 2 "АВ-ТУК. Файлы"), осциллограмма в BA[Pos]
 
 private:

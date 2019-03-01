@@ -25,7 +25,7 @@ public:
 
     int PosPlusPlus(void *dst, int &count, int size);
     virtual int Parse(int &count) = 0;
-    virtual void Save(quint32 &len) = 0;
+//    virtual void Save(quint32 *len) = 0;
 
 
 

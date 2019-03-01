@@ -178,8 +178,8 @@ int ParseID9000::ParseID85(quint32 id, OscHeader_Data &OHD, const QString &fn, T
 }
 
 
-void ParseID9000::Save(quint32 &len)
+/*void ParseID9000::Save(quint32 *len)
 {
 
 
-}
+}*/

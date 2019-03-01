@@ -28,6 +28,8 @@ public:
     static void SaveID(quint32 id);
     static quint32 idOsc;
     float xmax, xmin;
+    quint32 Len;
+
 
     QStringList acolors_85 = QStringList() << YLWCOLOR << GRNCOLOR << REDCOLOR << \
                                            YLLCOLOR << GRLCOLOR << RDLCOLOR << \
@@ -44,12 +46,12 @@ public:
                                            YLDCOLOR << GRDCOLOR << RDDCOLOR << \
                                            YLWCOLOR << GRNCOLOR << REDCOLOR;
 
-    QStringList tmpdv_85 = QStringList() << "OCNA" << "OCNB" << "OCNC" << "OCFA" << "OCFB" << "OCFC" \
+    QStringList tmpdv_85;/* = QStringList() << "OCNA" << "OCNB" << "OCNC" << "OCFA" << "OCFB" << "OCFC" \
                                          << "BKCA" << "BKCB" << "BKCC" << "BKOA" << "BKOB" << "BKOC" \
                                          << "CSC" << "CSO" << "CNA" << "CNB" << "CNC" << "CFA" << "CFB" << "CFC" \
                                          << "nNA" << "nNB" << "nNC" << "nFA" << "nFB" << "nFC" << "nCA" << "nCB" << "nCC" \
-                                         << "nOA" << "nOB" << "nOC";
-    QStringList tmpav_85 = QStringList() << "USA" << "USB" << "USC" << "IA" << "IB" << "IC" << "ULA" << "ULB" << "ULC";
+                                         << "nOA" << "nOB" << "nOC";*/
+    QStringList tmpav_85;// = QStringList() << "USA" << "USB" << "USC" << "IA" << "IB" << "IC" << "ULA" << "ULB" << "ULC";
 
     QStringList acolors_80 = QStringList() << YLWCOLOR << GRNCOLOR << REDCOLOR << \
                                            YLLCOLOR << GRLCOLOR << RDLCOLOR << \
