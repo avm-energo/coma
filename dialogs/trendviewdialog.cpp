@@ -43,7 +43,7 @@ TrendViewDialog::TrendViewDialog(QByteArray &ba, QWidget *parent) : QDialog(pare
 {
     QString tmps = "QDialog {background-color: "+QString(MAINWINCLRA1)+";}";
     setStyleSheet(tmps);
-    setAttribute(Qt::WA_DeleteOnClose);
+    //setAttribute(Qt::WA_DeleteOnClose);
     setWindowFlags(Qt::WindowMinMaxButtonsHint);
     TrendModel = nullptr;
     RangeChangeInProgress = false;

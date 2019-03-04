@@ -2,6 +2,7 @@
 #include <QHeaderView>
 #include <QPushButton>
 #include "../widgets/emessagebox.h"
+#include "../gen/maindef.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -13,10 +14,11 @@
 #include "trendviewdialog.h"
 #include "../gen/timefunc.h"
 
-SwitchJournalDialog::SwitchJournalDialog(QWidget *parent) : QDialog(parent)
+SwitchJournalDialog::SwitchJournalDialog(EOscillogram *osc, QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
+    SWJDOscFunc = osc;
 }
 
 void SwitchJournalDialog::SetupUI()
@@ -148,7 +150,7 @@ void SwitchJournalDialog::ShowJournal(QModelIndex idx)
     //EOscillogram::GBoStruct gbos;
     if(swjr.FileNum)
     {
-        SWJDialog *dlg = new SWJDialog;
+        SWJDialog *dlg = new SWJDialog(SWJDOscFunc);
         dlg->setModal(false);
         dlg->Init(swjr);
         dlg->show();

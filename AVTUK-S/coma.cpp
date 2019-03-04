@@ -451,7 +451,7 @@ void Coma::PrepareDialogs()
         setMinimumSize(QSize(1200, 800));
         ConfM = new ConfDialog85(S2Config);
         CheckM = new CheckDialog85(BoardTypes::BT_BASE);
-        SwjD = new SwitchJournalDialog;
+        SwjD = new SwitchJournalDialog(OscFunc);
         TuneM = new TuneDialog85(S2ConfigForTune);
         break;
     }

@@ -15,7 +15,7 @@ class SwitchJournalDialog : public QDialog
 {
     Q_OBJECT
 public:
-    SwitchJournalDialog(QWidget *parent=nullptr);
+    SwitchJournalDialog(EOscillogram *osc, QWidget *parent=nullptr);
 
 private:
 
@@ -23,6 +23,7 @@ private:
     ETableView *SwjTableView;
     QMap<quint64, EOscillogram::GBoStruct> OscMap;
     QMap<int, SWJDialog::SWJINFStruct> SWJMap;
+    EOscillogram *SWJDOscFunc;
 
     void SetupUI();
     void ProcessSWJournal(QByteArray &ba);

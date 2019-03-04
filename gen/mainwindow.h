@@ -14,6 +14,7 @@
 #include "../tune/eabstracttunedialog.h"
 #include "../gen/modulebsi.h"
 #include "../gen/maindef.h"
+#include "../dialogs/swjdialog.h"
 
 #include "eabstractprotocomchannel.h"
 
@@ -54,6 +55,7 @@ public:
     SwitchJournalDialog *SwjD;
     OscDialog *OscD;
     EOscillogram *OscFunc;
+    SWJDialog *dlg;
     void LoadOscFromFile(const QString &filename);
     void LoadSwjFromFile(const QString &filename);
 #endif
@@ -146,6 +148,7 @@ private:
     void SetProgressBar(QString prbnum, int cursize);
 #endif
 
+
 private slots:
     void StartSettingsDialog();
     void ShowErrorDialog();
@@ -154,6 +157,7 @@ private slots:
 #ifndef MODULE_A1
     void LoadOsc();
     void LoadSWJ();
+    void ShowOsc();
 #endif
     void ProtocolFromFile();
     void StartA1Dialog(const QString &filename);

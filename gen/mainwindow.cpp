@@ -27,7 +27,6 @@
 #include "../dialogs/hiddendialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/keypressdialog.h"
-#include "../dialogs/swjdialog.h"
 #include "../gen/error.h"
 #include "../gen/colors.h"
 #include "../gen/files.h"
@@ -36,6 +35,7 @@
 #include "../widgets/etableview.h"
 #include "../dialogs/a1dialog.h"
 #include "../dialogs/trendviewdialog.h"
+#include "../gen/timefunc.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -461,33 +461,123 @@ void MainWindow::LoadOscFromFile(const QString &filename)
 void MainWindow::LoadSwjFromFile(const QString &filename)
 {
     QByteArray ba;
-    bool haveosc;
-    int SWJRSize = sizeof(SWJDialog::SWJINFStruct);
+    //bool haveosc;
+    int SWJRSize = sizeof(SWJDialog::SWJournalRecordStruct);
     //int GBOSize = sizeof(EOscillogram::GBoStruct);
 
-    if (Files::LoadFromFile(filename, ba) == Files::ER_NOERROR)
+
+    if (Files::LoadFromFile(filename, OscFunc->BA) == Files::ER_NOERROR)
     {
-        if (ba.size() < (SWJRSize))
+        if (OscFunc->BA.size() < (SWJRSize))
         {
             EMessageBox::error(this, "Ошибка", "Некорректная структура файла журнала");
             return;
         }
-        SWJDialog::SWJINFStruct swjr;
+        SWJDialog::SWJournalRecordStruct SWJ;
         size_t tmpi = static_cast<size_t>(SWJRSize);
-        memcpy(&swjr, &(ba.data()[0]), tmpi); // копируем информацию о переключении
+        memcpy(&SWJ, &(OscFunc->BA.data()[0]), tmpi); // копируем информацию о переключении
+        SWJDialog::SWJINFStruct swjr;
+        swjr.FileLength = OscFunc->BA.size();
         //EOscillogram::GBoStruct gbos;
         //tmpi = static_cast<size_t>(GBOSize);
         //memcpy(&gbos, &(ba.data()[SWJRSize]), tmpi); // копируем информацию об осциллограмме
-        ba.remove(0, (swjr.FileLength)); // оставляем только саму осциллограмму
+       /* ba.remove(0, SWJRSize); // оставляем только саму осциллограмму
         if (ba.isEmpty()) // осциллограммы в журнале нет
             haveosc = false;
         else
-            haveosc = true;
-        SWJDialog *dlg = new SWJDialog(SWJDialog::SWJ_MODE_OFFLINE);
+            haveosc = true;*/
         //dlg->Init(swjr, haveosc, gbos);
-        dlg->Init(swjr);
-        if (!ba.isEmpty())
-            dlg->LoadOsc(ba);
+
+        //if (!ba.isEmpty())
+        //   dlg->LoadOsc(ba);
+
+        QVBoxLayout *vlyout = new QVBoxLayout;
+        QGridLayout *glyout = new QGridLayout;
+
+        dlg = new SWJDialog(OscFunc, SWJDialog::SWJ_MODE_OFFLINE);
+        dlg->GetSwjOscData();
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Номер"), 0,0,1,1);
+        glyout->addWidget(WDFunc::NewLBL(this, "Дата, время"),0,1,1,1);
+        glyout->addWidget(WDFunc::NewLBL(this, "Аппарат"),0,2,1,2);
+        glyout->addWidget(WDFunc::NewLBL(this, "Переключение"),0,4,1,2);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.Num)), 1,0,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(this, TimeFunc::UnixTime64ToString(OscFunc->SWJRecord.Time)),1,1,1,1);
+        QStringList tmpsl = QStringList() << "D" << "G" << "CB";
+        QString tmps = (OscFunc->SWJRecord.TypeA < tmpsl.size()) ? tmpsl.at(OscFunc->SWJRecord.TypeA) : "N/A";
+        glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,2,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.NumA)),1,3,1,1);
+        tmps = (OscFunc->SWJRecord.Options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
+        glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,4,1,2);
+        glyout->addWidget(WDFunc::NewLBL(this, "Результат переключения"),2,0,1,6);
+        glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации и коммутируемые фазы"),3,0,1,4);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.OpResult)),3,4,1,1);
+        if (swjr.FileLength)
+        {
+            QPushButton *pb = new QPushButton;
+            pb->setIcon(QIcon("images/oscillogramm.png"));
+            connect(pb,SIGNAL(clicked(bool)),this,SLOT(ShowOsc()));
+            glyout->addWidget(pb,3,5,1,1);
+        }
+        else
+        {
+            QPixmap *pm = new QPixmap("images/hr.png");
+            glyout->addWidget(WDFunc::NewLBL(this, "", "", "", pm),3,5,1,1);
+        }
+        vlyout->addLayout(glyout);
+        vlyout->addStretch(10);
+        glyout = new QGridLayout;
+        QStringList sl = QStringList() << "Значение тока при коммутации, А" << "Значение напряжения при коммутации, кВ" << \
+                                          "Собственное время коммутации, мс" << "Полное время коммутации, мс" << \
+                                          "Время перемещения главного контакта, мс" << "Время горения дуги, мс" << \
+                                          "Время безоперационного простоя к моменту коммутации, ч" << \
+                                          "Погрешность синхронной коммутации, мс";
+        glyout->addWidget(WDFunc::NewLBL(this, "Измеренное значение"),0,0,1,1);
+        glyout->addWidget(WDFunc::NewLBL(this, "A"),0,1,1,1);
+        glyout->addWidget(WDFunc::NewLBL(this, "B"),0,2,1,1);
+        glyout->addWidget(WDFunc::NewLBL(this, "C"),0,3,1,1);
+        glyout->setColumnStretch(0, 10);
+        int row = 1;
+        glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+        for (int i=0; i<3; ++i)
+            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.I[i], 'f', 1)),row,i+1,1,1);
+        ++row;
+        glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+        for (int i=0; i<3; ++i)
+            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.U[i], 'f', 1)),row,i+1,1,1);
+        ++row;
+        glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+        for (int i=0; i<3; ++i)
+            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.OwnTime[i], 'f', 1)),row,i+1,1,1);
+        ++row;
+        glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+        for (int i=0; i<3; ++i)
+            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.FullTime[i], 'f', 1)),row,i+1,1,1);
+        ++row;
+        glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+        for (int i=0; i<3; ++i)
+            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.MovTime[i], 'f', 1)),row,i+1,1,1);
+        ++row;
+        glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+        for (int i=0; i<3; ++i)
+            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.ArchTime[i], 'f', 1)),row,i+1,1,1);
+        ++row;
+        glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+        for (int i=0; i<3; ++i)
+            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.IdleTime[i], 'f', 0)),row,i+1,1,1);
+        ++row;
+        glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+        for (int i=0; i<3; ++i)
+            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.Inaccuracy[i], 'f', 1)),row,i+1,1,1);
+        vlyout->addLayout(glyout);
+        //QPushButton *pb = new QPushButton("Сохранить журнал в файл");
+        //connect(pb,SIGNAL(clicked(bool)),this,SLOT(SWJDialog::SaveSWJ()));
+        //vlyout->addWidget(pb);
+        //setLayout(vlyout);
+        /*lyout = new QVBoxLayout;
+        lyout->addWidget(TuneTW);
+        setLayout(lyout);*/
+        dlg->setLayout(vlyout);
         dlg->show();
     }
 }
@@ -925,3 +1015,9 @@ void MainWindow::ProtocolFromFile()
     dlg->close();
     StartA1Dialog(filename);
 }
+void MainWindow::ShowOsc()
+{
+    dlg->dlg->PlotShow();
+    dlg->dlg->show();
+}
+

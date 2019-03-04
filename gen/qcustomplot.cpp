@@ -14200,7 +14200,7 @@ QCPAxisRect *QCustomPlot::axisRect(int index) const
   } else
   {
     qDebug() << Q_FUNC_INFO << "invalid axis rect index" << index;
-    return 0;
+    return nullptr;
   }
 }
 

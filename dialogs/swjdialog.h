@@ -62,17 +62,17 @@ public:
     SWJINFStruct SWJInf;
     //EOscillogram::GBoStruct GBOs;
     EOscillogram::DataRecSwj SwRec;
-    EOscillogram *OscFunc;
+    EOscillogram *SWJOscFunc;
     bool Mode;
     TrendViewDialog *dlg;
     TrendViewModel *mdl;
 
-    SWJDialog(int mode=SWJ_MODE_ONLINE, QWidget *parent = nullptr);
+    SWJDialog(EOscillogram *osc, int mode=SWJ_MODE_ONLINE, QWidget *parent = nullptr);
     void Init(SWJDialog::SWJINFStruct swj);
     void LoadOsc(QByteArray &ba); // для оффлайн режима
     void GetSwjOscData();
 
-private slots:
+public slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void SaveSWJ();
     void ShowOsc();
