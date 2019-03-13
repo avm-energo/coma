@@ -356,10 +356,22 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 {
                     if ((fnum >= CN_MINOSCID) && (fnum <= CN_MAXOSCID)) // для осциллограмм особая обработка
                     {
+                        QVector<S2::DataRec> DRosc;
                         RDSize = qMin(RDLength, RDSize); // если даже приняли больше, копируем только требуемый размер
                         size_t tmpi = static_cast<size_t>(RDSize);
                         memcpy(outdata,ReadData.data(),tmpi);
+                        DRosc.append({static_cast<quint32>(ReadData.data()[16]),static_cast<quint32>(ReadData.data()[20]),&ReadData.data()[24]});
+                        tmpi = 8; //sizeof(FileHeader);
+                        memcpy(&DRosc.data()[0],&ReadData.data()[16],tmpi);
                         Finish(Error::ER_NOERROR);
+
+                        if (DRosc.isEmpty())
+                        {
+                            Finish(CN_NULLDATAERROR);
+                            break;
+                        }
+                        res = S2::RestoreDataMem(ReadData.data(), RDSize, &DRosc);
+
                         break;
                     }
                     if (DR->isEmpty())

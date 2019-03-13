@@ -157,8 +157,8 @@ void SWJDialog::GetSwjOscData()
         dlg = new TrendViewDialog(SWJOscFunc->BA);
         mdl = new TrendViewModel(QStringList(), QStringList(), len);
         SWJOscFunc->ProcessOsc(mdl);
-        mdl->xmax = (static_cast<float>((mdl->Len)/2));
-        mdl->xmin = -mdl->xmax;
+        mdl->xmax = (static_cast<float>((mdl->Len)-10));
+        mdl->xmin = -10;
         dlg->TrendModel = mdl;
 
         switch(mdl->idOsc)

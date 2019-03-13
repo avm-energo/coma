@@ -485,7 +485,9 @@ int TuneDialog80::Start7_3_1_1()
 
 int TuneDialog80::Start7_3_2()
 {
+    WaitNSeconds(1);
     ReadAnalogMeasurements();
+    WaitNSeconds(1);
     return StartCheckAnalogValues(V60, I1, S0, false);
 }
 
@@ -694,7 +696,10 @@ int TuneDialog80::Start7_3_9()
         // Пишем в модуль посчитанные регулировочные коэффициенты
         WaitNSeconds(5);
         if (Commands::WriteBac(BT_MEZONIN, &Bac_newblock, sizeof(Bac)) != Error::ER_NOERROR)  // Григорий Матвеевич попросил писать коэффициенты сразу в модуль
+        {
+            EMessageBox::question(this,"INFO","Некорректные регулировочные коэффициенты");
             return Error::ER_GENERALERROR;
+        }
         // переходим на прежнюю конфигурацию
         // измеряем и проверяем
         if (EMessageBox::question(this,"Протокол поверки","Начать поверку?"))

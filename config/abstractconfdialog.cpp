@@ -160,7 +160,7 @@ bool AbstractConfDialog::PrepareConfToWrite()
 {
     FillBack();
     CheckConfErrors.clear();
-    CheckConf();
+    //CheckConf();
     if (!CheckConfErrors.isEmpty())
     {
         QDialog *dlg = new QDialog;

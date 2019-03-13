@@ -53,7 +53,7 @@ void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
     int BaPos = 0;
     int CurRow = 1;
     SWJMap.clear();
-    while ((BaPos + SWJRecordSize) < BaSize)
+    while ((BaPos + SWJRecordSize) <= BaSize)
     {
         size_t tmpt = static_cast<size_t>(SWJRecordSize);
         memcpy(&tmpswj, &(ba.data()[BaPos]), tmpt);

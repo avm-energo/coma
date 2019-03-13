@@ -448,7 +448,7 @@ void Coma::PrepareDialogs()
     }
     case Config::MTM_85:
     {
-        setMinimumSize(QSize(1200, 800));
+        //setMinimumSize(QSize(1200, 800));
         ConfM = new ConfDialog85(S2Config);
         CheckM = new CheckDialog85(BoardTypes::BT_BASE);
         SwjD = new SwitchJournalDialog(OscFunc);

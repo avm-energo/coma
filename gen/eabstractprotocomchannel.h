@@ -134,6 +134,7 @@ private:
     int SegEnd; // номер последнего байта в ReadData текущего сегмента
     bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
     QVector<S2::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
+    QVector<S2::DataRec> DRosc;
     char BoardType;
     static bool WriteUSBLog;
 

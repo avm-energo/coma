@@ -8,6 +8,8 @@
 #include <QButtonGroup>
 #include <QGridLayout>
 #include <QVBoxLayout>
+#include <QScrollArea>
+#include <QScrollBar>
 #include "../widgets/emessagebox.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
@@ -235,6 +237,7 @@ void ConfDialog85::SetupUI()
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QGridLayout *glyout = new QGridLayout;
+    QScrollArea *area = new QScrollArea;
     QWidget *cp1 = new QWidget;
     QWidget *cp2 = new QWidget;
     QWidget *cp3 = new QWidget;
@@ -244,6 +247,10 @@ void ConfDialog85::SetupUI()
     cp2->setStyleSheet(tmps);
     cp3->setStyleSheet(tmps);
     cp4->setStyleSheet(tmps);
+
+    area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
+    area->setFrameShape(QFrame::NoFrame);
+    area->setWidgetResizable(true);
 
     QString paramcolor = MAINWINCLR;
     int row = 0;
@@ -582,7 +589,9 @@ void ConfDialog85::SetupUI()
     ConfTW->addTab(cp2,"Параметры выключателя");
     ConfTW->addTab(cp3,"Доп. параметры по алгоритму");
     ConfTW->addTab(cp4,"Уставки сигнализации");
-    lyout->addWidget(ConfTW);
+    area->setWidget(ConfTW);
+    lyout->addWidget(area);
+    area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
     QWidget *wdgt = ConfButtons();
     lyout->addWidget(wdgt);
     setLayout(lyout);

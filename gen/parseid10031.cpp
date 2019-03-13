@@ -69,7 +69,7 @@ int ParseID10031::Parse(int &count)
 int ParseID10031::ParseID85(OscHeader_Data &OHD, const QString &fn, int &count)
 {
 
-    float xmin = -(static_cast<float>(OHD.len/2));
+    float xmin = -10;//-(static_cast<float>(OHD.len/2));
 
     if (!TModel->SetPointsAxis(xmin, OHD.step))
         return Error::ER_GENERALERROR;
