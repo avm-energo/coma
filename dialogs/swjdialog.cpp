@@ -40,9 +40,8 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.NumA)),1,3,1,1);
     tmps = (SWJOscFunc->SWJRecord.Options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
     glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,4,1,2);
-    glyout->addWidget(WDFunc::NewLBL(this, "Результат переключения"),2,0,1,6);
-    glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации и коммутируемые фазы"),3,0,1,4);
-    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.OpResult)),3,4,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации и коммутируемые фазы"),2,0,1,4);
+    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.Options)),2,4,1,1);
     if (SWJInf.FileLength)
     {
         QPushButton *pb = new QPushButton;
@@ -58,7 +57,9 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     vlyout->addLayout(glyout);
     vlyout->addStretch(10);
     glyout = new QGridLayout;
-    QStringList sl = QStringList() << "Значение тока при коммутации, А" << "Значение напряжения при коммутации, кВ" << \
+    //glyout->addWidget(WDFunc::NewLBL(this, "Результат переключения"),2,0,1,6);
+    QStringList sl = QStringList() << "Результат переключения" << "Значение тока при коммутации, А" \
+                                      "Значение напряжения при коммутации, кВ" << \
                                       "Собственное время коммутации, мс" << "Полное время коммутации, мс" << \
                                       "Время перемещения главного контакта, мс" << "Время горения дуги, мс" << \
                                       "Время безоперационного простоя к моменту коммутации, ч" << \
@@ -69,6 +70,10 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     glyout->addWidget(WDFunc::NewLBL(this, "C"),0,3,1,1);
     glyout->setColumnStretch(0, 10);
     int row = 1;
+    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+    for (int i=0; i<3; ++i)
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(((SWJOscFunc->SWJRecord.OpResult >> i) & 0x00000001), 'f', 1)),row,i+1,1,1);
+    ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
         glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.I[i], 'f', 1)),row,i+1,1,1);

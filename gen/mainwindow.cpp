@@ -507,27 +507,48 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
         QString tmps = (OscFunc->SWJRecord.TypeA < tmpsl.size()) ? tmpsl.at(OscFunc->SWJRecord.TypeA) : "N/A";
         glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,2,1,1);
         glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.NumA)),1,3,1,1);
-        tmps = (OscFunc->SWJRecord.Options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
+        tmps = (OscFunc->SWJRecord.Options & 0x00000001) ? "ВКЛЮЧЕНИЕ" : "ОТКЛЮЧЕНИЕ";
         glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,4,1,2);
-        glyout->addWidget(WDFunc::NewLBL(this, "Результат переключения"),2,0,1,6);
-        glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации и коммутируемые фазы"),3,0,1,4);
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.OpResult)),3,4,1,1);
+        glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации:"),2,0,1,4);
+        if((OscFunc->SWJRecord.Options >> 1))
+        {
+            if(((OscFunc->SWJRecord.Options >> 1) & 0x00000001))
+            tmps = "Несинхронная от АВ-ТУК";
+
+            if(((OscFunc->SWJRecord.Options >> 1) & 0x00000011) == 3)
+            tmps = "Синхронная от АВ-ТУК";
+
+        }
+        else
+        {
+            tmps = "Несинхронная от внешнего устройства";
+        }
+        glyout->addWidget(WDFunc::NewLBLT(this, tmps),2,4,1,1);
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Результат переключения:"),3,0,1,4);
+        tmps = (OscFunc->SWJRecord.OpResult)  ? "НЕУСПЕШНО" : "УСПЕШНО";
+        glyout->addWidget(WDFunc::NewLBLT(this, tmps),3,4,1,1);
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Коммутируемые фазы:"),4,0,1,4);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.Options)),4,4,1,1);
         if (swjr.FileLength)
         {
+            glyout->addWidget(WDFunc::NewLBL(this, "Осциллограмма:"),5,0,1,4);
             QPushButton *pb = new QPushButton;
             pb->setIcon(QIcon("images/oscillogramm.png"));
             connect(pb,SIGNAL(clicked(bool)),this,SLOT(ShowOsc()));
-            glyout->addWidget(pb,3,5,1,1);
+            glyout->addWidget(pb,5,4,1,1);
         }
         else
         {
             QPixmap *pm = new QPixmap("images/hr.png");
-            glyout->addWidget(WDFunc::NewLBL(this, "", "", "", pm),3,5,1,1);
+            glyout->addWidget(WDFunc::NewLBL(this, "", "", "", pm),5,4,1,1);
         }
         vlyout->addLayout(glyout);
         vlyout->addStretch(10);
         glyout = new QGridLayout;
-        QStringList sl = QStringList() << "Значение тока при коммутации, А" << "Значение напряжения при коммутации, кВ" << \
+        QStringList sl = QStringList() << "Значение тока при коммутации, А" << \
+                                          "Значение напряжения при коммутации, кВ" << \
                                           "Собственное время коммутации, мс" << "Полное время коммутации, мс" << \
                                           "Время перемещения главного контакта, мс" << "Время горения дуги, мс" << \
                                           "Время безоперационного простоя к моменту коммутации, ч" << \
