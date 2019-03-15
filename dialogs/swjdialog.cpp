@@ -26,6 +26,8 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
 
+    QStringList phase = {"фазы А, В, С","фаза А","фаза В","фаза С"};
+
     GetSwjOscData();
 
     glyout->addWidget(WDFunc::NewLBL(this, "Номер"), 0,0,1,1);
@@ -38,21 +40,49 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     QString tmps = (SWJOscFunc->SWJRecord.TypeA < tmpsl.size()) ? tmpsl.at(SWJOscFunc->SWJRecord.TypeA) : "N/A";
     glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,2,1,1);
     glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.NumA)),1,3,1,1);
-    tmps = (SWJOscFunc->SWJRecord.Options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
+    tmps = (SWJOscFunc->SWJRecord.Options & 0x00000001) ? "ВКЛЮЧЕНИЕ" : "ОТКЛЮЧЕНИЕ";
     glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,4,1,2);
-    glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации и коммутируемые фазы"),2,0,1,4);
-    glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.Options)),2,4,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации:"),3,0,1,4);
+    if((SWJOscFunc->SWJRecord.Options >> 1))
+    {
+        if(((SWJOscFunc->SWJRecord.Options >> 1) & 0x00000001))
+        tmps = "Несинхронная от АВ-ТУК";
+
+        if(((SWJOscFunc->SWJRecord.Options >> 1) & 0x00000011) == 3)
+        tmps = "Синхронная от АВ-ТУК";
+
+    }
+    else
+    {
+        tmps = "Несинхронная от внешнего устройства";
+    }
+    glyout->addWidget(WDFunc::NewLBLT(this, tmps),3,4,1,1);
+
+    glyout->addWidget(WDFunc::NewLBL(this, "Результат переключения:"),4,0,1,4);
+    tmps = (SWJOscFunc->SWJRecord.OpResult)  ? "НЕУСПЕШНО" : "УСПЕШНО";
+    glyout->addWidget(WDFunc::NewLBLT(this, tmps),4,4,1,1);
+
+    glyout->addWidget(WDFunc::NewLBL(this, "Коммутируемые фазы:"),5,0,1,4);
+    for(int i = 0; i < 4; i++)
+    {
+        if(((SWJOscFunc->SWJRecord.Options >> 3) == i))
+        {
+           tmps = phase.at(i);
+        }
+    }
+    glyout->addWidget(WDFunc::NewLBLT(this, tmps),5,4,1,1);
     if (SWJInf.FileLength)
     {
+        glyout->addWidget(WDFunc::NewLBL(this, "Осциллограмма:"),6,0,1,4);
         QPushButton *pb = new QPushButton;
         pb->setIcon(QIcon("images/oscillogramm.png"));
         connect(pb,SIGNAL(clicked(bool)),this,SLOT(ShowOsc()));
-        glyout->addWidget(pb,3,5,1,1);
+        glyout->addWidget(pb,6,4,1,1);
     }
     else
     {
         QPixmap *pm = new QPixmap("images/hr.png");
-        glyout->addWidget(WDFunc::NewLBL(this, "", "", "", pm),3,5,1,1);
+        glyout->addWidget(WDFunc::NewLBL(this, "", "", "", pm),6,4,1,1);
     }
     vlyout->addLayout(glyout);
     vlyout->addStretch(10);

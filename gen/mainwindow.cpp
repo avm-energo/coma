@@ -468,6 +468,8 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
 
     if (Files::LoadFromFile(filename, OscFunc->BA) == Files::ER_NOERROR)
     {
+        QStringList phase = {"фазы А, В, С","фаза А","фаза В","фаза С"};
+
         if (OscFunc->BA.size() < (SWJRSize))
         {
             EMessageBox::error(this, "Ошибка", "Некорректная структура файла журнала");
@@ -509,7 +511,7 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
         glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.NumA)),1,3,1,1);
         tmps = (OscFunc->SWJRecord.Options & 0x00000001) ? "ВКЛЮЧЕНИЕ" : "ОТКЛЮЧЕНИЕ";
         glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,4,1,2);
-        glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации:"),2,0,1,4);
+        glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации:"),3,0,1,4);
         if((OscFunc->SWJRecord.Options >> 1))
         {
             if(((OscFunc->SWJRecord.Options >> 1) & 0x00000001))
@@ -523,26 +525,33 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
         {
             tmps = "Несинхронная от внешнего устройства";
         }
-        glyout->addWidget(WDFunc::NewLBLT(this, tmps),2,4,1,1);
-
-        glyout->addWidget(WDFunc::NewLBL(this, "Результат переключения:"),3,0,1,4);
-        tmps = (OscFunc->SWJRecord.OpResult)  ? "НЕУСПЕШНО" : "УСПЕШНО";
         glyout->addWidget(WDFunc::NewLBLT(this, tmps),3,4,1,1);
 
-        glyout->addWidget(WDFunc::NewLBL(this, "Коммутируемые фазы:"),4,0,1,4);
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.Options)),4,4,1,1);
+        glyout->addWidget(WDFunc::NewLBL(this, "Результат переключения:"),4,0,1,4);
+        tmps = (OscFunc->SWJRecord.OpResult)  ? "НЕУСПЕШНО" : "УСПЕШНО";
+        glyout->addWidget(WDFunc::NewLBLT(this, tmps),4,4,1,1);
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Коммутируемые фазы:"),5,0,1,4);
+        for(int i = 0; i < 4; i++)
+        {
+            if(((OscFunc->SWJRecord.Options >> 3) == i))
+            {
+               tmps = phase.at(i);
+            }
+        }
+        glyout->addWidget(WDFunc::NewLBLT(this, tmps),5,4,1,1);
         if (swjr.FileLength)
         {
-            glyout->addWidget(WDFunc::NewLBL(this, "Осциллограмма:"),5,0,1,4);
+            glyout->addWidget(WDFunc::NewLBL(this, "Осциллограмма:"),6,0,1,4);
             QPushButton *pb = new QPushButton;
-            pb->setIcon(QIcon("images/oscillogramm.png"));
+            pb->setIcon(QIcon(QPixmap("images/oscillogramm.png")));
             connect(pb,SIGNAL(clicked(bool)),this,SLOT(ShowOsc()));
-            glyout->addWidget(pb,5,4,1,1);
+            glyout->addWidget(pb,6,4,1,1);
         }
         else
         {
             QPixmap *pm = new QPixmap("images/hr.png");
-            glyout->addWidget(WDFunc::NewLBL(this, "", "", "", pm),5,4,1,1);
+            glyout->addWidget(WDFunc::NewLBL(this, "", "", "", pm),6,4,1,1);
         }
         vlyout->addLayout(glyout);
         vlyout->addStretch(10);
