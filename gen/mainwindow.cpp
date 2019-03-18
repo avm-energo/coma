@@ -544,8 +544,8 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
         {
             glyout->addWidget(WDFunc::NewLBL(this, "Осциллограмма:"),6,0,1,4);
             QPushButton *pb = new QPushButton;
-            pb->setIcon(QIcon(QPixmap("images/oscillogramm.png")));
-            connect(pb,SIGNAL(clicked(bool)),this,SLOT(ShowOsc()));
+            pb->setIcon(QIcon("images/osc.png"));
+            connect(pb,SIGNAL(clicked()),this,SLOT(ShowOsc()));
             glyout->addWidget(pb,6,4,1,1);
         }
         else

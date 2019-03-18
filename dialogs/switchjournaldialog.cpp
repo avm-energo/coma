@@ -72,7 +72,7 @@ void SwitchJournalDialog::ProcessSWJournal(QByteArray &ba)
             tmps = (tmpswj.Options & 0x00000001) ? "ВКЛ" : "ОТКЛ";
             TableModel->setData(TableModel->index(CurRow, 4, QModelIndex()), QVariant(tmps), Qt::EditRole);
             if (SWJMap.keys().contains(tmpswj.Time))
-                tmps = "images/oscillogramm.png";
+                tmps = "images/osc.png";
             else
                 tmps = "images/hr.png";
             TableModel->setData(TableModel->index(CurRow, 5, QModelIndex()), QVariant(QIcon(tmps)), Qt::DecorationRole);

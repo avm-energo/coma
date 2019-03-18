@@ -75,8 +75,8 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     {
         glyout->addWidget(WDFunc::NewLBL(this, "Осциллограмма:"),6,0,1,4);
         QPushButton *pb = new QPushButton;
-        pb->setIcon(QIcon("images/oscillogramm.png"));
-        connect(pb,SIGNAL(clicked(bool)),this,SLOT(ShowOsc()));
+        pb->setIcon(QIcon("images/osc.png"));
+        connect(pb,SIGNAL(clicked()),this,SLOT(ShowOsc()));
         glyout->addWidget(pb,6,4,1,1);
     }
     else
@@ -87,8 +87,7 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     vlyout->addLayout(glyout);
     vlyout->addStretch(10);
     glyout = new QGridLayout;
-    //glyout->addWidget(WDFunc::NewLBL(this, "Результат переключения"),2,0,1,6);
-    QStringList sl = QStringList() << "Результат переключения" << "Значение тока при коммутации, А" \
+    QStringList sl = QStringList() << "Значение тока при коммутации, А" << \
                                       "Значение напряжения при коммутации, кВ" << \
                                       "Собственное время коммутации, мс" << "Полное время коммутации, мс" << \
                                       "Время перемещения главного контакта, мс" << "Время горения дуги, мс" << \
@@ -100,10 +99,6 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     glyout->addWidget(WDFunc::NewLBL(this, "C"),0,3,1,1);
     glyout->setColumnStretch(0, 10);
     int row = 1;
-    glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
-    for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(((SWJOscFunc->SWJRecord.OpResult >> i) & 0x00000001), 'f', 1)),row,i+1,1,1);
-    ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
         glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.I[i], 'f', 1)),row,i+1,1,1);

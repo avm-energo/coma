@@ -114,7 +114,7 @@ QToolBar *TrendViewDialog::PlotToolBar()
     bar->setIconSize(QSize(20,20));
     QAction *act = new QAction(this);
     act->setToolTip("Выбор осциллограмм");
-    act->setIcon(QIcon("images/oscillogramm.png"));
+    act->setIcon(QIcon("images/osc.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(Stage1_5()));
     bar->addAction(act);
     return bar;
