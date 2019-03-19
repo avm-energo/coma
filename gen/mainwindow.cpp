@@ -512,12 +512,12 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
         tmps = (OscFunc->SWJRecord.Options & 0x00000001) ? "ВКЛЮЧЕНИЕ" : "ОТКЛЮЧЕНИЕ";
         glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,4,1,2);
         glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации:"),3,0,1,4);
-        if((OscFunc->SWJRecord.Options >> 1))
-        {
-            if(((OscFunc->SWJRecord.Options >> 1) & 0x00000001))
-            tmps = "Несинхронная от АВ-ТУК";
 
-            if(((OscFunc->SWJRecord.Options >> 1) & 0x00000011) == 3)
+        if(((OscFunc->SWJRecord.Options >> 1) & 3))
+        {
+            if(((OscFunc->SWJRecord.Options > 1) & 3) == 2)
+            tmps = "Несинхронная от АВ-ТУК";
+            else if(((OscFunc->SWJRecord.Options >> 1) & 3) == 3)
             tmps = "Синхронная от АВ-ТУК";
 
         }
