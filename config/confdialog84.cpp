@@ -1,10 +1,11 @@
 #include <QGroupBox>
 #include <QTabWidget>
-#include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QGridLayout>
 #include <QVBoxLayout>
+#include <QTime>
+#include <QTimer>
 #include "../widgets/emessagebox.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
@@ -131,6 +132,7 @@ void ConfDialog84::FillBack()
         WDFunc::SPBData(this, "adrMB", C84->Com_param.adrMB);
     }
 
+
 }
 
 void ConfDialog84::SetupUI()
@@ -143,10 +145,12 @@ void ConfDialog84::SetupUI()
     QWidget *analog1 = new QWidget;
     QWidget *analog2 = new QWidget;
     QWidget *extraconf = new QWidget;
+    QWidget *time = new QWidget;
     QString tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     analog1->setStyleSheet(tmps);
     analog2->setStyleSheet(tmps);
     extraconf->setStyleSheet(tmps);
+    time->setStyleSheet(tmps);
 
     QString paramcolor = MAINWINCLR;
     int row = 0;
@@ -364,12 +368,44 @@ void ConfDialog84::SetupUI()
     glyout->addWidget(WDFunc::NewLBL(this, "Адрес устройства для Modbus:"), row,1,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "adrMB", 0, 10000, 0, paramcolor), row,2,1,4);
 
-
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
 
     extraconf->setLayout(vlyout1);
+
+    gb = new QGroupBox("");
+    vlyout1 = new QVBoxLayout;
+    vlyout2 = new QVBoxLayout;
+    glyout = new QGridLayout;
+    row = 0;
+
+    SysTime = new QLabel;
+
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(slot_timeOut()));
+
+    //SysTime->setText(QTime::currentTime().toString("hh:mm:ss"));
+
+    timer->start(1000);
+
+    glyout->addWidget(WDFunc::NewLBL(this, "Время устройства:"), row,1,1,1, Qt::AlignTop);
+    SysTime->setText(QTime::currentTime().toString("hh:mm:ss"));
+    glyout->addWidget(SysTime, row,2,1,4, Qt::AlignTop);
+    tmps = "QWidget {background-color: "+QString(TABCOLOR)+";}";
+    QPushButton *Button = new QPushButton("Прочитать время из модуля");
+    Button->setStyleSheet(tmps);
+    row++;
+    glyout->addWidget(Button, row,1,1,1);
+    Button = new QPushButton("Записать время в модуль");
+    Button->setStyleSheet(tmps);
+    glyout->addWidget(Button, row,2,1,4);
+
+    vlyout2->addLayout(glyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
+
+    time->setLayout(vlyout1);
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
@@ -386,6 +422,7 @@ void ConfDialog84::SetupUI()
     else
     ConfTW->addTab(analog2,"Уставки");
 
+    ConfTW->addTab(time,"Время");
     lyout->addWidget(ConfTW);
 
     QWidget *wdgt = ConfButtons();
@@ -403,4 +440,11 @@ void ConfDialog84::CheckConf()
 void ConfDialog84::SetDefConf()
 {
     C84->SetDefConf();
+}
+
+void ConfDialog84::slot_timeOut()
+{
+   // WDFunc::LBLText(this, "adrMB", currentTime().toString("hh:mm:ss"));
+    SysTime->setText(QTime::currentTime().toString("hh:mm:ss"));
+    //SysTime->update();
 }

@@ -6,6 +6,7 @@
 #include "../config/config84.h"
 #include "abstractconfdialog.h"
 #include <QVBoxLayout>
+#include <QLabel>
 
 class ConfDialog84 : public AbstractConfDialog
 {
@@ -14,9 +15,12 @@ public:
     explicit ConfDialog84(QVector<S2::DataRec> &S2Config, QWidget *parent = nullptr);
     ~ConfDialog84();
 
+    QLabel *SysTime;
+
 private:
 
     Config84 *C84;
+    QTimer *timer;
 
     void Fill();
     void FillBack();
@@ -31,6 +35,7 @@ public slots:
 
 private slots:
     void SetDefConf();
+    void slot_timeOut();
 };
 
 #endif // CONFDIALOG84_H

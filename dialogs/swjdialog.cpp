@@ -28,7 +28,9 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
 
     QStringList phase = {"фазы А, В, С","фаза А","фаза В","фаза С"};
 
+
     GetSwjOscData();
+
 
     glyout->addWidget(WDFunc::NewLBL(this, "Номер"), 0,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "Дата, время"),0,1,1,1);
@@ -109,19 +111,19 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.OwnTime[i], 'f', 1)),row,i+1,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.OwnTime[i], 'f', 0)),row,i+1,1,1);
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.FullTime[i], 'f', 1)),row,i+1,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.FullTime[i], 'f', 0)),row,i+1,1,1);
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.MovTime[i], 'f', 1)),row,i+1,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.MovTime[i], 'f', 0)),row,i+1,1,1);
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.ArchTime[i], 'f', 1)),row,i+1,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.ArchTime[i], 'f', 0)),row,i+1,1,1);
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
@@ -129,7 +131,7 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.Inaccuracy[i], 'f', 1)),row,i+1,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.Inaccuracy[i], 'f', 0)),row,i+1,1,1);
     vlyout->addLayout(glyout);
     QPushButton *pb = new QPushButton("Сохранить журнал в файл");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SaveSWJ()));
@@ -164,6 +166,7 @@ void SWJDialog::ShowOsc()
     dlg->PlotShow();
     dlg->show();
 }
+#endif
 
 void SWJDialog::GetSwjOscData()
 {
@@ -172,7 +175,7 @@ void SWJDialog::GetSwjOscData()
     //char *ptr;
 
 
-
+      #if PROGSIZE != PROGSIZE_EMUL
         if(Mode != SWJ_MODE_OFFLINE)
         {
             SWJOscFunc->BA.resize(SWJInf.FileLength + sizeof(S2::FileHeader));
@@ -184,6 +187,7 @@ void SWJDialog::GetSwjOscData()
             QString tmps = StdFunc::GetSystemHomeDir()+"/temporary.osc";
             Files::SaveToFile(tmps, SWJOscFunc->BA, SWJInf.FileLength);
         }
+       #endif
         dlg = new TrendViewDialog(SWJOscFunc->BA);
         mdl = new TrendViewModel(QStringList(), QStringList(), len);
         SWJOscFunc->ProcessOsc(mdl);
@@ -253,4 +257,4 @@ void SWJDialog::GetSwjOscData()
 
 
 }
-#endif
+

@@ -70,6 +70,8 @@ public:
     SWJDialog(EOscillogram *osc, int mode=SWJ_MODE_ONLINE, QWidget *parent = nullptr);
     void Init(SWJDialog::SWJINFStruct swj);
     void LoadOsc(QByteArray &ba); // для оффлайн режима
+
+
     void GetSwjOscData();
 
 public slots:

@@ -578,19 +578,19 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
         ++row;
         glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
         for (int i=0; i<3; ++i)
-            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.OwnTime[i], 'f', 1)),row,i+1,1,1);
+            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.OwnTime[i], 'f', 0)),row,i+1,1,1);
         ++row;
         glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
         for (int i=0; i<3; ++i)
-            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.FullTime[i], 'f', 1)),row,i+1,1,1);
+            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.FullTime[i], 'f', 0)),row,i+1,1,1);
         ++row;
         glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
         for (int i=0; i<3; ++i)
-            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.MovTime[i], 'f', 1)),row,i+1,1,1);
+            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.MovTime[i], 'f', 0)),row,i+1,1,1);
         ++row;
         glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
         for (int i=0; i<3; ++i)
-            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.ArchTime[i], 'f', 1)),row,i+1,1,1);
+            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.ArchTime[i], 'f', 0)),row,i+1,1,1);
         ++row;
         glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
         for (int i=0; i<3; ++i)
@@ -598,7 +598,7 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
         ++row;
         glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
         for (int i=0; i<3; ++i)
-            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.Inaccuracy[i], 'f', 1)),row,i+1,1,1);
+            glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.Inaccuracy[i], 'f', 0)),row,i+1,1,1);
         vlyout->addLayout(glyout);
         //QPushButton *pb = new QPushButton("Сохранить журнал в файл");
         //connect(pb,SIGNAL(clicked(bool)),this,SLOT(SWJDialog::SaveSWJ()));
