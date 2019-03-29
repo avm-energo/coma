@@ -57,6 +57,7 @@ public:
         quint8		parity;
         quint8		stopbit;
         quint16     adrMB;
+        quint8      isNTP;
     } Com;
 
     Com Com_param;

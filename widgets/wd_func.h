@@ -105,6 +105,7 @@ public:
     static QImage *TwoImages(const QString &first, const QString &second);
     static QPushButton *NewPB(QWidget *parent, const QString &text, \
                       const QObject *receiver, const char *method, const QString &pbtooltip="");
+    static bool LE_read_data(QWidget *w, const QString &lename, QString &levalue);
 };
 
 #endif // WD_FUNC

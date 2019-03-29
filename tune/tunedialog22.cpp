@@ -95,7 +95,7 @@ void TuneDialog22::SetupUI()
     lyout = new QVBoxLayout;
     gb1lyout->addWidget(CoeffGB("Настроечные коэффициенты при усилении 1x", "0"));
     gb1lyout->addWidget(CoeffGB("Настроечные коэффициенты при усилении 16x", "1"));
-    gb1lyout->addWidget(BottomUI(BoardType - 1));
+    gb1lyout->addWidget(BottomUI(BoardType));
     lyout->addLayout(gb1lyout);
     cp2->setLayout(lyout);
 

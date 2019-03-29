@@ -15,12 +15,15 @@ public:
     explicit ConfDialog84(QVector<S2::DataRec> &S2Config, QWidget *parent = nullptr);
     ~ConfDialog84();
 
-    QLabel *SysTime;
+    QLabel *SysTime; 
+    QLabel *SysTime2;
+    QTimer *timer;
+    QTimer *timerRead;
 
 private:
 
     Config84 *C84;
-    QTimer *timer;
+    bool    IsNtp;
 
     void Fill();
     void FillBack();
@@ -36,6 +39,12 @@ public slots:
 private slots:
     void SetDefConf();
     void slot_timeOut();
+    void slot2_timeOut();
+    void Start_Timer();
+    void Stop_Timer();
+    void Write_PCDate();
+    void Write_Date();
+
 };
 
 #endif // CONFDIALOG84_H

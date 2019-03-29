@@ -228,3 +228,27 @@ int Commands::GetMode(int &mode)
     return 0;
 #endif
 }
+
+int Commands::WriteTimeMNK(uint32_t *Time,  int TimeSize)
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    cn->Send(CN_WTime, BoardTypes::BT_NONE, Time, TimeSize);
+    return cn->result;
+#else
+    Q_UNUSED(Time);
+    return 0;
+#endif
+}
+
+int Commands::GetTimeMNK(uint32_t &Time)
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    quint8 tmpi;
+    cn->Send(CN_GTime, BoardTypes::BT_NONE, &tmpi, sizeof(quint32));
+    Time = tmpi;
+    return cn->result;
+#else
+    Q_UNUSED(Time);
+    return 0;
+#endif
+}

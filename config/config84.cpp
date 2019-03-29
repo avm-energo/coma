@@ -50,6 +50,7 @@ Config84::Config84(QVector<S2::DataRec> &config)
           config.append({StartComIndex+6, sizeof(Com_param.parity), &Com_param.parity});
           config.append({StartComIndex+7, sizeof(Com_param.stopbit), &Com_param.stopbit});
           config.append({StartComIndex+8, sizeof(Com_param.adrMB), &Com_param.adrMB});
+          config.append({StartComIndex+9, sizeof(Com_param.isNTP), &Com_param.isNTP});
         }
     }
     config.append({0xFFFFFFFF, 0, nullptr});
@@ -116,6 +117,7 @@ void Config84::SetDefConf()
         Com_param.parity = 0;
         Com_param.stopbit = 0;
         Com_param.adrMB = 1;
+        Com_param.isNTP = 1;
 
     }
 }

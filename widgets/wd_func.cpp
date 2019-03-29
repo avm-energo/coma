@@ -455,3 +455,12 @@ QPushButton *WDFunc::NewPB(QWidget *parent, const QString &text, \
         QObject::connect(pb,SIGNAL(clicked(bool)),receiver,method);
     return pb;
 }
+
+bool WDFunc::LE_read_data(QWidget *w, const QString &lename, QString &levalue)
+{
+    QLineEdit *le = w->findChild<QLineEdit *>(lename);
+    if (le == nullptr)
+        return false;
+    levalue = le->text();
+    return true;
+}

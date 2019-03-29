@@ -177,6 +177,25 @@ void EAbstractProtocomChannel::InitiateSend()
         SetWRSegNum();
         WRCheckForNextSegment(true);
         break;
+    }     
+    case CN_GTime:
+    {
+        WriteData.append(CN_MS);
+        WriteData.append(cmd);
+        AppendSize(WriteData, 0);
+        WriteDataToPort(WriteData);
+        break;
+    }
+    case CN_WTime:
+    {
+        WriteData.append(CN_MS);
+        WriteData.append(cmd);
+        AppendSize(WriteData, outdatasize);
+        WriteData.resize(WriteData.size()+outdatasize);
+        size_t tmpi = static_cast<size_t>(outdatasize);
+        memcpy(&(WriteData.data()[5]), &outdata[0], tmpi);
+        WriteDataToPort(WriteData);
+        break;
     }
     default:
     {
@@ -231,6 +250,8 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             case CN_CtEr:
             case CN_NVar:
             case CN_SMode:
+            case CN_WTime:
+            case CN_GTime:
             {
                 if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
                 {
@@ -404,6 +425,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 }
                 break;
             }
+
             default:
             {
                 Finish(CN_UNKNOWNCMDERROR);
