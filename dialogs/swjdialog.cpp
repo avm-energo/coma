@@ -27,6 +27,8 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     QGridLayout *glyout = new QGridLayout;
 
     QStringList phase = {"фазы А, В, С","фаза А","фаза В","фаза С"};
+    float value;
+    QString str;
 
 
     GetSwjOscData();
@@ -111,27 +113,51 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.OwnTime[i], 'f', 0)),row,i+1,1,1);
+    {
+        value = static_cast<float>(SWJOscFunc->SWJRecord.OwnTime[i]);
+        value = value/100;
+        glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)),row,i+1,1,1);
+    }
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.FullTime[i], 'f', 0)),row,i+1,1,1);
+    {
+        value = static_cast<float>(SWJOscFunc->SWJRecord.FullTime[i]);
+        value = value/100;
+        glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)),row,i+1,1,1);
+    }
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.MovTime[i], 'f', 0)),row,i+1,1,1);
+    {
+        value = static_cast<float>(SWJOscFunc->SWJRecord.MovTime[i]);
+        value = value/100;
+        glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)),row,i+1,1,1);
+    }
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.ArchTime[i], 'f', 0)),row,i+1,1,1);
+    {
+        value = static_cast<float>(SWJOscFunc->SWJRecord.ArchTime[i]);
+        value = value/100;
+        glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)),row,i+1,1,1);
+    }
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.IdleTime[i], 'f', 0)),row,i+1,1,1);
+    {
+        value = static_cast<float>(SWJOscFunc->SWJRecord.IdleTime[i]);
+        value = value/100;
+        glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)),row,i+1,1,1);
+    }
     ++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
-        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.Inaccuracy[i], 'f', 0)),row,i+1,1,1);
+    {
+        value = static_cast<float>(SWJOscFunc->SWJRecord.Inaccuracy[i]);
+        value = value/100;
+        glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)),row,i+1,1,1);
+    }
     vlyout->addLayout(glyout);
     QPushButton *pb = new QPushButton("Сохранить журнал в файл");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SaveSWJ()));
