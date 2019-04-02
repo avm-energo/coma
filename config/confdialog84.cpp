@@ -82,11 +82,10 @@ void ConfDialog84::Fill()
         WDFunc::SetSPBData(this, "StopBit", C84->Com_param.stopbit);
         WDFunc::SetSPBData(this, "adrMB", C84->Com_param.adrMB);
 
-        WDFunc::ChBData(this, "ISNTP", IsNtp);
-        if(IsNtp)
-        C84->Com_param.isNTP = 1;
+        if(C84->Com_param.isNTP)
+        WDFunc::SetChBData(this, "ISNTP", true);
         else
-        C84->Com_param.isNTP = 0;
+        WDFunc::SetChBData(this, "ISNTP", false);
     }
 
 }
@@ -138,10 +137,15 @@ void ConfDialog84::FillBack()
         WDFunc::SPBData(this, "Parity", C84->Com_param.parity);
         WDFunc::SPBData(this, "StopBit", C84->Com_param.stopbit);
         WDFunc::SPBData(this, "adrMB", C84->Com_param.adrMB);
-        if(C84->Com_param.isNTP)
+        /*if(C84->Com_param.isNTP)
         WDFunc::SetChBData(this, "ISNTP", true);
         else
-        WDFunc::SetChBData(this, "ISNTP", false);
+        WDFunc::SetChBData(this, "ISNTP", false);*/
+        WDFunc::ChBData(this, "ISNTP", IsNtp);
+        if(IsNtp)
+        C84->Com_param.isNTP = 1;
+        else
+        C84->Com_param.isNTP = 0;
 
     }
 
@@ -486,13 +490,13 @@ void ConfDialog84::SetupUI()
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
     ConfTW->addTab(analog1,"Аналоговые");
 
-   // if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
-   // {
+    if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
+    {
       ConfTW->addTab(analog2,"Уставки и температура");
       ConfTW->addTab(extraconf,"Связь");
-   // }
-   // else
-   // ConfTW->addTab(analog2,"Уставки");
+    }
+    else
+    ConfTW->addTab(analog2,"Уставки");
 
     ConfTW->addTab(time,"Время");
     lyout->addWidget(ConfTW);
@@ -531,10 +535,10 @@ void ConfDialog84::slot2_timeOut()
       myDateTime.setTime_t(unixtimestamp);
       SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
 
-      EMessageBox::information(this, "INFO", "Прочитано успешно");
+      //EMessageBox::information(this, "INFO", "Прочитано успешно");
     }
-    else
-    EMessageBox::information(this, "INFO", "Ошибка");
+    //else
+    //EMessageBox::information(this, "INFO", "Ошибка");
 
 }
 
@@ -555,7 +559,7 @@ void ConfDialog84::Write_PCDate()
     myDateTime = QDateTime::currentDateTimeUtc();
     time = myDateTime.toTime_t();
 
-    if (Commands::WriteTimeMNK(&time, sizeof(quint32)) == Error::ER_NOERROR)
+    if (Commands::WriteTimeMNK(&time, sizeof(uint)) == Error::ER_NOERROR)
     EMessageBox::information(this, "INFO", "Записано успешно");
     else
     EMessageBox::information(this, "INFO", "Ошибка");
@@ -565,7 +569,7 @@ void ConfDialog84::Write_PCDate()
 void ConfDialog84::Write_Date()
 {
     QDateTime myDateTime;
-    uint *time = nullptr;
+    uint *time = new uint;
     QString qStr;
     WDFunc::LE_read_data(this, "Date", qStr);
     myDateTime = QDateTime::fromString(qStr,"dd-MM-yyyy HH:mm:ss");

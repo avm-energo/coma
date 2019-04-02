@@ -240,12 +240,12 @@ int Commands::WriteTimeMNK(uint32_t *Time,  int TimeSize)
 #endif
 }
 
-int Commands::GetTimeMNK(uint32_t &Time)
+int Commands::GetTimeMNK(uint &Time)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    quint8 tmpi;
-    cn->Send(CN_GTime, BoardTypes::BT_NONE, &tmpi, sizeof(quint32));
-    Time = tmpi;
+    //quint8 tmpi;
+    cn->Send(CN_GTime, BoardTypes::BT_NONE, &Time, sizeof(uint));
+    //Time = tmpi;
     return cn->result;
 #else
     Q_UNUSED(Time);

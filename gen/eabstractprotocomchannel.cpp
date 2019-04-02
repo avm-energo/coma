@@ -193,7 +193,7 @@ void EAbstractProtocomChannel::InitiateSend()
         AppendSize(WriteData, outdatasize);
         WriteData.resize(WriteData.size()+outdatasize);
         size_t tmpi = static_cast<size_t>(outdatasize);
-        memcpy(&(WriteData.data()[5]), &outdata[0], tmpi);
+        memcpy(&(WriteData.data()[4]), &outdata[0], tmpi);
         WriteDataToPort(WriteData);
         break;
     }
@@ -251,7 +251,6 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             case CN_NVar:
             case CN_SMode:
             case CN_WTime:
-            case CN_GTime:
             {
                 if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
                 {
@@ -329,6 +328,22 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 bStep++;
                 break;
             }
+
+            case CN_GTime:
+            {
+                if ((RDSize >= outdatasize) || (ReadDataChunkLength < CN_MAXSEGMENTLENGTH))
+                {
+                    emit SetDataSize(RDSize); // установка размера прогрессбара, чтобы не мелькал
+                    RDSize = qMin(outdatasize, RDSize); // если даже приняли больше, копируем только требуемый размер
+                    size_t tmpi = static_cast<size_t>(RDSize);
+                    memcpy(outdata,&(ReadDataChunk.data()[4]),tmpi);
+                    Finish(Error::ER_NOERROR);
+                }
+                else
+                    SendOk(true);
+                break;
+            }
+
             default:
                 Finish(CN_UNKNOWNCMDERROR);
                 break;
@@ -425,6 +440,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 }
                 break;
             }
+
 
             default:
             {
