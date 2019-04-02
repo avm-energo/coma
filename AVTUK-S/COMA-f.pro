@@ -119,7 +119,8 @@ SOURCES += \
     ../gen/parseid9050.cpp \
     ../gen/parseid10031.cpp \
     ../gen/report.cpp \
-    ../gen/parsemodule.cpp
+    ../gen/parsemodule.cpp \
+    ../tune/tunedialog84.cpp
 
 HEADERS  += \
     coma.h \
@@ -218,7 +219,8 @@ HEADERS  += \
     ../gen/parseid10031.h \
     ../gen/parseid9050.h \
     ../gen/report.h \
-    ../gen/parsemodule.h
+    ../gen/parsemodule.h \
+    ../tune/tunedialog84.h
 
 INCLUDEPATH += $$PWD/../../includes
 

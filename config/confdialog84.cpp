@@ -532,7 +532,8 @@ void ConfDialog84::slot2_timeOut()
 
     if (Commands::GetTimeMNK(unixtimestamp) == Error::ER_NOERROR)
     {
-      myDateTime.setTime_t(unixtimestamp);
+      myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
+      //myDateTime.setTime_t(unixtimestamp);
       SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
 
       //EMessageBox::information(this, "INFO", "Прочитано успешно");
@@ -573,9 +574,10 @@ void ConfDialog84::Write_Date()
     QString qStr;
     WDFunc::LE_read_data(this, "Date", qStr);
     myDateTime = QDateTime::fromString(qStr,"dd-MM-yyyy HH:mm:ss");
+    myDateTime.setOffsetFromUtc(0);
     *time = myDateTime.toTime_t();
 
-    if (Commands::WriteTimeMNK(time, sizeof(quint32)) == Error::ER_NOERROR)
+    if (Commands::WriteTimeMNK(time, sizeof(uint)) == Error::ER_NOERROR)
     EMessageBox::information(this, "INFO", "Записано успешно");
     else
     EMessageBox::information(this, "INFO", "Ошибка");

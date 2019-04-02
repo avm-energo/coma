@@ -291,6 +291,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             case CN_GF:
             case CN_GVar:
             case CN_GMode:
+            case CN_GTime:
             {
                 if (!GetLength())
                 {
@@ -329,21 +330,6 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 break;
             }
 
-            case CN_GTime:
-            {
-                if ((RDSize >= outdatasize) || (ReadDataChunkLength < CN_MAXSEGMENTLENGTH))
-                {
-                    emit SetDataSize(RDSize); // установка размера прогрессбара, чтобы не мелькал
-                    RDSize = qMin(outdatasize, RDSize); // если даже приняли больше, копируем только требуемый размер
-                    size_t tmpi = static_cast<size_t>(RDSize);
-                    memcpy(outdata,&(ReadDataChunk.data()[4]),tmpi);
-                    Finish(Error::ER_NOERROR);
-                }
-                else
-                    SendOk(true);
-                break;
-            }
-
             default:
                 Finish(CN_UNKNOWNCMDERROR);
                 break;
@@ -360,7 +346,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             if (RDSize < ReadDataChunkLength)
                 return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
             ReadDataChunk.remove(0, 4); // убираем заголовок с < и длиной
-            ReadData.append(ReadDataChunk.data(), ReadDataChunkLength);
+            ReadData.append(&(ReadDataChunk.data()[0]), ReadDataChunkLength);
             RDSize = ReadData.size();
             emit SetDataCount(RDSize); // сигнал для прогрессбара
             ReadDataChunk.clear();
@@ -373,6 +359,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             case CN_GBt:
             case CN_GVar:
             case CN_GMode:
+            case CN_GTime:
             {
                 if ((RDSize >= outdatasize) || (ReadDataChunkLength < CN_MAXSEGMENTLENGTH))
                 {
