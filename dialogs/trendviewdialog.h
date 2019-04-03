@@ -37,6 +37,8 @@ public:
     void SetupPlots();
     void SetupUI();
     void WriteToFile(int row, QXlsx::Document *xls); // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
+    void SetAnalogDescriptions(QStringList &descr);
+    void SetDiscreteDescriptions(QStringList &descr);
     int WRow;
 //    quint32 id;
 
@@ -81,6 +83,8 @@ private:
     bool RangeChangeInProgress, Starting;
     bool RangeAxisInProgress, StartingAx;
     QByteArray BAToSave;
+    QStringList DiscriptionsAnalog;
+    QStringList DiscriptionsDicrete;
 
     QToolBar *PlotToolBar();
     QCPGraph *GraphByName(const QString &name);

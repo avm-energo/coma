@@ -21,9 +21,9 @@ int ParseID10031::Parse(int &count)
 {
     QStringList tmpdv = QStringList() << "OCNA" << "OCNB" << "OCNC" << "OCFA" << "OCFB" << "OCFC" \
                                          << "BKCA" << "BKCB" << "BKCC" << "BKOA" << "BKOB" << "BKOC" \
-                                         << "CSC" << "CSO" << "CNA" << "CNB" << "CNC" << "CFA" << "CFB" << "CFC" \
+                                         << "CSC" << "CSO" << "CNA" << "CNB" << "CNC" << "CFA" << "CFB" << "CFC";/* \
                                          << "nNA" << "nNB" << "nNC" << "nFA" << "nFB" << "nFC" << "nCA" << "nCB" << "nCC" \
-                                         << "nOA" << "nOB" << "nOC";
+                                         << "nOA" << "nOB" << "nOC";*/
     QStringList tmpav = QStringList() << "USA" << "USB" << "USC" << "IA" << "IB" << "IC" << "ULA" << "ULB" << "ULC";
 
     //ParseID10031::SWJournalRecordStruct SWJ;
@@ -80,7 +80,7 @@ int ParseID10031::ParseID85(OscHeader_Data &OHD, const QString &fn, int &count)
             return Error::ER_GENERALERROR;
 //                quint32 DisPoint = point.Dis & 0x000FFFFF; // оставляем только младшие 20 бит
         quint32 DisPoint = point.Dis;
-        for (int i=0; i<32; ++i)
+        for (int i=0; i<TModel->tmpdv_85.size(); ++i)
         {
             if (DisPoint & 0x00000001)
                 TModel->AddDigitalPoint(TModel->tmpdv_85.at(i), 1);
@@ -88,7 +88,7 @@ int ParseID10031::ParseID85(OscHeader_Data &OHD, const QString &fn, int &count)
                 TModel->AddDigitalPoint(TModel->tmpdv_85.at(i), 0);
             DisPoint >>= 1;
         }
-        for (int i=0; i<9; ++i)
+        for (int i=0; i<TModel->tmpav_85.size(); ++i)
             TModel->AddAnalogPoint(TModel->tmpav_85.at(i), point.An[i]);
     }
     TModel->SetFilename(fn);

@@ -78,8 +78,8 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     if (SWJInf.FileLength)
     {
         glyout->addWidget(WDFunc::NewLBL(this, "Осциллограмма:"),6,0,1,4);
-        QPushButton *pb = new QPushButton;
-        pb->setIcon(QIcon("images/osc.png"));
+        QPushButton *pb = new QPushButton("Открыть осциллограмму");
+        //pb->setIcon(QIcon("images/osc.png"));
         connect(pb,SIGNAL(clicked()),this,SLOT(ShowOsc()));
         glyout->addWidget(pb,6,4,1,1);
     }
@@ -91,12 +91,12 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     vlyout->addLayout(glyout);
     vlyout->addStretch(10);
     glyout = new QGridLayout;
-    QStringList sl = QStringList() << "Значение тока при коммутации, А" << \
-                                      "Значение напряжения при коммутации, кВ" << \
+    QStringList sl = QStringList() << "Мгновенное значение тока в момент коммутации, А" << \
+                                      "Мгновенное значение напряжения в момент коммутации, кВ" << \
                                       "Собственное время коммутации, мс" << "Полное время коммутации, мс" << \
                                       "Время перемещения главного контакта, мс" << "Время горения дуги, мс" << \
-                                      "Время безоперационного простоя к моменту коммутации, ч" << \
-                                      "Погрешность синхронной коммутации, мс";
+                                      "Время безоперационного простоя к моменту коммутации, ч";/* << \
+                                      "Погрешность синхронной коммутации, мс";*/
     glyout->addWidget(WDFunc::NewLBL(this, "Измеренное значение"),0,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "A"),0,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(this, "B"),0,2,1,1);
@@ -150,14 +150,14 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
         value = value/100;
         glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)),row,i+1,1,1);
     }
-    ++row;
+    /*++row;
     glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
     for (int i=0; i<3; ++i)
     {
         value = static_cast<float>(SWJOscFunc->SWJRecord.Inaccuracy[i]);
         value = value/100;
         glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)),row,i+1,1,1);
-    }
+    }*/
     vlyout->addLayout(glyout);
     QPushButton *pb = new QPushButton("Сохранить журнал в файл");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SaveSWJ()));
@@ -230,6 +230,8 @@ void SWJDialog::GetSwjOscData()
             dlg->SetDigitalNames(mdl->tmpdv_85);
             dlg->SetDigitalColors(mdl->dcolors_85);
             dlg->SetAnalogColors(mdl->acolors_85);
+            dlg->SetDiscreteDescriptions(mdl->ddescr_85);
+            dlg->SetAnalogDescriptions(mdl->adescr_85);
             dlg->SetRanges(mdl->xmin, mdl->xmax, -200, 200);
             break;
           }

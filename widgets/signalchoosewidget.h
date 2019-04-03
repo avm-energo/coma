@@ -8,7 +8,7 @@ class SignalChooseWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SignalChooseWidget(QStringList &snames, QWidget *parent = nullptr);
+    explicit SignalChooseWidget(QStringList &snames, QStringList &discr,  QWidget *parent = nullptr);
 
 signals:
     void SignalChoosed(QString signame); // при выборе сигнала - требуется выделить тренд

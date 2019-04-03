@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     Coma w;
 //    w.setAttribute(Qt::WA_AlwaysShowToolTips);
     w.SetMode(Coma::COMA_GENERALMODE);
-    QCoreApplication::setApplicationName("COMA");
+    QCoreApplication::setApplicationName(PROGCAPTION);
     QCoreApplication::setApplicationVersion(COMAVERSION);
     if (argc > 1) // есть аргументы запуска
     {

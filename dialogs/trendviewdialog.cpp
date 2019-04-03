@@ -44,7 +44,7 @@ TrendViewDialog::TrendViewDialog(QByteArray &ba, QWidget *parent) : QDialog(pare
     QString tmps = "QDialog {background-color: "+QString(MAINWINCLRA1)+";}";
     setStyleSheet(tmps);
     //setAttribute(Qt::WA_DeleteOnClose);
-    setWindowFlags(Qt::WindowMinMaxButtonsHint);
+    //setWindowFlags(Qt::WindowMinMaxButtonsHint);
     TrendModel = nullptr;
     RangeChangeInProgress = false;
     RangeAxisInProgress = false;
@@ -63,17 +63,19 @@ void TrendViewDialog::SetupUI()
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
 
+
     if (!NoDiscrete)
     {
-        SignalChooseWidget *scw = new SignalChooseWidget(DigitalDescription.Names);
+        SignalChooseWidget *scw = new SignalChooseWidget(DigitalDescription.Names, DiscriptionsDicrete);
         scw->setObjectName("digital");
+        //scw->setAccessibleDescription("Descr");
         connect(scw,SIGNAL(SignalChoosed(QString)),this,SLOT(DSignalChoosed(QString)));
         connect(scw,SIGNAL(SignalToggled(QString,bool)),this,SLOT(DSignalToggled(QString,bool)));
         vlyout->addWidget(scw);
     }
     if (!NoAnalog)
     {
-        SignalChooseWidget *scw = new SignalChooseWidget(AnalogDescription.Names);
+        SignalChooseWidget *scw = new SignalChooseWidget(AnalogDescription.Names, DiscriptionsAnalog);
         scw->setObjectName("analog");
         connect(scw,SIGNAL(SignalChoosed(QString)),this,SLOT(ASignalChoosed(QString)));
         connect(scw,SIGNAL(SignalToggled(QString,bool)),this,SLOT(ASignalToggled(QString,bool)));
@@ -88,7 +90,7 @@ void TrendViewDialog::SetupUI()
     hlyout->addWidget(MainPlot, 100);
     lyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
-    QPushButton *pb = new QPushButton("Сохранить в Excel");
+    /*QPushButton *pb = new QPushButton("Сохранить в Excel");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(SaveToExcel()));
     hlyout->addWidget(pb);
     hlyout->addStretch(10);
@@ -102,7 +104,7 @@ void TrendViewDialog::SetupUI()
     hlyout->addStretch(10);
     pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(close()));
-    hlyout->addWidget(pb);
+    hlyout->addWidget(pb);*/
     lyout->addLayout(hlyout);
     setLayout(lyout);
 }
@@ -395,6 +397,16 @@ void TrendViewDialog::SetDigitalNames(QStringList &names)
 void TrendViewDialog::SetAnalogNames(QStringList &names)
 {
     AnalogDescription.Names = names;
+}
+
+void TrendViewDialog::SetAnalogDescriptions(QStringList &descr)
+{
+    DiscriptionsAnalog= descr;
+}
+
+void TrendViewDialog::SetDiscreteDescriptions(QStringList &descr)
+{
+    DiscriptionsDicrete = descr;
 }
 
 void TrendViewDialog::SetDigitalColors(QStringList &colors)

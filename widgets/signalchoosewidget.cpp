@@ -3,7 +3,7 @@
 #include "../widgets/wd_func.h"
 #include "signalchoosewidget.h"
 
-SignalChooseWidget::SignalChooseWidget(QStringList &snames, QWidget *parent) : QWidget(parent)
+SignalChooseWidget::SignalChooseWidget(QStringList &snames, QStringList &discr, QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QString tmps = "QDialog {background-color: "+QString(MAINWINCLRA1)+";}";
@@ -16,6 +16,7 @@ SignalChooseWidget::SignalChooseWidget(QStringList &snames, QWidget *parent) : Q
         connect(chb,SIGNAL(toggled(bool)),this,SLOT(SignalChecked(bool)));
         hlyout->addWidget(chb, 0);
         MarkSignalWidget *w = new MarkSignalWidget(snames.at(idx));
+        w->setToolTip(discr.at(idx));
         w->setObjectName(snames.at(idx));
         connect(w,SIGNAL(Clicked()),this,SLOT(SignalClicked()));
         hlyout->addWidget(w);
