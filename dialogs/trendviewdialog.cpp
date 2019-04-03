@@ -506,14 +506,13 @@ void TrendViewDialog::SetupPlots()
 
             while ((count < AnalogGraphNum) && (AnalogGraphs.size() < MAXGRAPHSPERPLOT))
             {
+/*                QString tmps = AnalogDescription.Names.at(count); */
                 QString tmps = AnalogDescription.Names.at(count);
-                /*if(count<3 || count>5)
-                QString tmpsU = AnalogDescription.Names.at(count);
+                QCPGraph *graph;
+                if(count<3 || count>5)
+                    graph = MainPlot->addGraph(AnalogAxisRect->axis(QCPAxis::atBottom), AnalogAxisRect->axis(QCPAxis::atLeft));
                 else
-                QString tmpsI = AnalogDescription.Names.at(count);*/
-
-                QCPGraph *graph = MainPlot->addGraph(AnalogAxisRect->axis(QCPAxis::atBottom), AnalogAxisRect->axis(QCPAxis::atLeft));
-               // QCPGraph *graph2 = MainPlot->addGraph(AnalogAxisRect->axis(QCPAxis::atBottom),  AnalogAxisRect->axis(QCPAxis::atLeft, 1));
+                    graph = MainPlot->addGraph(AnalogAxisRect->axis(QCPAxis::atBottom),  AnalogAxisRect->axis(QCPAxis::atLeft, 1));
                 if (!AnalogDescription.Colors[tmps].isEmpty())
                     pen.setColor(QColor(AnalogDescription.Colors[tmps]));
                 else
@@ -522,17 +521,11 @@ void TrendViewDialog::SetupPlots()
                 graph->valueAxis()->setRange(YMin, YMax);
                 graph->keyAxis()->setLabel("Time, ms");
                 graph->keyAxis()->setRange(XMin, XMax);
-    //            graph->valueAxis()->setLabel(tmps);
+                graph->valueAxis()->setLabel(tmps);
                 graph->setName(tmps);
                 AnalogGraphs[tmps] = graph;
                 AnalogLegend->addItem(new QCPPlottableLegendItem(AnalogLegend, graph));
 
-               /*graph2->setPen(pen);
-                graph2->valueAxis()->setRange(YMin, YMax);
-                graph2->keyAxis()->setRange(XMin, XMax);
-                graph2->setName(tmps);
-                AnalogGraphs[tmps] = graph2;
-                AnalogLegend->addItem(new QCPPlottableLegendItem(AnalogLegend, graph2));*/
 
                 ++count;
             }

@@ -308,6 +308,8 @@ int EOscillogram::ProcessOsc(TrendViewModel *mdl)
                 }
                 break;
             }
+            if (PM == nullptr)
+                return Error::ER_GENERALERROR;
             if (PM -> Parse(Pos) != Error::ER_NOERROR)
                 return Error::ER_GENERALERROR;
 
@@ -315,12 +317,12 @@ int EOscillogram::ProcessOsc(TrendViewModel *mdl)
                 return Error::ER_GENERALERROR;
             memcpy(&DR, &(BA.data()[Pos]), sizeof(DR));
             Pos += sizeof (DR);
-            *mdl = *(PM->TModel);
+            mdl = PM->TModel;
 //            PM->Save(len);
             //len = PM->len;
         }
         else
-        break;
+            break;
 
     }
     /*
