@@ -467,7 +467,7 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
     int SWJRSize = sizeof(SWJDialog::SWJournalRecordStruct);
     //int GBOSize = sizeof(EOscillogram::GBoStruct);
     float value;
-    QString str;
+    QString str, tmps;
 
 
     if (Files::LoadFromFile(filename, OscFunc->BA) == Files::ER_NOERROR)
@@ -509,8 +509,15 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
         glyout->addWidget(WDFunc::NewLBL(this, "Переключение"),0,4,1,2);
         glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.Num)), 1,0,1,1);
         glyout->addWidget(WDFunc::NewLBLT(this, TimeFunc::UnixTime64ToString(OscFunc->SWJRecord.Time)),1,1,1,1);
-        QStringList tmpsl = QStringList() << "D" << "G" << "CB";
-        QString tmps = (OscFunc->SWJRecord.TypeA < tmpsl.size()) ? tmpsl.at(OscFunc->SWJRecord.TypeA) : "N/A";
+        QStringList tmpsl = QStringList() << "CB" << "G" << "D";
+        if(OscFunc->SWJRecord.TypeA == 1)
+        tmps = tmpsl.at(0); //: "N/A";
+        else if(OscFunc->SWJRecord.TypeA == 2)
+        tmps = tmpsl.at(1);
+        else if(OscFunc->SWJRecord.TypeA == 4)
+        tmps = tmpsl.at(2);
+        else
+        tmps = "N/A";
         glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,2,1,1);
         glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.NumA)),1,3,1,1);
         tmps = (OscFunc->SWJRecord.Options & 0x00000001) ? "ВКЛЮЧЕНИЕ" : "ОТКЛЮЧЕНИЕ";
