@@ -68,47 +68,58 @@ public:
 
 
 private:
-    struct AnalogDescriptionStruct
+    enum SignalTypes
+    {
+        ST_ANALOG,
+        ST_DIGITAL
+    };
+
+    struct DescriptionStruct
     {
         QStringList Names;
+        QStringList Descriptions;
         QMap<QString, QString> Colors;
     };
-    int AnalogRectIndex, DiscreteRectIndex;
+
+    struct SignalOscPropertiesStruct
+    {
+        SignalTypes Type;
+        int LeftAxisIndex;
+        QCPGraph *Graph;
+        bool Visible;
+    };
+
+    QMap<QString, SignalOscPropertiesStruct> SignalOscPropertiesMap;
     QPointer<QCustomPlot> MainPlot;
     QCPLegend *AnalogLegend, *DiscreteLegend;
-    QMap<QString, QCPGraph *> AnalogGraphs, DigitalGraphs;
-    AnalogDescriptionStruct AnalogDescription, DigitalDescription;
+//    QMap<QString, QCPGraph *> AnalogGraphs, DigitalGraphs;
+    DescriptionStruct AnalogDescription, DigitalDescription;
     float XMin, XMax, YMin, YMax;
     bool NoDiscrete, NoAnalog;
     bool RangeChangeInProgress, Starting;
     bool RangeAxisInProgress, StartingAx;
+    bool DigitalRescaleActivated, AnalogRescaleActivated; // should we rescale upper and lower ranges automatically
+                            // to let the zero not moving
     QByteArray BAToSave;
-    QStringList DiscriptionsAnalog;
-    QStringList DiscriptionsDicrete;
 
-    QToolBar *PlotToolBar();
-    QCPGraph *GraphByName(const QString &name);
+    QToolBar *PlotToolBar(SignalTypes type);
     void ChangeRange(QCPRange range);
-//    void ChangeAxisRange(QCPRange range);
     QCPLegend *SetLegend(int rectindex);
-
+    int SignalOscDescriptionSize(SignalTypes type); // get current visible signals of type type
 
 private slots:
     void graphClicked(QCPAbstractPlottable *plot, int dataIndex);
-    void ASignalChoosed(QString signame);
-    void ASignalToggled(QString signame, bool isChecked);
-    void DSignalChoosed(QString signame);
-    void DSignalToggled(QString signame, bool isChecked);
-    void GraphSetVisible(int rectindex, const QString &graphname, bool visible);
+    void SignalChoosed(QString signame);
+    void SignalToggled(QString signame, bool isChecked);
     void DigitalRangeChanged(QCPRange range);
     void AnalogRangeChanged(QCPRange range);
-//    void Analog2RangeChanged(QCPRange range);
-//    void AxisRangeChanged(QCPRange range);
     void MouseWheel();
     void MousePress();
     void SaveToExcel();
     void SaveToComtrade();
     void SaveToOsc();
+    void SetRescale(bool isChecked);
+    void AutoResizeRange(QCPAxisRect *rect, int index);
 };
 
 #endif // TRENDVIEWDIALOG_H
