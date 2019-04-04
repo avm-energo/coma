@@ -28,7 +28,7 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
 
     QStringList phase = {"фазы А, В, С","фаза А","фаза В","фаза С"};
     float value;
-    QString str;
+    QString str, tmps;
 
 
     GetSwjOscData();
@@ -40,8 +40,15 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     glyout->addWidget(WDFunc::NewLBL(this, "Переключение"),0,4,1,2);
     glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.Num)), 1,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(this, TimeFunc::UnixTime64ToString(SWJOscFunc->SWJRecord.Time)),1,1,1,1);
-    QStringList tmpsl = QStringList() << "D" << "G" << "CB";
-    QString tmps = (SWJOscFunc->SWJRecord.TypeA < tmpsl.size()) ? tmpsl.at(SWJOscFunc->SWJRecord.TypeA) : "N/A";
+    QStringList tmpsl = QStringList() << "CB" << "G" << "D";
+    if(SWJOscFunc->SWJRecord.TypeA == 1)
+    tmps = tmpsl.at(0); //: "N/A";
+    else if(SWJOscFunc->SWJRecord.TypeA == 2)
+    tmps = tmpsl.at(1);
+    else if(SWJOscFunc->SWJRecord.TypeA == 4)
+    tmps = tmpsl.at(2);
+    else
+    tmps = "N/A";
     glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,2,1,1);
     glyout->addWidget(WDFunc::NewLBLT(this, QString::number(SWJOscFunc->SWJRecord.NumA)),1,3,1,1);
     tmps = (SWJOscFunc->SWJRecord.Options & 0x00000001) ? "ВКЛЮЧЕНИЕ" : "ОТКЛЮЧЕНИЕ";
