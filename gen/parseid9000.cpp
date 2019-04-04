@@ -73,7 +73,7 @@ int ParseID9000::Parse(int &count)
 
 int ParseID9000::ParseID21(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
 {
-
+    Q_UNUSED(id);
     if (!TModel->SetPointsAxis(0, OHD.step))
         return Error::ER_GENERALERROR;
     for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
@@ -92,6 +92,7 @@ int ParseID9000::ParseID21(quint32 id, OscHeader_Data &OHD, const QString &fn, T
 
 int ParseID9000::ParseID8x(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
 {
+    Q_UNUSED(id);
     //tmpav << "UA" << "UB" << "UC" << "IA" << "IB" << "IC";
    // tmpdv.clear();
 //            int np = C80
@@ -118,6 +119,11 @@ int ParseID9000::ParseID8x(quint32 id, OscHeader_Data &OHD, const QString &fn, T
 
 int ParseID9000::ParseID85(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
 {
+    Q_UNUSED(id);
+    Q_UNUSED(count);
+    Q_UNUSED(dlg);
+    Q_UNUSED(fn);
+    Q_UNUSED(OHD);
     /*tmpdv << "OCNA" << "OCNB" << "OCNC" << "OCFA" << "OCFB" << "OCFC" << \
              "BKCA" << "BKCB" << "BKCC" << "BKOA" << "BKOB" << "BKOC" << \
              "CSC" << "CSO" << "CNA" << "CNB" << "CNC" << "CFA" << "CFB" << "CFC" << \

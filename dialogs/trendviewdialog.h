@@ -89,7 +89,7 @@ private:
     QToolBar *PlotToolBar();
     QCPGraph *GraphByName(const QString &name);
     void ChangeRange(QCPRange range);
-    void ChangeAxisRange(QCPRange range);
+//    void ChangeAxisRange(QCPRange range);
     QCPLegend *SetLegend(int rectindex);
 
 
@@ -102,7 +102,10 @@ private slots:
     void GraphSetVisible(int rectindex, const QString &graphname, bool visible);
     void DigitalRangeChanged(QCPRange range);
     void AnalogRangeChanged(QCPRange range);
-    void AxisRangeChanged(QCPRange range);
+//    void Analog2RangeChanged(QCPRange range);
+//    void AxisRangeChanged(QCPRange range);
+    void MouseWheel();
+    void MousePress();
     void SaveToExcel();
     void SaveToComtrade();
     void SaveToOsc();

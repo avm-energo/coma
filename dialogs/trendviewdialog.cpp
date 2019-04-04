@@ -147,8 +147,9 @@ void TrendViewDialog::ChangeRange(QCPRange range)
     MainPlot->replot();
 }
 
-void TrendViewDialog::ChangeAxisRange(QCPRange range)
+/*void TrendViewDialog::ChangeAxisRange(QCPRange range)
 {
+    Q_UNUSED(range);
     if (RangeAxisInProgress || Starting)
     {
         RangeAxisInProgress = false;
@@ -157,9 +158,13 @@ void TrendViewDialog::ChangeAxisRange(QCPRange range)
     RangeAxisInProgress = true;
     QList<QCPAxisRect *> axisrects = MainPlot->axisRects();
     foreach(QCPAxisRect *rect, axisrects)
-    rect->axis(QCPAxis::atLeft, 1)->setRange(range);
+    {
+        QCPAxis *axis = rect->axis(QCPAxis::atLeft, 1);
+        if (axis != nullptr)
+            axis->setRange(range);
+    }
     MainPlot->replot();
-}
+}*/
 
 QCPLegend *TrendViewDialog::SetLegend(int rectindex)
 {
@@ -296,10 +301,83 @@ void TrendViewDialog::DigitalRangeChanged(QCPRange range)
         ChangeRange(range);
 }
 
-void TrendViewDialog::AxisRangeChanged(QCPRange range)
+/*void TrendViewDialog::AxisRangeChanged(QCPRange range)
 {
-        if(!NoDiscrete)
+    if(!NoDiscrete)
         ChangeAxisRange(range);
+} */
+
+void TrendViewDialog::MouseWheel()
+{
+    // https://stackoverflow.com/questions/36807980/qcustomplot-mouse-interaction-on-secondary-axis
+    // if an axis is selected, only allow the direction of that axis to be zoomed
+    // if no axis is selected, both directions may be zoomed
+    QList<QCPAxisRect *> axisrects = MainPlot->axisRects();
+    foreach(QCPAxisRect *rect, axisrects)
+    {
+        QCPAxis *axis = rect->axis(QCPAxis::atBottom, 0);
+        if ((axis != nullptr) && (axis->selectedParts().testFlag(QCPAxis::spAxis)))
+        {
+            rect->setRangeZoomAxes(axis, rect->axis(QCPAxis::atLeft, 0));
+            rect->setRangeZoom(axis->orientation());
+            continue;
+        }
+        axis = rect->axis(QCPAxis::atLeft, 0);
+        if ((axis != nullptr) && (axis->selectedParts().testFlag(QCPAxis::spAxis)))
+        {
+            rect->setRangeZoomAxes(rect->axis(QCPAxis::atBottom, 0), axis);
+            rect->setRangeZoom(axis->orientation());
+            continue;
+        }
+        axis = rect->axis(QCPAxis::atLeft, 1);
+        if ((axis != nullptr) && (axis->selectedParts().testFlag(QCPAxis::spAxis)))
+        {
+            rect->setRangeZoomAxes(rect->axis(QCPAxis::atBottom, 0), axis);
+            rect->setRangeZoom(axis->orientation());
+            continue;
+        }
+        else
+          rect->setRangeZoom(0); // deny zoom when none of axes selected
+    }
+}
+
+void TrendViewDialog::MousePress()
+{
+/*    QList<QCPAxis*> axesList;
+
+    // https://github.com/mmccullo/qcustomplot-interaction-example/blob/master/mainwindow.cpp
+    // if an axis is selected, only allow the direction of that axis to be dragged
+    // if no axis is selected, check if a graph is selected and drag both axes
+
+    QList<QCPAxisRect *> axisrects = MainPlot->axisRects();
+    foreach(QCPAxisRect *rect, axisrects)
+    {
+        axesList.clear();
+        foreach(QCPAxis *axis, rect->axes())
+        {
+            if ((axis != nullptr) && (axis->selectedParts().testFlag(QCPAxis::spAxis)))
+                axesList.append(axis);
+        }
+
+        bool selectedGraph = false;
+
+        // is a graph selected?
+        QList<QCPGraph *> GraphList = rect->graphs();
+        for (int i = 0; i < GraphList.size(); ++i)
+        {
+            QCPGraph *graph = GraphList.at(i);
+            if (graph->selected())
+            {
+                selectedGraph = true;
+                axesList.append(graph->keyAxis());
+                axesList.append(graph->valueAxis());
+                break;
+            }
+        }
+
+        // set the axes to drag
+        rect->setRangeDragAxes(axesList);
+    } */
 }
 
 
@@ -308,6 +386,24 @@ void TrendViewDialog::AnalogRangeChanged(QCPRange range)
     if (!NoDiscrete)
         ChangeRange(range);
 }
+
+/*void TrendViewDialog::Analog2RangeChanged(QCPRange range)
+{
+    if (RangeAxisInProgress || Starting)
+    {
+        RangeAxisInProgress = false;
+        return;
+    }
+    RangeAxisInProgress = true;
+    QList<QCPAxisRect *> axisrects = MainPlot->axisRects();
+    foreach(QCPAxisRect *rect, axisrects)
+    {
+        QCPAxis *axis = rect->axis(QCPAxis::atLeft, 1);
+        if (axis != nullptr)
+            axis->setRange(range);
+    }
+    MainPlot->replot();
+} */
 
 void TrendViewDialog::SaveToExcel()
 {
@@ -442,7 +538,7 @@ void TrendViewDialog::SetupPlots()
     MainPlot = new QCustomPlot;
     MainPlot->setBackground(QBrush(QColor(ACONFYCLR)));
     MainPlot->plotLayout()->clear();
-    MainPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    MainPlot->setInteractions(QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectAxes);
     MainPlot->setAutoAddPlottableToLegend(false);
     int MainPlotLayoutRow = 0;
     int RectIndex = 0;
@@ -482,6 +578,8 @@ void TrendViewDialog::SetupPlots()
 
             ++count;
         }
+        QCPAxis *axis = DigitalAxisRect->axis(QCPAxis::atBottom);
+        axis->setSelectableParts(QCPAxis::spAxis);
         DigitalAxisRect->insetLayout()->setMargins(QMargins(12, 12, 12, 12));
         connect(DigitalAxisRect->axis(QCPAxis::atBottom), SIGNAL(rangeChanged(QCPRange)),this,SLOT(DigitalRangeChanged(QCPRange)));
     }
@@ -494,7 +592,7 @@ void TrendViewDialog::SetupPlots()
         title->setFont(QFont("sans", 12, QFont::Bold));
         MainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, title); // place the title in the empty cell we've just created
         QCPAxisRect *AnalogAxisRect = new QCPAxisRect(MainPlot);
-        //AnalogAxisRect->addAxis(QCPAxis::atLeft);
+        AnalogAxisRect->addAxis(QCPAxis::atLeft);
         AnalogRectIndex = RectIndex++;
         MainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, AnalogAxisRect);
         AnalogLegend = SetLegend(MainPlotLayoutRow++);
@@ -506,13 +604,18 @@ void TrendViewDialog::SetupPlots()
 
             while ((count < AnalogGraphNum) && (AnalogGraphs.size() < MAXGRAPHSPERPLOT))
             {
-/*                QString tmps = AnalogDescription.Names.at(count); */
                 QString tmps = AnalogDescription.Names.at(count);
                 QCPGraph *graph;
                 if(count<3 || count>5)
+                {
                     graph = MainPlot->addGraph(AnalogAxisRect->axis(QCPAxis::atBottom), AnalogAxisRect->axis(QCPAxis::atLeft));
+                    graph->valueAxis()->setLabel("I");
+                }
                 else
+                {
                     graph = MainPlot->addGraph(AnalogAxisRect->axis(QCPAxis::atBottom),  AnalogAxisRect->axis(QCPAxis::atLeft, 1));
+                    graph->valueAxis()->setLabel("U");
+                }
                 if (!AnalogDescription.Colors[tmps].isEmpty())
                     pen.setColor(QColor(AnalogDescription.Colors[tmps]));
                 else
@@ -521,7 +624,6 @@ void TrendViewDialog::SetupPlots()
                 graph->valueAxis()->setRange(YMin, YMax);
                 graph->keyAxis()->setLabel("Time, ms");
                 graph->keyAxis()->setRange(XMin, XMax);
-                graph->valueAxis()->setLabel(tmps);
                 graph->setName(tmps);
                 AnalogGraphs[tmps] = graph;
                 AnalogLegend->addItem(new QCPPlottableLegendItem(AnalogLegend, graph));
@@ -530,7 +632,8 @@ void TrendViewDialog::SetupPlots()
                 ++count;
             }
 
-             //connect(AnalogAxisRect->axis(QCPAxis::atLeft, 0), SIGNAL(rangeChanged(QCPRange)),this,SLOT(AxisRangeChanged(QCPRange)));
+//            connect(AnalogAxisRect->axis(QCPAxis::atLeft, 1), SIGNAL(rangeChanged(QCPRange)),this,SLOT(Analog2RangeChanged(QCPRange)));
+//             connect(AnalogAxisRect->axis(QCPAxis::atLeft, 0), SIGNAL(rangeChanged(QCPRange)),this,SLOT(AxisRangeChanged(QCPRange)));
 
             break;
 
@@ -569,11 +672,15 @@ void TrendViewDialog::SetupPlots()
         }
 
         AnalogAxisRect->insetLayout()->setMargins(QMargins(12, 12, 12, 12));
+        QCPAxis *axis = AnalogAxisRect->axis(QCPAxis::atBottom);
+        axis->setSelectableParts(QCPAxis::spAxis);
         connect(AnalogAxisRect->axis(QCPAxis::atBottom), SIGNAL(rangeChanged(QCPRange)),this,SLOT(AnalogRangeChanged(QCPRange)));
 
     }
     else
         NoAnalog = true;
     connect(MainPlot, SIGNAL(plottableClick(QCPAbstractPlottable*,int,QMouseEvent*)), this, SLOT(graphClicked(QCPAbstractPlottable*,int)));
+    connect(MainPlot, SIGNAL(mouseWheel(QWheelEvent*)), this, SLOT(MouseWheel()));
+    connect(MainPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(MousePress()));
     Starting = false;
 }

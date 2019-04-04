@@ -385,12 +385,12 @@ int MainWindow::CheckPassword()
 #ifndef MODULE_A1
 void MainWindow::LoadOscFromFile(const QString &filename)
 {
-    quint32 len;
+    quint32 len = 0;
 
     if (Files::LoadFromFile(filename, OscFunc->BA) == Files::ER_NOERROR)
     {
         TrendViewDialog *dlg = new TrendViewDialog(OscFunc->BA);
-        TrendViewModel *mdl = nullptr;
+        TrendViewModel *mdl = new TrendViewModel(QStringList(), QStringList(), len);
         OscFunc->ProcessOsc(mdl);
         mdl->xmax = (static_cast<float>(mdl->Len/2));
         mdl->xmin = -mdl->xmax;
@@ -517,11 +517,12 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
         glyout->addWidget(WDFunc::NewLBLT(this, tmps),1,4,1,2);
         glyout->addWidget(WDFunc::NewLBL(this, "Тип коммутации:"),3,0,1,4);
 
-        if(((OscFunc->SWJRecord.Options >> 1) & 3))
+        quint32 tmpi32 = (OscFunc->SWJRecord.Options >> 1) & 0x03;
+        if (tmpi32)
         {
-            if(((OscFunc->SWJRecord.Options > 1) & 3) == 2)
+            if (tmpi32 == 2)
             tmps = "Несинхронная от АВ-ТУК";
-            else if(((OscFunc->SWJRecord.Options >> 1) & 3) == 3)
+            else if (tmpi32 == 3)
             tmps = "Синхронная от АВ-ТУК";
 
         }
