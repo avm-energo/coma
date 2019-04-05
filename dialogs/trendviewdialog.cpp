@@ -161,12 +161,12 @@ QCPLegend *TrendViewDialog::SetLegend(int rectindex)
     return rectlegend;
 }
 
-int TrendViewDialog::SignalOscDescriptionSize(TrendViewDialog::SignalTypes type)
+int TrendViewDialog::VisibleSignalOscDescriptionSize(TrendViewDialog::SignalTypes type)
 {
     int count = 0;
     foreach (SignalOscPropertiesStruct st, SignalOscPropertiesMap)
     {
-        if (st.Type == type)
+        if ((st.Type == type) && (st.Visible == true))
             ++count;
     }
     return count;
@@ -193,29 +193,32 @@ void TrendViewDialog::SignalToggled(QString signame, bool isChecked)
 {
     if (SignalOscPropertiesMap.keys().contains(signame))
     {
-        if ((!isChecked) && SignalOscPropertiesMap[signame].Visible) // signal to be deleted from plot
+        if (!isChecked) // signal to be deleted from plot
         {
-            QCPGraph *graph = SignalOscPropertiesMap[signame].Graph;
-            if (graph == nullptr)
-                return;
-            MainPlot->removeGraph(graph);
-            SignalOscPropertiesMap[signame].Graph = nullptr;
-            SignalTypes st = SignalOscPropertiesMap[signame].Type;
-            if (st == ST_ANALOG)
-                AnalogLegend->remove(AnalogLegend->itemWithPlottable(graph));
-            else if (st == ST_DIGITAL)
-                DiscreteLegend->remove(DiscreteLegend->itemWithPlottable(graph));
-            else
-                DBGMSG;
-            SignalOscPropertiesMap[signame].Visible = false;
+            if (SignalOscPropertiesMap[signame].Visible)
+            {
+                QCPGraph *graph = SignalOscPropertiesMap[signame].Graph;
+                if (graph == nullptr)
+                    return;
+                MainPlot->removeGraph(graph);
+                SignalOscPropertiesMap[signame].Graph = nullptr;
+                SignalTypes st = SignalOscPropertiesMap[signame].Type;
+                if (st == ST_ANALOG)
+                    AnalogLegend->remove(AnalogLegend->itemWithPlottable(graph));
+                else if (st == ST_DIGITAL)
+                    DiscreteLegend->remove(DiscreteLegend->itemWithPlottable(graph));
+                else
+                    DBGMSG;
+                SignalOscPropertiesMap[signame].Visible = false;
+            }
         }
         else // signal to be added to plot
         {
             if (SignalOscPropertiesMap[signame].Visible) // visible already
                 return;
             SignalChooseWidget *scw = this->findChild<SignalChooseWidget *>("digital");
-            int analogcount = SignalOscDescriptionSize(ST_ANALOG);
-            int digitalcount = SignalOscDescriptionSize(ST_DIGITAL);
+            int analogcount = VisibleSignalOscDescriptionSize(ST_ANALOG);
+            int digitalcount = VisibleSignalOscDescriptionSize(ST_DIGITAL);
             if (((SignalOscPropertiesMap[signame].Type == ST_DIGITAL) && (digitalcount < MAXGRAPHSPERPLOT)) || \
                     ((SignalOscPropertiesMap[signame].Type == ST_ANALOG) && (analogcount < MAXGRAPHSPERPLOT)))
             {
@@ -228,8 +231,10 @@ void TrendViewDialog::SignalToggled(QString signame, bool isChecked)
                     SignalTypes type = SignalOscPropertiesMap[signame].Type;
                     QCPAxisRect *AxisRect = (type == ST_ANALOG) ? \
                                 MainPlot->axisRect(1) : MainPlot->axisRect(0);
-                    int axisindex = (signame.at(0) == "I") ? 1 : 0;
+                    int axisindex = (signame.at(0) == "I") ? 0 : 1;
                     QCPGraph *graph = MainPlot->addGraph(AxisRect->axis(QCPAxis::atBottom), AxisRect->axis(QCPAxis::atLeft, axisindex));
+                    SignalOscPropertiesMap[signame].Visible = true;
+                    SignalOscPropertiesMap[signame].Graph = graph;
                     QPen pen;
     /*                graph->keyAxis()->setLabel("Time, ms");
                     graph->keyAxis()->setRange(XMin, XMax);
@@ -321,7 +326,7 @@ void TrendViewDialog::MouseWheel()
         if (rect != nullptr)
         {
             AutoResizeRange(rect, 0);
-//            AutoResizeRange(rect, 1);
+            AutoResizeRange(rect, 1);
         }
     }
     MainPlot->replot();

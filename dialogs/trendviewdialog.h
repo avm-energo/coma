@@ -105,7 +105,7 @@ private:
     QToolBar *PlotToolBar(SignalTypes type);
     void ChangeRange(QCPRange range);
     QCPLegend *SetLegend(int rectindex);
-    int SignalOscDescriptionSize(SignalTypes type); // get current visible signals of type type
+    int VisibleSignalOscDescriptionSize(SignalTypes type); // get current visible signals of type type
 
 private slots:
     void graphClicked(QCPAbstractPlottable *plot, int dataIndex);
