@@ -9,7 +9,7 @@
 #include "../gen/eoscillogram.h"
 
 
-#define MAXGRAPHSPERPLOT    16
+#define MAXGRAPHSPERPLOT    14
 #define MT_ID85            10030 // ID осциллограммы по модулю 8085
 #define ID_OSC_CH0         10040 // ID осциллограммы канала 0 модуля 87
 #define ID_OSC_CH7         10047 // ID осциллограммы канала 7 модуля 87
