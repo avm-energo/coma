@@ -460,6 +460,7 @@ void EAbstractProtocomChannel::SetWRSegNum()
 
 void EAbstractProtocomChannel::WRCheckForNextSegment(int first)
 {
+    //quint8 ForMihalich = 0;
     QByteArray tmpba;
     if (SegLeft)
     {
@@ -482,9 +483,13 @@ void EAbstractProtocomChannel::WRCheckForNextSegment(int first)
         tmpba += WriteData.right(WriteData.size() - SegEnd);
         SegEnd = WriteData.size();
         WriteData.clear();
+        //ForMihalich = 1;
     }
     emit SetDataCount(SegEnd);
     WriteDataToPort(tmpba);
+
+    //if(ForMihalich == 1)
+    //SendOk(true);
 }
 
 void EAbstractProtocomChannel::SendOk(bool cont)

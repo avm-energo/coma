@@ -28,7 +28,7 @@ CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent) : EAbstractCheck
     setStyleSheet(tmps);
     QStringList sl;
     BdNum = 6;
-    Ch84 = new Check_84;
+    Ch84 = new Check_84(board, parent);
     Ch = new Check;
 //    BdNum = 11;
 

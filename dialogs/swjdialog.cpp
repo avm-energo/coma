@@ -57,10 +57,10 @@ void SWJDialog::Init(SWJDialog::SWJINFStruct swj)
     if((SWJOscFunc->SWJRecord.Options >> 1))
     {
         if(((SWJOscFunc->SWJRecord.Options >> 1) & 0x00000001))
-        tmps = "Несинхронная от АВ-ТУК";
+        tmps = "Несинхронная от АВМ-СК";
 
         if(((SWJOscFunc->SWJRecord.Options >> 1) & 0x00000011) == 3)
-        tmps = "Синхронная от АВ-ТУК";
+        tmps = "Синхронная от АВМ-СК";
 
     }
     else

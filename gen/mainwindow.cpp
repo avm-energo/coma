@@ -528,9 +528,9 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
         if (tmpi32)
         {
             if (tmpi32 == 2)
-            tmps = "Несинхронная от АВ-ТУК";
+            tmps = "Несинхронная от АВМ-СК";
             else if (tmpi32 == 3)
-            tmps = "Синхронная от АВ-ТУК";
+            tmps = "Синхронная от АВМ-СК";
 
         }
         else
