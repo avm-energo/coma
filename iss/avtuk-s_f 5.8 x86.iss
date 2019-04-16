@@ -53,7 +53,7 @@ Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{localappdata}\{#EngName}"; Flags
 Source: "{#Prefix}\coma\reports\*.*"; DestDir: "{localappdata}\{#EngName}"; Flags: ignoreversion
 Source: "{#Prefix}\coma\images\*.*"; DestDir: "{app}\images"; Flags: ignoreversion
 Source: "{#Prefix}\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
-; Source: "coma\pdf\КОМА Руководство пользователя.pdf"; DestDir: "{app}"
+Source: "{#Prefix}\coma\readme.txt"; DestDir: "{app}"
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
