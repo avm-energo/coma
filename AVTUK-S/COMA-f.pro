@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.2.259
+VERSION = 2.2.260
 
 QT       += core gui printsupport network
 
@@ -79,6 +79,7 @@ SOURCES += \
     ../tune/tunedialog21.cpp \
     ../tune/tunedialog22.cpp \
     ../tune/tunedialog80.cpp \
+    ../tune/tunedialog84.cpp \
     ../tune/tunedialoga1.cpp \
     ../tune/tunedialoga1dn.cpp \
     ../widgets/ecombobox.cpp \

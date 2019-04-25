@@ -52,6 +52,7 @@
 #include "../tune/tunedialog21.h"
 #include "../tune/tunedialog22.h"
 #include "../tune/tunedialog80.h"
+#include "../tune/tunedialog84.h"
 #include "../tune/tunedialog85.h"
 #include "../tune/tunedialoga1.h"
 #include "../tune/tunedialoga1dn.h"
@@ -444,6 +445,7 @@ void Coma::PrepareDialogs()
     {
         setMinimumSize(QSize(800, 650));
         ConfM = new ConfDialog84(S2Config);
+        TuneM = new TuneDialog84(S2ConfigForTune);
         break;
     }
     case Config::MTM_85:

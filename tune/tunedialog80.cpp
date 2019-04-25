@@ -991,6 +991,7 @@ bool TuneDialog80::IsWithinLimits(double number, double base, double threshold)
         return false;
 }
 
+
 int TuneDialog80::CheckMip()
 {
     double ValuesToCheck[10] = {S0,HZ50,HZ50,HZ50,MVTC.u,MVTC.u,MVTC.u,MVTC.i[0],MVTC.i[1],MVTC.i[2]};
@@ -1305,7 +1306,7 @@ void TuneDialog80::MsgClear()
 
 void TuneDialog80::CancelTune()
 {
-    Cancelled = true;
+    StdFunc::Cancel();
 }
 #endif
 
