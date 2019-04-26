@@ -552,28 +552,44 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
             }
         }
         glyout->addWidget(WDFunc::NewLBLT(this, tmps),5,4,1,1);
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Напряжение питания цепей соленоидов, В:"),6,0,1,4);
+
+        if(OscFunc->SWJRecord.SupplyVoltage == std::numeric_limits<float>::max())
+        glyout->addWidget(WDFunc::NewLBLT(this, "-"),6,4,1,1);
+        else
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.SupplyVoltage)),6,4,1,1);
+
+        glyout->addWidget(WDFunc::NewLBL(this, "Температура окружающей среды, Град:"),7,0,1,4);
+
+        if(OscFunc->SWJRecord.Tokr == std::numeric_limits<float>::max())
+        glyout->addWidget(WDFunc::NewLBLT(this, "-"),7,4,1,1);
+        else
+        glyout->addWidget(WDFunc::NewLBLT(this, QString::number(OscFunc->SWJRecord.Tokr)),7,4,1,1);
+
         if (swjr.FileLength)
         {
-            glyout->addWidget(WDFunc::NewLBL(this, "Осциллограмма:"),6,0,1,4);
+            glyout->addWidget(WDFunc::NewLBL(this, "Осциллограмма:"),8,0,1,4);
             QPushButton *pb = new QPushButton("Открыть осциллограмму");
             //pb->setIcon(QIcon("images/osc.png"));
             connect(pb,SIGNAL(clicked()),this,SLOT(ShowOsc()));
-            glyout->addWidget(pb,6,4,1,1);
+            glyout->addWidget(pb,8,4,1,1);
         }
         else
         {
             QPixmap *pm = new QPixmap("images/hr.png");
-            glyout->addWidget(WDFunc::NewLBL(this, "", "", "", pm),6,4,1,1);
+            glyout->addWidget(WDFunc::NewLBL(this, "", "", "", pm),8,4,1,1);
         }
         vlyout->addLayout(glyout);
         vlyout->addStretch(10);
         glyout = new QGridLayout;
-        QStringList sl = QStringList() << "Мгновенное значение тока в момент коммутации, А" << \
-                                          "Мгновенное значение напряжения в момент коммутации, кВ" << \
+        QStringList sl = QStringList() << "Действующее значение тока в момент коммутации, А" << \
+                                          "Действующее значение напряжения в момент коммутации, кВ" << \
                                           "Собственное время коммутации, мс" << "Полное время коммутации, мс" << \
                                           "Время перемещения главного контакта, мс" << "Время горения дуги, мс" << \
-                                          "Время безоперационного простоя к моменту коммутации, ч"; /*<< \
-                                          "Погрешность синхронной коммутации, мс";*/
+                                          "Время безоперационного простоя к моменту коммутации, ч" << \
+                                          "Погрешность синхронной коммутации, мс" << "Температура внутри привода, Град" << \
+                                          "Давление в гидросистеме привода, Па";
         glyout->addWidget(WDFunc::NewLBL(this, "Измеренное значение"),0,0,1,1);
         glyout->addWidget(WDFunc::NewLBL(this, "A"),0,1,1,1);
         glyout->addWidget(WDFunc::NewLBL(this, "B"),0,2,1,1);
@@ -627,14 +643,34 @@ void MainWindow::LoadSwjFromFile(const QString &filename)
             value = value/100;
             glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)),row,i+1,1,1);
         }
-        /*++row;
+        ++row;
         glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
         for (int i=0; i<3; ++i)
         {
             value = static_cast<float>(OscFunc->SWJRecord.Inaccuracy[i]);
             value = value/100;
             glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)),row,i+1,1,1);
-        }*/
+        }
+        ++row;
+        glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+        for (int i=0; i<3; ++i)
+        {
+            value = OscFunc->SWJRecord.Tins[i];
+            if(value == std::numeric_limits<float>::max())
+            glyout->addWidget(WDFunc::NewLBLT(this, "-"),row,i+1,1,1);
+            else
+            glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)),row,i+1,1,1);
+        }
+        ++row;
+        glyout->addWidget(WDFunc::NewLBL(this, sl.at(row-1)),row,0,1,1);
+        for (int i=0; i<3; ++i)
+        {
+            value = OscFunc->SWJRecord.Phyd[i];
+            if(value == std::numeric_limits<float>::max())
+            glyout->addWidget(WDFunc::NewLBLT(this, "-"),row,i+1,1,1);
+            else
+            glyout->addWidget(WDFunc::NewLBLT(this, str.setNum(value, 'f', 2)),row,i+1,1,1);
+        }
         vlyout->addLayout(glyout);
         //QPushButton *pb = new QPushButton("Сохранить журнал в файл");
         //connect(pb,SIGNAL(clicked(bool)),this,SLOT(SWJDialog::SaveSWJ()));

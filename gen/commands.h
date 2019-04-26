@@ -26,6 +26,8 @@
 #define TUNE_MODE_1000  1
 #define TUNE_MODE_100   2
 
+#define MAXFLOAT    3.40282347E+38F
+
 class Commands
 {
     explicit Commands();
