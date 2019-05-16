@@ -10,6 +10,7 @@
 #include <QStandardItemModel>
 #include "limereport/lrreportengine.h"
 #include <QHBoxLayout>
+#include <QLineEdit>
 #include "eabstracttunedialog.h"
 #include "../config/config.h"
 
@@ -52,6 +53,8 @@ private:
     Config84 *C84;
     QVector<S2::DataRec> *S2Config;
     Config84::Bci Bci_block_work;
+    QDialog *ask;
+    QLineEdit *ledit;
 
     enum TuneModes
     {
@@ -127,7 +130,7 @@ private:
         float Pt100;
      };
 
-    BdaStruct Bda_block;
+    BdaStruct Bda_block, BdaPt100_80Om, BdaPt100_120Om;
 
     struct RealDataStruct
     {
@@ -191,6 +194,7 @@ private:
     QList<QStringList *> MainData; // полные данные таблицы для модели
 
     ReportHeaderStructure ReportHeader;
+    quint32 N;
 
     int Index, Counter;
     float CurrentS; // текущее значение нагрузки
@@ -256,7 +260,10 @@ private:
     QWidget *Bd1W(QWidget *parent);
     void FillBd1(QWidget *parent);
     void RefreshAnalogValues(int bdnum);
-    int TuneChannel();
+    int Show80();
+    int Show120();
+    void CalcNewPt100Coefs();
+
 
 #endif
 
@@ -267,6 +274,7 @@ private:
 private slots:
 
 #if PROGSIZE != PROGSIZE_EMUL
+    int TuneChannel();
     void StartMip();
     void StopMip();
     void ParseMipData(Parse104::Signals104 &);
