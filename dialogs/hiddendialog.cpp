@@ -181,6 +181,7 @@ void HiddenDialog::SetVersion(quint32 number, QString lename)
 
 void HiddenDialog::AcceptChanges()
 {
+    bool chbdata;
     QPushButton *pb = qobject_cast<QPushButton *>(this->sender());
     GetVersion(Bhb.BoardBBhb.HWVer, "bashw");
     QString tmps;
@@ -190,14 +191,18 @@ void HiddenDialog::AcceptChanges()
     Bhb.BoardBBhb.SerialNum = tmps.toUInt(Q_NULLPTR, 16);
     WDFunc::LEData(this, "bastp", tmps);
     Bhb.BoardBBhb.MType = tmps.toUInt(Q_NULLPTR, 16);
-    if (Type == BYMY) // ввод данных по мезонинной плате открывается только в случае её наличия
+    if (WDFunc::ChBData(this, "withmezzanine", chbdata))  // ввод данных по мезонинной плате открывается только в случае её наличия
     {
-        GetVersion(Bhb.BoardMBhb.HWVer, "mezhw");
-        WDFunc::LEData(this, "meztp", tmps);
-        Bhb.BoardMBhb.MType = tmps.toUInt(Q_NULLPTR, 16);
-        WDFunc::LEData(this, "mezsn", tmps);
-        Bhb.BoardMBhb.SerialNum = tmps.toUInt(Q_NULLPTR, 16);
-        Bhb.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
+        if(chbdata)
+        {
+            Type |= 0x02;
+            GetVersion(Bhb.BoardMBhb.HWVer, "mezhw");
+            WDFunc::LEData(this, "meztp", tmps);
+            Bhb.BoardMBhb.MType = tmps.toUInt(Q_NULLPTR, 16);
+            WDFunc::LEData(this, "mezsn", tmps);
+            Bhb.BoardMBhb.SerialNum = tmps.toUInt(Q_NULLPTR, 16);
+            Bhb.BoardMBhb.ModSerialNum = 0xFFFFFFFF;
+        }
     }
 #if PROGSIZE != PROGSIZE_EMUL
     if (!SendBhb())
