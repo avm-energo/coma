@@ -55,6 +55,7 @@ private:
     Config84::Bci Bci_block_work;
     QDialog *ask;
     QLineEdit *ledit;
+    QTimer *timer;
 
     enum TuneModes
     {
@@ -235,9 +236,10 @@ private:
     int Start7_3_1();
     int Start7_3_1_1();
     int Start7_3_2();
-    int Start7_3_3();
     int Start7_3_4();
-    int Start7_3_5();
+    int Start7_3_4_2();
+    int Start7_3_4_3();
+    int Start7_3_4_4();
     int Start7_3_6_2();
     int Start7_3_7_1();
     int Start7_3_7_2();
@@ -252,7 +254,7 @@ private:
     int Start7_3_8_2();
     int Start7_3_9();
     int SaveUeff();
-    int ShowRetomDialog(double U, double I);
+    int ShowRetomDialog(double U, double I, double Y);
     int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта
     int SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
     int SaveWorkConfig();
@@ -263,7 +265,7 @@ private:
     int Show80();
     int Show120();
     void CalcNewPt100Coefs();
-
+    void EnterData();
 
 #endif
 

@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QCoreApplication>
+#include <QThread>
 #include "tunedialog84.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
@@ -63,13 +64,19 @@ void TuneDialog84::SetupUI()
 
     glyout->addWidget(pb, 1,1,1,1);
 
+    glyout->addWidget(TuneUI(), 2,1,1,1);
+
+    pb = new QPushButton("Настройка температурной коррекции");
+    #if PROGSIZE != PROGSIZE_EMUL
+    //connect(pb,SIGNAL(clicked(bool)),this,SLOT(TunePt100Channel()));
+    #endif
+
+    glyout->addWidget(pb, 3,1,1,1);
+
     pb = new QPushButton("Начать поверку");
     #if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(GenerateReport()));
     #endif
-
-    glyout->addWidget(TuneUI(), 2,1,1,1);
-    //lyout->addStretch(10);
     glyout->addWidget(pb, 15,1,1,1);
     lyout->addLayout(glyout);
 
@@ -379,21 +386,21 @@ void TuneDialog84::SetPf()
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Show3PhaseScheme); // Отображение схемы подключения
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_2_3); // Проверка связи РЕТОМ и МИП
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_1); // Получение настроечных коэффициентов
+    //func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_2_3); // Проверка связи РЕТОМ и МИП
+    //pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_1); // Информация
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::SetNewTuneCoefs); // Установка коэффициентов
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_2); // Получение текущих аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::SaveUeff); // Сохранение значений фильтра
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4); // Информация
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_3); // Расчёт коррекции по фазе
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_2); // Расчёт коррекции по фазе
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4); // Расчёт коррекции по частоте
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_3); // Расчёт коррекции по частоте
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_5); // Отображение ввода трёхфазных значений
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_4); // Отображение ввода трёхфазных значений
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_2); // Получение текущих аналоговых данных
     pf[lbls.at(count++)] = func;
@@ -685,24 +692,16 @@ void TuneDialog84::StopMip()
     emit stopall();
 }
 
+
+
 int TuneDialog84::ShowControlChooseDialog()
 {
     TuneControlType = TUNERET; // по-умолчанию тип контроля - по РЕТОМу
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("Выберите метод подтверждения измеряемых данных:");
+    QLabel *lbl = new QLabel("Метод подтверждения измеряемых данных:");
     lyout->addWidget(lbl);
-    QPushButton *pb = new QPushButton("Автоматически по показаниям МИП-02");
-    pb->setObjectName(QString::number(TUNEMIP));
-    connect(pb,SIGNAL(clicked()),this,SLOT(SetTuneMode()));
-    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
-    lyout->addWidget(pb);
-    pb = new QPushButton("Вручную");
-    pb->setObjectName(QString::number(TUNEMAN));
-    connect(pb,SIGNAL(clicked()),this,SLOT(SetTuneMode()));
-    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
-    lyout->addWidget(pb);
-    pb = new QPushButton("Автоматически по прибору РЕТОМ");
+    QPushButton *pb = new QPushButton("Вручную по прибору Энергомонитор");
     pb->setObjectName(QString::number(TUNERET));
     connect(pb,SIGNAL(clicked()),this,SLOT(SetTuneMode()));
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
@@ -725,7 +724,7 @@ int TuneDialog84::Show3PhaseScheme()
     QVBoxLayout *lyout = new QVBoxLayout;
     QPixmap pmp;
 
-    pmp.load("../tune81.png");
+    pmp.load("../tune84.png");
 
     QLabel *lblpmp = new QLabel;
     lblpmp->setPixmap(pmp);
@@ -816,17 +815,40 @@ int TuneDialog84::Start7_3_2()
    // }
 }
 
-int TuneDialog84::Start7_3_3()
-{
-    return Error::ER_NOERROR;
-}
-
 int TuneDialog84::Start7_3_4()
 {
+
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QLabel *lbl=new QLabel("Значение тока и напряжения при этом контролируются по показаниям прибора Энергомонитор." \
+                           "При использовании в качестве источника сигналов РЕТОМ-51 задается угол между током и"\
+                           "напряжением в фазе А, при использовании имитатора АВМ-КИВ задается значение tg δ.");
+    lyout->addWidget(lbl);
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+
     return Error::ER_NOERROR;
 }
 
-int TuneDialog84::Start7_3_5()
+int TuneDialog84::Start7_3_4_2()
+{
+    ShowRetomDialog(57.5, 290, 89.9);
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog84::Start7_3_4_3()
+{
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog84::Start7_3_4_4()
 {
     return Error::ER_NOERROR;
 }
@@ -1008,6 +1030,34 @@ int TuneDialog84::GetExternalData()
 #endif
 }
 
+void TuneDialog84::EnterData()
+{
+    QDialog *dlg = new QDialog(this);
+    QVBoxLayout *lyout = new QVBoxLayout;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setObjectName("EnterDlg");
+    QGridLayout *glyout = new QGridLayout;
+    QLabel *lbl = new QLabel("Введите значения сигналов по приборам");
+    glyout->addWidget(lbl,0,0,1,6);
+
+    //ledit->setObjectName("N");
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+
+       // glyout->addWidget(lbl,0,1,1,1);
+       // glyout->addWidget(ledit,1,1,1,1);
+
+    QPushButton *pb = new QPushButton("Готово");
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();
+
+}
+
 void TuneDialog84::GetBdAndFillMTT()
 {
 
@@ -1020,6 +1070,12 @@ int TuneDialog84::SaveWorkConfig()
 
 int TuneDialog84::ReadAnalogMeasurements()
 {
+    // получение текущих аналоговых сигналов от модуля
+     if (Commands::GetBda(BT_BASE, &Bda_block, sizeof(Bda_block)) != Error::ER_NOERROR)
+     {
+         EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
+         return Error::ER_GENERALERROR;
+     }
     return Error::ER_NOERROR;
 }
 
@@ -1031,13 +1087,13 @@ int TuneDialog84::SaveUeff()
     return Error::ER_NOERROR;
 }
 
-int TuneDialog84::ShowRetomDialog(double U, double I)
+int TuneDialog84::ShowRetomDialog(double U, double I, double Y)
 {
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl=new QLabel("Задайте на РЕТОМ трёхфазный режим токов и напряжений 1-ой тройки (Uabc, Iabc) с углами "\
-                   "сдвига по фазам: А - 0 град., В - 240 град., С - 120 град.,\n"\
-                   "Значения напряжений: "+QString::number(U, 'g', 2)+" В, токов: "+QString::number(I, 'g', 2)+" А");
+    QLabel *lbl=new QLabel("Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc)"\
+                   "Угол между токами и напряжениями: "+QString::number(Y, 'g', 2)+" град.,\n"\
+                   "Значения напряжений: "+QString::number(U, 'g', 2)+" В, токов: "+QString::number(I, 'g', 2)+" мА");
     lyout->addWidget(lbl);
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
@@ -1218,7 +1274,7 @@ int TuneDialog84::TunePt100Channel()
 int TuneDialog84::TuneChannel()
 {
 
-    int i;
+    quint32 i;
     QString tmps;
     WDFunc::LEData(ask, "N", tmps);
     N=tmps.toUInt();
@@ -1226,35 +1282,53 @@ int TuneDialog84::TuneChannel()
     float sum = 0.0;
 
     Start7_3_2();
+    Bac_newblock = Bac_block;
 
-       if (Show80() == Error::ER_GENERALERROR)
+       if(Show80() == Error::ER_GENERALERROR)
        return Error::ER_GENERALERROR;
        else
        {
+           sum = 0;
            for(i = 0; i<N; i++)
            {
-             if(Commands::GetBda(1, &BdaPt100_80Om, sizeof(BdaPt100_80Om)) == Error::ER_NOERROR)
-             sum += BdaPt100_80Om.Pt100;
+             if(Commands::GetBda(BT_NONE, &BdaPt100_80Om, sizeof(BdaPt100_80Om)) == Error::ER_NOERROR)
+             {
+               sum += BdaPt100_80Om.Pt100;
+               QThread::msleep(500);
+             }
              else
              return Error::ER_GENERALERROR;
            }
            BdaPt100_80Om.Pt100 = sum/N; // усредняем
        }
 
-                                          if (Show120() == Error::ER_GENERALERROR)
+       if(Show120() == Error::ER_GENERALERROR)
        return Error::ER_GENERALERROR;
        else
        {
+           sum = 0;
            for(i = 0; i<N; i++)
            {
-             Commands::GetBda(1, &BdaPt100_120Om, sizeof(BdaPt100_120Om));
+              if(Commands::GetBda(BT_NONE, &BdaPt100_120Om, sizeof(BdaPt100_120Om)) == Error::ER_NOERROR)
+              {
+                sum += BdaPt100_120Om.Pt100;
+                QThread::msleep(500);
+              }
+              else
+              return Error::ER_GENERALERROR;
            }
+           BdaPt100_120Om.Pt100 = sum/N; // усредняем
        }
 
        CalcNewPt100Coefs();
+       FillNewBac();
 
-       FillBac(0);
-       return Error::ER_NOERROR;
+       if (Commands::WriteBac(BT_NONE, &Bac_newblock, sizeof(Bac_newblock)) == Error::ER_NOERROR)
+       {
+          return Error::ER_NOERROR;
+       }
+       else
+       return Error::ER_GENERALERROR;
 
 }
 
@@ -1286,8 +1360,15 @@ int TuneDialog84::Show120()
 
 void TuneDialog84::CalcNewPt100Coefs()
 {
-
-
+    if (StdFunc::FloatInRange(BdaPt100_120Om.Pt100, BdaPt100_80Om.Pt100))
+    {
+        WARNMSG("Ошибка в настроечных коэффициентах, деление на ноль");
+    }
+    else
+    {
+        Bac_newblock.Art = ((BdaPt100_120Om.Pt100 - BdaPt100_80Om.Pt100)/40); //[ед.АЦП/Ом],
+        Bac_newblock.Brt = (2*BdaPt100_120Om.Pt100 - 3*BdaPt100_80Om.Pt100);  //[ед.АЦП]
+    }
 }
 
 
