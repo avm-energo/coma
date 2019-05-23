@@ -45,6 +45,7 @@ public:
     //~TuneDialog85();
 
 signals:
+    void Send();
 
 public slots:
 
@@ -124,6 +125,21 @@ private:
 
     Bac Bac_block, Bac_newblock;
 
+    typedef struct {		// Структура блока выходных данных
+    // в масштабах входных сигналов (для настройки)
+    float Frequency;	// Частота в сети, Гц
+    float IUefNat_filt[6];	// Истинные действующие значения сигналов (в вольтах или мА на входе)
+    float IUeff_filtered[6];  // действующие значения сигналов по 1-й гармонике
+    float phi_next_f[6];	// Углы сдвига сигналов по 1-й гармонике относительно Ua в градусах
+    float Cbush[3];	// емкости вводов
+    float Tg_d[3];		// tg delta вводов
+    float Pt100_R;		// Измеренное сопротивление термометра, Ом
+    }Bda_in_struct;
+
+    Bda_in_struct Bda_in;
+
+    float Uet[3], Iet[3], PHIet[6], FREQet;
+
     struct BdaStruct
     {
         float Ueff_ADC[6];
@@ -195,7 +211,7 @@ private:
     QList<QStringList *> MainData; // полные данные таблицы для модели
 
     ReportHeaderStructure ReportHeader;
-    quint32 N;
+    int N;
 
     int Index, Counter;
     float CurrentS; // текущее значение нагрузки
@@ -265,7 +281,7 @@ private:
     int Show80();
     int Show120();
     void CalcNewPt100Coefs();
-    void EnterData();
+    void EnterDataTuneKadc1();
 
 #endif
 
@@ -277,6 +293,7 @@ private slots:
 
 #if PROGSIZE != PROGSIZE_EMUL
     int TuneChannel();
+    void ReadN();
     void StartMip();
     void StopMip();
     void ParseMipData(Parse104::Signals104 &);
@@ -287,6 +304,12 @@ private slots:
     void CancelTune();
     void GenerateReport();
     int TunePt100Channel();
+    int CalcTuneCoefsKadc1();
+    int CalcTuneCoefsKadc2();
+    int CalcTuneCoefsKadc4();
+    int CalcTuneCoefsKadc8();
+    int CalcTuneCoefsKadc16();
+    int CalcTuneCoefsKadc32();
 
 #endif
     void SetDefCoefs();

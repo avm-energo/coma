@@ -66,12 +66,12 @@ void TuneDialog84::SetupUI()
 
     glyout->addWidget(TuneUI(), 2,1,1,1);
 
-    pb = new QPushButton("Настройка температурной коррекции");
+   // pb = new QPushButton("Настройка температурной коррекции");
     #if PROGSIZE != PROGSIZE_EMUL
     //connect(pb,SIGNAL(clicked(bool)),this,SLOT(TunePt100Channel()));
     #endif
 
-    glyout->addWidget(pb, 3,1,1,1);
+    //glyout->addWidget(pb, 3,1,1,1);
 
     pb = new QPushButton("Начать поверку");
     #if PROGSIZE != PROGSIZE_EMUL
@@ -352,12 +352,12 @@ void TuneDialog84::SetLbls()
     lbls.append("2. Сохранение текущей конфигурации...");
     lbls.append("3. Отображение диалога выбора режима контроля показаний...");
     lbls.append("4. Отображение схемы подключения...");
-    lbls.append("5. 7.2.3. Проверка связи РЕТОМ и МИП...");
-    lbls.append("6. 7.3.1. Получение настроечных коэффициентов...");
-    lbls.append("8. Установка коэффициентов...");
-    lbls.append("9. 7.3.2. Получение текущих аналоговых данных...");
-    lbls.append("10. Сохранение значений фильтра...");
-    lbls.append("11. 7.3.3. Расчёт коррекции смещений сигналов по фазе...");
+    lbls.append("5. Информация...");
+    lbls.append("6. Установка коэффициентов...");
+    lbls.append("7. 7_3_2. Получение текущих аналоговых данных...");
+    lbls.append("8. 7.3.4. Информация...");
+    lbls.append("9. 7.3.4.2. Расчёт коррекции по фазе...");
+    lbls.append("10. 7.3.4.3 Расчёт коррекции по частоте...");
     lbls.append("12. 7.3.4. Расчёт коррекции по частоте...");
     lbls.append("13. 7.3.5. Отображение ввода трёхфазных значений...");
     lbls.append("14. 7.3.6.1. Получение текущих аналоговых данных...");
@@ -373,7 +373,7 @@ void TuneDialog84::SetLbls()
     lbls.append("24. 7.3.7.10. Расчёт настроечных коэффициентов по токам, напряжениям и углам...");
     lbls.append("25. 7.3.8.1. Запись настроечных коэффициентов и переход на новую конфигурацию...");
     lbls.append("26. 7.3.8.2. Проверка аналоговых данных...");
-    lbls.append("27. 7.3.9. Восстановление сохранённой конфигурации и проверка...");
+    //lbls.append("27. 7.3.9. Восстановление сохранённой конфигурации и проверка...");
 }
 
 void TuneDialog84::SetPf()
@@ -772,10 +772,10 @@ int TuneDialog84::Start7_3_1()
 
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl=new QLabel("Для регулировки необходимо поместить прибор в термокамеру" \
-                           "с диапазоном регулирования температуры от минус 20 до +60°С."\
-                           "Установить нормальное значение температуры в камере 20±5°С."\
-                           "Источники сигналов и эталонный прибор остаются вне камеры при нормальной температуре.");
+    QLabel *lbl=new QLabel("Для регулировки необходимо поместить прибор в термокамеру\n" \
+                           "с диапазоном регулирования температуры от минус 20 до +60°С.\n"\
+                           "Установить нормальное значение температуры в камере 20±5°С.\n"\
+                           "Источники сигналов и эталонный прибор остаются вне камеры \n при нормальной температуре.");
     lyout->addWidget(lbl);
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
@@ -820,8 +820,8 @@ int TuneDialog84::Start7_3_4()
 
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
-    QLabel *lbl=new QLabel("Значение тока и напряжения при этом контролируются по показаниям прибора Энергомонитор." \
-                           "При использовании в качестве источника сигналов РЕТОМ-51 задается угол между током и"\
+    QLabel *lbl=new QLabel("Значение тока и напряжения при этом контролируются по показаниям прибора Энергомонитор.\n" \
+                           "При использовании в качестве источника сигналов РЕТОМ-51 задается угол между током и\n"\
                            "напряжением в фазе А, при использовании имитатора АВМ-КИВ задается значение tg δ.");
     lyout->addWidget(lbl);
     QPushButton *pb = new QPushButton("Готово");
@@ -839,7 +839,25 @@ int TuneDialog84::Start7_3_4()
 
 int TuneDialog84::Start7_3_4_2()
 {
+    QGridLayout *glyout = new QGridLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QLabel *lbl = new QLabel("Количество усреднений");
+    ledit->setObjectName("N");
+    QPushButton* pb = new QPushButton;
+    ask = new QDialog();
+    ask->setAttribute(Qt::WA_DeleteOnClose);
+
+    glyout->addWidget(lbl,0,1,1,1);
+    glyout->addWidget(ledit,1,1,1,1);
+    pb = new QPushButton("Ok");
+    connect(pb,SIGNAL(clicked()),this,SLOT(ReadN()));
+    glyout->addWidget(pb,2,1,1,1);
+    vlyout->addLayout(glyout);
+    ask->setLayout(vlyout);
+    ask->exec();
+
     ShowRetomDialog(57.5, 290, 89.9);
+    EnterDataTuneKadc1();
     return Error::ER_NOERROR;
 }
 
@@ -916,6 +934,14 @@ int TuneDialog84::Start7_3_8_2()
 int TuneDialog84::Start7_3_9()
 {
     return Error::ER_NOERROR;
+}
+
+void TuneDialog84::ReadN()
+{
+    QString tmps;
+    WDFunc::LEData(ask, "N", tmps);
+    N=tmps.toInt();
+    ask->close();
 }
 
 int TuneDialog84::GetExternalData()
@@ -1030,32 +1056,127 @@ int TuneDialog84::GetExternalData()
 #endif
 }
 
-void TuneDialog84::EnterData()
+void TuneDialog84::EnterDataTuneKadc1()
 {
-    QDialog *dlg = new QDialog(this);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setObjectName("EnterDlg");
+    int i;
+    ask = new QDialog(this);
+    //QVBoxLayout *lyout = new QVBoxLayout;
+    ask->setAttribute(Qt::WA_DeleteOnClose);
+    ask->setObjectName("EnterDlg");
     QGridLayout *glyout = new QGridLayout;
-    QLabel *lbl = new QLabel("Введите значения сигналов по приборам");
+    ledit = new QLineEdit();
+    QLabel *lbl = new QLabel("Введите значения сигналов c Энергомонитора:");
     glyout->addWidget(lbl,0,0,1,6);
 
-    //ledit->setObjectName("N");
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    for(i=0; i<3; i++)
+    {
+        lbl = new QLabel("Uэт["+QString::number(i)+"]:");
+        glyout->addWidget(lbl,1,i,1,1);
+        ledit = new QLineEdit();
+        ledit->setObjectName("ValuetuneU"+QString::number(i));
+        glyout->addWidget(ledit,2,i,1,1);
+    }
 
-       // glyout->addWidget(lbl,0,1,1,1);
-       // glyout->addWidget(ledit,1,1,1,1);
+    for(i=0; i<3; i++)
+    {
+        lbl = new QLabel("Iэт["+QString::number(i)+"]:");
+        glyout->addWidget(lbl,3,i,1,1);
+        ledit = new QLineEdit();
+        ledit->setObjectName("ValuetuneI"+QString::number(i));
+        glyout->addWidget(ledit,4,i,1,1);
+    }
 
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
-    lyout->addWidget(pb);
+    for(i=0; i<6; i++)
+    {
+        lbl = new QLabel("φэт["+QString::number(i)+"]:");
+        glyout->addWidget(lbl,5,i,1,1);
+        ledit = new QLineEdit();
+        ledit->setObjectName("ValuetunePhi"+QString::number(i));
+        glyout->addWidget(ledit,6,i,1,1);
+    }
+
+    lbl = new QLabel("fэт:");
+    glyout->addWidget(lbl,7,0,1,1);
+    ledit = new QLineEdit();
+    ledit->setObjectName("ValuetuneF");
+    glyout->addWidget(ledit,8,0,1,1);
+
+    QPushButton *pb = new QPushButton("Настроить");
+    connect(pb,SIGNAL(clicked()),this,SLOT(CalcTuneCoefsKadc1()));
+    glyout->addWidget(pb,9,0,1,3);
     pb = new QPushButton("Отмена");
     connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
-    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
-    lyout->addWidget(pb);
-    dlg->setLayout(lyout);
-    dlg->exec();
+    connect(pb,SIGNAL(clicked()),this,SLOT(close()));
+    glyout->addWidget(pb,9,3,1,3);
 
+    ask->setLayout(glyout);
+    ask->exec();
+
+    /*lyout->addWidget(pb);
+    dlg->setLayout(lyout);
+    dlg->exec();*/
+
+}
+
+int TuneDialog84::CalcTuneCoefsKadc1()
+{
+    int i;
+    QString tmps;
+    for (i=0; i<3; i++)
+    {
+      WDFunc::LEData(ask, "ValuetuneU"+QString::number(i), tmps);
+      Uet[i]=tmps.toFloat();
+    }
+
+    ask->close();
+
+    ReadAnalogMeasurements();
+
+    for (i=0; i<3; i++)
+    {
+        Bac_newblock.KmU[i] = Bac_block.KmU[i] * Uet[i]/ Bda_in.IUefNat_filt[i];
+
+     //   KmI1[i] new = KmI1[i] old * Iэт / UefNat_filt[i+3] ;
+    }
+    // K_freq new = K_freq old * fэт / Frequency ;
+
+   // for (i=1; i < 3; i++)  DPsi[i]new =  DPsi[i]old – phi_next_f[i];
+  //  for (i=3; i < 6; i++)  DPsi[i]new =  DPsi[i]old + φэт -  phi_next_f[i];
+
+   // return Error::ER_GENERALERROR;
+
+return Error::ER_NOERROR;
+
+}
+
+int TuneDialog84::CalcTuneCoefsKadc2()
+{
+
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog84::CalcTuneCoefsKadc4()
+{
+
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog84::CalcTuneCoefsKadc8()
+{
+
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog84::CalcTuneCoefsKadc16()
+{
+
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog84::CalcTuneCoefsKadc32()
+{
+
+    return Error::ER_NOERROR;
 }
 
 void TuneDialog84::GetBdAndFillMTT()
@@ -1070,12 +1191,51 @@ int TuneDialog84::SaveWorkConfig()
 
 int TuneDialog84::ReadAnalogMeasurements()
 {
-    // получение текущих аналоговых сигналов от модуля
-     if (Commands::GetBda(BT_BASE, &Bda_block, sizeof(Bda_block)) != Error::ER_NOERROR)
-     {
-         EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
-         return Error::ER_GENERALERROR;
-     }
+    int i;
+    float sumU[3];
+    float sumI[3];
+    float sumPHI[6];
+    float sumFreq = 0.0;
+    for(i = 0; i<N; i++)
+    {
+        // получение текущих аналоговых сигналов от модуля
+         if (Commands::GetBda(BT_BASE, &Bda_in, sizeof(Bda_in)) != Error::ER_NOERROR)
+         {
+             EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
+             return Error::ER_GENERALERROR;
+         }
+         else
+         {
+             for(i = 0; i<3; i++)
+             {
+               sumU[i] += Bda_in.IUefNat_filt[i];
+               sumI[i] += Bda_in.IUefNat_filt[i+3];
+             }
+
+             for(i = 0; i<6; i++)
+             {
+               sumPHI[i] += Bda_in.phi_next_f[i];
+             }
+
+             sumFreq += Bda_in.Frequency;
+
+             QThread::msleep(500);
+         }
+    }
+
+    for(i = 0; i<3; i++)
+    {
+      Bda_in.IUefNat_filt[i] = sumU[i]/N;
+      Bda_in.IUefNat_filt[i+3] = sumI[i]/N;
+    }
+
+    for(i = 0; i<6; i++)
+    {
+      Bda_in.phi_next_f[i] = sumPHI[i]/N;
+    }
+
+    Bda_in.Frequency = sumFreq/N;
+
     return Error::ER_NOERROR;
 }
 
@@ -1093,7 +1253,7 @@ int TuneDialog84::ShowRetomDialog(double U, double I, double Y)
     QVBoxLayout *lyout = new QVBoxLayout;
     QLabel *lbl=new QLabel("Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc)"\
                    "Угол между токами и напряжениями: "+QString::number(Y, 'g', 2)+" град.,\n"\
-                   "Значения напряжений: "+QString::number(U, 'g', 2)+" В, токов: "+QString::number(I, 'g', 2)+" мА");
+                   "Значения напряжений: "+QString::number(U, 'g', 2)+" В, токов: "+QString::number(I, 'g', 4)+" мА");
     lyout->addWidget(lbl);
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
@@ -1245,6 +1405,7 @@ int TuneDialog84::TunePt100Channel()
     QLabel *lbl = new QLabel("Количество усреднений");
     ledit->setObjectName("N");
     QPushButton* pb = new QPushButton;
+    ask = new QDialog();
     ask->setAttribute(Qt::WA_DeleteOnClose);
 
     if (EAbstractTuneDialog::CheckPassword() == Error::ER_NOERROR)
@@ -1258,7 +1419,6 @@ int TuneDialog84::TunePt100Channel()
         //connect(pb,SIGNAL(clicked()),&EnterLoop,SLOT(quit()));
         glyout->addWidget(pb,2,1,1,1);
         vlyout->addLayout(glyout);
-        ask->setAttribute(Qt::WA_DeleteOnClose);
         ask->setLayout(vlyout);
         ask->show();
         //ask->setModal(false);
@@ -1274,10 +1434,10 @@ int TuneDialog84::TunePt100Channel()
 int TuneDialog84::TuneChannel()
 {
 
-    quint32 i;
+    int i;
     QString tmps;
     WDFunc::LEData(ask, "N", tmps);
-    N=tmps.toUInt();
+    N=tmps.toInt();
     ask->close();
     float sum = 0.0;
 
