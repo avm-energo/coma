@@ -281,7 +281,7 @@ private:
     int Show80();
     int Show120();
     void CalcNewPt100Coefs();
-    void EnterDataTuneKadc1();
+    void EnterDataTune(int Kadc);
 
 #endif
 
@@ -304,12 +304,8 @@ private slots:
     void CancelTune();
     void GenerateReport();
     int TunePt100Channel();
-    int CalcTuneCoefsKadc1();
-    int CalcTuneCoefsKadc2();
-    int CalcTuneCoefsKadc4();
-    int CalcTuneCoefsKadc8();
-    int CalcTuneCoefsKadc16();
-    int CalcTuneCoefsKadc32();
+    int CalcTuneCoefs(int Kadc);
+
 
 #endif
     void SetDefCoefs();

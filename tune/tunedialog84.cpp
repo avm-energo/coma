@@ -440,7 +440,7 @@ void TuneDialog84::FillBac(int bacnum)
     Q_UNUSED(bacnum);
     for (int i = 0; i < 3; i++)
     {
-        WDFunc::SetLEData(this, "tune"+QString::number(i), QString::number(Bac_block.N1_TT[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i), QString::number(Bac_block.N1_TT[i], 'g', 5));
         WDFunc::SetLEData(this, "tune"+QString::number(i+3), QString::number(Bac_block.KmU[i], 'f', 5));
         WDFunc::SetLEData(this, "tune"+QString::number(i+6), QString::number(Bac_block.KmI1[i], 'f', 5));
         WDFunc::SetLEData(this, "tune"+QString::number(i+9), QString::number(Bac_block.KmI2[i], 'f', 5));
@@ -448,15 +448,15 @@ void TuneDialog84::FillBac(int bacnum)
         WDFunc::SetLEData(this, "tune"+QString::number(i+15), QString::number(Bac_block.KmI8[i], 'f', 5));
         WDFunc::SetLEData(this, "tune"+QString::number(i+18), QString::number(Bac_block.KmI16[i], 'f', 5));
         WDFunc::SetLEData(this, "tune"+QString::number(i+21), QString::number(Bac_block.KmI32[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune"+QString::number(i+24), QString::number(Bac_block.TKPsi_a[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune"+QString::number(i+27), QString::number(Bac_block.TKPsi_b[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+24), QString::number(Bac_block.TKPsi_a[i], 'e', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+27), QString::number(Bac_block.TKPsi_b[i], 'e', 5));
     }
 
     for (int i = 0; i < 6; i++)
     {
         WDFunc::SetLEData(this, "tune"+QString::number(i+30), QString::number(Bac_block.DPsi[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune"+QString::number(i+36), QString::number(Bac_block.TKUa[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune"+QString::number(i+42), QString::number(Bac_block.TKUb[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+36), QString::number(Bac_block.TKUa[i], 'e', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+42), QString::number(Bac_block.TKUb[i], 'e', 5));
 
     }
 
@@ -471,7 +471,7 @@ void TuneDialog84::FillNewBac()
 {
     for (int i = 0; i < 3; i++)
     {
-        WDFunc::SetLEData(this, "tune"+QString::number(i), QString::number(Bac_newblock.N1_TT[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i), QString::number(Bac_newblock.N1_TT[i], 'g', 5));
         WDFunc::SetLEData(this, "tune"+QString::number(i+3), QString::number(Bac_newblock.KmU[i], 'f', 5));
         WDFunc::SetLEData(this, "tune"+QString::number(i+6), QString::number(Bac_newblock.KmI1[i], 'f', 5));
         WDFunc::SetLEData(this, "tune"+QString::number(i+9), QString::number(Bac_newblock.KmI2[i], 'f', 5));
@@ -479,15 +479,15 @@ void TuneDialog84::FillNewBac()
         WDFunc::SetLEData(this, "tune"+QString::number(i+15), QString::number(Bac_newblock.KmI8[i], 'f', 5));
         WDFunc::SetLEData(this, "tune"+QString::number(i+18), QString::number(Bac_newblock.KmI16[i], 'f', 5));
         WDFunc::SetLEData(this, "tune"+QString::number(i+21), QString::number(Bac_newblock.KmI32[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune"+QString::number(i+24), QString::number(Bac_newblock.TKPsi_a[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune"+QString::number(i+27), QString::number(Bac_newblock.TKPsi_b[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+24), QString::number(Bac_newblock.TKPsi_a[i], 'e', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+27), QString::number(Bac_newblock.TKPsi_b[i], 'e', 5));
     }
 
     for (int i = 0; i < 6; i++)
     {
         WDFunc::SetLEData(this, "tune"+QString::number(i+30), QString::number(Bac_newblock.DPsi[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune"+QString::number(i+36), QString::number(Bac_newblock.TKUa[i], 'f', 5));
-        WDFunc::SetLEData(this, "tune"+QString::number(i+42), QString::number(Bac_newblock.TKUb[i], 'f', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+36), QString::number(Bac_newblock.TKUa[i], 'e', 5));
+        WDFunc::SetLEData(this, "tune"+QString::number(i+42), QString::number(Bac_newblock.TKUb[i], 'e', 5));
     }
 
     WDFunc::SetLEData(this, "tune48", QString::number(Bac_newblock.K_freq, 'f', 5));
@@ -857,7 +857,7 @@ int TuneDialog84::Start7_3_4_2()
     ask->exec();
 
     ShowRetomDialog(57.5, 290, 89.9);
-    EnterDataTuneKadc1();
+    EnterDataTune(1);
     return Error::ER_NOERROR;
 }
 
@@ -1056,8 +1056,9 @@ int TuneDialog84::GetExternalData()
 #endif
 }
 
-void TuneDialog84::EnterDataTuneKadc1()
+void TuneDialog84::EnterDataTune(int Kadc)
 {
+    Q_UNUSED(Kadc);
     int i;
     ask = new QDialog(this);
     //QVBoxLayout *lyout = new QVBoxLayout;
@@ -1102,7 +1103,7 @@ void TuneDialog84::EnterDataTuneKadc1()
     glyout->addWidget(ledit,8,0,1,1);
 
     QPushButton *pb = new QPushButton("Настроить");
-    connect(pb,SIGNAL(clicked()),this,SLOT(CalcTuneCoefsKadc1()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(CalcTuneCoefs(Kadc)));
     glyout->addWidget(pb,9,0,1,3);
     pb = new QPushButton("Отмена");
     connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
@@ -1118,7 +1119,7 @@ void TuneDialog84::EnterDataTuneKadc1()
 
 }
 
-int TuneDialog84::CalcTuneCoefsKadc1()
+int TuneDialog84::CalcTuneCoefs(int Kadc)
 {
     int i;
     QString tmps;
@@ -1128,34 +1129,52 @@ int TuneDialog84::CalcTuneCoefsKadc1()
       Uet[i]=tmps.toFloat();
     }
 
-    ask->close();
-
-    ReadAnalogMeasurements();
-
     for (i=0; i<3; i++)
     {
-        Bac_newblock.KmU[i] = Bac_block.KmU[i] * Uet[i]/ Bda_in.IUefNat_filt[i];
-
-     //   KmI1[i] new = KmI1[i] old * Iэт / UefNat_filt[i+3] ;
+      WDFunc::LEData(ask, "ValuetuneI"+QString::number(i), tmps);
+      Iet[i]=tmps.toFloat();
     }
-    // K_freq new = K_freq old * fэт / Frequency ;
 
-   // for (i=1; i < 3; i++)  DPsi[i]new =  DPsi[i]old – phi_next_f[i];
-  //  for (i=3; i < 6; i++)  DPsi[i]new =  DPsi[i]old + φэт -  phi_next_f[i];
+    for (i=0; i<6; i++)
+    {
+      WDFunc::LEData(ask, "ValuetunePhi"+QString::number(i), tmps);
+      PHIet[i]=tmps.toFloat();
+    }
+
+    WDFunc::LEData(ask, "ValuetuneF"+QString::number(i), tmps);
+    FREQet=tmps.toFloat();
+
+    ask->close();
+
+    if(ReadAnalogMeasurements() != Error::ER_NOERROR)
+    {
+        EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
+        return Error::ER_GENERALERROR;
+    }
+
+    if(Kadc == 1)
+    {
+        for (i=0; i<3; i++)
+        {
+            Bac_newblock.KmU[i] = Bac_block.KmU[i] * Uet[i]/ Bda_in.IUefNat_filt[i];
+            Bac_newblock.KmI1[i] = Bac_block.KmI1[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
+        }
+
+        Bac_newblock.K_freq = Bac_block.K_freq * FREQet / Bda_in.Frequency ;
+
+        for (i=1; i < 3; i++) Bac_newblock.DPsi[i] =  Bac_block.DPsi[i] - Bda_in.phi_next_f[i];
+        for (i=3; i < 6; i++) Bac_newblock.DPsi[i] =  Bac_block.DPsi[i] + PHIet[i] - Bda_in.phi_next_f[i];
+     }
 
    // return Error::ER_GENERALERROR;
 
-return Error::ER_NOERROR;
-
-}
-
-int TuneDialog84::CalcTuneCoefsKadc2()
-{
-
     return Error::ER_NOERROR;
+
 }
 
-int TuneDialog84::CalcTuneCoefsKadc4()
+
+
+/*int TuneDialog84::CalcTuneCoefsKadc4()
 {
 
     return Error::ER_NOERROR;
@@ -1177,7 +1196,7 @@ int TuneDialog84::CalcTuneCoefsKadc32()
 {
 
     return Error::ER_NOERROR;
-}
+}*/
 
 void TuneDialog84::GetBdAndFillMTT()
 {
