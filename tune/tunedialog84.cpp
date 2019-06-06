@@ -356,24 +356,18 @@ void TuneDialog84::SetLbls()
     lbls.append("6. Установка коэффициентов...");
     lbls.append("7. 7_3_2. Получение текущих аналоговых данных...");
     lbls.append("8. 7.3.4. Информация...");
-    lbls.append("9. 7.3.4.2. Расчёт коррекции по фазе...");
-    lbls.append("10. 7.3.4.3 Расчёт коррекции по частоте...");
-    lbls.append("12. 7.3.4. Расчёт коррекции по частоте...");
-    lbls.append("13. 7.3.5. Отображение ввода трёхфазных значений...");
-    lbls.append("14. 7.3.6.1. Получение текущих аналоговых данных...");
-    lbls.append("15. 7.3.6.2. Расчёт коррекции взаимного влияния каналов...");
-    lbls.append("16. 7.3.7.1. Получение текущих аналоговых данных и расчёт настроечных коэффициентов по напряжениям...");
-    lbls.append("17. 7.3.7.2. Сохранение конфигурации...");
-    lbls.append("18. 7.3.7.3. Получение текущих аналоговых данных...");
-    lbls.append("19. 7.3.7.4. Ввод измеренных значений...");
-    lbls.append("20. 7.3.7.5. Расчёт настроечных коэффициентов по токам, напряжениям и углам...");
-    lbls.append("21. 7.3.7.6. Сохранение конфигурации...");
-    lbls.append("22. 7.3.7.7. Отображение ввода трёхфазных значений...");
-    lbls.append("23. 7.3.7.8. Получение текущих аналоговых данных...");
-    lbls.append("24. 7.3.7.10. Расчёт настроечных коэффициентов по токам, напряжениям и углам...");
-    lbls.append("25. 7.3.8.1. Запись настроечных коэффициентов и переход на новую конфигурацию...");
-    lbls.append("26. 7.3.8.2. Проверка аналоговых данных...");
-    //lbls.append("27. 7.3.9. Восстановление сохранённой конфигурации и проверка...");
+    lbls.append("9. 7.3.4.2. Конфигуратор рассчитывает новые значения калибровочных коэффициентов по току для Кацп=1...");
+    lbls.append("10. 7.3.4.6 Переход на новую конфигурацию 400мА...");
+    lbls.append("11. 7.3.4.7. Конфигуратор рассчитывает новые значения калибровочных коэффициентов по току для Кацп=2...");
+    lbls.append("12. 7.3.4.11. Переход на новую конфигурацию 200мА......");
+    lbls.append("13. 7.3.4.12. Конфигуратор рассчитывает новые значения калибровочных коэффициентов по току для Кацп=4...");
+    lbls.append("14. 7.3.4.13. Переход на новую конфигурацию 100мА......");
+    lbls.append("15. 7.3.4.14. Конфигуратор рассчитывает новые значения калибровочных коэффициентов по току для Кацп=8...");
+    lbls.append("16. 7.3.4.15. Переход на новую конфигурацию 50мА......");
+    lbls.append("17. 7.3.4.16. Конфигуратор рассчитывает новые значения калибровочных коэффициентов по току для Кацп=16...");
+    lbls.append("18. 7.3.4.17. Переход на новую конфигурацию 25мА......");
+    lbls.append("19. 7.3.4.18. Конфигуратор рассчитывает новые значения калибровочных коэффициентов по току для Кацп=32...");
+    lbls.append("20. 7.3.5. Восстановление сохранённой конфигурации и проверка...");
 }
 
 void TuneDialog84::SetPf()
@@ -398,37 +392,27 @@ void TuneDialog84::SetPf()
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_2); // Расчёт коррекции по фазе
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_3); // Расчёт коррекции по частоте
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_6); // Расчёт коррекции по частоте
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_4); // Отображение ввода трёхфазных значений
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_7); // Конфигуратор рассчитывает новые значения калибровочных коэффициентов по току для Кацп=2
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_2); // Получение текущих аналоговых данных
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_11); // Получение текущих аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_6_2); // Расчёт коррекции взаимного влияния каналов
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_12); // Расчёт коррекции взаимного влияния каналов
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_7_1); // Получение текущих аналоговых данных и расчёт настроечных коэффициентов по напряжениям
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_13); // Получение текущих аналоговых данных и расчёт настроечных коэффициентов по напряжениям
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_7_2); // Сохранение конфигурации
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_14); // Сохранение конфигурации
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_7_3); // Получение текущих аналоговых данных
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_15); // Получение текущих аналоговых данных
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_7_4); // Ввод измеренных значений
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_16); // Ввод измеренных значений
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_7_5); // Расчёт настроечных коэффициентов по токам, напряжениям и углам
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_17); // Расчёт настроечных коэффициентов по токам, напряжениям и углам
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_7_6); // Сохранение конфигурации
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_4_18); // Сохранение конфигурации
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_7_7); // Отображение ввода трёхфазных значений
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_7_8); // Получение текущих аналоговых данных
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_7_10); // Расчёт настроечных коэффициентов по токам, напряжениям и углам
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_8_1); // Запись настроечных коэффициентов и переход на новую конфигурацию
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_8_2); // Проверка аналоговых данных
-    pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_9); // Восстановление сохранённой конфигурации и проверка
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialog84::Start7_3_5); // Восстановление сохранённой конфигурации и проверка
     pf[lbls.at(count++)] = func;
 }
 
@@ -720,11 +704,11 @@ int TuneDialog84::ShowControlChooseDialog()
 
 int TuneDialog84::Show3PhaseScheme()
 {
-    QDialog *dlg = new QDialog;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QPixmap pmp;
+    //QDialog *dlg = new QDialog;
+    //QVBoxLayout *lyout = new QVBoxLayout;
+    //QPixmap pmp;
 
-    pmp.load("../tune84.png");
+    /*pmp.load("../tune84.png");
 
     QLabel *lblpmp = new QLabel;
     lblpmp->setPixmap(pmp);
@@ -753,7 +737,7 @@ int TuneDialog84::Show3PhaseScheme()
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
-    dlg->exec();
+    dlg->exec();*/
     return Error::ER_NOERROR;
 }
 
@@ -792,6 +776,7 @@ int TuneDialog84::Start7_3_1()
 
 int TuneDialog84::Start7_3_2()
 {
+   int i;
    // if (ModuleBSI::GetHealth() & HTH_REGPARS) // если нет настроечных параметров в памяти модуля
    //     return Error::ER_RESEMPTY;
    // else
@@ -801,18 +786,26 @@ int TuneDialog84::Start7_3_2()
        // if (Commands::WriteBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) == Error::ER_NOERROR)
        // {
             // получение настроечных коэффициентов от модуля
-            if (Commands::GetBac(BT_NONE, &Bac_block, sizeof(Bac)) != Error::ER_NOERROR)
+            if (Commands::GetBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) != Error::ER_NOERROR)
             {
                 WARNMSG("Ошибка при приёме данных");
                 return Error::ER_GENERALERROR;
             }
+            Bac_newblock = Bac_block;
             // обновление коэффициентов в соответствующих полях на экране
             FillBac(0);
+
+            for(i = 0; i<3; i++)
+            C84->Bci_block.Imax[i] = 600;
+
+            if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
+            return Error::ER_GENERALERROR;
+
             return Error::ER_NOERROR;
        // }
        // else
        //     return Error::ER_GENERALERROR;
-   // }
+       // }
 }
 
 int TuneDialog84::Start7_3_4()
@@ -842,6 +835,7 @@ int TuneDialog84::Start7_3_4_2()
     QGridLayout *glyout = new QGridLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     QLabel *lbl = new QLabel("Количество усреднений");
+    ledit = new QLineEdit;
     ledit->setObjectName("N");
     QPushButton* pb = new QPushButton;
     ask = new QDialog();
@@ -857,83 +851,140 @@ int TuneDialog84::Start7_3_4_2()
     ask->exec();
 
     ShowRetomDialog(57.5, 290, 89.9);
-    EnterDataTune(1);
+    Kadc = 1;
+    EnterDataTune();
     return Error::ER_NOERROR;
 }
 
-int TuneDialog84::Start7_3_4_3()
+int TuneDialog84::Start7_3_4_6()
 {
+    int i;
+    for(i = 0; i<3; i++)
+    C84->Bci_block.Imax[i] = 400;
+
+    if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
+    return Error::ER_GENERALERROR;
+
+    WaitNSeconds(2);
     return Error::ER_NOERROR;
 }
 
-int TuneDialog84::Start7_3_4_4()
+int TuneDialog84::Start7_3_4_7()
 {
+    ShowRetomDialog(57.5, 250, 89.9);
+    Kadc = 2;
+    EnterDataTune();
     return Error::ER_NOERROR;
 }
 
-int TuneDialog84::Start7_3_6_2()
+int TuneDialog84::Start7_3_4_11()
 {
+    int i;
+    for(i = 0; i<3; i++)
+    C84->Bci_block.Imax[i] = 200;
+
+    if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
+    return Error::ER_GENERALERROR;
+
+    WaitNSeconds(2);
     return Error::ER_NOERROR;
 }
 
-int TuneDialog84::Start7_3_7_1()
+int TuneDialog84::Start7_3_4_12()
 {
+    ShowRetomDialog(57.5, 125, 89.9);
+    Kadc = 4;
+    EnterDataTune();
+    return Error::ER_NOERROR;;
+}
+
+int TuneDialog84::Start7_3_4_13()
+{
+    int i;
+    for(i = 0; i<3; i++)
+    C84->Bci_block.Imax[i] = 100;
+
+    if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
+    return Error::ER_GENERALERROR;
+
+    WaitNSeconds(2);
     return Error::ER_NOERROR;
 }
 
-int TuneDialog84::Start7_3_7_2()
+int TuneDialog84::Start7_3_4_14()
 {
+    ShowRetomDialog(57.5, 63, 89.9);
+    Kadc = 8;
+    EnterDataTune();
     return Error::ER_NOERROR;
 }
 
-int TuneDialog84::Start7_3_7_3()
+int TuneDialog84::Start7_3_4_15()
 {
+    int i;
+    for(i = 0; i<3; i++)
+    C84->Bci_block.Imax[i] = 50;
+
+    if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
+    return Error::ER_GENERALERROR;
+
+    WaitNSeconds(2);
     return Error::ER_NOERROR;
 }
 
-int TuneDialog84::Start7_3_7_4()
+int TuneDialog84::Start7_3_4_16()
 {
+    ShowRetomDialog(57.5, 32, 89.9);
+    Kadc = 16;
+    EnterDataTune();
     return Error::ER_NOERROR;
 }
 
-int TuneDialog84::Start7_3_7_5()
+int TuneDialog84::Start7_3_4_17()
 {
+    int i;
+    for(i = 0; i<3; i++)
+    C84->Bci_block.Imax[i] = 25;
+
+    if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
+    return Error::ER_GENERALERROR;
+
+    WaitNSeconds(2);
     return Error::ER_NOERROR;
 }
 
-int TuneDialog84::Start7_3_7_6()
+int TuneDialog84::Start7_3_4_18()
 {
+    ShowRetomDialog(57.5, 16, 89.9);
+    Kadc = 32;
+    EnterDataTune();
+    FillNewBac();
     return Error::ER_NOERROR;
 }
 
-int TuneDialog84::Start7_3_7_7()
-{
-    return Error::ER_NOERROR;
-}
 
-int TuneDialog84::Start7_3_7_8()
+int TuneDialog84::Start7_3_5()
 {
-    return Error::ER_NOERROR;
-}
+    if (!LoadWorkConfig())
+       return Error::ER_GENERALERROR;
+    WaitNSeconds(5);
+    if (EMessageBox::question(this,"Закончить?","Закончить настройку и записать коэффициенты в модуль?"))
+    {
 
-int TuneDialog84::Start7_3_7_10()
-{
-    return Error::ER_NOERROR;
-}
+        // Пишем в модуль посчитанные регулировочные коэффициенты
 
-int TuneDialog84::Start7_3_8_1()
-{
-    return Error::ER_NOERROR;
-}
+        if (Commands::WriteBac(BT_MEZONIN, &Bac_newblock, sizeof(Bac_newblock)) != Error::ER_NOERROR)  // Григорий Матвеевич попросил писать коэффициенты сразу в модуль
+        return Error::ER_GENERALERROR;
 
-int TuneDialog84::Start7_3_8_2()
-{
-    return Error::ER_NOERROR;
-}
+        if (EMessageBox::question(this,"Протокол поверки","Начать поверку?"))
+        {
+           GenerateReport();
+        }
 
-int TuneDialog84::Start7_3_9()
-{
-    return Error::ER_NOERROR;
+        return Error::ER_NOERROR;
+    }
+    else
+        return false;
 }
 
 void TuneDialog84::ReadN()
@@ -1056,9 +1107,8 @@ int TuneDialog84::GetExternalData()
 #endif
 }
 
-void TuneDialog84::EnterDataTune(int Kadc)
+void TuneDialog84::EnterDataTune()
 {
-    Q_UNUSED(Kadc);
     int i;
     ask = new QDialog(this);
     //QVBoxLayout *lyout = new QVBoxLayout;
@@ -1103,12 +1153,13 @@ void TuneDialog84::EnterDataTune(int Kadc)
     glyout->addWidget(ledit,8,0,1,1);
 
     QPushButton *pb = new QPushButton("Настроить");
-    connect(pb,SIGNAL(clicked()),this,SLOT(CalcTuneCoefs(Kadc)));
-    glyout->addWidget(pb,9,0,1,3);
-    pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked()),this,SLOT(CalcTuneCoefs()));
+    glyout->addWidget(pb,9,2,1,2);
+   /* pb = new QPushButton("Отмена");
     connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
     connect(pb,SIGNAL(clicked()),this,SLOT(close()));
-    glyout->addWidget(pb,9,3,1,3);
+    connect(pb,SIGNAL(clicked()),this,SLOT(CloseAsk()));
+    glyout->addWidget(pb,9,3,1,3);*/
 
     ask->setLayout(glyout);
     ask->exec();
@@ -1119,7 +1170,12 @@ void TuneDialog84::EnterDataTune(int Kadc)
 
 }
 
-int TuneDialog84::CalcTuneCoefs(int Kadc)
+void TuneDialog84::CloseAsk()
+{
+    ask->close();
+}
+
+int TuneDialog84::CalcTuneCoefs()
 {
     int i;
     QString tmps;
@@ -1164,9 +1220,42 @@ int TuneDialog84::CalcTuneCoefs(int Kadc)
 
         for (i=1; i < 3; i++) Bac_newblock.DPsi[i] =  Bac_block.DPsi[i] - Bda_in.phi_next_f[i];
         for (i=3; i < 6; i++) Bac_newblock.DPsi[i] =  Bac_block.DPsi[i] + PHIet[i] - Bda_in.phi_next_f[i];
-     }
-
-   // return Error::ER_GENERALERROR;
+    }
+    else if(Kadc == 2)
+    {
+        for (i=0; i<3; i++)
+        {
+            Bac_newblock.KmI2[i] = Bac_block.KmI2[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
+        }
+    }
+    else if(Kadc == 4)
+    {
+        for (i=0; i<3; i++)
+        {
+            Bac_newblock.KmI4[i] = Bac_block.KmI4[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
+        }
+    }
+    else if(Kadc == 8)
+    {
+        for (i=0; i<3; i++)
+        {
+            Bac_newblock.KmI8[i] = Bac_block.KmI8[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
+        }
+    }
+    else if(Kadc == 16)
+    {
+        for (i=0; i<3; i++)
+        {
+            Bac_newblock.KmI16[i] = Bac_block.KmI16[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
+        }
+    }
+    else if(Kadc == 32)
+    {
+        for (i=0; i<3; i++)
+        {
+            Bac_newblock.KmI32[i] = Bac_block.KmI32[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
+        }
+    }
 
     return Error::ER_NOERROR;
 
@@ -1205,12 +1294,16 @@ void TuneDialog84::GetBdAndFillMTT()
 
 int TuneDialog84::SaveWorkConfig()
 {
+    if (Commands::GetFile(CM_CONFIGFILE,S2ConfigForTune) == Error::ER_NOERROR)
+        memcpy(&Bci_block_work,&C84->Bci_block,sizeof(Config84::Bci));
+    else
+        return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
 }
 
 int TuneDialog84::ReadAnalogMeasurements()
 {
-    int i;
+    int i,j;
     float sumU[3];
     float sumI[3];
     float sumPHI[6];
@@ -1218,22 +1311,22 @@ int TuneDialog84::ReadAnalogMeasurements()
     for(i = 0; i<N; i++)
     {
         // получение текущих аналоговых сигналов от модуля
-         if (Commands::GetBda(BT_BASE, &Bda_in, sizeof(Bda_in)) != Error::ER_NOERROR)
+         if (Commands::GetBd(BT_BASE, &Bda_in, sizeof(Bda_in)) != Error::ER_NOERROR)
          {
              EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
              return Error::ER_GENERALERROR;
          }
          else
          {
-             for(i = 0; i<3; i++)
+             for(j = 0; j<3; j++)
              {
-               sumU[i] += Bda_in.IUefNat_filt[i];
-               sumI[i] += Bda_in.IUefNat_filt[i+3];
+               sumU[j] += Bda_in.IUefNat_filt[j];
+               sumI[j] += Bda_in.IUefNat_filt[j+3];
              }
 
-             for(i = 0; i<6; i++)
+             for(j = 0; j<6; j++)
              {
-               sumPHI[i] += Bda_in.phi_next_f[i];
+               sumPHI[j] += Bda_in.phi_next_f[j];
              }
 
              sumFreq += Bda_in.Frequency;
@@ -1271,8 +1364,8 @@ int TuneDialog84::ShowRetomDialog(double U, double I, double Y)
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     QLabel *lbl=new QLabel("Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc)"\
-                   "Угол между токами и напряжениями: "+QString::number(Y, 'g', 2)+" град.,\n"\
-                   "Значения напряжений: "+QString::number(U, 'g', 2)+" В, токов: "+QString::number(I, 'g', 4)+" мА");
+                   "Угол между токами и напряжениями: "+QString::number(Y, 'f', 2)+" град.,\n"\
+                   "Значения напряжений: "+QString::number(U, 'f', 2)+" В, токов: "+QString::number(I, 'f', 2)+" мА");
     lyout->addWidget(lbl);
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
@@ -1422,6 +1515,7 @@ int TuneDialog84::TunePt100Channel()
     QGridLayout *glyout = new QGridLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     QLabel *lbl = new QLabel("Количество усреднений");
+    ledit = new QLineEdit;
     ledit->setObjectName("N");
     QPushButton* pb = new QPushButton;
     ask = new QDialog();
@@ -1499,11 +1593,15 @@ int TuneDialog84::TuneChannel()
            BdaPt100_120Om.Pt100 = sum/N; // усредняем
        }
 
+       Bda_block = BdaPt100_120Om;
+       FillBd1(this);
        CalcNewPt100Coefs();
        FillNewBac();
+       WaitNSeconds(5);
 
-       if (Commands::WriteBac(BT_NONE, &Bac_newblock, sizeof(Bac_newblock)) == Error::ER_NOERROR)
+       if (Commands::WriteBac(BT_MEZONIN, &Bac_newblock, sizeof(Bac_newblock)) == Error::ER_NOERROR)
        {
+          EMessageBox::information(this, "Настройка", "Настройка завершена");
           return Error::ER_NOERROR;
        }
        else

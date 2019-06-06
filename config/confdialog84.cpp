@@ -51,13 +51,13 @@ void ConfDialog84::Fill()
       WDFunc::SetSPBData(this, "corTg."+QString::number(i), C84->Bci_block.corTg[i]);
     }
 
-    WDFunc::SetSPBData(this, "dС_pred", C84->Bci_block.dС_pred);
-    WDFunc::SetSPBData(this, "dС_alarm", C84->Bci_block.dС_alarm);
+    WDFunc::SetSPBData(this, "dС_pred", C84->Bci_block.dC_pred);
+    WDFunc::SetSPBData(this, "dС_alarm", C84->Bci_block.dC_alarm);
     WDFunc::SetSPBData(this, "dTg_pred", C84->Bci_block.dTg_pred);
     WDFunc::SetSPBData(this, "dTg_alarm", C84->Bci_block.dTg_alarm);
     WDFunc::SetSPBData(this, "dIunb_pred", C84->Bci_block.dIunb_pred);
     WDFunc::SetSPBData(this, "dIunb_alarm", C84->Bci_block.dIunb_alarm);
-    WDFunc::SetSPBData(this, "GdС", C84->Bci_block.GdС);
+    WDFunc::SetSPBData(this, "GdС", C84->Bci_block.GdC);
     WDFunc::SetSPBData(this, "GdTg", C84->Bci_block.GdTg);
     WDFunc::SetSPBData(this, "GdIunb", C84->Bci_block.GdIunb);
     WDFunc::SetSPBData(this, "NFiltr", C84->Bci_block.NFiltr);
@@ -107,13 +107,13 @@ void ConfDialog84::FillBack()
       WDFunc::SPBData(this, "corTg."+QString::number(i), C84->Bci_block.corTg[i]);
     }
 
-    WDFunc::SPBData(this, "dС_pred", C84->Bci_block.dС_pred);
-    WDFunc::SPBData(this, "dС_alarm", C84->Bci_block.dС_alarm);
+    WDFunc::SPBData(this, "dС_pred", C84->Bci_block.dC_pred);
+    WDFunc::SPBData(this, "dС_alarm", C84->Bci_block.dC_alarm);
     WDFunc::SPBData(this, "dTg_pred", C84->Bci_block.dTg_pred);
     WDFunc::SPBData(this, "dTg_alarm", C84->Bci_block.dTg_alarm);
     WDFunc::SPBData(this, "dIunb_pred", C84->Bci_block.dIunb_pred);
     WDFunc::SPBData(this, "dIunb_alarm", C84->Bci_block.dIunb_alarm);
-    WDFunc::SPBData(this, "GdС", C84->Bci_block.GdС);
+    WDFunc::SPBData(this, "GdС", C84->Bci_block.GdC);
     WDFunc::SPBData(this, "GdTg", C84->Bci_block.GdTg);
     WDFunc::SPBData(this, "GdIunb", C84->Bci_block.GdIunb);
     WDFunc::SPBData(this, "NFiltr", C84->Bci_block.NFiltr);

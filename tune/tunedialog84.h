@@ -229,6 +229,7 @@ private:
     float IUefNat_filt_old[6];      // для сохранения значений по п. 7.3.2
     float MipDat[46];
     int GED_Type;
+    int Kadc;
 
     QHBoxLayout *MipPars(int parnum, const QString &groupname);
     void FillBac(int bacnum);
@@ -254,21 +255,17 @@ private:
     int Start7_3_2();
     int Start7_3_4();
     int Start7_3_4_2();
-    int Start7_3_4_3();
-    int Start7_3_4_4();
-    int Start7_3_6_2();
-    int Start7_3_7_1();
-    int Start7_3_7_2();
-    int Start7_3_7_3();
-    int Start7_3_7_4();
-    int Start7_3_7_5();
-    int Start7_3_7_6();
-    int Start7_3_7_7();
-    int Start7_3_7_8();
-    int Start7_3_7_10();
-    int Start7_3_8_1();
-    int Start7_3_8_2();
-    int Start7_3_9();
+    int Start7_3_4_6();
+    int Start7_3_4_7();
+    int Start7_3_4_11();
+    int Start7_3_4_12();
+    int Start7_3_4_13();
+    int Start7_3_4_14();
+    int Start7_3_4_15();
+    int Start7_3_4_16();
+    int Start7_3_4_17();
+    int Start7_3_4_18();
+    int Start7_3_5();
     int SaveUeff();
     int ShowRetomDialog(double U, double I, double Y);
     int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта
@@ -281,7 +278,7 @@ private:
     int Show80();
     int Show120();
     void CalcNewPt100Coefs();
-    void EnterDataTune(int Kadc);
+    void EnterDataTune();
 
 #endif
 
@@ -304,7 +301,8 @@ private slots:
     void CancelTune();
     void GenerateReport();
     int TunePt100Channel();
-    int CalcTuneCoefs(int Kadc);
+    int CalcTuneCoefs();
+    void CloseAsk();
 
 
 #endif

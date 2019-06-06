@@ -224,10 +224,6 @@ int TuneDialog21::Tune()
     int i;
     for (i=0; i<AIN21_NUMCH; ++i)
     {
-        if(ShowU0(i) == Error::ER_GENERALERROR)
-           return Error::ER_GENERALERROR;
-        if (TuneChannel(BdaU0) != Error::ER_NOERROR)
-            return Error::ER_GENERALERROR;
         if(ShowI0(i) == Error::ER_GENERALERROR)
            return Error::ER_GENERALERROR;
         if (TuneChannel(BdaI0) != Error::ER_NOERROR)
@@ -238,6 +234,13 @@ int TuneDialog21::Tune()
         if(ShowI20(i) == Error::ER_GENERALERROR)
             return Error::ER_GENERALERROR;
         if (TuneChannel(Bda20) != Error::ER_NOERROR)
+            return Error::ER_GENERALERROR;
+    }
+    for (i=0; i<AIN21_NUMCH; ++i)
+    {
+        if(ShowU0(i) == Error::ER_GENERALERROR)
+           return Error::ER_GENERALERROR;
+        if (TuneChannel(BdaU0) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
     }
     for (i=0; i<AIN21_NUMCH; ++i)
@@ -276,10 +279,6 @@ void TuneDialog21::TuneOneChannel()
 {
     int NumCh = 0;
     NumCh = WDFunc::CBIndex(this, "tunenumch");
-    if (ShowU0(NumCh) == Error::ER_GENERALERROR)
-        return;
-    if (TuneChannel(BdaU0) != Error::ER_NOERROR)
-        return;
     if (ShowI0(NumCh) == Error::ER_GENERALERROR)
         return;
     if (TuneChannel(BdaI0) != Error::ER_NOERROR)
@@ -288,7 +287,11 @@ void TuneDialog21::TuneOneChannel()
         return;
     if (TuneChannel(Bda20) != Error::ER_NOERROR)
         return;
-    if(ShowU5(NumCh) == Error::ER_GENERALERROR)
+    if (ShowU0(NumCh) == Error::ER_GENERALERROR)
+        return;
+    if (TuneChannel(BdaU0) != Error::ER_NOERROR)
+        return;
+    if (ShowU5(NumCh) == Error::ER_GENERALERROR)
         return;
     if (TuneChannel(Bda5) != Error::ER_NOERROR)
         return;
