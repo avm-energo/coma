@@ -80,7 +80,7 @@ Config85::Config85(QVector<S2::DataRec> &config)
         config.append({StartInIndex+63, sizeof(Bci_block.TsolOFF), &Bci_block.TsolOFF});
         config.append({StartInIndex+64, sizeof(Bci_block.NumA), &Bci_block.NumA});
         config.append({StartInIndex+65, sizeof(Bci_block.TypeA), &Bci_block.TypeA});
-        config.append({StartInIndex+66, sizeof(Bci_block.SolTime), &Bci_block.SolTime});
+        //config.append({StartInIndex+66, sizeof(Bci_block.SolTime), &Bci_block.SolTime});
         config.append({StartInIndex+67, sizeof(Bci_block.RESnom_max), &Bci_block.RESnom_max});
         config.append({StartInIndex+68, sizeof(Bci_block.Pdrive_nom), &Bci_block.Pdrive_nom});
         config.append({StartInIndex+69, sizeof(Bci_block.Pdrive_pred), &Bci_block.Pdrive_pred});
@@ -89,6 +89,13 @@ Config85::Config85(QVector<S2::DataRec> &config)
         config.append({StartInIndex+72, sizeof(Bci_block.dTs_ON), &Bci_block.dTs_ON});
         config.append({StartInIndex+73, sizeof(Bci_block.Tdis_OFF), &Bci_block.Tdis_OFF});
         config.append({StartInIndex+74, sizeof(Bci_block.Tdis_ON), &Bci_block.Tdis_ON});
+        config.append({StartInIndex+75, sizeof(Bci_block.RES_const_A_big), &Bci_block.RES_const_A_big});
+        config.append({StartInIndex+76, sizeof(Bci_block.RES_const_a_small), &Bci_block.RES_const_a_small});
+        config.append({StartInIndex+77, sizeof(Bci_block.RES_const_n_small), &Bci_block.RES_const_n_small});
+        config.append({StartInIndex+78, sizeof(Bci_block.RES_const_b), &Bci_block.RES_const_b});
+        config.append({StartInIndex+79, sizeof(Bci_block.RES_const_N_big), &Bci_block.RES_const_N_big});
+        config.append({StartInIndex+80, sizeof(Bci_block.Algorithm_Choice), &Bci_block.Algorithm_Choice});
+        config.append({StartInIndex+81, sizeof(Bci_block.Iotc), &Bci_block.Iotc});
     }
     config.append({0xFFFFFFFF, 0, nullptr});
 }
@@ -158,6 +165,8 @@ void Config85::SetDefConf()
         Bci_block.K_off_tdr[i] = 0;
         Bci_block.K_on_hdr[i] = 0;
         Bci_block.K_off_hdr[i] = 0;
+        Bci_block.Tdis_OFF[i] = 0;  //дополнительное смещение момента отключения во избежании повторного зажигания, мс
+        Bci_block.Tdis_ON[i] = 0; //дополнительное смещение момента включения для снижения перенапряжений, мс
     }
     Bci_block.Pdrive_nom = 32;
     Bci_block.Pdrive_pred = 33;
@@ -169,6 +178,5 @@ void Config85::SetDefConf()
     Bci_block.TypeA = 0x01; // выключатель
     Bci_block.dTs_OFF = 1;   // допустимое отклонение собственного времени отключения, мс
     Bci_block.dTs_ON = 1;   // допустимое отклонение собственного времени включения, мс
-    Bci_block.Tdis_OFF = 0;  //дополнительное смещение момента отключения во избежании повторного зажигания, мс
-    Bci_block.Tdis_ON = 0; //дополнительное смещение момента включения для снижения перенапряжений, мс
+
 }

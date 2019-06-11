@@ -64,14 +64,14 @@ void TuneDialog84::SetupUI()
 
     glyout->addWidget(pb, 1,1,1,1);
 
-    glyout->addWidget(TuneUI(), 2,1,1,1);
+    glyout->addWidget(TuneUI(), 3,1,1,1);
 
-   // pb = new QPushButton("Настройка температурной коррекции");
+    pb = new QPushButton("Настройка температурной коррекции");
     #if PROGSIZE != PROGSIZE_EMUL
-    //connect(pb,SIGNAL(clicked(bool)),this,SLOT(TunePt100Channel()));
+    connect(pb,SIGNAL(clicked(bool)),this,SLOT(TuneTemp()));
     #endif
 
-    //glyout->addWidget(pb, 3,1,1,1);
+    glyout->addWidget(pb, 2,1,1,1);
 
     pb = new QPushButton("Начать поверку");
     #if PROGSIZE != PROGSIZE_EMUL
@@ -777,35 +777,23 @@ int TuneDialog84::Start7_3_1()
 int TuneDialog84::Start7_3_2()
 {
    int i;
-   // if (ModuleBSI::GetHealth() & HTH_REGPARS) // если нет настроечных параметров в памяти модуля
-   //     return Error::ER_RESEMPTY;
-   // else
-   // {
-        // запись настроечных коэффициентов в модуль
-       // SetDefCoefs();
-       // if (Commands::WriteBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) == Error::ER_NOERROR)
-       // {
-            // получение настроечных коэффициентов от модуля
-            if (Commands::GetBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) != Error::ER_NOERROR)
-            {
-                WARNMSG("Ошибка при приёме данных");
-                return Error::ER_GENERALERROR;
-            }
-            Bac_newblock = Bac_block;
-            // обновление коэффициентов в соответствующих полях на экране
-            FillBac(0);
+   if (Commands::GetBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) != Error::ER_NOERROR)
+   {
+       WARNMSG("Ошибка при приёме данных");
+       return Error::ER_GENERALERROR;
+   }
+   Bac_newblock = Bac_block;
+   // обновление коэффициентов в соответствующих полях на экране
+   FillBac(0);
 
-            for(i = 0; i<3; i++)
-            C84->Bci_block.Imax[i] = 600;
+    for(i = 0; i<3; i++)
+    C84->Bci_block.Imax[i] = 600;
 
-            if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
-            return Error::ER_GENERALERROR;
+    if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
+    return Error::ER_GENERALERROR;
 
-            return Error::ER_NOERROR;
-       // }
-       // else
-       //     return Error::ER_GENERALERROR;
-       // }
+    return Error::ER_NOERROR;
+
 }
 
 int TuneDialog84::Start7_3_4()
@@ -1553,8 +1541,15 @@ int TuneDialog84::TuneChannel()
     N=tmps.toInt();
     ask->close();
     float sum = 0.0;
+    SaveWorkConfig();
 
-    Start7_3_2();
+    if (Commands::GetBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) != Error::ER_NOERROR)
+    {
+        WARNMSG("Ошибка при приёме данных");
+        return Error::ER_GENERALERROR;
+    }
+    // обновление коэффициентов в соответствующих полях на экране
+    FillBac(0);
     Bac_newblock = Bac_block;
 
        if(Show80() == Error::ER_GENERALERROR)
@@ -1648,7 +1643,38 @@ void TuneDialog84::CalcNewPt100Coefs()
     }
 }
 
+int TuneDialog84::TuneTemp()
+{
+    QGridLayout *glyout = new QGridLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QLabel *lbl = new QLabel("Количество усреднений");
+    ledit = new QLineEdit;
+    ledit->setObjectName("N");
+    QPushButton* pb = new QPushButton;
+    ask = new QDialog();
+    ask->setAttribute(Qt::WA_DeleteOnClose);
 
+    if (EAbstractTuneDialog::CheckPassword() == Error::ER_NOERROR)
+    {
+        //StdFunc::ClearCancel();
+        //QEventLoop EnterLoop;
+        glyout->addWidget(lbl,0,1,1,1);
+        glyout->addWidget(ledit,1,1,1,1);
+        pb = new QPushButton("Ok");
+        connect(pb,SIGNAL(clicked()),this,SLOT(TuneChannel()));
+        //connect(pb,SIGNAL(clicked()),&EnterLoop,SLOT(quit()));
+        glyout->addWidget(pb,2,1,1,1);
+        vlyout->addLayout(glyout);
+        ask->setLayout(vlyout);
+        ask->show();
+        //ask->setModal(false);
+
+
+       return Error::ER_NOERROR;
+
+    }
+    return Error::ER_GENERALERROR;
+}
 
 void TuneDialog84::GenerateReport()
 {

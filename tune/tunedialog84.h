@@ -301,6 +301,7 @@ private slots:
     void CancelTune();
     void GenerateReport();
     int TunePt100Channel();
+    int TuneTemp();
     int CalcTuneCoefs();
     void CloseAsk();
 

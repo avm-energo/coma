@@ -100,6 +100,8 @@ void ConfDialog85::Fill()
        WDFunc::SetSPBData(this, "k_off_tdr."+QString::number(i), C85->Bci_block.K_off_tdr[i]);
        WDFunc::SetSPBData(this, "k_on_hdr."+QString::number(i), C85->Bci_block.K_on_hdr[i]);
        WDFunc::SetSPBData(this, "k_off_hdr."+QString::number(i), C85->Bci_block.K_off_hdr[i]);
+       WDFunc::SetSPBData(this, "tdisoff."+QString::number(i), C85->Bci_block.Tdis_OFF[i]);
+       WDFunc::SetSPBData(this, "tdison."+QString::number(i), C85->Bci_block.Tdis_ON[i]);
     }
     WDFunc::SetSPBData(this, "ts_offpred", C85->Bci_block.Ts_OFFpred);
     WDFunc::SetSPBData(this, "ts_offalarm", C85->Bci_block.Ts_OFFalarm);
@@ -125,8 +127,6 @@ void ConfDialog85::Fill()
     WDFunc::SetSPBData(this, "ialarm", C85->Bci_block.I_alarm);
     WDFunc::SetSPBData(this, "dtsoff", C85->Bci_block.dTs_OFF);
     WDFunc::SetSPBData(this, "dtson", C85->Bci_block.dTs_ON);
-    WDFunc::SetSPBData(this, "tdisoff", C85->Bci_block.Tdis_OFF);
-    WDFunc::SetSPBData(this, "tdison", C85->Bci_block.Tdis_ON);
 
 }
 
@@ -202,6 +202,8 @@ void ConfDialog85::FillBack()
         WDFunc::SPBData(this, "k_off_tdr."+QString::number(i), C85->Bci_block.K_off_tdr[i]);
         WDFunc::SPBData(this, "k_on_hdr."+QString::number(i), C85->Bci_block.K_on_hdr[i]);
         WDFunc::SPBData(this, "k_off_hdr."+QString::number(i), C85->Bci_block.K_off_hdr[i]);
+        WDFunc::SPBData(this, "tdisoff."+QString::number(i), C85->Bci_block.Tdis_OFF[i]);
+        WDFunc::SPBData(this, "tdison."+QString::number(i), C85->Bci_block.Tdis_ON[i]);
     }
     WDFunc::SPBData(this, "ts_offpred", C85->Bci_block.Ts_OFFpred);
     WDFunc::SPBData(this, "ts_offalarm", C85->Bci_block.Ts_OFFalarm);
@@ -227,8 +229,6 @@ void ConfDialog85::FillBack()
     WDFunc::SPBData(this, "ialarm", C85->Bci_block.I_alarm);
     WDFunc::SPBData(this, "dtsoff", C85->Bci_block.dTs_OFF);
     WDFunc::SPBData(this, "dtson", C85->Bci_block.dTs_ON);
-    WDFunc::SPBData(this, "tdisoff", C85->Bci_block.Tdis_OFF);
-    WDFunc::SPBData(this, "tdison", C85->Bci_block.Tdis_ON);
 
 }
 
