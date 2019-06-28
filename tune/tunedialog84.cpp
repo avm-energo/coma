@@ -105,7 +105,7 @@ void TuneDialog84::SetupUI()
     TuneTW->addTab(cp4,"Измеренные параметры");
     #endif
     TuneTW->addTab(area,"Коэффициенты");
-    TuneTW->addTab(cp3,"Данные МИП");
+    //TuneTW->addTab(cp3,"Данные МИП");
 
 
     // CP2 - КОЭФФИЦИЕНТЫ МОДУЛЯ
@@ -238,7 +238,7 @@ void TuneDialog84::SetupUI()
 
     // CP3 - ПОКАЗАНИЯ МИП-02
 
-    QVBoxLayout *vlyout = new QVBoxLayout;
+    /*QVBoxLayout *vlyout = new QVBoxLayout;
     QVBoxLayout *gblyout = new QVBoxLayout;
     gb = new QGroupBox("Измеряемые параметры");
     QHBoxLayout *hlyout = MipPars(1, "Частота");
@@ -317,7 +317,7 @@ void TuneDialog84::SetupUI()
     hlyout->addWidget(pb);
     vlyout->addLayout(hlyout);
     #endif
-    cp3->setLayout(vlyout);
+    cp3->setLayout(vlyout);*/
 
     lyout = new QVBoxLayout;
     lyout->addWidget(TuneTW);
@@ -1661,7 +1661,7 @@ int TuneDialog84::TuneTemp()
         glyout->addWidget(lbl,0,1,1,1);
         glyout->addWidget(ledit,1,1,1,1);
         pb = new QPushButton("Ok");
-        connect(pb,SIGNAL(clicked()),this,SLOT(TuneChannel()));
+        connect(pb,SIGNAL(clicked()),this,SLOT(TuneTempCor()));
         //connect(pb,SIGNAL(clicked()),&EnterLoop,SLOT(quit()));
         glyout->addWidget(pb,2,1,1,1);
         vlyout->addLayout(glyout);
@@ -1675,6 +1675,79 @@ int TuneDialog84::TuneTemp()
     }
     return Error::ER_GENERALERROR;
 }
+
+int TuneDialog84::TuneTempCor()
+{
+
+    int i;
+    QString tmps;
+    WDFunc::LEData(ask, "N", tmps);
+    N=tmps.toInt();
+    ask->close();
+    float sum = 0.0;
+    SaveWorkConfig();
+
+    if (Commands::GetBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) != Error::ER_NOERROR)
+    {
+        WARNMSG("Ошибка при приёме данных");
+        return Error::ER_GENERALERROR;
+    }
+    // обновление коэффициентов в соответствующих полях на экране
+    FillBac(0);
+    Bac_newblock = Bac_block;
+
+       if(Show80() == Error::ER_GENERALERROR)
+       return Error::ER_GENERALERROR;
+       else
+       {
+           sum = 0;
+           for(i = 0; i<N; i++)
+           {
+             if(Commands::GetBda(BT_NONE, &BdaPt100_80Om, sizeof(BdaPt100_80Om)) == Error::ER_NOERROR)
+             {
+               sum += BdaPt100_80Om.Pt100;
+               QThread::msleep(500);
+             }
+             else
+             return Error::ER_GENERALERROR;
+           }
+           BdaPt100_80Om.Pt100 = sum/N; // усредняем
+       }
+
+       if(Show120() == Error::ER_GENERALERROR)
+       return Error::ER_GENERALERROR;
+       else
+       {
+           sum = 0;
+           for(i = 0; i<N; i++)
+           {
+              if(Commands::GetBda(BT_NONE, &BdaPt100_120Om, sizeof(BdaPt100_120Om)) == Error::ER_NOERROR)
+              {
+                sum += BdaPt100_120Om.Pt100;
+                QThread::msleep(500);
+              }
+              else
+              return Error::ER_GENERALERROR;
+           }
+           BdaPt100_120Om.Pt100 = sum/N; // усредняем
+       }
+
+       Bda_block = BdaPt100_120Om;
+       FillBd1(this);
+       CalcNewPt100Coefs();
+       FillNewBac();
+       WaitNSeconds(5);
+
+       if (Commands::WriteBac(BT_MEZONIN, &Bac_newblock, sizeof(Bac_newblock)) == Error::ER_NOERROR)
+       {
+          EMessageBox::information(this, "Настройка", "Настройка завершена");
+          return Error::ER_NOERROR;
+       }
+       else
+       return Error::ER_GENERALERROR;
+
+}
+
 
 void TuneDialog84::GenerateReport()
 {

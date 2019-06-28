@@ -302,6 +302,7 @@ private slots:
     void GenerateReport();
     int TunePt100Channel();
     int TuneTemp();
+    int TuneTempCor();
     int CalcTuneCoefs();
     void CloseAsk();
 

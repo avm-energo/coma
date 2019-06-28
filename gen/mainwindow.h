@@ -15,6 +15,7 @@
 #include "../gen/modulebsi.h"
 #include "../gen/maindef.h"
 #include "../dialogs/swjdialog.h"
+#include "../dialogs/fwupdialog.h"
 
 #include "eabstractprotocomchannel.h"
 
@@ -56,6 +57,7 @@ public:
     OscDialog *OscD;
     EOscillogram *OscFunc;
     SWJDialog *dlg;
+    fwupdialog *FwUpD;
     void LoadOscFromFile(const QString &filename);
     void LoadSwjFromFile(const QString &filename);
 #endif

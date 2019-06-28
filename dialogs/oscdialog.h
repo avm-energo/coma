@@ -16,7 +16,7 @@ class OscDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit OscDialog(EOscillogram *osc, QWidget *parent=0);
+    explicit OscDialog(EOscillogram *osc, QWidget *parent=nullptr);
     ~OscDialog();
 
 private:

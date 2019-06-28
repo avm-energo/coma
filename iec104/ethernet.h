@@ -13,7 +13,7 @@ class ethernet : public QObject
     Q_OBJECT
 
 public:
-    ethernet(QObject *parent = 0);
+    ethernet(QObject *parent = nullptr);
     quint16 ASDU;
     bool ClosePortAndFinishThread;
 
