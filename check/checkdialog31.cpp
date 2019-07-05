@@ -15,9 +15,7 @@ CheckDialog31::CheckDialog31(BoardTypes board, QWidget *parent) : EAbstractCheck
     Ch31 = new Check31;
     Ch = new Check;
     BdUINum = 1; // количество вкладок - 1
-    int StartBd = (board == BoardTypes::BT_BASE) ? BT_STARTBD_BASE : BT_STARTBD_MEZ; // стартовый номер блока данных - 1 для базовой платы, 101 - для мезонинной
     SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
-//    SetBd(StartBd + A31_BD, &Ch31->Bd_block, sizeof(Check31::Bd));
     QStringList sl = QStringList() << "Общ" << "Все";
     SetupUI(sl);
 #if PROGSIZE != PROGSIZE_EMUL
