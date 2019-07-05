@@ -17,7 +17,7 @@ public:
     {
       quint32 id; 		// id
       quint32 NumByte;			// количество байт в TypeTheData
-    }DataRecHeader;
+    } DataRecHeader;
 
     typedef struct
     {

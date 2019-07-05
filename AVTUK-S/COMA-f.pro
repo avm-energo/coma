@@ -30,12 +30,16 @@ SOURCES += \
     ../check/check.cpp \
     ../check/check21.cpp \
     ../check/check22.cpp \
+    ../check/check31.cpp \
     ../check/check80.cpp \
+    ../check/check84.cpp \
     ../check/check85.cpp \
     ../check/checka1.cpp \
     ../check/checkdialog21.cpp \
     ../check/checkdialog22.cpp \
+    ../check/checkdialog31.cpp \
     ../check/checkdialog80.cpp \
+    ../check/checkdialog84.cpp \
     ../check/checkdialog85.cpp \
     ../check/checkdialoga1.cpp \
     ../check/eabstractcheckdialog.cpp \
@@ -47,7 +51,9 @@ SOURCES += \
     ../config/confdialog31.cpp \
     ../config/confdialog35.cpp \
     ../config/confdialog80.cpp \
+    ../config/confdialog84.cpp \
     ../config/confdialog85.cpp \
+    ../config/confdialog87.cpp \
     ../config/confdialoga1.cpp \
     ../config/config.cpp \
     ../config/config21.cpp \
@@ -56,7 +62,9 @@ SOURCES += \
     ../config/config35.cpp \
     ../config/config3x.cpp \
     ../config/config80.cpp \
+    ../config/config84.cpp \
     ../config/config85.cpp \
+    ../config/config87.cpp \
     ../config/configa1.cpp \
     ../dialogs/a1dialog.cpp \
     ../dialogs/errordialog.cpp \
@@ -69,17 +77,35 @@ SOURCES += \
     ../dialogs/switchjournaldialog.cpp \
     ../dialogs/swjdialog.cpp \
     ../dialogs/trendviewdialog.cpp \
+    ../gen/commands.cpp \
+    ../gen/eabstractprotocomchannel.cpp \
     ../gen/eoscillogram.cpp \
+    ../gen/error.cpp \
+    ../gen/eusbhid.cpp \
+    ../gen/files.cpp \
     ../gen/log.cpp \
     ../gen/mainwindow.cpp \
+    ../gen/modulebsi.cpp \
+    ../gen/parseid10031.cpp \
+    ../gen/parseid9000.cpp \
+    ../gen/parseid9050.cpp \
+    ../gen/parsemodule.cpp \
     ../gen/qcustomplot.cpp \
+    ../gen/report.cpp \
+    ../gen/s2.cpp \
+    ../gen/stdfunc.cpp \
+    ../gen/timefunc.cpp \
+    ../iec104/ethernet.cpp \
+    ../iec104/iec104.cpp \
     ../models/trendviewmodel.cpp \
     ../modules/eabstractmodule.cpp \
     ../tune/eabstracttunedialog.cpp \
+    ../tune/eabstracttunedialoga1dn.cpp \
     ../tune/tunedialog21.cpp \
     ../tune/tunedialog22.cpp \
     ../tune/tunedialog80.cpp \
     ../tune/tunedialog84.cpp \
+    ../tune/tunedialog85.cpp \
     ../tune/tunedialoga1.cpp \
     ../tune/tunedialoga1dn.cpp \
     ../widgets/ecombobox.cpp \
@@ -96,44 +122,23 @@ SOURCES += \
     ../widgets/passwordlineedit.cpp \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp \
-    ../gen/s2.cpp \
-    ../gen/modulebsi.cpp \
-    ../gen/error.cpp \
-    ../gen/timefunc.cpp \
-    ../gen/files.cpp \
-    ../gen/stdfunc.cpp \
-    ../tune/tunedialog85.cpp \
-    ../config/confdialog87.cpp \
-    ../config/config87.cpp \
-    ../gen/commands.cpp \
-    ../gen/eabstractprotocomchannel.cpp \
-    ../gen/eusbhid.cpp \
-    ../iec104/ethernet.cpp \
-    ../iec104/iec104.cpp \
-    ../config/config84.cpp \
-    ../config/confdialog84.cpp \
-    ../check/checkdialog84.cpp \
-    ../check/check84.cpp \
-    ../tune/eabstracttunedialoga1dn.cpp \
-    ../gen/parseid9000.cpp \
-    ../gen/parseid9050.cpp \
-    ../gen/parseid10031.cpp \
-    ../gen/report.cpp \
-    ../gen/parsemodule.cpp \
-    ../tune/tunedialog84.cpp
+    ../widgets/wd_func.cpp
 
 HEADERS  += \
     coma.h \
     ../check/check.h \
     ../check/check21.h \
     ../check/check22.h \
+    ../check/check31.h \
     ../check/check80.h \
+    ../check/check84.h \
     ../check/check85.h \
     ../check/checka1.h \
     ../check/checkdialog21.h \
     ../check/checkdialog22.h \
+    ../check/checkdialog31.h \
     ../check/checkdialog80.h \
+    ../check/checkdialog84.h \
     ../check/checkdialog85.h \
     ../check/checkdialoga1.h \
     ../check/eabstractcheckdialog.h \
@@ -145,7 +150,9 @@ HEADERS  += \
     ../config/confdialog31.h \
     ../config/confdialog35.h \
     ../config/confdialog80.h \
+    ../config/confdialog84.h \
     ../config/confdialog85.h \
+    ../config/confdialog87.h \
     ../config/confdialoga1.h \
     ../config/config.h \
     ../config/config21.h \
@@ -154,7 +161,9 @@ HEADERS  += \
     ../config/config35.h \
     ../config/config3x.h \
     ../config/config80.h \
+    ../config/config84.h \
     ../config/config85.h \
+    ../config/config87.h \
     ../config/configa1.h \
     ../dialogs/a1dialog.h \
     ../dialogs/errordialog.h \
@@ -167,16 +176,37 @@ HEADERS  += \
     ../dialogs/switchjournaldialog.h \
     ../dialogs/swjdialog.h \
     ../dialogs/trendviewdialog.h \
+    ../gen/colors.h \
+    ../gen/commands.h \
+    ../gen/eabstractprotocomchannel.h \
     ../gen/eoscillogram.h \
+    ../gen/error.h \
+    ../gen/eusbhid.h \
+    ../gen/files.h \
     ../gen/log.h \
+    ../gen/maindef.h \
     ../gen/mainwindow.h \
+    ../gen/modulebsi.h \
+    ../gen/parseid10031.h \
+    ../gen/parseid9000.h \
+    ../gen/parseid9050.h \
+    ../gen/parsemodule.h \
     ../gen/qcustomplot.h \
+    ../gen/report.h \
+    ../gen/s2.h \
+    ../gen/stdfunc.h \
+    ../gen/timefunc.h \
+    ../iec104/ethernet.h \
+    ../iec104/iec104.h \
     ../models/trendviewmodel.h \
     ../modules/eabstractmodule.h \
     ../tune/eabstracttunedialog.h \
+    ../tune/eabstracttunedialoga1dn.h \
     ../tune/tunedialog21.h \
     ../tune/tunedialog22.h \
     ../tune/tunedialog80.h \
+    ../tune/tunedialog84.h \
+    ../tune/tunedialog85.h \
     ../tune/tunedialoga1.h \
     ../tune/tunedialoga1dn.h \
     ../widgets/ecombobox.h \
@@ -194,34 +224,7 @@ HEADERS  += \
     ../widgets/passwordlineedit.h \
     ../widgets/signalchoosewidget.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h \
-    ../gen/s2.h \
-    ../gen/modulebsi.h \
-    ../gen/error.h \
-    ../gen/timefunc.h \
-    ../gen/files.h \
-    ../gen/colors.h \
-    ../gen/stdfunc.h \
-    ../gen/maindef.h \
-    ../tune/tunedialog85.h \
-    ../config/confdialog87.h \
-    ../config/config87.h \
-    ../gen/commands.h \
-    ../gen/eabstractprotocomchannel.h \
-    ../gen/eusbhid.h \
-    ../iec104/ethernet.h \
-    ../iec104/iec104.h \
-    ../config/config84.h \
-    ../config/confdialog84.h \
-    ../check/check84.h \
-    ../check/checkdialog84.h \
-    ../tune/eabstracttunedialoga1dn.h \
-    ../gen/parseid9000.h \
-    ../gen/parseid10031.h \
-    ../gen/parseid9050.h \
-    ../gen/report.h \
-    ../gen/parsemodule.h \
-    ../tune/tunedialog84.h
+    ../widgets/wd_func.h
 
 INCLUDEPATH += $$PWD/../../includes
 

@@ -31,6 +31,7 @@
 #include "coma.h"
 #include "../check/checkdialog21.h"
 #include "../check/checkdialog22.h"
+#include "../check/checkdialog31.h"
 #include "../check/checkdialog80.h"
 #include "../check/checkdialog84.h"
 #include "../check/checkdialog85.h"
@@ -368,6 +369,7 @@ void Coma::PrepareDialogs()
     case Config::MTB_31:
     {
         ConfB = new ConfDialog31(S2Config, true);
+        CheckB = new CheckDialog31(BoardTypes::BT_BASE);
         break;
     }
     case Config::MTB_35:
@@ -425,6 +427,7 @@ void Coma::PrepareDialogs()
     {
         INFOMSG("Mezonin 0x31 start");
         ConfM = new ConfDialog31(S2Config, false);
+        CheckM = new CheckDialog31(BoardTypes::BT_MEZONIN);
         INFOMSG("Mezonin 0x31 stop");
         break;
     }

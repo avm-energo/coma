@@ -1,27 +1,28 @@
-#ifndef CHECKDIALOG22_H
-#define CHECKDIALOG22_H
+#ifndef CHECKDIALOG31_H
+#define CHECKDIALOG31_H
 
 #include "eabstractcheckdialog.h"
-#include "../config/config21.h"
-#include "check22.h"
+#include "../config/config31.h"
+#include "check31.h"
 #include "check.h"
 
-class CheckDialog22 : public EAbstractCheckDialog
+class CheckDialog31 : public EAbstractCheckDialog
 {
     Q_OBJECT
 public:
-    explicit CheckDialog22(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    explicit CheckDialog31(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
 signals:
 
 public slots:
 
 private:
-    Check22 *Ch22;
+    Check31 *Ch31;
     Check *Ch;
     QTimer *BdaTimer;
 
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
+    QWidget *CustomTab();
 #if PROGSIZE != PROGSIZE_EMUL
     void RefreshAnalogValues(int bdnum); // обновление полей в GUI из полученного соответствующего Bd_block
     void PrepareHeadersForFile(int row); // row - строка для записи заголовков
@@ -29,15 +30,12 @@ private:
     void ChooseValuesToWrite();
     void SetDefaultValuesToWrite();
     void PrepareAnalogMeasurements();
-#endif
-    QWidget *CustomTab();
 
 private slots:
-#if PROGSIZE != PROGSIZE_EMUL
     void StartBdaMeasurements();
     void StopBdaMeasurements();
     void BdaTimerTimeout();
 #endif
 };
 
-#endif // CHECKDIALOG22_H
+#endif // CHECKDIALOG31_H

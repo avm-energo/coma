@@ -23,7 +23,7 @@
 #include "../gen/commands.h"
 #endif
 
-EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent) :
+EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board, QWidget *parent) :
     QDialog(parent)
 {
     XlsxWriting = false;
@@ -112,7 +112,7 @@ QWidget *EAbstractCheckDialog::BottomUI()
     hlyout->addWidget(rb);
     lyout->addLayout(hlyout);
 
-    QPushButton *pb = new QPushButton("Запустить чтение аналоговых сигналов");
+    QPushButton *pb = new QPushButton("Запустить чтение сигналов");
     pb->setObjectName("pbmeasurements");
 #if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurements()));
@@ -120,7 +120,7 @@ QWidget *EAbstractCheckDialog::BottomUI()
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
-    pb = new QPushButton("Запустить чтение аналоговых сигналов в файл");
+    pb = new QPushButton("Запустить чтение сигналов в файл");
     pb->setObjectName("pbfilemeasurements");
 #if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurementsToFile()));
@@ -128,7 +128,7 @@ QWidget *EAbstractCheckDialog::BottomUI()
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
-    pb = new QPushButton("Остановить чтение аналоговых сигналов");
+    pb = new QPushButton("Остановить чтение сигналов");
 #if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(StopAnalogMeasurements()));
 #endif
