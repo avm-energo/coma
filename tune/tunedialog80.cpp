@@ -525,6 +525,7 @@ int TuneDialog80::Start7_3_3()
 {
     float phiMip[6];
     GED_Type = TD_GED_D;
+    WaitNSeconds(5);
     GetExternalData();
     Bac_newblock.DPsi[0] = 0;
     phiMip[0] = 0;
@@ -571,18 +572,18 @@ int TuneDialog80::Start7_3_6_2()
 
 int TuneDialog80::Start7_3_7_1()
 {
-    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_81)
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_82)
         return Error::ER_RESEMPTY;
     GED_Type = TD_GED_U;
     if (GetExternalData() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
     if (Start7_3_2() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
-    for (int i=0; i<3; i++)
+    /*for (int i=0; i<3; i++)
     {
         Bac_newblock.KmU[i] = Bac_block.KmU[i] * RealData.u[i] / Bda_block.IUefNat_filt[i];
         Bac_newblock.KmU[i+3] = Bac_block.KmU[i+3] * RealData.u[i] / Bda_block.IUefNat_filt[i+3];
-    }
+    }*/
     return Error::ER_NOERROR;
 }
 
@@ -597,7 +598,7 @@ int TuneDialog80::Start7_3_7_2()
     // послать новые коэффициенты по току в конфигурацию
     if (Commands::WriteFile(&C80->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
-    WaitNSeconds(2);
+    WaitNSeconds(5);
     return Error::ER_NOERROR;
 }
 
@@ -605,7 +606,7 @@ int TuneDialog80::Start7_3_7_3()
 {
     if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == Config::MTM_81)
         return Error::ER_RESEMPTY;
-    //ShowRetomDialog(V60, I1);
+    ShowRetomDialog(V60, I1);
     if (Start7_3_2() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
@@ -642,7 +643,7 @@ int TuneDialog80::Start7_3_7_6()
         C80->Bci_block.inom2[i] = I5;
     if (Commands::WriteFile(&C80->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
-    WaitNSeconds(2);
+    WaitNSeconds(5);
     return Error::ER_NOERROR;
 }
 
@@ -1307,6 +1308,7 @@ void TuneDialog80::MsgClear()
 void TuneDialog80::CancelTune()
 {
     StdFunc::Cancel();
+    EMessageBox::information(this, "Отменено", "Действие отменено");
 }
 #endif
 
@@ -1461,6 +1463,7 @@ void TuneDialog80::GenerateReport()
     // отобразим таблицу
    // ShowTable();
    // QString GOST = (PovType == GOST_1983) ? "1983" : "23625";
+    StdFunc::Cancelled = false;
     report = new LimeReport::ReportEngine(this);
     QString path = StdFunc::GetSystemHomeDir()+"82report.lrxml";
     report->loadFromFile(path);
@@ -1477,6 +1480,7 @@ void TuneDialog80::GenerateReport()
 
     for(int i=0; i<21; i++) // 21 таблица!
     {
+
         if(i==0)
         {
             if (Commands::GetFile(CM_CONFIGFILE,S2ConfigForTune) == Error::ER_NOERROR)
@@ -1518,11 +1522,12 @@ void TuneDialog80::GenerateReport()
             dlg->setLayout(lyout);
             dlg->exec();
 
-           if(Cancelled)
+           if(StdFunc::Cancelled)
            break;
 
         TuneControlType = 0;
         GetExternalData();
+        WaitNSeconds(5);
         ReadAnalogMeasurements();
         WaitNSeconds(1);
         FillBd1(this);
@@ -1625,20 +1630,26 @@ void TuneDialog80::GenerateReport()
 
     }
 
-    if (EMessageBox::question(this,"Сохранить","Сохранить протокол поверки?"))
+    if(!StdFunc::Cancelled)
     {
-        QString filename = Files::ChooseFileForSave(this, "*.pdf", "pdf");
-        if (!filename.isEmpty())
+        if (EMessageBox::question(this,"Сохранить","Сохранить протокол поверки?"))
         {
-            report->designReport();
-            report->printToPDF(filename);
-    //        report->previewReport();
-          //  report->designReport();
-            EMessageBox::information(this, "Успешно!", "Записано успешно!");
+            QString filename = Files::ChooseFileForSave(this, "*.pdf", "pdf");
+            if (!filename.isEmpty())
+            {
+                report->designReport();
+                report->printToPDF(filename);
+        //        report->previewReport();
+              //  report->designReport();
+                EMessageBox::information(this, "Успешно!", "Записано успешно!");
+            }
+            else
+                EMessageBox::information(this, "Отменено", "Действие отменено");
         }
-        else
-            EMessageBox::information(this, "Отменено", "Действие отменено");
     }
+    //else
+    //EMessageBox::information(this, "Отменено", "Действие отменено");
+
     delete report;
 }
 #endif

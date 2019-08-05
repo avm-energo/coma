@@ -133,6 +133,7 @@ int TuneDialog22::ShowScheme()
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     lyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/tune22.png")));
+    mode = 0;
     QPushButton *pb = new QPushButton("Готово");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(pb);
@@ -154,10 +155,14 @@ int TuneDialog22::Show0(int coef)
         if(EMessageBox::question(this,"Настройка",\
                                      "Задайте значение сопротивления "+QString::number(R0[coef], 'f', 2) + \
                                      " Ом\nна входе "+QString::number(ChNum)+\
-                                     " модуля и нажмите OK", nullptr, "Ok" , "Close"))   //StdFunc::FloatInRange(R0[coef],0)
+                                     " модуля и нажмите OK", nullptr, "Ok") == true)   //StdFunc::FloatInRange(R0[coef],0)
             return Error::ER_NOERROR;
-                else
+        else
+        {
+            StdFunc::Cancel();
+            emit Finished();
             return Error::ER_GENERALERROR;
+        }
     }
 
     return Error::ER_GENERALERROR;
@@ -171,10 +176,14 @@ int TuneDialog22::ShowW100(int coef)
         if (EMessageBox::question(this,"Настройка",\
                                      "Задайте значение сопротивления"+QString::number(R100) + \
                                      " Ом\nна входе "+QString::number(ChNum)+\
-                                     " модуля и нажмите OK", nullptr, "Ok" , "Close"))
+                                     " модуля и нажмите OK", nullptr, "Ok") == true)
             return Error::ER_NOERROR;
-                else
+        else
+        {
+            StdFunc::Cancel();
+            emit Finished();
             return Error::ER_GENERALERROR;
+        }
     }
 
     return Error::ER_GENERALERROR;
@@ -214,6 +223,18 @@ int TuneDialog22::TuneOneChannelFunc()
 {
     for (CoefNum=0; CoefNum<2; CoefNum++)
     {
+        if(CoefNum == 1 && mode != 1)
+        {
+            mode = 1;
+            Commands::SetMode(TUNE_MODE_1000);
+            TimeFunc::Wait(2000);
+        }
+        else if(CoefNum == 0 && mode != 0)
+        {
+            mode = 0;
+            Commands::SetMode(TUNE_MODE_100);
+            TimeFunc::Wait(2000);
+        }
         //WDFunc::CBIndex(this, "tunenumch", Ch);
         if(Show0(CoefNum) == Error::ER_GENERALERROR)
             return Error::ER_GENERALERROR;
@@ -233,7 +254,8 @@ int TuneDialog22::Tune()
 {
     for (ChNum=0; ChNum<AIN22_NUMCH; ++ChNum)
     {
-      TuneOneChannelFunc();
+      if(TuneOneChannelFunc() == Error::ER_GENERALERROR)
+      return Error::ER_GENERALERROR;
     }
     Commands::SetMode(WORK_MODE);
     return Error::ER_NOERROR;
@@ -271,16 +293,6 @@ bool TuneDialog22::CalcNewTuneCoef()
     Bac_block[CoefNum].fbin[ChNum] = R0 - Bda0.sin[ChNum] * (R100 - R0) / (BdaW100.sin[ChNum] - Bda0.sin[ChNum]);
     Bac_block[CoefNum].fkin[ChNum] = (R100 - R0) / (BdaW100.sin[ChNum] - Bda0.sin[ChNum]);
 
-    if(CoefNum == 0)
-    {
-        Commands::SetMode(TUNE_MODE_1000);
-        TimeFunc::Wait(20);
-    }
-    else
-    {
-        Commands::SetMode(WORK_MODE);
-        TimeFunc::Wait(20);
-    }
     return true;
 }
 
@@ -297,7 +309,7 @@ int TuneDialog22::TuneOneChannel()
         if(CoefNum == 0)
         {
             Commands::SetMode(TUNE_MODE_100);
-            TimeFunc::Wait(20);
+            TimeFunc::Wait(2000);
         }
 
         ChNum = WDFunc::CBIndex(this, "tunenumch");

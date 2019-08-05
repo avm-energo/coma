@@ -103,6 +103,7 @@ int fwupdialog::LoadFW()
     PV_file.File_xxx_header.service=0xFFFF;
     PV_file.File_xxx_header.fname=0x003;
 
+    #if PROGSIZE != PROGSIZE_EMUL
     if (Commands::WriteFile(&(ba.data()[0]), 3, &S2DR) != Error::ER_NOERROR)
     {
         EMessageBox::information(this, "Ошибка", "Ошибка записи в модуль!");
@@ -110,6 +111,7 @@ int fwupdialog::LoadFW()
     }
     EMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
     return Error::ER_NOERROR;
+    #endif
 
 
 }

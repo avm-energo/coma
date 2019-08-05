@@ -530,6 +530,7 @@ void ConfDialog84::slot2_timeOut()
     uint unixtimestamp = 0;
     QDateTime myDateTime;
 
+    #if PROGSIZE != PROGSIZE_EMUL
     if (Commands::GetTimeMNK(unixtimestamp) == Error::ER_NOERROR)
     {
       myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
@@ -540,6 +541,7 @@ void ConfDialog84::slot2_timeOut()
     }
     //else
     //EMessageBox::information(this, "INFO", "Ошибка");
+    #endif
 
 }
 
@@ -560,10 +562,12 @@ void ConfDialog84::Write_PCDate()
     myDateTime = QDateTime::currentDateTimeUtc();
     time = myDateTime.toTime_t();
 
+    #if PROGSIZE != PROGSIZE_EMUL
     if (Commands::WriteTimeMNK(&time, sizeof(uint)) == Error::ER_NOERROR)
     EMessageBox::information(this, "INFO", "Записано успешно");
     else
     EMessageBox::information(this, "INFO", "Ошибка");
+    #endif
 
 }
 
@@ -577,9 +581,11 @@ void ConfDialog84::Write_Date()
     myDateTime.setOffsetFromUtc(0);
     *time = myDateTime.toTime_t();
 
+    #if PROGSIZE != PROGSIZE_EMUL
     if (Commands::WriteTimeMNK(time, sizeof(uint)) == Error::ER_NOERROR)
     EMessageBox::information(this, "INFO", "Записано успешно");
     else
     EMessageBox::information(this, "INFO", "Ошибка");
+    #endif
 
 }

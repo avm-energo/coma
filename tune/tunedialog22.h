@@ -44,6 +44,7 @@ private:
 
     Bac Bac_block[COEFSNUM];
 
+    int mode;
     int BoardType;
     int ChNum, CoefNum;
     Config22 *C22;

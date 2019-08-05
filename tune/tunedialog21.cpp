@@ -249,6 +249,12 @@ int TuneDialog21::Tune()
             return Error::ER_GENERALERROR;
         if (TuneChannel(Bda5) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
+        //if (!CalcNewTuneCoef(i))
+        //    return Error::ER_GENERALERROR;
+    }
+
+    for (i=0; i<AIN21_NUMCH; ++i)
+    {
         if (!CalcNewTuneCoef(i))
             return Error::ER_GENERALERROR;
     }
