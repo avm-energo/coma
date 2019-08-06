@@ -5,11 +5,11 @@
 #define Name "АВТУК-Сервис ПР"
 #define GroupName "АВТУК-Сервис"
 #define EngName "AVTUK-S"
-#define Version "2.2.254"
+#define Version "2.2.267"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "avtuks-F.exe"
-#define SetupName "avtuks-F-2.2.254-qt5.9-x86"
+#define SetupName "avtuks-F-2.2.267-qt5.9-x86"
 #define Prefix "D:\Progs\out"
 
 [CustomMessages]
@@ -65,38 +65,4 @@ Name: "{group}\Удалить программу {#Name}"; Filename: "{uninstallexe}"
 [Run]
 ; add the Parameters, WorkingDir and StatusMsg as you wish, just keep here
 ; the conditional installation Check
-Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; Check: not IsRequiredVC2015Detected; StatusMsg: Устанавливается пакет MSVC2015 Redistributable...
-
-[Code]
-//-----------------------------------------------------------------------------
-//  Проверка наличия нужной версии VC2015
-//  https://habrahabr.ru/post/255807/
-//-----------------------------------------------------------------------------
-function IsVC2015Detected(): boolean;
-
-var 
-    reg_key: string; // Просматриваемый подраздел системного реестра
-    success: boolean; // Флаг наличия запрашиваемой версии VC
-    success2: boolean; // Временный флаг
-    key_value: string; // Прочитанное из реестра значение ключа
-
-begin
-    success := false;
-    reg_key := 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64';
-    success := RegQueryStringValue(HKLM, reg_key, 'Version', key_value);
-    success := success and ((Pos('v14.0.24215', key_value) = 1) or (Pos('v14.0.24210', key_value) = 1));
-    reg_key := 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86';
-    success2 := RegQueryStringValue(HKLM, reg_key, 'Version', key_value);
-    success2 := success2 and ((Pos('v14.0.24215', key_value) = 1) or (Pos('v14.0.24210', key_value) = 1));
-    success := success or success2;
-
-    result := success;
-end;
-
-//-----------------------------------------------------------------------------
-//  Функция-обертка для детектирования конкретной нужной нам версии
-//-----------------------------------------------------------------------------
-function IsRequiredVC2015Detected(): boolean;
-begin
-    result := IsVC2015Detected();
-end;
+Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2015 Redistributable...

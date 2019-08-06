@@ -9,7 +9,7 @@
 #define Publisher "AVMEnergo"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "avtuks-F.exe"
-#define SetupName "avtuks-F-2.2.267"
+#define SetupName "avtuks-F-2.2.267-x86"
 #define Prefix "D:\Progs\out"
 
 [CustomMessages]
@@ -48,7 +48,19 @@ Name: {userappdata}\{#EngName}
 [Files]
 Source: "{#Prefix}\3rdparty-x86\hidapi.dll"; DestDir: "{app}"
 Source: "{#Prefix}\3rdparty-x86\liblzma.dll"; DestDir: "{app}"
-Source: "{#Prefix}\qt5.11.1-x86\*.dll"; DestDir: "{app}"
+Source: "{#Prefix}\3rdparty-x86\Qt5Xlsx.dll"; DestDir: "{app}"
+Source: "{#Prefix}\3rdparty-x86\QtZint.dll"; DestDir: "{app}"
+Source: "{#Prefix}\3rdparty-x86\limereport.dll"; DestDir: "{app}"
+Source: "{#Prefix}\qt5.11.1-x86\Qt5Core.dll"; DestDir: "{app}"
+Source: "{#Prefix}\qt5.11.1-x86\Qt5Designer.dll"; DestDir: "{app}"
+Source: "{#Prefix}\qt5.11.1-x86\Qt5DesignerComponents.dll"; DestDir: "{app}"
+Source: "{#Prefix}\qt5.11.1-x86\Qt5Gui.dll"; DestDir: "{app}"
+Source: "{#Prefix}\qt5.11.1-x86\Qt5Network.dll"; DestDir: "{app}"
+Source: "{#Prefix}\qt5.11.1-x86\Qt5PrintSupport.dll"; DestDir: "{app}"
+Source: "{#Prefix}\qt5.11.1-x86\Qt5Qml.dll"; DestDir: "{app}"
+Source: "{#Prefix}\qt5.11.1-x86\Qt5Sql.dll"; DestDir: "{app}"
+Source: "{#Prefix}\qt5.11.1-x86\Qt5Widgets.dll"; DestDir: "{app}"
+Source: "{#Prefix}\qt5.11.1-x86\Qt5Xml.dll"; DestDir: "{app}"
 Source: "{#Prefix}\qt5.11.1-x86\platforms\qwindows.dll"; DestDir: "{app}\platforms"
 Source: "{#Prefix}\coma\{#ExeName}"; DestDir: "{app}"; DestName: {#ExeName}; Flags: ignoreversion
 Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
@@ -65,4 +77,4 @@ Name: "{group}\Удалить программу {#Name}"; Filename: "{uninstallexe}"
 [Run]
 ; add the Parameters, WorkingDir and StatusMsg as you wish, just keep here
 ; the conditional installation Check
-Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"
+Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"
