@@ -26,7 +26,7 @@ signals:
 public slots:
 
 private:
-    Check21::Bda BdaI0, BdaU0, Bda5, Bda20;
+    Check21::Bda BdaI0, BdaU0, Bda5, Bda20, BdaI0copy, BdaU0copy, Bda5copy, Bda20copy;
 
     struct Bac_Old
     {

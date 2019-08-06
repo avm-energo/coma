@@ -280,6 +280,8 @@ void ConfDialog21::Fill()
         WDFunc::SetChBData(this, "choscthr."+QString::number(i), Osc&0x04);
         WDFunc::SetChBData(this, "chosccso0."+QString::number(i), Osc&0x01);
         SetMinMax(i);
+        WDFunc::SetSPBData(this, "0."+QString::number(i), C21->Bci_block.in_min[i]); // in_min
+        WDFunc::SetSPBData(this, "1."+QString::number(i), C21->Bci_block.in_max[i]); // in_max
         WDFunc::SetSPBData(this, "2."+QString::number(i), C21->Bci_block.in_vmin[i]); // in_vmin
         WDFunc::SetSPBData(this, "3."+QString::number(i), C21->Bci_block.in_vmax[i]); // in_vmax
         WDFunc::SetSPBData(this, "4."+QString::number(i), C21->Bci_block.setminmin[i]); // setminmin
@@ -311,6 +313,8 @@ void ConfDialog21::FillBack()
         WDFunc::ChBData(this, "chosccso0."+QString::number(i), tmpb);
         if (tmpb) Osc |= 0x01;
         C21->Bci_block.osc[i] = Osc;
+        WDFunc::SPBData(this, "0."+QString::number(i), C21->Bci_block.in_min[i]); // in_min
+        WDFunc::SPBData(this, "1."+QString::number(i), C21->Bci_block.in_max[i]); // in_max
         WDFunc::SPBData(this, "2."+QString::number(i), C21->Bci_block.in_vmin[i]); // in_vmin
         WDFunc::SPBData(this, "3."+QString::number(i), C21->Bci_block.in_vmax[i]); // in_vmax
         WDFunc::SPBData(this, "4."+QString::number(i), C21->Bci_block.setminmin[i]); // setminmin

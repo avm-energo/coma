@@ -14,6 +14,7 @@ public:
 
     static QString s_MIPIP;
     static QString s_OrganizationString;
+    static bool Cancelled;
 
     static void Init();
     static QString VerToStr(quint32);
@@ -39,7 +40,6 @@ private:
     static QString HomeDir; // рабочий каталог программы
     static QString SystemHomeDir; // системный каталог программы
     static bool Emul;
-    static bool Cancelled;
     static QString PrbMsg;
 };
 

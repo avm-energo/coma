@@ -78,8 +78,8 @@ void pkdn_s::SetupUI()
     tb->addSeparator();
     act = new QAction(this);
     act->setToolTip("Эмуляция A1");
-    quint16 MType = MTB_A1;
-    MType = MType << 8 & MTM_00;
+    quint16 MType = Config::MTB_A1;
+    MType = MType << 8 & Config::MTM_00;
     act->setObjectName(QString::number(MType, 16)); // для слота StartEmul
     act->setIcon(QIcon("images/a1.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(StartEmul()));

@@ -215,7 +215,7 @@ int TuneDialog21::ShowU5(int ChNum)
 
 
 int TuneDialog21::TuneChannel(Check21::Bda &Bda)
-{
+{ 
     return Commands::GetBda(BoardType, &Bda, sizeof(Check21::Bda));
 }
 
@@ -226,29 +226,43 @@ int TuneDialog21::Tune()
     {
         if(ShowI0(i) == Error::ER_GENERALERROR)
            return Error::ER_GENERALERROR;
-        if (TuneChannel(BdaI0) != Error::ER_NOERROR)
+        if (TuneChannel(BdaI0copy) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
+        else
+        BdaI0.sin[i] = BdaI0copy.sin[i];
     }
     for (i=0; i<AIN21_NUMCH; ++i)
     {
         if(ShowI20(i) == Error::ER_GENERALERROR)
             return Error::ER_GENERALERROR;
-        if (TuneChannel(Bda20) != Error::ER_NOERROR)
+        if (TuneChannel(Bda20copy) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
+        else
+        Bda20.sin[i] = Bda20copy.sin[i];
     }
     for (i=0; i<AIN21_NUMCH; ++i)
     {
         if(ShowU0(i) == Error::ER_GENERALERROR)
            return Error::ER_GENERALERROR;
-        if (TuneChannel(BdaU0) != Error::ER_NOERROR)
+        if (TuneChannel(BdaU0copy) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
+        else
+        BdaU0.sin[i] = BdaU0copy.sin[i];
     }
     for (i=0; i<AIN21_NUMCH; ++i)
     {
         if(ShowU5(i) == Error::ER_GENERALERROR)
             return Error::ER_GENERALERROR;
-        if (TuneChannel(Bda5) != Error::ER_NOERROR)
+        if (TuneChannel(Bda5copy) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
+        else
+        Bda5.sin[i] = Bda5copy.sin[i];
+        //if (!CalcNewTuneCoef(i))
+        //    return Error::ER_GENERALERROR;
+    }
+
+    for (i=0; i<AIN21_NUMCH; ++i)
+    {
         if (!CalcNewTuneCoef(i))
             return Error::ER_GENERALERROR;
     }
