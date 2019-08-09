@@ -67,14 +67,7 @@ Config85::Config85(QVector<S2::DataRec> &config)
         config.append({StartInIndex+50, sizeof(Bci_block.I_pred), &Bci_block.I_pred});
         config.append({StartInIndex+51, sizeof(Bci_block.I_alarm), &Bci_block.I_alarm});
         config.append({StartInIndex+52, sizeof(Bci_block.Aux), &Bci_block.Aux});
-        config.append({StartInIndex+53, sizeof(Bci_block.K_on_volt), &Bci_block.K_on_volt});
-        config.append({StartInIndex+54, sizeof(Bci_block.K_off_volt), &Bci_block.K_off_volt});
-        config.append({StartInIndex+55, sizeof(Bci_block.K_on_tamb), &Bci_block.K_on_tamb});
-        config.append({StartInIndex+56, sizeof(Bci_block.K_off_tamb), &Bci_block.K_off_tamb});
-        config.append({StartInIndex+57, sizeof(Bci_block.K_on_tdr), &Bci_block.K_on_tdr});
-        config.append({StartInIndex+58, sizeof(Bci_block.K_off_tdr), &Bci_block.K_off_tdr});
-        config.append({StartInIndex+59, sizeof(Bci_block.K_on_hdr), &Bci_block.K_on_hdr});
-        config.append({StartInIndex+60, sizeof(Bci_block.K_off_hdr), &Bci_block.K_off_hdr});
+        //...
         config.append({StartInIndex+61, sizeof(Bci_block.Adapt), &Bci_block.Adapt});
         config.append({StartInIndex+62, sizeof(Bci_block.TsolON), &Bci_block.TsolON});
         config.append({StartInIndex+63, sizeof(Bci_block.TsolOFF), &Bci_block.TsolOFF});
@@ -87,8 +80,7 @@ Config85::Config85(QVector<S2::DataRec> &config)
         config.append({StartInIndex+70, sizeof(Bci_block.Pdrive_alarm), &Bci_block.Pdrive_alarm});
         config.append({StartInIndex+71, sizeof(Bci_block.dTs_OFF), &Bci_block.dTs_OFF});
         config.append({StartInIndex+72, sizeof(Bci_block.dTs_ON), &Bci_block.dTs_ON});
-        config.append({StartInIndex+73, sizeof(Bci_block.Tdis_OFF), &Bci_block.Tdis_OFF});
-        config.append({StartInIndex+74, sizeof(Bci_block.Tdis_ON), &Bci_block.Tdis_ON});
+        //...
         config.append({StartInIndex+75, sizeof(Bci_block.RES_const_A_big), &Bci_block.RES_const_A_big});
         config.append({StartInIndex+76, sizeof(Bci_block.RES_const_a_small), &Bci_block.RES_const_a_small});
         config.append({StartInIndex+77, sizeof(Bci_block.RES_const_n_small), &Bci_block.RES_const_n_small});
@@ -96,6 +88,19 @@ Config85::Config85(QVector<S2::DataRec> &config)
         config.append({StartInIndex+79, sizeof(Bci_block.RES_const_N_big), &Bci_block.RES_const_N_big});
         config.append({StartInIndex+80, sizeof(Bci_block.Algorithm_Choice), &Bci_block.Algorithm_Choice});
         config.append({StartInIndex+81, sizeof(Bci_block.Iotc), &Bci_block.Iotc});
+        config.append({StartInIndex+83, sizeof(Bci_block.Tdis_OFF), &Bci_block.Tdis_OFF});
+        config.append({StartInIndex+84, sizeof(Bci_block.Tdis_ON), &Bci_block.Tdis_ON});
+        config.append({StartInIndex+90, sizeof(Bci_block.K_on_volt), &Bci_block.K_on_volt});
+        config.append({StartInIndex+91, sizeof(Bci_block.K_off_volt), &Bci_block.K_off_volt});
+        config.append({StartInIndex+92, sizeof(Bci_block.K_on_tamb), &Bci_block.K_on_tamb});
+        config.append({StartInIndex+93, sizeof(Bci_block.K_off_tamb), &Bci_block.K_off_tamb});
+        config.append({StartInIndex+94, sizeof(Bci_block.K_on_tdr), &Bci_block.K_on_tdr});
+        config.append({StartInIndex+95, sizeof(Bci_block.K_off_tdr), &Bci_block.K_off_tdr});
+        config.append({StartInIndex+96, sizeof(Bci_block.K_on_hdr), &Bci_block.K_on_hdr});
+        config.append({StartInIndex+97, sizeof(Bci_block.K_off_hdr), &Bci_block.K_off_hdr});
+        config.append({StartInIndex+98, sizeof(Bci_block.K_on_tbo), &Bci_block.K_on_tbo});
+        config.append({StartInIndex+99, sizeof(Bci_block.K_off_tbo), &Bci_block.K_off_tbo});
+        config.append({StartInIndex+100, sizeof(Bci_block.Kad), &Bci_block.Kad});
     }
     config.append({0xFFFFFFFF, 0, nullptr});
 }
@@ -146,8 +151,11 @@ void Config85::SetDefConf()
     Bci_block.dT_ONalarm =3;	// Погрешность выполненной синхронной коммутации при включении (повышенное значение / аварийная уставка)
     Bci_block.Tras_pred = 10;	// Время рассинхронизации фаз выключателя (повышенное значение / предупредительная уставка)
     Bci_block.Tras_alarm = 15;	// Время рассинхронизации фаз выключателя (повышенное значение / аварийная уставка)
-    Bci_block.Tarc_pred = 10;	// Время горения дуги в полюсе выключателя (повышенное значение / предупредительная уставка)
-    Bci_block.Tarc_alarm = 15;	// Время горения дуги в полюсе выключателя (повышенное значение / аварийная уставка)
+    for (int i=0; i<2; ++i)
+    {
+        Bci_block.Tarc_pred[i] = 10;	// Время горения дуги в полюсе выключателя (повышенное значение / предупредительная уставка)
+        Bci_block.Tarc_alarm[i] = 15;	// Время горения дуги в полюсе выключателя (повышенное значение / аварийная уставка)
+    }
     Bci_block.RESnom_pred =100;	// Остаточный механический ресурс (пониженное значение / предупредительная уставка)
     Bci_block.RESnom_alarm =20;	 // Остаточный механический ресурс (пониженное значение / аварийная уставка)
     Bci_block.RESkz_pred = 5; 	// Остаточный коммутационный ресурс (пониженное значение / предупредительная уставка)
@@ -155,16 +163,23 @@ void Config85::SetDefConf()
     Bci_block.I_pred = 3000; 	// Ток в выключателе при выполнении коммутации (повышенное значение / предупредительная уставка)
     Bci_block.I_alarm = 4000; 	// Ток в выключателе при выполнении коммутации (повышенное значение / аварийная уставка)
     Bci_block.Aux = 0;
+    for (int i=0; i<2; ++i)
+    {
+        for (int j=0; j<2; ++j)
+        {
+            Bci_block.K_on_volt[i][j] = 0;
+            Bci_block.K_off_volt[i][j] = 0;
+            Bci_block.K_on_tamb[i][j] = 0;
+            Bci_block.K_off_tamb[i][j] = 0;
+            Bci_block.K_on_tdr[i][j] = 0;
+            Bci_block.K_off_tdr[i][j] = 0;
+            Bci_block.K_on_hdr[i][j] = 0;
+            Bci_block.K_off_hdr[i][j] = 0;
+
+        }
+    }
     for (int i=0; i<3; ++i)
-    {// вспомогательные аналоговые сигналы не используются
-        Bci_block.K_on_volt[i] = 0;
-        Bci_block.K_off_volt[i] = 0;
-        Bci_block.K_on_tamb[i] = 0;
-        Bci_block.K_off_tamb[i] = 0;
-        Bci_block.K_on_tdr[i] = 0;
-        Bci_block.K_off_tdr[i] = 0;
-        Bci_block.K_on_hdr[i] = 0;
-        Bci_block.K_off_hdr[i] = 0;
+    {
         Bci_block.Tdis_OFF[i] = 0;  //дополнительное смещение момента отключения во избежании повторного зажигания, мс
         Bci_block.Tdis_ON[i] = 0; //дополнительное смещение момента включения для снижения перенапряжений, мс
     }
