@@ -29,6 +29,7 @@ private slots:
     void SetEqType(int);
     void SetDefConf();
     void ShowAdaptParams(bool isAdaptChecked);
+    void ShowResParams(bool isAdaptChecked);
 };
 
 #endif // CONFDIALOG85_H

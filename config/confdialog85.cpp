@@ -79,6 +79,7 @@ void ConfDialog85::Fill()
     WDFunc::SetSPBData(this, "pdrivepred", C85->Bci_block.Pdrive_pred);
     WDFunc::SetSPBData(this, "pdrivealarm", C85->Bci_block.Pdrive_alarm);
     WDFunc::SetChBData(this, "adapt", (C85->Bci_block.Adapt == 1));
+    WDFunc::SetChBData(this, "AlgChoice", (C85->Bci_block.Algorithm_Choice == 1));
     QStringList fl = QStringList() << "Pa" << "Pb" << "Pc" << "Ta" << "Tb" << "Tc" << "To" << "Us";
     quint32 bitinbyte = 0x00000001;
     for (int i=0; i<fl.size(); ++i)
@@ -103,8 +104,10 @@ void ConfDialog85::Fill()
            WDFunc::SetSPBData(this, "k_on_hdr."+QString::number(i)+"."+QString::number(j), C85->Bci_block.K_on_hdr[i][j]);
            WDFunc::SetSPBData(this, "k_off_hdr."+QString::number(i)+"."+QString::number(j), C85->Bci_block.K_off_hdr[i][j]);
         }
-
     }
+
+    WDFunc::SetSPBData(this, "k_on_tbo", C85->Bci_block.K_on_tbo);
+    WDFunc::SetSPBData(this, "k_off_tbo", C85->Bci_block.K_off_tbo);
 
     for (int i=0; i<3; ++i)
     {
@@ -121,8 +124,8 @@ void ConfDialog85::Fill()
     WDFunc::SetSPBData(this, "tmain_onalarm", C85->Bci_block.Tmain_ONalarm);
     WDFunc::SetSPBData(this, "dt_offpred", C85->Bci_block.dT_OFFpred);
     WDFunc::SetSPBData(this, "dt_offalarm", C85->Bci_block.dT_OFFalarm);
-    WDFunc::SetSPBData(this, "dt_offpred", C85->Bci_block.dT_ONpred);
-    WDFunc::SetSPBData(this, "dt_offalarm", C85->Bci_block.dT_ONalarm);
+    WDFunc::SetSPBData(this, "dt_onpred", C85->Bci_block.dT_ONpred);
+    WDFunc::SetSPBData(this, "dt_onalarm", C85->Bci_block.dT_ONalarm);
     WDFunc::SetSPBData(this, "traspred", C85->Bci_block.Tras_pred);
     WDFunc::SetSPBData(this, "trasalarm", C85->Bci_block.Tras_alarm);
     for (int i=0; i<2; ++i)
@@ -138,6 +141,14 @@ void ConfDialog85::Fill()
     WDFunc::SetSPBData(this, "ialarm", C85->Bci_block.I_alarm);
     WDFunc::SetSPBData(this, "dtsoff", C85->Bci_block.dTs_OFF);
     WDFunc::SetSPBData(this, "dtson", C85->Bci_block.dTs_ON);
+
+    WDFunc::SetSPBData(this, "RES_const_A_big", C85->Bci_block.RES_const_A_big);
+    WDFunc::SetSPBData(this, "RES_const_a_small", C85->Bci_block.RES_const_a_small);
+    WDFunc::SetSPBData(this, "RES_const_N_big", C85->Bci_block.RES_const_N_big);
+    WDFunc::SetSPBData(this, "RES_const_n_small", C85->Bci_block.RES_const_n_small);
+    WDFunc::SetSPBData(this, "RES_const_b", C85->Bci_block.RES_const_b);
+    WDFunc::SetSPBData(this, "Iotc", C85->Bci_block.Iotc);
+    WDFunc::SetSPBData(this, "Kad", C85->Bci_block.Kad);
 
 }
 
@@ -189,6 +200,8 @@ void ConfDialog85::FillBack()
     WDFunc::SPBData(this, "pdrivealarm", C85->Bci_block.Pdrive_alarm);
     WDFunc::ChBData(this, "adapt", tmpb);
     C85->Bci_block.Adapt = (tmpb) ? 1 : 0;
+    WDFunc::ChBData(this, "AlgChoice", tmpb);
+    C85->Bci_block.Algorithm_Choice = (tmpb) ? 1 : 0;
     QStringList fl = QStringList() << "Pa" << "Pb" << "Pc" << "Ta" << "Tb" << "Tc" << "To" << "Us";
     quint32 bitinbyte = 0x00000001;
     C85->Bci_block.Aux = 0;
@@ -218,6 +231,9 @@ void ConfDialog85::FillBack()
         }
     }
 
+    WDFunc::SPBData(this, "k_on_tbo", C85->Bci_block.K_on_tbo);
+    WDFunc::SPBData(this, "k_off_tbo", C85->Bci_block.K_off_tbo);
+
     for (int i=0; i<3; ++i)
     {
         WDFunc::SPBData(this, "tdisoff."+QString::number(i), C85->Bci_block.Tdis_OFF[i]);
@@ -233,8 +249,8 @@ void ConfDialog85::FillBack()
     WDFunc::SPBData(this, "tmain_onalarm", C85->Bci_block.Tmain_ONalarm);
     WDFunc::SPBData(this, "dt_offpred", C85->Bci_block.dT_OFFpred);
     WDFunc::SPBData(this, "dt_offalarm", C85->Bci_block.dT_OFFalarm);
-    WDFunc::SPBData(this, "dt_offpred", C85->Bci_block.dT_ONpred);
-    WDFunc::SPBData(this, "dt_offalarm", C85->Bci_block.dT_ONalarm);
+    WDFunc::SPBData(this, "dt_onpred", C85->Bci_block.dT_ONpred);
+    WDFunc::SPBData(this, "dt_onalarm", C85->Bci_block.dT_ONalarm);
     WDFunc::SPBData(this, "traspred", C85->Bci_block.Tras_pred);
     WDFunc::SPBData(this, "trasalarm", C85->Bci_block.Tras_alarm);
     for (int i=0; i<2; ++i)
@@ -251,6 +267,14 @@ void ConfDialog85::FillBack()
     WDFunc::SPBData(this, "dtsoff", C85->Bci_block.dTs_OFF);
     WDFunc::SPBData(this, "dtson", C85->Bci_block.dTs_ON);
 
+    WDFunc::SPBData(this, "RES_const_A_big", C85->Bci_block.RES_const_A_big);
+    WDFunc::SPBData(this, "RES_const_a_small", C85->Bci_block.RES_const_a_small);
+    WDFunc::SPBData(this, "RES_const_N_big", C85->Bci_block.RES_const_N_big);
+    WDFunc::SPBData(this, "RES_const_n_small", C85->Bci_block.RES_const_n_small);
+    WDFunc::SPBData(this, "RES_const_b", C85->Bci_block.RES_const_b);
+    WDFunc::SPBData(this, "Iotc", C85->Bci_block.Iotc);
+    WDFunc::SPBData(this, "Kad", C85->Bci_block.Kad);
+
 }
 
 void ConfDialog85::SetupUI()
@@ -263,11 +287,13 @@ void ConfDialog85::SetupUI()
     QWidget *cp2 = new QWidget;
     QWidget *cp3 = new QWidget;
     QWidget *cp4 = new QWidget;
+    QWidget *cp5 = new QWidget;
     QString tmps = "QWidget {background-color: "+QString(ACONFGCLR)+";}";
     cp1->setStyleSheet(tmps);
     cp2->setStyleSheet(tmps);
     cp3->setStyleSheet(tmps);
     cp4->setStyleSheet(tmps);
+    cp5->setStyleSheet(tmps);
 
     area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
     area->setFrameShape(QFrame::NoFrame);
@@ -608,6 +634,15 @@ void ConfDialog85::SetupUI()
     iglyout->addWidget(WDFunc::NewSPB(this, "k_off_hdr.1.0", -1000, 1000, 1, paramcolor),15,1,1,1);
     iglyout->addWidget(WDFunc::NewLBL(this, "Значение поправки для повышенного значения в мс:"),15,2,1,1);
     iglyout->addWidget(WDFunc::NewSPB(this, "k_off_hdr.1.1", -1000, 1000, 1, paramcolor),15,3,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэффициент коррекции времени включения выключателя"),16,0,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "по длительности безоперационного простоя мс/час:"),17,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_on_tbo", -1000, 1000, 1, paramcolor),17,1,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэффициент коррекции времени выключения выключателя"),18,0,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "по длительности безоперационного простоя мс/час:"),19,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "k_off_tbo", -1000, 1000, 1, paramcolor),19,1,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Коэффициент адаптации расчётных собственных времен"),20,0,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "вкл./откл. по фактическим значениям:"),21,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "Kad", -1000, 1000, 1, paramcolor),21,1,1,1);
 
     iglyout->setColumnStretch(0, 0);
     iglyout->setColumnStretch(1, 10);
@@ -618,6 +653,45 @@ void ConfDialog85::SetupUI()
     vlyout1->addWidget(stw, 1);
     vlyout1->addStretch(1);
     cp3->setLayout(vlyout1);
+
+    vlyout1 = new QVBoxLayout;
+    glyout = new QGridLayout;
+    hlyout = new QHBoxLayout;
+    glyout->addWidget(WDFunc::NewLBL(this, "Использовать алгоритм заказчиков:"),0,0,1,1);
+    chb = new QCheckBox;
+    chb->setObjectName("AlgChoice");
+    connect(chb,SIGNAL(clicked(bool)),this,SLOT(ShowResParams(bool)));
+    glyout->addWidget(chb, 0, 1, 1, 1);
+    vlyout1->addLayout(glyout);
+    stw = new EStackedWidget;
+    stw->setObjectName("Algstw");
+    w = new QWidget;
+    stw->insertWidget(0, w); // стандартный алгоритм
+    w = new QWidget;
+    iglyout = new QGridLayout;
+    iglyout->addWidget(WDFunc::NewLBL(this, "Константа RES_const_A_big, запрограммированная под конкретный тип выключателя:"),2,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "RES_const_A_big", -100000, 100000, 1, paramcolor),2,1,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Константа RES_const_a_small, запрограммированная под конкретный тип выключателя:"),3,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "RES_const_a_small", -100000, 100000, 2, paramcolor),3,1,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Константа RES_const_n_small, запрограммированная под конкретный тип выключателя:"),4,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "RES_const_n_small", -100000, 100000, 2, paramcolor),4,1,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Константа RES_const_b, запрограммированная под конкретный тип выключателя:"),5,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "RES_const_b", -100000, 100000, 2, paramcolor),5,1,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Константа RES_const_N_big, запрограммированная под конкретный тип выключателя:"),6,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "RES_const_N_big", -100000, 100000, 1, paramcolor),6,1,1,1);
+    iglyout->addWidget(WDFunc::NewLBL(this, "Ток отсечки конкретного выключателя:"),7,0,1,1);
+    iglyout->addWidget(WDFunc::NewSPB(this, "Iotc", -10000, 10000, 1, paramcolor),7,1,1,1);
+
+    iglyout->setColumnStretch(0, 0);
+    iglyout->setColumnStretch(1, 10);
+    iglyout->setColumnStretch(2, 0);
+    iglyout->setColumnStretch(3, 10);
+    w->setLayout(iglyout);
+    stw->insertWidget(1, w); // алгоритм заказчиков
+    vlyout1->addWidget(stw, 1);
+    vlyout1->addStretch(1);
+    cp4->setLayout(vlyout1);
+
 
     vlyout1 = new QVBoxLayout;
     glyout = new QGridLayout;
@@ -649,7 +723,7 @@ void ConfDialog85::SetupUI()
     glyout->addWidget(WDFunc::NewSPB(this, "tarcalarm.1", 0, 1000, 0, ACONFRCLR),11,2,1,1);
     vlyout1->addLayout(glyout);
     vlyout1->addStretch(1);
-    cp4->setLayout(vlyout1);
+    cp5->setLayout(vlyout1);
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
@@ -659,7 +733,8 @@ void ConfDialog85::SetupUI()
     ConfTW->addTab(cp1,"Основные");
     ConfTW->addTab(cp2,"Параметры выключателя");
     ConfTW->addTab(cp3,"Доп. параметры по алгоритму");
-    ConfTW->addTab(cp4,"Уставки сигнализации");
+    ConfTW->addTab(cp4,"Алгоритм для коммутационного ресурса");
+    ConfTW->addTab(cp5,"Уставки сигнализации");
     area->setWidget(ConfTW);
     lyout->addWidget(area);
     area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
@@ -700,6 +775,18 @@ void ConfDialog85::SetDefConf()
 void ConfDialog85::ShowAdaptParams(bool isAdaptChecked)
 {
     EStackedWidget *stw = this->findChild<EStackedWidget *>("adaptstw");
+    if (stw != nullptr)
+    {
+        if (isAdaptChecked)
+            stw->setCurrentIndex(1);
+        else
+            stw->setCurrentIndex(0);
+    }
+}
+
+void ConfDialog85::ShowResParams(bool isAdaptChecked)
+{
+    EStackedWidget *stw = this->findChild<EStackedWidget *>("Algstw");
     if (stw != nullptr)
     {
         if (isAdaptChecked)
