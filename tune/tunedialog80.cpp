@@ -1555,6 +1555,7 @@ void TuneDialog80::GenerateReport()
         }
         ReportHeader.PhiUAB   = QString::number((-Bda_block.phi_next_f[1]), 'f', 3);
         ReportHeader.PhiUBC   = QString::number((360 - Bda_block.phi_next_f[2] + Bda_block.phi_next_f[1]), 'f', 3);
+
         ReportHeader.OffsetF  = QString::number(100*((Bda_block.Frequency/RealData.f[0])-1), 'f', 3);
         ReportHeader.OffsetUA = QString::number(100*((Bda_block.IUefNat_filt[0]/RealData.u[0])-1), 'f', 3);
         ReportHeader.OffsetUB = QString::number(100*((Bda_block.IUefNat_filt[1]/RealData.u[1])-1), 'f', 3);
@@ -1590,6 +1591,133 @@ void TuneDialog80::GenerateReport()
 
         ReportHeader.OffsetPhiUAB = QString::number(RealData.dpsiU[0] - ReportHeader.PhiUAB.toFloat(), 'f', 3);
         ReportHeader.OffsetPhiUBC = QString::number(RealData.dpsiU[1] - ReportHeader.PhiUBC.toFloat(), 'f', 3);
+
+        /*if(ReportHeader.OffsetF.toFloat() >= 0.5)
+        {
+            if (EMessageBox::question(this,"Поверка",\
+                                         "Превышена допустимая погрешность по частоте\n"\
+                                         "Нажмите OK, чтобы продолжить поверку", nullptr, "Ok" , "Close"))
+                continue;
+            else
+            {
+                StdFunc::Cancelled = 1;
+                break;
+            }
+        }
+
+        if(ReportHeader.OffsetUA.toFloat() >= 0.5)
+        {
+            if (EMessageBox::question(this,"Поверка",\
+                                         "Превышена допустимая погрешность по напряжению в фазе А\n"\
+                                         "Нажмите OK, чтобы продолжить поверку", nullptr, "Ok" , "Close"))
+                continue;
+            else
+            {
+                StdFunc::Cancelled = 1;
+                break;
+            }
+        }
+        if(ReportHeader.OffsetUB.toFloat() >= 0.5)
+        {
+            if (EMessageBox::question(this,"Поверка",\
+                                         "Превышена допустимая погрешность по напряжению в фазе B\n"\
+                                         "Нажмите OK, чтобы продолжить поверку", nullptr, "Ok" , "Close"))
+                continue;
+            else
+            {
+                StdFunc::Cancelled = 1;
+                break;
+            }
+        }
+        if(ReportHeader.OffsetUC.toFloat() >= 0.5)
+        {
+            if (EMessageBox::question(this,"Поверка",\
+                                         "Превышена допустимая погрешность по напряжению в фазе C\n"\
+                                         "Нажмите OK, чтобы продолжить поверку", nullptr, "Ok" , "Close"))
+                continue;
+            else
+            {
+                StdFunc::Cancelled = 1;
+                break;
+            }
+        }
+
+        if(ReportHeader.OffsetIA.toFloat() >= 0.5)
+        {
+            if (EMessageBox::question(this,"Поверка",\
+                                         "Превышена допустимая погрешность по току в фазе А\n"\
+                                         "Нажмите OK, чтобы продолжить поверку", nullptr, "Ok" , "Close"))
+                continue;
+            else
+            {
+                StdFunc::Cancelled = 1;
+                break;
+            }
+        }
+
+        if(ReportHeader.OffsetIB.toFloat() >= 0.5)
+        {
+            if (EMessageBox::question(this,"Поверка",\
+                                         "Превышена допустимая погрешность по току в фазе B\n"\
+                                         "Нажмите OK, чтобы продолжить поверку", nullptr, "Ok" , "Close"))
+                continue;
+            else
+            {
+                StdFunc::Cancelled = 1;
+                break;
+            }
+        }
+
+        if(ReportHeader.OffsetIC.toFloat() >= 0.5)
+        {
+            if (EMessageBox::question(this,"Поверка",\
+                                         "Превышена допустимая погрешность по току в фазе C\n"\
+                                         "Нажмите OK, чтобы продолжить поверку", nullptr, "Ok" , "Close"))
+                continue;
+            else
+            {
+                StdFunc::Cancelled = 1;
+                break;
+            }
+        }
+
+        if(ReportHeader.OffsetPhiloadA.toFloat() >= 0.5)
+        {
+            if (EMessageBox::question(this,"Поверка",\
+                                         "Превышена допустимая погрешность по углу нагрузки фазы А\n"\
+                                         "Нажмите OK, чтобы продолжить поверку", nullptr, "Ok" , "Close"))
+                continue;
+            else
+            {
+                StdFunc::Cancelled = 1;
+                break;
+            }
+        }
+
+        if(ReportHeader.OffsetPhiloadB.toFloat() >= 0.5)
+        {
+            if (EMessageBox::question(this,"Поверка",\
+                                         "Превышена допустимая погрешность по углу нагрузки фазы B\n"\
+                                         "Нажмите OK, чтобы продолжить поверку", nullptr, "Ok" , "Close"))
+                continue;
+            else
+            {
+                StdFunc::Cancelled = 1;
+                break;
+            }
+        }
+        if(ReportHeader.OffsetPhiloadC.toFloat() >= 0.5)
+        {
+            if (EMessageBox::question(this,"Поверка",\
+                                         "Превышена допустимая погрешность по углу нагрузки фазы C\n"\
+                                         "Нажмите OK, чтобы продолжить поверку", nullptr, "Ok" , "Close"))
+                continue;
+            else
+            {
+                StdFunc::Cancelled = 1;
+                break;
+            }
+        }*/
 
         report->dataManager()->setReportVariable("FreqMIP", QString::number(RealData.f[0], 'f', 3));
         report->dataManager()->setReportVariable("UA_MIP."+QString::number(i), QString::number(RealData.u[0], 'f', 3));

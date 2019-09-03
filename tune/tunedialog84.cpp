@@ -37,6 +37,7 @@ TuneDialog84::TuneDialog84(QVector<S2::DataRec> &S2Config, QWidget *parent) : EA
     ViewModel = new QStandardItemModel;
     ledit = new QLineEdit;
     ask = new QDialog;
+    TempCor = 0;
 //    Ch80 = new Check80;
     SetBac(&Bac_block, BoardTypes::BT_MEZONIN, sizeof(Bac_block));
     setAttribute(Qt::WA_DeleteOnClose);
@@ -1158,8 +1159,269 @@ void TuneDialog84::EnterDataTune()
 
 }
 
+void TuneDialog84::Enter20Data()
+{
+    int i;
+    ask = new QDialog(this);
+    //QVBoxLayout *lyout = new QVBoxLayout;
+    ask->setAttribute(Qt::WA_DeleteOnClose);
+    ask->setObjectName("EnterDlg");
+    QGridLayout *glyout = new QGridLayout;
+    ledit = new QLineEdit();
+    QLabel *lbl = new QLabel("Введите значения сигналов c Энергомонитора:");
+    glyout->addWidget(lbl,0,0,1,6);
+
+    for(i=0; i<3; i++)
+    {
+        lbl = new QLabel("Uэт["+QString::number(i)+"]:");
+        glyout->addWidget(lbl,1,i,1,1);
+        ledit = new QLineEdit();
+        ledit->setObjectName("ValuetuneU"+QString::number(i));
+        glyout->addWidget(ledit,2,i,1,1);
+    }
+
+    for(i=0; i<3; i++)
+    {
+        lbl = new QLabel("Iэт["+QString::number(i)+"]:");
+        glyout->addWidget(lbl,3,i,1,1);
+        ledit = new QLineEdit();
+        ledit->setObjectName("ValuetuneI"+QString::number(i));
+        glyout->addWidget(ledit,4,i,1,1);
+    }
+
+    for(i=0; i<6; i++)
+    {
+        lbl = new QLabel("φэт["+QString::number(i)+"]:");
+        glyout->addWidget(lbl,5,i,1,1);
+        ledit = new QLineEdit();
+        ledit->setObjectName("ValuetunePhi"+QString::number(i));
+        glyout->addWidget(ledit,6,i,1,1);
+    }
+
+    lbl = new QLabel("fэт:");
+    glyout->addWidget(lbl,7,0,1,1);
+    ledit = new QLineEdit();
+    ledit->setObjectName("ValuetuneF");
+    glyout->addWidget(ledit,8,0,1,1);
+
+    QPushButton *pb = new QPushButton("Настроить");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SaveValuesTemp20()));
+    glyout->addWidget(pb,9,2,1,2);
+   /* pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(close()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(CloseAsk()));
+    glyout->addWidget(pb,9,3,1,3);*/
+
+    ask->setLayout(glyout);
+    ask->exec();
+
+}
+
+void TuneDialog84::Enterminus20Data()
+{
+    int i;
+    ask = new QDialog(this);
+    //QVBoxLayout *lyout = new QVBoxLayout;
+    ask->setAttribute(Qt::WA_DeleteOnClose);
+    ask->setObjectName("EnterDlg");
+    QGridLayout *glyout = new QGridLayout;
+    ledit = new QLineEdit();
+    QLabel *lbl = new QLabel("Введите значения сигналов c Энергомонитора:");
+    glyout->addWidget(lbl,0,0,1,6);
+
+    for(i=0; i<3; i++)
+    {
+        lbl = new QLabel("Uэт["+QString::number(i)+"]:");
+        glyout->addWidget(lbl,1,i,1,1);
+        ledit = new QLineEdit();
+        ledit->setObjectName("ValuetuneU"+QString::number(i));
+        glyout->addWidget(ledit,2,i,1,1);
+    }
+
+    for(i=0; i<3; i++)
+    {
+        lbl = new QLabel("Iэт["+QString::number(i)+"]:");
+        glyout->addWidget(lbl,3,i,1,1);
+        ledit = new QLineEdit();
+        ledit->setObjectName("ValuetuneI"+QString::number(i));
+        glyout->addWidget(ledit,4,i,1,1);
+    }
+
+    for(i=0; i<6; i++)
+    {
+        lbl = new QLabel("φэт["+QString::number(i)+"]:");
+        glyout->addWidget(lbl,5,i,1,1);
+        ledit = new QLineEdit();
+        ledit->setObjectName("ValuetunePhi"+QString::number(i));
+        glyout->addWidget(ledit,6,i,1,1);
+    }
+
+    lbl = new QLabel("fэт:");
+    glyout->addWidget(lbl,7,0,1,1);
+    ledit = new QLineEdit();
+    ledit->setObjectName("ValuetuneF");
+    glyout->addWidget(ledit,8,0,1,1);
+
+    QPushButton *pb = new QPushButton("Настроить");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SaveValuesTempMinus20()));
+    glyout->addWidget(pb,9,2,1,2);
+   /* pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(close()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(CloseAsk()));
+    glyout->addWidget(pb,9,3,1,3);*/
+
+    ask->setLayout(glyout);
+    ask->exec();
+
+}
+
+void TuneDialog84::Enter60Data()
+{
+    int i;
+    ask = new QDialog(this);
+    //QVBoxLayout *lyout = new QVBoxLayout;
+    ask->setAttribute(Qt::WA_DeleteOnClose);
+    ask->setObjectName("EnterDlg");
+    QGridLayout *glyout = new QGridLayout;
+    ledit = new QLineEdit();
+    QLabel *lbl = new QLabel("Введите значения сигналов c Энергомонитора:");
+    glyout->addWidget(lbl,0,0,1,6);
+
+    for(i=0; i<3; i++)
+    {
+        lbl = new QLabel("Uэт["+QString::number(i)+"]:");
+        glyout->addWidget(lbl,1,i,1,1);
+        ledit = new QLineEdit();
+        ledit->setObjectName("ValuetuneU"+QString::number(i));
+        glyout->addWidget(ledit,2,i,1,1);
+    }
+
+    for(i=0; i<3; i++)
+    {
+        lbl = new QLabel("Iэт["+QString::number(i)+"]:");
+        glyout->addWidget(lbl,3,i,1,1);
+        ledit = new QLineEdit();
+        ledit->setObjectName("ValuetuneI"+QString::number(i));
+        glyout->addWidget(ledit,4,i,1,1);
+    }
+
+    for(i=0; i<6; i++)
+    {
+        lbl = new QLabel("φэт["+QString::number(i)+"]:");
+        glyout->addWidget(lbl,5,i,1,1);
+        ledit = new QLineEdit();
+        ledit->setObjectName("ValuetunePhi"+QString::number(i));
+        glyout->addWidget(ledit,6,i,1,1);
+    }
+
+    lbl = new QLabel("fэт:");
+    glyout->addWidget(lbl,7,0,1,1);
+    ledit = new QLineEdit();
+    ledit->setObjectName("ValuetuneF");
+    glyout->addWidget(ledit,8,0,1,1);
+
+    QPushButton *pb = new QPushButton("Настроить");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SaveValuesTemp60()));
+    glyout->addWidget(pb,9,2,1,2);
+   /* pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(close()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(CloseAsk()));
+    glyout->addWidget(pb,9,3,1,3);*/
+
+    ask->setLayout(glyout);
+    ask->exec();
+
+}
+
 void TuneDialog84::CloseAsk()
 {
+    ask->close();
+}
+
+void TuneDialog84::SaveValuesTemp20()
+{
+    int i;
+    QString tmps;
+    for (i=0; i<3; i++)
+    {
+      WDFunc::LEData(ask, "ValuetuneU"+QString::number(i), tmps);
+      Uet[i]=tmps.toFloat();
+    }
+
+    for (i=0; i<3; i++)
+    {
+      WDFunc::LEData(ask, "ValuetuneI"+QString::number(i), tmps);
+      Iet[i]=tmps.toFloat();
+    }
+
+    for (i=0; i<6; i++)
+    {
+      WDFunc::LEData(ask, "ValuetunePhi"+QString::number(i), tmps);
+      PHIet[i]=tmps.toFloat();
+    }
+
+    WDFunc::LEData(ask, "ValuetuneF"+QString::number(i), tmps);
+    FREQet=tmps.toFloat();
+
+    ask->close();
+}
+
+void TuneDialog84::SaveValuesTempMinus20()
+{
+    int i;
+    QString tmps;
+    for (i=0; i<3; i++)
+    {
+      WDFunc::LEData(ask, "ValuetuneU"+QString::number(i), tmps);
+      UetMinus20[i]=tmps.toFloat();
+    }
+
+    for (i=0; i<3; i++)
+    {
+      WDFunc::LEData(ask, "ValuetuneI"+QString::number(i), tmps);
+      IetMinus20[i]=tmps.toFloat();
+    }
+
+    for (i=0; i<6; i++)
+    {
+      WDFunc::LEData(ask, "ValuetunePhi"+QString::number(i), tmps);
+      PHIetMinus20[i]=tmps.toFloat();
+    }
+
+    WDFunc::LEData(ask, "ValuetuneF"+QString::number(i), tmps);
+    FREQetMinus20=tmps.toFloat();
+
+    ask->close();
+}
+
+void TuneDialog84::SaveValuesTemp60()
+{
+    int i;
+    QString tmps;
+    for (i=0; i<3; i++)
+    {
+      WDFunc::LEData(ask, "ValuetuneU"+QString::number(i), tmps);
+      Uet60[i]=tmps.toFloat();
+    }
+
+    for (i=0; i<3; i++)
+    {
+      WDFunc::LEData(ask, "ValuetuneI"+QString::number(i), tmps);
+      Iet60[i]=tmps.toFloat();
+    }
+
+    for (i=0; i<6; i++)
+    {
+      WDFunc::LEData(ask, "ValuetunePhi"+QString::number(i), tmps);
+      PHIet60[i]=tmps.toFloat();
+    }
+
+    WDFunc::LEData(ask, "ValuetuneF"+QString::number(i), tmps);
+    FREQet60=tmps.toFloat();
+
     ask->close();
 }
 
@@ -1196,54 +1458,55 @@ int TuneDialog84::CalcTuneCoefs()
         return Error::ER_GENERALERROR;
     }
 
-    if(Kadc == 1)
-    {
-        for (i=0; i<3; i++)
+        if(Kadc == 1)
         {
-            Bac_newblock.KmU[i] = Bac_block.KmU[i] * Uet[i]/ Bda_in.IUefNat_filt[i];
-            Bac_newblock.KmI1[i] = Bac_block.KmI1[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
+            for (i=0; i<3; i++)
+            {
+                Bac_newblock.KmU[i] = Bac_block.KmU[i] * Uet[i]/ Bda_in.IUefNat_filt[i];
+                Bac_newblock.KmI1[i] = Bac_block.KmI1[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
+            }
+
+            Bac_newblock.K_freq = Bac_block.K_freq * FREQet / Bda_in.Frequency ;
+
+            for (i=1; i < 3; i++) Bac_newblock.DPsi[i] =  Bac_block.DPsi[i] - Bda_in.phi_next_f[i];
+            for (i=3; i < 6; i++) Bac_newblock.DPsi[i] =  Bac_block.DPsi[i] + PHIet[i] - Bda_in.phi_next_f[i];
+        }
+        else if(Kadc == 2)
+        {
+            for (i=0; i<3; i++)
+            {
+                Bac_newblock.KmI2[i] = Bac_block.KmI2[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
+            }
+        }
+        else if(Kadc == 4)
+        {
+            for (i=0; i<3; i++)
+            {
+                Bac_newblock.KmI4[i] = Bac_block.KmI4[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
+            }
+        }
+        else if(Kadc == 8)
+        {
+            for (i=0; i<3; i++)
+            {
+                Bac_newblock.KmI8[i] = Bac_block.KmI8[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
+            }
+        }
+        else if(Kadc == 16)
+        {
+            for (i=0; i<3; i++)
+            {
+                Bac_newblock.KmI16[i] = Bac_block.KmI16[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
+            }
+        }
+        else if(Kadc == 32)
+        {
+            for (i=0; i<3; i++)
+            {
+                Bac_newblock.KmI32[i] = Bac_block.KmI32[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
+            }
         }
 
-        Bac_newblock.K_freq = Bac_block.K_freq * FREQet / Bda_in.Frequency ;
-
-        for (i=1; i < 3; i++) Bac_newblock.DPsi[i] =  Bac_block.DPsi[i] - Bda_in.phi_next_f[i];
-        for (i=3; i < 6; i++) Bac_newblock.DPsi[i] =  Bac_block.DPsi[i] + PHIet[i] - Bda_in.phi_next_f[i];
-    }
-    else if(Kadc == 2)
-    {
-        for (i=0; i<3; i++)
-        {
-            Bac_newblock.KmI2[i] = Bac_block.KmI2[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
-        }
-    }
-    else if(Kadc == 4)
-    {
-        for (i=0; i<3; i++)
-        {
-            Bac_newblock.KmI4[i] = Bac_block.KmI4[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
-        }
-    }
-    else if(Kadc == 8)
-    {
-        for (i=0; i<3; i++)
-        {
-            Bac_newblock.KmI8[i] = Bac_block.KmI8[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
-        }
-    }
-    else if(Kadc == 16)
-    {
-        for (i=0; i<3; i++)
-        {
-            Bac_newblock.KmI16[i] = Bac_block.KmI16[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
-        }
-    }
-    else if(Kadc == 32)
-    {
-        for (i=0; i<3; i++)
-        {
-            Bac_newblock.KmI32[i] = Bac_block.KmI32[i] * Iet[i] / Bda_in.IUefNat_filt[i+3] ;
-        }
-    }
 
     return Error::ER_NOERROR;
 
@@ -1335,6 +1598,156 @@ int TuneDialog84::ReadAnalogMeasurements()
     }
 
     Bda_in.Frequency = sumFreq/N;
+
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog84::ReadAnalogTemp20()
+{
+    int i,j;
+    float sumU[3];
+    float sumI[3];
+    float sumPHI[6];
+    float sumFreq = 0.0;
+    for(i = 0; i<N; i++)
+    {
+        // получение текущих аналоговых сигналов от модуля
+         if (Commands::GetBd(BT_BASE, &Bda_block20, sizeof(Bda_block20)) != Error::ER_NOERROR)
+         {
+             EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
+             return Error::ER_GENERALERROR;
+         }
+         else
+         {
+             for(j = 0; j<3; j++)
+             {
+               sumU[j] += Bda_block20.IUefNat_filt[j];
+               sumI[j] += Bda_block20.IUefNat_filt[j+3];
+             }
+
+             for(j = 0; j<6; j++)
+             {
+               sumPHI[j] += Bda_block20.phi_next_f[j];
+             }
+
+             sumFreq += Bda_block20.Frequency;
+
+             QThread::msleep(500);
+         }
+    }
+
+    for(i = 0; i<3; i++)
+    {
+      Bda_block20.IUefNat_filt[i] = sumU[i]/N;
+      Bda_block20.IUefNat_filt[i+3] = sumI[i]/N;
+    }
+
+    for(i = 0; i<6; i++)
+    {
+      Bda_block20.phi_next_f[i] = sumPHI[i]/N;
+    }
+
+    Bda_block20.Frequency = sumFreq/N;
+
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog84::ReadAnalogTemp60()
+{
+    int i,j;
+    float sumU[3];
+    float sumI[3];
+    float sumPHI[6];
+    float sumFreq = 0.0;
+    for(i = 0; i<N; i++)
+    {
+        // получение текущих аналоговых сигналов от модуля
+         if (Commands::GetBd(BT_BASE, &Bda_block60, sizeof(Bda_block60)) != Error::ER_NOERROR)
+         {
+             EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
+             return Error::ER_GENERALERROR;
+         }
+         else
+         {
+             for(j = 0; j<3; j++)
+             {
+               sumU[j] += Bda_block60.IUefNat_filt[j];
+               sumI[j] += Bda_block60.IUefNat_filt[j+3];
+             }
+
+             for(j = 0; j<6; j++)
+             {
+               sumPHI[j] += Bda_block60.phi_next_f[j];
+             }
+
+             sumFreq += Bda_block60.Frequency;
+
+             QThread::msleep(500);
+         }
+    }
+
+    for(i = 0; i<3; i++)
+    {
+      Bda_block60.IUefNat_filt[i] = sumU[i]/N;
+      Bda_block60.IUefNat_filt[i+3] = sumI[i]/N;
+    }
+
+    for(i = 0; i<6; i++)
+    {
+      Bda_block60.phi_next_f[i] = sumPHI[i]/N;
+    }
+
+    Bda_block60.Frequency = sumFreq/N;
+
+    return Error::ER_NOERROR;
+}
+
+int TuneDialog84::ReadAnalogTempMinus20()
+{
+    int i,j;
+    float sumU[3];
+    float sumI[3];
+    float sumPHI[6];
+    float sumFreq = 0.0;
+    for(i = 0; i<N; i++)
+    {
+        // получение текущих аналоговых сигналов от модуля
+         if (Commands::GetBd(BT_BASE, &Bda_blockMinus20, sizeof(Bda_blockMinus20)) != Error::ER_NOERROR)
+         {
+             EMessageBox::information(this, "Внимание", "Ошибка при приёме данных");
+             return Error::ER_GENERALERROR;
+         }
+         else
+         {
+             for(j = 0; j<3; j++)
+             {
+               sumU[j] += Bda_blockMinus20.IUefNat_filt[j];
+               sumI[j] += Bda_blockMinus20.IUefNat_filt[j+3];
+             }
+
+             for(j = 0; j<6; j++)
+             {
+               sumPHI[j] += Bda_blockMinus20.phi_next_f[j];
+             }
+
+             sumFreq += Bda_blockMinus20.Frequency;
+
+             QThread::msleep(500);
+         }
+    }
+
+    for(i = 0; i<3; i++)
+    {
+      Bda_blockMinus20.IUefNat_filt[i] = sumU[i]/N;
+      Bda_blockMinus20.IUefNat_filt[i+3] = sumI[i]/N;
+    }
+
+    for(i = 0; i<6; i++)
+    {
+      Bda_blockMinus20.phi_next_f[i] = sumPHI[i]/N;
+    }
+
+    Bda_blockMinus20.Frequency = sumFreq/N;
 
     return Error::ER_NOERROR;
 }
@@ -1692,55 +2105,98 @@ int TuneDialog84::TuneTempCor()
         WARNMSG("Ошибка при приёме данных");
         return Error::ER_GENERALERROR;
     }
+
+    for(i=0; i<3; i++)
+    {
+      Bac_block.TKPsi_a[i] = 0;
+      Bac_block.TKPsi_b[i] = 0;
+      Bac_block.TKUa[i] = 0;
+      Bac_block.TKUb[i] = 0;
+    }
+    if (Commands::WriteBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) != Error::ER_NOERROR)
+    {
+        WARNMSG("Ошибка при отправке данных");
+        return Error::ER_GENERALERROR;
+    }
     // обновление коэффициентов в соответствующих полях на экране
     FillBac(0);
     Bac_newblock = Bac_block;
+    WaitNSeconds(5);
+    Start7_3_4_11();
+    //Average();
 
-       if(Show80() == Error::ER_GENERALERROR)
+       if(Show125mA() == Error::ER_GENERALERROR)
        return Error::ER_GENERALERROR;
        else
        {
-           sum = 0;
-           for(i = 0; i<N; i++)
+           if(AskTemp20() == Error::ER_GENERALERROR)
+               return Error::ER_GENERALERROR;
+           else
            {
-             if(Commands::GetBda(BT_NONE, &BdaPt100_80Om, sizeof(BdaPt100_80Om)) == Error::ER_NOERROR)
-             {
-               sum += BdaPt100_80Om.Pt100;
-               QThread::msleep(500);
-             }
-             else
-             return Error::ER_GENERALERROR;
+
+               Enter20Data();
+
+               if(ReadAnalogTemp20() != Error::ER_NOERROR)
+               return Error::ER_GENERALERROR;
+
+               if (Commands::GetBd(0, &Bd_block20, sizeof(Bd_block20)) != Error::ER_NOERROR)
+               {
+                   WARNMSG("Ошибка при приёме данных");
+                   return Error::ER_GENERALERROR;
+               }
+
            }
-           BdaPt100_80Om.Pt100 = sum/N; // усредняем
+
+           if(AskTemp60() == Error::ER_GENERALERROR)
+               return Error::ER_GENERALERROR;
+           else
+           {
+
+               Enter60Data();
+
+               if(ReadAnalogTemp60() != Error::ER_NOERROR)
+               return Error::ER_GENERALERROR;
+
+               if (Commands::GetBd(0, &Bd_block_plus60, sizeof(Bd_block_plus60)) != Error::ER_NOERROR)
+               {
+                   WARNMSG("Ошибка при приёме данных");
+                   return Error::ER_GENERALERROR;
+               }
+
+           }
+
+           if(AskTempMinus20() == Error::ER_GENERALERROR)
+               return Error::ER_GENERALERROR;
+           else
+           {
+
+               Enterminus20Data();
+
+               if(ReadAnalogTempMinus20() != Error::ER_NOERROR)
+               return Error::ER_GENERALERROR;
+
+               if (Commands::GetBd(0, &Bd_block_minus20, sizeof(Bd_block_minus20)) != Error::ER_NOERROR)
+               {
+                   WARNMSG("Ошибка при приёме данных");
+                   return Error::ER_GENERALERROR;
+               }
+
+           }
+
+
        }
 
-       if(Show120() == Error::ER_GENERALERROR)
-       return Error::ER_GENERALERROR;
-       else
-       {
-           sum = 0;
-           for(i = 0; i<N; i++)
-           {
-              if(Commands::GetBda(BT_NONE, &BdaPt100_120Om, sizeof(BdaPt100_120Om)) == Error::ER_NOERROR)
-              {
-                sum += BdaPt100_120Om.Pt100;
-                QThread::msleep(500);
-              }
-              else
-              return Error::ER_GENERALERROR;
-           }
-           BdaPt100_120Om.Pt100 = sum/N; // усредняем
-       }
 
-       Bda_block = BdaPt100_120Om;
-       FillBd1(this);
-       CalcNewPt100Coefs();
+       //FillBd1(this);
+       CalcTempCorCoefs();
        FillNewBac();
        WaitNSeconds(5);
 
        if (Commands::WriteBac(BT_MEZONIN, &Bac_newblock, sizeof(Bac_newblock)) == Error::ER_NOERROR)
        {
           EMessageBox::information(this, "Настройка", "Настройка завершена");
+          WaitNSeconds(5);
+          LoadWorkConfig();
           return Error::ER_NOERROR;
        }
        else
@@ -1748,6 +2204,110 @@ int TuneDialog84::TuneTempCor()
 
 }
 
+int TuneDialog84::Show125mA()
+{
+
+    if (EMessageBox::question(this,"Настройка",\
+                                 "Задайте ток источника равным 125 мА"\
+                                 " и нажмите OK", nullptr, "Ok" , "Close"))
+    {
+
+        return Error::ER_NOERROR;
+    }
+    else
+        return Error::ER_GENERALERROR;
+}
+
+int TuneDialog84::AskTemp20()
+{
+
+    if (EMessageBox::question(this,"Настройка",\
+                                 "Установите в камере температуру 20±2°С"\
+                                 " и через 30 минут нажмите OK", nullptr, "Ok" , "Close"))
+    {
+
+        return Error::ER_NOERROR;
+    }
+    else
+        return Error::ER_GENERALERROR;
+}
+
+int TuneDialog84::AskTempMinus20()
+{
+
+    if (EMessageBox::question(this,"Настройка",\
+                                 "Установите в камере температуру минус 20±2°С"\
+                                 " и через 30 минут нажмите OK", nullptr, "Ok" , "Close"))
+    {
+
+        return Error::ER_NOERROR;
+    }
+    else
+        return Error::ER_GENERALERROR;
+}
+
+int TuneDialog84::AskTemp60()
+{
+
+    if (EMessageBox::question(this,"Настройка",\
+                                 "Установите в камере температуру 60±2°С"\
+                                 " и через 30 минут нажмите OK", nullptr, "Ok" , "Close"))
+    {
+
+        return Error::ER_NOERROR;
+    }
+    else
+        return Error::ER_GENERALERROR;
+}
+
+int TuneDialog84::Average()
+{
+    QGridLayout *glyout = new QGridLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QLabel *lbl = new QLabel("Количество усреднений");
+    ledit = new QLineEdit;
+    ledit->setObjectName("N");
+    QPushButton* pb = new QPushButton;
+    ask = new QDialog();
+    ask->setAttribute(Qt::WA_DeleteOnClose);
+
+    glyout->addWidget(lbl,0,1,1,1);
+    glyout->addWidget(ledit,1,1,1,1);
+    pb = new QPushButton("Ok");
+    connect(pb,SIGNAL(clicked()),this,SLOT(ReadN()));
+    glyout->addWidget(pb,2,1,1,1);
+    vlyout->addLayout(glyout);
+    ask->setLayout(vlyout);
+    ask->exec();
+
+    return Error::ER_NOERROR;
+}
+
+void TuneDialog84::CalcTempCorCoefs()
+{
+    int i;
+    float deltaTplus, deltaTminus, dUplus[3], dUminus[3], deltaPhiplus[3], deltaPhiminus[3];
+
+    deltaTplus = Bd_block_plus60.Tmk - Bd_block20.Tmk;
+    deltaTminus = Bd_block_minus20.Tmk - Bd_block20.Tmk;
+
+    for (i=0; i<3; i++)
+    {
+        dUplus[i] = ((Bda_block60.IUefNat_filt[i] * Uet[i])/(Bda_block20.IUefNat_filt[i] * Uet60[i])) - 1;
+        dUminus[i] = ((Bda_blockMinus20.IUefNat_filt[i] * Uet[i])/(Bda_block20.IUefNat_filt[i] * UetMinus20[i])) - 1;
+        Bac_newblock.TKUa[i] = ((dUminus[i]*deltaTplus*deltaTplus) - (dUplus[i]*deltaTminus*deltaTminus))/(deltaTplus*deltaTminus*(deltaTplus - deltaTminus));
+        Bac_newblock.TKUb[i] = ((dUplus[i]*deltaTminus) - (dUminus[i]*deltaTplus))/(deltaTplus*deltaTminus*(deltaTplus - deltaTminus));
+    }
+
+    for (i=0; i<6; i++)
+    {
+      deltaPhiplus[i] = (Bda_block60.phi_next_f[i] - Bda_block20.phi_next_f[i]) - (PHIet60[i] - PHIet[i]);
+      deltaPhiminus[i] = (Bda_blockMinus20.phi_next_f[i] - Bda_block20.phi_next_f[i]) - (PHIetMinus20[i] - PHIet[i]);
+      Bac_newblock.TKPsi_a[i] = ((deltaPhiminus[i]*deltaTplus*deltaTplus) - (deltaPhiplus[i]*deltaTminus*deltaTminus))/(deltaTplus*deltaTminus*(deltaTplus - deltaTminus));
+      Bac_newblock.TKPsi_b[i] = ((deltaPhiplus[i]*deltaTminus) - (deltaPhiminus[i]*deltaTplus))/(deltaTplus*deltaTminus*(deltaTplus - deltaTminus));
+    }
+
+}
 
 void TuneDialog84::GenerateReport()
 {

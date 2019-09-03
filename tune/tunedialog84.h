@@ -136,9 +136,9 @@ private:
     float Pt100_R;		// Измеренное сопротивление термометра, Ом
     }Bda_in_struct;
 
-    Bda_in_struct Bda_in;
+    Bda_in_struct Bda_in, Bda_block20, Bda_block60, Bda_blockMinus20;
 
-    float Uet[3], Iet[3], PHIet[6], FREQet;
+    float Uet[3], Iet[3], PHIet[6], FREQet, UetMinus20[3], IetMinus20[3], PHIetMinus20[6], FREQetMinus20, Uet60[3], Iet60[3], PHIet60[6], FREQet60;
 
     struct BdaStruct
     {
@@ -148,6 +148,8 @@ private:
      };
 
     BdaStruct Bda_block, BdaPt100_80Om, BdaPt100_120Om;
+
+    quint8 TempCor;
 
     struct RealDataStruct
     {
@@ -164,7 +166,7 @@ private:
         float Vbat;	// Напряжение аккумуляторной батареи, В
     };
 
-    Bd0 Bd_block0;
+    Bd0 Bd_block20, Bd_block_minus20, Bd_block_plus60;
 
     struct PovDevStruct // данные об установке
     {
@@ -278,7 +280,19 @@ private:
     int Show80();
     int Show120();
     void CalcNewPt100Coefs();
+    void CalcTempCorCoefs();
     void EnterDataTune();
+    int Show125mA();
+    int AskTemp20();
+    int AskTempMinus20();
+    int AskTemp60();
+    int Average();
+    int ReadAnalogTemp20();
+    int ReadAnalogTempMinus20();
+    int ReadAnalogTemp60();
+    void Enter20Data();
+    void Enterminus20Data();
+    void Enter60Data();
 
 #endif
 
@@ -304,6 +318,9 @@ private slots:
     int TuneTemp();
     int TuneTempCor();
     int CalcTuneCoefs();
+    void SaveValuesTemp20();
+    void SaveValuesTempMinus20();
+    void SaveValuesTemp60();
     void CloseAsk();
 
 
