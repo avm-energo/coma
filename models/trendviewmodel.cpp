@@ -18,7 +18,7 @@ TrendViewModel::TrendViewModel(const QStringList &dlist, const QStringList &alis
                                  int pointsnum)
 
 {
-    this->PointsNum = pointsnum;
+    PointsNum = pointsnum;
     DigitalNames = dlist;
     AnalogNames = alist;
     for (int i=0; i<dlist.size(); ++i)
@@ -34,12 +34,12 @@ TrendViewModel::~TrendViewModel()
 
 void TrendViewModel::AddAnalogPoint(const QString &GraphNum, float PointValue)
 {
-    if (AnalogMainData.contains(GraphNum))
-    {
+    //if (AnalogMainData.contains(GraphNum))
+    //{
         QVector<double> tmpv = AnalogMainData[GraphNum];
         tmpv.append(PointValue);
         AnalogMainData[GraphNum] = tmpv;
-    }
+    //}
 }
 
 void TrendViewModel::AddDigitalPoint(const QString &GraphNum, int PointValue)
@@ -88,7 +88,7 @@ void TrendViewModel::SaveToComtrade()
 
 bool TrendViewModel::SetPointsAxis(float start, float step)
 {
-    if (step <= 0)
+    if(step <= 0)
     {
         WARNMSG("Ошибка в принятой осциллограмме, шаг отрицательный или равен нулю");
         return false;

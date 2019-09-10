@@ -229,7 +229,11 @@ void TrendViewDialog::SignalToggled(QString signame, bool isChecked)
                 {
                     int count = MainPlot->graphCount();
                     SignalTypes type = SignalOscPropertiesMap[signame].Type;
-                    QCPAxisRect *AxisRect = (type == ST_ANALOG) ? \
+                    QCPAxisRect *AxisRect = nullptr;
+                    if((TrendModel->idOsc >= 10001) && (TrendModel->idOsc <= 10008))
+                    AxisRect = MainPlot->axisRect(0);
+                    else
+                    AxisRect = (type == ST_ANALOG) ? \
                                 MainPlot->axisRect(1) : MainPlot->axisRect(0);
                     int axisindex = (signame.at(0) == "I") ? 0 : 1;
                     QCPGraph *graph = MainPlot->addGraph(AxisRect->axis(QCPAxis::atBottom), AxisRect->axis(QCPAxis::atLeft, axisindex));

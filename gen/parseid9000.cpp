@@ -34,7 +34,15 @@ int ParseID9000::Parse(int &count)
     tmps.insert(0, QString::number(DR.id));
 
     QStringList tmpav, tmpdv;
-    TrendViewDialog *dlg = new TrendViewDialog(BArray);
+    //TrendViewDialog *dlg = new TrendViewDialog(BArray);
+    TModel = new TrendViewModel(tmpdv, tmpav, OHD.len);
+
+    TModel->Len = OHD.len;
+    TModel->xmax = (static_cast<float>(TModel->Len/2));
+    TModel->xmin = -TModel->xmax;
+    //dlg->TrendModel = TModel;
+    //TModel->tmpdv_21 = tmpdv;
+    //TModel->tmpav_21 = tmpav;
 
     switch (DR.id)
     {
@@ -54,7 +62,7 @@ int ParseID9000::Parse(int &count)
         case 10014:
         case 10015:
         case MT_ID21E:
-        if (ParseID21(DR.id, OHD, tmps, dlg, count) != Error::ER_NOERROR)
+        if (ParseID21(DR.id, OHD, tmps, count) != Error::ER_NOERROR)
             return Error::ER_GENERALERROR;
         break;
 
@@ -71,11 +79,15 @@ int ParseID9000::Parse(int &count)
     return Error::ER_NOERROR;
 }
 
-int ParseID9000::ParseID21(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count)
+int ParseID9000::ParseID21(quint32 id, OscHeader_Data &OHD, const QString &fn, int &count)
 {
     Q_UNUSED(id);
+
     if (!TModel->SetPointsAxis(0, OHD.step))
         return Error::ER_GENERALERROR;
+
+    TModel->tmpav_21 << QString::number(TModel->idOsc);
+
     for (quint32 i = 0; i < OHD.len; ++i) // цикл по точкам
     {
         Point21 point;
@@ -84,9 +96,9 @@ int ParseID9000::ParseID21(quint32 id, OscHeader_Data &OHD, const QString &fn, T
         TModel->AddAnalogPoint(TModel->tmpav_21.at(0), point.An);
     }
     TModel->SetFilename(fn);
-    dlg->setModal(false);
+    /*dlg->setModal(false);
     dlg->PlotShow();
-    dlg->show();
+    dlg->show();*/
     return Error::ER_NOERROR;
 }
 

@@ -424,10 +424,12 @@ void MainWindow::LoadOscFromFile(const QString &filename)
          case MT_ID21:
          {
             // период отсчётов - 20 мс, длительность записи осциллограммы 10 сек, итого 500 точек по 4 байта на каждую
-            mdl->tmpav_21 << QString::number(mdl->idOsc); // пока сделано для одного канала в осциллограмме
-            //TrendViewModel *TModel = new TrendViewModel(QStringList(), tmpav, *len);
+            //mdl->tmpav_21 << QString::number(mdl->idOsc); // пока сделано для одного канала в осциллограмме
+            //TrendViewModel *TModel = new TrendViewModel(QStringList(), mdl->tmpav_21, mdl->Len);
             //dlg->SetModel(TModel);
+            dlg->SetAnalogColors(mdl->acolors_21);
             dlg->SetAnalogNames(mdl->tmpav_21);
+            dlg->SetAnalogDescriptions(mdl->adescr_21);
             dlg->SetRanges(0, 10000, -20, 20); // 10000 мс, 20 мА (сделать автонастройку в зависимости от конфигурации по данному каналу)
 
            break;
@@ -454,9 +456,11 @@ void MainWindow::LoadOscFromFile(const QString &filename)
 
         }
 
+            dlg->setModal(false);
             dlg->SetupPlots();
             dlg->SetupUI();
-            dlg->setModal(false);
+            dlg->PlotShow();
+            dlg->show();
     }
 }
 

@@ -2,15 +2,21 @@
 #include "../gen/colors.h"
 #include "../widgets/wd_func.h"
 #include "signalchoosewidget.h"
+#include "../models/trendviewmodel.h"
+#include "../dialogs/trendviewdialog.h"
 
 SignalChooseWidget::SignalChooseWidget(QStringList &snames, QStringList &discr, QWidget *parent) : QWidget(parent)
 {
+    int idx;
     QVBoxLayout *lyout = new QVBoxLayout;
     QString tmps = "QDialog {background-color: "+QString(MAINWINCLRA1)+";}";
     setStyleSheet(tmps);
     for (int i=0; i<snames.size(); ++i)
     {
-        int idx = snames.size() - i - 1; // инверсия индекса
+        //if(snames.size() == 1)
+        //idx = snames.size() - i - 2; // инверсия индекса
+        //else
+        idx = snames.size() - i - 1; // инверсия индекса
         QHBoxLayout *hlyout = new QHBoxLayout;
         QCheckBox *chb = WDFunc::NewChB(this, snames.at(idx), "");
         connect(chb,SIGNAL(toggled(bool)),this,SLOT(SignalChecked(bool)));

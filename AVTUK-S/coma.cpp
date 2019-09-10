@@ -274,7 +274,7 @@ void Coma::Stage3()
         MainTuneDialog = new ConfDialog(S2ConfigForTune, MTypeB, MTypeM);
         MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     }
-    //OscD = new OscDialog(OscFunc);
+    OscD = new OscDialog(OscFunc);
     PrepareDialogs();
     if (ConfB != nullptr)
     {
@@ -331,7 +331,7 @@ void Coma::Stage3()
         MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
     }
     FwUpD = new fwupdialog;
-    //MainTW->addTab(OscD, "Осциллограммы");
+    MainTW->addTab(OscD, "Осциллограммы");
     if (SwjD != nullptr)
         MainTW->addTab(SwjD, "Журнал переключений");
     MainTW->addTab(FwUpD, "Загрузка ВПО");

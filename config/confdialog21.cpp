@@ -29,7 +29,7 @@ ConfDialog21::ConfDialog21(QVector<S2::DataRec> &S2Config, bool BaseBoard, QWidg
     RangeInMaxs = {20.0, 20.0, 5.0, 5.0, 5.0};
     this->S2Config = &S2Config;
     C21 = new Config21(S2Config, BaseBoard);
-    Params.InTypes = QStringList() << "Не исп." << "мА" << "В";
+    Params.InTypes = QStringList() << "Не исп." << "Постоянный ток, мА" << "Постоянное напряжение, В"<< "Переменный ток, мА" << "Переменное напряжение, В";
     Params.RangeTypes = QStringList() << "(4..20) мА" << "(0..20) мА" << "(0..5) мА" << \
                                          "(-5..5) В" << "(0..5) В" << "Произвольный мА" << "Произвольный В";
     Params.NumCh = AIN21_NUMCH;

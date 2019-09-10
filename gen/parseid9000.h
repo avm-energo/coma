@@ -57,7 +57,7 @@ public:
 
     int Parse(int &count);
 //    void Save(quint32 *len);
-    int ParseID21(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
+    int ParseID21(quint32 id, OscHeader_Data &OHD, const QString &fn, int &count);
     int ParseID8x(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
     int ParseID85(quint32 id, OscHeader_Data &OHD, const QString &fn, TrendViewDialog *dlg, int &count);
 };

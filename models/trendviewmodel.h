@@ -89,7 +89,9 @@ public:
     QStringList tmpav_80 = QStringList() << "USA" << "USB" << "USC" << "IA" << "IB" << "IC" << "ULA" << "ULB" << "ULC";
 
 
-    QStringList tmpav_21 = QStringList() << "UA" << "UB" << "UC" << "IA" << "IB" << "IC";
+    QStringList acolors_21 = QStringList() << YLWCOLOR;
+    QStringList tmpav_21;// = QStringList() << "UA";
+    QStringList adescr_21  = QStringList() << "Сигнал в инженерных единицах";
 
 private:
 
