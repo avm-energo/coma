@@ -18,9 +18,9 @@ Config84::Config84(QVector<S2::DataRec> &config)
     {
         config.append({1003, sizeof(Bci_block.NFiltr), &Bci_block.NFiltr});
         config.append({1006, sizeof(Bci_block.Unom), &Bci_block.Unom});
-        config.append({StartInIndex, sizeof(Bci_block.Umin), &Bci_block.Imax});
-        config.append({StartInIndex+1, sizeof(Bci_block.Imin), &Bci_block.Umin});
-        config.append({StartInIndex+2, sizeof(Bci_block.Imax), &Bci_block.Imin});
+        config.append({StartInIndex, sizeof(Bci_block.Umin), &Bci_block.Umin});
+        config.append({StartInIndex+1, sizeof(Bci_block.Imin), &Bci_block.Imin});
+        config.append({StartInIndex+2, sizeof(Bci_block.Imax), &Bci_block.Imax});
         config.append({StartInIndex+3, sizeof(Bci_block.C_init), &Bci_block.C_init});
         config.append({StartInIndex+4, sizeof(Bci_block.Tg_init), &Bci_block.Tg_init});
         config.append({StartInIndex+5, sizeof(Bci_block.corTg), &Bci_block.corTg});
@@ -38,6 +38,15 @@ Config84::Config84(QVector<S2::DataRec> &config)
         config.append({StartInIndex+17, sizeof(Bci_block.Iunb_init), &Bci_block.Iunb_init});
         config.append({StartInIndex+18, sizeof(Bci_block.Phy_unb_init), &Bci_block.Phy_unb_init});
         config.append({StartInIndex+19, sizeof(Bci_block.T_Data_Rec), &Bci_block.T_Data_Rec});
+        config.append({StartInIndex+20, sizeof(Bci_block.LowU), &Bci_block.LowU});
+        config.append({StartInIndex+21, sizeof(Bci_block.IsU), &Bci_block.IsU});
+        config.append({StartInIndex+22, sizeof(Bci_block.IsIunb), &Bci_block.IsIunb});
+        config.append({StartInIndex+23, sizeof(Bci_block.Tevent_pred), &Bci_block.Tevent_pred});
+        config.append({StartInIndex+24, sizeof(Bci_block.Tevent_alarm), &Bci_block.Tevent_alarm});
+        config.append({StartInIndex+25, sizeof(Bci_block.Trele_pred), &Bci_block.Trele_pred});
+        config.append({StartInIndex+26, sizeof(Bci_block.Trele_alarm), &Bci_block.Trele_alarm});
+
+
 
         if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
         {

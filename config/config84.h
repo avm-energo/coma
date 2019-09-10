@@ -43,6 +43,13 @@ public:
                         // относительно вектора тока фазы А
         quint32 NFiltr;	  // Интервал усреднения данных  (в периодах основной частоты)
         quint32 T_Data_Rec;  // Интервал записи данных в ПЗУ (тренд), в секундах
+        float LowU;
+        quint8 IsU;
+        quint8 IsIunb;
+        quint32 Tevent_pred;
+        quint32 Tevent_alarm;
+        quint32 Trele_pred;
+        quint32 Trele_alarm;
 
     } Bci;
 
