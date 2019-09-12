@@ -605,7 +605,10 @@ void TrendViewDialog::SetupPlots()
         title->setFont(QFont("sans", 12, QFont::Bold));
         MainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, title); // place the title in the empty cell we've just created
         QCPAxisRect *AnalogAxisRect = new QCPAxisRect(MainPlot);
+
+        if (TrendModel->idOsc == MT_ID85)
         AnalogAxisRect->addAxis(QCPAxis::atLeft);
+
         MainPlot->plotLayout()->addElement(MainPlotLayoutRow++, 0, AnalogAxisRect);
         AnalogLegend = SetLegend(MainPlotLayoutRow++);
         AnalogAxisRect->setBackground(QBrush(QColor(ACONFYCLR)));

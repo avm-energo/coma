@@ -118,7 +118,7 @@ void ConfDialog21::SetupUI()
     lbl = new QLabel();
     hlyout->addWidget(WDFunc::NewLBLT(this, "Задержка в мс начала фиксации максимумов:"));
     hlyout->addWidget(WDFunc::NewSPB(this, "oscdly", 0, 10000, 0, ACONFWCLR));
-    hlyout->addWidget(WDFunc::NewLBLT(this, "Гистерезис осциллограмм:", "", "", "Доля от диапазона, при превышении которой начинается запись осциллограмм"));
+    hlyout->addWidget(WDFunc::NewLBLT(this, "Порог срабатывания осциллограмм:", "", "", "Доля от диапазона, при превышении которой начинается запись осциллограмм"));
     hlyout->addWidget(WDFunc::NewSPB(this, "oscthr", 0, 1, 3, ACONFWCLR));
     gblyout->addLayout(hlyout);
     gb->setLayout(gblyout);
@@ -129,7 +129,7 @@ void ConfDialog21::SetupUI()
     hlyout->addStretch(10);
     hlyout->addWidget(WDFunc::NewLBLT(this, "Степень фильтрации:", "", "", "Степень фильтрации (0 - отсутствует)"));
     hlyout->addWidget(WDFunc::NewSPB(this, "filtern", 0, 10000, 0, ACONFWCLR));
-    hlyout->addWidget(WDFunc::NewLBLT(this, "Гистерезис фильтрации:", "", "", "Доля от диапазона, при превышении которой между замерами фильтр не работает"));
+    hlyout->addWidget(WDFunc::NewLBLT(this, "Порог фильтрации:", "", "", "Доля от диапазона, при превышении которой между замерами фильтр не работает"));
     hlyout->addWidget(WDFunc::NewSPB(this, "filterthr", 0, 1, 3, ACONFWCLR));
     hlyout->addWidget(WDFunc::NewLBLT(this, "Гистерезис уставок:", "", "", "Значение гистерезиса на сравнение с уставками (доля от диапазона)"));
     hlyout->addWidget(WDFunc::NewSPB(this, "hysteresis", 0, 1, 3, ACONFWCLR));
