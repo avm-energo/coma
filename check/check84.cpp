@@ -46,6 +46,7 @@ Check_84::~Check_84()
 QWidget *Check_84::Bd1W(QWidget *parent)
 {
     int i;
+    QString paramcolor = MAINWINCLR;
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
@@ -79,13 +80,27 @@ QWidget *Check_84::Bd1W(QWidget *parent)
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+18), ValuesFormat, \
                                           QString::number(i+18)+".Изменение тангенсов дельта вводов, %"),11,i,1,1);
     }
+
+    /*glyout->addWidget(WDFunc::NewLBL(this, "Заводские значения tg δ вводов:"), 12,1,1,1);
+
+    for (int i = 0; i < 3; i++)
+    {
+     glyout->addWidget(WDFunc::NewSPB(this, "Tg_zav."+QString::number(i), -10, 10, 2, paramcolor), 12,2+i,1,1);
+    }*/
+
+    QPushButton *pb = new QPushButton("Рассчитать начальные значения tg δ вводов");
+    pb->setObjectName("pbcalc");
+    #if PROGSIZE != PROGSIZE_EMUL
+    connect(pb,SIGNAL(clicked()),this,SLOT(EnterTg()));
+    #endif
+     glyout->addWidget(pb,13,0,1,3);
     
-    QPushButton *pb = new QPushButton("Стереть журнал");
+    pb = new QPushButton("Стереть журнал");
     //pb->setObjectName("pbmeasurements");
     #if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(SendErt()));
     #endif
-     glyout->addWidget(pb,12,0,1,3);
+     glyout->addWidget(pb,14,0,1,3);
 
 
     lyout->addLayout(glyout);
@@ -271,4 +286,73 @@ QWidget *Check_84::CustomTab()
     QWidget *w = new QWidget;
 
     return w;
+}
+
+void Check_84::EnterTg()
+{
+    int i;
+    ask = new QDialog(this);
+    //QVBoxLayout *lyout = new QVBoxLayout;
+    ask->setAttribute(Qt::WA_DeleteOnClose);
+    ask->setObjectName("EnterDlg");
+    QGridLayout *glyout = new QGridLayout;
+    ledit = new QLineEdit();
+    QLabel *lbl = new QLabel("Задайте заводские значения tg δ вводов:");
+    glyout->addWidget(lbl,0,0,1,6);
+
+    for(i=0; i<3; i++)
+    {
+        lbl = new QLabel("Tg_d["+QString::number(i)+"]:");
+        glyout->addWidget(lbl,1,i,1,1);
+        ledit = new QLineEdit();
+        ledit->setObjectName("Tg_zav."+QString::number(i));
+        glyout->addWidget(ledit,2,i,1,1);
+    }
+
+
+    QPushButton *pb = new QPushButton("Рассчитать");
+    connect(pb,SIGNAL(clicked()),this,SLOT(CalcTginit()));
+    glyout->addWidget(pb,3,2,1,2);
+   /* pb = new QPushButton("Отмена");
+    connect(pb,SIGNAL(clicked()),this,SLOT(CancelTune()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(close()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(CloseAsk()));
+    glyout->addWidget(pb,9,3,1,3);*/
+
+    ask->setLayout(glyout);
+    ask->exec();
+
+}
+
+void Check_84::CalcTginit(void)
+{
+    float *tginit = new float[3];
+    float tgzav[3];
+    float tg_measurement[3];
+    QString tmps;
+    int i;
+
+    for(i=0; i<3; i++)
+    {
+      WDFunc::LEData(ask, "Tg_zav."+QString::number(i), tmps);
+      tgzav[i] = tmps.toFloat();
+      ask->close();
+
+      //WDFunc::SPBData(this, "Tg_zav."+QString::number(i), tgzav[i]);
+      WDFunc::SPBData(this, "dTg_d"+QString::number(i), tg_measurement[i]);
+
+      if(tgzav[i] != 0)
+      {
+         *(tginit+i) = tg_measurement[i] - tgzav[i];
+      }
+      else
+      {
+         EMessageBox::information(this, "Информация", "Задайте заводские значения");
+         return;
+      }
+    }
+
+    EMessageBox::information(this, "Информация", "Посчитано успешно");
+    emit tg_start_ready(tginit);
+
 }

@@ -300,6 +300,7 @@ private:
 
     QString ValuesFormat, WidgetFormat;
 
+
 private slots:
 
 #if PROGSIZE != PROGSIZE_EMUL

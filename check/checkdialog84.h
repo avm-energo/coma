@@ -36,7 +36,6 @@ private:
 #endif
     QWidget *CustomTab();
 
-
 private slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void StartBdMeasurements();

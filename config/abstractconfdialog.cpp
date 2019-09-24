@@ -179,3 +179,10 @@ bool AbstractConfDialog::PrepareConfToWrite()
     }
     return true;
 }
+
+void AbstractConfDialog::Fill_tg_init(float* tg)
+{
+    int i = 0;
+    i++;
+
+}

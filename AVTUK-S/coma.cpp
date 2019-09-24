@@ -449,6 +449,8 @@ void Coma::PrepareDialogs()
         setMinimumSize(QSize(800, 650));
         ConfM = new ConfDialog84(S2Config);
         TuneM = new TuneDialog84(S2ConfigForTune);
+        if (CheckB != nullptr)
+        connect(CheckB, SIGNAL(tg_start_ready(float*)), ConfM, SLOT(Fill_tg_init(float*)));
         break;
     }
     case Config::MTM_85:

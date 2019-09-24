@@ -20,6 +20,7 @@ public:
     QTimer *timer;
     QTimer *timerRead;
 
+
 private:
 
     Config84 *C84;
@@ -36,6 +37,8 @@ signals:
 
 public slots:
 
+
+
 private slots:
     void SetDefConf();
     void slot_timeOut();
@@ -44,6 +47,9 @@ private slots:
     void Stop_Timer();
     void Write_PCDate();
     void Write_Date();
+
+
+
 
 };
 

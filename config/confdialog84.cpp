@@ -205,21 +205,21 @@ void ConfDialog84::SetupUI()
 
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "C_init."+QString::number(i), 0, 10000, 0, paramcolor), row,2+i,1,1);
+     glyout->addWidget(WDFunc::NewSPB(this, "C_init."+QString::number(i), 0, 10000, 1, paramcolor), row,2+i,1,1);
     }
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения tg δ вводов:"), row,1,1,1);
 
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "Tg_init."+QString::number(i), 0, 10000, 1, paramcolor), row,2+i,1,1);
+     glyout->addWidget(WDFunc::NewSPB(this, "Tg_init."+QString::number(i), -10, 10, 2, paramcolor), row,2+i,1,1);
     }
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Коррекция  tg δ вводов:"), row,1,1,1);
 
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "corTg."+QString::number(i), 0, 10000, 1, paramcolor), row, 2+i, 1, 1);
+     glyout->addWidget(WDFunc::NewSPB(this, "corTg."+QString::number(i), -10, 10, 2, paramcolor), row, 2+i, 1, 1);
     }
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Гистерезис на отключение сигнализации по dC, % от уставки:"), row,1,1,1);
@@ -589,3 +589,13 @@ void ConfDialog84::Write_Date()
     #endif
 
 }
+
+/*void AbstractConfDialog::Fill_tg_init(float *tginit)
+{
+    int i;
+
+    for (i = 0; i < 3; i++)
+    {
+      WDFunc::SetSPBData(this, "Tg_init."+QString::number(i), *(tginit+i));
+    }
+}*/

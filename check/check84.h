@@ -1,6 +1,7 @@
 #ifndef CHECK84_H
 #define CHECK84_H
 #include <QWidget>
+#include <QLineEdit>
 #include "../gen/maindef.h"
 #include "eabstractcheckdialog.h"
 
@@ -13,6 +14,9 @@ class Check_84 : public EAbstractCheckDialog
 public:
      explicit Check_84(BoardTypes board, QWidget *parent);
      ~Check_84();
+
+    QDialog *ask;
+    QLineEdit *ledit;
 
     struct Bd1
     {
@@ -59,6 +63,10 @@ public:
 
 private:
     QString ValuesFormat, WidgetFormat;
+
+public slots:
+    void CalcTginit(void);
+    void EnterTg();
 
 #if PROGSIZE != PROGSIZE_EMUL
 private slots:
