@@ -19,6 +19,7 @@
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
+    connect(this, SIGNAL(SendTg(float*)), this, SIGNAL(tginit(float*)));
 }
 
 #if PROGSIZE != PROGSIZE_EMUL
@@ -180,8 +181,9 @@ bool AbstractConfDialog::PrepareConfToWrite()
     return true;
 }
 
-void AbstractConfDialog::Fill_tg_init(float* tg)
+void AbstractConfDialog::tginit(float* tg)
 {
+    *tg = 1;
     int i = 0;
     i++;
 

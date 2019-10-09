@@ -42,12 +42,14 @@ private slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void ReadConf();
     void WriteConf();
-    void Fill_tg_init(float *tg);
+    void tginit(float *tg);
+
 #endif
 signals:
     void BsiIsNeedToBeAcquiredAndChecked(); // signal to reload start block emitted when new configuration has been sent to module
     void NewConfToBeLoaded(); // signal to load configuration in all appropriate windows (main conf, base conf, mez conf)
     void DefConfToBeLoaded(); // signal to load default configuration
+    void SendTg(float*);
 };
 
 #endif // ABSTRACTCONFDIALOG_H

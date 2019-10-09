@@ -353,6 +353,6 @@ void Check_84::CalcTginit(void)
     }
 
     EMessageBox::information(this, "Информация", "Посчитано успешно");
-    emit tg_start_ready(tginit);
+    emit tgStart(tginit);
 
 }

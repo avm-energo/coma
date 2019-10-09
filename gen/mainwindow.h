@@ -132,6 +132,7 @@ signals:
     void ClearBsi();
     void Finished();
 
+
 private:
     bool ok;
     bool TEEnabled; // признак того, ведётся ли лог в правом выезжающем окне

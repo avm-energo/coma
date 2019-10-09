@@ -53,7 +53,7 @@ public:
 // CurBdNum,
 
 signals:
-    void tg_start_ready(float*);
+    void tgStart(float*);
 
 public slots:
 #if PROGSIZE != PROGSIZE_EMUL
