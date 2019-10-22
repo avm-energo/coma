@@ -50,6 +50,7 @@ public:
         quint32 Tevent_alarm;
         quint32 Trele_pred;
         quint32 Trele_alarm;
+        float Unom_1;           //номинальное первичное напряжение первой тройки
 
     } Bci;
 

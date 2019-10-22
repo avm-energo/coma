@@ -62,6 +62,9 @@ void ConfDialog84::Fill()
     WDFunc::SetSPBData(this, "GdIunb", C84->Bci_block.GdIunb);
     WDFunc::SetSPBData(this, "NFiltr", C84->Bci_block.NFiltr);
     WDFunc::SetSPBData(this, "T_Data_Rec", C84->Bci_block.T_Data_Rec);
+    WDFunc::SetSPBData(this, "Phy_unb_init", C84->Bci_block.Phy_unb_init);
+    WDFunc::SetSPBData(this, "Iunb_init", C84->Bci_block.Iunb_init);
+    WDFunc::SetSPBData(this, "Unom_1", C84->Bci_block.Unom_1);
 
     if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     {
@@ -118,6 +121,9 @@ void ConfDialog84::FillBack()
     WDFunc::SPBData(this, "GdIunb", C84->Bci_block.GdIunb);
     WDFunc::SPBData(this, "NFiltr", C84->Bci_block.NFiltr);
     WDFunc::SPBData(this, "T_Data_Rec", C84->Bci_block.T_Data_Rec);
+    WDFunc::SPBData(this, "Phy_unb_init", C84->Bci_block.Phy_unb_init);
+    WDFunc::SPBData(this, "Iunb_init", C84->Bci_block.Iunb_init);
+    WDFunc::SPBData(this, "Unom_1", C84->Bci_block.Unom_1);
 
     if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     {
@@ -240,6 +246,10 @@ void ConfDialog84::SetupUI()
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Начальное значение угла тока небаланса:"), row,1,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "Phy_unb_init", 0, 10000, 1, paramcolor), row,2,1,3);
+
+    row++;
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение первой тройки:"), row,1,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "Unom_1", 0, 10000, 1, paramcolor), row,2,1,3);
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);

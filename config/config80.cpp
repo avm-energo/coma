@@ -27,6 +27,9 @@ Config80::Config80(QVector<S2::DataRec> &config)
         config.append({StartInIndex+9, sizeof(Bci_block.duosc), &Bci_block.duosc});
         config.append({StartInIndex+10, sizeof(Bci_block.diosc), &Bci_block.diosc});
         config.append({StartInIndex+11, sizeof(Bci_block.duimin), &Bci_block.duimin});
+        config.append({1050, sizeof(Bci_block.Unom_1), &Bci_block.Unom_1});
+        config.append({1051, sizeof(Bci_block.Unom_2), &Bci_block.Unom_2});
+
     }
     config.append({0xFFFFFFFF, 0, nullptr});
 
@@ -44,6 +47,8 @@ void Config80::SetDefConf()
     Bci_block.duosc = 2.0;
     Bci_block.diosc = 2.0;
     Bci_block.duimin = 0.5;
+    Bci_block.Unom_1 = 100;
+    Bci_block.Unom_2 = 100;
     for (int i = 0; i < 3; i++)
     {
         Bci_block.inom1[i] = 600;

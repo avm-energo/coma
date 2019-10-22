@@ -52,6 +52,8 @@ void ConfDialog80::Fill()
         WDFunc::SetCBData(this, "unom.1", QString::number(C80->Bci_block.unom1));
         WDFunc::SetCBData(this, "unom.2", QString::number(C80->Bci_block.unom2));
         WDFunc::SetSPBData(this, "thr.1", C80->Bci_block.duosc);
+        WDFunc::SetSPBData(this, "Unom_1",C80->Bci_block.Unom_1);
+        WDFunc::SetSPBData(this, "Unom_2",C80->Bci_block.Unom_2);
        break;
     }
     case Config::MTM_82:
@@ -64,6 +66,7 @@ void ConfDialog80::Fill()
         }
         WDFunc::SetSPBData(this, "thr.1", C80->Bci_block.duosc);
         WDFunc::SetSPBData(this, "thr.2", C80->Bci_block.diosc);
+        WDFunc::SetSPBData(this, "Unom_1",C80->Bci_block.Unom_1);
         break;
     }
     case Config::MTM_83:
@@ -80,6 +83,7 @@ void ConfDialog80::Fill()
         break;
     }
     WDFunc::SetSPBData(this, "thr.3", C80->Bci_block.duimin);
+
 }
 
 void ConfDialog80::FillBack()
@@ -116,6 +120,8 @@ void ConfDialog80::FillBack()
         tmps = WDFunc::CBData(this, "unom.2");
         C80->Bci_block.unom2 = tmps.toFloat();
         WDFunc::SPBData(this, "thr.1", C80->Bci_block.duosc);
+        WDFunc::SPBData(this, "Unom_1",C80->Bci_block.Unom_1);           // Номинальное вторичное напряжение первой тройки);
+        WDFunc::SPBData(this, "Unom_2",C80->Bci_block.Unom_2);
        break;
     }
     case Config::MTM_82:
@@ -129,6 +135,7 @@ void ConfDialog80::FillBack()
         }
         WDFunc::SPBData(this, "thr.1", C80->Bci_block.duosc);
         WDFunc::SPBData(this, "thr.2", C80->Bci_block.diosc);
+        WDFunc::SPBData(this, "Unom_1",C80->Bci_block.Unom_1);
         break;
     }
     case Config::MTM_83:
@@ -176,6 +183,10 @@ void ConfDialog80::SetupUI()
         //vlyout2->addWidget(UNom(this, 1));
         //vlyout2->addWidget(UNom(this, 2));
         vlyout3->addWidget(Threshold("Уставка скачка напряжения для запуска осциллографирования, %", 1));
+        hlyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение первой тройки:"));
+        hlyout->addWidget(WDFunc::NewSPB(this, "Unom_1", 0, 1000, 0, ACONFWCLR));
+        hlyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение второй тройки:"));
+        hlyout->addWidget(WDFunc::NewSPB(this, "Unom_2", 0, 1000, 0, ACONFWCLR));
         break;
     }
     case Config::MTM_82: // 3U3I
@@ -185,6 +196,8 @@ void ConfDialog80::SetupUI()
         UNom(vlyout3, 1);
         INom(vlyout3, 3);
         INom(vlyout3, 4);
+        hlyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение первой тройки:"));
+        hlyout->addWidget(WDFunc::NewSPB(this, "Unom_1", 0, 1000, 0, ACONFWCLR));
         //vlyout2->addWidget(Threshold("Уставка скачка напряжения для запуска осциллографирования, %", 1));
         //vlyout2->addWidget(Threshold("Уставка скачка тока для запуска осциллографирования, %", 2));
         /*vlyout2->addWidget(UNom(this, 1));

@@ -49,6 +49,8 @@ void ConfDialog85::Fill()
     WDFunc::SetCBData(this, "unomcb", QString::number(C85->Bci_block.Unom));
     WDFunc::SetSPBData(this, "inom1", C85->Bci_block.ITT1nom);
     WDFunc::SetCBData(this, "inom2", QString::number(C85->Bci_block.ITT2nom));
+    WDFunc::SetSPBData(this, "Unom_1",C85->Bci_block.Unom_1);           // Номинальное вторичное напряжение первой тройки);
+    WDFunc::SetSPBData(this, "Unom_2",C85->Bci_block.Unom_2);
     for (int i=0; i<3; ++i)
     {
         WDFunc::SetSPBData(this, "tzadoff"+QString::number(i+1), C85->Bci_block.Tzad_OFF[i]);
@@ -169,6 +171,8 @@ void ConfDialog85::FillBack()
     WDFunc::SPBData(this, "inom1", C85->Bci_block.ITT1nom);
     tmps = WDFunc::CBData(this, "inom2");
     C85->Bci_block.ITT2nom = tmps.toInt();
+    WDFunc::SPBData(this, "Unom_1",C85->Bci_block.Unom_1);           // Номинальное вторичное напряжение первой тройки);
+    WDFunc::SPBData(this, "Unom_2",C85->Bci_block.Unom_2);
     for (int i=0; i<3; ++i)
     {
         WDFunc::SPBData(this, "tzadoff"+QString::number(i+1), C85->Bci_block.Tzad_OFF[i]);
@@ -347,6 +351,16 @@ void ConfDialog85::SetupUI()
     hlyout->addWidget(WDFunc::NewLBL(this, "вторичный:"), 0);
     cbl = QStringList() << "1" << "5";
     hlyout->addWidget(WDFunc::NewCB(this, "inom2", cbl, paramcolor), 1);
+    glyout->addLayout(hlyout,row,1,1,1);
+    hlyout = new QHBoxLayout;
+    row+=2;
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение первой тройки, А:"),row,0,1,1);
+    hlyout->addWidget(WDFunc::NewSPB(this, "Unom_1", 0, 1000, 0, paramcolor), 1);
+    glyout->addLayout(hlyout,row,1,1,1);
+    hlyout = new QHBoxLayout;
+    row+=3;
+    glyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение второй тройки, А:"),row,0,1,1);
+    hlyout->addWidget(WDFunc::NewSPB(this, "Unom_2", 0, 1000, 0, paramcolor), 1);
     glyout->addLayout(hlyout,row,1,1,1);
     vlyout1->addLayout(glyout);
     EStackedWidget *stw = new EStackedWidget;

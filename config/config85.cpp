@@ -204,4 +204,6 @@ void Config85::SetDefConf()
     Bci_block.K_on_tbo = 0.01;
     Bci_block.K_off_tbo = 0.01;
     Bci_block.Kad = 0.1;
+    Bci_block.Unom_1 = 100;
+    Bci_block.Unom_2 = 100;
 }

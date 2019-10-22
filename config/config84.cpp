@@ -45,6 +45,7 @@ Config84::Config84(QVector<S2::DataRec> &config)
         config.append({StartInIndex+24, sizeof(Bci_block.Tevent_alarm), &Bci_block.Tevent_alarm});
         config.append({StartInIndex+25, sizeof(Bci_block.Trele_pred), &Bci_block.Trele_pred});
         config.append({StartInIndex+26, sizeof(Bci_block.Trele_alarm), &Bci_block.Trele_alarm});
+        config.append({1050, sizeof(Bci_block.Unom_1), &Bci_block.Unom_1});
 
 
 
@@ -84,6 +85,7 @@ void Config84::SetDefConf()
     Bci_block.Phy_unb_init = 0;
     Bci_block.NFiltr = 100;
     Bci_block.T_Data_Rec = 3600;
+    Bci_block.Unom_1 = 100;
 
     for (int i = 0; i < 3; i++)
     {
