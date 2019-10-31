@@ -65,10 +65,10 @@ int fwupdialog::LoadFW()
 {
     QByteArray ba;
     File_struct PV_file;
-    quint32 crc=0xFFFFFFFF;
+    //quint32 crc=0xFFFFFFFF;
     quint32 i;
     quint32 tmpi = 0;
-    void *Rptr = static_cast<void *>(&PV_file.Type);
+    //void *Rptr = static_cast<void *>(&PV_file.Type);
     //tmpi = sizeof(PV_file.Type)+sizeof(PV_file.File.FileDatHeader);
     QVector<S2::DataRec> S2DR;
 
@@ -79,7 +79,9 @@ int fwupdialog::LoadFW()
         return Error::ER_GENERALERROR;
     }
 
-    PV_file.File_xxx_header.size=sizeof(PV_file.Type) + sizeof(PV_file.File.FileDatHeader) + sizeof(ba) + sizeof(PV_file.void_recHeader);
+    ParseHexToS2(ba);
+
+    //PV_file.File_xxx_header.size=sizeof(PV_file.Type) + sizeof(PV_file.File.FileDatHeader) + sizeof(ba) + sizeof(PV_file.void_recHeader);
 
     PV_file.Type.TypeHeader.id = 8000;
     PV_file.Type.TypeHeader.NumByte = 8;
@@ -95,16 +97,16 @@ int fwupdialog::LoadFW()
     S2DR.append({PV_file.File.FileDatHeader.id, PV_file.File.FileDatHeader.NumByte, &PV_file.File.Data});
     S2DR.append({PV_file.void_recHeader.id, PV_file.void_recHeader.NumByte, nullptr});
 
-    for(i=0;i<PV_file.File_xxx_header.size;i++)
+    /*for(i=0;i<PV_file.File_xxx_header.size;i++)
     S2::updCRC32((static_cast<char *>(Rptr))[i],&crc);
 
     PV_file.File_xxx_header.crc32=crc;
     PV_file.File_xxx_header.thetime=S2::getTime32();
     PV_file.File_xxx_header.service=0xFFFF;
-    PV_file.File_xxx_header.fname=0x003;
+    PV_file.File_xxx_header.fname=0x003;*/
 
     #if PROGSIZE != PROGSIZE_EMUL
-    if (Commands::WriteFile(&(ba.data()[0]), 3, &S2DR) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&(BaForSend.data()[0]), 3, &S2DR) != Error::ER_NOERROR)
     {
         EMessageBox::information(this, "Ошибка", "Ошибка записи в модуль!");
         return Error::ER_GENERALERROR;
@@ -114,4 +116,25 @@ int fwupdialog::LoadFW()
     #endif
 
 
+}
+
+int fwupdialog::ParseHexToS2(QByteArray ba)
+{
+
+    int i;
+    QString str;
+    QStringList sl;
+
+    str = ba;
+    str.split(":");
+
+    sl.append(str.split("\r\n:"));
+
+    for(i = 0; i<ba.size(); i++)
+    {
+        if(ba.data()[i] == 0x3A)
+        ba.data()[i]++;
+    }
+
+   return Error::ER_NOERROR;
 }

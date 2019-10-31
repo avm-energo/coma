@@ -10,6 +10,7 @@ public:
     explicit fwupdialog(QWidget *parent = nullptr);
 
     void SetupUI();
+    int ParseHexToS2(QByteArray ba);
 
     quint32 NN;
 
@@ -48,6 +49,8 @@ public:
       DataRecF		File;		   	// Файл ВПО в формате BIN
       DataRecHeader	void_recHeader;	// заголовок пустой записи
     }File_struct;
+
+    QByteArray BaForSend;
 
 signals:
 
