@@ -16,6 +16,7 @@
 #include "../gen/maindef.h"
 #include "../dialogs/swjdialog.h"
 #include "../dialogs/fwupdialog.h"
+#include "../dialogs/cordialog.h"
 
 #include "eabstractprotocomchannel.h"
 
@@ -55,6 +56,7 @@ public:
 #ifndef MODULE_A1
     SwitchJournalDialog *SwjD;
     OscDialog *OscD;
+    CorDialog *CorD;
     EOscillogram *OscFunc;
     SWJDialog *dlg;
     fwupdialog *FwUpD;

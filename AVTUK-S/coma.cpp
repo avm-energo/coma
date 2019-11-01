@@ -275,6 +275,7 @@ void Coma::Stage3()
         MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     }
     OscD = new OscDialog(OscFunc);
+    CorD = new CorDialog();
     PrepareDialogs();
     if (ConfB != nullptr)
     {
@@ -330,6 +331,7 @@ void Coma::Stage3()
         MainTW->addTab(new TuneDialogA1DN, "Настройка своего ДН");
         MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
     }
+    MainTW->addTab(CorD, "Коррекция");
     FwUpD = new fwupdialog;
     MainTW->addTab(OscD, "Осциллограммы");
     if (SwjD != nullptr)

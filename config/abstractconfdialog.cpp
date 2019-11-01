@@ -19,7 +19,7 @@
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
-    connect(this, SIGNAL(SendTg(float*)), this, SIGNAL(tginit(float*)));
+    connect(this, SIGNAL(SendTg(float*)), this, SLOT(tginit(float*)));
 }
 
 #if PROGSIZE != PROGSIZE_EMUL

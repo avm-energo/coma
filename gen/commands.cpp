@@ -252,3 +252,28 @@ int Commands::GetTimeMNK(uint &Time)
     return 0;
 #endif
 }
+
+int Commands::WriteBd(char BdNum, void *BdPtr, int BdPtrSize)
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    cn->Send(CN_WBd, BdNum, BdPtr, BdPtrSize);
+    return cn->result;
+#else
+    Q_UNUSED(BdNum);
+    Q_UNUSED(BdPtr);
+    Q_UNUSED(BdPtrSize);
+    return 0;
+#endif
+}
+int Commands::WriteCom(char ComNum)
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    cn->Send(CN_WCom, ComNum);
+    return cn->result;
+#else
+    Q_UNUSED(BdNum);
+    Q_UNUSED(BdPtr);
+    Q_UNUSED(BdPtrSize);
+    return 0;
+#endif
+}

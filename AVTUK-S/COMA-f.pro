@@ -122,7 +122,8 @@ SOURCES += \
     ../widgets/passwordlineedit.cpp \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp
+    ../widgets/wd_func.cpp \
+    ../dialogs/cordialog.cpp
 
 HEADERS  += \
     coma.h \
@@ -224,7 +225,8 @@ HEADERS  += \
     ../widgets/passwordlineedit.h \
     ../widgets/signalchoosewidget.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h
+    ../widgets/wd_func.h \
+    ../dialogs/cordialog.h
 
 INCLUDEPATH += $$PWD/../../includes
 

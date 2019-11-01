@@ -121,19 +121,30 @@ int fwupdialog::LoadFW()
 int fwupdialog::ParseHexToS2(QByteArray ba)
 {
 
-    int i;
+    int i,j;
     QString str;
     QStringList sl;
+    bool ok = false;
 
     str = ba;
     str.split(":");
 
     sl.append(str.split("\r\n:"));
 
-    for(i = 0; i<ba.size(); i++)
+    //str = str.toLocal8Bit();
+
+    for(i = 0; i<sl.size(); i++)
     {
-        if(ba.data()[i] == 0x3A)
-        ba.data()[i]++;
+        str = sl.at(i);
+
+        if(i == 0)
+        {
+          //ba.data()[0] = QString("%1").arg(str.toULongLong(&ok, 16), 16, 2, QChar('0'));
+         // i++;
+          str = QString("%1").arg(str.toULongLong(&ok, 2), 16, 2, QChar('0'));
+          memcpy(&ba.data()[0], &str, 16);
+          i++;
+        }
     }
 
    return Error::ER_NOERROR;

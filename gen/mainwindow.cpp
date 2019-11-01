@@ -55,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     ConfB = ConfM = nullptr;
 #ifndef MODULE_A1
     OscD = nullptr;
+    CorD = nullptr;
     SwjD = nullptr;
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE

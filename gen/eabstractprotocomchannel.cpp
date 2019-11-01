@@ -197,6 +197,30 @@ void EAbstractProtocomChannel::InitiateSend()
         WriteDataToPort(WriteData);
         break;
     }
+    case CN_WBd:
+    {
+        WriteData.append(CN_MS);
+        WriteData.append(cmd);
+        AppendSize(WriteData, outdatasize);
+        WriteData.append(BoardType);
+        WriteData.resize(WriteData.size()+outdatasize);
+        size_t tmpi = static_cast<size_t>(outdatasize);
+        memcpy(&(WriteData.data()[5]), &outdata[0], tmpi);
+        WriteDataToPort(WriteData);
+        break;
+    }
+
+    case CN_WCom:
+    {
+        WriteData.append(CN_MS);
+        WriteData.append(cmd);
+        AppendSize(WriteData, 1);
+        WriteData.append(BoardType);
+        WriteData.resize(WriteData.size());
+        WriteDataToPort(WriteData);
+        break;
+    }
+
     default:
     {
         Finish(CN_UNKNOWNCMDERROR);
@@ -251,6 +275,8 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             case CN_NVar:
             case CN_SMode:
             case CN_WTime:
+            case CN_WBd:
+            case CN_WCom:
             {
                 if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
                 {

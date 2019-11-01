@@ -52,6 +52,8 @@ public:
     static int GetMode(int &mode); // прочитать текущий режим работы
     static int WriteTimeMNK(uint32_t *Time,  int TimeSize);
     static int GetTimeMNK(uint &Time);
+    static int WriteBd(char BdNum, void *BdPtr, int BdPtrSize);
+    static int WriteCom(char ComNum);
 
 private:
 };
