@@ -54,7 +54,6 @@ CorDialog::~CorDialog()
 
 void CorDialog::SetupUI()
 {
-    QWidget *cp2 = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     ETableView *tv = new ETableView;

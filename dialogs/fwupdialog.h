@@ -1,6 +1,8 @@
 #ifndef FWUPDIALOG_H
 #define FWUPDIALOG_H
 
+#define MAXSIZE 2000000
+
 #include <QDialog>
 
 class fwupdialog : public QDialog
@@ -50,7 +52,8 @@ public:
       DataRecHeader	void_recHeader;	// заголовок пустой записи
     }File_struct;
 
-    QByteArray BaForSend;
+    QByteArray *BaForSend;
+    int MainSize;
 
 signals:
 

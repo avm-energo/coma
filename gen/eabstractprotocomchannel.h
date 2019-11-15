@@ -21,7 +21,7 @@
 
 #define CN_TIMEOUT  2000 // таймаут по USB в мс
 #define CN_OSCT     1000 // таймаут посылки запроса нестёртых осциллограмм
-#define CN_MAXFILESIZE  30000 // максимальный размер выходного файла
+#define CN_MAXFILESIZE  300000 // максимальный размер выходного файла
 #define CN_MAINLOOP_DELAY   100 // 100 ms main loop sleep
 
 // Обмен с модулями
