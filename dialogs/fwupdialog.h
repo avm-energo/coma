@@ -44,6 +44,7 @@ public:
       QByteArray Data;
     }DataRecF;
 
+    #pragma pack(push, 1)
     typedef struct
     {
       FileHeader	File_xxx_header;	// Заголовок файла (Прил. 1)
@@ -51,6 +52,7 @@ public:
       DataRecF		File;		   	// Файл ВПО в формате BIN
       DataRecHeader	void_recHeader;	// заголовок пустой записи
     }File_struct;
+    #pragma pack(pop)
 
     QByteArray *BaForSend;
     int MainSize;
@@ -59,6 +61,7 @@ signals:
 
 public slots:
     int LoadFW();
+    void RunSoft();
 
 };
 

@@ -54,6 +54,15 @@ void fwupdialog::SetupUI()
 
     glyout->addWidget(pb, 1,1,1,1);
 
+    pb = new QPushButton("Перейти на новое ПО");
+    #if PROGSIZE != PROGSIZE_EMUL
+        connect(pb,SIGNAL(clicked()),this,SLOT(RunSoft()));
+    #endif
+        if (StdFunc::IsInEmulateMode())
+            pb->setEnabled(false);
+
+        glyout->addWidget(pb, 2,1,1,1);
+
     //hlyout->addWidget(glyout,Qt::AlignTop);
     lyout->addLayout(glyout,Qt::AlignTop);
     lyout->addWidget(tv, 89);
@@ -88,20 +97,35 @@ int fwupdialog::LoadFW()
 
 }
 
+void fwupdialog::RunSoft()
+{
+    int res = Commands::RunVPO();
+    if (res != Files::ER_NOERROR)
+    {
+        WARNMSG("Ошибка перехода на новое ПО");
+    }
+    else
+    {
+        EMessageBox::information(this, "Успешно", "Переход на новое ПО выполнен успешно");
+    }
+}
+
 int fwupdialog::ParseHexToS2(QByteArray ba)
 {
 
     File_struct* PV_file = new File_struct;
+
     //quint32 crc=0xFFFFFFFF;
-    quint32 tmpi = 0;
+    //quint32 tmpi = 0;
     //void *Rptr = static_cast<void *>(&PV_file.Type);
     //tmpi = sizeof(PV_file.Type)+sizeof(PV_file.File.FileDatHeader);
     QVector<S2::DataRec> S2DR;
+    uint usize;
     int i, j = 0, k, h, p, size, copysize, iVal;
     QString str,st;
     QStringList sl;
     bool ok = false;
-    QByteArray* ForProcess = new QByteArray;
+    //QByteArray* ForProcess = new QByteArray;
     MainSize = 0;
     QString binnumber, process;
     char byte = '\0';
@@ -141,11 +165,12 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
                if(st == "00")
                {
                    MainSize+=size;
-                   while(size)
-                   {
+                   for(j=0; j<size; j=j+2)
+                   {//while(size)
+
                        binnumber.clear();
                        process.clear();
-                       iVal = QString("%1%2").arg(str.at(6+size)).arg(str.at(7+size)).toInt(&ok, 16);
+                       iVal = QString("%1%2").arg(str.at(8+j)).arg(str.at(9+j)).toInt(&ok, 16); //size
                        binnumber = st.setNum(iVal, 2);//.arg(iVal, 8, QChar('0'));  //st.setNum(iVal, 2).
 
                        byte = '\0';
@@ -173,16 +198,16 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
                        }
 
                      BaForSend->append(byte);
-                     size = size-2;
+                     //size = size-2;
                    }
 \
                    st = QString("%1%2").arg(str.at(14)).arg(str.at(15));
 
-                   while(copysize)
+                   for(j=0; j<copysize; j=j+2)
                    {
                        binnumber.clear();
                        process.clear();
-                       iVal = QString("%1%2").arg(str.at(14+copysize)).arg(str.at(15+copysize)).toInt(&ok, 16);
+                       iVal = QString("%1%2").arg(str.at(16+j)).arg(str.at(17+j)).toInt(&ok, 16);
                        binnumber = st.setNum(iVal, 2);//.arg(iVal, 8, QChar('0'));  //st.setNum(iVal, 2).
 
                        byte = '\0';
@@ -210,7 +235,7 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
                        }
 
                      BaForSend->append(byte);
-                     copysize = copysize-2;
+                     //copysize = copysize-2;
                    }
                }
             }
@@ -278,23 +303,33 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
 
     }
 
+
     BaForSend->resize(MainSize);
+
+    PV_file->File.Data.clear();
+    PV_file->File.Data.resize(MainSize-8);
 
     PV_file->Type.TypeHeader.id = 8000;
     PV_file->Type.TypeHeader.NumByte = 8;
     memcpy(&PV_file->Type.TypeTheData, &BaForSend->data()[0], 4);
     memcpy(&PV_file->Type.VerPO, &BaForSend->data()[4], 4);
 
+    st.clear();
+    st.append("Ver");
+    for(i=0; i<4; i++)
+    st.append("."+QString::number(PV_file->Type.VerPO[i]));
+
     PV_file->File.FileDatHeader.id = 8001;
-    PV_file->File.FileDatHeader.NumByte = (BaForSend->size()+16);
+    usize = (MainSize-8);
+    PV_file->File.FileDatHeader.NumByte = usize;
     //PV_file->File.Data = &BaForSend->data()[8];
-    memcpy(&PV_file->File.Data, &BaForSend->data()[8], (BaForSend->size()-8));
+    memcpy(&PV_file->File.Data.data()[0], &BaForSend->data()[8], usize);
 
     PV_file->void_recHeader.id = 0xFFFFFFFF;
     PV_file->void_recHeader.NumByte = 0;
 
     S2DR.append({PV_file->Type.TypeHeader.id, PV_file->Type.TypeHeader.NumByte, &PV_file->Type.TypeTheData});
-    S2DR.append({PV_file->File.FileDatHeader.id, PV_file->File.FileDatHeader.NumByte,  PV_file->File.Data.data_ptr()});  //BaForSend->data_ptr()
+    S2DR.append({PV_file->File.FileDatHeader.id, PV_file->File.FileDatHeader.NumByte,  &PV_file->File.Data.data()[0]});  //BaForSend->data_ptr()
     S2DR.append({PV_file->void_recHeader.id, PV_file->void_recHeader.NumByte, nullptr});
 
     /*ForProcess->clear();
@@ -307,12 +342,12 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
     memcpy(&BaForSend->data()[0], &ForProcess->data()[0], (BaForSend->size()+16));*/
 
     #if PROGSIZE != PROGSIZE_EMUL
-    if (Commands::WriteFile(&PV_file->Type.TypeHeader.id, 3, &S2DR) != Error::ER_NOERROR)
+    if (Commands::WriteFile(PV_file, 3, &S2DR) != Error::ER_NOERROR)
     {
         EMessageBox::information(this, "Ошибка", "Ошибка записи в модуль!");
         return Error::ER_GENERALERROR;
     }
-    EMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
+    EMessageBox::information(this, "Успешно", "Загрузка ПО версии "+st+" прошла успешно!");
     return Error::ER_NOERROR;
     #endif
 

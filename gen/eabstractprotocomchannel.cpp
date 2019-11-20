@@ -221,6 +221,15 @@ void EAbstractProtocomChannel::InitiateSend()
         break;
     }
 
+    case CN_VPO:
+    {
+        WriteData.append(CN_MS);
+        WriteData.append(cmd);
+        AppendSize(WriteData, 0);
+        WriteDataToPort(WriteData);
+        break;
+    }
+
     default:
     {
         Finish(CN_UNKNOWNCMDERROR);
@@ -277,6 +286,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             case CN_WTime:
             case CN_WBd:
             case CN_WCom:
+            case CN_VPO:
             {
                 if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
                 {

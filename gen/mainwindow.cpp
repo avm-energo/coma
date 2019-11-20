@@ -742,9 +742,19 @@ void MainWindow::Stage2()
 void MainWindow::UpdateHthWidget()
 {
     ModuleBSI::Bsi bsi = ModuleBSI::GetBsi();
+
+    QLabel *lbl = this->findChild<QLabel *>("hth0");
+    if (lbl == nullptr)
+        return;
+
+    if(bsi.Hth)
+    lbl->setStyleSheet("QLabel {background-color: rgba(255,10,10,255); color: rgba(255,255,255,255);}");
+    else
+    lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
+
     for (int i = 0; i < MAXERRORFLAGNUM; i++)
     {
-        QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
+        QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i+1));
         if (lbl == nullptr)
             return;
         quint32 tmpui = (0x00000001 << i) & bsi.Hth;
@@ -753,6 +763,7 @@ void MainWindow::UpdateHthWidget()
         else
             lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
     }
+
 }
 #endif
 

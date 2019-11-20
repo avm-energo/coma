@@ -331,7 +331,10 @@ void Coma::Stage3()
         MainTW->addTab(new TuneDialogA1DN, "Настройка своего ДН");
         MainTW->addTab(new A1Dialog, "Поверка внешнего ДН/ТН");
     }
+
+    if (MTypeB == 0xA2) // диапазон модулей АВ-ТУК
     MainTW->addTab(CorD, "Коррекция");
+
     FwUpD = new fwupdialog;
     MainTW->addTab(OscD, "Осциллограммы");
     if (SwjD != nullptr)

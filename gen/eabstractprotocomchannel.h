@@ -19,7 +19,7 @@
 
 // Канал связи с модулем
 
-#define CN_TIMEOUT  2000 // таймаут по USB в мс
+#define CN_TIMEOUT  4000 // таймаут по USB в мс
 #define CN_OSCT     1000 // таймаут посылки запроса нестёртых осциллограмм
 #define CN_MAXFILESIZE  300000 // максимальный размер выходного файла
 #define CN_MAINLOOP_DELAY   100 // 100 ms main loop sleep
@@ -43,6 +43,7 @@
 #define CN_WBc      0x33 // посылка блока выходных состояний
 #define CN_WBd      0x34 // посылка блока данных
 #define CN_WCom     0x35 // посылка команды
+#define	CN_VPO		0x40 // переход на новое ПО
 #define CN_SMode    0x43 // задание текущего режима работы
 #define CN_NVar     0x44 // задание варианта использования
 #define CN_Ert      0x45 // стирание технологического блока

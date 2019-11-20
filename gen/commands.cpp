@@ -277,3 +277,11 @@ int Commands::WriteCom(char ComNum)
     return 0;
 #endif
 }
+
+int Commands::RunVPO()
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    cn->Send(CN_VPO);
+    return cn->result;
+#endif
+}
