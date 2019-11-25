@@ -2,13 +2,18 @@
 #define CHECK_H
 
 #include <QWidget>
+#include <QDialog>
+#include "eabstractcheckdialog.h"
 
 #define BD_COMMON   0
 #define BD_MEZONIN  100
 
 class Check
 {
+
 public:
+    // explicit Check();
+    //~Check();
 
     struct Bd0
     {
@@ -21,6 +26,7 @@ public:
     Check();
     QWidget *Bd0W(QWidget *parent);
     void FillBd0(QWidget *parent);
+
 };
 
 #endif // CHECK_H

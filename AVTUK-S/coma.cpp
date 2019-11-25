@@ -32,6 +32,7 @@
 #include "../check/checkdialog21.h"
 #include "../check/checkdialog22.h"
 #include "../check/checkdialog31.h"
+#include "../check/checkdialog35.h"
 #include "../check/checkdialog80.h"
 #include "../check/checkdialog84.h"
 #include "../check/checkdialog85.h"
@@ -380,6 +381,7 @@ void Coma::PrepareDialogs()
     case Config::MTB_35:
     {
         ConfB = new ConfDialog35(S2Config, true);
+        CheckB = new CheckDialog35(BoardTypes::BT_BASE);
         break;
     }
     case Config::MTB_80:

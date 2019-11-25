@@ -19,6 +19,7 @@
 #include "../gen/stdfunc.h"
 #include "../gen/error.h"
 #include "../gen/colors.h"
+#include "../gen/files.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -135,6 +136,24 @@ QWidget *EAbstractCheckDialog::BottomUI()
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
+    pb = new QPushButton("Начать тестирование");
+#if PROGSIZE != PROGSIZE_EMUL
+    connect(pb,SIGNAL(clicked()),this,SLOT(StartTest()));
+#endif
+    if (StdFunc::IsInEmulateMode())
+        pb->setEnabled(false);
+
+    lyout->addWidget(pb);
+
+    pb = new QPushButton("Завершить тестирование");
+    #if PROGSIZE != PROGSIZE_EMUL
+        connect(pb,SIGNAL(clicked()),this,SLOT(StopTest()));
+    #endif
+        if (StdFunc::IsInEmulateMode())
+            pb->setEnabled(false);
+
+    lyout->addWidget(pb);
+    //TestCom
     w->setLayout(lyout);
     return w;
 }
@@ -294,3 +313,32 @@ void EAbstractCheckDialog::SetTimerPeriod()
     if (TimerIsActive)
         timer->start();
 }
+
+void EAbstractCheckDialog::StartTest()
+{
+    int res = Commands::TestCom(1);
+    if (res != Error::ER_NOERROR)
+    {
+        EMessageBox::information(this, "Ошибка", "Ошибка запуска тестирования");
+    }
+    else
+    {
+        EMessageBox::information(this, "Успешно", "Идёт тестирование");
+    }
+
+}
+
+void EAbstractCheckDialog::StopTest()
+{
+    int res = Commands::TestCom(0);
+    if (res != Error::ER_NOERROR)
+    {
+        EMessageBox::information(this, "Ошибка","Ошибка остановки тестирования");
+    }
+    else
+    {
+        EMessageBox::information(this, "Успешно", "Тестирование завершено");
+    }
+
+}
+

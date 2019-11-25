@@ -270,11 +270,7 @@ int Commands::WriteCom(char ComNum)
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_WCom, ComNum);
     return cn->result;
-#else
-    Q_UNUSED(BdNum);
-    Q_UNUSED(BdPtr);
-    Q_UNUSED(BdPtrSize);
-    return 0;
+
 #endif
 }
 
@@ -283,5 +279,14 @@ int Commands::RunVPO()
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_VPO);
     return cn->result;
+#endif
+}
+
+int Commands::TestCom(char OnOff)
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    cn->Send(CN_STest, OnOff);
+    return cn->result;
+
 #endif
 }

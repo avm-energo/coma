@@ -55,6 +55,7 @@ public:
     static int WriteBd(char BdNum, void *BdPtr, int BdPtrSize);
     static int WriteCom(char ComNum);
     static int RunVPO();
+    static int TestCom(char OnOff);
 
 private:
 };

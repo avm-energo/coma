@@ -123,7 +123,9 @@ SOURCES += \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp \
-    ../dialogs/cordialog.cpp
+    ../dialogs/cordialog.cpp \
+    ../check/checkdialog35.cpp \
+    ../check/check35.cpp
 
 HEADERS  += \
     coma.h \
@@ -226,7 +228,9 @@ HEADERS  += \
     ../widgets/signalchoosewidget.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
-    ../dialogs/cordialog.h
+    ../dialogs/cordialog.h \
+    ../check/checkdialog35.h \
+    ../check/check35.h
 
 INCLUDEPATH += $$PWD/../../includes
 
