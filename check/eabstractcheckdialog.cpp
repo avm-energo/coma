@@ -91,6 +91,7 @@ void EAbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool tox
 QWidget *EAbstractCheckDialog::BottomUI()
 {
     QWidget *w = new QWidget;
+    QGridLayout *glyout = new QGridLayout;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QLabel *lbl = new QLabel("Период обновления данных измерения, сек:");
@@ -120,7 +121,7 @@ QWidget *EAbstractCheckDialog::BottomUI()
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
-    lyout->addWidget(pb);
+    glyout->addWidget(pb,1,1,1,1);
     pb = new QPushButton("Запустить чтение сигналов в файл");
     pb->setObjectName("pbfilemeasurements");
 #if PROGSIZE != PROGSIZE_EMUL
@@ -128,32 +129,32 @@ QWidget *EAbstractCheckDialog::BottomUI()
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
-    lyout->addWidget(pb);
+    glyout->addWidget(pb,1,2,1,1);
     pb = new QPushButton("Остановить чтение сигналов");
 #if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(StopAnalogMeasurements()));
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
-    lyout->addWidget(pb);
-    pb = new QPushButton("Начать тестирование");
+    glyout->addWidget(pb,1,3,1,1);
+    pb = new QPushButton("Начать тестирование мезонина");
 #if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(StartTest()));
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 
-    lyout->addWidget(pb);
+    glyout->addWidget(pb,2,1,1,1);
 
-    pb = new QPushButton("Завершить тестирование");
+    pb = new QPushButton("Завершить тестирование мезонина");
     #if PROGSIZE != PROGSIZE_EMUL
         connect(pb,SIGNAL(clicked()),this,SLOT(StopTest()));
     #endif
         if (StdFunc::IsInEmulateMode())
             pb->setEnabled(false);
 
-    lyout->addWidget(pb);
-    //TestCom
+    glyout->addWidget(pb,2,3,1,1);
+    lyout->addLayout(glyout);
     w->setLayout(lyout);
     return w;
 }
