@@ -51,6 +51,8 @@ public:
         quint32 Trele_pred;
         quint32 Trele_alarm;
         float Unom_1;           //номинальное первичное напряжение первой тройки
+        float Tg_pasp[3];       //паспортные значения
+        float C_pasp[3];
 
     } Bci;
 

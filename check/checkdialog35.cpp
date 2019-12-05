@@ -16,6 +16,7 @@ CheckDialog35::CheckDialog35(BoardTypes board, QWidget *parent) : EAbstractCheck
     Ch = new Check;
 //    BdNum = 2; // количество блоков данных 1
     BdUINum = 1; // количество вкладок - 1
+    SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
     QStringList sl = QStringList() << "Общ";
     SetupUI(sl);
 

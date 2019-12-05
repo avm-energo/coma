@@ -45,10 +45,12 @@ void ConfDialog84::Fill()
 
     for (i = 0; i < 3; i++)
     {
-      WDFunc::SetSPBData(this, "Imax."+QString::number(i), C84->Bci_block.Imax[i]);
-      WDFunc::SetSPBData(this, "C_init."+QString::number(i), C84->Bci_block.C_init[i]);
-      WDFunc::SetSPBData(this, "Tg_init."+QString::number(i), C84->Bci_block.Tg_init[i]);
-      WDFunc::SetSPBData(this, "corTg."+QString::number(i), C84->Bci_block.corTg[i]);
+        //WDFunc::SetSPBData(this, "Imax."+QString::number(i), C84->Bci_block.Imax[i]);
+        //WDFunc::SetSPBData(this, "C_init."+QString::number(i), C84->Bci_block.C_init[i]);
+        //WDFunc::SetSPBData(this, "Tg_init."+QString::number(i), C84->Bci_block.Tg_init[i]);
+        //WDFunc::SetSPBData(this, "corTg."+QString::number(i), C84->Bci_block.corTg[i]);
+          WDFunc::SetSPBData(this, "Tg_pasp."+QString::number(i), C84->Bci_block.Tg_pasp[i]);
+          WDFunc::SetSPBData(this, "C_pasp."+QString::number(i), C84->Bci_block.C_pasp[i]);
     }
 
     WDFunc::SetSPBData(this, "dС_pred", C84->Bci_block.dC_pred);
@@ -73,11 +75,11 @@ void ConfDialog84::Fill()
 
         for (i = 0; i < 4; i++)
         {
-         WDFunc::SetSPBData(this, "IP"+QString::number(i), C84->Com_param.IP[i]);
-         WDFunc::SetSPBData(this, "Mask"+QString::number(i), C84->Com_param.Mask[i]);
-         WDFunc::SetSPBData(this, "GateWay"+QString::number(i), C84->Com_param.GateWay[i]);
-         WDFunc::SetSPBData(this, "Port"+QString::number(i), C84->Com_param.Port[i]);
-         WDFunc::SetSPBData(this, "SNTP"+QString::number(i), C84->Com_param.SNTP[i]);
+             WDFunc::SetSPBData(this, "IP"+QString::number(i), C84->Com_param.IP[i]);
+             WDFunc::SetSPBData(this, "Mask"+QString::number(i), C84->Com_param.Mask[i]);
+             WDFunc::SetSPBData(this, "GateWay"+QString::number(i), C84->Com_param.GateWay[i]);
+             WDFunc::SetSPBData(this, "Port"+QString::number(i), C84->Com_param.Port[i]);
+             WDFunc::SetSPBData(this, "SNTP"+QString::number(i), C84->Com_param.SNTP[i]);
         }
 
         WDFunc::SetSPBData(this, "Baud", C84->Com_param.baud);
@@ -104,10 +106,12 @@ void ConfDialog84::FillBack()
 
     for (i = 0; i < 3; i++)
     {
-      WDFunc::SPBData(this, "Imax."+QString::number(i), C84->Bci_block.Imax[i]);
-      WDFunc::SPBData(this, "C_init."+QString::number(i), C84->Bci_block.C_init[i]);
-      WDFunc::SPBData(this, "Tg_init."+QString::number(i), C84->Bci_block.Tg_init[i]);
-      WDFunc::SPBData(this, "corTg."+QString::number(i), C84->Bci_block.corTg[i]);
+        //WDFunc::SPBData(this, "Imax."+QString::number(i), C84->Bci_block.Imax[i]);
+        //WDFunc::SPBData(this, "C_init."+QString::number(i), C84->Bci_block.C_init[i]);
+        //WDFunc::SPBData(this, "Tg_init."+QString::number(i), C84->Bci_block.Tg_init[i]);
+        //WDFunc::SPBData(this, "corTg."+QString::number(i), C84->Bci_block.corTg[i]);
+        WDFunc::SPBData(this, "Tg_pasp."+QString::number(i), C84->Bci_block.Tg_pasp[i]);
+        WDFunc::SPBData(this, "C_pasp."+QString::number(i), C84->Bci_block.C_pasp[i]);
     }
 
     WDFunc::SPBData(this, "dС_pred", C84->Bci_block.dC_pred);
@@ -195,39 +199,41 @@ void ConfDialog84::SetupUI()
     glyout->addWidget(WDFunc::NewSPB(this, "Imin", 0, 10000, 1, paramcolor), row,2,1,3);
     row++;
 
-    for (int i = 0; i < 3; i++)
+    /*for(int i = 0; i < 3; i++)
     {
      glyout->addWidget(WDFunc::NewLBL(this, phase[i]), row,2+i,1,1,Qt::AlignLeft);
     }
-    row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Максимальные действующие значение токов вводов, мА:"), row,1,1,1);
+    row++;*/
+    glyout->addWidget(WDFunc::NewLBL(this, "Паспортные значения ёмкости вводов, пФ:"), row,1,1,1);
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "Imax."+QString::number(i), 0, 10000, 0, paramcolor), row,2+i,1,1);
+     glyout->addWidget(WDFunc::NewLBL(this, phase[i]), row,2+i,1,1,Qt::AlignLeft);
+     glyout->addWidget(WDFunc::NewSPB(this, "C_pasp."+QString::number(i), 0, 10000, 0, paramcolor), row,2+i,1,1,Qt::AlignRight);
     }
     row++;
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения емкостей вводов:"), row,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Паспортные значения tg вводов, %:"), row,1,1,1);
 
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "C_init."+QString::number(i), 0, 10000, 1, paramcolor), row,2+i,1,1);
+     glyout->addWidget(WDFunc::NewLBL(this, phase[i]), row,2+i,1,1,Qt::AlignLeft);
+     glyout->addWidget(WDFunc::NewSPB(this, "Tg_pasp."+QString::number(i), 0, 10000, 0, paramcolor), row,2+i,1,1,Qt::AlignRight);
     }
     row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения tg δ вводов:"), row,1,1,1);
+    /*glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения tg δ вводов, %:"), row,1,1,1);
 
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "Tg_init."+QString::number(i), -10, 10, 2, paramcolor), row,2+i,1,1);
+     glyout->addWidget(WDFunc::NewSPB(this, "Tg_init."+QString::number(i), 0, 10000, 1, paramcolor), row,2+i,1,1);
     }
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Коррекция  tg δ вводов:"), row,1,1,1);
 
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "corTg."+QString::number(i), -10, 10, 2, paramcolor), row, 2+i, 1, 1);
+     glyout->addWidget(WDFunc::NewSPB(this, "corTg."+QString::number(i), 0, 10000, 1, paramcolor), row, 2+i, 1, 1);
     }
-    row++;
+    row++; */
     glyout->addWidget(WDFunc::NewLBL(this, "Гистерезис на отключение сигнализации по dC, % от уставки:"), row,1,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "GdС", 0, 10000, 1, paramcolor), row,2,1,3);
 

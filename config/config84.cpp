@@ -45,6 +45,8 @@ Config84::Config84(QVector<S2::DataRec> &config)
         config.append({StartInIndex+24, sizeof(Bci_block.Tevent_alarm), &Bci_block.Tevent_alarm});
         config.append({StartInIndex+25, sizeof(Bci_block.Trele_pred), &Bci_block.Trele_pred});
         config.append({StartInIndex+26, sizeof(Bci_block.Trele_alarm), &Bci_block.Trele_alarm});
+        config.append({StartInIndex+27, sizeof(Bci_block.Tg_pasp), &Bci_block.Tg_pasp});
+        config.append({StartInIndex+28, sizeof(Bci_block.C_pasp), &Bci_block.C_pasp});
         config.append({1050, sizeof(Bci_block.Unom_1), &Bci_block.Unom_1});
 
 
