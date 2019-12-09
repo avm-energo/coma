@@ -2,6 +2,7 @@
 #include <QFileDialog>
 #include <QDateTime>
 #include "checkdialog35.h"
+#include "check35.h"
 #include "../widgets/emessagebox.h"
 #include "../gen/error.h"
 #include "../widgets/wd_func.h"
@@ -12,12 +13,12 @@
 CheckDialog35::CheckDialog35(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    //Ch35 = new Check35;
+    Ch35 = new Check35();
     Ch = new Check;
 //    BdNum = 2; // количество блоков данных 1
-    BdUINum = 1; // количество вкладок - 1
+    BdUINum = 2; // количество вкладок - 1
     SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
-    QStringList sl = QStringList() << "Общ";
+    QStringList sl = QStringList() << "Общ" << "Проверка выходных реле";
     SetupUI(sl);
 
 }
@@ -28,6 +29,8 @@ QWidget *CheckDialog35::BdUI(int bdnum)
     {
     case BD_COMMON:
         return Ch->Bd0W(this);
+    case 1:
+        return Ch35->Bd1W(this);
     default:
         return new QWidget;
     }

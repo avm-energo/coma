@@ -17,7 +17,7 @@ signals:
 public slots:
 
 private:
-    //Check35 *Ch35;
+    Check35 *Ch35;
     Check *Ch;
 
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля

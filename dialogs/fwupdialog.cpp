@@ -316,7 +316,7 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
 
     st.clear();
     st.append("Ver");
-    for(i=0; i<4; i++)
+    for(i=3; i>=0; i--)
     st.append("."+QString::number(PV_file->Type.VerPO[i]));
 
     PV_file->File.FileDatHeader.id = 8001;
