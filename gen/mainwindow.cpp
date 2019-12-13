@@ -149,6 +149,7 @@ QWidget *MainWindow::HthWidget()
     return w;
 }
 
+
 QWidget *MainWindow::Least()
 {
     QWidget *w = new QWidget;

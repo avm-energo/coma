@@ -156,6 +156,28 @@ void CorDialog::SetupUI()
 
     glyout->addWidget(pb, row,1,1,5);
 
+    row++;
+
+    pb = new QPushButton("Задать коррекцию");
+    #if PROGSIZE != PROGSIZE_EMUL
+        connect(pb,SIGNAL(clicked()),this,SLOT(SetCor()));
+    #endif
+        if (StdFunc::IsInEmulateMode())
+            pb->setEnabled(false);
+
+    glyout->addWidget(pb, row,1,1,5);
+
+    row++;
+
+    pb = new QPushButton("Сбросить коррекцию");
+    #if PROGSIZE != PROGSIZE_EMUL
+        connect(pb,SIGNAL(clicked()),this,SLOT(ResetCor()));
+    #endif
+        if (StdFunc::IsInEmulateMode())
+            pb->setEnabled(false);
+
+    glyout->addWidget(pb, row,1,1,5);
+
     //hlyout->addWidget(glyout,Qt::AlignTop);
     lyout->addLayout(glyout,Qt::AlignTop);
     lyout->addWidget(tv, 89);
@@ -241,6 +263,24 @@ void CorDialog::WriteCorTg()
 void CorDialog::WriteCorNotBalance()
 {
     if(Commands::WriteCom(3) == Error::ER_NOERROR)
+    EMessageBox::information(this, "INFO", "Записано успешно");
+    else
+    EMessageBox::information(this, "INFO", "Ошибка");
+
+}
+
+void CorDialog::SetCor()
+{
+    if(Commands::WriteCom(4) == Error::ER_NOERROR)
+    EMessageBox::information(this, "INFO", "Записано успешно");
+    else
+    EMessageBox::information(this, "INFO", "Ошибка");
+
+}
+
+void CorDialog::ResetCor()
+{
+    if(Commands::WriteCom(5) == Error::ER_NOERROR)
     EMessageBox::information(this, "INFO", "Записано успешно");
     else
     EMessageBox::information(this, "INFO", "Ошибка");

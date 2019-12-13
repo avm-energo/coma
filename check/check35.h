@@ -20,10 +20,18 @@ public:
     //void FillBd3(QWidget *parent);
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
     QWidget *CustomTab();
+    quint8 rele1, rele2, rele3, rele4;
+    QWidget *Fwidjet;
 
 signals:
 
 public slots:
+    void Rele1();
+    void Rele2();
+    void Rele3();
+    void Rele4();
+    void Switch_off();
+
 
 private slots:
 

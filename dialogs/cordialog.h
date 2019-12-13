@@ -43,6 +43,8 @@ public slots:
     void WriteCorNotBalance();
     void WriteCorCapacity();
     void WriteCorTg();
+    void SetCor();
+    void ResetCor();
 
 private slots:
 #if PROGSIZE != PROGSIZE_EMUL
