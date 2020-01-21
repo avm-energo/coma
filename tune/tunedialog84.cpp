@@ -788,7 +788,8 @@ int TuneDialog84::Start7_3_2()
    FillBac(0);
 
     for(i = 0; i<3; i++)
-    C84->Bci_block.Imax[i] = 600;
+    C84->Bci_block.C_pasp[i] = 15036;
+    //C84->Bci_block.Imax[i] = 600;
 
     if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
     return Error::ER_GENERALERROR;
@@ -849,7 +850,8 @@ int TuneDialog84::Start7_3_4_6()
 {
     int i;
     for(i = 0; i<3; i++)
-    C84->Bci_block.Imax[i] = 400;
+    C84->Bci_block.C_pasp[i] = 10024;
+    //C84->Bci_block.Imax[i] = 400;
 
     if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
     return Error::ER_GENERALERROR;
@@ -870,7 +872,8 @@ int TuneDialog84::Start7_3_4_11()
 {
     int i;
     for(i = 0; i<3; i++)
-    C84->Bci_block.Imax[i] = 200;
+    C84->Bci_block.C_pasp[i] = 5012;
+    //C84->Bci_block.Imax[i] = 200;
 
     if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
     return Error::ER_GENERALERROR;
@@ -891,7 +894,8 @@ int TuneDialog84::Start7_3_4_13()
 {
     int i;
     for(i = 0; i<3; i++)
-    C84->Bci_block.Imax[i] = 100;
+    C84->Bci_block.C_pasp[i] = 2506;
+    //C84->Bci_block.Imax[i] = 100;
 
     if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
     return Error::ER_GENERALERROR;
@@ -912,7 +916,8 @@ int TuneDialog84::Start7_3_4_15()
 {
     int i;
     for(i = 0; i<3; i++)
-    C84->Bci_block.Imax[i] = 50;
+    C84->Bci_block.C_pasp[i] = 1253;
+    //C84->Bci_block.Imax[i] = 50;
 
     if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
     return Error::ER_GENERALERROR;
@@ -933,7 +938,8 @@ int TuneDialog84::Start7_3_4_17()
 {
     int i;
     for(i = 0; i<3; i++)
-    C84->Bci_block.Imax[i] = 25;
+    C84->Bci_block.C_pasp[i] = 626;
+    //C84->Bci_block.Imax[i] = 25;
 
     if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
     return Error::ER_GENERALERROR;
@@ -1559,6 +1565,13 @@ int TuneDialog84::ReadAnalogMeasurements()
     float sumI[3];
     float sumPHI[6];
     float sumFreq = 0.0;
+
+    for(i = 0; i<3; i++)
+    {
+        sumU[i] = 0;
+        sumI[i] = 0;
+    }
+
     for(i = 0; i<N; i++)
     {
         // получение текущих аналоговых сигналов от модуля

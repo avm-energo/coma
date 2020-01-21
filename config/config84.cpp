@@ -95,6 +95,8 @@ void Config84::SetDefConf()
         Bci_block.C_init[i] = 2200;
         Bci_block.Tg_init[i] = 0;
         Bci_block.corTg[i] = 0;
+        Bci_block.Tg_pasp[i] = 0;
+        Bci_block.C_pasp[i] = 0;
     }
     if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     {
