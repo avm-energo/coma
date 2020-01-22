@@ -43,6 +43,8 @@ class TuneDialog84 : public EAbstractTuneDialog
 public:
     explicit TuneDialog84(QVector<S2::DataRec> &S2Config, QWidget *parent = nullptr);
     //~TuneDialog85();
+    int inc;
+    float samples[6];
 
 signals:
     void Send();
@@ -57,6 +59,7 @@ private:
     QDialog *ask;
     QLineEdit *ledit;
     QTimer *timer;
+
 
     enum TuneModes
     {

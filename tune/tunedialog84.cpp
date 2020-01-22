@@ -31,6 +31,7 @@
 TuneDialog84::TuneDialog84(QVector<S2::DataRec> &S2Config, QWidget *parent) : EAbstractTuneDialog(parent)
 {
     this->S2ConfigForTune = &S2Config;
+    int i;
 
     C84 = new Config84(*S2ConfigForTune);
     ReportModel = new QStandardItemModel;
@@ -38,10 +39,24 @@ TuneDialog84::TuneDialog84(QVector<S2::DataRec> &S2Config, QWidget *parent) : EA
     ledit = new QLineEdit;
     ask = new QDialog;
     TempCor = 0;
+    inc = 0;
 //    Ch80 = new Check80;
     SetBac(&Bac_block, BoardTypes::BT_MEZONIN, sizeof(Bac_block));
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
+
+    for (i=0; i<3; i++)
+    {
+        Bac_newblock.KmU[i] = 0;
+        Bac_newblock.KmI1[i] = 0;
+        Bac_newblock.KmI2[i] = 0;
+        Bac_newblock.KmI4[i] = 0;
+        Bac_newblock.KmI8[i] = 0;
+        Bac_newblock.KmI16[i] = 0;
+        Bac_newblock.KmI32[i] = 0;
+        Bac_newblock.DPsi[i] = 0;
+        Bac_newblock.DPsi[i+3] = 0;
+    }
 }
 
 void TuneDialog84::SetupUI()
@@ -1369,7 +1384,7 @@ void TuneDialog84::SaveValuesTemp20()
       PHIet[i]=tmps.toFloat();
     }
 
-    WDFunc::LEData(ask, "ValuetuneF"+QString::number(i), tmps);
+    WDFunc::LEData(ask, "ValuetuneF", tmps);
     FREQet=tmps.toFloat();
 
     ask->close();
@@ -1397,7 +1412,7 @@ void TuneDialog84::SaveValuesTempMinus20()
       PHIetMinus20[i]=tmps.toFloat();
     }
 
-    WDFunc::LEData(ask, "ValuetuneF"+QString::number(i), tmps);
+    WDFunc::LEData(ask, "ValuetuneF", tmps);
     FREQetMinus20=tmps.toFloat();
 
     ask->close();
@@ -1425,7 +1440,7 @@ void TuneDialog84::SaveValuesTemp60()
       PHIet60[i]=tmps.toFloat();
     }
 
-    WDFunc::LEData(ask, "ValuetuneF"+QString::number(i), tmps);
+    WDFunc::LEData(ask, "ValuetuneF", tmps);
     FREQet60=tmps.toFloat();
 
     ask->close();
@@ -1453,7 +1468,7 @@ int TuneDialog84::CalcTuneCoefs()
       PHIet[i]=tmps.toFloat();
     }
 
-    WDFunc::LEData(ask, "ValuetuneF"+QString::number(i), tmps);
+    WDFunc::LEData(ask, "ValuetuneF", tmps);
     FREQet=tmps.toFloat();
 
     ask->close();
@@ -1566,10 +1581,13 @@ int TuneDialog84::ReadAnalogMeasurements()
     float sumPHI[6];
     float sumFreq = 0.0;
 
+
     for(i = 0; i<3; i++)
     {
         sumU[i] = 0;
         sumI[i] = 0;
+        sumPHI[i] = 0;
+        sumPHI[i+3] = 0;
     }
 
     for(i = 0; i<N; i++)
@@ -1591,6 +1609,11 @@ int TuneDialog84::ReadAnalogMeasurements()
              for(j = 0; j<6; j++)
              {
                sumPHI[j] += Bda_in.phi_next_f[j];
+               if(j==4)
+               {
+                   samples[inc] = Bda_in.phi_next_f[j];
+                   inc++;
+               }
              }
 
              sumFreq += Bda_in.Frequency;
