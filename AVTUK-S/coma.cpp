@@ -441,6 +441,7 @@ void Coma::PrepareDialogs()
     case Config::MTM_35:
     {
         ConfM = new ConfDialog35(S2Config, false);
+        CheckM = new CheckDialog35(BoardTypes::BT_MEZONIN);
         break;
     }
     case Config::MTM_81:

@@ -114,7 +114,7 @@ void Check35::Rele1()
        {
         if(Commands::WriteCom(105) == Error::ER_NOERROR)   // включение
         {
-         WDFunc::SetLBLText(Bd1W(Fwidjet), "lbl1", "Замкнуто", true);
+         WDFunc::SetLBLText(Fwidjet, "lbl1", "Замкнуто", true);
          //EMessageBox::information(Fwidjet, "INFO", "Команда отправлена успешно");
          rele1 = 1;
         }
