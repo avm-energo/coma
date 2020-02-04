@@ -53,8 +53,12 @@ public:
 
 private:
 
-    ETableModel *TableModel;
+    ETableModel *TableSysModel;
+    ETableModel *TableWorkModel;
+    ETableModel *TableMeasModel;
     void UpdateSysModel();
+    void UpdateWorkModel();
+    void UpdateMeasModel();
 
     void SetupUI();
     void ProcessSWJournal(QByteArray &ba);

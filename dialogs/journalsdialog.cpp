@@ -29,14 +29,17 @@ void JournalDialog::SetupUI()
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     ETableView * tv = new ETableView;
-    TableModel = new ETableModel;
+    tv->setObjectName("work");
+    TableSysModel = new ETableModel;
+    TableWorkModel = new ETableModel;
+    TableMeasModel = new ETableModel;
 
     //int i;
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
     setStyleSheet(tmps);
     //QTabWidget *ConfTW = new QTabWidget;
     QTabWidget *work = new QTabWidget;
-    work->setObjectName("conftw1");
+    //work->setObjectName("conftw1");
     QString ConfTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLOR)+";}";
     work->tabBar()->setStyleSheet(ConfTWss);
 
@@ -60,13 +63,15 @@ void JournalDialog::SetupUI()
     work->setStyleSheet(ConfTWss);
 
     QTabWidget *system = new QTabWidget;
-    //system->setObjectName("conftw2");
+    //system->setObjectName("system");
     system->tabBar()->setStyleSheet(ConfTWss);
 
     hlyout = new QHBoxLayout;
     vlyout = new QVBoxLayout;
+
     tv = new ETableView;
-    tv->setObjectName("conftw2");
+    tv->setObjectName("system");
+
     pb = new QPushButton("Получить системный журнал");
     connect(pb,SIGNAL(clicked()),this,SLOT(GetSystemJour()));
     if (StdFunc::IsInEmulateMode())
@@ -84,11 +89,13 @@ void JournalDialog::SetupUI()
     system->setStyleSheet(ConfTWss);
 
     QTabWidget *measure = new QTabWidget;
-    measure->setObjectName("conftw3");
+    //measure->setObjectName("meas");
     measure->tabBar()->setStyleSheet(ConfTWss);
     hlyout = new QHBoxLayout;
     vlyout = new QVBoxLayout;
+
     tv = new ETableView;
+    tv->setObjectName("meas");
 
     pb = new QPushButton("Получить журнал измерений");
     connect(pb,SIGNAL(clicked()),this,SLOT(GetMeasJour()));
@@ -135,11 +142,21 @@ void JournalDialog::GetSystemJour()
 
 void JournalDialog::GetWorkJour()
 {
+    //char* num = new char;
+    //*num = 4;
+    char num = 5;
+
+    emit ReadJour(&num);
 
 }
 
 void JournalDialog::GetMeasJour()
 {
+    //char* num = new char;
+    //*num = 4;
+    char num = 6;
+
+    emit ReadJour(&num);
 
 }
 
@@ -184,11 +201,11 @@ void JournalDialog::FillSysJour(QVector<S2::DataRec>* File)
 
     memcpy(&JourSize, &(File->at(0).num_byte), 4);
 
-        TableModel->ClearModel();
-        TableModel->addColumn(" № ");
-        TableModel->addColumn("Описание события");
-        TableModel->addColumn("Дата/Время");
-        TableModel->addColumn("Тип события");
+        TableSysModel->ClearModel();
+        TableSysModel->addColumn(" № ");
+        TableSysModel->addColumn("Описание события");
+        TableSysModel->addColumn("Дата/Время");
+        TableSysModel->addColumn("Тип события");
 
         QApplication::setOverrideCursor(Qt::WaitCursor);
         QVector<QVariant> EventNum, Num, Time, Type;
@@ -283,7 +300,7 @@ void JournalDialog::FillSysJour(QVector<S2::DataRec>* File)
         lsl.append(Num);
         lsl.append(Time);
         lsl.append(Type);
-        TableModel->fillModel(lsl);
+        TableSysModel->fillModel(lsl);
         UpdateSysModel();
         QApplication::restoreOverrideCursor();
 
@@ -324,15 +341,13 @@ void JournalDialog::FillWorkJour(QVector<S2::DataRec>* File)
                                             << "Авария по приращению C ввода фазы B"
                                             << "Авария по приращению C ввода фазы C";
 
-
-
     memcpy(&JourSize, &(File->at(0).num_byte), 4);
 
-        TableModel->ClearModel();
-        TableModel->addColumn(" № ");
-        TableModel->addColumn("Описание события");
-        TableModel->addColumn("Дата/Время");
-        TableModel->addColumn("Тип события");
+        TableWorkModel->ClearModel();
+        TableWorkModel->addColumn(" № ");
+        TableWorkModel->addColumn("Описание события");
+        TableWorkModel->addColumn("Дата/Время");
+        TableWorkModel->addColumn("Тип события");
 
         QApplication::setOverrideCursor(Qt::WaitCursor);
         QVector<QVariant> EventNum, Num, Time, Type;
@@ -387,7 +402,114 @@ void JournalDialog::FillWorkJour(QVector<S2::DataRec>* File)
 
         }
 
-        for (int i = 0; i < (JourSize - SaveI); i+= RecordSize)
+        if(SaveI != 0)
+        {
+            for (int i = 0; i < (SaveI); i+= RecordSize)
+            {
+                mem = static_cast<char *>(File->at(0).thedata);
+                mem +=i;
+                memcpy(&System, mem, tmpt);
+
+                if(System.Time != 0xFFFFFFFFFFFFFFFF)
+                {
+                    memcpy(&N, &System.EvNum, sizeof(System.EvNum));
+                    N = N&0x00FFFFFF;
+
+                    if(N <= Discription.size())
+                    {
+                      Num << Discription.at(N);
+                    }
+                    else
+                    {
+                      Num << "Некорректный номер события";
+                    }
+
+                    Time << TimeFunc::UnixTime64ToString(System.Time);
+
+                    if(System.EvType)
+                    Type << "Пришло";
+                    else
+                    Type << "Ушло";
+
+                    ++counter;
+                    EventNum << counter;
+                }
+
+            }
+        }
+
+        lsl.append(EventNum);
+        lsl.append(Num);
+        lsl.append(Time);
+        lsl.append(Type);
+        TableWorkModel->fillModel(lsl);
+        UpdateSysModel();
+        QApplication::restoreOverrideCursor();
+
+}
+
+void JournalDialog::FillMeasJour(QVector<S2::DataRec>* File)
+{
+    QVector<QVector<QVariant> > lsl;
+    QByteArray OscInfo;
+    char *mem;
+    int N = 0;
+    int JourSize = 0; // размер считанного буфера с информацией
+    int RecordSize = sizeof(MeasureStruct);
+    SystemWorkStruct System;
+    size_t tmpt = static_cast<size_t>(RecordSize);
+    QStringList Discription = QStringList() << "Отсутствует сигнал напряжения фазы A"
+                                            << "Отсутствует сигнал напряжения фазы B"
+                                            << "Отсутствует сигнал напряжения фазы С"
+                                            << "Нет реактивного тока канала А (ток меньше 2мА)"
+                                            << "Нет реактивного тока канала B (ток меньше 2мА)"
+                                            << "Нет реактивного тока канала C (ток меньше 2мА)"
+                                            << "Не заданы начальные значения"
+                                            << "Низкое напряжение фазы A"
+                                            << "Низкое напряжение фазы B"
+                                            << "Низкое напряжение фазы C"
+                                            << "Сигнализация по приращению тангенса дельта ввода фазы А"
+                                            << "Сигнализация по приращению тангенса дельта ввода фазы B"
+                                            << "Сигнализация по приращению тангенса дельта ввода фазы C"
+                                            << "Авария по приращению тангенса дельта ввода фазы А"
+                                            << "Авария по приращению тангенса дельта ввода фазы B"
+                                            << "Авария по приращению тангенса дельта ввода фазы C"
+                                            << "Сигнализация по приращению C ввода фазы А"
+                                            << "Сигнализация по приращению C ввода фазы B"
+                                            << "Сигнализация по приращению C ввода фазы C"
+                                            << "Авария по приращению C ввода фазы А"
+                                            << "Авария по приращению C ввода фазы B"
+                                            << "Авария по приращению C ввода фазы C";
+
+    memcpy(&JourSize, &(File->at(0).num_byte), 4);
+
+        TableMeasModel->ClearModel();
+        TableMeasModel->addColumn(" № ");
+        TableMeasModel->addColumn("Описание события");
+        TableMeasModel->addColumn("Дата/Время");
+        TableMeasModel->addColumn("Тип события");
+
+        QApplication::setOverrideCursor(Qt::WaitCursor);
+        QVector<QVariant> EventNum, Num, Time, Type;
+        int counter = 0;
+
+        for(int i = 0; i < JourSize; i+= RecordSize)
+        {
+            mem = static_cast<char *>(File->at(0).thedata);
+            mem +=i;
+            memcpy(&System, mem, tmpt);
+
+            if(System.Time != 0xFFFFFFFFFFFFFFFF)
+            {
+                if(LTime > System.Time)
+                {
+                  LTime = System.Time;
+                  SaveI = i;
+                }
+            }
+        }
+
+        for (int i = SaveI; i < JourSize; i+= RecordSize)
         {
             mem = static_cast<char *>(File->at(0).thedata);
             mem +=i;
@@ -420,31 +542,98 @@ void JournalDialog::FillWorkJour(QVector<S2::DataRec>* File)
 
         }
 
+        if(SaveI != 0)
+        {
+            for (int i = 0; i < (SaveI); i+= RecordSize)
+            {
+                mem = static_cast<char *>(File->at(0).thedata);
+                mem +=i;
+                memcpy(&System, mem, tmpt);
+
+                if(System.Time != 0xFFFFFFFFFFFFFFFF)
+                {
+                    memcpy(&N, &System.EvNum, sizeof(System.EvNum));
+                    N = N&0x00FFFFFF;
+
+                    if(N <= Discription.size())
+                    {
+                      Num << Discription.at(N);
+                    }
+                    else
+                    {
+                      Num << "Некорректный номер события";
+                    }
+
+                    Time << TimeFunc::UnixTime64ToString(System.Time);
+
+                    if(System.EvType)
+                    Type << "Пришло";
+                    else
+                    Type << "Ушло";
+
+                    ++counter;
+                    EventNum << counter;
+                }
+
+            }
+        }
+
         lsl.append(EventNum);
         lsl.append(Num);
         lsl.append(Time);
         lsl.append(Type);
-        TableModel->fillModel(lsl);
+        TableMeasModel->fillModel(lsl);
         UpdateSysModel();
         QApplication::restoreOverrideCursor();
 
 }
 
-void JournalDialog::FillMeasJour(QVector<S2::DataRec>*)
-{
-
-}
-
 void JournalDialog::UpdateSysModel()
 {
-    ETableView *tv = this->findChild<ETableView *>("conftw2");
+    ETableView *tv = this->findChild<ETableView *>("system");
     if (tv == nullptr)
     {
         DBGMSG;
         return; // !!! системная проблема
     }
     QItemSelectionModel *m = tv->selectionModel();
-    tv->setModel(TableModel);
+    tv->setModel(TableSysModel);
+    delete m;
+    //GetOscPBDelegate *dg = new GetOscPBDelegate;
+    //connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(GetOsc(QModelIndex)));
+    //tv->setItemDelegateForColumn(4, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
+    tv->resizeRowsToContents();
+    tv->resizeColumnsToContents();
+}
+
+void JournalDialog::UpdateWorkModel()
+{
+    ETableView *tv = this->findChild<ETableView *>("work");
+    if (tv == nullptr)
+    {
+        DBGMSG;
+        return; // !!! системная проблема
+    }
+    QItemSelectionModel *m = tv->selectionModel();
+    tv->setModel(TableWorkModel);
+    delete m;
+    //GetOscPBDelegate *dg = new GetOscPBDelegate;
+    //connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(GetOsc(QModelIndex)));
+    //tv->setItemDelegateForColumn(4, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
+    tv->resizeRowsToContents();
+    tv->resizeColumnsToContents();
+}
+
+void JournalDialog::UpdateMeasModel()
+{
+    ETableView *tv = this->findChild<ETableView *>("meas");
+    if (tv == nullptr)
+    {
+        DBGMSG;
+        return; // !!! системная проблема
+    }
+    QItemSelectionModel *m = tv->selectionModel();
+    tv->setModel(TableMeasModel);
     delete m;
     //GetOscPBDelegate *dg = new GetOscPBDelegate;
     //connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(GetOsc(QModelIndex)));
