@@ -72,7 +72,7 @@ QWidget *Check_84::Bd1W(QWidget *parent)
                                           QString::number(i+9)+".Ёмкости вводов, пФ"),5,i,1,1);
         glyout->addWidget(WDFunc::NewLBL(parent, "Tg_d"+IndexStr),6,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+12), ValuesFormat, \
-                                          QString::number(i+12)+".Ёмкости вводов, пФ"),7,i,1,1);
+                                          QString::number(i+12)+".tg delta вводов, пФ"),7,i,1,1);
         glyout->addWidget(WDFunc::NewLBL(parent, "dCbush"+IndexStr),8,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+15), ValuesFormat, \
                                           QString::number(i+15)+".Изменение емкостей вводов, пФ"),9,i,1,1);
@@ -136,7 +136,7 @@ QWidget *Check_84::Bd2W(QWidget *parent)
                                       QString::number(26)+".Ток обратной последовательности"),3,2,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "Iunb"),4,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value27", ValuesFormat, \
-                                      QString::number(27)+".Ток обратной последовательности"),5,0,1,1);
+                                      QString::number(27)+".Действующее значение 1-й гармоники тока небаланса, мА"),5,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "Phy_unb"),4,1,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value28", ValuesFormat, \
                                       QString::number(28)+".Угол тока небаланса относительно тока ф.А, град."),5,1,1,1);
