@@ -594,14 +594,56 @@ void MainWindow::SetProgressBar2(int cursize)
 void MainWindow::ShowConnectDialog()
 {
     QByteArray ba;
-    int res;
+    int res, i;
     QDialog *dlg = new QDialog(this);
     QString Str;
+    //QStringList device = QStringList() << "KDV" << "2" << "1" << "2";
+    //QStringList inter = QStringList() << "ETH" << "MODBUS";
     QStringListModel *tmpmodel = new QStringListModel;
     dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setObjectName("connectdlg");
     QVBoxLayout *lyout = new QVBoxLayout;
+
+
+    /*tmpmodel->setStringList(device);
+    QComboBox *portscb = new QComboBox;
+    connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SDevice(QString)));
+    portscb->setModel(tmpmodel);
+    lyout->addWidget(portscb);
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QPushButton *pb = new QPushButton("Далее");
+    connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    hlyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
+    connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
+    hlyout->addWidget(pb);
+    lyout->addLayout(hlyout);
+    dlg->setLayout(lyout);
+    dlg->exec();
+
+    dlg = new QDialog(this);
+
+    tmpmodel = new QStringListModel;
+    tmpmodel->setStringList(inter);
+    portscb = new QComboBox;
+    lyout = new QVBoxLayout;
+    connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SaveInterface(QString)));
+    portscb->setModel(tmpmodel);
+    lyout->addWidget(portscb);
+    hlyout = new QHBoxLayout;
+    pb = new QPushButton("Далее");
+    connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    hlyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
+    connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
+    hlyout->addWidget(pb);
+    lyout->addLayout(hlyout);
+    dlg->setLayout(lyout);
+    dlg->exec();*/
+
 
     if(!HaveAlreadyRed)
     {
@@ -616,18 +658,34 @@ void MainWindow::ShowConnectDialog()
         Str = ba;
         sl.append(Str.split("\r\n"));
 
+        /*for(i=0; i<sl.size(); i++)
+        {
+          insl.clear();
+          insl.append(sl.at(i).split(" "));
+
+           if((insl.at(0) == SaveDevice) && (insl.at(1) == interface))
+           {
+             slfinal.append(sl.at(i));
+           }
+        }*/
+
         HaveAlreadyRed = 1;
 
     }
+
 
     if (sl.size() == 0)
     {
         lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
         Error::ShowErMsg(CN_NOPORTSERROR);
     }
+
+    //dlg = new QDialog(this);
+
+    //tmpmodel = new QStringListModel;
     tmpmodel->setStringList(sl);
     QComboBox *portscb = new QComboBox;
-    connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SaveIPString(QString)));
+    connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(ParseString(QString)));
     portscb->setModel(tmpmodel);
     lyout->addWidget(portscb);
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -787,12 +845,39 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
     QMainWindow::keyPressEvent(e);
 }
 
-void MainWindow::SaveIPString(QString IP)
+void MainWindow::ParseString(QString Str)
 { 
-   Disconnect();
-   FullName = IP;
-    IPtemp = IP.split(" ").last();
+    insl.clear();
+    insl.append(Str.split(" "));
+
+    if(insl.at(1) == "ETH")
+    {
+       Disconnect();
+       FullName = insl.at(0);
+       AdrBaseStation = insl.at(2).toUShort();
+       IPtemp = Str.split(" ").last();
+    }
+    else if(insl.at(1) == "MODBUS")
+    {
+
+    }
 }
+
+/*void MainWindow::SaveModBusString(QString ModBus)
+{
+
+}
+
+
+void MainWindow::SaveInterface(QString Interface)
+{
+    interface = Interface;
+}
+
+void MainWindow::SDevice(QString Device)
+{
+    SaveDevice = Device;
+}*/
 
 void MainWindow::SetDefConf()
 {

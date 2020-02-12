@@ -374,6 +374,7 @@ void Coma::PrepareDialogs()
 #ifdef ETHENABLE
         ch104 = new iec104(&IPtemp, this);
         //ch104->IP = IPtemp;
+        ch104->BaseAdr = AdrBaseStation;
         connect(this,SIGNAL(stopit()),ch104,SLOT(Stop()));
         connect(ch104,SIGNAL(ethconnected()), this, SLOT(ConnectMessage()));
         //connect(ch104,SIGNAL(readConf()), ch104,SIGNAL(readConf()));

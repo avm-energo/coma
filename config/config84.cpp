@@ -49,8 +49,8 @@ Config84::Config84(QVector<S2::DataRec> &config)
         config.append({StartInIndex+28, sizeof(Bci_block.C_pasp), &Bci_block.C_pasp});
         config.append({1050, sizeof(Bci_block.Unom_1), &Bci_block.Unom_1});
 
-        if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
-        {
+        //if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
+        //{
           config.append({StartComIndex, sizeof(Com_param.IP), &Com_param.IP});
           config.append({StartComIndex+1, sizeof(Com_param.Mask), &Com_param.Mask});
           config.append({StartComIndex+2, sizeof(Com_param.GateWay), &Com_param.GateWay});
@@ -61,7 +61,7 @@ Config84::Config84(QVector<S2::DataRec> &config)
           config.append({StartComIndex+7, sizeof(Com_param.stopbit), &Com_param.stopbit});
           config.append({StartComIndex+8, sizeof(Com_param.adrMB), &Com_param.adrMB});
           config.append({StartComIndex+9, sizeof(Com_param.isNTP), &Com_param.isNTP});
-        }
+       // }
     }
     config.append({0xFFFFFFFF, 0, nullptr});
 
@@ -93,8 +93,8 @@ void Config84::SetDefConf()
         Bci_block.Tg_init[i] = 0;
         Bci_block.corTg[i] = 0;
     }
-    if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
-    {
+    //if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
+    //{
         Bci_block.RTerm = 100;
         Bci_block.W100 = 1.385f;
 
@@ -129,5 +129,5 @@ void Config84::SetDefConf()
         Com_param.adrMB = 1;
         Com_param.isNTP = 1;
 
-    }
+    //}
 }

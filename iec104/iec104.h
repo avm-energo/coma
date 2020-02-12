@@ -268,6 +268,7 @@ public:
     QList<QByteArray> ReadData;
     bool ParseStarted;
     Parse104::FlSignals104* flSignals;
+    quint16 BaseAdr;
 
 
     static quint8 stopincrementing;

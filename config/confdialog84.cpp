@@ -65,8 +65,8 @@ void ConfDialog84::Fill()
     WDFunc::SetSPBData(this, "T_Data_Rec", C84->Bci_block.T_Data_Rec);
     WDFunc::SetSPBData(this, "Unom_1", C84->Bci_block.Unom_1);
 
-    if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
-    {
+    //if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
+    //{
         WDFunc::SetSPBData(this, "RTerm", C84->Bci_block.RTerm);
         WDFunc::SetSPBData(this, "W100", C84->Bci_block.W100);
 
@@ -88,7 +88,7 @@ void ConfDialog84::Fill()
         WDFunc::SetChBData(this, "ISNTP", true);
         else
         WDFunc::SetChBData(this, "ISNTP", false);
-    }
+    //}
 
 }
 
@@ -124,8 +124,8 @@ void ConfDialog84::FillBack()
     WDFunc::SPBData(this, "T_Data_Rec", C84->Bci_block.T_Data_Rec);
     WDFunc::SPBData(this, "Unom_1", C84->Bci_block.Unom_1);
 
-    if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
-    {
+    //if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
+    //{
         WDFunc::SPBData(this, "RTerm", C84->Bci_block.RTerm);
         WDFunc::SPBData(this, "W100", C84->Bci_block.W100);
 
@@ -152,7 +152,7 @@ void ConfDialog84::FillBack()
         else
         C84->Com_param.isNTP = 0;
 
-    }
+   // }
 
 
 }
@@ -318,8 +318,8 @@ void ConfDialog84::SetupUI()
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
 
-    if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
-    {
+    //if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
+    //{
         gb = new QGroupBox("Температура");
         vlyout2 = new QVBoxLayout;
         glyout = new QGridLayout;
@@ -335,7 +335,7 @@ void ConfDialog84::SetupUI()
         vlyout2->addLayout(glyout);
         gb->setLayout(vlyout2);
         vlyout1->addWidget(gb);
-    }
+    //}
 
     analog2->setLayout(vlyout1);
 
@@ -501,13 +501,13 @@ void ConfDialog84::SetupUI()
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
     ConfTW->addTab(analog1,"Аналоговые");
 
-    if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
-    {
+    //if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
+    //{
       ConfTW->addTab(analog2,"Уставки и температура");
       ConfTW->addTab(extraconf,"Связь");
-    }
-    else
-    ConfTW->addTab(analog2,"Уставки");
+    //}
+    //else
+    //ConfTW->addTab(analog2,"Уставки");
 
     //ConfTW->addTab(time,"Время");
     lyout->addWidget(ConfTW);

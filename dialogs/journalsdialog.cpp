@@ -443,7 +443,7 @@ void JournalDialog::FillWorkJour(QVector<S2::DataRec>* File)
         lsl.append(Time);
         lsl.append(Type);
         TableWorkModel->fillModel(lsl);
-        UpdateSysModel();
+        UpdateWorkModel();
         QApplication::restoreOverrideCursor();
 
 }
@@ -638,7 +638,7 @@ void JournalDialog::FillMeasJour(QVector<S2::DataRec>* File)
         lsl.append(Tokr);
 
         TableMeasModel->fillModel(lsl);
-        UpdateSysModel();
+        UpdateMeasModel();
         QApplication::restoreOverrideCursor();
 
 }
@@ -657,7 +657,7 @@ void JournalDialog::UpdateSysModel()
     //GetOscPBDelegate *dg = new GetOscPBDelegate;
     //connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(GetOsc(QModelIndex)));
     //tv->setItemDelegateForColumn(4, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
-    tv->resizeRowsToContents();
+    //tv->resizeRowsToContents();
     tv->resizeColumnsToContents();
 }
 
@@ -675,7 +675,7 @@ void JournalDialog::UpdateWorkModel()
     //GetOscPBDelegate *dg = new GetOscPBDelegate;
     //connect(dg,SIGNAL(clicked(QModelIndex)),this,SLOT(GetOsc(QModelIndex)));
     //tv->setItemDelegateForColumn(4, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
-    tv->resizeRowsToContents();
+    //tv->resizeRowsToContents();
     tv->resizeColumnsToContents();
 }
 

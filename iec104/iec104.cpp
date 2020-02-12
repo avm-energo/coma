@@ -160,8 +160,8 @@ void iec104::SendI()
     GInter[1] = static_cast<char>(1);
     GInter[2] = static_cast<char>(6);
     GInter[3] = static_cast<char>(0);
-    GInter[4] = static_cast<char>(BASEADR104);
-    GInter[5] = static_cast<char>(BASEADR104>>8);
+    GInter[4] = static_cast<char>(BaseAdr);
+    GInter[5] = static_cast<char>(BaseAdr>>8);
     GInter[6] = static_cast<char>(0);
     GInter[7] = static_cast<char>(0);
     GInter[8] = static_cast<char>(0);
@@ -432,7 +432,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
     DUI.commonAdrASDU = ba[4] + ba[5]*256;
     quint32 ObjectAdr = 0;
     quint32 index = 6;
-    //iec104::F_LS LS;
+    int FileSize;
     int res,i,cntfl = 0,cntflTimestamp = 0,cntspon = 0,cntbs = 0;
     Parse104::FlSignals104* flSignals = new Parse104::FlSignals104[DUI.qualifier.Number];
     Parse104::SponSignals104* sponSignals = new Parse104::SponSignals104[DUI.qualifier.Number];
@@ -554,13 +554,14 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
 
         case F_FR_NA_1: // файл готов
         {
+            ReadData.clear();
             RDSize = 0;
             RDLength = 0;
+            FileSize = (static_cast<quint8>(ba[13]) << 16) | (static_cast<quint8>(ba[12]) << 8) | (static_cast<quint8>(ba[11]));
 
             emit callFile((char*)ba[9]);
 
-            if(ba[9] == 4)
-            emit SetDataSizeFromParse(SYSTEM_JOUR_SIZE);
+            emit SetDataSizeFromParse(FileSize);
 
             break;
         }
@@ -615,11 +616,27 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
                       }
                       else if(ba[9] == 5)   // если файл рабочего журнала
                       {
-                       emit sendJourWorkfromParse(DR);
+                       QVector<S2::DataRec> *DRJour = new QVector<S2::DataRec>;
+                       DRJour->append({static_cast<quint32>(ReadData.data()[16]),static_cast<quint32>(ReadData.data()[20]),&ReadData.data()[24]});
+                       memcpy(&DRJour->data()[0],&ReadData.data()[16],8);
+
+                       res = S2::RestoreDataMem(ReadData.data(), RDLength, DRJour);
+                       if (res == Error::ER_NOERROR)
+                       {
+                        emit sendJourWorkfromParse(DRJour);
+                       }
                       }
                       else if(ba[9] == 6)   // если файл журнала измерений
                       {
-                       emit sendJourMeasfromParse(DR);
+                       QVector<S2::DataRec> *DRMJour = new QVector<S2::DataRec>;
+                       DRMJour->append({static_cast<quint32>(ReadData.data()[16]),static_cast<quint32>(ReadData.data()[20]),&ReadData.data()[24]});
+                       memcpy(&DRMJour->data()[0],&ReadData.data()[16],8);
+
+                       res = S2::RestoreDataMem(ReadData.data(), RDLength, DRMJour);
+                       if (res == Error::ER_NOERROR)
+                       {
+                        emit sendJourMeasfromParse(DRMJour);
+                       }
                       }
 
 
@@ -748,8 +765,8 @@ void iec104::SelectFile(char* numFile)
     Cmd[1] = static_cast<char>(1);
     Cmd[2] = static_cast<char>(13);
     Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BASEADR104);
-    Cmd[5] = static_cast<char>(BASEADR104>>8);
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
@@ -787,8 +804,8 @@ void iec104::CallFile(char* numFile)
     Cmd[1] = static_cast<char>(1);
     Cmd[2] = static_cast<char>(13);
     Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BASEADR104);
-    Cmd[5] = static_cast<char>(BASEADR104>>8);
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
@@ -839,8 +856,8 @@ void iec104::GetSection(char* numFile)
     Cmd[1] = static_cast<char>(1);
     Cmd[2] = static_cast<char>(13);
     Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BASEADR104);
-    Cmd[5] = static_cast<char>(BASEADR104>>8);
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
@@ -880,8 +897,8 @@ void iec104::ConfirmSection(char* numFile)
     Cmd[1] = static_cast<char>(1);
     Cmd[2] = static_cast<char>(13);
     Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BASEADR104);
-    Cmd[5] = static_cast<char>(BASEADR104>>8);
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
@@ -921,8 +938,8 @@ void iec104::ConfirmFile(char* numFile)
     Cmd[1] = static_cast<char>(1);
     Cmd[2] = static_cast<char>(13);
     Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BASEADR104);
-    Cmd[5] = static_cast<char>(BASEADR104>>8);
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
@@ -963,8 +980,8 @@ void iec104::FileReady(QVector<S2::DataRec>* File)
     Cmd[1] = static_cast<char>(1);
     Cmd[2] = static_cast<char>(13);
     Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BASEADR104);
-    Cmd[5] = static_cast<char>(BASEADR104>>8);
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
@@ -1013,8 +1030,8 @@ void iec104::SectionReady()
     Cmd[1] = static_cast<char>(1);
     Cmd[2] = static_cast<char>(13);
     Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BASEADR104);
-    Cmd[5] = static_cast<char>(BASEADR104>>8);
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
@@ -1065,8 +1082,8 @@ void iec104::SendSegments()
     Cmd[1] = static_cast<char>(1);
     Cmd[2] = static_cast<char>(13);
     Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BASEADR104);
-    Cmd[5] = static_cast<char>(BASEADR104>>8);
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
@@ -1206,8 +1223,8 @@ void iec104::LastSegment()
     Cmd[1] = static_cast<char>(1);
     Cmd[2] = static_cast<char>(13);
     Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BASEADR104);
-    Cmd[5] = static_cast<char>(BASEADR104>>8);
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
@@ -1257,8 +1274,8 @@ void iec104::LastSection()
     Cmd[1] = static_cast<char>(1);
     Cmd[2] = static_cast<char>(13);
     Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BASEADR104);
-    Cmd[5] = static_cast<char>(BASEADR104>>8);
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
@@ -1301,8 +1318,8 @@ void iec104::Com45(quint32 *com)
     Cmd[1] = static_cast<char>(1);
     Cmd[2] = static_cast<char>(6);
     Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BASEADR104);
-    Cmd[5] = static_cast<char>(BASEADR104>>8);
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
     Cmd[6] = static_cast<char>(*com);
     Cmd[7] = static_cast<char>(*com>>8);
     Cmd[8] = static_cast<char>(*com>>16);
@@ -1339,8 +1356,8 @@ void iec104::Com50(quint16* adr, float *param)
     Cmd[1] = static_cast<char>(1);
     Cmd[2] = static_cast<char>(6);
     Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BASEADR104);
-    Cmd[5] = static_cast<char>(BASEADR104>>8);
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
     Cmd[6] = static_cast<char>(*adr);
     Cmd[7] = static_cast<char>(*adr>>8);
     Cmd[8] = static_cast<char>(*adr>>16);

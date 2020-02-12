@@ -52,11 +52,12 @@ public:
     EAbstractCheckDialog *CheckB, *CheckM;
     iec104* ch104;
     //CheckDialog84* Ch84;
-    QString IPtemp, FullName;
-    QStringList sl;
+    QString IPtemp, FullName, interface, SaveDevice, instr;
+    QStringList sl, insl, slfinal;
     quint8 HaveAlreadyRed = 0;
     CorDialog *CorD;
     JournalDialog *JourD;
+    quint16 AdrBaseStation;
 
     struct DeviceConnectStruct
     {
@@ -207,7 +208,10 @@ private slots:
 
 #endif
     void ShowErrorMessageBox(QString message);
-    void SaveIPString(QString port);
+    void ParseString(QString Str);
+    //void SaveModBusString(QString ModBus);
+    //void SaveInterface(QString Interface);
+    //void SDevice(QString Device);
 
 protected:
     bool Autonomous; // признак автономного режима
