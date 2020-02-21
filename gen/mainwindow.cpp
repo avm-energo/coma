@@ -647,6 +647,7 @@ void MainWindow::ShowConnectDialog()
 
     if(!HaveAlreadyRed)
     {
+        sl.clear();
         res= Files::LoadFromFile(Files::ChooseFileForOpen(this, "IP files (*.txt)"), ba);
         if (res != Files::ER_NOERROR)
         {
@@ -859,7 +860,11 @@ void MainWindow::ParseString(QString Str)
     }
     else if(insl.at(1) == "MODBUS")
     {
-
+        FullName = insl.at(0);
+        Settings.baud =  insl.at(2);
+        Settings.parity =  insl.at(3);
+        Settings.stop =  insl.at(4);
+        Settings.adr =  insl.at(5);
     }
 }
 

@@ -154,7 +154,7 @@ QWidget *Check_84::Bd2W(QWidget *parent)
                                       QString::number(33)+".Крест фактор"),9,2,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "Ramb"),10,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(4502), ValuesFormat, \
-                                      QString::number(24)+".Сопротивление датчика, Ом"),11,0,1,1);
+                                      QString::number(34)+".Сопротивление датчика, Ом"),11,0,1,1);
     /*glyout->addWidget(WDFunc::NewLBL(parent, "Time"),6,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value29", ValuesFormat, \
                                       QString::number(29)+".Время записи, с"),7,0,1,1);*/

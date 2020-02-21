@@ -2,14 +2,14 @@
 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING .ISS SCRIPT FILES!
 
-#define Name "АВТУК-Сервис ПР"
-#define GroupName "АВТУК-Сервис"
-#define EngName "AVTUK-S"
-#define Version "2.2.261"
+#define Name "АВТУК-Сервис ETH"
+#define GroupName "АВТУК-ETH Сервис"
+#define EngName "AVTUK-ETH"
+#define Version "0.0.1"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
-#define ExeName "avtuks-F.exe"
-#define SetupName "avtuks-F-2.2.261-x86"
+#define ExeName "AVTUK_ETH_Version-f.exe"
+#define SetupName "avtuks-F-0.0.1-x86"
 #define Prefix "D:\out-5.8_x32"
 
 [CustomMessages]

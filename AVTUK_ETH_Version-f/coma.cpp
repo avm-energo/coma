@@ -50,6 +50,7 @@
 #include "../gen/colors.h"
 #include "../gen/modulebsi.h"
 #include "../gen/log.h"
+#include "../modbus/modbus.h"
 
 Coma::Coma(QWidget *parent)
     : MainWindow(parent)
@@ -160,7 +161,6 @@ void Coma::SetupUI()
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QAction *act;
-    //setMinimumHeight(650);
 
     QHBoxLayout *hlyout = new QHBoxLayout;
     QToolBar *tb = new QToolBar;
@@ -255,6 +255,8 @@ void Coma::Stage3()
 {
     QString str;
     ConfB = ConfM = nullptr;
+    JourD = nullptr;
+    CorD = nullptr;
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
@@ -272,8 +274,13 @@ void Coma::Stage3()
         MainTuneDialog = new ConfDialog(S2ConfigForTune, MTypeB, MTypeM);
         //MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     }
-    CorD = new CorDialog();
-    JourD = new JournalDialog();
+
+    if(insl.at(1) != "MODBUS")
+    {
+     CorD = new CorDialog();
+     JourD = new JournalDialog();
+    }
+
     PrepareDialogs();
 
     str = (CheckM == nullptr) ? "Текущие параметры" : "Текущие параметры\nБазовая";
@@ -319,10 +326,19 @@ void Coma::Stage3()
         connect(ConfM,SIGNAL(DefConfToBeLoaded()),this,SLOT(SetDefConf()));
     }
 
+    str = "Проверка температуры";
+    if (CheckModBus != nullptr)
+    {
+        CheckModBus->setMinimumHeight(500);
+        //MainTW->setFixedHeight(500);
+        MainTW->addTab(CheckModBus, str);
+    }
+
+    if (CorD != nullptr)
     MainTW->addTab(CorD, "Коррекция");
 
     if (JourD != nullptr)
-        MainTW->addTab(JourD, "Журналы");
+    MainTW->addTab(JourD, "Журналы");
 
     if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
         Error::ShowErMsg(ER_NOCONF);
@@ -371,38 +387,46 @@ void Coma::PrepareDialogs()
 
     case Config::MTB_A2:
     {
+        if(insl.at(1) == "ETH")
+        {
 #ifdef ETHENABLE
-        ch104 = new iec104(&IPtemp, this);
-        //ch104->IP = IPtemp;
-        ch104->BaseAdr = AdrBaseStation;
-        connect(this,SIGNAL(stopit()),ch104,SLOT(Stop()));
-        connect(ch104,SIGNAL(ethconnected()), this, SLOT(ConnectMessage()));
-        //connect(ch104,SIGNAL(readConf()), ch104,SIGNAL(readConf()));
-        //connect(ch104,SIGNAL(ethdisconnected()), this, SLOT(DisconnectMessage()));
-        //connect(ch104,SIGNAL(ethNoconnection()), this, SLOT(DisconnectAndClear()));
-        connect(CorD,SIGNAL(sendCom45(quint32*)), ch104, SLOT(Com45(quint32*)));
-        connect(CorD,SIGNAL(sendCom50(quint16*, float*)), ch104, SLOT(Com50(quint16*,float*)));
-        connect(ch104,SIGNAL(sendMessageOk()), CorD, SLOT(MessageOk()));
-        connect(ch104,SIGNAL(relesignalsready(Parse104::SponSignals104*)), this, SLOT(UpdateReleWidget(Parse104::SponSignals104*)));
+            ch104 = new iec104(&IPtemp, this);
+            //ch104->IP = IPtemp;
+            ch104->BaseAdr = AdrBaseStation;
+            connect(this,SIGNAL(stopit()),ch104,SLOT(Stop()));
+            connect(ch104,SIGNAL(ethconnected()), this, SLOT(ConnectMessage()));
+            //connect(ch104,SIGNAL(readConf()), ch104,SIGNAL(readConf()));
+            //connect(ch104,SIGNAL(ethdisconnected()), this, SLOT(DisconnectMessage()));
+            //connect(ch104,SIGNAL(ethNoconnection()), this, SLOT(DisconnectAndClear()));
+            connect(CorD,SIGNAL(sendCom45(quint32*)), ch104, SLOT(Com45(quint32*)));
+            connect(CorD,SIGNAL(sendCom50(quint16*, float*)), ch104, SLOT(Com50(quint16*,float*)));
+            connect(ch104,SIGNAL(sendMessageOk()), CorD, SLOT(MessageOk()));
+            connect(ch104,SIGNAL(relesignalsready(Parse104::SponSignals104*)), this, SLOT(UpdateReleWidget(Parse104::SponSignals104*)));
 
-        connect(ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
-        connect(ch104,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
+            connect(ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
+            connect(ch104,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
 
-        setMinimumSize(QSize(800, 650));
-        CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, ch104);
-        connect(CheckB,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)),this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)));
+            setMinimumSize(QSize(800, 650));
+            CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, ch104);
+            connect(CheckB,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)),this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)));
 
-        ConfM = new ConfDialog84(S2Config);
-        connect(ConfM,SIGNAL(ReadConfig(char*)), ch104, SLOT(SelectFile(char*)));
-        connect(JourD,SIGNAL(ReadJour(char*)), ch104, SLOT(SelectFile(char*)));
-        connect(ch104,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)), ConfM, SLOT(FillConf(QVector<S2::DataRec>*)));
-        connect(ch104,SIGNAL(sendJourSysfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillSysJour(QVector<S2::DataRec>*)));
-        connect(ch104,SIGNAL(sendJourWorkfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillWorkJour(QVector<S2::DataRec>*)));
-        connect(ch104,SIGNAL(sendJourMeasfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillMeasJour(QVector<S2::DataRec>*)));
-        connect(ConfM,SIGNAL(writeConfFile(QVector<S2::DataRec>*)), ch104, SLOT(FileReady(QVector<S2::DataRec>*)));
-        ch104->Parse->DR = &S2Config;
-        break;
+            ConfM = new ConfDialog84(S2Config);
+            connect(ConfM,SIGNAL(ReadConfig(char*)), ch104, SLOT(SelectFile(char*)));
+            connect(JourD,SIGNAL(ReadJour(char*)), ch104, SLOT(SelectFile(char*)));
+            connect(ch104,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)), ConfM, SLOT(FillConf(QVector<S2::DataRec>*)));
+            connect(ch104,SIGNAL(sendJourSysfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillSysJour(QVector<S2::DataRec>*)));
+            connect(ch104,SIGNAL(sendJourWorkfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillWorkJour(QVector<S2::DataRec>*)));
+            connect(ch104,SIGNAL(sendJourMeasfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillMeasJour(QVector<S2::DataRec>*)));
+            connect(ConfM,SIGNAL(writeConfFile(QVector<S2::DataRec>*)), ch104, SLOT(FileReady(QVector<S2::DataRec>*)));
+            ch104->Parse->DR = &S2Config;
 #endif
+         }
+         else if(insl.at(1) == "MODBUS")
+         {
+            CheckModBus = new checktempmodbusdialog(BoardTypes::BT_BASE, this);
+            modBus = new ModBus(Settings, CheckModBus);
+         }
+         break;
     }
 
     case Config::MTB_87:

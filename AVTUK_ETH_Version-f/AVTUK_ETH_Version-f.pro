@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.2.261
+VERSION = 0.0.1
 
 QT       += core gui printsupport network serialbus
 
@@ -405,7 +405,8 @@ SOURCES += \
     ../widgets/passwordlineedit.cpp \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp
+    ../widgets/wd_func.cpp \
+    ../check/checktempmodbusdialog.cpp
 
 
 HEADERS += \
@@ -793,7 +794,8 @@ HEADERS += \
     ../widgets/signalchoosewidget.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
-    ../modbus/modbus.h
+    ../modbus/modbus.h \
+    ../check/checktempmodbusdialog.h
 
 
 INCLUDEPATH += $$PWD/../../includes

@@ -14,6 +14,8 @@
 #include "../check/checkdialog84.h"
 #include "../dialogs/cordialog.h"
 #include "../dialogs/journalsdialog.h"
+#include "../modbus/modbus.h"
+#include "../check/checktempmodbusdialog.h"
 
 
 #define C_TE_MAXSIZE    100
@@ -51,6 +53,8 @@ public:
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
     iec104* ch104;
+    ModBus* modBus;
+    checktempmodbusdialog *CheckModBus;
     //CheckDialog84* Ch84;
     QString IPtemp, FullName, interface, SaveDevice, instr;
     QStringList sl, insl, slfinal;
@@ -58,6 +62,7 @@ public:
     CorDialog *CorD;
     JournalDialog *JourD;
     quint16 AdrBaseStation;
+    ModBus::ModBus_Settings Settings;
 
     struct DeviceConnectStruct
     {
@@ -65,6 +70,16 @@ public:
         unsigned short product_id;
         wchar_t serial[20];
     };
+
+    /*struct ModBus_Settings
+    {
+        QString baud;
+        QString parity;
+        QString stop;
+        QString adr;
+    };
+
+    ModBus_Settings Settings;*/
 
 
     int CheckPassword();
