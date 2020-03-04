@@ -11,7 +11,7 @@ RC_ICONS = ../coma.ico
 CONFIG += c++11
 VERSION = 0.0.1
 
-QT       += core gui printsupport network serialbus
+QT       += core gui printsupport network serialbus serialport
 
 TARGET = AVTUK_ETH_Version-f
 #DEFINES += MODULE_A1

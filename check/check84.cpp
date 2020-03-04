@@ -69,7 +69,7 @@ QWidget *Check_84::Bd1W(QWidget *parent)
                                           QString::number(i+9)+".Ёмкости вводов, пФ"),5,i,1,1);
         glyout->addWidget(WDFunc::NewLBL(parent, "Tg_d ф."+phase[i]),6,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2423+i), ValuesFormat, \
-                                          QString::number(i+12)+".Ёмкости вводов, пФ"),7,i,1,1);
+                                          QString::number(i+12)+".Тангенсы дельта вводов"),7,i,1,1);
         glyout->addWidget(WDFunc::NewLBL(parent, "dCbush ф."+phase[i]),8,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2426+i), ValuesFormat, \
                                           QString::number(i+15)+".Изменение емкостей вводов, пФ"),9,i,1,1);
@@ -91,6 +91,16 @@ QWidget *Check_84::Bd1W(QWidget *parent)
     glyout->addWidget(WDFunc::NewLBL(parent, "Tamb"),12,2,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(4501), ValuesFormat, \
                                       QString::number(23)+".Температура окружающей среды, °С"),13,2,1,1);
+
+    for (i = 0; i < 3; ++i)
+    {
+        glyout->addWidget(WDFunc::NewLBL(parent, "U_phi_next_f ф."+phase[i]),14,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(2400+i), ValuesFormat, \
+                                          QString::number(24+i)+".Угол по напряжению ф."+phase[i]+", град."),15,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "I_phi_next_f ф."+phase[i]),16,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(2403+i), ValuesFormat, \
+                                          QString::number(27+i)+".Угол по напряжению ф."+phase[i]+", град."),17,i,1,1);
+    }
 
     /*QPushButton *pb = new QPushButton("Стереть журнал");
     //pb->setObjectName("pbmeasurements");
@@ -115,46 +125,46 @@ QWidget *Check_84::Bd2W(QWidget *parent)
 
     glyout->addWidget(WDFunc::NewLBL(parent, "U0 ф.А"),0,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1020), ValuesFormat, \
-                                      QString::number(21)+".Напряжение нулевой последовательности ф.А"),1,0,1,1);
+                                      QString::number(29)+".Напряжение нулевой последовательности ф.А"),1,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "U1 ф.B"),0,1,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1021), ValuesFormat, \
-                                      QString::number(22)+".Напряжение прямой последовательности ф.B"),1,1,1,1);
+                                      QString::number(30)+".Напряжение прямой последовательности ф.B"),1,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "U2 ф.C"),0,2,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1022), ValuesFormat, \
-                                      QString::number(23)+".Напряжение обратной последовательности ф.C"),1,2,1,1);
+                                      QString::number(31)+".Напряжение обратной последовательности ф.C"),1,2,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim0"),2,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1023), ValuesFormat, \
-                                      QString::number(24)+".Коэффициент несимметрии по нулевой последовательности по напряжению"),3,0,1,1);
+                                      QString::number(32)+".Коэффициент несимметрии по нулевой последовательности по напряжению"),3,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim2"),2,1,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1024), ValuesFormat, \
-                                      QString::number(25)+".Коэффициент несимметрии по обратной последовательности по напряжению"),3,1,1,1);
+                                      QString::number(33)+".Коэффициент несимметрии по обратной последовательности по напряжению"),3,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "I0 ф.А"),4,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1120), ValuesFormat, \
-                                      QString::number(26)+".Ток обратной последовательности ф.А"),5,0,1,1);
+                                      QString::number(34)+".Ток обратной последовательности ф.А"),5,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "I1 ф.B"),4,1,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1121), ValuesFormat, \
-                                      QString::number(27)+".Ток обратной последовательности ф.B"),5,1,1,1);
+                                      QString::number(35)+".Ток обратной последовательности ф.B"),5,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "I2 ф.C"),4,2,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1122), ValuesFormat, \
-                                      QString::number(28)+".Ток обратной последовательности ф.С"),5,2,1,1);
+                                      QString::number(36)+".Ток обратной последовательности ф.С"),5,2,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim0"),6,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1123), ValuesFormat, \
-                                      QString::number(29)+".Коэффициент несимметрии по нулевой последовательности по току"),7,0,1,1);
+                                      QString::number(37)+".Коэффициент несимметрии по нулевой последовательности по току"),7,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim2"),6,1,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1124), ValuesFormat, \
-                                      QString::number(30)+".Коэффициент несимметрии по обратной последовательности по току"),7,1,1,1);
+                                      QString::number(38)+".Коэффициент несимметрии по обратной последовательности по току"),7,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "KrF ф.A"),8,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1008), ValuesFormat, \
-                                      QString::number(31)+".Крест фактор"),9,0,1,1);
+                                      QString::number(39)+".Крест фактор"),9,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "KrF ф.B"),8,1,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1009), ValuesFormat, \
-                                      QString::number(32)+".Крест фактор"),9,1,1,1);
+                                      QString::number(40)+".Крест фактор"),9,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "KrF ф.B"),8,2,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1010), ValuesFormat, \
-                                      QString::number(33)+".Крест фактор"),9,2,1,1);
+                                      QString::number(41)+".Крест фактор"),9,2,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "Ramb"),10,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(4502), ValuesFormat, \
-                                      QString::number(34)+".Сопротивление датчика, Ом"),11,0,1,1);
+                                      QString::number(42)+".Сопротивление датчика, Ом"),11,0,1,1);
     /*glyout->addWidget(WDFunc::NewLBL(parent, "Time"),6,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value29", ValuesFormat, \
                                       QString::number(29)+".Время записи, с"),7,0,1,1);*/

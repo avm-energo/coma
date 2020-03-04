@@ -15,7 +15,15 @@ public:
     checktempmodbusdialog *Ch84;
     bool connectionStateRTU;
 
+    typedef struct
+    {
+       float flVal;
+       int SigAdr;
+    }ModBusSignal;
+
     QWidget *Bd1W(QWidget *parent);
+    QWidget *Bd2W(QWidget *parent);
+    QWidget *Bd3W(QWidget *parent);
     void FillBd(QWidget *parent, QString Name, QString Value);
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
 
@@ -26,6 +34,7 @@ public:
     void ChooseValuesToWrite();
     void SetDefaultValuesToWrite();
     void PrepareAnalogMeasurements();
+    void UpdateModBusData(ModBusSignal* Signal);
 #endif
     QWidget *CustomTab();
 
@@ -38,7 +47,7 @@ private:
     QString ValuesFormat, WidgetFormat;
 
 private slots:
-    void onModbusStateChanged(QModbusDevice::State *state);
+    void onModbusStateChanged(QModbusDevice::State state);
 
 };
 #endif

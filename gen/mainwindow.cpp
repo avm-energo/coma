@@ -860,11 +860,19 @@ void MainWindow::ParseString(QString Str)
     }
     else if(insl.at(1) == "MODBUS")
     {
-        FullName = insl.at(0);
-        Settings.baud =  insl.at(2);
-        Settings.parity =  insl.at(3);
-        Settings.stop =  insl.at(4);
-        Settings.adr =  insl.at(5);
+        if(insl.size() == 7)
+        {
+            FullName = insl.at(0);
+            Settings.baud =  insl.at(2);
+            Settings.parity =  insl.at(3);
+            Settings.stop =  insl.at(4);
+            Settings.adr =  insl.at(5);
+            Settings.port =  insl.at(6);
+        }
+        else
+        {
+            EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
+        }
     }
 }
 

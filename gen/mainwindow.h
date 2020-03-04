@@ -64,6 +64,7 @@ public:
     quint16 AdrBaseStation;
     ModBus::ModBus_Settings Settings;
 
+
     struct DeviceConnectStruct
     {
         unsigned short vendor_id;

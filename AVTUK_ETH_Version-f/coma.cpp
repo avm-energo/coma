@@ -28,6 +28,7 @@
 #include <QToolBar>
 #include <QDialog>
 #include <QCursor>
+#include <QThread>
 #include "coma.h"
 #include "../config/confdialog21.h"
 #include "../config/confdialog22.h"
