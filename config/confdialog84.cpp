@@ -208,7 +208,7 @@ void ConfDialog84::SetupUI()
     for (int i = 0; i < 3; i++)
     {
      glyout->addWidget(WDFunc::NewLBL(this, phase[i]), row,2+i,1,1,Qt::AlignLeft);
-     glyout->addWidget(WDFunc::NewSPB(this, "C_pasp."+QString::number(i), 0, 20000, 0, paramcolor), row,2+i,1,1,Qt::AlignRight);
+     glyout->addWidget(WDFunc::NewSPB(this, "C_pasp."+QString::number(i), 0, 20000, 0, paramcolor), row,3+i,1,1,Qt::AlignCenter);
     }
     row++;
 
@@ -217,7 +217,7 @@ void ConfDialog84::SetupUI()
     for (int i = 0; i < 3; i++)
     {
      glyout->addWidget(WDFunc::NewLBL(this, phase[i]), row,2+i,1,1,Qt::AlignLeft);
-     glyout->addWidget(WDFunc::NewSPB(this, "Tg_pasp."+QString::number(i), 0, 10000, 1, paramcolor), row,2+i,1,1,Qt::AlignRight);
+     glyout->addWidget(WDFunc::NewSPB(this, "Tg_pasp."+QString::number(i), 0, 10, 2, paramcolor), row,2+i,1,1,Qt::AlignCenter);
     }
     row++;
     /*glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения tg δ вводов, %:"), row,1,1,1);

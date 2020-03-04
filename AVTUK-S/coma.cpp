@@ -262,6 +262,7 @@ void Coma::Stage3()
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
         return;
+    //MainTW->setMaximumSize(QSize(1920,1440));
 
     InfoDialog *idlg = new InfoDialog;
     connect(this,SIGNAL(BsiRefresh()),idlg,SLOT(FillBsi()));
@@ -273,7 +274,7 @@ void Coma::Stage3()
     {
         MainConfDialog = new ConfDialog(S2Config, MTypeB, MTypeM);
         MainTuneDialog = new ConfDialog(S2ConfigForTune, MTypeB, MTypeM);
-        MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
+        MainTW->addTab(MainConfDialog, "Конфигурирование\nМЭК-60870-5-104");
     }
     OscD = new OscDialog(OscFunc);
     CorD = new CorDialog();
@@ -345,6 +346,7 @@ void Coma::Stage3()
         Error::ShowErMsg(ER_NOCONF);
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
         Error::ShowErMsg(ER_NOTUNECOEF);
+    MainTW->sizeIncrement();
     MainTW->repaint();
     MainTW->show();
 #if PROGSIZE >= PROGSIZE_LARGE

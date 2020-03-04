@@ -35,7 +35,7 @@ Check_84::Check_84(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(boa
 {
     //setAttribute(Qt::WA_DeleteOnClose);
     ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
-                "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
+                "background-color: "+QString(ACONFOCLR)+"; font: bold 11px;}";
     WidgetFormat = "QWidget {background-color: "+QString(UCONFCLR)+";}";
 }
 
@@ -51,6 +51,7 @@ QWidget *Check_84::Bd1W(QWidget *parent)
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
+    QString phase[3] = {"A:","B:","C:"};
     hlyout->addWidget(WDFunc::NewLBL(parent, "Номер:"), 0);
     hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Номер"), 0);
     hlyout->addWidget(WDFunc::NewLBL(parent, "Температура микроконтроллера, °С:"), 0);
@@ -60,26 +61,33 @@ QWidget *Check_84::Bd1W(QWidget *parent)
     lyout->addLayout(hlyout);
     for (i = 0; i < 3; ++i)
     {
-        QString IndexStr = "[" + QString::number(i) + "]";
-        glyout->addWidget(WDFunc::NewLBL(parent, "Ueff"+IndexStr),0,i,1,1);
+        //QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "Ueff ф."+phase[i]),0,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+3), ValuesFormat, \
                                           QString::number(i+3)+".Действующие значения напряжений по 1-й гармонике, кВ"),1,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Ieff"+IndexStr),2,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Ieff ф."+phase[i]),2,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+6), ValuesFormat, \
                                           QString::number(i+6)+".Действующие значения токов по 1-й гармонике, мА"),3,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Cbush"+IndexStr),4,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Cbush ф."+phase[i]),4,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+9), ValuesFormat, \
                                           QString::number(i+9)+".Ёмкости вводов, пФ"),5,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Tg_d"+IndexStr),6,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Tg_d ф."+phase[i]),6,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+12), ValuesFormat, \
                                           QString::number(i+12)+".tg delta вводов, пФ"),7,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "dCbush"+IndexStr),8,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "dCbush ф."+phase[i]),8,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+15), ValuesFormat, \
                                           QString::number(i+15)+".Изменение емкостей вводов, пФ"),9,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "dTg_d"+IndexStr),10,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "dTg_d ф."+phase[i]),10,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+18), ValuesFormat, \
                                           QString::number(i+18)+".Изменение тангенсов дельта вводов, %"),11,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "U_phi_next_f ф."+phase[i]),12,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "",  "value"+QString::number(i+21), ValuesFormat, \
+                                          QString::number(24+i)+".Угол по напряжению ф."+phase[i]+", град."),13,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "I_phi_next_f ф."+phase[i]),14,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "",  "value"+QString::number(i+24), ValuesFormat, \
+                                          QString::number(27+i)+".Угол по току ф."+phase[i]+", град."),15,i,1,1);
     }
+
 
     /*glyout->addWidget(WDFunc::NewLBL(this, "Заводские значения tg δ вводов:"), 12,1,1,1);
 
@@ -88,19 +96,19 @@ QWidget *Check_84::Bd1W(QWidget *parent)
      glyout->addWidget(WDFunc::NewSPB(this, "Tg_zav."+QString::number(i), -10, 10, 2, paramcolor), 12,2+i,1,1);
     }*/
 
-    QPushButton *pb = new QPushButton("Рассчитать начальные значения tg δ вводов");
-    pb->setObjectName("pbcalc");
+    //QPushButton *pb = new QPushButton("Рассчитать начальные значения tg δ вводов");
+    /*pb->setObjectName("pbcalc");
     #if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(EnterTg()));
     #endif
-     glyout->addWidget(pb,13,0,1,3);
+     glyout->addWidget(pb,13,0,1,3);*/
     
-    pb = new QPushButton("Стереть журнал");
+    QPushButton *pb = new QPushButton("Стереть журнал");
     //pb->setObjectName("pbmeasurements");
     #if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(SendErt()));
     #endif
-     glyout->addWidget(pb,14,0,1,3);
+     glyout->addWidget(pb,16,0,1,3);
 
 
     lyout->addLayout(glyout);

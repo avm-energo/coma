@@ -113,7 +113,7 @@ void TuneDialog84::SetupUI()
     QTabWidget *TuneTW = new QTabWidget;
     QScrollArea *area = new QScrollArea;
     area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
-    area->setFrameShape(QFrame::NoFrame);
+    area->setFrameShape(QFrame::WinPanel);
     area->setWidgetResizable(true);
 
     TuneTW->addTab(cp1,"Настройка");

@@ -98,7 +98,7 @@ void CorDialog::SetupUI()
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Начальное значение угла тока небаланса:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Phy_unb_init1", 0, 10000, 1, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "Phy_unb_init1", -360, 360, 1, paramcolor), row,2,1,3);
 
     row++;
 

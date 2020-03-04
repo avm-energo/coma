@@ -9,7 +9,7 @@
 Check_85::Check_85()
 {
     ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
-                "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
+                "background-color: "+QString(ACONFOCLR)+"; font: bold 11px;}";
     WidgetFormat = "QWidget {background-color: "+QString(UCONFCLR)+";}";
 }
 
