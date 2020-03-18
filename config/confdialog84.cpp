@@ -24,7 +24,7 @@ ConfDialog84::ConfDialog84(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     setStyleSheet(tmps);
     this->S2Config = &S2Config;
     C84 = new Config84(S2Config);
-     setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_DeleteOnClose);
 
     SetupUI();
 #if PROGSIZE != PROGSIZE_EMUL
@@ -39,6 +39,15 @@ ConfDialog84::~ConfDialog84()
 void ConfDialog84::Fill()
 {
     int i;
+    WDFunc::SetSPBData(this, "spb.1", C84->MainBlk.Abs_104);
+    WDFunc::SetSPBData(this, "spb.2", C84->MainBlk.Cycle_104);
+    WDFunc::SetSPBData(this, "spb.3", C84->MainBlk.T1_104);
+    WDFunc::SetSPBData(this, "spb.4", C84->MainBlk.T2_104);
+    WDFunc::SetSPBData(this, "spb.5", C84->MainBlk.T3_104);
+    WDFunc::SetSPBData(this, "spb.6", C84->MainBlk.k_104);
+    WDFunc::SetSPBData(this, "spb.7", C84->MainBlk.w_104);
+    WDFunc::SetSPBData(this, "spb.8", C84->MainBlk.Ctype);
+
     WDFunc::SetSPBData(this, "Unom", C84->Bci_block.Unom);
     WDFunc::SetSPBData(this, "Umin", C84->Bci_block.Umin);
     WDFunc::SetSPBData(this, "Imin", C84->Bci_block.Imin);
@@ -99,6 +108,15 @@ void ConfDialog84::FillBack()
 {
     int i;
     QString tmps;
+
+    WDFunc::SPBData(this, "spb.1", C84->MainBlk.Abs_104);
+    WDFunc::SPBData(this, "spb.2", C84->MainBlk.Cycle_104);
+    WDFunc::SPBData(this, "spb.3", C84->MainBlk.T1_104);
+    WDFunc::SPBData(this, "spb.4", C84->MainBlk.T2_104);
+    WDFunc::SPBData(this, "spb.5", C84->MainBlk.T3_104);
+    WDFunc::SPBData(this, "spb.6", C84->MainBlk.k_104);
+    WDFunc::SPBData(this, "spb.7", C84->MainBlk.w_104);
+    WDFunc::SPBData(this, "spb.8", C84->MainBlk.Ctype);
 
     WDFunc::SPBData(this, "Unom", C84->Bci_block.Unom);
     WDFunc::SPBData(this, "Umin", C84->Bci_block.Umin);
@@ -172,12 +190,14 @@ void ConfDialog84::SetupUI()
     QWidget *analog1 = new QWidget;
     QWidget *analog2 = new QWidget;
     QWidget *extraconf = new QWidget;
+    QWidget *MEKconf = new QWidget;
     QWidget *time = new QWidget;
     QString tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     analog1->setStyleSheet(tmps);
     analog2->setStyleSheet(tmps);
     extraconf->setStyleSheet(tmps);
     time->setStyleSheet(tmps);
+    MEKconf->setStyleSheet(tmps);
 
     uint32_t unixtimestamp = 1423062000;
 
@@ -186,8 +206,76 @@ void ConfDialog84::SetupUI()
     myDateTime.setTime_t(unixtimestamp);
 
     QString paramcolor = MAINWINCLR;
+
+    QGroupBox *gb = new QGroupBox;
+    gb->setTitle("Настройки протокола МЭК-60870-5-104");
+    glyout = new QGridLayout;
+    glyout->setColumnStretch(2, 50);
+    QLabel *lbl = new QLabel("Адрес базовой станции:");
+    glyout->addWidget(lbl,0,0,1,1,Qt::AlignRight);
+    QDoubleSpinBox *dspbls = WDFunc::NewSPB(this, "spb.1", 0, 65535, 0, paramcolor);
+    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+    glyout->addWidget(dspbls, 0, 1, 1, 1, Qt::AlignLeft);
+    lbl = new QLabel("Интервал циклического опроса:");
+    glyout->addWidget(lbl,1,0,1,1,Qt::AlignRight);
+    dspbls = WDFunc::NewSPB(this, "spb.2", 0, 255, 0, paramcolor);
+    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+    glyout->addWidget(dspbls, 1, 1, 1, 1, Qt::AlignLeft);
+    lbl=new QLabel("c");
+    glyout->addWidget(lbl,1,2,1,1,Qt::AlignLeft);
+    lbl = new QLabel("Тайм-аут t1:");
+    glyout->addWidget(lbl,2,0,1,1,Qt::AlignRight);
+    dspbls = WDFunc::NewSPB(this, "spb.3", 0, 255, 0, paramcolor);
+    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+    glyout->addWidget(dspbls, 2, 1, 1, 1, Qt::AlignLeft);
+    lbl=new QLabel("c");
+    glyout->addWidget(lbl,2,2,1,1,Qt::AlignLeft);
+    lbl = new QLabel("Тайм-аут t2:");
+    glyout->addWidget(lbl,3,0,1,1,Qt::AlignRight);
+    dspbls = WDFunc::NewSPB(this, "spb.4", 0, 255, 0, paramcolor);
+    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+    glyout->addWidget(dspbls, 3, 1, 1, 1, Qt::AlignLeft);
+    lbl=new QLabel("c");
+    glyout->addWidget(lbl,3,2,1,1,Qt::AlignLeft);
+    lbl = new QLabel("Тайм-аут t3:");
+    glyout->addWidget(lbl,4,0,1,1,Qt::AlignRight);
+    dspbls = WDFunc::NewSPB(this, "spb.5", 0, 255, 0, paramcolor);
+    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+    glyout->addWidget(dspbls, 4, 1, 1, 1, Qt::AlignLeft);
+    lbl=new QLabel("c");
+    glyout->addWidget(lbl,4,2,1,1,Qt::AlignLeft);
+    lbl = new QLabel("Макс. число неподтв. APDU (k):");
+    glyout->addWidget(lbl,5,0,1,1,Qt::AlignRight);
+    dspbls = WDFunc::NewSPB(this, "spb.6", 0, 255, 0, paramcolor);
+    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+    glyout->addWidget(dspbls, 5, 1, 1, 1, Qt::AlignLeft);
+    lbl=new QLabel("c");
+    glyout->addWidget(lbl,5,2,1,1,Qt::AlignLeft);
+    lbl = new QLabel("Макс. число посл. подтв. APDU (w):");
+    glyout->addWidget(lbl,6,0,1,1,Qt::AlignRight);
+    dspbls = WDFunc::NewSPB(this, "spb.7", 0, 255, 0, paramcolor);
+    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+    glyout->addWidget(dspbls, 6, 1, 1, 1, Qt::AlignLeft);
+    lbl=new QLabel("c");
+    glyout->addWidget(lbl,6,2,1,1);
+    lbl = new QLabel("Тип синхр. времени:");
+    glyout->addWidget(lbl,7,0,1,1,Qt::AlignRight);
+    QStringList cbl = QStringList() << "SNTP+PPS" << "SNTP";
+    EComboBox *cb = WDFunc::NewCB(this, "spb.8", cbl, paramcolor);
+    cb->setMinimumWidth(70);
+    connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(cb, 7, 1, 1, 2);
+
+    vlyout2->addLayout(glyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
+    MEKconf->setLayout(vlyout1);
+
     int row = 0;
-    QGroupBox *gb = new QGroupBox("Аналоговые параметры");
+    gb = new QGroupBox("Аналоговые параметры");
+    glyout = new QGridLayout;
+    vlyout1 = new QVBoxLayout;
+    vlyout2 = new QVBoxLayout;
 
     glyout->addWidget(WDFunc::NewLBL(this, "Номинальное линейное первичное напряжение, кВ:"), row,1,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "Unom", 0, 10000, 0, paramcolor), row,2,1,3);
@@ -208,7 +296,7 @@ void ConfDialog84::SetupUI()
     for (int i = 0; i < 3; i++)
     {
      glyout->addWidget(WDFunc::NewLBL(this, phase[i]), row,2+i,1,1,Qt::AlignLeft);
-     glyout->addWidget(WDFunc::NewSPB(this, "C_pasp."+QString::number(i), 0, 20000, 0, paramcolor), row,3+i,1,1,Qt::AlignCenter);
+     glyout->addWidget(WDFunc::NewSPB(this, "C_pasp."+QString::number(i), 0, 20000, 0, paramcolor), row,2+i,1,1,Qt::AlignCenter);
     }
     row++;
 
@@ -504,6 +592,7 @@ void ConfDialog84::SetupUI()
     ConfTW->setObjectName("conftw");
     QString ConfTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLOR)+";}";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
+    ConfTW->addTab(MEKconf,"Конфигурирование МЭК-60870-5-104");
     ConfTW->addTab(analog1,"Аналоговые");
 
     if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
@@ -604,6 +693,68 @@ void ConfDialog84::Write_Date()
     EMessageBox::information(this, "INFO", "Ошибка");
     #endif
 
+}
+
+void ConfDialog84::Set104(double dbl)
+{
+    QStringList sl = sender()->objectName().split(".");
+    if (sl.size() < 1)
+    {
+        DBGMSG;
+        return;
+    }
+    bool ok;
+    int wnum = sl.at(1).toInt(&ok);
+    if (!ok)
+    {
+        DBGMSG;
+        return;
+    }
+    switch (wnum)
+    {
+    case 1:
+    {
+        C84->MainBlk.Abs_104=dbl;
+        break;
+    }
+    case 2:
+    {
+        C84->MainBlk.Cycle_104=dbl;
+        break;
+    }
+    case 3:
+    {
+        C84->MainBlk.T1_104=dbl;
+        break;
+    }
+    case 4:
+    {
+        C84->MainBlk.T2_104=dbl;
+        break;
+    }
+    case 5:
+    {
+        C84->MainBlk.T3_104=dbl;
+        break;
+    }
+    case 6:
+    {
+        C84->MainBlk.k_104=dbl;
+        break;
+    }
+    case 7:
+    {
+        C84->MainBlk.w_104=dbl;
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+void ConfDialog84::SetCType(int num)
+{
+    C84->MainBlk.Ctype = num;
 }
 
 /*void AbstractConfDialog::Fill_tg_init(float *tginit)

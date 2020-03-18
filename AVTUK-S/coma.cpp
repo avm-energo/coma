@@ -255,6 +255,7 @@ void Coma::AddActionsToMenuBar(QMenuBar *menubar)
 void Coma::Stage3()
 {
     QString str;
+    int index;
     ConfB = ConfM = nullptr;
     CheckB = CheckM = nullptr;
     TuneB = TuneM = nullptr;
@@ -270,7 +271,7 @@ void Coma::Stage3()
     MainTW->addTab(idlg, "Информация");
     quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
     quint32 MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
-    if (MTypeB <= 0xA2) // диапазон модулей АВ-ТУК
+    if (MTypeB < 0xA2) // диапазон модулей АВ-ТУК
     {
         MainConfDialog = new ConfDialog(S2Config, MTypeB, MTypeM);
         MainTuneDialog = new ConfDialog(S2ConfigForTune, MTypeB, MTypeM);
@@ -309,6 +310,8 @@ void Coma::Stage3()
 
         connect(ConfM,SIGNAL(NewConfToBeLoaded()),this,SLOT(Fill()));
         connect(ConfM,SIGNAL(DefConfToBeLoaded()),this,SLOT(SetDefConf()));
+        index = MainTW->indexOf(ConfM);
+        connect(MainTW, SIGNAL(tabClicked(index)), ConfM,SLOT(ReadConf()));
     }
     str = (TuneM == nullptr) ? "Регулировка" : "Регулировка\nБазовая";
     if (TuneB != nullptr)
@@ -456,7 +459,7 @@ void Coma::PrepareDialogs()
     }
     case Config::MTM_84:
     {
-        setMinimumSize(QSize(800, 650));
+        setMinimumSize(QSize(850, 650));
         ConfM = new ConfDialog84(S2Config);
         TuneM = new TuneDialog84(S2ConfigForTune);
         if (CheckB != nullptr)

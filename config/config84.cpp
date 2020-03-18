@@ -71,6 +71,15 @@ Config84::Config84(QVector<S2::DataRec> &config)
 
 void Config84::SetDefConf()
 {
+    MainBlk.Abs_104 = DEF_ABS_104;
+    MainBlk.Ctype = DEF_CTYPE;
+    MainBlk.Cycle_104 = DEF_CYCLE_104;
+    MainBlk.k_104 = DEF_K_104;
+    MainBlk.w_104 = DEF_W_104;
+    MainBlk.T1_104 = DEF_T1_104;
+    MainBlk.T2_104 = DEF_T2_104;
+    MainBlk.T3_104 = DEF_T3_104;
+
     Bci_block.Unom = 220;
     Bci_block.Umin = 0.5;
     Bci_block.Imin = 0.5;
@@ -95,8 +104,8 @@ void Config84::SetDefConf()
         Bci_block.C_init[i] = 2200;
         Bci_block.Tg_init[i] = 0;
         Bci_block.corTg[i] = 0;
-        Bci_block.Tg_pasp[i] = 0;
-        Bci_block.C_pasp[i] = 0;
+        Bci_block.Tg_pasp[i] = 0.3;
+        Bci_block.C_pasp[i] = 2200;
     }
     if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     {

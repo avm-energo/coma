@@ -49,9 +49,10 @@ class ETabWidget : public QTabWidget
 {
     Q_OBJECT
 public:
-    explicit ETabWidget(QWidget *parent = 0);
+    explicit ETabWidget(QWidget *parent = nullptr);
 
 signals:
+    void tabClicked(int index);
 
 public slots:
 

@@ -42,16 +42,20 @@ public:
         quint32 res;	       // чтобы было 128 байт
     };
     Bd1 Bd_block1;
+    quint8 rele1, rele2, rele3, rele4;
+    QWidget *Fwidjet;
 
     //Check_84();
     QWidget *Bd1W(QWidget *parent);
     QWidget *Bd2W(QWidget *parent);
     QWidget *Bd3W(QWidget *parent);
+    QWidget *Bd4W(QWidget *parent);
     void FillBd(QWidget *parent);
     //void FillBd2(QWidget *parent);
     //void FillBd3(QWidget *parent);
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
     QWidget *CustomTab();
+
 #if PROGSIZE != PROGSIZE_EMUL
     void RefreshAnalogValues(int bdnum); // обновление полей в GUI из полученного соответствующего Bd_block
     void PrepareHeadersForFile(int row); // row - строка для записи заголовков
@@ -67,6 +71,10 @@ private:
 public slots:
     void CalcTginit(void);
     void EnterTg();
+    void Rele1();
+    void Rele2();
+    void Rele3();
+    void Switch_off();
 
 #if PROGSIZE != PROGSIZE_EMUL
 private slots:

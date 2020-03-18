@@ -54,14 +54,14 @@ CorDialog::~CorDialog()
 
 void CorDialog::SetupUI()
 {
+    QWidget *cp2 = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     ETableView *tv = new ETableView;
     tv->setObjectName("cor");
     int row = 0;
     QString paramcolor = MAINWINCLR;
-    QString ValuesLEFormat = "QLineEdit {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
-            "background-color: "+QString(ACONFOCLR)+"; font: bold 10px;}";
+    QPushButton *pb = new QPushButton();
 
     glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения емкостей вводов:"), row,1,1,1);
 
@@ -74,6 +74,16 @@ void CorDialog::SetupUI()
      le->setStyleSheet(ValuesLEFormat);
      glyout->addWidget(le,row,2+i,1,1);*/
     }
+
+    /*pb = new QPushButton("Задать начальные значения емкостей");
+    #if PROGSIZE != PROGSIZE_EMUL
+        connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorCapacity()));
+    #endif
+        if (StdFunc::IsInEmulateMode())
+            pb->setEnabled(false);
+
+    glyout->addWidget(pb, row,5,1,1);*/
+
     row++;
 
 
@@ -84,7 +94,17 @@ void CorDialog::SetupUI()
     {
      glyout->addWidget(WDFunc::NewSPB(this, "Tg_init1."+QString::number(i), -10, 10, 2, paramcolor), row,2+i,1,1);
     }
+
+    /*pb = new QPushButton("Задать начальные значения тангенсов");
+    #if PROGSIZE != PROGSIZE_EMUL
+        connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorTg()));
+    #endif
+        if (StdFunc::IsInEmulateMode())
+            pb->setEnabled(false);
+
+    glyout->addWidget(pb, row,5,1,1);*/
     row++;
+
     glyout->addWidget(WDFunc::NewLBL(this, "Коррекция  tg δ вводов:"), row,1,1,1);
 
     for (int i = 0; i < 3; i++)
@@ -98,12 +118,23 @@ void CorDialog::SetupUI()
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Начальное значение угла тока небаланса:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Phy_unb_init1", -360, 360, 1, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "Phy_unb_init1", 0, 10000, 1, paramcolor), row,2,1,3);
+
+
+    /*pb = new QPushButton("Задать начальные значения небаланса");
+    #if PROGSIZE != PROGSIZE_EMUL
+        connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorNotBalance()));
+    #endif
+        if (StdFunc::IsInEmulateMode())
+            pb->setEnabled(false);
+
+    glyout->addWidget(pb, row,5,1,1);*/
 
     row++;
 
     //QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
-    QPushButton *pb = new QPushButton("Записать в модуль");
+
+    pb = new QPushButton("Записать в модуль");
 #if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorBd()));
 #endif
@@ -125,38 +156,6 @@ void CorDialog::SetupUI()
 
     row++;
 
-    pb = new QPushButton("Задать начальные значения емкостей");
-    #if PROGSIZE != PROGSIZE_EMUL
-        connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorCapacity()));
-    #endif
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
-
-    glyout->addWidget(pb, row,1,1,5);
-
-    row++;
-
-    pb = new QPushButton("Задать начальные значения тангенсов");
-    #if PROGSIZE != PROGSIZE_EMUL
-        connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorTg()));
-    #endif
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
-
-    glyout->addWidget(pb, row,1,1,5);
-
-    row++;
-
-    pb = new QPushButton("Задать начальные значения небаланса");
-    #if PROGSIZE != PROGSIZE_EMUL
-        connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorNotBalance()));
-    #endif
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
-
-    glyout->addWidget(pb, row,1,1,5);
-
-    row++;
 
     pb = new QPushButton("Задать коррекцию");
     #if PROGSIZE != PROGSIZE_EMUL
@@ -177,6 +176,19 @@ void CorDialog::SetupUI()
             pb->setEnabled(false);
 
     glyout->addWidget(pb, row,1,1,5);
+
+    row++;
+
+    pb = new QPushButton("Задать начальные значения");
+    #if PROGSIZE != PROGSIZE_EMUL
+      connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorNotBalance()));
+    #endif
+    if (StdFunc::IsInEmulateMode())
+       pb->setEnabled(false);
+
+    glyout->addWidget(pb, row,1,1,5);
+
+
 
     //hlyout->addWidget(glyout,Qt::AlignTop);
     lyout->addLayout(glyout,Qt::AlignTop);
@@ -225,7 +237,7 @@ void CorDialog::FillCor()
 
 void CorDialog::GetCorBd()
 {
-    if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
+    if(Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::ER_NOERROR)
     FillCor();
 }
 
@@ -233,7 +245,7 @@ void CorDialog::WriteCorBd()
 {
 
     FillBackCor();
-    if(Commands::WriteBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
+    if(Commands::WriteBd(7, CorBlock, sizeof(CorData)) == Error::ER_NOERROR)
     EMessageBox::information(this, "INFO", "Записано успешно");
     else
     EMessageBox::information(this, "INFO", "Ошибка");
@@ -262,7 +274,7 @@ void CorDialog::WriteCorTg()
 
 void CorDialog::WriteCorNotBalance()
 {
-    if(Commands::WriteCom(3) == Error::ER_NOERROR)
+    if(Commands::WriteCom(1) == Error::ER_NOERROR)   // задание общей коррекции
     EMessageBox::information(this, "INFO", "Записано успешно");
     else
     EMessageBox::information(this, "INFO", "Ошибка");

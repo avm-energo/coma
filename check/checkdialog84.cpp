@@ -36,7 +36,7 @@ CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent) : EAbstractCheck
     SetBd(6, &Ch84->Bd_block1, sizeof(Check_84::Bd1));
 
     if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
-    sl = QStringList() << "Общие" << "Аналоговые" << "Несимметрия" << "Температура";
+    sl = QStringList() << "Общие" << "Аналоговые" << "Несимметрия" << "Температура" << "Проверка выходных реле";
     else
     sl = QStringList() << "Общие" << "Аналоговые" << "Несимметрия";
 
@@ -62,10 +62,12 @@ QWidget *CheckDialog84::BdUI(int bdnum)
         return Ch->Bd0W(this);
     case 1: // Блок #1
         return Ch84->Bd1W(this);
-    case 2: // Блок #1
+    case 2: // Блок #2
         return Ch84->Bd2W(this);
-    case 3: // Блок #1
+    case 3: // Блок #3
         return Ch84->Bd3W(this);
+    case 4: // Блок #1
+        return Ch84->Bd4W(this);
 
     default:
         return new QWidget;

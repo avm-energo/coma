@@ -21,6 +21,8 @@ public:
     QTimer *timerRead;
 
 
+
+
 private:
 
     Config84 *C84;
@@ -36,6 +38,8 @@ private:
 signals:
 
 public slots:
+    void Set104(double);
+    void SetCType(int);
 
 
 
