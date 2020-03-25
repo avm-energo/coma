@@ -37,7 +37,7 @@
 #include "commands.h"
 #endif
 
-QString MainWindow::interface;
+QString MainWindow::MainInterface;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -379,15 +379,15 @@ void MainWindow::Stage1_5()
 {
     ShowInterfaceDialog();
     ShowConnectDialog();
-    if(interface.size() != 0)
+    if(MainInterface.size() != 0)
     {
-        if(interface == "Ethernet и RS485")
+        if(MainInterface == "Ethernet и RS485")
         {
    #ifdef ETHENABLE
 
    #endif
         }
-        else if(interface == "USB")
+        else if(MainInterface == "USB")
         {
            insl.clear();
 
@@ -422,11 +422,11 @@ void MainWindow::Stage1_5()
 
 void MainWindow::Stage2()
 {
-    if(interface.size() != 0)
+    if(MainInterface.size() != 0)
     {
         //if(interface == "Ethernet и RS485")
 
-        if(interface == "USB")
+        if(MainInterface == "USB")
         {
             int res = ModuleBSI::SetupBSI();
             if (res == Error::ER_CANAL)
@@ -683,9 +683,9 @@ void MainWindow::ShowConnectDialog()
     QVBoxLayout *lyout = new QVBoxLayout;   
     QStringListModel *tmpmodel = new QStringListModel;
 
-    if(interface.size() != 0)
+    if(MainInterface.size() != 0)
     {
-         if(interface == "USB")
+         if(MainInterface == "USB")
          {
              //#ifdef USBENABLE
              cn = new EUsbHid;
@@ -716,7 +716,7 @@ void MainWindow::ShowConnectDialog()
             portscb->setModel(tmpmodel);
             lyout->addWidget(portscb);
          }
-         else if(interface == "Ethernet и RS485")
+         else if(MainInterface == "Ethernet и RS485")
          {
 
             /*tmpmodel->setStringList(device);
@@ -812,7 +812,7 @@ void MainWindow::ShowConnectDialog()
         connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
         hlyout->addWidget(pb);
         pb = new QPushButton("Отмена");
-        if(interface == "USB")
+        if(MainInterface == "USB")
         connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));
 
         connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
@@ -876,9 +876,9 @@ void MainWindow::GetAbout()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Disconnect()
 {
-    if(interface.size() != 0 && (!StdFunc::IsInEmulateMode()))
+    if(MainInterface.size() != 0 && (!StdFunc::IsInEmulateMode()))
     {
-        if(interface == "USB")
+        if(MainInterface == "USB")
         cn->Disconnect();
         else
         emit stopit();
@@ -929,9 +929,9 @@ void MainWindow::DisconnectAndClear()
         thr = nullptr;
         Time = nullptr;
 
-        if(interface.size() != 0)
+        if(MainInterface.size() != 0)
         {
-           if(interface == "USB")
+           if(MainInterface == "USB")
            {
              EMessageBox::information(this, "Разрыв связи", "Связь с "+ModuleBSI::ModuleTypeString+" разорвана");
            }
@@ -1025,7 +1025,7 @@ void MainWindow::ParseString(QString Str)
 
 void MainWindow::ParseInter(QString Str)
 {
-    interface = Str;
+    MainInterface = Str;
 }
 
 /*void MainWindow::SaveModBusString(QString ModBus)

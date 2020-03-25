@@ -12,7 +12,6 @@
 #include "../iec104/iec104.h"
 #include "../check/eabstractcheckdialog.h"
 #include "../check/checkdialog84.h"
-#include "../dialogs/cordialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../modbus/modbus.h"
 #include "../check/checktempmodbusdialog.h"
@@ -60,9 +59,8 @@ public:
     //CheckDialog84* Ch84;
     QString IPtemp, FullName, SaveDevice, instr;
     QStringList sl, slfinal, insl;
-    static QString interface;
+    static QString MainInterface;
     quint8 HaveAlreadyRed = 0;
-    CorDialog *CorD;
     JournalDialog *JourD;
     fwupdialog *FwUpD;
     quint16 AdrBaseStation;

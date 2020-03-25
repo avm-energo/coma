@@ -7,6 +7,7 @@
 #include "../gen/mainwindow.h"
 #include "../check/checkdialog84.h"
 #include "../check/eabstractcheckdialog.h"
+#include "../dialogs/cordialog.h"
 
 class Coma : public MainWindow
 {
@@ -41,6 +42,7 @@ private slots:
 private:
     const QVector<int> MTBs = {0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84};
 //    int Mode; // режим запуска программы
+    CorDialog *CorD;
 
     void SetupUI();
     void AddEmulToToolbar(QToolBar *tb);

@@ -272,7 +272,7 @@ void Coma::Stage3()
     connect(this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)),idlg,SLOT(FillBsi()));
     connect(this,SIGNAL(ClearBsi()),idlg,SLOT(ClearBsi()));
 
-    if(interface == "USB")
+    if(MainInterface == "USB")
     {
         MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
         MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
@@ -347,7 +347,7 @@ void Coma::Stage3()
         connect(MainTW, SIGNAL(tabClicked(int)), ConfM, SLOT(ReadConf(int))); //tabClicked
     }
 
-    if (MTypeB == 0xA2 && interface == "USB") // для МНК
+    if (MTypeB == 0xA2 && MainInterface == "USB") // для МНК
     {
 
         Time = new MNKTime();
@@ -393,7 +393,7 @@ void Coma::Stage3()
     //connect(MainTW, SIGNAL(currentChanged()))
     connect(this,SIGNAL(FinishAll()),this,SLOT(FinishHim()));
 
-    if(interface == "USB")
+    if(MainInterface == "USB")
     {
         FwUpD = new fwupdialog;
         MainTW->addTab(FwUpD, "Загрузка ВПО");
@@ -495,7 +495,7 @@ void Coma::PrepareDialogs()
 
        }
 
-       if(interface == "USB")
+       if(MainInterface == "USB")
        {
          CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
        }
@@ -555,7 +555,7 @@ void Coma::PrepareDialogs()
         setMinimumSize(QSize(800, 650));
         ConfM = new ConfDialog84(S2Config);
 
-        if(ch104 != nullptr && interface == "Ethernet и RS485")
+        if(ch104 != nullptr && MainInterface == "Ethernet и RS485")
         {
           connect(ConfM,SIGNAL(ReadConfig(char*)), ch104, SLOT(SelectFile(char*)));
           connect(ch104,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)), ConfM, SLOT(FillConf(QVector<S2::DataRec>*)));
