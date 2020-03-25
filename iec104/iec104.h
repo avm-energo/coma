@@ -86,7 +86,7 @@
 #include <QMutex>
 
 
-#define CN_MAXFILESIZE  30000 // максимальный размер выходного файла
+//#define CN_MAXFILESIZE  30000 // максимальный размер выходного файла
 #define SECTIONSIZE 2048
 #define SEGMENTSIZE 230
 #define OFFSET 13

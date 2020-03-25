@@ -27,7 +27,8 @@ MNKTime::MNKTime(QWidget *parent) :
 {
     //int i;
 
-    FinishThread = true;    
+    FinishThread = true;
+    closeThr = false;
     myDateTime.setTime_t(unixtimestamp);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
@@ -36,7 +37,7 @@ MNKTime::MNKTime(QWidget *parent) :
 
 MNKTime::~MNKTime()
 {
-
+    closeThr = true;
 }
 
 void MNKTime::SetupUI()
@@ -186,6 +187,9 @@ void MNKTime::slot2_timeOut()
 
             #endif
         }
+
+        if(closeThr)
+        return;
 
         qApp->processEvents();
     }

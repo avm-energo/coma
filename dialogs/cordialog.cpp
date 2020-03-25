@@ -159,7 +159,7 @@ void CorDialog::SetupUI()
 
 void CorDialog::FillBackCor()
 {
-    /*int i;
+    int i;
     QString tmps;
 
     WDFunc::SPBData(this, QString::number(4010), CorBlock->Phy_unb_init);
@@ -173,13 +173,13 @@ void CorDialog::FillBackCor()
       //CorBlock->C_init[i]=ToFloat(tmps);
       WDFunc::SPBData(this, QString::number(4003+i), CorBlock->Tg_init[i]);
       WDFunc::SPBData(this, QString::number(4006+i), CorBlock->corTg[i]);
-    }*/
+    }
 }
 
 
 void CorDialog::FillCor()
 {
-   /* int i;
+   int i;
 
     WDFunc::SetSPBData(this, QString::number(4010), CorBlock->Phy_unb_init);
     WDFunc::SetSPBData(this, QString::number(4009), CorBlock->Iunb_init);
@@ -191,7 +191,7 @@ void CorDialog::FillCor()
       WDFunc::SetSPBData(this, QString::number(4000+i), CorBlock->C_init[i]);
       WDFunc::SetSPBData(this, QString::number(4003+i),CorBlock->Tg_init[i]);
       WDFunc::SetSPBData(this, QString::number(4006+i), CorBlock->corTg[i]);
-    }*/
+    }
 }
 
 void CorDialog::GetCorBd(int index)
@@ -356,10 +356,6 @@ void CorDialog::UpdateFlCorData(Parse104::FlSignals104 *Signal)
     for(i=0; i<Signal->SigNumber; i++)
     {
         sig = *(Signal+i);
-        //WDFunc::SetLBLText(Ch, QString::number((Signal+i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal));
-        //if((Signal+i)->fl.SigAdr == 101 || (Signal+i)->fl.SigAdr == 102)
-        //Ch->FillBd0(this, QString::number((Signal+i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal));
-
         //if((Signal+i)->fl.SigAdr >= 1000 || (Signal+i)->fl.SigAdr <= 1009)
         FillBd(this, QString::number((Signal+i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal));
     }

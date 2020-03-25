@@ -23,7 +23,7 @@ public:
     QTimer *timer;
     QTimer *timerRead;
     //QThread *thr;
-    bool FinishThread;
+    bool FinishThread, closeThr;
     uint32_t unixtimestamp = 1423062000;
     QDateTime myDateTime;
 

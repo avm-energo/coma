@@ -258,9 +258,11 @@ void Coma::AddActionsToMenuBar(QMenuBar *menubar)
 void Coma::Stage3()
 {
     QString str;
+    quint32 MTypeB = 0;
+    quint32 MTypeM = 0;
     ConfB = ConfM = nullptr;
     JourD = nullptr;
-    CorD = nullptr;
+    //CorD = nullptr;
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
@@ -269,22 +271,27 @@ void Coma::Stage3()
     InfoDialog *idlg = new InfoDialog;
     connect(this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)),idlg,SLOT(FillBsi()));
     connect(this,SIGNAL(ClearBsi()),idlg,SLOT(ClearBsi()));
-    //MainTW->addTab(idlg, "Информация");
-    quint32 MTypeB = 0xA2;//ModuleBSI::GetMType(BoardTypes::BT_BASE);
-    quint32 MTypeM = 0xA2;//ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
-    if (MTypeB < 0xA2) // диапазон модулей АВ-ТУК
+
+    if(interface == "USB")
+    {
+        MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
+        MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
+        CorD = new CorDialog();
+        JourD = new JournalDialog();
+    }
+    else
+    {
+        MTypeB = 0xA2;
+        MTypeM = 0x84;
+    }
+    /*if (MTypeB < 0xA2) // диапазон модулей АВ-ТУК
     {
         MainConfDialog = new ConfDialog(S2Config, MTypeB, MTypeM);
         MainTuneDialog = new ConfDialog(S2ConfigForTune, MTypeB, MTypeM);
         //MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
-    }
+    }*/
 
-    if(interface == "USB")
-    {
-       CorD = new CorDialog();
-       JourD = new JournalDialog();
-    }
-    else if(interface == "Ethernet и RS485")
+    if(interface == "Ethernet и RS485")
     {
        if(insl.at(1) != "MODBUS")
        {
@@ -370,9 +377,11 @@ void Coma::Stage3()
     }
 
     if (CorD != nullptr)
-    MainTW->addTab(CorD, "Коррекция");
-    CorD->corDIndex = MainTW->indexOf(CorD);
-    connect(MainTW, SIGNAL(tabClicked(int)), CorD, SLOT(GetCorBd(int))); //tabClicked
+    {
+        MainTW->addTab(CorD, "Коррекция");
+        CorD->corDIndex = MainTW->indexOf(CorD);
+        connect(MainTW, SIGNAL(tabClicked(int)), CorD, SLOT(GetCorBd(int))); //tabClicked
+    }
 
     if (JourD != nullptr)
     MainTW->addTab(JourD, "Журналы");
@@ -389,6 +398,8 @@ void Coma::Stage3()
         FwUpD = new fwupdialog;
         MainTW->addTab(FwUpD, "Загрузка ВПО");
     }
+
+    MainTW->addTab(idlg, "О приборе");
 
     MainTW->repaint();
     MainTW->show();
@@ -447,10 +458,14 @@ void Coma::PrepareDialogs()
             //connect(ch104,SIGNAL(readConf()), ch104,SIGNAL(readConf()));
             //connect(ch104,SIGNAL(ethdisconnected()), this, SLOT(DisconnectMessage()));
             //connect(ch104,SIGNAL(ethNoconnection()), this, SLOT(DisconnectAndClear()));
+
             connect(CorD,SIGNAL(sendCom45(quint32*)), ch104, SLOT(Com45(quint32*)));
             connect(CorD,SIGNAL(sendCom50(quint16*, float*)), ch104, SLOT(Com50(quint16*,float*)));
+
             connect(ch104,SIGNAL(sendMessageOk()), CorD, SLOT(MessageOk()));
+
             connect(ch104,SIGNAL(relesignalsready(Parse104::SponSignals104*)), this, SLOT(UpdateReleWidget(Parse104::SponSignals104*)));
+
             connect(ch104,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),CorD,SLOT(UpdateFlCorData(Parse104::FlSignals104*)));
 
             connect(ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));

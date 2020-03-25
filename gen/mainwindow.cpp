@@ -915,7 +915,6 @@ void MainWindow::DisconnectAndClear()
     #endif
 
         CheckB = CheckM = nullptr;
-        Time = nullptr;
         emit ClearBsi();
         ClearTW();
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
@@ -928,6 +927,7 @@ void MainWindow::DisconnectAndClear()
         emit FinishAll();
 
         thr = nullptr;
+        Time = nullptr;
 
         if(interface.size() != 0)
         {
@@ -1072,6 +1072,7 @@ void MainWindow::DisconnectMessage()
 
 void MainWindow::FinishHim()
 {
+    Time->closeThr = true;
     thr->exit();
     //thr->wait(100);
     thr->deleteLater();
