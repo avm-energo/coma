@@ -38,6 +38,7 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
     connect(eth,SIGNAL(disconnected()), parent, SLOT(DisconnectAndClear()));
     connect(eth,SIGNAL(ethNoconnection()), parent, SLOT(DisconnectAndClear()));
 
+
     Parse = new Parse104;
     Parse->timer104 = new QTimer;
     Parse->timer104->setInterval(15000);
@@ -89,6 +90,7 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
 
 iec104::~iec104()
 {
+    deleteLater();
 
 }
 
@@ -839,7 +841,7 @@ void iec104::GetSection(char* numFile)
     ASDU Cmd;
     //char *ptr = static_cast<char*>(Cmd.data());
     quint16 VR = Parse->V_R;
-    int i;
+    //int i;
     //void* temp = &SC;
 
     /*SC.Ident.typeIdent = F_SC_NA_1;
@@ -970,7 +972,7 @@ void iec104::FileReady(QVector<S2::DataRec>* File)
 
     //char *ptr = static_cast<char*>(Cmd.data());
     quint16 VR = Parse->V_R;
-    int i;
+    //int i;
 
     Parse->DR = File;
 

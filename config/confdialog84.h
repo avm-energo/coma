@@ -37,6 +37,8 @@ private:
 signals:
 
 public slots:
+    void Set104(double);
+    void SetCType(int);
 
 private slots:
     void SetDefConf();

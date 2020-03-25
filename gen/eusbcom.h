@@ -10,7 +10,7 @@ class EUsbCom : public EAbstractProtocomChannel
 {
     Q_OBJECT
 public:
-    explicit EUsbCom(QObject *parent = 0);
+    explicit EUsbCom(QObject *parent = nullptr);
     ~EUsbCom();
 
     QSerialPortInfo info;

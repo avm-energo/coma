@@ -10,12 +10,12 @@
 #include "s2.h"
 #include "log.h"
 
-#ifdef COMPORTENABLE
-#define CN_MAXSEGMENTLENGTH 764 // 768-4 ('<',cmd,L,L) максимальная длина одного сегмента (0x300)
-#endif
-#ifdef USBENABLE
+//#ifdef COMPORTENABLE
+//#define CN_MAXSEGMENTLENGTH 764 // 768-4 ('<',cmd,L,L) максимальная длина одного сегмента (0x300)
+//#endif
+//#ifdef USBENABLE
 #define CN_MAXSEGMENTLENGTH 60 // 64-4 ('<',cmd,L,L)
-#endif
+//#endif
 
 // Канал связи с модулем
 

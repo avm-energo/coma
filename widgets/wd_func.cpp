@@ -502,3 +502,14 @@ bool WDFunc::LE_read_data(QWidget *w, const QString &lename, QString &levalue)
     levalue = le->text();
     return true;
 }
+
+bool WDFunc::LE_write_data(QWidget *w, QString &levalue, const QString &lename)
+{
+    QLineEdit *le = w->findChild<QLineEdit *>(lename);
+    if (le == nullptr)
+        return false;
+    le->text() = levalue;
+    le->setText(levalue);
+    //SetTEData(w, lename, levalue);
+    return true;
+}

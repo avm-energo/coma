@@ -34,14 +34,15 @@ public:
     void ChooseValuesToWrite();
     void SetDefaultValuesToWrite();
     void PrepareAnalogMeasurements();
-    void UpdateModBusData(ModBusSignal* Signal);
+
 #endif
     QWidget *CustomTab();
 
 signals:
 
 public slots:
-
+    void ErrorRead();
+    void UpdateModBusData(ModBusSignal* Signal, int *size);
 
 private:
     QString ValuesFormat, WidgetFormat;

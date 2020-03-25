@@ -30,10 +30,14 @@ CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent, iec104* channel)
     Ch84 = new Check_84(board, parent);
     Ch = new Check;
 //    BdNum = 11;
-    ch104 = channel;
-    connect(ch104,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),this,SLOT(UpdateFlData(Parse104::FlSignals104*)));
-    connect(ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),this,SLOT(UpdateSponData(Parse104::SponSignals104*)));
-    connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),this,SLOT(UpdateBS104Data(Parse104::BS104Signals*)));
+    setAttribute(Qt::WA_DeleteOnClose);
+    if(channel != nullptr)
+    {
+        ch104 = channel;
+        connect(ch104,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),this,SLOT(UpdateFlData(Parse104::FlSignals104*)));
+        connect(ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),this,SLOT(UpdateSponData(Parse104::SponSignals104*)));
+        connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),this,SLOT(UpdateBS104Data(Parse104::BS104Signals*)));
+    }
 
     SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
     SetBd(6, &Ch84->Bd_block1, sizeof(Check_84::Bd1));

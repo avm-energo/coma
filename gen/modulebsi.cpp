@@ -3,6 +3,9 @@
 #include "modulebsi.h"
 #include "error.h"
 #include "stdfunc.h"
+#if PROGSIZE != PROGSIZE_EMUL
+#include "commands.h"
+#endif
 
 
 
@@ -18,7 +21,7 @@ ModuleBSI::ModuleBSI()
 #if PROGSIZE != PROGSIZE_EMUL
 int ModuleBSI::SetupBSI()
 {
-    //if (Commands::GetBsi(ModuleBsi) != Error::ER_NOERROR)
+    if (Commands::GetBsi(ModuleBsi) != Error::ER_NOERROR)
         return Error::ER_CANAL;
 /*    quint32 mtype;
     QString mtypestring;
@@ -33,10 +36,10 @@ int ModuleBSI::SetupBSI()
             Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].TextString;
     ModuleBSI::Bsi bsi = ModuleBsi;
     QString tmps = ModuleTypeString;
-/*#if PROGSIZE >= PROGSIZE_LARGE
+#if PROGSIZE >= PROGSIZE_LARGE
     if (!IsKnownModule())
         return Error::ER_RESEMPTY;
-#endif*/
+#endif
     return Error::ER_NOERROR;
 }
 #endif
@@ -115,12 +118,12 @@ int ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
     else // иначе заполнить значениями из модуля
     {
         //iec104::GetFile();
-        /*if ((res = Commands::GetFile(1, S2Config)) != Error::ER_NOERROR)
+        if ((res = Commands::GetFile(1, S2Config)) != Error::ER_NOERROR)
         {
             QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
             EMessageBox::error(w, "ошибка", "Ошибка чтения конфигурации из " + tmps + QString::number(res));
             return Error::ER_GENERALERROR;
-        }*/
+        }
 
     }
     return Error::ER_NOERROR;

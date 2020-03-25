@@ -2,13 +2,13 @@
 #define COMMANDS_H
 
 #include "s2.h"
-#ifdef USBENABLE
+//#ifdef USBENABLE
 #include "eusbhid.h"
-#else
-#ifdef COMPORTENABLE
+//#else
+//#ifdef COMPORTENABLE
 #include "eusbcom.h"
-#endif
-#endif
+//#endif
+//#endif
 #include "modulebsi.h"
 
 //#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением батареи
@@ -60,12 +60,12 @@ public:
 private:
 };
 
-#ifdef USBENABLE
+//#ifdef USBENABLE
     extern EUsbHid *cn;
-#else
-#ifdef COMPORTENABLE
-    extern EUsbCom *cn;
-#endif
-#endif
+//#else
+//#ifdef COMPORTENABLE
+//    extern EUsbCom *cn;
+//#endif
+//#endif
 
 #endif // COMMANDS_H

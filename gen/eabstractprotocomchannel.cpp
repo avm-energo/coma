@@ -71,12 +71,12 @@ bool EAbstractProtocomChannel::IsWriteUSBLog()
 
 void EAbstractProtocomChannel::TranslateDeviceAndSave(const QString &str)
 {
-#ifdef COMPORTENABLE
+/*#ifdef COMPORTENABLE
     ComPort = str;
     QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
     sets->setValue("Port", ComPort);
-#endif
-#ifdef USBENABLE
+#endif*/
+//#ifdef USBENABLE
     // формат строки: "VEN_" + QString::number(venid, 16) + "_ & DEV_" + QString::number(prodid, 16) + "_ & SN_" + sn;
     QStringList sl = str.split("_"); // 1, 3 и 5 - полезная нагрузка
     if (sl.size() < 6)
@@ -91,7 +91,7 @@ void EAbstractProtocomChannel::TranslateDeviceAndSave(const QString &str)
     tmps = sl.at(5);
     int z = tmps.toWCharArray(UsbPort.serial);
     UsbPort.serial[z] = '\x0';
-#endif
+//#endif
 }
 
 void EAbstractProtocomChannel::InitiateSend()

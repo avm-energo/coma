@@ -7,7 +7,7 @@
 #include "../config/confdialog.h"
 #include "../gen/modulebsi.h"
 #include "../gen/maindef.h"
-//#include "eabstractprotocomchannel.h"
+#include "eabstractprotocomchannel.h"
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
 #include "../check/eabstractcheckdialog.h"
@@ -16,6 +16,8 @@
 #include "../dialogs/journalsdialog.h"
 #include "../modbus/modbus.h"
 #include "../check/checktempmodbusdialog.h"
+#include "../dialogs/time.h"
+#include "../dialogs/fwupdialog.h"
 
 
 #define C_TE_MAXSIZE    100
@@ -56,13 +58,17 @@ public:
     ModBus* modBus;
     checktempmodbusdialog *CheckModBus;
     //CheckDialog84* Ch84;
-    QString IPtemp, FullName, interface, SaveDevice, instr;
-    QStringList sl, insl, slfinal;
+    QString IPtemp, FullName, SaveDevice, instr;
+    QStringList sl, slfinal, insl;
+    static QString interface;
     quint8 HaveAlreadyRed = 0;
     CorDialog *CorD;
     JournalDialog *JourD;
+    fwupdialog *FwUpD;
     quint16 AdrBaseStation;
     ModBus::ModBus_Settings Settings;
+    MNKTime *Time;
+    QThread *thr;
 
 
     struct DeviceConnectStruct
@@ -149,6 +155,7 @@ public:
     QWidget *HthWidget();
     QWidget *ReleWidget();
     QWidget *Least();
+
 #if PROGSIZE >= PROGSIZE_LARGE
     void SetSlideWidget();
 #endif
@@ -184,6 +191,7 @@ private:
 
 public slots:
     void DisconnectAndClear();
+    void FinishHim();
     void UpdateReleWidget(Parse104::SponSignals104*);
 
 private slots:
@@ -200,6 +208,7 @@ private slots:
     void PasswordCheck(QString psw);
     void ConnectMessage();
     void DisconnectMessage();
+    void SetPortSlot(QString port);
 
 
 #if PROGSIZE != PROGSIZE_EMUL
@@ -212,6 +221,7 @@ private slots:
     void SetProgressBar2Size(int size);
     void SetProgressBar2(int cursize);
     void ShowConnectDialog();
+    void ShowInterfaceDialog();
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE || PROGSIZE == PROGSIZE_EMUL
     void StartEmul();
@@ -225,6 +235,7 @@ private slots:
 #endif
     void ShowErrorMessageBox(QString message);
     void ParseString(QString Str);
+    void ParseInter(QString Str);
     //void SaveModBusString(QString ModBus);
     //void SaveInterface(QString Interface);
     //void SDevice(QString Device);
@@ -237,3 +248,4 @@ protected:
 };
 
 #endif // MAINWINDOW_H
+

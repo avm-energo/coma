@@ -25,6 +25,9 @@
 #include "../gen/stdfunc.h"
 #include "../gen/maindef.h"
 #include "../gen/colors.h"
+#if PROGSIZE != PROGSIZE_EMUL
+#include "../gen/commands.h"
+#endif
 
 
 CorDialog::CorDialog(QWidget *parent) :
@@ -53,25 +56,36 @@ CorDialog::~CorDialog()
 
 void CorDialog::SetupUI()
 {
-    QWidget *cp2 = new QWidget;
+    //QWidget *cp2 = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     ETableView *tv = new ETableView;
     tv->setObjectName("cor");
     int row = 0;
     QString paramcolor = MAINWINCLR;
+    QPushButton *pb = new QPushButton();
 
     glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения емкостей вводов:"), row,1,1,1);
 
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "C_init1."+QString::number(i), 0, 10000, 1, paramcolor), row,2+i,1,1);
+     glyout->addWidget(WDFunc::NewSPB(this, QString::number(4000+i), 0, 10000, 1, paramcolor), row,2+i,1,1);
 
      /*QLineEdit *le = new QLineEdit("");
      le->setObjectName("C_init1."+QString::number(i));
      le->setStyleSheet(ValuesLEFormat);
      glyout->addWidget(le,row,2+i,1,1);*/
     }
+
+    /*pb = new QPushButton("Задать начальные значения емкостей");
+    #if PROGSIZE != PROGSIZE_EMUL
+        connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorCapacity()));
+    #endif
+        if (StdFunc::IsInEmulateMode())
+            pb->setEnabled(false);
+
+    glyout->addWidget(pb, row,5,1,1);*/
+
     row++;
 
 
@@ -80,28 +94,49 @@ void CorDialog::SetupUI()
 
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "Tg_init1."+QString::number(i), -10, 10, 2, paramcolor), row,2+i,1,1);
+     glyout->addWidget(WDFunc::NewSPB(this, QString::number(4003+i), -10, 10, 2, paramcolor), row,2+i,1,1);
     }
+
+    /*pb = new QPushButton("Задать начальные значения тангенсов");
+    #if PROGSIZE != PROGSIZE_EMUL
+        connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorTg()));
+    #endif
+        if (StdFunc::IsInEmulateMode())
+            pb->setEnabled(false);
+
+    glyout->addWidget(pb, row,5,1,1);*/
     row++;
+
     glyout->addWidget(WDFunc::NewLBL(this, "Коррекция  tg δ вводов:"), row,1,1,1);
 
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewSPB(this, "corTg1."+QString::number(i), -10, 10, 2, paramcolor), row, 2+i, 1, 1);
+     glyout->addWidget(WDFunc::NewSPB(this, QString::number(4006+i), -10, 10, 2, paramcolor), row, 2+i, 1, 1);
     }
     row++;
 
     glyout->addWidget(WDFunc::NewLBL(this, "Начальное действ. значение тока небаланса:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Iunb_init1", 0, 10000, 1, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, QString::number(4009), 0, 10000, 1, paramcolor), row,2,1,3);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Начальное значение угла тока небаланса:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Phy_unb_init1", 0, 10000, 1, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, QString::number(4010), 0, 10000, 1, paramcolor), row,2,1,3);
+
+
+    /*pb = new QPushButton("Задать начальные значения небаланса");
+    #if PROGSIZE != PROGSIZE_EMUL
+        connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorNotBalance()));
+    #endif
+        if (StdFunc::IsInEmulateMode())
+            pb->setEnabled(false);
+
+    glyout->addWidget(pb, row,5,1,1);*/
 
     row++;
 
     //QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
-    QPushButton *pb = new QPushButton("Записать в модуль");
+
+    pb = new QPushButton("Записать в модуль");
 #if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorBd()));
 #endif
@@ -114,7 +149,7 @@ void CorDialog::SetupUI()
 
     pb = new QPushButton("Прочитать из модуля");
     #if PROGSIZE != PROGSIZE_EMUL
-        connect(pb,SIGNAL(clicked()),this,SLOT(GetCorBd()));
+        connect(pb,SIGNAL(clicked()),this,SLOT(GetCorBdButton()));
     #endif
         if (StdFunc::IsInEmulateMode())
             pb->setEnabled(false);
@@ -123,40 +158,8 @@ void CorDialog::SetupUI()
 
     row++;
 
-    pb = new QPushButton("Задать начальные значения емкостей");
-    #if PROGSIZE != PROGSIZE_EMUL
-        connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorCapacity()));
-    #endif
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
 
-    glyout->addWidget(pb, row,1,1,5);
-
-    row++;
-
-    pb = new QPushButton("Задать начальные значения тангенсов");
-    #if PROGSIZE != PROGSIZE_EMUL
-        connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorTg()));
-    #endif
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
-
-    glyout->addWidget(pb, row,1,1,5);
-
-    row++;
-
-    pb = new QPushButton("Задать начальные значения небаланса");
-    #if PROGSIZE != PROGSIZE_EMUL
-        connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorNotBalance()));
-    #endif
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
-
-    glyout->addWidget(pb, row,1,1,5);
-
-    row++;
-
-    pb = new QPushButton("Задать коррекцию");
+    /*pb = new QPushButton("Задать коррекцию");
     #if PROGSIZE != PROGSIZE_EMUL
         connect(pb,SIGNAL(clicked()),this,SLOT(SetCor()));
     #endif
@@ -165,7 +168,7 @@ void CorDialog::SetupUI()
 
     glyout->addWidget(pb, row,1,1,5);
 
-    row++;
+    row++;*/
 
     pb = new QPushButton("Сбросить коррекцию");
     #if PROGSIZE != PROGSIZE_EMUL
@@ -175,6 +178,19 @@ void CorDialog::SetupUI()
             pb->setEnabled(false);
 
     glyout->addWidget(pb, row,1,1,5);
+
+    row++;
+
+    pb = new QPushButton("Задать начальные значения");
+    #if PROGSIZE != PROGSIZE_EMUL
+      connect(pb,SIGNAL(clicked()),this,SLOT(WriteCor()));
+    #endif
+    if (StdFunc::IsInEmulateMode())
+       pb->setEnabled(false);
+
+    glyout->addWidget(pb, row,1,1,5);
+
+
 
     //hlyout->addWidget(glyout,Qt::AlignTop);
     lyout->addLayout(glyout,Qt::AlignTop);
@@ -186,45 +202,65 @@ void CorDialog::SetupUI()
 
 void CorDialog::FillBackCor()
 {
-    int i;
+    /*int i;
     QString tmps;
 
-    WDFunc::SPBData(this, "Phy_unb_init1", CorBlock->Phy_unb_init);
-    WDFunc::SPBData(this, "Iunb_init1", CorBlock->Iunb_init);
+    WDFunc::SPBData(this, QString::number(4010), CorBlock->Phy_unb_init);
+    WDFunc::SPBData(this, QString::number(4009), CorBlock->Iunb_init);
 
     for (i = 0; i < 3; i++)
     {
-      WDFunc::SPBData(this, "C_init1."+QString::number(i), CorBlock->C_init[i]);
+      WDFunc::SPBData(this, QString::number(4000+i), CorBlock->C_init[i]);
 
       //WDFunc::LEData(this, "C_init1."+QString::number(i), tmps);
       //CorBlock->C_init[i]=ToFloat(tmps);
-      WDFunc::SPBData(this, "Tg_init1."+QString::number(i), CorBlock->Tg_init[i]);
-      WDFunc::SPBData(this, "corTg1."+QString::number(i), CorBlock->corTg[i]);
-    }
+      WDFunc::SPBData(this, QString::number(4003+i), CorBlock->Tg_init[i]);
+      WDFunc::SPBData(this, QString::number(4006+i), CorBlock->corTg[i]);
+    }*/
 }
 
 
 void CorDialog::FillCor()
 {
-    int i;
+   /* int i;
 
-    WDFunc::SetSPBData(this, "Phy_unb_init1", CorBlock->Phy_unb_init);
-    WDFunc::SetSPBData(this, "Iunb_init1", CorBlock->Iunb_init);
+    WDFunc::SetSPBData(this, QString::number(4010), CorBlock->Phy_unb_init);
+    WDFunc::SetSPBData(this, QString::number(4009), CorBlock->Iunb_init);
 
     for (i = 0; i < 3; i++)
     {
 
       //WDFunc::SetLEData(this, "C_init1."+QString::number(i), QString::number(CorBlock->C_init[i], 'f', 5));
-      WDFunc::SetSPBData(this, "C_init1."+QString::number(i), CorBlock->C_init[i]);
-      WDFunc::SetSPBData(this, "Tg_init1."+QString::number(i),CorBlock->Tg_init[i]);
-      WDFunc::SetSPBData(this, "corTg1."+QString::number(i), CorBlock->corTg[i]);
-    }
+      WDFunc::SetSPBData(this, QString::number(4000+i), CorBlock->C_init[i]);
+      WDFunc::SetSPBData(this, QString::number(4003+i),CorBlock->Tg_init[i]);
+      WDFunc::SetSPBData(this, QString::number(4006+i), CorBlock->corTg[i]);
+    }*/
 }
 
-void CorDialog::GetCorBd()
+void CorDialog::GetCorBd(int index)
 {
-    //if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
-    FillCor();
+    if(index == corDIndex)
+    {
+       if(MainWindow::interface.size() != 0)
+       {
+        if(MainWindow::interface == "USB")
+        {
+            if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
+            FillCor();
+        }
+       }
+    }
+}
+void CorDialog::GetCorBdButton()
+{
+    if(MainWindow::interface.size() != 0)
+    {
+     if(MainWindow::interface == "USB")
+     {
+       if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
+       FillCor();
+     }
+    }
 }
 
 void CorDialog::WriteCorBd()
@@ -233,15 +269,27 @@ void CorDialog::WriteCorBd()
     quint16 adr[11] = {910, 911, 912, 913, 914, 915, 916, 917, 918, 919, 920};
 
     FillBackCor();
-    for(i = 0; i<11; i++)
-    {
-      emit sendCom50((adr+i), (float*)(CorBlock+i));
-    }
 
-    /*if(Commands::WriteBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
-    EMessageBox::information(this, "INFO", "Записано успешно");
-    else
-    EMessageBox::information(this, "INFO", "Ошибка");*/
+    if(MainWindow::interface.size() != 0)
+    {
+     if(MainWindow::interface == "Ethernet и RS485")
+     {
+        for(i = 0; i<11; i++)
+        {
+          emit sendCom50((adr+i), (float*)(CorBlock+i));
+        }
+     }
+     else
+     {
+         if(Commands::WriteBd(7, CorBlock, sizeof(CorData)) == Error::ER_NOERROR)
+         EMessageBox::information(this, "INFO", "Записано успешно");
+         else
+         EMessageBox::information(this, "INFO", "Ошибка");
+
+         if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
+         FillCor();
+     }
+    }
 
 }
 
@@ -263,23 +311,66 @@ void CorDialog::WriteCorTg()
     EMessageBox::information(this, "INFO", "Ошибка");*/
 }
 
-void CorDialog::WriteCorNotBalance()
+void CorDialog::WriteCor()
 {
-    quint32 Com = 902;
-    emit sendCom45(&Com);
+    if(MainWindow::interface.size() != 0)
+    {
+     if(MainWindow::interface == "Ethernet и RS485")
+     {
+        quint32 Com = 900;
+        emit sendCom45(&Com);
+     }
+     else if(MainWindow::interface == "USB")
+     {
+        if(Commands::WriteCom(1) == Error::ER_NOERROR)   // задание общей коррекции
+        EMessageBox::information(this, "INFO", "Записано успешно");
+        else
+        EMessageBox::information(this, "INFO", "Ошибка");
+
+     }
+    }
 }
 
 void CorDialog::SetCor()
 {
-    quint32 Com = 903;
-    emit sendCom45(&Com);
+    if(MainWindow::interface.size() != 0)
+    {
+     if(MainWindow::interface == "Ethernet и RS485")
+     {
+        quint32 Com = 903;
+        emit sendCom45(&Com);
+     }
+     else if(MainWindow::interface == "USB")
+     {
+        if(Commands::WriteCom(4) == Error::ER_NOERROR)
+        EMessageBox::information(this, "INFO", "Записано успешно");
+        else
+        EMessageBox::information(this, "INFO", "Ошибка");
+     }
+    }
 
 }
 
 void CorDialog::ResetCor()
 {
-    quint32 Com = 904;
-    emit sendCom45(&Com);
+    if(MainWindow::interface.size() != 0)
+    {
+     if(MainWindow::interface == "Ethernet и RS485")
+     {
+        quint32 Com = 905;
+        emit sendCom45(&Com);
+     }
+     else if(MainWindow::interface == "USB")
+     {
+        if(Commands::WriteCom(5) == Error::ER_NOERROR)
+        EMessageBox::information(this, "INFO", "Записано успешно");
+        else
+        EMessageBox::information(this, "INFO", "Ошибка");
+
+        if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
+        FillCor();
+     }
+    }
 
 }
 
@@ -299,4 +390,25 @@ float CorDialog::ToFloat(QString text)
 void CorDialog::MessageOk()
 {
   EMessageBox::information(this, "INFO", "Записано успешно");
+}
+
+void CorDialog::UpdateFlCorData(Parse104::FlSignals104 *Signal)
+{
+    Parse104::FlSignals104 sig = *new Parse104::FlSignals104;
+    int i;
+    for(i=0; i<Signal->SigNumber; i++)
+    {
+        sig = *(Signal+i);
+        //WDFunc::SetLBLText(Ch, QString::number((Signal+i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal));
+        //if((Signal+i)->fl.SigAdr == 101 || (Signal+i)->fl.SigAdr == 102)
+        //Ch->FillBd0(this, QString::number((Signal+i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal));
+
+        //if((Signal+i)->fl.SigAdr >= 1000 || (Signal+i)->fl.SigAdr <= 1009)
+        FillBd(this, QString::number((Signal+i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal));
+    }
+}
+
+void CorDialog::FillBd(QWidget *parent, QString Name, QString Value)
+{
+    WDFunc::SetSPBData(parent, Name, Value.toFloat());
 }

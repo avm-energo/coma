@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QTime>
 #include <QTimer>
+#include <QThread>
 #include "../widgets/emessagebox.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"

@@ -14,27 +14,57 @@
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
 #include "../iec104/iec104.h"
+#include "../gen/mainwindow.h"
+#include "../gen/timefunc.h"
+#include "../dialogs/keypressdialog.h"
+#if PROGSIZE != PROGSIZE_EMUL
+#include "../gen/commands.h"
+#endif
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
 }
 
 #if PROGSIZE != PROGSIZE_EMUL
-void AbstractConfDialog::ReadConf()
+void AbstractConfDialog::ReadConf(int index)
 {
     //int res = ModuleBSI::PrereadConf(this, S2Config);
-    int res = 0;
+    //int res = 0;
     char* num = new char;
     *num = 1;
 
-    if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
+    if(index == 1)
     {
-      emit DefConfToBeLoaded();
+        if(timeIndex)
+        emit stopRead(timeIndex);
+
+        TimeFunc::Wait(100);
+
+        if(MainWindow::interface.size() != 0)
+        {
+         if(MainWindow::interface == "Ethernet и RS485")
+         {
+            if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
+            {
+              emit DefConfToBeLoaded();
+            }
+            else // иначе заполнить значениями из модуля
+            {
+              emit ReadConfig(num);
+            }
+         }
+         else if(MainWindow::interface == "USB")
+         {
+             int res = ModuleBSI::PrereadConf(this, S2Config);
+             if (res == Error::ER_RESEMPTY)
+                 emit DefConfToBeLoaded();
+             else if (res == Error::ER_NOERROR)
+                 emit NewConfToBeLoaded();
+
+         }
+        }
     }
-    else // иначе заполнить значениями из модуля
-    {
-      emit ReadConfig(num);
-    }
+
 
 
 }
@@ -47,18 +77,62 @@ void AbstractConfDialog::FillConf(QVector<S2::DataRec>* DR)
 
 void AbstractConfDialog::WriteConf()
 {
-    if (!PrepareConfToWrite())
-        return;
-
-    emit writeConfFile(S2Config);
-    /*if ((res = Commands::WriteFile(nullptr, 1, S2Config)) == Error::ER_NOERROR)
+    int res;
+    if (WriteCheckPassword() == Error::ER_NOERROR)
     {
-        emit BsiIsNeedToBeAcquiredAndChecked();
-        EMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
+
+        if (!PrepareConfToWrite())
+            return;
+
+        if(MainWindow::interface.size() != 0)
+        {
+         if(MainWindow::interface == "Ethernet и RS485")
+         {
+           emit writeConfFile(S2Config);
+         }
+         else if(MainWindow::interface == "USB")
+         {
+            if ((res = Commands::WriteFile(nullptr, 1, S2Config)) == Error::ER_NOERROR)
+            {
+                emit BsiIsNeedToBeAcquiredAndChecked();
+                EMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
+            }
+            else
+                EMessageBox::error(this, "Ошибка", "Ошибка записи конфигурации"+QString::number(res));
+         }
+        }
     }
-    else
-        EMessageBox::error(this, "Ошибка", "Ошибка записи конфигурации"+QString::number(res));*/
 }
+
+int AbstractConfDialog::WriteCheckPassword()
+{
+    ok = false;
+    StdFunc::ClearCancel();
+    QEventLoop PasswordLoop;
+    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
+    connect(dlg,SIGNAL(Finished(QString)),this,SLOT(WritePasswordCheck(QString)));
+    connect(this,SIGNAL(WritePasswordChecked()),&PasswordLoop,SLOT(quit()));
+    dlg->show();
+    PasswordLoop.exec();
+    if (StdFunc::IsCancelled())
+        return Error::ER_GENERALERROR;
+    if (!ok)
+    {
+        EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
+        return Error::ER_GENERALERROR;
+    }
+    return Error::ER_NOERROR;
+}
+
+void AbstractConfDialog::WritePasswordCheck(QString psw)
+{
+    if (psw == "se/7520a")
+        ok = true;
+    else
+        ok = false;
+    emit WritePasswordChecked();
+}
+
 #endif
 void AbstractConfDialog::SaveConfToFile()
 {
@@ -117,7 +191,7 @@ QWidget *AbstractConfDialog::ConfButtons()
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Прочитать из " + tmps);
 #if PROGSIZE != PROGSIZE_EMUL
-    connect(pb,SIGNAL(clicked()),this,SLOT(ReadConf()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(ButtonReadConf()));
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
@@ -146,13 +220,43 @@ QWidget *AbstractConfDialog::ConfButtons()
     return wdgt;
 }
 
+void AbstractConfDialog::ButtonReadConf()
+{
+    char* num = new char;
+    *num = 1;
+
+    if(MainWindow::interface.size() != 0)
+    {
+     if(MainWindow::interface == "Ethernet и RS485")
+     {
+        if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
+        {
+          emit DefConfToBeLoaded();
+        }
+        else // иначе заполнить значениями из модуля
+        {
+          emit ReadConfig(num);
+        }
+     }
+     else if(MainWindow::interface == "USB")
+     {
+         int res = ModuleBSI::PrereadConf(this, S2Config);
+         if (res == Error::ER_RESEMPTY)
+             emit DefConfToBeLoaded();
+         else if (res == Error::ER_NOERROR)
+             emit NewConfToBeLoaded();
+
+     }
+    }
+}
+
 #if PROGSIZE != PROGSIZE_EMUL
 void AbstractConfDialog::PrereadConf()
 {
     if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
      IsNeededDefConf = true;  // emit LoadDefConf();
     else // иначе заполнить значениями из модуля
-     ReadConf();
+     ReadConf(confIndex);
 }
 #endif
 // по имени виджета взять его номер

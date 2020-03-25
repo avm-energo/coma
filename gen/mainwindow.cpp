@@ -11,6 +11,7 @@
 #include <QProgressBar>
 #include <QSettings>
 #include <QCursor>
+#include <QThread>
 #include <QStringListModel>
 #include <QStandardPaths>
 #include <QPropertyAnimation>
@@ -32,7 +33,11 @@
 #include "../widgets/etableview.h"
 #include "../gen/timefunc.h"
 #include "modulebsi.h"
+#if PROGSIZE != PROGSIZE_EMUL
+#include "commands.h"
+#endif
 
+QString MainWindow::interface;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -52,9 +57,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     ConfB = ConfM = nullptr;
     CheckB = CheckM = nullptr;
 
-#if PROGSIZE >= PROGSIZE_LARGE
+
+//#endif
+
+//#if PROGSIZE >= PROGSIZE_LARGE
     PrepareTimers();
-#endif
+//#endif
     LoadSettings();
 
     StartWindowSplashScreen->finish(this);
@@ -242,23 +250,23 @@ void MainWindow::SetupMenubar()
     }
     menubar->addMenu(menu);
 #if PROGSIZE >= PROGSIZE_LARGE
-    menu = new QMenu;
+   /* menu = new QMenu;
     menu->setTitle("Секретные операции");
     act = new QAction(this);
     act->setText("Работа с Hidden Block");
     connect(act,SIGNAL(triggered()),this,SLOT(OpenBhbDialog()));
     menu->addAction(act);
-    menubar->addMenu(menu);
+    menubar->addMenu(menu);*/
 #endif
 
     menu = new QMenu;
-    menu->setTitle("Настройки");
+    /*menu->setTitle("Настройки");
     act = new QAction(this);
     act->setText("Настройки");
     act->setIcon(QIcon("images/settings.png"));
     connect(act,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
     menu->addAction(act);
-    menubar->addMenu(menu);
+    menubar->addMenu(menu);*/
 
     act = new QAction(this);
     act->setText("О программе");
@@ -268,7 +276,8 @@ void MainWindow::SetupMenubar()
     menubar->addSeparator();
 
     setMenuBar(menubar);
-    AddActionsToMenuBar(menubar);
+    disconnected = 0;
+    //AddActionsToMenuBar(menubar);
 }
 
 #if PROGSIZE >= PROGSIZE_LARGE
@@ -368,19 +377,32 @@ int MainWindow::CheckPassword()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Stage1_5()
 {
-#ifdef ETHENABLE
-    disconnected = 0;
+    ShowInterfaceDialog();
     ShowConnectDialog();
-#endif
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    /*if (Commands::Connect() != Error::ER_NOERROR)
+    if(interface.size() != 0)
     {
-        EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
-        QApplication::restoreOverrideCursor();
-        return;
-    }*/
+        if(interface == "Ethernet и RS485")
+        {
+   #ifdef ETHENABLE
+
+   #endif
+        }
+        else if(interface == "USB")
+        {
+           insl.clear();
+
+           if (Commands::Connect() != Error::ER_NOERROR)
+           {
+              EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
+              QApplication::restoreOverrideCursor();
+              return;
+           }
+         }
+    }
 
 
+
+ QApplication::setOverrideCursor(Qt::WaitCursor);
     //connect(ch104,SIGNAL(floatsignalsready(Parse104::FLOAT104&, int N)),this,SLOT(CheckDialog84::UpdateData(Parse104::FLOAT104&, int N)));
     //connect(this,SIGNAL(stopit()),ch104,SLOT(Stop()));
 #if PROGSIZE != PROGSIZE_EMUL
@@ -400,27 +422,44 @@ void MainWindow::Stage1_5()
 
 void MainWindow::Stage2()
 {
-    int res = ModuleBSI::SetupBSI();
-    /*if (res == Error::ER_CANAL)
+    if(interface.size() != 0)
     {
-        if (EMessageBox::question(this, "Ошибка", \
-                                  "Блок Bsi не может быть прочитан, ошибка " + QString::number(res) + ", повторить?") == 1) // Yes
+        //if(interface == "Ethernet и RS485")
+
+        if(interface == "USB")
         {
-            emit ch104->stopall();
-            emit Retry();
-        }
-        return;
-    }
+            int res = ModuleBSI::SetupBSI();
+            if (res == Error::ER_CANAL)
+            {
+                if (EMessageBox::question(this, "Ошибка", \
+                                          "Блок Bsi не может быть прочитан, ошибка " + QString::number(res) + ", повторить?") == 1) // Yes
+                {
+                    cn->Disconnect();
+                    emit Retry();
+                }
+                return;
+            }
 #if PROGSIZE >= PROGSIZE_LARGE
-    else if (res == Error::ER_RESEMPTY)
-    {
-        if (OpenBhbDialog() != Error::ER_NOERROR)
-        {
-            EMessageBox::error(this, "Ошибка", "Ошибка при работе с Hidden block");
-            return;
+            else if (res == Error::ER_RESEMPTY)
+            {
+                if (OpenBhbDialog() != Error::ER_NOERROR)
+                {
+                    EMessageBox::error(this, "Ошибка", "Ошибка при работе с Hidden block");
+                    return;
+                }
+            }
+            else if (res == Error::ER_NOERROR)
+            {
+              EMessageBox::information(this, "Успешно", "Связь с "+ModuleBSI::ModuleTypeString+" установлена");
+            }
+#endif
         }
     }
-#endif*/
+    //else if(interface == "Ethernet и RS485" && ch104 != nullptr)
+    //emit ch104->stopall();
+
+
+
     Stage3();
 }
 
@@ -462,7 +501,7 @@ void MainWindow::SetMDefConf()
 
 void MainWindow::Fill()
 {
-    if (MainConfDialog != nullptr)
+        if (MainConfDialog != nullptr)
         MainConfDialog->Fill();
     if (ConfB != nullptr)
         ConfB->Fill();
@@ -498,12 +537,12 @@ void MainWindow::PasswordCheck(QString psw)
 #if PROGSIZE >= PROGSIZE_LARGE
 int MainWindow::OpenBhbDialog()
 {
-    /*if (!Commands::isConnected())                         !!!!
+    if (!Commands::isConnected())
     {
         QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модулем" : "прибором");
         EMessageBox::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с "+tmps);
         return Error::ER_GENERALERROR;
-    }*/
+    }
     if (CheckPassword() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
 
@@ -514,18 +553,18 @@ int MainWindow::OpenBhbDialog()
         return Error::ER_GENERALERROR;
     Disconnect();
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    /*if (Commands::Connect() != Error::ER_NOERROR)                           !!!
+    if (Commands::Connect() != Error::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
         QApplication::restoreOverrideCursor();
         return Error::ER_GENERALERROR;
-    }*/
+    }
     QApplication::restoreOverrideCursor();
     int res;
     if ((res = ModuleBSI::SetupBSI()) == Error::ER_CANAL)
     {
         EMessageBox::error(this, "Ошибка", "Блок Bsi не может быть прочитан, ошибка " + QString::number(res));
-       // Commands::Disconnect();                          !!!
+        Commands::Disconnect();
         return Error::ER_GENERALERROR;
     }
     //emit BsiRefresh();
@@ -591,6 +630,44 @@ void MainWindow::SetProgressBar2(int cursize)
     SetProgressBar("2", cursize);
 }
 
+void MainWindow::ShowInterfaceDialog()
+{
+    QByteArray ba;
+    int res, i;
+    QDialog *dlg = new QDialog(this);
+    QString Str;
+    //QStringList device = QStringList() << "KDV" << "2" << "1" << "2";
+    QStringList inter;
+    inter.append("USB");
+    inter.append("Ethernet и RS485");
+    QStringListModel *tmpmodel = new QStringListModel;
+    tmpmodel->deleteLater();
+    dlg->setMinimumWidth(150);
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    dlg->setObjectName("connectdlg");
+    QVBoxLayout *lyout = new QVBoxLayout;
+
+    lyout->addWidget(WDFunc::NewLBL(this, "Выберите интерфейс связи"));
+
+    //tmpmodel = new QStringListModel;
+    tmpmodel->setStringList(inter);
+    QComboBox *portscb = new QComboBox;
+    connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(ParseInter(QString)));
+    portscb->setModel(tmpmodel);
+    lyout->addWidget(portscb);
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QPushButton *pb = new QPushButton("Далее");
+    connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    hlyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
+    connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
+    hlyout->addWidget(pb);
+    lyout->addLayout(hlyout);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
 void MainWindow::ShowConnectDialog()
 {
     QByteArray ba;
@@ -599,107 +676,151 @@ void MainWindow::ShowConnectDialog()
     QString Str;
     //QStringList device = QStringList() << "KDV" << "2" << "1" << "2";
     //QStringList inter = QStringList() << "ETH" << "MODBUS";
-    QStringListModel *tmpmodel = new QStringListModel;
+
     dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setObjectName("connectdlg");
-    QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *lyout = new QVBoxLayout;   
+    QStringListModel *tmpmodel = new QStringListModel;
 
-
-    /*tmpmodel->setStringList(device);
-    QComboBox *portscb = new QComboBox;
-    connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SDevice(QString)));
-    portscb->setModel(tmpmodel);
-    lyout->addWidget(portscb);
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QPushButton *pb = new QPushButton("Далее");
-    connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
-    connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    dlg->setLayout(lyout);
-    dlg->exec();
-
-    dlg = new QDialog(this);
-
-    tmpmodel = new QStringListModel;
-    tmpmodel->setStringList(inter);
-    portscb = new QComboBox;
-    lyout = new QVBoxLayout;
-    connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SaveInterface(QString)));
-    portscb->setModel(tmpmodel);
-    lyout->addWidget(portscb);
-    hlyout = new QHBoxLayout;
-    pb = new QPushButton("Далее");
-    connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
-    connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    dlg->setLayout(lyout);
-    dlg->exec();*/
-
-
-    if(!HaveAlreadyRed)
+    if(interface.size() != 0)
     {
-        sl.clear();
-        res= Files::LoadFromFile(Files::ChooseFileForOpen(this, "IP files (*.txt)"), ba);
-        if (res != Files::ER_NOERROR)
-        {
-           WARNMSG("Ошибка при загрузке файла");
-           return;
-        }
+         if(interface == "USB")
+         {
+             //#ifdef USBENABLE
+             cn = new EUsbHid;
+             connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
+             //#else
+             //#ifdef COMPORTENABLE
+             //    cn = new EUsbCom;
+             //    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
+             //#endif
+             //#endif
+             connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
+             connect(cn,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
+             connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+             connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+             connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
+             connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
+
+            QStringList sl = cn->DevicesFound();
+            if (sl.size() == 0)
+            {
+                lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
+                Error::ShowErMsg(CN_NOPORTSERROR);
+            }
+            tmpmodel->deleteLater();
+            tmpmodel->setStringList(sl);
+            QComboBox *portscb = new QComboBox;
+            connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPortSlot(QString)));
+            portscb->setModel(tmpmodel);
+            lyout->addWidget(portscb);
+         }
+         else if(interface == "Ethernet и RS485")
+         {
+
+            /*tmpmodel->setStringList(device);
+            QComboBox *portscb = new QComboBox;
+            connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SDevice(QString)));
+            portscb->setModel(tmpmodel);
+            lyout->addWidget(portscb);
+            QHBoxLayout *hlyout = new QHBoxLayout;
+            QPushButton *pb = new QPushButton("Далее");
+            connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
+            hlyout->addWidget(pb);
+            pb = new QPushButton("Отмена");
+            //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
+            connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
+            hlyout->addWidget(pb);
+            lyout->addLayout(hlyout);
+            dlg->setLayout(lyout);
+            dlg->exec();
+
+            dlg = new QDialog(this);
+
+            tmpmodel = new QStringListModel;
+            tmpmodel->setStringList(inter);
+            portscb = new QComboBox;
+            lyout = new QVBoxLayout;
+            connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SaveInterface(QString)));
+            portscb->setModel(tmpmodel);
+            lyout->addWidget(portscb);
+            hlyout = new QHBoxLayout;
+            pb = new QPushButton("Далее");
+            connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
+            hlyout->addWidget(pb);
+            pb = new QPushButton("Отмена");
+            //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
+            connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
+            hlyout->addWidget(pb);
+            lyout->addLayout(hlyout);
+            dlg->setLayout(lyout);
+            dlg->exec();*/
 
 
-        Str = ba;
-        sl.append(Str.split("\r\n"));
+            if(!HaveAlreadyRed)
+            {
+                sl.clear();
+                res= Files::LoadFromFile(Files::ChooseFileForOpen(this, "IP files (*.txt)"), ba);
+                if (res != Files::ER_NOERROR)
+                {
+                   WARNMSG("Ошибка при загрузке файла");
+                   return;
+                }
 
-        /*for(i=0; i<sl.size(); i++)
-        {
-          insl.clear();
-          insl.append(sl.at(i).split(" "));
 
-           if((insl.at(0) == SaveDevice) && (insl.at(1) == interface))
-           {
-             slfinal.append(sl.at(i));
-           }
-        }*/
+                Str = ba;
+                sl.append(Str.split("\r\n"));
 
-        HaveAlreadyRed = 1;
+                /*for(i=0; i<sl.size(); i++)
+                {
+                  insl.clear();
+                  insl.append(sl.at(i).split(" "));
 
+                   if((insl.at(0) == SaveDevice) && (insl.at(1) == interface))
+                   {
+                     slfinal.append(sl.at(i));
+                   }
+                }*/
+
+                HaveAlreadyRed = 1;
+
+            }
+
+
+            if (sl.size() == 0)
+            {
+                lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
+                Error::ShowErMsg(CN_NOPORTSERROR);
+            }
+
+            //dlg = new QDialog(this);
+
+            //tmpmodel = new QStringListModel;
+
+             tmpmodel->deleteLater();
+             tmpmodel->setStringList(sl);
+
+             QComboBox *portscb = new QComboBox;
+             connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(ParseString(QString)));
+             portscb->setModel(tmpmodel);
+             lyout->addWidget(portscb);
+         }
     }
+        QHBoxLayout *hlyout = new QHBoxLayout;
+        QPushButton *pb = new QPushButton("Далее");
+        connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
+        hlyout->addWidget(pb);
+        pb = new QPushButton("Отмена");
+        if(interface == "USB")
+        connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));
 
+        connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
+        hlyout->addWidget(pb);
+        lyout->addLayout(hlyout);
+        dlg->setLayout(lyout);
+        dlg->exec();
 
-    if (sl.size() == 0)
-    {
-        lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
-        Error::ShowErMsg(CN_NOPORTSERROR);
-    }
-
-    //dlg = new QDialog(this);
-
-    //tmpmodel = new QStringListModel;
-    tmpmodel->setStringList(sl);
-    QComboBox *portscb = new QComboBox;
-    connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(ParseString(QString)));
-    portscb->setModel(tmpmodel);
-    lyout->addWidget(portscb);
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QPushButton *pb = new QPushButton("Далее");
-    connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
-    connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    dlg->setLayout(lyout);
-    dlg->exec();
 }
 
 void MainWindow::SetProgressBarSize(QString prbnum, int size)
@@ -755,8 +876,14 @@ void MainWindow::GetAbout()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Disconnect()
 {
-    if (!StdFunc::IsInEmulateMode())
+    if(interface.size() != 0 && (!StdFunc::IsInEmulateMode()))
+    {
+        if(interface == "USB")
+        cn->Disconnect();
+        else
         emit stopit();
+
+    }
 }
 
 void MainWindow::GetDeviceFromTable(QModelIndex idx)
@@ -787,7 +914,8 @@ void MainWindow::DisconnectAndClear()
         Disconnect();
     #endif
 
-        emit FinishAll();
+        CheckB = CheckM = nullptr;
+        Time = nullptr;
         emit ClearBsi();
         ClearTW();
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
@@ -795,9 +923,27 @@ void MainWindow::DisconnectAndClear()
             return;
         MainTW->hide();
         StdFunc::SetEmulated(false);
-        EMessageBox::information(this, "Разрыв", "Подключение c "+FullName+" разорвано");
+
+        if(thr != nullptr)
+        emit FinishAll();
+
+        thr = nullptr;
+
+        if(interface.size() != 0)
+        {
+           if(interface == "USB")
+           {
+             EMessageBox::information(this, "Разрыв связи", "Связь с "+ModuleBSI::ModuleTypeString+" разорвана");
+           }
+           else
+           {
+             EMessageBox::information(this, "Разрыв связи", "Связь с "+FullName+" разорвана");
+           }
+        }
         disconnected = 0;
     }
+
+
 }
 
 #if PROGSIZE >= PROGSIZE_LARGE
@@ -849,6 +995,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 void MainWindow::ParseString(QString Str)
 { 
     insl.clear();
+    //if(Str != nullptr)
     insl.append(Str.split(" "));
 
     if(insl.at(1) == "ETH")
@@ -876,6 +1023,11 @@ void MainWindow::ParseString(QString Str)
     }
 }
 
+void MainWindow::ParseInter(QString Str)
+{
+    interface = Str;
+}
+
 /*void MainWindow::SaveModBusString(QString ModBus)
 {
 
@@ -891,6 +1043,12 @@ void MainWindow::SDevice(QString Device)
 {
     SaveDevice = Device;
 }*/
+void MainWindow::SetPortSlot(QString port)
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    cn->TranslateDeviceAndSave(port);
+#endif
+}
 
 void MainWindow::SetDefConf()
 {
@@ -904,10 +1062,21 @@ void MainWindow::SetDefConf()
 
 void MainWindow::ConnectMessage()
 {
-    EMessageBox::information(this, "Успешно", "Связь с "+FullName+" установлена");
+   EMessageBox::information(this, "Успешно", "Связь с "+FullName+" установлена");
 }
 
 void MainWindow::DisconnectMessage()
 {
     EMessageBox::information(this, "Провал", "Нет подключения");
+}
+
+void MainWindow::FinishHim()
+{
+    thr->exit();
+    //thr->wait(100);
+    thr->deleteLater();
+    ConfM->timeIndex = -1;
+    ConfM->confIndex = -1;
+    TimeFunc::Wait(1000);
+    //ConfM->stopRead(ConfM->timeIndex);
 }

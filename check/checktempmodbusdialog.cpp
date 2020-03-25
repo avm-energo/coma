@@ -288,14 +288,19 @@ QWidget *checktempmodbusdialog::CustomTab(void)
     return w;
 }
 
-void checktempmodbusdialog::UpdateModBusData(ModBusSignal *Signal)
+void checktempmodbusdialog::UpdateModBusData(ModBusSignal *Signal, int * size)
 {
 
     ModBusSignal sig = *new ModBusSignal;
     int i = 0;
-    //for(i=0; i<Signal->SigNumber; i++)
-    //{
+    for(i=0; i<*size; i++)
+    {
       sig = *(Signal+i);
       FillBd(this, QString::number(sig.SigAdr), WDFunc::StringValueWithCheck(sig.flVal));
-    //}
+    }
+}
+
+void checktempmodbusdialog::ErrorRead()
+{
+  //EMessageBox::information(this, "INFO", "Ошибка чтения");
 }

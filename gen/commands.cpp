@@ -3,13 +3,13 @@
 #include "commands.h"
 #include "error.h"
 
-#ifdef USBENABLE
+//#ifdef USBENABLE
     EUsbHid *cn;
-#else
-#ifdef COMPORTENABLE
-    EUsbCom *cn;
-#endif
-#endif
+//#else
+//#ifdef COMPORTENABLE
+//    EUsbCom *cn;
+//#endif
+//#endif
 
 Commands::Commands()
 {

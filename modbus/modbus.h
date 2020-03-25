@@ -50,7 +50,8 @@ public:
     ModBus_Groups SignalGroups[6];
 
     int deviceAdr;
-    int Reading, Groups;
+    int Reading, Group, readSize;
+    QThread *thr;
 
     constexpr static const unsigned char TabCRChi[] = {
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
@@ -117,8 +118,11 @@ public slots:
 
 
 signals:
- void signalsreceived(ModBusSignal *Signal);
+ void signalsreceived(ModBusSignal *Signal, int* size);
  void ModBusState(QModbusDevice::State);
+ void nextGroup();
+ void errorRead();
+ void errorCrc();
 
 
 private:

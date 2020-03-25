@@ -406,7 +406,13 @@ SOURCES += \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp \
-    ../check/checktempmodbusdialog.cpp
+    ../check/checktempmodbusdialog.cpp \
+    ../gen/commands.cpp \
+    ../gen/eabstractprotocomchannel.cpp \
+    ../gen/eusbcom.cpp \
+    ../gen/eusbhid.cpp \
+    ../dialogs/time.cpp \
+    ../dialogs/fwupdialog.cpp
 
 
 HEADERS += \
@@ -795,7 +801,13 @@ HEADERS += \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
     ../modbus/modbus.h \
-    ../check/checktempmodbusdialog.h
+    ../check/checktempmodbusdialog.h \
+    ../gen/commands.h \
+    ../gen/eabstractprotocomchannel.h \
+    ../gen/eusbcom.h \
+    ../gen/eusbhid.h \
+    ../dialogs/time.h \
+    ../dialogs/fwupdialog.h
 
 
 INCLUDEPATH += $$PWD/../../includes

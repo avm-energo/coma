@@ -52,6 +52,9 @@
 #include "../gen/modulebsi.h"
 #include "../gen/log.h"
 #include "../modbus/modbus.h"
+#if PROGSIZE != PROGSIZE_EMUL
+#include "../gen/commands.h"
+#endif
 
 Coma::Coma(QWidget *parent)
     : MainWindow(parent)
@@ -269,17 +272,25 @@ void Coma::Stage3()
     //MainTW->addTab(idlg, "Информация");
     quint32 MTypeB = 0xA2;//ModuleBSI::GetMType(BoardTypes::BT_BASE);
     quint32 MTypeM = 0xA2;//ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
-    if (MTypeB <= 0xA2) // диапазон модулей АВ-ТУК
+    if (MTypeB < 0xA2) // диапазон модулей АВ-ТУК
     {
         MainConfDialog = new ConfDialog(S2Config, MTypeB, MTypeM);
         MainTuneDialog = new ConfDialog(S2ConfigForTune, MTypeB, MTypeM);
         //MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     }
 
-    if(insl.at(1) != "MODBUS")
+    if(interface == "USB")
     {
-     CorD = new CorDialog();
-     JourD = new JournalDialog();
+       CorD = new CorDialog();
+       JourD = new JournalDialog();
+    }
+    else if(interface == "Ethernet и RS485")
+    {
+       if(insl.at(1) != "MODBUS")
+       {
+         CorD = new CorDialog();
+         JourD = new JournalDialog();
+       }
     }
 
     PrepareDialogs();
@@ -325,18 +336,43 @@ void Coma::Stage3()
 
         connect(ConfM,SIGNAL(NewConfToBeLoaded()),this,SLOT(Fill()));
         connect(ConfM,SIGNAL(DefConfToBeLoaded()),this,SLOT(SetDefConf()));
+        ConfM->confIndex = MainTW->indexOf(ConfM);
+        connect(MainTW, SIGNAL(tabClicked(int)), ConfM, SLOT(ReadConf(int))); //tabClicked
+    }
+
+    if (MTypeB == 0xA2 && interface == "USB") // для МНК
+    {
+
+        Time = new MNKTime();
+        connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Start_Timer(int))); //tabClicked
+        connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Stop_Timer(int)));
+        connect(ConfM, SIGNAL(stopRead(int)), Time,SLOT(Stop_Timer(int)));
+        MainTW->addTab(Time, "Время");
+        Time->timeIndex = MainTW->indexOf(Time);
+        ConfM->timeIndex = Time->timeIndex;
+        thr = new QThread;
+        Time->moveToThread(thr);
+        connect(thr,SIGNAL(finished()),Time,SLOT(deleteLater()));
+        connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
+        connect(thr,SIGNAL(started()),Time,SLOT(slot2_timeOut()));
+        thr->start();
     }
 
     str = "Проверка температуры";
-    if (CheckModBus != nullptr)
+    if (CheckModBus != nullptr && insl.size() != 0)
     {
-        CheckModBus->setMinimumHeight(500);
-        //MainTW->setFixedHeight(500);
-        MainTW->addTab(CheckModBus, str);
+        if(insl.at(1) == "MODBUS")
+        {
+            CheckModBus->setMinimumHeight(500);
+            //MainTW->setFixedHeight(500);
+            MainTW->addTab(CheckModBus, str);
+        }
     }
 
     if (CorD != nullptr)
     MainTW->addTab(CorD, "Коррекция");
+    CorD->corDIndex = MainTW->indexOf(CorD);
+    connect(MainTW, SIGNAL(tabClicked(int)), CorD, SLOT(GetCorBd(int))); //tabClicked
 
     if (JourD != nullptr)
     MainTW->addTab(JourD, "Журналы");
@@ -345,6 +381,15 @@ void Coma::Stage3()
         Error::ShowErMsg(ER_NOCONF);
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
         Error::ShowErMsg(ER_NOTUNECOEF);
+    //connect(MainTW, SIGNAL(currentChanged()))
+    connect(this,SIGNAL(FinishAll()),this,SLOT(FinishHim()));
+
+    if(interface == "USB")
+    {
+        FwUpD = new fwupdialog;
+        MainTW->addTab(FwUpD, "Загрузка ВПО");
+    }
+
     MainTW->repaint();
     MainTW->show();
 #if PROGSIZE >= PROGSIZE_LARGE
@@ -388,10 +433,13 @@ void Coma::PrepareDialogs()
 
     case Config::MTB_A2:
     {
+       if(insl.size() != 0)
+       {
         if(insl.at(1) == "ETH")
         {
 #ifdef ETHENABLE
             ch104 = new iec104(&IPtemp, this);
+
             //ch104->IP = IPtemp;
             ch104->BaseAdr = AdrBaseStation;
             connect(this,SIGNAL(stopit()),ch104,SLOT(Stop()));
@@ -403,6 +451,7 @@ void Coma::PrepareDialogs()
             connect(CorD,SIGNAL(sendCom50(quint16*, float*)), ch104, SLOT(Com50(quint16*,float*)));
             connect(ch104,SIGNAL(sendMessageOk()), CorD, SLOT(MessageOk()));
             connect(ch104,SIGNAL(relesignalsready(Parse104::SponSignals104*)), this, SLOT(UpdateReleWidget(Parse104::SponSignals104*)));
+            connect(ch104,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),CorD,SLOT(UpdateFlCorData(Parse104::FlSignals104*)));
 
             connect(ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
             connect(ch104,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
@@ -411,14 +460,11 @@ void Coma::PrepareDialogs()
             CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, ch104);
             connect(CheckB,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)),this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)));
 
-            ConfM = new ConfDialog84(S2Config);
-            connect(ConfM,SIGNAL(ReadConfig(char*)), ch104, SLOT(SelectFile(char*)));
-            connect(JourD,SIGNAL(ReadJour(char*)), ch104, SLOT(SelectFile(char*)));
-            connect(ch104,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)), ConfM, SLOT(FillConf(QVector<S2::DataRec>*)));
+            //ConfM = new ConfDialog84(S2Config);
+            connect(JourD,SIGNAL(ReadJour(char*)), ch104, SLOT(SelectFile(char*)));           
             connect(ch104,SIGNAL(sendJourSysfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillSysJour(QVector<S2::DataRec>*)));
             connect(ch104,SIGNAL(sendJourWorkfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillWorkJour(QVector<S2::DataRec>*)));
             connect(ch104,SIGNAL(sendJourMeasfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillMeasJour(QVector<S2::DataRec>*)));
-            connect(ConfM,SIGNAL(writeConfFile(QVector<S2::DataRec>*)), ch104, SLOT(FileReady(QVector<S2::DataRec>*)));
             ch104->Parse->DR = &S2Config;
 #endif
          }
@@ -426,7 +472,18 @@ void Coma::PrepareDialogs()
          {
             CheckModBus = new checktempmodbusdialog(BoardTypes::BT_BASE, this);
             modBus = new ModBus(Settings, CheckModBus);
+            connect(modBus, SIGNAL(errorRead()), CheckModBus, SLOT(ErrorRead()));
+            connect(modBus, SIGNAL(signalsreceived(ModBusSignal*, int*)), CheckModBus, SLOT(UpdateModBusData(ModBusSignal*, int*)));
+
+
          }
+
+       }
+
+       if(interface == "USB")
+       {
+         CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
+       }
          break;
     }
 
@@ -483,6 +540,13 @@ void Coma::PrepareDialogs()
         setMinimumSize(QSize(800, 650));
         ConfM = new ConfDialog84(S2Config);
 
+        if(ch104 != nullptr && interface == "Ethernet и RS485")
+        {
+          connect(ConfM,SIGNAL(ReadConfig(char*)), ch104, SLOT(SelectFile(char*)));
+          connect(ch104,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)), ConfM, SLOT(FillConf(QVector<S2::DataRec>*)));
+          connect(ConfM,SIGNAL(writeConfFile(QVector<S2::DataRec>*)), ch104, SLOT(FileReady(QVector<S2::DataRec>*)));
+        }
+
         break;
     }
     case Config::MTM_85:
@@ -496,4 +560,4 @@ void Coma::PrepareDialogs()
         break;
     }
 
-}
+ }

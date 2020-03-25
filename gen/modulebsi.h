@@ -64,6 +64,7 @@ public:
     static bool IsKnownModule();
     static int PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config);
     static Bsi ModuleBsi;
+    static QString ModuleTypeString;
 
 signals:
     void readConf();
@@ -73,7 +74,7 @@ public slots:
 
 private:
     static quint32 MType;
-    static QString ModuleTypeString;
+
 };
 
 #endif // MODULEBSI_H

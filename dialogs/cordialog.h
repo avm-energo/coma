@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QByteArray>
-
+#include "../gen/mainwindow.h"
 #include "../widgets/etablemodel.h"
 
 class CorDialog : public QDialog
@@ -13,6 +13,8 @@ class CorDialog : public QDialog
 public:
     explicit CorDialog(QWidget *parent = nullptr);
     ~CorDialog();
+
+    int corDIndex;
 
 private:
 
@@ -28,10 +30,12 @@ private:
 
     CorData *CorBlock;
 
+
     void FillCor();
     void FillBackCor();
     float ToFloat(QString text);
     void SetupUI();
+    void FillBd(QWidget *parent, QString Name, QString Value);
 
 signals:
    void sendCom45(quint32*);
@@ -39,19 +43,19 @@ signals:
 
 
 public slots:
-    void GetCorBd();
+    void GetCorBd(int index);
+    void GetCorBdButton();
     void WriteCorBd();
-    void WriteCorNotBalance();
+    void WriteCor();
     void WriteCorCapacity();
     void WriteCorTg();
     void MessageOk();
     void SetCor();
     void ResetCor();
+    void UpdateFlCorData(Parse104::FlSignals104 *Signal);
 
 private slots:
-#if PROGSIZE != PROGSIZE_EMUL
 
-#endif
 };
 
 #endif // CORDIALOG_H
