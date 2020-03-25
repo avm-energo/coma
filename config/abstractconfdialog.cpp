@@ -40,9 +40,9 @@ void AbstractConfDialog::ReadConf(int index)
 
         TimeFunc::Wait(100);
 
-        if(MainWindow::interface.size() != 0)
+        if(MainWindow::MainInterface.size() != 0)
         {
-         if(MainWindow::interface == "Ethernet и RS485")
+         if(MainWindow::MainInterface == "Ethernet и RS485")
          {
             if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
             {
@@ -53,7 +53,7 @@ void AbstractConfDialog::ReadConf(int index)
               emit ReadConfig(num);
             }
          }
-         else if(MainWindow::interface == "USB")
+         else if(MainWindow::MainInterface == "USB")
          {
              int res = ModuleBSI::PrereadConf(this, S2Config);
              if (res == Error::ER_RESEMPTY)
@@ -84,13 +84,13 @@ void AbstractConfDialog::WriteConf()
         if (!PrepareConfToWrite())
             return;
 
-        if(MainWindow::interface.size() != 0)
+        if(MainWindow::MainInterface.size() != 0)
         {
-         if(MainWindow::interface == "Ethernet и RS485")
+         if(MainWindow::MainInterface == "Ethernet и RS485")
          {
            emit writeConfFile(S2Config);
          }
-         else if(MainWindow::interface == "USB")
+         else if(MainWindow::MainInterface == "USB")
          {
             if ((res = Commands::WriteFile(nullptr, 1, S2Config)) == Error::ER_NOERROR)
             {
@@ -225,9 +225,9 @@ void AbstractConfDialog::ButtonReadConf()
     char* num = new char;
     *num = 1;
 
-    if(MainWindow::interface.size() != 0)
+    if(MainWindow::MainInterface.size() != 0)
     {
-     if(MainWindow::interface == "Ethernet и RS485")
+     if(MainWindow::MainInterface == "Ethernet и RS485")
      {
         if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
         {
@@ -238,7 +238,7 @@ void AbstractConfDialog::ButtonReadConf()
           emit ReadConfig(num);
         }
      }
-     else if(MainWindow::interface == "USB")
+     else if(MainWindow::MainInterface == "USB")
      {
          int res = ModuleBSI::PrereadConf(this, S2Config);
          if (res == Error::ER_RESEMPTY)
