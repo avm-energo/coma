@@ -70,21 +70,8 @@ void CorDialog::SetupUI()
     for (int i = 0; i < 3; i++)
     {
      glyout->addWidget(WDFunc::NewSPB(this, QString::number(4000+i), 0, 10000, 1, paramcolor), row,2+i,1,1);
-
-     /*QLineEdit *le = new QLineEdit("");
-     le->setObjectName("C_init1."+QString::number(i));
-     le->setStyleSheet(ValuesLEFormat);
-     glyout->addWidget(le,row,2+i,1,1);*/
     }
 
-    /*pb = new QPushButton("Задать начальные значения емкостей");
-    #if PROGSIZE != PROGSIZE_EMUL
-        connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorCapacity()));
-    #endif
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
-
-    glyout->addWidget(pb, row,5,1,1);*/
 
     row++;
 
@@ -97,14 +84,6 @@ void CorDialog::SetupUI()
      glyout->addWidget(WDFunc::NewSPB(this, QString::number(4003+i), -10, 10, 2, paramcolor), row,2+i,1,1);
     }
 
-    /*pb = new QPushButton("Задать начальные значения тангенсов");
-    #if PROGSIZE != PROGSIZE_EMUL
-        connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorTg()));
-    #endif
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
-
-    glyout->addWidget(pb, row,5,1,1);*/
     row++;
 
     glyout->addWidget(WDFunc::NewLBL(this, "Коррекция  tg δ вводов:"), row,1,1,1);
@@ -121,16 +100,6 @@ void CorDialog::SetupUI()
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Начальное значение угла тока небаланса:"), row,1,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, QString::number(4010), 0, 10000, 1, paramcolor), row,2,1,3);
-
-
-    /*pb = new QPushButton("Задать начальные значения небаланса");
-    #if PROGSIZE != PROGSIZE_EMUL
-        connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorNotBalance()));
-    #endif
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
-
-    glyout->addWidget(pb, row,5,1,1);*/
 
     row++;
 
@@ -157,18 +126,6 @@ void CorDialog::SetupUI()
     glyout->addWidget(pb, row,1,1,5);
 
     row++;
-
-
-    /*pb = new QPushButton("Задать коррекцию");
-    #if PROGSIZE != PROGSIZE_EMUL
-        connect(pb,SIGNAL(clicked()),this,SLOT(SetCor()));
-    #endif
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
-
-    glyout->addWidget(pb, row,1,1,5);
-
-    row++;*/
 
     pb = new QPushButton("Сбросить коррекцию");
     #if PROGSIZE != PROGSIZE_EMUL
