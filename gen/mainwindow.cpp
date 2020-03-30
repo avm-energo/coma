@@ -89,7 +89,7 @@ int MainWindow::GetMode()
 
 void MainWindow::Go(const QString &parameter)
 {
-    Q_UNUSED(parameter);
+    Q_UNUSED(parameter)
     if (Mode != COMA_GENERALMODE)
     {
         StdFunc::SetEmulated(true);
@@ -355,7 +355,7 @@ void MainWindow::ShowOrHideSlideSW()
 #if PROGSIZE != PROGSIZE_EMUL
 int MainWindow::CheckPassword()
 {
-    ok = false;
+    Ok = false;
     StdFunc::ClearCancel();
     QEventLoop PasswordLoop;
     KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
@@ -365,7 +365,7 @@ int MainWindow::CheckPassword()
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
-    if (!ok)
+    if (!Ok)
     {
         EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
         return Error::ER_GENERALERROR;
@@ -529,9 +529,9 @@ void MainWindow::SetTEEnabled(bool enabled)
 void MainWindow::PasswordCheck(QString psw)
 {
     if (psw == "se/7520a")
-        ok = true;
+        Ok = true;
     else
-        ok = false;
+        Ok = false;
     emit PasswordChecked();
 }
 
@@ -704,7 +704,7 @@ void MainWindow::ShowConnectDialog()
              connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
              connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
 
-            QStringList sl = cn->DevicesFound();
+            sl = cn->DevicesFound();
             if (sl.size() == 0)
             {
                 lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
@@ -890,7 +890,7 @@ void MainWindow::Disconnect()
 
 void MainWindow::GetDeviceFromTable(QModelIndex idx)
 {
-    Q_UNUSED(idx);
+    Q_UNUSED(idx)
     ETableView *tv = this->findChild<ETableView *>("devicetv");
     if (tv == nullptr)
     {
@@ -1000,6 +1000,11 @@ void MainWindow::ParseString(QString Str)
     //if(Str != nullptr)
     insl.append(Str.split(" "));
 
+    if (insl.size() < 2)
+    {
+        EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
+        return;
+    }
     if(insl.at(1) == "ETH")
     {
        Disconnect();
