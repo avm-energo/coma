@@ -13,10 +13,9 @@ VERSION = 0.0.1
 
 QT       += core gui printsupport network serialbus serialport
 
-TARGET = AVTUK_ETH_Version-f
-#DEFINES += MODULE_A1
-DEFINES += PROGNAME='\\"AVTUK-S\\"'
-DEFINES += PROGCAPTION='\\"AVTUK-Service-F\\040v\\040"$$VERSION"\\040\\"'
+TARGET = AVM-Service
+#DEFINES += MODULE_A1DEFINES += PROGNAME='\\"AVTUK-S\\"'
+DEFINES += PROGCAPTION='\\"AVM-Service\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=4 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)

@@ -4,7 +4,6 @@
 #include <QCoreApplication>
 #include <QDialog>
 #include <QVBoxLayout>
-
 #include "../gen/timefunc.h"
 #include "../gen/error.h"
 #include "iec104.h"
@@ -1363,15 +1362,15 @@ void iec104::Com50(quint16* adr, float *param)
     Cmd[6] = static_cast<char>(*adr);
     Cmd[7] = static_cast<char>(*adr>>8);
     Cmd[8] = static_cast<char>(*adr>>16);
-    Cmd[9] = static_cast<char>(1);
-    Cmd[10] = static_cast<char>(*param);
-    Cmd[11] = static_cast<char>(*(param+1));
-    Cmd[12] = static_cast<char>(*(param+2));
-    Cmd[13] = static_cast<char>(*(param+3));
-    Cmd[14] = 0;
+    //Cmd[9] = static_cast<char>(1);
+    Cmd[9] = static_cast<char>(*param);
+    Cmd[10] = static_cast<char>(*(param+1));
+    Cmd[11] = static_cast<char>(*(param+2));
+    Cmd[12] = static_cast<char>(*(param+3));
+    Cmd[13] = 0;
 
     GI.start = I104_START;
-    GI.APDUlength = 19;
+    GI.APDUlength = 18;
     GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
     GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
     GI.contrfield[2] = (VR & 0x007F) << 1;

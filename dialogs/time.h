@@ -46,6 +46,7 @@ private slots:
     void Stop_Timer(int);
     void Write_PCDate();
     void Write_Date();
+    void StopSlot();
 //#if PROGSIZE != PROGSIZE_EMUL
 
 //#endif

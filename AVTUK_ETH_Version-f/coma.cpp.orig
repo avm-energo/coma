@@ -272,7 +272,7 @@ void Coma::Stage3()
     connect(this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)),idlg,SLOT(FillBsi()));
     connect(this,SIGNAL(ClearBsi()),idlg,SLOT(ClearBsi()));
 
-    if(MainInterface == "USB")
+    if(interface == "USB")
     {
         MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
         MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
@@ -291,7 +291,16 @@ void Coma::Stage3()
         //MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     }*/
 
-    if(MainInterface == "Ethernet и RS485")
+<<<<<<< HEAD
+    if(interface == "Ethernet и RS485")
+=======
+    if(MainInterface == "USB")
+    {
+       CorD = new CorDialog();
+       JourD = new JournalDialog();
+    }
+    else if(MainInterface == "Ethernet и RS485")
+>>>>>>> a3082c08bd1e011a74fb25283cf11a357afe659a
     {
        if(insl.at(1) != "MODBUS")
        {
@@ -350,23 +359,19 @@ void Coma::Stage3()
     if (MTypeB == 0xA2 && MainInterface == "USB") // для МНК
     {
 
-        MNKTime *Time = new MNKTime();
+        Time = new MNKTime();
         connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Start_Timer(int))); //tabClicked
         connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Stop_Timer(int)));
         connect(ConfM, SIGNAL(stopRead(int)), Time,SLOT(Stop_Timer(int)));
         MainTW->addTab(Time, "Время");
         Time->timeIndex = MainTW->indexOf(Time);
         ConfM->timeIndex = Time->timeIndex;
-
-        QThread *thr = new QThread;
+        thr = new QThread;
         Time->moveToThread(thr);
-        connect(this,SIGNAL(stoptime()),Time,SLOT(StopSlot()));
-        connect(Time, SIGNAL(finished()), thr, SIGNAL(finished()));
         connect(thr,SIGNAL(finished()),Time,SLOT(deleteLater()));
         connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
         connect(thr,SIGNAL(started()),Time,SLOT(slot2_timeOut()));
         thr->start();
-
     }
 
     str = "Проверка температуры";
@@ -395,7 +400,7 @@ void Coma::Stage3()
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
         Error::ShowErMsg(ER_NOTUNECOEF);
     //connect(MainTW, SIGNAL(currentChanged()))
-   // connect(this,SIGNAL(FinishAll()),this,SLOT(FinishHim()));
+    connect(this,SIGNAL(FinishAll()),this,SLOT(FinishHim()));
 
     if(MainInterface == "USB")
     {
@@ -521,15 +526,7 @@ void Coma::PrepareDialogs()
         break;
     }
     INFOMSG("Mezonin parsing");
-
-    Mes = Config::MTM_84;
-
-    if(MainInterface == "USB")
-    {
-       Mes = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
-    }
-
-    switch(Mes)
+    switch(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN))
     {
     case Config::MTM_21:
     {

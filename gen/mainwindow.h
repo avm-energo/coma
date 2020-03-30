@@ -65,8 +65,9 @@ public:
     fwupdialog *FwUpD;
     quint16 AdrBaseStation;
     ModBus::ModBus_Settings Settings;
-    MNKTime *Time;
-    QThread *thr;
+    //MNKTime *Time;
+    //QThread *thr;
+    quint32 Mes;
 
 
     struct DeviceConnectStruct
@@ -168,6 +169,7 @@ signals:
     void ClearBsi();
     void Finished();
     void stopit();
+    void stoptime();
 
 private:
     bool ok;
@@ -240,7 +242,6 @@ private slots:
 
 protected:
     bool Autonomous; // признак автономного режима
-
     void keyPressEvent(QKeyEvent *e);
     void resizeEvent(QResizeEvent *e);
 };

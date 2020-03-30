@@ -71,6 +71,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 MainWindow::~MainWindow()
 {
+   // DisconnectAndClear();
 #if PROGSIZE != PROGSIZE_EMUL
     Disconnect();
 #endif
@@ -876,6 +877,7 @@ void MainWindow::GetAbout()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Disconnect()
 {
+    emit stoptime();
     if(MainInterface.size() != 0 && (!StdFunc::IsInEmulateMode()))
     {
         if(MainInterface == "USB")
@@ -923,11 +925,11 @@ void MainWindow::DisconnectAndClear()
         MainTW->hide();
         StdFunc::SetEmulated(false);
 
-        if(thr != nullptr)
-        emit FinishAll();
+        //if(thr != nullptr)
+        //emit FinishAll();
 
-        thr = nullptr;
-        Time = nullptr;
+        //thr = nullptr;
+        //Time = nullptr;
 
         if(MainInterface.size() != 0)
         {
@@ -1072,12 +1074,15 @@ void MainWindow::DisconnectMessage()
 
 void MainWindow::FinishHim()
 {
-    Time->closeThr = true;
-    thr->exit();
+    //Time->closeThr = true;
+    //thr->exit();
+    //emit Time->finished();
+
     //thr->wait(100);
-    thr->deleteLater();
+    //thr->deleteLater();
     ConfM->timeIndex = -1;
     ConfM->confIndex = -1;
     TimeFunc::Wait(1000);
     //ConfM->stopRead(ConfM->timeIndex);
 }
+

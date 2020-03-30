@@ -25,6 +25,7 @@
 #include "../gen/stdfunc.h"
 #include "../gen/maindef.h"
 #include "../gen/colors.h"
+#include "../gen/timefunc.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -234,6 +235,7 @@ void CorDialog::WriteCorBd()
         for(i = 0; i<11; i++)
         {
           emit sendCom50((adr+i), (float*)(CorBlock+i));
+          TimeFunc::Wait(100);
         }
      }
      else
