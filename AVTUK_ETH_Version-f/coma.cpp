@@ -294,11 +294,13 @@ void Coma::Stage3()
 
     if(MainInterface == "Ethernet и RS485")
     {
-       if(insl.at(1) != "MODBUS")
-       {
-         CorD = new CorDialog();
-         JourD = new JournalDialog();
-       }
+        if (insl.size() < 2)
+            return;
+        if(insl.at(1) != "MODBUS")
+        {
+          CorD = new CorDialog();
+          JourD = new JournalDialog();
+        }
     }
 
     PrepareDialogs();

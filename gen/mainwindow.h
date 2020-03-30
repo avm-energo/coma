@@ -172,7 +172,7 @@ signals:
     void stoptime();
 
 private:
-    bool ok;
+    bool Ok;
     bool TEEnabled; // признак того, ведётся ли лог в правом выезжающем окне
 #ifdef ETHENABLE
     DeviceConnectStruct DevInfo;
