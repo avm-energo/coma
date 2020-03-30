@@ -1351,7 +1351,6 @@ void iec104::Com50(quint16* adr, float *param)
     QByteArray ba;
     //char *ptr = static_cast<char*>(Cmd.data());
     quint16 VR = Parse->V_R;
-    //Parse->firstSegment = 1;
 
     Cmd[0] = C_SE_NC_1;
     Cmd[1] = static_cast<char>(1);

@@ -262,7 +262,8 @@ void Coma::Stage3()
     quint32 MTypeM = 0;
     ConfB = ConfM = nullptr;
     JourD = nullptr;
-    //CorD = nullptr;
+    ch104 = nullptr;
+    CorD = nullptr;
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
