@@ -166,8 +166,8 @@ void ConfDialog21::SetupUI()
         QComboBox *mcb = WDFunc::NewCB(this, "inrange."+QString::number(i), Params.RangeTypes, ACONFWCLRO);
         connect(mcb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetRange(int)));
         glyout->addWidget(mcb, row,1,1,1);
-        hlyout->addWidget(WDFunc::NewSPB(this, "0."+QString::number(i), -20.0, 20.0, 2, ACONFWCLR));
-        hlyout->addWidget(WDFunc::NewSPB(this, "1."+QString::number(i), -20.0, 20.0, 2, ACONFWCLR));
+        hlyout->addWidget(WDFunc::NewSPB(this, "0."+QString::number(i), -24.0, 24.0, 2, ACONFWCLR));
+        hlyout->addWidget(WDFunc::NewSPB(this, "1."+QString::number(i), -24.0, 24.0, 2, ACONFWCLR));
         hlyout->addWidget(WDFunc::NewLBL(this, "мА", ACONFWCLR, "units"));
         glyout->addLayout(hlyout, row, 2, 1, 1);
         glyout->addWidget(WDFunc::NewSPB(this, "2."+QString::number(i), -100000.0, 100000.0, 2, ACONFWCLRO),row,3,1,1);
@@ -194,7 +194,7 @@ void ConfDialog21::SetupUI()
     glyout->addWidget(WDFunc::NewLBL(this, "Мин. пред."),0,2,1,1,Qt::AlignCenter);
     glyout->addWidget(WDFunc::NewLBL(this, "Макс. пред."),0,3,1,1,Qt::AlignCenter);
     glyout->addWidget(WDFunc::NewLBL(this, "Макс. авар."),0,4,1,1,Qt::AlignCenter);
-    for (i = 0; i < Params.NumCh; ++i)
+    for(i = 0; i < Params.NumCh; ++i)
     {
         row = i+1;
         glyout->addWidget(WDFunc::NewLBL(this, QString::number(i+1)),row,0,1,1,Qt::AlignRight);

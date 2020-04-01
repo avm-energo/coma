@@ -16,6 +16,8 @@
 #include "../gen/files.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
+#include "../gen/timefunc.h"
+#include "../gen/mainwindow.h"
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
@@ -23,13 +25,31 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 }
 
 #if PROGSIZE != PROGSIZE_EMUL
-void AbstractConfDialog::ReadConf()
+void AbstractConfDialog::ReadConf(int index)
 {
-    int res = ModuleBSI::PrereadConf(this, S2Config);
-    if (res == Error::ER_RESEMPTY)
-        emit DefConfToBeLoaded();
-    else if (res == Error::ER_NOERROR)
-        emit NewConfToBeLoaded();
+    if(index == confIndex)
+    {
+        if(timeIndex)
+        emit stopRead(timeIndex);
+
+        TimeFunc::Wait(100);
+
+        int res = ModuleBSI::PrereadConf(this, S2Config);
+        if (res == Error::ER_RESEMPTY)
+            emit DefConfToBeLoaded();
+        else if (res == Error::ER_NOERROR)
+            emit NewConfToBeLoaded();
+    }
+}
+
+void AbstractConfDialog::ButtonReadConf()
+{
+
+        int res = ModuleBSI::PrereadConf(this, S2Config);
+        if (res == Error::ER_RESEMPTY)
+            emit DefConfToBeLoaded();
+        else if (res == Error::ER_NOERROR)
+            emit NewConfToBeLoaded();
 }
 
 void AbstractConfDialog::WriteConf()
@@ -103,7 +123,7 @@ QWidget *AbstractConfDialog::ConfButtons()
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Прочитать из " + tmps);
 #if PROGSIZE != PROGSIZE_EMUL
-    connect(pb,SIGNAL(clicked()),this,SLOT(ReadConf()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(ButtonReadConf()));
 #endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
@@ -138,7 +158,7 @@ void AbstractConfDialog::PrereadConf()
     if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
      IsNeededDefConf = true;  // emit LoadDefConf();
     else // иначе заполнить значениями из модуля
-     ReadConf();
+     ReadConf(confIndex);
 }
 #endif
 // по имени виджета взять его номер

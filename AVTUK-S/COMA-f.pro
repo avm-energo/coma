@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.2.275
+VERSION = 2.2.276
 
 QT       += core gui printsupport network
 
@@ -125,7 +125,8 @@ SOURCES += \
     ../widgets/wd_func.cpp \
     ../dialogs/cordialog.cpp \
     ../check/checkdialog35.cpp \
-    ../check/check35.cpp
+    ../check/check35.cpp \
+    ../dialogs/time.cpp
 
 HEADERS  += \
     coma.h \
@@ -230,7 +231,8 @@ HEADERS  += \
     ../widgets/wd_func.h \
     ../dialogs/cordialog.h \
     ../check/checkdialog35.h \
-    ../check/check35.h
+    ../check/check35.h \
+    ../dialogs/time.h
 
 INCLUDEPATH += $$PWD/../../includes
 

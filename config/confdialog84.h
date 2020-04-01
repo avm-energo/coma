@@ -45,12 +45,7 @@ public slots:
 
 private slots:
     void SetDefConf();
-    void slot_timeOut();
-    void slot2_timeOut();
-    void Start_Timer();
-    void Stop_Timer();
-    void Write_PCDate();
-    void Write_Date();
+
 
 
 

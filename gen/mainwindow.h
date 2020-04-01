@@ -17,6 +17,7 @@
 #include "../dialogs/swjdialog.h"
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/cordialog.h"
+#include "../dialogs/time.h"
 
 #include "eabstractprotocomchannel.h"
 
@@ -53,6 +54,7 @@ public:
     ConfDialog *MainTuneDialog;
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
+    MNKTime *Time;
 #ifndef MODULE_A1
     SwitchJournalDialog *SwjD;
     OscDialog *OscD;
@@ -64,11 +66,14 @@ public:
     void LoadSwjFromFile(const QString &filename);
 #endif
     int CheckPassword();
+    int AdminCheckPassword();
 
     EAbstractTuneDialog *TuneB, *TuneM;
     void Disconnect();
     QWidget *Parent;
     QSplashScreen *StartWindowSplashScreen;
+    QThread *thr;
+    int admin;
 
     static QStringList Hth()
     {
@@ -138,6 +143,7 @@ signals:
     void Retry();
     void FinishAll();
     void PasswordChecked();
+    void AdminPasswordChecked();
     void BsiRefresh();
     void ClearBsi();
     void Finished();
@@ -167,6 +173,7 @@ private slots:
     void ShowErrorDialog();
     void GetAbout();
     void DisconnectAndClear();
+    void FinishHim();
 #ifndef MODULE_A1
     void LoadOsc();
     void LoadSWJ();
@@ -181,6 +188,7 @@ private slots:
     void SetMDefConf();
     void Fill();
     void PasswordCheck(QString psw);
+    void AdminPasswordCheck(QString psw);
 #if PROGSIZE != PROGSIZE_EMUL
     void GetDeviceFromTable(QModelIndex idx);
     void Stage1_5();

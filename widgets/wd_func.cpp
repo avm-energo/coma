@@ -361,7 +361,12 @@ void WDFunc::AddLabelAndLineeditH(QLayout *lyout, QString caption, QString lenam
     hlyout->addWidget(lbl,0);
     QLineEdit *le = new QLineEdit("");
     le->setObjectName(lename);
+    if(enabled)
     le->setEnabled(enabled);
+    else
+    le->setDisabled(~enabled);
+    //le->setReadOnly(false);
+    //le->setModified(enabled);
     hlyout->addWidget(le,10);
 }
 
@@ -462,5 +467,16 @@ bool WDFunc::LE_read_data(QWidget *w, const QString &lename, QString &levalue)
     if (le == nullptr)
         return false;
     levalue = le->text();
+    return true;
+}
+
+bool WDFunc::LE_write_data(QWidget *w, QString &levalue, const QString &lename)
+{
+    QLineEdit *le = w->findChild<QLineEdit *>(lename);
+    if (le == nullptr)
+        return false;
+    le->text() = levalue;
+    le->setText(levalue);
+    //SetTEData(w, lename, levalue);
     return true;
 }

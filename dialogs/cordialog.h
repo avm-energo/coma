@@ -40,7 +40,7 @@ signals:
 public slots:
     void GetCorBd();
     void WriteCorBd();
-    void WriteCorNotBalance();
+    void WriteCor();
     void WriteCorCapacity();
     void WriteCorTg();
     void SetCor();

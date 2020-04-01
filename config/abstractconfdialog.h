@@ -18,6 +18,7 @@ public:
 
     QStringList CheckConfErrors;
     bool IsNeededDefConf = false;
+    int confIndex, timeIndex;
 
     QWidget *ConfButtons();
     virtual void Fill() = 0; // заполнить значения полей вывода из структуры конфигурации
@@ -40,7 +41,8 @@ private slots:
     void SaveConfToFile();
     void LoadConfFromFile();
 #if PROGSIZE != PROGSIZE_EMUL
-    void ReadConf();
+    void ReadConf(int index);
+    void ButtonReadConf();
     void WriteConf();
     void tginit(float *tg);
 
@@ -50,6 +52,7 @@ signals:
     void NewConfToBeLoaded(); // signal to load configuration in all appropriate windows (main conf, base conf, mez conf)
     void DefConfToBeLoaded(); // signal to load default configuration
     void SendTg(float*);
+    void stopRead(int);
 };
 
 #endif // ABSTRACTCONFDIALOG_H

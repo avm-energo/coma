@@ -182,7 +182,7 @@ void ConfDialog84::FillBack()
 
 void ConfDialog84::SetupUI()
 {
-    QString phase[3] = {"A:","B:","C:"};
+    QString phase[3] = {"Фаза A:","Фаза B:","Фаза C:"};
     //QString S;
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
@@ -292,11 +292,19 @@ void ConfDialog84::SetupUI()
      glyout->addWidget(WDFunc::NewLBL(this, phase[i]), row,2+i,1,1,Qt::AlignLeft);
     }
     row++;*/
+
+    for (int i = 0; i < 3; i++)
+    {
+     //glyout->addWidget(WDFunc::NewLBL(this, " "), row, i,1,1,Qt::AlignLeft);
+     glyout->addWidget(WDFunc::NewLBL(this, phase[i]), row,2+i,1,1,Qt::AlignLeft);
+    }
+    row++;
+
     glyout->addWidget(WDFunc::NewLBL(this, "Паспортные значения ёмкости вводов, пФ:"), row,1,1,1);
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewLBL(this, phase[i]), row,2+i,1,1,Qt::AlignLeft);
-     glyout->addWidget(WDFunc::NewSPB(this, "C_pasp."+QString::number(i), 0, 20000, 0, paramcolor), row,2+i,1,1,Qt::AlignCenter);
+     //glyout->addWidget(WDFunc::NewLBL(this, phase[i]), row,2+i,1,1,Qt::AlignLeft);
+     glyout->addWidget(WDFunc::NewSPB(this, "C_pasp."+QString::number(i), 0, 20000, 0, paramcolor), row,2+i,1,1);
     }
     row++;
 
@@ -304,8 +312,8 @@ void ConfDialog84::SetupUI()
 
     for (int i = 0; i < 3; i++)
     {
-     glyout->addWidget(WDFunc::NewLBL(this, phase[i]), row,2+i,1,1,Qt::AlignLeft);
-     glyout->addWidget(WDFunc::NewSPB(this, "Tg_pasp."+QString::number(i), 0, 10, 2, paramcolor), row,2+i,1,1,Qt::AlignCenter);
+     //glyout->addWidget(WDFunc::NewLBL(this, phase[i]), row,2+i,1,1,Qt::AlignLeft);
+     glyout->addWidget(WDFunc::NewSPB(this, "Tg_pasp."+QString::number(i), 0, 10, 2, paramcolor), row,2+i,1,1);
     }
     row++;
     /*glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения tg δ вводов, %:"), row,1,1,1);
@@ -504,89 +512,6 @@ void ConfDialog84::SetupUI()
 
     extraconf->setLayout(vlyout1);
 
-    gb = new QGroupBox("");
-    vlyout1 = new QVBoxLayout;
-    vlyout2 = new QVBoxLayout;
-    glyout = new QGridLayout;
-    row = 0;
-
-    SysTime = new QLabel;
-
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(slot_timeOut()));
-
-    //SysTime->setText(QTime::currentTime().toString("hh:mm:ss"));
-
-    timer->start(1000);
-
-    QString Text = "dd-MM-yyyy HH:mm:ss";
-
-    QDateTime current = QDateTime::currentDateTime();
-    glyout->addWidget(WDFunc::NewLBL(this, "Дата и время ПК:"), row,1,1,1, Qt::AlignTop);
-    QDateTime dt = QDateTime::currentDateTime();
-    //SysTime->setText(dt.toString());
-    SysTime->setText(QDateTime::currentDateTimeUtc().toString("yyyy-MM-ddTHH:mm:ss"));
-    glyout->addWidget(SysTime, row,2,1,4, Qt::AlignTop);
-
-    row++;
-    tmps = "QWidget {background-color: "+QString(MAINWINCLR)+";}";
-    QPushButton *Button = new QPushButton("Записать дату и время ПК в модуль");
-    Button->setStyleSheet(tmps);
-    glyout->addWidget(Button, row,1,1,6, Qt::AlignTop);
-    connect(Button, SIGNAL(clicked()), this, SLOT(Write_PCDate()));
-
-    SysTime2 = new QLabel;
-    timerRead = new QTimer(this);
-    connect(timerRead, SIGNAL(timeout()), this, SLOT(slot2_timeOut()));
-    row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Дата и время в модуле:"), row,1,1,1);
-    SysTime2->setText(Text);
-    glyout->addWidget(SysTime2, row,2,1,4);
-
-    row++;
-    Button = new QPushButton("Читать время из модуля");
-    Button->setStyleSheet(tmps);
-    glyout->addWidget(Button, row,1,1,1,Qt::AlignTop);
-    connect(Button, SIGNAL(clicked()), this, SLOT(Start_Timer()));
-    Button = new QPushButton("Остановить чтение");
-    Button->setStyleSheet(tmps);
-    glyout->addWidget(Button, row,2,1,5,Qt::AlignTop);
-    connect(Button, SIGNAL(clicked()), this, SLOT(Stop_Timer()));
-
-    row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Дата и время для записи в модуль"), row,1,1,1);
-
-    //for(int i = 0; i<3; i++)
-    //{
-    //glyout->addWidget(WDFunc::NewSPB(Date, "Date", 0, 100000, 0, paramcolor), row,2,1,1);
-    glyout->addWidget(WDFunc::NewLE(this, "Date", Text, paramcolor), row,2,1,1);
-
-    //}
-
-    row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "день-месяц-год часы:минуты:секунды"), row,2,1,1);
-
-    /*for(int i = 0; i<3; i++)
-    {
-       glyout->addWidget(WDFunc::NewSPB(this, "Time"+QString::number(i), 0, 59, 0, paramcolor), row,2+i,1,1);
-    }*/
-
-
-    row++;
-    Button = new QPushButton("Записать заданное время в модуль");
-    Button->setStyleSheet(tmps);
-    glyout->addWidget(Button, row,1,1,6, Qt::AlignTop);
-    connect(Button, SIGNAL(clicked()), this, SLOT(Write_Date()));
-
-    //SysTime2->setText(QTime::currentTime().toString("hh:mm:ss"));
-    // glyout->addWidget(SysTime2, row,2,1,4, Qt::AlignTop);
-
-    vlyout2->addLayout(glyout);
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);
-
-    time->setLayout(vlyout1);
-
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
@@ -603,7 +528,7 @@ void ConfDialog84::SetupUI()
     else
     ConfTW->addTab(analog2,"Уставки");
 
-    ConfTW->addTab(time,"Время");
+    //ConfTW->addTab(time,"Время");
     lyout->addWidget(ConfTW);
 
     QWidget *wdgt = ConfButtons();
@@ -623,77 +548,7 @@ void ConfDialog84::SetDefConf()
     C84->SetDefConf();
 }
 
-void ConfDialog84::slot_timeOut()
-{
-   // WDFunc::LBLText(this, "adrMB", currentTime().toString("hh:mm:ss"));
-    SysTime->setText(QDateTime::currentDateTimeUtc().toString("dd-MM-yyyy HH:mm:ss"));
-    //SysTime->update();
-}
 
-void ConfDialog84::slot2_timeOut()
-{
-    uint unixtimestamp = 0;
-    QDateTime myDateTime;
-
-    #if PROGSIZE != PROGSIZE_EMUL
-    if (Commands::GetTimeMNK(unixtimestamp) == Error::ER_NOERROR)
-    {
-      myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
-      //myDateTime.setTime_t(unixtimestamp);
-      SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
-
-      //EMessageBox::information(this, "INFO", "Прочитано успешно");
-    }
-    //else
-    //EMessageBox::information(this, "INFO", "Ошибка");
-    #endif
-
-}
-
-void ConfDialog84::Start_Timer()
-{
-   timerRead->start(1000);
-}
-
-void ConfDialog84::Stop_Timer()
-{
-   timerRead->stop();
-}
-
-void ConfDialog84::Write_PCDate()
-{
-    QDateTime myDateTime;
-    uint time ;
-    myDateTime = QDateTime::currentDateTimeUtc();
-    time = myDateTime.toTime_t();
-
-    #if PROGSIZE != PROGSIZE_EMUL
-    if (Commands::WriteTimeMNK(&time, sizeof(uint)) == Error::ER_NOERROR)
-    EMessageBox::information(this, "INFO", "Записано успешно");
-    else
-    EMessageBox::information(this, "INFO", "Ошибка");
-    #endif
-
-}
-
-void ConfDialog84::Write_Date()
-{
-    QDateTime myDateTime;
-    uint *time = new uint;
-    QString qStr;
-    WDFunc::LE_read_data(this, "Date", qStr);
-    myDateTime = QDateTime::fromString(qStr,"dd-MM-yyyy HH:mm:ss");
-    myDateTime.setOffsetFromUtc(0);
-    *time = myDateTime.toTime_t();
-
-    #if PROGSIZE != PROGSIZE_EMUL
-    if (Commands::WriteTimeMNK(time, sizeof(uint)) == Error::ER_NOERROR)
-    EMessageBox::information(this, "INFO", "Записано успешно");
-    else
-    EMessageBox::information(this, "INFO", "Ошибка");
-    #endif
-
-}
 
 void ConfDialog84::Set104(double dbl)
 {

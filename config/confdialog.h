@@ -10,6 +10,8 @@ class ConfDialog : public AbstractConfDialog
 public:
     ConfDialog(QVector<S2::DataRec> &S2Config, quint32 MTypeB, quint32 MTypeM, QWidget *parent = nullptr);
 
+    Config *ConfigMain;
+
     void SetDefConf();
     void Fill();
     void FillBack();
@@ -18,7 +20,7 @@ public:
 public slots:
 
 private:
-    Config *ConfigMain;
+
 
     void SetupUI();
 

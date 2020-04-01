@@ -106,6 +106,7 @@ public:
     static QPushButton *NewPB(QWidget *parent, const QString &text, \
                       const QObject *receiver, const char *method, const QString &pbtooltip="");
     static bool LE_read_data(QWidget *w, const QString &lename, QString &levalue);
+    static bool LE_write_data(QWidget *w, QString &levalue, const QString &lename);
 };
 
 #endif // WD_FUNC

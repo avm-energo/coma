@@ -16,7 +16,7 @@
 #include "../gen/commands.h"
 #endif
 
-HiddenDialog::HiddenDialog(QWidget *parent) :
+HiddenDialog::HiddenDialog(int status, QWidget *parent) :
     QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -68,6 +68,7 @@ HiddenDialog::HiddenDialog(QWidget *parent) :
             break;
         }
     }
+    st = status;
     SetupUI();
 }
 
@@ -103,7 +104,10 @@ void HiddenDialog::SetupUI()
         WDFunc::AddLabelAndLineeditH(hlyout, ".", "mezhwsv", true);
         gblyout->addLayout(hlyout);
         hlyout = new QHBoxLayout;
+        if(st)
         WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "mezsn", true);
+        else
+        WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "mezsn", false);
         gblyout->addLayout(hlyout);
         gb->setLayout(gblyout);
         hlyout = new QHBoxLayout;
@@ -123,7 +127,10 @@ void HiddenDialog::SetupUI()
     WDFunc::AddLabelAndLineeditH(hlyout, ".", "bashwsv", true);
     gblyout->addLayout(hlyout);
     hlyout = new QHBoxLayout;
+    if(st)
     WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "bassn", true);
+    else
+    WDFunc::AddLabelAndLineeditH(hlyout, "Серийный номер платы:", "bassn", false);
     gblyout->addLayout(hlyout);
     gb->setLayout(gblyout);
     hlyout = new QHBoxLayout;
@@ -233,7 +240,10 @@ void HiddenDialog::SetMezzanineEnabled(int Enabled)
     WDFunc::SetEnabled(this, "mezhwmv", Enabled);
     WDFunc::SetEnabled(this, "mezhwsv", Enabled);
     WDFunc::SetEnabled(this, "mezhwlv", Enabled);
+    if(st)
     WDFunc::SetEnabled(this, "mezsn", Enabled);
+    //else
+    //WDFunc::SetDisabled(this, "mezsn", Enabled);
 }
 
 void HiddenDialog::GetVersion(quint32 &number, QString lename)

@@ -66,6 +66,7 @@
 #include "../gen/modulebsi.h"
 #include "../gen/log.h"
 
+
 Coma::Coma(QWidget *parent)
     : MainWindow(parent)
 {
@@ -255,7 +256,6 @@ void Coma::AddActionsToMenuBar(QMenuBar *menubar)
 void Coma::Stage3()
 {
     QString str;
-    int index;
     ConfB = ConfM = nullptr;
     CheckB = CheckM = nullptr;
     TuneB = TuneM = nullptr;
@@ -307,12 +307,29 @@ void Coma::Stage3()
             EMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
 
         }
-
         connect(ConfM,SIGNAL(NewConfToBeLoaded()),this,SLOT(Fill()));
         connect(ConfM,SIGNAL(DefConfToBeLoaded()),this,SLOT(SetDefConf()));
-        index = MainTW->indexOf(ConfM);
-        connect(MainTW, SIGNAL(tabClicked(index)), ConfM,SLOT(ReadConf()));
+        ConfM->confIndex = MainTW->indexOf(ConfM);
+        connect(MainTW, SIGNAL(tabClicked(int)), ConfM,SLOT(ReadConf(int))); //tabClicked
     }
+
+    if (MTypeB == 0xA2) // для МНК
+    {
+        Time = new MNKTime();
+        connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Start_Timer(int))); //tabClicked
+        connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Stop_Timer(int)));
+        connect(ConfM, SIGNAL(stopRead(int)), Time,SLOT(Stop_Timer(int)));
+        MainTW->addTab(Time, "Время");
+        Time->timeIndex = MainTW->indexOf(Time);
+        ConfM->timeIndex = Time->timeIndex;
+        thr = new QThread;
+        Time->moveToThread(thr);
+        connect(thr,SIGNAL(finished()),Time,SLOT(deleteLater()));
+        connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
+        connect(thr,SIGNAL(started()),Time,SLOT(slot2_timeOut()));
+        thr->start();
+    }
+
     str = (TuneM == nullptr) ? "Регулировка" : "Регулировка\nБазовая";
     if (TuneB != nullptr)
     {
@@ -349,6 +366,10 @@ void Coma::Stage3()
         Error::ShowErMsg(ER_NOCONF);
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
         Error::ShowErMsg(ER_NOTUNECOEF);
+
+    connect(this,SIGNAL(FinishAll()),this,SLOT(FinishHim()));
+
+
     MainTW->sizeIncrement();
     MainTW->repaint();
     MainTW->show();

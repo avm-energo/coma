@@ -20,7 +20,7 @@ class HiddenDialog : public QDialog
 public:
     bool ResultOk;
 
-    explicit HiddenDialog(QWidget *parent = nullptr);
+    explicit HiddenDialog(int status, QWidget *parent = nullptr);
     void Fill();
 
 signals:
@@ -43,6 +43,7 @@ private:
         Bhb_Main BoardMBhb;
     };
     Bhb_Overall Bhb;
+    int st;
 
     void SetupUI();
     void SetVersion(quint32 number, QString lename);

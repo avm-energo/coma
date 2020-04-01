@@ -37,6 +37,7 @@
 #include "../dialogs/trendviewdialog.h"
 #include "../gen/timefunc.h"
 
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     QPixmap StartWindowSplashPixmap("images/2.1.x.png");
@@ -372,6 +373,26 @@ int MainWindow::CheckPassword()
     KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
     connect(dlg,SIGNAL(Finished(QString)),this,SLOT(PasswordCheck(QString)));
     connect(this,SIGNAL(PasswordChecked()),&PasswordLoop,SLOT(quit()));
+    dlg->show();
+    PasswordLoop.exec();
+    if (StdFunc::IsCancelled())
+        return Error::ER_GENERALERROR;
+    if (!ok)
+    {
+        EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
+        return Error::ER_GENERALERROR;
+    }
+    return Error::ER_NOERROR;
+}
+
+int MainWindow::AdminCheckPassword()
+{
+    ok = false;
+    StdFunc::ClearCancel();
+    QEventLoop PasswordLoop;
+    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
+    connect(dlg,SIGNAL(Finished(QString)),this,SLOT(AdminPasswordCheck(QString)));
+    connect(this,SIGNAL(AdminPasswordChecked()),&PasswordLoop,SLOT(quit()));
     dlg->show();
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
@@ -815,10 +836,30 @@ void MainWindow::SetTEEnabled(bool enabled)
 void MainWindow::PasswordCheck(QString psw)
 {
     if (psw == "se/7520a")
+    {
+        admin=0;
+        ok = true;
+    }
+    else if(psw == "admin")
+    {
+        admin = 1;
+        ok = true;
+    }
+    else
+    {
+        admin=0;
+        ok = false;
+    }
+    emit PasswordChecked();
+}
+
+void MainWindow::AdminPasswordCheck(QString psw)
+{
+    if (psw == "admin")
         ok = true;
     else
         ok = false;
-    emit PasswordChecked();
+    emit AdminPasswordChecked();
 }
 
 #if PROGSIZE >= PROGSIZE_LARGE
@@ -833,7 +874,7 @@ int MainWindow::OpenBhbDialog()
     if (CheckPassword() == Error::ER_GENERALERROR)
         return Error::ER_GENERALERROR;
 
-    HiddenDialog *dlg = new HiddenDialog();
+    HiddenDialog *dlg = new HiddenDialog(admin);
     dlg->Fill(); // заполняем диалог из недавно присвоенных значений
     dlg->exec();
     if (!dlg->ResultOk)
@@ -1027,6 +1068,7 @@ void MainWindow::GetDeviceFromTable(QModelIndex idx)
 #endif
 void MainWindow::DisconnectAndClear()
 {
+
 #if PROGSIZE != PROGSIZE_EMUL
     Disconnect();
     TuneB = TuneM = nullptr;
@@ -1035,7 +1077,7 @@ void MainWindow::DisconnectAndClear()
     OscD = nullptr;
 #endif
     CheckB = CheckM = nullptr;
-    emit FinishAll();
+    Time = nullptr;
     emit ClearBsi();
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
@@ -1043,6 +1085,12 @@ void MainWindow::DisconnectAndClear()
         return;
     MainTW->hide();
     StdFunc::SetEmulated(false);
+
+    if(thr != nullptr)
+    emit FinishAll();
+
+    thr = nullptr;
+
 }
 #ifndef MODULE_A1
 void MainWindow::LoadOsc()
@@ -1140,3 +1188,13 @@ void MainWindow::ShowOsc()
     dlg->dlg->show();
 }
 
+void MainWindow::FinishHim()
+{
+    thr->exit();
+    //thr->wait(100);
+    thr->deleteLater();
+    ConfM->timeIndex = -1;
+    ConfM->confIndex = -1;
+    TimeFunc::Wait(1000);
+    //ConfM->stopRead(ConfM->timeIndex);
+}

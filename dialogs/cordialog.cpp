@@ -54,7 +54,7 @@ CorDialog::~CorDialog()
 
 void CorDialog::SetupUI()
 {
-    QWidget *cp2 = new QWidget;
+    //QWidget *cp2 = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     ETableView *tv = new ETableView;
@@ -157,7 +157,7 @@ void CorDialog::SetupUI()
     row++;
 
 
-    pb = new QPushButton("Задать коррекцию");
+    /*pb = new QPushButton("Задать коррекцию");
     #if PROGSIZE != PROGSIZE_EMUL
         connect(pb,SIGNAL(clicked()),this,SLOT(SetCor()));
     #endif
@@ -166,7 +166,7 @@ void CorDialog::SetupUI()
 
     glyout->addWidget(pb, row,1,1,5);
 
-    row++;
+    row++;*/
 
     pb = new QPushButton("Сбросить коррекцию");
     #if PROGSIZE != PROGSIZE_EMUL
@@ -181,7 +181,7 @@ void CorDialog::SetupUI()
 
     pb = new QPushButton("Задать начальные значения");
     #if PROGSIZE != PROGSIZE_EMUL
-      connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorNotBalance()));
+      connect(pb,SIGNAL(clicked()),this,SLOT(WriteCor()));
     #endif
     if (StdFunc::IsInEmulateMode())
        pb->setEnabled(false);
@@ -272,7 +272,7 @@ void CorDialog::WriteCorTg()
 
 }
 
-void CorDialog::WriteCorNotBalance()
+void CorDialog::WriteCor()
 {
     if(Commands::WriteCom(1) == Error::ER_NOERROR)   // задание общей коррекции
     EMessageBox::information(this, "INFO", "Записано успешно");

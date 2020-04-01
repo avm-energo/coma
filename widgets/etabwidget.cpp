@@ -4,7 +4,7 @@ ETabWidget::ETabWidget(QWidget *parent) :
     QTabWidget(parent)
 {
     setTabBar(new ETabBar());
-    connect(this,SIGNAL(tabBarClicked(int)),this,SIGNAL(tabClicked(int)));
+    connect(this,SIGNAL(currentChanged(int)),this,SIGNAL(tabClicked(int)), Qt::ConnectionType(2));
 }
 
 void ETabWidget::TabClicked()

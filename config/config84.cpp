@@ -16,6 +16,17 @@ Config84::Config84(QVector<S2::DataRec> &config)
 
     if ((StartInIndex != 0))
     {
+        config.append({BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB});
+        config.append({BCI_MTYPEM, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM});
+        config.append({BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype});
+        config.append({BCI_ABS_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104});
+        config.append({BCI_CYCLE_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104});
+        config.append({BCI_T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104});
+        config.append({BCI_T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104});
+        config.append({BCI_T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104});
+        config.append({BCI_K_104, sizeof(MainBlk.k_104), &MainBlk.k_104});
+        config.append({BCI_W_104, sizeof(MainBlk.w_104), &MainBlk.w_104});
+
         config.append({1003, sizeof(Bci_block.NFiltr), &Bci_block.NFiltr});
         config.append({1006, sizeof(Bci_block.Unom), &Bci_block.Unom});
         config.append({StartInIndex, sizeof(Bci_block.Umin), &Bci_block.Umin});
