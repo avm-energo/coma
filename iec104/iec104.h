@@ -104,10 +104,10 @@ public:
 
     typedef struct
     {
-        quint32 SigAdr;
+        quint8 SigAdr[3];
         quint32 SigVal;
         quint8 SigQuality;
-        quint64 CP56Time;
+        //quint64 CP56Time;
     }BS104;  // первое - номера сигналов, второе - их значения ("" ~ недостоверное значение), третье - метка времени
 
     typedef struct

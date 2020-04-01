@@ -60,6 +60,8 @@ public:
     QString IPtemp, FullName, SaveDevice, instr;
     QStringList sl, slfinal, insl;
     static QString MainInterface;
+    static quint32 MTypeB;
+    static quint32 MTypeM;
     quint8 HaveAlreadyRed = 0;
     JournalDialog *JourD;
     fwupdialog *FwUpD;
@@ -68,6 +70,7 @@ public:
     //MNKTime *Time;
     //QThread *thr;
     quint32 Mes;
+    bool TimeThrFinished, ModBusThrFinished;
 
 
     struct DeviceConnectStruct
@@ -166,6 +169,7 @@ signals:
     void FinishAll();
     void PasswordChecked();
     void BsiRefresh(ModuleBSI::Bsi*);
+    void USBBsiRefresh();
     void ClearBsi();
     void Finished();
     void stopit();
@@ -193,12 +197,15 @@ public slots:
     void DisconnectAndClear();
     void FinishHim();
     void UpdateReleWidget(Parse104::SponSignals104*);
+    void CheckTimeFinish();
+    void CheckModBusFinish();
+
 
 private slots:
     void StartSettingsDialog();
     void ShowErrorDialog();
     void GetAbout();
-
+    void closeEvent(QCloseEvent *event);
 
     void SetDefConf();
     void SetMainDefConf();

@@ -14,6 +14,7 @@
 #include "../gen/modulebsi.h"
 #include "confdialog84.h"
 #include "../gen/error.h"
+#include "../gen/mainwindow.h"
 
 
 ConfDialog84::ConfDialog84(QVector<S2::DataRec> &S2Config, QWidget *parent) :
@@ -516,7 +517,7 @@ void ConfDialog84::SetupUI()
     ConfTW->addTab(MEKconf,"Конфигурирование МЭК-60870-5-104");
     ConfTW->addTab(analog1,"Аналоговые");
 
-    if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
+    if(MainWindow::MTypeB == Config::MTB_A2)
     {
       ConfTW->addTab(analog2,"Уставки и температура");
       ConfTW->addTab(extraconf,"Связь");

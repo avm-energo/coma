@@ -29,15 +29,16 @@ MNKTime::MNKTime(QWidget *parent) :
 
     FinishThread = true;
     closeThr = false;
+    haveFinished = false;
     myDateTime.setTime_t(unixtimestamp);
-
+    //setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
     //thr->start();
 }
 
 MNKTime::~MNKTime()
 {
-   deleteLater();
+   //deleteLater();
 }
 
 void MNKTime::SetupUI()
@@ -188,8 +189,9 @@ void MNKTime::slot2_timeOut()
             #endif
         }
 
-        if(closeThr)
+        if(closeThr) //&& (!haveFinished))
         {
+         //haveFinished = true;
          emit finished();
          break;
         }

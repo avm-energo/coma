@@ -38,6 +38,8 @@
 #endif
 
 QString MainWindow::MainInterface;
+quint32 MainWindow::MTypeB;
+quint32 MainWindow::MTypeM;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -56,6 +58,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     MainConfDialog = nullptr;
     ConfB = ConfM = nullptr;
     CheckB = CheckM = nullptr;
+    //ModBusThrFinished = false;
+    //TimeThrFinished = false;
 
 
 //#endif
@@ -71,7 +75,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 MainWindow::~MainWindow()
 {
-   // DisconnectAndClear();
+    //DisconnectAndClear();
 #if PROGSIZE != PROGSIZE_EMUL
     Disconnect();
 #endif
@@ -883,7 +887,10 @@ void MainWindow::Disconnect()
         if(MainInterface == "USB")
         cn->Disconnect();
         else
-        emit stopit();
+        {
+         emit stopit();
+         emit stopModBus();
+        }
 
     }
 }
@@ -1091,3 +1098,20 @@ void MainWindow::FinishHim()
     //ConfM->stopRead(ConfM->timeIndex);
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    DisconnectAndClear();
+    //while(!TimeThrFinished || !ModBusThrFinished)
+    //TimeFunc::Wait(100);
+    event->accept();
+}
+
+void MainWindow::CheckTimeFinish()
+{
+   TimeThrFinished = true;
+}
+
+void MainWindow::CheckModBusFinish()
+{
+   TimeThrFinished = true;
+}

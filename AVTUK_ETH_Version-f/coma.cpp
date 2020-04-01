@@ -41,7 +41,6 @@
 #include "../config/confdialoga1.h"
 #include "../check/checkdialog84.h"
 #include "../dialogs/fwupdialog.h"
-#include "../dialogs/infodialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../widgets/etabwidget.h"
@@ -52,6 +51,7 @@
 #include "../gen/modulebsi.h"
 #include "../gen/log.h"
 #include "../modbus/modbus.h"
+#include "../gen/timefunc.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -258,8 +258,9 @@ void Coma::AddActionsToMenuBar(QMenuBar *menubar)
 void Coma::Stage3()
 {
     QString str;
-    quint32 MTypeB = 0;
-    quint32 MTypeM = 0;
+    int count = 0;
+    MTypeB = 0;
+    MTypeM = 0;
     ConfB = ConfM = nullptr;
     JourD = nullptr;
     ch104 = nullptr;
@@ -269,8 +270,8 @@ void Coma::Stage3()
     if (MainTW == nullptr)
         return;
 
-    InfoDialog *idlg = new InfoDialog;
-    connect(this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)),idlg,SLOT(FillBsi()));
+    idlg = new InfoDialog;
+    connect(this,SIGNAL(USBBsiRefresh()),idlg,SLOT(FillBsi()));
     connect(this,SIGNAL(ClearBsi()),idlg,SLOT(ClearBsi()));
 
     if(MainInterface == "USB")
@@ -282,8 +283,22 @@ void Coma::Stage3()
     }
     else
     {
-        MTypeB = 0xA2;
-        MTypeM = 0x84;
+#ifdef ETHENABLE
+        ch104 = new iec104(&IPtemp, this);
+        ch104->BaseAdr = AdrBaseStation;
+        connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),idlg,SLOT(FillBsiFrom104(Parse104::BS104Signals*)));
+#endif
+        while(MTypeB == 0)
+        {
+          TimeFunc::Wait(100);
+          count++;
+          if(count == 50)
+          {
+            count = 0;
+            DisconnectAndClear();
+            break;
+          }
+        }
     }
     /*if (MTypeB < 0xA2) // диапазон модулей АВ-ТУК
     {
@@ -302,6 +317,9 @@ void Coma::Stage3()
           JourD = new JournalDialog();
         }
     }
+
+    if (MainInterface == "USB")
+    emit USBBsiRefresh();
 
     PrepareDialogs();
 
@@ -350,7 +368,7 @@ void Coma::Stage3()
         connect(MainTW, SIGNAL(tabClicked(int)), ConfM, SLOT(ReadConf(int))); //tabClicked
     }
 
-    if (MTypeB == 0xA2 && MainInterface == "USB") // для МНК
+    if (MTypeB == 0xA200 && MainInterface == "USB") // для МНК
     {
 
         MNKTime *Time = new MNKTime();
@@ -365,8 +383,9 @@ void Coma::Stage3()
         Time->moveToThread(thr);
         connect(this,SIGNAL(stoptime()),Time,SLOT(StopSlot()));
         connect(Time, SIGNAL(finished()), thr, SIGNAL(finished()));
+        //connect(thr, SIGNAL(finished()), this, SLOT(CheckTimeFinish()));
         connect(thr,SIGNAL(finished()),Time,SLOT(deleteLater()));
-        connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
+        //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
         connect(thr,SIGNAL(started()),Time,SLOT(slot2_timeOut()));
         thr->start();
 
@@ -413,12 +432,15 @@ void Coma::Stage3()
 #if PROGSIZE >= PROGSIZE_LARGE
     SetSlideWidget();
 #endif
-   // emit BsiRefresh(ModuleBSI::Bsi*);
 }
 
 void Coma::PrepareDialogs()
 {
-    quint32 MTypeB = Config::MTB_A2;//ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8;
+    if (MainInterface == "USB")
+    MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
+
+    MTypeB =  MTypeB<<8;
+
     switch(MTypeB)
     {
     case Config::MTB_21:
@@ -456,10 +478,10 @@ void Coma::PrepareDialogs()
         if(insl.at(1) == "ETH")
         {
 #ifdef ETHENABLE
-            ch104 = new iec104(&IPtemp, this);
+            //ch104 = new iec104(&IPtemp, this);
 
             //ch104->IP = IPtemp;
-            ch104->BaseAdr = AdrBaseStation;
+
             connect(this,SIGNAL(stopit()),ch104,SLOT(Stop()));
             connect(ch104,SIGNAL(ethconnected()), this, SLOT(ConnectMessage()));
             //connect(ch104,SIGNAL(readConf()), ch104,SIGNAL(readConf()));
@@ -488,12 +510,24 @@ void Coma::PrepareDialogs()
             connect(ch104,SIGNAL(sendJourWorkfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillWorkJour(QVector<S2::DataRec>*)));
             connect(ch104,SIGNAL(sendJourMeasfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillMeasJour(QVector<S2::DataRec>*)));
             ch104->Parse->DR = &S2Config;
+
 #endif
          }
          else if(insl.at(1) == "MODBUS")
          {
             CheckModBus = new checktempmodbusdialog(BoardTypes::BT_BASE, this);
             modBus = new ModBus(Settings, CheckModBus);
+
+            /*QThread *Modthr = new QThread;
+            modBus->moveToThread(Modthr);
+            connect(this,SIGNAL(stopModBus()),modBus,SLOT(StopModSlot()));
+            connect(modBus, SIGNAL(finished()), Modthr, SIGNAL(finished()));
+            connect(Modthr, SIGNAL(finished()), this, SLOT(CheckModBusFinish()));
+            connect(Modthr,SIGNAL(finished()),modBus,SLOT(deleteLater()));
+            //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
+            connect(Modthr,SIGNAL(started()),modBus,SLOT(slot2_timeOut()));
+            Modthr->start();*/
+
             connect(modBus, SIGNAL(errorRead()), CheckModBus, SLOT(ErrorRead()));
             connect(modBus, SIGNAL(signalsreceived(ModBusSignal*, int*)), CheckModBus, SLOT(UpdateModBusData(ModBusSignal*, int*)));
 
@@ -525,14 +559,14 @@ void Coma::PrepareDialogs()
     }
     INFOMSG("Mezonin parsing");
 
-    Mes = Config::MTM_84;
+    //MTypeM = Config::MTM_84;
 
     if(MainInterface == "USB")
     {
-       Mes = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
+       MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
     }
 
-    switch(Mes)
+    switch(MTypeM)
     {
     case Config::MTM_21:
     {

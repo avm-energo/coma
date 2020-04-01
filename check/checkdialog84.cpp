@@ -300,13 +300,15 @@ void CheckDialog84::UpdateBS104Data(Parse104::BS104Signals* Signal)
     sig = *Signal;
     ModuleBSI::Bsi* Bsi = new ModuleBSI::Bsi;
     int i;
+    int adr = 0;
+    memcpy(&adr, &(sig.BS.SigAdr[0]), sizeof(sig.BS.SigAdr));
 
     for(i=0; i<Signal->SigNumber; i++)
     {
         sig = *(Signal+i);
 
         Bsi->Hth = sig.BS.SigVal;
-        if(sig.BS.SigAdr == 15)
+        if(adr == 15)
         {
            emit BsiRefresh(Bsi);
         }

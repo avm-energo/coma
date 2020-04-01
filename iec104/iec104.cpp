@@ -529,8 +529,10 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
 
         case M_BO_NA_1:
         {
+            int j;
+            for(j=0 ; j<3; j++)
+            (BS104Signals+cntbs)->BS.SigAdr[j]=(ObjectAdr>>8*j);
 
-            (BS104Signals+cntbs)->BS.SigAdr=ObjectAdr;
             quint32 value;
             memcpy(&value,&ba[index],4);
             index += 4;
@@ -539,10 +541,10 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
             memcpy(&quality,&ba[index],1);
             index++;
             (BS104Signals+cntbs)->BS.SigQuality=quality;
-            quint64 time;
-            memcpy(&time,&ba[index],8);
-            index += 8;
-            (BS104Signals+cntbs)->BS.CP56Time=time;
+            //quint64 time;
+            //memcpy(&time,&ba[index],8);
+            //index += 8;
+            //(BS104Signals+cntbs)->BS.CP56Time=time;
             cntbs++;
             break;
         }
