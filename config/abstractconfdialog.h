@@ -43,8 +43,10 @@ private slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void ReadConf(int index);
     void ButtonReadConf();
-    void WriteConf();
     void tginit(float *tg);
+
+public slots:
+    void WriteConf();
 
 #endif
 signals:

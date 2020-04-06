@@ -5,8 +5,9 @@
 #include "../gen/maindef.h"
 #include "eabstractcheckdialog.h"
 
-#define C84_BDA_IN   1
+#define C84_BDA_IN   2
 #define C84_BDA_IN2  2
+#define C84_BDA_PHI  1
 
 class Check_84 : public EAbstractCheckDialog
 {
@@ -41,7 +42,16 @@ public:
         float Tamb;			// температура окружающей среды, °С
         quint32 res;	       // чтобы было 128 байт
     };
+
+    struct Bd5
+    {
+        float Frequency;
+        float phi_next_f[6];
+    };
+
     Bd1 Bd_block1;
+    Bd5 Bd_block5;
+
     quint8 rele1, rele2, rele3, rele4;
     QWidget *Fwidjet;
 
@@ -51,6 +61,7 @@ public:
     QWidget *Bd3W(QWidget *parent);
     QWidget *Bd4W(QWidget *parent);
     void FillBd(QWidget *parent);
+    void FillBd5(QWidget *parent);
     //void FillBd2(QWidget *parent);
     //void FillBd3(QWidget *parent);
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля

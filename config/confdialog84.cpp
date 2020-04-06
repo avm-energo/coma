@@ -296,7 +296,7 @@ void ConfDialog84::SetupUI()
     for (int i = 0; i < 3; i++)
     {
      //glyout->addWidget(WDFunc::NewLBL(this, " "), row, i,1,1,Qt::AlignLeft);
-     glyout->addWidget(WDFunc::NewLBL(this, phase[i]), row,2+i,1,1,Qt::AlignLeft);
+     glyout->addWidget(WDFunc::NewLBL(this, phase[i]), row,2+i,1,1,Qt::AlignBottom);
     }
     row++;
 
@@ -341,13 +341,13 @@ void ConfDialog84::SetupUI()
     glyout->addWidget(WDFunc::NewLBL(this, "Гистерезис на отключение сигнализации по небалансу токов:"), row,1,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "GdIunb", 0, 10000, 1, paramcolor), row,2,1,3);
 
-    row++;
+    /*row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Начальное действ. значение тока небаланса:"), row,1,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, "Iunb_init", 0, 10000, 1, paramcolor), row,2,1,3);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Начальное значение угла тока небаланса:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Phy_unb_init", 0, 10000, 1, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "Phy_unb_init", 0, 10000, 1, paramcolor), row,2,1,3);*/
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение первой тройки:"), row,1,1,1);
@@ -426,11 +426,11 @@ void ConfDialog84::SetupUI()
         glyout = new QGridLayout;
 
         row++;
-        glyout->addWidget(WDFunc::NewLBL(this, "Сопротивление термометра при 0°С, Ом (только для МНК3):"), row,1,1,1);
+        glyout->addWidget(WDFunc::NewLBL(this, "Сопротивление термометра при 0°С, Ом (только для АВМ):"), row,1,1,1);
         glyout->addWidget(WDFunc::NewSPB(this, "RTerm", 0, 10000, 1, paramcolor), row,2,1,3);
 
         row++;
-        glyout->addWidget(WDFunc::NewLBL(this, "Температурный коэффициент термометра (только для МНК3):"), row,1,1,1);
+        glyout->addWidget(WDFunc::NewLBL(this, "Температурный коэффициент термометра (только для АВМ):"), row,1,1,1);
         glyout->addWidget(WDFunc::NewSPB(this, "W100", 0, 10000, 3, paramcolor), row,2,1,3);
 
         vlyout2->addLayout(glyout);
@@ -470,12 +470,12 @@ void ConfDialog84::SetupUI()
     }
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Порты протоколов:"), row,1,1,1);
-
-    for (int i = 0; i < 4; i++)
+    glyout->addWidget(WDFunc::NewLBL(this, "Порт протокола 104:"), row,1,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "Port0", 0, 10000, 0, paramcolor), row,2,1,1, Qt::AlignLeft);
+    /*for (int i = 0; i < 4; i++)
     {
      glyout->addWidget(WDFunc::NewSPB(this, "Port"+QString::number(i), 0, 10000, 0, paramcolor), row,2+i,1,1, Qt::AlignLeft);
-    }
+    }*/
 
     row++;
     glyout->addWidget(WDFunc::NewChB(this, "ISNTP", "Использование SNTP сервера"), row,1,1,1);
@@ -546,6 +546,7 @@ void ConfDialog84::CheckConf()
 void ConfDialog84::SetDefConf()
 {
     C84->SetDefConf();
+    //WriteConf();
 }
 
 

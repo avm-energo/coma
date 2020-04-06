@@ -79,12 +79,12 @@ QWidget *Check_84::Bd1W(QWidget *parent)
                                           QString::number(i+15)+".Изменение емкостей вводов, пФ"),9,i,1,1);
         glyout->addWidget(WDFunc::NewLBL(parent, "dTg_d ф."+phase[i]),10,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", "value"+QString::number(i+18), ValuesFormat, \
-                                          QString::number(i+18)+".Изменение тангенсов дельта вводов, %"),11,i,1,1);
+                                          QString ::number(i+18)+".Изменение тангенсов дельта вводов, %"),11,i,1,1);
         glyout->addWidget(WDFunc::NewLBL(parent, "U_phi_next_f ф."+phase[i]),12,i,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "",  "value"+QString::number(i+21), ValuesFormat, \
+        glyout->addWidget(WDFunc::NewLBLT(parent, "",  "value"+QString::number(i+31), ValuesFormat, \
                                           QString::number(24+i)+".Угол по напряжению ф."+phase[i]+", град."),13,i,1,1);
         glyout->addWidget(WDFunc::NewLBL(parent, "I_phi_next_f ф."+phase[i]),14,i,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "",  "value"+QString::number(i+24), ValuesFormat, \
+        glyout->addWidget(WDFunc::NewLBLT(parent, "",  "value"+QString::number(i+34), ValuesFormat, \
                                           QString::number(27+i)+".Угол по току ф."+phase[i]+", град."),15,i,1,1);
     }
 

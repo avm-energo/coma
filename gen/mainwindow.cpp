@@ -798,7 +798,10 @@ void MainWindow::SetMainDefConf()
 void MainWindow::SetBDefConf()
 {
     if (ConfB != nullptr)
+    {
         ConfB->SetDefConf();
+        ConfB->WriteConf();
+    }
 }
 
 void MainWindow::SetMDefConf()
@@ -1169,6 +1172,10 @@ void MainWindow::SetDefConf()
     SetBDefConf();
     SetMDefConf();
     Fill();
+    if(ConfB != nullptr)
+    ConfB->WriteConf();
+    if(ConfM != nullptr)
+    ConfM->WriteConf();
     EMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
 }
 

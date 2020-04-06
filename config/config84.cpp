@@ -94,19 +94,19 @@ void Config84::SetDefConf()
     Bci_block.Unom = 220;
     Bci_block.Umin = 0.5;
     Bci_block.Imin = 0.5;
-    Bci_block.dC_pred = 0.5;
-    Bci_block.dC_alarm = 1;
+    Bci_block.dC_pred = 3;
+    Bci_block.dC_alarm = 5;
     Bci_block.dTg_pred = 1;
     Bci_block.dTg_alarm = 1.5;
     Bci_block.dIunb_pred = 1;
     Bci_block.dIunb_alarm = 1.5;
-    Bci_block.GdC = 0.1f;
-    Bci_block.GdTg = 0.2f;
+    Bci_block.GdC = 1;
+    Bci_block.GdTg = 1;
     Bci_block.GdIunb = 0.2f;
     Bci_block.Iunb_init = 0;
     Bci_block.Phy_unb_init = 0;
     Bci_block.NFiltr = 100;
-    Bci_block.T_Data_Rec = 3600;
+    Bci_block.T_Data_Rec = 60;
     Bci_block.Unom_1 = 100;
 
     for (int i = 0; i < 3; i++)
@@ -115,9 +115,13 @@ void Config84::SetDefConf()
         Bci_block.C_init[i] = 2200;
         Bci_block.Tg_init[i] = 0;
         Bci_block.corTg[i] = 0;
-        Bci_block.Tg_pasp[i] = 0.3;
+        Bci_block.Tg_pasp[i] = 0.3f;
         Bci_block.C_pasp[i] = 2200;
     }
+
+    Bci_block.Tg_pasp[0] = 0;
+    Bci_block.C_pasp[0] = 0;
+
     if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     {
         Bci_block.RTerm = 100;
