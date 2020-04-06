@@ -283,21 +283,27 @@ void Coma::Stage3()
     }
     else
     {
-#ifdef ETHENABLE
-        ch104 = new iec104(&IPtemp, this);
-        ch104->BaseAdr = AdrBaseStation;
-        connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),idlg,SLOT(FillBsiFrom104(Parse104::BS104Signals*)));
-#endif
-        while(MTypeB == 0)
+        if(insl.size() != 0)
         {
-          TimeFunc::Wait(100);
-          count++;
-          if(count == 50)
-          {
-            count = 0;
-            DisconnectAndClear();
-            break;
-          }
+         if(insl.at(1) == "ETH")
+         {
+#ifdef ETHENABLE
+            ch104 = new iec104(&IPtemp, this);
+            ch104->BaseAdr = AdrBaseStation;
+            connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),idlg,SLOT(FillBsiFrom104(Parse104::BS104Signals*)));
+    #endif
+            while(MTypeB == 0)
+            {
+              TimeFunc::Wait(100);
+              count++;
+              if(count == 20)
+              {
+                count = 0;
+                DisconnectAndClear();
+                return;
+              }
+            }
+         }
         }
     }
     /*if (MTypeB < 0xA2) // диапазон модулей АВ-ТУК
@@ -307,13 +313,14 @@ void Coma::Stage3()
         //MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     }*/
 
-    if(MainInterface == "Ethernet и RS485")
+    CorD = new CorDialog();
+
+    if(MainInterface == "Ethernet")
     {
         if (insl.size() < 2)
             return;
         if(insl.at(1) != "MODBUS")
         {
-          CorD = new CorDialog();
           JourD = new JournalDialog();
         }
     }
@@ -329,6 +336,19 @@ void Coma::Stage3()
         CheckB->setMinimumHeight(500);
         //MainTW->setFixedHeight(500);
         MainTW->addTab(CheckB, str);
+
+
+        if(MainInterface == "USB")
+        {
+            connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Start_BdaTimer(int))); //tabClicked
+            connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Stop_BdaTimer(int)));
+            connect(ConfM, SIGNAL(stopRead(int)), this,SLOT(Stop_BdaTimer(int)));
+            CheckB->checkIndex = MainTW->indexOf(CheckB);
+            ConfM->checkIndex = CheckB->checkIndex;
+            BdaTimer = new QTimer;
+            BdaTimer->setInterval(ANMEASINT);
+            connect(BdaTimer,SIGNAL(timeout()),CheckB,SLOT(BdTimerTimeout()));
+        }
     }
     str = (CheckB == nullptr) ? "Текущие параметры" : "Текущие параметры\nМезонин";
     if (CheckM != nullptr)
@@ -391,16 +411,16 @@ void Coma::Stage3()
 
     }
 
-    str = "Проверка температуры";
-    if (CheckModBus != nullptr && insl.size() != 0)
+    /*str = "Проверка";
+    if ((CheckB != nullptr) && (insl.size() != 0))
     {
         if(insl.at(1) == "MODBUS")
         {
-            CheckModBus->setMinimumHeight(500);
+            CheckB->setMinimumHeight(500);
             //MainTW->setFixedHeight(500);
-            MainTW->addTab(CheckModBus, str);
+            MainTW->addTab(CheckB, str);
         }
-    }
+    }*/
 
     if (CorD != nullptr)
     {
@@ -432,6 +452,8 @@ void Coma::Stage3()
 #if PROGSIZE >= PROGSIZE_LARGE
     SetSlideWidget();
 #endif
+    if(MainInterface == "USB")
+    BdaTimer->start();
 }
 
 void Coma::PrepareDialogs()
@@ -441,7 +463,15 @@ void Coma::PrepareDialogs()
 
     MTypeB =  MTypeB<<8;
 
-    switch(MTypeB)
+    if (insl.size() != 0)
+    {
+        if(insl.at(1) == "MODBUS")
+        {
+            MTypeB = Config::MTB_A2;
+
+        }
+    }
+     switch(MTypeB)
     {
     case Config::MTB_21:
     {
@@ -515,22 +545,23 @@ void Coma::PrepareDialogs()
          }
          else if(insl.at(1) == "MODBUS")
          {
-            CheckModBus = new checktempmodbusdialog(BoardTypes::BT_BASE, this);
-            modBus = new ModBus(Settings, CheckModBus);
+            //CheckModBus = new checktempmodbusdialog(BoardTypes::BT_BASE, this);
+            CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
+            modBus = new ModBus(Settings, CheckB);
 
-            /*QThread *Modthr = new QThread;
+            QThread *Modthr = new QThread;
             modBus->moveToThread(Modthr);
             connect(this,SIGNAL(stopModBus()),modBus,SLOT(StopModSlot()));
             connect(modBus, SIGNAL(finished()), Modthr, SIGNAL(finished()));
             connect(Modthr, SIGNAL(finished()), this, SLOT(CheckModBusFinish()));
             connect(Modthr,SIGNAL(finished()),modBus,SLOT(deleteLater()));
             //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
-            connect(Modthr,SIGNAL(started()),modBus,SLOT(slot2_timeOut()));
-            Modthr->start();*/
-
-            connect(modBus, SIGNAL(errorRead()), CheckModBus, SLOT(ErrorRead()));
-            connect(modBus, SIGNAL(signalsreceived(ModBusSignal*, int*)), CheckModBus, SLOT(UpdateModBusData(ModBusSignal*, int*)));
-
+            connect(Modthr,SIGNAL(started()),modBus,SLOT(WriteToPort()));
+            connect(modBus, SIGNAL(errorRead()), CheckB, SLOT(ErrorRead()));
+            connect(modBus, SIGNAL(ModBusState(QModbusDevice::State)), CheckB, SLOT(onModbusStateChanged(QModbusDevice::State)));
+            connect(modBus, SIGNAL(signalsreceived(ModBusSignal*, int*)), CheckB, SLOT(UpdateModBusData(ModBusSignal*, int*)));
+            connect(CorD, SIGNAL(RS485WriteCorBd(information*, float*)), modBus, SLOT(ModWriteCor(information*, float*)));//, int*)));
+            Modthr->start();
 
          }
 
@@ -604,7 +635,7 @@ void Coma::PrepareDialogs()
         setMinimumSize(QSize(800, 650));
         ConfM = new ConfDialog84(S2Config);
 
-        if(ch104 != nullptr && MainInterface == "Ethernet и RS485")
+        if(ch104 != nullptr && MainInterface == "Ethernet")
         {
           connect(ConfM,SIGNAL(ReadConfig(char*)), ch104, SLOT(SelectFile(char*)));
           connect(ch104,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)), ConfM, SLOT(FillConf(QVector<S2::DataRec>*)));
@@ -625,3 +656,4 @@ void Coma::PrepareDialogs()
     }
 
  }
+

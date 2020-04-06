@@ -58,7 +58,7 @@ public:
     checktempmodbusdialog *CheckModBus;
     //CheckDialog84* Ch84;
     QString IPtemp, FullName, SaveDevice, instr;
-    QStringList sl, slfinal, insl;
+    QStringList sl, USBsl, slfinal, insl;
     static QString MainInterface;
     static quint32 MTypeB;
     static quint32 MTypeM;
@@ -71,6 +71,7 @@ public:
     //QThread *thr;
     quint32 Mes;
     bool TimeThrFinished, ModBusThrFinished;
+    QTimer* BdaTimer;
 
 
     struct DeviceConnectStruct
@@ -174,6 +175,7 @@ signals:
     void Finished();
     void stopit();
     void stoptime();
+    void stopModBus();
 
 private:
     bool Ok;
@@ -199,6 +201,8 @@ public slots:
     void UpdateReleWidget(Parse104::SponSignals104*);
     void CheckTimeFinish();
     void CheckModBusFinish();
+    void Stop_BdaTimer(int index);
+    void Start_BdaTimer(int index);
 
 
 private slots:

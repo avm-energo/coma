@@ -291,13 +291,14 @@ QWidget *checktempmodbusdialog::CustomTab(void)
 void checktempmodbusdialog::UpdateModBusData(ModBusSignal *Signal, int * size)
 {
 
-    ModBusSignal sig = *new ModBusSignal;
+    //ModBusSignal sig = *new ModBusSignal;
     int i = 0;
     for(i=0; i<*size; i++)
     {
-      sig = *(Signal+i);
-      FillBd(this, QString::number(sig.SigAdr), WDFunc::StringValueWithCheck(sig.flVal));
+      //sig = *(Signal+i);
+      FillBd(this, QString::number((Signal+i)->SigAdr), WDFunc::StringValueWithCheck((Signal+i)->flVal));
     }
+    ModBus::Reading = false;
 }
 
 void checktempmodbusdialog::ErrorRead()

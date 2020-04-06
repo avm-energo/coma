@@ -49,9 +49,16 @@ public:
     };
     ModBus_Groups SignalGroups[6];
 
+    struct information
+    {
+        quint16 adr;
+        int size;
+    };
+
     int deviceAdr;
-    int Reading, Group, readSize;
+    int Group, readSize;
     QThread *thr;
+    ModBusSignal* Sig;
 
     constexpr static const unsigned char TabCRChi[256] = {
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
@@ -99,9 +106,12 @@ ModBus(ModBus_Settings Settings, QObject *parent = nullptr);
  QModbusDevice::State state;
  //QModbusSerialAdu* Serial;
  QSerialPort *serialPort;
- QByteArray* responseBuffer;
+ QByteArray responseBuffer;
  QTimer* ModBusInterrogateTimer;
  quint16 CalcCRC(quint8* Dat, quint8 len);
+ bool closeThr;
+ static bool Reading;
+
 
 
 
@@ -115,6 +125,8 @@ public slots:
         void onAboutToClose();
         void onResponseTimeout(int timerId);
         void reading();
+        void StopModSlot();
+        void ModWriteCor(information *info, float*);//, int*);
 
 
 signals:
@@ -123,6 +135,7 @@ signals:
  void nextGroup();
  void errorRead();
  void errorCrc();
+ void finished();
 
 
 private:

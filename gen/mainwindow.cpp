@@ -382,11 +382,24 @@ int MainWindow::CheckPassword()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Stage1_5()
 {
+    disconnected = 0;
     ShowInterfaceDialog();
     ShowConnectDialog();
+
+
+    if((MainInterface == "Ethernet" && insl.at(1) != "ETH") ||
+       (MainInterface == "RS485" && insl.at(1) != "MODBUS"))
+    {
+       EMessageBox::information(this, "Ошибка", "Выбранный интерфейс не соотвествует выбранной строке в файле");
+       DisconnectAndClear();
+       insl.clear();
+       return;
+    }
+
+
     if(MainInterface.size() != 0)
     {
-        if(MainInterface == "Ethernet и RS485")
+        if(MainInterface == "Ethernet")
         {
    #ifdef ETHENABLE
 
@@ -644,7 +657,8 @@ void MainWindow::ShowInterfaceDialog()
     //QStringList device = QStringList() << "KDV" << "2" << "1" << "2";
     QStringList inter;
     inter.append("USB");
-    inter.append("Ethernet и RS485");
+    inter.append("Ethernet");
+    inter.append("RS485");
     QStringListModel *tmpmodel = new QStringListModel;
     tmpmodel->deleteLater();
     dlg->setMinimumWidth(150);
@@ -708,20 +722,20 @@ void MainWindow::ShowConnectDialog()
              connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
              connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
 
-            sl = cn->DevicesFound();
-            if (sl.size() == 0)
+            USBsl = cn->DevicesFound();
+            if (USBsl.size() == 0)
             {
                 lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
                 Error::ShowErMsg(CN_NOPORTSERROR);
             }
             tmpmodel->deleteLater();
-            tmpmodel->setStringList(sl);
+            tmpmodel->setStringList(USBsl);
             QComboBox *portscb = new QComboBox;
             connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPortSlot(QString)));
             portscb->setModel(tmpmodel);
             lyout->addWidget(portscb);
          }
-         else if(MainInterface == "Ethernet и RS485")
+         else if(MainInterface == "Ethernet" || MainInterface == "RS485")
          {
 
             /*tmpmodel->setStringList(device);
@@ -885,7 +899,10 @@ void MainWindow::Disconnect()
     if(MainInterface.size() != 0 && (!StdFunc::IsInEmulateMode()))
     {
         if(MainInterface == "USB")
-        cn->Disconnect();
+        {
+         BdaTimer->stop();
+         cn->Disconnect();
+        }
         else
         {
          emit stopit();
@@ -924,6 +941,7 @@ void MainWindow::DisconnectAndClear()
     #endif
 
         CheckB = CheckM = nullptr;
+        CheckModBus = nullptr;
         emit ClearBsi();
         ClearTW();
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
@@ -949,7 +967,7 @@ void MainWindow::DisconnectAndClear()
              EMessageBox::information(this, "Разрыв связи", "Связь с "+FullName+" разорвана");
            }
         }
-        disconnected = 0;
+        //disconnected = 0;
     }
 
 
@@ -1070,6 +1088,10 @@ void MainWindow::SetDefConf()
     SetBDefConf();
     SetMDefConf();
     Fill();
+    if(ConfB != nullptr)
+    ConfB->WriteConf();
+    if(ConfM != nullptr)
+    ConfM->WriteConf();
     EMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
 }
 
@@ -1114,4 +1136,30 @@ void MainWindow::CheckTimeFinish()
 void MainWindow::CheckModBusFinish()
 {
    TimeThrFinished = true;
+}
+
+void MainWindow::Stop_BdaTimer(int index)
+{
+    if(CheckB != nullptr)
+    {
+        if(index != CheckB->checkIndex)
+        {
+            BdaTimer->stop();
+            //thr->msleep(100);
+        }
+    }
+
+}
+
+void MainWindow::Start_BdaTimer(int index)
+{
+    if(CheckB != nullptr)
+    {
+        if(index == CheckB->checkIndex)
+        {
+            BdaTimer->start();
+            //thr->msleep(100);
+        }
+    }
+
 }

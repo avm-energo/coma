@@ -53,7 +53,7 @@ QWidget *Check_84::Bd1W(QWidget *parent)
     hlyout->addWidget(WDFunc::NewLBL(parent, "Температура микроконтроллера, °С:"), 0);
     hlyout->addWidget(WDFunc::NewLBLT(parent, "", "101", ValuesFormat, "Температура микроконтроллера, °С"), 0);
     hlyout->addWidget(WDFunc::NewLBL(parent, "Частота:"));
-    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "102", ValuesFormat, "Частота, Гц"));
+    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "2400", ValuesFormat, "Частота, Гц"));
     lyout->addLayout(hlyout);
     for (i = 0; i < 3; ++i)
     {
@@ -95,10 +95,10 @@ QWidget *Check_84::Bd1W(QWidget *parent)
     for (i = 0; i < 3; ++i)
     {
         glyout->addWidget(WDFunc::NewLBL(parent, "U_phi_next_f ф."+phase[i]),14,i,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(2400+i), ValuesFormat, \
+        glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(2401+i), ValuesFormat, \
                                           QString::number(24+i)+".Угол по напряжению ф."+phase[i]+", град."),15,i,1,1);
         glyout->addWidget(WDFunc::NewLBL(parent, "I_phi_next_f ф."+phase[i]),16,i,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(2403+i), ValuesFormat, \
+        glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(2404+i), ValuesFormat, \
                                           QString::number(27+i)+".Угол по напряжению ф."+phase[i]+", град."),17,i,1,1);
     }
 
@@ -132,22 +132,22 @@ QWidget *Check_84::Bd2W(QWidget *parent)
     glyout->addWidget(WDFunc::NewLBL(parent, "U2 ф.C"),0,2,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1022), ValuesFormat, \
                                       QString::number(31)+".Напряжение обратной последовательности ф.C"),1,2,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim0"),2,0,1,1);
+    /*glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim0"),2,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1023), ValuesFormat, \
                                       QString::number(32)+".Коэффициент несимметрии по нулевой последовательности по напряжению"),3,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim2"),2,1,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1024), ValuesFormat, \
-                                      QString::number(33)+".Коэффициент несимметрии по обратной последовательности по напряжению"),3,1,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "I0 ф.А"),4,0,1,1);
+                                      QString::number(33)+".Коэффициент несимметрии по обратной последовательности по напряжению"),3,1,1,1);*/
+    glyout->addWidget(WDFunc::NewLBL(parent, "I0 ф.А"),2,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1120), ValuesFormat, \
-                                      QString::number(34)+".Ток обратной последовательности ф.А"),5,0,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "I1 ф.B"),4,1,1,1);
+                                      QString::number(34)+".Ток обратной последовательности ф.А"),3,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "I1 ф.B"),2,1,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1121), ValuesFormat, \
-                                      QString::number(35)+".Ток обратной последовательности ф.B"),5,1,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "I2 ф.C"),4,2,1,1);
+                                      QString::number(35)+".Ток обратной последовательности ф.B"),3,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "I2 ф.C"),2,2,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1122), ValuesFormat, \
-                                      QString::number(36)+".Ток обратной последовательности ф.С"),5,2,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim0"),6,0,1,1);
+                                      QString::number(36)+".Ток обратной последовательности ф.С"),3,2,1,1);
+   /* glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim0"),6,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1123), ValuesFormat, \
                                       QString::number(37)+".Коэффициент несимметрии по нулевой последовательности по току"),7,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim2"),6,1,1,1);
@@ -161,10 +161,10 @@ QWidget *Check_84::Bd2W(QWidget *parent)
                                       QString::number(40)+".Крест фактор"),9,1,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "KrF ф.B"),8,2,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1010), ValuesFormat, \
-                                      QString::number(41)+".Крест фактор"),9,2,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Ramb"),10,0,1,1);
+                                      QString::number(41)+".Крест фактор"),9,2,1,1);*/
+    glyout->addWidget(WDFunc::NewLBL(parent, "Ramb"),4,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(4502), ValuesFormat, \
-                                      QString::number(42)+".Сопротивление датчика, Ом"),11,0,1,1);
+                                      QString::number(42)+".Сопротивление датчика, Ом"),5,0,1,1);
     /*glyout->addWidget(WDFunc::NewLBL(parent, "Time"),6,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value29", ValuesFormat, \
                                       QString::number(29)+".Время записи, с"),7,0,1,1);*/
@@ -288,4 +288,62 @@ QWidget *Check_84::CustomTab()
     QWidget *w = new QWidget;
 
     return w;
+}
+
+void Check_84::FillBdUSB(QWidget *parent)
+{
+    //WDFunc::SetLBLText(parent, "value0", WDFunc::StringValueWithCheck(Bd_block1.NUM, 3));
+    WDFunc::SetLBLText(parent, QString::number(101), WDFunc::StringValueWithCheck(Bd_block1.Tmk, 3));
+    WDFunc::SetLBLText(parent, QString::number(102), WDFunc::StringValueWithCheck(Bd_block1.Frequency, 3));
+    for (int i = 0; i < 3; i++)
+    {
+
+        WDFunc::SetLBLText(parent, QString::number(1000+i), WDFunc::StringValueWithCheck(Bd_block1.Ueff[i], 3));
+        WDFunc::SetLBLText(parent, QString::number(1100+i), WDFunc::StringValueWithCheck(Bd_block1.Ieff[i], 3));
+        WDFunc::SetLBLText(parent, QString::number(2420+i), WDFunc::StringValueWithCheck(Bd_block1.Cbush[i], 3));
+        WDFunc::SetLBLText(parent, QString::number(2423+i), WDFunc::StringValueWithCheck(Bd_block1.Tg_d[i], 3));
+        WDFunc::SetLBLText(parent, QString::number(2426+i), WDFunc::StringValueWithCheck(Bd_block1.dCbush[i], 3));
+        WDFunc::SetLBLText(parent, QString::number(2429+i), WDFunc::StringValueWithCheck(Bd_block1.dTg_d[i], 3));
+    }
+
+    WDFunc::SetLBLText(parent, "1020", WDFunc::StringValueWithCheck(Bd_block1.U0, 3));
+    WDFunc::SetLBLText(parent, "1021", WDFunc::StringValueWithCheck(Bd_block1.U1, 3));
+    WDFunc::SetLBLText(parent, "1022", WDFunc::StringValueWithCheck(Bd_block1.U2, 3));
+    //WDFunc::SetLBLText(parent, "1023", WDFunc::StringValueWithCheck(Bd_block1., 3));
+    //WDFunc::SetLBLText(parent, "1024", WDFunc::StringValueWithCheck(Bd_block1.U2, 3));
+    WDFunc::SetLBLText(parent, "1120", WDFunc::StringValueWithCheck(Bd_block1.I0, 3));
+    WDFunc::SetLBLText(parent, "1121", WDFunc::StringValueWithCheck(Bd_block1.I1, 3));
+    WDFunc::SetLBLText(parent, "1122", WDFunc::StringValueWithCheck(Bd_block1.I2, 3));
+    WDFunc::SetLBLText(parent, "2432", WDFunc::StringValueWithCheck(Bd_block1.Iunb, 3));
+    WDFunc::SetLBLText(parent, "2433", WDFunc::StringValueWithCheck(Bd_block1.Phy_unb, 3));
+    //WDFunc::SetLBLText(parent, "value29", WDFunc::StringValueWithCheck(Bd_block1.Time, 3));
+
+
+    if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != Config::MTB_A2)
+    {
+        WDFunc::SetLBLText(parent, "4501", WDFunc::StringValueWithCheck(Bd_block1.Tamb, 3));
+        //WDFunc::SetLBLText(parent, "value31", WDFunc::StringValueWithCheck(Bd_block1.Ramb, 3));
+    }
+
+}
+
+void Check_84::FillBd5(QWidget *parent)
+{
+    WDFunc::SetLBLText(parent, QString::number(2400), WDFunc::StringValueWithCheck(Bd_block5.Frequency, 3));
+
+    for (int i = 0; i < 6; i++)
+    {
+        WDFunc::SetLBLText(parent, QString::number(2401+i), WDFunc::StringValueWithCheck(Bd_block5.phi_next_f[i], 3));
+    }
+
+}
+
+void Check_84::FillBd8(QWidget *parent)
+{
+   // if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != Config::MTB_A2)
+   // {
+       WDFunc::SetLBLText(parent, "4502", WDFunc::StringValueWithCheck(Bd_block8.resistance, 3));
+        //WDFunc::SetLBLText(parent, "value31", WDFunc::StringValueWithCheck(Bd_block1.Ramb, 3));
+   // }
+
 }

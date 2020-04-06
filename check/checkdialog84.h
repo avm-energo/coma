@@ -6,6 +6,7 @@
 #include "check.h"
 #include "../iec104/iec104.h"
 #include "../iec104/ethernet.h"
+#include "../modbus/modbus.h"
 
 class CheckDialog84 : public EAbstractCheckDialog
 {
@@ -13,12 +14,20 @@ class CheckDialog84 : public EAbstractCheckDialog
 public:
     explicit CheckDialog84(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr, iec104* channel = nullptr);
 
+    typedef struct
+    {
+       float flVal;
+       int SigAdr;
+    }ModBusSignal;
+
     Check_84 *Ch84;
+    bool connectionStateRTU;
+
 
 signals:
 
-public slots:
-
+public slots:   
+    void BdTimerTimeout();
 
 private:
     Check *Ch;
@@ -46,10 +55,13 @@ private slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void StartBdMeasurements();
     void StopBdMeasurements();
-    void BdTimerTimeout();
     void UpdateFlData(Parse104::FlSignals104 *);
     void UpdateSponData(Parse104::SponSignals104 *);
     void UpdateBS104Data(Parse104::BS104Signals *);
+    void UpdateModBusData(ModBusSignal *Signal, int * size);
+    void ErrorRead();
+    void onModbusStateChanged(QModbusDevice::State state);
+
 #endif
 };
 #endif // CHECKDIALOG84_H

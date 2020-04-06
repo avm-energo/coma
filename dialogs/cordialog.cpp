@@ -230,7 +230,7 @@ void CorDialog::WriteCorBd()
 
     if(MainWindow::MainInterface.size() != 0)
     {
-     if(MainWindow::MainInterface == "Ethernet и RS485")
+     if(MainWindow::MainInterface == "Ethernet")
      {
         for(i = 0; i<11; i++)
         {
@@ -238,7 +238,14 @@ void CorDialog::WriteCorBd()
           TimeFunc::Wait(100);
         }
      }
-     else
+     else if(MainWindow::MainInterface == "RS485")
+     {
+         information info;
+         info.size = (sizeof(CorData)/4);
+         info.adr = adr[0];
+         RS485WriteCorBd(&info, (float*)CorBlock);
+     }
+     else if(MainWindow::MainInterface == "USB")
      {
          if(Commands::WriteBd(7, CorBlock, sizeof(CorData)) == Error::ER_NOERROR)
          EMessageBox::information(this, "INFO", "Записано успешно");
@@ -274,7 +281,7 @@ void CorDialog::WriteCor()
 {
     if(MainWindow::MainInterface.size() != 0)
     {
-     if(MainWindow::MainInterface == "Ethernet и RS485")
+     if(MainWindow::MainInterface == "Ethernet")
      {
         quint32 Com = 900;
         emit sendCom45(&Com);
@@ -294,7 +301,7 @@ void CorDialog::SetCor()
 {
     if(MainWindow::MainInterface.size() != 0)
     {
-     if(MainWindow::MainInterface == "Ethernet и RS485")
+     if(MainWindow::MainInterface == "Ethernet")
      {
         quint32 Com = 903;
         emit sendCom45(&Com);
@@ -314,7 +321,7 @@ void CorDialog::ResetCor()
 {
     if(MainWindow::MainInterface.size() != 0)
     {
-     if(MainWindow::MainInterface == "Ethernet и RS485")
+     if(MainWindow::MainInterface == "Ethernet")
      {
         quint32 Com = 905;
         emit sendCom45(&Com);

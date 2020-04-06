@@ -19,6 +19,9 @@
 #include "../gen/colors.h"
 #include "../config/config.h"
 #include "../gen/error.h"
+#if PROGSIZE != PROGSIZE_EMUL
+#include "../gen/commands.h"
+#endif
 
 
 CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent, iec104* channel) : EAbstractCheckDialog(board, parent)
@@ -205,11 +208,23 @@ void CheckDialog84::StopBdMeasurements()
 
 void CheckDialog84::BdTimerTimeout()
 {
-    /*if (Commands::GetBd(BdNum, &Ch84->Bd_block1, sizeof(Check_84::Bd1)) == Error::ER_NOERROR)
+    if (Commands::GetBd(BdNum, &Ch84->Bd_block1, sizeof(Check_84::Bd1)) == Error::ER_NOERROR)
     {
-        Ch84->FillBd(this);
+        Ch84->FillBdUSB(this);
        // Ch84->FillBd2(this);
-    }*/
+    }
+
+    if (Commands::GetBd(5, &Ch84->Bd_block5, sizeof(Check_84::Bd5)) == Error::ER_NOERROR)
+    {
+        Ch84->FillBd5(this);
+       // Ch84->FillBd2(this);
+    }
+
+    if (Commands::GetBd(8, &Ch84->Bd_block8, sizeof(Check_84::Bd8)) == Error::ER_NOERROR)
+    {
+        Ch84->FillBd8(this);
+       // Ch84->FillBd2(this);
+    }
 }
 void CheckDialog84::UpdateFlData(Parse104::FlSignals104 *Signal)
 {
@@ -316,3 +331,38 @@ void CheckDialog84::UpdateBS104Data(Parse104::BS104Signals* Signal)
 }
 
 #endif
+
+void CheckDialog84::UpdateModBusData(ModBusSignal *Signal, int * size)
+{
+
+    //ModBusSignal sig = *new ModBusSignal;
+    int i = 0;
+    for(i=0; i<*size; i++)
+    {
+      //sig = *(Signal+i);
+      Ch84->FillBd(this, QString::number((Signal+i)->SigAdr), WDFunc::StringValueWithCheck((Signal+i)->flVal));
+    }
+    ModBus::Reading = false;
+}
+
+void CheckDialog84::ErrorRead()
+{
+  //EMessageBox::information(this, "INFO", "Ошибка чтения");
+}
+
+void CheckDialog84::onModbusStateChanged(QModbusDevice::State state)
+{
+    if(state == QModbusDevice::ConnectedState)
+    {
+     connectionStateRTU =  true;
+     EMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
+    }
+    else
+    {
+     connectionStateRTU =  false;
+     EMessageBox::information(this, "Провал", "Подключение отсутствует");
+    }
+
+}
+
+

@@ -38,11 +38,14 @@ void AbstractConfDialog::ReadConf(int index)
         if(timeIndex)
         emit stopRead(timeIndex);
 
+        if(checkIndex)
+        emit stopRead(checkIndex);
+
         TimeFunc::Wait(100);
 
         if(MainWindow::MainInterface.size() != 0)
         {
-         if(MainWindow::MainInterface == "Ethernet и RS485")
+         if(MainWindow::MainInterface == "Ethernet")
          {
             if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
             {
@@ -86,7 +89,7 @@ void AbstractConfDialog::WriteConf()
 
         if(MainWindow::MainInterface.size() != 0)
         {
-         if(MainWindow::MainInterface == "Ethernet и RS485")
+         if(MainWindow::MainInterface == "Ethernet")
          {
            emit writeConfFile(S2Config);
          }
@@ -227,7 +230,7 @@ void AbstractConfDialog::ButtonReadConf()
 
     if(MainWindow::MainInterface.size() != 0)
     {
-     if(MainWindow::MainInterface == "Ethernet и RS485")
+     if(MainWindow::MainInterface == "Ethernet")
      {
         if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
         {

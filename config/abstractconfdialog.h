@@ -19,7 +19,7 @@ public:
     QStringList CheckConfErrors;
     bool IsNeededDefConf = false;
     bool ok;
-    int confIndex, timeIndex;
+    int confIndex, timeIndex, checkIndex;
 
     QWidget *ConfButtons();
     virtual void Fill() = 0; // заполнить значения полей вывода из структуры конфигурации
@@ -47,10 +47,15 @@ private slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void ReadConf(int index);
     void ButtonReadConf();
-    void WriteConf();
     void FillConf(QVector<S2::DataRec>*);
     void WritePasswordCheck(QString psw);
+
+
+public slots:
+    void WriteConf();
+
 #endif
+
 signals:
     void writeConfFile(QVector<S2::DataRec>*);
     void ReadConfig(char*);

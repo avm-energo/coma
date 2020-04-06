@@ -30,6 +30,13 @@ private:
 
     CorData *CorBlock;
 
+    struct information
+    {
+        quint16 adr;
+        int size;
+    };
+
+
 
     void FillCor();
     void FillBackCor();
@@ -40,6 +47,7 @@ private:
 signals:
    void sendCom45(quint32*);
    void sendCom50(quint16* adr, float *data);
+   void RS485WriteCorBd(information*, float*);
 
 
 public slots:

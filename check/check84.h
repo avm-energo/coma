@@ -40,13 +40,32 @@ public:
         float Tamb;			// температура окружающей среды, °С
         quint32 res;	       // чтобы было 128 байт
     };
+
+    struct Bd5
+    {
+        float Frequency;
+        float phi_next_f[6];
+    };
+
+    struct Bd8
+    {
+        float temperature;
+        float resistance;
+    };
+
+
     Bd1 Bd_block1;
+    Bd5 Bd_block5;
+    Bd8 Bd_block8;
 
     //Check_84();
     QWidget *Bd1W(QWidget *parent);
     QWidget *Bd2W(QWidget *parent);
     QWidget *Bd3W(QWidget *parent);
     void FillBd(QWidget *parent, QString Name, QString Value);
+    void FillBdUSB(QWidget *parent);
+    void FillBd8(QWidget *parent);
+    void FillBd5(QWidget *parent);
     //void FillBd2(QWidget *parent);
     //void FillBd3(QWidget *parent);
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
