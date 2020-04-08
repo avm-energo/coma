@@ -450,7 +450,7 @@ void Coma::Stage3()
     MainTW->repaint();
     MainTW->show();
 #if PROGSIZE >= PROGSIZE_LARGE
-    SetSlideWidget();
+   // SetSlideWidget();
 #endif
     if(MainInterface == "USB")
     BdaTimer->start();
@@ -560,7 +560,9 @@ void Coma::PrepareDialogs()
             connect(modBus, SIGNAL(errorRead()), CheckB, SLOT(ErrorRead()));
             connect(modBus, SIGNAL(ModBusState(QModbusDevice::State)), CheckB, SLOT(onModbusStateChanged(QModbusDevice::State)));
             connect(modBus, SIGNAL(signalsreceived(ModBusSignal*, int*)), CheckB, SLOT(UpdateModBusData(ModBusSignal*, int*)));
+            connect(modBus, SIGNAL(corsignalsreceived(ModBusSignal*, int*)), CorD, SLOT(ModBusUpdateCorData(ModBusSignal*, int*)));
             connect(CorD, SIGNAL(RS485WriteCorBd(information*, float*)), modBus, SLOT(ModWriteCor(information*, float*)));//, int*)));
+            connect(CorD, SIGNAL(RS485ReadCorBd(information*)), modBus, SLOT(ModReadCor(information*)));
             Modthr->start();
 
          }

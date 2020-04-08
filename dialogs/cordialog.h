@@ -36,6 +36,12 @@ private:
         int size;
     };
 
+    typedef struct
+    {
+       float flVal;
+       int SigAdr;
+    }ModBusSignal;
+
 
 
     void FillCor();
@@ -48,6 +54,7 @@ signals:
    void sendCom45(quint32*);
    void sendCom50(quint16* adr, float *data);
    void RS485WriteCorBd(information*, float*);
+   void RS485ReadCorBd(information*);
 
 
 public slots:
@@ -61,6 +68,9 @@ public slots:
     void SetCor();
     void ResetCor();
     void UpdateFlCorData(Parse104::FlSignals104 *Signal);
+    void ModBusUpdateCorData(ModBusSignal *Signal, int * size);
+    void SaveToFile();
+    void ReadFromFile();
 
 private slots:
 

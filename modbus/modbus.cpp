@@ -53,6 +53,7 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
     Reading = false;
     closeThr = false;
     int i;
+    commands = false;
 
     for(i=0;i<6;i++)
     SignalGroups[i].signaltype=0x04;
@@ -256,17 +257,37 @@ void ModBus::ReadPort()
          ival = (responseBuffer.data()[5+4*i]<<24)+(responseBuffer.data()[6+4*i]<<16)+(responseBuffer.data()[3+4*i]<<8)+responseBuffer.data()[4+4*i];
          //float fval = *reinterpret_cast<float*>(&ival);
          Sig[i].flVal = *(float*)&ival;
+
+         if(commands)
+         Sig[i].SigAdr = ComData.adr+i;
+         else
          Sig[i].SigAdr = startadr+i;
         }
 
-        Group++;
+        if(commands)
+        {
+           if(ComData.adr>=900 && ComData.adr<=910)
+           {
+               int recordSize = (static_cast<quint8>(responseBuffer.data()[4]) << 8) | (static_cast<quint8>(responseBuffer.data()[5]));
+               if(recordSize == ComData.quantity)
+               signalsSize = 1;
+               TimeFunc::Wait(100);
+           }
 
-        if(Group == 6)
-        Group= 0;
+           emit corsignalsreceived(Sig, &signalsSize);
+           commands = false;
+        }
+        else
+        {
+           Group++;
 
-        //Reading = 0;
+           if(Group == 6)
+           Group= 0;
 
-        emit signalsreceived(Sig, &signalsSize);
+           //Reading = 0;
+
+           emit signalsreceived(Sig, &signalsSize);
+        }
       }
       else
       {
@@ -304,20 +325,63 @@ void ModBus::WriteToPort()
 
             TimeFunc::Wait(10);
             bytes->append((char)deviceAdr); // адрес устройства
-            bytes->append(SignalGroups[Group].signaltype);         //аналоговый выход
-            bytes->append(SignalGroups[Group].firstbyteadr);
-            bytes->append(SignalGroups[Group].secondbyteadr);
-            bytes->append(SignalGroups[Group].firstbytequantity);
-            bytes->append(SignalGroups[Group].secondbytequantity);
 
-            //for(i=0;i<bytes->size();i++)
-            KSS=CalcCRC((quint8*)(bytes->data()), bytes->size());
-            //KSS += static_cast<quint8>(bytes->data()[i]);
-            //S2::updCRC32(bytes->data()[i],&crc);
-            bytes->append(static_cast<char>(KSS>>8));
-            bytes->append(static_cast<char>(KSS));
+            if(commands)
+            {
+                bytes->append(ComData.ModCom);         //аналоговый выход
+                bytes->append(static_cast<char>(ComData.adr>>8));
+                bytes->append(static_cast<char>(ComData.adr));
+                bytes->append(static_cast<char>(ComData.quantity>>8));
+                bytes->append(static_cast<char>(ComData.quantity));
 
-            readSize = 5+2*SignalGroups[Group].secondbytequantity;
+                if(ComData.ModCom == 0x10)
+                bytes->append(static_cast<char>(ComData.sizebytes));
+
+                if(ComData.data.size())
+                {
+                    for(i = 0; i<ComData.data.size(); i++)
+                    {
+                      bytes->append(ComData.data.data()[i]);
+                    }
+                }
+
+
+                //for(i=0;i<bytes->size();i++)
+                KSS=CalcCRC((quint8*)(bytes->data()), bytes->size());
+                //KSS += static_cast<quint8>(bytes->data()[i]);
+                //S2::updCRC32(bytes->data()[i],&crc);
+                bytes->append(static_cast<char>(KSS>>8));
+                bytes->append(static_cast<char>(KSS));
+
+                readSize = 5+2*ComData.quantity;
+
+                if(ComData.ModCom == 0x10)
+                readSize = 8;
+
+                ComData.data.clear();
+
+               // commands = false;
+            }
+            else
+            {
+                bytes->append(SignalGroups[Group].signaltype);         //аналоговый выход
+                bytes->append(SignalGroups[Group].firstbyteadr);
+                bytes->append(SignalGroups[Group].secondbyteadr);
+                bytes->append(SignalGroups[Group].firstbytequantity);
+                bytes->append(SignalGroups[Group].secondbytequantity);
+
+                //for(i=0;i<bytes->size();i++)
+                KSS=CalcCRC((quint8*)(bytes->data()), bytes->size());
+                //KSS += static_cast<quint8>(bytes->data()[i]);
+                //S2::updCRC32(bytes->data()[i],&crc);
+                bytes->append(static_cast<char>(KSS>>8));
+                bytes->append(static_cast<char>(KSS));
+
+                readSize = 5+2*SignalGroups[Group].secondbytequantity;
+
+
+            }
+
 
             st = serialPort->write(bytes->data(), bytes->size());
             //st=0;
@@ -372,51 +436,52 @@ void ModBus::ModWriteCor(information* info, float* data)//, int* size)
     QByteArray* bytes = new QByteArray;
     //char zero = 0;
     //quint32 crc=0;
-    quint16 KSS = '\0', quantity;
-    quint8 sizebytes;
+    quint16 KSS = '\0', quantity = 0;
+    quint8 sizebytes = '\0';
     qint64 st;
     int i;
     quint32 fl;
-    bool readingState = Reading;
-    if(Reading == false)
-    Reading = true;
+    //bool readingState = Reading;
 
-    TimeFunc::Wait(10);
+    ComData.ModCom = 0x10;
+    ComData.adr = info->adr;
 
-    quantity = (quint8)((info->size)*2);
-    sizebytes = (quint8)((info->size)*4);
-
-    serialPort->clear();
-
-    TimeFunc::Wait(10);
-    bytes->append((char)deviceAdr); // адрес устройства
-    bytes->append(0x10);         // запись в регистры
-    bytes->append(static_cast<char>(info->adr>>8));
-    bytes->append(static_cast<char>(info->adr));
-    bytes->append(static_cast<char>(quantity>>8));
-    bytes->append(static_cast<char>(quantity));
-    bytes->append(static_cast<char>(sizebytes));
-
-    for(i = 0; i<info->size; i++)
+    if((info->adr == 900) || (info->adr == 905))
     {
-      fl =*(quint32*)(data+i);
-      bytes->append(static_cast<char>(fl>>8));
-      bytes->append(static_cast<char>(fl));
-      bytes->append(static_cast<char>(fl>>24));
-      bytes->append(static_cast<char>(fl>>16));
+        ComData.quantity = 1;
+        ComData.sizebytes = 2;
+        ComData.data.append(0x01);
+        ComData.data.append(0x01);
     }
+    else
+    {
+        ComData.quantity = (quint8)((info->size)*2);
+        ComData.sizebytes = (quint8)((info->size)*4);
 
-    KSS=CalcCRC((quint8*)(bytes->data()), bytes->size());
+        for(i = 0; i<info->size; i++)
+        {
+         fl =*(quint32*)(data+i);
+         ComData.data.append(static_cast<char>(fl>>8));
+         ComData.data.append(static_cast<char>(fl));
+         ComData.data.append(static_cast<char>(fl>>24));
+         ComData.data.append(static_cast<char>(fl>>16));
+        }
+    }
+    TimeFunc::Wait(100);
+    commands = true;
 
-    bytes->append(static_cast<char>(KSS>>8));
-    bytes->append(static_cast<char>(KSS));
+}
 
-    //readSize = 5+2*SignalGroups[Group].secondbytequantity;
+void ModBus::ModReadCor(information* info)
+{
 
-    st = serialPort->write(bytes->data(), bytes->size());
+    ComData.ModCom = 0x04;
+    ComData.adr = info->adr;
+    ComData.quantity = (quint8)((info->size)*2);
+    ComData.sizebytes = (quint8)((info->size)*4);
+    ComData.data.clear();
 
-
-    Reading = readingState;
+    commands = true;
 
 }
 

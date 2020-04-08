@@ -55,6 +55,17 @@ public:
         int size;
     };
 
+    struct ComInfo
+    {
+        char ModCom;
+        quint16 adr;
+        quint16 quantity;
+        quint8 sizebytes;
+        QByteArray data;
+    };
+
+    ComInfo ComData;
+
     int deviceAdr;
     int Group, readSize;
     QThread *thr;
@@ -111,6 +122,7 @@ ModBus(ModBus_Settings Settings, QObject *parent = nullptr);
  quint16 CalcCRC(quint8* Dat, quint8 len);
  bool closeThr;
  static bool Reading;
+ bool commands;
 
 
 
@@ -127,10 +139,12 @@ public slots:
         void reading();
         void StopModSlot();
         void ModWriteCor(information *info, float*);//, int*);
+        void ModReadCor(information* info);
 
 
 signals:
  void signalsreceived(ModBusSignal *Signal, int* size);
+ void corsignalsreceived(ModBusSignal *Signal, int* size);
  void ModBusState(QModbusDevice::State);
  void nextGroup();
  void errorRead();

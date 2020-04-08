@@ -113,9 +113,9 @@ void CorDialog::SetupUI()
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 
-    glyout->addWidget(pb, row,1,1,5);
+    glyout->addWidget(pb, row,1,1,2);
 
-    row++;
+    //row++;
 
     pb = new QPushButton("Прочитать из модуля");
     #if PROGSIZE != PROGSIZE_EMUL
@@ -124,18 +124,7 @@ void CorDialog::SetupUI()
         if (StdFunc::IsInEmulateMode())
             pb->setEnabled(false);
 
-    glyout->addWidget(pb, row,1,1,5);
-
-    row++;
-
-    pb = new QPushButton("Сбросить коррекцию");
-    #if PROGSIZE != PROGSIZE_EMUL
-        connect(pb,SIGNAL(clicked()),this,SLOT(ResetCor()));
-    #endif
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
-
-    glyout->addWidget(pb, row,1,1,5);
+    glyout->addWidget(pb, row,3,1,2);
 
     row++;
 
@@ -146,7 +135,41 @@ void CorDialog::SetupUI()
     if (StdFunc::IsInEmulateMode())
        pb->setEnabled(false);
 
-    glyout->addWidget(pb, row,1,1,5);
+    glyout->addWidget(pb, row,1,1,2);
+
+    //row++;
+
+    pb = new QPushButton("Сбросить коррекцию");
+    #if PROGSIZE != PROGSIZE_EMUL
+        connect(pb,SIGNAL(clicked()),this,SLOT(ResetCor()));
+    #endif
+        if (StdFunc::IsInEmulateMode())
+            pb->setEnabled(false);
+
+    glyout->addWidget(pb, row,3,1,2);
+
+
+    row++;
+
+    pb = new QPushButton("Записать коррекцию в файл");
+    #if PROGSIZE != PROGSIZE_EMUL
+      connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
+    #endif
+    if (StdFunc::IsInEmulateMode())
+       pb->setEnabled(false);
+
+    glyout->addWidget(pb, row,1,1,2);
+
+    //row++;
+
+    pb = new QPushButton("Прочитать коррекцию из файла");
+    #if PROGSIZE != PROGSIZE_EMUL
+      connect(pb,SIGNAL(clicked()),this,SLOT(ReadFromFile()));
+    #endif
+    if (StdFunc::IsInEmulateMode())
+       pb->setEnabled(false);
+
+    glyout->addWidget(pb, row,3,1,2);
 
 
 
@@ -206,6 +229,13 @@ void CorDialog::GetCorBd(int index)
             if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
             FillCor();
         }
+        else if(MainWindow::MainInterface == "RS485")
+        {
+            information info;
+            info.size = (sizeof(CorData)/4);
+            info.adr = 4000;
+            emit RS485ReadCorBd(&info);
+        }
        }
     }
 }
@@ -218,7 +248,15 @@ void CorDialog::GetCorBdButton()
        if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
        FillCor();
      }
+     else if(MainWindow::MainInterface == "RS485")
+     {
+         information info;
+         info.size = (sizeof(CorData)/4);
+         info.adr = 4000;
+         emit RS485ReadCorBd(&info);
+     }
     }
+
 }
 
 void CorDialog::WriteCorBd()
@@ -243,7 +281,7 @@ void CorDialog::WriteCorBd()
          information info;
          info.size = (sizeof(CorData)/4);
          info.adr = adr[0];
-         RS485WriteCorBd(&info, (float*)CorBlock);
+         emit RS485WriteCorBd(&info, (float*)CorBlock);
      }
      else if(MainWindow::MainInterface == "USB")
      {
@@ -279,12 +317,19 @@ void CorDialog::WriteCorTg()
 
 void CorDialog::WriteCor()
 {
+    quint32 Com = 900;
     if(MainWindow::MainInterface.size() != 0)
     {
      if(MainWindow::MainInterface == "Ethernet")
      {
-        quint32 Com = 900;
         emit sendCom45(&Com);
+     }
+     else if(MainWindow::MainInterface == "RS485")
+     {
+         information info;
+         info.size = 1;
+         info.adr = (quint16)Com;
+         emit RS485WriteCorBd(&info, nullptr);
      }
      else if(MainWindow::MainInterface == "USB")
      {
@@ -319,12 +364,19 @@ void CorDialog::SetCor()
 
 void CorDialog::ResetCor()
 {
+    quint32 Com = 905;
     if(MainWindow::MainInterface.size() != 0)
     {
      if(MainWindow::MainInterface == "Ethernet")
      {
-        quint32 Com = 905;
         emit sendCom45(&Com);
+     }
+     else if(MainWindow::MainInterface == "RS485")
+     {
+         information info;
+         info.size = 1;
+         info.adr = (quint16)Com;
+         emit RS485WriteCorBd(&info, nullptr);
      }
      else if(MainWindow::MainInterface == "USB")
      {
@@ -374,3 +426,79 @@ void CorDialog::FillBd(QWidget *parent, QString Name, QString Value)
 {
     WDFunc::SetSPBData(parent, Name, Value.toFloat());
 }
+
+void CorDialog::ModBusUpdateCorData(ModBusSignal *Signal, int * size)
+{
+
+    //ModBusSignal sig = *new ModBusSignal;
+    int i = 0;
+
+    if(Signal != nullptr)
+    {
+        if(Signal->SigAdr == 4000)
+        {
+            for(i=0; i<*size; i++)
+            {
+              //sig = *(Signal+i);
+              FillBd(this, QString::number((Signal+i)->SigAdr), WDFunc::StringValueWithCheck((Signal+i)->flVal));
+            }
+            ModBus::Reading = false;
+            EMessageBox::information(this, "INFO", "Прочитано успешно");
+        }
+        else if(*size == 1)
+        {
+          EMessageBox::information(this, "INFO", "Записано успешно");
+          ModBus::Reading = false;
+        }
+
+    }
+
+
+}
+
+void CorDialog::SaveToFile()
+{
+    int res = Error::ER_NOERROR;
+    QByteArray ba;
+    FillBackCor();
+    ba.resize(sizeof(*CorBlock));
+    memcpy(&(ba.data()[0]), CorBlock, sizeof(*CorBlock));
+    res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*CorBlock));
+    switch (res)
+    {
+    case Files::ER_NOERROR:
+        EMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
+        break;
+    case Files::ER_FILEWRITE:
+        EMessageBox::error(this, "Ошибка", "Ошибка при записи файла!");
+        break;
+    case Files::ER_FILENAMEEMP:
+        EMessageBox::error(this, "Ошибка", "Пустое имя файла!");
+        break;
+    case Files::ER_FILEOPEN:
+        EMessageBox::error(this, "Ошибка", "Ошибка открытия файла!");
+        break;
+    default:
+        break;
+    }
+}
+
+void CorDialog::ReadFromFile()
+{
+    QByteArray ba;
+    ba.resize(sizeof(*CorBlock));
+
+    int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
+    if (res != Files::ER_NOERROR)
+    {
+        EMessageBox::error(this, "Ошибка", "Ошибка при загрузке файла");
+        return;
+    }
+
+    memcpy(CorBlock, &(ba.data()[0]), sizeof(*CorBlock));
+
+    FillCor();
+    EMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
+
+}
+
