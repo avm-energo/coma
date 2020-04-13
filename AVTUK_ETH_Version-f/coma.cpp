@@ -274,11 +274,13 @@ void Coma::Stage3()
     connect(this,SIGNAL(USBBsiRefresh()),idlg,SLOT(FillBsi()));
     connect(this,SIGNAL(ClearBsi()),idlg,SLOT(ClearBsi()));
 
+    CorD = new CorDialog();
+
     if(MainInterface == "USB")
     {
         MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
         MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
-        CorD = new CorDialog();
+        //CorD = new CorDialog();
         JourD = new JournalDialog();
     }
     else
@@ -290,19 +292,40 @@ void Coma::Stage3()
 #ifdef ETHENABLE
             ch104 = new iec104(&IPtemp, this);
             ch104->BaseAdr = AdrBaseStation;
-            connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),idlg,SLOT(FillBsiFrom104(Parse104::BS104Signals*)));
+            connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),idlg,SLOT(FillBsiFrom104(Parse104::BS104Signals*)));           
+            connect(this,SIGNAL(stopit()),ch104,SLOT(Stop()));
     #endif
-            while(MTypeB == 0)
-            {
-              TimeFunc::Wait(100);
-              count++;
-              if(count == 20)
-              {
-                count = 0;
-                DisconnectAndClear();
-                return;
-              }
-            }
+         }
+         else if(insl.at(1) == "MODBUS")
+         {
+
+             CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
+             modBus = new ModBus(Settings, this);           
+             Modthr = new QThread;
+             //Modthr->setPriority(QThread::LowPriority);
+             modBus->moveToThread(Modthr);
+             connect(this,SIGNAL(stopModBus()),modBus,SLOT(StopModSlot()));
+             connect(modBus, SIGNAL(finished()), Modthr, SIGNAL(finished()));
+             connect(Modthr, SIGNAL(finished()), this, SLOT(CheckModBusFinish()));
+             connect(Modthr,SIGNAL(finished()),modBus,SLOT(deleteLater()));
+             //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
+             connect(Modthr,SIGNAL(started()),modBus,SLOT(WriteToPort()));
+
+             connect(modBus,SIGNAL(BsiFromModBus(ModBusBSISignal*, int*)),idlg,SLOT(FillBsiFromModBus(ModBusBSISignal*, int* )));
+             modBus->BSIrequest();
+
+         }
+
+         while(MTypeB == 0)
+         {
+           TimeFunc::Wait(100);
+           count++;
+           if(count == 20)
+           {
+             count = 0;
+             DisconnectAndClear();
+             return;
+           }
          }
         }
     }
@@ -312,8 +335,6 @@ void Coma::Stage3()
         MainTuneDialog = new ConfDialog(S2ConfigForTune, MTypeB, MTypeM);
         //MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
     }*/
-
-    CorD = new CorDialog();
 
     if(MainInterface == "Ethernet")
     {
@@ -452,6 +473,8 @@ void Coma::Stage3()
 #if PROGSIZE >= PROGSIZE_LARGE
    // SetSlideWidget();
 #endif
+
+    Modthr->start();
     if(MainInterface == "USB")
     BdaTimer->start();
 }
@@ -511,8 +534,6 @@ void Coma::PrepareDialogs()
             //ch104 = new iec104(&IPtemp, this);
 
             //ch104->IP = IPtemp;
-
-            connect(this,SIGNAL(stopit()),ch104,SLOT(Stop()));
             connect(ch104,SIGNAL(ethconnected()), this, SLOT(ConnectMessage()));
             //connect(ch104,SIGNAL(readConf()), ch104,SIGNAL(readConf()));
             //connect(ch104,SIGNAL(ethdisconnected()), this, SLOT(DisconnectMessage()));
@@ -546,24 +567,12 @@ void Coma::PrepareDialogs()
          else if(insl.at(1) == "MODBUS")
          {
             //CheckModBus = new checktempmodbusdialog(BoardTypes::BT_BASE, this);
-            CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
-            modBus = new ModBus(Settings, CheckB);
-
-            QThread *Modthr = new QThread;
-            modBus->moveToThread(Modthr);
-            connect(this,SIGNAL(stopModBus()),modBus,SLOT(StopModSlot()));
-            connect(modBus, SIGNAL(finished()), Modthr, SIGNAL(finished()));
-            connect(Modthr, SIGNAL(finished()), this, SLOT(CheckModBusFinish()));
-            connect(Modthr,SIGNAL(finished()),modBus,SLOT(deleteLater()));
-            //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
-            connect(Modthr,SIGNAL(started()),modBus,SLOT(WriteToPort()));
             connect(modBus, SIGNAL(errorRead()), CheckB, SLOT(ErrorRead()));
             connect(modBus, SIGNAL(ModBusState(QModbusDevice::State)), CheckB, SLOT(onModbusStateChanged(QModbusDevice::State)));
             connect(modBus, SIGNAL(signalsreceived(ModBusSignal*, int*)), CheckB, SLOT(UpdateModBusData(ModBusSignal*, int*)));
             connect(modBus, SIGNAL(corsignalsreceived(ModBusSignal*, int*)), CorD, SLOT(ModBusUpdateCorData(ModBusSignal*, int*)));
             connect(CorD, SIGNAL(RS485WriteCorBd(information*, float*)), modBus, SLOT(ModWriteCor(information*, float*)));//, int*)));
             connect(CorD, SIGNAL(RS485ReadCorBd(information*)), modBus, SLOT(ModReadCor(information*)));
-            Modthr->start();
 
          }
 

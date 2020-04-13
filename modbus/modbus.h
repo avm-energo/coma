@@ -23,6 +23,8 @@ Q_OBJECT
 
 public:
 
+    void BSIrequest();
+
     struct ModBus_Settings
     {
         QString baud;
@@ -37,6 +39,12 @@ public:
        float flVal;
        int SigAdr;
     }ModBusSignal;
+
+    typedef struct
+    {
+       quint32 Val;
+       int SigAdr;
+    }ModBusBSISignal;
 
     struct ModBus_Groups
     {
@@ -70,6 +78,7 @@ public:
     int Group, readSize;
     QThread *thr;
     ModBusSignal* Sig;
+    ModBusBSISignal* BSISig;
 
     constexpr static const unsigned char TabCRChi[256] = {
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
@@ -123,6 +132,7 @@ ModBus(ModBus_Settings Settings, QObject *parent = nullptr);
  bool closeThr;
  static bool Reading;
  bool commands;
+ //QThread *Modthr;
 
 
 
@@ -145,11 +155,13 @@ public slots:
 signals:
  void signalsreceived(ModBusSignal *Signal, int* size);
  void corsignalsreceived(ModBusSignal *Signal, int* size);
+ void BsiFromModBus(ModBusBSISignal*, int*);
  void ModBusState(QModbusDevice::State);
  void nextGroup();
  void errorRead();
  void errorCrc();
  void finished();
+ //void stopModBus();
 
 
 private:

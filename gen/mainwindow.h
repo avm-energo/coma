@@ -72,6 +72,7 @@ public:
     quint32 Mes;
     bool TimeThrFinished, ModBusThrFinished;
     QTimer* BdaTimer;
+    QThread *Modthr;
 
 
     struct DeviceConnectStruct

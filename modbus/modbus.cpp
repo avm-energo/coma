@@ -29,13 +29,6 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
     //state = *new QModbusDevice::State;
     //modbusDevice->setConnectionParameter(QModbusDevice::SerialPortNameParameter,
     //                ui->portEdit->text());
-    //QThread *thr = new QThread;
-    //thr->setPriority(QThread::HighestPriority);
-    //ModThr* modthr = new ModThr;
-    //ModThr->moveToThread(thr);
-   // connect(thr,SIGNAL(started()),this,SLOT(Run()));
-   // connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
-   // connect(thr,SIGNAL(finished()),this,SLOT(deleteLater()));
 
     /*modbusDevice->setConnectionParameter(QModbusDevice::SerialParityParameter, Settings.parity.toInt());
     modbusDevice->setConnectionParameter(QModbusDevice::SerialBaudRateParameter, Settings.baud.toInt());
@@ -103,26 +96,15 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
     serialPort->setFlowControl(QSerialPort::NoFlowControl);
     serialPort->setReadBufferSize(1024);
 
-    //connect(&m_responseTimer, &Timer::timeout, q, [this](int timerId) {
-    //            onResponseTimeout(timerId);
-     //       });
-    //connect(serialPort, SIGNAL(readChannelFinished()), this, SLOT(reading()));
+
     connect(serialPort, SIGNAL(readyRead()), this, SLOT(ReadPort()));
-    //connect(serialPort, SIGNAL(aboutToClose()), this, SLOT(onAboutToClose()));
-    //connect(serialPort, SIGNAL(WriteToPort(bytes, len))), this, SLOT(WriteToPort(bytes, len);
-    //connect(ModBusInterrogateTimer,SIGNAL(timeout()),this,SLOT(WriteToPort()));
-    //connect(this,SIGNAL(nextGroup()),this,SLOT(WriteToPort()));
-    //connect(this,SIGNAL(signalsreceived(ModBusSignal*, int*)), parent,SLOT(UpdateModBusData(ModBusSignal*)));
-    /*        QObject::connect(m_serialPort, QOverload<QSerialPort::SerialPortError>::of(&QSerialPort::error),
-                    q, [this](QSerialPort::SerialPortError error) {
-                onError(error);
-            });*/
 
     //if(modbusDevice->connectDevice() == true)
     if(serialPort->open(QIODevice::ReadWrite) == true)
     {
        state = QModbusDevice::ConnectedState;
        emit ModBusState(state);
+       serialPort->isOpen();
        //ModBusInterrogateTimer->start();
     }
     else
@@ -250,18 +232,34 @@ void ModBus::ReadPort()
       if(MYKSS == crcfinal)
       {
         signalsSize = responseBuffer.data()[2]/4; // количество байт
+
+        if(ComData.adr == 1)
+        BSISig = new ModBusBSISignal[signalsSize];
+        else
         Sig = new ModBusSignal[signalsSize];
+
         startadr = (static_cast<quint8>(SignalGroups[Group].firstbyteadr) << 8) | (static_cast<quint8>(SignalGroups[Group].secondbyteadr));
         for(i=0; i<signalsSize; i++)
         {
          ival = (responseBuffer.data()[5+4*i]<<24)+(responseBuffer.data()[6+4*i]<<16)+(responseBuffer.data()[3+4*i]<<8)+responseBuffer.data()[4+4*i];
          //float fval = *reinterpret_cast<float*>(&ival);
+         if(ComData.adr != 1)
          Sig[i].flVal = *(float*)&ival;
 
          if(commands)
-         Sig[i].SigAdr = ComData.adr+i;
+         {
+             if(ComData.adr == 1)  // bsi
+             {
+                 BSISig[i].Val = *(quint32*)&ival;
+                 BSISig[i].SigAdr = ComData.adr+i;
+             }
+             else
+             Sig[i].SigAdr = ComData.adr+i;
+
+         }
          else
          Sig[i].SigAdr = startadr+i;
+
         }
 
         if(commands)
@@ -274,7 +272,14 @@ void ModBus::ReadPort()
                TimeFunc::Wait(100);
            }
 
+           if(ComData.adr == 1)
+           {
+             ComData.adr = 0;
+             emit BsiFromModBus(BSISig, &signalsSize);
+           }
+           else
            emit corsignalsreceived(Sig, &signalsSize);
+
            commands = false;
         }
         else
@@ -401,6 +406,58 @@ void ModBus::WriteToPort()
         QThread::msleep(100);
         qApp->processEvents();
     }
+}
+
+void ModBus::BSIrequest()
+{
+    QByteArray* bytes = new QByteArray;
+    char zero = 0;
+    //quint32 crc=0;
+    quint16 KSS = '\0';
+    int i = 0;
+    qint64 st;
+
+    ComData.ModCom = 0x04;
+    ComData.adr = 0x01;
+    ComData.quantity = 30;
+    ComData.sizebytes = 60;
+    ComData.data.clear();
+
+    commands = true;
+
+    serialPort->clear();
+
+    bytes->append((char)deviceAdr); // адрес устройства
+
+    bytes->append(ComData.ModCom);         //аналоговый выход
+    bytes->append(static_cast<char>(ComData.adr>>8));
+    bytes->append(static_cast<char>(ComData.adr));
+    bytes->append(static_cast<char>(ComData.quantity>>8));
+    bytes->append(static_cast<char>(ComData.quantity));
+
+    /*        if(ComData.data.size())
+                {
+                    for(i = 0; i<ComData.data.size(); i++)
+                    {
+                      bytes->append(ComData.data.data()[i]);
+                    }
+                }
+*/
+
+                //for(i=0;i<bytes->size();i++)
+     KSS=CalcCRC((quint8*)(bytes->data()), bytes->size());
+                //KSS += static_cast<quint8>(bytes->data()[i]);
+                //S2::updCRC32(bytes->data()[i],&crc);
+     bytes->append(static_cast<char>(KSS>>8));
+     bytes->append(static_cast<char>(KSS));
+
+     readSize = 5+2*ComData.quantity;
+
+     st = serialPort->write(bytes->data(), bytes->size());
+            //st=0;
+
+     Reading = 1;
+
 }
 
 quint16 ModBus::CalcCRC(quint8* Dat, quint8 len)

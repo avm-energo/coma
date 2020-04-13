@@ -105,6 +105,43 @@ void InfoDialog::FillBsiFrom104(Parse104::BS104Signals* BS104)
 
 }
 
+void InfoDialog::FillBsiFromModBus(ModBusBSISignal *Signal, int * size)
+{
+    //Parse104::BS104Signals sig = *new Parse104::BS104Signals;
+    //sig = *BS104;
+    ModuleBSI::Bsi bsi = *new ModuleBSI::Bsi;
+    int i;
+    int startadr = 0;
+    memcpy(&startadr, &(Signal->SigAdr), sizeof(Signal->SigAdr));
+
+    if(*size && startadr == 1)
+    {
+        for(i=0; i< *size; i++)
+        memcpy((((quint32*)(&bsi)+i)), (((quint32*)(&Signal->Val)+i)), sizeof(Signal->Val));
+
+        MainWindow::MTypeB = bsi.MTypeB;
+        MainWindow::MTypeM = bsi.MTypeM;
+
+        WDFunc::SetLBLText(this, "snle", QString::number(bsi.SerialNum, 16));
+        WDFunc::SetLBLText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));
+        WDFunc::SetLBLText(this, "cfcrcle", "0x"+QString::number(static_cast<uint>(bsi.Cfcrc), 16));
+        WDFunc::SetLBLText(this, "rstle", "0x"+QString::number(bsi.Rst, 16));
+        WDFunc::SetLBLText(this, "rstcountle", QString::number(bsi.RstCount, 16));
+        WDFunc::SetLBLText(this, "cpuidle", QString::number(bsi.UIDHigh, 16)+QString::number(bsi.UIDMid, 16)+QString::number(bsi.UIDLow, 16));
+        WDFunc::SetLBLText(this, "typeble", QString::number(bsi.MTypeB, 16));
+        WDFunc::SetLBLText(this, "snble", QString::number(bsi.SerialNumB, 16));
+        WDFunc::SetLBLText(this, "hwble", StdFunc::VerToStr(bsi.HwverB));
+        WDFunc::SetLBLText(this, "typemle", QString::number(bsi.MTypeM, 16));
+        WDFunc::SetLBLText(this, "snmle", QString::number(bsi.SerialNumM, 16));
+        WDFunc::SetLBLText(this, "hwmle", StdFunc::VerToStr(bsi.HwverM));
+        // расшифровка Hth
+    }
+
+
+    ModBus::Reading = false;
+
+}
+
 void InfoDialog::ClearBsi()
 {
     WDFunc::SetLBLText(this, "snle", "");

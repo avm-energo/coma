@@ -12,6 +12,12 @@ class InfoDialog : public QDialog
 public:
     explicit InfoDialog(QWidget *parent = nullptr);
 
+    typedef struct
+    {
+       quint32 Val;
+       int SigAdr;
+    }ModBusBSISignal;
+
     void SetupUI();
 
 signals:
@@ -20,6 +26,7 @@ public slots:
     void FillBsi();
     void ClearBsi();
     void FillBsiFrom104(Parse104::BS104Signals* BS104);
+    void FillBsiFromModBus(ModBusBSISignal *Signal, int * size);
 
 private:
 /*    QMap<int, QString> ModuleNames()
