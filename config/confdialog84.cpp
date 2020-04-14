@@ -95,7 +95,7 @@ void ConfDialog84::Fill()
         WDFunc::SetCBIndex(this, "Parity", cbidx);
         cbidx = ((C84->Com_param.stopbit & 0x02) ? 1 : 0);
         WDFunc::SetCBIndex(this, "StopBit", cbidx);
-        WDFunc::SetSPBData(this, "StopBit", C84->Com_param.stopbit);
+        //WDFunc::SetSPBData(this, "StopBit", C84->Com_param.stopbit);
         WDFunc::SetSPBData(this, "adrMB", C84->Com_param.adrMB);
 
         if(C84->Com_param.isNTP)
@@ -164,9 +164,10 @@ void ConfDialog84::FillBack()
 
         WDFunc::SPBData(this, "Baud", C84->Com_param.baud);
         cbidx = WDFunc::CBIndex(this, "Parity");
-        C84->Com_param.parity = 0x00000001 << cbidx;
+        C84->Com_param.parity = (0x00000001 << cbidx) - 1;
         cbidx = WDFunc::CBIndex(this, "StopBit");
         C84->Com_param.stopbit = 0x00000001 << cbidx;
+
         WDFunc::SPBData(this, "adrMB", C84->Com_param.adrMB);
         /*if(C84->Com_param.isNTP)
         WDFunc::SetChBData(this, "ISNTP", true);
