@@ -91,7 +91,10 @@ void ConfDialog84::Fill()
         }
 
         WDFunc::SetSPBData(this, "Baud", C84->Com_param.baud);
-        WDFunc::SetSPBData(this, "Parity", C84->Com_param.parity);
+        int cbidx = (C84->Com_param.parity & 0x04) ? 2 : ((C84->Com_param.parity & 0x02) ? 1 : 0);
+        WDFunc::SetCBIndex(this, "Parity", cbidx);
+        cbidx = ((C84->Com_param.stopbit & 0x02) ? 1 : 0);
+        WDFunc::SetCBIndex(this, "StopBit", cbidx);
         WDFunc::SetSPBData(this, "StopBit", C84->Com_param.stopbit);
         WDFunc::SetSPBData(this, "adrMB", C84->Com_param.adrMB);
 
@@ -106,6 +109,7 @@ void ConfDialog84::Fill()
 void ConfDialog84::FillBack()
 {
     int i;
+    int cbidx;
     QString tmps;
 
     WDFunc::SPBData(this, "spb.1", C84->MainBlk.Abs_104);
@@ -159,8 +163,10 @@ void ConfDialog84::FillBack()
         }
 
         WDFunc::SPBData(this, "Baud", C84->Com_param.baud);
-        WDFunc::SPBData(this, "Parity", C84->Com_param.parity);
-        WDFunc::SPBData(this, "StopBit", C84->Com_param.stopbit);
+        cbidx = WDFunc::CBIndex(this, "Parity");
+        C84->Com_param.parity = 0x00000001 << cbidx;
+        cbidx = WDFunc::CBIndex(this, "StopBit");
+        C84->Com_param.stopbit = 0x00000001 << cbidx;
         WDFunc::SPBData(this, "adrMB", C84->Com_param.adrMB);
         /*if(C84->Com_param.isNTP)
         WDFunc::SetChBData(this, "ISNTP", true);
@@ -492,12 +498,22 @@ void ConfDialog84::SetupUI()
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Чётность:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Parity", 0, 10000, 0, paramcolor), row,2,1,4);
+    cbl = QStringList() << "NoParity" << "EvenParity" << "OddParity";
+    cb = WDFunc::NewCB(this, "Parity", cbl, paramcolor);
+    cb->setMinimumWidth(80);
+    cb->setMinimumHeight(15);
+    glyout->addWidget(cb,row,2,1,4);
+    //glyout->addWidget(WDFunc::NewSPB(this, "Parity", 0, 10000, 0, paramcolor), row,2,1,4);
 
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Количество стоповых битов:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "StopBit", 0, 10000, 0, paramcolor), row,2,1,4);
+    cbl = QStringList() << "Stop_Bit_1" << "Stop_Bit_2";
+    cb = WDFunc::NewCB(this, "StopBit", cbl, paramcolor);
+    cb->setMinimumWidth(80);
+    cb->setMinimumHeight(15);
+    glyout->addWidget(cb,row,2,1,4);
+    //glyout->addWidget(WDFunc::NewSPB(this, "StopBit", 0, 10000, 0, paramcolor), row,2,1,4);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Адрес устройства для Modbus:"), row,1,1,1);

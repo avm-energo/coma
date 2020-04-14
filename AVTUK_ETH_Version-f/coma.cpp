@@ -474,7 +474,9 @@ void Coma::Stage3()
    // SetSlideWidget();
 #endif
 
+    if(MainInterface == "RS485")
     Modthr->start();
+
     if(MainInterface == "USB")
     BdaTimer->start();
 }

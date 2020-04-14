@@ -440,11 +440,11 @@ void WDFunc::SetVisible(QWidget *w, const QString &wname, bool visible)
 QString WDFunc::StringValueWithCheck(float value, int precision)
 {
     QString tmps;
-    QLocale russian(QLocale::Russian, QLocale::Russia);
+    QLocale german(QLocale::German);
     if (value == FLT_MAX)
         tmps = "***";
     else
-        tmps = russian.toString(value, 'f', precision);
+        tmps = german.toString(value, 'f', precision);
     return tmps;
 }
 

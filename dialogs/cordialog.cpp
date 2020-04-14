@@ -424,7 +424,10 @@ void CorDialog::UpdateFlCorData(Parse104::FlSignals104 *Signal)
 
 void CorDialog::FillBd(QWidget *parent, QString Name, QString Value)
 {
-    WDFunc::SetSPBData(parent, Name, Value.toFloat());
+    float fl;
+    QLocale german(QLocale::German);
+    fl = german.toDouble(Value);
+    WDFunc::SetSPBData(parent, Name, fl);
 }
 
 void CorDialog::ModBusUpdateCorData(ModBusSignal *Signal, int * size)
