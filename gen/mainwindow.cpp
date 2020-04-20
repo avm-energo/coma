@@ -60,7 +60,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     CheckB = CheckM = nullptr;
     //ModBusThrFinished = false;
     //TimeThrFinished = false;
-
+    BdaTimer = new QTimer;
+    BdaTimer->setInterval(ANMEASINT);
 
 //#endif
 
@@ -386,6 +387,11 @@ void MainWindow::Stage1_5()
     ShowInterfaceDialog();
     ShowConnectDialog();
 
+    if((insl.size() == 0) && ((MainInterface == "Ethernet") || (MainInterface == "RS485")))
+    {
+        DisconnectAndClear();
+        return;
+    }
 
     if((MainInterface == "Ethernet" && insl.at(1) != "ETH") ||
        (MainInterface == "RS485" && insl.at(1) != "MODBUS"))
@@ -399,13 +405,7 @@ void MainWindow::Stage1_5()
 
     if(MainInterface.size() != 0)
     {
-        if(MainInterface == "Ethernet")
-        {
-   #ifdef ETHENABLE
-
-   #endif
-        }
-        else if(MainInterface == "USB")
+        if(MainInterface == "USB")
         {
            insl.clear();
 
@@ -690,7 +690,7 @@ void MainWindow::ShowInterfaceDialog()
 void MainWindow::ShowConnectDialog()
 {
     QByteArray ba;
-    int res, i;
+    int res;
     QDialog *dlg = new QDialog(this);
     QString Str;
     //QStringList device = QStringList() << "KDV" << "2" << "1" << "2";
@@ -900,7 +900,9 @@ void MainWindow::Disconnect()
     {
         if(MainInterface == "USB")
         {
+         if(BdaTimer != nullptr)
          BdaTimer->stop();
+         TimeFunc::Wait(100);
          cn->Disconnect();
         }
         else

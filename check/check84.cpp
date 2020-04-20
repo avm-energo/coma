@@ -45,62 +45,72 @@ QWidget *Check_84::Bd1W(QWidget *parent)
     int i;
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QString phase[3] = {"A:","B:","C:"};
+    //QHBoxLayout *hlyout = new QHBoxLayout;
+    QString phase[3] = {"A","B","C"};
     //hlyout->addWidget(WDFunc::NewLBL(parent, "Номер:"), 0);
     //hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Номер"), 0);
-    hlyout->addWidget(WDFunc::NewLBL(parent, "Температура микроконтроллера, °С:"), 0);
-    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "101", ValuesFormat, "Температура микроконтроллера, °С"), 0);
-    hlyout->addWidget(WDFunc::NewLBL(parent, "Частота:"));
-    hlyout->addWidget(WDFunc::NewLBLT(parent, "", "2400", ValuesFormat, "Частота, Гц"));
-    lyout->addLayout(hlyout);
+    QGroupBox *gb = new QGroupBox("Общие");
+    glyout->addWidget(WDFunc::NewLBL(parent, "Температура микроконтроллера, °С:"), 0,0,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "101", ValuesFormat, "Температура микроконтроллера, °С"), 1,0,1,1);
+    //hlyout->addWidget(WDFunc::NewLBL(parent, "                     "));
+    glyout->addWidget(WDFunc::NewLBL(parent, "Tamb, °С"),0,1,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(4501), ValuesFormat, \
+                                      "Температура окружающей среды, °С"),1,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Частота, Гц:"), 0,2,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", "2400", ValuesFormat, "Частота, Гц"), 1,2,1,1);
+
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+
+    gb = new QGroupBox("Параметры вводов");
+    vlyout = new QVBoxLayout;
+    glyout = new QGridLayout;
     for (i = 0; i < 3; ++i)
     {
         //QString IndexStr = "[" + QString::number(i) + "]";
-        glyout->addWidget(WDFunc::NewLBL(parent, "Ueff ф."+phase[i]),0,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Ueff ф."+phase[i]+", кВ"),2,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1000+i), ValuesFormat, \
-                                          QString::number(i+3)+".Действующие значения напряжений по 1-й гармонике, кВ"),1,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Ieff ф."+phase[i]),2,i,1,1);
+                                          "Действующие значения напряжений по 1-й гармонике, кВ"),3,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Ieff ф."+phase[i]+", мА"),4,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1100+i), ValuesFormat, \
-                                          QString::number(i+6)+".Действующие значения токов по 1-й гармонике, мА"),3,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Cbush ф."+phase[i]),4,i,1,1);
+                                          "Действующие значения токов по 1-й гармонике, мА"),5,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Cbush ф."+phase[i]+", пФ"),6,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2420+i), ValuesFormat, \
-                                          QString::number(i+9)+".Ёмкости вводов, пФ"),5,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Tg_d ф."+phase[i]),6,i,1,1);
+                                          "Ёмкости вводов, пФ"),7,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Tg_d ф."+phase[i]+", %"),8,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2423+i), ValuesFormat, \
-                                          QString::number(i+12)+".Тангенсы дельта вводов"),7,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "dCbush ф."+phase[i]),8,i,1,1);
+                                          "Тангенсы дельта вводов, %"),9,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "dCbush ф."+phase[i]+", пФ"),10,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2426+i), ValuesFormat, \
-                                          QString::number(i+15)+".Изменение емкостей вводов, пФ"),9,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "dTg_d ф."+phase[i]),10,i,1,1);
+                                          "Изменение емкостей вводов, пФ"),11,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "dTg_d ф."+phase[i]+", %"),12,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2429+i), ValuesFormat, \
-                                          QString::number(i+18)+".Изменение тангенсов дельта вводов, %"),11,i,1,1);
+                                          "Изменение тангенсов дельта вводов, %"),13,i,1,1);
         /*glyout->addWidget(WDFunc::NewLBL(parent, "KrF ф."+phase[i]),12,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1008+i), ValuesFormat, \
                                           QString::number(i+21)+".Крест фактор"),13,i,1,1);*/
     }
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "Iunb"),12,0,1,1);
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+
+    gb = new QGroupBox("Параметры небаланса токов");
+    vlyout = new QVBoxLayout;
+    glyout = new QGridLayout;
+    glyout->addWidget(WDFunc::NewLBL(parent, "Iunb, мА"),14,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2432), ValuesFormat, \
-                                      QString::number(21)+".Действующее значение тока небаланса, мА"),13,0,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Phy_unb"),12,1,1,1);
+                                      "Действующее значение тока небаланса, мА"),15,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Phy_unb, град."),14,1,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2433), ValuesFormat, \
-                                      QString::number(22)+".Угол тока небаланса относительно тока ф.А, град."),13,1,1,1);
+                                      "Угол тока небаланса относительно тока ф.А, град."),15,1,1,1);
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "Tamb"),12,2,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(4501), ValuesFormat, \
-                                      QString::number(23)+".Температура окружающей среды, °С"),13,2,1,1);
-
-    for (i = 0; i < 3; ++i)
-    {
-        glyout->addWidget(WDFunc::NewLBL(parent, "U_phi_next_f ф."+phase[i]),14,i,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(2401+i), ValuesFormat, \
-                                          QString::number(24+i)+".Угол по напряжению ф."+phase[i]+", град."),15,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "I_phi_next_f ф."+phase[i]),16,i,1,1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(2404+i), ValuesFormat, \
-                                          QString::number(27+i)+".Угол по напряжению ф."+phase[i]+", град."),17,i,1,1);
-    }
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
 
     /*QPushButton *pb = new QPushButton("Стереть журнал");
     //pb->setObjectName("pbmeasurements");
@@ -122,31 +132,32 @@ QWidget *Check_84::Bd2W(QWidget *parent)
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
+    QString phase[3] = {"A","B","C"};
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "U0 ф.А"),0,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "U0, кВ"),0,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1020), ValuesFormat, \
-                                      QString::number(29)+".Напряжение нулевой последовательности ф.А"),1,0,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "U1 ф.B"),0,1,1,1);
+                                      "Напряжение нулевой последовательности, кВ"),1,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "U1, кВ"),0,1,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1021), ValuesFormat, \
-                                      QString::number(30)+".Напряжение прямой последовательности ф.B"),1,1,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "U2 ф.C"),0,2,1,1);
+                                      "Напряжение прямой последовательности, кВ"),1,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "U2, кВ"),0,2,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1022), ValuesFormat, \
-                                      QString::number(31)+".Напряжение обратной последовательности ф.C"),1,2,1,1);
+                                      "Напряжение обратной последовательности, кВ"),1,2,1,1);
     /*glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim0"),2,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1023), ValuesFormat, \
                                       QString::number(32)+".Коэффициент несимметрии по нулевой последовательности по напряжению"),3,0,1,1);
     glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim2"),2,1,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1024), ValuesFormat, \
                                       QString::number(33)+".Коэффициент несимметрии по обратной последовательности по напряжению"),3,1,1,1);*/
-    glyout->addWidget(WDFunc::NewLBL(parent, "I0 ф.А"),2,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "I0, мА"),2,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1120), ValuesFormat, \
-                                      QString::number(34)+".Ток обратной последовательности ф.А"),3,0,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "I1 ф.B"),2,1,1,1);
+                                      "Ток нулевой последовательности, мА"),3,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "I1, мА"),2,1,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1121), ValuesFormat, \
-                                      QString::number(35)+".Ток обратной последовательности ф.B"),3,1,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "I2 ф.C"),2,2,1,1);
+                                      "Ток прямой последовательности, мА"),3,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "I2, мА"),2,2,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1122), ValuesFormat, \
-                                      QString::number(36)+".Ток обратной последовательности ф.С"),3,2,1,1);
+                                      "Ток обратной последовательности, мА"),3,2,1,1);
    /* glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim0"),6,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1123), ValuesFormat, \
                                       QString::number(37)+".Коэффициент несимметрии по нулевой последовательности по току"),7,0,1,1);
@@ -162,9 +173,22 @@ QWidget *Check_84::Bd2W(QWidget *parent)
     glyout->addWidget(WDFunc::NewLBL(parent, "KrF ф.B"),8,2,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1010), ValuesFormat, \
                                       QString::number(41)+".Крест фактор"),9,2,1,1);*/
-    glyout->addWidget(WDFunc::NewLBL(parent, "Ramb"),4,0,1,1);
+
+    int i;
+    for (i = 0; i < 3; ++i)
+    {
+        glyout->addWidget(WDFunc::NewLBL(parent, "Phy_U ф."+phase[i]+", град."),4,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(2401+i), ValuesFormat, \
+                                          "Угол по напряжению ф."+phase[i]+", град."),5,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Phy_I ф."+phase[i]+", град."),6,i,1,1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(2404+i), ValuesFormat, \
+                                          "Угол по току ф."+phase[i]+", град."),7,i,1,1);
+    }
+
+
+    glyout->addWidget(WDFunc::NewLBL(parent, "Ramb, Ом"),8,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(4502), ValuesFormat, \
-                                      QString::number(42)+".Сопротивление датчика, Ом"),5,0,1,1);
+                                      "Сопротивление датчика, Ом"),9,0,1,1);
     /*glyout->addWidget(WDFunc::NewLBL(parent, "Time"),6,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value29", ValuesFormat, \
                                       QString::number(29)+".Время записи, с"),7,0,1,1);*/
@@ -191,7 +215,6 @@ QWidget *Check_84::Bd3W(QWidget *parent)
         glyout->addWidget(WDFunc::NewLBL(parent, "", GRNCOLOR),0,1,1,1);
         glyout->addWidget(WDFunc::NewLBL(parent, "Логическая единица - "),0,3,1,1, Qt::AlignRight);
         glyout->addWidget(WDFunc::NewLBL(parent, "", REDCOLOR),0,4,1,1);
-
 
         glyout->addWidget(WDFunc::NewLBL(parent, "Сигналы:"),3,2,1,1);
         glyout->addWidget(WDFunc::NewLBL(parent, "Сигнал:"),4,1,1,1);

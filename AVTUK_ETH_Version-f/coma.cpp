@@ -267,6 +267,7 @@ void Coma::Stage3()
     CorD = nullptr;
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
+    //MainTW->setMinimumSize(QSize(800,600));
     if (MainTW == nullptr)
         return;
 
@@ -366,8 +367,6 @@ void Coma::Stage3()
             connect(ConfM, SIGNAL(stopRead(int)), this,SLOT(Stop_BdaTimer(int)));
             CheckB->checkIndex = MainTW->indexOf(CheckB);
             ConfM->checkIndex = CheckB->checkIndex;
-            BdaTimer = new QTimer;
-            BdaTimer->setInterval(ANMEASINT);
             connect(BdaTimer,SIGNAL(timeout()),CheckB,SLOT(BdTimerTimeout()));
         }
     }
@@ -445,7 +444,7 @@ void Coma::Stage3()
 
     if (CorD != nullptr)
     {
-        MainTW->addTab(CorD, "Коррекция");
+        MainTW->addTab(CorD, "Начальные значения");
         CorD->corDIndex = MainTW->indexOf(CorD);
         connect(MainTW, SIGNAL(tabClicked(int)), CorD, SLOT(GetCorBd(int))); //tabClicked
     }
@@ -646,6 +645,8 @@ void Coma::PrepareDialogs()
     case Config::MTM_84:
     {
         setMinimumSize(QSize(800, 650));
+
+        if(MainInterface != "RS485")
         ConfM = new ConfDialog84(S2Config);
 
         if(ch104 != nullptr && MainInterface == "Ethernet")

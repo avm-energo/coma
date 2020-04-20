@@ -241,10 +241,13 @@ void ModBus::ReadPort()
         startadr = (static_cast<quint8>(SignalGroups[Group].firstbyteadr) << 8) | (static_cast<quint8>(SignalGroups[Group].secondbyteadr));
         for(i=0; i<signalsSize; i++)
         {
-         ival = (responseBuffer.data()[5+4*i]<<24)+(responseBuffer.data()[6+4*i]<<16)+(responseBuffer.data()[3+4*i]<<8)+responseBuffer.data()[4+4*i];
-         //float fval = *reinterpret_cast<float*>(&ival);
-         if(ComData.adr != 1)
-         Sig[i].flVal = *(float*)&ival;
+         if(ComData.adr == 1)  // bsi
+         ival = (static_cast<quint8>(responseBuffer.data()[5+4*i])<<24)+(static_cast<quint8>(responseBuffer.data()[6+4*i])<<16)+(static_cast<quint8>(responseBuffer.data()[3+4*i])<<8)+(static_cast<quint8>(responseBuffer.data()[4+4*i]));
+         else
+         {
+           ival = (responseBuffer.data()[5+4*i]<<24)+(responseBuffer.data()[6+4*i]<<16)+(responseBuffer.data()[3+4*i]<<8)+(responseBuffer.data()[4+4*i]);
+           Sig[i].flVal = *(float*)&ival;
+         }
 
          if(commands)
          {
@@ -526,6 +529,7 @@ void ModBus::ModWriteCor(information* info, float* data)//, int* size)
     }
     TimeFunc::Wait(100);
     commands = true;
+    Reading = false;
 
 }
 
@@ -538,7 +542,9 @@ void ModBus::ModReadCor(information* info)
     ComData.sizebytes = (quint8)((info->size)*4);
     ComData.data.clear();
 
+    TimeFunc::Wait(100);
     commands = true;
+    Reading = false;
 
 }
 

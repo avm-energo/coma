@@ -129,7 +129,7 @@ int AbstractConfDialog::WriteCheckPassword()
 
 void AbstractConfDialog::WritePasswordCheck(QString psw)
 {
-    if (psw == "se/7520a")
+    if (psw == "121941")
         ok = true;
     else
         ok = false;

@@ -15,6 +15,9 @@ public:
     ~CorDialog();
 
     int corDIndex;
+    bool ok;
+
+    int WriteCheckPassword();
 
 private:
 
@@ -55,6 +58,7 @@ signals:
    void sendCom50(quint16* adr, float *data);
    void RS485WriteCorBd(information*, float*);
    void RS485ReadCorBd(information*);
+   void WritePasswordChecked();
 
 
 public slots:
@@ -71,6 +75,7 @@ public slots:
     void ModBusUpdateCorData(ModBusSignal *Signal, int * size);
     void SaveToFile();
     void ReadFromFile();
+    void WritePasswordCheck(QString psw);
 
 private slots:
 

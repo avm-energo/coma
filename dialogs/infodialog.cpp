@@ -117,7 +117,7 @@ void InfoDialog::FillBsiFromModBus(ModBusBSISignal *Signal, int * size)
     if(*size && startadr == 1)
     {
         for(i=0; i< *size; i++)
-        memcpy((((quint32*)(&bsi)+i)), (((quint32*)(&Signal->Val)+i)), sizeof(Signal->Val));
+        memcpy((((quint32*)(&bsi)+i)), ((quint32*)(&Signal->Val)+2*i), sizeof(Signal->Val));
 
         MainWindow::MTypeB = bsi.MTypeB;
         MainWindow::MTypeM = bsi.MTypeM;

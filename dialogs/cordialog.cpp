@@ -26,6 +26,7 @@
 #include "../gen/maindef.h"
 #include "../gen/colors.h"
 #include "../gen/timefunc.h"
+#include "../dialogs/keypressdialog.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -66,7 +67,7 @@ void CorDialog::SetupUI()
     QString paramcolor = MAINWINCLR;
     QPushButton *pb = new QPushButton();
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения емкостей вводов:"), row,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения емкостей вводов, пФ:"), row,1,1,1);
 
     for (int i = 0; i < 3; i++)
     {
@@ -78,7 +79,7 @@ void CorDialog::SetupUI()
 
 
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения tg δ вводов:"), row,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения tg δ вводов, %:"), row,1,1,1);
 
     for (int i = 0; i < 3; i++)
     {
@@ -87,7 +88,7 @@ void CorDialog::SetupUI()
 
     row++;
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Коррекция  tg δ вводов:"), row,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Коррекция  tg δ вводов,%:"), row,1,1,1);
 
     for (int i = 0; i < 3; i++)
     {
@@ -95,11 +96,11 @@ void CorDialog::SetupUI()
     }
     row++;
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Начальное действ. значение тока небаланса:"), row,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Начальное действ. значение тока небаланса, мА:"), row,1,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, QString::number(4009), 0, 10000, 1, paramcolor), row,2,1,3);
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Начальное значение угла тока небаланса:"), row,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Начальное значение угла тока небаланса, град.:"), row,1,1,1);
     glyout->addWidget(WDFunc::NewSPB(this, QString::number(4010), 0, 10000, 1, paramcolor), row,2,1,3);
 
     row++;
@@ -139,7 +140,7 @@ void CorDialog::SetupUI()
 
     //row++;
 
-    pb = new QPushButton("Сбросить коррекцию");
+    pb = new QPushButton("Сбросить начальные значения");
     #if PROGSIZE != PROGSIZE_EMUL
         connect(pb,SIGNAL(clicked()),this,SLOT(ResetCor()));
     #endif
@@ -151,7 +152,7 @@ void CorDialog::SetupUI()
 
     row++;
 
-    pb = new QPushButton("Записать коррекцию в файл");
+    pb = new QPushButton("Сохранить значения в файл");
     #if PROGSIZE != PROGSIZE_EMUL
       connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
     #endif
@@ -162,7 +163,7 @@ void CorDialog::SetupUI()
 
     //row++;
 
-    pb = new QPushButton("Прочитать коррекцию из файла");
+    pb = new QPushButton("Прочитать значения из файла");
     #if PROGSIZE != PROGSIZE_EMUL
       connect(pb,SIGNAL(clicked()),this,SLOT(ReadFromFile()));
     #endif
@@ -266,33 +267,36 @@ void CorDialog::WriteCorBd()
 
     FillBackCor();
 
-    if(MainWindow::MainInterface.size() != 0)
+    if (WriteCheckPassword() == Error::ER_NOERROR)
     {
-     if(MainWindow::MainInterface == "Ethernet")
-     {
-        for(i = 0; i<11; i++)
+        if(MainWindow::MainInterface.size() != 0)
         {
-          emit sendCom50((adr+i), (float*)(CorBlock+i));
-          TimeFunc::Wait(100);
-        }
-     }
-     else if(MainWindow::MainInterface == "RS485")
-     {
-         information info;
-         info.size = (sizeof(CorData)/4);
-         info.adr = adr[0];
-         emit RS485WriteCorBd(&info, (float*)CorBlock);
-     }
-     else if(MainWindow::MainInterface == "USB")
-     {
-         if(Commands::WriteBd(7, CorBlock, sizeof(CorData)) == Error::ER_NOERROR)
-         EMessageBox::information(this, "INFO", "Записано успешно");
-         else
-         EMessageBox::information(this, "INFO", "Ошибка");
+         if(MainWindow::MainInterface == "Ethernet")
+         {
+            for(i = 0; i<11; i++)
+            {
+              emit sendCom50((adr+i), (float*)(CorBlock+i));
+              TimeFunc::Wait(100);
+            }
+         }
+         else if(MainWindow::MainInterface == "RS485")
+         {
+             information info;
+             info.size = (sizeof(CorData)/4);
+             info.adr = adr[0];
+             emit RS485WriteCorBd(&info, (float*)CorBlock);
+         }
+         else if(MainWindow::MainInterface == "USB")
+         {
+             if(Commands::WriteBd(7, CorBlock, sizeof(CorData)) == Error::ER_NOERROR)
+             EMessageBox::information(this, "INFO", "Записано успешно");
+             else
+             EMessageBox::information(this, "INFO", "Ошибка");
 
-         if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
-         FillCor();
-     }
+             if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
+             FillCor();
+         }
+        }
     }
 
 }
@@ -317,28 +321,31 @@ void CorDialog::WriteCorTg()
 
 void CorDialog::WriteCor()
 {
-    quint32 Com = 900;
-    if(MainWindow::MainInterface.size() != 0)
+    if (WriteCheckPassword() == Error::ER_NOERROR)
     {
-     if(MainWindow::MainInterface == "Ethernet")
-     {
-        emit sendCom45(&Com);
-     }
-     else if(MainWindow::MainInterface == "RS485")
-     {
-         information info;
-         info.size = 1;
-         info.adr = (quint16)Com;
-         emit RS485WriteCorBd(&info, nullptr);
-     }
-     else if(MainWindow::MainInterface == "USB")
-     {
-        if(Commands::WriteCom(1) == Error::ER_NOERROR)   // задание общей коррекции
-        EMessageBox::information(this, "INFO", "Записано успешно");
-        else
-        EMessageBox::information(this, "INFO", "Ошибка");
+        quint32 Com = 900;
+        if(MainWindow::MainInterface.size() != 0)
+        {
+         if(MainWindow::MainInterface == "Ethernet")
+         {
+            emit sendCom45(&Com);
+         }
+         else if(MainWindow::MainInterface == "RS485")
+         {
+             information info;
+             info.size = 1;
+             info.adr = (quint16)Com;
+             emit RS485WriteCorBd(&info, nullptr);
+         }
+         else if(MainWindow::MainInterface == "USB")
+         {
+            if(Commands::WriteCom(1) == Error::ER_NOERROR)   // задание общей коррекции
+            EMessageBox::information(this, "INFO", "Записано успешно");
+            else
+            EMessageBox::information(this, "INFO", "Ошибка");
 
-     }
+         }
+        }
     }
 }
 
@@ -365,29 +372,33 @@ void CorDialog::SetCor()
 void CorDialog::ResetCor()
 {
     quint32 Com = 905;
-    if(MainWindow::MainInterface.size() != 0)
-    {
-     if(MainWindow::MainInterface == "Ethernet")
-     {
-        emit sendCom45(&Com);
-     }
-     else if(MainWindow::MainInterface == "RS485")
-     {
-         information info;
-         info.size = 1;
-         info.adr = (quint16)Com;
-         emit RS485WriteCorBd(&info, nullptr);
-     }
-     else if(MainWindow::MainInterface == "USB")
-     {
-        if(Commands::WriteCom(5) == Error::ER_NOERROR)
-        EMessageBox::information(this, "INFO", "Записано успешно");
-        else
-        EMessageBox::information(this, "INFO", "Ошибка");
 
-        if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
-        FillCor();
-     }
+    if (WriteCheckPassword() == Error::ER_NOERROR)
+    {
+        if(MainWindow::MainInterface.size() != 0)
+        {
+         if(MainWindow::MainInterface == "Ethernet")
+         {
+            emit sendCom45(&Com);
+         }
+         else if(MainWindow::MainInterface == "RS485")
+         {
+             information info;
+             info.size = 1;
+             info.adr = (quint16)Com;
+             emit RS485WriteCorBd(&info, nullptr);
+         }
+         else if(MainWindow::MainInterface == "USB")
+         {
+            if(Commands::WriteCom(5) == Error::ER_NOERROR)
+            EMessageBox::information(this, "INFO", "Сброшено успешно");
+            else
+            EMessageBox::information(this, "INFO", "Ошибка");
+
+            if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
+            FillCor();
+         }
+        }
     }
 
 }
@@ -505,3 +516,32 @@ void CorDialog::ReadFromFile()
 
 }
 
+
+int CorDialog::WriteCheckPassword()
+{
+    ok = false;
+    StdFunc::ClearCancel();
+    QEventLoop PasswordLoop;
+    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
+    connect(dlg,SIGNAL(Finished(QString)),this,SLOT(WritePasswordCheck(QString)));
+    connect(this,SIGNAL(WritePasswordChecked()),&PasswordLoop,SLOT(quit()));
+    dlg->show();
+    PasswordLoop.exec();
+    if (StdFunc::IsCancelled())
+        return Error::ER_GENERALERROR;
+    if (!ok)
+    {
+        EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
+        return Error::ER_GENERALERROR;
+    }
+    return Error::ER_NOERROR;
+}
+
+void CorDialog::WritePasswordCheck(QString psw)
+{
+    if (psw == "121941")
+        ok = true;
+    else
+        ok = false;
+    emit WritePasswordChecked();
+}
