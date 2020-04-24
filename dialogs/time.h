@@ -23,7 +23,7 @@ public:
     QTimer *timer;
     QTimer *timerRead;
     //QThread *thr;
-    bool FinishThread;
+    bool FinishThread, closeThr;
     uint32_t unixtimestamp = 1423062000;
     QDateTime myDateTime;
 
@@ -46,6 +46,7 @@ private slots:
     void Stop_Timer(int);
     void Write_PCDate();
     void Write_Date();
+    void StopSlot();
 //#if PROGSIZE != PROGSIZE_EMUL
 
 //#endif

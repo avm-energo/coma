@@ -1046,9 +1046,13 @@ void MainWindow::GetAbout()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Disconnect()
 {
+    emit stoptime();
     if (!StdFunc::IsInEmulateMode())
+    {
         cn->Disconnect();
+    }
 }
+
 
 void MainWindow::GetDeviceFromTable(QModelIndex idx)
 {
@@ -1080,7 +1084,7 @@ void MainWindow::DisconnectAndClear()
     OscD = nullptr;
 #endif
     CheckB = CheckM = nullptr;
-    Time = nullptr;
+    //Time = nullptr;
     emit ClearBsi();
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
@@ -1089,10 +1093,10 @@ void MainWindow::DisconnectAndClear()
     MainTW->hide();
     StdFunc::SetEmulated(false);
 
-    if(thr != nullptr)
-    emit FinishAll();
+    //if(thr != nullptr)
+    //emit FinishAll();
 
-    thr = nullptr;
+    //thr = nullptr;
 
 }
 #ifndef MODULE_A1
@@ -1204,4 +1208,12 @@ void MainWindow::FinishHim()
     ConfM->confIndex = -1;
     TimeFunc::Wait(1000);
     //ConfM->stopRead(ConfM->timeIndex);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    DisconnectAndClear();
+    //while(!TimeThrFinished || !ModBusThrFinished)
+    //TimeFunc::Wait(100);
+    event->accept();
 }

@@ -315,17 +315,21 @@ void Coma::Stage3()
 
     if (MTypeB == 0xA2) // для МНК
     {
-        Time = new MNKTime();
+        MNKTime *Time = new MNKTime();
         connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Start_Timer(int))); //tabClicked
         connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Stop_Timer(int)));
         connect(ConfM, SIGNAL(stopRead(int)), Time,SLOT(Stop_Timer(int)));
         MainTW->addTab(Time, "Время");
         Time->timeIndex = MainTW->indexOf(Time);
         ConfM->timeIndex = Time->timeIndex;
-        thr = new QThread;
+
+        QThread *thr = new QThread;
         Time->moveToThread(thr);
+        connect(this,SIGNAL(stoptime()),Time,SLOT(StopSlot()));
+        connect(Time, SIGNAL(finished()), thr, SIGNAL(finished()));
+        //connect(thr, SIGNAL(finished()), this, SLOT(CheckTimeFinish()));
         connect(thr,SIGNAL(finished()),Time,SLOT(deleteLater()));
-        connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
+        //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
         connect(thr,SIGNAL(started()),Time,SLOT(slot2_timeOut()));
         thr->start();
     }
@@ -343,8 +347,18 @@ void Coma::Stage3()
         connect(TuneM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
     }
     str = (CheckM == nullptr) ? "Проверка" : "Проверка\nБазовая";
-    if (CheckB != nullptr)
-        MainTW->addTab(CheckB, str);
+    if(CheckB != nullptr)
+    {
+      MainTW->addTab(CheckB, str);
+      if(MTypeB == 0xA2)
+      {
+          CheckB->checkIndex = MainTW->indexOf(CheckB);
+          connect(MainTW, SIGNAL(tabClicked(int)), CheckB, SLOT(TestMode(int))); //tabClicked
+      }
+
+
+
+    }
     str = (CheckB == nullptr) ? "Проверка" : "Проверка\nМезонин";
     if (CheckM != nullptr)
         MainTW->addTab(CheckM, str);
@@ -367,7 +381,7 @@ void Coma::Stage3()
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
         Error::ShowErMsg(ER_NOTUNECOEF);
 
-    connect(this,SIGNAL(FinishAll()),this,SLOT(FinishHim()));
+    //connect(this,SIGNAL(FinishAll()),this,SLOT(FinishHim()));
 
 
     MainTW->sizeIncrement();

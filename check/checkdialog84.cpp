@@ -221,5 +221,4 @@ void Check_84::FillBd5(QWidget *parent)
 
 }
 
-
 #endif

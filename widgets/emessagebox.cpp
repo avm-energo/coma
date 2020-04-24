@@ -50,7 +50,7 @@ void error(QWidget *parent, const QString &title,
                  const QString &text, const QString &detailedText)
 {
 #if QT_VERSION >= 0x040600
-    QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
+        QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
 #else
     QSharedPointer<QMessageBox> messageBox(new QMessageBox(parent));
 #endif

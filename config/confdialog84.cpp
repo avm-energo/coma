@@ -46,7 +46,8 @@ void ConfDialog84::Fill()
     WDFunc::SetSPBData(this, "spb.5", C84->MainBlk.T3_104);
     WDFunc::SetSPBData(this, "spb.6", C84->MainBlk.k_104);
     WDFunc::SetSPBData(this, "spb.7", C84->MainBlk.w_104);
-    WDFunc::SetSPBData(this, "spb.8", C84->MainBlk.Ctype);
+    int cbidx = ((C84->MainBlk.Ctype & 0x01) ? 1 : 0);
+    WDFunc::SetCBIndex(this, "spb.8", cbidx);
 
     WDFunc::SetSPBData(this, "Unom", C84->Bci_block.Unom);
     WDFunc::SetSPBData(this, "Umin", C84->Bci_block.Umin);
@@ -92,7 +93,10 @@ void ConfDialog84::Fill()
         }
 
         WDFunc::SetSPBData(this, "Baud", C84->Com_param.baud);
-        WDFunc::SetSPBData(this, "Parity", C84->Com_param.parity);
+        int cbidx = (C84->Com_param.parity & 0x04) ? 2 : ((C84->Com_param.parity & 0x02) ? 1 : 0);
+        WDFunc::SetCBIndex(this, "Parity", cbidx);
+        cbidx = ((C84->Com_param.stopbit & 0x02) ? 1 : 0);
+        WDFunc::SetCBIndex(this, "StopBit", cbidx);
         WDFunc::SetSPBData(this, "StopBit", C84->Com_param.stopbit);
         WDFunc::SetSPBData(this, "adrMB", C84->Com_param.adrMB);
 
@@ -116,7 +120,8 @@ void ConfDialog84::FillBack()
     WDFunc::SPBData(this, "spb.5", C84->MainBlk.T3_104);
     WDFunc::SPBData(this, "spb.6", C84->MainBlk.k_104);
     WDFunc::SPBData(this, "spb.7", C84->MainBlk.w_104);
-    WDFunc::SPBData(this, "spb.8", C84->MainBlk.Ctype);
+    int cbidx = WDFunc::CBIndex(this, "spb.8");
+    C84->MainBlk.Ctype = (0x00000001 << cbidx) - 1;
 
     WDFunc::SPBData(this, "Unom", C84->Bci_block.Unom);
     WDFunc::SPBData(this, "Umin", C84->Bci_block.Umin);
@@ -162,8 +167,10 @@ void ConfDialog84::FillBack()
         }
 
         WDFunc::SPBData(this, "Baud", C84->Com_param.baud);
-        WDFunc::SPBData(this, "Parity", C84->Com_param.parity);
-        WDFunc::SPBData(this, "StopBit", C84->Com_param.stopbit);
+        int cbidx = WDFunc::CBIndex(this, "Parity");
+        C84->Com_param.parity = 0x00000001 << cbidx;
+        cbidx = WDFunc::CBIndex(this, "StopBit");
+        C84->Com_param.stopbit = 0x00000001 << cbidx;
         WDFunc::SPBData(this, "adrMB", C84->Com_param.adrMB);
         /*if(C84->Com_param.isNTP)
         WDFunc::SetChBData(this, "ISNTP", true);
@@ -495,12 +502,21 @@ void ConfDialog84::SetupUI()
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Чётность:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Parity", 0, 10000, 0, paramcolor), row,2,1,4);
+    cbl = QStringList() << "NoParity" << "EvenParity" << "OddParity";
+    cb = WDFunc::NewCB(this, "Parity", cbl, paramcolor);
+    cb->setMinimumWidth(80);
+    cb->setMinimumHeight(15);
+    glyout->addWidget(cb,row,2,1,4);
+    //glyout->addWidget(WDFunc::NewSPB(this, "Parity", 0, 10000, 0, paramcolor), row,2,1,4);
 
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Количество стоповых битов:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "StopBit", 0, 10000, 0, paramcolor), row,2,1,4);
+    cbl = QStringList() << "Stop_Bit_1" << "Stop_Bit_2";
+    cb = WDFunc::NewCB(this, "StopBit", cbl, paramcolor);
+    cb->setMinimumWidth(80);
+    cb->setMinimumHeight(15);
+    glyout->addWidget(cb,row,2,1,4);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Адрес устройства для Modbus:"), row,1,1,1);

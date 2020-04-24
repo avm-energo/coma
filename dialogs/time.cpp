@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QTime>
 #include <QTimer>
+#include <QThread>
 #include "../widgets/emessagebox.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
@@ -26,17 +27,17 @@ MNKTime::MNKTime(QWidget *parent) :
 {
     //int i;
 
-    FinishThread = true;    
+    FinishThread = true;
+    closeThr = false;
     myDateTime.setTime_t(unixtimestamp);
-    setAttribute(Qt::WA_DeleteOnClose);
+    //setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
     //thr->start();
 }
 
 MNKTime::~MNKTime()
 {
-    emit finished();
-
+   //deleteLater();
 }
 
 void MNKTime::SetupUI()
@@ -169,10 +170,10 @@ void MNKTime::slot2_timeOut()
     uint unixtimestamp = 0;
     QDateTime myDateTime;
 
-    while(!FinishThread)
+    while (1)
     {
-        //if(!FinishThread)
-        //{
+        if(!FinishThread)
+        {
             #if PROGSIZE != PROGSIZE_EMUL
             if (Commands::GetTimeMNK(unixtimestamp) == Error::ER_NOERROR)
             {
@@ -182,14 +183,19 @@ void MNKTime::slot2_timeOut()
               SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
               //WDFunc::SetTEData(this, "Date", SysTime2->text());
             }
-
+            QThread::msleep(1000);
 
             #endif
-            QThread::msleep(1000);
-            qApp->processEvents();
-       // }
+        }
 
-
+        if(closeThr) //&& (!haveFinished))
+        {
+         //haveFinished = true;
+         //emit finished();
+         break;
+        }
+        QThread::msleep(10);
+        qApp->processEvents();
     }
 
 
@@ -199,7 +205,7 @@ void MNKTime::slot2_timeOut()
 void MNKTime::Start_Timer(int index)
 {
     if(index == timeIndex)
-    {     
+    {
         if (Commands::GetTimeMNK(unixtimestamp) == Error::ER_NOERROR)
         {
           QString qStr;
@@ -212,7 +218,6 @@ void MNKTime::Start_Timer(int index)
         }
 
         FinishThread = false;
-        slot2_timeOut();
     }
 
 }
@@ -268,4 +273,10 @@ void MNKTime::Write_Date()
     FinishThread = false;
     #endif
 
+}
+
+void MNKTime::StopSlot()
+{
+    FinishThread = true;
+    closeThr = true;
 }

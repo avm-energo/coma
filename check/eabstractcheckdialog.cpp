@@ -20,6 +20,7 @@
 #include "../gen/error.h"
 #include "../gen/colors.h"
 #include "../gen/files.h"
+#include "../gen/timefunc.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -317,29 +318,41 @@ void EAbstractCheckDialog::SetTimerPeriod()
 
 void EAbstractCheckDialog::StartTest()
 {
+    TimeFunc::Wait(500);
     int res = Commands::TestCom(1);
     if (res != Error::ER_NOERROR)
     {
-        EMessageBox::information(this, "Ошибка", "Ошибка запуска тестирования");
+        //EMessageBox::information(this, "Ошибка", "Ошибка запуска тестирования");
     }
     else
     {
-        EMessageBox::information(this, "Успешно", "Идёт тестирование");
+       // EMessageBox::information(this, "Успешно", "Режим тестирования");
     }
 
 }
 
 void EAbstractCheckDialog::StopTest()
 {
+    TimeFunc::Wait(500);
     int res = Commands::TestCom(0);
     if (res != Error::ER_NOERROR)
     {
-        EMessageBox::information(this, "Ошибка","Ошибка остановки тестирования");
+        //EMessageBox::information(this, "Ошибка","Ошибка остановки тестирования");
     }
     else
     {
-        EMessageBox::information(this, "Успешно", "Тестирование завершено");
+       // EMessageBox::information(this, "Успешно", "Тестирование завершено");
     }
 
 }
+
+
+void EAbstractCheckDialog::TestMode(int index)
+{
+    if(index == checkIndex)
+    StartTest();
+    else
+    StopTest();
+}
+
 

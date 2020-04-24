@@ -258,32 +258,6 @@ void Check_84::Rele1()
         EMessageBox::information(Fwidjet, "INFO", "Ошибка");
        }
    }
-
-   if((ModuleBSI::GetMType(BoardTypes::BT_MEZONIN)) == Config::MTM_84)
-   {
-       if(rele1 != 1)
-       {
-        if(Commands::WriteCom(105) == Error::ER_NOERROR)   // включение
-        {
-         WDFunc::SetLBLText(Fwidjet, "lbl1", "Замкнуто", true);
-         //EMessageBox::information(Fwidjet, "INFO", "Команда отправлена успешно");
-         rele1 = 1;
-        }
-        else
-        EMessageBox::information(Fwidjet, "INFO", "Ошибка");
-       }
-       else  // выключение
-       {
-        if(Commands::WriteCom(125) == Error::ER_NOERROR)
-        {
-         WDFunc::SetLBLText(Fwidjet, "lbl1", "Разомкнуто", true);
-         //EMessageBox::information(Fwidjet, "INFO", "Команда отправлена успешно");
-         rele1 = 0;
-        }
-        else
-        EMessageBox::information(Fwidjet, "INFO", "Ошибка");
-       }
-   }
 }
 
 void Check_84::Rele2()
@@ -314,32 +288,6 @@ void Check_84::Rele2()
         }
     }
 
-    if((ModuleBSI::GetMType(BoardTypes::BT_MEZONIN)) == Config::MTM_84)
-    {
-        if(rele2 != 1)
-        {
-         if(Commands::WriteCom(106) == Error::ER_NOERROR)   // включение
-         {
-          WDFunc::SetLBLText(Fwidjet, "lbl2", "Замкнуто", true);
-          //EMessageBox::information(Fwidjet, "INFO", "Команда отправлена успешно");
-          rele2 = 1;
-         }
-         else
-         EMessageBox::information(Fwidjet, "INFO", "Ошибка");
-        }
-        else  // выключение
-        {
-         if(Commands::WriteCom(126) == Error::ER_NOERROR)
-         {
-          WDFunc::SetLBLText(Fwidjet, "lbl2", "Разомкнуто", true);
-          //EMessageBox::information(Fwidjet, "INFO", "Команда отправлена успешно");
-          rele2 = 0;
-         }
-         else
-         EMessageBox::information(Fwidjet, "INFO", "Ошибка");
-        }
-    }
-
 }
 
 void Check_84::Rele3()
@@ -360,32 +308,6 @@ void Check_84::Rele3()
         else  // выключение
         {
          if(Commands::WriteCom(123) == Error::ER_NOERROR)
-         {
-          WDFunc::SetLBLText(Fwidjet, "lbl3", "Разомкнуто", true);
-          //EMessageBox::information(Fwidjet, "INFO", "Команда отправлена успешно");
-          rele3 = 0;
-         }
-         else
-         EMessageBox::information(Fwidjet, "INFO", "Ошибка");
-        }
-    }
-
-    if((ModuleBSI::GetMType(BoardTypes::BT_MEZONIN)) == Config::MTM_84)
-    {
-        if(rele3 != 1)
-        {
-         if(Commands::WriteCom(107) == Error::ER_NOERROR)   // включение
-         {
-          WDFunc::SetLBLText(Fwidjet, "lbl3", "Замкнуто", true);
-          //EMessageBox::information(Fwidjet, "INFO", "Команда отправлена успешно");
-          rele3 = 1;
-         }
-         else
-         EMessageBox::information(Fwidjet, "INFO", "Ошибка");
-        }
-        else  // выключение
-        {
-         if(Commands::WriteCom(127) == Error::ER_NOERROR)
          {
           WDFunc::SetLBLText(Fwidjet, "lbl3", "Разомкнуто", true);
           //EMessageBox::information(Fwidjet, "INFO", "Команда отправлена успешно");
@@ -429,40 +351,7 @@ void Check_84::Switch_off()
         }
         else
         EMessageBox::information(Fwidjet, "INFO", "Ошибка");
-
-
     }
-
-    if((ModuleBSI::GetMType(BoardTypes::BT_MEZONIN)) == Config::MTM_84)
-    {
-        if(Commands::WriteCom(125) == Error::ER_NOERROR)
-        {
-         WDFunc::SetLBLText(Fwidjet, "lbl1", "Разомкнуто", true);
-         //EMessageBox::information(Fwidjet, "INFO", "Команда отправлена успешно");
-         rele1 = 0;
-        }
-        else
-        EMessageBox::information(Fwidjet, "INFO", "Ошибка");
-
-        if(Commands::WriteCom(126) == Error::ER_NOERROR)
-        {
-         WDFunc::SetLBLText(Fwidjet, "lbl2", "Разомкнуто", true);
-         //EMessageBox::information(Fwidjet, "INFO", "Команда отправлена успешно");
-         rele2 = 0;
-        }
-        else
-        EMessageBox::information(Fwidjet, "INFO", "Ошибка");
-
-        if(Commands::WriteCom(127) == Error::ER_NOERROR)
-        {
-         WDFunc::SetLBLText(Fwidjet, "lbl3", "Разомкнуто", true);
-         //EMessageBox::information(Fwidjet, "INFO", "Команда отправлена успешно");
-         rele3 = 0;
-        }
-        else
-        EMessageBox::information(Fwidjet, "INFO", "Ошибка");
-    }
-
 }
 
 void Check_84::FillBd(QWidget *parent)

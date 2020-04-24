@@ -38,7 +38,7 @@ QString StdFunc::VerToStr(quint32 num)
     int mv = (num&0xFF000000)>>24;
     int lv = (num&0x00FF0000)>>16;
     int sv = (num&0x0000FFFF);
-    QString tmpString = QString::number(mv, 10) + "." + QString::number(lv, 10) + "-" + QString("%1").arg(sv, 4, 16, QChar('0'));
+    QString tmpString = QString::number(mv, 10) + "." + QString::number(lv, 10) + "-" + QString("%1").arg(sv, 4, 10, QChar('0'));
     return tmpString;
 }
 

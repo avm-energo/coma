@@ -49,6 +49,7 @@ public:
     QTimer *timer;
     int WRow, BdUINum; // BdUINum - количество вкладок с выводом блоков данных модуля, один блок может быть разделён на несколько вкладок
     int Board; // тип платы
+    int checkIndex;
 
 // CurBdNum,
 
@@ -60,6 +61,8 @@ public slots:
     void StopAnalogMeasurements();
     void StartTest();
     void StopTest();
+    void TestMode(int index);
+
 #endif
 
 private:

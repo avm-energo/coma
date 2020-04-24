@@ -147,6 +147,7 @@ signals:
     void BsiRefresh();
     void ClearBsi();
     void Finished();
+    void stoptime();
 
 
 private:
@@ -174,6 +175,7 @@ private slots:
     void GetAbout();
     void DisconnectAndClear();
     void FinishHim();
+    void closeEvent(QCloseEvent *event);
 #ifndef MODULE_A1
     void LoadOsc();
     void LoadSWJ();

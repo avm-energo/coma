@@ -11,6 +11,7 @@ class CheckDialog84 : public EAbstractCheckDialog
 public:
     explicit CheckDialog84(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
+
 signals:
 
 public slots:
@@ -41,6 +42,7 @@ private slots:
     void StartBdMeasurements();
     void StopBdMeasurements();
     void BdTimerTimeout();
+
 #endif
 };
 #endif // CHECKDIALOG84_H
