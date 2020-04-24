@@ -51,9 +51,14 @@ QWidget *Check_84::Bd1W(QWidget *parent)
     QString phase[3] = {"A","B","C"};
     //hlyout->addWidget(WDFunc::NewLBL(parent, "Номер:"), 0);
     //hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Номер"), 0);
+    QFont font;
     QGroupBox *gb = new QGroupBox("Общие");
+    font.setFamily("Times");
+    font.setPointSize(11);
+    //setFont(font);
+    gb->setFont(font);
     glyout->addWidget(WDFunc::NewLBL(parent, "Температура микроконтроллера, °С:"), 0,0,1,1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "101", ValuesFormat, "Температура микроконтроллера, °С"), 1,0,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(101), ValuesFormat, "Температура микроконтроллера, °С"), 1,0,1,1);
     //hlyout->addWidget(WDFunc::NewLBL(parent, "                     "));
     glyout->addWidget(WDFunc::NewLBL(parent, "Tamb, °С"),0,1,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(4501), ValuesFormat, \
@@ -66,6 +71,7 @@ QWidget *Check_84::Bd1W(QWidget *parent)
     lyout->addWidget(gb);
 
     gb = new QGroupBox("Параметры вводов");
+    gb->setFont(font);
     vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
     for (i = 0; i < 3; ++i)
@@ -99,6 +105,7 @@ QWidget *Check_84::Bd1W(QWidget *parent)
     lyout->addWidget(gb);
 
     gb = new QGroupBox("Параметры небаланса токов");
+    gb->setFont(font);
     vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
     glyout->addWidget(WDFunc::NewLBL(parent, "Iunb, мА"),14,0,1,1);
@@ -133,6 +140,15 @@ QWidget *Check_84::Bd2W(QWidget *parent)
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QString phase[3] = {"A","B","C"};
+    QFont font;
+
+    QGroupBox *gb = new QGroupBox("Симметричные составляющие");
+    font.setFamily("Times");
+    font.setPointSize(11);
+    gb->setFont(font);
+    //gb->setTitle(title);
+    QVBoxLayout *vlyout2 = new QVBoxLayout;
+    QVBoxLayout *vlyout1 = new QVBoxLayout;
 
     glyout->addWidget(WDFunc::NewLBL(parent, "U0, кВ"),0,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1020), ValuesFormat, \
@@ -158,6 +174,9 @@ QWidget *Check_84::Bd2W(QWidget *parent)
     glyout->addWidget(WDFunc::NewLBL(parent, "I2, мА"),2,2,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1122), ValuesFormat, \
                                       "Ток обратной последовательности, мА"),3,2,1,1);
+    vlyout2->addLayout(glyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
    /* glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim0"),6,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1123), ValuesFormat, \
                                       QString::number(37)+".Коэффициент несимметрии по нулевой последовательности по току"),7,0,1,1);
@@ -174,6 +193,11 @@ QWidget *Check_84::Bd2W(QWidget *parent)
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1010), ValuesFormat, \
                                       QString::number(41)+".Крест фактор"),9,2,1,1);*/
 
+    gb = new QGroupBox("Угловые значения");
+    vlyout2 = new QVBoxLayout;
+    glyout = new QGridLayout;
+    gb->setFont(font);
+
     int i;
     for (i = 0; i < 3; ++i)
     {
@@ -185,6 +209,14 @@ QWidget *Check_84::Bd2W(QWidget *parent)
                                           "Угол по току ф."+phase[i]+", град."),7,i,1,1);
     }
 
+    vlyout2->addLayout(glyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
+
+    gb = new QGroupBox("Температура");
+    gb->setFont(font);
+    vlyout2 = new QVBoxLayout;
+    glyout = new QGridLayout;
 
     glyout->addWidget(WDFunc::NewLBL(parent, "Ramb, Ом"),8,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(4502), ValuesFormat, \
@@ -192,10 +224,13 @@ QWidget *Check_84::Bd2W(QWidget *parent)
     /*glyout->addWidget(WDFunc::NewLBL(parent, "Time"),6,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "value29", ValuesFormat, \
                                       QString::number(29)+".Время записи, с"),7,0,1,1);*/
+    vlyout2->addLayout(glyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
 
 
 
-    lyout->addLayout(glyout);
+    lyout->addLayout(vlyout1);
     lyout->addStretch(100);
     w->setLayout(lyout);
     w->setStyleSheet(WidgetFormat);
@@ -205,7 +240,7 @@ QWidget *Check_84::Bd2W(QWidget *parent)
 
 QWidget *Check_84::Bd3W(QWidget *parent)
 {
-    QWidget *w = new QWidget(parent);
+    /*QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
 
@@ -226,7 +261,91 @@ QWidget *Check_84::Bd3W(QWidget *parent)
     lyout->addStretch(100);
     w->setLayout(lyout);
     w->setStyleSheet(WidgetFormat);
+    return w;*/
+
+    QWidget *w = new QWidget(parent);
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QGridLayout *glyout = new QGridLayout;
+    QString phase[3] = {"A","B","C"};
+    QFont font;
+    QString title;
+
+    QGroupBox *gb = new QGroupBox("Отладка");
+    font.setFamily("Times");
+    font.setPointSize(11);
+    //setFont(font);
+    gb->setFont(font);
+    //gb->setTitle(title);
+    QVBoxLayout *vlyout2 = new QVBoxLayout;
+    QVBoxLayout *vlyout1 = new QVBoxLayout;
+
+    glyout->addWidget(WDFunc::NewLBL(parent, "13000"),0,0,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13000), ValuesFormat, \
+                                      ""),1,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "13001"),0,1,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13001), ValuesFormat, \
+                                      ""),1,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "13002"),0,2,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13002), ValuesFormat, \
+                                      ""),1,2,1,1);
+
+    glyout->addWidget(WDFunc::NewLBL(parent, "13003"),2,0,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13003), ValuesFormat, \
+                                      ""),3,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "13004"),2,1,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13004), ValuesFormat, \
+                                      ""),3,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "13005"),2,2,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13005), ValuesFormat, \
+                                      ""),3,2,1,1);
+
+    glyout->addWidget(WDFunc::NewLBL(parent, "13006"),4,0,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13006), ValuesFormat, \
+                                      ""),5,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "13007"),4,1,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13007), ValuesFormat, \
+                                      ""),5,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "13008"),4,2,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13008), ValuesFormat, \
+                                      ""),5,2,1,1);
+
+    glyout->addWidget(WDFunc::NewLBL(parent, "13009"),6,0,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13009), ValuesFormat, \
+                                      ""),7,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "13010"),6,1,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13010), ValuesFormat, \
+                                      ""),7,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "13011"),6,2,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13011), ValuesFormat, \
+                                      ""),7,2,1,1);
+
+    glyout->addWidget(WDFunc::NewLBL(parent, "13012"),8,0,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13012), ValuesFormat, \
+                                      ""),9,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "13013"),8,1,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13013), ValuesFormat, \
+                                      ""),9,1,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "13014"),8,2,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13014), ValuesFormat, \
+                                      ""),9,2,1,1);
+
+    glyout->addWidget(WDFunc::NewLBL(parent, "13015"),10,0,1,1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(13015), ValuesFormat, \
+                                      ""),11,0,1,1);
+
+    vlyout2->addLayout(glyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
+
+
+
+    lyout->addLayout(vlyout1);
+    lyout->addStretch(100);
+    w->setLayout(lyout);
+    w->setStyleSheet(WidgetFormat);
     return w;
+
+
 }
 
 

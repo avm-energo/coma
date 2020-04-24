@@ -161,7 +161,7 @@ void Coma::SetupUI()
     setWindowTitle(PROGCAPTION);
     QString tmps = "QMainWindow {background-color: "+QString(MAINWINCLR)+";}";
     setStyleSheet(tmps);
-    setMinimumSize(QSize(800, 600));
+    setMinimumSize(QSize(800, 700));
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QAction *act;

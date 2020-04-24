@@ -49,7 +49,9 @@ void ConfDialog84::Fill()
     WDFunc::SetSPBData(this, "spb.5", C84->MainBlk.T3_104);
     WDFunc::SetSPBData(this, "spb.6", C84->MainBlk.k_104);
     WDFunc::SetSPBData(this, "spb.7", C84->MainBlk.w_104);
-    WDFunc::SetSPBData(this, "spb.8", C84->MainBlk.Ctype);
+    //WDFunc::SetSPBData(this, "spb.8", C84->MainBlk.Ctype);
+    int cbidx = ((C84->MainBlk.Ctype & 0x01) ? 1 : 0);
+    WDFunc::SetCBIndex(this, "spb.8", cbidx);
 
     WDFunc::SetSPBData(this, "Unom", C84->Bci_block.Unom);
     WDFunc::SetSPBData(this, "Umin", C84->Bci_block.Umin);
@@ -118,7 +120,7 @@ void ConfDialog84::Fill()
         WDFunc::LE_write_data(this, StrMask, "Mask");
 
         WDFunc::SetSPBData(this, "Baud", C84->Com_param.baud);
-        int cbidx = (C84->Com_param.parity & 0x04) ? 2 : ((C84->Com_param.parity & 0x02) ? 1 : 0);
+        cbidx = (C84->Com_param.parity & 0x04) ? 2 : ((C84->Com_param.parity & 0x02) ? 1 : 0);
         WDFunc::SetCBIndex(this, "Parity", cbidx);
         cbidx = ((C84->Com_param.stopbit & 0x02) ? 1 : 0);
         WDFunc::SetCBIndex(this, "StopBit", cbidx);
@@ -146,7 +148,8 @@ void ConfDialog84::FillBack()
     WDFunc::SPBData(this, "spb.5", C84->MainBlk.T3_104);
     WDFunc::SPBData(this, "spb.6", C84->MainBlk.k_104);
     WDFunc::SPBData(this, "spb.7", C84->MainBlk.w_104);
-    WDFunc::SPBData(this, "spb.8", C84->MainBlk.Ctype);
+    cbidx = WDFunc::CBIndex(this, "spb.8");
+    C84->MainBlk.Ctype = (0x00000001 << cbidx) - 1;
 
     WDFunc::SPBData(this, "Unom", C84->Bci_block.Unom);
     WDFunc::SPBData(this, "Umin", C84->Bci_block.Umin);
@@ -276,6 +279,7 @@ void ConfDialog84::SetupUI()
     myDateTime.setTime_t(unixtimestamp);
 
     QString paramcolor = MAINWINCLR;
+    QFont font;
 
     QGroupBox *gb = new QGroupBox;
 
@@ -349,6 +353,10 @@ void ConfDialog84::SetupUI()
 
     int row = 0;
     gb = new QGroupBox("Аналоговые параметры");
+    font.setFamily("Times");
+    font.setPointSize(11);
+    //setFont(font);
+    gb->setFont(font);
     glyout = new QGridLayout;
     vlyout1 = new QVBoxLayout;
     vlyout2 = new QVBoxLayout;
@@ -378,7 +386,7 @@ void ConfDialog84::SetupUI()
     for (int i = 0; i < 3; i++)
     {
      //glyout->addWidget(WDFunc::NewLBL(this, phase[i]), row,2+i,1,1,Qt::AlignLeft);
-     glyout->addWidget(WDFunc::NewSPB(this, "C_pasp."+QString::number(i), 0, 20000, 0, paramcolor), row,2+i,1,1, Qt::AlignTop);
+     glyout->addWidget(WDFunc::NewSPB(this, "C_pasp."+QString::number(i), 0, 20000, 1, paramcolor), row,2+i,1,1, Qt::AlignTop);
     }
     row++;
 
@@ -439,6 +447,7 @@ void ConfDialog84::SetupUI()
 
 
     gb = new QGroupBox("Уставки сигнализации");
+    gb->setFont(font);
     vlyout1 = new QVBoxLayout;
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
@@ -472,6 +481,7 @@ void ConfDialog84::SetupUI()
     vlyout1->addWidget(gb);
 
     gb = new QGroupBox("Уставки контроля минимума тока и напряжения");
+    gb->setFont(font);
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
 
@@ -489,6 +499,7 @@ void ConfDialog84::SetupUI()
     vlyout1->addWidget(gb);
 
     gb = new QGroupBox("Гистерезис");
+    gb->setFont(font);
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
 
@@ -516,6 +527,7 @@ void ConfDialog84::SetupUI()
     row = 0;
 
         gb->setTitle("Настройки протокола МЭК-60870-5-104");
+        gb->setFont(font);
         glyout = new QGridLayout;
         glyout->setColumnStretch(2, 50);
         QLabel *lbl = new QLabel("Адрес базовой станции:");
@@ -659,6 +671,7 @@ void ConfDialog84::SetupUI()
     vlyout1->addWidget(gb);
 
     gb = new QGroupBox("Настройка времени");
+    gb->setFont(font);
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
     glyout->setColumnStretch(2, 50);
@@ -676,6 +689,7 @@ void ConfDialog84::SetupUI()
     vlyout1->addWidget(gb);
 
     gb = new QGroupBox("Настройки ModBus");
+    gb->setFont(font);
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
     glyout->setColumnStretch(2, 50);
@@ -717,6 +731,7 @@ void ConfDialog84::SetupUI()
 
 
     gb = new QGroupBox("Параметры записи");
+    gb->setFont(font);
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
     vlyout1 = new QVBoxLayout;
@@ -736,6 +751,7 @@ void ConfDialog84::SetupUI()
     if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     {
         gb = new QGroupBox("Температура");
+        gb->setFont(font);
         vlyout2 = new QVBoxLayout;
         glyout = new QGridLayout;
 

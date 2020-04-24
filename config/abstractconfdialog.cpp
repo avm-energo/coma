@@ -33,7 +33,7 @@ void AbstractConfDialog::ReadConf(int index)
     char* num = new char;
     *num = 1;
 
-    if(index == 1)
+    if(index == confIndex)
     {
         if(timeIndex)
         emit stopRead(timeIndex);

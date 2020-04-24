@@ -46,7 +46,7 @@ CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent, iec104* channel)
     SetBd(6, &Ch84->Bd_block1, sizeof(Check_84::Bd1));
 
     if(Config::MTB_A2) //(ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8)
-    sl = QStringList() <<  "Основные" << "Дополнительные";// << "Спорадика";// << "Температура"; //"Общие" <<
+    sl = QStringList() <<  "Основные" << "Дополнительные" << "Отладка";// << "Спорадика";// << "Температура"; //"Общие" <<
     else
     sl = QStringList() << "Общие" << "Аналоговые" << "Несимметрия";
 

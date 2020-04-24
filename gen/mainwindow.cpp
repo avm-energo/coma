@@ -121,22 +121,57 @@ QWidget *MainWindow::HthWidget()
 
 QWidget *MainWindow::ReleWidget()
 {
+    QMenuBar *menubar = new QMenuBar;
+    QString tmps = "QMenuBar {background-color: "+QString(MAINWINCLR)+";}"\
+            "QMenuBar::item {background-color: "+QString(MAINWINCLR)+";}";
+    menubar->setStyleSheet(tmps);
+    QMenu *menu = new QMenu;
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QWidget *w = new QWidget();
     QStringList Discription =  QStringList() << "Состояние устройства" << "Предупредительная сигнализация" << "Аварийная сигнализация";
     w->setStyleSheet("QMainWindow {background-color: "+QString(MAINWINCLR)+";}");
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    for (int i = 0; i < 3; ++i)
-    {
-        hlyout->addWidget(WDFunc::NewLBLT(w, "                 Реле №"+ QString::number(i+1) +": ", "", "", Discription.at(i)));
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i), pmgrn), 1);
+
+
+    //for (int i = 0; i < 3; ++i)
+    //{
+        QAction *act = new QAction(this);
+        act->setText("Состояние устройства");
+        connect(act,SIGNAL(triggered()),this,SLOT(DeviceState()));
+        menubar->addAction(act);
+
+        menubar->addSeparator();
+
+        //setMenuBar(menubar);
+        //hlyout->addWidget(WDFunc::NewLBLT(w, "                 Реле №"+ QString::number(i+1) +": ", "", "", Discription.at(i)));
+        hlyout->addWidget(menubar,Qt::AlignRight);
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(0), pmgrn), 1);
         /*if ((i>0)&&!((i+1)%8))
         {
             vlyout->addLayout(hlyout);
             hlyout = new QHBoxLayout;
         }*/
-    }
+    //}
+        act = new QAction(this);
+        act->setText("Предупредительная сигнализация");
+        connect(act,SIGNAL(triggered()),this,SLOT(DeviceState()));
+        menubar->addAction(act);
+
+        menubar->addSeparator();
+        hlyout->addWidget(menubar,Qt::AlignRight);
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(1), pmgrn), 1);
+
+        act = new QAction(this);
+        act->setText("Аварийная сигнализация");
+        connect(act,SIGNAL(triggered()),this,SLOT(DeviceState()));
+        menubar->addAction(act);
+
+        menubar->addSeparator();
+        hlyout->addWidget(menubar,Qt::AlignRight);
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(2), pmgrn), 1);
+
+
     if (hlyout->count())
         vlyout->addLayout(hlyout);
     w->setLayout(vlyout);
