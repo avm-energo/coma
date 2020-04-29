@@ -238,7 +238,7 @@ void CheckDialog84::UpdateFlData(Parse104::FlSignals104 *Signal)
         //Ch->FillBd0(this, QString::number((Signal+i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal));
 
         //if((Signal+i)->fl.SigAdr >= 1000 || (Signal+i)->fl.SigAdr <= 1009)
-        Ch84->FillBd(this, QString::number((Signal+i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal));
+        Ch84->FillBd(this, QString::number(sig.fl.SigAdr), WDFunc::StringValueWithCheck(sig.fl.SigVal));
     }
 }
 

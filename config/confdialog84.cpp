@@ -27,7 +27,7 @@ ConfDialog84::ConfDialog84(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     this->S2Config = &S2Config;
     C84 = new Config84(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
-
+    TheEnd = 0;
     SetupUI();
 #if PROGSIZE != PROGSIZE_EMUL
     PrereadConf();
@@ -131,7 +131,22 @@ void ConfDialog84::Fill()
         WDFunc::SetChBData(this, "ISNTP", true);
         else
         WDFunc::SetChBData(this, "ISNTP", false);
-    //}
+
+        WDFunc::SetSPBData(this, "Ulow", C84->Bci_block.LowU);
+        WDFunc::SetSPBData(this, "Tevent_pred", C84->Bci_block.Tevent_pred);
+        WDFunc::SetSPBData(this, "Tevent_alarm", C84->Bci_block.Tevent_alarm);
+        WDFunc::SetSPBData(this, "Trele_pred", C84->Bci_block.Trele_pred);
+        WDFunc::SetSPBData(this, "Trele_alarm", C84->Bci_block.Trele_alarm);
+
+        if(C84->Bci_block.IsU)
+        WDFunc::SetChBData(this, "IsU", true);
+        else
+        WDFunc::SetChBData(this, "IsU", false);
+
+        if(C84->Bci_block.IsIunb)
+        WDFunc::SetChBData(this, "IsIunb", true);
+        else
+        WDFunc::SetChBData(this, "IsIunb", false);
 
 }
 
@@ -241,7 +256,23 @@ void ConfDialog84::FillBack()
         else
         C84->Com_param.isNTP = 0;
 
-   // }
+        WDFunc::SPBData(this, "Ulow", C84->Bci_block.LowU);
+        WDFunc::SPBData(this, "Tevent_pred", C84->Bci_block.Tevent_pred);
+        WDFunc::SPBData(this, "Tevent_alarm", C84->Bci_block.Tevent_alarm);
+        WDFunc::SPBData(this, "Trele_pred", C84->Bci_block.Trele_pred);
+        WDFunc::SPBData(this, "Trele_alarm", C84->Bci_block.Trele_alarm);
+
+        WDFunc::ChBData(this, "IsU", IsNtp);
+        if(IsNtp)
+        C84->Bci_block.IsU = 1;
+        else
+        C84->Bci_block.IsU = 0;
+
+        WDFunc::ChBData(this, "IsIunb", IsNtp);
+        if(IsNtp)
+        C84->Bci_block.IsIunb= 1;
+        else
+        C84->Bci_block.IsIunb = 0;
 
 
 }
@@ -254,6 +285,7 @@ void ConfDialog84::SetupUI()
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QScrollArea *area = new QScrollArea;
+    QScrollArea *area2 = new QScrollArea;
     QWidget *analog1 = new QWidget;
     QWidget *analog2 = new QWidget;
     QWidget *extraconf = new QWidget;
@@ -518,7 +550,46 @@ void ConfDialog84::SetupUI()
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
 
+    gb = new QGroupBox("Сигнализации событий");
+    gb->setFont(font);
+    vlyout2 = new QVBoxLayout;
+    glyout = new QGridLayout;
+
+    row++;
+    glyout->addWidget(WDFunc::NewLBL(this, "Низкое напряжение для сигнализации:"), row,0,1,1,Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB(this, "Ulow", 0, 10000, 1, paramcolor), row,1,1,1);
+
+    //row++;
+    glyout->addWidget(WDFunc::NewChB(this, "IsU", "Сигнализация по наличию входного напряжения"), row,2,1,1);
+
+    //row++;
+
+
+    row++;
+    glyout->addWidget(WDFunc::NewLBL(this, "Задержка на формирование предупредительных событий:"), row,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "Tevent_pred", 0, 10000, 1, paramcolor), row,1,1,1);
+
+     glyout->addWidget(WDFunc::NewChB(this, "IsIunb", "Сигнализация по небалансу токов"), row,2,1,1);
+
+    row++;
+    glyout->addWidget(WDFunc::NewLBL(this, "Задержка на формирование аварийных событий:"), row,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "Tevent_alarm", 0, 10000, 1, paramcolor), row,1,1,1);
+
+    row++;
+    glyout->addWidget(WDFunc::NewLBL(this, "Задержка на срабатывание реле предупредительной сигнализации:"), row,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "Trele_pred", 0, 10000, 1, paramcolor), row,1,1,1);
+
+    row++;
+    glyout->addWidget(WDFunc::NewLBL(this, "Задержка на срабатывание реле аварийной сигнализации:"), row,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "Trele_alarm", 0, 10000, 1, paramcolor), row,1,1,1);
+
+
+    vlyout2->addLayout(glyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
+
     analog2->setLayout(vlyout1);
+    area2->setWidget(analog2);
 
     gb = new QGroupBox("Конфигурация 104");
     vlyout1 = new QVBoxLayout;
@@ -784,7 +855,9 @@ void ConfDialog84::SetupUI()
 
     if(MainWindow::MTypeB == Config::MTB_A2)
     {
-      ConfTW->addTab(analog2,"Уставки");
+      ConfTW->addTab(area2,"Уставки");
+      area2->verticalScrollBar()->setValue(area2->verticalScrollBar()->maximum());
+      //area2->setSizeIncrement(QSize(1000,1000));
       ConfTW->addTab(area,"Связь");
       area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
     }

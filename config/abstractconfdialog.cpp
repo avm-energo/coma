@@ -33,42 +33,44 @@ void AbstractConfDialog::ReadConf(int index)
     char* num = new char;
     *num = 1;
 
-    if(index == confIndex)
+    if(!MainWindow::TheEnd)
     {
-        if(timeIndex)
-        emit stopRead(timeIndex);
-
-        if(checkIndex)
-        emit stopRead(checkIndex);
-
-        TimeFunc::Wait(100);
-
-        if(MainWindow::MainInterface.size() != 0)
+        if(index == confIndex)
         {
-         if(MainWindow::MainInterface == "Ethernet")
-         {
-            if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
-            {
-              emit DefConfToBeLoaded();
-            }
-            else // иначе заполнить значениями из модуля
-            {
-              emit ReadConfig(num);
-            }
-         }
-         else if(MainWindow::MainInterface == "USB")
-         {
-             int res = ModuleBSI::PrereadConf(this, S2Config);
-             if (res == Error::ER_RESEMPTY)
-                 emit DefConfToBeLoaded();
-             else if (res == Error::ER_NOERROR)
-                 emit NewConfToBeLoaded();
+            if(timeIndex)
+            emit stopRead(timeIndex);
 
-         }
+            if(checkIndex)
+            emit stopRead(checkIndex);
+
+            TimeFunc::Wait(100);
+
+            if(MainWindow::MainInterface.size() != 0)
+            {
+             if(MainWindow::MainInterface == "Ethernet")
+             {
+                if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
+                {
+                  emit DefConfToBeLoaded();
+                }
+                else // иначе заполнить значениями из модуля
+                {
+                  emit ReadConfig(num);
+                }
+             }
+             else if(MainWindow::MainInterface == "USB")
+             {
+                 int res = ModuleBSI::PrereadConf(this, S2Config);
+                 if (res == Error::ER_RESEMPTY)
+                     emit DefConfToBeLoaded();
+                 else if (res == Error::ER_NOERROR)
+                     emit NewConfToBeLoaded();
+
+             }
+            }
         }
+
     }
-
-
 
 }
 

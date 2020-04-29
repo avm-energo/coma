@@ -10,6 +10,7 @@
 #include <QScrollBar>
 #include <QProgressBar>
 #include <QSettings>
+#include <QGroupBox>
 #include <QCursor>
 #include <QThread>
 #include <QStringListModel>
@@ -40,6 +41,7 @@
 QString MainWindow::MainInterface;
 quint32 MainWindow::MTypeB;
 quint32 MainWindow::MTypeM;
+int MainWindow::TheEnd;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -58,10 +60,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     MainConfDialog = nullptr;
     ConfB = ConfM = nullptr;
     CheckB = CheckM = nullptr;
+    ch104 = nullptr;
+    //iec104* SaveCh104 = new iec104("172.16.28.5", this);
     //ModBusThrFinished = false;
     //TimeThrFinished = false;
     BdaTimer = new QTimer;
     BdaTimer->setInterval(ANMEASINT);
+
+    for (int i = 0; i < 20; ++i)
+    {
+       PredAlarmEvents[i] = 0;
+       AlarmEvents[i] = 0;
+    }
+    TheEnd = 0;
 
 //#endif
 
@@ -121,62 +132,268 @@ QWidget *MainWindow::HthWidget()
 
 QWidget *MainWindow::ReleWidget()
 {
-    QMenuBar *menubar = new QMenuBar;
+    QMenu *menu = new QMenu;
     QString tmps = "QMenuBar {background-color: "+QString(MAINWINCLR)+";}"\
             "QMenuBar::item {background-color: "+QString(MAINWINCLR)+";}";
-    menubar->setStyleSheet(tmps);
-    QMenu *menu = new QMenu;
+    menu->setStyleSheet(tmps);
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
+    QHBoxLayout *hlyout2 = new QHBoxLayout;
     QWidget *w = new QWidget();
     QStringList Discription =  QStringList() << "Состояние устройства" << "Предупредительная сигнализация" << "Аварийная сигнализация";
     w->setStyleSheet("QMainWindow {background-color: "+QString(MAINWINCLR)+";}");
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
-
+    QLabel lab;
 
     //for (int i = 0; i < 3; ++i)
     //{
         QAction *act = new QAction(this);
         act->setText("Состояние устройства");
         connect(act,SIGNAL(triggered()),this,SLOT(DeviceState()));
-        menubar->addAction(act);
-
-        menubar->addSeparator();
+        menu->addAction(act);
+        menu->setMinimumWidth(200);
+        menu->setMinimumHeight(30);
+        menu->popup(QCursor::pos());
+        QGroupBox *gb = new QGroupBox("");
 
         //setMenuBar(menubar);
         //hlyout->addWidget(WDFunc::NewLBLT(w, "                 Реле №"+ QString::number(i+1) +": ", "", "", Discription.at(i)));
-        hlyout->addWidget(menubar,Qt::AlignRight);
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(0), pmgrn), 1);
+        hlyout->addWidget(menu,Qt::AlignRight);
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(950), pmgrn), 1);
+        gb->setLayout(hlyout);
+        hlyout2->addWidget(gb);
         /*if ((i>0)&&!((i+1)%8))
         {
             vlyout->addLayout(hlyout);
             hlyout = new QHBoxLayout;
         }*/
     //}
+        gb = new QGroupBox("");
+        hlyout = new QHBoxLayout;
+        menu = new QMenu;
         act = new QAction(this);
         act->setText("Предупредительная сигнализация");
-        connect(act,SIGNAL(triggered()),this,SLOT(DeviceState()));
-        menubar->addAction(act);
+        connect(act,SIGNAL(triggered()),this,SLOT(PredAlarmState()));
+        menu->addAction(act);
+        menu->setMinimumWidth(250);
+        menu->setMinimumHeight(30);
+        menu->popup(QCursor::pos());
 
-        menubar->addSeparator();
-        hlyout->addWidget(menubar,Qt::AlignRight);
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(1), pmgrn), 1);
+        hlyout->addWidget(menu,Qt::AlignRight);
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(951), pmgrn), 1);
+        gb->setLayout(hlyout);
+        hlyout2->addWidget(gb);
 
+        menu = new QMenu;
+        gb = new QGroupBox("");
+        hlyout = new QHBoxLayout;
         act = new QAction(this);
         act->setText("Аварийная сигнализация");
-        connect(act,SIGNAL(triggered()),this,SLOT(DeviceState()));
-        menubar->addAction(act);
+        connect(act,SIGNAL(triggered()),this,SLOT(AlarmState()));
+        menu->addAction(act);
+        menu->setMinimumWidth(200);
+        menu->setMinimumHeight(30);
+        menu->popup(QCursor::pos());
 
-        menubar->addSeparator();
-        hlyout->addWidget(menubar,Qt::AlignRight);
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(2), pmgrn), 1);
+       // menubar->addSeparator();
+        hlyout->addWidget(menu,Qt::AlignRight);
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(952), pmgrn), 1);
+        gb->setLayout(hlyout);
+        hlyout2->addWidget(gb);
 
 
-    if (hlyout->count())
-        vlyout->addLayout(hlyout);
+
+    if (hlyout2->count())
+        vlyout->addLayout(hlyout2);
     w->setLayout(vlyout);
     return w;
 }
+
+void MainWindow::DeviceState()
+{
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    QString tmps = QString(PROGCAPTION);
+
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+    //QPixmap *pm[2] = {pmred, pmgrn};                        ";
+
+
+    QWidget *w = new QWidget;
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
+
+    for (int i = 0; i < HthToolTip().size(); ++i)
+    {
+        hlyout = new QHBoxLayout;
+
+        if(ModuleBSI::ModuleBsi.Hth & (0x00000001<<i))
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i), pmred));
+        else
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i), pmgrn));
+
+        hlyout->addWidget(WDFunc::NewLBLT(w, HthToolTip().at(i), "", "", ""), 1);
+        vlayout->addLayout(hlyout);
+    }
+
+    w->setLayout(vlayout);
+    connect(this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)), this, SLOT(UpdateHthWidget(ModuleBSI::Bsi*)));
+
+    //hlyout->addLayout(l2yout,100);
+    lyout->addWidget(w);
+    QPushButton *pb = new QPushButton("Ok");
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb,0);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
+void MainWindow::PredAlarmState()
+{
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    QString tmps = QString(PROGCAPTION);
+
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+    //QPixmap *pm[2] = {pmred, pmgrn};
+    QStringList events = QStringList() << "Отсутствует сигнал напряжения фазы A                   "
+                                       << "Отсутствует сигнал напряжения фазы B                   "
+                                       << "Отсутствует сигнал напряжения фазы С                   "
+                                       << "Отсутствует ток ввода фазы А (ток меньше 2мА)          "
+                                       << "Отсутствует ток ввода фазы B (ток меньше 2мА)          "
+                                       << "Отсутствует ток ввода фазы C (ток меньше 2мА)          "
+                                       << "Не заданы начальные значения                           "
+                                       << "Низкое напряжение фазы A                               "
+                                       << "Низкое напряжение фазы B                               "
+                                       << "Низкое напряжение фазы C                               "
+                                       << "Сигнализация по приращению тангенса дельта ввода фазы А"
+                                       << "Сигнализация по приращению тангенса дельта ввода фазы B"
+                                       << "Сигнализация по приращению тангенса дельта ввода фазы C"
+                                       << "Сигнализация по приращению C ввода фазы А              "
+                                       << "Сигнализация по приращению C ввода фазы B              "
+                                       << "Сигнализация по приращению C ввода фазы C              "
+                                       << "Не заданы паспортные значения                          ";
+
+
+    QWidget *w = new QWidget;
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
+
+    for (int i = 0; i < 13; ++i)
+    {
+        hlyout = new QHBoxLayout;
+
+        if(PredAlarmEvents[i])
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3011+i), pmred));
+        else
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3011+i), pmgrn));
+
+        hlyout->addWidget(WDFunc::NewLBLT(w, events.at(i), "", "", ""), 1);
+        vlayout->addLayout(hlyout);
+    }
+
+    for (int i = 0; i < 3; ++i)
+    {
+        hlyout = new QHBoxLayout;
+
+        if(PredAlarmEvents[13+i])
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3027+i), pmred));
+        else
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3027+i), pmgrn));
+
+        hlyout->addWidget(WDFunc::NewLBLT(w, events.at(13+i), "", "", ""), 1);
+        vlayout->addLayout(hlyout);
+    }
+
+    hlyout = new QHBoxLayout;
+    if(PredAlarmEvents[16])
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3033), pmred));
+    else
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3033), pmgrn));
+
+    hlyout->addWidget(WDFunc::NewLBLT(w, events.at(16), "", "", ""), 1);
+    vlayout->addLayout(hlyout);
+
+    w->setLayout(vlayout);
+
+    if(ch104 != nullptr)
+    connect(ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignals104*)));
+
+    //hlyout->addLayout(l2yout,100);
+    lyout->addWidget(w);
+    QPushButton *pb = new QPushButton("Ok");
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb,0);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
+
+void MainWindow::AlarmState()
+{
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    QString tmps = QString(PROGCAPTION);
+
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+    //QPixmap *pm[2] = {pmred, pmgrn};
+    QStringList events = QStringList() << "Авария по приращению тангенса дельта ввода фазы А"
+                                       << "Авария по приращению тангенса дельта ввода фазы B"
+                                       << "Авария по приращению тангенса дельта ввода фазы C"
+                                       << "Авария по приращению C ввода фазы А              "
+                                       << "Авария по приращению C ввода фазы B              "
+                                       << "Авария по приращению C ввода фазы C              ";
+
+    QWidget *w = new QWidget;
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
+
+    for (int i = 0; i < 3; ++i)
+    {
+        hlyout = new QHBoxLayout;
+
+        if(AlarmEvents[i])
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3024+i), pmred));
+        else
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3024+i), pmgrn));
+
+        hlyout->addWidget(WDFunc::NewLBLT(w, events.at(i), "", "", ""), 1);
+        vlayout->addLayout(hlyout);
+    }
+
+    for (int i = 0; i < 3; ++i)
+    {
+        hlyout = new QHBoxLayout;
+
+        if(AlarmEvents[3+i])
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3030+i), pmred));
+        else
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3030+i), pmgrn));
+
+        hlyout->addWidget(WDFunc::NewLBLT(w, events.at(3+i), "", "", ""), 1);
+        vlayout->addLayout(hlyout);
+    }
+
+    w->setLayout(vlayout);
+
+    if(ch104 != nullptr)
+    connect(ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignals104*)));
+
+    //hlyout->addLayout(l2yout,100);
+    lyout->addWidget(w);
+    QPushButton *pb = new QPushButton("Ok");
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb,0);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
 
 void MainWindow::UpdateReleWidget(Parse104::SponSignals104* Signal)
 {
@@ -189,9 +406,54 @@ void MainWindow::UpdateReleWidget(Parse104::SponSignals104* Signal)
     //for(j=0; j<Signal->SigNumber; j++)
     //{
        //sig = *(Signal+j);
-       int signal = ((Signal->Spon.SigVal & (0x00000001 << i)) ? 1 : 0);
-       WDFunc::SetLBLImage(this, (QString::number(Signal->Spon.SigAdr-950)), pm[signal]);
+       int signal = ((Signal->Spon.SigVal & (0x00000001)) ? 1 : 0);
+       WDFunc::SetLBLImage(this, (QString::number(Signal->Spon.SigAdr)), pm[signal]);
     //}
+
+}
+
+void MainWindow::UpdatePredAlarmEvents(Parse104::SponSignals104* Signal)
+{
+    int i = 0;
+    Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+    QPixmap *pm[2] = {pmred, pmgrn};
+
+    for(i=0; i<Signal->SigNumber; i++)
+    {
+       sig = *(Signal+i);
+       int signal = ((sig.Spon.SigVal & (0x00000001)) ? 1 : 0);
+       WDFunc::SetLBLImage(this, (QString::number(sig.Spon.SigAdr)), pm[signal]);
+    }
+
+}
+
+
+void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104* Signal)
+{
+    int i = 0;
+    Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+    QPixmap *pm[2] = {pmred, pmgrn};
+
+    for(i=0; i<Signal->SigNumber; i++)
+    {
+       sig = *(Signal+i);
+       quint8 signal = ((sig.Spon.SigVal & (0x00000001)) ? 1 : 0);
+
+       if((sig.Spon.SigAdr >= 3011) && (sig.Spon.SigAdr < 3024))
+       PredAlarmEvents[sig.Spon.SigAdr - 3011] = signal;
+       else if((sig.Spon.SigAdr >= 3024) && (sig.Spon.SigAdr < 3027))
+       AlarmEvents[sig.Spon.SigAdr - 3024] = signal;
+       else if((sig.Spon.SigAdr >= 3027) && (sig.Spon.SigAdr < 3030))
+       PredAlarmEvents[sig.Spon.SigAdr - 3014] = signal;
+       else if((sig.Spon.SigAdr >= 3030) && (sig.Spon.SigAdr < 3033))
+       AlarmEvents[sig.Spon.SigAdr - 3027] = signal;
+       else if(sig.Spon.SigAdr == 3033)
+       PredAlarmEvents[16] = signal;
+    }
 
 }
 
@@ -519,7 +781,7 @@ void MainWindow::Stage2()
 void MainWindow::UpdateHthWidget(ModuleBSI::Bsi* bsi)
 {
     //ModuleBSI::Bsi bsi = ModuleBSI::GetBsi();
-    ModuleBSI::ModuleBsi= *bsi;
+    ModuleBSI::ModuleBsi = *bsi;
     for (int i = 0; i < MAXERRORFLAGNUM; i++)
     {
         QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i+1));
@@ -1125,11 +1387,12 @@ void MainWindow::SetDefConf()
     SetBDefConf();
     SetMDefConf();
     Fill();
+    EMessageBox::information(this, "Информация", "В модуле нет конфигурации. \nНеобходимо записать конфигурацию по умолчанию.");
     if(ConfB != nullptr)
     ConfB->WriteConf();
     if(ConfM != nullptr)
     ConfM->WriteConf();
-    EMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
+    //EMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
 }
 
 
@@ -1159,6 +1422,7 @@ void MainWindow::FinishHim()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    TheEnd = 1;
     DisconnectAndClear();
     //while(!TimeThrFinished || !ModBusThrFinished)
     //TimeFunc::Wait(100);

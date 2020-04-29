@@ -711,6 +711,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
     if(cntfl != 0)
     {
         flSignals->SigNumber = cntfl;
+        TimeFunc::Wait(100);
         emit floatsignalsreceived(flSignals);
     }
 

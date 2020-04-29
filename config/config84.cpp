@@ -105,6 +105,13 @@ void Config84::SetDefConf()
     Bci_block.Phy_unb_init = 0;
     Bci_block.NFiltr = 100;
     Bci_block.T_Data_Rec = 60;
+    Bci_block.LowU = 80;
+    Bci_block.IsU = 1;
+    Bci_block.IsIunb = 1;
+    Bci_block.Tevent_pred = 0;
+    Bci_block.Tevent_alarm = 0;
+    Bci_block.Trele_pred = 0;
+    Bci_block.Trele_alarm = 0;
 
     for (int i = 0; i < 3; i++)
     {

@@ -55,6 +55,7 @@ void InfoDialog::SetupUI()
 void InfoDialog::FillBsi()
 {
     ModuleBSI::Bsi bsi = ModuleBSI::GetBsi();
+    ModuleBSI::ModuleBsi.Hth = bsi.Hth;
     WDFunc::SetLBLText(this, "snle", QString::number(bsi.SerialNum, 16));
     WDFunc::SetLBLText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));
     WDFunc::SetLBLText(this, "cfcrcle", "0x"+QString::number(static_cast<uint>(bsi.Cfcrc), 16));
@@ -86,6 +87,7 @@ void InfoDialog::FillBsiFrom104(Parse104::BS104Signals* BS104)
 
         MainWindow::MTypeB = bsi.MTypeB;
         MainWindow::MTypeM = bsi.MTypeM;
+        ModuleBSI::ModuleBsi.Hth = bsi.Hth;
 
         WDFunc::SetLBLText(this, "snle", QString::number(bsi.SerialNum, 16));
         WDFunc::SetLBLText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));
@@ -121,6 +123,7 @@ void InfoDialog::FillBsiFromModBus(ModBusBSISignal *Signal, int * size)
 
         MainWindow::MTypeB = bsi.MTypeB;
         MainWindow::MTypeM = bsi.MTypeM;
+        ModuleBSI::ModuleBsi.Hth = bsi.Hth;
 
         WDFunc::SetLBLText(this, "snle", QString::number(bsi.SerialNum, 16));
         WDFunc::SetLBLText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));

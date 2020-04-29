@@ -213,7 +213,7 @@ void Coma::SetupUI()
     tb->addAction(act);
     hlyout->addWidget(tb); 
     hlyout->addWidget(ReleWidget(), Qt::AlignCenter);
-    hlyout->addWidget(HthWidget());
+    //hlyout->addWidget(HthWidget());
     lyout->addLayout(hlyout);
     lyout->addWidget(Least());
     wdgt->setLayout(lyout);
@@ -551,6 +551,8 @@ void Coma::PrepareDialogs()
 
             connect(ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
             connect(ch104,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
+
+            connect(ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),this,SLOT(UpdateStatePredAlarmEvents(Parse104::SponSignals104*)));
 
             setMinimumSize(QSize(800, 650));
             CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, ch104);

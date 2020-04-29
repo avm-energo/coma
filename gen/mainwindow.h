@@ -54,6 +54,7 @@ public:
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
     iec104* ch104;
+    iec104* SaveCh104;
     ModBus* modBus;
     checktempmodbusdialog *CheckModBus;
     //CheckDialog84* Ch84;
@@ -62,6 +63,7 @@ public:
     static QString MainInterface;
     static quint32 MTypeB;
     static quint32 MTypeM;
+    static int TheEnd;
     quint8 HaveAlreadyRed = 0;
     JournalDialog *JourD;
     fwupdialog *FwUpD;
@@ -73,6 +75,8 @@ public:
     bool TimeThrFinished, ModBusThrFinished;
     QTimer* BdaTimer;
     QThread *Modthr;
+    quint8 PredAlarmEvents[20];
+    quint8 AlarmEvents[20];
 
 
     struct DeviceConnectStruct
@@ -103,7 +107,7 @@ public:
     static QStringList Hth()
     {
         QStringList sl;
-        sl.append("ERR");
+        //sl.append("ERR");
         sl.append("ADCI");
         sl.append("FLS");
         sl.append("TUP");
@@ -119,34 +123,34 @@ public:
         sl.append("NTP");
         sl.append("FLS2");
         sl.append("FRM");
-        int ts = sl.size();
-        for (int i=ts; i<MAXERRORFLAGNUM; ++i)
-            sl.append("");
+        //int ts = sl.size();
+        //for (int i=ts; i<MAXERRORFLAGNUM; ++i)
+        //    sl.append("");
         return sl;
     }
 
     static QStringList HthToolTip()
     {
         QStringList sl;
-        sl.append("Что-то не в порядке");
-        sl.append("Проблемы с встроенным АЦП ");
+        //sl.append("Что-то не в порядке");
+        sl.append("Проблемы со встроенным АЦП ");
         sl.append("Не работает внешняя flash-память");
         sl.append("Перегрев");
         sl.append("Проблемы с АЦП (нет связи) (базовая)");
         sl.append("Нет сигнала 1PPS с антенны");
-        sl.append("Проблемы с АЦП (нет связи) (Мезонин)");
+        sl.append("Проблемы с АЦП (нет связи) (мезонин)");
         sl.append("Ошибка регулировочных коэффициентов (базовая)");
         sl.append("Ошибка загрузки конфигурации из flash-памяти. Работает конфигурация по умолчанию");
         sl.append("Некорректная Hardware информация (базовая)");
         sl.append("Некорректная Hardware информация (мезонин)");
-        sl.append("Ошибка регулировочных коэффициентов (Мезонин)");
+        sl.append("Ошибка регулировочных коэффициентов (мезонин)");
         sl.append("Напряжение батареи низко (< 2,5 В)");
         sl.append("Нет связи с NTP-сервером");
-        sl.append("Не работает внешняя flash-память (Мезонин)");
+        sl.append("Не работает внешняя flash-память (мезонин)");
         sl.append("Не работает внешняя fram");
-        int ts = sl.size();
-        for (int i=ts; i<MAXERRORFLAGNUM; ++i)
-            sl.append("");
+        //int ts = sl.size();
+        //for (int i=ts; i<MAXERRORFLAGNUM; ++i)
+        //    sl.append("");
         return sl;
     }
 
@@ -200,10 +204,15 @@ public slots:
     void DisconnectAndClear();
     void FinishHim();
     void UpdateReleWidget(Parse104::SponSignals104*);
+    void UpdatePredAlarmEvents(Parse104::SponSignals104*);
+    void UpdateStatePredAlarmEvents(Parse104::SponSignals104*);
     void CheckTimeFinish();
     void CheckModBusFinish();
     void Stop_BdaTimer(int index);
     void Start_BdaTimer(int index);
+    void DeviceState();
+    void PredAlarmState();
+    void AlarmState();
 
 
 private slots:

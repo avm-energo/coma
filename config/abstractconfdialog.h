@@ -19,7 +19,7 @@ public:
     QStringList CheckConfErrors;
     bool IsNeededDefConf = false;
     bool ok;
-    int confIndex, timeIndex, checkIndex;
+    int confIndex, timeIndex, checkIndex, TheEnd;
 
     QWidget *ConfButtons();
     virtual void Fill() = 0; // заполнить значения полей вывода из структуры конфигурации
