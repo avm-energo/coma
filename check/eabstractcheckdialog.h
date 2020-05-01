@@ -59,6 +59,7 @@ signals:
 public slots:
 #if PROGSIZE != PROGSIZE_EMUL
     void StopAnalogMeasurements();
+
 #endif
 
 private:

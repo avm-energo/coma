@@ -2,14 +2,14 @@
 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING .ISS SCRIPT FILES!
 
-#define Name "АВТУК-Сервис ПР"
-#define GroupName "АВТУК-Сервис"
-#define EngName "AVTUK-S"
-#define Version "0.0.3"
+#define Name "АВМ-Сервис"
+#define GroupName "АВМ-Сервис"
+#define EngName "АВМ-Сервис"
+#define Version "0.0.11"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "AVM-Service.exe"
-#define SetupName "AVM-Service-0.0.3-x64"
+#define SetupName "AVM-Service-0.0.11-x64"
 #define Prefix "D:\out-5.8_x32"
 
 [CustomMessages]

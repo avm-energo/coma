@@ -55,7 +55,7 @@ public:
         char secondbytequantity;
 
     };
-    ModBus_Groups SignalGroups[6];
+    ModBus_Groups SignalGroups[8];
 
     struct information
     {

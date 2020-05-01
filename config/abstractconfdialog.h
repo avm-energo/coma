@@ -35,6 +35,7 @@ public:
     int WriteCheckPassword();
 
 public slots:
+     void WriteConfMessageOk();
 
 private:
 

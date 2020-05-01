@@ -276,6 +276,7 @@ void Coma::Stage3()
     connect(this,SIGNAL(ClearBsi()),idlg,SLOT(ClearBsi()));
 
     CorD = new CorDialog();
+    //connect(this,SIGNAL(ConnectMes(QString*)),CheckB,SLOT(ConnectMessage(QString*)));
 
     if(MainInterface == "USB")
     {
@@ -295,12 +296,12 @@ void Coma::Stage3()
             ch104->BaseAdr = AdrBaseStation;
             connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),idlg,SLOT(FillBsiFrom104(Parse104::BS104Signals*)));           
             connect(this,SIGNAL(stopit()),ch104,SLOT(Stop()));
+            CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, ch104);
     #endif
          }
          else if(insl.at(1) == "MODBUS")
          {
 
-             CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
              modBus = new ModBus(Settings, this);           
              Modthr = new QThread;
              //Modthr->setPriority(QThread::LowPriority);
@@ -311,7 +312,7 @@ void Coma::Stage3()
              connect(Modthr,SIGNAL(finished()),modBus,SLOT(deleteLater()));
              //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
              connect(Modthr,SIGNAL(started()),modBus,SLOT(WriteToPort()));
-
+             CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
              connect(modBus,SIGNAL(BsiFromModBus(ModBusBSISignal*, int*)),idlg,SLOT(FillBsiFromModBus(ModBusBSISignal*, int* )));
              modBus->BSIrequest();
 
@@ -328,6 +329,8 @@ void Coma::Stage3()
              return;
            }
          }
+
+         //emit ConnectMes(&FullName);
         }
     }
     /*if (MTypeB < 0xA2) // диапазон модулей АВ-ТУК
@@ -473,6 +476,9 @@ void Coma::Stage3()
    // SetSlideWidget();
 #endif
 
+    if(MainInterface == "Ethernet" || MainInterface == "RS485")
+    EMessageBox::information(this, "Успешно", "Связь с "+FullName+" установлена");
+
     if(MainInterface == "RS485")
     Modthr->start();
 
@@ -542,8 +548,10 @@ void Coma::PrepareDialogs()
 
             connect(CorD,SIGNAL(sendCom45(quint32*)), ch104, SLOT(Com45(quint32*)));
             connect(CorD,SIGNAL(sendCom50(quint16*, float*)), ch104, SLOT(Com50(quint16*,float*)));
+            connect(CorD,SIGNAL(CorReadRequest()), ch104, SLOT(CorReadRequest()));
 
             connect(ch104,SIGNAL(sendMessageOk()), CorD, SLOT(MessageOk()));
+            connect(ch104,SIGNAL(sendCorMesOk()), CorD, SLOT(WriteCorMessageOk()));
 
             connect(ch104,SIGNAL(relesignalsready(Parse104::SponSignals104*)), this, SLOT(UpdateReleWidget(Parse104::SponSignals104*)));
 
@@ -555,7 +563,7 @@ void Coma::PrepareDialogs()
             connect(ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),this,SLOT(UpdateStatePredAlarmEvents(Parse104::SponSignals104*)));
 
             setMinimumSize(QSize(800, 650));
-            CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, ch104);
+            //CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, ch104);
             connect(CheckB,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)),this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)));
 
             //ConfM = new ConfDialog84(S2Config);
@@ -570,7 +578,7 @@ void Coma::PrepareDialogs()
          else if(insl.at(1) == "MODBUS")
          {
             //CheckModBus = new checktempmodbusdialog(BoardTypes::BT_BASE, this);
-            connect(modBus, SIGNAL(errorRead()), CheckB, SLOT(ErrorRead()));
+            connect(modBus, SIGNAL(errorRead()), CorD, SLOT(ErrorRead()));
             connect(modBus, SIGNAL(ModBusState(QModbusDevice::State)), CheckB, SLOT(onModbusStateChanged(QModbusDevice::State)));
             connect(modBus, SIGNAL(signalsreceived(ModBusSignal*, int*)), CheckB, SLOT(UpdateModBusData(ModBusSignal*, int*)));
             connect(modBus, SIGNAL(corsignalsreceived(ModBusSignal*, int*)), CorD, SLOT(ModBusUpdateCorData(ModBusSignal*, int*)));
@@ -656,6 +664,9 @@ void Coma::PrepareDialogs()
           connect(ConfM,SIGNAL(ReadConfig(char*)), ch104, SLOT(SelectFile(char*)));
           connect(ch104,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)), ConfM, SLOT(FillConf(QVector<S2::DataRec>*)));
           connect(ConfM,SIGNAL(writeConfFile(QVector<S2::DataRec>*)), ch104, SLOT(FileReady(QVector<S2::DataRec>*)));
+          //connect(ch104,SIGNAL(sendMessageiec104()), ConfM, SLOT(Message()));
+          connect(ch104,SIGNAL(sendConfMessageOk()), ConfM, SLOT(WriteConfMessageOk()));
+
         }
 
         break;

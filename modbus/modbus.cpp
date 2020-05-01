@@ -48,7 +48,7 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
     int i;
     commands = false;
 
-    for(i=0;i<6;i++)
+    for(i=0;i<8;i++)
     SignalGroups[i].signaltype=0x04;
 
     SignalGroups[0].firstbyteadr = 0;
@@ -58,23 +58,31 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
     SignalGroups[1].firstbyteadr = 0x03;
     SignalGroups[1].secondbyteadr = 0xE8;
     SignalGroups[1].firstbytequantity = 0;
-    SignalGroups[1].secondbytequantity = 0x20;
-    SignalGroups[2].firstbyteadr = 0x04;
-    SignalGroups[2].secondbyteadr = 0x4C;
+    SignalGroups[1].secondbytequantity = 0x16;
+    SignalGroups[2].firstbyteadr = 0x03;
+    SignalGroups[2].secondbyteadr = 0xFC;
     SignalGroups[2].firstbytequantity = 0;
-    SignalGroups[2].secondbytequantity = 0x20;
-    SignalGroups[3].firstbyteadr = 0x09;
-    SignalGroups[3].secondbyteadr = 0x60;
+    SignalGroups[2].secondbytequantity = 0x0A;
+    SignalGroups[3].firstbyteadr = 0x04;
+    SignalGroups[3].secondbyteadr = 0x4C;
     SignalGroups[3].firstbytequantity = 0;
-    SignalGroups[3].secondbytequantity = 0x0E;
+    SignalGroups[3].secondbytequantity = 0x20;
     SignalGroups[4].firstbyteadr = 0x09;
-    SignalGroups[4].secondbyteadr = 0x74;
+    SignalGroups[4].secondbyteadr = 0x60;
     SignalGroups[4].firstbytequantity = 0;
-    SignalGroups[4].secondbytequantity = 0x1C;
-    SignalGroups[5].firstbyteadr = 0x11;
-    SignalGroups[5].secondbyteadr = 0x95;
+    SignalGroups[4].secondbytequantity = 0x0E;
+    SignalGroups[5].firstbyteadr = 0x09;
+    SignalGroups[5].secondbyteadr = 0x74;
     SignalGroups[5].firstbytequantity = 0;
-    SignalGroups[5].secondbytequantity = 0x04;
+    SignalGroups[5].secondbytequantity = 0x1C;
+    SignalGroups[6].firstbyteadr = 0x11;
+    SignalGroups[6].secondbyteadr = 0x95;
+    SignalGroups[6].firstbytequantity = 0;
+    SignalGroups[6].secondbytequantity = 0x04;
+    SignalGroups[7].firstbyteadr = 0x04;
+    SignalGroups[7].secondbyteadr = 0x60;
+    SignalGroups[7].firstbytequantity = 0;
+    SignalGroups[7].secondbytequantity = 0x0A;
 
 
 
@@ -289,7 +297,7 @@ void ModBus::ReadPort()
         {
            Group++;
 
-           if(Group == 6)
+           if(Group == 8)
            Group= 0;
 
            //Reading = 0;
@@ -302,6 +310,18 @@ void ModBus::ReadPort()
         emit errorCrc();
       }
 
+  }
+  else
+  {
+      if(cursize == 5)
+      {
+          commands = false;
+          Reading = false;
+          Group++;
+          responseBuffer = serialPort->read(cursize);
+          if((responseBuffer.data()[3] == (char)0xC2) && (responseBuffer.data()[4] == (char)0xC1))
+          emit errorRead();
+      }
   }
 
  // emit nextGroup();

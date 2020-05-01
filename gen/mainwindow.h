@@ -73,10 +73,11 @@ public:
     //QThread *thr;
     quint32 Mes;
     bool TimeThrFinished, ModBusThrFinished;
-    QTimer* BdaTimer;
+    QTimer* BdaTimer, *ReceiveTimer;
     QThread *Modthr;
     quint8 PredAlarmEvents[20];
     quint8 AlarmEvents[20];
+    int fileSize, curfileSize;
 
 
     struct DeviceConnectStruct
@@ -181,6 +182,7 @@ signals:
     void stopit();
     void stoptime();
     void stopModBus();
+    void ConnectMes(QString*);
 
 private:
     bool Ok;
@@ -213,6 +215,7 @@ public slots:
     void DeviceState();
     void PredAlarmState();
     void AlarmState();
+    void FileTimeOut();
 
 
 private slots:

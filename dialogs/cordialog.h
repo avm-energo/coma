@@ -16,6 +16,8 @@ public:
 
     int corDIndex;
     bool ok;
+    int first;
+    QTimer *MessageTimer;
 
     int WriteCheckPassword();
 
@@ -58,6 +60,7 @@ signals:
    void sendCom50(quint16* adr, float *data);
    void RS485WriteCorBd(information*, float*);
    void RS485ReadCorBd(information*);
+   void CorReadRequest();
    void WritePasswordChecked();
 
 
@@ -76,6 +79,9 @@ public slots:
     void SaveToFile();
     void ReadFromFile();
     void WritePasswordCheck(QString psw);
+    void TimerTimeout();
+    void WriteCorMessageOk();
+    void ErrorRead();
 
 private slots:
 

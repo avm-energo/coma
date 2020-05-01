@@ -12,6 +12,10 @@
 #include "../gen/timefunc.h"
 #include "../dialogs/journalsdialog.h"
 #include "../gen/colors.h"
+#include "../gen/mainwindow.h"
+#if PROGSIZE != PROGSIZE_EMUL
+#include "../gen/commands.h"
+#endif
 
 
 JournalDialog::JournalDialog() : QDialog()
@@ -134,9 +138,23 @@ void JournalDialog::GetSystemJour()
 {
     //char* num = new char;
     //*num = 4;
+    QVector<S2::DataRec>* Jour = new QVector<S2::DataRec>;
     char num = 4;
-
-    emit ReadJour(&num);
+    if(MainWindow::MainInterface == "Ethernet")
+    {
+      emit ReadJour(&num);
+    }
+    else if(MainWindow::MainInterface == "USB")
+    {
+      if(Commands::GetJour(num, Jour) == Error::ER_NOERROR)
+      {
+         FillSysJour(Jour);
+      }
+      else
+      {
+        EMessageBox::information(this, "Ошибка", "Ошибка чтения журнала");
+      }
+    }
 
 }
 
@@ -144,19 +162,50 @@ void JournalDialog::GetWorkJour()
 {
     //char* num = new char;
     //*num = 4;
+    QVector<S2::DataRec>* Jour = new QVector<S2::DataRec>;
     char num = 5;
 
-    emit ReadJour(&num);
+    if(MainWindow::MainInterface == "Ethernet")
+    {
+      emit ReadJour(&num);
+    }
+    else if(MainWindow::MainInterface == "USB")
+    {
+      if(Commands::GetJour(num, Jour) == Error::ER_NOERROR)
+      {
+         FillWorkJour(Jour);
+      }
+      else
+      {
+         EMessageBox::information(this, "Ошибка", "Ошибка чтения журнала");
+      }
+    }
 
 }
 
 void JournalDialog::GetMeasJour()
 {
     //char* num = new char;
-    //*num = 4;
+    //*num = 4;    
+    QVector<S2::DataRec>* Jour = new QVector<S2::DataRec>;
     char num = 6;
 
-    emit ReadJour(&num);
+    if(MainWindow::MainInterface == "Ethernet")
+    {
+      emit ReadJour(&num);
+    }
+    else if(MainWindow::MainInterface == "USB")
+    {
+      if(Commands::GetJour(num, Jour) == Error::ER_NOERROR)
+      {
+         FillMeasJour(Jour);
+      }
+      else
+      {
+         EMessageBox::information(this, "Ошибка", "Ошибка чтения журнала");
+      }
+    }
+
 
 }
 

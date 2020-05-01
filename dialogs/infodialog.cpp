@@ -21,7 +21,7 @@ void InfoDialog::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *slyout = new QGridLayout;
     slyout->addWidget(WDFunc::NewLBL(this, "Тип устройства:"), 0, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBL(this, ModuleBSI::GetModuleTypeString()), 0, 1, 1, 1);
+    slyout->addWidget(WDFunc::NewLBL(this, "АВМ-КИВ"), 0, 1, 1, 1); //ModuleBSI::GetModuleTypeString())
     slyout->addWidget(WDFunc::NewLBL(this, "Серийный номер устройства:"), 1, 0, 1, 1, Qt::AlignRight);
     slyout->addWidget(WDFunc::NewLBLT(this, "", "snle"), 1, 1, 1, 1);
     slyout->addWidget(WDFunc::NewLBL(this, "Версия ПО:"), 2, 0, 1, 1, Qt::AlignRight);
@@ -80,27 +80,27 @@ void InfoDialog::FillBsiFrom104(Parse104::BS104Signals* BS104)
     int startadr = 0;
     memcpy(&startadr, &(BS104->BS.SigAdr[0]), sizeof(BS104->BS.SigAdr));
 
-    if(BS104->SigNumber && startadr == 1)
+    if(BS104->SigNumber && (startadr >= 1 && startadr <= 15))
     {
-        for(i=0; i< BS104->SigNumber; i++)
-        memcpy((((quint32*)(&bsi)+i)), (((quint32*)(&BS104->BS.SigVal)+4*i)), sizeof(BS104->BS.SigVal));
+        for(i=0; i<BS104->SigNumber; i++)
+        memcpy((((quint32*)(&ModuleBSI::ModuleBsi)+(i+startadr-1))), (((quint32*)(&BS104->BS.SigVal)+4*i)), sizeof(BS104->BS.SigVal));
 
-        MainWindow::MTypeB = bsi.MTypeB;
-        MainWindow::MTypeM = bsi.MTypeM;
-        ModuleBSI::ModuleBsi.Hth = bsi.Hth;
+        MainWindow::MTypeB = ModuleBSI::ModuleBsi.MTypeB;
+        MainWindow::MTypeM = ModuleBSI::ModuleBsi.MTypeM;
+        //ModuleBSI::ModuleBsi.Hth = bsi.Hth;
 
-        WDFunc::SetLBLText(this, "snle", QString::number(bsi.SerialNum, 16));
-        WDFunc::SetLBLText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));
-        WDFunc::SetLBLText(this, "cfcrcle", "0x"+QString::number(static_cast<uint>(bsi.Cfcrc), 16));
-        WDFunc::SetLBLText(this, "rstle", "0x"+QString::number(bsi.Rst, 16));
-        WDFunc::SetLBLText(this, "rstcountle", QString::number(bsi.RstCount, 16));
-        WDFunc::SetLBLText(this, "cpuidle", QString::number(bsi.UIDHigh, 16)+QString::number(bsi.UIDMid, 16)+QString::number(bsi.UIDLow, 16));
-        WDFunc::SetLBLText(this, "typeble", QString::number(bsi.MTypeB, 16));
-        WDFunc::SetLBLText(this, "snble", QString::number(bsi.SerialNumB, 16));
-        WDFunc::SetLBLText(this, "hwble", StdFunc::VerToStr(bsi.HwverB));
-        WDFunc::SetLBLText(this, "typemle", QString::number(bsi.MTypeM, 16));
-        WDFunc::SetLBLText(this, "snmle", QString::number(bsi.SerialNumM, 16));
-        WDFunc::SetLBLText(this, "hwmle", StdFunc::VerToStr(bsi.HwverM));
+        WDFunc::SetLBLText(this, "snle", QString::number(ModuleBSI::ModuleBsi.SerialNum, 16));
+        WDFunc::SetLBLText(this, "fwverle", StdFunc::VerToStr(ModuleBSI::ModuleBsi.Fwver));
+        WDFunc::SetLBLText(this, "cfcrcle", "0x"+QString::number(static_cast<uint>(ModuleBSI::ModuleBsi.Cfcrc), 16));
+        WDFunc::SetLBLText(this, "rstle", "0x"+QString::number(ModuleBSI::ModuleBsi.Rst, 16));
+        WDFunc::SetLBLText(this, "rstcountle", QString::number(ModuleBSI::ModuleBsi.RstCount, 16));
+        WDFunc::SetLBLText(this, "cpuidle", QString::number(ModuleBSI::ModuleBsi.UIDHigh, 16)+QString::number(ModuleBSI::ModuleBsi.UIDMid, 16)+QString::number(ModuleBSI::ModuleBsi.UIDLow, 16));
+        WDFunc::SetLBLText(this, "typeble", QString::number(ModuleBSI::ModuleBsi.MTypeB, 16));
+        WDFunc::SetLBLText(this, "snble", QString::number(ModuleBSI::ModuleBsi.SerialNumB, 16));
+        WDFunc::SetLBLText(this, "hwble", StdFunc::VerToStr(ModuleBSI::ModuleBsi.HwverB));
+        WDFunc::SetLBLText(this, "typemle", QString::number(ModuleBSI::ModuleBsi.MTypeM, 16));
+        WDFunc::SetLBLText(this, "snmle", QString::number(ModuleBSI::ModuleBsi.SerialNumM, 16));
+        WDFunc::SetLBLText(this, "hwmle", StdFunc::VerToStr(ModuleBSI::ModuleBsi.HwverM));
 
         // расшифровка Hth
     }

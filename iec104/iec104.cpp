@@ -80,8 +80,11 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
 
     connect(Parse,SIGNAL(SetDataSizeFromParse(int)),this,SIGNAL(SetDataSize(int)));
     connect(Parse,SIGNAL(SetDataCountFromParse(int)),this,SIGNAL(SetDataCount(int)));
+    connect(Parse,SIGNAL(sendMessagefromParse()),this,SIGNAL(sendConfMessageOk()));
+    connect(Parse,SIGNAL(writeCorMesOkParse()),this,SIGNAL(sendCorMesOk()));
 
     Parse->incLS = 0;
+    Parse->count = 0;
 
     thr->start();
     thr2->start();
@@ -176,6 +179,42 @@ void iec104::SendI()
     GI.contrfield[3] = (VR & 0x7F80) >> 7;
     Parse->cmd = I104_S;
     Send(1, GI, GInter); // ASDU = QByteArray()
+
+    Parse->AckVR = Parse->V_R;
+
+    //while(stopincrementing)
+    //QThread::usleep(10);
+
+   // Parse->V_S++;
+
+    Parse->Interogatetimer->start();
+}
+
+void iec104::CorReadRequest()
+{
+    APCI GI;
+    ASDU GCor;
+    quint16 VR = Parse->V_R;
+
+    GCor[0] = static_cast<char>(C_IC_NA_1);
+    GCor[1] = static_cast<char>(1);
+    GCor[2] = static_cast<char>(6);
+    GCor[3] = static_cast<char>(0);
+    GCor[4] = static_cast<char>(BaseAdr);
+    GCor[5] = static_cast<char>(BaseAdr>>8);
+    GCor[6] = static_cast<char>(0);
+    GCor[7] = static_cast<char>(0);
+    GCor[8] = static_cast<char>(0);
+    GCor[9] = static_cast<char>(22);
+
+    GI.start = I104_START;
+    GI.APDUlength = 14;
+    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
+    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
+    GI.contrfield[2] = (VR & 0x007F) << 1;
+    GI.contrfield[3] = (VR & 0x7F80) >> 7;
+    Parse->cmd = I104_S;
+    Send(1, GI, GCor); // ASDU = QByteArray()
 
     Parse->AckVR = Parse->V_R;
 
@@ -676,9 +715,15 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
 
         case F_AF_NA_1: // подтверждение файла, секции
         {
+            //emit sendMessagefromParse();
             if(ba[12] == 0x03)  //подтверждение секции
             {
                 emit LastSec();
+            }
+
+            if(ba[12] == 0x01)  //подтверждение секции
+            {
+                emit sendMessagefromParse();
             }
 
             break;
@@ -694,6 +739,28 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
             break;
 
 
+        }
+
+        case C_SE_NC_1:
+        {
+            if(DUI.cause.cause == 10)
+            count++;
+
+            emit SetDataCountFromParse(count);
+            quint32 adr = ba[6] + (ba[7]+1)*256; //+ (ba[8]<<16);
+
+            if((adr == 920) && (DUI.cause.cause == 10))  // если адрес последнего параметра коррекции
+            {
+               if(ba[13] == 0)
+               {
+                   emit writeCorMesOkParse();
+                   emit SetDataCountFromParse(11);
+               }
+               //else
+               //emit writeCorMesError()
+               count=0;
+            }
+            break;
         }
 
 
@@ -1103,6 +1170,7 @@ void iec104::SendSegments()
     Parse->File.data()[13] = 0;
     Parse->File.data()[14] = 0;
     Parse->File.data()[15] = 0;*/
+    emit SetDataSize(Parse->FileLen);
 
     if(Parse->FileLen > SEGMENTSIZE)
     {
@@ -1115,6 +1183,7 @@ void iec104::SendSegments()
           KSF += static_cast<quint8>(Parse->File.data()[i]);
        }
        Parse->Pos += SEGMENTSIZE;
+       emit SetDataCount(Parse->Pos-OFFSET);
     }
     else
     {
@@ -1130,6 +1199,7 @@ void iec104::SendSegments()
        }
 
        Parse->Pos += Parse->FileLen;
+       emit SetDataCount(Parse->Pos-OFFSET);
     }
 
     Cmd[12] =  static_cast<char>(Parse->Pos - OFFSET);
@@ -1175,6 +1245,7 @@ void iec104::SendSegments()
             }
 
             Parse->Pos += SEGMENTSIZE;
+            emit SetDataCount(Parse->Pos-OFFSET);
         }
         else
         {
@@ -1190,6 +1261,7 @@ void iec104::SendSegments()
             }
 
             Parse->Pos += leftsize;
+            emit SetDataCount(Parse->Pos-OFFSET);
             leftsize = 0;
         }
 
@@ -1351,9 +1423,16 @@ void iec104::Com50(quint16* adr, float *param)
 {
     APCI GI;
     ASDU Cmd;
-    QByteArray ba;
+    QByteArray *ba = new QByteArray;
+    ba->resize(4);
     //char *ptr = static_cast<char*>(Cmd.data());
     quint16 VR = Parse->V_R;
+
+    if(*adr == 910)
+    emit SetDataSize(11);
+
+    memcpy(&ba->data()[0], (quint8*)param, sizeof(float));
+    ba->toHex();
 
     Cmd[0] = C_SE_NC_1;
     Cmd[1] = static_cast<char>(1);
@@ -1365,10 +1444,10 @@ void iec104::Com50(quint16* adr, float *param)
     Cmd[7] = static_cast<char>(*adr>>8);
     Cmd[8] = static_cast<char>(*adr>>16);
     //Cmd[9] = static_cast<char>(1);
-    Cmd[9] = static_cast<char>(*param);
-    Cmd[10] = static_cast<char>(*(param+1));
-    Cmd[11] = static_cast<char>(*(param+2));
-    Cmd[12] = static_cast<char>(*(param+3));
+    Cmd[9] = static_cast<char>(ba->data()[0]);
+    Cmd[10] = static_cast<char>(ba->data()[1]);
+    Cmd[11] = static_cast<char>(ba->data()[2]);
+    Cmd[12] = static_cast<char>(ba->data()[3]);
     Cmd[13] = 0;
 
     GI.start = I104_START;

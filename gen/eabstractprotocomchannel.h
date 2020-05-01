@@ -62,6 +62,9 @@
 #define CN_MINOSCID 1000 // минимальный ИД осциллограмм, нужно, т.к. файлы осциллограмм обрабатываются по-своему
 #define CN_MAXOSCID 2999 // максимальный ИД осциллограмм
 
+#define MINJOURID 4 // минимальный ИД журналов
+#define MAXJOURID 6 // максимальный ИД журналов
+
 #define WHV_SIZE_ONEBOARD   17
 #define WHV_SIZE_TWOBOARDS  33
 

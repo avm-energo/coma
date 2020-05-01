@@ -218,7 +218,7 @@ QWidget *AbstractConfDialog::ConfButtons()
     pb->setIcon(QIcon("images/save.png"));
     connect(pb,SIGNAL(clicked()),this,SLOT(SaveConfToFile()));
     wdgtlyout->addWidget(pb, 1, 1, 1, 1);
-    pb = new QPushButton("Задать конфигурацию по умолчанию");
+    pb = new QPushButton("Взять конфигурацию по умолчанию");
     connect(pb,SIGNAL(clicked()),this,SIGNAL(DefConfToBeLoaded()));
     wdgtlyout->addWidget(pb, 2, 0, 1, 2);
     wdgt->setLayout(wdgtlyout);
@@ -302,4 +302,9 @@ bool AbstractConfDialog::PrepareConfToWrite()
         return false;
     }
     return true;
+}
+
+void AbstractConfDialog::WriteConfMessageOk()
+{
+  EMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
 }

@@ -175,7 +175,8 @@ public:
     char BoardType;
     static bool WriteUSBLog;
     quint32 FileLen;
-    int incLS;
+    int incLS, count;
+
 
 
 
@@ -205,9 +206,12 @@ signals:
     void segmentReady();
     void LastSec();
     void sendMessageOk();
+    void sendConfMessageOk();
     void UpdateReleWidget(Parse104::SponSignals104*);
     void SetDataSizeFromParse(int);
     void SetDataCountFromParse(int);
+    void sendMessagefromParse();
+    void writeCorMesOkParse();
 
 
 private:
@@ -384,6 +388,8 @@ signals:
     void relesignalsready(Parse104::SponSignals104*);
     void SetDataSize(int);
     void SetDataCount(int);
+    void sendConfMessageOk();
+    void sendCorMesOk();
 
 
 private:
@@ -412,6 +418,7 @@ private slots:
     void LastSection();
     void Com45(quint32 *com);
     void Com50(quint16 *adr, float *param);
+    void CorReadRequest();
 
 };
 

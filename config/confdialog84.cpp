@@ -506,7 +506,7 @@ void ConfDialog84::SetupUI()
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Уставка аварийной сигнализации по изменению небаланса токов, %:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "dIunb _alarm", 0, 10000, 1, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "dIunb_alarm", 0, 10000, 1, paramcolor), row,2,1,3);
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
@@ -1012,3 +1012,6 @@ void ConfDialog84::SetCType(int num)
 {
     C84->MainBlk.Ctype = num;
 }
+
+
+

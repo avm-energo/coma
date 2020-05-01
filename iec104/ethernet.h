@@ -30,6 +30,7 @@ signals:
     void finished();
     void newdataarrived(QByteArray);
 
+
 public slots:
     void Run();
     void Stop();

@@ -67,6 +67,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     BdaTimer = new QTimer;
     BdaTimer->setInterval(ANMEASINT);
 
+    ReceiveTimer = new QTimer;
+    ReceiveTimer->setInterval(ANMEASINT);
+    connect(ReceiveTimer, SIGNAL(timeout()), this,SLOT(FileTimeOut()));
+
     for (int i = 0; i < 20; ++i)
     {
        PredAlarmEvents[i] = 0;
@@ -927,12 +931,38 @@ void MainWindow::ShowErrorDialog()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::SetProgressBar1Size(int size)
 {
+    fileSize = size;
     SetProgressBarSize("1", size);
 }
 
 void MainWindow::SetProgressBar1(int cursize)
 {
+    curfileSize = cursize;
+    ReceiveTimer->stop();
+    ReceiveTimer->setInterval(3000);
     SetProgressBar("1", cursize);
+    ReceiveTimer->start();
+}
+
+void MainWindow::FileTimeOut()
+{
+    QString prbname = "prb1prb";
+    QString lblname = "prb1lbl";
+    QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
+    if (prb == nullptr)
+    {
+        DBGMSG;
+        return;
+    }
+    WDFunc::SetLBLText(this, lblname,StdFunc::PrbMessage() + QString::number(0), false);
+    //prb->setMinimum(0);
+    //prb->setMaximum(0);
+
+   ReceiveTimer->stop();
+   if(fileSize != curfileSize)
+   {
+     EMessageBox::information(this, "Ошибка", "Ошибка");
+   }
 }
 
 void MainWindow::SetProgressBar2Size(int size)
@@ -1387,12 +1417,12 @@ void MainWindow::SetDefConf()
     SetBDefConf();
     SetMDefConf();
     Fill();
-    EMessageBox::information(this, "Информация", "В модуле нет конфигурации. \nНеобходимо записать конфигурацию по умолчанию.");
-    if(ConfB != nullptr)
-    ConfB->WriteConf();
-    if(ConfM != nullptr)
-    ConfM->WriteConf();
-    //EMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
+    //EMessageBox::information(this, "Информация", "В модуле нет конфигурации. \nНеобходимо записать конфигурацию по умолчанию.");
+    //if(ConfB != nullptr)
+    //ConfB->WriteConf();
+    //if(ConfM != nullptr)
+    //ConfM->WriteConf();
+    EMessageBox::information(this, "Успешно", "Конфигурация по умолчанию");
 }
 
 

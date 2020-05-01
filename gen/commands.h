@@ -35,6 +35,7 @@ public:
     static int GetBsi(ModuleBSI::Bsi &bsi);
     static int GetFile(int filenum, QVector<S2::DataRec> *data);
     static int GetOsc(int filenum, void *ptr); // приём осциллограмм, в ptr возвращается целиком весь считанный буфер
+    static int GetJour(int filenum, void *ptr);
     static int GetBac(char BacNum, void *ptr, int ptrsize);
     static int GetBd(char BdNum, void *BdPtr, int BdPtrSize);
     static int GetBda(char board, void *BdPtr, int BdPtrSize);

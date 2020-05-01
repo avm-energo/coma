@@ -40,6 +40,11 @@ CorDialog::CorDialog(QWidget *parent) :
     CorBlock = new CorData;
     CorBlock->Phy_unb_init = 0;
     CorBlock->Iunb_init = 0;
+    first = 0;
+
+    MessageTimer = new QTimer;
+    MessageTimer->setInterval(5000);
+    connect(MessageTimer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));
 
     for (i = 0; i < 3; i++)
     {
@@ -49,6 +54,7 @@ CorDialog::CorDialog(QWidget *parent) :
     }
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
+    MessageTimer->start();
 }
 
 CorDialog::~CorDialog()
@@ -107,17 +113,6 @@ void CorDialog::SetupUI()
 
     //QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
 
-    pb = new QPushButton("Записать в модуль");
-#if PROGSIZE != PROGSIZE_EMUL
-    connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorBd()));
-#endif
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
-
-    glyout->addWidget(pb, row,1,1,2);
-
-    //row++;
-
     pb = new QPushButton("Прочитать из модуля");
     #if PROGSIZE != PROGSIZE_EMUL
         connect(pb,SIGNAL(clicked()),this,SLOT(GetCorBdButton()));
@@ -125,20 +120,20 @@ void CorDialog::SetupUI()
         if (StdFunc::IsInEmulateMode())
             pb->setEnabled(false);
 
-    glyout->addWidget(pb, row,3,1,2);
-
-    row++;
-
-    pb = new QPushButton("Задать начальные значения");
-    #if PROGSIZE != PROGSIZE_EMUL
-      connect(pb,SIGNAL(clicked()),this,SLOT(WriteCor()));
-    #endif
-    if (StdFunc::IsInEmulateMode())
-       pb->setEnabled(false);
-
     glyout->addWidget(pb, row,1,1,2);
 
+    pb = new QPushButton("Записать в модуль");
+#if PROGSIZE != PROGSIZE_EMUL
+    connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorBd()));
+#endif
+    if (StdFunc::IsInEmulateMode())
+        pb->setEnabled(false);
+
+    glyout->addWidget(pb, row,3,1,2);
+
     //row++;
+
+    row++;
 
     pb = new QPushButton("Сбросить начальные значения");
     #if PROGSIZE != PROGSIZE_EMUL
@@ -147,21 +142,23 @@ void CorDialog::SetupUI()
         if (StdFunc::IsInEmulateMode())
             pb->setEnabled(false);
 
-    glyout->addWidget(pb, row,3,1,2);
+    glyout->addWidget(pb, row,1,1,2);
 
-
-    row++;
-
-    pb = new QPushButton("Сохранить значения в файл");
+    pb = new QPushButton("Задать начальные значения");
     #if PROGSIZE != PROGSIZE_EMUL
-      connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
+      connect(pb,SIGNAL(clicked()),this,SLOT(WriteCor()));
     #endif
     if (StdFunc::IsInEmulateMode())
        pb->setEnabled(false);
 
-    glyout->addWidget(pb, row,1,1,2);
+    glyout->addWidget(pb, row,3,1,2);
 
     //row++;
+
+
+
+
+    row++;
 
     pb = new QPushButton("Прочитать значения из файла");
     #if PROGSIZE != PROGSIZE_EMUL
@@ -170,7 +167,18 @@ void CorDialog::SetupUI()
     if (StdFunc::IsInEmulateMode())
        pb->setEnabled(false);
 
+    glyout->addWidget(pb, row,1,1,2);
+
+    pb = new QPushButton("Сохранить значения в файл");
+    #if PROGSIZE != PROGSIZE_EMUL
+      connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
+    #endif
+    if (StdFunc::IsInEmulateMode())
+       pb->setEnabled(false);
+
     glyout->addWidget(pb, row,3,1,2);
+
+    //row++;
 
 
 
@@ -237,6 +245,10 @@ void CorDialog::GetCorBd(int index)
             info.adr = 4000;
             emit RS485ReadCorBd(&info);
         }
+        else if(MainWindow::MainInterface == "Ethernet")
+        {
+            emit CorReadRequest();
+        }
        }
     }
 }
@@ -255,6 +267,10 @@ void CorDialog::GetCorBdButton()
          info.size = (sizeof(CorData)/4);
          info.adr = 4000;
          emit RS485ReadCorBd(&info);
+     }
+     else if(MainWindow::MainInterface == "Ethernet")
+     {
+         emit CorReadRequest();
      }
     }
 
@@ -275,8 +291,8 @@ void CorDialog::WriteCorBd()
          {
             for(i = 0; i<11; i++)
             {
-              emit sendCom50((adr+i), (float*)(CorBlock+i));
-              TimeFunc::Wait(100);
+              emit sendCom50((adr+i), (((float*)CorBlock)+i));
+              TimeFunc::Wait(300);
             }
          }
          else if(MainWindow::MainInterface == "RS485")
@@ -425,6 +441,13 @@ void CorDialog::UpdateFlCorData(Parse104::FlSignals104 *Signal)
 {
     Parse104::FlSignals104 sig = *new Parse104::FlSignals104;
     int i;
+
+    if(((Signal)->fl.SigAdr >= 4000) && ((Signal)->fl.SigAdr <= 4010) && first)
+    {
+      EMessageBox::information(this, "INFO", "Прочитано успешно");
+    }
+
+
     for(i=0; i<Signal->SigNumber; i++)
     {
         sig = *(Signal+i);
@@ -544,4 +567,20 @@ void CorDialog::WritePasswordCheck(QString psw)
     else
         ok = false;
     emit WritePasswordChecked();
+}
+
+void CorDialog::TimerTimeout()
+{
+   MessageTimer->stop();
+   first = 1;
+}
+
+void CorDialog::WriteCorMessageOk()
+{
+   EMessageBox::information(this, "Успешно", "Записано успешно!");
+}
+
+void CorDialog::ErrorRead()
+{
+  EMessageBox::information(this, "Ошибка", "Ошибка чтения");
 }

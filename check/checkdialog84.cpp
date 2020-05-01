@@ -228,6 +228,8 @@ void CheckDialog84::BdTimerTimeout()
 }
 void CheckDialog84::UpdateFlData(Parse104::FlSignals104 *Signal)
 {
+    //if(!first)
+
     Parse104::FlSignals104 sig = *new Parse104::FlSignals104;
     int i;
     for(i=0; i<Signal->SigNumber; i++)
@@ -238,7 +240,7 @@ void CheckDialog84::UpdateFlData(Parse104::FlSignals104 *Signal)
         //Ch->FillBd0(this, QString::number((Signal+i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal));
 
         //if((Signal+i)->fl.SigAdr >= 1000 || (Signal+i)->fl.SigAdr <= 1009)
-        Ch84->FillBd(this, QString::number(sig.fl.SigAdr), WDFunc::StringValueWithCheck(sig.fl.SigVal));
+        Ch84->FillBd(this, QString::number(sig.fl.SigAdr), WDFunc::StringValueWithCheck(sig.fl.SigVal, 3));
     }
 }
 
@@ -340,7 +342,7 @@ void CheckDialog84::UpdateModBusData(ModBusSignal *Signal, int * size)
     for(i=0; i<*size; i++)
     {
       //sig = *(Signal+i);
-      Ch84->FillBd(this, QString::number((Signal+i)->SigAdr), WDFunc::StringValueWithCheck((Signal+i)->flVal));
+      Ch84->FillBd(this, QString::number((Signal+i)->SigAdr), WDFunc::StringValueWithCheck((Signal+i)->flVal, 3));
     }
     ModBus::Reading = false;
 }
@@ -363,6 +365,12 @@ void CheckDialog84::onModbusStateChanged(QModbusDevice::State state)
      EMessageBox::information(this, "Провал", "Подключение отсутствует");
     }
 
+}
+
+
+void CheckDialog84::ConnectMessage(QString* Name)
+{
+  EMessageBox::information(this, "Успешно", "Связь с "+*Name+" установлена");
 }
 
 

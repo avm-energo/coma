@@ -50,6 +50,7 @@ private slots:
     void Write_Date();
 
 
+
 };
 
 #endif // CONFDIALOG84_H
