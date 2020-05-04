@@ -447,21 +447,23 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
 
                     if ((fnum >= MINJOURID) && (fnum <= MAXJOURID)) // для осциллограмм особая обработка
                     {
-                        QVector<S2::DataRec> DRJour;
+                        QVector<S2::DataRec> *DRJour  = new QVector<S2::DataRec>;
                         RDSize = qMin(RDLength, RDSize); // если даже приняли больше, копируем только требуемый размер
                         size_t tmpi = static_cast<size_t>(RDSize);
-                        memcpy(outdata,ReadData.data(),tmpi);
-                        DRJour.append({static_cast<quint32>(ReadData.data()[16]),static_cast<quint32>(ReadData.data()[20]),&ReadData.data()[24]});
+                        //memcpy(outdata,&ReadData.data()[0],tmpi);
+                        DRJour->append({static_cast<quint32>(ReadData.data()[16]),static_cast<quint32>(ReadData.data()[20]),&ReadData.data()[24]});
                         tmpi = 8; //sizeof(FileHeader);
-                        memcpy(&DRJour.data()[0],&ReadData.data()[16],8);
+                        memcpy(&DRJour->data()[0],&ReadData.data()[16],8);
                         Finish(Error::ER_NOERROR);
 
-                        if (DRosc.isEmpty())
+                        if (DRJour->isEmpty())
                         {
                             Finish(CN_NULLDATAERROR);
                             break;
                         }
-                        res = S2::RestoreDataMem(ReadData.data(), RDSize, &DRJour);
+                        res = S2::RestoreDataMem(ReadData.data(), RDSize, DRJour);
+                        int size = DRJour->size();
+                        memcpy(outdata,&DRJour->data()[0], 12);
 
                         break;
                     }

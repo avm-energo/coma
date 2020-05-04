@@ -42,6 +42,7 @@ QString MainWindow::MainInterface;
 quint32 MainWindow::MTypeB;
 quint32 MainWindow::MTypeM;
 int MainWindow::TheEnd;
+int MainWindow::StopRead;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -410,8 +411,11 @@ void MainWindow::UpdateReleWidget(Parse104::SponSignals104* Signal)
     //for(j=0; j<Signal->SigNumber; j++)
     //{
        //sig = *(Signal+j);
+    if(!(Signal->Spon.SigVal & 0x80))
+    {
        int signal = ((Signal->Spon.SigVal & (0x00000001)) ? 1 : 0);
        WDFunc::SetLBLImage(this, (QString::number(Signal->Spon.SigAdr)), pm[signal]);
+    }
     //}
 
 }
@@ -427,8 +431,11 @@ void MainWindow::UpdatePredAlarmEvents(Parse104::SponSignals104* Signal)
     for(i=0; i<Signal->SigNumber; i++)
     {
        sig = *(Signal+i);
-       int signal = ((sig.Spon.SigVal & (0x00000001)) ? 1 : 0);
-       WDFunc::SetLBLImage(this, (QString::number(sig.Spon.SigAdr)), pm[signal]);
+       if(!(sig.Spon.SigVal & 0x80))
+       {
+        int signal = ((sig.Spon.SigVal & (0x00000001)) ? 1 : 0);
+        WDFunc::SetLBLImage(this, (QString::number(sig.Spon.SigAdr)), pm[signal]);
+       }
     }
 
 }
@@ -440,23 +447,26 @@ void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104* Signal)
     Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
-    QPixmap *pm[2] = {pmred, pmgrn};
+    //QPixmap *pm[2] = {pmred, pmgrn};
 
     for(i=0; i<Signal->SigNumber; i++)
     {
        sig = *(Signal+i);
-       quint8 signal = ((sig.Spon.SigVal & (0x00000001)) ? 1 : 0);
+       if(!(sig.Spon.SigVal & 0x80))
+       {
+           quint8 signal = ((sig.Spon.SigVal & (0x00000001)) ? 1 : 0);
 
-       if((sig.Spon.SigAdr >= 3011) && (sig.Spon.SigAdr < 3024))
-       PredAlarmEvents[sig.Spon.SigAdr - 3011] = signal;
-       else if((sig.Spon.SigAdr >= 3024) && (sig.Spon.SigAdr < 3027))
-       AlarmEvents[sig.Spon.SigAdr - 3024] = signal;
-       else if((sig.Spon.SigAdr >= 3027) && (sig.Spon.SigAdr < 3030))
-       PredAlarmEvents[sig.Spon.SigAdr - 3014] = signal;
-       else if((sig.Spon.SigAdr >= 3030) && (sig.Spon.SigAdr < 3033))
-       AlarmEvents[sig.Spon.SigAdr - 3027] = signal;
-       else if(sig.Spon.SigAdr == 3033)
-       PredAlarmEvents[16] = signal;
+           if((sig.Spon.SigAdr >= 3011) && (sig.Spon.SigAdr < 3024))
+           PredAlarmEvents[sig.Spon.SigAdr - 3011] = signal;
+           else if((sig.Spon.SigAdr >= 3024) && (sig.Spon.SigAdr < 3027))
+           AlarmEvents[sig.Spon.SigAdr - 3024] = signal;
+           else if((sig.Spon.SigAdr >= 3027) && (sig.Spon.SigAdr < 3030))
+           PredAlarmEvents[sig.Spon.SigAdr - 3014] = signal;
+           else if((sig.Spon.SigAdr >= 3030) && (sig.Spon.SigAdr < 3033))
+           AlarmEvents[sig.Spon.SigAdr - 3027] = signal;
+           else if(sig.Spon.SigAdr == 3033)
+           PredAlarmEvents[16] = signal;
+       }
     }
 
 }
@@ -687,6 +697,7 @@ void MainWindow::Stage1_5()
     disconnected = 0;
     ShowInterfaceDialog();
     ShowConnectDialog();
+    StopRead = 0;
 
     if((insl.size() == 0) && ((MainInterface == "Ethernet") || (MainInterface == "RS485")))
     {
@@ -786,16 +797,22 @@ void MainWindow::UpdateHthWidget(ModuleBSI::Bsi* bsi)
 {
     //ModuleBSI::Bsi bsi = ModuleBSI::GetBsi();
     ModuleBSI::ModuleBsi = *bsi;
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+    QPixmap *pm[2] = {pmred, pmgrn};
+
     for (int i = 0; i < MAXERRORFLAGNUM; i++)
     {
-        QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i+1));
+        QLabel *lbl = this->findChild<QLabel *>(QString::number(i));  //hth+ (i+1)
         if (lbl == nullptr)
             return;
         quint32 tmpui = (0x00000001 << i) & bsi->Hth;
-        if (tmpui)
+
+        WDFunc::SetLBLImage(this, (QString::number(i)), pm[tmpui]);
+        /*if (tmpui)
             lbl->setStyleSheet("QLabel {background-color: rgba(255,10,10,255); color: rgba(255,255,255,255);}");
         else
-            lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
+            lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");*/
     }
 }
 #endif
@@ -1264,6 +1281,7 @@ void MainWindow::DisconnectAndClear()
 {
     if(!disconnected)
     {
+        StopRead = 1;
         disconnected = 1;
     #if PROGSIZE != PROGSIZE_EMUL
         Disconnect();

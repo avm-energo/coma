@@ -122,7 +122,7 @@ public:
     {
         quint32 SigAdr;
         quint8 SigVal;
-        quint64 CP56Time;
+       // quint64 CP56Time;
     }SIQ104;
 
     typedef struct

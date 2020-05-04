@@ -545,7 +545,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
             break;
         }
 
-        case M_SP_TB_1:
+        case M_SP_NA_1:
         {
 
            (sponSignals+cntspon)->Spon.SigAdr=ObjectAdr;
@@ -553,10 +553,10 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
            memcpy(&value,&ba[index],1);
            index += 1;
            (sponSignals+cntspon)->Spon.SigVal=value;
-           quint64 time;
+           /*quint64 time;
            memcpy(&time,&ba[index],8);
            index += 8;
-           (sponSignals+cntspon)->Spon.CP56Time=time;
+           (sponSignals+cntspon)->Spon.CP56Time=time;*/
 
            if(ObjectAdr>=950 && ObjectAdr<953)
            emit UpdateReleWidget(sponSignals+cntspon);

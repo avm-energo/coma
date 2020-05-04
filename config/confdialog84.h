@@ -21,6 +21,7 @@ public:
     QLabel *SysTime2;
     QTimer *timer;
     QTimer *timerRead;
+    QStringList Rates = QStringList() << "1200" << "2400"<< "4800" << "9600" << "19200" << "38400" << "57600" << "115200";
 
 private:
 

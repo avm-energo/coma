@@ -235,7 +235,7 @@ void CorDialog::GetCorBd(int index)
        {
         if(MainWindow::MainInterface == "USB")
         {
-            if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
+            if(Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::ER_NOERROR)
             FillCor();
         }
         else if(MainWindow::MainInterface == "RS485")
@@ -258,7 +258,7 @@ void CorDialog::GetCorBdButton()
     {
      if(MainWindow::MainInterface == "USB")
      {
-       if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
+       if(Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::ER_NOERROR)
        FillCor();
      }
      else if(MainWindow::MainInterface == "RS485")
@@ -345,6 +345,8 @@ void CorDialog::WriteCor()
          if(MainWindow::MainInterface == "Ethernet")
          {
             emit sendCom45(&Com);
+            EMessageBox::information(this, "INFO", "Задано успешно");
+            emit CorReadRequest();
          }
          else if(MainWindow::MainInterface == "RS485")
          {
@@ -352,14 +354,23 @@ void CorDialog::WriteCor()
              info.size = 1;
              info.adr = (quint16)Com;
              emit RS485WriteCorBd(&info, nullptr);
+             EMessageBox::information(this, "INFO", "Задано успешно");
+             info.size = (sizeof(CorData)/4);
+             info.adr = 4000;
+             emit RS485ReadCorBd(&info);
          }
          else if(MainWindow::MainInterface == "USB")
          {
             if(Commands::WriteCom(1) == Error::ER_NOERROR)   // задание общей коррекции
-            EMessageBox::information(this, "INFO", "Записано успешно");
+            {
+               if(Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::ER_NOERROR)
+               {
+                  FillCor();
+                  EMessageBox::information(this, "INFO", "Задано и прочитано успешно");
+               }
+            }
             else
             EMessageBox::information(this, "INFO", "Ошибка");
-
          }
         }
     }

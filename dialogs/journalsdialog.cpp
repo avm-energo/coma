@@ -3,6 +3,7 @@
 #include <QHeaderView>
 #include <QPushButton>
 #include <QApplication>
+#include <QFileDialog>
 #include "../widgets/emessagebox.h"
 #include "../gen/maindef.h"
 #include "../widgets/getoscpbdelegate.h"
@@ -13,6 +14,7 @@
 #include "../dialogs/journalsdialog.h"
 #include "../gen/colors.h"
 #include "../gen/mainwindow.h"
+#include "../gen/files.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -20,6 +22,9 @@
 
 JournalDialog::JournalDialog() : QDialog()
 {
+    SaveMJour = nullptr;
+    SaveWJour = nullptr;
+    SaveSJour = nullptr;
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
 }
@@ -60,6 +65,11 @@ void JournalDialog::SetupUI()
     if(StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
+    pb = new QPushButton("Сохранить журнал в файл");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SaveWorkToTXTFile()));
+    if (StdFunc::IsInEmulateMode())
+        pb->setEnabled(false);
+    hlyout->addWidget(pb);
     vlyout->addLayout(hlyout);
     vlyout->addWidget(tv, 89);
 
@@ -86,6 +96,11 @@ void JournalDialog::SetupUI()
     if(StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
+    pb = new QPushButton("Сохранить журнал в файл");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SaveSysToTXTFile()));
+    if (StdFunc::IsInEmulateMode())
+        pb->setEnabled(false);
+    hlyout->addWidget(pb);
     vlyout->addLayout(hlyout);
     vlyout->addWidget(tv, 89);
 
@@ -109,6 +124,11 @@ void JournalDialog::SetupUI()
     pb = new QPushButton("Стереть журнал измерений");
     //connect(pb,SIGNAL(clicked()),this,SLOT(EraseJournals()));
     if(StdFunc::IsInEmulateMode())
+        pb->setEnabled(false);
+    hlyout->addWidget(pb);
+    pb = new QPushButton("Сохранить журнал в файл");
+    connect(pb,SIGNAL(clicked()),this,SLOT(SaveMeasToTXTFile()));
+    if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
     vlyout->addLayout(hlyout);
@@ -146,7 +166,8 @@ void JournalDialog::GetSystemJour()
     }
     else if(MainWindow::MainInterface == "USB")
     {
-      if(Commands::GetJour(num, Jour) == Error::ER_NOERROR)
+      Jour->resize(1);
+      if(Commands::GetJour(num, &(Jour->data()[0])) == Error::ER_NOERROR)
       {
          FillSysJour(Jour);
       }
@@ -162,7 +183,7 @@ void JournalDialog::GetWorkJour()
 {
     //char* num = new char;
     //*num = 4;
-    QVector<S2::DataRec>* Jour = new QVector<S2::DataRec>;
+    QVector<S2::DataRec> *Jour  = new QVector<S2::DataRec>;
     char num = 5;
 
     if(MainWindow::MainInterface == "Ethernet")
@@ -171,7 +192,8 @@ void JournalDialog::GetWorkJour()
     }
     else if(MainWindow::MainInterface == "USB")
     {
-      if(Commands::GetJour(num, Jour) == Error::ER_NOERROR)
+      Jour->resize(1);
+      if(Commands::GetJour(num, &(Jour->data()[0])) == Error::ER_NOERROR)
       {
          FillWorkJour(Jour);
       }
@@ -196,7 +218,8 @@ void JournalDialog::GetMeasJour()
     }
     else if(MainWindow::MainInterface == "USB")
     {
-      if(Commands::GetJour(num, Jour) == Error::ER_NOERROR)
+      Jour->resize(1);
+      if(Commands::GetJour(num, &(Jour->data()[0])) == Error::ER_NOERROR)
       {
          FillMeasJour(Jour);
       }
@@ -218,6 +241,10 @@ void JournalDialog::FillSysJour(QVector<S2::DataRec>* File)
     int JourSize = 0; // размер считанного буфера с информацией
     int RecordSize = sizeof(SystemWorkStruct);
     SystemWorkStruct System;
+    //quint32 size = File->at(0).num_byte;
+    SaveSJour = new QVector<S2::DataRec>;
+    SaveSJour->resize(1);
+    memcpy((char*)(&SaveSJour->data()[0]), (char*)&File->data()[0], 12);
     size_t tmpt = static_cast<size_t>(RecordSize);
     QStringList Discription = QStringList() << "Произошёл рестарт программного обеспечения модуля"
                                             << "Произошла запись и переход на новую конфигурацию"
@@ -366,6 +393,10 @@ void JournalDialog::FillWorkJour(QVector<S2::DataRec>* File)
     int JourSize = 0; // размер считанного буфера с информацией
     int RecordSize = sizeof(SystemWorkStruct);
     SystemWorkStruct System;
+    //quint32 size = File->at(0).num_byte;
+    SaveWJour = new QVector<S2::DataRec>;
+    SaveWJour->resize(1);
+    memcpy((char*)(&SaveWJour->data()[0]), (char*)&File->data()[0], 12);
     size_t tmpt = static_cast<size_t>(RecordSize);
     QStringList Discription = QStringList() << "Отсутствует сигнал напряжения фазы A"
                                             << "Отсутствует сигнал напряжения фазы B"
@@ -506,6 +537,10 @@ void JournalDialog::FillMeasJour(QVector<S2::DataRec>* File)
     int JourSize = 0; // размер считанного буфера с информацией
     int RecordSize = sizeof(MeasureStruct);
     MeasureStruct Meas;
+    //quint32 size = File->at(0).num_byte;
+    SaveMJour = new QVector<S2::DataRec>;
+    SaveMJour->resize(1);
+    memcpy((char*)(&SaveMJour->data()[0]), (char*)&File->data()[0], 12);
     size_t tmpt = static_cast<size_t>(RecordSize);
 
     memcpy(&JourSize, &(File->at(0).num_byte), 4);
@@ -744,6 +779,94 @@ void JournalDialog::UpdateMeasModel()
     //tv->setItemDelegateForColumn(4, dg); // устанавливаем делегата (кнопки "Скачать") для соотв. столбца
     tv->resizeRowsToContents();
     tv->resizeColumnsToContents();
+}
+
+void JournalDialog::SaveMeasToTXTFile()
+{
+    int res = Error::ER_NOERROR;
+    QByteArray ba;
+    if((SaveMJour != nullptr) && (SaveMJour->at(0).num_byte != 0))
+    {
+        ba.resize(SaveMJour->at(0).num_byte);
+        memcpy(&(ba.data()[0]), &SaveMJour->data()[0], SaveMJour->at(0).num_byte);
+        res = Files::SaveToFile(Files::ChooseFileForSave(this, "Journal files (*.txt)", "txt"), ba, SaveMJour->at(0).num_byte);
+        switch (res)
+        {
+        case Files::ER_NOERROR:
+            EMessageBox::information(this, "Внимание", "Журнал успешно записан в файл!");
+            break;
+        case Files::ER_FILEWRITE:
+            EMessageBox::error(this, "Ошибка", "Ошибка при записи файла!");
+            break;
+        case Files::ER_FILENAMEEMP:
+            EMessageBox::error(this, "Ошибка", "Пустое имя файла!");
+            break;
+        case Files::ER_FILEOPEN:
+            EMessageBox::error(this, "Ошибка", "Ошибка открытия файла!");
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void JournalDialog::SaveSysToTXTFile()
+{
+    int res = Error::ER_NOERROR;
+    QByteArray ba;
+    if((SaveSJour != nullptr) && (SaveSJour->at(0).num_byte != 0))
+    {
+        ba.resize(SaveSJour->size());
+        memcpy(&(ba.data()[0]), &SaveSJour->data()[0], SaveSJour->at(0).num_byte);
+        res = Files::SaveToFile(Files::ChooseFileForSave(this, "Journal files (*.txt)", "txt"), ba, SaveSJour->size());
+        switch (res)
+        {
+        case Files::ER_NOERROR:
+            EMessageBox::information(this, "Внимание", "Журнал успешно записан в файл!");
+            break;
+        case Files::ER_FILEWRITE:
+            EMessageBox::error(this, "Ошибка", "Ошибка при записи файла!");
+            break;
+        case Files::ER_FILENAMEEMP:
+            EMessageBox::error(this, "Ошибка", "Пустое имя файла!");
+            break;
+        case Files::ER_FILEOPEN:
+            EMessageBox::error(this, "Ошибка", "Ошибка открытия файла!");
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void JournalDialog::SaveWorkToTXTFile()
+{
+    int res = Error::ER_NOERROR;
+    QByteArray ba;
+    if((SaveWJour != nullptr) && (SaveWJour->at(0).num_byte != 0))
+    {
+        ba.resize(SaveWJour->at(0).num_byte);
+        int size = sizeof(*TableWorkModel);
+        memcpy(&(ba.data()[0]), (char*)TableWorkModel, sizeof(*TableWorkModel));
+        res = Files::SaveToFile(Files::ChooseFileForSave(this, "Journal files (*.txt)", "txt"), ba, SaveWJour->size());
+        switch(res)
+        {
+        case Files::ER_NOERROR:
+            EMessageBox::information(this, "Внимание", "Журнал успешно записан в файл!");
+            break;
+        case Files::ER_FILEWRITE:
+            EMessageBox::error(this, "Ошибка", "Ошибка при записи файла!");
+            break;
+        case Files::ER_FILENAMEEMP:
+            EMessageBox::error(this, "Ошибка", "Пустое имя файла!");
+            break;
+        case Files::ER_FILEOPEN:
+            EMessageBox::error(this, "Ошибка", "Ошибка открытия файла!");
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 #endif

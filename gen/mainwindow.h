@@ -63,7 +63,7 @@ public:
     static QString MainInterface;
     static quint32 MTypeB;
     static quint32 MTypeM;
-    static int TheEnd;
+    static int TheEnd, StopRead;
     quint8 HaveAlreadyRed = 0;
     JournalDialog *JourD;
     fwupdialog *FwUpD;

@@ -50,6 +50,9 @@ public:
     quint8 start;
     quint64 LTime;
     int SaveI;
+    QVector<S2::DataRec>* SaveWJour;
+    QVector<S2::DataRec>* SaveSJour;
+    QVector<S2::DataRec>* SaveMJour;
 
 private:
 
@@ -73,6 +76,9 @@ private slots:
     void FillSysJour(QVector<S2::DataRec>*);
     void FillWorkJour(QVector<S2::DataRec>*);
     void FillMeasJour(QVector<S2::DataRec>*);
+    void SaveMeasToTXTFile();
+    void SaveWorkToTXTFile();
+    void SaveSysToTXTFile();
 };
 
 #endif // JOURNALDIALOG_H
