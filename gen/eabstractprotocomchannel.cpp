@@ -1,5 +1,6 @@
 #include <QCoreApplication>
 #include <QStandardPaths>
+#include <QSettings>
 #include <QTime>
 #include "error.h"
 #include "modulebsi.h"
@@ -27,6 +28,8 @@ EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(pa
     OscTimer->setSingleShot(false);
     connect(OscTimer,SIGNAL(timeout()),this,SLOT(OscTimerTimeout()));
     connect(TTimer, SIGNAL(timeout()),this,SLOT(Timeout())); // для отладки закомментарить
+    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    SetWriteUSBLog(sets->value("WriteLog", "0").toBool());
 }
 
 EAbstractProtocomChannel::~EAbstractProtocomChannel()

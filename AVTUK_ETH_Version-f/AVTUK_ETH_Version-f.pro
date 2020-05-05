@@ -11,7 +11,7 @@ RC_ICONS = ../coma.ico
 CONFIG += c++11
 VERSION = 0.0.13
 
-QT       += core gui printsupport network serialbus serialport
+QT       += core gui printsupport network serialbus serialport qml
 
 TARGET = AVM-Service
 #DEFINES += MODULE_A1DEFINES += PROGNAME='\\"AVTUK-S\\"'
@@ -181,7 +181,7 @@ equals(QMAKE_PLATFORM, win32)
         message("x64 build")
        ## Windows x64 (64bit) specific build here
         CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereportd -lliblzma -lhidapi -lqt5xlsxd
     } else {
         message("x86 build")
         ## Windows x86 (32bit) specific build here

@@ -613,6 +613,7 @@ void MainWindow::LoadSettings()
     StdFunc::SetHomeDir(sets->value("Homedir", HomeDir).toString());
 
     TEEnabled = sets->value("TEEnabled", "0").toBool();
+
 }
 
 void MainWindow::SaveSettings()

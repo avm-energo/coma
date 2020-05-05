@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QMutex>
 #include <QWaitCondition>
+#include <QDataStream>
 
 #include "s2.h"
 #include "log.h"
@@ -146,6 +147,7 @@ private:
     QVector<S2::DataRec> DRosc;
     char BoardType;
     static bool WriteUSBLog;
+    QDataStream DataStream;
 
     void InitiateSend();
     void WriteDataToPort(QByteArray &ba);
