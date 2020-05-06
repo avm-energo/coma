@@ -11,7 +11,7 @@ RC_ICONS = ../coma.ico
 CONFIG += c++11
 VERSION = 0.0.11
 
-QT       += core gui printsupport network serialbus serialport
+QT       += core gui printsupport network serialbus serialport qml
 
 TARGET = AVM-Service
 #DEFINES += MODULE_A1DEFINES += PROGNAME='\\"AVTUK-S\\"'
