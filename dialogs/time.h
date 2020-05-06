@@ -34,6 +34,8 @@ private:
 
 signals:
     void finished();
+    void ethTimeRequest();
+    void modBusTimeRequest();
 
 
 public slots:

@@ -74,7 +74,7 @@ public:
     quint32 Mes;
     bool TimeThrFinished, ModBusThrFinished;
     QTimer* BdaTimer, *ReceiveTimer;
-    QThread *Modthr;
+    QThread *Modthr, *thrTime;
     quint8 PredAlarmEvents[20];
     quint8 AlarmEvents[20];
     int fileSize, curfileSize;
@@ -86,6 +86,29 @@ public:
         unsigned short product_id;
         wchar_t serial[20];
     };
+
+    typedef struct
+    {
+        quint32 SigVal;
+        quint8 SigQuality;
+        //quint64 CP56Time;
+    }BS104;
+
+    struct Bd11
+    {
+        quint32 dev;
+        quint32 predAlarm;
+        quint32 alarm;
+    };
+
+    Bd11 Bd_block11;
+
+    struct Coils
+    {
+        int countBytes;
+        quint8 Bytes[20];
+    };
+
 
     /*struct ModBus_Settings
     {
@@ -164,6 +187,8 @@ public:
     QWidget *HthWidget();
     QWidget *ReleWidget();
     QWidget *Least();
+    QWidget *Wpred;
+    QWidget *Walarm;
 
 #if PROGSIZE >= PROGSIZE_LARGE
     void SetSlideWidget();
@@ -216,6 +241,10 @@ public slots:
     void PredAlarmState();
     void AlarmState();
     void FileTimeOut();
+    void GetUSBAlarmTimerTimeout();
+    void GetUSBAlarmInDialog();
+    void ModbusUpdateStatePredAlarmEvents(Coils* Signal);
+    void ModBusUpdatePredAlarmEvents(Coils* Signal);
 
 
 private slots:

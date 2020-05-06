@@ -89,7 +89,7 @@ QWidget *Check_84::Bd1W(QWidget *parent)
         glyout->addWidget(WDFunc::NewLBL(parent, "Tg_d ф."+phase[i]+", %"),8,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2423+i), ValuesFormat, \
                                           "Тангенсы дельта вводов, %"),9,i,1,1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "dCbush ф."+phase[i]+", пФ"),10,i,1,1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "dCbush ф."+phase[i]+", %"),10,i,1,1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2426+i), ValuesFormat, \
                                           "Изменение емкостей вводов, пФ"),11,i,1,1);
         glyout->addWidget(WDFunc::NewLBL(parent, "dTg_d ф."+phase[i]+", %"),12,i,1,1);

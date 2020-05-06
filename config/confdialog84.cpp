@@ -547,7 +547,7 @@ void ConfDialog84::SetupUI()
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Гистерезис на отключение сигнализации по dTg, % от уставки:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "GdTg", 0, 10000, 1, paramcolor), row,2,1,3);
+    glyout->addWidget(WDFunc::NewSPB(this, "GdTg", 0, 10000, 3, paramcolor), row,2,1,3);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Гистерезис на отключение сигнализации по небалансу токов, %:"), row,1,1,1);

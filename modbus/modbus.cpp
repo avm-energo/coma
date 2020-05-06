@@ -83,6 +83,11 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
     SignalGroups[7].secondbyteadr = 0x60;
     SignalGroups[7].firstbytequantity = 0;
     SignalGroups[7].secondbytequantity = 0x0A;
+    SignalGroups[8].signaltype=0x01;
+    SignalGroups[8].firstbyteadr = 0x0B;
+    SignalGroups[8].secondbyteadr = 0xC3;
+    SignalGroups[8].firstbytequantity = 0;
+    SignalGroups[8].secondbytequantity = 0x19;
 
 
 
@@ -219,6 +224,7 @@ void ModBus::ReadPort()
   quint8 size;
   qint64 cursize;
   int i = 0, startadr, signalsSize, ival;
+  Coils *Coil = new Coils;
   //ModBusInterrogateTimer->stop();
   //responseBuffer = new QByteArray;
   responseBuffer.clear();
@@ -239,7 +245,18 @@ void ModBus::ReadPort()
 
       if(MYKSS == crcfinal)
       {
-        signalsSize = responseBuffer.data()[2]/4; // количество байт
+        if(Group == 8)
+        {
+           Coil = new Coils;
+           Coil->countBytes = responseBuffer.data()[2];
+           signalsSize = 0;
+           for(i=0; i<Coil->countBytes; i++)
+           {
+             Coil->Bytes[i] = responseBuffer.data()[3+i];
+           }
+        }
+        else
+        signalsSize = responseBuffer.data()[2]/4; // количество байт float или u32
 
         if(ComData.adr == 1)
         BSISig = new ModBusBSISignal[signalsSize];
@@ -295,14 +312,18 @@ void ModBus::ReadPort()
         }
         else
         {
-           Group++;
 
            if(Group == 8)
+           emit coilsignalsready(Coil);
+           else
+           emit signalsreceived(Sig, &signalsSize);
+
+           Group++;
+
+           if(Group == 9)
            Group= 0;
 
            //Reading = 0;
-
-           emit signalsreceived(Sig, &signalsSize);
         }
       }
       else
@@ -318,6 +339,10 @@ void ModBus::ReadPort()
           commands = false;
           Reading = false;
           Group++;
+
+          if(Group == 9)
+          Group= 0;
+
           responseBuffer = serialPort->read(cursize);
           if((responseBuffer.data()[3] == (char)0xC2) && (responseBuffer.data()[4] == (char)0xC1))
           emit errorRead();
@@ -406,6 +431,9 @@ void ModBus::WriteToPort()
                 bytes->append(static_cast<char>(KSS));
 
                 readSize = 5+2*SignalGroups[Group].secondbytequantity;
+
+                if(Group == 8)
+                readSize = 8;
 
 
             }

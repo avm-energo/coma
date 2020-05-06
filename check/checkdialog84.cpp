@@ -276,7 +276,7 @@ void CheckDialog84::UpdateSponData(Parse104::SponSignals104* Signal)
             }
             else
             {
-               WDFunc::SetLBLTColor(this,QString::number(2423+i),TABCOLORA1);
+               WDFunc::SetLBLTColor(this,QString::number(2423+i),ACONFOCLR);
             }
 
         }
@@ -304,9 +304,33 @@ void CheckDialog84::UpdateSponData(Parse104::SponSignals104* Signal)
             }
             else
             {
-               WDFunc::SetLBLTColor(this,QString::number(2420+i),TABCOLORA1);
+               WDFunc::SetLBLTColor(this,QString::number(2420+i),ACONFOCLR);
             }
 
+        }
+
+        if(sig.Spon.SigAdr == 3034)
+        {
+            if(sig.Spon.SigVal == 1)
+            {
+               WDFunc::SetLBLTColor(this,QString::number(2432),TABCOLORA1);
+            }
+            else
+            {
+               WDFunc::SetLBLTColor(this,QString::number(2432),ACONFOCLR);
+            }
+        }
+
+        if(sig.Spon.SigAdr == 3035)
+        {
+            if(sig.Spon.SigVal == 1)
+            {
+               WDFunc::SetLBLTColor(this,QString::number(2432),REDCOLOR);
+            }
+            else
+            {
+               WDFunc::SetLBLTColor(this,QString::number(2432),ACONFOCLR);
+            }
         }
     }
 }

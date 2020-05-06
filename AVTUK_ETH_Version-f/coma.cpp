@@ -314,6 +314,7 @@ void Coma::Stage3()
              connect(Modthr,SIGNAL(started()),modBus,SLOT(WriteToPort()));
              CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
              connect(modBus,SIGNAL(BsiFromModBus(ModBusBSISignal*, int*)),idlg,SLOT(FillBsiFromModBus(ModBusBSISignal*, int* )));
+             connect(modBus,SIGNAL(coilsignalsready(Coils*)),this,SLOT(ModbusUpdateStatePredAlarmEvents(Coils*)));
              modBus->BSIrequest();
 
          }
@@ -322,7 +323,7 @@ void Coma::Stage3()
          {
            TimeFunc::Wait(100);
            count++;
-           if(count == 20)
+           if(count == 50)
            {
              count = 0;
              DisconnectAndClear();
@@ -371,6 +372,7 @@ void Coma::Stage3()
             CheckB->checkIndex = MainTW->indexOf(CheckB);
             ConfM->checkIndex = CheckB->checkIndex;
             connect(BdaTimer,SIGNAL(timeout()),CheckB,SLOT(BdTimerTimeout()));
+            connect(BdaTimer,SIGNAL(timeout()),this,SLOT(GetUSBAlarmTimerTimeout()));
         }
     }
     str = (CheckB == nullptr) ? "Текущие параметры" : "Текущие параметры\nМезонин";
@@ -411,8 +413,8 @@ void Coma::Stage3()
         connect(MainTW, SIGNAL(tabClicked(int)), ConfM, SLOT(ReadConf(int))); //tabClicked
     }
 
-    if (MTypeB == 0xA200 && MainInterface == "USB") // для МНК
-    {
+    //if (MTypeB == 0xA200 && MainInterface == "USB") // для МНК
+    //{
 
         MNKTime *Time = new MNKTime();
         connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Start_Timer(int))); //tabClicked
@@ -420,19 +422,20 @@ void Coma::Stage3()
         connect(ConfM, SIGNAL(stopRead(int)), Time,SLOT(Stop_Timer(int)));
         MainTW->addTab(Time, "Время");
         Time->timeIndex = MainTW->indexOf(Time);
+        if(ConfM != nullptr)
         ConfM->timeIndex = Time->timeIndex;
 
-        QThread *thr = new QThread;
-        Time->moveToThread(thr);
+        thrTime = new QThread;
+        Time->moveToThread(thrTime);
         connect(this,SIGNAL(stoptime()),Time,SLOT(StopSlot()));
-        connect(Time, SIGNAL(finished()), thr, SIGNAL(finished()));
+        connect(Time, SIGNAL(finished()), thrTime, SIGNAL(finished()));
         //connect(thr, SIGNAL(finished()), this, SLOT(CheckTimeFinish()));
-        connect(thr,SIGNAL(finished()),Time,SLOT(deleteLater()));
+        connect(thrTime,SIGNAL(finished()),Time,SLOT(deleteLater()));
         //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
-        connect(thr,SIGNAL(started()),Time,SLOT(slot2_timeOut()));
-        thr->start();
+        connect(thrTime,SIGNAL(started()),Time,SLOT(slot2_timeOut()));
 
-    }
+
+   // }
 
     /*str = "Проверка";
     if ((CheckB != nullptr) && (insl.size() != 0))
@@ -484,6 +487,8 @@ void Coma::Stage3()
 
     if(MainInterface == "USB")
     BdaTimer->start();
+
+    //thrTime->start();
 }
 
 void Coma::PrepareDialogs()

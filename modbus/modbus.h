@@ -55,7 +55,7 @@ public:
         char secondbytequantity;
 
     };
-    ModBus_Groups SignalGroups[8];
+    ModBus_Groups SignalGroups[9];
 
     struct information
     {
@@ -73,6 +73,12 @@ public:
     };
 
     ComInfo ComData;
+
+    struct Coils
+    {
+        int countBytes;
+        quint8 Bytes[20];
+    };
 
     int deviceAdr;
     int Group, readSize;
@@ -161,6 +167,7 @@ signals:
  void errorRead();
  void errorCrc();
  void finished();
+ void coilsignalsready(Coils*);
  //void stopModBus();
 
 
