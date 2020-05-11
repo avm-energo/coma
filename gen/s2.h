@@ -32,12 +32,13 @@ public:
     // S2: получение размера:
     static int StoreDataSize(FileHeader *, DataRec *); //>0 - успешно, иначе код ошибки
     // S2: Разборщик из памяти:
-    static int RestoreDataMem(void *, int, QVector<DataRec> *); //0 - успешно, иначе код ошибки
+    static int RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr); //0 - успешно, иначе код ошибки
     // S2: Поиск элемента в массиве описаний
     static DataRec *FindElem(QVector<DataRec> *, quint32);
     static quint32 getTime32();
     static quint32 GetCRC32(char *, quint32);
     static void updCRC32(char byte, quint32 *dwCRC32);
+    static bool CheckCRC32(unsigned char *m, quint32 length, quint32 crctocheck);
 
 private:
 //    const unsigned long dwPolynomial = 0xEDB88320;

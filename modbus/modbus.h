@@ -48,11 +48,11 @@ public:
 
     struct ModBus_Groups
     {
-        char signaltype;
-        char firstbyteadr;
-        char secondbyteadr;
-        char firstbytequantity;
-        char secondbytequantity;
+        unsigned char signaltype;
+        unsigned char firstbyteadr;
+        unsigned char secondbyteadr;
+        unsigned char firstbytequantity;
+        unsigned char secondbytequantity;
 
     };
     ModBus_Groups SignalGroups[8];

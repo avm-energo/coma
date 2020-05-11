@@ -11,6 +11,8 @@
 #include <QPushButton>
 #include "ecombobox.h"
 #include "passwordlineedit.h"
+#include "etableview.h"
+#include "etablemodel.h"
 
 class WDFunc
 {
@@ -104,10 +106,11 @@ public:
     static QString StringValueWithCheck(float value, int precision = 5);
     static QVariant FloatValueWithCheck(float value);
     static QImage *TwoImages(const QString &first, const QString &second);
-    static QPushButton *NewPB(QWidget *parent, const QString &text, \
-                      const QObject *receiver, const char *method, const QString &pbtooltip="");
-    static bool LE_read_data(QWidget *w, const QString &lename, QString &levalue);
-    static bool LE_write_data(QWidget *w, QString &levalue, const QString &lename);
+    static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, \
+                      const QObject *receiver, const char *method, const QString &icon="", const QString &pbtooltip="");
+    static void SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model);
+    static ETableView *NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model);
+    static ETableModel *TVModel(QWidget *w, const QString &tvname);
 };
 
 #endif // WD_FUNC

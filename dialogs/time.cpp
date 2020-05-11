@@ -215,7 +215,7 @@ void MNKTime::Start_Timer(int index)
           if(SysTime2 != nullptr)
           SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
           qStr = SysTime2->text();
-          WDFunc::LE_write_data(this, qStr, "Date");
+          WDFunc::SetLEData(this, qStr, "Date");
         }
 
         FinishThread = false;
@@ -258,7 +258,7 @@ void MNKTime::Write_Date()
     QDateTime myDateTime;
     uint *time = new uint;
     QString qStr;
-    WDFunc::LE_read_data(this, "Date", qStr);
+    WDFunc::LEData(this, "Date", qStr);
     myDateTime = QDateTime::fromString(qStr,"dd-MM-yyyy HH:mm:ss");
     myDateTime.setOffsetFromUtc(0);
     *time = myDateTime.toTime_t();

@@ -2,13 +2,7 @@
 #define COMMANDS_H
 
 #include "s2.h"
-//#ifdef USBENABLE
 #include "eusbhid.h"
-//#else
-//#ifdef COMPORTENABLE
-#include "eusbcom.h"
-//#endif
-//#endif
 #include "modulebsi.h"
 
 //#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением батареи
@@ -33,9 +27,8 @@ class Commands
     explicit Commands();
 public:
     static int GetBsi(ModuleBSI::Bsi &bsi);
-    static int GetFile(int filenum, QVector<S2::DataRec> *data);
-    static int GetOsc(int filenum, void *ptr); // приём осциллограмм, в ptr возвращается целиком весь считанный буфер
-    static int GetJour(int filenum, void *ptr);
+    static int GetFileWithRestore(int filenum, QVector<S2::DataRec> *data);
+    static int GetFile(int filenum, void *ptr);
     static int GetBac(char BacNum, void *ptr, int ptrsize);
     static int GetBd(char BdNum, void *BdPtr, int BdPtrSize);
     static int GetBda(char board, void *BdPtr, int BdPtrSize);
@@ -47,10 +40,6 @@ public:
     static int Connect();
     static void Disconnect();
     static bool isConnected();
-    static int SetUsingVariant(char variant); // задать вариант использования (выбор набора регулировочных параметров)
-    static int GetUsingVariant(char &variant); // получить вариант использования (выбор набора регулировочных параметров)
-    static int SetMode(char mode); // задать режим работы (коэффициенты при регулировке/рабочий режим)
-    static int GetMode(int &mode); // прочитать текущий режим работы
     static int WriteTimeMNK(uint32_t *Time,  int TimeSize);
     static int GetTimeMNK(uint &Time);
     static int WriteBd(char BdNum, void *BdPtr, int BdPtrSize);
@@ -61,12 +50,6 @@ public:
 private:
 };
 
-//#ifdef USBENABLE
-    extern EUsbHid *cn;
-//#else
-//#ifdef COMPORTENABLE
-//    extern EUsbCom *cn;
-//#endif
-//#endif
+extern EUsbHid *cn;
 
 #endif // COMMANDS_H

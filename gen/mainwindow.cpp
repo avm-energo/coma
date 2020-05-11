@@ -1,6 +1,6 @@
 #include <QHBoxLayout>
 #include <QTextEdit>
-#include <QPushButton>
+//#include <QPushButton>
 #include <QDir>
 #include <QMenu>
 #include <QApplication>
@@ -12,7 +12,6 @@
 #include <QSettings>
 #include <QGroupBox>
 #include <QCursor>
-#include <QThread>
 #include <QStringListModel>
 #include <QStandardPaths>
 #include <QPropertyAnimation>
@@ -248,9 +247,10 @@ void MainWindow::DeviceState()
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
-    QPushButton *pb = new QPushButton("Ok");
+/*    QPushButton *pb = new QPushButton("Ok");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
-    lyout->addWidget(pb,0);
+    lyout->addWidget(pb,0); */
+    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", dlg, SLOT(close)), 0);
     dlg->setLayout(lyout);
     dlg->exec();
 }
@@ -330,9 +330,10 @@ void MainWindow::PredAlarmState()
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
-    QPushButton *pb = new QPushButton("Ok");
+/*    QPushButton *pb = new QPushButton("Ok");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
-    lyout->addWidget(pb,0);
+    lyout->addWidget(pb,0); */
+    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", dlg, SLOT(close)), 0);
     dlg->setLayout(lyout);
     dlg->exec();
 }
@@ -402,7 +403,7 @@ void MainWindow::AlarmState()
 
 void MainWindow::UpdateReleWidget(Parse104::SponSignals104* Signal)
 {
-    int i = 0;
+//    int i = 0;
     //Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
@@ -445,8 +446,8 @@ void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104* Signal)
 {
     int i = 0;
     Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
+//    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+//    QPixmap *pmred = new QPixmap("images/redc.png");
     //QPixmap *pm[2] = {pmred, pmgrn};
 
     for(i=0; i<Signal->SigNumber; i++)
@@ -996,7 +997,7 @@ void MainWindow::SetProgressBar2(int cursize)
 void MainWindow::ShowInterfaceDialog()
 {
     QByteArray ba;
-    int res, i;
+//    int res, i;
     QDialog *dlg = new QDialog(this);
     QString Str;
     //QStringList device = QStringList() << "KDV" << "2" << "1" << "2";
@@ -1020,13 +1021,15 @@ void MainWindow::ShowInterfaceDialog()
     portscb->setModel(tmpmodel);
     lyout->addWidget(portscb);
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QPushButton *pb = new QPushButton("Далее");
+/*    QPushButton *pb = new QPushButton("Далее");
     connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
+    hlyout->addWidget(pb); */
+    hlyout->addWidget(WDFunc::NewPB(this, "", "Далее", dlg, SLOT(close)));
+/*    pb = new QPushButton("Отмена");
     //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
     connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
-    hlyout->addWidget(pb);
+    hlyout->addWidget(pb); */
+    hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", dlg, SLOT(close)));
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
     dlg->exec();
@@ -1051,15 +1054,8 @@ void MainWindow::ShowConnectDialog()
     {
          if(MainInterface == "USB")
          {
-             //#ifdef USBENABLE
              cn = new EUsbHid;
              connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
-             //#else
-             //#ifdef COMPORTENABLE
-             //    cn = new EUsbCom;
-             //    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
-             //#endif
-             //#endif
              connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
              connect(cn,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
              connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));

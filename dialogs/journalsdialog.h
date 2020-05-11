@@ -11,13 +11,23 @@
 
 #define MAXSWJNUM   262144
 
+#define SYSJOURID   0
+#define WORKJOURID  3010
+
 class JournalDialog : public QDialog
 {
     Q_OBJECT
 public:
     JournalDialog();
 
-    struct SystemWorkStruct{
+    enum JournalEnum
+    {
+        JOURSYS     = 0,
+        JOURWORK    = 1,
+        JOURMEAS    = 2
+    };
+
+    struct EventStruct{
     quint64 Time;
     quint8 EvType;
     quint8 EvNum[3];
@@ -48,37 +58,77 @@ public:
     };	// sizeof(Bda_trend_struct)=31*4=124
 
     quint8 start;
-    quint64 LTime;
+//    quint64 LTime;
     int SaveI;
-    QVector<S2::DataRec>* SaveWJour;
+/*    QVector<S2::DataRec>* SaveWJour;
     QVector<S2::DataRec>* SaveSJour;
-    QVector<S2::DataRec>* SaveMJour;
+    QVector<S2::DataRec>* SaveMJour; */
 
 private:
+    const QStringList SysJourDescription = QStringList() << "Произошёл рестарт программного обеспечения модуля"
+                                            << "Произошла запись и переход на новую конфигурацию"
+                                            << "Произошла запись и переход на новую версию ВПО"
+                                            << "Произошла запись в блок Bhb (hidden block)"
+                                            << "Произошла запись в блок Bhbm (hidden block)( Мезонин)"
+                                            << "Произошёл отказ внешней Flash-памяти 4 Мбайт на базовой плате"
+                                            << "Произошёл отказ внешней Flash-памяти 512 байт на мезонинной плате"
+                                            << "Ошибка работы внешней FRAM памяти"
+                                            << "Произошёл отказ при обновлении конфигурации"
+                                            << "Ошибка загрузки конфигурации из flash памяти"
+                                            << "Ошибка регулировочных коэффициентов (базовая)"
+                                            << "Ошибка регулировочных коэффициентов (Мезонин)"
+                                            << "Ошибка перегрев модуля"
+                                            << "Напряжение батарейки низкое (< 2,5 В)"
+                                            << "Ошибка связи с NTP сервером"
+                                            << "Ошибка связи с 1PPS от антенны"
+                                            << "Ошибка АЦП (Мезонин)"
+                                            << "Ошибка АЦП (базовая)"
+                                            << "Произошла запись регулировочные коэффициенты (базовая)"
+                                            << "Произошла запись регулировочные коэффициенты (Мезонин)"
+                                            << "Произошло стирание системного журнала"
+                                            << "Произошло стирание рабочего журнала"
+                                            << "Произошло стирание осциллограмм"
+                                            << "Произошло стирание журнала измерений"
+                                            << "Ошибка ВПО"
+                                            << "Ошибка встроенного АЦП"
+                                            << "Произошла запись в блок Bhb (hidden block)"
+                                            << "Произошла запись в блок Bhbm (hidden block)( Мезонин)";
 
-    ETableModel *TableSysModel;
-    ETableModel *TableWorkModel;
-    ETableModel *TableMeasModel;
-    void UpdateSysModel();
-    void UpdateWorkModel();
-    void UpdateMeasModel();
+    const QStringList WorkJourDescription = QStringList() << "Отсутствует сигнал напряжения фазы A"
+                                            << "Отсутствует сигнал напряжения фазы B"
+                                            << "Отсутствует сигнал напряжения фазы С"
+                                            << "Нет реактивного тока канала А (ток меньше 2мА)"
+                                            << "Нет реактивного тока канала B (ток меньше 2мА)"
+                                            << "Нет реактивного тока канала C (ток меньше 2мА)"
+                                            << "Не заданы начальные значения"
+                                            << "Низкое напряжение фазы A"
+                                            << "Низкое напряжение фазы B"
+                                            << "Низкое напряжение фазы C"
+                                            << "Сигнализация по приращению тангенса дельта ввода фазы А"
+                                            << "Сигнализация по приращению тангенса дельта ввода фазы B"
+                                            << "Сигнализация по приращению тангенса дельта ввода фазы C"
+                                            << "Авария по приращению тангенса дельта ввода фазы А"
+                                            << "Авария по приращению тангенса дельта ввода фазы B"
+                                            << "Авария по приращению тангенса дельта ввода фазы C"
+                                            << "Сигнализация по приращению C ввода фазы А"
+                                            << "Сигнализация по приращению C ввода фазы B"
+                                            << "Сигнализация по приращению C ввода фазы C"
+                                            << "Авария по приращению C ввода фазы А"
+                                            << "Авария по приращению C ввода фазы B"
+                                            << "Авария по приращению C ввода фазы C";
 
     void SetupUI();
-    void ProcessSWJournal(QByteArray &ba);
+    void FillEventsTable(QVector<S2::DataRec> *jour, int jourtype);
+    void FillMeasTable(QVector<S2::DataRec>*jour);
+    int GetJourNum(const QString &objname);
 
 signals:
-    void ReadJour(char*);
+    void ReadJour(char);
 
 private slots:
-    void GetSystemJour();
-    void GetWorkJour();
-    void GetMeasJour();
-    void FillSysJour(QVector<S2::DataRec>*);
-    void FillWorkJour(QVector<S2::DataRec>*);
-    void FillMeasJour(QVector<S2::DataRec>*);
-    void SaveMeasToTXTFile();
-    void SaveWorkToTXTFile();
-    void SaveSysToTXTFile();
+    void GetJour();
+    void EraseJour();
+    void SaveJour();
 };
 
 #endif // JOURNALDIALOG_H

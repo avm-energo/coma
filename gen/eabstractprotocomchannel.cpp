@@ -43,7 +43,7 @@ void EAbstractProtocomChannel::Send(char command, char board_type, void *ptr, in
         result = CN_NULLDATAERROR;
         return;
     }
-    outdata = static_cast<char *>(ptr);
+    OutData = static_cast<unsigned char *>(ptr);
     outdatasize = ptrsize; // размер области данных, в которую производить запись
     cmd = command;
     fnum = filenum;
@@ -74,12 +74,6 @@ bool EAbstractProtocomChannel::IsWriteUSBLog()
 
 void EAbstractProtocomChannel::TranslateDeviceAndSave(const QString &str)
 {
-/*#ifdef COMPORTENABLE
-    ComPort = str;
-    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
-    sets->setValue("Port", ComPort);
-#endif*/
-//#ifdef USBENABLE
     // формат строки: "VEN_" + QString::number(venid, 16) + "_ & DEV_" + QString::number(prodid, 16) + "_ & SN_" + sn;
     QStringList sl = str.split("_"); // 1, 3 и 5 - полезная нагрузка
     if (sl.size() < 6)
@@ -94,7 +88,6 @@ void EAbstractProtocomChannel::TranslateDeviceAndSave(const QString &str)
     tmps = sl.at(5);
     int z = tmps.toWCharArray(UsbPort.serial);
     UsbPort.serial[z] = '\x0';
-//#endif
 }
 
 void EAbstractProtocomChannel::InitiateSend()
@@ -147,7 +140,7 @@ void EAbstractProtocomChannel::InitiateSend()
         WriteData.append(BoardType);
         WriteData.resize(WriteData.size()+outdatasize);
         size_t tmpi = static_cast<size_t>(outdatasize);
-        memcpy(&(WriteData.data()[5]), &outdata[0], tmpi);
+        memcpy(&(WriteData.data()[5]), &OutData[0], tmpi);
         WriteDataToPort(WriteData);
         break;
     }
@@ -174,7 +167,7 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_WBt:
     {
         WriteData.append(BoardType);
-        WriteData.append(QByteArray::fromRawData(static_cast<const char *>(outdata), outdatasize));
+        WriteData.append(QByteArray::fromRawData(reinterpret_cast<const char *>(OutData), outdatasize));
         WRLength = outdatasize + 1;
         emit SetDataSize(WRLength); // сигнал для прогрессбара
         SetWRSegNum();
@@ -196,7 +189,7 @@ void EAbstractProtocomChannel::InitiateSend()
         AppendSize(WriteData, outdatasize);
         WriteData.resize(WriteData.size()+outdatasize);
         size_t tmpi = static_cast<size_t>(outdatasize);
-        memcpy(&(WriteData.data()[4]), &outdata[0], tmpi);
+        memcpy(&(WriteData.data()[4]), &OutData[0], tmpi);
         WriteDataToPort(WriteData);
         break;
     }
@@ -208,7 +201,7 @@ void EAbstractProtocomChannel::InitiateSend()
         WriteData.append(BoardType);
         WriteData.resize(WriteData.size()+outdatasize);
         size_t tmpi = static_cast<size_t>(outdatasize);
-        memcpy(&(WriteData.data()[5]), &outdata[0], tmpi);
+        memcpy(&(WriteData.data()[5]), &OutData[0], tmpi);
         WriteDataToPort(WriteData);
         break;
     }
@@ -338,7 +331,6 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             case CN_GBd:
             case CN_ErPg:
             case CN_GBt:
-            case CN_GF:
             case CN_GVar:
             case CN_GMode:
             case CN_GTime:
@@ -354,28 +346,72 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                     Finish(Error::ER_NOERROR);
                     return;
                 }
-                if (cmd == CN_GF) // надо проверить, тот ли номер файла принимаем
-                {
-                    if (RDSize < 16) // не пришла ещё шапка файла
-                        return;
-                    quint16 filenum;
-                    quint8 tmpi= ReadDataChunk[5];
-                    filenum = static_cast<unsigned short>(tmpi) * 256;
-                    tmpi = ReadDataChunk[4];
-                    filenum += tmpi;
-                    if (filenum != fnum)
-                    {
-                        Finish(USO_UNKNFILESENT);
-                        return;
-                    }
-                    memcpy(&RDLength, &(ReadDataChunk.data()[8]), sizeof(RDLength));
-                    RDLength += 16;
-                    emit SetDataSize(RDLength);
-                }
-                else if (cmd == CN_ErPg)
+                if (cmd == CN_ErPg)
                     emit SetDataSize(100);
                 else
                     emit SetDataSize(0); // длина неизвестна для команд с ответами без длины
+                bStep++;
+                break;
+            }
+            case CN_GF:
+            {
+                if (!GetLength())
+                {
+                    Finish(CN_RCVDATAERROR);
+                    return;
+                }
+                if (ReadDataChunkLength == 0)
+                {
+                    RDSize = 0;
+                    Finish(Error::ER_NOERROR);
+                    return;
+                }
+                // надо проверить, тот ли номер файла принимаем
+                if (RDSize < 16) // не пришла ещё шапка файла
+                    return;
+                // шапка:
+                // WORD fname;		// имя файла
+                // WORD service;	// сервисное слово (по умолчанию 0xFF)
+                // DWORD size;		// размер файла (без заголовка)
+                // DWORD crc32;     // контрольная сумма
+                // DWORD thetime;	// время создания файла
+
+                quint8 tmpi = ReadDataChunk[5];
+                quint16 filenum = static_cast<unsigned short>(tmpi) * 256;
+                tmpi = ReadDataChunk[4];
+                filenum += tmpi;
+                if (filenum != fnum)
+                {
+                    Finish(USO_UNKNFILESENT);
+                    return;
+                }
+                // вытаскиваем размер файла
+                memcpy(&RDLength, &(ReadDataChunk.data()[8]), sizeof(RDLength));
+                RDLength += 16;
+                if (RDLength > CN_MAXGETFILESIZE) // размер файла должен быть не более 16М
+                {
+                    Finish(CN_RCVLENGTHERROR);
+                    return;
+                }
+                emit SetDataSize(RDLength);
+                // если длина файла более 64к, используем файл
+                if (RDLength > CN_MAXMEMORYFILESIZE)
+                {
+                    QString tmps = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/comatempfile.dat";
+                    OutFile = new QFile(tmps);
+                    OutFile->resize(RDLength+16);
+                    OutData = OutFile->map(0, RDLength);
+                    if (OutData == nullptr)
+                    {
+                        Finish(CN_NOMAPFILE);
+                        return;
+                    }
+                }
+                else
+                    // иначе выделяем место в памяти
+                    OutData = new unsigned char(RDLength+16);
+                memcpy(OutData, &ReadDataChunk.data()[0], 16); // копируем FileHeader
+                RDCount = 0;
                 bStep++;
                 break;
             }
@@ -396,10 +432,6 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             if (RDSize < ReadDataChunkLength)
                 return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
             ReadDataChunk.remove(0, 4); // убираем заголовок с < и длиной
-            ReadData.append(&(ReadDataChunk.data()[0]), ReadDataChunkLength);
-            RDSize = ReadData.size();
-            emit SetDataCount(RDSize); // сигнал для прогрессбара
-            ReadDataChunk.clear();
             switch (cmd)
             {
             case CN_GBsi:
@@ -411,12 +443,16 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             case CN_GMode:
             case CN_GTime:
             {
+                ReadData.append(&(ReadDataChunk.data()[0]), ReadDataChunkLength);
+                RDSize = ReadData.size();
+                emit SetDataCount(RDSize); // сигнал для прогрессбара
+                ReadDataChunk.clear();
                 if ((RDSize >= outdatasize) || (ReadDataChunkLength < CN_MAXSEGMENTLENGTH))
                 {
                     emit SetDataSize(RDSize); // установка размера прогрессбара, чтобы не мелькал
                     RDSize = qMin(outdatasize, RDSize); // если даже приняли больше, копируем только требуемый размер
                     size_t tmpi = static_cast<size_t>(RDSize);
-                    memcpy(outdata,ReadData.data(),tmpi);
+                    memcpy(OutData,ReadData.data(),tmpi);
                     Finish(Error::ER_NOERROR);
                 }
                 else
@@ -425,14 +461,30 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             }
             case CN_GF:
             {
-                if (RDSize >= RDLength)
+                int tmpi = RDCount + ReadDataChunkLength;
+                if (tmpi > RDLength) // проверка на выход за диапазон
+                    // копируем только требуемое количество байт
+                    ReadDataChunkLength = RDLength - RDCount;
+                memcpy(&OutData[RDCount], &ReadDataChunk.data()[0], ReadDataChunkLength);
+                RDCount += ReadDataChunkLength;
+                emit SetDataCount(RDCount); // сигнал для прогрессбара
+                ReadDataChunk.clear();
+                if (RDCount >= RDLength)
                 {
-                    if ((fnum >= CN_MINOSCID) && (fnum <= CN_MAXOSCID)) // для осциллограмм особая обработка
+                    // проверка контрольной суммы файла
+                    quint32 crctocheck;
+                    memcpy(&crctocheck, &OutData[8], sizeof(quint32));
+                    if (!S2::CheckCRC32(&OutData[16], (RDLength-16), crctocheck))
+                    {
+                        Finish(S2_CRCERROR);
+                        return;
+                    }
+/*                    if ((fnum >= CN_MINOSCID) && (fnum <= CN_MAXOSCID)) // для осциллограмм особая обработка
                     {
                         QVector<S2::DataRec> DRosc;
                         RDSize = qMin(RDLength, RDSize); // если даже приняли больше, копируем только требуемый размер
                         size_t tmpi = static_cast<size_t>(RDSize);
-                        memcpy(outdata,ReadData.data(),tmpi);
+                        memcpy(OutData,ReadData.data(),tmpi);
                         DRosc.append({static_cast<quint32>(ReadData.data()[16]),static_cast<quint32>(ReadData.data()[20]),&ReadData.data()[24]});
                         tmpi = 8; //sizeof(FileHeader);
                         memcpy(&DRosc.data()[0],&ReadData.data()[16],tmpi);
@@ -466,24 +518,20 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                         }
                         res = S2::RestoreDataMem(ReadData.data(), RDSize, DRJour);
                         int size = DRJour->size();
-                        memcpy(outdata,&DRJour->data()[0], 12);
+                        memcpy(OutData,&DRJour->data()[0], 12);
 
                         break;
                     }
-
-                    if (DR->isEmpty())
+*/
+                    if (DR != nullptr)
                     {
-                        Finish(CN_NULLDATAERROR);
-                        break;
+                        res = S2::RestoreDataMem(ReadData.data(), RDSize, DR);
+                        if (res == 0)
+                            Finish(Error::ER_NOERROR);
+                        else
+                            Finish(res);
                     }
-                    res = S2::RestoreDataMem(ReadData.data(), RDSize, DR);
-                    if (res == 0)
-                    {
-    //                    SendOk(false);
-                        Finish(Error::ER_NOERROR);
-                    }
-                    else
-                        Finish(res);
+                    Finish(Error::ER_NOERROR);
                 }
                 else
                     SendOk(true);
@@ -491,7 +539,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             }
             case CN_ErPg:
             {
-                quint16 OscNum = static_cast<quint8>(ReadData.at(0))+static_cast<quint8>(ReadData.at(1))*256;
+                quint16 OscNum = static_cast<quint8>(ReadDataChunk.at(0))+static_cast<quint8>(ReadDataChunk.at(1))*256;
                 emit SetDataCount(OscNum);
                 if (OscNum == 100)
                 {

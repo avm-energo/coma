@@ -7,16 +7,15 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <QDataStream>
+#include <QFile>
 
 #include "s2.h"
 #include "log.h"
 
-//#ifdef COMPORTENABLE
-//#define CN_MAXSEGMENTLENGTH 764 // 768-4 ('<',cmd,L,L) максимальная длина одного сегмента (0x300)
-//#endif
-//#ifdef USBENABLE
 #define CN_MAXSEGMENTLENGTH 60 // 64-4 ('<',cmd,L,L)
-//#endif
+
+#define CN_MAXMEMORYFILESIZE    65535
+#define CN_MAXGETFILESIZE       16777215
 
 // Канал связи с модулем
 
@@ -129,7 +128,7 @@ private slots:
     void OscTimerTimeout();
 
 private:
-    char *outdata;
+    unsigned char *OutData;
     QByteArray ReadData, ReadDataChunk;
     QByteArray WriteData;
     QTimer *TTimer, *OscTimer;
@@ -148,6 +147,8 @@ private:
     char BoardType;
     static bool WriteUSBLog;
     QDataStream DataStream;
+    QFile *OutFile;
+    int RDCount; // количество полезных считанных байт (без заголовков)
 
     void InitiateSend();
     void WriteDataToPort(QByteArray &ba);

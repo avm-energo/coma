@@ -20,7 +20,7 @@
 #include "../gen/error.h"
 #include "../gen/colors.h"
 
-EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent) :
+EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board, QWidget *parent) :
     QDialog(parent)
 {
     XlsxWriting = false;
@@ -192,7 +192,7 @@ void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
     pb = this->findChild<QPushButton *>("pbmeasurements");
     if (pb != nullptr)
         pb->setEnabled(false);
-    ElapsedTimeCounter = new QTime;
+    ElapsedTimeCounter = new QElapsedTimer;
     ElapsedTimeCounter->start();
     StartAnalogMeasurements();
 }
@@ -221,8 +221,8 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     {
         if (!XlsxWriting || (XlsxWriting && (Bd_blocks[Bd_blocks.keys().at(bdnum)]->toxlsxwrite)))
         {
-            int tmpi = Bd_blocks.keys().at(bdnum);
-            /*if (Commands::GetBd(tmpi, Bd_blocks[tmpi]->block, Bd_blocks[tmpi]->blocknum) != Error::ER_NOERROR)
+/*            int tmpi = Bd_blocks.keys().at(bdnum);
+            if (Commands::GetBd(tmpi, Bd_blocks[tmpi]->block, Bd_blocks[tmpi]->blocknum) != Error::ER_NOERROR)
             {
                 WARNMSG("Ошибка при приёме данных");
                 Busy = false;

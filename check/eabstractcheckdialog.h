@@ -15,6 +15,7 @@
 #define EABSTRACTCHECKDIALOG_H
 
 #include <QDialog>
+#include <QElapsedTimer>
 #include <QTimer>
 #include "QtXlsx/xlsxdocument.h"
 #include "../gen/modulebsi.h"
@@ -29,7 +30,7 @@ class EAbstractCheckDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit EAbstractCheckDialog(BoardTypes board, QWidget *parent = nullptr);
+    explicit EAbstractCheckDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
     void SetupUI(QStringList &tabnames);
 
     virtual QWidget *BdUI(int bdnum) = 0; // визуализация наборов текущих данных от модуля
@@ -78,7 +79,7 @@ private:
 
     Bip Bip_block;
     bool XlsxWriting, Busy;
-    QTime *ElapsedTimeCounter;
+    QElapsedTimer *ElapsedTimeCounter;
 //    QWidget *Parent;
 
     void CheckIP();

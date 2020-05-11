@@ -175,6 +175,7 @@ void ModBus::onAboutToClose()
 
 void ModBus::onResponseTimeout(int timerId)
 {
+    Q_UNUSED(timerId)
         /*m_responseTimer.stop();
         if (m_state != State::WaitingForReplay || m_queue.isEmpty())
             return;
@@ -330,7 +331,7 @@ void ModBus::ReadPort()
 void ModBus::WriteToPort()
 {
     QByteArray* bytes = new QByteArray;
-    char zero = 0;
+//    char zero = 0;
     //quint32 crc=0;
     quint16 KSS = '\0';
     int i = 0;
@@ -434,10 +435,10 @@ void ModBus::WriteToPort()
 void ModBus::BSIrequest()
 {
     QByteArray* bytes = new QByteArray;
-    char zero = 0;
+//    char zero = 0;
     //quint32 crc=0;
     quint16 KSS = '\0';
-    int i = 0;
+//    int i = 0;
     qint64 st;
 
     ComData.ModCom = 0x04;
@@ -513,12 +514,12 @@ void ModBus::StopModSlot()
 void ModBus::ModWriteCor(information* info, float* data)//, int* size)
 {
 
-    QByteArray* bytes = new QByteArray;
+//    QByteArray* bytes = new QByteArray;
     //char zero = 0;
     //quint32 crc=0;
-    quint16 KSS = '\0', quantity = 0;
-    quint8 sizebytes = '\0';
-    qint64 st;
+//    quint16 KSS = '\0', quantity = 0;
+//    quint8 sizebytes = '\0';
+//    qint64 st;
     int i;
     quint32 fl;
     //bool readingState = Reading;

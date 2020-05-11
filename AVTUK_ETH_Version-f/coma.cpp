@@ -567,7 +567,7 @@ void Coma::PrepareDialogs()
             connect(CheckB,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)),this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)));
 
             //ConfM = new ConfDialog84(S2Config);
-            connect(JourD,SIGNAL(ReadJour(char*)), ch104, SLOT(SelectFile(char*)));           
+            connect(JourD,SIGNAL(ReadJour(char)), ch104, SLOT(SelectFile(char)));
             connect(ch104,SIGNAL(sendJourSysfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillSysJour(QVector<S2::DataRec>*)));
             connect(ch104,SIGNAL(sendJourWorkfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillWorkJour(QVector<S2::DataRec>*)));
             connect(ch104,SIGNAL(sendJourMeasfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillMeasJour(QVector<S2::DataRec>*)));
