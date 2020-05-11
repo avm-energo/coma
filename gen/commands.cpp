@@ -27,9 +27,10 @@ int Commands::GetBsi(ModuleBSI::Bsi &bsi)
 int Commands::GetFileWithRestore(int filenum, QVector<S2::DataRec> *data)
 {
 #if PROGSIZE != PROGSIZE_EMUL
+    unsigned char *tmp = new unsigned char;
     if (cn != 0)
     {
-        cn->Send(CN_GF, BoardTypes::BT_NONE, nullptr, 0, filenum, data);
+        cn->Send(CN_GF, BoardTypes::BT_NONE, tmp, 0, filenum, data);
         return cn->result;
     }
     return Error::ER_GENERALERROR;

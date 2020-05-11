@@ -1024,12 +1024,12 @@ void MainWindow::ShowInterfaceDialog()
 /*    QPushButton *pb = new QPushButton("Далее");
     connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
     hlyout->addWidget(pb); */
-    hlyout->addWidget(WDFunc::NewPB(this, "", "Далее", dlg, SLOT(close)));
+    hlyout->addWidget(WDFunc::NewPB(this, "", "Далее", dlg, SLOT(close())));
 /*    pb = new QPushButton("Отмена");
     //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
     connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
     hlyout->addWidget(pb); */
-    hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", dlg, SLOT(close)));
+    hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", dlg, SLOT(close())));
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
     dlg->exec();

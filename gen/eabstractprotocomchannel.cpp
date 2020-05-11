@@ -43,7 +43,7 @@ void EAbstractProtocomChannel::Send(char command, char board_type, void *ptr, in
         result = CN_NULLDATAERROR;
         return;
     }
-    OutData = static_cast<unsigned char *>(ptr);
+//    OutData = static_cast<unsigned char *>(ptr);
     outdatasize = ptrsize; // размер области данных, в которую производить запись
     cmd = command;
     fnum = filenum;
@@ -60,6 +60,7 @@ void EAbstractProtocomChannel::Send(char command, char board_type, void *ptr, in
     QEventLoop loop;
     connect(this, SIGNAL(QueryFinished()), &loop, SLOT(quit()));
     loop.exec();
+    ptr = OutData;
 }
 
 void EAbstractProtocomChannel::SetWriteUSBLog(bool bit)
@@ -395,7 +396,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 }
                 emit SetDataSize(RDLength);
                 // если длина файла более 64к, используем файл
-                if (RDLength > CN_MAXMEMORYFILESIZE)
+/*                if (RDLength > CN_MAXMEMORYFILESIZE)
                 {
                     QString tmps = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/comatempfile.dat";
                     OutFile = new QFile(tmps);
@@ -408,9 +409,9 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                     }
                 }
                 else
-                    // иначе выделяем место в памяти
+                    // иначе выделяем место в памяти */
                     OutData = new unsigned char(RDLength+16);
-                memcpy(OutData, &ReadDataChunk.data()[0], 16); // копируем FileHeader
+//                memcpy(OutData, &ReadDataChunk.data()[0], 16); // копируем FileHeader
                 RDCount = 0;
                 bStep++;
                 break;
@@ -465,7 +466,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 if (tmpi > RDLength) // проверка на выход за диапазон
                     // копируем только требуемое количество байт
                     ReadDataChunkLength = RDLength - RDCount;
-                memcpy(&OutData[RDCount], &ReadDataChunk.data()[0], ReadDataChunkLength);
+                memcpy(OutData + RDCount, &ReadDataChunk.data()[0], ReadDataChunkLength);
                 RDCount += ReadDataChunkLength;
                 emit SetDataCount(RDCount); // сигнал для прогрессбара
                 ReadDataChunk.clear();
@@ -473,12 +474,12 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 {
                     // проверка контрольной суммы файла
                     quint32 crctocheck;
-                    memcpy(&crctocheck, &OutData[8], sizeof(quint32));
+/*                    memcpy(&crctocheck, &OutData[8], sizeof(quint32));
                     if (!S2::CheckCRC32(&OutData[16], (RDLength-16), crctocheck))
                     {
                         Finish(S2_CRCERROR);
                         return;
-                    }
+                    } */
 /*                    if ((fnum >= CN_MINOSCID) && (fnum <= CN_MAXOSCID)) // для осциллограмм особая обработка
                     {
                         QVector<S2::DataRec> DRosc;
@@ -525,11 +526,10 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
 */
                     if (DR != nullptr)
                     {
-                        res = S2::RestoreDataMem(ReadData.data(), RDSize, DR);
-                        if (res == 0)
-                            Finish(Error::ER_NOERROR);
-                        else
-                            Finish(res);
+//                        res = S2::RestoreDataMem(OutData, RDLength, DR);
+//                        Finish(res);
+                        Finish(Error::ER_NOERROR);
+                        return;
                     }
                     Finish(Error::ER_NOERROR);
                 }
