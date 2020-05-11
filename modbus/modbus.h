@@ -156,11 +156,14 @@ public slots:
         void StopModSlot();
         void ModWriteCor(information *info, float*);//, int*);
         void ModReadCor(information* info);
+        void InterrogateTime();
+        void WriteTime(uint*);
 
 
 signals:
  void signalsreceived(ModBusSignal *Signal, int* size);
  void corsignalsreceived(ModBusSignal *Signal, int* size);
+ void timeSignalsReceived(ModBusBSISignal *Signal);
  void BsiFromModBus(ModBusBSISignal*, int*);
  void ModBusState(QModbusDevice::State);
  void nextGroup();
@@ -168,6 +171,7 @@ signals:
  void errorCrc();
  void finished();
  void coilsignalsready(Coils*);
+ void timeReadError();
  //void stopModBus();
 
 

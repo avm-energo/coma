@@ -58,6 +58,8 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
             this,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),Qt::BlockingQueuedConnection);
     connect(Parse,SIGNAL(sponsignalsreceived(Parse104::SponSignals104*)),\
             this,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),Qt::BlockingQueuedConnection);
+    connect(Parse,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),\
+            this,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),Qt::BlockingQueuedConnection);
     connect(Parse,SIGNAL(UpdateReleWidget(Parse104::SponSignals104*)),\
             this,SIGNAL(relesignalsready(Parse104::SponSignals104*)),Qt::BlockingQueuedConnection);
     connect(Parse,SIGNAL(sendS()),this,SLOT(SendS()));
@@ -473,9 +475,10 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
     quint32 ObjectAdr = 0;
     quint32 index = 6;
     int FileSize;
-    int res,i,cntfl = 0,cntflTimestamp = 0,cntspon = 0,cntbs = 0;
+    int res,i,cntfl = 0,cntflTimestamp = 0,cntspon = 0,cntbs = 0, cntsponTime = 0;
     Parse104::FlSignals104* flSignals = new Parse104::FlSignals104[DUI.qualifier.Number];
     Parse104::SponSignals104* sponSignals = new Parse104::SponSignals104[DUI.qualifier.Number];
+    Parse104::SponSignalsWithTime* SponSignalsWithTime = new Parse104::SponSignalsWithTime[DUI.qualifier.Number];
     Parse104::BS104Signals* BS104Signals = new Parse104::BS104Signals[DUI.qualifier.Number];
     char *num = new char;
     num = (char*)ba[9];
@@ -548,11 +551,11 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
         case M_SP_NA_1:
         {
 
-           (sponSignals+cntspon)->Spon.SigAdr=ObjectAdr;
+           (sponSignals)->Spon[cntspon].SigAdr=ObjectAdr;
            quint8 value;
            memcpy(&value,&ba[index],1);
            index += 1;
-           (sponSignals+cntspon)->Spon.SigVal=value;
+           (sponSignals)->Spon[cntspon].SigVal=value;
            /*quint64 time;
            memcpy(&time,&ba[index],8);
            index += 8;
@@ -565,6 +568,27 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
 
            break;
         }
+
+        case M_SP_TB_1:
+        {
+
+            (SponSignalsWithTime)->Spon[cntsponTime].SigAdr=ObjectAdr;
+            quint8 value;
+            memcpy(&value,&ba[index],1);
+            index += 1;
+            (SponSignalsWithTime)->Spon[cntsponTime].SigVal=value;
+            quint64 time;
+            memcpy(&time,&ba[index],7);
+            index += 7;
+            (SponSignalsWithTime)->Spon[cntsponTime].CP56Time=time;
+
+            if(ObjectAdr>=950 && ObjectAdr<953)
+            emit UpdateReleWidget(sponSignals+cntsponTime);
+
+             cntsponTime++;
+
+             break;
+         }
 
         case M_BO_NA_1:
         {
@@ -786,6 +810,12 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
     {
         sponSignals->SigNumber = cntspon;
         emit sponsignalsreceived(sponSignals);
+    }
+
+    if(cntsponTime != 0)
+    {
+        SponSignalsWithTime->SigNumber = cntsponTime;
+        emit sponsignalWithTimereceived(SponSignalsWithTime);
     }
 
     if(cntbs != 0)
@@ -1466,4 +1496,81 @@ void iec104::Com50(quint16* adr, float *param)
     //SecNum++;
 
     //Parse->V_S++;
+}
+
+void iec104::InterrogateTimeGr15()
+{
+    APCI GI;
+    ASDU GTime;
+    quint16 VR = Parse->V_R;
+
+    GTime[0] = static_cast<char>(C_IC_NA_1);
+    GTime[1] = static_cast<char>(1);
+    GTime[2] = static_cast<char>(6);
+    GTime[3] = static_cast<char>(0);
+    GTime[4] = static_cast<char>(BaseAdr);
+    GTime[5] = static_cast<char>(BaseAdr>>8);
+    GTime[6] = static_cast<char>(0);
+    GTime[7] = static_cast<char>(0);
+    GTime[8] = static_cast<char>(0);
+    GTime[9] = static_cast<char>(35);
+
+    GI.start = I104_START;
+    GI.APDUlength = 14;
+    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
+    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
+    GI.contrfield[2] = (VR & 0x007F) << 1;
+    GI.contrfield[3] = (VR & 0x7F80) >> 7;
+    Parse->cmd = I104_S;
+    Send(1, GI, GTime); // ASDU = QByteArray()
+
+    Parse->AckVR = Parse->V_R;
+
+    //while(stopincrementing)
+    //QThread::usleep(10);
+
+   // Parse->V_S++;
+
+    Parse->Interogatetimer->start();
+
+}
+
+void iec104::com51WriteTime(uint* Time)
+{
+    APCI GI;
+    ASDU Cmd;
+    QByteArray *ba = new QByteArray;
+    quint32 adr = 4601;
+    ba->resize(4);
+    //char *ptr = static_cast<char*>(Cmd.data());
+    quint16 VR = Parse->V_R;
+
+    memcpy(&ba->data()[0], (quint8*)Time, sizeof(uint));
+    //ba->toHex();
+
+    Cmd[0] = C_BO_NA_1;
+    Cmd[1] = static_cast<char>(1);
+    Cmd[2] = static_cast<char>(6);
+    Cmd[3] = 0;
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
+    Cmd[6] = static_cast<char>(adr);
+    Cmd[7] = static_cast<char>(adr>>8);
+    Cmd[8] = static_cast<char>(adr>>16);
+    //Cmd[9] = static_cast<char>(1);
+    Cmd[9] = static_cast<char>(ba->data()[0]);
+    Cmd[10] = static_cast<char>(ba->data()[1]);
+    Cmd[11] = static_cast<char>(ba->data()[2]);
+    Cmd[12] = static_cast<char>(ba->data()[3]);
+    //Cmd[13] = 0;
+
+    GI.start = I104_START;
+    GI.APDUlength = 17;
+    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
+    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
+    GI.contrfield[2] = (VR & 0x007F) << 1;
+    GI.contrfield[3] = (VR & 0x7F80) >> 7;
+    Parse->cmd = I104_S;
+    Send(1, GI, Cmd); // ASDU = QByteArray()
+
 }

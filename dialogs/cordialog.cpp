@@ -236,7 +236,10 @@ void CorDialog::GetCorBd(int index)
         if(MainWindow::MainInterface == "USB")
         {
             if(Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::ER_NOERROR)
-            FillCor();
+            {
+                FillCor();
+                EMessageBox::information(this, "INFO", "Прочитано успешно");
+            }
         }
         else if(MainWindow::MainInterface == "RS485")
         {
@@ -259,7 +262,10 @@ void CorDialog::GetCorBdButton()
      if(MainWindow::MainInterface == "USB")
      {
        if(Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::ER_NOERROR)
-       FillCor();
+       {
+           FillCor();
+           EMessageBox::information(this, "INFO", "Прочитано успешно");
+       }
      }
      else if(MainWindow::MainInterface == "RS485")
      {

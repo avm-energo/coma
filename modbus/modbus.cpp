@@ -13,6 +13,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QWaitCondition>
 #include <QLineEdit>
 #include <QMessageBox>
 #include "../gen/s2.h"
@@ -88,10 +89,6 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
     SignalGroups[8].secondbyteadr = 0xC3;
     SignalGroups[8].firstbytequantity = 0;
     SignalGroups[8].secondbytequantity = 0x19;
-
-
-
-
 
     //connect(this,  SIGNAL(ModBusState(QModbusDevice::State)), parent, SLOT(onModbusStateChanged(QModbusDevice::State)));
     //connect(modbusDevice,  SIGNAL(stateChanged(QModbusDevice::State)), parent, SLOT(onModbusStateChanged(QModbusDevice::State)));
@@ -258,7 +255,7 @@ void ModBus::ReadPort()
         else
         signalsSize = responseBuffer.data()[2]/4; // количество байт float или u32
 
-        if(ComData.adr == 1)
+        if(ComData.adr == 1 || ComData.adr == 4600)
         BSISig = new ModBusBSISignal[signalsSize];
         else
         Sig = new ModBusSignal[signalsSize];
@@ -266,7 +263,7 @@ void ModBus::ReadPort()
         startadr = (static_cast<quint8>(SignalGroups[Group].firstbyteadr) << 8) | (static_cast<quint8>(SignalGroups[Group].secondbyteadr));
         for(i=0; i<signalsSize; i++)
         {
-         if(ComData.adr == 1)  // bsi
+         if(ComData.adr == 1  || ComData.adr == 4600)  // bsi
          ival = (static_cast<quint8>(responseBuffer.data()[5+4*i])<<24)+(static_cast<quint8>(responseBuffer.data()[6+4*i])<<16)+(static_cast<quint8>(responseBuffer.data()[3+4*i])<<8)+(static_cast<quint8>(responseBuffer.data()[4+4*i]));
          else
          {
@@ -276,7 +273,7 @@ void ModBus::ReadPort()
 
          if(commands)
          {
-             if(ComData.adr == 1)  // bsi
+             if(ComData.adr == 1 || ComData.adr == 4600)  // bsi и time
              {
                  BSISig[i].Val = *(quint32*)&ival;
                  BSISig[i].SigAdr = ComData.adr+i;
@@ -287,7 +284,6 @@ void ModBus::ReadPort()
          }
          else
          Sig[i].SigAdr = startadr+i;
-
         }
 
         if(commands)
@@ -305,10 +301,13 @@ void ModBus::ReadPort()
              ComData.adr = 0;
              emit BsiFromModBus(BSISig, &signalsSize);
            }
+           else if(ComData.adr == 4600)
+           emit timeSignalsReceived(BSISig);
            else
            emit corsignalsreceived(Sig, &signalsSize);
 
            commands = false;
+           ComData.adr = 0;
         }
         else
         {
@@ -345,7 +344,13 @@ void ModBus::ReadPort()
 
           responseBuffer = serialPort->read(cursize);
           if((responseBuffer.data()[3] == (char)0xC2) && (responseBuffer.data()[4] == (char)0xC1))
-          emit errorRead();
+          {
+             if(ComData.adr == 4600)
+             emit timeReadError();
+             else
+             emit errorRead();
+          }
+          ComData.adr = 0;
       }
   }
 
@@ -360,9 +365,17 @@ void ModBus::WriteToPort()
     quint16 KSS = '\0';
     int i = 0;
     qint64 st;
+    //QWaitCondition * cond = new QWaitCondition;
+    //QMutex *mutex = new QMutex;
 
     while(1)
     {
+
+        /*if(!serialPort->isOpen())
+        {
+           Reading = 1;
+        }*/
+
         if(!Reading)
         {
 
@@ -433,7 +446,7 @@ void ModBus::WriteToPort()
                 readSize = 5+2*SignalGroups[Group].secondbytequantity;
 
                 if(Group == 8)
-                readSize = 8;
+                readSize = 9;
 
 
             }
@@ -453,7 +466,7 @@ void ModBus::WriteToPort()
          emit finished();
          break;
         }
-
+        //cond->wait(mutex,10);
         QThread::msleep(100);
         qApp->processEvents();
     }
@@ -540,13 +553,6 @@ void ModBus::StopModSlot()
 
 void ModBus::ModWriteCor(information* info, float* data)//, int* size)
 {
-
-    QByteArray* bytes = new QByteArray;
-    //char zero = 0;
-    //quint32 crc=0;
-    quint16 KSS = '\0', quantity = 0;
-    quint8 sizebytes = '\0';
-    qint64 st;
     int i;
     quint32 fl;
     //bool readingState = Reading;
@@ -594,6 +600,39 @@ void ModBus::ModReadCor(information* info)
     commands = true;
     Reading = false;
 
+}
+
+void ModBus::InterrogateTime()
+{
+    ComData.ModCom = 0x04;
+    ComData.adr = 4600;
+    ComData.quantity = 2;
+    ComData.sizebytes = 4;
+    ComData.data.clear();
+    //TimeFunc::Wait(100);
+    commands = true;
+    Reading = false;
+}
+
+void ModBus::WriteTime(uint* time)
+{
+    quint32 T;
+
+    ComData.ModCom = 0x10;
+    ComData.adr = 4600;
+
+    ComData.quantity = 2;
+    ComData.sizebytes = 4;
+
+    T =*time;
+    ComData.data.append(static_cast<char>(T>>8));
+    ComData.data.append(static_cast<char>(T));
+    ComData.data.append(static_cast<char>(T>>24));
+    ComData.data.append(static_cast<char>(T>>16));
+
+    TimeFunc::Wait(100);
+    commands = true;
+    Reading = false;
 }
 
 /*QModbusReply *enqueueRequest(const QModbusRequest &request, int serverAddress,

@@ -316,6 +316,7 @@ void Coma::Stage3()
              connect(modBus,SIGNAL(BsiFromModBus(ModBusBSISignal*, int*)),idlg,SLOT(FillBsiFromModBus(ModBusBSISignal*, int* )));
              connect(modBus,SIGNAL(coilsignalsready(Coils*)),this,SLOT(ModbusUpdateStatePredAlarmEvents(Coils*)));
              modBus->BSIrequest();
+             //TimeTimer->setInterval(3000);
 
          }
 
@@ -411,42 +412,37 @@ void Coma::Stage3()
         connect(ConfM,SIGNAL(DefConfToBeLoaded()),this,SLOT(SetDefConf()));
         ConfM->confIndex = MainTW->indexOf(ConfM);
         connect(MainTW, SIGNAL(tabClicked(int)), ConfM, SLOT(ReadConf(int))); //tabClicked
+        connect(ConfM, SIGNAL(stopRead(int)), this,SLOT(Stop_TimeTimer(int)));
     }
 
-    //if (MTypeB == 0xA200 && MainInterface == "USB") // для МНК
-    //{
-
-        MNKTime *Time = new MNKTime();
+        Time = new MNKTime();
         connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Start_Timer(int))); //tabClicked
-        connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Stop_Timer(int)));
-        connect(ConfM, SIGNAL(stopRead(int)), Time,SLOT(Stop_Timer(int)));
+        //connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Stop_Timer(int)));
+        connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Start_TimeTimer(int))); //tabClicked
+        connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Stop_TimeTimer(int)));
         MainTW->addTab(Time, "Время");
         Time->timeIndex = MainTW->indexOf(Time);
         if(ConfM != nullptr)
         ConfM->timeIndex = Time->timeIndex;
 
-        thrTime = new QThread;
+        /*QThread *thrTime = new QThread;
+        thrTime->setPriority(QThread::LowPriority);
         Time->moveToThread(thrTime);
         connect(this,SIGNAL(stoptime()),Time,SLOT(StopSlot()));
         connect(Time, SIGNAL(finished()), thrTime, SIGNAL(finished()));
         //connect(thr, SIGNAL(finished()), this, SLOT(CheckTimeFinish()));
         connect(thrTime,SIGNAL(finished()),Time,SLOT(deleteLater()));
-        //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
-        connect(thrTime,SIGNAL(started()),Time,SLOT(slot2_timeOut()));
+        //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));*/
+        connect(TimeTimer,SIGNAL(timeout()),Time,SLOT(slot2_timeOut()));
+        connect(Time,SIGNAL(ethTimeRequest()),ch104,SLOT(InterrogateTimeGr15()));
+        connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),Time,SLOT(FillTimeFrom104(Parse104::BS104Signals*)));
+        connect(Time,SIGNAL(ethWriteTimeToModule(uint*)),ch104,SLOT(com51WriteTime(uint*)));
+        connect(Time,SIGNAL(modBusTimeRequest()),modBus,SLOT(InterrogateTime()));
+        connect(modBus,SIGNAL(timeSignalsReceived(ModBusBSISignal*)),Time,SLOT(FillTimeFromModBus(ModBusBSISignal*)));
+        connect(Time,SIGNAL(modbusWriteTimeToModule(uint*)),modBus,SLOT(WriteTime(uint*)));
+        connect(modBus,SIGNAL( timeReadError()),Time,SLOT(ErrorRead()));
 
 
-   // }
-
-    /*str = "Проверка";
-    if ((CheckB != nullptr) && (insl.size() != 0))
-    {
-        if(insl.at(1) == "MODBUS")
-        {
-            CheckB->setMinimumHeight(500);
-            //MainTW->setFixedHeight(500);
-            MainTW->addTab(CheckB, str);
-        }
-    }*/
 
     if (CorD != nullptr)
     {
@@ -488,7 +484,6 @@ void Coma::Stage3()
     if(MainInterface == "USB")
     BdaTimer->start();
 
-    //thrTime->start();
 }
 
 void Coma::PrepareDialogs()
@@ -503,7 +498,6 @@ void Coma::PrepareDialogs()
         if(insl.at(1) == "MODBUS")
         {
             MTypeB = Config::MTB_A2;
-
         }
     }
      switch(MTypeB)
@@ -566,6 +560,7 @@ void Coma::PrepareDialogs()
             connect(ch104,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
 
             connect(ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),this,SLOT(UpdateStatePredAlarmEvents(Parse104::SponSignals104*)));
+            connect(ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),this,SLOT(UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime*)));
 
             setMinimumSize(QSize(800, 650));
             //CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, ch104);

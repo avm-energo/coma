@@ -57,13 +57,13 @@ QWidget *Check_84::Bd1W(QWidget *parent)
     font.setPointSize(11);
     //setFont(font);
     gb->setFont(font);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Температура микроконтроллера, °С:"), 0,0,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Температура микроконтроллера, °С"), 0,0,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(101), ValuesFormat, "Температура микроконтроллера, °С"), 1,0,1,1);
     //hlyout->addWidget(WDFunc::NewLBL(parent, "                     "));
     glyout->addWidget(WDFunc::NewLBL(parent, "Tamb, °С"),0,1,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "",  QString::number(4501), ValuesFormat, \
                                       "Температура окружающей среды, °С"),1,1,1,1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Частота, Гц:"), 0,2,1,1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Частота, Гц"), 0,2,1,1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", "2400", ValuesFormat, "Частота, Гц"), 1,2,1,1);
 
     vlyout->addLayout(glyout);

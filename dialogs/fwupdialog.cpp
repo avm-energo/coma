@@ -104,7 +104,7 @@ void fwupdialog::RunSoft()
     if (WriteCheckPassword() == Error::ER_NOERROR)
     {
         int res = Commands::RunVPO();
-        if (res != Files::ER_NOERROR)
+        if (res != Error::ER_NOERROR)
         {
             WARNMSG("Ошибка перехода на новое ПО");
             EMessageBox::information(this, "Ошибка", "Ошибка");

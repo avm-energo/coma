@@ -56,6 +56,7 @@ public:
     iec104* ch104;
     iec104* SaveCh104;
     ModBus* modBus;
+    MNKTime *Time;
     checktempmodbusdialog *CheckModBus;
     //CheckDialog84* Ch84;
     QString IPtemp, FullName, SaveDevice, instr;
@@ -73,8 +74,8 @@ public:
     //QThread *thr;
     quint32 Mes;
     bool TimeThrFinished, ModBusThrFinished;
-    QTimer* BdaTimer, *ReceiveTimer;
-    QThread *Modthr, *thrTime;
+    QTimer* BdaTimer, *ReceiveTimer, *TimeTimer;
+    QThread *Modthr;// *thrTime;
     quint8 PredAlarmEvents[20];
     quint8 AlarmEvents[20];
     int fileSize, curfileSize;
@@ -231,12 +232,15 @@ public slots:
     void DisconnectAndClear();
     void FinishHim();
     void UpdateReleWidget(Parse104::SponSignals104*);
-    void UpdatePredAlarmEvents(Parse104::SponSignals104*);
+    void UpdatePredAlarmEvents(Parse104::SponSignalsWithTime *);
     void UpdateStatePredAlarmEvents(Parse104::SponSignals104*);
+    void UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime*);
     void CheckTimeFinish();
     void CheckModBusFinish();
     void Stop_BdaTimer(int index);
     void Start_BdaTimer(int index);
+    void Stop_TimeTimer(int index);
+    void Start_TimeTimer(int index);
     void DeviceState();
     void PredAlarmState();
     void AlarmState();

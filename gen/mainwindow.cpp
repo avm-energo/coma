@@ -61,10 +61,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     MainConfDialog = nullptr;
     ConfB = ConfM = nullptr;
     CheckB = CheckM = nullptr;
+    Wpred = Walarm = nullptr;
     ch104 = nullptr;
     //iec104* SaveCh104 = new iec104("172.16.28.5", this);
     //ModBusThrFinished = false;
     //TimeThrFinished = false;
+    TimeTimer = new QTimer;
+    TimeTimer->setInterval(1000);
+
     BdaTimer = new QTimer;
     BdaTimer->setInterval(ANMEASINT);
 
@@ -283,7 +287,7 @@ void MainWindow::PredAlarmState()
                                        << "Сигнализация по приращению C ввода фазы B              "
                                        << "Сигнализация по приращению C ввода фазы C              "
                                        << "Не заданы паспортные значения                          "
-                                       << "Повышенный небаланс токов утечки вводов                ";
+                                       << "Сигнализация по повышенному небалансу токов            ";
 
 
     QWidget *w = new QWidget;
@@ -337,7 +341,7 @@ void MainWindow::PredAlarmState()
     w->setLayout(vlayout);
 
     if(MainInterface == "Ethernet" && ch104 != nullptr)
-    connect(ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignals104*)));
+    connect(ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
 
     if(MainInterface == "USB")
     connect(BdaTimer,SIGNAL(timeout()), this, SLOT(GetUSBAlarmInDialog()));
@@ -372,7 +376,7 @@ void MainWindow::AlarmState()
                                        << "Авария по приращению C ввода фазы А              "
                                        << "Авария по приращению C ввода фазы B              "
                                        << "Авария по приращению C ввода фазы C              "
-                                       << "Недопустимый небаланс токов утечки вводов        ";
+                                       << "Авария по недопустимому небалансу токов          ";
 
     QWidget *w = new QWidget;
     Walarm = w;
@@ -416,7 +420,7 @@ void MainWindow::AlarmState()
     w->setLayout(vlayout);
 
     if(MainInterface == "Ethernet" && ch104 != nullptr)
-    connect(ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignals104*)));
+    connect(ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
 
     if(MainInterface == "USB")
     connect(BdaTimer,SIGNAL(timeout()), this, SLOT(GetUSBAlarmInDialog()));
@@ -440,46 +444,48 @@ void MainWindow::UpdateReleWidget(Parse104::SponSignals104* Signal)
     //Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
-    QPixmap *pm[2] = {pmred, pmgrn};
+    QPixmap *pm[2] = {pmgrn, pmred};
 
     //for(j=0; j<Signal->SigNumber; j++)
     //{
        //sig = *(Signal+j);
-    if(!(Signal->Spon.SigVal & 0x80))
+    if(!(Signal->Spon[i].SigVal & 0x80))
     {
-       int signal = ((Signal->Spon.SigVal & (0x00000001)) ? 1 : 0);
-       WDFunc::SetLBLImage(this, (QString::number(Signal->Spon.SigAdr)), pm[signal]);
+       int signal = ((Signal->Spon[i].SigVal & (0x00000001)) ? 1 : 0);
+       WDFunc::SetLBLImage(this, (QString::number(Signal->Spon[i].SigAdr)), pm[signal]);
     }
     //}
 
 }
 
-void MainWindow::UpdatePredAlarmEvents(Parse104::SponSignals104* Signal)
+void MainWindow::UpdatePredAlarmEvents(Parse104::SponSignalsWithTime* Signal)
 {
     int i = 0;
-    Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
+    //Parse104::SponSignalsWithTime* sig = new Parse104::SponSignalsWithTime;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
-    QPixmap *pm[2] = {pmred, pmgrn};
+    QPixmap *pm[2] = {pmgrn, pmred};
 
     for(i=0; i<Signal->SigNumber; i++)
     {
-       sig = *(Signal+i);
-       if(!(sig.Spon.SigVal & 0x80))
+       //sig->Spon->SigAdr = (Signal->Spon[i].SigAdr);
+       //sig->Spon->SigVal = (Signal->Spon[i].SigVal);
+       if(!(Signal->Spon[i].SigVal & 0x80))
        {
-        int signal = ((sig.Spon.SigVal & (0x00000001)) ? 1 : 0);
+        quint8 signal = ((Signal->Spon[i].SigVal & (0x00000001)) ? 1 : 0);
 
-        if((((sig.Spon.SigAdr >= 3024) && (sig.Spon.SigAdr < 3027))) || ((sig.Spon.SigAdr >= 3030) && (sig.Spon.SigAdr < 3033)) || (sig.Spon.SigAdr < 3035))
-        WDFunc::SetLBLImage(Walarm, (QString::number(sig.Spon.SigAdr)), pm[signal]);
+        if((((Signal->Spon[i].SigAdr >= 3024) && (Signal->Spon[i].SigAdr < 3027))) || ((Signal->Spon[i].SigAdr >= 3030) && (Signal->Spon[i].SigAdr < 3033)) || (Signal->Spon[i].SigAdr == 3035))
+        WDFunc::SetLBLImage(Walarm, (QString::number(Signal->Spon[i].SigAdr)), pm[signal]);
         else
-        WDFunc::SetLBLImage(Wpred, (QString::number(sig.Spon.SigAdr)), pm[signal]);
+        WDFunc::SetLBLImage(Wpred, (QString::number(Signal->Spon[i].SigAdr)), pm[signal]);
        }
     }
+
 
 }
 
 
-void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104* Signal)
+void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104 *Signal)
 {
     int i = 0, PredArarmcount = 0, Ararmcount = 0;
     Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
@@ -489,24 +495,82 @@ void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104* Signal)
 
     for(i=0; i<Signal->SigNumber; i++)
     {
-       sig = *(Signal+i);
-       if(!(sig.Spon.SigVal & 0x80))
+       //sig = *(Signal+i);
+       if(!(Signal->Spon[i].SigVal & 0x80))
        {
-           quint8 signal = ((sig.Spon.SigVal & (0x00000001)) ? 1 : 0);
+           quint8 signal = ((Signal->Spon[i].SigVal & (0x00000001)) ? 1 : 0);
 
-           if((sig.Spon.SigAdr >= 3011) && (sig.Spon.SigAdr < 3024))
-           PredAlarmEvents[sig.Spon.SigAdr - 3011] = signal;
-           else if((sig.Spon.SigAdr >= 3024) && (sig.Spon.SigAdr < 3027))
-           AlarmEvents[sig.Spon.SigAdr - 3024] = signal;
-           else if((sig.Spon.SigAdr >= 3027) && (sig.Spon.SigAdr < 3030))
-           PredAlarmEvents[sig.Spon.SigAdr - 3014] = signal;
-           else if((sig.Spon.SigAdr >= 3030) && (sig.Spon.SigAdr < 3033))
-           AlarmEvents[sig.Spon.SigAdr - 3027] = signal;
-           else if(sig.Spon.SigAdr == 3033)
+           if((Signal->Spon[i].SigAdr >= 3011) && (Signal->Spon[i].SigAdr < 3024))
+           PredAlarmEvents[Signal->Spon[i].SigAdr - 3011] = signal;
+           else if((Signal->Spon[i].SigAdr >= 3024) && (Signal->Spon[i].SigAdr < 3027))
+           AlarmEvents[Signal->Spon[i].SigAdr - 3024] = signal;
+           else if((Signal->Spon[i].SigAdr >= 3027) && (Signal->Spon[i].SigAdr < 3030))
+           PredAlarmEvents[Signal->Spon[i].SigAdr - 3014] = signal;
+           else if((Signal->Spon[i].SigAdr >= 3030) && (Signal->Spon[i].SigAdr < 3033))
+           AlarmEvents[Signal->Spon[i].SigAdr - 3027] = signal;
+           else if(Signal->Spon[i].SigAdr == 3033)
            PredAlarmEvents[16] = signal;
-           else if(sig.Spon.SigAdr == 3034)
+           else if(Signal->Spon[i].SigAdr == 3034)
            PredAlarmEvents[17] = signal;
-           else if(sig.Spon.SigAdr == 3035)
+           else if(Signal->Spon[i].SigAdr == 3035)
+           AlarmEvents[6] = signal;
+       }
+    }
+
+    for(i=0; i<18; i++)
+    {
+        if(PredAlarmEvents[i])
+        {
+           WDFunc::SetLBLImage(this, QString::number(951), pm[0]);
+           PredArarmcount++;
+        }
+    }
+
+    if(PredArarmcount == 0)
+    WDFunc::SetLBLImage(this,  QString::number(951), pm[1]);
+
+    for(i=0; i<7; i++)
+    {
+        if(AlarmEvents[i])
+        {
+           WDFunc::SetLBLImage(this, QString::number(952), pm[0]);
+           Ararmcount++;
+        }
+    }
+
+    if(Ararmcount == 0)
+    WDFunc::SetLBLImage(this,  QString::number(952), pm[1]);
+
+}
+
+void MainWindow::UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime *Signal)
+{
+    int i = 0, PredArarmcount = 0, Ararmcount = 0;
+    //Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+    QPixmap *pm[2] = {pmred, pmgrn};
+
+    for(i=0; i<Signal->SigNumber; i++)
+    {
+       //sig = *(Signal+i);
+       if(!(Signal->Spon[i].SigVal & 0x80))
+       {
+           quint8 signal = ((Signal->Spon[i].SigVal & (0x00000001)) ? 1 : 0);
+
+           if((Signal->Spon[i].SigAdr >= 3011) && (Signal->Spon[i].SigAdr < 3024))
+           PredAlarmEvents[Signal->Spon[i].SigAdr - 3011] = signal;
+           else if((Signal->Spon[i].SigAdr >= 3024) && (Signal->Spon[i].SigAdr < 3027))
+           AlarmEvents[Signal->Spon[i].SigAdr - 3024] = signal;
+           else if((Signal->Spon[i].SigAdr >= 3027) && (Signal->Spon[i].SigAdr < 3030))
+           PredAlarmEvents[Signal->Spon[i].SigAdr - 3014] = signal;
+           else if((Signal->Spon[i].SigAdr >= 3030) && (Signal->Spon[i].SigAdr < 3033))
+           AlarmEvents[Signal->Spon[i].SigAdr - 3027] = signal;
+           else if(Signal->Spon[i].SigAdr == 3033)
+           PredAlarmEvents[16] = signal;
+           else if(Signal->Spon[i].SigAdr == 3034)
+           PredAlarmEvents[17] = signal;
+           else if(Signal->Spon[i].SigAdr == 3035)
            AlarmEvents[6] = signal;
        }
     }
@@ -627,7 +691,7 @@ void MainWindow::ModBusUpdatePredAlarmEvents(Coils* Signal)
     int i = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
-    QPixmap *pm[2] = {pmred, pmgrn};
+    QPixmap *pm[2] = {pmgrn, pmred};
 
     for(i=0; i<Signal->countBytes; i++)
     {
@@ -1203,7 +1267,7 @@ void MainWindow::SetProgressBar2(int cursize)
 void MainWindow::ShowInterfaceDialog()
 {
     QByteArray ba;
-    int res, i;
+    //int res, i;
     QDialog *dlg = new QDialog(this);
     QString Str;
     //QStringList device = QStringList() << "KDV" << "2" << "1" << "2";
@@ -1447,7 +1511,10 @@ void MainWindow::GetAbout()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Disconnect()
 {
-    emit stoptime();
+    //emit stoptime();
+    if(TimeTimer != nullptr)
+    TimeTimer->stop();
+
     if(MainInterface.size() != 0 && (!StdFunc::IsInEmulateMode()))
     {
         if(MainInterface == "USB")
@@ -1721,6 +1788,32 @@ void MainWindow::Start_BdaTimer(int index)
 
 }
 
+void MainWindow::Stop_TimeTimer(int index)
+{
+    if(Time != nullptr)
+    {
+        if(index != Time->timeIndex)
+        {
+            TimeTimer->stop();
+            //thr->msleep(100);
+        }
+    }
+
+}
+
+void MainWindow::Start_TimeTimer(int index)
+{
+    if(Time != nullptr)
+    {
+        if(index == Time->timeIndex)
+        {
+            TimeTimer->start();
+            //thr->msleep(100);
+        }
+    }
+
+}
+
 void MainWindow::GetUSBAlarmTimerTimeout()
 {
     int i = 0, PredArarmcount = 0, Ararmcount = 0;
@@ -1772,56 +1865,63 @@ void MainWindow::GetUSBAlarmInDialog()
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmred, pmgrn};
+    Bd_block11 = *new Bd11;
 
     if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == Error::ER_NOERROR)
     {
-        for(i=0; i<13; i++)
+        if(Wpred != nullptr)
         {
-           if(Bd_block11.predAlarm & (0x00000001 << i))
-           WDFunc::SetLBLImage(Wpred, (QString::number(3011+i)), pm[0]);
-           else
-           WDFunc::SetLBLImage(Wpred, (QString::number(3011+i)), pm[1]);
+            for(i=0; i<13; i++)
+            {
+               if(Bd_block11.predAlarm & ((quint32)0x00000001 << i))
+               WDFunc::SetLBLImage(Wpred, (QString::number(3011+i)), pm[0]);
+               else
+               WDFunc::SetLBLImage(Wpred, (QString::number(3011+i)), pm[1]);
+            }
+
+            for(i=13; i<16; i++)
+            {
+               if(Bd_block11.predAlarm & ((quint32)0x00000001 << i))
+               WDFunc::SetLBLImage(Wpred, (QString::number(3027+i-13)), pm[0]);
+               else
+               WDFunc::SetLBLImage(Wpred, (QString::number(3027+i-13)), pm[1]);
+            }
+
+            if(Bd_block11.predAlarm & ((quint32)0x00000001 << 16))
+            WDFunc::SetLBLImage(Wpred, (QString::number(3033)), pm[0]);
+            else
+            WDFunc::SetLBLImage(Wpred, (QString::number(3033)), pm[1]);
+
+            if(Bd_block11.predAlarm & ((quint32)0x00000001 << 17))
+            WDFunc::SetLBLImage(Wpred, (QString::number(3034)), pm[0]);
+            else
+            WDFunc::SetLBLImage(Wpred, (QString::number(3034)), pm[1]);
         }
 
-        for(i=13; i<16; i++)
+
+        if(Walarm != nullptr)
         {
-           if(Bd_block11.predAlarm & (0x00000001 << i))
-           WDFunc::SetLBLImage(Wpred, (QString::number(3027+i)), pm[0]);
-           else
-           WDFunc::SetLBLImage(Wpred, (QString::number(3027+i)), pm[1]);
+            for(i=0; i<3; i++)
+            {
+               if(Bd_block11.alarm & ((quint32)0x00000001 << i))
+               WDFunc::SetLBLImage(Walarm, (QString::number(3024+i)), pm[0]);
+               else
+               WDFunc::SetLBLImage(Walarm, (QString::number(3024+i)), pm[1]);
+            }
+
+            for(i=3; i<6; i++)
+            {
+               if(Bd_block11.alarm & ((quint32)0x00000001 << i))
+               WDFunc::SetLBLImage(Walarm, (QString::number(3030+i-3)), pm[0]);
+               else
+               WDFunc::SetLBLImage(Walarm, (QString::number(3030+i-3)), pm[1]);
+            }
+
+            if(Bd_block11.alarm & ((quint32)0x00000001 << 6))
+            WDFunc::SetLBLImage(Walarm, (QString::number(3035)), pm[0]);
+            else
+            WDFunc::SetLBLImage(Walarm, (QString::number(3035)), pm[1]);
         }
-
-        if(Bd_block11.predAlarm & (0x00000001 << 16))
-        WDFunc::SetLBLImage(Wpred, (QString::number(3033+i)), pm[0]);
-        else
-        WDFunc::SetLBLImage(Wpred, (QString::number(3033+i)), pm[1]);
-
-        if(Bd_block11.predAlarm & (0x00000001 << 17))
-        WDFunc::SetLBLImage(Wpred, (QString::number(3034+i)), pm[0]);
-        else
-        WDFunc::SetLBLImage(Wpred, (QString::number(3034+i)), pm[1]);
-
-
-        for(i=0; i<3; i++)
-        {
-           if(Bd_block11.alarm & (0x00000001 << i))
-           WDFunc::SetLBLImage(Walarm, (QString::number(3024+i)), pm[0]);
-           else
-           WDFunc::SetLBLImage(Walarm, (QString::number(3024+i)), pm[1]);
-        }
-
-        for(i=3; i<6; i++)
-        {
-           if(Bd_block11.alarm & (0x00000001 << i))
-           WDFunc::SetLBLImage(Walarm, (QString::number(3030+i)), pm[0]);
-           else
-           WDFunc::SetLBLImage(Walarm, (QString::number(3030+i)), pm[1]);
-        }
-
-        if(Bd_block11.alarm & (0x00000001 << 6))
-        WDFunc::SetLBLImage(Walarm, (QString::number(3035)), pm[0]);
-        else
-        WDFunc::SetLBLImage(Walarm, (QString::number(3035)), pm[1]);
 
     }
 
