@@ -265,6 +265,7 @@ void Coma::Stage3()
     JourD = nullptr;
     ch104 = nullptr;
     CorD = nullptr;
+    modBus = nullptr;
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     //MainTW->setMinimumSize(QSize(800,600));
@@ -315,7 +316,7 @@ void Coma::Stage3()
              CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
              connect(modBus,SIGNAL(BsiFromModBus(ModBusBSISignal*, int*)),idlg,SLOT(FillBsiFromModBus(ModBusBSISignal*, int* )));
              connect(modBus,SIGNAL(coilsignalsready(Coils*)),this,SLOT(ModbusUpdateStatePredAlarmEvents(Coils*)));
-             modBus->BSIrequest();
+             modBus->BSIrequest(Settings);
              //TimeTimer->setInterval(3000);
 
          }
@@ -434,13 +435,19 @@ void Coma::Stage3()
         connect(thrTime,SIGNAL(finished()),Time,SLOT(deleteLater()));
         //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));*/
         connect(TimeTimer,SIGNAL(timeout()),Time,SLOT(slot2_timeOut()));
-        connect(Time,SIGNAL(ethTimeRequest()),ch104,SLOT(InterrogateTimeGr15()));
-        connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),Time,SLOT(FillTimeFrom104(Parse104::BS104Signals*)));
-        connect(Time,SIGNAL(ethWriteTimeToModule(uint*)),ch104,SLOT(com51WriteTime(uint*)));
-        connect(Time,SIGNAL(modBusTimeRequest()),modBus,SLOT(InterrogateTime()));
-        connect(modBus,SIGNAL(timeSignalsReceived(ModBusBSISignal*)),Time,SLOT(FillTimeFromModBus(ModBusBSISignal*)));
-        connect(Time,SIGNAL(modbusWriteTimeToModule(uint*)),modBus,SLOT(WriteTime(uint*)));
-        connect(modBus,SIGNAL( timeReadError()),Time,SLOT(ErrorRead()));
+        if(ch104 != nullptr)
+        {
+            connect(Time,SIGNAL(ethTimeRequest()),ch104,SLOT(InterrogateTimeGr15()));
+            connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),Time,SLOT(FillTimeFrom104(Parse104::BS104Signals*)));
+            connect(Time,SIGNAL(ethWriteTimeToModule(uint*)),ch104,SLOT(com51WriteTime(uint*)));
+        }
+        if(modBus != nullptr)
+        {
+            connect(Time,SIGNAL(modBusTimeRequest()),modBus,SLOT(InterrogateTime()));
+            connect(modBus,SIGNAL(timeSignalsReceived(ModBusBSISignal*)),Time,SLOT(FillTimeFromModBus(ModBusBSISignal*)));
+            connect(Time,SIGNAL(modbusWriteTimeToModule(uint*)),modBus,SLOT(WriteTime(uint*)));
+            connect(modBus,SIGNAL(timeReadError()),Time,SLOT(ErrorRead()));
+        }
 
 
 
@@ -546,7 +553,7 @@ void Coma::PrepareDialogs()
             //connect(ch104,SIGNAL(ethNoconnection()), this, SLOT(DisconnectAndClear()));
 
             connect(CorD,SIGNAL(sendCom45(quint32*)), ch104, SLOT(Com45(quint32*)));
-            connect(CorD,SIGNAL(sendCom50(quint16*, float*)), ch104, SLOT(Com50(quint16*,float*)));
+            connect(CorD,SIGNAL(sendCom50(quint32*, float*)), ch104, SLOT(Com50(quint32*,float*)));
             connect(CorD,SIGNAL(CorReadRequest()), ch104, SLOT(CorReadRequest()));
 
             connect(ch104,SIGNAL(sendMessageOk()), CorD, SLOT(MessageOk()));

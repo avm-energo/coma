@@ -1449,7 +1449,7 @@ void iec104::Com45(quint32 *com)
     //Parse->V_S++;
 }
 
-void iec104::Com50(quint16* adr, float *param)
+void iec104::Com50(quint32* adr, float *param)
 {
     APCI GI;
     ASDU Cmd;

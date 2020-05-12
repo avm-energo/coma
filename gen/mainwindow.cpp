@@ -63,9 +63,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     CheckB = CheckM = nullptr;
     Wpred = Walarm = nullptr;
     ch104 = nullptr;
-    //iec104* SaveCh104 = new iec104("172.16.28.5", this);
-    //ModBusThrFinished = false;
-    //TimeThrFinished = false;
+    FullName = "";
+
     TimeTimer = new QTimer;
     TimeTimer->setInterval(1000);
 
@@ -122,6 +121,11 @@ void MainWindow::Go(const QString &parameter)
     }
     SetupUI();
     show();
+
+}
+
+void MainWindow::ReConnect()
+{
 
 }
 
@@ -969,6 +973,10 @@ void MainWindow::Stage1_5()
     disconnected = 0;
     ShowInterfaceDialog();
     ShowConnectDialog();
+
+    if(cancel)
+    return;
+
     StopRead = 0;
 
     if((insl.size() == 0) && ((MainInterface == "Ethernet") || (MainInterface == "RS485")))
@@ -993,6 +1001,9 @@ void MainWindow::Stage1_5()
         {
            insl.clear();
 
+           if(cn->Cancelled)
+           return;
+
            if (Commands::Connect() != Error::ER_NOERROR)
            {
               EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
@@ -1002,19 +1013,7 @@ void MainWindow::Stage1_5()
          }
     }
 
-
-
- QApplication::setOverrideCursor(Qt::WaitCursor);
-    //connect(ch104,SIGNAL(floatsignalsready(Parse104::FLOAT104&, int N)),this,SLOT(CheckDialog84::UpdateData(Parse104::FLOAT104&, int N)));
-    //connect(this,SIGNAL(stopit()),ch104,SLOT(Stop()));
-#if PROGSIZE != PROGSIZE_EMUL
-//#ifdef ETHENABLE
- //   ch104 = new iec104;
-    //CheckDialog84* handler = new CheckDialog84;
-  //  connect(ch104,SIGNAL(floatsignalsready(Parse104::Signals104*)),CheckB,SLOT(UpdateData(Parse104::Signals104*)));
-  //  connect(this,SIGNAL(stopit()),ch104,SLOT(Stop()));
-//#endif
-#endif
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     S2ConfigForTune.clear();
     S2Config.clear();
     SaveSettings();
@@ -1034,7 +1033,7 @@ void MainWindow::Stage2()
             if (res == Error::ER_CANAL)
             {
                 if (EMessageBox::question(this, "Ошибка", \
-                                          "Блок Bsi не может быть прочитан, ошибка " + QString::number(res) + ", повторить?") == 1) // Yes
+                                          "Повторить подключение?") == 1) // Yes
                 {
                     cn->Disconnect();
                     emit Retry();
@@ -1052,6 +1051,7 @@ void MainWindow::Stage2()
             }
             else if (res == Error::ER_NOERROR)
             {
+              if(ModuleBSI::ModuleTypeString != "")
               EMessageBox::information(this, "Успешно", "Связь с "+ModuleBSI::ModuleTypeString+" установлена");
             }
 #endif
@@ -1270,6 +1270,7 @@ void MainWindow::ShowInterfaceDialog()
     //int res, i;
     QDialog *dlg = new QDialog(this);
     QString Str;
+    cancel = false;
     //QStringList device = QStringList() << "KDV" << "2" << "1" << "2";
     QStringList inter;
     inter.append("USB");
@@ -1295,12 +1296,17 @@ void MainWindow::ShowInterfaceDialog()
     connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
     hlyout->addWidget(pb);
     pb = new QPushButton("Отмена");
-    //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
+    connect(pb, SIGNAL(clicked(bool)),this,SLOT(SetCancelled()));
     connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
     dlg->exec();
+}
+
+void MainWindow::SetCancelled()
+{
+   cancel = true;
 }
 
 void MainWindow::ShowConnectDialog()
@@ -1311,6 +1317,8 @@ void MainWindow::ShowConnectDialog()
     QString Str;
     //QStringList device = QStringList() << "KDV" << "2" << "1" << "2";
     //QStringList inter = QStringList() << "ETH" << "MODBUS";
+    if(cancel)
+    return;
 
     dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -1447,6 +1455,7 @@ void MainWindow::ShowConnectDialog()
         connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
         hlyout->addWidget(pb);
         pb = new QPushButton("Отмена");
+        connect(pb, SIGNAL(clicked(bool)),this,SLOT(SetCancelled()));
         if(MainInterface == "USB")
         connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));
 
@@ -1582,11 +1591,17 @@ void MainWindow::DisconnectAndClear()
         {
            if(MainInterface == "USB")
            {
+             if(ModuleBSI::ModuleTypeString != "")
              EMessageBox::information(this, "Разрыв связи", "Связь с "+ModuleBSI::ModuleTypeString+" разорвана");
+             else
+             EMessageBox::information(this, "Разрыв связи", "Связь разорвана");
            }
            else
            {
+             if(FullName != "")
              EMessageBox::information(this, "Разрыв связи", "Связь с "+FullName+" разорвана");
+             else
+             EMessageBox::information(this, "Разрыв связи", "Связь разорвана");
            }
         }
         //disconnected = 0;

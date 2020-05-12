@@ -111,7 +111,7 @@ void AbstractConfDialog::WriteConf()
 
 int AbstractConfDialog::WriteCheckPassword()
 {
-    ok = false;
+    ok = 0;
     StdFunc::ClearCancel();
     QEventLoop PasswordLoop;
     KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
@@ -119,7 +119,7 @@ int AbstractConfDialog::WriteCheckPassword()
     connect(this,SIGNAL(WritePasswordChecked()),&PasswordLoop,SLOT(quit()));
     dlg->show();
     PasswordLoop.exec();
-    if (StdFunc::IsCancelled())
+    if(StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
     if (!ok)
     {

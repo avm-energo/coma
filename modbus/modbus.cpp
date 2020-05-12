@@ -41,13 +41,15 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
     //modbusDevice->setNumberOfRetries(m_settingsDialog->settings().numberOfRetries);
 
     //connect(modbusDevice,  SIGNAL(QModbusDevice::stateChanged(QModbusDevice::State state)), parent, SLOT(onModbusStateChanged(state)));
-    deviceAdr = Settings.adr.toInt();
+    deviceAdr = Settings.adr;
     Group = 0;
     readSize = 0;
     Reading = false;
     closeThr = false;
     int i;
     commands = false;
+    First = 1;
+    count = 0;
 
     for(i=0;i<8;i++)
     SignalGroups[i].signaltype=0x04;
@@ -114,7 +116,7 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
     {
        state = QModbusDevice::ConnectedState;
        emit ModBusState(state);
-       serialPort->isOpen();
+       //serialPort->isOpen();
        //ModBusInterrogateTimer->start();
     }
     else
@@ -242,7 +244,7 @@ void ModBus::ReadPort()
 
       if(MYKSS == crcfinal)
       {
-        if(Group == 8)
+        if((Group == 8) && (commands == false))
         {
            Coil = new Coils;
            Coil->countBytes = responseBuffer.data()[2];
@@ -352,6 +354,10 @@ void ModBus::ReadPort()
           }
           ComData.adr = 0;
       }
+      else
+      {
+         lastcursize = cursize;
+      }
   }
 
  // emit nextGroup();
@@ -359,7 +365,7 @@ void ModBus::ReadPort()
 
 void ModBus::WriteToPort()
 {
-    QByteArray* bytes = new QByteArray;
+    QByteArray* bytes = new QByteArray[100];
     char zero = 0;
     //quint32 crc=0;
     quint16 KSS = '\0';
@@ -378,7 +384,6 @@ void ModBus::WriteToPort()
 
         if(!Reading)
         {
-
             bytes->clear();
 
             //if(Reading == 0)
@@ -390,7 +395,7 @@ void ModBus::WriteToPort()
             serialPort->clear();
 
             TimeFunc::Wait(10);
-            bytes->append((char)deviceAdr); // адрес устройства
+            bytes->append(deviceAdr.toInt()); // адрес устройства
 
             if(commands)
             {
@@ -403,11 +408,11 @@ void ModBus::WriteToPort()
                 if(ComData.ModCom == 0x10)
                 bytes->append(static_cast<char>(ComData.sizebytes));
 
-                if(ComData.data.size())
+                if(ComData.data->size())
                 {
-                    for(i = 0; i<ComData.data.size(); i++)
+                    for(i = 0; i<ComData.data->size(); i++)
                     {
-                      bytes->append(ComData.data.data()[i]);
+                      bytes->append(ComData.data->data()[i]);
                     }
                 }
 
@@ -424,7 +429,7 @@ void ModBus::WriteToPort()
                 if(ComData.ModCom == 0x10)
                 readSize = 8;
 
-                ComData.data.clear();
+                ComData.data->clear();
 
                // commands = false;
             }
@@ -454,7 +459,6 @@ void ModBus::WriteToPort()
 
             st = serialPort->write(bytes->data(), bytes->size());
             //st=0;
-
             Reading = 1;
 
                 //qCDebug << "(RTU client) Response buffer:" << m_responseBuffer.toHex();
@@ -472,26 +476,24 @@ void ModBus::WriteToPort()
     }
 }
 
-void ModBus::BSIrequest()
+void ModBus::BSIrequest(ModBus_Settings Settings)
 {
     QByteArray* bytes = new QByteArray;
-    char zero = 0;
-    //quint32 crc=0;
     quint16 KSS = '\0';
-    int i = 0;
     qint64 st;
 
     ComData.ModCom = 0x04;
     ComData.adr = 0x01;
     ComData.quantity = 30;
     ComData.sizebytes = 60;
-    ComData.data.clear();
+    //if( ComData.data.size())
+    //ComData.data.clear();
 
     commands = true;
 
     serialPort->clear();
 
-    bytes->append((char)deviceAdr); // адрес устройства
+    bytes->append(Settings.adr.toInt()); // адрес устройства
 
     bytes->append(ComData.ModCom);         //аналоговый выход
     bytes->append(static_cast<char>(ComData.adr>>8));
@@ -520,7 +522,7 @@ void ModBus::BSIrequest()
      st = serialPort->write(bytes->data(), bytes->size());
             //st=0;
 
-     Reading = 1;
+     Reading = true;
 
 }
 
@@ -564,8 +566,8 @@ void ModBus::ModWriteCor(information* info, float* data)//, int* size)
     {
         ComData.quantity = 1;
         ComData.sizebytes = 2;
-        ComData.data.append(0x01);
-        ComData.data.append(0x01);
+        ComData.data->append(0x01);
+        ComData.data->append(0x01);
     }
     else
     {
@@ -575,10 +577,10 @@ void ModBus::ModWriteCor(information* info, float* data)//, int* size)
         for(i = 0; i<info->size; i++)
         {
          fl =*(quint32*)(data+i);
-         ComData.data.append(static_cast<char>(fl>>8));
-         ComData.data.append(static_cast<char>(fl));
-         ComData.data.append(static_cast<char>(fl>>24));
-         ComData.data.append(static_cast<char>(fl>>16));
+         ComData.data->append(static_cast<char>(fl>>8));
+         ComData.data->append(static_cast<char>(fl));
+         ComData.data->append(static_cast<char>(fl>>24));
+         ComData.data->append(static_cast<char>(fl>>16));
         }
     }
     TimeFunc::Wait(100);
@@ -594,7 +596,9 @@ void ModBus::ModReadCor(information* info)
     ComData.adr = info->adr;
     ComData.quantity = (quint8)((info->size)*2);
     ComData.sizebytes = (quint8)((info->size)*4);
-    ComData.data.clear();
+
+    ComData.data = new QByteArray[100];
+    ComData.data->clear();
 
     TimeFunc::Wait(100);
     commands = true;
@@ -604,14 +608,35 @@ void ModBus::ModReadCor(information* info)
 
 void ModBus::InterrogateTime()
 {
-    ComData.ModCom = 0x04;
+    if(First)
+    {
+      First = 0;
+      Reading = false;
+    }
+
+
+    while(Reading == true)
+    {
+        TimeFunc::Wait(10);
+        count++;
+        if(count == 200)
+        {
+          Reading = false;
+          count = 0;
+        }
+    }
+
+
+    ComData.ModCom = 0x03;
     ComData.adr = 4600;
     ComData.quantity = 2;
     ComData.sizebytes = 4;
-    ComData.data.clear();
+    ComData.data = new QByteArray[100];
+    ComData.data->clear();
     //TimeFunc::Wait(100);
     commands = true;
     Reading = false;
+
 }
 
 void ModBus::WriteTime(uint* time)
@@ -625,10 +650,10 @@ void ModBus::WriteTime(uint* time)
     ComData.sizebytes = 4;
 
     T =*time;
-    ComData.data.append(static_cast<char>(T>>8));
-    ComData.data.append(static_cast<char>(T));
-    ComData.data.append(static_cast<char>(T>>24));
-    ComData.data.append(static_cast<char>(T>>16));
+    ComData.data->append(static_cast<char>(T>>8));
+    ComData.data->append(static_cast<char>(T));
+    ComData.data->append(static_cast<char>(T>>24));
+    ComData.data->append(static_cast<char>(T>>16));
 
     TimeFunc::Wait(100);
     commands = true;

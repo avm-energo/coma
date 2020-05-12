@@ -432,7 +432,7 @@ private slots:
     void LastSegment();
     void LastSection();
     void Com45(quint32 *com);
-    void Com50(quint16 *adr, float *param);
+    void Com50(quint32 *adr, float *param);
     void CorReadRequest();
     void InterrogateTimeGr15();
     void com51WriteTime(uint*);

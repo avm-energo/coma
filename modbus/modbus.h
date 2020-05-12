@@ -22,9 +22,6 @@ class ModBus : public QObject
 Q_OBJECT
 
 public:
-
-    void BSIrequest();
-
     struct ModBus_Settings
     {
         QString baud;
@@ -33,6 +30,12 @@ public:
         QString adr;
         QString port;
     };
+
+
+    ModBus(ModBus_Settings Settings, QObject *parent = nullptr);
+    ~ModBus();
+
+    void BSIrequest(ModBus_Settings Settings);
 
     typedef struct
     {
@@ -55,7 +58,6 @@ public:
         char secondbytequantity;
 
     };
-    ModBus_Groups SignalGroups[9];
 
     struct information
     {
@@ -69,10 +71,8 @@ public:
         quint16 adr;
         quint16 quantity;
         quint8 sizebytes;
-        QByteArray data;
+        QByteArray *data;
     };
-
-    ComInfo ComData;
 
     struct Coils
     {
@@ -80,7 +80,6 @@ public:
         quint8 Bytes[20];
     };
 
-    int deviceAdr;
     int Group, readSize;
     QThread *thr;
     ModBusSignal* Sig;
@@ -124,20 +123,10 @@ public:
     0x44, 0x84, 0x85, 0x45, 0x87, 0x47, 0x46, 0x86, 0x82, 0x42, 0x43, 0x83, 0x41, 0x81, 0x80, 0x40
                                    }  ;
 
-
-ModBus(ModBus_Settings Settings, QObject *parent = nullptr);
-~ModBus();
-
- QModbusRtuSerialMaster *modbusDevice;
- QModbusDevice::State state;
- //QModbusSerialAdu* Serial;
- QSerialPort *serialPort;
- QByteArray responseBuffer;
- QTimer* ModBusInterrogateTimer;
  quint16 CalcCRC(quint8* Dat, quint8 len);
- bool closeThr;
+
  static bool Reading;
- bool commands;
+ quint8 InWriteToPort;
  //QThread *Modthr;
 
 
@@ -177,6 +166,19 @@ signals:
 
 private:
 // QModbusReply Reply;
+     QModbusRtuSerialMaster *modbusDevice;
+     QModbusDevice::State state;
+     //QModbusSerialAdu* Serial;
+     QSerialPort *serialPort;
+     QByteArray responseBuffer;
+     QTimer* ModBusInterrogateTimer;
+     QString deviceAdr;
+     ComInfo ComData;
+     ModBus_Groups SignalGroups[9];
+     bool closeThr;
+     bool commands;
+     qint64 lastcursize;
+     int First, count;
 
 private slots:
 

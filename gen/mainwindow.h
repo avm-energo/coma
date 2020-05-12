@@ -190,6 +190,7 @@ public:
     QWidget *Least();
     QWidget *Wpred;
     QWidget *Walarm;
+    bool cancel;
 
 #if PROGSIZE >= PROGSIZE_LARGE
     void SetSlideWidget();
@@ -249,6 +250,8 @@ public slots:
     void GetUSBAlarmInDialog();
     void ModbusUpdateStatePredAlarmEvents(Coils* Signal);
     void ModBusUpdatePredAlarmEvents(Coils* Signal);
+    void SetCancelled();
+    void ReConnect();
 
 
 private slots:

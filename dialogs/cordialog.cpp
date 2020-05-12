@@ -285,7 +285,7 @@ void CorDialog::GetCorBdButton()
 void CorDialog::WriteCorBd()
 {
     int i;
-    quint16 adr[11] = {910, 911, 912, 913, 914, 915, 916, 917, 918, 919, 920};
+    quint32 adr[11] = {910, 911, 912, 913, 914, 915, 916, 917, 918, 919, 920};
 
     FillBackCor();
 
@@ -565,6 +565,7 @@ int CorDialog::WriteCheckPassword()
     KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
     connect(dlg,SIGNAL(Finished(QString)),this,SLOT(WritePasswordCheck(QString)));
     connect(this,SIGNAL(WritePasswordChecked()),&PasswordLoop,SLOT(quit()));
+    dlg->deleteLater();
     dlg->show();
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())

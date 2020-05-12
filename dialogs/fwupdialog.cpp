@@ -24,8 +24,10 @@
 #include "../widgets/wd_func.h"
 #include "../gen/files.h"
 #include "../widgets/etableview.h"
+#include "../widgets/waitwidget.h"
 #include "../gen/s2.h"
 #include "../dialogs/keypressdialog.h"
+#include "../gen/timefunc.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -103,6 +105,7 @@ void fwupdialog::RunSoft()
 {
     if (WriteCheckPassword() == Error::ER_NOERROR)
     {
+        TimeFunc::Wait(100);
         int res = Commands::RunVPO();
         if (res != Error::ER_NOERROR)
         {
