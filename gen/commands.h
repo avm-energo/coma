@@ -28,7 +28,7 @@ class Commands
 public:
     static int GetBsi(ModuleBSI::Bsi &bsi);
     static int GetFileWithRestore(int filenum, QVector<S2::DataRec> *data);
-    static int GetFile(int filenum, void *ptr);
+    static int GetFile(int filenum, QByteArray &ba);
     static int GetBac(char BacNum, void *ptr, int ptrsize);
     static int GetBd(char BdNum, void *BdPtr, int BdPtrSize);
     static int GetBda(char board, void *BdPtr, int BdPtrSize);

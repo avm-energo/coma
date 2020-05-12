@@ -91,7 +91,6 @@ SOURCES += \
     ../check/checktempmodbusdialog.cpp \
     ../gen/commands.cpp \
     ../gen/eabstractprotocomchannel.cpp \
-    ../gen/eusbcom.cpp \
     ../gen/eusbhid.cpp \
     ../dialogs/time.cpp
 
@@ -166,7 +165,6 @@ HEADERS += \
     ../check/checktempmodbusdialog.h \
     ../gen/commands.h \
     ../gen/eabstractprotocomchannel.h \
-    ../gen/eusbcom.h \
     ../gen/eusbhid.h \
     ../dialogs/time.h
 

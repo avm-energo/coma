@@ -13,10 +13,12 @@ Commands::Commands()
 int Commands::GetBsi(ModuleBSI::Bsi &bsi)
 {
 #if PROGSIZE != PROGSIZE_EMUL
+    QByteArray ba;
     if (cn != 0)
     {
-        cn->Send(CN_GBsi, BoardTypes::BT_NONE, &bsi, sizeof(ModuleBSI::Bsi));
-        return cn->result;
+        cn->Send(CN_GBsi, BoardTypes::BT_NONE, ba, sizeof(ModuleBSI::Bsi));
+        memcpy(&bsi, &(ba.data()[0]), sizeof(ModuleBSI::Bsi));
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else
@@ -27,11 +29,19 @@ int Commands::GetBsi(ModuleBSI::Bsi &bsi)
 int Commands::GetFileWithRestore(int filenum, QVector<S2::DataRec> *data)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    unsigned char *tmp = new unsigned char;
+    QByteArray ba;
     if (cn != 0)
     {
-        cn->Send(CN_GF, BoardTypes::BT_NONE, tmp, 0, filenum, data);
-        return cn->result;
+//        cn->Send(CN_GF, BoardTypes::BT_NONE, tmp, 0, filenum, data);
+        cn->SendPtr(CN_GF, BoardTypes::BT_NONE, ba, filenum);
+        // проверка контрольной суммы файла
+        quint32 crctocheck;
+        quint32 basize = ba.size();
+        memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
+        if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
+            return Error::ER_GENERALERROR;
+        return S2::RestoreDataMem(&ba.data()[0], basize, data);
+//        return cn->result;
     }
     return Error::ER_GENERALERROR;
 #else
@@ -41,13 +51,19 @@ int Commands::GetFileWithRestore(int filenum, QVector<S2::DataRec> *data)
 #endif
 }
 
-int Commands::GetFile(int filenum, void *ptr)
+int Commands::GetFile(int filenum, QByteArray &ba)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     if (cn != 0)
     {
-        cn->Send(CN_GF, BoardTypes::BT_NONE, ptr, 0, filenum);
-        return cn->result;
+//        cn->Send(CN_GF, BoardTypes::BT_NONE, ptr, 0, filenum);
+        cn->SendPtr(CN_GF, BoardTypes::BT_NONE, ba, filenum);
+        quint32 crctocheck;
+        quint32 basize = ba.size();
+        memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
+        if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
+            return Error::ER_GENERALERROR;
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else
@@ -60,10 +76,11 @@ int Commands::GetFile(int filenum, void *ptr)
 int Commands::WriteFile(void *ptr, int filenum, QVector<S2::DataRec> *data)
 {
 #if PROGSIZE != PROGSIZE_EMUL
+
     if (cn != 0)
     {
         cn->Send(CN_WF, BoardTypes::BT_BASE, ptr, 0, filenum, data);
-        return cn->result;
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else

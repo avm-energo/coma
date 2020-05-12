@@ -6,9 +6,9 @@
 #include <QTimer>
 #include <QMutex>
 #include <QWaitCondition>
-#include <QDataStream>
-#include <QFile>
+#include <QPointer>
 
+#include "modulebsi.h"
 #include "s2.h"
 #include "log.h"
 
@@ -84,16 +84,12 @@ public:
         wchar_t serial[20];
     };
 
-    qint32 result;
-    int baud;
-    int ernum;
+    qint32 Result;
+//    int ernum;
     bool NeedToSend, Busy, NeedToFinish;
-    QMutex BusyMutex;
-    QWaitCondition BusyWC;
     bool Connected, Cancelled;
-    int RDSize;
+//    qint64 RDSize;
     Log *CnLog;
-    QString ComPort;
     DeviceConnectStruct UsbPort;
 
     virtual bool Connect() = 0;
@@ -101,8 +97,10 @@ public:
     virtual int RawWrite(QByteArray &ba) = 0;
     virtual void RawClose() = 0;
 
-    void Send(char command, char board_type=0, void *ptr=nullptr, int ptrsize=0, int filenum=0, \
+    void Send(char command, char board_type=BoardTypes::BT_NONE);
+    void Send(char command, char board_type, QByteArray &ba, int ptrsize=0, int filenum=0, \
               QVector<S2::DataRec> *DRptr=nullptr);
+    void SendPtr(unsigned char command, unsigned char board_type, QByteArray &baout, int filenum = 0);
     static void SetWriteUSBLog(bool bit);
     static bool IsWriteUSBLog();
     virtual QStringList DevicesFound() = 0; // функция, возвращающая список найденных устройств (COM-портов, устройств USB)
@@ -128,26 +126,24 @@ private slots:
     void OscTimerTimeout();
 
 private:
-    unsigned char *OutData;
-    QByteArray ReadData, ReadDataChunk;
+    QByteArray InData, OutData;
+    QByteArray ReadDataChunk; //, ReadData;
     QByteArray WriteData;
     QTimer *TTimer, *OscTimer;
     quint16 OscNum;
     quint8 bStep;
-    char cmd;
-    int fnum;
+    char Command;
+    int FNum;
     int ReadDataChunkLength, RDLength; // длина всей посылки
     int WRLength; // длина всей посылки
-    int outdatasize; // размер приёмной области памяти
+//    qint64 OutDataSize; // размер приёмной области памяти
+    qint64 InDataSize;
     int SegLeft; // количество оставшихся сегментов
     int SegEnd; // номер последнего байта в ReadData текущего сегмента
     bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
     QVector<S2::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
-    QVector<S2::DataRec> DRosc;
     char BoardType;
     static bool WriteUSBLog;
-    QDataStream DataStream;
-    QFile *OutFile;
     int RDCount; // количество полезных считанных байт (без заголовков)
 
     void InitiateSend();

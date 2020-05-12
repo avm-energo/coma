@@ -38,7 +38,7 @@ public:
     static quint32 getTime32();
     static quint32 GetCRC32(char *, quint32);
     static void updCRC32(char byte, quint32 *dwCRC32);
-    static bool CheckCRC32(unsigned char *m, quint32 length, quint32 crctocheck);
+    static bool CheckCRC32(void *m, quint32 length, quint32 crctocheck);
 
 private:
 //    const unsigned long dwPolynomial = 0xEDB88320;

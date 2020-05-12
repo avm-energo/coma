@@ -148,12 +148,14 @@ void inline S2::updCRC32(char byte, quint32 *dwCRC32)
     *dwCRC32 = (( *dwCRC32 ) >> 8 )^ _crc32_t[static_cast<quint8>( byte )^(( *dwCRC32 ) & 0x000000FF )];
 }
 
-bool S2::CheckCRC32(unsigned char *m, quint32 length, quint32 crctocheck)
+bool S2::CheckCRC32(void *m, quint32 length, quint32 crctocheck)
 {
     quint32 i;
     quint32 crc=0xFFFFFFFF;
+    unsigned char *mem = static_cast<unsigned char *>(m);
+
     for (i=0; i<length; ++i)
-        updCRC32(m[i], &crc);
+        updCRC32(mem[i], &crc);
     return (crctocheck == crc);
 }
 
