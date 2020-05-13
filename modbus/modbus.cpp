@@ -333,7 +333,7 @@ void ModBus::ReadPort()
       }
 
   }
-  else
+  /*else
   {
       if(cursize == 5)
       {
@@ -358,7 +358,7 @@ void ModBus::ReadPort()
       {
          lastcursize = cursize;
       }
-  }
+  }*/
 
  // emit nextGroup();
 }

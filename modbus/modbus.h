@@ -80,10 +80,6 @@ public:
         quint8 Bytes[20];
     };
 
-    int Group, readSize;
-    QThread *thr;
-    ModBusSignal* Sig;
-    ModBusBSISignal* BSISig;
 
     constexpr static const unsigned char TabCRChi[256] = {
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
@@ -123,10 +119,8 @@ public:
     0x44, 0x84, 0x85, 0x45, 0x87, 0x47, 0x46, 0x86, 0x82, 0x42, 0x43, 0x83, 0x41, 0x81, 0x80, 0x40
                                    }  ;
 
- quint16 CalcCRC(quint8* Dat, quint8 len);
 
  static bool Reading;
- quint8 InWriteToPort;
  //QThread *Modthr;
 
 
@@ -166,6 +160,10 @@ signals:
 
 private:
 // QModbusReply Reply;
+     int Group, readSize;
+     ModBusSignal* Sig;
+     ModBusBSISignal* BSISig;
+     quint16 CalcCRC(quint8* Dat, quint8 len);
      QModbusRtuSerialMaster *modbusDevice;
      QModbusDevice::State state;
      //QModbusSerialAdu* Serial;
