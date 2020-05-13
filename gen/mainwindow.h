@@ -43,42 +43,11 @@ public:
         COMA_AUTON_MODE // просто автономный режим
     };
 
-    int disconnected;
-    int Mode; // режим запуска программы
-    bool SWHide;
-    QRect SWGeometry;
-    QVector<S2::DataRec> S2Config;
-    QVector<S2::DataRec> S2ConfigForTune;
-    ConfDialog *MainConfDialog;
-    ConfDialog *MainTuneDialog;
-    AbstractConfDialog *ConfB, *ConfM;
-    EAbstractCheckDialog *CheckB, *CheckM;
-    iec104* ch104;
-    iec104* SaveCh104;
-    ModBus* modBus;
-    MNKTime *Time;
-    checktempmodbusdialog *CheckModBus;
-    //CheckDialog84* Ch84;
-    QString IPtemp, FullName, SaveDevice, instr;
-    QStringList sl, USBsl, slfinal, insl;
+
     static QString MainInterface;
     static quint32 MTypeB;
     static quint32 MTypeM;
     static int TheEnd, StopRead;
-    quint8 HaveAlreadyRed = 0;
-    JournalDialog *JourD;
-    fwupdialog *FwUpD;
-    quint16 AdrBaseStation;
-    ModBus::ModBus_Settings Settings;
-    //MNKTime *Time;
-    //QThread *thr;
-    quint32 Mes;
-    bool TimeThrFinished, ModBusThrFinished;
-    QTimer* BdaTimer, *ReceiveTimer, *TimeTimer;
-    QThread *Modthr;// *thrTime;
-    quint8 PredAlarmEvents[20];
-    quint8 AlarmEvents[20];
-    int fileSize, curfileSize;
 
 
     struct DeviceConnectStruct
@@ -120,7 +89,21 @@ public:
     };
 
     ModBus_Settings Settings;*/
-
+    AbstractConfDialog *ConfB, *ConfM;
+    EAbstractCheckDialog *CheckB, *CheckM;
+    iec104* ch104;
+    iec104* SaveCh104;
+    ModBus* modBus;
+    MNKTime *Time;
+    JournalDialog *JourD;
+    fwupdialog *FwUpD;
+    QString IPtemp, FullName, SaveDevice, instr;
+    QStringList sl, USBsl, slfinal, insl;
+    QThread *Modthr;// *thrTime;
+    quint16 AdrBaseStation;
+    ModBus::ModBus_Settings Settings;
+    QTimer* BdaTimer, *TimeTimer;
+    QVector<S2::DataRec> S2Config;
 
     int CheckPassword();
 
@@ -214,6 +197,26 @@ signals:
 private:
     bool Ok;
     bool TEEnabled; // признак того, ведётся ли лог в правом выезжающем окне
+    int disconnected;
+    int Mode; // режим запуска программы
+    bool SWHide;
+    QRect SWGeometry;
+    QVector<S2::DataRec> S2ConfigForTune;
+    ConfDialog *MainConfDialog;
+    ConfDialog *MainTuneDialog;
+
+    //checktempmodbusdialog *CheckModBus;
+    //CheckDialog84* Ch84;
+    quint8 HaveAlreadyRed = 0;
+    //MNKTime *Time;
+    //QThread *thr;
+    quint32 Mes;
+    bool TimeThrFinished, ModBusThrFinished;
+    QTimer *ReceiveTimer;
+    quint8 PredAlarmEvents[20];
+    quint8 AlarmEvents[20];
+    int fileSize, curfileSize;
+
 #ifdef ETHENABLE
     DeviceConnectStruct DevInfo;
 #endif

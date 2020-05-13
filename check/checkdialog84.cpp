@@ -458,6 +458,9 @@ void CheckDialog84::UpdateModBusData(ModBusSignal *Signal, int * size)
     for(i=0; i<*size; i++)
     {
       //sig = *(Signal+i);
+      if(((((Signal+i)->SigAdr >= 1011) && ((Signal+i)->SigAdr <= 1015))) || (((Signal+i)->SigAdr >= 1111) && ((Signal+i)->SigAdr <= 1115)))
+      Ch84->FillBd(this, QString::number(((Signal+i)->SigAdr)+9), WDFunc::StringValueWithCheck((Signal+i)->flVal, 3));
+      else
       Ch84->FillBd(this, QString::number((Signal+i)->SigAdr), WDFunc::StringValueWithCheck((Signal+i)->flVal, 3));
     }
     ModBus::Reading = false;

@@ -441,7 +441,7 @@ QString WDFunc::StringValueWithCheck(float value, int precision)
 {
     QString tmps;
     QLocale german(QLocale::German);
-    if (value == FLT_MAX)
+    if (value >= FLT_MAX)
         tmps = "***";
     else
         tmps = german.toString(value, 'f', precision);
@@ -451,7 +451,7 @@ QString WDFunc::StringValueWithCheck(float value, int precision)
 QVariant WDFunc::FloatValueWithCheck(float value)
 {
     QVariant tmps;
-    if (value == FLT_MAX)
+    if (value >= FLT_MAX)
         tmps = "***";
     else
         tmps = value;

@@ -12,6 +12,8 @@
 #include "ecombobox.h"
 #include "passwordlineedit.h"
 
+#define MAXFLOAT    3.40282347E+38F
+
 class WDFunc
 {
 public:

@@ -51,7 +51,7 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
     First = 1;
     count = 0;
 
-    for(i=0;i<8;i++)
+    for(i=0;i<6;i++)
     SignalGroups[i].signaltype=0x04;
 
     SignalGroups[0].firstbyteadr = 0;
@@ -61,43 +61,43 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
     SignalGroups[1].firstbyteadr = 0x03;
     SignalGroups[1].secondbyteadr = 0xE8;
     SignalGroups[1].firstbytequantity = 0;
-    SignalGroups[1].secondbytequantity = 0x16;
-    SignalGroups[2].firstbyteadr = 0x03;
+    SignalGroups[1].secondbytequantity = 0x20;
+    /*SignalGroups[2].firstbyteadr = 0x03;
     SignalGroups[2].secondbyteadr = 0xFC;
     SignalGroups[2].firstbytequantity = 0;
-    SignalGroups[2].secondbytequantity = 0x0A;
-    SignalGroups[3].firstbyteadr = 0x04;
-    SignalGroups[3].secondbyteadr = 0x4C;
+    SignalGroups[2].secondbytequantity = 0x0A;*/
+    SignalGroups[2].firstbyteadr = 0x04;
+    SignalGroups[2].secondbyteadr = 0x4C;
+    SignalGroups[2].firstbytequantity = 0;
+    SignalGroups[2].secondbytequantity = 0x20;
+    SignalGroups[3].firstbyteadr = 0x09;
+    SignalGroups[3].secondbyteadr = 0x60;
     SignalGroups[3].firstbytequantity = 0;
-    SignalGroups[3].secondbytequantity = 0x20;
+    SignalGroups[3].secondbytequantity = 0x0E;
     SignalGroups[4].firstbyteadr = 0x09;
-    SignalGroups[4].secondbyteadr = 0x60;
+    SignalGroups[4].secondbyteadr = 0x74;
     SignalGroups[4].firstbytequantity = 0;
-    SignalGroups[4].secondbytequantity = 0x0E;
-    SignalGroups[5].firstbyteadr = 0x09;
-    SignalGroups[5].secondbyteadr = 0x74;
+    SignalGroups[4].secondbytequantity = 0x1C;
+    SignalGroups[5].firstbyteadr = 0x11;
+    SignalGroups[5].secondbyteadr = 0x95;
     SignalGroups[5].firstbytequantity = 0;
-    SignalGroups[5].secondbytequantity = 0x1C;
-    SignalGroups[6].firstbyteadr = 0x11;
-    SignalGroups[6].secondbyteadr = 0x95;
-    SignalGroups[6].firstbytequantity = 0;
-    SignalGroups[6].secondbytequantity = 0x04;
-    SignalGroups[7].firstbyteadr = 0x04;
+    SignalGroups[5].secondbytequantity = 0x04;
+    /*SignalGroups[7].firstbyteadr = 0x04;
     SignalGroups[7].secondbyteadr = 0x60;
     SignalGroups[7].firstbytequantity = 0;
-    SignalGroups[7].secondbytequantity = 0x0A;
-    SignalGroups[8].signaltype=0x01;
-    SignalGroups[8].firstbyteadr = 0x0B;
-    SignalGroups[8].secondbyteadr = 0xC3;
-    SignalGroups[8].firstbytequantity = 0;
-    SignalGroups[8].secondbytequantity = 0x19;
+    SignalGroups[7].secondbytequantity = 0x0A;*/
+    SignalGroups[6].signaltype=0x01;
+    SignalGroups[6].firstbyteadr = 0x0B;
+    SignalGroups[6].secondbyteadr = 0xC3;
+    SignalGroups[6].firstbytequantity = 0;
+    SignalGroups[6].secondbytequantity = 0x19;
 
     //connect(this,  SIGNAL(ModBusState(QModbusDevice::State)), parent, SLOT(onModbusStateChanged(QModbusDevice::State)));
     //connect(modbusDevice,  SIGNAL(stateChanged(QModbusDevice::State)), parent, SLOT(onModbusStateChanged(QModbusDevice::State)));
     //thr->start();
 
-    ModBusInterrogateTimer = new QTimer;
-    ModBusInterrogateTimer->setInterval(1000);
+    //ModBusInterrogateTimer = new QTimer;
+    //ModBusInterrogateTimer->setInterval(1000);
 
 
     serialPort = new QSerialPort(Settings.port);
@@ -222,10 +222,11 @@ void ModBus::ReadPort()
   QString crc = nullptr;
   quint8 size;
   qint64 cursize;
-  int i = 0, startadr, signalsSize, ival;
+  int i = 0, startadr, signalsSize;
+  int ival;
   Coils *Coil = new Coils;
   //ModBusInterrogateTimer->stop();
-  //responseBuffer = new QByteArray;
+  responseBuffer = *new QByteArray[1024];
   responseBuffer.clear();
   Reading = 1;
 
@@ -244,7 +245,7 @@ void ModBus::ReadPort()
 
       if(MYKSS == crcfinal)
       {
-        if((Group == 8) && (commands == false))
+        if((Group == 6) && (commands == false))
         {
            Coil = new Coils;
            Coil->countBytes = responseBuffer.data()[2];
@@ -269,7 +270,23 @@ void ModBus::ReadPort()
          ival = (static_cast<quint8>(responseBuffer.data()[5+4*i])<<24)+(static_cast<quint8>(responseBuffer.data()[6+4*i])<<16)+(static_cast<quint8>(responseBuffer.data()[3+4*i])<<8)+(static_cast<quint8>(responseBuffer.data()[4+4*i]));
          else
          {
-           ival = (responseBuffer.data()[5+4*i]<<24)+(responseBuffer.data()[6+4*i]<<16)+(responseBuffer.data()[3+4*i]<<8)+(responseBuffer.data()[4+4*i]);
+           /*bool ok;
+           QString fl = *new QString[1024];
+           QStringList Listfl = *new QStringList[4];
+           fl.clear();
+           float tmpf;
+           fl.append(responseBuffer.data()[5+4*i] & 0x00FF);
+           fl.append(responseBuffer.data()[6+4*i] & 0x00FF);
+           fl.append(responseBuffer.data()[3+4*i] & 0x00FF);
+           fl.append(responseBuffer.data()[4+4*i] & 0x00FF);
+           Listfl.append(fl.at(0));
+           Listfl.append(fl.at(1));
+           Listfl.append(fl.at(2));
+           Listfl.append(fl.at(3));
+           fl = Listfl.join("");
+           tmpf = fl.toFloat(&ok);
+           Sig[i].flVal = tmpf;*/
+           ival = ((responseBuffer.data()[5+4*i]<<24)&0xFF000000)+((responseBuffer.data()[6+4*i]<<16)&0x00FF0000)+((responseBuffer.data()[3+4*i]<<8)&0x0000FF00)+((responseBuffer.data()[4+4*i]&0x000000FF));
            Sig[i].flVal = *(float*)&ival;
          }
 
@@ -314,14 +331,14 @@ void ModBus::ReadPort()
         else
         {
 
-           if(Group == 8)
+           if(Group == 6)
            emit coilsignalsready(Coil);
            else
            emit signalsreceived(Sig, &signalsSize);
 
            Group++;
 
-           if(Group == 9)
+           if(Group == 7)
            Group= 0;
 
            //Reading = 0;
@@ -333,15 +350,15 @@ void ModBus::ReadPort()
       }
 
   }
-  /*else
+  else
   {
-      if(cursize == 5)
+      if((cursize == 5) && (ComData.adr != 1))
       {
           commands = false;
           Reading = false;
           Group++;
 
-          if(Group == 9)
+          if(Group == 7)
           Group= 0;
 
           responseBuffer = serialPort->read(cursize);
@@ -354,19 +371,14 @@ void ModBus::ReadPort()
           }
           ComData.adr = 0;
       }
-      else
-      {
-         lastcursize = cursize;
-      }
-  }*/
+  }
 
  // emit nextGroup();
 }
 
 void ModBus::WriteToPort()
 {
-    QByteArray* bytes = new QByteArray[100];
-    char zero = 0;
+    QByteArray* bytes = new QByteArray[1024];
     //quint32 crc=0;
     quint16 KSS = '\0';
     int i = 0;
@@ -450,7 +462,7 @@ void ModBus::WriteToPort()
 
                 readSize = 5+2*SignalGroups[Group].secondbytequantity;
 
-                if(Group == 8)
+                if(Group == 6)
                 readSize = 9;
 
 
@@ -478,7 +490,7 @@ void ModBus::WriteToPort()
 
 void ModBus::BSIrequest(ModBus_Settings Settings)
 {
-    QByteArray* bytes = new QByteArray;
+    QByteArray* bytes = new QByteArray[100];
     quint16 KSS = '\0';
     qint64 st;
 
@@ -490,7 +502,7 @@ void ModBus::BSIrequest(ModBus_Settings Settings)
     //ComData.data.clear();
 
     commands = true;
-
+    bytes->clear();
     serialPort->clear();
 
     bytes->append(Settings.adr.toInt()); // адрес устройства

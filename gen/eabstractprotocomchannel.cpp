@@ -4,6 +4,7 @@
 #include "error.h"
 #include "modulebsi.h"
 #include "eabstractprotocomchannel.h"
+#include "../gen/timefunc.h"
 
 bool EAbstractProtocomChannel::WriteUSBLog = false;
 
@@ -227,6 +228,7 @@ void EAbstractProtocomChannel::InitiateSend()
         WriteData.append(cmd);
         AppendSize(WriteData, 0);
         WriteDataToPort(WriteData);
+        TimeFunc::Wait(10);
         break;
     }
 

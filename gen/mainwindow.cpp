@@ -1572,7 +1572,7 @@ void MainWindow::DisconnectAndClear()
     #endif
 
         CheckB = CheckM = nullptr;
-        CheckModBus = nullptr;
+        //CheckModBus = nullptr;
         emit ClearBsi();
         ClearTW();
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");

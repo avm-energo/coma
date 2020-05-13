@@ -169,10 +169,10 @@ private:
      //QModbusSerialAdu* Serial;
      QSerialPort *serialPort;
      QByteArray responseBuffer;
-     QTimer* ModBusInterrogateTimer;
+     //QTimer* ModBusInterrogateTimer;
      QString deviceAdr;
      ComInfo ComData;
-     ModBus_Groups SignalGroups[9];
+     ModBus_Groups SignalGroups[7];
      bool closeThr;
      bool commands;
      qint64 lastcursize;
