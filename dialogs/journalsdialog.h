@@ -118,8 +118,8 @@ private:
                                             << "Авария по приращению C ввода фазы C";
 
     void SetupUI();
-    void FillEventsTable(QVector<S2::DataRec> *jour, int jourtype);
-    void FillMeasTable(QVector<S2::DataRec>*jour);
+    void FillEventsTable(char *file, int jourtype);
+    void FillMeasTable(char *file);
     int GetJourNum(const QString &objname);
 
 signals:

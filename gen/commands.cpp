@@ -33,7 +33,7 @@ int Commands::GetFileWithRestore(int filenum, QVector<S2::DataRec> *data)
     if (cn != 0)
     {
 //        cn->Send(CN_GF, BoardTypes::BT_NONE, tmp, 0, filenum, data);
-        cn->SendPtr(CN_GF, BoardTypes::BT_NONE, ba, filenum);
+        cn->SendFile(CN_GF, BoardTypes::BT_NONE, filenum, ba);
         // проверка контрольной суммы файла
         quint32 crctocheck;
         quint32 basize = ba.size();
@@ -57,7 +57,7 @@ int Commands::GetFile(int filenum, QByteArray &ba)
     if (cn != 0)
     {
 //        cn->Send(CN_GF, BoardTypes::BT_NONE, ptr, 0, filenum);
-        cn->SendPtr(CN_GF, BoardTypes::BT_NONE, ba, filenum);
+        cn->SendFile(CN_GF, BoardTypes::BT_NONE, filenum, ba);
         quint32 crctocheck;
         quint32 basize = ba.size();
         memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
@@ -73,13 +73,23 @@ int Commands::GetFile(int filenum, QByteArray &ba)
 #endif
 }
 
-int Commands::WriteFile(void *ptr, int filenum, QVector<S2::DataRec> *data)
+int Commands::WriteFile(int filenum, QVector<S2::DataRec> *data)
 {
 #if PROGSIZE != PROGSIZE_EMUL
+    QByteArray ba;
 
     if (cn != 0)
     {
-        cn->Send(CN_WF, BoardTypes::BT_BASE, ptr, 0, filenum, data);
+        ba.resize(CN_MAXFILESIZE);
+        S2::StoreDataMem(&(ba.data()[0]), data, filenum);
+        // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
+        quint32 wrlength = static_cast<quint8>(ba.at(7))*16777216; // с 4 байта начинается FileHeader.size
+        wrlength += static_cast<quint8>(ba.at(6))*65536;
+        wrlength += static_cast<quint8>(ba.at(5))*256;
+        wrlength += static_cast<quint8>(ba.at(4));
+        wrlength += sizeof(S2::FileHeader); // sizeof(FileHeader)
+        ba.resize(wrlength);
+        cn->SendFile(CN_WF, BoardTypes::BT_BASE, filenum, ba);
         return cn->Result;
     }
     return Error::ER_GENERALERROR;
@@ -94,10 +104,13 @@ int Commands::WriteFile(void *ptr, int filenum, QVector<S2::DataRec> *data)
 int Commands::WriteHiddenBlock(char board, void *HPtr, int HPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
+    QByteArray ba;
+
     if (cn != 0)
     {
-        cn->Send(CN_WHv, board, HPtr, HPtrSize);
-        return cn->result;
+        ba.append(static_cast<const char *>(HPtr), HPtrSize);
+        cn->Send(CN_WHv, board, ba);
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else

@@ -105,19 +105,20 @@ void JournalDialog::GetJour()
     }
     else if (MainWindow::MainInterface == "USB")
     {
-        QVector<S2::DataRec> *Jour = new QVector<S2::DataRec>;
-        if(Commands::GetFile(num, Jour) == Error::ER_NOERROR)
+//        QVector<S2::DataRec> *Jour = new QVector<S2::DataRec>;
+        QByteArray ba;
+        if(Commands::GetFile(num, ba) == Error::ER_NOERROR)
         {
             switch(jourtype)
             {
             case JOURSYS:
-                FillEventsTable(Jour, JOURSYS);
+                FillEventsTable(ba.data(), JOURSYS);
                 break;
             case JOURWORK:
-                FillEventsTable(Jour, JOURWORK);
+                FillEventsTable(ba.data(), JOURWORK);
                 break;
             case JOURMEAS:
-                FillMeasTable(Jour);
+                FillMeasTable(ba.data());
                 break;
             default:
                 break;
@@ -193,7 +194,7 @@ void JournalDialog::SaveJour()
     delete xlsx;
 }
 
-void JournalDialog::FillEventsTable(QVector<S2::DataRec> *jour, int jourtype)
+void JournalDialog::FillEventsTable(char *file, int jourtype)
 {
     QVector<QVector<QVariant>> lsl;
     QVector<QVariant> EventNum, Num, Time, Type;
@@ -202,21 +203,24 @@ void JournalDialog::FillEventsTable(QVector<S2::DataRec> *jour, int jourtype)
     const QStringList sl = (jourtype == JOURSYS) ? SysJourDescription : WorkJourDescription;
     int mineventid = (jourtype == JOURSYS) ? SYSJOURID : WORKJOURID;
     const QString tvname = (jourtype == JOURSYS) ? "system" : "work";
-    char *mem;
     int N = 0;
     int joursize = 0; // размер считанного буфера с информацией
     int recordsize = sizeof(EventStruct);
-
-    joursize = jour->at(0).num_byte;
+    int fhsize = sizeof(S2::FileHeader);
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
+    file += fhsize;
+    S2::DataRec jour;
+    int drsize = sizeof(S2::DataRec) - sizeof(void *);
+    memcpy(&jour, file, drsize);
+    joursize = jour.num_byte;
+    file += drsize; // move file pointer to thedata
     int counter = 0;
-    mem = static_cast<char *>(jour->at(0).thedata);
     int i = 0;
     while (i < joursize)
     {
-        memcpy(&event, mem, recordsize);
-        mem += recordsize;
+        memcpy(&event, file, recordsize);
+        file += recordsize;
         i += recordsize;
         if(event.Time != 0xFFFFFFFFFFFFFFFF)
         {
@@ -252,26 +256,32 @@ void JournalDialog::FillEventsTable(QVector<S2::DataRec> *jour, int jourtype)
     QApplication::restoreOverrideCursor();
 }
 
-void JournalDialog::FillMeasTable(QVector<S2::DataRec>* jour)
+void JournalDialog::FillMeasTable(char *file)
 {
     QVector<QVector<QVariant> > lsl;
     ETableModel *model = new ETableModel;
-    char *mem;
     QVector<QVariant> EventNum, Time, UeffA, UeffB, UeffC, IeffA, IeffB, IeffC, U0, U1, U2,
                       I0, I1, I2, CbushA, CbushB, CbushC, Tg_dA, Tg_dB, Tg_dC, dCbushA, dCbushB,
                       dCbushC, dTg_dA, dTg_dB, dTg_dC, Iunb, Phy_unb, Tmk, Tokr;
 
     MeasureStruct meas;
     int recordsize = sizeof(MeasureStruct);
-    int joursize = jour->at(0).num_byte;
+
+    int joursize = 0; // размер считанного буфера с информацией
+    int fhsize = sizeof(S2::FileHeader);
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    mem = static_cast<char *>(jour->at(0).thedata);
+    file += fhsize;
+    S2::DataRec jour;
+    int drsize = sizeof(S2::DataRec) - sizeof(void *);
+    memcpy(&jour, file, drsize);
+    joursize = jour.num_byte;
+    file += drsize; // move file pointer to thedata
     int i = 0;
     while (i < joursize)
     {
-        memcpy(&meas, mem, recordsize);
-        mem += recordsize;
+        memcpy(&meas, file, recordsize);
+        file += recordsize;
         i += recordsize;
 
         QApplication::setOverrideCursor(Qt::WaitCursor);

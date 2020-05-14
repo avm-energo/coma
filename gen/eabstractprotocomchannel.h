@@ -98,9 +98,8 @@ public:
     virtual void RawClose() = 0;
 
     void Send(char command, char board_type=BoardTypes::BT_NONE);
-    void Send(char command, char board_type, QByteArray &ba, int ptrsize=0, int filenum=0, \
-              QVector<S2::DataRec> *DRptr=nullptr);
-    void SendPtr(unsigned char command, unsigned char board_type, QByteArray &baout, int filenum = 0);
+    void Send(char command, char board_type, QByteArray &ba);
+    void SendFile(unsigned char command, unsigned char board_type, int filenum, QByteArray &ba);
     static void SetWriteUSBLog(bool bit);
     static bool IsWriteUSBLog();
     virtual QStringList DevicesFound() = 0; // функция, возвращающая список найденных устройств (COM-портов, устройств USB)
@@ -130,21 +129,21 @@ private:
     QByteArray ReadDataChunk; //, ReadData;
     QByteArray WriteData;
     QTimer *TTimer, *OscTimer;
-    quint16 OscNum;
+//    quint16 OscNum;
     quint8 bStep;
     char Command;
     int FNum;
     int ReadDataChunkLength, RDLength; // длина всей посылки
     int WRLength; // длина всей посылки
 //    qint64 OutDataSize; // размер приёмной области памяти
-    qint64 InDataSize;
+//    qint64 InDataSize;
     int SegLeft; // количество оставшихся сегментов
     int SegEnd; // номер последнего байта в ReadData текущего сегмента
     bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
-    QVector<S2::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
+//    QVector<S2::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     char BoardType;
     static bool WriteUSBLog;
-    int RDCount; // количество полезных считанных байт (без заголовков)
+//    int RDCount; // количество полезных считанных байт (без заголовков)
 
     void InitiateSend();
     void WriteDataToPort(QByteArray &ba);

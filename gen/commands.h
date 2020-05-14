@@ -34,7 +34,7 @@ public:
     static int GetBda(char board, void *BdPtr, int BdPtrSize);
     static int GetBt(char BtNum, void *BoPtr, int &BoPtrSize);
     static int WriteBac(char BacNum, void *BacPtr, int BacPtrSize);
-    static int WriteFile(void *ptr, int filenum, QVector<S2::DataRec> *data);
+    static int WriteFile(int filenum, QVector<S2::DataRec> *data);
     static int WriteHiddenBlock(char board, void *HPtr, int HPtrSize);
     static int EraseTechBlock(char block);
     static int Connect();

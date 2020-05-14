@@ -17,7 +17,7 @@ EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(pa
     RDLength = 0;
     SegEnd = 0;
     SegLeft = 0;
-    OscNum = 0;
+//    OscNum = 0;
     Connected = false;
     Cancelled = false;
     TTimer = new QTimer(this);
@@ -68,7 +68,7 @@ void EAbstractProtocomChannel::Send(char command, char board_type)
     loop.exec();
 }
 
-void EAbstractProtocomChannel::Send(char command, char board_type, QByteArray &ba, int ptrsize, int filenum, QVector<S2::DataRec> *DRptr)
+void EAbstractProtocomChannel::Send(char command, char board_type, QByteArray &ba)
 {
     if (!Connected)
     {
@@ -76,10 +76,10 @@ void EAbstractProtocomChannel::Send(char command, char board_type, QByteArray &b
         return;
     }
     InData = ba;
-    InDataSize = ptrsize; // размер области данных, в которую производить запись
+//    InDataSize = ptrsize; // размер области данных, в которую производить запись
     Command = command;
-    FNum = filenum;
-    DR = DRptr;
+//    FNum = filenum;
+//    DR = DRptr;
     if (board_type == BoardTypes::BT_BASE)
         BoardType = 0x01;
     else if (board_type == BoardTypes::BT_MEZONIN)
@@ -94,19 +94,16 @@ void EAbstractProtocomChannel::Send(char command, char board_type, QByteArray &b
     loop.exec();
 }
 
-void EAbstractProtocomChannel::SendPtr(unsigned char command, unsigned char board_type, QByteArray &baout, int filenum)
+void EAbstractProtocomChannel::SendFile(unsigned char command, unsigned char board_type, int filenum, QByteArray &ba)
 {
     if (!Connected)
     {
         Result = CN_NULLDATAERROR;
         return;
     }
-//    OutData = static_cast<unsigned char *>(ptr);
-//    OutDataSize = ptrsize; // размер области данных, в которую производить запись
-//    OutDataSize = -1;
     Command = command;
     FNum = filenum;
-//    DR = DRptr;
+    InData = ba;
     if (board_type == BoardTypes::BT_BASE)
         BoardType = 0x01;
     else if (board_type == BoardTypes::BT_MEZONIN)
@@ -119,7 +116,7 @@ void EAbstractProtocomChannel::SendPtr(unsigned char command, unsigned char boar
     QEventLoop loop;
     connect(this, SIGNAL(QueryFinished()), &loop, SLOT(quit()));
     loop.exec();
-    baout = OutData;
+    ba = OutData;
 }
 
 void EAbstractProtocomChannel::SetWriteUSBLog(bool bit)
@@ -207,17 +204,8 @@ void EAbstractProtocomChannel::InitiateSend()
     }
     case CN_WF: // запись файла
     {
-        if (DR->isEmpty())
-            Finish(CN_NULLDATAERROR);
-        WriteData.resize(CN_MAXFILESIZE);
-        S2::StoreDataMem(&(WriteData.data()[0]), DR, FNum);
-        // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
-        WRLength = static_cast<quint8>(WriteData.at(7))*16777216; // с 4 байта начинается FileHeader.size
-        WRLength += static_cast<quint8>(WriteData.at(6))*65536;
-        WRLength += static_cast<quint8>(WriteData.at(5))*256;
-        WRLength += static_cast<quint8>(WriteData.at(4));
-        WRLength += sizeof(S2::FileHeader); // sizeof(FileHeader)
-        WriteData.resize(WRLength);
+        WriteData = InData;
+        WRLength = WriteData.length();
         emit SetDataSize(WRLength); // сигнал для прогрессбара
         SetWRSegNum();
         WRCheckForNextSegment(true);
@@ -459,7 +447,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 }
                 emit SetDataSize(RDLength);
                 OutData.resize(RDLength);
-                RDCount = 0;
+//                RDCount = 0;
                 bStep++;
                 break;
             }

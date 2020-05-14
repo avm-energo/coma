@@ -173,7 +173,6 @@ public:
     QVector<S2::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     QVector<S2::DataRec> *DRJour;
     char BoardType;
-    static bool WriteUSBLog;
     quint32 FileLen;
     int incLS, count;
 
