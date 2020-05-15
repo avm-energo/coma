@@ -176,7 +176,7 @@ private:
      bool closeThr;
      bool commands;
      qint64 lastcursize;
-     int First, count;
+     int First, count, write;
 
 private slots:
 

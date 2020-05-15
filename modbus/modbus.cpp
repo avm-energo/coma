@@ -50,6 +50,7 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
     commands = false;
     First = 1;
     count = 0;
+    write = 0;
 
     for(i=0;i<6;i++)
     SignalGroups[i].signaltype=0x04;
@@ -267,7 +268,7 @@ void ModBus::ReadPort()
         for(i=0; i<signalsSize; i++)
         {
          if(ComData.adr == 1  || ComData.adr == 4600)  // bsi
-         ival = (static_cast<quint8>(responseBuffer.data()[5+4*i])<<24)+(static_cast<quint8>(responseBuffer.data()[6+4*i])<<16)+(static_cast<quint8>(responseBuffer.data()[3+4*i])<<8)+(static_cast<quint8>(responseBuffer.data()[4+4*i]));
+         ival = (((static_cast<quint8>(responseBuffer.data()[5+4*i])<<24)&0xFF000000)+((static_cast<quint8>(responseBuffer.data()[6+4*i])<<16)&0x00FF0000)+((static_cast<quint8>(responseBuffer.data()[3+4*i])<<8)&0x0000FF00)+(static_cast<quint8>(responseBuffer.data()[4+4*i])&0x000000FF));
          else
          {
            /*bool ok;
@@ -470,6 +471,9 @@ void ModBus::WriteToPort()
 
 
             st = serialPort->write(bytes->data(), bytes->size());
+
+            if(ComData.adr == 4600)
+            write=0;
             //st=0;
             Reading = 1;
 
@@ -571,6 +575,17 @@ void ModBus::ModWriteCor(information* info, float* data)//, int* size)
     quint32 fl;
     //bool readingState = Reading;
 
+    while(Reading == true)
+    {
+        TimeFunc::Wait(10);
+        count++;
+        if(count == 200)
+        {
+          Reading = false;
+          count = 0;
+        }
+    }
+
     ComData.ModCom = 0x10;
     ComData.adr = info->adr;
 
@@ -595,7 +610,7 @@ void ModBus::ModWriteCor(information* info, float* data)//, int* size)
          ComData.data->append(static_cast<char>(fl>>16));
         }
     }
-    TimeFunc::Wait(100);
+    //TimeFunc::Wait(100);
     commands = true;
     Reading = false;
 
@@ -603,6 +618,17 @@ void ModBus::ModWriteCor(information* info, float* data)//, int* size)
 
 void ModBus::ModReadCor(information* info)
 {
+
+    while(Reading == true)
+    {
+        TimeFunc::Wait(10);
+        count++;
+        if(count == 200)
+        {
+          Reading = false;
+          count = 0;
+        }
+    }
 
     ComData.ModCom = 0x04;
     ComData.adr = info->adr;
@@ -612,7 +638,7 @@ void ModBus::ModReadCor(information* info)
     ComData.data = new QByteArray[100];
     ComData.data->clear();
 
-    TimeFunc::Wait(100);
+    //TimeFunc::Wait(100);
     commands = true;
     Reading = false;
 
@@ -638,22 +664,38 @@ void ModBus::InterrogateTime()
         }
     }
 
+    if(!write)
+    {
+      ComData.ModCom = 0x03;
+      ComData.adr = 4600;
+      ComData.quantity = 2;
+      ComData.sizebytes = 4;
+      ComData.data = new QByteArray[100];
+      ComData.data->clear();
+      //TimeFunc::Wait(100);
+      commands = true;
+      Reading = false;
+    }
 
-    ComData.ModCom = 0x03;
-    ComData.adr = 4600;
-    ComData.quantity = 2;
-    ComData.sizebytes = 4;
-    ComData.data = new QByteArray[100];
-    ComData.data->clear();
-    //TimeFunc::Wait(100);
-    commands = true;
-    Reading = false;
 
 }
 
 void ModBus::WriteTime(uint* time)
 {
+    write = 1;
     quint32 T;
+    //ComData = *new ComInfo;
+
+    while(Reading == true)
+    {
+        TimeFunc::Wait(10);
+        count++;
+        if(count == 200)
+        {
+          Reading = false;
+          count = 0;
+        }
+    }
 
     ComData.ModCom = 0x10;
     ComData.adr = 4600;
@@ -661,15 +703,19 @@ void ModBus::WriteTime(uint* time)
     ComData.quantity = 2;
     ComData.sizebytes = 4;
 
+    ComData.data = new QByteArray[100];
+    ComData.data->clear();
+
     T =*time;
     ComData.data->append(static_cast<char>(T>>8));
     ComData.data->append(static_cast<char>(T));
     ComData.data->append(static_cast<char>(T>>24));
     ComData.data->append(static_cast<char>(T>>16));
 
-    TimeFunc::Wait(100);
+    //TimeFunc::Wait(100);
     commands = true;
     Reading = false;
+
 }
 
 /*QModbusReply *enqueueRequest(const QModbusRequest &request, int serverAddress,

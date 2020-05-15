@@ -263,14 +263,13 @@ void MNKTime::Start_Timer(int index)
               WDFunc::LE_write_data(this, qStr, "Date");
             }
         }
+        else
+        {
+            first = 0;
+        }
 
        // FinishThread = false;
     }
-    else
-    {
-        first = 0;
-    }
-
 
 }
 
@@ -319,7 +318,7 @@ void MNKTime::Write_PCDate()
 void MNKTime::Write_Date()
 {
     QDateTime myDateTime;
-    uint *time = new uint;
+    uint *time = new uint[1];
     QString qStr;
     WDFunc::LE_read_data(this, "Date", qStr);
     myDateTime = QDateTime::fromString(qStr,"dd-MM-yyyy HH:mm:ss");
