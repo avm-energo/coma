@@ -66,10 +66,10 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
     connect(Parse,SIGNAL(GeneralInter()),this,SLOT(SendI()));
     connect(Parse,SIGNAL(sendAct()),this,SLOT(SendTestAct()));
     connect(Parse,SIGNAL(parsestarted()),this,SLOT(StartParse()));
-    connect(Parse,SIGNAL(callFile(char*)),this,SLOT(CallFile(char*)));
-    connect(Parse,SIGNAL(callSection(char*)),this,SLOT(GetSection(char*)));
-    connect(Parse,SIGNAL(sendConfirmSection(char*)),this,SLOT(ConfirmSection(char*)));
-    //connect(Parse,SIGNAL(sendConfirmFile(char*)),this,SLOT(ConfirmFilechar*()));
+    connect(Parse,SIGNAL(CallFile(unsigned char)),this,SLOT(CallFile(unsigned char)));
+    connect(Parse,SIGNAL(CallSection(unsigned char)),this,SLOT(GetSection(unsigned char)));
+    connect(Parse,SIGNAL(SendConfirmSection(unsigned char)),this,SLOT(ConfirmSection(unsigned char)));
+    //connect(Parse,SIGNAL(sendConfirmFile(unsigned char)),this,SLOT(ConfirmFile(unsigned char)));
     connect(Parse,SIGNAL(sendS2fromParse(QVector<S2::DataRec>*)),this,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)));
     connect(Parse,SIGNAL(sendJourSysfromParse(QVector<S2::DataRec>*)),this,SIGNAL(sendJourSysfromiec104(QVector<S2::DataRec>*)));
     connect(Parse,SIGNAL(sendJourWorkfromParse(QVector<S2::DataRec>*)),this,SIGNAL(sendJourWorkfromiec104(QVector<S2::DataRec>*)));
@@ -232,7 +232,7 @@ void iec104::SendTestAct()
 {
     APCI GI;
     ASDU GInter;
-    quint16 VR = Parse->V_R;
+//    quint16 VR = Parse->V_R;
 
     GI.start = I104_START;
     GI.APDUlength = 4;
@@ -439,17 +439,18 @@ int Parse104::isIncomeDataValid(QByteArray ba)
     }
     case I104_U:
     {
-        if ((ba.at(2) == I104_STARTDT_CON) && (cmd == I104_STARTDT_ACT)) // если пришло подтверждение старта и перед этим мы старт запрашивали
+        unsigned char baat2 = ba.at(2);
+        if ((baat2 == I104_STARTDT_CON) && (cmd == I104_STARTDT_ACT)) // если пришло подтверждение старта и перед этим мы старт запрашивали
         {
             timer104->stop();
             cmd = I104_STARTDT_CON;
             emit GeneralInter();
         }
-        if ((ba.at(2) == I104_STOPDT_CON) && (cmd == I104_STOPDT_ACT)) // если пришло подтверждение стопа и перед этим мы стоп запрашивали
+        if ((baat2 == I104_STOPDT_CON) && (cmd == I104_STOPDT_ACT)) // если пришло подтверждение стопа и перед этим мы стоп запрашивали
             cmd = I104_STOPDT_CON;
-        if ((ba.at(2) == I104_TESTFR_CON) && (cmd == I104_TESTFR_ACT)) // если пришло подтверждение теста и перед этим мы тест запрашивали
+        if ((baat2 == I104_TESTFR_CON) && (cmd == I104_TESTFR_ACT)) // если пришло подтверждение теста и перед этим мы тест запрашивали
             cmd = I104_TESTFR_CON;
-        if (ba.at(2) == I104_TESTFR_ACT)
+        if (baat2 == I104_TESTFR_ACT)
             emit sendAct();
         return I104_RCVNORM;
         break;
@@ -480,8 +481,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
     Parse104::SponSignals104* sponSignals = new Parse104::SponSignals104[DUI.qualifier.Number];
     Parse104::SponSignalsWithTime* SponSignalsWithTime = new Parse104::SponSignalsWithTime[DUI.qualifier.Number];
     Parse104::BS104Signals* BS104Signals = new Parse104::BS104Signals[DUI.qualifier.Number];
-    char *num = new char;
-    num = (char*)ba[9];
+    unsigned char num = ba[9];
 
     for (i = 0; i < DUI.qualifier.Number; i++)
     {
@@ -614,7 +614,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
 
         case F_SR_NA_1: // секция готова
         {
-            emit callSection((char*)ba[9]);
+            emit CallSection(ba[9]);
             break;
         }
 
@@ -625,7 +625,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
             RDLength = 0;
             FileSize = (static_cast<quint8>(ba[13]) << 16) | (static_cast<quint8>(ba[12]) << 8) | (static_cast<quint8>(ba[11]));
 
-            emit callFile((char*)ba[9]);
+            emit CallFile(ba[9]);
 
             emit SetDataSizeFromParse(FileSize);
 
@@ -715,7 +715,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
                  case 3:
                  {
                   //incLS++;
-                  emit sendConfirmSection(num);
+                  emit SendConfirmSection(num);
                   break;
                  }
 
@@ -836,13 +836,13 @@ void Parse104::ErrMsg()
     Interogatetimer->stop();
     //QDialog *dlg = new QDialog;
     //dlg->deleteLater();
-    QVBoxLayout *lyout = new QVBoxLayout;
-    /*EMessageBox::information(dlg, "Ошибка", "Таймаут по команде");
+/*    QVBoxLayout *lyout = new QVBoxLayout;
+    EMessageBox::information(dlg, "Ошибка", "Таймаут по команде");
     dlg->setLayout(lyout);
     dlg->exec();*/
 }
 
-void iec104::SelectFile(char* numFile)
+void iec104::SelectFile(char numFile)
 {
     APCI GI;
     ASDU Cmd;
@@ -871,7 +871,7 @@ void iec104::SelectFile(char* numFile)
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
-    Cmd[9] = *numFile;
+    Cmd[9] = numFile;
     Cmd[10] = 0;
     Cmd[11] = 0;
     Cmd[12] = 1;
@@ -895,7 +895,7 @@ void iec104::SelectFile(char* numFile)
     //Parse->V_S++;
 }
 
-void iec104::CallFile(char* numFile)
+void iec104::CallFile(unsigned char numFile)
 {
     APCI GI;
     ASDU Cmd;
@@ -934,7 +934,7 @@ void iec104::CallFile(char* numFile)
     //Parse->V_S++;
 }
 
-void iec104::GetSection(char* numFile)
+void iec104::GetSection(unsigned char numFile)
 {
     APCI GI;
     ASDU Cmd;
@@ -962,7 +962,7 @@ void iec104::GetSection(char* numFile)
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
-    Cmd[9] = *(char*)&numFile;
+    Cmd[9] = numFile;
     Cmd[10] = 0;
     Cmd[11] = SecNum;
     Cmd[12] = 6;
@@ -986,7 +986,7 @@ void iec104::GetSection(char* numFile)
     //Parse->V_S++;
 }
 
-void iec104::ConfirmSection(char* numFile)
+void iec104::ConfirmSection(unsigned char numFile)
 {
     APCI GI;
     ASDU Cmd;
@@ -1003,7 +1003,7 @@ void iec104::ConfirmSection(char* numFile)
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
-    Cmd[9] = *(char*)&numFile;
+    Cmd[9] = numFile;
     Cmd[10] = 0;
     Cmd[11] = SecNum;
     Cmd[12] = static_cast<char>(3);
@@ -1028,7 +1028,7 @@ void iec104::ConfirmSection(char* numFile)
     SecNum++;
 }
 
-void iec104::ConfirmFile(char* numFile)
+void iec104::ConfirmFile(unsigned char numFile)
 {
     APCI GI;
     ASDU Cmd;
@@ -1044,7 +1044,7 @@ void iec104::ConfirmFile(char* numFile)
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
-    Cmd[9] = *(char*)&numFile;
+    Cmd[9] = numFile;
     Cmd[10] = 0;
     Cmd[11] = SecNum;
     Cmd[12] = static_cast<char>(1);
@@ -1174,21 +1174,21 @@ void iec104::SendSegments()
     //char *ptr = static_cast<char*>(Cmd.data());
     quint16 VR = Parse->V_R;
     quint32 leftsize = 0;
-    int i;
+    quint32 i;
     KSS = 0;
     KSF = 0;
     Cmd.resize(256);
 
     Cmd[0] = F_SG_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(13);
+    Cmd[1] = static_cast<unsigned char>(1);
+    Cmd[2] = static_cast<unsigned char>(13);
     Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
+    Cmd[4] = static_cast<unsigned char>(BaseAdr);
+    Cmd[5] = static_cast<unsigned char>(BaseAdr>>8);
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
-    Cmd[9] = static_cast<char>(1);
+    Cmd[9] = static_cast<unsigned char>(1);
     Cmd[10] = 0;
     Cmd[11] = SecNum;
     //Cmd[12] =  static_cast<char>(SEGMENTSIZE);
@@ -1232,7 +1232,7 @@ void iec104::SendSegments()
        emit SetDataCount(Parse->Pos-OFFSET);
     }
 
-    Cmd[12] =  static_cast<char>(Parse->Pos - OFFSET);
+    Cmd[12] =  static_cast<unsigned char>(Parse->Pos - OFFSET);
     //Parse->firstSegment = 0;
 
 
@@ -1266,7 +1266,7 @@ void iec104::SendSegments()
 
             Cmd.resize(SEGMENTSIZE+OFFSET);
             leftsize = leftsize - SEGMENTSIZE;
-            Cmd[12] =  static_cast<char>(SEGMENTSIZE);
+            Cmd[12] =  static_cast<unsigned char>(SEGMENTSIZE);
 
             for(i = 0; i<SEGMENTSIZE; i++)
             {
@@ -1465,19 +1465,19 @@ void iec104::Com50(quint32* adr, float *param)
     ba->toHex();
 
     Cmd[0] = C_SE_NC_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(6);
+    Cmd[1] = static_cast<unsigned char>(1);
+    Cmd[2] = static_cast<unsigned char>(6);
     Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = static_cast<char>(*adr);
-    Cmd[7] = static_cast<char>(*adr>>8);
-    Cmd[8] = static_cast<char>(*adr>>16);
+    Cmd[4] = static_cast<unsigned char>(BaseAdr);
+    Cmd[5] = static_cast<unsigned char>(BaseAdr>>8);
+    Cmd[6] = static_cast<unsigned char>(*adr);
+    Cmd[7] = static_cast<unsigned char>(*adr>>8);
+    Cmd[8] = static_cast<unsigned char>(*adr>>16);
     //Cmd[9] = static_cast<char>(1);
-    Cmd[9] = static_cast<char>(ba->data()[0]);
-    Cmd[10] = static_cast<char>(ba->data()[1]);
-    Cmd[11] = static_cast<char>(ba->data()[2]);
-    Cmd[12] = static_cast<char>(ba->data()[3]);
+    Cmd[9] = static_cast<unsigned char>(ba->data()[0]);
+    Cmd[10] = static_cast<unsigned char>(ba->data()[1]);
+    Cmd[11] = static_cast<unsigned char>(ba->data()[2]);
+    Cmd[12] = static_cast<unsigned char>(ba->data()[3]);
     Cmd[13] = 0;
 
     GI.start = I104_START;

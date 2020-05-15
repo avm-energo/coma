@@ -380,7 +380,12 @@ void ModBus::ReadPort()
 
 void ModBus::WriteToPort()
 {
+<<<<<<< HEAD
     QByteArray* bytes = new QByteArray[1024];
+=======
+    QByteArray* bytes = new QByteArray;
+//    char zero = 0;
+>>>>>>> origin/MemCpy_Bug
     //quint32 crc=0;
     quint16 KSS = '\0';
     int i = 0;
@@ -495,8 +500,16 @@ void ModBus::WriteToPort()
 
 void ModBus::BSIrequest(ModBus_Settings Settings)
 {
+<<<<<<< HEAD
     QByteArray* bytes = new QByteArray[100];
     quint16 KSS = '\0';
+=======
+    QByteArray* bytes = new QByteArray;
+//    char zero = 0;
+    //quint32 crc=0;
+    quint16 KSS = '\0';
+//    int i = 0;
+>>>>>>> origin/MemCpy_Bug
     qint64 st;
 
     ComData.ModCom = 0x04;
@@ -572,6 +585,16 @@ void ModBus::StopModSlot()
 
 void ModBus::ModWriteCor(information* info, float* data)//, int* size)
 {
+<<<<<<< HEAD
+=======
+
+//    QByteArray* bytes = new QByteArray;
+    //char zero = 0;
+    //quint32 crc=0;
+//    quint16 KSS = '\0', quantity = 0;
+//    quint8 sizebytes = '\0';
+//    qint64 st;
+>>>>>>> origin/MemCpy_Bug
     int i;
     quint32 fl;
     //bool readingState = Reading;

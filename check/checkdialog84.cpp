@@ -86,18 +86,19 @@ QWidget *CheckDialog84::BdUI(int bdnum)
 #if PROGSIZE != PROGSIZE_EMUL
 void CheckDialog84::RefreshAnalogValues(int bdnum)
 {
-    switch (bdnum)
+    Q_UNUSED(bdnum)
+/*    switch (bdnum)
     {
-    /*case BD_COMMON:
+    case BD_COMMON:
         Ch->FillBd0(this);
         break;
     case C84_BDA_IN:
         Ch84->FillBd(this);
-        break;*/
+        break;
 
     default:
         return;
-    }
+    } */
 }
 
 void CheckDialog84::PrepareHeadersForFile(int row)

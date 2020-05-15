@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 #include <QRegExp>
 #include <QPainter>
+#include <QHeaderView>
 #include <QStringListModel>
 #include <QtMath>
 #include "wd_func.h"
@@ -483,10 +484,16 @@ QImage *WDFunc::TwoImages(const QString &first, const QString &second)
     return image;
 }
 
-QPushButton *WDFunc::NewPB(QWidget *parent, const QString &text, \
-                           const QObject *receiver, const char *method, const QString &pbtooltip)
+QPushButton *WDFunc::NewPB(QWidget *parent, const QString &pbname, const QString &text, const QObject *receiver, const char *method, \
+                           const QString &icon, const QString &pbtooltip)
 {
     QPushButton *pb = new QPushButton(parent);
+    pb->setStyleSheet("QPushButton {background-color: rgba(0,0,0,0); border: 1px solid gray; border-radius: 5px; border-style: outset; padding: 2px 5px;}"
+                  "QPushButton:pressed {border-style: inset;}"
+                  "QPushButton:disabled {border: none;}");
+    pb->setObjectName(pbname);
+    if (!icon.isEmpty())
+        pb->setIcon(QIcon(icon));
     pb->setText(text);
     pb->setToolTip(pbtooltip);
     if (receiver != nullptr)
@@ -494,22 +501,32 @@ QPushButton *WDFunc::NewPB(QWidget *parent, const QString &text, \
     return pb;
 }
 
-bool WDFunc::LE_read_data(QWidget *w, const QString &lename, QString &levalue)
+ETableView *WDFunc::NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model)
 {
-    QLineEdit *le = w->findChild<QLineEdit *>(lename);
-    if (le == nullptr)
-        return false;
-    levalue = le->text();
-    return true;
+    ETableView *tv = new ETableView(w);
+    tv->setObjectName(tvname);
+    tv->horizontalHeader()->setVisible(true);
+    tv->verticalHeader()->setVisible(false);
+    if (model != nullptr)
+        tv->setModel(model);
+    tv->setSelectionMode(QAbstractItemView::NoSelection);
+    return tv;
 }
 
-bool WDFunc::LE_write_data(QWidget *w, QString &levalue, const QString &lename)
+void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model)
 {
-    QLineEdit *le = w->findChild<QLineEdit *>(lename);
-    if (le == nullptr)
-        return false;
-    le->text() = levalue;
-    le->setText(levalue);
-    //SetTEData(w, lename, levalue);
-    return true;
+    ETableView *tv = w->findChild<ETableView *>(tvname);
+    if (tv == nullptr)
+        return;
+    QItemSelectionModel *m = tv->selectionModel();
+    tv->setModel(model);
+    delete m;
+}
+
+ETableModel *WDFunc::TVModel(QWidget *w, const QString &tvname)
+{
+    ETableView *tv = w->findChild<ETableView *>(tvname);
+    if (tv == nullptr)
+        return nullptr;
+    return reinterpret_cast<ETableModel *>(tv->model());
 }

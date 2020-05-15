@@ -1,8 +1,9 @@
 #include <QCoreApplication>
 #include <QStandardPaths>
+#include <QSettings>
 #include <QTime>
+#include <QtGlobal>
 #include "error.h"
-#include "modulebsi.h"
 #include "eabstractprotocomchannel.h"
 #include "../gen/timefunc.h"
 
@@ -17,7 +18,7 @@ EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(pa
     RDLength = 0;
     SegEnd = 0;
     SegLeft = 0;
-    OscNum = 0;
+//    OscNum = 0;
     Connected = false;
     Cancelled = false;
     TTimer = new QTimer(this);
@@ -28,24 +29,32 @@ EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(pa
     OscTimer->setSingleShot(false);
     connect(OscTimer,SIGNAL(timeout()),this,SLOT(OscTimerTimeout()));
     connect(TTimer, SIGNAL(timeout()),this,SLOT(Timeout())); // для отладки закомментарить
+    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    SetWriteUSBLog(sets->value("WriteLog", "0").toBool());
 }
 
 EAbstractProtocomChannel::~EAbstractProtocomChannel()
 {
 }
 
-void EAbstractProtocomChannel::Send(char command, char board_type, void *ptr, int ptrsize, int filenum, QVector<S2::DataRec> *DRptr)
+void EAbstractProtocomChannel::Send(char command, char board_type)
 {
-    if (!Connected)
+    // only for these commands
+    switch(command)
     {
-        result = CN_NULLDATAERROR;
+    case CN_ErPg:
+    case CN_VPO:
+        break;
+    default:
         return;
     }
-    outdata = static_cast<char *>(ptr);
-    outdatasize = ptrsize; // размер области данных, в которую производить запись
-    cmd = command;
-    fnum = filenum;
-    DR = DRptr;
+
+    if (!Connected)
+    {
+        Result = CN_NULLDATAERROR;
+        return;
+    }
+    Command = command;
     if (board_type == BoardTypes::BT_BASE)
         BoardType = 0x01;
     else if (board_type == BoardTypes::BT_MEZONIN)
@@ -60,6 +69,57 @@ void EAbstractProtocomChannel::Send(char command, char board_type, void *ptr, in
     loop.exec();
 }
 
+void EAbstractProtocomChannel::Send(char command, char board_type, QByteArray &ba)
+{
+    if (!Connected)
+    {
+        Result = CN_NULLDATAERROR;
+        return;
+    }
+    InData = ba;
+//    InDataSize = ptrsize; // размер области данных, в которую производить запись
+    Command = command;
+//    FNum = filenum;
+//    DR = DRptr;
+    if (board_type == BoardTypes::BT_BASE)
+        BoardType = 0x01;
+    else if (board_type == BoardTypes::BT_MEZONIN)
+        BoardType = 0x02;
+    else if (board_type == BoardTypes::BT_NONE)
+        BoardType = 0x00;
+    else
+        BoardType = board_type; // in GBd command it is a block number
+    InitiateSend();
+    QEventLoop loop;
+    connect(this, SIGNAL(QueryFinished()), &loop, SLOT(quit()));
+    loop.exec();
+}
+
+void EAbstractProtocomChannel::SendFile(unsigned char command, unsigned char board_type, int filenum, QByteArray &ba)
+{
+    if (!Connected)
+    {
+        Result = CN_NULLDATAERROR;
+        return;
+    }
+    Command = command;
+    FNum = filenum;
+    InData = ba;
+    if (board_type == BoardTypes::BT_BASE)
+        BoardType = 0x01;
+    else if (board_type == BoardTypes::BT_MEZONIN)
+        BoardType = 0x02;
+    else if (board_type == BoardTypes::BT_NONE)
+        BoardType = 0x00;
+    else
+        BoardType = board_type; // in GBd command it is a block number
+    InitiateSend();
+    QEventLoop loop;
+    connect(this, SIGNAL(QueryFinished()), &loop, SLOT(quit()));
+    loop.exec();
+    ba = OutData;
+}
+
 void EAbstractProtocomChannel::SetWriteUSBLog(bool bit)
 {
     WriteUSBLog = bit;
@@ -72,12 +132,6 @@ bool EAbstractProtocomChannel::IsWriteUSBLog()
 
 void EAbstractProtocomChannel::TranslateDeviceAndSave(const QString &str)
 {
-/*#ifdef COMPORTENABLE
-    ComPort = str;
-    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
-    sets->setValue("Port", ComPort);
-#endif*/
-//#ifdef USBENABLE
     // формат строки: "VEN_" + QString::number(venid, 16) + "_ & DEV_" + QString::number(prodid, 16) + "_ & SN_" + sn;
     QStringList sl = str.split("_"); // 1, 3 и 5 - полезная нагрузка
     if (sl.size() < 6)
@@ -92,13 +146,12 @@ void EAbstractProtocomChannel::TranslateDeviceAndSave(const QString &str)
     tmps = sl.at(5);
     int z = tmps.toWCharArray(UsbPort.serial);
     UsbPort.serial[z] = '\x0';
-//#endif
 }
 
 void EAbstractProtocomChannel::InitiateSend()
 {
     WriteData.clear();
-    switch (cmd)
+    switch (Command)
     {
     case CN_GBsi:   // запрос блока стартовой информации
     case CN_ErPg:  // запрос текущего прогресса
@@ -106,7 +159,7 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_GMode:
     {
         WriteData.append(CN_MS);
-        WriteData.append(cmd);
+        WriteData.append(Command);
         AppendSize(WriteData, 0);
         WriteDataToPort(WriteData);
         break;
@@ -120,7 +173,7 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_Ert:  // команда стирания технологического блока
     {
         WriteData.append(CN_MS);
-        WriteData.append(cmd);
+        WriteData.append(Command);
         AppendSize(WriteData, 1);
         WriteData.append(BoardType);
         WriteDataToPort(WriteData);
@@ -129,39 +182,31 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_GF:     // запрос файла
     {
         WriteData.append(CN_MS);
-        WriteData.append(cmd);
+        WriteData.append(Command);
         AppendSize(WriteData, 2);
-        WriteData.append(static_cast<char>(fnum&0x00FF));
-        WriteData.append(static_cast<char>((fnum&0xFF00)>>8));
+        WriteData.append(static_cast<char>(FNum&0x00FF));
+        WriteData.append(static_cast<char>((FNum&0xFF00)>>8));
         WriteDataToPort(WriteData);
         break;
     }
     case CN_WHv:
     {
         WriteData.append(CN_MS);
-        WriteData.append(cmd);
+        WriteData.append(Command);
         int size = (BoardType == BoardTypes::BT_BSMZ) ? WHV_SIZE_TWOBOARDS : WHV_SIZE_ONEBOARD;
         AppendSize(WriteData, size); // BoardType(1), HiddenBlock(16)
         WriteData.append(BoardType);
-        WriteData.resize(WriteData.size()+outdatasize);
-        size_t tmpi = static_cast<size_t>(outdatasize);
-        memcpy(&(WriteData.data()[5]), &outdata[0], tmpi);
+//        WriteData.resize(WriteData.size()+InDataSize);
+//        size_t tmpi = static_cast<size_t>(InDataSize);
+        WriteData.append(InData);
+//        memcpy(&(WriteData.data()[5]), &OutData[0], tmpi);
         WriteDataToPort(WriteData);
         break;
     }
     case CN_WF: // запись файла
     {
-        if (DR->isEmpty())
-            Finish(CN_NULLDATAERROR);
-        WriteData.resize(CN_MAXFILESIZE);
-        S2::StoreDataMem(&(WriteData.data()[0]), DR, fnum);
-        // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
-        WRLength = static_cast<quint8>(WriteData.at(7))*16777216; // с 4 байта начинается FileHeader.size
-        WRLength += static_cast<quint8>(WriteData.at(6))*65536;
-        WRLength += static_cast<quint8>(WriteData.at(5))*256;
-        WRLength += static_cast<quint8>(WriteData.at(4));
-        WRLength += sizeof(S2::FileHeader); // sizeof(FileHeader)
-        WriteData.resize(WRLength);
+        WriteData = InData;
+        WRLength = WriteData.length();
         emit SetDataSize(WRLength); // сигнал для прогрессбара
         SetWRSegNum();
         WRCheckForNextSegment(true);
@@ -172,8 +217,9 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_WBt:
     {
         WriteData.append(BoardType);
-        WriteData.append(QByteArray::fromRawData(static_cast<const char *>(outdata), outdatasize));
-        WRLength = outdatasize + 1;
+//        WriteData.append(QByteArray::fromRawData(reinterpret_cast<const char *>(OutData.data()), OutDataSize));
+        WriteData.append(InData);
+        WRLength = InDataSize + 1;
         emit SetDataSize(WRLength); // сигнал для прогрессбара
         SetWRSegNum();
         WRCheckForNextSegment(true);
@@ -182,7 +228,7 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_GTime:
     {
         WriteData.append(CN_MS);
-        WriteData.append(cmd);
+        WriteData.append(Command);
         AppendSize(WriteData, 0);
         WriteDataToPort(WriteData);
         break;
@@ -190,23 +236,25 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_WTime:
     {
         WriteData.append(CN_MS);
-        WriteData.append(cmd);
-        AppendSize(WriteData, outdatasize);
-        WriteData.resize(WriteData.size()+outdatasize);
-        size_t tmpi = static_cast<size_t>(outdatasize);
-        memcpy(&(WriteData.data()[4]), &outdata[0], tmpi);
+        WriteData.append(Command);
+        AppendSize(WriteData, InDataSize);
+//        WriteData.resize(WriteData.size()+OutDataSize);
+//        size_t tmpi = static_cast<size_t>(OutDataSize);
+//        memcpy(&(WriteData.data()[4]), &OutData[0], tmpi);
+        WriteData.append(InData);
         WriteDataToPort(WriteData);
         break;
     }
     case CN_WBd:
     {
         WriteData.append(CN_MS);
-        WriteData.append(cmd);
-        AppendSize(WriteData, outdatasize);
+        WriteData.append(Command);
+        AppendSize(WriteData, InDataSize);
         WriteData.append(BoardType);
-        WriteData.resize(WriteData.size()+outdatasize);
-        size_t tmpi = static_cast<size_t>(outdatasize);
-        memcpy(&(WriteData.data()[5]), &outdata[0], tmpi);
+/*        WriteData.resize(WriteData.size()+OutDataSize);
+        size_t tmpi = static_cast<size_t>(OutDataSize);
+        memcpy(&(WriteData.data()[5]), &OutData[0], tmpi); */
+        WriteData.append(InData);
         WriteDataToPort(WriteData);
         break;
     }
@@ -214,10 +262,10 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_WCom:
     {
         WriteData.append(CN_MS);
-        WriteData.append(cmd);
+        WriteData.append(Command);
         AppendSize(WriteData, 1);
         WriteData.append(BoardType);
-        WriteData.resize(WriteData.size());
+//        WriteData.resize(WriteData.size());
         WriteDataToPort(WriteData);
         break;
     }
@@ -225,7 +273,7 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_VPO:
     {
         WriteData.append(CN_MS);
-        WriteData.append(cmd);
+        WriteData.append(Command);
         AppendSize(WriteData, 0);
         WriteDataToPort(WriteData);
         TimeFunc::Wait(10);
@@ -235,7 +283,7 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_STest:
     {
         WriteData.append(CN_MS);
-        WriteData.append(cmd);
+        WriteData.append(Command);
         AppendSize(WriteData, 1);
         WriteData.append(BoardType);
         WriteDataToPort(WriteData);
@@ -248,7 +296,7 @@ void EAbstractProtocomChannel::InitiateSend()
         return;
     }
     }
-    ReadData.clear();
+    OutData.clear();
     ReadDataChunk.clear();
     LastBlock = false;
     bStep = 0;
@@ -263,12 +311,12 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         QByteArray tmps = "<-" + ba.toHex() + "\n";
         CnLog->WriteRaw(tmps);
     }
-    if (cmd == CN_Unk) // игнорирование вызова процедуры, если не было послано никакой команды
+    if (Command == CN_Unk) // игнорирование вызова процедуры, если не было послано никакой команды
         return;
-    int res;
+//    int res;
     ReadDataChunk.append(ba);
-    RDSize = ReadDataChunk.size();
-    if (RDSize<4) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
+    quint32 rdsize = ReadDataChunk.size();
+    if (rdsize<4) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
         return;
     if (ReadDataChunk.at(0) != CN_SS)
     {
@@ -277,7 +325,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
     }
     if (ReadDataChunk.at(1) == CN_ResErr)
     {
-        if (RDSize < 5) // некорректная посылка
+        if (rdsize < 5) // некорректная посылка
             Finish(CN_RCVDATAERROR);
         else
             Finish(USO_NOERR + ReadDataChunk.at(4));
@@ -287,7 +335,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
     {
         case 0: // первая порция
         {
-            switch (cmd)
+            switch (Command)
             {
             // команды с ответом "ОК"
             case CN_WHv:
@@ -306,7 +354,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                     Finish(CN_RCVDATAERROR);
                     return;
                 }
-                if (cmd == CN_Ert)
+                if (Command == CN_Ert)
                     OscTimer->start(); // start timer to send ErPg command periodically
                 Finish(Error::ER_NOERROR);
                 return;
@@ -337,7 +385,6 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             case CN_GBd:
             case CN_ErPg:
             case CN_GBt:
-            case CN_GF:
             case CN_GVar:
             case CN_GMode:
             case CN_GTime:
@@ -349,32 +396,60 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 }
                 if (ReadDataChunkLength == 0)
                 {
-                    RDSize = 0;
+                    rdsize = 0;
                     Finish(Error::ER_NOERROR);
                     return;
                 }
-                if (cmd == CN_GF) // надо проверить, тот ли номер файла принимаем
-                {
-                    if (RDSize < 16) // не пришла ещё шапка файла
-                        return;
-                    quint16 filenum;
-                    quint8 tmpi= ReadDataChunk[5];
-                    filenum = static_cast<unsigned short>(tmpi) * 256;
-                    tmpi = ReadDataChunk[4];
-                    filenum += tmpi;
-                    if (filenum != fnum)
-                    {
-                        Finish(USO_UNKNFILESENT);
-                        return;
-                    }
-                    memcpy(&RDLength, &(ReadDataChunk.data()[8]), sizeof(RDLength));
-                    RDLength += 16;
-                    emit SetDataSize(RDLength);
-                }
-                else if (cmd == CN_ErPg)
+                if (Command == CN_ErPg)
                     emit SetDataSize(100);
                 else
                     emit SetDataSize(0); // длина неизвестна для команд с ответами без длины
+                bStep++;
+                break;
+            }
+            case CN_GF:
+            {
+                if (!GetLength())
+                {
+                    Finish(CN_RCVDATAERROR);
+                    return;
+                }
+                if (ReadDataChunkLength == 0)
+                {
+                    rdsize = 0;
+                    Finish(Error::ER_NOERROR);
+                    return;
+                }
+                // надо проверить, тот ли номер файла принимаем
+                if (rdsize < 16) // не пришла ещё шапка файла
+                    return;
+                // шапка:
+                // WORD fname;		// имя файла
+                // WORD service;	// сервисное слово (по умолчанию 0xFF)
+                // DWORD size;		// размер файла (без заголовка)
+                // DWORD crc32;     // контрольная сумма
+                // DWORD thetime;	// время создания файла
+
+                quint8 tmpi = ReadDataChunk[5];
+                quint16 filenum = static_cast<unsigned short>(tmpi) * 256;
+                tmpi = ReadDataChunk[4];
+                filenum += tmpi;
+                if (filenum != FNum)
+                {
+                    Finish(USO_UNKNFILESENT);
+                    return;
+                }
+                // вытаскиваем размер файла
+                memcpy(&RDLength, &(ReadDataChunk.data()[8]), sizeof(RDLength));
+                RDLength += 16;
+                if (RDLength > CN_MAXGETFILESIZE) // размер файла должен быть не более 16М
+                {
+                    Finish(CN_RCVLENGTHERROR);
+                    return;
+                }
+                emit SetDataSize(RDLength);
+                OutData.resize(RDLength);
+//                RDCount = 0;
                 bStep++;
                 break;
             }
@@ -392,14 +467,10 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 Finish(CN_RCVDATAERROR);
                 return;
             }
-            if (RDSize < ReadDataChunkLength)
+            if (rdsize < ReadDataChunkLength)
                 return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
             ReadDataChunk.remove(0, 4); // убираем заголовок с < и длиной
-            ReadData.append(&(ReadDataChunk.data()[0]), ReadDataChunkLength);
-            RDSize = ReadData.size();
-            emit SetDataCount(RDSize); // сигнал для прогрессбара
-            ReadDataChunk.clear();
-            switch (cmd)
+            switch (Command)
             {
             case CN_GBsi:
             case CN_GBda:
@@ -410,12 +481,20 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             case CN_GMode:
             case CN_GTime:
             {
-                if ((RDSize >= outdatasize) || (ReadDataChunkLength < CN_MAXSEGMENTLENGTH))
+                // команды с чтением определённого InDataSize количества байт из устройства
+                ReadDataChunk.truncate(ReadDataChunkLength);
+                OutData.append(ReadDataChunk);
+                int outdatasize = OutData.size();
+//                RDSize = OutData.size();
+                emit SetDataCount(outdatasize); // сигнал для прогрессбара
+                ReadDataChunk.clear();
+                if ((outdatasize >= InDataSize) || (ReadDataChunkLength < CN_MAXSEGMENTLENGTH))
                 {
-                    emit SetDataSize(RDSize); // установка размера прогрессбара, чтобы не мелькал
-                    RDSize = qMin(outdatasize, RDSize); // если даже приняли больше, копируем только требуемый размер
-                    size_t tmpi = static_cast<size_t>(RDSize);
-                    memcpy(outdata,ReadData.data(),tmpi);
+                    emit SetDataSize(outdatasize); // установка размера прогрессбара, чтобы не мелькал
+//                    RDSize = qMin(InDataSize, RDSize); // если даже приняли больше, копируем только требуемый размер
+//                    size_t tmpi = static_cast<size_t>(RDSize);
+//                    memcpy(OutData,ReadData.data(),tmpi);
+//                    memcpy(OutData.data(),ReadData.data(),RDSize);
                     Finish(Error::ER_NOERROR);
                 }
                 else
@@ -424,65 +503,24 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             }
             case CN_GF:
             {
-                if (RDSize >= RDLength)
+                // чтение файла количеством байт RDLength = (sizeof(FileHeader) + size)
+                int outdatasize = OutData.size();
+                int tmpi = outdatasize + ReadDataChunkLength;
+                if (tmpi > RDLength) // проверка на выход за диапазон
+                    // копируем только требуемое количество байт
+                    ReadDataChunkLength = RDLength - outdatasize;
+                ReadDataChunk.truncate(ReadDataChunkLength);
+//                memcpy(OutData.data() + RDCount, &ReadDataChunk.data()[0], ReadDataChunkLength);
+                OutData.append(ReadDataChunk);
+//                RDCount += ReadDataChunkLength;
+                outdatasize += ReadDataChunkLength;
+                emit SetDataCount(outdatasize); // сигнал для прогрессбара
+                ReadDataChunk.clear();
+                if (outdatasize >= RDLength)
                 {
-                    if ((fnum >= CN_MINOSCID) && (fnum <= CN_MAXOSCID)) // для осциллограмм особая обработка
-                    {
-                        QVector<S2::DataRec> DRosc;
-                        RDSize = qMin(RDLength, RDSize); // если даже приняли больше, копируем только требуемый размер
-                        size_t tmpi = static_cast<size_t>(RDSize);
-                        memcpy(outdata,ReadData.data(),tmpi);
-                        DRosc.append({static_cast<quint32>(ReadData.data()[16]),static_cast<quint32>(ReadData.data()[20]),&ReadData.data()[24]});
-                        tmpi = 8; //sizeof(FileHeader);
-                        memcpy(&DRosc.data()[0],&ReadData.data()[16],tmpi);
-                        Finish(Error::ER_NOERROR);
-
-                        if (DRosc.isEmpty())
-                        {
-                            Finish(CN_NULLDATAERROR);
-                            break;
-                        }
-                        res = S2::RestoreDataMem(ReadData.data(), RDSize, &DRosc);
-
-                        break;
-                    }
-
-                    if ((fnum >= MINJOURID) && (fnum <= MAXJOURID)) // для осциллограмм особая обработка
-                    {
-                        QVector<S2::DataRec> *DRJour  = new QVector<S2::DataRec>;
-                        RDSize = qMin(RDLength, RDSize); // если даже приняли больше, копируем только требуемый размер
-                        size_t tmpi = static_cast<size_t>(RDSize);
-                        //memcpy(outdata,&ReadData.data()[0],tmpi);
-                        DRJour->append({static_cast<quint32>(ReadData.data()[16]),static_cast<quint32>(ReadData.data()[20]),&ReadData.data()[24]});
-                        tmpi = 8; //sizeof(FileHeader);
-                        memcpy(&DRJour->data()[0],&ReadData.data()[16],8);
-                        Finish(Error::ER_NOERROR);
-
-                        if (DRJour->isEmpty())
-                        {
-                            Finish(CN_NULLDATAERROR);
-                            break;
-                        }
-                        res = S2::RestoreDataMem(ReadData.data(), RDSize, DRJour);
-                        int size = DRJour->size();
-                        memcpy(outdata,&DRJour->data()[0], 12);
-
-                        break;
-                    }
-
-                    if (DR->isEmpty())
-                    {
-                        Finish(CN_NULLDATAERROR);
-                        break;
-                    }
-                    res = S2::RestoreDataMem(ReadData.data(), RDSize, DR);
-                    if (res == 0)
-                    {
-    //                    SendOk(false);
-                        Finish(Error::ER_NOERROR);
-                    }
-                    else
-                        Finish(res);
+//                    OutDataSize = RDLength;
+                    Finish(Error::ER_NOERROR);
+                    return;
                 }
                 else
                     SendOk(true);
@@ -490,7 +528,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             }
             case CN_ErPg:
             {
-                quint16 OscNum = static_cast<quint8>(ReadData.at(0))+static_cast<quint8>(ReadData.at(1))*256;
+                quint16 OscNum = static_cast<quint8>(ReadDataChunk.at(0))+static_cast<quint8>(ReadDataChunk.at(1))*256;
                 emit SetDataCount(OscNum);
                 if (OscNum == 100)
                 {
@@ -515,7 +553,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
 
 bool EAbstractProtocomChannel::GetLength()
 {
-    if (ReadDataChunk.at(1) != cmd)
+    if (ReadDataChunk.at(1) != Command)
         return false;
     ReadDataChunkLength = static_cast<quint8>(ReadDataChunk.at(2));
     ReadDataChunkLength += static_cast<quint8>(ReadDataChunk.at(3))*256; // посчитали длину посылки
@@ -542,7 +580,7 @@ void EAbstractProtocomChannel::WRCheckForNextSegment(int first)
             tmpba.append(CN_MS);
         else
             tmpba.append(CN_MS3);
-        tmpba.append(cmd);
+        tmpba.append(Command);
     }
     if (SegLeft)
     {
@@ -572,7 +610,7 @@ void EAbstractProtocomChannel::SendOk(bool cont)
         tmpba.append(CN_MS3);
     else
         tmpba.append(CN_MS);
-    tmpba.append(cmd);
+    tmpba.append(Command);
     AppendSize(tmpba, 0);
     WriteDataToPort(tmpba); // отправляем "ОК" и переходим к следующему сегменту
 }
@@ -603,7 +641,7 @@ void EAbstractProtocomChannel::Timeout()
 void EAbstractProtocomChannel::Finish(int ernum)
 {
     TTimer->stop();
-    cmd = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
+    Command = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
     if (ernum != Error::ER_NOERROR)
     {
         if (ernum < 0)
@@ -614,7 +652,7 @@ void EAbstractProtocomChannel::Finish(int ernum)
         else
             Error::ShowErMsg(ernum);
     }
-    result = ernum;
+    Result = ernum;
     emit QueryFinished();
 //    Busy = false;
 }
@@ -639,7 +677,7 @@ void EAbstractProtocomChannel::CheckForData()
 void EAbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
 {
     QByteArray tmpba = ba;
-    if (cmd == CN_Unk) // игнорируем вызовы процедуры без команды
+    if (Command == CN_Unk) // игнорируем вызовы процедуры без команды
     {
         Error::ShowErMsg(USB_WRONGCOMER);
         return;

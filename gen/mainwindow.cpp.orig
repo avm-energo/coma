@@ -494,8 +494,9 @@ void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104 *Signal)
 {
     int i = 0, PredArarmcount = 0, Ararmcount = 0;
     Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
-//    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-//    QPixmap *pmred = new QPixmap("images/redc.png");
+<<<<<<< HEAD
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmred, pmgrn};
 
     for(i=0; i<Signal->SigNumber; i++)
@@ -555,6 +556,11 @@ void MainWindow::UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTim
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmred, pmgrn};
+=======
+//    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+//    QPixmap *pmred = new QPixmap("images/redc.png");
+    //QPixmap *pm[2] = {pmred, pmgrn};
+>>>>>>> origin/MemCpy_Bug
 
     for(i=0; i<Signal->SigNumber; i++)
     {
@@ -1269,7 +1275,11 @@ void MainWindow::SetProgressBar2(int cursize)
 void MainWindow::ShowInterfaceDialog()
 {
     QByteArray ba;
+<<<<<<< HEAD
     //int res, i;
+=======
+//    int res, i;
+>>>>>>> origin/MemCpy_Bug
     QDialog *dlg = new QDialog(this);
     QString Str;
     cancel = false;
@@ -1295,17 +1305,20 @@ void MainWindow::ShowInterfaceDialog()
     lyout->addWidget(portscb);
     QHBoxLayout *hlyout = new QHBoxLayout;
 /*    QPushButton *pb = new QPushButton("Далее");
-    QPushButton *pb = new QPushButton("Далее");
     connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    hlyout->addWidget(pb); */
-    hlyout->addWidget(WDFunc::NewPB(this, "", "Далее", dlg, SLOT(close())));
+<<<<<<< HEAD
     hlyout->addWidget(pb);
     pb = new QPushButton("Отмена");
     connect(pb, SIGNAL(clicked(bool)),this,SLOT(SetCancelled()));
+=======
+    hlyout->addWidget(pb); */
+    hlyout->addWidget(WDFunc::NewPB(this, "", "Далее", dlg, SLOT(close())));
+/*    pb = new QPushButton("Отмена");
+    //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
+>>>>>>> origin/MemCpy_Bug
     connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
     hlyout->addWidget(pb); */
     hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", dlg, SLOT(close())));
-    hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
     dlg->exec();

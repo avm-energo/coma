@@ -186,7 +186,6 @@ public:
     QVector<S2::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     QVector<S2::DataRec> *DRJour;
     char BoardType;
-    static bool WriteUSBLog;
     quint32 FileLen;
     int incLS, count;
 
@@ -208,10 +207,10 @@ signals:
     void parsestarted();
     void GeneralInter();
     void sendAct();
-    void callFile(char*);
-    void callSection(char*);
-    void sendConfirmSection(char*);
-    void sendConfirmFile(char*);
+    void CallFile(unsigned char);
+    void CallSection(unsigned char);
+    void SendConfirmSection(unsigned char);
+    void sendConfirmFile(unsigned char);
     void sendS2fromParse(QVector<S2::DataRec>*);
     void sendJourSysfromParse(QVector<S2::DataRec>*);
     void sendJourWorkfromParse(QVector<S2::DataRec>*);
@@ -421,11 +420,11 @@ private slots:
     void SendTestAct();
     void GetSomeData(QByteArray);
     void StartParse();
-    void SelectFile(char*);
-    void CallFile(char*);
-    void GetSection(char*);
-    void ConfirmSection(char*);
-    void ConfirmFile(char*);
+    void SelectFile(char);
+    void CallFile(unsigned char);
+    void GetSection(unsigned char);
+    void ConfirmSection(unsigned char);
+    void ConfirmFile(unsigned char);
     void FileReady(QVector<S2::DataRec>*);
     void SectionReady();
     void SendSegments();
