@@ -36,6 +36,7 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
     connect(this,SIGNAL(writedatatoeth(QByteArray)),eth,SLOT(InitiateWriteDataToPort(QByteArray)));
     connect(eth,SIGNAL(disconnected()), parent, SLOT(DisconnectAndClear()));
     connect(eth,SIGNAL(ethNoconnection()), parent, SLOT(DisconnectAndClear()));
+    connect(eth,SIGNAL(error(QAbstractSocket::SocketError)),this,SIGNAL(errorCh104(QAbstractSocket::SocketError)));
 
 
     Parse = new Parse104;
@@ -232,7 +233,7 @@ void iec104::SendTestAct()
 {
     APCI GI;
     ASDU GInter;
-    quint16 VR = Parse->V_R;
+    //quint16 VR = Parse->V_R;
 
     GI.start = I104_START;
     GI.APDUlength = 4;

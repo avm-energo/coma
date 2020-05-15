@@ -364,14 +364,13 @@ void Coma::Stage3()
         CheckB->setMinimumHeight(500);
         //MainTW->setFixedHeight(500);
         MainTW->addTab(CheckB, str);
-
+        CheckB->checkIndex = MainTW->indexOf(CheckB);
 
         if(MainInterface == "USB")
         {
             connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Start_BdaTimer(int))); //tabClicked
             connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Stop_BdaTimer(int)));
             connect(ConfM, SIGNAL(stopRead(int)), this,SLOT(Stop_BdaTimer(int)));
-            CheckB->checkIndex = MainTW->indexOf(CheckB);
             ConfM->checkIndex = CheckB->checkIndex;
             connect(BdaTimer,SIGNAL(timeout()),CheckB,SLOT(BdTimerTimeout()));
             connect(BdaTimer,SIGNAL(timeout()),this,SLOT(GetUSBAlarmTimerTimeout()));
@@ -425,6 +424,7 @@ void Coma::Stage3()
         Time->timeIndex = MainTW->indexOf(Time);
         if(ConfM != nullptr)
         ConfM->timeIndex = Time->timeIndex;
+        Time->checkIndex = CheckB->checkIndex;
 
         /*QThread *thrTime = new QThread;
         thrTime->setPriority(QThread::LowPriority);
@@ -578,6 +578,7 @@ void Coma::PrepareDialogs()
             connect(ch104,SIGNAL(sendJourSysfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillSysJour(QVector<S2::DataRec>*)));
             connect(ch104,SIGNAL(sendJourWorkfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillWorkJour(QVector<S2::DataRec>*)));
             connect(ch104,SIGNAL(sendJourMeasfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillMeasJour(QVector<S2::DataRec>*)));
+            connect(ch104,SIGNAL(errorCh104(QAbstractSocket::SocketError)),this,SLOT(ReConnect(int)));
             ch104->Parse->DR = &S2Config;
 
 #endif

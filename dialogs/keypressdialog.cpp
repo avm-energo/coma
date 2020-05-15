@@ -21,7 +21,7 @@ void KeyPressDialog::SetupUI()
 
 void KeyPressDialog::SetPhrase(const QString &Phrase)
 {
-    WDFunc::SetLEData(this, "pswlbl", Phrase);
+    WDFunc::LE_write_data(this, Phrase, "pswlbl");
 }
 
 void KeyPressDialog::keyPressEvent(QKeyEvent *e)

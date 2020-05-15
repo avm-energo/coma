@@ -54,8 +54,7 @@ void ethernet::Run()
             break;
         }
 
-
-        if(sock->state() == 2)
+        if(!sock->isValid())
         {
             if(stateMessage != 1)
             {

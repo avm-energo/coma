@@ -503,7 +503,7 @@ bool WDFunc::LE_read_data(QWidget *w, const QString &lename, QString &levalue)
     return true;
 }
 
-bool WDFunc::LE_write_data(QWidget *w, QString &levalue, const QString &lename)
+bool WDFunc::LE_write_data(QWidget *w, const QString &levalue, const QString &lename)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);
     if (le == nullptr)

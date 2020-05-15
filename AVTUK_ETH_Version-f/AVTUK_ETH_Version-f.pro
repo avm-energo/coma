@@ -58,7 +58,6 @@ SOURCES += \
     ../dialogs/cordialog.cpp \
     ../dialogs/errordialog.cpp \
     ../dialogs/fwupdialog.cpp \
-    ../dialogs/hiddendialog.cpp \
     ../dialogs/infodialog.cpp \
     ../dialogs/journalsdialog.cpp \
     ../dialogs/keypressdialog.cpp \
@@ -130,7 +129,6 @@ HEADERS += \
     ../dialogs/cordialog.h \
     ../dialogs/errordialog.h \
     ../dialogs/fwupdialog.h \
-    ../dialogs/hiddendialog.h \
     ../dialogs/infodialog.h \
     ../dialogs/journalsdialog.h \
     ../dialogs/keypressdialog.h \
