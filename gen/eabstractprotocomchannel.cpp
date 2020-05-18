@@ -383,7 +383,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                     return;
                 }
                 // надо проверить, тот ли номер файла принимаем
-                if (rdsize < 16) // не пришла ещё шапка файла
+                if (rdsize < 20) // не пришла ещё шапка файла
                     return;
                 // шапка:
                 // WORD fname;		// имя файла
@@ -402,7 +402,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                     return;
                 }
                 // вытаскиваем размер файла
-                memcpy(&RDLength, &(ReadDataChunk.data()[8]), sizeof(RDLength));
+                memcpy(&RDLength, &(ReadDataChunk.data()[8]), sizeof(quint32));
                 RDLength += 16;
                 if (RDLength > CN_MAXGETFILESIZE) // размер файла должен быть не более 16М
                 {
@@ -410,7 +410,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                     return;
                 }
                 emit SetDataSize(RDLength);
-                OutData.resize(RDLength);
+//                OutData.resize(RDLength);
                 bStep++;
                 break;
             }
