@@ -97,7 +97,7 @@ void AbstractConfDialog::WriteConf()
          }
          else if(MainWindow::MainInterface == "USB")
          {
-            if ((res = Commands::WriteFile(nullptr, 1, S2Config)) == Error::ER_NOERROR)
+            if ((res = Commands::WriteFile(1, S2Config)) == Error::ER_NOERROR)
             {
                 emit BsiIsNeedToBeAcquiredAndChecked();
                 EMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");

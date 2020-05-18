@@ -10,13 +10,46 @@ Commands::Commands()
     cn = 0;
 }
 
+int Commands::Connect()
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    if (cn != 0)
+    {
+        if (cn->Connect())
+            return Error::ER_NOERROR;
+    }
+    return Error::ER_GENERALERROR;
+#else
+    return 0;
+#endif
+}
+
+bool Commands::isConnected()
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    if (cn != 0)
+        return cn->Connected;
+    return false;
+#else
+    return false;
+#endif
+}
+
+void Commands::Disconnect()
+{
+#if PROGSIZE != PROGSIZE_EMUL
+    if (cn != 0)
+        cn->Disconnect();
+#endif
+}
+
 int Commands::GetBsi(ModuleBSI::Bsi &bsi)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     QByteArray ba;
     if (cn != 0)
     {
-        cn->Send(CN_GBsi, BoardTypes::BT_NONE, ba, sizeof(ModuleBSI::Bsi));
+        cn->SendIn(CN_GBsi, BoardTypes::BT_NONE, ba, sizeof(ModuleBSI::Bsi));
         memcpy(&bsi, &(ba.data()[0]), sizeof(ModuleBSI::Bsi));
         return cn->Result;
     }
@@ -109,7 +142,7 @@ int Commands::WriteHiddenBlock(char board, void *HPtr, int HPtrSize)
     if (cn != 0)
     {
         ba.append(static_cast<const char *>(HPtr), HPtrSize);
-        cn->Send(CN_WHv, board, ba);
+        cn->SendOut(CN_WHv, board, ba);
         return cn->Result;
     }
     return Error::ER_GENERALERROR;
@@ -124,10 +157,12 @@ int Commands::WriteHiddenBlock(char board, void *HPtr, int HPtrSize)
 int Commands::GetBac(char BacNum, void *BacPtr, int BacPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
+    QByteArray ba;
     if (cn != 0)
     {
-        cn->Send(CN_GBac, BacNum, BacPtr, BacPtrSize);
-        return cn->result;
+        cn->SendIn(CN_GBac, BacNum, ba, BacPtrSize);
+        memcpy(BacPtr, &(ba.data()[0]), BacPtrSize);
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else
@@ -138,35 +173,15 @@ int Commands::GetBac(char BacNum, void *BacPtr, int BacPtrSize)
 #endif
 }
 
-int Commands::Connect()
-{
-#if PROGSIZE != PROGSIZE_EMUL
-    if (cn != 0)
-    {
-        if (cn->Connect())
-            return Error::ER_NOERROR;
-    }
-    return Error::ER_GENERALERROR;
-#else
-    return 0;
-#endif
-}
-
-void Commands::Disconnect()
-{
-#if PROGSIZE != PROGSIZE_EMUL
-    if (cn != 0)
-        cn->Disconnect();
-#endif
-}
-
 int Commands::GetBd(char BdNum, void *BdPtr, int BdPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
+    QByteArray ba;
     if (cn != 0)
     {
-        cn->Send(CN_GBd, BdNum, BdPtr, BdPtrSize);
-        return cn->result;
+        cn->SendIn(CN_GBd, BdNum, ba, BdPtrSize);
+        memcpy(BdPtr, &(ba.data()[0]), BdPtrSize);
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else
@@ -180,10 +195,12 @@ int Commands::GetBd(char BdNum, void *BdPtr, int BdPtrSize)
 int Commands::GetBda(char board, void *BdPtr, int BdPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
+    QByteArray ba;
     if (cn != 0)
     {
-        cn->Send(CN_GBda, board, BdPtr, BdPtrSize);
-        return cn->result;
+        cn->SendIn(CN_GBda, board, ba, BdPtrSize);
+        memcpy(BdPtr, &(ba.data()[0]), BdPtrSize);
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else
@@ -197,11 +214,12 @@ int Commands::GetBda(char board, void *BdPtr, int BdPtrSize)
 int Commands::GetBt(char BtNum, void *BtPtr, int &BtPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
+    QByteArray ba;
     if (cn != 0)
     {
-        cn->Send(CN_GBt, BtNum, BtPtr, BtPtrSize);
-        BtPtrSize = cn->RDSize;
-        return cn->result;
+        cn->SendIn(CN_GBt, BtNum, ba, BtPtrSize);
+        memcpy(BtPtr, &(ba.data()[0]), BtPtrSize);
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else
@@ -215,10 +233,12 @@ int Commands::GetBt(char BtNum, void *BtPtr, int &BtPtrSize)
 int Commands::WriteBac(char BacNum, void *BacPtr, int BacPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
+    QByteArray ba;
     if (cn != 0)
     {
-        cn->Send(CN_WBac, BacNum, BacPtr, BacPtrSize);
-        return cn->result;
+        ba.append(static_cast<const char *>(BacPtr), BacPtrSize);
+        cn->SendOut(CN_WBac, BacNum, ba);
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else
@@ -234,8 +254,8 @@ int Commands::EraseTechBlock(char block)
 #if PROGSIZE != PROGSIZE_EMUL
     if (cn != 0)
     {
-        cn->Send(CN_Ert, block);
-        return cn->result;
+        cn->SendCmd(CN_Ert, block);
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else
@@ -244,24 +264,15 @@ int Commands::EraseTechBlock(char block)
 #endif
 }
 
-bool Commands::isConnected()
-{
-#if PROGSIZE != PROGSIZE_EMUL
-    if (cn != 0)
-        return cn->Connected;
-    return false;
-#else
-    return false;
-#endif
-}
-
 int Commands::WriteTimeMNK(uint32_t *Time,  int TimeSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
+    QByteArray ba;
     if (cn != 0)
     {
-        cn->Send(CN_WTime, BoardTypes::BT_NONE, Time, TimeSize);
-        return cn->result;
+        ba.append(reinterpret_cast<const char *>(Time), TimeSize);
+        cn->SendOut(CN_WTime, BoardTypes::BT_NONE, ba);
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else
@@ -273,12 +284,12 @@ int Commands::WriteTimeMNK(uint32_t *Time,  int TimeSize)
 int Commands::GetTimeMNK(uint &Time)
 {
 #if PROGSIZE != PROGSIZE_EMUL
+    QByteArray ba;
     if (cn != 0)
     {
-        //quint8 tmpi;
-        cn->Send(CN_GTime, BoardTypes::BT_NONE, &Time, sizeof(uint));
-        //Time = tmpi;
-        return cn->result;
+        cn->SendIn(CN_GTime, BoardTypes::BT_NONE, ba, sizeof(uint));
+        memcpy(&Time, &(ba.data()[0]), sizeof(uint));
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else
@@ -290,10 +301,12 @@ int Commands::GetTimeMNK(uint &Time)
 int Commands::WriteBd(char BdNum, void *BdPtr, int BdPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
+    QByteArray ba;
     if (cn != 0)
     {
-        cn->Send(CN_WBd, BdNum, BdPtr, BdPtrSize);
-        return cn->result;
+        ba.append(static_cast<const char *>(BdPtr), BdPtrSize);
+        cn->SendOut(CN_WBd, BdNum, ba);
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else
@@ -309,8 +322,8 @@ int Commands::WriteCom(char ComNum)
 #if PROGSIZE != PROGSIZE_EMUL
     if (cn != 0)
     {
-        cn->Send(CN_WCom, ComNum);
-        return cn->result;
+        cn->SendCmd(CN_WCom, ComNum);
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else
@@ -323,8 +336,8 @@ int Commands::RunVPO()
 #if PROGSIZE != PROGSIZE_EMUL
     if (cn != 0)
     {
-        cn->Send(CN_VPO);
-        return cn->result;
+        cn->SendCmd(CN_VPO);
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else
@@ -337,8 +350,8 @@ int Commands::TestCom(char OnOff)
 #if PROGSIZE != PROGSIZE_EMUL
     if (cn != 0)
     {
-        cn->Send(CN_STest, OnOff);
-        return cn->result;
+        cn->SendCmd(CN_STest, OnOff);
+        return cn->Result;
     }
     return Error::ER_GENERALERROR;
 #else

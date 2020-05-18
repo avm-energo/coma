@@ -36,86 +36,105 @@ EAbstractProtocomChannel::~EAbstractProtocomChannel()
 {
 }
 
-void EAbstractProtocomChannel::Send(char command, char board_type)
+void EAbstractProtocomChannel::Send(char command, char parameter, QByteArray &ba, qint64 datasize)
+{
+    if (!Connected)
+    {
+        Result = CN_NULLDATAERROR;
+        return;
+    }
+    InData = ba;
+    InDataSize = datasize; // размер области данных, в которую производить запись
+    Command = command;
+/*    if (parameter == BoardTypes::BT_BASE)
+        BoardType = 0x01;
+    else if (parameter == BoardTypes::BT_MEZONIN)
+        BoardType = 0x02;
+    else if (parameter == BoardTypes::BT_NONE)
+        BoardType = 0x00;
+    else */
+        BoardType = parameter; // in GBd command it is a block number
+    InitiateSend();
+    QEventLoop loop;
+    connect(this, SIGNAL(QueryFinished()), &loop, SLOT(quit()));
+    loop.exec();
+}
+
+void EAbstractProtocomChannel::SendCmd(char command, int parameter)
 {
     // only for these commands
     switch(command)
     {
     case CN_ErPg:
     case CN_VPO:
+    case CN_WCom:
+    case CN_STest:
+    case CN_NVar:
+    case CN_SMode:
         break;
     default:
+        Finish(CN_UNKNOWNCMDERROR);
         return;
     }
-
-    if (!Connected)
-    {
-        Result = CN_NULLDATAERROR;
-        return;
-    }
-    Command = command;
-    if (board_type == BoardTypes::BT_BASE)
-        BoardType = 0x01;
-    else if (board_type == BoardTypes::BT_MEZONIN)
-        BoardType = 0x02;
-    else if (board_type == BoardTypes::BT_NONE)
-        BoardType = 0x00;
-    else
-        BoardType = board_type; // in GBd command it is a block number
-    InitiateSend();
-    QEventLoop loop;
-    connect(this, SIGNAL(QueryFinished()), &loop, SLOT(quit()));
-    loop.exec();
+    QByteArray ba;
+    Send(command, parameter, ba, 0);
 }
 
-void EAbstractProtocomChannel::Send(char command, char board_type, QByteArray &ba)
+void EAbstractProtocomChannel::SendIn(char command, char parameter, QByteArray &ba, qint64 maxdatasize)
 {
-    if (!Connected)
+    // only for these commands
+    switch(command)
     {
-        Result = CN_NULLDATAERROR;
+    case CN_GBsi:
+    case CN_GBac:
+    case CN_GBda:
+    case CN_GBd:
+    case CN_GBt:
+    case CN_GTime:
+    case CN_GVar:
+    case CN_GMode:
+        break;
+    default:
+        Finish(CN_UNKNOWNCMDERROR);
         return;
     }
-    InData = ba;
-//    InDataSize = ptrsize; // размер области данных, в которую производить запись
-    Command = command;
-//    FNum = filenum;
-//    DR = DRptr;
-    if (board_type == BoardTypes::BT_BASE)
-        BoardType = 0x01;
-    else if (board_type == BoardTypes::BT_MEZONIN)
-        BoardType = 0x02;
-    else if (board_type == BoardTypes::BT_NONE)
-        BoardType = 0x00;
-    else
-        BoardType = board_type; // in GBd command it is a block number
-    InitiateSend();
-    QEventLoop loop;
-    connect(this, SIGNAL(QueryFinished()), &loop, SLOT(quit()));
-    loop.exec();
+    Send(command, parameter, ba, maxdatasize);
+    ba = OutData;
 }
 
-void EAbstractProtocomChannel::SendFile(unsigned char command, unsigned char board_type, int filenum, QByteArray &ba)
+void EAbstractProtocomChannel::SendOut(char command, char board_type, QByteArray &ba)
 {
-    if (!Connected)
+    // only for these commands
+    switch(command)
     {
-        Result = CN_NULLDATAERROR;
+    case CN_WHv:
+    case CN_WBac:
+    case CN_WTime:
+    case CN_WBd:
+    case CN_WBt:
+    case CN_CtEr:
+        break;
+    default:
+        Finish(CN_UNKNOWNCMDERROR);
         return;
     }
-    Command = command;
+    Send(command, board_type, ba, 0);
+}
+
+void EAbstractProtocomChannel::SendFile(unsigned char command, char board_type, int filenum, QByteArray &ba)
+{
+    // only for these commands
+    switch(command)
+    {
+    case CN_GF:
+    case CN_WF:
+        break;
+    default:
+        Finish(CN_UNKNOWNCMDERROR);
+        return;
+    }
     FNum = filenum;
-    InData = ba;
-    if (board_type == BoardTypes::BT_BASE)
-        BoardType = 0x01;
-    else if (board_type == BoardTypes::BT_MEZONIN)
-        BoardType = 0x02;
-    else if (board_type == BoardTypes::BT_NONE)
-        BoardType = 0x00;
-    else
-        BoardType = board_type; // in GBd command it is a block number
-    InitiateSend();
-    QEventLoop loop;
-    connect(this, SIGNAL(QueryFinished()), &loop, SLOT(quit()));
-    loop.exec();
+    Send(command, board_type, ba, 0);
     ba = OutData;
 }
 
@@ -156,6 +175,8 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_ErPg:  // запрос текущего прогресса
     case CN_GVar:
     case CN_GMode:
+    case CN_GTime:
+    case CN_VPO:
     {
         WriteData.append(CN_MS);
         WriteData.append(Command);
@@ -170,6 +191,8 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_SMode:
     case CN_GBt:    // чтение технологического блока
     case CN_Ert:  // команда стирания технологического блока
+    case CN_WCom:
+    case CN_STest:
     {
         WriteData.append(CN_MS);
         WriteData.append(Command);
@@ -195,10 +218,7 @@ void EAbstractProtocomChannel::InitiateSend()
         int size = (BoardType == BoardTypes::BT_BSMZ) ? WHV_SIZE_TWOBOARDS : WHV_SIZE_ONEBOARD;
         AppendSize(WriteData, size); // BoardType(1), HiddenBlock(16)
         WriteData.append(BoardType);
-//        WriteData.resize(WriteData.size()+InDataSize);
-//        size_t tmpi = static_cast<size_t>(InDataSize);
         WriteData.append(InData);
-//        memcpy(&(WriteData.data()[5]), &OutData[0], tmpi);
         WriteDataToPort(WriteData);
         break;
     }
@@ -214,9 +234,9 @@ void EAbstractProtocomChannel::InitiateSend()
     case CN_WBac:
     case CN_CtEr:
     case CN_WBt:
+    case CN_WBd:
     {
         WriteData.append(BoardType);
-//        WriteData.append(QByteArray::fromRawData(reinterpret_cast<const char *>(OutData.data()), OutDataSize));
         WriteData.append(InData);
         WRLength = InDataSize + 1;
         emit SetDataSize(WRLength); // сигнал для прогрессбара
@@ -224,70 +244,15 @@ void EAbstractProtocomChannel::InitiateSend()
         WRCheckForNextSegment(true);
         break;
     }     
-    case CN_GTime:
-    {
-        WriteData.append(CN_MS);
-        WriteData.append(Command);
-        AppendSize(WriteData, 0);
-        WriteDataToPort(WriteData);
-        break;
-    }
     case CN_WTime:
     {
         WriteData.append(CN_MS);
         WriteData.append(Command);
         AppendSize(WriteData, InDataSize);
-//        WriteData.resize(WriteData.size()+OutDataSize);
-//        size_t tmpi = static_cast<size_t>(OutDataSize);
-//        memcpy(&(WriteData.data()[4]), &OutData[0], tmpi);
         WriteData.append(InData);
         WriteDataToPort(WriteData);
         break;
     }
-    case CN_WBd:
-    {
-        WriteData.append(CN_MS);
-        WriteData.append(Command);
-        AppendSize(WriteData, InDataSize);
-        WriteData.append(BoardType);
-/*        WriteData.resize(WriteData.size()+OutDataSize);
-        size_t tmpi = static_cast<size_t>(OutDataSize);
-        memcpy(&(WriteData.data()[5]), &OutData[0], tmpi); */
-        WriteData.append(InData);
-        WriteDataToPort(WriteData);
-        break;
-    }
-
-    case CN_WCom:
-    {
-        WriteData.append(CN_MS);
-        WriteData.append(Command);
-        AppendSize(WriteData, 1);
-        WriteData.append(BoardType);
-//        WriteData.resize(WriteData.size());
-        WriteDataToPort(WriteData);
-        break;
-    }
-
-    case CN_VPO:
-    {
-        WriteData.append(CN_MS);
-        WriteData.append(Command);
-        AppendSize(WriteData, 0);
-        WriteDataToPort(WriteData);
-        break;
-    }
-
-    case CN_STest:
-    {
-        WriteData.append(CN_MS);
-        WriteData.append(Command);
-        AppendSize(WriteData, 1);
-        WriteData.append(BoardType);
-        WriteDataToPort(WriteData);
-        break;
-    }
-
     default:
     {
         Finish(CN_UNKNOWNCMDERROR);
@@ -311,9 +276,8 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
     }
     if (Command == CN_Unk) // игнорирование вызова процедуры, если не было послано никакой команды
         return;
-//    int res;
     ReadDataChunk.append(ba);
-    quint32 rdsize = ReadDataChunk.size();
+    qint64 rdsize = ReadDataChunk.size();
     if (rdsize<4) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
         return;
     if (ReadDataChunk.at(0) != CN_SS)
@@ -342,7 +306,6 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             case CN_NVar:
             case CN_SMode:
             case CN_WTime:
-            case CN_WBd:
             case CN_WCom:
             case CN_VPO:
             case CN_STest:
@@ -361,6 +324,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             case CN_WF:
             case CN_WBac:
             case CN_WBt:
+            case CN_WBd:
             {
                 if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
                 {
@@ -447,7 +411,6 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 }
                 emit SetDataSize(RDLength);
                 OutData.resize(RDLength);
-//                RDCount = 0;
                 bStep++;
                 break;
             }
@@ -483,16 +446,11 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 ReadDataChunk.truncate(ReadDataChunkLength);
                 OutData.append(ReadDataChunk);
                 int outdatasize = OutData.size();
-//                RDSize = OutData.size();
                 emit SetDataCount(outdatasize); // сигнал для прогрессбара
                 ReadDataChunk.clear();
                 if ((outdatasize >= InDataSize) || (ReadDataChunkLength < CN_MAXSEGMENTLENGTH))
                 {
                     emit SetDataSize(outdatasize); // установка размера прогрессбара, чтобы не мелькал
-//                    RDSize = qMin(InDataSize, RDSize); // если даже приняли больше, копируем только требуемый размер
-//                    size_t tmpi = static_cast<size_t>(RDSize);
-//                    memcpy(OutData,ReadData.data(),tmpi);
-//                    memcpy(OutData.data(),ReadData.data(),RDSize);
                     Finish(Error::ER_NOERROR);
                 }
                 else
@@ -508,15 +466,12 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                     // копируем только требуемое количество байт
                     ReadDataChunkLength = RDLength - outdatasize;
                 ReadDataChunk.truncate(ReadDataChunkLength);
-//                memcpy(OutData.data() + RDCount, &ReadDataChunk.data()[0], ReadDataChunkLength);
                 OutData.append(ReadDataChunk);
-//                RDCount += ReadDataChunkLength;
                 outdatasize += ReadDataChunkLength;
                 emit SetDataCount(outdatasize); // сигнал для прогрессбара
                 ReadDataChunk.clear();
                 if (outdatasize >= RDLength)
                 {
-//                    OutDataSize = RDLength;
                     Finish(Error::ER_NOERROR);
                     return;
                 }
@@ -544,7 +499,6 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 break;
             }
             }
-    //        bStep = 0;
         }
     }
 }
@@ -663,7 +617,7 @@ void EAbstractProtocomChannel::Disconnect()
 
 void EAbstractProtocomChannel::OscTimerTimeout()
 {
-    Send(CN_ErPg);
+    SendCmd(CN_ErPg);
 }
 
 void EAbstractProtocomChannel::CheckForData()

@@ -40,7 +40,6 @@
 #define CN_WBt      0x2B // запись технологического блока
 #define CN_WBac     0x31 // запись настроечных коэффициентов
 #define CN_WF       0x32 // запись файла
-#define CN_WBc      0x33 // посылка блока выходных состояний
 #define CN_WBd      0x34 // посылка блока данных
 #define CN_WCom     0x35 // посылка команды
 #define	CN_VPO		0x40 // переход на новое ПО
@@ -97,9 +96,10 @@ public:
     virtual int RawWrite(QByteArray &ba) = 0;
     virtual void RawClose() = 0;
 
-    void Send(char command, char board_type=BoardTypes::BT_NONE);
-    void Send(char command, char board_type, QByteArray &ba);
-    void SendFile(unsigned char command, unsigned char board_type, int filenum, QByteArray &ba);
+    void SendCmd(char command, int parameter = 0);
+    void SendIn(char command, char parameter, QByteArray &ba, qint64 maxdatasize);
+    void SendOut(char command, char board_type, QByteArray &ba);
+    void SendFile(unsigned char command, char board_type, int filenum, QByteArray &ba);
     static void SetWriteUSBLog(bool bit);
     static bool IsWriteUSBLog();
     virtual QStringList DevicesFound() = 0; // функция, возвращающая список найденных устройств (COM-портов, устройств USB)
@@ -133,10 +133,10 @@ private:
     quint8 bStep;
     char Command;
     int FNum;
-    int ReadDataChunkLength, RDLength; // длина всей посылки
+    qint64 ReadDataChunkLength, RDLength; // длина всей посылки
     int WRLength; // длина всей посылки
 //    qint64 OutDataSize; // размер приёмной области памяти
-//    qint64 InDataSize;
+    qint64 InDataSize;
     int SegLeft; // количество оставшихся сегментов
     int SegEnd; // номер последнего байта в ReadData текущего сегмента
     bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
@@ -145,6 +145,7 @@ private:
     static bool WriteUSBLog;
 //    int RDCount; // количество полезных считанных байт (без заголовков)
 
+    void Send(char command, char parameter, QByteArray &ba, qint64 datasize);
     void InitiateSend();
     void WriteDataToPort(QByteArray &ba);
     void Finish(int ernum);

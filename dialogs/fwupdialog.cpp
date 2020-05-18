@@ -377,7 +377,7 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
     memcpy(&BaForSend->data()[0], &ForProcess->data()[0], (BaForSend->size()+16));*/
 
     #if PROGSIZE != PROGSIZE_EMUL
-    if (Commands::WriteFile(PV_file, 3, &S2DR) != Error::ER_NOERROR)
+    if (Commands::WriteFile(3, &S2DR) != Error::ER_NOERROR)
     {
         EMessageBox::information(this, "Ошибка", "Ошибка записи в модуль!");
         return Error::ER_GENERALERROR;
