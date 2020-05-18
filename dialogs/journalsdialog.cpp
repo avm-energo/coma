@@ -226,21 +226,21 @@ void JournalDialog::FillEventsTable(char *file, int jourtype)
         {
             memcpy(&N, &event.EvNum, sizeof(event.EvNum));
             N = (N & 0x00FFFFFF) - mineventid;
-            if (N <= sl.size())
+            if ((N <= sl.size()) && (N > 0))
             {
                 --N;
                 Num << sl.at(N);
             }
             else
                 Num << "Некорректный номер события";
+            Time << TimeFunc::UnixTime64ToString(event.Time);
+            if(event.EvType)
+                Type << "Пришло";
+            else
+                Type << "Ушло";
+            ++counter;
+            EventNum << counter;
         }
-        Time << TimeFunc::UnixTime64ToString(event.Time);
-        if(event.EvType)
-            Type << "Пришло";
-        else
-            Type << "Ушло";
-        ++counter;
-        EventNum << counter;
     }
     lsl.append(EventNum);
     lsl.append(Time);

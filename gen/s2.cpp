@@ -155,7 +155,10 @@ bool S2::CheckCRC32(void *m, quint32 length, quint32 crctocheck)
     unsigned char *mem = static_cast<unsigned char *>(m);
 
     for (i=0; i<length; ++i)
-        updCRC32(mem[i], &crc);
+    {
+        updCRC32(*mem, &crc);
+        ++mem;
+    }
     return (crctocheck == crc);
 }
 
