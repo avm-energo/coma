@@ -42,9 +42,9 @@ CorDialog::CorDialog(QWidget *parent) :
     CorBlock->Iunb_init = 0;
     first = 0;
 
-    MessageTimer = new QTimer;
+    /*MessageTimer = new QTimer;
     MessageTimer->setInterval(5000);
-    connect(MessageTimer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));
+    connect(MessageTimer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));*/
 
     for (i = 0; i < 3; i++)
     {
@@ -54,7 +54,7 @@ CorDialog::CorDialog(QWidget *parent) :
     }
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
-    MessageTimer->start();
+    //MessageTimer->start();
 }
 
 CorDialog::~CorDialog()
@@ -459,18 +459,21 @@ void CorDialog::UpdateFlCorData(Parse104::FlSignals104 *Signal)
     Parse104::FlSignals104 sig = *new Parse104::FlSignals104;
     int i;
 
-    if(((Signal)->fl.SigAdr >= 4000) && ((Signal)->fl.SigAdr <= 4010) && first)
-    {
-      EMessageBox::information(this, "INFO", "Прочитано успешно");
+    if(((Signal)->fl.SigAdr >= 4000) && ((Signal)->fl.SigAdr <= 4010))
+    {   
+        for(i=0; i<Signal->SigNumber; i++)
+        {
+            sig = *(Signal+i);
+            //if((Signal+i)->fl.SigAdr >= 1000 || (Signal+i)->fl.SigAdr <= 1009)
+            FillBd(this, QString::number((Signal+i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal));
+        }
+
+        if(first)
+        EMessageBox::information(this, "INFO", "Прочитано успешно");
+        else
+        first = 1;
     }
 
-
-    for(i=0; i<Signal->SigNumber; i++)
-    {
-        sig = *(Signal+i);
-        //if((Signal+i)->fl.SigAdr >= 1000 || (Signal+i)->fl.SigAdr <= 1009)
-        FillBd(this, QString::number((Signal+i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal));
-    }
 }
 
 void CorDialog::FillBd(QWidget *parent, QString Name, QString Value)
@@ -496,13 +499,13 @@ void CorDialog::ModBusUpdateCorData(ModBusSignal *Signal, int * size)
               //sig = *(Signal+i);
               FillBd(this, QString::number((Signal+i)->SigAdr), WDFunc::StringValueWithCheck((Signal+i)->flVal));
             }
-            ModBus::Reading = false;
+            //ModBus::Reading = false;
             EMessageBox::information(this, "INFO", "Прочитано успешно");
         }
         else if(*size == 1)
         {
           EMessageBox::information(this, "INFO", "Записано успешно");
-          ModBus::Reading = false;
+          //ModBus::Reading = false;
         }
 
     }
@@ -590,7 +593,7 @@ void CorDialog::WritePasswordCheck(QString psw)
 void CorDialog::TimerTimeout()
 {
    MessageTimer->stop();
-   first = 1;
+   //first = 1;
 }
 
 void CorDialog::WriteCorMessageOk()

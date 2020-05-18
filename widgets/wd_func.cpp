@@ -28,7 +28,7 @@ PasswordLineEdit *WDFunc::NewPswLE(QWidget *w, const QString &lename, QLineEdit:
     return le;
 }
 
-bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring)
+/*bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);
     if (le == nullptr)
@@ -42,7 +42,7 @@ bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue
         le->setValidator(val);
     }
     return true;
-}
+}*/
 
 bool WDFunc::SetLEColor(QWidget *w, const QString &lename, const QColor &color)
 {

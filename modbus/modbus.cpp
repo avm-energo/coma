@@ -20,6 +20,7 @@
 #include "modbus.h"
 #include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
+#include "../gen/mainwindow.h"
 
 bool ModBus::Reading;
 
@@ -320,14 +321,15 @@ void ModBus::ReadPort()
            {
              ComData.adr = 0;
              emit BsiFromModBus(BSISig, &signalsSize);
+             commands = false;
            }
            else if(ComData.adr == 4600)
            emit timeSignalsReceived(BSISig);
            else
            emit corsignalsreceived(Sig, &signalsSize);
 
-           commands = false;
-           ComData.adr = 0;
+           //commands = false;
+           //ComData.adr = 0;
         }
         else
         {
@@ -355,7 +357,7 @@ void ModBus::ReadPort()
   {
       if((cursize == 5) && (ComData.adr != 1))
       {
-          commands = false;
+          //commands = false;
           Reading = false;
           Group++;
 
@@ -370,7 +372,7 @@ void ModBus::ReadPort()
              else
              emit errorRead();
           }
-          ComData.adr = 0;
+          //ComData.adr = 0;
       }
   }
 
@@ -413,10 +415,10 @@ void ModBus::WriteToPort()
             if(commands)
             {
                 bytes->append(ComData.ModCom);         //аналоговый выход
-                bytes->append(static_cast<char>(ComData.adr>>8));
-                bytes->append(static_cast<char>(ComData.adr));
-                bytes->append(static_cast<char>(ComData.quantity>>8));
-                bytes->append(static_cast<char>(ComData.quantity));
+                bytes->append(static_cast<char>((ComData.adr&0xFF00)>>8));
+                bytes->append(static_cast<char>(ComData.adr&0x00FF));
+                bytes->append(static_cast<char>((ComData.quantity&0xFF00)>>8));
+                bytes->append(static_cast<char>(ComData.quantity&0x00FF));
 
                 if(ComData.ModCom == 0x10)
                 bytes->append(static_cast<char>(ComData.sizebytes));
@@ -579,7 +581,7 @@ void ModBus::ModWriteCor(information* info, float* data)//, int* size)
     {
         TimeFunc::Wait(10);
         count++;
-        if(count == 200)
+        if(count == 20)
         {
           Reading = false;
           count = 0;
@@ -623,7 +625,7 @@ void ModBus::ModReadCor(information* info)
     {
         TimeFunc::Wait(10);
         count++;
-        if(count == 200)
+        if(count == 20)
         {
           Reading = false;
           count = 0;
@@ -657,7 +659,7 @@ void ModBus::InterrogateTime()
     {
         TimeFunc::Wait(10);
         count++;
-        if(count == 200)
+        if(count == 20)
         {
           Reading = false;
           count = 0;
@@ -690,7 +692,7 @@ void ModBus::WriteTime(uint* time)
     {
         TimeFunc::Wait(10);
         count++;
-        if(count == 200)
+        if(count == 20)
         {
           Reading = false;
           count = 0;
@@ -716,6 +718,59 @@ void ModBus::WriteTime(uint* time)
     commands = true;
     Reading = false;
 
+}
+
+void ModBus::tabs(int index)
+{
+
+  if(!MainWindow::TheEnd)
+  {
+    while(Reading == true)
+    {
+        TimeFunc::Wait(10);
+        count++;
+        if(count == 200)
+        {
+          Reading = false;
+          count = 0;
+        }
+    }
+
+   if(index == timeIndex)
+   {
+       if(!write)
+       {
+         ComData.ModCom = 0x03;
+         ComData.adr = 4600;
+         ComData.quantity = 2;
+         ComData.sizebytes = 4;
+         ComData.data = new QByteArray[100];
+         ComData.data->clear();
+         //TimeFunc::Wait(100);
+         commands = true;
+         Reading = false;
+       }
+   }
+   else if(index == corIndex)
+   {
+       ComData.ModCom = 0x04;
+       ComData.adr = 4000;
+       ComData.quantity = 22;
+       ComData.sizebytes = 44;
+
+       ComData.data = new QByteArray[100];
+       ComData.data->clear();
+
+       //TimeFunc::Wait(100);
+       commands = true;
+       Reading = false;
+   }
+   else if(index == checkIndex)
+   {
+       ComData.adr = 0;
+       commands = false;
+   }
+  }
 }
 
 /*QModbusReply *enqueueRequest(const QModbusRequest &request, int serverAddress,

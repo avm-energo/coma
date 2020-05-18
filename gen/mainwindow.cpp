@@ -63,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     Wpred = Walarm = nullptr;
     ch104 = nullptr;
     FullName = "";
+    reconnect = false;
 
     TimeTimer = new QTimer;
     TimeTimer->setInterval(1000);
@@ -123,37 +124,66 @@ void MainWindow::Go(const QString &parameter)
 
 }
 
-void MainWindow::ReConnect(int Err)
+void MainWindow::ReConnect(int err)
 {
     QDialog *dlg = new QDialog;
-    QTimer *reconnectTimer = new QTimer;
-    reconnectTimer->setInterval(5000);
+    reconnectTimer = new QTimer;
+    reconnectTimer->setInterval(10000);
+
+    reconnect = true;
+
+    if(!disconnected)
+    {
+        StopRead = 1;
+        //disconnected = 1;
+    #if PROGSIZE != PROGSIZE_EMUL
+        Disconnect();
+    #endif
+
+        CheckB = CheckM = nullptr;
+        //CheckModBus = nullptr;
+        emit ClearBsi();
+        ClearTW();
+        ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
+        if (MainTW == nullptr)
+            return;
+        MainTW->hide();
+        StdFunc::SetEmulated(false);
+    }
+
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
     QString tmps = QString(PROGCAPTION);
     QWidget *w = new QWidget;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
-    hlyout->addWidget(WDFunc::NewLBLT(w, "Связь разорвана.\nПопытка переподключения будет выполнена через 5 секунд", "", "", ""), 1);
+    hlyout->addWidget(WDFunc::NewLBLT(w, "Связь разорвана.\nПопытка переподключения будет выполнена через 10 секунд", "", "", ""), 1);
     vlayout->addLayout(hlyout);
 
     w->setLayout(vlayout);
     connect(reconnectTimer,SIGNAL(timeout()), dlg,SLOT(close()));
-    connect(reconnectTimer,SIGNAL(timeout()), dlg,SLOT(attemptToRec()));
+    connect(reconnectTimer,SIGNAL(timeout()), this, SLOT(attemptToRec()));
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
     dlg->setLayout(lyout);
 
     reconnectTimer->start();
-
     dlg->exec();
 
 }
 
 void MainWindow::attemptToRec()
 {
-
+    reconnectTimer->stop();
+    reconnectTimer->deleteLater();
+    ch104->deleteLater();
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    S2Config.clear();
+    SaveSettings();
+    QApplication::restoreOverrideCursor();
+    StopRead = 0;
+    Stage3();
 }
 
 QWidget *MainWindow::HthWidget()
@@ -997,6 +1027,7 @@ int MainWindow::CheckPassword()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Stage1_5()
 {
+    TheEnd = 0;
     disconnected = 0;
     ShowInterfaceDialog();
     ShowConnectDialog();
@@ -1060,7 +1091,7 @@ void MainWindow::Stage2()
             if (res == Error::ER_CANAL)
             {
                 if (EMessageBox::question(this, "Ошибка", \
-                                          "Повторить подключение?") == 1) // Yes
+                                          "Не удалось установить связь.\nПовторить подключение?") == 1) // Yes
                 {
                     cn->Disconnect();
                     emit Retry();
@@ -1549,8 +1580,6 @@ void MainWindow::GetAbout()
 void MainWindow::Disconnect()
 {
     //emit stoptime();
-    if(TimeTimer != nullptr)
-    TimeTimer->stop();
 
     if(MainInterface.size() != 0 && (!StdFunc::IsInEmulateMode()))
     {
@@ -1591,6 +1620,11 @@ void MainWindow::GetDeviceFromTable(QModelIndex idx)
 #endif
 void MainWindow::DisconnectAndClear()
 {
+    TheEnd = 1;
+    if(TimeTimer != nullptr)
+    {
+      TimeTimer->stop();
+    }
     if(!disconnected)
     {
         StopRead = 1;
@@ -1619,19 +1653,41 @@ void MainWindow::DisconnectAndClear()
         {
            if(MainInterface == "USB")
            {
-             if(ModuleBSI::ModuleTypeString != "")
-             EMessageBox::information(this, "Разрыв связи", "Связь с "+ModuleBSI::ModuleTypeString+" разорвана");
+             if(reconnect)
+             {
+                 if(ModuleBSI::ModuleTypeString != "")
+                 EMessageBox::information(this, "Разрыв связи", "Связь с "+ModuleBSI::ModuleTypeString+" разорвана");
+                 else
+                 EMessageBox::information(this, "Разрыв связи", "Связь разорвана");
+             }
              else
-             EMessageBox::information(this, "Разрыв связи", "Связь разорвана");
+             {
+                 if(ModuleBSI::ModuleTypeString != "")
+                 EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь с "+ModuleBSI::ModuleTypeString+"");
+                 else
+                 EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
+             }
            }
            else
            {
-             if(FullName != "")
-             EMessageBox::information(this, "Разрыв связи", "Связь с "+FullName+" разорвана");
-             else
-             EMessageBox::information(this, "Разрыв связи", "Связь разорвана");
+               if(reconnect)
+               {
+                 if(FullName != "")
+                 EMessageBox::information(this, "Разрыв связи", "Связь с "+FullName+" разорвана");
+                 else
+                 EMessageBox::information(this, "Разрыв связи", "Связь разорвана");
+               }
+               else
+               {
+                 if(FullName != "")
+                 EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь с "+FullName+"");
+                 else
+                 EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
+               }
            }
         }
+
+        reconnect = false;
         //disconnected = 0;
     }
 
@@ -1788,7 +1844,7 @@ void MainWindow::FinishHim()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    TheEnd = 1;
+    //TheEnd = 1;
     DisconnectAndClear();
     //while(!TimeThrFinished || !ModBusThrFinished)
     //TimeFunc::Wait(100);

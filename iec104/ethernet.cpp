@@ -15,6 +15,11 @@ ethernet::ethernet(QObject *parent) :
     ClosePortAndFinishThread = false;
 }
 
+ethernet::~ethernet()
+{
+    sock->deleteLater();
+}
+
 void ethernet::Run()
 {
     //quint8 sendStatus = 0;

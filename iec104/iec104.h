@@ -1,6 +1,6 @@
     #ifndef IEC104_H
 #define IEC104_H
-
+#include <QTcpSocket>
 #include "../gen/s2.h"
 #include "../gen/log.h"
 
@@ -167,7 +167,7 @@ public:
     int cmd;
     bool GetNewVR, NewDataArrived;
     QMutex ParseMutex, SignalsMutex;
-    QTimer *timer104;
+    QTimer *timer104, *conTimer;
     QTimer *Interogatetimer;
     QByteArray WriteData;
     char *outdata;
@@ -188,7 +188,7 @@ public:
     char BoardType;
     static bool WriteUSBLog;
     quint32 FileLen;
-    int incLS, count;
+    int incLS, count, noAnswer;
 
 
 
@@ -420,6 +420,7 @@ private slots:
     void SendI();
     void SendS();
     void SendTestAct();
+    void SendTestCon();
     void GetSomeData(QByteArray);
     void StartParse();
     void SelectFile(char*);

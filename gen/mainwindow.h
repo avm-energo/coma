@@ -174,6 +174,7 @@ public:
     QWidget *Wpred;
     QWidget *Walarm;
     bool cancel;
+        bool reconnect;
 
 #if PROGSIZE >= PROGSIZE_LARGE
     void SetSlideWidget();
@@ -216,6 +217,7 @@ private:
     quint8 PredAlarmEvents[20];
     quint8 AlarmEvents[20];
     int fileSize, curfileSize;
+    QTimer *reconnectTimer;
 
 #ifdef ETHENABLE
     DeviceConnectStruct DevInfo;

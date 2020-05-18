@@ -34,9 +34,9 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
     connect(eth,SIGNAL(connected()),this,SLOT(Start()));
     connect(eth,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
     connect(this,SIGNAL(writedatatoeth(QByteArray)),eth,SLOT(InitiateWriteDataToPort(QByteArray)));
-    connect(eth,SIGNAL(disconnected()), parent, SLOT(DisconnectAndClear()));
-    connect(eth,SIGNAL(ethNoconnection()), parent, SLOT(DisconnectAndClear()));
-    connect(eth,SIGNAL(error(QAbstractSocket::SocketError)),this,SIGNAL(errorCh104(QAbstractSocket::SocketError)));
+    //connect(eth,SIGNAL(disconnected()), parent, SLOT(DisconnectAndClear()));
+    //connect(eth,SIGNAL(ethNoconnection()), parent, SLOT(DisconnectAndClear()));
+
 
 
     Parse = new Parse104;
@@ -44,6 +44,12 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
     Parse->timer104->setInterval(15000);
     Parse->Interogatetimer = new QTimer;
     Parse->Interogatetimer->setInterval(15000);
+
+    Parse->noAnswer = 0;
+    Parse->conTimer = new QTimer;
+    Parse->conTimer->setInterval(5000);
+    connect(Parse->conTimer,SIGNAL(timeout()),this,SLOT(SendTestAct()));
+
     QThread *thr2 = new QThread;
     thr2->setPriority(QThread::HighestPriority);
     Parse->moveToThread(thr2);
@@ -65,7 +71,7 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
             this,SIGNAL(relesignalsready(Parse104::SponSignals104*)),Qt::BlockingQueuedConnection);
     connect(Parse,SIGNAL(sendS()),this,SLOT(SendS()));
     connect(Parse,SIGNAL(GeneralInter()),this,SLOT(SendI()));
-    connect(Parse,SIGNAL(sendAct()),this,SLOT(SendTestAct()));
+    connect(Parse,SIGNAL(sendAct()),this,SLOT(SendTestCon()));
     connect(Parse,SIGNAL(parsestarted()),this,SLOT(StartParse()));
     connect(Parse,SIGNAL(callFile(char*)),this,SLOT(CallFile(char*)));
     connect(Parse,SIGNAL(callSection(char*)),this,SLOT(GetSection(char*)));
@@ -91,6 +97,7 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
 
     thr->start();
     thr2->start();
+    Parse->conTimer->start();
 }
 
 iec104::~iec104()
@@ -229,7 +236,7 @@ void iec104::CorReadRequest()
     Parse->Interogatetimer->start();
 }
 
-void iec104::SendTestAct()
+void iec104::SendTestCon()
 {
     APCI GI;
     ASDU GInter;
@@ -242,6 +249,38 @@ void iec104::SendTestAct()
     GI.contrfield[2] = 0;
     GI.contrfield[3] = 0;
     Parse->cmd = I104_TESTFR_CON;
+    Send(0,GI); // ASDU = QByteArray()
+
+    //while(stopincrementing)
+    //QThread::usleep(10);
+
+    //Parse->V_S++;
+
+}
+
+void iec104::SendTestAct()
+{
+    APCI GI;
+    //ASDU GInter;
+    //quint16 VR = Parse->V_R;
+
+    if(Parse->noAnswer)
+    {
+       Parse->conTimer->stop();
+       Parse->conTimer->deleteLater();
+       emit errorCh104(1);
+       return;
+    }
+    else
+    Parse->noAnswer = 1;
+
+    GI.start = I104_START;
+    GI.APDUlength = 4;
+    GI.contrfield[0] = I104_TESTFR_ACT;
+    GI.contrfield[1] = 0;
+    GI.contrfield[2] = 0;
+    GI.contrfield[3] = 0;
+    Parse->cmd = I104_TESTFR_ACT;
     Send(0,GI); // ASDU = QByteArray()
 
     //while(stopincrementing)
@@ -419,8 +458,9 @@ int Parse104::isIncomeDataValid(QByteArray ba)
         V_Srcv >>= 1;
         if (V_Srcv != V_S)
         {
+            V_S = V_Srcv;           // временно, нужно исправить проблему несовпадения s посылок
             emit error(M104_NUMER);
-            return I104_RCVWRONG;
+            //return I104_RCVWRONG;  // временно, нужно исправить проблему несовпадения s посылок
         }
         return I104_RCVNORM;
         break;
@@ -431,8 +471,9 @@ int Parse104::isIncomeDataValid(QByteArray ba)
         V_Srcv >>= 1;
         if (V_Srcv != V_S)
         {
+            V_S = V_Srcv;
             emit error(M104_NUMER);
-            return I104_RCVWRONG;
+            //return I104_RCVWRONG;
         }
 //        V_R++;
         return I104_RCVNORM;
@@ -448,10 +489,15 @@ int Parse104::isIncomeDataValid(QByteArray ba)
         }
         if ((ba.at(2) == I104_STOPDT_CON) && (cmd == I104_STOPDT_ACT)) // если пришло подтверждение стопа и перед этим мы стоп запрашивали
             cmd = I104_STOPDT_CON;
-        if ((ba.at(2) == I104_TESTFR_CON) && (cmd == I104_TESTFR_ACT)) // если пришло подтверждение теста и перед этим мы тест запрашивали
+        if ((quint8)ba.at(2) == I104_TESTFR_CON) // если пришло подтверждение теста и перед этим мы тест запрашивали
+        {
             cmd = I104_TESTFR_CON;
+        }
         if (ba.at(2) == I104_TESTFR_ACT)
             emit sendAct();
+
+        noAnswer = 0;
+
         return I104_RCVNORM;
         break;
     }
@@ -828,7 +874,12 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
 
 void Parse104::Stop()
 {
+    if(conTimer != nullptr)
+    {
+       conTimer->stop();
+    }
     ThreadMustBeFinished = true;
+    if(timer104 != nullptr)
     timer104->stop();
 }
 

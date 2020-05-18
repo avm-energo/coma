@@ -288,9 +288,7 @@ void Coma::Stage3()
     }
     else
     {
-        if(insl.size() != 0)
-        {
-         if(insl.at(1) == "ETH")
+         if(MainInterface == "Ethernet")
          {
 #ifdef ETHENABLE
             ch104 = new iec104(&IPtemp, this);
@@ -300,7 +298,7 @@ void Coma::Stage3()
             CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, ch104);
     #endif
          }
-         else if(insl.at(1) == "MODBUS")
+         else if(MainInterface == "RS485")
          {
 
              modBus = new ModBus(Settings, this);           
@@ -316,6 +314,7 @@ void Coma::Stage3()
              CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
              connect(modBus,SIGNAL(BsiFromModBus(ModBusBSISignal*, int*)),idlg,SLOT(FillBsiFromModBus(ModBusBSISignal*, int* )));
              connect(modBus,SIGNAL(coilsignalsready(Coils*)),this,SLOT(ModbusUpdateStatePredAlarmEvents(Coils*)));
+             connect(MainTW, SIGNAL(tabClicked(int)), modBus,SLOT(tabs(int)));
              modBus->BSIrequest(Settings);
              //TimeTimer->setInterval(3000);
 
@@ -328,20 +327,21 @@ void Coma::Stage3()
            if(count == 50)
            {
              count = 0;
+             if(reconnect)
+             {
+               if(MainInterface == "Ethernet")
+               ReConnect(1);
+             }
+             else
              DisconnectAndClear();
              return;
            }
          }
 
          //emit ConnectMes(&FullName);
-        }
     }
-    /*if (MTypeB < 0xA2) // диапазон модулей АВ-ТУК
-    {
-        MainConfDialog = new ConfDialog(S2Config, MTypeB, MTypeM);
-        MainTuneDialog = new ConfDialog(S2ConfigForTune, MTypeB, MTypeM);
-        //MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
-    }*/
+
+    reconnect = true;
 
     if(MainInterface == "Ethernet")
     {
@@ -365,6 +365,9 @@ void Coma::Stage3()
         //MainTW->setFixedHeight(500);
         MainTW->addTab(CheckB, str);
         CheckB->checkIndex = MainTW->indexOf(CheckB);
+
+        if(MainInterface == "RS485")
+        modBus->checkIndex = CheckB->checkIndex;
 
         if(MainInterface == "USB")
         {
@@ -424,7 +427,9 @@ void Coma::Stage3()
         Time->timeIndex = MainTW->indexOf(Time);
         if(ConfM != nullptr)
         ConfM->timeIndex = Time->timeIndex;
-        Time->checkIndex = CheckB->checkIndex;
+
+        if(MainInterface == "RS485")
+        modBus->timeIndex = Time->timeIndex;
 
         /*QThread *thrTime = new QThread;
         thrTime->setPriority(QThread::LowPriority);
@@ -456,6 +461,9 @@ void Coma::Stage3()
         MainTW->addTab(CorD, "Начальные значения");
         CorD->corDIndex = MainTW->indexOf(CorD);
         connect(MainTW, SIGNAL(tabClicked(int)), CorD, SLOT(GetCorBd(int))); //tabClicked
+
+        if(MainInterface == "RS485")
+        modBus->corIndex = CorD->corDIndex;
     }
 
     if (JourD != nullptr)
@@ -500,13 +508,13 @@ void Coma::PrepareDialogs()
 
     MTypeB =  MTypeB<<8;
 
-    if (insl.size() != 0)
+    /*if (insl.size() != 0)
     {
         if(insl.at(1) == "MODBUS")
         {
             MTypeB = Config::MTB_A2;
         }
-    }
+    }*/
      switch(MTypeB)
     {
     case Config::MTB_21:
@@ -578,7 +586,7 @@ void Coma::PrepareDialogs()
             connect(ch104,SIGNAL(sendJourSysfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillSysJour(QVector<S2::DataRec>*)));
             connect(ch104,SIGNAL(sendJourWorkfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillWorkJour(QVector<S2::DataRec>*)));
             connect(ch104,SIGNAL(sendJourMeasfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillMeasJour(QVector<S2::DataRec>*)));
-            connect(ch104,SIGNAL(errorCh104(QAbstractSocket::SocketError)),this,SLOT(ReConnect(int)));
+            connect(ch104,SIGNAL(errorCh104(int)),this,SLOT(ReConnect(int)));
             ch104->Parse->DR = &S2Config;
 
 #endif
@@ -691,4 +699,6 @@ void Coma::PrepareDialogs()
     }
 
  }
+
+
 

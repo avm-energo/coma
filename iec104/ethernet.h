@@ -15,6 +15,7 @@ class ethernet : public QObject
 
 public:
     ethernet(QObject *parent = nullptr);
+    ~ethernet();
     quint16 ASDU;
     bool ClosePortAndFinishThread;
     quint8 sendStatus;

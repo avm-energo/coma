@@ -80,6 +80,7 @@ public:
         quint8 Bytes[20];
     };
 
+    int checkIndex, corIndex, timeIndex;
 
     constexpr static const unsigned char TabCRChi[256] = {
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
@@ -141,6 +142,7 @@ public slots:
         void ModReadCor(information* info);
         void InterrogateTime();
         void WriteTime(uint*);
+        void tabs(int);
 
 
 signals:
@@ -155,6 +157,7 @@ signals:
  void finished();
  void coilsignalsready(Coils*);
  void timeReadError();
+ void modBusError();
  //void stopModBus();
 
 

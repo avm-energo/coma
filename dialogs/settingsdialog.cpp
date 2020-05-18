@@ -99,14 +99,14 @@ void SettingsDialog::AcceptSettings()
     QString DevName, DevSN, DevPrecision, tmps, dir;
     quint32 PovNumPoints;
     bool tmpb;
-    WDFunc::LEData(this, "orgle", tmps);
+    WDFunc::LE_read_data(this, "orgle", tmps);
     StdFunc::SetOrganizationString(tmps);
-    WDFunc::LEData(this, "pathle", dir);
+    WDFunc::LE_read_data(this, "pathle", dir);
     StdFunc::SetHomeDir(dir);
-    WDFunc::LEData(this, "povdev", DevName);
-    WDFunc::LEData(this, "povdevsn", DevSN);
-    WDFunc::LEData(this, "povdevprecision", DevPrecision);
-    WDFunc::LEData(this, "miple", tmps);
+    WDFunc::LE_read_data(this, "povdev", DevName);
+    WDFunc::LE_read_data(this, "povdevsn", DevSN);
+    WDFunc::LE_read_data(this, "povdevprecision", DevPrecision);
+    WDFunc::LE_read_data(this, "miple", tmps);
     StdFunc::SetDeviceIP(tmps);
     WDFunc::ChBData(this, "writelogchb", tmpb);
 
@@ -128,5 +128,5 @@ void SettingsDialog::SetHomeDir()
     dlg->setFileMode(QFileDialog::AnyFile);
     QString dir = dlg->getExistingDirectory(this, "Домашний каталог", StdFunc::GetHomeDir());
     if (!dir.isEmpty())
-        WDFunc::SetLEData(this,"pathle",dir);
+        WDFunc::LE_write_data(this,dir,"pathle");
 }
