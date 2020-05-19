@@ -114,10 +114,10 @@ void ConfDialog84::Fill()
 
         WDFunc::SetSPBData(this, "Port"+QString::number(0), C84->Com_param.Port[0]);
 
-        WDFunc::SetLEData(this, StrIP, "IP");
-        WDFunc::SetLEData(this, StrSNTP, "SNTP");
-        WDFunc::SetLEData(this, StrGate, "GateWay");
-        WDFunc::SetLEData(this, StrMask, "Mask");
+        WDFunc::LE_write_data(this, StrIP, "IP");
+        WDFunc::LE_write_data(this, StrSNTP, "SNTP");
+        WDFunc::LE_write_data(this, StrGate, "GateWay");
+        WDFunc::LE_write_data(this, StrMask, "Mask");
 
         WDFunc::SetSPBData(this, "Baud", C84->Com_param.baud);
         for(int i= 0; i<8; i++)
@@ -218,10 +218,10 @@ void ConfDialog84::FillBack()
         QStringList inIP, inMask, inSNTP, inGate;
         QLocale german(QLocale::German);
 
-        WDFunc::LEData(this, NameIP, StrIP);
-        WDFunc::LEData(this, NameSNTP, StrSNTP);
-        WDFunc::LEData(this, NameGate, StrGate);
-        WDFunc::LEData(this, NameMask, StrMask);
+        WDFunc::LE_read_data(this, NameIP, StrIP);
+        WDFunc::LE_read_data(this, NameSNTP, StrSNTP);
+        WDFunc::LE_read_data(this, NameGate, StrGate);
+        WDFunc::LE_read_data(this, NameMask, StrMask);
 
         inIP.append(StrIP.split("."));
         inMask.append(StrMask.split("."));
@@ -950,7 +950,7 @@ void ConfDialog84::Write_Date()
     QDateTime myDateTime;
     uint *time = new uint;
     QString qStr;
-    WDFunc::LEData(this, "Date", qStr);
+    WDFunc::LE_read_data(this, "Date", qStr);
     myDateTime = QDateTime::fromString(qStr,"dd-MM-yyyy HH:mm:ss");
     myDateTime.setOffsetFromUtc(0);
     *time = myDateTime.toTime_t();
