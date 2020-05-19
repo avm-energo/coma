@@ -123,7 +123,39 @@ void MainWindow::Go(const QString &parameter)
 
 }
 
+<<<<<<< HEAD
 void MainWindow::ReConnect(int err)
+=======
+void MainWindow::ReConnect(int Err)
+{
+    QDialog *dlg = new QDialog;
+    QTimer *reconnectTimer = new QTimer;
+    reconnectTimer->setInterval(5000);
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    QString tmps = QString(PROGCAPTION);
+    QWidget *w = new QWidget;
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
+    hlyout->addWidget(WDFunc::NewLBLT(w, "Связь разорвана.\nПопытка переподключения будет выполнена через 5 секунд", "", "", ""), 1);
+    vlayout->addLayout(hlyout);
+
+    w->setLayout(vlayout);
+    connect(reconnectTimer,SIGNAL(timeout()), dlg,SLOT(close()));
+    connect(reconnectTimer,SIGNAL(timeout()), dlg,SLOT(attemptToRec()));
+
+    //hlyout->addLayout(l2yout,100);
+    lyout->addWidget(w);
+    dlg->setLayout(lyout);
+
+    reconnectTimer->start();
+
+    dlg->exec();
+
+}
+
+void MainWindow::attemptToRec()
+>>>>>>> temporary
 {
     QDialog *dlg = new QDialog;
     reconnectTimer = new QTimer;
@@ -312,9 +344,10 @@ void MainWindow::DeviceState()
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
-    QPushButton *pb = new QPushButton("Ok");
+/*    QPushButton *pb = new QPushButton("Ok");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
-    lyout->addWidget(pb,0);
+    lyout->addWidget(pb,0); */
+    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", dlg, SLOT(close)), 0);
     dlg->setLayout(lyout);
     dlg->exec();
 }
@@ -411,9 +444,10 @@ void MainWindow::PredAlarmState()
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
-    QPushButton *pb = new QPushButton("Ok");
+/*    QPushButton *pb = new QPushButton("Ok");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
-    lyout->addWidget(pb,0);
+    lyout->addWidget(pb,0); */
+    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", dlg, SLOT(close)), 0);
     dlg->setLayout(lyout);
     dlg->exec();
 }
@@ -500,7 +534,7 @@ void MainWindow::AlarmState()
 
 void MainWindow::UpdateReleWidget(Parse104::SponSignals104* Signal)
 {
-    int i = 0;
+//    int i = 0;
     //Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
@@ -549,8 +583,8 @@ void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104 *Signal)
 {
     int i = 0, PredArarmcount = 0, Ararmcount = 0;
     Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
+//    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+//    QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmred, pmgrn};
 
     for(i=0; i<Signal->SigNumber; i++)
@@ -945,6 +979,7 @@ void MainWindow::LoadSettings()
     StdFunc::SetHomeDir(sets->value("Homedir", HomeDir).toString());
 
     TEEnabled = sets->value("TEEnabled", "0").toBool();
+
 }
 
 void MainWindow::SaveSettings()
@@ -1350,12 +1385,17 @@ void MainWindow::ShowInterfaceDialog()
     portscb->setModel(tmpmodel);
     lyout->addWidget(portscb);
     QHBoxLayout *hlyout = new QHBoxLayout;
+/*    QPushButton *pb = new QPushButton("Далее");
     QPushButton *pb = new QPushButton("Далее");
     connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    hlyout->addWidget(pb); */
+    hlyout->addWidget(WDFunc::NewPB(this, "", "Далее", dlg, SLOT(close())));
     hlyout->addWidget(pb);
     pb = new QPushButton("Отмена");
     connect(pb, SIGNAL(clicked(bool)),this,SLOT(SetCancelled()));
     connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
+    hlyout->addWidget(pb); */
+    hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", dlg, SLOT(close())));
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
@@ -1388,15 +1428,8 @@ void MainWindow::ShowConnectDialog()
     {
          if(MainInterface == "USB")
          {
-             //#ifdef USBENABLE
              cn = new EUsbHid;
              connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
-             //#else
-             //#ifdef COMPORTENABLE
-             //    cn = new EUsbCom;
-             //    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
-             //#endif
-             //#endif
              connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
              connect(cn,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
              connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));

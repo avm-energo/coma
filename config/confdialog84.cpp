@@ -114,15 +114,15 @@ void ConfDialog84::Fill()
 
         WDFunc::SetSPBData(this, "Port"+QString::number(0), C84->Com_param.Port[0]);
 
-        WDFunc::LE_write_data(this, StrIP, "IP");
-        WDFunc::LE_write_data(this, StrSNTP, "SNTP");
-        WDFunc::LE_write_data(this, StrGate, "GateWay");
-        WDFunc::LE_write_data(this, StrMask, "Mask");
+        WDFunc::SetLEData(this, StrIP, "IP");
+        WDFunc::SetLEData(this, StrSNTP, "SNTP");
+        WDFunc::SetLEData(this, StrGate, "GateWay");
+        WDFunc::SetLEData(this, StrMask, "Mask");
 
         WDFunc::SetSPBData(this, "Baud", C84->Com_param.baud);
         for(int i= 0; i<8; i++)
         {
-            if(C84->Com_param.baud == Rates.at(i).toInt())
+            if(C84->Com_param.baud == Rates.at(i).toUInt())
             cbidx = i;
         }
         WDFunc::SetCBIndex(this, "Baud", cbidx);
@@ -218,10 +218,10 @@ void ConfDialog84::FillBack()
         QStringList inIP, inMask, inSNTP, inGate;
         QLocale german(QLocale::German);
 
-        WDFunc::LE_read_data(this, NameIP, StrIP);
-        WDFunc::LE_read_data(this, NameSNTP, StrSNTP);
-        WDFunc::LE_read_data(this, NameGate, StrGate);
-        WDFunc::LE_read_data(this, NameMask, StrMask);
+        WDFunc::LEData(this, NameIP, StrIP);
+        WDFunc::LEData(this, NameSNTP, StrSNTP);
+        WDFunc::LEData(this, NameGate, StrGate);
+        WDFunc::LEData(this, NameMask, StrMask);
 
         inIP.append(StrIP.split("."));
         inMask.append(StrMask.split("."));
@@ -905,10 +905,10 @@ void ConfDialog84::slot_timeOut()
 
 void ConfDialog84::slot2_timeOut()
 {
-    uint unixtimestamp = 0;
+/*    uint unixtimestamp = 0;
     QDateTime myDateTime;
 
-    /*if (Commands::GetTimeMNK(unixtimestamp) == Error::ER_NOERROR)
+    if (Commands::GetTimeMNK(unixtimestamp) == Error::ER_NOERROR)
     {
       myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
       //myDateTime.setTime_t(unixtimestamp);
@@ -950,7 +950,7 @@ void ConfDialog84::Write_Date()
     QDateTime myDateTime;
     uint *time = new uint;
     QString qStr;
-    WDFunc::LE_read_data(this, "Date", qStr);
+    WDFunc::LEData(this, "Date", qStr);
     myDateTime = QDateTime::fromString(qStr,"dd-MM-yyyy HH:mm:ss");
     myDateTime.setOffsetFromUtc(0);
     *time = myDateTime.toTime_t();

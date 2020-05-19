@@ -28,7 +28,7 @@ void SettingsDialog::SetupUI()
 {
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
-    quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8;
+//    quint32 MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8;
 /*    if (MTypeB == Config::MTB_A1)
     { */
         hlyout = new QHBoxLayout;
@@ -78,6 +78,7 @@ void SettingsDialog::SetupUI()
 void SettingsDialog::Fill()
 {
     QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+    bool tmpb = sets->value("WriteLog", "0").toBool();
     QString DevName = sets->value("PovDevName", "UPTN").toString();
     QString DevSN = sets->value("PovDevSN", "00000001").toString();
     QString DevPrecision = sets->value("PovDevPrecision", "0.05").toString();
@@ -92,6 +93,7 @@ void SettingsDialog::Fill()
     WDFunc::LE_write_data(this, StdFunc::ForDeviceIP(), "miple");
 
     WDFunc::SetSPBData(this, "povnumpoints", PovNumPoints);
+    WDFunc::SetChBData(this, "writelogchb", tmpb);
 }
 
 void SettingsDialog::AcceptSettings()
@@ -118,6 +120,7 @@ void SettingsDialog::AcceptSettings()
     sets->setValue("PovNumPoints", QString::number(PovNumPoints, 10));
     sets->setValue("Organization", StdFunc::OrganizationString());
     sets->setValue("DeviceIP", StdFunc::ForDeviceIP());
+    sets->setValue("WriteLog", (tmpb)?"1":"0");
     this->close();
 }
 

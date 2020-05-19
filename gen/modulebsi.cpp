@@ -121,7 +121,7 @@ int ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
         else // иначе заполнить значениями из модуля
         {
             //iec104::GetFile();
-            if ((res = Commands::GetFile(1, S2Config)) != Error::ER_NOERROR)
+            if ((res = Commands::GetFileWithRestore(1, S2Config)) != Error::ER_NOERROR)
             {
                 QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
                 EMessageBox::error(w, "ошибка", "Ошибка чтения конфигурации из " + tmps + QString::number(res));

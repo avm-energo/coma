@@ -34,9 +34,15 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
     connect(eth,SIGNAL(connected()),this,SLOT(Start()));
     connect(eth,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
     connect(this,SIGNAL(writedatatoeth(QByteArray)),eth,SLOT(InitiateWriteDataToPort(QByteArray)));
+<<<<<<< HEAD
     //connect(eth,SIGNAL(disconnected()), parent, SLOT(DisconnectAndClear()));
     //connect(eth,SIGNAL(ethNoconnection()), parent, SLOT(DisconnectAndClear()));
 
+=======
+    connect(eth,SIGNAL(disconnected()), parent, SLOT(DisconnectAndClear()));
+    connect(eth,SIGNAL(ethNoconnection()), parent, SLOT(DisconnectAndClear()));
+    connect(eth,SIGNAL(error(QAbstractSocket::SocketError)),this,SIGNAL(errorCh104(QAbstractSocket::SocketError)));
+>>>>>>> temporary
 
 
     Parse = new Parse104;
@@ -240,7 +246,11 @@ void iec104::SendTestCon()
 {
     APCI GI;
     ASDU GInter;
+<<<<<<< HEAD
     //quint16 VR = Parse->V_R;
+=======
+//    quint16 VR = Parse->V_R;
+>>>>>>> temporary
 
     GI.start = I104_START;
     GI.APDUlength = 4;
@@ -490,10 +500,17 @@ int Parse104::isIncomeDataValid(QByteArray ba)
         }
         if ((baat2 == I104_STOPDT_CON) && (cmd == I104_STOPDT_ACT)) // если пришло подтверждение стопа и перед этим мы стоп запрашивали
             cmd = I104_STOPDT_CON;
-        if ((baat2 == I104_TESTFR_CON) && (cmd == I104_TESTFR_ACT)) // если пришло подтверждение теста и перед этим мы тест запрашивали
+<<<<<<< HEAD
+        if ((quint8)ba.at(2) == I104_TESTFR_CON) // если пришло подтверждение теста и перед этим мы тест запрашивали
         {
             cmd = I104_TESTFR_CON;
+        }
+        if (ba.at(2) == I104_TESTFR_ACT)
+=======
+        if ((baat2 == I104_TESTFR_CON) && (cmd == I104_TESTFR_ACT)) // если пришло подтверждение теста и перед этим мы тест запрашивали
+            cmd = I104_TESTFR_CON;
         if (baat2 == I104_TESTFR_ACT)
+>>>>>>> temporary
             emit sendAct();
 
         noAnswer = 0;

@@ -11,16 +11,14 @@ RC_ICONS = ../coma.ico
 CONFIG += c++11
 VERSION = 0.0.31
 
-QT       += core gui printsupport network serialbus serialport
+QT       += core gui printsupport network serialbus serialport qml
 
 TARGET = AVM-Service
-#DEFINES += MODULE_A1DEFINES += PROGNAME='\\"AVTUK-S\\"'
 DEFINES += PROGNAME='\\"AVM-Service\\"'
 DEFINES += PROGCAPTION='\\"AVM-Service\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=4 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
-#DEFINES += COMPORTENABLE # enable virtual com port driver
 DEFINES += ETHENABLE # enable eth
 TEMPLATE = app
 
@@ -92,7 +90,6 @@ SOURCES += \
     ../check/checktempmodbusdialog.cpp \
     ../gen/commands.cpp \
     ../gen/eabstractprotocomchannel.cpp \
-    ../gen/eusbcom.cpp \
     ../gen/eusbhid.cpp \
     ../dialogs/time.cpp
 
@@ -166,7 +163,6 @@ HEADERS += \
     ../check/checktempmodbusdialog.h \
     ../gen/commands.h \
     ../gen/eabstractprotocomchannel.h \
-    ../gen/eusbcom.h \
     ../gen/eusbhid.h \
     ../dialogs/time.h
 
@@ -179,7 +175,7 @@ equals(QMAKE_PLATFORM, win32)
         message("x64 build")
        ## Windows x64 (64bit) specific build here
         CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereportd -lliblzma -lhidapi -lqt5xlsxd
     } else {
         message("x86 build")
         ## Windows x86 (32bit) specific build here

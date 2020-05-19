@@ -36,7 +36,6 @@ private:
     QTimer *BdTimer;
     int BdNum;
     bool XlsxWriting;
-    QTime *ElapsedTimeCounter;
     const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
     iec104* ch104;
 

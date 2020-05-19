@@ -78,8 +78,8 @@ int fwupdialog::LoadFW()
     QByteArray ba;
     File_struct PV_file;
     //quint32 crc=0xFFFFFFFF;
-    quint32 i;
-    quint32 tmpi = 0;
+//    quint32 i;
+//    quint32 tmpi = 0;
     //void *Rptr = static_cast<void *>(&PV_file.Type);
     //tmpi = sizeof(PV_file.Type)+sizeof(PV_file.File.FileDatHeader);
     QVector<S2::DataRec> S2DR;
@@ -97,8 +97,7 @@ int fwupdialog::LoadFW()
 
         //PV_file.File_xxx_header.size=sizeof(PV_file.Type) + sizeof(PV_file.File.FileDatHeader) + sizeof(ba) + sizeof(PV_file.void_recHeader);
     }
-
-
+    return Error::ER_NOERROR;
 }
 
 void fwupdialog::RunSoft()
