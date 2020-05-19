@@ -83,14 +83,14 @@ void SettingsDialog::Fill()
     QString DevSN = sets->value("PovDevSN", "00000001").toString();
     QString DevPrecision = sets->value("PovDevPrecision", "0.05").toString();
     quint32 PovNumPoints = sets->value("PovNumPoints", "60").toUInt();
-    WDFunc::SetLEData(this,"orgle", StdFunc::OrganizationString());
-    WDFunc::SetLEData(this,"pathle",StdFunc::GetHomeDir());
-    WDFunc::SetLEData(this,"povdev", DevName);
-    WDFunc::SetLEData(this,"povdevsn", DevSN);
-    WDFunc::SetLEData(this,"povdevprecision", DevPrecision);
+    WDFunc::LE_write_data(this, StdFunc::OrganizationString(), "orgle");
+    WDFunc::LE_write_data(this, StdFunc::GetHomeDir(), "pathle");
+    WDFunc::LE_write_data(this, DevName, "povdev");
+    WDFunc::LE_write_data(this, DevSN, "povdevsn");
+    WDFunc::LE_write_data(this, DevPrecision, "povdevprecision");
 //    QString restring = "^[0-2]{0,1}[0-9]{1,2}{\\.[0-2]{0,1}[0-9]{1,2}}{3}$";
     QString restring = "";
-    WDFunc::SetLEData(this,"miple",StdFunc::ForDeviceIP(),restring);
+    WDFunc::LE_write_data(this, StdFunc::ForDeviceIP(), "miple");
 
     WDFunc::SetSPBData(this, "povnumpoints", PovNumPoints);
     WDFunc::SetChBData(this, "writelogchb", tmpb);

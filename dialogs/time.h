@@ -25,7 +25,7 @@ public:
        int SigAdr;
     }ModBusBSISignal;
 
-    int timeIndex;
+    int timeIndex,checkIndex;
     QLabel *SysTime;
     QLineEdit *SysTime2;
     QTimer *timer;

@@ -22,7 +22,6 @@
 #include "../widgets/etabwidget.h"
 #include "../widgets/emessagebox.h"
 #include "../dialogs/errordialog.h"
-#include "../dialogs/hiddendialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../gen/error.h"
@@ -123,7 +122,35 @@ void MainWindow::Go(const QString &parameter)
 
 }
 
-void MainWindow::ReConnect()
+void MainWindow::ReConnect(int Err)
+{
+    QDialog *dlg = new QDialog;
+    QTimer *reconnectTimer = new QTimer;
+    reconnectTimer->setInterval(5000);
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    QString tmps = QString(PROGCAPTION);
+    QWidget *w = new QWidget;
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
+    hlyout->addWidget(WDFunc::NewLBLT(w, "Связь разорвана.\nПопытка переподключения будет выполнена через 5 секунд", "", "", ""), 1);
+    vlayout->addLayout(hlyout);
+
+    w->setLayout(vlayout);
+    connect(reconnectTimer,SIGNAL(timeout()), dlg,SLOT(close()));
+    connect(reconnectTimer,SIGNAL(timeout()), dlg,SLOT(attemptToRec()));
+
+    //hlyout->addLayout(l2yout,100);
+    lyout->addWidget(w);
+    dlg->setLayout(lyout);
+
+    reconnectTimer->start();
+
+    dlg->exec();
+
+}
+
+void MainWindow::attemptToRec()
 {
 
 }
@@ -1043,19 +1070,20 @@ void MainWindow::Stage2()
                 return;
             }
 #if PROGSIZE >= PROGSIZE_LARGE
-            else if (res == Error::ER_RESEMPTY)
+            else if (res == Error::ER_NOERROR)
+            {
+              if(ModuleBSI::ModuleTypeString != "")
+              EMessageBox::information(this, "Успешно", "Связь с "+ModuleBSI::ModuleTypeString+" установлена");
+            }
+            /*else if (res == Error::ER_RESEMPTY)
             {
                 if (OpenBhbDialog() != Error::ER_NOERROR)
                 {
                     EMessageBox::error(this, "Ошибка", "Ошибка при работе с Hidden block");
                     return;
                 }
-            }
-            else if (res == Error::ER_NOERROR)
-            {
-              if(ModuleBSI::ModuleTypeString != "")
-              EMessageBox::information(this, "Успешно", "Связь с "+ModuleBSI::ModuleTypeString+" установлена");
-            }
+            }*/
+
 #endif
         }
     }
@@ -1145,7 +1173,7 @@ void MainWindow::PasswordCheck(QString psw)
 }
 
 #if PROGSIZE >= PROGSIZE_LARGE
-int MainWindow::OpenBhbDialog()
+/*int MainWindow::OpenBhbDialog()
 {
     if (!Commands::isConnected())
     {
@@ -1179,7 +1207,7 @@ int MainWindow::OpenBhbDialog()
     }
     //emit BsiRefresh();
     return Error::ER_NOERROR;
-}
+}*/
 #endif
 
 #if PROGSIZE >= PROGSIZE_LARGE || PROGSIZE == PROGSIZE_EMUL

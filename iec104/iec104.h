@@ -404,6 +404,7 @@ signals:
     void SetDataCount(int);
     void sendConfMessageOk();
     void sendCorMesOk();
+    void errorCh104(int);
 
 
 private:

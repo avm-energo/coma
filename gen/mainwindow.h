@@ -254,7 +254,8 @@ public slots:
     void ModbusUpdateStatePredAlarmEvents(Coils* Signal);
     void ModBusUpdatePredAlarmEvents(Coils* Signal);
     void SetCancelled();
-    void ReConnect();
+    void ReConnect(int);
+    void attemptToRec();
 
 
 private slots:
@@ -292,7 +293,7 @@ private slots:
 #if PROGSIZE >= PROGSIZE_LARGE
     void UpdateMainTE(QByteArray ba);
     void SetTEEnabled(bool enabled);
-    int OpenBhbDialog();
+    //int OpenBhbDialog();
     void MouseMove();
 
 #endif
