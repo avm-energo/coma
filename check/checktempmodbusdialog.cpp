@@ -288,7 +288,7 @@ QWidget *checktempmodbusdialog::CustomTab(void)
     return w;
 }
 
-void checktempmodbusdialog::UpdateModBusData(ModBusSignal *Signal, int * size)
+void checktempmodbusdialog::UpdateModBusData1(ModBusSignal *Signal, int * size)
 {
 
     //ModBusSignal sig = *new ModBusSignal;

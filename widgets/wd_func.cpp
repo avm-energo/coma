@@ -29,7 +29,7 @@ PasswordLineEdit *WDFunc::NewPswLE(QWidget *w, const QString &lename, QLineEdit:
     return le;
 }
 
-bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring)
+/*bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);
     if (le == nullptr)
@@ -43,7 +43,7 @@ bool WDFunc::SetLEData(QWidget *w, const QString &lename, const QString &levalue
         le->setValidator(val);
     }
     return true;
-}
+}*/
 
 bool WDFunc::SetLEColor(QWidget *w, const QString &lename, const QColor &color)
 {
@@ -442,7 +442,7 @@ QString WDFunc::StringValueWithCheck(float value, int precision)
 {
     QString tmps;
     QLocale german(QLocale::German);
-    if (value == FLT_MAX)
+    if (value >= FLT_MAX)
         tmps = "***";
     else
         tmps = german.toString(value, 'f', precision);
@@ -452,7 +452,7 @@ QString WDFunc::StringValueWithCheck(float value, int precision)
 QVariant WDFunc::FloatValueWithCheck(float value)
 {
     QVariant tmps;
-    if (value == FLT_MAX)
+    if (value >= FLT_MAX)
         tmps = "***";
     else
         tmps = value;
@@ -501,32 +501,22 @@ QPushButton *WDFunc::NewPB(QWidget *parent, const QString &pbname, const QString
     return pb;
 }
 
-ETableView *WDFunc::NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model)
+bool WDFunc::LE_read_data(QWidget *w, const QString &lename, QString &levalue)
 {
-    ETableView *tv = new ETableView(w);
-    tv->setObjectName(tvname);
-    tv->horizontalHeader()->setVisible(true);
-    tv->verticalHeader()->setVisible(false);
-    if (model != nullptr)
-        tv->setModel(model);
-    tv->setSelectionMode(QAbstractItemView::NoSelection);
-    return tv;
+    QLineEdit *le = w->findChild<QLineEdit *>(lename);
+    if (le == nullptr)
+        return false;
+    levalue = le->text();
+    return true;
 }
 
-void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model)
+bool WDFunc::LE_write_data(QWidget *w, const QString &levalue, const QString &lename)
 {
-    ETableView *tv = w->findChild<ETableView *>(tvname);
-    if (tv == nullptr)
-        return;
-    QItemSelectionModel *m = tv->selectionModel();
-    tv->setModel(model);
-    delete m;
-}
-
-ETableModel *WDFunc::TVModel(QWidget *w, const QString &tvname)
-{
-    ETableView *tv = w->findChild<ETableView *>(tvname);
-    if (tv == nullptr)
-        return nullptr;
-    return reinterpret_cast<ETableModel *>(tv->model());
+    QLineEdit *le = w->findChild<QLineEdit *>(lename);
+    if (le == nullptr)
+        return false;
+    le->text() = levalue;
+    le->setText(levalue);
+    //SetTEData(w, lename, levalue);
+    return true;
 }

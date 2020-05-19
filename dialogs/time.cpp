@@ -30,6 +30,7 @@ MNKTime::MNKTime(QWidget *parent) :
     FinishThread = true;
     closeThr = false;
     haveFinished = false;
+    first = false;
     myDateTime.setTime_t(unixtimestamp);
     //setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
@@ -43,7 +44,7 @@ MNKTime::~MNKTime()
 
 void MNKTime::SetupUI()
 {
-    QString phase[3] = {"Фаза A:","Фаза B:","Фаза C:"};
+    //QString phase[3] = {"Фаза A:","Фаза B:","Фаза C:"};
     //QString S;
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
@@ -79,6 +80,14 @@ void MNKTime::SetupUI()
     timer->start(1000);
 
     QString Text = "dd-MM-yyyy HH:mm:ss";
+
+    glyout->addWidget(WDFunc::NewLBL(this, "Часовой пояс:"), row,1,1,1);
+    QStringList cbl = QStringList() << "Местное время" << "Время по Гринвичу";
+    EComboBox *cb = WDFunc::NewCB(this, "TimeZone", cbl, paramcolor);
+    //cb->setMinimumWidth(80);
+    cb->setMinimumHeight(20);
+    glyout->addWidget(cb,row,2,1,4);
+    row++;
 
     QDateTime current = QDateTime::currentDateTime();
     glyout->addWidget(WDFunc::NewLBL(this, "Дата и время ПК:"), row,1,1,1, Qt::AlignTop);
@@ -137,9 +146,11 @@ void MNKTime::SetupUI()
     glyout->addWidget(Button, row,1,1,6, Qt::AlignTop);
     connect(Button, SIGNAL(clicked()), this, SLOT(Write_Date()));
 
-    //SysTime2->setText(QTime::currentTime().toString("hh:mm:ss"));
-    // glyout->addWidget(SysTime2, row,2,1,4, Qt::AlignTop);
-
+    for(int i=0; i<6; i++)
+    {
+        glyout->addWidget(WDFunc::NewLBL(this, ""), row,0,1,1);
+        row++;
+    }
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
@@ -162,7 +173,12 @@ void MNKTime::SetupUI()
 void MNKTime::slot_timeOut()
 {
    // WDFunc::LBLText(this, "adrMB", currentTime().toString("hh:mm:ss"));
+    int cbidx = WDFunc::CBIndex(this, "TimeZone");
+    if(cbidx == 0)
+    SysTime->setText(QDateTime::currentDateTime().toString("dd-MM-yyyy HH:mm:ss"));
+    else
     SysTime->setText(QDateTime::currentDateTimeUtc().toString("dd-MM-yyyy HH:mm:ss"));
+
     //SysTime->update();
 }
 
@@ -170,34 +186,56 @@ void MNKTime::slot2_timeOut()
 {
     uint unixtimestamp = 0;
     QDateTime myDateTime;
+    //QWaitCondition * cond = new QWaitCondition;
+    //QMutex *mutex = new QMutex;
 
-    while (1)
-    {
-        if(!FinishThread)
-        {
-            #if PROGSIZE != PROGSIZE_EMUL
-            if (Commands::GetTimeMNK(unixtimestamp) == Error::ER_NOERROR)
+    //while (1)
+    //{
+     //   if(!FinishThread)
+     //   {
+            if(MainWindow::MainInterface == "USB")
             {
-              myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
-              //myDateTime.setTime_t(unixtimestamp);
-              if(SysTime2 != nullptr)
-              SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
-              //WDFunc::SetTEData(this, "Date", SysTime2->text());
+                #if PROGSIZE != PROGSIZE_EMUL
+                if (Commands::GetTimeMNK(unixtimestamp) == Error::ER_NOERROR)
+                {
+                    int cbidx = WDFunc::CBIndex(this, "TimeZone");
+                    if(cbidx == 0)
+                    myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::LocalTime);
+                    else
+                    myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
+                  //myDateTime.setTime_t(unixtimestamp);
+                  if(SysTime2 != nullptr)
+                  SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
+                  //WDFunc::SetTEData(this, "Date", SysTime2->text());
+                }
+               // QThread::msleep(1000);
+
+                #endif
             }
-            QThread::msleep(1000);
+            else if(MainWindow::MainInterface == "Ethernet")
+            {
+               emit ethTimeRequest();
+            }
+            else if(MainWindow::MainInterface == "RS485")
+            {
+               emit modBusTimeRequest();
+            }
 
-            #endif
+     /*       if(closeThr) //&& (!haveFinished))
+            {
+             //haveFinished = true;
+             emit finished();
+             break;
+            }
+            //cond->wakeAll();
+            QThread::msleep(10);
+            qApp->processEvents();
+            //qApp->quit();
         }
 
-        if(closeThr) //&& (!haveFinished))
-        {
-         //haveFinished = true;
-         emit finished();
-         break;
-        }
-        QThread::msleep(10);
-        qApp->processEvents();
-    }
+
+        //break;
+    }*/
 
 
 
@@ -205,20 +243,32 @@ void MNKTime::slot2_timeOut()
 
 void MNKTime::Start_Timer(int index)
 {
+    int cbidx;
     if(index == timeIndex)
-    {     
-        if (Commands::GetTimeMNK(unixtimestamp) == Error::ER_NOERROR)
+    {
+        if(MainWindow::MainInterface == "USB")
         {
-          QString qStr;
-          myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
-          //myDateTime.setTime_t(unixtimestamp);
-          if(SysTime2 != nullptr)
-          SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
-          qStr = SysTime2->text();
-          WDFunc::SetLEData(this, qStr, "Date");
+            if (Commands::GetTimeMNK(unixtimestamp) == Error::ER_NOERROR)
+            {
+              QString qStr;
+              cbidx = WDFunc::CBIndex(this, "TimeZone");
+              if(cbidx == 0)
+              myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::LocalTime);
+              else
+              myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
+              //myDateTime.setTime_t(unixtimestamp);
+              if(SysTime2 != nullptr)
+              SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
+              qStr = SysTime2->text();
+          WDFunc::LE_write_data(this, qStr, "Date");
+            }
+        }
+        else
+        {
+            first = 0;
         }
 
-        FinishThread = false;
+       // FinishThread = false;
     }
 
 }
@@ -241,38 +291,59 @@ void MNKTime::Write_PCDate()
     time = myDateTime.toTime_t();
 
 
-    #if PROGSIZE != PROGSIZE_EMUL
-    FinishThread = true;
-    TimeFunc::Wait(100);
-    if (Commands::WriteTimeMNK(&time, sizeof(uint)) == Error::ER_NOERROR)
-    EMessageBox::information(this, "INFO", "Записано успешно");
-    else
-    EMessageBox::information(this, "INFO", "Ошибка");
-    FinishThread = false;
-    #endif
+    if(MainWindow::MainInterface == "USB")
+    {
+        #if PROGSIZE != PROGSIZE_EMUL
+        //FinishThread = true;
+        TimeFunc::Wait(100);
+        if (Commands::WriteTimeMNK(&time, sizeof(uint)) == Error::ER_NOERROR)
+        EMessageBox::information(this, "INFO", "Записано успешно");
+        else
+        EMessageBox::information(this, "INFO", "Ошибка");
+        //FinishThread = false;
+        #endif
+    }
+    else if(MainWindow::MainInterface == "Ethernet")
+    {
+      emit ethWriteTimeToModule(&time);
+    }
+    else if(MainWindow::MainInterface == "RS485")
+    {
+      emit modbusWriteTimeToModule(&time);
+    }
+
 
 }
 
 void MNKTime::Write_Date()
 {
     QDateTime myDateTime;
-    uint *time = new uint;
+    uint *time = new uint[1];
     QString qStr;
-    WDFunc::LEData(this, "Date", qStr);
+    WDFunc::LE_read_data(this, "Date", qStr);
     myDateTime = QDateTime::fromString(qStr,"dd-MM-yyyy HH:mm:ss");
     myDateTime.setOffsetFromUtc(0);
     *time = myDateTime.toTime_t();
 
 
-    #if PROGSIZE != PROGSIZE_EMUL
-    FinishThread = true;
-    TimeFunc::Wait(100);
-    if (Commands::WriteTimeMNK(time, sizeof(uint)) == Error::ER_NOERROR)
-    EMessageBox::information(this, "INFO", "Записано успешно");
-    else
-    EMessageBox::information(this, "INFO", "Ошибка");
-    FinishThread = false;
-    #endif
+    if(MainWindow::MainInterface == "USB")
+    {
+        #if PROGSIZE != PROGSIZE_EMUL
+        TimeFunc::Wait(100);
+        if (Commands::WriteTimeMNK(time, sizeof(uint)) == Error::ER_NOERROR)
+        EMessageBox::information(this, "INFO", "Записано успешно");
+        else
+        EMessageBox::information(this, "INFO", "Ошибка");
+        #endif
+    }
+    else if(MainWindow::MainInterface == "Ethernet")
+    {
+      emit ethWriteTimeToModule(time);
+    }
+    else if(MainWindow::MainInterface == "RS485")
+    {
+      emit modbusWriteTimeToModule(time);
+    }
 
 }
 
@@ -280,4 +351,69 @@ void MNKTime::StopSlot()
 {
     FinishThread = true;
     closeThr = true;
+}
+
+void MNKTime::FillTimeFrom104(Parse104::BS104Signals* Time)
+{
+    uint unixtimestamp = 0;
+    QString qStr;
+    QDateTime myDateTime;
+    int startadr = 0;
+    memcpy(&startadr, &(Time->BS.SigAdr[0]), sizeof(Time->BS.SigAdr));
+
+    if(startadr == 4600)
+    {
+       memcpy((quint32*)(&unixtimestamp), ((quint32*)(&Time->BS.SigVal)), sizeof(Time->BS.SigVal));
+       int cbidx = WDFunc::CBIndex(this, "TimeZone");
+
+       if(cbidx == 0)
+       myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::LocalTime);
+       else
+       myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
+
+       if(SysTime2 != nullptr)
+       SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
+
+       if(first == 0)
+       {
+         qStr = SysTime2->text();
+         WDFunc::LE_write_data(this, qStr, "Date");
+         first = 1;
+       }
+    }
+}
+
+void MNKTime::FillTimeFromModBus(ModBusBSISignal* Time)
+{
+    uint unixtimestamp = 0;
+    QString qStr;
+    QDateTime myDateTime;
+
+    if(Time->SigAdr == 4600)
+    {
+       memcpy((quint32*)(&unixtimestamp), ((quint32*)(&Time->Val)), sizeof(Time->Val));
+       int cbidx = WDFunc::CBIndex(this, "TimeZone");
+
+       if(cbidx == 0)
+       myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::LocalTime);
+       else
+       myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
+
+       if(SysTime2 != nullptr)
+       SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
+
+       if(first == 0)
+       {
+         qStr = SysTime2->text();
+         WDFunc::LE_write_data(this, qStr, "Date");
+         first = 1;
+       }
+       ModBus::Reading = false;
+    }
+}
+
+void MNKTime::ErrorRead()
+{
+    if(SysTime2 != nullptr)
+    SysTime2->setText("Ошибка чтения");
 }

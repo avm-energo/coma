@@ -48,6 +48,7 @@ void JournalDialog::SetupUI()
 
     QTabWidget *system = new QTabWidget;
     system->tabBar()->setStyleSheet(ConfTWss);
+
     hlyout = new QHBoxLayout;
     vlyout = new QVBoxLayout;
     hlyout->addWidget(WDFunc::NewPB(this, "gj." + QString::number(JOURSYS), "Получить системный журнал", this, SLOT(GetJour())));
@@ -197,7 +198,7 @@ void JournalDialog::SaveJour()
     }
     xlsx->save();
     EMessageBox::information(this, "Внимание", "Файл создан успешно");
-}
+                }
 
 void JournalDialog::FillSysJour(QByteArray ba)
 {

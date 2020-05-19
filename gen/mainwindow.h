@@ -43,41 +43,11 @@ public:
         COMA_AUTON_MODE // просто автономный режим
     };
 
-    int disconnected;
-    int Mode; // режим запуска программы
-    bool SWHide;
-    QRect SWGeometry;
-    QVector<S2::DataRec> S2Config;
-    QVector<S2::DataRec> S2ConfigForTune;
-    ConfDialog *MainConfDialog;
-    ConfDialog *MainTuneDialog;
-    AbstractConfDialog *ConfB, *ConfM;
-    EAbstractCheckDialog *CheckB, *CheckM;
-    iec104* ch104;
-    iec104* SaveCh104;
-    ModBus* modBus;
-    checktempmodbusdialog *CheckModBus;
-    //CheckDialog84* Ch84;
-    QString IPtemp, FullName, SaveDevice, instr;
-    QStringList sl, USBsl, slfinal, insl;
+
     static QString MainInterface;
     static quint32 MTypeB;
     static quint32 MTypeM;
     static int TheEnd, StopRead;
-    quint8 HaveAlreadyRed = 0;
-    JournalDialog *JourD;
-    fwupdialog *FwUpD;
-    quint16 AdrBaseStation;
-    ModBus::ModBus_Settings Settings;
-    //MNKTime *Time;
-    //QThread *thr;
-    quint32 Mes;
-    bool TimeThrFinished, ModBusThrFinished;
-    QTimer* BdaTimer, *ReceiveTimer;
-    QThread *Modthr;
-    quint8 PredAlarmEvents[20];
-    quint8 AlarmEvents[20];
-    int fileSize, curfileSize;
 
 
     struct DeviceConnectStruct
@@ -86,6 +56,29 @@ public:
         unsigned short product_id;
         wchar_t serial[20];
     };
+
+    typedef struct
+    {
+        quint32 SigVal;
+        quint8 SigQuality;
+        //quint64 CP56Time;
+    }BS104;
+
+    struct Bd11
+    {
+        quint32 dev;
+        quint32 predAlarm;
+        quint32 alarm;
+    };
+
+    Bd11 Bd_block11;
+
+    struct Coils
+    {
+        int countBytes;
+        quint8 Bytes[20];
+    };
+
 
     /*struct ModBus_Settings
     {
@@ -96,7 +89,21 @@ public:
     };
 
     ModBus_Settings Settings;*/
-
+    AbstractConfDialog *ConfB, *ConfM;
+    EAbstractCheckDialog *CheckB, *CheckM;
+    iec104* ch104;
+    iec104* SaveCh104;
+    ModBus* modBus;
+    MNKTime *Time;
+    JournalDialog *JourD;
+    fwupdialog *FwUpD;
+    QString IPtemp, FullName, SaveDevice, instr;
+    QStringList sl, USBsl, slfinal, insl;
+    QThread *Modthr;// *thrTime;
+    quint16 AdrBaseStation;
+    ModBus::ModBus_Settings Settings;
+    QTimer* BdaTimer, *TimeTimer;
+    QVector<S2::DataRec> S2Config;
 
     int CheckPassword();
 
@@ -164,6 +171,10 @@ public:
     QWidget *HthWidget();
     QWidget *ReleWidget();
     QWidget *Least();
+    QWidget *Wpred;
+    QWidget *Walarm;
+    bool cancel;
+        bool reconnect;
 
 #if PROGSIZE >= PROGSIZE_LARGE
     void SetSlideWidget();
@@ -187,6 +198,27 @@ signals:
 private:
     bool Ok;
     bool TEEnabled; // признак того, ведётся ли лог в правом выезжающем окне
+    int disconnected;
+    int Mode; // режим запуска программы
+    bool SWHide;
+    QRect SWGeometry;
+    QVector<S2::DataRec> S2ConfigForTune;
+    ConfDialog *MainConfDialog;
+    ConfDialog *MainTuneDialog;
+
+    //checktempmodbusdialog *CheckModBus;
+    //CheckDialog84* Ch84;
+    quint8 HaveAlreadyRed = 0;
+    //MNKTime *Time;
+    //QThread *thr;
+    quint32 Mes;
+    bool TimeThrFinished, ModBusThrFinished;
+    QTimer *ReceiveTimer;
+    quint8 PredAlarmEvents[20];
+    quint8 AlarmEvents[20];
+    int fileSize, curfileSize;
+    QTimer *reconnectTimer;
+
 #ifdef ETHENABLE
     DeviceConnectStruct DevInfo;
 #endif
@@ -206,16 +238,26 @@ public slots:
     void DisconnectAndClear();
     void FinishHim();
     void UpdateReleWidget(Parse104::SponSignals104*);
-    void UpdatePredAlarmEvents(Parse104::SponSignals104*);
+    void UpdatePredAlarmEvents(Parse104::SponSignalsWithTime *);
     void UpdateStatePredAlarmEvents(Parse104::SponSignals104*);
+    void UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime*);
     void CheckTimeFinish();
     void CheckModBusFinish();
     void Stop_BdaTimer(int index);
     void Start_BdaTimer(int index);
+    void Stop_TimeTimer(int index);
+    void Start_TimeTimer(int index);
     void DeviceState();
     void PredAlarmState();
     void AlarmState();
     void FileTimeOut();
+    void GetUSBAlarmTimerTimeout();
+    void GetUSBAlarmInDialog();
+    void ModbusUpdateStatePredAlarmEvents(Coils* Signal);
+    void ModBusUpdatePredAlarmEvents(Coils* Signal);
+    void SetCancelled();
+    void ReConnect(int);
+    void attemptToRec();
 
 
 private slots:
@@ -253,7 +295,7 @@ private slots:
 #if PROGSIZE >= PROGSIZE_LARGE
     void UpdateMainTE(QByteArray ba);
     void SetTEEnabled(bool enabled);
-    int OpenBhbDialog();
+    //int OpenBhbDialog();
     void MouseMove();
 
 #endif

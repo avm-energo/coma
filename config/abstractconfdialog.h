@@ -18,7 +18,6 @@ public:
 
     QStringList CheckConfErrors;
     bool IsNeededDefConf = false;
-    bool ok;
     int confIndex, timeIndex, checkIndex, TheEnd;
 
     QWidget *ConfButtons();
@@ -38,7 +37,7 @@ public slots:
      void WriteConfMessageOk();
 
 private:
-
+    bool ok;
     virtual void SetupUI() = 0;
     bool PrepareConfToWrite();
 

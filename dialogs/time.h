@@ -6,6 +6,8 @@
 #include <QLabel>
 #include <QTime>
 #include <QLineEdit>
+#include "../iec104/iec104.h"
+#include "../modBus/modBus.h"
 
 #include "../widgets/etablemodel.h"
 
@@ -17,7 +19,13 @@ public:
     explicit MNKTime(QWidget *parent = nullptr);
     ~MNKTime();
 
-    int timeIndex;
+    typedef struct
+    {
+       quint32 Val;
+       int SigAdr;
+    }ModBusBSISignal;
+
+    int timeIndex,checkIndex;
     QLabel *SysTime;
     QLineEdit *SysTime2;
     QTimer *timer;
@@ -26,6 +34,7 @@ public:
     bool FinishThread, closeThr, haveFinished;
     uint32_t unixtimestamp = 1423062000;
     QDateTime myDateTime;
+    bool first;
 
 private:
 
@@ -34,6 +43,10 @@ private:
 
 signals:
     void finished();
+    void ethTimeRequest();
+    void modBusTimeRequest();
+    void ethWriteTimeToModule(uint*);
+    void modbusWriteTimeToModule(uint*);
 
 
 public slots:
@@ -47,6 +60,9 @@ private slots:
     void Write_PCDate();
     void Write_Date();
     void StopSlot();
+    void FillTimeFrom104(Parse104::BS104Signals*);
+    void FillTimeFromModBus(ModBusBSISignal*);
+    void ErrorRead();
 //#if PROGSIZE != PROGSIZE_EMUL
 
 //#endif

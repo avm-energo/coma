@@ -21,7 +21,7 @@ void KeyPressDialog::SetupUI()
 
 void KeyPressDialog::SetPhrase(const QString &Phrase)
 {
-    WDFunc::SetLEData(this, "pswlbl", Phrase);
+    WDFunc::LE_write_data(this, Phrase, "pswlbl");
 }
 
 void KeyPressDialog::keyPressEvent(QKeyEvent *e)
@@ -31,7 +31,7 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
         return;
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
     {
-        if (WDFunc::LEData(this, "pswle", str))
+        if (WDFunc::LE_read_data(this, "pswle", str))
             emit Finished(str);
         this->close();
     }
@@ -47,7 +47,7 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
 void KeyPressDialog::closeEvent(QCloseEvent *e)
 {
     QString str;
-    if (WDFunc::LEData(this, "pswle", str))
+    if (WDFunc::LE_read_data(this, "pswle", str))
         emit Finished(str);
     else
         emit Finished(QString());

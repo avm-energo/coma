@@ -34,8 +34,9 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
     connect(eth,SIGNAL(connected()),this,SLOT(Start()));
     connect(eth,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
     connect(this,SIGNAL(writedatatoeth(QByteArray)),eth,SLOT(InitiateWriteDataToPort(QByteArray)));
-    connect(eth,SIGNAL(disconnected()), parent, SLOT(DisconnectAndClear()));
-    connect(eth,SIGNAL(ethNoconnection()), parent, SLOT(DisconnectAndClear()));
+    //connect(eth,SIGNAL(disconnected()), parent, SLOT(DisconnectAndClear()));
+    //connect(eth,SIGNAL(ethNoconnection()), parent, SLOT(DisconnectAndClear()));
+
 
 
     Parse = new Parse104;
@@ -43,6 +44,12 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
     Parse->timer104->setInterval(15000);
     Parse->Interogatetimer = new QTimer;
     Parse->Interogatetimer->setInterval(15000);
+
+    Parse->noAnswer = 0;
+    Parse->conTimer = new QTimer;
+    Parse->conTimer->setInterval(5000);
+    connect(Parse->conTimer,SIGNAL(timeout()),this,SLOT(SendTestAct()));
+
     QThread *thr2 = new QThread;
     thr2->setPriority(QThread::HighestPriority);
     Parse->moveToThread(thr2);
@@ -58,11 +65,13 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
             this,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),Qt::BlockingQueuedConnection);
     connect(Parse,SIGNAL(sponsignalsreceived(Parse104::SponSignals104*)),\
             this,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),Qt::BlockingQueuedConnection);
+    connect(Parse,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),\
+            this,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),Qt::BlockingQueuedConnection);
     connect(Parse,SIGNAL(UpdateReleWidget(Parse104::SponSignals104*)),\
             this,SIGNAL(relesignalsready(Parse104::SponSignals104*)),Qt::BlockingQueuedConnection);
     connect(Parse,SIGNAL(sendS()),this,SLOT(SendS()));
     connect(Parse,SIGNAL(GeneralInter()),this,SLOT(SendI()));
-    connect(Parse,SIGNAL(sendAct()),this,SLOT(SendTestAct()));
+    connect(Parse,SIGNAL(sendAct()),this,SLOT(SendTestCon()));
     connect(Parse,SIGNAL(parsestarted()),this,SLOT(StartParse()));
     connect(Parse,SIGNAL(CallFile(unsigned char)),this,SLOT(CallFile(unsigned char)));
     connect(Parse,SIGNAL(CallSection(unsigned char)),this,SLOT(GetSection(unsigned char)));
@@ -92,6 +101,7 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
 
     thr->start();
     thr2->start();
+    Parse->conTimer->start();
 }
 
 iec104::~iec104()
@@ -230,11 +240,11 @@ void iec104::CorReadRequest()
     Parse->Interogatetimer->start();
 }
 
-void iec104::SendTestAct()
+void iec104::SendTestCon()
 {
     APCI GI;
     ASDU GInter;
-//    quint16 VR = Parse->V_R;
+    //quint16 VR = Parse->V_R;
 
     GI.start = I104_START;
     GI.APDUlength = 4;
@@ -243,6 +253,38 @@ void iec104::SendTestAct()
     GI.contrfield[2] = 0;
     GI.contrfield[3] = 0;
     Parse->cmd = I104_TESTFR_CON;
+    Send(0,GI); // ASDU = QByteArray()
+
+    //while(stopincrementing)
+    //QThread::usleep(10);
+
+    //Parse->V_S++;
+
+}
+
+void iec104::SendTestAct()
+{
+    APCI GI;
+    //ASDU GInter;
+    //quint16 VR = Parse->V_R;
+
+    if(Parse->noAnswer)
+    {
+       Parse->conTimer->stop();
+       Parse->conTimer->deleteLater();
+       emit errorCh104(1);
+       return;
+    }
+    else
+    Parse->noAnswer = 1;
+
+    GI.start = I104_START;
+    GI.APDUlength = 4;
+    GI.contrfield[0] = I104_TESTFR_ACT;
+    GI.contrfield[1] = 0;
+    GI.contrfield[2] = 0;
+    GI.contrfield[3] = 0;
+    Parse->cmd = I104_TESTFR_ACT;
     Send(0,GI); // ASDU = QByteArray()
 
     //while(stopincrementing)
@@ -420,8 +462,9 @@ int Parse104::isIncomeDataValid(QByteArray ba)
         V_Srcv >>= 1;
         if (V_Srcv != V_S)
         {
+            V_S = V_Srcv;           // временно, нужно исправить проблему несовпадения s посылок
             emit error(M104_NUMER);
-            return I104_RCVWRONG;
+            //return I104_RCVWRONG;  // временно, нужно исправить проблему несовпадения s посылок
         }
         return I104_RCVNORM;
         break;
@@ -432,8 +475,9 @@ int Parse104::isIncomeDataValid(QByteArray ba)
         V_Srcv >>= 1;
         if (V_Srcv != V_S)
         {
+            V_S = V_Srcv;
             emit error(M104_NUMER);
-            return I104_RCVWRONG;
+            //return I104_RCVWRONG;
         }
 //        V_R++;
         return I104_RCVNORM;
@@ -451,9 +495,13 @@ int Parse104::isIncomeDataValid(QByteArray ba)
         if ((baat2 == I104_STOPDT_CON) && (cmd == I104_STOPDT_ACT)) // если пришло подтверждение стопа и перед этим мы стоп запрашивали
             cmd = I104_STOPDT_CON;
         if ((baat2 == I104_TESTFR_CON) && (cmd == I104_TESTFR_ACT)) // если пришло подтверждение теста и перед этим мы тест запрашивали
+        {
             cmd = I104_TESTFR_CON;
         if (baat2 == I104_TESTFR_ACT)
             emit sendAct();
+
+        noAnswer = 0;
+
         return I104_RCVNORM;
         break;
     }
@@ -478,9 +526,10 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
     quint32 ObjectAdr = 0;
     quint32 index = 6;
     int FileSize;
-    int res,i,cntfl = 0,cntflTimestamp = 0,cntspon = 0,cntbs = 0;
+    int res,i,cntfl = 0,cntflTimestamp = 0,cntspon = 0,cntbs = 0, cntsponTime = 0;
     Parse104::FlSignals104* flSignals = new Parse104::FlSignals104[DUI.qualifier.Number];
     Parse104::SponSignals104* sponSignals = new Parse104::SponSignals104[DUI.qualifier.Number];
+    Parse104::SponSignalsWithTime* SponSignalsWithTime = new Parse104::SponSignalsWithTime[DUI.qualifier.Number];
     Parse104::BS104Signals* BS104Signals = new Parse104::BS104Signals[DUI.qualifier.Number];
     unsigned char num = ba[9];
 
@@ -552,11 +601,11 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
         case M_SP_NA_1:
         {
 
-           (sponSignals+cntspon)->Spon.SigAdr=ObjectAdr;
+           (sponSignals)->Spon[cntspon].SigAdr=ObjectAdr;
            quint8 value;
            memcpy(&value,&ba[index],1);
            index += 1;
-           (sponSignals+cntspon)->Spon.SigVal=value;
+           (sponSignals)->Spon[cntspon].SigVal=value;
            /*quint64 time;
            memcpy(&time,&ba[index],8);
            index += 8;
@@ -569,6 +618,27 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
 
            break;
         }
+
+        case M_SP_TB_1:
+        {
+
+            (SponSignalsWithTime)->Spon[cntsponTime].SigAdr=ObjectAdr;
+            quint8 value;
+            memcpy(&value,&ba[index],1);
+            index += 1;
+            (SponSignalsWithTime)->Spon[cntsponTime].SigVal=value;
+            quint64 time;
+            memcpy(&time,&ba[index],7);
+            index += 7;
+            (SponSignalsWithTime)->Spon[cntsponTime].CP56Time=time;
+
+            if(ObjectAdr>=950 && ObjectAdr<953)
+            emit UpdateReleWidget(sponSignals+cntsponTime);
+
+             cntsponTime++;
+
+             break;
+         }
 
         case M_BO_NA_1:
         {
@@ -795,6 +865,12 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
         emit sponsignalsreceived(sponSignals);
     }
 
+    if(cntsponTime != 0)
+    {
+        SponSignalsWithTime->SigNumber = cntsponTime;
+        emit sponsignalWithTimereceived(SponSignalsWithTime);
+    }
+
     if(cntbs != 0)
     {
         BS104Signals->SigNumber = cntbs;
@@ -804,7 +880,12 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
 
 void Parse104::Stop()
 {
+    if(conTimer != nullptr)
+    {
+       conTimer->stop();
+    }
     ThreadMustBeFinished = true;
+    if(timer104 != nullptr)
     timer104->stop();
 }
 
@@ -1426,7 +1507,7 @@ void iec104::Com45(quint32 *com)
     //Parse->V_S++;
 }
 
-void iec104::Com50(quint16* adr, float *param)
+void iec104::Com50(quint32* adr, float *param)
 {
     APCI GI;
     ASDU Cmd;
@@ -1473,4 +1554,81 @@ void iec104::Com50(quint16* adr, float *param)
     //SecNum++;
 
     //Parse->V_S++;
+}
+
+void iec104::InterrogateTimeGr15()
+{
+    APCI GI;
+    ASDU GTime;
+    quint16 VR = Parse->V_R;
+
+    GTime[0] = static_cast<char>(C_IC_NA_1);
+    GTime[1] = static_cast<char>(1);
+    GTime[2] = static_cast<char>(6);
+    GTime[3] = static_cast<char>(0);
+    GTime[4] = static_cast<char>(BaseAdr);
+    GTime[5] = static_cast<char>(BaseAdr>>8);
+    GTime[6] = static_cast<char>(0);
+    GTime[7] = static_cast<char>(0);
+    GTime[8] = static_cast<char>(0);
+    GTime[9] = static_cast<char>(35);
+
+    GI.start = I104_START;
+    GI.APDUlength = 14;
+    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
+    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
+    GI.contrfield[2] = (VR & 0x007F) << 1;
+    GI.contrfield[3] = (VR & 0x7F80) >> 7;
+    Parse->cmd = I104_S;
+    Send(1, GI, GTime); // ASDU = QByteArray()
+
+    Parse->AckVR = Parse->V_R;
+
+    //while(stopincrementing)
+    //QThread::usleep(10);
+
+   // Parse->V_S++;
+
+    Parse->Interogatetimer->start();
+
+}
+
+void iec104::com51WriteTime(uint* Time)
+{
+    APCI GI;
+    ASDU Cmd;
+    QByteArray *ba = new QByteArray;
+    quint32 adr = 4601;
+    ba->resize(4);
+    //char *ptr = static_cast<char*>(Cmd.data());
+    quint16 VR = Parse->V_R;
+
+    memcpy(&ba->data()[0], (quint8*)Time, sizeof(uint));
+    //ba->toHex();
+
+    Cmd[0] = C_BO_NA_1;
+    Cmd[1] = static_cast<char>(1);
+    Cmd[2] = static_cast<char>(6);
+    Cmd[3] = 0;
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
+    Cmd[6] = static_cast<char>(adr);
+    Cmd[7] = static_cast<char>(adr>>8);
+    Cmd[8] = static_cast<char>(adr>>16);
+    //Cmd[9] = static_cast<char>(1);
+    Cmd[9] = static_cast<char>(ba->data()[0]);
+    Cmd[10] = static_cast<char>(ba->data()[1]);
+    Cmd[11] = static_cast<char>(ba->data()[2]);
+    Cmd[12] = static_cast<char>(ba->data()[3]);
+    //Cmd[13] = 0;
+
+    GI.start = I104_START;
+    GI.APDUlength = 17;
+    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
+    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
+    GI.contrfield[2] = (VR & 0x007F) << 1;
+    GI.contrfield[3] = (VR & 0x7F80) >> 7;
+    Parse->cmd = I104_S;
+    Send(1, GI, Cmd); // ASDU = QByteArray()
+
 }

@@ -14,6 +14,8 @@
 #include "etableview.h"
 #include "etablemodel.h"
 
+#define MAXFLOAT    3.40282347E+38F
+
 class WDFunc
 {
 public:
@@ -34,7 +36,7 @@ public:
                             const QString &lestyle="");
     static PasswordLineEdit *NewPswLE(QWidget *w, const QString &lename, QLineEdit::EchoMode echostyle=QLineEdit::Normal, \
                                const QString &lestyle="");
-    static bool SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring="");
+    /*static bool SetLEData(QWidget *w, const QString &lename, const QString &levalue, const QString &restring="");
     template <typename T> static bool LEData(QWidget *w, const QString &lename, T &levalue)
     {
         QLineEdit *le = w->findChild<QLineEdit *>(lename);
@@ -46,7 +48,7 @@ public:
             return false;
         levalue = tmpv.value<T>();
         return true;
-    }
+    }*/
     template <typename T> static bool LENumber(QWidget *w, const QString &lename, T &levalue)
     {
         QLineEdit *le = w->findChild<QLineEdit *>(lename);
@@ -106,11 +108,10 @@ public:
     static QString StringValueWithCheck(float value, int precision = 5);
     static QVariant FloatValueWithCheck(float value);
     static QImage *TwoImages(const QString &first, const QString &second);
-    static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, \
-                      const QObject *receiver, const char *method, const QString &icon="", const QString &pbtooltip="");
-    static void SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model);
-    static ETableView *NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model);
-    static ETableModel *TVModel(QWidget *w, const QString &tvname);
+    static QPushButton *NewPB(QWidget *parent, const QString &text, \
+                      const QObject *receiver, const char *method, const QString &pbtooltip="");
+    static bool LE_read_data(QWidget *w, const QString &lename, QString &levalue);
+    static bool LE_write_data(QWidget *w, const QString &levalue, const QString &lename);
 };
 
 #endif // WD_FUNC

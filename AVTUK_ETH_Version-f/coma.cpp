@@ -265,6 +265,7 @@ void Coma::Stage3()
     JourD = nullptr;
     ch104 = nullptr;
     CorD = nullptr;
+    modBus = nullptr;
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     //MainTW->setMinimumSize(QSize(800,600));
@@ -287,9 +288,7 @@ void Coma::Stage3()
     }
     else
     {
-        if(insl.size() != 0)
-        {
-         if(insl.at(1) == "ETH")
+         if(MainInterface == "Ethernet")
          {
 #ifdef ETHENABLE
             ch104 = new iec104(&IPtemp, this);
@@ -299,7 +298,7 @@ void Coma::Stage3()
             CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, ch104);
     #endif
          }
-         else if(insl.at(1) == "MODBUS")
+         else if(MainInterface == "RS485")
          {
 
              modBus = new ModBus(Settings, this);           
@@ -314,7 +313,10 @@ void Coma::Stage3()
              connect(Modthr,SIGNAL(started()),modBus,SLOT(WriteToPort()));
              CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
              connect(modBus,SIGNAL(BsiFromModBus(ModBusBSISignal*, int*)),idlg,SLOT(FillBsiFromModBus(ModBusBSISignal*, int* )));
-             modBus->BSIrequest();
+             connect(modBus,SIGNAL(coilsignalsready(Coils*)),this,SLOT(ModbusUpdateStatePredAlarmEvents(Coils*)));
+             connect(MainTW, SIGNAL(tabClicked(int)), modBus,SLOT(tabs(int)));
+             modBus->BSIrequest(Settings);
+             //TimeTimer->setInterval(3000);
 
          }
 
@@ -322,23 +324,24 @@ void Coma::Stage3()
          {
            TimeFunc::Wait(100);
            count++;
-           if(count == 20)
+           if(count == 50)
            {
              count = 0;
+             if(reconnect)
+             {
+               if(MainInterface == "Ethernet")
+               ReConnect(1);
+             }
+             else
              DisconnectAndClear();
              return;
            }
          }
 
          //emit ConnectMes(&FullName);
-        }
     }
-    /*if (MTypeB < 0xA2) // диапазон модулей АВ-ТУК
-    {
-        MainConfDialog = new ConfDialog(S2Config, MTypeB, MTypeM);
-        MainTuneDialog = new ConfDialog(S2ConfigForTune, MTypeB, MTypeM);
-        //MainTW->addTab(MainConfDialog, "Конфигурирование\nОбщие");
-    }*/
+
+    reconnect = true;
 
     if(MainInterface == "Ethernet")
     {
@@ -361,16 +364,19 @@ void Coma::Stage3()
         CheckB->setMinimumHeight(500);
         //MainTW->setFixedHeight(500);
         MainTW->addTab(CheckB, str);
+        CheckB->checkIndex = MainTW->indexOf(CheckB);
 
+        if(MainInterface == "RS485")
+        modBus->checkIndex = CheckB->checkIndex;
 
         if(MainInterface == "USB")
         {
             connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Start_BdaTimer(int))); //tabClicked
             connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Stop_BdaTimer(int)));
             connect(ConfM, SIGNAL(stopRead(int)), this,SLOT(Stop_BdaTimer(int)));
-            CheckB->checkIndex = MainTW->indexOf(CheckB);
             ConfM->checkIndex = CheckB->checkIndex;
             connect(BdaTimer,SIGNAL(timeout()),CheckB,SLOT(BdTimerTimeout()));
+            connect(BdaTimer,SIGNAL(timeout()),this,SLOT(GetUSBAlarmTimerTimeout()));
         }
     }
     str = (CheckB == nullptr) ? "Текущие параметры" : "Текущие параметры\nМезонин";
@@ -409,47 +415,55 @@ void Coma::Stage3()
         connect(ConfM,SIGNAL(DefConfToBeLoaded()),this,SLOT(SetDefConf()));
         ConfM->confIndex = MainTW->indexOf(ConfM);
         connect(MainTW, SIGNAL(tabClicked(int)), ConfM, SLOT(ReadConf(int))); //tabClicked
+        connect(ConfM, SIGNAL(stopRead(int)), this,SLOT(Stop_TimeTimer(int)));
     }
 
-    if (MTypeB == 0xA200 && MainInterface == "USB") // для МНК
-    {
-
-        MNKTime *Time = new MNKTime();
+        Time = new MNKTime();
         connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Start_Timer(int))); //tabClicked
-        connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Stop_Timer(int)));
-        connect(ConfM, SIGNAL(stopRead(int)), Time,SLOT(Stop_Timer(int)));
+        //connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Stop_Timer(int)));
+        connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Start_TimeTimer(int))); //tabClicked
+        connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Stop_TimeTimer(int)));
         MainTW->addTab(Time, "Время");
         Time->timeIndex = MainTW->indexOf(Time);
+        if(ConfM != nullptr)
         ConfM->timeIndex = Time->timeIndex;
 
-        QThread *thr = new QThread;
-        Time->moveToThread(thr);
+        if(MainInterface == "RS485")
+        modBus->timeIndex = Time->timeIndex;
+
+        /*QThread *thrTime = new QThread;
+        thrTime->setPriority(QThread::LowPriority);
+        Time->moveToThread(thrTime);
         connect(this,SIGNAL(stoptime()),Time,SLOT(StopSlot()));
-        connect(Time, SIGNAL(finished()), thr, SIGNAL(finished()));
+        connect(Time, SIGNAL(finished()), thrTime, SIGNAL(finished()));
         //connect(thr, SIGNAL(finished()), this, SLOT(CheckTimeFinish()));
-        connect(thr,SIGNAL(finished()),Time,SLOT(deleteLater()));
-        //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
-        connect(thr,SIGNAL(started()),Time,SLOT(slot2_timeOut()));
-        thr->start();
-
-    }
-
-    /*str = "Проверка";
-    if ((CheckB != nullptr) && (insl.size() != 0))
-    {
-        if(insl.at(1) == "MODBUS")
+        connect(thrTime,SIGNAL(finished()),Time,SLOT(deleteLater()));
+        //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));*/
+        connect(TimeTimer,SIGNAL(timeout()),Time,SLOT(slot2_timeOut()));
+        if(ch104 != nullptr)
         {
-            CheckB->setMinimumHeight(500);
-            //MainTW->setFixedHeight(500);
-            MainTW->addTab(CheckB, str);
+            connect(Time,SIGNAL(ethTimeRequest()),ch104,SLOT(InterrogateTimeGr15()));
+            connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),Time,SLOT(FillTimeFrom104(Parse104::BS104Signals*)));
+            connect(Time,SIGNAL(ethWriteTimeToModule(uint*)),ch104,SLOT(com51WriteTime(uint*)));
         }
-    }*/
+        if(modBus != nullptr)
+        {
+            connect(Time,SIGNAL(modBusTimeRequest()),modBus,SLOT(InterrogateTime()));
+            connect(modBus,SIGNAL(timeSignalsReceived(ModBusBSISignal*)),Time,SLOT(FillTimeFromModBus(ModBusBSISignal*)));
+            connect(Time,SIGNAL(modbusWriteTimeToModule(uint*)),modBus,SLOT(WriteTime(uint*)));
+            connect(modBus,SIGNAL(timeReadError()),Time,SLOT(ErrorRead()));
+        }
+
+
 
     if (CorD != nullptr)
     {
         MainTW->addTab(CorD, "Начальные значения");
         CorD->corDIndex = MainTW->indexOf(CorD);
         connect(MainTW, SIGNAL(tabClicked(int)), CorD, SLOT(GetCorBd(int))); //tabClicked
+
+        if(MainInterface == "RS485")
+        modBus->corIndex = CorD->corDIndex;
     }
 
     if (JourD != nullptr)
@@ -484,6 +498,7 @@ void Coma::Stage3()
 
     if(MainInterface == "USB")
     BdaTimer->start();
+
 }
 
 void Coma::PrepareDialogs()
@@ -493,14 +508,13 @@ void Coma::PrepareDialogs()
 
     MTypeB =  MTypeB<<8;
 
-    if (insl.size() != 0)
+    /*if (insl.size() != 0)
     {
         if(insl.at(1) == "MODBUS")
         {
             MTypeB = Config::MTB_A2;
-
         }
-    }
+    }*/
      switch(MTypeB)
     {
     case Config::MTB_21:
@@ -547,7 +561,7 @@ void Coma::PrepareDialogs()
             //connect(ch104,SIGNAL(ethNoconnection()), this, SLOT(DisconnectAndClear()));
 
             connect(CorD,SIGNAL(sendCom45(quint32*)), ch104, SLOT(Com45(quint32*)));
-            connect(CorD,SIGNAL(sendCom50(quint16*, float*)), ch104, SLOT(Com50(quint16*,float*)));
+            connect(CorD,SIGNAL(sendCom50(quint32*, float*)), ch104, SLOT(Com50(quint32*,float*)));
             connect(CorD,SIGNAL(CorReadRequest()), ch104, SLOT(CorReadRequest()));
 
             connect(ch104,SIGNAL(sendMessageOk()), CorD, SLOT(MessageOk()));
@@ -561,6 +575,7 @@ void Coma::PrepareDialogs()
             connect(ch104,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
 
             connect(ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),this,SLOT(UpdateStatePredAlarmEvents(Parse104::SponSignals104*)));
+            connect(ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),this,SLOT(UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime*)));
 
             setMinimumSize(QSize(800, 650));
             //CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, ch104);
@@ -686,4 +701,6 @@ void Coma::PrepareDialogs()
     }
 
  }
+
+
 

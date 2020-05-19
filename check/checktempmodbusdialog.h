@@ -41,14 +41,14 @@ public:
 signals:
 
 public slots:
-    void ErrorRead();
-    void UpdateModBusData(ModBusSignal* Signal, int *size);
+
 
 private:
     QString ValuesFormat, WidgetFormat;
 
 private slots:
     void onModbusStateChanged(QModbusDevice::State state);
-
+    void ErrorRead();
+    void UpdateModBusData1(ModBusSignal* Signal, int *size);
 };
 #endif

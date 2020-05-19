@@ -22,7 +22,6 @@
 #include "../widgets/etabwidget.h"
 #include "../widgets/emessagebox.h"
 #include "../dialogs/errordialog.h"
-#include "../dialogs/hiddendialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../gen/error.h"
@@ -60,10 +59,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     MainConfDialog = nullptr;
     ConfB = ConfM = nullptr;
     CheckB = CheckM = nullptr;
+    Wpred = Walarm = nullptr;
     ch104 = nullptr;
-    //iec104* SaveCh104 = new iec104("172.16.28.5", this);
-    //ModBusThrFinished = false;
-    //TimeThrFinished = false;
+    FullName = "";
+    reconnect = false;
+
+    TimeTimer = new QTimer;
+    TimeTimer->setInterval(1000);
+
     BdaTimer = new QTimer;
     BdaTimer->setInterval(ANMEASINT);
 
@@ -118,6 +121,68 @@ void MainWindow::Go(const QString &parameter)
     SetupUI();
     show();
 
+}
+
+void MainWindow::ReConnect(int err)
+{
+    QDialog *dlg = new QDialog;
+    reconnectTimer = new QTimer;
+    reconnectTimer->setInterval(10000);
+
+    reconnect = true;
+
+    if(!disconnected)
+    {
+        StopRead = 1;
+        //disconnected = 1;
+    #if PROGSIZE != PROGSIZE_EMUL
+        Disconnect();
+    #endif
+
+        CheckB = CheckM = nullptr;
+        //CheckModBus = nullptr;
+        emit ClearBsi();
+        ClearTW();
+        ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
+        if (MainTW == nullptr)
+            return;
+        MainTW->hide();
+        StdFunc::SetEmulated(false);
+    }
+
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    QString tmps = QString(PROGCAPTION);
+    QWidget *w = new QWidget;
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
+    hlyout->addWidget(WDFunc::NewLBLT(w, "Связь разорвана.\nПопытка переподключения будет выполнена через 10 секунд", "", "", ""), 1);
+    vlayout->addLayout(hlyout);
+
+    w->setLayout(vlayout);
+    connect(reconnectTimer,SIGNAL(timeout()), dlg,SLOT(close()));
+    connect(reconnectTimer,SIGNAL(timeout()), this, SLOT(attemptToRec()));
+
+    //hlyout->addLayout(l2yout,100);
+    lyout->addWidget(w);
+    dlg->setLayout(lyout);
+
+    reconnectTimer->start();
+    dlg->exec();
+
+}
+
+void MainWindow::attemptToRec()
+{
+    reconnectTimer->stop();
+    reconnectTimer->deleteLater();
+    ch104->deleteLater();
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    S2Config.clear();
+    SaveSettings();
+    QApplication::restoreOverrideCursor();
+    StopRead = 0;
+    Stage3();
 }
 
 QWidget *MainWindow::HthWidget()
@@ -247,10 +312,9 @@ void MainWindow::DeviceState()
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
-/*    QPushButton *pb = new QPushButton("Ok");
+    QPushButton *pb = new QPushButton("Ok");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
-    lyout->addWidget(pb,0); */
-    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", dlg, SLOT(close)), 0);
+    lyout->addWidget(pb,0);
     dlg->setLayout(lyout);
     dlg->exec();
 }
@@ -282,10 +346,12 @@ void MainWindow::PredAlarmState()
                                        << "Сигнализация по приращению C ввода фазы А              "
                                        << "Сигнализация по приращению C ввода фазы B              "
                                        << "Сигнализация по приращению C ввода фазы C              "
-                                       << "Не заданы паспортные значения                          ";
+                                       << "Не заданы паспортные значения                          "
+                                       << "Сигнализация по повышенному небалансу токов            ";
 
 
     QWidget *w = new QWidget;
+    Wpred = w;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
 
     for (int i = 0; i < 13; ++i)
@@ -323,17 +389,31 @@ void MainWindow::PredAlarmState()
     hlyout->addWidget(WDFunc::NewLBLT(w, events.at(16), "", "", ""), 1);
     vlayout->addLayout(hlyout);
 
+    hlyout = new QHBoxLayout;
+    if(PredAlarmEvents[17])
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3034), pmred));
+    else
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3034), pmgrn));
+
+    hlyout->addWidget(WDFunc::NewLBLT(w, events.at(17), "", "", ""), 1);
+    vlayout->addLayout(hlyout);
+
     w->setLayout(vlayout);
 
-    if(ch104 != nullptr)
-    connect(ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignals104*)));
+    if(MainInterface == "Ethernet" && ch104 != nullptr)
+    connect(ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
+
+    if(MainInterface == "USB")
+    connect(BdaTimer,SIGNAL(timeout()), this, SLOT(GetUSBAlarmInDialog()));
+
+    if(MainInterface == "RS485" && modBus != nullptr)
+    connect(modBus,SIGNAL(coilsignalsready(Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(Coils*)));
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
-/*    QPushButton *pb = new QPushButton("Ok");
+    QPushButton *pb = new QPushButton("Ok");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
-    lyout->addWidget(pb,0); */
-    lyout->addWidget(WDFunc::NewPB(this, "", "Ok", dlg, SLOT(close)), 0);
+    lyout->addWidget(pb,0);
     dlg->setLayout(lyout);
     dlg->exec();
 }
@@ -355,9 +435,11 @@ void MainWindow::AlarmState()
                                        << "Авария по приращению тангенса дельта ввода фазы C"
                                        << "Авария по приращению C ввода фазы А              "
                                        << "Авария по приращению C ввода фазы B              "
-                                       << "Авария по приращению C ввода фазы C              ";
+                                       << "Авария по приращению C ввода фазы C              "
+                                       << "Авария по недопустимому небалансу токов          ";
 
     QWidget *w = new QWidget;
+    Walarm = w;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
 
     for (int i = 0; i < 3; ++i)
@@ -386,10 +468,25 @@ void MainWindow::AlarmState()
         vlayout->addLayout(hlyout);
     }
 
+    hlyout = new QHBoxLayout;
+    if(AlarmEvents[6])
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3035), pmred));
+    else
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3035), pmgrn));
+
+    hlyout->addWidget(WDFunc::NewLBLT(w, events.at(6), "", "", ""), 1);
+    vlayout->addLayout(hlyout);
+
     w->setLayout(vlayout);
 
-    if(ch104 != nullptr)
-    connect(ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignals104*)));
+    if(MainInterface == "Ethernet" && ch104 != nullptr)
+    connect(ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
+
+    if(MainInterface == "USB")
+    connect(BdaTimer,SIGNAL(timeout()), this, SLOT(GetUSBAlarmInDialog()));
+
+    if(MainInterface == "RS485" && modBus != nullptr)
+    connect(modBus,SIGNAL(coilsignalsready(Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(Coils*)));
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
@@ -403,27 +500,54 @@ void MainWindow::AlarmState()
 
 void MainWindow::UpdateReleWidget(Parse104::SponSignals104* Signal)
 {
-//    int i = 0;
+    int i = 0;
     //Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
-    QPixmap *pm[2] = {pmred, pmgrn};
+    QPixmap *pm[2] = {pmgrn, pmred};
 
     //for(j=0; j<Signal->SigNumber; j++)
     //{
        //sig = *(Signal+j);
-    if(!(Signal->Spon.SigVal & 0x80))
+    if(!(Signal->Spon[i].SigVal & 0x80))
     {
-       int signal = ((Signal->Spon.SigVal & (0x00000001)) ? 1 : 0);
-       WDFunc::SetLBLImage(this, (QString::number(Signal->Spon.SigAdr)), pm[signal]);
+       int signal = ((Signal->Spon[i].SigVal & (0x00000001)) ? 1 : 0);
+       WDFunc::SetLBLImage(this, (QString::number(Signal->Spon[i].SigAdr)), pm[signal]);
     }
     //}
 
 }
 
-void MainWindow::UpdatePredAlarmEvents(Parse104::SponSignals104* Signal)
+void MainWindow::UpdatePredAlarmEvents(Parse104::SponSignalsWithTime* Signal)
 {
     int i = 0;
+    //Parse104::SponSignalsWithTime* sig = new Parse104::SponSignalsWithTime;
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+    QPixmap *pm[2] = {pmgrn, pmred};
+
+    for(i=0; i<Signal->SigNumber; i++)
+    {
+       //sig->Spon->SigAdr = (Signal->Spon[i].SigAdr);
+       //sig->Spon->SigVal = (Signal->Spon[i].SigVal);
+       if(!(Signal->Spon[i].SigVal & 0x80))
+       {
+        quint8 signal = ((Signal->Spon[i].SigVal & (0x00000001)) ? 1 : 0);
+
+        if((((Signal->Spon[i].SigAdr >= 3024) && (Signal->Spon[i].SigAdr < 3027))) || ((Signal->Spon[i].SigAdr >= 3030) && (Signal->Spon[i].SigAdr < 3033)) || (Signal->Spon[i].SigAdr == 3035))
+        WDFunc::SetLBLImage(Walarm, (QString::number(Signal->Spon[i].SigAdr)), pm[signal]);
+        else
+        WDFunc::SetLBLImage(Wpred, (QString::number(Signal->Spon[i].SigAdr)), pm[signal]);
+       }
+    }
+
+
+}
+
+
+void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104 *Signal)
+{
+    int i = 0, PredArarmcount = 0, Ararmcount = 0;
     Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
@@ -431,43 +555,250 @@ void MainWindow::UpdatePredAlarmEvents(Parse104::SponSignals104* Signal)
 
     for(i=0; i<Signal->SigNumber; i++)
     {
-       sig = *(Signal+i);
-       if(!(sig.Spon.SigVal & 0x80))
+       //sig = *(Signal+i);
+       if(!(Signal->Spon[i].SigVal & 0x80))
        {
-        int signal = ((sig.Spon.SigVal & (0x00000001)) ? 1 : 0);
-        WDFunc::SetLBLImage(this, (QString::number(sig.Spon.SigAdr)), pm[signal]);
+           quint8 signal = ((Signal->Spon[i].SigVal & (0x00000001)) ? 1 : 0);
+
+           if((Signal->Spon[i].SigAdr >= 3011) && (Signal->Spon[i].SigAdr < 3024))
+           PredAlarmEvents[Signal->Spon[i].SigAdr - 3011] = signal;
+           else if((Signal->Spon[i].SigAdr >= 3024) && (Signal->Spon[i].SigAdr < 3027))
+           AlarmEvents[Signal->Spon[i].SigAdr - 3024] = signal;
+           else if((Signal->Spon[i].SigAdr >= 3027) && (Signal->Spon[i].SigAdr < 3030))
+           PredAlarmEvents[Signal->Spon[i].SigAdr - 3014] = signal;
+           else if((Signal->Spon[i].SigAdr >= 3030) && (Signal->Spon[i].SigAdr < 3033))
+           AlarmEvents[Signal->Spon[i].SigAdr - 3027] = signal;
+           else if(Signal->Spon[i].SigAdr == 3033)
+           PredAlarmEvents[16] = signal;
+           else if(Signal->Spon[i].SigAdr == 3034)
+           PredAlarmEvents[17] = signal;
+           else if(Signal->Spon[i].SigAdr == 3035)
+           AlarmEvents[6] = signal;
        }
     }
 
+    for(i=0; i<18; i++)
+    {
+        if(PredAlarmEvents[i])
+        {
+           WDFunc::SetLBLImage(this, QString::number(951), pm[0]);
+           PredArarmcount++;
+        }
+    }
+
+    if(PredArarmcount == 0)
+    WDFunc::SetLBLImage(this,  QString::number(951), pm[1]);
+
+    for(i=0; i<7; i++)
+    {
+        if(AlarmEvents[i])
+        {
+           WDFunc::SetLBLImage(this, QString::number(952), pm[0]);
+           Ararmcount++;
+        }
+    }
+
+    if(Ararmcount == 0)
+    WDFunc::SetLBLImage(this,  QString::number(952), pm[1]);
+
 }
 
-
-void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104* Signal)
+void MainWindow::UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime *Signal)
 {
-    int i = 0;
-    Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
-//    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-//    QPixmap *pmred = new QPixmap("images/redc.png");
-    //QPixmap *pm[2] = {pmred, pmgrn};
+    int i = 0, PredArarmcount = 0, Ararmcount = 0;
+    //Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+    QPixmap *pm[2] = {pmred, pmgrn};
 
     for(i=0; i<Signal->SigNumber; i++)
     {
-       sig = *(Signal+i);
-       if(!(sig.Spon.SigVal & 0x80))
+       //sig = *(Signal+i);
+       if(!(Signal->Spon[i].SigVal & 0x80))
        {
-           quint8 signal = ((sig.Spon.SigVal & (0x00000001)) ? 1 : 0);
+           quint8 signal = ((Signal->Spon[i].SigVal & (0x00000001)) ? 1 : 0);
 
-           if((sig.Spon.SigAdr >= 3011) && (sig.Spon.SigAdr < 3024))
-           PredAlarmEvents[sig.Spon.SigAdr - 3011] = signal;
-           else if((sig.Spon.SigAdr >= 3024) && (sig.Spon.SigAdr < 3027))
-           AlarmEvents[sig.Spon.SigAdr - 3024] = signal;
-           else if((sig.Spon.SigAdr >= 3027) && (sig.Spon.SigAdr < 3030))
-           PredAlarmEvents[sig.Spon.SigAdr - 3014] = signal;
-           else if((sig.Spon.SigAdr >= 3030) && (sig.Spon.SigAdr < 3033))
-           AlarmEvents[sig.Spon.SigAdr - 3027] = signal;
-           else if(sig.Spon.SigAdr == 3033)
+           if((Signal->Spon[i].SigAdr >= 3011) && (Signal->Spon[i].SigAdr < 3024))
+           PredAlarmEvents[Signal->Spon[i].SigAdr - 3011] = signal;
+           else if((Signal->Spon[i].SigAdr >= 3024) && (Signal->Spon[i].SigAdr < 3027))
+           AlarmEvents[Signal->Spon[i].SigAdr - 3024] = signal;
+           else if((Signal->Spon[i].SigAdr >= 3027) && (Signal->Spon[i].SigAdr < 3030))
+           PredAlarmEvents[Signal->Spon[i].SigAdr - 3014] = signal;
+           else if((Signal->Spon[i].SigAdr >= 3030) && (Signal->Spon[i].SigAdr < 3033))
+           AlarmEvents[Signal->Spon[i].SigAdr - 3027] = signal;
+           else if(Signal->Spon[i].SigAdr == 3033)
            PredAlarmEvents[16] = signal;
+           else if(Signal->Spon[i].SigAdr == 3034)
+           PredAlarmEvents[17] = signal;
+           else if(Signal->Spon[i].SigAdr == 3035)
+           AlarmEvents[6] = signal;
        }
+    }
+
+    for(i=0; i<18; i++)
+    {
+        if(PredAlarmEvents[i])
+        {
+           WDFunc::SetLBLImage(this, QString::number(951), pm[0]);
+           PredArarmcount++;
+        }
+    }
+
+    if(PredArarmcount == 0)
+    WDFunc::SetLBLImage(this,  QString::number(951), pm[1]);
+
+    for(i=0; i<7; i++)
+    {
+        if(AlarmEvents[i])
+        {
+           WDFunc::SetLBLImage(this, QString::number(952), pm[0]);
+           Ararmcount++;
+        }
+    }
+
+    if(Ararmcount == 0)
+    WDFunc::SetLBLImage(this,  QString::number(952), pm[1]);
+
+}
+
+void MainWindow::ModbusUpdateStatePredAlarmEvents(Coils* Signal)
+{
+    int i = 0, PredArarmcount = 0, Ararmcount = 0;
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+    QPixmap *pm[2] = {pmred, pmgrn};
+
+    for(i=0; i<Signal->countBytes; i++)
+    {
+        if(i == 3)
+        {
+            //for(int j = 0; j<8; j++)
+            //{
+                quint8 signal = ((Signal->Bytes[i] & (0x00000001)) ? 1 : 0);
+                AlarmEvents[6] = signal;
+
+        }
+        if(i == 2)
+        {
+            for(int j = 0; j<8; j++)
+            {
+                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+
+                if(j<3)
+                PredAlarmEvents[13+j] = signal;
+                else if(j>=3 && j<6)
+                AlarmEvents[j] = signal;
+                if(j==6)
+                PredAlarmEvents[16] = signal;
+                if(j==7)
+                PredAlarmEvents[17] = signal;
+
+            }
+
+        }
+        else if(i == 0)
+        {
+            for(int j = 0; j<8; j++)
+            {
+                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+                PredAlarmEvents[j] = signal;
+            }
+        }
+        else if(i == 1)
+        {
+            for(int j = 0; j<8; j++)
+            {
+                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+
+                if(j<5)
+                PredAlarmEvents[7+j] = signal;
+                if(j >= 5)
+                AlarmEvents[j-5] = signal;
+            }
+        }
+    }
+
+    ModBus::Reading = false;
+
+    for(i=0; i<18; i++)
+    {
+        if(PredAlarmEvents[i])
+        {
+           WDFunc::SetLBLImage(this, QString::number(951), pm[0]);
+           PredArarmcount++;
+        }
+    }
+
+    if(PredArarmcount == 0)
+    WDFunc::SetLBLImage(this,  QString::number(951), pm[1]);
+
+    for(i=0; i<7; i++)
+    {
+        if(AlarmEvents[i])
+        {
+           WDFunc::SetLBLImage(this, QString::number(952), pm[0]);
+           Ararmcount++;
+        }
+    }
+
+    if(Ararmcount == 0)
+    WDFunc::SetLBLImage(this,  QString::number(952), pm[1]);
+
+}
+
+void MainWindow::ModBusUpdatePredAlarmEvents(Coils* Signal)
+{
+    int i = 0;
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+    QPixmap *pm[2] = {pmgrn, pmred};
+
+    for(i=0; i<Signal->countBytes; i++)
+    {
+        if(i == 3)
+        {
+           quint8 signal = ((Signal->Bytes[i] & (0x00000001)) ? 1 : 0);
+           WDFunc::SetLBLImage(Walarm, (QString::number(3035)), pm[signal]);
+        }
+
+        if(i == 2)
+        {
+            for(int j = 0; j<8; j++)
+            {
+                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+
+                if(j<3)
+                WDFunc::SetLBLImage(Wpred, (QString::number(3027+j)), pm[signal]);
+                else if(j>=3 && j<6)
+                WDFunc::SetLBLImage(Walarm, (QString::number(3030+j-3)), pm[signal]);
+                if(j==6)
+                WDFunc::SetLBLImage(Wpred, (QString::number(3033)), pm[signal]);
+                if(j==7)
+                WDFunc::SetLBLImage(Wpred, (QString::number(3034)), pm[signal]);
+
+            }
+
+        }
+        else if(i == 0)
+        {
+            for(int j = 0; j<8; j++)
+            {
+                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+                WDFunc::SetLBLImage(Wpred, (QString::number(3011+j)), pm[signal]);
+            }
+        }
+        else if(i == 1)
+        {
+            for(int j = 0; j<8; j++)
+            {
+                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+
+                if(j<5)
+                WDFunc::SetLBLImage(Wpred, (QString::number(3019+j)), pm[signal]);
+                if(j >= 5)
+                WDFunc::SetLBLImage(Walarm, (QString::number(3024+j-5)), pm[signal]);
+            }
+        }
     }
 
 }
@@ -614,7 +945,6 @@ void MainWindow::LoadSettings()
     StdFunc::SetHomeDir(sets->value("Homedir", HomeDir).toString());
 
     TEEnabled = sets->value("TEEnabled", "0").toBool();
-
 }
 
 void MainWindow::SaveSettings()
@@ -696,9 +1026,14 @@ int MainWindow::CheckPassword()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Stage1_5()
 {
+    TheEnd = 0;
     disconnected = 0;
     ShowInterfaceDialog();
     ShowConnectDialog();
+
+    if(cancel)
+    return;
+
     StopRead = 0;
 
     if((insl.size() == 0) && ((MainInterface == "Ethernet") || (MainInterface == "RS485")))
@@ -723,6 +1058,9 @@ void MainWindow::Stage1_5()
         {
            insl.clear();
 
+           if(cn->Cancelled)
+           return;
+
            if (Commands::Connect() != Error::ER_NOERROR)
            {
               EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
@@ -732,19 +1070,7 @@ void MainWindow::Stage1_5()
          }
     }
 
-
-
- QApplication::setOverrideCursor(Qt::WaitCursor);
-    //connect(ch104,SIGNAL(floatsignalsready(Parse104::FLOAT104&, int N)),this,SLOT(CheckDialog84::UpdateData(Parse104::FLOAT104&, int N)));
-    //connect(this,SIGNAL(stopit()),ch104,SLOT(Stop()));
-#if PROGSIZE != PROGSIZE_EMUL
-//#ifdef ETHENABLE
- //   ch104 = new iec104;
-    //CheckDialog84* handler = new CheckDialog84;
-  //  connect(ch104,SIGNAL(floatsignalsready(Parse104::Signals104*)),CheckB,SLOT(UpdateData(Parse104::Signals104*)));
-  //  connect(this,SIGNAL(stopit()),ch104,SLOT(Stop()));
-//#endif
-#endif
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     S2ConfigForTune.clear();
     S2Config.clear();
     SaveSettings();
@@ -764,7 +1090,7 @@ void MainWindow::Stage2()
             if (res == Error::ER_CANAL)
             {
                 if (EMessageBox::question(this, "Ошибка", \
-                                          "Блок Bsi не может быть прочитан, ошибка " + QString::number(res) + ", повторить?") == 1) // Yes
+                                          "Не удалось установить связь.\nПовторить подключение?") == 1) // Yes
                 {
                     cn->Disconnect();
                     emit Retry();
@@ -772,18 +1098,20 @@ void MainWindow::Stage2()
                 return;
             }
 #if PROGSIZE >= PROGSIZE_LARGE
-            else if (res == Error::ER_RESEMPTY)
+            else if (res == Error::ER_NOERROR)
+            {
+              if(ModuleBSI::ModuleTypeString != "")
+              EMessageBox::information(this, "Успешно", "Связь с "+ModuleBSI::ModuleTypeString+" установлена");
+            }
+            /*else if (res == Error::ER_RESEMPTY)
             {
                 if (OpenBhbDialog() != Error::ER_NOERROR)
                 {
                     EMessageBox::error(this, "Ошибка", "Ошибка при работе с Hidden block");
                     return;
                 }
-            }
-            else if (res == Error::ER_NOERROR)
-            {
-              EMessageBox::information(this, "Успешно", "Связь с "+ModuleBSI::ModuleTypeString+" установлена");
-            }
+            }*/
+
 #endif
         }
     }
@@ -873,7 +1201,7 @@ void MainWindow::PasswordCheck(QString psw)
 }
 
 #if PROGSIZE >= PROGSIZE_LARGE
-int MainWindow::OpenBhbDialog()
+/*int MainWindow::OpenBhbDialog()
 {
     if (!Commands::isConnected())
     {
@@ -907,7 +1235,7 @@ int MainWindow::OpenBhbDialog()
     }
     //emit BsiRefresh();
     return Error::ER_NOERROR;
-}
+}*/
 #endif
 
 #if PROGSIZE >= PROGSIZE_LARGE || PROGSIZE == PROGSIZE_EMUL
@@ -997,9 +1325,10 @@ void MainWindow::SetProgressBar2(int cursize)
 void MainWindow::ShowInterfaceDialog()
 {
     QByteArray ba;
-//    int res, i;
+    //int res, i;
     QDialog *dlg = new QDialog(this);
     QString Str;
+    cancel = false;
     //QStringList device = QStringList() << "KDV" << "2" << "1" << "2";
     QStringList inter;
     inter.append("USB");
@@ -1021,18 +1350,21 @@ void MainWindow::ShowInterfaceDialog()
     portscb->setModel(tmpmodel);
     lyout->addWidget(portscb);
     QHBoxLayout *hlyout = new QHBoxLayout;
-/*    QPushButton *pb = new QPushButton("Далее");
+    QPushButton *pb = new QPushButton("Далее");
     connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    hlyout->addWidget(pb); */
-    hlyout->addWidget(WDFunc::NewPB(this, "", "Далее", dlg, SLOT(close())));
-/*    pb = new QPushButton("Отмена");
-    //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
+    hlyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb, SIGNAL(clicked(bool)),this,SLOT(SetCancelled()));
     connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
-    hlyout->addWidget(pb); */
-    hlyout->addWidget(WDFunc::NewPB(this, "", "Отмена", dlg, SLOT(close())));
+    hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
     dlg->exec();
+}
+
+void MainWindow::SetCancelled()
+{
+   cancel = true;
 }
 
 void MainWindow::ShowConnectDialog()
@@ -1043,6 +1375,8 @@ void MainWindow::ShowConnectDialog()
     QString Str;
     //QStringList device = QStringList() << "KDV" << "2" << "1" << "2";
     //QStringList inter = QStringList() << "ETH" << "MODBUS";
+    if(cancel)
+    return;
 
     dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -1054,8 +1388,15 @@ void MainWindow::ShowConnectDialog()
     {
          if(MainInterface == "USB")
          {
+             //#ifdef USBENABLE
              cn = new EUsbHid;
              connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
+             //#else
+             //#ifdef COMPORTENABLE
+             //    cn = new EUsbCom;
+             //    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
+             //#endif
+             //#endif
              connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
              connect(cn,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
              connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
@@ -1172,6 +1513,7 @@ void MainWindow::ShowConnectDialog()
         connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
         hlyout->addWidget(pb);
         pb = new QPushButton("Отмена");
+        connect(pb, SIGNAL(clicked(bool)),this,SLOT(SetCancelled()));
         if(MainInterface == "USB")
         connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));
 
@@ -1236,7 +1578,8 @@ void MainWindow::GetAbout()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Disconnect()
 {
-    emit stoptime();
+    //emit stoptime();
+
     if(MainInterface.size() != 0 && (!StdFunc::IsInEmulateMode()))
     {
         if(MainInterface == "USB")
@@ -1276,6 +1619,11 @@ void MainWindow::GetDeviceFromTable(QModelIndex idx)
 #endif
 void MainWindow::DisconnectAndClear()
 {
+    TheEnd = 1;
+    if(TimeTimer != nullptr)
+    {
+      TimeTimer->stop();
+    }
     if(!disconnected)
     {
         StopRead = 1;
@@ -1285,7 +1633,7 @@ void MainWindow::DisconnectAndClear()
     #endif
 
         CheckB = CheckM = nullptr;
-        CheckModBus = nullptr;
+        //CheckModBus = nullptr;
         emit ClearBsi();
         ClearTW();
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
@@ -1304,13 +1652,41 @@ void MainWindow::DisconnectAndClear()
         {
            if(MainInterface == "USB")
            {
-             EMessageBox::information(this, "Разрыв связи", "Связь с "+ModuleBSI::ModuleTypeString+" разорвана");
+             if(reconnect)
+             {
+                 if(ModuleBSI::ModuleTypeString != "")
+                 EMessageBox::information(this, "Разрыв связи", "Связь с "+ModuleBSI::ModuleTypeString+" разорвана");
+                 else
+                 EMessageBox::information(this, "Разрыв связи", "Связь разорвана");
+             }
+             else
+             {
+                 if(ModuleBSI::ModuleTypeString != "")
+                 EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь с "+ModuleBSI::ModuleTypeString+"");
+                 else
+                 EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
+             }
            }
            else
            {
-             EMessageBox::information(this, "Разрыв связи", "Связь с "+FullName+" разорвана");
+               if(reconnect)
+               {
+                 if(FullName != "")
+                 EMessageBox::information(this, "Разрыв связи", "Связь с "+FullName+" разорвана");
+                 else
+                 EMessageBox::information(this, "Разрыв связи", "Связь разорвана");
+               }
+               else
+               {
+                 if(FullName != "")
+                 EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь с "+FullName+"");
+                 else
+                 EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
+               }
            }
         }
+
+        reconnect = false;
         //disconnected = 0;
     }
 
@@ -1467,7 +1843,7 @@ void MainWindow::FinishHim()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    TheEnd = 1;
+    //TheEnd = 1;
     DisconnectAndClear();
     //while(!TimeThrFinished || !ModBusThrFinished)
     //TimeFunc::Wait(100);
@@ -1506,6 +1882,145 @@ void MainWindow::Start_BdaTimer(int index)
             BdaTimer->start();
             //thr->msleep(100);
         }
+    }
+
+}
+
+void MainWindow::Stop_TimeTimer(int index)
+{
+    if(Time != nullptr)
+    {
+        if(index != Time->timeIndex)
+        {
+            TimeTimer->stop();
+            //thr->msleep(100);
+        }
+    }
+
+}
+
+void MainWindow::Start_TimeTimer(int index)
+{
+    if(Time != nullptr)
+    {
+        if(index == Time->timeIndex)
+        {
+            TimeTimer->start();
+            //thr->msleep(100);
+        }
+    }
+
+}
+
+void MainWindow::GetUSBAlarmTimerTimeout()
+{
+    int i = 0, PredArarmcount = 0, Ararmcount = 0;
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+    QPixmap *pm[2] = {pmred, pmgrn};
+
+    if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == Error::ER_NOERROR)
+    {
+        for(i=0; i<18; i++)
+        {
+           if(Bd_block11.predAlarm & (0x00000001 << i))
+           PredAlarmEvents[i] = 1;
+           else
+           PredAlarmEvents[i] = 0;
+
+           if(PredAlarmEvents[i])
+           {
+              WDFunc::SetLBLImage(this, QString::number(951), pm[0]);
+              PredArarmcount++;
+           }
+        }
+
+        for(i=0; i<7; i++)
+        {
+           if(Bd_block11.alarm & (0x00000001 << i))
+           AlarmEvents[i] = 1;
+           else
+           AlarmEvents[i] = 0;
+
+           if(AlarmEvents[i])
+           {
+              WDFunc::SetLBLImage(this, QString::number(952), pm[0]);
+              Ararmcount++;
+           }
+        }
+
+        if(PredArarmcount == 0)
+        WDFunc::SetLBLImage(this,  QString::number(951), pm[1]);
+
+        if(Ararmcount == 0)
+        WDFunc::SetLBLImage(this,  QString::number(952), pm[1]);
+    }
+}
+
+void MainWindow::GetUSBAlarmInDialog()
+{
+    int i = 0;
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+    QPixmap *pm[2] = {pmred, pmgrn};
+    Bd_block11 = *new Bd11;
+
+    if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == Error::ER_NOERROR)
+    {
+        if(Wpred != nullptr)
+        {
+            for(i=0; i<13; i++)
+            {
+               if(Bd_block11.predAlarm & ((quint32)0x00000001 << i))
+               WDFunc::SetLBLImage(Wpred, (QString::number(3011+i)), pm[0]);
+               else
+               WDFunc::SetLBLImage(Wpred, (QString::number(3011+i)), pm[1]);
+            }
+
+            for(i=13; i<16; i++)
+            {
+               if(Bd_block11.predAlarm & ((quint32)0x00000001 << i))
+               WDFunc::SetLBLImage(Wpred, (QString::number(3027+i-13)), pm[0]);
+               else
+               WDFunc::SetLBLImage(Wpred, (QString::number(3027+i-13)), pm[1]);
+            }
+
+            if(Bd_block11.predAlarm & ((quint32)0x00000001 << 16))
+            WDFunc::SetLBLImage(Wpred, (QString::number(3033)), pm[0]);
+            else
+            WDFunc::SetLBLImage(Wpred, (QString::number(3033)), pm[1]);
+
+            if(Bd_block11.predAlarm & ((quint32)0x00000001 << 17))
+            WDFunc::SetLBLImage(Wpred, (QString::number(3034)), pm[0]);
+            else
+            WDFunc::SetLBLImage(Wpred, (QString::number(3034)), pm[1]);
+        }
+
+
+        if(Walarm != nullptr)
+        {
+            for(i=0; i<3; i++)
+            {
+               if(Bd_block11.alarm & ((quint32)0x00000001 << i))
+               WDFunc::SetLBLImage(Walarm, (QString::number(3024+i)), pm[0]);
+               else
+               WDFunc::SetLBLImage(Walarm, (QString::number(3024+i)), pm[1]);
+            }
+
+            for(i=3; i<6; i++)
+            {
+               if(Bd_block11.alarm & ((quint32)0x00000001 << i))
+               WDFunc::SetLBLImage(Walarm, (QString::number(3030+i-3)), pm[0]);
+               else
+               WDFunc::SetLBLImage(Walarm, (QString::number(3030+i-3)), pm[1]);
+            }
+
+            if(Bd_block11.alarm & ((quint32)0x00000001 << 6))
+            WDFunc::SetLBLImage(Walarm, (QString::number(3035)), pm[0]);
+            else
+            WDFunc::SetLBLImage(Walarm, (QString::number(3035)), pm[1]);
+        }
+
     }
 
 }

@@ -1,6 +1,6 @@
     #ifndef IEC104_H
 #define IEC104_H
-
+#include <QTcpSocket>
 #include "../gen/s2.h"
 #include "../gen/log.h"
 
@@ -45,7 +45,7 @@
 #define C_DC_NA_1				46	// Double command
 #define C_RC_NA_1				47	// Regulating step command
 #define C_SE_NA_1				48	// Set point command, normalised value
-#define C_SE_NC_1               50
+#define C_SE_NC_1                               50
 #define C_BO_NA_1				51	// Bitstring of 32 bit
 #define C_SC_TA_1				58	// Single command with time tag CP56Time2a
 #define C_DC_TA_1				59	// Double command with time tag CP56Time2a
@@ -127,15 +127,28 @@ public:
 
     typedef struct
     {
+        quint32 SigAdr;
+        quint8 SigVal;
+        quint64 CP56Time;
+    }SIQ104withTime;
+
+    typedef struct
+    {
        FLOAT104 fl;
        int SigNumber;
     }FlSignals104;
 
     typedef struct
     {
-       SIQ104 Spon;
+       SIQ104 Spon[256];
        int SigNumber;
     }SponSignals104;
+
+    typedef struct
+    {
+       SIQ104withTime Spon[256];
+       int SigNumber;
+    }SponSignalsWithTime;
 
     typedef struct
     {
@@ -154,7 +167,7 @@ public:
     int cmd;
     bool GetNewVR, NewDataArrived;
     QMutex ParseMutex, SignalsMutex;
-    QTimer *timer104;
+    QTimer *timer104, *conTimer;
     QTimer *Interogatetimer;
     QByteArray WriteData;
     char *outdata;
@@ -174,7 +187,7 @@ public:
     QVector<S2::DataRec> *DRJour;
     char BoardType;
     quint32 FileLen;
-    int incLS, count;
+    int incLS, count, noAnswer;
 
 
 
@@ -187,6 +200,7 @@ public slots:
 signals:
     void floatsignalsreceived(Parse104::FlSignals104*);
     void sponsignalsreceived(Parse104::SponSignals104*);
+    void sponsignalWithTimereceived(Parse104::SponSignalsWithTime*);
     void bs104signalsreceived(Parse104::BS104Signals*);
     void error(int);
     void sendS();
@@ -375,6 +389,7 @@ signals:
     //void ethNoconnection();
     void floatsignalsready(Parse104::FlSignals104*);
     void sponsignalsready(Parse104::SponSignals104*);
+    void sponsignalWithTimereceived(Parse104::SponSignalsWithTime*);
     void bs104signalsready(Parse104::BS104Signals*);
     void Retry();
     void readbytessignal(QByteArray);
@@ -395,6 +410,7 @@ signals:
     void SetDataCount(int);
     void sendConfMessageOk();
     void sendCorMesOk();
+    void errorCh104(int);
 
 
 private:
@@ -409,6 +425,7 @@ private slots:
     void SendI();
     void SendS();
     void SendTestAct();
+    void SendTestCon();
     void GetSomeData(QByteArray);
     void StartParse();
     void SelectFile(char);
@@ -422,8 +439,10 @@ private slots:
     void LastSegment();
     void LastSection();
     void Com45(quint32 *com);
-    void Com50(quint16 *adr, float *param);
+    void Com50(quint32 *adr, float *param);
     void CorReadRequest();
+    void InterrogateTimeGr15();
+    void com51WriteTime(uint*);
 
 };
 
