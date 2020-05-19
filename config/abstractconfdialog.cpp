@@ -30,8 +30,8 @@ void AbstractConfDialog::ReadConf(int index)
 {
     //int res = ModuleBSI::PrereadConf(this, S2Config);
     //int res = 0;
-    char* num = new char;
-    *num = 1;
+//    char* num = new char;
+//    char num = 1;
 
     if(!MainWindow::TheEnd)
     {
@@ -55,7 +55,7 @@ void AbstractConfDialog::ReadConf(int index)
                 }
                 else // иначе заполнить значениями из модуля
                 {
-                  emit ReadConfig(num);
+                  emit ReadConfig(1);
                 }
              }
              else if(MainWindow::MainInterface == "USB")
@@ -227,8 +227,8 @@ QWidget *AbstractConfDialog::ConfButtons()
 
 void AbstractConfDialog::ButtonReadConf()
 {
-    char* num = new char;
-    *num = 1;
+/*    char* num = new char;
+    *num = 1; */
 
     if(MainWindow::MainInterface.size() != 0)
     {
@@ -240,7 +240,7 @@ void AbstractConfDialog::ButtonReadConf()
         }
         else // иначе заполнить значениями из модуля
         {
-          emit ReadConfig(num);
+          emit ReadConfig(1);
         }
      }
      else if(MainWindow::MainInterface == "USB")

@@ -568,9 +568,12 @@ void Coma::PrepareDialogs()
 
             //ConfM = new ConfDialog84(S2Config);
             connect(JourD,SIGNAL(ReadJour(char)), ch104, SLOT(SelectFile(char)));
-            connect(ch104,SIGNAL(sendJourSysfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillSysJour(QVector<S2::DataRec>*)));
+/*            connect(ch104,SIGNAL(sendJourSysfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillSysJour(QVector<S2::DataRec>*)));
             connect(ch104,SIGNAL(sendJourWorkfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillWorkJour(QVector<S2::DataRec>*)));
-            connect(ch104,SIGNAL(sendJourMeasfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillMeasJour(QVector<S2::DataRec>*)));
+            connect(ch104,SIGNAL(sendJourMeasfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillMeasJour(QVector<S2::DataRec>*))); */
+            connect(ch104,SIGNAL(sendJourSysfromiec104(QByteArray)), JourD, SLOT(FillSysJour(QByteArray)));
+            connect(ch104,SIGNAL(sendJourWorkfromiec104(QByteArray)), JourD, SLOT(FillWorkJour(QByteArray)));
+            connect(ch104,SIGNAL(sendJourMeasfromiec104(QByteArray)), JourD, SLOT(FillMeasJour(QByteArray)));
             ch104->Parse->DR = &S2Config;
 
 #endif
@@ -661,7 +664,7 @@ void Coma::PrepareDialogs()
 
         if(ch104 != nullptr && MainInterface == "Ethernet")
         {
-          connect(ConfM,SIGNAL(ReadConfig(char*)), ch104, SLOT(SelectFile(char*)));
+          connect(ConfM,SIGNAL(ReadConfig(char)), ch104, SLOT(SelectFile(char)));
           connect(ch104,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)), ConfM, SLOT(FillConf(QVector<S2::DataRec>*)));
           connect(ConfM,SIGNAL(writeConfFile(QVector<S2::DataRec>*)), ch104, SLOT(FileReady(QVector<S2::DataRec>*)));
           //connect(ch104,SIGNAL(sendMessageiec104()), ConfM, SLOT(Message()));
