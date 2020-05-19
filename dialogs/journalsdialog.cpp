@@ -3,6 +3,7 @@
 #include <QHeaderView>
 #include <QPushButton>
 #include <QApplication>
+#include <QSortFilterProxyModel>
 #include <QFileDialog>
 #include "../widgets/emessagebox.h"
 #include "../gen/maindef.h"
@@ -146,7 +147,7 @@ void JournalDialog::SaveJour()
     case JOURSYS:
         tvname = "system";
         jourtypestr = "Системный журнал";
-        cellformat.setNumberFormat("TEXT");
+//        cellformat.setNumberFormat("");
         break;
     case JOURMEAS:
         tvname = "meas";
@@ -156,13 +157,17 @@ void JournalDialog::SaveJour()
     case JOURWORK:
         tvname = "work";
         jourtypestr = "Журнал событий";
-        cellformat.setNumberFormat("TEXT");
+//        cellformat.setNumberFormat("");
         break;
     default:
         break;
     }
 
     ETableModel *mdl = WDFunc::TVModel(this, tvname);
+    QSortFilterProxyModel *pmdl = new QSortFilterProxyModel;
+    pmdl->setSourceModel(mdl);
+    int dateidx = mdl->Headers().indexOf("Дата/Время");
+    pmdl->sort(dateidx, Qt::DescendingOrder);
     // запрашиваем имя файла для сохранения
     QString filename = Files::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx");
     QXlsx::Document *xlsx = new QXlsx::Document(filename);
@@ -176,22 +181,22 @@ void JournalDialog::SaveJour()
     for (int i=0; i<mdl->columnCount(); ++i)
         xlsx->write(5, (i+1), mdl->headerData(i, Qt::Horizontal, Qt::DisplayRole));
 
-    QXlsx::Format numformat; //, dateformat;
-    numformat.setNumberFormat("#");
+//    QXlsx::Format numformat; //, dateformat;
+//    numformat.setNumberFormat("0");
 //    dateformat.setNumberFormat("dd-mm-yyyy hh:mm:ss");
     // теперь по всем строкам модели пишем данные
-    for (int i=0; i<mdl->rowCount(); ++i)
+    for (int i=0; i<pmdl->rowCount(); ++i)
     {
         // номер события
-        xlsx->write((6+i), 1, mdl->data(mdl->index(i, 0), Qt::DisplayRole).toString(), numformat);
+        xlsx->write((6+i), 1, pmdl->data(pmdl->index(i, 0), Qt::DisplayRole).toString());
         // время события
-        xlsx->write((6+i), 2, mdl->data(mdl->index(i, 1), Qt::DisplayRole).toString());
-        for (int j=2; j<mdl->columnCount(); ++j)
-            xlsx->write((6+i), (1+j), mdl->data(mdl->index(i, 1), Qt::DisplayRole).toString(), cellformat);
+        xlsx->write((6+i), 2, pmdl->data(pmdl->index(i, 1), Qt::DisplayRole).toString());
+        for (int j=2; j<pmdl->columnCount(); ++j)
+//            xlsx->write((6+i), (1+j), pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toString(), cellformat);
+            xlsx->write((6+i), (1+j), pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toString());
     }
     xlsx->save();
     EMessageBox::information(this, "Внимание", "Файл создан успешно");
-    delete xlsx;
 }
 
 void JournalDialog::FillSysJour(QByteArray ba)
@@ -249,7 +254,7 @@ void JournalDialog::FillEventsTable(char *file, int jourtype)
             }
             else
                 Num << "Некорректный номер события";
-            Time << TimeFunc::UnixTime64ToString(event.Time);
+            Time << TimeFunc::UnixTime64ToInvStringFractional(event.Time);
             if(event.EvType)
                 Type << "Пришло";
             else
@@ -305,7 +310,7 @@ void JournalDialog::FillMeasTable(char *file)
         if(meas.Time != 0xFFFFFFFF)
         {
             EventNum << meas.NUM;
-            Time << TimeFunc::UnixTime64ToString(meas.Time);
+            Time << TimeFunc::UnixTime64ToInvStringFractional(meas.Time);
             UeffA << meas.Ueff[0];
             UeffB << meas.Ueff[1];
             UeffC << meas.Ueff[2];

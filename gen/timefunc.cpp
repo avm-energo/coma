@@ -29,3 +29,16 @@ QString TimeFunc::UnixTime64ToString(quint64 utime)
     QString time = tn.toString("dd/MM/yyyy hh:mm:ss.")+ms+"."+mcs+"."+ns;
     return time;
 }
+
+QString TimeFunc::UnixTime64ToInvStringFractional(quint64 utime)
+{
+    quint32 tmpi = utime >> 32;
+    QDateTime tn = QDateTime::fromTime_t(tmpi, Qt::UTC); // in seconds
+    utime &= 0x00000000FFFFFFFF;
+    QString outs = tn.toString("yyyy/MM/dd hh:mm:ss");
+    QString frac = QString::number(utime);
+    frac.truncate(3);
+    outs += "." + frac;
+    return outs;
+}
+

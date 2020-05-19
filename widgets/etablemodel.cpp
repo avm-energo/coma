@@ -38,6 +38,11 @@ bool ETableModel::setHeaderData(int section, Qt::Orientation orientation, const 
     return QAbstractTableModel::setHeaderData(section, orientation, value, role);
 }
 
+QStringList ETableModel::Headers()
+{
+    return hdr;
+}
+
 QVariant ETableModel::data(const QModelIndex &index, int role) const
 {
     if (index.isValid())
