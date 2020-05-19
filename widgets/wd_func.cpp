@@ -501,6 +501,36 @@ QPushButton *WDFunc::NewPB(QWidget *parent, const QString &pbname, const QString
     return pb;
 }
 
+ETableView *WDFunc::NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model)
+{
+    ETableView *tv = new ETableView(w);
+    tv->setObjectName(tvname);
+    tv->horizontalHeader()->setVisible(true);
+    tv->verticalHeader()->setVisible(false);
+    if (model != nullptr)
+        tv->setModel(model);
+    tv->setSelectionMode(QAbstractItemView::NoSelection);
+    return tv;
+}
+
+void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model)
+{
+    ETableView *tv = w->findChild<ETableView *>(tvname);
+    if (tv == nullptr)
+        return;
+    QItemSelectionModel *m = tv->selectionModel();
+    tv->setModel(model);
+    delete m;
+}
+
+ETableModel *WDFunc::TVModel(QWidget *w, const QString &tvname)
+{
+    ETableView *tv = w->findChild<ETableView *>(tvname);
+    if (tv == nullptr)
+        return nullptr;
+    return reinterpret_cast<ETableModel *>(tv->model());
+}
+
 bool WDFunc::LE_read_data(QWidget *w, const QString &lename, QString &levalue)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);

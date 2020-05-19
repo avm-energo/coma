@@ -495,7 +495,6 @@ int Parse104::isIncomeDataValid(QByteArray ba)
         if ((baat2 == I104_STOPDT_CON) && (cmd == I104_STOPDT_ACT)) // если пришло подтверждение стопа и перед этим мы стоп запрашивали
             cmd = I104_STOPDT_CON;
         if ((baat2 == I104_TESTFR_CON) && (cmd == I104_TESTFR_ACT)) // если пришло подтверждение теста и перед этим мы тест запрашивали
-        {
             cmd = I104_TESTFR_CON;
         if (baat2 == I104_TESTFR_ACT)
             emit sendAct();
