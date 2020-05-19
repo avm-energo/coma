@@ -194,6 +194,22 @@ void JournalDialog::SaveJour()
     delete xlsx;
 }
 
+void JournalDialog::FillSysJour(QByteArray ba)
+{
+    FillEventsTable(ba.data(), JOURSYS);
+}
+
+void JournalDialog::FillMeasJour(QByteArray ba)
+{
+    FillMeasTable(ba.data());
+}
+
+void JournalDialog::FillWorkJour(QByteArray ba)
+{
+    FillEventsTable(ba.data(), JOURWORK);
+}
+
+
 void JournalDialog::FillEventsTable(char *file, int jourtype)
 {
     QVector<QVector<QVariant>> lsl;

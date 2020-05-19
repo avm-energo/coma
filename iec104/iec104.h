@@ -198,9 +198,12 @@ signals:
     void SendConfirmSection(unsigned char);
     void sendConfirmFile(unsigned char);
     void sendS2fromParse(QVector<S2::DataRec>*);
-    void sendJourSysfromParse(QVector<S2::DataRec>*);
+/*    void sendJourSysfromParse(QVector<S2::DataRec>*);
     void sendJourWorkfromParse(QVector<S2::DataRec>*);
-    void sendJourMeasfromParse(QVector<S2::DataRec>*);
+    void sendJourMeasfromParse(QVector<S2::DataRec>*); */
+    void sendJourSysfromParse(QByteArray);
+    void sendJourWorkfromParse(QByteArray);
+    void sendJourMeasfromParse(QByteArray);
     void sectionReady();
     void segmentReady();
     void LastSec();
@@ -379,9 +382,12 @@ signals:
     void ShowError(QString);
     void readConfEth();
     void sendS2fromiec104(QVector<S2::DataRec>*);
-    void sendJourSysfromiec104(QVector<S2::DataRec>*);
+/*    void sendJourSysfromiec104(QVector<S2::DataRec>*);
     void sendJourWorkfromiec104(QVector<S2::DataRec>*);
-    void sendJourMeasfromiec104(QVector<S2::DataRec>*);
+    void sendJourMeasfromiec104(QVector<S2::DataRec>*); */
+    void sendJourSysfromiec104(QByteArray);
+    void sendJourWorkfromiec104(QByteArray);
+    void sendJourMeasfromiec104(QByteArray);
     void LastSeg();
     void sendMessageOk();
     void relesignalsready(Parse104::SponSignals104*);

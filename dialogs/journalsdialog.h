@@ -129,6 +129,11 @@ private slots:
     void GetJour();
     void EraseJour();
     void SaveJour();
+
+public slots:
+    void FillSysJour(QByteArray ba);
+    void FillMeasJour(QByteArray ba);
+    void FillWorkJour(QByteArray ba);
 };
 
 #endif // JOURNALDIALOG_H

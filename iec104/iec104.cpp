@@ -69,9 +69,13 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
     connect(Parse,SIGNAL(SendConfirmSection(unsigned char)),this,SLOT(ConfirmSection(unsigned char)));
     //connect(Parse,SIGNAL(sendConfirmFile(unsigned char)),this,SLOT(ConfirmFile(unsigned char)));
     connect(Parse,SIGNAL(sendS2fromParse(QVector<S2::DataRec>*)),this,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)));
-    connect(Parse,SIGNAL(sendJourSysfromParse(QVector<S2::DataRec>*)),this,SIGNAL(sendJourSysfromiec104(QVector<S2::DataRec>*)));
+/*    connect(Parse,SIGNAL(sendJourSysfromParse(QVector<S2::DataRec>*)),this,SIGNAL(sendJourSysfromiec104(QVector<S2::DataRec>*)));
     connect(Parse,SIGNAL(sendJourWorkfromParse(QVector<S2::DataRec>*)),this,SIGNAL(sendJourWorkfromiec104(QVector<S2::DataRec>*)));
-     connect(Parse,SIGNAL(sendJourMeasfromParse(QVector<S2::DataRec>*)),this,SIGNAL(sendJourMeasfromiec104(QVector<S2::DataRec>*)));
+     connect(Parse,SIGNAL(sendJourMeasfromParse(QVector<S2::DataRec>*)),this,SIGNAL(sendJourMeasfromiec104(QVector<S2::DataRec>*))); */
+    connect(Parse,SIGNAL(sendJourSysfromParse(QByteArray)),this,SIGNAL(sendJourSysfromiec104(QByteArray)));
+    connect(Parse,SIGNAL(sendJourWorkfromParse(QByteArray)),this,SIGNAL(sendJourWorkfromiec104(QByteArray)));
+    connect(Parse,SIGNAL(sendJourMeasfromParse(QByteArray)),this,SIGNAL(sendJourMeasfromiec104(QByteArray)));
+
     connect(Parse,SIGNAL(sectionReady()),this,SLOT(SectionReady()));
     connect(Parse,SIGNAL(segmentReady()),this,SLOT(SendSegments()));
     connect(this,SIGNAL(LastSeg()),this,SLOT(LastSegment()));
@@ -646,7 +650,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
                       }
                       else if(ba[9] == 4)   // если файл системного журнала
                       {
-                       QVector<S2::DataRec> *DRJour = new QVector<S2::DataRec>;
+/*                       QVector<S2::DataRec> *DRJour = new QVector<S2::DataRec>;
                        DRJour->append({static_cast<quint32>(ReadData.data()[16]),static_cast<quint32>(ReadData.data()[20]),&ReadData.data()[24]});
                        memcpy(&DRJour->data()[0],&ReadData.data()[16],8);
 
@@ -654,31 +658,34 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
                        if (res == Error::ER_NOERROR)
                        {
                         emit sendJourSysfromParse(DRJour);
-                       }
+                       } */
+                          emit sendJourSysfromParse(ReadData);
                       }
                       else if(ba[9] == 5)   // если файл рабочего журнала
                       {
-                       QVector<S2::DataRec> *DRJour = new QVector<S2::DataRec>;
+/*                       QVector<S2::DataRec> *DRJour = new QVector<S2::DataRec>;
                        DRJour->append({static_cast<quint32>(ReadData.data()[16]),static_cast<quint32>(ReadData.data()[20]),&ReadData.data()[24]});
                        memcpy(&DRJour->data()[0],&ReadData.data()[16],8);
 
                        res = S2::RestoreDataMem(ReadData.data(), RDLength, DRJour);
                        if (res == Error::ER_NOERROR)
-                       {
-                        emit sendJourWorkfromParse(DRJour);
-                       }
+                       { */
+//                        emit sendJourWorkfromParse(DRJour);
+                          emit sendJourWorkfromParse(ReadData);
+//                       }
                       }
                       else if(ba[9] == 6)   // если файл журнала измерений
                       {
-                       QVector<S2::DataRec> *DRMJour = new QVector<S2::DataRec>;
+/*                       QVector<S2::DataRec> *DRMJour = new QVector<S2::DataRec>;
                        DRMJour->append({static_cast<quint32>(ReadData.data()[16]),static_cast<quint32>(ReadData.data()[20]),&ReadData.data()[24]});
                        memcpy(&DRMJour->data()[0],&ReadData.data()[16],8);
 
                        res = S2::RestoreDataMem(ReadData.data(), RDLength, DRMJour);
                        if (res == Error::ER_NOERROR)
-                       {
-                        emit sendJourMeasfromParse(DRMJour);
-                       }
+                       { */
+//                        emit sendJourMeasfromParse(DRMJour);
+                          emit sendJourMeasfromParse(ReadData);
+//                       }
                       }
 
 
