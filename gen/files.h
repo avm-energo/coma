@@ -20,7 +20,7 @@ public:
 
     static QString ChooseFileForOpen(QWidget *parent, QString mask);
     static int LoadFromFile(const QString &filename, QByteArray &ba);
-    static QString ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext);
+    static QString ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr = "");
     static int SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes);
 };
 

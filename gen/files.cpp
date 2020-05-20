@@ -45,11 +45,15 @@ int Files::LoadFromFile(const QString &filename, QByteArray &ba)
 // Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)"; QString ext - расширение по умолчанию
 // Output: QString filename
 
-QString Files::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext)
+QString Files::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr)
 {
     QString MTypeM = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == 0) ? "00" : QString::number(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN), 16);
-    QString tmps = StdFunc::GetHomeDir() + "/" + QString::number(ModuleBSI::GetMType(BoardTypes::BT_BASE), 16)+MTypeM+"-"+\
+    QString tmps;
+    if (filenamestr.isEmpty())
+        tmps = StdFunc::GetHomeDir() + "/" + QString::number(ModuleBSI::GetMType(BoardTypes::BT_BASE), 16)+MTypeM+"-"+\
             QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0'))+"."+ext;
+    else
+        tmps = filenamestr;
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);

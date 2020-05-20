@@ -125,6 +125,7 @@ void MainWindow::Go(const QString &parameter)
 
 void MainWindow::ReConnect(int err)
 {
+    Q_UNUSED(err)
     QDialog *dlg = new QDialog;
     reconnectTimer = new QTimer;
     reconnectTimer->setInterval(10000);

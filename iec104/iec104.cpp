@@ -400,7 +400,11 @@ void Parse104::Run()
             if (tmpi == I104_RCVNORM) // если поймали правильное начало данных, переходим к их обработке
             {
                 if (APDUFormat == I104_I)
-                    ParseIFormat(&(tmpba.data()[6])); // без APCI
+//                    ParseIFormat(&(tmpba.data()[6])); // без APCI
+                {
+                    tmpba = tmpba.mid(6);
+                    ParseIFormat(tmpba); // без APCI
+                }
             }
             if (V_R>(AckVR+I104_W))
             {
@@ -510,7 +514,7 @@ int Parse104::isIncomeDataValid(QByteArray ba)
     return I104_RCVWRONG;
 }
 
-void Parse104::ParseIFormat(const char *ba) // основной разборщик
+void Parse104::ParseIFormat(QByteArray &ba) // основной разборщик
 {
    // char bacopy[100];
    // memcpy(&bacopy, ba, sizeof(ba));
@@ -554,15 +558,15 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
         {
             (flSignals+cntflTimestamp)->fl.SigAdr=ObjectAdr;
             float value;
-            memcpy(&value,&ba[index],4);
+            memcpy(&value,&(ba.data()[index]),4);
             index += 4;
             (flSignals+cntflTimestamp)->fl.SigVal=value;
             quint8 quality;
-            memcpy(&quality,&ba[index],1);
+            memcpy(&quality,&(ba.data()[index]),1);
             index++;
             (flSignals+cntflTimestamp)->fl.SigQuality=quality;
             quint64 time;
-            memcpy(&time,&ba[index],8);
+            memcpy(&time,&(ba.data()[index]),8);
             index += 8;
             (flSignals+cntflTimestamp)->fl.CP56Time=time;
             cntflTimestamp++;
@@ -586,11 +590,11 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
         {
             (flSignals+cntfl)->fl.SigAdr=ObjectAdr;
             float value;
-            memcpy(&value,&ba[index],4);
+            memcpy(&value,&(ba.data()[index]),4);
             index += 4;
             (flSignals+cntfl)->fl.SigVal=value;
             quint8 quality;
-            memcpy(&quality,&ba[index],1);
+            memcpy(&quality,&(ba.data()[index]),1);
             index++;
             (flSignals+cntfl)->fl.SigQuality=quality;
             cntfl++;
@@ -602,11 +606,11 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
 
            (sponSignals)->Spon[cntspon].SigAdr=ObjectAdr;
            quint8 value;
-           memcpy(&value,&ba[index],1);
+           memcpy(&value,&(ba.data()[index]),1);
            index += 1;
            (sponSignals)->Spon[cntspon].SigVal=value;
            /*quint64 time;
-           memcpy(&time,&ba[index],8);
+           memcpy(&time,&(ba.data()[index]),8);
            index += 8;
            (sponSignals+cntspon)->Spon.CP56Time=time;*/
 
@@ -623,11 +627,11 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
 
             (SponSignalsWithTime)->Spon[cntsponTime].SigAdr=ObjectAdr;
             quint8 value;
-            memcpy(&value,&ba[index],1);
+            memcpy(&value,&(ba.data()[index]),1);
             index += 1;
             (SponSignalsWithTime)->Spon[cntsponTime].SigVal=value;
             quint64 time;
-            memcpy(&time,&ba[index],7);
+            memcpy(&time,&(ba.data()[index]),7);
             index += 7;
             (SponSignalsWithTime)->Spon[cntsponTime].CP56Time=time;
 
@@ -646,15 +650,15 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
             (BS104Signals+cntbs)->BS.SigAdr[j]=(ObjectAdr>>8*j);
 
             quint32 value;
-            memcpy(&value,&ba[index],4);
+            memcpy(&value,&(ba.data()[index]),4);
             index += 4;
             (BS104Signals+cntbs)->BS.SigVal=value;
             quint8 quality;
-            memcpy(&quality,&ba[index],1);
+            memcpy(&quality,&(ba.data()[index]),1);
             index++;
             (BS104Signals+cntbs)->BS.SigQuality=quality;
             //quint64 time;
-            //memcpy(&time,&ba[index],8);
+            //memcpy(&time,&(ba.data()[index]),8);
             //index += 8;
             //(BS104Signals+cntbs)->BS.CP56Time=time;
             cntbs++;
@@ -691,7 +695,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
                 {
                     break;
                 }*/
-                ReadData.append(&ba[13], RDSize);
+                ReadData.append(&(ba.data()[13]), RDSize);
                 RDLength += RDSize;
                 emit SetDataCountFromParse(RDLength);
 
@@ -708,8 +712,8 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
                  {
                       //emit sendConfirmFile(num);
 
-
-                      if(ba[9] == 1)  // если файл конфигурации
+                    int filetype = ba.at(9);
+                      if(filetype == 0x01)  // если файл конфигурации
                       {
                        res = S2::RestoreDataMem(ReadData.data(), RDLength, DR);
                        if (res == Error::ER_NOERROR)
@@ -717,7 +721,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
                         emit sendS2fromParse(DR);
                        }
                       }
-                      else if(ba[9] == 4)   // если файл системного журнала
+                      else if(filetype == 0x04)   // если файл системного журнала
                       {
 /*                       QVector<S2::DataRec> *DRJour = new QVector<S2::DataRec>;
                        DRJour->append({static_cast<quint32>(ReadData.data()[16]),static_cast<quint32>(ReadData.data()[20]),&ReadData.data()[24]});
@@ -730,7 +734,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
                        } */
                           emit sendJourSysfromParse(ReadData);
                       }
-                      else if(ba[9] == 5)   // если файл рабочего журнала
+                      else if(filetype == 0x05)   // если файл рабочего журнала
                       {
 /*                       QVector<S2::DataRec> *DRJour = new QVector<S2::DataRec>;
                        DRJour->append({static_cast<quint32>(ReadData.data()[16]),static_cast<quint32>(ReadData.data()[20]),&ReadData.data()[24]});
@@ -743,7 +747,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
                           emit sendJourWorkfromParse(ReadData);
 //                       }
                       }
-                      else if(ba[9] == 6)   // если файл журнала измерений
+                      else if(filetype == 6)   // если файл журнала измерений
                       {
 /*                       QVector<S2::DataRec> *DRMJour = new QVector<S2::DataRec>;
                        DRMJour->append({static_cast<quint32>(ReadData.data()[16]),static_cast<quint32>(ReadData.data()[20]),&ReadData.data()[24]});
@@ -777,12 +781,12 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
 
         case F_SC_NA_1: // запрос файла, секции
         {
-            if(ba[12] == 0x02)  //запрос файла
+            if(ba.at(12) == 0x02)  //запрос файла
             {
                 emit sectionReady();
             }
 
-            if(ba[12] == 0x06)
+            if(ba.at(12) == 0x06)
             {
                 emit segmentReady();
             }
@@ -792,12 +796,12 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
         case F_AF_NA_1: // подтверждение файла, секции
         {
             //emit sendMessagefromParse();
-            if(ba[12] == 0x03)  //подтверждение секции
+            if(ba.at(12) == 0x03)  //подтверждение секции
             {
                 emit LastSec();
             }
 
-            if(ba[12] == 0x01)  //подтверждение секции
+            if(ba.at(12) == 0x01)  //подтверждение секции
             {
                 emit sendMessagefromParse();
             }
@@ -827,7 +831,7 @@ void Parse104::ParseIFormat(const char *ba) // основной разборщи
 
             if((adr == 920) && (DUI.cause.cause == 10))  // если адрес последнего параметра коррекции
             {
-               if(ba[13] == 0)
+               if(ba.at(13) == 0)
                {
                    emit writeCorMesOkParse();
                    emit SetDataCountFromParse(11);

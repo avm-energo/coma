@@ -23,7 +23,7 @@ public:
     static QString NsTimeToString (quint64 nstime);
     static QString UnixTime64ToString(quint64 utime);
     static QString UnixTime64ToInvStringFractional(quint64 utime);
-
+    static QString UnixTime32ToInvString(quint32 utime);
 };
 
 #endif // TIMEFUNC_H

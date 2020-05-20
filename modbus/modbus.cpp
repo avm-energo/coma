@@ -181,6 +181,7 @@ void ModBus::onAboutToClose()
 
 void ModBus::onResponseTimeout(int timerId)
 {
+    Q_UNUSED(timerId)
         /*m_responseTimer.stop();
         if (m_state != State::WaitingForReplay || m_queue.isEmpty())
             return;
