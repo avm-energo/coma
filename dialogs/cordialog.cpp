@@ -499,13 +499,13 @@ void CorDialog::ModBusUpdateCorData(ModBusSignal *Signal, int * size)
               //sig = *(Signal+i);
               FillBd(this, QString::number((Signal+i)->SigAdr), WDFunc::StringValueWithCheck((Signal+i)->flVal));
             }
-            //ModBus::Reading = false;
+            ModBus::Reading = false;
             EMessageBox::information(this, "INFO", "Прочитано успешно");
         }
         else if(*size == 1)
         {
           EMessageBox::information(this, "INFO", "Записано успешно");
-          //ModBus::Reading = false;
+          ModBus::Reading = false;
         }
 
     }

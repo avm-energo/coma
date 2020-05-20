@@ -71,6 +71,7 @@ void EAbstractProtocomChannel::SendCmd(char command, int parameter)
     case CN_STest:
     case CN_NVar:
     case CN_SMode:
+    case CN_Ert:
         break;
     default:
         Finish(CN_UNKNOWNCMDERROR);

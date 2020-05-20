@@ -125,12 +125,14 @@ void MainWindow::Go(const QString &parameter)
 
 void MainWindow::ReConnect(int err)
 {
+    Q_UNUSED(err);
     QDialog *dlg = new QDialog;
     reconnectTimer = new QTimer;
     reconnectTimer->setInterval(10000);
 
     reconnect = true;
 
+    TheEnd = 1;
     if(!disconnected)
     {
         StopRead = 1;
@@ -1026,7 +1028,6 @@ int MainWindow::CheckPassword()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Stage1_5()
 {
-    TheEnd = 0;
     disconnected = 0;
     ShowInterfaceDialog();
     ShowConnectDialog();

@@ -52,6 +52,10 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
     First = 1;
     count = 0;
     write = 0;
+    reconnectTimer = new QTimer;
+    reconnectTimer->setInterval(RECONNECTIME);
+
+    connect(reconnectTimer, SIGNAL(timeout()), this, SLOT(Reconnect()));
 
     for(i=0;i<6;i++)
     SignalGroups[i].signaltype=0x04;
@@ -129,7 +133,7 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
 
 }
 
-void ModBus::Run()
+/*void ModBus::Run()
 {
 
     while(1)
@@ -155,7 +159,7 @@ void ModBus::Run()
         QThread::msleep(10);
         qApp->processEvents();
     }
-}
+}*/
 
 
 ModBus::~ModBus()
@@ -234,6 +238,12 @@ void ModBus::ReadPort()
 
   cursize = serialPort->bytesAvailable();
 
+  if(ComData.adr != 1)
+  {
+     reconnectTimer->stop();
+     reconnectTimer->setInterval(RECONNECTIME);
+     reconnectTimer->start();
+  }
 
   if(cursize == readSize)
   {
@@ -315,6 +325,7 @@ void ModBus::ReadPort()
                if(recordSize == ComData.quantity)
                signalsSize = 1;
                TimeFunc::Wait(100);
+
            }
 
            if(ComData.adr == 1)
@@ -322,11 +333,15 @@ void ModBus::ReadPort()
              ComData.adr = 0;
              emit BsiFromModBus(BSISig, &signalsSize);
              commands = false;
+             reconnectTimer->start();
            }
            else if(ComData.adr == 4600)
            emit timeSignalsReceived(BSISig);
            else
-           emit corsignalsreceived(Sig, &signalsSize);
+           {
+             commands = false;
+             emit corsignalsreceived(Sig, &signalsSize);
+           }
 
            //commands = false;
            //ComData.adr = 0;
@@ -738,18 +753,16 @@ void ModBus::tabs(int index)
 
    if(index == timeIndex)
    {
-       if(!write)
-       {
-         ComData.ModCom = 0x03;
-         ComData.adr = 4600;
-         ComData.quantity = 2;
-         ComData.sizebytes = 4;
-         ComData.data = new QByteArray[100];
-         ComData.data->clear();
+       TimeFunc::Wait(1000);
+       ComData.ModCom = 0x03;
+       ComData.adr = 4600;
+       ComData.quantity = 2;
+       ComData.sizebytes = 4;
+       ComData.data = new QByteArray[100];
+       ComData.data->clear();
          //TimeFunc::Wait(100);
-         commands = true;
-         Reading = false;
-       }
+       commands = true;
+       //Reading = false;
    }
    else if(index == corIndex)
    {
@@ -763,14 +776,23 @@ void ModBus::tabs(int index)
 
        //TimeFunc::Wait(100);
        commands = true;
-       Reading = false;
+       //Reading = false;
    }
    else if(index == checkIndex)
    {
        ComData.adr = 0;
        commands = false;
    }
+
+   Reading = false;
   }
+}
+
+void ModBus::Reconnect()
+{
+   reconnectTimer->stop();
+   reconnectTimer->deleteLater();
+   emit reconnectSignal(1);
 }
 
 /*QModbusReply *enqueueRequest(const QModbusRequest &request, int serverAddress,

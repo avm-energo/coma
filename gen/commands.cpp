@@ -254,7 +254,7 @@ int Commands::WriteBac(char BacNum, void *BacPtr, int BacPtrSize)
 int Commands::EraseTechBlock(char block)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    if (cn != 0)
+    if (cn != nullptr)
     {
         cn->SendCmd(CN_Ert, block);
         return cn->Result;
@@ -270,7 +270,7 @@ int Commands::WriteTimeMNK(uint32_t *Time,  int TimeSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     QByteArray ba;
-    if (cn != 0)
+    if (cn != nullptr)
     {
         ba.append(reinterpret_cast<const char *>(Time), TimeSize);
         cn->SendOut(CN_WTime, BoardTypes::BT_NONE, ba);
@@ -287,7 +287,7 @@ int Commands::GetTimeMNK(uint &Time)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     QByteArray ba;
-    if (cn != 0)
+    if (cn != nullptr)
     {
         cn->SendIn(CN_GTime, BoardTypes::BT_NONE, ba, sizeof(uint));
         memcpy(&Time, &(ba.data()[0]), sizeof(uint));
@@ -322,7 +322,7 @@ int Commands::WriteBd(char BdNum, void *BdPtr, int BdPtrSize)
 int Commands::WriteCom(char ComNum)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    if (cn != 0)
+    if (cn != nullptr)
     {
         cn->SendCmd(CN_WCom, ComNum);
         return cn->Result;
@@ -336,7 +336,7 @@ int Commands::WriteCom(char ComNum)
 int Commands::RunVPO()
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    if (cn != 0)
+    if (cn != nullptr)
     {
         cn->SendCmd(CN_VPO);
         return cn->Result;
@@ -350,7 +350,7 @@ int Commands::RunVPO()
 int Commands::TestCom(char OnOff)
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    if (cn != 0)
+    if (cn != nullptr)
     {
         cn->SendCmd(CN_STest, OnOff);
         return cn->Result;
