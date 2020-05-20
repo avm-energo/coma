@@ -154,38 +154,46 @@ void JournalDialog::EraseJour()
 void JournalDialog::SaveJour()
 {
     QXlsx::Format cellformat;
-    QString tvname, jourtypestr;
+    QString tvname, jourtypestr, jourfilestr;
+    Qt::SortOrder order = Qt::AscendingOrder;
     int jourtype = GetJourNum(sender()->objectName());
     if (jourtype == Error::ER_GENERALERROR)
         return;
+    jourfilestr = "KIV #" + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + " ";
     switch(jourtype)
     {
     case JOURSYS:
         tvname = "system";
         jourtypestr = "Системный журнал";
+        jourfilestr += "SysJ ";
+        order = Qt::DescendingOrder;
 //        cellformat.setNumberFormat("");
         break;
     case JOURMEAS:
         tvname = "meas";
         jourtypestr = "Журнал измерений";
+        jourfilestr += "MeasJ ";
+        order = Qt::AscendingOrder;
         cellformat.setNumberFormat("#.####");
         break;
     case JOURWORK:
         tvname = "work";
         jourtypestr = "Журнал событий";
+        jourfilestr += "WorkJ ";
+        order = Qt::DescendingOrder;
 //        cellformat.setNumberFormat("");
         break;
     default:
         break;
     }
-
     ETableModel *mdl = WDFunc::TVModel(this, tvname);
     QSortFilterProxyModel *pmdl = new QSortFilterProxyModel;
     pmdl->setSourceModel(mdl);
     int dateidx = mdl->Headers().indexOf("Дата/Время");
-    pmdl->sort(dateidx, Qt::DescendingOrder);
+    pmdl->sort(dateidx, order);
+    jourfilestr += QDate::currentDate().toString("dd-MM-yyyy") + " .xlsx";
     // запрашиваем имя файла для сохранения
-    QString filename = Files::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx");
+    QString filename = Files::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx", jourfilestr);
     QXlsx::Document *xlsx = new QXlsx::Document(filename);
     xlsx->write(1,1,QVariant(jourtypestr));
     xlsx->write(2,1,QVariant("Модуль: " + ModuleBSI::GetModuleTypeString() + " сер. ном. " + \
@@ -194,8 +202,8 @@ void JournalDialog::SaveJour()
     xlsx->write(4,1,QVariant("Время сохранения журнала: "+QDateTime::currentDateTime().toString("hh:mm:ss")));
 
     // пишем в файл заголовки
-    for (int i=0; i<mdl->columnCount(); ++i)
-        xlsx->write(5, (i+1), mdl->headerData(i, Qt::Horizontal, Qt::DisplayRole));
+    for (int i=0; i<pmdl->columnCount(); ++i)
+        xlsx->write(5, (i+1), pmdl->headerData(i, Qt::Horizontal, Qt::DisplayRole));
 
 //    QXlsx::Format numformat; //, dateformat;
 //    numformat.setNumberFormat("0");
@@ -213,7 +221,7 @@ void JournalDialog::SaveJour()
     }
     xlsx->save();
     EMessageBox::information(this, "Внимание", "Файл создан успешно");
-                }
+}
 
 void JournalDialog::FillSysJour(QByteArray ba)
 {
@@ -321,12 +329,11 @@ void JournalDialog::FillMeasTable(char *file)
         file += recordsize;
         i += recordsize;
 
-        QApplication::setOverrideCursor(Qt::WaitCursor);
 
         if(meas.Time != 0xFFFFFFFF)
         {
             EventNum << meas.NUM;
-            Time << TimeFunc::UnixTime64ToInvStringFractional(meas.Time);
+            Time << TimeFunc::UnixTime32ToInvString(meas.Time);
             UeffA << meas.Ueff[0];
             UeffB << meas.Ueff[1];
             UeffC << meas.Ueff[2];

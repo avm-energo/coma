@@ -42,3 +42,9 @@ QString TimeFunc::UnixTime64ToInvStringFractional(quint64 utime)
     return outs;
 }
 
+QString TimeFunc::UnixTime32ToInvString(quint32 utime)
+{
+    QDateTime tn = QDateTime::fromTime_t(utime, Qt::UTC); // in seconds
+    return tn.toString("yyyy/MM/dd hh:mm:ss");
+}
+

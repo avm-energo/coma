@@ -260,7 +260,7 @@ private:
     quint8 APDULength;
     quint8 APDUFormat;
 
-    void ParseIFormat(const char *);
+    void ParseIFormat(QByteArray &ba);
     int isIncomeDataValid(QByteArray);
 
 private slots:

@@ -6,7 +6,7 @@
 #include "error.h"
 #include "eabstractprotocomchannel.h"
 
-bool EAbstractProtocomChannel::WriteUSBLog = false;
+bool EAbstractProtocomChannel::WriteUSBLog = true;
 
 EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(parent)
 {
