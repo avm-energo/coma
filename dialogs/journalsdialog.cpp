@@ -133,7 +133,22 @@ void JournalDialog::GetJour()
 
 void JournalDialog::EraseJour()
 {
+    if (MainWindow::MainInterface == "USB")
+    {
+        int jourtype = GetJourNum(sender()->objectName());
+        if (jourtype == Error::ER_GENERALERROR)
+            return;
+        char num = jourtype + 4;
 
+        if(Commands::EraseTechBlock(num) == Error::ER_NOERROR)
+        {
+          EMessageBox::information(this, "Успешно", "Стирание прошло успешно");
+        }
+        else
+        {
+          EMessageBox::information(this, "Ошибка", "Ошибка");
+        }
+    }
 }
 
 void JournalDialog::SaveJour()

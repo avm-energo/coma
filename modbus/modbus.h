@@ -16,6 +16,8 @@
 #include "../gen/s2.h"
 #include "../gen/log.h"
 
+#define RECONNECTIME 5000
+
 
 class ModBus : public QObject
 {
@@ -131,7 +133,7 @@ public:
 
 
 public slots:
-        void Run();
+        //void Run();
         void ReadPort();
         void WriteToPort();
         void onAboutToClose();
@@ -158,6 +160,7 @@ signals:
  void coilsignalsready(Coils*);
  void timeReadError();
  void modBusError();
+ void reconnectSignal(int);
  //void stopModBus();
 
 
@@ -180,8 +183,10 @@ private:
      bool commands;
      qint64 lastcursize;
      int First, count, write;
+     QTimer *reconnectTimer;
 
 private slots:
+     void Reconnect();
 
 protected:
 };

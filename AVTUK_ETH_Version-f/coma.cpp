@@ -257,6 +257,7 @@ void Coma::AddActionsToMenuBar(QMenuBar *menubar)
 
 void Coma::Stage3()
 {
+    TheEnd = 0;
     QString str;
     int count = 0;
     MTypeB = 0;
@@ -301,7 +302,7 @@ void Coma::Stage3()
          else if(MainInterface == "RS485")
          {
 
-             modBus = new ModBus(Settings, this);           
+             modBus = new ModBus(Settings,this);
              Modthr = new QThread;
              //Modthr->setPriority(QThread::LowPriority);
              modBus->moveToThread(Modthr);
@@ -329,7 +330,7 @@ void Coma::Stage3()
              count = 0;
              if(reconnect)
              {
-               if(MainInterface == "Ethernet")
+               if(MainInterface == "Ethernet" || MainInterface == "RS485")
                ReConnect(1);
              }
              else
@@ -590,6 +591,7 @@ void Coma::PrepareDialogs()
             connect(ch104,SIGNAL(sendJourWorkfromiec104(QByteArray)), JourD, SLOT(FillWorkJour(QByteArray)));
             connect(ch104,SIGNAL(sendJourMeasfromiec104(QByteArray)), JourD, SLOT(FillMeasJour(QByteArray)));
             ch104->Parse->DR = &S2Config;
+            connect(ch104,SIGNAL(errorCh104(int)), this, SLOT(ReConnect(int)));
 
 #endif
          }
@@ -602,7 +604,7 @@ void Coma::PrepareDialogs()
             connect(modBus, SIGNAL(corsignalsreceived(ModBusSignal*, int*)), CorD, SLOT(ModBusUpdateCorData(ModBusSignal*, int*)));
             connect(CorD, SIGNAL(RS485WriteCorBd(information*, float*)), modBus, SLOT(ModWriteCor(information*, float*)));//, int*)));
             connect(CorD, SIGNAL(RS485ReadCorBd(information*)), modBus, SLOT(ModReadCor(information*)));
-
+            connect(modBus,SIGNAL(reconnectSignal(int)), this, SLOT(ReConnect(int)));
          }
 
        }

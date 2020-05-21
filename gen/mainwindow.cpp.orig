@@ -125,7 +125,11 @@ void MainWindow::Go(const QString &parameter)
 
 void MainWindow::ReConnect(int err)
 {
+<<<<<<< HEAD
     Q_UNUSED(err);
+=======
+    Q_UNUSED(err)
+>>>>>>> origin/MemCpy_Bug
     QDialog *dlg = new QDialog;
     reconnectTimer = new QTimer;
     reconnectTimer->setInterval(10000);

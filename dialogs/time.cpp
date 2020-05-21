@@ -296,10 +296,8 @@ void MNKTime::Write_PCDate()
         #if PROGSIZE != PROGSIZE_EMUL
         //FinishThread = true;
         TimeFunc::Wait(100);
-        if (Commands::WriteTimeMNK(&time, sizeof(uint)) == Error::ER_NOERROR)
-        EMessageBox::information(this, "INFO", "Записано успешно");
-        else
-        EMessageBox::information(this, "INFO", "Ошибка");
+        if (Commands::WriteTimeMNK(&time, sizeof(uint)) != Error::ER_NOERROR)
+        EMessageBox::information(this, "INFO", "Ошибка"); //EMessageBox::information(this, "INFO", "Записано успешно");
         //FinishThread = false;
         #endif
     }
@@ -330,10 +328,8 @@ void MNKTime::Write_Date()
     {
         #if PROGSIZE != PROGSIZE_EMUL
         TimeFunc::Wait(100);
-        if (Commands::WriteTimeMNK(time, sizeof(uint)) == Error::ER_NOERROR)
-        EMessageBox::information(this, "INFO", "Записано успешно");
-        else
-        EMessageBox::information(this, "INFO", "Ошибка");
+        if (Commands::WriteTimeMNK(time, sizeof(uint)) != Error::ER_NOERROR)
+        EMessageBox::information(this, "INFO", "Ошибка"); //EMessageBox::information(this, "INFO", "Записано успешно");
         #endif
     }
     else if(MainWindow::MainInterface == "Ethernet")
