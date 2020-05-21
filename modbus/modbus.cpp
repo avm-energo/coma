@@ -664,11 +664,11 @@ void ModBus::ModReadCor(information* info)
 
 void ModBus::InterrogateTime()
 {
-    if(First)
+    /*if(First)
     {
       First = 0;
       Reading = false;
-    }
+    }*/
 
 
     while(Reading == true)
