@@ -178,13 +178,53 @@ void MainWindow::attemptToRec()
 {
     reconnectTimer->stop();
     reconnectTimer->deleteLater();
+
+    if(ch104 != nullptr)
     ch104->deleteLater();
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    S2Config.clear();
-    SaveSettings();
-    QApplication::restoreOverrideCursor();
-    StopRead = 0;
-    Stage3();
+
+    if(reconnect != false)
+    {
+        QApplication::setOverrideCursor(Qt::WaitCursor);
+        S2Config.clear();
+        SaveSettings();
+        QApplication::restoreOverrideCursor();
+        StopRead = 0;
+        Stage3();
+    }
+}
+
+void MainWindow::ConnectMessage()
+{
+    QDialog *dlg = new QDialog;
+    connectTimer = new QTimer;
+    connectTimer->setInterval(2000);
+
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    QString tmps = QString(PROGCAPTION);
+    QWidget *w = new QWidget;
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
+    hlyout->addWidget(WDFunc::NewLBLT(w, "Связь с "+FullName+" установлена", "", "", ""), 1);
+    vlayout->addLayout(hlyout);
+
+    w->setLayout(vlayout);
+    connect(connectTimer,SIGNAL(timeout()), dlg,SLOT(close()));
+    connect(connectTimer,SIGNAL(timeout()), this,SLOT(stopTimer()));
+
+    //hlyout->addLayout(l2yout,100);
+    lyout->addWidget(w);
+    dlg->setLayout(lyout);
+
+    connectTimer->start();
+    dlg->exec();
+
+}
+
+void MainWindow::stopTimer()
+{
+    connectTimer->stop();
+    connectTimer->deleteLater();
 }
 
 QWidget *MainWindow::HthWidget()
@@ -1028,6 +1068,7 @@ int MainWindow::CheckPassword()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Stage1_5()
 {
+    reconnect = false;
     disconnected = 0;
     ShowInterfaceDialog();
     ShowConnectDialog();
@@ -1655,6 +1696,7 @@ void MainWindow::DisconnectAndClear()
            {
              if(reconnect)
              {
+                 reconnect = false;
                  if(ModuleBSI::ModuleTypeString != "")
                  EMessageBox::information(this, "Разрыв связи", "Связь с "+ModuleBSI::ModuleTypeString+" разорвана");
                  else
@@ -1672,6 +1714,7 @@ void MainWindow::DisconnectAndClear()
            {
                if(reconnect)
                {
+                 reconnect = false;
                  if(FullName != "")
                  EMessageBox::information(this, "Разрыв связи", "Связь с "+FullName+" разорвана");
                  else
@@ -1818,10 +1861,10 @@ void MainWindow::SetDefConf()
 }
 
 
-void MainWindow::ConnectMessage()
+/*void MainWindow::ConnectMessage()
 {
    EMessageBox::information(this, "Успешно", "Связь с "+FullName+" установлена");
-}
+}*/
 
 void MainWindow::DisconnectMessage()
 {
@@ -2024,4 +2067,10 @@ void MainWindow::GetUSBAlarmInDialog()
 
     }
 
+}
+
+
+void MainWindow::ConnectMessage(QString* Name)
+{
+  EMessageBox::information(this, "Успешно", "Связь с "+*Name+" установлена");
 }
