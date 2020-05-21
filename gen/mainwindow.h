@@ -14,7 +14,6 @@
 #include "../check/checkdialog84.h"
 #include "../dialogs/journalsdialog.h"
 #include "../modbus/modbus.h"
-#include "../check/checktempmodbusdialog.h"
 #include "../dialogs/time.h"
 #include "../dialogs/fwupdialog.h"
 
@@ -206,7 +205,6 @@ private:
     ConfDialog *MainConfDialog;
     ConfDialog *MainTuneDialog;
 
-    //checktempmodbusdialog *CheckModBus;
     //CheckDialog84* Ch84;
     quint8 HaveAlreadyRed = 0;
     //MNKTime *Time;

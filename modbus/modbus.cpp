@@ -17,10 +17,10 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include "../gen/s2.h"
-#include "modbus.h"
 #include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
 #include "../gen/mainwindow.h"
+#include "modbus.h"
 
 bool ModBus::Reading;
 
@@ -42,61 +42,70 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
     //modbusDevice->setNumberOfRetries(m_settingsDialog->settings().numberOfRetries);
 
     //connect(modbusDevice,  SIGNAL(QModbusDevice::stateChanged(QModbusDevice::State state)), parent, SLOT(onModbusStateChanged(state)));
-    deviceAdr = Settings.adr;
+    DeviceAdr = Settings.adr;
     Group = 0;
-    readSize = 0;
+    ReadSize = 0;
     Reading = false;
-    closeThr = false;
+    CloseThr = false;
     int i;
-    commands = false;
+    Commands = false;
     First = 1;
-    count = 0;
-    write = 0;
-    reconnectTimer = new QTimer;
-    reconnectTimer->setInterval(RECONNECTIME);
+    Count = 0;
+    Write = 0;
+    AboutToFinish = false;
+    ReconnectTimer = new QTimer;
+    ReconnectTimer->setInterval(RECONNECTIME);
 
-    connect(reconnectTimer, SIGNAL(timeout()), this, SLOT(Reconnect()));
+    connect(ReconnectTimer, SIGNAL(timeout()), this, SLOT(Reconnect()));
 
     for(i=0;i<6;i++)
-    SignalGroups[i].signaltype=0x04;
+        SignalGroups[i].data[SIGNALTYPE]=0x04;
+//        SignalGroups[i].signaltype=0x04;
 
-    SignalGroups[0].firstbyteadr = 0;
+    SignalGroups[0] = {0x04, 0x00, 0x65, 0x00, 0x04};
+/*    SignalGroups[0].firstbyteadr = 0;
     SignalGroups[0].secondbyteadr = 0x65;
     SignalGroups[0].firstbytequantity = 0;
-    SignalGroups[0].secondbytequantity = 0x04;
-    SignalGroups[1].firstbyteadr = 0x03;
+    SignalGroups[0].secondbytequantity = 0x04; */
+    SignalGroups[1] = {0x04, 0x03, 0xE8, 0x00, 0x20};
+/*    SignalGroups[1].firstbyteadr = 0x03;
     SignalGroups[1].secondbyteadr = 0xE8;
     SignalGroups[1].firstbytequantity = 0;
-    SignalGroups[1].secondbytequantity = 0x20;
+    SignalGroups[1].secondbytequantity = 0x20; */
     /*SignalGroups[2].firstbyteadr = 0x03;
     SignalGroups[2].secondbyteadr = 0xFC;
     SignalGroups[2].firstbytequantity = 0;
     SignalGroups[2].secondbytequantity = 0x0A;*/
-    SignalGroups[2].firstbyteadr = 0x04;
+    SignalGroups[2] = {0x04, 0x04, 0x4C, 0x00, 0x20};
+/*    SignalGroups[2].firstbyteadr = 0x04;
     SignalGroups[2].secondbyteadr = 0x4C;
     SignalGroups[2].firstbytequantity = 0;
-    SignalGroups[2].secondbytequantity = 0x20;
-    SignalGroups[3].firstbyteadr = 0x09;
+    SignalGroups[2].secondbytequantity = 0x20; */
+    SignalGroups[3] = {0x04, 0x09, 0x60, 0x00, 0x0E};
+/*    SignalGroups[3].firstbyteadr = 0x09;
     SignalGroups[3].secondbyteadr = 0x60;
     SignalGroups[3].firstbytequantity = 0;
-    SignalGroups[3].secondbytequantity = 0x0E;
-    SignalGroups[4].firstbyteadr = 0x09;
+    SignalGroups[3].secondbytequantity = 0x0E; */
+    SignalGroups[4] = {0x04, 0x09, 0x74, 0x00, 0x1C};
+/*    SignalGroups[4].firstbyteadr = 0x09;
     SignalGroups[4].secondbyteadr = 0x74;
     SignalGroups[4].firstbytequantity = 0;
-    SignalGroups[4].secondbytequantity = 0x1C;
-    SignalGroups[5].firstbyteadr = 0x11;
+    SignalGroups[4].secondbytequantity = 0x1C; */
+    SignalGroups[5] = {0x04, 0x11, 0x95, 0x00, 0x04};
+/*    SignalGroups[5].firstbyteadr = 0x11;
     SignalGroups[5].secondbyteadr = 0x95;
     SignalGroups[5].firstbytequantity = 0;
-    SignalGroups[5].secondbytequantity = 0x04;
+    SignalGroups[5].secondbytequantity = 0x04; */
     /*SignalGroups[7].firstbyteadr = 0x04;
     SignalGroups[7].secondbyteadr = 0x60;
     SignalGroups[7].firstbytequantity = 0;
     SignalGroups[7].secondbytequantity = 0x0A;*/
-    SignalGroups[6].signaltype=0x01;
+    SignalGroups[6] = {0x01, 0x0B, 0xC3, 0x00, 0x19};
+/*    SignalGroups[6].signaltype=0x01;
     SignalGroups[6].firstbyteadr = 0x0B;
     SignalGroups[6].secondbyteadr = 0xC3;
     SignalGroups[6].firstbytequantity = 0;
-    SignalGroups[6].secondbytequantity = 0x19;
+    SignalGroups[6].secondbytequantity = 0x19; */
 
     //connect(this,  SIGNAL(ModBusState(QModbusDevice::State)), parent, SLOT(onModbusStateChanged(QModbusDevice::State)));
     //connect(modbusDevice,  SIGNAL(stateChanged(QModbusDevice::State)), parent, SLOT(onModbusStateChanged(QModbusDevice::State)));
@@ -106,64 +115,54 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
     //ModBusInterrogateTimer->setInterval(1000);
 
 
-    serialPort = new QSerialPort(Settings.port);
-    serialPort->setBaudRate(Settings.baud.toInt());
-    serialPort->setDataBits(QSerialPort::Data8);
-    serialPort->setParity(QSerialPort::NoParity);
-    serialPort->setStopBits(QSerialPort::OneStop);
-    serialPort->setFlowControl(QSerialPort::NoFlowControl);
-    serialPort->setReadBufferSize(1024);
-
-
-    connect(serialPort, SIGNAL(readyRead()), this, SLOT(ReadPort()));
+    SerialPort = new QSerialPort(Settings.port);
+    SerialPort->setBaudRate(Settings.baud.toInt());
+    SerialPort->setDataBits(QSerialPort::Data8);
+    SerialPort->setParity(QSerialPort::NoParity);
+    SerialPort->setStopBits(QSerialPort::OneStop);
+    SerialPort->setFlowControl(QSerialPort::NoFlowControl);
+    SerialPort->setReadBufferSize(1024);
+    connect(SerialPort, SIGNAL(readyRead()), this, SLOT(ReadPort()));
 
     //if(modbusDevice->connectDevice() == true)
-    if(serialPort->open(QIODevice::ReadWrite) == true)
+    if(SerialPort->open(QIODevice::ReadWrite) == true)
     {
-       state = QModbusDevice::ConnectedState;
-       emit ModBusState(state);
+       State = QModbusDevice::ConnectedState;
+       emit ModbusState(State);
        //serialPort->isOpen();
        //ModBusInterrogateTimer->start();
     }
     else
     {
-       state = QModbusDevice::ClosingState;
-       emit ModBusState(state);
+       State = QModbusDevice::ClosingState;
+       emit ModbusState(State);
     }
 
 }
 
-/*void ModBus::Run()
+void ModBus::Run()
 {
-
-    while(1)
+    while(!AboutToFinish)
     {
-        if(modbusDevice->state() == QModbusDevice::ConnectedState)
-        {
-           if(state != QModbusDevice::ConnectedState)
-           {
-               state = QModbusDevice::ConnectedState;
-               emit ModBusState(state);
-           }
-
-        }
-        else
-        {
-            if(state != QModbusDevice::ClosingState)
-            {
-                state = QModbusDevice::ClosingState;
-                emit ModBusState(state);
-            }
-        }
-
+        // 1. Set in mutex
+        // 2. If input queue is not empty and not reading send data
+        // 3. Clear in mutex
+        // 4. Set out mutex
+        // 5. If reading and output is ready set out data to out queue
+        // 6. Clear out mutex
+        // 7. Wait a bit
         QThread::msleep(10);
         qApp->processEvents();
     }
-}*/
+    if (SerialPort->isOpen())
+        SerialPort->close();
+}
 
 
 ModBus::~ModBus()
 {
+    if (SerialPort->isOpen())
+        SerialPort->close();
     //if(modbusDevice)
     //modbusDevice->disconnectDevice();
 
@@ -171,22 +170,10 @@ ModBus::~ModBus()
 
 }
 
-void ModBus::reading()
-{
-    Reading = 0;
-}
-
-void ModBus::onAboutToClose()
-{
-    //serialPort->close();
-    //Q_ASSERT(modbusDevice->state() == QModbusDevice::ClosingState);
-        //m_responseTimer.stop();
-}
-
-void ModBus::onResponseTimeout(int timerId)
+/*void ModBus::ResponseTimeout(int timerId)
 {
     Q_UNUSED(timerId)
-        /*m_responseTimer.stop();
+        m_responseTimer.stop();
         if (m_state != State::WaitingForReplay || m_queue.isEmpty())
             return;
         const auto current = m_queue.first();
@@ -201,10 +188,10 @@ void ModBus::onResponseTimeout(int timerId)
             }
         }
         m_state = Idle;
-        scheduleNextRequest(m_interFrameDelayMilliseconds);*/
+        scheduleNextRequest(m_interFrameDelayMilliseconds);
 }
 
-/*void ModBus::onBytesWritten(qint64 bytes)
+void ModBus::onBytesWritten(qint64 bytes)
 {
         //if (m_queue.isEmpty())
         //    return;
@@ -233,54 +220,54 @@ void ModBus::ReadPort()
   int ival;
   Coils *Coil = new Coils;
   //ModBusInterrogateTimer->stop();
-  responseBuffer = *new QByteArray[1024];
-  responseBuffer.clear();
+  ResponseBuffer = *new QByteArray[1024];
+  ResponseBuffer.clear();
   Reading = 1;
 
-  cursize = serialPort->bytesAvailable();
+  cursize = SerialPort->bytesAvailable();
 
   if(ComData.adr != 1)
   {
-     reconnectTimer->stop();
-     reconnectTimer->setInterval(RECONNECTIME);
-     reconnectTimer->start();
+     ReconnectTimer->stop();
+     ReconnectTimer->setInterval(RECONNECTIME);
+     ReconnectTimer->start();
   }
 
-  if(cursize == readSize)
+  if(cursize == ReadSize)
   {
-      responseBuffer = serialPort->read(cursize);//serialPort->bytesAvailable());
-      size = responseBuffer.size();
+      ResponseBuffer = SerialPort->read(cursize);//serialPort->bytesAvailable());
+      size = ResponseBuffer.size();
       size -= 2;
 
-      MYKSS=CalcCRC((quint8*)(responseBuffer.data()), size);
+      MYKSS=CalcCRC((quint8*)(ResponseBuffer.data()), size);
 
-      crcfinal = (static_cast<quint8>(responseBuffer.data()[readSize-2]) << 8) | (static_cast<quint8>(responseBuffer.data()[readSize-1]));
+      crcfinal = (static_cast<quint8>(ResponseBuffer.data()[ReadSize-2]) << 8) | (static_cast<quint8>(ResponseBuffer.data()[ReadSize-1]));
 
       if(MYKSS == crcfinal)
       {
-        if((Group == 6) && (commands == false))
+        if((Group == 6) && (Commands == false))
         {
            Coil = new Coils;
-           Coil->countBytes = responseBuffer.data()[2];
+           Coil->countBytes = ResponseBuffer.data()[2];
            signalsSize = 0;
            for(i=0; i<Coil->countBytes; i++)
            {
-             Coil->Bytes[i] = responseBuffer.data()[3+i];
+             Coil->Bytes[i] = ResponseBuffer.data()[3+i];
            }
         }
         else
-        signalsSize = responseBuffer.data()[2]/4; // количество байт float или u32
+        signalsSize = ResponseBuffer.data()[2]/4; // количество байт float или u32
 
         if(ComData.adr == 1 || ComData.adr == 4600)
-        BSISig = new ModBusBSISignal[signalsSize];
+        BSISig = new ModBusBSISignalStruct[signalsSize];
         else
-        Sig = new ModBusSignal[signalsSize];
+        Sig = new ModBusSignalStruct[signalsSize];
 
-        startadr = (static_cast<quint8>(SignalGroups[Group].firstbyteadr) << 8) | (static_cast<quint8>(SignalGroups[Group].secondbyteadr));
+        startadr = (static_cast<quint8>(SignalGroups[Group].data[FIRSTBYTEADR]) << 8) | (static_cast<quint8>(SignalGroups[Group].data[SECONDBYTEADR]));
         for(i=0; i<signalsSize; i++)
         {
          if(ComData.adr == 1  || ComData.adr == 4600)  // bsi
-         ival = (((static_cast<quint8>(responseBuffer.data()[5+4*i])<<24)&0xFF000000)+((static_cast<quint8>(responseBuffer.data()[6+4*i])<<16)&0x00FF0000)+((static_cast<quint8>(responseBuffer.data()[3+4*i])<<8)&0x0000FF00)+(static_cast<quint8>(responseBuffer.data()[4+4*i])&0x000000FF));
+         ival = (((static_cast<quint8>(ResponseBuffer.data()[5+4*i])<<24)&0xFF000000)+((static_cast<quint8>(ResponseBuffer.data()[6+4*i])<<16)&0x00FF0000)+((static_cast<quint8>(ResponseBuffer.data()[3+4*i])<<8)&0x0000FF00)+(static_cast<quint8>(ResponseBuffer.data()[4+4*i])&0x000000FF));
          else
          {
            /*bool ok;
@@ -299,11 +286,11 @@ void ModBus::ReadPort()
            fl = Listfl.join("");
            tmpf = fl.toFloat(&ok);
            Sig[i].flVal = tmpf;*/
-           ival = ((responseBuffer.data()[5+4*i]<<24)&0xFF000000)+((responseBuffer.data()[6+4*i]<<16)&0x00FF0000)+((responseBuffer.data()[3+4*i]<<8)&0x0000FF00)+((responseBuffer.data()[4+4*i]&0x000000FF));
+           ival = ((ResponseBuffer.data()[5+4*i]<<24)&0xFF000000)+((ResponseBuffer.data()[6+4*i]<<16)&0x00FF0000)+((ResponseBuffer.data()[3+4*i]<<8)&0x0000FF00)+((ResponseBuffer.data()[4+4*i]&0x000000FF));
            Sig[i].flVal = *(float*)&ival;
          }
 
-         if(commands)
+         if(Commands)
          {
              if(ComData.adr == 1 || ComData.adr == 4600)  // bsi и time
              {
@@ -318,11 +305,11 @@ void ModBus::ReadPort()
          Sig[i].SigAdr = startadr+i;
         }
 
-        if(commands)
+        if(Commands)
         {
            if(ComData.adr>=900 && ComData.adr<=910)
            {
-               int recordSize = (static_cast<quint8>(responseBuffer.data()[4]) << 8) | (static_cast<quint8>(responseBuffer.data()[5]));
+               int recordSize = (static_cast<quint8>(ResponseBuffer.data()[4]) << 8) | (static_cast<quint8>(ResponseBuffer.data()[5]));
                if(recordSize == ComData.quantity)
                signalsSize = 1;
                TimeFunc::Wait(100);
@@ -332,16 +319,16 @@ void ModBus::ReadPort()
            if(ComData.adr == 1)
            {
              ComData.adr = 0;
-             emit BsiFromModBus(BSISig, &signalsSize);
-             commands = false;
-             reconnectTimer->start();
+             emit BsiFromModbus(BSISig, &signalsSize);
+             Commands = false;
+             ReconnectTimer->start();
            }
            else if(ComData.adr == 4600)
-           emit timeSignalsReceived(BSISig);
+           emit TimeSignalsReceived(BSISig);
            else
            {
-             commands = false;
-             emit corsignalsreceived(Sig, &signalsSize);
+             Commands = false;
+             emit CorSignalsReceived(Sig, &signalsSize);
            }
 
            //commands = false;
@@ -351,9 +338,9 @@ void ModBus::ReadPort()
         {
 
            if(Group == 6)
-           emit coilsignalsready(Coil);
+           emit CoilSignalsReady(Coil);
            else
-           emit signalsreceived(Sig, &signalsSize);
+           emit SignalsReceived(Sig, &signalsSize);
 
            Group++;
 
@@ -365,7 +352,7 @@ void ModBus::ReadPort()
       }
       else
       {
-        emit errorCrc();
+        emit ErrorCrc();
       }
 
   }
@@ -380,13 +367,13 @@ void ModBus::ReadPort()
           if(Group == 7)
           Group= 0;
 
-          responseBuffer = serialPort->read(cursize);
-          if((responseBuffer.data()[3] == (char)0xC2) && (responseBuffer.data()[4] == (char)0xC1))
+          ResponseBuffer = SerialPort->read(cursize);
+          if((ResponseBuffer.data()[3] == (char)0xC2) && (ResponseBuffer.data()[4] == (char)0xC1))
           {
              if(ComData.adr == 4600)
-             emit timeReadError();
+             emit TimeReadError();
              else
-             emit errorRead();
+             emit ErrorRead();
           }
           //ComData.adr = 0;
       }
@@ -423,12 +410,12 @@ void ModBus::WriteToPort()
             //for(i = 0; i<6; i++)
             //{
 
-            serialPort->clear();
+            SerialPort->clear();
 
             TimeFunc::Wait(10);
-            bytes->append(deviceAdr.toInt()); // адрес устройства
+            bytes->append(DeviceAdr.toInt()); // адрес устройства
 
-            if(commands)
+            if(Commands)
             {
                 bytes->append(ComData.ModCom);         //аналоговый выход
                 bytes->append(static_cast<char>((ComData.adr&0xFF00)>>8));
@@ -455,10 +442,10 @@ void ModBus::WriteToPort()
                 bytes->append(static_cast<char>(KSS>>8));
                 bytes->append(static_cast<char>(KSS));
 
-                readSize = 5+2*ComData.quantity;
+                ReadSize = 5+2*ComData.quantity;
 
                 if(ComData.ModCom == 0x10)
-                readSize = 8;
+                ReadSize = 8;
 
                 ComData.data->clear();
 
@@ -466,11 +453,13 @@ void ModBus::WriteToPort()
             }
             else
             {
-                bytes->append(SignalGroups[Group].signaltype);         //аналоговый выход
+                for (int i=0; i<5; ++i)
+                    bytes->append(SignalGroups[Group].data[i]);
+/*                bytes->append(SignalGroups[Group].signaltype);         //аналоговый выход
                 bytes->append(SignalGroups[Group].firstbyteadr);
                 bytes->append(SignalGroups[Group].secondbyteadr);
                 bytes->append(SignalGroups[Group].firstbytequantity);
-                bytes->append(SignalGroups[Group].secondbytequantity);
+                bytes->append(SignalGroups[Group].secondbytequantity); */
 
                 //for(i=0;i<bytes->size();i++)
                 KSS=CalcCRC((quint8*)(bytes->data()), bytes->size());
@@ -479,29 +468,29 @@ void ModBus::WriteToPort()
                 bytes->append(static_cast<char>(KSS>>8));
                 bytes->append(static_cast<char>(KSS));
 
-                readSize = 5+2*SignalGroups[Group].secondbytequantity;
+                ReadSize = 5+2*SignalGroups[Group].data[SECONDBYTEQ];
 
                 if(Group == 6)
-                readSize = 9;
+                ReadSize = 9;
 
 
             }
 
 
-            st = serialPort->write(bytes->data(), bytes->size());
+            st = SerialPort->write(bytes->data(), bytes->size());
 
             if(ComData.adr == 4600)
-            write=0;
+            Write=0;
             //st=0;
             Reading = 1;
 
                 //qCDebug << "(RTU client) Response buffer:" << m_responseBuffer.toHex();
         }
 
-        if(closeThr) //&& (!haveFinished))
+        if(CloseThr) //&& (!haveFinished))
         {
          //haveFinished = true;
-         emit finished();
+         emit Finished();
          break;
         }
         //cond->wait(mutex,10);
@@ -523,9 +512,9 @@ void ModBus::BSIrequest(ModBus_Settings Settings)
     //if( ComData.data.size())
     //ComData.data.clear();
 
-    commands = true;
+    Commands = true;
     bytes->clear();
-    serialPort->clear();
+    SerialPort->clear();
 
     bytes->append(Settings.adr.toInt()); // адрес устройства
 
@@ -551,9 +540,9 @@ void ModBus::BSIrequest(ModBus_Settings Settings)
      bytes->append(static_cast<char>(KSS>>8));
      bytes->append(static_cast<char>(KSS));
 
-     readSize = 5+2*ComData.quantity;
+     ReadSize = 5+2*ComData.quantity;
 
-     st = serialPort->write(bytes->data(), bytes->size());
+     st = SerialPort->write(bytes->data(), bytes->size());
             //st=0;
 
      Reading = true;
@@ -580,14 +569,14 @@ quint16 ModBus::CalcCRC(quint8* Dat, quint8 len)
 
 void ModBus::StopModSlot()
 {
-    if(serialPort != nullptr)
-    serialPort->close();
+    if(SerialPort != nullptr)
+    SerialPort->close();
 
     Reading = true;
-    closeThr = true;
+    CloseThr = true;
 }
 
-void ModBus::ModWriteCor(information* info, float* data)//, int* size)
+void ModBus::ModWriteCor(Information* info, float* data)//, int* size)
 {
     int i;
     quint32 fl;
@@ -596,11 +585,11 @@ void ModBus::ModWriteCor(information* info, float* data)//, int* size)
     while(Reading == true)
     {
         TimeFunc::Wait(10);
-        count++;
-        if(count == 20)
+        Count++;
+        if(Count == 20)
         {
           Reading = false;
-          count = 0;
+          Count = 0;
         }
     }
 
@@ -629,22 +618,22 @@ void ModBus::ModWriteCor(information* info, float* data)//, int* size)
         }
     }
     //TimeFunc::Wait(100);
-    commands = true;
+    Commands = true;
     Reading = false;
 
 }
 
-void ModBus::ModReadCor(information* info)
+void ModBus::ModReadCor(Information* info)
 {
 
     while(Reading == true)
     {
         TimeFunc::Wait(10);
-        count++;
-        if(count == 20)
+        Count++;
+        if(Count == 20)
         {
           Reading = false;
-          count = 0;
+          Count = 0;
         }
     }
 
@@ -657,7 +646,7 @@ void ModBus::ModReadCor(information* info)
     ComData.data->clear();
 
     //TimeFunc::Wait(100);
-    commands = true;
+    Commands = true;
     Reading = false;
 
 }
@@ -674,15 +663,15 @@ void ModBus::InterrogateTime()
     while(Reading == true)
     {
         TimeFunc::Wait(10);
-        count++;
-        if(count == 20)
+        Count++;
+        if(Count == 20)
         {
           Reading = false;
-          count = 0;
+          Count = 0;
         }
     }
 
-    if(!write)
+    if(!Write)
     {
       ComData.ModCom = 0x03;
       ComData.adr = 4600;
@@ -691,7 +680,7 @@ void ModBus::InterrogateTime()
       ComData.data = new QByteArray[100];
       ComData.data->clear();
       //TimeFunc::Wait(100);
-      commands = true;
+      Commands = true;
       Reading = false;
     }
 
@@ -700,18 +689,18 @@ void ModBus::InterrogateTime()
 
 void ModBus::WriteTime(uint* time)
 {
-    write = 1;
+    Write = 1;
     quint32 T;
     //ComData = *new ComInfo;
 
     while(Reading == true)
     {
         TimeFunc::Wait(10);
-        count++;
-        if(count == 20)
+        Count++;
+        if(Count == 20)
         {
           Reading = false;
-          count = 0;
+          Count = 0;
         }
     }
 
@@ -731,12 +720,12 @@ void ModBus::WriteTime(uint* time)
     ComData.data->append(static_cast<char>(T>>16));
 
     //TimeFunc::Wait(100);
-    commands = true;
+    Commands = true;
     Reading = false;
 
 }
 
-void ModBus::tabs(int index)
+void ModBus::Tabs(int index)
 {
 
   if(!MainWindow::TheEnd)
@@ -744,15 +733,15 @@ void ModBus::tabs(int index)
     while(Reading == true)
     {
         TimeFunc::Wait(10);
-        count++;
-        if(count == 200)
+        Count++;
+        if(Count == 200)
         {
           Reading = false;
-          count = 0;
+          Count = 0;
         }
     }
 
-   if(index == timeIndex)
+   if(index == TimeIndex)
    {
        TimeFunc::Wait(1000);
        ComData.ModCom = 0x03;
@@ -762,10 +751,10 @@ void ModBus::tabs(int index)
        ComData.data = new QByteArray[100];
        ComData.data->clear();
          //TimeFunc::Wait(100);
-       commands = true;
+       Commands = true;
        //Reading = false;
    }
-   else if(index == corIndex)
+   else if(index == CorIndex)
    {
        ComData.ModCom = 0x04;
        ComData.adr = 4000;
@@ -776,24 +765,29 @@ void ModBus::tabs(int index)
        ComData.data->clear();
 
        //TimeFunc::Wait(100);
-       commands = true;
+       Commands = true;
        //Reading = false;
    }
-   else if(index == checkIndex)
+   else if(index == CheckIndex)
    {
        ComData.adr = 0;
-       commands = false;
+       Commands = false;
    }
 
    Reading = false;
   }
 }
 
+void ModBus::FinishThread()
+{
+    AboutToFinish = true;
+}
+
 void ModBus::Reconnect()
 {
-   reconnectTimer->stop();
-   reconnectTimer->deleteLater();
-   emit reconnectSignal(1);
+   ReconnectTimer->stop();
+   ReconnectTimer->deleteLater();
+   emit ReconnectSignal(1);
 }
 
 /*QModbusReply *enqueueRequest(const QModbusRequest &request, int serverAddress,

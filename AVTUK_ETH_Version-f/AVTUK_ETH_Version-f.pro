@@ -87,7 +87,6 @@ SOURCES += \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp \
-    ../check/checktempmodbusdialog.cpp \
     ../gen/commands.cpp \
     ../gen/eabstractprotocomchannel.cpp \
     ../gen/eusbhid.cpp \
@@ -160,7 +159,6 @@ HEADERS += \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
     ../modbus/modbus.h \
-    ../check/checktempmodbusdialog.h \
     ../gen/commands.h \
     ../gen/eabstractprotocomchannel.h \
     ../gen/eusbhid.h \

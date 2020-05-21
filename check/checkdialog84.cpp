@@ -451,7 +451,7 @@ void CheckDialog84::UpdateBS104Data(Parse104::BS104Signals* Signal)
 
 #endif
 
-void CheckDialog84::UpdateModBusData(ModBusSignal *Signal, int * size)
+void CheckDialog84::UpdateModBusData(ModBus::ModBusSignalStruct *Signal, int * size)
 {
 
     //ModBusSignal sig = *new ModBusSignal;
@@ -475,16 +475,9 @@ void CheckDialog84::ErrorRead()
 void CheckDialog84::onModbusStateChanged(QModbusDevice::State state)
 {
     if(state == QModbusDevice::ConnectedState)
-    {
-     connectionStateRTU =  true;
-     EMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
-    }
+        EMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
     else
-    {
-     connectionStateRTU =  false;
-     EMessageBox::information(this, "Провал", "Подключение отсутствует");
-    }
-
+        EMessageBox::error(this, "Провал", "Подключение отсутствует");
 }
 
 

@@ -368,7 +368,7 @@ void Coma::Stage3()
         CheckB->checkIndex = MainTW->indexOf(CheckB);
 
         if(MainInterface == "RS485")
-        modBus->checkIndex = CheckB->checkIndex;
+        modBus->CheckIndex = CheckB->checkIndex;
 
         if(MainInterface == "USB")
         {
@@ -430,7 +430,7 @@ void Coma::Stage3()
         ConfM->timeIndex = Time->timeIndex;
 
         if(MainInterface == "RS485")
-        modBus->timeIndex = Time->timeIndex;
+        modBus->TimeIndex = Time->timeIndex;
 
         /*QThread *thrTime = new QThread;
         thrTime->setPriority(QThread::LowPriority);
@@ -464,7 +464,7 @@ void Coma::Stage3()
         connect(MainTW, SIGNAL(tabClicked(int)), CorD, SLOT(GetCorBd(int))); //tabClicked
 
         if(MainInterface == "RS485")
-        modBus->corIndex = CorD->corDIndex;
+        modBus->CorIndex = CorD->corDIndex;
     }
 
     if (JourD != nullptr)
@@ -597,14 +597,13 @@ void Coma::PrepareDialogs()
          }
          else if(insl.at(1) == "MODBUS")
          {
-            //CheckModBus = new checktempmodbusdialog(BoardTypes::BT_BASE, this);
-            connect(modBus, SIGNAL(errorRead()), CorD, SLOT(ErrorRead()));
-            connect(modBus, SIGNAL(ModBusState(QModbusDevice::State)), CheckB, SLOT(onModbusStateChanged(QModbusDevice::State)));
-            connect(modBus, SIGNAL(signalsreceived(ModBusSignal*, int*)), CheckB, SLOT(UpdateModBusData(ModBusSignal*, int*)));
-            connect(modBus, SIGNAL(corsignalsreceived(ModBusSignal*, int*)), CorD, SLOT(ModBusUpdateCorData(ModBusSignal*, int*)));
+            connect(modBus, SIGNAL(ErrorRead()), CorD, SLOT(ErrorRead()));
+            connect(modBus, SIGNAL(ModbusState(QModbusDevice::State)), CheckB, SLOT(onModbusStateChanged(QModbusDevice::State)));
+            connect(modBus, SIGNAL(SignalsReceived(ModBusSignal*, int*)), CheckB, SLOT(UpdateModBusData(ModBusSignal*, int*)));
+            connect(modBus, SIGNAL(CorSignalsReceived(ModBusSignal*, int*)), CorD, SLOT(ModBusUpdateCorData(ModBusSignal*, int*)));
             connect(CorD, SIGNAL(RS485WriteCorBd(information*, float*)), modBus, SLOT(ModWriteCor(information*, float*)));//, int*)));
             connect(CorD, SIGNAL(RS485ReadCorBd(information*)), modBus, SLOT(ModReadCor(information*)));
-            connect(modBus,SIGNAL(reconnectSignal(int)), this, SLOT(ReConnect(int)));
+            connect(modBus,SIGNAL(ReconnectSignal(int)), this, SLOT(ReConnect(int)));
          }
 
        }

@@ -14,15 +14,7 @@ class CheckDialog84 : public EAbstractCheckDialog
 public:
     explicit CheckDialog84(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr, iec104* channel = nullptr);
 
-    typedef struct
-    {
-       float flVal;
-       int SigAdr;
-    }ModBusSignal;
-
     Check_84 *Ch84;
-    bool connectionStateRTU;
-
 
 signals:
 
@@ -59,7 +51,7 @@ private slots:
     void UpdateSponData(Parse104::SponSignals104 *);
     void UpdateSponDataWithTime(Parse104::SponSignalsWithTime *);
     void UpdateBS104Data(Parse104::BS104Signals *);
-    void UpdateModBusData(ModBusSignal *Signal, int * size);
+    void UpdateModBusData(ModBus::ModBusSignalStruct *Signal, int * size);
     void ErrorRead();
     void onModbusStateChanged(QModbusDevice::State state);
 

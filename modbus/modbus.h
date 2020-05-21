@@ -1,7 +1,6 @@
 #ifndef MODBUS_H
 #define MODBUS_H
 
-
 #include <QObject>
 #include <QDialog>
 #include <QTimer>
@@ -17,13 +16,22 @@
 #include "../gen/log.h"
 
 #define RECONNECTIME 5000
-
+#define SIGNALGROUPSNUM 7
 
 class ModBus : public QObject
 {
 Q_OBJECT
 
 public:
+    enum ModbusGroupsEnum
+    {
+        SIGNALTYPE = 0,
+        FIRSTBYTEADR = 1,
+        SECONDBYTEADR = 2,
+        FIRSTBYTEQ = 3,
+        SECONDBYTEQ = 4
+    };
+
     struct ModBus_Settings
     {
         QString baud;
@@ -43,25 +51,25 @@ public:
     {
        float flVal;
        int SigAdr;
-    }ModBusSignal;
+    } ModBusSignalStruct;
 
     typedef struct
     {
        quint32 Val;
        int SigAdr;
-    }ModBusBSISignal;
+    } ModBusBSISignalStruct;
 
     struct ModBus_Groups
     {
-        unsigned char signaltype;
+        unsigned char data[5]; // [0] - signal type, [1] - first byte adr, [2] - second byte adr, [3] - first byte quantity, [4] - second byte quantity
+/*        unsigned char signaltype;
         unsigned char firstbyteadr;
         unsigned char secondbyteadr;
         unsigned char firstbytequantity;
-        unsigned char secondbytequantity;
-
+        unsigned char secondbytequantity; */
     };
 
-    struct information
+    struct Information
     {
         quint16 adr;
         int size;
@@ -82,7 +90,7 @@ public:
         quint8 Bytes[20];
     };
 
-    int checkIndex, corIndex, timeIndex;
+    int CheckIndex, CorIndex, TimeIndex;
 
     constexpr static const unsigned char TabCRChi[256] = {
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
@@ -123,67 +131,60 @@ public:
                                    }  ;
 
 
- static bool Reading;
- //QThread *Modthr;
-
-
-
-
-
-
+static bool Reading;
+//QThread *Modthr;
 
 public slots:
-        //void Run();
-        void ReadPort();
-        void WriteToPort();
-        void onAboutToClose();
-        void onResponseTimeout(int timerId);
-        void reading();
-        void StopModSlot();
-        void ModWriteCor(information *info, float*);//, int*);
-        void ModReadCor(information* info);
-        void InterrogateTime();
-        void WriteTime(uint*);
-        void tabs(int);
-
+void Run();
+void ReadPort();
+void WriteToPort();
+//void ResponseTimeout(int timerId);
+void StopModSlot();
+void ModWriteCor(Information *info, float*);//, int*);
+void ModReadCor(Information* info);
+void InterrogateTime();
+void WriteTime(uint*);
+void Tabs(int);
+void FinishThread();
 
 signals:
- void signalsreceived(ModBusSignal *Signal, int* size);
- void corsignalsreceived(ModBusSignal *Signal, int* size);
- void timeSignalsReceived(ModBusBSISignal *Signal);
- void BsiFromModBus(ModBusBSISignal*, int*);
- void ModBusState(QModbusDevice::State);
- void nextGroup();
- void errorRead();
- void errorCrc();
- void finished();
- void coilsignalsready(Coils*);
- void timeReadError();
- void modBusError();
- void reconnectSignal(int);
+ void SignalsReceived(ModBusSignalStruct *Signal, int* size);
+ void CorSignalsReceived(ModBusSignalStruct *Signal, int* size);
+ void TimeSignalsReceived(ModBusBSISignalStruct *Signal);
+ void BsiFromModbus(ModBusBSISignalStruct*, int*);
+ void ModbusState(QModbusDevice::State);
+ void NextGroup();
+ void ErrorRead();
+ void ErrorCrc();
+ void Finished();
+ void CoilSignalsReady(Coils*);
+ void TimeReadError();
+ void ModbusError();
+ void ReconnectSignal(int);
  //void stopModBus();
 
 
 private:
 // QModbusReply Reply;
-     int Group, readSize;
-     ModBusSignal* Sig;
-     ModBusBSISignal* BSISig;
+     int Group, ReadSize;
+     ModBusSignalStruct* Sig;
+     ModBusBSISignalStruct* BSISig;
      quint16 CalcCRC(quint8* Dat, quint8 len);
-     QModbusRtuSerialMaster *modbusDevice;
-     QModbusDevice::State state;
+     QModbusRtuSerialMaster *ModbusDevice;
+     QModbusDevice::State State;
      //QModbusSerialAdu* Serial;
-     QSerialPort *serialPort;
-     QByteArray responseBuffer;
+     QSerialPort *SerialPort;
+     QByteArray ResponseBuffer;
      //QTimer* ModBusInterrogateTimer;
-     QString deviceAdr;
+     QString DeviceAdr;
      ComInfo ComData;
-     ModBus_Groups SignalGroups[7];
-     bool closeThr;
-     bool commands;
-     qint64 lastcursize;
-     int First, count, write;
-     QTimer *reconnectTimer;
+     ModBus_Groups SignalGroups[SIGNALGROUPSNUM];
+     bool CloseThr;
+     bool Commands;
+     qint64 LastCurSize;
+     int First, Count, Write;
+     QTimer *ReconnectTimer;
+     bool AboutToFinish;
 
 private slots:
      void Reconnect();
