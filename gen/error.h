@@ -111,6 +111,11 @@
 #define ER_BUFMAX   16
 #define LOGFILE     "coma.log"
 
+#define NOERROR         0 // нет ошибок
+#define GENERALERROR    -1 // возвращённое значение - ошибка
+#define RESEMPTY        -2 // пустой результат
+
+
 class Error
 {
 public:
@@ -129,24 +134,6 @@ public:
         QString file;
         int line;
         QString msg;
-    };
-
-    enum Errors
-    {
-        ER_MAIN,
-        ER_CANAL,
-        ER_SERIAL,
-        ER_ETUNE,
-        ER_ECONF,
-        ER_ATUNE,
-        ER_ACONF,
-        ER_OSC,
-        ER_PUB,
-        ER_ACHECK,
-        ER_ECHECK,
-        ER_NOERROR, // нет ошибок
-        ER_GENERALERROR, // возвращённое значение - ошибка
-        ER_RESEMPTY // пустой результат
     };
 
     Error();

@@ -313,8 +313,8 @@ void Coma::Stage3()
              //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
              connect(Modthr,SIGNAL(started()),modBus,SLOT(WriteToPort()));
              CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
-             connect(modBus,SIGNAL(BsiFromModBus(ModBusBSISignal*, int*)),idlg,SLOT(FillBsiFromModBus(ModBusBSISignal*, int* )));
-             connect(modBus,SIGNAL(coilsignalsready(Coils*)),this,SLOT(ModbusUpdateStatePredAlarmEvents(Coils*)));
+             connect(modBus,SIGNAL(BsiFromModbus(ModBusBSISignal*, int*)),idlg,SLOT(FillBsiFromModBus(ModBusBSISignal*, int* )));
+             connect(modBus,SIGNAL(CoilSignalsReady(Coils*)),this,SLOT(ModbusUpdateStatePredAlarmEvents(Coils*)));
              connect(MainTW, SIGNAL(tabClicked(int)), modBus,SLOT(tabs(int)));
              modBus->BSIrequest(Settings);
              //TimeTimer->setInterval(3000);
@@ -450,7 +450,7 @@ void Coma::Stage3()
         if(modBus != nullptr)
         {
             connect(Time,SIGNAL(modBusTimeRequest()),modBus,SLOT(InterrogateTime()));
-            connect(modBus,SIGNAL(timeSignalsReceived(ModBusBSISignal*)),Time,SLOT(FillTimeFromModBus(ModBusBSISignal*)));
+            connect(modBus,SIGNAL(TimeSignalsReceived(ModBusBSISignal*)),Time,SLOT(FillTimeFromModBus(ModBusBSISignal*)));
             connect(Time,SIGNAL(modbusWriteTimeToModule(uint*)),modBus,SLOT(WriteTime(uint*)));
             connect(modBus,SIGNAL(timeReadError()),Time,SLOT(ErrorRead()));
         }

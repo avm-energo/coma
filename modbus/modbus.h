@@ -135,7 +135,7 @@ static bool Reading;
 //QThread *Modthr;
 
 public slots:
-void Run();
+void SendAndGetResult(ComInfo &request);
 void ReadPort();
 void WriteToPort();
 //void ResponseTimeout(int timerId);
@@ -168,7 +168,6 @@ private:
 // QModbusReply Reply;
      int Group, ReadSize;
      ModBusSignalStruct* Sig;
-     ModBusBSISignalStruct* BSISig;
      quint16 CalcCRC(quint8* Dat, quint8 len);
      QModbusRtuSerialMaster *ModbusDevice;
      QModbusDevice::State State;
@@ -177,7 +176,7 @@ private:
      QByteArray ResponseBuffer;
      //QTimer* ModBusInterrogateTimer;
      QString DeviceAdr;
-     ComInfo ComData;
+//     ComInfo ComData;
      ModBus_Groups SignalGroups[SIGNALGROUPSNUM];
      bool CloseThr;
      bool Commands;
@@ -185,6 +184,9 @@ private:
      int First, Count, Write;
      QTimer *ReconnectTimer;
      bool AboutToFinish;
+     QMutex InMutex, OutMutex;
+
+     int Connect(ModBus_Settings &settings);
 
 private slots:
      void Reconnect();
