@@ -20,7 +20,7 @@ bool EUsbHid::Connect()
     UThread = new EUsbThread(CnLog, IsWriteUSBLog());
     connect(UThread,SIGNAL(NewDataReceived(QByteArray)),this,SLOT(ParseIncomeData(QByteArray)));
     connect(this,SIGNAL(StopUThread()),UThread,SLOT(Finish()));
-    if (UThread->Set(UsbPort) != Error::ER_NOERROR)
+    if (UThread->Set(UsbPort) != NOERROR)
         return false;
     Connected = true;
     QTimer *tmr = new QTimer;
@@ -41,10 +41,10 @@ QByteArray EUsbHid::RawRead(int bytes)
 int EUsbHid::RawWrite(QByteArray &ba)
 {
     if (!ThreadRunning)
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     int res = UThread->WriteData(ba);
     if (res < 0)
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     return res;
 }
 
@@ -99,12 +99,12 @@ EUsbThread::~EUsbThread()
 int EUsbThread::Set(EAbstractProtocomChannel::DeviceConnectStruct &devinfo)
 {
     if ((devinfo.product_id == 0) || (devinfo.vendor_id == 0))
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     HidDevice = hid_open(devinfo.vendor_id, devinfo.product_id, devinfo.serial);
     if (!HidDevice)
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     hid_set_nonblocking(HidDevice, 1);
-    return Error::ER_NOERROR;
+    return NOERROR;
 }
 
 void EUsbThread::Run()
@@ -157,7 +157,7 @@ int EUsbThread::WriteData(QByteArray &ba)
             if (WriteUSBLog)
                 log->WriteRaw("UsbThread: WRONG SEGMENT LENGTH!\n");
             ERMSG("Длина сегмента больше "+QString::number(UH_MAXSEGMENTLENGTH)+" байт");
-            return Error::ER_GENERALERROR;
+            return GENERALERROR;
         }
         if (ba.size() < UH_MAXSEGMENTLENGTH)
             ba.append(UH_MAXSEGMENTLENGTH - ba.size(), static_cast<char>(0x00));

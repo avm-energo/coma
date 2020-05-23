@@ -222,7 +222,7 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
         if (!XlsxWriting || (XlsxWriting && (Bd_blocks[Bd_blocks.keys().at(bdnum)]->toxlsxwrite)))
         {
 /*            int tmpi = Bd_blocks.keys().at(bdnum);
-            if (Commands::GetBd(tmpi, Bd_blocks[tmpi]->block, Bd_blocks[tmpi]->blocknum) != Error::ER_NOERROR)
+            if (Commands::GetBd(tmpi, Bd_blocks[tmpi]->block, Bd_blocks[tmpi]->blocknum) != NOERROR)
             {
                 WARNMSG("Ошибка при приёме данных");
                 Busy = false;

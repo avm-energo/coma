@@ -53,7 +53,7 @@ private slots:
     void UpdateBS104Data(Parse104::BS104Signals *);
     void UpdateModBusData(ModBus::ModBusSignalStruct *Signal, int * size);
     void ErrorRead();
-    void onModbusStateChanged(QModbusDevice::State state);
+    void onModbusStateChanged(ModBus::ModbusDeviceState state);
 
 #endif
 };

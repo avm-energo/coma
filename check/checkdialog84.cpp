@@ -210,19 +210,19 @@ void CheckDialog84::StopBdMeasurements()
 
 void CheckDialog84::BdTimerTimeout()
 {
-    if (Commands::GetBd(BdNum, &Ch84->Bd_block1, sizeof(Check_84::Bd1)) == Error::ER_NOERROR)
+    if (Commands::GetBd(BdNum, &Ch84->Bd_block1, sizeof(Check_84::Bd1)) == NOERROR)
     {
         Ch84->FillBdUSB(this);
        // Ch84->FillBd2(this);
     }
 
-    if (Commands::GetBd(5, &Ch84->Bd_block5, sizeof(Check_84::Bd5)) == Error::ER_NOERROR)
+    if (Commands::GetBd(5, &Ch84->Bd_block5, sizeof(Check_84::Bd5)) == NOERROR)
     {
         Ch84->FillBd5(this);
        // Ch84->FillBd2(this);
     }
 
-    if (Commands::GetBd(8, &Ch84->Bd_block8, sizeof(Check_84::Bd8)) == Error::ER_NOERROR)
+    if (Commands::GetBd(8, &Ch84->Bd_block8, sizeof(Check_84::Bd8)) == NOERROR)
     {
         Ch84->FillBd8(this);
        // Ch84->FillBd2(this);
@@ -472,9 +472,9 @@ void CheckDialog84::ErrorRead()
   //EMessageBox::information(this, "INFO", "Ошибка чтения");
 }
 
-void CheckDialog84::onModbusStateChanged(QModbusDevice::State state)
+void CheckDialog84::onModbusStateChanged(ModBus::ModbusDeviceState state)
 {
-    if(state == QModbusDevice::ConnectedState)
+    if(state == ModBus::ConnectedState)
         EMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
     else
         EMessageBox::error(this, "Провал", "Подключение отсутствует");

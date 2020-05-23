@@ -44,7 +44,7 @@ int S2::StoreDataMem(void *mem, QVector<DataRec> *dr, int fname) //0 - успе�
     header.service=0xFFFF;
     header.fname=static_cast<quint16>(fname);
     memcpy(mem,&header,sizeof(header));
-    return Error::ER_NOERROR;
+    return NOERROR;
 }
 
 int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
@@ -127,7 +127,7 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
         ERMSG("Не найдено ни одного элемента с заданным ID"); // не найдено ни одного ИД
         return S2_NOIDS;
     }
-    return Error::ER_NOERROR;
+    return NOERROR;
 }
 
 S2::DataRec *S2::FindElem(QVector<DataRec> *dr, quint32 id)

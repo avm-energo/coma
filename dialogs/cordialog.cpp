@@ -235,7 +235,7 @@ void CorDialog::GetCorBd(int index)
        {
         if(MainWindow::MainInterface == "USB")
         {
-            if(Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::ER_NOERROR)
+            if(Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
             {
                 FillCor();
                 EMessageBox::information(this, "INFO", "Прочитано успешно");
@@ -261,7 +261,7 @@ void CorDialog::GetCorBdButton()
     {
      if(MainWindow::MainInterface == "USB")
      {
-       if(Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::ER_NOERROR)
+       if(Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
        {
            FillCor();
            EMessageBox::information(this, "INFO", "Прочитано успешно");
@@ -289,7 +289,7 @@ void CorDialog::WriteCorBd()
 
     FillBackCor();
 
-    if (WriteCheckPassword() == Error::ER_NOERROR)
+    if (WriteCheckPassword() == NOERROR)
     {
         if(MainWindow::MainInterface.size() != 0)
         {
@@ -310,12 +310,12 @@ void CorDialog::WriteCorBd()
          }
          else if(MainWindow::MainInterface == "USB")
          {
-             if(Commands::WriteBd(7, CorBlock, sizeof(CorData)) == Error::ER_NOERROR)
+             if(Commands::WriteBd(7, CorBlock, sizeof(CorData)) == NOERROR)
              EMessageBox::information(this, "INFO", "Записано успешно");
              else
              EMessageBox::information(this, "INFO", "Ошибка");
 
-             if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
+             if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == NOERROR)
              FillCor();
          }
         }
@@ -335,7 +335,7 @@ void CorDialog::WriteCorTg()
 {
     quint32 Com = 901;
     emit sendCom45(&Com);
-    /*if(Commands::WriteCom(2) == Error::ER_NOERROR)
+    /*if(Commands::WriteCom(2) == NOERROR)
     EMessageBox::information(this, "INFO", "Записано успешно");
     else
     EMessageBox::information(this, "INFO", "Ошибка");*/
@@ -343,7 +343,7 @@ void CorDialog::WriteCorTg()
 
 void CorDialog::WriteCor()
 {
-    if (WriteCheckPassword() == Error::ER_NOERROR)
+    if (WriteCheckPassword() == NOERROR)
     {
         quint32 Com = 900;
         if(MainWindow::MainInterface.size() != 0)
@@ -367,9 +367,9 @@ void CorDialog::WriteCor()
          }
          else if(MainWindow::MainInterface == "USB")
          {
-            if(Commands::WriteCom(1) == Error::ER_NOERROR)   // задание общей коррекции
+            if(Commands::WriteCom(1) == NOERROR)   // задание общей коррекции
             {
-               if(Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::ER_NOERROR)
+               if(Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
                {
                   FillCor();
                   EMessageBox::information(this, "INFO", "Задано и прочитано успешно");
@@ -393,7 +393,7 @@ void CorDialog::SetCor()
      }
      else if(MainWindow::MainInterface == "USB")
      {
-        if(Commands::WriteCom(4) == Error::ER_NOERROR)
+        if(Commands::WriteCom(4) == NOERROR)
         EMessageBox::information(this, "INFO", "Записано успешно");
         else
         EMessageBox::information(this, "INFO", "Ошибка");
@@ -406,7 +406,7 @@ void CorDialog::ResetCor()
 {
     quint32 Com = 905;
 
-    if (WriteCheckPassword() == Error::ER_NOERROR)
+    if (WriteCheckPassword() == NOERROR)
     {
         if(MainWindow::MainInterface.size() != 0)
         {
@@ -423,12 +423,12 @@ void CorDialog::ResetCor()
          }
          else if(MainWindow::MainInterface == "USB")
          {
-            if(Commands::WriteCom(5) == Error::ER_NOERROR)
+            if(Commands::WriteCom(5) == NOERROR)
             EMessageBox::information(this, "INFO", "Сброшено успешно");
             else
             EMessageBox::information(this, "INFO", "Ошибка");
 
-            if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::ER_NOERROR)
+            if(Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == NOERROR)
             FillCor();
          }
         }
@@ -515,7 +515,7 @@ void CorDialog::ModBusUpdateCorData(ModBusSignal *Signal, int * size)
 
 void CorDialog::SaveToFile()
 {
-    int res = Error::ER_NOERROR;
+    int res = NOERROR;
     QByteArray ba;
     FillBackCor();
     ba.resize(sizeof(*CorBlock));
@@ -572,13 +572,13 @@ int CorDialog::WriteCheckPassword()
     dlg->show();
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     if (!ok)
     {
         EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     }
-    return Error::ER_NOERROR;
+    return NOERROR;
 }
 
 void CorDialog::WritePasswordCheck(QString psw)

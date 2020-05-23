@@ -1,6 +1,5 @@
 #include <QHBoxLayout>
 #include <QTextEdit>
-//#include <QPushButton>
 #include <QDir>
 #include <QMenu>
 #include <QApplication>
@@ -590,7 +589,7 @@ void MainWindow::UpdatePredAlarmEvents(Parse104::SponSignalsWithTime* Signal)
 void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104 *Signal)
 {
     int i = 0, PredArarmcount = 0, Ararmcount = 0;
-    Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
+//    Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmred, pmgrn};
@@ -1054,13 +1053,13 @@ int MainWindow::CheckPassword()
     dlg->show();
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     if (!Ok)
     {
         EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     }
-    return Error::ER_NOERROR;
+    return NOERROR;
 }
 #endif
 
@@ -1103,7 +1102,7 @@ void MainWindow::Stage1_5()
            if(cn->Cancelled)
            return;
 
-           if (Commands::Connect() != Error::ER_NOERROR)
+           if (Commands::Connect() != NOERROR)
            {
               EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
               QApplication::restoreOverrideCursor();
@@ -1129,7 +1128,7 @@ void MainWindow::Stage2()
         if(MainInterface == "USB")
         {
             int res = ModuleBSI::SetupBSI();
-            if (res == Error::ER_CANAL)
+            if (res == GENERALERROR)
             {
                 if (EMessageBox::question(this, "Ошибка", \
                                           "Не удалось установить связь.\nПовторить подключение?") == 1) // Yes
@@ -1140,14 +1139,14 @@ void MainWindow::Stage2()
                 return;
             }
 #if PROGSIZE >= PROGSIZE_LARGE
-            else if (res == Error::ER_NOERROR)
+            else if (res == NOERROR)
             {
               if(ModuleBSI::ModuleTypeString != "")
               EMessageBox::information(this, "Успешно", "Связь с "+ModuleBSI::ModuleTypeString+" установлена");
             }
             /*else if (res == Error::ER_RESEMPTY)
             {
-                if (OpenBhbDialog() != Error::ER_NOERROR)
+                if (OpenBhbDialog() != NOERROR)
                 {
                     EMessageBox::error(this, "Ошибка", "Ошибка при работе с Hidden block");
                     return;
@@ -1249,23 +1248,23 @@ void MainWindow::PasswordCheck(QString psw)
     {
         QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модулем" : "прибором");
         EMessageBox::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с "+tmps);
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     }
-    if (CheckPassword() == Error::ER_GENERALERROR)
-        return Error::ER_GENERALERROR;
+    if (CheckPassword() == GENERALERROR)
+        return GENERALERROR;
 
     HiddenDialog *dlg = new HiddenDialog();
     dlg->Fill(); // заполняем диалог из недавно присвоенных значений
     dlg->exec();
     if (!dlg->ResultOk)
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     Disconnect();
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    if (Commands::Connect() != Error::ER_NOERROR)
+    if (Commands::Connect() != NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
         QApplication::restoreOverrideCursor();
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     }
     QApplication::restoreOverrideCursor();
     int res;
@@ -1273,10 +1272,10 @@ void MainWindow::PasswordCheck(QString psw)
     {
         EMessageBox::error(this, "Ошибка", "Блок Bsi не может быть прочитан, ошибка " + QString::number(res));
         Commands::Disconnect();
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     }
     //emit BsiRefresh();
-    return Error::ER_NOERROR;
+    return NOERROR;
 }*/
 #endif
 
@@ -1786,7 +1785,6 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 void MainWindow::ParseString(QString Str)
 { 
     insl.clear();
-    //if(Str != nullptr)
     insl.append(Str.split(" "));
 
     if (insl.size() < 2)
@@ -1803,20 +1801,33 @@ void MainWindow::ParseString(QString Str)
     }
     else if(insl.at(1) == "MODBUS")
     {
-        if(insl.size() == 7)
+        if(insl.size() > 6)
         {
+            bool ok;
             FullName = insl.at(0);
-            Settings.baud =  insl.at(2);
-            Settings.parity =  insl.at(3);
-            Settings.stop =  insl.at(4);
-            Settings.adr =  insl.at(5);
-            Settings.port =  insl.at(6);
+            Settings.Baud =  insl.at(2).toUInt(&ok);
+            if (!ok)
+            {
+                EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
+                return;
+            }
+            Settings.Parity =  insl.at(3);
+            Settings.Stop =  insl.at(4);
+            Settings.Address =  insl.at(5).toUInt(&ok);
+            if (!ok)
+            {
+                EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
+                return;
+            }
+            Settings.Port =  insl.at(6);
         }
         else
         {
             EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
         }
     }
+    else
+        EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
 }
 
 void MainWindow::ParseInter(QString Str)
@@ -1963,7 +1974,7 @@ void MainWindow::GetUSBAlarmTimerTimeout()
     QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmred, pmgrn};
 
-    if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == Error::ER_NOERROR)
+    if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == NOERROR)
     {
         for(i=0; i<18; i++)
         {
@@ -2009,7 +2020,7 @@ void MainWindow::GetUSBAlarmInDialog()
     QPixmap *pm[2] = {pmred, pmgrn};
     Bd_block11 = *new Bd11;
 
-    if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == Error::ER_NOERROR)
+    if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == NOERROR)
     {
         if(Wpred != nullptr)
         {

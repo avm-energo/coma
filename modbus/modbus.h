@@ -2,16 +2,8 @@
 #define MODBUS_H
 
 #include <QObject>
-#include <QDialog>
 #include <QTimer>
-#include <QMutex>
-#include <QModbusServer>
-#include <QModbusTcpClient>
-#include <QModbusRtuSerialMaster>
-#include <QStandardItemModel>
-#include <QStatusBar>
-#include <QUrl>
-#include <QtSerialPort/qserialport.h>
+#include <QSerialPort>
 #include "../gen/s2.h"
 #include "../gen/log.h"
 
@@ -23,6 +15,12 @@ class ModBus : public QObject
 Q_OBJECT
 
 public:
+    enum ModbusDeviceState
+    {
+        ConnectedState,
+        ClosingState
+    };
+
     enum ModbusGroupsEnum
     {
         SIGNALTYPE = 0,
@@ -34,11 +32,11 @@ public:
 
     struct ModBus_Settings
     {
-        QString baud;
-        QString parity;
-        QString stop;
-        QString adr;
-        QString port;
+        quint32 Baud;
+        QString Parity;
+        QString Stop;
+        quint8 Address;
+        QString Port;
     };
 
 
@@ -62,11 +60,6 @@ public:
     struct ModBus_Groups
     {
         unsigned char data[5]; // [0] - signal type, [1] - first byte adr, [2] - second byte adr, [3] - first byte quantity, [4] - second byte quantity
-/*        unsigned char signaltype;
-        unsigned char firstbyteadr;
-        unsigned char secondbyteadr;
-        unsigned char firstbytequantity;
-        unsigned char secondbytequantity; */
     };
 
     struct Information
@@ -77,11 +70,11 @@ public:
 
     struct ComInfo
     {
-        char ModCom;
-        quint16 adr;
-        quint16 quantity;
-        quint8 sizebytes;
-        QByteArray *data;
+        char Command;
+        quint16 Address;
+        quint16 Quantity;
+        quint8 SizeBytes;
+        QByteArray Data;
     };
 
     struct Coils
@@ -131,67 +124,64 @@ public:
                                    }  ;
 
 
-static bool Reading;
-//QThread *Modthr;
+    static bool Reading;
 
 public slots:
-void SendAndGetResult(ComInfo &request);
-void ReadPort();
-void WriteToPort();
-//void ResponseTimeout(int timerId);
-void StopModSlot();
-void ModWriteCor(Information *info, float*);//, int*);
-void ModReadCor(Information* info);
-void InterrogateTime();
-void WriteTime(uint*);
-void Tabs(int);
-void FinishThread();
+    int SendAndGetResult(ComInfo &request);
+    int SendNextCmdAndGetResult();
+    void ReadPort();
+    void StopModSlot();
+    void ModWriteCor(Information *info, float*);//, int*);
+    void ModReadCor(Information* info);
+    void InterrogateTime();
+    void WriteTime(uint*);
+    void Tabs(int);
+    void FinishThread();
+    void StartPolling();
+    void StopPolling();
 
 signals:
- void SignalsReceived(ModBusSignalStruct *Signal, int* size);
- void CorSignalsReceived(ModBusSignalStruct *Signal, int* size);
- void TimeSignalsReceived(ModBusBSISignalStruct *Signal);
- void BsiFromModbus(ModBusBSISignalStruct*, int*);
- void ModbusState(QModbusDevice::State);
- void NextGroup();
- void ErrorRead();
- void ErrorCrc();
- void Finished();
- void CoilSignalsReady(Coils*);
- void TimeReadError();
- void ModbusError();
- void ReconnectSignal(int);
- //void stopModBus();
+    void SignalsReceived(ModBusSignalStruct *Signal, int* size);
+    void CorSignalsReceived(ModBusSignalStruct *Signal, int* size);
+    void TimeSignalsReceived(ModBusBSISignalStruct *Signal);
+    void BsiFromModbus(ModBusBSISignalStruct*, int*);
+    void ModbusState(ModbusDeviceState);
+    void NextGroup();
+    void ErrorRead();
+    void ErrorCrc();
+    void Finished();
+    void CoilSignalsReady(Coils*);
+    void TimeReadError();
+    void ModbusError();
+    void ReconnectSignal(int);
 
 
 private:
-// QModbusReply Reply;
-     int Group, ReadSize;
-     ModBusSignalStruct* Sig;
-     quint16 CalcCRC(quint8* Dat, quint8 len);
-     QModbusRtuSerialMaster *ModbusDevice;
-     QModbusDevice::State State;
-     //QModbusSerialAdu* Serial;
-     QSerialPort *SerialPort;
-     QByteArray ResponseBuffer;
-     //QTimer* ModBusInterrogateTimer;
-     QString DeviceAdr;
-//     ComInfo ComData;
-     ModBus_Groups SignalGroups[SIGNALGROUPSNUM];
-     bool CloseThr;
-     bool Commands;
-     qint64 LastCurSize;
-     int First, Count, Write;
-     QTimer *ReconnectTimer;
-     bool AboutToFinish;
-     QMutex InMutex, OutMutex;
+    ModBus_Settings Settings;
+    int CycleGroup, ReadSize;
+    QTimer *ReconnectTimer, *PollingTimer;
+    ModBusSignalStruct* Sig;
+    ModbusDeviceState State;
+    QSerialPort *SerialPort;
+    QByteArray ResponseBuffer;
+   //     ComInfo ComData;
+    QByteArray SignalGroups[SIGNALGROUPSNUM];
+//    bool CloseThr;
+//    bool Commands;
+    qint64 LastCurSize;
+    int First, Count, Write;
+    bool AboutToFinish;
+    QMutex InMutex, OutMutex;
 
-     int Connect(ModBus_Settings &settings);
+    int Connect();
+    quint16 CalcCRC(QByteArray &Dat);
+    int PrepareWrite();
 
 private slots:
-     void Reconnect();
+    void Reconnect();
 
 protected:
+
 };
 
 #endif

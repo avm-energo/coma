@@ -80,7 +80,6 @@ SOURCES += \
     ../widgets/etablemodel.cpp \
     ../widgets/etableview.cpp \
     ../widgets/etabwidget.cpp \
-    ../widgets/etwoimages.cpp \
     ../widgets/getoscpbdelegate.cpp \
     ../widgets/lineeditfield.cpp \
     ../widgets/passwordlineedit.cpp \
@@ -150,7 +149,6 @@ HEADERS += \
     ../widgets/etablemodel.h \
     ../widgets/etableview.h \
     ../widgets/etabwidget.h \
-    ../widgets/etwoimages.h \
     ../widgets/getoscpbdelegate.h \
     ../widgets/keypress.h \
     ../widgets/lineeditfield.h \

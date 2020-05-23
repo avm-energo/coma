@@ -14,7 +14,6 @@
 #include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
 #include "../widgets/estackedwidget.h"
-// #include "../gen/publicclass.h"
 #include "../gen/colors.h"
 #include "confdialog85.h"
 

@@ -10,7 +10,6 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
-//#include "../gen/publicclass.h"
 #include "../gen/colors.h"
 #include "../gen/modulebsi.h"
 #include "../gen/commands.h"
@@ -196,7 +195,7 @@ void MNKTime::slot2_timeOut()
             if(MainWindow::MainInterface == "USB")
             {
                 #if PROGSIZE != PROGSIZE_EMUL
-                if (Commands::GetTimeMNK(unixtimestamp) == Error::ER_NOERROR)
+                if (Commands::GetTimeMNK(unixtimestamp) == NOERROR)
                 {
                     int cbidx = WDFunc::CBIndex(this, "TimeZone");
                     if(cbidx == 0)
@@ -248,7 +247,7 @@ void MNKTime::Start_Timer(int index)
     {
         if(MainWindow::MainInterface == "USB")
         {
-            if (Commands::GetTimeMNK(unixtimestamp) == Error::ER_NOERROR)
+            if (Commands::GetTimeMNK(unixtimestamp) == NOERROR)
             {
               QString qStr;
               cbidx = WDFunc::CBIndex(this, "TimeZone");
@@ -296,7 +295,7 @@ void MNKTime::Write_PCDate()
         #if PROGSIZE != PROGSIZE_EMUL
         //FinishThread = true;
         TimeFunc::Wait(100);
-        if (Commands::WriteTimeMNK(&time, sizeof(uint)) != Error::ER_NOERROR)
+        if (Commands::WriteTimeMNK(&time, sizeof(uint)) != NOERROR)
         EMessageBox::information(this, "INFO", "Ошибка"); //EMessageBox::information(this, "INFO", "Записано успешно");
         //FinishThread = false;
         #endif
@@ -328,7 +327,7 @@ void MNKTime::Write_Date()
     {
         #if PROGSIZE != PROGSIZE_EMUL
         TimeFunc::Wait(100);
-        if (Commands::WriteTimeMNK(time, sizeof(uint)) != Error::ER_NOERROR)
+        if (Commands::WriteTimeMNK(time, sizeof(uint)) != NOERROR)
         EMessageBox::information(this, "INFO", "Ошибка"); //EMessageBox::information(this, "INFO", "Записано успешно");
         #endif
     }

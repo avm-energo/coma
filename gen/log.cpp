@@ -1,6 +1,5 @@
 #include <QDateTime>
 #include <QDir>
-//#include <QStandardPaths>
 #define LZMA_API_STATIC
 #include "lzma/lzma.h"
 

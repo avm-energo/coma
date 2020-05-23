@@ -16,9 +16,9 @@ int Commands::Connect()
     if (cn != 0)
     {
         if (cn->Connect())
-            return Error::ER_NOERROR;
+            return NOERROR;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     return 0;
 #endif
@@ -53,7 +53,7 @@ int Commands::GetBsi(ModuleBSI::Bsi &bsi)
         memcpy(&bsi, &(ba.data()[0]), sizeof(ModuleBSI::Bsi));
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     return 0;
 #endif
@@ -71,14 +71,14 @@ int Commands::GetFileWithRestore(int filenum, QVector<S2::DataRec> *data)
         quint32 crctocheck;
         quint32 basize = ba.size();
         if (basize < 17)
-            return Error::ER_GENERALERROR;
+            return GENERALERROR;
         memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
         if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
-            return Error::ER_GENERALERROR;
+            return GENERALERROR;
         return S2::RestoreDataMem(&ba.data()[0], basize, data);
 //        return cn->result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     Q_UNUSED(filenum);
     Q_UNUSED(data);
@@ -96,13 +96,13 @@ int Commands::GetFile(int filenum, QByteArray &ba)
         quint32 crctocheck;
         quint32 basize = ba.size();
         if (basize < 17)
-            return Error::ER_GENERALERROR;
+            return GENERALERROR;
         memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
         if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
-            return Error::ER_GENERALERROR;
+            return GENERALERROR;
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     Q_UNUSED(filenum)
     Q_UNUSED(ptr)
@@ -129,7 +129,7 @@ int Commands::WriteFile(int filenum, QVector<S2::DataRec> *data)
         cn->SendFile(CN_WF, BoardTypes::BT_BASE, filenum, ba);
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     Q_UNUSED(ptr);
     Q_UNUSED(filenum);
@@ -149,7 +149,7 @@ int Commands::WriteHiddenBlock(char board, void *HPtr, int HPtrSize)
         cn->SendOut(CN_WHv, board, ba);
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     Q_UNUSED(board);
     Q_UNUSED(HPtr);
@@ -168,7 +168,7 @@ int Commands::GetBac(char BacNum, void *BacPtr, int BacPtrSize)
         memcpy(BacPtr, &(ba.data()[0]), BacPtrSize);
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     Q_UNUSED(BacNum);
     Q_UNUSED(BacPtr);
@@ -187,7 +187,7 @@ int Commands::GetBd(char BdNum, void *BdPtr, int BdPtrSize)
         memcpy(BdPtr, &(ba.data()[0]), BdPtrSize);
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     Q_UNUSED(BdNum);
     Q_UNUSED(BdPtr);
@@ -206,7 +206,7 @@ int Commands::GetBda(char board, void *BdPtr, int BdPtrSize)
         memcpy(BdPtr, &(ba.data()[0]), BdPtrSize);
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     Q_UNUSED(board);
     Q_UNUSED(BdPtr);
@@ -225,7 +225,7 @@ int Commands::GetBt(char BtNum, void *BtPtr, int &BtPtrSize)
         memcpy(BtPtr, &(ba.data()[0]), BtPtrSize);
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     Q_UNUSED(BtNum);
     Q_UNUSED(BtPtr);
@@ -244,7 +244,7 @@ int Commands::WriteBac(char BacNum, void *BacPtr, int BacPtrSize)
         cn->SendOut(CN_WBac, BacNum, ba);
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     Q_UNUSED(BacNum);
     Q_UNUSED(BacPtr);
@@ -261,7 +261,7 @@ int Commands::EraseTechBlock(char block)
         cn->SendCmd(CN_Ert, block);
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     Q_UNUSED(block);
     return 0;
@@ -278,7 +278,7 @@ int Commands::WriteTimeMNK(uint32_t *Time,  int TimeSize)
         cn->SendOut(CN_WTime, BoardTypes::BT_NONE, ba);
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     Q_UNUSED(Time);
     return 0;
@@ -295,7 +295,7 @@ int Commands::GetTimeMNK(uint &Time)
         memcpy(&Time, &(ba.data()[0]), sizeof(uint));
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     Q_UNUSED(Time);
     return 0;
@@ -312,7 +312,7 @@ int Commands::WriteBd(char BdNum, void *BdPtr, int BdPtrSize)
         cn->SendOut(CN_WBd, BdNum, ba);
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     Q_UNUSED(BdNum);
     Q_UNUSED(BdPtr);
@@ -329,7 +329,7 @@ int Commands::WriteCom(char ComNum)
         cn->SendCmd(CN_WCom, ComNum);
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     return 0;
 #endif
@@ -343,7 +343,7 @@ int Commands::RunVPO()
         cn->SendCmd(CN_VPO);
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     return 0;
 #endif
@@ -357,7 +357,7 @@ int Commands::TestCom(char OnOff)
         cn->SendCmd(CN_STest, OnOff);
         return cn->Result;
     }
-    return Error::ER_GENERALERROR;
+    return GENERALERROR;
 #else
     Q_UNUSED(OnOff);
     return 0;

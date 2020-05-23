@@ -98,7 +98,7 @@ void JournalDialog::SetupUI()
 void JournalDialog::GetJour()
 {
     int jourtype = GetJourNum(sender()->objectName());
-    if (jourtype == Error::ER_GENERALERROR)
+    if (jourtype == GENERALERROR)
         return;
     char num = jourtype + 4;
     if (MainWindow::MainInterface == "Ethernet")
@@ -109,7 +109,7 @@ void JournalDialog::GetJour()
     {
 //        QVector<S2::DataRec> *Jour = new QVector<S2::DataRec>;
         QByteArray ba;
-        if(Commands::GetFile(num, ba) == Error::ER_NOERROR)
+        if(Commands::GetFile(num, ba) == NOERROR)
         {
             switch(jourtype)
             {
@@ -136,11 +136,11 @@ void JournalDialog::EraseJour()
     if (MainWindow::MainInterface == "USB")
     {
         int jourtype = GetJourNum(sender()->objectName());
-        if (jourtype == Error::ER_GENERALERROR)
+        if (jourtype == GENERALERROR)
             return;
         char num = jourtype + 4;
 
-        if(Commands::EraseTechBlock(num) == Error::ER_NOERROR)
+        if(Commands::EraseTechBlock(num) == NOERROR)
         {
           EMessageBox::information(this, "Успешно", "Стирание прошло успешно");
         }
@@ -157,7 +157,7 @@ void JournalDialog::SaveJour()
     QString tvname, jourtypestr, jourfilestr;
     Qt::SortOrder order = Qt::AscendingOrder;
     int jourtype = GetJourNum(sender()->objectName());
-    if (jourtype == Error::ER_GENERALERROR)
+    if (jourtype == GENERALERROR)
         return;
     jourfilestr = "KIV #" + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + " ";
     switch(jourtype)
@@ -467,13 +467,13 @@ int JournalDialog::GetJourNum(const QString &objname)
     if (sl.size() < 2)
     {
         DBGMSG;
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     }
     int jourtype = sl.at(1).toInt(&ok);
     if (((sl.at(0) != "gj") && (sl.at(0) != "ej") && (sl.at(0) != "sj")) || !ok)
     {
         DBGMSG;
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     }
     return jourtype;
 }

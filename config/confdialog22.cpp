@@ -15,7 +15,6 @@
 #include <QTabBar>
 #include "confdialog22.h"
 #include "../widgets/emessagebox.h"
-//#include "../gen/publicclass.h"
 #include "../gen/colors.h"
 #include "../widgets/wd_func.h"
 

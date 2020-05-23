@@ -75,7 +75,7 @@ void InfoDialog::FillBsiFrom104(Parse104::BS104Signals* BS104)
 {
     //Parse104::BS104Signals sig = *new Parse104::BS104Signals;
     //sig = *BS104;
-    ModuleBSI::Bsi bsi = *new ModuleBSI::Bsi;
+//    ModuleBSI::Bsi bsi = *new ModuleBSI::Bsi;
     int i;
     int startadr = 0;
     memcpy(&startadr, &(BS104->BS.SigAdr[0]), sizeof(BS104->BS.SigAdr));

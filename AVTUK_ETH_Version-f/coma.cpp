@@ -598,7 +598,7 @@ void Coma::PrepareDialogs()
          else if(insl.at(1) == "MODBUS")
          {
             connect(modBus, SIGNAL(ErrorRead()), CorD, SLOT(ErrorRead()));
-            connect(modBus, SIGNAL(ModbusState(QModbusDevice::State)), CheckB, SLOT(onModbusStateChanged(QModbusDevice::State)));
+            connect(modBus, SIGNAL(ModbusState(ModBus::ModbusDeviceState)), CheckB, SLOT(onModbusStateChanged(ModBus::ModbusDeviceState)));
             connect(modBus, SIGNAL(SignalsReceived(ModBusSignal*, int*)), CheckB, SLOT(UpdateModBusData(ModBusSignal*, int*)));
             connect(modBus, SIGNAL(CorSignalsReceived(ModBusSignal*, int*)), CorD, SLOT(ModBusUpdateCorData(ModBusSignal*, int*)));
             connect(CorD, SIGNAL(RS485WriteCorBd(information*, float*)), modBus, SLOT(ModWriteCor(information*, float*)));//, int*)));

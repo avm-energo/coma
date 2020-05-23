@@ -22,8 +22,8 @@ ModuleBSI::ModuleBSI()
 #if PROGSIZE != PROGSIZE_EMUL
 int ModuleBSI::SetupBSI()
 {
-    if (Commands::GetBsi(ModuleBsi) != Error::ER_NOERROR)
-        return Error::ER_CANAL;
+    if (Commands::GetBsi(ModuleBsi) != NOERROR)
+        return GENERALERROR;
 /*    quint32 mtype;
     QString mtypestring;
     mtype = ((ModuleBsi.MTypeB & 0x000000FF) << 8) | (ModuleBsi.MTypeM & 0x000000FF);
@@ -35,13 +35,13 @@ int ModuleBSI::SetupBSI()
 #endif */
     ModuleTypeString = Config::ModuleBaseBoards()[ModuleBsi.MTypeB << 8].TextString + \
             Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].TextString;
-    ModuleBSI::Bsi bsi = ModuleBsi;
+//    ModuleBSI::Bsi bsi = ModuleBsi;
     QString tmps = ModuleTypeString;
 #if PROGSIZE >= PROGSIZE_LARGE
     if (!IsKnownModule())
-        return Error::ER_RESEMPTY;
+        return RESEMPTY;
 #endif
-    return Error::ER_NOERROR;
+    return NOERROR;
 }
 #endif
 void ModuleBSI::SetupEmulatedBsi(ModuleBSI::Bsi &bsi)
@@ -117,19 +117,19 @@ int ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
     if(!MainWindow::StopRead)
     {
         if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
-            return Error::ER_RESEMPTY;
+            return RESEMPTY;
         else // иначе заполнить значениями из модуля
         {
             //iec104::GetFile();
-            if ((res = Commands::GetFileWithRestore(1, S2Config)) != Error::ER_NOERROR)
+            if ((res = Commands::GetFileWithRestore(1, S2Config)) != NOERROR)
             {
                 QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
                 EMessageBox::error(w, "ошибка", "Ошибка чтения конфигурации из " + tmps);
-                return Error::ER_GENERALERROR;
+                return GENERALERROR;
             }
 
         }
     }
-    return Error::ER_NOERROR;
+    return NOERROR;
 }
 #endif

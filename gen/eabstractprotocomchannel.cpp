@@ -318,7 +318,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 }
                 if (Command == CN_Ert)
                     OscTimer->start(); // start timer to send ErPg command periodically
-                Finish(Error::ER_NOERROR);
+                Finish(NOERROR);
                 return;
             }
             // команды с ответом "ОК" и с продолжением
@@ -334,7 +334,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 }
                 if (!SegLeft)
                 {
-                    Finish(Error::ER_NOERROR);
+                    Finish(NOERROR);
                     return;
                 }
                 ReadDataChunk.clear();
@@ -360,7 +360,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 if (ReadDataChunkLength == 0)
                 {
                     rdsize = 0;
-                    Finish(Error::ER_NOERROR);
+                    Finish(NOERROR);
                     return;
                 }
                 if (Command == CN_ErPg)
@@ -380,7 +380,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 if (ReadDataChunkLength == 0)
                 {
                     rdsize = 0;
-                    Finish(Error::ER_NOERROR);
+                    Finish(NOERROR);
                     return;
                 }
                 // надо проверить, тот ли номер файла принимаем
@@ -452,7 +452,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 if ((outdatasize >= InDataSize) || (ReadDataChunkLength < CN_MAXSEGMENTLENGTH))
                 {
                     emit SetDataSize(outdatasize); // установка размера прогрессбара, чтобы не мелькал
-                    Finish(Error::ER_NOERROR);
+                    Finish(NOERROR);
                 }
                 else
                     SendOk(true);
@@ -473,7 +473,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 ReadDataChunk.clear();
                 if (outdatasize >= RDLength)
                 {
-                    Finish(Error::ER_NOERROR);
+                    Finish(NOERROR);
                     return;
                 }
                 else
@@ -486,7 +486,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 emit SetDataCount(OscNum);
                 if (OscNum == 100)
                 {
-                    Finish(Error::ER_NOERROR);
+                    Finish(NOERROR);
                     OscTimer->stop();
                     break;
                 }
@@ -595,7 +595,7 @@ void EAbstractProtocomChannel::Finish(int ernum)
 {
     TTimer->stop();
     Command = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
-    if (ernum != Error::ER_NOERROR)
+    if (ernum != NOERROR)
     {
         if (ernum < 0)
         {
@@ -645,7 +645,7 @@ void EAbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
             CnLog->WriteRaw(tmps);
         }
         int tmpi = RawWrite(tmpba);
-        if (tmpi == Error::ER_GENERALERROR)
+        if (tmpi == GENERALERROR)
         {
             Error::ShowErMsg(COM_WRITEER);
             Disconnect();

@@ -8,12 +8,9 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
-//#include "../gen/publicclass.h"
 #include "../gen/colors.h"
 #include "../gen/modulebsi.h"
 #include "confdialog80.h"
-
-//Config80 *ConfDialog80::C80;
 
 ConfDialog80::ConfDialog80(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     AbstractConfDialog(parent)

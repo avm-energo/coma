@@ -25,14 +25,14 @@
 
 bool ModBus::Reading;
 
-ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
+ModBus::ModBus(ModBus_Settings settings, QObject *parent) : QObject(parent)
 {
-    DeviceAdr = Settings.adr;
-    Group = 0;
+    Settings = settings;
+    CycleGroup = 0;
     ReadSize = 0;
     Reading = false;
-    CloseThr = false;
-    Commands = false;
+//    CloseThr = false;
+//    Commands = false;
     First = 1;
     Count = 0;
     Write = 0;
@@ -42,13 +42,13 @@ ModBus::ModBus(ModBus_Settings Settings, QObject *parent) : QObject(parent)
 
     connect(ReconnectTimer, SIGNAL(timeout()), this, SLOT(Reconnect()));
 
-    SignalGroups[0] = {0x04, 0x00, 0x65, 0x00, 0x04};
-    SignalGroups[1] = {0x04, 0x03, 0xE8, 0x00, 0x20};
-    SignalGroups[2] = {0x04, 0x04, 0x4C, 0x00, 0x20};
-    SignalGroups[3] = {0x04, 0x09, 0x60, 0x00, 0x0E};
-    SignalGroups[4] = {0x04, 0x09, 0x74, 0x00, 0x1C};
-    SignalGroups[5] = {0x04, 0x11, 0x95, 0x00, 0x04};
-    SignalGroups[6] = {0x01, 0x0B, 0xC3, 0x00, 0x19};
+    SignalGroups[0] = QByteArrayLiteral("\x04\x00\x65\x00\x04");
+    SignalGroups[1] = QByteArrayLiteral("\x04\x03\xE8\x00\x20");
+    SignalGroups[2] = QByteArrayLiteral("\x04\x04\x4c\x00\x20");
+    SignalGroups[3] = QByteArrayLiteral("\x04\x09\x60\x00\x0E");
+    SignalGroups[4] = QByteArrayLiteral("\x04\x09\x74\x00\x1c");
+    SignalGroups[5] = QByteArrayLiteral("\x04\x11\x95\x00\x04");
+    SignalGroups[6] = QByteArrayLiteral("\x01\x0b\xc3\x00\x19");
 
     //ModBusInterrogateTimer = new QTimer;
     //ModBusInterrogateTimer->setInterval(1000);
@@ -60,45 +60,81 @@ ModBus::~ModBus()
         SerialPort->close();
 }
 
-/*void ModBus::ResponseTimeout(int timerId)
+int ModBus::Connect()
 {
-    Q_UNUSED(timerId)
-        m_responseTimer.stop();
-        if (m_state != State::WaitingForReplay || m_queue.isEmpty())
-            return;
-        const auto current = m_queue.first();
-        if (current.m_timerId != timerId)
-            return;
-        qCDebug(QT_MODBUS) << "(RTU client) Receive timeout:" << current.requestPdu;
-        if (current.numberOfRetries <= 0) {
-            auto item = m_queue.dequeue();
-            if (item.reply) {
-                item.reply->setError(QModbusDevice::TimeoutError,
-                    QModbusClient::tr("Request timeout."));
-            }
-        }
-        m_state = Idle;
-        scheduleNextRequest(m_interFrameDelayMilliseconds);
+    SerialPort = new QSerialPort(Settings.Port);
+    SerialPort->setBaudRate(Settings.Baud);
+    SerialPort->setDataBits(QSerialPort::Data8);
+    SerialPort->setParity(QSerialPort::NoParity);
+    SerialPort->setStopBits(QSerialPort::OneStop);
+    SerialPort->setFlowControl(QSerialPort::NoFlowControl);
+    SerialPort->setReadBufferSize(1024);
+    connect(SerialPort, SIGNAL(readyRead()), this, SLOT(ReadPort()));
+
+    if(SerialPort->open(QIODevice::ReadWrite) == true)
+    {
+       State = ConnectedState;
+       emit ModbusState(State);
+    }
+    else
+    {
+       State = ClosingState;
+       emit ModbusState(State);
+       return GENERALERROR;
+    }
+    return NOERROR;
 }
 
-void ModBus::onBytesWritten(qint64 bytes)
+int ModBus::SendAndGetResult(ModBus::ComInfo &request)
 {
-        //if (m_queue.isEmpty())
-        //    return;
-        //auto &current = m_queue.first();
-        current.bytesWritten += bytes;
-        if (current.bytesWritten != current.adu.size())
-            return;
-        qCDebug(QT_MODBUS) << "(RTU client) Send successful:" << current.requestPdu;
-        if (!current.reply.isNull() && current.reply->type() == QModbusReply::Broadcast) {
-            m_state = ProcessReply;
-            processQueueElement({}, m_queue.dequeue());
-            m_state = Idle;
-            scheduleNextRequest(m_turnaroundDelay);
-        } else {
-            current.m_timerId = m_responseTimer.start(m_responseTimeoutDuration);
-        }
-}*/
+    QByteArray bytes;
+
+    if (PrepareWrite() != NOERROR)
+        return GENERALERROR;
+    bytes.append(Settings.Address); // адрес устройства
+    bytes.append(request.Command);         //аналоговый выход
+    bytes.append(static_cast<char>((request.Address&0xFF00)>>8));
+    bytes.append(static_cast<char>(request.Address&0x00FF));
+    bytes.append(static_cast<char>((request.Quantity&0xFF00)>>8));
+    bytes.append(static_cast<char>(request.Quantity&0x00FF));
+    if(request.Command == 0x10)
+        bytes.append(static_cast<char>(request.SizeBytes));
+    if(request.Data.size())
+        bytes.append(request.Data);
+    quint16 KSS = CalcCRC(bytes);
+    bytes.append(static_cast<unsigned char>(KSS>>8));
+    bytes.append(static_cast<unsigned char>(KSS));
+    if(request.Command== 0x10)
+        ReadSize = 8;
+    else
+        ReadSize = 5+2*request.Quantity;
+    qint64 st = SerialPort->write(bytes.data(), bytes.size());
+    if (st < bytes.size())
+        return RESEMPTY;
+    if(request.Address == 4600)
+        Write=0;
+    // wait for an answer ot timeout and return result
+    return NOERROR;
+}
+
+int ModBus::SendNextCmdAndGetResult()
+{
+    QByteArray bytes;
+
+    if (PrepareWrite() != NOERROR)
+        return GENERALERROR;
+    bytes.append(Settings.Address); // адрес устройства
+    bytes.append(SignalGroups[CycleGroup]);
+    quint16 KSS = CalcCRC(bytes);
+    bytes.append(static_cast<unsigned char>(KSS>>8));
+    bytes.append(static_cast<unsigned char>(KSS));
+
+    ReadSize = 5+2*SignalGroups[CycleGroup][SECONDBYTEQ];
+
+    if(CycleGroup == 6)
+        ReadSize = 9;
+    st = SerialPort->write(bytes.data(), bytes.size());
+}
 
 void ModBus::ReadPort()
 {
@@ -136,7 +172,7 @@ void ModBus::ReadPort()
 
       if(MYKSS == crcfinal)
       {
-        if((Group == 6) && (Commands == false))
+        if((CycleGroup == 6) && (Commands == false))
         {
            Coil = new Coils;
            Coil->countBytes = ResponseBuffer.data()[2];
@@ -154,7 +190,7 @@ void ModBus::ReadPort()
         else
         Sig = new ModBusSignalStruct[signalsSize];
 
-        startadr = (static_cast<quint8>(SignalGroups[Group].data[FIRSTBYTEADR]) << 8) | (static_cast<quint8>(SignalGroups[Group].data[SECONDBYTEADR]));
+        startadr = (static_cast<quint8>(SignalGroups[CycleGroup].data[FIRSTBYTEADR]) << 8) | (static_cast<quint8>(SignalGroups[CycleGroup].data[SECONDBYTEADR]));
         for(i=0; i<signalsSize; i++)
         {
          if(ComData.adr == 1  || ComData.adr == 4600)  // bsi
@@ -228,15 +264,15 @@ void ModBus::ReadPort()
         else
         {
 
-           if(Group == 6)
+           if(CycleGroup == 6)
            emit CoilSignalsReady(Coil);
            else
            emit SignalsReceived(Sig, &signalsSize);
 
-           Group++;
+           CycleGroup++;
 
-           if(Group == 7)
-           Group= 0;
+           if(CycleGroup == 7)
+           CycleGroup= 0;
 
            //Reading = 0;
         }
@@ -253,10 +289,10 @@ void ModBus::ReadPort()
       {
           //commands = false;
           Reading = false;
-          Group++;
+          CycleGroup++;
 
-          if(Group == 7)
-          Group= 0;
+          if(CycleGroup == 7)
+          CycleGroup= 0;
 
           ResponseBuffer = SerialPort->read(cursize);
           if((ResponseBuffer.data()[3] == (char)0xC2) && (ResponseBuffer.data()[4] == (char)0xC1))
@@ -271,10 +307,6 @@ void ModBus::ReadPort()
   }
 
  // emit nextGroup();
-}
-
-void ModBus::WriteToPort()
-{
 }
 
 void ModBus::BSIrequest(ModBus_Settings Settings)
@@ -294,7 +326,7 @@ void ModBus::BSIrequest(ModBus_Settings Settings)
     bytes->clear();
     SerialPort->clear();
 
-    bytes->append(Settings.adr.toInt()); // адрес устройства
+    bytes->append(Settings.Address.toInt()); // адрес устройства
 
     bytes->append(ComData.ModCom);         //аналоговый выход
     bytes->append(static_cast<char>(ComData.adr>>8));
@@ -327,160 +359,35 @@ void ModBus::BSIrequest(ModBus_Settings Settings)
 
 }
 
-void ModBus::SendAndGetResult(ModBus::ComInfo &request)
-{
-    QByteArray bytes;
-    quint16 KSS = '\0';
-    int i = 0;
-    qint64 st;
-
-    if(!serialPort->isOpen())
-
-        if(!Reading)
-        {
-            bytes->clear();
-
-            //if(Reading == 0)
-            //emit errorRead();
-
-            //for(i = 0; i<6; i++)
-            //{
-
-            SerialPort->clear();
-
-            TimeFunc::Wait(10);
-            bytes->append(DeviceAdr.toInt()); // адрес устройства
-
-            if(Commands)
-            {
-                bytes->append(ComData.ModCom);         //аналоговый выход
-                bytes->append(static_cast<char>((ComData.adr&0xFF00)>>8));
-                bytes->append(static_cast<char>(ComData.adr&0x00FF));
-                bytes->append(static_cast<char>((ComData.quantity&0xFF00)>>8));
-                bytes->append(static_cast<char>(ComData.quantity&0x00FF));
-
-                if(ComData.ModCom == 0x10)
-                bytes->append(static_cast<char>(ComData.sizebytes));
-
-                if(ComData.data->size())
-                {
-                    for(i = 0; i<ComData.data->size(); i++)
-                    {
-                      bytes->append(ComData.data->data()[i]);
-                    }
-                }
-
-
-                //for(i=0;i<bytes->size();i++)
-                KSS=CalcCRC((quint8*)(bytes->data()), bytes->size());
-                //KSS += static_cast<quint8>(bytes->data()[i]);
-                //S2::updCRC32(bytes->data()[i],&crc);
-                bytes->append(static_cast<char>(KSS>>8));
-                bytes->append(static_cast<char>(KSS));
-
-                ReadSize = 5+2*ComData.quantity;
-
-                if(ComData.ModCom == 0x10)
-                ReadSize = 8;
-
-                ComData.data->clear();
-
-               // commands = false;
-            }
-            else
-            {
-                for (int i=0; i<5; ++i)
-                    bytes->append(SignalGroups[Group].data[i]);
-/*                bytes->append(SignalGroups[Group].signaltype);         //аналоговый выход
-                bytes->append(SignalGroups[Group].firstbyteadr);
-                bytes->append(SignalGroups[Group].secondbyteadr);
-                bytes->append(SignalGroups[Group].firstbytequantity);
-                bytes->append(SignalGroups[Group].secondbytequantity); */
-
-                //for(i=0;i<bytes->size();i++)
-                KSS=CalcCRC((quint8*)(bytes->data()), bytes->size());
-                //KSS += static_cast<quint8>(bytes->data()[i]);
-                //S2::updCRC32(bytes->data()[i],&crc);
-                bytes->append(static_cast<char>(KSS>>8));
-                bytes->append(static_cast<char>(KSS));
-
-                ReadSize = 5+2*SignalGroups[Group].data[SECONDBYTEQ];
-
-                if(Group == 6)
-                ReadSize = 9;
-
-
-            }
-
-
-            st = SerialPort->write(bytes->data(), bytes->size());
-
-            if(ComData.adr == 4600)
-            Write=0;
-            //st=0;
-            Reading = 1;
-
-                //qCDebug << "(RTU client) Response buffer:" << m_responseBuffer.toHex();
-        }
-
-        if(CloseThr) //&& (!haveFinished))
-        {
-         //haveFinished = true;
-         emit Finished();
-         break;
-        }
-        //cond->wait(mutex,10);
-        QThread::msleep(100);
-        qApp->processEvents();
-    }
-}
-
-quint16 ModBus::CalcCRC(quint8* Dat, quint8 len)
+quint16 ModBus::CalcCRC(QByteArray &ba)
 {
   quint8 CRChi=0xFF;
   quint8 CRClo=0xFF;
   quint8 Ind;
   quint16 crc;
+  int count = 0;
 
-  while(len--)
+  while (count < ba.size())
   {
-    Ind = CRChi ^ *Dat;
-    Dat++;
-    CRChi = CRClo ^ TabCRChi[Ind];
-    CRClo = TabCRClo[Ind];
+      Ind = CRChi ^ ba.at(count);
+      count++;
+      CRChi = CRClo ^ TabCRChi[Ind];
+      CRClo = TabCRClo[Ind];
   }
-  crc = ((CRChi<<8)|CRClo);
+  crc = ((CRChi << 8) | CRClo);
   return crc;
 }
 
-int ModBus::Connect(ModBus::ModBus_Settings &settings)
+int ModBus::PrepareWrite()
 {
-    bool ok;
-    int baud = settings.baud.toInt(&ok);
-    if (!ok)
-        return Error::ER_GENERALERROR;
-    SerialPort = new QSerialPort(settings.port);
-    SerialPort->setBaudRate(baud);
-    SerialPort->setDataBits(QSerialPort::Data8);
-    SerialPort->setParity(QSerialPort::NoParity);
-    SerialPort->setStopBits(QSerialPort::OneStop);
-    SerialPort->setFlowControl(QSerialPort::NoFlowControl);
-    SerialPort->setReadBufferSize(1024);
-    connect(SerialPort, SIGNAL(readyRead()), this, SLOT(ReadPort()));
+    if(!SerialPort->isOpen())
+    {
+        if (Connect() != NOERROR)
+            return GENERALERROR;
+    }
 
-    //if(modbusDevice->connectDevice() == true)
-    if(SerialPort->open(QIODevice::ReadWrite) == true)
-    {
-       State = QModbusDevice::ConnectedState;
-       emit ModbusState(State);
-       //serialPort->isOpen();
-       //ModBusInterrogateTimer->start();
-    }
-    else
-    {
-       State = QModbusDevice::ClosingState;
-       emit ModbusState(State);
-    }
+    SerialPort->clear();
+    TimeFunc::Wait(10);
 }
 
 void ModBus::StopModSlot()
@@ -694,27 +601,9 @@ void ModBus::Tabs(int index)
   }
 }
 
-void ModBus::FinishThread()
-{
-    AboutToFinish = true;
-}
-
 void ModBus::Reconnect()
 {
    ReconnectTimer->stop();
    ReconnectTimer->deleteLater();
    emit ReconnectSignal(1);
 }
-
-/*QModbusReply *enqueueRequest(const QModbusRequest &request, int serverAddress,
-       const QModbusDataUnit &unit, QModbusReply::ReplyType type)
-   {
-       Q_Q(QModbusRtuSerialMaster);
-       auto reply = new QModbusReply(serverAddress == 0 ? QModbusReply::Broadcast : type,
-           serverAddress, q);
-       QueueElement element(reply, request, unit, m_numberOfRetries + 1);
-       element.adu = QModbusSerialAdu::create(QModbusSerialAdu::Rtu, serverAddress, request);
-       m_queue.enqueue(element);
-       scheduleNextRequest(m_interFrameDelayMilliseconds);
-       return reply;
-   }*/

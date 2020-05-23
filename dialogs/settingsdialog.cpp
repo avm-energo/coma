@@ -11,7 +11,6 @@
 #include "../config/config.h"
 #include "../gen/stdfunc.h"
 #include "../gen/modulebsi.h"
-//#include "../gen/eabstractprotocomchannel.h"
 #include "../widgets/wd_func.h"
 #include "../gen/maindef.h"
 

@@ -9,9 +9,9 @@
 #include "iec104.h"
 #include "ethernet.h"
 #include "../widgets/emessagebox.h"
-#include <vcruntime_string.h>
+/*#include <vcruntime_string.h>
 
-#include <vcruntime.h>
+#include <vcruntime.h> */
 
 quint8 iec104::stopincrementing;
 
@@ -716,7 +716,7 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
                       if(filetype == 0x01)  // если файл конфигурации
                       {
                        res = S2::RestoreDataMem(ReadData.data(), RDLength, DR);
-                       if (res == Error::ER_NOERROR)
+                       if (res == NOERROR)
                        {
                         emit sendS2fromParse(DR);
                        }
@@ -728,7 +728,7 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
                        memcpy(&DRJour->data()[0],&ReadData.data()[16],8);
 
                        res = S2::RestoreDataMem(ReadData.data(), RDLength, DRJour);
-                       if (res == Error::ER_NOERROR)
+                       if (res == NOERROR)
                        {
                         emit sendJourSysfromParse(DRJour);
                        } */
@@ -741,7 +741,7 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
                        memcpy(&DRJour->data()[0],&ReadData.data()[16],8);
 
                        res = S2::RestoreDataMem(ReadData.data(), RDLength, DRJour);
-                       if (res == Error::ER_NOERROR)
+                       if (res == NOERROR)
                        { */
 //                        emit sendJourWorkfromParse(DRJour);
                           emit sendJourWorkfromParse(ReadData);
@@ -754,7 +754,7 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
                        memcpy(&DRMJour->data()[0],&ReadData.data()[16],8);
 
                        res = S2::RestoreDataMem(ReadData.data(), RDLength, DRMJour);
-                       if (res == Error::ER_NOERROR)
+                       if (res == NOERROR)
                        { */
 //                        emit sendJourMeasfromParse(DRMJour);
                           emit sendJourMeasfromParse(ReadData);

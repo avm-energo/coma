@@ -7,7 +7,6 @@
 #include "abstractconfdialog.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-//#include "../canal.h"
 #include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
 #include "../gen/files.h"
@@ -61,9 +60,9 @@ void AbstractConfDialog::ReadConf(int index)
              else if(MainWindow::MainInterface == "USB")
              {
                  int res = ModuleBSI::PrereadConf(this, S2Config);
-                 if (res == Error::ER_RESEMPTY)
+                 if (res == RESEMPTY)
                      emit DefConfToBeLoaded();
-                 else if (res == Error::ER_NOERROR)
+                 else if (res == NOERROR)
                      emit NewConfToBeLoaded();
 
              }
@@ -83,7 +82,7 @@ void AbstractConfDialog::FillConf(QVector<S2::DataRec>* DR)
 void AbstractConfDialog::WriteConf()
 {
     int res;
-    if (WriteCheckPassword() == Error::ER_NOERROR)
+    if (WriteCheckPassword() == NOERROR)
     {
 
         if (!PrepareConfToWrite())
@@ -97,7 +96,7 @@ void AbstractConfDialog::WriteConf()
          }
          else if(MainWindow::MainInterface == "USB")
          {
-            if ((res = Commands::WriteFile(1, S2Config)) == Error::ER_NOERROR)
+            if ((res = Commands::WriteFile(1, S2Config)) == NOERROR)
             {
                 emit BsiIsNeedToBeAcquiredAndChecked();
                 EMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
@@ -120,13 +119,13 @@ int AbstractConfDialog::WriteCheckPassword()
     dlg->show();
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     if (!ok)
     {
         EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     }
-    return Error::ER_NOERROR;
+    return NOERROR;
 }
 
 void AbstractConfDialog::WritePasswordCheck(QString psw)
@@ -180,7 +179,7 @@ void AbstractConfDialog::LoadConfFromFile()
         WARNMSG("Ошибка при загрузке файла конфигурации");
         return;
     }
-    if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), S2Config) != Error::ER_NOERROR)
+    if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), S2Config) != NOERROR)
     {
         WARNMSG("Ошибка при разборе файла конфигурации");
         return;
@@ -246,9 +245,9 @@ void AbstractConfDialog::ButtonReadConf()
      else if(MainWindow::MainInterface == "USB")
      {
          int res = ModuleBSI::PrereadConf(this, S2Config);
-         if (res == Error::ER_RESEMPTY)
+         if (res == RESEMPTY)
              emit DefConfToBeLoaded();
-         else if (res == Error::ER_NOERROR)
+         else if (res == NOERROR)
              emit NewConfToBeLoaded();
 
      }
@@ -274,9 +273,9 @@ int AbstractConfDialog::GetChNumFromObjectName(QString ObjectName)
     if (ObjectNameSl.size()>1)
         ChNum = ObjectNameSl.at(1).toInt(&ok);
     else
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     if (!ok)
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     return ChNum;
 }
 
