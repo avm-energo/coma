@@ -28,7 +28,6 @@ signals:
 
 public slots:   
     void BdTimerTimeout();
-    void ConnectMessage(QString*);
 
 
 private:

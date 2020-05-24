@@ -488,9 +488,4 @@ void CheckDialog84::onModbusStateChanged(QModbusDevice::State state)
 }
 
 
-void CheckDialog84::ConnectMessage(QString* Name)
-{
-  EMessageBox::information(this, "Успешно", "Связь с "+*Name+" установлена");
-}
-
 

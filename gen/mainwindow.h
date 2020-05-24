@@ -217,7 +217,7 @@ private:
     quint8 PredAlarmEvents[20];
     quint8 AlarmEvents[20];
     int fileSize, curfileSize;
-    QTimer *reconnectTimer;
+    QTimer *reconnectTimer, *connectTimer;
 
 #ifdef ETHENABLE
     DeviceConnectStruct DevInfo;
@@ -258,6 +258,8 @@ public slots:
     void SetCancelled();
     void ReConnect(int);
     void attemptToRec();
+    void ConnectMessage(QString*);
+    void ConnectMessage();
 
 
 private slots:
@@ -265,14 +267,13 @@ private slots:
     void ShowErrorDialog();
     void GetAbout();
     void closeEvent(QCloseEvent *event);
-
+    void stopTimer();
     void SetDefConf();
     void SetMainDefConf();
     void SetBDefConf();
     void SetMDefConf();
     void Fill();
     void PasswordCheck(QString psw);
-    void ConnectMessage();
     void DisconnectMessage();
     void SetPortSlot(QString port);
 

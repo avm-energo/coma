@@ -492,7 +492,7 @@ void Coma::Stage3()
 #endif
 
     if(MainInterface == "Ethernet" || MainInterface == "RS485")
-    EMessageBox::information(this, "Успешно", "Связь с "+FullName+" установлена");
+    ConnectMessage();
 
     if(MainInterface == "RS485")
     Modthr->start();
