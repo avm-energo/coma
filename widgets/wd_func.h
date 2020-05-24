@@ -110,7 +110,7 @@ public:
     static QImage *TwoImages(const QString &first, const QString &second);
     static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, \
                       const QObject *receiver, const char *method, const QString &icon="", const QString &pbtooltip="");
-    static void SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model);
+    static void SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
     static ETableView *NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model);
     static ETableModel *TVModel(QWidget *w, const QString &tvname);
     static bool LE_read_data(QWidget *w, const QString &lename, QString &levalue);

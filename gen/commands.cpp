@@ -70,11 +70,16 @@ int Commands::GetFileWithRestore(int filenum, QVector<S2::DataRec> *data)
         // проверка контрольной суммы файла
         quint32 crctocheck;
         quint32 basize = ba.size();
-        if (basize < 17)
+        {
+            ERMSG("basize");
             return Error::ER_GENERALERROR;
+        }
         memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
         if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
+        {
+            ERMSG("CRC error");
             return Error::ER_GENERALERROR;
+        }
         return S2::RestoreDataMem(&ba.data()[0], basize, data);
 //        return cn->result;
     }
@@ -96,10 +101,16 @@ int Commands::GetFile(int filenum, QByteArray &ba)
         quint32 crctocheck;
         quint32 basize = ba.size();
         if (basize < 17)
+        {
+            ERMSG("basize");
             return Error::ER_GENERALERROR;
+        }
         memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
         if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
+        {
+            ERMSG("CRC error");
             return Error::ER_GENERALERROR;
+        }
         return cn->Result;
     }
     return Error::ER_GENERALERROR;

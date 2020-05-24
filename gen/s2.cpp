@@ -60,7 +60,7 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
     quint32 fhsize = sizeof(FileHeader);
     if (fhsize > memsize)
     {
-        ERMSG("S2: выход за границу принятых байт"); // выход за границу принятых байт
+        ERMSG("S2: out of memory"); // выход за границу принятых байт
         return S2_SIZEERROR;
     }
     memcpy(&header,m,fhsize);
@@ -69,7 +69,7 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
     // проверка контрольной суммы
     if (!CheckCRC32(m, memsize-fhsize, header.crc32))
     {
-        ERMSG("S2: Ошибка CRC"); // выход за границу принятых байт
+        ERMSG("S2: CRC error"); // выход за границу принятых байт
         return S2_CRCERROR;
     }
     pos = fhsize;
@@ -80,7 +80,7 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
         pos += tmpi;
         if (pos > memsize)
         {
-            ERMSG("S2: выход за границу принятых байт"); // выход за границу принятых байт
+            ERMSG("S2: out of memory"); // выход за границу принятых байт
             return S2_SIZEERROR;
         }
         memcpy(&R, m, tmpi);
@@ -94,7 +94,7 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
                 pos += tmpi;
                 if (pos > memsize)
                 {
-                    ERMSG("S2: выход за границу принятых байт"); // выход за границу принятых байт
+                    ERMSG("S2: out of memory"); // выход за границу принятых байт
                     return S2_SIZEERROR;
                 }
                 m += tmpi;
@@ -103,14 +103,14 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
             noIDs = false;
             if (r->num_byte!=R.num_byte) //несовпадения описания прочитанного элемента с ожидаемым
             {
-                ERMSG("Несовпадение описаний одного и того же блока"); // несовпадение описаний одного и того же блока
+                ERMSG("S2: block description mismatch"); // несовпадение описаний одного и того же блока
                 return S2_DESCERROR;
             }
             tmpi = r->num_byte;
             pos += tmpi;
             if (pos > memsize)
             {
-                ERMSG("S2: выход за границу принятых байт"); // выход за границу принятых байт
+                ERMSG("S2: out of memory"); // выход за границу принятых байт
                 return S2_SIZEERROR;
             }
             memcpy(r->thedata, m, tmpi);
@@ -119,12 +119,12 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
     }
     if (header.size != (pos - fhsize))
     {
-        ERMSG("S2: ошибка длины"); // ошибка длины
+        ERMSG("S2: length error"); // ошибка длины
         return S2_DHSZERROR;
     }
     if (noIDs)
     {
-        ERMSG("Не найдено ни одного элемента с заданным ID"); // не найдено ни одного ИД
+        ERMSG("S2: there's no such ID"); // не найдено ни одного ИД
         return S2_NOIDS;
     }
     return Error::ER_NOERROR;
