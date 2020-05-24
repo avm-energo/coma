@@ -230,6 +230,17 @@ void JournalDialog::FillSysJour(QByteArray ba)
 
 void JournalDialog::FillMeasJour(QByteArray ba)
 {
+    quint32 crctocheck;
+    quint32 basize = ba.size();
+    if (basize < 17)
+    {
+        ERMSG("basize");
+    }
+    memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
+    if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
+    {
+        ERMSG("CRC error");
+    }
     FillMeasTable(ba.data());
 }
 
@@ -297,7 +308,11 @@ void JournalDialog::FillEventsTable(char *file, int jourtype)
     model->addColumn("Описание события");
     model->addColumn("Тип события");
     model->fillModel(lsl);
-    WDFunc::SetTVModel(this, tvname, model);
+    QSortFilterProxyModel *pmdl = new QSortFilterProxyModel;
+    pmdl->setSourceModel(model);
+    int dateidx = model->Headers().indexOf("Дата/Время");
+    pmdl->sort(dateidx, Qt::DescendingOrder);
+    WDFunc::SetTVModel(this, tvname, pmdl, true);
     QApplication::restoreOverrideCursor();
 }
 
@@ -455,7 +470,11 @@ void JournalDialog::FillMeasTable(char *file)
    model->addColumn("Tmk, °С");
    model->addColumn("Tamb, °С");
    model->fillModel(lsl);
-   WDFunc::SetTVModel(this, "meas", model);
+   QSortFilterProxyModel *pmdl = new QSortFilterProxyModel;
+   pmdl->setSourceModel(model);
+   int dateidx = model->Headers().indexOf("Дата/Время");
+   pmdl->sort(dateidx, Qt::AscendingOrder);
+   WDFunc::SetTVModel(this, "meas", pmdl, true);
    QApplication::restoreOverrideCursor();
 }
 

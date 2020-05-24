@@ -513,13 +513,14 @@ ETableView *WDFunc::NewTV(QWidget *w, const QString &tvname, QAbstractItemModel 
     return tv;
 }
 
-void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model)
+void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable)
 {
     ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == nullptr)
         return;
     QItemSelectionModel *m = tv->selectionModel();
     tv->setModel(model);
+    tv->setSortingEnabled(sortenable);
     delete m;
 }
 

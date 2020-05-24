@@ -558,7 +558,7 @@ void Coma::PrepareDialogs()
             //ch104->IP = IPtemp;
             connect(ch104,SIGNAL(ethconnected()), this, SLOT(ConnectMessage()));
             //connect(ch104,SIGNAL(readConf()), ch104,SIGNAL(readConf()));
-            //connect(ch104,SIGNAL(ethdisconnected()), this, SLOT(DisconnectMessage()));
+            connect(ch104,SIGNAL(ethdisconnected()), this, SLOT(DisconnectMessage()));
             //connect(ch104,SIGNAL(ethNoconnection()), this, SLOT(DisconnectAndClear()));
 
             connect(CorD,SIGNAL(sendCom45(quint32*)), ch104, SLOT(Com45(quint32*)));
