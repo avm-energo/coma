@@ -65,7 +65,7 @@ public:
     QVector<S2::DataRec>* SaveMJour; */
 
 private:
-    const QStringList SysJourDescription = QStringList() << "Произошёл рестарт программного обеспечения модуля"
+    const QStringList SysJourDescription = QStringList() << "Рестарт модуля"
                                             << "Произошла запись и переход на новую конфигурацию"
                                             << "Произошла запись и переход на новую версию ВПО"
                                             << "Произошла запись в блок Bhb (hidden block)"

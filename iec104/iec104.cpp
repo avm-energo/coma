@@ -47,7 +47,7 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
 
     Parse->noAnswer = 0;
     Parse->conTimer = new QTimer;
-    Parse->conTimer->setInterval(5000);
+    Parse->conTimer->setInterval(10000);
     connect(Parse->conTimer,SIGNAL(timeout()),this,SLOT(SendTestAct()));
 
     QThread *thr2 = new QThread;
@@ -374,6 +374,7 @@ Parse104::Parse104(QObject *parent) : QObject(parent)
     APDUFormat = I104_WRONG;
     GetNewVR = false;
     NewDataArrived = false;
+    FileSending = 0;
 }
 
 Parse104::~Parse104()
@@ -406,7 +407,8 @@ void Parse104::Run()
                     ParseIFormat(tmpba); // без APCI
                 }
             }
-            if (V_R>(AckVR+I104_W))
+
+            if ((V_R>(AckVR+I104_W)) && !FileSending)
             {
                 //AckVR += V_R;
                 emit sendS();
@@ -667,7 +669,7 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
 
         case F_SR_NA_1: // секция готова
         {
-            emit CallSection(ba[9]);
+            emit CallSection(static_cast<quint8>(ba[9]));
             break;
         }
 
@@ -711,6 +713,7 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
                  case 1:
                  {
                       //emit sendConfirmFile(num);
+                    FileSending = 0;
 
                     int filetype = ba.at(9);
                       if(filetype == 0x01)  // если файл конфигурации
@@ -912,7 +915,7 @@ void iec104::SelectFile(char numFile)
     //int i;
     SecNum = 1;
     //void* temp = &SC;
-
+    Parse->FileSending = 1;
     /*SC.Ident.typeIdent = F_SC_NA_1;
     SC.Ident.qualifier = static_cast<char>(1);
     SC.Ident.cause = 13;
@@ -971,7 +974,7 @@ void iec104::CallFile(unsigned char numFile)
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
-    Cmd[9] = *(char*)&numFile;
+    Cmd[9] = static_cast<char>(numFile);
     Cmd[10] = 0;
     Cmd[11] = 0;
     Cmd[12] = 2;
@@ -1023,9 +1026,9 @@ void iec104::GetSection(unsigned char numFile)
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
-    Cmd[9] = numFile;
+    Cmd[9] = static_cast<char>(numFile);
     Cmd[10] = 0;
-    Cmd[11] = SecNum;
+    Cmd[11] = static_cast<char>(SecNum);
     Cmd[12] = 6;
 
     //Cmd.append(static_cast<char *>(temp),sizeof(SC));
@@ -1064,9 +1067,9 @@ void iec104::ConfirmSection(unsigned char numFile)
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
-    Cmd[9] = numFile;
+    Cmd[9] = static_cast<char>(numFile);
     Cmd[10] = 0;
-    Cmd[11] = SecNum;
+    Cmd[11] = static_cast<char>(SecNum);
     Cmd[12] = static_cast<char>(3);
 
     GI.start = I104_START;
@@ -1105,9 +1108,9 @@ void iec104::ConfirmFile(unsigned char numFile)
     Cmd[6] = 0;
     Cmd[7] = 0;
     Cmd[8] = 0;
-    Cmd[9] = numFile;
+    Cmd[9] = static_cast<char>(numFile);
     Cmd[10] = 0;
-    Cmd[11] = SecNum;
+    Cmd[11] = static_cast<char>(SecNum);
     Cmd[12] = static_cast<char>(1);
 
     GI.start = I104_START;
@@ -1199,7 +1202,7 @@ void iec104::SectionReady()
     Cmd[8] = 0;
     Cmd[9] = static_cast<char>(1);
     Cmd[10] = 0;
-    Cmd[11] = SecNum;
+    Cmd[11] = static_cast<char>(SecNum);
     Cmd[12] = static_cast<char>(Parse->FileLen&0xFF);
     Cmd[13] = static_cast<char>((Parse->FileLen&0xFF00)>>8);
     Cmd[14] = static_cast<char>((Parse->FileLen&0xFF0000)>>16);
@@ -1251,7 +1254,7 @@ void iec104::SendSegments()
     Cmd[8] = 0;
     Cmd[9] = static_cast<unsigned char>(1);
     Cmd[10] = 0;
-    Cmd[11] = SecNum;
+    Cmd[11] = static_cast<char>(SecNum);
     //Cmd[12] =  static_cast<char>(SEGMENTSIZE);
 
     Parse->Pos = OFFSET;

@@ -128,7 +128,7 @@ void MainWindow::ReConnect(int err)
     Q_UNUSED(err);
     QDialog *dlg = new QDialog;
     reconnectTimer = new QTimer;
-    reconnectTimer->setInterval(10000);
+    reconnectTimer->setInterval(3000);
 
     reconnect = true;
 
@@ -158,7 +158,7 @@ void MainWindow::ReConnect(int err)
     QString tmps = QString(PROGCAPTION);
     QWidget *w = new QWidget;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
-    hlyout->addWidget(WDFunc::NewLBLT(w, "Связь разорвана.\nПопытка переподключения будет выполнена через 10 секунд", "", "", ""), 1);
+    hlyout->addWidget(WDFunc::NewLBLT(w, "Связь разорвана.\nПопытка переподключения будет выполнена через 3 секунды", "", "", ""), 1);
     vlayout->addLayout(hlyout);
 
     w->setLayout(vlayout);
@@ -181,6 +181,23 @@ void MainWindow::attemptToRec()
 
     if(ch104 != nullptr)
     ch104->deleteLater();
+
+    if(MainInterface.size() != 0)
+    {
+        if(MainInterface == "USB")
+        {
+           insl.clear();
+
+           if(cn->Cancelled)
+           return;
+
+           if (Commands::Connect() != Error::ER_NOERROR)
+           {
+              ReConnect(1);
+              return;
+           }
+         }
+    }
 
     if(reconnect != false)
     {
@@ -217,7 +234,7 @@ void MainWindow::ConnectMessage()
     dlg->setLayout(lyout);
 
     connectTimer->start();
-    dlg->exec();
+    dlg->show();
 
 }
 
@@ -358,7 +375,7 @@ void MainWindow::DeviceState()
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(pb,0);
     dlg->setLayout(lyout);
-    dlg->exec();
+    dlg->show();
 }
 
 void MainWindow::PredAlarmState()
@@ -457,7 +474,7 @@ void MainWindow::PredAlarmState()
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(pb,0);
     dlg->setLayout(lyout);
-    dlg->exec();
+    dlg->show();
 }
 
 
@@ -536,7 +553,7 @@ void MainWindow::AlarmState()
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(pb,0);
     dlg->setLayout(lyout);
-    dlg->exec();
+    dlg->show();
 }
 
 
@@ -590,7 +607,7 @@ void MainWindow::UpdatePredAlarmEvents(Parse104::SponSignalsWithTime* Signal)
 void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104 *Signal)
 {
     int i = 0, PredArarmcount = 0, Ararmcount = 0;
-    Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
+    //Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmred, pmgrn};
@@ -753,7 +770,7 @@ void MainWindow::ModbusUpdateStatePredAlarmEvents(Coils* Signal)
                 quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
 
                 if(j<5)
-                PredAlarmEvents[7+j] = signal;
+                PredAlarmEvents[8+j] = signal;
                 if(j >= 5)
                 AlarmEvents[j-5] = signal;
             }
@@ -774,6 +791,8 @@ void MainWindow::ModbusUpdateStatePredAlarmEvents(Coils* Signal)
     if(PredArarmcount == 0)
     WDFunc::SetLBLImage(this,  QString::number(951), pm[1]);
 
+    emit SetPredAlarmColor(PredAlarmEvents);
+
     for(i=0; i<7; i++)
     {
         if(AlarmEvents[i])
@@ -785,6 +804,8 @@ void MainWindow::ModbusUpdateStatePredAlarmEvents(Coils* Signal)
 
     if(Ararmcount == 0)
     WDFunc::SetLBLImage(this,  QString::number(952), pm[1]);
+
+    emit SetAlarmColor(AlarmEvents);
 
 }
 
@@ -1308,14 +1329,14 @@ void MainWindow::StartEmul()
 void MainWindow::StartSettingsDialog()
 {
     SettingsDialog *dlg = new SettingsDialog;
-    dlg->exec();
+    dlg->show();
     SaveSettings();
 }
 
 void MainWindow::ShowErrorDialog()
 {
     ErrorDialog *dlg = new ErrorDialog;
-    dlg->exec();
+    dlg->show();
 }
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::SetProgressBar1Size(int size)
@@ -1328,7 +1349,7 @@ void MainWindow::SetProgressBar1(int cursize)
 {
     curfileSize = cursize;
     ReceiveTimer->stop();
-    ReceiveTimer->setInterval(3000);
+    ReceiveTimer->setInterval(5000);
     SetProgressBar("1", cursize);
     ReceiveTimer->start();
 }
@@ -1445,6 +1466,7 @@ void MainWindow::ShowConnectDialog()
              connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
              connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
              connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
+             connect(cn,SIGNAL(ReconnectSignal(int)),this,SLOT(ReConnect(int)));
 
             USBsl = cn->DevicesFound();
             if (USBsl.size() == 0)
@@ -1615,7 +1637,7 @@ void MainWindow::GetAbout()
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(pb,0);
     dlg->setLayout(lyout);
-    dlg->exec();
+    dlg->show();
 }
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Disconnect()
@@ -1996,8 +2018,12 @@ void MainWindow::GetUSBAlarmTimerTimeout()
         if(PredArarmcount == 0)
         WDFunc::SetLBLImage(this,  QString::number(951), pm[1]);
 
+        emit SetPredAlarmColor(PredAlarmEvents);
+
         if(Ararmcount == 0)
         WDFunc::SetLBLImage(this,  QString::number(952), pm[1]);
+
+        emit SetAlarmColor(AlarmEvents);
     }
 }
 

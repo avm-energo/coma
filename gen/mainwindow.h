@@ -194,6 +194,8 @@ signals:
     void stoptime();
     void stopModBus();
     void ConnectMes(QString*);
+    void SetPredAlarmColor(quint8*);
+    void SetAlarmColor(quint8*);
 
 private:
     bool Ok;

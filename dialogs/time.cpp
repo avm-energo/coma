@@ -286,10 +286,15 @@ void MNKTime::Stop_Timer(int index)
 void MNKTime::Write_PCDate()
 {
     QDateTime myDateTime;
-    uint time ;
-    myDateTime = QDateTime::currentDateTimeUtc();
-    time = myDateTime.toTime_t();
+    uint time;
+    int cbidx = WDFunc::CBIndex(this, "TimeZone");
 
+    if(cbidx == 0)
+    myDateTime = QDateTime::currentDateTime();
+    else
+    myDateTime = QDateTime::currentDateTimeUtc();
+
+    time = myDateTime.toTime_t();
 
     if(MainWindow::MainInterface == "USB")
     {
@@ -320,7 +325,11 @@ void MNKTime::Write_Date()
     QString qStr;
     WDFunc::LE_read_data(this, "Date", qStr);
     myDateTime = QDateTime::fromString(qStr,"dd-MM-yyyy HH:mm:ss");
-    myDateTime.setOffsetFromUtc(0);
+    //int cbidx = WDFunc::CBIndex(this, "TimeZone");
+
+    //if(cbidx == 1)
+    //myDateTime.setOffsetFromUtc(10800);
+
     *time = myDateTime.toTime_t();
 
 

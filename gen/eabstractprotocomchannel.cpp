@@ -589,6 +589,7 @@ void EAbstractProtocomChannel::SendErr()
 void EAbstractProtocomChannel::Timeout()
 {
     Finish(USO_TIMEOUTER);
+    emit ReconnectSignal(1);
 }
 
 void EAbstractProtocomChannel::Finish(int ernum)

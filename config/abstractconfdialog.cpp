@@ -121,7 +121,7 @@ int AbstractConfDialog::WriteCheckPassword()
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
         return Error::ER_GENERALERROR;
-    if (!ok)
+    if(!ok)
     {
         EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
         return Error::ER_GENERALERROR;
@@ -298,7 +298,7 @@ bool AbstractConfDialog::PrepareConfToWrite()
         connect(pb,SIGNAL(clicked(bool)),dlg,SLOT(close()));
         vlyout->addWidget(pb);
         dlg->setLayout(vlyout);
-        dlg->exec();
+        dlg->show();
         return false;
     }
     return true;

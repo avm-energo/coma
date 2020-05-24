@@ -187,7 +187,7 @@ public:
     QVector<S2::DataRec> *DRJour;
     char BoardType;
     quint32 FileLen;
-    int incLS, count, noAnswer;
+    int incLS, count, noAnswer, FileSending;
 
 
 

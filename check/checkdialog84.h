@@ -28,6 +28,8 @@ signals:
 
 public slots:   
     void BdTimerTimeout();
+    void SetPredAlarmColor(quint8*);
+    void SetAlarmColor(quint8* Alarm);
 
 
 private:

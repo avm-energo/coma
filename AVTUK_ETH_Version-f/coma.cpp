@@ -362,6 +362,13 @@ void Coma::Stage3()
     str = (CheckM == nullptr) ? "Текущие параметры" : "Текущие параметры\nБазовая";
     if (CheckB != nullptr)
     {
+        if(MainInterface == "RS485" || MainInterface == "USB")
+        {
+           connect(this, SIGNAL(SetPredAlarmColor(quint8*)), CheckB,SLOT(SetPredAlarmColor(quint8*)));
+           connect(this, SIGNAL(SetAlarmColor(quint8*)), CheckB,SLOT(SetAlarmColor(quint8*)));
+        }
+
+
         CheckB->setMinimumHeight(500);
         //MainTW->setFixedHeight(500);
         MainTW->addTab(CheckB, str);
