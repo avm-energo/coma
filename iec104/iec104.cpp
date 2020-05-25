@@ -95,13 +95,13 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
     connect(Parse,SIGNAL(SetDataCountFromParse(int)),this,SIGNAL(SetDataCount(int)));
     connect(Parse,SIGNAL(sendMessagefromParse()),this,SIGNAL(sendConfMessageOk()));
     connect(Parse,SIGNAL(writeCorMesOkParse()),this,SIGNAL(sendCorMesOk()));
+    connect(Parse,SIGNAL(startConTimer()),this,SLOT(StartConTimer()));
 
     Parse->incLS = 0;
     Parse->count = 0;
 
     thr->start();
     thr2->start();
-    Parse->conTimer->start();
 }
 
 iec104::~iec104()
@@ -127,6 +127,7 @@ void iec104::Start()
     Send(0,StartDT);//, GInter); // ASDU = QByteArray()
     //emit writedatatoeth(GInter);
     Parse->timer104->start();
+    Parse->conTimer->start();
 
     //emit ethconnected();
 }
@@ -472,6 +473,10 @@ int Parse104::isIncomeDataValid(QByteArray ba)
             emit error(M104_NUMER);
             //return I104_RCVWRONG;  // временно, нужно исправить проблему несовпадения s посылок
         }
+
+        //if(FileSending)
+        //noAnswer = 0;
+
         return I104_RCVNORM;
         break;
     }
@@ -714,6 +719,7 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
                  {
                       //emit sendConfirmFile(num);
                     FileSending = 0;
+                    emit startConTimer();
 
                     int filetype = ba.at(9);
                       if(filetype == 0x01)  // если файл конфигурации
@@ -916,6 +922,7 @@ void iec104::SelectFile(char numFile)
     SecNum = 1;
     //void* temp = &SC;
     Parse->FileSending = 1;
+    Parse->conTimer->stop();
     /*SC.Ident.typeIdent = F_SC_NA_1;
     SC.Ident.qualifier = static_cast<char>(1);
     SC.Ident.cause = 13;
@@ -1637,4 +1644,9 @@ void iec104::com51WriteTime(uint* Time)
     Parse->cmd = I104_S;
     Send(1, GI, Cmd); // ASDU = QByteArray()
 
+}
+
+void iec104::StartConTimer()
+{
+   Parse->conTimer->start();
 }

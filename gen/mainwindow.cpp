@@ -142,6 +142,10 @@ void MainWindow::ReConnect(int err)
     #endif
 
         CheckB = CheckM = nullptr;
+
+        if(CheckB != nullptr)
+        CheckB->deleteLater();
+
         //CheckModBus = nullptr;
         emit ClearBsi();
         ClearTW();
@@ -193,8 +197,17 @@ void MainWindow::attemptToRec()
 
            if (Commands::Connect() != Error::ER_NOERROR)
            {
-              ReConnect(1);
-              return;
+               ReConnect(1);
+               return;
+           }
+           else
+           {
+               int res = ModuleBSI::SetupBSI();
+               if (res == Error::ER_CANAL)
+               {
+                  ReConnect(1);
+                  return;
+               }
            }
          }
     }

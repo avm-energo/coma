@@ -2,18 +2,19 @@
 #include <QCoreApplication>
 #include "commands.h"
 #include "error.h"
+#include "../gen/timefunc.h"
 
 EUsbHid *cn;
 
 Commands::Commands()
 {
-    cn = 0;
+    cn = nullptr;
 }
 
 int Commands::Connect()
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    if (cn != 0)
+    if (cn != nullptr)
     {
         if (cn->Connect())
             return Error::ER_NOERROR;
@@ -27,7 +28,7 @@ int Commands::Connect()
 bool Commands::isConnected()
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    if (cn != 0)
+    if (cn != nullptr)
         return cn->Connected;
     return false;
 #else
@@ -38,7 +39,7 @@ bool Commands::isConnected()
 void Commands::Disconnect()
 {
 #if PROGSIZE != PROGSIZE_EMUL
-    if (cn != 0)
+    if (cn != nullptr)
         cn->Disconnect();
 #endif
 }
@@ -47,7 +48,7 @@ int Commands::GetBsi(ModuleBSI::Bsi &bsi)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     QByteArray ba;
-    if (cn != 0)
+    if (cn != nullptr)
     {
         cn->SendIn(CN_GBsi, BoardTypes::BT_NONE, ba, sizeof(ModuleBSI::Bsi));
         memcpy(&bsi, &(ba.data()[0]), sizeof(ModuleBSI::Bsi));
@@ -63,13 +64,14 @@ int Commands::GetFileWithRestore(int filenum, QVector<S2::DataRec> *data)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     QByteArray ba;
-    if (cn != 0)
+    if (cn != nullptr)
     {
 //        cn->Send(CN_GF, BoardTypes::BT_NONE, tmp, 0, filenum, data);
         cn->SendFile(CN_GF, BoardTypes::BT_NONE, filenum, ba);
         // проверка контрольной суммы файла
         quint32 crctocheck;
         quint32 basize = ba.size();
+        if(basize < 17)
         {
             ERMSG("basize");
             return Error::ER_GENERALERROR;
@@ -154,7 +156,7 @@ int Commands::WriteHiddenBlock(char board, void *HPtr, int HPtrSize)
 #if PROGSIZE != PROGSIZE_EMUL
     QByteArray ba;
 
-    if (cn != 0)
+    if (cn != nullptr)
     {
         ba.append(static_cast<const char *>(HPtr), HPtrSize);
         cn->SendOut(CN_WHv, board, ba);
@@ -173,7 +175,7 @@ int Commands::GetBac(char BacNum, void *BacPtr, int BacPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     QByteArray ba;
-    if (cn != 0)
+    if (cn != nullptr)
     {
         cn->SendIn(CN_GBac, BacNum, ba, BacPtrSize);
         memcpy(BacPtr, &(ba.data()[0]), BacPtrSize);
@@ -192,7 +194,7 @@ int Commands::GetBd(char BdNum, void *BdPtr, int BdPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     QByteArray ba;
-    if (cn != 0)
+    if (cn != nullptr)
     {
         cn->SendIn(CN_GBd, BdNum, ba, BdPtrSize);
         memcpy(BdPtr, &(ba.data()[0]), BdPtrSize);

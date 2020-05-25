@@ -228,6 +228,7 @@ signals:
     void SetDataCountFromParse(int);
     void sendMessagefromParse();
     void writeCorMesOkParse();
+    void startConTimer();
 
 
 private:
@@ -378,6 +379,7 @@ public slots:
     void Send(int Inc, APCI, ASDU=QByteArray());
     void Start();
     void Stop();
+    void StartConTimer();
     //void ErrMsg();
 
 signals:
