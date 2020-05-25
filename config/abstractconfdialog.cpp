@@ -44,28 +44,25 @@ void AbstractConfDialog::ReadConf(int index)
 
             TimeFunc::Wait(100);
 
-            if(MainWindow::MainInterface.size() != 0)
+            if (MainInterface == I_ETHERNET)
             {
-             if(MainWindow::MainInterface == "Ethernet")
-             {
-                if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
-                {
-                  emit DefConfToBeLoaded();
-                }
-                else // иначе заполнить значениями из модуля
-                {
-                  emit ReadConfig(1);
-                }
-             }
-             else if(MainWindow::MainInterface == "USB")
-             {
-                 int res = ModuleBSI::PrereadConf(this, S2Config);
-                 if (res == RESEMPTY)
-                     emit DefConfToBeLoaded();
-                 else if (res == NOERROR)
-                     emit NewConfToBeLoaded();
+               if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
+               {
+                 emit DefConfToBeLoaded();
+               }
+               else // иначе заполнить значениями из модуля
+               {
+                 emit ReadConfig(1);
+               }
+            }
+            else if (MainInterface == I_USB)
+            {
+                int res = ModuleBSI::PrereadConf(this, S2Config);
+                if (res == RESEMPTY)
+                    emit DefConfToBeLoaded();
+                else if (res == NOERROR)
+                    emit NewConfToBeLoaded();
 
-             }
             }
         }
 
@@ -88,22 +85,19 @@ void AbstractConfDialog::WriteConf()
         if (!PrepareConfToWrite())
             return;
 
-        if(MainWindow::MainInterface.size() != 0)
+        if (MainInterface == I_ETHERNET)
         {
-         if(MainWindow::MainInterface == "Ethernet")
-         {
-           emit writeConfFile(S2Config);
-         }
-         else if(MainWindow::MainInterface == "USB")
-         {
-            if ((res = Commands::WriteFile(1, S2Config)) == NOERROR)
-            {
-                emit BsiIsNeedToBeAcquiredAndChecked();
-                EMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
-            }
-            else
-                EMessageBox::error(this, "Ошибка", "Ошибка записи конфигурации"+QString::number(res));
-         }
+          emit writeConfFile(S2Config);
+        }
+        else if (MainInterface == I_USB)
+        {
+           if ((res = Commands::WriteFile(1, S2Config)) == NOERROR)
+           {
+               emit BsiIsNeedToBeAcquiredAndChecked();
+               EMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
+           }
+           else
+               EMessageBox::error(this, "Ошибка", "Ошибка записи конфигурации"+QString::number(res));
         }
     }
 }
@@ -229,28 +223,25 @@ void AbstractConfDialog::ButtonReadConf()
 /*    char* num = new char;
     *num = 1; */
 
-    if(MainWindow::MainInterface.size() != 0)
+    if(MainInterface == I_ETHERNET)
     {
-     if(MainWindow::MainInterface == "Ethernet")
-     {
-        if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
-        {
-          emit DefConfToBeLoaded();
-        }
-        else // иначе заполнить значениями из модуля
-        {
-          emit ReadConfig(1);
-        }
-     }
-     else if(MainWindow::MainInterface == "USB")
-     {
-         int res = ModuleBSI::PrereadConf(this, S2Config);
-         if (res == RESEMPTY)
-             emit DefConfToBeLoaded();
-         else if (res == NOERROR)
-             emit NewConfToBeLoaded();
+       if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
+       {
+         emit DefConfToBeLoaded();
+       }
+       else // иначе заполнить значениями из модуля
+       {
+         emit ReadConfig(1);
+       }
+    }
+    else if(MainInterface == I_USB)
+    {
+        int res = ModuleBSI::PrereadConf(this, S2Config);
+        if (res == RESEMPTY)
+            emit DefConfToBeLoaded();
+        else if (res == NOERROR)
+            emit NewConfToBeLoaded();
 
-     }
     }
 }
 

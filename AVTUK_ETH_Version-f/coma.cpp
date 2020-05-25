@@ -274,14 +274,14 @@ void Coma::Stage3()
         return;
 
     idlg = new InfoDialog;
-    connect(this,SIGNAL(USBBsiRefresh()),idlg,SLOT(FillBsi()));
     connect(this,SIGNAL(ClearBsi()),idlg,SLOT(ClearBsi()));
 
     CorD = new CorDialog();
     //connect(this,SIGNAL(ConnectMes(QString*)),CheckB,SLOT(ConnectMessage(QString*)));
 
-    if(MainInterface == "USB")
+    if(MainInterface == I_USB)
     {
+        connect(this,SIGNAL(USBBsiRefresh()),idlg,SLOT(FillBsi()));
         MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
         MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
         //CorD = new CorDialog();
@@ -289,7 +289,7 @@ void Coma::Stage3()
     }
     else
     {
-         if(MainInterface == "Ethernet")
+         if (MainInterface == I_ETHERNET)
          {
 #ifdef ETHENABLE
             ch104 = new iec104(&IPtemp, this);
@@ -299,7 +299,7 @@ void Coma::Stage3()
             CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, ch104);
     #endif
          }
-         else if(MainInterface == "RS485")
+         else if (MainInterface == I_RS485)
          {
 
              modBus = new ModBus(Settings,this);
@@ -330,8 +330,8 @@ void Coma::Stage3()
              count = 0;
              if(reconnect)
              {
-               if(MainInterface == "Ethernet" || MainInterface == "RS485")
-               ReConnect(1);
+               if(MainInterface == I_ETHERNET || MainInterface == I_RS485)
+               ReConnect();
              }
              else
              DisconnectAndClear();
@@ -344,7 +344,7 @@ void Coma::Stage3()
 
     reconnect = true;
 
-    if(MainInterface == "Ethernet")
+    if(MainInterface == I_ETHERNET)
     {
         if (insl.size() < 2)
             return;
@@ -354,8 +354,8 @@ void Coma::Stage3()
         }
     }
 
-    if (MainInterface == "USB")
-    emit USBBsiRefresh();
+    if (MainInterface == I_USB)
+        emit USBBsiRefresh();
 
     PrepareDialogs();
 
@@ -367,10 +367,10 @@ void Coma::Stage3()
         MainTW->addTab(CheckB, str);
         CheckB->checkIndex = MainTW->indexOf(CheckB);
 
-        if(MainInterface == "RS485")
+        if(MainInterface == I_RS485)
         modBus->CheckIndex = CheckB->checkIndex;
 
-        if(MainInterface == "USB")
+        if(MainInterface == I_USB)
         {
             connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Start_BdaTimer(int))); //tabClicked
             connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Stop_BdaTimer(int)));
@@ -429,7 +429,7 @@ void Coma::Stage3()
         if(ConfM != nullptr)
         ConfM->timeIndex = Time->timeIndex;
 
-        if(MainInterface == "RS485")
+        if(MainInterface == I_RS485)
         modBus->TimeIndex = Time->timeIndex;
 
         /*QThread *thrTime = new QThread;
@@ -463,7 +463,7 @@ void Coma::Stage3()
         CorD->corDIndex = MainTW->indexOf(CorD);
         connect(MainTW, SIGNAL(tabClicked(int)), CorD, SLOT(GetCorBd(int))); //tabClicked
 
-        if(MainInterface == "RS485")
+        if(MainInterface == I_RS485)
         modBus->CorIndex = CorD->corDIndex;
     }
 
@@ -477,7 +477,7 @@ void Coma::Stage3()
     //connect(MainTW, SIGNAL(currentChanged()))
    // connect(this,SIGNAL(FinishAll()),this,SLOT(FinishHim()));
 
-    if(MainInterface == "USB")
+    if(MainInterface == I_USB)
     {
         FwUpD = new fwupdialog;
         MainTW->addTab(FwUpD, "Загрузка ВПО");
@@ -491,20 +491,20 @@ void Coma::Stage3()
    // SetSlideWidget();
 #endif
 
-    if(MainInterface == "Ethernet" || MainInterface == "RS485")
+    if(MainInterface == I_ETHERNET || MainInterface == I_RS485)
     ConnectMessage();
 
-    if(MainInterface == "RS485")
+    if(MainInterface == I_RS485)
     Modthr->start();
 
-    if(MainInterface == "USB")
+    if(MainInterface == I_USB)
     BdaTimer->start();
 
 }
 
 void Coma::PrepareDialogs()
 {
-    if (MainInterface == "USB")
+    if (MainInterface == I_USB)
     MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
 
     MTypeB =  MTypeB<<8;
@@ -603,12 +603,12 @@ void Coma::PrepareDialogs()
             connect(modBus, SIGNAL(CorSignalsReceived(ModBusSignal*, int*)), CorD, SLOT(ModBusUpdateCorData(ModBusSignal*, int*)));
             connect(CorD, SIGNAL(RS485WriteCorBd(information*, float*)), modBus, SLOT(ModWriteCor(information*, float*)));//, int*)));
             connect(CorD, SIGNAL(RS485ReadCorBd(information*)), modBus, SLOT(ModReadCor(information*)));
-            connect(modBus,SIGNAL(ReconnectSignal(int)), this, SLOT(ReConnect(int)));
+            connect(modBus,SIGNAL(ReconnectSignal()), this, SLOT(ReConnect()));
          }
 
        }
 
-       if(MainInterface == "USB")
+       if(MainInterface == I_USB)
        {
          CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
        }
@@ -633,7 +633,7 @@ void Coma::PrepareDialogs()
 
     //MTypeM = Config::MTM_84;
 
-    if(MainInterface == "USB")
+    if(MainInterface == I_USB)
     {
        MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
     }
@@ -675,10 +675,10 @@ void Coma::PrepareDialogs()
     {
         setMinimumSize(QSize(800, 650));
 
-        if(MainInterface != "RS485")
+        if(MainInterface != I_RS485)
         ConfM = new ConfDialog84(S2Config);
 
-        if(ch104 != nullptr && MainInterface == "Ethernet")
+        if(ch104 != nullptr && MainInterface == I_ETHERNET)
         {
           connect(ConfM,SIGNAL(ReadConfig(char)), ch104, SLOT(SelectFile(char)));
           connect(ch104,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)), ConfM, SLOT(FillConf(QVector<S2::DataRec>*)));

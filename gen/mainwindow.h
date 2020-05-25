@@ -43,7 +43,7 @@ public:
     };
 
 
-    static QString MainInterface;
+//    static int MainInterface;
     static quint32 MTypeB;
     static quint32 MTypeM;
     static int TheEnd, StopRead;
@@ -254,7 +254,7 @@ public slots:
     void ModbusUpdateStatePredAlarmEvents(Coils* Signal);
     void ModBusUpdatePredAlarmEvents(Coils* Signal);
     void SetCancelled();
-    void ReConnect(int);
+    void ReConnect();
     void attemptToRec();
     void ConnectMessage(QString*);
     void ConnectMessage();
@@ -300,7 +300,7 @@ private slots:
 #endif
     void ShowErrorMessageBox(QString message);
     void ParseString(QString Str);
-    void ParseInter(QString Str);
+    void ParseInter(QString str);
     //void SaveModBusString(QString ModBus);
     //void SaveInterface(QString Interface);
     //void SDevice(QString Device);

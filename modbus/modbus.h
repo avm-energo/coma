@@ -4,11 +4,16 @@
 #include <QObject>
 #include <QTimer>
 #include <QSerialPort>
+#include <QMutex>
+#include <QQueue>
+#include <QWaitCondition>
 #include "../gen/s2.h"
 #include "../gen/log.h"
 
-#define RECONNECTIME 5000
+#define RECONNECTTIME 5000
+#define POLLINGINTERVAL 2000 // polling cycle time
 #define SIGNALGROUPSNUM 7
+#define MAINSLEEPCYCLETIME  50
 
 class ModBus : public QObject
 {
@@ -39,11 +44,13 @@ public:
         QString Port;
     };
 
-
-    ModBus(ModBus_Settings Settings, QObject *parent = nullptr);
-    ~ModBus();
-
-    void BSIrequest(ModBus_Settings Settings);
+    struct InOutStruct
+    {
+        QByteArray Ba;
+        int TaskNum;
+        int Res;
+        qint64 ReadSize;
+    };
 
     typedef struct
     {
@@ -83,9 +90,99 @@ public:
         quint8 Bytes[20];
     };
 
+    ModBus(ModBus_Settings Settings, QObject *parent = nullptr);
+    ~ModBus();
+
+    void BSIrequest(ModBus_Settings Settings);
+
     int CheckIndex, CorIndex, TimeIndex;
 
-    constexpr static const unsigned char TabCRChi[256] = {
+    static bool Reading;
+
+public slots:
+    int SendAndGetResult(ComInfo &request);
+    void SendNextCmdAndGetResult();
+    void StopModSlot();
+    void ModWriteCor(Information *info, float*);//, int*);
+    void ModReadCor(Information* info);
+    void InterrogateTime();
+    void WriteTime(uint*);
+    void Tabs(int);
+    void StartPolling();
+    void StopPolling();
+
+signals:
+    void SignalsReceived(ModBusSignalStruct *Signal, int* size);
+    void CorSignalsReceived(ModBusSignalStruct *Signal, int* size);
+    void TimeSignalsReceived(ModBusBSISignalStruct *Signal);
+    void BsiFromModbus(ModBusBSISignalStruct*, int*);
+    void ModbusState(ModbusDeviceState);
+    void NextGroup();
+    void ErrorRead();
+    void ErrorCrc();
+    void Finished();
+    void CoilSignalsReady(Coils*);
+    void TimeReadError();
+    void ModbusError();
+    void ReconnectSignal();
+
+
+private:
+    ModBus_Settings Settings;
+    int CycleGroup;
+    QTimer *TimeoutTimer, *PollingTimer;
+    bool PollingEnabled;
+    ModBusSignalStruct* Sig;
+    QByteArray ResponseBuffer;
+   //     ComInfo ComData;
+    QByteArray SignalGroups[SIGNALGROUPSNUM];
+//    bool Commands;
+    qint64 LastCurSize;
+    int First, Count, Write;
+    int _taskCounter;
+    QQueue<InOutStruct> InQueue;
+    QList<InOutStruct> OutList;
+
+    int Connect();
+    void SendAndGet(InOutStruct &inp, InOutStruct &outp);
+    bool GetResultFromOutQueue(int index, InOutStruct &outp);
+
+private slots:
+    void Reconnect();
+
+protected:
+
+};
+
+class ModbusThread : public QObject
+{
+    Q_OBJECT
+
+public:
+    ModbusThread(ModBus::ModBus_Settings settings, QObject *parent = nullptr);
+    ~ModbusThread();
+
+    ModBus::ModbusDeviceState State();
+    void Init(QQueue<ModBus::InOutStruct> *inq, QList<ModBus::InOutStruct> *outl);
+
+public slots:
+    void Run();
+
+signals:
+    void ModbusState(ModBus::ModbusDeviceState);
+    void Finished();
+
+private:
+    QSerialPort *SerialPort;
+    QQueue<ModBus::InOutStruct> *InQueue;
+    QList<ModBus::InOutStruct> *OutList;
+    bool Busy; // port is busy with write/read operation
+    bool AboutToFinish;
+    ModBus::InOutStruct Inp, Outp;
+    ModBus::ModbusDeviceState _state;
+    QByteArray ReadData;
+
+    const unsigned char TabCRChi[256] = {
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
     0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
     0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
@@ -104,7 +201,7 @@ public:
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40
                                    } ;
 
-    constexpr static const unsigned char TabCRClo[256] = {
+    const unsigned char TabCRClo[256] = {
     0x00, 0xC0, 0xC1, 0x01, 0xC3, 0x03, 0x02, 0xC2, 0xC6, 0x06, 0x07, 0xC7, 0x05, 0xC5, 0xC4, 0x04,
     0xCC, 0x0C, 0x0D, 0xCD, 0x0F, 0xCF, 0xCE, 0x0E, 0x0A, 0xCA, 0xCB, 0x0B, 0xC9, 0x09, 0x08, 0xC8,
     0xD8, 0x18, 0x19, 0xD9, 0x1B, 0xDB, 0xDA, 0x1A, 0x1E, 0xDE, 0xDF, 0x1F, 0xDD, 0x1D, 0x1C, 0xDC,
@@ -123,65 +220,14 @@ public:
     0x44, 0x84, 0x85, 0x45, 0x87, 0x47, 0x46, 0x86, 0x82, 0x42, 0x43, 0x83, 0x41, 0x81, 0x80, 0x40
                                    }  ;
 
-
-    static bool Reading;
-
-public slots:
-    int SendAndGetResult(ComInfo &request);
-    int SendNextCmdAndGetResult();
-    void ReadPort();
-    void StopModSlot();
-    void ModWriteCor(Information *info, float*);//, int*);
-    void ModReadCor(Information* info);
-    void InterrogateTime();
-    void WriteTime(uint*);
-    void Tabs(int);
-    void FinishThread();
-    void StartPolling();
-    void StopPolling();
-
-signals:
-    void SignalsReceived(ModBusSignalStruct *Signal, int* size);
-    void CorSignalsReceived(ModBusSignalStruct *Signal, int* size);
-    void TimeSignalsReceived(ModBusBSISignalStruct *Signal);
-    void BsiFromModbus(ModBusBSISignalStruct*, int*);
-    void ModbusState(ModbusDeviceState);
-    void NextGroup();
-    void ErrorRead();
-    void ErrorCrc();
-    void Finished();
-    void CoilSignalsReady(Coils*);
-    void TimeReadError();
-    void ModbusError();
-    void ReconnectSignal(int);
-
-
-private:
-    ModBus_Settings Settings;
-    int CycleGroup, ReadSize;
-    QTimer *ReconnectTimer, *PollingTimer;
-    ModBusSignalStruct* Sig;
-    ModbusDeviceState State;
-    QSerialPort *SerialPort;
-    QByteArray ResponseBuffer;
-   //     ComInfo ComData;
-    QByteArray SignalGroups[SIGNALGROUPSNUM];
-//    bool CloseThr;
-//    bool Commands;
-    qint64 LastCurSize;
-    int First, Count, Write;
-    bool AboutToFinish;
-    QMutex InMutex, OutMutex;
-
-    int Connect();
+    int SendAndGetResult(ModBus::InOutStruct &inp);
+    void Send();
     quint16 CalcCRC(QByteArray &Dat);
-    int PrepareWrite();
+    void AddToOutQueue(ModBus::InOutStruct &outp);
 
 private slots:
-    void Reconnect();
-
-protected:
-
+    void ParseReply();
+    void FinishThread();
 };
 
 #endif

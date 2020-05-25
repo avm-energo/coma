@@ -4,6 +4,12 @@
 #define DEVICETYPE_MODULE 1 // модуль
 #define DEVICETYPE_DEVICE 2 // прибор
 
+// interface types
+#define I_UNKNOWN   -1
+#define I_USB       0
+#define I_ETHERNET  1
+#define I_RS485     2
+
 // program sizes
 #define PROGSIZE_EMUL   0
 #define PROGSIZE_SMALL  1
@@ -27,5 +33,7 @@
 #define S1      1.0
 #define S4      4.0
 #define S20     20.0
+
+int MainInterface;
 
 #endif // MAINDEF_H
