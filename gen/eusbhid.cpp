@@ -84,7 +84,7 @@ QStringList EUsbHid::DevicesFound()
     return sl;
 }
 
-EUsbThread::EUsbThread(Log *logh, bool writelog, QObject *parent) : QObject(parent)
+EUsbThread::EUsbThread(LogClass *logh, bool writelog, QObject *parent) : QObject(parent)
 {
     log = logh;
     AboutToFinish = false;

@@ -192,7 +192,7 @@ void MNKTime::slot2_timeOut()
     //{
      //   if(!FinishThread)
      //   {
-            if(MainWindow::MainInterface == "USB")
+            if(MainInterface == I_USB)
             {
                 #if PROGSIZE != PROGSIZE_EMUL
                 if (Commands::GetTimeMNK(unixtimestamp) == NOERROR)
@@ -211,11 +211,11 @@ void MNKTime::slot2_timeOut()
 
                 #endif
             }
-            else if(MainWindow::MainInterface == "Ethernet")
+            else if(MainInterface == I_ETHERNET)
             {
                emit ethTimeRequest();
             }
-            else if(MainWindow::MainInterface == "RS485")
+            else if(MainInterface == I_RS485)
             {
                emit modBusTimeRequest();
             }
@@ -245,7 +245,7 @@ void MNKTime::Start_Timer(int index)
     int cbidx;
     if(index == timeIndex)
     {
-        if(MainWindow::MainInterface == "USB")
+        if(MainInterface == I_USB)
         {
             if (Commands::GetTimeMNK(unixtimestamp) == NOERROR)
             {
@@ -290,23 +290,23 @@ void MNKTime::Write_PCDate()
     time = myDateTime.toTime_t();
 
 
-    if(MainWindow::MainInterface == "USB")
+    if(MainInterface == I_USB)
     {
         #if PROGSIZE != PROGSIZE_EMUL
         //FinishThread = true;
         TimeFunc::Wait(100);
-        if (Commands::WriteTimeMNK(&time, sizeof(uint)) != NOERROR)
+        if (Commands::WriteTimeMNK(time, sizeof(uint)) != NOERROR)
         EMessageBox::information(this, "INFO", "Ошибка"); //EMessageBox::information(this, "INFO", "Записано успешно");
         //FinishThread = false;
         #endif
     }
-    else if(MainWindow::MainInterface == "Ethernet")
+    else if(MainInterface == I_ETHERNET)
     {
-      emit ethWriteTimeToModule(&time);
+      emit ethWriteTimeToModule(time);
     }
-    else if(MainWindow::MainInterface == "RS485")
+    else if(MainInterface == I_RS485)
     {
-      emit modbusWriteTimeToModule(&time);
+      emit modbusWriteTimeToModule(time);
     }
 
 
@@ -315,15 +315,14 @@ void MNKTime::Write_PCDate()
 void MNKTime::Write_Date()
 {
     QDateTime myDateTime;
-    uint *time = new uint[1];
     QString qStr;
     WDFunc::LE_read_data(this, "Date", qStr);
     myDateTime = QDateTime::fromString(qStr,"dd-MM-yyyy HH:mm:ss");
     myDateTime.setOffsetFromUtc(0);
-    *time = myDateTime.toTime_t();
+    uint time = myDateTime.toTime_t();
 
 
-    if(MainWindow::MainInterface == "USB")
+    if(MainInterface == I_USB)
     {
         #if PROGSIZE != PROGSIZE_EMUL
         TimeFunc::Wait(100);
@@ -331,11 +330,11 @@ void MNKTime::Write_Date()
         EMessageBox::information(this, "INFO", "Ошибка"); //EMessageBox::information(this, "INFO", "Записано успешно");
         #endif
     }
-    else if(MainWindow::MainInterface == "Ethernet")
+    else if(MainInterface == I_ETHERNET)
     {
       emit ethWriteTimeToModule(time);
     }
-    else if(MainWindow::MainInterface == "RS485")
+    else if(MainInterface == I_RS485)
     {
       emit modbusWriteTimeToModule(time);
     }

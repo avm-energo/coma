@@ -72,11 +72,11 @@ public:
 
     Bd11 Bd_block11;
 
-    struct Coils
+/*    struct Coils
     {
         int countBytes;
         quint8 Bytes[20];
-    };
+    }; */
 
 
     /*struct ModBus_Settings
@@ -251,8 +251,8 @@ public slots:
     void FileTimeOut();
     void GetUSBAlarmTimerTimeout();
     void GetUSBAlarmInDialog();
-    void ModbusUpdateStatePredAlarmEvents(Coils* Signal);
-    void ModBusUpdatePredAlarmEvents(Coils* Signal);
+    void ModbusUpdateStatePredAlarmEvents(ModBus::Coils* Signal);
+    void ModBusUpdatePredAlarmEvents(ModBus::Coils* Signal);
     void SetCancelled();
     void ReConnect();
     void attemptToRec();

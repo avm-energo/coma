@@ -8,12 +8,19 @@
 #include <QQueue>
 #include <QWaitCondition>
 #include "../gen/s2.h"
-#include "../gen/log.h"
 
 #define RECONNECTTIME 5000
 #define POLLINGINTERVAL 2000 // polling cycle time
 #define SIGNALGROUPSNUM 7
 #define MAINSLEEPCYCLETIME  50
+
+#define READHOLDINGREGISTERS    0x03
+#define READINPUTREGISTER       0x04
+#define WRITEMULTIPLEREGISTERS  0x10
+
+#define BSIREG      1
+#define INITREG     4000
+#define TIMEREG     4600
 
 class ModBus : public QObject
 {
@@ -46,10 +53,12 @@ public:
 
     struct InOutStruct
     {
+        int Command;
         QByteArray Ba;
         int TaskNum;
         int Res;
         qint64 ReadSize;
+        bool Checked;
     };
 
     typedef struct
@@ -63,11 +72,6 @@ public:
        quint32 Val;
        int SigAdr;
     } ModBusBSISignalStruct;
-
-    struct ModBus_Groups
-    {
-        unsigned char data[5]; // [0] - signal type, [1] - first byte adr, [2] - second byte adr, [3] - first byte quantity, [4] - second byte quantity
-    };
 
     struct Information
     {
@@ -87,43 +91,38 @@ public:
     struct Coils
     {
         int countBytes;
-        quint8 Bytes[20];
+        QByteArray Bytes;
     };
 
     ModBus(ModBus_Settings Settings, QObject *parent = nullptr);
     ~ModBus();
 
-    void BSIrequest(ModBus_Settings Settings);
+    void BSIrequest();
 
     int CheckIndex, CorIndex, TimeIndex;
 
-    static bool Reading;
-
 public slots:
-    int SendAndGetResult(ComInfo &request);
+    int SendAndGetResult(ComInfo &request, InOutStruct &outp);
     void SendNextCmdAndGetResult();
-    void StopModSlot();
     void ModWriteCor(Information *info, float*);//, int*);
     void ModReadCor(Information* info);
-    void InterrogateTime();
-    void WriteTime(uint*);
+    void ReadTime();
+    void WriteTime(uint);
     void Tabs(int);
     void StartPolling();
     void StopPolling();
 
 signals:
-    void SignalsReceived(ModBusSignalStruct *Signal, int* size);
-    void CorSignalsReceived(ModBusSignalStruct *Signal, int* size);
+    void SignalsReceived(ModBusSignalStruct *Signal, int size);
+    void CorSignalsReceived(ModBusSignalStruct *Signal, int size);
     void TimeSignalsReceived(ModBusBSISignalStruct *Signal);
-    void BsiFromModbus(ModBusBSISignalStruct*, int*);
+    void BsiFromModbus(ModBusBSISignalStruct*, int);
     void ModbusState(ModbusDeviceState);
-    void NextGroup();
     void ErrorRead();
-    void ErrorCrc();
+//    void ErrorCrc();
     void Finished();
     void CoilSignalsReady(Coils*);
     void TimeReadError();
-    void ModbusError();
     void ReconnectSignal();
 
 
@@ -132,13 +131,7 @@ private:
     int CycleGroup;
     QTimer *TimeoutTimer, *PollingTimer;
     bool PollingEnabled;
-    ModBusSignalStruct* Sig;
-    QByteArray ResponseBuffer;
-   //     ComInfo ComData;
     QByteArray SignalGroups[SIGNALGROUPSNUM];
-//    bool Commands;
-    qint64 LastCurSize;
-    int First, Count, Write;
     int _taskCounter;
     QQueue<InOutStruct> InQueue;
     QList<InOutStruct> OutList;
@@ -146,6 +139,8 @@ private:
     int Connect();
     void SendAndGet(InOutStruct &inp, InOutStruct &outp);
     bool GetResultFromOutQueue(int index, InOutStruct &outp);
+    int GetSignalsFromByteArray(QByteArray &bain, int startadr, ModBusBSISignalStruct *BSIsig, int &size);
+    int GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, ModBusSignalStruct *Sig, int &size);
 
 private slots:
     void Reconnect();
@@ -180,7 +175,6 @@ private:
     bool AboutToFinish;
     ModBus::InOutStruct Inp, Outp;
     ModBus::ModbusDeviceState _state;
-    QByteArray ReadData;
 
     const unsigned char TabCRChi[256] = {
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,

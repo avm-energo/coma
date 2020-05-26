@@ -1472,7 +1472,7 @@ void iec104::LastSection()
     //Parse->V_S++;
 }
 
-void iec104::Com45(quint32 *com)
+void iec104::Com45(quint32 com)
 {
     APCI GI;
     ASDU Cmd;
@@ -1487,9 +1487,9 @@ void iec104::Com45(quint32 *com)
     Cmd[3] = 0;
     Cmd[4] = static_cast<char>(BaseAdr);
     Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = static_cast<char>(*com);
-    Cmd[7] = static_cast<char>(*com>>8);
-    Cmd[8] = static_cast<char>(*com>>16);
+    Cmd[6] = static_cast<char>(com);
+    Cmd[7] = static_cast<char>(com>>8);
+    Cmd[8] = static_cast<char>(com>>16);
     Cmd[9] = static_cast<char>(1);
 
     GI.start = I104_START;
@@ -1596,7 +1596,7 @@ void iec104::InterrogateTimeGr15()
 
 }
 
-void iec104::com51WriteTime(uint* Time)
+void iec104::com51WriteTime(uint Time)
 {
     APCI GI;
     ASDU Cmd;
@@ -1606,7 +1606,7 @@ void iec104::com51WriteTime(uint* Time)
     //char *ptr = static_cast<char*>(Cmd.data());
     quint16 VR = Parse->V_R;
 
-    memcpy(&ba->data()[0], (quint8*)Time, sizeof(uint));
+    memcpy(&ba->data()[0], &Time, sizeof(uint));
     //ba->toHex();
 
     Cmd[0] = C_BO_NA_1;

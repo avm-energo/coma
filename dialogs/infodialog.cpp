@@ -107,7 +107,7 @@ void InfoDialog::FillBsiFrom104(Parse104::BS104Signals* BS104)
 
 }
 
-void InfoDialog::FillBsiFromModBus(ModBusBSISignal *Signal, int * size)
+void InfoDialog::FillBsiFromModBus(ModBusBSISignal *Signal, int size)
 {
     //Parse104::BS104Signals sig = *new Parse104::BS104Signals;
     //sig = *BS104;
@@ -116,9 +116,9 @@ void InfoDialog::FillBsiFromModBus(ModBusBSISignal *Signal, int * size)
     int startadr = 0;
     memcpy(&startadr, &(Signal->SigAdr), sizeof(Signal->SigAdr));
 
-    if(*size && startadr == 1)
+    if(size && startadr == 1)
     {
-        for(i=0; i< *size; i++)
+        for(i=0; i< size; i++)
         memcpy((((quint32*)(&bsi)+i)), ((quint32*)(&Signal->Val)+2*i), sizeof(Signal->Val));
 
         MainWindow::MTypeB = bsi.MTypeB;
@@ -139,10 +139,6 @@ void InfoDialog::FillBsiFromModBus(ModBusBSISignal *Signal, int * size)
         WDFunc::SetLBLText(this, "hwmle", StdFunc::VerToStr(bsi.HwverM));
         // расшифровка Hth
     }
-
-
-    ModBus::Reading = false;
-
 }
 
 void InfoDialog::ClearBsi()

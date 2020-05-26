@@ -7,9 +7,7 @@
 #include <QTime>
 #include <QLineEdit>
 #include "../iec104/iec104.h"
-#include "../modBus/modBus.h"
-
-#include "../widgets/etablemodel.h"
+#include "../modbus/modbus.h"
 
 class MNKTime : public QDialog
 {
@@ -45,8 +43,8 @@ signals:
     void finished();
     void ethTimeRequest();
     void modBusTimeRequest();
-    void ethWriteTimeToModule(uint*);
-    void modbusWriteTimeToModule(uint*);
+    void ethWriteTimeToModule(uint);
+    void modbusWriteTimeToModule(uint);
 
 
 public slots:

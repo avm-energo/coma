@@ -701,7 +701,7 @@ void MainWindow::UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTim
 
 }
 
-void MainWindow::ModbusUpdateStatePredAlarmEvents(Coils* Signal)
+void MainWindow::ModbusUpdateStatePredAlarmEvents(ModBus::Coils* Signal)
 {
     int i = 0, PredArarmcount = 0, Ararmcount = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
@@ -758,8 +758,6 @@ void MainWindow::ModbusUpdateStatePredAlarmEvents(Coils* Signal)
         }
     }
 
-    ModBus::Reading = false;
-
     for(i=0; i<18; i++)
     {
         if(PredAlarmEvents[i])
@@ -786,7 +784,7 @@ void MainWindow::ModbusUpdateStatePredAlarmEvents(Coils* Signal)
 
 }
 
-void MainWindow::ModBusUpdatePredAlarmEvents(Coils* Signal)
+void MainWindow::ModBusUpdatePredAlarmEvents(ModBus::Coils* Signal)
 {
     int i = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");

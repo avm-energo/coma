@@ -4,7 +4,7 @@
 #include <QString>
 #include <QList>
 
-#include "log.h"
+#include "logclass.h"
 
 // Макросы для выдачи сообщений
 #define ERMSG(a)    Error::AddErrMsg(Error::ER_MSG,__FILE__,__LINE__,a)
@@ -146,7 +146,7 @@ public:
 private:
     static QStringList ErrMsgs;
     static QList<ErMsg> ErMsgPool;
-    static Log LogFile;
+    static LogClass LogFile;
 
     void addmessage(QStringList &sl, QString mes);
     void SetErMsg(int ernum);

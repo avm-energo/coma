@@ -268,13 +268,13 @@ int Commands::EraseTechBlock(char block)
 #endif
 }
 
-int Commands::WriteTimeMNK(uint32_t *Time,  int TimeSize)
+int Commands::WriteTimeMNK(uint32_t Time,  int TimeSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     QByteArray ba;
     if (cn != nullptr)
     {
-        ba.append(reinterpret_cast<const char *>(Time), TimeSize);
+        ba.append(reinterpret_cast<const char *>(&Time), TimeSize);
         cn->SendOut(CN_WTime, BoardTypes::BT_NONE, ba);
         return cn->Result;
     }

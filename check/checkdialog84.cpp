@@ -451,12 +451,12 @@ void CheckDialog84::UpdateBS104Data(Parse104::BS104Signals* Signal)
 
 #endif
 
-void CheckDialog84::UpdateModBusData(ModBus::ModBusSignalStruct *Signal, int * size)
+void CheckDialog84::UpdateModBusData(ModBus::ModBusSignalStruct *Signal, int size)
 {
 
     //ModBusSignal sig = *new ModBusSignal;
     int i = 0;
-    for(i=0; i<*size; i++)
+    for(i=0; i<size; i++)
     {
       //sig = *(Signal+i);
       if(((((Signal+i)->SigAdr >= 1011) && ((Signal+i)->SigAdr <= 1015))) || (((Signal+i)->SigAdr >= 1111) && ((Signal+i)->SigAdr <= 1115)))
@@ -464,7 +464,6 @@ void CheckDialog84::UpdateModBusData(ModBus::ModBusSignalStruct *Signal, int * s
       else
       Ch84->FillBd(this, QString::number((Signal+i)->SigAdr), WDFunc::StringValueWithCheck((Signal+i)->flVal, 3));
     }
-    ModBus::Reading = false;
 }
 
 void CheckDialog84::ErrorRead()

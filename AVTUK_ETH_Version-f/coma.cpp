@@ -49,7 +49,7 @@
 #include "../widgets/waitwidget.h"
 #include "../gen/colors.h"
 #include "../gen/modulebsi.h"
-#include "../gen/log.h"
+#include "../gen/logclass.h"
 #include "../modbus/modbus.h"
 #include "../gen/timefunc.h"
 #if PROGSIZE != PROGSIZE_EMUL
@@ -313,10 +313,10 @@ void Coma::Stage3()
              //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
              connect(Modthr,SIGNAL(started()),modBus,SLOT(WriteToPort()));
              CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
-             connect(modBus,SIGNAL(BsiFromModbus(ModBusBSISignal*, int*)),idlg,SLOT(FillBsiFromModBus(ModBusBSISignal*, int* )));
+             connect(modBus,SIGNAL(BsiFromModbus(ModBusBSISignal*, int)),idlg,SLOT(FillBsiFromModBus(ModBusBSISignal*, int)));
              connect(modBus,SIGNAL(CoilSignalsReady(Coils*)),this,SLOT(ModbusUpdateStatePredAlarmEvents(Coils*)));
              connect(MainTW, SIGNAL(tabClicked(int)), modBus,SLOT(tabs(int)));
-             modBus->BSIrequest(Settings);
+             modBus->BSIrequest();
              //TimeTimer->setInterval(3000);
 
          }
@@ -445,13 +445,13 @@ void Coma::Stage3()
         {
             connect(Time,SIGNAL(ethTimeRequest()),ch104,SLOT(InterrogateTimeGr15()));
             connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),Time,SLOT(FillTimeFrom104(Parse104::BS104Signals*)));
-            connect(Time,SIGNAL(ethWriteTimeToModule(uint*)),ch104,SLOT(com51WriteTime(uint*)));
+            connect(Time,SIGNAL(ethWriteTimeToModule(uint)),ch104,SLOT(com51WriteTime(uint)));
         }
         if(modBus != nullptr)
         {
-            connect(Time,SIGNAL(modBusTimeRequest()),modBus,SLOT(InterrogateTime()));
+            connect(Time,SIGNAL(modBusTimeRequest()),modBus,SLOT(ReadTime()));
             connect(modBus,SIGNAL(TimeSignalsReceived(ModBusBSISignal*)),Time,SLOT(FillTimeFromModBus(ModBusBSISignal*)));
-            connect(Time,SIGNAL(modbusWriteTimeToModule(uint*)),modBus,SLOT(WriteTime(uint*)));
+            connect(Time,SIGNAL(modbusWriteTimeToModule(uint)),modBus,SLOT(WriteTime(uint)));
             connect(modBus,SIGNAL(timeReadError()),Time,SLOT(ErrorRead()));
         }
 
@@ -561,7 +561,7 @@ void Coma::PrepareDialogs()
             //connect(ch104,SIGNAL(ethdisconnected()), this, SLOT(DisconnectMessage()));
             //connect(ch104,SIGNAL(ethNoconnection()), this, SLOT(DisconnectAndClear()));
 
-            connect(CorD,SIGNAL(sendCom45(quint32*)), ch104, SLOT(Com45(quint32*)));
+            connect(CorD,SIGNAL(sendCom45(quint32)), ch104, SLOT(Com45(quint32)));
             connect(CorD,SIGNAL(sendCom50(quint32*, float*)), ch104, SLOT(Com50(quint32*,float*)));
             connect(CorD,SIGNAL(CorReadRequest()), ch104, SLOT(CorReadRequest()));
 
@@ -599,10 +599,10 @@ void Coma::PrepareDialogs()
          {
             connect(modBus, SIGNAL(ErrorRead()), CorD, SLOT(ErrorRead()));
             connect(modBus, SIGNAL(ModbusState(ModBus::ModbusDeviceState)), CheckB, SLOT(onModbusStateChanged(ModBus::ModbusDeviceState)));
-            connect(modBus, SIGNAL(SignalsReceived(ModBusSignal*, int*)), CheckB, SLOT(UpdateModBusData(ModBusSignal*, int*)));
-            connect(modBus, SIGNAL(CorSignalsReceived(ModBusSignal*, int*)), CorD, SLOT(ModBusUpdateCorData(ModBusSignal*, int*)));
-            connect(CorD, SIGNAL(RS485WriteCorBd(information*, float*)), modBus, SLOT(ModWriteCor(information*, float*)));//, int*)));
-            connect(CorD, SIGNAL(RS485ReadCorBd(information*)), modBus, SLOT(ModReadCor(information*)));
+            connect(modBus, SIGNAL(SignalsReceived(ModBusSignal*, int)), CheckB, SLOT(UpdateModBusData(ModBusSignal*, int)));
+            connect(modBus, SIGNAL(CorSignalsReceived(ModBusSignal*, int)), CorD, SLOT(ModBusUpdateCorData(ModBusSignal*, int)));
+            connect(CorD, SIGNAL(RS485WriteCorBd(ModBus::Information*, float*)), modBus, SLOT(ModWriteCor(ModBus::Information*, float*)));//, int*)));
+            connect(CorD, SIGNAL(RS485ReadCorBd(Information*)), modBus, SLOT(ModReadCor(Information*)));
             connect(modBus,SIGNAL(ReconnectSignal()), this, SLOT(ReConnect()));
          }
 

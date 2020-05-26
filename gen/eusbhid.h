@@ -6,7 +6,7 @@
 #include <QTimer>
 #include <QLabel>
 
-#include "log.h"
+#include "logclass.h"
 #include "eabstractprotocomchannel.h"
 #include "hidapi/hidapi.h"
 
@@ -22,10 +22,10 @@ class EUsbThread : public QObject
 {
     Q_OBJECT
 public:
-    explicit EUsbThread(Log *logh, bool writelog = false, QObject *parent = 0);
+    explicit EUsbThread(LogClass *logh, bool writelog = false, QObject *parent = 0);
     ~EUsbThread();
 
-    Log *log;
+    LogClass *log;
 
     int Set(EAbstractProtocomChannel::DeviceConnectStruct &devinfo);
 

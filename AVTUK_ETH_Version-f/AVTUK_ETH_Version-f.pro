@@ -24,6 +24,7 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../gen/logclass.cpp \
     coma.cpp \
     main.cpp \
     ../check/check.cpp \
@@ -62,7 +63,6 @@ SOURCES += \
     ../dialogs/settingsdialog.cpp \
     ../gen/error.cpp \
     ../gen/files.cpp \
-    ../gen/log.cpp \
     ../gen/mainwindow.cpp \
     ../gen/modulebsi.cpp \
     ../gen/report.cpp \
@@ -93,6 +93,7 @@ SOURCES += \
 
 
 HEADERS += \
+    ../gen/logclass.h \
     coma.h \
     ../check/check.h \
     ../check/check84.h \
@@ -131,7 +132,6 @@ HEADERS += \
     ../gen/colors.h \
     ../gen/error.h \
     ../gen/files.h \
-    ../gen/log.h \
     ../gen/maindef.h \
     ../gen/mainwindow.h \
     ../gen/modulebsi.h \

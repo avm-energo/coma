@@ -10,7 +10,7 @@
 
 #include "modulebsi.h"
 #include "s2.h"
-#include "log.h"
+#include "logclass.h"
 
 #define CN_MAXSEGMENTLENGTH 60 // 64-4 ('<',cmd,L,L)
 
@@ -88,7 +88,7 @@ public:
     bool NeedToSend, Busy, NeedToFinish;
     bool Connected, Cancelled;
 //    qint64 RDSize;
-    Log *CnLog;
+    LogClass *CnLog;
     DeviceConnectStruct UsbPort;
 
     virtual bool Connect() = 0;

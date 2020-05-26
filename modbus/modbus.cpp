@@ -13,7 +13,6 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QPushButton>
-#include <QWaitCondition>
 #include <QLineEdit>
 #include <QMessageBox>
 #include "../gen/error.h"
@@ -23,7 +22,6 @@
 #include "../gen/mainwindow.h"
 #include "modbus.h"
 
-bool ModBus::Reading;
 QMutex RunMutex, InMutex, OutMutex, OutWaitMutex;
 QWaitCondition RunWC, OutWC;
 
@@ -31,12 +29,6 @@ ModBus::ModBus(ModBus_Settings settings, QObject *parent) : QObject(parent)
 {
     Settings = settings;
     CycleGroup = 0;
-    Reading = false;
-//    CloseThr = false;
-//    Commands = false;
-    First = 1;
-    Count = 0;
-    Write = 0;
     PollingEnabled = false;
 
     TimeoutTimer = new QTimer;
@@ -54,9 +46,6 @@ ModBus::ModBus(ModBus_Settings settings, QObject *parent) : QObject(parent)
     SignalGroups[4] = QByteArrayLiteral("\x04\x09\x74\x00\x1c");
     SignalGroups[5] = QByteArrayLiteral("\x04\x11\x95\x00\x04");
     SignalGroups[6] = QByteArrayLiteral("\x01\x0b\xc3\x00\x19");
-
-    //ModBusInterrogateTimer = new QTimer;
-    //ModBusInterrogateTimer->setInterval(1000);
 }
 
 ModBus::~ModBus()
@@ -78,12 +67,13 @@ int ModBus::Connect()
     return cthr->State();
 }
 
-int ModBus::SendAndGetResult(ModBus::ComInfo &request)
+int ModBus::SendAndGetResult(ComInfo &request, InOutStruct &outp)
 {
-    InOutStruct inp, outp;
+    InOutStruct inp;
     QByteArray bytes;
 
-    if(request.Command== 0x10)
+    inp.Command = request.Command;
+    if(request.Command == WRITEMULTIPLEREGISTERS)
         inp.ReadSize = 8;
     else
         inp.ReadSize = 5+2*request.Quantity;
@@ -103,9 +93,6 @@ int ModBus::SendAndGetResult(ModBus::ComInfo &request)
     SendAndGet(inp, outp);
     if (outp.Res != NOERROR)
         return outp.Res;
-
-    if(request.Address == 4600)
-        Write=0;
     return NOERROR;
 }
 
@@ -114,6 +101,7 @@ void ModBus::SendNextCmdAndGetResult()
     QByteArray bytes;
     InOutStruct inp, outp;
 
+    inp.Command = SignalGroups[CycleGroup][0];
     bytes.append(Settings.Address); // адрес устройства
     bytes.append(SignalGroups[CycleGroup]);
     if(CycleGroup == 6)
@@ -125,6 +113,21 @@ void ModBus::SendNextCmdAndGetResult()
     // wait for an answer or timeout and return result
     SendAndGet(inp, outp);
 
+    if(CycleGroup == 6)
+    {
+        Coils *coil = new Coils;
+        coil->countBytes = outp.Ba.data()[2];
+        coil->Bytes = outp.Ba.mid(3);
+        emit CoilSignalsReady(coil);
+    }
+    else
+    {
+        ModBusSignalStruct *Sig = nullptr;
+        int sigsize;
+        int startadr = (static_cast<quint8>(SignalGroups[CycleGroup][FIRSTBYTEADR]) << 8) | (static_cast<quint8>(SignalGroups[CycleGroup][SECONDBYTEADR]));
+        GetFloatSignalsFromByteArray(outp.Ba, startadr, Sig, sigsize);
+        emit SignalsReceived(Sig, sigsize);
+    }
     CycleGroup++;
     if (CycleGroup > 6)
         CycleGroup = 0;
@@ -179,242 +182,177 @@ bool ModBus::GetResultFromOutQueue(int index, ModBus::InOutStruct &outp)
     return false;
 }
 
-void ModBus::BSIrequest(ModBus_Settings Settings)
+void ModBus::BSIrequest()
 {
-    QByteArray* bytes = new QByteArray[100];
-    quint16 KSS = '\0';
-    qint64 st;
+    ComInfo request;
+    InOutStruct outp;
 
-    ComData.ModCom = 0x04;
-    ComData.adr = 0x01;
-    ComData.quantity = 30;
-    ComData.sizebytes = 60;
-    //if( ComData.data.size())
-    //ComData.data.clear();
+    request.Command = READINPUTREGISTER;
+    request.Address = BSIREG; // BSI block
+    request.Quantity = 30;
+    request.SizeBytes = 60;
 
-    Commands = true;
-    bytes->clear();
-    SerialPort->clear();
+    int res = SendAndGetResult(request, outp);
+    if (res != NOERROR)
+        emit TimeReadError();
 
-    bytes->append(Settings.Address.toInt()); // адрес устройства
-
-    bytes->append(ComData.ModCom);         //аналоговый выход
-    bytes->append(static_cast<char>(ComData.adr>>8));
-    bytes->append(static_cast<char>(ComData.adr));
-    bytes->append(static_cast<char>(ComData.quantity>>8));
-    bytes->append(static_cast<char>(ComData.quantity));
-
-    /*        if(ComData.data.size())
-                {
-                    for(i = 0; i<ComData.data.size(); i++)
-                    {
-                      bytes->append(ComData.data.data()[i]);
-                    }
-                }
-*/
-
-                //for(i=0;i<bytes->size();i++)
-     KSS=CalcCRC((quint8*)(bytes->data()), bytes->size());
-                //KSS += static_cast<quint8>(bytes->data()[i]);
-                //S2::updCRC32(bytes->data()[i],&crc);
-     bytes->append(static_cast<char>(KSS>>8));
-     bytes->append(static_cast<char>(KSS));
-
-     ReadSize = 5+2*ComData.quantity;
-
-     st = SerialPort->write(bytes->data(), bytes->size());
-            //st=0;
-
-     Reading = true;
-
-}
-
-void ModBus::StopModSlot()
-{
-    if(SerialPort != nullptr)
-    SerialPort->close();
-
-    Reading = true;
-    CloseThr = true;
+    ModBusBSISignalStruct *BSIsig = nullptr;
+    int sigsize;
+    if (GetSignalsFromByteArray(outp.Ba, BSIREG, BSIsig, sigsize) != NOERROR)
+        return;
+    emit BsiFromModbus(BSIsig, sigsize);
 }
 
 void ModBus::ModWriteCor(Information* info, float* data)//, int* size)
 {
-    int i;
-    quint32 fl;
-    //bool readingState = Reading;
+    ComInfo request;
+    InOutStruct outp;
 
-    while(Reading == true)
+    request.Command = WRITEMULTIPLEREGISTERS;
+    request.Address = info->adr;
+
+    if((info->adr == 900) || (info->adr == 901)) // set initial values or clear initial values commands
     {
-        TimeFunc::Wait(10);
-        Count++;
-        if(Count == 20)
-        {
-          Reading = false;
-          Count = 0;
-        }
-    }
-
-    ComData.ModCom = 0x10;
-    ComData.adr = info->adr;
-
-    if((info->adr == 900) || (info->adr == 905))
-    {
-        ComData.quantity = 1;
-        ComData.sizebytes = 2;
-        ComData.data->append(0x01);
-        ComData.data->append(0x01);
+        request.Quantity = 1;
+        request.SizeBytes = 2;
+        request.Data = QByteArrayLiteral("\x01\x01");
     }
     else
     {
-        ComData.quantity = (quint8)((info->size)*2);
-        ComData.sizebytes = (quint8)((info->size)*4);
+        request.Quantity = (quint8)((info->size)*2);
+        request.SizeBytes = (quint8)((info->size)*4);
 
-        for(i = 0; i<info->size; i++)
+        for (int i = 0; i<info->size; i++)
         {
-         fl =*(quint32*)(data+i);
-         ComData.data->append(static_cast<char>(fl>>8));
-         ComData.data->append(static_cast<char>(fl));
-         ComData.data->append(static_cast<char>(fl>>24));
-         ComData.data->append(static_cast<char>(fl>>16));
+            quint32 fl =*(quint32*)(data+i);
+            request.Data.append(static_cast<char>(fl>>8));
+            request.Data.append(static_cast<char>(fl));
+            request.Data.append(static_cast<char>(fl>>24));
+            request.Data.append(static_cast<char>(fl>>16));
         }
     }
-    //TimeFunc::Wait(100);
-    Commands = true;
-    Reading = false;
-
+    SendAndGetResult(request, outp);
 }
 
 void ModBus::ModReadCor(Information* info)
 {
+    ComInfo request;
+    InOutStruct outp;
 
-    while(Reading == true)
-    {
-        TimeFunc::Wait(10);
-        Count++;
-        if(Count == 20)
-        {
-          Reading = false;
-          Count = 0;
-        }
-    }
+    request.Command = READINPUTREGISTER;
+    request.Address = info->adr;
+    request.Quantity = (quint8)((info->size)*2);
+    request.SizeBytes = (quint8)((info->size)*4);
+    SendAndGetResult(request, outp);
 
-    ComData.ModCom = 0x04;
-    ComData.adr = info->adr;
-    ComData.quantity = (quint8)((info->size)*2);
-    ComData.sizebytes = (quint8)((info->size)*4);
-
-    ComData.data = new QByteArray[100];
-    ComData.data->clear();
-
-    //TimeFunc::Wait(100);
-    Commands = true;
-    Reading = false;
-
+    ModBusSignalStruct *Sig = nullptr;
+    int sigsize;
+    GetFloatSignalsFromByteArray(outp.Ba, info->adr, Sig, sigsize);
+    emit CorSignalsReceived(Sig, sigsize);
 }
 
-void ModBus::InterrogateTime()
+void ModBus::ReadTime()
 {
-    if(First)
-    {
-      First = 0;
-      Reading = false;
-    }
+    ComInfo request;
+    InOutStruct outp;
 
-
-    while(Reading == true)
-    {
-        TimeFunc::Wait(10);
-        Count++;
-        if(Count == 20)
-        {
-          Reading = false;
-          Count = 0;
-        }
-    }
-
-    if(!Write)
-    {
-      ComData.ModCom = 0x03;
-      ComData.adr = 4600;
-      ComData.quantity = 2;
-      ComData.sizebytes = 4;
-      ComData.data = new QByteArray[100];
-      ComData.data->clear();
-      //TimeFunc::Wait(100);
-      Commands = true;
-      Reading = false;
-    }
-
-
+    request.Address = TIMEREG;
+    request.Command = READHOLDINGREGISTERS;
+    request.Quantity = 2;
+    request.SizeBytes = 4;
+    int res = SendAndGetResult(request, outp);
+    if (res != NOERROR)
+        emit TimeReadError();
+    ModBusBSISignalStruct *BSIsig = nullptr;
+    int sigsize;
+    if (GetSignalsFromByteArray(outp.Ba, TIMEREG, BSIsig, sigsize) != NOERROR)
+        return;
+    emit TimeSignalsReceived(BSIsig);
 }
 
-void ModBus::WriteTime(uint* time)
+int ModBus::GetSignalsFromByteArray(QByteArray &bain, int startadr, ModBusBSISignalStruct *BSIsig, int &size)
 {
-    Write = 1;
-    quint32 T;
-    //ComData = *new ComInfo;
-
-    while(Reading == true)
+    int byteSize = bain.data()[2];
+    QByteArray ba = bain.mid(3);
+    if (byteSize > ba.size())
     {
-        TimeFunc::Wait(10);
-        Count++;
-        if(Count == 20)
-        {
-          Reading = false;
-          Count = 0;
-        }
+        ERMSG("wrong byte size in response");
+        return GENERALERROR;
     }
+    int signalsSize = byteSize / 4; // количество байт float или u32
+    BSIsig = new ModBusBSISignalStruct[signalsSize];
+    for (int i=0; i<signalsSize; ++i)
+    {
+        quint32 ival = ((ba.data()[2+4*i]<<24)&0xFF000000)+((ba.data()[3+4*i]<<16)&0x00FF0000)+\
+                ((ba.data()[4*i]<<8)&0x0000FF00)+((ba.data()[1+4*i]&0x000000FF));
+        BSIsig[i].Val = *(reinterpret_cast<quint32*>(&ival));
+        BSIsig[i].SigAdr = i+startadr;
+    }
+    size = signalsSize;
+    return NOERROR;
+}
 
-    ComData.ModCom = 0x10;
-    ComData.adr = 4600;
+int ModBus::GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, ModBusSignalStruct *Sig, int &size)
+{
+    int byteSize = bain.data()[2];
+    QByteArray ba = bain.mid(3);
+    if (byteSize > ba.size())
+    {
+        ERMSG("wrong byte size in response");
+        return GENERALERROR;
+    }
+    int signalsSize = byteSize / 4; // количество байт float или u32
+    Sig = new ModBusSignalStruct[signalsSize];
+    for (int i=0; i<signalsSize; ++i)
+    {
+        quint32 ival = ((ba.data()[2+4*i]<<24)&0xFF000000)+((ba.data()[3+4*i]<<16)&0x00FF0000)+\
+                ((ba.data()[4*i]<<8)&0x0000FF00)+((ba.data()[1+4*i]&0x000000FF));
+        Sig[i].flVal = *(reinterpret_cast<float*>(&ival));
+        Sig[i].SigAdr = i+startadr;
+    }
+    size = signalsSize;
+    return NOERROR;
+}
 
-    ComData.quantity = 2;
-    ComData.sizebytes = 4;
+void ModBus::WriteTime(uint time)
+{
+    ComInfo request;
+    InOutStruct outp;
 
-    ComData.data = new QByteArray[100];
-    ComData.data->clear();
-
-    T =*time;
-    ComData.data->append(static_cast<char>(T>>8));
-    ComData.data->append(static_cast<char>(T));
-    ComData.data->append(static_cast<char>(T>>24));
-    ComData.data->append(static_cast<char>(T>>16));
-
-    //TimeFunc::Wait(100);
-    Commands = true;
-    Reading = false;
-
+    request.Address = TIMEREG;
+    request.Command = WRITEMULTIPLEREGISTERS;
+    request.Quantity = 2;
+    request.SizeBytes = 4;
+    request.Data.append(static_cast<char>(time >> 8));
+    request.Data.append(static_cast<char>(time));
+    request.Data.append(static_cast<char>(time >> 24));
+    request.Data.append(static_cast<char>(time >> 16));
+    int res = SendAndGetResult(request, outp);
+    if (res != NOERROR)
+        emit TimeReadError();
+    if (outp.Ba.size() < 5)
+    {
+        ERMSG("response length incorrect");
+        return;
+    }
+    quint16 startadr = (outp.Ba.data()[1] << 8) + outp.Ba.data()[2];
+    if (startadr != TIMEREG)
+    {
+        ERMSG("wrong response");
+        return;
+    }
+    emit
 }
 
 void ModBus::Tabs(int index)
 {
-
   if(!MainWindow::TheEnd)
   {
-    while(Reading == true)
-    {
-        TimeFunc::Wait(10);
-        Count++;
-        if(Count == 200)
-        {
-          Reading = false;
-          Count = 0;
-        }
-    }
 
    if(index == TimeIndex)
    {
+       ReadTime();
        TimeFunc::Wait(1000);
-       ComData.ModCom = 0x03;
-       ComData.adr = 4600;
-       ComData.quantity = 2;
-       ComData.sizebytes = 4;
-       ComData.data = new QByteArray[100];
-       ComData.data->clear();
-         //TimeFunc::Wait(100);
-       Commands = true;
-       //Reading = false;
    }
    else if(index == CorIndex)
    {
@@ -520,6 +458,14 @@ int ModbusThread::SendAndGetResult(ModBus::InOutStruct &inp)
     AddToOutQueue(Outp);
 }
 
+void ModbusThread::AddToOutQueue(ModBus::InOutStruct &outp)
+{
+    OutMutex.lock();
+    OutList->append(outp);
+    OutMutex.unlock();
+    OutWC.wakeAll();
+}
+
 void ModbusThread::Send()
 {
     // data to send is in Inp.Ba
@@ -528,7 +474,8 @@ void ModbusThread::Send()
     Inp.Ba.append(static_cast<unsigned char>(KSS));
     if (!SerialPort->isOpen())
         SerialPort->open(QIODevice::ReadWrite);
-    ReadData.clear();
+    Outp.Ba.clear();
+    Inp.Checked = false;
     Busy = true;
     qint64 st = SerialPort->write(Inp.Ba.data(), Inp.Ba.size());
     if (st < Inp.Ba.size())
@@ -542,8 +489,38 @@ void ModbusThread::Send()
         QThread::msleep(MAINSLEEPCYCLETIME);
     if (Busy)
         Outp.Res = GENERALERROR;
-    else
+}
+
+void ModbusThread::ParseReply()
+{
+    qint64 cursize = SerialPort->bytesAvailable();
+    Outp.Ba.append(SerialPort->read(cursize));
+    if ((!Inp.Checked) && (Outp.Ba.size() >= 2))
+    {
+        Inp.Checked = true;
+        if (Outp.Ba.at(1) == (Inp.Command & 0x80)) // error
+            ERMSG("modbus error response");
+        if (Outp.Ba.at(1) != Inp.Command) // wrong response
+            ERMSG("modbus wrong command");
+    }
+
+    if(cursize >= Inp.ReadSize)
+    {
+        int rdsize = Outp.Ba.size();
+
+        quint16 MYKSS = CalcCRC(Outp.Ba);
+        quint16 crcfinal = (static_cast<quint8>(Outp.Ba.data()[rdsize-2]) << 8) | (static_cast<quint8>(Outp.Ba.data()[rdsize-1]));
+
+        if(MYKSS != crcfinal)
+        {
+            ERMSG("modbus crc error");
+//            emit ErrorCrc();
+            Outp.Res = GENERALERROR;
+            return;
+        }
         Outp.Res = NOERROR;
+        Busy = false;
+    }
 }
 
 void ModbusThread::FinishThread()
@@ -568,168 +545,4 @@ quint16 ModbusThread::CalcCRC(QByteArray &ba)
   }
   crc = ((CRChi << 8) | CRClo);
   return crc;
-}
-
-void ModbusThread::AddToOutQueue(ModBus::InOutStruct &outp)
-{
-    OutMutex.lock();
-    OutList->append(outp);
-    OutMutex.unlock();
-    OutWC.wakeAll();
-}
-
-void ModbusThread::ParseReply()
-{
-    quint16 MYKSS = '\0', crcfinal = '\0';
-    QString crc = nullptr;
-    int i = 0, startadr, signalsSize;
-    int ival;
-    Coils *Coil = new Coils;
-    ModBusBSISignalStruct *BSIsig = new ModBusBSISignalStruct;
-
-    qint64 cursize = SerialPort->bytesAvailable();
-    ReadData.append(SerialPort->read(cursize));
-    if (ReadData.size() >= 5)
-    {
-
-    }
-
-    if(cursize >= Inp.ReadSize)
-    {
-        int rdsize = ReadData.size();
-
-        MYKSS = CalcCRC(ReadData);
-        crcfinal = (static_cast<quint8>(ReadData.data()[rdsize-2]) << 8) | (static_cast<quint8>(ReadData.data()[rdsize-1]));
-
-        if(MYKSS == crcfinal)
-        {
-
-            if((CycleGroup == 6) && (Commands == false))
-        {
-           Coil = new Coils;
-           Coil->countBytes = ResponseBuffer.data()[2];
-           signalsSize = 0;
-           for(i=0; i<Coil->countBytes; i++)
-           {
-             Coil->Bytes[i] = ResponseBuffer.data()[3+i];
-           }
-        }
-        else
-        signalsSize = ResponseBuffer.data()[2]/4; // количество байт float или u32
-
-        if(ComData.adr == 1 || ComData.adr == 4600)
-        BSIsig = new ModBusBSISignalStruct[signalsSize];
-        else
-        Sig = new ModBusSignalStruct[signalsSize];
-
-        startadr = (static_cast<quint8>(SignalGroups[CycleGroup].data[FIRSTBYTEADR]) << 8) | (static_cast<quint8>(SignalGroups[CycleGroup].data[SECONDBYTEADR]));
-        for(i=0; i<signalsSize; i++)
-        {
-         if(ComData.adr == 1  || ComData.adr == 4600)  // bsi
-         ival = (((static_cast<quint8>(ResponseBuffer.data()[5+4*i])<<24)&0xFF000000)+((static_cast<quint8>(ResponseBuffer.data()[6+4*i])<<16)&0x00FF0000)+((static_cast<quint8>(ResponseBuffer.data()[3+4*i])<<8)&0x0000FF00)+(static_cast<quint8>(ResponseBuffer.data()[4+4*i])&0x000000FF));
-         else
-         {
-           /*bool ok;
-           QString fl = *new QString[1024];
-           QStringList Listfl = *new QStringList[4];
-           fl.clear();
-           float tmpf;
-           fl.append(responseBuffer.data()[5+4*i] & 0x00FF);
-           fl.append(responseBuffer.data()[6+4*i] & 0x00FF);
-           fl.append(responseBuffer.data()[3+4*i] & 0x00FF);
-           fl.append(responseBuffer.data()[4+4*i] & 0x00FF);
-           Listfl.append(fl.at(0));
-           Listfl.append(fl.at(1));
-           Listfl.append(fl.at(2));
-           Listfl.append(fl.at(3));
-           fl = Listfl.join("");
-           tmpf = fl.toFloat(&ok);
-           Sig[i].flVal = tmpf;*/
-           ival = ((ResponseBuffer.data()[5+4*i]<<24)&0xFF000000)+((ResponseBuffer.data()[6+4*i]<<16)&0x00FF0000)+((ResponseBuffer.data()[3+4*i]<<8)&0x0000FF00)+((ResponseBuffer.data()[4+4*i]&0x000000FF));
-           Sig[i].flVal = *(float*)&ival;
-         }
-
-         if(Commands)
-         {
-             if(ComData.adr == 1 || ComData.adr == 4600)  // bsi и time
-             {
-                 BSIsig[i].Val = *(quint32*)&ival;
-                 BSIsig[i].SigAdr = ComData.adr+i;
-             }
-             else
-             Sig[i].SigAdr = ComData.adr+i;
-
-         }
-         else
-         Sig[i].SigAdr = startadr+i;
-        }
-
-        if(Commands)
-        {
-           if(ComData.adr>=900 && ComData.adr<=910)
-           {
-               int recordSize = (static_cast<quint8>(ResponseBuffer.data()[4]) << 8) | (static_cast<quint8>(ResponseBuffer.data()[5]));
-               if(recordSize == ComData.quantity)
-               signalsSize = 1;
-               TimeFunc::Wait(100);
-
-           }
-
-           if(ComData.adr == 1)
-           {
-             ComData.adr = 0;
-             emit BsiFromModbus(BSIsig, &signalsSize);
-             Commands = false;
-             TimeoutTimer->start();
-           }
-           else if(ComData.adr == 4600)
-           emit TimeSignalsReceived(BSIsig);
-           else
-           {
-             Commands = false;
-             emit CorSignalsReceived(Sig, &signalsSize);
-           }
-
-           //commands = false;
-           //ComData.adr = 0;
-        }
-        else
-        {
-
-           if(CycleGroup == 6)
-           emit CoilSignalsReady(Coil);
-           else
-           emit SignalsReceived(Sig, &signalsSize);
-
-
-           //Reading = 0;
-        }
-      }
-      else
-      {
-        emit ErrorCrc();
-      }
-
-  }
-  else
-  {
-      if((cursize == 5) && (ComData.adr != 1))
-      {
-          //commands = false;
-          Reading = false;
-
-          ResponseBuffer = SerialPort->read(cursize);
-          if((ResponseBuffer.data()[3] == (char)0xC2) && (ResponseBuffer.data()[4] == (char)0xC1))
-          {
-             if(ComData.adr == 4600)
-             emit TimeReadError();
-             else
-             emit ErrorRead();
-          }
-          //ComData.adr = 0;
-      }
-  }
-
- // emit nextGroup();
-
 }

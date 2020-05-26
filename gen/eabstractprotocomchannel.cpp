@@ -11,7 +11,7 @@ bool EAbstractProtocomChannel::WriteUSBLog = true;
 EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(parent)
 {
     QString tmps = "=== CLog started ===\n";
-    CnLog = new Log;
+    CnLog = new LogClass;
     CnLog->Init("canal.log");
     CnLog->WriteRaw(tmps.toUtf8());
     RDLength = 0;

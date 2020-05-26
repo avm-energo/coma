@@ -2,7 +2,7 @@
 #define IEC104_H
 #include <QTcpSocket>
 #include "../gen/s2.h"
-#include "../gen/log.h"
+#include "../gen/logclass.h"
 
 #define BASEADR104          205
 #define I104_START          0x68
@@ -438,11 +438,11 @@ private slots:
     void SendSegments();
     void LastSegment();
     void LastSection();
-    void Com45(quint32 *com);
+    void Com45(quint32 com);
     void Com50(quint32 *adr, float *param);
     void CorReadRequest();
     void InterrogateTimeGr15();
-    void com51WriteTime(uint*);
+    void com51WriteTime(uint);
 
 };
 
