@@ -29,7 +29,8 @@ ModBus::ModBus(ModBus_Settings settings, QObject *parent) : QObject(parent)
 {
     Settings = settings;
     CycleGroup = 0;
-    PollingEnabled = false;
+    MainPollEnabled = true;
+    TimePollEnabled = InitPollEnabled = false;
 
     TimeoutTimer = new QTimer;
     TimeoutTimer->setInterval(RECONNECTTIME);
@@ -37,7 +38,7 @@ ModBus::ModBus(ModBus_Settings settings, QObject *parent) : QObject(parent)
 
     PollingTimer = new QTimer;
     PollingTimer->setInterval(POLLINGINTERVAL);
-    connect(PollingTimer, SIGNAL(timeout()), this, SLOT(SendNextCmdAndGetResult()));
+    connect(PollingTimer, SIGNAL(timeout()), this, SLOT(Polling()));
 
     SignalGroups[0] = QByteArrayLiteral("\x04\x00\x65\x00\x04");
     SignalGroups[1] = QByteArrayLiteral("\x04\x03\xE8\x00\x20");
@@ -65,6 +66,7 @@ int ModBus::Connect()
     connect(cthr, SIGNAL(ModbusState(ModBus::ModbusDeviceState)), this, SIGNAL(ModbusState(ModBus::ModbusDeviceState)));
     thr->start();
     return cthr->State();
+    StartPolling();
 }
 
 int ModBus::SendAndGetResult(ComInfo &request, InOutStruct &outp)
@@ -96,41 +98,55 @@ int ModBus::SendAndGetResult(ComInfo &request, InOutStruct &outp)
     return NOERROR;
 }
 
-void ModBus::SendNextCmdAndGetResult()
+void ModBus::Polling()
 {
     QByteArray bytes;
     InOutStruct inp, outp;
 
-    inp.Command = SignalGroups[CycleGroup][0];
-    bytes.append(Settings.Address); // адрес устройства
-    bytes.append(SignalGroups[CycleGroup]);
-    if(CycleGroup == 6)
-        inp.ReadSize = 9;
-    else
-        inp.ReadSize = 5+2*SignalGroups[CycleGroup][SECONDBYTEQ];
-
-    inp.Ba = bytes;
-    // wait for an answer or timeout and return result
-    SendAndGet(inp, outp);
-
-    if(CycleGroup == 6)
+    if (MainPollEnabled)
     {
-        Coils *coil = new Coils;
-        coil->countBytes = outp.Ba.data()[2];
-        coil->Bytes = outp.Ba.mid(3);
-        emit CoilSignalsReady(coil);
+        inp.Command = SignalGroups[CycleGroup][0];
+        bytes.append(Settings.Address); // адрес устройства
+        bytes.append(SignalGroups[CycleGroup]);
+        if(CycleGroup == 6)
+            inp.ReadSize = 9;
+        else
+            inp.ReadSize = 5+2*SignalGroups[CycleGroup][SECONDBYTEQ];
+
+        inp.Ba = bytes;
+        // wait for an answer or timeout and return result
+        SendAndGet(inp, outp);
+
+        if(CycleGroup == 6)
+        {
+            Coils *coil = new Coils;
+            coil->countBytes = outp.Ba.data()[2];
+            coil->Bytes = outp.Ba.mid(3);
+            emit CoilSignalsReady(coil);
+        }
+        else
+        {
+            ModBusSignalStruct *Sig = nullptr;
+            int sigsize;
+            int startadr = (static_cast<quint8>(SignalGroups[CycleGroup][FIRSTBYTEADR]) << 8) | (static_cast<quint8>(SignalGroups[CycleGroup][SECONDBYTEADR]));
+            GetFloatSignalsFromByteArray(outp.Ba, startadr, Sig, sigsize);
+            emit SignalsReceived(Sig, sigsize);
+        }
+        CycleGroup++;
+        if (CycleGroup > 6)
+            CycleGroup = 0;
     }
-    else
+    if (TimePollEnabled)
     {
-        ModBusSignalStruct *Sig = nullptr;
-        int sigsize;
-        int startadr = (static_cast<quint8>(SignalGroups[CycleGroup][FIRSTBYTEADR]) << 8) | (static_cast<quint8>(SignalGroups[CycleGroup][SECONDBYTEADR]));
-        GetFloatSignalsFromByteArray(outp.Ba, startadr, Sig, sigsize);
-        emit SignalsReceived(Sig, sigsize);
+        ReadTime();
     }
-    CycleGroup++;
-    if (CycleGroup > 6)
-        CycleGroup = 0;
+    if (InitPollEnabled)
+    {
+        Information info;
+        info.adr = INITREG;
+        info.size = 22;
+        ModReadCor(info);
+    }
 }
 
 void ModBus::SendAndGet(InOutStruct &inp, ModBus::InOutStruct &outp)
@@ -234,20 +250,20 @@ void ModBus::ModWriteCor(Information* info, float* data)//, int* size)
     SendAndGetResult(request, outp);
 }
 
-void ModBus::ModReadCor(Information* info)
+void ModBus::ModReadCor(Information &info)
 {
     ComInfo request;
     InOutStruct outp;
 
     request.Command = READINPUTREGISTER;
-    request.Address = info->adr;
-    request.Quantity = (quint8)((info->size)*2);
-    request.SizeBytes = (quint8)((info->size)*4);
+    request.Address = info.adr;
+    request.Quantity = (quint8)((info.size)*2);
+    request.SizeBytes = (quint8)((info.size)*4);
     SendAndGetResult(request, outp);
 
     ModBusSignalStruct *Sig = nullptr;
     int sigsize;
-    GetFloatSignalsFromByteArray(outp.Ba, info->adr, Sig, sigsize);
+    GetFloatSignalsFromByteArray(outp.Ba, info.adr, Sig, sigsize);
     emit CorSignalsReceived(Sig, sigsize);
 }
 
@@ -346,36 +362,27 @@ void ModBus::WriteTime(uint time)
 
 void ModBus::Tabs(int index)
 {
-  if(!MainWindow::TheEnd)
-  {
-
-   if(index == TimeIndex)
-   {
-       ReadTime();
-       TimeFunc::Wait(1000);
-   }
-   else if(index == CorIndex)
-   {
-       ComData.ModCom = 0x04;
-       ComData.adr = 4000;
-       ComData.quantity = 22;
-       ComData.sizebytes = 44;
-
-       ComData.data = new QByteArray[100];
-       ComData.data->clear();
-
-       //TimeFunc::Wait(100);
-       Commands = true;
-       //Reading = false;
-   }
-   else if(index == CheckIndex)
-   {
-       ComData.adr = 0;
-       Commands = false;
-   }
-
-   Reading = false;
-  }
+    if(!MainWindow::TheEnd)
+    {
+        if(index == TimeIndex)
+        {
+            TimePollEnabled = true;
+            MainPollEnabled = false;
+            InitPollEnabled = false;
+        }
+        else if(index == CorIndex)
+        {
+            TimePollEnabled = false;
+            MainPollEnabled = false;
+            InitPollEnabled = true;
+        }
+        else if(index == CheckIndex)
+        {
+            TimePollEnabled = false;
+            MainPollEnabled = true;
+            InitPollEnabled = false;
+        }
+    }
 }
 
 void ModBus::StartPolling()
@@ -450,7 +457,7 @@ void ModbusThread::Run()
     emit Finished();
 }
 
-int ModbusThread::SendAndGetResult(ModBus::InOutStruct &inp)
+void ModbusThread::SendAndGetResult(ModBus::InOutStruct &inp)
 {
     Inp = inp;
     Send();

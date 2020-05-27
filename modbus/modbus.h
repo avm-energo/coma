@@ -103,9 +103,8 @@ public:
 
 public slots:
     int SendAndGetResult(ComInfo &request, InOutStruct &outp);
-    void SendNextCmdAndGetResult();
     void ModWriteCor(Information *info, float*);//, int*);
-    void ModReadCor(Information* info);
+    void ModReadCor(Information &info);
     void ReadTime();
     void WriteTime(uint);
     void Tabs(int);
@@ -130,7 +129,7 @@ private:
     ModBus_Settings Settings;
     int CycleGroup;
     QTimer *TimeoutTimer, *PollingTimer;
-    bool PollingEnabled;
+    bool TimePollEnabled, InitPollEnabled, MainPollEnabled;
     QByteArray SignalGroups[SIGNALGROUPSNUM];
     int _taskCounter;
     QQueue<InOutStruct> InQueue;
@@ -144,6 +143,7 @@ private:
 
 private slots:
     void Reconnect();
+    void Polling();
 
 protected:
 
@@ -214,7 +214,7 @@ private:
     0x44, 0x84, 0x85, 0x45, 0x87, 0x47, 0x46, 0x86, 0x82, 0x42, 0x43, 0x83, 0x41, 0x81, 0x80, 0x40
                                    }  ;
 
-    int SendAndGetResult(ModBus::InOutStruct &inp);
+    void SendAndGetResult(ModBus::InOutStruct &inp);
     void Send();
     quint16 CalcCRC(QByteArray &Dat);
     void AddToOutQueue(ModBus::InOutStruct &outp);

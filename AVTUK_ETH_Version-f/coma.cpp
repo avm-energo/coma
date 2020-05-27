@@ -602,7 +602,7 @@ void Coma::PrepareDialogs()
             connect(modBus, SIGNAL(SignalsReceived(ModBusSignal*, int)), CheckB, SLOT(UpdateModBusData(ModBusSignal*, int)));
             connect(modBus, SIGNAL(CorSignalsReceived(ModBusSignal*, int)), CorD, SLOT(ModBusUpdateCorData(ModBusSignal*, int)));
             connect(CorD, SIGNAL(RS485WriteCorBd(ModBus::Information*, float*)), modBus, SLOT(ModWriteCor(ModBus::Information*, float*)));//, int*)));
-            connect(CorD, SIGNAL(RS485ReadCorBd(Information*)), modBus, SLOT(ModReadCor(Information*)));
+            connect(CorD, SIGNAL(RS485ReadCorBd(Information &)), modBus, SLOT(ModReadCor(Information &)));
             connect(modBus,SIGNAL(ReconnectSignal()), this, SLOT(ReConnect()));
          }
 

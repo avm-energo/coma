@@ -101,11 +101,11 @@ void JournalDialog::GetJour()
     if (jourtype == GENERALERROR)
         return;
     char num = jourtype + 4;
-    if (MainWindow::MainInterface == "Ethernet")
+    if (MainInterface == I_ETHERNET)
     {
         emit ReadJour(num);
     }
-    else if (MainWindow::MainInterface == "USB")
+    else if (MainInterface == I_USB)
     {
 //        QVector<S2::DataRec> *Jour = new QVector<S2::DataRec>;
         QByteArray ba;
@@ -133,7 +133,7 @@ void JournalDialog::GetJour()
 
 void JournalDialog::EraseJour()
 {
-    if (MainWindow::MainInterface == "USB")
+    if (MainInterface == I_USB)
     {
         int jourtype = GetJourNum(sender()->objectName());
         if (jourtype == GENERALERROR)

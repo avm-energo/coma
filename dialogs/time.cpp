@@ -402,7 +402,6 @@ void MNKTime::FillTimeFromModBus(ModBusBSISignal* Time)
          WDFunc::LE_write_data(this, qStr, "Date");
          first = 1;
        }
-       ModBus::Reading = false;
     }
 }
 

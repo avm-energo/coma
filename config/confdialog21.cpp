@@ -360,7 +360,7 @@ void ConfDialog21::SetMinMax(int i)
 void ConfDialog21::SetChTypData(int value)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());
-    if (tmpi == Error::ER_GENERALERROR)
+    if (tmpi == GENERALERROR)
         return;
     C21->Bci_block.in_type[tmpi] = value;
     DisableChannel(tmpi, (value == 0));

@@ -244,7 +244,7 @@ void CorDialog::GetCorBd(int index)
             information info;
             info.size = (sizeof(CorData)/4);
             info.adr = 4000;
-            emit RS485ReadCorBd(&info);
+            emit RS485ReadCorBd(info);
         }
         else if (MainInterface == I_ETHERNET)
         {
@@ -267,7 +267,7 @@ void CorDialog::GetCorBdButton()
         information info;
         info.size = (sizeof(CorData)/4);
         info.adr = 4000;
-        emit RS485ReadCorBd(&info);
+        emit RS485ReadCorBd(info);
     }
     else if (MainInterface == I_ETHERNET)
     {
@@ -331,7 +331,7 @@ void CorDialog::WriteCor()
             EMessageBox::information(this, "INFO", "Задано успешно");
             info.size = (sizeof(CorData)/4);
             info.adr = 4000;
-            emit RS485ReadCorBd(&info);
+            emit RS485ReadCorBd(info);
         }
         else if(MainInterface == I_USB)
         {

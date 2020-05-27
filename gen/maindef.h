@@ -34,6 +34,6 @@
 #define S4      4.0
 #define S20     20.0
 
-int MainInterface;
+extern int MainInterface;
 
 #endif // MAINDEF_H

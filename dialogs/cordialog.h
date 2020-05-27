@@ -59,7 +59,7 @@ signals:
    void sendCom45(quint32);
    void sendCom50(quint32* adr, float *data);
    void RS485WriteCorBd(information*, float*);
-   void RS485ReadCorBd(information*);
+   void RS485ReadCorBd(information &);
    void CorReadRequest();
    void WritePasswordChecked();
 

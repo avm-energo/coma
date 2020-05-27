@@ -35,7 +35,7 @@
 #include "commands.h"
 #endif
 
-//int MainWindow::MainInterface;
+int MainInterface;
 quint32 MainWindow::MTypeB;
 quint32 MainWindow::MTypeM;
 int MainWindow::TheEnd;
