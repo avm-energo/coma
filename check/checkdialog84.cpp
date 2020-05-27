@@ -24,7 +24,7 @@
 #endif
 
 
-CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent, iec104* channel) : EAbstractCheckDialog(board, parent)
+CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent, IEC104* channel) : EAbstractCheckDialog(board, parent)
 {
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);
@@ -36,11 +36,11 @@ CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent, iec104* channel)
     setAttribute(Qt::WA_DeleteOnClose);
     if(channel != nullptr)
     {
-        ch104 = channel;
-        connect(ch104,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),this,SLOT(UpdateFlData(Parse104::FlSignals104*)));
-        connect(ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),this,SLOT(UpdateSponData(Parse104::SponSignals104*)));
-        connect(ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),this,SLOT(UpdateSponDataWithTime(Parse104::SponSignalsWithTime*)));
-        connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),this,SLOT(UpdateBS104Data(Parse104::BS104Signals*)));
+        Ch104 = channel;
+        connect(Ch104,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),this,SLOT(UpdateFlData(Parse104::FlSignals104*)));
+        connect(Ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),this,SLOT(UpdateSponData(Parse104::SponSignals104*)));
+        connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),this,SLOT(UpdateSponDataWithTime(Parse104::SponSignalsWithTime*)));
+        connect(Ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),this,SLOT(UpdateBS104Data(Parse104::BS104Signals*)));
     }
 
     SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));

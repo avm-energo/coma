@@ -113,6 +113,7 @@ signals:
     void Retry();
     void ShowError(QString message);
     void QueryFinished();
+    void Finished();
 
 public slots:
     void Timeout();

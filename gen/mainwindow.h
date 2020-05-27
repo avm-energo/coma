@@ -20,6 +20,9 @@
 
 #define C_TE_MAXSIZE    100
 
+#define RECONNECTINTERVAL   10000
+#define WAITINTERVAL        2000
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -43,7 +46,6 @@ public:
     };
 
 
-//    static int MainInterface;
     static quint32 MTypeB;
     static quint32 MTypeM;
     static int TheEnd, StopRead;
@@ -72,27 +74,10 @@ public:
 
     Bd11 Bd_block11;
 
-/*    struct Coils
-    {
-        int countBytes;
-        quint8 Bytes[20];
-    }; */
-
-
-    /*struct ModBus_Settings
-    {
-        QString baud;
-        QString parity;
-        QString stop;
-        QString adr;
-    };
-
-    ModBus_Settings Settings;*/
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
-    iec104* ch104;
-    iec104* SaveCh104;
-    ModBus* modBus;
+    IEC104 *Ch104;
+    ModBus *ChModbus;
     MNKTime *Time;
     JournalDialog *JourD;
     fwupdialog *FwUpD;
@@ -173,7 +158,7 @@ public:
     QWidget *Wpred;
     QWidget *Walarm;
     bool cancel;
-        bool reconnect;
+        bool Reconnect;
 
 #if PROGSIZE >= PROGSIZE_LARGE
     void SetSlideWidget();
@@ -198,7 +183,7 @@ signals:
 private:
     bool Ok;
     bool TEEnabled; // признак того, ведётся ли лог в правом выезжающем окне
-    int disconnected;
+    int Disconnected;
     int Mode; // режим запуска программы
     bool SWHide;
     QRect SWGeometry;
@@ -216,11 +201,9 @@ private:
     quint8 PredAlarmEvents[20];
     quint8 AlarmEvents[20];
     int fileSize, curfileSize;
-    QTimer *reconnectTimer, *connectTimer;
+    QTimer *ReconnectTimer;
 
-#ifdef ETHENABLE
     DeviceConnectStruct DevInfo;
-#endif
 
 #if PROGSIZE >= PROGSIZE_LARGE
     void PrepareTimers();
@@ -266,7 +249,6 @@ private slots:
     void ShowErrorDialog();
     void GetAbout();
     void closeEvent(QCloseEvent *event);
-    void stopTimer();
     void SetDefConf();
     void SetMainDefConf();
     void SetBDefConf();

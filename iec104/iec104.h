@@ -167,8 +167,8 @@ public:
     int cmd;
     bool GetNewVR, NewDataArrived;
     QMutex ParseMutex, SignalsMutex;
-    QTimer *timer104, *conTimer;
-    QTimer *Interogatetimer;
+    QTimer *Timer104;
+    QTimer *InterogateTimer;
     QByteArray WriteData;
     char *outdata;
     QByteArray ReadData, ReadDataChunk;
@@ -187,7 +187,7 @@ public:
     QVector<S2::DataRec> *DRJour;
     char BoardType;
     quint32 FileLen;
-    int incLS, count, noAnswer;
+    int incLS, count, NoAnswer;
 
 
 
@@ -198,6 +198,7 @@ public slots:
     void ErrMsg();
 
 signals:
+    void Finished();
     void floatsignalsreceived(Parse104::FlSignals104*);
     void sponsignalsreceived(Parse104::SponSignals104*);
     void sponsignalWithTimereceived(Parse104::SponSignalsWithTime*);
@@ -268,13 +269,13 @@ private slots:
 protected:
 };
 
-class iec104 : public QObject
+class IEC104 : public QObject
 {
     Q_OBJECT
 
 public:
-    iec104(QString *IP, QObject *parent = nullptr);
-    ~iec104();
+    IEC104(QObject *parent = nullptr);
+    ~IEC104();
 
     typedef struct
     {
@@ -376,16 +377,17 @@ public:
 
 public slots:
     void Send(int Inc, APCI, ASDU=QByteArray());
+    void Connect(const QString &IP);
     void Start();
     void Stop();
     //void ErrMsg();
 
 signals:
     void writedatatoeth(QByteArray);
-    void stopall();
+    void StopAll();
     void error(int);
-    void ethconnected();
-    void ethdisconnected();
+    void EthConnected();
+    void EthDisconnected();
     //void ethNoconnection();
     void floatsignalsready(Parse104::FlSignals104*);
     void sponsignalsready(Parse104::SponSignals104*);
@@ -414,7 +416,7 @@ signals:
 
 
 private:
-    QTimer *TTimer;
+    QTimer *TTimer, *ConTimer;
     bool GSD;
     QByteArray cutpckt;
     void ParseSomeData(QByteArray, bool);

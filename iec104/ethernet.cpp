@@ -28,8 +28,8 @@ void ethernet::Run()
     timerstart = 0;
     QTimer timeout;
     QString tmps = IP;
-    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
-    StdFunc::SetDeviceIP(sets->value("DeviceIP", IP).toString());
+//    QSettings *sets = new QSettings ("EvelSoft",PROGNAME);
+//    StdFunc::SetDeviceIP(sets->value("DeviceIP", IP).toString());
     StdFunc::SetDeviceIP(tmps);
     sock = new QTcpSocket(this);
     connect(sock,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(seterr(QAbstractSocket::SocketError)));
@@ -39,25 +39,13 @@ void ethernet::Run()
     connect(sock,SIGNAL(readyRead()),this,SLOT(CheckForData()));
     connect(&timeout,SIGNAL(timeout()),this,SLOT(SetFlag()));
     timeout.setInterval(1000);
-    while(1)
+    while(!ClosePortAndFinishThread)
     {
 
         OutDataBufMtx.lock();
         if (!OutDataBuf.isEmpty()) // что-то пришло в выходной буфер для записи
             SendData();
         OutDataBufMtx.unlock();
-
-        if (ClosePortAndFinishThread)
-        {
-            if (sock->isOpen())
-            {
-                sock->close();
-                sock->disconnect();
-                delete sock;
-            }
-            emit finished();
-            break;
-        }
 
         if(!sock->isValid())
         {
@@ -94,6 +82,13 @@ void ethernet::Run()
         QThread::msleep(10);
         qApp->processEvents();
     }
+    if (sock->isOpen())
+    {
+        sock->close();
+        sock->disconnect();
+        sock->deleteLater();
+    }
+    emit Finished();
 }
 
 void ethernet::Stop()

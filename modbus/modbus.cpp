@@ -25,9 +25,8 @@
 QMutex RunMutex, InMutex, OutMutex, OutWaitMutex;
 QWaitCondition RunWC, OutWC;
 
-ModBus::ModBus(ModBus_Settings settings, QObject *parent) : QObject(parent)
+ModBus::ModBus(QObject *parent) : QObject(parent)
 {
-    Settings = settings;
     CycleGroup = 0;
     MainPollEnabled = true;
     TimePollEnabled = InitPollEnabled = false;
@@ -53,8 +52,9 @@ ModBus::~ModBus()
 {
 }
 
-int ModBus::Connect()
+int ModBus::Connect(ModBus_Settings settings)
 {
+    Settings = settings;
     ModbusThread *cthr = new ModbusThread(Settings);
     cthr->Init(&InQueue, &OutList);
     QThread *thr = new QThread;

@@ -59,9 +59,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     ConfB = ConfM = nullptr;
     CheckB = CheckM = nullptr;
     Wpred = Walarm = nullptr;
-    ch104 = nullptr;
+    Ch104 = new IEC104;
+    ChModbus = new ModBus;
+    cn = new EUsbHid;
     FullName = "";
-    reconnect = false;
+    Reconnect = false;
 
     TimeTimer = new QTimer;
     TimeTimer->setInterval(1000);
@@ -73,6 +75,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     ReceiveTimer->setInterval(ANMEASINT);
     connect(ReceiveTimer, SIGNAL(timeout()), this,SLOT(FileTimeOut()));
 
+    ReconnectTimer = new QTimer;
+    ReconnectTimer->setInterval(RECONNECTINTERVAL);
+    connect(ReconnectTimer,SIGNAL(timeout()), this, SLOT(attemptToRec()));
+
     for (int i = 0; i < 20; ++i)
     {
        PredAlarmEvents[i] = 0;
@@ -80,11 +86,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     }
     TheEnd = 0;
 
-//#endif
-
-//#if PROGSIZE >= PROGSIZE_LARGE
     PrepareTimers();
-//#endif
     LoadSettings();
 
     StartWindowSplashScreen->finish(this);
@@ -125,13 +127,11 @@ void MainWindow::Go(const QString &parameter)
 void MainWindow::ReConnect()
 {
     QDialog *dlg = new QDialog;
-    reconnectTimer = new QTimer;
-    reconnectTimer->setInterval(10000);
 
-    reconnect = true;
+    Reconnect = true;
 
     TheEnd = 1;
-    if(!disconnected)
+    if(!Disconnected)
     {
         StopRead = 1;
         //disconnected = 1;
@@ -160,27 +160,26 @@ void MainWindow::ReConnect()
     vlayout->addLayout(hlyout);
 
     w->setLayout(vlayout);
-    connect(reconnectTimer,SIGNAL(timeout()), dlg,SLOT(close()));
-    connect(reconnectTimer,SIGNAL(timeout()), this, SLOT(attemptToRec()));
+    connect(ReconnectTimer,SIGNAL(timeout()), dlg,SLOT(close()));
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
     dlg->setLayout(lyout);
 
-    reconnectTimer->start();
+    ReconnectTimer->start();
     dlg->exec();
 
 }
 
 void MainWindow::attemptToRec()
 {
-    reconnectTimer->stop();
-    reconnectTimer->deleteLater();
+    ReconnectTimer->stop();
+//    ReconnectTimer->deleteLater();
 
-    if(ch104 != nullptr)
-    ch104->deleteLater();
+//    if(Ch104 != nullptr)
+//    Ch104->deleteLater();
 
-    if(reconnect != false)
+    if(Reconnect != false)
     {
         QApplication::setOverrideCursor(Qt::WaitCursor);
         S2Config.clear();
@@ -194,8 +193,6 @@ void MainWindow::attemptToRec()
 void MainWindow::ConnectMessage()
 {
     QDialog *dlg = new QDialog;
-    connectTimer = new QTimer;
-    connectTimer->setInterval(2000);
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -207,22 +204,14 @@ void MainWindow::ConnectMessage()
     vlayout->addLayout(hlyout);
 
     w->setLayout(vlayout);
-    connect(connectTimer,SIGNAL(timeout()), dlg,SLOT(close()));
-    connect(connectTimer,SIGNAL(timeout()), this,SLOT(stopTimer()));
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
     dlg->setLayout(lyout);
 
-    connectTimer->start();
-    dlg->exec();
-
-}
-
-void MainWindow::stopTimer()
-{
-    connectTimer->stop();
-    connectTimer->deleteLater();
+    dlg->show();
+    StdFunc::Wait(WAITINTERVAL);
+    dlg->close();
 }
 
 QWidget *MainWindow::HthWidget()
@@ -440,14 +429,14 @@ void MainWindow::PredAlarmState()
 
     w->setLayout(vlayout);
 
-    if (MainInterface == I_ETHERNET && ch104 != nullptr)
-    connect(ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
+    if (MainInterface == I_ETHERNET && Ch104 != nullptr)
+    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
 
     if (MainInterface == I_USB)
     connect(BdaTimer,SIGNAL(timeout()), this, SLOT(GetUSBAlarmInDialog()));
 
-    if(MainInterface == I_RS485 && modBus != nullptr)
-    connect(modBus,SIGNAL(coilsignalsready(Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(Coils*)));
+    if(MainInterface == I_RS485 && ChModbus != nullptr)
+    connect(ChModbus,SIGNAL(coilsignalsready(Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(Coils*)));
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
@@ -519,14 +508,14 @@ void MainWindow::AlarmState()
 
     w->setLayout(vlayout);
 
-    if(MainInterface == I_ETHERNET && ch104 != nullptr)
-    connect(ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
+    if(MainInterface == I_ETHERNET && Ch104 != nullptr)
+    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
 
     if(MainInterface == I_USB)
     connect(BdaTimer,SIGNAL(timeout()), this, SLOT(GetUSBAlarmInDialog()));
 
-    if(MainInterface == I_RS485 && modBus != nullptr)
-    connect(modBus,SIGNAL(coilsignalsready(Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(Coils*)));
+    if(MainInterface == I_RS485 && ChModbus != nullptr)
+    connect(ChModbus,SIGNAL(coilsignalsready(Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(Coils*)));
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
@@ -963,7 +952,7 @@ void MainWindow::SetupMenubar()
     menubar->addSeparator();
 
     setMenuBar(menubar);
-    disconnected = 0;
+    Disconnected = 0;
     //AddActionsToMenuBar(menubar);
 }
 
@@ -1064,8 +1053,8 @@ int MainWindow::CheckPassword()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Stage1_5()
 {
-    reconnect = false;
-    disconnected = 0;
+    Reconnect = false;
+    Disconnected = 0;
     ShowInterfaceDialog();
     ShowConnectDialog();
 
@@ -1097,7 +1086,7 @@ void MainWindow::Stage1_5()
        if(cn->Cancelled)
        return;
 
-       if (Commands::Connect() != NOERROR)
+       if (Commands::Connect() != NOERROR) // cn->Connect()
        {
           EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
           QApplication::restoreOverrideCursor();
@@ -1417,7 +1406,6 @@ void MainWindow::ShowConnectDialog()
     if(MainInterface == I_USB)
     {
         //#ifdef USBENABLE
-        cn = new EUsbHid;
         connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
         //#else
         //#ifdef COMPORTENABLE
@@ -1651,10 +1639,10 @@ void MainWindow::DisconnectAndClear()
     {
       TimeTimer->stop();
     }
-    if(!disconnected)
+    if(!Disconnected)
     {
         StopRead = 1;
-        disconnected = 1;
+        Disconnected = 1;
     #if PROGSIZE != PROGSIZE_EMUL
         Disconnect();
     #endif
@@ -1677,9 +1665,9 @@ void MainWindow::DisconnectAndClear()
 
         if(MainInterface == I_USB)
         {
-            if(reconnect)
+            if(Reconnect)
             {
-                reconnect = false;
+                Reconnect = false;
                 if(ModuleBSI::ModuleTypeString != "")
                 EMessageBox::information(this, "Разрыв связи", "Связь с "+ModuleBSI::ModuleTypeString+" разорвана");
                 else
@@ -1695,9 +1683,9 @@ void MainWindow::DisconnectAndClear()
         }
         else
         {
-            if(reconnect)
+            if(Reconnect)
             {
-                reconnect = false;
+                Reconnect = false;
                 if(FullName != "")
                     EMessageBox::information(this, "Разрыв связи", "Связь с "+FullName+" разорвана");
                 else
@@ -1712,7 +1700,7 @@ void MainWindow::DisconnectAndClear()
             }
         }
 
-        reconnect = false;
+        Reconnect = false;
         //disconnected = 0;
     }
 
@@ -1861,11 +1849,6 @@ void MainWindow::SetDefConf()
     EMessageBox::information(this, "Успешно", "Конфигурация по умолчанию");
 }
 
-
-/*void MainWindow::ConnectMessage()
-{
-   EMessageBox::information(this, "Успешно", "Связь с "+FullName+" установлена");
-}*/
 
 void MainWindow::DisconnectMessage()
 {

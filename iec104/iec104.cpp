@@ -13,52 +13,113 @@
 
 #include <vcruntime.h> */
 
-quint8 iec104::stopincrementing;
+quint8 IEC104::stopincrementing;
 
-iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
+IEC104::IEC104(QObject *parent) : QObject(parent)
 {
     //incSend = 0;
     ParseStarted = false;
     GSD = true;
+}
+
+IEC104::~IEC104()
+{
+    deleteLater();
+
+}
+
+void IEC104::StartParse()
+{
+    ParseStarted = true;
+}
+
+void IEC104::Start()
+{
+    APCI StartDT;
+    ASDU GInter;
+    StartDT.start = I104_START;
+    StartDT.APDUlength = 4;
+    StartDT.contrfield[0] = I104_STARTDT_ACT;
+    StartDT.contrfield[1] = StartDT.contrfield[2] = StartDT.contrfield[3] = 0;
+    Parse->cmd = I104_STARTDT_ACT;
+    Send(0,StartDT);//, GInter); // ASDU = QByteArray()
+    //emit writedatatoeth(GInter);
+    Parse->Timer104->start();
+
+    //emit ethconnected();
+}
+
+void IEC104::Stop()
+{
+    APCI StopDT;
+    StopDT.start = I104_START;
+    StopDT.APDUlength = 4;
+    StopDT.contrfield[0] = I104_STOPDT_ACT;
+    StopDT.contrfield[1] = StopDT.contrfield[2] = StopDT.contrfield[3] = 0;
+    Parse->cmd = I104_STOPDT_ACT;
+    Send(0,StopDT); // ASDU = QByteArray()
+    //QTime tmr;
+    //tmr.start();
+    //while (tmr.elapsed() < 1000)
+    //    qApp->processEvents();
+    if(ConTimer != nullptr)
+    {
+       ConTimer->stop();
+    }
+    emit StopAll();
+}
+
+void IEC104::Send(int Inc, APCI apci, ASDU asdu)
+{
+    QByteArray ba;
+    ba.clear();
+    void *tempp = &apci;
+    ba.append(static_cast<char *>(tempp),sizeof(apci));
+    if(!asdu.isEmpty())
+    {
+        tempp = asdu.data();
+        //int i = sizeof(asdu);
+        ba.append(static_cast<char *>(tempp),asdu.size());
+    }
+    emit writedatatoeth(ba);  
+
+    //while(stopincrementing)
+    //QThread::usleep(10);
+
+    if(Inc)
+        Parse->V_S++;
+}
+
+void IEC104::Connect(const QString &IP)
+{
     QThread *thr = new QThread;
     thr->setPriority(QThread::HighestPriority);
     ethernet *eth = new ethernet;
     eth->moveToThread(thr);
-    eth->IP = *IP;
-    connect(thr,SIGNAL(finished()),eth,SLOT(deleteLater()));
-    connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
+    eth->IP = IP;
+    connect(eth,SIGNAL(Finished()),thr,SLOT(quit()));
+    connect(eth,SIGNAL(Finished()),eth,SLOT(deleteLater()));
     connect(thr,SIGNAL(started()),eth,SLOT(Run()));
-    connect(this,SIGNAL(stopall()),eth,SLOT(Stop()));
-    connect(eth,SIGNAL(connected()),this,SIGNAL(ethconnected()));
-    connect(eth,SIGNAL(disconnected()),this,SIGNAL(ethdisconnected()));
+    connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
+    connect(this,SIGNAL(StopAll()),eth,SLOT(Stop()));
+    connect(eth,SIGNAL(connected()),this,SIGNAL(EthConnected()));
+    connect(eth,SIGNAL(disconnected()),this,SIGNAL(EthDisconnected()));
     connect(eth,SIGNAL(connected()),this,SLOT(Start()));
     connect(eth,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
     connect(this,SIGNAL(writedatatoeth(QByteArray)),eth,SLOT(InitiateWriteDataToPort(QByteArray)));
     //connect(eth,SIGNAL(disconnected()), parent, SLOT(DisconnectAndClear()));
     //connect(eth,SIGNAL(ethNoconnection()), parent, SLOT(DisconnectAndClear()));
 
-
-
     Parse = new Parse104;
-    Parse->timer104 = new QTimer;
-    Parse->timer104->setInterval(15000);
-    Parse->Interogatetimer = new QTimer;
-    Parse->Interogatetimer->setInterval(15000);
-
-    Parse->noAnswer = 0;
-    Parse->conTimer = new QTimer;
-    Parse->conTimer->setInterval(5000);
-    connect(Parse->conTimer,SIGNAL(timeout()),this,SLOT(SendTestAct()));
-
     QThread *thr2 = new QThread;
     thr2->setPriority(QThread::HighestPriority);
     Parse->moveToThread(thr2);
-    connect(this,SIGNAL(stopall()),Parse,SLOT(Stop()));
-    connect(thr2,SIGNAL(finished()),Parse,SLOT(deleteLater()));
+    connect(this,SIGNAL(StopAll()),Parse,SLOT(Stop()));
+    connect(Parse,SIGNAL(Finished()),Parse,SLOT(deleteLater()));
+    connect(Parse,SIGNAL(Finished()),thr2,SLOT(quit()));
     connect(thr2,SIGNAL(finished()),thr2,SLOT(deleteLater()));
     connect(thr2,SIGNAL(started()),Parse,SLOT(Run()));
-    connect(Parse->timer104,SIGNAL(timeout()),Parse,SLOT(Stop()));
-    connect(Parse->Interogatetimer,SIGNAL(timeout()),Parse,SLOT(ErrMsg()));
+
     connect(Parse,SIGNAL(bs104signalsreceived(Parse104::BS104Signals*)),\
             this,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),Qt::BlockingQueuedConnection);
     connect(Parse,SIGNAL(floatsignalsreceived(Parse104::FlSignals104*)),\
@@ -78,9 +139,6 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
     connect(Parse,SIGNAL(SendConfirmSection(unsigned char)),this,SLOT(ConfirmSection(unsigned char)));
     //connect(Parse,SIGNAL(sendConfirmFile(unsigned char)),this,SLOT(ConfirmFile(unsigned char)));
     connect(Parse,SIGNAL(sendS2fromParse(QVector<S2::DataRec>*)),this,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)));
-/*    connect(Parse,SIGNAL(sendJourSysfromParse(QVector<S2::DataRec>*)),this,SIGNAL(sendJourSysfromiec104(QVector<S2::DataRec>*)));
-    connect(Parse,SIGNAL(sendJourWorkfromParse(QVector<S2::DataRec>*)),this,SIGNAL(sendJourWorkfromiec104(QVector<S2::DataRec>*)));
-     connect(Parse,SIGNAL(sendJourMeasfromParse(QVector<S2::DataRec>*)),this,SIGNAL(sendJourMeasfromiec104(QVector<S2::DataRec>*))); */
     connect(Parse,SIGNAL(sendJourSysfromParse(QByteArray)),this,SIGNAL(sendJourSysfromiec104(QByteArray)));
     connect(Parse,SIGNAL(sendJourWorkfromParse(QByteArray)),this,SIGNAL(sendJourWorkfromiec104(QByteArray)));
     connect(Parse,SIGNAL(sendJourMeasfromParse(QByteArray)),this,SIGNAL(sendJourMeasfromiec104(QByteArray)));
@@ -101,74 +159,13 @@ iec104::iec104(QString *IP, QObject *parent) : QObject(parent)
 
     thr->start();
     thr2->start();
-    Parse->conTimer->start();
+    ConTimer = new QTimer;
+    ConTimer->setInterval(5000);
+    connect(ConTimer,SIGNAL(timeout()),this,SLOT(SendTestAct()));
+    ConTimer->start();
 }
 
-iec104::~iec104()
-{
-    deleteLater();
-
-}
-
-void iec104::StartParse()
-{
-    ParseStarted = true;
-}
-
-void iec104::Start()
-{
-    APCI StartDT;
-    ASDU GInter;
-    StartDT.start = I104_START;
-    StartDT.APDUlength = 4;
-    StartDT.contrfield[0] = I104_STARTDT_ACT;
-    StartDT.contrfield[1] = StartDT.contrfield[2] = StartDT.contrfield[3] = 0;
-    Parse->cmd = I104_STARTDT_ACT;
-    Send(0,StartDT);//, GInter); // ASDU = QByteArray()
-    //emit writedatatoeth(GInter);
-    Parse->timer104->start();
-
-    //emit ethconnected();
-}
-
-void iec104::Stop()
-{
-    APCI StopDT;
-    StopDT.start = I104_START;
-    StopDT.APDUlength = 4;
-    StopDT.contrfield[0] = I104_STOPDT_ACT;
-    StopDT.contrfield[1] = StopDT.contrfield[2] = StopDT.contrfield[3] = 0;
-    Parse->cmd = I104_STOPDT_ACT;
-    Send(0,StopDT); // ASDU = QByteArray()
-    //QTime tmr;
-    //tmr.start();
-    //while (tmr.elapsed() < 1000)
-    //    qApp->processEvents();
-    emit stopall();
-}
-
-void iec104::Send(int Inc, APCI apci, ASDU asdu)
-{
-    QByteArray ba;
-    ba.clear();
-    void *tempp = &apci;
-    ba.append(static_cast<char *>(tempp),sizeof(apci));
-    if(!asdu.isEmpty())
-    {
-        tempp = asdu.data();
-        //int i = sizeof(asdu);
-        ba.append(static_cast<char *>(tempp),asdu.size());
-    }
-    emit writedatatoeth(ba);  
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    if(Inc)
-    Parse->V_S++;
-}
-
-void iec104::SendI()
+void IEC104::SendI()
 {
     APCI GI;
     ASDU GInter;
@@ -201,10 +198,10 @@ void iec104::SendI()
 
    // Parse->V_S++;
 
-    Parse->Interogatetimer->start();
+    Parse->InterogateTimer->start();
 }
 
-void iec104::CorReadRequest()
+void IEC104::CorReadRequest()
 {
     APCI GI;
     ASDU GCor;
@@ -237,10 +234,10 @@ void iec104::CorReadRequest()
 
    // Parse->V_S++;
 
-    Parse->Interogatetimer->start();
+    Parse->InterogateTimer->start();
 }
 
-void iec104::SendTestCon()
+void IEC104::SendTestCon()
 {
     APCI GI;
     ASDU GInter;
@@ -262,21 +259,21 @@ void iec104::SendTestCon()
 
 }
 
-void iec104::SendTestAct()
+void IEC104::SendTestAct()
 {
     APCI GI;
     //ASDU GInter;
     //quint16 VR = Parse->V_R;
 
-    if(Parse->noAnswer)
+    if(Parse->NoAnswer)
     {
-       Parse->conTimer->stop();
-       Parse->conTimer->deleteLater();
-       emit errorCh104(1);
-       return;
+        ConTimer->stop();
+//        ConTimer->deleteLater();
+        emit errorCh104(1);
+        return;
     }
     else
-    Parse->noAnswer = 1;
+    Parse->NoAnswer = 1;
 
     GI.start = I104_START;
     GI.APDUlength = 4;
@@ -294,14 +291,14 @@ void iec104::SendTestAct()
 
 }
 
-void iec104::GetSomeData(QByteArray ba)
+void IEC104::GetSomeData(QByteArray ba)
 {
     Parse->ParseMutex.lock();
     ParseSomeData(ba, true);
     Parse->ParseMutex.unlock();
 }
 
-void iec104::ParseSomeData(QByteArray ba, bool GSD)
+void IEC104::ParseSomeData(QByteArray ba, bool GSD)
 {
     quint32 basize = static_cast<quint32>(ba.size());
     if (GSD)
@@ -346,7 +343,7 @@ void iec104::ParseSomeData(QByteArray ba, bool GSD)
     }
 }
 
-void iec104::SendS()
+void IEC104::SendS()
 {
     APCI Confirm;
     Confirm.start = I104_START;
@@ -374,6 +371,13 @@ Parse104::Parse104(QObject *parent) : QObject(parent)
     APDUFormat = I104_WRONG;
     GetNewVR = false;
     NewDataArrived = false;
+    Timer104 = new QTimer;
+    Timer104->setInterval(15000);
+    connect(Timer104,SIGNAL(timeout()),this,SLOT(Stop()));
+    InterogateTimer = new QTimer;
+    InterogateTimer->setInterval(15000);
+    connect(InterogateTimer,SIGNAL(timeout()),this,SLOT(ErrMsg()));
+    NoAnswer = 0;
 }
 
 Parse104::~Parse104()
@@ -387,7 +391,7 @@ void Parse104::Run()
         // обработка ParseData
         if (ParseData.size())
         {
-            iec104::stopincrementing = 1;
+            IEC104::stopincrementing = 1;
             ParseMutex.lock();
             QByteArray tmpba = ParseData.at(0);
             ParseData.removeFirst();
@@ -412,7 +416,7 @@ void Parse104::Run()
                 emit sendS();
                 GetNewVR = true;
             }
-            iec104::stopincrementing = 0;
+            IEC104::stopincrementing = 0;
         }
 /*        QTime tmr;
         tmr.start();
@@ -420,6 +424,7 @@ void Parse104::Run()
         QThread::msleep(10);
         qApp->processEvents();
     }
+    emit Finished();
 }
 
 int Parse104::isIncomeDataValid(QByteArray ba)
@@ -492,7 +497,7 @@ int Parse104::isIncomeDataValid(QByteArray ba)
         unsigned char baat2 = ba.at(2);
         if ((baat2 == I104_STARTDT_CON) && (cmd == I104_STARTDT_ACT)) // если пришло подтверждение старта и перед этим мы старт запрашивали
         {
-            timer104->stop();
+            Timer104->stop();
             cmd = I104_STARTDT_CON;
             emit GeneralInter();
         }
@@ -503,7 +508,7 @@ int Parse104::isIncomeDataValid(QByteArray ba)
         if (baat2 == I104_TESTFR_ACT)
             emit sendAct();
 
-        noAnswer = 0;
+        NoAnswer = 0;
 
         return I104_RCVNORM;
         break;
@@ -576,7 +581,7 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
         case C_IC_NA_1: // 100
         {
             if(DUI.cause.cause == 7)
-            Interogatetimer->stop();
+            InterogateTimer->stop();
             else
             {
 
@@ -883,18 +888,14 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
 
 void Parse104::Stop()
 {
-    if(conTimer != nullptr)
-    {
-       conTimer->stop();
-    }
     ThreadMustBeFinished = true;
-    if(timer104 != nullptr)
-    timer104->stop();
+    if(Timer104 != nullptr)
+        Timer104->stop();
 }
 
 void Parse104::ErrMsg()
 {
-    Interogatetimer->stop();
+    InterogateTimer->stop();
     //QDialog *dlg = new QDialog;
     //dlg->deleteLater();
 /*    QVBoxLayout *lyout = new QVBoxLayout;
@@ -903,7 +904,7 @@ void Parse104::ErrMsg()
     dlg->exec();*/
 }
 
-void iec104::SelectFile(char numFile)
+void IEC104::SelectFile(char numFile)
 {
     APCI GI;
     ASDU Cmd;
@@ -956,7 +957,7 @@ void iec104::SelectFile(char numFile)
     //Parse->V_S++;
 }
 
-void iec104::CallFile(unsigned char numFile)
+void IEC104::CallFile(unsigned char numFile)
 {
     APCI GI;
     ASDU Cmd;
@@ -995,7 +996,7 @@ void iec104::CallFile(unsigned char numFile)
     //Parse->V_S++;
 }
 
-void iec104::GetSection(unsigned char numFile)
+void IEC104::GetSection(unsigned char numFile)
 {
     APCI GI;
     ASDU Cmd;
@@ -1047,7 +1048,7 @@ void iec104::GetSection(unsigned char numFile)
     //Parse->V_S++;
 }
 
-void iec104::ConfirmSection(unsigned char numFile)
+void IEC104::ConfirmSection(unsigned char numFile)
 {
     APCI GI;
     ASDU Cmd;
@@ -1089,7 +1090,7 @@ void iec104::ConfirmSection(unsigned char numFile)
     SecNum++;
 }
 
-void iec104::ConfirmFile(unsigned char numFile)
+void IEC104::ConfirmFile(unsigned char numFile)
 {
     APCI GI;
     ASDU Cmd;
@@ -1125,7 +1126,7 @@ void iec104::ConfirmFile(unsigned char numFile)
     //Parse->V_S++;
 }
 
-void iec104::FileReady(QVector<S2::DataRec>* File)
+void IEC104::FileReady(QVector<S2::DataRec>* File)
 {
     APCI GI;
     ASDU Cmd;
@@ -1179,7 +1180,7 @@ void iec104::FileReady(QVector<S2::DataRec>* File)
     //Parse->V_S++;
 }
 
-void iec104::SectionReady()
+void IEC104::SectionReady()
 {
     APCI GI;
     ASDU Cmd;
@@ -1227,7 +1228,7 @@ void iec104::SectionReady()
     //Parse->V_S++;
 }
 
-void iec104::SendSegments()
+void IEC104::SendSegments()
 {
     APCI GI;
     ASDU Cmd;
@@ -1377,7 +1378,7 @@ void iec104::SendSegments()
     }
 }
 
-void iec104::LastSegment()
+void IEC104::LastSegment()
 {
     APCI GI;
     ASDU Cmd;
@@ -1428,7 +1429,7 @@ void iec104::LastSegment()
     //Parse->V_S++;
 }
 
-void iec104::LastSection()
+void IEC104::LastSection()
 {
     APCI GI;
     ASDU Cmd;
@@ -1472,7 +1473,7 @@ void iec104::LastSection()
     //Parse->V_S++;
 }
 
-void iec104::Com45(quint32 com)
+void IEC104::Com45(quint32 com)
 {
     APCI GI;
     ASDU Cmd;
@@ -1510,7 +1511,7 @@ void iec104::Com45(quint32 com)
     //Parse->V_S++;
 }
 
-void iec104::Com50(quint32* adr, float *param)
+void IEC104::Com50(quint32* adr, float *param)
 {
     APCI GI;
     ASDU Cmd;
@@ -1559,7 +1560,7 @@ void iec104::Com50(quint32* adr, float *param)
     //Parse->V_S++;
 }
 
-void iec104::InterrogateTimeGr15()
+void IEC104::InterrogateTimeGr15()
 {
     APCI GI;
     ASDU GTime;
@@ -1592,11 +1593,11 @@ void iec104::InterrogateTimeGr15()
 
    // Parse->V_S++;
 
-    Parse->Interogatetimer->start();
+    Parse->InterogateTimer->start();
 
 }
 
-void iec104::com51WriteTime(uint Time)
+void IEC104::com51WriteTime(uint Time)
 {
     APCI GI;
     ASDU Cmd;

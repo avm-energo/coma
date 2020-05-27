@@ -28,7 +28,7 @@ signals:
     void error(int);
     void connected();
     void disconnected();
-    void finished();
+    void Finished();
     void newdataarrived(QByteArray);
 
 

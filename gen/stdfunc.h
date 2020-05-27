@@ -7,6 +7,8 @@
 #include <QCoreApplication>
 #include "maindef.h"
 
+#define MAINSLEEP   20
+
 class StdFunc
 {
 public:
@@ -34,6 +36,7 @@ public:
     static quint32 BitByIndex(int idx); // возвращение битовой маски по индексу (0 => 0, 1 => 1, 2 => 2, 3 => 4, ...)
     static QString PrbMessage();
     static void SetPrbMessage(const QString &msg);
+    static void Wait(int ms);
 
 private:
     static QString HomeDir; // рабочий каталог программы

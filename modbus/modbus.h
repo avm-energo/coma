@@ -94,10 +94,10 @@ public:
         QByteArray Bytes;
     };
 
-    ModBus(ModBus_Settings Settings, QObject *parent = nullptr);
+    ModBus(QObject *parent = nullptr);
     ~ModBus();
 
-    int Connect();
+    int Connect(ModBus_Settings settings);
     void BSIrequest();
 
     int CheckIndex, CorIndex, TimeIndex;

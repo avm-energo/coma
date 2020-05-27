@@ -12,7 +12,7 @@ class CheckDialog84 : public EAbstractCheckDialog
 {
     Q_OBJECT
 public:
-    explicit CheckDialog84(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr, iec104* channel = nullptr);
+    explicit CheckDialog84(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr, IEC104* channel = nullptr);
 
     Check_84 *Ch84;
 
@@ -28,7 +28,7 @@ private:
     int BdNum;
     bool XlsxWriting;
     const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
-    iec104* ch104;
+    IEC104* Ch104;
 
     QWidget *AutoCheckUI(); // UI для автоматической проверки модуля
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
