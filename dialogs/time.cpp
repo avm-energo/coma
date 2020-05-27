@@ -185,59 +185,34 @@ void MNKTime::slot2_timeOut()
 {
     uint unixtimestamp = 0;
     QDateTime myDateTime;
-    //QWaitCondition * cond = new QWaitCondition;
-    //QMutex *mutex = new QMutex;
 
-    //while (1)
-    //{
-     //   if(!FinishThread)
-     //   {
-            if(MainInterface == I_USB)
-            {
-                #if PROGSIZE != PROGSIZE_EMUL
-                if (Commands::GetTimeMNK(unixtimestamp) == NOERROR)
-                {
-                    int cbidx = WDFunc::CBIndex(this, "TimeZone");
-                    if(cbidx == 0)
-                    myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::LocalTime);
-                    else
-                    myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
-                  //myDateTime.setTime_t(unixtimestamp);
-                  if(SysTime2 != nullptr)
-                  SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
-                  //WDFunc::SetTEData(this, "Date", SysTime2->text());
-                }
-               // QThread::msleep(1000);
-
-                #endif
-            }
-            else if(MainInterface == I_ETHERNET)
-            {
-               emit ethTimeRequest();
-            }
-            else if(MainInterface == I_RS485)
-            {
-               emit modBusTimeRequest();
-            }
-
-     /*       if(closeThr) //&& (!haveFinished))
-            {
-             //haveFinished = true;
-             emit finished();
-             break;
-            }
-            //cond->wakeAll();
-            QThread::msleep(10);
-            qApp->processEvents();
-            //qApp->quit();
+    if(MainInterface == I_USB)
+    {
+        #if PROGSIZE != PROGSIZE_EMUL
+        if (Commands::GetTimeMNK(unixtimestamp) == NOERROR)
+        {
+            int cbidx = WDFunc::CBIndex(this, "TimeZone");
+            if(cbidx == 0)
+            myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::LocalTime);
+            else
+            myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
+          //myDateTime.setTime_t(unixtimestamp);
+          if(SysTime2 != nullptr)
+          SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
+          //WDFunc::SetTEData(this, "Date", SysTime2->text());
         }
+       // QThread::msleep(1000);
 
-
-        //break;
-    }*/
-
-
-
+        #endif
+    }
+    else if(MainInterface == I_ETHERNET)
+    {
+       emit ethTimeRequest();
+    }
+    else if(MainInterface == I_RS485)
+    {
+       emit modBusTimeRequest();
+    }
 }
 
 void MNKTime::Start_Timer(int index)

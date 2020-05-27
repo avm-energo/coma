@@ -97,6 +97,7 @@ public:
     ModBus(ModBus_Settings Settings, QObject *parent = nullptr);
     ~ModBus();
 
+    int Connect();
     void BSIrequest();
 
     int CheckIndex, CorIndex, TimeIndex;
@@ -120,6 +121,7 @@ signals:
     void ErrorRead();
 //    void ErrorCrc();
     void Finished();
+    void FinishModbusThread();
     void CoilSignalsReady(Coils*);
     void TimeReadError();
     void ReconnectSignal();
@@ -135,7 +137,6 @@ private:
     QQueue<InOutStruct> InQueue;
     QList<InOutStruct> OutList;
 
-    int Connect();
     void SendAndGet(InOutStruct &inp, InOutStruct &outp);
     bool GetResultFromOutQueue(int index, InOutStruct &outp);
     int GetSignalsFromByteArray(QByteArray &bain, int startadr, ModBusBSISignalStruct *BSIsig, int &size);
@@ -162,6 +163,7 @@ public:
 
 public slots:
     void Run();
+    void FinishThread();
 
 signals:
     void ModbusState(ModBus::ModbusDeviceState);
@@ -221,7 +223,6 @@ private:
 
 private slots:
     void ParseReply();
-    void FinishThread();
 };
 
 #endif

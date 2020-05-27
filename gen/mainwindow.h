@@ -189,9 +189,10 @@ signals:
     void USBBsiRefresh();
     void ClearBsi();
     void Finished();
-    void stopit();
+    void StopCommunications();
+//    void stopit();
     void stoptime();
-    void stopModBus();
+//    void stopModBus();
     void ConnectMes(QString*);
 
 private:

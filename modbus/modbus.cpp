@@ -64,6 +64,8 @@ int ModBus::Connect()
     connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
     connect(cthr,SIGNAL(Finished()),cthr,SLOT(deleteLater()));
     connect(cthr, SIGNAL(ModbusState(ModBus::ModbusDeviceState)), this, SIGNAL(ModbusState(ModBus::ModbusDeviceState)));
+    connect(cthr, SIGNAL(Finished()), this, SIGNAL(Finished()));
+    connect(this, SIGNAL(FinishModbusThread()), cthr, SLOT(FinishThread()));
     thr->start();
     return cthr->State();
     StartPolling();
@@ -414,9 +416,15 @@ ModbusThread::ModbusThread(ModBus::ModBus_Settings settings, QObject *parent) : 
     connect(SerialPort, SIGNAL(readyRead()), this, SLOT(ParseReply()));
 
     if(SerialPort->open(QIODevice::ReadWrite) == true)
+    {
+        _state = ModBus::ModbusDeviceState::ConnectedState;
         emit ModbusState(ModBus::ModbusDeviceState::ConnectedState);
+    }
     else
+    {
+        _state = ModBus::ModbusDeviceState::ClosingState;
         emit ModbusState(ModBus::ModbusDeviceState::ClosingState);
+    }
 
 }
 

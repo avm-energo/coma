@@ -1617,8 +1617,9 @@ void MainWindow::Disconnect()
         }
         else
         {
-            emit stopit();
-            emit stopModBus();
+/*            emit stopit();
+            emit stopModBus(); */
+            emit StopCommunications();
         }
 
     }

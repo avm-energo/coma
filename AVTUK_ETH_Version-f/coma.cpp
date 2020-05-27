@@ -173,10 +173,8 @@ void Coma::SetupUI()
     if (!Autonomous)
     {
     /*#if PROGSIZE != PROGSIZE_EMUL
-    #ifdef ETHENABLE
         ch104 = new iec104;
         connect(ch104,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
-    #endif
         connect(ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
         connect(ch104,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
         connect(ch104,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
@@ -291,27 +289,21 @@ void Coma::Stage3()
     {
          if (MainInterface == I_ETHERNET)
          {
-#ifdef ETHENABLE
             ch104 = new iec104(&IPtemp, this);
             ch104->BaseAdr = AdrBaseStation;
             connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),idlg,SLOT(FillBsiFrom104(Parse104::BS104Signals*)));           
-            connect(this,SIGNAL(stopit()),ch104,SLOT(Stop()));
+            connect(this,SIGNAL(StopCommunications()),ch104,SLOT(Stop()));
             CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, ch104);
-    #endif
          }
          else if (MainInterface == I_RS485)
          {
-
              modBus = new ModBus(Settings,this);
-             Modthr = new QThread;
-             //Modthr->setPriority(QThread::LowPriority);
-             modBus->moveToThread(Modthr);
-             connect(this,SIGNAL(stopModBus()),modBus,SLOT(StopModSlot()));
-             connect(modBus, SIGNAL(finished()), Modthr, SIGNAL(finished()));
+             if (modBus->Connect() != ModBus::ModbusDeviceState::ConnectedState)
+                 return;
+             connect(this,SIGNAL(StopCommunications()),modBus,SLOT(StopModSlot()));
+
              connect(Modthr, SIGNAL(finished()), this, SLOT(CheckModBusFinish()));
-             connect(Modthr,SIGNAL(finished()),modBus,SLOT(deleteLater()));
-             //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
-             connect(Modthr,SIGNAL(started()),modBus,SLOT(WriteToPort()));
+
              CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
              connect(modBus,SIGNAL(BsiFromModbus(ModBusBSISignal*, int)),idlg,SLOT(FillBsiFromModBus(ModBusBSISignal*, int)));
              connect(modBus,SIGNAL(CoilSignalsReady(Coils*)),this,SLOT(ModbusUpdateStatePredAlarmEvents(Coils*)));
@@ -432,14 +424,6 @@ void Coma::Stage3()
         if(MainInterface == I_RS485)
         modBus->TimeIndex = Time->timeIndex;
 
-        /*QThread *thrTime = new QThread;
-        thrTime->setPriority(QThread::LowPriority);
-        Time->moveToThread(thrTime);
-        connect(this,SIGNAL(stoptime()),Time,SLOT(StopSlot()));
-        connect(Time, SIGNAL(finished()), thrTime, SIGNAL(finished()));
-        //connect(thr, SIGNAL(finished()), this, SLOT(CheckTimeFinish()));
-        connect(thrTime,SIGNAL(finished()),Time,SLOT(deleteLater()));
-        //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));*/
         connect(TimeTimer,SIGNAL(timeout()),Time,SLOT(slot2_timeOut()));
         if(ch104 != nullptr)
         {
@@ -552,7 +536,6 @@ void Coma::PrepareDialogs()
        {
         if(insl.at(1) == "ETH")
         {
-#ifdef ETHENABLE
             //ch104 = new iec104(&IPtemp, this);
 
             //ch104->IP = IPtemp;
@@ -592,8 +575,6 @@ void Coma::PrepareDialogs()
             connect(ch104,SIGNAL(sendJourMeasfromiec104(QByteArray)), JourD, SLOT(FillMeasJour(QByteArray)));
             ch104->Parse->DR = &S2Config;
             connect(ch104,SIGNAL(errorCh104(int)), this, SLOT(ReConnect(int)));
-
-#endif
          }
          else if(insl.at(1) == "MODBUS")
          {
