@@ -111,13 +111,14 @@ public slots:
     void Tabs(int);
     void StartPolling();
     void StopPolling();
+    void Finish();
 
 signals:
     void SignalsReceived(ModBusSignalStruct *Signal, int size);
     void CorSignalsReceived(ModBusSignalStruct *Signal, int size);
     void TimeSignalsReceived(ModBusBSISignalStruct *Signal);
     void BsiFromModbus(ModBusBSISignalStruct*, int);
-    void ModbusState(ModbusDeviceState);
+    void ModbusState(ModBus::ModbusDeviceState);
     void ErrorRead();
 //    void ErrorCrc();
     void Finished();

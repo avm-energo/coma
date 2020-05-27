@@ -51,22 +51,25 @@ void IEC104::Start()
 
 void IEC104::Stop()
 {
-    APCI StopDT;
-    StopDT.start = I104_START;
-    StopDT.APDUlength = 4;
-    StopDT.contrfield[0] = I104_STOPDT_ACT;
-    StopDT.contrfield[1] = StopDT.contrfield[2] = StopDT.contrfield[3] = 0;
-    Parse->cmd = I104_STOPDT_ACT;
-    Send(0,StopDT); // ASDU = QByteArray()
-    //QTime tmr;
-    //tmr.start();
-    //while (tmr.elapsed() < 1000)
-    //    qApp->processEvents();
-    if(ConTimer != nullptr)
+    if (ParseStarted)
     {
-       ConTimer->stop();
+        APCI StopDT;
+        StopDT.start = I104_START;
+        StopDT.APDUlength = 4;
+        StopDT.contrfield[0] = I104_STOPDT_ACT;
+        StopDT.contrfield[1] = StopDT.contrfield[2] = StopDT.contrfield[3] = 0;
+        Parse->cmd = I104_STOPDT_ACT;
+        Send(0,StopDT); // ASDU = QByteArray()
+        //QTime tmr;
+        //tmr.start();
+        //while (tmr.elapsed() < 1000)
+        //    qApp->processEvents();
+        if(ConTimer != nullptr)
+        {
+           ConTimer->stop();
+        }
+        emit StopAll();
     }
-    emit StopAll();
 }
 
 void IEC104::Send(int Inc, APCI apci, ASDU asdu)

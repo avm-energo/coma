@@ -83,7 +83,6 @@ public:
     fwupdialog *FwUpD;
     QString IPtemp, FullName, SaveDevice, instr;
     QStringList sl, USBsl, slfinal, insl;
-    QThread *Modthr;// *thrTime;
     quint16 AdrBaseStation;
     ModBus::ModBus_Settings Settings;
     QTimer* BdaTimer, *TimeTimer;

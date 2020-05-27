@@ -60,8 +60,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     CheckB = CheckM = nullptr;
     Wpred = Walarm = nullptr;
     Ch104 = new IEC104;
+    connect(this,SIGNAL(StopCommunications()),Ch104,SLOT(Stop()));
     ChModbus = new ModBus;
+    connect(this,SIGNAL(StopCommunications()),ChModbus,SLOT(Finish()));
     cn = new EUsbHid;
+    connect(this, SIGNAL(StopCommunications()), cn, SLOT(Disconnect()));
     FullName = "";
     Reconnect = false;
 

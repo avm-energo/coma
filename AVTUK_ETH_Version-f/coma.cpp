@@ -297,16 +297,12 @@ void Coma::Stage3()
             Ch104->Connect(IPtemp);
             Ch104->BaseAdr = AdrBaseStation;
             connect(Ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),idlg,SLOT(FillBsiFrom104(Parse104::BS104Signals*)));
-            connect(this,SIGNAL(StopCommunications()),Ch104,SLOT(Stop()));
             CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, Ch104);
          }
          else if (MainInterface == I_RS485)
          {
              if (ChModbus->Connect(Settings) != ModBus::ModbusDeviceState::ConnectedState)
                  return;
-             connect(this,SIGNAL(StopCommunications()),ChModbus,SLOT(StopModSlot()));
-
-             connect(Modthr, SIGNAL(finished()), this, SLOT(CheckModBusFinish()));
 
              CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
              connect(ChModbus,SIGNAL(BsiFromModbus(ModBusBSISignal*, int)),idlg,SLOT(FillBsiFromModBus(ModBusBSISignal*, int)));
@@ -479,14 +475,14 @@ void Coma::Stage3()
    // SetSlideWidget();
 #endif
 
-    if(MainInterface == I_ETHERNET || MainInterface == I_RS485)
-    ConnectMessage();
+    if (MainInterface == I_ETHERNET || MainInterface == I_RS485)
+        ConnectMessage();
 
-    if(MainInterface == I_RS485)
-    Modthr->start();
+/*    if(MainInterface == I_RS485)
+    Modthr->start(); */
 
     if(MainInterface == I_USB)
-    BdaTimer->start();
+        BdaTimer->start();
 
 }
 

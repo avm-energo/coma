@@ -65,7 +65,6 @@ int ModBus::Connect(ModBus_Settings settings)
     connect(cthr,SIGNAL(Finished()),cthr,SLOT(deleteLater()));
     connect(cthr, SIGNAL(ModbusState(ModBus::ModbusDeviceState)), this, SIGNAL(ModbusState(ModBus::ModbusDeviceState)));
     connect(cthr, SIGNAL(Finished()), this, SIGNAL(Finished()));
-    connect(this, SIGNAL(FinishModbusThread()), cthr, SLOT(FinishThread()));
     thr->start();
     return cthr->State();
     StartPolling();
@@ -149,6 +148,12 @@ void ModBus::Polling()
         info.size = 22;
         ModReadCor(info);
     }
+}
+
+void ModBus::Finish()
+{
+    StopPolling();
+    emit FinishModbusThread();
 }
 
 void ModBus::SendAndGet(InOutStruct &inp, ModBus::InOutStruct &outp)
