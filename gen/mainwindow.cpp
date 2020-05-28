@@ -132,29 +132,7 @@ void MainWindow::ReConnect(int err)
 
     reconnect = true;
 
-    TheEnd = 1;
-    if(!disconnected)
-    {
-        StopRead = 1;
-        //disconnected = 1;
-    #if PROGSIZE != PROGSIZE_EMUL
-        Disconnect();
-    #endif
-
-        CheckB = CheckM = nullptr;
-
-        if(CheckB != nullptr)
-        CheckB->deleteLater();
-
-        //CheckModBus = nullptr;
-        emit ClearBsi();
-        ClearTW();
-        ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-        if (MainTW == nullptr)
-            return;
-        MainTW->hide();
-        StdFunc::SetEmulated(false);
-    }
+    DisconnectAndClear();
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -186,14 +164,25 @@ void MainWindow::attemptToRec()
     if(ch104 != nullptr)
     ch104->deleteLater();
 
+    //Stage1_5();
+
     if(MainInterface.size() != 0)
     {
         if(MainInterface == "USB")
         {
            insl.clear();
 
-           if(cn->Cancelled)
-           return;
+           cn = new EUsbHid;
+           connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
+           connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
+           connect(cn,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
+           connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+           connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+           connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
+           connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
+           connect(cn,SIGNAL(ReconnectSignal(int)),this,SLOT(ReConnect(int)));
+
+           cn->TranslateDeviceAndSave(SavePort);
 
            if (Commands::Connect() != Error::ER_NOERROR)
            {
@@ -208,9 +197,15 @@ void MainWindow::attemptToRec()
                   ReConnect(1);
                   return;
                }
+               else if (res == Error::ER_NOERROR)
+               {
+                 if(ModuleBSI::ModuleTypeString != "")
+                 EMessageBox::information(this, "Успешно", "Связь с "+ModuleBSI::ModuleTypeString+" установлена");
+               }
            }
          }
     }
+
 
     if(reconnect != false)
     {
@@ -273,6 +268,7 @@ QWidget *MainWindow::HthWidget()
 
 QWidget *MainWindow::ReleWidget()
 {
+
     QMenu *menu = new QMenu;
     QString tmps = "QMenuBar {background-color: "+QString(MAINWINCLR)+";}"\
             "QMenuBar::item {background-color: "+QString(MAINWINCLR)+";}";
@@ -286,20 +282,14 @@ QWidget *MainWindow::ReleWidget()
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QLabel lab;
 
-    //for (int i = 0; i < 3; ++i)
-    //{
-        QAction *act = new QAction(this);
-        act->setText("Состояние устройства");
-        connect(act,SIGNAL(triggered()),this,SLOT(DeviceState()));
-        menu->addAction(act);
-        menu->setMinimumWidth(200);
-        menu->setMinimumHeight(30);
-        menu->popup(QCursor::pos());
+        QPushButton *pb = new QPushButton("Состояние устройства");
+        pb->setMinimumSize(QSize(230,30));
+        connect(pb,SIGNAL(clicked()),this,SLOT(DeviceState()));
         QGroupBox *gb = new QGroupBox("");
 
         //setMenuBar(menubar);
         //hlyout->addWidget(WDFunc::NewLBLT(w, "                 Реле №"+ QString::number(i+1) +": ", "", "", Discription.at(i)));
-        hlyout->addWidget(menu,Qt::AlignRight);
+        hlyout->addWidget(pb,Qt::AlignRight);
         hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(950), pmgrn), 1);
         gb->setLayout(hlyout);
         hlyout2->addWidget(gb);
@@ -311,16 +301,11 @@ QWidget *MainWindow::ReleWidget()
     //}
         gb = new QGroupBox("");
         hlyout = new QHBoxLayout;
-        menu = new QMenu;
-        act = new QAction(this);
-        act->setText("Предупредительная сигнализация");
-        connect(act,SIGNAL(triggered()),this,SLOT(PredAlarmState()));
-        menu->addAction(act);
-        menu->setMinimumWidth(250);
-        menu->setMinimumHeight(30);
-        menu->popup(QCursor::pos());
+        pb = new QPushButton("Предупредительная сигнализация");
+        pb->setMinimumSize(QSize(230,30));
+        connect(pb,SIGNAL(clicked()),this,SLOT(PredAlarmState()));
 
-        hlyout->addWidget(menu,Qt::AlignRight);
+        hlyout->addWidget(pb,Qt::AlignRight);
         hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(951), pmgrn), 1);
         gb->setLayout(hlyout);
         hlyout2->addWidget(gb);
@@ -328,16 +313,11 @@ QWidget *MainWindow::ReleWidget()
         menu = new QMenu;
         gb = new QGroupBox("");
         hlyout = new QHBoxLayout;
-        act = new QAction(this);
-        act->setText("Аварийная сигнализация");
-        connect(act,SIGNAL(triggered()),this,SLOT(AlarmState()));
-        menu->addAction(act);
-        menu->setMinimumWidth(200);
-        menu->setMinimumHeight(30);
-        menu->popup(QCursor::pos());
+        pb = new QPushButton("Аварийная сигнализация");
+        pb->setMinimumSize(QSize(230,30));
+        connect(pb,SIGNAL(clicked()),this,SLOT(AlarmState()));
 
-       // menubar->addSeparator();
-        hlyout->addWidget(menu,Qt::AlignRight);
+        hlyout->addWidget(pb,Qt::AlignRight);
         hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(952), pmgrn), 1);
         gb->setLayout(hlyout);
         hlyout2->addWidget(gb);
@@ -1382,7 +1362,7 @@ void MainWindow::FileTimeOut()
     //prb->setMaximum(0);
 
    ReceiveTimer->stop();
-   if(fileSize != curfileSize)
+   if(fileSize != curfileSize && MainInterface != "USB")
    {
      EMessageBox::information(this, "Ошибка", "Ошибка");
    }
@@ -1662,8 +1642,10 @@ void MainWindow::Disconnect()
         if(MainInterface == "USB")
         {
          if(BdaTimer != nullptr)
-         BdaTimer->stop();
-         TimeFunc::Wait(100);
+         {
+           BdaTimer->stop();
+           TimeFunc::Wait(100);
+         }
          cn->Disconnect();
         }
         else
@@ -1877,6 +1859,7 @@ void MainWindow::SDevice(QString Device)
 void MainWindow::SetPortSlot(QString port)
 {
 #if PROGSIZE != PROGSIZE_EMUL
+    SavePort = port;
     cn->TranslateDeviceAndSave(port);
 #endif
 }

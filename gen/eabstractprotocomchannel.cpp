@@ -99,6 +99,7 @@ void EAbstractProtocomChannel::SendIn(char command, char parameter, QByteArray &
         Finish(CN_UNKNOWNCMDERROR);
         return;
     }
+    OutData = *new QByteArray;
     Send(command, parameter, ba, maxdatasize);
     ba = OutData;
 }

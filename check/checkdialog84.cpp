@@ -320,10 +320,10 @@ void CheckDialog84::UpdateSponData(Parse104::SponSignals104* Signal)
             {
                WDFunc::SetLBLTColor(this,QString::number(2429+i),REDCOLOR);
             }
-            /*else
+            else
             {
-               WDFunc::SetLBLTColor(this,QString::number(2429+i),ACONFOCLR);
-            }*/
+               WDFunc::SetLBLTColor(this,QString::number(2429+i),TABCOLORA1);
+            }
 
         }
 
@@ -348,10 +348,10 @@ void CheckDialog84::UpdateSponData(Parse104::SponSignals104* Signal)
             {
                WDFunc::SetLBLTColor(this,QString::number(2426+i),REDCOLOR);
             }
-            /*else
+            else
             {
-               WDFunc::SetLBLTColor(this,QString::number(2426+i),ACONFOCLR);
-            }*/
+               WDFunc::SetLBLTColor(this,QString::number(2426+i),TABCOLORA1);
+            }
 
         }
 
@@ -373,10 +373,10 @@ void CheckDialog84::UpdateSponData(Parse104::SponSignals104* Signal)
             {
                WDFunc::SetLBLTColor(this,QString::number(2432),REDCOLOR);
             }
-            /*else
+            else
             {
-               WDFunc::SetLBLTColor(this,QString::number(2432),ACONFOCLR);
-            }*/
+               WDFunc::SetLBLTColor(this,QString::number(2432),TABCOLORA1);
+            }
         }
     }
 }
@@ -455,10 +455,10 @@ void CheckDialog84::UpdateSponDataWithTime(Parse104::SponSignalsWithTime* Signal
             {
                WDFunc::SetLBLTColor(this,QString::number(2429+i),REDCOLOR);
             }
-            /*else
+            else
             {
-               WDFunc::SetLBLTColor(this,QString::number(2429+i),ACONFOCLR);
-            }*/
+               WDFunc::SetLBLTColor(this,QString::number(2429+i),TABCOLORA1);
+            }
 
         }
 
@@ -483,10 +483,10 @@ void CheckDialog84::UpdateSponDataWithTime(Parse104::SponSignalsWithTime* Signal
             {
                WDFunc::SetLBLTColor(this,QString::number(2426+i),REDCOLOR);
             }
-            /*else
+            else
             {
-               WDFunc::SetLBLTColor(this,QString::number(2426+i),ACONFOCLR);
-            }*/
+               WDFunc::SetLBLTColor(this,QString::number(2426+i),TABCOLORA1);
+            }
 
         }
 
@@ -508,10 +508,10 @@ void CheckDialog84::UpdateSponDataWithTime(Parse104::SponSignalsWithTime* Signal
             {
                WDFunc::SetLBLTColor(this,QString::number(2432),REDCOLOR);
             }
-            /*else
+            else
             {
-               WDFunc::SetLBLTColor(this,QString::number(2432),ACONFOCLR);
-            }*/
+               WDFunc::SetLBLTColor(this,QString::number(2432),TABCOLORA1);
+            }
         }
     }
 }

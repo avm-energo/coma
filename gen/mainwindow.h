@@ -102,7 +102,7 @@ public:
     QThread *Modthr;// *thrTime;
     quint16 AdrBaseStation;
     ModBus::ModBus_Settings Settings;
-    QTimer* BdaTimer, *TimeTimer;
+    QTimer* BdaTimer, *TimeTimer, *AlarmStateTimer;
     QVector<S2::DataRec> S2Config;
 
     int CheckPassword();
@@ -220,6 +220,7 @@ private:
     quint8 AlarmEvents[20];
     int fileSize, curfileSize;
     QTimer *reconnectTimer, *connectTimer;
+    QString SavePort;
 
 #ifdef ETHENABLE
     DeviceConnectStruct DevInfo;
