@@ -8,6 +8,7 @@
 #include <QQueue>
 #include <QWaitCondition>
 #include "../gen/s2.h"
+#include "../gen/logclass.h"
 
 #define RECONNECTTIME 5000
 #define POLLINGINTERVAL 2000 // polling cycle time
@@ -137,6 +138,7 @@ private:
     int _taskCounter;
     QQueue<InOutStruct> InQueue;
     QList<InOutStruct> OutList;
+    LogClass *Log;
 
     void SendAndGet(InOutStruct &inp, InOutStruct &outp);
     bool GetResultFromOutQueue(int index, InOutStruct &outp);
@@ -178,6 +180,7 @@ private:
     bool AboutToFinish;
     ModBus::InOutStruct Inp, Outp;
     ModBus::ModbusDeviceState _state;
+    LogClass *Log;
 
     const unsigned char TabCRChi[256] = {
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,

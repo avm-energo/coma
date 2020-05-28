@@ -1,20 +1,5 @@
 #include <QThread>
-#include <QCoreApplication>
-#include <QWidget>
-#include <QtTest/QTest>
-#include <QtMath>
-#include <QTime>
-#include <QTabWidget>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGroupBox>
-#include <QLabel>
-#include <QRadioButton>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QLineEdit>
-#include <QMessageBox>
+#include <QStandardPaths>
 #include "../gen/error.h"
 #include "../gen/s2.h"
 #include "../gen/timefunc.h"
@@ -27,6 +12,8 @@ QWaitCondition RunWC, OutWC;
 
 ModBus::ModBus(QObject *parent) : QObject(parent)
 {
+    Log = new LogClass;
+    Log->Init(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/modbus.log");
     CycleGroup = 0;
     MainPollEnabled = true;
     TimePollEnabled = InitPollEnabled = false;
@@ -46,6 +33,7 @@ ModBus::ModBus(QObject *parent) : QObject(parent)
     SignalGroups[4] = QByteArrayLiteral("\x04\x09\x74\x00\x1c");
     SignalGroups[5] = QByteArrayLiteral("\x04\x11\x95\x00\x04");
     SignalGroups[6] = QByteArrayLiteral("\x01\x0b\xc3\x00\x19");
+    Log->info("=== Log started ===");
 }
 
 ModBus::~ModBus()
@@ -68,6 +56,7 @@ int ModBus::Connect(ModBus_Settings settings)
     thr->start();
     return cthr->State();
     StartPolling();
+    Log->info("Polling started, thread initiated");
 }
 
 int ModBus::SendAndGetResult(ComInfo &request, InOutStruct &outp)
@@ -91,11 +80,16 @@ int ModBus::SendAndGetResult(ComInfo &request, InOutStruct &outp)
     if(request.Data.size())
         bytes.append(request.Data);
 
+    Log->info("Send bytes: " + bytes.toHex(','));
     inp.Ba = bytes;
     // wait for an answer or timeout and return result
     SendAndGet(inp, outp);
     if (outp.Res != NOERROR)
+    {
+        Log->warning("Error, bytes: " + outp.Ba.toHex(','));
         return outp.Res;
+    }
+    Log->info("Rcv bytes: " + outp.Ba.toHex(','));
     return NOERROR;
 }
 
@@ -410,6 +404,8 @@ void ModBus::Reconnect()
 
 ModbusThread::ModbusThread(ModBus::ModBus_Settings settings, QObject *parent) : QObject(parent)
 {
+    Log = new LogClass;
+    Log->Init(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/modbusprot.log");
     AboutToFinish = false;
     SerialPort = new QSerialPort(settings.Port);
     SerialPort->setBaudRate(settings.Baud);
@@ -497,6 +493,7 @@ void ModbusThread::Send()
     Outp.Ba.clear();
     Inp.Checked = false;
     Busy = true;
+    Log->info("-> " + Inp.Ba.toHex());
     qint64 st = SerialPort->write(Inp.Ba.data(), Inp.Ba.size());
     if (st < Inp.Ba.size())
     {
@@ -526,6 +523,7 @@ void ModbusThread::ParseReply()
 
     if(cursize >= Inp.ReadSize)
     {
+        Log->info("<- " + Outp.Ba.toHex());
         int rdsize = Outp.Ba.size();
 
         quint16 MYKSS = CalcCRC(Outp.Ba);
