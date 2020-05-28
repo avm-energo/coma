@@ -17,7 +17,6 @@ ethernet::ethernet(QObject *parent) :
 
 ethernet::~ethernet()
 {
-    sock->deleteLater();
 }
 
 void ethernet::Run()

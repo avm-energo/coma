@@ -10,9 +10,10 @@
 #include "../gen/s2.h"
 #include "../gen/logclass.h"
 #include "../gen/maindef.h"
+#include "serialport.h"
 
 #define RECONNECTTIME 5000
-#define POLLINGINTERVAL 2000 // polling cycle time
+#define POLLINGINTERVAL 300 // polling cycle time
 #define SIGNALGROUPSNUM 7
 #define MAINSLEEPCYCLETIME  50
 
@@ -23,6 +24,8 @@
 #define BSIREG      1
 #define INITREG     4000
 #define TIMEREG     4600
+#define SETINITREG  900
+#define CLEARREG    905
 
 class ModBus : public QObject
 {
@@ -36,15 +39,6 @@ public:
         SECONDBYTEADR = 2,
         FIRSTBYTEQ = 3,
         SECONDBYTEQ = 4
-    };
-
-    struct ModBus_Settings
-    {
-        quint32 Baud;
-        QString Parity;
-        QString Stop;
-        quint8 Address;
-        QString Port;
     };
 
     struct InOutStruct
@@ -93,15 +87,15 @@ public:
     ModBus(QObject *parent = nullptr);
     ~ModBus();
 
-    int Connect(ModBus_Settings settings);
+    int Connect(SerialPort::Settings settings);
     void BSIrequest();
 
     int CheckIndex, CorIndex, TimeIndex;
 
 public slots:
     int SendAndGetResult(ComInfo &request, InOutStruct &outp);
-    void ModWriteCor(Information *info, float*);//, int*);
-    void ModReadCor(Information &info);
+    void ModWriteCor(ModBus::Information info, float *);//, int*);
+    void ModReadCor(ModBus::Information info);
     void ReadTime();
     void WriteTime(uint);
     void Tabs(int);
@@ -110,25 +104,27 @@ public slots:
     void Finish();
 
 signals:
-    void SignalsReceived(ModBus::SignalStruct *Signal, int size);
-    void CorSignalsReceived(ModBus::SignalStruct *Signal, int size);
-    void TimeSignalsReceived(ModBus::BSISignalStruct *Signal);
-    void BsiFromModbus(ModBus::BSISignalStruct*, int);
+    void SignalsReceived(QList<ModBus::SignalStruct> Signal);
+    void CorSignalsReceived(QList<ModBus::SignalStruct> Signal);
+    void CorSignalsWritten();
+    void TimeSignalsReceived(QList<ModBus::BSISignalStruct> Signal);
+    void TimeWritten();
+    void BsiFromModbus(QList<ModBus::BSISignalStruct>, int);
     void ModbusState(ConnectionStates);
     void ErrorRead();
 //    void ErrorCrc();
     void Finished();
     void FinishModbusThread();
-    void CoilSignalsReady(ModBus::Coils*);
+    void CoilSignalsReady(ModBus::Coils);
     void TimeReadError();
     void ReconnectSignal();
 
 
 private:
-    ModBus_Settings Settings;
+    SerialPort::Settings Settings;
     int CycleGroup;
-    QTimer *TimeoutTimer, *PollingTimer;
-    bool TimePollEnabled, InitPollEnabled, MainPollEnabled;
+    QTimer *PollingTimer;
+    bool TimePollEnabled, MainPollEnabled;
     QByteArray SignalGroups[SIGNALGROUPSNUM];
     int _taskCounter;
     QQueue<InOutStruct> InQueue;
@@ -137,11 +133,10 @@ private:
 
     void SendAndGet(InOutStruct &inp, InOutStruct &outp);
     bool GetResultFromOutQueue(int index, InOutStruct &outp);
-    int GetSignalsFromByteArray(QByteArray &bain, int startadr, BSISignalStruct *BSIsig, int &size);
-    int GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, SignalStruct *Sig, int &size);
+    int GetSignalsFromByteArray(QByteArray &bain, int startadr, QList<BSISignalStruct> &BSIsig, int &size);
+    int GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, QList<SignalStruct> &Sig, int &size);
 
 private slots:
-    void Reconnect();
     void Polling();
 
 protected:
@@ -153,7 +148,7 @@ class ModbusThread : public QObject
     Q_OBJECT
 
 public:
-    ModbusThread(ModBus::ModBus_Settings settings, QObject *parent = nullptr);
+    ModbusThread(QObject *parent = nullptr);
     ~ModbusThread();
 
     ConnectionStates State();
@@ -166,9 +161,10 @@ public slots:
 signals:
     void ModbusState(ConnectionStates);
     void Finished();
+    void Reconnect();
+    void Write(QByteArray);
 
 private:
-    QSerialPort *SerialPort;
     QQueue<ModBus::InOutStruct> *InQueue;
     QList<ModBus::InOutStruct> *OutList;
     bool Busy; // port is busy with write/read operation
@@ -176,7 +172,6 @@ private:
     ModBus::InOutStruct Inp, Outp;
     ConnectionStates _state;
     LogClass *Log;
-    ModBus::ModBus_Settings Settings;
 
     const unsigned char TabCRChi[256] = {
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
@@ -222,7 +217,7 @@ private:
     void AddToOutQueue(ModBus::InOutStruct &outp);
 
 private slots:
-    void ParseReply();
+    void ParseReply(QByteArray ba);
 };
 
 #endif

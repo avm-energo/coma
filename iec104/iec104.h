@@ -189,15 +189,13 @@ public:
     quint32 FileLen;
     int incLS, count, NoAnswer;
 
-
-
-
 public slots:
     void Stop();
     void Run();
     void ErrMsg();
 
 signals:
+    void Started();
     void Finished();
     void floatsignalsreceived(Parse104::FlSignals104*);
     void sponsignalsreceived(Parse104::SponSignals104*);
@@ -277,6 +275,15 @@ public:
     IEC104(QObject *parent = nullptr);
     ~IEC104();
 
+    enum EthernetStates
+    {
+        Connected,
+        Connecting,
+        Disconnected
+    };
+
+    bool State();
+
     typedef struct
     {
         quint8 start;
@@ -287,7 +294,6 @@ public:
     typedef QByteArray ASDU;
     Parse104 *Parse;
     QList<QByteArray> ReadData;
-    bool ParseStarted;
     Parse104::FlSignals104* flSignals;
     quint16 BaseAdr;
 
@@ -373,10 +379,10 @@ public:
     quint8 KSF;
     QString IP;
 
-
+    bool Working();
 
 public slots:
-    void Send(int Inc, APCI, ASDU=QByteArray());
+    void Send(int inc, APCI, ASDU=QByteArray());
     void Connect(const QString &IP);
     void Start();
     void Stop();
@@ -412,16 +418,17 @@ signals:
     void SetDataCount(int);
     void sendConfMessageOk();
     void sendCorMesOk();
-    void errorCh104(int);
-
+    void errorCh104();
+    void Finished();
 
 private:
     QTimer *TTimer, *ConTimer;
     bool GSD;
     QByteArray cutpckt;
+    int _state;
+    bool EthThreadWorking, ParseThreadWorking;
+
     void ParseSomeData(QByteArray, bool);
-
-
 
 private slots:
     void SendI();
@@ -429,7 +436,6 @@ private slots:
     void SendTestAct();
     void SendTestCon();
     void GetSomeData(QByteArray);
-    void StartParse();
     void SelectFile(char);
     void CallFile(unsigned char);
     void GetSection(unsigned char);
@@ -445,7 +451,9 @@ private slots:
     void CorReadRequest();
     void InterrogateTimeGr15();
     void com51WriteTime(uint);
-
+    void EthThreadFinished();
+    void ParseThreadStarted();
+    void ParseThreadFinished();
 };
 
 #endif // IEC104_H

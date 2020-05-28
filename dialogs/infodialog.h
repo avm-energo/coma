@@ -21,7 +21,7 @@ public slots:
     void FillBsi();
     void ClearBsi();
     void FillBsiFrom104(Parse104::BS104Signals* BS104);
-    void FillBsiFromModBus(ModBus::BSISignalStruct *Signal, int size);
+    void FillBsiFromModBus(QList<ModBus::BSISignalStruct> Signal, int size);
 
 private:
 /*    QMap<int, QString> ModuleNames()

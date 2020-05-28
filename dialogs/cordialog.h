@@ -22,8 +22,6 @@ public:
     int WriteCheckPassword();
 
 private:
-
-
     struct CorData
     {
         float C_init[3]; //Начальные значени емкостей вводов
@@ -35,20 +33,6 @@ private:
 
     CorData *CorBlock;
 
-    struct information
-    {
-        quint16 adr;
-        int size;
-    };
-
-    typedef struct
-    {
-       float flVal;
-       int SigAdr;
-    }ModBusSignal;
-
-
-
     void FillCor();
     void FillBackCor();
     float ToFloat(QString text);
@@ -58,8 +42,8 @@ private:
 signals:
    void sendCom45(quint32);
    void sendCom50(quint32* adr, float *data);
-   void RS485WriteCorBd(information*, float*);
-   void RS485ReadCorBd(information &);
+   void RS485WriteCorBd(ModBus::Information, float *);
+   void RS485ReadCorBd(ModBus::Information);
    void CorReadRequest();
    void WritePasswordChecked();
 
@@ -73,7 +57,8 @@ public slots:
     void SetCor();
     void ResetCor();
     void UpdateFlCorData(Parse104::FlSignals104 *Signal);
-    void ModBusUpdateCorData(ModBusSignal *Signal, int size);
+    void ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal);
+    void ModbusCorDataWritten();
     void SaveToFile();
     void ReadFromFile();
     void WritePasswordCheck(QString psw);

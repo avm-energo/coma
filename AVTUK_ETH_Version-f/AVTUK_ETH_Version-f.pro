@@ -24,6 +24,7 @@ TEMPLATE = app
 
 SOURCES += \
     ../gen/logclass.cpp \
+    ../modbus/serialport.cpp \
     coma.cpp \
     main.cpp \
     ../check/check.cpp \
@@ -93,6 +94,7 @@ SOURCES += \
 
 HEADERS += \
     ../gen/logclass.h \
+    ../modbus/serialport.h \
     coma.h \
     ../check/check.h \
     ../check/check84.h \

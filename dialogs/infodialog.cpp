@@ -73,12 +73,9 @@ void InfoDialog::FillBsi()
 
 void InfoDialog::FillBsiFrom104(Parse104::BS104Signals* BS104)
 {
-    //Parse104::BS104Signals sig = *new Parse104::BS104Signals;
-    //sig = *BS104;
-//    ModuleBSI::Bsi bsi = *new ModuleBSI::Bsi;
     int i;
-    int startadr = BS104->BS.SigAdr[0];
-//    memcpy(&startadr, &(BS104->BS.SigAdr[0]), sizeof(BS104->BS.SigAdr));
+    int startadr;
+    memcpy(&startadr, &(BS104->BS.SigAdr[0]), sizeof(BS104->BS.SigAdr));
 
     if(BS104->SigNumber && (startadr >= 1 && startadr <= 15))
     {
@@ -107,19 +104,20 @@ void InfoDialog::FillBsiFrom104(Parse104::BS104Signals* BS104)
 
 }
 
-void InfoDialog::FillBsiFromModBus(ModBus::BSISignalStruct *Signal, int size)
+void InfoDialog::FillBsiFromModBus(QList<ModBus::BSISignalStruct> Signal, int size)
 {
-    //Parse104::BS104Signals sig = *new Parse104::BS104Signals;
-    //sig = *BS104;
     ModuleBSI::Bsi bsi = *new ModuleBSI::Bsi;
     int i;
-    int startadr = Signal->SigAdr;
-//    memcpy(&startadr, &(Signal->SigAdr), sizeof(Signal->SigAdr));
+    int startadr = Signal.at(0).SigAdr;
 
     if(size && startadr == 1)
     {
+        unsigned char *bsiptr = reinterpret_cast<unsigned char *>(&bsi);
         for(i=0; i< size; i++)
-        memcpy((((quint32*)(&bsi)+i)), ((quint32*)(&Signal->Val)+2*i), sizeof(Signal->Val));
+        {
+            memcpy(bsiptr, &Signal.at(i).Val, sizeof(Signal.at(i).Val));
+            bsiptr += sizeof(Signal.at(i).Val);
+        }
 
         MainWindow::MTypeB = bsi.MTypeB;
         MainWindow::MTypeM = bsi.MTypeM;

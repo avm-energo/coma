@@ -84,7 +84,7 @@ public:
     QString IPtemp, FullName, SaveDevice, instr;
     QStringList sl, USBsl, slfinal, insl;
     quint16 AdrBaseStation;
-    ModBus::ModBus_Settings Settings;
+    SerialPort::Settings Settings;
     QTimer* BdaTimer, *TimeTimer;
     QVector<S2::DataRec> S2Config;
 
@@ -234,8 +234,8 @@ public slots:
     void FileTimeOut();
     void GetUSBAlarmTimerTimeout();
     void GetUSBAlarmInDialog();
-    void ModbusUpdateStatePredAlarmEvents(ModBus::Coils* Signal);
-    void ModBusUpdatePredAlarmEvents(ModBus::Coils* Signal);
+    void ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal);
+    void ModBusUpdatePredAlarmEvents(ModBus::Coils Signal);
     void SetCancelled();
     void ReConnect();
     void attemptToRec();

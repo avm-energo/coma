@@ -352,36 +352,46 @@ void MNKTime::FillTimeFrom104(Parse104::BS104Signals* Time)
     }
 }
 
-void MNKTime::FillTimeFromModBus(ModBusBSISignal* Time)
+void MNKTime::FillTimeFromModBus(QList<ModBus::BSISignalStruct> Time)
 {
     uint unixtimestamp = 0;
     QString qStr;
     QDateTime myDateTime;
 
-    if(Time->SigAdr == 4600)
+    if (Time.size() == 0)
     {
-       memcpy((quint32*)(&unixtimestamp), ((quint32*)(&Time->Val)), sizeof(Time->Val));
-       int cbidx = WDFunc::CBIndex(this, "TimeZone");
+        DBGMSG;
+        return;
+    }
+    if(Time.at(0).SigAdr == 4600)
+    {
+        unixtimestamp = Time.at(0).Val;
+        int cbidx = WDFunc::CBIndex(this, "TimeZone");
 
-       if(cbidx == 0)
-       myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::LocalTime);
-       else
-       myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
+        if(cbidx == 0)
+        myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::LocalTime);
+        else
+        myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
 
-       if(SysTime2 != nullptr)
-       SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
+        if(SysTime2 != nullptr)
+        SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
 
-       if(first == 0)
-       {
-         qStr = SysTime2->text();
-         WDFunc::LE_write_data(this, qStr, "Date");
-         first = 1;
-       }
+        if(first == 0)
+        {
+          qStr = SysTime2->text();
+          WDFunc::LE_write_data(this, qStr, "Date");
+          first = 1;
+        }
     }
 }
 
 void MNKTime::ErrorRead()
 {
     if(SysTime2 != nullptr)
-    SysTime2->setText("Ошибка чтения");
+        SysTime2->setText("Ошибка чтения");
+}
+
+void MNKTime::TimeWritten()
+{
+    EMessageBox::information(this, "Успешно", "Время записано успешно");
 }

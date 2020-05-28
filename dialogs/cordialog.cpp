@@ -239,13 +239,13 @@ void CorDialog::GetCorBd(int index)
                 EMessageBox::information(this, "INFO", "Прочитано успешно");
             }
         }
-        else if (MainInterface == I_RS485)
+/*        else if (MainInterface == I_RS485)
         {
-            information info;
+            ModBus::Information info;
             info.size = (sizeof(CorData)/4);
             info.adr = 4000;
             emit RS485ReadCorBd(info);
-        }
+        } */
         else if (MainInterface == I_ETHERNET)
         {
             emit CorReadRequest();
@@ -264,7 +264,7 @@ void CorDialog::GetCorBdButton()
     }
     else if (MainInterface == I_RS485)
     {
-        information info;
+        ModBus::Information info;
         info.size = (sizeof(CorData)/4);
         info.adr = 4000;
         emit RS485ReadCorBd(info);
@@ -294,10 +294,10 @@ void CorDialog::WriteCorBd()
         }
         else if(MainInterface == I_RS485)
         {
-            information info;
+            ModBus::Information info;
             info.size = (sizeof(CorData)/4);
             info.adr = adr[0];
-            emit RS485WriteCorBd(&info, (float*)CorBlock);
+            emit RS485WriteCorBd(info, (float*)CorBlock);
         }
         else if(MainInterface == I_USB)
         {
@@ -318,16 +318,16 @@ void CorDialog::WriteCor()
     {
         if(MainInterface == I_ETHERNET)
         {
-           emit sendCom45(900);
+           emit sendCom45(SETINITREG);
            EMessageBox::information(this, "INFO", "Задано успешно");
            emit CorReadRequest();
         }
         else if(MainInterface == I_RS485)
         {
-            information info;
+            ModBus::Information info;
             info.size = 1;
-            info.adr = 900;
-            emit RS485WriteCorBd(&info, nullptr);
+            info.adr = SETINITREG;
+            emit RS485WriteCorBd(info, nullptr);
             EMessageBox::information(this, "INFO", "Задано успешно");
             info.size = (sizeof(CorData)/4);
             info.adr = 4000;
@@ -370,14 +370,14 @@ void CorDialog::ResetCor()
     {
         if(MainInterface == I_ETHERNET)
         {
-           emit sendCom45(905);
+           emit sendCom45(CLEARREG);
         }
         else if(MainInterface == I_RS485)
         {
-            information info;
+            ModBus::Information info;
             info.size = 1;
-            info.adr = 901;
-            emit RS485WriteCorBd(&info, nullptr);
+            info.adr = CLEARREG;
+            emit RS485WriteCorBd(info, nullptr);
         }
         else if(MainInterface == I_USB)
         {
@@ -441,27 +441,26 @@ void CorDialog::FillBd(QWidget *parent, QString Name, QString Value)
     WDFunc::SetSPBData(parent, Name, fl);
 }
 
-void CorDialog::ModBusUpdateCorData(ModBusSignal *Signal, int size)
+void CorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
 {
-    //ModBusSignal sig = *new ModBusSignal;
     int i = 0;
 
-    if(Signal != nullptr)
+    if (Signal.size() > 0)
     {
-        if(Signal->SigAdr == 4000)
+        if(Signal.at(0).SigAdr == 4000)
         {
-            for(i=0; i<size; i++)
+            for(i=0; i<Signal.size(); ++i)
             {
-                //sig = *(Signal+i);
-                FillBd(this, QString::number((Signal+i)->SigAdr), WDFunc::StringValueWithCheck((Signal+i)->flVal));
+                FillBd(this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal));
             }
             EMessageBox::information(this, "INFO", "Прочитано успешно");
         }
-        else if(size == 1)
-        {
-          EMessageBox::information(this, "INFO", "Записано успешно");
-        }
     }
+}
+
+void CorDialog::ModbusCorDataWritten()
+{
+    EMessageBox::information(this, "INFO", "Записано успешно");
 }
 
 void CorDialog::SaveToFile()

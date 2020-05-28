@@ -17,9 +17,11 @@ quint8 IEC104::stopincrementing;
 
 IEC104::IEC104(QObject *parent) : QObject(parent)
 {
+    _state = Disconnected;
     //incSend = 0;
-    ParseStarted = false;
     GSD = true;
+    EthThreadWorking = false;
+    ParseThreadWorking = false;
 }
 
 IEC104::~IEC104()
@@ -28,13 +30,15 @@ IEC104::~IEC104()
 
 }
 
-void IEC104::StartParse()
+bool IEC104::Working()
 {
-    ParseStarted = true;
+    return (EthThreadWorking | ParseThreadWorking);
 }
 
 void IEC104::Start()
 {
+    _state = Connected;
+    EthThreadWorking = true;
     APCI StartDT;
     ASDU GInter;
     StartDT.start = I104_START;
@@ -51,7 +55,7 @@ void IEC104::Start()
 
 void IEC104::Stop()
 {
-    if (ParseStarted)
+    if (ParseThreadWorking)
     {
         APCI StopDT;
         StopDT.start = I104_START;
@@ -72,7 +76,7 @@ void IEC104::Stop()
     }
 }
 
-void IEC104::Send(int Inc, APCI apci, ASDU asdu)
+void IEC104::Send(int inc, APCI apci, ASDU asdu)
 {
     QByteArray ba;
     ba.clear();
@@ -89,12 +93,13 @@ void IEC104::Send(int Inc, APCI apci, ASDU asdu)
     //while(stopincrementing)
     //QThread::usleep(10);
 
-    if(Inc)
+    if(inc)
         Parse->V_S++;
 }
 
 void IEC104::Connect(const QString &IP)
 {
+    _state = Connecting;
     QThread *thr = new QThread;
     thr->setPriority(QThread::HighestPriority);
     ethernet *eth = new ethernet;
@@ -107,6 +112,7 @@ void IEC104::Connect(const QString &IP)
     connect(this,SIGNAL(StopAll()),eth,SLOT(Stop()));
     connect(eth,SIGNAL(connected()),this,SIGNAL(EthConnected()));
     connect(eth,SIGNAL(disconnected()),this,SIGNAL(EthDisconnected()));
+    connect(eth,SIGNAL(disconnected()),this,SLOT(EthThreadFinished()));
     connect(eth,SIGNAL(connected()),this,SLOT(Start()));
     connect(eth,SIGNAL(newdataarrived(QByteArray)),this,SLOT(GetSomeData(QByteArray)));
     connect(this,SIGNAL(writedatatoeth(QByteArray)),eth,SLOT(InitiateWriteDataToPort(QByteArray)));
@@ -120,8 +126,10 @@ void IEC104::Connect(const QString &IP)
     connect(this,SIGNAL(StopAll()),Parse,SLOT(Stop()));
     connect(Parse,SIGNAL(Finished()),Parse,SLOT(deleteLater()));
     connect(Parse,SIGNAL(Finished()),thr2,SLOT(quit()));
+    connect(Parse,SIGNAL(Finished()),this,SLOT(ParseThreadFinished()));
     connect(thr2,SIGNAL(finished()),thr2,SLOT(deleteLater()));
     connect(thr2,SIGNAL(started()),Parse,SLOT(Run()));
+    connect(Parse,SIGNAL(Started()),this,SLOT(ParseThreadStarted()));
 
     connect(Parse,SIGNAL(bs104signalsreceived(Parse104::BS104Signals*)),\
             this,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),Qt::BlockingQueuedConnection);
@@ -136,7 +144,6 @@ void IEC104::Connect(const QString &IP)
     connect(Parse,SIGNAL(sendS()),this,SLOT(SendS()));
     connect(Parse,SIGNAL(GeneralInter()),this,SLOT(SendI()));
     connect(Parse,SIGNAL(sendAct()),this,SLOT(SendTestCon()));
-    connect(Parse,SIGNAL(parsestarted()),this,SLOT(StartParse()));
     connect(Parse,SIGNAL(CallFile(unsigned char)),this,SLOT(CallFile(unsigned char)));
     connect(Parse,SIGNAL(CallSection(unsigned char)),this,SLOT(GetSection(unsigned char)));
     connect(Parse,SIGNAL(SendConfirmSection(unsigned char)),this,SLOT(ConfirmSection(unsigned char)));
@@ -272,7 +279,7 @@ void IEC104::SendTestAct()
     {
         ConTimer->stop();
 //        ConTimer->deleteLater();
-        emit errorCh104(1);
+        emit errorCh104();
         return;
     }
     else
@@ -389,6 +396,7 @@ Parse104::~Parse104()
 
 void Parse104::Run()
 {
+    emit Started();
     while (!ThreadMustBeFinished)
     {
         // обработка ParseData
@@ -1638,4 +1646,23 @@ void IEC104::com51WriteTime(uint Time)
     Parse->cmd = I104_S;
     Send(1, GI, Cmd); // ASDU = QByteArray()
 
+}
+
+void IEC104::EthThreadFinished()
+{
+    EthThreadWorking = false;
+    if (!ParseThreadWorking)
+        emit Finished();
+}
+
+void IEC104::ParseThreadStarted()
+{
+    ParseThreadWorking = true;
+}
+
+void IEC104::ParseThreadFinished()
+{
+    ParseThreadWorking = false;
+    if (!EthThreadWorking)
+        emit Finished();
 }

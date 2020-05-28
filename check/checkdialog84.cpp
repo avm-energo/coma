@@ -451,18 +451,18 @@ void CheckDialog84::UpdateBS104Data(Parse104::BS104Signals* Signal)
 
 #endif
 
-void CheckDialog84::UpdateModBusData(ModBus::SignalStruct *Signal, int size)
+void CheckDialog84::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
 
     //ModBusSignal sig = *new ModBusSignal;
     int i = 0;
-    for(i=0; i<size; i++)
+    for(i=0; i<Signal.size(); ++i)
     {
       //sig = *(Signal+i);
-      if(((((Signal+i)->SigAdr >= 1011) && ((Signal+i)->SigAdr <= 1015))) || (((Signal+i)->SigAdr >= 1111) && ((Signal+i)->SigAdr <= 1115)))
-      Ch84->FillBd(this, QString::number(((Signal+i)->SigAdr)+9), WDFunc::StringValueWithCheck((Signal+i)->flVal, 3));
+      if((((Signal.at(i).SigAdr >= 1011) && (Signal.at(i).SigAdr <= 1015))) || ((Signal.at(i).SigAdr >= 1111) && (Signal.at(i).SigAdr <= 1115)))
+      Ch84->FillBd(this, QString::number((Signal.at(i).SigAdr)+9), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
       else
-      Ch84->FillBd(this, QString::number((Signal+i)->SigAdr), WDFunc::StringValueWithCheck((Signal+i)->flVal, 3));
+      Ch84->FillBd(this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
     }
 }
 
@@ -475,9 +475,8 @@ void CheckDialog84::onModbusStateChanged(ConnectionStates state)
 {
     if(state == ConnectionStates::ConnectedState)
         EMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
-    else
-        EMessageBox::error(this, "Провал", "Подключение отсутствует");
+//    else
+//        EMessageBox::error(this, "Провал", "Подключение отсутствует");
 }
-
 
 

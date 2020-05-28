@@ -64,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
     ChModbus = new ModBus;
     connect(this,SIGNAL(StopCommunications()),ChModbus,SLOT(Finish()));
-    connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(ModBus::Coils*)));
+    connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils)), this, SLOT(ModBusUpdatePredAlarmEvents(ModBus::Coils)));
     cn = new EUsbHid;
     connect(this, SIGNAL(StopCommunications()), cn, SLOT(Disconnect()));
     FullName = "";
@@ -678,20 +678,20 @@ void MainWindow::UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTim
 
 }
 
-void MainWindow::ModbusUpdateStatePredAlarmEvents(ModBus::Coils* Signal)
+void MainWindow::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
 {
     int i = 0, PredArarmcount = 0, Ararmcount = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmred, pmgrn};
 
-    for(i=0; i<Signal->countBytes; i++)
+    for(i=0; i<Signal.countBytes; i++)
     {
         if(i == 3)
         {
             //for(int j = 0; j<8; j++)
             //{
-                quint8 signal = ((Signal->Bytes[i] & (0x00000001)) ? 1 : 0);
+                quint8 signal = ((Signal.Bytes[i] & (0x00000001)) ? 1 : 0);
                 AlarmEvents[6] = signal;
 
         }
@@ -699,7 +699,7 @@ void MainWindow::ModbusUpdateStatePredAlarmEvents(ModBus::Coils* Signal)
         {
             for(int j = 0; j<8; j++)
             {
-                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+                quint8 signal = ((Signal.Bytes[i] & (0x00000001 << j)) ? 1 : 0);
 
                 if(j<3)
                 PredAlarmEvents[13+j] = signal;
@@ -717,7 +717,7 @@ void MainWindow::ModbusUpdateStatePredAlarmEvents(ModBus::Coils* Signal)
         {
             for(int j = 0; j<8; j++)
             {
-                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+                quint8 signal = ((Signal.Bytes[i] & (0x00000001 << j)) ? 1 : 0);
                 PredAlarmEvents[j] = signal;
             }
         }
@@ -725,7 +725,7 @@ void MainWindow::ModbusUpdateStatePredAlarmEvents(ModBus::Coils* Signal)
         {
             for(int j = 0; j<8; j++)
             {
-                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+                quint8 signal = ((Signal.Bytes[i] & (0x00000001 << j)) ? 1 : 0);
 
                 if(j<5)
                 PredAlarmEvents[7+j] = signal;
@@ -761,18 +761,18 @@ void MainWindow::ModbusUpdateStatePredAlarmEvents(ModBus::Coils* Signal)
 
 }
 
-void MainWindow::ModBusUpdatePredAlarmEvents(ModBus::Coils* Signal)
+void MainWindow::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
 {
     int i = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmgrn, pmred};
 
-    for(i=0; i<Signal->countBytes; i++)
+    for(i=0; i<Signal.countBytes; i++)
     {
         if(i == 3)
         {
-           quint8 signal = ((Signal->Bytes[i] & (0x00000001)) ? 1 : 0);
+           quint8 signal = ((Signal.Bytes[i] & (0x00000001)) ? 1 : 0);
            WDFunc::SetLBLImage(Walarm, (QString::number(3035)), pm[signal]);
         }
 
@@ -780,7 +780,7 @@ void MainWindow::ModBusUpdatePredAlarmEvents(ModBus::Coils* Signal)
         {
             for(int j = 0; j<8; j++)
             {
-                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+                quint8 signal = ((Signal.Bytes[i] & (0x00000001 << j)) ? 1 : 0);
 
                 if(j<3)
                 WDFunc::SetLBLImage(Wpred, (QString::number(3027+j)), pm[signal]);
@@ -798,7 +798,7 @@ void MainWindow::ModBusUpdatePredAlarmEvents(ModBus::Coils* Signal)
         {
             for(int j = 0; j<8; j++)
             {
-                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+                quint8 signal = ((Signal.Bytes[i] & (0x00000001 << j)) ? 1 : 0);
                 WDFunc::SetLBLImage(Wpred, (QString::number(3011+j)), pm[signal]);
             }
         }
@@ -806,7 +806,7 @@ void MainWindow::ModBusUpdatePredAlarmEvents(ModBus::Coils* Signal)
         {
             for(int j = 0; j<8; j++)
             {
-                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+                quint8 signal = ((Signal.Bytes[i] & (0x00000001 << j)) ? 1 : 0);
 
                 if(j<5)
                 WDFunc::SetLBLImage(Wpred, (QString::number(3019+j)), pm[signal]);
