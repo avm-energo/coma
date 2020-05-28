@@ -301,13 +301,16 @@ void Coma::Stage3()
          }
          else if (MainInterface == I_RS485)
          {
-             if (ChModbus->Connect(Settings) != ModBus::ModbusDeviceState::ConnectedState)
+             if (ChModbus->Connect(Settings) != ConnectionStates::ConnectedState)
+             {
+                 ERMSG("Modbus not connected");
                  return;
+             }
 
              CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
-             connect(ChModbus,SIGNAL(BsiFromModbus(ModBusBSISignal*, int)),idlg,SLOT(FillBsiFromModBus(ModBusBSISignal*, int)));
-             connect(ChModbus,SIGNAL(CoilSignalsReady(Coils*)),this,SLOT(ModbusUpdateStatePredAlarmEvents(Coils*)));
-             connect(MainTW, SIGNAL(tabClicked(int)), ChModbus,SLOT(tabs(int)));
+             connect(ChModbus,SIGNAL(BsiFromModbus(ModBus::BSISignalStruct*, int)),idlg,SLOT(FillBsiFromModBus(ModBus::BSISignalStruct*, int)));
+             connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils*)),this,SLOT(ModbusUpdateStatePredAlarmEvents(ModBus::Coils*)));
+             connect(MainTW, SIGNAL(tabClicked(int)), ChModbus,SLOT(Tabs(int)));
              ChModbus->BSIrequest();
              //TimeTimer->setInterval(3000);
 
@@ -580,7 +583,7 @@ void Coma::PrepareDialogs()
          else if(insl.at(1) == "MODBUS")
          {
             connect(ChModbus, SIGNAL(ErrorRead()), CorD, SLOT(ErrorRead()));
-            connect(ChModbus, SIGNAL(ModbusState(ModBus::ModbusDeviceState)), CheckB, SLOT(onModbusStateChanged(ModBus::ModbusDeviceState)));
+            connect(ChModbus, SIGNAL(ModbusState(ConnectionStates)), CheckB, SLOT(onModbusStateChanged(ConnectionStates)));
             connect(ChModbus, SIGNAL(SignalsReceived(ModBusSignal*, int)), CheckB, SLOT(UpdateModBusData(ModBusSignal*, int)));
             connect(ChModbus, SIGNAL(CorSignalsReceived(ModBusSignal*, int)), CorD, SLOT(ModBusUpdateCorData(ModBusSignal*, int)));
             connect(CorD, SIGNAL(RS485WriteCorBd(ModBus::Information*, float*)), ChModbus, SLOT(ModWriteCor(ModBus::Information*, float*)));//, int*)));

@@ -61,8 +61,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     Wpred = Walarm = nullptr;
     Ch104 = new IEC104;
     connect(this,SIGNAL(StopCommunications()),Ch104,SLOT(Stop()));
+    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
     ChModbus = new ModBus;
     connect(this,SIGNAL(StopCommunications()),ChModbus,SLOT(Finish()));
+    connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(ModBus::Coils*)));
     cn = new EUsbHid;
     connect(this, SIGNAL(StopCommunications()), cn, SLOT(Disconnect()));
     FullName = "";
@@ -73,6 +75,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     BdaTimer = new QTimer;
     BdaTimer->setInterval(ANMEASINT);
+    connect(BdaTimer,SIGNAL(timeout()), this, SLOT(GetUSBAlarmInDialog()));
 
     ReceiveTimer = new QTimer;
     ReceiveTimer->setInterval(ANMEASINT);
@@ -432,15 +435,6 @@ void MainWindow::PredAlarmState()
 
     w->setLayout(vlayout);
 
-    if (MainInterface == I_ETHERNET && Ch104 != nullptr)
-    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
-
-    if (MainInterface == I_USB)
-    connect(BdaTimer,SIGNAL(timeout()), this, SLOT(GetUSBAlarmInDialog()));
-
-    if(MainInterface == I_RS485 && ChModbus != nullptr)
-    connect(ChModbus,SIGNAL(coilsignalsready(Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(Coils*)));
-
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
     QPushButton *pb = new QPushButton("Ok");
@@ -510,15 +504,6 @@ void MainWindow::AlarmState()
     vlayout->addLayout(hlyout);
 
     w->setLayout(vlayout);
-
-    if(MainInterface == I_ETHERNET && Ch104 != nullptr)
-    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
-
-    if(MainInterface == I_USB)
-    connect(BdaTimer,SIGNAL(timeout()), this, SLOT(GetUSBAlarmInDialog()));
-
-    if(MainInterface == I_RS485 && ChModbus != nullptr)
-    connect(ChModbus,SIGNAL(coilsignalsready(Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(Coils*)));
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);

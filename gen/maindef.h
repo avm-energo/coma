@@ -34,6 +34,11 @@
 #define S4      4.0
 #define S20     20.0
 
+enum ConnectionStates
+{
+    ConnectedState,
+    ClosingState
+};
 extern int MainInterface;
 
 #endif // MAINDEF_H

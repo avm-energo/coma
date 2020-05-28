@@ -51,9 +51,9 @@ private slots:
     void UpdateSponData(Parse104::SponSignals104 *);
     void UpdateSponDataWithTime(Parse104::SponSignalsWithTime *);
     void UpdateBS104Data(Parse104::BS104Signals *);
-    void UpdateModBusData(ModBus::ModBusSignalStruct *Signal, int size);
+    void UpdateModBusData(ModBus::SignalStruct *Signal, int size);
     void ErrorRead();
-    void onModbusStateChanged(ModBus::ModbusDeviceState state);
+    void onModbusStateChanged(ConnectionStates state);
 
 #endif
 };

@@ -451,7 +451,7 @@ void CheckDialog84::UpdateBS104Data(Parse104::BS104Signals* Signal)
 
 #endif
 
-void CheckDialog84::UpdateModBusData(ModBus::ModBusSignalStruct *Signal, int size)
+void CheckDialog84::UpdateModBusData(ModBus::SignalStruct *Signal, int size)
 {
 
     //ModBusSignal sig = *new ModBusSignal;
@@ -471,9 +471,9 @@ void CheckDialog84::ErrorRead()
   //EMessageBox::information(this, "INFO", "Ошибка чтения");
 }
 
-void CheckDialog84::onModbusStateChanged(ModBus::ModbusDeviceState state)
+void CheckDialog84::onModbusStateChanged(ConnectionStates state)
 {
-    if(state == ModBus::ConnectedState)
+    if(state == ConnectionStates::ConnectedState)
         EMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
     else
         EMessageBox::error(this, "Провал", "Подключение отсутствует");

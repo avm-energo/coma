@@ -5,6 +5,7 @@
 #include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
 #include "../gen/mainwindow.h"
+#include "../gen/stdfunc.h"
 #include "modbus.h"
 
 QMutex RunMutex, InMutex, OutMutex, OutWaitMutex;
@@ -13,7 +14,7 @@ QWaitCondition RunWC, OutWC;
 ModBus::ModBus(QObject *parent) : QObject(parent)
 {
     Log = new LogClass;
-    Log->Init(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/modbus.log");
+    Log->Init("modbus.log");
     CycleGroup = 0;
     MainPollEnabled = true;
     TimePollEnabled = InitPollEnabled = false;
@@ -51,12 +52,15 @@ int ModBus::Connect(ModBus_Settings settings)
     connect(cthr,SIGNAL(Finished()),thr,SLOT(quit()));
     connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
     connect(cthr,SIGNAL(Finished()),cthr,SLOT(deleteLater()));
-    connect(cthr, SIGNAL(ModbusState(ModBus::ModbusDeviceState)), this, SIGNAL(ModbusState(ModBus::ModbusDeviceState)));
+    connect(cthr, SIGNAL(ModbusState(ConnectionStates)), this, SIGNAL(ModbusState(ConnectionStates)));
     connect(cthr, SIGNAL(Finished()), this, SIGNAL(Finished()));
     thr->start();
-    return cthr->State();
+    StdFunc::Wait(1000);
+    if (cthr->State() != ConnectionStates::ConnectedState)
+        return cthr->State();
     StartPolling();
     Log->info("Polling started, thread initiated");
+    return cthr->State();
 }
 
 int ModBus::SendAndGetResult(ComInfo &request, InOutStruct &outp)
@@ -121,7 +125,7 @@ void ModBus::Polling()
         }
         else
         {
-            ModBusSignalStruct *Sig = nullptr;
+            SignalStruct *Sig = nullptr;
             int sigsize;
             int startadr = (static_cast<quint8>(SignalGroups[CycleGroup][FIRSTBYTEADR]) << 8) | (static_cast<quint8>(SignalGroups[CycleGroup][SECONDBYTEADR]));
             GetFloatSignalsFromByteArray(outp.Ba, startadr, Sig, sigsize);
@@ -213,7 +217,7 @@ void ModBus::BSIrequest()
     if (res != NOERROR)
         emit TimeReadError();
 
-    ModBusBSISignalStruct *BSIsig = nullptr;
+    BSISignalStruct *BSIsig = nullptr;
     int sigsize;
     if (GetSignalsFromByteArray(outp.Ba, BSIREG, BSIsig, sigsize) != NOERROR)
         return;
@@ -262,7 +266,7 @@ void ModBus::ModReadCor(Information &info)
     request.SizeBytes = (quint8)((info.size)*4);
     SendAndGetResult(request, outp);
 
-    ModBusSignalStruct *Sig = nullptr;
+    SignalStruct *Sig = nullptr;
     int sigsize;
     GetFloatSignalsFromByteArray(outp.Ba, info.adr, Sig, sigsize);
     emit CorSignalsReceived(Sig, sigsize);
@@ -280,15 +284,20 @@ void ModBus::ReadTime()
     int res = SendAndGetResult(request, outp);
     if (res != NOERROR)
         emit TimeReadError();
-    ModBusBSISignalStruct *BSIsig = nullptr;
+    BSISignalStruct *BSIsig = nullptr;
     int sigsize;
     if (GetSignalsFromByteArray(outp.Ba, TIMEREG, BSIsig, sigsize) != NOERROR)
         return;
     emit TimeSignalsReceived(BSIsig);
 }
 
-int ModBus::GetSignalsFromByteArray(QByteArray &bain, int startadr, ModBusBSISignalStruct *BSIsig, int &size)
+int ModBus::GetSignalsFromByteArray(QByteArray &bain, int startadr, BSISignalStruct *BSIsig, int &size)
 {
+    if (bain.size() < 3)
+    {
+        Log->error("Wrong inbuf size");
+        return GENERALERROR;
+    }
     int byteSize = bain.data()[2];
     QByteArray ba = bain.mid(3);
     if (byteSize > ba.size())
@@ -297,7 +306,7 @@ int ModBus::GetSignalsFromByteArray(QByteArray &bain, int startadr, ModBusBSISig
         return GENERALERROR;
     }
     int signalsSize = byteSize / 4; // количество байт float или u32
-    BSIsig = new ModBusBSISignalStruct[signalsSize];
+    BSIsig = new BSISignalStruct[signalsSize];
     for (int i=0; i<signalsSize; ++i)
     {
         quint32 ival = ((ba.data()[2+4*i]<<24)&0xFF000000)+((ba.data()[3+4*i]<<16)&0x00FF0000)+\
@@ -309,8 +318,13 @@ int ModBus::GetSignalsFromByteArray(QByteArray &bain, int startadr, ModBusBSISig
     return NOERROR;
 }
 
-int ModBus::GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, ModBusSignalStruct *Sig, int &size)
+int ModBus::GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, SignalStruct *Sig, int &size)
 {
+    if (bain.size() < 3)
+    {
+        Log->error("Wrong inbuf size");
+        return GENERALERROR;
+    }
     int byteSize = bain.data()[2];
     QByteArray ba = bain.mid(3);
     if (byteSize > ba.size())
@@ -319,7 +333,7 @@ int ModBus::GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, ModBusS
         return GENERALERROR;
     }
     int signalsSize = byteSize / 4; // количество байт float или u32
-    Sig = new ModBusSignalStruct[signalsSize];
+    Sig = new SignalStruct[signalsSize];
     for (int i=0; i<signalsSize; ++i)
     {
         quint32 ival = ((ba.data()[2+4*i]<<24)&0xFF000000)+((ba.data()[3+4*i]<<16)&0x00FF0000)+\
@@ -404,29 +418,10 @@ void ModBus::Reconnect()
 
 ModbusThread::ModbusThread(ModBus::ModBus_Settings settings, QObject *parent) : QObject(parent)
 {
+    Settings = settings;
     Log = new LogClass;
-    Log->Init(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/modbusprot.log");
+    Log->Init("modbusprot.log");
     AboutToFinish = false;
-    SerialPort = new QSerialPort(settings.Port);
-    SerialPort->setBaudRate(settings.Baud);
-    SerialPort->setDataBits(QSerialPort::Data8);
-    SerialPort->setParity(QSerialPort::NoParity);
-    SerialPort->setStopBits(QSerialPort::OneStop);
-    SerialPort->setFlowControl(QSerialPort::NoFlowControl);
-    SerialPort->setReadBufferSize(1024);
-    connect(SerialPort, SIGNAL(readyRead()), this, SLOT(ParseReply()));
-
-    if(SerialPort->open(QIODevice::ReadWrite) == true)
-    {
-        _state = ModBus::ModbusDeviceState::ConnectedState;
-        emit ModbusState(ModBus::ModbusDeviceState::ConnectedState);
-    }
-    else
-    {
-        _state = ModBus::ModbusDeviceState::ClosingState;
-        emit ModbusState(ModBus::ModbusDeviceState::ClosingState);
-    }
-
 }
 
 ModbusThread::~ModbusThread()
@@ -435,7 +430,7 @@ ModbusThread::~ModbusThread()
         SerialPort->close();
 }
 
-ModBus::ModbusDeviceState ModbusThread::State()
+ConnectionStates ModbusThread::State()
 {
     return _state;
 }
@@ -448,6 +443,25 @@ void ModbusThread::Init(QQueue<ModBus::InOutStruct> *inq, QList<ModBus::InOutStr
 
 void ModbusThread::Run()
 {
+    SerialPort = new QSerialPort(Settings.Port);
+    SerialPort->setBaudRate(Settings.Baud);
+    SerialPort->setDataBits(QSerialPort::Data8);
+    SerialPort->setParity(QSerialPort::NoParity);
+    SerialPort->setStopBits(QSerialPort::OneStop);
+    SerialPort->setFlowControl(QSerialPort::NoFlowControl);
+    SerialPort->setReadBufferSize(1024);
+    connect(SerialPort, SIGNAL(readyRead()), this, SLOT(ParseReply()));
+
+    if(SerialPort->open(QIODevice::ReadWrite) == true)
+    {
+        _state = ConnectionStates::ConnectedState;
+        emit ModbusState(ConnectionStates::ConnectedState);
+    }
+    else
+    {
+        _state = ConnectionStates::ClosingState;
+        emit ModbusState(ConnectionStates::ClosingState);
+    }
     while (!AboutToFinish)
     {
         RunMutex.lock();
@@ -494,6 +508,7 @@ void ModbusThread::Send()
     Inp.Checked = false;
     Busy = true;
     Log->info("-> " + Inp.Ba.toHex());
+    bool status = SerialPort->isOpen();
     qint64 st = SerialPort->write(Inp.Ba.data(), Inp.Ba.size());
     if (st < Inp.Ba.size())
     {
@@ -505,25 +520,35 @@ void ModbusThread::Send()
     while ((Busy) && (tme.elapsed() < RECONNECTTIME)) // ждём, пока либо сервер не отработает, либо не наступит таймаут
         QThread::msleep(MAINSLEEPCYCLETIME);
     if (Busy)
+    {
+        Busy = false;
+        Log->error("Timeout");
         Outp.Res = GENERALERROR;
+    }
 }
 
 void ModbusThread::ParseReply()
 {
-    qint64 cursize = SerialPort->bytesAvailable();
-    Outp.Ba.append(SerialPort->read(cursize));
+    Outp.Ba.append(SerialPort->readAll());
+    Log->info("<- " + Outp.Ba.toHex());
     if ((!Inp.Checked) && (Outp.Ba.size() >= 2))
     {
         Inp.Checked = true;
         if (Outp.Ba.at(1) == (Inp.Command & 0x80)) // error
+        {
+            Log->error("Error in module");
             ERMSG("modbus error response");
+        }
         if (Outp.Ba.at(1) != Inp.Command) // wrong response
+        {
+            Log->error("Wrong response");
             ERMSG("modbus wrong command");
+        }
     }
 
-    if(cursize >= Inp.ReadSize)
+    if (Outp.Ba.size() >= Inp.ReadSize)
     {
-        Log->info("<- " + Outp.Ba.toHex());
+        Log->info("<-- " + Outp.Ba.toHex());
         int rdsize = Outp.Ba.size();
 
         quint16 MYKSS = CalcCRC(Outp.Ba);
@@ -531,6 +556,7 @@ void ModbusThread::ParseReply()
 
         if(MYKSS != crcfinal)
         {
+            Log->error("Crc error");
             ERMSG("modbus crc error");
 //            emit ErrorCrc();
             Outp.Res = GENERALERROR;

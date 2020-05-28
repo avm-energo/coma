@@ -9,6 +9,7 @@
 #include <QWaitCondition>
 #include "../gen/s2.h"
 #include "../gen/logclass.h"
+#include "../gen/maindef.h"
 
 #define RECONNECTTIME 5000
 #define POLLINGINTERVAL 2000 // polling cycle time
@@ -28,12 +29,6 @@ class ModBus : public QObject
 Q_OBJECT
 
 public:
-    enum ModbusDeviceState
-    {
-        ConnectedState,
-        ClosingState
-    };
-
     enum ModbusGroupsEnum
     {
         SIGNALTYPE = 0,
@@ -66,13 +61,13 @@ public:
     {
        float flVal;
        int SigAdr;
-    } ModBusSignalStruct;
+    } SignalStruct;
 
     typedef struct
     {
        quint32 Val;
        int SigAdr;
-    } ModBusBSISignalStruct;
+    } BSISignalStruct;
 
     struct Information
     {
@@ -115,16 +110,16 @@ public slots:
     void Finish();
 
 signals:
-    void SignalsReceived(ModBusSignalStruct *Signal, int size);
-    void CorSignalsReceived(ModBusSignalStruct *Signal, int size);
-    void TimeSignalsReceived(ModBusBSISignalStruct *Signal);
-    void BsiFromModbus(ModBusBSISignalStruct*, int);
-    void ModbusState(ModBus::ModbusDeviceState);
+    void SignalsReceived(ModBus::SignalStruct *Signal, int size);
+    void CorSignalsReceived(ModBus::SignalStruct *Signal, int size);
+    void TimeSignalsReceived(ModBus::BSISignalStruct *Signal);
+    void BsiFromModbus(ModBus::BSISignalStruct*, int);
+    void ModbusState(ConnectionStates);
     void ErrorRead();
 //    void ErrorCrc();
     void Finished();
     void FinishModbusThread();
-    void CoilSignalsReady(Coils*);
+    void CoilSignalsReady(ModBus::Coils*);
     void TimeReadError();
     void ReconnectSignal();
 
@@ -142,8 +137,8 @@ private:
 
     void SendAndGet(InOutStruct &inp, InOutStruct &outp);
     bool GetResultFromOutQueue(int index, InOutStruct &outp);
-    int GetSignalsFromByteArray(QByteArray &bain, int startadr, ModBusBSISignalStruct *BSIsig, int &size);
-    int GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, ModBusSignalStruct *Sig, int &size);
+    int GetSignalsFromByteArray(QByteArray &bain, int startadr, BSISignalStruct *BSIsig, int &size);
+    int GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, SignalStruct *Sig, int &size);
 
 private slots:
     void Reconnect();
@@ -161,7 +156,7 @@ public:
     ModbusThread(ModBus::ModBus_Settings settings, QObject *parent = nullptr);
     ~ModbusThread();
 
-    ModBus::ModbusDeviceState State();
+    ConnectionStates State();
     void Init(QQueue<ModBus::InOutStruct> *inq, QList<ModBus::InOutStruct> *outl);
 
 public slots:
@@ -169,7 +164,7 @@ public slots:
     void FinishThread();
 
 signals:
-    void ModbusState(ModBus::ModbusDeviceState);
+    void ModbusState(ConnectionStates);
     void Finished();
 
 private:
@@ -179,8 +174,9 @@ private:
     bool Busy; // port is busy with write/read operation
     bool AboutToFinish;
     ModBus::InOutStruct Inp, Outp;
-    ModBus::ModbusDeviceState _state;
+    ConnectionStates _state;
     LogClass *Log;
+    ModBus::ModBus_Settings Settings;
 
     const unsigned char TabCRChi[256] = {
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,

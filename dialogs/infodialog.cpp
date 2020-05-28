@@ -77,8 +77,8 @@ void InfoDialog::FillBsiFrom104(Parse104::BS104Signals* BS104)
     //sig = *BS104;
 //    ModuleBSI::Bsi bsi = *new ModuleBSI::Bsi;
     int i;
-    int startadr = 0;
-    memcpy(&startadr, &(BS104->BS.SigAdr[0]), sizeof(BS104->BS.SigAdr));
+    int startadr = BS104->BS.SigAdr[0];
+//    memcpy(&startadr, &(BS104->BS.SigAdr[0]), sizeof(BS104->BS.SigAdr));
 
     if(BS104->SigNumber && (startadr >= 1 && startadr <= 15))
     {
@@ -107,14 +107,14 @@ void InfoDialog::FillBsiFrom104(Parse104::BS104Signals* BS104)
 
 }
 
-void InfoDialog::FillBsiFromModBus(ModBusBSISignal *Signal, int size)
+void InfoDialog::FillBsiFromModBus(ModBus::BSISignalStruct *Signal, int size)
 {
     //Parse104::BS104Signals sig = *new Parse104::BS104Signals;
     //sig = *BS104;
     ModuleBSI::Bsi bsi = *new ModuleBSI::Bsi;
     int i;
-    int startadr = 0;
-    memcpy(&startadr, &(Signal->SigAdr), sizeof(Signal->SigAdr));
+    int startadr = Signal->SigAdr;
+//    memcpy(&startadr, &(Signal->SigAdr), sizeof(Signal->SigAdr));
 
     if(size && startadr == 1)
     {
