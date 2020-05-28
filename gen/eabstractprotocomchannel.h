@@ -114,6 +114,7 @@ signals:
     void ShowError(QString message);
     void QueryFinished();
     void Finished();
+    void ReconnectSignal();
 
 public slots:
     void Timeout();

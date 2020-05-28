@@ -187,7 +187,8 @@ public:
     QVector<S2::DataRec> *DRJour;
     char BoardType;
     quint32 FileLen;
-    int incLS, count, noAnswer, FileSending;
+    int incLS, count, NoAnswer, FileSending;
+    QTimer *TimerCon;
 
 
 

@@ -932,7 +932,7 @@ void IEC104::SelectFile(char numFile)
     SecNum = 1;
     //void* temp = &SC;
     Parse->FileSending = 1;
-    Parse->conTimer->stop();
+    ConTimer->stop();
     /*SC.Ident.typeIdent = F_SC_NA_1;
     SC.Ident.qualifier = static_cast<char>(1);
     SC.Ident.cause = 13;

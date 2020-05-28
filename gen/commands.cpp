@@ -98,6 +98,7 @@ int Commands::GetFile(int filenum, QByteArray &ba)
         quint32 crctocheck;
         quint32 basize = ba.size();
         if (basize < 17)
+        {
             return GENERALERROR;
             ERMSG("basize");
         }

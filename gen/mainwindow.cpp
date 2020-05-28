@@ -188,9 +188,9 @@ void MainWindow::attemptToRec()
 
     if(Reconnect != false)
 
-    if(MainInterface.size() != 0)
-    {
-        if(MainInterface == "USB")
+    //if(MainInterface->size() != 0)
+    //{
+        if(MainInterface == I_USB)
         {
            insl.clear();
 
@@ -206,29 +206,30 @@ void MainWindow::attemptToRec()
 
            cn->TranslateDeviceAndSave(SavePort);
 
-           if (Commands::Connect() != Error::ER_NOERROR)
+           if (Commands::Connect() != NOERROR)
            {
-               ReConnect(1);
+               ReConnect();
                return;
            }
            else
            {
                int res = ModuleBSI::SetupBSI();
-               if (res == Error::ER_CANAL)
+               if (res != NOERROR)
                {
-                  ReConnect(1);
+                  ReConnect();
                   return;
                }
-               else if (res == Error::ER_NOERROR)
+               else if (res == NOERROR)
                {
                  if(ModuleBSI::ModuleTypeString != "")
                  EMessageBox::information(this, "Успешно", "Связь с "+ModuleBSI::ModuleTypeString+" установлена");
                }
            }
          }
-    }
+    //}
 
 
+    if(Reconnect != false)
     {
         QApplication::setOverrideCursor(Qt::WaitCursor);
         S2Config.clear();
@@ -263,11 +264,11 @@ void MainWindow::ConnectMessage()
     dlg->close();
 }
 
-void MainWindow::stopTimer()
+/*void MainWindow::stopTimer()
 {
     connectTimer->stop();
     connectTimer->deleteLater();
-}
+}*/
 
 QWidget *MainWindow::HthWidget()
 {
@@ -469,14 +470,14 @@ void MainWindow::PredAlarmState()
 
     w->setLayout(vlayout);
 
-    if(MainInterface == "Ethernet" && ch104 != nullptr)
-    connect(ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
+    if(MainInterface == I_ETHERNET && Ch104 != nullptr)
+    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
 
-    if(MainInterface == "USB")
+    if(MainInterface == I_USB)
     connect(BdaTimer,SIGNAL(timeout()), this, SLOT(GetUSBAlarmInDialog()));
 
-    if(MainInterface == "RS485" && modBus != nullptr)
-    connect(modBus,SIGNAL(coilsignalsready(Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(Coils*)));
+    if(MainInterface == I_RS485 && ChModbus != nullptr)
+    connect(ChModbus,SIGNAL(coilsignalsready(Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(Coils*)));
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
@@ -548,14 +549,14 @@ void MainWindow::AlarmState()
 
     w->setLayout(vlayout);
 
-    if(MainInterface == "Ethernet" && ch104 != nullptr)
-    connect(ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
+    if(MainInterface ==  I_ETHERNET && Ch104 != nullptr)
+    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
 
-    if(MainInterface == "USB")
+    if(MainInterface == I_USB)
     connect(BdaTimer,SIGNAL(timeout()), this, SLOT(GetUSBAlarmInDialog()));
 
-    if(MainInterface == "RS485" && modBus != nullptr)
-    connect(modBus,SIGNAL(coilsignalsready(Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(Coils*)));
+    if(MainInterface == I_RS485 && ChModbus != nullptr)
+    connect(ChModbus,SIGNAL(coilsignalsready(Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(Coils*)));
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
@@ -1371,7 +1372,7 @@ void MainWindow::FileTimeOut()
     //prb->setMaximum(0);
 
    ReceiveTimer->stop();
-   if(fileSize != curfileSize && MainInterface != "USB")
+   if(fileSize != curfileSize && MainInterface != I_USB)
    {
      EMessageBox::information(this, "Ошибка", "Ошибка");
    }

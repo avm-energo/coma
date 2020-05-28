@@ -86,16 +86,16 @@ int ModBus::SendAndGetResult(ComInfo &request, InOutStruct &outp)
     if(request.Data.size())
         bytes.append(request.Data);
 
-    Log->info("Send bytes: " + bytes.toHex(','));
+    Log->info("Send bytes: " + bytes.toHex());
     inp.Ba = bytes;
     // wait for an answer or timeout and return result
     SendAndGet(inp, outp);
     if (outp.Res != NOERROR)
     {
-        Log->warning("Error, bytes: " + outp.Ba.toHex(','));
+        Log->warning("Error, bytes: " + outp.Ba.toHex());
         return outp.Res;
     }
-    Log->info("Rcv bytes: " + outp.Ba.toHex(','));
+    Log->info("Rcv bytes: " + outp.Ba.toHex());
     return NOERROR;
 }
 

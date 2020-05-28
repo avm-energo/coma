@@ -358,7 +358,7 @@ void Coma::Stage3()
     str = (CheckM == nullptr) ? "Текущие параметры" : "Текущие параметры\nБазовая";
     if (CheckB != nullptr)
     {
-        if(MainInterface == "RS485" || MainInterface == "USB")
+        if(MainInterface == I_RS485 || MainInterface == I_USB)
         {
            connect(this, SIGNAL(SetPredAlarmColor(quint8*)), CheckB,SLOT(SetPredAlarmColor(quint8*)));
            connect(this, SIGNAL(SetAlarmColor(quint8*)), CheckB,SLOT(SetAlarmColor(quint8*)));
@@ -553,7 +553,7 @@ void Coma::PrepareDialogs()
                 Ch104->Connect(IPtemp);
             connect(Ch104,SIGNAL(EthConnected()), this, SLOT(ConnectMessage()));
             //connect(ch104,SIGNAL(readConf()), ch104,SIGNAL(readConf()));
-            connect(ch104,SIGNAL(ethdisconnected()), this, SLOT(DisconnectMessage()));
+            connect(Ch104,SIGNAL(ethdisconnected()), this, SLOT(DisconnectMessage()));
             //connect(ch104,SIGNAL(ethNoconnection()), this, SLOT(DisconnectAndClear()));
 
             connect(CorD,SIGNAL(sendCom45(quint32)), Ch104, SLOT(Com45(quint32)));
