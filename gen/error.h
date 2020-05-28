@@ -4,7 +4,7 @@
 #include <QString>
 #include <QList>
 
-#include "log.h"
+#include "logclass.h"
 
 // Макросы для выдачи сообщений
 #define ERMSG(a)    Error::AddErrMsg(Error::ER_MSG,__FILE__,__LINE__,a)
@@ -111,6 +111,11 @@
 #define ER_BUFMAX   16
 #define LOGFILE     "coma.log"
 
+#define NOERROR         0 // нет ошибок
+#define GENERALERROR    -1 // возвращённое значение - ошибка
+#define RESEMPTY        -2 // пустой результат
+
+
 class Error
 {
 public:
@@ -131,24 +136,6 @@ public:
         QString msg;
     };
 
-    enum Errors
-    {
-        ER_MAIN,
-        ER_CANAL,
-        ER_SERIAL,
-        ER_ETUNE,
-        ER_ECONF,
-        ER_ATUNE,
-        ER_ACONF,
-        ER_OSC,
-        ER_PUB,
-        ER_ACHECK,
-        ER_ECHECK,
-        ER_NOERROR, // нет ошибок
-        ER_GENERALERROR, // возвращённое значение - ошибка
-        ER_RESEMPTY // пустой результат
-    };
-
     Error();
     static void Init();
     static void AddErrMsg(ErMsgType msgtype, QString file=nullptr, int line=0, QString msg="");
@@ -159,7 +146,7 @@ public:
 private:
     static QStringList ErrMsgs;
     static QList<ErMsg> ErMsgPool;
-    static Log LogFile;
+    static LogClass LogFile;
 
     void addmessage(QStringList &sl, QString mes);
     void SetErMsg(int ernum);

@@ -298,8 +298,17 @@ void MNKTime::Write_Date()
     QString qStr;
     WDFunc::LE_read_data(this, "Date", qStr);
     myDateTime = QDateTime::fromString(qStr,"dd-MM-yyyy HH:mm:ss");
+<<<<<<< HEAD
     //int cbidx = WDFunc::CBIndex(this, "TimeZone");
+
+    //if(cbidx == 1)
+    //myDateTime.setOffsetFromUtc(10800);
+
+    *time = myDateTime.toTime_t();
+=======
+    myDateTime.setOffsetFromUtc(0);
     uint time = myDateTime.toTime_t();
+>>>>>>> origin/Modbus_refactoring
 
 
     if(MainInterface == I_USB)

@@ -113,8 +113,13 @@ int AbstractConfDialog::WriteCheckPassword()
     dlg->show();
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
-        return GENERALERROR;
+<<<<<<< HEAD
+        return Error::ER_GENERALERROR;
     if(!ok)
+=======
+        return GENERALERROR;
+    if (!ok)
+>>>>>>> origin/Modbus_refactoring
     {
         EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
         return GENERALERROR;

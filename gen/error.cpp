@@ -6,7 +6,7 @@
 
 QStringList Error::ErrMsgs;
 QList<Error::ErMsg> Error::ErMsgPool;
-Log Error::LogFile;
+LogClass Error::LogFile;
 
 Error::Error()
 {

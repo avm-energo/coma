@@ -7,13 +7,13 @@
 
 #define LOG_MAX_SIZE    1048576
 
-class Log : public QObject
+class LogClass : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit Log(QObject *parent=nullptr);
-    ~Log();
+    explicit LogClass(QObject *parent=nullptr);
+    ~LogClass();
     void Init(const QString &Filename);
     void error(const QString &str);
     void warning(const QString &str);

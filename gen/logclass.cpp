@@ -1,20 +1,19 @@
 #include <QDateTime>
 #include <QDir>
-//#include <QStandardPaths>
 #define LZMA_API_STATIC
 #include "lzma/lzma.h"
 
-#include "log.h"
+#include "logclass.h"
 #include "stdfunc.h"
 #include "error.h"
 
-Log::Log(QObject *parent) : QObject(parent)
+LogClass::LogClass(QObject *parent) : QObject(parent)
 {
     fp = nullptr;
     mtx = new QMutex;
 }
 
-Log::~Log()
+LogClass::~LogClass()
 {
     if (fp != nullptr)
     {
@@ -24,7 +23,7 @@ Log::~Log()
     }
 }
 
-void Log::Init(const QString &Filename)
+void LogClass::Init(const QString &Filename)
 {
     LogFile = StdFunc::GetSystemHomeDir() + Filename;
     // тестовая проверка открытия файла на запись
@@ -37,31 +36,31 @@ void Log::Init(const QString &Filename)
     CanLog = true;
 }
 
-void Log::error(const QString &str)
+void LogClass::error(const QString &str)
 {
     if (CanLog)
         WriteFile("Error", str);
 }
 
-void Log::info(const QString &str)
+void LogClass::info(const QString &str)
 {
     if (CanLog)
         WriteFile("Info", str);
 }
 
-void Log::warning(const QString &str)
+void LogClass::warning(const QString &str)
 {
     if (CanLog)
         WriteFile("Warning",str);
 }
 
-void Log::intvarvalue(const QString &var, int value)
+void LogClass::intvarvalue(const QString &var, int value)
 {
     if (CanLog)
         WriteFile(var, QString::number(value));
 }
 
-void Log::WriteFile(const QString &Prepend, const QString &msg)
+void LogClass::WriteFile(const QString &Prepend, const QString &msg)
 {
     QString tmps = "[" + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz") + "]";
     fp->write(tmps.toLocal8Bit());
@@ -75,7 +74,7 @@ void Log::WriteFile(const QString &Prepend, const QString &msg)
 
 // thread-safe function
 
-void Log::WriteRaw(const QByteArray &ba)
+void LogClass::WriteRaw(const QByteArray &ba)
 {
     QString tmps = "[" + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz") + "]";
     mtx->lock();
@@ -86,7 +85,7 @@ void Log::WriteRaw(const QByteArray &ba)
     mtx->unlock();
 }
 
-void Log::CheckAndGz()
+void LogClass::CheckAndGz()
 {
     QString GZippedLogFile = LogFile;
     if (fp->size() >= LOG_MAX_SIZE)

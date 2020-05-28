@@ -39,7 +39,7 @@ void WaitWidget::Init(WaitWidget::ww_struct &ww)
     this->Seconds = ww.initialseconds;
     QFont font;
     QFontMetrics fm(font);
-    PressAnyKeyStringWidth = fm.width(PressAnyKeyString);//+10;
+    PressAnyKeyStringWidth = fm.horizontalAdvance(PressAnyKeyString);//+10;
 }
 
 void WaitWidget::Start()
@@ -110,7 +110,7 @@ void WaitWidget::paintEvent(QPaintEvent *e)
     QFont font;
     QFontMetrics fm(font);
     int center = wsize.width()/2;
-    int msgwidth = fm.width(Message);//+10;
+    int msgwidth = fm.horizontalAdvance(Message);//+10;
     left = center - msgwidth/2;
     QRect mrect = QRect(left,height()-20,msgwidth,20);
 //    p.setPen(Qt::blue);

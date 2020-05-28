@@ -19,11 +19,12 @@ DEFINES += PROGCAPTION='\\"AVM-Service\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += PROGSIZE=4 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
-DEFINES += ETHENABLE # enable eth
 TEMPLATE = app
 
 
 SOURCES += \
+    ../gen/logclass.cpp \
+    ../modbus/serialport.cpp \
     coma.cpp \
     main.cpp \
     ../check/check.cpp \
@@ -62,7 +63,6 @@ SOURCES += \
     ../dialogs/settingsdialog.cpp \
     ../gen/error.cpp \
     ../gen/files.cpp \
-    ../gen/log.cpp \
     ../gen/mainwindow.cpp \
     ../gen/modulebsi.cpp \
     ../gen/report.cpp \
@@ -80,14 +80,12 @@ SOURCES += \
     ../widgets/etablemodel.cpp \
     ../widgets/etableview.cpp \
     ../widgets/etabwidget.cpp \
-    ../widgets/etwoimages.cpp \
     ../widgets/getoscpbdelegate.cpp \
     ../widgets/lineeditfield.cpp \
     ../widgets/passwordlineedit.cpp \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp \
-    ../check/checktempmodbusdialog.cpp \
     ../gen/commands.cpp \
     ../gen/eabstractprotocomchannel.cpp \
     ../gen/eusbhid.cpp \
@@ -95,6 +93,8 @@ SOURCES += \
 
 
 HEADERS += \
+    ../gen/logclass.h \
+    ../modbus/serialport.h \
     coma.h \
     ../check/check.h \
     ../check/check84.h \
@@ -133,7 +133,6 @@ HEADERS += \
     ../gen/colors.h \
     ../gen/error.h \
     ../gen/files.h \
-    ../gen/log.h \
     ../gen/maindef.h \
     ../gen/mainwindow.h \
     ../gen/modulebsi.h \
@@ -151,7 +150,6 @@ HEADERS += \
     ../widgets/etablemodel.h \
     ../widgets/etableview.h \
     ../widgets/etabwidget.h \
-    ../widgets/etwoimages.h \
     ../widgets/getoscpbdelegate.h \
     ../widgets/keypress.h \
     ../widgets/lineeditfield.h \
@@ -160,7 +158,6 @@ HEADERS += \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
     ../modbus/modbus.h \
-    ../check/checktempmodbusdialog.h \
     ../gen/commands.h \
     ../gen/eabstractprotocomchannel.h \
     ../gen/eusbhid.h \

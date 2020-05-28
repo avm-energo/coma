@@ -11,7 +11,6 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
-//#include "../gen/publicclass.h"
 #include "../gen/colors.h"
 #include "../gen/modulebsi.h"
 #include "confdialog84.h"
@@ -908,7 +907,7 @@ void ConfDialog84::slot2_timeOut()
 /*    uint unixtimestamp = 0;
     QDateTime myDateTime;
 
-    if (Commands::GetTimeMNK(unixtimestamp) == Error::ER_NOERROR)
+    if (Commands::GetTimeMNK(unixtimestamp) == NOERROR)
     {
       myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
       //myDateTime.setTime_t(unixtimestamp);
@@ -938,7 +937,7 @@ void ConfDialog84::Write_PCDate()
     myDateTime = QDateTime::currentDateTimeUtc();
     time = myDateTime.toTime_t();
 
-    /*if (Commands::WriteTimeMNK(&time, sizeof(uint)) == Error::ER_NOERROR)
+    /*if (Commands::WriteTimeMNK(&time, sizeof(uint)) == NOERROR)
     EMessageBox::information(this, "INFO", "Записано успешно");
     else
     EMessageBox::information(this, "INFO", "Ошибка");*/
@@ -955,7 +954,7 @@ void ConfDialog84::Write_Date()
     myDateTime.setOffsetFromUtc(0);
     *time = myDateTime.toTime_t();
 
-   /* if (Commands::WriteTimeMNK(time, sizeof(uint)) == Error::ER_NOERROR)
+   /* if (Commands::WriteTimeMNK(time, sizeof(uint)) == NOERROR)
     EMessageBox::information(this, "INFO", "Записано успешно");
     else
     EMessageBox::information(this, "INFO", "Ошибка");*/

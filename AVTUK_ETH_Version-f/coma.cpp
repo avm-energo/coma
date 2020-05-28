@@ -49,7 +49,7 @@
 #include "../widgets/waitwidget.h"
 #include "../gen/colors.h"
 #include "../gen/modulebsi.h"
-#include "../gen/log.h"
+#include "../gen/logclass.h"
 #include "../modbus/modbus.h"
 #include "../gen/timefunc.h"
 #if PROGSIZE != PROGSIZE_EMUL
@@ -173,10 +173,8 @@ void Coma::SetupUI()
     if (!Autonomous)
     {
     /*#if PROGSIZE != PROGSIZE_EMUL
-    #ifdef ETHENABLE
         ch104 = new iec104;
         connect(ch104,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
-    #endif
         connect(ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
         connect(ch104,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
         connect(ch104,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
@@ -264,9 +262,9 @@ void Coma::Stage3()
     MTypeM = 0;
     ConfB = ConfM = nullptr;
     JourD = nullptr;
-    ch104 = nullptr;
+//    Ch104 = nullptr;
     CorD = nullptr;
-    modBus = nullptr;
+//    ChModbus = nullptr;
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     //MainTW->setMinimumSize(QSize(800,600));
@@ -274,14 +272,19 @@ void Coma::Stage3()
         return;
 
     idlg = new InfoDialog;
-    connect(this,SIGNAL(USBBsiRefresh()),idlg,SLOT(FillBsi()));
     connect(this,SIGNAL(ClearBsi()),idlg,SLOT(ClearBsi()));
 
     CorD = new CorDialog();
     //connect(this,SIGNAL(ConnectMes(QString*)),CheckB,SLOT(ConnectMessage(QString*)));
 
-    if(MainInterface == "USB")
+    if(MainInterface == I_USB)
     {
+        if (Commands::Connect() != NOERROR) // cn->Connect()
+        {
+            cn->CnLog->error("Can't connect");
+            return;
+        }
+        connect(this,SIGNAL(USBBsiRefresh()),idlg,SLOT(FillBsi()));
         MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
         MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
         //CorD = new CorDialog();
@@ -289,34 +292,27 @@ void Coma::Stage3()
     }
     else
     {
-         if(MainInterface == "Ethernet")
+         if (MainInterface == I_ETHERNET)
          {
-#ifdef ETHENABLE
-            ch104 = new iec104(&IPtemp, this);
-            ch104->BaseAdr = AdrBaseStation;
-            connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),idlg,SLOT(FillBsiFrom104(Parse104::BS104Signals*)));           
-            connect(this,SIGNAL(stopit()),ch104,SLOT(Stop()));
-            CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, ch104);
-    #endif
+             if (!Ch104->Working())
+                 Ch104->Connect(IPtemp);
+             Ch104->BaseAdr = AdrBaseStation;
+             connect(Ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),idlg,SLOT(FillBsiFrom104(Parse104::BS104Signals*)));
+             CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, Ch104);
          }
-         else if(MainInterface == "RS485")
+         else if (MainInterface == I_RS485)
          {
+             if (ChModbus->Connect(Settings) != NOERROR)
+             {
+                 ERMSG("Modbus not connected");
+                 return;
+             }
 
-             modBus = new ModBus(Settings,this);
-             Modthr = new QThread;
-             //Modthr->setPriority(QThread::LowPriority);
-             modBus->moveToThread(Modthr);
-             connect(this,SIGNAL(stopModBus()),modBus,SLOT(StopModSlot()));
-             connect(modBus, SIGNAL(finished()), Modthr, SIGNAL(finished()));
-             connect(Modthr, SIGNAL(finished()), this, SLOT(CheckModBusFinish()));
-             connect(Modthr,SIGNAL(finished()),modBus,SLOT(deleteLater()));
-             //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
-             connect(Modthr,SIGNAL(started()),modBus,SLOT(WriteToPort()));
              CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
-             connect(modBus,SIGNAL(BsiFromModBus(ModBusBSISignal*, int*)),idlg,SLOT(FillBsiFromModBus(ModBusBSISignal*, int* )));
-             connect(modBus,SIGNAL(coilsignalsready(Coils*)),this,SLOT(ModbusUpdateStatePredAlarmEvents(Coils*)));
-             connect(MainTW, SIGNAL(tabClicked(int)), modBus,SLOT(tabs(int)));
-             modBus->BSIrequest(Settings);
+             connect(ChModbus,SIGNAL(BsiFromModbus(QList<ModBus::BSISignalStruct>, int)),idlg,SLOT(FillBsiFromModBus(QList<ModBus::BSISignalStruct>, int)));
+             connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils)),this,SLOT(ModbusUpdateStatePredAlarmEvents(ModBus::Coils)));
+             connect(MainTW, SIGNAL(tabClicked(int)), ChModbus,SLOT(Tabs(int)));
+             ChModbus->BSIrequest();
              //TimeTimer->setInterval(3000);
 
          }
@@ -328,13 +324,13 @@ void Coma::Stage3()
            if(count == 50)
            {
              count = 0;
-             if(reconnect)
+             if(Reconnect)
              {
-               if(MainInterface == "Ethernet" || MainInterface == "RS485")
-               ReConnect(1);
+               if(MainInterface == I_ETHERNET || MainInterface == I_RS485)
+               ReConnect();
              }
              else
-             DisconnectAndClear();
+                DisconnectAndClear();
              return;
            }
          }
@@ -342,9 +338,9 @@ void Coma::Stage3()
          //emit ConnectMes(&FullName);
     }
 
-    reconnect = true;
+    Reconnect = true;
 
-    if(MainInterface == "Ethernet")
+    if(MainInterface == I_ETHERNET)
     {
         if (insl.size() < 2)
             return;
@@ -354,8 +350,8 @@ void Coma::Stage3()
         }
     }
 
-    if (MainInterface == "USB")
-    emit USBBsiRefresh();
+    if (MainInterface == I_USB)
+        emit USBBsiRefresh();
 
     PrepareDialogs();
 
@@ -374,10 +370,10 @@ void Coma::Stage3()
         MainTW->addTab(CheckB, str);
         CheckB->checkIndex = MainTW->indexOf(CheckB);
 
-        if(MainInterface == "RS485")
-        modBus->checkIndex = CheckB->checkIndex;
+        if(MainInterface == I_RS485)
+        ChModbus->CheckIndex = CheckB->checkIndex;
 
-        if(MainInterface == "USB")
+        if(MainInterface == I_USB)
         {
             connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Start_BdaTimer(int))); //tabClicked
             connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Stop_BdaTimer(int)));
@@ -436,33 +432,24 @@ void Coma::Stage3()
         if(ConfM != nullptr)
         ConfM->timeIndex = Time->timeIndex;
 
-        if(MainInterface == "RS485")
-        modBus->timeIndex = Time->timeIndex;
+        if(MainInterface == I_RS485)
+        ChModbus->TimeIndex = Time->timeIndex;
 
-        /*QThread *thrTime = new QThread;
-        thrTime->setPriority(QThread::LowPriority);
-        Time->moveToThread(thrTime);
-        connect(this,SIGNAL(stoptime()),Time,SLOT(StopSlot()));
-        connect(Time, SIGNAL(finished()), thrTime, SIGNAL(finished()));
-        //connect(thr, SIGNAL(finished()), this, SLOT(CheckTimeFinish()));
-        connect(thrTime,SIGNAL(finished()),Time,SLOT(deleteLater()));
-        //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));*/
         connect(TimeTimer,SIGNAL(timeout()),Time,SLOT(slot2_timeOut()));
-        if(ch104 != nullptr)
+        if(Ch104 != nullptr)
         {
-            connect(Time,SIGNAL(ethTimeRequest()),ch104,SLOT(InterrogateTimeGr15()));
-            connect(ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),Time,SLOT(FillTimeFrom104(Parse104::BS104Signals*)));
-            connect(Time,SIGNAL(ethWriteTimeToModule(uint*)),ch104,SLOT(com51WriteTime(uint*)));
+            connect(Time,SIGNAL(ethTimeRequest()),Ch104,SLOT(InterrogateTimeGr15()));
+            connect(Ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),Time,SLOT(FillTimeFrom104(Parse104::BS104Signals*)));
+            connect(Time,SIGNAL(ethWriteTimeToModule(uint)),Ch104,SLOT(com51WriteTime(uint)));
         }
-        if(modBus != nullptr)
+        if(ChModbus != nullptr)
         {
-            connect(Time,SIGNAL(modBusTimeRequest()),modBus,SLOT(InterrogateTime()));
-            connect(modBus,SIGNAL(timeSignalsReceived(ModBusBSISignal*)),Time,SLOT(FillTimeFromModBus(ModBusBSISignal*)));
-            connect(Time,SIGNAL(modbusWriteTimeToModule(uint*)),modBus,SLOT(WriteTime(uint*)));
-            connect(modBus,SIGNAL(timeReadError()),Time,SLOT(ErrorRead()));
+            connect(Time,SIGNAL(modBusTimeRequest()),ChModbus,SLOT(ReadTime()));
+            connect(ChModbus,SIGNAL(TimeSignalsReceived(QList<ModBus::BSISignalStruct>)),Time,SLOT(FillTimeFromModBus(QList<ModBus::BSISignalStruct>)));
+            connect(Time,SIGNAL(modbusWriteTimeToModule(uint)),ChModbus,SLOT(WriteTime(uint)));
+            connect(ChModbus,SIGNAL(TimeReadError()),Time,SLOT(ErrorRead()));
+            connect(ChModbus, SIGNAL(TimeWritten()), Time, SLOT(TimeWritten()));
         }
-
-
 
     if (CorD != nullptr)
     {
@@ -470,8 +457,8 @@ void Coma::Stage3()
         CorD->corDIndex = MainTW->indexOf(CorD);
         connect(MainTW, SIGNAL(tabClicked(int)), CorD, SLOT(GetCorBd(int))); //tabClicked
 
-        if(MainInterface == "RS485")
-        modBus->corIndex = CorD->corDIndex;
+        if(MainInterface == I_RS485)
+        ChModbus->CorIndex = CorD->corDIndex;
     }
 
     if (JourD != nullptr)
@@ -484,7 +471,7 @@ void Coma::Stage3()
     //connect(MainTW, SIGNAL(currentChanged()))
    // connect(this,SIGNAL(FinishAll()),this,SLOT(FinishHim()));
 
-    if(MainInterface == "USB")
+    if(MainInterface == I_USB)
     {
         FwUpD = new fwupdialog;
         MainTW->addTab(FwUpD, "Загрузка ВПО");
@@ -498,20 +485,20 @@ void Coma::Stage3()
    // SetSlideWidget();
 #endif
 
-    if(MainInterface == "Ethernet" || MainInterface == "RS485")
-    ConnectMessage();
+    if (MainInterface == I_ETHERNET || MainInterface == I_RS485)
+        ConnectMessage();
 
-    if(MainInterface == "RS485")
-    Modthr->start();
+/*    if(MainInterface == I_RS485)
+    Modthr->start(); */
 
-    if(MainInterface == "USB")
-    BdaTimer->start();
+    if(MainInterface == I_USB)
+        BdaTimer->start();
 
 }
 
 void Coma::PrepareDialogs()
 {
-    if (MainInterface == "USB")
+    if (MainInterface == I_USB)
     MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
 
     MTypeB =  MTypeB<<8;
@@ -559,64 +546,60 @@ void Coma::PrepareDialogs()
        {
         if(insl.at(1) == "ETH")
         {
-#ifdef ETHENABLE
             //ch104 = new iec104(&IPtemp, this);
 
             //ch104->IP = IPtemp;
-            connect(ch104,SIGNAL(ethconnected()), this, SLOT(ConnectMessage()));
+            if (!Ch104->Working())
+                Ch104->Connect(IPtemp);
+            connect(Ch104,SIGNAL(EthConnected()), this, SLOT(ConnectMessage()));
             //connect(ch104,SIGNAL(readConf()), ch104,SIGNAL(readConf()));
             connect(ch104,SIGNAL(ethdisconnected()), this, SLOT(DisconnectMessage()));
             //connect(ch104,SIGNAL(ethNoconnection()), this, SLOT(DisconnectAndClear()));
 
-            connect(CorD,SIGNAL(sendCom45(quint32*)), ch104, SLOT(Com45(quint32*)));
-            connect(CorD,SIGNAL(sendCom50(quint32*, float*)), ch104, SLOT(Com50(quint32*,float*)));
-            connect(CorD,SIGNAL(CorReadRequest()), ch104, SLOT(CorReadRequest()));
+            connect(CorD,SIGNAL(sendCom45(quint32)), Ch104, SLOT(Com45(quint32)));
+            connect(CorD,SIGNAL(sendCom50(quint32*, float*)), Ch104, SLOT(Com50(quint32*,float*)));
+            connect(CorD,SIGNAL(CorReadRequest()), Ch104, SLOT(CorReadRequest()));
 
-            connect(ch104,SIGNAL(sendMessageOk()), CorD, SLOT(MessageOk()));
-            connect(ch104,SIGNAL(sendCorMesOk()), CorD, SLOT(WriteCorMessageOk()));
+            connect(Ch104,SIGNAL(sendMessageOk()), CorD, SLOT(MessageOk()));
+            connect(Ch104,SIGNAL(sendCorMesOk()), CorD, SLOT(WriteCorMessageOk()));
 
-            connect(ch104,SIGNAL(relesignalsready(Parse104::SponSignals104*)), this, SLOT(UpdateReleWidget(Parse104::SponSignals104*)));
+            connect(Ch104,SIGNAL(relesignalsready(Parse104::SponSignals104*)), this, SLOT(UpdateReleWidget(Parse104::SponSignals104*)));
 
-            connect(ch104,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),CorD,SLOT(UpdateFlCorData(Parse104::FlSignals104*)));
+            connect(Ch104,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),CorD,SLOT(UpdateFlCorData(Parse104::FlSignals104*)));
 
-            connect(ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
-            connect(ch104,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
+            connect(Ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
+            connect(Ch104,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
 
-            connect(ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),this,SLOT(UpdateStatePredAlarmEvents(Parse104::SponSignals104*)));
-            connect(ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),this,SLOT(UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime*)));
+            connect(Ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),this,SLOT(UpdateStatePredAlarmEvents(Parse104::SponSignals104*)));
+            connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),this,SLOT(UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime*)));
 
             setMinimumSize(QSize(800, 650));
             //CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, ch104);
             connect(CheckB,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)),this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)));
 
             //ConfM = new ConfDialog84(S2Config);
-            connect(JourD,SIGNAL(ReadJour(char)), ch104, SLOT(SelectFile(char)));
-/*            connect(ch104,SIGNAL(sendJourSysfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillSysJour(QVector<S2::DataRec>*)));
-            connect(ch104,SIGNAL(sendJourWorkfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillWorkJour(QVector<S2::DataRec>*)));
-            connect(ch104,SIGNAL(sendJourMeasfromiec104(QVector<S2::DataRec>*)), JourD, SLOT(FillMeasJour(QVector<S2::DataRec>*))); */
-            connect(ch104,SIGNAL(sendJourSysfromiec104(QByteArray)), JourD, SLOT(FillSysJour(QByteArray)));
-            connect(ch104,SIGNAL(sendJourWorkfromiec104(QByteArray)), JourD, SLOT(FillWorkJour(QByteArray)));
-            connect(ch104,SIGNAL(sendJourMeasfromiec104(QByteArray)), JourD, SLOT(FillMeasJour(QByteArray)));
-            ch104->Parse->DR = &S2Config;
-            connect(ch104,SIGNAL(errorCh104(int)), this, SLOT(ReConnect(int)));
-
-#endif
+            connect(JourD,SIGNAL(ReadJour(char)), Ch104, SLOT(SelectFile(char)));
+            connect(Ch104,SIGNAL(sendJourSysfromiec104(QByteArray)), JourD, SLOT(FillSysJour(QByteArray)));
+            connect(Ch104,SIGNAL(sendJourWorkfromiec104(QByteArray)), JourD, SLOT(FillWorkJour(QByteArray)));
+            connect(Ch104,SIGNAL(sendJourMeasfromiec104(QByteArray)), JourD, SLOT(FillMeasJour(QByteArray)));
+            Ch104->Parse->DR = &S2Config;
+            connect(Ch104,SIGNAL(errorCh104()), this, SLOT(ReConnect()));
          }
          else if(insl.at(1) == "MODBUS")
          {
-            //CheckModBus = new checktempmodbusdialog(BoardTypes::BT_BASE, this);
-            connect(modBus, SIGNAL(errorRead()), CorD, SLOT(ErrorRead()));
-            connect(modBus, SIGNAL(ModBusState(QModbusDevice::State)), CheckB, SLOT(onModbusStateChanged(QModbusDevice::State)));
-            connect(modBus, SIGNAL(signalsreceived(ModBusSignal*, int*)), CheckB, SLOT(UpdateModBusData(ModBusSignal*, int*)));
-            connect(modBus, SIGNAL(corsignalsreceived(ModBusSignal*, int*)), CorD, SLOT(ModBusUpdateCorData(ModBusSignal*, int*)));
-            connect(CorD, SIGNAL(RS485WriteCorBd(information*, float*)), modBus, SLOT(ModWriteCor(information*, float*)));//, int*)));
-            connect(CorD, SIGNAL(RS485ReadCorBd(information*)), modBus, SLOT(ModReadCor(information*)));
-            connect(modBus,SIGNAL(reconnectSignal(int)), this, SLOT(ReConnect(int)));
+            connect(ChModbus, SIGNAL(ErrorRead()), CorD, SLOT(ErrorRead()));
+            connect(ChModbus, SIGNAL(ModbusState(ConnectionStates)), CheckB, SLOT(onModbusStateChanged(ConnectionStates)));
+            connect(ChModbus, SIGNAL(SignalsReceived(QList<ModBus::SignalStruct>)), CheckB, SLOT(UpdateModBusData(QList<ModBus::SignalStruct>)));
+            connect(ChModbus, SIGNAL(CorSignalsReceived(QList<ModBus::SignalStruct>)), CorD, SLOT(ModBusUpdateCorData(QList<ModBus::SignalStruct>)));
+            connect(ChModbus, SIGNAL(CorSignalsWritten()), CorD, SLOT(ModbusCorDataWritten()));
+            connect(CorD, SIGNAL(RS485WriteCorBd(ModBus::Information, float *)), ChModbus, SLOT(ModWriteCor(ModBus::Information, float *)));//, int*)));
+            connect(CorD, SIGNAL(RS485ReadCorBd(ModBus::Information)), ChModbus, SLOT(ModReadCor(ModBus::Information)));
+            connect(ChModbus,SIGNAL(ReconnectSignal()), this, SLOT(ReConnect()));
          }
 
        }
 
-       if(MainInterface == "USB")
+       if(MainInterface == I_USB)
        {
          CheckB = new CheckDialog84(BoardTypes::BT_BASE, this, nullptr);
        }
@@ -641,7 +624,7 @@ void Coma::PrepareDialogs()
 
     //MTypeM = Config::MTM_84;
 
-    if(MainInterface == "USB")
+    if(MainInterface == I_USB)
     {
        MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
     }
@@ -683,16 +666,16 @@ void Coma::PrepareDialogs()
     {
         setMinimumSize(QSize(800, 650));
 
-        if(MainInterface != "RS485")
+        if(MainInterface != I_RS485)
         ConfM = new ConfDialog84(S2Config);
 
-        if(ch104 != nullptr && MainInterface == "Ethernet")
+        if(Ch104 != nullptr && MainInterface == I_ETHERNET)
         {
-          connect(ConfM,SIGNAL(ReadConfig(char)), ch104, SLOT(SelectFile(char)));
-          connect(ch104,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)), ConfM, SLOT(FillConf(QVector<S2::DataRec>*)));
-          connect(ConfM,SIGNAL(writeConfFile(QVector<S2::DataRec>*)), ch104, SLOT(FileReady(QVector<S2::DataRec>*)));
+          connect(ConfM,SIGNAL(ReadConfig(char)), Ch104, SLOT(SelectFile(char)));
+          connect(Ch104,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)), ConfM, SLOT(FillConf(QVector<S2::DataRec>*)));
+          connect(ConfM,SIGNAL(writeConfFile(QVector<S2::DataRec>*)), Ch104, SLOT(FileReady(QVector<S2::DataRec>*)));
           //connect(ch104,SIGNAL(sendMessageiec104()), ConfM, SLOT(Message()));
-          connect(ch104,SIGNAL(sendConfMessageOk()), ConfM, SLOT(WriteConfMessageOk()));
+          connect(Ch104,SIGNAL(sendConfMessageOk()), ConfM, SLOT(WriteConfMessageOk()));
 
         }
 

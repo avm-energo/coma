@@ -1,4 +1,3 @@
-#include "fwupdialog.h"
 #include <QGroupBox>
 #include <QTabWidget>
 #include <QLabel>
@@ -16,6 +15,7 @@
 #include <QDoubleSpinBox>
 #include <QTabBar>
 #include <QFileDialog>
+#include "fwupdialog.h"
 #include "../gen/stdfunc.h"
 #include "../gen/maindef.h"
 #include "../gen/colors.h"
@@ -84,29 +84,29 @@ int fwupdialog::LoadFW()
     //tmpi = sizeof(PV_file.Type)+sizeof(PV_file.File.FileDatHeader);
     QVector<S2::DataRec> S2DR;
 
-    if (WriteCheckPassword() == Error::ER_NOERROR)
+    if (WriteCheckPassword() == NOERROR)
     {
         int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Program Version (*.hex)"), ba);
         if (res != Files::ER_NOERROR)
         {
             WARNMSG("Ошибка файла ПО");
-            return Error::ER_GENERALERROR;
+            return GENERALERROR;
         }
 
         ParseHexToS2(ba);
 
         //PV_file.File_xxx_header.size=sizeof(PV_file.Type) + sizeof(PV_file.File.FileDatHeader) + sizeof(ba) + sizeof(PV_file.void_recHeader);
     }
-    return Error::ER_NOERROR;
+    return NOERROR;
 }
 
 void fwupdialog::RunSoft()
 {
-    if (WriteCheckPassword() == Error::ER_NOERROR)
+    if (WriteCheckPassword() == NOERROR)
     {
         TimeFunc::Wait(100);
         int res = Commands::RunVPO();
-        if (res != Error::ER_NOERROR)
+        if (res != NOERROR)
         {
             WARNMSG("Ошибка перехода на новое ПО");
             EMessageBox::information(this, "Ошибка", "Ошибка");
@@ -129,13 +129,13 @@ int fwupdialog::WriteCheckPassword()
     dlg->show();
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     if (!ok)
     {
         EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     }
-    return Error::ER_NOERROR;
+    return NOERROR;
 }
 
 void fwupdialog::WritePasswordCheck(QString psw)
@@ -380,14 +380,14 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
     memcpy(&BaForSend->data()[0], &ForProcess->data()[0], (BaForSend->size()+16));*/
 
     #if PROGSIZE != PROGSIZE_EMUL
-    if (Commands::WriteFile(3, &S2DR) != Error::ER_NOERROR)
+    if (Commands::WriteFile(3, &S2DR) != NOERROR)
     {
         EMessageBox::information(this, "Ошибка", "Ошибка записи в модуль!");
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     }
     EMessageBox::information(this, "Успешно", "Загрузка ПО версии "+st+" прошла успешно!");
-    return Error::ER_NOERROR;
+    return NOERROR;
     #endif
 
-   return Error::ER_NOERROR;
+   return NOERROR;
 }

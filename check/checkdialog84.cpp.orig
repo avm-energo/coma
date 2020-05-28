@@ -585,6 +585,8 @@ void CheckDialog84::onModbusStateChanged(ConnectionStates state)
 //        EMessageBox::error(this, "Провал", "Подключение отсутствует");
 }
 
+
+<<<<<<< HEAD
 void CheckDialog84::SetPredAlarmColor(quint8* PredAlarm)
 {
 
@@ -659,3 +661,5 @@ void CheckDialog84::SetAlarmColor(quint8* Alarm)
        }
     }
 }
+=======
+>>>>>>> origin/Modbus_refactoring

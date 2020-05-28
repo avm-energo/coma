@@ -84,8 +84,13 @@ public:
     QString IPtemp, FullName, SaveDevice, instr;
     QStringList sl, USBsl, slfinal, insl;
     quint16 AdrBaseStation;
-    SerialPort::Settings Settings;
+<<<<<<< HEAD
+    ModBus::ModBus_Settings Settings;
     QTimer* BdaTimer, *TimeTimer, *AlarmStateTimer;
+=======
+    SerialPort::Settings Settings;
+    QTimer* BdaTimer, *TimeTimer;
+>>>>>>> origin/Modbus_refactoring
     QVector<S2::DataRec> S2Config;
 
     int CheckPassword();
@@ -201,8 +206,12 @@ private:
     quint8 PredAlarmEvents[20];
     quint8 AlarmEvents[20];
     int fileSize, curfileSize;
-    QTimer *ReconnectTimer;
+<<<<<<< HEAD
+    QTimer *reconnectTimer, *connectTimer;
     QString SavePort;
+=======
+    QTimer *ReconnectTimer;
+>>>>>>> origin/Modbus_refactoring
 
     DeviceConnectStruct DevInfo;
 

@@ -36,7 +36,7 @@
 #include "commands.h"
 #endif
 
-QString MainWindow::MainInterface;
+int MainInterface;
 quint32 MainWindow::MTypeB;
 quint32 MainWindow::MTypeM;
 int MainWindow::TheEnd;
@@ -60,19 +60,31 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     ConfB = ConfM = nullptr;
     CheckB = CheckM = nullptr;
     Wpred = Walarm = nullptr;
-    ch104 = nullptr;
+    Ch104 = new IEC104;
+    connect(this,SIGNAL(StopCommunications()),Ch104,SLOT(Stop()));
+    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
+    ChModbus = new ModBus;
+    connect(this,SIGNAL(StopCommunications()),ChModbus,SLOT(Finish()));
+    connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils)), this, SLOT(ModBusUpdatePredAlarmEvents(ModBus::Coils)));
+    cn = new EUsbHid;
+    connect(this, SIGNAL(StopCommunications()), cn, SLOT(Disconnect()));
     FullName = "";
-    reconnect = false;
+    Reconnect = false;
 
     TimeTimer = new QTimer;
     TimeTimer->setInterval(1000);
 
     BdaTimer = new QTimer;
     BdaTimer->setInterval(ANMEASINT);
+    connect(BdaTimer,SIGNAL(timeout()), this, SLOT(GetUSBAlarmInDialog()));
 
     ReceiveTimer = new QTimer;
     ReceiveTimer->setInterval(ANMEASINT);
     connect(ReceiveTimer, SIGNAL(timeout()), this,SLOT(FileTimeOut()));
+
+    ReconnectTimer = new QTimer;
+    ReconnectTimer->setInterval(RECONNECTINTERVAL);
+    connect(ReconnectTimer,SIGNAL(timeout()), this, SLOT(attemptToRec()));
 
     for (int i = 0; i < 20; ++i)
     {
@@ -81,11 +93,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     }
     TheEnd = 0;
 
-//#endif
-
-//#if PROGSIZE >= PROGSIZE_LARGE
     PrepareTimers();
-//#endif
     LoadSettings();
 
     StartWindowSplashScreen->finish(this);
@@ -123,16 +131,31 @@ void MainWindow::Go(const QString &parameter)
 
 }
 
-void MainWindow::ReConnect(int err)
+void MainWindow::ReConnect()
 {
-    Q_UNUSED(err);
     QDialog *dlg = new QDialog;
-    reconnectTimer = new QTimer;
-    reconnectTimer->setInterval(3000);
 
-    reconnect = true;
+    Reconnect = true;
 
-    DisconnectAndClear();
+    TheEnd = 1;
+    if(!Disconnected)
+    {
+        StopRead = 1;
+        //disconnected = 1;
+    #if PROGSIZE != PROGSIZE_EMUL
+        Disconnect();
+    #endif
+
+        CheckB = CheckM = nullptr;
+        //CheckModBus = nullptr;
+        emit ClearBsi();
+        ClearTW();
+        ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
+        if (MainTW == nullptr)
+            return;
+        MainTW->hide();
+        StdFunc::SetEmulated(false);
+    }
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -144,27 +167,26 @@ void MainWindow::ReConnect(int err)
     vlayout->addLayout(hlyout);
 
     w->setLayout(vlayout);
-    connect(reconnectTimer,SIGNAL(timeout()), dlg,SLOT(close()));
-    connect(reconnectTimer,SIGNAL(timeout()), this, SLOT(attemptToRec()));
+    connect(ReconnectTimer,SIGNAL(timeout()), dlg,SLOT(close()));
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
     dlg->setLayout(lyout);
 
-    reconnectTimer->start();
+    ReconnectTimer->start();
     dlg->exec();
 
 }
 
 void MainWindow::attemptToRec()
 {
-    reconnectTimer->stop();
-    reconnectTimer->deleteLater();
+    ReconnectTimer->stop();
+//    ReconnectTimer->deleteLater();
 
-    if(ch104 != nullptr)
-    ch104->deleteLater();
+//    if(Ch104 != nullptr)
+//    Ch104->deleteLater();
 
-    //Stage1_5();
+    if(Reconnect != false)
 
     if(MainInterface.size() != 0)
     {
@@ -207,7 +229,6 @@ void MainWindow::attemptToRec()
     }
 
 
-    if(reconnect != false)
     {
         QApplication::setOverrideCursor(Qt::WaitCursor);
         S2Config.clear();
@@ -221,8 +242,6 @@ void MainWindow::attemptToRec()
 void MainWindow::ConnectMessage()
 {
     QDialog *dlg = new QDialog;
-    connectTimer = new QTimer;
-    connectTimer->setInterval(2000);
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -234,16 +253,14 @@ void MainWindow::ConnectMessage()
     vlayout->addLayout(hlyout);
 
     w->setLayout(vlayout);
-    connect(connectTimer,SIGNAL(timeout()), dlg,SLOT(close()));
-    connect(connectTimer,SIGNAL(timeout()), this,SLOT(stopTimer()));
 
     //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
     dlg->setLayout(lyout);
 
-    connectTimer->start();
     dlg->show();
-
+    StdFunc::Wait(WAITINTERVAL);
+    dlg->close();
 }
 
 void MainWindow::stopTimer()
@@ -546,7 +563,9 @@ void MainWindow::AlarmState()
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(pb,0);
     dlg->setLayout(lyout);
-    dlg->show();
+
+    
+            dlg->show();
 }
 
 
@@ -600,7 +619,7 @@ void MainWindow::UpdatePredAlarmEvents(Parse104::SponSignalsWithTime* Signal)
 void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104 *Signal)
 {
     int i = 0, PredArarmcount = 0, Ararmcount = 0;
-    //Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
+//    Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmred, pmgrn};
@@ -713,20 +732,20 @@ void MainWindow::UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTim
 
 }
 
-void MainWindow::ModbusUpdateStatePredAlarmEvents(Coils* Signal)
+void MainWindow::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
 {
     int i = 0, PredArarmcount = 0, Ararmcount = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmred, pmgrn};
 
-    for(i=0; i<Signal->countBytes; i++)
+    for(i=0; i<Signal.countBytes; i++)
     {
         if(i == 3)
         {
             //for(int j = 0; j<8; j++)
             //{
-                quint8 signal = ((Signal->Bytes[i] & (0x00000001)) ? 1 : 0);
+                quint8 signal = ((Signal.Bytes[i] & (0x00000001)) ? 1 : 0);
                 AlarmEvents[6] = signal;
 
         }
@@ -734,7 +753,7 @@ void MainWindow::ModbusUpdateStatePredAlarmEvents(Coils* Signal)
         {
             for(int j = 0; j<8; j++)
             {
-                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+                quint8 signal = ((Signal.Bytes[i] & (0x00000001 << j)) ? 1 : 0);
 
                 if(j<3)
                 PredAlarmEvents[13+j] = signal;
@@ -752,7 +771,7 @@ void MainWindow::ModbusUpdateStatePredAlarmEvents(Coils* Signal)
         {
             for(int j = 0; j<8; j++)
             {
-                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+                quint8 signal = ((Signal.Bytes[i] & (0x00000001 << j)) ? 1 : 0);
                 PredAlarmEvents[j] = signal;
             }
         }
@@ -760,7 +779,7 @@ void MainWindow::ModbusUpdateStatePredAlarmEvents(Coils* Signal)
         {
             for(int j = 0; j<8; j++)
             {
-                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+                quint8 signal = ((Signal.Bytes[i] & (0x00000001 << j)) ? 1 : 0);
 
                 if(j<5)
                 PredAlarmEvents[8+j] = signal;
@@ -769,8 +788,6 @@ void MainWindow::ModbusUpdateStatePredAlarmEvents(Coils* Signal)
             }
         }
     }
-
-    ModBus::Reading = false;
 
     for(i=0; i<18; i++)
     {
@@ -802,18 +819,18 @@ void MainWindow::ModbusUpdateStatePredAlarmEvents(Coils* Signal)
 
 }
 
-void MainWindow::ModBusUpdatePredAlarmEvents(Coils* Signal)
+void MainWindow::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
 {
     int i = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmgrn, pmred};
 
-    for(i=0; i<Signal->countBytes; i++)
+    for(i=0; i<Signal.countBytes; i++)
     {
         if(i == 3)
         {
-           quint8 signal = ((Signal->Bytes[i] & (0x00000001)) ? 1 : 0);
+           quint8 signal = ((Signal.Bytes[i] & (0x00000001)) ? 1 : 0);
            WDFunc::SetLBLImage(Walarm, (QString::number(3035)), pm[signal]);
         }
 
@@ -821,7 +838,7 @@ void MainWindow::ModBusUpdatePredAlarmEvents(Coils* Signal)
         {
             for(int j = 0; j<8; j++)
             {
-                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+                quint8 signal = ((Signal.Bytes[i] & (0x00000001 << j)) ? 1 : 0);
 
                 if(j<3)
                 WDFunc::SetLBLImage(Wpred, (QString::number(3027+j)), pm[signal]);
@@ -839,7 +856,7 @@ void MainWindow::ModBusUpdatePredAlarmEvents(Coils* Signal)
         {
             for(int j = 0; j<8; j++)
             {
-                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+                quint8 signal = ((Signal.Bytes[i] & (0x00000001 << j)) ? 1 : 0);
                 WDFunc::SetLBLImage(Wpred, (QString::number(3011+j)), pm[signal]);
             }
         }
@@ -847,7 +864,7 @@ void MainWindow::ModBusUpdatePredAlarmEvents(Coils* Signal)
         {
             for(int j = 0; j<8; j++)
             {
-                quint8 signal = ((Signal->Bytes[i] & (0x00000001 << j)) ? 1 : 0);
+                quint8 signal = ((Signal.Bytes[i] & (0x00000001 << j)) ? 1 : 0);
 
                 if(j<5)
                 WDFunc::SetLBLImage(Wpred, (QString::number(3019+j)), pm[signal]);
@@ -981,7 +998,7 @@ void MainWindow::SetupMenubar()
     menubar->addSeparator();
 
     setMenuBar(menubar);
-    disconnected = 0;
+    Disconnected = 0;
     //AddActionsToMenuBar(menubar);
 }
 
@@ -1068,13 +1085,13 @@ int MainWindow::CheckPassword()
     dlg->show();
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     if (!Ok)
     {
         EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     }
-    return Error::ER_NOERROR;
+    return NOERROR;
 }
 #endif
 
@@ -1082,8 +1099,8 @@ int MainWindow::CheckPassword()
 #if PROGSIZE != PROGSIZE_EMUL
 void MainWindow::Stage1_5()
 {
-    reconnect = false;
-    disconnected = 0;
+    Reconnect = false;
+    Disconnected = 0;
     ShowInterfaceDialog();
     ShowConnectDialog();
 
@@ -1092,14 +1109,14 @@ void MainWindow::Stage1_5()
 
     StopRead = 0;
 
-    if((insl.size() == 0) && ((MainInterface == "Ethernet") || (MainInterface == "RS485")))
+    if((insl.size() == 0) && ((MainInterface == I_ETHERNET) || (MainInterface == I_RS485)))
     {
         DisconnectAndClear();
         return;
     }
 
-    if((MainInterface == "Ethernet" && insl.at(1) != "ETH") ||
-       (MainInterface == "RS485" && insl.at(1) != "MODBUS"))
+    if((MainInterface == I_ETHERNET && insl.at(1) != "ETH") ||
+       (MainInterface == I_RS485 && insl.at(1) != "MODBUS"))
     {
        EMessageBox::information(this, "Ошибка", "Выбранный интерфейс не соотвествует выбранной строке в файле");
        DisconnectAndClear();
@@ -1108,22 +1125,19 @@ void MainWindow::Stage1_5()
     }
 
 
-    if(MainInterface.size() != 0)
+    if (MainInterface == I_USB)
     {
-        if(MainInterface == "USB")
-        {
-           insl.clear();
+       insl.clear();
 
-           if(cn->Cancelled)
-           return;
+       if(cn->Cancelled)
+       return;
 
-           if (Commands::Connect() != Error::ER_NOERROR)
-           {
-              EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
-              QApplication::restoreOverrideCursor();
-              return;
-           }
-         }
+       if (Commands::Connect() != NOERROR) // cn->Connect()
+       {
+          EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
+          QApplication::restoreOverrideCursor();
+          return;
+       }
     }
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -1136,45 +1150,40 @@ void MainWindow::Stage1_5()
 
 void MainWindow::Stage2()
 {
-    if(MainInterface.size() != 0)
-    {
         //if(interface == "Ethernet и RS485")
 
-        if(MainInterface == "USB")
+    if (MainInterface == I_USB)
+    {
+        int res = ModuleBSI::SetupBSI();
+        if (res == GENERALERROR)
         {
-            int res = ModuleBSI::SetupBSI();
-            if (res == Error::ER_CANAL)
+            if (EMessageBox::question(this, "Ошибка", \
+                                      "Не удалось установить связь.\nПовторить подключение?") == 1) // Yes
             {
-                if (EMessageBox::question(this, "Ошибка", \
-                                          "Не удалось установить связь.\nПовторить подключение?") == 1) // Yes
-                {
-                    cn->Disconnect();
-                    emit Retry();
-                }
+                cn->Disconnect();
+                emit Retry();
+            }
+            return;
+        }
+#if PROGSIZE >= PROGSIZE_LARGE
+        else if (res == NOERROR)
+        {
+          if(ModuleBSI::ModuleTypeString != "")
+          EMessageBox::information(this, "Успешно", "Связь с "+ModuleBSI::ModuleTypeString+" установлена");
+        }
+        /*else if (res == Error::ER_RESEMPTY)
+        {
+            if (OpenBhbDialog() != NOERROR)
+            {
+                EMessageBox::error(this, "Ошибка", "Ошибка при работе с Hidden block");
                 return;
             }
-#if PROGSIZE >= PROGSIZE_LARGE
-            else if (res == Error::ER_NOERROR)
-            {
-              if(ModuleBSI::ModuleTypeString != "")
-              EMessageBox::information(this, "Успешно", "Связь с "+ModuleBSI::ModuleTypeString+" установлена");
-            }
-            /*else if (res == Error::ER_RESEMPTY)
-            {
-                if (OpenBhbDialog() != Error::ER_NOERROR)
-                {
-                    EMessageBox::error(this, "Ошибка", "Ошибка при работе с Hidden block");
-                    return;
-                }
-            }*/
+        }*/
 
 #endif
-        }
     }
     //else if(interface == "Ethernet и RS485" && ch104 != nullptr)
     //emit ch104->stopall();
-
-
 
     Stage3();
 }
@@ -1263,23 +1272,23 @@ void MainWindow::PasswordCheck(QString psw)
     {
         QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модулем" : "прибором");
         EMessageBox::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с "+tmps);
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     }
-    if (CheckPassword() == Error::ER_GENERALERROR)
-        return Error::ER_GENERALERROR;
+    if (CheckPassword() == GENERALERROR)
+        return GENERALERROR;
 
     HiddenDialog *dlg = new HiddenDialog();
     dlg->Fill(); // заполняем диалог из недавно присвоенных значений
     dlg->exec();
     if (!dlg->ResultOk)
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     Disconnect();
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    if (Commands::Connect() != Error::ER_NOERROR)
+    if (Commands::Connect() != NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
         QApplication::restoreOverrideCursor();
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     }
     QApplication::restoreOverrideCursor();
     int res;
@@ -1287,10 +1296,10 @@ void MainWindow::PasswordCheck(QString psw)
     {
         EMessageBox::error(this, "Ошибка", "Блок Bsi не может быть прочитан, ошибка " + QString::number(res));
         Commands::Disconnect();
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     }
     //emit BsiRefresh();
-    return Error::ER_NOERROR;
+    return NOERROR;
 }*/
 #endif
 
@@ -1440,146 +1449,141 @@ void MainWindow::ShowConnectDialog()
     QVBoxLayout *lyout = new QVBoxLayout;   
     QStringListModel *tmpmodel = new QStringListModel;
 
-    if(MainInterface.size() != 0)
+    if(MainInterface == I_USB)
     {
-         if(MainInterface == "USB")
-         {
-             //#ifdef USBENABLE
-             cn = new EUsbHid;
-             connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
-             //#else
-             //#ifdef COMPORTENABLE
-             //    cn = new EUsbCom;
-             //    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
-             //#endif
-             //#endif
-             connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
-             connect(cn,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
-             connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-             connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-             connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
-             connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
+        //#ifdef USBENABLE
+        connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
+        //#else
+        //#ifdef COMPORTENABLE
+        //    cn = new EUsbCom;
+        //    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
+        //#endif
+        //#endif
+        connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
+        connect(cn,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
+        connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+        connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+        connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
+        connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
              connect(cn,SIGNAL(ReconnectSignal(int)),this,SLOT(ReConnect(int)));
 
-            USBsl = cn->DevicesFound();
-            if (USBsl.size() == 0)
-            {
-                lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
-                Error::ShowErMsg(CN_NOPORTSERROR);
-            }
-            tmpmodel->deleteLater();
-            tmpmodel->setStringList(USBsl);
-            QComboBox *portscb = new QComboBox;
-            connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPortSlot(QString)));
-            portscb->setModel(tmpmodel);
-            lyout->addWidget(portscb);
-         }
-         else if(MainInterface == "Ethernet" || MainInterface == "RS485")
-         {
-
-            /*tmpmodel->setStringList(device);
-            QComboBox *portscb = new QComboBox;
-            connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SDevice(QString)));
-            portscb->setModel(tmpmodel);
-            lyout->addWidget(portscb);
-            QHBoxLayout *hlyout = new QHBoxLayout;
-            QPushButton *pb = new QPushButton("Далее");
-            connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-            hlyout->addWidget(pb);
-            pb = new QPushButton("Отмена");
-            //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
-            connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
-            hlyout->addWidget(pb);
-            lyout->addLayout(hlyout);
-            dlg->setLayout(lyout);
-            dlg->exec();
-
-            dlg = new QDialog(this);
-
-            tmpmodel = new QStringListModel;
-            tmpmodel->setStringList(inter);
-            portscb = new QComboBox;
-            lyout = new QVBoxLayout;
-            connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SaveInterface(QString)));
-            portscb->setModel(tmpmodel);
-            lyout->addWidget(portscb);
-            hlyout = new QHBoxLayout;
-            pb = new QPushButton("Далее");
-            connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-            hlyout->addWidget(pb);
-            pb = new QPushButton("Отмена");
-            //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
-            connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
-            hlyout->addWidget(pb);
-            lyout->addLayout(hlyout);
-            dlg->setLayout(lyout);
-            dlg->exec();*/
-
-
-            if(!HaveAlreadyRed)
-            {
-                sl.clear();
-                res= Files::LoadFromFile(Files::ChooseFileForOpen(this, "IP files (*.txt)"), ba);
-                if (res != Files::ER_NOERROR)
-                {
-                   WARNMSG("Ошибка при загрузке файла");
-                   return;
-                }
-
-
-                Str = ba;
-                sl.append(Str.split("\r\n"));
-
-                /*for(i=0; i<sl.size(); i++)
-                {
-                  insl.clear();
-                  insl.append(sl.at(i).split(" "));
-
-                   if((insl.at(0) == SaveDevice) && (insl.at(1) == interface))
-                   {
-                     slfinal.append(sl.at(i));
-                   }
-                }*/
-
-                HaveAlreadyRed = 1;
-
-            }
-
-
-            if (sl.size() == 0)
-            {
-                lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
-                Error::ShowErMsg(CN_NOPORTSERROR);
-            }
-
-            //dlg = new QDialog(this);
-
-            //tmpmodel = new QStringListModel;
-
-             tmpmodel->deleteLater();
-             tmpmodel->setStringList(sl);
-
-             QComboBox *portscb = new QComboBox;
-             connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(ParseString(QString)));
-             portscb->setModel(tmpmodel);
-             lyout->addWidget(portscb);
-         }
+       USBsl = cn->DevicesFound();
+       if (USBsl.size() == 0)
+       {
+           lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
+           Error::ShowErMsg(CN_NOPORTSERROR);
+       }
+       tmpmodel->deleteLater();
+       tmpmodel->setStringList(USBsl);
+       QComboBox *portscb = new QComboBox;
+       connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPortSlot(QString)));
+       portscb->setModel(tmpmodel);
+       lyout->addWidget(portscb);
     }
-        QHBoxLayout *hlyout = new QHBoxLayout;
-        QPushButton *pb = new QPushButton("Далее");
-        connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-        hlyout->addWidget(pb);
-        pb = new QPushButton("Отмена");
-        connect(pb, SIGNAL(clicked(bool)),this,SLOT(SetCancelled()));
-        if(MainInterface == "USB")
+//         else if (MainInterface == "Ethernet" || MainInterface == "RS485")
+    else
+    {
+
+       /*tmpmodel->setStringList(device);
+       QComboBox *portscb = new QComboBox;
+       connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SDevice(QString)));
+       portscb->setModel(tmpmodel);
+       lyout->addWidget(portscb);
+       QHBoxLayout *hlyout = new QHBoxLayout;
+       QPushButton *pb = new QPushButton("Далее");
+       connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
+       hlyout->addWidget(pb);
+       pb = new QPushButton("Отмена");
+       //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
+       connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
+       hlyout->addWidget(pb);
+       lyout->addLayout(hlyout);
+       dlg->setLayout(lyout);
+       dlg->exec();
+
+       dlg = new QDialog(this);
+
+       tmpmodel = new QStringListModel;
+       tmpmodel->setStringList(inter);
+       portscb = new QComboBox;
+       lyout = new QVBoxLayout;
+       connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SaveInterface(QString)));
+       portscb->setModel(tmpmodel);
+       lyout->addWidget(portscb);
+       hlyout = new QHBoxLayout;
+       pb = new QPushButton("Далее");
+       connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
+       hlyout->addWidget(pb);
+       pb = new QPushButton("Отмена");
+       //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
+       connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
+       hlyout->addWidget(pb);
+       lyout->addLayout(hlyout);
+       dlg->setLayout(lyout);
+       dlg->exec();*/
+
+
+       if(!HaveAlreadyRed)
+       {
+           sl.clear();
+           res= Files::LoadFromFile(Files::ChooseFileForOpen(this, "IP files (*.txt)"), ba);
+           if (res != Files::ER_NOERROR)
+           {
+              WARNMSG("Ошибка при загрузке файла");
+              return;
+           }
+
+
+           Str = ba;
+           sl.append(Str.split("\r\n"));
+
+           /*for(i=0; i<sl.size(); i++)
+           {
+             insl.clear();
+             insl.append(sl.at(i).split(" "));
+
+              if((insl.at(0) == SaveDevice) && (insl.at(1) == interface))
+              {
+                slfinal.append(sl.at(i));
+              }
+           }*/
+
+           HaveAlreadyRed = 1;
+
+       }
+
+
+       if (sl.size() == 0)
+       {
+           lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
+           Error::ShowErMsg(CN_NOPORTSERROR);
+       }
+
+       //dlg = new QDialog(this);
+
+       //tmpmodel = new QStringListModel;
+
+        tmpmodel->deleteLater();
+        tmpmodel->setStringList(sl);
+
+        QComboBox *portscb = new QComboBox;
+        connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(ParseString(QString)));
+        portscb->setModel(tmpmodel);
+        lyout->addWidget(portscb);
+    }
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QPushButton *pb = new QPushButton("Далее");
+    connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
+    hlyout->addWidget(pb);
+    pb = new QPushButton("Отмена");
+    connect(pb, SIGNAL(clicked(bool)),this,SLOT(SetCancelled()));
+    if(MainInterface == I_USB)
         connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));
-
-        connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
-        hlyout->addWidget(pb);
-        lyout->addLayout(hlyout);
-        dlg->setLayout(lyout);
-        dlg->exec();
-
+    connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
+    hlyout->addWidget(pb);
+    lyout->addLayout(hlyout);
+    dlg->setLayout(lyout);
+    dlg->exec();
 }
 
 void MainWindow::SetProgressBarSize(QString prbnum, int size)
@@ -1637,21 +1641,22 @@ void MainWindow::Disconnect()
 {
     //emit stoptime();
 
-    if(MainInterface.size() != 0 && (!StdFunc::IsInEmulateMode()))
+    if (!StdFunc::IsInEmulateMode())
     {
-        if(MainInterface == "USB")
+        if(MainInterface == I_USB)
         {
-         if(BdaTimer != nullptr)
+            if(BdaTimer != nullptr)
          {
-           BdaTimer->stop();
-           TimeFunc::Wait(100);
+            BdaTimer->stop();
+            TimeFunc::Wait(100);
          }
-         cn->Disconnect();
+            cn->Disconnect();
         }
         else
         {
-         emit stopit();
-         emit stopModBus();
+/*            emit stopit();
+            emit stopModBus(); */
+            emit StopCommunications();
         }
 
     }
@@ -1683,10 +1688,10 @@ void MainWindow::DisconnectAndClear()
     {
       TimeTimer->stop();
     }
-    if(!disconnected)
+    if(!Disconnected)
     {
         StopRead = 1;
-        disconnected = 1;
+        Disconnected = 1;
     #if PROGSIZE != PROGSIZE_EMUL
         Disconnect();
     #endif
@@ -1707,47 +1712,44 @@ void MainWindow::DisconnectAndClear()
         //thr = nullptr;
         //Time = nullptr;
 
-        if(MainInterface.size() != 0)
+        if(MainInterface == I_USB)
         {
-           if(MainInterface == "USB")
-           {
-             if(reconnect)
-             {
-                 reconnect = false;
-                 if(ModuleBSI::ModuleTypeString != "")
-                 EMessageBox::information(this, "Разрыв связи", "Связь с "+ModuleBSI::ModuleTypeString+" разорвана");
-                 else
-                 EMessageBox::information(this, "Разрыв связи", "Связь разорвана");
-             }
-             else
-             {
-                 if(ModuleBSI::ModuleTypeString != "")
-                 EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь с "+ModuleBSI::ModuleTypeString+"");
-                 else
-                 EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
-             }
-           }
-           else
-           {
-               if(reconnect)
-               {
-                 reconnect = false;
-                 if(FullName != "")
-                 EMessageBox::information(this, "Разрыв связи", "Связь с "+FullName+" разорвана");
-                 else
-                 EMessageBox::information(this, "Разрыв связи", "Связь разорвана");
-               }
-               else
-               {
-                 if(FullName != "")
-                 EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь с "+FullName+"");
-                 else
-                 EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
-               }
-           }
+            if(Reconnect)
+            {
+                Reconnect = false;
+                if(ModuleBSI::ModuleTypeString != "")
+                EMessageBox::information(this, "Разрыв связи", "Связь с "+ModuleBSI::ModuleTypeString+" разорвана");
+                else
+                EMessageBox::information(this, "Разрыв связи", "Связь разорвана");
+            }
+            else
+            {
+                if(ModuleBSI::ModuleTypeString != "")
+                EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь с "+ModuleBSI::ModuleTypeString+"");
+                else
+                EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
+            }
+        }
+        else
+        {
+            if(Reconnect)
+            {
+                Reconnect = false;
+                if(FullName != "")
+                    EMessageBox::information(this, "Разрыв связи", "Связь с "+FullName+" разорвана");
+                else
+                    EMessageBox::information(this, "Разрыв связи", "Связь разорвана");
+            }
+            else
+            {
+                if(FullName != "")
+                    EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь с "+FullName+"");
+                else
+                    EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
+            }
         }
 
-        reconnect = false;
+        Reconnect = false;
         //disconnected = 0;
     }
 
@@ -1803,7 +1805,6 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 void MainWindow::ParseString(QString Str)
 { 
     insl.clear();
-    //if(Str != nullptr)
     insl.append(Str.split(" "));
 
     if (insl.size() < 2)
@@ -1820,25 +1821,45 @@ void MainWindow::ParseString(QString Str)
     }
     else if(insl.at(1) == "MODBUS")
     {
-        if(insl.size() == 7)
+        if(insl.size() > 6)
         {
+            bool ok;
             FullName = insl.at(0);
-            Settings.baud =  insl.at(2);
-            Settings.parity =  insl.at(3);
-            Settings.stop =  insl.at(4);
-            Settings.adr =  insl.at(5);
-            Settings.port =  insl.at(6);
+            Settings.Baud =  insl.at(2).toUInt(&ok);
+            if (!ok)
+            {
+                EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
+                return;
+            }
+            Settings.Parity =  insl.at(3);
+            Settings.Stop =  insl.at(4);
+            Settings.Address =  insl.at(5).toUInt(&ok);
+            if (!ok)
+            {
+                EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
+                return;
+            }
+            Settings.Port =  insl.at(6);
         }
         else
         {
             EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
         }
     }
+    else
+        EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
 }
 
-void MainWindow::ParseInter(QString Str)
+void MainWindow::ParseInter(QString str)
 {
-    MainInterface = Str;
+    if (str == "USB")
+        MainInterface = I_USB;
+    else if (str == "Ethernet")
+        MainInterface = I_ETHERNET;
+    else if (str == "RS485")
+        MainInterface = I_RS485;
+    else
+        MainInterface = I_UNKNOWN;
 }
 
 /*void MainWindow::SaveModBusString(QString ModBus)
@@ -1878,11 +1899,6 @@ void MainWindow::SetDefConf()
     EMessageBox::information(this, "Успешно", "Конфигурация по умолчанию");
 }
 
-
-/*void MainWindow::ConnectMessage()
-{
-   EMessageBox::information(this, "Успешно", "Связь с "+FullName+" установлена");
-}*/
 
 void MainWindow::DisconnectMessage()
 {
@@ -1981,7 +1997,7 @@ void MainWindow::GetUSBAlarmTimerTimeout()
     QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmred, pmgrn};
 
-    if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == Error::ER_NOERROR)
+    if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == NOERROR)
     {
         for(i=0; i<18; i++)
         {
@@ -2031,7 +2047,7 @@ void MainWindow::GetUSBAlarmInDialog()
     QPixmap *pm[2] = {pmred, pmgrn};
     Bd_block11 = *new Bd11;
 
-    if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == Error::ER_NOERROR)
+    if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == NOERROR)
     {
         if(Wpred != nullptr)
         {

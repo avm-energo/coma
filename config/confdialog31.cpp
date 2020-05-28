@@ -89,7 +89,7 @@ void ConfDialog31::SetDefConf()
 void ConfDialog31::SetChTypData(int value)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());
-    if (tmpi == Error::ER_GENERALERROR)
+    if (tmpi == GENERALERROR)
         return;
     if (tmpi < DIN31_NUMCH)
     {
@@ -123,7 +123,7 @@ void ConfDialog31::SetChTypData(int value)
 void ConfDialog31::SetDly(double dly)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());
-    if (tmpi == Error::ER_GENERALERROR)
+    if (tmpi == GENERALERROR)
         return;
     if (tmpi < DIN31_NUMCH)
         C31->Bci_block.inblk.dly_time[tmpi] = static_cast<quint32>(dly)*4;
@@ -132,7 +132,7 @@ void ConfDialog31::SetDly(double dly)
 void ConfDialog31::SetPair(int ch)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());
-    if (tmpi == Error::ER_GENERALERROR)
+    if (tmpi == GENERALERROR)
         return;
     SetPair(tmpi, ch);
 }

@@ -376,7 +376,7 @@ void Check_84::FillBd(QWidget *parent, QString Name, QString Value)
 #if PROGSIZE != PROGSIZE_EMUL
 void Check_84::SendErt(void)
 {
-  /* if(Commands::EraseTechBlock(5) == Error::ER_NOERROR)
+  /* if(Commands::EraseTechBlock(5) == NOERROR)
    EMessageBox::information(this, "INFO", "Стёрто успешно");
    else
    EMessageBox::information(this, "INFO", "Ошибка стирания");*/

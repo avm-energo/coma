@@ -5,18 +5,13 @@
 #include <QMap>
 #include "../config/config.h"
 #include "../iec104/iec104.h"
+#include "../modbus/modbus.h"
 
 class InfoDialog : public QDialog
 {
     Q_OBJECT
 public:
     explicit InfoDialog(QWidget *parent = nullptr);
-
-    typedef struct
-    {
-       quint32 Val;
-       int SigAdr;
-    }ModBusBSISignal;
 
     void SetupUI();
 
@@ -26,7 +21,7 @@ public slots:
     void FillBsi();
     void ClearBsi();
     void FillBsiFrom104(Parse104::BS104Signals* BS104);
-    void FillBsiFromModBus(ModBusBSISignal *Signal, int * size);
+    void FillBsiFromModBus(QList<ModBus::BSISignalStruct> Signal, int size);
 
 private:
 /*    QMap<int, QString> ModuleNames()

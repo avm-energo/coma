@@ -113,7 +113,11 @@ signals:
     void Retry();
     void ShowError(QString message);
     void QueryFinished();
+<<<<<<< HEAD
+    void ReconnectSignal(int);
+=======
     void Finished();
+>>>>>>> origin/Modbus_refactoring
 
 public slots:
     void Timeout();

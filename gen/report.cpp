@@ -85,7 +85,7 @@ int Report::Generate(const QString &filename)
     Rep->designReport(); */
     rep = Rep->printToPDF(filename);
     if (!rep)
-        return Error::ER_GENERALERROR;
+        return GENERALERROR;
     else
-        return Error::ER_NOERROR;
+        return NOERROR;
 }

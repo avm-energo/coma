@@ -5,6 +5,8 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QElapsedTimer>
+#include <QThread>
 #include "stdfunc.h"
 #include "maindef.h"
 
@@ -138,4 +140,15 @@ QString StdFunc::PrbMessage()
 void StdFunc::SetPrbMessage(const QString &msg)
 {
     PrbMsg = msg;
+}
+
+void StdFunc::Wait(int ms)
+{
+    QElapsedTimer tmr;
+    tmr.start();
+    while (tmr.elapsed() < ms)
+    {
+        QCoreApplication::processEvents(QEventLoop::AllEvents);
+        QThread::msleep(MAINSLEEP);
+    }
 }

@@ -71,12 +71,25 @@ int Commands::GetFileWithRestore(int filenum, QVector<S2::DataRec> *data)
         // проверка контрольной суммы файла
         quint32 crctocheck;
         quint32 basize = ba.size();
+<<<<<<< HEAD
         if(basize < 17)
-            return GENERALERROR;
+        {
             ERMSG("basize");
+            return Error::ER_GENERALERROR;
+        }
+        memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
+        if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
+        {
+            ERMSG("CRC error");
+            return Error::ER_GENERALERROR;
+        }
+=======
+        if (basize < 17)
+            return GENERALERROR;
         memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
         if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
             return GENERALERROR;
+>>>>>>> origin/Modbus_refactoring
         return S2::RestoreDataMem(&ba.data()[0], basize, data);
 //        return cn->result;
     }
@@ -98,12 +111,23 @@ int Commands::GetFile(int filenum, QByteArray &ba)
         quint32 crctocheck;
         quint32 basize = ba.size();
         if (basize < 17)
-            return GENERALERROR;
+<<<<<<< HEAD
+        {
             ERMSG("basize");
+            return Error::ER_GENERALERROR;
         }
         memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
         if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
+        {
+            ERMSG("CRC error");
+            return Error::ER_GENERALERROR;
+        }
+=======
             return GENERALERROR;
+        memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
+        if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
+            return GENERALERROR;
+>>>>>>> origin/Modbus_refactoring
         return cn->Result;
     }
     return GENERALERROR;
@@ -147,7 +171,7 @@ int Commands::WriteHiddenBlock(char board, void *HPtr, int HPtrSize)
 #if PROGSIZE != PROGSIZE_EMUL
     QByteArray ba;
 
-    if (cn != 0)
+    if (cn != nullptr)
     {
         ba.append(static_cast<const char *>(HPtr), HPtrSize);
         cn->SendOut(CN_WHv, board, ba);
@@ -166,7 +190,7 @@ int Commands::GetBac(char BacNum, void *BacPtr, int BacPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     QByteArray ba;
-    if (cn != 0)
+    if (cn != nullptr)
     {
         cn->SendIn(CN_GBac, BacNum, ba, BacPtrSize);
         memcpy(BacPtr, &(ba.data()[0]), BacPtrSize);
@@ -185,7 +209,7 @@ int Commands::GetBd(char BdNum, void *BdPtr, int BdPtrSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     QByteArray ba;
-    if (cn != 0)
+    if (cn != nullptr)
     {
         cn->SendIn(CN_GBd, BdNum, ba, BdPtrSize);
         memcpy(BdPtr, &(ba.data()[0]), BdPtrSize);

@@ -30,8 +30,12 @@ private:
     int BdNum;
     bool XlsxWriting;
     const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
-    IEC104* Ch104;
+<<<<<<< HEAD
+    iec104* ch104;
     quint8 stColor[7];
+=======
+    IEC104* Ch104;
+>>>>>>> origin/Modbus_refactoring
 
     QWidget *AutoCheckUI(); // UI для автоматической проверки модуля
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля

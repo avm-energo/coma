@@ -120,6 +120,19 @@ void IEC104::Connect(const QString &IP)
     //connect(eth,SIGNAL(ethNoconnection()), parent, SLOT(DisconnectAndClear()));
 
     Parse = new Parse104;
+<<<<<<< HEAD
+    Parse->timer104 = new QTimer;
+    Parse->timer104->setInterval(15000);
+    Parse->Interogatetimer = new QTimer;
+    Parse->Interogatetimer->setInterval(15000);
+
+    Parse->noAnswer = 0;
+    Parse->conTimer = new QTimer;
+    Parse->conTimer->setInterval(10000);
+    connect(Parse->conTimer,SIGNAL(timeout()),this,SLOT(SendTestAct()));
+
+=======
+>>>>>>> origin/Modbus_refactoring
     QThread *thr2 = new QThread;
     thr2->setPriority(QThread::HighestPriority);
     Parse->moveToThread(thr2);
@@ -163,16 +176,85 @@ void IEC104::Connect(const QString &IP)
     connect(Parse,SIGNAL(SetDataCountFromParse(int)),this,SIGNAL(SetDataCount(int)));
     connect(Parse,SIGNAL(sendMessagefromParse()),this,SIGNAL(sendConfMessageOk()));
     connect(Parse,SIGNAL(writeCorMesOkParse()),this,SIGNAL(sendCorMesOk()));
+    connect(Parse,SIGNAL(startConTimer()),this,SLOT(StartConTimer()));
 
     Parse->incLS = 0;
     Parse->count = 0;
 
     thr->start();
     thr2->start();
+<<<<<<< HEAD
+}
+
+iec104::~iec104()
+{
+    deleteLater();
+
+}
+
+void iec104::StartParse()
+{
+    ParseStarted = true;
+}
+
+void iec104::Start()
+{
+    APCI StartDT;
+    ASDU GInter;
+    StartDT.start = I104_START;
+    StartDT.APDUlength = 4;
+    StartDT.contrfield[0] = I104_STARTDT_ACT;
+    StartDT.contrfield[1] = StartDT.contrfield[2] = StartDT.contrfield[3] = 0;
+    Parse->cmd = I104_STARTDT_ACT;
+    Send(0,StartDT);//, GInter); // ASDU = QByteArray()
+    //emit writedatatoeth(GInter);
+    Parse->timer104->start();
+    Parse->conTimer->start();
+
+    //emit ethconnected();
+}
+
+void iec104::Stop()
+{
+    APCI StopDT;
+    StopDT.start = I104_START;
+    StopDT.APDUlength = 4;
+    StopDT.contrfield[0] = I104_STOPDT_ACT;
+    StopDT.contrfield[1] = StopDT.contrfield[2] = StopDT.contrfield[3] = 0;
+    Parse->cmd = I104_STOPDT_ACT;
+    Send(0,StopDT); // ASDU = QByteArray()
+    //QTime tmr;
+    //tmr.start();
+    //while (tmr.elapsed() < 1000)
+    //    qApp->processEvents();
+    emit stopall();
+}
+
+void iec104::Send(int Inc, APCI apci, ASDU asdu)
+{
+    QByteArray ba;
+    ba.clear();
+    void *tempp = &apci;
+    ba.append(static_cast<char *>(tempp),sizeof(apci));
+    if(!asdu.isEmpty())
+    {
+        tempp = asdu.data();
+        //int i = sizeof(asdu);
+        ba.append(static_cast<char *>(tempp),asdu.size());
+    }
+    emit writedatatoeth(ba);  
+
+    //while(stopincrementing)
+    //QThread::usleep(10);
+
+    if(Inc)
+    Parse->V_S++;
+=======
     ConTimer = new QTimer;
     ConTimer->setInterval(5000);
     connect(ConTimer,SIGNAL(timeout()),this,SLOT(SendTestAct()));
     ConTimer->start();
+>>>>>>> origin/Modbus_refactoring
 }
 
 void IEC104::SendI()
@@ -381,13 +463,17 @@ Parse104::Parse104(QObject *parent) : QObject(parent)
     APDUFormat = I104_WRONG;
     GetNewVR = false;
     NewDataArrived = false;
+<<<<<<< HEAD
     FileSending = 0;
+=======
+    Timer104 = new QTimer;
     Timer104->setInterval(15000);
     connect(Timer104,SIGNAL(timeout()),this,SLOT(Stop()));
     InterogateTimer = new QTimer;
     InterogateTimer->setInterval(15000);
     connect(InterogateTimer,SIGNAL(timeout()),this,SLOT(ErrMsg()));
     NoAnswer = 0;
+>>>>>>> origin/Modbus_refactoring
 }
 
 Parse104::~Parse104()
@@ -1656,6 +1742,11 @@ void IEC104::com51WriteTime(uint Time)
 
 }
 
+<<<<<<< HEAD
+void iec104::StartConTimer()
+{
+   Parse->conTimer->start();
+=======
 void IEC104::EthThreadFinished()
 {
     EthThreadWorking = false;
@@ -1673,4 +1764,5 @@ void IEC104::ParseThreadFinished()
     ParseThreadWorking = false;
     if (!EthThreadWorking)
         emit Finished();
+>>>>>>> origin/Modbus_refactoring
 }

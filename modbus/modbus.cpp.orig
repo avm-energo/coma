@@ -423,8 +423,16 @@ ModbusThread::~ModbusThread()
 
 ConnectionStates ModbusThread::State()
 {
+<<<<<<< HEAD
+    /*if(First)
+    {
+      First = 0;
+      Reading = false;
+    }*/
+=======
     return _state;
 }
+>>>>>>> origin/Modbus_refactoring
 
 void ModbusThread::Init(QQueue<ModBus::InOutStruct> *inq, QList<ModBus::InOutStruct> *outl)
 {
