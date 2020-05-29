@@ -202,7 +202,7 @@ void MainWindow::attemptToRec()
            connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
            connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
            connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
-           connect(cn,SIGNAL(ReconnectSignal(int)),this,SLOT(ReConnect(int)));
+           connect(cn,SIGNAL(ReconnectSignal()),this,SLOT(ReConnect()));
 
            cn->TranslateDeviceAndSave(SavePort);
 
@@ -1466,7 +1466,7 @@ void MainWindow::ShowConnectDialog()
         connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
         connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
         connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
-             connect(cn,SIGNAL(ReconnectSignal(int)),this,SLOT(ReConnect(int)));
+        connect(cn,SIGNAL(ReconnectSignal()),this,SLOT(ReConnect()));
 
        USBsl = cn->DevicesFound();
        if (USBsl.size() == 0)

@@ -589,12 +589,16 @@ void EAbstractProtocomChannel::SendErr()
 void EAbstractProtocomChannel::Timeout()
 {
     Finish(USO_TIMEOUTER);
-    emit ReconnectSignal(1);
+    emit ReconnectSignal();
 }
 
 void EAbstractProtocomChannel::Finish(int ernum)
 {
+    if(ernum == 0 || ernum == 82)
     TTimer->stop();
+    else
+    TTimer->start();
+
     Command = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
     if (ernum != NOERROR)
     {

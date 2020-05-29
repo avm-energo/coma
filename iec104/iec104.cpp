@@ -1674,3 +1674,9 @@ void IEC104::ParseThreadFinished()
     if (!EthThreadWorking)
         emit Finished();
 }
+
+void IEC104::StartConTimer()
+{
+    ConTimer->start();
+}
+
