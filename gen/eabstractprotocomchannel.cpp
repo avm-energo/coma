@@ -594,11 +594,7 @@ void EAbstractProtocomChannel::Timeout()
 
 void EAbstractProtocomChannel::Finish(int ernum)
 {
-    if(ernum == 0 || ernum == 82)
     TTimer->stop();
-    else
-    TTimer->start();
-
     Command = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
     if (ernum != NOERROR)
     {
@@ -655,6 +651,8 @@ void EAbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
         {
             Error::ShowErMsg(COM_WRITEER);
             Disconnect();
+            TTimer->start();
+            return;
         }
         byteswritten += tmpi;
         emit writebytessignal(tmpba.left(tmpi));

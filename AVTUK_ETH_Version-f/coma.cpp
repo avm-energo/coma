@@ -326,7 +326,7 @@ void Coma::Stage3()
              count = 0;
              if(Reconnect)
              {
-               if(MainInterface == I_ETHERNET || MainInterface == I_RS485)
+               //if(MainInterface == I_ETHERNET || MainInterface == I_RS485)
                ReConnect();
              }
              else
