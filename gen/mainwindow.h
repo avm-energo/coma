@@ -20,7 +20,7 @@
 
 #define C_TE_MAXSIZE    100
 
-#define RECONNECTINTERVAL   10000
+#define RECONNECTINTERVAL   3000
 #define WAITINTERVAL        2000
 
 class MainWindow : public QMainWindow
