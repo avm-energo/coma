@@ -22,6 +22,8 @@ public:
     static int LoadFromFile(const QString &filename, QByteArray &ba);
     static QString ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr = "");
     static int SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes);
+    static QStringList Drives();
+    static QStringList SearchForFile(QStringList &filepaths, const QString &filename, bool subdirs = false);
 };
 
 #endif // FILES_H

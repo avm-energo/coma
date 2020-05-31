@@ -130,6 +130,9 @@ signals:
 
 private slots:
     void GetJour();
+    void GetJourMeasj();
+    void ReadJourFileAndProcessIt();
+    void JourFileChoosed(QString &file);
     void EraseJour();
     void SaveJour();
 
@@ -137,6 +140,10 @@ public slots:
     void FillSysJour(QByteArray ba);
     void FillMeasJour(QByteArray ba);
     void FillWorkJour(QByteArray ba);
+
+private:
+    QString JourFile;
+    int JourType;
 };
 
 #endif // JOURNALDIALOG_H

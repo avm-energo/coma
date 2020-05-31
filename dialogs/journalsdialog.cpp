@@ -42,6 +42,10 @@ void JournalDialog::SetupUI()
     hlyout->addWidget(WDFunc::NewPB(this, "ej." + QString::number(JOURWORK), "Стереть рабочий журнал", this, SLOT(EraseJour())));
     hlyout->addWidget(WDFunc::NewPB(this, "sj." + QString::number(JOURWORK), "Сохранить журнал в файл", this, SLOT(SaveJour())));
     vlyout->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewPB(this, "mj." + QString::number(JOURWORK), "Скачать, используя Measj", this, SLOT(GetJourMeasj())));
+    hlyout->addStretch(100);
+    vlyout->addLayout(hlyout);
     vlyout->addWidget(WDFunc::NewTV(this, "work", new ETableModel), 89);
     work->setLayout(vlyout);
     work->setStyleSheet(ConfTWss);
@@ -55,6 +59,10 @@ void JournalDialog::SetupUI()
     hlyout->addWidget(WDFunc::NewPB(this, "ej." + QString::number(JOURSYS), "Стереть системный журнал", this, SLOT(EraseJour())));
     hlyout->addWidget(WDFunc::NewPB(this, "sj." + QString::number(JOURSYS), "Сохранить журнал в файл", this, SLOT(SaveJour())));
     vlyout->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewPB(this, "mj." + QString::number(JOURSYS), "Скачать, используя Measj", this, SLOT(GetJourMeasj())));
+    hlyout->addStretch(100);
+    vlyout->addLayout(hlyout);
     vlyout->addWidget(WDFunc::NewTV(this, "system", new ETableModel), 89);
     system->setLayout(vlyout);
     system->setStyleSheet(ConfTWss);
@@ -66,6 +74,10 @@ void JournalDialog::SetupUI()
     hlyout->addWidget(WDFunc::NewPB(this, "gj." + QString::number(JOURMEAS), "Получить журнал измерений", this, SLOT(GetJour())));
     hlyout->addWidget(WDFunc::NewPB(this, "ej." + QString::number(JOURMEAS), "Стереть журнал измерений", this, SLOT(EraseJour())));
     hlyout->addWidget(WDFunc::NewPB(this, "sj." + QString::number(JOURMEAS), "Сохранить журнал в файл", this, SLOT(SaveJour())));
+    vlyout->addLayout(hlyout);
+    hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewPB(this, "mj." + QString::number(JOURMEAS), "Скачать, используя Measj", this, SLOT(GetJourMeasj())));
+    hlyout->addStretch(100);
     vlyout->addLayout(hlyout);
     vlyout->addWidget(WDFunc::NewTV(this, "meas", new ETableModel), 89);
     measure->setLayout(vlyout);
@@ -129,6 +141,76 @@ void JournalDialog::GetJour()
         else
             EMessageBox::information(this, "Ошибка", "Ошибка чтения журнала");
     }
+}
+
+void JournalDialog::GetJourMeasj()
+{
+    QString filetofind;
+    int jourtype = GetJourNum(sender()->objectName());
+    if (jourtype == GENERALERROR)
+    {
+        ERMSG("Incorrect jour type");
+        return;
+    }
+    if (jourtype == JOURSYS)
+        filetofind = "system.dat";
+    else if (jourtype == JOURWORK)
+        filetofind = "workj.dat";
+    else if (jourtype == JOURMEAS)
+        filetofind = "measj.dat";
+    else
+    {
+        ERMSG("Incorrect jour type");
+        return;
+    }
+    JourType = jourtype;
+    QByteArray ba;
+    QStringList drives = Files::Drives();
+    if (!drives.isEmpty())
+    {
+        QStringList files = Files::SearchForFile(drives, filetofind);
+        if (!files.isEmpty())
+        {
+            QDialog *dlg = new QDialog;
+            dlg->setObjectName("filedlg");
+            QVBoxLayout *lyout = new QVBoxLayout;
+            lyout->addWidget(WDFunc::NewLBLT(this, "Найдены следующие файлы:"), Qt::AlignLeft);
+            lyout->addWidget(WDFunc::NewCB(this, "filescb", files));
+            WDFunc::CBConnect(this, "filescb", WDFunc::CT_TEXTCHANGED, this, SLOT(JourFileChoosed(QString &)));
+            lyout->addWidget(WDFunc::NewPB(this, "nextpb", "Далее", this, SLOT(ReadJourFileAndProcessIt())));
+            dlg->setLayout(lyout);
+            dlg->exec();
+        }
+    }
+}
+
+void JournalDialog::ReadJourFileAndProcessIt()
+{
+    QDialog *dlg = this->findChild<QDialog *>("filedlg");
+    if (dlg != nullptr)
+        dlg->close();
+    QFile file(JourFile);
+    QByteArray ba = file.readAll();
+    switch(JourType)
+    {
+    case JOURSYS:
+        FillEventsTable(ba.data(), JOURSYS);
+        break;
+    case JOURWORK:
+        FillEventsTable(ba.data(), JOURWORK);
+        break;
+    case JOURMEAS:
+        FillMeasTable(ba.data());
+        break;
+    default:
+        ERMSG("Incorrect jour type");
+        return;
+    }
+}
+
+void JournalDialog::JourFileChoosed(QString &file)
+{
+    JourFile = file;
 }
 
 void JournalDialog::EraseJour()
