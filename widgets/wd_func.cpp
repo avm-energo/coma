@@ -501,6 +501,14 @@ QPushButton *WDFunc::NewPB(QWidget *parent, const QString &pbname, const QString
     return pb;
 }
 
+QMetaObject::Connection WDFunc::PBConnect(QWidget *w, const QString &pbname, const QObject *receiver, const char *method)
+{
+    QPushButton *pb = w->findChild<QPushButton *>(pbname);
+    if (pb == nullptr)
+        return QMetaObject::Connection();
+    return QObject::connect(pb, SIGNAL(clicked(bool)), receiver, method);
+}
+
 ETableView *WDFunc::NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model)
 {
     ETableView *tv = new ETableView(w);
@@ -522,6 +530,15 @@ void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *m
     tv->setModel(model);
     tv->setSortingEnabled(sortenable);
     delete m;
+}
+
+void WDFunc::SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder sortorder)
+{
+    ETableView *tv = w->findChild<ETableView *>(tvname);
+    if (tv == nullptr)
+        return;
+    if (column >= 0)
+        tv->sortByColumn(column, sortorder);
 }
 
 ETableModel *WDFunc::TVModel(QWidget *w, const QString &tvname)

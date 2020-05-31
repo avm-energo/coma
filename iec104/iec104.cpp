@@ -382,6 +382,7 @@ Parse104::Parse104(QObject *parent) : QObject(parent)
     GetNewVR = false;
     NewDataArrived = false;
     FileSending = 0;
+    Timer104 = new QTimer;
     Timer104->setInterval(15000);
     connect(Timer104,SIGNAL(timeout()),this,SLOT(Stop()));
     InterogateTimer = new QTimer;

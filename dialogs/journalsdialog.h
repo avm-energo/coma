@@ -24,7 +24,10 @@ public:
     {
         JOURSYS     = 0,
         JOURWORK    = 1,
-        JOURMEAS    = 2
+        JOURMEAS    = 2,
+        JOURSYSM    = 3,
+        JOURWORKM   = 4,
+        JOURMEASM   = 5
     };
 
     struct EventStruct{
@@ -121,8 +124,8 @@ private:
                                             << "Авария по изменению небаланса тока";
 
     void SetupUI();
-    void FillEventsTable(char *file, int jourtype);
-    void FillMeasTable(char *file);
+    void FillEventsTable(QByteArray &ba, int jourtype);
+    void FillMeasTable(QByteArray &ba, int jourtype);
     int GetJourNum(const QString &objname);
 
 signals:

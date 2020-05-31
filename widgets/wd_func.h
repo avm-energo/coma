@@ -110,11 +110,13 @@ public:
     static QImage *TwoImages(const QString &first, const QString &second);
     static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, \
                       const QObject *receiver, const char *method, const QString &icon="", const QString &pbtooltip="");
+    static QMetaObject::Connection PBConnect(QWidget *w, const QString &pbname, const QObject *receiver, const char *method);
     static void SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
     static ETableView *NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model);
     static ETableModel *TVModel(QWidget *w, const QString &tvname);
     static bool LE_read_data(QWidget *w, const QString &lename, QString &levalue);
     static bool LE_write_data(QWidget *w, const QString &levalue, const QString &lename);
+    static void SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder sortorder);
 };
 
 #endif // WD_FUNC

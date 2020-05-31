@@ -9,6 +9,7 @@
 #include "../gen/maindef.h"
 #include "../widgets/getoscpbdelegate.h"
 #include "../widgets/wd_func.h"
+#include "../widgets/waitwidget.h"
 #include "../gen/stdfunc.h"
 #include "../gen/error.h"
 #include "../gen/timefunc.h"
@@ -103,6 +104,9 @@ void JournalDialog::SetupUI()
         WDFunc::SetEnabled(this, "sj." + QString::number(JOURSYS), false);
         WDFunc::SetEnabled(this, "sj." + QString::number(JOURMEAS), false);
         WDFunc::SetEnabled(this, "sj." + QString::number(JOURWORK), false);
+        WDFunc::SetEnabled(this, "mj." + QString::number(JOURSYS), false);
+        WDFunc::SetEnabled(this, "mj." + QString::number(JOURMEAS), false);
+        WDFunc::SetEnabled(this, "mj." + QString::number(JOURWORK), false);
     }
 }
 
@@ -126,13 +130,13 @@ void JournalDialog::GetJour()
             switch(jourtype)
             {
             case JOURSYS:
-                FillEventsTable(ba.data(), JOURSYS);
+                FillEventsTable(ba, JOURSYS);
                 break;
             case JOURWORK:
-                FillEventsTable(ba.data(), JOURWORK);
+                FillEventsTable(ba, JOURWORK);
                 break;
             case JOURMEAS:
-                FillMeasTable(ba.data());
+                FillMeasTable(ba, JOURMEAS);
                 break;
             default:
                 break;
@@ -171,13 +175,15 @@ void JournalDialog::GetJourMeasj()
         QStringList files = Files::SearchForFile(drives, filetofind);
         if (!files.isEmpty())
         {
-            QDialog *dlg = new QDialog;
+            JourFile = files.at(0);
+            QDialog *dlg = new QDialog(this);
             dlg->setObjectName("filedlg");
             QVBoxLayout *lyout = new QVBoxLayout;
             lyout->addWidget(WDFunc::NewLBLT(this, "Найдены следующие файлы:"), Qt::AlignLeft);
             lyout->addWidget(WDFunc::NewCB(this, "filescb", files));
             WDFunc::CBConnect(this, "filescb", WDFunc::CT_TEXTCHANGED, this, SLOT(JourFileChoosed(QString &)));
             lyout->addWidget(WDFunc::NewPB(this, "nextpb", "Далее", this, SLOT(ReadJourFileAndProcessIt())));
+            WDFunc::PBConnect(this, "nextpb", dlg, SLOT(close()));
             dlg->setLayout(lyout);
             dlg->exec();
         }
@@ -186,21 +192,29 @@ void JournalDialog::GetJourMeasj()
 
 void JournalDialog::ReadJourFileAndProcessIt()
 {
-    QDialog *dlg = this->findChild<QDialog *>("filedlg");
-    if (dlg != nullptr)
-        dlg->close();
+    // Крутилка
+    WaitWidget *ww = new WaitWidget;
+    ww->SetMessage("Чтение файла..");
+    ww->Start();
     QFile file(JourFile);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        EMessageBox::error(this, "Ошибка", "Ошибка чтения файла");
+        ww->Stop();
+        return;
+    }
     QByteArray ba = file.readAll();
+    ww->Stop();
     switch(JourType)
     {
     case JOURSYS:
-        FillEventsTable(ba.data(), JOURSYS);
+        FillEventsTable(ba, JOURSYSM);
         break;
     case JOURWORK:
-        FillEventsTable(ba.data(), JOURWORK);
+        FillEventsTable(ba, JOURWORKM);
         break;
     case JOURMEAS:
-        FillMeasTable(ba.data());
+        FillMeasTable(ba, JOURMEASM);
         break;
     default:
         ERMSG("Incorrect jour type");
@@ -307,7 +321,7 @@ void JournalDialog::SaveJour()
 
 void JournalDialog::FillSysJour(QByteArray ba)
 {
-    FillEventsTable(ba.data(), JOURSYS);
+    FillEventsTable(ba, JOURSYS);
 }
 
 void JournalDialog::FillMeasJour(QByteArray ba)
@@ -323,39 +337,44 @@ void JournalDialog::FillMeasJour(QByteArray ba)
     {
         ERMSG("CRC error");
     }
-    FillMeasTable(ba.data());
+    FillMeasTable(ba, JOURMEAS);
 }
 
 void JournalDialog::FillWorkJour(QByteArray ba)
 {
-    FillEventsTable(ba.data(), JOURWORK);
+    FillEventsTable(ba, JOURWORK);
 }
 
 
-void JournalDialog::FillEventsTable(char *file, int jourtype)
+void JournalDialog::FillEventsTable(QByteArray &ba, int jourtype)
 {
     QVector<QVector<QVariant>> lsl;
     QVector<QVariant> EventNum, Num, Time, Type;
     ETableModel *model = new ETableModel;
     EventStruct event;
-    const QStringList sl = (jourtype == JOURSYS) ? SysJourDescription : WorkJourDescription;
-    int mineventid = (jourtype == JOURSYS) ? SYSJOURID : WORKJOURID;
-    const QString tvname = (jourtype == JOURSYS) ? "system" : "work";
+    const QStringList sl = ((jourtype == JOURSYS) || (jourtype == JOURSYSM)) ? SysJourDescription : WorkJourDescription;
+    int mineventid = ((jourtype == JOURSYS) || (jourtype == JOURSYSM)) ? SYSJOURID : WORKJOURID;
+    const QString tvname = ((jourtype == JOURSYS) || (jourtype == JOURSYSM)) ? "system" : "work";
     int N = 0;
+    int basize = ba.size();
+    char *file = ba.data();
     int joursize = 0; // размер считанного буфера с информацией
     int recordsize = sizeof(EventStruct);
     int fhsize = sizeof(S2::FileHeader);
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    file += fhsize;
-    S2::DataRec jour;
-    int drsize = sizeof(S2::DataRec) - sizeof(void *);
-    memcpy(&jour, file, drsize);
-    joursize = jour.num_byte;
-    file += drsize; // move file pointer to thedata
+    if ((jourtype == JOURSYS) || (jourtype == JOURWORK))
+    {
+        file += fhsize;
+        S2::DataRec jour;
+        int drsize = sizeof(S2::DataRec) - sizeof(void *);
+        memcpy(&jour, file, drsize);
+        joursize = jour.num_byte;
+        file += drsize; // move file pointer to thedata
+    }
     int counter = 0;
     int i = 0;
-    while (i < joursize)
+    while (i < basize)
     {
         memcpy(&event, file, recordsize);
         file += recordsize;
@@ -393,12 +412,13 @@ void JournalDialog::FillEventsTable(char *file, int jourtype)
     QSortFilterProxyModel *pmdl = new QSortFilterProxyModel;
     pmdl->setSourceModel(model);
     int dateidx = model->Headers().indexOf("Дата/Время");
-    pmdl->sort(dateidx, Qt::DescendingOrder);
+//    pmdl->sort(dateidx, Qt::DescendingOrder);
     WDFunc::SetTVModel(this, tvname, pmdl, true);
+    WDFunc::SortTV(this, tvname, dateidx, Qt::DescendingOrder);
     QApplication::restoreOverrideCursor();
 }
 
-void JournalDialog::FillMeasTable(char *file)
+void JournalDialog::FillMeasTable(QByteArray &ba, int jourtype)
 {
     QVector<QVector<QVariant> > lsl;
     ETableModel *model = new ETableModel;
@@ -408,19 +428,23 @@ void JournalDialog::FillMeasTable(char *file)
 
     MeasureStruct meas;
     int recordsize = sizeof(MeasureStruct);
-
+    int basize = ba.size();
+    char *file = ba.data();
     int joursize = 0; // размер считанного буфера с информацией
     int fhsize = sizeof(S2::FileHeader);
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    file += fhsize;
-    S2::DataRec jour;
-    int drsize = sizeof(S2::DataRec) - sizeof(void *);
-    memcpy(&jour, file, drsize);
-    joursize = jour.num_byte;
-    file += drsize; // move file pointer to thedata
+    if (jourtype == JOURMEAS)
+    {
+        file += fhsize;
+        S2::DataRec jour;
+        int drsize = sizeof(S2::DataRec) - sizeof(void *);
+        memcpy(&jour, file, drsize);
+        joursize = jour.num_byte;
+        file += drsize; // move file pointer to thedata
+    }
     int i = 0;
-    while (i < joursize)
+    while (i < basize)
     {
         memcpy(&meas, file, recordsize);
         file += recordsize;
@@ -555,8 +579,9 @@ void JournalDialog::FillMeasTable(char *file)
    QSortFilterProxyModel *pmdl = new QSortFilterProxyModel;
    pmdl->setSourceModel(model);
    int dateidx = model->Headers().indexOf("Дата/Время");
-   pmdl->sort(dateidx, Qt::AscendingOrder);
+//   pmdl->sort(dateidx, Qt::AscendingOrder);
    WDFunc::SetTVModel(this, "meas", pmdl, true);
+   WDFunc::SortTV(this, "meas", dateidx, Qt::AscendingOrder);
    QApplication::restoreOverrideCursor();
 }
 
@@ -571,7 +596,8 @@ int JournalDialog::GetJourNum(const QString &objname)
         return GENERALERROR;
     }
     int jourtype = sl.at(1).toInt(&ok);
-    if (((sl.at(0) != "gj") && (sl.at(0) != "ej") && (sl.at(0) != "sj")) || !ok)
+    QString jourprefix = sl.at(0);
+    if (((jourprefix != "gj") && (jourprefix != "ej") && (jourprefix != "sj") && (jourprefix != "mj")) || !ok)
     {
         DBGMSG;
         return GENERALERROR;
