@@ -147,7 +147,6 @@ void MainWindow::ReConnect()
     #endif
 
         CheckB = CheckM = nullptr;
-        //CheckModBus = nullptr;
         emit ClearBsi();
         ClearTW();
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
@@ -174,57 +173,72 @@ void MainWindow::ReConnect()
     dlg->setLayout(lyout);
 
     ReconnectTimer->start();
-    dlg->exec();
+    dlg->show();
+    StdFunc::Wait(RECONNECTINTERVAL);
+    dlg->close();
 
 }
 
 void MainWindow::attemptToRec()
 {
     ReconnectTimer->stop();
-//    ReconnectTimer->deleteLater();
-
-//    if(Ch104 != nullptr)
-//    Ch104->deleteLater();
-
-    if(Reconnect != false)
 
     //if(MainInterface->size() != 0)
     //{
         if(MainInterface == I_USB)
         {
-           insl.clear();
 
-           cn = new EUsbHid;
-           connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
-           connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
-           connect(cn,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
-           connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-           connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-           connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
-           connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
-           connect(cn,SIGNAL(ReconnectSignal()),this,SLOT(ReConnect()));
+           Disconnected = 0;
 
-           cn->TranslateDeviceAndSave(SavePort);
+               //#ifdef USBENABLE
+               connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
+               //#else
+               //#ifdef COMPORTENABLE
+               //    cn = new EUsbCom;
+               //    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
+               //#endif
+               //#endif
+               connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
+               connect(cn,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
+               connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+               connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
+               connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
+               connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
+               connect(cn,SIGNAL(ReconnectSignal()),this,SLOT(ReConnect()));
 
-           if (Commands::Connect() != NOERROR)
-           {
-               ReConnect();
-               return;
-           }
-           else
-           {
-               int res = ModuleBSI::SetupBSI();
-               if (res != NOERROR)
-               {
-                  ReConnect();
-                  return;
-               }
-               else if (res == NOERROR)
-               {
-                 if(ModuleBSI::ModuleTypeString != "")
-                 EMessageBox::information(this, "Успешно", "Связь с "+ModuleBSI::ModuleTypeString+" установлена");
-               }
-           }
+              //cn->DevicesFound();
+              SetPortSlot(SavePort);
+
+              if(cancel)
+              return;
+
+              StopRead = 0;
+
+                 insl.clear();
+
+                 if(cn->Cancelled)
+                 return;
+
+                 if (Commands::Connect() != NOERROR) // cn->Connect()
+                 {
+                     ReConnect();
+                     return;
+                 }
+
+                  int res = ModuleBSI::SetupBSI();
+                  if (res == GENERALERROR)
+                  {
+                      ReConnect();
+                      return;
+                  }
+          #if PROGSIZE >= PROGSIZE_LARGE
+                  else if (res == NOERROR)
+                  {
+                    if(ModuleBSI::ModuleTypeString != "")
+                    ConnectMessage();
+                  }
+          #endif
+
          }
     //}
 
@@ -250,7 +264,12 @@ void MainWindow::ConnectMessage()
     QString tmps = QString(PROGCAPTION);
     QWidget *w = new QWidget;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
+
+    if(MainInterface == I_USB)
+    hlyout->addWidget(WDFunc::NewLBLT(w, "Связь с "+ModuleBSI::ModuleTypeString+" установлена", "", "", ""), 1);
+    else
     hlyout->addWidget(WDFunc::NewLBLT(w, "Связь с "+FullName+" установлена", "", "", ""), 1);
+
     vlayout->addLayout(hlyout);
 
     w->setLayout(vlayout);
