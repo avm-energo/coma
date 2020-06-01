@@ -4,7 +4,7 @@
 
 #define Name "АВМ-Сервис"
 #define GroupName "АВМ-Сервис"
-#define EngName "АВМ-Сервис"
+#define EngName "AVM-Service"
 #define Version "0.0.40"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
@@ -49,8 +49,8 @@ Name: {userappdata}\{#EngName}
 Source: "{#Prefix}\coma\*.dll"; DestDir: "{app}"
 Source: "{#Prefix}\coma\platforms\qwindows.dll"; DestDir: "{app}\platforms"
 Source: "{#Prefix}\coma\{#ExeName}"; DestDir: "{app}"; DestName: {#ExeName}; Flags: ignoreversion
-Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{localappdata}\{#EngName}"; Flags: ignoreversion
-Source: "{#Prefix}\coma\reports\*.*"; DestDir: "{localappdata}\{#EngName}"; Flags: ignoreversion
+Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
+Source: "{#Prefix}\coma\reports\*.*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
 Source: "{#Prefix}\coma\images\*.*"; DestDir: "{app}\images"; Flags: ignoreversion
 Source: "{#Prefix}\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 Source: "{#Prefix}\coma\readme.txt"; DestDir: "{app}"
@@ -61,52 +61,4 @@ Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
 Name: "{group}\Удалить программу {#Name}"; Filename: "{uninstallexe}"
 
 [Run]
-; add the Parameters, WorkingDir and StatusMsg as you wish, just keep here
-; the conditional installation Check
-Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; Check: not IsRequiredVC2017Detected; StatusMsg: Устанавливается пакет MSVC2017 Redistributable...
-
-[Code]
-//-----------------------------------------------------------------------------
-//  Проверка наличия нужной версии VC2017
-//  https://habrahabr.ru/post/255807/
-//-----------------------------------------------------------------------------
-function IsVC2017Detected(): boolean;
-
-var 
-    reg_key: string; // Просматриваемый подраздел системного реестра
-    success: boolean; // Флаг наличия запрашиваемой версии VC
-    key_value: string; // Прочитанное из реестра значение ключа
-
-begin
-    success := false;
-    reg_key := 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86';
-    
-    success := RegQueryStringValue(HKLM, reg_key, 'Version', key_value);
-    success := success and (Pos('v14.0.24215', key_value) = 1);
-    result := success;
-end;
-
-//-----------------------------------------------------------------------------
-//  Функция-обертка для детектирования конкретной нужной нам версии
-//-----------------------------------------------------------------------------
-function IsRequiredVC2017Detected(): boolean;
-begin
-    result := IsVC2017Detected();
-end;
-
-//-----------------------------------------------------------------------------
-//    Callback-функция, вызываемая при инициализации установки
-//-----------------------------------------------------------------------------
-function InitializeSetup(): boolean;
-begin
-
-  // Если нет тербуемой версии .NET выводим сообщение о том, что инсталлятор
-  // попытается установить её на данный компьютер
-//  if not IsVC2017Detected() then
-//    begin
-//      MsgBox('{#Name} требует установки Microsoft VC2015 redistributable v14.0.24215'#13#13
-//             'Установщик запустит установку MSVC после установки основного пакета', mbInformation, MB_OK);
-//    end;   
-
-  result := true;
-end;
+Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2017 Redistributable...

@@ -1,5 +1,6 @@
 #include <QFile>
 #include <QFileDialog>
+#include <QDirIterator>
 
 #include "stdfunc.h"
 #include "files.h"
@@ -78,5 +79,27 @@ int Files::SaveToFile(const QString &filename, QByteArray &src, unsigned int num
     if (res == GENERALERROR)
         return ER_FILEWRITE; // ошибка записи
     return ER_NOERROR; // нет ошибок
+}
+
+QStringList Files::Drives()
+{
+    QStringList sl;
+    QFileInfoList list = QDir::drives();
+    foreach(QFileInfo fi, list)
+        sl << fi.path();
+    return sl;
+}
+
+QStringList Files::SearchForFile(QStringList &filepaths, const QString &filename, bool subdirs)
+{
+    QStringList files;
+    foreach (QString filepath, filepaths)
+    {
+        QStringList sl = QStringList() << filename;
+        QDirIterator it(filepath, sl, QDir::AllEntries | QDir::NoSymLinks | QDir::NoDotAndDotDot, (subdirs) ? QDirIterator::Subdirectories : QDirIterator::NoIteratorFlags);
+        while (it.hasNext())
+            files << it.next();
+    }
+    return files;
 }
 
