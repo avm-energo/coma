@@ -280,6 +280,7 @@ void IEC104::SendTestAct()
         ConTimer->stop();
 //        ConTimer->deleteLater();
         emit errorCh104();
+        ERMSG("Нет ответа");
         return;
     }
     else
@@ -322,6 +323,7 @@ void IEC104::ParseSomeData(QByteArray ba, bool GSD)
             if (missing_num>basize)
             {
                 cutpckt.append(ba);
+                ERMSG("Так и не достигли конца пакета, надо брать следующий пакет в cutpckt");
                 return; // если так и не достигли конца пакета, надо брать следующий пакет в cutpckt
             }
             cutpckt.append(ba.left(missing_num)); // взяли из текущего пакета сами байты
@@ -332,7 +334,11 @@ void IEC104::ParseSomeData(QByteArray ba, bool GSD)
         }
     }
     if (basize<1)
-        return;
+    {
+      ERMSG("basize<1");
+      return;
+    }
+
     quint32 BlockLength = static_cast<quint8>(ba.at(1))+2;
     if (BlockLength == 0)
     {

@@ -40,6 +40,7 @@ void EAbstractProtocomChannel::Send(char command, char parameter, QByteArray &ba
 {
     if (!Connected)
     {
+        ERMSG("В канальную процедуру переданы некорректные данные");
         Result = CN_NULLDATAERROR;
         return;
     }
@@ -75,6 +76,7 @@ void EAbstractProtocomChannel::SendCmd(char command, int parameter)
         break;
     default:
         Finish(CN_UNKNOWNCMDERROR);
+        ERMSG("Неизвестная команда");
         return;
     }
     QByteArray ba;
@@ -96,6 +98,7 @@ void EAbstractProtocomChannel::SendIn(char command, char parameter, QByteArray &
     case CN_GMode:
         break;
     default:
+        ERMSG("Неизвестная команда");
         Finish(CN_UNKNOWNCMDERROR);
         return;
     }
@@ -116,6 +119,7 @@ void EAbstractProtocomChannel::SendOut(char command, char board_type, QByteArray
     case CN_CtEr:
         break;
     default:
+        ERMSG("Неизвестная команда");
         Finish(CN_UNKNOWNCMDERROR);
         return;
     }
@@ -131,6 +135,7 @@ void EAbstractProtocomChannel::SendFile(unsigned char command, char board_type, 
     case CN_WF:
         break;
     default:
+        ERMSG("Неизвестная команда");
         Finish(CN_UNKNOWNCMDERROR);
         return;
     }
@@ -155,6 +160,7 @@ void EAbstractProtocomChannel::TranslateDeviceAndSave(const QString &str)
     QStringList sl = str.split("_"); // 1, 3 и 5 - полезная нагрузка
     if (sl.size() < 6)
     {
+        ERMSG("Неправильная длина имени порта");
         DBGMSG;
         return;
     }
@@ -256,6 +262,7 @@ void EAbstractProtocomChannel::InitiateSend()
     }
     default:
     {
+        ERMSG("Неизвестная команда");
         Finish(CN_UNKNOWNCMDERROR);
         return;
     }
@@ -276,13 +283,17 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         CnLog->WriteRaw(tmps);
     }
     if (Command == CN_Unk) // игнорирование вызова процедуры, если не было послано никакой команды
+    {
+        ERMSG("Игнорирование вызова процедуры, если не было послано никакой команды");
         return;
+    }
     ReadDataChunk.append(ba);
     qint64 rdsize = ReadDataChunk.size();
     if (rdsize<4) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
         return;
     if (ReadDataChunk.at(0) != CN_SS)
     {
+        ERMSG("Ошибка при приеме данных");
         Finish(CN_RCVDATAERROR);
         return;
     }
@@ -313,12 +324,14 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             {
                 if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
                 {
+                    ERMSG("Ошибка при приеме данных");
                     Finish(CN_RCVDATAERROR);
                     return;
                 }
                 if (Command == CN_Ert)
                     OscTimer->start(); // start timer to send ErPg command periodically
                 Finish(NOERROR);
+                ERMSG("Переход в тестовый режим без ошибок");
                 return;
             }
             // команды с ответом "ОК" и с продолжением
@@ -329,6 +342,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             {
                 if ((ReadDataChunk.at(1) != CN_ResOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
                 {
+                    ERMSG("Ошибка при приеме данных");
                     Finish(CN_RCVDATAERROR);
                     return;
                 }
@@ -354,6 +368,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             {
                 if (!GetLength())
                 {
+                    ERMSG("Несовпадение длины");
                     Finish(CN_RCVDATAERROR);
                     return;
                 }
@@ -374,6 +389,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             {
                 if (!GetLength())
                 {
+                    ERMSG("Несовпадение длины");
                     Finish(CN_RCVDATAERROR);
                     return;
                 }
@@ -385,7 +401,11 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 }
                 // надо проверить, тот ли номер файла принимаем
                 if (rdsize < 20) // не пришла ещё шапка файла
-                    return;
+                {
+                  ERMSG("Не пришла ещё шапка файла");
+                  return;
+                }
+
                 // шапка:
                 // WORD fname;		// имя файла
                 // WORD service;	// сервисное слово (по умолчанию 0xFF)
@@ -407,6 +427,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 RDLength += 16;
                 if (RDLength > CN_MAXGETFILESIZE) // размер файла должен быть не более 16М
                 {
+                    ERMSG("Некорректная длина блока");
                     Finish(CN_RCVLENGTHERROR);
                     return;
                 }
@@ -634,6 +655,7 @@ void EAbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
     QByteArray tmpba = ba;
     if (Command == CN_Unk) // игнорируем вызовы процедуры без команды
     {
+        ERMSG("Не пришла ещё шапка файла");
         Error::ShowErMsg(USB_WRONGCOMER);
         return;
     }
@@ -649,6 +671,7 @@ void EAbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
         int tmpi = RawWrite(tmpba);
         if (tmpi == GENERALERROR)
         {
+            ERMSG("Ошибка записи RawWrite");
             Error::ShowErMsg(COM_WRITEER);
             Disconnect();
             TTimer->start();

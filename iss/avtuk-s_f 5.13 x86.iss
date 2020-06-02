@@ -5,12 +5,12 @@
 #define Name "АВМ-Сервис"
 #define GroupName "АВМ-Сервис"
 #define EngName "AVM-Service"
-#define Version "0.0.41"
+#define Version "0.0.43"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "AVM-Service.exe"
-#define SetupName "AVM-Service-0.0.41-x86"
-#define Prefix "D:\out-5.14_x32"
+#define SetupName "AVM-Service-0.0.43-x86"
+#define Prefix "D:\out-5.13_x32"
 
 [CustomMessages]
 Version={#Version}

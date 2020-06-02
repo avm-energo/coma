@@ -125,6 +125,7 @@ void EUsbThread::Run()
                         log->WriteRaw("UsbThread: Unable to hid_read()");
                     AboutToFinish = true;
                     emit Finished();
+                    ERMSG("Завершение потока HID USB");
                     return;
                 }
                 if (bytes > 0)

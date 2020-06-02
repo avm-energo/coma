@@ -83,7 +83,11 @@ void AbstractConfDialog::WriteConf()
     {
 
         if (!PrepareConfToWrite())
+        {
+            ERMSG("Ошибка чтения конфигурации");
             return;
+        }
+
 
         if (MainInterface == I_ETHERNET)
         {
@@ -136,7 +140,10 @@ void AbstractConfDialog::SaveConfToFile()
 {
     QByteArray ba;
     if (!PrepareConfToWrite())
+    {
+        ERMSG("Ошибка чтения конфигурации");
         return;
+    }
     ba.resize(MAXBYTEARRAY);
     S2::StoreDataMem(&(ba.data()[0]), S2Config, 0x0001); // 0x0001 - номер файла конфигурации
     quint32 BaLength = static_cast<quint8>(ba.data()[4]);

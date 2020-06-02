@@ -203,7 +203,11 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 //    qDebug() << ElapsedTimeCounter->elapsed();
     // получение текущих аналоговых сигналов от модуля
     if (Busy)
-        return;
+    {
+      ERMSG("Ещё не завершена предыдущая операция");
+      return;
+    }
+
     Busy = true;
     if (XlsxWriting)
     {
@@ -285,7 +289,10 @@ void EAbstractCheckDialog::SetTimerPeriod()
     bool ok;
     int per = sender()->objectName().toInt(&ok);
     if (!ok)
-        return;
+    {
+       ERMSG("Ошибка считывания интервала таймера");
+       return;
+    }
     timer->stop();
     timer->setInterval(per);
     if (TimerIsActive)

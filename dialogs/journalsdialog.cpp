@@ -115,7 +115,10 @@ void JournalDialog::GetJour()
 {
     int jourtype = GetJourNum(sender()->objectName());
     if (jourtype == GENERALERROR)
-        return;
+    {
+      ERMSG("Ошибочный тип журнала");
+      return;
+    }
     char num = jourtype + 4;
     if (MainInterface == I_ETHERNET)
     {
@@ -200,6 +203,7 @@ void JournalDialog::ReadJourFileAndProcessIt()
     if (!file.open(QIODevice::ReadOnly))
     {
         EMessageBox::error(this, "Ошибка", "Ошибка чтения файла");
+        ERMSG("Ошибка чтения файла");
         ww->Stop();
         return;
     }
@@ -233,7 +237,10 @@ void JournalDialog::EraseJour()
     {
         int jourtype = GetJourNum(sender()->objectName());
         if (jourtype == GENERALERROR)
+        {
+            ERMSG("Ошибочный тип журнала");
             return;
+        }
         char num = jourtype + 4;
 
         if(Commands::EraseTechBlock(num) == NOERROR)
@@ -254,7 +261,10 @@ void JournalDialog::SaveJour()
     Qt::SortOrder order = Qt::AscendingOrder;
     int jourtype = GetJourNum(sender()->objectName());
     if (jourtype == GENERALERROR)
+    {
+        ERMSG("Ошибочный тип журнала");
         return;
+    }
     jourfilestr = "KIV #" + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + " ";
     switch(jourtype)
     {

@@ -31,6 +31,7 @@ void LogClass::Init(const QString &Filename)
     if (!fp->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
     {
         CanLog = false;
+        ERMSG("Ошибка открытия файла");
         return;
     }
     CanLog = true;

@@ -72,8 +72,12 @@ int Commands::GetFileWithRestore(int filenum, QVector<S2::DataRec> *data)
         quint32 crctocheck;
         quint32 basize = ba.size();
         if(basize < 17)
+        {
+            ERMSG("Ошибка basize");
             return GENERALERROR;
-            ERMSG("basize");
+        }
+
+
         memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
         if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
             return GENERALERROR;
@@ -99,8 +103,8 @@ int Commands::GetFile(int filenum, QByteArray &ba)
         quint32 basize = ba.size();
         if (basize < 17)
         {
-            return GENERALERROR;
             ERMSG("basize");
+            return GENERALERROR;
         }
         memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
         if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))

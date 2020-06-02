@@ -151,7 +151,10 @@ void MainWindow::ReConnect()
         ClearTW();
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
         if (MainTW == nullptr)
-            return;
+        {
+          ERMSG("Ошибка открытия файла");
+          return;
+        }
         MainTW->hide();
         StdFunc::SetEmulated(false);
     }
@@ -210,18 +213,25 @@ void MainWindow::attemptToRec()
               SetPortSlot(SavePort);
 
               if(cancel)
-              return;
+              {
+                  ERMSG("Отмена");
+                  return;
+              }
 
               StopRead = 0;
 
                  insl.clear();
 
                  if(cn->Cancelled)
-                 return;
+                 {
+                     ERMSG("Отмена");
+                     return;
+                 }
 
                  if (Commands::Connect() != NOERROR) // cn->Connect()
                  {
                      ReConnect();
+                     ERMSG("Реконект");
                      return;
                  }
 
@@ -1053,7 +1063,11 @@ void MainWindow::ClearTW()
     S2Config.clear();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
-        return;
+    {
+      ERMSG("Пустой MainTW");
+      return;
+    }
+
     while (MainTW->count())
     {
         QWidget *wdgt = MainTW->widget(0);
@@ -1070,7 +1084,10 @@ void MainWindow::ShowOrHideSlideSW()
 {
     QWidget *w = this->findChild<QWidget *>("slidew");
     if (w == nullptr)
-        return;
+    {
+      ERMSG("Пустой виджет");
+      return;
+    }
     if (w->isHidden())
         w->show();
     if (SWHide)
@@ -1105,9 +1122,14 @@ int MainWindow::CheckPassword()
     dlg->show();
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
-        return GENERALERROR;
+    {
+      ERMSG("Отмена ввода пароля");
+      return GENERALERROR;
+    }
+
     if (!Ok)
     {
+        ERMSG("Пароль введён неверно");
         EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
         return GENERALERROR;
     }
@@ -1125,13 +1147,17 @@ void MainWindow::Stage1_5()
     ShowConnectDialog();
 
     if(cancel)
-    return;
+    {
+        ERMSG("Отмена подключения");
+        return;
+    }
 
     StopRead = 0;
 
     if((insl.size() == 0) && ((MainInterface == I_ETHERNET) || (MainInterface == I_RS485)))
     {
         DisconnectAndClear();
+        ERMSG("Разрыв связи");
         return;
     }
 
@@ -1141,6 +1167,7 @@ void MainWindow::Stage1_5()
        EMessageBox::information(this, "Ошибка", "Выбранный интерфейс не соотвествует выбранной строке в файле");
        DisconnectAndClear();
        insl.clear();
+       ERMSG("Выбранный интерфейс не соотвествует выбранной строке в файле");
        return;
     }
 
@@ -1156,6 +1183,7 @@ void MainWindow::Stage1_5()
        {
           EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
           QApplication::restoreOverrideCursor();
+          ERMSG("Не удалось установить связь");
           return;
        }
     }
@@ -1183,6 +1211,7 @@ void MainWindow::Stage2()
                 cn->Disconnect();
                 emit Retry();
             }
+            ERMSG("Ошибка чтения BSI");
             return;
         }
 #if PROGSIZE >= PROGSIZE_LARGE
@@ -1220,7 +1249,10 @@ void MainWindow::UpdateHthWidget(ModuleBSI::Bsi* bsi)
     {
         QLabel *lbl = this->findChild<QLabel *>(QString::number(i));  //hth+ (i+1)
         if (lbl == nullptr)
-            return;
+        {
+           ERMSG("Нулевой lbl");
+           return;
+        }
         quint32 tmpui = (0x00000001 << i) & bsi->Hth;
 
         WDFunc::SetLBLImage(this, (QString::number(i)), pm[tmpui]);
@@ -1264,7 +1296,10 @@ void MainWindow::Fill()
 void MainWindow::UpdateMainTE(QByteArray ba)
 {
     if (!TEEnabled)
+    {
+        ERMSG("Ошибка TE");
         return;
+    }
     QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
     if (MainTE != nullptr)
         MainTE->append(ba.toHex());
@@ -1383,6 +1418,7 @@ void MainWindow::FileTimeOut()
     QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
     if (prb == nullptr)
     {
+        ERMSG("Пустой prb");
         DBGMSG;
         return;
     }
@@ -1461,7 +1497,10 @@ void MainWindow::ShowConnectDialog()
     //QStringList device = QStringList() << "KDV" << "2" << "1" << "2";
     //QStringList inter = QStringList() << "ETH" << "MODBUS";
     if(cancel)
-    return;
+    {
+        ERMSG("Отмена ConnectDialog");
+        return;
+    }
 
     dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -1577,6 +1616,7 @@ void MainWindow::ShowConnectDialog()
        {
            lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
            Error::ShowErMsg(CN_NOPORTSERROR);
+           ERMSG("Ошибка, устройства не найдены");
        }
 
        //dlg = new QDialog(this);
@@ -1670,6 +1710,7 @@ void MainWindow::Disconnect()
             BdaTimer->stop();
             TimeFunc::Wait(100);
          }
+            if(!Reconnect)
             cn->Disconnect();
         }
         else
@@ -1688,6 +1729,7 @@ void MainWindow::GetDeviceFromTable(QModelIndex idx)
     ETableView *tv = this->findChild<ETableView *>("devicetv");
     if (tv == nullptr)
     {
+        ERMSG("Пустой tv");
         DBGMSG;
         return;
     }
@@ -1722,7 +1764,11 @@ void MainWindow::DisconnectAndClear()
         ClearTW();
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
         if (MainTW == nullptr)
+        {
+            ERMSG("Пустой MainTW");
             return;
+        }
+
         MainTW->hide();
         StdFunc::SetEmulated(false);
 
@@ -1782,7 +1828,10 @@ void MainWindow::MouseMove()
     QPoint curPos = mapFromGlobal(QCursor::pos());
     QWidget *sww = this->findChild<QWidget *>("slidew");
     if (sww == nullptr)
-        return;
+    {
+      ERMSG("Пустой sww");
+      return;
+    }
     if ((abs(curPos.x() - width()) < 10) && (curPos.y() > 0) && (curPos.y() < height()))
     {
         if (SWHide)
@@ -1808,7 +1857,10 @@ void MainWindow::resizeEvent(QResizeEvent *e)
     {
         QWidget *sww = this->findChild<QWidget *>("slidew");
         if (sww == nullptr)
-            return;
+        {
+          ERMSG("Пустой sww");
+          return;
+        }
         sww->setGeometry(QRect(width()-sww->width(), 0, sww->width(), height()));
     }
 }
@@ -1830,6 +1882,7 @@ void MainWindow::ParseString(QString Str)
     if (insl.size() < 2)
     {
         EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
+        ERMSG("Некорректная запись в файле");
         return;
     }
     if(insl.at(1) == "ETH")
@@ -1849,6 +1902,7 @@ void MainWindow::ParseString(QString Str)
             if (!ok)
             {
                 EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
+                ERMSG("Некорректная запись в файле");
                 return;
             }
             Settings.Parity =  insl.at(3);
@@ -1856,6 +1910,7 @@ void MainWindow::ParseString(QString Str)
             Settings.Address =  insl.at(5).toUInt(&ok);
             if (!ok)
             {
+                ERMSG("Некорректная запись в файле");
                 EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
                 return;
             }

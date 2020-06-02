@@ -166,7 +166,10 @@ void ModBus::SendAndGet(InOutStruct &inp, ModBus::InOutStruct &outp)
     while (!Finished)
     {
         if (GetResultFromOutQueue(inp.TaskNum, outp))
+        {
+            ERMSG("Ошибка взятия из очереди по modbus");
             return;
+        }
         OutWaitMutex.lock();
         OutWC.wait(&OutWaitMutex, 20);
         OutWaitMutex.unlock();
@@ -215,7 +218,11 @@ void ModBus::BSIrequest()
     QList<BSISignalStruct> BSIsig;// = nullptr;
     int sigsize;
     if (GetSignalsFromByteArray(outp.Ba, BSIREG, BSIsig, sigsize) != NOERROR)
-        return;
+    {
+       ERMSG("Ошибка взятия сигнала из очереди по modbus");
+       return;
+    }
+
     emit BsiFromModbus(BSIsig, sigsize);
 }
 
@@ -283,7 +290,10 @@ void ModBus::ReadTime()
     QList<BSISignalStruct> BSIsig;
     int sigsize;
     if (GetSignalsFromByteArray(outp.Ba, TIMEREG, BSIsig, sigsize) != NOERROR)
-        return;
+    {
+       ERMSG("Ошибка взятия сигнала из очереди по modbus");
+       return;
+    }
     emit TimeSignalsReceived(BSIsig);
 }
 

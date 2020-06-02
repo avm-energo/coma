@@ -2,6 +2,7 @@
 #include "keypressdialog.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
+#include "../gen/error.h"
 
 KeyPressDialog::KeyPressDialog(const QString &PswPhrase, QWidget *parent) :
     QDialog(parent)
@@ -28,7 +29,10 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
 {
     QString str;
     if ((e->modifiers() == Qt::AltModifier) || (e->modifiers() == Qt::ControlModifier))
-        return;
+    {
+       ERMSG("Ошибка при обработке пароля");
+       return;
+    }
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
     {
         if (WDFunc::LE_read_data(this, "pswle", str))

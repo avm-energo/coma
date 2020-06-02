@@ -365,6 +365,7 @@ void MNKTime::FillTimeFromModBus(QList<ModBus::BSISignalStruct> Time)
 
     if (Time.size() == 0)
     {
+        ERMSG("Некорректное время");
         DBGMSG;
         return;
     }

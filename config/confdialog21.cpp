@@ -254,6 +254,7 @@ void ConfDialog21::SetRange(int RangeType)
         WDFunc::SetLBLText(this, "units", "В");
         break;
     default:
+        ERMSG("Неизвестный диапазон");
         return;
     }
     if (RangeType < 5) // predefined ranges
@@ -325,6 +326,7 @@ void ConfDialog21::SetMinMax(int i)
     QComboBox *cb = this->findChild<QComboBox *>("inrange."+QString::number(i));
     if (cb == nullptr)
     {
+        ERMSG("Пустой cb");
         DBGMSG;
         return;
     }
@@ -361,7 +363,10 @@ void ConfDialog21::SetChTypData(int value)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());
     if (tmpi == GENERALERROR)
-        return;
+    {
+       ERMSG("Некорректные данные");
+       return;
+    }
     C21->Bci_block.in_type[tmpi] = value;
     DisableChannel(tmpi, (value == 0));
 }

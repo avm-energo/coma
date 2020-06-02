@@ -9,6 +9,7 @@
 #include "wd_func.h"
 #include "etableview.h"
 #include "../gen/colors.h"
+#include "../gen/error.h"
 
 QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letext, const QString &lestyle)
 {
@@ -344,7 +345,10 @@ void WDFunc::TVAutoResize(QWidget *w, const QString &tvname)
 {
     ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == nullptr)
-        return;
+    {
+       ERMSG("Пустой tv");
+       return;
+    }
     tv->resizeColumnsToContents();
     tv->resizeRowsToContents();
 }
@@ -525,7 +529,10 @@ void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *m
 {
     ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == nullptr)
-        return;
+    {
+       ERMSG("Пустой tv");
+       return;
+    }
     QItemSelectionModel *m = tv->selectionModel();
     tv->setModel(model);
     tv->setSortingEnabled(sortenable);
@@ -536,7 +543,10 @@ void WDFunc::SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder
 {
     ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == nullptr)
-        return;
+    {
+       ERMSG("Пустой tv");
+       return;
+    }
     if (column >= 0)
         tv->sortByColumn(column, sortorder);
 }

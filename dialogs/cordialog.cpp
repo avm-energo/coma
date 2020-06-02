@@ -499,6 +499,7 @@ void CorDialog::ReadFromFile()
     if (res != Files::ER_NOERROR)
     {
         EMessageBox::error(this, "Ошибка", "Ошибка при загрузке файла");
+        ERMSG("Ошибка при загрузке файла");
         return;
     }
 

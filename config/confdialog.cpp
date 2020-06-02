@@ -123,6 +123,7 @@ void ConfDialog::Set104(double dbl)
     QStringList sl = sender()->objectName().split(".");
     if (sl.size() < 1)
     {
+        ERMSG("Некорректные данные");
         DBGMSG;
         return;
     }
@@ -130,6 +131,7 @@ void ConfDialog::Set104(double dbl)
     int wnum = sl.at(1).toInt(&ok);
     if (!ok)
     {
+        ERMSG("Некорректные данные");
         DBGMSG;
         return;
     }

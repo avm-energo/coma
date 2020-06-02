@@ -52,6 +52,7 @@ void ConfDialog31::SetPair(int firstch, int secondch)
     if ((firstch > DIN31_NUMCH) || (secondch > DIN31_NUMCH) || (firstch < 0) || (secondch < 0))
     {
         EMessageBox::information(this, "Предупреждение", "Ошибка при чтении пары каналов из конфигурации");
+        ERMSG("Ошибка при чтении пары каналов из конфигурации");
         return;
     }
     WDFunc::SetCBIndex(this, "chpaircb."+QString::number(firstch), secondch+1); // +1 из-за 0-го элемента "нет пары"
@@ -90,7 +91,11 @@ void ConfDialog31::SetChTypData(int value)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());
     if (tmpi == GENERALERROR)
-        return;
+    {
+       ERMSG("Некорректные данные");
+       return;
+    }
+
     if (tmpi < DIN31_NUMCH)
     {
         switch (value)
@@ -124,7 +129,11 @@ void ConfDialog31::SetDly(double dly)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());
     if (tmpi == GENERALERROR)
-        return;
+    {
+       ERMSG("Некорректные данные");
+       return;
+    }
+
     if (tmpi < DIN31_NUMCH)
         C31->Bci_block.inblk.dly_time[tmpi] = static_cast<quint32>(dly)*4;
 }
@@ -133,6 +142,10 @@ void ConfDialog31::SetPair(int ch)
 {
     int tmpi = GetChNumFromObjectName(sender()->objectName());
     if (tmpi == GENERALERROR)
-        return;
+    {
+       ERMSG("Некорректные данные");
+       return;
+    }
+
     SetPair(tmpi, ch);
 }

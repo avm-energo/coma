@@ -159,6 +159,7 @@ void InfoDialog::ClearBsi()
         QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
         if (lbl == nullptr)
         {
+            ERMSG("Пустой health lbl");
             DBGMSG;
             return;
         }

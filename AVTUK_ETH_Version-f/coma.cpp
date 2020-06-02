@@ -269,7 +269,10 @@ void Coma::Stage3()
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     //MainTW->setMinimumSize(QSize(800,600));
     if (MainTW == nullptr)
-        return;
+    {
+      ERMSG("пустой MainTW");
+      return;
+    }
 
     idlg = new InfoDialog;
     connect(this,SIGNAL(ClearBsi()),idlg,SLOT(ClearBsi()));
@@ -331,6 +334,8 @@ void Coma::Stage3()
              }
              else
                 DisconnectAndClear();
+
+             ERMSG("Не получили BSI");
              return;
            }
          }
@@ -343,7 +348,10 @@ void Coma::Stage3()
     if(MainInterface == I_ETHERNET)
     {
         if (insl.size() < 2)
-            return;
+        {
+          ERMSG("некорректный размер строки в файле");
+          return;
+        }
         if(insl.at(1) != "MODBUS")
         {
           JourD = new JournalDialog();

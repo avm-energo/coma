@@ -20,7 +20,10 @@ void Error::Init()
     QString ermsgspath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/";
     file.setFileName(ermsgspath+"ermsgs.dat");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
+    {
+       ERMSG("Ошибка открытия файла");
+       return;
+    }
     QString tmpString;
     QTextStream streamfile(&file);
     streamfile.setCodec("WIN-1251");
