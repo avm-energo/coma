@@ -7,6 +7,7 @@
 #include "../widgets/etableview.h"
 #include "../widgets/etablemodel.h"
 #include "../gen/s2.h"
+#include "../dialogs/keypressdialog.h"
 
 
 #define MAXSWJNUM   262144
@@ -130,6 +131,7 @@ private:
 
 signals:
     void ReadJour(char);
+    void WritePasswordChecked();
 
 private slots:
     void GetJour();
@@ -138,6 +140,7 @@ private slots:
     void JourFileChoosed(QString &file);
     void EraseJour();
     void SaveJour();
+    void WritePasswordCheck(QString psw);
 
 public slots:
     void FillSysJour(QByteArray ba);
@@ -147,6 +150,8 @@ public slots:
 private:
     QString JourFile;
     int JourType;
+    int WriteCheckPassword();
+    bool ok;
 };
 
 #endif // JOURNALDIALOG_H

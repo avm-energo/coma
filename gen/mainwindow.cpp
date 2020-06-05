@@ -137,6 +137,17 @@ void MainWindow::ReConnect()
 
     Reconnect = true;
 
+    if(TimeTimer != nullptr)
+    {
+      TimeTimer->stop();
+    }
+
+    if(Time->timer != nullptr)
+    {
+      Time->timer->stop();
+    }
+
+
     TheEnd = 1;
     if(!Disconnected)
     {
@@ -194,20 +205,20 @@ void MainWindow::attemptToRec()
            Disconnected = 0;
 
                //#ifdef USBENABLE
-               connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
+               //connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
                //#else
                //#ifdef COMPORTENABLE
                //    cn = new EUsbCom;
                //    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
                //#endif
                //#endif
-               connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
+               /*connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
                connect(cn,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
                connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
                connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
                connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
                connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
-               connect(cn,SIGNAL(ReconnectSignal()),this,SLOT(ReConnect()));
+               connect(cn,SIGNAL(ReconnectSignal()),this,SLOT(ReConnect()));*/
 
               //cn->DevicesFound();
               SetPortSlot(SavePort);
@@ -1710,7 +1721,7 @@ void MainWindow::Disconnect()
             BdaTimer->stop();
             TimeFunc::Wait(100);
          }
-            if(!Reconnect)
+            if(cn->Connected)
             cn->Disconnect();
         }
         else
@@ -1750,6 +1761,12 @@ void MainWindow::DisconnectAndClear()
     {
       TimeTimer->stop();
     }
+
+    if(Time->timer != nullptr)
+    {
+      Time->timer->stop();
+    }
+
     if(!Disconnected)
     {
         StopRead = 1;

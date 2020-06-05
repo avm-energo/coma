@@ -235,21 +235,24 @@ void JournalDialog::EraseJour()
 {
     if (MainInterface == I_USB)
     {
-        int jourtype = GetJourNum(sender()->objectName());
-        if (jourtype == GENERALERROR)
+        if(WriteCheckPassword() == NOERROR)
         {
-            ERMSG("Ошибочный тип журнала");
-            return;
-        }
-        char num = jourtype + 4;
+            int jourtype = GetJourNum(sender()->objectName());
+            if (jourtype == GENERALERROR)
+            {
+                ERMSG("Ошибочный тип журнала");
+                return;
+            }
+            char num = jourtype + 4;
 
-        if(Commands::EraseTechBlock(num) == NOERROR)
-        {
-          EMessageBox::information(this, "Успешно", "Стирание прошло успешно");
-        }
-        else
-        {
-          EMessageBox::information(this, "Ошибка", "Ошибка");
+            if(Commands::EraseTechBlock(num) == NOERROR)
+            {
+              EMessageBox::information(this, "Успешно", "Стирание прошло успешно");
+            }
+            else
+            {
+              EMessageBox::information(this, "Ошибка", "Ошибка");
+            }
         }
     }
 }
@@ -616,4 +619,31 @@ int JournalDialog::GetJourNum(const QString &objname)
 }
 #endif
 
+int JournalDialog::WriteCheckPassword()
+{
+    ok = false;
+    StdFunc::ClearCancel();
+    QEventLoop PasswordLoop;
+    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
+    connect(dlg,SIGNAL(Finished(QString)),this,SLOT(WritePasswordCheck(QString)));
+    connect(this,SIGNAL(WritePasswordChecked()),&PasswordLoop,SLOT(quit()));
+    dlg->show();
+    PasswordLoop.exec();
+    if (StdFunc::IsCancelled())
+        return GENERALERROR;
+    if(!ok)
+    {
+        EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
+        return GENERALERROR;
+    }
+    return NOERROR;
+}
 
+void JournalDialog::WritePasswordCheck(QString psw)
+{
+    if (psw == "121941")
+        ok = true;
+    else
+        ok = false;
+    emit WritePasswordChecked();
+}
