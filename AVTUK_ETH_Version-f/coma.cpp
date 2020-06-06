@@ -177,8 +177,6 @@ void Coma::SetupUI()
         connect(ch104,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
         connect(ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
         connect(ch104,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
-        connect(ch104,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-        connect(ch104,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
         connect(ch104, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
         connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
         #endif
@@ -260,10 +258,10 @@ void Coma::Stage3()
     int count = 0;
     MTypeB = 0;
     MTypeM = 0;
-    ConfB = ConfM = nullptr;
-    JourD = nullptr;
+//    ConfB = ConfM = nullptr;
+//    JourD = nullptr;
 //    Ch104 = nullptr;
-    CorD = nullptr;
+//    CorD = nullptr;
 //    ChModbus = nullptr;
     ClearTW();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
@@ -277,7 +275,6 @@ void Coma::Stage3()
     idlg = new InfoDialog;
     connect(this,SIGNAL(ClearBsi()),idlg,SLOT(ClearBsi()));
 
-    CorD = new CorDialog();
     //connect(this,SIGNAL(ConnectMes(QString*)),CheckB,SLOT(ConnectMessage(QString*)));
 
     if(MainInterface == I_USB)
@@ -290,7 +287,6 @@ void Coma::Stage3()
         connect(this,SIGNAL(USBBsiRefresh()),idlg,SLOT(FillBsi()));
         MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
         MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
-        //CorD = new CorDialog();
         JourD = new JournalDialog();
     }
     else
@@ -489,9 +485,6 @@ void Coma::Stage3()
 
     MainTW->repaint();
     MainTW->show();
-#if PROGSIZE >= PROGSIZE_LARGE
-   // SetSlideWidget();
-#endif
 
     if (MainInterface == I_ETHERNET || MainInterface == I_RS485)
         ConnectMessage();
@@ -507,18 +500,11 @@ void Coma::Stage3()
 void Coma::PrepareDialogs()
 {
     if (MainInterface == I_USB)
-    MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
+        MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
 
-    MTypeB =  MTypeB<<8;
+    MTypeB <<= 8;
 
-    /*if (insl.size() != 0)
-    {
-        if(insl.at(1) == "MODBUS")
-        {
-            MTypeB = Config::MTB_A2;
-        }
-    }*/
-     switch(MTypeB)
+    switch(MTypeB)
     {
     case Config::MTB_21:
     {
@@ -544,7 +530,6 @@ void Coma::PrepareDialogs()
     }
     case Config::MTB_80:
     {
-
         break;
     }
 
@@ -554,9 +539,7 @@ void Coma::PrepareDialogs()
        {
         if(insl.at(1) == "ETH")
         {
-            //ch104 = new iec104(&IPtemp, this);
-
-            //ch104->IP = IPtemp;
+            CorD = new CorDialog;
             if (!Ch104->Working())
                 Ch104->Connect(IPtemp);
             connect(Ch104,SIGNAL(EthConnected()), this, SLOT(ConnectMessage()));

@@ -101,7 +101,7 @@ public slots:
     void Tabs(int);
     void StartPolling();
     void StopPolling();
-    void Finish();
+    void Stop();
 
 signals:
     void SignalsReceived(QList<ModBus::SignalStruct> Signal);

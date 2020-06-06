@@ -143,7 +143,7 @@ void ModBus::Polling()
     }
 }
 
-void ModBus::Finish()
+void ModBus::Stop()
 {
     StopPolling();
     emit FinishModbusThread();

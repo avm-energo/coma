@@ -156,12 +156,7 @@ public:
     QWidget *Wpred;
     QWidget *Walarm;
     bool cancel;
-        bool Reconnect;
-
-#if PROGSIZE >= PROGSIZE_LARGE
-    void SetSlideWidget();
-#endif
-//    void SetParent(QWidget *parent);
+    bool Reconnect;
 
 signals:
     void CloseConnectDialog();
@@ -185,8 +180,6 @@ private:
     bool TEEnabled; // признак того, ведётся ли лог в правом выезжающем окне
     int Disconnected;
     int Mode; // режим запуска программы
-    bool SWHide;
-    QRect SWGeometry;
     QVector<S2::DataRec> S2ConfigForTune;
     ConfDialog *MainConfDialog;
     ConfDialog *MainTuneDialog;
@@ -208,7 +201,6 @@ private:
 
 #if PROGSIZE >= PROGSIZE_LARGE
     void PrepareTimers();
-    void ShowOrHideSlideSW();
 #endif
     void LoadSettings();
     void SaveSettings();
@@ -235,12 +227,12 @@ public slots:
     void AlarmState();
     void FileTimeOut();
     void GetUSBAlarmTimerTimeout();
-    void GetUSBAlarmInDialog();
+    void USBSetAlarms();
     void ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal);
     void ModBusUpdatePredAlarmEvents(ModBus::Coils Signal);
     void SetCancelled();
     void ReConnect();
-    void attemptToRec();
+    void AttemptToRec();
     void ConnectMessage(QString*);
     void ConnectMessage();
 
@@ -274,13 +266,6 @@ private slots:
 #endif
 #if PROGSIZE >= PROGSIZE_LARGE || PROGSIZE == PROGSIZE_EMUL
     void StartEmul();
-#endif
-#if PROGSIZE >= PROGSIZE_LARGE
-    void UpdateMainTE(QByteArray ba);
-    void SetTEEnabled(bool enabled);
-    //int OpenBhbDialog();
-    void MouseMove();
-
 #endif
     void ShowErrorMessageBox(QString message);
     void ParseString(QString Str);

@@ -1,6 +1,5 @@
 #include <QHBoxLayout>
 #include <QTextEdit>
-//#include <QPushButton>
 #include <QDir>
 #include <QMenu>
 #include <QApplication>
@@ -14,7 +13,6 @@
 #include <QCursor>
 #include <QStringListModel>
 #include <QStandardPaths>
-#include <QPropertyAnimation>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QFileDialog>
 #include "mainwindow.h"
@@ -64,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(this,SIGNAL(StopCommunications()),Ch104,SLOT(Stop()));
     connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
     ChModbus = new ModBus;
-    connect(this,SIGNAL(StopCommunications()),ChModbus,SLOT(Finish()));
+    connect(this,SIGNAL(StopCommunications()),ChModbus,SLOT(Stop()));
     connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils)), this, SLOT(ModBusUpdatePredAlarmEvents(ModBus::Coils)));
     cn = new EUsbHid;
     connect(this, SIGNAL(StopCommunications()), cn, SLOT(Disconnect()));
@@ -76,7 +74,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     BdaTimer = new QTimer;
     BdaTimer->setInterval(ANMEASINT);
-    connect(BdaTimer,SIGNAL(timeout()), this, SLOT(GetUSBAlarmInDialog()));
+    connect(BdaTimer,SIGNAL(timeout()), this, SLOT(USBSetAlarms()));
 
     ReceiveTimer = new QTimer;
     ReceiveTimer->setInterval(ANMEASINT);
@@ -84,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     ReconnectTimer = new QTimer;
     ReconnectTimer->setInterval(RECONNECTINTERVAL);
-    connect(ReconnectTimer,SIGNAL(timeout()), this, SLOT(attemptToRec()));
+    connect(ReconnectTimer,SIGNAL(timeout()), this, SLOT(AttemptToRec()));
 
     for (int i = 0; i < 20; ++i)
     {
@@ -193,76 +191,57 @@ void MainWindow::ReConnect()
 
 }
 
-void MainWindow::attemptToRec()
+void MainWindow::AttemptToRec()
 {
     ReconnectTimer->stop();
 
-    //if(MainInterface->size() != 0)
-    //{
-        if(MainInterface == I_USB)
-        {
+    if(MainInterface == I_USB)
+    {
 
-           Disconnected = 0;
+       Disconnected = 0;
 
-               //#ifdef USBENABLE
-               //connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
-               //#else
-               //#ifdef COMPORTENABLE
-               //    cn = new EUsbCom;
-               //    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
-               //#endif
-               //#endif
-               /*connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
-               connect(cn,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
-               connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-               connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-               connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
-               connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
-               connect(cn,SIGNAL(ReconnectSignal()),this,SLOT(ReConnect()));*/
 
-              //cn->DevicesFound();
-              SetPortSlot(SavePort);
+          //cn->DevicesFound();
+          SetPortSlot(SavePort);
 
-              if(cancel)
+          if(cancel)
+          {
+              ERMSG("Отмена");
+              return;
+          }
+
+          StopRead = 0;
+
+             insl.clear();
+
+             if(cn->Cancelled)
+             {
+                 ERMSG("Отмена");
+                 return;
+             }
+
+             if (Commands::Connect() != NOERROR) // cn->Connect()
+             {
+                 ReConnect();
+                 ERMSG("Реконект");
+                 return;
+             }
+
+              int res = ModuleBSI::SetupBSI();
+              if (res == GENERALERROR)
               {
-                  ERMSG("Отмена");
+                  ReConnect();
                   return;
               }
+      #if PROGSIZE >= PROGSIZE_LARGE
+              else if (res == NOERROR)
+              {
+                if(ModuleBSI::ModuleTypeString != "")
+                ConnectMessage();
+              }
+      #endif
 
-              StopRead = 0;
-
-                 insl.clear();
-
-                 if(cn->Cancelled)
-                 {
-                     ERMSG("Отмена");
-                     return;
-                 }
-
-                 if (Commands::Connect() != NOERROR) // cn->Connect()
-                 {
-                     ReConnect();
-                     ERMSG("Реконект");
-                     return;
-                 }
-
-                  int res = ModuleBSI::SetupBSI();
-                  if (res == GENERALERROR)
-                  {
-                      ReConnect();
-                      return;
-                  }
-          #if PROGSIZE >= PROGSIZE_LARGE
-                  else if (res == NOERROR)
-                  {
-                    if(ModuleBSI::ModuleTypeString != "")
-                    ConnectMessage();
-                  }
-          #endif
-
-         }
-    //}
-
+     }
 
     if(Reconnect != false)
     {
@@ -435,11 +414,9 @@ void MainWindow::PredAlarmState()
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
-    QString tmps = QString(PROGCAPTION);
 
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
-    //QPixmap *pm[2] = {pmred, pmgrn};
     QStringList events = QStringList() << "Отсутствует сигнал напряжения фазы A                   "
                                        << "Отсутствует сигнал напряжения фазы B                   "
                                        << "Отсутствует сигнал напряжения фазы С                   "
@@ -467,59 +444,29 @@ void MainWindow::PredAlarmState()
     for (int i = 0; i < 13; ++i)
     {
         hlyout = new QHBoxLayout;
-
-        if(PredAlarmEvents[i])
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3011+i), pmred));
-        else
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3011+i), pmgrn));
-
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3011+i), (PredAlarmEvents[i]) ? pmred : pmgrn));
         hlyout->addWidget(WDFunc::NewLBLT(w, events.at(i), "", "", ""), 1);
         vlayout->addLayout(hlyout);
     }
-
     for (int i = 0; i < 3; ++i)
     {
         hlyout = new QHBoxLayout;
-
-        if(PredAlarmEvents[13+i])
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3027+i), pmred));
-        else
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3027+i), pmgrn));
-
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3027+i), (PredAlarmEvents[13+i]) ? pmred : pmgrn));
         hlyout->addWidget(WDFunc::NewLBLT(w, events.at(13+i), "", "", ""), 1);
         vlayout->addLayout(hlyout);
     }
-
     hlyout = new QHBoxLayout;
-    if(PredAlarmEvents[16])
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3033), pmred));
-    else
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3033), pmgrn));
-
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3033), (PredAlarmEvents[16]) ? pmred : pmgrn));
     hlyout->addWidget(WDFunc::NewLBLT(w, events.at(16), "", "", ""), 1);
     vlayout->addLayout(hlyout);
 
     hlyout = new QHBoxLayout;
-    if(PredAlarmEvents[17])
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3034), pmred));
-    else
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3034), pmgrn));
-
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3034), (PredAlarmEvents[17]) ? pmred : pmgrn));
     hlyout->addWidget(WDFunc::NewLBLT(w, events.at(17), "", "", ""), 1);
     vlayout->addLayout(hlyout);
 
     w->setLayout(vlayout);
 
-    if(MainInterface == I_ETHERNET && Ch104 != nullptr)
-    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
-
-    if(MainInterface == I_USB)
-    connect(BdaTimer,SIGNAL(timeout()), this, SLOT(GetUSBAlarmInDialog()));
-
-    if(MainInterface == I_RS485 && ChModbus != nullptr)
-    connect(ChModbus,SIGNAL(coilsignalsready(Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(Coils*)));
-
-    //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
     QPushButton *pb = new QPushButton("Ok");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
@@ -589,16 +536,6 @@ void MainWindow::AlarmState()
 
     w->setLayout(vlayout);
 
-    if(MainInterface ==  I_ETHERNET && Ch104 != nullptr)
-    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)), this, SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
-
-    if(MainInterface == I_USB)
-    connect(BdaTimer,SIGNAL(timeout()), this, SLOT(GetUSBAlarmInDialog()));
-
-    if(MainInterface == I_RS485 && ChModbus != nullptr)
-    connect(ChModbus,SIGNAL(coilsignalsready(Coils*)), this, SLOT(ModBusUpdatePredAlarmEvents(Coils*)));
-
-    //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
     QPushButton *pb = new QPushButton("Ok");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
@@ -659,7 +596,7 @@ void MainWindow::UpdatePredAlarmEvents(Parse104::SponSignalsWithTime* Signal)
 
 void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104 *Signal)
 {
-    int i = 0, PredArarmcount = 0, Ararmcount = 0;
+    int i = 0, predalarmcount = 0, alarmcount = 0;
 //    Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
@@ -671,20 +608,21 @@ void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104 *Signal)
        if(!(Signal->Spon[i].SigVal & 0x80))
        {
            quint8 signal = ((Signal->Spon[i].SigVal & (0x00000001)) ? 1 : 0);
+           quint32 sigadr = Signal->Spon[i].SigAdr;
 
-           if((Signal->Spon[i].SigAdr >= 3011) && (Signal->Spon[i].SigAdr < 3024))
-           PredAlarmEvents[Signal->Spon[i].SigAdr - 3011] = signal;
-           else if((Signal->Spon[i].SigAdr >= 3024) && (Signal->Spon[i].SigAdr < 3027))
-           AlarmEvents[Signal->Spon[i].SigAdr - 3024] = signal;
-           else if((Signal->Spon[i].SigAdr >= 3027) && (Signal->Spon[i].SigAdr < 3030))
-           PredAlarmEvents[Signal->Spon[i].SigAdr - 3014] = signal;
-           else if((Signal->Spon[i].SigAdr >= 3030) && (Signal->Spon[i].SigAdr < 3033))
-           AlarmEvents[Signal->Spon[i].SigAdr - 3027] = signal;
-           else if(Signal->Spon[i].SigAdr == 3033)
+           if((sigadr >= 3011) && (sigadr < 3024))
+           PredAlarmEvents[sigadr - 3011] = signal;
+           else if((sigadr >= 3024) && (sigadr < 3027))
+           AlarmEvents[sigadr - 3024] = signal;
+           else if((sigadr >= 3027) && (sigadr < 3030))
+           PredAlarmEvents[sigadr - 3014] = signal;
+           else if((sigadr >= 3030) && (sigadr < 3033))
+           AlarmEvents[sigadr - 3027] = signal;
+           else if(sigadr == 3033)
            PredAlarmEvents[16] = signal;
-           else if(Signal->Spon[i].SigAdr == 3034)
+           else if(sigadr == 3034)
            PredAlarmEvents[17] = signal;
-           else if(Signal->Spon[i].SigAdr == 3035)
+           else if(sigadr == 3035)
            AlarmEvents[6] = signal;
        }
     }
@@ -694,11 +632,11 @@ void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104 *Signal)
         if(PredAlarmEvents[i])
         {
            WDFunc::SetLBLImage(this, QString::number(951), pm[0]);
-           PredArarmcount++;
+           predalarmcount++;
         }
     }
 
-    if(PredArarmcount == 0)
+    if(predalarmcount == 0)
     WDFunc::SetLBLImage(this,  QString::number(951), pm[1]);
 
     for(i=0; i<7; i++)
@@ -706,11 +644,11 @@ void MainWindow::UpdateStatePredAlarmEvents(Parse104::SponSignals104 *Signal)
         if(AlarmEvents[i])
         {
            WDFunc::SetLBLImage(this, QString::number(952), pm[0]);
-           Ararmcount++;
+           alarmcount++;
         }
     }
 
-    if(Ararmcount == 0)
+    if(alarmcount == 0)
     WDFunc::SetLBLImage(this,  QString::number(952), pm[1]);
 
 }
@@ -960,32 +898,6 @@ QWidget *MainWindow::Least()
     return w;
 }
 
-#if PROGSIZE >= PROGSIZE_LARGE
-void MainWindow::SetSlideWidget()
-{
-    QWidget *SlideWidget = new QWidget(this);
-    SlideWidget->setWindowFlags(Qt::FramelessWindowHint);
-    SlideWidget->setObjectName("slidew");
-    SlideWidget->setStyleSheet("QWidget {background-color: rgba(110,234,145,255);}");
-    QVBoxLayout *slyout = new QVBoxLayout;
-    QCheckBox *chb = WDFunc::NewChB(this, "teenablechb", "Включить протокол");
-    connect(chb,SIGNAL(toggled(bool)),this,SLOT(SetTEEnabled(bool)));
-    slyout->addWidget(chb, 0, Qt::AlignLeft);
-    QTextEdit *MainTE = new QTextEdit;
-    MainTE->setObjectName("mainte");
-    MainTE->setReadOnly(true);
-    MainTE->setUndoRedoEnabled(false);
-    MainTE->setWordWrapMode(QTextOption::WrapAnywhere);
-    MainTE->document()->setMaximumBlockCount(C_TE_MAXSIZE);
-    slyout->addWidget(MainTE, 40);
-    SlideWidget->setLayout(slyout);
-    SlideWidget->setMinimumWidth(250);
-    SlideWidget->hide();
-    SWGeometry = SlideWidget->geometry();
-    SWHide = true;
-}
-#endif
-
 void MainWindow::SetupMenubar()
 {
     QMenuBar *menubar = new QMenuBar;
@@ -1085,42 +997,8 @@ void MainWindow::ClearTW()
         MainTW->removeTab(0);
         wdgt->deleteLater();
     }
-    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
-    if (MainTE != nullptr)
-        MainTE->clear();
 }
 
-#if PROGSIZE >= PROGSIZE_LARGE
-void MainWindow::ShowOrHideSlideSW()
-{
-    QWidget *w = this->findChild<QWidget *>("slidew");
-    if (w == nullptr)
-    {
-      ERMSG("Пустой виджет");
-      return;
-    }
-    if (w->isHidden())
-        w->show();
-    if (SWHide)
-        w->setGeometry(SWGeometry);
-    QPropertyAnimation *ani = new QPropertyAnimation(w, "geometry");
-    ani->setDuration(500);
-    QRect startRect(width(), 30, 0, height()-30);
-    QRect endRect(width() - w->width(), 30, w->width(), height()-30);
-    if (SWHide)
-    {
-        ani->setStartValue(startRect);
-        ani->setEndValue(endRect);
-    }
-    else
-    {
-        ani->setStartValue(endRect);
-        ani->setEndValue(startRect);
-    }
-    ani->start();
-    SWHide = !SWHide;
-}
-#endif
 #if PROGSIZE != PROGSIZE_EMUL
 int MainWindow::CheckPassword()
 {
@@ -1302,25 +1180,6 @@ void MainWindow::Fill()
     if (ConfM != nullptr)
         ConfM->Fill();
 }
-
-#if PROGSIZE >= PROGSIZE_LARGE
-void MainWindow::UpdateMainTE(QByteArray ba)
-{
-    if (!TEEnabled)
-    {
-        ERMSG("Ошибка TE");
-        return;
-    }
-    QTextEdit *MainTE = this->findChild<QTextEdit *>("mainte");
-    if (MainTE != nullptr)
-        MainTE->append(ba.toHex());
-}
-
-void MainWindow::SetTEEnabled(bool enabled)
-{
-    TEEnabled = enabled;
-}
-#endif
 
 void MainWindow::PasswordCheck(QString psw)
 {
@@ -1521,18 +1380,9 @@ void MainWindow::ShowConnectDialog()
 
     if(MainInterface == I_USB)
     {
-        //#ifdef USBENABLE
         connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
-        //#else
-        //#ifdef COMPORTENABLE
-        //    cn = new EUsbCom;
-        //    connect(cn,SIGNAL(Retry()),this,SLOT(ShowConnectDialog()));
-        //#endif
-        //#endif
         connect(cn,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
         connect(cn,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
-        connect(cn,SIGNAL(readbytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
-        connect(cn,SIGNAL(writebytessignal(QByteArray)),this,SLOT(UpdateMainTE(QByteArray)));
         connect(cn, SIGNAL(ShowError(QString)), this, SLOT(ShowErrorMessageBox(QString)));
         connect(this,SIGNAL(Retry()),this,SLOT(Stage1_5()));
         connect(cn,SIGNAL(ReconnectSignal()),this,SLOT(ReConnect()));
@@ -1550,49 +1400,8 @@ void MainWindow::ShowConnectDialog()
        portscb->setModel(tmpmodel);
        lyout->addWidget(portscb);
     }
-//         else if (MainInterface == "Ethernet" || MainInterface == "RS485")
     else
     {
-
-       /*tmpmodel->setStringList(device);
-       QComboBox *portscb = new QComboBox;
-       connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SDevice(QString)));
-       portscb->setModel(tmpmodel);
-       lyout->addWidget(portscb);
-       QHBoxLayout *hlyout = new QHBoxLayout;
-       QPushButton *pb = new QPushButton("Далее");
-       connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-       hlyout->addWidget(pb);
-       pb = new QPushButton("Отмена");
-       //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
-       connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
-       hlyout->addWidget(pb);
-       lyout->addLayout(hlyout);
-       dlg->setLayout(lyout);
-       dlg->exec();
-
-       dlg = new QDialog(this);
-
-       tmpmodel = new QStringListModel;
-       tmpmodel->setStringList(inter);
-       portscb = new QComboBox;
-       lyout = new QVBoxLayout;
-       connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SaveInterface(QString)));
-       portscb->setModel(tmpmodel);
-       lyout->addWidget(portscb);
-       hlyout = new QHBoxLayout;
-       pb = new QPushButton("Далее");
-       connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-       hlyout->addWidget(pb);
-       pb = new QPushButton("Отмена");
-       //connect(pb, SIGNAL(clicked(bool)),cn,SLOT(SetCancelled()));         !!!
-       connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
-       hlyout->addWidget(pb);
-       lyout->addLayout(hlyout);
-       dlg->setLayout(lyout);
-       dlg->exec();*/
-
-
        if(!HaveAlreadyRed)
        {
            sl.clear();
@@ -1839,29 +1648,6 @@ void MainWindow::DisconnectAndClear()
 
 }
 
-#if PROGSIZE >= PROGSIZE_LARGE
-void MainWindow::MouseMove()
-{
-    QPoint curPos = mapFromGlobal(QCursor::pos());
-    QWidget *sww = this->findChild<QWidget *>("slidew");
-    if (sww == nullptr)
-    {
-      ERMSG("Пустой sww");
-      return;
-    }
-    if ((abs(curPos.x() - width()) < 10) && (curPos.y() > 0) && (curPos.y() < height()))
-    {
-        if (SWHide)
-            ShowOrHideSlideSW();
-    }
-    else if ((abs(curPos.x() - width()) > sww->width()) && (curPos.y() > 0) && (curPos.y() < height()))
-    {
-        if (!SWHide)
-            ShowOrHideSlideSW();
-    }
-}
-#endif
-
 void MainWindow::ShowErrorMessageBox(QString message)
 {
     EMessageBox::error(this, "Ошибка", message);
@@ -1870,16 +1656,6 @@ void MainWindow::ShowErrorMessageBox(QString message)
 void MainWindow::resizeEvent(QResizeEvent *e)
 {
     QMainWindow::resizeEvent(e);
-    if (!SWHide)
-    {
-        QWidget *sww = this->findChild<QWidget *>("slidew");
-        if (sww == nullptr)
-        {
-          ERMSG("Пустой sww");
-          return;
-        }
-        sww->setGeometry(QRect(width()-sww->width(), 0, sww->width(), height()));
-    }
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e)
@@ -2131,7 +1907,7 @@ void MainWindow::GetUSBAlarmTimerTimeout()
     }
 }
 
-void MainWindow::GetUSBAlarmInDialog()
+void MainWindow::USBSetAlarms()
 {
     int i = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
