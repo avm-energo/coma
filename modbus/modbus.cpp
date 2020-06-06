@@ -388,7 +388,7 @@ void ModBus::WriteTime(uint time)
 
 void ModBus::Tabs(int index)
 {
-    if(!MainWindow::TheEnd)
+    if(!TheEnd)
     {
         if(index == TimeIndex)
         {

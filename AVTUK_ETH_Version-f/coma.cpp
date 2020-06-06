@@ -314,7 +314,7 @@ void Coma::StartWork()
 //            connect(ConfM, SIGNAL(StopRead(int)), BdaTimer,SLOT(stop()));
 //            ConfM->checkIndex = CheckIndex;
 //            connect(BdaTimer,SIGNAL(timeout()),CheckB,SLOT(BdTimerTimeout()));
-            connect(BdaTimer,SIGNAL(timeout()),this,SLOT(UpdateUSBAlarm()));
+            connect(BdaTimer,SIGNAL(timeout()),this,SLOT(UpdateUSB()));
         }
     }
     str = (CheckB == nullptr) ? "Текущие параметры" : "Текущие параметры\nМезонин";
@@ -2029,7 +2029,7 @@ void Coma::CheckModBusFinish()
    TimeThrFinished = true;
 }
 
-void Coma::UpdateUSBAlarm()
+void Coma::UpdateUSB()
 {
     int i = 0, predalarmcount = 0, alarmcount = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
@@ -2037,6 +2037,7 @@ void Coma::UpdateUSBAlarm()
 
     if (CheckB != nullptr)
         CheckB->USBUpdate();
+
     if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == NOERROR)
     {
         for(i=0; i<18; i++)
