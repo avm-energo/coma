@@ -15,16 +15,13 @@
 #include "checkdialog84.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-//#include "../gen/publicclass.h"
 #include "../gen/colors.h"
 #include "../config/config.h"
 #include "../gen/error.h"
-#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
-#endif
 
 
-CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent, IEC104* channel) : EAbstractCheckDialog(board, parent)
+CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);
@@ -34,14 +31,6 @@ CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent, IEC104* channel)
     Ch = new Check;
 //    BdNum = 11;
     setAttribute(Qt::WA_DeleteOnClose);
-    if(channel != nullptr)
-    {
-        Ch104 = channel;
-        connect(Ch104,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),this,SLOT(UpdateFlData(Parse104::FlSignals104*)));
-        connect(Ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),this,SLOT(UpdateSponData(Parse104::SponSignals104*)));
-        connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),this,SLOT(UpdateSponDataWithTime(Parse104::SponSignalsWithTime*)));
-        connect(Ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),this,SLOT(UpdateBS104Data(Parse104::BS104Signals*)));
-    }
 
     SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
     SetBd(6, &Ch84->Bd_block1, sizeof(Check_84::Bd1));
@@ -55,13 +44,7 @@ CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent, IEC104* channel)
 
     SetupUI(sl);
 
-    #if PROGSIZE != PROGSIZE_EMUL
-    timer->setInterval(ANMEASINT);
-   // BdTimer = new QTimer;
-   // BdTimer->setInterval(ANMEASINT);
-   // connect(BdTimer,SIGNAL(timeout()),this,SLOT(BdTimerTimeout()));
-   #endif
-
+    Timer->setInterval(ANMEASINT);
 }
 
 
@@ -83,7 +66,6 @@ QWidget *CheckDialog84::BdUI(int bdnum)
     }
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void CheckDialog84::RefreshAnalogValues(int bdnum)
 {
     Q_UNUSED(bdnum)
@@ -161,7 +143,6 @@ void CheckDialog84::WriteToFile(int row, int bdnum)
 
     xlsx->write(WRow,30,Ch84->Bd_block1.Frequency,format);
 }
-#endif
 
 QWidget *CheckDialog84::CustomTab()
 {
@@ -170,21 +151,16 @@ QWidget *CheckDialog84::CustomTab()
     QHBoxLayout *hlyout = new QHBoxLayout;
     lyout->addWidget(Ch84->Bd1W(this));
     QPushButton *pb = new QPushButton("Начать измерения Bd");
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(StartBdMeasurements()));
-#endif
     hlyout->addWidget(pb);
     pb = new QPushButton("Остановить измерения Bd");
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked(bool)),this,SLOT(StopBdMeasurements()));
-#endif
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     w->setLayout(lyout);
     return nullptr;
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void CheckDialog84::ChooseValuesToWrite()
 {
 
@@ -208,7 +184,7 @@ void CheckDialog84::StopBdMeasurements()
     BdTimer->stop();
 }
 
-void CheckDialog84::BdTimerTimeout()
+void CheckDialog84::USBUpdate()
 {
     if (Commands::GetBd(BdNum, &Ch84->Bd_block1, sizeof(Check_84::Bd1)) == NOERROR)
     {
@@ -554,8 +530,6 @@ void CheckDialog84::UpdateBS104Data(Parse104::BS104Signals* Signal)
         }
     }
 }
-
-#endif
 
 void CheckDialog84::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {

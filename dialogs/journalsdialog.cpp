@@ -17,9 +17,7 @@
 #include "../gen/colors.h"
 #include "../gen/mainwindow.h"
 #include "../gen/files.h"
-#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
-#endif
 
 
 JournalDialog::JournalDialog() : QDialog()
@@ -110,7 +108,6 @@ void JournalDialog::SetupUI()
     }
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void JournalDialog::GetJour()
 {
     int jourtype = GetJourNum(sender()->objectName());
@@ -617,7 +614,6 @@ int JournalDialog::GetJourNum(const QString &objname)
     }
     return jourtype;
 }
-#endif
 
 int JournalDialog::WriteCheckPassword()
 {

@@ -27,9 +27,7 @@
 #include "../gen/colors.h"
 #include "../gen/timefunc.h"
 #include "../dialogs/keypressdialog.h"
-#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
-#endif
 
 
 CorDialog::CorDialog(QWidget *parent) :
@@ -114,18 +112,14 @@ void CorDialog::SetupUI()
     //QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
 
     pb = new QPushButton("Прочитать из модуля");
-    #if PROGSIZE != PROGSIZE_EMUL
         connect(pb,SIGNAL(clicked()),this,SLOT(GetCorBdButton()));
-    #endif
         if (StdFunc::IsInEmulateMode())
             pb->setEnabled(false);
 
     glyout->addWidget(pb, row,1,1,2);
 
     pb = new QPushButton("Записать в модуль");
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteCorBd()));
-#endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 
@@ -136,18 +130,14 @@ void CorDialog::SetupUI()
     row++;
 
     pb = new QPushButton("Сбросить начальные значения");
-    #if PROGSIZE != PROGSIZE_EMUL
         connect(pb,SIGNAL(clicked()),this,SLOT(ResetCor()));
-    #endif
         if (StdFunc::IsInEmulateMode())
             pb->setEnabled(false);
 
     glyout->addWidget(pb, row,1,1,2);
 
     pb = new QPushButton("Задать начальные значения");
-    #if PROGSIZE != PROGSIZE_EMUL
       connect(pb,SIGNAL(clicked()),this,SLOT(WriteCor()));
-    #endif
     if (StdFunc::IsInEmulateMode())
        pb->setEnabled(false);
 
@@ -161,18 +151,14 @@ void CorDialog::SetupUI()
     row++;
 
     pb = new QPushButton("Прочитать значения из файла");
-    #if PROGSIZE != PROGSIZE_EMUL
-      connect(pb,SIGNAL(clicked()),this,SLOT(ReadFromFile()));
-    #endif
+    connect(pb,SIGNAL(clicked()),this,SLOT(ReadFromFile()));
     if (StdFunc::IsInEmulateMode())
        pb->setEnabled(false);
 
     glyout->addWidget(pb, row,1,1,2);
 
     pb = new QPushButton("Сохранить значения в файл");
-    #if PROGSIZE != PROGSIZE_EMUL
-      connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
-    #endif
+    connect(pb,SIGNAL(clicked()),this,SLOT(SaveToFile()));
     if (StdFunc::IsInEmulateMode())
        pb->setEnabled(false);
 

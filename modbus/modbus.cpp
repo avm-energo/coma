@@ -17,7 +17,7 @@ ModBus::ModBus(QObject *parent) : QObject(parent)
     Log->Init("modbus.log");
     CycleGroup = 0;
     MainPollEnabled = true;
-    TimePollEnabled = false;
+    TimePollEnabled = AboutToFinish = false;
 
     PollingTimer = new QTimer;
     PollingTimer->setInterval(POLLINGINTERVAL);
@@ -54,13 +54,13 @@ int ModBus::Connect(SerialPort::Settings settings)
     connect(port, SIGNAL(State(ConnectionStates)), this, SIGNAL(ModbusState(ConnectionStates)));
     connect(port, SIGNAL(Read(QByteArray)), cthr, SLOT(ParseReply(QByteArray)));
     connect(cthr, SIGNAL(Write(QByteArray)), port, SLOT(WriteBytes(QByteArray)));
-    connect(cthr, SIGNAL(Reconnect()), this, SIGNAL(ReconnectSignal()));
     connect(port, SIGNAL(Reconnect()), this, SIGNAL(ReconnectSignal()));
     if (port->Init(settings) != NOERROR)
         return GENERALERROR;
     thr->start();
     StdFunc::Wait(1000);
     StartPolling();
+    AboutToFinish = false;
     Log->info("Polling started, thread initiated");
     return NOERROR;
 }
@@ -118,7 +118,7 @@ void ModBus::Polling()
         // wait for an answer or timeout and return result
         SendAndGet(inp, outp);
 
-        if(CycleGroup == 6)
+        if ((CycleGroup == 6) && (outp.Ba.size() > 3))
         {
             Coils coil;
             coil.countBytes = outp.Ba.data()[2];
@@ -145,6 +145,7 @@ void ModBus::Polling()
 
 void ModBus::Stop()
 {
+    AboutToFinish = true;
     StopPolling();
     emit FinishModbusThread();
 }
@@ -153,6 +154,11 @@ void ModBus::SendAndGet(InOutStruct &inp, ModBus::InOutStruct &outp)
 {
     QElapsedTimer tmetimeout;
 
+    if (AboutToFinish)
+    {
+        ERMSG("Command while about to finish");
+        return;
+    }
     inp.TaskNum = _taskCounter++;
     if (_taskCounter >= INT_MAX)
         _taskCounter = 0; // to prevent negative numbers
@@ -166,10 +172,7 @@ void ModBus::SendAndGet(InOutStruct &inp, ModBus::InOutStruct &outp)
     while (!Finished)
     {
         if (GetResultFromOutQueue(inp.TaskNum, outp))
-        {
-            ERMSG("Ошибка взятия из очереди по modbus");
             return;
-        }
         OutWaitMutex.lock();
         OutWC.wait(&OutWaitMutex, 20);
         OutWaitMutex.unlock();

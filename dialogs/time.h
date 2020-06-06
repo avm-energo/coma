@@ -21,22 +21,18 @@ public:
     {
        quint32 Val;
        int SigAdr;
-    }ModBusBSISignal;
+    } ModBusBSISignal;
 
-    int timeIndex,checkIndex;
+    int timeIndex;
     QLabel *SysTime;
     QLineEdit *SysTime2;
     QTimer *timer;
-    QTimer *timerRead;
-    //QThread *thr;
     bool FinishThread, closeThr, haveFinished;
     uint32_t unixtimestamp = 1423062000;
     QDateTime myDateTime;
     bool first;
 
 private:
-
-
     void SetupUI();
 
 signals:
@@ -61,9 +57,6 @@ private slots:
     void StopSlot();
     void FillTimeFrom104(Parse104::BS104Signals*);
     void FillTimeFromModBus(QList<ModBus::BSISignalStruct>);
-//#if PROGSIZE != PROGSIZE_EMUL
-
-//#endif
 };
 
 #endif // TIME_H

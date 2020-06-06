@@ -16,32 +16,30 @@
 #include "../gen/mainwindow.h"
 #include "../gen/timefunc.h"
 #include "../dialogs/keypressdialog.h"
-#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
-#endif
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
-void AbstractConfDialog::ReadConf(int index)
+//void AbstractConfDialog::ReadConf(int index)
+void AbstractConfDialog::ReadConf()
 {
     //int res = ModuleBSI::PrereadConf(this, S2Config);
     //int res = 0;
 //    char* num = new char;
 //    char num = 1;
 
-    if(!MainWindow::TheEnd)
+    if(!TheEnd)
     {
-        if(index == confIndex)
+/*        if(index == confIndex)
         {
             if(timeIndex)
-            emit stopRead(timeIndex);
+            emit StopRead(timeIndex);
 
             if(checkIndex)
-            emit stopRead(checkIndex);
-
+            emit StopRead(checkIndex);
+*/
             TimeFunc::Wait(100);
 
             if (MainInterface == I_ETHERNET)
@@ -64,7 +62,7 @@ void AbstractConfDialog::ReadConf(int index)
                     emit NewConfToBeLoaded();
 
             }
-        }
+//        }
 
     }
 
@@ -135,7 +133,6 @@ void AbstractConfDialog::WritePasswordCheck(QString psw)
     emit WritePasswordChecked();
 }
 
-#endif
 void AbstractConfDialog::SaveConfToFile()
 {
     QByteArray ba;
@@ -195,18 +192,14 @@ QWidget *AbstractConfDialog::ConfButtons()
     QGridLayout *wdgtlyout = new QGridLayout;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Прочитать из " + tmps);
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(ButtonReadConf()));
-#endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 0, 1, 1);
     tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     pb = new QPushButton("Записать в " + tmps);
     pb->setObjectName("WriteConfPB");
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(WriteConf()));
-#endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 1, 1, 1);
@@ -252,15 +245,15 @@ void AbstractConfDialog::ButtonReadConf()
     }
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void AbstractConfDialog::PrereadConf()
 {
     if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
-     IsNeededDefConf = true;  // emit LoadDefConf();
+        IsNeededDefConf = true;  // emit LoadDefConf();
     else // иначе заполнить значениями из модуля
-     ReadConf(confIndex);
+//        ReadConf(confIndex);
+        ReadConf();
 }
-#endif
+
 // по имени виджета взять его номер
 
 int AbstractConfDialog::GetChNumFromObjectName(QString ObjectName)

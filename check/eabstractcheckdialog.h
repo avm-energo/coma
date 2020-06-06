@@ -34,34 +34,27 @@ public:
     void SetupUI(QStringList &tabnames);
 
     virtual QWidget *BdUI(int bdnum) = 0; // визуализация наборов текущих данных от модуля
-#if PROGSIZE != PROGSIZE_EMUL
+    virtual void USBUpdate() = 0; // update BDs from USB
     virtual void RefreshAnalogValues(int bdnum) = 0; // обновление полей в GUI из полученного соответствующего Bd_block
     virtual void PrepareHeadersForFile(int row) = 0; // row - строка для записи заголовков
     virtual void WriteToFile(int row, int bdnum) = 0; // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
     virtual void ChooseValuesToWrite() = 0;
     virtual void SetDefaultValuesToWrite() = 0;
     virtual void PrepareAnalogMeasurements() = 0; // функция подготовки к измерениям (например, запрос постоянных данных)
-#endif
     virtual QWidget *CustomTab() = 0; // если требуется для модуля специфичный вывод данных
     void SetBd(int bdnum, void *block, int blocksize, bool toxlsx=true);
     QWidget *BottomUI();
 
     QXlsx::Document *xlsx;
-    QTimer *timer;
+    QTimer *Timer;
     int WRow, BdUINum; // BdUINum - количество вкладок с выводом блоков данных модуля, один блок может быть разделён на несколько вкладок
     int Board; // тип платы
-    int checkIndex;
-
-// CurBdNum,
 
 signals:
      void BsiRefresh(ModuleBSI::Bsi*);
 
 public slots:
-#if PROGSIZE != PROGSIZE_EMUL
     void StopAnalogMeasurements();
-
-#endif
 
 private:
     struct BdBlocks
@@ -80,22 +73,17 @@ private:
     Bip Bip_block;
     bool XlsxWriting, Busy;
     QElapsedTimer *ElapsedTimeCounter;
-//    QWidget *Parent;
 
     void CheckIP();
     void GetIP();
     void Check1PPS();
-#if PROGSIZE != PROGSIZE_EMUL
     void ReadAnalogMeasurementsAndWriteToFile();
-#endif
 
 private slots:
     void SetTimerPeriod();
-#if PROGSIZE != PROGSIZE_EMUL
     void StartAnalogMeasurementsToFile();
     void StartAnalogMeasurements();
     void TimerTimeout();
-#endif
 };
 
 #endif // EABSTRACTCHECKDIALOG_H

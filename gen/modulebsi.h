@@ -51,10 +51,7 @@ public:
 
     ModuleBSI();
 
-#if PROGSIZE != PROGSIZE_EMUL
     static int SetupBSI();
-#endif
-    static void SetupEmulatedBsi(Bsi &bsi);
     static QString GetModuleTypeString();
     static quint32 GetMType(BoardTypes type);
     static quint32 Health();

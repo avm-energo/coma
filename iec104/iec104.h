@@ -405,7 +405,6 @@ signals:
     void sponsignalsready(Parse104::SponSignals104*);
     void sponsignalWithTimereceived(Parse104::SponSignalsWithTime*);
     void bs104signalsready(Parse104::BS104Signals*);
-    void Retry();
     void readbytessignal(QByteArray);
     void writebytessignal(QByteArray);
     void ShowError(QString);

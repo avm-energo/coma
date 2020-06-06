@@ -121,9 +121,7 @@ QWidget *Check_84::Bd1W(QWidget *parent)
 
     /*QPushButton *pb = new QPushButton("Стереть журнал");
     //pb->setObjectName("pbmeasurements");
-    #if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(SendErt()));
-    #endif
      glyout->addWidget(pb,12,0,1,3);*/
 
 
@@ -373,7 +371,6 @@ void Check_84::FillBd(QWidget *parent, QString Name, QString Value)
     }
 }*/
 
-#if PROGSIZE != PROGSIZE_EMUL
 void Check_84::SendErt(void)
 {
   /* if(Commands::EraseTechBlock(5) == NOERROR)
@@ -382,14 +379,13 @@ void Check_84::SendErt(void)
    EMessageBox::information(this, "INFO", "Ошибка стирания");*/
 
 }
-#endif
 
 QWidget *Check_84::BdUI(int bdnum)
 {
     Q_UNUSED(bdnum);
     return nullptr;
 }
-#if PROGSIZE != PROGSIZE_EMUL
+
 void Check_84::SetDefaultValuesToWrite()
 {
 
@@ -399,8 +395,6 @@ void Check_84::PrepareAnalogMeasurements()
 {
 
 }
-
-
 
 void Check_84::ChooseValuesToWrite()
 {
@@ -424,7 +418,7 @@ void Check_84::RefreshAnalogValues(int bdnum)
 {
   Q_UNUSED(bdnum);
 }
-#endif
+
 QWidget *Check_84::CustomTab()
 {
     QWidget *w = new QWidget;

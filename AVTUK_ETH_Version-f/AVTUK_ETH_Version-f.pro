@@ -18,12 +18,12 @@ DEFINES += PROGNAME='\\"AVM-Service\\"'
 DEFINES += PROGCAPTION='\\"AVM-Service\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
-DEFINES += PROGSIZE=4 # 1 - SMALL (only for users), 2 - MEDIUM (for mid-class users), 3 - LARGE (for developers of modules), 4 - FULL (for developer of the prog)
 TEMPLATE = app
 
 
 SOURCES += \
     ../gen/logclass.cpp \
+    ../gen/maindef.cpp \
     ../modbus/serialport.cpp \
     coma.cpp \
     main.cpp \
@@ -32,28 +32,10 @@ SOURCES += \
     ../check/checkdialog84.cpp \
     ../check/eabstractcheckdialog.cpp \
     ../config/abstractconfdialog.cpp \
-    ../config/abstractconfdialog3x.cpp \
     ../config/confdialog.cpp \
-    ../config/confdialog21.cpp \
-    ../config/confdialog22.cpp \
-    ../config/confdialog31.cpp \
-    ../config/confdialog35.cpp \
-    ../config/confdialog80.cpp \
     ../config/confdialog84.cpp \
-    ../config/confdialog85.cpp \
-    ../config/confdialog87.cpp \
-    ../config/confdialoga1.cpp \
     ../config/config.cpp \
-    ../config/config21.cpp \
-    ../config/config22.cpp \
-    ../config/config31.cpp \
-    ../config/config35.cpp \
-    ../config/config3x.cpp \
-    ../config/config80.cpp \
     ../config/config84.cpp \
-    ../config/config85.cpp \
-    ../config/config87.cpp \
-    ../config/configa1.cpp \
     ../dialogs/cordialog.cpp \
     ../dialogs/errordialog.cpp \
     ../dialogs/fwupdialog.cpp \
@@ -63,7 +45,6 @@ SOURCES += \
     ../dialogs/settingsdialog.cpp \
     ../gen/error.cpp \
     ../gen/files.cpp \
-    ../gen/mainwindow.cpp \
     ../gen/modulebsi.cpp \
     ../gen/report.cpp \
     ../gen/s2.cpp \
@@ -101,28 +82,10 @@ HEADERS += \
     ../check/checkdialog84.h \
     ../check/eabstractcheckdialog.h \
     ../config/abstractconfdialog.h \
-    ../config/abstractconfdialog3x.h \
     ../config/confdialog.h \
-    ../config/confdialog21.h \
-    ../config/confdialog22.h \
-    ../config/confdialog31.h \
-    ../config/confdialog35.h \
-    ../config/confdialog80.h \
     ../config/confdialog84.h \
-    ../config/confdialog85.h \
-    ../config/confdialog87.h \
-    ../config/confdialoga1.h \
     ../config/config.h \
-    ../config/config21.h \
-    ../config/config22.h \
-    ../config/config31.h \
-    ../config/config35.h \
-    ../config/config3x.h \
-    ../config/config80.h \
     ../config/config84.h \
-    ../config/config85.h \
-    ../config/config87.h \
-    ../config/configa1.h \
     ../dialogs/cordialog.h \
     ../dialogs/errordialog.h \
     ../dialogs/fwupdialog.h \
@@ -134,7 +97,6 @@ HEADERS += \
     ../gen/error.h \
     ../gen/files.h \
     ../gen/maindef.h \
-    ../gen/mainwindow.h \
     ../gen/modulebsi.h \
     ../gen/report.h \
     ../gen/s2.h \

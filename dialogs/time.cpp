@@ -17,9 +17,7 @@
 #include "../dialogs/time.h"
 #include "../gen/timefunc.h"
 #include "../gen/mainwindow.h"
-#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
-#endif
 
 MNKTime::MNKTime(QWidget *parent) :
     QDialog(parent)
@@ -38,7 +36,6 @@ MNKTime::MNKTime(QWidget *parent) :
 
 MNKTime::~MNKTime()
 {
-   //deleteLater();
 }
 
 void MNKTime::SetupUI()
@@ -94,51 +91,22 @@ void MNKTime::SetupUI()
     //SysTime->setText(dt.toString());
     SysTime->setText(QDateTime::currentDateTimeUtc().toString("yyyy-MM-ddTHH:mm:ss"));
     glyout->addWidget(SysTime, row,2,1,4, Qt::AlignTop);
-
     row++;
     tmps = "QWidget {background-color: "+QString(MAINWINCLR)+";}";
     QPushButton *Button = new QPushButton("Записать дату и время ПК в модуль");
     Button->setStyleSheet(tmps);
     glyout->addWidget(Button, row,1,1,6, Qt::AlignTop);
     connect(Button, SIGNAL(clicked()), this, SLOT(Write_PCDate()));
-
     SysTime2 = new QLineEdit;
-    timerRead = new QTimer(this);
-    //connect(timerRead, SIGNAL(timeout()), this, SLOT(slot2_timeOut()));
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Дата и время в модуле:"), row,1,1,1);
     SysTime2->setText(Text);
     glyout->addWidget(SysTime2, row,2,1,4);
-
-    /*row++;
-    Button = new QPushButton("Читать время из модуля");
-    Button->setStyleSheet(tmps);
-    glyout->addWidget(Button, row,1,1,1,Qt::AlignTop);
-    connect(Button, SIGNAL(clicked()), this, SLOT(Start_Timer()));
-    Button = new QPushButton("Остановить чтение");
-    Button->setStyleSheet(tmps);
-    glyout->addWidget(Button, row,2,1,5,Qt::AlignTop);
-    connect(Button, SIGNAL(clicked()), this, SLOT(Stop_Timer()));*/
-
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Дата и время для записи в модуль"), row,1,1,1);
-
-    //for(int i = 0; i<3; i++)
-    //{
-    //glyout->addWidget(WDFunc::NewSPB(Date, "Date", 0, 100000, 0, paramcolor), row,2,1,1);
     glyout->addWidget(WDFunc::NewLE(this, "Date", SysTime2->text(), paramcolor), row,2,1,1);
-
-    //}
-
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "день-месяц-год часы:минуты:секунды"), row,2,1,1);
-
-    /*for(int i = 0; i<3; i++)
-    {
-       glyout->addWidget(WDFunc::NewSPB(this, "Time"+QString::number(i), 0, 59, 0, paramcolor), row,2+i,1,1);
-    }*/
-
-
     row++;
     Button = new QPushButton("Записать заданное время в модуль");
     Button->setStyleSheet(tmps);
@@ -171,7 +139,6 @@ void MNKTime::SetupUI()
 
 void MNKTime::slot_timeOut()
 {
-   // WDFunc::LBLText(this, "adrMB", currentTime().toString("hh:mm:ss"));
     int cbidx = WDFunc::CBIndex(this, "TimeZone");
     if(cbidx == 0)
     SysTime->setText(QDateTime::currentDateTime().toString("dd-MM-yyyy HH:mm:ss"));
@@ -188,22 +155,16 @@ void MNKTime::slot2_timeOut()
 
     if(MainInterface == I_USB)
     {
-        #if PROGSIZE != PROGSIZE_EMUL
         if (Commands::GetTimeMNK(unixtimestamp) == NOERROR)
         {
             int cbidx = WDFunc::CBIndex(this, "TimeZone");
             if(cbidx == 0)
-            myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::LocalTime);
+                myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::LocalTime);
             else
-            myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
-          //myDateTime.setTime_t(unixtimestamp);
+                myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
           if(SysTime2 != nullptr)
-          SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
-          //WDFunc::SetTEData(this, "Date", SysTime2->text());
+                SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
         }
-       // QThread::msleep(1000);
-
-        #endif
     }
     else if(MainInterface == I_ETHERNET)
     {
@@ -238,23 +199,14 @@ void MNKTime::Start_Timer(int index)
             }
         }
         else
-        {
             first = 0;
-        }
-
-       // FinishThread = false;
     }
-
 }
 
 void MNKTime::Stop_Timer(int index)
 {
     if(index != timeIndex)
-    {
         FinishThread = true;
-        //thr->msleep(100);
-    }
-
 }
 
 void MNKTime::Write_PCDate()
@@ -272,24 +224,16 @@ void MNKTime::Write_PCDate()
 
     if(MainInterface == I_USB)
     {
-        #if PROGSIZE != PROGSIZE_EMUL
         //FinishThread = true;
         TimeFunc::Wait(100);
         if (Commands::WriteTimeMNK(time, sizeof(uint)) != NOERROR)
         EMessageBox::information(this, "INFO", "Ошибка"); //EMessageBox::information(this, "INFO", "Записано успешно");
         //FinishThread = false;
-        #endif
     }
     else if(MainInterface == I_ETHERNET)
-    {
       emit ethWriteTimeToModule(time);
-    }
     else if(MainInterface == I_RS485)
-    {
       emit modbusWriteTimeToModule(time);
-    }
-
-
 }
 
 void MNKTime::Write_Date()
@@ -304,21 +248,14 @@ void MNKTime::Write_Date()
 
     if(MainInterface == I_USB)
     {
-        #if PROGSIZE != PROGSIZE_EMUL
         TimeFunc::Wait(100);
         if (Commands::WriteTimeMNK(time, sizeof(uint)) != NOERROR)
         EMessageBox::information(this, "INFO", "Ошибка"); //EMessageBox::information(this, "INFO", "Записано успешно");
-        #endif
     }
     else if(MainInterface == I_ETHERNET)
-    {
       emit ethWriteTimeToModule(time);
-    }
     else if(MainInterface == I_RS485)
-    {
       emit modbusWriteTimeToModule(time);
-    }
-
 }
 
 void MNKTime::StopSlot()
