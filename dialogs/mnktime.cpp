@@ -14,7 +14,7 @@
 #include "../gen/modulebsi.h"
 #include "../gen/commands.h"
 #include "../gen/error.h"
-#include "../dialogs/time.h"
+#include "../dialogs/mnktime.h"
 #include "../gen/timefunc.h"
 #include "../gen/mainwindow.h"
 #include "../gen/commands.h"
@@ -68,12 +68,12 @@ void MNKTime::SetupUI()
 
     SysTime = new QLabel;
 
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(slot_timeOut()));
+    Timer = new QTimer(this);
+    connect(Timer, SIGNAL(timeout()), this, SLOT(slot_timeOut()));
 
     //SysTime->setText(QTime::currentTime().toString("hh:mm:ss"));
 
-    timer->start(1000);
+    Timer->start(1000);
 
     QString Text = "dd-MM-yyyy HH:mm:ss";
 

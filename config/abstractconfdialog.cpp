@@ -13,7 +13,6 @@
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
 #include "../iec104/iec104.h"
-#include "../gen/mainwindow.h"
 #include "../gen/timefunc.h"
 #include "../dialogs/keypressdialog.h"
 #include "../gen/commands.h"

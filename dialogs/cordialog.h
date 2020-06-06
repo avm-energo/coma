@@ -20,6 +20,7 @@ public:
     QTimer *MessageTimer;
 
     int WriteCheckPassword();
+    void GetCorBd(int index);
 
 private:
     struct CorData
@@ -49,7 +50,6 @@ signals:
 
 
 public slots:
-    void GetCorBd(int index);
     void GetCorBdButton();
     void WriteCorBd();
     void WriteCor();

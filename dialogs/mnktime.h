@@ -1,5 +1,5 @@
-#ifndef TIME_H
-#define TIME_H
+#ifndef MNKTIME_H
+#define MNKTIME_H
 
 #include <QDialog>
 #include <QByteArray>
@@ -26,7 +26,7 @@ public:
     int timeIndex;
     QLabel *SysTime;
     QLineEdit *SysTime2;
-    QTimer *timer;
+    QTimer *Timer;
     bool FinishThread, closeThr, haveFinished;
     uint32_t unixtimestamp = 1423062000;
     QDateTime myDateTime;
@@ -59,4 +59,4 @@ private slots:
     void FillTimeFromModBus(QList<ModBus::BSISignalStruct>);
 };
 
-#endif // TIME_H
+#endif // MNKTIME_H

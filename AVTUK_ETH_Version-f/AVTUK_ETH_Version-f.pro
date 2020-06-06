@@ -22,6 +22,7 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../dialogs/mnktime.cpp \
     ../gen/logclass.cpp \
     ../gen/maindef.cpp \
     ../modbus/serialport.cpp \
@@ -69,11 +70,11 @@ SOURCES += \
     ../widgets/wd_func.cpp \
     ../gen/commands.cpp \
     ../gen/eabstractprotocomchannel.cpp \
-    ../gen/eusbhid.cpp \
-    ../dialogs/time.cpp
+    ../gen/eusbhid.cpp
 
 
 HEADERS += \
+    ../dialogs/mnktime.h \
     ../gen/logclass.h \
     ../modbus/serialport.h \
     coma.h \
@@ -122,8 +123,7 @@ HEADERS += \
     ../modbus/modbus.h \
     ../gen/commands.h \
     ../gen/eabstractprotocomchannel.h \
-    ../gen/eusbhid.h \
-    ../dialogs/time.h
+    ../gen/eusbhid.h
 
 
 INCLUDEPATH += $$PWD/../../includes

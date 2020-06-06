@@ -279,7 +279,7 @@ void IEC104::SendTestAct()
     {
         ConTimer->stop();
 //        ConTimer->deleteLater();
-        emit errorCh104();
+        emit ReconnectSignal();
         ERMSG("Нет ответа");
         return;
     }

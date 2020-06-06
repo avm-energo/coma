@@ -4,11 +4,12 @@
 #include <QMainWindow>
 #include <QResizeEvent>
 #include "../config/confdialog.h"
-#include "../gen/mainwindow.h"
-#include "../check/checkdialog84.h"
 #include "../check/eabstractcheckdialog.h"
 #include "../dialogs/cordialog.h"
 #include "../dialogs/infodialog.h"
+#include "../dialogs/fwupdialog.h"
+#include "../dialogs/mnktime.h"
+#include "../dialogs/journalsdialog.h"
 
 #define RECONNECTINTERVAL   3000
 #define WAITINTERVAL        1500
@@ -107,26 +108,6 @@ public:
         return sl;
     }
 
-    Bd11 Bd_block11;
-    AbstractConfDialog *ConfB, *ConfM;
-    EAbstractCheckDialog *CheckB, *CheckM;
-    IEC104 *Ch104;
-    ModBus *ChModbus;
-    MNKTime *Time;
-    JournalDialog *JourD;
-    fwupdialog *FwUpD;
-    QString IPtemp, FullName, SaveDevice, instr;
-    QStringList sl, USBsl, slfinal;
-    quint16 AdrBaseStation;
-    SerialPort::Settings Settings;
-    QTimer* BdaTimer, *TimeTimer, *AlarmStateTimer;
-    QVector<S2::DataRec> S2Config;
-    QWidget *Parent;
-    QWidget *Wpred;
-    QWidget *Walarm;
-    bool Cancelled;
-    bool Reconnect;
-
     Coma(QWidget *parent = nullptr);
     ~Coma();
     void SetMode(int mode);
@@ -216,7 +197,7 @@ private:
     CorDialog *CorD;
     InfoDialog *IDialog;
     bool Ok;
-    int Disconnected;
+    bool Disconnected;
     int Mode; // режим запуска программы
     QVector<S2::DataRec> S2ConfigForTune;
     ConfDialog *MainConfDialog;
@@ -234,6 +215,25 @@ private:
     int MainInterface;
     quint8 ActiveThreads;
     int CheckIndex;
+    Bd11 Bd_block11;
+    AbstractConfDialog *ConfB, *ConfM;
+    EAbstractCheckDialog *CheckB, *CheckM;
+    IEC104 *Ch104;
+    ModBus *ChModbus;
+    MNKTime *TimeD;
+    JournalDialog *JourD;
+    fwupdialog *FwUpD;
+    QString IPtemp, FullName, SaveDevice, instr;
+    QStringList sl, USBsl, slfinal;
+    quint16 AdrBaseStation;
+    SerialPort::Settings Settings;
+    QTimer* BdaTimer, *TimeTimer, *AlarmStateTimer;
+    QVector<S2::DataRec> S2Config;
+    QWidget *Parent;
+    QWidget *Wpred;
+    QWidget *Walarm;
+    bool Cancelled;
+    bool Reconnect;
 
     void LoadSettings();
     void SaveSettings();

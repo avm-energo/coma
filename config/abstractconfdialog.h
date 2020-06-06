@@ -25,6 +25,7 @@ public:
     virtual void FillBack() = 0; // ввести информацию из полей вывода в конфигурацию
     virtual void SetDefConf() = 0; // задать конфигурацию по умолчанию
     virtual void CheckConf() = 0; // проверить конфигурацию на корректность, признаком наличия некорректностей
+    void ReadConf();
                                     // является непустой список CheckConfErrors
     void PrereadConf();
     int GetChNumFromObjectName(QString ObjectName);
@@ -42,7 +43,6 @@ private:
 private slots:
     void SaveConfToFile();
     void LoadConfFromFile();
-    void ReadConf();
     void ButtonReadConf();
     void FillConf(QVector<S2::DataRec>*);
     void WritePasswordCheck(QString psw);
