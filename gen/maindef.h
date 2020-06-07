@@ -29,6 +29,15 @@
 
 #include <QtGlobal>
 
+enum BoardTypes
+{
+    BT_NONE = 0,
+    BT_BASE = 1,
+    BT_MEZONIN = 2,
+    BT_BSMZ = 3,
+    BT_MODULE = 4
+};
+
 enum ConnectionStates
 {
     ConnectedState,
@@ -38,7 +47,7 @@ enum ConnectionStates
 extern int MainInterface;
 extern quint32 MTypeB;
 extern quint32 MTypeM;
-extern int TheEnd;
-extern int StopRead;
+//extern int TheEnd;
+//extern int StopRead;
 
 #endif // MAINDEF_H

@@ -3,7 +3,6 @@
 #include "modulebsi.h"
 #include "error.h"
 #include "stdfunc.h"
-#include "../gen/mainwindow.h"
 #include "commands.h"
 
 
@@ -97,8 +96,8 @@ int ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
 {
     int res;
 
-    if(!StopRead)
-    {
+/*    if(!StopRead)
+    { */
         if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
             return RESEMPTY;
         else // иначе заполнить значениями из модуля
@@ -112,6 +111,6 @@ int ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
             }
 
         }
-    }
+//    }
     return NOERROR;
 }

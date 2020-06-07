@@ -4,7 +4,6 @@
 #include "../gen/s2.h"
 #include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
-#include "../gen/mainwindow.h"
 #include "../gen/stdfunc.h"
 #include "modbus.h"
 
@@ -388,8 +387,8 @@ void ModBus::WriteTime(uint time)
 
 void ModBus::Tabs(int index)
 {
-    if(!TheEnd)
-    {
+/*    if(!TheEnd)
+    { */
         if(index == TimeIndex)
         {
             TimePollEnabled = true;
@@ -409,7 +408,7 @@ void ModBus::Tabs(int index)
             TimePollEnabled = false;
             MainPollEnabled = true;
         }
-    }
+//    }
 }
 
 void ModBus::StartPolling()

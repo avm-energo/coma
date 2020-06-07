@@ -33,9 +33,9 @@ public:
     };
 
 
-    static quint32 MTypeB;
-    static quint32 MTypeM;
-    static int TheEnd, StopRead;
+//    static quint32 MTypeB;
+//    static quint32 MTypeM;
+//    static int TheEnd; //, StopRead;
 
 
     struct DeviceConnectStruct
@@ -115,7 +115,7 @@ public:
     void ClearTW();
     void SetupMenubar();
     QWidget *MainInfoWidget();
-    QWidget *HthWidget();
+//    QWidget *HthWidget();
     QWidget *ReleWidget();
     QWidget *Least();
     int CheckPassword();
@@ -127,7 +127,7 @@ signals:
     void CloseConnectDialog();
     void FinishAll();
     void PasswordChecked();
-    void BsiRefresh(ModuleBSI::Bsi*);
+//    void BsiRefresh(ModuleBSI::Bsi*);
     void USBBsiRefresh();
     void ClearBsi();
     void Finished();
@@ -139,17 +139,17 @@ signals:
 
 public slots:
     void DisconnectAndClear();
-    void FinishHim();
-    void UpdateReleWidget(Parse104::SponSignals104*);
-    void UpdatePredAlarmEvents(Parse104::SponSignalsWithTime *);
-    void UpdateStatePredAlarmEvents(Parse104::SponSignals104*);
-    void UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime*);
+//    void FinishHim();
+//    void UpdateReleWidget(Parse104::SponSignals104*);
+    void UpdatePredAlarmEvents(Parse104::SponSignals *);
+    void UpdateStatePredAlarmEvents(Parse104::SponSignals *);
+//    void UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime*);
     void CheckTimeFinish();
     void CheckModBusFinish();
-    void Stop_BdaTimer(int index);
+/*    void Stop_BdaTimer(int index);
     void Start_BdaTimer(int index);
     void Stop_TimeTimer(int index);
-    void Start_TimeTimer(int index);
+    void Start_TimeTimer(int index); */
     void DeviceState();
     void PredAlarmState();
     void AlarmState();
@@ -176,8 +176,8 @@ private slots:
     void PasswordCheck(QString psw);
     void DisconnectMessage();
     void SetPortSlot(QString port);
-    void GetDeviceFromTable(QModelIndex idx);
-    void UpdateHthWidget(ModuleBSI::Bsi *);
+//    void GetDeviceFromTable(QModelIndex idx);
+//    void UpdateHthWidget(ModuleBSI::Bsi *);
     void SetProgressBar1Size(int size);
     void SetProgressBar1(int cursize);
     void SetProgressBar2Size(int size);
@@ -214,8 +214,7 @@ private:
     DeviceConnectStruct DevInfo;
     int MainInterface;
     quint8 ActiveThreads;
-    int CheckIndex;
-    Bd11 Bd_block11;
+    int CheckIndex, TimeIndex;
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
     IEC104 *Ch104;

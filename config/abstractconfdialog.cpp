@@ -29,8 +29,8 @@ void AbstractConfDialog::ReadConf()
 //    char* num = new char;
 //    char num = 1;
 
-    if(!TheEnd)
-    {
+/*    if(!TheEnd)
+    { */
 /*        if(index == confIndex)
         {
             if(timeIndex)
@@ -63,7 +63,7 @@ void AbstractConfDialog::ReadConf()
             }
 //        }
 
-    }
+//    }
 
 }
 

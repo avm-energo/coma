@@ -17,26 +17,15 @@ public:
     explicit MNKTime(QWidget *parent = nullptr);
     ~MNKTime();
 
-    typedef struct
-    {
-       quint32 Val;
-       int SigAdr;
-    } ModBusBSISignal;
-
-    int timeIndex;
-    QLabel *SysTime;
-    QLineEdit *SysTime2;
+    bool First;
     QTimer *Timer;
-    bool FinishThread, closeThr, haveFinished;
-    uint32_t unixtimestamp = 1423062000;
-    QDateTime myDateTime;
-    bool first;
 
 private:
     void SetupUI();
+    void SetTime(quint32 unixtimestamp);
+    void WriteTime(QDateTime &myDateTime);
 
 signals:
-    void finished();
     void ethTimeRequest();
     void modBusTimeRequest();
     void ethWriteTimeToModule(uint);
@@ -50,11 +39,8 @@ public slots:
 private slots:
     void slot_timeOut();
     void slot2_timeOut();
-    void Start_Timer(int);
-    void Stop_Timer(int);
     void Write_PCDate();
     void Write_Date();
-    void StopSlot();
     void FillTimeFrom104(Parse104::BS104Signals*);
     void FillTimeFromModBus(QList<ModBus::BSISignalStruct>);
 };

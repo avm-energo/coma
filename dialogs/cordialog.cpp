@@ -444,10 +444,10 @@ void CorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
     }
 }
 
-void CorDialog::ModbusCorDataWritten()
+/*void CorDialog::ModbusCorDataWritten()
 {
     EMessageBox::information(this, "INFO", "Записано успешно");
-}
+} */
 
 void CorDialog::SaveToFile()
 {
@@ -533,10 +533,10 @@ void CorDialog::TimerTimeout()
    //first = 1;
 }
 
-void CorDialog::WriteCorMessageOk()
+/*void CorDialog::WriteCorMessageOk()
 {
    EMessageBox::information(this, "Успешно", "Записано успешно!");
-}
+} */
 
 void CorDialog::ErrorRead()
 {

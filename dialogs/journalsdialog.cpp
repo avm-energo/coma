@@ -1,3 +1,4 @@
+#include <QDateTime>
 #include <QGroupBox>
 #include <QVBoxLayout>
 #include <QHeaderView>
@@ -15,7 +16,6 @@
 #include "../gen/timefunc.h"
 #include "../dialogs/journalsdialog.h"
 #include "../gen/colors.h"
-#include "../gen/mainwindow.h"
 #include "../gen/files.h"
 #include "../gen/commands.h"
 

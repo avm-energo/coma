@@ -1,20 +1,16 @@
 #ifndef CHECK84_H
 #define CHECK84_H
+
 #include <QWidget>
 #include "../gen/maindef.h"
-#include "eabstractcheckdialog.h"
-#include "../gen/modulebsi.h"
-#include "../iec104/iec104.h"
-#include "../iec104/ethernet.h"
 
 #define C84_BDA_IN   1
 #define C84_BDA_IN2  2
 
-class Check_84 : public EAbstractCheckDialog
+class Check_84
 {
-     Q_OBJECT
 public:
-     explicit Check_84(BoardTypes board, QWidget *parent);
+     explicit Check_84();
      ~Check_84();
 
     struct Bd1
@@ -80,8 +76,8 @@ public:
 private:
     QString ValuesFormat, WidgetFormat;
 
-private slots:
-    void SendErt(void);
+//private slots:
+//    void SendErt(void);
 };
 
 

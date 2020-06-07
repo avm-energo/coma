@@ -1,7 +1,7 @@
 #ifndef TIMEFUNC_H
 #define TIMEFUNC_H
 
-#include <QTime>
+#include <QElapsedTimer>
 #include <QCoreApplication>
 
 #define SLEEPINT    20
@@ -14,9 +14,9 @@ public:
 
     static inline void Wait(int ms = SLEEPINT)
     {
-        QTime tme;
-        tme.start();
-        while (tme.elapsed() < ms)
+        QElapsedTimer tmr;
+        tmr.start();
+        while (tmr.elapsed() < ms)
             QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
 

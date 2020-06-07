@@ -3,7 +3,8 @@
 
 #include <QDialog>
 #include <QByteArray>
-#include "../gen/mainwindow.h"
+#include "../modbus/modbus.h"
+#include "../iec104/iec104.h"
 #include "../widgets/etablemodel.h"
 
 class CorDialog : public QDialog
@@ -58,12 +59,12 @@ public slots:
     void ResetCor();
     void UpdateFlCorData(Parse104::FlSignals104 *Signal);
     void ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal);
-    void ModbusCorDataWritten();
+//    void ModbusCorDataWritten();
     void SaveToFile();
     void ReadFromFile();
     void WritePasswordCheck(QString psw);
     void TimerTimeout();
-    void WriteCorMessageOk();
+//    void WriteCorMessageOk();
     void ErrorRead();
 
 private slots:

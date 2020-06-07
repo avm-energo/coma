@@ -135,12 +135,14 @@ void IEC104::Connect(const QString &IP)
             this,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),Qt::BlockingQueuedConnection);
     connect(Parse,SIGNAL(floatsignalsreceived(Parse104::FlSignals104*)),\
             this,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),Qt::BlockingQueuedConnection);
-    connect(Parse,SIGNAL(sponsignalsreceived(Parse104::SponSignals104*)),\
-            this,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),Qt::BlockingQueuedConnection);
-    connect(Parse,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),\
-            this,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),Qt::BlockingQueuedConnection);
-    connect(Parse,SIGNAL(UpdateReleWidget(Parse104::SponSignals104*)),\
-            this,SIGNAL(relesignalsready(Parse104::SponSignals104*)),Qt::BlockingQueuedConnection);
+    connect(Parse,SIGNAL(sponsignalsreceived(Parse104::SponSignals*)),\
+            this,SIGNAL(sponsignalsready(Parse104::SponSignals*)),Qt::BlockingQueuedConnection);
+/*    connect(Parse,SIGNAL(sponsignalsreceived(Parse104::SponSignals104*)),\
+            this,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),Qt::BlockingQueuedConnection); */
+/*    connect(Parse,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),\
+            this,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),Qt::BlockingQueuedConnection); */
+/*    connect(Parse,SIGNAL(UpdateReleWidget(Parse104::SponSignals104*)),\
+            this,SIGNAL(relesignalsready(Parse104::SponSignals104*)),Qt::BlockingQueuedConnection); */
     connect(Parse,SIGNAL(sendS()),this,SLOT(SendS()));
     connect(Parse,SIGNAL(GeneralInter()),this,SLOT(SendI()));
     connect(Parse,SIGNAL(sendAct()),this,SLOT(SendTestCon()));
@@ -162,7 +164,7 @@ void IEC104::Connect(const QString &IP)
     connect(Parse,SIGNAL(SetDataSizeFromParse(int)),this,SIGNAL(SetDataSize(int)));
     connect(Parse,SIGNAL(SetDataCountFromParse(int)),this,SIGNAL(SetDataCount(int)));
     connect(Parse,SIGNAL(sendMessagefromParse()),this,SIGNAL(sendConfMessageOk()));
-    connect(Parse,SIGNAL(writeCorMesOkParse()),this,SIGNAL(sendCorMesOk()));
+//    connect(Parse,SIGNAL(writeCorMesOkParse()),this,SIGNAL(sendCorMesOk()));
 
     Parse->incLS = 0;
     Parse->count = 0;
@@ -557,10 +559,11 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
     quint32 ObjectAdr = 0;
     quint32 index = 6;
     int FileSize;
-    int res,i,cntfl = 0,cntflTimestamp = 0,cntspon = 0,cntbs = 0, cntsponTime = 0;
+    int res,i,cntfl = 0,cntflTimestamp = 0,cntspon = 0,cntbs = 0; //, cntsponTime = 0;
     Parse104::FlSignals104* flSignals = new Parse104::FlSignals104[DUI.qualifier.Number];
-    Parse104::SponSignals104* sponSignals = new Parse104::SponSignals104[DUI.qualifier.Number];
-    Parse104::SponSignalsWithTime* SponSignalsWithTime = new Parse104::SponSignalsWithTime[DUI.qualifier.Number];
+    Parse104::SponSignals* sponsignals = new Parse104::SponSignals[DUI.qualifier.Number];
+/*    Parse104::SponSignals104* sponSignals = new Parse104::SponSignals104[DUI.qualifier.Number];
+    Parse104::SponSignalsWithTime* SponSignalsWithTime = new Parse104::SponSignalsWithTime[DUI.qualifier.Number]; */
     Parse104::BS104Signals* BS104Signals = new Parse104::BS104Signals[DUI.qualifier.Number];
     unsigned char num = ba[9];
 
@@ -584,6 +587,11 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
         }
         case M_ME_TF_1: // 36 тип - измеренные данные с плавающей запятой
         {
+            if (cntflTimestamp >= DUI.qualifier.Number)
+            {
+                ERMSG("out of array flSignals");
+                return;
+            }
             (flSignals+cntflTimestamp)->fl.SigAdr=ObjectAdr;
             float value;
             memcpy(&value,&(ba.data()[index]),4);
@@ -604,18 +612,17 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
         case C_IC_NA_1: // 100
         {
             if(DUI.cause.cause == 7)
-            InterogateTimer->stop();
-            else
-            {
-
-
-            }
-
+                InterogateTimer->stop();
             break;
         }
 
         case M_ME_NC_1:   // 13 тип - измеренные данные с плавающей запятой
         {
+            if (cntfl >= DUI.qualifier.Number)
+            {
+                ERMSG("out of array flSignals");
+                return;
+            }
             (flSignals+cntfl)->fl.SigAdr=ObjectAdr;
             float value;
             memcpy(&value,&(ba.data()[index]),4);
@@ -631,19 +638,25 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
 
         case M_SP_NA_1:
         {
-
-           (sponSignals)->Spon[cntspon].SigAdr=ObjectAdr;
+            if (cntspon > 255)
+            {
+                ERMSG("out of array sponsignals");
+                return;
+            }
+//           (sponSignals)->Spon[cntspon].SigAdr=ObjectAdr;
+           sponsignals->Spon[cntspon].SigAdr=ObjectAdr;
            quint8 value;
            memcpy(&value,&(ba.data()[index]),1);
            index += 1;
-           (sponSignals)->Spon[cntspon].SigVal=value;
+//           (sponSignals)->Spon[cntspon].SigVal=value;
+           sponsignals->Spon[cntspon].SigVal=value;
            /*quint64 time;
            memcpy(&time,&(ba.data()[index]),8);
            index += 8;
            (sponSignals+cntspon)->Spon.CP56Time=time;*/
 
-           if(ObjectAdr>=950 && ObjectAdr<953)
-           emit UpdateReleWidget(sponSignals+cntspon);
+/*           if(ObjectAdr>=950 && ObjectAdr<953)
+           emit UpdateReleWidget(sponSignals+cntspon); */
 
            cntspon++;
 
@@ -653,26 +666,39 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
         case M_SP_TB_1:
         {
 
-            (SponSignalsWithTime)->Spon[cntsponTime].SigAdr=ObjectAdr;
+            if (cntspon > 255)
+            {
+                ERMSG("out of array sponsignals");
+                return;
+            }
+//            (SponSignalsWithTime)->Spon[cntsponTime].SigAdr=ObjectAdr;
+            sponsignals->Spon[cntspon].SigAdr=ObjectAdr;
             quint8 value;
             memcpy(&value,&(ba.data()[index]),1);
             index += 1;
-            (SponSignalsWithTime)->Spon[cntsponTime].SigVal=value;
+            sponsignals->Spon[cntspon].SigVal=value;
+//            (SponSignalsWithTime)->Spon[cntsponTime].SigVal=value;
             quint64 time;
             memcpy(&time,&(ba.data()[index]),7);
             index += 7;
-            (SponSignalsWithTime)->Spon[cntsponTime].CP56Time=time;
+            sponsignals->Spon[cntspon].CP56Time=time;
+//            (SponSignalsWithTime)->Spon[cntsponTime].CP56Time=time;
 
-            if(ObjectAdr>=950 && ObjectAdr<953)
-            emit UpdateReleWidget(sponSignals+cntsponTime);
+/*            if(ObjectAdr>=950 && ObjectAdr<953)
+            emit UpdateReleWidget(sponSignals+cntsponTime); */
 
-             cntsponTime++;
+            cntspon++;
 
-             break;
+            break;
          }
 
         case M_BO_NA_1:
         {
+            if (cntbs >= DUI.qualifier.Number)
+            {
+                ERMSG("out of array BS104Signals");
+                return;
+            }
             int j;
             for(j=0 ; j<3; j++)
             (BS104Signals+cntbs)->BS.SigAdr[j]=(ObjectAdr>>8*j);
@@ -863,7 +889,7 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
             {
                if(ba.at(13) == 0)
                {
-                   emit writeCorMesOkParse();
+                   emit sendMessageOk();
                    emit SetDataCountFromParse(11);
                }
                //else
@@ -888,21 +914,21 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
     if(cntfl != 0)
     {
         flSignals->SigNumber = cntfl;
-        TimeFunc::Wait(100);
+//        TimeFunc::Wait(100);
         emit floatsignalsreceived(flSignals);
     }
 
     if(cntspon != 0)
     {
-        sponSignals->SigNumber = cntspon;
-        emit sponsignalsreceived(sponSignals);
+        sponsignals->SigNumber = cntspon;
+        emit sponsignalsreceived(sponsignals);
     }
 
-    if(cntsponTime != 0)
+/*    if(cntsponTime != 0)
     {
         SponSignalsWithTime->SigNumber = cntsponTime;
         emit sponsignalWithTimereceived(SponSignalsWithTime);
-    }
+    } */
 
     if(cntbs != 0)
     {

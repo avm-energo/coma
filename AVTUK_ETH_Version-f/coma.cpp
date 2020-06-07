@@ -25,13 +25,15 @@
 #include <QDir>
 #include <QMenu>
 #include <QMenuBar>
-#include <QTextEdit>
 #include <QToolBar>
 #include <QDialog>
 #include <QCursor>
 #include <QSplashScreen>
 #include <QApplication>
-#include <QThread>
+#include <QSettings>
+#include <QGroupBox>
+#include <QStandardPaths>
+#include <QStringListModel>
 #include "coma.h"
 #include "../config/confdialog84.h"
 #include "../check/checkdialog84.h"
@@ -45,6 +47,7 @@
 #include "../gen/modulebsi.h"
 #include "../gen/logclass.h"
 #include "../gen/stdfunc.h"
+#include "../gen/files.h"
 #include "../modbus/modbus.h"
 #include "../gen/timefunc.h"
 #include "../gen/commands.h"
@@ -72,7 +75,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
        AlarmEvents[i] = 0;
     }
     ActiveThreads = 0;
-    TheEnd = 0;
+//    TheEnd = 0;
 
     New104();
     NewModbus();
@@ -195,7 +198,7 @@ void Coma::StartWork()
             ERMSG("Отмена подключения");
             return;
         }
-        StopRead = 0;
+//        StopRead = 0;
         S2ConfigForTune.clear();
         S2Config.clear();
         SaveSettings();
@@ -204,7 +207,7 @@ void Coma::StartWork()
     // Stage3
 
     DisconnectAndClear();
-    TheEnd = 0;
+//    TheEnd = 0;
     QString str;
     MTypeB = 0;
     MTypeM = 0;
@@ -356,8 +359,8 @@ void Coma::StartWork()
     if (TimeD != nullptr)
     {
         MainTW->addTab(TimeD, "Время");
-        TimeD->timeIndex = MainTW->indexOf(TimeD);
-        ChModbus->TimeIndex = TimeD->timeIndex;
+        TimeIndex = MainTW->indexOf(TimeD);
+        ChModbus->TimeIndex = TimeIndex;
         connect(TimeTimer,SIGNAL(timeout()),TimeD,SLOT(slot2_timeOut()));
     }
 
@@ -390,7 +393,7 @@ void Coma::StartWork()
     MainTW->repaint();
     MainTW->show();
 
-    if (MainInterface == I_ETHERNET || MainInterface == I_RS485)
+//    if (MainInterface == I_ETHERNET || MainInterface == I_RS485)
         ConnectMessage();
 
     if(MainInterface == I_USB)
@@ -419,7 +422,7 @@ void Coma::PrepareDialogs()
 
     connect(this,SIGNAL(ClearBsi()),IDialog,SLOT(ClearBsi()));
     connect(this,SIGNAL(USBBsiRefresh()),IDialog,SLOT(FillBsi()));
-    connect(CheckB,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)),this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)));
+    connect(CheckB,SIGNAL(BsiRefresh()),IDialog,SLOT(FillBsi()));
     connect(this, SIGNAL(SetPredAlarmColor(quint8*)), CheckB,SLOT(SetPredAlarmColor(quint8*)));
     connect(this, SIGNAL(SetAlarmColor(quint8*)), CheckB,SLOT(SetAlarmColor(quint8*)));
 
@@ -430,9 +433,9 @@ void Coma::PrepareDialogs()
         connect(Ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),IDialog,SLOT(FillBsiFrom104(Parse104::BS104Signals*)));
 
         connect(Ch104,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),CheckB,SLOT(UpdateFlData(Parse104::FlSignals104*)));
-        connect(Ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),CheckB,SLOT(UpdateSponData(Parse104::SponSignals104*)));
-        connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),CheckB,SLOT(UpdateSponDataWithTime(Parse104::SponSignalsWithTime*)));
-        connect(Ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),CheckB,SLOT(UpdateBS104Data(Parse104::BS104Signals*)));
+        connect(Ch104,SIGNAL(sponsignalsready(Parse104::SponSignals*)),CheckB,SLOT(UpdateSponData(Parse104::SponSignals*)));
+//        connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),CheckB,SLOT(UpdateSponDataWithTime(Parse104::SponSignalsWithTime*)));
+//        connect(Ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),CheckB,SLOT(UpdateBS104Data(Parse104::BS104Signals*)));
 
         connect(TimeD,SIGNAL(ethTimeRequest()),Ch104,SLOT(InterrogateTimeGr15()));
         connect(Ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),TimeD,SLOT(FillTimeFrom104(Parse104::BS104Signals*)));
@@ -442,7 +445,7 @@ void Coma::PrepareDialogs()
         connect(CorD,SIGNAL(sendCom50(quint32*, float*)), Ch104, SLOT(Com50(quint32*,float*)));
         connect(CorD,SIGNAL(CorReadRequest()), Ch104, SLOT(CorReadRequest()));
         connect(Ch104,SIGNAL(sendMessageOk()), CorD, SLOT(MessageOk()));
-        connect(Ch104,SIGNAL(sendCorMesOk()), CorD, SLOT(WriteCorMessageOk()));
+//        connect(Ch104,SIGNAL(sendCorMesOk()), CorD, SLOT(WriteCorMessageOk()));
         connect(Ch104,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),CorD,SLOT(UpdateFlCorData(Parse104::FlSignals104*)));
 
         connect(JourD,SIGNAL(ReadJour(char)), Ch104, SLOT(SelectFile(char)));
@@ -454,10 +457,6 @@ void Coma::PrepareDialogs()
         connect(Ch104,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)), ConfM, SLOT(FillConf(QVector<S2::DataRec>*)));
         connect(ConfM,SIGNAL(writeConfFile(QVector<S2::DataRec>*)), Ch104, SLOT(FileReady(QVector<S2::DataRec>*)));
         connect(Ch104,SIGNAL(sendConfMessageOk()), ConfM, SLOT(WriteConfMessageOk()));
-
-        connect(Ch104,SIGNAL(relesignalsready(Parse104::SponSignals104*)), this, SLOT(UpdateReleWidget(Parse104::SponSignals104*)));
-        connect(Ch104,SIGNAL(sponsignalsready(Parse104::SponSignals104*)),this,SLOT(UpdateStatePredAlarmEvents(Parse104::SponSignals104*)));
-        connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),this,SLOT(UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime*)));
     }
     else if (MainInterface == I_RS485)
     {
@@ -474,13 +473,11 @@ void Coma::PrepareDialogs()
 
         connect(ChModbus, SIGNAL(ErrorRead()), CorD, SLOT(ErrorRead()));
         connect(ChModbus, SIGNAL(CorSignalsReceived(QList<ModBus::SignalStruct>)), CorD, SLOT(ModBusUpdateCorData(QList<ModBus::SignalStruct>)));
-        connect(ChModbus, SIGNAL(CorSignalsWritten()), CorD, SLOT(ModbusCorDataWritten()));
+        connect(ChModbus, SIGNAL(CorSignalsWritten()), CorD, SLOT(MessageOk()));
         connect(CorD, SIGNAL(RS485WriteCorBd(ModBus::Information, float *)), ChModbus, SLOT(ModWriteCor(ModBus::Information, float *)));//, int*)));
         connect(CorD, SIGNAL(RS485ReadCorBd(ModBus::Information)), ChModbus, SLOT(ModReadCor(ModBus::Information)));
 
         ChModbus->BSIrequest();
-
-        connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils)),this,SLOT(ModbusUpdateStatePredAlarmEvents(ModBus::Coils)));
     }
 }
 
@@ -489,12 +486,15 @@ void Coma::New104()
     Ch104 = new IEC104;
     connect(this,SIGNAL(StopCommunications()),Ch104,SLOT(Stop()));
     connect(Ch104,SIGNAL(Finished()),this,SLOT(Ch104Finished()));
-    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),this,SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
-    connect(Ch104,SIGNAL(EthConnected()),this,SLOT(ConnectMessage()));
+    connect(Ch104,SIGNAL(sponsignalsready(Parse104::SponSignals*)),this,SLOT(UpdatePredAlarmEvents(Parse104::SponSignals*)));
+//    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),this,SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
     connect(Ch104,SIGNAL(ethdisconnected()),this,SLOT(DisconnectMessage()));
     connect(Ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
     connect(Ch104,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
     connect(Ch104,SIGNAL(ReconnectSignal()), this, SLOT(ReConnect()));
+//    connect(Ch104,SIGNAL(relesignalsready(Parse104::SponSignals104*)), this, SLOT(UpdateReleWidget(Parse104::SponSignals104*)));
+    connect(Ch104,SIGNAL(sponsignalsready(Parse104::SponSignals*)),this,SLOT(UpdateStatePredAlarmEvents(Parse104::SponSignals*)));
+//    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),this,SLOT(UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime*)));
 }
 
 void Coma::NewModbus()
@@ -504,6 +504,7 @@ void Coma::NewModbus()
     connect(ChModbus,SIGNAL(Finished()),this,SLOT(ModBusFinished()));
     connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils)), this, SLOT(ModBusUpdatePredAlarmEvents(ModBus::Coils)));
     connect(ChModbus,SIGNAL(ReconnectSignal()), this, SLOT(ReConnect()));
+    connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils)),this,SLOT(ModbusUpdateStatePredAlarmEvents(ModBus::Coils)));
 }
 
 void Coma::NewUSB()
@@ -545,9 +546,7 @@ void Coma::Go(const QString &parameter)
 {
     Q_UNUSED(parameter)
     if (Mode != COMA_GENERALMODE)
-    {
         StdFunc::SetEmulated(true);
-    }
     SetupUI();
     show();
 }
@@ -558,11 +557,11 @@ void Coma::ReConnect()
 
     Reconnect = true;
     TimeTimer->stop();
-    TimeD->Timer->stop();
-    TheEnd = 1;
+    if(TimeD->Timer != nullptr)
+        TimeD->Timer->stop();
     if(!Disconnected)
     {
-        StopRead = 1;
+//        StopRead = 1;
         Disconnect();
         emit ClearBsi();
         ClearTW();
@@ -586,7 +585,6 @@ void Coma::ReConnect()
     vlayout->addLayout(hlyout);
     w->setLayout(vlayout);
     connect(ReconnectTimer,SIGNAL(timeout()), dlg,SLOT(close()));
-    //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
     dlg->setLayout(lyout);
     ReconnectTimer->start();
@@ -603,7 +601,7 @@ void Coma::AttemptToRec()
         S2Config.clear();
         SaveSettings();
         QApplication::restoreOverrideCursor();
-        StopRead = 0;
+//        StopRead = 0;
         StartWork();
     }
 }
@@ -636,7 +634,7 @@ void Coma::ConnectMessage()
     connectTimer->deleteLater();
 }*/
 
-QWidget *Coma::HthWidget()
+/*QWidget *Coma::HthWidget()
 {
     QWidget *w = new QWidget;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
@@ -648,11 +646,10 @@ QWidget *Coma::HthWidget()
     w->setLayout(hlyout);
     connect(this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)), this, SLOT(UpdateHthWidget(ModuleBSI::Bsi*)));
     return w;
-}
+} */
 
 QWidget *Coma::ReleWidget()
 {
-
     QMenu *menu = new QMenu;
     QString tmps = "QMenuBar {background-color: "+QString(MAINWINCLR)+";}"\
             "QMenuBar::item {background-color: "+QString(MAINWINCLR)+";}";
@@ -660,53 +657,42 @@ QWidget *Coma::ReleWidget()
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QHBoxLayout *hlyout2 = new QHBoxLayout;
-    QWidget *w = new QWidget();
+    QWidget *w = new QWidget;
     QStringList Discription =  QStringList() << "Состояние устройства" << "Предупредительная сигнализация" << "Аварийная сигнализация";
     w->setStyleSheet("QComa {background-color: "+QString(MAINWINCLR)+";}");
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QLabel lab;
 
-        QPushButton *pb = new QPushButton("Состояние устройства");
-        pb->setMinimumSize(QSize(230,30));
-        connect(pb,SIGNAL(clicked()),this,SLOT(DeviceState()));
-        QGroupBox *gb = new QGroupBox("");
+    QPushButton *pb = new QPushButton("Состояние устройства");
+    pb->setMinimumSize(QSize(230,30));
+    connect(pb,SIGNAL(clicked()),this,SLOT(DeviceState()));
+    QGroupBox *gb = new QGroupBox("");
 
-        //setMenuBar(menubar);
-        //hlyout->addWidget(WDFunc::NewLBLT(w, "                 Реле №"+ QString::number(i+1) +": ", "", "", Discription.at(i)));
-        hlyout->addWidget(pb,Qt::AlignRight);
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(950), pmgrn), 1);
-        gb->setLayout(hlyout);
-        hlyout2->addWidget(gb);
-        /*if ((i>0)&&!((i+1)%8))
-        {
-            vlyout->addLayout(hlyout);
-            hlyout = new QHBoxLayout;
-        }*/
-    //}
-        gb = new QGroupBox("");
-        hlyout = new QHBoxLayout;
-        pb = new QPushButton("Предупредительная сигнализация");
-        pb->setMinimumSize(QSize(230,30));
-        connect(pb,SIGNAL(clicked()),this,SLOT(PredAlarmState()));
+    hlyout->addWidget(pb,Qt::AlignRight);
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(950), pmgrn), 1);
+    gb->setLayout(hlyout);
+    hlyout2->addWidget(gb);
+    gb = new QGroupBox("");
+    hlyout = new QHBoxLayout;
+    pb = new QPushButton("Предупредительная сигнализация");
+    pb->setMinimumSize(QSize(230,30));
+    connect(pb,SIGNAL(clicked()),this,SLOT(PredAlarmState()));
 
-        hlyout->addWidget(pb,Qt::AlignRight);
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(951), pmgrn), 1);
-        gb->setLayout(hlyout);
-        hlyout2->addWidget(gb);
+    hlyout->addWidget(pb,Qt::AlignRight);
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(951), pmgrn), 1);
+    gb->setLayout(hlyout);
+    hlyout2->addWidget(gb);
 
-        menu = new QMenu;
-        gb = new QGroupBox("");
-        hlyout = new QHBoxLayout;
-        pb = new QPushButton("Аварийная сигнализация");
-        pb->setMinimumSize(QSize(230,30));
-        connect(pb,SIGNAL(clicked()),this,SLOT(AlarmState()));
+    menu = new QMenu;
+    gb = new QGroupBox("");
+    hlyout = new QHBoxLayout;
+    pb = new QPushButton("Аварийная сигнализация");
+    pb->setMinimumSize(QSize(230,30));
+    connect(pb,SIGNAL(clicked()),this,SLOT(AlarmState()));
 
-        hlyout->addWidget(pb,Qt::AlignRight);
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(952), pmgrn), 1);
-        gb->setLayout(hlyout);
-        hlyout2->addWidget(gb);
-
-
+    hlyout->addWidget(pb,Qt::AlignRight);
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(952), pmgrn), 1);
+    gb->setLayout(hlyout);
+    hlyout2->addWidget(gb);
 
     if (hlyout2->count())
         vlyout->addLayout(hlyout2);
@@ -724,9 +710,6 @@ void Coma::DeviceState()
 
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
-    //QPixmap *pm[2] = {pmred, pmgrn};                        ";
-
-
     QWidget *w = new QWidget;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
 
@@ -744,9 +727,8 @@ void Coma::DeviceState()
     }
 
     w->setLayout(vlayout);
-    connect(this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)), this, SLOT(UpdateHthWidget(ModuleBSI::Bsi*)));
+//    connect(this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)), this, SLOT(UpdateHthWidget(ModuleBSI::Bsi*)));
 
-    //hlyout->addLayout(l2yout,100);
     lyout->addWidget(w);
     QPushButton *pb = new QPushButton("Ok");
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
@@ -764,26 +746,24 @@ void Coma::PredAlarmState()
 
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
-    QStringList events = QStringList() << "Отсутствует сигнал напряжения фазы A                   "
-                                       << "Отсутствует сигнал напряжения фазы B                   "
-                                       << "Отсутствует сигнал напряжения фазы С                   "
-                                       << "Отсутствует ток ввода фазы А (ток меньше 2мА)          "
-                                       << "Отсутствует ток ввода фазы B (ток меньше 2мА)          "
-                                       << "Отсутствует ток ввода фазы C (ток меньше 2мА)          "
-                                       << "Не заданы начальные значения                           "
-                                       << "Низкое напряжение фазы A                               "
-                                       << "Низкое напряжение фазы B                               "
-                                       << "Низкое напряжение фазы C                               "
-                                       << "Сигнализация по приращению тангенса дельта ввода фазы А"
-                                       << "Сигнализация по приращению тангенса дельта ввода фазы B"
-                                       << "Сигнализация по приращению тангенса дельта ввода фазы C"
-                                       << "Сигнализация по приращению C ввода фазы А              "
-                                       << "Сигнализация по приращению C ввода фазы B              "
-                                       << "Сигнализация по приращению C ввода фазы C              "
-                                       << "Не заданы паспортные значения                          "
-                                       << "Сигнализация по повышенному небалансу токов            ";
-
-
+    const QStringList events = QStringList() << "Отсутствует сигнал напряжения фазы A                   "
+                                             << "Отсутствует сигнал напряжения фазы B                   "
+                                             << "Отсутствует сигнал напряжения фазы С                   "
+                                             << "Отсутствует ток ввода фазы А (ток меньше 2мА)          "
+                                             << "Отсутствует ток ввода фазы B (ток меньше 2мА)          "
+                                             << "Отсутствует ток ввода фазы C (ток меньше 2мА)          "
+                                             << "Не заданы начальные значения                           "
+                                             << "Низкое напряжение фазы A                               "
+                                             << "Низкое напряжение фазы B                               "
+                                             << "Низкое напряжение фазы C                               "
+                                             << "Сигнализация по приращению тангенса дельта ввода фазы А"
+                                             << "Сигнализация по приращению тангенса дельта ввода фазы B"
+                                             << "Сигнализация по приращению тангенса дельта ввода фазы C"
+                                             << "Сигнализация по приращению C ввода фазы А              "
+                                             << "Сигнализация по приращению C ввода фазы B              "
+                                             << "Сигнализация по приращению C ввода фазы C              "
+                                             << "Не заданы паспортные значения                          "
+                                             << "Сигнализация по повышенному небалансу токов            ";
     QWidget *w = new QWidget;
     Wpred = w;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
@@ -803,12 +783,12 @@ void Coma::PredAlarmState()
         vlayout->addLayout(hlyout);
     }
     hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3033), (PredAlarmEvents[16]) ? pmred : pmgrn));
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", "3033", (PredAlarmEvents[16]) ? pmred : pmgrn));
     hlyout->addWidget(WDFunc::NewLBLT(w, events.at(16), "", "", ""), 1);
     vlayout->addLayout(hlyout);
 
     hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3034), (PredAlarmEvents[17]) ? pmred : pmgrn));
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", "3034", (PredAlarmEvents[17]) ? pmred : pmgrn));
     hlyout->addWidget(WDFunc::NewLBLT(w, events.at(17), "", "", ""), 1);
     vlayout->addLayout(hlyout);
 
@@ -821,7 +801,6 @@ void Coma::PredAlarmState()
     dlg->setLayout(lyout);
     dlg->show();
 }
-
 
 void Coma::AlarmState()
 {
@@ -841,7 +820,6 @@ void Coma::AlarmState()
                                        << "Авария по приращению C ввода фазы B              "
                                        << "Авария по приращению C ввода фазы C              "
                                        << "Авария по недопустимому небалансу токов          ";
-
     QWidget *w = new QWidget;
     Walarm = w;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
@@ -849,12 +827,7 @@ void Coma::AlarmState()
     for (int i = 0; i < 3; ++i)
     {
         hlyout = new QHBoxLayout;
-
-        if(AlarmEvents[i])
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3024+i), pmred));
-        else
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3024+i), pmgrn));
-
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3024+i), (AlarmEvents[i]) ? pmred : pmgrn));
         hlyout->addWidget(WDFunc::NewLBLT(w, events.at(i), "", "", ""), 1);
         vlayout->addLayout(hlyout);
     }
@@ -862,22 +835,13 @@ void Coma::AlarmState()
     for (int i = 0; i < 3; ++i)
     {
         hlyout = new QHBoxLayout;
-
-        if(AlarmEvents[3+i])
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3030+i), pmred));
-        else
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3030+i), pmgrn));
-
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3030+i), (AlarmEvents[3+i]) ? pmred : pmgrn));
         hlyout->addWidget(WDFunc::NewLBLT(w, events.at(3+i), "", "", ""), 1);
         vlayout->addLayout(hlyout);
     }
 
     hlyout = new QHBoxLayout;
-    if(AlarmEvents[6])
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3035), pmred));
-    else
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3035), pmgrn));
-
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", "3035", (AlarmEvents[6]) ? pmred : pmgrn));
     hlyout->addWidget(WDFunc::NewLBLT(w, events.at(6), "", "", ""), 1);
     vlayout->addLayout(hlyout);
 
@@ -888,119 +852,99 @@ void Coma::AlarmState()
     connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
     lyout->addWidget(pb,0);
     dlg->setLayout(lyout);
-
-
-            dlg->show();
+    dlg->show();
 }
 
-
-void Coma::UpdateReleWidget(Parse104::SponSignals104* Signal)
+/*void Coma::UpdateReleWidget(Parse104::SponSignals104 *Signal)
 {
     int i = 0;
-    //Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmgrn, pmred};
 
-    //for(j=0; j<Signal->SigNumber; j++)
-    //{
-       //sig = *(Signal+j);
     if(!(Signal->Spon[i].SigVal & 0x80))
     {
        int signal = ((Signal->Spon[i].SigVal & (0x00000001)) ? 1 : 0);
        WDFunc::SetLBLImage(this, (QString::number(Signal->Spon[i].SigAdr)), pm[signal]);
     }
-    //}
+} */
 
-}
-
-void Coma::UpdatePredAlarmEvents(Parse104::SponSignalsWithTime* Signal)
+void Coma::UpdatePredAlarmEvents(Parse104::SponSignals *Signal)
 {
     int i = 0;
-    //Parse104::SponSignalsWithTime* sig = new Parse104::SponSignalsWithTime;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmgrn, pmred};
 
     for(i=0; i<Signal->SigNumber; i++)
     {
-       //sig->Spon->SigAdr = (Signal->Spon[i].SigAdr);
-       //sig->Spon->SigVal = (Signal->Spon[i].SigVal);
-       if(!(Signal->Spon[i].SigVal & 0x80))
-       {
-        quint8 signal = ((Signal->Spon[i].SigVal & (0x00000001)) ? 1 : 0);
-
-        if((((Signal->Spon[i].SigAdr >= 3024) && (Signal->Spon[i].SigAdr < 3027))) || ((Signal->Spon[i].SigAdr >= 3030) && (Signal->Spon[i].SigAdr < 3033)) || (Signal->Spon[i].SigAdr == 3035))
-        WDFunc::SetLBLImage(Walarm, (QString::number(Signal->Spon[i].SigAdr)), pm[signal]);
-        else
-        WDFunc::SetLBLImage(Wpred, (QString::number(Signal->Spon[i].SigAdr)), pm[signal]);
+        quint32 sigadr = Signal->Spon[i].SigAdr;
+        quint8 sigval = Signal->Spon[i].SigVal;
+        if(!(sigval & 0x80))
+        {
+            int pmidx = (sigval & 0x00000001) ? 1 : 0;
+            if((((sigadr >= 3024) && (sigadr < 3027))) || ((sigadr >= 3030) && (sigadr < 3033)) || (sigadr == 3035))
+                WDFunc::SetLBLImage(Walarm, (QString::number(sigadr)), pm[pmidx]);
+            else
+                WDFunc::SetLBLImage(Wpred, (QString::number(sigadr)), pm[pmidx]);
        }
     }
-
-
 }
 
-
-void Coma::UpdateStatePredAlarmEvents(Parse104::SponSignals104 *Signal)
+void Coma::UpdateStatePredAlarmEvents(Parse104::SponSignals *Signal)
 {
     int i = 0, predalarmcount = 0, alarmcount = 0;
 //    Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
-    QPixmap *pm[2] = {pmred, pmgrn};
 
     for(i=0; i<Signal->SigNumber; i++)
     {
-       //sig = *(Signal+i);
-       if(!(Signal->Spon[i].SigVal & 0x80))
-       {
-           quint8 signal = ((Signal->Spon[i].SigVal & (0x00000001)) ? 1 : 0);
-           quint32 sigadr = Signal->Spon[i].SigAdr;
+        quint8 sigval = Signal->Spon[i].SigVal;
+        if(!(sigval & 0x80))
+        {
+            quint32 sigadr = Signal->Spon[i].SigAdr;
+            int pmidx = (sigval & 0x00000001) ? 1 : 0;
 
-           if((sigadr >= 3011) && (sigadr < 3024))
-           PredAlarmEvents[sigadr - 3011] = signal;
-           else if((sigadr >= 3024) && (sigadr < 3027))
-           AlarmEvents[sigadr - 3024] = signal;
-           else if((sigadr >= 3027) && (sigadr < 3030))
-           PredAlarmEvents[sigadr - 3014] = signal;
-           else if((sigadr >= 3030) && (sigadr < 3033))
-           AlarmEvents[sigadr - 3027] = signal;
-           else if(sigadr == 3033)
-           PredAlarmEvents[16] = signal;
-           else if(sigadr == 3034)
-           PredAlarmEvents[17] = signal;
-           else if(sigadr == 3035)
-           AlarmEvents[6] = signal;
-       }
+            if((sigadr >= 3011) && (sigadr < 3024))
+            PredAlarmEvents[sigadr - 3011] = pmidx;
+            else if((sigadr >= 3024) && (sigadr < 3027))
+            AlarmEvents[sigadr - 3024] = pmidx;
+            else if((sigadr >= 3027) && (sigadr < 3030))
+            PredAlarmEvents[sigadr - 3014] = pmidx;
+            else if((sigadr >= 3030) && (sigadr < 3033))
+            AlarmEvents[sigadr - 3027] = pmidx;
+            else if(sigadr == 3033)
+            PredAlarmEvents[16] = pmidx;
+            else if(sigadr == 3034)
+            PredAlarmEvents[17] = pmidx;
+            else if(sigadr == 3035)
+            AlarmEvents[6] = pmidx;
+        }
     }
-
     for(i=0; i<18; i++)
     {
         if(PredAlarmEvents[i])
         {
-           WDFunc::SetLBLImage(this, QString::number(951), pm[0]);
+           WDFunc::SetLBLImage(this, "951", pmred);
            predalarmcount++;
         }
     }
-
     if(predalarmcount == 0)
-    WDFunc::SetLBLImage(this,  QString::number(951), pm[1]);
-
+        WDFunc::SetLBLImage(this,  "951", pmgrn);
     for(i=0; i<7; i++)
     {
         if(AlarmEvents[i])
         {
-           WDFunc::SetLBLImage(this, QString::number(952), pm[0]);
+           WDFunc::SetLBLImage(this, "952", pmred);
            alarmcount++;
         }
     }
-
     if(alarmcount == 0)
-    WDFunc::SetLBLImage(this,  QString::number(952), pm[1]);
-
+        WDFunc::SetLBLImage(this, "952", pmgrn);
 }
 
-void Coma::UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime *Signal)
+/*void Coma::UpdateStatePredAlarmEventsWithTime(Parse104::SponSignals *Signal)
 {
     int i = 0, PredArarmcount = 0, Ararmcount = 0;
     //Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
@@ -1056,24 +1000,20 @@ void Coma::UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime *Sig
     if(Ararmcount == 0)
     WDFunc::SetLBLImage(this,  QString::number(952), pm[1]);
 
-}
+} */
 
 void Coma::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
 {
-    int i = 0, PredArarmcount = 0, Ararmcount = 0;
+    int i = 0, predalarmcount = 0, alarmcount = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
-    QPixmap *pm[2] = {pmred, pmgrn};
 
     for(i=0; i<Signal.countBytes; i++)
     {
         if(i == 3)
         {
-            //for(int j = 0; j<8; j++)
-            //{
-                quint8 signal = ((Signal.Bytes[i] & (0x00000001)) ? 1 : 0);
-                AlarmEvents[6] = signal;
-
+            quint8 signal = ((Signal.Bytes[i] & (0x00000001)) ? 1 : 0);
+            AlarmEvents[6] = signal;
         }
         if(i == 2)
         {
@@ -1082,16 +1022,14 @@ void Coma::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
                 quint8 signal = ((Signal.Bytes[i] & (0x00000001 << j)) ? 1 : 0);
 
                 if(j<3)
-                PredAlarmEvents[13+j] = signal;
+                    PredAlarmEvents[13+j] = signal;
                 else if(j>=3 && j<6)
-                AlarmEvents[j] = signal;
+                    AlarmEvents[j] = signal;
                 if(j==6)
-                PredAlarmEvents[16] = signal;
+                    PredAlarmEvents[16] = signal;
                 if(j==7)
-                PredAlarmEvents[17] = signal;
-
+                    PredAlarmEvents[17] = signal;
             }
-
         }
         else if(i == 0)
         {
@@ -1108,24 +1046,22 @@ void Coma::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
                 quint8 signal = ((Signal.Bytes[i] & (0x00000001 << j)) ? 1 : 0);
 
                 if(j<5)
-                PredAlarmEvents[8+j] = signal;
+                    PredAlarmEvents[8+j] = signal;
                 if(j >= 5)
-                AlarmEvents[j-5] = signal;
+                    AlarmEvents[j-5] = signal;
             }
         }
     }
-
     for(i=0; i<18; i++)
     {
         if(PredAlarmEvents[i])
         {
-           WDFunc::SetLBLImage(this, QString::number(951), pm[0]);
-           PredArarmcount++;
+           WDFunc::SetLBLImage(this, "951", pmred);
+           predalarmcount++;
         }
     }
-
-    if(PredArarmcount == 0)
-    WDFunc::SetLBLImage(this,  QString::number(951), pm[1]);
+    if(predalarmcount == 0)
+        WDFunc::SetLBLImage(this,  "951", pmgrn);
 
     emit SetPredAlarmColor(PredAlarmEvents);
 
@@ -1133,16 +1069,13 @@ void Coma::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
     {
         if(AlarmEvents[i])
         {
-           WDFunc::SetLBLImage(this, QString::number(952), pm[0]);
-           Ararmcount++;
+           WDFunc::SetLBLImage(this, "952", pmred);
+           alarmcount++;
         }
     }
-
-    if(Ararmcount == 0)
-    WDFunc::SetLBLImage(this,  QString::number(952), pm[1]);
-
+    if(alarmcount == 0)
+        WDFunc::SetLBLImage(this,  "952", pmgrn);
     emit SetAlarmColor(AlarmEvents);
-
 }
 
 void Coma::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
@@ -1159,7 +1092,6 @@ void Coma::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
            quint8 signal = ((Signal.Bytes[i] & (0x00000001)) ? 1 : 0);
            WDFunc::SetLBLImage(Walarm, (QString::number(3035)), pm[signal]);
         }
-
         if(i == 2)
         {
             for(int j = 0; j<8; j++)
@@ -1171,12 +1103,11 @@ void Coma::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
                 else if(j>=3 && j<6)
                 WDFunc::SetLBLImage(Walarm, (QString::number(3030+j-3)), pm[signal]);
                 if(j==6)
-                WDFunc::SetLBLImage(Wpred, (QString::number(3033)), pm[signal]);
+                WDFunc::SetLBLImage(Wpred, "3033", pm[signal]);
                 if(j==7)
-                WDFunc::SetLBLImage(Wpred, (QString::number(3034)), pm[signal]);
+                WDFunc::SetLBLImage(Wpred, "3034", pm[signal]);
 
             }
-
         }
         else if(i == 0)
         {
@@ -1199,7 +1130,6 @@ void Coma::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
             }
         }
     }
-
 }
 
 QWidget *Coma::Least()
@@ -1301,7 +1231,7 @@ int Coma::CheckPassword()
     return NOERROR;
 }
 
-void Coma::UpdateHthWidget(ModuleBSI::Bsi* bsi)
+/*void Coma::UpdateHthWidget(ModuleBSI::Bsi* bsi)
 {
     //ModuleBSI::Bsi bsi = ModuleBSI::GetBsi();
     ModuleBSI::ModuleBsi = *bsi;
@@ -1320,12 +1250,12 @@ void Coma::UpdateHthWidget(ModuleBSI::Bsi* bsi)
         quint32 tmpui = (0x00000001 << i) & bsi->Hth;
 
         WDFunc::SetLBLImage(this, (QString::number(i)), pm[tmpui]);
-        /*if (tmpui)
-            lbl->setStyleSheet("QLabel {background-color: rgba(255,10,10,255); color: rgba(255,255,255,255);}");
-        else
-            lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");*/
+//        if (tmpui)
+//            lbl->setStyleSheet("QLabel {background-color: rgba(255,10,10,255); color: rgba(255,255,255,255);}");
+//        else
+//            lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
     }
-}
+}  */
 
 void Coma::SetMainDefConf()
 {
@@ -1347,7 +1277,7 @@ void Coma::SetMDefConf()
 
 void Coma::Fill()
 {
-        if (MainConfDialog != nullptr)
+    if (MainConfDialog != nullptr)
         MainConfDialog->Fill();
     if (ConfB != nullptr)
         ConfB->Fill();
@@ -1440,14 +1370,10 @@ void Coma::FileTimeOut()
         return;
     }
     WDFunc::SetLBLText(this, lblname,StdFunc::PrbMessage() + QString::number(0), false);
-    //prb->setMinimum(0);
-    //prb->setMaximum(0);
 
    ReceiveTimer->stop();
    if(fileSize != curfileSize && MainInterface != I_USB)
-   {
-     EMessageBox::information(this, "Ошибка", "Ошибка");
-   }
+       EMessageBox::information(this, "Ошибка", "Ошибка");
 }
 
 void Coma::SetProgressBar2Size(int size)
@@ -1463,17 +1389,14 @@ void Coma::SetProgressBar2(int cursize)
 void Coma::ShowInterfaceDialog()
 {
     QByteArray ba;
-    //int res, i;
     QDialog *dlg = new QDialog(this);
     QString Str;
     Cancelled = false;
-    //QStringList device = QStringList() << "KDV" << "2" << "1" << "2";
     QStringList inter;
     inter.append("USB");
     inter.append("Ethernet");
     inter.append("RS485");
     QStringListModel *tmpmodel = new QStringListModel;
-    tmpmodel->deleteLater();
     dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setObjectName("connectdlg");
@@ -1516,10 +1439,6 @@ void Coma::ShowConnectDialog()
         ERMSG("Отмена ConnectDialog");
         return;
     }
-
-    //QStringList device = QStringList() << "KDV" << "2" << "1" << "2";
-    //QStringList inter = QStringList() << "ETH" << "MODBUS";
-
     QDialog *dlg = new QDialog(this);
     dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -1529,62 +1448,51 @@ void Coma::ShowConnectDialog()
 
     if(MainInterface == I_USB)
     {
-       USBsl = cn->DevicesFound();
-       if (USBsl.size() == 0)
-       {
-           lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
-           Error::ShowErMsg(CN_NOPORTSERROR);
-       }
-       tmpmodel->deleteLater();
-       tmpmodel->setStringList(USBsl);
-       QComboBox *portscb = new QComboBox;
-       connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPortSlot(QString)));
-       portscb->setModel(tmpmodel);
-       lyout->addWidget(portscb);
+        USBsl = cn->DevicesFound();
+        if (USBsl.size() == 0)
+        {
+            lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
+            Error::ShowErMsg(CN_NOPORTSERROR);
+        }
+        tmpmodel->deleteLater();
+        tmpmodel->setStringList(USBsl);
+        QComboBox *portscb = new QComboBox;
+        connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPortSlot(QString)));
+        portscb->setModel(tmpmodel);
+        lyout->addWidget(portscb);
     }
     else
     {
-       if(!HaveAlreadyRed)
-       {
-           sl.clear();
-           res= Files::LoadFromFile(Files::ChooseFileForOpen(this, "IP files (*.txt)"), ba);
-           if (res != Files::ER_NOERROR)
-           {
-              WARNMSG("Ошибка при загрузке файла");
-              return;
-           }
+        if(!HaveAlreadyRed)
+        {
+            sl.clear();
+            res= Files::LoadFromFile(Files::ChooseFileForOpen(this, "IP files (*.txt)"), ba);
+            if (res != Files::ER_NOERROR)
+            {
+               WARNMSG("Ошибка при загрузке файла");
+               return;
+            }
+            Str = ba;
+            sl.append(Str.split("\r\n"));
+            /*for(i=0; i<sl.size(); i++)
+            {
+              insl.clear();
+              insl.append(sl.at(i).split(" "));
 
-           Str = ba;
-           sl.append(Str.split("\r\n"));
-
-           /*for(i=0; i<sl.size(); i++)
-           {
-             insl.clear();
-             insl.append(sl.at(i).split(" "));
-
-              if((insl.at(0) == SaveDevice) && (insl.at(1) == interface))
-              {
-                slfinal.append(sl.at(i));
-              }
-           }*/
-
-           HaveAlreadyRed = 1;
-
-       }
-
-
-       if (sl.size() == 0)
-       {
-           lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
-           Error::ShowErMsg(CN_NOPORTSERROR);
-           ERMSG("Ошибка, устройства не найдены");
-       }
-
-       //dlg = new QDialog(this);
-
-       //tmpmodel = new QStringListModel;
-
-        tmpmodel->deleteLater();
+               if((insl.at(0) == SaveDevice) && (insl.at(1) == interface))
+               {
+                 slfinal.append(sl.at(i));
+               }
+            }*/
+            HaveAlreadyRed = 1;
+        }
+        if (sl.size() == 0)
+        {
+            lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
+            Error::ShowErMsg(CN_NOPORTSERROR);
+            ERMSG("Ошибка, устройства не найдены");
+        }
+        tmpmodel = new QStringListModel;
         tmpmodel->setStringList(sl);
 
         QComboBox *portscb = new QComboBox;
@@ -1642,10 +1550,10 @@ void Coma::GetAbout()
 
     l2yout->addWidget(WDFunc::NewLBL(this, tmps));
     l2yout->addWidget(WDFunc::NewLBL(this, "ООО \"АВМ-Энерго\""));
-    l2yout->addWidget(WDFunc::NewLBL(this, "2015-2019 гг."));
+    l2yout->addWidget(WDFunc::NewLBL(this, "2015-2020 гг."));
     l2yout->addWidget(WDFunc::NewLBL(this, "info@avmenergo.ru"));
     l2yout->addStretch(10);
-    hlyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/evel.png")), 1, Qt::AlignVCenter);
+    hlyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/avm-energo.png")), 1, Qt::AlignVCenter);
     hlyout->addLayout(l2yout,100);
     lyout->addLayout(hlyout,1);
     QPushButton *pb = new QPushButton("Готово");
@@ -1676,7 +1584,7 @@ void Coma::Disconnect()
     }
 }
 
-void Coma::GetDeviceFromTable(QModelIndex idx)
+/*void Coma::GetDeviceFromTable(QModelIndex idx)
 {
     Q_UNUSED(idx)
     ETableView *tv = this->findChild<ETableView *>("devicetv");
@@ -1694,29 +1602,18 @@ void Coma::GetDeviceFromTable(QModelIndex idx)
 //    quint16 pid = tmps.toInt(nullptr, 16);
     tmps = tv->model()->index(tv->currentIndex().row(), 3, QModelIndex()).data(Qt::DisplayRole).toString();
     tmps.toWCharArray(DevInfo.serial);
-}
+} */
 
 void Coma::DisconnectAndClear()
 {
-    TheEnd = 1;
-    if(TimeTimer != nullptr)
-    {
-      TimeTimer->stop();
-    }
-
-    if(TimeD->Timer != nullptr)
-    {
-      TimeD->Timer->stop();
-    }
-
+//    TheEnd = 1;
+    TimeTimer->stop();
+    TimeD->Timer->stop();
     if(!Disconnected)
     {
-        StopRead = 1;
-        Disconnected = 1;
+//        StopRead = 1;
         Disconnect();
-
         CheckB = CheckM = nullptr;
-        //CheckModBus = nullptr;
         emit ClearBsi();
         ClearTW();
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
@@ -1725,52 +1622,14 @@ void Coma::DisconnectAndClear()
             ERMSG("Пустой MainTW");
             return;
         }
-
         MainTW->hide();
         StdFunc::SetEmulated(false);
-
-        if(MainInterface == I_USB)
-        {
-            if(Reconnect)
-            {
-                Reconnect = false;
-                if(ModuleBSI::ModuleTypeString != "")
-                EMessageBox::information(this, "Разрыв связи", "Связь с "+ModuleBSI::ModuleTypeString+" разорвана");
-                else
-                EMessageBox::information(this, "Разрыв связи", "Связь разорвана");
-            }
-            else
-            {
-                if(ModuleBSI::ModuleTypeString != "")
-                EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь с "+ModuleBSI::ModuleTypeString+"");
-                else
-                EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
-            }
-        }
+        if(Reconnect)
+            EMessageBox::information(this, "Разрыв связи", "Связь разорвана");
         else
-        {
-            if(Reconnect)
-            {
-                Reconnect = false;
-                if(FullName != "")
-                    EMessageBox::information(this, "Разрыв связи", "Связь с "+FullName+" разорвана");
-                else
-                    EMessageBox::information(this, "Разрыв связи", "Связь разорвана");
-            }
-            else
-            {
-                if(FullName != "")
-                    EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь с "+FullName+"");
-                else
-                    EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
-            }
-        }
-
+            EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
         Reconnect = false;
-        //disconnected = 0;
     }
-
-
 }
 
 void Coma::ShowErrorMessageBox(QString message)
@@ -1869,7 +1728,7 @@ void Coma::MainTWTabClicked(int tabindex)
     }
     if(TimeD != nullptr)
     {
-        if(tabindex == TimeD->timeIndex)
+        if(tabindex == TimeIndex)
             TimeTimer->start();
         else
             TimeTimer->stop();
@@ -1917,11 +1776,11 @@ void Coma::DisconnectMessage()
     EMessageBox::information(this, "Провал", "Нет подключения");
 }
 
-void Coma::FinishHim()
+/*void Coma::FinishHim()
 {
-    ConfM->confIndex = -1;
+//    ConfM->confIndex = -1;
     TimeFunc::Wait(1000);
-}
+}*/
 
 void Coma::closeEvent(QCloseEvent *event)
 {
@@ -1944,6 +1803,7 @@ void Coma::UpdateUSB()
     int i = 0, predalarmcount = 0, alarmcount = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
+    Bd11 Bd_block11;
 
     if (CheckB != nullptr)
         CheckB->USBUpdate();
@@ -1971,8 +1831,8 @@ void Coma::UpdateUSB()
            else
                AlarmEvents[i] = 0;
         }
-        WDFunc::SetLBLImage(this,  QString::number(951), (predalarmcount == 0) ? pmgrn : pmred);
-        WDFunc::SetLBLImage(this,  QString::number(952), (alarmcount == 0) ? pmgrn : pmred);
+        WDFunc::SetLBLImage(this, "951", (predalarmcount == 0) ? pmgrn : pmred);
+        WDFunc::SetLBLImage(this, "952", (alarmcount == 0) ? pmgrn : pmred);
         emit SetPredAlarmColor(PredAlarmEvents);
         emit SetAlarmColor(AlarmEvents);
     }
@@ -1983,8 +1843,7 @@ void Coma::USBSetAlarms()
     int i = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
-    QPixmap *pm[2] = {pmred, pmgrn};
-    Bd_block11 = *new Bd11;
+    Bd11 Bd_block11;
 
     if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == NOERROR)
     {
@@ -1992,54 +1851,36 @@ void Coma::USBSetAlarms()
         {
             for(i=0; i<13; i++)
             {
-               if(Bd_block11.predAlarm & ((quint32)0x00000001 << i))
-               WDFunc::SetLBLImage(Wpred, (QString::number(3011+i)), pm[0]);
-               else
-               WDFunc::SetLBLImage(Wpred, (QString::number(3011+i)), pm[1]);
+                quint32 alarm = Bd_block11.predAlarm & ((quint32)0x00000001 << i);
+                WDFunc::SetLBLImage(Walarm, (QString::number(3011+i)), (alarm) ? pmred : pmgrn);
             }
-
             for(i=13; i<16; i++)
             {
-               if(Bd_block11.predAlarm & ((quint32)0x00000001 << i))
-               WDFunc::SetLBLImage(Wpred, (QString::number(3027+i-13)), pm[0]);
-               else
-               WDFunc::SetLBLImage(Wpred, (QString::number(3027+i-13)), pm[1]);
+                quint32 alarm = Bd_block11.predAlarm & ((quint32)0x00000001 << i);
+                WDFunc::SetLBLImage(Walarm, (QString::number(3027+i-13)), (alarm) ? pmred : pmgrn);
             }
-
-            if(Bd_block11.predAlarm & ((quint32)0x00000001 << 16))
-            WDFunc::SetLBLImage(Wpred, (QString::number(3033)), pm[0]);
-            else
-            WDFunc::SetLBLImage(Wpred, (QString::number(3033)), pm[1]);
-
-            if(Bd_block11.predAlarm & ((quint32)0x00000001 << 17))
-            WDFunc::SetLBLImage(Wpred, (QString::number(3034)), pm[0]);
-            else
-            WDFunc::SetLBLImage(Wpred, (QString::number(3034)), pm[1]);
+            quint32 alarm = Bd_block11.predAlarm & ((quint32)0x00000001 << 16);
+            WDFunc::SetLBLImage(Walarm, "3033", (alarm) ? pmred : pmgrn);
+            alarm = Bd_block11.predAlarm & ((quint32)0x00000001 << 17);
+            WDFunc::SetLBLImage(Walarm, "3034", (alarm) ? pmred : pmgrn);
         }
-
-
         if(Walarm != nullptr)
         {
             for(i=0; i<3; i++)
             {
-               if(Bd_block11.alarm & ((quint32)0x00000001 << i))
-               WDFunc::SetLBLImage(Walarm, (QString::number(3024+i)), pm[0]);
-               else
-               WDFunc::SetLBLImage(Walarm, (QString::number(3024+i)), pm[1]);
+                quint32 alarm = Bd_block11.alarm & ((quint32)0x00000001 << i);
+                WDFunc::SetLBLImage(Walarm, (QString::number(3024+i)), (alarm) ? pmred : pmgrn);
             }
 
             for(i=3; i<6; i++)
             {
-               if(Bd_block11.alarm & ((quint32)0x00000001 << i))
-               WDFunc::SetLBLImage(Walarm, (QString::number(3030+i-3)), pm[0]);
-               else
-               WDFunc::SetLBLImage(Walarm, (QString::number(3030+i-3)), pm[1]);
+                quint32 alarm = Bd_block11.alarm & ((quint32)0x00000001 << i);
+                WDFunc::SetLBLImage(Walarm, (QString::number(3030+i-3)), (alarm) ? pmred : pmgrn);
             }
 
+            quint32 alarm = Bd_block11.alarm & ((quint32)0x00000001 << 6);
             if(Bd_block11.alarm & ((quint32)0x00000001 << 6))
-            WDFunc::SetLBLImage(Walarm, (QString::number(3035)), pm[0]);
-            else
-            WDFunc::SetLBLImage(Walarm, (QString::number(3035)), pm[1]);
+                WDFunc::SetLBLImage(Walarm, "3035", (alarm) ? pmred : pmgrn);
         }
     }
 }

@@ -24,9 +24,9 @@ public slots:
     void SetPredAlarmColor(quint8*);
     void SetAlarmColor(quint8* Alarm);
     void UpdateFlData(Parse104::FlSignals104 *);
-    void UpdateSponData(Parse104::SponSignals104 *);
-    void UpdateSponDataWithTime(Parse104::SponSignalsWithTime *);
-    void UpdateBS104Data(Parse104::BS104Signals *);
+    void UpdateSponData(Parse104::SponSignals *);
+//    void UpdateSponDataWithTime(Parse104::SponSignals *);
+//    void UpdateBS104Data(Parse104::BS104Signals *);
 
 
 private:
@@ -52,7 +52,7 @@ private slots:
     void StartBdMeasurements();
     void StopBdMeasurements();
     void UpdateModBusData(QList<ModBus::SignalStruct> Signal);
-    void ErrorRead();
+//    void ErrorRead();
     void onModbusStateChanged(ConnectionStates state);
 };
 #endif // CHECKDIALOG84_H

@@ -27,7 +27,7 @@ CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent) : EAbstractCheck
     setStyleSheet(tmps);
     QStringList sl;
     BdNum = 6;
-    Ch84 = new Check_84(board, parent);
+    Ch84 = new Check_84;
     Ch = new Check;
 //    BdNum = 11;
     setAttribute(Qt::WA_DeleteOnClose);
@@ -206,8 +206,6 @@ void CheckDialog84::USBUpdate()
 }
 void CheckDialog84::UpdateFlData(Parse104::FlSignals104 *Signal)
 {
-    //if(!first)
-
     Parse104::FlSignals104 sig = *new Parse104::FlSignals104;
     int i;
     for(i=0; i<Signal->SigNumber; i++)
@@ -222,109 +220,64 @@ void CheckDialog84::UpdateFlData(Parse104::FlSignals104 *Signal)
     }
 }
 
-void CheckDialog84::UpdateSponData(Parse104::SponSignals104* Signal)
+void CheckDialog84::UpdateSponData(Parse104::SponSignals *Signal)
 {
-    //Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
-    int i = 0,j;
+    int i, j;
     for(j=0; j<Signal->SigNumber; j++)
     {
-      //sig = *(Signal+j);
-
-        if((Signal->Spon[j].SigAdr == 3011) || (Signal->Spon[j].SigAdr == 3012) || (Signal->Spon[j].SigAdr == 3013))
+        quint32 sigadr = Signal->Spon[j].SigAdr;
+        quint8 sigval = Signal->Spon[j].SigVal;
+        if ((sigadr >= 3011) && (sigadr <= 3013))
         {
-            i = Signal->Spon[j].SigAdr-3011;
-            if(Signal->Spon[j].SigVal == 1)
+            i = sigadr-3011;
+            WDFunc::SetLBLTColor(this,QString::number(1000+i), (sigval == 1) ? TABCOLORA1 : ACONFOCLR); //TABCOLORA1
+        }
+        if ((sigadr >= 3014) && (sigadr <= 3016))
+        {
+            i = sigadr-3014;
+            WDFunc::SetLBLTColor(this,QString::number(1100+i), (sigval == 1) ? TABCOLORA1 : ACONFOCLR); //TABCOLORA1
+        }
+        if ((sigadr >= 3018) && (sigadr <= 3020))
+        {
+            i = sigadr-3018;
+            WDFunc::SetLBLTColor(this,QString::number(1000+i), (sigval == 1) ? TABCOLORA1 : ACONFOCLR); //TABCOLORA1
+        }
+        if ((sigadr >= 3021) && (sigadr <= 3023))
+        {
+            i = sigadr-3021;
+            WDFunc::SetLBLTColor(this,QString::number(1000+i), (sigval == 1) ? TABCOLORA1 : ACONFOCLR); //TABCOLORA1
+            if (sigval == 0)
+                stColor[i] = 1;
+        }
+        if ((sigadr >= 3024) && (sigadr <= 3026))
+        {
+            i = sigadr-3024;
+            if (sigval == 1)
             {
-
-               WDFunc::SetLBLTColor(this,QString::number(1000+i), TABCOLORA1); //TABCOLORA1
+                stColor[i] = 0;
+                WDFunc::SetLBLTColor(this,QString::number(2429+i),REDCOLOR);
             }
             else
             {
-               WDFunc::SetLBLTColor(this,QString::number(1000+i),ACONFOCLR);
+                if(!stColor[i])
+                    WDFunc::SetLBLTColor(this,QString::number(2429+i),TABCOLORA1);
             }
-
         }
-
-        if((Signal->Spon[j].SigAdr == 3014) || (Signal->Spon[j].SigAdr == 3015) || (Signal->Spon[j].SigAdr == 3016))
+        if ((sigadr >= 3027) && (sigadr <= 3029))
         {
-            i = Signal->Spon[j].SigAdr-3014;
-            if(Signal->Spon[j].SigVal == 1)
-            {
-               WDFunc::SetLBLTColor(this,QString::number(1100+i), TABCOLORA1); //TABCOLORA1
-            }
-            else
-            {
-               WDFunc::SetLBLTColor(this,QString::number(1100+i),ACONFOCLR);
-            }
-
-        }
-
-        if((Signal->Spon[j].SigAdr == 3018) || (Signal->Spon[j].SigAdr == 3019) || (Signal->Spon[j].SigAdr == 3020))
-        {
-            i = Signal->Spon[j].SigAdr-3018;
-            if(Signal->Spon[j].SigVal == 1)
-            {
-
-               WDFunc::SetLBLTColor(this,QString::number(1000+i), TABCOLORA1); //TABCOLORA1
-            }
-            else
-            {
-               WDFunc::SetLBLTColor(this,QString::number(1000+i),ACONFOCLR);
-            }
-
-        }
-
-        if((Signal->Spon[j].SigAdr == 3021) || (Signal->Spon[j].SigAdr == 3022) || (Signal->Spon[j].SigAdr == 3023))
-        {
-            i = Signal->Spon[j].SigAdr-3021;
-            if(Signal->Spon[j].SigVal == 1)
-            {
-
-               WDFunc::SetLBLTColor(this,QString::number(2429+i), TABCOLORA1); //TABCOLORA1
-            }
-            else
-            {
-               stColor[i] = 1;
-               WDFunc::SetLBLTColor(this,QString::number(2429+i),ACONFOCLR);
-            }
-
-        }
-
-        if(Signal->Spon[j].SigAdr == 3024 || Signal->Spon[j].SigAdr == 3025 || Signal->Spon[j].SigAdr == 3026)
-        {
-            i = Signal->Spon[j].SigAdr-3024;
-            if(Signal->Spon[j].SigVal == 1)
-            {
-               stColor[i] =0;
-               WDFunc::SetLBLTColor(this,QString::number(2429+i),REDCOLOR);
-            }
-            else
-            {
-               if(!stColor[i])
-               WDFunc::SetLBLTColor(this,QString::number(2429+i),TABCOLORA1);
-            }
-
-        }
-
-        if(Signal->Spon[j].SigAdr == 3027 || Signal->Spon[j].SigAdr == 3028 || Signal->Spon[j].SigAdr == 3029)
-        {
-            i = Signal->Spon[j].SigAdr-3027;
-            if(Signal->Spon[j].SigVal == 1)
-            {
+            i = sigadr-3027;
+            if(sigval == 1)
                WDFunc::SetLBLTColor(this,QString::number(2426+i),TABCOLORA1);
-            }
             else
             {
                stColor[3+i] = 1;
                WDFunc::SetLBLTColor(this,QString::number(2426+i),ACONFOCLR);
             }
-
         }
-
-        if(Signal->Spon[j].SigAdr == 3030 || Signal->Spon[j].SigAdr == 3031 || Signal->Spon[j].SigAdr == 3032)
+        if ((sigadr >= 3030) && (sigadr <= 3033))
         {
-            i = Signal->Spon[j].SigAdr-3030;
-            if(Signal->Spon[j].SigVal == 1)
+            i = sigadr-3030;
+            if(sigval == 1)
             {
                stColor[3+i] = 0;
                WDFunc::SetLBLTColor(this,QString::number(2426+i),REDCOLOR);
@@ -332,27 +285,22 @@ void CheckDialog84::UpdateSponData(Parse104::SponSignals104* Signal)
             else
             {
                if(!stColor[3+i])
-               WDFunc::SetLBLTColor(this,QString::number(2426+i),TABCOLORA1);
+                   WDFunc::SetLBLTColor(this,QString::number(2426+i),TABCOLORA1);
             }
-
         }
-
-        if(Signal->Spon[j].SigAdr == 3034)
+        if(sigadr == 3034)
         {
-            if(Signal->Spon[j].SigVal == 1)
-            {
+            if(sigval == 1)
                WDFunc::SetLBLTColor(this,QString::number(2432),TABCOLORA1);
-            }
             else
             {
                stColor[6] = 1;
                WDFunc::SetLBLTColor(this,QString::number(2432),ACONFOCLR);
             }
         }
-
-        if(Signal->Spon[j].SigAdr == 3035)
+        if(sigadr == 3035)
         {
-            if(Signal->Spon[j].SigVal == 1)
+            if(sigval == 1)
             {
                stColor[6] = 0;
                WDFunc::SetLBLTColor(this,QString::number(2432),REDCOLOR);
@@ -360,13 +308,13 @@ void CheckDialog84::UpdateSponData(Parse104::SponSignals104* Signal)
             else
             {
                if(!stColor[6])
-               WDFunc::SetLBLTColor(this,QString::number(2432),TABCOLORA1);
+                   WDFunc::SetLBLTColor(this,QString::number(2432),TABCOLORA1);
             }
         }
     }
 }
 
-void CheckDialog84::UpdateSponDataWithTime(Parse104::SponSignalsWithTime* Signal)
+/*void CheckDialog84::UpdateSponDataWithTime(Parse104::SponSignals *Signal)
 {
     //Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
     int i = 0,j;
@@ -509,12 +457,12 @@ void CheckDialog84::UpdateSponDataWithTime(Parse104::SponSignalsWithTime* Signal
         }
     }
 }
-
-void CheckDialog84::UpdateBS104Data(Parse104::BS104Signals* Signal)
+*/
+/*void CheckDialog84::UpdateBS104Data(Parse104::BS104Signals* Signal)
 {
     Parse104::BS104Signals sig = *new Parse104::BS104Signals;
     sig = *Signal;
-    ModuleBSI::Bsi* Bsi = new ModuleBSI::Bsi;
+//    ModuleBSI::Bsi* Bsi = new ModuleBSI::Bsi;
     int i;
     int adr = 0;
     memcpy(&adr, &(sig.BS.SigAdr[0]), sizeof(sig.BS.SigAdr));
@@ -523,13 +471,13 @@ void CheckDialog84::UpdateBS104Data(Parse104::BS104Signals* Signal)
     {
         sig = *(Signal+i);
 
-        Bsi->Hth = sig.BS.SigVal;
         if(adr == 15)
         {
-           emit BsiRefresh(Bsi);
+            ModuleBSI::ModuleBsi.Hth = sig.BS.SigVal;
+            emit BsiRefresh();
         }
     }
-}
+}*/
 
 void CheckDialog84::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
@@ -546,10 +494,10 @@ void CheckDialog84::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
     }
 }
 
-void CheckDialog84::ErrorRead()
+/*void CheckDialog84::ErrorRead()
 {
   //EMessageBox::information(this, "INFO", "Ошибка чтения");
-}
+}*/
 
 void CheckDialog84::onModbusStateChanged(ConnectionStates state)
 {
