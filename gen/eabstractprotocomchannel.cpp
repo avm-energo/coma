@@ -281,6 +281,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         QByteArray tmps = "<-" + ba.toHex() + "\n";
         CnLog->WriteRaw(tmps);
     }
+    Busy = false;
     if (Command == CN_Unk) // игнорирование вызова процедуры, если не было послано никакой команды
     {
         ERMSG("Игнорирование вызова процедуры, если не было послано никакой команды");

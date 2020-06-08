@@ -67,8 +67,13 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     S2Config.clear();
     S2ConfigForTune.clear();
     FullName = "";
-    Disconnected = false;
+    Disconnected = true;
     Reconnect = false;
+    TimeD = nullptr;
+    MainConfDialog = nullptr;
+    ConfB = ConfM = nullptr;
+    CheckB = CheckM = nullptr;
+    Wpred = Walarm = nullptr;
     for (int i = 0; i < 20; ++i)
     {
        PredAlarmEvents[i] = 0;
@@ -190,7 +195,6 @@ void Coma::StartWork()
 {
     if (!Reconnect)
     {
-        Disconnected = false;
         ShowInterfaceDialog();
         ShowConnectDialog();
         if(Cancelled)
@@ -211,10 +215,6 @@ void Coma::StartWork()
     QString str;
     MTypeB = 0;
     MTypeM = 0;
-    MainConfDialog = nullptr;
-    ConfB = ConfM = nullptr;
-    CheckB = CheckM = nullptr;
-    Wpred = Walarm = nullptr;
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
     {
@@ -261,7 +261,7 @@ void Coma::StartWork()
         ActiveThreads |= THREADUSB;
         MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
         MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
-        emit USBBsiRefresh();
+//        emit USBBsiRefresh();
     }
     else
     {
@@ -297,8 +297,11 @@ void Coma::StartWork()
     // MTypeB & MTypeM are acquired
     MTypeB <<= 8;
 
+    INFOMSG("PrepareDialogs");
+    Disconnected = false;
     Reconnect = true;
     PrepareDialogs();
+    INFOMSG("Check");
     str = (CheckM == nullptr) ? "Текущие параметры" : "Текущие параметры\nБазовая";
     if (CheckB != nullptr)
     {
@@ -321,6 +324,7 @@ void Coma::StartWork()
     if (CheckM != nullptr)
         MainTW->addTab(CheckM, str);
 
+    INFOMSG("Conf");
     if (ConfB != nullptr)
     {
         str = (ConfM == nullptr) ? "Конфигурирование" : "Конфигурирование\nБазовая";
@@ -338,6 +342,7 @@ void Coma::StartWork()
     {
         str = (ConfB == nullptr) ? "Конфигурирование" : "Конфигурирование\nМезонин";
         MainTW->addTab(ConfM, str);
+        ConfIndex = MainTW->indexOf(ConfM);
 
         if(ConfM->IsNeededDefConf)
         {
@@ -356,6 +361,7 @@ void Coma::StartWork()
         //connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Stop_Timer(int)));
 //        connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Start_TimeTimer(int))); //tabClicked
 //        connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Stop_TimeTimer(int)));
+    INFOMSG("Time");
     if (TimeD != nullptr)
     {
         MainTW->addTab(TimeD, "Время");
@@ -364,6 +370,7 @@ void Coma::StartWork()
         connect(TimeTimer,SIGNAL(timeout()),TimeD,SLOT(slot2_timeOut()));
     }
 
+    INFOMSG("CorD");
     if (CorD != nullptr)
     {
         MainTW->addTab(CorD, "Начальные значения");
@@ -374,6 +381,7 @@ void Coma::StartWork()
         ChModbus->CorIndex = CorD->corDIndex;
     }
 
+    INFOMSG("JourD");
     if (MainInterface != I_RS485)
         MainTW->addTab(JourD, "Журналы");
 
@@ -382,20 +390,24 @@ void Coma::StartWork()
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
         Error::ShowErMsg(ER_NOTUNECOEF);
 
+    INFOMSG("FwUpD");
     if(MainInterface == I_USB)
     {
         FwUpD = new fwupdialog;
         MainTW->addTab(FwUpD, "Загрузка ВПО");
     }
 
+    INFOMSG("ID");
     MainTW->addTab(IDialog, "О приборе");
 
+    INFOMSG("repaint");
     MainTW->repaint();
     MainTW->show();
 
 //    if (MainInterface == I_ETHERNET || MainInterface == I_RS485)
-        ConnectMessage();
+//        ConnectMessage();
 
+        INFOMSG("MainTW created");
     if(MainInterface == I_USB)
         BdaTimer->start();
 }
@@ -409,6 +421,7 @@ void Coma::PrepareDialogs()
     CorD = new CorDialog;
     ConfM = new ConfDialog84(S2Config);
 
+    IDialog->FillBsi();
     switch(MTypeB)
     {
     case Config::MTB_A2:
@@ -421,7 +434,7 @@ void Coma::PrepareDialogs()
     };
 
     connect(this,SIGNAL(ClearBsi()),IDialog,SLOT(ClearBsi()));
-    connect(this,SIGNAL(USBBsiRefresh()),IDialog,SLOT(FillBsi()));
+//    connect(this,SIGNAL(USBBsiRefresh()),IDialog,SLOT(FillBsi()));
     connect(CheckB,SIGNAL(BsiRefresh()),IDialog,SLOT(FillBsi()));
     connect(this, SIGNAL(SetPredAlarmColor(quint8*)), CheckB,SLOT(SetPredAlarmColor(quint8*)));
     connect(this, SIGNAL(SetAlarmColor(quint8*)), CheckB,SLOT(SetAlarmColor(quint8*)));
@@ -488,7 +501,7 @@ void Coma::New104()
     connect(Ch104,SIGNAL(Finished()),this,SLOT(Ch104Finished()));
     connect(Ch104,SIGNAL(sponsignalsready(Parse104::SponSignals*)),this,SLOT(UpdatePredAlarmEvents(Parse104::SponSignals*)));
 //    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),this,SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
-    connect(Ch104,SIGNAL(ethdisconnected()),this,SLOT(DisconnectMessage()));
+    connect(Ch104,SIGNAL(EthDisconnected()),this,SLOT(DisconnectMessage()));
     connect(Ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
     connect(Ch104,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
     connect(Ch104,SIGNAL(ReconnectSignal()), this, SLOT(ReConnect()));
@@ -557,7 +570,7 @@ void Coma::ReConnect()
 
     Reconnect = true;
     TimeTimer->stop();
-    if(TimeD->Timer != nullptr)
+    if(TimeD != nullptr)
         TimeD->Timer->stop();
     if(!Disconnected)
     {
@@ -609,6 +622,7 @@ void Coma::AttemptToRec()
 void Coma::ConnectMessage()
 {
     QDialog *dlg = new QDialog;
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -1608,12 +1622,18 @@ void Coma::DisconnectAndClear()
 {
 //    TheEnd = 1;
     TimeTimer->stop();
-    TimeD->Timer->stop();
+    if (TimeD != nullptr)
+        TimeD->Timer->stop();
     if(!Disconnected)
     {
 //        StopRead = 1;
         Disconnect();
+        TimeD = nullptr;
         CheckB = CheckM = nullptr;
+        MainConfDialog = nullptr;
+        ConfB = ConfM = nullptr;
+        CheckB = CheckM = nullptr;
+        Wpred = Walarm = nullptr;
         emit ClearBsi();
         ClearTW();
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
@@ -1715,7 +1735,10 @@ void Coma::ParseInter(QString str)
 void Coma::MainTWTabClicked(int tabindex)
 {
     if (ConfM != nullptr)
-        ConfM->ReadConf();
+    {
+        if (tabindex == ConfIndex)
+            ConfM->ReadConf();
+    }
     ChModbus->Tabs(tabindex);
     if (CorD != nullptr)
         CorD->GetCorBd(tabindex);

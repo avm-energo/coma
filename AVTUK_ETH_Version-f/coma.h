@@ -128,7 +128,7 @@ signals:
     void FinishAll();
     void PasswordChecked();
 //    void BsiRefresh(ModuleBSI::Bsi*);
-    void USBBsiRefresh();
+//    void USBBsiRefresh();
     void ClearBsi();
     void Finished();
     void StopCommunications();
@@ -164,6 +164,7 @@ public slots:
     void ConnectMessage();
 
 private slots:
+    void StartWork();
     void StartSettingsDialog();
     void ShowErrorDialog();
     void GetAbout();
@@ -214,7 +215,7 @@ private:
     DeviceConnectStruct DevInfo;
     int MainInterface;
     quint8 ActiveThreads;
-    int CheckIndex, TimeIndex;
+    int CheckIndex, TimeIndex, ConfIndex;
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
     IEC104 *Ch104;
@@ -243,7 +244,6 @@ private:
     void NewUSB();
     void NewTimers();
     void SetupUI();
-    void StartWork();
     void PrepareDialogs();
 
 protected:

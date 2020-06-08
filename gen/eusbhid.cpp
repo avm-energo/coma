@@ -1,12 +1,13 @@
 #include <QCoreApplication>
-#include <QTime>
+#include <QElapsedTimer>
+#include <QThread>
 #include "eusbhid.h"
 #include "error.h"
 #include "stdfunc.h"
 
 EUsbHid::EUsbHid(QObject *parent) : EAbstractProtocomChannel(parent)
 {
-    ThreadRunning = false;
+    UThreadRunning = false;
 }
 
 EUsbHid::~EUsbHid()
@@ -17,18 +18,20 @@ bool EUsbHid::Connect()
 {
     if (Connected)
         Disconnect();
-    UThread = new EUsbThread(CnLog, IsWriteUSBLog());
+    QThread *thr = new QThread;
+    UThread = new EUsbThread(UsbPort, CnLog, IsWriteUSBLog());
+    UThread->moveToThread(thr);
+    connect(thr,SIGNAL(started()),UThread,SLOT(Run()));
+    connect(UThread,SIGNAL(Started()),this,SLOT(UThreadStarted()));
+    connect(UThread,SIGNAL(Finished()),thr,SLOT(quit()));
+    connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
+    connect(UThread,SIGNAL(Finished()),UThread,SLOT(deleteLater()));
+    connect(UThread,SIGNAL(Finished()),this,SLOT(UThreadFinished()));
     connect(UThread,SIGNAL(NewDataReceived(QByteArray)),this,SLOT(ParseIncomeData(QByteArray)));
-    connect(this,SIGNAL(StopUThread()),UThread,SLOT(Finish()));
-    if (UThread->Set(UsbPort) != NOERROR)
-        return false;
-    Connected = true;
-    QTimer *tmr = new QTimer;
-    tmr->setInterval(UH_MAINLOOP_DELAY);
-    connect(tmr,SIGNAL(timeout()),UThread,SLOT(Run()));
-    tmr->start();
-    connect(this,SIGNAL(StopUThread()),tmr,SLOT(stop()));
-    ThreadRunning = true;
+    connect(this,SIGNAL(StopUThread()),UThread,SLOT(Stop()));
+    thr->start();
+    while (!Connected)
+        QCoreApplication::processEvents();
     return true;
 }
 
@@ -40,21 +43,25 @@ QByteArray EUsbHid::RawRead(int bytes)
 
 int EUsbHid::RawWrite(QByteArray &ba)
 {
-    if (!ThreadRunning)
+    int res;
+    if (!Connected)
         return GENERALERROR;
-    int res = UThread->WriteData(ba);
+    while ((res = UThread->WriteDataAttempt(ba)) == RESEMPTY) // while out queue is busy
+        StdFunc::Wait(UH_MAINLOOP_DELAY);
     if (res < 0)
+    {
+        ERMSG("error writedata");
         return GENERALERROR;
+    }
     return res;
 }
 
 void EUsbHid::RawClose()
 {
-    if (ThreadRunning)
-    {
+    if (Connected)
         emit StopUThread();
-        ThreadRunning = false;
-    }
+    while (UThreadRunning)
+        QCoreApplication::processEvents();
     Connected = false;
 }
 
@@ -84,38 +91,65 @@ QStringList EUsbHid::DevicesFound()
     return sl;
 }
 
-EUsbThread::EUsbThread(LogClass *logh, bool writelog, QObject *parent) : QObject(parent)
+void EUsbHid::UThreadFinished()
+{
+    UThreadRunning = false;
+}
+
+void EUsbHid::UThreadStarted()
+{
+    UThreadRunning = true;
+    Connected = true;
+}
+
+EUsbThread::EUsbThread(EAbstractProtocomChannel::DeviceConnectStruct &devinfo, \
+                       LogClass *logh, bool writelog, QObject *parent) : QObject(parent)
 {
     log = logh;
     AboutToFinish = false;
     HidDevice = nullptr;
     WriteUSBLog = writelog;
+    Busy = false;
+    DeviceInfo = devinfo;
 }
 
 EUsbThread::~EUsbThread()
 {
 }
 
-int EUsbThread::Set(EAbstractProtocomChannel::DeviceConnectStruct &devinfo)
+int EUsbThread::Set()
 {
-    if ((devinfo.product_id == 0) || (devinfo.vendor_id == 0))
+    if ((DeviceInfo.product_id == 0) || (DeviceInfo.vendor_id == 0))
+    {
+        ERMSG("DeviceInfo is null");
         return GENERALERROR;
-    HidDevice = hid_open(devinfo.vendor_id, devinfo.product_id, devinfo.serial);
+    }
+    HidDevice = hid_open(DeviceInfo.vendor_id, DeviceInfo.product_id, DeviceInfo.serial);
     if (!HidDevice)
+    {
+        ERMSG("Error opening HID device");
         return GENERALERROR;
+    }
     hid_set_nonblocking(HidDevice, 1);
+    INFOMSG("HID opened successfully");
     return NOERROR;
 }
 
 void EUsbThread::Run()
 {
+    int bytes;
+    unsigned char data[UH_MAXSEGMENTLENGTH+1]; // +1 to ID
     try
     {
-        unsigned char data[UH_MAXSEGMENTLENGTH+1]; // +1 to ID
-        if (!AboutToFinish)
+        if (Set() != NOERROR)
+        {
+            Finish();
+            return;
+        }
+        emit Started();
+        while(!AboutToFinish)
         {
             // check if there's any data in input buffer
-            int bytes;
             if (HidDevice != nullptr)
             {
                 bytes = hid_read(HidDevice, data, UH_MAXSEGMENTLENGTH+1);
@@ -123,25 +157,24 @@ void EUsbThread::Run()
                 {
                     if (WriteUSBLog)
                         log->WriteRaw("UsbThread: Unable to hid_read()");
-                    AboutToFinish = true;
-                    emit Finished();
-                    ERMSG("Завершение потока HID USB");
+                    Finish();
+                    ERMSG("HID USB thread finishing");
                     return;
                 }
                 if (bytes > 0)
                 {
                     QByteArray ba(reinterpret_cast<char*>(data), bytes);
                     emit NewDataReceived(ba);
+                    Busy = false;
                 }
-/*            QTime tme;
-            tme.start();
-            while (tme.elapsed() < UH_MAINLOOP_DELAY)
-                QCoreApplication::processEvents(QEventLoop::AllEvents);
-            RunMutex.lock();
-            QWC.wait(&RunMutex);
-            RunMutex.unlock(); */
+                CheckWriteQueue(); // write data to port if there's something delayed in out queue
+                QElapsedTimer tmr;
+                tmr.start();
+                while (tmr.elapsed() < UH_MAINLOOP_DELAY)
+                    QCoreApplication::processEvents(QEventLoop::AllEvents);
             }
         }
+        Finish();
     }
     catch(...)
     {
@@ -149,8 +182,37 @@ void EUsbThread::Run()
     }
 }
 
+void EUsbThread::Stop()
+{
+    AboutToFinish = true;
+}
+
+int EUsbThread::WriteDataAttempt(QByteArray &ba)
+{
+    if (Busy)
+    {
+//        WriteQueue.append(ba);
+        INFOMSG("UThread: busy");
+//        while (Busy)
+//            QCoreApplication::processEvents();
+    }
+    return WriteData(ba);
+}
+
+void EUsbThread::Finish()
+{
+    if (HidDevice != nullptr)
+    {
+        hid_close(HidDevice);
+        HidDevice = nullptr;
+    }
+    INFOMSG("UThread finished");
+    emit Finished();
+}
+
 int EUsbThread::WriteData(QByteArray &ba)
 {
+    Busy = true;
     if (HidDevice != nullptr)
     {
         if (ba.size() > UH_MAXSEGMENTLENGTH)
@@ -169,21 +231,18 @@ int EUsbThread::WriteData(QByteArray &ba)
             log->WriteRaw(tmpba);
         }
         size_t tmpt = static_cast<size_t>(ba.size());
-        return hid_write(HidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt);
+        int res = hid_write(HidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt);
+        return res;
     }
-    return 0;
+    log->WriteRaw("UsbThread: null hid device");
+    return GENERALERROR;
 }
 
-void EUsbThread::Finish()
+void EUsbThread::CheckWriteQueue()
 {
-    if (!AboutToFinish)
+    if (!Busy && (!WriteQueue.isEmpty()))
     {
-        if (HidDevice != nullptr)
-        {
-            hid_close(HidDevice);
-            HidDevice = nullptr;
-        }
-        emit Finished();
-        AboutToFinish = true;
+        QByteArray ba = WriteQueue.takeFirst();
+        WriteData(ba);
     }
 }

@@ -13,7 +13,7 @@
 // Канал связи с модулем
 
 #define UH_MAXSEGMENTLENGTH 64 // максимальная длина одного сегмента (0x40)
-#define UH_MAINLOOP_DELAY   50 // 100 ms main loop sleep
+#define UH_MAINLOOP_DELAY   20 // 20 ms main loop sleep
 
 #define UH_VID  0xC251
 #define UH_PID  0x3505
@@ -22,27 +22,34 @@ class EUsbThread : public QObject
 {
     Q_OBJECT
 public:
-    explicit EUsbThread(LogClass *logh, bool writelog = false, QObject *parent = 0);
+    explicit EUsbThread(EAbstractProtocomChannel::DeviceConnectStruct &devinfo, LogClass *logh, bool writelog = false, QObject *parent = 0);
     ~EUsbThread();
 
     LogClass *log;
 
-    int Set(EAbstractProtocomChannel::DeviceConnectStruct &devinfo);
+    int Set();
+    int WriteDataAttempt(QByteArray &ba);
 
 signals:
     void NewDataReceived(QByteArray ba);
     void Finished();
+    void Started();
 
 public slots:
     void Run();
-    int WriteData(QByteArray &ba);
-    void Finish();
+    void Stop();
 
 private:
     hid_device *HidDevice;
-    bool AboutToFinish, Device;
+    bool AboutToFinish, Busy;
     bool RunWait;
     bool WriteUSBLog;
+    QList<QByteArray> WriteQueue;
+    EAbstractProtocomChannel::DeviceConnectStruct DeviceInfo;
+
+    int WriteData(QByteArray &ba);
+    void CheckWriteQueue();
+    void Finish();
 
 private slots:
 };
@@ -54,7 +61,7 @@ public:
     explicit EUsbHid(QObject *parent = nullptr);
     ~EUsbHid();
 
-    bool ThreadRunning;
+//    bool ThreadRunning;
 
     bool Connect();
     QByteArray RawRead(int bytes);
@@ -68,9 +75,12 @@ signals:
 public slots:
 
 private slots:
+    void UThreadFinished();
+    void UThreadStarted();
 
 private:
     EUsbThread *UThread;
+    bool UThreadRunning;
 
     void ClosePort();
 };

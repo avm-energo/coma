@@ -21,7 +21,7 @@
 MNKTime::MNKTime(QWidget *parent) :
     QDialog(parent)
 {
-    //setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_DeleteOnClose);
     First = false;
     Timer = new QTimer(this);
     connect(Timer, SIGNAL(timeout()), this, SLOT(slot_timeOut()));
