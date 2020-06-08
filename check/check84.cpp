@@ -1,34 +1,13 @@
-#include <QGridLayout>
-#include <QtMath>
-#include <QWidget>
+#include <QLayout>
 #include <QGroupBox>
-#include <QTabWidget>
-#include <QLabel>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QStringListModel>
-#include <QSpinBox>
-#include <QVBoxLayout>
-#include <QSpinBox>
-#include <QComboBox>
-#include <QCheckBox>
-#include <QMessageBox>
-#include <QCoreApplication>
-#include <QDoubleSpinBox>
-#include <QTabBar>
-#include <QObject>
 #include "check84.h"
 #include "../config/config.h"
-//#include "../gen/publicclass.h"
-#include "../gen/colors.h"
 #include "../gen/modulebsi.h"
-#include "../widgets/wd_func.h"
-#include "../widgets/emessagebox.h"
-#include "../gen/error.h"
+#include "../gen/colors.h"
 #include "../widgets/wd_func.h"
 
 
-Check_84::Check_84(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
+Check_84::Check_84()
 {
     //setAttribute(Qt::WA_DeleteOnClose);
     ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
@@ -121,9 +100,7 @@ QWidget *Check_84::Bd1W(QWidget *parent)
 
     /*QPushButton *pb = new QPushButton("Стереть журнал");
     //pb->setObjectName("pbmeasurements");
-    #if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(SendErt()));
-    #endif
      glyout->addWidget(pb,12,0,1,3);*/
 
 
@@ -373,23 +350,21 @@ void Check_84::FillBd(QWidget *parent, QString Name, QString Value)
     }
 }*/
 
-#if PROGSIZE != PROGSIZE_EMUL
-void Check_84::SendErt(void)
+/*void Check_84::SendErt(void)
 {
-  /* if(Commands::EraseTechBlock(5) == NOERROR)
+   if(Commands::EraseTechBlock(5) == NOERROR)
    EMessageBox::information(this, "INFO", "Стёрто успешно");
    else
-   EMessageBox::information(this, "INFO", "Ошибка стирания");*/
+   EMessageBox::information(this, "INFO", "Ошибка стирания");
 
-}
-#endif
+} */
 
 QWidget *Check_84::BdUI(int bdnum)
 {
     Q_UNUSED(bdnum);
     return nullptr;
 }
-#if PROGSIZE != PROGSIZE_EMUL
+
 void Check_84::SetDefaultValuesToWrite()
 {
 
@@ -399,8 +374,6 @@ void Check_84::PrepareAnalogMeasurements()
 {
 
 }
-
-
 
 void Check_84::ChooseValuesToWrite()
 {
@@ -424,7 +397,7 @@ void Check_84::RefreshAnalogValues(int bdnum)
 {
   Q_UNUSED(bdnum);
 }
-#endif
+
 QWidget *Check_84::CustomTab()
 {
     QWidget *w = new QWidget;

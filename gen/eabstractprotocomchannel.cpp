@@ -19,7 +19,6 @@ EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(pa
     SegLeft = 0;
 //    OscNum = 0;
     Connected = false;
-    Cancelled = false;
     TTimer = new QTimer(this);
     TTimer->setInterval(CN_TIMEOUT);
     NeedToSend = false;
@@ -684,9 +683,4 @@ void EAbstractProtocomChannel::WriteDataToPort(QByteArray &ba)
 #ifndef NOTIMEOUT
     TTimer->start();
 #endif
-}
-
-void EAbstractProtocomChannel::SetCancelled()
-{
-    Cancelled = true;
 }

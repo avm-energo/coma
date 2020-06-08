@@ -3,12 +3,12 @@
 
 #include <QDialog>
 #include <QModelIndex>
+#include "QtXlsx/xlsxdocument.h"
 #include "../gen/maindef.h"
 #include "../widgets/etableview.h"
 #include "../widgets/etablemodel.h"
 #include "../gen/s2.h"
 #include "../dialogs/keypressdialog.h"
-
 
 #define MAXSWJNUM   262144
 

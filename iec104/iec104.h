@@ -138,7 +138,7 @@ public:
        int SigNumber;
     }FlSignals104;
 
-    typedef struct
+/*    typedef struct
     {
        SIQ104 Spon[256];
        int SigNumber;
@@ -148,7 +148,14 @@ public:
     {
        SIQ104withTime Spon[256];
        int SigNumber;
-    }SponSignalsWithTime;
+    }SponSignalsWithTime; */
+
+    typedef struct
+    {
+       SIQ104withTime Spon[256];
+       int SigNumber;
+    } SponSignals;
+
 
     typedef struct
     {
@@ -202,8 +209,9 @@ signals:
     void Started();
     void Finished();
     void floatsignalsreceived(Parse104::FlSignals104*);
-    void sponsignalsreceived(Parse104::SponSignals104*);
-    void sponsignalWithTimereceived(Parse104::SponSignalsWithTime*);
+    void sponsignalsreceived(Parse104::SponSignals*);
+//    void sponsignalsreceived(Parse104::SponSignals104*);
+//    void sponsignalWithTimereceived(Parse104::SponSignalsWithTime*);
     void bs104signalsreceived(Parse104::BS104Signals*);
     void error(int);
     void sendS();
@@ -226,11 +234,11 @@ signals:
     void LastSec();
     void sendMessageOk();
     void sendConfMessageOk();
-    void UpdateReleWidget(Parse104::SponSignals104*);
+//    void UpdateReleWidget(Parse104::SponSignals104*);
     void SetDataSizeFromParse(int);
     void SetDataCountFromParse(int);
     void sendMessagefromParse();
-    void writeCorMesOkParse();
+//    void writeCorMesOkParse();
     void startConTimer();
 
 
@@ -402,10 +410,10 @@ signals:
     void EthDisconnected();
     //void ethNoconnection();
     void floatsignalsready(Parse104::FlSignals104*);
-    void sponsignalsready(Parse104::SponSignals104*);
-    void sponsignalWithTimereceived(Parse104::SponSignalsWithTime*);
+    void sponsignalsready(Parse104::SponSignals*);
+//    void sponsignalsready(Parse104::SponSignals104*);
+//    void sponsignalWithTimereceived(Parse104::SponSignalsWithTime*);
     void bs104signalsready(Parse104::BS104Signals*);
-    void Retry();
     void readbytessignal(QByteArray);
     void writebytessignal(QByteArray);
     void ShowError(QString);
@@ -419,12 +427,12 @@ signals:
     void sendJourMeasfromiec104(QByteArray);
     void LastSeg();
     void sendMessageOk();
-    void relesignalsready(Parse104::SponSignals104*);
+//    void relesignalsready(Parse104::SponSignals104*);
     void SetDataSize(int);
     void SetDataCount(int);
     void sendConfMessageOk();
     void sendCorMesOk();
-    void errorCh104();
+    void ReconnectSignal();
     void Finished();
 
 private:

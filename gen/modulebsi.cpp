@@ -3,10 +3,7 @@
 #include "modulebsi.h"
 #include "error.h"
 #include "stdfunc.h"
-#include "../gen/mainwindow.h"
-#if PROGSIZE != PROGSIZE_EMUL
 #include "commands.h"
-#endif
 
 
 
@@ -19,34 +16,20 @@ ModuleBSI::ModuleBSI()
     ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 int ModuleBSI::SetupBSI()
 {
     if (Commands::GetBsi(ModuleBsi) != NOERROR)
         return GENERALERROR;
 /*    quint32 mtype;
     QString mtypestring;
-    mtype = ((ModuleBsi.MTypeB & 0x000000FF) << 8) | (ModuleBsi.MTypeM & 0x000000FF);
-#ifndef MODULE_A1
-    mtypestring = "АВТУК-";
-    mtypestring.append(QString::number(mtype, 16));
-#else
-    mtypestring = "ПКС-1";
-#endif */
+    mtype = ((ModuleBsi.MTypeB & 0x000000FF) << 8) | (ModuleBsi.MTypeM & 0x000000FF); */
     ModuleTypeString = Config::ModuleBaseBoards()[ModuleBsi.MTypeB << 8].TextString + \
             Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].TextString;
 //    ModuleBSI::Bsi bsi = ModuleBsi;
     QString tmps = ModuleTypeString;
-#if PROGSIZE >= PROGSIZE_LARGE
     if (!IsKnownModule())
         return RESEMPTY;
-#endif
     return NOERROR;
-}
-#endif
-void ModuleBSI::SetupEmulatedBsi(ModuleBSI::Bsi &bsi)
-{
-    ModuleBsi = bsi;
 }
 
 QString ModuleBSI::GetModuleTypeString()
@@ -109,13 +92,12 @@ bool ModuleBSI::IsKnownModule()
     return false;
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 int ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
 {
     int res;
 
-    if(!MainWindow::StopRead)
-    {
+/*    if(!StopRead)
+    { */
         if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
             return RESEMPTY;
         else // иначе заполнить значениями из модуля
@@ -129,7 +111,6 @@ int ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
             }
 
         }
-    }
+//    }
     return NOERROR;
 }
-#endif

@@ -38,9 +38,6 @@ int main(int argc, char *argv[])
             }
         }
     }
-#if PROGSIZE == PROGSIZE_EMUL
-    w.SetMode(Coma::COMA_AUTON_MODE);
-#endif
     w.Go(Parameter);
 
     return a.exec();

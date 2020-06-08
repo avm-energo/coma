@@ -18,15 +18,6 @@
 #define HTH_REL             0x00000008 // неисправность выходных реле (Д)
 #define HTH_TUPP            0x00000004 // перегрев модуля
 
-enum BoardTypes
-{
-    BT_NONE = 0,
-    BT_BASE = 1,
-    BT_MEZONIN = 2,
-    BT_BSMZ = 3,
-    BT_MODULE = 4
-};
-
 class ModuleBSI //: public iec104
 {
 public:
@@ -51,10 +42,7 @@ public:
 
     ModuleBSI();
 
-#if PROGSIZE != PROGSIZE_EMUL
     static int SetupBSI();
-#endif
-    static void SetupEmulatedBsi(Bsi &bsi);
     static QString GetModuleTypeString();
     static quint32 GetMType(BoardTypes type);
     static quint32 Health();
