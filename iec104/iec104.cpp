@@ -17,8 +17,6 @@ quint8 IEC104::stopincrementing;
 
 IEC104::IEC104(QObject *parent) : QObject(parent)
 {
-    _state = Disconnected;
-    //incSend = 0;
 //    GSD = true;
     EthThreadWorking = false;
     ParseThreadWorking = false;
@@ -29,8 +27,6 @@ IEC104::IEC104(QObject *parent) : QObject(parent)
 
 IEC104::~IEC104()
 {
-    deleteLater();
-
 }
 
 bool IEC104::Working()
@@ -41,7 +37,6 @@ bool IEC104::Working()
 void IEC104::Start()
 {
     Log->info("Start()");
-    _state = Connected;
     EthThreadWorking = true;
     APCI StartDT;
     ASDU GInter;
@@ -51,10 +46,7 @@ void IEC104::Start()
     StartDT.contrfield[1] = StartDT.contrfield[2] = StartDT.contrfield[3] = 0;
     Parse->cmd = I104_STARTDT_ACT;
     Send(0,StartDT);//, GInter); // ASDU = QByteArray()
-    //emit writedatatoeth(GInter);
     Parse->Timer104->start();
-
-    //emit ethconnected();
 }
 
 void IEC104::Stop()
@@ -69,14 +61,8 @@ void IEC104::Stop()
         StopDT.contrfield[1] = StopDT.contrfield[2] = StopDT.contrfield[3] = 0;
         Parse->cmd = I104_STOPDT_ACT;
         Send(0,StopDT); // ASDU = QByteArray()
-        //QTime tmr;
-        //tmr.start();
-        //while (tmr.elapsed() < 1000)
-        //    qApp->processEvents();
         if(ConTimer != nullptr)
-        {
            ConTimer->stop();
-        }
         emit StopAll();
     }
 }
@@ -90,15 +76,10 @@ void IEC104::Send(int inc, APCI apci, ASDU asdu)
     if(!asdu.isEmpty())
     {
         tempp = asdu.data();
-        //int i = sizeof(asdu);
         ba.append(static_cast<char *>(tempp),asdu.size());
     }
     Log->info("--> " + ba.toHex());
     emit writedatatoeth(ba);  
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
     if(inc)
         Parse->V_S++;
 }
@@ -106,7 +87,6 @@ void IEC104::Send(int inc, APCI apci, ASDU asdu)
 void IEC104::Connect(const QString &IP)
 {
     INFOMSG("IEC104: connect");
-    _state = Connecting;
     QThread *thr = new QThread;
     thr->setPriority(QThread::HighestPriority);
     ethernet *eth = new ethernet;
@@ -460,98 +440,105 @@ void Parse104::Run()
 
 int Parse104::isIncomeDataValid(QByteArray ba)
 {
-
-    if (ba.at(0) != 0x68)
-        return I104_RCVWRONG;
-    APDULength = static_cast<quint8>(ba.at(1)); // в 1-м байте лежит длина
-    if ((APDULength<4) || (APDULength>253))
+    try
     {
-        emit error(M104_LENGTHER);
-        return I104_RCVWRONG;
-    }
-    if (!(ba.at(2)&0x01)) // I
-        APDUFormat = I104_I;
-    else
-    {
-        if (!(ba.at(2)&0x02)) // S
-            APDUFormat = I104_S;
-        else
-            APDUFormat = I104_U;
-    }
-    switch (APDUFormat)
-    {
-    case I104_I:
-    {
-        quint16 V_Rrcv = static_cast<quint8>(ba.at(3))*256+static_cast<quint8>(ba.at(2)&0xFE);
-        V_Rrcv >>= 1;
-        if (V_Rrcv != V_R)
+        if (ba.at(0) != 0x68)
+            return I104_RCVWRONG;
+        APDULength = static_cast<quint8>(ba.at(1)); // в 1-м байте лежит длина
+        if ((APDULength < 4) || (APDULength > 253))
         {
-            emit error(M104_NUMER);
-//            V_R = V_Rrcv+1;
+            emit error(M104_LENGTHER);
             return I104_RCVWRONG;
         }
-        /*if (GetNewVR)
+        if (!(ba.at(2)&0x01)) // I
+            APDUFormat = I104_I;
+        else
         {
-            V_R = V_Rrcv;
-            GetNewVR = false;
-            AckVR = V_R + I104_W;
-        } */
-        V_R++;
-
-        quint16 V_Srcv = static_cast<quint8>(ba.at(5))*256+static_cast<quint8>(ba.at(4)&0xFE);
-        V_Srcv >>= 1;
-        if (V_Srcv != V_S)
-        {
-            V_S = V_Srcv;           // временно, нужно исправить проблему несовпадения s посылок
-            emit error(M104_NUMER);
-            //return I104_RCVWRONG;  // временно, нужно исправить проблему несовпадения s посылок
+            if (!(ba.at(2)&0x02)) // S
+                APDUFormat = I104_S;
+            else
+                APDUFormat = I104_U;
         }
+        switch (APDUFormat)
+        {
+        case I104_I:
+        {
+            quint16 V_Rrcv = static_cast<quint8>(ba.at(3))*256+static_cast<quint8>(ba.at(2)&0xFE);
+            V_Rrcv >>= 1;
+            if (V_Rrcv != V_R)
+            {
+                emit error(M104_NUMER);
+    //            V_R = V_Rrcv+1;
+                return I104_RCVWRONG;
+            }
+            /*if (GetNewVR)
+            {
+                V_R = V_Rrcv;
+                GetNewVR = false;
+                AckVR = V_R + I104_W;
+            } */
+            V_R++;
 
-        //if(FileSending)
-        //noAnswer = 0;
+            quint16 V_Srcv = static_cast<quint8>(ba.at(5))*256+static_cast<quint8>(ba.at(4)&0xFE);
+            V_Srcv >>= 1;
+            if (V_Srcv != V_S)
+            {
+                V_S = V_Srcv;           // временно, нужно исправить проблему несовпадения s посылок
+                emit error(M104_NUMER);
+                //return I104_RCVWRONG;  // временно, нужно исправить проблему несовпадения s посылок
+            }
 
-        return I104_RCVNORM;
-        break;
+            //if(FileSending)
+            //noAnswer = 0;
+
+            return I104_RCVNORM;
+            break;
+        }
+        case I104_S:
+        {
+            quint16 V_Srcv = static_cast<quint8>(ba.at(5))*256+static_cast<quint8>(ba.at(4)&0xFE);
+            V_Srcv >>= 1;
+            if (V_Srcv != V_S)
+            {
+                V_S = V_Srcv;
+                emit error(M104_NUMER);
+                //return I104_RCVWRONG;
+            }
+    //        V_R++;
+            return I104_RCVNORM;
+            break;
+        }
+        case I104_U:
+        {
+            unsigned char baat2 = ba.at(2);
+            if ((baat2 == I104_STARTDT_CON) && (cmd == I104_STARTDT_ACT)) // если пришло подтверждение старта и перед этим мы старт запрашивали
+            {
+                Timer104->stop();
+                cmd = I104_STARTDT_CON;
+                emit GeneralInter();
+            }
+            if ((baat2 == I104_STOPDT_CON) && (cmd == I104_STOPDT_ACT)) // если пришло подтверждение стопа и перед этим мы стоп запрашивали
+                cmd = I104_STOPDT_CON;
+            if ((baat2 == I104_TESTFR_CON) && (cmd == I104_TESTFR_ACT)) // если пришло подтверждение теста и перед этим мы тест запрашивали
+                cmd = I104_TESTFR_CON;
+            if (baat2 == I104_TESTFR_ACT)
+                emit sendAct();
+
+            NoAnswer = 0;
+
+            return I104_RCVNORM;
+            break;
+        }
+        default:
+            break;
+        }
+        return I104_RCVWRONG;
     }
-    case I104_S:
+    catch (...)
     {
-        quint16 V_Srcv = static_cast<quint8>(ba.at(5))*256+static_cast<quint8>(ba.at(4)&0xFE);
-        V_Srcv >>= 1;
-        if (V_Srcv != V_S)
-        {
-            V_S = V_Srcv;
-            emit error(M104_NUMER);
-            //return I104_RCVWRONG;
-        }
-//        V_R++;
-        return I104_RCVNORM;
-        break;
+        ERMSG("Fatal exception");
+        return GENERALERROR;
     }
-    case I104_U:
-    {
-        unsigned char baat2 = ba.at(2);
-        if ((baat2 == I104_STARTDT_CON) && (cmd == I104_STARTDT_ACT)) // если пришло подтверждение старта и перед этим мы старт запрашивали
-        {
-            Timer104->stop();
-            cmd = I104_STARTDT_CON;
-            emit GeneralInter();
-        }
-        if ((baat2 == I104_STOPDT_CON) && (cmd == I104_STOPDT_ACT)) // если пришло подтверждение стопа и перед этим мы стоп запрашивали
-            cmd = I104_STOPDT_CON;
-        if ((baat2 == I104_TESTFR_CON) && (cmd == I104_TESTFR_ACT)) // если пришло подтверждение теста и перед этим мы тест запрашивали
-            cmd = I104_TESTFR_CON;
-        if (baat2 == I104_TESTFR_ACT)
-            emit sendAct();
-
-        NoAnswer = 0;
-
-        return I104_RCVNORM;
-        break;
-    }
-    default:
-        break;
-    }
-    return I104_RCVWRONG;
 }
 
 void Parse104::ParseIFormat(QByteArray &ba) // основной разборщик
