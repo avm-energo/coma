@@ -18,7 +18,9 @@
 #define HTH_REL             0x00000008 // неисправность выходных реле (Д)
 #define HTH_TUPP            0x00000004 // перегрев модуля
 
-class ModuleBSI //: public iec104
+#define BSIENDREG           15 // конечный регистр BSI в 104 и modbus
+
+class ModuleBSI
 {
 public:
     typedef struct

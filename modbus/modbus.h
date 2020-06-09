@@ -109,7 +109,7 @@ signals:
     void CorSignalsWritten();
     void TimeSignalsReceived(QList<ModBus::BSISignalStruct> Signal);
     void TimeWritten();
-    void BsiFromModbus(QList<ModBus::BSISignalStruct>, int);
+    void BsiFromModbus(QList<ModBus::BSISignalStruct>, unsigned int);
     void ModbusState(ConnectionStates);
     void ErrorRead();
 //    void ErrorCrc();
@@ -133,7 +133,7 @@ private:
 
     void SendAndGet(InOutStruct &inp, InOutStruct &outp);
     bool GetResultFromOutQueue(int index, InOutStruct &outp);
-    int GetSignalsFromByteArray(QByteArray &bain, int startadr, QList<BSISignalStruct> &BSIsig, int &size);
+    int GetSignalsFromByteArray(QByteArray &bain, int startadr, QList<BSISignalStruct> &BSIsig, unsigned int &size);
     int GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, QList<SignalStruct> &Sig, int &size);
 
 private slots:

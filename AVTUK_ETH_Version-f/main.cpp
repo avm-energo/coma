@@ -6,8 +6,8 @@ int main(int argc, char *argv[])
 {
     QString Parameter;
     QApplication a(argc, argv);
+    a.setStyle( "cleanlooks" );
     Coma w;
-//    w.setAttribute(Qt::WA_AlwaysShowToolTips);
     w.SetMode(Coma::COMA_GENERALMODE);
     QCoreApplication::setApplicationName(PROGCAPTION);
     QCoreApplication::setApplicationVersion(COMAVERSION);

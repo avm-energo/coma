@@ -5,7 +5,8 @@
 #include <QCoreApplication>
 
 #define SLEEPINT    20
-
+#define TIMEOUT_MAIN    2000
+#define TIMEOUT_BIG     30000
 
 class TimeFunc
 {
@@ -24,6 +25,7 @@ public:
     static QString UnixTime64ToString(quint64 utime);
     static QString UnixTime64ToInvStringFractional(quint64 utime);
     static QString UnixTime32ToInvString(quint32 utime);
+    static int WaitFor(bool &flag, int timeoutms = TIMEOUT_MAIN);
 };
 
 #endif // TIMEFUNC_H

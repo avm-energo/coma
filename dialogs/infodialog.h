@@ -20,17 +20,10 @@ signals:
 
 public slots:
     void ClearBsi();
-    void FillBsiFrom104(Parse104::BS104Signals* BS104);
-    void FillBsiFromModBus(QList<ModBus::BSISignalStruct> Signal, int size);
+//    void FillBsiFrom104(Parse104::BS104Signals* BS104);
+//    void FillBsiFromModBus(QList<ModBus::BSISignalStruct> Signal, int size);
 
 private:
-/*    QMap<int, QString> ModuleNames()
-    {
-        QMap<int, QString> map;
-        map[MTB_A1] = "ПКДН";
-        map[MTB_80] = "АВТУК";
-        return map;
-    } */
 };
 
 #endif // INFODIALOG_H

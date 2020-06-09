@@ -11,13 +11,16 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 
-QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letext, const QString &lestyle)
+QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letext, const QString &lecolor)
 {
     QLineEdit *le = new QLineEdit(w);
     le->setObjectName(lename);
     le->setText(letext);
-    if (!lestyle.isEmpty())
-        le->setStyleSheet(lestyle);
+    if (!lecolor.isEmpty())
+    {
+        QString tmps = "QLineEdit {background-color: " + lecolor + ";}";
+        le->setStyleSheet(tmps);
+    }
     return le;
 }
 
@@ -173,7 +176,7 @@ QString WDFunc::CBData(QWidget *w, const QString &cbname)
 
 QMetaObject::Connection WDFunc::CBConnect(QWidget *w, const QString &cbname, int cbconnecttype, const QObject *receiver, const char *method)
 {
-    QComboBox *cb = w->findChild<QComboBox *>(cbname);
+    EComboBox *cb = w->findChild<EComboBox *>(cbname);
     if (cb == nullptr)
         return QMetaObject::Connection();
     switch (cbconnecttype)

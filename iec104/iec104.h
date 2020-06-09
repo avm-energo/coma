@@ -441,8 +441,9 @@ private:
     QByteArray cutpckt;
     int _state;
     bool EthThreadWorking, ParseThreadWorking;
+    LogClass *Log;
 
-    void ParseSomeData(QByteArray, bool);
+    void ParseSomeData(QByteArray); //, bool);
 
 private slots:
     void SendI();

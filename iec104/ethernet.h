@@ -18,11 +18,11 @@ public:
     ~ethernet();
     quint16 ASDU;
     bool ClosePortAndFinishThread;
-    quint8 sendStatus;
-    quint8 stateMessage;
-    quint8 mutexflag;
+//    quint8 sendStatus;
+//    quint8 stateMessage;
+//    quint8 mutexflag;
     QString IP;
-    quint8 disconflag, timerstart;
+//    quint8 disconflag, timerstart;
 signals:
     void ethNoconnection();
     void error(int);
@@ -30,7 +30,6 @@ signals:
     void disconnected();
     void Finished();
     void newdataarrived(QByteArray);
-
 
 public slots:
     void Run();
@@ -41,13 +40,16 @@ public slots:
 private slots:
     void CheckForData();
     void seterr(QAbstractSocket::SocketError);
-    void SetFlag();
+//    void SetFlag();
+    void EthSetConnected();
 
 private:
     QTcpSocket *sock;
     QMutex OutDataBufMtx;
     QByteArray *DataToSend;
     QByteArray OutDataBuf;
+    bool EthConnected;
+
     void SendData();
 
 protected:

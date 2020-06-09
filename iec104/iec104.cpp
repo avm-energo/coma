@@ -22,6 +22,9 @@ IEC104::IEC104(QObject *parent) : QObject(parent)
     GSD = true;
     EthThreadWorking = false;
     ParseThreadWorking = false;
+    Log = new LogClass;
+    Log->Init("iec104.log");
+    Log->info("=== Log started ===");
 }
 
 IEC104::~IEC104()
@@ -37,6 +40,7 @@ bool IEC104::Working()
 
 void IEC104::Start()
 {
+    Log->info("Start()");
     _state = Connected;
     EthThreadWorking = true;
     APCI StartDT;
@@ -55,6 +59,7 @@ void IEC104::Start()
 
 void IEC104::Stop()
 {
+    Log->info("Stop()");
     if (ParseThreadWorking)
     {
         APCI StopDT;
@@ -88,6 +93,7 @@ void IEC104::Send(int inc, APCI apci, ASDU asdu)
         //int i = sizeof(asdu);
         ba.append(static_cast<char *>(tempp),asdu.size());
     }
+    Log->info("--> " + ba.toHex());
     emit writedatatoeth(ba);  
 
     //while(stopincrementing)
@@ -99,6 +105,7 @@ void IEC104::Send(int inc, APCI apci, ASDU asdu)
 
 void IEC104::Connect(const QString &IP)
 {
+    INFOMSG("IEC104: connect");
     _state = Connecting;
     QThread *thr = new QThread;
     thr->setPriority(QThread::HighestPriority);
@@ -130,6 +137,7 @@ void IEC104::Connect(const QString &IP)
     connect(thr2,SIGNAL(finished()),thr2,SLOT(deleteLater()));
     connect(thr2,SIGNAL(started()),Parse,SLOT(Run()));
     connect(Parse,SIGNAL(Started()),this,SLOT(ParseThreadStarted()));
+    connect(eth,SIGNAL(Finished()),Parse,SLOT(Stop()));
 
     connect(Parse,SIGNAL(bs104signalsreceived(Parse104::BS104Signals*)),\
             this,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),Qt::BlockingQueuedConnection);
@@ -219,6 +227,7 @@ void IEC104::CorReadRequest()
     ASDU GCor;
     quint16 VR = Parse->V_R;
 
+    Log->info("CorReadRequest()");
     GCor[0] = static_cast<char>(C_IC_NA_1);
     GCor[1] = static_cast<char>(1);
     GCor[2] = static_cast<char>(6);
@@ -306,12 +315,13 @@ void IEC104::SendTestAct()
 
 void IEC104::GetSomeData(QByteArray ba)
 {
-    Parse->ParseMutex.lock();
-    ParseSomeData(ba, true);
-    Parse->ParseMutex.unlock();
+//    Parse->ParseMutex.lock();
+    Log->info("<-- " + ba.toHex());
+    ParseSomeData(ba);
+//    Parse->ParseMutex.unlock();
 }
 
-void IEC104::ParseSomeData(QByteArray ba, bool GSD)
+void IEC104::ParseSomeData(QByteArray ba) //, bool GSD)
 {
     quint32 basize = static_cast<quint32>(ba.size());
     if (GSD)
@@ -325,23 +335,25 @@ void IEC104::ParseSomeData(QByteArray ba, bool GSD)
             if (missing_num>basize)
             {
                 cutpckt.append(ba);
-                ERMSG("Так и не достигли конца пакета, надо брать следующий пакет в cutpckt");
+//                ERMSG("Так и не достигли конца пакета, надо брать следующий пакет в cutpckt");
                 return; // если так и не достигли конца пакета, надо брать следующий пакет в cutpckt
             }
             cutpckt.append(ba.left(missing_num)); // взяли из текущего пакета сами байты
             ba.remove(0,missing_num);
+            Parse->ParseMutex.lock();
             Parse->ParseData.append(cutpckt);
+            Parse->ParseMutex.unlock();
             cutpckt.clear();
             basize = static_cast<quint32>(ba.size());
         }
     }
-    if (basize<1)
-    {
-      ERMSG("basize<1");
+    if (basize < 2) // ba is empty or there's not enough symbols to parse in it
       return;
-    }
 
-    quint32 BlockLength = static_cast<quint8>(ba.at(1))+2;
+    cutpckt = ba.left(2);
+    ba = ba.mid(2);
+    ParseSomeData(ba);
+/*    quint32 BlockLength = static_cast<quint8>(ba.at(1))+2;
     if (BlockLength == 0)
     {
         while ((!BlockLength) && (ba.size()>3))
@@ -358,7 +370,7 @@ void IEC104::ParseSomeData(QByteArray ba, bool GSD)
     {
         Parse->ParseData.append(ba.left(BlockLength));
         ParseSomeData(ba.right(basize-BlockLength), false);
-    }
+    } */
 }
 
 void IEC104::SendS()
@@ -380,9 +392,7 @@ void IEC104::SendS()
 
 Parse104::Parse104(QObject *parent) : QObject(parent)
 {
-    ParseMutex.lock();
     ParseData.clear();
-    ParseMutex.unlock();
     ThreadMustBeFinished = false;
     V_S = V_R = 0;
     AckVR = I104_W;
@@ -976,6 +986,7 @@ void IEC104::SelectFile(char numFile)
     SC.SCQ = static_cast<char>(2);
     i = sizeof(SC);*/
 
+    Log->info("SelectFile(" + QString::number(numFile) + ")");
     Cmd[0] = F_SC_NA_1;
     Cmd[1] = static_cast<char>(1);
     Cmd[2] = static_cast<char>(13);
@@ -1187,6 +1198,7 @@ void IEC104::FileReady(QVector<S2::DataRec>* File)
     quint16 VR = Parse->V_R;
     //int i;
 
+    Log->info("FileReady()");
     Parse->DR = File;
 
     SecNum = 1;
@@ -1534,6 +1546,7 @@ void IEC104::Com45(quint32 com)
     quint16 VR = Parse->V_R;
     //Parse->firstSegment = 1;
 
+    Log->info("Com45()");
     Cmd[0] = C_SC_NA_1;
     Cmd[1] = static_cast<char>(1);
     Cmd[2] = static_cast<char>(6);
@@ -1572,6 +1585,7 @@ void IEC104::Com50(quint32* adr, float *param)
     //char *ptr = static_cast<char*>(Cmd.data());
     quint16 VR = Parse->V_R;
 
+    Log->info("Com50()");
     if(*adr == 910)
     emit SetDataSize(11);
 
@@ -1618,6 +1632,8 @@ void IEC104::InterrogateTimeGr15()
     ASDU GTime;
     quint16 VR = Parse->V_R;
 
+    Log->info("InterrogateTimeGr15()");
+
     GTime[0] = static_cast<char>(C_IC_NA_1);
     GTime[1] = static_cast<char>(1);
     GTime[2] = static_cast<char>(6);
@@ -1659,6 +1675,7 @@ void IEC104::com51WriteTime(uint Time)
     //char *ptr = static_cast<char*>(Cmd.data());
     quint16 VR = Parse->V_R;
 
+    Log->info("Com51()");
     memcpy(&ba->data()[0], &Time, sizeof(uint));
     //ba->toHex();
 

@@ -174,8 +174,10 @@ private slots:
     void SetBDefConf();
     void SetMDefConf();
     void Fill();
+    void FillBSI(Parse104::BS104Signals *sig);
+    void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     void PasswordCheck(QString psw);
-    void DisconnectMessage();
+//    void DisconnectMessage();
     void SetPortSlot(QString port);
 //    void GetDeviceFromTable(QModelIndex idx);
 //    void UpdateHthWidget(ModuleBSI::Bsi *);
@@ -213,9 +215,8 @@ private:
     QTimer *ReconnectTimer;
     QString SavePort;
     DeviceConnectStruct DevInfo;
-    int MainInterface;
     quint8 ActiveThreads;
-    int CheckIndex, TimeIndex, ConfIndex;
+    int CheckIndex, TimeIndex, ConfIndex, CurTabIndex;
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
     IEC104 *Ch104;

@@ -331,7 +331,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 if (Command == CN_Ert)
                     OscTimer->start(); // start timer to send ErPg command periodically
                 Finish(NOERROR);
-                ERMSG("Переход в тестовый режим без ошибок");
+                INFOMSG("Переход в тестовый режим без ошибок");
                 return;
             }
             // команды с ответом "ОК" и с продолжением
