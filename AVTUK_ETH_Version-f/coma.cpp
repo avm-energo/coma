@@ -304,11 +304,9 @@ void Coma::StartWork()
     // MTypeB & MTypeM are acquired
     MTypeB <<= 8;
 
-    INFOMSG("PrepareDialogs");
     Disconnected = false;
     Reconnect = true;
     PrepareDialogs();
-    INFOMSG("Check");
     str = (CheckM == nullptr) ? "Текущие параметры" : "Текущие параметры\nБазовая";
     if (CheckB != nullptr)
     {
@@ -331,7 +329,6 @@ void Coma::StartWork()
     if (CheckM != nullptr)
         MainTW->addTab(CheckM, str);
 
-    INFOMSG("Conf");
     if (ConfB != nullptr)
     {
         str = (ConfM == nullptr) ? "Конфигурирование" : "Конфигурирование\nБазовая";
@@ -366,7 +363,6 @@ void Coma::StartWork()
         //connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Stop_Timer(int)));
 //        connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Start_TimeTimer(int))); //tabClicked
 //        connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Stop_TimeTimer(int)));
-    INFOMSG("Time");
     if (TimeD != nullptr)
     {
         MainTW->addTab(TimeD, "Время");
@@ -375,7 +371,6 @@ void Coma::StartWork()
         connect(TimeTimer,SIGNAL(timeout()),TimeD,SLOT(slot2_timeOut()));
     }
 
-    INFOMSG("CorD");
     if (CorD != nullptr)
     {
         MainTW->addTab(CorD, "Начальные значения");
@@ -386,7 +381,6 @@ void Coma::StartWork()
         ChModbus->CorIndex = CorD->corDIndex;
     }
 
-    INFOMSG("JourD");
     if (MainInterface != I_RS485)
         MainTW->addTab(JourD, "Журналы");
 
@@ -395,18 +389,15 @@ void Coma::StartWork()
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
         Error::ShowErMsg(ER_NOTUNECOEF);
 
-    INFOMSG("FwUpD");
     if(MainInterface == I_USB)
     {
         FwUpD = new fwupdialog;
         MainTW->addTab(FwUpD, "Загрузка ВПО");
     }
 
-    INFOMSG("ID");
     MainTW->addTab(IDialog, "О приборе");
     IDialog->FillBsi();
 
-    INFOMSG("repaint");
     MainTW->repaint();
     MainTW->show();
 
@@ -1313,10 +1304,9 @@ void Coma::FillBSI(Parse104::BS104Signals *sig)
     unsigned int i, signum;
     int startadr;
 
-    INFOMSG("FillBSIe()");
-
     memcpy(&startadr, &(sig->BS.SigAdr[0]), sizeof(sig->BS.SigAdr));
     signum = sig->SigNumber;
+    INFOMSG("FillBSIe(): address=" + QString::number(signum));
 
     if((signum < sizeof(ModuleBSI::ModuleBsi)) && (startadr >= BSIREG && startadr <= BSIENDREG))
     {

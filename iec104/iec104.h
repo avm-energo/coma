@@ -437,7 +437,7 @@ signals:
 
 private:
     QTimer *TTimer, *ConTimer;
-    bool GSD;
+//    bool GSD;
     QByteArray cutpckt;
     int _state;
     bool EthThreadWorking, ParseThreadWorking;

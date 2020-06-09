@@ -12,7 +12,7 @@
 #include "../dialogs/journalsdialog.h"
 
 #define RECONNECTINTERVAL   3000
-#define WAITINTERVAL        1500
+#define WAITINTERVAL        3000
 
 #define THREADUSB   0x01
 #define THREAD104   0x02

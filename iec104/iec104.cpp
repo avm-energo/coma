@@ -19,7 +19,7 @@ IEC104::IEC104(QObject *parent) : QObject(parent)
 {
     _state = Disconnected;
     //incSend = 0;
-    GSD = true;
+//    GSD = true;
     EthThreadWorking = false;
     ParseThreadWorking = false;
     Log = new LogClass;
@@ -324,9 +324,9 @@ void IEC104::GetSomeData(QByteArray ba)
 void IEC104::ParseSomeData(QByteArray ba) //, bool GSD)
 {
     quint32 basize = static_cast<quint32>(ba.size());
-    if (GSD)
-    {
-        if (cutpckt.size()>1)
+//    if (GSD)
+//    {
+        if (cutpckt.size() > 1)
         {
             quint32 cutpcktlen = static_cast<quint8>(cutpckt.at(1));
             cutpcktlen += 2;
@@ -346,7 +346,7 @@ void IEC104::ParseSomeData(QByteArray ba) //, bool GSD)
             cutpckt.clear();
             basize = static_cast<quint32>(ba.size());
         }
-    }
+//    }
     if (basize < 2) // ba is empty or there's not enough symbols to parse in it
       return;
 
