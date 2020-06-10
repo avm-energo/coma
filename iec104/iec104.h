@@ -196,7 +196,7 @@ signals:
 //    void sponsignalsreceived(Parse104::SponSignals104*);
 //    void sponsignalWithTimereceived(Parse104::SponSignalsWithTime*);
     void bs104signalsreceived(Parse104::BS104Signals*);
-    void error(int);
+//    void error(int);
     void sendS();
     void parsestarted();
     void GeneralInter();
@@ -269,14 +269,14 @@ public:
     IEC104(QObject *parent = nullptr);
     ~IEC104();
 
-    typedef struct
+/*    typedef struct
     {
         quint8 start;
         quint8 APDUlength;
         quint8 contrfield[4];
-    } APCI;
+    } APCI; */
 
-    typedef QByteArray ASDU;
+    typedef QByteArray APCI, ASDU;
 
     Parse104 *Parse;
     QList<QByteArray> ReadData;
@@ -375,7 +375,7 @@ public slots:
 signals:
     void writedatatoeth(QByteArray);
     void StopAll();
-    void error(int);
+//    void error(int);
     void EthConnected();
     void EthDisconnected();
     //void ethNoconnection();
@@ -415,9 +415,11 @@ private:
     LogClass *Log;
 
     void ParseSomeData(QByteArray); //, bool);
+    QByteArray CreateGI(unsigned char apdulength);
+    QByteArray ASDUFilePrefix(unsigned char cmd, unsigned char filenum, unsigned char secnum);
 
 private slots:
-    void SendI();
+    void SendGI();
     void SendS();
     void SendTestAct();
     void SendTestCon();

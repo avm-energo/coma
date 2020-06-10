@@ -38,10 +38,10 @@ void IEC104::Start()
     EthThreadWorking = true;
     APCI StartDT;
     ASDU GInter;
-    StartDT.start = I104_START;
-    StartDT.APDUlength = 4;
-    StartDT.contrfield[0] = I104_STARTDT_ACT;
-    StartDT.contrfield[1] = StartDT.contrfield[2] = StartDT.contrfield[3] = 0;
+    StartDT.append(I104_START);
+    StartDT.append(0x04);
+    StartDT.append(I104_STARTDT_ACT);
+    StartDT.append(QByteArrayLiteral("\x00\x00\x00"));
     Parse->cmd = I104_STARTDT_ACT;
     Send(0,StartDT);//, GInter); // ASDU = QByteArray()
 //    emit ParseTimer104Start();
@@ -54,10 +54,10 @@ void IEC104::Stop()
     if (ParseThreadWorking)
     {
         APCI StopDT;
-        StopDT.start = I104_START;
-        StopDT.APDUlength = 4;
-        StopDT.contrfield[0] = I104_STOPDT_ACT;
-        StopDT.contrfield[1] = StopDT.contrfield[2] = StopDT.contrfield[3] = 0;
+        StopDT.append(I104_START);
+        StopDT.append(0x04);
+        StopDT.append(I104_STOPDT_ACT);
+        StopDT.append(QByteArrayLiteral("\x00\x00\x00"));
         Parse->cmd = I104_STOPDT_ACT;
         Send(0,StopDT); // ASDU = QByteArray()
         if(ConTimer != nullptr)
@@ -68,15 +68,8 @@ void IEC104::Stop()
 
 void IEC104::Send(int inc, APCI apci, ASDU asdu)
 {
-    QByteArray ba;
-    ba.clear();
-    void *tempp = &apci;
-    ba.append(static_cast<char *>(tempp),sizeof(apci));
-    if(!asdu.isEmpty())
-    {
-        tempp = asdu.data();
-        ba.append(static_cast<char *>(tempp),asdu.size());
-    }
+    QByteArray ba = apci;
+    ba.append(asdu);
     Log->info("--> " + ba.toHex());
     emit writedatatoeth(ba);  
     if(inc)
@@ -130,7 +123,7 @@ void IEC104::Connect(const QString &IP)
 /*    connect(Parse,SIGNAL(UpdateReleWidget(Parse104::SponSignals104*)),\
             this,SIGNAL(relesignalsready(Parse104::SponSignals104*)),Qt::BlockingQueuedConnection); */
     connect(Parse,SIGNAL(sendS()),this,SLOT(SendS()));
-    connect(Parse,SIGNAL(GeneralInter()),this,SLOT(SendI()));
+    connect(Parse,SIGNAL(GeneralInter()),this,SLOT(SendGI()));
     connect(Parse,SIGNAL(sendAct()),this,SLOT(SendTestCon()));
     connect(Parse,SIGNAL(CallFile(unsigned char)),this,SLOT(CallFile(unsigned char)));
     connect(Parse,SIGNAL(CallSection(unsigned char)),this,SLOT(GetSection(unsigned char)));
@@ -165,39 +158,28 @@ void IEC104::Connect(const QString &IP)
     ConTimer->start();
 }
 
-void IEC104::SendI()
+void IEC104::SendGI()
 {
     APCI GI;
     ASDU GInter;
     quint16 VR = Parse->V_R;
 
-    GInter[0] = static_cast<char>(C_IC_NA_1);
-    GInter[1] = static_cast<char>(1);
-    GInter[2] = static_cast<char>(6);
-    GInter[3] = static_cast<char>(0);
-    GInter[4] = static_cast<char>(BaseAdr);
-    GInter[5] = static_cast<char>(BaseAdr>>8);
-    GInter[6] = static_cast<char>(0);
-    GInter[7] = static_cast<char>(0);
-    GInter[8] = static_cast<char>(0);
-    GInter[9] = static_cast<char>(20);
+    GInter.append(C_IC_NA_1);
+    GInter.append(QByteArrayLiteral("\x01\x06\x00"));
+    GInter.append(BaseAdr);
+    GInter.append(BaseAdr>>8);
+    GInter.append(QByteArrayLiteral("\x00\x00\x00\x20"));
 
-    GI.start = I104_START;
-    GI.APDUlength = 14;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
+    GI.append(I104_START);
+    GI.append(0x0e);
+    GI.append((Parse->V_S & 0x007F) << 1);
+    GI.append((Parse->V_S & 0x7F80) >> 7);
+    GI.append((VR & 0x007F) << 1);
+    GI.append((VR & 0x7F80) >> 7);
     Parse->cmd = I104_S;
     Send(1, GI, GInter); // ASDU = QByteArray()
-
     Parse->AckVR = Parse->V_R;
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
    // Parse->V_S++;
-
     Parse->InterogateTimer->start();
 }
 
@@ -206,33 +188,23 @@ void IEC104::CorReadRequest()
     APCI GI;
     ASDU GCor;
     quint16 VR = Parse->V_R;
-
     Log->info("CorReadRequest()");
-    GCor[0] = static_cast<char>(C_IC_NA_1);
-    GCor[1] = static_cast<char>(1);
-    GCor[2] = static_cast<char>(6);
-    GCor[3] = static_cast<char>(0);
-    GCor[4] = static_cast<char>(BaseAdr);
-    GCor[5] = static_cast<char>(BaseAdr>>8);
-    GCor[6] = static_cast<char>(0);
-    GCor[7] = static_cast<char>(0);
-    GCor[8] = static_cast<char>(0);
-    GCor[9] = static_cast<char>(22);
+    GCor.append(C_IC_NA_1);
+    GCor.append(QByteArrayLiteral("\x01\x06\x00"));
+    GCor.append(BaseAdr);
+    GCor.append(BaseAdr>>8);
+    GCor.append(QByteArrayLiteral("\x00\x00\x00\x22"));
 
-    GI.start = I104_START;
-    GI.APDUlength = 14;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
+    GI.append(I104_START);
+    GI.append(0x0e);
+    GI.append((Parse->V_S & 0x007F) << 1);
+    GI.append((Parse->V_S & 0x7F80) >> 7);
+    GI.append((VR & 0x007F) << 1);
+    GI.append((VR & 0x7F80) >> 7);
     Parse->cmd = I104_S;
     Send(1, GI, GCor); // ASDU = QByteArray()
 
     Parse->AckVR = Parse->V_R;
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
    // Parse->V_S++;
 
     Parse->InterogateTimer->start();
@@ -244,20 +216,13 @@ void IEC104::SendTestCon()
     ASDU GInter;
     //quint16 VR = Parse->V_R;
 
-    GI.start = I104_START;
-    GI.APDUlength = 4;
-    GI.contrfield[0] = I104_TESTFR_CON;
-    GI.contrfield[1] = 0;
-    GI.contrfield[2] = 0;
-    GI.contrfield[3] = 0;
+    GI.append(I104_START);
+    GI.append(0x04);
+    GI.append(I104_TESTFR_CON);
+    GI.append(QByteArrayLiteral("\x00\x00\x00"));
     Parse->cmd = I104_TESTFR_CON;
     Send(0,GI); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
     //Parse->V_S++;
-
 }
 
 void IEC104::SendTestAct()
@@ -269,7 +234,6 @@ void IEC104::SendTestAct()
     if(Parse->NoAnswer)
     {
         ConTimer->stop();
-//        ConTimer->deleteLater();
         emit ReconnectSignal();
         ERMSG("Нет ответа");
         return;
@@ -277,28 +241,19 @@ void IEC104::SendTestAct()
     else
     Parse->NoAnswer = 1;
 
-    GI.start = I104_START;
-    GI.APDUlength = 4;
-    GI.contrfield[0] = I104_TESTFR_ACT;
-    GI.contrfield[1] = 0;
-    GI.contrfield[2] = 0;
-    GI.contrfield[3] = 0;
+    GI.append(I104_START);
+    GI.append(0x04);
+    GI.append(I104_TESTFR_ACT);
+    GI.append(QByteArrayLiteral("\x00\x00\x00"));
     Parse->cmd = I104_TESTFR_ACT;
     Send(0,GI); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
     //Parse->V_S++;
-
 }
 
 void IEC104::GetSomeData(QByteArray ba)
 {
-//    Parse->ParseMutex.lock();
     Log->info("<-- " + ba.toHex());
     ParseSomeData(ba);
-//    Parse->ParseMutex.unlock();
 }
 
 void IEC104::ParseSomeData(QByteArray ba) //, bool GSD)
@@ -353,19 +308,552 @@ void IEC104::ParseSomeData(QByteArray ba) //, bool GSD)
     } */
 }
 
+QByteArray IEC104::CreateGI(unsigned char apdulength)
+{
+    QByteArray GI;
+    GI.append(I104_START);
+    GI.append(apdulength);
+    GI.append((Parse->V_S & 0x007F) << 1);
+    GI.append((Parse->V_S & 0x7F80) >> 7);
+    GI.append((Parse->V_R & 0x007F) << 1);
+    GI.append((Parse->V_R & 0x7F80) >> 7);
+    return GI;
+}
+
+QByteArray IEC104::ASDUFilePrefix(unsigned char cmd, unsigned char filenum, unsigned char secnum)
+{
+    QByteArray ba;
+    ba.append(cmd);
+    ba.append(QByteArrayLiteral("\x01\x13\x00"));
+    ba.append(BaseAdr);
+    ba.append(BaseAdr>>8);
+    ba.append(QByteArrayLiteral("\x00\x00\x00"));
+    ba.append(filenum);
+    ba.append('\x00');
+    ba.append(secnum);
+    return ba;
+}
+
 void IEC104::SendS()
 {
     APCI Confirm;
-    Confirm.start = I104_START;
-    Confirm.APDUlength = 4;
-    Confirm.contrfield[0] = I104_S;
-    Confirm.contrfield[1] = 0x00;
-    quint16 VR = Parse->V_R;
-    Confirm.contrfield[2] = (VR & 0x007F) << 1;
-    Confirm.contrfield[3] = (VR & 0x7F80) >> 7;
+
+    Confirm.append(I104_START);
+    Confirm.append(0x04);
+    Confirm.append(I104_S);
+    Confirm.append('\x0');
+    Confirm.append((Parse->V_R & 0x007F) << 1);
+    Confirm.append((Parse->V_R & 0x7F80) >> 7);
     Parse->cmd = I104_S;
     Send(0,Confirm); // ASDU = QByteArray()
     Parse->AckVR = Parse->V_R;
+}
+
+void IEC104::SelectFile(char numFile)
+{
+    APCI GI = CreateGI(0x11);
+    SecNum = 1;
+    Parse->FileSending = 1;
+    ConTimer->stop();
+
+    Log->info("SelectFile(" + QString::number(numFile) + ")");
+    ASDU Cmd = ASDUFilePrefix(F_SC_NA_1, numFile, 0x00);
+    Cmd.append('\x01');
+
+    Parse->cmd = I104_S;
+    Send(1, GI, Cmd); // ASDU = QByteArray()
+    //Parse->V_S++;
+}
+
+void IEC104::CallFile(unsigned char numFile)
+{
+    APCI GI = CreateGI(0x11);
+    ASDU Cmd = ASDUFilePrefix(F_SC_NA_1, numFile, 0x00);
+    Cmd.append('\x02');
+
+    Parse->cmd = I104_S;
+    Send(1, GI, Cmd); // ASDU = QByteArray()
+    //Parse->V_S++;
+}
+
+void IEC104::GetSection(unsigned char numFile)
+{
+    APCI GI = CreateGI(0x11);
+    ASDU Cmd = ASDUFilePrefix(F_SC_NA_1, numFile, SecNum);
+    Cmd.append('\x06');
+
+    Parse->cmd = I104_S;
+    Send(1, GI, Cmd); // ASDU = QByteArray()
+    //Parse->V_S++;
+}
+
+void IEC104::ConfirmSection(unsigned char numFile)
+{
+    APCI GI = CreateGI(0x11);
+    ASDU Cmd = ASDUFilePrefix(F_AF_NA_1, numFile, SecNum);
+    Cmd.append('\x03');
+
+    Parse->cmd = I104_S;
+    Send(1, GI, Cmd); // ASDU = QByteArray()
+    //Parse->V_S++;
+    SecNum++;
+}
+
+void IEC104::ConfirmFile(unsigned char numFile)
+{
+    APCI GI = CreateGI(0x11);
+    ASDU Cmd = ASDUFilePrefix(F_AF_NA_1, numFile, SecNum);
+    Cmd.append('\x01');
+
+    Parse->cmd = I104_S;
+    Send(1, GI, Cmd); // ASDU = QByteArray()
+    //Parse->V_S++;
+}
+
+void IEC104::FileReady(QVector<S2::DataRec>* File)
+{
+    APCI GI = CreateGI(0x12);
+
+    Log->info("FileReady()");
+    Parse->DR = File;
+    SecNum = 1;
+    ASDU Cmd = ASDUFilePrefix(F_FR_NA_1, 0x01, 0x00);
+    Cmd.append('\x06');
+    Cmd.chop(1);
+    Parse->File.resize(65535);
+    S2::StoreDataMem(&(Parse->File.data()[0]), Parse->DR, 0x0001); // 0x0001 - номер файла конфигурации
+    Parse->FileLen = static_cast<quint8>(Parse->File.data()[4]);
+    Parse->FileLen += static_cast<quint8>(Parse->File.data()[5])*256;
+    Parse->FileLen += static_cast<quint8>(Parse->File.data()[6])*65536;
+    Parse->FileLen += static_cast<quint8>(Parse->File.data()[7])*16777216;
+    Parse->FileLen += sizeof(S2::FileHeader); // FileHeader
+    Cmd.append(Parse->FileLen&0xFF);
+    Cmd.append((Parse->FileLen&0xFF00)>>8);
+    Cmd.append((Parse->FileLen&0xFF0000)>>16);
+    Parse->cmd = I104_S;
+    Send(1, GI, Cmd); // ASDU = QByteArray()
+    //Parse->V_S++;
+}
+
+void IEC104::SectionReady()
+{
+    APCI GI = CreateGI(0x13);
+    Parse->firstSegment = 1;
+
+    ASDU Cmd = ASDUFilePrefix(F_SR_NA_1, 0x01, SecNum);
+    Cmd.append(Parse->FileLen&0xFF);
+    Cmd.append((Parse->FileLen&0xFF00)>>8);
+    Cmd.append((Parse->FileLen&0xFF0000)>>16);
+
+    Parse->cmd = I104_S;
+    Send(1, GI, Cmd); // ASDU = QByteArray()
+    //if(Parse->FileLen > SECTIONSIZE)
+    //SecNum++;
+    //Parse->V_S++;
+}
+
+void IEC104::SendSegments()
+{
+    APCI GI;
+    QByteArray ba;
+    quint16 VR = Parse->V_R;
+    quint32 leftsize = 0;
+    quint32 i;
+    KSS = 0;
+    KSF = 0;
+
+    Parse->Pos = OFFSET;
+    emit SetDataSize(Parse->FileLen);
+    ASDU Cmd = ASDUFilePrefix(F_SG_NA_1, 0x01, SecNum);
+    if(Parse->FileLen > SEGMENTSIZE)
+    {
+        QByteArray tmpba = Parse->File.left(SEGMENTSIZE);
+        Cmd.append(tmpba);
+        leftsize = Parse->FileLen - SEGMENTSIZE;
+        for(i = 0; i<SEGMENTSIZE; i++)
+        {
+           KSS += static_cast<quint8>(Parse->File.data()[i]);
+           KSF += static_cast<quint8>(Parse->File.data()[i]);
+        }
+        Parse->Pos += SEGMENTSIZE;
+        emit SetDataCount(Parse->Pos-OFFSET);
+    }
+    else
+    {
+        QByteArray tmpba = Parse->File.left(Parse->FileLen);
+        Cmd.append(tmpba);
+        Cmd.resize(Parse->Pos);
+        leftsize = 0;
+        for(i = 0; i<Parse->FileLen; i++)
+        {
+           KSS += static_cast<quint8>(Parse->File.data()[i]);
+           KSF += static_cast<quint8>(Parse->File.data()[i]);
+        }
+        Parse->Pos += Parse->FileLen;
+        emit SetDataCount(Parse->Pos-OFFSET);
+    }
+    Cmd.append(Parse->Pos - OFFSET);
+
+    GI.start = I104_START;
+    GI.APDUlength = (Cmd[12]+17);
+    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
+    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
+    GI.contrfield[2] = (VR & 0x007F) << 1;
+    GI.contrfield[3] = (VR & 0x7F80) >> 7;
+    Parse->cmd = I104_S;
+    Send(1, GI, Cmd); // ASDU = QByteArray()
+
+    QThread::msleep(20);
+
+    //while(stopincrementing)
+    //QThread::usleep(10);
+
+    //Parse->V_S++;
+
+    while(leftsize)
+    {
+        if(leftsize > SEGMENTSIZE) //Parse->FileLen + OFFSET + FHSIZE - Parse->Pos
+        {
+            memcpy(&Cmd.data()[OFFSET], &Parse->File.data()[Parse->Pos-OFFSET], SEGMENTSIZE);
+
+            Cmd.resize(SEGMENTSIZE+OFFSET);
+            leftsize = leftsize - SEGMENTSIZE;
+            Cmd[12] =  static_cast<unsigned char>(SEGMENTSIZE);
+
+            for(i = 0; i<SEGMENTSIZE; i++)
+            {
+               KSS += static_cast<quint8>(Parse->File.data()[Parse->Pos-OFFSET+i]);
+               KSF += static_cast<quint8>(Parse->File.data()[Parse->Pos-OFFSET+i]);
+            }
+
+            Parse->Pos += SEGMENTSIZE;
+            emit SetDataCount(Parse->Pos-OFFSET);
+        }
+        else
+        {
+            memcpy(&Cmd.data()[OFFSET], &Parse->File.data()[Parse->Pos-OFFSET], leftsize);
+            //Parse->Pos += leftsize;
+            Cmd.resize(leftsize + OFFSET);
+            Cmd[12] =  static_cast<char>(leftsize);
+
+            for(i = 0; i<leftsize; i++)
+            {
+               KSS += static_cast<quint8>(Parse->File.data()[Parse->Pos-OFFSET+i]);
+               KSF += static_cast<quint8>(Parse->File.data()[Parse->Pos-OFFSET+i]);
+            }
+
+            Parse->Pos += leftsize;
+            emit SetDataCount(Parse->Pos-OFFSET);
+            leftsize = 0;
+        }
+
+        GI.start = I104_START;
+        GI.APDUlength = (Cmd[12]+17);
+        GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
+        GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
+        GI.contrfield[2] = (VR & 0x007F) << 1;
+        GI.contrfield[3] = (VR & 0x7F80) >> 7;
+        Parse->cmd = I104_S;
+        Send(1, GI, Cmd);
+
+        QThread::msleep(500);
+
+        //while(stopincrementing)
+        //QThread::usleep(10);
+
+        //Parse->V_S++;
+
+        if(leftsize == 0)
+        emit LastSeg();
+    }
+}
+
+void IEC104::LastSegment()
+{
+    APCI GI;
+    ASDU Cmd;
+    QByteArray ba;
+    //char *ptr = static_cast<char*>(Cmd.data());
+    quint16 VR = Parse->V_R;
+    //Parse->firstSegment = 1;
+
+    Cmd[0] = F_LS_NA_1;
+    Cmd[1] = static_cast<char>(1);
+    Cmd[2] = static_cast<char>(13);
+    Cmd[3] = 0;
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
+    Cmd[6] = 0;
+    Cmd[7] = 0;
+    Cmd[8] = 0;
+    Cmd[9] = static_cast<char>(1);
+    Cmd[10] = 0;
+    Cmd[11] = static_cast<char>(SecNum);
+    Cmd[12] = static_cast<char>(3);
+    Cmd[13] = static_cast<char>(KSS);
+    //Cmd[14] = static_cast<char>((Parse->FileLen&0xFF0000)>>16);
+
+    KSS = 0;
+    //Cmd.append(static_cast<char *>(temp),sizeof(SC));
+
+    //memcpy(Cmd.data(), &SC.Ident.typeIdent, sizeof(SC));
+
+    GI.start = I104_START;
+    GI.APDUlength = 18;
+    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
+    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
+    GI.contrfield[2] = (VR & 0x007F) << 1;
+    GI.contrfield[3] = (VR & 0x7F80) >> 7;
+    Parse->cmd = I104_S;
+
+    QThread::msleep(500);
+
+    Send(1, GI, Cmd); // ASDU = QByteArray()
+
+    //while(stopincrementing)
+    //QThread::usleep(10);
+
+    //if(Parse->FileLen > SECTIONSIZE)
+    //SecNum++;
+
+    //Parse->V_S++;
+}
+
+void IEC104::LastSection()
+{
+    APCI GI;
+    ASDU Cmd;
+    QByteArray ba;
+    //char *ptr = static_cast<char*>(Cmd.data());
+    quint16 VR = Parse->V_R;
+    //Parse->firstSegment = 1;
+
+    Cmd[0] = F_LS_NA_1;
+    Cmd[1] = static_cast<char>(1);
+    Cmd[2] = static_cast<char>(13);
+    Cmd[3] = 0;
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
+    Cmd[6] = 0;
+    Cmd[7] = 0;
+    Cmd[8] = 0;
+    Cmd[9] = static_cast<char>(1);
+    Cmd[10] = 0;
+    Cmd[11] = static_cast<char>(SecNum);
+    Cmd[12] = static_cast<char>(1);
+    Cmd[13] = static_cast<char>(KSF);
+
+    KSF = 0;
+
+    GI.start = I104_START;
+    GI.APDUlength = 18;
+    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
+    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
+    GI.contrfield[2] = (VR & 0x007F) << 1;
+    GI.contrfield[3] = (VR & 0x7F80) >> 7;
+    Parse->cmd = I104_S;
+    Send(1, GI, Cmd); // ASDU = QByteArray()
+
+    //while(stopincrementing)
+    //QThread::usleep(10);
+
+    //if(Parse->FileLen > SECTIONSIZE)
+    //SecNum++;
+
+    //Parse->V_S++;
+}
+
+void IEC104::Com45(quint32 com)
+{
+    APCI GI;
+    ASDU Cmd;
+    QByteArray ba;
+    //char *ptr = static_cast<char*>(Cmd.data());
+    quint16 VR = Parse->V_R;
+    //Parse->firstSegment = 1;
+
+    Log->info("Com45()");
+    Cmd[0] = C_SC_NA_1;
+    Cmd[1] = static_cast<char>(1);
+    Cmd[2] = static_cast<char>(6);
+    Cmd[3] = 0;
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
+    Cmd[6] = static_cast<char>(com);
+    Cmd[7] = static_cast<char>(com>>8);
+    Cmd[8] = static_cast<char>(com>>16);
+    Cmd[9] = static_cast<char>(1);
+
+    GI.start = I104_START;
+    GI.APDUlength = 14;
+    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
+    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
+    GI.contrfield[2] = (VR & 0x007F) << 1;
+    GI.contrfield[3] = (VR & 0x7F80) >> 7;
+    Parse->cmd = I104_S;
+    Send(1, GI, Cmd); // ASDU = QByteArray()
+
+    //while(stopincrementing)
+    //QThread::usleep(10);
+
+    //if(Parse->FileLen > SECTIONSIZE)
+    //SecNum++;
+
+    //Parse->V_S++;
+}
+
+void IEC104::Com50(quint32* adr, float *param)
+{
+    APCI GI;
+    ASDU Cmd;
+    QByteArray *ba = new QByteArray;
+    ba->resize(4);
+    //char *ptr = static_cast<char*>(Cmd.data());
+    quint16 VR = Parse->V_R;
+
+    Log->info("Com50()");
+    if(*adr == 910)
+    emit SetDataSize(11);
+
+    memcpy(&ba->data()[0], (quint8*)param, sizeof(float));
+    ba->toHex();
+
+    Cmd[0] = C_SE_NC_1;
+    Cmd[1] = static_cast<unsigned char>(1);
+    Cmd[2] = static_cast<unsigned char>(6);
+    Cmd[3] = 0;
+    Cmd[4] = static_cast<unsigned char>(BaseAdr);
+    Cmd[5] = static_cast<unsigned char>(BaseAdr>>8);
+    Cmd[6] = static_cast<unsigned char>(*adr);
+    Cmd[7] = static_cast<unsigned char>(*adr>>8);
+    Cmd[8] = static_cast<unsigned char>(*adr>>16);
+    //Cmd[9] = static_cast<char>(1);
+    Cmd[9] = static_cast<unsigned char>(ba->data()[0]);
+    Cmd[10] = static_cast<unsigned char>(ba->data()[1]);
+    Cmd[11] = static_cast<unsigned char>(ba->data()[2]);
+    Cmd[12] = static_cast<unsigned char>(ba->data()[3]);
+    Cmd[13] = 0;
+
+    GI.start = I104_START;
+    GI.APDUlength = 18;
+    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
+    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
+    GI.contrfield[2] = (VR & 0x007F) << 1;
+    GI.contrfield[3] = (VR & 0x7F80) >> 7;
+    Parse->cmd = I104_S;
+    Send(1, GI, Cmd); // ASDU = QByteArray()
+
+    //while(stopincrementing)
+    //QThread::usleep(10);
+
+    //if(Parse->FileLen > SECTIONSIZE)
+    //SecNum++;
+
+    //Parse->V_S++;
+}
+
+void IEC104::InterrogateTimeGr15()
+{
+    APCI GI;
+    ASDU GTime;
+    quint16 VR = Parse->V_R;
+
+    Log->info("InterrogateTimeGr15()");
+
+    GTime[0] = static_cast<char>(C_IC_NA_1);
+    GTime[1] = static_cast<char>(1);
+    GTime[2] = static_cast<char>(6);
+    GTime[3] = static_cast<char>(0);
+    GTime[4] = static_cast<char>(BaseAdr);
+    GTime[5] = static_cast<char>(BaseAdr>>8);
+    GTime[6] = static_cast<char>(0);
+    GTime[7] = static_cast<char>(0);
+    GTime[8] = static_cast<char>(0);
+    GTime[9] = static_cast<char>(35);
+
+    GI.start = I104_START;
+    GI.APDUlength = 14;
+    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
+    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
+    GI.contrfield[2] = (VR & 0x007F) << 1;
+    GI.contrfield[3] = (VR & 0x7F80) >> 7;
+    Parse->cmd = I104_S;
+    Send(1, GI, GTime); // ASDU = QByteArray()
+
+    Parse->AckVR = Parse->V_R;
+
+    //while(stopincrementing)
+    //QThread::usleep(10);
+
+   // Parse->V_S++;
+
+    Parse->InterogateTimer->start();
+
+}
+
+void IEC104::com51WriteTime(uint Time)
+{
+    APCI GI;
+    ASDU Cmd;
+    QByteArray *ba = new QByteArray;
+    quint32 adr = 4601;
+    ba->resize(4);
+    //char *ptr = static_cast<char*>(Cmd.data());
+    quint16 VR = Parse->V_R;
+
+    Log->info("Com51()");
+    memcpy(&ba->data()[0], &Time, sizeof(uint));
+    //ba->toHex();
+
+    Cmd[0] = C_BO_NA_1;
+    Cmd[1] = static_cast<char>(1);
+    Cmd[2] = static_cast<char>(6);
+    Cmd[3] = 0;
+    Cmd[4] = static_cast<char>(BaseAdr);
+    Cmd[5] = static_cast<char>(BaseAdr>>8);
+    Cmd[6] = static_cast<char>(adr);
+    Cmd[7] = static_cast<char>(adr>>8);
+    Cmd[8] = static_cast<char>(adr>>16);
+    //Cmd[9] = static_cast<char>(1);
+    Cmd[9] = static_cast<char>(ba->data()[0]);
+    Cmd[10] = static_cast<char>(ba->data()[1]);
+    Cmd[11] = static_cast<char>(ba->data()[2]);
+    Cmd[12] = static_cast<char>(ba->data()[3]);
+    //Cmd[13] = 0;
+
+    GI.start = I104_START;
+    GI.APDUlength = 17;
+    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
+    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
+    GI.contrfield[2] = (VR & 0x007F) << 1;
+    GI.contrfield[3] = (VR & 0x7F80) >> 7;
+    Parse->cmd = I104_S;
+    Send(1, GI, Cmd); // ASDU = QByteArray()
+
+}
+
+void IEC104::EthThreadFinished()
+{
+    EthThreadWorking = false;
+    if (!ParseThreadWorking)
+        emit Finished();
+}
+
+void IEC104::ParseThreadStarted()
+{
+    ParseThreadWorking = true;
+}
+
+void IEC104::ParseThreadFinished()
+{
+    ParseThreadWorking = false;
+    if (!EthThreadWorking)
+        emit Finished();
+}
+
+void IEC104::StartConTimer()
+{
+    ConTimer->start();
 }
 
 // Класс PARSE104
@@ -403,40 +891,30 @@ void Parse104::Run()
     emit Started();
     while (!ThreadMustBeFinished)
     {
-        // обработка ParseData
-        if (ParseData.size())
+        if (!ParseData.isEmpty())
         {
             ParseMutex.lock();
-            QByteArray tmpba = ParseData.at(0);
-            ParseData.removeFirst();
+            QByteArray tmpba = ParseData.takeFirst();
             ParseMutex.unlock();
             if (tmpba.isEmpty())
                 continue;
-//                char *ParseDataOne = new char[ParseData.at(0).size()];
-//                memcpy(ParseDataOne,ParseData.at(0).constData(),ParseData.at(0).size());
             int tmpi = isIncomeDataValid(tmpba);
             if (tmpi == I104_RCVNORM) // если поймали правильное начало данных, переходим к их обработке
             {
                 if (APDUFormat == I104_I)
-//                    ParseIFormat(&(tmpba.data()[6])); // без APCI
                 {
                     tmpba = tmpba.mid(6);
                     ParseIFormat(tmpba); // без APCI
                 }
             }
-
-            if ((V_R>(AckVR+I104_W)) && !FileSending)
+            if ((V_R > (AckVR + I104_W)) && !FileSending)
             {
-                //AckVR += V_R;
                 emit sendS();
                 GetNewVR = true;
             }
         }
-/*        QTime tmr;
-        tmr.start();
-        while (tmr.elapsed() < 10)*/
-        QThread::msleep(10);
-        qApp->processEvents();
+        TimeFunc::Wait();
+        QCoreApplication::processEvents();
     }
     emit Finished();
 }
@@ -450,7 +928,7 @@ int Parse104::isIncomeDataValid(QByteArray ba)
         APDULength = static_cast<quint8>(ba.at(1)); // в 1-м байте лежит длина
         if ((APDULength < 4) || (APDULength > 253))
         {
-            emit error(M104_LENGTHER);
+//            emit error(M104_LENGTHER);
             return I104_RCVWRONG;
         }
         if (!(ba.at(2)&0x01)) // I
@@ -470,7 +948,7 @@ int Parse104::isIncomeDataValid(QByteArray ba)
             V_Rrcv >>= 1;
             if (V_Rrcv != V_R)
             {
-                emit error(M104_NUMER);
+//                emit error(M104_NUMER);
     //            V_R = V_Rrcv+1;
                 return I104_RCVWRONG;
             }
@@ -487,7 +965,7 @@ int Parse104::isIncomeDataValid(QByteArray ba)
             if (V_Srcv != V_S)
             {
                 V_S = V_Srcv;           // временно, нужно исправить проблему несовпадения s посылок
-                emit error(M104_NUMER);
+//                emit error(M104_NUMER);
                 //return I104_RCVWRONG;  // временно, нужно исправить проблему несовпадения s посылок
             }
 
@@ -504,7 +982,7 @@ int Parse104::isIncomeDataValid(QByteArray ba)
             if (V_Srcv != V_S)
             {
                 V_S = V_Srcv;
-                emit error(M104_NUMER);
+//                emit error(M104_NUMER);
                 //return I104_RCVWRONG;
             }
     //        V_R++;
@@ -963,769 +1441,3 @@ void Parse104::Timer104Stop()
 {
     Timer104->stop();
 }
-
-void IEC104::SelectFile(char numFile)
-{
-    APCI GI;
-    ASDU Cmd;
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-    //int i;
-    SecNum = 1;
-    //void* temp = &SC;
-    Parse->FileSending = 1;
-    ConTimer->stop();
-    /*SC.Ident.typeIdent = F_SC_NA_1;
-    SC.Ident.qualifier = static_cast<char>(1);
-    SC.Ident.cause = 13;
-    SC.Ident.commonAdrASDU = BASEADR104;
-    SC.AdrObj = 0;
-    SC.FileName = static_cast<char>(1);
-    SC.SectionName = 0;
-    SC.SCQ = static_cast<char>(2);
-    i = sizeof(SC);*/
-
-    Log->info("SelectFile(" + QString::number(numFile) + ")");
-    Cmd[0] = F_SC_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(13);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = 0;
-    Cmd[7] = 0;
-    Cmd[8] = 0;
-    Cmd[9] = numFile;
-    Cmd[10] = 0;
-    Cmd[11] = 0;
-    Cmd[12] = 1;
-
-    //Cmd.append(static_cast<char *>(temp),sizeof(SC));
-
-    //memcpy(Cmd.data(), &SC.Ident.typeIdent, sizeof(SC));
-
-    GI.start = I104_START;
-    GI.APDUlength = 17;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //Parse->V_S++;
-}
-
-void IEC104::CallFile(unsigned char numFile)
-{
-    APCI GI;
-    ASDU Cmd;
-    quint16 VR = Parse->V_R;
-
-    Cmd[0] = F_SC_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(13);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = 0;
-    Cmd[7] = 0;
-    Cmd[8] = 0;
-    Cmd[9] = static_cast<char>(numFile);
-    Cmd[10] = 0;
-    Cmd[11] = 0;
-    Cmd[12] = 2;
-
-    //Cmd.append(static_cast<char *>(temp),sizeof(SC));
-
-    //memcpy(Cmd.data(), &SC.Ident.typeIdent, sizeof(SC));
-
-    GI.start = I104_START;
-    GI.APDUlength = 17;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //Parse->V_S++;
-}
-
-void IEC104::GetSection(unsigned char numFile)
-{
-    APCI GI;
-    ASDU Cmd;
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-    //int i;
-    //void* temp = &SC;
-
-    /*SC.Ident.typeIdent = F_SC_NA_1;
-    SC.Ident.qualifier = static_cast<char>(1);
-    SC.Ident.cause = 13;
-    SC.Ident.commonAdrASDU = BASEADR104;
-    SC.AdrObj = 0;
-    SC.FileName = static_cast<char>(1);
-    SC.SectionName = 0;
-    SC.SCQ = static_cast<char>(2);
-    i = sizeof(SC);*/
-
-    Cmd[0] = F_SC_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(13);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = 0;
-    Cmd[7] = 0;
-    Cmd[8] = 0;
-    Cmd[9] = static_cast<char>(numFile);
-    Cmd[10] = 0;
-    Cmd[11] = static_cast<char>(SecNum);
-    Cmd[12] = 6;
-
-    //Cmd.append(static_cast<char *>(temp),sizeof(SC));
-
-    //memcpy(Cmd.data(), &SC.Ident.typeIdent, sizeof(SC));
-
-    GI.start = I104_START;
-    GI.APDUlength = 17;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //Parse->V_S++;
-}
-
-void IEC104::ConfirmSection(unsigned char numFile)
-{
-    APCI GI;
-    ASDU Cmd;
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-    //inc++;
-
-    Cmd[0] = F_AF_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(13);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = 0;
-    Cmd[7] = 0;
-    Cmd[8] = 0;
-    Cmd[9] = static_cast<char>(numFile);
-    Cmd[10] = 0;
-    Cmd[11] = static_cast<char>(SecNum);
-    Cmd[12] = static_cast<char>(3);
-
-    GI.start = I104_START;
-    GI.APDUlength = 17;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-
-   // incSend++;
-
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //Parse->V_S++;
-
-    SecNum++;
-}
-
-void IEC104::ConfirmFile(unsigned char numFile)
-{
-    APCI GI;
-    ASDU Cmd;
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-
-    Cmd[0] = F_AF_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(13);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = 0;
-    Cmd[7] = 0;
-    Cmd[8] = 0;
-    Cmd[9] = static_cast<char>(numFile);
-    Cmd[10] = 0;
-    Cmd[11] = static_cast<char>(SecNum);
-    Cmd[12] = static_cast<char>(1);
-
-    GI.start = I104_START;
-    GI.APDUlength = 17;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //Parse->V_S++;
-}
-
-void IEC104::FileReady(QVector<S2::DataRec>* File)
-{
-    APCI GI;
-    ASDU Cmd;
-
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-    //int i;
-
-    Log->info("FileReady()");
-    Parse->DR = File;
-
-    SecNum = 1;
-
-    Cmd[0] = F_FR_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(13);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = 0;
-    Cmd[7] = 0;
-    Cmd[8] = 0;
-    Cmd[9] = static_cast<char>(1);
-    Cmd[10] = 0;
-    Parse->File.resize(65535);
-    S2::StoreDataMem(&(Parse->File.data()[0]), Parse->DR, 0x0001); // 0x0001 - номер файла конфигурации
-    Parse->FileLen = static_cast<quint8>(Parse->File.data()[4]);
-    Parse->FileLen += static_cast<quint8>(Parse->File.data()[5])*256;
-    Parse->FileLen += static_cast<quint8>(Parse->File.data()[6])*65536;
-    Parse->FileLen += static_cast<quint8>(Parse->File.data()[7])*16777216;
-    Parse->FileLen += sizeof(S2::FileHeader); // FileHeader
-    Cmd[11] = static_cast<char>(Parse->FileLen&0xFF);
-    Cmd[12] = static_cast<char>((Parse->FileLen&0xFF00)>>8);
-    Cmd[13] = static_cast<char>((Parse->FileLen&0xFF0000)>>16);
-
-    //Cmd.append(static_cast<char *>(temp),sizeof(SC));
-
-    //memcpy(Cmd.data(), &SC.Ident.typeIdent, sizeof(SC));
-
-    GI.start = I104_START;
-    GI.APDUlength = 18;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //Parse->V_S++;
-}
-
-void IEC104::SectionReady()
-{
-    APCI GI;
-    ASDU Cmd;
-    QByteArray ba;
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-    Parse->firstSegment = 1;
-
-    Cmd[0] = F_SR_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(13);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = 0;
-    Cmd[7] = 0;
-    Cmd[8] = 0;
-    Cmd[9] = static_cast<char>(1);
-    Cmd[10] = 0;
-    Cmd[11] = static_cast<char>(SecNum);
-    Cmd[12] = static_cast<char>(Parse->FileLen&0xFF);
-    Cmd[13] = static_cast<char>((Parse->FileLen&0xFF00)>>8);
-    Cmd[14] = static_cast<char>((Parse->FileLen&0xFF0000)>>16);
-
-
-    //Cmd.append(static_cast<char *>(temp),sizeof(SC));
-
-    //memcpy(Cmd.data(), &SC.Ident.typeIdent, sizeof(SC));
-
-    GI.start = I104_START;
-    GI.APDUlength = 19;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //if(Parse->FileLen > SECTIONSIZE)
-    //SecNum++;
-
-    //Parse->V_S++;
-}
-
-void IEC104::SendSegments()
-{
-    APCI GI;
-    ASDU Cmd;
-    QByteArray ba;
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-    quint32 leftsize = 0;
-    quint32 i;
-    KSS = 0;
-    KSF = 0;
-    Cmd.resize(256);
-
-    Cmd[0] = F_SG_NA_1;
-    Cmd[1] = static_cast<unsigned char>(1);
-    Cmd[2] = static_cast<unsigned char>(13);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<unsigned char>(BaseAdr);
-    Cmd[5] = static_cast<unsigned char>(BaseAdr>>8);
-    Cmd[6] = 0;
-    Cmd[7] = 0;
-    Cmd[8] = 0;
-    Cmd[9] = static_cast<unsigned char>(1);
-    Cmd[10] = 0;
-    Cmd[11] = static_cast<char>(SecNum);
-    //Cmd[12] =  static_cast<char>(SEGMENTSIZE);
-
-    Parse->Pos = OFFSET;
-    //memcpy(&Cmd.data()[Parse->Pos], Parse->File, FHSIZE);
-    //Parse->Pos += FHSIZE;
-    /*Parse->File.data()[12] = 0;
-    Parse->File.data()[13] = 0;
-    Parse->File.data()[14] = 0;
-    Parse->File.data()[15] = 0;*/
-    emit SetDataSize(Parse->FileLen);
-
-    if(Parse->FileLen > SEGMENTSIZE)
-    {
-       memcpy(&Cmd.data()[Parse->Pos], &Parse->File.data()[0], SEGMENTSIZE);
-       Cmd.resize(SEGMENTSIZE+OFFSET);
-       leftsize = Parse->FileLen - SEGMENTSIZE;
-       for(i = 0; i<SEGMENTSIZE; i++)
-       {
-          KSS += static_cast<quint8>(Parse->File.data()[i]);
-          KSF += static_cast<quint8>(Parse->File.data()[i]);
-       }
-       Parse->Pos += SEGMENTSIZE;
-       emit SetDataCount(Parse->Pos-OFFSET);
-    }
-    else
-    {
-       memcpy(&Cmd.data()[Parse->Pos], &Parse->File.data()[0], Parse->FileLen);
-
-       Cmd.resize(Parse->Pos);
-       leftsize = 0;
-
-       for(i = 0; i<Parse->FileLen; i++)
-       {
-          KSS += static_cast<quint8>(Parse->File.data()[i]);
-          KSF += static_cast<quint8>(Parse->File.data()[i]);
-       }
-
-       Parse->Pos += Parse->FileLen;
-       emit SetDataCount(Parse->Pos-OFFSET);
-    }
-
-    Cmd[12] =  static_cast<unsigned char>(Parse->Pos - OFFSET);
-    //Parse->firstSegment = 0;
-
-
-
-
-    //Cmd.append(static_cast<char *>(temp),sizeof(SC));
-
-    //memcpy(Cmd.data(), &SC.Ident.typeIdent, sizeof(SC));
-
-    GI.start = I104_START;
-    GI.APDUlength = (Cmd[12]+17);
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    QThread::msleep(20);
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //Parse->V_S++;
-
-    while(leftsize)
-    {
-        if(leftsize > SEGMENTSIZE) //Parse->FileLen + OFFSET + FHSIZE - Parse->Pos
-        {
-            memcpy(&Cmd.data()[OFFSET], &Parse->File.data()[Parse->Pos-OFFSET], SEGMENTSIZE);
-
-            Cmd.resize(SEGMENTSIZE+OFFSET);
-            leftsize = leftsize - SEGMENTSIZE;
-            Cmd[12] =  static_cast<unsigned char>(SEGMENTSIZE);
-
-            for(i = 0; i<SEGMENTSIZE; i++)
-            {
-               KSS += static_cast<quint8>(Parse->File.data()[Parse->Pos-OFFSET+i]);
-               KSF += static_cast<quint8>(Parse->File.data()[Parse->Pos-OFFSET+i]);
-            }
-
-            Parse->Pos += SEGMENTSIZE;
-            emit SetDataCount(Parse->Pos-OFFSET);
-        }
-        else
-        {
-            memcpy(&Cmd.data()[OFFSET], &Parse->File.data()[Parse->Pos-OFFSET], leftsize);
-            //Parse->Pos += leftsize;
-            Cmd.resize(leftsize + OFFSET);
-            Cmd[12] =  static_cast<char>(leftsize);
-
-            for(i = 0; i<leftsize; i++)
-            {
-               KSS += static_cast<quint8>(Parse->File.data()[Parse->Pos-OFFSET+i]);
-               KSF += static_cast<quint8>(Parse->File.data()[Parse->Pos-OFFSET+i]);
-            }
-
-            Parse->Pos += leftsize;
-            emit SetDataCount(Parse->Pos-OFFSET);
-            leftsize = 0;
-        }
-
-        GI.start = I104_START;
-        GI.APDUlength = (Cmd[12]+17);
-        GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-        GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-        GI.contrfield[2] = (VR & 0x007F) << 1;
-        GI.contrfield[3] = (VR & 0x7F80) >> 7;
-        Parse->cmd = I104_S;
-        Send(1, GI, Cmd);
-
-        QThread::msleep(500);
-
-        //while(stopincrementing)
-        //QThread::usleep(10);
-
-        //Parse->V_S++;
-
-        if(leftsize == 0)
-        emit LastSeg();
-    }
-}
-
-void IEC104::LastSegment()
-{
-    APCI GI;
-    ASDU Cmd;
-    QByteArray ba;
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-    //Parse->firstSegment = 1;
-
-    Cmd[0] = F_LS_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(13);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = 0;
-    Cmd[7] = 0;
-    Cmd[8] = 0;
-    Cmd[9] = static_cast<char>(1);
-    Cmd[10] = 0;
-    Cmd[11] = static_cast<char>(SecNum);
-    Cmd[12] = static_cast<char>(3);
-    Cmd[13] = static_cast<char>(KSS);
-    //Cmd[14] = static_cast<char>((Parse->FileLen&0xFF0000)>>16);
-
-    KSS = 0;
-    //Cmd.append(static_cast<char *>(temp),sizeof(SC));
-
-    //memcpy(Cmd.data(), &SC.Ident.typeIdent, sizeof(SC));
-
-    GI.start = I104_START;
-    GI.APDUlength = 18;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-
-    QThread::msleep(500);
-
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //if(Parse->FileLen > SECTIONSIZE)
-    //SecNum++;
-
-    //Parse->V_S++;
-}
-
-void IEC104::LastSection()
-{
-    APCI GI;
-    ASDU Cmd;
-    QByteArray ba;
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-    //Parse->firstSegment = 1;
-
-    Cmd[0] = F_LS_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(13);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = 0;
-    Cmd[7] = 0;
-    Cmd[8] = 0;
-    Cmd[9] = static_cast<char>(1);
-    Cmd[10] = 0;
-    Cmd[11] = static_cast<char>(SecNum);;
-    Cmd[12] = static_cast<char>(1);
-    Cmd[13] = static_cast<char>(KSF);
-
-    KSF = 0;
-
-    GI.start = I104_START;
-    GI.APDUlength = 18;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //if(Parse->FileLen > SECTIONSIZE)
-    //SecNum++;
-
-    //Parse->V_S++;
-}
-
-void IEC104::Com45(quint32 com)
-{
-    APCI GI;
-    ASDU Cmd;
-    QByteArray ba;
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-    //Parse->firstSegment = 1;
-
-    Log->info("Com45()");
-    Cmd[0] = C_SC_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(6);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = static_cast<char>(com);
-    Cmd[7] = static_cast<char>(com>>8);
-    Cmd[8] = static_cast<char>(com>>16);
-    Cmd[9] = static_cast<char>(1);
-
-    GI.start = I104_START;
-    GI.APDUlength = 14;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //if(Parse->FileLen > SECTIONSIZE)
-    //SecNum++;
-
-    //Parse->V_S++;
-}
-
-void IEC104::Com50(quint32* adr, float *param)
-{
-    APCI GI;
-    ASDU Cmd;
-    QByteArray *ba = new QByteArray;
-    ba->resize(4);
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-
-    Log->info("Com50()");
-    if(*adr == 910)
-    emit SetDataSize(11);
-
-    memcpy(&ba->data()[0], (quint8*)param, sizeof(float));
-    ba->toHex();
-
-    Cmd[0] = C_SE_NC_1;
-    Cmd[1] = static_cast<unsigned char>(1);
-    Cmd[2] = static_cast<unsigned char>(6);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<unsigned char>(BaseAdr);
-    Cmd[5] = static_cast<unsigned char>(BaseAdr>>8);
-    Cmd[6] = static_cast<unsigned char>(*adr);
-    Cmd[7] = static_cast<unsigned char>(*adr>>8);
-    Cmd[8] = static_cast<unsigned char>(*adr>>16);
-    //Cmd[9] = static_cast<char>(1);
-    Cmd[9] = static_cast<unsigned char>(ba->data()[0]);
-    Cmd[10] = static_cast<unsigned char>(ba->data()[1]);
-    Cmd[11] = static_cast<unsigned char>(ba->data()[2]);
-    Cmd[12] = static_cast<unsigned char>(ba->data()[3]);
-    Cmd[13] = 0;
-
-    GI.start = I104_START;
-    GI.APDUlength = 18;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //if(Parse->FileLen > SECTIONSIZE)
-    //SecNum++;
-
-    //Parse->V_S++;
-}
-
-void IEC104::InterrogateTimeGr15()
-{
-    APCI GI;
-    ASDU GTime;
-    quint16 VR = Parse->V_R;
-
-    Log->info("InterrogateTimeGr15()");
-
-    GTime[0] = static_cast<char>(C_IC_NA_1);
-    GTime[1] = static_cast<char>(1);
-    GTime[2] = static_cast<char>(6);
-    GTime[3] = static_cast<char>(0);
-    GTime[4] = static_cast<char>(BaseAdr);
-    GTime[5] = static_cast<char>(BaseAdr>>8);
-    GTime[6] = static_cast<char>(0);
-    GTime[7] = static_cast<char>(0);
-    GTime[8] = static_cast<char>(0);
-    GTime[9] = static_cast<char>(35);
-
-    GI.start = I104_START;
-    GI.APDUlength = 14;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, GTime); // ASDU = QByteArray()
-
-    Parse->AckVR = Parse->V_R;
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-   // Parse->V_S++;
-
-    Parse->InterogateTimer->start();
-
-}
-
-void IEC104::com51WriteTime(uint Time)
-{
-    APCI GI;
-    ASDU Cmd;
-    QByteArray *ba = new QByteArray;
-    quint32 adr = 4601;
-    ba->resize(4);
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-
-    Log->info("Com51()");
-    memcpy(&ba->data()[0], &Time, sizeof(uint));
-    //ba->toHex();
-
-    Cmd[0] = C_BO_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(6);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = static_cast<char>(adr);
-    Cmd[7] = static_cast<char>(adr>>8);
-    Cmd[8] = static_cast<char>(adr>>16);
-    //Cmd[9] = static_cast<char>(1);
-    Cmd[9] = static_cast<char>(ba->data()[0]);
-    Cmd[10] = static_cast<char>(ba->data()[1]);
-    Cmd[11] = static_cast<char>(ba->data()[2]);
-    Cmd[12] = static_cast<char>(ba->data()[3]);
-    //Cmd[13] = 0;
-
-    GI.start = I104_START;
-    GI.APDUlength = 17;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-}
-
-void IEC104::EthThreadFinished()
-{
-    EthThreadWorking = false;
-    if (!ParseThreadWorking)
-        emit Finished();
-}
-
-void IEC104::ParseThreadStarted()
-{
-    ParseThreadWorking = true;
-}
-
-void IEC104::ParseThreadFinished()
-{
-    ParseThreadWorking = false;
-    if (!EthThreadWorking)
-        emit Finished();
-}
-
-void IEC104::StartConTimer()
-{
-    ConTimer->start();
-}
-
