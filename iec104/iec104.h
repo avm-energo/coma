@@ -107,7 +107,6 @@ public:
         quint8 SigAdr[3];
         quint32 SigVal;
         quint8 SigQuality;
-        //quint64 CP56Time;
     }BS104;  // первое - номера сигналов, второе - их значения ("" ~ недостоверное значение), третье - метка времени
 
     typedef struct
@@ -116,39 +115,27 @@ public:
         float SigVal;
         quint8 SigQuality;
         quint64 CP56Time;
-    }FLOAT104;
+    } FLOAT104;
 
     typedef struct
     {
         quint32 SigAdr;
         quint8 SigVal;
        // quint64 CP56Time;
-    }SIQ104;
+    } SIQ104;
 
     typedef struct
     {
         quint32 SigAdr;
         quint8 SigVal;
         quint64 CP56Time;
-    }SIQ104withTime;
+    } SIQ104withTime;
 
     typedef struct
     {
        FLOAT104 fl;
        int SigNumber;
-    }FlSignals104;
-
-/*    typedef struct
-    {
-       SIQ104 Spon[256];
-       int SigNumber;
-    }SponSignals104;
-
-    typedef struct
-    {
-       SIQ104withTime Spon[256];
-       int SigNumber;
-    }SponSignalsWithTime; */
+    } FlSignals104;
 
     typedef struct
     {
@@ -156,14 +143,11 @@ public:
        int SigNumber;
     } SponSignals;
 
-
     typedef struct
     {
        BS104 BS;
        int SigNumber;
-    }BS104Signals;
-
-
+    } BS104Signals;
 
     QByteArray File;
     quint8 firstSegment;
@@ -196,9 +180,6 @@ public:
     quint32 FileLen;
     int incLS, count, NoAnswer, FileSending;
     QTimer *TimerCon;
-
-
-
 
 public slots:
     void Stop();
@@ -267,8 +248,6 @@ private:
         quint8 commonAdrASDU;
     } DataUnitIdentifier;
 
-
-
     DataUnitIdentifier DUI;
     bool ThreadMustBeFinished;
     quint8 APDULength;
@@ -289,15 +268,6 @@ class IEC104 : public QObject
 public:
     IEC104(QObject *parent = nullptr);
     ~IEC104();
-
-    enum EthernetStates
-    {
-        Connected,
-        Connecting,
-        Disconnected
-    };
-
-    bool State();
 
     typedef struct
     {
@@ -441,7 +411,6 @@ private:
     QTimer *ConTimer;
 //    bool GSD;
     QByteArray cutpckt;
-    int _state;
     bool EthThreadWorking, ParseThreadWorking;
     LogClass *Log;
 
