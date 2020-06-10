@@ -18,6 +18,7 @@ DEFINES += PROGNAME='\\"AVM-Service\\"'
 DEFINES += PROGCAPTION='\\"AVM-Service\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
+# DEFINES += DEBUG
 TEMPLATE = app
 
 

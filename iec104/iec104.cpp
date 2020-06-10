@@ -13,8 +13,6 @@
 
 #include <vcruntime.h> */
 
-quint8 IEC104::stopincrementing;
-
 IEC104::IEC104(QObject *parent) : QObject(parent)
 {
     _state = Disconnected;
@@ -52,6 +50,7 @@ void IEC104::Start()
     Parse->cmd = I104_STARTDT_ACT;
     Send(0,StartDT);//, GInter); // ASDU = QByteArray()
     //emit writedatatoeth(GInter);
+//    emit ParseTimer104Start();
     Parse->Timer104->start();
 
     //emit ethconnected();
@@ -108,7 +107,6 @@ void IEC104::Connect(const QString &IP)
     INFOMSG("IEC104: connect");
     _state = Connecting;
     QThread *thr = new QThread;
-    thr->setPriority(QThread::HighestPriority);
     ethernet *eth = new ethernet;
     eth->moveToThread(thr);
     eth->IP = IP;
@@ -128,7 +126,6 @@ void IEC104::Connect(const QString &IP)
 
     Parse = new Parse104;
     QThread *thr2 = new QThread;
-    thr2->setPriority(QThread::HighestPriority);
     Parse->moveToThread(thr2);
     connect(this,SIGNAL(StopAll()),Parse,SLOT(Stop()));
     connect(Parse,SIGNAL(Finished()),Parse,SLOT(deleteLater()));
@@ -138,7 +135,8 @@ void IEC104::Connect(const QString &IP)
     connect(thr2,SIGNAL(started()),Parse,SLOT(Run()));
     connect(Parse,SIGNAL(Started()),this,SLOT(ParseThreadStarted()));
     connect(eth,SIGNAL(Finished()),Parse,SLOT(Stop()));
-
+    connect(this,SIGNAL(ParseTimer104Start()),Parse,SLOT(Timer104Start()));
+    connect(this,SIGNAL(ParseTimer104Stop()),Parse,SLOT(Timer104Stop()));
     connect(Parse,SIGNAL(bs104signalsreceived(Parse104::BS104Signals*)),\
             this,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),Qt::BlockingQueuedConnection);
     connect(Parse,SIGNAL(floatsignalsreceived(Parse104::FlSignals104*)),\
@@ -181,7 +179,9 @@ void IEC104::Connect(const QString &IP)
     thr2->start();
     ConTimer = new QTimer;
     ConTimer->setInterval(5000);
+#ifndef DEBUG
     connect(ConTimer,SIGNAL(timeout()),this,SLOT(SendTestAct()));
+#endif
     ConTimer->start();
 }
 
@@ -402,10 +402,15 @@ Parse104::Parse104(QObject *parent) : QObject(parent)
     FileSending = 0;
     Timer104 = new QTimer;
     Timer104->setInterval(15000);
+#ifndef DEBUG
     connect(Timer104,SIGNAL(timeout()),this,SLOT(Stop()));
+#endif
     InterogateTimer = new QTimer;
     InterogateTimer->setInterval(15000);
+    InterogateTimer->setSingleShot(true);
+#ifndef DEBUG
     connect(InterogateTimer,SIGNAL(timeout()),this,SLOT(ErrMsg()));
+#endif
     NoAnswer = 0;
 }
 
@@ -421,7 +426,6 @@ void Parse104::Run()
         // обработка ParseData
         if (ParseData.size())
         {
-            IEC104::stopincrementing = 1;
             ParseMutex.lock();
             QByteArray tmpba = ParseData.at(0);
             ParseData.removeFirst();
@@ -447,7 +451,6 @@ void Parse104::Run()
                 emit sendS();
                 GetNewVR = true;
             }
-            IEC104::stopincrementing = 0;
         }
 /*        QTime tmr;
         tmr.start();
@@ -622,7 +625,7 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
         case C_IC_NA_1: // 100
         {
             if(DUI.cause.cause == 7)
-                InterogateTimer->stop();
+                InterogateTimer->stop(); // !!!
             break;
         }
 
@@ -950,19 +953,28 @@ void Parse104::ParseIFormat(QByteArray &ba) // основной разборщи
 void Parse104::Stop()
 {
     ThreadMustBeFinished = true;
-    if(Timer104 != nullptr)
-        Timer104->stop();
+    Timer104->stop();
 }
 
 void Parse104::ErrMsg()
 {
-    InterogateTimer->stop();
+//    InterogateTimer->stop();
     //QDialog *dlg = new QDialog;
     //dlg->deleteLater();
 /*    QVBoxLayout *lyout = new QVBoxLayout;
     EMessageBox::information(dlg, "Ошибка", "Таймаут по команде");
     dlg->setLayout(lyout);
     dlg->exec();*/
+}
+
+void Parse104::Timer104Start()
+{
+    Timer104->start();
+}
+
+void Parse104::Timer104Stop()
+{
+    Timer104->stop();
 }
 
 void IEC104::SelectFile(char numFile)

@@ -204,6 +204,8 @@ public slots:
     void Stop();
     void Run();
     void ErrMsg();
+    void Timer104Start();
+    void Timer104Stop();
 
 signals:
     void Started();
@@ -305,13 +307,11 @@ public:
     } APCI;
 
     typedef QByteArray ASDU;
+
     Parse104 *Parse;
     QList<QByteArray> ReadData;
     Parse104::FlSignals104* flSignals;
     quint16 BaseAdr;
-
-
-    static quint8 stopincrementing;
 
     typedef struct
     {
@@ -434,9 +434,11 @@ signals:
     void sendCorMesOk();
     void ReconnectSignal();
     void Finished();
+    void ParseTimer104Start();
+    void ParseTimer104Stop();
 
 private:
-    QTimer *TTimer, *ConTimer;
+    QTimer *ConTimer;
 //    bool GSD;
     QByteArray cutpckt;
     int _state;
