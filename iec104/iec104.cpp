@@ -196,7 +196,7 @@ void IEC104::CorReadRequest()
     GCor.append(QByteArrayLiteral("\x01\x06\x00"));
     GCor.append(BaseAdr);
     GCor.append(BaseAdr>>8);
-    GCor.append(QByteArrayLiteral("\x00\x00\x00\x22"));
+    GCor.append(QByteArrayLiteral("\x00\x00\x00\x16"));
 
     GI.append(I104_START);
     GI.append(0x0e);
@@ -423,7 +423,6 @@ void IEC104::FileReady(QVector<S2::DataRec>* File)
     Parse->DR = File;
     SecNum = 1;
     ASDU cmd = ASDUFilePrefix(F_FR_NA_1, 0x01, 0x00);
-    cmd.append('\x06');
     cmd.chop(1);
     Parse->File.resize(65535);
     S2::StoreDataMem(&(Parse->File.data()[0]), Parse->DR, 0x0001); // 0x0001 - номер файла конфигурации
