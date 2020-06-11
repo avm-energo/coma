@@ -19,7 +19,7 @@
 #define I104_STOPDT_ACT     0x13
 #define I104_STOPDT_CON     0x23
 #define I104_TESTFR_ACT     0x43
-#define I104_TESTFR_CON     0x83
+#define I104_TESTFR_CON     0x83u
 
 // определения возвращаемого значения функции isIncomeDataValid
 #define I104_RCVNORM        0x00
@@ -151,7 +151,6 @@ public:
 
     QByteArray File;
     quint8 firstSegment;
-    int Pos;
     QList<QByteArray> ParseData;
     quint32 ReadDataSize;
     quint16 V_S, V_R, AckVR;
@@ -395,7 +394,6 @@ signals:
     void sendJourSysfromiec104(QByteArray);
     void sendJourWorkfromiec104(QByteArray);
     void sendJourMeasfromiec104(QByteArray);
-    void LastSeg();
     void sendMessageOk();
 //    void relesignalsready(Parse104::SponSignals104*);
     void SetDataSize(int);
@@ -418,6 +416,10 @@ private:
     QByteArray CreateGI(unsigned char apdulength);
     QByteArray ASDUFilePrefix(unsigned char cmd, unsigned char filenum, unsigned char secnum);
 
+    QByteArray ASDU6Prefix(unsigned char cmd, quint32 adr);
+
+    template <typename T> QByteArray ToByteArray(T var);
+
 private slots:
     void SendGI();
     void SendS();
@@ -432,13 +434,12 @@ private slots:
     void FileReady(QVector<S2::DataRec>*);
     void SectionReady();
     void SendSegments();
-    void LastSegment();
     void LastSection();
     void Com45(quint32 com);
-    void Com50(quint32 *adr, float *param);
+    void Com50(quint32 adr, float param);
     void CorReadRequest();
     void InterrogateTimeGr15();
-    void com51WriteTime(uint);
+    void com51WriteTime(uint time);
     void EthThreadFinished();
     void ParseThreadStarted();
     void ParseThreadFinished();

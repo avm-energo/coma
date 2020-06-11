@@ -449,7 +449,7 @@ void Coma::PrepareDialogs()
         connect(TimeD,SIGNAL(ethWriteTimeToModule(uint)),Ch104,SLOT(com51WriteTime(uint)));
 
         connect(CorD,SIGNAL(sendCom45(quint32)), Ch104, SLOT(Com45(quint32)));
-        connect(CorD,SIGNAL(sendCom50(quint32*, float*)), Ch104, SLOT(Com50(quint32*,float*)));
+        connect(CorD,SIGNAL(sendCom50(quint32, float)), Ch104, SLOT(Com50(quint32, float)));
         connect(CorD,SIGNAL(CorReadRequest()), Ch104, SLOT(CorReadRequest()));
         connect(Ch104,SIGNAL(sendMessageOk()), CorD, SLOT(MessageOk()));
 //        connect(Ch104,SIGNAL(sendCorMesOk()), CorD, SLOT(WriteCorMessageOk()));

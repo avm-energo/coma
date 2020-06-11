@@ -136,7 +136,7 @@ void IEC104::Connect(const QString &IP)
 
     connect(Parse,SIGNAL(sectionReady()),this,SLOT(SectionReady()));
     connect(Parse,SIGNAL(segmentReady()),this,SLOT(SendSegments()));
-    connect(this,SIGNAL(LastSeg()),this,SLOT(LastSegment()));
+//    connect(this,SIGNAL(LastSeg()),this,SLOT(LastSegment()));
     connect(Parse,SIGNAL(LastSec()),this,SLOT(LastSection()));
     connect(Parse,SIGNAL(sendMessageOk()), this,SIGNAL(sendMessageOk()));
 
@@ -317,6 +317,7 @@ QByteArray IEC104::CreateGI(unsigned char apdulength)
     GI.append((Parse->V_S & 0x7F80) >> 7);
     GI.append((Parse->V_R & 0x007F) << 1);
     GI.append((Parse->V_R & 0x7F80) >> 7);
+    Parse->cmd = I104_S;
     return GI;
 }
 
@@ -331,6 +332,19 @@ QByteArray IEC104::ASDUFilePrefix(unsigned char cmd, unsigned char filenum, unsi
     ba.append(filenum);
     ba.append('\x00');
     ba.append(secnum);
+    return ba;
+}
+
+QByteArray IEC104::ASDU6Prefix(unsigned char cmd, quint32 adr)
+{
+    ASDU ba;
+    ba.append(cmd);
+    ba.append(QByteArrayLiteral("\x01\x06\x00"));
+    ba.append(BaseAdr);
+    ba.append(BaseAdr>>8);
+    ba.append(adr);
+    ba.append(adr>>8);
+    ba.append(adr>>16);
     return ba;
 }
 
@@ -351,75 +365,63 @@ void IEC104::SendS()
 
 void IEC104::SelectFile(char numFile)
 {
-    APCI GI = CreateGI(0x11);
     SecNum = 1;
     Parse->FileSending = 1;
     ConTimer->stop();
 
     Log->info("SelectFile(" + QString::number(numFile) + ")");
-    ASDU Cmd = ASDUFilePrefix(F_SC_NA_1, numFile, 0x00);
-    Cmd.append('\x01');
-
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
+    ASDU cmd = ASDUFilePrefix(F_SC_NA_1, numFile, 0x00);
+    cmd.append('\x01');
+    APCI GI = CreateGI(0x11);
+    Send(1, GI, cmd); // ASDU = QByteArray()
     //Parse->V_S++;
 }
 
 void IEC104::CallFile(unsigned char numFile)
 {
+    ASDU cmd = ASDUFilePrefix(F_SC_NA_1, numFile, 0x00);
+    cmd.append('\x02');
     APCI GI = CreateGI(0x11);
-    ASDU Cmd = ASDUFilePrefix(F_SC_NA_1, numFile, 0x00);
-    Cmd.append('\x02');
-
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
+    Send(1, GI, cmd); // ASDU = QByteArray()
     //Parse->V_S++;
 }
 
 void IEC104::GetSection(unsigned char numFile)
 {
+    ASDU cmd = ASDUFilePrefix(F_SC_NA_1, numFile, SecNum);
+    cmd.append('\x06');
     APCI GI = CreateGI(0x11);
-    ASDU Cmd = ASDUFilePrefix(F_SC_NA_1, numFile, SecNum);
-    Cmd.append('\x06');
-
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
+    Send(1, GI, cmd); // ASDU = QByteArray()
     //Parse->V_S++;
 }
 
 void IEC104::ConfirmSection(unsigned char numFile)
 {
+    ASDU cmd = ASDUFilePrefix(F_AF_NA_1, numFile, SecNum);
+    cmd.append('\x03');
     APCI GI = CreateGI(0x11);
-    ASDU Cmd = ASDUFilePrefix(F_AF_NA_1, numFile, SecNum);
-    Cmd.append('\x03');
-
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
+    Send(1, GI, cmd); // ASDU = QByteArray()
     //Parse->V_S++;
     SecNum++;
 }
 
 void IEC104::ConfirmFile(unsigned char numFile)
 {
+    ASDU cmd = ASDUFilePrefix(F_AF_NA_1, numFile, SecNum);
+    cmd.append('\x01');
     APCI GI = CreateGI(0x11);
-    ASDU Cmd = ASDUFilePrefix(F_AF_NA_1, numFile, SecNum);
-    Cmd.append('\x01');
-
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
+    Send(1, GI, cmd); // ASDU = QByteArray()
     //Parse->V_S++;
 }
 
 void IEC104::FileReady(QVector<S2::DataRec>* File)
 {
-    APCI GI = CreateGI(0x12);
-
     Log->info("FileReady()");
     Parse->DR = File;
     SecNum = 1;
-    ASDU Cmd = ASDUFilePrefix(F_FR_NA_1, 0x01, 0x00);
-    Cmd.append('\x06');
-    Cmd.chop(1);
+    ASDU cmd = ASDUFilePrefix(F_FR_NA_1, 0x01, 0x00);
+    cmd.append('\x06');
+    cmd.chop(1);
     Parse->File.resize(65535);
     S2::StoreDataMem(&(Parse->File.data()[0]), Parse->DR, 0x0001); // 0x0001 - номер файла конфигурации
     Parse->FileLen = static_cast<quint8>(Parse->File.data()[4]);
@@ -427,26 +429,23 @@ void IEC104::FileReady(QVector<S2::DataRec>* File)
     Parse->FileLen += static_cast<quint8>(Parse->File.data()[6])*65536;
     Parse->FileLen += static_cast<quint8>(Parse->File.data()[7])*16777216;
     Parse->FileLen += sizeof(S2::FileHeader); // FileHeader
-    Cmd.append(Parse->FileLen&0xFF);
-    Cmd.append((Parse->FileLen&0xFF00)>>8);
-    Cmd.append((Parse->FileLen&0xFF0000)>>16);
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
+    cmd.append(Parse->FileLen&0xFF);
+    cmd.append((Parse->FileLen&0xFF00)>>8);
+    cmd.append((Parse->FileLen&0xFF0000)>>16);
+    APCI GI = CreateGI(0x12);
+    Send(1, GI, cmd); // ASDU = QByteArray()
     //Parse->V_S++;
 }
 
 void IEC104::SectionReady()
 {
-    APCI GI = CreateGI(0x13);
     Parse->firstSegment = 1;
-
-    ASDU Cmd = ASDUFilePrefix(F_SR_NA_1, 0x01, SecNum);
-    Cmd.append(Parse->FileLen&0xFF);
-    Cmd.append((Parse->FileLen&0xFF00)>>8);
-    Cmd.append((Parse->FileLen&0xFF0000)>>16);
-
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
+    ASDU cmd = ASDUFilePrefix(F_SR_NA_1, 0x01, SecNum);
+    cmd.append(Parse->FileLen&0xFF);
+    cmd.append((Parse->FileLen&0xFF00)>>8);
+    cmd.append((Parse->FileLen&0xFF0000)>>16);
+    APCI GI = CreateGI(0x13);
+    Send(1, GI, cmd); // ASDU = QByteArray()
     //if(Parse->FileLen > SECTIONSIZE)
     //SecNum++;
     //Parse->V_S++;
@@ -455,381 +454,123 @@ void IEC104::SectionReady()
 void IEC104::SendSegments()
 {
     APCI GI;
-    QByteArray ba;
-    quint16 VR = Parse->V_R;
-    quint32 leftsize = 0;
-    quint32 i;
     KSS = 0;
     KSF = 0;
 
-    Parse->Pos = OFFSET;
+    unsigned int pos = 0;
+    if (Parse->FileLen > static_cast<quint32>(Parse->File.size()))
+    {
+        ERMSG("FileLen is bigger than file");
+        return;
+    }
     emit SetDataSize(Parse->FileLen);
-    ASDU Cmd = ASDUFilePrefix(F_SG_NA_1, 0x01, SecNum);
-    if(Parse->FileLen > SEGMENTSIZE)
+    ASDU cmd = ASDUFilePrefix(F_SG_NA_1, 0x01, SecNum);
+    cmd.append('\x0');
+    unsigned char diff;
+    do
     {
-        QByteArray tmpba = Parse->File.left(SEGMENTSIZE);
-        Cmd.append(tmpba);
-        leftsize = Parse->FileLen - SEGMENTSIZE;
-        for(i = 0; i<SEGMENTSIZE; i++)
-        {
-           KSS += static_cast<quint8>(Parse->File.data()[i]);
-           KSF += static_cast<quint8>(Parse->File.data()[i]);
-        }
-        Parse->Pos += SEGMENTSIZE;
-        emit SetDataCount(Parse->Pos-OFFSET);
-    }
-    else
-    {
-        QByteArray tmpba = Parse->File.left(Parse->FileLen);
-        Cmd.append(tmpba);
-        Cmd.resize(Parse->Pos);
-        leftsize = 0;
-        for(i = 0; i<Parse->FileLen; i++)
-        {
-           KSS += static_cast<quint8>(Parse->File.data()[i]);
-           KSF += static_cast<quint8>(Parse->File.data()[i]);
-        }
-        Parse->Pos += Parse->FileLen;
-        emit SetDataCount(Parse->Pos-OFFSET);
-    }
-    Cmd.append(Parse->Pos - OFFSET);
-
-    GI.start = I104_START;
-    GI.APDUlength = (Cmd[12]+17);
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    QThread::msleep(20);
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //Parse->V_S++;
-
-    while(leftsize)
-    {
-        if(leftsize > SEGMENTSIZE) //Parse->FileLen + OFFSET + FHSIZE - Parse->Pos
-        {
-            memcpy(&Cmd.data()[OFFSET], &Parse->File.data()[Parse->Pos-OFFSET], SEGMENTSIZE);
-
-            Cmd.resize(SEGMENTSIZE+OFFSET);
-            leftsize = leftsize - SEGMENTSIZE;
-            Cmd[12] =  static_cast<unsigned char>(SEGMENTSIZE);
-
-            for(i = 0; i<SEGMENTSIZE; i++)
-            {
-               KSS += static_cast<quint8>(Parse->File.data()[Parse->Pos-OFFSET+i]);
-               KSF += static_cast<quint8>(Parse->File.data()[Parse->Pos-OFFSET+i]);
-            }
-
-            Parse->Pos += SEGMENTSIZE;
-            emit SetDataCount(Parse->Pos-OFFSET);
-        }
+        quint32 filesize = Parse->File.size();
+        if(filesize > SEGMENTSIZE)
+            diff = SEGMENTSIZE;
         else
+            diff = filesize;
+        cmd.append(Parse->File.left(diff));
+        for(int i = 0; i<diff; ++i)
         {
-            memcpy(&Cmd.data()[OFFSET], &Parse->File.data()[Parse->Pos-OFFSET], leftsize);
-            //Parse->Pos += leftsize;
-            Cmd.resize(leftsize + OFFSET);
-            Cmd[12] =  static_cast<char>(leftsize);
-
-            for(i = 0; i<leftsize; i++)
-            {
-               KSS += static_cast<quint8>(Parse->File.data()[Parse->Pos-OFFSET+i]);
-               KSF += static_cast<quint8>(Parse->File.data()[Parse->Pos-OFFSET+i]);
-            }
-
-            Parse->Pos += leftsize;
-            emit SetDataCount(Parse->Pos-OFFSET);
-            leftsize = 0;
+           KSS += static_cast<quint8>(Parse->File.data()[i]);
+           KSF += static_cast<quint8>(Parse->File.data()[i]);
         }
-
-        GI.start = I104_START;
-        GI.APDUlength = (Cmd[12]+17);
-        GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-        GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-        GI.contrfield[2] = (VR & 0x007F) << 1;
-        GI.contrfield[3] = (VR & 0x7F80) >> 7;
-        Parse->cmd = I104_S;
-        Send(1, GI, Cmd);
-
-        QThread::msleep(500);
-
-        //while(stopincrementing)
-        //QThread::usleep(10);
-
+        Parse->File = Parse->File.mid(diff);
+        pos += diff;
+        emit SetDataCount(pos);
+        cmd[12] = static_cast<unsigned char>(diff);
+        GI = CreateGI(diff+17);
+        Send(1, GI, cmd); // ASDU = QByteArray()
+        cmd = cmd.left(13);
+        QThread::msleep(20);
         //Parse->V_S++;
+    } while (!Parse->File.isEmpty());
 
-        if(leftsize == 0)
-        emit LastSeg();
-    }
-}
-
-void IEC104::LastSegment()
-{
-    APCI GI;
-    ASDU Cmd;
-    QByteArray ba;
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-    //Parse->firstSegment = 1;
-
-    Cmd[0] = F_LS_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(13);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = 0;
-    Cmd[7] = 0;
-    Cmd[8] = 0;
-    Cmd[9] = static_cast<char>(1);
-    Cmd[10] = 0;
-    Cmd[11] = static_cast<char>(SecNum);
-    Cmd[12] = static_cast<char>(3);
-    Cmd[13] = static_cast<char>(KSS);
-    //Cmd[14] = static_cast<char>((Parse->FileLen&0xFF0000)>>16);
-
+    cmd = ASDUFilePrefix(F_LS_NA_1, 1, SecNum);
+    cmd.append('\x03');
+    cmd.append(KSS);
     KSS = 0;
-    //Cmd.append(static_cast<char *>(temp),sizeof(SC));
-
-    //memcpy(Cmd.data(), &SC.Ident.typeIdent, sizeof(SC));
-
-    GI.start = I104_START;
-    GI.APDUlength = 18;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-
+    GI = CreateGI(0x12);
     QThread::msleep(500);
-
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //if(Parse->FileLen > SECTIONSIZE)
-    //SecNum++;
-
+    Send(1, GI, cmd); // ASDU = QByteArray()
     //Parse->V_S++;
 }
 
 void IEC104::LastSection()
 {
-    APCI GI;
-    ASDU Cmd;
     QByteArray ba;
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-    //Parse->firstSegment = 1;
 
-    Cmd[0] = F_LS_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(13);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = 0;
-    Cmd[7] = 0;
-    Cmd[8] = 0;
-    Cmd[9] = static_cast<char>(1);
-    Cmd[10] = 0;
-    Cmd[11] = static_cast<char>(SecNum);
-    Cmd[12] = static_cast<char>(1);
-    Cmd[13] = static_cast<char>(KSF);
-
+    ASDU cmd = ASDUFilePrefix(F_LS_NA_1, 1, SecNum);
+    cmd.append('\x01');
+    cmd.append(KSF);
     KSF = 0;
-
-    GI.start = I104_START;
-    GI.APDUlength = 18;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //if(Parse->FileLen > SECTIONSIZE)
-    //SecNum++;
-
+    APCI GI = CreateGI(0x12);
+    Send(1, GI, cmd); // ASDU = QByteArray()
     //Parse->V_S++;
 }
 
 void IEC104::Com45(quint32 com)
 {
-    APCI GI;
-    ASDU Cmd;
-    QByteArray ba;
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-    //Parse->firstSegment = 1;
-
     Log->info("Com45()");
-    Cmd[0] = C_SC_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(6);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = static_cast<char>(com);
-    Cmd[7] = static_cast<char>(com>>8);
-    Cmd[8] = static_cast<char>(com>>16);
-    Cmd[9] = static_cast<char>(1);
 
-    GI.start = I104_START;
-    GI.APDUlength = 14;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //if(Parse->FileLen > SECTIONSIZE)
-    //SecNum++;
-
+    ASDU cmd = ASDU6Prefix(C_SC_NA_1, com);
+    cmd.append('\x01');
+    APCI GI = CreateGI(0x0e);
+    Send(1, GI, cmd); // ASDU = QByteArray()
     //Parse->V_S++;
 }
 
-void IEC104::Com50(quint32* adr, float *param)
+template <typename T> QByteArray IEC104::ToByteArray(T var)
 {
-    APCI GI;
-    ASDU Cmd;
-    QByteArray *ba = new QByteArray;
-    ba->resize(4);
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
+    QByteArray ba;
+    int sizeofvar = sizeof(var);
+    for (int i=0; i<sizeofvar; ++i)
+    {
+        unsigned char tmpc;
+        memcpy(&tmpc, reinterpret_cast<unsigned char *>(&var)+i, sizeof(unsigned char));
+        ba.append(tmpc);
+    }
+    return ba;
+}
 
+void IEC104::Com50(quint32 adr, float param)
+{
     Log->info("Com50()");
-    if(*adr == 910)
-    emit SetDataSize(11);
+    if(adr == 910)
+        emit SetDataSize(11);
 
-    memcpy(&ba->data()[0], (quint8*)param, sizeof(float));
-    ba->toHex();
-
-    Cmd[0] = C_SE_NC_1;
-    Cmd[1] = static_cast<unsigned char>(1);
-    Cmd[2] = static_cast<unsigned char>(6);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<unsigned char>(BaseAdr);
-    Cmd[5] = static_cast<unsigned char>(BaseAdr>>8);
-    Cmd[6] = static_cast<unsigned char>(*adr);
-    Cmd[7] = static_cast<unsigned char>(*adr>>8);
-    Cmd[8] = static_cast<unsigned char>(*adr>>16);
-    //Cmd[9] = static_cast<char>(1);
-    Cmd[9] = static_cast<unsigned char>(ba->data()[0]);
-    Cmd[10] = static_cast<unsigned char>(ba->data()[1]);
-    Cmd[11] = static_cast<unsigned char>(ba->data()[2]);
-    Cmd[12] = static_cast<unsigned char>(ba->data()[3]);
-    Cmd[13] = 0;
-
-    GI.start = I104_START;
-    GI.APDUlength = 18;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
-    //if(Parse->FileLen > SECTIONSIZE)
-    //SecNum++;
-
+    ASDU cmd = ASDU6Prefix(C_SE_NC_1, adr);
+    cmd.append(ToByteArray(param));
+    cmd.append('\x00');
+    APCI GI = CreateGI(0x12);
+    Send(1, GI, cmd); // ASDU = QByteArray()
     //Parse->V_S++;
 }
 
 void IEC104::InterrogateTimeGr15()
 {
-    APCI GI;
-    ASDU GTime;
-    quint16 VR = Parse->V_R;
-
     Log->info("InterrogateTimeGr15()");
-
-    GTime[0] = static_cast<char>(C_IC_NA_1);
-    GTime[1] = static_cast<char>(1);
-    GTime[2] = static_cast<char>(6);
-    GTime[3] = static_cast<char>(0);
-    GTime[4] = static_cast<char>(BaseAdr);
-    GTime[5] = static_cast<char>(BaseAdr>>8);
-    GTime[6] = static_cast<char>(0);
-    GTime[7] = static_cast<char>(0);
-    GTime[8] = static_cast<char>(0);
-    GTime[9] = static_cast<char>(35);
-
-    GI.start = I104_START;
-    GI.APDUlength = 14;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
+    ASDU GTime = ASDU6Prefix(C_IC_NA_1, 0);
+    GTime.append(0x23);
+    APCI GI = CreateGI(0x0e);
     Send(1, GI, GTime); // ASDU = QByteArray()
-
     Parse->AckVR = Parse->V_R;
-
-    //while(stopincrementing)
-    //QThread::usleep(10);
-
    // Parse->V_S++;
-
     Parse->InterogateTimer->start();
-
 }
 
-void IEC104::com51WriteTime(uint Time)
+void IEC104::com51WriteTime(uint time)
 {
-    APCI GI;
-    ASDU Cmd;
-    QByteArray *ba = new QByteArray;
-    quint32 adr = 4601;
-    ba->resize(4);
-    //char *ptr = static_cast<char*>(Cmd.data());
-    quint16 VR = Parse->V_R;
-
     Log->info("Com51()");
-    memcpy(&ba->data()[0], &Time, sizeof(uint));
-    //ba->toHex();
-
-    Cmd[0] = C_BO_NA_1;
-    Cmd[1] = static_cast<char>(1);
-    Cmd[2] = static_cast<char>(6);
-    Cmd[3] = 0;
-    Cmd[4] = static_cast<char>(BaseAdr);
-    Cmd[5] = static_cast<char>(BaseAdr>>8);
-    Cmd[6] = static_cast<char>(adr);
-    Cmd[7] = static_cast<char>(adr>>8);
-    Cmd[8] = static_cast<char>(adr>>16);
-    //Cmd[9] = static_cast<char>(1);
-    Cmd[9] = static_cast<char>(ba->data()[0]);
-    Cmd[10] = static_cast<char>(ba->data()[1]);
-    Cmd[11] = static_cast<char>(ba->data()[2]);
-    Cmd[12] = static_cast<char>(ba->data()[3]);
-    //Cmd[13] = 0;
-
-    GI.start = I104_START;
-    GI.APDUlength = 17;
-    GI.contrfield[0] = (Parse->V_S & 0x007F) << 1;
-    GI.contrfield[1] = (Parse->V_S & 0x7F80) >> 7;
-    GI.contrfield[2] = (VR & 0x007F) << 1;
-    GI.contrfield[3] = (VR & 0x7F80) >> 7;
-    Parse->cmd = I104_S;
-    Send(1, GI, Cmd); // ASDU = QByteArray()
-
+    ASDU cmd = ASDU6Prefix(C_BO_NA_1, 4601);
+    cmd.append(ToByteArray(time));
+    APCI GI = CreateGI(0x11);
+    Send(1, GI, cmd); // ASDU = QByteArray()
 }
 
 void IEC104::EthThreadFinished()

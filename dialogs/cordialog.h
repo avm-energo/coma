@@ -43,7 +43,7 @@ private:
 
 signals:
    void sendCom45(quint32);
-   void sendCom50(quint32* adr, float *data);
+   void sendCom50(quint32 adr, float data);
    void RS485WriteCorBd(ModBus::Information, float *);
    void RS485ReadCorBd(ModBus::Information);
    void CorReadRequest();

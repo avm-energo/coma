@@ -274,8 +274,10 @@ void CorDialog::WriteCorBd()
         {
            for(i = 0; i<11; i++)
            {
-             emit sendCom50((adr+i), (((float*)CorBlock)+i));
-             TimeFunc::Wait(300);
+               float corblocki;
+               memcpy(&corblocki, CorBlock+i, sizeof(float));
+               emit sendCom50((adr[i]), corblocki);
+               TimeFunc::Wait(300);
            }
         }
         else if(MainInterface == I_RS485)
