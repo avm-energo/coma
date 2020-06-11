@@ -13,6 +13,8 @@
 
 #include <vcruntime.h> */
 
+QMutex ParseMutex;
+
 IEC104::IEC104(QObject *parent) : QObject(parent)
 {
 //    GSD = true;
@@ -34,6 +36,7 @@ bool IEC104::Working()
 
 void IEC104::Start()
 {
+    TimeFunc::Wait(500);
     Log->info("Start()");
     EthThreadWorking = true;
     APCI StartDT;
@@ -168,7 +171,7 @@ void IEC104::SendGI()
     GInter.append(QByteArrayLiteral("\x01\x06\x00"));
     GInter.append(BaseAdr);
     GInter.append(BaseAdr>>8);
-    GInter.append(QByteArrayLiteral("\x00\x00\x00\x20"));
+    GInter.append(QByteArrayLiteral("\x00\x00\x00\x14"));
 
     GI.append(I104_START);
     GI.append(0x0e);
@@ -275,9 +278,9 @@ void IEC104::ParseSomeData(QByteArray ba) //, bool GSD)
             }
             cutpckt.append(ba.left(missing_num)); // взяли из текущего пакета сами байты
             ba.remove(0,missing_num);
-            Parse->ParseMutex.lock();
+            ParseMutex.lock();
             Parse->ParseData.append(cutpckt);
-            Parse->ParseMutex.unlock();
+            ParseMutex.unlock();
             cutpckt.clear();
             basize = static_cast<quint32>(ba.size());
         }
@@ -607,7 +610,6 @@ Parse104::Parse104(QObject *parent) : QObject(parent)
     AckVR = I104_W;
     APDUFormat = I104_WRONG;
     GetNewVR = false;
-    NewDataArrived = false;
     FileSending = 0;
     Timer104 = new QTimer;
     Timer104->setInterval(15000);
@@ -737,6 +739,7 @@ int Parse104::isIncomeDataValid(QByteArray ba)
             {
                 Timer104->stop();
                 cmd = I104_STARTDT_CON;
+//                TimeFunc::Wait(500);
                 emit GeneralInter();
             }
             if ((baat2 == I104_STOPDT_CON) && (cmd == I104_STOPDT_ACT)) // если пришло подтверждение стопа и перед этим мы стоп запрашивали

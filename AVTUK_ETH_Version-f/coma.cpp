@@ -1302,11 +1302,11 @@ void Coma::Fill()
 void Coma::FillBSI(Parse104::BS104Signals *sig)
 {
     unsigned int i, signum;
-    int startadr;
+    int startadr = 0;
 
     memcpy(&startadr, &(sig->BS.SigAdr[0]), sizeof(sig->BS.SigAdr));
     signum = sig->SigNumber;
-    INFOMSG("FillBSIe(): address=" + QString::number(signum));
+    INFOMSG("FillBSIe(): address=" + QString::number(startadr));
 
     if((signum < sizeof(ModuleBSI::ModuleBsi)) && (startadr >= BSIREG && startadr <= BSIENDREG))
     {

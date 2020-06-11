@@ -155,27 +155,15 @@ public:
     quint32 ReadDataSize;
     quint16 V_S, V_R, AckVR;
     int cmd;
-    bool GetNewVR, NewDataArrived;
-    QMutex ParseMutex, SignalsMutex;
+    bool GetNewVR;
     QTimer *Timer104;
     QTimer *InterogateTimer;
-    QByteArray WriteData;
-    char *outdata;
-    QByteArray ReadData, ReadDataChunk;
+    QByteArray ReadData;
     QTimer *TTimer, *OscTimer;
-    quint16 OscNum;
-    quint8 bStep;
-    int fnum;
-    quint8 ReadDataChunkLength; // длина всей посылки
     quint8 RDSize; // длина всей посылки
     int RDLength;
-    int outdatasize; // размер приёмной области памяти
-    int SegLeft; // количество оставшихся сегментов
-    int SegEnd; // номер последнего байта в ReadData текущего сегмента
-    bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
     QVector<S2::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     QVector<S2::DataRec> *DRJour;
-    char BoardType;
     quint32 FileLen;
     int incLS, count, NoAnswer, FileSending;
     QTimer *TimerCon;
