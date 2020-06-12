@@ -24,11 +24,8 @@ ConfDialog84::ConfDialog84(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     this->S2Config = &S2Config;
     C84 = new Config84(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
-//    TheEnd = 0;
     SetupUI();
-#if PROGSIZE != PROGSIZE_EMUL
     PrereadConf();
-#endif
 }
 
 ConfDialog84::~ConfDialog84()
@@ -891,31 +888,6 @@ void ConfDialog84::SetDefConf()
 {
     C84->SetDefConf();
     Fill();
-}
-
-void ConfDialog84::slot_timeOut()
-{
-   // WDFunc::LBLText(this, "adrMB", currentTime().toString("hh:mm:ss"));
-    SysTime->setText(QDateTime::currentDateTimeUtc().toString("dd-MM-yyyy HH:mm:ss"));
-    //SysTime->update();
-}
-
-void ConfDialog84::slot2_timeOut()
-{
-/*    uint unixtimestamp = 0;
-    QDateTime myDateTime;
-
-    if (Commands::GetTimeMNK(unixtimestamp) == NOERROR)
-    {
-      myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
-      //myDateTime.setTime_t(unixtimestamp);
-      SysTime2->setText(myDateTime.toString("dd-MM-yyyy HH:mm:ss"));
-
-      //EMessageBox::information(this, "INFO", "Прочитано успешно");
-    }
-    //else
-    //EMessageBox::information(this, "INFO", "Ошибка");*/
-
 }
 
 void ConfDialog84::Start_Timer()

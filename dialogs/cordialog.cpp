@@ -399,9 +399,9 @@ void CorDialog::MessageOk()
   EMessageBox::information(this, "INFO", "Записано успешно");
 }
 
-void CorDialog::UpdateFlCorData(Parse104::FlSignals104 *Signal)
+void CorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
 {
-    Parse104::FlSignals104 sig = *new Parse104::FlSignals104;
+    IEC104Thread::FlSignals104 sig = *new IEC104Thread::FlSignals104;
     int i;
 
     if(((Signal)->fl.SigAdr >= 4000) && ((Signal)->fl.SigAdr <= 4010))

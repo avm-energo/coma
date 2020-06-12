@@ -1,6 +1,7 @@
-    #ifndef IEC104_H
+#ifndef IEC104_H
 #define IEC104_H
 #include <QTcpSocket>
+#include <QQueue>
 #include "../gen/s2.h"
 #include "../gen/logclass.h"
 
@@ -94,20 +95,41 @@
 #define SYSTEM_JOUR_SIZE 65568
 
 
-class Parse104 : public QObject
+class IEC104Thread : public QObject
 {
     Q_OBJECT
 
 public:
-    Parse104(QObject *parent=nullptr);
-    ~Parse104();
+
+    enum CommandsEnum
+    {
+        CM104_INTERROGATETIMEGR15,
+        CM104_COM51WRITETIME,
+        CM104_COM45,
+        CM104_COM50,
+        CM104_CORREADREQUEST,
+        CM104_SELECTFILE,
+        CM104_FILEREADY
+    };
+
+    struct CommandsArgs
+    {
+        quint32 uintarg;
+        void *ptrarg;
+    };
+
+    struct InputStruct
+    {
+        CommandsEnum cmd;
+        CommandsArgs args;
+    };
 
     typedef struct
     {
         quint8 SigAdr[3];
         quint32 SigVal;
         quint8 SigQuality;
-    }BS104;  // первое - номера сигналов, второе - их значения ("" ~ недостоверное значение), третье - метка времени
+    } BS104;  // первое - номера сигналов, второе - их значения ("" ~ недостоверное значение), третье - метка времени
 
     typedef struct
     {
@@ -154,10 +176,9 @@ public:
     QList<QByteArray> ParseData;
     quint32 ReadDataSize;
     quint16 V_S, V_R, AckVR;
-    int cmd;
+    int Command;
     bool GetNewVR;
     QTimer *Timer104;
-    QTimer *InterogateTimer;
     QByteArray ReadData;
     QTimer *TTimer, *OscTimer;
     quint8 RDSize; // длина всей посылки
@@ -166,50 +187,39 @@ public:
     QVector<S2::DataRec> *DRJour;
     quint32 FileLen;
     int incLS, count, NoAnswer, FileSending;
-    QTimer *TimerCon;
+    QQueue<InputStruct> *InputQueue;
+
+    IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, QObject *parent=nullptr);
+    ~IEC104Thread();
+
+    void SetBaseAdr(quint16 adr);
 
 public slots:
+    void StartDT();
+    void StopDT();
     void Stop();
     void Run();
     void ErrMsg();
-    void Timer104Start();
-    void Timer104Stop();
 
 signals:
     void Started();
     void Finished();
-    void floatsignalsreceived(Parse104::FlSignals104*);
-    void sponsignalsreceived(Parse104::SponSignals*);
-//    void sponsignalsreceived(Parse104::SponSignals104*);
-//    void sponsignalWithTimereceived(Parse104::SponSignalsWithTime*);
-    void bs104signalsreceived(Parse104::BS104Signals*);
-//    void error(int);
-    void sendS();
-    void parsestarted();
-    void GeneralInter();
-    void sendAct();
-    void CallFile(unsigned char);
-    void CallSection(unsigned char);
-    void SendConfirmSection(unsigned char);
+    void WriteData(QByteArray);
+    void ReconnectSignal();
+    void floatsignalsreceived(IEC104Thread::FlSignals104*);
+    void sponsignalsreceived(IEC104Thread::SponSignals*);
+    void bs104signalsreceived(IEC104Thread::BS104Signals*);
     void sendConfirmFile(unsigned char);
     void sendS2fromParse(QVector<S2::DataRec>*);
-/*    void sendJourSysfromParse(QVector<S2::DataRec>*);
-    void sendJourWorkfromParse(QVector<S2::DataRec>*);
-    void sendJourMeasfromParse(QVector<S2::DataRec>*); */
     void sendJourSysfromParse(QByteArray);
     void sendJourWorkfromParse(QByteArray);
     void sendJourMeasfromParse(QByteArray);
-    void sectionReady();
-    void segmentReady();
     void LastSec();
     void sendMessageOk();
     void sendConfMessageOk();
-//    void UpdateReleWidget(Parse104::SponSignals104*);
     void SetDataSizeFromParse(int);
     void SetDataCountFromParse(int);
     void sendMessagefromParse();
-//    void writeCorMesOkParse();
-    void startConTimer();
 
 
 private:
@@ -235,13 +245,39 @@ private:
         quint8 commonAdrASDU;
     } DataUnitIdentifier;
 
+    typedef QByteArray APCI, ASDU;
+
     DataUnitIdentifier DUI;
     bool ThreadMustBeFinished;
     quint8 APDULength;
     quint8 APDUFormat;
+    quint8 SecNum;
+    LogClass *Log;
+    quint16 BaseAdr;
+    QTimer *ConTimer;
+    quint8 KSS;
+    quint8 KSF;
 
     void ParseIFormat(QByteArray &ba);
     int isIncomeDataValid(QByteArray);
+    QByteArray CreateGI(unsigned char apdulength);
+    QByteArray ASDUFilePrefix(unsigned char Command, unsigned char filenum, unsigned char secnum);
+    QByteArray ASDU6Prefix(unsigned char Command, quint32 adr);
+    template <typename T> QByteArray ToByteArray(T var);
+    void Send(int inc, APCI, ASDU=QByteArray());
+    void SendGI();
+    void SendS();
+    void SendTestCon();
+    void CorReadRequest();
+    void SendTestAct();
+    void SelectFile(char numfile);
+    void CallFile(unsigned char);
+    void GetSection(unsigned char);
+    void ConfirmSection(unsigned char);
+    void ConfirmFile(unsigned char);
+    void FileReady(QVector<S2::DataRec>*);
+    void SectionReady();
+    void SendSegments();
 
 private slots:
 
@@ -256,19 +292,9 @@ public:
     IEC104(QObject *parent = nullptr);
     ~IEC104();
 
-/*    typedef struct
-    {
-        quint8 start;
-        quint8 APDUlength;
-        quint8 contrfield[4];
-    } APCI; */
-
-    typedef QByteArray APCI, ASDU;
-
-    Parse104 *Parse;
+    IEC104Thread *Parse;
     QList<QByteArray> ReadData;
-    Parse104::FlSignals104* flSignals;
-    quint16 BaseAdr;
+    IEC104Thread::FlSignals104* flSignals;
 
     typedef struct
     {
@@ -343,91 +369,52 @@ public:
 
     }F_FR;
 
-    quint8 SecNum;
-    //static quint8 stopincrementing;
-    quint8 KSS;
-    quint8 KSF;
     QString IP;
 
     bool Working();
+    void Connect(const QString &IP, quint16 baseadr);
 
 public slots:
-    void Send(int inc, APCI, ASDU=QByteArray());
-    void Connect(const QString &IP);
-    void Start();
-    void Stop();
-    void StartConTimer();
-    //void ErrMsg();
 
 signals:
-    void writedatatoeth(QByteArray);
     void StopAll();
-//    void error(int);
-    void EthConnected();
-    void EthDisconnected();
-    //void ethNoconnection();
-    void floatsignalsready(Parse104::FlSignals104*);
-    void sponsignalsready(Parse104::SponSignals*);
-//    void sponsignalsready(Parse104::SponSignals104*);
-//    void sponsignalWithTimereceived(Parse104::SponSignalsWithTime*);
-    void bs104signalsready(Parse104::BS104Signals*);
+    void floatsignalsready(IEC104Thread::FlSignals104*);
+    void sponsignalsready(IEC104Thread::SponSignals*);
+    void bs104signalsready(IEC104Thread::BS104Signals*);
     void readbytessignal(QByteArray);
     void writebytessignal(QByteArray);
     void ShowError(QString);
     void readConfEth();
     void sendS2fromiec104(QVector<S2::DataRec>*);
-/*    void sendJourSysfromiec104(QVector<S2::DataRec>*);
-    void sendJourWorkfromiec104(QVector<S2::DataRec>*);
-    void sendJourMeasfromiec104(QVector<S2::DataRec>*); */
     void sendJourSysfromiec104(QByteArray);
     void sendJourWorkfromiec104(QByteArray);
     void sendJourMeasfromiec104(QByteArray);
     void sendMessageOk();
-//    void relesignalsready(Parse104::SponSignals104*);
     void SetDataSize(int);
     void SetDataCount(int);
     void sendConfMessageOk();
     void sendCorMesOk();
     void ReconnectSignal();
     void Finished();
-    void ParseTimer104Start();
-    void ParseTimer104Stop();
 
 private:
-    QTimer *ConTimer;
-//    bool GSD;
-    QByteArray cutpckt;
+    QByteArray CutPckt;
     bool EthThreadWorking, ParseThreadWorking;
     LogClass *Log;
-
-    void ParseSomeData(QByteArray); //, bool);
-    QByteArray CreateGI(unsigned char apdulength);
-    QByteArray ASDUFilePrefix(unsigned char cmd, unsigned char filenum, unsigned char secnum);
-
-    QByteArray ASDU6Prefix(unsigned char cmd, quint32 adr);
-
-    template <typename T> QByteArray ToByteArray(T var);
+    QQueue<IEC104Thread::InputStruct> InputQueue;
+    bool FirstParse;
 
 private slots:
-    void SendGI();
-    void SendS();
-    void SendTestAct();
-    void SendTestCon();
     void GetSomeData(QByteArray);
     void SelectFile(char);
-    void CallFile(unsigned char);
-    void GetSection(unsigned char);
-    void ConfirmSection(unsigned char);
-    void ConfirmFile(unsigned char);
     void FileReady(QVector<S2::DataRec>*);
-    void SectionReady();
-    void SendSegments();
     void LastSection();
     void Com45(quint32 com);
     void Com50(quint32 adr, float param);
     void CorReadRequest();
     void InterrogateTimeGr15();
     void com51WriteTime(uint time);
+    void EthThreadStarted();
     void EthThreadFinished();
     void ParseThreadStarted();
     void ParseThreadFinished();

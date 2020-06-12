@@ -18,7 +18,6 @@ public:
     ~ConfDialog84();
 
     QLabel *SysTime; 
-    QLabel *SysTime2;
     QTimer *timer;
     QTimer *timerRead;
     QStringList Rates = QStringList() << "1200" << "2400"<< "4800" << "9600" << "19200" << "38400" << "57600" << "115200";
@@ -43,8 +42,6 @@ public slots:
 
 private slots:
     void SetDefConf();
-    void slot_timeOut();
-    void slot2_timeOut();
     void Start_Timer();
     void Stop_Timer();
     void Write_PCDate();

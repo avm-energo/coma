@@ -57,7 +57,7 @@ public slots:
     void MessageOk();
     void SetCor();
     void ResetCor();
-    void UpdateFlCorData(Parse104::FlSignals104 *Signal);
+    void UpdateFlCorData(IEC104Thread::FlSignals104 *Signal);
     void ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal);
 //    void ModbusCorDataWritten();
     void SaveToFile();

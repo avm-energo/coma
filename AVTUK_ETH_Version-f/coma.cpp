@@ -270,7 +270,7 @@ void Coma::StartWork()
         {
             Ch104->BaseAdr = AdrBaseStation;
             if (!Ch104->Working())
-                Ch104->Connect(IPtemp);
+                Ch104->Connect(IPtemp, AdrBaseStation);
             ActiveThreads |= THREAD104;
         }
         else
@@ -316,14 +316,7 @@ void Coma::StartWork()
         if(MainInterface == I_RS485)
             ChModbus->CheckIndex = CheckIndex;
         if(MainInterface == I_USB)
-        {
-//            connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Start_BdaTimer(int))); //tabClicked
-//            connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Stop_BdaTimer(int)));
-//            connect(ConfM, SIGNAL(StopRead(int)), BdaTimer,SLOT(stop()));
-//            ConfM->checkIndex = CheckIndex;
-//            connect(BdaTimer,SIGNAL(timeout()),CheckB,SLOT(BdTimerTimeout()));
             connect(BdaTimer,SIGNAL(timeout()),this,SLOT(UpdateUSB()));
-        }
     }
     str = (CheckB == nullptr) ? "Текущие параметры" : "Текущие параметры\nМезонин";
     if (CheckM != nullptr)
@@ -354,15 +347,7 @@ void Coma::StartWork()
         }
         connect(ConfM,SIGNAL(NewConfToBeLoaded()),this,SLOT(Fill()));
         connect(ConfM,SIGNAL(DefConfToBeLoaded()),this,SLOT(SetDefConf()));
-//        ConfM->confIndex = MainTW->indexOf(ConfM);
-//        connect(MainTW, SIGNAL(tabClicked(int)), ConfM, SLOT(ReadConf(int))); //tabClicked
-//        connect(ConfM, SIGNAL(StopRead(int)), this,SLOT(Stop_TimeTimer(int)));
     }
-
-//        connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Start_Timer(int))); //tabClicked
-        //connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Stop_Timer(int)));
-//        connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Start_TimeTimer(int))); //tabClicked
-//        connect(MainTW, SIGNAL(tabClicked(int)), this,SLOT(Stop_TimeTimer(int)));
     if (TimeD != nullptr)
     {
         MainTW->addTab(TimeD, "Время");
@@ -375,10 +360,8 @@ void Coma::StartWork()
     {
         MainTW->addTab(CorD, "Начальные значения");
         CorD->corDIndex = MainTW->indexOf(CorD);
-//        connect(MainTW, SIGNAL(tabClicked(int)), CorD, SLOT(GetCorBd(int))); //tabClicked
-
         if(MainInterface == I_RS485)
-        ChModbus->CorIndex = CorD->corDIndex;
+            ChModbus->CorIndex = CorD->corDIndex;
     }
 
     if (MainInterface != I_RS485)
@@ -400,9 +383,6 @@ void Coma::StartWork()
 
     MainTW->repaint();
     MainTW->show();
-
-//    if (MainInterface == I_ETHERNET || MainInterface == I_RS485)
-//        ConnectMessage();
 
     INFOMSG("MainTW created");
     if(MainInterface == I_USB)
@@ -431,29 +411,24 @@ void Coma::PrepareDialogs()
     };
 
     connect(this,SIGNAL(ClearBsi()),IDialog,SLOT(ClearBsi()));
-//    connect(this,SIGNAL(USBBsiRefresh()),IDialog,SLOT(FillBsi()));
-//    connect(CheckB,SIGNAL(BsiRefresh()),IDialog,SLOT(FillBsi()));
     connect(this, SIGNAL(SetPredAlarmColor(quint8*)), CheckB,SLOT(SetPredAlarmColor(quint8*)));
     connect(this, SIGNAL(SetAlarmColor(quint8*)), CheckB,SLOT(SetAlarmColor(quint8*)));
 
     if (MainInterface == I_ETHERNET)
     {
         Ch104->Parse->DR = &S2Config;
-        connect(Ch104,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),CheckB,SLOT(UpdateFlData(Parse104::FlSignals104*)));
-        connect(Ch104,SIGNAL(sponsignalsready(Parse104::SponSignals*)),CheckB,SLOT(UpdateSponData(Parse104::SponSignals*)));
-//        connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),CheckB,SLOT(UpdateSponDataWithTime(Parse104::SponSignalsWithTime*)));
-//        connect(Ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),CheckB,SLOT(UpdateBS104Data(Parse104::BS104Signals*)));
+        connect(Ch104,SIGNAL(floatsignalsready(IEC104Thread::FlSignals104*)),CheckB,SLOT(UpdateFlData(IEC104Thread::FlSignals104*)));
+        connect(Ch104,SIGNAL(sponsignalsready(IEC104Thread::SponSignals*)),CheckB,SLOT(UpdateSponData(IEC104Thread::SponSignals*)));
 
         connect(TimeD,SIGNAL(ethTimeRequest()),Ch104,SLOT(InterrogateTimeGr15()));
-        connect(Ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),TimeD,SLOT(FillTimeFrom104(Parse104::BS104Signals*)));
+        connect(Ch104,SIGNAL(bs104signalsready(IEC104Thread::BS104Signals*)),TimeD,SLOT(FillTimeFrom104(IEC104Thread::BS104Signals*)));
         connect(TimeD,SIGNAL(ethWriteTimeToModule(uint)),Ch104,SLOT(com51WriteTime(uint)));
 
         connect(CorD,SIGNAL(sendCom45(quint32)), Ch104, SLOT(Com45(quint32)));
         connect(CorD,SIGNAL(sendCom50(quint32, float)), Ch104, SLOT(Com50(quint32, float)));
         connect(CorD,SIGNAL(CorReadRequest()), Ch104, SLOT(CorReadRequest()));
         connect(Ch104,SIGNAL(sendMessageOk()), CorD, SLOT(MessageOk()));
-//        connect(Ch104,SIGNAL(sendCorMesOk()), CorD, SLOT(WriteCorMessageOk()));
-        connect(Ch104,SIGNAL(floatsignalsready(Parse104::FlSignals104*)),CorD,SLOT(UpdateFlCorData(Parse104::FlSignals104*)));
+        connect(Ch104,SIGNAL(floatsignalsready(IEC104Thread::FlSignals104*)),CorD,SLOT(UpdateFlCorData(IEC104Thread::FlSignals104*)));
 
         connect(JourD,SIGNAL(ReadJour(char)), Ch104, SLOT(SelectFile(char)));
         connect(Ch104,SIGNAL(sendJourSysfromiec104(QByteArray)), JourD, SLOT(FillSysJour(QByteArray)));
@@ -487,18 +462,14 @@ void Coma::PrepareDialogs()
 void Coma::New104()
 {
     Ch104 = new IEC104;
-    connect(this,SIGNAL(StopCommunications()),Ch104,SLOT(Stop()));
+    connect(this,SIGNAL(StopCommunications()),Ch104,SIGNAL(StopAll()));
     connect(Ch104,SIGNAL(Finished()),this,SLOT(Ch104Finished()));
-    connect(Ch104,SIGNAL(sponsignalsready(Parse104::SponSignals*)),this,SLOT(UpdatePredAlarmEvents(Parse104::SponSignals*)));
-//    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),this,SLOT(UpdatePredAlarmEvents(Parse104::SponSignalsWithTime*)));
-//    connect(Ch104,SIGNAL(EthDisconnected()),this,SLOT(DisconnectMessage()));
+    connect(Ch104,SIGNAL(sponsignalsready(IEC104Thread::SponSignals*)),this,SLOT(UpdatePredAlarmEvents(IEC104Thread::SponSignals*)));
     connect(Ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
     connect(Ch104,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
     connect(Ch104,SIGNAL(ReconnectSignal()), this, SLOT(ReConnect()));
-//    connect(Ch104,SIGNAL(relesignalsready(Parse104::SponSignals104*)), this, SLOT(UpdateReleWidget(Parse104::SponSignals104*)));
-    connect(Ch104,SIGNAL(sponsignalsready(Parse104::SponSignals*)),this,SLOT(UpdateStatePredAlarmEvents(Parse104::SponSignals*)));
-//    connect(Ch104,SIGNAL(sponsignalWithTimereceived(Parse104::SponSignalsWithTime*)),this,SLOT(UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime*)));
-    connect(Ch104,SIGNAL(bs104signalsready(Parse104::BS104Signals*)),this,SLOT(FillBSI(Parse104::BS104Signals*)));
+    connect(Ch104,SIGNAL(sponsignalsready(IEC104Thread::SponSignals*)),this,SLOT(UpdateStatePredAlarmEvents(IEC104Thread::SponSignals*)));
+    connect(Ch104,SIGNAL(bs104signalsready(IEC104Thread::BS104Signals*)),this,SLOT(FillBSI(IEC104Thread::BS104Signals*)));
 }
 
 void Coma::NewModbus()
@@ -879,7 +850,7 @@ void Coma::AlarmState()
     }
 } */
 
-void Coma::UpdatePredAlarmEvents(Parse104::SponSignals *Signal)
+void Coma::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
 {
     int i = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
@@ -902,7 +873,7 @@ void Coma::UpdatePredAlarmEvents(Parse104::SponSignals *Signal)
     }
 }
 
-void Coma::UpdateStatePredAlarmEvents(Parse104::SponSignals *Signal)
+void Coma::UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
 {
     int i = 0, predalarmcount = 0, alarmcount = 0;
 //    Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
@@ -1299,7 +1270,7 @@ void Coma::Fill()
         ConfM->Fill();
 }
 
-void Coma::FillBSI(Parse104::BS104Signals *sig)
+void Coma::FillBSI(IEC104Thread::BS104Signals *sig)
 {
     unsigned int i, signum;
     int startadr = 0;

@@ -141,8 +141,8 @@ public slots:
     void DisconnectAndClear();
 //    void FinishHim();
 //    void UpdateReleWidget(Parse104::SponSignals104*);
-    void UpdatePredAlarmEvents(Parse104::SponSignals *);
-    void UpdateStatePredAlarmEvents(Parse104::SponSignals *);
+    void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
+    void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
 //    void UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime*);
     void CheckTimeFinish();
     void CheckModBusFinish();
@@ -174,7 +174,7 @@ private slots:
     void SetBDefConf();
     void SetMDefConf();
     void Fill();
-    void FillBSI(Parse104::BS104Signals *sig);
+    void FillBSI(IEC104Thread::BS104Signals *sig);
     void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     void PasswordCheck(QString psw);
 //    void DisconnectMessage();
