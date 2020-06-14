@@ -166,7 +166,7 @@ void MNKTime::Write_Date()
     WriteTime(myDateTime);
 }
 
-void MNKTime::  FillTimeFrom104(IEC104Thread::BS104Signals* Time)
+void MNKTime::FillTimeFrom104(IEC104Thread::BS104Signals* Time)
 {
     uint unixtimestamp = 0;
     QString qStr;

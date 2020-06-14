@@ -25,9 +25,9 @@ void Ethernet::Run()
     StdFunc::SetDeviceIP(IP);
     sock = new QTcpSocket(this);
     connect(sock,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(seterr(QAbstractSocket::SocketError)));
-    connect(sock,SIGNAL(Connected()),this,SIGNAL(Connected()));
-    connect(sock,SIGNAL(Connected()),this,SLOT(EthSetConnected()));
-    connect(sock,SIGNAL(Disconnected()),this,SIGNAL(Disconnected()));
+    connect(sock,SIGNAL(connected()),this,SIGNAL(Connected()));
+    connect(sock,SIGNAL(connected()),this,SLOT(EthSetConnected()));
+    connect(sock,SIGNAL(disconnected()),this,SIGNAL(Disconnected()));
     sock->connectToHost(StdFunc::ForDeviceIP(),PORT104,QIODevice::ReadWrite,QAbstractSocket::IPv4Protocol);
     connect(sock,SIGNAL(readyRead()),this,SLOT(CheckForData()));
     TimeFunc::WaitFor(EthConnected, TIMEOUT_BIG);

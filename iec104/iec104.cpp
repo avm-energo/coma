@@ -15,7 +15,6 @@ IEC104::IEC104(QObject *parent) : QObject(parent)
 {
     EthThreadWorking = false;
     ParseThreadWorking = false;
-    FirstParse = true;
     Log = new LogClass;
     Log->Init("iec104.log");
     Log->info("=== Log started ===");
@@ -71,7 +70,7 @@ void IEC104::Connect(const QString &IP, quint16 baseadr)
     connect(Parse,SIGNAL(SendJourWorkfromParse(QByteArray)),this,SIGNAL(SendJourWorkfromiec104(QByteArray)));
     connect(Parse,SIGNAL(SendJourMeasfromParse(QByteArray)),this,SIGNAL(SendJourMeasfromiec104(QByteArray)));
 
-    connect(Parse,SIGNAL(SendMessageOk()), this,SIGNAL(sendMessageOk()));
+    connect(Parse,SIGNAL(SendMessageOk()), this,SIGNAL(SendMessageOk()));
 
     connect(Parse,SIGNAL(SetDataSize(int)),this,SIGNAL(SetDataSize(int)));
     connect(Parse,SIGNAL(SetDataCount(int)),this,SIGNAL(SetDataCount(int)));
@@ -92,40 +91,6 @@ void IEC104::CorReadRequest()
     ParseWriteMutex.lock();
     InputQueue.enqueue(inp);
     ParseWriteMutex.unlock();
-}
-
-void IEC104::GetSomeData(QByteArray ba)
-{
-    if (FirstParse)
-        Log->info("<-- " + ba.toHex());
-    FirstParse = false;
-    quint32 basize = static_cast<quint32>(ba.size());
-    if (CutPckt.size() > 1)
-    {
-        quint32 cutpcktlen = static_cast<quint8>(CutPckt.at(1));
-        cutpcktlen += 2;
-        quint32 cutpcktsize = static_cast<quint32>(CutPckt.size());
-        quint32 missing_num = cutpcktlen-cutpcktsize; // взяли длину остатка от предыдущего пакета
-        if (missing_num>basize)
-        {
-            CutPckt.append(ba);
-            return; // если так и не достигли конца пакета, надо брать следующий пакет в cutpckt
-        }
-        CutPckt.append(ba.left(missing_num)); // взяли из текущего пакета сами байты
-        ba.remove(0,missing_num);
-        ParseReadMutex.lock();
-        Parse->ParseData.append(CutPckt);
-        ParseReadMutex.unlock();
-        CutPckt.clear();
-        basize = static_cast<quint32>(ba.size());
-    }
-    if (basize < 2) // ba is empty or there's not enough symbols to parse in it
-      return;
-
-    CutPckt = ba.left(2);
-    ba = ba.mid(2);
-    GetSomeData(ba);
-    FirstParse = true;
 }
 
 void IEC104::SelectFile(char numFile)
@@ -216,13 +181,14 @@ void IEC104::ParseThreadFinished()
 
 IEC104Thread::IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, QObject *parent) : QObject(parent)
 {
+    FirstParse = true;
     InputQueue = &queue;
     Log = log;
     ThreadMustBeFinished = false;
     V_S = V_R = 0;
     AckVR = I104_W;
     APDUFormat = I104_WRONG;
-    FileSending = 0;
+    FileSending = false;
     Timer104 = new QTimer;
     Timer104->setInterval(15000);
     ConTimer = new QTimer;
@@ -254,60 +220,94 @@ void IEC104Thread::Run()
             ParseReadMutex.lock();
             QByteArray tmpba = ParseData.takeFirst();
             ParseReadMutex.unlock();
-            if (tmpba.isEmpty())
-                continue;
-            int tmpi = isIncomeDataValid(tmpba);
-            if (tmpi == I104_RCVNORM) // если поймали правильное начало данных, переходим к их обработке
+            if (!tmpba.isEmpty())
             {
-                if (APDUFormat == I104_I)
+                int tmpi = isIncomeDataValid(tmpba);
+                if (tmpi == I104_RCVNORM) // если поймали правильное начало данных, переходим к их обработке
                 {
-                    tmpba = tmpba.mid(6);
-                    ParseIFormat(tmpba); // без APCI
-                }
-            }
-            if (!FileSending)
-            {
-                if (!InputQueue->isEmpty())
-                {
-                    ParseWriteMutex.lock();
-                    InputStruct inp = InputQueue->dequeue();
-                    ParseWriteMutex.unlock();
-                    switch (inp.cmd)
+                    if (APDUFormat == I104_I)
                     {
-                    case CM104_COM45:
-                        Com45(inp.args.uintarg);
-                        break;
-                    case CM104_COM50:
-                        Com50(inp.args.uintarg, inp.args.flarg);
-                        break;
-                    case CM104_FILEREADY:
-                    {
-                        QVector<S2::DataRec> *ptr = reinterpret_cast<QVector<S2::DataRec> *>(inp.args.ptrarg);
-                        FileReady(ptr);
-                        break;
-                    }
-                    case CM104_SELECTFILE:
-                        SelectFile(inp.args.uintarg);
-                        break;
-                    case CM104_COM51WRITETIME:
-                        Com51WriteTime(inp.args.uintarg);
-                        break;
-                    case CM104_CORREADREQUEST:
-                        CorReadRequest();
-                        break;
-                    case CM104_INTERROGATETIMEGR15:
-                        InterrogateTimeGr15();
-                        break;
+                        tmpba = tmpba.mid(6);
+                        ParseIFormat(tmpba); // без APCI
                     }
                 }
-                if (V_R > (AckVR + I104_W))
-                    SendS();
             }
         }
-        TimeFunc::Wait();
+        if (!FileSending)
+        {
+            if (!InputQueue->isEmpty())
+            {
+                ParseWriteMutex.lock();
+                InputStruct inp = InputQueue->dequeue();
+                ParseWriteMutex.unlock();
+                switch (inp.cmd)
+                {
+                case CM104_COM45:
+                    Com45(inp.args.uintarg);
+                    break;
+                case CM104_COM50:
+                    Com50(inp.args.uintarg, inp.args.flarg);
+                    break;
+                case CM104_FILEREADY:
+                {
+                    QVector<S2::DataRec> *ptr = reinterpret_cast<QVector<S2::DataRec> *>(inp.args.ptrarg);
+                    FileReady(ptr);
+                    break;
+                }
+                case CM104_SELECTFILE:
+                    SelectFile(inp.args.uintarg);
+                    break;
+                case CM104_COM51WRITETIME:
+                    Com51WriteTime(inp.args.uintarg);
+                    break;
+                case CM104_CORREADREQUEST:
+                    CorReadRequest();
+                    break;
+                case CM104_INTERROGATETIMEGR15:
+                    InterrogateTimeGr15();
+                    break;
+                }
+            }
+            if (V_R > (AckVR + I104_W))
+                SendS();
+        }
         QCoreApplication::processEvents();
     }
     emit Finished();
+}
+
+void IEC104Thread::GetSomeData(QByteArray ba)
+{
+    if (FirstParse)
+        Log->info("<-- " + ba.toHex());
+    FirstParse = false;
+    quint32 basize = static_cast<quint32>(ba.size());
+    if (CutPckt.size() > 1)
+    {
+        quint32 cutpcktlen = static_cast<quint8>(CutPckt.at(1));
+        cutpcktlen += 2;
+        quint32 cutpcktsize = static_cast<quint32>(CutPckt.size());
+        quint32 missing_num = cutpcktlen-cutpcktsize; // взяли длину остатка от предыдущего пакета
+        if (missing_num>basize)
+        {
+            CutPckt.append(ba);
+            return; // если так и не достигли конца пакета, надо брать следующий пакет в cutpckt
+        }
+        CutPckt.append(ba.left(missing_num)); // взяли из текущего пакета сами байты
+        ba.remove(0,missing_num);
+        ParseReadMutex.lock();
+        ParseData.append(CutPckt);
+        ParseReadMutex.unlock();
+        CutPckt.clear();
+        basize = static_cast<quint32>(ba.size());
+    }
+    if (basize < 2) // ba is empty or there's not enough symbols to parse in it
+      return;
+
+    CutPckt = ba.left(2);
+    ba = ba.mid(2);
+    GetSomeData(ba);
+    FirstParse = true;
 }
 
 int IEC104Thread::isIncomeDataValid(QByteArray ba)
@@ -531,12 +531,14 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
         case F_SR_NA_1: // секция готова
         {
+            Log->info("Section ready");
             GetSection(ba[9]);
             break;
         }
 
         case F_FR_NA_1: // файл готов
         {
+            Log->info("File ready");
             ReadData.clear();
             RDSize = 0;
             RDLength = 0;
@@ -548,6 +550,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
         case F_SG_NA_1: // сегмент
         {
+            Log->info("Segment ready: RDSize=" + QString::number(ba[12], 16) + ", num=" + QString::number(ba[13]));
             RDSize = static_cast<quint8>(ba[12]);
             RDSize &= 0xFF;
             if(RDSize) //>= RDLength)
@@ -561,13 +564,14 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
         case F_LS_NA_1: // последняя секция, последнй сегмент
         {
+            Log->info("Last section, ba[12] = "+QString::number(ba[12]));
                 switch(ba[12])
                 {
                 case 1:
                 {
                       // ConfirmFile(num);
-                    FileSending = 0;
                     ConTimer->start();
+                    FileSending = false;
 
                     int filetype = ba.at(9);
                     if(filetype == 0x01)  // если файл конфигурации
@@ -599,14 +603,22 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
         case F_SC_NA_1: // запрос файла, секции
         {
             if(ba.at(12) == 0x02)  //запрос файла
+            {
+                Log->info("File query");
                 SectionReady();
+            }
             if(ba.at(12) == 0x06)
+            {
+                Log->info("Segment query");
                 SendSegments();
+            }
             break;
         }
 
         case F_AF_NA_1: // подтверждение файла, секции
         {
+            Log->info("Last section of file " + QString::number(ba[12]) + " confirm");
+            FileSending = false;
             if(ba.at(12) == 0x03)  //подтверждение секции
                 LastSection();
             if(ba.at(12) == 0x01)  //подтверждение секции
@@ -673,7 +685,6 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
 
 void IEC104Thread::StartDT()
 {
-    TimeFunc::Wait(500);
     Log->info("Start()");
     APCI StartDT;
     ASDU GInter;
@@ -837,7 +848,7 @@ void IEC104Thread::SendTestAct()
 void IEC104Thread::SelectFile(char numfile)
 {
     SecNum = 1;
-    FileSending = 1;
+    FileSending = true;
     ConTimer->stop();
     Log->info("SelectFile(" + QString::number(numfile) + ")");
     ASDU cmd = ASDUFilePrefix(F_SC_NA_1, numfile, 0x00);

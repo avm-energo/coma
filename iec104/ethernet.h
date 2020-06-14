@@ -18,11 +18,7 @@ public:
     ~Ethernet();
     quint16 ASDU;
     bool ClosePortAndFinishThread;
-//    quint8 sendStatus;
-//    quint8 stateMessage;
-//    quint8 mutexflag;
     QString IP;
-//    quint8 disconflag, timerstart;
 signals:
     void ethNoconnection();
     void error(int);
@@ -40,7 +36,6 @@ public slots:
 private slots:
     void CheckForData();
     void seterr(QAbstractSocket::SocketError);
-//    void SetFlag();
     void EthSetConnected();
 
 private:

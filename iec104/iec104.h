@@ -173,7 +173,8 @@ public:
     QVector<S2::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     QVector<S2::DataRec> *DRJour;
     quint32 FileLen;
-    int incLS, count, NoAnswer, FileSending;
+    int incLS, count, NoAnswer;
+    bool FileSending;
     QQueue<InputStruct> *InputQueue;
 
     IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, QObject *parent=nullptr);
@@ -186,6 +187,7 @@ public slots:
     void StopDT();
     void Stop();
     void Run();
+    void GetSomeData(QByteArray);
 
 signals:
     void Started();
@@ -240,6 +242,8 @@ private:
     QTimer *ConTimer;
     quint8 KSS;
     quint8 KSF;
+    QByteArray CutPckt;
+    bool FirstParse;
 
     void ParseIFormat(QByteArray &ba);
     int isIncomeDataValid(QByteArray);
@@ -252,7 +256,6 @@ private:
     void SendS();
     void SendTestCon();
     void CorReadRequest();
-    void SendTestAct();
     void SelectFile(char numfile);
     void CallFile(unsigned char);
     void GetSection(unsigned char);
@@ -268,6 +271,7 @@ private:
     void Com51WriteTime(quint32 time);
 
 private slots:
+    void SendTestAct();
 
 protected:
 };
@@ -370,11 +374,11 @@ signals:
     void Sponsignalsready(IEC104Thread::SponSignals*);
     void Bs104signalsready(IEC104Thread::BS104Signals*);
     void ShowError(QString);
-    void sendS2fromiec104(QVector<S2::DataRec>*);
+    void SendS2fromiec104(QVector<S2::DataRec>*);
     void SendJourSysfromiec104(QByteArray);
     void SendJourWorkfromiec104(QByteArray);
     void SendJourMeasfromiec104(QByteArray);
-    void sendMessageOk();
+    void SendMessageOk();
     void SetDataSize(int);
     void SetDataCount(int);
     void SendConfMessageOk();
@@ -382,14 +386,11 @@ signals:
     void Finished();
 
 private:
-    QByteArray CutPckt;
     bool EthThreadWorking, ParseThreadWorking;
     LogClass *Log;
     QQueue<IEC104Thread::InputStruct> InputQueue;
-    bool FirstParse;
 
 private slots:
-    void GetSomeData(QByteArray);
     void SelectFile(char);
     void FileReady(QVector<S2::DataRec>*);
     void Com45(quint32 com);

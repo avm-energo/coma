@@ -506,8 +506,6 @@ void Coma::ReConnect()
     INFOMSG("Reconnect()");
     Reconnect = true;
     TimeTimer->stop();
-    if(TimeD != nullptr)
-        TimeD->Timer->stop();
     if(!Disconnected)
     {
         Disconnect();
@@ -1406,8 +1404,6 @@ void Coma::DisconnectAndClear()
 {
     INFOMSG("DisconnectAndClear()");
     TimeTimer->stop();
-    if (TimeD != nullptr)
-        TimeD->Timer->stop();
     if(!Disconnected)
     {
         Disconnect();
@@ -1540,6 +1536,8 @@ void Coma::MainTWTabClicked(int tabindex)
         else
             TimeTimer->stop();
     }
+    else
+        TimeTimer->stop();
 }
 
 void Coma::ModBusFinished()

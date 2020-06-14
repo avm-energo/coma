@@ -116,12 +116,10 @@ public:
 
 signals:
     void CloseConnectDialog();
-    void FinishAll();
     void PasswordChecked();
     void ClearBsi();
     void Finished();
     void StopCommunications();
-    void stoptime();
     void ConnectMes(QString*);
     void SetPredAlarmColor(quint8*);
     void SetAlarmColor(quint8*);
