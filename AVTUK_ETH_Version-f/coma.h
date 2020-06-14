@@ -33,11 +33,6 @@ public:
     };
 
 
-//    static quint32 MTypeB;
-//    static quint32 MTypeM;
-//    static int TheEnd; //, StopRead;
-
-
     struct DeviceConnectStruct
     {
         unsigned short vendor_id;
@@ -102,9 +97,6 @@ public:
         sl.append("Нет связи с NTP-сервером");
         sl.append("Не работает внешняя flash-память (мезонин)");
         sl.append("Не работает внешняя fram");
-        //int ts = sl.size();
-        //for (int i=ts; i<MAXERRORFLAGNUM; ++i)
-        //    sl.append("");
         return sl;
     }
 
@@ -115,7 +107,6 @@ public:
     void ClearTW();
     void SetupMenubar();
     QWidget *MainInfoWidget();
-//    QWidget *HthWidget();
     QWidget *ReleWidget();
     QWidget *Least();
     int CheckPassword();
@@ -127,8 +118,6 @@ signals:
     void CloseConnectDialog();
     void FinishAll();
     void PasswordChecked();
-//    void BsiRefresh(ModuleBSI::Bsi*);
-//    void USBBsiRefresh();
     void ClearBsi();
     void Finished();
     void StopCommunications();
@@ -139,17 +128,10 @@ signals:
 
 public slots:
     void DisconnectAndClear();
-//    void FinishHim();
-//    void UpdateReleWidget(Parse104::SponSignals104*);
     void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
     void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
-//    void UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime*);
     void CheckTimeFinish();
     void CheckModBusFinish();
-/*    void Stop_BdaTimer(int index);
-    void Start_BdaTimer(int index);
-    void Stop_TimeTimer(int index);
-    void Start_TimeTimer(int index); */
     void DeviceState();
     void PredAlarmState();
     void AlarmState();
@@ -177,10 +159,7 @@ private slots:
     void FillBSI(IEC104Thread::BS104Signals *sig);
     void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     void PasswordCheck(QString psw);
-//    void DisconnectMessage();
     void SetPortSlot(QString port);
-//    void GetDeviceFromTable(QModelIndex idx);
-//    void UpdateHthWidget(ModuleBSI::Bsi *);
     void SetProgressBar1Size(int size);
     void SetProgressBar1(int cursize);
     void SetProgressBar2Size(int size);

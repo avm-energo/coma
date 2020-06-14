@@ -1,5 +1,4 @@
 #include <QThread>
-#include <QTimer>
 #include <QCoreApplication>
 #include <QDialog>
 #include <QVBoxLayout>
@@ -61,23 +60,22 @@ void IEC104::Connect(const QString &IP, quint16 baseadr)
     connect(eth,SIGNAL(NewDataArrived(QByteArray)),Parse,SLOT(GetSomeData(QByteArray)));
     connect(Parse,SIGNAL(ReconnectSignal()),this,SIGNAL(ReconnectSignal()));
 
-    connect(Parse,SIGNAL(bs104signalsreceived(IEC104Thread::BS104Signals*)),\
-            this,SIGNAL(bs104signalsready(IEC104Thread::BS104Signals*)),Qt::BlockingQueuedConnection);
-    connect(Parse,SIGNAL(floatsignalsreceived(IEC104Thread::FlSignals104*)),\
-            this,SIGNAL(floatsignalsready(IEC104Thread::FlSignals104*)),Qt::BlockingQueuedConnection);
-    connect(Parse,SIGNAL(sponsignalsreceived(IEC104Thread::SponSignals*)),\
-            this,SIGNAL(sponsignalsready(IEC104Thread::SponSignals*)),Qt::BlockingQueuedConnection);
-    connect(Parse,SIGNAL(sendS2fromParse(QVector<S2::DataRec>*)),this,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)));
-    connect(Parse,SIGNAL(sendJourSysfromParse(QByteArray)),this,SIGNAL(sendJourSysfromiec104(QByteArray)));
-    connect(Parse,SIGNAL(sendJourWorkfromParse(QByteArray)),this,SIGNAL(sendJourWorkfromiec104(QByteArray)));
-    connect(Parse,SIGNAL(sendJourMeasfromParse(QByteArray)),this,SIGNAL(sendJourMeasfromiec104(QByteArray)));
+    connect(Parse,SIGNAL(Bs104signalsreceived(IEC104Thread::BS104Signals*)),\
+            this,SIGNAL(Bs104signalsready(IEC104Thread::BS104Signals*)),Qt::BlockingQueuedConnection);
+    connect(Parse,SIGNAL(Floatsignalsreceived(IEC104Thread::FlSignals104*)),\
+            this,SIGNAL(Floatsignalsready(IEC104Thread::FlSignals104*)),Qt::BlockingQueuedConnection);
+    connect(Parse,SIGNAL(Sponsignalsreceived(IEC104Thread::SponSignals*)),\
+            this,SIGNAL(Sponsignalsready(IEC104Thread::SponSignals*)),Qt::BlockingQueuedConnection);
+    connect(Parse,SIGNAL(SendS2fromParse(QVector<S2::DataRec>*)),this,SIGNAL(SendS2fromiec104(QVector<S2::DataRec>*)));
+    connect(Parse,SIGNAL(SendJourSysfromParse(QByteArray)),this,SIGNAL(SendJourSysfromiec104(QByteArray)));
+    connect(Parse,SIGNAL(SendJourWorkfromParse(QByteArray)),this,SIGNAL(SendJourWorkfromiec104(QByteArray)));
+    connect(Parse,SIGNAL(SendJourMeasfromParse(QByteArray)),this,SIGNAL(SendJourMeasfromiec104(QByteArray)));
 
-    connect(Parse,SIGNAL(LastSec()),this,SLOT(LastSection()));
-    connect(Parse,SIGNAL(sendMessageOk()), this,SIGNAL(sendMessageOk()));
+    connect(Parse,SIGNAL(SendMessageOk()), this,SIGNAL(sendMessageOk()));
 
-    connect(Parse,SIGNAL(SetDataSizeFromParse(int)),this,SIGNAL(SetDataSize(int)));
-    connect(Parse,SIGNAL(SetDataCountFromParse(int)),this,SIGNAL(SetDataCount(int)));
-    connect(Parse,SIGNAL(sendMessagefromParse()),this,SIGNAL(sendConfMessageOk()));
+    connect(Parse,SIGNAL(SetDataSize(int)),this,SIGNAL(SetDataSize(int)));
+    connect(Parse,SIGNAL(SetDataCount(int)),this,SIGNAL(SetDataCount(int)));
+    connect(Parse,SIGNAL(SendMessagefromParse()),this,SIGNAL(SendConfMessageOk()));
 
     Parse->SetBaseAdr(baseadr);
     Parse->incLS = 0;
@@ -150,75 +148,44 @@ void IEC104::FileReady(QVector<S2::DataRec>* File)
     ParseWriteMutex.unlock();
 }
 
-void IEC104::LastSection()
-{
-    QByteArray ba;
-
-    ASDU cmd = ASDUFilePrefix(F_LS_NA_1, 1, SecNum);
-    cmd.append('\x01');
-    cmd.append(KSF);
-    KSF = 0;
-    APCI GI = CreateGI(0x12);
-    Send(1, GI, cmd); // ASDU = QByteArray()
-    //Parse->V_S++;
-}
-
 void IEC104::Com45(quint32 com)
 {
-    Log->info("Com45()");
-
-    ASDU cmd = ASDU6Prefix(C_SC_NA_1, com);
-    cmd.append('\x01');
-    APCI GI = CreateGI(0x0e);
-    Send(1, GI, cmd); // ASDU = QByteArray()
-    //Parse->V_S++;
-}
-
-template <typename T> QByteArray IEC104::ToByteArray(T var)
-{
-    QByteArray ba;
-    int sizeofvar = sizeof(var);
-    for (int i=0; i<sizeofvar; ++i)
-    {
-        unsigned char tmpc;
-        memcpy(&tmpc, reinterpret_cast<unsigned char *>(&var)+i, sizeof(unsigned char));
-        ba.append(tmpc);
-    }
-    return ba;
+    IEC104Thread::InputStruct inp;
+    inp.cmd = IEC104Thread::CM104_COM45;
+    inp.args.uintarg = com;
+    ParseWriteMutex.lock();
+    InputQueue.enqueue(inp);
+    ParseWriteMutex.unlock();
 }
 
 void IEC104::Com50(quint32 adr, float param)
 {
-    Log->info("Com50()");
-    if(adr == 910)
-        emit SetDataSize(11);
-
-    ASDU cmd = ASDU6Prefix(C_SE_NC_1, adr);
-    cmd.append(ToByteArray(param));
-    cmd.append('\x00');
-    APCI GI = CreateGI(0x12);
-    Send(1, GI, cmd); // ASDU = QByteArray()
-    //Parse->V_S++;
+    IEC104Thread::InputStruct inp;
+    inp.cmd = IEC104Thread::CM104_COM50;
+    inp.args.uintarg = adr;
+    inp.args.flarg = param;
+    ParseWriteMutex.lock();
+    InputQueue.enqueue(inp);
+    ParseWriteMutex.unlock();
 }
 
 void IEC104::InterrogateTimeGr15()
 {
-    Log->info("InterrogateTimeGr15()");
-    ASDU GTime = ASDU6Prefix(C_IC_NA_1, 0);
-    GTime.append(0x23);
-    APCI GI = CreateGI(0x0e);
-    Send(1, GI, GTime); // ASDU = QByteArray()
-    Parse->AckVR = Parse->V_R;
-   // Parse->V_S++;
+    IEC104Thread::InputStruct inp;
+    inp.cmd = IEC104Thread::CM104_INTERROGATETIMEGR15;
+    ParseWriteMutex.lock();
+    InputQueue.enqueue(inp);
+    ParseWriteMutex.unlock();
 }
 
 void IEC104::com51WriteTime(uint time)
 {
-    Log->info("Com51()");
-    ASDU cmd = ASDU6Prefix(C_BO_NA_1, 4601);
-    cmd.append(ToByteArray(time));
-    APCI GI = CreateGI(0x11);
-    Send(1, GI, cmd); // ASDU = QByteArray()
+    IEC104Thread::InputStruct inp;
+    inp.cmd = IEC104Thread::CM104_COM51WRITETIME;
+    inp.args.uintarg = time;
+    ParseWriteMutex.lock();
+    InputQueue.enqueue(inp);
+    ParseWriteMutex.unlock();
 }
 
 void IEC104::EthThreadStarted()
@@ -255,7 +222,6 @@ IEC104Thread::IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, QObject *p
     V_S = V_R = 0;
     AckVR = I104_W;
     APDUFormat = I104_WRONG;
-    GetNewVR = false;
     FileSending = 0;
     Timer104 = new QTimer;
     Timer104->setInterval(15000);
@@ -309,7 +275,11 @@ void IEC104Thread::Run()
                     switch (inp.cmd)
                     {
                     case CM104_COM45:
+                        Com45(inp.args.uintarg);
+                        break;
                     case CM104_COM50:
+                        Com50(inp.args.uintarg, inp.args.flarg);
+                        break;
                     case CM104_FILEREADY:
                     {
                         QVector<S2::DataRec> *ptr = reinterpret_cast<QVector<S2::DataRec> *>(inp.args.ptrarg);
@@ -320,19 +290,18 @@ void IEC104Thread::Run()
                         SelectFile(inp.args.uintarg);
                         break;
                     case CM104_COM51WRITETIME:
+                        Com51WriteTime(inp.args.uintarg);
+                        break;
                     case CM104_CORREADREQUEST:
                         CorReadRequest();
                         break;
                     case CM104_INTERROGATETIMEGR15:
-                    case default:
+                        InterrogateTimeGr15();
                         break;
                     }
                 }
                 if (V_R > (AckVR + I104_W))
-                {
                     SendS();
-                    GetNewVR = true;
-                }
             }
         }
         TimeFunc::Wait();
@@ -572,7 +541,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
             RDSize = 0;
             RDLength = 0;
             fileSize = (static_cast<quint8>(ba[13]) << 16) | (static_cast<quint8>(ba[12]) << 8) | (static_cast<quint8>(ba[11]));
-            emit SetDataSizeFromParse(fileSize);
+            emit SetDataSize(fileSize);
             CallFile(ba[9]);
             break;
         }
@@ -585,7 +554,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
             {
                 ReadData.append(&(ba.data()[13]), RDSize);
                 RDLength += RDSize;
-                emit SetDataCountFromParse(RDLength);
+                emit SetDataCount(RDLength);
             }
             break;
         }
@@ -605,14 +574,14 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                     {
                        res = S2::RestoreDataMem(ReadData.data(), RDLength, DR);
                        if (res == NOERROR)
-                           emit sendS2fromParse(DR);
+                           emit SendS2fromParse(DR);
                     }
                     else if(filetype == 0x04)   // если файл системного журнала
-                        emit sendJourSysfromParse(ReadData);
+                        emit SendJourSysfromParse(ReadData);
                     else if(filetype == 0x05)   // если файл рабочего журнала
-                          emit sendJourWorkfromParse(ReadData);
+                          emit SendJourWorkfromParse(ReadData);
                     else if(filetype == 6)   // если файл журнала измерений
-                        emit sendJourMeasfromParse(ReadData);
+                        emit SendJourMeasfromParse(ReadData);
                     RDLength = 0;
                     RDSize = 0;
                     break;
@@ -639,16 +608,16 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
         case F_AF_NA_1: // подтверждение файла, секции
         {
             if(ba.at(12) == 0x03)  //подтверждение секции
-                emit LastSec();
+                LastSection();
             if(ba.at(12) == 0x01)  //подтверждение секции
-                emit sendMessagefromParse();
+                emit SendMessagefromParse();
             break;
         }
 
         case C_SC_NA_1:
         {
             if(DUI.cause.cause == 10)
-                emit sendMessageOk();
+                emit SendMessageOk();
             break;
         }
 
@@ -657,15 +626,15 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
             if(DUI.cause.cause == 10)
             count++;
 
-            emit SetDataCountFromParse(count);
+            emit SetDataCount(count);
             quint32 adr = ba[6] + (ba[7]+1)*256; //+ (ba[8]<<16);
 
             if((adr == 920) && (DUI.cause.cause == 10))  // если адрес последнего параметра коррекции
             {
                if(ba.at(13) == 0)
                {
-                   emit sendMessageOk();
-                   emit SetDataCountFromParse(11);
+                   emit SendMessageOk();
+                   emit SetDataCount(11);
                }
                count=0;
             }
@@ -680,25 +649,25 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
     if(cntflTimestamp != 0)
     {
         flSignals->SigNumber = cntflTimestamp;
-        emit floatsignalsreceived(flSignals);
+        emit Floatsignalsreceived(flSignals);
     }
 
     if(cntfl != 0)
     {
         flSignals->SigNumber = cntfl;
-        emit floatsignalsreceived(flSignals);
+        emit Floatsignalsreceived(flSignals);
     }
 
     if(cntspon != 0)
     {
         sponsignals->SigNumber = cntspon;
-        emit sponsignalsreceived(sponsignals);
+        emit Sponsignalsreceived(sponsignals);
     }
 
     if(cntbs != 0)
     {
         BS104Signals->SigNumber = cntbs;
-        emit bs104signalsreceived(BS104Signals);
+        emit Bs104signalsreceived(BS104Signals);
     }
 }
 
@@ -793,6 +762,19 @@ void IEC104Thread::SendGI()
     APCI GI = CreateGI(0x0e);
     Send(1, GI, GInter); // ASDU = QByteArray()
     AckVR = V_R;
+}
+
+template <typename T> QByteArray IEC104Thread::ToByteArray(T var)
+{
+    QByteArray ba;
+    int sizeofvar = sizeof(var);
+    for (int i=0; i<sizeofvar; ++i)
+    {
+        unsigned char tmpc;
+        memcpy(&tmpc, reinterpret_cast<unsigned char *>(&var)+i, sizeof(unsigned char));
+        ba.append(tmpc);
+    }
+    return ba;
 }
 
 void IEC104Thread::SendS()
@@ -919,7 +901,6 @@ void IEC104Thread::FileReady(QVector<S2::DataRec> *file)
 
 void IEC104Thread::SectionReady()
 {
-    firstSegment = 1;
     ASDU cmd = ASDUFilePrefix(F_SR_NA_1, 0x01, SecNum);
     cmd.append(FileLen&0xFF);
     cmd.append((FileLen&0xFF00)>>8);
@@ -975,5 +956,51 @@ void IEC104Thread::SendSegments()
     GI = CreateGI(0x12);
     QThread::msleep(500);
     Send(1, GI, cmd); // ASDU = QByteArray()
-    //Parse->V_S++;
+}
+
+void IEC104Thread::LastSection()
+{
+    ASDU cmd = ASDUFilePrefix(F_LS_NA_1, 1, SecNum);
+    cmd.append('\x01');
+    cmd.append(KSF);
+    KSF = 0;
+    APCI GI = CreateGI(0x12);
+    Send(1, GI, cmd); // ASDU = QByteArray()
+}
+
+void IEC104Thread::Com45(quint32 com)
+{
+    ASDU cmd = ASDU6Prefix(C_SC_NA_1, com);
+    cmd.append('\x01');
+    APCI GI = CreateGI(0x0e);
+    Send(1, GI, cmd);
+}
+
+void IEC104Thread::Com50(quint32 adr, float param)
+{
+    if(adr == 910)
+        emit SetDataSize(11);
+
+    ASDU cmd = ASDU6Prefix(C_SE_NC_1, adr);
+    cmd.append(ToByteArray(param));
+    cmd.append('\x00');
+    APCI GI = CreateGI(0x12);
+    Send(1, GI, cmd); // ASDU = QByteArray()
+}
+
+void IEC104Thread::InterrogateTimeGr15()
+{
+    ASDU GTime = ASDU6Prefix(C_IC_NA_1, 0);
+    GTime.append(0x23);
+    APCI GI = CreateGI(0x0e);
+    Send(1, GI, GTime); // ASDU = QByteArray()
+    AckVR = V_R;
+}
+
+void IEC104Thread::Com51WriteTime(quint32 time)
+{
+    ASDU cmd = ASDU6Prefix(C_BO_NA_1, 4601);
+    cmd.append(ToByteArray(time));
+    APCI GI = CreateGI(0x11);
+    Send(1, GI, cmd); // ASDU = QByteArray()
 }

@@ -82,18 +82,14 @@
 #define COT_FILETRANSFER						13
 #define COT_INTERROGATION						20
 
-#include <QObject>
 #include <QTimer>
 #include <QMutex>
 
-
-//#define CN_MAXFILESIZE  30000 // максимальный размер выходного файла
 #define SECTIONSIZE 2048
 #define SEGMENTSIZE 230
 #define OFFSET 13
 #define FHSIZE 16
 #define SYSTEM_JOUR_SIZE 65568
-
 
 class IEC104Thread : public QObject
 {
@@ -115,6 +111,7 @@ public:
     struct CommandsArgs
     {
         quint32 uintarg;
+        float flarg;
         void *ptrarg;
     };
 
@@ -143,13 +140,6 @@ public:
     {
         quint32 SigAdr;
         quint8 SigVal;
-       // quint64 CP56Time;
-    } SIQ104;
-
-    typedef struct
-    {
-        quint32 SigAdr;
-        quint8 SigVal;
         quint64 CP56Time;
     } SIQ104withTime;
 
@@ -172,15 +162,12 @@ public:
     } BS104Signals;
 
     QByteArray File;
-    quint8 firstSegment;
     QList<QByteArray> ParseData;
     quint32 ReadDataSize;
     quint16 V_S, V_R, AckVR;
     int Command;
-    bool GetNewVR;
     QTimer *Timer104;
     QByteArray ReadData;
-    QTimer *TTimer, *OscTimer;
     quint8 RDSize; // длина всей посылки
     int RDLength;
     QVector<S2::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
@@ -199,27 +186,23 @@ public slots:
     void StopDT();
     void Stop();
     void Run();
-    void ErrMsg();
 
 signals:
     void Started();
     void Finished();
     void WriteData(QByteArray);
     void ReconnectSignal();
-    void floatsignalsreceived(IEC104Thread::FlSignals104*);
-    void sponsignalsreceived(IEC104Thread::SponSignals*);
-    void bs104signalsreceived(IEC104Thread::BS104Signals*);
-    void sendConfirmFile(unsigned char);
-    void sendS2fromParse(QVector<S2::DataRec>*);
-    void sendJourSysfromParse(QByteArray);
-    void sendJourWorkfromParse(QByteArray);
-    void sendJourMeasfromParse(QByteArray);
-    void LastSec();
-    void sendMessageOk();
-    void sendConfMessageOk();
-    void SetDataSizeFromParse(int);
-    void SetDataCountFromParse(int);
-    void sendMessagefromParse();
+    void Floatsignalsreceived(IEC104Thread::FlSignals104*);
+    void Sponsignalsreceived(IEC104Thread::SponSignals*);
+    void Bs104signalsreceived(IEC104Thread::BS104Signals*);
+    void SendS2fromParse(QVector<S2::DataRec>*);
+    void SendJourSysfromParse(QByteArray);
+    void SendJourWorkfromParse(QByteArray);
+    void SendJourMeasfromParse(QByteArray);
+    void SendMessageOk();
+    void SetDataSize(int);
+    void SetDataCount(int);
+    void SendMessagefromParse();
 
 
 private:
@@ -278,6 +261,11 @@ private:
     void FileReady(QVector<S2::DataRec>*);
     void SectionReady();
     void SendSegments();
+    void LastSection();
+    void Com45(quint32 com);
+    void Com50(quint32 adr, float param);
+    void InterrogateTimeGr15();
+    void Com51WriteTime(quint32 time);
 
 private slots:
 
@@ -378,22 +366,18 @@ public slots:
 
 signals:
     void StopAll();
-    void floatsignalsready(IEC104Thread::FlSignals104*);
-    void sponsignalsready(IEC104Thread::SponSignals*);
-    void bs104signalsready(IEC104Thread::BS104Signals*);
-    void readbytessignal(QByteArray);
-    void writebytessignal(QByteArray);
+    void Floatsignalsready(IEC104Thread::FlSignals104*);
+    void Sponsignalsready(IEC104Thread::SponSignals*);
+    void Bs104signalsready(IEC104Thread::BS104Signals*);
     void ShowError(QString);
-    void readConfEth();
     void sendS2fromiec104(QVector<S2::DataRec>*);
-    void sendJourSysfromiec104(QByteArray);
-    void sendJourWorkfromiec104(QByteArray);
-    void sendJourMeasfromiec104(QByteArray);
+    void SendJourSysfromiec104(QByteArray);
+    void SendJourWorkfromiec104(QByteArray);
+    void SendJourMeasfromiec104(QByteArray);
     void sendMessageOk();
     void SetDataSize(int);
     void SetDataCount(int);
-    void sendConfMessageOk();
-    void sendCorMesOk();
+    void SendConfMessageOk();
     void ReconnectSignal();
     void Finished();
 
@@ -408,7 +392,6 @@ private slots:
     void GetSomeData(QByteArray);
     void SelectFile(char);
     void FileReady(QVector<S2::DataRec>*);
-    void LastSection();
     void Com45(quint32 com);
     void Com50(quint32 adr, float param);
     void CorReadRequest();

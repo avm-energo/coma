@@ -276,7 +276,7 @@ void CorDialog::WriteCorBd()
            {
                float corblocki;
                memcpy(&corblocki, CorBlock+i, sizeof(float));
-               emit sendCom50((adr[i]), corblocki);
+               emit SendCom50((adr[i]), corblocki);
                TimeFunc::Wait(300);
            }
         }
@@ -306,7 +306,7 @@ void CorDialog::WriteCor()
     {
         if(MainInterface == I_ETHERNET)
         {
-           emit sendCom45(SETINITREG);
+           emit SendCom45(SETINITREG);
            EMessageBox::information(this, "INFO", "Задано успешно");
            emit CorReadRequest();
         }
@@ -341,7 +341,7 @@ void CorDialog::SetCor()
 {
     if (MainInterface == I_ETHERNET)
     {
-       emit sendCom45(903);
+       emit SendCom45(903);
     }
     else if (MainInterface == I_USB)
     {
@@ -358,7 +358,7 @@ void CorDialog::ResetCor()
     {
         if(MainInterface == I_ETHERNET)
         {
-           emit sendCom45(CLEARREG);
+           emit SendCom45(CLEARREG);
         }
         else if(MainInterface == I_RS485)
         {

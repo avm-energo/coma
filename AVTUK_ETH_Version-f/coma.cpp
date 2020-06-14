@@ -81,7 +81,6 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
        AlarmEvents[i] = 0;
     }
     ActiveThreads = 0;
-//    TheEnd = 0;
 
     New104();
     NewModbus();
@@ -134,7 +133,6 @@ void Coma::SetupUI()
     tb->addAction(act);
     hlyout->addWidget(tb); 
     hlyout->addWidget(ReleWidget(), Qt::AlignCenter);
-    //hlyout->addWidget(HthWidget());
     lyout->addLayout(hlyout);
     lyout->addWidget(Least());
     wdgt->setLayout(lyout);
@@ -165,23 +163,8 @@ void Coma::SetupMenubar()
     connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndClear()));
     menu->addAction(act);
     menubar->addMenu(menu);
-   /* menu = new QMenu;
-    menu->setTitle("Секретные операции");
-    act = new QAction(this);
-    act->setText("Работа с Hidden Block");
-    connect(act,SIGNAL(triggered()),this,SLOT(OpenBhbDialog()));
-    menu->addAction(act);
-    menubar->addMenu(menu);*/
 
     menu = new QMenu;
-    /*menu->setTitle("Настройки");
-    act = new QAction(this);
-    act->setText("Настройки");
-    act->setIcon(QIcon("images/settings.png"));
-    connect(act,SIGNAL(triggered()),this,SLOT(StartSettingsDialog()));
-    menu->addAction(act);
-    menubar->addMenu(menu);*/
-
     act = new QAction(this);
     act->setText("О программе");
     connect(act,SIGNAL(triggered()),this,SLOT(GetAbout()));
@@ -203,7 +186,6 @@ void Coma::StartWork()
             ERMSG("Отмена подключения");
             return;
         }
-//        StopRead = 0;
         S2ConfigForTune.clear();
         S2Config.clear();
         SaveSettings();
@@ -212,7 +194,6 @@ void Coma::StartWork()
     // Stage3
 
     DisconnectAndClear();
-//    TheEnd = 0;
     QString str;
     MTypeB = 0;
     MTypeM = 0;
@@ -251,14 +232,6 @@ void Coma::StartWork()
                 return;
             }
         }
-        /*else if (res == Error::ER_RESEMPTY)
-        {
-            if (OpenBhbDialog() != NOERROR)
-            {
-                EMessageBox::error(this, "Ошибка", "Ошибка при работе с Hidden block");
-                return;
-            }
-        }*/
         ActiveThreads |= THREADUSB;
         MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
         MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
@@ -268,7 +241,6 @@ void Coma::StartWork()
     {
         if(MainInterface == I_ETHERNET)
         {
-            Ch104->BaseAdr = AdrBaseStation;
             if (!Ch104->Working())
                 Ch104->Connect(IPtemp, AdrBaseStation);
             ActiveThreads |= THREAD104;
@@ -417,28 +389,28 @@ void Coma::PrepareDialogs()
     if (MainInterface == I_ETHERNET)
     {
         Ch104->Parse->DR = &S2Config;
-        connect(Ch104,SIGNAL(floatsignalsready(IEC104Thread::FlSignals104*)),CheckB,SLOT(UpdateFlData(IEC104Thread::FlSignals104*)));
-        connect(Ch104,SIGNAL(sponsignalsready(IEC104Thread::SponSignals*)),CheckB,SLOT(UpdateSponData(IEC104Thread::SponSignals*)));
+        connect(Ch104,SIGNAL(Floatsignalsready(IEC104Thread::FlSignals104*)),CheckB,SLOT(UpdateFlData(IEC104Thread::FlSignals104*)));
+        connect(Ch104,SIGNAL(Sponsignalsready(IEC104Thread::SponSignals*)),CheckB,SLOT(UpdateSponData(IEC104Thread::SponSignals*)));
 
         connect(TimeD,SIGNAL(ethTimeRequest()),Ch104,SLOT(InterrogateTimeGr15()));
-        connect(Ch104,SIGNAL(bs104signalsready(IEC104Thread::BS104Signals*)),TimeD,SLOT(FillTimeFrom104(IEC104Thread::BS104Signals*)));
+        connect(Ch104,SIGNAL(Bs104signalsready(IEC104Thread::BS104Signals*)),TimeD,SLOT(FillTimeFrom104(IEC104Thread::BS104Signals*)));
         connect(TimeD,SIGNAL(ethWriteTimeToModule(uint)),Ch104,SLOT(com51WriteTime(uint)));
 
-        connect(CorD,SIGNAL(sendCom45(quint32)), Ch104, SLOT(Com45(quint32)));
-        connect(CorD,SIGNAL(sendCom50(quint32, float)), Ch104, SLOT(Com50(quint32, float)));
+        connect(CorD,SIGNAL(SendCom45(quint32)), Ch104, SLOT(Com45(quint32)));
+        connect(CorD,SIGNAL(SendCom50(quint32, float)), Ch104, SLOT(Com50(quint32, float)));
         connect(CorD,SIGNAL(CorReadRequest()), Ch104, SLOT(CorReadRequest()));
-        connect(Ch104,SIGNAL(sendMessageOk()), CorD, SLOT(MessageOk()));
-        connect(Ch104,SIGNAL(floatsignalsready(IEC104Thread::FlSignals104*)),CorD,SLOT(UpdateFlCorData(IEC104Thread::FlSignals104*)));
+        connect(Ch104,SIGNAL(SendMessageOk()), CorD, SLOT(MessageOk()));
+        connect(Ch104,SIGNAL(Floatsignalsready(IEC104Thread::FlSignals104*)),CorD,SLOT(UpdateFlCorData(IEC104Thread::FlSignals104*)));
 
         connect(JourD,SIGNAL(ReadJour(char)), Ch104, SLOT(SelectFile(char)));
-        connect(Ch104,SIGNAL(sendJourSysfromiec104(QByteArray)), JourD, SLOT(FillSysJour(QByteArray)));
-        connect(Ch104,SIGNAL(sendJourWorkfromiec104(QByteArray)), JourD, SLOT(FillWorkJour(QByteArray)));
-        connect(Ch104,SIGNAL(sendJourMeasfromiec104(QByteArray)), JourD, SLOT(FillMeasJour(QByteArray)));
+        connect(Ch104,SIGNAL(SendJourSysfromiec104(QByteArray)), JourD, SLOT(FillSysJour(QByteArray)));
+        connect(Ch104,SIGNAL(SendJourWorkfromiec104(QByteArray)), JourD, SLOT(FillWorkJour(QByteArray)));
+        connect(Ch104,SIGNAL(SendJourMeasfromiec104(QByteArray)), JourD, SLOT(FillMeasJour(QByteArray)));
 
         connect(ConfM,SIGNAL(ReadConfig(char)), Ch104, SLOT(SelectFile(char)));
-        connect(Ch104,SIGNAL(sendS2fromiec104(QVector<S2::DataRec>*)), ConfM, SLOT(FillConf(QVector<S2::DataRec>*)));
+        connect(Ch104,SIGNAL(SendS2fromiec104(QVector<S2::DataRec>*)), ConfM, SLOT(FillConf(QVector<S2::DataRec>*)));
         connect(ConfM,SIGNAL(writeConfFile(QVector<S2::DataRec>*)), Ch104, SLOT(FileReady(QVector<S2::DataRec>*)));
-        connect(Ch104,SIGNAL(sendConfMessageOk()), ConfM, SLOT(WriteConfMessageOk()));
+        connect(Ch104,SIGNAL(SendConfMessageOk()), ConfM, SLOT(WriteConfMessageOk()));
     }
     else if (MainInterface == I_RS485)
     {
@@ -464,12 +436,12 @@ void Coma::New104()
     Ch104 = new IEC104;
     connect(this,SIGNAL(StopCommunications()),Ch104,SIGNAL(StopAll()));
     connect(Ch104,SIGNAL(Finished()),this,SLOT(Ch104Finished()));
-    connect(Ch104,SIGNAL(sponsignalsready(IEC104Thread::SponSignals*)),this,SLOT(UpdatePredAlarmEvents(IEC104Thread::SponSignals*)));
+    connect(Ch104,SIGNAL(Sponsignalsready(IEC104Thread::SponSignals*)),this,SLOT(UpdatePredAlarmEvents(IEC104Thread::SponSignals*)));
     connect(Ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
     connect(Ch104,SIGNAL(SetDataCount(int)),this,SLOT(SetProgressBar1(int)));
     connect(Ch104,SIGNAL(ReconnectSignal()), this, SLOT(ReConnect()));
-    connect(Ch104,SIGNAL(sponsignalsready(IEC104Thread::SponSignals*)),this,SLOT(UpdateStatePredAlarmEvents(IEC104Thread::SponSignals*)));
-    connect(Ch104,SIGNAL(bs104signalsready(IEC104Thread::BS104Signals*)),this,SLOT(FillBSI(IEC104Thread::BS104Signals*)));
+    connect(Ch104,SIGNAL(Sponsignalsready(IEC104Thread::SponSignals*)),this,SLOT(UpdateStatePredAlarmEvents(IEC104Thread::SponSignals*)));
+    connect(Ch104,SIGNAL(Bs104signalsready(IEC104Thread::BS104Signals*)),this,SLOT(FillBSI(IEC104Thread::BS104Signals*)));
 }
 
 void Coma::NewModbus()
@@ -538,7 +510,6 @@ void Coma::ReConnect()
         TimeD->Timer->stop();
     if(!Disconnected)
     {
-//        StopRead = 1;
         Disconnect();
         emit ClearBsi();
         ClearTW();
@@ -578,7 +549,6 @@ void Coma::AttemptToRec()
         S2Config.clear();
         SaveSettings();
         QApplication::restoreOverrideCursor();
-//        StopRead = 0;
         StartWork();
     }
 }
@@ -605,26 +575,6 @@ void Coma::ConnectMessage()
     StdFunc::Wait(WAITINTERVAL);
     dlg->close();
 }
-
-/*void Coma::stopTimer()
-{
-    connectTimer->stop();
-    connectTimer->deleteLater();
-}*/
-
-/*QWidget *Coma::HthWidget()
-{
-    QWidget *w = new QWidget;
-    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    for (int i = (MAXERRORFLAGNUM-1); i >= 0; i--)
-        hlyout->addWidget(WDFunc::NewLBLT(w, Hth().at(i), "hth"+QString::number(i), \
-                                          "QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);" \
-                                          "background: 0px; margin: 0px; spacing: 0; padding: 0px;}", HthToolTip().at(i)));
-    w->setLayout(hlyout);
-    connect(this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)), this, SLOT(UpdateHthWidget(ModuleBSI::Bsi*)));
-    return w;
-} */
 
 QWidget *Coma::ReleWidget()
 {
@@ -706,7 +656,6 @@ void Coma::DeviceState()
     }
 
     w->setLayout(vlayout);
-//    connect(this,SIGNAL(BsiRefresh(ModuleBSI::Bsi*)), this, SLOT(UpdateHthWidget(ModuleBSI::Bsi*)));
 
     lyout->addWidget(w);
     QPushButton *pb = new QPushButton("Ok");
@@ -723,7 +672,6 @@ void Coma::PredAlarmState()
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
 
-    INFOMSG("PredAlarmState()");
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     const QStringList events = QStringList() << "Отсутствует сигнал напряжения фазы A                   "
@@ -836,20 +784,6 @@ void Coma::AlarmState()
     dlg->show();
 }
 
-/*void Coma::UpdateReleWidget(Parse104::SponSignals104 *Signal)
-{
-    int i = 0;
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
-    QPixmap *pm[2] = {pmgrn, pmred};
-
-    if(!(Signal->Spon[i].SigVal & 0x80))
-    {
-       int signal = ((Signal->Spon[i].SigVal & (0x00000001)) ? 1 : 0);
-       WDFunc::SetLBLImage(this, (QString::number(Signal->Spon[i].SigAdr)), pm[signal]);
-    }
-} */
-
 void Coma::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
 {
     int i = 0;
@@ -857,7 +791,6 @@ void Coma::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
     QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmgrn, pmred};
 
-    INFOMSG("UpdatePredAlarmEvents()");
     for(i=0; i<Signal->SigNumber; i++)
     {
         quint32 sigadr = Signal->Spon[i].SigAdr;
@@ -876,11 +809,9 @@ void Coma::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
 void Coma::UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
 {
     int i = 0, predalarmcount = 0, alarmcount = 0;
-//    Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
 
-    INFOMSG("UpdateStatePredAlarmEvents()");
     for(i=0; i<Signal->SigNumber; i++)
     {
         quint8 sigval = Signal->Spon[i].SigVal;
@@ -927,71 +858,12 @@ void Coma::UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
         WDFunc::SetLBLImage(this, "952", pmgrn);
 }
 
-/*void Coma::UpdateStatePredAlarmEventsWithTime(Parse104::SponSignals *Signal)
-{
-    int i = 0, PredArarmcount = 0, Ararmcount = 0;
-    //Parse104::SponSignals104 sig = *new Parse104::SponSignals104;
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
-    QPixmap *pm[2] = {pmred, pmgrn};
-
-    for(i=0; i<Signal->SigNumber; i++)
-    {
-       //sig = *(Signal+i);
-       if(!(Signal->Spon[i].SigVal & 0x80))
-       {
-           quint8 signal = ((Signal->Spon[i].SigVal & (0x00000001)) ? 1 : 0);
-
-           if((Signal->Spon[i].SigAdr >= 3011) && (Signal->Spon[i].SigAdr < 3024))
-           PredAlarmEvents[Signal->Spon[i].SigAdr - 3011] = signal;
-           else if((Signal->Spon[i].SigAdr >= 3024) && (Signal->Spon[i].SigAdr < 3027))
-           AlarmEvents[Signal->Spon[i].SigAdr - 3024] = signal;
-           else if((Signal->Spon[i].SigAdr >= 3027) && (Signal->Spon[i].SigAdr < 3030))
-           PredAlarmEvents[Signal->Spon[i].SigAdr - 3014] = signal;
-           else if((Signal->Spon[i].SigAdr >= 3030) && (Signal->Spon[i].SigAdr < 3033))
-           AlarmEvents[Signal->Spon[i].SigAdr - 3027] = signal;
-           else if(Signal->Spon[i].SigAdr == 3033)
-           PredAlarmEvents[16] = signal;
-           else if(Signal->Spon[i].SigAdr == 3034)
-           PredAlarmEvents[17] = signal;
-           else if(Signal->Spon[i].SigAdr == 3035)
-           AlarmEvents[6] = signal;
-       }
-    }
-
-    for(i=0; i<18; i++)
-    {
-        if(PredAlarmEvents[i])
-        {
-           WDFunc::SetLBLImage(this, QString::number(951), pm[0]);
-           PredArarmcount++;
-        }
-    }
-
-    if(PredArarmcount == 0)
-    WDFunc::SetLBLImage(this,  QString::number(951), pm[1]);
-
-    for(i=0; i<7; i++)
-    {
-        if(AlarmEvents[i])
-        {
-           WDFunc::SetLBLImage(this, QString::number(952), pm[0]);
-           Ararmcount++;
-        }
-    }
-
-    if(Ararmcount == 0)
-    WDFunc::SetLBLImage(this,  QString::number(952), pm[1]);
-
-} */
-
 void Coma::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
 {
     int i = 0, predalarmcount = 0, alarmcount = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
 
-    INFOMSG("ModbusUpdateStatePredAlarmEvents()");
     for(i=0; i<Signal.countBytes; i++)
     {
         if(i == 3)
@@ -1069,7 +941,6 @@ void Coma::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
     QPixmap *pmred = new QPixmap("images/redc.png");
     QPixmap *pm[2] = {pmgrn, pmred};
 
-    INFOMSG("ModbusUpdatePredAlarmEvents()");
     for(i=0; i<Signal.countBytes; i++)
     {
         if(i == 3)
@@ -1120,13 +991,11 @@ void Coma::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
 QWidget *Coma::Least()
 {
     QWidget *w = new QWidget;
-//    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *inlyout = new QHBoxLayout;
     ETabWidget *MainTW = new ETabWidget;
     MainTW->setObjectName("maintw");
     MainTW->setTabPosition(QTabWidget::West);
-//    MainTW->tabBar()->setStyleSheet("QTabBar::tab {background-color: yellow;}");
     inlyout->addWidget(MainTW, 60);
     MainTW->hide();
     lyout->addLayout(inlyout, 90);
@@ -1216,32 +1085,6 @@ int Coma::CheckPassword()
     return NOERROR;
 }
 
-/*void Coma::UpdateHthWidget(ModuleBSI::Bsi* bsi)
-{
-    //ModuleBSI::Bsi bsi = ModuleBSI::GetBsi();
-    ModuleBSI::ModuleBsi = *bsi;
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
-    QPixmap *pm[2] = {pmred, pmgrn};
-
-    for (int i = 0; i < MAXERRORFLAGNUM; i++)
-    {
-        QLabel *lbl = this->findChild<QLabel *>(QString::number(i));  //hth+ (i+1)
-        if (lbl == nullptr)
-        {
-           ERMSG("Нулевой lbl");
-           return;
-        }
-        quint32 tmpui = (0x00000001 << i) & bsi->Hth;
-
-        WDFunc::SetLBLImage(this, (QString::number(i)), pm[tmpui]);
-//        if (tmpui)
-//            lbl->setStyleSheet("QLabel {background-color: rgba(255,10,10,255); color: rgba(255,255,255,255);}");
-//        else
-//            lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
-    }
-}  */
-
 void Coma::SetMainDefConf()
 {
     if (MainConfDialog != nullptr)
@@ -1314,42 +1157,6 @@ void Coma::PasswordCheck(QString psw)
         Ok = false;
     emit PasswordChecked();
 }
-
-/*int Coma::OpenBhbDialog()
-{
-    if (!Commands::isConnected())
-    {
-        QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модулем" : "прибором");
-        EMessageBox::information(this, "Подтверждение", "Для работы данной функции необходимо сначала установить связь с "+tmps);
-        return GENERALERROR;
-    }
-    if (CheckPassword() == GENERALERROR)
-        return GENERALERROR;
-
-    HiddenDialog *dlg = new HiddenDialog();
-    dlg->Fill(); // заполняем диалог из недавно присвоенных значений
-    dlg->exec();
-    if (!dlg->ResultOk)
-        return GENERALERROR;
-    Disconnect();
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    if (Commands::Connect() != NOERROR)
-    {
-        EMessageBox::error(this, "Ошибка", "Не удалось установить связь");
-        QApplication::restoreOverrideCursor();
-        return GENERALERROR;
-    }
-    QApplication::restoreOverrideCursor();
-    int res;
-    if ((res = ModuleBSI::SetupBSI()) == Error::ER_CANAL)
-    {
-        EMessageBox::error(this, "Ошибка", "Блок Bsi не может быть прочитан, ошибка " + QString::number(res));
-        Commands::Disconnect();
-        return GENERALERROR;
-    }
-    //emit BsiRefresh();
-    return NOERROR;
-}*/
 
 void Coma::StartSettingsDialog()
 {
@@ -1425,7 +1232,6 @@ void Coma::ShowInterfaceDialog()
 
     lyout->addWidget(WDFunc::NewLBL(this, "Выберите интерфейс связи"));
 
-    //tmpmodel = new QStringListModel;
     tmpmodel->setStringList(inter);
     QComboBox *portscb = new QComboBox;
     connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(ParseInter(QString)));
@@ -1495,16 +1301,6 @@ void Coma::ShowConnectDialog()
             }
             Str = ba;
             sl.append(Str.split("\r\n"));
-            /*for(i=0; i<sl.size(); i++)
-            {
-              insl.clear();
-              insl.append(sl.at(i).split(" "));
-
-               if((insl.at(0) == SaveDevice) && (insl.at(1) == interface))
-               {
-                 slfinal.append(sl.at(i));
-               }
-            }*/
             HaveAlreadyRed = 1;
         }
         if (sl.size() == 0)
@@ -1606,36 +1402,14 @@ void Coma::Disconnect()
     }
 }
 
-/*void Coma::GetDeviceFromTable(QModelIndex idx)
-{
-    Q_UNUSED(idx)
-    ETableView *tv = this->findChild<ETableView *>("devicetv");
-    if (tv == nullptr)
-    {
-        ERMSG("Пустой tv");
-        DBGMSG;
-        return;
-    }
-    QString tmps = tv->model()->index(tv->currentIndex().row(), 0, QModelIndex()).data(Qt::DisplayRole).toString();
-    DevInfo.vendor_id = tmps.toUShort(nullptr, 16);
-//    quint16 vid = tmps.toInt(nullptr, 16);
-    tmps = tv->model()->index(tv->currentIndex().row(), 1, QModelIndex()).data(Qt::DisplayRole).toString();
-    DevInfo.product_id = tmps.toUShort(nullptr, 16);
-//    quint16 pid = tmps.toInt(nullptr, 16);
-    tmps = tv->model()->index(tv->currentIndex().row(), 3, QModelIndex()).data(Qt::DisplayRole).toString();
-    tmps.toWCharArray(DevInfo.serial);
-} */
-
 void Coma::DisconnectAndClear()
 {
-//    TheEnd = 1;
     INFOMSG("DisconnectAndClear()");
     TimeTimer->stop();
     if (TimeD != nullptr)
         TimeD->Timer->stop();
     if(!Disconnected)
     {
-//        StopRead = 1;
         Disconnect();
         TimeD = nullptr;
         CheckB = CheckM = nullptr;
@@ -1725,8 +1499,6 @@ void Coma::ParseString(QString Str)
             EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
         }
     }
-//    else
-//        EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
 }
 
 void Coma::ParseInter(QString str)
@@ -1797,25 +1569,8 @@ void Coma::SetDefConf()
     SetBDefConf();
     SetMDefConf();
     Fill();
-    //EMessageBox::information(this, "Информация", "В модуле нет конфигурации. \nНеобходимо записать конфигурацию по умолчанию.");
-    //if(ConfB != nullptr)
-    //ConfB->WriteConf();
-    //if(ConfM != nullptr)
-    //ConfM->WriteConf();
     EMessageBox::information(this, "Успешно", "Конфигурация по умолчанию");
 }
-
-
-/*void Coma::DisconnectMessage()
-{
-    EMessageBox::information(this, "Провал", "Нет подключения");
-} */
-
-/*void Coma::FinishHim()
-{
-//    ConfM->confIndex = -1;
-    TimeFunc::Wait(1000);
-}*/
 
 void Coma::closeEvent(QCloseEvent *event)
 {
