@@ -63,27 +63,35 @@ void LogClass::intvarvalue(const QString &var, int value)
 
 void LogClass::WriteFile(const QString &Prepend, const QString &msg)
 {
-    QString tmps = "[" + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz") + "]";
-    fp->write(tmps.toLocal8Bit());
-    tmps = "["+Prepend+"] ";
-    fp->write(tmps.toLocal8Bit());
-    fp->write(msg.toLocal8Bit());
-    fp->write("\n");
-    fp->flush();
-    CheckAndGz();
+    if (fp != nullptr)
+    {
+        mtx->lock();
+        QString tmps = "[" + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz") + "]";
+        fp->write(tmps.toLocal8Bit());
+        tmps = "["+Prepend+"] ";
+        fp->write(tmps.toLocal8Bit());
+        fp->write(msg.toLocal8Bit());
+        fp->write("\n");
+        fp->flush();
+        CheckAndGz();
+        mtx->unlock();
+    }
 }
 
 // thread-safe function
 
 void LogClass::WriteRaw(const QByteArray &ba)
 {
-    QString tmps = "[" + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz") + "]";
-    mtx->lock();
-    fp->write(tmps.toLocal8Bit());
-    fp->write(ba);
-    fp->flush();
-    CheckAndGz();
-    mtx->unlock();
+    if (fp != nullptr)
+    {
+        QString tmps = "[" + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz") + "]";
+        mtx->lock();
+        fp->write(tmps.toLocal8Bit());
+        fp->write(ba);
+        fp->flush();
+        CheckAndGz();
+        mtx->unlock();
+    }
 }
 
 void LogClass::CheckAndGz()

@@ -782,7 +782,7 @@ template <typename T> QByteArray IEC104Thread::ToByteArray(T var)
     for (int i=0; i<sizeofvar; ++i)
     {
         unsigned char tmpc;
-        memcpy(&tmpc, reinterpret_cast<unsigned char *>(&var)+i, sizeof(unsigned char));
+        memcpy(&tmpc, reinterpret_cast<quint8 *>(&var)+i, sizeof(quint8));
         ba.append(tmpc);
     }
     return ba;
@@ -903,6 +903,7 @@ void IEC104Thread::FileReady(QVector<S2::DataRec> *file)
     FileLen += static_cast<quint8>(File.data()[6])*65536;
     FileLen += static_cast<quint8>(File.data()[7])*16777216;
     FileLen += sizeof(S2::FileHeader); // FileHeader
+    File.resize(FileLen);
     cmd.append(FileLen&0xFF);
     cmd.append((FileLen&0xFF00)>>8);
     cmd.append((FileLen&0xFF0000)>>16);
@@ -958,6 +959,7 @@ void IEC104Thread::SendSegments()
         cmd = cmd.left(13);
         QThread::msleep(20);
         //Parse->V_S++;
+        QThread::msleep(500);
     } while (!File.isEmpty());
 
     cmd = ASDUFilePrefix(F_LS_NA_1, 1, SecNum);
@@ -965,7 +967,6 @@ void IEC104Thread::SendSegments()
     cmd.append(KSS);
     KSS = 0;
     GI = CreateGI(0x12);
-    QThread::msleep(500);
     Send(1, GI, cmd); // ASDU = QByteArray()
 }
 

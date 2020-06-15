@@ -255,22 +255,19 @@ void Coma::StartWork()
             ChModbus->BSIrequest();
             ActiveThreads |= THREADMBS;
         }
-        while ((MTypeB == 0) && !Cancelled)
+        QElapsedTimer tmr;
+        tmr.start();
+        while ((MTypeB == 0) && (tmr.elapsed() < WAITINTERVAL) && !Cancelled)
+            QCoreApplication::processEvents();
+        if (MTypeB == 0)
         {
-            QElapsedTimer tmr;
-            tmr.start();
-            while (tmr.elapsed() < WAITINTERVAL)
-                QCoreApplication::processEvents();
-            if (MTypeB == 0)
-            {
-                if(Reconnect)
-                    ReConnect();
-                else
-                    DisconnectAndClear();
-                ERMSG("Не получили BSI");
-                Disconnect();
-                return;
-            }
+            if(Reconnect)
+                ReConnect();
+            else
+                DisconnectAndClear();
+            ERMSG("Не получили BSI");
+            Disconnect();
+            return;
         }
     }
     // MTypeB & MTypeM are acquired

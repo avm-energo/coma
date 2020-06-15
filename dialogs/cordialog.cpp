@@ -275,8 +275,8 @@ void CorDialog::WriteCorBd()
            for(i = 0; i<11; i++)
            {
                float corblocki;
-               memcpy(&corblocki, CorBlock+i, sizeof(float));
-               emit SendCom50((adr[i]), corblocki);
+               memcpy(&corblocki, reinterpret_cast<float *>(CorBlock)+i, sizeof(float));
+               emit SendCom50(adr[i], corblocki);
                TimeFunc::Wait(300);
            }
         }
