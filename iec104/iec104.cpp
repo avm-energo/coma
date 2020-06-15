@@ -743,7 +743,7 @@ QByteArray IEC104Thread::ASDUFilePrefix(unsigned char cmd, unsigned char filenum
 {
     QByteArray ba;
     ba.append(cmd);
-    ba.append(QByteArrayLiteral("\x01\x13\x00"));
+    ba.append(QByteArrayLiteral("\x01\x0d\x00"));
     ba.append(BaseAdr);
     ba.append(BaseAdr>>8);
     ba.append(QByteArrayLiteral("\x00\x00\x00"));
