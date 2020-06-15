@@ -274,8 +274,10 @@ void CorDialog::WriteCorBd()
         {
            for(i = 0; i<11; i++)
            {
-             emit sendCom50((adr+i), (((float*)CorBlock)+i));
-             TimeFunc::Wait(300);
+               float corblocki;
+               memcpy(&corblocki, reinterpret_cast<float *>(CorBlock)+i, sizeof(float));
+               emit SendCom50(adr[i], corblocki);
+               TimeFunc::Wait(300);
            }
         }
         else if(MainInterface == I_RS485)
@@ -304,7 +306,7 @@ void CorDialog::WriteCor()
     {
         if(MainInterface == I_ETHERNET)
         {
-           emit sendCom45(SETINITREG);
+           emit SendCom45(SETINITREG);
            EMessageBox::information(this, "INFO", "Задано успешно");
            emit CorReadRequest();
         }
@@ -339,7 +341,7 @@ void CorDialog::SetCor()
 {
     if (MainInterface == I_ETHERNET)
     {
-       emit sendCom45(903);
+       emit SendCom45(903);
     }
     else if (MainInterface == I_USB)
     {
@@ -356,7 +358,7 @@ void CorDialog::ResetCor()
     {
         if(MainInterface == I_ETHERNET)
         {
-           emit sendCom45(CLEARREG);
+           emit SendCom45(CLEARREG);
         }
         else if(MainInterface == I_RS485)
         {
@@ -397,9 +399,9 @@ void CorDialog::MessageOk()
   EMessageBox::information(this, "INFO", "Записано успешно");
 }
 
-void CorDialog::UpdateFlCorData(Parse104::FlSignals104 *Signal)
+void CorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
 {
-    Parse104::FlSignals104 sig = *new Parse104::FlSignals104;
+    IEC104Thread::FlSignals104 sig = *new IEC104Thread::FlSignals104;
     int i;
 
     if(((Signal)->fl.SigAdr >= 4000) && ((Signal)->fl.SigAdr <= 4010))

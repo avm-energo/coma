@@ -21,7 +21,7 @@
 MNKTime::MNKTime(QWidget *parent) :
     QDialog(parent)
 {
-    //setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_DeleteOnClose);
     First = false;
     Timer = new QTimer(this);
     connect(Timer, SIGNAL(timeout()), this, SLOT(slot_timeOut()));
@@ -166,7 +166,7 @@ void MNKTime::Write_Date()
     WriteTime(myDateTime);
 }
 
-void MNKTime::  FillTimeFrom104(Parse104::BS104Signals* Time)
+void MNKTime::FillTimeFrom104(IEC104Thread::BS104Signals* Time)
 {
     uint unixtimestamp = 0;
     QString qStr;

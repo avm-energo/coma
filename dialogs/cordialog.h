@@ -42,8 +42,8 @@ private:
     void FillBd(QWidget *parent, QString Name, QString Value);
 
 signals:
-   void sendCom45(quint32);
-   void sendCom50(quint32* adr, float *data);
+   void SendCom45(quint32);
+   void SendCom50(quint32 adr, float data);
    void RS485WriteCorBd(ModBus::Information, float *);
    void RS485ReadCorBd(ModBus::Information);
    void CorReadRequest();
@@ -57,14 +57,12 @@ public slots:
     void MessageOk();
     void SetCor();
     void ResetCor();
-    void UpdateFlCorData(Parse104::FlSignals104 *Signal);
+    void UpdateFlCorData(IEC104Thread::FlSignals104 *Signal);
     void ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal);
-//    void ModbusCorDataWritten();
     void SaveToFile();
     void ReadFromFile();
     void WritePasswordCheck(QString psw);
     void TimerTimeout();
-//    void WriteCorMessageOk();
     void ErrorRead();
 
 private slots:

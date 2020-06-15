@@ -23,8 +23,8 @@ signals:
 public slots:   
     void SetPredAlarmColor(quint8*);
     void SetAlarmColor(quint8* Alarm);
-    void UpdateFlData(Parse104::FlSignals104 *);
-    void UpdateSponData(Parse104::SponSignals *);
+    void UpdateFlData(IEC104Thread::FlSignals104 *);
+    void UpdateSponData(IEC104Thread::SponSignals *);
 //    void UpdateSponDataWithTime(Parse104::SponSignals *);
 //    void UpdateBS104Data(Parse104::BS104Signals *);
 

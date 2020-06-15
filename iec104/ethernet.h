@@ -9,28 +9,23 @@
 
 #define PORT104     2404 // порт связи по протоколу МЭК 60870-5-104
 
-class ethernet : public QObject
+class Ethernet : public QObject
 {
     Q_OBJECT
 
 public:
-    ethernet(QObject *parent = nullptr);
-    ~ethernet();
+    Ethernet(QObject *parent = nullptr);
+    ~Ethernet();
     quint16 ASDU;
     bool ClosePortAndFinishThread;
-    quint8 sendStatus;
-    quint8 stateMessage;
-    quint8 mutexflag;
     QString IP;
-    quint8 disconflag, timerstart;
 signals:
     void ethNoconnection();
     void error(int);
-    void connected();
-    void disconnected();
+    void Connected();
+    void Disconnected();
     void Finished();
-    void newdataarrived(QByteArray);
-
+    void NewDataArrived(QByteArray);
 
 public slots:
     void Run();
@@ -41,13 +36,15 @@ public slots:
 private slots:
     void CheckForData();
     void seterr(QAbstractSocket::SocketError);
-    void SetFlag();
+    void EthSetConnected();
 
 private:
     QTcpSocket *sock;
     QMutex OutDataBufMtx;
     QByteArray *DataToSend;
     QByteArray OutDataBuf;
+    bool EthConnected;
+
     void SendData();
 
 protected:

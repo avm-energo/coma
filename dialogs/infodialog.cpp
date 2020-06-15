@@ -54,7 +54,7 @@ void InfoDialog::SetupUI()
 void InfoDialog::FillBsi()
 {
     ModuleBSI::Bsi bsi = ModuleBSI::GetBsi();
-//    ModuleBSI::ModuleBsi.Hth = bsi.Hth;
+    ModuleBSI::ModuleBsi.Hth = bsi.Hth;
     WDFunc::SetLBLText(this, "snle", QString::number(bsi.SerialNum, 16));
     WDFunc::SetLBLText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));
     WDFunc::SetLBLText(this, "cfcrcle", "0x"+QString::number(static_cast<uint>(bsi.Cfcrc), 16));
@@ -69,7 +69,7 @@ void InfoDialog::FillBsi()
     WDFunc::SetLBLText(this, "hwmle", StdFunc::VerToStr(bsi.HwverM));
 }
 
-void InfoDialog::FillBsiFrom104(Parse104::BS104Signals* BS104)
+/*void InfoDialog::FillBsiFrom104(Parse104::BS104Signals* BS104)
 {
     int i;
     int startadr = 0;
@@ -100,9 +100,9 @@ void InfoDialog::FillBsiFrom104(Parse104::BS104Signals* BS104)
         // расшифровка Hth
     }
 
-}
+} */
 
-void InfoDialog::FillBsiFromModBus(QList<ModBus::BSISignalStruct> Signal, int size)
+/*void InfoDialog::FillBsiFromModBus(QList<ModBus::BSISignalStruct> Signal, int size)
 {
     ModuleBSI::Bsi bsi = *new ModuleBSI::Bsi;
     int i;
@@ -135,7 +135,7 @@ void InfoDialog::FillBsiFromModBus(QList<ModBus::BSISignalStruct> Signal, int si
         WDFunc::SetLBLText(this, "hwmle", StdFunc::VerToStr(bsi.HwverM));
         // расшифровка Hth
     }
-}
+} */
 
 void InfoDialog::ClearBsi()
 {
@@ -152,15 +152,14 @@ void InfoDialog::ClearBsi()
     WDFunc::SetLBLText(this, "snmle", "");
     WDFunc::SetLBLText(this, "hwmle", "");
     // расшифровка Hth
-    for (int i = 0; i < 32; i++)
+/*    for (int i = 0; i < 32; i++)
     {
         QLabel *lbl = this->findChild<QLabel *>("hth"+QString::number(i));
         if (lbl == nullptr)
         {
-            ERMSG("Пустой health lbl");
             DBGMSG;
             return;
         }
         lbl->setStyleSheet("QLabel {background-color: rgba(255,50,50,0); color: rgba(220,220,220,255);}");
-    }
+    } */
 }

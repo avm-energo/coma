@@ -281,6 +281,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         QByteArray tmps = "<-" + ba.toHex() + "\n";
         CnLog->WriteRaw(tmps);
     }
+    Busy = false;
     if (Command == CN_Unk) // игнорирование вызова процедуры, если не было послано никакой команды
     {
         ERMSG("Игнорирование вызова процедуры, если не было послано никакой команды");
@@ -330,7 +331,7 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
                 if (Command == CN_Ert)
                     OscTimer->start(); // start timer to send ErPg command periodically
                 Finish(NOERROR);
-                ERMSG("Переход в тестовый режим без ошибок");
+                INFOMSG("Переход в тестовый режим без ошибок");
                 return;
             }
             // команды с ответом "ОК" и с продолжением

@@ -38,6 +38,7 @@ ModBus::~ModBus()
 
 int ModBus::Connect(SerialPort::Settings settings)
 {
+    INFOMSG("Modbus: connect");
     Settings = settings;
     SerialPort *port = new SerialPort();
     ModbusThread *cthr = new ModbusThread();
@@ -144,6 +145,7 @@ void ModBus::Polling()
 
 void ModBus::Stop()
 {
+    Log->info("Stop()");
     AboutToFinish = true;
     StopPolling();
     emit FinishModbusThread();
@@ -208,6 +210,7 @@ void ModBus::BSIrequest()
     ComInfo request;
     InOutStruct outp;
 
+    Log->info("BSIRequest()");
     request.Command = READINPUTREGISTER;
     request.Address = BSIREG; // BSI block
     request.Quantity = 30;
@@ -218,7 +221,7 @@ void ModBus::BSIrequest()
         emit TimeReadError();
 
     QList<BSISignalStruct> BSIsig;// = nullptr;
-    int sigsize;
+    unsigned int sigsize;
     if (GetSignalsFromByteArray(outp.Ba, BSIREG, BSIsig, sigsize) != NOERROR)
     {
        ERMSG("Ошибка взятия сигнала из очереди по modbus");
@@ -233,6 +236,7 @@ void ModBus::ModWriteCor(ModBus::Information info, float *data)//, int* size)
     ComInfo request;
     InOutStruct outp;
 
+    Log->info("ModWriteCor()");
     request.Command = WRITEMULTIPLEREGISTERS;
     request.Address = info.adr;
 
@@ -265,6 +269,7 @@ void ModBus::ModReadCor(ModBus::Information info)
     ComInfo request;
     InOutStruct outp;
 
+    Log->info("ReadCor()");
     request.Command = READINPUTREGISTER;
     request.Address = info.adr;
     request.Quantity = (quint8)((info.size)*2);
@@ -282,6 +287,7 @@ void ModBus::ReadTime()
     ComInfo request;
     InOutStruct outp;
 
+    Log->info("ReadTime()");
     request.Address = TIMEREG;
     request.Command = READHOLDINGREGISTERS;
     request.Quantity = 2;
@@ -290,7 +296,7 @@ void ModBus::ReadTime()
     if (res != NOERROR)
         emit TimeReadError();
     QList<BSISignalStruct> BSIsig;
-    int sigsize;
+    unsigned int sigsize;
     if (GetSignalsFromByteArray(outp.Ba, TIMEREG, BSIsig, sigsize) != NOERROR)
     {
        ERMSG("Ошибка взятия сигнала из очереди по modbus");
@@ -299,23 +305,23 @@ void ModBus::ReadTime()
     emit TimeSignalsReceived(BSIsig);
 }
 
-int ModBus::GetSignalsFromByteArray(QByteArray &bain, int startadr, QList<BSISignalStruct> &BSIsig, int &size)
+int ModBus::GetSignalsFromByteArray(QByteArray &bain, int startadr, QList<BSISignalStruct> &BSIsig, unsigned int &size)
 {
     if (bain.size() < 3)
     {
         Log->error("Wrong inbuf size");
         return GENERALERROR;
     }
-    int byteSize = bain.data()[2];
+    unsigned int byteSize = bain.data()[2];
     QByteArray ba = bain.mid(3);
-    if (byteSize > ba.size())
+    if (byteSize > static_cast<unsigned int>(ba.size()))
     {
         ERMSG("wrong byte size in response");
         return GENERALERROR;
     }
-    int signalsSize = byteSize / 4; // количество байт float или u32
+    unsigned int signalsSize = byteSize / 4; // количество байт float или u32
     BSISignalStruct bsi;
-    for (int i=0; i<signalsSize; ++i)
+    for (unsigned int i=0; i<signalsSize; ++i)
     {
         quint32 ival = ((ba.data()[2+4*i]<<24)&0xFF000000)+((ba.data()[3+4*i]<<16)&0x00FF0000)+\
                 ((ba.data()[4*i]<<8)&0x0000FF00)+((ba.data()[1+4*i]&0x000000FF));
@@ -360,6 +366,7 @@ void ModBus::WriteTime(uint time)
     ComInfo request;
     InOutStruct outp;
 
+    Log->info("WriteTime()");
     request.Address = TIMEREG;
     request.Command = WRITEMULTIPLEREGISTERS;
     request.Quantity = 2;

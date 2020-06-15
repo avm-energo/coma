@@ -41,7 +41,7 @@ private slots:
     void slot2_timeOut();
     void Write_PCDate();
     void Write_Date();
-    void FillTimeFrom104(Parse104::BS104Signals*);
+    void FillTimeFrom104(IEC104Thread::BS104Signals*);
     void FillTimeFromModBus(QList<ModBus::BSISignalStruct>);
 };
 

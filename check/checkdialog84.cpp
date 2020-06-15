@@ -204,9 +204,9 @@ void CheckDialog84::USBUpdate()
        // Ch84->FillBd2(this);
     }
 }
-void CheckDialog84::UpdateFlData(Parse104::FlSignals104 *Signal)
+void CheckDialog84::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
 {
-    Parse104::FlSignals104 sig = *new Parse104::FlSignals104;
+    IEC104Thread::FlSignals104 sig = *new IEC104Thread::FlSignals104;
     int i;
     for(i=0; i<Signal->SigNumber; i++)
     {
@@ -220,7 +220,7 @@ void CheckDialog84::UpdateFlData(Parse104::FlSignals104 *Signal)
     }
 }
 
-void CheckDialog84::UpdateSponData(Parse104::SponSignals *Signal)
+void CheckDialog84::UpdateSponData(IEC104Thread::SponSignals *Signal)
 {
     int i, j;
     for(j=0; j<Signal->SigNumber; j++)

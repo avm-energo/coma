@@ -116,6 +116,7 @@ void ConfDialog::SetDefConf()
     ConfigMain->MainBlk.T1_104 = DEF_T1_104;
     ConfigMain->MainBlk.T2_104 = DEF_T2_104;
     ConfigMain->MainBlk.T3_104 = DEF_T3_104;
+    Fill();
 }
 
 void ConfDialog::Set104(double dbl)

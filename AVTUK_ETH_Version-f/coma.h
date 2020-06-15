@@ -33,11 +33,6 @@ public:
     };
 
 
-//    static quint32 MTypeB;
-//    static quint32 MTypeM;
-//    static int TheEnd; //, StopRead;
-
-
     struct DeviceConnectStruct
     {
         unsigned short vendor_id;
@@ -102,9 +97,6 @@ public:
         sl.append("Нет связи с NTP-сервером");
         sl.append("Не работает внешняя flash-память (мезонин)");
         sl.append("Не работает внешняя fram");
-        //int ts = sl.size();
-        //for (int i=ts; i<MAXERRORFLAGNUM; ++i)
-        //    sl.append("");
         return sl;
     }
 
@@ -115,7 +107,6 @@ public:
     void ClearTW();
     void SetupMenubar();
     QWidget *MainInfoWidget();
-//    QWidget *HthWidget();
     QWidget *ReleWidget();
     QWidget *Least();
     int CheckPassword();
@@ -125,31 +116,20 @@ public:
 
 signals:
     void CloseConnectDialog();
-    void FinishAll();
     void PasswordChecked();
-//    void BsiRefresh(ModuleBSI::Bsi*);
-    void USBBsiRefresh();
     void ClearBsi();
     void Finished();
     void StopCommunications();
-    void stoptime();
     void ConnectMes(QString*);
     void SetPredAlarmColor(quint8*);
     void SetAlarmColor(quint8*);
 
 public slots:
     void DisconnectAndClear();
-//    void FinishHim();
-//    void UpdateReleWidget(Parse104::SponSignals104*);
-    void UpdatePredAlarmEvents(Parse104::SponSignals *);
-    void UpdateStatePredAlarmEvents(Parse104::SponSignals *);
-//    void UpdateStatePredAlarmEventsWithTime(Parse104::SponSignalsWithTime*);
+    void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
+    void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
     void CheckTimeFinish();
     void CheckModBusFinish();
-/*    void Stop_BdaTimer(int index);
-    void Start_BdaTimer(int index);
-    void Stop_TimeTimer(int index);
-    void Start_TimeTimer(int index); */
     void DeviceState();
     void PredAlarmState();
     void AlarmState();
@@ -164,6 +144,7 @@ public slots:
     void ConnectMessage();
 
 private slots:
+    void StartWork();
     void StartSettingsDialog();
     void ShowErrorDialog();
     void GetAbout();
@@ -173,11 +154,10 @@ private slots:
     void SetBDefConf();
     void SetMDefConf();
     void Fill();
+    void FillBSI(IEC104Thread::BS104Signals *sig);
+    void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     void PasswordCheck(QString psw);
-    void DisconnectMessage();
     void SetPortSlot(QString port);
-//    void GetDeviceFromTable(QModelIndex idx);
-//    void UpdateHthWidget(ModuleBSI::Bsi *);
     void SetProgressBar1Size(int size);
     void SetProgressBar1(int cursize);
     void SetProgressBar2Size(int size);
@@ -212,9 +192,8 @@ private:
     QTimer *ReconnectTimer;
     QString SavePort;
     DeviceConnectStruct DevInfo;
-    int MainInterface;
     quint8 ActiveThreads;
-    int CheckIndex, TimeIndex;
+    int CheckIndex, TimeIndex, ConfIndex, CurTabIndex;
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
     IEC104 *Ch104;
@@ -243,7 +222,6 @@ private:
     void NewUSB();
     void NewTimers();
     void SetupUI();
-    void StartWork();
     void PrepareDialogs();
 
 protected:

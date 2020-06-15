@@ -59,7 +59,6 @@ void AbstractConfDialog::ReadConf()
                     emit DefConfToBeLoaded();
                 else if (res == NOERROR)
                     emit NewConfToBeLoaded();
-
             }
 //        }
 
@@ -240,7 +239,6 @@ void AbstractConfDialog::ButtonReadConf()
             emit DefConfToBeLoaded();
         else if (res == NOERROR)
             emit NewConfToBeLoaded();
-
     }
 }
 

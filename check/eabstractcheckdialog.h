@@ -51,7 +51,7 @@ public:
     int Board; // тип платы
 
 signals:
-     void BsiRefresh();
+//     void BsiRefresh();
 
 public slots:
     void StopAnalogMeasurements();
