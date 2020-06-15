@@ -142,10 +142,10 @@ void MainWindow::ReConnect()
       TimeTimer->stop();
     }
 
-    if(Time->timer != nullptr)
+    /*if(Time->timer->isActive())
     {
       Time->timer->stop();
-    }
+    }*/
 
 
     TheEnd = 1;
@@ -1762,10 +1762,10 @@ void MainWindow::DisconnectAndClear()
       TimeTimer->stop();
     }
 
-    if(Time->timer != nullptr)
+    /*if(Time->timer != nullptr)
     {
       Time->timer->stop();
-    }
+    }*/
 
     if(!Disconnected)
     {

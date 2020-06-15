@@ -74,7 +74,7 @@ void InfoDialog::FillBsi()
 void InfoDialog::FillBsiFrom104(Parse104::BS104Signals* BS104)
 {
     int i;
-    int startadr;
+    int startadr = 0;
     memcpy(&startadr, &(BS104->BS.SigAdr[0]), sizeof(BS104->BS.SigAdr));
 
     if(BS104->SigNumber && (startadr >= 1 && startadr <= 15))
