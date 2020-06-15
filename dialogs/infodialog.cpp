@@ -5,7 +5,6 @@
 #include "../gen/stdfunc.h"
 #include "../gen/modulebsi.h"
 #include "../widgets/wd_func.h"
-#include "../gen/mainwindow.h"
 
 InfoDialog::InfoDialog(QWidget *parent) :
     QDialog(parent)
@@ -55,7 +54,7 @@ void InfoDialog::SetupUI()
 void InfoDialog::FillBsi()
 {
     ModuleBSI::Bsi bsi = ModuleBSI::GetBsi();
-    ModuleBSI::ModuleBsi.Hth = bsi.Hth;
+//    ModuleBSI::ModuleBsi.Hth = bsi.Hth;
     WDFunc::SetLBLText(this, "snle", QString::number(bsi.SerialNum, 16));
     WDFunc::SetLBLText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));
     WDFunc::SetLBLText(this, "cfcrcle", "0x"+QString::number(static_cast<uint>(bsi.Cfcrc), 16));
@@ -68,7 +67,6 @@ void InfoDialog::FillBsi()
     WDFunc::SetLBLText(this, "typemle", QString::number(bsi.MTypeM, 16));
     WDFunc::SetLBLText(this, "snmle", QString::number(bsi.SerialNumM, 16));
     WDFunc::SetLBLText(this, "hwmle", StdFunc::VerToStr(bsi.HwverM));
-    // расшифровка Hth
 }
 
 void InfoDialog::FillBsiFrom104(Parse104::BS104Signals* BS104)
@@ -82,8 +80,8 @@ void InfoDialog::FillBsiFrom104(Parse104::BS104Signals* BS104)
         for(i=0; i<BS104->SigNumber; i++)
         memcpy((((quint32*)(&ModuleBSI::ModuleBsi)+(i+startadr-1))), (((quint32*)(&BS104->BS.SigVal)+4*i)), sizeof(BS104->BS.SigVal));
 
-        MainWindow::MTypeB = ModuleBSI::ModuleBsi.MTypeB;
-        MainWindow::MTypeM = ModuleBSI::ModuleBsi.MTypeM;
+        MTypeB = ModuleBSI::ModuleBsi.MTypeB;
+        MTypeM = ModuleBSI::ModuleBsi.MTypeM;
         //ModuleBSI::ModuleBsi.Hth = bsi.Hth;
 
         WDFunc::SetLBLText(this, "snle", QString::number(ModuleBSI::ModuleBsi.SerialNum, 16));
@@ -119,8 +117,8 @@ void InfoDialog::FillBsiFromModBus(QList<ModBus::BSISignalStruct> Signal, int si
             bsiptr += sizeof(Signal.at(i).Val);
         }
 
-        MainWindow::MTypeB = bsi.MTypeB;
-        MainWindow::MTypeM = bsi.MTypeM;
+        MTypeB = bsi.MTypeB;
+        MTypeM = bsi.MTypeM;
         ModuleBSI::ModuleBsi.Hth = bsi.Hth;
 
         WDFunc::SetLBLText(this, "snle", QString::number(bsi.SerialNum, 16));

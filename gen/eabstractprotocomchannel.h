@@ -86,7 +86,7 @@ public:
     qint32 Result;
 //    int ernum;
     bool NeedToSend, Busy, NeedToFinish;
-    bool Connected, Cancelled;
+    bool Connected;
 //    qint64 RDSize;
     LogClass *CnLog;
     DeviceConnectStruct UsbPort;
@@ -110,7 +110,6 @@ signals:
     void SetDataCount(int);
     void readbytessignal(QByteArray ); // for TE updating
     void writebytessignal(QByteArray ); // for TE updating
-    void Retry();
     void ShowError(QString message);
     void QueryFinished();
     void Finished();
@@ -120,7 +119,6 @@ public slots:
     void Timeout();
     void Disconnect();
     void ParseIncomeData(QByteArray ba);
-    void SetCancelled();
 
 private slots:
     void CheckForData();
@@ -137,15 +135,12 @@ private:
     int FNum;
     qint64 ReadDataChunkLength, RDLength; // длина всей посылки
     int WRLength; // длина всей посылки
-//    qint64 OutDataSize; // размер приёмной области памяти
     qint64 InDataSize;
     int SegLeft; // количество оставшихся сегментов
     int SegEnd; // номер последнего байта в ReadData текущего сегмента
     bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
-//    QVector<S2::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
     char BoardType;
     static bool WriteUSBLog;
-//    int RDCount; // количество полезных считанных байт (без заголовков)
 
     void Send(char command, char parameter, QByteArray &ba, qint64 datasize);
     void InitiateSend();

@@ -28,9 +28,7 @@
 #include "../gen/s2.h"
 #include "../dialogs/keypressdialog.h"
 #include "../gen/timefunc.h"
-#if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
-#endif
 
 fwupdialog::fwupdialog(QWidget *parent) :
     QDialog(parent)
@@ -49,18 +47,14 @@ void fwupdialog::SetupUI()
 
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Записать ПО в память "+tmps);
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(LoadFW()));
-#endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
 
     glyout->addWidget(pb, 1,1,1,1);
 
     pb = new QPushButton("Перейти на новое ПО");
-    #if PROGSIZE != PROGSIZE_EMUL
         connect(pb,SIGNAL(clicked()),this,SLOT(RunSoft()));
-    #endif
         if (StdFunc::IsInEmulateMode())
             pb->setEnabled(false);
 
@@ -379,7 +373,6 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
     //BaForSend->resize(ForProcess->size());
     memcpy(&BaForSend->data()[0], &ForProcess->data()[0], (BaForSend->size()+16));*/
 
-    #if PROGSIZE != PROGSIZE_EMUL
     if (Commands::WriteFile(3, &S2DR) != NOERROR)
     {
         EMessageBox::information(this, "Ошибка", "Ошибка записи в модуль!");
@@ -387,7 +380,6 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
     }
     EMessageBox::information(this, "Успешно", "Загрузка ПО версии "+st+" прошла успешно!");
     return NOERROR;
-    #endif
 
    return NOERROR;
 }

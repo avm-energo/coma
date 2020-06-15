@@ -1,3 +1,4 @@
+#include <QDateTime>
 #include "timefunc.h"
 
 TimeFunc::TimeFunc()

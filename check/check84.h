@@ -1,20 +1,16 @@
 #ifndef CHECK84_H
 #define CHECK84_H
+
 #include <QWidget>
 #include "../gen/maindef.h"
-#include "eabstractcheckdialog.h"
-#include "../gen/modulebsi.h"
-#include "../iec104/iec104.h"
-#include "../iec104/ethernet.h"
 
 #define C84_BDA_IN   1
 #define C84_BDA_IN2  2
 
-class Check_84 : public EAbstractCheckDialog
+class Check_84
 {
-     Q_OBJECT
 public:
-     explicit Check_84(BoardTypes board, QWidget *parent);
+     explicit Check_84();
      ~Check_84();
 
     struct Bd1
@@ -70,23 +66,18 @@ public:
     //void FillBd3(QWidget *parent);
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
     QWidget *CustomTab();
-#if PROGSIZE != PROGSIZE_EMUL
     void RefreshAnalogValues(int bdnum); // обновление полей в GUI из полученного соответствующего Bd_block
     void PrepareHeadersForFile(int row); // row - строка для записи заголовков
     void WriteToFile(int row, int bdnum); // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
     void ChooseValuesToWrite();
     void SetDefaultValuesToWrite();
     void PrepareAnalogMeasurements();
-#endif
 
 private:
     QString ValuesFormat, WidgetFormat;
 
-#if PROGSIZE != PROGSIZE_EMUL
-private slots:
-void SendErt(void);
-#endif
-
+//private slots:
+//    void SendErt(void);
 };
 
 

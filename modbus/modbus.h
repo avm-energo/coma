@@ -101,7 +101,7 @@ public slots:
     void Tabs(int);
     void StartPolling();
     void StopPolling();
-    void Finish();
+    void Stop();
 
 signals:
     void SignalsReceived(QList<ModBus::SignalStruct> Signal);
@@ -124,7 +124,7 @@ private:
     SerialPort::Settings Settings;
     int CycleGroup;
     QTimer *PollingTimer;
-    bool TimePollEnabled, MainPollEnabled;
+    bool TimePollEnabled, MainPollEnabled, AboutToFinish;
     QByteArray SignalGroups[SIGNALGROUPSNUM];
     int _taskCounter;
     QQueue<InOutStruct> InQueue;
@@ -161,7 +161,6 @@ public slots:
 signals:
     void ModbusState(ConnectionStates);
     void Finished();
-    void Reconnect();
     void Write(QByteArray);
 
 private:

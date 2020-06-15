@@ -29,12 +29,10 @@ EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board, QWidget *parent) :
     WRow = 0;
     Board = board;
     Bd_blocks.clear();
-    timer = new QTimer;
-    timer->setObjectName("checktimer");
-#if PROGSIZE != PROGSIZE_EMUL
-    connect(timer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));
-#endif
-    timer->setInterval(1000);
+    Timer = new QTimer;
+    Timer->setObjectName("checktimer");
+    connect(Timer,SIGNAL(timeout()),this,SLOT(TimerTimeout()));
+    Timer->setInterval(1000);
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
@@ -111,24 +109,18 @@ QWidget *EAbstractCheckDialog::BottomUI()
 
     QPushButton *pb = new QPushButton("Запустить чтение аналоговых сигналов");
     pb->setObjectName("pbmeasurements");
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurements()));
-#endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
     pb = new QPushButton("Запустить чтение аналоговых сигналов в файл");
     pb->setObjectName("pbfilemeasurements");
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(StartAnalogMeasurementsToFile()));
-#endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
     pb = new QPushButton("Остановить чтение аналоговых сигналов");
-#if PROGSIZE != PROGSIZE_EMUL
     connect(pb,SIGNAL(clicked()),this,SLOT(StopAnalogMeasurements()));
-#endif
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     lyout->addWidget(pb);
@@ -153,8 +145,6 @@ void EAbstractCheckDialog::CheckIP()
         lbl->text().append(QString::number(Bip_block.ip[i], 16) + ".");
     lbl->text().chop(1);
 } */
-
-#if PROGSIZE != PROGSIZE_EMUL
 
 void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
 {
@@ -248,7 +238,7 @@ void EAbstractCheckDialog::StartAnalogMeasurements()
 {
 //    CurBdNum = 1;
     PrepareAnalogMeasurements();
-    timer->start();
+    Timer->start();
 }
 
 void EAbstractCheckDialog::StopAnalogMeasurements()
@@ -272,19 +262,18 @@ void EAbstractCheckDialog::StopAnalogMeasurements()
             pb->setEnabled(true);
         XlsxWriting = false;
     }
-    timer->stop();
+    Timer->stop();
 }
 
 void EAbstractCheckDialog::TimerTimeout()
 {
     ReadAnalogMeasurementsAndWriteToFile();
 }
-#endif
 
 void EAbstractCheckDialog::SetTimerPeriod()
 {
     bool TimerIsActive = false;
-    if (timer->isActive())
+    if (Timer->isActive())
         TimerIsActive = true;
     bool ok;
     int per = sender()->objectName().toInt(&ok);
@@ -293,8 +282,8 @@ void EAbstractCheckDialog::SetTimerPeriod()
        ERMSG("Ошибка считывания интервала таймера");
        return;
     }
-    timer->stop();
-    timer->setInterval(per);
+    Timer->stop();
+    Timer->setInterval(per);
     if (TimerIsActive)
-        timer->start();
+        Timer->start();
 }

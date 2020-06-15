@@ -18,17 +18,16 @@ public:
 
     QStringList CheckConfErrors;
     bool IsNeededDefConf = false;
-    int confIndex, timeIndex, checkIndex, TheEnd;
+//    int confIndex; //, timeIndex; //, checkIndex;
 
     QWidget *ConfButtons();
     virtual void Fill() = 0; // заполнить значения полей вывода из структуры конфигурации
     virtual void FillBack() = 0; // ввести информацию из полей вывода в конфигурацию
     virtual void SetDefConf() = 0; // задать конфигурацию по умолчанию
     virtual void CheckConf() = 0; // проверить конфигурацию на корректность, признаком наличия некорректностей
+    void ReadConf();
                                     // является непустой список CheckConfErrors
-#if PROGSIZE != PROGSIZE_EMUL
     void PrereadConf();
-#endif
     int GetChNumFromObjectName(QString ObjectName);
 
     int WriteCheckPassword();
@@ -44,8 +43,6 @@ private:
 private slots:
     void SaveConfToFile();
     void LoadConfFromFile();
-#if PROGSIZE != PROGSIZE_EMUL
-    void ReadConf(int index);
     void ButtonReadConf();
     void FillConf(QVector<S2::DataRec>*);
     void WritePasswordCheck(QString psw);
@@ -54,15 +51,13 @@ private slots:
 public slots:
     void WriteConf();
 
-#endif
-
 signals:
     void writeConfFile(QVector<S2::DataRec>*);
     void ReadConfig(char);
     void BsiIsNeedToBeAcquiredAndChecked(); // signal to reload start block emitted when new configuration has been sent to module
     void NewConfToBeLoaded(); // signal to load configuration in all appropriate windows (main conf, base conf, mez conf)
     void DefConfToBeLoaded(); // signal to load default configuration
-    void stopRead(int);
+//    void StopRead(int);
     void WritePasswordChecked();
 };
 

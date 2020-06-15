@@ -15,8 +15,6 @@
 #include "../gen/modulebsi.h"
 #include "confdialog84.h"
 #include "../gen/error.h"
-#include "../gen/mainwindow.h"
-
 
 ConfDialog84::ConfDialog84(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     AbstractConfDialog(parent)
@@ -26,7 +24,7 @@ ConfDialog84::ConfDialog84(QVector<S2::DataRec> &S2Config, QWidget *parent) :
     this->S2Config = &S2Config;
     C84 = new Config84(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
-    TheEnd = 0;
+//    TheEnd = 0;
     SetupUI();
 #if PROGSIZE != PROGSIZE_EMUL
     PrereadConf();
@@ -863,7 +861,7 @@ void ConfDialog84::SetupUI()
     //ConfTW->addTab(MEKconf,"Конфигурирование МЭК-60870-5-104");
     ConfTW->addTab(analog1,"Аналоговые");
 
-    if(MainWindow::MTypeB == Config::MTB_A2)
+    if(MTypeB == Config::MTB_A2)
     {
       ConfTW->addTab(area2,"Уставки");
       area2->verticalScrollBar()->setValue(area2->verticalScrollBar()->maximum());
