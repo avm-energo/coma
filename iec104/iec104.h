@@ -4,6 +4,7 @@
 #include <QQueue>
 #include "../gen/s2.h"
 #include "../gen/logclass.h"
+//#define DEBUG
 
 #define BASEADR104          205
 #define I104_START          0x68
@@ -177,7 +178,7 @@ public:
     bool FileSending;
     QQueue<InputStruct> *InputQueue;
 
-    IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, QObject *parent=nullptr);
+    IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, QVector<S2::DataRec> *s2, QObject *parent=nullptr);
     ~IEC104Thread();
 
     void SetBaseAdr(quint16 adr);
@@ -261,7 +262,7 @@ private:
     void GetSection(unsigned char);
     void ConfirmSection(unsigned char);
     void ConfirmFile(unsigned char);
-    void FileReady(QVector<S2::DataRec>*);
+    void FileReady();
     void SectionReady();
     void SendSegments();
     void LastSection();
@@ -281,7 +282,7 @@ class IEC104 : public QObject
     Q_OBJECT
 
 public:
-    IEC104(QObject *parent = nullptr);
+    IEC104(QVector<S2::DataRec> *s2, QObject *parent = nullptr);
     ~IEC104();
 
     IEC104Thread *Parse;
@@ -389,6 +390,7 @@ private:
     bool EthThreadWorking, ParseThreadWorking;
     LogClass *Log;
     QQueue<IEC104Thread::InputStruct> InputQueue;
+    QVector<S2::DataRec> *S2Config;
 
 private slots:
     void SelectFile(char);

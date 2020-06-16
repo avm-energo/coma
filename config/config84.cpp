@@ -1,80 +1,80 @@
 #include "config84.h"
 
-Config84::Config84(QVector<S2::DataRec> &config)
+Config84::Config84(QVector<S2::DataRec> *config)
 {
     // параметры входных сигналов
     quint32 StartInIndex = ID8084_START;
     quint32 StartComIndex = ID8084_COM;
-    for (int i=0; i<config.size(); ++i)
+    for (int i=0; i<config->size(); ++i)
     {
-        if (config.at(i).id == 0xFFFFFFFF)
+        if (config->at(i).id == 0xFFFFFFFF)
         {
-            config.remove(i);
+            config->remove(i);
             --i;
         }
     }
 
     if ((StartInIndex != 0))
     {
-        config.append({BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB});
-        config.append({BCI_MTYPEM, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM});
-        config.append({BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype});
-        config.append({BCI_ABS_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104});
-        config.append({BCI_CYCLE_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104});
-        config.append({BCI_T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104});
-        config.append({BCI_T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104});
-        config.append({BCI_T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104});
-        config.append({BCI_K_104, sizeof(MainBlk.k_104), &MainBlk.k_104});
-        config.append({BCI_W_104, sizeof(MainBlk.w_104), &MainBlk.w_104});
+        config->append({BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB});
+        config->append({BCI_MTYPEM, sizeof(MainBlk.MTypeM), &MainBlk.MTypeM});
+        config->append({BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype});
+        config->append({BCI_ABS_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104});
+        config->append({BCI_CYCLE_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104});
+        config->append({BCI_T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104});
+        config->append({BCI_T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104});
+        config->append({BCI_T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104});
+        config->append({BCI_K_104, sizeof(MainBlk.k_104), &MainBlk.k_104});
+        config->append({BCI_W_104, sizeof(MainBlk.w_104), &MainBlk.w_104});
 
-        config.append({1003, sizeof(Bci_block.NFiltr), &Bci_block.NFiltr});
-        config.append({1006, sizeof(Bci_block.Unom), &Bci_block.Unom});
-        config.append({StartInIndex, sizeof(Bci_block.Umin), &Bci_block.Umin});
-        config.append({StartInIndex+1, sizeof(Bci_block.Imin), &Bci_block.Imin});
-        //config.append({StartInIndex+2, sizeof(Bci_block.Imax), &Bci_block.Imax});
-        config.append({StartInIndex+3, sizeof(Bci_block.C_init), &Bci_block.C_init});
-        config.append({StartInIndex+4, sizeof(Bci_block.Tg_init), &Bci_block.Tg_init});
-        config.append({StartInIndex+5, sizeof(Bci_block.corTg), &Bci_block.corTg});
-        config.append({StartInIndex+6, sizeof(Bci_block.dC_pred), &Bci_block.dC_pred});
-        config.append({StartInIndex+7, sizeof(Bci_block.dC_alarm), &Bci_block.dC_alarm});
-        config.append({StartInIndex+8, sizeof(Bci_block.dTg_pred), &Bci_block.dTg_pred});
-        config.append({StartInIndex+9, sizeof(Bci_block.dTg_alarm), &Bci_block.dTg_alarm});
-        config.append({StartInIndex+10, sizeof(Bci_block.dIunb_pred), &Bci_block.dIunb_pred});
-        config.append({StartInIndex+11, sizeof(Bci_block.dIunb_alarm), &Bci_block.dIunb_alarm});
-        config.append({StartInIndex+12, sizeof(Bci_block.GdC), &Bci_block.GdC});
-        config.append({StartInIndex+13, sizeof(Bci_block.GdTg), &Bci_block.GdTg});
-        config.append({StartInIndex+14, sizeof(Bci_block.GdIunb), &Bci_block.GdIunb});
-        config.append({StartInIndex+15, sizeof(Bci_block.RTerm), &Bci_block.RTerm});
-        config.append({StartInIndex+16, sizeof(Bci_block.W100), &Bci_block.W100});
-        config.append({StartInIndex+17, sizeof(Bci_block.Iunb_init), &Bci_block.Iunb_init});
-        config.append({StartInIndex+18, sizeof(Bci_block.Phy_unb_init), &Bci_block.Phy_unb_init});
-        config.append({StartInIndex+19, sizeof(Bci_block.T_Data_Rec), &Bci_block.T_Data_Rec});
-        config.append({StartInIndex+20, sizeof(Bci_block.LowU), &Bci_block.LowU});
-        config.append({StartInIndex+21, sizeof(Bci_block.IsU), &Bci_block.IsU});
-        config.append({StartInIndex+22, sizeof(Bci_block.IsIunb), &Bci_block.IsIunb});
-        config.append({StartInIndex+23, sizeof(Bci_block.Tevent_pred), &Bci_block.Tevent_pred});
-        config.append({StartInIndex+24, sizeof(Bci_block.Tevent_alarm), &Bci_block.Tevent_alarm});
-        config.append({StartInIndex+25, sizeof(Bci_block.Trele_pred), &Bci_block.Trele_pred});
-        config.append({StartInIndex+26, sizeof(Bci_block.Trele_alarm), &Bci_block.Trele_alarm});
-        config.append({StartInIndex+27, sizeof(Bci_block.Tg_pasp), &Bci_block.Tg_pasp});
-        config.append({StartInIndex+28, sizeof(Bci_block.C_pasp), &Bci_block.C_pasp});
-        config.append({1050, sizeof(Bci_block.Unom_1), &Bci_block.Unom_1});
+        config->append({1003, sizeof(Bci_block.NFiltr), &Bci_block.NFiltr});
+        config->append({1006, sizeof(Bci_block.Unom), &Bci_block.Unom});
+        config->append({StartInIndex, sizeof(Bci_block.Umin), &Bci_block.Umin});
+        config->append({StartInIndex+1, sizeof(Bci_block.Imin), &Bci_block.Imin});
+        //config->append({StartInIndex+2, sizeof(Bci_block.Imax), &Bci_block.Imax});
+        config->append({StartInIndex+3, sizeof(Bci_block.C_init), &Bci_block.C_init});
+        config->append({StartInIndex+4, sizeof(Bci_block.Tg_init), &Bci_block.Tg_init});
+        config->append({StartInIndex+5, sizeof(Bci_block.corTg), &Bci_block.corTg});
+        config->append({StartInIndex+6, sizeof(Bci_block.dC_pred), &Bci_block.dC_pred});
+        config->append({StartInIndex+7, sizeof(Bci_block.dC_alarm), &Bci_block.dC_alarm});
+        config->append({StartInIndex+8, sizeof(Bci_block.dTg_pred), &Bci_block.dTg_pred});
+        config->append({StartInIndex+9, sizeof(Bci_block.dTg_alarm), &Bci_block.dTg_alarm});
+        config->append({StartInIndex+10, sizeof(Bci_block.dIunb_pred), &Bci_block.dIunb_pred});
+        config->append({StartInIndex+11, sizeof(Bci_block.dIunb_alarm), &Bci_block.dIunb_alarm});
+        config->append({StartInIndex+12, sizeof(Bci_block.GdC), &Bci_block.GdC});
+        config->append({StartInIndex+13, sizeof(Bci_block.GdTg), &Bci_block.GdTg});
+        config->append({StartInIndex+14, sizeof(Bci_block.GdIunb), &Bci_block.GdIunb});
+        config->append({StartInIndex+15, sizeof(Bci_block.RTerm), &Bci_block.RTerm});
+        config->append({StartInIndex+16, sizeof(Bci_block.W100), &Bci_block.W100});
+        config->append({StartInIndex+17, sizeof(Bci_block.Iunb_init), &Bci_block.Iunb_init});
+        config->append({StartInIndex+18, sizeof(Bci_block.Phy_unb_init), &Bci_block.Phy_unb_init});
+        config->append({StartInIndex+19, sizeof(Bci_block.T_Data_Rec), &Bci_block.T_Data_Rec});
+        config->append({StartInIndex+20, sizeof(Bci_block.LowU), &Bci_block.LowU});
+        config->append({StartInIndex+21, sizeof(Bci_block.IsU), &Bci_block.IsU});
+        config->append({StartInIndex+22, sizeof(Bci_block.IsIunb), &Bci_block.IsIunb});
+        config->append({StartInIndex+23, sizeof(Bci_block.Tevent_pred), &Bci_block.Tevent_pred});
+        config->append({StartInIndex+24, sizeof(Bci_block.Tevent_alarm), &Bci_block.Tevent_alarm});
+        config->append({StartInIndex+25, sizeof(Bci_block.Trele_pred), &Bci_block.Trele_pred});
+        config->append({StartInIndex+26, sizeof(Bci_block.Trele_alarm), &Bci_block.Trele_alarm});
+        config->append({StartInIndex+27, sizeof(Bci_block.Tg_pasp), &Bci_block.Tg_pasp});
+        config->append({StartInIndex+28, sizeof(Bci_block.C_pasp), &Bci_block.C_pasp});
+        config->append({1050, sizeof(Bci_block.Unom_1), &Bci_block.Unom_1});
 
         //if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
         //{
-          config.append({StartComIndex, sizeof(Com_param.IP), &Com_param.IP});
-          config.append({StartComIndex+1, sizeof(Com_param.Mask), &Com_param.Mask});
-          config.append({StartComIndex+2, sizeof(Com_param.GateWay), &Com_param.GateWay});
-          config.append({StartComIndex+3, sizeof(Com_param.Port), &Com_param.Port});
-          config.append({StartComIndex+4, sizeof(Com_param.SNTP), &Com_param.SNTP});
-          config.append({StartComIndex+5, sizeof(Com_param.baud), &Com_param.baud});
-          config.append({StartComIndex+6, sizeof(Com_param.parity), &Com_param.parity});
-          config.append({StartComIndex+7, sizeof(Com_param.stopbit), &Com_param.stopbit});
-          config.append({StartComIndex+8, sizeof(Com_param.adrMB), &Com_param.adrMB});
-          config.append({StartComIndex+9, sizeof(Com_param.isNTP), &Com_param.isNTP});
+          config->append({StartComIndex, sizeof(Com_param.IP), &Com_param.IP});
+          config->append({StartComIndex+1, sizeof(Com_param.Mask), &Com_param.Mask});
+          config->append({StartComIndex+2, sizeof(Com_param.GateWay), &Com_param.GateWay});
+          config->append({StartComIndex+3, sizeof(Com_param.Port), &Com_param.Port});
+          config->append({StartComIndex+4, sizeof(Com_param.SNTP), &Com_param.SNTP});
+          config->append({StartComIndex+5, sizeof(Com_param.baud), &Com_param.baud});
+          config->append({StartComIndex+6, sizeof(Com_param.parity), &Com_param.parity});
+          config->append({StartComIndex+7, sizeof(Com_param.stopbit), &Com_param.stopbit});
+          config->append({StartComIndex+8, sizeof(Com_param.adrMB), &Com_param.adrMB});
+          config->append({StartComIndex+9, sizeof(Com_param.isNTP), &Com_param.isNTP});
        // }
     }
-    config.append({0xFFFFFFFF, 0, nullptr});
+    config->append({0xFFFFFFFF, 0, nullptr});
 
 }
 

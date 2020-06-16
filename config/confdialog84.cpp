@@ -16,12 +16,12 @@
 #include "confdialog84.h"
 #include "../gen/error.h"
 
-ConfDialog84::ConfDialog84(QVector<S2::DataRec> &S2Config, QWidget *parent) :
+ConfDialog84::ConfDialog84(QVector<S2::DataRec> *S2Config, QWidget *parent) :
     AbstractConfDialog(parent)
 {
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
     setStyleSheet(tmps);
-    this->S2Config = &S2Config;
+    this->S2Config = S2Config;
     C84 = new Config84(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
