@@ -11,8 +11,9 @@
 QMutex ParseReadMutex;
 QMutex ParseWriteMutex;
 
-IEC104::IEC104(QObject *parent) : QObject(parent)
+IEC104::IEC104(QVector<S2::DataRec> *s2, QObject *parent) : QObject(parent)
 {
+    S2Config = s2;
     EthThreadWorking = false;
     ParseThreadWorking = false;
     Log = new LogClass;
@@ -44,7 +45,7 @@ void IEC104::Connect(const QString &IP, quint16 baseadr)
     connect(eth,SIGNAL(Connected()),this,SLOT(EthThreadStarted()));
     connect(eth,SIGNAL(Disconnected()),this,SLOT(EthThreadFinished()));
 
-    Parse = new IEC104Thread(Log, InputQueue);
+    Parse = new IEC104Thread(Log, InputQueue, S2Config);
     QThread *thr2 = new QThread;
     Parse->moveToThread(thr2);
     connect(this,SIGNAL(StopAll()),Parse,SLOT(Stop()));
@@ -55,6 +56,7 @@ void IEC104::Connect(const QString &IP, quint16 baseadr)
     connect(thr2,SIGNAL(started()),Parse,SLOT(Run()));
     connect(Parse,SIGNAL(Started()),this,SLOT(ParseThreadStarted()));
     connect(eth,SIGNAL(Connected()),Parse,SLOT(StartDT()));
+    connect(eth,SIGNAL(Finished()),this,SIGNAL(ReconnectSignal()));
     connect(Parse,SIGNAL(WriteData(QByteArray)),eth,SLOT(InitiateWriteDataToPort(QByteArray)));
     connect(eth,SIGNAL(NewDataArrived(QByteArray)),Parse,SLOT(GetSomeData(QByteArray)));
     connect(Parse,SIGNAL(ReconnectSignal()),this,SIGNAL(ReconnectSignal()));
@@ -179,8 +181,9 @@ void IEC104::ParseThreadFinished()
 
 // Класс PARSE104
 
-IEC104Thread::IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, QObject *parent) : QObject(parent)
+IEC104Thread::IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, QVector<S2::DataRec> *s2, QObject *parent) : QObject(parent)
 {
+    DR = s2;
     FirstParse = true;
     InputQueue = &queue;
     Log = log;
@@ -251,7 +254,8 @@ void IEC104Thread::Run()
                 case CM104_FILEREADY:
                 {
                     QVector<S2::DataRec> *ptr = reinterpret_cast<QVector<S2::DataRec> *>(inp.args.ptrarg);
-                    FileReady(ptr);
+//                    FileReady(ptr);
+                    FileReady();
                     break;
                 }
                 case CM104_SELECTFILE:
@@ -335,7 +339,10 @@ int IEC104Thread::isIncomeDataValid(QByteArray ba)
             quint16 V_Rrcv = static_cast<quint8>(ba.at(3))*256+static_cast<quint8>(ba.at(2)&0xFE);
             V_Rrcv >>= 1;
             if (V_Rrcv != V_R)
+            {
+                Log->error("V_Rrcv != V_R");
                 return I104_RCVWRONG;
+            }
             V_R++;
             quint16 V_Srcv = static_cast<quint8>(ba.at(5))*256+static_cast<quint8>(ba.at(4)&0xFE);
             V_Srcv >>= 1;
@@ -388,298 +395,309 @@ int IEC104Thread::isIncomeDataValid(QByteArray ba)
 
 void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разборщик
 {
-    DUI.typeIdent = ba[0];
-    DUI.qualifier.Number = ba[1]&0x7f;
-    DUI.qualifier.SQ = ba[1]>>7;
-    DUI.cause.cause = ba[2]&0x3F;
-    DUI.cause.confirm = (ba[2]>>6)&0x01;
-    DUI.cause.test = ba[2]>>7;
-    DUI.cause.initiator = ba[3];
-    DUI.commonAdrASDU = ba[4] + ba[5]*256;
-    quint32 objectAdr = 0;
-    quint32 index = 6;
-    int fileSize;
-    int res,i,cntfl = 0,cntflTimestamp = 0,cntspon = 0,cntbs = 0; //, cntsponTime = 0;
-    IEC104Thread::FlSignals104* flSignals = new IEC104Thread::FlSignals104[DUI.qualifier.Number];
-    IEC104Thread::SponSignals* sponsignals = new IEC104Thread::SponSignals[DUI.qualifier.Number];
-    IEC104Thread::BS104Signals* BS104Signals = new IEC104Thread::BS104Signals[DUI.qualifier.Number];
-    unsigned char num = ba[9];
-
-    for (i = 0; i < DUI.qualifier.Number; i++)
+    try
     {
-        if ((i==0) || (DUI.qualifier.SQ==0))
-        {
+        DUI.typeIdent = ba[0];
+        DUI.qualifier.Number = ba[1]&0x7f;
+        DUI.qualifier.SQ = ba[1]>>7;
+        DUI.cause.cause = ba[2]&0x3F;
+        DUI.cause.confirm = (ba[2]>>6)&0x01;
+        DUI.cause.test = ba[2]>>7;
+        DUI.cause.initiator = ba[3];
+        DUI.commonAdrASDU = ba[4] + ba[5]*256;
+        quint32 objectAdr = 0;
+        quint32 index = 6;
+        int fileSize;
+        int res,i,cntfl = 0,cntflTimestamp = 0,cntspon = 0,cntbs = 0; //, cntsponTime = 0;
+        IEC104Thread::FlSignals104* flSignals = new IEC104Thread::FlSignals104[DUI.qualifier.Number];
+        IEC104Thread::SponSignals* sponsignals = new IEC104Thread::SponSignals[DUI.qualifier.Number];
+        IEC104Thread::BS104Signals* BS104Signals = new IEC104Thread::BS104Signals[DUI.qualifier.Number];
+        unsigned char num = ba[9];
 
-            objectAdr = ba[index++];
-            objectAdr &= 0x00FF;
-            objectAdr |= ba[index++]<<8;
-            objectAdr += ba[index++]*0x10000;
-        }
-        else
-            objectAdr++;
-        switch(DUI.typeIdent)
+        for (i = 0; i < DUI.qualifier.Number; i++)
         {
-        case M_EI_NA_1: // 70 тип - подтверждение окончания инициализации
-        {
-            break;
-        }
-        case M_ME_TF_1: // 36 тип - измеренные данные с плавающей запятой
-        {
-            if (cntflTimestamp >= DUI.qualifier.Number)
+            if ((i==0) || (DUI.qualifier.SQ==0))
             {
-                ERMSG("out of array flSignals");
-                return;
+
+                objectAdr = ba[index++];
+                objectAdr &= 0x00FF;
+                objectAdr |= ba[index++]<<8;
+                objectAdr += ba[index++]*0x10000;
             }
-            (flSignals+cntflTimestamp)->fl.SigAdr=objectAdr;
-            float value;
-            memcpy(&value,&(ba.data()[index]),4);
-            index += 4;
-            (flSignals+cntflTimestamp)->fl.SigVal=value;
-            quint8 quality;
-            memcpy(&quality,&(ba.data()[index]),1);
-            index++;
-            (flSignals+cntflTimestamp)->fl.SigQuality=quality;
-            quint64 time;
-            memcpy(&time,&(ba.data()[index]),8);
-            index += 8;
-            (flSignals+cntflTimestamp)->fl.CP56Time=time;
-            cntflTimestamp++;
-            break;
-        }
-
-        case C_IC_NA_1: // 100
-            break;
-
-        case M_ME_NC_1:   // 13 тип - измеренные данные с плавающей запятой
-        {
-            if (cntfl >= DUI.qualifier.Number)
+            else
+                objectAdr++;
+            switch(DUI.typeIdent)
             {
-                ERMSG("out of array flSignals");
-                return;
-            }
-            (flSignals+cntfl)->fl.SigAdr=objectAdr;
-            float value;
-            memcpy(&value,&(ba.data()[index]),4);
-            index += 4;
-            (flSignals+cntfl)->fl.SigVal=value;
-            quint8 quality;
-            memcpy(&quality,&(ba.data()[index]),1);
-            index++;
-            (flSignals+cntfl)->fl.SigQuality=quality;
-            cntfl++;
-            break;
-        }
-
-        case M_SP_NA_1:
-        {
-            if (cntspon > 255)
+            case M_EI_NA_1: // 70 тип - подтверждение окончания инициализации
             {
-                ERMSG("out of array sponsignals");
-                return;
+                break;
             }
-           sponsignals->Spon[cntspon].SigAdr=objectAdr;
-           quint8 value;
-           memcpy(&value,&(ba.data()[index]),1);
-           index += 1;
-           sponsignals->Spon[cntspon].SigVal=value;
-           cntspon++;
-           break;
-        }
-
-        case M_SP_TB_1:
-        {
-            if (cntspon > 255)
+            case M_ME_TF_1: // 36 тип - измеренные данные с плавающей запятой
             {
-                ERMSG("out of array sponsignals");
-                return;
-            }
-            sponsignals->Spon[cntspon].SigAdr=objectAdr;
-            quint8 value;
-            memcpy(&value,&(ba.data()[index]),1);
-            index += 1;
-            sponsignals->Spon[cntspon].SigVal=value;
-            quint64 time;
-            memcpy(&time,&(ba.data()[index]),7);
-            index += 7;
-            sponsignals->Spon[cntspon].CP56Time=time;
-            cntspon++;
-            break;
-         }
-
-        case M_BO_NA_1:
-        {
-            if (cntbs >= DUI.qualifier.Number)
-            {
-                ERMSG("out of array BS104Signals");
-                return;
-            }
-            int j;
-            for(j=0 ; j<3; j++)
-            (BS104Signals+cntbs)->BS.SigAdr[j]=(objectAdr>>8*j);
-
-            quint32 value;
-            memcpy(&value,&(ba.data()[index]),4);
-            index += 4;
-            (BS104Signals+cntbs)->BS.SigVal=value;
-            quint8 quality;
-            memcpy(&quality,&(ba.data()[index]),1);
-            index++;
-            (BS104Signals+cntbs)->BS.SigQuality=quality;
-            cntbs++;
-            break;
-        }
-
-        case F_SR_NA_1: // секция готова
-        {
-            Log->info("Section ready");
-            GetSection(ba[9]);
-            break;
-        }
-
-        case F_FR_NA_1: // файл готов
-        {
-            Log->info("File ready");
-            ReadData.clear();
-            RDSize = 0;
-            RDLength = 0;
-            fileSize = (static_cast<quint8>(ba[13]) << 16) | (static_cast<quint8>(ba[12]) << 8) | (static_cast<quint8>(ba[11]));
-            emit SetDataSize(fileSize);
-            CallFile(ba[9]);
-            break;
-        }
-
-        case F_SG_NA_1: // сегмент
-        {
-            Log->info("Segment ready: RDSize=" + QString::number(ba[12], 16) + ", num=" + QString::number(ba[13]));
-            RDSize = static_cast<quint8>(ba[12]);
-            RDSize &= 0xFF;
-            if(RDSize) //>= RDLength)
-            {
-                ReadData.append(&(ba.data()[13]), RDSize);
-                RDLength += RDSize;
-                emit SetDataCount(RDLength);
-            }
-            break;
-        }
-
-        case F_LS_NA_1: // последняя секция, последнй сегмент
-        {
-            Log->info("Last section, ba[12] = "+QString::number(ba[12]));
-                switch(ba[12])
+                if (cntflTimestamp >= DUI.qualifier.Number)
                 {
-                case 1:
+                    ERMSG("out of array flSignals");
+                    return;
+                }
+                (flSignals+cntflTimestamp)->fl.SigAdr=objectAdr;
+                float value;
+                memcpy(&value,&(ba.data()[index]),4);
+                index += 4;
+                (flSignals+cntflTimestamp)->fl.SigVal=value;
+                quint8 quality;
+                memcpy(&quality,&(ba.data()[index]),1);
+                index++;
+                (flSignals+cntflTimestamp)->fl.SigQuality=quality;
+                quint64 time;
+                memcpy(&time,&(ba.data()[index]),8);
+                index += 8;
+                (flSignals+cntflTimestamp)->fl.CP56Time=time;
+                cntflTimestamp++;
+                break;
+            }
+
+            case C_IC_NA_1: // 100
+                break;
+
+            case M_ME_NC_1:   // 13 тип - измеренные данные с плавающей запятой
+            {
+                if (cntfl >= DUI.qualifier.Number)
                 {
-                      // ConfirmFile(num);
-                    ConTimer->start();
-                    FileSending = false;
+                    ERMSG("out of array flSignals");
+                    return;
+                }
+                (flSignals+cntfl)->fl.SigAdr=objectAdr;
+                float value;
+                memcpy(&value,&(ba.data()[index]),4);
+                index += 4;
+                (flSignals+cntfl)->fl.SigVal=value;
+                quint8 quality;
+                memcpy(&quality,&(ba.data()[index]),1);
+                index++;
+                (flSignals+cntfl)->fl.SigQuality=quality;
+                cntfl++;
+                break;
+            }
 
-                    int filetype = ba.at(9);
-                    if(filetype == 0x01)  // если файл конфигурации
-                    {
-                       res = S2::RestoreDataMem(ReadData.data(), RDLength, DR);
-                       if (res == NOERROR)
-                           emit SendS2fromParse(DR);
-                    }
-                    else if(filetype == 0x04)   // если файл системного журнала
-                        emit SendJourSysfromParse(ReadData);
-                    else if(filetype == 0x05)   // если файл рабочего журнала
-                          emit SendJourWorkfromParse(ReadData);
-                    else if(filetype == 6)   // если файл журнала измерений
-                        emit SendJourMeasfromParse(ReadData);
-                    RDLength = 0;
-                    RDSize = 0;
-                    break;
-                 }
+            case M_SP_NA_1:
+            {
+                if (cntspon > 255)
+                {
+                    ERMSG("out of array sponsignals");
+                    return;
+                }
+               sponsignals->Spon[cntspon].SigAdr=objectAdr;
+               quint8 value;
+               memcpy(&value,&(ba.data()[index]),1);
+               index += 1;
+               sponsignals->Spon[cntspon].SigVal=value;
+               cntspon++;
+               break;
+            }
 
-                 case 3:
-                 {
-                    ConfirmSection(num);
-                    break;
-                 }
+            case M_SP_TB_1:
+            {
+                if (cntspon > 255)
+                {
+                    ERMSG("out of array sponsignals");
+                    return;
+                }
+                sponsignals->Spon[cntspon].SigAdr=objectAdr;
+                quint8 value;
+                memcpy(&value,&(ba.data()[index]),1);
+                index += 1;
+                sponsignals->Spon[cntspon].SigVal=value;
+                quint64 time;
+                memcpy(&time,&(ba.data()[index]),7);
+                index += 7;
+                sponsignals->Spon[cntspon].CP56Time=time;
+                cntspon++;
+                break;
+             }
+
+            case M_BO_NA_1:
+            {
+                if (cntbs >= DUI.qualifier.Number)
+                {
+                    ERMSG("out of array BS104Signals");
+                    return;
+                }
+                int j;
+                for(j=0 ; j<3; j++)
+                (BS104Signals+cntbs)->BS.SigAdr[j]=(objectAdr>>8*j);
+
+                quint32 value;
+                memcpy(&value,&(ba.data()[index]),4);
+                index += 4;
+                (BS104Signals+cntbs)->BS.SigVal=value;
+                quint8 quality;
+                memcpy(&quality,&(ba.data()[index]),1);
+                index++;
+                (BS104Signals+cntbs)->BS.SigQuality=quality;
+                cntbs++;
+                break;
+            }
+
+            case F_SR_NA_1: // секция готова
+            {
+                Log->info("Section ready");
+                GetSection(ba[9]);
+                break;
+            }
+
+            case F_FR_NA_1: // файл готов
+            {
+                Log->info("File ready");
+                ReadData.clear();
+                RDSize = 0;
+                RDLength = 0;
+                fileSize = (static_cast<quint8>(ba[13]) << 16) | (static_cast<quint8>(ba[12]) << 8) | (static_cast<quint8>(ba[11]));
+                emit SetDataSize(fileSize);
+                CallFile(ba[9]);
+                break;
+            }
+
+            case F_SG_NA_1: // сегмент
+            {
+                Log->info("Segment ready: RDSize=" + QString::number(ba[12], 16) + ", num=" + QString::number(ba[13]));
+                RDSize = static_cast<quint8>(ba[12]);
+                RDSize &= 0xFF;
+                if(RDSize) //>= RDLength)
+                {
+                    ReadData.append(&(ba.data()[13]), RDSize);
+                    RDLength += RDSize;
+                    emit SetDataCount(RDLength);
                 }
                 break;
-        }
-
-        case F_SC_NA_1: // запрос файла, секции
-        {
-            if(ba.at(12) == 0x02)  //запрос файла
-            {
-                Log->info("File query");
-                SectionReady();
             }
-            if(ba.at(12) == 0x06)
+
+            case F_LS_NA_1: // последняя секция, последнй сегмент
             {
-                Log->info("Segment query");
-                SendSegments();
+                Log->info("Last section, ba[12] = "+QString::number(ba[12]));
+                    switch(ba[12])
+                    {
+                    case 1:
+                    {
+                        ConfirmFile(num);
+                        ConTimer->start();
+                        FileSending = false;
+                        Log->info("FileSending clear");
+
+                        int filetype = ba.at(9);
+                        if(filetype == 0x01)  // если файл конфигурации
+                        {
+                           res = S2::RestoreDataMem(ReadData.data(), RDLength, DR);
+                           if (res == NOERROR)
+                               emit SendS2fromParse(DR);
+                        }
+                        else if(filetype == 0x04)   // если файл системного журнала
+                            emit SendJourSysfromParse(ReadData);
+                        else if(filetype == 0x05)   // если файл рабочего журнала
+                              emit SendJourWorkfromParse(ReadData);
+                        else if(filetype == 6)   // если файл журнала измерений
+                            emit SendJourMeasfromParse(ReadData);
+                        RDLength = 0;
+                        RDSize = 0;
+                        break;
+                     }
+
+                     case 3:
+                     {
+                        ConfirmSection(num);
+                        break;
+                     }
+                    }
+                    break;
             }
-            break;
-        }
 
-        case F_AF_NA_1: // подтверждение файла, секции
-        {
-            Log->info("Last section of file " + QString::number(ba[12]) + " confirm");
-            FileSending = false;
-            if(ba.at(12) == 0x03)  //подтверждение секции
-                LastSection();
-            if(ba.at(12) == 0x01)  //подтверждение секции
-                emit SendMessagefromParse();
-            break;
-        }
-
-        case C_SC_NA_1:
-        {
-            if(DUI.cause.cause == 10)
-                emit SendMessageOk();
-            break;
-        }
-
-        case C_SE_NC_1:
-        {
-            if(DUI.cause.cause == 10)
-            count++;
-
-            emit SetDataCount(count);
-            quint32 adr = ba[6] + (ba[7]+1)*256; //+ (ba[8]<<16);
-
-            if((adr == 920) && (DUI.cause.cause == 10))  // если адрес последнего параметра коррекции
+            case F_SC_NA_1: // запрос файла, секции
             {
-               if(ba.at(13) == 0)
-               {
-                   emit SendMessageOk();
-                   emit SetDataCount(11);
-               }
-               count=0;
+                if(ba.at(12) == 0x02)  //запрос файла
+                {
+                    Log->info("File query");
+                    SectionReady();
+                }
+                if(ba.at(12) == 0x06)
+                {
+                    Log->info("Segment query");
+                    SendSegments();
+                }
+                break;
             }
-            break;
+
+            case F_AF_NA_1: // подтверждение файла, секции
+            {
+                Log->info("Last section of file " + QString::number(ba[12]) + " confirm");
+                if(ba.at(12) == 0x03)  // подтверждение секции
+                    LastSection();
+                if(ba.at(12) == 0x01)  // подтверждение файла
+                {
+                    Log->info("FileSending clear");
+                    FileSending = false;
+                    emit SendMessagefromParse();
+                }
+                break;
+            }
+
+            case C_SC_NA_1:
+            {
+                if(DUI.cause.cause == 10)
+                    emit SendMessageOk();
+                break;
+            }
+
+            case C_SE_NC_1:
+            {
+                if(DUI.cause.cause == 10)
+                count++;
+
+                emit SetDataCount(count);
+                quint32 adr = ba[6] + (ba[7]+1)*256; //+ (ba[8]<<16);
+
+                if((adr == 920) && (DUI.cause.cause == 10))  // если адрес последнего параметра коррекции
+                {
+                   if(ba.at(13) == 0)
+                   {
+                       emit SendMessageOk();
+                       emit SetDataCount(11);
+                   }
+                   count=0;
+                }
+                break;
+            }
+
+            default:
+                break;
+            }
         }
 
-        default:
-            break;
+        if(cntflTimestamp != 0)
+        {
+            flSignals->SigNumber = cntflTimestamp;
+            emit Floatsignalsreceived(flSignals);
+        }
+
+        if(cntfl != 0)
+        {
+            flSignals->SigNumber = cntfl;
+            emit Floatsignalsreceived(flSignals);
+        }
+
+        if(cntspon != 0)
+        {
+            sponsignals->SigNumber = cntspon;
+            emit Sponsignalsreceived(sponsignals);
+        }
+
+        if(cntbs != 0)
+        {
+            BS104Signals->SigNumber = cntbs;
+            emit Bs104signalsreceived(BS104Signals);
         }
     }
-
-    if(cntflTimestamp != 0)
+    catch (...)
     {
-        flSignals->SigNumber = cntflTimestamp;
-        emit Floatsignalsreceived(flSignals);
-    }
-
-    if(cntfl != 0)
-    {
-        flSignals->SigNumber = cntfl;
-        emit Floatsignalsreceived(flSignals);
-    }
-
-    if(cntspon != 0)
-    {
-        sponsignals->SigNumber = cntspon;
-        emit Sponsignalsreceived(sponsignals);
-    }
-
-    if(cntbs != 0)
-    {
-        BS104Signals->SigNumber = cntbs;
-        emit Bs104signalsreceived(BS104Signals);
+        Log->error("Catch exception");
     }
 }
 
@@ -828,7 +846,6 @@ void IEC104Thread::SendTestAct()
 {
     if(NoAnswer)
     {
-        ConTimer->stop();
         emit ReconnectSignal();
         ERMSG("No answer");
         return;
@@ -836,6 +853,7 @@ void IEC104Thread::SendTestAct()
     else
         NoAnswer = 1;
 
+    ConTimer->stop();
     APCI GI;
     GI.append(I104_START);
     GI.append(0x04);
@@ -849,6 +867,7 @@ void IEC104Thread::SelectFile(char numfile)
 {
     SecNum = 1;
     FileSending = true;
+    Log->info("FileSending set");
     ConTimer->stop();
     Log->info("SelectFile(" + QString::number(numfile) + ")");
     ASDU cmd = ASDUFilePrefix(F_SC_NA_1, numfile, 0x00);
@@ -890,9 +909,12 @@ void IEC104Thread::ConfirmFile(unsigned char numFile)
     Send(1, GI, cmd); // ASDU = QByteArray()
 }
 
-void IEC104Thread::FileReady(QVector<S2::DataRec> *file)
+//void IEC104Thread::FileReady(QVector<S2::DataRec> *file)
+void IEC104Thread::FileReady()
 {
-    DR = file;
+    FileSending = true;
+    Log->info("FileSending set");
+//    DR = file;
     SecNum = 1;
     ASDU cmd = ASDUFilePrefix(F_FR_NA_1, 0x01, 0x00);
     cmd.chop(1);
@@ -928,11 +950,11 @@ void IEC104Thread::SendSegments()
     KSF = 0;
 
     unsigned int pos = 0;
-    if (FileLen > static_cast<quint32>(File.size()))
+/*    if (FileLen > static_cast<quint32>(File.size()))
     {
         ERMSG("FileLen is bigger than file");
         return;
-    }
+    } */
     emit SetDataSize(FileLen);
     ASDU cmd = ASDUFilePrefix(F_SG_NA_1, 0x01, SecNum);
     cmd.append('\x0');
@@ -957,9 +979,7 @@ void IEC104Thread::SendSegments()
         GI = CreateGI(diff+17);
         Send(1, GI, cmd); // ASDU = QByteArray()
         cmd = cmd.left(13);
-        QThread::msleep(20);
-        //Parse->V_S++;
-        QThread::msleep(500);
+        QThread::msleep(100);
     } while (!File.isEmpty());
 
     cmd = ASDUFilePrefix(F_LS_NA_1, 1, SecNum);

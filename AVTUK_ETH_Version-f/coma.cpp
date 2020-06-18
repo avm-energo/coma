@@ -64,7 +64,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
         dir.mkpath(".");
     StdFunc::Init();
     Error::Init();
-    S2Config.clear();
+    S2Config = new QVector<S2::DataRec>;
     S2ConfigForTune.clear();
     FullName = "";
     Disconnected = true;
@@ -93,6 +93,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
 
 Coma::~Coma()
 {
+    Reconnect = false;
     Disconnect();
 }
 
@@ -187,7 +188,6 @@ void Coma::StartWork()
             return;
         }
         S2ConfigForTune.clear();
-        S2Config.clear();
         SaveSettings();
     }
 
@@ -365,6 +365,7 @@ void Coma::PrepareDialogs()
     CheckB = new CheckDialog84(BoardTypes::BT_BASE);
     TimeD = new MNKTime;
     CorD = new CorDialog;
+    S2Config->clear();
     if (MainInterface != I_RS485)
         ConfM = new ConfDialog84(S2Config);
 
@@ -385,7 +386,6 @@ void Coma::PrepareDialogs()
 
     if (MainInterface == I_ETHERNET)
     {
-        Ch104->Parse->DR = &S2Config;
         connect(Ch104,SIGNAL(Floatsignalsready(IEC104Thread::FlSignals104*)),CheckB,SLOT(UpdateFlData(IEC104Thread::FlSignals104*)));
         connect(Ch104,SIGNAL(Sponsignalsready(IEC104Thread::SponSignals*)),CheckB,SLOT(UpdateSponData(IEC104Thread::SponSignals*)));
 
@@ -430,7 +430,7 @@ void Coma::PrepareDialogs()
 
 void Coma::New104()
 {
-    Ch104 = new IEC104;
+    Ch104 = new IEC104(S2Config);
     connect(this,SIGNAL(StopCommunications()),Ch104,SIGNAL(StopAll()));
     connect(Ch104,SIGNAL(Finished()),this,SLOT(Ch104Finished()));
     connect(Ch104,SIGNAL(Sponsignalsready(IEC104Thread::SponSignals*)),this,SLOT(UpdatePredAlarmEvents(IEC104Thread::SponSignals*)));
@@ -541,7 +541,6 @@ void Coma::AttemptToRec()
     if(Reconnect != false)
     {
         QApplication::setOverrideCursor(Qt::WaitCursor);
-        S2Config.clear();
         SaveSettings();
         QApplication::restoreOverrideCursor();
         StartWork();
@@ -1039,7 +1038,6 @@ void Coma::SaveSettings()
 
 void Coma::ClearTW()
 {
-    S2Config.clear();
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
     {

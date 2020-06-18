@@ -10,7 +10,7 @@
 class Config84
 {
 public:
-    explicit Config84(QVector<S2::DataRec> &config);
+    explicit Config84(QVector<S2::DataRec> *config);
 
     typedef struct
     {

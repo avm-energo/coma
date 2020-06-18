@@ -14,7 +14,7 @@ class ConfDialog84 : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    explicit ConfDialog84(QVector<S2::DataRec> &S2Config, QWidget *parent = nullptr);
+    explicit ConfDialog84(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
     ~ConfDialog84();
 
     QLabel *SysTime; 

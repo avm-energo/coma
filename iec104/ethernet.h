@@ -6,6 +6,7 @@
 #include <QMutex>
 #include <QByteArray>
 #include "iec104.h"
+#include "../gen/logclass.h"
 
 #define PORT104     2404 // порт связи по протоколу МЭК 60870-5-104
 
@@ -19,6 +20,8 @@ public:
     quint16 ASDU;
     bool ClosePortAndFinishThread;
     QString IP;
+    LogClass *Log;
+
 signals:
     void ethNoconnection();
     void error(int);
@@ -32,11 +35,11 @@ public slots:
     void Stop();
     void InitiateWriteDataToPort(QByteArray);
 
-
 private slots:
     void CheckForData();
     void seterr(QAbstractSocket::SocketError);
     void EthSetConnected();
+    void EthStateChanged(QAbstractSocket::SocketState state);
 
 private:
     QTcpSocket *sock;

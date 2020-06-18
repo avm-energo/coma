@@ -12,7 +12,7 @@
 #include "../dialogs/journalsdialog.h"
 
 #define RECONNECTINTERVAL   3000
-#define WAITINTERVAL        1500
+#define WAITINTERVAL        15000
 
 #define THREADUSB   0x01
 #define THREAD104   0x02
@@ -206,7 +206,7 @@ private:
     quint16 AdrBaseStation;
     SerialPort::Settings Settings;
     QTimer* BdaTimer, *TimeTimer, *AlarmStateTimer;
-    QVector<S2::DataRec> S2Config;
+    QVector<S2::DataRec> *S2Config;
     QWidget *Parent;
     QWidget *Wpred;
     QWidget *Walarm;
