@@ -426,7 +426,7 @@ void Coma::PrepareDialogs()
 void Coma::New104()
 {
     Ch104 = new IEC104(S2Config);
-    connect(this,SIGNAL(StopCommunications()),Ch104,SIGNAL(StopAllThreads()));
+    connect(this,SIGNAL(StopCommunications()),Ch104,SLOT(StopAllThreads()));
     connect(Ch104,SIGNAL(Finished()),this,SLOT(Ch104Finished()));
     connect(Ch104,SIGNAL(Sponsignalsready(IEC104Thread::SponSignals*)),this,SLOT(UpdatePredAlarmEvents(IEC104Thread::SponSignals*)));
     connect(Ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
