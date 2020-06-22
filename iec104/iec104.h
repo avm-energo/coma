@@ -368,6 +368,7 @@ public:
     void Connect(const QString &IP, quint16 baseadr);
 
 public slots:
+    void StopAllThreads();
 
 signals:
     void StopAll();
@@ -387,7 +388,7 @@ signals:
     void Finished();
 
 private:
-    bool EthThreadWorking, ParseThreadWorking;
+    bool EthThreadWorking, ParseThreadWorking, AboutToFinish;
     LogClass *Log;
     QQueue<IEC104Thread::InputStruct> InputQueue;
     QVector<S2::DataRec> *S2Config;
@@ -404,6 +405,7 @@ private slots:
     void EthThreadFinished();
     void ParseThreadStarted();
     void ParseThreadFinished();
+    void EmitReconnectSignal();
 };
 
 #endif // IEC104_H

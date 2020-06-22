@@ -14,8 +14,6 @@ QMutex ParseWriteMutex;
 IEC104::IEC104(QVector<S2::DataRec> *s2, QObject *parent) : QObject(parent)
 {
     S2Config = s2;
-    EthThreadWorking = false;
-    ParseThreadWorking = false;
     Log = new LogClass;
     Log->Init("iec104.log");
     Log->info("=== Log started ===");
@@ -33,6 +31,9 @@ bool IEC104::Working()
 void IEC104::Connect(const QString &IP, quint16 baseadr)
 {
     INFOMSG("IEC104: connect");
+    EthThreadWorking = false;
+    ParseThreadWorking = false;
+    AboutToFinish = false;
     QThread *thr = new QThread;
     Ethernet *eth = new Ethernet;
     eth->moveToThread(thr);
@@ -177,6 +178,18 @@ void IEC104::ParseThreadFinished()
     ParseThreadWorking = false;
     if (!EthThreadWorking)
         emit Finished();
+}
+
+void IEC104::EmitReconnectSignal()
+{
+    if (!AboutToFinish)
+        emit ReconnectSignal();
+}
+
+void IEC104::StopAllThreads()
+{
+    AboutToFinish = true;
+    emit StopAll();
 }
 
 // Класс PARSE104

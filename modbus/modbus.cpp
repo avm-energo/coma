@@ -54,7 +54,7 @@ int ModBus::Connect(SerialPort::Settings settings)
     connect(port, SIGNAL(State(ConnectionStates)), this, SIGNAL(ModbusState(ConnectionStates)));
     connect(port, SIGNAL(Read(QByteArray)), cthr, SLOT(ParseReply(QByteArray)));
     connect(cthr, SIGNAL(Write(QByteArray)), port, SLOT(WriteBytes(QByteArray)));
-    connect(port, SIGNAL(Reconnect()), this, SIGNAL(ReconnectSignal()));
+    connect(port, SIGNAL(Reconnect()), this, SLOT(SendReconnectSignal()));
     if (port->Init(settings) != NOERROR)
         return GENERALERROR;
     thr->start();
@@ -141,6 +141,12 @@ void ModBus::Polling()
     {
         ReadTime();
     }
+}
+
+void ModBus::SendReconnectSignal()
+{
+    if (!AboutToFinish)
+        emit ReconnectSignal();
 }
 
 void ModBus::Stop()
