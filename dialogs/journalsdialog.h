@@ -134,8 +134,8 @@ signals:
     void WritePasswordChecked();
 
 private slots:
+    void TryGetJourByUSB();
     void GetJour();
-    void GetJourMeasj();
     void ReadJourFileAndProcessIt();
     void JourFileChoosed(QString &file);
     void EraseJour();

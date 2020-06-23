@@ -562,12 +562,12 @@ void WDFunc::SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder
         tv->sortByColumn(column, sortorder);
 }
 
-ETableModel *WDFunc::TVModel(QWidget *w, const QString &tvname)
+QAbstractItemModel *WDFunc::TVModel(QWidget *w, const QString &tvname)
 {
     ETableView *tv = w->findChild<ETableView *>(tvname);
     if (tv == nullptr)
         return nullptr;
-    return reinterpret_cast<ETableModel *>(tv->model());
+    return tv->model();
 }
 
 bool WDFunc::LE_read_data(QWidget *w, const QString &lename, QString &levalue)

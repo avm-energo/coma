@@ -40,7 +40,9 @@ bool ETableModel::setHeaderData(int section, Qt::Orientation orientation, const 
 
 QStringList ETableModel::Headers()
 {
-    return hdr;
+    if (!hdr.isEmpty())
+        return hdr;
+    return QStringList();
 }
 
 QVariant ETableModel::data(const QModelIndex &index, int role) const
@@ -275,6 +277,11 @@ void ETableModel::SetRowTextAlignment(int row, int alignment)
         insertRows(rowCount(), (row-rowCount()));
     for (int i=0; i<columnCount(); ++i)
         setData(index(row, i, QModelIndex()), QVariant(alignment), Qt::TextAlignmentRole);
+}
+
+bool ETableModel::isEmpty()
+{
+    return maindata.isEmpty();
 }
 
 void ETableModel::setCellAttr(QModelIndex index, int fcset, int icon)
