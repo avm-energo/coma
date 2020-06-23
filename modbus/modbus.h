@@ -138,6 +138,7 @@ private:
 
 private slots:
     void Polling();
+    void SendReconnectSignal();
 
 protected:
 

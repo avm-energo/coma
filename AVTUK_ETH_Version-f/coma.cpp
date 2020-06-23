@@ -93,8 +93,6 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
 
 Coma::~Coma()
 {
-    Reconnect = false;
-    Disconnect();
 }
 
 void Coma::SetupUI()
@@ -261,10 +259,7 @@ void Coma::StartWork()
             QCoreApplication::processEvents();
         if (MTypeB == 0)
         {
-            if(Reconnect)
-                ReConnect();
-            else
-                DisconnectAndClear();
+            DisconnectAndClear();
             ERMSG("Не получили BSI");
             Disconnect();
             return;
@@ -431,7 +426,7 @@ void Coma::PrepareDialogs()
 void Coma::New104()
 {
     Ch104 = new IEC104(S2Config);
-    connect(this,SIGNAL(StopCommunications()),Ch104,SIGNAL(StopAll()));
+    connect(this,SIGNAL(StopCommunications()),Ch104,SLOT(StopAllThreads()));
     connect(Ch104,SIGNAL(Finished()),this,SLOT(Ch104Finished()));
     connect(Ch104,SIGNAL(Sponsignalsready(IEC104Thread::SponSignals*)),this,SLOT(UpdatePredAlarmEvents(IEC104Thread::SponSignals*)));
     connect(Ch104,SIGNAL(SetDataSize(int)),this,SLOT(SetProgressBar1Size(int)));
@@ -498,53 +493,52 @@ void Coma::Go(const QString &parameter)
 
 void Coma::ReConnect()
 {
-    QDialog *dlg = new QDialog;
-
-    INFOMSG("Reconnect()");
-    Reconnect = true;
-    TimeTimer->stop();
-    if(!Disconnected)
+    if (Reconnect)
     {
-        Disconnect();
-        emit ClearBsi();
-        ClearTW();
-        ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
-        if (MainTW == nullptr)
-        {
-          ERMSG("Ошибка открытия файла");
-          return;
-        }
-        MainTW->hide();
-        StdFunc::SetEmulated(false);
-    }
+        QDialog *dlg = new QDialog;
 
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QVBoxLayout *vlayout = new QVBoxLayout;
-    QString tmps = QString(PROGCAPTION);
-    QWidget *w = new QWidget;
-    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
-    hlyout->addWidget(WDFunc::NewLBLT(w, "Связь разорвана.\nПопытка переподключения будет выполнена через 3 секунды", "", "", ""), 1);
-    vlayout->addLayout(hlyout);
-    w->setLayout(vlayout);
-    connect(ReconnectTimer,SIGNAL(timeout()), dlg,SLOT(close()));
-    lyout->addWidget(w);
-    dlg->setLayout(lyout);
-    ReconnectTimer->start();
-    dlg->show();
-    StdFunc::Wait(RECONNECTINTERVAL);
-    dlg->close();
+        INFOMSG("Reconnect()");
+        TimeTimer->stop();
+        if(!Disconnected)
+        {
+            Disconnect();
+            emit ClearBsi();
+            ClearTW();
+            ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
+            if (MainTW == nullptr)
+            {
+              ERMSG("Ошибка открытия файла");
+              return;
+            }
+            MainTW->hide();
+            StdFunc::SetEmulated(false);
+        }
+
+        QVBoxLayout *lyout = new QVBoxLayout;
+        QHBoxLayout *hlyout = new QHBoxLayout;
+        QVBoxLayout *vlayout = new QVBoxLayout;
+        QString tmps = QString(PROGCAPTION);
+        QWidget *w = new QWidget;
+        w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
+        hlyout->addWidget(WDFunc::NewLBLT(w, "Связь разорвана.\nПопытка переподключения будет выполнена через 3 секунды", "", "", ""), 1);
+        vlayout->addLayout(hlyout);
+        w->setLayout(vlayout);
+        connect(ReconnectTimer,SIGNAL(timeout()), dlg,SLOT(close()));
+        lyout->addWidget(w);
+        dlg->setLayout(lyout);
+        ReconnectTimer->start();
+        dlg->show();
+        StdFunc::Wait(RECONNECTINTERVAL);
+        dlg->close();
+    }
 }
 
 void Coma::AttemptToRec()
 {
-    if(Reconnect != false)
-    {
-        QApplication::setOverrideCursor(Qt::WaitCursor);
-        SaveSettings();
-        QApplication::restoreOverrideCursor();
-        StartWork();
-    }
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    SaveSettings();
+    QApplication::restoreOverrideCursor();
+    StartWork();
 }
 
 void Coma::ConnectMessage()
@@ -1573,12 +1567,12 @@ void Coma::closeEvent(QCloseEvent *event)
 
 void Coma::CheckTimeFinish()
 {
-   TimeThrFinished = true;
+    TimeThrFinished = true;
 }
 
 void Coma::CheckModBusFinish()
 {
-   TimeThrFinished = true;
+    TimeThrFinished = true;
 }
 
 void Coma::UpdateUSB()

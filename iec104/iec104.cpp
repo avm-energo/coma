@@ -13,9 +13,10 @@ QMutex ParseWriteMutex;
 
 IEC104::IEC104(QVector<S2::DataRec> *s2, QObject *parent) : QObject(parent)
 {
-    S2Config = s2;
     EthThreadWorking = false;
     ParseThreadWorking = false;
+    AboutToFinish = false;
+    S2Config = s2;
     Log = new LogClass;
     Log->Init("iec104.log");
     Log->info("=== Log started ===");
@@ -33,6 +34,9 @@ bool IEC104::Working()
 void IEC104::Connect(const QString &IP, quint16 baseadr)
 {
     INFOMSG("IEC104: connect");
+    EthThreadWorking = false;
+    ParseThreadWorking = false;
+    AboutToFinish = false;
     QThread *thr = new QThread;
     Ethernet *eth = new Ethernet;
     eth->moveToThread(thr);
@@ -56,10 +60,10 @@ void IEC104::Connect(const QString &IP, quint16 baseadr)
     connect(thr2,SIGNAL(started()),Parse,SLOT(Run()));
     connect(Parse,SIGNAL(Started()),this,SLOT(ParseThreadStarted()));
     connect(eth,SIGNAL(Connected()),Parse,SLOT(StartDT()));
-    connect(eth,SIGNAL(Finished()),this,SIGNAL(ReconnectSignal()));
+    connect(eth,SIGNAL(Finished()),this,SLOT(EmitReconnectSignal()));
     connect(Parse,SIGNAL(WriteData(QByteArray)),eth,SLOT(InitiateWriteDataToPort(QByteArray)));
     connect(eth,SIGNAL(NewDataArrived(QByteArray)),Parse,SLOT(GetSomeData(QByteArray)));
-    connect(Parse,SIGNAL(ReconnectSignal()),this,SIGNAL(ReconnectSignal()));
+    connect(Parse,SIGNAL(ReconnectSignal()),this,SLOT(EmitReconnectSignal()));
 
     connect(Parse,SIGNAL(Bs104signalsreceived(IEC104Thread::BS104Signals*)),\
             this,SIGNAL(Bs104signalsready(IEC104Thread::BS104Signals*)),Qt::BlockingQueuedConnection);
@@ -177,6 +181,18 @@ void IEC104::ParseThreadFinished()
     ParseThreadWorking = false;
     if (!EthThreadWorking)
         emit Finished();
+}
+
+void IEC104::EmitReconnectSignal()
+{
+    if (!AboutToFinish)
+        emit ReconnectSignal();
+}
+
+void IEC104::StopAllThreads()
+{
+    AboutToFinish = true;
+    emit StopAll();
 }
 
 // Класс PARSE104
