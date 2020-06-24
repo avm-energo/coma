@@ -288,7 +288,7 @@ void JournalDialog::SaveJour()
         jourtypestr = "Системный журнал";
         jourfilestr += "SysJ ";
         order = Qt::DescendingOrder;
-//        cellformat.setNumberFormat("");
+        cellformat.setNumberFormat("@");
         break;
     case JOURMEAS:
         tvname = "meas";
@@ -302,7 +302,7 @@ void JournalDialog::SaveJour()
         jourtypestr = "Журнал событий";
         jourfilestr += "WorkJ ";
         order = Qt::DescendingOrder;
-//        cellformat.setNumberFormat("");
+        cellformat.setNumberFormat("@");
         break;
     default:
         break;
@@ -344,8 +344,8 @@ void JournalDialog::SaveJour()
         // время события
         xlsx->write((6+i), 2, pmdl->data(pmdl->index(i, 1), Qt::DisplayRole).toString());
         for (int j=2; j<pmdl->columnCount(); ++j)
-//            xlsx->write((6+i), (1+j), pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toString(), cellformat);
-            xlsx->write((6+i), (1+j), pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toString());
+            xlsx->write((6+i), (1+j), pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toString(), cellformat);
+//            xlsx->write((6+i), (1+j), pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toString());
     }
     xlsx->save();
     ww->Stop();
@@ -438,7 +438,7 @@ void JournalDialog::FillEventsTable(QByteArray &ba, int jourtype)
     lsl.append(Type);
     model->ClearModel();
     model->addColumn(" № ");
-    model->addColumn("Дата/Время");
+    model->addColumn("Дата/Время UTC");
     model->addColumn("Описание события");
     model->addColumn("Тип события");
     model->fillModel(lsl);
@@ -455,7 +455,7 @@ void JournalDialog::FillMeasTable(QByteArray &ba, int jourtype)
 {
     QVector<QVector<QVariant> > lsl;
     ETableModel *model = new ETableModel;
-    QVector<QVariant> EventNum, Time, UeffA, UeffB, UeffC, IeffA, IeffB, IeffC, U0, U1, U2,
+    QVector<QVariant> EventNum, Time, UeffA, UeffB, UeffC, IeffA, IeffB, IeffC, Freq, U0, U1, U2,
                       I0, I1, I2, CbushA, CbushB, CbushC, Tg_dA, Tg_dB, Tg_dC, dCbushA, dCbushB,
                       dCbushC, dTg_dA, dTg_dB, dTg_dC, Iunb, Phy_unb, Tmk, Tokr;
 
@@ -494,6 +494,7 @@ void JournalDialog::FillMeasTable(QByteArray &ba, int jourtype)
             IeffA << meas.Ieff[0];
             IeffB << meas.Ieff[1];
             IeffC << meas.Ieff[2];
+            Freq << meas.Frequency;
             U0 << meas.U0;
             U1 << meas.U1;
             U2 << meas.U2;
@@ -526,6 +527,7 @@ void JournalDialog::FillMeasTable(QByteArray &ba, int jourtype)
    lsl.append(IeffA);
    lsl.append(IeffB);
    lsl.append(IeffC);
+   lsl.append(Freq);
    lsl.append(U0);
    lsl.append(U1);
    lsl.append(U2);
@@ -586,6 +588,7 @@ void JournalDialog::FillMeasTable(QByteArray &ba, int jourtype)
    model->addColumn("Ieff фA");
    model->addColumn("Ieff фB");
    model->addColumn("Ieff фC");
+   model->addColumn("Freq");
    model->addColumn("U0");
    model->addColumn("U1");
    model->addColumn("U2");
