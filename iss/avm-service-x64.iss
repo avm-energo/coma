@@ -9,7 +9,7 @@
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "AVM-Service.exe"
-#define SetupName "AVM-Service-0.1.4-x86"
+#define SetupName "AVM-Service-0.1.4-x64"
 #define Prefix "D:\Progs\out"
 
 [CustomMessages]
@@ -46,22 +46,22 @@ OutputBaseFilename={#SetupName}
 Name: {userappdata}\{#EngName}
 
 [Files]
-Source: "{#Prefix}\src x86\Qt5Core.dll"; DestDir: "{app}"
-Source: "{#Prefix}\src x86\Qt5Gui.dll"; DestDir: "{app}"
-Source: "{#Prefix}\src x86\Qt5Network.dll"; DestDir: "{app}"
-Source: "{#Prefix}\src x86\Qt5SerialPort.dll"; DestDir: "{app}"
-Source: "{#Prefix}\src x86\Qt5Widgets.dll"; DestDir: "{app}"
-Source: "{#Prefix}\src x86\platforms\qwindows.dll"; DestDir: "{app}\platforms"
-Source: "{#Prefix}\3rdparty-x86\Qt5Xlsx.dll"; DestDir: "{app}"
-Source: "{#Prefix}\3rdparty-x86\hidapi.dll"; DestDir: "{app}"
-Source: "{#Prefix}\3rdparty-x86\liblzma.dll"; DestDir: "{app}"
-Source: "{#Prefix}\3rdparty-x86\limereport.dll"; DestDir: "{app}"
-Source: "{#Prefix}\3rdparty-x86\QtZint.dll"; DestDir: "{app}"
+Source: "{#Prefix}\src x64\Qt5Core.dll"; DestDir: "{app}"
+Source: "{#Prefix}\src x64\Qt5Gui.dll"; DestDir: "{app}"
+Source: "{#Prefix}\src x64\Qt5Network.dll"; DestDir: "{app}"
+Source: "{#Prefix}\src x64\Qt5SerialPort.dll"; DestDir: "{app}"
+Source: "{#Prefix}\src x64\Qt5Widgets.dll"; DestDir: "{app}"
+Source: "{#Prefix}\src x64\platforms\qwindows.dll"; DestDir: "{app}\platforms"
+Source: "{#Prefix}\3rdparty-x64\Qt5Xlsx.dll"; DestDir: "{app}"
+Source: "{#Prefix}\3rdparty-x64\hidapi.dll"; DestDir: "{app}"
+Source: "{#Prefix}\3rdparty-x64\liblzma.dll"; DestDir: "{app}"
+Source: "{#Prefix}\3rdparty-x64\limereport.dll"; DestDir: "{app}"
+Source: "{#Prefix}\3rdparty-x64\QtZint.dll"; DestDir: "{app}"
 Source: "{#Prefix}\prg\{#ExeName}"; DestDir: "{app}"; DestName: {#ExeName}; Flags: ignoreversion
 Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
 Source: "{#Prefix}\coma\reports\*.*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
 Source: "{#Prefix}\coma\images\*.*"; DestDir: "{app}\images"; Flags: ignoreversion
-Source: "{#Prefix}\3rdparty-x86\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "{#Prefix}\3rdparty-x64\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 ; Source: "{#Prefix}\coma\readme.txt"; DestDir: "{app}"
 
 [Icons]
@@ -72,4 +72,4 @@ Name: "{group}\Удалить программу {#Name}"; Filename: "{uninstallexe}"
 [Run]
 ; add the Parameters, WorkingDir and StatusMsg as you wish, just keep here
 ; the conditional installation Check
-Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2017 Redistributable...
+Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2017 Redistributable...

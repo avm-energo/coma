@@ -33,3 +33,9 @@ void ETableView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bott
     resizeColumnsToContents();
     emit datachanged();
 }
+
+void ETableView::resizeEvent(QResizeEvent *e)
+{
+    resizeColumnsToContents();
+    e->accept();
+}

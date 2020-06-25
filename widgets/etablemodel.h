@@ -42,6 +42,7 @@ public:
     QStringList cvalues(int column); // выдать значения по столбцу column в выходной QStringList
     QStringList rvalues(int row); // выдать значения по строке row в выходной QStringList
     void SetRowTextAlignment(int row, int alignment);
+    bool isEmpty();
 
 signals:
 

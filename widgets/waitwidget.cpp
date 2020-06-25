@@ -24,6 +24,10 @@ WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     qsrand(QDateTime::currentDateTime().toTime_t());
     vel1 = 0.5;
+    IsAllowedToStop = false;
+    IsIncrement = true;
+    TimeFormat = WW_SIMPLE;
+    Seconds = 0;
 }
 
 WaitWidget::~WaitWidget()

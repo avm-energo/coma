@@ -3,6 +3,7 @@
 
 #include <QTableView>
 #include <QPaintEvent>
+#include <QResizeEvent>
 
 class ETableView : public QTableView
 {
@@ -26,6 +27,7 @@ private:
 //    bool autoResize;
 
 protected:
+    void resizeEvent(QResizeEvent *e);
 //    void paintEvent(QPaintEvent *e);
 };
 
