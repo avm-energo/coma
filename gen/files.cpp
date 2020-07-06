@@ -1,6 +1,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QDirIterator>
+#include <QStorageInfo>
 
 #include "stdfunc.h"
 #include "files.h"
@@ -103,3 +104,17 @@ QStringList Files::SearchForFile(QStringList &filepaths, const QString &filename
     return files;
 }
 
+QString Files::GetFirstDriveWithLabel(QStringList &filepaths, const QString &label)
+{
+    QString str = "";
+    int i = 0;
+    while ((str.isEmpty()) && (i < filepaths.size()))
+    {
+        QStorageInfo si;
+        si.setPath(filepaths.at(i));
+        if (si.name() == label)
+            str = filepaths.at(i);
+        ++i;
+    }
+    return str;
+}

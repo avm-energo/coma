@@ -136,8 +136,12 @@ void JournalDialog::TryGetJourByUSB()
         QStringList files = Files::SearchForFile(drives, filetofind);
         if (!files.isEmpty())
         {
-            JourFile = files.at(0);
-            QDialog *dlg = new QDialog(this);
+            JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
+            if (JourFile.isEmpty())
+                GetJour();
+            else
+                ReadJourFileAndProcessIt();
+/*            QDialog *dlg = new QDialog(this);
             dlg->setObjectName("filedlg");
             QVBoxLayout *lyout = new QVBoxLayout;
             lyout->addWidget(WDFunc::NewLBLT(this, "Найдены следующие файлы:"), Qt::AlignLeft);
@@ -148,7 +152,7 @@ void JournalDialog::TryGetJourByUSB()
             lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", this, SLOT(GetJour())));
             WDFunc::PBConnect(this, "cancelpb", dlg, SLOT(close()));
             dlg->setLayout(lyout);
-            dlg->exec();
+            dlg->exec(); */
         }
         else
         {
