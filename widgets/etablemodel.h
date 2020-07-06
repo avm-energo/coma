@@ -43,6 +43,7 @@ public:
     QStringList rvalues(int row); // выдать значения по строке row в выходной QStringList
     void SetRowTextAlignment(int row, int alignment);
     bool isEmpty();
+    void SetColumnFormat(int column, int format); // format is precision of the double, set num above 10 to set no format
 
 signals:
 
@@ -50,6 +51,7 @@ public slots:
 
 private:
     QList<ETableItem *> maindata;
+    QList<int> ColFormat;
     QStringList hdr;
     QColor colors[6]; // определение набора цветов шрифта
     QFont fonts[6]; // определение набора шрифтов

@@ -52,7 +52,20 @@ QVariant ETableModel::data(const QModelIndex &index, int role) const
         if ((index.row() < maindata.size()) && (index.column() < hdr.size()))
         {
             if ((role == Qt::DisplayRole) || (role == Qt::EditRole))
+            {
+                if (ColFormat.at(index.column()) < 10)
+                {
+                    QString cellvalue = maindata.at(index.row())->data(index.column());
+                    bool ok;
+                    double celldblvalue = cellvalue.toDouble(&ok);
+                    if (ok)
+                    {
+                        cellvalue = QString::number(celldblvalue, 'f', ColFormat.at(index.column()));
+                        return cellvalue;
+                    }
+                }
                 return maindata.at(index.row())->data(index.column());
+            }
             else if (role == Qt::FontRole)
                 return QVariant::fromValue(QFont(maindata.at(index.row())->font(index.column())));
             else if (role == Qt::ForegroundRole)
@@ -208,6 +221,7 @@ void ETableModel::addColumn(const QString hdrtext)
     int lastEntry = columnCount();
     insertColumns(lastEntry, 1, QModelIndex());
     hdr.replace(lastEntry, hdrtext);
+    ColFormat.append(11); // 11 is the number more than 10 i.e. no format for column
 }
 
 void ETableModel::addRow()
@@ -282,6 +296,12 @@ void ETableModel::SetRowTextAlignment(int row, int alignment)
 bool ETableModel::isEmpty()
 {
     return maindata.isEmpty();
+}
+
+void ETableModel::SetColumnFormat(int column, int format)
+{
+    if (column < columnCount())
+        ColFormat.replace(column, format);
 }
 
 void ETableModel::setCellAttr(QModelIndex index, int fcset, int icon)

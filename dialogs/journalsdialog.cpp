@@ -313,8 +313,6 @@ void JournalDialog::SaveJour()
         EMessageBox::error(this, "Ошибка", "Данные ещё не получены");
         return;
     }
-    WaitWidget *ww = new WaitWidget;
-    ww->Start();
     QSortFilterProxyModel *pmdl = reinterpret_cast<QSortFilterProxyModel *>(amdl);
     ETableModel *mdl = reinterpret_cast<ETableModel *>(pmdl->sourceModel());
     int dateidx = mdl->Headers().indexOf("Дата/Время");
@@ -348,7 +346,6 @@ void JournalDialog::SaveJour()
 //            xlsx->write((6+i), (1+j), pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toString());
     }
     xlsx->save();
-    ww->Stop();
     EMessageBox::information(this, "Внимание", "Файл создан успешно");
 }
 
@@ -611,6 +608,8 @@ void JournalDialog::FillMeasTable(QByteArray &ba, int jourtype)
    model->addColumn("Phy_unb");
    model->addColumn("Tmk, °С");
    model->addColumn("Tamb, °С");
+   for (int i=2; i<model->columnCount(); ++i)
+       model->SetColumnFormat(i, 4); // set 4 diits precision for all cells starting 2
    model->fillModel(lsl);
    QSortFilterProxyModel *pmdl = new QSortFilterProxyModel;
    pmdl->setSourceModel(model);
