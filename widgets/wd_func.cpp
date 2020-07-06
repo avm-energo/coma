@@ -184,7 +184,7 @@ QMetaObject::Connection WDFunc::CBConnect(QWidget *w, const QString &cbname, int
     case CT_INDEXCHANGED:
         return QObject::connect(cb, SIGNAL(currentIndexChanged(int)), receiver, method);
     case CT_TEXTCHANGED:
-        return QObject::connect(cb, SIGNAL(currentTextChanged(QString &)), receiver, method);
+        return QObject::connect(cb, SIGNAL(currentTextChanged(const QString &)), receiver, method);
     default:
         break;
     }
