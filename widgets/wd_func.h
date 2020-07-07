@@ -12,7 +12,7 @@
 #include "ecombobox.h"
 #include "passwordlineedit.h"
 #include "etableview.h"
-#include "etablemodel.h"
+#include "../models/etablemodel.h"
 
 #define MAXFLOAT    3.40282347E+38F
 

@@ -24,6 +24,7 @@ TEMPLATE = app
 
 SOURCES += \
     ../dialogs/mnktime.cpp \
+    ../gen/journals.cpp \
     ../gen/logclass.cpp \
     ../gen/maindef.cpp \
     ../modbus/serialport.cpp \
@@ -59,11 +60,11 @@ SOURCES += \
     ../widgets/emessagebox.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/estackedwidget.cpp \
-    ../widgets/etableitem.cpp \
-    ../widgets/etablemodel.cpp \
+    ../models/etableitem.cpp \
+    ../models/etablemodel.cpp \
     ../widgets/etableview.cpp \
     ../widgets/etabwidget.cpp \
-    ../widgets/getoscpbdelegate.cpp \
+    ../models/getoscpbdelegate.cpp \
     ../widgets/lineeditfield.cpp \
     ../widgets/passwordlineedit.cpp \
     ../widgets/signalchoosewidget.cpp \
@@ -76,6 +77,7 @@ SOURCES += \
 
 HEADERS += \
     ../dialogs/mnktime.h \
+    ../gen/journals.h \
     ../gen/logclass.h \
     ../modbus/serialport.h \
     coma.h \
@@ -110,11 +112,11 @@ HEADERS += \
     ../widgets/emessagebox.h \
     ../widgets/errorprotocolwidget.h \
     ../widgets/estackedwidget.h \
-    ../widgets/etableitem.h \
-    ../widgets/etablemodel.h \
+    ../models/etableitem.h \
+    ../models/etablemodel.h \
     ../widgets/etableview.h \
     ../widgets/etabwidget.h \
-    ../widgets/getoscpbdelegate.h \
+    ../models/getoscpbdelegate.h \
     ../widgets/keypress.h \
     ../widgets/lineeditfield.h \
     ../widgets/passwordlineedit.h \

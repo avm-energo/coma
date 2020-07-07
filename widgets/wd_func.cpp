@@ -546,6 +546,7 @@ void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *m
     }
     QItemSelectionModel *m = tv->selectionModel();
     tv->setModel(model);
+    tv->resizeColumnsToContents();
     tv->setSortingEnabled(sortenable);
     delete m;
 }

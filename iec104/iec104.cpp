@@ -269,7 +269,7 @@ void IEC104Thread::Run()
                     break;
                 case CM104_FILEREADY:
                 {
-                    QVector<S2::DataRec> *ptr = reinterpret_cast<QVector<S2::DataRec> *>(inp.args.ptrarg);
+//                    QVector<S2::DataRec> *ptr = reinterpret_cast<QVector<S2::DataRec> *>(inp.args.ptrarg);
 //                    FileReady(ptr);
                     FileReady();
                     break;

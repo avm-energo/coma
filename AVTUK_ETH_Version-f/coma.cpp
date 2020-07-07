@@ -356,7 +356,7 @@ void Coma::StartWork()
 void Coma::PrepareDialogs()
 {
     IDialog = new InfoDialog;
-    JourD = new JournalDialog;
+    JourD = new JournalDialog(Ch104);
     CheckB = new CheckDialog84(BoardTypes::BT_BASE);
     TimeD = new MNKTime;
     CorD = new CorDialog;
@@ -393,11 +393,6 @@ void Coma::PrepareDialogs()
         connect(CorD,SIGNAL(CorReadRequest()), Ch104, SLOT(CorReadRequest()));
         connect(Ch104,SIGNAL(SendMessageOk()), CorD, SLOT(MessageOk()));
         connect(Ch104,SIGNAL(Floatsignalsready(IEC104Thread::FlSignals104*)),CorD,SLOT(UpdateFlCorData(IEC104Thread::FlSignals104*)));
-
-        connect(JourD,SIGNAL(ReadJour(char)), Ch104, SLOT(SelectFile(char)));
-        connect(Ch104,SIGNAL(SendJourSysfromiec104(QByteArray)), JourD, SLOT(FillSysJour(QByteArray)));
-        connect(Ch104,SIGNAL(SendJourWorkfromiec104(QByteArray)), JourD, SLOT(FillWorkJour(QByteArray)));
-        connect(Ch104,SIGNAL(SendJourMeasfromiec104(QByteArray)), JourD, SLOT(FillMeasJour(QByteArray)));
 
         connect(ConfM,SIGNAL(ReadConfig(char)), Ch104, SLOT(SelectFile(char)));
         connect(Ch104,SIGNAL(SendS2fromiec104(QVector<S2::DataRec>*)), ConfM, SLOT(FillConf(QVector<S2::DataRec>*)));
