@@ -5,7 +5,6 @@
 #include <QModelIndex>
 #include <QThread>
 
-#include "QtXlsx/xlsxdocument.h"
 #include "../gen/maindef.h"
 #include "../widgets/etableview.h"
 #include "../models/etablemodel.h"
@@ -37,6 +36,9 @@ private:
 
 signals:
     void WritePasswordChecked();
+    void StartGetJour(); // start fet journal thread
+    void StartReadFile();
+    void StartSaveJour(int, QAbstractItemModel *, QString);
 
 private slots:
     void TryGetJourByUSB();
@@ -45,9 +47,10 @@ private slots:
     void EraseJour();
     void SaveJour();
     void WritePasswordCheck(QString psw);
-    void Done();
+    void Done(QString msg);
     void Error(QString msg);
-    void Ready(ETableModel *mdl);
+    void SetModel(ETableModel *mdl);
+//    void SetProxyModel(QSortFilterProxyModel *mdl);
 
 public slots:
 
@@ -56,6 +59,7 @@ private:
     int JourType;
     bool ok;
     Journals *JourFuncs;
+    QSortFilterProxyModel *ProxyWorkModel, *ProxySysModel, *ProxyMeasModel;
 
     int WriteCheckPassword();
     void StartReadJourFile();

@@ -9,14 +9,14 @@
 #include <QStringList>
 #include "etableitem.h"
 
+#define NOCOLFORMAT 11 // 11 is the number more than 10 i.e. no format for column
+
 class ETableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
     explicit ETableModel(QObject *parent = 0);
     ~ETableModel();
-
-    int result;
 
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role);
@@ -44,6 +44,8 @@ public:
     void SetRowTextAlignment(int row, int alignment);
     bool isEmpty();
     void SetColumnFormat(int column, int format); // format is precision of the double, set num above 10 to set no format
+    void SetHeaders(QStringList hdrl);
+    void AddRowWithData(QVector<QVariant> vl);
 
 signals:
 

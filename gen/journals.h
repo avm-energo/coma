@@ -2,10 +2,13 @@
 #define JOURNALS_H
 
 #include <QObject>
+#include <QSortFilterProxyModel>
+
 #include "../models/etablemodel.h"
 
 #define SYSJOURID   0
 #define WORKJOURID  3010
+
 
 class Journals : public QObject
 {
@@ -53,18 +56,21 @@ public:
     explicit Journals(QObject *parent = nullptr);
     ~Journals();
 
-    void ReadJourFileAndProcessIt(const QString &jourfile, int jourtype);
-    void SetModel(ETableModel *mdl);
-    ETableModel *Model();
+    void SetProxyModels(QSortFilterProxyModel *workmdl, QSortFilterProxyModel *sysmdl, QSortFilterProxyModel *measmdl);
+    void SetJourType(int jourtype);
+    void SetJourFile(const QString &jourfile);
+//    void SetParentWidget(QWidget *w);
 
 signals:
-    void ResultReady(ETableModel *mdl);
-    void Done();
+    void Done(QString msg);
     void Error(QString msg);
+    void ModelReady(ETableModel *);
     void ReadJour(char);
 
 private:
-    ETableModel *_model;
+    QSortFilterProxyModel *_proxySysModel, *_proxyWorkModel, *_proxyMeasModel;
+    int _jourType;
+    QString _jourFile;
     const QStringList SysJourDescription = QStringList() << "Рестарт модуля"
                                             << "Произошла запись и переход на новую конфигурацию"
                                             << "Произошла запись и переход на новую версию ВПО"
@@ -120,14 +126,26 @@ private:
                                             << "Сигнализация по изменению небаланса тока"
                                             << "Авария по изменению небаланса тока";
 
-    void FillEventsTable(QByteArray &ba, int jourtype);
-    void FillMeasTable(QByteArray &ba, int jourtype);
+    const QStringList MeasJourHeaders = QStringList() << "Номер события" << "Дата/Время UTC" << "Ueff фA" << "Ueff фB" << "Ueff фC" <<
+                                                         "Ieff фA" << "Ieff фB" << "Ieff фC" << "Freq" << "U0" << "U1" << "U2" << "I0" << "I1" << "I2" <<
+                                                         "Cbush фA" << "Cbush фB" << "Cbush фC" << "Tg_d фA" << "Tg_d фB" << "Tg_d фC" <<
+                                                         "dCbush фA" << "dCbush фB" << "dCbush фC" << "dTg_d фA" << "dTg_d фB" << "dTg_d фC" <<
+                                                         "Iunb" << "Phy_unb" << "Tmk, °С" << "Tamb, °С";
+
+    const QStringList EventJourHeaders = QStringList() << " № " << "Дата/Время UTC" << "Описание события" << "Тип события";
+
+
+    void FillEventsTable(QByteArray &ba);
+    void FillMeasTable(QByteArray &ba);
+    void ResultReady(ETableModel *mdl);
 
 public slots:
     void FillSysJour(QByteArray ba);
     void FillMeasJour(QByteArray ba);
     void FillWorkJour(QByteArray ba);
-
+    void ReadJourFileAndProcessIt();
+    void StartGetJour();
+    void StartSaveJour(int jtype, QAbstractItemModel *mdl, QString filename);
 };
 
 #endif // JOURNALS_H

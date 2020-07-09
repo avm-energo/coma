@@ -21,15 +21,23 @@
 
 JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
 {
-    WW = new WaitWidget;
     JourFuncs = new Journals;
-    connect(JourFuncs,SIGNAL(Done()),this,SLOT(Done()));
+    ProxyWorkModel = new QSortFilterProxyModel;
+    ProxySysModel = new QSortFilterProxyModel;
+    ProxyMeasModel = new QSortFilterProxyModel;
+    JourFuncs->SetProxyModels(ProxyWorkModel, ProxySysModel, ProxyMeasModel);
+//    JourFuncs->SetParentWidget(this);
+    connect(JourFuncs,SIGNAL(Done(QString)),this,SLOT(Done(QString)));
     connect(JourFuncs,SIGNAL(Error(QString)),this,SLOT(Error(QString)));
-    connect(JourFuncs,SIGNAL(ResultReady(ETableModel *)),this,SLOT(Ready(ETableModel *)));
+    connect(JourFuncs,SIGNAL(ModelReady(ETableModel *)),this,SLOT(SetModel(ETableModel *)));
+//    connect(JourFuncs,SIGNAL(ProxyModelReady(QSortFilterProxyModel *)),this,SLOT(SetProxyModel(QSortFilterProxyModel *)));
     connect(JourFuncs,SIGNAL(ReadJour(char)), iec, SLOT(SelectFile(char)));
     connect(iec,SIGNAL(SendJourSysfromiec104(QByteArray)), JourFuncs, SLOT(FillSysJour(QByteArray)));
     connect(iec,SIGNAL(SendJourWorkfromiec104(QByteArray)), JourFuncs, SLOT(FillWorkJour(QByteArray)));
     connect(iec,SIGNAL(SendJourMeasfromiec104(QByteArray)), JourFuncs, SLOT(FillMeasJour(QByteArray)));
+    connect(this,SIGNAL(StartGetJour()),JourFuncs,SLOT(StartGetJour()));
+    connect(this,SIGNAL(StartSaveJour(int, QAbstractItemModel *, QString)),JourFuncs,SLOT(StartSaveJour(int, QAbstractItemModel *, QString)));
+    connect(this,SIGNAL(StartReadFile()),JourFuncs,SLOT(ReadJourFileAndProcessIt()));
     JourFuncs->moveToThread(&JourThread);
     JourThread.start();
     setAttribute(Qt::WA_DeleteOnClose);
@@ -111,6 +119,7 @@ void JournalDialog::SetupUI()
 
 QWidget *JournalDialog::JourTab(int jourtype)
 {
+    QSortFilterProxyModel *mdl;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     QWidget *w = new QWidget;
@@ -121,14 +130,17 @@ QWidget *JournalDialog::JourTab(int jourtype)
     case Journals::JOURWORK:
         str = "рабочий журнал";
         tvname = "work";
+        mdl = ProxyWorkModel;
         break;
     case Journals::JOURSYS:
         str = "системный журнал";
         tvname = "system";
+        mdl = ProxySysModel;
         break;
     case Journals::JOURMEAS:
         str = "журнал измерений";
         tvname = "meas";
+        mdl = ProxyMeasModel;
         break;
     }
 
@@ -136,7 +148,7 @@ QWidget *JournalDialog::JourTab(int jourtype)
     hlyout->addWidget(WDFunc::NewPB(this, "ej." + QString::number(jourtype), "Стереть " + str, this, SLOT(EraseJour())));
     hlyout->addWidget(WDFunc::NewPB(this, "sj." + QString::number(jourtype), "Сохранить журнал в файл", this, SLOT(SaveJour())));
     vlyout->addLayout(hlyout);
-    vlyout->addWidget(WDFunc::NewTV(this, tvname, nullptr), 89);
+    vlyout->addWidget(WDFunc::NewTV(this, tvname, mdl), 89);
     w->setLayout(vlyout);
     return w;
 }
@@ -162,6 +174,7 @@ void JournalDialog::TryGetJourByUSB()
         return;
     }
     JourType = jourtype;
+    JourFuncs->SetJourType(jourtype);
     QByteArray ba;
     QStringList drives = Files::Drives();
     if (!drives.isEmpty())
@@ -170,6 +183,7 @@ void JournalDialog::TryGetJourByUSB()
         if (!files.isEmpty())
         {
             JourFile = Files::GetFirstDriveWithLabel(files, "AVM");
+            JourFuncs->SetJourFile(JourFile);
             if (JourFile.isEmpty())
                 GetJour();
             else
@@ -180,47 +194,11 @@ void JournalDialog::TryGetJourByUSB()
     }
     else
         GetJour();
-
 }
 
 void JournalDialog::GetJour()
 {
-    char num = JourType + 4;
-    if (MainInterface == I_ETHERNET)
-    {
-        emit ReadJour(num);
-    }
-    else if (MainInterface == I_USB)
-    {
-        QByteArray ba;
-        // Крутилка
-        WaitWidget *ww = new WaitWidget;
-        ww->SetMessage("Чтение файла..");
-        ww->Start();
-        if(Commands::GetFile(num, ba) == NOERROR)
-        {
-            ww->Stop();
-            switch(JourType)
-            {
-            case Journals::JOURSYS:
-                FillEventsTable(ba, Journals::JOURSYS);
-                break;
-            case Journals::JOURWORK:
-                FillEventsTable(ba, Journals::JOURWORK);
-                break;
-            case Journals::JOURMEAS:
-                FillMeasTable(ba, Journals::JOURMEAS);
-                break;
-            default:
-                break;
-            }
-        }
-        else
-        {
-            ww->Stop();
-            EMessageBox::information(this, "Ошибка", "Ошибка чтения журнала");
-        }
-    }
+    emit StartGetJour();
 }
 
 void JournalDialog::JourFileChoosed(QString &file)
@@ -256,285 +234,45 @@ void JournalDialog::EraseJour()
 
 void JournalDialog::SaveJour()
 {
-    QXlsx::Format cellformat;
-    QString tvname, jourtypestr, jourfilestr;
-    Qt::SortOrder order = Qt::AscendingOrder;
-    int jourtype = GetJourNum(sender()->objectName());
-    if (jourtype == GENERALERROR)
+    QString jourfilestr;
+    QString tvname;
+    int jtype = GetJourNum(sender()->objectName());
+    if (jtype == GENERALERROR)
     {
-        ERMSG("Ошибочный тип журнала");
+        EMessageBox::error(this, "Ошибка", "Ошибочный тип журнала");
         return;
     }
-    jourfilestr = "KIV #" + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + " ";
-    switch(jourtype)
+
+    if (jtype == Journals::JOURSYS)
     {
-    case Journals::JOURSYS:
         tvname = "system";
-        jourtypestr = "Системный журнал";
         jourfilestr += "SysJ ";
-        order = Qt::DescendingOrder;
-        cellformat.setNumberFormat("@");
-        break;
-    case Journals::JOURMEAS:
-        tvname = "meas";
-        jourtypestr = "Журнал измерений";
-        jourfilestr += "MeasJ ";
-        order = Qt::AscendingOrder;
-        cellformat.setNumberFormat("#.####");
-        break;
-    case Journals::JOURWORK:
-        tvname = "work";
-        jourtypestr = "Журнал событий";
-        jourfilestr += "WorkJ ";
-        order = Qt::DescendingOrder;
-        cellformat.setNumberFormat("@");
-        break;
-    default:
-        break;
     }
+    else if (jtype == Journals::JOURWORK)
+    {
+        tvname = "work";
+        jourfilestr += "WorkJ ";
+    }
+    else
+    {
+        tvname = "meas";
+        jourfilestr += "MeasJ ";
+    }
+
     QAbstractItemModel *amdl = WDFunc::TVModel(this, tvname);
     if (amdl == nullptr)
     {
         EMessageBox::error(this, "Ошибка", "Данные ещё не получены");
         return;
     }
-    QSortFilterProxyModel *pmdl = reinterpret_cast<QSortFilterProxyModel *>(amdl);
-    ETableModel *mdl = reinterpret_cast<ETableModel *>(pmdl->sourceModel());
-    int dateidx = mdl->Headers().indexOf("Дата/Время");
-    pmdl->sort(dateidx, order);
+    jourfilestr += QString::number(MTypeB, 16) + QString::number(MTypeM, 16) + " #" + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + " ";
     jourfilestr += QDate::currentDate().toString("dd-MM-yyyy") + ".xlsx";
     // запрашиваем имя файла для сохранения
-    QString filename = Files::ChooseFileForSave(this, "Excel documents (*.xlsx)", "xlsx", jourfilestr);
-    QXlsx::Document *xlsx = new QXlsx::Document(filename);
-    xlsx->write(1,1,QVariant(jourtypestr));
-    xlsx->write(2,1,QVariant("Модуль: " + ModuleBSI::GetModuleTypeString() + " сер. ном. " + \
-                             QString::number(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 10)));
-    xlsx->write(3,1,QVariant("Дата сохранения журнала: "+QDateTime::currentDateTime().toString("dd-MM-yyyy")));
-    xlsx->write(4,1,QVariant("Время сохранения журнала: "+QDateTime::currentDateTime().toString("hh:mm:ss")));
-
-    // пишем в файл заголовки
-    for (int i=0; i<pmdl->columnCount(); ++i)
-        xlsx->write(5, (i+1), pmdl->headerData(i, Qt::Horizontal, Qt::DisplayRole));
-
-//    QXlsx::Format numformat; //, dateformat;
-//    numformat.setNumberFormat("0");
-//    dateformat.setNumberFormat("dd-mm-yyyy hh:mm:ss");
-    // теперь по всем строкам модели пишем данные
-    for (int i=0; i<pmdl->rowCount(); ++i)
-    {
-        // номер события
-        xlsx->write((6+i), 1, pmdl->data(pmdl->index(i, 0), Qt::DisplayRole).toString());
-        // время события
-        xlsx->write((6+i), 2, pmdl->data(pmdl->index(i, 1), Qt::DisplayRole).toString());
-        for (int j=2; j<pmdl->columnCount(); ++j)
-            xlsx->write((6+i), (1+j), pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toString(), cellformat);
-//            xlsx->write((6+i), (1+j), pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toString());
-    }
-    xlsx->save();
-    EMessageBox::information(this, "Внимание", "Файл создан успешно");
-}
-
-void JournalDialog::FillSysJour(QByteArray ba)
-{
-    FillEventsTable(ba, Journals::JOURSYS);
-}
-
-void JournalDialog::FillMeasJour(QByteArray ba)
-{
-    quint32 crctocheck;
-    quint32 basize = ba.size();
-    if (basize < 17)
-    {
-        ERMSG("basize");
-    }
-    memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
-    if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
-    {
-        ERMSG("CRC error");
-    }
-    FillMeasTable(ba, Journals::JOURMEAS);
-}
-
-void JournalDialog::FillWorkJour(QByteArray ba)
-{
-    FillEventsTable(ba, Journals::JOURWORK);
-}
-
-
-void JournalDialog::FillEventsTable(QByteArray &ba, int jourtype)
-{
-}
-
-void JournalDialog::FillMeasTable(QByteArray &ba, int jourtype)
-{
-    QVector<QVector<QVariant> > lsl;
-    ETableModel *model = new ETableModel;
-    QVector<QVariant> EventNum, Time, UeffA, UeffB, UeffC, IeffA, IeffB, IeffC, Freq, U0, U1, U2,
-                      I0, I1, I2, CbushA, CbushB, CbushC, Tg_dA, Tg_dB, Tg_dC, dCbushA, dCbushB,
-                      dCbushC, dTg_dA, dTg_dB, dTg_dC, Iunb, Phy_unb, Tmk, Tokr;
-
-    MeasureStruct meas;
-    int recordsize = sizeof(MeasureStruct);
-    int basize = ba.size();
-    char *file = ba.data();
-    int joursize = 0; // размер считанного буфера с информацией
-    int fhsize = sizeof(S2::FileHeader);
-
-    QApplication::setOverrideCursor(Qt::WaitCursor);
-    if (jourtype == Journals::JOURMEAS)
-    {
-        file += fhsize;
-        S2::DataRec jour;
-        int drsize = sizeof(S2::DataRec) - sizeof(void *);
-        memcpy(&jour, file, drsize);
-        joursize = jour.num_byte;
-        file += drsize; // move file pointer to thedata
-    }
-    int i = 0;
-    while (i < basize)
-    {
-        memcpy(&meas, file, recordsize);
-        file += recordsize;
-        i += recordsize;
-
-
-        if(meas.Time != 0xFFFFFFFF)
-        {
-            EventNum << meas.NUM;
-            Time << TimeFunc::UnixTime32ToInvString(meas.Time);
-            UeffA << meas.Ueff[0];
-            UeffB << meas.Ueff[1];
-            UeffC << meas.Ueff[2];
-            IeffA << meas.Ieff[0];
-            IeffB << meas.Ieff[1];
-            IeffC << meas.Ieff[2];
-            Freq << meas.Frequency;
-            U0 << meas.U0;
-            U1 << meas.U1;
-            U2 << meas.U2;
-            I0 << meas.I0;
-            I1 << meas.I1;
-            I2 << meas.I2;
-            CbushA << meas.Cbush[0];
-            CbushB << meas.Cbush[1];
-            CbushC << meas.Cbush[2];
-            Tg_dA << meas.Tg_d[0];
-            Tg_dB << meas.Tg_d[1];
-            Tg_dC << meas.Tg_d[2];
-            dCbushA << meas.dCbush[0];
-            dCbushB << meas.dCbush[1];
-            dCbushC << meas.dCbush[2];
-            dTg_dA << meas.dTg_d[0];
-            dTg_dB << meas.dTg_d[1];
-            dTg_dC << meas.dTg_d[2];
-            Iunb << meas.Iunb;
-            Phy_unb << meas.Phy_unb;
-            Tmk << meas.Tmk;
-            Tokr << meas.Tamb;
-        }
-    }
-   lsl.append(EventNum);
-   lsl.append(Time);
-   lsl.append(UeffA);
-   lsl.append(UeffB);
-   lsl.append(UeffC);
-   lsl.append(IeffA);
-   lsl.append(IeffB);
-   lsl.append(IeffC);
-   lsl.append(Freq);
-   lsl.append(U0);
-   lsl.append(U1);
-   lsl.append(U2);
-   lsl.append(I0);
-   lsl.append(I1);
-   lsl.append(I2);
-   lsl.append(CbushA);
-   lsl.append(CbushB);
-   lsl.append(CbushC);
-   lsl.append(Tg_dA);
-   lsl.append(Tg_dB);
-   lsl.append(Tg_dC);
-   lsl.append(dCbushA);
-   lsl.append(dCbushB);
-   lsl.append(dCbushC);
-   lsl.append(dTg_dA);
-   lsl.append(dTg_dB);
-   lsl.append(dTg_dC);
-   lsl.append(Iunb);
-   lsl.append(Phy_unb);
-   lsl.append(Tmk);
-   lsl.append(Tokr);
-
-   model->ClearModel();
-   model->addColumn("Номер события");
-   model->addColumn("Дата/Время");
-/*   model->addColumn("Действующее значение напряжения фазы А, кВ");
-   model->addColumn("Действующее значение напряжения фазы B, кВ");
-   model->addColumn("Действующее значение напряжения фазы C, кВ");
-   model->addColumn("Действующее значение тока фазы А, мА");
-   model->addColumn("Действующее значение тока фазы B, мА");
-   model->addColumn("Действующее значение тока фазы C, мА");
-   model->addColumn("Напряжение нулевой последовательности");
-   model->addColumn("Напряжение прямой последовательности");
-   model->addColumn("Напряжение обратной последовательности");
-   model->addColumn("Ток нулевой последовательности");
-   model->addColumn("Ток прямой последовательности");
-   model->addColumn("Ток обратной последовательности");
-   model->addColumn("Емкость ввода фазы А, пФ");
-   model->addColumn("Емкость ввода фазы B, пФ");
-   model->addColumn("Емкость ввода фазы C, пФ");
-   model->addColumn("tg delta ввода фазы А, %");
-   model->addColumn("tg delta ввода фазы B, %");
-   model->addColumn("tg delta ввода фазы C, %");
-   model->addColumn("Изменение емкости ввода фазы А, % от C_init");
-   model->addColumn("Изменение емкости ввода фазы B, % от C_init");
-   model->addColumn("Изменение емкости ввода фазы C, % от C_init");
-   model->addColumn("Изменение tg delta ввода фазы А, %");
-   model->addColumn("Изменение tg delta ввода фазы B, %");
-   model->addColumn("Изменение tg delta ввода фазы C, %");
-   model->addColumn("Действующее значение 1-й гармоники тока небаланса, мА");
-   model->addColumn("Угол тока небаланса относительно тока ф.А, град");
-   model->addColumn("Температура кристалла микроконтроллера");
-   model->addColumn("Температура окружающей среды"); */
-   model->addColumn("Ueff фA");
-   model->addColumn("Ueff фB");
-   model->addColumn("Ueff фC");
-   model->addColumn("Ieff фA");
-   model->addColumn("Ieff фB");
-   model->addColumn("Ieff фC");
-   model->addColumn("Freq");
-   model->addColumn("U0");
-   model->addColumn("U1");
-   model->addColumn("U2");
-   model->addColumn("I0");
-   model->addColumn("I1");
-   model->addColumn("I2");
-   model->addColumn("Cbush фA");
-   model->addColumn("Cbush фB");
-   model->addColumn("Cbush фC");
-   model->addColumn("Tg_d фA");
-   model->addColumn("Tg_d фB");
-   model->addColumn("Tg_d фC");
-   model->addColumn("dCbush фA");
-   model->addColumn("dCbush фB");
-   model->addColumn("dCbush фC");
-   model->addColumn("dTg_d фA");
-   model->addColumn("dTg_d фB");
-   model->addColumn("dTg_d фC");
-   model->addColumn("Iunb");
-   model->addColumn("Phy_unb");
-   model->addColumn("Tmk, °С");
-   model->addColumn("Tamb, °С");
-   for (int i=2; i<model->columnCount(); ++i)
-       model->SetColumnFormat(i, 4); // set 4 diits precision for all cells starting 2
-   model->fillModel(lsl);
-   QSortFilterProxyModel *pmdl = new QSortFilterProxyModel;
-   pmdl->setSourceModel(model);
-   int dateidx = model->Headers().indexOf("Дата/Время");
-//   pmdl->sort(dateidx, Qt::AscendingOrder);
-   WDFunc::SetTVModel(this, "meas", pmdl, true);
-   WDFunc::SortTV(this, "meas", dateidx, Qt::AscendingOrder);
-   QApplication::restoreOverrideCursor();
+    QString filename = Files::ChooseFileForSave(nullptr, "Excel documents (*.xlsx)", "xlsx", jourfilestr);
+    WW = new WaitWidget;
+    WW->SetMessage("Запись файла...");
+    WW->Start();
+    emit StartSaveJour(jtype, amdl, filename);
 }
 
 int JournalDialog::GetJourNum(const QString &objname)
@@ -579,10 +317,12 @@ int JournalDialog::WriteCheckPassword()
 
 void JournalDialog::StartReadJourFile()
 {
+//    QApplication::setOverrideCursor(Qt::WaitCursor);
     // Крутилка
+    WW = new WaitWidget(nullptr);
     WW->SetMessage("Чтение файла..");
     WW->Start();
-
+    emit StartReadFile();
 }
 
 void JournalDialog::WritePasswordCheck(QString psw)
@@ -594,35 +334,43 @@ void JournalDialog::WritePasswordCheck(QString psw)
     emit WritePasswordChecked();
 }
 
-void JournalDialog::Done()
+void JournalDialog::Done(QString msg)
 {
-
+    if (WW != nullptr)
+        WW->Stop();
+//    QApplication::restoreOverrideCursor();
+    EMessageBox::information(this, "Успешно", msg);
 }
 
 void JournalDialog::Error(QString msg)
 {
-    EMessageBox::error(this, "Ошибка", msg);
+    if (WW != nullptr)
+        WW->Stop();
     ERMSG(msg);
-    WW->Stop();
+//    QApplication::restoreOverrideCursor();
+    EMessageBox::error(this, "Ошибка", msg);
 }
 
-void JournalDialog::Ready(ETableModel *mdl)
+void JournalDialog::SetModel(ETableModel *mdl)
 {
+    WW->SetMessage("Сортировка...");
     QSortFilterProxyModel *pmdl = new QSortFilterProxyModel;
     pmdl->setSourceModel(mdl);
-    int dateidx = mdl->Headers().indexOf("Дата/Время");
+    int dateidx = mdl->Headers().indexOf("Дата/Время UTC");
     switch(JourType)
     {
     case Journals::JOURWORK:
         WDFunc::SetTVModel(this, "work", pmdl, true);
         WDFunc::SortTV(this, "work", dateidx, Qt::DescendingOrder);
+        break;
     case Journals::JOURSYS:
         WDFunc::SetTVModel(this, "system", pmdl, true);
         WDFunc::SortTV(this, "system", dateidx, Qt::DescendingOrder);
+        break;
     case Journals::JOURMEAS:
         WDFunc::SetTVModel(this, "meas", pmdl, true);
         WDFunc::SortTV(this, "meas", dateidx, Qt::AscendingOrder);
+        break;
     }
-    QApplication::restoreOverrideCursor();
-    WW->Stop();
+    Done("Прочитано успешно");
 }
