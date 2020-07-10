@@ -79,6 +79,9 @@ public:
         return sl;
     }
 
+    const quint32 PredBSIMask = 0x00005F55;
+    const quint32 AvarBSIMask = 0x000020AA;
+
     static QStringList HthToolTip()
     {
         QStringList sl;
@@ -86,6 +89,7 @@ public:
         sl.append("Проблемы со встроенным АЦП ");
         sl.append("Не работает внешняя flash-память");
         sl.append("Перегрев");
+        sl.append("Проблемы с АЦП (нет связи) (базовая)");
         sl.append("Нет сигнала 1PPS с антенны");
         sl.append("Проблемы с АЦП (нет связи) (мезонин)");
         sl.append("Ошибка регулировочных коэффициентов (базовая)");

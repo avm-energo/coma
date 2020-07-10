@@ -234,7 +234,8 @@ int EUsbThread::WriteData(QByteArray &ba)
         int res = hid_write(HidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt);
         return res;
     }
-    log->WriteRaw("UsbThread: null hid device");
+    if (log != nullptr)
+        log->WriteRaw("UsbThread: null hid device");
     return GENERALERROR;
 }
 

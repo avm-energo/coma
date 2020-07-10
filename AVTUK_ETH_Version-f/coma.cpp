@@ -579,7 +579,7 @@ QWidget *Coma::ReleWidget()
     QGroupBox *gb = new QGroupBox("");
 
     hlyout->addWidget(pb,Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(950), pmgrn), 1);
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", "950", pmgrn), 1);
     gb->setLayout(hlyout);
     hlyout2->addWidget(gb);
     gb = new QGroupBox("");
@@ -589,7 +589,7 @@ QWidget *Coma::ReleWidget()
     connect(pb,SIGNAL(clicked()),this,SLOT(PredAlarmState()));
 
     hlyout->addWidget(pb,Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(951), pmgrn), 1);
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", "951", pmgrn), 1);
     gb->setLayout(hlyout);
     hlyout2->addWidget(gb);
 
@@ -601,7 +601,7 @@ QWidget *Coma::ReleWidget()
     connect(pb,SIGNAL(clicked()),this,SLOT(AlarmState()));
 
     hlyout->addWidget(pb,Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(952), pmgrn), 1);
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", "952", pmgrn), 1);
     gb->setLayout(hlyout);
     hlyout2->addWidget(gb);
 
@@ -771,8 +771,8 @@ void Coma::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
 {
     int i = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
-    QPixmap *pm[2] = {pmgrn, pmred};
+    QPixmap *pmylw = new QPixmap("images/yellowc.png");
+    QPixmap *pm[2] = {pmgrn, pmylw};
 
     for(i=0; i<Signal->SigNumber; i++)
     {
@@ -1574,6 +1574,7 @@ void Coma::UpdateUSB()
 {
     int i = 0, predalarmcount = 0, alarmcount = 0;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmylw = new QPixmap("images/yellowс.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     Bd11 Bd_block11;
 
@@ -1604,10 +1605,19 @@ void Coma::UpdateUSB()
            else
                AlarmEvents[i] = 0;
         }
-        WDFunc::SetLBLImage(this, "951", (predalarmcount == 0) ? pmgrn : pmred);
+        WDFunc::SetLBLImage(this, "951", (predalarmcount == 0) ? pmgrn : pmylw);
         WDFunc::SetLBLImage(this, "952", (alarmcount == 0) ? pmgrn : pmred);
         emit SetPredAlarmColor(PredAlarmEvents);
         emit SetAlarmColor(AlarmEvents);
+    }
+    if (Commands::GetBsi(ModuleBSI::ModuleBsi) == NOERROR)
+    {
+        if (ModuleBSI::ModuleBsi.Hth & PredBSIMask)
+            WDFunc::SetLBLImage(this, "950", pmylw);
+        else if (ModuleBSI::ModuleBsi.Hth & AvarBSIMask)
+            WDFunc::SetLBLImage(this, "950", pmred);
+        else
+            WDFunc::SetLBLImage(this, "950", pmgrn);
     }
 }
 
