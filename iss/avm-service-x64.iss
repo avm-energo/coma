@@ -5,12 +5,12 @@
 #define Name "АВМ-Сервис"
 #define GroupName "АВМ-Сервис"
 #define EngName "AVM-Service"
-#define Version "0.1.4"
+#define Version "0.1.5"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "AVM-Service.exe"
-#define SetupName "AVM-Service-0.1.4-x64"
-#define Prefix "D:\Progs\out"
+#define SetupName "AVM-Service-0.1.5-x64"
+#define Prefix "C:\Progs\out"
 
 [CustomMessages]
 Version={#Version}
@@ -61,7 +61,7 @@ Source: "{#Prefix}\prg\{#ExeName}"; DestDir: "{app}"; DestName: {#ExeName}; Flag
 Source: "{#Prefix}\coma\ermsgs.dat"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
 Source: "{#Prefix}\coma\reports\*.*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion
 Source: "{#Prefix}\coma\images\*.*"; DestDir: "{app}\images"; Flags: ignoreversion
-Source: "{#Prefix}\3rdparty-x64\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "{#Prefix}\common\VC2017\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 ; Source: "{#Prefix}\coma\readme.txt"; DestDir: "{app}"
 
 [Icons]

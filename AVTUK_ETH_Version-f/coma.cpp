@@ -279,8 +279,6 @@ void Coma::StartWork()
         CheckIndex = MainTW->indexOf(CheckB);
         if(MainInterface == I_RS485)
             ChModbus->CheckIndex = CheckIndex;
-        if(MainInterface == I_USB)
-            connect(BdaTimer,SIGNAL(timeout()),this,SLOT(UpdateUSB()));
     }
     str = (CheckB == nullptr) ? "Текущие параметры" : "Текущие параметры\nМезонин";
     if (CheckM != nullptr)
@@ -418,6 +416,37 @@ void Coma::PrepareDialogs()
     }
 }
 
+void Coma::CloseDialogs()
+{
+    if (TimeD != nullptr)
+        TimeD->close();
+//        TimeD = nullptr;
+    if (CheckB != nullptr)
+        CheckB->close();
+    if (CheckM != nullptr)
+        CheckM->close();
+//    CheckB = CheckM = nullptr;
+    if (MainConfDialog != nullptr)
+        MainConfDialog->close();
+//    MainConfDialog = nullptr;
+    if (ConfB != nullptr)
+        ConfB->close();
+    if (ConfM != nullptr)
+        ConfM->close();
+//    ConfB = ConfM = nullptr;
+    if (Wpred != nullptr)
+        Wpred->close();
+    if (Walarm != nullptr)
+        Walarm->close();
+//    Wpred = Walarm = nullptr;
+    if (CorD != nullptr)
+        CorD->close();
+    if (IDialog != nullptr)
+        IDialog->close();
+    if (JourD != nullptr)
+        JourD->close();
+}
+
 void Coma::New104()
 {
     Ch104 = new IEC104(S2Config);
@@ -461,6 +490,7 @@ void Coma::NewTimers()
     BdaTimer = new QTimer;
     BdaTimer->setInterval(ANMEASINT);
     connect(BdaTimer,SIGNAL(timeout()), this, SLOT(USBSetAlarms()));
+    connect(BdaTimer,SIGNAL(timeout()),this,SLOT(UpdateUSB()));
 
     ReceiveTimer = new QTimer;
     ReceiveTimer->setInterval(ANMEASINT);
@@ -1391,12 +1421,7 @@ void Coma::DisconnectAndClear()
     if(!Disconnected)
     {
         Disconnect();
-        TimeD = nullptr;
-        CheckB = CheckM = nullptr;
-        MainConfDialog = nullptr;
-        ConfB = ConfM = nullptr;
-        CheckB = CheckM = nullptr;
-        Wpred = Walarm = nullptr;
+        CloseDialogs();
         emit ClearBsi();
         ClearTW();
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
@@ -1572,99 +1597,105 @@ void Coma::CheckModBusFinish()
 
 void Coma::UpdateUSB()
 {
-    int i = 0, predalarmcount = 0, alarmcount = 0;
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmylw = new QPixmap("images/yellowс.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
-    Bd11 Bd_block11;
-
-    INFOMSG("UpdateUSB()");
-    if (CheckB != nullptr)
-        CheckB->USBUpdate();
-
-    if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == NOERROR)
+    if (MainInterface == I_USB)
     {
-        for(i=0; i<18; i++)
-        {
-           if(Bd_block11.predAlarm & (0x00000001 << i))
-           {
-               PredAlarmEvents[i] = 1;
-               ++predalarmcount;
-           }
-           else
-               PredAlarmEvents[i] = 0;
-        }
+        int i = 0, predalarmcount = 0, alarmcount = 0;
+        QPixmap *pmgrn = new QPixmap("images/greenc.png");
+        QPixmap *pmylw = new QPixmap("images/yellowc.png");
+        QPixmap *pmred = new QPixmap("images/redc.png");
+        Bd11 Bd_block11;
 
-        for(i=0; i<7; i++)
+        INFOMSG("UpdateUSB()");
+        if (CheckB != nullptr)
+            CheckB->USBUpdate();
+
+        if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == NOERROR)
         {
-           if(Bd_block11.alarm & (0x00000001 << i))
-           {
-               AlarmEvents[i] = 1;
-               ++alarmcount;
-           }
-           else
-               AlarmEvents[i] = 0;
+            for(i=0; i<18; i++)
+            {
+               if(Bd_block11.predAlarm & (0x00000001 << i))
+               {
+                   PredAlarmEvents[i] = 1;
+                   ++predalarmcount;
+               }
+               else
+                   PredAlarmEvents[i] = 0;
+            }
+
+            for(i=0; i<7; i++)
+            {
+               if(Bd_block11.alarm & (0x00000001 << i))
+               {
+                   AlarmEvents[i] = 1;
+                   ++alarmcount;
+               }
+               else
+                   AlarmEvents[i] = 0;
+            }
+            WDFunc::SetLBLImage(this, "951", (predalarmcount == 0) ? pmgrn : pmylw);
+            WDFunc::SetLBLImage(this, "952", (alarmcount == 0) ? pmgrn : pmred);
+            emit SetPredAlarmColor(PredAlarmEvents);
+            emit SetAlarmColor(AlarmEvents);
         }
-        WDFunc::SetLBLImage(this, "951", (predalarmcount == 0) ? pmgrn : pmylw);
-        WDFunc::SetLBLImage(this, "952", (alarmcount == 0) ? pmgrn : pmred);
-        emit SetPredAlarmColor(PredAlarmEvents);
-        emit SetAlarmColor(AlarmEvents);
-    }
-    if (Commands::GetBsi(ModuleBSI::ModuleBsi) == NOERROR)
-    {
-        if (ModuleBSI::ModuleBsi.Hth & PredBSIMask)
-            WDFunc::SetLBLImage(this, "950", pmylw);
-        else if (ModuleBSI::ModuleBsi.Hth & AvarBSIMask)
-            WDFunc::SetLBLImage(this, "950", pmred);
-        else
-            WDFunc::SetLBLImage(this, "950", pmgrn);
+        if (Commands::GetBsi(ModuleBSI::ModuleBsi) == NOERROR)
+        {
+            if (ModuleBSI::ModuleBsi.Hth & PredBSIMask)
+                WDFunc::SetLBLImage(this, "950", pmylw);
+            else if (ModuleBSI::ModuleBsi.Hth & AvarBSIMask)
+                WDFunc::SetLBLImage(this, "950", pmred);
+            else
+                WDFunc::SetLBLImage(this, "950", pmgrn);
+        }
     }
 }
 
 void Coma::USBSetAlarms()
 {
-    int i = 0;
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
-    Bd11 Bd_block11;
-
-    INFOMSG("USBSetAlarms()");
-    if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == NOERROR)
+    if (MainInterface == I_USB)
     {
-        if(Wpred != nullptr)
-        {
-            for(i=0; i<13; i++)
-            {
-                quint32 alarm = Bd_block11.predAlarm & ((quint32)0x00000001 << i);
-                WDFunc::SetLBLImage(Walarm, (QString::number(3011+i)), (alarm) ? pmred : pmgrn);
-            }
-            for(i=13; i<16; i++)
-            {
-                quint32 alarm = Bd_block11.predAlarm & ((quint32)0x00000001 << i);
-                WDFunc::SetLBLImage(Walarm, (QString::number(3027+i-13)), (alarm) ? pmred : pmgrn);
-            }
-            quint32 alarm = Bd_block11.predAlarm & ((quint32)0x00000001 << 16);
-            WDFunc::SetLBLImage(Walarm, "3033", (alarm) ? pmred : pmgrn);
-            alarm = Bd_block11.predAlarm & ((quint32)0x00000001 << 17);
-            WDFunc::SetLBLImage(Walarm, "3034", (alarm) ? pmred : pmgrn);
-        }
-        if(Walarm != nullptr)
-        {
-            for(i=0; i<3; i++)
-            {
-                quint32 alarm = Bd_block11.alarm & ((quint32)0x00000001 << i);
-                WDFunc::SetLBLImage(Walarm, (QString::number(3024+i)), (alarm) ? pmred : pmgrn);
-            }
+        int i = 0;
+        QPixmap *pmgrn = new QPixmap("images/greenc.png");
+        QPixmap *pmred = new QPixmap("images/redc.png");
+        Bd11 Bd_block11;
 
-            for(i=3; i<6; i++)
+        INFOMSG("USBSetAlarms()");
+        if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == NOERROR)
+        {
+            if(Wpred != nullptr)
             {
-                quint32 alarm = Bd_block11.alarm & ((quint32)0x00000001 << i);
-                WDFunc::SetLBLImage(Walarm, (QString::number(3030+i-3)), (alarm) ? pmred : pmgrn);
+                for(i=0; i<13; i++)
+                {
+                    quint32 alarm = Bd_block11.predAlarm & ((quint32)0x00000001 << i);
+                    WDFunc::SetLBLImage(Walarm, (QString::number(3011+i)), (alarm) ? pmred : pmgrn);
+                }
+                for(i=13; i<16; i++)
+                {
+                    quint32 alarm = Bd_block11.predAlarm & ((quint32)0x00000001 << i);
+                    WDFunc::SetLBLImage(Walarm, (QString::number(3027+i-13)), (alarm) ? pmred : pmgrn);
+                }
+                quint32 alarm = Bd_block11.predAlarm & ((quint32)0x00000001 << 16);
+                WDFunc::SetLBLImage(Walarm, "3033", (alarm) ? pmred : pmgrn);
+                alarm = Bd_block11.predAlarm & ((quint32)0x00000001 << 17);
+                WDFunc::SetLBLImage(Walarm, "3034", (alarm) ? pmred : pmgrn);
             }
+            if(Walarm != nullptr)
+            {
+                for(i=0; i<3; i++)
+                {
+                    quint32 alarm = Bd_block11.alarm & ((quint32)0x00000001 << i);
+                    WDFunc::SetLBLImage(Walarm, (QString::number(3024+i)), (alarm) ? pmred : pmgrn);
+                }
 
-            quint32 alarm = Bd_block11.alarm & ((quint32)0x00000001 << 6);
-            if(Bd_block11.alarm & ((quint32)0x00000001 << 6))
-                WDFunc::SetLBLImage(Walarm, "3035", (alarm) ? pmred : pmgrn);
+                for(i=3; i<6; i++)
+                {
+                    quint32 alarm = Bd_block11.alarm & ((quint32)0x00000001 << i);
+                    WDFunc::SetLBLImage(Walarm, (QString::number(3030+i-3)), (alarm) ? pmred : pmgrn);
+                }
+
+                quint32 alarm = Bd_block11.alarm & ((quint32)0x00000001 << 6);
+                if(Bd_block11.alarm & ((quint32)0x00000001 << 6))
+                    WDFunc::SetLBLImage(Walarm, "3035", (alarm) ? pmred : pmgrn);
+            }
         }
     }
 }

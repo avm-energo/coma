@@ -227,6 +227,7 @@ private:
     void NewTimers();
     void SetupUI();
     void PrepareDialogs();
+    void CloseDialogs();
 
 protected:
     void keyPressEvent(QKeyEvent *e);
