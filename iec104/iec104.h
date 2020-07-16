@@ -289,6 +289,12 @@ public:
     QList<QByteArray> ReadData;
     IEC104Thread::FlSignals104* flSignals;
 
+    struct Settings
+    {
+        quint16 baseadr;
+        QString ip;
+    };
+
     typedef struct
     {
         quint8 typeIdent;
@@ -365,7 +371,7 @@ public:
     QString IP;
 
     bool Working();
-    void Connect(const QString &IP, quint16 baseadr);
+    void Connect(Settings &st);
 
 public slots:
     void StopAllThreads();

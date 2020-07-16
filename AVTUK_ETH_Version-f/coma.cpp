@@ -139,6 +139,47 @@ void Coma::SetupUI()
     SetupMenubar();
 }
 
+QWidget *Coma::Least()
+{
+    QWidget *w = new QWidget;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *inlyout = new QHBoxLayout;
+    ETabWidget *MainTW = new ETabWidget;
+    MainTW->setObjectName("maintw");
+    MainTW->setTabPosition(QTabWidget::West);
+    inlyout->addWidget(MainTW, 60);
+    MainTW->hide();
+    lyout->addLayout(inlyout, 90);
+    lyout->addStretch(500);
+    QFrame *line = new QFrame;
+    line->setLineWidth(0);
+    line->setMidLineWidth(1);
+    line->setFrameStyle(QFrame::Sunken | QFrame::HLine);
+    lyout->addWidget(line);
+    inlyout = new QHBoxLayout;
+    inlyout->addWidget(WDFunc::NewLBLT(this, "Обмен"));
+    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb1lbl"));
+    QProgressBar *prb = new QProgressBar;
+    prb->setObjectName("prb1prb");
+    prb->setOrientation(Qt::Horizontal);
+    prb->setMinimumWidth(500);
+    prb->setMaximumHeight(10);
+    inlyout->addWidget(prb);
+    lyout->addLayout(inlyout);
+    inlyout = new QHBoxLayout;
+    inlyout->addWidget(WDFunc::NewLBLT(this, "Отсчёт"));
+    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb2lbl"));
+    prb = new QProgressBar;
+    prb->setObjectName("prb2prb");
+    prb->setOrientation(Qt::Horizontal);
+    prb->setMinimumWidth(500);
+    prb->setMaximumHeight(10);
+    inlyout->addWidget(prb);
+    lyout->addLayout(inlyout);
+    w->setLayout(lyout);
+    return w;
+}
+
 void Coma::SetupMenubar()
 {
     QMenuBar *menubar = new QMenuBar;
@@ -178,8 +219,17 @@ void Coma::StartWork()
 {
     if (!Reconnect)
     {
-        ShowInterfaceDialog();
-        ShowConnectDialog();
+        QEventLoop loop;
+        Cancelled = false;
+        ConnectDialog *dlg = new ConnectDialog;
+        connect(dlg,SIGNAL(Accepted(ConnectStruct &)),this,SLOT(SetConnection(ConnectDialog::ConnectStruct &)));
+        connect(dlg,&ConnectDialog::Cancelled,this,&Coma::Cancel);
+        connect(this, SIGNAL(CloseConnectDialog()),dlg,SLOT(close()));
+        connect(this, &Coma::CloseConnectDialog,&loop,&QEventLoop::quit);
+        dlg->show();
+        loop.exec();
+//        ShowInterfaceDialog();
+//        ShowConnectDialog();
         if(Cancelled)
         {
             ERMSG("Отмена подключения");
@@ -240,12 +290,12 @@ void Coma::StartWork()
         if(MainInterface == I_ETHERNET)
         {
             if (!Ch104->Working())
-                Ch104->Connect(IPtemp, AdrBaseStation);
+                Ch104->Connect(ConnectSettings.iec104st);
             ActiveThreads |= THREAD104;
         }
         else
         {
-            if (ChModbus->Connect(Settings) != NOERROR)
+            if (ChModbus->Connect(ConnectSettings.serialst) != NOERROR)
             {
                 ERMSG("Modbus not connected");
                 return;
@@ -420,25 +470,20 @@ void Coma::CloseDialogs()
 {
     if (TimeD != nullptr)
         TimeD->close();
-//        TimeD = nullptr;
     if (CheckB != nullptr)
         CheckB->close();
     if (CheckM != nullptr)
         CheckM->close();
-//    CheckB = CheckM = nullptr;
     if (MainConfDialog != nullptr)
         MainConfDialog->close();
-//    MainConfDialog = nullptr;
     if (ConfB != nullptr)
         ConfB->close();
     if (ConfM != nullptr)
         ConfM->close();
-//    ConfB = ConfM = nullptr;
     if (Wpred != nullptr)
         Wpred->close();
     if (Walarm != nullptr)
         Walarm->close();
-//    Wpred = Walarm = nullptr;
     if (CorD != nullptr)
         CorD->close();
     if (IDialog != nullptr)
@@ -1001,47 +1046,6 @@ void Coma::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
     }
 }
 
-QWidget *Coma::Least()
-{
-    QWidget *w = new QWidget;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *inlyout = new QHBoxLayout;
-    ETabWidget *MainTW = new ETabWidget;
-    MainTW->setObjectName("maintw");
-    MainTW->setTabPosition(QTabWidget::West);
-    inlyout->addWidget(MainTW, 60);
-    MainTW->hide();
-    lyout->addLayout(inlyout, 90);
-    lyout->addStretch(500);
-    QFrame *line = new QFrame;
-    line->setLineWidth(0);
-    line->setMidLineWidth(1);
-    line->setFrameStyle(QFrame::Sunken | QFrame::HLine);
-    lyout->addWidget(line);
-    inlyout = new QHBoxLayout;
-    inlyout->addWidget(WDFunc::NewLBLT(this, "Обмен"));
-    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb1lbl"));
-    QProgressBar *prb = new QProgressBar;
-    prb->setObjectName("prb1prb");
-    prb->setOrientation(Qt::Horizontal);
-    prb->setMinimumWidth(500);
-    prb->setMaximumHeight(10);
-    inlyout->addWidget(prb);
-    lyout->addLayout(inlyout);
-    inlyout = new QHBoxLayout;
-    inlyout->addWidget(WDFunc::NewLBLT(this, "Отсчёт"));
-    inlyout->addWidget(WDFunc::NewLBLT(this, "", "prb2lbl"));
-    prb = new QProgressBar;
-    prb->setObjectName("prb2prb");
-    prb->setOrientation(Qt::Horizontal);
-    prb->setMinimumWidth(500);
-    prb->setMaximumHeight(10);
-    inlyout->addWidget(prb);
-    lyout->addLayout(inlyout);
-    w->setLayout(lyout);
-    return w;
-}
-
 void Coma::LoadSettings()
 {
     QString HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/"+PROGNAME+"/";
@@ -1226,120 +1230,9 @@ void Coma::SetProgressBar2(int cursize)
     SetProgressBar("2", cursize);
 }
 
-void Coma::ShowInterfaceDialog()
-{
-    QByteArray ba;
-    QDialog *dlg = new QDialog(this);
-    QString Str;
-    Cancelled = false;
-    QStringList inter;
-    inter.append("USB");
-    inter.append("Ethernet");
-    inter.append("RS485");
-    QStringListModel *tmpmodel = new QStringListModel;
-    dlg->setMinimumWidth(150);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setObjectName("connectdlg");
-    QVBoxLayout *lyout = new QVBoxLayout;
-
-    lyout->addWidget(WDFunc::NewLBL(this, "Выберите интерфейс связи"));
-
-    tmpmodel->setStringList(inter);
-    QComboBox *portscb = new QComboBox;
-    connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(ParseInter(QString)));
-    portscb->setModel(tmpmodel);
-    lyout->addWidget(portscb);
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QPushButton *pb = new QPushButton("Далее");
-    connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb, SIGNAL(clicked(bool)),this,SLOT(SetCancelled()));
-    connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    dlg->setLayout(lyout);
-    dlg->exec();
-}
-
 void Coma::SetCancelled()
 {
     Cancelled = true;
-}
-
-void Coma::ShowConnectDialog()
-{
-    QByteArray ba;
-    int res;
-    QString Str;
-
-    if(Cancelled)
-    {
-        ERMSG("Отмена ConnectDialog");
-        return;
-    }
-    QDialog *dlg = new QDialog(this);
-    dlg->setMinimumWidth(150);
-    dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setObjectName("connectdlg");
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QStringListModel *tmpmodel = new QStringListModel;
-
-    if(MainInterface == I_USB)
-    {
-        USBsl = cn->DevicesFound();
-        if (USBsl.size() == 0)
-        {
-            lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
-            Error::ShowErMsg(CN_NOPORTSERROR);
-        }
-        tmpmodel->deleteLater();
-        tmpmodel->setStringList(USBsl);
-        QComboBox *portscb = new QComboBox;
-        connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPortSlot(QString)));
-        portscb->setModel(tmpmodel);
-        lyout->addWidget(portscb);
-    }
-    else
-    {
-        if(!HaveAlreadyRed)
-        {
-            sl.clear();
-            res= Files::LoadFromFile(Files::ChooseFileForOpen(this, "IP files (*.txt)"), ba);
-            if (res != Files::ER_NOERROR)
-            {
-               WARNMSG("Ошибка при загрузке файла");
-               return;
-            }
-            Str = ba;
-            sl.append(Str.split("\r\n"));
-            HaveAlreadyRed = 1;
-        }
-        if (sl.size() == 0)
-        {
-            lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
-            Error::ShowErMsg(CN_NOPORTSERROR);
-            ERMSG("Ошибка, устройства не найдены");
-        }
-        tmpmodel = new QStringListModel;
-        tmpmodel->setStringList(sl);
-
-        QComboBox *portscb = new QComboBox;
-        connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(ParseString(QString)));
-        portscb->setModel(tmpmodel);
-        lyout->addWidget(portscb);
-    }
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QPushButton *pb = new QPushButton("Далее");
-    connect(pb, SIGNAL(clicked(bool)),dlg,SLOT(close()));
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb, SIGNAL(clicked(bool)),this,SLOT(SetCancelled()));
-    connect(pb, SIGNAL(clicked(bool)),dlg, SLOT(close()));
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    dlg->setLayout(lyout);
-    dlg->exec();
 }
 
 void Coma::SetProgressBarSize(QString prbnum, int size)
@@ -1459,65 +1352,6 @@ void Coma::keyPressEvent(QKeyEvent *e)
     QMainWindow::keyPressEvent(e);
 }
 
-void Coma::ParseString(QString Str)
-{
-    QStringList sl = Str.split(" ");
-
-    if (sl.size() < 3)
-    {
-        EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
-        ERMSG("Некорректная запись в файле");
-        return;
-    }
-    if ((sl.at(1) == "ETH") && (MainInterface == I_ETHERNET))
-    {
-       FullName = sl.at(0);
-       AdrBaseStation = sl.at(2).toUShort();
-       IPtemp = Str.split(" ").last();
-    }
-    else if ((sl.at(1) == "MODBUS") && (MainInterface == I_RS485))
-    {
-        if(sl.size() > 6)
-        {
-            bool ok;
-            FullName = sl.at(0);
-            Settings.Baud =  sl.at(2).toUInt(&ok);
-            if (!ok)
-            {
-                EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
-                ERMSG("Некорректная запись в файле");
-                return;
-            }
-            Settings.Parity =  sl.at(3);
-            Settings.Stop =  sl.at(4);
-            Settings.Address =  sl.at(5).toUInt(&ok);
-            if (!ok)
-            {
-                ERMSG("Некорректная запись в файле");
-                EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
-                return;
-            }
-            Settings.Port =  sl.at(6);
-        }
-        else
-        {
-            EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
-        }
-    }
-}
-
-void Coma::ParseInter(QString str)
-{
-    if (str == "USB")
-        MainInterface = I_USB;
-    else if (str == "Ethernet")
-        MainInterface = I_ETHERNET;
-    else if (str == "RS485")
-        MainInterface = I_RS485;
-    else
-        MainInterface = I_UNKNOWN;
-}
-
 void Coma::MainTWTabClicked(int tabindex)
 {
     if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
@@ -1547,6 +1381,18 @@ void Coma::MainTWTabClicked(int tabindex)
     }
     else
         TimeTimer->stop();
+}
+
+void Coma::SetConnection(ConnectDialog::ConnectStruct &st)
+{
+    ConnectSettings = st;
+    emit CloseConnectDialog();
+}
+
+void Coma::Cancel()
+{
+    Cancelled = true;
+    emit CloseConnectDialog();
 }
 
 void Coma::ModBusFinished()

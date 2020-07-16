@@ -10,6 +10,7 @@
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/mnktime.h"
 #include "../dialogs/journalsdialog.h"
+#include "../dialogs/connectdialog.h"
 
 #define RECONNECTINTERVAL   3000
 #define WAITINTERVAL        15000
@@ -115,8 +116,6 @@ public:
     QWidget *Least();
     int CheckPassword();
     void Disconnect();
-    void ShowConnectDialog();
-    void ShowInterfaceDialog();
 
 signals:
     void CloseConnectDialog();
@@ -167,9 +166,9 @@ private slots:
     void SetProgressBar2Size(int size);
     void SetProgressBar2(int cursize);
     void ShowErrorMessageBox(QString message);
-    void ParseString(QString Str);
-    void ParseInter(QString str);
     void MainTWTabClicked(int tabindex);
+    void SetConnection(ConnectDialog::ConnectStruct &st);
+    void Cancel();
 
     // finished slots
     void ModBusFinished();
@@ -216,6 +215,7 @@ private:
     QWidget *Walarm;
     bool Cancelled;
     bool Reconnect;
+    ConnectDialog::ConnectStruct ConnectSettings;
 
     void LoadSettings();
     void SaveSettings();

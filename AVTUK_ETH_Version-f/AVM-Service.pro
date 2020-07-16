@@ -11,7 +11,8 @@ RC_ICONS = ../coma.ico
 CONFIG += c++11
 VERSION = 0.1.5
 
-QT       += core gui printsupport network serialport qml
+QT       += core gui printsupport network serialport qml \
+    widgets
 
 TARGET = AVM-Service
 DEFINES += PROGNAME='\\"AVM-Service\\"'
@@ -23,6 +24,7 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../dialogs/connectdialog.cpp \
     ../dialogs/mnktime.cpp \
     ../gen/journals.cpp \
     ../gen/logclass.cpp \
@@ -76,6 +78,7 @@ SOURCES += \
 
 
 HEADERS += \
+    ../dialogs/connectdialog.h \
     ../dialogs/mnktime.h \
     ../gen/journals.h \
     ../gen/logclass.h \
