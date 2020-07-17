@@ -1,10 +1,8 @@
 // commands.cpp
 #include <QCoreApplication>
 #include "commands.h"
-#include "error.h"
+#include "../gen/error.h"
 #include "../gen/timefunc.h"
-
-EUsbHid *cn;
 
 Commands::Commands()
 {

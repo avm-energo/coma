@@ -5,6 +5,8 @@
 #include "../modbus/serialport.h"
 #include "../iec104/iec104.h"
 
+#define MAXREGISTRYINTERFACECOUNT   5 // how much entries can we have for interfaces of each type in registry
+
 class ConnectDialog : public QDialog
 {
     Q_OBJECT
@@ -25,7 +27,7 @@ signals:
 private slots:
     void ParseString(QString str);
     void ParseInter();
-    void SetInterface(QString inttype);
+    void SetInterface();
 
 private:
     ConnectStruct Connect;

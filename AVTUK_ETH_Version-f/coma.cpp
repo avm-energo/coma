@@ -50,7 +50,7 @@
 #include "../gen/files.h"
 #include "../modbus/modbus.h"
 #include "../gen/timefunc.h"
-#include "../gen/commands.h"
+#include "../usb/commands.h"
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
 {

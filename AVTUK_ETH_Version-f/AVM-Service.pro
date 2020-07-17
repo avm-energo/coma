@@ -11,8 +11,7 @@ RC_ICONS = ../coma.ico
 CONFIG += c++11
 VERSION = 0.1.5
 
-QT       += core gui printsupport network serialport qml \
-    widgets
+QT       += core gui printsupport network serialport qml widgets
 
 TARGET = AVM-Service
 DEFINES += PROGNAME='\\"AVM-Service\\"'
@@ -24,12 +23,9 @@ TEMPLATE = app
 
 
 SOURCES += \
-    ../dialogs/connectdialog.cpp \
-    ../dialogs/mnktime.cpp \
-    ../gen/journals.cpp \
-    ../gen/logclass.cpp \
-    ../gen/maindef.cpp \
-    ../modbus/serialport.cpp \
+    ../usb/commands.cpp \
+    ../usb/eabstractprotocomchannel.cpp \
+    ../usb/eusbhid.cpp \
     coma.cpp \
     main.cpp \
     ../check/check.cpp \
@@ -41,15 +37,20 @@ SOURCES += \
     ../config/confdialog84.cpp \
     ../config/config.cpp \
     ../config/config84.cpp \
+    ../dialogs/connectdialog.cpp \
     ../dialogs/cordialog.cpp \
     ../dialogs/errordialog.cpp \
     ../dialogs/fwupdialog.cpp \
     ../dialogs/infodialog.cpp \
     ../dialogs/journalsdialog.cpp \
     ../dialogs/keypressdialog.cpp \
+    ../dialogs/mnktime.cpp \
     ../dialogs/settingsdialog.cpp \
     ../gen/error.cpp \
     ../gen/files.cpp \
+    ../gen/journals.cpp \
+    ../gen/logclass.cpp \
+    ../gen/maindef.cpp \
     ../gen/modulebsi.cpp \
     ../gen/report.cpp \
     ../gen/s2.cpp \
@@ -58,31 +59,27 @@ SOURCES += \
     ../iec104/ethernet.cpp \
     ../iec104/iec104.cpp \
     ../modbus/modbus.cpp \
+    ../modbus/serialport.cpp \
+    ../models/etableitem.cpp \
+    ../models/etablemodel.cpp \
+    ../models/getoscpbdelegate.cpp \
+    ../usb/usb.cpp \
     ../widgets/ecombobox.cpp \
     ../widgets/emessagebox.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/estackedwidget.cpp \
-    ../models/etableitem.cpp \
-    ../models/etablemodel.cpp \
     ../widgets/etableview.cpp \
     ../widgets/etabwidget.cpp \
-    ../models/getoscpbdelegate.cpp \
     ../widgets/lineeditfield.cpp \
     ../widgets/passwordlineedit.cpp \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp \
-    ../gen/commands.cpp \
-    ../gen/eabstractprotocomchannel.cpp \
-    ../gen/eusbhid.cpp
-
+    ../widgets/wd_func.cpp
 
 HEADERS += \
-    ../dialogs/connectdialog.h \
-    ../dialogs/mnktime.h \
-    ../gen/journals.h \
-    ../gen/logclass.h \
-    ../modbus/serialport.h \
+    ../usb/commands.h \
+    ../usb/eabstractprotocomchannel.h \
+    ../usb/eusbhid.h \
     coma.h \
     ../check/check.h \
     ../check/check84.h \
@@ -93,16 +90,20 @@ HEADERS += \
     ../config/confdialog84.h \
     ../config/config.h \
     ../config/config84.h \
+    ../dialogs/connectdialog.h \
     ../dialogs/cordialog.h \
     ../dialogs/errordialog.h \
     ../dialogs/fwupdialog.h \
     ../dialogs/infodialog.h \
     ../dialogs/journalsdialog.h \
     ../dialogs/keypressdialog.h \
+    ../dialogs/mnktime.h \
     ../dialogs/settingsdialog.h \
     ../gen/colors.h \
     ../gen/error.h \
     ../gen/files.h \
+    ../gen/journals.h \
+    ../gen/logclass.h \
     ../gen/maindef.h \
     ../gen/modulebsi.h \
     ../gen/report.h \
@@ -111,26 +112,24 @@ HEADERS += \
     ../gen/timefunc.h \
     ../iec104/ethernet.h \
     ../iec104/iec104.h \
+    ../modbus/modbus.h \
+    ../modbus/serialport.h \
+    ../models/etableitem.h \
+    ../models/etablemodel.h \
+    ../models/getoscpbdelegate.h \
+    ../usb/usb.h \
     ../widgets/ecombobox.h \
     ../widgets/emessagebox.h \
     ../widgets/errorprotocolwidget.h \
     ../widgets/estackedwidget.h \
-    ../models/etableitem.h \
-    ../models/etablemodel.h \
     ../widgets/etableview.h \
     ../widgets/etabwidget.h \
-    ../models/getoscpbdelegate.h \
     ../widgets/keypress.h \
     ../widgets/lineeditfield.h \
     ../widgets/passwordlineedit.h \
     ../widgets/signalchoosewidget.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h \
-    ../modbus/modbus.h \
-    ../gen/commands.h \
-    ../gen/eabstractprotocomchannel.h \
-    ../gen/eusbhid.h
-
+    ../widgets/wd_func.h
 
 INCLUDEPATH += $$PWD/../../includes
 

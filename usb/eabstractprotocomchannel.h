@@ -8,9 +8,9 @@
 #include <QWaitCondition>
 #include <QPointer>
 
-#include "modulebsi.h"
-#include "s2.h"
-#include "logclass.h"
+#include "../gen/modulebsi.h"
+#include "../gen/s2.h"
+#include "../gen/logclass.h"
 
 #define CN_MAXSEGMENTLENGTH 60 // 64-4 ('<',cmd,L,L)
 

@@ -1,6 +1,11 @@
 #include <QVBoxLayout>
+#include <QSettings>
+
 #include "connectdialog.h"
 #include "../gen/maindef.h"
+#include "../gen/error.h"
+#include "../usb/usb.h"
+#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 ConnectDialog::ConnectDialog()
@@ -20,7 +25,6 @@ ConnectDialog::ConnectDialog()
     hlyout->addWidget(pb);
     pb = new QPushButton("Отмена");
     connect(pb, &QPushButton::clicked,this,&ConnectDialog::Cancelled);
-    connect(pb, SIGNAL(clicked(bool)),this, SLOT(close()));
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     setLayout(lyout);
@@ -86,36 +90,37 @@ void ConnectDialog::ParseInter()
         MainInterface = I_UNKNOWN;
 }
 
-void ConnectDialog::SetInterface(QString inttype)
+void ConnectDialog::SetInterface()
 {
-    QByteArray ba;
-    int res;
-    QString Str;
-
-    QDialog *dlg = new QDialog(this);
+    QStringList ethlist, rslist;
+    QDialog *dlg = new QDialog;
     dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setObjectName("connectdlg");
     QVBoxLayout *lyout = new QVBoxLayout;
-    QStringListModel *tmpmodel = new QStringListModel;
 
-    if(MainInterface == I_USB)
+    QSettings *sets = new QSettings ("EvelSoft", PROGNAME);
+    for (int i=0; i<MAXREGISTRYINTERFACECOUNT; ++i)
     {
-        USBsl = cn->DevicesFound();
+        QString rsname = "RS485-" + QString::number(i);
+        QString ethname = "Ethernet-" + QString::number(i);
+        ethlist << sets->value(ethname, "").toString();
+        rslist << sets->value(rsname, "").toString();
+    }
+    if (MainInterface == I_USB)
+    {
+        QStringList USBsl = cn->DevicesFound();
         if (USBsl.size() == 0)
         {
             lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
             Error::ShowErMsg(CN_NOPORTSERROR);
+            return;
         }
-        tmpmodel->deleteLater();
-        tmpmodel->setStringList(USBsl);
-        QComboBox *portscb = new QComboBox;
-        connect(portscb,SIGNAL(currentIndexChanged(QString)),this,SLOT(SetPortSlot(QString)));
-        portscb->setModel(tmpmodel);
-        lyout->addWidget(portscb);
+        lyout->addWidget(WDFunc::NewCB(this, "usbcb", USBsl));
     }
     else
     {
+        sets->value("Homedir", HomeDir).toString());
         if(!HaveAlreadyRed)
         {
             sl.clear();
@@ -153,5 +158,6 @@ void ConnectDialog::SetInterface(QString inttype)
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     dlg->setLayout(lyout);
+    WDFunc::CBConnect(this, "usbcb", WDFunc::CT_TEXTCHANGED,this,SLOT(SetPortSlot(QString)));
     dlg->exec();
 }
