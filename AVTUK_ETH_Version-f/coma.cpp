@@ -66,7 +66,6 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     Error::Init();
     S2Config = new QVector<S2::DataRec>;
     S2ConfigForTune.clear();
-    FullName = "";
     Disconnected = true;
     Reconnect = false;
     TimeD = nullptr;
@@ -624,7 +623,7 @@ void Coma::ConnectMessage()
     if(MainInterface == I_USB)
         hlyout->addWidget(WDFunc::NewLBLT(w, "Связь с "+ModuleBSI::ModuleTypeString+" установлена", "", "", ""), 1);
     else
-        hlyout->addWidget(WDFunc::NewLBLT(w, "Связь с "+FullName+" установлена", "", "", ""), 1);
+        hlyout->addWidget(WDFunc::NewLBLT(w, "Связь с "+ConnectSettings.name+" установлена", "", "", ""), 1);
     vlayout->addLayout(hlyout);
     w->setLayout(vlayout);
     lyout->addWidget(w);
@@ -1408,12 +1407,6 @@ void Coma::Ch104Finished()
 void Coma::USBFinished()
 {
     ActiveThreads &= ~THREADUSB;
-}
-
-void Coma::SetPortSlot(QString port)
-{
-    SavePort = port;
-    cn->TranslateDeviceAndSave(port);
 }
 
 void Coma::SetDefConf()

@@ -2,8 +2,8 @@
 #include <QElapsedTimer>
 #include <QThread>
 #include "eusbhid.h"
-#include "error.h"
-#include "stdfunc.h"
+#include "../gen/error.h"
+#include "../gen/stdfunc.h"
 
 EUsbHid::EUsbHid(QObject *parent) : EAbstractProtocomChannel(parent)
 {

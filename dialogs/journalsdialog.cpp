@@ -17,7 +17,7 @@
 #include "../dialogs/journalsdialog.h"
 #include "../gen/colors.h"
 #include "../gen/files.h"
-#include "../gen/commands.h"
+#include "../usb/commands.h"
 
 JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
 {

@@ -9,7 +9,7 @@
 #include "timefunc.h"
 #include "error.h"
 #include "maindef.h"
-#include "commands.h"
+#include "../usb/commands.h"
 #include "files.h"
 #include "../widgets/wd_func.h"
 

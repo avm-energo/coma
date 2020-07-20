@@ -160,7 +160,6 @@ private slots:
     void FillBSI(IEC104Thread::BS104Signals *sig);
     void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     void PasswordCheck(QString psw);
-    void SetPortSlot(QString port);
     void SetProgressBar1Size(int size);
     void SetProgressBar1(int cursize);
     void SetProgressBar2Size(int size);
@@ -194,7 +193,6 @@ private:
     int fileSize, curfileSize;
     QTimer *ReconnectTimer;
     QString SavePort;
-    DeviceConnectStruct DevInfo;
     quint8 ActiveThreads;
     int CheckIndex, TimeIndex, ConfIndex, CurTabIndex;
     AbstractConfDialog *ConfB, *ConfM;
@@ -204,10 +202,6 @@ private:
     MNKTime *TimeD;
     JournalDialog *JourD;
     fwupdialog *FwUpD;
-    QString IPtemp, FullName, SaveDevice, instr;
-    QStringList sl, USBsl, slfinal;
-    quint16 AdrBaseStation;
-    SerialPort::Settings Settings;
     QTimer* BdaTimer, *TimeTimer, *AlarmStateTimer;
     QVector<S2::DataRec> *S2Config;
     QWidget *Parent;

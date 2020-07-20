@@ -3,7 +3,7 @@
 #include <QSettings>
 #include <QTime>
 #include <QtGlobal>
-#include "error.h"
+#include "../gen/error.h"
 #include "eabstractprotocomchannel.h"
 
 bool EAbstractProtocomChannel::WriteUSBLog = true;

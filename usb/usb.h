@@ -4,11 +4,11 @@
 #include <QObject>
 #include "eusbhid.h"
 
-class usb
+class usb : public QObject
 {
     Q_OBJECT
 public:
-    usb();
+    usb(QObject *parent = nullptr);
 };
 
 extern EUsbHid *cn;

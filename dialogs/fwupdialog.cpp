@@ -28,7 +28,7 @@
 #include "../gen/s2.h"
 #include "../dialogs/keypressdialog.h"
 #include "../gen/timefunc.h"
-#include "../gen/commands.h"
+#include "../usb/commands.h"
 
 fwupdialog::fwupdialog(QWidget *parent) :
     QDialog(parent)

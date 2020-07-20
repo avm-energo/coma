@@ -14,6 +14,7 @@ public:
     struct ConnectStruct
     {
 //        int type; // USB, Ethernet, RS485
+        QString name;
         IEC104::Settings iec104st; // IEC104 settings
         SerialPort::Settings serialst;
     };
@@ -25,9 +26,20 @@ signals:
     void Cancelled();
 
 private slots:
-    void ParseString(QString str);
+//    void ParseString(QString str);
     void ParseInter();
     void SetInterface();
+    void SetUsb();
+    void AddEth();
+    void EthAccepted();
+    void SetCancelled();
+    void SetEth();
+/*    void ScanEth();
+    void AddRs();
+    void SetRs();
+    void ScanRs(); */
+    void RotateSettings(const QString &type, const QString &name); // in: name of registry dir without index, out - name with index
+    bool IsKeyExist(const QString &type, const QString &chstr);
 
 private:
     ConnectStruct Connect;

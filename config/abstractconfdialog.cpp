@@ -15,7 +15,7 @@
 #include "../iec104/iec104.h"
 #include "../gen/timefunc.h"
 #include "../dialogs/keypressdialog.h"
-#include "../gen/commands.h"
+#include "../usb/commands.h"
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
