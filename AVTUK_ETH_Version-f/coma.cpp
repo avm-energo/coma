@@ -221,7 +221,7 @@ void Coma::StartWork()
         QEventLoop loop;
         Cancelled = false;
         ConnectDialog *dlg = new ConnectDialog;
-        connect(dlg,SIGNAL(Accepted(ConnectStruct &)),this,SLOT(SetConnection(ConnectDialog::ConnectStruct &)));
+        connect(dlg,SIGNAL(Accepted(ConnectDialog::ConnectStruct *)),this,SLOT(SetConnection(ConnectDialog::ConnectStruct *)));
         connect(dlg,&ConnectDialog::Cancelled,this,&Coma::Cancel);
         connect(this, SIGNAL(CloseConnectDialog()),dlg,SLOT(close()));
         connect(this, &Coma::CloseConnectDialog,&loop,&QEventLoop::quit);
@@ -308,9 +308,10 @@ void Coma::StartWork()
             QCoreApplication::processEvents();
         if (MTypeB == 0)
         {
+            EMessageBox::error(this, "Ошибка", "Не удалось соединиться с прибором");
             DisconnectAndClear();
-            ERMSG("Не получили BSI");
-            Disconnect();
+            ERMSG("Не получили BSI, нет соединения");
+//            Disconnect();
             return;
         }
     }
@@ -1382,9 +1383,9 @@ void Coma::MainTWTabClicked(int tabindex)
         TimeTimer->stop();
 }
 
-void Coma::SetConnection(ConnectDialog::ConnectStruct &st)
+void Coma::SetConnection(ConnectDialog::ConnectStruct *st)
 {
-    ConnectSettings = st;
+    ConnectSettings = *st;
     emit CloseConnectDialog();
 }
 

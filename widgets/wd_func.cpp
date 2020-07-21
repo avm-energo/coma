@@ -361,6 +361,7 @@ void WDFunc::TVAutoResize(QWidget *w, const QString &tvname)
        return;
     }
     tv->update();
+    tv->repaint();
     tv->resizeColumnsToContents();
     tv->resizeRowsToContents();
 }

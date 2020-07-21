@@ -68,6 +68,7 @@ signals:
     void ReadJour(char);
 
 private:
+    ETableModel *_sysModel, *_workModel, *_measModel;
     QSortFilterProxyModel *_proxySysModel, *_proxyWorkModel, *_proxyMeasModel;
     int _jourType;
     QString _jourFile;
@@ -137,7 +138,7 @@ private:
 
     void FillEventsTable(QByteArray &ba);
     void FillMeasTable(QByteArray &ba);
-    void ResultReady(ETableModel *mdl);
+    void ResultReady();
 
 public slots:
     void FillSysJour(QByteArray ba);

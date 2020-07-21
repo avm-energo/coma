@@ -13,7 +13,6 @@ class ConnectDialog : public QDialog
 public:
     struct ConnectStruct
     {
-//        int type; // USB, Ethernet, RS485
         QString name;
         IEC104::Settings iec104st; // IEC104 settings
         SerialPort::Settings serialst;
@@ -22,11 +21,10 @@ public:
     ConnectDialog();
 
 signals:
-    void Accepted(ConnectStruct &);
+    void Accepted(ConnectDialog::ConnectStruct *);
     void Cancelled();
 
 private slots:
-//    void ParseString(QString str);
     void ParseInter();
     void SetInterface();
     void SetUsb();
@@ -40,6 +38,7 @@ private slots:
     void ScanRs(); */
     void RotateSettings(const QString &type, const QString &name); // in: name of registry dir without index, out - name with index
     bool IsKeyExist(const QString &type, const QString &chstr);
+    bool UpdateModel();
 
 private:
     ConnectStruct Connect;

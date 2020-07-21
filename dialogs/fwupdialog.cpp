@@ -42,8 +42,8 @@ void fwupdialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    ETableView *tv = new ETableView;
-    tv->setObjectName("fwp");
+/*    ETableView *tv = new ETableView;
+    tv->setObjectName("fwp"); */
 
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Записать ПО в память "+tmps);
@@ -62,7 +62,7 @@ void fwupdialog::SetupUI()
 
     //hlyout->addWidget(glyout,Qt::AlignTop);
     lyout->addLayout(glyout,Qt::AlignTop);
-    lyout->addWidget(tv, 89);
+//    lyout->addWidget(tv, 89);
     setLayout(lyout);
 
 }

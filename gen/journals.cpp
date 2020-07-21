@@ -15,6 +15,9 @@
 
 Journals::Journals(QObject *parent) : QObject(parent)
 {
+    _sysModel = new ETableModel;
+    _workModel = new ETableModel;
+    _measModel = new ETableModel;
 }
 
 Journals::~Journals()
@@ -72,10 +75,10 @@ void Journals::ReadJourFileAndProcessIt()
 void Journals::FillEventsTable(QByteArray &ba)
 {
     QVector<QVector<QVariant>> ValueLists;
-    ETableModel *model = new ETableModel;
+    ETableModel *model;
     EventStruct event;
-    const QStringList sl = (_jourType == JOURSYS) ? SysJourDescription : WorkJourDescription;
-    int mineventid = (_jourType == JOURSYS) ? SYSJOURID : WORKJOURID;
+    QStringList sl;
+    int mineventid;
     int N = 0;
     int basize = ba.size();
     char *file = ba.data();
@@ -83,15 +86,32 @@ void Journals::FillEventsTable(QByteArray &ba)
     int recordsize = sizeof(EventStruct);
     int fhsize = sizeof(S2::FileHeader);
 
-    if ((_jourType == JOURSYS) || (_jourType == JOURWORK))
+    switch (_jourType)
     {
-        file += fhsize;
-        S2::DataRec jour;
-        int drsize = sizeof(S2::DataRec) - sizeof(void *);
-        memcpy(&jour, file, drsize);
-        joursize = jour.num_byte;
-        file += drsize; // move file pointer to thedata
+    case JOURSYS:
+    {
+        sl = SysJourDescription;
+        mineventid = SYSJOURID;
+        model = _sysModel;
+        break;
     }
+    case JOURWORK:
+    {
+        sl = WorkJourDescription;
+        mineventid = WORKJOURID;
+        model = _workModel;
+        break;
+    }
+    default:
+        DBGMSG;
+        return;
+    }
+    file += fhsize;
+    S2::DataRec jour;
+    int drsize = sizeof(S2::DataRec) - sizeof(void *);
+    memcpy(&jour, file, drsize);
+    joursize = jour.num_byte;
+    file += drsize; // move file pointer to thedata
     int counter = 0;
     int i = 0;
     while (i < basize)
@@ -124,12 +144,12 @@ void Journals::FillEventsTable(QByteArray &ba)
     model->ClearModel();
     model->SetHeaders(EventJourHeaders);
     model->fillModel(ValueLists);
-    ResultReady(model);
+    ResultReady();
 }
 
 void Journals::FillMeasTable(QByteArray &ba)
 {
-    ETableModel *model = new ETableModel;
+    ETableModel *model = _measModel;
     QVector<QVector<QVariant>> ValueLists;
     MeasureStruct meas;
     int recordsize = sizeof(MeasureStruct);
@@ -175,35 +195,33 @@ void Journals::FillMeasTable(QByteArray &ba)
    for (int i=2; i<model->columnCount(); ++i)
        model->SetColumnFormat(i, 4); // set 4 diits precision for all cells starting 2
    model->fillModel(ValueLists);
-   ResultReady(model);
+   ResultReady();
 }
 
-void Journals::ResultReady(ETableModel *mdl)
+void Journals::ResultReady()
 {
+    ETableModel *mdl;
     QSortFilterProxyModel *pmdl;
     Qt::SortOrder order;
-    int dateidx = mdl->Headers().indexOf("Дата/Время UTC");
     switch(_jourType)
     {
     case Journals::JOURWORK:
+        mdl = _workModel;
         pmdl = _proxyWorkModel;
         order = Qt::DescendingOrder;
-/*        WDFunc::SetTVModel(_parent, "work", _proxyModel, true);
-        WDFunc::SortTV(_parent, "work", dateidx, Qt::DescendingOrder); */
         break;
     case Journals::JOURSYS:
+        mdl = _sysModel;
         pmdl = _proxySysModel;
         order = Qt::DescendingOrder;
-/*        WDFunc::SetTVModel(_parent, "system", _proxyModel, true);
-        WDFunc::SortTV(_parent, "system", dateidx, Qt::DescendingOrder); */
         break;
     case Journals::JOURMEAS:
+        mdl = _measModel;
         pmdl = _proxyMeasModel;
         order = Qt::AscendingOrder;
-/*        WDFunc::SetTVModel(_parent, "meas", _proxyModel, true);
-        WDFunc::SortTV(_parent, "meas", dateidx, Qt::AscendingOrder); */
         break;
     }
+    int dateidx = mdl->Headers().indexOf("Дата/Время UTC");
     pmdl->setDynamicSortFilter(true);
     pmdl->setSourceModel(mdl);
     pmdl->sort(dateidx, order);

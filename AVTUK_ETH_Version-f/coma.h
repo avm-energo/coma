@@ -166,7 +166,7 @@ private slots:
     void SetProgressBar2(int cursize);
     void ShowErrorMessageBox(QString message);
     void MainTWTabClicked(int tabindex);
-    void SetConnection(ConnectDialog::ConnectStruct &st);
+    void SetConnection(ConnectDialog::ConnectStruct *st);
     void Cancel();
 
     // finished slots

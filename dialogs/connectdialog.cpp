@@ -12,6 +12,7 @@
 ConnectDialog::ConnectDialog()
 {
     QByteArray ba;
+    MainInterface = I_USB;
     QStringList intersl = QStringList() << "USB" << "Ethernet" << "RS485";
     setMinimumWidth(150);
     setAttribute(Qt::WA_DeleteOnClose);
@@ -19,7 +20,7 @@ ConnectDialog::ConnectDialog()
 
     lyout->addWidget(WDFunc::NewLBL(this, "Выберите интерфейс связи"));
     lyout->addWidget(WDFunc::NewCB(this, "intercb", intersl));
-    WDFunc::CBConnect(this, "intercb", WDFunc::CT_TEXTCHANGED,this,SLOT(ParseInter(QString)));
+    WDFunc::CBConnect(this, "intercb", WDFunc::CT_TEXTCHANGED,this,SLOT(ParseInter()));
     QHBoxLayout *hlyout = new QHBoxLayout;
     QPushButton *pb = new QPushButton("Далее");
     connect(pb, &QPushButton::clicked,this,&ConnectDialog::SetInterface);
@@ -30,53 +31,6 @@ ConnectDialog::ConnectDialog()
     lyout->addLayout(hlyout);
     setLayout(lyout);
 }
-
-/*void ConnectDialog::ParseString(QString str)
-{
-    QStringList sl = Str.split(" ");
-
-    if (sl.size() < 3)
-    {
-        EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
-        ERMSG("Некорректная запись в файле");
-        return;
-    }
-    if ((sl.at(1) == "ETH") && (MainInterface == I_ETHERNET))
-    {
-       FullName = sl.at(0);
-       AdrBaseStation = sl.at(2).toUShort();
-       IPtemp = Str.split(" ").last();
-    }
-    else if ((sl.at(1) == "MODBUS") && (MainInterface == I_RS485))
-    {
-        if(sl.size() > 6)
-        {
-            bool ok;
-            FullName = sl.at(0);
-            Settings.Baud =  sl.at(2).toUInt(&ok);
-            if (!ok)
-            {
-                EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
-                ERMSG("Некорректная запись в файле");
-                return;
-            }
-            Settings.Parity =  sl.at(3);
-            Settings.Stop =  sl.at(4);
-            Settings.Address =  sl.at(5).toUInt(&ok);
-            if (!ok)
-            {
-                ERMSG("Некорректная запись в файле");
-                EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
-                return;
-            }
-            Settings.Port =  sl.at(6);
-        }
-        else
-        {
-            EMessageBox::information(this, "Ошибка", "Некорректная запись в файле");
-        }
-    }
-} */
 
 void ConnectDialog::ParseInter()
 {
@@ -93,58 +47,18 @@ void ConnectDialog::ParseInter()
 
 void ConnectDialog::SetInterface()
 {
-    QStringList ethlist, rslist;
-    QDialog *dlg = new QDialog;
+    QDialog *dlg = new QDialog(this);
     dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setObjectName("connectdlg");
+    dlg->setMinimumWidth(400);
     QVBoxLayout *lyout = new QVBoxLayout;
 
-    QSettings *sets = new QSettings (SOFTDEVELOPER, PROGNAME);
-    for (int i=0; i<MAXREGISTRYINTERFACECOUNT; ++i)
-    {
-        QString rsname = "RS485-" + QString::number(i);
-        QString ethname = "Ethernet-" + QString::number(i);
-        ethlist << sets->value(ethname, "").toString();
-        rslist << sets->value(rsname, "").toString();
-    }
     if (MainInterface == I_USB)
-    {
-        QStringList USBsl = cn->DevicesFound();
-        QStringList sl = QStringList() << "#" << "Device";
-        ETableModel *mdl = new ETableModel;
-
-        if (USBsl.size() == 0)
-        {
-            lyout->addWidget(WDFunc::NewLBL(this, "Ошибка, устройства не найдены"));
-            Error::ShowErMsg(CN_NOPORTSERROR);
-            return;
-        }
-        mdl->SetHeaders(sl);
-        for (int i=0; i<USBsl.size(); ++i)
-        {
-            QVector<QVariant> vl;
-            vl << QString::number(i+1) << USBsl.at(i);
-            mdl->AddRowWithData(vl);
-        }
-        lyout->addWidget(WDFunc::NewTV(dlg, "usbtv", mdl));
-    }
+        lyout->addWidget(WDFunc::NewTV(dlg, "usbtv", nullptr));
     else if (MainInterface == I_ETHERNET)
     {
-        QStringList sl = QStringList() << "#" << "Name" << "IP" << "BS address";
-        ETableModel *mdl = new ETableModel;
-
-        mdl->SetHeaders(sl);
-        for (int i=0; i<ethlist.size(); ++i)
-        {
-            QVector<QVariant> vl;
-            QString key = PROGNAME;
-            key += "\\" + ethlist.at(i);
-            sets = new QSettings(SOFTDEVELOPER, key);
-            vl << QString::number(i+1) << sets->value("name", "") << sets->value("ip", "") << sets->value("bs", "");
-            mdl->AddRowWithData(vl);
-        }
-        lyout->addWidget(WDFunc::NewTV(dlg, "ethtv", mdl));
+        lyout->addWidget(WDFunc::NewTV(dlg, "ethtv", nullptr));
         QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->addStretch(10);
         hlyout->addWidget(WDFunc::NewPB(dlg, "newethpb", "Добавить", this, SLOT(AddEth())));
@@ -154,21 +68,7 @@ void ConnectDialog::SetInterface()
     }
     else // RS485
     {
-        QStringList sl = QStringList() << "#" << "Name" << "Port" << "Speed" << "Parity" << "Stop bits" << "Address";
-        ETableModel *mdl = new ETableModel;
-
-        mdl->SetHeaders(sl);
-        for (int i=0; i<rslist.size(); ++i)
-        {
-            QVector<QVariant> vl;
-            QString key = PROGNAME;
-            key += "\\" + rslist.at(i);
-            sets = new QSettings(SOFTDEVELOPER, key);
-            vl << QString::number(i+1) << sets->value("name", "") << sets->value("port", "") << sets->value("speed", "") <<
-                  sets->value("parity", "") << sets->value("stop", "") << sets->value("address", "");
-            mdl->AddRowWithData(vl);
-        }
-        lyout->addWidget(WDFunc::NewTV(dlg, "rstv", mdl));
+        lyout->addWidget(WDFunc::NewTV(dlg, "rstv", nullptr));
         QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->addStretch(10);
         hlyout->addWidget(WDFunc::NewPB(dlg, "newrspb", "Добавить", this, SLOT(AddRs())));
@@ -185,6 +85,7 @@ void ConnectDialog::SetInterface()
     WDFunc::TVConnect(dlg, "usbtv", WDFunc::CT_DCLICKED,this,SLOT(SetUsb()));
     WDFunc::TVConnect(dlg, "rstv", WDFunc::CT_DCLICKED, this, SLOT(SetRs()));
     WDFunc::TVConnect(dlg, "ethtv", WDFunc::CT_DCLICKED, this, SLOT(SetEth()));
+    UpdateModel();
     dlg->exec();
 }
 
@@ -194,12 +95,12 @@ void ConnectDialog::SetUsb()
     QDialog *dlg = this->findChild<QDialog *>("connectdlg");
     if (dlg != nullptr)
         cn->TranslateDeviceAndSave(WDFunc::TVData(dlg, "usbtv", 1).toString());
-    emit Accepted(st);
+    emit Accepted(&st);
 }
 
 void ConnectDialog::AddEth()
 {
-    QDialog *dlg = new QDialog;
+    QDialog *dlg = new QDialog(this);
     dlg->setObjectName("ethdlg");
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     QGridLayout *lyout = new QGridLayout;
@@ -245,7 +146,7 @@ void ConnectDialog::EthAccepted()
         sets->setValue("bs", QString::number(spbdata));
         QDialog *dlg2 = this->findChild<QDialog *>("connectdlg");
         if (dlg2 != nullptr)
-            WDFunc::TVAutoResize(dlg2, "ethtv");
+            UpdateModel();
         dlg->close();
     }
 }
@@ -265,7 +166,7 @@ void ConnectDialog::SetEth()
         st.iec104st.ip = WDFunc::TVData(dlg, "ethtv", 2).toString();
         st.iec104st.baseadr = WDFunc::TVData(dlg, "ethtv", 3).toUInt();
     }
-    emit Accepted(st);
+    emit Accepted(&st);
 }
 
 void ConnectDialog::RotateSettings(const QString &type, const QString &name)
@@ -283,14 +184,13 @@ void ConnectDialog::RotateSettings(const QString &type, const QString &name)
     }
     // 2. if count < 5 then return count
     if (sl.size() < MAXREGISTRYINTERFACECOUNT)
+        sl.append("");
+    else
     {
-        namename = type + QString::number(sl.size());
-        sets->setValue(namename, name);
-        return;
+        // 3. else delete group "type + sl.size()-1"
+        namename = type + QString::number(sl.size()-1);
+        sets->remove(sets->value(namename, "").toString());
     }
-    // 3. else delete group "type + sl.size()-1"
-    namename = type + QString::number(sl.size()-1);
-    sets->remove(sets->value(namename, "").toString());
     // and rotate it (1->0, 2->1 etc)
     for (int i=(sl.size()-1); i>0; --i)
     {
@@ -312,4 +212,78 @@ bool ConnectDialog::IsKeyExist(const QString &type, const QString &chstr)
             return true;
     }
     return false;
+}
+
+bool ConnectDialog::UpdateModel()
+{
+    QStringList ethlist, rslist;
+    QSettings *sets = new QSettings(SOFTDEVELOPER, PROGNAME);
+    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
+    if (dlg != nullptr)
+    {
+        for (int i=0; i<MAXREGISTRYINTERFACECOUNT; ++i)
+        {
+            QString rsname = "RS485-" + QString::number(i);
+            QString ethname = "Ethernet-" + QString::number(i);
+            ethlist << sets->value(ethname, "").toString();
+            rslist << sets->value(rsname, "").toString();
+        }
+        if (MainInterface == I_USB)
+        {
+            QStringList USBsl = cn->DevicesFound();
+            QStringList sl = QStringList() << "#" << "Device";
+            ETableModel *mdl = new ETableModel;
+
+            if (USBsl.size() == 0)
+            {
+                EMessageBox::error(this, "Ошибка", "Устройства не найдены");
+                Error::ShowErMsg(CN_NOPORTSERROR);
+                return false;
+            }
+            mdl->SetHeaders(sl);
+            for (int i=0; i<USBsl.size(); ++i)
+            {
+                QVector<QVariant> vl;
+                vl << QString::number(i+1) << USBsl.at(i);
+                mdl->AddRowWithData(vl);
+            }
+            WDFunc::SetTVModel(dlg, "usbtv", mdl);
+        }
+        else if (MainInterface == I_ETHERNET)
+        {
+            QStringList sl = QStringList() << "#" << "Имя" << "IP" << "Адрес БС";
+            ETableModel *mdl = new ETableModel;
+
+            mdl->SetHeaders(sl);
+            for (int i=0; i<ethlist.size(); ++i)
+            {
+                QVector<QVariant> vl;
+                QString key = PROGNAME;
+                key += "\\" + ethlist.at(i);
+                sets = new QSettings(SOFTDEVELOPER, key);
+                vl << QString::number(i+1) << ethlist.at(i) << sets->value("ip", "") << sets->value("bs", "");
+                mdl->AddRowWithData(vl);
+            }
+            WDFunc::SetTVModel(dlg, "ethtv", mdl);
+        }
+        else // RS485
+        {
+            QStringList sl = QStringList() << "#" << "Имя" << "Порт" << "Скорость" << "Четность" << "Стоп бит" << "Адрес";
+            ETableModel *mdl = new ETableModel;
+
+            mdl->SetHeaders(sl);
+            for (int i=0; i<rslist.size(); ++i)
+            {
+                QVector<QVariant> vl;
+                QString key = PROGNAME;
+                key += "\\" + rslist.at(i);
+                sets = new QSettings(SOFTDEVELOPER, key);
+                vl << QString::number(i+1) << rslist.at(i) << sets->value("port", "") << sets->value("speed", "") <<
+                      sets->value("parity", "") << sets->value("stop", "") << sets->value("address", "");
+                mdl->AddRowWithData(vl);
+            }
+            WDFunc::SetTVModel(dlg, "rstv", mdl);
+        }
+    }
+    return true;
 }
