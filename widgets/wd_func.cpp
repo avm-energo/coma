@@ -92,6 +92,26 @@ QLabel *WDFunc::NewLBLT(QWidget *w, const QString &text, const QString &lblname,
     lbl->setObjectName(lblname);
     lbl->setStyleSheet(lblstyle);
     lbl->setToolTip(lbltip);
+   // lbl->setMargin(10);
+ //   lbl->setFixedSize(250,15);
+
+
+    return lbl;
+
+}
+
+
+QLabel *WDFunc::NewLBLTT(QWidget *w, const QString &text, const QString &lblname, const QString &lblstyle, const QString &lbltip)
+{
+    QLabel *lbl = new QLabel(w);
+    lbl->setText(text);
+    lbl->setObjectName(lblname);
+    lbl->setStyleSheet(lblstyle);
+    lbl->setToolTip(lbltip);
+   // lbl->setMargin(10);
+    lbl->setFixedSize(250,15);
+
+
     return lbl;
 
 }
@@ -457,17 +477,20 @@ QString WDFunc::StringValueWithCheck(float value, int precision)
 {
     QString tmps;
     QLocale german(QLocale::German);
-    if (value >= FLT_MAX)
+    if (value >= FLT_MAX || value <= -FLT_MAX)
         tmps = "***";
     else
         tmps = german.toString(value, 'f', precision);
     return tmps;
+
+
+
 }
 
 QVariant WDFunc::FloatValueWithCheck(float value)
 {
     QVariant tmps;
-    if (value >= FLT_MAX)
+    if (value >= FLT_MAX || value <=FLT_MIN)
         tmps = "***";
     else
         tmps = value;

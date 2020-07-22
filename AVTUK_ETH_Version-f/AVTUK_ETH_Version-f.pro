@@ -23,6 +23,11 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../check/checkktf.cpp \
+    ../check/chekdialogktf.cpp \
+    ../config/confdialogktf.cpp \
+    ../config/configdefktf.cpp \
+    ../config/configktf.cpp \
     ../dialogs/mnktime.cpp \
     ../gen/logclass.cpp \
     ../gen/maindef.cpp \
@@ -75,6 +80,11 @@ SOURCES += \
 
 
 HEADERS += \
+    ../check/checkktf.h \
+    ../check/chekdialogktf.h \
+    ../config/confdialogktf.h \
+    ../config/configdefktf.h \
+    ../config/configktf.h \
     ../dialogs/mnktime.h \
     ../gen/logclass.h \
     ../modbus/serialport.h \

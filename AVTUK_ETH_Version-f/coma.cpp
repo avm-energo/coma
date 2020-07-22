@@ -37,6 +37,7 @@
 #include "coma.h"
 #include "../config/confdialog84.h"
 #include "../check/checkdialog84.h"
+#include "../config/confdialogktf.h"
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../widgets/etabwidget.h"
@@ -51,6 +52,7 @@
 #include "../modbus/modbus.h"
 #include "../gen/timefunc.h"
 #include "../gen/commands.h"
+#include "../check/chekdialogktf.h"
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
 {
@@ -357,12 +359,14 @@ void Coma::PrepareDialogs()
 {
     IDialog = new InfoDialog;
     JourD = new JournalDialog;
-    CheckB = new CheckDialog84(BoardTypes::BT_BASE);
+//    CheckB = new CheckDialog84(BoardTypes::BT_BASE);
+    CheckB = new ChekDialogKTF(BoardTypes::BT_BASE);
     TimeD = new MNKTime;
     CorD = new CorDialog;
     S2Config->clear();
     if (MainInterface != I_RS485)
-        ConfM = new ConfDialog84(S2Config);
+      //  ConfM = new ConfDialog84(S2Config);
+        ConfM = new ConfDialogKTF(S2Config);
 
     switch(MTypeB)
     {
