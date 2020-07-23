@@ -76,8 +76,8 @@ public:
     }
     static bool SetLEColor(QWidget *w, const QString &lename, const QColor &color);
     static QLabel *NewLBL(QWidget *w, const QString &text, const QString &lblcolor="", const QString &lblname="", const QPixmap *pm=Q_NULLPTR);
-    static QLabel *NewLBLT(QWidget *w, const QString &text, const QString &lblname="", const QString &lblstyle="", const QString &lbltip="");
-    static QLabel *NewLBLTT(QWidget *w, const QString &text, const QString &lblname="", const QString &lblstyle="", const QString &lbltip="");
+    static QLabel *NewLBLT(QWidget *w, const QString &text, const QString &lblname="", const QString &lblstyle="", const QString &lbltip="",bool Fixed=false);
+   // static QLabel *NewLBLTT(QWidget *w, const QString &text, const QString &lblname="", const QString &lblstyle="", const QString &lbltip="",bool Fixed=false);
     static bool SetLBLImage(QWidget *w, const QString &lblname, QPixmap *pm);
     static bool SetLBLColor(QWidget *w, const QString &lblname, const QString &lblcolor);
     static bool SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext="", bool enabled=true);

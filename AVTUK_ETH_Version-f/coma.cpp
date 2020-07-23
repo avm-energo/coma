@@ -360,25 +360,46 @@ void Coma::PrepareDialogs()
     IDialog = new InfoDialog;
     JourD = new JournalDialog;
 //    CheckB = new CheckDialog84(BoardTypes::BT_BASE);
-    CheckB = new ChekDialogKTF(BoardTypes::BT_BASE);
+//    CheckB = new ChekDialogKTF(BoardTypes::BT_BASE);
     TimeD = new MNKTime;
     CorD = new CorDialog;
-    S2Config->clear();
-    if (MainInterface != I_RS485)
+  //  S2Config->clear();
+  //  if (MainInterface != I_RS485)
       //  ConfM = new ConfDialog84(S2Config);
-        ConfM = new ConfDialogKTF(S2Config);
+   //     ConfM = new ConfDialogKTF(S2Config);
 
     switch(MTypeB)
     {
     case Config::MTB_A2:
+        switch(MTypeM)
+        {
+           case Config::MTM_84:
+            CheckB = new CheckDialog84(BoardTypes::BT_BASE);
+             S2Config->clear();
+            if (MainInterface != I_RS485)
+                ConfM = new ConfDialog84(S2Config);
+           break;
+
+           case Config::MTM_87:
+            CheckB = new ChekDialogKTF(BoardTypes::BT_BASE);
+             S2Config->clear();
+            if (MainInterface != I_RS485)
+                ConfM = new ConfDialogKTF(S2Config);
+           break;
+        }
+    break;
+    case Config::MTB_A3:
         break;
+
     };
-    switch(MTypeM)
+
+
+  /*  switch(MTypeM)
     {
     case Config::MTM_84:
         break;
     };
-
+  */
     connect(this,SIGNAL(ClearBsi()),IDialog,SLOT(ClearBsi()));
     connect(this, SIGNAL(SetPredAlarmColor(quint8*)), CheckB,SLOT(SetPredAlarmColor(quint8*)));
     connect(this, SIGNAL(SetAlarmColor(quint8*)), CheckB,SLOT(SetAlarmColor(quint8*)));

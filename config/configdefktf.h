@@ -116,7 +116,7 @@
 #define DEF_UMAXM       120
 #define DEF_IMAXM     33
 #define DEF_IWNOM   300
-#define DEF_OSCPOINTS      256
+#define DEF_OSCPOINTS      32
 #define DEF_GTNNT      2
 #define DEF_GOVC      2
 #define DEF_TDATNUM       0

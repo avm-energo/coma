@@ -483,35 +483,35 @@ QWidget *CheckKTF::Bd6W(QWidget *parent)
       {
 
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 2 "),0,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1028+i*61), ValuesFormat, \
-                                            "2-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),1,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1028+i*61), ValuesFormat, \
+                                            "2-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),1,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 3 "),2,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1029+i*61), ValuesFormat, \
-                                             "3-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),3,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1029+i*61), ValuesFormat, \
+                                             "3-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),3,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 4 "),4,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1030+i*61), ValuesFormat, \
-                                             "4-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),5,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1030+i*61), ValuesFormat, \
+                                             "4-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),5,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent,phase[i]+ "Гм. 5 "),6,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1031+i*61), ValuesFormat, \
-                                             "5-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),7,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1031+i*61), ValuesFormat, \
+                                             "5-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),7,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 6 "),8,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1032+i*61), ValuesFormat, \
-                                             "6-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),9,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1032+i*61), ValuesFormat, \
+                                             "6-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),9,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 7 "),10,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1033+i*61), ValuesFormat, \
-                                             "7-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),11,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1033+i*61), ValuesFormat, \
+                                             "7-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),11,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 8 "),12,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1034+i*61), ValuesFormat, \
-                                              "8-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),13,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1034+i*61), ValuesFormat, \
+                                              "8-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),13,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 9 "),14,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1035+i*61), ValuesFormat, \
-                                              "9-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),15,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1035+i*61), ValuesFormat, \
+                                              "9-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),15,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 10 "),16,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1036+i*61), ValuesFormat, \
-                                               "10-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),17,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1036+i*61), ValuesFormat, \
+                                               "10-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),17,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 11 "),18,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1037+i*61), ValuesFormat, \
-                                               "11-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),19,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1037+i*61), ValuesFormat, \
+                                               "11-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),19,i,1,1);
 
       }
 
@@ -559,35 +559,35 @@ QWidget *CheckKTF::Bd7W(QWidget *parent)
       {
 
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 12 "),0,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1038+i*61), ValuesFormat, \
-                                            "12-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),1,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1038+i*61), ValuesFormat, \
+                                            "12-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),1,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 13 "),2,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1039+i*61), ValuesFormat, \
-                                             "13-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),3,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1039+i*61), ValuesFormat, \
+                                             "13-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),3,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 14 "),4,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1040+i*61), ValuesFormat, \
-                                             "14-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),5,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1040+i*61), ValuesFormat, \
+                                             "14-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),5,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent,phase[i]+ "Гм. 15 "),6,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1041+i*61), ValuesFormat, \
-                                             "15-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),7,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1041+i*61), ValuesFormat, \
+                                             "15-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),7,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 16 "),8,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1042+i*61), ValuesFormat, \
-                                             "16-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),9,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1042+i*61), ValuesFormat, \
+                                             "16-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),9,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 17 "),10,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1043+i*61), ValuesFormat, \
-                                             "17-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),11,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1043+i*61), ValuesFormat, \
+                                             "17-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),11,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 18 "),12,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1044+i*61), ValuesFormat, \
-                                              "18-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),13,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1044+i*61), ValuesFormat, \
+                                              "18-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),13,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 19 "),14,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1045+i*61), ValuesFormat, \
-                                              "19-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),15,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1045+i*61), ValuesFormat, \
+                                              "19-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),15,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 20 "),16,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1046+i*61), ValuesFormat, \
-                                               "20-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),17,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1046+i*61), ValuesFormat, \
+                                               "20-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),17,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 21 "),18,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1047+i*61), ValuesFormat, \
-                                               "21-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),19,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1047+i*61), ValuesFormat, \
+                                               "21-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),19,i,1,1);
 
       }
 
@@ -635,35 +635,35 @@ QWidget *CheckKTF::Bd8W(QWidget *parent)
       {
 
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 22 "),0,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1048+i*61), ValuesFormat, \
-                                            "22-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),1,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1048+i*61), ValuesFormat, \
+                                            "22-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),1,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 23 "),2,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1049+i*61), ValuesFormat, \
-                                             "23-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),3,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1049+i*61), ValuesFormat, \
+                                             "23-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),3,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 24 "),4,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1050+i*61), ValuesFormat, \
-                                             "24-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),5,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1050+i*61), ValuesFormat, \
+                                             "24-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),5,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent,phase[i]+ "Гм. 25 "),6,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1051+i*61), ValuesFormat, \
-                                             "25-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),7,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1051+i*61), ValuesFormat, \
+                                             "25-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),7,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 26 "),8,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1052+i*61), ValuesFormat, \
-                                             "26-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),9,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1052+i*61), ValuesFormat, \
+                                             "26-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),9,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 27 "),10,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1053+i*61), ValuesFormat, \
-                                             "27-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),11,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1053+i*61), ValuesFormat, \
+                                             "27-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),11,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 28 "),12,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1054+i*61), ValuesFormat, \
-                                              "28-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),13,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1054+i*61), ValuesFormat, \
+                                              "28-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),13,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 29 "),14,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1055+i*61), ValuesFormat, \
-                                              "29-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),15,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1055+i*61), ValuesFormat, \
+                                              "29-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),15,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 30 "),16,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1056+i*61), ValuesFormat, \
-                                               "30-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),17,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1056+i*61), ValuesFormat, \
+                                               "30-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),17,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 31 "),18,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1057+i*61), ValuesFormat, \
-                                               "31-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),19,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1057+i*61), ValuesFormat, \
+                                               "31-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),19,i,1,1);
 
       }
 
@@ -710,35 +710,35 @@ QWidget *CheckKTF::Bd9W(QWidget *parent)
       {
 
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 32 "),0,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1058+i*61), ValuesFormat, \
-                                            "32-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),1,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1058+i*61), ValuesFormat, \
+                                            "32-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),1,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 33 "),2,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1059+i*61), ValuesFormat, \
-                                             "33-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),3,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1059+i*61), ValuesFormat, \
+                                             "33-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),3,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 34 "),4,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1060+i*61), ValuesFormat, \
-                                             "34-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),5,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1060+i*61), ValuesFormat, \
+                                             "34-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),5,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent,phase[i]+ "Гм. 35 "),6,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1061+i*61), ValuesFormat, \
-                                             "35-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),7,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1061+i*61), ValuesFormat, \
+                                             "35-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),7,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 36 "),8,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1062+i*61), ValuesFormat, \
-                                             "36-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),9,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1062+i*61), ValuesFormat, \
+                                             "36-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),9,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 37 "),10,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1063+i*61), ValuesFormat, \
-                                             "37-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),11,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1063+i*61), ValuesFormat, \
+                                             "37-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),11,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 38 "),12,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1064+i*61), ValuesFormat, \
-                                              "38-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),13,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1064+i*61), ValuesFormat, \
+                                              "38-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),13,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 39 "),14,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1065+i*61), ValuesFormat, \
-                                              "39-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),15,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1065+i*61), ValuesFormat, \
+                                              "39-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),15,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 40 "),16,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1066+i*61), ValuesFormat, \
-                                               "40-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),17,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1066+i*61), ValuesFormat, \
+                                               "40-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),17,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 41 "),18,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1067+i*61), ValuesFormat, \
-                                               "41-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),19,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1067+i*61), ValuesFormat, \
+                                               "41-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),19,i,1,1);
 
       }
 
@@ -786,35 +786,35 @@ QWidget *CheckKTF::Bd10W(QWidget *parent)
       {
 
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 42 "),0,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1068+i*61), ValuesFormat, \
-                                            "42-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),1,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1068+i*61), ValuesFormat, \
+                                            "42-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),1,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 43 "),2,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1069+i*61), ValuesFormat, \
-                                             "43-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),3,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1069+i*61), ValuesFormat, \
+                                             "43-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),3,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 44 "),4,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1070+i*61), ValuesFormat, \
-                                             "44-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),5,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1070+i*61), ValuesFormat, \
+                                             "44-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),5,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent,phase[i]+ "Гм. 45 "),6,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1071+i*61), ValuesFormat, \
-                                             "45-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),7,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1071+i*61), ValuesFormat, \
+                                             "45-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),7,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 46 "),8,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1072+i*61), ValuesFormat, \
-                                             "46-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),9,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1072+i*61), ValuesFormat, \
+                                             "46-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),9,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 47 "),10,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1073+i*61), ValuesFormat, \
-                                             "47-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),11,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1073+i*61), ValuesFormat, \
+                                             "47-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),11,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 48 "),12,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1074+i*61), ValuesFormat, \
-                                              "48-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),13,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1074+i*61), ValuesFormat, \
+                                              "48-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),13,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 49 "),14,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1075+i*61), ValuesFormat, \
-                                              "49-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),15,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1075+i*61), ValuesFormat, \
+                                              "49-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),15,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 50 "),16,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1076+i*61), ValuesFormat, \
-                                               "50-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),17,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1076+i*61), ValuesFormat, \
+                                               "50-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),17,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 51 "),18,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1077+i*61), ValuesFormat, \
-                                               "51-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),19,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1077+i*61), ValuesFormat, \
+                                               "51-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),19,i,1,1);
 
       }
 
@@ -862,38 +862,38 @@ QWidget *CheckKTF::Bd11W(QWidget *parent)
       {
 
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 52 "),0,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1078+i*61), ValuesFormat, \
-                                            "52-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),1,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1078+i*61), ValuesFormat, \
+                                            "52-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),1,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 53 "),2,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1079+i*61), ValuesFormat, \
-                                             "53-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),3,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1079+i*61), ValuesFormat, \
+                                             "53-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),3,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 54 "),4,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1080+i*61), ValuesFormat, \
-                                             "54-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),5,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1080+i*61), ValuesFormat, \
+                                             "54-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),5,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent,phase[i]+ "Гм. 55 "),6,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1081+i*61), ValuesFormat, \
-                                             "55-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),7,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1081+i*61), ValuesFormat, \
+                                             "55-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),7,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 56 "),8,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1082+i*61), ValuesFormat, \
-                                             "56-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),9,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1082+i*61), ValuesFormat, \
+                                             "56-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),9,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 57 "),10,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1083+i*61), ValuesFormat, \
-                                             "57-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),11,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1083+i*61), ValuesFormat, \
+                                             "57-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),11,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 58 "),12,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1084+i*61), ValuesFormat, \
-                                              "58-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),13,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1084+i*61), ValuesFormat, \
+                                              "58-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),13,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 59 "),14,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1085+i*61), ValuesFormat, \
-                                              "59-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),15,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1085+i*61), ValuesFormat, \
+                                              "59-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),15,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 60 "),16,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1086+i*61), ValuesFormat, \
-                                               "60-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),17,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1086+i*61), ValuesFormat, \
+                                               "60-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),17,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 61 "),18,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1087+i*61), ValuesFormat, \
-                                               "61-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),19,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1087+i*61), ValuesFormat, \
+                                               "61-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),19,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 62 "),20,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1088+i*61), ValuesFormat, \
-                                                "62-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й"),21,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1088+i*61), ValuesFormat, \
+                                                "62-я гармоника напряжения в фазе" +phase[i] +"в % от 1-й",true),21,i,1,1);
 
       }
 
@@ -946,35 +946,35 @@ QWidget *CheckKTF::Bd12W(QWidget *parent)
       {
 
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 2 "),0,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1428+i*61), ValuesFormat, \
-                                            "2-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),1,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1428+i*61), ValuesFormat, \
+                                            "2-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),1,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 3 "),2,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1429+i*61), ValuesFormat, \
-                                             "3-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),3,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1429+i*61), ValuesFormat, \
+                                             "3-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),3,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 4 "),4,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1430+i*61), ValuesFormat, \
-                                             "4-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),5,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1430+i*61), ValuesFormat, \
+                                             "4-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),5,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent,phase[i]+ "Гм. 5 "),6,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1431+i*61), ValuesFormat, \
-                                             "5-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),7,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1431+i*61), ValuesFormat, \
+                                             "5-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),7,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 6 "),8,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1432+i*61), ValuesFormat, \
-                                             "6-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),9,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1432+i*61), ValuesFormat, \
+                                             "6-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),9,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 7 "),10,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1433+i*61), ValuesFormat, \
-                                             "7-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),11,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1433+i*61), ValuesFormat, \
+                                             "7-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),11,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 8 "),12,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1434+i*61), ValuesFormat, \
-                                              "8-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),13,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1434+i*61), ValuesFormat, \
+                                              "8-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),13,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 9 "),14,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1435+i*61), ValuesFormat, \
-                                              "9-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),15,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1435+i*61), ValuesFormat, \
+                                              "9-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),15,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 10 "),16,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1436+i*61), ValuesFormat, \
-                                               "10-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),17,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1436+i*61), ValuesFormat, \
+                                               "10-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),17,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 11 "),18,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1437+i*61), ValuesFormat, \
-                                               "11-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),19,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1437+i*61), ValuesFormat, \
+                                               "11-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),19,i,1,1);
       }
 
 
@@ -1021,35 +1021,35 @@ QWidget *CheckKTF::Bd13W(QWidget *parent)
       {
 
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 12 "),0,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1438+i*61), ValuesFormat, \
-                                            "12-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),1,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1438+i*61), ValuesFormat, \
+                                            "12-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),1,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 13 "),2,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1439+i*61), ValuesFormat, \
-                                             "13-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),3,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1439+i*61), ValuesFormat, \
+                                             "13-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),3,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 14 "),4,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1440+i*61), ValuesFormat, \
-                                             "14-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),5,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1440+i*61), ValuesFormat, \
+                                             "14-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),5,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent,phase[i]+ "Гм. 15 "),6,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1441+i*61), ValuesFormat, \
-                                             "15-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),7,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1441+i*61), ValuesFormat, \
+                                             "15-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),7,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 16 "),8,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1442+i*61), ValuesFormat, \
-                                             "16-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),9,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1442+i*61), ValuesFormat, \
+                                             "16-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),9,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 17 "),10,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1443+i*61), ValuesFormat, \
-                                             "17-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),11,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1443+i*61), ValuesFormat, \
+                                             "17-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),11,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 18 "),12,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1444+i*61), ValuesFormat, \
-                                              "18-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),13,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1444+i*61), ValuesFormat, \
+                                              "18-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),13,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 19 "),14,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1445+i*61), ValuesFormat, \
-                                              "19-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),15,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1445+i*61), ValuesFormat, \
+                                              "19-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),15,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 20 "),16,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1446+i*61), ValuesFormat, \
-                                               "20-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),17,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1446+i*61), ValuesFormat, \
+                                               "20-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),17,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 21 "),18,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1447+i*61), ValuesFormat, \
-                                               "21-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),19,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1447+i*61), ValuesFormat, \
+                                               "21-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),19,i,1,1);
       }
 
       vlyout->addLayout(glyout);
@@ -1095,35 +1095,35 @@ QWidget *CheckKTF::Bd14W(QWidget *parent)
       {
 
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 22 "),0,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1448+i*61), ValuesFormat, \
-                                            "22-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),1,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1448+i*61), ValuesFormat, \
+                                            "22-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),1,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 23 "),2,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1449+i*61), ValuesFormat, \
-                                             "23-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),3,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1449+i*61), ValuesFormat, \
+                                             "23-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),3,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 24 "),4,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1450+i*61), ValuesFormat, \
-                                             "24-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),5,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1450+i*61), ValuesFormat, \
+                                             "24-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),5,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent,phase[i]+ "Гм. 25 "),6,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1451+i*61), ValuesFormat, \
-                                             "25-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),7,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1451+i*61), ValuesFormat, \
+                                             "25-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),7,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 26 "),8,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1452+i*61), ValuesFormat, \
-                                             "26-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),9,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1452+i*61), ValuesFormat, \
+                                             "26-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),9,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 27 "),10,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1453+i*61), ValuesFormat, \
-                                             "27-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),11,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1453+i*61), ValuesFormat, \
+                                             "27-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),11,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 28 "),12,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1454+i*61), ValuesFormat, \
-                                              "28-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),13,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1454+i*61), ValuesFormat, \
+                                              "28-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),13,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 29 "),14,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1455+i*61), ValuesFormat, \
-                                              "29-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),15,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1455+i*61), ValuesFormat, \
+                                              "29-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),15,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 30 "),16,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1456+i*61), ValuesFormat, \
-                                               "30-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),17,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1456+i*61), ValuesFormat, \
+                                               "30-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),17,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 31 "),18,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1457+i*61), ValuesFormat, \
-                                               "31-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),19,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1457+i*61), ValuesFormat, \
+                                               "31-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),19,i,1,1);
       }
 
       vlyout->addLayout(glyout);
@@ -1169,35 +1169,35 @@ QWidget *CheckKTF::Bd15W(QWidget *parent)
       {
 
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 32 "),0,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1458+i*61), ValuesFormat, \
-                                            "32-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),1,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1458+i*61), ValuesFormat, \
+                                            "32-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),1,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 33 "),2,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1459+i*61), ValuesFormat, \
-                                             "33-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),3,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1459+i*61), ValuesFormat, \
+                                             "33-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),3,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 34 "),4,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1460+i*61), ValuesFormat, \
-                                             "34-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),5,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1460+i*61), ValuesFormat, \
+                                             "34-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),5,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent,phase[i]+ "Гм. 35 "),6,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1461+i*61), ValuesFormat, \
-                                             "35-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),7,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1461+i*61), ValuesFormat, \
+                                             "35-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),7,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 36 "),8,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1462+i*61), ValuesFormat, \
-                                             "36-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),9,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1462+i*61), ValuesFormat, \
+                                             "36-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),9,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 37 "),10,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1463+i*61), ValuesFormat, \
-                                             "37-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),11,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1463+i*61), ValuesFormat, \
+                                             "37-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),11,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 38 "),12,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1464+i*61), ValuesFormat, \
-                                              "38-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),13,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1464+i*61), ValuesFormat, \
+                                              "38-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),13,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 39 "),14,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1465+i*61), ValuesFormat, \
-                                              "39-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),15,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1465+i*61), ValuesFormat, \
+                                              "39-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),15,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 40 "),16,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1466+i*61), ValuesFormat, \
-                                               "40-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),17,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1466+i*61), ValuesFormat, \
+                                               "40-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),17,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 41 "),18,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1467+i*61), ValuesFormat, \
-                                               "41-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),19,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1467+i*61), ValuesFormat, \
+                                               "41-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),19,i,1,1);
       }
 
       vlyout->addLayout(glyout);
@@ -1243,35 +1243,35 @@ QWidget *CheckKTF::Bd16W(QWidget *parent)
       {
 
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 42 "),0,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1468+i*61), ValuesFormat, \
-                                            "42-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),1,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1468+i*61), ValuesFormat, \
+                                            "42-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),1,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 43 "),2,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1469+i*61), ValuesFormat, \
-                                             "43-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),3,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1469+i*61), ValuesFormat, \
+                                             "43-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),3,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 44 "),4,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1470+i*61), ValuesFormat, \
-                                             "44-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),5,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1470+i*61), ValuesFormat, \
+                                             "44-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),5,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent,phase[i]+ "Гм. 45 "),6,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1471+i*61), ValuesFormat, \
-                                             "45-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),7,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1471+i*61), ValuesFormat, \
+                                             "45-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),7,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 46 "),8,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1472+i*61), ValuesFormat, \
-                                             "46-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),9,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1472+i*61), ValuesFormat, \
+                                             "46-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),9,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 47 "),10,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1473+i*61), ValuesFormat, \
-                                             "47-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),11,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1473+i*61), ValuesFormat, \
+                                             "47-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),11,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 48 "),12,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1474+i*61), ValuesFormat, \
-                                              "48-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),13,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1474+i*61), ValuesFormat, \
+                                              "48-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),13,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 49 "),14,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1475+i*61), ValuesFormat, \
-                                              "49-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),15,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1475+i*61), ValuesFormat, \
+                                              "49-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),15,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 50 "),16,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1476+i*61), ValuesFormat, \
-                                               "50-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),17,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1476+i*61), ValuesFormat, \
+                                               "50-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),17,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 51 "),18,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1477+i*61), ValuesFormat, \
-                                               "51-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),19,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1477+i*61), ValuesFormat, \
+                                               "51-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),19,i,1,1);
       }
 
       vlyout->addLayout(glyout);
@@ -1318,38 +1318,38 @@ QWidget *CheckKTF::Bd17W(QWidget *parent)
       {
 
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 52 "),0,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1478+i*61), ValuesFormat, \
-                                            "52-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),1,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1478+i*61), ValuesFormat, \
+                                            "52-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),1,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 53 "),2,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1479+i*61), ValuesFormat, \
-                                             "53-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),3,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1479+i*61), ValuesFormat, \
+                                             "53-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),3,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 54 "),4,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1480+i*61), ValuesFormat, \
-                                             "54-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),5,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1480+i*61), ValuesFormat, \
+                                             "54-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),5,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent,phase[i]+ "Гм. 55 "),6,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1481+i*61), ValuesFormat, \
-                                             "55-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),7,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1481+i*61), ValuesFormat, \
+                                             "55-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),7,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 56 "),8,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1482+i*61), ValuesFormat, \
-                                             "56-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),9,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1482+i*61), ValuesFormat, \
+                                             "56-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),9,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 57 "),10,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1483+i*61), ValuesFormat, \
-                                             "57-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),11,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1483+i*61), ValuesFormat, \
+                                             "57-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),11,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 58 "),12,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1484+i*61), ValuesFormat, \
-                                              "58-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),13,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1484+i*61), ValuesFormat, \
+                                              "58-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),13,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 59 "),14,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1485+i*61), ValuesFormat, \
-                                              "59-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),15,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1485+i*61), ValuesFormat, \
+                                              "59-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),15,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 60 "),16,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1486+i*61), ValuesFormat, \
-                                               "60-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),17,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1486+i*61), ValuesFormat, \
+                                               "60-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),17,i,1,1);
           glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 61 "),18,i,1,1);
-           glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1487+i*61), ValuesFormat, \
-                                               "61-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),19,i,1,1);
+           glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1487+i*61), ValuesFormat, \
+                                               "61-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),19,i,1,1);
            glyout->addWidget(WDFunc::NewLBL(parent, phase[i]+"Гм. 62 "),18,i,1,1);
-            glyout->addWidget(WDFunc::NewLBLTT(parent, "", QString::number(1488+i*61), ValuesFormat, \
-                                                "62-я гармоника тока в фазе" +phase[i] +"в % от 1-й"),19,i,1,1);
+            glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1488+i*61), ValuesFormat, \
+                                                "62-я гармоника тока в фазе" +phase[i] +"в % от 1-й",true),19,i,1,1);
       }
 
       vlyout->addLayout(glyout);

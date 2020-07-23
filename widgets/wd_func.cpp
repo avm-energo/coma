@@ -85,36 +85,37 @@ QLabel *WDFunc::NewLBL(QWidget *w, const QString &text, const QString &lblcolor,
     return lbl;
 }
 
-QLabel *WDFunc::NewLBLT(QWidget *w, const QString &text, const QString &lblname, const QString &lblstyle, const QString &lbltip)
+QLabel *WDFunc::NewLBLT(QWidget *w, const QString &text, const QString &lblname, const QString &lblstyle, const QString &lbltip,bool Fixed)
 {
     QLabel *lbl = new QLabel(w);
     lbl->setText(text);
     lbl->setObjectName(lblname);
     lbl->setStyleSheet(lblstyle);
     lbl->setToolTip(lbltip);
-   // lbl->setMargin(10);
- //   lbl->setFixedSize(250,15);
+    if ( Fixed== true)
+        lbl->setFixedSize(250,15);
 
 
     return lbl;
 
 }
 
-
-QLabel *WDFunc::NewLBLTT(QWidget *w, const QString &text, const QString &lblname, const QString &lblstyle, const QString &lbltip)
+/*
+QLabel *WDFunc::NewLBLTT(QWidget *w, const QString &text, const QString &lblname, const QString &lblstyle, const QString &lbltip, bool Fixed )
 {
     QLabel *lbl = new QLabel(w);
     lbl->setText(text);
     lbl->setObjectName(lblname);
     lbl->setStyleSheet(lblstyle);
     lbl->setToolTip(lbltip);
-   // lbl->setMargin(10);
+if ( Fixed== true)
     lbl->setFixedSize(250,15);
 
 
+
     return lbl;
 
-}
+} */
 
 bool WDFunc::SetLBLTColor(QWidget *w, const QString &lblname, const QString &color)
 {

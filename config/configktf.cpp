@@ -110,7 +110,7 @@ void ConfigKTF::SetDefConf()
     Bci_block.Imin = DEF_IMIN;
     Bci_block.RTerm = DEF_RTERM;
     Bci_block.W100 = DEF_W100;
-  //  Bci_block.T_Data_Rec = DEF_T_DATA_REC;
+    Bci_block.T_Data_Rec = DEF_T_DATA_REC;
     Bci_block.Trele_pred = DEF_TRELE_PRED;
     Bci_block.Trele_alarm = DEF_TRELE_ALARM;
     Bci_block.U2nom = DEF_U2NOM ;
@@ -180,7 +180,7 @@ void ConfigKTF::SetDefConf()
         Com_param.Stopbit_ID = DEF_STOPBIT_ID;
         Com_param.adrMB_ID = DEF_STOPBIT_ID;
         Com_param.IsNTP_ID = DEF_ISNTP_ID;
-       // Com_param.IsPPS_ID = DEF_ISPPS_ID;
+        Com_param.IsPPS_ID = DEF_ISPPS_ID;
 
     //}
 }

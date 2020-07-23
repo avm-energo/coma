@@ -21,12 +21,12 @@ public:
     QLabel *SysTime;
     QTimer *timer;
     QTimer *timerRead;
-    QStringList Rates = QStringList() << "1200" << "2400"<< "4800" << "9600" << "19200" << "38400" << "57600" << "115200";
+    QStringList Rates = QStringList()  << "256"<< "128" << "64" << "32" << "16" ;
 
 private:
 
     ConfigKTF *KTF;
-    bool    IsNtp;
+    bool   DDosc ;
 
     void Fill();
     void FillBack();
