@@ -10,6 +10,7 @@
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/mnktime.h"
 #include "../dialogs/journalsdialog.h"
+#include "../dialogs/connectdialog.h"
 
 #define RECONNECTINTERVAL   3000
 #define WAITINTERVAL        15000
@@ -79,6 +80,9 @@ public:
         return sl;
     }
 
+    const quint32 PredBSIMask = 0x00005F55;
+    const quint32 AvarBSIMask = 0x000020AA;
+
     static QStringList HthToolTip()
     {
         QStringList sl;
@@ -86,6 +90,7 @@ public:
         sl.append("Проблемы со встроенным АЦП ");
         sl.append("Не работает внешняя flash-память");
         sl.append("Перегрев");
+        sl.append("Проблемы с АЦП (нет связи) (базовая)");
         sl.append("Нет сигнала 1PPS с антенны");
         sl.append("Проблемы с АЦП (нет связи) (мезонин)");
         sl.append("Ошибка регулировочных коэффициентов (базовая)");
@@ -111,8 +116,6 @@ public:
     QWidget *Least();
     int CheckPassword();
     void Disconnect();
-    void ShowConnectDialog();
-    void ShowInterfaceDialog();
 
 signals:
     void CloseConnectDialog();
@@ -157,15 +160,14 @@ private slots:
     void FillBSI(IEC104Thread::BS104Signals *sig);
     void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     void PasswordCheck(QString psw);
-    void SetPortSlot(QString port);
     void SetProgressBar1Size(int size);
     void SetProgressBar1(int cursize);
     void SetProgressBar2Size(int size);
     void SetProgressBar2(int cursize);
     void ShowErrorMessageBox(QString message);
-    void ParseString(QString Str);
-    void ParseInter(QString str);
     void MainTWTabClicked(int tabindex);
+    void SetConnection(ConnectDialog::ConnectStruct *st);
+    void Cancel();
 
     // finished slots
     void ModBusFinished();
@@ -191,7 +193,6 @@ private:
     int fileSize, curfileSize;
     QTimer *ReconnectTimer;
     QString SavePort;
-    DeviceConnectStruct DevInfo;
     quint8 ActiveThreads;
     int CheckIndex, TimeIndex, ConfIndex, CurTabIndex;
     AbstractConfDialog *ConfB, *ConfM;
@@ -201,10 +202,6 @@ private:
     MNKTime *TimeD;
     JournalDialog *JourD;
     fwupdialog *FwUpD;
-    QString IPtemp, FullName, SaveDevice, instr;
-    QStringList sl, USBsl, slfinal;
-    quint16 AdrBaseStation;
-    SerialPort::Settings Settings;
     QTimer* BdaTimer, *TimeTimer, *AlarmStateTimer;
     QVector<S2::DataRec> *S2Config;
     QWidget *Parent;
@@ -212,6 +209,7 @@ private:
     QWidget *Walarm;
     bool Cancelled;
     bool Reconnect;
+    ConnectDialog::ConnectStruct ConnectSettings;
 
     void LoadSettings();
     void SaveSettings();
@@ -223,6 +221,7 @@ private:
     void NewTimers();
     void SetupUI();
     void PrepareDialogs();
+    void CloseDialogs();
 
 protected:
     void keyPressEvent(QKeyEvent *e);

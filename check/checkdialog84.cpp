@@ -18,7 +18,7 @@
 #include "../gen/colors.h"
 #include "../config/config.h"
 #include "../gen/error.h"
-#include "../gen/commands.h"
+#include "../usb/commands.h"
 
 
 CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)

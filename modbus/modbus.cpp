@@ -36,7 +36,7 @@ ModBus::~ModBus()
 {
 }
 
-int ModBus::Connect(SerialPort::Settings settings)
+int ModBus::Connect(SerialPort::Settings &settings)
 {
     INFOMSG("Modbus: connect");
     Settings = settings;

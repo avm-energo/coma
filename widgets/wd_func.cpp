@@ -184,7 +184,7 @@ QMetaObject::Connection WDFunc::CBConnect(QWidget *w, const QString &cbname, int
     case CT_INDEXCHANGED:
         return QObject::connect(cb, SIGNAL(currentIndexChanged(int)), receiver, method);
     case CT_TEXTCHANGED:
-        return QObject::connect(cb, SIGNAL(currentTextChanged(QString &)), receiver, method);
+        return QObject::connect(cb, SIGNAL(currentTextChanged(const QString &)), receiver, method);
     default:
         break;
     }
@@ -360,8 +360,22 @@ void WDFunc::TVAutoResize(QWidget *w, const QString &tvname)
        ERMSG("Пустой tv");
        return;
     }
+    tv->update();
+    tv->repaint();
     tv->resizeColumnsToContents();
     tv->resizeRowsToContents();
+}
+
+QVariant WDFunc::TVData(QWidget *w, const QString &tvname, int column)
+{
+    QString tmps;
+    ETableView *tv = w->findChild<ETableView *>(tvname);
+    if (tv == nullptr)
+        return QVariant();
+    ETableModel *m = static_cast<ETableModel *>(tv->model());
+    if (m != nullptr)
+        return m->index(tv->currentIndex().row(), column, QModelIndex()).data(Qt::DisplayRole);
+    return QVariant();
 }
 
 QCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor)
@@ -546,8 +560,31 @@ void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *m
     }
     QItemSelectionModel *m = tv->selectionModel();
     tv->setModel(model);
+    tv->resizeColumnsToContents();
     tv->setSortingEnabled(sortenable);
     delete m;
+}
+
+void WDFunc::TVConnect(QWidget *w, const QString &tvname, int signaltype, const QObject *receiver, const char *method)
+{
+    ETableView *tv = w->findChild<ETableView *>(tvname);
+    if (tv == nullptr)
+        return;
+    switch (signaltype)
+    {
+    case CT_DCLICKED:
+        QObject::connect(tv, SIGNAL(doubleClicked(QModelIndex)), receiver, method);
+        break;
+    case CT_CLICKED:
+        QObject::connect(tv, SIGNAL(clicked(QModelIndex)), receiver, method);
+        break;
+    case CT_CONTEXT:
+        tv->setContextMenuPolicy(Qt::CustomContextMenu);
+        QObject::connect(tv, SIGNAL(customContextMenuRequested(QPoint)), receiver, method);
+        break;
+    default:
+        break;
+    }
 }
 
 void WDFunc::SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder sortorder)

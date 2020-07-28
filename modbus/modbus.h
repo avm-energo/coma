@@ -87,7 +87,7 @@ public:
     ModBus(QObject *parent = nullptr);
     ~ModBus();
 
-    int Connect(SerialPort::Settings settings);
+    int Connect(SerialPort::Settings &settings);
     void BSIrequest();
 
     int CheckIndex, CorIndex, TimeIndex;

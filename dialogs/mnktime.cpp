@@ -12,11 +12,10 @@
 #include "../widgets/wd_func.h"
 #include "../gen/colors.h"
 #include "../gen/modulebsi.h"
-#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../dialogs/mnktime.h"
 #include "../gen/timefunc.h"
-#include "../gen/commands.h"
+#include "../usb/commands.h"
 
 MNKTime::MNKTime(QWidget *parent) :
     QDialog(parent)

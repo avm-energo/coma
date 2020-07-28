@@ -31,7 +31,7 @@ bool IEC104::Working()
     return (EthThreadWorking | ParseThreadWorking);
 }
 
-void IEC104::Connect(const QString &IP, quint16 baseadr)
+void IEC104::Connect(Settings &st)
 {
     INFOMSG("IEC104: connect");
     EthThreadWorking = false;
@@ -40,7 +40,7 @@ void IEC104::Connect(const QString &IP, quint16 baseadr)
     QThread *thr = new QThread;
     Ethernet *eth = new Ethernet;
     eth->moveToThread(thr);
-    eth->IP = IP;
+    eth->IP = st.ip;
     connect(eth,SIGNAL(Finished()),thr,SLOT(quit()));
     connect(eth,SIGNAL(Finished()),eth,SLOT(deleteLater()));
     connect(thr,SIGNAL(started()),eth,SLOT(Run()));
@@ -82,7 +82,7 @@ void IEC104::Connect(const QString &IP, quint16 baseadr)
     connect(Parse,SIGNAL(SetDataCount(int)),this,SIGNAL(SetDataCount(int)));
     connect(Parse,SIGNAL(SendMessagefromParse()),this,SIGNAL(SendConfMessageOk()));
 
-    Parse->SetBaseAdr(baseadr);
+    Parse->SetBaseAdr(st.baseadr);
     Parse->incLS = 0;
     Parse->count = 0;
 
@@ -269,7 +269,7 @@ void IEC104Thread::Run()
                     break;
                 case CM104_FILEREADY:
                 {
-                    QVector<S2::DataRec> *ptr = reinterpret_cast<QVector<S2::DataRec> *>(inp.args.ptrarg);
+//                    QVector<S2::DataRec> *ptr = reinterpret_cast<QVector<S2::DataRec> *>(inp.args.ptrarg);
 //                    FileReady(ptr);
                     FileReady();
                     break;

@@ -23,7 +23,8 @@ public:
     static QString ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr = "");
     static int SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes);
     static QStringList Drives();
-    static QStringList SearchForFile(QStringList &filepaths, const QString &filename, bool subdirs = false);
+    static QStringList SearchForFile(QStringList &di, const QString &filename, bool subdirs = false);
+    static QString GetFirstDriveWithLabel(QStringList &filepaths, const QString &label);
 };
 
 #endif // FILES_H

@@ -1,9 +1,9 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-#include "s2.h"
+#include "../gen/s2.h"
 #include "eusbhid.h"
-#include "modulebsi.h"
+#include "../gen/modulebsi.h"
 
 //#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением батареи
 #define TECH_Bo     1   // технологический блок осциллограмм

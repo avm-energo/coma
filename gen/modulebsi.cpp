@@ -3,7 +3,7 @@
 #include "modulebsi.h"
 #include "error.h"
 #include "stdfunc.h"
-#include "commands.h"
+#include "../usb/commands.h"
 
 
 

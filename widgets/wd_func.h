@@ -12,7 +12,7 @@
 #include "ecombobox.h"
 #include "passwordlineedit.h"
 #include "etableview.h"
-#include "etablemodel.h"
+#include "../models/etablemodel.h"
 
 #define MAXFLOAT    3.40282347E+38F
 
@@ -103,9 +103,11 @@ public:
     static void SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
     static ETableView *NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model);
     static QAbstractItemModel *TVModel(QWidget *w, const QString &tvname);
+    static void TVConnect(QWidget *w, const QString &tvname, int signaltype, const QObject *receiver, const char *method);
     static bool LE_read_data(QWidget *w, const QString &lename, QString &levalue);
     static bool LE_write_data(QWidget *w, const QString &levalue, const QString &lename);
     static void SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder sortorder);
+    static QVariant TVData(QWidget *w, const QString &tvname, int column);
 };
 
 #endif // WD_FUNC

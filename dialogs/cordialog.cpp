@@ -27,7 +27,7 @@
 #include "../gen/colors.h"
 #include "../gen/timefunc.h"
 #include "../dialogs/keypressdialog.h"
-#include "../gen/commands.h"
+#include "../usb/commands.h"
 
 
 CorDialog::CorDialog(QWidget *parent) :
@@ -65,8 +65,8 @@ void CorDialog::SetupUI()
     //QWidget *cp2 = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    ETableView *tv = new ETableView;
-    tv->setObjectName("cor");
+/*    ETableView *tv = new ETableView;
+    tv->setObjectName("cor"); */
     int row = 0;
     QString paramcolor = MAINWINCLR;
     QPushButton *pb = new QPushButton();
@@ -170,7 +170,7 @@ void CorDialog::SetupUI()
 
     //hlyout->addWidget(glyout,Qt::AlignTop);
     lyout->addLayout(glyout,Qt::AlignTop);
-    lyout->addWidget(tv, 89);
+//    lyout->addWidget(tv, 89);
     setLayout(lyout);
 
 }

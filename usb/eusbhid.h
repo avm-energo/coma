@@ -6,7 +6,7 @@
 #include <QTimer>
 #include <QLabel>
 
-#include "logclass.h"
+#include "../gen/logclass.h"
 #include "eabstractprotocomchannel.h"
 #include "hidapi/hidapi.h"
 
