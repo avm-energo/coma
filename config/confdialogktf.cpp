@@ -9,6 +9,8 @@
 #include <QTimer>
 #include <QScrollArea>
 #include <QScrollBar>
+#include <QStackedWidget>
+#include <QLineEdit>
 #include "../widgets/emessagebox.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
@@ -83,13 +85,68 @@ void ConfDialogKTF::Fill()
     WDFunc::SetSPBData(this, "U2nom", KTF->Bci_block.U2nom);
     WDFunc::SetSPBData(this, "ITT1nom", KTF->Bci_block.ITT1nom);
     WDFunc::SetSPBData(this, "ITT2nom", KTF->Bci_block.ITT2nom);
-    WDFunc::SetSPBData(this, "MBMaster", KTF->Bci_block.MBMaster);
+
+
+    cbidx = ((KTF->Bci_block.MBMaster & 0x01) ? 1 : 0);
+    WDFunc::SetCBIndex(this, "MBMaster", cbidx);
 
     //нет с 1061-1064
 
-    cbidx = ((KTF->Bci_block.Cool_type & 0x02) ? 1 : 0);
+
+     if( KTF->Bci_block.MBMab1[0]>4)
+         KTF->Bci_block.MBMab1[0]=0;
+     if( KTF->Bci_block.MBMab2[0]>4)
+         KTF->Bci_block.MBMab2[0]=0;
+     if( KTF->Bci_block.MBMab3[0]>4)
+         KTF->Bci_block.MBMab3[0]=0;
+     if( KTF->Bci_block.MBMab4[0]>4)
+         KTF->Bci_block.MBMab4[0]=0;
+
+     WDFunc::SetCBIndex(this, "MBMab1[0]", KTF->Bci_block.MBMab1[0] );
+     WDFunc::SetCBIndex(this, "MBMab2[0]", KTF->Bci_block.MBMab2[0]);
+     WDFunc::SetCBIndex(this, "MBMab3[0]", KTF->Bci_block.MBMab3[0]);
+     WDFunc::SetCBIndex(this, "MBMab4[0]", KTF->Bci_block.MBMab4[0]);
+
+
+    WDFunc::SetCBIndex(this, "MBMab1sk[1]", KTF->Bci_block.MBMab1[1] & 0x0F);
+    WDFunc::SetCBIndex(this, "MBMab1sk[1]", KTF->Bci_block.MBMab2[1] & 0x0F);
+    WDFunc::SetCBIndex(this, "MBMab1sk[1]", KTF->Bci_block.MBMab3[1] & 0x0F);
+    WDFunc::SetCBIndex(this, "MBMab1sk[1]", KTF->Bci_block.MBMab4[1] & 0x0F);
+
+    cbidx = (KTF->Bci_block.MBMab1[1] & 0x60)>>5;
+    WDFunc::SetCBIndex(this, "MBMab1ch[1]", cbidx);
+    cbidx = (KTF->Bci_block.MBMab1[1] & 0x60)>>5;
+    WDFunc::SetCBIndex(this, "MBMab2ch[1]", cbidx);
+    cbidx = (KTF->Bci_block.MBMab1[1] & 0x60)>>5;
+    WDFunc::SetCBIndex(this, "MBMab3ch[1]", cbidx);
+    cbidx = (KTF->Bci_block.MBMab1[1] & 0x60)>>5;
+    WDFunc::SetCBIndex(this, "MBMab4ch[1]", cbidx);
+
+    cbidx = (KTF->Bci_block.MBMab1[1] & 0x80)>>7;
+    WDFunc::SetCBIndex(this, "MBMab1bt[1]", cbidx);
+    cbidx = (KTF->Bci_block.MBMab1[1] & 0x80)>>7;
+    WDFunc::SetCBIndex(this, "MBMab2bt[1]", cbidx);
+    cbidx = (KTF->Bci_block.MBMab1[1] & 0x80)>>7;
+    WDFunc::SetCBIndex(this, "MBMab3bt[1]", cbidx);
+    cbidx = (KTF->Bci_block.MBMab1[1] & 0x80)>>7;
+    WDFunc::SetCBIndex(this, "MBMab4bt[1]", cbidx);
+
+
+    WDFunc::SetSPBData(this, "MBMab1per[2]", KTF->Bci_block.MBMab1[2]);
+    WDFunc::SetSPBData(this, "MBMab1per[2]", KTF->Bci_block.MBMab2[2]);
+    WDFunc::SetSPBData(this, "MBMab1per[2]", KTF->Bci_block.MBMab3[2]);
+    WDFunc::SetSPBData(this, "MBMab1per[2]", KTF->Bci_block.MBMab4[2]);
+
+    WDFunc::SetSPBData(this, "MBMab1adr[3]", KTF->Bci_block.MBMab1[3]);
+    WDFunc::SetSPBData(this, "MBMab2adr[3]", KTF->Bci_block.MBMab2[3]);
+    WDFunc::SetSPBData(this, "MBMab3adr[3]", KTF->Bci_block.MBMab3[3]);
+    WDFunc::SetSPBData(this, "MBMab4adr[3]", KTF->Bci_block.MBMab4[3]);
+
+
+
+    cbidx = ((KTF->Bci_block.Cool_type & 0x01) ? 1 : 0);
     WDFunc::SetCBIndex(this, "Cool_type", cbidx);
-    cbidx = ((KTF->Bci_block.W_mat & 0x02) ? 1 : 0);
+    cbidx = ((KTF->Bci_block.W_mat & 0x01) ? 1 : 0);
     WDFunc::SetCBIndex(this, "W_mat", cbidx);
 
     WDFunc::SetSPBData(this, "TNNTdop", KTF->Bci_block.TNNTdop);
@@ -113,9 +170,60 @@ void ConfDialogKTF::Fill()
     WDFunc::SetSPBData(this, "GOvc", KTF->Bci_block.GOvc);
     WDFunc::SetSPBData(this, "TdatNum", KTF->Bci_block.TdatNum);
 
+//....................
 
+    QString StrIP, StrMask, StrSNTP, StrGate;
+    QLocale german(QLocale::German);
 
+    for (i = 0; i < 4; i++)
+    {
 
+     if(i==3)
+     {
+       StrIP.append(german.toString(KTF->Com_param.IP_ID[i]));
+       StrMask.append(german.toString(KTF->Com_param.Mask_ID[i]));
+       StrGate.append(german.toString(KTF->Com_param.GW_ID[i]));
+       StrSNTP.append(german.toString(KTF->Com_param.SNTP_ID[i]));
+     }
+     else
+     {
+       StrIP.append(german.toString(KTF->Com_param.IP_ID[i])+".");
+       StrMask.append(german.toString(KTF->Com_param.Mask_ID[i])+".");
+       StrGate.append(german.toString(KTF->Com_param.GW_ID[i])+".");
+       StrSNTP.append(german.toString(KTF->Com_param.SNTP_ID[i])+".");
+     }
+    }
+
+    WDFunc::SetSPBData(this, "Port_ID", KTF->Com_param.Port_ID[0]);
+
+    WDFunc::LE_write_data(this, StrIP, "IP_ID");
+    WDFunc::LE_write_data(this, StrSNTP, "SNTP_ID");
+    WDFunc::LE_write_data(this, StrGate, "GW_ID");
+    WDFunc::LE_write_data(this, StrMask, "Mask_ID");
+
+    //WDFunc::SetSPBData(this, "Baud_ID", KTF->Com_param.Baud_ID);
+    for(int i= 0; i<8; i++)
+    {
+        if(KTF->Com_param.Baud_ID == Sbaud.at(i).toUInt())
+        cbidx = i;
+    }
+    WDFunc::SetCBIndex(this, "Baud_ID", cbidx);
+//    cbidx = (KTF->Com_param.Parity_ID & 0x04) ? 2 : ((KTF->Com_param.Parity_ID & 0x02) ? 1 : 0);
+    if( KTF->Com_param.Parity_ID>2)
+        cbidx=0;
+    else
+        cbidx= KTF->Com_param.Parity_ID;
+
+    WDFunc::SetCBIndex(this, "Parity_ID", cbidx);
+    cbidx = ((KTF->Com_param.Stopbit_ID & 0x01) ? 1 : 0);
+    WDFunc::SetCBIndex(this, "Stopbit_ID", cbidx);
+
+    WDFunc::SetSPBData(this, "adrMB_ID", KTF->Com_param.adrMB_ID);
+
+    if(KTF->Com_param.IsNTP_ID)
+    WDFunc::SetChBData(this, "IsNTP_ID", true);
+    else
+    WDFunc::SetChBData(this, "IsNTP_ID", false);
 
 }
 
@@ -143,6 +251,9 @@ void ConfDialogKTF::FillBack()
 
     WDFunc::SPBData(this, "DDosc_ID", KTF->Bci_block.DDosc_ID);
 
+
+
+
     WDFunc::ChBData(this, "DDosc_ID1", DDosc);
     if(DDosc)
     {
@@ -152,12 +263,14 @@ void ConfDialogKTF::FillBack()
     else
     KTF->Bci_block.DDosc_ID = 0;
 
-
     WDFunc::ChBData(this, "DDosc_ID2", DDosc );
     if(DDosc)
     {
      KTF->Bci_block.DDosc_ID = KTF->Bci_block.DDosc_ID | 0x01;
     }
+
+
+
 
     WDFunc::SPBData(this, "Unom1", KTF->Bci_block.Unom1);
     WDFunc::SPBData(this, "DUosc", KTF->Bci_block.DUosc);
@@ -172,14 +285,72 @@ void ConfDialogKTF::FillBack()
     WDFunc::SPBData(this, "U2nom", KTF->Bci_block.U2nom);
     WDFunc::SPBData(this, "ITT1nom", KTF->Bci_block.ITT1nom);
     WDFunc::SPBData(this, "ITT2nom", KTF->Bci_block.ITT2nom);
-    WDFunc::SPBData(this, "MBMaster", KTF->Bci_block.MBMaster);
 
-    //нет с 1061-1064
+ //   cbidx = ((KTF->Bci_block.MBMaster & 0x02) ? 1 : 0);
+   cbidx = WDFunc::CBIndex(this, "MBMaster");
+   KTF->Bci_block.MBMaster = cbidx  ;
 
-    cbidx = ((KTF->Bci_block.Cool_type & 0x02) ? 1 : 0);
-    WDFunc::CBIndex(this, "Cool_type");
-    cbidx = ((KTF->Bci_block.W_mat & 0x02) ? 1 : 0);
-    WDFunc::CBIndex(this, "W_mat");
+   cbidx = WDFunc::CBIndex(this, "MBMab1[0]");
+   KTF->Bci_block.MBMab1[0]= cbidx;
+
+   cbidx = WDFunc::CBIndex(this, "MBMab2[0]");
+   KTF->Bci_block.MBMab2[0]= cbidx;
+
+   cbidx = WDFunc::CBIndex(this, "MBMab3[0]");
+   KTF->Bci_block.MBMab3[0]= cbidx;
+
+   cbidx = WDFunc::CBIndex(this, "MBMab4[0]");
+   KTF->Bci_block.MBMab4[0]= cbidx;
+
+   //..........................
+
+   cbidx = WDFunc::CBIndex(this, "MBMab1sk[1]");
+   KTF->Bci_block.MBMab1[1]= cbidx;
+   cbidx = WDFunc::CBIndex(this, "MBMab1ch[1]");
+   KTF->Bci_block.MBMab1[1]= KTF->Bci_block.MBMab1[1] | (cbidx << 5);
+   cbidx = WDFunc::CBIndex(this, "MBMab1bt[1]");
+   KTF->Bci_block.MBMab1[1]= KTF->Bci_block.MBMab1[1] | (cbidx << 7);
+
+   cbidx = WDFunc::CBIndex(this, "MBMab2sk[1]");
+   KTF->Bci_block.MBMab2[1]= cbidx;
+   cbidx = WDFunc::CBIndex(this, "MBMab2ch[1]");
+   KTF->Bci_block.MBMab2[1]= KTF->Bci_block.MBMab2[1] | (cbidx << 5);
+   cbidx = WDFunc::CBIndex(this, "MBMab2bt[1]");
+   KTF->Bci_block.MBMab2[1]= KTF->Bci_block.MBMab2[1] | (cbidx << 7);
+
+   cbidx = WDFunc::CBIndex(this, "MBMab3sk[1]");
+   KTF->Bci_block.MBMab3[1]= cbidx;
+   cbidx = WDFunc::CBIndex(this, "MBMab3ch[1]");
+   KTF->Bci_block.MBMab3[1]= KTF->Bci_block.MBMab3[1] | (cbidx << 5);
+   cbidx = WDFunc::CBIndex(this, "MBMab3bt[1]");
+   KTF->Bci_block.MBMab3[1]= KTF->Bci_block.MBMab3[1] | (cbidx << 7);
+
+   cbidx = WDFunc::CBIndex(this, "MBMab4sk[1]");
+   KTF->Bci_block.MBMab4[1]= cbidx;
+   cbidx = WDFunc::CBIndex(this, "MBMab4ch[1]");
+   KTF->Bci_block.MBMab4[1]= KTF->Bci_block.MBMab4[1] | (cbidx << 5);
+   cbidx = WDFunc::CBIndex(this, "MBMab4bt[1]");
+   KTF->Bci_block.MBMab4[1]= KTF->Bci_block.MBMab4[1] | (cbidx << 7);
+
+
+    WDFunc::SPBData(this, "MBMab1per[2]", KTF->Bci_block.MBMab1[2]);
+    WDFunc::SPBData(this, "MBMab2per[2]", KTF->Bci_block.MBMab2[2]);
+    WDFunc::SPBData(this, "MBMab3per[2]", KTF->Bci_block.MBMab3[2]);
+    WDFunc::SPBData(this, "MBMab4per[2]", KTF->Bci_block.MBMab4[2]);
+
+
+    WDFunc::SPBData(this, "MBMab1adr[3]", KTF->Bci_block.MBMab1[3]);
+    WDFunc::SPBData(this, "MBMab2adr[3]", KTF->Bci_block.MBMab2[3]);
+    WDFunc::SPBData(this, "MBMab3adr[3]", KTF->Bci_block.MBMab3[3]);
+    WDFunc::SPBData(this, "MBMab4adr[3]", KTF->Bci_block.MBMab4[3]);
+
+
+    cbidx = WDFunc::CBIndex(this, "Cool_type");
+    KTF->Bci_block.Cool_type  = cbidx;
+
+    cbidx = WDFunc::CBIndex(this, "W_mat");
+    KTF->Bci_block.W_mat = cbidx;
+
 
     WDFunc::SPBData(this, "TNNTdop", KTF->Bci_block.TNNTdop);
     WDFunc::SPBData(this, "TNNTpred", KTF->Bci_block.TNNTpred);
@@ -200,6 +371,50 @@ void ConfDialogKTF::FillBack()
     WDFunc::SPBData(this, "TdatNum", KTF->Bci_block.TdatNum);
 
 
+    //..................................
+
+
+    QString StrIP, StrMask, StrSNTP, StrGate;
+    QString NameIP = "IP_ID", NameMask = "Mask_ID", NameSNTP = "SNTP_ID", NameGate = "GW_ID";
+    QStringList inIP, inMask, inSNTP, inGate;
+    QLocale german(QLocale::German);
+
+    WDFunc::LE_read_data(this, NameIP, StrIP);
+    WDFunc::LE_read_data(this, NameSNTP, StrSNTP);
+    WDFunc::LE_read_data(this, NameGate, StrGate);
+    WDFunc::LE_read_data(this, NameMask, StrMask);
+
+    inIP.append(StrIP.split("."));
+    inMask.append(StrMask.split("."));
+    inSNTP.append(StrSNTP.split("."));
+    inGate.append(StrGate.split("."));
+
+    for (i = 0; i < 4; i++)
+    {
+     KTF->Com_param.IP_ID[i] = inIP.at(i).toInt();
+     KTF->Com_param.Mask_ID[i] = inMask.at(i).toInt();
+     KTF->Com_param.GW_ID[i] = inGate.at(i).toInt();
+     KTF->Com_param.SNTP_ID[i] = inSNTP.at(i).toInt();
+    }
+
+    WDFunc::SPBData(this, "Port"+QString::number(0), KTF->Com_param.Port_ID[0]);
+
+    cbidx = WDFunc::CBIndex(this, "Baud_ID");
+    KTF->Com_param.Baud_ID = (Rates.at(cbidx).toInt());
+    cbidx = WDFunc::CBIndex(this, "Parity_ID");
+    KTF->Com_param.Parity_ID =  cbidx;
+    cbidx = WDFunc::CBIndex(this, "Stopbit_ID");
+    KTF->Com_param.Stopbit_ID = cbidx;
+
+    WDFunc::SPBData(this, "adrMB_ID", KTF->Com_param.adrMB_ID);
+
+    WDFunc::ChBData(this, "ISNTP", IsNtp);
+    if(IsNtp)
+    KTF->Com_param.IsNTP_ID = 1;
+    else
+    KTF->Com_param.IsNTP_ID = 0;
+
+
 
 
 }
@@ -213,28 +428,40 @@ void ConfDialogKTF::SetupUI()
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QScrollArea *area = new QScrollArea;
-    //QScrollArea *area2 = new QScrollArea;
-    QWidget *analog1 = new QWidget;
-    QWidget *analog2 = new QWidget;
-    QWidget *analog3 = new QWidget;
-    QWidget *analog4 = new QWidget;
-    QWidget *analog5 = new QWidget;
-    QWidget *analog6 = new QWidget;
-    QWidget *extraconf = new QWidget;
-    QWidget *MEKconf = new QWidget;
-    QWidget *Leftconf = new QWidget;
-    QWidget *time = new QWidget;
+    QScrollArea *area2 = new QScrollArea;
+    QWidget *wind1 = new QWidget;
+    QWidget *wind2 = new QWidget;
+    QWidget *wind3 = new QWidget;
+    QWidget *wind4 = new QWidget;
+    QWidget *wind5 = new QWidget;
+    QWidget *wind6 = new QWidget;
+    QWidget *wind7 = new QWidget;
+  //  QWidget *winddop5_1 = new QWidget;
+   // QWidget *winddop5_2 = new QWidget;
+    QStackedWidget *qswt = new QStackedWidget;
+    qswt -> setObjectName("qswt");
+ //   QTableWidget *table = new QTableWidget();
+
+
+     QLineEdit *line1 = new QLineEdit();
+ //   QWidget *extraconf = new QWidget;
+   // QWidget *MEKconf = new QWidget;
+  //  QWidget *Leftconf = new QWidget;
+  //  QWidget *time = new QWidget;
     QString tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
-    analog1->setStyleSheet(tmps);
-    analog2->setStyleSheet(tmps);
-    analog3->setStyleSheet(tmps);
-    analog4->setStyleSheet(tmps);
-    analog5->setStyleSheet(tmps);
-    analog6->setStyleSheet(tmps);
-    extraconf->setStyleSheet(tmps);
-    time->setStyleSheet(tmps);
-    MEKconf->setStyleSheet(tmps);
-    Leftconf->setStyleSheet(tmps);
+    wind1->setStyleSheet(tmps);
+    wind2->setStyleSheet(tmps);
+    wind3->setStyleSheet(tmps);
+    wind4->setStyleSheet(tmps);
+    wind5->setStyleSheet(tmps);
+    wind6->setStyleSheet(tmps);
+    wind7->setStyleSheet(tmps);
+ //   winddop5_1->setStyleSheet(tmps);
+//    winddop5_2->setStyleSheet(tmps);
+
+   // time->setStyleSheet(tmps);
+  //  MEKconf->setStyleSheet(tmps);
+  //  Leftconf->setStyleSheet(tmps);
 
     area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
     area->setFrameShape(QFrame::NoFrame);
@@ -303,7 +530,7 @@ void ConfDialogKTF::SetupUI()
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
-    analog1->setLayout(vlyout1);
+    wind1->setLayout(vlyout1);
 
     //.........................................................................
 
@@ -325,10 +552,10 @@ void ConfDialogKTF::SetupUI()
     row++;
     lbl = new QLabel("Материал охлаждения: ");
     glyout->addWidget(lbl,row,0,1,1,Qt::AlignLeft);
-    QStringList bl = QStringList() << "медь" << "алюминий";
-    EComboBox *cсb = WDFunc::NewCB(this, "W_mat", bl , paramcolor);
-    connect(cсb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
-    glyout->addWidget(cсb, row, 1, 1, 1);
+    cbl = QStringList() << "медь" << "алюминий";
+    cb = WDFunc::NewCB(this, "W_mat", cbl , paramcolor);
+    connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(cb, row, 1, 1, 1);
     row++;
 
     glyout->addWidget(WDFunc::NewLBL(this, "Коэффициент добавочных потерь :"), row,0,1,1);
@@ -343,7 +570,7 @@ void ConfDialogKTF::SetupUI()
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
-    analog2->setLayout(vlyout1);
+    wind2->setLayout(vlyout1);
 
     //.........................................................................
 
@@ -389,7 +616,7 @@ void ConfDialogKTF::SetupUI()
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
-    analog3->setLayout(vlyout1);
+    wind3->setLayout(vlyout1);
 
     //.........................................................................
 
@@ -433,16 +660,16 @@ void ConfDialogKTF::SetupUI()
 
     lbl = new QLabel("Количество точек осциллограммы на период основной частоты: ");
     glyout->addWidget(lbl,row,0,1,1,Qt::AlignLeft);
-    QStringList bbl = QStringList()  << "256"<< "128"<< "64"<< "32"<< "16";
-    EComboBox *cсbb = WDFunc::NewCB(this, "OscPoints", bbl , paramcolor);
-    connect(cсb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
-    glyout->addWidget(cсbb, row, 1, 1, 1);
+    cbl = QStringList()  << "256"<< "128"<< "64"<< "32"<< "16";
+    cb = WDFunc::NewCB(this, "OscPoints", cbl , paramcolor);
+    connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(cb, row, 1, 1, 1);
     row++;
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
-    analog4->setLayout(vlyout1);
+    wind4->setLayout(vlyout1);
 
 
     //.........................................................................
@@ -452,30 +679,233 @@ void ConfDialogKTF::SetupUI()
     gb->setFont(font);
     glyout = new QGridLayout;
     vlyout1 = new QVBoxLayout;
+
     vlyout2 = new QVBoxLayout;
+    glyout->setColumnStretch(1, 20);
 
     lbl = new QLabel("Modbus: ");
     glyout->addWidget(lbl,row,0,1,1,Qt::AlignLeft);
-    QStringList bbll = QStringList() << "slave" << "master";
-    EComboBox *cсbbb = WDFunc::NewCB(this, "MBMaster", bbll , paramcolor);
-    connect(cсbbb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
-    glyout->addWidget(cсbbb, row, 1, 1, 1);
+    QStringList dopcbl = QStringList() << "slave" << "master";
+    EComboBox *dopcb = WDFunc::NewCB(this, "MBMaster", dopcbl , paramcolor);
+    connect(dopcb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(dopcb, row, 1, 1, 1);
     row++;
 
+    vlyout2->addLayout(glyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
+
+   //  <<<<<<<<<<<<<<<<<<-
+    row = 0;
+    qswt = new QStackedWidget;
+    gb = new QGroupBox("Настройки ModBus");
+    gb->setObjectName("Gb1");
+    gb->setFont(font);
+    vlyout2 = new QVBoxLayout;
+    glyout = new QGridLayout;
+   // glyout->setColumnStretch(2, 50);
+
+    row++;
+    glyout->addWidget(WDFunc::NewLBL(this, "Скорость RS485 интерфейса:"), row,0,1,1);
+    cbl = QStringList() << "1200" << "2400"<< "4800" << "9600" << "19200" << "38400" << "57600" << "115200";
+    cb = WDFunc::NewCB(this, "Baud_ID", cbl, paramcolor);
+    glyout->addWidget(cb,row,1,1,1,Qt::AlignLeft);
+
+    row++;
+    glyout->addWidget(WDFunc::NewLBL(this, "Чётность:"), row,0,1,1);
+    cbl = QStringList() << "NoParity" << "EvenParity" << "OddParity";
+    cb = WDFunc::NewCB(this, "Parity_ID", cbl, paramcolor);
+    glyout->addWidget(cb,row,1,1,1,Qt::AlignLeft);
+
+    row++;
+    glyout->addWidget(WDFunc::NewLBL(this, "Количество стоповых битов:"), row,0,1,1);
+    cbl = QStringList() << "StopBit_1" << "StopBit_2";
+    cb = WDFunc::NewCB(this, "Stopbit_ID", cbl, paramcolor);
+    glyout->addWidget(cb,row,1,1,1,Qt::AlignLeft);
+
+    row++;
+    glyout->addWidget(WDFunc::NewLBL(this, "Адрес устройства для Modbus:"), row,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "adrMB_ID", 0, 10000, 0, paramcolor), row,1,1,1,Qt::AlignLeft);
+
+    vlyout2->addLayout(glyout);
+    gb->setLayout(vlyout2);
+    //qswt ->addWidget(gb);
+    vlyout1->addWidget(gb);
+
+    //  <<<<<<<<<<<<<<<<<<<<-
+
+    row = 0;
+    gb = new QGroupBox("Настройки ModBus");
+    gb->setObjectName("Gb2");
+    gb->setFont(font);
+    vlyout2 = new QVBoxLayout;
+    glyout = new QGridLayout;
+    line1=new QLineEdit(this);
+
+    line1->setText("тип датчика:");
+    glyout->addWidget(line1,1,1,1,1);
+
+    line1=new QLineEdit(this);
+    line1->setText("           ");
+    glyout->addWidget(line1,0,1,1,1);
+
+    line1=new QLineEdit(this);
+    line1->setText("              параметры связи:          ");
+    glyout->addWidget(line1,0,2,1,3);
+
+    line1=new QLineEdit(this);
+    line1->setText("           ");
+    glyout->addWidget(line1,0,5,1,1);
+
+    line1=new QLineEdit(this);
+    line1->setText("           ");
+    glyout->addWidget(line1,0,6,1,1);
+
+    line1=new QLineEdit(this);
+    line1->setText("скорость:");
+    glyout->addWidget(line1,1,2,1,1);
+
+    line1=new QLineEdit(this);
+    line1->setText("чётность:");
+    glyout->addWidget(line1, 1,3,1,1);
+
+    line1=new QLineEdit(this);
+    line1->setText("стопБиты:");
+    glyout->addWidget(line1,1,4,1,1);
+
+    line1=new QLineEdit(this);
+    line1->setText("переуд опроса:");
+    glyout->addWidget(line1, 1,5,1,1);
+
+    line1=new QLineEdit(this);
+    line1->setText("адрес абонента:");
+    glyout->addWidget(line1,1,6,1,1);
+
+    line1=new QLineEdit(this);
+    line1->setText("Датчик 1:");
+    glyout->addWidget(line1, 2,0,1,1);
+
+    line1=new QLineEdit(this);
+    line1->setText("Датчик 2:");
+    glyout->addWidget(line1, 3,0,1,1);
+
+    line1=new QLineEdit(this);
+    line1->setText("Датчик 3:");
+    glyout->addWidget(line1,4,0,1,1);
+
+    line1=new QLineEdit(this);
+    line1->setText("Датчик 4:");
+    glyout->addWidget(line1, 5,0,1,1);
+
+    cbl = QStringList() << "нет" << "тип 1"<< "тип 2" << "тип 3";
+    EComboBox *сb = WDFunc::NewCB(this, "MBMab1[0]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 2, 1, 1, 1);
+
+    cbl = QStringList() << "нет" << "тип 1"<< "тип 2" << "тип 3";
+    сb = WDFunc::NewCB(this, "MBMab2[0]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 3, 1, 1, 1);
+
+    cbl = QStringList() << "нет" << "тип 1"<< "тип 2" << "тип 3";
+    сb = WDFunc::NewCB(this, "MBMab3[0]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 4, 1, 1, 1);
+
+    cbl = QStringList() << "нет" << "тип 1"<< "тип 2" << "тип 3";
+    сb = WDFunc::NewCB(this, "MBMab4[0]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 5, 1, 1, 1);
+
+    cbl = QStringList() << "1200" << "2400"<< "4800" << "9600" << "19200"<< "38400" << "57600"<< "115200" ;
+    сb = WDFunc::NewCB(this, "MBMab1sk[1]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 2, 2, 1, 1);
+
+    cbl = QStringList() << "1200" << "2400"<< "4800" << "9600" << "19200"<< "38400" << "57600"<< "115200" ;
+    сb = WDFunc::NewCB(this, "MBMab2sk[1]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 3, 2, 1, 1);
+
+    cbl = QStringList() << "1200" << "2400"<< "4800" << "9600" << "19200"<< "38400" << "57600"<< "115200" ;
+    сb = WDFunc::NewCB(this, "MBMab3sk[1]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 4, 2, 1, 1);
+
+    cbl = QStringList() << "1200" << "2400"<< "4800" << "9600" << "19200"<< "38400" << "57600"<< "115200" ;
+    сb = WDFunc::NewCB(this, "MBMab4sk[1]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 5, 2, 1, 1);
+
+    cbl = QStringList() << "нет" << "even"<< "old"  ;
+    сb = WDFunc::NewCB(this, "MBMab1ch[1]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 2, 3, 1, 1);
+
+    cbl = QStringList() << "нет" << "even"<< "old"  ;
+    сb = WDFunc::NewCB(this, "MBMab2ch[1]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 3, 3, 1, 1);
+
+    cbl = QStringList() << "нет" << "even"<< "old"  ;
+    сb = WDFunc::NewCB(this, "MBMab3ch[1]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 4, 3, 1, 1);
+
+    cbl = QStringList() << "нет" << "even"<< "old"  ;
+    сb = WDFunc::NewCB(this, "MBMab4ch[1]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 5, 3, 1, 1);
+
+    cbl = QStringList() << "1" << "2" ;
+    сb = WDFunc::NewCB(this, "MBMab1bt[1]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 2, 4, 1, 1);
+
+    cbl = QStringList() << "1" << "2" ;
+    сb = WDFunc::NewCB(this, "MBMab2bt[1]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 3, 4, 1, 1);
+
+    cbl = QStringList() << "1" << "2" ;
+    сb = WDFunc::NewCB(this, "MBMab3bt[1]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 4, 4, 1, 1);
+
+    cbl = QStringList() << "1" << "2" ;
+    сb = WDFunc::NewCB(this, "MBMab4bt[1]", cbl , paramcolor);
+    connect(сb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(сb, 5, 4, 1, 1);
 
 
+    glyout->addWidget(WDFunc::NewSPB(this, "MBMab1per[2]", 0, 10000, 0, paramcolor), 2,5,1,1);
 
+    glyout->addWidget(WDFunc::NewSPB(this, "MBMab2per[2]", 0, 10000, 0, paramcolor), 3,5,1,1);
 
+    glyout->addWidget(WDFunc::NewSPB(this, "MBMab3per[2]", 0, 10000, 0, paramcolor), 4,5,1,1);
 
+    glyout->addWidget(WDFunc::NewSPB(this, "MBMab4per[2]", 0, 10000, 0, paramcolor), 5,5,1,1);
 
+    glyout->addWidget(WDFunc::NewSPB(this, "MBMab1adr[3]", 0, 10000, 0, paramcolor), 2,6,1,1);
 
+    glyout->addWidget(WDFunc::NewSPB(this, "MBMab2adr[3]", 0, 10000, 0, paramcolor), 3,6,1,1);
+
+    glyout->addWidget(WDFunc::NewSPB(this, "MBMab3adr[3]", 0, 10000, 0, paramcolor), 4,6,1,1);
+
+    glyout->addWidget(WDFunc::NewSPB(this, "MBMab4adr[3]", 0, 10000, 0, paramcolor), 5,6,1,1);
 
 
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
+    //qswt ->addWidget(gb);
     vlyout1->addWidget(gb);
-    analog5->setLayout(vlyout1);
+
+   // connect(dopcb,SIGNAL(currentIndexChanged(int)),vlyout1,SLOT(ChangeWindow(int)));
+   // vlyout1->addWidget(qswt);
+
+    wind5->setLayout(vlyout1);
+    area2->setWidget( wind5);
 
     //.........................................................................
 
@@ -510,7 +940,167 @@ void ConfDialogKTF::SetupUI()
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
-    analog6->setLayout(vlyout1);
+    wind6->setLayout(vlyout1);
+
+
+
+    //.........................................................................
+
+
+
+    row = 0;
+    gb = new QGroupBox("Конфигурация 104");
+    gb->setFont(font);
+    glyout = new QGridLayout;
+    vlyout1 = new QVBoxLayout;
+    vlyout2 = new QVBoxLayout;
+
+
+        gb->setTitle("Настройки протокола МЭК-60870-5-104");
+        gb->setFont(font);
+        glyout = new QGridLayout;
+        glyout->setColumnStretch(2, 50);
+        lbl = new QLabel("Адрес базовой станции:");
+        glyout->addWidget(lbl,0,0,1,1,Qt::AlignLeft);
+        QDoubleSpinBox *dspbls = WDFunc::NewSPB(this, "Abs_104", 0, 65535, 0, paramcolor);
+        connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+        glyout->addWidget(dspbls, 0, 1, 1, 1, Qt::AlignLeft);
+        lbl = new QLabel("Интервал циклического опроса, с:");
+        glyout->addWidget(lbl,1,0,1,1,Qt::AlignLeft);
+        dspbls = WDFunc::NewSPB(this, "Cycle_104", 0, 255, 0, paramcolor);
+        connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+        glyout->addWidget(dspbls, 1, 1, 1, 1, Qt::AlignLeft);
+        //lbl=new QLabel("c");
+        //glyout->addWidget(lbl,1,2,1,1,Qt::AlignLeft);
+        lbl = new QLabel("Тайм-аут t1, с:");
+        glyout->addWidget(lbl,2,0,1,1,Qt::AlignLeft);
+        dspbls = WDFunc::NewSPB(this, "T1_104", 0, 255, 0, paramcolor);
+        connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+        glyout->addWidget(dspbls, 2, 1, 1, 1, Qt::AlignLeft);
+        //lbl=new QLabel("c");
+        //glyout->addWidget(lbl,2,2,1,1,Qt::AlignLeft);
+        lbl = new QLabel("Тайм-аут t2, с:");
+        glyout->addWidget(lbl,3,0,1,1,Qt::AlignLeft);
+        dspbls = WDFunc::NewSPB(this, "T2_104", 0, 255, 0, paramcolor);
+        connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+        glyout->addWidget(dspbls, 3, 1, 1, 1, Qt::AlignLeft);
+        //lbl=new QLabel("c");
+        //glyout->addWidget(lbl,3,2,1,1,Qt::AlignLeft);
+        lbl = new QLabel("Тайм-аут t3, с:");
+        glyout->addWidget(lbl,4,0,1,1,Qt::AlignLeft);
+        dspbls = WDFunc::NewSPB(this, "T3_104", 0, 255, 0, paramcolor);
+        connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+        glyout->addWidget(dspbls, 4, 1, 1, 1, Qt::AlignLeft);
+        //lbl=new QLabel("c");
+        //glyout->addWidget(lbl,4,2,1,1,Qt::AlignLeft);
+        lbl = new QLabel("Макс. число неподтв. APDU (k):");
+        glyout->addWidget(lbl,5,0,1,1,Qt::AlignLeft);
+        dspbls = WDFunc::NewSPB(this, "k_104", 0, 255, 0, paramcolor);
+        connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+        glyout->addWidget(dspbls, 5, 1, 1, 1, Qt::AlignLeft);
+        //lbl=new QLabel("c");
+        //glyout->addWidget(lbl,5,2,1,1,Qt::AlignLeft);
+        lbl = new QLabel("Макс. число посл. подтв. APDU (w):");
+        glyout->addWidget(lbl,6,0,1,1,Qt::AlignLeft);
+        dspbls = WDFunc::NewSPB(this, "w_104", 0, 255, 0, paramcolor);
+        connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+        glyout->addWidget(dspbls, 6, 1, 1, 1, Qt::AlignLeft);
+    row++;
+
+
+    row += 7;
+
+    QString Str;
+    QLocale german(QLocale::German);
+    int i;
+    for(i = 0; i<4; i++)
+    {
+      KTF->Com_param.IP_ID[i]=0;
+      if(i==3)
+      Str.append(german.toString(KTF->Com_param.IP_ID[i]));
+      else
+      Str.append(german.toString(KTF->Com_param.IP_ID[i])+".");
+    }
+
+
+    glyout->addWidget(WDFunc::NewLBL(this, "IP адрес устройства:"), row,0,1,1);
+    glyout->addWidget(WDFunc::NewLE(this, "IP_ID", Str, paramcolor), row,1,1,1, Qt::AlignLeft);
+
+
+    row++;
+    Str.clear();
+    for(i = 0; i<4; i++)
+    {
+      KTF->Com_param.Mask_ID[i]=0;
+      if(i==3)
+      Str.append(german.toString(KTF->Com_param.Mask_ID[i]));
+      else
+      Str.append(german.toString(KTF->Com_param.Mask_ID[i])+".");
+    }
+    glyout->addWidget(WDFunc::NewLBL(this, "Маска:"), row,0,1,1);
+    glyout->addWidget(WDFunc::NewLE(this, "Mask_ID", Str, paramcolor), row,1,1,1, Qt::AlignLeft);
+
+
+    row++;
+    Str.clear();
+    for(i = 0; i<4; i++)
+    {
+      KTF->Com_param.GW_ID[i]=0;
+      if(i==3)
+      Str.append(german.toString(KTF->Com_param.GW_ID[i]));
+      else
+      Str.append(german.toString(KTF->Com_param.GW_ID[i])+".");
+    }
+    glyout->addWidget(WDFunc::NewLBL(this, "Шлюз:"), row,0,1,1);
+    glyout->addWidget(WDFunc::NewLE(this, "GW_ID", Str, paramcolor), row,1,1,1, Qt::AlignLeft);
+
+    row++;
+    glyout->addWidget(WDFunc::NewLBL(this, "Порт протокола 104:"), row,0,1,1);
+    glyout->addWidget(WDFunc::NewSPB(this, "Port_ID", 0, 10000, 0, paramcolor), row,1,1,1);
+
+    row++;
+    glyout->addWidget(WDFunc::NewChB(this, "ISNTP_ID", "Использование SNTP сервера"), row,0,1,1);
+
+    row++;
+    Str.clear();
+    for(i = 0; i<4; i++)
+    {
+      KTF->Com_param.SNTP_ID[i]=0;
+      if(i==3)
+      Str.append(german.toString(KTF->Com_param.SNTP_ID[i]));
+      else
+      Str.append(german.toString(KTF->Com_param.SNTP_ID[i])+".");
+    }
+    glyout->addWidget(WDFunc::NewLBL(this, "Адрес SNTP сервера:"), row,0,1,1);
+    glyout->addWidget(WDFunc::NewLE(this, "SNTP_ID", Str, paramcolor), row,1,1,1, Qt::AlignLeft);
+
+    vlyout2->addLayout(glyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
+
+
+
+    gb = new QGroupBox("Настройка времени");
+    gb->setFont(font);
+    vlyout2 = new QVBoxLayout;
+    glyout = new QGridLayout;
+    glyout->setColumnStretch(2, 50);
+    row++;
+    lbl = new QLabel("Тип синхронизации времени:");
+    glyout->addWidget(lbl,row,0,1,1,Qt::AlignLeft);
+    cbl = QStringList() << "SNTP+PPS" << "SNTP";
+    cb = WDFunc::NewCB(this, "spb.8", cbl, paramcolor);
+    connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    glyout->addWidget(cb, row, 1, 1, 1);
+
+    vlyout2->addLayout(glyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
+
+
+
+    wind7->setLayout(vlyout1);
+    area->setWidget(wind7);
 
 
 
@@ -522,12 +1112,20 @@ void ConfDialogKTF::SetupUI()
     ConfTW->setObjectName("conftw");
     QString ConfTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLOR)+";}";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
-    ConfTW->addTab(analog1,"Аналоговые");
-    ConfTW->addTab(analog2,"Трансформатор");
-    ConfTW->addTab(analog3,"Сигнализация");
-    ConfTW->addTab(analog4,"Осцилографирование");
-    ConfTW->addTab(analog5,"ModBusMaster");
-    ConfTW->addTab(analog6,"Прочее");
+    ConfTW->addTab(wind1,"Аналоговые");
+    ConfTW->addTab(wind2,"Трансформатор");
+    ConfTW->addTab(wind3,"Сигнализация");
+    ConfTW->addTab(wind4,"Осцилографирование");
+    ConfTW->addTab(wind5,"ModBusMaster");
+  //  area2->verticalScrollBar()->setValue(area2->verticalScrollBar()->maximum());
+
+    ConfTW->addTab(wind6,"Прочее");
+
+    if(MTypeB == Config::MTB_A2)
+    {
+    ConfTW->addTab(area,"Связь");
+    area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
+    }
 
     lyout->addWidget(ConfTW);
 
@@ -582,10 +1180,33 @@ void ConfDialogKTF::Set104(double dbl)
 
 void ConfDialogKTF::SetCType(int num)
 {
-  // KTF->MainBlk.Ctype = num;
+   KTF->MainBlk.Ctype = num;
 }
 
+void ConfDialogKTF::ChangeWindow(int x)
+{
+     //QStackedWidget *VLYOUT1 = this -> findChild<QStackedWidget*>("Vlyout1");
+     QStackedWidget *QSWT = this -> findChild<QStackedWidget*>("qswt");
 
+    if (x == 0)
+    {
+        QStackedWidget *GB1 = this -> findChild<QStackedWidget*>("Gb1");
+     //   QSWT->addWidget(GB1);
+      QSWT->setCurrentWidget(GB1);
+        //vlyout1->addWidget(QSWT);
+
+    }
+    else
+    {
+         QStackedWidget *GB2 = this -> findChild<QStackedWidget*>("Gb2");
+       //  QSWT->addWidget(GB2);
+       QSWT->setCurrentWidget(GB2);
+    }
+
+
+   // VLYOUT1->addWidget(QSWT);
+
+}
 
 
 

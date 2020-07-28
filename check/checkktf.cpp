@@ -48,12 +48,9 @@ QWidget *CheckKTF::Bd1W(QWidget *parent)
      glyout->addWidget(WDFunc::NewLBL(parent, "Частота, Гц"), 0,2,1,1);
       glyout->addWidget(WDFunc::NewLBLT(parent, "",QString::number(2400), ValuesFormat, \
                                                                      "Частота, Гц"), 1,2,1,1);
-      glyout->addWidget(WDFunc::NewLBL(parent, "Температура микроконтроллера, °С"), 0,3,1,1);
-       glyout->addWidget(WDFunc::NewLBLT(parent, "",QString::number(101), ValuesFormat, \
+     glyout->addWidget(WDFunc::NewLBL(parent, "Температура микроконтроллера, °С"), 0,3,1,1);
+      glyout->addWidget(WDFunc::NewLBLT(parent, "",QString::number(101), ValuesFormat, \
                                                                        "Температура микроконтроллера, °С"), 1,3,1,1);
-
-   \
-
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
