@@ -28,6 +28,8 @@ SOURCES += \
     ../config/confdialogktf.cpp \
     ../config/configdefktf.cpp \
     ../config/configktf.cpp \
+    ../dialogs/abstractcordialog.cpp \
+    ../dialogs/cordialogktf.cpp \
     ../dialogs/mnktime.cpp \
     ../gen/logclass.cpp \
     ../gen/maindef.cpp \
@@ -85,6 +87,8 @@ HEADERS += \
     ../config/confdialogktf.h \
     ../config/configdefktf.h \
     ../config/configktf.h \
+    ../dialogs/abstractcordialog.h \
+    ../dialogs/cordialogktf.h \
     ../dialogs/mnktime.h \
     ../gen/logclass.h \
     ../modbus/serialport.h \

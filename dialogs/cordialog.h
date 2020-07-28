@@ -6,8 +6,9 @@
 #include "../modbus/modbus.h"
 #include "../iec104/iec104.h"
 #include "../widgets/etablemodel.h"
+#include "abstractcordialog.h"
 
-class CorDialog : public QDialog
+class CorDialog : public AbstractCorDialog
 {
     Q_OBJECT
 
