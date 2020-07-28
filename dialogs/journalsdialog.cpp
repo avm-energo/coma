@@ -26,24 +26,18 @@ JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent) {
   ProxyMeasModel = new QSortFilterProxyModel;
   JourFuncs->SetProxyModels(ProxyWorkModel, ProxySysModel, ProxyMeasModel);
   //    JourFuncs->SetParentWidget(this);
-  connect(JourFuncs, SIGNAL(Done(QString)), this, SLOT(Done(QString)));
-  connect(JourFuncs, SIGNAL(Error(QString)), this, SLOT(Error(QString)));
-  connect(JourFuncs, SIGNAL(ModelReady(ETableModel *)), this,
-          SLOT(SetModel(ETableModel *)));
+  connect(JourFuncs, &Journals::Done, this, &JournalDialog::Done);
+  connect(JourFuncs,&Journals::Error,this, &JournalDialog::Error);
+  connect(JourFuncs,&Journals::ModelReady,this,&JournalDialog::SetModel);
   //    connect(JourFuncs,SIGNAL(ProxyModelReady(QSortFilterProxyModel
   //    *)),this,SLOT(SetProxyModel(QSortFilterProxyModel *)));
-  connect(JourFuncs, SIGNAL(ReadJour(char)), iec, SLOT(SelectFile(char)));
-  connect(iec, SIGNAL(SendJourSysfromiec104(QByteArray)), JourFuncs,
-          SLOT(FillSysJour(QByteArray)));
-  connect(iec, SIGNAL(SendJourWorkfromiec104(QByteArray)), JourFuncs,
-          SLOT(FillWorkJour(QByteArray)));
-  connect(iec, SIGNAL(SendJourMeasfromiec104(QByteArray)), JourFuncs,
-          SLOT(FillMeasJour(QByteArray)));
-  connect(this, SIGNAL(StartGetJour()), JourFuncs, SLOT(StartGetJour()));
-  connect(this, SIGNAL(StartSaveJour(int, QAbstractItemModel *, QString)),
-          JourFuncs, SLOT(StartSaveJour(int, QAbstractItemModel *, QString)));
-  connect(this, SIGNAL(StartReadFile()), JourFuncs,
-          SLOT(ReadJourFileAndProcessIt()));
+  connect(JourFuncs, &Journals::ReadJour,iec, &IEC104::SelectFile);
+  connect(iec, &IEC104::SendJourSysfromiec104,JourFuncs, &Journals::FillSysJour);
+  connect(iec, &IEC104::SendJourWorkfromiec104,JourFuncs, &Journals::FillWorkJour);
+  connect(iec, &IEC104::SendJourMeasfromiec104,JourFuncs, &Journals::FillMeasJour);
+  connect(this, &JournalDialog::StartGetJour, JourFuncs, &Journals::StartGetJour);
+  connect(this, &JournalDialog::StartSaveJour, JourFuncs, &Journals::StartSaveJour);
+  connect(this, &JournalDialog::StartReadFile, JourFuncs, &Journals::ReadJourFileAndProcessIt);
   JourFuncs->moveToThread(&JourThread);
   JourThread.start();
   setAttribute(Qt::WA_DeleteOnClose);
