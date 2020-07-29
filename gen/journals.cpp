@@ -7,6 +7,7 @@
 #include "journals.h"
 #include "s2.h"
 #include "timefunc.h"
+#include "../config/config.h"
 #include "error.h"
 #include "maindef.h"
 #include "commands.h"
@@ -74,8 +75,34 @@ void Journals::FillEventsTable(QByteArray &ba)
     QVector<QVector<QVariant>> ValueLists;
     ETableModel *model = new ETableModel;
     EventStruct event;
-    const QStringList sl = (_jourType == JOURSYS) ? SysJourDescription : WorkJourDescription;
-    int mineventid = (_jourType == JOURSYS) ? SYSJOURID : WORKJOURID;
+    QStringList descriptionlist;
+    int mineventid;
+    if (_jourType == JOURSYS)
+    {
+        mineventid = SYSJOURID;
+        descriptionlist = SysJourDescription;
+    }
+    else
+    {
+        switch(MTypeB)
+        {
+        case Config::MTB_A2:
+            switch(MTypeM)
+            {
+            case Config::MTM_84:
+                descriptionlist = WorkJourDescription ;
+                mineventid =  WORKJOURID;
+                break;
+            case Config::MTM_87:
+                descriptionlist = WorkJourDescriptionKTF ;
+                mineventid =  WORKJOURIDKTF;
+                break;
+            }
+            break;
+        case Config::MTB_A3:
+            break;
+        };
+    }
     int N = 0;
     int basize = ba.size();
     char *file = ba.data();
@@ -107,10 +134,10 @@ void Journals::FillEventsTable(QByteArray &ba)
             vl << TimeFunc::UnixTime64ToInvStringFractional(event.Time);
             memcpy(&N, &event.EvNum, sizeof(event.EvNum));
             N = (N & 0x00FFFFFF) - mineventid;
-            if ((N <= sl.size()) && (N > 0))
+            if ((N <= descriptionlist.size()) && (N > 0))
             {
                 --N;
-                vl << sl.at(N);
+                vl << descriptionlist.at(N);
             }
             else
                 vl << "Некорректный номер события";

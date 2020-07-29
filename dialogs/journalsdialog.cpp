@@ -276,44 +276,6 @@ void JournalDialog::SaveJour()
     emit StartSaveJour(jtype, amdl, filename);
 
 
- // const QStringList *sl = new QStringList ;
-     QStringList sl;
-  int mineventid;
-
-    if ((jourtype == JOURSYS) || (jourtype == JOURSYSM))
-    {
-         sl = SysJourDescription ;
-         mineventid = SYSJOURID;
-    }
-    else
-    {
-        switch(MTypeB)
-        {
-        case Config::MTB_A2:
-            switch(MTypeM)
-            {
-               case Config::MTM_84:
-                 sl = WorkJourDescription ;
-                 mineventid =  WORKJOURID;
-               break;
-
-               case Config::MTM_87:
-                sl = WorkJourDescriptionKTF ;
-                mineventid =  WORKJOURIDKTF;
-               break;
-            }
-        break;
-
-        case Config::MTB_A3:
-        break;
-
-        };
-    }
-
-
-
-QStringList strl;
-
        switch(MTypeB)
        {
        case Config::MTB_A2:
@@ -347,10 +309,6 @@ QStringList strl;
        };
 
    model->fillModel(lsl);
-
-   /*
-
-
 }
 
 int JournalDialog::GetJourNum(const QString &objname)
@@ -452,3 +410,4 @@ void JournalDialog::SetModel(ETableModel *mdl)
     }
     Done("Прочитано успешно");
 }
+*/
