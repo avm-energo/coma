@@ -18,6 +18,7 @@
 #include "../gen/colors.h"
 #include "../gen/files.h"
 #include "../gen/commands.h"
+#include "../config/confdialog.h"
 
 JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
 {
@@ -273,6 +274,83 @@ void JournalDialog::SaveJour()
     WW->SetMessage("Запись файла...");
     WW->Start();
     emit StartSaveJour(jtype, amdl, filename);
+
+
+ // const QStringList *sl = new QStringList ;
+     QStringList sl;
+  int mineventid;
+
+    if ((jourtype == JOURSYS) || (jourtype == JOURSYSM))
+    {
+         sl = SysJourDescription ;
+         mineventid = SYSJOURID;
+    }
+    else
+    {
+        switch(MTypeB)
+        {
+        case Config::MTB_A2:
+            switch(MTypeM)
+            {
+               case Config::MTM_84:
+                 sl = WorkJourDescription ;
+                 mineventid =  WORKJOURID;
+               break;
+
+               case Config::MTM_87:
+                sl = WorkJourDescriptionKTF ;
+                mineventid =  WORKJOURIDKTF;
+               break;
+            }
+        break;
+
+        case Config::MTB_A3:
+        break;
+
+        };
+    }
+
+
+
+QStringList strl;
+
+       switch(MTypeB)
+       {
+       case Config::MTB_A2:
+           switch(MTypeM)
+           {
+              case Config::MTM_84:
+
+               strl =TitleList;
+
+               for (int i=0; i<29 ;i++)
+
+               model->addColumn(strl[i]);
+
+              break;
+
+              case Config::MTM_87:
+
+               strl =TitleListKTF;
+
+               for (int i=-0; i<29 ;i++)
+
+               model->addColumn(strl[i]);
+
+              break;
+           }
+       break;
+
+       case Config::MTB_A3:
+       break;
+
+       };
+
+   model->fillModel(lsl);
+
+   /*
+
+
 }
 
 int JournalDialog::GetJourNum(const QString &objname)

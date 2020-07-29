@@ -23,6 +23,13 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../check/checkktf.cpp \
+    ../check/chekdialogktf.cpp \
+    ../config/confdialogktf.cpp \
+    ../config/configdefktf.cpp \
+    ../config/configktf.cpp \
+    ../dialogs/abstractcordialog.cpp \
+    ../dialogs/cordialogktf.cpp \
     ../dialogs/mnktime.cpp \
     ../gen/journals.cpp \
     ../gen/logclass.cpp \
@@ -76,6 +83,13 @@ SOURCES += \
 
 
 HEADERS += \
+    ../check/checkktf.h \
+    ../check/chekdialogktf.h \
+    ../config/confdialogktf.h \
+    ../config/configdefktf.h \
+    ../config/configktf.h \
+    ../dialogs/abstractcordialog.h \
+    ../dialogs/cordialogktf.h \
     ../dialogs/mnktime.h \
     ../gen/journals.h \
     ../gen/logclass.h \

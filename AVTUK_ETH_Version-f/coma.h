@@ -6,10 +6,12 @@
 #include "../config/confdialog.h"
 #include "../check/eabstractcheckdialog.h"
 #include "../dialogs/cordialog.h"
+#include "../dialogs/cordialogktf.h"
 #include "../dialogs/infodialog.h"
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/mnktime.h"
 #include "../dialogs/journalsdialog.h"
+#include "../dialogs/abstractcordialog.h"
 
 #define RECONNECTINTERVAL   3000
 #define WAITINTERVAL        15000
@@ -178,7 +180,12 @@ private slots:
 
 private:
     const QVector<int> MTBs = {0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84};
-    CorDialog *CorD;
+    //CorDialog *CorD;
+   // CorDialogKTF *CorDKTF;
+
+    AbstractCorDialog *CorD;
+
+
     InfoDialog *IDialog;
     bool Ok;
     bool Disconnected;

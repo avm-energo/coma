@@ -37,6 +37,7 @@
 #include "coma.h"
 #include "../config/confdialog84.h"
 #include "../check/checkdialog84.h"
+#include "../config/confdialogktf.h"
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../widgets/etabwidget.h"
@@ -51,6 +52,7 @@
 #include "../modbus/modbus.h"
 #include "../gen/timefunc.h"
 #include "../gen/commands.h"
+#include "../check/chekdialogktf.h"
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
 {
@@ -74,6 +76,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     ConfB = ConfM = nullptr;
     CheckB = CheckM = nullptr;
     Wpred = Walarm = nullptr;
+    CorD = nullptr;
     CurTabIndex = -1;
     for (int i = 0; i < 20; ++i)
     {
@@ -320,10 +323,50 @@ void Coma::StartWork()
 
     if (CorD != nullptr)
     {
-        MainTW->addTab(CorD, "Начальные значения");
+
+       /* MainTW->addTab(CorD, "Начальные значения");
         CorD->corDIndex = MainTW->indexOf(CorD);
         if(MainInterface == I_RS485)
-            ChModbus->CorIndex = CorD->corDIndex;
+            ChModbus->CorIndex = CorD->corDIndex; */
+
+
+
+        switch(MTypeB)
+        {
+        case Config::MTB_A2:
+            switch(MTypeM)
+            {
+               case Config::MTM_84:
+                MainTW->addTab(CorD, "Начальные значения");
+                CorD->corDIndex = MainTW->indexOf(CorD);
+                if(MainInterface == I_RS485)
+                    ChModbus->CorIndex = CorD->corDIndex;
+               break;
+
+               case Config::MTM_87:
+                MainTW->addTab(CorD, "Текущее значение");
+                CorD->corDIndex = MainTW->indexOf(CorD);
+                if(MainInterface == I_RS485)
+                    ChModbus->CorIndex = CorD->corDIndex;
+               break;
+            }
+        break;
+        case Config::MTB_A3:
+
+            switch(MTypeM)
+            {
+               case Config::MTM_87:
+                MainTW->addTab(CorD, "Начальные значения");
+                CorD->corDIndex = MainTW->indexOf(CorD);
+                if(MainInterface == I_RS485)
+                    ChModbus->CorIndex = CorD->corDIndex;
+               break;
+            }
+
+        break;
+
+        };
+
     }
 
     if (MainInterface != I_RS485)
@@ -355,24 +398,51 @@ void Coma::PrepareDialogs()
 {
     IDialog = new InfoDialog;
     JourD = new JournalDialog(Ch104);
-    CheckB = new CheckDialog84(BoardTypes::BT_BASE);
+//    CheckB = new CheckDialog84(BoardTypes::BT_BASE);
+//    CheckB = new ChekDialogKTF(BoardTypes::BT_BASE);
     TimeD = new MNKTime;
-    CorD = new CorDialog;
-    S2Config->clear();
-    if (MainInterface != I_RS485)
-        ConfM = new ConfDialog84(S2Config);
+   // CorD = new CorDialog;
+   // CorDKTF = new CorDialogKTF;
+  //  S2Config->clear();
+  //  if (MainInterface != I_RS485)
+      //  ConfM = new ConfDialog84(S2Config);
+   //     ConfM = new ConfDialogKTF(S2Config);
 
     switch(MTypeB)
     {
     case Config::MTB_A2:
+        switch(MTypeM)
+        {
+           case Config::MTM_84:
+            CheckB = new CheckDialog84(BoardTypes::BT_BASE);
+             S2Config->clear();
+            if (MainInterface != I_RS485)
+                ConfM = new ConfDialog84(S2Config);
+            CorD = new CorDialog;
+           break;
+
+           case Config::MTM_87:
+            CheckB = new ChekDialogKTF(BoardTypes::BT_BASE);
+             S2Config->clear();
+            if (MainInterface != I_RS485)
+                ConfM = new ConfDialogKTF(S2Config);
+           //CorD = new CorDialog;
+            CorD = new CorDialogKTF;
+           break;
+        }
+    break;
+    case Config::MTB_A3:
         break;
+
     };
-    switch(MTypeM)
+
+
+  /*  switch(MTypeM)
     {
     case Config::MTM_84:
         break;
     };
-
+  */
     connect(this,SIGNAL(ClearBsi()),IDialog,SLOT(ClearBsi()));
     connect(this, SIGNAL(SetPredAlarmColor(quint8*)), CheckB,SLOT(SetPredAlarmColor(quint8*)));
     connect(this, SIGNAL(SetAlarmColor(quint8*)), CheckB,SLOT(SetAlarmColor(quint8*)));

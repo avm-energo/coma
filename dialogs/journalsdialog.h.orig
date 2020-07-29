@@ -16,7 +16,13 @@
 
 #define MAXSWJNUM   262144
 
+<<<<<<< HEAD
+=======
+#define SYSJOURID   0
+#define WORKJOURID  3010
 #define WORKJOURIDKTF  5011
+
+>>>>>>> origin/KTF
 class JournalDialog : public QDialog
 {
     Q_OBJECT

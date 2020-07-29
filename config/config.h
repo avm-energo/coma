@@ -84,7 +84,8 @@ public:
         MTB_85 = 0x8500,
         MTB_87 = 0x8700,
         MTB_A1 = 0xA100,
-        MTB_A2 = 0xA200
+        MTB_A2 = 0xA200,
+        MTB_A3 = 0xA300
     };
 
     BaseBoards Base;
@@ -100,7 +101,9 @@ public:
         MTM_82 = 0x0082,
         MTM_83 = 0x0083,
         MTM_84 = 0x0084,
-        MTM_85 = 0x0085
+        MTM_85 = 0x0085,
+        MTM_86 = 0x0086,
+        MTM_87 = 0x0087
     };
 
     struct Bci_Main
