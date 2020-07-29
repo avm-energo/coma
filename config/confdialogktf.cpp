@@ -729,7 +729,7 @@ void ConfDialogKTF::SetupUI()
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
-    //qswt ->addWidget(gb);
+    // qswt ->addWidget(gb);
     vlyout1->addWidget(gb);
 
     //  <<<<<<<<<<<<<<<<<<<<-
@@ -898,11 +898,11 @@ void ConfDialogKTF::SetupUI()
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
-    //qswt ->addWidget(gb);
-    vlyout1->addWidget(gb);
+    // qswt ->addWidget(gb);
+   vlyout1->addWidget(gb);
 
-   // connect(dopcb,SIGNAL(currentIndexChanged(int)),vlyout1,SLOT(ChangeWindow(int)));
-   // vlyout1->addWidget(qswt);
+   //  connect(dopcb,SIGNAL(currentIndexChanged(int)),vlyout1,SLOT(ChangeWindow(int)));
+    // vlyout1->addWidget(qswt);
 
     wind5->setLayout(vlyout1);
     area2->setWidget( wind5);
