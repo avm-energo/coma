@@ -18,6 +18,7 @@
 #include "../gen/colors.h"
 #include "../gen/files.h"
 #include "../gen/commands.h"
+#include "../config/confdialog.h"
 
 
 JournalDialog::JournalDialog() : QDialog()
@@ -385,8 +386,44 @@ void JournalDialog::FillEventsTable(QByteArray &ba, int jourtype)
     QVector<QVariant> EventNum, Num, Time, Type;
     ETableModel *model = new ETableModel;
     EventStruct event;
-    const QStringList sl = ((jourtype == JOURSYS) || (jourtype == JOURSYSM)) ? SysJourDescription : WorkJourDescription;
-    int mineventid = ((jourtype == JOURSYS) || (jourtype == JOURSYSM)) ? SYSJOURID : WORKJOURID;
+    /* const QStringList sl = ((jourtype == JOURSYS) || (jourtype == JOURSYSM)) ? SysJourDescription : WorkJourDescription;
+    int mineventid = ((jourtype == JOURSYS) || (jourtype == JOURSYSM)) ? SYSJOURID : WORKJOURID; */
+
+
+ // const QStringList *sl = new QStringList ;
+     QStringList sl;
+  int mineventid;
+
+    if ((jourtype == JOURSYS) || (jourtype == JOURSYSM))
+    {
+         sl = SysJourDescription ;
+         mineventid = SYSJOURID;
+    }
+    else
+    {
+        switch(MTypeB)
+        {
+        case Config::MTB_A2:
+            switch(MTypeM)
+            {
+               case Config::MTM_84:
+                 sl = WorkJourDescription ;
+                 mineventid =  WORKJOURID;
+               break;
+
+               case Config::MTM_87:
+                sl = WorkJourDescriptionKTF ;
+                mineventid =  WORKJOURIDKTF;
+               break;
+            }
+        break;
+
+        case Config::MTB_A3:
+        break;
+
+        };
+    }
+
     const QString tvname = ((jourtype == JOURSYS) || (jourtype == JOURSYSM)) ? "system" : "work";
     int N = 0;
     int basize = ba.size();
@@ -486,7 +523,7 @@ void JournalDialog::FillMeasTable(QByteArray &ba, int jourtype)
 
         if(meas.Time != 0xFFFFFFFF)
         {
-            EventNum << meas.NUM;
+            EventNum << meas.NUM;                             //для КТФ одинаково
             Time << TimeFunc::UnixTime32ToInvString(meas.Time);
             UeffA << meas.Ueff[0];
             UeffB << meas.Ueff[1];
@@ -582,6 +619,45 @@ void JournalDialog::FillMeasTable(QByteArray &ba, int jourtype)
    model->addColumn("Угол тока небаланса относительно тока ф.А, град");
    model->addColumn("Температура кристалла микроконтроллера");
    model->addColumn("Температура окружающей среды"); */
+
+
+QStringList strl;
+
+       switch(MTypeB)
+       {
+       case Config::MTB_A2:
+           switch(MTypeM)
+           {
+              case Config::MTM_84:
+
+               strl =TitleList;
+
+               for (int i=0; i<29 ;i++)
+
+               model->addColumn(strl[i]);
+
+              break;
+
+              case Config::MTM_87:
+
+               strl =TitleListKTF;
+
+               for (int i=-0; i<29 ;i++)
+
+               model->addColumn(strl[i]);
+
+              break;
+           }
+       break;
+
+       case Config::MTB_A3:
+       break;
+
+       };
+
+   model->fillModel(lsl);
+
+   /*
    model->addColumn("Ueff фA");
    model->addColumn("Ueff фB");
    model->addColumn("Ueff фC");
@@ -611,7 +687,9 @@ void JournalDialog::FillMeasTable(QByteArray &ba, int jourtype)
    model->addColumn("Phy_unb");
    model->addColumn("Tmk, °С");
    model->addColumn("Tamb, °С");
-   model->fillModel(lsl);
+   model->fillModel(lsl);     */
+
+
    QSortFilterProxyModel *pmdl = new QSortFilterProxyModel;
    pmdl->setSourceModel(model);
    int dateidx = model->Headers().indexOf("Дата/Время");
