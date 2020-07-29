@@ -53,6 +53,30 @@ public:
         quint32 res;
     };	// sizeof(Bda_trend_struct)=31*4=124
 
+    struct MeasureStructKTF
+    {
+        quint32	NUM;
+        quint32 Time;
+        float Ueff[3];
+        float Ieff[3];
+        float Frequency;
+        float U0;
+        float U1;
+        float U2;
+        float I0;
+        float I1;
+        float I2;
+        float Cbush[3];
+        float Tg_d[3];
+        float dCbush[3];
+        float dTg_d[3];
+        float Iunb;
+        float Phy_unb;
+        float Tmk;
+        float Tamb;
+        quint32 res;
+    };	// sizeof(Bda_trend_struct)=31*4=124
+
     explicit Journals(QObject *parent = nullptr);
     ~Journals();
 
@@ -142,10 +166,10 @@ private:
                                             << "Сигнализация по опасному уровню пускового тока"
                                             << "Аварийное сообщение по недопустимому уровню пускового тока";
 
-    const QStringList TitleListKTF = QStringList() << "Ueff фA" << "Ueff фB" << "Ueff фC" << "Ieff фA" << "Ieff фB" << "Ieff фC" << "Frequency" <<
-                                                      "U0" << "U1" << "U2" << "I0" << "I1" << "I2" << "Pf фA" << "Pf фB" << "Pf фC" << "Pf сумм." <<
-                                                      "Qf фA" << "Qf фB" << "Qf фC" << "Qf сумм." << "Sf фA" << "Sf фB" << "Sf фC" << "Sf сумм." <<
-                                                      "CosPhi" << "Tmk,°С" << "Tamb,°С" << "Twin,°С";
+    const QStringList MeasJourKTFHeaders = QStringList() << "Номер события" << "Дата/Время UTC" << "Ueff фA" << "Ueff фB" << "Ueff фC" << "Ieff фA" <<
+                                                            "Ieff фB" << "Ieff фC" << "Frequency" << "U0" << "U1" << "U2" << "I0" << "I1" << "I2" <<
+                                                            "Pf фA" << "Pf фB" << "Pf фC" << "Pf сумм." << "Qf фA" << "Qf фB" << "Qf фC" << "Qf сумм." <<
+                                                            "Sf фA" << "Sf фB" << "Sf фC" << "Sf сумм." << "CosPhi" << "Tmk,°С" << "Tamb,°С" << "Twin,°С";
 
     const QStringList MeasJourHeaders = QStringList() << "Номер события" << "Дата/Время UTC" << "Ueff фA" << "Ueff фB" << "Ueff фC" <<
                                                          "Ieff фA" << "Ieff фB" << "Ieff фC" << "Freq" << "U0" << "U1" << "U2" << "I0" << "I1" << "I2" <<

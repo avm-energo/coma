@@ -274,41 +274,6 @@ void JournalDialog::SaveJour()
     WW->SetMessage("Запись файла...");
     WW->Start();
     emit StartSaveJour(jtype, amdl, filename);
-
-
-       switch(MTypeB)
-       {
-       case Config::MTB_A2:
-           switch(MTypeM)
-           {
-              case Config::MTM_84:
-
-               strl =TitleList;
-
-               for (int i=0; i<29 ;i++)
-
-               model->addColumn(strl[i]);
-
-              break;
-
-              case Config::MTM_87:
-
-               strl =TitleListKTF;
-
-               for (int i=-0; i<29 ;i++)
-
-               model->addColumn(strl[i]);
-
-              break;
-           }
-       break;
-
-       case Config::MTB_A3:
-       break;
-
-       };
-
-   model->fillModel(lsl);
 }
 
 int JournalDialog::GetJourNum(const QString &objname)
@@ -410,4 +375,4 @@ void JournalDialog::SetModel(ETableModel *mdl)
     }
     Done("Прочитано успешно");
 }
-*/
+
