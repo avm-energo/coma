@@ -37,6 +37,11 @@ QWidget *Check_84::Bd1W(QWidget *parent)
     //setFont(font);
     gb->setFont(font);
     glyout->addWidget(WDFunc::NewLBL(parent, "Температура микроконтроллера, °С"), 0,0,1,1);
+
+    QLabel *lbl = new QLabel;
+    lbl->setText("Температура микроконтроллера, °С");
+    glyout->addWidget(lbl, 0, 0, 1, 1);
+
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(101), ValuesFormat, "Температура микроконтроллера, °С"), 1,0,1,1);
     //hlyout->addWidget(WDFunc::NewLBL(parent, "                     "));
     glyout->addWidget(WDFunc::NewLBL(parent, "Tamb, °С"),0,1,1,1);

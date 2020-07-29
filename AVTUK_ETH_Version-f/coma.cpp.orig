@@ -51,8 +51,12 @@
 #include "../gen/files.h"
 #include "../modbus/modbus.h"
 #include "../gen/timefunc.h"
+<<<<<<< HEAD
 #include "../usb/commands.h"
+=======
+#include "../gen/commands.h"
 #include "../check/chekdialogktf.h"
+>>>>>>> origin/KTF
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
 {
@@ -447,9 +451,14 @@ void Coma::StartWork()
 void Coma::PrepareDialogs()
 {
     IDialog = new InfoDialog;
+<<<<<<< HEAD
     JourD = new JournalDialog(Ch104);
+    CheckB = new CheckDialog84(BoardTypes::BT_BASE);
+=======
+    JourD = new JournalDialog;
 //    CheckB = new CheckDialog84(BoardTypes::BT_BASE);
 //    CheckB = new ChekDialogKTF(BoardTypes::BT_BASE);
+>>>>>>> origin/KTF
     TimeD = new MNKTime;
    // CorD = new CorDialog;
    // CorDKTF = new CorDialogKTF;

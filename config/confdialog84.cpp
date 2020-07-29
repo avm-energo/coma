@@ -30,6 +30,7 @@ ConfDialog84::ConfDialog84(QVector<S2::DataRec> *S2Config, QWidget *parent) :
 
 ConfDialog84::~ConfDialog84()
 {
+
 }
 
 void ConfDialog84::Fill()
@@ -880,8 +881,6 @@ void ConfDialog84::SetupUI()
 void ConfDialog84::CheckConf()
 {
 }
-
-
 
 
 void ConfDialog84::SetDefConf()

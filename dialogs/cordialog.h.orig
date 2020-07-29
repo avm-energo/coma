@@ -5,8 +5,12 @@
 #include <QByteArray>
 #include "../modbus/modbus.h"
 #include "../iec104/iec104.h"
+<<<<<<< HEAD
 #include "../models/etablemodel.h"
+=======
+#include "../widgets/etablemodel.h"
 #include "abstractcordialog.h"
+>>>>>>> origin/KTF
 
 class CorDialog : public AbstractCorDialog
 {

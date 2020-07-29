@@ -30,8 +30,9 @@
 #include "../usb/commands.h"
 
 
+
 CorDialog::CorDialog(QWidget *parent) :
-    QDialog(parent)
+    AbstractCorDialog(parent)
 {
     int i;
 
@@ -63,6 +64,8 @@ CorDialog::~CorDialog()
 void CorDialog::SetupUI()
 {
     //QWidget *cp2 = new QWidget;
+    QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
+    setStyleSheet(tmps);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
 /*    ETableView *tv = new ETableView;

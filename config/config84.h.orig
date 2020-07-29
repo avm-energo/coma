@@ -80,7 +80,11 @@ public:
         quint32		baud;
         quint8		parity;
         quint8		stopbit;
+<<<<<<< HEAD
+        quint8      adrMB;
+=======
         quint8     adrMB;
+>>>>>>> origin/KTF
         quint8      isNTP;
     } Com;
 
