@@ -95,7 +95,7 @@ public:
     static QWidget *NewLBLAndLE(QWidget *parent, QString caption, QString lename, bool enabled=false);
     static void SetEnabled(QWidget *w, const QString &wname, bool enabled);
     static void SetVisible(QWidget *w, const QString &wname, bool visible);
-    static QString StringValueWithCheck(float value, int precision = 5);
+    static QString StringValueWithCheck(float value, int precision = 5,bool exp=false);
     static QVariant FloatValueWithCheck(float value);
     static QImage *TwoImages(const QString &first, const QString &second);
     static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, \

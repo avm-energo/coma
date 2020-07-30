@@ -7,7 +7,7 @@ ConfigKTF::ConfigKTF(QVector<S2::DataRec> *config)
 
     // параметры входных сигналов
 //    quint32 StartInIndex = ID8084_START;
-    quint32 StartComIndex = ID_COM;
+  //  quint32 StartComIndex = ID_COM;
     for (int i=0; i<config->size(); ++i)
     {
         if (config->at(i).id == 0xFFFFFFFF)

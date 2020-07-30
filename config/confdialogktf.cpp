@@ -1175,7 +1175,7 @@ void ConfDialogKTF::Write_Date()
 
 void ConfDialogKTF::Set104(double dbl)
 {
-
+  Q_UNUSED(dbl);
 }
 
 void ConfDialogKTF::SetCType(int num)

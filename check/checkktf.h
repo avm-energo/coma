@@ -34,32 +34,55 @@ public:
 
     struct Bd2
     {
-        float Frequency;
+
         float IUefNat_filt[4];
         float IUeff_filtered[4];
         float KrF[3];
-        float U0;
-        float U1;
-        float U2;
-        float Kunsim0;
-        float Kunsim2;
-        float THD[3];
-        float UI_Harm[3][61];
+//        float U0;
+//        float U1;
+//        float U2;
+//        float Kunsim0;
+//        float Kunsim2;
+//        float THD[3];
+//        float UI_Harm[3][61];
     };
     struct Bd3
     {
-        float Frequency;
+
         float IUefNat_filt[4];    
         float IUeff_filtered[4];
         float KrF[3];
+//        float U0;
+//        float U1;
+//        float U2;
+//        float Kunsim0;
+ //       float Kunsim2;
+ //       float THD[3];
+//        float UI_Harm[3][61];
+    };
+
+
+    struct Bd5
+    {
+       float UI_Harm[3][61];
+    };
+
+    struct Bd6
+    {
         float U0;
         float U1;
         float U2;
         float Kunsim0;
         float Kunsim2;
         float THD[3];
+    };
+
+    struct Bd7
+    {
         float UI_Harm[3][61];
     };
+
+
 
     struct Bd10
     {
@@ -142,6 +165,9 @@ public:
     Bd11 Bd_block11;
     Bd9 Bd_block9;
     Bd18 Bd_block18;
+    Bd5 Bd_block5;
+    Bd6 Bd_block6;
+    Bd7 Bd_block7;
 
 
 
@@ -175,6 +201,10 @@ public:
     void FillBd11(QWidget *parent);
     void FillBd9(QWidget *parent);
     void FillBd18(QWidget *parent);
+    void FillBd4(QWidget *parent);
+    void FillBd5(QWidget *parent);
+    void FillBd6(QWidget *parent);
+    void FillBd7(QWidget *parent);
 
 
 

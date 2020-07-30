@@ -198,6 +198,7 @@ void Coma::StartWork()
     QString str;
     MTypeB = 0;
     MTypeM = 0;
+    CurTabIndex = -1;
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
     {
@@ -1593,11 +1594,6 @@ void Coma::MainTWTabClicked(int tabindex)
     if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
         return;
     CurTabIndex = tabindex;
-    if (ConfM != nullptr)
-    {
-        if (tabindex == ConfIndex)
-            ConfM->ReadConf();
-    }
     ChModbus->Tabs(tabindex);
     if (CorD != nullptr)
         CorD->GetCorBd(tabindex);
@@ -1617,6 +1613,12 @@ void Coma::MainTWTabClicked(int tabindex)
     }
     else
         TimeTimer->stop();
+
+    if (ConfM != nullptr)
+    {
+        if (tabindex == ConfIndex)
+            ConfM->ReadConf();
+    }
 }
 
 void Coma::ModBusFinished()

@@ -35,8 +35,8 @@ ChekDialogKTF::ChekDialogKTF(BoardTypes board, QWidget *parent) : EAbstractCheck
     SetBd(17, &ChKTF->Bd_block13, sizeof(CheckKTF::Bd13));
 
     if(Config::MTB_A2) //(ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8)
-    sl = QStringList() <<  "Основные" << "Модель" << "Ресурс" << "1-я гармоника"<< "Несиметрия"<< "Гармоники 1"<< "Гармоники 2"<< "Гармоники 3"<< "Гармоники 4"<< "Гармоники 5"<<"Гармоники 6"\
-                        <<"Гармоники1.1" <<"Гармоники1.2"<<"Гармоники1.3"<<"Гармоники1.4"<<"Гармоники1.5" << "Гармоники1.6";
+    sl = QStringList() <<  "Основные" << "Модель" << "Ресурс" << "1-я гармоника"<< "Несиметрия"<< "Гармоники U 2-11"<< "Гармоники U 12-21"<< "Гармоники U 22-31"<< "Гармоники U 32-41"<< "Гармоники U 42-51"<<"Гармоники U 52-61"\
+                        <<"Гармоники I 2-11" <<"Гармоники I 12-21"<<"Гармоники I 22-31"<<"Гармоники I 32-41"<< "Гармоники I 42-51" << "Гармоники I 52-61";
 
     BdUINum = sl.size();
 
@@ -218,6 +218,24 @@ void ChekDialogKTF::USBUpdate()
     if (Commands::GetBd(18, &ChKTF->Bd_block9, sizeof(CheckKTF::Bd18)) == NOERROR)
     {
         ChKTF->FillBd18(this);
+
+    }
+
+    if (Commands::GetBd(4, &ChKTF->Bd_block4, sizeof(CheckKTF::Bd4)) == NOERROR)
+    {
+        ChKTF->FillBd4(this);
+    }
+    if (Commands::GetBd(5, &ChKTF->Bd_block5, sizeof(CheckKTF::Bd5)) == NOERROR)
+    {
+        ChKTF->FillBd5(this);
+    }
+    if (Commands::GetBd(6, &ChKTF->Bd_block6, sizeof(CheckKTF::Bd6)) == NOERROR)
+    {
+        ChKTF->FillBd6(this);
+    }
+    if (Commands::GetBd(7, &ChKTF->Bd_block7, sizeof(CheckKTF::Bd7)) == NOERROR)
+    {
+        ChKTF->FillBd7(this);
     }
 
 }
