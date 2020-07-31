@@ -1,17 +1,19 @@
-#include <QApplication>
-#include <QFile>
-#include <QDate>
-#include <QObject>
 #include "QtXlsx/xlsxdocument.h"
+#include <QAbstractItemModelTester>
+#include <QApplication>
+#include <QDate>
+#include <QFile>
+#include <QObject>
+#include <QThread>
 
+#include "../usb/commands.h"
+#include "../widgets/wd_func.h"
+#include "error.h"
+#include "files.h"
 #include "journals.h"
+#include "maindef.h"
 #include "s2.h"
 #include "timefunc.h"
-#include "error.h"
-#include "maindef.h"
-#include "../usb/commands.h"
-#include "files.h"
-#include "../widgets/wd_func.h"
 
 Journals::Journals(QObject *parent) : QObject(parent)
 {
@@ -19,27 +21,21 @@ Journals::Journals(QObject *parent) : QObject(parent)
     _workModel = new ETableModel;
     _measModel = new ETableModel;
 }
-
-Journals::~Journals()
-{
-}
-
-void Journals::SetProxyModels(QSortFilterProxyModel *workmdl, QSortFilterProxyModel *sysmdl, QSortFilterProxyModel *measmdl)
+void Journals::SetProxyModels(
+    QSortFilterProxyModel *workmdl, QSortFilterProxyModel *sysmdl, QSortFilterProxyModel *measmdl)
 {
     _proxyWorkModel = workmdl;
     _proxySysModel = sysmdl;
     _proxyMeasModel = measmdl;
+    // auto tester = new QAbstractItemModelTester(_workModel, QAbstractItemModelTester::FailureReportingMode::Fatal,
+    // this);
 }
 
-void Journals::SetJourType(int jourtype)
-{
-    _jourType = jourtype;
-}
+Journals::~Journals() { }
 
-void Journals::SetJourFile(const QString &jourfile)
-{
-    _jourFile = jourfile;
-}
+void Journals::SetJourType(int jourtype) { _jourType = jourtype; }
+
+void Journals::SetJourFile(const QString &jourfile) { _jourFile = jourfile; }
 /*
 void Journals::SetParentWidget(QWidget *w)
 {
@@ -55,7 +51,7 @@ void Journals::ReadJourFileAndProcessIt()
         return;
     }
     QByteArray ba = file.readAll();
-    switch(_jourType)
+    switch (_jourType)
     {
     case JOURSYS:
         FillEventsTable(ba);
@@ -82,7 +78,7 @@ void Journals::FillEventsTable(QByteArray &ba)
     int N = 0;
     int basize = ba.size();
     char *file = ba.data();
-    int joursize = 0; // размер считанного буфера с информацией
+    // int joursize = 0; // размер считанного буфера с информацией
     int recordsize = sizeof(EventStruct);
     int fhsize = sizeof(S2::FileHeader);
 
@@ -106,11 +102,12 @@ void Journals::FillEventsTable(QByteArray &ba)
         DBGMSG;
         return;
     }
+
     file += fhsize;
     S2::DataRec jour;
     int drsize = sizeof(S2::DataRec) - sizeof(void *);
     memcpy(&jour, file, drsize);
-    joursize = jour.num_byte;
+    // joursize = jour.num_byte;
     file += drsize; // move file pointer to thedata
     int counter = 0;
     int i = 0;
@@ -119,7 +116,7 @@ void Journals::FillEventsTable(QByteArray &ba)
         memcpy(&event, file, recordsize);
         file += recordsize;
         i += recordsize;
-        if(event.Time != 0xFFFFFFFFFFFFFFFF)
+        if (event.Time != 0xFFFFFFFFFFFFFFFF)
         {
             QVector<QVariant> vl;
             ++counter;
@@ -134,7 +131,7 @@ void Journals::FillEventsTable(QByteArray &ba)
             }
             else
                 vl << "Некорректный номер события";
-            if(event.EvType)
+            if (event.EvType)
                 vl << "Пришло";
             else
                 vl << "Ушло";
@@ -155,7 +152,7 @@ void Journals::FillMeasTable(QByteArray &ba)
     int recordsize = sizeof(MeasureStruct);
     int basize = ba.size();
     char *file = ba.data();
-    int joursize = 0; // размер считанного буфера с информацией
+    // int joursize = 0; // размер считанного буфера с информацией
     int fhsize = sizeof(S2::FileHeader);
 
     if (_jourType == Journals::JOURMEAS)
@@ -164,7 +161,7 @@ void Journals::FillMeasTable(QByteArray &ba)
         S2::DataRec jour;
         int drsize = sizeof(S2::DataRec) - sizeof(void *);
         memcpy(&jour, file, drsize);
-        joursize = jour.num_byte;
+        // joursize = jour.num_byte;
         file += drsize; // move file pointer to thedata
     }
     int i = 0;
@@ -174,28 +171,29 @@ void Journals::FillMeasTable(QByteArray &ba)
         file += recordsize;
         i += recordsize;
 
-        if(meas.Time != 0xFFFFFFFF)
+        if (meas.Time != 0xFFFFFFFF)
         {
             QVector<QVariant> vl;
-            vl << meas.NUM << TimeFunc::UnixTime32ToInvString(meas.Time) << meas.Ueff[0] << meas.Ueff[1] << meas.Ueff[2] << meas.Ieff[0] << meas.Ieff[1] << meas.Ieff[2] <<
-                  meas.Frequency << meas.U0 << meas.U1 << meas.U2 << meas.I0 << meas.I1 << meas.I2 << meas.Cbush[0] << meas.Cbush[1] << meas.Cbush[2] <<
-                  meas.Tg_d[0] << meas.Tg_d[1] << meas.Tg_d[2] << meas.dCbush[0] << meas.dCbush[1] << meas.dCbush[2] << meas.dTg_d[0] << meas.dTg_d[1] << meas.dTg_d[2] <<
-                  meas.Iunb << meas.Phy_unb << meas.Tmk << meas.Tamb;
+            vl << meas.NUM << TimeFunc::UnixTime32ToInvString(meas.Time) << meas.Ueff[0] << meas.Ueff[1] << meas.Ueff[2]
+               << meas.Ieff[0] << meas.Ieff[1] << meas.Ieff[2] << meas.Frequency << meas.U0 << meas.U1 << meas.U2
+               << meas.I0 << meas.I1 << meas.I2 << meas.Cbush[0] << meas.Cbush[1] << meas.Cbush[2] << meas.Tg_d[0]
+               << meas.Tg_d[1] << meas.Tg_d[2] << meas.dCbush[0] << meas.dCbush[1] << meas.dCbush[2] << meas.dTg_d[0]
+               << meas.dTg_d[1] << meas.dTg_d[2] << meas.Iunb << meas.Phy_unb << meas.Tmk << meas.Tamb;
             ValueLists.append(vl);
         }
     }
 
-   model->ClearModel();
-   model->SetHeaders(MeasJourHeaders);
-   if (model->columnCount() < 3)
-   {
-       ERMSG("Column count error");
-       return;
-   }
-   for (int i=2; i<model->columnCount(); ++i)
-       model->SetColumnFormat(i, 4); // set 4 diits precision for all cells starting 2
-   model->fillModel(ValueLists);
-   ResultReady();
+    model->ClearModel();
+    model->SetHeaders(MeasJourHeaders);
+    if (model->columnCount() < 3)
+    {
+        ERMSG("Column count error");
+        return;
+    }
+    for (int i = 2; i < model->columnCount(); ++i)
+        model->SetColumnFormat(i, 4); // set 4 diits precision for all cells starting 2
+    model->fillModel(ValueLists);
+    ResultReady();
 }
 
 void Journals::ResultReady()
@@ -203,7 +201,7 @@ void Journals::ResultReady()
     ETableModel *mdl;
     QSortFilterProxyModel *pmdl;
     Qt::SortOrder order;
-    switch(_jourType)
+    switch (_jourType)
     {
     case Journals::JOURWORK:
         mdl = _workModel;
@@ -220,18 +218,18 @@ void Journals::ResultReady()
         pmdl = _proxyMeasModel;
         order = Qt::AscendingOrder;
         break;
+    default:
+        DBGMSG;
+        return;
     }
     int dateidx = mdl->Headers().indexOf("Дата/Время UTC");
-    pmdl->setDynamicSortFilter(true);
+    pmdl->setDynamicSortFilter(false);
     pmdl->setSourceModel(mdl);
     pmdl->sort(dateidx, order);
     emit Done("Прочитано успешно");
 }
 
-void Journals::FillSysJour(QByteArray ba)
-{
-    FillEventsTable(ba);
-}
+void Journals::FillSysJour(QByteArray ba) { FillEventsTable(ba); }
 
 void Journals::FillMeasJour(QByteArray ba)
 {
@@ -242,17 +240,14 @@ void Journals::FillMeasJour(QByteArray ba)
         ERMSG("basize");
     }
     memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
-    if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
+    if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), crctocheck))
     {
         ERMSG("CRC error");
     }
     FillMeasTable(ba);
 }
 
-void Journals::FillWorkJour(QByteArray ba)
-{
-    FillEventsTable(ba);
-}
+void Journals::FillWorkJour(QByteArray ba) { FillEventsTable(ba); }
 
 void Journals::StartGetJour()
 {
@@ -264,9 +259,9 @@ void Journals::StartGetJour()
     else if (MainInterface == I_USB)
     {
         QByteArray ba;
-        if(Commands::GetFile(jnum, ba) == NOERROR)
+        if (Commands::GetFile(jnum, ba) == NOERROR)
         {
-            switch(_jourType)
+            switch (_jourType)
             {
             case JOURSYS:
                 FillEventsTable(ba);
@@ -291,7 +286,7 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
     QString jourtypestr;
     QXlsx::Format cellformat;
     Qt::SortOrder order = Qt::AscendingOrder;
-    switch(jtype)
+    switch (jtype)
     {
     case Journals::JOURSYS:
         jourtypestr = "Системный журнал";
@@ -317,29 +312,30 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
     int dateidx = mdl->Headers().indexOf("Дата/Время UTC");
     pmdl->sort(dateidx, order);
     QXlsx::Document *xlsx = new QXlsx::Document(filename);
-    xlsx->write(1,1,QVariant(jourtypestr));
-    xlsx->write(2,1,QVariant("Модуль: " + ModuleBSI::GetModuleTypeString() + " сер. ном. " + \
-                             QString::number(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 10)));
-    xlsx->write(3,1,QVariant("Дата сохранения журнала: "+QDateTime::currentDateTime().toString("dd-MM-yyyy")));
-    xlsx->write(4,1,QVariant("Время сохранения журнала: "+QDateTime::currentDateTime().toString("hh:mm:ss")));
+    xlsx->write(1, 1, QVariant(jourtypestr));
+    xlsx->write(2, 1,
+        QVariant("Модуль: " + ModuleBSI::GetModuleTypeString() + " сер. ном. "
+            + QString::number(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 10)));
+    xlsx->write(3, 1, QVariant("Дата сохранения журнала: " + QDateTime::currentDateTime().toString("dd-MM-yyyy")));
+    xlsx->write(4, 1, QVariant("Время сохранения журнала: " + QDateTime::currentDateTime().toString("hh:mm:ss")));
 
     // пишем в файл заголовки
-    for (int i=0; i<pmdl->columnCount(); ++i)
-        xlsx->write(5, (i+1), pmdl->headerData(i, Qt::Horizontal, Qt::DisplayRole));
+    for (int i = 0; i < pmdl->columnCount(); ++i)
+        xlsx->write(5, (i + 1), pmdl->headerData(i, Qt::Horizontal, Qt::DisplayRole));
 
     // теперь по всем строкам модели пишем данные
-    for (int i=0; i<pmdl->rowCount(); ++i)
+    for (int i = 0; i < pmdl->rowCount(); ++i)
     {
         // номер события
-        xlsx->write((6+i), 1, pmdl->data(pmdl->index(i, 0), Qt::DisplayRole).toString());
+        xlsx->write((6 + i), 1, pmdl->data(pmdl->index(i, 0), Qt::DisplayRole).toString());
         // время события
-        xlsx->write((6+i), 2, pmdl->data(pmdl->index(i, 1), Qt::DisplayRole).toString());
-        for (int j=2; j<pmdl->columnCount(); ++j)
+        xlsx->write((6 + i), 2, pmdl->data(pmdl->index(i, 1), Qt::DisplayRole).toString());
+        for (int j = 2; j < pmdl->columnCount(); ++j)
         {
-/*            float number = ;
-            QString str = QString::number(number, 'f', 4);
-            str.replace('.', ','); */
-            xlsx->write((6+i), (1+j), pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toFloat(), cellformat);
+            /*            float number = ;
+                        QString str = QString::number(number, 'f', 4);
+                        str.replace('.', ','); */
+            xlsx->write((6 + i), (1 + j), pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toFloat(), cellformat);
         }
     }
     xlsx->save();

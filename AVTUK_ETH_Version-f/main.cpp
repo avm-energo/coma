@@ -1,12 +1,15 @@
+#include "coma.h"
 #include <QApplication>
 #include <QCommandLineParser>
-#include "coma.h"
 
 int main(int argc, char *argv[])
 {
+#ifdef QT_DEBUG
+    qSetMessagePattern("%{file}(%{line}): %{message}");
+#endif
     QString Parameter;
     QApplication a(argc, argv);
-    a.setStyle( "cleanlooks" );
+    a.setStyle("cleanlooks");
     Coma w;
     w.SetMode(Coma::COMA_GENERALMODE);
     QCoreApplication::setApplicationName(PROGCAPTION);
@@ -14,9 +17,9 @@ int main(int argc, char *argv[])
     if (argc > 1) // есть аргументы запуска
     {
         QCommandLineParser parser;
-/*        parser.setApplicationDescription("COMA");
-        parser.addHelpOption();
-        parser.addVersionOption(); */
+        /*        parser.setApplicationDescription("COMA");
+                parser.addHelpOption();
+                parser.addVersionOption(); */
         parser.addPositionalArgument("file", "file with oscillogramm (*.osc) or with switch journal (*.swj)");
         parser.process(QCoreApplication::arguments());
         const QStringList files = parser.positionalArguments();

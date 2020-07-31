@@ -1,13 +1,10 @@
 #include "etableitem.h"
 
-ETableItem::ETableItem(ETableItem *parent)
-{
-    Q_UNUSED(parent);
-}
+ETableItem::ETableItem(ETableItem *parent) { Q_UNUSED(parent); }
 
 QString ETableItem::data(int column) const
 {
-    if (column < itemData.size())
+    if (!itemData.isEmpty() && column <= itemData.size())
         return itemData.at(column);
     else
         return QString();
@@ -50,7 +47,7 @@ void ETableItem::setTextAlignment(int column, int alignment)
 
 QColor ETableItem::color(int column)
 {
-    if (column < itemColor.size())
+    if (!itemColor.isEmpty() && column < itemColor.size())
         return itemColor.at(column);
     else
         return QColor();
@@ -58,7 +55,8 @@ QColor ETableItem::color(int column)
 
 QFont ETableItem::font(int column)
 {
-    if (column < itemFont.size())
+    // Продолжить с try catch
+    if (!itemFont.isEmpty() && column <= itemFont.size())
         return itemFont.at(column);
     else
         return QFont();
@@ -66,7 +64,7 @@ QFont ETableItem::font(int column)
 
 QIcon ETableItem::icon(int column)
 {
-    if (column < itemIcon.size())
+    if (!itemIcon.isEmpty() && column <= itemIcon.size())
         return itemIcon.at(column);
     else
         return QIcon();
@@ -74,7 +72,7 @@ QIcon ETableItem::icon(int column)
 
 int ETableItem::TextAlignment(int column)
 {
-    if (column < itemTextAlignment.size())
+    if (!itemTextAlignment.isEmpty() && column < itemTextAlignment.size())
         return itemTextAlignment.at(column);
     else
         return (Qt::AlignLeft | Qt::AlignVCenter);

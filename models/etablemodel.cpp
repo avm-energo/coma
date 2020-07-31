@@ -1,7 +1,10 @@
 #include "etablemodel.h"
-
+#include <QDebug>
 // ######################################## Переопределение методов QAbstractTableModel
 // ####################################
+#if _MSC_VER && !__INTEL_COMPILER
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
 
 ETableModel::ETableModel(QObject *parent) : QAbstractTableModel(parent)
 {
@@ -18,8 +21,9 @@ ETableModel::ETableModel(QObject *parent) : QAbstractTableModel(parent)
     icons[0] = QIcon("images/hr.png");
     icons[1] = QIcon("images/ok.png");
     icons[2] = QIcon("images/cross.png");
-    hdr.clear();
-    maindata.clear();
+    // Изучить
+    // hdr.clear();
+    // maindata.clear();
 }
 
 ETableModel::~ETableModel() { }
@@ -69,14 +73,17 @@ QVariant ETableModel::data(const QModelIndex &index, int role) const
                 }
                 return maindata.at(row)->data(column);
             }
-            else if (role == Qt::FontRole)
+            switch (role)
+            {
+            case Qt::FontRole:
                 return QVariant::fromValue(QFont(maindata.at(row)->font(column)));
-            else if (role == Qt::ForegroundRole)
+            case Qt::ForegroundRole:
                 return QVariant::fromValue(QColor(maindata.at(row)->color(column)));
-            else if (role == Qt::DecorationRole)
+            case Qt::DecorationRole:
                 return QVariant::fromValue(QIcon(maindata.at(row)->icon(column)));
-            else if (role == Qt::TextAlignmentRole)
+            case Qt::TextAlignmentRole:
                 return maindata.at(row)->TextAlignment(column);
+            }
         }
     }
     return QVariant();
@@ -94,32 +101,26 @@ bool ETableModel::setData(const QModelIndex &index, const QVariant &value, int r
 {
     if (index.isValid())
     {
-        if (role == Qt::EditRole)
+        switch (role)
         {
+        case Qt::EditRole:
             if (index.column() < hdr.size())
             {
                 maindata.at(index.row())->setData(index.column(), value.toString()); // пишем само значение
                 //                emit dataChanged(index, index);
                 return true;
             }
-        }
-        else if (role == Qt::ForegroundRole)
-        {
+            break;
+        case Qt::ForegroundRole:
             maindata.at(index.row())->setColor(index.column(), value.value<QColor>());
             return true;
-        }
-        else if (role == Qt::FontRole)
-        {
+        case Qt::FontRole:
             maindata.at(index.row())->setFont(index.column(), value.value<QFont>());
             return true;
-        }
-        else if (role == Qt::DecorationRole)
-        {
+        case Qt::DecorationRole:
             maindata.at(index.row())->setIcon(index.column(), value.value<QIcon>());
             return true;
-        }
-        else if (role == Qt::TextAlignmentRole)
-        {
+        case Qt::TextAlignmentRole:
             maindata.at(index.row())->setTextAlignment(index.column(), value.toInt());
             return true;
         }
@@ -130,7 +131,7 @@ bool ETableModel::setData(const QModelIndex &index, const QVariant &value, int r
 Qt::ItemFlags ETableModel::flags(const QModelIndex &index) const
 {
     if (index.isValid())
-        return QAbstractItemModel::flags(index);
+        return QAbstractItemModel::flags(index) | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
     return 0;
 }
 
@@ -182,15 +183,20 @@ bool ETableModel::removeColumns(int position, int columns, const QModelIndex &in
 
 bool ETableModel::insertRows(int position, int rows, const QModelIndex &index)
 {
-    int i, j;
     Q_UNUSED(index);
     beginInsertRows(QModelIndex(), position, position + rows - 1);
-    for (i = 0; i < rows; i++)
+    for (int i = 0; i < rows; i++)
     {
         ETableItem *item = new ETableItem();
-        for (j = 0; j < hdr.size(); j++)
+        for (int j = 0; j < hdr.size(); j++)
             item->setData(j, "");
-        maindata.insert(position, item);
+        if (i >= rowCount() && i <= rowCount())
+        {
+            maindata.append(item);
+            qDebug("Row has been appended");
+        }
+        else
+            maindata.insert(position, item);
     }
     endInsertRows();
     return true;
@@ -248,8 +254,8 @@ void ETableModel::addRow()
 
 void ETableModel::fillModel(QVector<QVector<QVariant>> lsl)
 {
-    for (int i = 0; i < lsl.size(); ++i)
-        AddRowWithData(lsl.at(i));
+    for (const auto i : lsl)
+        AddRowWithData(i);
 }
 
 // выдать значения по столбцу column в выходной QStringList
@@ -324,7 +330,8 @@ void ETableModel::setCellAttr(QModelIndex index, int fcset, int icon)
 void ETableModel::ClearModel()
 {
     beginResetModel();
-    qDeleteAll(maindata);
+    if (!maindata.isEmpty())
+        qDeleteAll(maindata.begin(), maindata.end());
     hdr.clear();
     maindata.clear();
     ColFormat.clear();
