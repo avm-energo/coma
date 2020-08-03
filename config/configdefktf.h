@@ -90,8 +90,8 @@
 #define DEF_UNOM1       35
 #define DEF_DUOSC     2
 #define DEF_DIOSC_ID   2
-#define DEF_DUIMIN_ID      0,5
-#define DEF_IMIN      0,2
+#define DEF_DUIMIN_ID      0.5
+#define DEF_IMIN      0.2
 #define DEF_RTERM      100
 #define DEF_W100       1.385
 #define DEF_T_DATA_REC   300
@@ -111,7 +111,7 @@
 #define DEF_TNNTPRED      100
 #define DEF_TAMB_NOM       25
 #define DEF_DTNNT_NOM       70
-#define DEF_KDOB      0,1
+#define DEF_KDOB      0.1
 #define DEF_TAUWNOM      10
 #define DEF_UMAXM       120
 #define DEF_IMAXM     33
@@ -124,7 +124,7 @@
 #define DEF_IP_ID      172,16,29,12
 #define DEF_MASK_ID      255,255,252,0
 #define DEF_GW_ID       172,16,29,1
-#define DEF_PORT_ID     24042405,502,502
+#define DEF_PORT_ID     2404,2405,502,502
 #define DEF_SNTP_ID  172,16,31,220
 #define DEF_BAUD_ID      0
 #define DEF_PARITY_ID    0

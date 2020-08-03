@@ -26,12 +26,17 @@ public:
     QStringList MBs1 = QStringList() << "нет" << "тип 1"<< "тип 2" << "тип 3";
 
 
+
+
 private:
 
     ConfigKTF *KTF;
     bool   DDosc ;
     bool   Mb ;
     bool    IsNtp;
+    QList<QWidget *> WidgetList;
+
+
 
     void Fill();
     void FillBack();

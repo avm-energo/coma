@@ -238,7 +238,7 @@ void ConfDialog84::FillBack()
          C84->Com_param.SNTP[i] = inSNTP.at(i).toInt();
         }
 
-        WDFunc::SPBData(this, "Port"+QString::number(0), C84->Com_param.Port[0]);
+        WDFunc::SPBData(this, "Port0", C84->Com_param.Port[0]);
 
         cbidx = WDFunc::CBIndex(this, "Baud");
         C84->Com_param.baud = (Rates.at(cbidx).toInt());
@@ -682,9 +682,9 @@ void ConfDialog84::SetupUI()
     {
       C84->Com_param.Mask[i]=0;
       if(i==3)
-      Str.append(german.toString(C84->Com_param.Mask[i]));
+        Str.append(german.toString(C84->Com_param.Mask[i]));
       else
-      Str.append(german.toString(C84->Com_param.Mask[i])+".");
+        Str.append(german.toString(C84->Com_param.Mask[i])+".");
     }
     glyout->addWidget(WDFunc::NewLBL(this, "Маска:"), row,0,1,1);
     glyout->addWidget(WDFunc::NewLE(this, "Mask", Str, paramcolor), row,1,1,1, Qt::AlignLeft);
@@ -699,9 +699,9 @@ void ConfDialog84::SetupUI()
     {
       C84->Com_param.GateWay[i]=0;
       if(i==3)
-      Str.append(german.toString(C84->Com_param.GateWay[i]));
+        Str.append(german.toString(C84->Com_param.GateWay[i]));
       else
-      Str.append(german.toString(C84->Com_param.GateWay[i])+".");
+        Str.append(german.toString(C84->Com_param.GateWay[i])+".");
     }
     glyout->addWidget(WDFunc::NewLBL(this, "Шлюз:"), row,0,1,1);
     glyout->addWidget(WDFunc::NewLE(this, "GateWay", Str, paramcolor), row,1,1,1, Qt::AlignLeft);
@@ -727,9 +727,9 @@ void ConfDialog84::SetupUI()
     {
       C84->Com_param.SNTP[i]=0;
       if(i==3)
-      Str.append(german.toString(C84->Com_param.SNTP[i]));
+        Str.append(german.toString(C84->Com_param.SNTP[i]));
       else
-      Str.append(german.toString(C84->Com_param.SNTP[i])+".");
+        Str.append(german.toString(C84->Com_param.SNTP[i])+".");
     }
     glyout->addWidget(WDFunc::NewLBL(this, "Адрес SNTP сервера:"), row,0,1,1);
     glyout->addWidget(WDFunc::NewLE(this, "SNTP", Str, paramcolor), row,1,1,1, Qt::AlignLeft);
@@ -933,7 +933,7 @@ void ConfDialog84::Write_Date()
 void ConfDialog84::Set104(double dbl)
 {
     QStringList sl = sender()->objectName().split(".");
-    if (sl.size() < 1)
+    if (sl.size() < 2)
     {
         ERMSG("Некорректные данные 104");
         DBGMSG;

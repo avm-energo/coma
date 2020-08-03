@@ -7,11 +7,14 @@
 #include "../check/eabstractcheckdialog.h"
 #include "../dialogs/cordialog.h"
 #include "../dialogs/cordialogktf.h"
+
 #include "../dialogs/infodialog.h"
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/mnktime.h"
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/abstractcordialog.h"
+#include "../alarm/abstractalarm.h"
+#include "../alarm/alarm84.h"
 
 #define RECONNECTINTERVAL   3000
 #define WAITINTERVAL        15000
@@ -106,6 +109,9 @@ public:
         return sl;
     }
 
+
+     QTimer* BdaTimer;
+
     Coma(QWidget *parent = nullptr);
     ~Coma();
     void SetMode(int mode);
@@ -113,7 +119,15 @@ public:
     void ClearTW();
     void SetupMenubar();
     QWidget *MainInfoWidget();
+
+
+
+  //  QWidget *ReleWidget();
     QWidget *ReleWidget();
+   QWidget * WWidgetComa();
+
+
+
     QWidget *Least();
     int CheckPassword();
     void Disconnect();
@@ -180,10 +194,11 @@ private slots:
 
 private:
     const QVector<int> MTBs = {0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84};
-    //CorDialog *CorD;
-   // CorDialogKTF *CorDKTF;
+   // CorDialog *CorD;
+  //  CorDialogKTF *CorDKTF;
 
     AbstractCorDialog *CorD;
+    AbstractAlarm *ALARM;
 
 
     InfoDialog *IDialog;
@@ -216,7 +231,7 @@ private:
     QStringList sl, USBsl, slfinal;
     quint16 AdrBaseStation;
     SerialPort::Settings Settings;
-    QTimer* BdaTimer, *TimeTimer, *AlarmStateTimer;
+    QTimer *TimeTimer, *AlarmStateTimer;
     QVector<S2::DataRec> *S2Config;
     QWidget *Parent;
     QWidget *Wpred;
@@ -235,6 +250,7 @@ private:
     void SetupUI();
     void PrepareDialogs();
     void CloseDialogs();
+    void   NewTimersBda();
 
 protected:
     void keyPressEvent(QKeyEvent *e);

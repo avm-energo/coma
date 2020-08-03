@@ -21,8 +21,8 @@ ConfigKTF::ConfigKTF(QVector<S2::DataRec> *config)
 
  //   if ((StartInIndex != 0))
 //    {
-        config->append({BCI_MTYPEB, sizeof(MainBlk.MTypeB_ID), &MainBlk.MTypeB_ID});
-        config->append({BCI_MTYPEM, sizeof(MainBlk.MTypeE_ID), &MainBlk.MTypeE_ID});
+        config->append({BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB});
+        config->append({BCI_MTYPEM, sizeof(MainBlk.MTypeE), &MainBlk.MTypeE});
         config->append({BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype});
         config->append({BCI_ABS_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104});
         config->append({BCI_CYCLE_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104});
@@ -32,14 +32,14 @@ ConfigKTF::ConfigKTF(QVector<S2::DataRec> *config)
         config->append({BCI_K_104, sizeof(MainBlk.k_104), &MainBlk.k_104});
         config->append({BCI_W_104, sizeof(MainBlk.w_104), &MainBlk.w_104});
 
-        config->append({BCI_NFILTR_ID, sizeof(Bci_block.NFiltr_ID), &Bci_block.NFiltr_ID});
-        config->append({BCI_NHARMFILT_ID, sizeof(Bci_block.NHarmFilt_ID), &Bci_block.NHarmFilt_ID});
-        config->append({BCI_DDOCS_ID, sizeof(Bci_block.DDosc_ID), &Bci_block.DDosc_ID});
+        config->append({BCI_NFILTR_ID, sizeof(Bci_block.NFiltr), &Bci_block.NFiltr});
+        config->append({BCI_NHARMFILT_ID, sizeof(Bci_block.NHarmFilt), &Bci_block.NHarmFilt});
+        config->append({BCI_DDOCS_ID, sizeof(Bci_block.DDosc), &Bci_block.DDosc});
         config->append({BCI_UNOM1, sizeof(Bci_block.Unom1), &Bci_block.Unom1});
         //config->append({StartInIndex+2, sizeof(Bci_block.Imax), &Bci_block.Imax});
         config->append({BCI_DUOSC, sizeof(Bci_block.DUosc), &Bci_block.DUosc});
-        config->append({BCI_DIOSC_ID, sizeof(Bci_block.DIosc_ID), &Bci_block.DIosc_ID});
-        config->append({BCI_DUIMIN_ID, sizeof(Bci_block.DUImin_ID), &Bci_block.DUImin_ID});
+        config->append({BCI_DIOSC_ID, sizeof(Bci_block.DIosc), &Bci_block.DIosc});
+        config->append({BCI_DUIMIN_ID, sizeof(Bci_block.DUImin), &Bci_block.DUImin});
         config->append({BCI_IMIN, sizeof(Bci_block.Imin), &Bci_block.Imin});
         config->append({BCI_RTERM, sizeof(Bci_block.RTerm), &Bci_block.RTerm});
         config->append({BCI_W100, sizeof(Bci_block.W100), &Bci_block.W100});
@@ -72,17 +72,17 @@ ConfigKTF::ConfigKTF(QVector<S2::DataRec> *config)
 
         //if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
         //{
-          config->append({BCI_IP_ID, sizeof(Com_param.IP_ID), &Com_param.IP_ID});
-          config->append({BCI_MASK_ID, sizeof(Com_param.Mask_ID), &Com_param.Mask_ID});
-          config->append({BCI_GW_ID, sizeof(Com_param.GW_ID), &Com_param.GW_ID});
-          config->append({BCI_PORT_ID, sizeof(Com_param.Port_ID), &Com_param.Port_ID});
-          config->append({BCI_SNTP_ID, sizeof(Com_param.SNTP_ID), &Com_param.SNTP_ID});
-          config->append({BCI_BAUD_ID, sizeof(Com_param.Baud_ID), &Com_param.Baud_ID});
-          config->append({BCI_PARITY_ID, sizeof(Com_param.Parity_ID), &Com_param.Parity_ID});
-          config->append({BCI_STOPBIT_ID, sizeof(Com_param.Stopbit_ID), &Com_param.Stopbit_ID});
-          config->append({BCI_ADRMB_ID, sizeof(Com_param.adrMB_ID), &Com_param.adrMB_ID});
-          config->append({BCI_ISNTP_ID, sizeof(Com_param.IsNTP_ID), &Com_param.IsNTP_ID});
-          config->append({BCI_ISPPS_ID, sizeof(Com_param.IsPPS_ID), &Com_param.IsPPS_ID});
+          config->append({BCI_IP_ID, sizeof(Com_param.IP), &Com_param.IP});
+          config->append({BCI_MASK_ID, sizeof(Com_param.Mask), &Com_param.Mask});
+          config->append({BCI_GW_ID, sizeof(Com_param.GW), &Com_param.GW});
+          config->append({BCI_PORT_ID, sizeof(Com_param.Port), &Com_param.Port});
+          config->append({BCI_SNTP_ID, sizeof(Com_param.SNTP), &Com_param.SNTP});
+          config->append({BCI_BAUD_ID, sizeof(Com_param.Baud), &Com_param.Baud});
+          config->append({BCI_PARITY_ID, sizeof(Com_param.Parity), &Com_param.Parity});
+          config->append({BCI_STOPBIT_ID, sizeof(Com_param.Stopbit), &Com_param.Stopbit});
+          config->append({BCI_ADRMB_ID, sizeof(Com_param.adrMB), &Com_param.adrMB});
+          config->append({BCI_ISNTP_ID, sizeof(Com_param.IsNTP), &Com_param.IsNTP});
+          config->append({BCI_ISPPS_ID, sizeof(Com_param.IsPPS), &Com_param.IsPPS});
        // }
 //    }
           config->append({0xFFFFFFFF, 0, nullptr});
@@ -100,13 +100,13 @@ void ConfigKTF::SetDefConf()
     MainBlk.T2_104 = DEF_T2_104;
     MainBlk.T3_104 = DEF_T3_104;
 
-    Bci_block.NFiltr_ID = DEF_NFILTR_ID;
-    Bci_block.NHarmFilt_ID = DEF_NHARMFILT_ID;
-    Bci_block.DDosc_ID = DEF_DDOCS_ID;
+    Bci_block.NFiltr = DEF_NFILTR_ID;
+    Bci_block.NHarmFilt = DEF_NHARMFILT_ID;
+    Bci_block.DDosc = DEF_DDOCS_ID;
     Bci_block.Unom1 = DEF_UNOM1;
     Bci_block.DUosc = DEF_DUOSC;
-    Bci_block.DIosc_ID = DEF_DIOSC_ID ;
-    Bci_block.DUImin_ID = DEF_DIOSC_ID   ;
+    Bci_block.DIosc = DEF_DIOSC_ID ;
+    Bci_block.DUImin = DEF_DUIMIN_ID   ;
     Bci_block.Imin = DEF_IMIN;
     Bci_block.RTerm = DEF_RTERM;
     Bci_block.W100 = DEF_W100;
@@ -150,37 +150,37 @@ void ConfigKTF::SetDefConf()
       //  Bci_block.RTerm = 100;
       //  Bci_block.W100 = 1.385f;
 
-        Com_param.IP_ID[0] = 172;
-        Com_param.IP_ID[1] = 16;
-        Com_param.IP_ID[2] = 29;
-        Com_param.IP_ID[3] = 12;
+        Com_param.IP[0] = 172;
+        Com_param.IP[1] = 16;
+        Com_param.IP[2] = 29;
+        Com_param.IP[3] = 12;
 
-        Com_param.Mask_ID[0] = 255;
-        Com_param.Mask_ID[1] = 255;
-        Com_param.Mask_ID[2] = 252;
-        Com_param.Mask_ID[3] = 0;
+        Com_param.Mask[0] = 255;
+        Com_param.Mask[1] = 255;
+        Com_param.Mask[2] = 252;
+        Com_param.Mask[3] = 0;
 
-        Com_param.GW_ID[0] = 172;
-        Com_param.GW_ID[1] = 16;
-        Com_param.GW_ID[2] = 29;
-        Com_param.GW_ID[3] = 1;
+        Com_param.GW[0] = 172;
+        Com_param.GW[1] = 16;
+        Com_param.GW[2] = 29;
+        Com_param.GW[3] = 1;
 
-        Com_param.Port_ID[0] = 2404;
-        Com_param.Port_ID[1] = 2405;
-        Com_param.Port_ID[2] = 502;
-        Com_param.Port_ID[3] = 502;
+        Com_param.Port[0] = 2404;
+        Com_param.Port[1] = 2405;
+        Com_param.Port[2] = 502;
+        Com_param.Port[3] = 502;
 
-        Com_param.SNTP_ID[0] = 172;
-        Com_param.SNTP_ID[1] = 16;
-        Com_param.SNTP_ID[2] = 31;
-        Com_param.SNTP_ID[3] = 220;
+        Com_param.SNTP[0] = 172;
+        Com_param.SNTP[1] = 16;
+        Com_param.SNTP[2] = 31;
+        Com_param.SNTP[3] = 220;
 
-        Com_param.Baud_ID = DEF_BAUD_ID;
-        Com_param.Parity_ID = DEF_PARITY_ID;
-        Com_param.Stopbit_ID = DEF_STOPBIT_ID;
-        Com_param.adrMB_ID = DEF_STOPBIT_ID;
-        Com_param.IsNTP_ID = DEF_ISNTP_ID;
-        Com_param.IsPPS_ID = DEF_ISPPS_ID;
+        Com_param.Baud = DEF_BAUD_ID;
+        Com_param.Parity = DEF_PARITY_ID;
+        Com_param.Stopbit = DEF_STOPBIT_ID;
+        Com_param.adrMB = DEF_ADRMB_ID ;
+        Com_param.IsNTP = DEF_ISNTP_ID;
+        Com_param.IsPPS = DEF_ISPPS_ID;
 
     //}
 }

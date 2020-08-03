@@ -23,6 +23,8 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../alarm/abstractalarm.cpp \
+    ../alarm/alarm84.cpp \
     ../check/checkktf.cpp \
     ../check/chekdialogktf.cpp \
     ../config/confdialogktf.cpp \
@@ -83,6 +85,8 @@ SOURCES += \
 
 
 HEADERS += \
+    ../alarm/abstractalarm.h \
+    ../alarm/alarm84.h \
     ../check/checkktf.h \
     ../check/chekdialogktf.h \
     ../config/confdialogktf.h \

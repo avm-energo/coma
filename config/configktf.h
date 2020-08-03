@@ -20,8 +20,8 @@ public:
 
     typedef struct
     {
-        quint32 MTypeB_ID;
-        quint32 MTypeE_ID;
+        quint32 MTypeB;
+        quint32 MTypeE;
         quint32 Ctype;   		// Тип синхронизации времени от модуля Ц
         quint32 Abs_104;     	// Адрес базовой станции для протокола 104
         quint32 Cycle_104;      // Интервал циклического опроса по протоколу МЭК 60870-5-104
@@ -34,14 +34,13 @@ public:
 
     typedef struct
     {
-
-        quint32 NFiltr_ID;
-        quint32 NHarmFilt_ID;
-        quint32 DDosc_ID;
+        quint32 NFiltr;
+        quint32 NHarmFilt;
+        quint32 DDosc;
         float Unom1;
         float DUosc;
-        float DIosc_ID;
-        float DUImin_ID;
+        float DIosc;
+        float DUImin;
         float Imin;
         float RTerm;
         float W100;
@@ -76,17 +75,17 @@ public:
 
     typedef struct
     {
-        quint8		IP_ID[4];
-        quint8		Mask_ID[4];
-        quint8  	GW_ID[4];
-        quint16		Port_ID[4];
-        quint8		SNTP_ID[4];
-        quint32		Baud_ID;
-        quint8		Parity_ID;
-        quint8		Stopbit_ID;
-        quint8      adrMB_ID;
-        quint8      IsNTP_ID;
-        quint8      IsPPS_ID;
+        quint8		IP[4];
+        quint8		Mask[4];
+        quint8  	GW[4];
+        quint16		Port[4];
+        quint8		SNTP[4];
+        quint32		Baud;
+        quint8		Parity;
+        quint8		Stopbit;
+        quint8      adrMB;
+        quint8      IsNTP;
+        quint8      IsPPS;
 
     } Com;
 

@@ -48,7 +48,7 @@
 
 #define DEF_MTYPEB      MTB_00
 #define DEF_MTYPEM      MTM_00
-#define DEF_CTYPE       2
+#define DEF_CTYPE       1
 #define DEF_ABS_104     205
 #define DEF_CYCLE_104   5
 #define DEF_T1_104      15

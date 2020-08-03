@@ -85,6 +85,8 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     }
     ActiveThreads = 0;
 
+    //ALARM = new Alarm84;
+
     New104();
     NewModbus();
     NewUSB();
@@ -107,9 +109,9 @@ void Coma::SetupUI()
     QWidget *wdgt = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QAction *act;
-
     QHBoxLayout *hlyout = new QHBoxLayout;
     QToolBar *tb = new QToolBar;
+
     tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
     tb->setIconSize(QSize(20,20));
     act = new QAction(this);
@@ -134,13 +136,64 @@ void Coma::SetupUI()
     connect(act,SIGNAL(triggered(bool)),this,SLOT(ShowErrorDialog()));
     tb->addAction(act);
     hlyout->addWidget(tb); 
-    hlyout->addWidget(ReleWidget(), Qt::AlignCenter);
+
+
+    ALARM = new Alarm84;
+    QWidget *wind =ALARM->AlmReleWidget();
+    hlyout->addWidget(wind, Qt::AlignCenter);
+
+
+    /*
+
+     QWidget *wind =new QWidget();
+
+    switch(MTypeB)
+    {
+    case Config::MTB_A2:
+        switch(MTypeM)
+        {
+           case Config::MTM_84:
+
+            ALARM = new Alarm84;
+            wind =ALARM->AlmReleWidget();
+            hlyout->addWidget(wind, Qt::AlignCenter);
+
+
+           break;
+
+           case Config::MTM_87:
+
+
+           break;
+        }
+    break;
+    case Config::MTB_A3:
+
+        switch(MTypeM)
+        {
+           case Config::MTM_87:
+
+
+
+           break;
+        }
+
+    break;
+
+    };  */
+
+
+
+//    hlyout->addWidget(ReleWidget(), Qt::AlignCenter);
+
+
     lyout->addLayout(hlyout);
     lyout->addWidget(Least());
     wdgt->setLayout(lyout);
     setCentralWidget(wdgt);
     SetupMenubar();
 }
+
 
 void Coma::SetupMenubar()
 {
@@ -165,7 +218,6 @@ void Coma::SetupMenubar()
     connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndClear()));
     menu->addAction(act);
     menubar->addMenu(menu);
-
     menu = new QMenu;
     act = new QAction(this);
     act->setText("О программе");
@@ -274,7 +326,9 @@ void Coma::StartWork()
 
     Disconnected = false;
     Reconnect = true;
+
     PrepareDialogs();
+
     str = (CheckM == nullptr) ? "Текущие параметры" : "Текущие параметры\nБазовая";
     if (CheckB != nullptr)
     {
@@ -437,7 +491,7 @@ void Coma::PrepareDialogs()
 
     };
 
-
+  NewTimersBda();
   /*  switch(MTypeM)
     {
     case Config::MTM_84:
@@ -505,11 +559,15 @@ void Coma::CloseDialogs()
     if (ConfM != nullptr)
         ConfM->close();
 //    ConfB = ConfM = nullptr;
+
+
     if (Wpred != nullptr)
         Wpred->close();
     if (Walarm != nullptr)
         Walarm->close();
 //    Wpred = Walarm = nullptr;
+
+
     if (CorD != nullptr)
         CorD->close();
     if (IDialog != nullptr)
@@ -558,10 +616,22 @@ void Coma::NewTimers()
     TimeTimer = new QTimer;
     TimeTimer->setInterval(1000);
 
+
+  //  ALARM -> AlmNewTimers();
+
     BdaTimer = new QTimer;
     BdaTimer->setInterval(ANMEASINT);
-    connect(BdaTimer,SIGNAL(timeout()), this, SLOT(USBSetAlarms()));
-    connect(BdaTimer,SIGNAL(timeout()),this,SLOT(UpdateUSB()));
+//    connect(BdaTimer,SIGNAL(timeout()), this, SLOT(USBSetAlarms()));
+//    connect(BdaTimer,SIGNAL(timeout()),this,SLOT(UpdateUSB()));
+
+    //  BdaTimer = new QTimer;
+   //  BdaTimer->setInterval(ANMEASINT);
+
+     // connect(BdaTimer,SIGNAL(timeout()), this, SLOT(ALARM->USBSetAlarms()));
+    //  connect(BdaTimer,SIGNAL(timeout()),this,SLOT(ALARM->UpdateUSB()));
+    // connect(BdaTimer,SIGNAL(timeout()),this,SLOT( CheckB->USBUpdate()));
+
+
 
     ReceiveTimer = new QTimer;
     ReceiveTimer->setInterval(ANMEASINT);
@@ -571,6 +641,19 @@ void Coma::NewTimers()
     ReconnectTimer->setInterval(RECONNECTINTERVAL);
     ReconnectTimer->setSingleShot(true);
     connect(ReconnectTimer,SIGNAL(timeout()), this, SLOT(AttemptToRec()));
+}
+
+
+void Coma::NewTimersBda()
+{
+
+
+  //  BdaTimer = new QTimer;
+//    BdaTimer->setInterval(ANMEASINT);
+   // connect(BdaTimer,SIGNAL(timeout()), ALARM, SLOT(USBSetAlarms()));
+ //   connect(BdaTimer,SIGNAL(timeout()),this,SLOT(ALARM->UpdateUSB()));
+   // connect(BdaTimer,SIGNAL(timeout()),this,SLOT( CheckB->USBUpdate()));
+
 }
 
 void Coma::SetMode(int mode)
@@ -660,6 +743,8 @@ void Coma::ConnectMessage()
     dlg->close();
 }
 
+
+
 QWidget *Coma::ReleWidget()
 {
     QMenu *menu = new QMenu;
@@ -707,7 +792,7 @@ QWidget *Coma::ReleWidget()
     hlyout2->addWidget(gb);
 
     if (hlyout2->count())
-        vlyout->addLayout(hlyout2);
+    vlyout->addLayout(hlyout2);
     w->setLayout(vlyout);
     return w;
 }
@@ -1071,6 +1156,8 @@ void Coma::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
         }
     }
 }
+
+
 
 QWidget *Coma::Least()
 {
@@ -1667,6 +1754,9 @@ void Coma::CheckModBusFinish()
     TimeThrFinished = true;
 }
 
+
+
+
 void Coma::UpdateUSB()
 {
     if (MainInterface == I_USB)
@@ -1771,3 +1861,6 @@ void Coma::USBSetAlarms()
         }
     }
 }
+
+
+
