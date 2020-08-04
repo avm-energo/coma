@@ -1,0 +1,13 @@
+[submodule "QtXlsxWriter"]
+	path = QtXlsxWriter
+	url = https://github.com/VSRonin/QtXlsxWriter
+[submodule "LimeReport"]
+	path = LimeReport
+	url = https://github.com/fralx/LimeReport
+[submodule "hidapi"]
+	path = hidapi
+	url = https://git.avmenergo.ru/atom/hidapi
+[submodule "xz-utilz"]
+	path = xz-utilz
+	url = https://github.com/xz-mirror/xz
+	branch = v5.2
