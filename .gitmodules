@@ -6,7 +6,7 @@
 	url = https://github.com/fralx/LimeReport
 [submodule "hidapi"]
 	path = hidapi
-	url = https://git.avmenergo.ru/atom/hidapi
+	url = ssh://git@git.avmenergo.ru:5507/atom/hidapi.git
 [submodule "xz-utilz"]
 	path = xz-utilz
 	url = https://github.com/xz-mirror/xz
