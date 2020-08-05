@@ -14,6 +14,6 @@ start /wait "" nmake sub-src
 xcopy lib\Qt5Xlsx.*  ..\..\libs\win32\release /H /Y /C /R /S /I
 cd ..
 start /wait "" nmake clean
-start /wait "" "C:\Qt\5.14.2\msvc2017_64\bin\qmake.exe" AVTUK_ETH_Version-f
+start /wait "" "C:\Qt\5.14.2\msvc2017\bin\qmake.exe" AVTUK_ETH_Version-f
 start /wait nmake
 start /wait "" "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" iss\avm-service.iss
