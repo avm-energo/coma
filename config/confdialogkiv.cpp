@@ -13,44 +13,44 @@
 #include "../widgets/wd_func.h"
 #include "../gen/colors.h"
 #include "../gen/modulebsi.h"
-#include "confdialog84.h"
+#include "confdialogkiv.h"
 #include "../gen/error.h"
 
-ConfDialog84::ConfDialog84(QVector<S2::DataRec> *S2Config, QWidget *parent) :
+ConfDialogKIV::ConfDialogKIV(QVector<S2::DataRec> *S2Config, QWidget *parent) :
     AbstractConfDialog(parent)
 {
     QString tmps = "QDialog {background-color: "+QString(ACONFCLR)+";}";
     setStyleSheet(tmps);
     this->S2Config = S2Config;
-    C84 = new Config84(S2Config);
+    CKIV = new ConfigKIV(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
     PrereadConf();
 }
 
-ConfDialog84::~ConfDialog84()
+ConfDialogKIV::~ConfDialogKIV()
 {
 
 }
 
-void ConfDialog84::Fill()
+void ConfDialogKIV::Fill()
 {
     int i;
 
-    WDFunc::SetSPBData(this, "spb.1", C84->MainBlk.Abs_104);
-    WDFunc::SetSPBData(this, "spb.2", C84->MainBlk.Cycle_104);
-    WDFunc::SetSPBData(this, "spb.3", C84->MainBlk.T1_104);
-    WDFunc::SetSPBData(this, "spb.4", C84->MainBlk.T2_104);
-    WDFunc::SetSPBData(this, "spb.5", C84->MainBlk.T3_104);
-    WDFunc::SetSPBData(this, "spb.6", C84->MainBlk.k_104);
-    WDFunc::SetSPBData(this, "spb.7", C84->MainBlk.w_104);
+    WDFunc::SetSPBData(this, "spb.1", CKIV->MainBlk.Abs_104);
+    WDFunc::SetSPBData(this, "spb.2", CKIV->MainBlk.Cycle_104);
+    WDFunc::SetSPBData(this, "spb.3", CKIV->MainBlk.T1_104);
+    WDFunc::SetSPBData(this, "spb.4", CKIV->MainBlk.T2_104);
+    WDFunc::SetSPBData(this, "spb.5", CKIV->MainBlk.T3_104);
+    WDFunc::SetSPBData(this, "spb.6", CKIV->MainBlk.k_104);
+    WDFunc::SetSPBData(this, "spb.7", CKIV->MainBlk.w_104);
     //WDFunc::SetSPBData(this, "spb.8", C84->MainBlk.Ctype);
-    int cbidx = ((C84->MainBlk.Ctype & 0x01) ? 1 : 0);
+    int cbidx = ((CKIV->MainBlk.Ctype & 0x01) ? 1 : 0);
     WDFunc::SetCBIndex(this, "spb.8", cbidx);
 
-    WDFunc::SetSPBData(this, "Unom", C84->Bci_block.Unom);
-    WDFunc::SetSPBData(this, "Umin", C84->Bci_block.Umin);
-    WDFunc::SetSPBData(this, "Imin", C84->Bci_block.Imin);
+    WDFunc::SetSPBData(this, "Unom", CKIV->Bci_block.Unom);
+    WDFunc::SetSPBData(this, "Umin", CKIV->Bci_block.Umin);
+    WDFunc::SetSPBData(this, "Imin", CKIV->Bci_block.Imin);
 
     for (i = 0; i < 3; i++)
     {
@@ -58,27 +58,27 @@ void ConfDialog84::Fill()
       //WDFunc::SetSPBData(this, "C_init."+QString::number(i), C84->Bci_block.C_init[i]);
       //WDFunc::SetSPBData(this, "Tg_init."+QString::number(i), C84->Bci_block.Tg_init[i]);
       //WDFunc::SetSPBData(this, "corTg."+QString::number(i), C84->Bci_block.corTg[i]);
-        WDFunc::SetSPBData(this, "Tg_pasp."+QString::number(i), C84->Bci_block.Tg_pasp[i]);
-        WDFunc::SetSPBData(this, "C_pasp."+QString::number(i), C84->Bci_block.C_pasp[i]);
+        WDFunc::SetSPBData(this, "Tg_pasp."+QString::number(i), CKIV->Bci_block.Tg_pasp[i]);
+        WDFunc::SetSPBData(this, "C_pasp."+QString::number(i), CKIV->Bci_block.C_pasp[i]);
     }
 
-    WDFunc::SetSPBData(this, "dС_pred", C84->Bci_block.dC_pred);
-    WDFunc::SetSPBData(this, "dС_alarm", C84->Bci_block.dC_alarm);
-    WDFunc::SetSPBData(this, "dTg_pred", C84->Bci_block.dTg_pred);
-    WDFunc::SetSPBData(this, "dTg_alarm", C84->Bci_block.dTg_alarm);
-    WDFunc::SetSPBData(this, "dIunb_pred", C84->Bci_block.dIunb_pred);
-    WDFunc::SetSPBData(this, "dIunb_alarm", C84->Bci_block.dIunb_alarm);
-    WDFunc::SetSPBData(this, "GdС", C84->Bci_block.GdC);
-    WDFunc::SetSPBData(this, "GdTg", C84->Bci_block.GdTg);
-    WDFunc::SetSPBData(this, "GdIunb", C84->Bci_block.GdIunb);
-    WDFunc::SetSPBData(this, "NFiltr", C84->Bci_block.NFiltr);
-    WDFunc::SetSPBData(this, "T_Data_Rec", C84->Bci_block.T_Data_Rec);
-    WDFunc::SetSPBData(this, "Unom_1", C84->Bci_block.Unom_1);
+    WDFunc::SetSPBData(this, "dС_pred", CKIV->Bci_block.dC_pred);
+    WDFunc::SetSPBData(this, "dС_alarm", CKIV->Bci_block.dC_alarm);
+    WDFunc::SetSPBData(this, "dTg_pred", CKIV->Bci_block.dTg_pred);
+    WDFunc::SetSPBData(this, "dTg_alarm", CKIV->Bci_block.dTg_alarm);
+    WDFunc::SetSPBData(this, "dIunb_pred", CKIV->Bci_block.dIunb_pred);
+    WDFunc::SetSPBData(this, "dIunb_alarm", CKIV->Bci_block.dIunb_alarm);
+    WDFunc::SetSPBData(this, "GdС", CKIV->Bci_block.GdC);
+    WDFunc::SetSPBData(this, "GdTg", CKIV->Bci_block.GdTg);
+    WDFunc::SetSPBData(this, "GdIunb", CKIV->Bci_block.GdIunb);
+    WDFunc::SetSPBData(this, "NFiltr", CKIV->Bci_block.NFiltr);
+    WDFunc::SetSPBData(this, "T_Data_Rec", CKIV->Bci_block.T_Data_Rec);
+    WDFunc::SetSPBData(this, "Unom_1", CKIV->Bci_block.Unom_1);
 
     //if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     //{
-        WDFunc::SetSPBData(this, "RTerm", C84->Bci_block.RTerm);
-        WDFunc::SetSPBData(this, "W100", C84->Bci_block.W100);
+        WDFunc::SetSPBData(this, "RTerm", CKIV->Bci_block.RTerm);
+        WDFunc::SetSPBData(this, "W100", CKIV->Bci_block.W100);
 
         QString StrIP, StrMask, StrSNTP, StrGate;
         QLocale german(QLocale::German);
@@ -93,83 +93,83 @@ void ConfDialog84::Fill()
 
          if(i==3)
          {
-           StrIP.append(german.toString(C84->Com_param.IP[i]));
-           StrMask.append(german.toString(C84->Com_param.Mask[i]));
-           StrGate.append(german.toString(C84->Com_param.GateWay[i]));
-           StrSNTP.append(german.toString(C84->Com_param.SNTP[i]));
+           StrIP.append(german.toString(CKIV->Com_param.IP[i]));
+           StrMask.append(german.toString(CKIV->Com_param.Mask[i]));
+           StrGate.append(german.toString(CKIV->Com_param.GateWay[i]));
+           StrSNTP.append(german.toString(CKIV->Com_param.SNTP[i]));
          }
          else
          {
-           StrIP.append(german.toString(C84->Com_param.IP[i])+".");
-           StrMask.append(german.toString(C84->Com_param.Mask[i])+".");
-           StrGate.append(german.toString(C84->Com_param.GateWay[i])+".");
-           StrSNTP.append(german.toString(C84->Com_param.SNTP[i])+".");
+           StrIP.append(german.toString(CKIV->Com_param.IP[i])+".");
+           StrMask.append(german.toString(CKIV->Com_param.Mask[i])+".");
+           StrGate.append(german.toString(CKIV->Com_param.GateWay[i])+".");
+           StrSNTP.append(german.toString(CKIV->Com_param.SNTP[i])+".");
          }
         }
 
-        WDFunc::SetSPBData(this, "Port"+QString::number(0), C84->Com_param.Port[0]);
+        WDFunc::SetSPBData(this, "Port"+QString::number(0), CKIV->Com_param.Port[0]);
 
         WDFunc::LE_write_data(this, StrIP, "IP");
         WDFunc::LE_write_data(this, StrSNTP, "SNTP");
         WDFunc::LE_write_data(this, StrGate, "GateWay");
         WDFunc::LE_write_data(this, StrMask, "Mask");
 
-        WDFunc::SetSPBData(this, "Baud", C84->Com_param.baud);
+        WDFunc::SetSPBData(this, "Baud", CKIV->Com_param.baud);
         for(int i= 0; i<8; i++)
         {
-            if(C84->Com_param.baud == Rates.at(i).toUInt())
+            if(CKIV->Com_param.baud == Rates.at(i).toUInt())
             cbidx = i;
         }
         WDFunc::SetCBIndex(this, "Baud", cbidx);
-        cbidx = (C84->Com_param.parity & 0x04) ? 2 : ((C84->Com_param.parity & 0x02) ? 1 : 0);
+        cbidx = (CKIV->Com_param.parity & 0x04) ? 2 : ((CKIV->Com_param.parity & 0x02) ? 1 : 0);
         WDFunc::SetCBIndex(this, "Parity", cbidx);
-        cbidx = ((C84->Com_param.stopbit & 0x02) ? 1 : 0);
+        cbidx = ((CKIV->Com_param.stopbit & 0x02) ? 1 : 0);
         WDFunc::SetCBIndex(this, "StopBit", cbidx);
         //WDFunc::SetSPBData(this, "StopBit", C84->Com_param.stopbit);
-        WDFunc::SetSPBData(this, "adrMB", C84->Com_param.adrMB);
+        WDFunc::SetSPBData(this, "adrMB", CKIV->Com_param.adrMB);
 
-        if(C84->Com_param.isNTP)
+        if(CKIV->Com_param.isNTP)
         WDFunc::SetChBData(this, "ISNTP", true);
         else
         WDFunc::SetChBData(this, "ISNTP", false);
 
-        WDFunc::SetSPBData(this, "Ulow", C84->Bci_block.LowU);
-        WDFunc::SetSPBData(this, "Tevent_pred", C84->Bci_block.Tevent_pred);
-        WDFunc::SetSPBData(this, "Tevent_alarm", C84->Bci_block.Tevent_alarm);
-        WDFunc::SetSPBData(this, "Trele_pred", C84->Bci_block.Trele_pred);
-        WDFunc::SetSPBData(this, "Trele_alarm", C84->Bci_block.Trele_alarm);
+        WDFunc::SetSPBData(this, "Ulow", CKIV->Bci_block.LowU);
+        WDFunc::SetSPBData(this, "Tevent_pred", CKIV->Bci_block.Tevent_pred);
+        WDFunc::SetSPBData(this, "Tevent_alarm", CKIV->Bci_block.Tevent_alarm);
+        WDFunc::SetSPBData(this, "Trele_pred", CKIV->Bci_block.Trele_pred);
+        WDFunc::SetSPBData(this, "Trele_alarm", CKIV->Bci_block.Trele_alarm);
 
-        if(C84->Bci_block.IsU)
+        if(CKIV->Bci_block.IsU)
         WDFunc::SetChBData(this, "IsU", true);
         else
         WDFunc::SetChBData(this, "IsU", false);
 
-        if(C84->Bci_block.IsIunb)
+        if(CKIV->Bci_block.IsIunb)
         WDFunc::SetChBData(this, "IsIunb", true);
         else
         WDFunc::SetChBData(this, "IsIunb", false);
 
 }
 
-void ConfDialog84::FillBack()
+void ConfDialogKIV::FillBack()
 {
     int i;
     int cbidx;
     QString tmps;
 
-    WDFunc::SPBData(this, "spb.1", C84->MainBlk.Abs_104);
-    WDFunc::SPBData(this, "spb.2", C84->MainBlk.Cycle_104);
-    WDFunc::SPBData(this, "spb.3", C84->MainBlk.T1_104);
-    WDFunc::SPBData(this, "spb.4", C84->MainBlk.T2_104);
-    WDFunc::SPBData(this, "spb.5", C84->MainBlk.T3_104);
-    WDFunc::SPBData(this, "spb.6", C84->MainBlk.k_104);
-    WDFunc::SPBData(this, "spb.7", C84->MainBlk.w_104);
+    WDFunc::SPBData(this, "spb.1", CKIV->MainBlk.Abs_104);
+    WDFunc::SPBData(this, "spb.2", CKIV->MainBlk.Cycle_104);
+    WDFunc::SPBData(this, "spb.3", CKIV->MainBlk.T1_104);
+    WDFunc::SPBData(this, "spb.4", CKIV->MainBlk.T2_104);
+    WDFunc::SPBData(this, "spb.5", CKIV->MainBlk.T3_104);
+    WDFunc::SPBData(this, "spb.6", CKIV->MainBlk.k_104);
+    WDFunc::SPBData(this, "spb.7", CKIV->MainBlk.w_104);
     cbidx = WDFunc::CBIndex(this, "spb.8");
-    C84->MainBlk.Ctype = (0x00000001 << cbidx) - 1;
+    CKIV->MainBlk.Ctype = (0x00000001 << cbidx) - 1;
 
-    WDFunc::SPBData(this, "Unom", C84->Bci_block.Unom);
-    WDFunc::SPBData(this, "Umin", C84->Bci_block.Umin);
-    WDFunc::SPBData(this, "Imin", C84->Bci_block.Imin);
+    WDFunc::SPBData(this, "Unom", CKIV->Bci_block.Unom);
+    WDFunc::SPBData(this, "Umin", CKIV->Bci_block.Umin);
+    WDFunc::SPBData(this, "Imin", CKIV->Bci_block.Imin);
 
     for (i = 0; i < 3; i++)
     {
@@ -177,27 +177,27 @@ void ConfDialog84::FillBack()
       //WDFunc::SPBData(this, "C_init."+QString::number(i), C84->Bci_block.C_init[i]);
       //WDFunc::SPBData(this, "Tg_init."+QString::number(i), C84->Bci_block.Tg_init[i]);
       //WDFunc::SPBData(this, "corTg."+QString::number(i), C84->Bci_block.corTg[i]);
-      WDFunc::SPBData(this, "Tg_pasp."+QString::number(i), C84->Bci_block.Tg_pasp[i]);
-      WDFunc::SPBData(this, "C_pasp."+QString::number(i), C84->Bci_block.C_pasp[i]);
+      WDFunc::SPBData(this, "Tg_pasp."+QString::number(i), CKIV->Bci_block.Tg_pasp[i]);
+      WDFunc::SPBData(this, "C_pasp."+QString::number(i), CKIV->Bci_block.C_pasp[i]);
     }
 
-    WDFunc::SPBData(this, "dС_pred", C84->Bci_block.dC_pred);
-    WDFunc::SPBData(this, "dС_alarm", C84->Bci_block.dC_alarm);
-    WDFunc::SPBData(this, "dTg_pred", C84->Bci_block.dTg_pred);
-    WDFunc::SPBData(this, "dTg_alarm", C84->Bci_block.dTg_alarm);
-    WDFunc::SPBData(this, "dIunb_pred", C84->Bci_block.dIunb_pred);
-    WDFunc::SPBData(this, "dIunb_alarm", C84->Bci_block.dIunb_alarm);
-    WDFunc::SPBData(this, "GdС", C84->Bci_block.GdC);
-    WDFunc::SPBData(this, "GdTg", C84->Bci_block.GdTg);
-    WDFunc::SPBData(this, "GdIunb", C84->Bci_block.GdIunb);
-    WDFunc::SPBData(this, "NFiltr", C84->Bci_block.NFiltr);
-    WDFunc::SPBData(this, "T_Data_Rec", C84->Bci_block.T_Data_Rec);
-    WDFunc::SPBData(this, "Unom_1", C84->Bci_block.Unom_1);
+    WDFunc::SPBData(this, "dС_pred", CKIV->Bci_block.dC_pred);
+    WDFunc::SPBData(this, "dС_alarm", CKIV->Bci_block.dC_alarm);
+    WDFunc::SPBData(this, "dTg_pred", CKIV->Bci_block.dTg_pred);
+    WDFunc::SPBData(this, "dTg_alarm", CKIV->Bci_block.dTg_alarm);
+    WDFunc::SPBData(this, "dIunb_pred", CKIV->Bci_block.dIunb_pred);
+    WDFunc::SPBData(this, "dIunb_alarm", CKIV->Bci_block.dIunb_alarm);
+    WDFunc::SPBData(this, "GdС", CKIV->Bci_block.GdC);
+    WDFunc::SPBData(this, "GdTg", CKIV->Bci_block.GdTg);
+    WDFunc::SPBData(this, "GdIunb", CKIV->Bci_block.GdIunb);
+    WDFunc::SPBData(this, "NFiltr", CKIV->Bci_block.NFiltr);
+    WDFunc::SPBData(this, "T_Data_Rec", CKIV->Bci_block.T_Data_Rec);
+    WDFunc::SPBData(this, "Unom_1", CKIV->Bci_block.Unom_1);
 
     //if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     //{
-        WDFunc::SPBData(this, "RTerm", C84->Bci_block.RTerm);
-        WDFunc::SPBData(this, "W100", C84->Bci_block.W100);
+        WDFunc::SPBData(this, "RTerm", CKIV->Bci_block.RTerm);
+        WDFunc::SPBData(this, "W100", CKIV->Bci_block.W100);
 
         /*for (i = 0; i < 4; i++)
         {
@@ -232,54 +232,54 @@ void ConfDialog84::FillBack()
          WDFunc::SetSPBData(this, "Port"+QString::number(i), C84->Com_param.Port[i]);
          WDFunc::SetSPBData(this, "SNTP"+QString::number(i), C84->Com_param.SNTP[i]);*/
 
-         C84->Com_param.IP[i] = inIP.at(i).toInt();
-         C84->Com_param.Mask[i] = inMask.at(i).toInt();
-         C84->Com_param.GateWay[i] = inGate.at(i).toInt();
-         C84->Com_param.SNTP[i] = inSNTP.at(i).toInt();
+         CKIV->Com_param.IP[i] = inIP.at(i).toInt();
+         CKIV->Com_param.Mask[i] = inMask.at(i).toInt();
+         CKIV->Com_param.GateWay[i] = inGate.at(i).toInt();
+         CKIV->Com_param.SNTP[i] = inSNTP.at(i).toInt();
         }
 
-        WDFunc::SPBData(this, "Port0", C84->Com_param.Port[0]);
+        WDFunc::SPBData(this, "Port0", CKIV->Com_param.Port[0]);
 
         cbidx = WDFunc::CBIndex(this, "Baud");
-        C84->Com_param.baud = (Rates.at(cbidx).toInt());
+        CKIV->Com_param.baud = (Rates.at(cbidx).toInt());
         cbidx = WDFunc::CBIndex(this, "Parity");
-        C84->Com_param.parity = (0x00000001 << cbidx) - 1;
+        CKIV->Com_param.parity = (0x00000001 << cbidx) - 1;
         cbidx = WDFunc::CBIndex(this, "StopBit");
-        C84->Com_param.stopbit = 0x00000001 << cbidx;
+        CKIV->Com_param.stopbit = 0x00000001 << cbidx;
 
-        WDFunc::SPBData(this, "adrMB", C84->Com_param.adrMB);
+        WDFunc::SPBData(this, "adrMB", CKIV->Com_param.adrMB);
         /*if(C84->Com_param.isNTP)
         WDFunc::SetChBData(this, "ISNTP", true);
         else
         WDFunc::SetChBData(this, "ISNTP", false);*/
         WDFunc::ChBData(this, "ISNTP", IsNtp);
         if(IsNtp)
-        C84->Com_param.isNTP = 1;
+        CKIV->Com_param.isNTP = 1;
         else
-        C84->Com_param.isNTP = 0;
+        CKIV->Com_param.isNTP = 0;
 
-        WDFunc::SPBData(this, "Ulow", C84->Bci_block.LowU);
-        WDFunc::SPBData(this, "Tevent_pred", C84->Bci_block.Tevent_pred);
-        WDFunc::SPBData(this, "Tevent_alarm", C84->Bci_block.Tevent_alarm);
-        WDFunc::SPBData(this, "Trele_pred", C84->Bci_block.Trele_pred);
-        WDFunc::SPBData(this, "Trele_alarm", C84->Bci_block.Trele_alarm);
+        WDFunc::SPBData(this, "Ulow", CKIV->Bci_block.LowU);
+        WDFunc::SPBData(this, "Tevent_pred", CKIV->Bci_block.Tevent_pred);
+        WDFunc::SPBData(this, "Tevent_alarm", CKIV->Bci_block.Tevent_alarm);
+        WDFunc::SPBData(this, "Trele_pred", CKIV->Bci_block.Trele_pred);
+        WDFunc::SPBData(this, "Trele_alarm", CKIV->Bci_block.Trele_alarm);
 
         WDFunc::ChBData(this, "IsU", IsNtp);
         if(IsNtp)
-        C84->Bci_block.IsU = 1;
+        CKIV->Bci_block.IsU = 1;
         else
-        C84->Bci_block.IsU = 0;
+        CKIV->Bci_block.IsU = 0;
 
         WDFunc::ChBData(this, "IsIunb", IsNtp);
         if(IsNtp)
-        C84->Bci_block.IsIunb= 1;
+        CKIV->Bci_block.IsIunb= 1;
         else
-        C84->Bci_block.IsIunb = 0;
+        CKIV->Bci_block.IsIunb = 0;
 
 
 }
 
-void ConfDialog84::SetupUI()
+void ConfDialogKIV::SetupUI()
 {
     QString phase[3] = {"Фаза A:","Фаза B:","Фаза C:"};
     //QString S;
@@ -659,11 +659,11 @@ void ConfDialog84::SetupUI()
     int i;
     for(i = 0; i<4; i++)
     {
-      C84->Com_param.IP[i]=0;
+      CKIV->Com_param.IP[i]=0;
       if(i==3)
-      Str.append(german.toString(C84->Com_param.IP[i]));
+      Str.append(german.toString(CKIV->Com_param.IP[i]));
       else
-      Str.append(german.toString(C84->Com_param.IP[i])+".");
+      Str.append(german.toString(CKIV->Com_param.IP[i])+".");
     }
 
 
@@ -680,11 +680,11 @@ void ConfDialog84::SetupUI()
     Str.clear();
     for(i = 0; i<4; i++)
     {
-      C84->Com_param.Mask[i]=0;
+      CKIV->Com_param.Mask[i]=0;
       if(i==3)
-        Str.append(german.toString(C84->Com_param.Mask[i]));
+        Str.append(german.toString(CKIV->Com_param.Mask[i]));
       else
-        Str.append(german.toString(C84->Com_param.Mask[i])+".");
+        Str.append(german.toString(CKIV->Com_param.Mask[i])+".");
     }
     glyout->addWidget(WDFunc::NewLBL(this, "Маска:"), row,0,1,1);
     glyout->addWidget(WDFunc::NewLE(this, "Mask", Str, paramcolor), row,1,1,1, Qt::AlignLeft);
@@ -697,11 +697,11 @@ void ConfDialog84::SetupUI()
     Str.clear();
     for(i = 0; i<4; i++)
     {
-      C84->Com_param.GateWay[i]=0;
+      CKIV->Com_param.GateWay[i]=0;
       if(i==3)
-        Str.append(german.toString(C84->Com_param.GateWay[i]));
+        Str.append(german.toString(CKIV->Com_param.GateWay[i]));
       else
-        Str.append(german.toString(C84->Com_param.GateWay[i])+".");
+        Str.append(german.toString(CKIV->Com_param.GateWay[i])+".");
     }
     glyout->addWidget(WDFunc::NewLBL(this, "Шлюз:"), row,0,1,1);
     glyout->addWidget(WDFunc::NewLE(this, "GateWay", Str, paramcolor), row,1,1,1, Qt::AlignLeft);
@@ -725,11 +725,11 @@ void ConfDialog84::SetupUI()
     Str.clear();
     for(i = 0; i<4; i++)
     {
-      C84->Com_param.SNTP[i]=0;
+      CKIV->Com_param.SNTP[i]=0;
       if(i==3)
-        Str.append(german.toString(C84->Com_param.SNTP[i]));
+        Str.append(german.toString(CKIV->Com_param.SNTP[i]));
       else
-        Str.append(german.toString(C84->Com_param.SNTP[i])+".");
+        Str.append(german.toString(CKIV->Com_param.SNTP[i])+".");
     }
     glyout->addWidget(WDFunc::NewLBL(this, "Адрес SNTP сервера:"), row,0,1,1);
     glyout->addWidget(WDFunc::NewLE(this, "SNTP", Str, paramcolor), row,1,1,1, Qt::AlignLeft);
@@ -878,28 +878,28 @@ void ConfDialog84::SetupUI()
     setLayout(lyout);
 }
 
-void ConfDialog84::CheckConf()
+void ConfDialogKIV::CheckConf()
 {
 }
 
 
-void ConfDialog84::SetDefConf()
+void ConfDialogKIV::SetDefConf()
 {
-    C84->SetDefConf();
+    CKIV->SetDefConf();
     Fill();
 }
 
-void ConfDialog84::Start_Timer()
+void ConfDialogKIV::Start_Timer()
 {
    timerRead->start(1000);
 }
 
-void ConfDialog84::Stop_Timer()
+void ConfDialogKIV::Stop_Timer()
 {
    timerRead->stop();
 }
 
-void ConfDialog84::Write_PCDate()
+void ConfDialogKIV::Write_PCDate()
 {
     QDateTime myDateTime;
     uint time ;
@@ -913,7 +913,7 @@ void ConfDialog84::Write_PCDate()
 
 }
 
-void ConfDialog84::Write_Date()
+void ConfDialogKIV::Write_Date()
 {
     QDateTime myDateTime;
     uint *time = new uint;
@@ -930,7 +930,7 @@ void ConfDialog84::Write_Date()
 
 }
 
-void ConfDialog84::Set104(double dbl)
+void ConfDialogKIV::Set104(double dbl)
 {
     QStringList sl = sender()->objectName().split(".");
     if (sl.size() < 2)
@@ -951,37 +951,37 @@ void ConfDialog84::Set104(double dbl)
     {
     case 1:
     {
-        C84->MainBlk.Abs_104=dbl;
+        CKIV->MainBlk.Abs_104=dbl;
         break;
     }
     case 2:
     {
-        C84->MainBlk.Cycle_104=dbl;
+        CKIV->MainBlk.Cycle_104=dbl;
         break;
     }
     case 3:
     {
-        C84->MainBlk.T1_104=dbl;
+        CKIV->MainBlk.T1_104=dbl;
         break;
     }
     case 4:
     {
-        C84->MainBlk.T2_104=dbl;
+        CKIV->MainBlk.T2_104=dbl;
         break;
     }
     case 5:
     {
-        C84->MainBlk.T3_104=dbl;
+        CKIV->MainBlk.T3_104=dbl;
         break;
     }
     case 6:
     {
-        C84->MainBlk.k_104=dbl;
+        CKIV->MainBlk.k_104=dbl;
         break;
     }
     case 7:
     {
-        C84->MainBlk.w_104=dbl;
+        CKIV->MainBlk.w_104=dbl;
         break;
     }
     default:
@@ -989,9 +989,9 @@ void ConfDialog84::Set104(double dbl)
     }
 }
 
-void ConfDialog84::SetCType(int num)
+void ConfDialogKIV::SetCType(int num)
 {
-    C84->MainBlk.Ctype = num;
+    CKIV->MainBlk.Ctype = num;
 }
 
 

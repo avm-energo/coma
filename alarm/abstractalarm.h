@@ -7,7 +7,9 @@
 #include "../iec104/iec104.h"
 #include "../iec104/ethernet.h"
 #include "../modbus/modbus.h"
-#include "../check/eabstractcheckdialog.h"
+#include "../gen/modulebsi.h"
+
+
 
 class AbstractAlarm : public QDialog
 {
@@ -15,9 +17,15 @@ class AbstractAlarm : public QDialog
 public:
     AbstractAlarm(QWidget *parent = nullptr);
 
+    const quint32 PredBSIMask = 0x00005F55;
+    const quint32 AvarBSIMask = 0x000020AA;
 
-    virtual void AlmNewTimers()=0;
 
+    quint8 PredAlarmEvents[20];
+    quint8 AvarAlarmEvents[20];
+
+    quint8 PredAlarmEventsKTF[14];
+    quint8 AvarAlarmEventsKTF[14];
 
 
     struct Bd11
@@ -27,9 +35,12 @@ public:
         quint32 alarm;
     };
 
-
-    const quint32 PredBSIMask = 0x00005F55;
-    const quint32 AvarBSIMask = 0x000020AA;
+    struct Bd16
+    {
+        quint32 Prib;
+        quint32 Warn;
+        quint32 Alarm;
+    };
 
     static QStringList HthToolTip()
     {
@@ -54,30 +65,21 @@ public:
     }
 
 
-    QWidget *AlmReleWidget();
-
-
- signals:
-      void SetPredAlarmColor(quint8*);
-      void SetAlarmColor(quint8*);
-
-
 public slots:
+    virtual void AlarmState();
+    virtual  void PredAlarmState()=0;
+    virtual void AvarState()=0;
+
+    virtual void UpdateUSB()=0;
+    virtual void USBSetAlarms()=0;
+
      virtual void UpdatePredAlarmEvents(IEC104Thread::SponSignals *)=0;
      virtual void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *)=0;
-     virtual void DeviceState()=0;
-     virtual  void PredAlarmState()=0;
-     virtual void AlarmState()=0;
-     virtual void UpdateUSB()=0;
-     virtual void USBSetAlarms()=0;
+
      virtual void ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)=0;
      virtual void ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)=0;
 
 private:
-     // QTimer* BdaTimer, *TimeTimer, *AlarmStateTimer;
-
-       //virtual void AlmNewTimers()=0;
- //      EAbstractCheckDialog *CheckB, *CheckM;
 
 };
 

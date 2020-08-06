@@ -1,13 +1,13 @@
 #include <QLayout>
 #include <QGroupBox>
-#include "check84.h"
+#include "checkkiv.h"
 #include "../config/config.h"
 #include "../gen/modulebsi.h"
 #include "../gen/colors.h"
 #include "../widgets/wd_func.h"
 
 
-Check_84::Check_84()
+Check_KIV::Check_KIV()
 {
     //setAttribute(Qt::WA_DeleteOnClose);
     ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"\
@@ -15,11 +15,11 @@ Check_84::Check_84()
     WidgetFormat = "QWidget {background-color: "+QString(UCONFCLR)+";}";
 }
 
-Check_84::~Check_84()
+Check_KIV::~Check_KIV()
 {
 }
 
-QWidget *Check_84::Bd1W(QWidget *parent)
+QWidget *Check_KIV::Bd1W(QWidget *parent)
 {
     int i;
     QWidget *w = new QWidget(parent);
@@ -116,7 +116,7 @@ QWidget *Check_84::Bd1W(QWidget *parent)
     return w;
 }
 
-QWidget *Check_84::Bd2W(QWidget *parent)
+QWidget *Check_KIV::Bd2W(QWidget *parent)
 {
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -220,7 +220,7 @@ QWidget *Check_84::Bd2W(QWidget *parent)
 
 }
 
-QWidget *Check_84::Bd3W(QWidget *parent)
+QWidget *Check_KIV::Bd3W(QWidget *parent)
 {
     /*QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -331,7 +331,7 @@ QWidget *Check_84::Bd3W(QWidget *parent)
 }
 
 
-void Check_84::FillBd(QWidget *parent, QString Name, QString Value)
+void Check_KIV::FillBd(QWidget *parent, QString Name, QString Value)
 {
     WDFunc::SetLBLText(parent, Name, Value);   
 }
@@ -364,53 +364,53 @@ void Check_84::FillBd(QWidget *parent, QString Name, QString Value)
 
 } */
 
-QWidget *Check_84::BdUI(int bdnum)
+QWidget *Check_KIV::BdUI(int bdnum)
 {
     Q_UNUSED(bdnum);
     return nullptr;
 }
 
-void Check_84::SetDefaultValuesToWrite()
+void Check_KIV::SetDefaultValuesToWrite()
 {
 
 }
 
-void Check_84::PrepareAnalogMeasurements()
+void Check_KIV::PrepareAnalogMeasurements()
 {
 
 }
 
-void Check_84::ChooseValuesToWrite()
+void Check_KIV::ChooseValuesToWrite()
 {
 
 }
 
-void Check_84::WriteToFile(int row, int bdnum)
+void Check_KIV::WriteToFile(int row, int bdnum)
 {
     Q_UNUSED(row);
     Q_UNUSED(bdnum);
 
 }
 
-void Check_84::PrepareHeadersForFile(int row)
+void Check_KIV::PrepareHeadersForFile(int row)
 {
      Q_UNUSED(row);
 
 }
 
-void Check_84::RefreshAnalogValues(int bdnum)
+void Check_KIV::RefreshAnalogValues(int bdnum)
 {
   Q_UNUSED(bdnum);
 }
 
-QWidget *Check_84::CustomTab()
+QWidget *Check_KIV::CustomTab()
 {
     QWidget *w = new QWidget;
 
     return w;
 }
 
-void Check_84::FillBdUSB(QWidget *parent)
+void Check_KIV::FillBdUSB(QWidget *parent)
 {
     //WDFunc::SetLBLText(parent, "value0", WDFunc::StringValueWithCheck(Bd_block1.NUM, 3));
     WDFunc::SetLBLText(parent, QString::number(101), WDFunc::StringValueWithCheck(Bd_block1.Tmk, 3));
@@ -447,7 +447,7 @@ void Check_84::FillBdUSB(QWidget *parent)
 
 }
 
-void Check_84::FillBd5(QWidget *parent)
+void Check_KIV::FillBd5(QWidget *parent)
 {
     WDFunc::SetLBLText(parent, QString::number(2400), WDFunc::StringValueWithCheck(Bd_block5.Frequency, 3));
 
@@ -458,7 +458,7 @@ void Check_84::FillBd5(QWidget *parent)
 
 }
 
-void Check_84::FillBd8(QWidget *parent)
+void Check_KIV::FillBd8(QWidget *parent)
 {
    // if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != Config::MTB_A2)
    // {

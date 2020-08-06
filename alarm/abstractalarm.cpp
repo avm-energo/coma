@@ -19,62 +19,48 @@
 #include "abstractalarm.h"
 #include "../gen/colors.h"
 #include "../widgets/wd_func.h"
+#include "../gen/error.h"
 
 AbstractAlarm::AbstractAlarm(QWidget *parent):
       QDialog(parent)
 {
-
-   //  ReleWidget();
+  AlarmState();
 
 }
 
-QWidget *AbstractAlarm::AlmReleWidget()
+void AbstractAlarm::AlarmState()
 {
-QMenu *menu = new QMenu;
-QString tmps = "QMenuBar {background-color: "+QString(MAINWINCLR)+";}"\
-        "QMenuBar::item {background-color: "+QString(MAINWINCLR)+";}";
-menu->setStyleSheet(tmps);
-QVBoxLayout *vlyout = new QVBoxLayout;
-QHBoxLayout *hlyout1 = new QHBoxLayout;
-QHBoxLayout *hlyout2 = new QHBoxLayout;
-QWidget *w = new QWidget;
-QStringList Discription =  QStringList() << "Состояние устройства" << "Предупредительная сигнализация" << "Аварийная сигнализация";
-w->setStyleSheet("QComa {background-color: "+QString(MAINWINCLR)+";}");
-QPixmap *pmgrn = new QPixmap("images/greenc.png");
-QPushButton *pb = new QPushButton("Состояние устройства");
-pb->setMinimumSize(QSize(230,30));
-connect(pb,SIGNAL(clicked()),this,SLOT(DeviceState()));
-QGroupBox *gb = new QGroupBox("");
-hlyout1->addWidget(pb,Qt::AlignRight);
-hlyout1->addWidget(WDFunc::NewLBL(w, "", "", "950", pmgrn), 1);
-gb->setLayout(hlyout1);
-hlyout2->addWidget(gb);
+    QDialog *dlg = new QDialog;
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    QString tmps = QString(PROGCAPTION);
 
+    INFOMSG("DeviceState()");
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+    QWidget *w = new QWidget;
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
 
-gb = new QGroupBox("");
-hlyout1 = new QHBoxLayout;
-pb = new QPushButton("Предупредительная сигнализация");
-pb->setMinimumSize(QSize(230,30));
-connect(pb,SIGNAL(clicked()),this,SLOT(PredAlarmState()));
-hlyout1->addWidget(pb,Qt::AlignRight);
-hlyout1->addWidget(WDFunc::NewLBL(w, "", "", "951", pmgrn), 1);
-gb->setLayout(hlyout1);
-hlyout2->addWidget(gb);
+    for (int i = 0; i < HthToolTip().size(); ++i)
+    {
+        hlyout = new QHBoxLayout;
 
-menu = new QMenu;
-gb = new QGroupBox("");
-hlyout1 = new QHBoxLayout;
-pb = new QPushButton("Аварийная сигнализация");
-pb->setMinimumSize(QSize(230,30));
-connect(pb,SIGNAL(clicked()),this,SLOT(AlarmState()));
-hlyout1->addWidget(pb,Qt::AlignRight);
-hlyout1->addWidget(WDFunc::NewLBL(w, "", "", "952", pmgrn), 1);
-gb->setLayout(hlyout1);
-hlyout2->addWidget(gb);
+        if(ModuleBSI::ModuleBsi.Hth & (0x00000001<<i))
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i), pmred));
+        else
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i), pmgrn));
 
-if (hlyout2->count())
-vlyout->addLayout(hlyout2);
-w->setLayout(vlyout);
-return w;
+        hlyout->addWidget(WDFunc::NewLBLT(w, HthToolTip().at(i), "", "", ""), 1);
+        vlayout->addLayout(hlyout);
+    }
 
+    w->setLayout(vlayout);
+
+    lyout->addWidget(w);
+    QPushButton *pb = new QPushButton("Ok");
+    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    lyout->addWidget(pb,0);
+    dlg->setLayout(lyout);
+    dlg->show();
 }

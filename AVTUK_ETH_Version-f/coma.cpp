@@ -85,7 +85,6 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     }
     ActiveThreads = 0;
 
-    //ALARM = new Alarm84;
 
     New104();
     NewModbus();
@@ -122,7 +121,7 @@ void Coma::SetupUI()
     act = new QAction(this);
     act->setToolTip("Разрыв соединения");
     act->setIcon(QIcon("images/stop.png"));
-    connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndClear()));
+    connect(act,SIGNAL(triggered()),this,SLOT(DisconnectAndtypeClear()));
     tb->addAction(act);
     tb->addSeparator();
     act = new QAction(this);
@@ -137,54 +136,15 @@ void Coma::SetupUI()
     tb->addAction(act);
     hlyout->addWidget(tb); 
 
-
-    ALARM = new Alarm84;
-    QWidget *wind =ALARM->AlmReleWidget();
-    hlyout->addWidget(wind, Qt::AlignCenter);
-
-
-    /*
-
-     QWidget *wind =new QWidget();
-
-    switch(MTypeB)
-    {
-    case Config::MTB_A2:
-        switch(MTypeM)
-        {
-           case Config::MTM_84:
-
-            ALARM = new Alarm84;
-            wind =ALARM->AlmReleWidget();
-            hlyout->addWidget(wind, Qt::AlignCenter);
+    //ALARM = new Alarm84;
+   //  QWidget *wind =ALARM;
+     hlyout->addWidget(ALARM, Qt::AlignCenter);
 
 
-           break;
-
-           case Config::MTM_87:
+   // hlyout->addWidget(ReleWidget(), Qt::AlignCenter);
 
 
-           break;
-        }
-    break;
-    case Config::MTB_A3:
-
-        switch(MTypeM)
-        {
-           case Config::MTM_87:
-
-
-
-           break;
-        }
-
-    break;
-
-    };  */
-
-
-
-//    hlyout->addWidget(ReleWidget(), Qt::AlignCenter);
+ //   hlyout->addWidget(SignWidget(), Qt::AlignCenter);
 
 
     lyout->addLayout(hlyout);
@@ -474,6 +434,11 @@ void Coma::PrepareDialogs()
             if (MainInterface != I_RS485)
                 ConfM = new ConfDialog84(S2Config);
             CorD = new CorDialog;
+            connect(ALARM,SIGNAL(AlarmButtonPressed()),AbstrALARM,SLOT(show()));
+            PredAlarm84Widget = new PredAlarm84;
+            connect(ALARM,SIGNAL(ModuleWarnButtonPressed()),PredAlarm84Widget,SLOT(show()));
+            AvarAlarm84Widget = new AvarAlarm84;
+            connect(ALARM,SIGNAL(AlarmButtonPressed()),AvarAlarm84Widget,SLOT(show()));
            break;
 
            case Config::MTM_87:
@@ -481,8 +446,12 @@ void Coma::PrepareDialogs()
              S2Config->clear();
             if (MainInterface != I_RS485)
                 ConfM = new ConfDialogKTF(S2Config);
-           //CorD = new CorDialog;
             CorD = new CorDialogKTF;
+            connect(ALARM,SIGNAL(AlarmButtonPressed()),AbstrALARM,SLOT(show()));
+            PredAlarmKTFWidget = new PredAlarmKTF;
+            connect(ALARM,SIGNAL(ModuleWarnButtonPressed()),PredAlarmKTFWidget,SLOT(show()));
+            AvarAlarmKTFWidget = new AvarAlarmKTF;
+            connect(ALARM,SIGNAL(AlarmButtonPressed()),AvarAlarmKTFWidget,SLOT(show()));
            break;
         }
     break;
@@ -492,6 +461,8 @@ void Coma::PrepareDialogs()
     };
 
   NewTimersBda();
+
+
   /*  switch(MTypeM)
     {
     case Config::MTM_84:
@@ -617,15 +588,12 @@ void Coma::NewTimers()
     TimeTimer->setInterval(1000);
 
 
-  //  ALARM -> AlmNewTimers();
-
     BdaTimer = new QTimer;
     BdaTimer->setInterval(ANMEASINT);
-//    connect(BdaTimer,SIGNAL(timeout()), this, SLOT(USBSetAlarms()));
-//    connect(BdaTimer,SIGNAL(timeout()),this,SLOT(UpdateUSB()));
+ //   connect(BdaTimer,SIGNAL(timeout()), this, SLOT(USBSetAlarms()));
 
-    //  BdaTimer = new QTimer;
-   //  BdaTimer->setInterval(ANMEASINT);
+    //connect(BdaTimer,SIGNAL(timeout()),this,SLOT(UpdateUSB()));
+
 
      // connect(BdaTimer,SIGNAL(timeout()), this, SLOT(ALARM->USBSetAlarms()));
     //  connect(BdaTimer,SIGNAL(timeout()),this,SLOT(ALARM->UpdateUSB()));
@@ -648,11 +616,12 @@ void Coma::NewTimersBda()
 {
 
 
-  //  BdaTimer = new QTimer;
-//    BdaTimer->setInterval(ANMEASINT);
-   // connect(BdaTimer,SIGNAL(timeout()), ALARM, SLOT(USBSetAlarms()));
- //   connect(BdaTimer,SIGNAL(timeout()),this,SLOT(ALARM->UpdateUSB()));
-   // connect(BdaTimer,SIGNAL(timeout()),this,SLOT( CheckB->USBUpdate()));
+   // connect(BdaTimer,SIGNAL(timeout()), ALARM, SLOT(USBSetAlarm84->USBSetAlarms()));
+    connect(BdaTimer,SIGNAL(timeout()),ALARM,SLOT(UpdateUSB()));
+
+
+    if (CheckB != nullptr)
+        connect(BdaTimer,SIGNAL(timeout()),CheckB,SLOT(USBUpdate()));
 
 }
 
@@ -744,7 +713,7 @@ void Coma::ConnectMessage()
 }
 
 
-
+/*
 QWidget *Coma::ReleWidget()
 {
     QMenu *menu = new QMenu;
@@ -796,6 +765,7 @@ QWidget *Coma::ReleWidget()
     w->setLayout(vlyout);
     return w;
 }
+
 
 void Coma::DeviceState()
 {
@@ -1157,7 +1127,7 @@ void Coma::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
     }
 }
 
-
+*/
 
 QWidget *Coma::Least()
 {
@@ -1756,7 +1726,7 @@ void Coma::CheckModBusFinish()
 
 
 
-
+/*
 void Coma::UpdateUSB()
 {
     if (MainInterface == I_USB)
@@ -1767,11 +1737,8 @@ void Coma::UpdateUSB()
         QPixmap *pmred = new QPixmap("images/redc.png");
         Bd11 Bd_block11;
 
-        INFOMSG("UpdateUSB()");
-        if (CheckB != nullptr)
-            CheckB->USBUpdate();
-
         if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == NOERROR)
+        if (Commands::GetBd(16, &Bd_block11, sizeof(Bd11)) == NOERROR)
         {
             for(i=0; i<18; i++)
             {
@@ -1811,6 +1778,7 @@ void Coma::UpdateUSB()
     }
 }
 
+
 void Coma::USBSetAlarms()
 {
     if (MainInterface == I_USB)
@@ -1820,7 +1788,6 @@ void Coma::USBSetAlarms()
         QPixmap *pmred = new QPixmap("images/redc.png");
         Bd11 Bd_block11;
 
-        INFOMSG("USBSetAlarms()");
         if (Commands::GetBd(11, &Bd_block11, sizeof(Bd11)) == NOERROR)
         {
             if(Wpred != nullptr)
@@ -1861,6 +1828,91 @@ void Coma::USBSetAlarms()
         }
     }
 }
+
+
+QWidget *Coma::SignWidget()
+{
+    QMenu *menu = new QMenu;
+    QString tmps = "QMenuBar {background-color: "+QString(MAINWINCLR)+";}"\
+            "QMenuBar::item {background-color: "+QString(MAINWINCLR)+";}";
+    menu->setStyleSheet(tmps);
+    QVBoxLayout *vlyout = new QVBoxLayout;
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QHBoxLayout *hlyout2 = new QHBoxLayout;
+    QWidget *w = new QWidget;
+    QStringList Discription =  QStringList() << "Состояние устройства" << "Предупредительная сигнализация" << "Аварийная сигнализация";
+    w->setStyleSheet("QComa {background-color: "+QString(MAINWINCLR)+";}");
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+
+    QPushButton *pb = new QPushButton("Состояние устройства");
+    pb->setMinimumSize(QSize(230,30));
+   // connect(pb,SIGNAL(clicked()),this,SLOT(DeviceState()));
+    connect(pb,SIGNAL(clicked()), ALARM, SLOT(AlarmState()));
+    QGroupBox *gb = new QGroupBox("");
+
+    hlyout->addWidget(pb,Qt::AlignRight);
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", "950", pmgrn), 1);
+    gb->setLayout(hlyout);
+    hlyout2->addWidget(gb);
+    gb = new QGroupBox("");
+    hlyout = new QHBoxLayout;
+    pb = new QPushButton("Предупредительная сигнализация");
+    pb->setMinimumSize(QSize(230,30));
+  //  connect(pb,SIGNAL(clicked()),this,SLOT(PredAlarmState()));
+    connect(pb,SIGNAL(clicked()),ALARM,SLOT(PredAlarm84.PredAlarmState()));
+
+    hlyout->addWidget(pb,Qt::AlignRight);
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", "951", pmgrn), 1);
+    gb->setLayout(hlyout);
+    hlyout2->addWidget(gb);
+
+    menu = new QMenu;
+    gb = new QGroupBox("");
+    hlyout = new QHBoxLayout;
+    pb = new QPushButton("Аварийная сигнализация");
+    pb->setMinimumSize(QSize(230,30));
+//    connect(pb,SIGNAL(clicked()),this,SLOT(AlarmState()));
+    connect(pb,SIGNAL(clicked()),ALARM,SLOT(AvarAlarm84.AvarState()));
+
+    hlyout->addWidget(pb,Qt::AlignRight);
+    hlyout->addWidget(WDFunc::NewLBL(w, "", "", "952", pmgrn), 1);
+    gb->setLayout(hlyout);
+    hlyout2->addWidget(gb);
+
+    if (hlyout2->count())
+    vlyout->addLayout(hlyout2);
+    w->setLayout(vlyout);
+    return w;
+}
+
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

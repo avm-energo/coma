@@ -24,11 +24,27 @@ TEMPLATE = app
 
 SOURCES += \
     ../alarm/abstractalarm.cpp \
-    ../alarm/alarm84.cpp \
+    ../alarm/alarmwidget.cpp \
+    ../alarm/avaralarmkiv.cpp \
+    ../alarm/avaralarmktf.cpp \
+    ../alarm/modbusupdatepredalarm84.cpp \
+    ../alarm/modbusupdatestatepredalarm84.cpp \
+    ../alarm/predalarmkiv.cpp \
+    ../alarm/predalarmktf.cpp \
+    ../alarm/updatepredalarm84.cpp \
+    ../alarm/updatestatepredalarm84.cpp \
+    ../alarm/usbalarm84.cpp \
+    ../alarm/usbalarmktf.cpp \
+    ../alarm/usbsetalarm84.cpp \
+    ../alarm/usbsetalarmktf.cpp \
+    ../check/checkdialogkiv.cpp \
+    ../check/checkkiv.cpp \
     ../check/checkktf.cpp \
     ../check/chekdialogktf.cpp \
+    ../config/confdialogkiv.cpp \
     ../config/confdialogktf.cpp \
     ../config/configdefktf.cpp \
+    ../config/configkiv.cpp \
     ../config/configktf.cpp \
     ../dialogs/abstractcordialog.cpp \
     ../dialogs/cordialogktf.cpp \
@@ -40,14 +56,10 @@ SOURCES += \
     coma.cpp \
     main.cpp \
     ../check/check.cpp \
-    ../check/check84.cpp \
-    ../check/checkdialog84.cpp \
     ../check/eabstractcheckdialog.cpp \
     ../config/abstractconfdialog.cpp \
     ../config/confdialog.cpp \
-    ../config/confdialog84.cpp \
     ../config/config.cpp \
-    ../config/config84.cpp \
     ../dialogs/cordialog.cpp \
     ../dialogs/errordialog.cpp \
     ../dialogs/fwupdialog.cpp \
@@ -86,11 +98,27 @@ SOURCES += \
 
 HEADERS += \
     ../alarm/abstractalarm.h \
-    ../alarm/alarm84.h \
+    ../alarm/alarmwidget.h \
+    ../alarm/avaralarmkiv.h \
+    ../alarm/avaralarmktf.h \
+    ../alarm/modbusupdatepredalarm84.h \
+    ../alarm/modbusupdatestatepredalarm84.h \
+    ../alarm/predalarmkiv.h \
+    ../alarm/predalarmktf.h \
+    ../alarm/updatepredalarm84.h \
+    ../alarm/updatestatepredalarm84.h \
+    ../alarm/usbalarm84.h \
+    ../alarm/usbalarmktf.h \
+    ../alarm/usbsetalarm84.h \
+    ../alarm/usbsetalarmktf.h \
+    ../check/checkdialogkiv.h \
+    ../check/checkkiv.h \
     ../check/checkktf.h \
     ../check/chekdialogktf.h \
+    ../config/confdialogkiv.h \
     ../config/confdialogktf.h \
     ../config/configdefktf.h \
+    ../config/configkiv.h \
     ../config/configktf.h \
     ../dialogs/abstractcordialog.h \
     ../dialogs/cordialogktf.h \
@@ -100,14 +128,10 @@ HEADERS += \
     ../modbus/serialport.h \
     coma.h \
     ../check/check.h \
-    ../check/check84.h \
-    ../check/checkdialog84.h \
     ../check/eabstractcheckdialog.h \
     ../config/abstractconfdialog.h \
     ../config/confdialog.h \
-    ../config/confdialog84.h \
     ../config/config.h \
-    ../config/config84.h \
     ../dialogs/cordialog.h \
     ../dialogs/errordialog.h \
     ../dialogs/fwupdialog.h \

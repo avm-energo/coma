@@ -14,7 +14,18 @@
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/abstractcordialog.h"
 #include "../alarm/abstractalarm.h"
-#include "../alarm/alarm84.h"
+#include "../alarm/avaralarm84.h"
+#include "../alarm/alarmwidget.h"
+#include "../alarm/modbusupdatepredalarm84.h"
+#include "../alarm/modbusupdatestatepredalarm84.h"
+#include "../alarm/predalarm84.h"
+#include "../alarm/updatepredalarm84.h"
+#include "../alarm/updatestatepredalarm84.h"
+#include "../alarm/usbalarm84.h"
+#include "../alarm/usbsetalarm84.h"
+#include "../alarm/avaralarmktf.h"
+#include "../alarm/predalarmktf.h"
+
 
 #define RECONNECTINTERVAL   3000
 #define WAITINTERVAL        15000
@@ -122,9 +133,9 @@ public:
 
 
 
-  //  QWidget *ReleWidget();
     QWidget *ReleWidget();
-   QWidget * WWidgetComa();
+    QWidget *SignWidget();
+    QWidget * WWidgetComa();
 
 
 
@@ -146,18 +157,18 @@ signals:
 
 public slots:
     void DisconnectAndClear();
-    void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
-    void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
+   // void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
+   // void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
     void CheckTimeFinish();
     void CheckModBusFinish();
-    void DeviceState();
-    void PredAlarmState();
-    void AlarmState();
+  //  void DeviceState();
+  //  void PredAlarmState();
+  //  void AlarmState();
     void FileTimeOut();
-    void UpdateUSB();
-    void USBSetAlarms();
-    void ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal);
-    void ModBusUpdatePredAlarmEvents(ModBus::Coils Signal);
+  //  void UpdateUSB();
+  //  void USBSetAlarms();
+ //   void ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal);
+  //  void ModBusUpdatePredAlarmEvents(ModBus::Coils Signal);
     void SetCancelled();
     void ReConnect();
     void AttemptToRec();
@@ -194,11 +205,9 @@ private slots:
 
 private:
     const QVector<int> MTBs = {0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84};
-   // CorDialog *CorD;
-  //  CorDialogKTF *CorDKTF;
 
     AbstractCorDialog *CorD;
-    AbstractAlarm *ALARM;
+    AlarmWidget *ALARM;
 
 
     InfoDialog *IDialog;
@@ -222,6 +231,11 @@ private:
     int CheckIndex, TimeIndex, ConfIndex, CurTabIndex;
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
+    PredAlarm84 *PredAlarm84Widget;
+    AvarAlarm84 *AvarAlarm84Widget;
+    PredAlarmKTF *PredAlarmKTFWidget;
+    AvarAlarmKTF *AvarAlarmKTFWidget;
+    AbstractAlarm *AbstrALARM;
     IEC104 *Ch104;
     ModBus *ChModbus;
     MNKTime *TimeD;
@@ -250,7 +264,7 @@ private:
     void SetupUI();
     void PrepareDialogs();
     void CloseDialogs();
-    void   NewTimersBda();
+    void NewTimersBda();
 
 protected:
     void keyPressEvent(QKeyEvent *e);
