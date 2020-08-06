@@ -10,7 +10,7 @@
 #define ExeName "AVM-Service.exe"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;#define Prefix "C:\Progs\out"
-#define ARCH "Win32"
+#define ARCH "win32"
 #define QT_DIR "C:\Qt\5.14.2\msvc2017\bin"
 ;#define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\v142"
 #define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012"
