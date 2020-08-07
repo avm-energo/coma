@@ -6,3 +6,4 @@ xcopy QtXlsxWriter\src ..\src /I /Y /S
 xcopy QtXlsxWriter\include\QtXlsx ..\includes\QtXlsx /I /Y /S
 start /wait script\buildX86.bat
 start /wait script\buildX64.bat
+ 
