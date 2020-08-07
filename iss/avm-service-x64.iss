@@ -4,7 +4,6 @@
 #define Name "АВМ-Сервис"
 #define GroupName "АВМ-Сервис"
 #define EngName "AVM-Service"
-;#define Version "0.1.4"
 #define Publisher "EvelSoft"
 #define URL "http://www.avmenergo.ru"
 #define ExeName "AVM-Service.exe"
@@ -16,6 +15,7 @@
 #define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012"
 #define LIB_DIR "..\..\libs"
 #define Build_DIR  "..\..\build"
+#define ApplicationVersion GetFileVersion('..\..\build\win64\release\AVM-Service.exe')
 
 
 
@@ -27,10 +27,10 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{4C4A32F2-8733-4C05-AF66-3996C08A228A}
 AppName={#GroupName}
+AppVerName={#ExeName} {#ApplicationVersion}
 ;AppVersion={#AppVersion}
 ;VersionInfoVersion={#AppVersion}
 ;AppVersion= {#GetStringFileInfo("{#Build_DIR}\{#ARCH}\release\{#ExeName}", "FileVersion")}
-AppVerName={#GroupName}
 AppPublisher={#Publisher}
 AppPublisherURL={#URL}
 AppSupportURL={#URL}
@@ -43,14 +43,13 @@ DefaultGroupName={#EngName}
 UsedUserAreasWarning=no
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-;PrivilegesRequiredOverridesAllowed=dialog
 SetupIconFile=..\coma.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-;OutputBaseFilename="{#EngName}\{#Version}\{#ARCH}"
-OutputBaseFilename={#EngName}-{#ARCH}
+OutputBaseFilename={#EngName}-{#ApplicationVersion}-{#ARCH}
 OutputDir=..\output
+VersionInfoVersion={#ApplicationVersion}
 
 [Dirs]
 Name: {userappdata}\{#EngName}
@@ -96,4 +95,3 @@ Type: files; Name: "{app}\{#ExeName}"
 
 [Run]
 Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2017 Redistributable...
-
