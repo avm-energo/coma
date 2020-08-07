@@ -92,8 +92,13 @@ void ConfDialog84::Fill()
              WDFunc::SetSPBData(this, "SNTP"+QString::number(i), C84->Com_param.SNTP[i]);
         }
 
-        WDFunc::SetSPBData(this, "Baud", C84->Com_param.baud);
-        int cbidx = (C84->Com_param.parity & 0x04) ? 2 : ((C84->Com_param.parity & 0x02) ? 1 : 0);
+        for(int i= 0; i<8; i++)
+        {
+            if(C84->Com_param.baud == Rates.at(i).toUInt())
+            cbidx = i;
+        }
+        WDFunc::SetCBIndex(this, "Baud", cbidx);
+        cbidx = (C84->Com_param.parity & 0x04) ? 2 : ((C84->Com_param.parity & 0x02) ? 1 : 0);
         WDFunc::SetCBIndex(this, "Parity", cbidx);
         cbidx = ((C84->Com_param.stopbit & 0x02) ? 1 : 0);
         WDFunc::SetCBIndex(this, "StopBit", cbidx);
@@ -166,8 +171,9 @@ void ConfDialog84::FillBack()
          WDFunc::SPBData(this, "SNTP"+QString::number(i), C84->Com_param.SNTP[i]);
         }
 
-        WDFunc::SPBData(this, "Baud", C84->Com_param.baud);
-        int cbidx = WDFunc::CBIndex(this, "Parity");
+        int cbidx = WDFunc::CBIndex(this, "Baud");
+        C84->Com_param.baud = (Rates.at(cbidx).toInt());
+        cbidx = WDFunc::CBIndex(this, "Parity");
         C84->Com_param.parity = 0x00000001 << cbidx;
         cbidx = WDFunc::CBIndex(this, "StopBit");
         C84->Com_param.stopbit = 0x00000001 << cbidx;
@@ -496,8 +502,12 @@ void ConfDialog84::SetupUI()
     }
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Скорость 485 интерфейса:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Baud", 0, 100000, 0, paramcolor), row,2,1,4);
+    glyout->addWidget(WDFunc::NewLBL(this, "Скорость RS485 интерфейса:"), row,1,1,1);
+    cbl = QStringList() << "1200" << "2400"<< "4800" << "9600" << "19200" << "38400" << "57600" << "115200";
+    cb = WDFunc::NewCB(this, "Baud", cbl, paramcolor);
+    //cb->setMinimumWidth(80);
+    //cb->setMinimumHeight(15);
+    glyout->addWidget(cb,row,2,1,4);
 
 
     row++;

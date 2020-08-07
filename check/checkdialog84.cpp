@@ -27,7 +27,7 @@ CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent) : EAbstractCheck
     QString tmps = "QDialog {background-color: "+QString(UCONFCLR)+";}";
     setStyleSheet(tmps);
     QStringList sl;
-    BdNum = 6;
+    BdNum = 10;
     Ch84 = new Check_84(board, parent);
     Ch = new Check;
 //    BdNum = 11;
@@ -35,9 +35,11 @@ CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent) : EAbstractCheck
     SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
     SetBd(6, &Ch84->Bd_block1, sizeof(Check_84::Bd1));
     SetBd(5, &Ch84->Bd_block5, sizeof(Check_84::Bd5));
+    SetBd(9, &Ch84->Bd_block9, sizeof(Check_84::Bd9));
+    SetBd(10, &Ch84->Bd_block10, sizeof(Check_84::Bd10));
 
     if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
-    sl = QStringList() << "Общие" << "Аналоговые" << "Несимметрия" << "Температура" << "Проверка выходных реле";
+    sl = QStringList() << "Общие" << "Аналоговые" << "Несимметрия" << "Температура" << "Проверка дискретного ввода/вывода";
     else
     sl = QStringList() << "Общие" << "Аналоговые" << "Несимметрия";
 
@@ -88,6 +90,12 @@ void CheckDialog84::RefreshAnalogValues(int bdnum)
         break;
     case C84_BDA_PHI:
         Ch84->FillBd5(this);
+        break;
+    case C84_BDA_DIn:
+        Ch84->FillBd9(this);
+        break;
+    case C84_BDA_PPS:
+        Ch84->FillBd10(this);
         break;
 
     default:
@@ -219,6 +227,30 @@ void Check_84::FillBd5(QWidget *parent)
         WDFunc::SetLBLText(parent, "value"+QString::number(31+i), WDFunc::StringValueWithCheck(Bd_block5.phi_next_f[i], 3));
     }
 
+}
+
+void Check_84::FillBd9(QWidget *parent)
+{
+    if(Bd_block9.Din24)   // включение
+    {
+       WDFunc::SetLBLText(parent, "Din24", "Замкнуто", true);
+    }
+    else  // выключение
+    {
+       WDFunc::SetLBLText(parent, "Din24", "Разомкнуто", true);
+    }
+}
+
+void Check_84::FillBd10(QWidget *parent)
+{
+    if(Bd_block10.PPS)   // включение
+    {
+       WDFunc::SetLBLText(parent, "1PPS", "Замкнуто", true);
+    }
+    else  // выключение
+    {
+       WDFunc::SetLBLText(parent, "1PPS", "Разомкнуто", true);
+    }
 }
 
 #endif

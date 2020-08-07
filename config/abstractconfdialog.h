@@ -19,6 +19,7 @@ public:
     QStringList CheckConfErrors;
     bool IsNeededDefConf = false;
     int confIndex, timeIndex;
+    quint8 TheEnd;
 
     QWidget *ConfButtons();
     virtual void Fill() = 0; // заполнить значения полей вывода из структуры конфигурации
@@ -41,12 +42,12 @@ private slots:
     void SaveConfToFile();
     void LoadConfFromFile();
 #if PROGSIZE != PROGSIZE_EMUL
-    void ReadConf(int index);
     void ButtonReadConf();
     void tginit(float *tg);
 
 public slots:
     void WriteConf();
+    void ReadConf(int index);
 
 #endif
 signals:

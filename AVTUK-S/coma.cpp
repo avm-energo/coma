@@ -72,6 +72,8 @@ Coma::Coma(QWidget *parent)
 {
     StartWindowSplashScreen->finish(this);
     Autonomous = false;
+    TimeTimer = new QTimer;
+    TimeTimer->setInterval(1000);
 }
 
 Coma::~Coma()
@@ -265,6 +267,8 @@ void Coma::Stage3()
         return;
     //MainTW->setMaximumSize(QSize(1920,1440));
 
+    connect(MainTW,SIGNAL(tabClicked(int)),this,SLOT(MainTWTabClicked(int)));
+
     InfoDialog *idlg = new InfoDialog;
     connect(this,SIGNAL(BsiRefresh()),idlg,SLOT(FillBsi()));
     connect(this,SIGNAL(ClearBsi()),idlg,SLOT(ClearBsi()));
@@ -310,28 +314,20 @@ void Coma::Stage3()
         connect(ConfM,SIGNAL(NewConfToBeLoaded()),this,SLOT(Fill()));
         connect(ConfM,SIGNAL(DefConfToBeLoaded()),this,SLOT(SetDefConf()));
         ConfM->confIndex = MainTW->indexOf(ConfM);
-        connect(MainTW, SIGNAL(tabClicked(int)), ConfM,SLOT(ReadConf(int))); //tabClicked
+        //connect(MainTW, SIGNAL(tabClicked(int)), ConfM,SLOT(ReadConf(int))); //tabClicked
     }
 
     if (MTypeB == 0xA2) // для МНК
     {
-        MNKTime *Time = new MNKTime();
-        connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Start_Timer(int))); //tabClicked
-        connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Stop_Timer(int)));
+        Time = new MNKTime();
+        //connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Start_Timer(int))); //tabClicked
+        //connect(MainTW, SIGNAL(tabClicked(int)), Time,SLOT(Stop_Timer(int)));
         connect(ConfM, SIGNAL(stopRead(int)), Time,SLOT(Stop_Timer(int)));
         MainTW->addTab(Time, "Время");
         Time->timeIndex = MainTW->indexOf(Time);
         ConfM->timeIndex = Time->timeIndex;
 
-        QThread *thr = new QThread;
-        Time->moveToThread(thr);
-        connect(this,SIGNAL(stoptime()),Time,SLOT(StopSlot()));
-        connect(Time, SIGNAL(finished()), thr, SIGNAL(finished()));
-        //connect(thr, SIGNAL(finished()), this, SLOT(CheckTimeFinish()));
-        connect(thr,SIGNAL(finished()),Time,SLOT(deleteLater()));
-        //connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
-        connect(thr,SIGNAL(started()),Time,SLOT(slot2_timeOut()));
-        thr->start();
+        connect(TimeTimer,SIGNAL(timeout()),Time,SLOT(slot2_timeOut()));
     }
 
     str = (TuneM == nullptr) ? "Регулировка" : "Регулировка\nБазовая";
@@ -344,7 +340,9 @@ void Coma::Stage3()
     if (TuneM != nullptr)
     {
         MainTW->addTab(TuneM, str);
-        connect(TuneM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));
+        connect(TuneM,SIGNAL(LoadDefConf()),this,SLOT(SetDefConf()));       
+        TuneM->TuneIndex = MainTW->indexOf(TuneM);
+        connect(MainTW, SIGNAL(tabClicked(int)), TuneM, SLOT(TuneMode(int))); //tabClicked
     }
     str = (CheckM == nullptr) ? "Проверка" : "Проверка\nБазовая";
     if(CheckB != nullptr)
@@ -353,7 +351,7 @@ void Coma::Stage3()
       if(MTypeB == 0xA2)
       {
           CheckB->checkIndex = MainTW->indexOf(CheckB);
-          connect(MainTW, SIGNAL(tabClicked(int)), CheckB, SLOT(TestMode(int))); //tabClicked
+          //connect(MainTW, SIGNAL(tabClicked(int)), CheckB, SLOT(TestMode(int))); //tabClicked
       }
 
 
@@ -369,7 +367,7 @@ void Coma::Stage3()
     }
 
     if (MTypeB == 0xA2) // диапазон модулей АВ-ТУК
-    MainTW->addTab(CorD, "Коррекция");
+    MainTW->addTab(CorD, "Начальные значения");
 
     FwUpD = new fwupdialog;
     MainTW->addTab(OscD, "Осциллограммы");
@@ -518,3 +516,29 @@ void Coma::PrepareDialogs()
     if (CheckM != nullptr)
         connect(OscD, SIGNAL(StopCheckTimer()), CheckM, SLOT(StopAnalogMeasurements()));
 }
+
+void Coma::MainTWTabClicked(int tabindex)
+{
+    //if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
+    //    return;
+
+    if(Time != nullptr)
+    {
+        if(tabindex == Time->timeIndex)
+            TimeTimer->start();
+        else
+            TimeTimer->stop();
+    }
+    else
+        TimeTimer->stop();
+
+
+    if (ConfM != nullptr)
+    {
+       if(tabindex == ConfM->confIndex)
+       ConfM->ReadConf(tabindex);
+    }
+    /*if (CorD != nullptr)
+        CorD->GetCorBd(tabindex);*/
+}
+

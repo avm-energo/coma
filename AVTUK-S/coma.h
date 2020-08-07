@@ -30,6 +30,7 @@ public:
 signals:
 
 public slots:
+    void MainTWTabClicked(int);
 
 private slots:
     void Emul2x();

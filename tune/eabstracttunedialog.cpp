@@ -513,3 +513,24 @@ void EAbstractTuneDialog::keyPressEvent(QKeyEvent *e)
         StdFunc::Cancel();
     QDialog::keyPressEvent(e);
 }
+
+void EAbstractTuneDialog::TuneMode(int index)
+{
+    Q_UNUSED(index);
+    //if(!MainWindow::TheEnd)
+   // {
+        if(index == TuneIndex)
+        {
+            if(Commands::SetMode(0x02) != Error::ER_NOERROR)
+            WARNMSG("Ошибка при переходе на регулировочный режим");
+
+        }
+        else
+        {
+            if(Commands::SetMode(0x00) != Error::ER_NOERROR)
+            WARNMSG("Ошибка при переходе на рабочий режим");
+        }
+        TimeFunc::Wait(100);
+
+   // }
+}

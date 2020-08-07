@@ -229,7 +229,7 @@ int Commands::GetMode(int &mode)
 #endif
 }
 
-int Commands::WriteTimeMNK(uint32_t *Time,  int TimeSize)
+int Commands::WriteTimeMNK(uint*Time,  int TimeSize)
 {
 #if PROGSIZE != PROGSIZE_EMUL
     cn->Send(CN_WTime, BoardTypes::BT_NONE, Time, TimeSize);

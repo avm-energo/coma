@@ -21,6 +21,7 @@
 #include "../gen/colors.h"
 #include "../gen/files.h"
 #include "../gen/timefunc.h"
+#include "../config/config.h"
 #if PROGSIZE != PROGSIZE_EMUL
 #include "../gen/commands.h"
 #endif
@@ -138,21 +139,25 @@ QWidget *EAbstractCheckDialog::BottomUI()
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     glyout->addWidget(pb,1,3,1,1);
-    pb = new QPushButton("Начать тестирование мезонина");
-#if PROGSIZE != PROGSIZE_EMUL
-    connect(pb,SIGNAL(clicked()),this,SLOT(StartTest()));
-#endif
-    if (StdFunc::IsInEmulateMode())
-        pb->setEnabled(false);
 
-    glyout->addWidget(pb,2,1,1,1);
-
-    pb = new QPushButton("Завершить тестирование мезонина");
+    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_84)
+    {
+        pb = new QPushButton("Начать тестирование мезонина");
     #if PROGSIZE != PROGSIZE_EMUL
-        connect(pb,SIGNAL(clicked()),this,SLOT(StopTest()));
+        connect(pb,SIGNAL(clicked()),this,SLOT(StartTest()));
     #endif
         if (StdFunc::IsInEmulateMode())
             pb->setEnabled(false);
+
+        glyout->addWidget(pb,2,1,1,1);
+
+        pb = new QPushButton("Завершить тестирование мезонина");
+        #if PROGSIZE != PROGSIZE_EMUL
+            connect(pb,SIGNAL(clicked()),this,SLOT(StopTest()));
+        #endif
+            if (StdFunc::IsInEmulateMode())
+                pb->setEnabled(false);
+    }
 
     glyout->addWidget(pb,2,3,1,1);
     lyout->addLayout(glyout);
@@ -318,7 +323,7 @@ void EAbstractCheckDialog::SetTimerPeriod()
 
 void EAbstractCheckDialog::StartTest()
 {
-    TimeFunc::Wait(500);
+    TimeFunc::Wait(100);
     int res = Commands::TestCom(1);
     if (res != Error::ER_NOERROR)
     {
@@ -328,12 +333,13 @@ void EAbstractCheckDialog::StartTest()
     {
        // EMessageBox::information(this, "Успешно", "Режим тестирования");
     }
+    TimeFunc::Wait(100);
 
 }
 
 void EAbstractCheckDialog::StopTest()
 {
-    TimeFunc::Wait(500);
+    TimeFunc::Wait(100);
     int res = Commands::TestCom(0);
     if (res != Error::ER_NOERROR)
     {
@@ -343,6 +349,7 @@ void EAbstractCheckDialog::StopTest()
     {
        // EMessageBox::information(this, "Успешно", "Тестирование завершено");
     }
+    TimeFunc::Wait(100);
 
 }
 

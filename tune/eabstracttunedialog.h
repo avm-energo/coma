@@ -45,6 +45,7 @@ public:
     QVector<S2::DataRec> *S2ConfigForTune;
     ReportModel *RepModel; // модель, в которую заносим данные для отчёта
 //    QString OrganizationString; // наименование организации, работающей с программой
+    int TuneIndex;
 
     virtual void SetupUI() = 0;
     QWidget *TuneUI();
@@ -92,6 +93,7 @@ public slots:
     void NoGood();
     int StartMeasurement();
     virtual void SetDefCoefs() = 0;
+    void TuneMode(int);
 
 #endif
     void SaveToFile();

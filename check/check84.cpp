@@ -224,6 +224,16 @@ QWidget *Check_84::Bd4W(QWidget *parent)
     glyout->addWidget(Button, row,1,1,2,Qt::AlignTop);
     connect(Button, SIGNAL(clicked()), this, SLOT(Switch_off()));
 
+    row++;
+    glyout->addWidget(WDFunc::NewLBL(parent, "Din24"),row,1,1,1,Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Разомкнуто", QString(ACONFOCLR), "Din24"), row,2,1,1,Qt::AlignCenter);
+    //connect(Button, SIGNAL(clicked()), this, SLOT(Rele1()));
+
+    row++;
+    glyout->addWidget(WDFunc::NewLBL(parent, "1PPS"),row,1,1,1,Qt::AlignCenter);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Разомкнуто", QString(ACONFOCLR), "1PPS"), row,2,1,1,Qt::AlignCenter);
+    //connect(Button, SIGNAL(clicked()), this, SLOT(Rele2()));
+
     vlyout->addLayout(glyout);
     w->setLayout(vlyout);
     QString tmps = "QWidget {background-color: "+QString(UCONFCLR)+";}";
@@ -233,6 +243,7 @@ QWidget *Check_84::Bd4W(QWidget *parent)
 
 void Check_84::Rele1()
 {
+   StartTest();
    if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
    {
        if(rele1 != 1)
@@ -258,10 +269,12 @@ void Check_84::Rele1()
         EMessageBox::information(Fwidjet, "INFO", "Ошибка");
        }
    }
+   StopTest();
 }
 
 void Check_84::Rele2()
 {
+    StartTest();
     if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     {
         if(rele2 != 1)
@@ -287,11 +300,13 @@ void Check_84::Rele2()
          EMessageBox::information(Fwidjet, "INFO", "Ошибка");
         }
     }
+    StopTest();
 
 }
 
 void Check_84::Rele3()
 {
+    StartTest();
     if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     {
         if(rele3 != 1)
@@ -317,12 +332,14 @@ void Check_84::Rele3()
          EMessageBox::information(Fwidjet, "INFO", "Ошибка");
         }
     }
+    StopTest();
 
 }
 
 
 void Check_84::Switch_off()
 {
+    StartTest();
     if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     {
         if(Commands::WriteCom(121) == Error::ER_NOERROR)
@@ -352,6 +369,7 @@ void Check_84::Switch_off()
         else
         EMessageBox::information(Fwidjet, "INFO", "Ошибка");
     }
+    StopTest();
 }
 
 void Check_84::FillBd(QWidget *parent)
@@ -383,8 +401,9 @@ void Check_84::FillBd(QWidget *parent)
 
     if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != Config::MTB_A2)
     {
+
         WDFunc::SetLBLText(parent, "value30", WDFunc::StringValueWithCheck(Bd_block1.Tamb, 3));
-        //WDFunc::SetLBLText(parent, "value31", WDFunc::StringValueWithCheck(Bd_block1.Ramb, 3));
+        WDFunc::SetLBLText(parent, "value30", WDFunc::StringValueWithCheck(Bd_block1.Tamb, 3));
     }
 
 }
@@ -535,3 +554,4 @@ void Check_84::CalcTginit(void)
     emit tgStart(tginit);
 
 }
+

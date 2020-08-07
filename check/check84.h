@@ -8,6 +8,8 @@
 #define C84_BDA_IN   2
 #define C84_BDA_IN2  2
 #define C84_BDA_PHI  1
+#define C84_BDA_DIn  3
+#define C84_BDA_PPS  4
 
 class Check_84 : public EAbstractCheckDialog
 {
@@ -49,8 +51,20 @@ public:
         float phi_next_f[6];
     };
 
+    struct Bd9
+    {
+       quint32 Din24;
+    };
+
+    struct Bd10
+    {
+       quint8 PPS;
+    };
+
     Bd1 Bd_block1;
     Bd5 Bd_block5;
+    Bd9 Bd_block9;
+    Bd10 Bd_block10;
 
     quint8 rele1, rele2, rele3, rele4;
     QWidget *Fwidjet;
@@ -62,8 +76,8 @@ public:
     QWidget *Bd4W(QWidget *parent);
     void FillBd(QWidget *parent);
     void FillBd5(QWidget *parent);
-    //void FillBd2(QWidget *parent);
-    //void FillBd3(QWidget *parent);
+    void FillBd9(QWidget *parent);
+    void FillBd10(QWidget *parent);
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
     QWidget *CustomTab();
 

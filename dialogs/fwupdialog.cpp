@@ -100,7 +100,7 @@ int fwupdialog::LoadFW()
 void fwupdialog::RunSoft()
 {
     int res = Commands::RunVPO();
-    if (res != Files::ER_NOERROR)
+    if (res != Error::ER_NOERROR)
     {
         WARNMSG("Ошибка перехода на новое ПО");
     }

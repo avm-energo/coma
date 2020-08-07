@@ -21,25 +21,30 @@
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
+    TheEnd = 0;
     connect(this, SIGNAL(SendTg(float*)), this, SLOT(tginit(float*)));
 }
 
 #if PROGSIZE != PROGSIZE_EMUL
 void AbstractConfDialog::ReadConf(int index)
 {
-    if(index == confIndex)
+    if(!TheEnd)
     {
-        if(timeIndex)
-        emit stopRead(timeIndex);
+        if(index == confIndex)
+        {
+            if(timeIndex)
+            emit stopRead(timeIndex);
 
-        TimeFunc::Wait(100);
+            TimeFunc::Wait(500);
 
-        int res = ModuleBSI::PrereadConf(this, S2Config);
-        if (res == Error::ER_RESEMPTY)
-            emit DefConfToBeLoaded();
-        else if (res == Error::ER_NOERROR)
-            emit NewConfToBeLoaded();
+            int res = ModuleBSI::PrereadConf(this, S2Config);
+            if (res == Error::ER_RESEMPTY)
+                emit DefConfToBeLoaded();
+            else if (res == Error::ER_NOERROR)
+                emit NewConfToBeLoaded();
+        }
     }
+
 }
 
 void AbstractConfDialog::ButtonReadConf()

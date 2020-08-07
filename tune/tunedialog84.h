@@ -1,5 +1,5 @@
-#ifndef TUNEDIALOG84_H
-#define TUNEDIALOG84_H
+#ifndef TuneDialog84_H
+#define TuneDialog84_H
 
 #include <QDialog>
 #include "eabstracttunedialog.h"
@@ -34,6 +34,7 @@
 #define TD_TMK  25.0 // degrees
 #define TD_VBAT 3.0 // voltage
 #define TD_FREQ 50 // Hz
+#define CONST2PIF 314.15926
 
 class QGroupBox;
 
@@ -93,7 +94,6 @@ private:
     bool Cancelled = false, DefConfig;
     //QVector<S2::DataRec> *S2Config;
     //QVector<S2::DataRec> *S2ConfigForTune;  // для регулировки
-    iec104 *mipcanal;
     int TuneControlType;
     int SecondsToEnd15SecondsInterval;
     //QHash <QString, int (TuneDialog80::*)()> pf;
@@ -273,7 +273,6 @@ private:
     int Start7_3_5();
     int SaveUeff();
     int ShowRetomDialog(double U, double I, double Y);
-    int GetExternalData(); // ввод данных в зависимости от выбранного режима и номера опыта
     int SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
     int SaveWorkConfig();
     int LoadWorkConfig();
@@ -309,9 +308,6 @@ private slots:
 #if PROGSIZE != PROGSIZE_EMUL
     int TuneChannel();
     void ReadN();
-    void StartMip();
-    void StopMip();
-    void ParseMipData(Parse104::Signals104 &);
     void SetTuneMode();
     int ReadAnalogMeasurements();
     void SetExtData();

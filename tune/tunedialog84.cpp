@@ -502,45 +502,45 @@ void TuneDialog84::FillBackBac(int bacnum)
     QString tmps;
     for (int i = 0; i < 3; i++)
     {
-        WDFunc::LEData(this, "tune"+QString::number(i), tmps);
+        WDFunc::LE_read_data(this, "tune"+QString::number(i), tmps);
         Bac_block.N1_TT[i]=tmps.toUInt();
-        WDFunc::LEData(this, "tune"+QString::number(i+3), tmps);
+        WDFunc::LE_read_data(this, "tune"+QString::number(i+3), tmps);
         Bac_block.KmU[i]=ToFloat(tmps);
-        WDFunc::LEData(this, "tune"+QString::number(i+6), tmps);
+        WDFunc::LE_read_data(this, "tune"+QString::number(i+6), tmps);
         Bac_block.KmI1[i]=ToFloat(tmps);
-        WDFunc::LEData(this, "tune"+QString::number(i+9), tmps);
+        WDFunc::LE_read_data(this, "tune"+QString::number(i+9), tmps);
         Bac_block.KmI2[i]=ToFloat(tmps);
-        WDFunc::LEData(this, "tune"+QString::number(i+12), tmps);
+        WDFunc::LE_read_data(this, "tune"+QString::number(i+12), tmps);
         Bac_block.KmI4[i]=ToFloat(tmps);
-        WDFunc::LEData(this, "tune"+QString::number(i+15), tmps);
+        WDFunc::LE_read_data(this, "tune"+QString::number(i+15), tmps);
         Bac_block.KmI8[i]=ToFloat(tmps);
-        WDFunc::LEData(this, "tune"+QString::number(i+18), tmps);
+        WDFunc::LE_read_data(this, "tune"+QString::number(i+18), tmps);
         Bac_block.KmI16[i]=ToFloat(tmps);
-        WDFunc::LEData(this, "tune"+QString::number(i+21), tmps);
+        WDFunc::LE_read_data(this, "tune"+QString::number(i+21), tmps);
         Bac_block.KmI32[i]=ToFloat(tmps);
-        WDFunc::LEData(this, "tune"+QString::number(i+24), tmps);
+        WDFunc::LE_read_data(this, "tune"+QString::number(i+24), tmps);
         Bac_block.TKPsi_a[i]=ToFloat(tmps);
-        WDFunc::LEData(this, "tune"+QString::number(i+27), tmps);
+        WDFunc::LE_read_data(this, "tune"+QString::number(i+27), tmps);
         Bac_block.TKPsi_b[i]=ToFloat(tmps);
     }
 
     for (int i = 0; i < 6; i++)
     {
-        WDFunc::LEData(this, "tune"+QString::number(i+30), tmps);
+        WDFunc::LE_read_data(this, "tune"+QString::number(i+30), tmps);
         Bac_block.DPsi[i]=ToFloat(tmps);
-        WDFunc::LEData(this, "tune"+QString::number(i+36), tmps);
+        WDFunc::LE_read_data(this, "tune"+QString::number(i+36), tmps);
         Bac_block.TKUa[i]=ToFloat(tmps);
-        WDFunc::LEData(this, "tune"+QString::number(i+42), tmps);
+        WDFunc::LE_read_data(this, "tune"+QString::number(i+42), tmps);
         Bac_block.TKUb[i]=ToFloat(tmps);
     }
 
-    WDFunc::LEData(this, "tune48", tmps);
+    WDFunc::LE_read_data(this, "tune48", tmps);
     Bac_block.K_freq=ToFloat(tmps);
-    WDFunc::LEData(this, "tune49", tmps);
+    WDFunc::LE_read_data(this, "tune49", tmps);
     Bac_block.Art=ToFloat(tmps);
-    WDFunc::LEData(this, "tune50", tmps);
+    WDFunc::LE_read_data(this, "tune50", tmps);
     Bac_block.Brt=ToFloat(tmps);
-    WDFunc::LEData(this, "tune51", tmps);
+    WDFunc::LE_read_data(this, "tune51", tmps);
     Bac_block.Tmk0=ToFloat(tmps);
 
 }
@@ -621,30 +621,6 @@ float TuneDialog84::ToFloat(QString text)
     return tmpf;
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
-void TuneDialog84::StartMip()
-{
-    mipcanal = new iec104;
-    connect(mipcanal,SIGNAL(signalsready(Parse104::Signals104&)),this,SLOT(ParseMipData(Parse104::Signals104&)));
-    connect(this,SIGNAL(stopall()),mipcanal,SLOT(Stop()));
-}
-
-void TuneDialog84::ParseMipData(Parse104::Signals104 &Signal)
-{
-    // precision
-    static int Precisions[46] = {0,4,4,4,3,3,3,4,4,4,4,3,3,3,3,3,3,1,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3};
-    // приём из mipcanal::Signal номера сигнала (SigNum) и его значения (SigVal) и его дальнейшая обработка
-    quint32 index = Signal.SigNum;
-    if (index != quint32(-1))
-    {
-        MipDat[index] = Signal.SigVal;
-        /*if ((index >= 11) && (index <= 13))
-            MipDat[index] = -MipDat[index]; // у МИП-а знак угла отрицательный*/
-        WDFunc::SetLBLText(this, "mip"+QString::number(index), QString::number(Signal.SigVal, 'f', Precisions[index]));
-
-    }
-}
-
 int TuneDialog84::CheckMip()
 {
     double ValuesToCheck[10] = {S0,HZ50,HZ50,HZ50,MVTC.u,MVTC.u,MVTC.u,MVTC.i[0],MVTC.i[1],MVTC.i[2]};
@@ -686,12 +662,6 @@ void TuneDialog84::SetTuneMode()
 {
     TuneControlType = sender()->objectName().toInt();
 }
-
-void TuneDialog84::StopMip()
-{
-    emit stopall();
-}
-
 
 
 int TuneDialog84::ShowControlChooseDialog()
@@ -757,7 +727,7 @@ int TuneDialog84::Show3PhaseScheme()
     return Error::ER_NOERROR;
 }
 
-int TuneDialog84::Start7_2_3()
+/*int TuneDialog84::Start7_2_3()
 {
     if (TuneControlType == TUNEMIP)
     {
@@ -765,7 +735,7 @@ int TuneDialog84::Start7_2_3()
         return GetExternalData();
     }
     return Error::ER_NOERROR;
-}
+}*/
 
 int TuneDialog84::Start7_3_1()
 {
@@ -806,7 +776,7 @@ int TuneDialog84::Start7_3_2()
     C84->Bci_block.C_pasp[i] = 15036;
     //C84->Bci_block.Imax[i] = 600;
 
-    if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&C84->Bci_block,1, S2ConfigForTune) != Error::ER_NOERROR)
     return Error::ER_GENERALERROR;
 
     return Error::ER_NOERROR;
@@ -890,7 +860,7 @@ int TuneDialog84::Start7_3_4_11()
     C84->Bci_block.C_pasp[i] = 5012;
     //C84->Bci_block.Imax[i] = 200;
 
-    if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&C84->Bci_block,1, S2ConfigForTune) != Error::ER_NOERROR)
     return Error::ER_GENERALERROR;
 
     WaitNSeconds(2);
@@ -912,7 +882,7 @@ int TuneDialog84::Start7_3_4_13()
     C84->Bci_block.C_pasp[i] = 2506;
     //C84->Bci_block.Imax[i] = 100;
 
-    if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&C84->Bci_block,1, S2ConfigForTune) != Error::ER_NOERROR)
     return Error::ER_GENERALERROR;
 
     WaitNSeconds(2);
@@ -934,7 +904,7 @@ int TuneDialog84::Start7_3_4_15()
     C84->Bci_block.C_pasp[i] = 1253;
     //C84->Bci_block.Imax[i] = 50;
 
-    if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&C84->Bci_block,1, S2ConfigForTune) != Error::ER_NOERROR)
     return Error::ER_GENERALERROR;
 
     WaitNSeconds(2);
@@ -956,7 +926,7 @@ int TuneDialog84::Start7_3_4_17()
     C84->Bci_block.C_pasp[i] = 626;
     //C84->Bci_block.Imax[i] = 25;
 
-    if (Commands::WriteFile(&C84->Bci_block, 1, S2ConfigForTune) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&C84->Bci_block,1, S2ConfigForTune) != Error::ER_NOERROR)
     return Error::ER_GENERALERROR;
 
     WaitNSeconds(2);
@@ -1000,12 +970,12 @@ int TuneDialog84::Start7_3_5()
 void TuneDialog84::ReadN()
 {
     QString tmps;
-    WDFunc::LEData(ask, "N", tmps);
+    WDFunc::LE_read_data(ask, "N", tmps);
     N=tmps.toInt();
     ask->close();
 }
 
-int TuneDialog84::GetExternalData()
+/*int TuneDialog84::GetExternalData()
 {
 #if PROGSIZE != PROGSIZE_EMUL
     switch (TuneControlType)
@@ -1060,7 +1030,7 @@ int TuneDialog84::GetExternalData()
                 lbl = new QLabel("Iф" + QString::number(i+10,36).toUpper()+", A");
                 glyout->addWidget(lbl,row, column++,1,1);
                 QDoubleSpinBox *spb = WDFunc::NewSPB(this, "spb7371"+QString::number(i+3), 0, 6, 3);
-                spb->setValue(C84->Bci_block.Imax[i]);
+                spb->setValue(1.5*C84->Bci_block.C_pasp[i]*C84->Bci_block.Unom*qPow(10,-6)*CONST2PIF);
                 glyout->addWidget(spb,row, column++,1,1);
             }
             ++row;
@@ -1104,7 +1074,7 @@ int TuneDialog84::GetExternalData()
         for (int i=0; i<3; i++)
         {
             RealData.u[i] = 60.0;
-            RealData.i[i] = C84->Bci_block.Imax[i];
+            RealData.i[i] = (1.5*C84->Bci_block.C_pasp[i]*C84->Bci_block.Unom*qPow(10,-6)*CONST2PIF);
             RealData.d[i] = 0.0;
             RealData.f[i] = 50.0;
         }
@@ -1115,7 +1085,7 @@ int TuneDialog84::GetExternalData()
 #else
     return Error::ER_NOERROR;
 #endif
-}
+}*/
 
 void TuneDialog84::EnterDataTune()
 {
@@ -1368,23 +1338,23 @@ void TuneDialog84::SaveValuesTemp20()
     QString tmps;
     for (i=0; i<3; i++)
     {
-      WDFunc::LEData(ask, "ValuetuneU"+QString::number(i), tmps);
+      WDFunc::LE_read_data(ask, "ValuetuneU"+QString::number(i), tmps);
       Uet[i]=tmps.toFloat();
     }
 
     for (i=0; i<3; i++)
     {
-      WDFunc::LEData(ask, "ValuetuneI"+QString::number(i), tmps);
+      WDFunc::LE_read_data(ask, "ValuetuneI"+QString::number(i), tmps);
       Iet[i]=tmps.toFloat();
     }
 
     for (i=0; i<6; i++)
     {
-      WDFunc::LEData(ask, "ValuetunePhi"+QString::number(i), tmps);
+      WDFunc::LE_read_data(ask, "ValuetunePhi"+QString::number(i), tmps);
       PHIet[i]=tmps.toFloat();
     }
 
-    WDFunc::LEData(ask, "ValuetuneF", tmps);
+    WDFunc::LE_read_data(ask, "ValuetuneF", tmps);
     FREQet=tmps.toFloat();
 
     ask->close();
@@ -1396,23 +1366,23 @@ void TuneDialog84::SaveValuesTempMinus20()
     QString tmps;
     for (i=0; i<3; i++)
     {
-      WDFunc::LEData(ask, "ValuetuneU"+QString::number(i), tmps);
+      WDFunc::LE_read_data(ask, "ValuetuneU"+QString::number(i), tmps);
       UetMinus20[i]=tmps.toFloat();
     }
 
     for (i=0; i<3; i++)
     {
-      WDFunc::LEData(ask, "ValuetuneI"+QString::number(i), tmps);
+      WDFunc::LE_read_data(ask, "ValuetuneI"+QString::number(i), tmps);
       IetMinus20[i]=tmps.toFloat();
     }
 
     for (i=0; i<6; i++)
     {
-      WDFunc::LEData(ask, "ValuetunePhi"+QString::number(i), tmps);
+      WDFunc::LE_read_data(ask, "ValuetunePhi"+QString::number(i), tmps);
       PHIetMinus20[i]=tmps.toFloat();
     }
 
-    WDFunc::LEData(ask, "ValuetuneF", tmps);
+    WDFunc::LE_read_data(ask, "ValuetuneF", tmps);
     FREQetMinus20=tmps.toFloat();
 
     ask->close();
@@ -1424,23 +1394,23 @@ void TuneDialog84::SaveValuesTemp60()
     QString tmps;
     for (i=0; i<3; i++)
     {
-      WDFunc::LEData(ask, "ValuetuneU"+QString::number(i), tmps);
+      WDFunc::LE_read_data(ask, "ValuetuneU"+QString::number(i), tmps);
       Uet60[i]=tmps.toFloat();
     }
 
     for (i=0; i<3; i++)
     {
-      WDFunc::LEData(ask, "ValuetuneI"+QString::number(i), tmps);
+      WDFunc::LE_read_data(ask, "ValuetuneI"+QString::number(i), tmps);
       Iet60[i]=tmps.toFloat();
     }
 
     for (i=0; i<6; i++)
     {
-      WDFunc::LEData(ask, "ValuetunePhi"+QString::number(i), tmps);
+      WDFunc::LE_read_data(ask, "ValuetunePhi"+QString::number(i), tmps);
       PHIet60[i]=tmps.toFloat();
     }
 
-    WDFunc::LEData(ask, "ValuetuneF", tmps);
+    WDFunc::LE_read_data(ask, "ValuetuneF", tmps);
     FREQet60=tmps.toFloat();
 
     ask->close();
@@ -1452,23 +1422,23 @@ int TuneDialog84::CalcTuneCoefs()
     QString tmps;
     for (i=0; i<3; i++)
     {
-      WDFunc::LEData(ask, "ValuetuneU"+QString::number(i), tmps);
+      WDFunc::LE_read_data(ask, "ValuetuneU"+QString::number(i), tmps);
       Uet[i]=tmps.toFloat();
     }
 
     for (i=0; i<3; i++)
     {
-      WDFunc::LEData(ask, "ValuetuneI"+QString::number(i), tmps);
+      WDFunc::LE_read_data(ask, "ValuetuneI"+QString::number(i), tmps);
       Iet[i]=tmps.toFloat();
     }
 
     for (i=0; i<6; i++)
     {
-      WDFunc::LEData(ask, "ValuetunePhi"+QString::number(i), tmps);
+      WDFunc::LE_read_data(ask, "ValuetunePhi"+QString::number(i), tmps);
       PHIet[i]=tmps.toFloat();
     }
 
-    WDFunc::LEData(ask, "ValuetuneF", tmps);
+    WDFunc::LE_read_data(ask, "ValuetuneF", tmps);
     FREQet=tmps.toFloat();
 
     ask->close();
@@ -1840,7 +1810,7 @@ int TuneDialog84::LoadWorkConfig()
 {
     // пишем ранее запомненный конфигурационный блок
     memcpy(&C84->Bci_block,&Bci_block_work,sizeof(Config84::Bci));
-    if (Commands::WriteFile(&C84->Bci_block, CM_CONFIGFILE, S2ConfigForTune) != Error::ER_NOERROR)
+    if (Commands::WriteFile(&C84->Bci_block,CM_CONFIGFILE, S2ConfigForTune) != Error::ER_NOERROR)
         return Error::ER_GENERALERROR;
     return Error::ER_NOERROR;
 }
@@ -1986,7 +1956,7 @@ int TuneDialog84::TuneChannel()
 
     int i;
     QString tmps;
-    WDFunc::LEData(ask, "N", tmps);
+    WDFunc::LE_read_data(ask, "N", tmps);
     N=tmps.toInt();
     ask->close();
     float sum = 0.0;
@@ -2130,10 +2100,10 @@ int TuneDialog84::TuneTempCor()
 
     int i;
     QString tmps;
-    WDFunc::LEData(ask, "N", tmps);
+    WDFunc::LE_read_data(ask, "N", tmps);
     N=tmps.toInt();
     ask->close();
-    float sum = 0.0;
+    //float sum = 0.0;
     SaveWorkConfig();
 
     if (Commands::GetBac(BT_MEZONIN, &Bac_block, sizeof(Bac)) != Error::ER_NOERROR)
@@ -2531,5 +2501,5 @@ void TuneDialog84::GenerateReport()
     }
     delete report;*/
 }
-#endif
+
 

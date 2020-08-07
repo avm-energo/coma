@@ -9,9 +9,9 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 2.2.278
+VERSION = 2.2.280
 
-QT       += core gui printsupport network
+QT       += core gui printsupport network qml
 
 TARGET = avtuks-F
 #DEFINES += MODULE_A1
@@ -25,6 +25,7 @@ DEFINES += USBENABLE # enable usb hid driver
 TEMPLATE = app
 
 SOURCES += \
+    ../dialogs/mnktime.cpp \
     coma.cpp \
     main.cpp \
     ../check/check.cpp \
@@ -125,10 +126,10 @@ SOURCES += \
     ../widgets/wd_func.cpp \
     ../dialogs/cordialog.cpp \
     ../check/checkdialog35.cpp \
-    ../check/check35.cpp \
-    ../dialogs/time.cpp
+    ../check/check35.cpp
 
 HEADERS  += \
+    ../dialogs/mnktime.h \
     coma.h \
     ../check/check.h \
     ../check/check21.h \
@@ -242,13 +243,13 @@ equals(QMAKE_PLATFORM, win32)
         message("x64 build")
        ## Windows x64 (64bit) specific build here
         CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereportd -lliblzma -lhidapi -lqt5xlsxd
     } else {
         message("x86 build")
         ## Windows x86 (32bit) specific build here
         CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win32/debug/ -llimereport -lliblzma -lhidapi -lqt5xlsxd
+        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win32/debug/ -llimereportd -lliblzma -lhidapi -lqt5xlsxd
     }
 }
 
-unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereport -lliblzma -lqt5xlsxd
+unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereportd -lliblzma -lqt5xlsxd

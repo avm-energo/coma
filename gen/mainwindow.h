@@ -17,7 +17,7 @@
 #include "../dialogs/swjdialog.h"
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/cordialog.h"
-#include "../dialogs/time.h"
+#include "../dialogs/mnktime.h"
 
 #include "eabstractprotocomchannel.h"
 
@@ -55,6 +55,7 @@ public:
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
     MNKTime *Time;
+    QTimer *TimeTimer;
 #ifndef MODULE_A1
     SwitchJournalDialog *SwjD;
     OscDialog *OscD;

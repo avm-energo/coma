@@ -50,7 +50,7 @@ public:
     static int GetUsingVariant(char &variant); // получить вариант использования (выбор набора регулировочных параметров)
     static int SetMode(char mode); // задать режим работы (коэффициенты при регулировке/рабочий режим)
     static int GetMode(int &mode); // прочитать текущий режим работы
-    static int WriteTimeMNK(uint32_t *Time,  int TimeSize);
+    static int WriteTimeMNK(uint *Time,  int TimeSize);
     static int GetTimeMNK(uint &Time);
     static int WriteBd(char BdNum, void *BdPtr, int BdPtrSize);
     static int WriteCom(char ComNum);

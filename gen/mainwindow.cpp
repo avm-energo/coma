@@ -1077,6 +1077,9 @@ void MainWindow::DisconnectAndClear()
 {
 
 #if PROGSIZE != PROGSIZE_EMUL
+    if(ConfM != nullptr)
+    ConfM->TheEnd = 1;
+
     Disconnect();
     TuneB = TuneM = nullptr;
 #endif
