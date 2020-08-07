@@ -35,7 +35,7 @@ AvarAlarmKTF::AvarAlarmKTF(QWidget *parent):
 void AvarAlarmKTF::AvarState()
 {
 
-    QDialog *dlg = new QDialog;
+
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -55,22 +55,22 @@ void AvarAlarmKTF::AvarState()
 
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(w, "", "", "5023", (AvarAlarmEventsKTF[12]) ? pmred : pmgrn));
-    hlyout->addWidget(WDFunc::NewLBLT(w, events.at(12), "", "", ""), 1);
+    hlyout->addWidget(WDFunc::NewLBLT(w, events.at(0), "", "", ""), 1);
     vlayout->addLayout(hlyout);
 
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(w, "", "", "5025", (AvarAlarmEventsKTF[14]) ? pmred : pmgrn));
-    hlyout->addWidget(WDFunc::NewLBLT(w, events.at(14), "", "", ""), 1);
+    hlyout->addWidget(WDFunc::NewLBLT(w, events.at(1), "", "", ""), 1);
     vlayout->addLayout(hlyout);
 
     w->setLayout(vlayout);
 
     lyout->addWidget(w);
     QPushButton *pb = new QPushButton("Ok");
-    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(close()));
     lyout->addWidget(pb,0);
-    dlg->setLayout(lyout);
-    dlg->show();
+    setLayout(lyout);
+
 
 }
 

@@ -1,5 +1,5 @@
-#ifndef CHECKDIALOG84_H
-#define CHECKDIALOG84_H
+#ifndef CHECKDIALOGKIV_H
+#define CHECKDIALOGKIV_H
 
 #include "eabstractcheckdialog.h"
 #include "checkkiv.h"
@@ -8,20 +8,20 @@
 #include "../iec104/ethernet.h"
 #include "../modbus/modbus.h"
 
-class CheckDialog84 : public EAbstractCheckDialog
+class CheckDialogKIV : public EAbstractCheckDialog
 {
     Q_OBJECT
 public:
-    explicit CheckDialog84(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    explicit CheckDialogKIV(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
-    Check_KIV *Ch84;
+    Check_KIV *ChKIV;
 
 
 signals:
 
 public slots:   
-    void SetPredAlarmColor(quint8*);
-    void SetAlarmColor(quint8* Alarm);
+    void SetPredAlarmColor(QList <bool> WarnAlarm);
+    void SetAlarmColor(QList <bool> Alarm);
     void UpdateFlData(IEC104Thread::FlSignals104 *);
     void UpdateSponData(IEC104Thread::SponSignals *);
     void USBUpdate();

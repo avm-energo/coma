@@ -24,6 +24,8 @@ TEMPLATE = app
 
 SOURCES += \
     ../alarm/abstractalarm.cpp \
+    ../alarm/alarmclass.cpp \
+    ../alarm/alarmstateall.cpp \
     ../alarm/alarmwidget.cpp \
     ../alarm/avaralarmkiv.cpp \
     ../alarm/avaralarmktf.cpp \
@@ -98,6 +100,8 @@ SOURCES += \
 
 HEADERS += \
     ../alarm/abstractalarm.h \
+    ../alarm/alarmclass.h \
+    ../alarm/alarmstateall.h \
     ../alarm/alarmwidget.h \
     ../alarm/avaralarmkiv.h \
     ../alarm/avaralarmktf.h \

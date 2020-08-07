@@ -23,16 +23,16 @@
 #include "../gen/modulebsi.h"
 #include "../gen/error.h"
 #include "../gen/commands.h"
-#include "predalarm84.h"
+#include "predalarmkiv.h"
 
-PredAlarm84::PredAlarm84(QWidget *parent):
+PredAlarmKIV::PredAlarmKIV(QWidget *parent):
     AbstractAlarm(parent)
 {
    PredAlarmState();
 }
 
 
-void PredAlarm84::PredAlarmState()
+void PredAlarmKIV::PredAlarmState()
 {
      QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -96,32 +96,32 @@ void PredAlarm84::PredAlarmState()
     setLayout(lyout);
 }
 
-void PredAlarm84::AlarmState()
+void PredAlarmKIV::AlarmState()
 {
 }
-void PredAlarm84::AvarState()
+void PredAlarmKIV::AvarState()
 {
 }
-void PredAlarm84::UpdateUSB()
+void PredAlarmKIV::UpdateUSB()
 {
 }
-void PredAlarm84::USBSetAlarms()
+void PredAlarmKIV::USBSetAlarms()
 {
 }
-void PredAlarm84::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
+void PredAlarmKIV::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
 {
     Q_UNUSED(Signal);
 
 }
-void PredAlarm84::UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
+void PredAlarmKIV::UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
 {
     Q_UNUSED(Signal);
 }
-void PredAlarm84::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
+void PredAlarmKIV::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
 {
     Q_UNUSED(Signal);
 }
-void PredAlarm84::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
+void PredAlarmKIV::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
 {
     Q_UNUSED(Signal);
 }

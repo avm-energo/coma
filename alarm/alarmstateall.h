@@ -1,15 +1,13 @@
-#ifndef AVARALARMKIV_H
-#define AVARALARMKIV_H
+#ifndef ALARMSTATEALL_H
+#define ALARMSTATEALL_H
 
 #include "../alarm/abstractalarm.h"
 
-class AvarAlarmKIV: public AbstractAlarm
+class AlarmStateAll : public AbstractAlarm
 {
-   Q_OBJECT
-
+     Q_OBJECT
 public:
-   explicit  AvarAlarmKIV(QWidget *parent = nullptr);
-
+   explicit AlarmStateAll(QWidget *parent = nullptr);
 
 public slots:
 
@@ -32,7 +30,6 @@ private:
    QWidget *Walarm;
 
 
-
 };
 
-#endif // AVARALARM84_H
+#endif // ALARMSTATE_H

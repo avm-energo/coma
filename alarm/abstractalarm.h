@@ -11,7 +11,7 @@
 
 
 
-class AbstractAlarm : public QDialog
+class AbstractAlarm : public QWidget
 {
         Q_OBJECT
 public:
@@ -19,14 +19,15 @@ public:
 
     const quint32 PredBSIMask = 0x00005F55;
     const quint32 AvarBSIMask = 0x000020AA;
-
+\
+   // QList <bool> WarnAlarmEvents;
+  //  QList <bool> AvarAlarmEvents;
 
     quint8 PredAlarmEvents[20];
     quint8 AvarAlarmEvents[20];
 
-    quint8 PredAlarmEventsKTF[14];
-    quint8 AvarAlarmEventsKTF[14];
-
+    quint8 PredAlarmEventsKTF[15];
+    quint8 AvarAlarmEventsKTF[15];
 
     struct Bd11
     {
@@ -41,6 +42,7 @@ public:
         quint32 Warn;
         quint32 Alarm;
     };
+
 
     static QStringList HthToolTip()
     {
@@ -66,7 +68,11 @@ public:
 
 
 public slots:
-    virtual void AlarmState();
+
+  //  virtual void Update(QList<bool> values)=0;
+
+
+    virtual void AlarmState()=0;
     virtual  void PredAlarmState()=0;
     virtual void AvarState()=0;
 

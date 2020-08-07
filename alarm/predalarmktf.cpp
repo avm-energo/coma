@@ -27,13 +27,11 @@
 PredAlarmKTF::PredAlarmKTF(QWidget *parent):
     AbstractAlarm(parent)
 {
-  PredAlarmState();
+   PredAlarmState();
 }
 
 void PredAlarmKTF::PredAlarmState()
 {
-
-    QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -68,7 +66,7 @@ void PredAlarmKTF::PredAlarmState()
 
     hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewLBL(w, "", "", "5024", (PredAlarmEvents[13]) ? pmred : pmgrn));
-    hlyout->addWidget(WDFunc::NewLBLT(w, events.at(13), "", "", ""), 1);
+    hlyout->addWidget(WDFunc::NewLBLT(w, events.at(12), "", "", ""), 1);
     vlayout->addLayout(hlyout);
 
 
@@ -77,10 +75,10 @@ void PredAlarmKTF::PredAlarmState()
 
     lyout->addWidget(w);
     QPushButton *pb = new QPushButton("Ok");
-    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
+    connect(pb,SIGNAL(clicked()),this,SLOT(close()));
     lyout->addWidget(pb,0);
-    dlg->setLayout(lyout);
-    dlg->show();
+    setLayout(lyout);
+
 
 }
 

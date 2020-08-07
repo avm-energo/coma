@@ -1,14 +1,14 @@
-#ifndef PREDALARM84_H
-#define PREDALARM84_H
+#ifndef PREDALARMKIV_H
+#define PREDALARMKIV_H
 
 #include "../alarm/abstractalarm.h"
 
-class PredAlarm84: public AbstractAlarm
+class PredAlarmKIV: public AbstractAlarm
 {
      Q_OBJECT
 
 public:
-    explicit  PredAlarm84(QWidget *parent = nullptr);
+    explicit  PredAlarmKIV(QWidget *parent = nullptr);
 
 
 public slots:

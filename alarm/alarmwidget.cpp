@@ -19,9 +19,11 @@
 
 
 
-AlarmWidget::AlarmWidget(QWidget *parent):
-         QDialog(parent)
+AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent):
+         QWidget(parent)
 {
+        Alarm = alarm;
+
         QMenu *menu = new QMenu;
         QString tmps = "QMenuBar {background-color: "+QString(MAINWINCLR)+";}"\
                 "QMenuBar::item {background-color: "+QString(MAINWINCLR)+";}";
@@ -29,9 +31,8 @@ AlarmWidget::AlarmWidget(QWidget *parent):
         QVBoxLayout *vlyout = new QVBoxLayout;
         QHBoxLayout *hlyout = new QHBoxLayout;
         QHBoxLayout *hlyout2 = new QHBoxLayout;
-        QWidget *w = new QWidget;
         QStringList Discription =  QStringList() << "Состояние устройства" << "Предупредительная сигнализация" << "Аварийная сигнализация";
-        w->setStyleSheet("QComa {background-color: "+QString(MAINWINCLR)+";}");
+        setStyleSheet("QComa {background-color: "+QString(MAINWINCLR)+";}");
         QPixmap *pmgrn = new QPixmap("images/greenc.png");
 
         QPushButton *pb = new QPushButton("Состояние устройства");
@@ -39,7 +40,7 @@ AlarmWidget::AlarmWidget(QWidget *parent):
         connect(pb,SIGNAL(clicked()),this,SIGNAL(AlarmButtonPressed()));;
         QGroupBox *gb = new QGroupBox("");
         hlyout->addWidget(pb,Qt::AlignRight);
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", "950", pmgrn), 1);
+        hlyout->addWidget(WDFunc::NewLBL(this, "", "", "950", pmgrn), 1);
         gb->setLayout(hlyout);
         hlyout2->addWidget(gb);
 
@@ -50,7 +51,7 @@ AlarmWidget::AlarmWidget(QWidget *parent):
         pb->setMinimumSize(QSize(230,30));
         connect(pb,SIGNAL(clicked()),this,SIGNAL(ModuleWarnButtonPressed()));
         hlyout->addWidget(pb,Qt::AlignRight);
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", "951", pmgrn), 1);
+        hlyout->addWidget(WDFunc::NewLBL(this, "", "", "951", pmgrn), 1);
         gb->setLayout(hlyout);
         hlyout2->addWidget(gb);
 
@@ -61,23 +62,15 @@ AlarmWidget::AlarmWidget(QWidget *parent):
         pb->setMinimumSize(QSize(230,30));
         connect(pb,SIGNAL(clicked()),this,SIGNAL(ModuleAlarmButtonPressed()));
         hlyout->addWidget(pb,Qt::AlignRight);
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", "952", pmgrn), 1);
+        hlyout->addWidget(WDFunc::NewLBL(this, "", "", "952", pmgrn), 1);
         gb->setLayout(hlyout);
         hlyout2->addWidget(gb);
 
         if (hlyout2->count())
         vlyout->addLayout(hlyout2);
-        w->setLayout(vlyout);
+        setLayout(vlyout);
 
 
-        warnCounts[0xA284]=18;
-        warnCounts[0xA287]=15;
-
-        avarCounts[0xA284]=7;
-        avarCounts[0xA287]=2;
-
-        BdNumbers[0xA284]=11;
-        BdNumbers[0xA287]=16;
 
 }
 
@@ -85,49 +78,46 @@ void AlarmWidget::UpdateUSB()
 {
     if (MainInterface == I_USB)
     {
-        int i = 0, predalarmcount = 0, alarmcount = 0;
+         int  predalarmcount = 0, alarmcount = 0;
         QPixmap *pmgrn = new QPixmap("images/greenc.png");
         QPixmap *pmylw = new QPixmap("images/yellowc.png");
         QPixmap *pmred = new QPixmap("images/redc.png");
-        BdAlarm signaling;
-        quint32 MType=(MTypeB<<8)+MTypeM;
+       // BdAlarm signalling;
+
 
         WDFunc::SetLBLImage(this, "951", (predalarmcount == 0) ? pmgrn : pmylw);
         WDFunc::SetLBLImage(this, "952", (alarmcount == 0) ? pmgrn : pmred);
 
 
-        if (Commands::GetBd(BdNumbers[MType], &signaling, sizeof(BdAlarm)) == NOERROR)
+      /* if (Commands::GetBd(BdNumbers[MType], &signalling, sizeof(BdAlarm)) == NOERROR)
         {
+            bool warn=(signalling.Warn & (0x00000001 << i));
+            bool alarm=(signalling.Alarm & (0x00000001 << i));
             for(i=0; i<warnCounts[MType]; ++i)
             {
-               if(signaling.Warn & (0x00000001 << i))
-               {
-                   WarnEvents[i] = 1;
-                   ++predalarmcount;
-                   break;
-               }
-               else
-                   WarnEvents[i] = 0;
+              Alarm->WarnAlarmEvents.append(warn);
+               if(warn)
+                   ++predalarmcount;  
+
             }
-
-
 
             for(i=0; i<warnCounts[MType]; ++i)
             {
-               if(signaling.Alarm & (0x00000001 << i))
-               {
-                   AvarAlarmEvents[i] = 1;
-                   ++alarmcount;
-                   break;
-               }
-               else
-                   AvarAlarmEvents[i] = 0;
+                Alarm->AvarAlarmEvents.append(alarm);
+                if(alarm)
+                    ++alarmcount;
             }
+   */
+
+            Alarm ->UpdateAlarmUSB();
+
             WDFunc::SetLBLImage(this, "951", (predalarmcount == 0) ? pmgrn : pmylw);
             WDFunc::SetLBLImage(this, "952", (alarmcount == 0) ? pmgrn : pmred);
-            emit SetWarnAlarmColor(WarnEvents);
-            emit SetAlarmColor(AvarAlarmEvents);
-        }
+
+
+           // emit SetWarnAlarmColor(Alarm->WarnAlarmEvents);
+          //  emit SetAlarmColor(Alarm->AvarAlarmEvents);
+       // }
         if (Commands::GetBsi(ModuleBSI::ModuleBsi) == NOERROR)
         {
             if (ModuleBSI::ModuleBsi.Hth & WarnBSIMask)
@@ -141,6 +131,7 @@ void AlarmWidget::UpdateUSB()
 
     }
 }
+
 
 void AlarmWidget::USBSetAlarms()
 {

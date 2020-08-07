@@ -14,17 +14,18 @@
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/abstractcordialog.h"
 #include "../alarm/abstractalarm.h"
-#include "../alarm/avaralarm84.h"
+#include "../alarm/avaralarmkiv.h"
 #include "../alarm/alarmwidget.h"
 #include "../alarm/modbusupdatepredalarm84.h"
 #include "../alarm/modbusupdatestatepredalarm84.h"
-#include "../alarm/predalarm84.h"
+#include "../alarm/predalarmkiv.h"
 #include "../alarm/updatepredalarm84.h"
 #include "../alarm/updatestatepredalarm84.h"
 #include "../alarm/usbalarm84.h"
 #include "../alarm/usbsetalarm84.h"
 #include "../alarm/avaralarmktf.h"
 #include "../alarm/predalarmktf.h"
+#include "../alarm/alarmstateall.h"
 
 
 #define RECONNECTINTERVAL   3000
@@ -152,8 +153,8 @@ signals:
     void Finished();
     void StopCommunications();
     void ConnectMes(QString*);
-    void SetPredAlarmColor(quint8*);
-    void SetAlarmColor(quint8*);
+   // void SetPredAlarmColor(quint8*);
+  //  void SetAlarmColor(quint8*);
 
 public slots:
     void DisconnectAndClear();
@@ -207,8 +208,8 @@ private:
     const QVector<int> MTBs = {0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84};
 
     AbstractCorDialog *CorD;
-    AlarmWidget *ALARM;
-
+    AlarmWidget *ALARMW;
+    AlarmClass *Alarm;
 
     InfoDialog *IDialog;
     bool Ok;
@@ -231,10 +232,11 @@ private:
     int CheckIndex, TimeIndex, ConfIndex, CurTabIndex;
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
-    PredAlarm84 *PredAlarm84Widget;
-    AvarAlarm84 *AvarAlarm84Widget;
+    PredAlarmKIV *PredAlarmKIVWidget;
+    AvarAlarmKIV *AvarAlarmKIVWidget;
     PredAlarmKTF *PredAlarmKTFWidget;
     AvarAlarmKTF *AvarAlarmKTFWidget;
+    AlarmStateAll *AlarmStateAllWidget;
     AbstractAlarm *AbstrALARM;
     IEC104 *Ch104;
     ModBus *ChModbus;

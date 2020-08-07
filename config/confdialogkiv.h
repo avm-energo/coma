@@ -1,21 +1,21 @@
-#ifndef CONFDIALOG84_H
-#define CONFDIALOG84_H
+#ifndef CONFDIALOGKIV_H
+#define CONFDIALOGKIV_H
 
 #include <QDialog>
 
-#include "../config/config84.h"
+#include "../config/configkiv.h"
 #include "abstractconfdialog.h"
 #include <QVBoxLayout>
 #include <QLabel>
 #include "../iec104/iec104.h"
 #include "../iec104/ethernet.h"
 
-class ConfDialog84 : public AbstractConfDialog
+class ConfDialogKIV : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    explicit ConfDialog84(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
-    ~ConfDialog84();
+    explicit ConfDialogKIV(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
+    ~ConfDialogKIV();
 
     QLabel *SysTime; 
     QTimer *timer;
@@ -24,7 +24,7 @@ public:
 
 private:
 
-    Config84 *C84;
+    ConfigKIV *CKIV;
     bool    IsNtp;
 
     void Fill();

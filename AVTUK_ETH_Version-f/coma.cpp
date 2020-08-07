@@ -35,8 +35,8 @@
 #include <QStandardPaths>
 #include <QStringListModel>
 #include "coma.h"
-#include "../config/confdialog84.h"
-#include "../check/checkdialog84.h"
+#include "../config/confdialogkiv.h"
+#include "../check/checkdialogkiv.h"
 #include "../config/confdialogktf.h"
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/errordialog.h"
@@ -84,7 +84,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
        AlarmEvents[i] = 0;
     }
     ActiveThreads = 0;
-
+    Alarm = new AlarmClass;
 
     New104();
     NewModbus();
@@ -136,9 +136,9 @@ void Coma::SetupUI()
     tb->addAction(act);
     hlyout->addWidget(tb); 
 
-    //ALARM = new Alarm84;
+    ALARMW = new AlarmWidget(Alarm);
    //  QWidget *wind =ALARM;
-     hlyout->addWidget(ALARM, Qt::AlignCenter);
+    hlyout->addWidget(ALARMW, Qt::AlignCenter);
 
 
    // hlyout->addWidget(ReleWidget(), Qt::AlignCenter);
@@ -429,16 +429,16 @@ void Coma::PrepareDialogs()
         switch(MTypeM)
         {
            case Config::MTM_84:
-            CheckB = new CheckDialog84(BoardTypes::BT_BASE);
+            CheckB = new CheckDialogKIV(BoardTypes::BT_BASE);
              S2Config->clear();
             if (MainInterface != I_RS485)
-                ConfM = new ConfDialog84(S2Config);
+                ConfM = new ConfDialogKIV(S2Config);
             CorD = new CorDialog;
-            connect(ALARM,SIGNAL(AlarmButtonPressed()),AbstrALARM,SLOT(show()));
-            PredAlarm84Widget = new PredAlarm84;
-            connect(ALARM,SIGNAL(ModuleWarnButtonPressed()),PredAlarm84Widget,SLOT(show()));
-            AvarAlarm84Widget = new AvarAlarm84;
-            connect(ALARM,SIGNAL(AlarmButtonPressed()),AvarAlarm84Widget,SLOT(show()));
+            connect(ALARMW,SIGNAL(AlarmButtonPressed()),AbstrALARM,SLOT(show()));
+            PredAlarmKIVWidget = new PredAlarmKIV;
+            connect(ALARMW,SIGNAL(ModuleWarnButtonPressed()),PredAlarmKIVWidget,SLOT(show()));
+            AvarAlarmKIVWidget = new AvarAlarmKIV;
+            connect(ALARMW,SIGNAL(AlarmButtonPressed()),AvarAlarmKIVWidget,SLOT(show()));
            break;
 
            case Config::MTM_87:
@@ -447,11 +447,13 @@ void Coma::PrepareDialogs()
             if (MainInterface != I_RS485)
                 ConfM = new ConfDialogKTF(S2Config);
             CorD = new CorDialogKTF;
-            connect(ALARM,SIGNAL(AlarmButtonPressed()),AbstrALARM,SLOT(show()));
+
+            AlarmStateAllWidget = new AlarmStateAll;
+            connect(ALARMW,SIGNAL(AlarmButtonPressed()),AlarmStateAllWidget,SLOT(show()));
             PredAlarmKTFWidget = new PredAlarmKTF;
-            connect(ALARM,SIGNAL(ModuleWarnButtonPressed()),PredAlarmKTFWidget,SLOT(show()));
+            connect(ALARMW,SIGNAL(ModuleWarnButtonPressed()),PredAlarmKTFWidget,SLOT(show()));
             AvarAlarmKTFWidget = new AvarAlarmKTF;
-            connect(ALARM,SIGNAL(AlarmButtonPressed()),AvarAlarmKTFWidget,SLOT(show()));
+            connect(ALARMW,SIGNAL(ModuleAlarmButtonPressed()),AvarAlarmKTFWidget,SLOT(show()));
            break;
         }
     break;
@@ -470,8 +472,8 @@ void Coma::PrepareDialogs()
     };
   */
     connect(this,SIGNAL(ClearBsi()),IDialog,SLOT(ClearBsi()));
-    connect(this, SIGNAL(SetPredAlarmColor(quint8*)), CheckB,SLOT(SetPredAlarmColor(quint8*)));
-    connect(this, SIGNAL(SetAlarmColor(quint8*)), CheckB,SLOT(SetAlarmColor(quint8*)));
+    connect(ALARMW, SIGNAL(SetWarnAlarmColor(QList <bool>)), CheckB,SLOT(SetPredAlarmColor(QList <bool>)));
+    connect(ALARMW, SIGNAL(SetAlarmColor(QList <bool>)), CheckB,SLOT(SetAlarmColor(QList <bool>)));
 
     if (MainInterface == I_ETHERNET)
     {
@@ -616,8 +618,8 @@ void Coma::NewTimersBda()
 {
 
 
-   // connect(BdaTimer,SIGNAL(timeout()), ALARM, SLOT(USBSetAlarm84->USBSetAlarms()));
-    connect(BdaTimer,SIGNAL(timeout()),ALARM,SLOT(UpdateUSB()));
+    //connect(BdaTimer,SIGNAL(timeout()), ALARMW, SLOT(USBSetAlarmKIV->USBSetAlarms()));
+    connect(BdaTimer,SIGNAL(timeout()),ALARMW,SLOT(UpdateUSB()));
 
 
     if (CheckB != nullptr)

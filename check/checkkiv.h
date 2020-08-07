@@ -1,5 +1,5 @@
-#ifndef CHECK84_H
-#define CHECK84_H
+#ifndef CHECKKIV_H
+#define CHECKKIV_H
 
 #include <QWidget>
 #include "../gen/maindef.h"
@@ -7,11 +7,11 @@
 #define C84_BDA_IN   1
 #define C84_BDA_IN2  2
 
-class Check_84
+class Check_KIV
 {
 public:
-     explicit Check_84();
-     ~Check_84();
+     explicit Check_KIV();
+     ~Check_KIV();
 
     struct Bd1
     {

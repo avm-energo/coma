@@ -23,15 +23,15 @@
 #include "../gen/modulebsi.h"
 #include "../gen/error.h"
 #include "../gen/commands.h"
-#include "avaralarm84.h"
+#include "avaralarmkiv.h"
 
-AvarAlarm84::AvarAlarm84(QWidget *parent):
+AvarAlarmKIV::AvarAlarmKIV(QWidget *parent):
     AbstractAlarm(parent)
 {
    AvarState();
 }
 
-void AvarAlarm84::AvarState()
+void AvarAlarmKIV::AvarState()
 {
     QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -85,35 +85,36 @@ void AvarAlarm84::AvarState()
     dlg->show();
 }
 
-void AvarAlarm84::AlarmState()
+void AvarAlarmKIV::AlarmState()
 {
 }
-void AvarAlarm84::PredAlarmState()
-{
-}
-
-void AvarAlarm84::UpdateUSB()
+void AvarAlarmKIV::PredAlarmState()
 {
 }
 
-void AvarAlarm84::USBSetAlarms()
+void AvarAlarmKIV::UpdateUSB()
 {
 }
 
-void AvarAlarm84::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
+void AvarAlarmKIV::USBSetAlarms()
+{
+
+}
+
+void AvarAlarmKIV::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
 {
     Q_UNUSED(Signal);
 
 }
-void AvarAlarm84::UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
+void AvarAlarmKIV::UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
 {
     Q_UNUSED(Signal);
 }
-void AvarAlarm84::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
+void AvarAlarmKIV::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
 {
     Q_UNUSED(Signal);
 }
-void AvarAlarm84::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
+void AvarAlarmKIV::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
 {
     Q_UNUSED(Signal);
 }
