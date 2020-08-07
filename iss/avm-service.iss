@@ -47,7 +47,7 @@ SetupIconFile=..\coma.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-OutputBaseFilename={#EngName}-{#ApplicationVersion}-{#ARCH}
+OutputBaseFilename={#EngName}-{#ApplicationVersion}-x86
 OutputDir=..\output
 VersionInfoVersion={#ApplicationVersion}
 
