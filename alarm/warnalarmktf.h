@@ -1,14 +1,14 @@
-#ifndef PREDALARMKTF_H
-#define PREDALARMKTF_H
+#ifndef WARNALARMKTF_H
+#define WARNALARMKTF_H
 
 #include "../alarm/abstractalarm.h"
 
-class PredAlarmKTF : public AbstractAlarm
+class WarnAlarmKTF : public AbstractAlarm
 {
     Q_OBJECT
 
 public:
-   explicit  PredAlarmKTF(QWidget *parent = nullptr);
+   explicit  WarnAlarmKTF(AlarmClass *alarm, QWidget *parent = nullptr);
 
 
 public slots:
@@ -17,8 +17,7 @@ public slots:
    void PredAlarmState();
    void AvarState();
 
-   void UpdateUSB();
-   void USBSetAlarms();
+   void Update(QList<bool> states);
 
    void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
    void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
@@ -28,8 +27,6 @@ public slots:
 
 private:
 
-   QWidget *Wpred;
-   QWidget *Walarm;
 };
 
 #endif // PREDALARMKTF_H

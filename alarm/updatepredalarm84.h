@@ -24,7 +24,7 @@ public slots:
     void AvarState();
 
     void UpdateUSB();
-    void USBSetAlarms();
+    void Update();
 
     void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
     void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
@@ -34,8 +34,7 @@ public slots:
 
 private:
 
-    QWidget *Wpred;
-    QWidget *Walarm;
+
 };
 
 #endif // UPDATEPREDALARM84_H

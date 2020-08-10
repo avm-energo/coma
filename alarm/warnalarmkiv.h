@@ -1,19 +1,15 @@
-#ifndef USBSETALARM84_H
-#define USBSETALARM84_H
+#ifndef WARNALARMKIV_H
+#define WARNALARMKIV_H
 
 #include "../alarm/abstractalarm.h"
 
-class USBSetAlarm84 : public AbstractAlarm
+
+class WarnAlarmKIV: public AbstractAlarm
 {
-    Q_OBJECT
+     Q_OBJECT
 
 public:
-    explicit  USBSetAlarm84(QWidget *parent = nullptr);
-
-
-signals:
-    void SetPredAlarmColor(quint8*);
-    void SetAlarmColor(quint8*);
+    explicit  WarnAlarmKIV(AlarmClass *alarm,QWidget *parent = nullptr);
 
 
 public slots:
@@ -22,8 +18,7 @@ public slots:
     void PredAlarmState();
     void AvarState();
 
-    void UpdateUSB();
-    void USBSetAlarms();
+    void Update(QList<bool> states);
 
     void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
     void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
@@ -33,8 +28,9 @@ public slots:
 
 private:
 
-    QWidget *Wpred;
-    QWidget *Walarm;
+
+
+
 };
 
-#endif // USBSETALARM84_H
+#endif // PREDALARM84_H

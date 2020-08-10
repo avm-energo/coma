@@ -8,7 +8,7 @@ class AvarAlarmKTF : public AbstractAlarm
     Q_OBJECT
 
  public:
-    explicit  AvarAlarmKTF(QWidget *parent = nullptr);
+    explicit  AvarAlarmKTF(AlarmClass *alarm,QWidget *parent = nullptr);
 
 
  public slots:
@@ -17,8 +17,7 @@ class AvarAlarmKTF : public AbstractAlarm
     void PredAlarmState();
     void AvarState();
 
-    void UpdateUSB();
-    void USBSetAlarms();
+    void Update(QList<bool> states);
 
     void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
     void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
@@ -28,8 +27,6 @@ class AvarAlarmKTF : public AbstractAlarm
 
  private:
 
-    QWidget *Wpred;
-    QWidget *Walarm;
 };
 
 #endif // AVARALARMKTF_H

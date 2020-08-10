@@ -1,4 +1,4 @@
-#include "predalarmktf.h"
+#include "warnalarmktf.h"
 #include <QLabel>
 #include <QProgressBar>
 #include <QDir>
@@ -24,20 +24,19 @@
 #include "../gen/commands.h"
 
 
-PredAlarmKTF::PredAlarmKTF(QWidget *parent):
+WarnAlarmKTF::WarnAlarmKTF(AlarmClass *alarm, QWidget *parent):
     AbstractAlarm(parent)
 {
+    Alarm = alarm;
    PredAlarmState();
 }
 
-void PredAlarmKTF::PredAlarmState()
+void WarnAlarmKTF::PredAlarmState()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
 
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
     const QStringList events = QStringList() << "Отсутствует сигнал напряжения фазы A                   "
                                              << "Отсутствует сигнал напряжения фазы B                   "
                                              << "Отсутствует сигнал напряжения фазы С                   "
@@ -52,24 +51,16 @@ void PredAlarmKTF::PredAlarmState()
                                              << "Неисправны все датчики температуры обмотки             "
                                              << "Сигнализация по опасному уровню пускового тока         ";
     QWidget *w = new QWidget;
-    Wpred = w;
+   // Wpred = w;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
 
-    for (int i = 0; i < 12; ++i)
+    for (int i = 0; i < Alarm->warnCounts[MTYPE_KTF]; ++i)
     {
         hlyout = new QHBoxLayout;
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(5011+i), (PredAlarmEvents[i]) ? pmred : pmgrn));
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i)));
         hlyout->addWidget(WDFunc::NewLBLT(w, events.at(i), "", "", ""), 1);
         vlayout->addLayout(hlyout);
     }
-
-
-    hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", "5024", (PredAlarmEvents[13]) ? pmred : pmgrn));
-    hlyout->addWidget(WDFunc::NewLBLT(w, events.at(12), "", "", ""), 1);
-    vlayout->addLayout(hlyout);
-
-
 
     w->setLayout(vlayout);
 
@@ -78,39 +69,46 @@ void PredAlarmKTF::PredAlarmState()
     connect(pb,SIGNAL(clicked()),this,SLOT(close()));
     lyout->addWidget(pb,0);
     setLayout(lyout);
-
-
 }
 
-void PredAlarmKTF::AlarmState()
-{
-}
-void PredAlarmKTF::AvarState()
+void WarnAlarmKTF::AlarmState()
 {
 }
 
-void PredAlarmKTF::UpdateUSB()
+void WarnAlarmKTF::AvarState()
 {
 }
 
-void PredAlarmKTF::USBSetAlarms()
+
+void WarnAlarmKTF::Update(QList<bool> states)
 {
+    int i = 0;
+
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+
+        for(i=0; i<Alarm->warnCounts[MTYPE_KTF]; i++)
+        {
+            quint32 alarm =states[i];
+            WDFunc::SetLBLImage(this, (QString::number(i)), (alarm) ? pmred : pmgrn);
+        }
+
 }
 
-void PredAlarmKTF::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal);
-
-}
-void PredAlarmKTF::UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal);
-}
-void PredAlarmKTF::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
+void WarnAlarmKTF::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
 {
     Q_UNUSED(Signal);
+
 }
-void PredAlarmKTF::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
+void WarnAlarmKTF::UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
+{
+    Q_UNUSED(Signal);
+}
+void WarnAlarmKTF::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
+{
+    Q_UNUSED(Signal);
+}
+void WarnAlarmKTF::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
 {
     Q_UNUSED(Signal);
 }

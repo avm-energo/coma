@@ -8,7 +8,7 @@ class AvarAlarmKIV: public AbstractAlarm
    Q_OBJECT
 
 public:
-   explicit  AvarAlarmKIV(QWidget *parent = nullptr);
+   explicit  AvarAlarmKIV(AlarmClass *alarm,QWidget *parent = nullptr);
 
 
 public slots:
@@ -17,8 +17,7 @@ public slots:
    void PredAlarmState();
    void AvarState();
 
-   void UpdateUSB();
-   void USBSetAlarms();
+   void Update(QList<bool> states);
 
    void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
    void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
@@ -27,10 +26,6 @@ public slots:
    void ModBusUpdatePredAlarmEvents(ModBus::Coils Signal);
 
 private:
-
-   QWidget *Wpred;
-   QWidget *Walarm;
-
 
 
 };

@@ -73,11 +73,8 @@ void AlarmStateAll::AvarState()
 {
 }
 
-void AlarmStateAll::UpdateUSB()
-{
-}
 
-void AlarmStateAll::USBSetAlarms()
+void AlarmStateAll::Update(QList<bool>)
 {
 }
 

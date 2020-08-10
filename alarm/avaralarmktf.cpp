@@ -26,42 +26,34 @@
 #include "../gen/commands.h"
 
 
-AvarAlarmKTF::AvarAlarmKTF(QWidget *parent):
+AvarAlarmKTF::AvarAlarmKTF(AlarmClass *alarm,QWidget *parent):
     AbstractAlarm(parent)
 {
+    Alarm = alarm;
     AvarState();
 }
 
 void AvarAlarmKTF::AvarState()
 {
-
-
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
     QString tmps = QString(PROGCAPTION);
 
-    INFOMSG("AlarmState()");
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
-    //QPixmap *pm[2] = {pmred, pmgrn};
     QStringList events = QStringList() << "Аварийное сообщение по недопустимому превышению температуры обмотки"
                                        << "Аварийное сообщение по недопустимому уровню пускового тока         ";
 
     QWidget *w = new QWidget;
-    Walarm = w;
+
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
-
-    hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", "5023", (AvarAlarmEventsKTF[12]) ? pmred : pmgrn));
-    hlyout->addWidget(WDFunc::NewLBLT(w, events.at(0), "", "", ""), 1);
-    vlayout->addLayout(hlyout);
-
-    hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", "5025", (AvarAlarmEventsKTF[14]) ? pmred : pmgrn));
-    hlyout->addWidget(WDFunc::NewLBLT(w, events.at(1), "", "", ""), 1);
-    vlayout->addLayout(hlyout);
+    for (int i = 0; i < Alarm->avarCounts[MTYPE_KTF]; ++i)
+    {
+        hlyout = new QHBoxLayout;
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i)));
+        hlyout->addWidget(WDFunc::NewLBLT(w, events.at(i), "", "", ""), 1);
+        vlayout->addLayout(hlyout);
+    }
 
     w->setLayout(vlayout);
 
@@ -70,8 +62,6 @@ void AvarAlarmKTF::AvarState()
     connect(pb,SIGNAL(clicked()),this,SLOT(close()));
     lyout->addWidget(pb,0);
     setLayout(lyout);
-
-
 }
 
 void AvarAlarmKTF::AlarmState()
@@ -81,12 +71,19 @@ void AvarAlarmKTF::PredAlarmState()
 {
 }
 
-void AvarAlarmKTF::UpdateUSB()
-{
-}
 
-void AvarAlarmKTF::USBSetAlarms()
+void AvarAlarmKTF::Update(QList<bool> states)
 {
+    int i;
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+
+    for(i=0; i<Alarm->avarCounts[MTYPE_KTF]; i++)
+    {
+        quint32 alarm =states[i];
+        WDFunc::SetLBLImage(this, (QString::number(i)), (alarm) ? pmred : pmgrn);
+    }
+
 }
 
 void AvarAlarmKTF::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)

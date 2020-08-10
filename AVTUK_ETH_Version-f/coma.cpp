@@ -136,9 +136,9 @@ void Coma::SetupUI()
     tb->addAction(act);
     hlyout->addWidget(tb); 
 
-    ALARMW = new AlarmWidget(Alarm);
+    AlarmW = new AlarmWidget(Alarm);
    //  QWidget *wind =ALARM;
-    hlyout->addWidget(ALARMW, Qt::AlignCenter);
+    hlyout->addWidget(AlarmW, Qt::AlignCenter);
 
 
    // hlyout->addWidget(ReleWidget(), Qt::AlignCenter);
@@ -411,6 +411,8 @@ void Coma::StartWork()
 
 void Coma::PrepareDialogs()
 {
+
+
     IDialog = new InfoDialog;
     JourD = new JournalDialog(Ch104);
 //    CheckB = new CheckDialog84(BoardTypes::BT_BASE);
@@ -422,6 +424,8 @@ void Coma::PrepareDialogs()
   //  if (MainInterface != I_RS485)
       //  ConfM = new ConfDialog84(S2Config);
    //     ConfM = new ConfDialogKTF(S2Config);
+    AlarmStateAllWidget = new AlarmStateAll;
+    connect(AlarmW,SIGNAL(AlarmButtonPressed()),AlarmStateAllWidget,SLOT(show()));
 
     switch(MTypeB)
     {
@@ -434,11 +438,13 @@ void Coma::PrepareDialogs()
             if (MainInterface != I_RS485)
                 ConfM = new ConfDialogKIV(S2Config);
             CorD = new CorDialog;
-            connect(ALARMW,SIGNAL(AlarmButtonPressed()),AbstrALARM,SLOT(show()));
-            PredAlarmKIVWidget = new PredAlarmKIV;
-            connect(ALARMW,SIGNAL(ModuleWarnButtonPressed()),PredAlarmKIVWidget,SLOT(show()));
-            AvarAlarmKIVWidget = new AvarAlarmKIV;
-            connect(ALARMW,SIGNAL(AlarmButtonPressed()),AvarAlarmKIVWidget,SLOT(show()));
+
+            WarnAlarmKIVWidget = new WarnAlarmKIV(Alarm);
+            connect(AlarmW,SIGNAL(ModuleWarnButtonPressed()),WarnAlarmKIVWidget,SLOT(show()));
+            connect(Alarm,SIGNAL(SetWarnAlarmColor(QList<bool>)),WarnAlarmKIVWidget,SLOT(Update(QList<bool>)));
+            AvarAlarmKIVWidget = new AvarAlarmKIV(Alarm);
+            connect(AlarmW,SIGNAL(AlarmButtonPressed()),AvarAlarmKIVWidget,SLOT(show()));
+            connect(Alarm,SIGNAL(SetAlarmColor(QList<bool>)),AvarAlarmKIVWidget,SLOT(Update(QList<bool>)));
            break;
 
            case Config::MTM_87:
@@ -447,13 +453,13 @@ void Coma::PrepareDialogs()
             if (MainInterface != I_RS485)
                 ConfM = new ConfDialogKTF(S2Config);
             CorD = new CorDialogKTF;
-
-            AlarmStateAllWidget = new AlarmStateAll;
-            connect(ALARMW,SIGNAL(AlarmButtonPressed()),AlarmStateAllWidget,SLOT(show()));
-            PredAlarmKTFWidget = new PredAlarmKTF;
-            connect(ALARMW,SIGNAL(ModuleWarnButtonPressed()),PredAlarmKTFWidget,SLOT(show()));
-            AvarAlarmKTFWidget = new AvarAlarmKTF;
-            connect(ALARMW,SIGNAL(ModuleAlarmButtonPressed()),AvarAlarmKTFWidget,SLOT(show()));
+\
+            WarnAlarmKTFWidget = new WarnAlarmKTF(Alarm);
+            connect(AlarmW,SIGNAL(ModuleWarnButtonPressed()),WarnAlarmKTFWidget,SLOT(show()));
+            connect(Alarm,SIGNAL(SetWarnAlarmColor(QList<bool>)),WarnAlarmKTFWidget,SLOT(Update(QList<bool>)));
+            AvarAlarmKTFWidget = new AvarAlarmKTF(Alarm);
+            connect(AlarmW,SIGNAL(ModuleAlarmButtonPressed()),AvarAlarmKTFWidget,SLOT(show()));
+            connect(Alarm,SIGNAL(SetAlarmColor(QList<bool>)),AvarAlarmKTFWidget,SLOT(Update(QList<bool>)));
            break;
         }
     break;
@@ -462,8 +468,7 @@ void Coma::PrepareDialogs()
 
     };
 
-  NewTimersBda();
-
+NewTimersBda();
 
   /*  switch(MTypeM)
     {
@@ -472,8 +477,8 @@ void Coma::PrepareDialogs()
     };
   */
     connect(this,SIGNAL(ClearBsi()),IDialog,SLOT(ClearBsi()));
-    connect(ALARMW, SIGNAL(SetWarnAlarmColor(QList <bool>)), CheckB,SLOT(SetPredAlarmColor(QList <bool>)));
-    connect(ALARMW, SIGNAL(SetAlarmColor(QList <bool>)), CheckB,SLOT(SetAlarmColor(QList <bool>)));
+    connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList <bool>)), CheckB,SLOT(SetWarnAlarmColor(QList <bool>)));
+    connect(AlarmW, SIGNAL(SetAlarmColor(QList <bool>)), CheckB,SLOT(SetAlarmColor(QList <bool>)));
 
     if (MainInterface == I_ETHERNET)
     {
@@ -619,7 +624,7 @@ void Coma::NewTimersBda()
 
 
     //connect(BdaTimer,SIGNAL(timeout()), ALARMW, SLOT(USBSetAlarmKIV->USBSetAlarms()));
-    connect(BdaTimer,SIGNAL(timeout()),ALARMW,SLOT(UpdateUSB()));
+    connect(BdaTimer,SIGNAL(timeout()),Alarm,SLOT(UpdateAlarmUSB()));
 
 
     if (CheckB != nullptr)

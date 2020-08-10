@@ -94,7 +94,7 @@ void ModBusUpdatePredAlarm84::PredAlarmState()
 void ModBusUpdatePredAlarm84::UpdateUSB()
 {
 }
-void ModBusUpdatePredAlarm84::USBSetAlarms()
+void ModBusUpdatePredAlarm84::Update()
 {
 }
 void ModBusUpdatePredAlarm84::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)

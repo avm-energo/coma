@@ -4,6 +4,12 @@
 #define WARNEVENTS 20
 #define ALARMEVENTS 20
 
+#define MTYPE_KTF   0xA287
+#define MTYPE_KIV   0xA284
+
+#define WARNBSIMASK 0x00005F55
+#define AVARBSIMASK 0x000020AA
+
 #include <QDialog>
 #include <QByteArray>
 #include <QMap>
@@ -34,6 +40,8 @@ public:
     QList <bool> WarnAlarmEvents;
     QList <bool> AvarAlarmEvents;
 
+   int  warnalarmcount = 0, alarmcount = 0;
+
 
     struct BdAlarm
     {
@@ -45,6 +53,7 @@ public:
 signals:
     void SetWarnAlarmColor(QList <bool>);
     void SetAlarmColor(QList <bool>);
+    void SetFirstButton();
 
 
 public slots:

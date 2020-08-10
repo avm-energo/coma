@@ -44,7 +44,6 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent):
         gb->setLayout(hlyout);
         hlyout2->addWidget(gb);
 
-
         gb = new QGroupBox("");
         hlyout = new QHBoxLayout;
         pb = new QPushButton("Предупредительная сигнализация");
@@ -70,68 +69,65 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent):
         vlyout->addLayout(hlyout2);
         setLayout(vlyout);
 
-
+        connect(Alarm,SIGNAL(SetFirstButton()),this, SLOT(UpdateFirstUSB()));
+        connect(Alarm,SIGNAL(SetWarnAlarmColor(QList<bool>)),this, SLOT(UpdateSecondUSB(QList<bool>)));
+        connect(Alarm,SIGNAL(SetAlarmColor(QList<bool>)),this, SLOT(UpdateThirdUSB(QList<bool>)));
 
 }
 
-void AlarmWidget::UpdateUSB()
+void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarmcount)
 {
-    if (MainInterface == I_USB)
+   //int i;
+   int alarm = 0 ;
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmylw = new QPixmap("images/yellowc.png");
+
+   // for(i=0; i<warnalarmcount.size(); i++)
+    foreach(bool item, warnalarmcount)
     {
-         int  predalarmcount = 0, alarmcount = 0;
-        QPixmap *pmgrn = new QPixmap("images/greenc.png");
-        QPixmap *pmylw = new QPixmap("images/yellowc.png");
-        QPixmap *pmred = new QPixmap("images/redc.png");
-       // BdAlarm signalling;
-
-
-        WDFunc::SetLBLImage(this, "951", (predalarmcount == 0) ? pmgrn : pmylw);
-        WDFunc::SetLBLImage(this, "952", (alarmcount == 0) ? pmgrn : pmred);
-
-
-      /* if (Commands::GetBd(BdNumbers[MType], &signalling, sizeof(BdAlarm)) == NOERROR)
-        {
-            bool warn=(signalling.Warn & (0x00000001 << i));
-            bool alarm=(signalling.Alarm & (0x00000001 << i));
-            for(i=0; i<warnCounts[MType]; ++i)
-            {
-              Alarm->WarnAlarmEvents.append(warn);
-               if(warn)
-                   ++predalarmcount;  
-
-            }
-
-            for(i=0; i<warnCounts[MType]; ++i)
-            {
-                Alarm->AvarAlarmEvents.append(alarm);
-                if(alarm)
-                    ++alarmcount;
-            }
-   */
-
-            Alarm ->UpdateAlarmUSB();
-
-            WDFunc::SetLBLImage(this, "951", (predalarmcount == 0) ? pmgrn : pmylw);
-            WDFunc::SetLBLImage(this, "952", (alarmcount == 0) ? pmgrn : pmred);
-
-
-           // emit SetWarnAlarmColor(Alarm->WarnAlarmEvents);
-          //  emit SetAlarmColor(Alarm->AvarAlarmEvents);
-       // }
-        if (Commands::GetBsi(ModuleBSI::ModuleBsi) == NOERROR)
-        {
-            if (ModuleBSI::ModuleBsi.Hth & WarnBSIMask)
-                WDFunc::SetLBLImage(this, "950", pmylw);
-            else if (ModuleBSI::ModuleBsi.Hth & AvarBSIMask)
-                WDFunc::SetLBLImage(this, "950", pmred);
-            else
-                WDFunc::SetLBLImage(this, "950", pmgrn);
-        }
-
-
+        if (item ==true)
+           {
+              alarm ++;
+              break;
+           }
     }
+
+    WDFunc::SetLBLImage(this, "951", (alarm == 0) ? pmgrn : pmylw);
 }
 
+void AlarmWidget::UpdateThirdUSB(QList<bool> alarmcount)
+{
+    // int i;
+     int alarm = 0 ;
+     QPixmap *pmgrn = new QPixmap("images/greenc.png");
+     QPixmap *pmred = new QPixmap("images/redc.png");
+
+//     for(i=0; i<alarmcount.size(); i++)
+     foreach(bool item, alarmcount)
+     {
+         if (item ==true)
+          {
+             alarm ++;
+             break;
+          }
+     }
+
+     WDFunc::SetLBLImage(this, "952", (alarm == 0 ) ? pmgrn : pmred);
+}
+
+void AlarmWidget::UpdateFirstUSB()
+{
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmylw = new QPixmap("images/yellowc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+
+    if (ModuleBSI::ModuleBsi.Hth & WARNBSIMASK)
+        WDFunc::SetLBLImage(this, "950", pmylw);
+    else if (ModuleBSI::ModuleBsi.Hth & AVARBSIMASK)
+        WDFunc::SetLBLImage(this, "950", pmred);
+    else
+        WDFunc::SetLBLImage(this, "950", pmgrn);
+}
 
 void AlarmWidget::USBSetAlarms()
 {

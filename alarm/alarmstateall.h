@@ -15,8 +15,7 @@ public slots:
    void PredAlarmState();
    void AvarState();
 
-   void UpdateUSB();
-   void USBSetAlarms();
+   void Update(QList<bool>);
 
    void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
    void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
@@ -24,11 +23,29 @@ public slots:
    void ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal);
    void ModBusUpdatePredAlarmEvents(ModBus::Coils Signal);
 
+   static QStringList HthToolTip()
+   {
+       QStringList sl;
+       //sl.append("Что-то не в порядке");
+       sl.append("Проблемы со встроенным АЦП ");
+       sl.append("Не работает внешняя flash-память");
+       sl.append("Перегрев");
+       sl.append("Проблемы с АЦП (нет связи) (базовая)");
+       sl.append("Нет сигнала 1PPS с антенны");
+       sl.append("Проблемы с АЦП (нет связи) (мезонин)");
+       sl.append("Ошибка регулировочных коэффициентов (базовая)");
+       sl.append("Ошибка загрузки конфигурации из flash-памяти. Работает конфигурация по умолчанию");
+       sl.append("Некорректная Hardware информация (базовая)");
+       sl.append("Некорректная Hardware информация (мезонин)");
+       sl.append("Ошибка регулировочных коэффициентов (мезонин)");
+       sl.append("Напряжение батареи низко (< 2,5 В)");
+       sl.append("Нет связи с NTP-сервером");
+       sl.append("Не работает внешняя flash-память (мезонин)");
+       sl.append("Не работает внешняя fram");
+       return sl;
+   }
+
 private:
-
-   QWidget *Wpred;
-   QWidget *Walarm;
-
 
 };
 

@@ -30,7 +30,11 @@ signals:
 
 public slots:
 
-     void UpdateUSB();
+
+     void UpdateFirstUSB();
+     void UpdateSecondUSB(QList<bool>);
+     void UpdateThirdUSB(QList<bool>);
+
      void USBSetAlarms();
 
      void UpdateWarningEvents(IEC104Thread::SponSignals *);

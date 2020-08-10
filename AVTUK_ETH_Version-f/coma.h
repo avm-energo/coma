@@ -18,13 +18,11 @@
 #include "../alarm/alarmwidget.h"
 #include "../alarm/modbusupdatepredalarm84.h"
 #include "../alarm/modbusupdatestatepredalarm84.h"
-#include "../alarm/predalarmkiv.h"
+#include "../alarm/warnalarmkiv.h"
 #include "../alarm/updatepredalarm84.h"
 #include "../alarm/updatestatepredalarm84.h"
-#include "../alarm/usbalarm84.h"
-#include "../alarm/usbsetalarm84.h"
 #include "../alarm/avaralarmktf.h"
-#include "../alarm/predalarmktf.h"
+#include "../alarm/warnalarmktf.h"
 #include "../alarm/alarmstateall.h"
 
 
@@ -208,7 +206,7 @@ private:
     const QVector<int> MTBs = {0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84};
 
     AbstractCorDialog *CorD;
-    AlarmWidget *ALARMW;
+    AlarmWidget *AlarmW;
     AlarmClass *Alarm;
 
     InfoDialog *IDialog;
@@ -232,9 +230,9 @@ private:
     int CheckIndex, TimeIndex, ConfIndex, CurTabIndex;
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
-    PredAlarmKIV *PredAlarmKIVWidget;
+    WarnAlarmKIV *WarnAlarmKIVWidget;
     AvarAlarmKIV *AvarAlarmKIVWidget;
-    PredAlarmKTF *PredAlarmKTFWidget;
+    WarnAlarmKTF *WarnAlarmKTFWidget;
     AvarAlarmKTF *AvarAlarmKTFWidget;
     AlarmStateAll *AlarmStateAllWidget;
     AbstractAlarm *AbstrALARM;

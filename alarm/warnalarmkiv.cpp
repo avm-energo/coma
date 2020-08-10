@@ -23,24 +23,23 @@
 #include "../gen/modulebsi.h"
 #include "../gen/error.h"
 #include "../gen/commands.h"
-#include "predalarmkiv.h"
+#include "warnalarmkiv.h"
 
-PredAlarmKIV::PredAlarmKIV(QWidget *parent):
+WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm,QWidget *parent):
     AbstractAlarm(parent)
 {
+   Alarm = alarm;
    PredAlarmState();
 }
 
 
-void PredAlarmKIV::PredAlarmState()
+void WarnAlarmKIV::PredAlarmState()
 {
      QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
 
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
     const QStringList events = QStringList() << "Отсутствует сигнал напряжения фазы A                   "
                                              << "Отсутствует сигнал напряжения фазы B                   "
                                              << "Отсутствует сигнал напряжения фазы С                   "
@@ -60,32 +59,16 @@ void PredAlarmKIV::PredAlarmState()
                                              << "Не заданы паспортные значения                          "
                                              << "Сигнализация по повышенному небалансу токов            ";
     QWidget *w = new QWidget;
-    Wpred = w;
+    //Wpred = w;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
-    for (int i = 0; i < 13; ++i)
+    for (int i = 0; i < Alarm->warnCounts[MTYPE_KIV]; ++i)
     {
         hlyout = new QHBoxLayout;
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3011+i), (PredAlarmEvents[i]) ? pmred : pmgrn));
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i)));
         hlyout->addWidget(WDFunc::NewLBLT(w, events.at(i), "", "", ""), 1);
         vlayout->addLayout(hlyout);
     }
-    for (int i = 0; i < 3; ++i)
-    {
-        hlyout = new QHBoxLayout;
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(3027+i), (PredAlarmEvents[13+i]) ? pmred : pmgrn));
-        hlyout->addWidget(WDFunc::NewLBLT(w, events.at(13+i), "", "", ""), 1);
-        vlayout->addLayout(hlyout);
-    }
-    hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", "3033", (PredAlarmEvents[16]) ? pmred : pmgrn));
-    hlyout->addWidget(WDFunc::NewLBLT(w, events.at(16), "", "", ""), 1);
-    vlayout->addLayout(hlyout);
-
-    hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(w, "", "", "3034", (PredAlarmEvents[17]) ? pmred : pmgrn));
-    hlyout->addWidget(WDFunc::NewLBLT(w, events.at(17), "", "", ""), 1);
-    vlayout->addLayout(hlyout);
 
     w->setLayout(vlayout);
 
@@ -96,32 +79,40 @@ void PredAlarmKIV::PredAlarmState()
     setLayout(lyout);
 }
 
-void PredAlarmKIV::AlarmState()
+void WarnAlarmKIV::AlarmState()
 {
 }
-void PredAlarmKIV::AvarState()
+void WarnAlarmKIV::AvarState()
 {
 }
-void PredAlarmKIV::UpdateUSB()
+
+void WarnAlarmKIV::Update(QList<bool> states)
 {
+    int i = 0;
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+
+        for(i=0; i<Alarm->warnCounts[MTYPE_KIV]; i++)
+        {
+            quint32 alarm = states[i];
+            WDFunc::SetLBLImage(this, (QString::number(i)), (alarm) ? pmred : pmgrn);
+        }
+
 }
-void PredAlarmKIV::USBSetAlarms()
-{
-}
-void PredAlarmKIV::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
+void WarnAlarmKIV::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
 {
     Q_UNUSED(Signal);
 
 }
-void PredAlarmKIV::UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
+void WarnAlarmKIV::UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
 {
     Q_UNUSED(Signal);
 }
-void PredAlarmKIV::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
+void WarnAlarmKIV::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
 {
     Q_UNUSED(Signal);
 }
-void PredAlarmKIV::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
+void WarnAlarmKIV::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
 {
     Q_UNUSED(Signal);
 }

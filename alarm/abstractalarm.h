@@ -1,6 +1,47 @@
 #ifndef ABSTRACTALARM_H
 #define ABSTRACTALARM_H
 
+#define NotUA 3011
+#define NotUB 3012
+#define NotUC 3013
+#define NotIA 3014
+#define NotIB 3015
+#define NotIC 3016
+#define BegDat 3017
+#define LowUA 3018
+#define LowUB 3019
+#define LowUC 3020
+#define SignTA 3021
+#define SignTB 3022
+#define SignTC 3023
+#define AlarmTA 3024
+#define AlarmTB 3025
+#define AlarmTC 3026
+#define SignCA 3027
+#define SignCB 3028
+#define SignCC 3029
+#define AlarmCA 3030
+#define AlarmCB 3031
+#define AlarmCC 3032
+#define PaspDat 3033
+#define SignInb 3034
+#define AlarmInb 3035
+
+#define NOTUA 5011
+#define NOTUB 5012
+#define NOTUC 5013
+#define NOTIA 5014
+#define NOTIB 5015
+#define NOTIC 5016
+#define OvcA 5017
+#define OvcB 5018
+#define OvcC 5019
+#define MachON 5020
+#define SignT 5021
+#define SignDat 5022
+#define AlarmT 5023
+#define SignIStart 5024
+#define AlarmIStart 5025
 
 #include <QDialog>
 #include <QByteArray>
@@ -8,6 +49,8 @@
 #include "../iec104/ethernet.h"
 #include "../modbus/modbus.h"
 #include "../gen/modulebsi.h"
+#include "alarmclass.h"
+
 
 
 
@@ -16,6 +59,8 @@ class AbstractAlarm : public QWidget
         Q_OBJECT
 public:
     AbstractAlarm(QWidget *parent = nullptr);
+
+    AlarmClass *Alarm;
 
     const quint32 PredBSIMask = 0x00005F55;
     const quint32 AvarBSIMask = 0x000020AA;
@@ -43,28 +88,8 @@ public:
         quint32 Alarm;
     };
 
-
-    static QStringList HthToolTip()
-    {
-        QStringList sl;
-        //sl.append("Что-то не в порядке");
-        sl.append("Проблемы со встроенным АЦП ");
-        sl.append("Не работает внешняя flash-память");
-        sl.append("Перегрев");
-        sl.append("Проблемы с АЦП (нет связи) (базовая)");
-        sl.append("Нет сигнала 1PPS с антенны");
-        sl.append("Проблемы с АЦП (нет связи) (мезонин)");
-        sl.append("Ошибка регулировочных коэффициентов (базовая)");
-        sl.append("Ошибка загрузки конфигурации из flash-памяти. Работает конфигурация по умолчанию");
-        sl.append("Некорректная Hardware информация (базовая)");
-        sl.append("Некорректная Hardware информация (мезонин)");
-        sl.append("Ошибка регулировочных коэффициентов (мезонин)");
-        sl.append("Напряжение батареи низко (< 2,5 В)");
-        sl.append("Нет связи с NTP-сервером");
-        sl.append("Не работает внешняя flash-память (мезонин)");
-        sl.append("Не работает внешняя fram");
-        return sl;
-    }
+    QWidget *Wpred;
+    QWidget *Walarm;
 
 
 public slots:
@@ -76,8 +101,7 @@ public slots:
     virtual  void PredAlarmState()=0;
     virtual void AvarState()=0;
 
-    virtual void UpdateUSB()=0;
-    virtual void USBSetAlarms()=0;
+    virtual void Update(QList<bool>)=0;
 
      virtual void UpdatePredAlarmEvents(IEC104Thread::SponSignals *)=0;
      virtual void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *)=0;

@@ -61,7 +61,7 @@ void UpdatePredAlarm84::AvarState()
 void UpdatePredAlarm84::UpdateUSB()
 {
 }
-void UpdatePredAlarm84::USBSetAlarms()
+void UpdatePredAlarm84::Update()
 {
 }
 void UpdatePredAlarm84::PredAlarmState()

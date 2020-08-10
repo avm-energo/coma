@@ -19,45 +19,48 @@
 
 AlarmClass::AlarmClass(QObject *parent) : QObject(parent)
 {
-    warnCounts[0xA284]=18;
-    warnCounts[0xA287]=15;
+    warnCounts[MTYPE_KIV]=18;
+    warnCounts[MTYPE_KTF]=13;
 
-    avarCounts[0xA284]=7;
-    avarCounts[0xA287]=2;
+    avarCounts[MTYPE_KIV]=7;
+    avarCounts[MTYPE_KTF]=2;
 
-    BdNumbers[0xA284]=11;
-    BdNumbers[0xA287]=16;
+    BdNumbers[MTYPE_KIV]=11;
+    BdNumbers[MTYPE_KTF]=16;
 
 }
 
 void AlarmClass::UpdateAlarmUSB()
 {
-    int i = 0, predalarmcount = 0, alarmcount = 0;
-    BdAlarm signalling;
 
-    quint32 MType=(MTypeB<<8)+MTypeM;
+    BdAlarm signalling;
+    int i = 0;
+    quint32 MType=MTypeB+MTypeM;
 
     if (Commands::GetBd(BdNumbers[MType], &signalling, sizeof(BdAlarm)) == NOERROR)
     {
-        bool warn=(signalling.Warn & (0x00000001 << i));
-        bool alarm=(signalling.Alarm & (0x00000001 << i));
         for(i=0; i<warnCounts[MType]; ++i)
         {
+           bool warn=(signalling.Warn & (0x00000001 << i));
            WarnAlarmEvents.append(warn);
-           if(warn)
-               ++predalarmcount;
-
+//           if(warn)
+//               ++warnalarmcount;
         }
 
         for(i=0; i<warnCounts[MType]; ++i)
         {
-            AvarAlarmEvents.append(alarm);
-            if(alarm)
-                ++alarmcount;
+            bool avar=(signalling.Alarm & (0x00000001 << i));
+            AvarAlarmEvents.append(avar);
+//            if(avar)
+//                ++alarmcount;
         }
-
+        emit SetWarnAlarmColor(WarnAlarmEvents);
+        emit SetAlarmColor(AvarAlarmEvents);
+        if (Commands::GetBsi(ModuleBSI::ModuleBsi) == NOERROR)
+        emit SetFirstButton();
     }
-    emit SetWarnAlarmColor(WarnAlarmEvents);
-    emit SetAlarmColor(AvarAlarmEvents);
+
+
+
 
 }

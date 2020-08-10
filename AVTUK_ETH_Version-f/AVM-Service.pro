@@ -31,14 +31,10 @@ SOURCES += \
     ../alarm/avaralarmktf.cpp \
     ../alarm/modbusupdatepredalarm84.cpp \
     ../alarm/modbusupdatestatepredalarm84.cpp \
-    ../alarm/predalarmkiv.cpp \
-    ../alarm/predalarmktf.cpp \
     ../alarm/updatepredalarm84.cpp \
     ../alarm/updatestatepredalarm84.cpp \
-    ../alarm/usbalarm84.cpp \
-    ../alarm/usbalarmktf.cpp \
-    ../alarm/usbsetalarm84.cpp \
-    ../alarm/usbsetalarmktf.cpp \
+    ../alarm/warnalarmkiv.cpp \
+    ../alarm/warnalarmktf.cpp \
     ../check/checkdialogkiv.cpp \
     ../check/checkkiv.cpp \
     ../check/checkktf.cpp \
@@ -107,14 +103,10 @@ HEADERS += \
     ../alarm/avaralarmktf.h \
     ../alarm/modbusupdatepredalarm84.h \
     ../alarm/modbusupdatestatepredalarm84.h \
-    ../alarm/predalarmkiv.h \
-    ../alarm/predalarmktf.h \
     ../alarm/updatepredalarm84.h \
     ../alarm/updatestatepredalarm84.h \
-    ../alarm/usbalarm84.h \
-    ../alarm/usbalarmktf.h \
-    ../alarm/usbsetalarm84.h \
-    ../alarm/usbsetalarmktf.h \
+    ../alarm/warnalarmkiv.h \
+    ../alarm/warnalarmktf.h \
     ../check/checkdialogkiv.h \
     ../check/checkkiv.h \
     ../check/checkktf.h \

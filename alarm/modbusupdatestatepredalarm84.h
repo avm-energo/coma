@@ -23,7 +23,7 @@ signals:
     void AvarState();
 
     void UpdateUSB();
-    void USBSetAlarms();
+    void Update();
 
     void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
     void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
@@ -33,8 +33,7 @@ signals:
 
  private:
 
-    QWidget *Wpred;
-    QWidget *Walarm;
+
 
 };
 
