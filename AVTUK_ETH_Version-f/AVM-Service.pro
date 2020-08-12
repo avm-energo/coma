@@ -42,6 +42,7 @@ SOURCES += \
     ../config/configktf.cpp \
     ../dialogs/abstractcordialog.cpp \
     ../dialogs/cordialogktf.cpp \
+    ../dialogs/infodialog.cpp \
     ../dialogs/mnktime.cpp \
     ../gen/journals.cpp \
     ../gen/logclass.cpp \
@@ -57,7 +58,6 @@ SOURCES += \
     ../dialogs/cordialog.cpp \
     ../dialogs/errordialog.cpp \
     ../dialogs/fwupdialog.cpp \
-    ../dialogs/infodialog.cpp \
     ../dialogs/journalsdialog.cpp \
     ../dialogs/keypressdialog.cpp \
     ../dialogs/settingsdialog.cpp \
@@ -110,6 +110,7 @@ HEADERS += \
     ../config/configktf.h \
     ../dialogs/abstractcordialog.h \
     ../dialogs/cordialogktf.h \
+    ../dialogs/infodialog.h \
     ../dialogs/mnktime.h \
     ../gen/journals.h \
     ../gen/logclass.h \
@@ -123,7 +124,6 @@ HEADERS += \
     ../dialogs/cordialog.h \
     ../dialogs/errordialog.h \
     ../dialogs/fwupdialog.h \
-    ../dialogs/infodialog.h \
     ../dialogs/journalsdialog.h \
     ../dialogs/keypressdialog.h \
     ../dialogs/settingsdialog.h \

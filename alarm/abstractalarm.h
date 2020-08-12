@@ -65,8 +65,6 @@ public:
     const quint32 PredBSIMask = 0x00005F55;
     const quint32 AvarBSIMask = 0x000020AA;
 \
-   // QList <bool> WarnAlarmEvents;
-  //  QList <bool> AvarAlarmEvents;
 
     quint8 PredAlarmEvents[20];
     quint8 AvarAlarmEvents[20];

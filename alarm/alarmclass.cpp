@@ -37,8 +37,6 @@ AlarmClass::AlarmClass(QObject *parent) : QObject(parent)
 
     MapAlarm[MTYPE_KIV] = KIV;
     MapAlarm[MTYPE_KTF] = KTF;
-
-
 }
 
 void AlarmClass::UpdateAlarmUSB()

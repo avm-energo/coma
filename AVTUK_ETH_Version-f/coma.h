@@ -84,9 +84,7 @@ public:
         sl.append("NTP");
         sl.append("FLS2");
         sl.append("FRM");
-        //int ts = sl.size();
-        //for (int i=ts; i<MAXERRORFLAGNUM; ++i)
-        //    sl.append("");
+
         return sl;
     }
 
@@ -147,23 +145,14 @@ signals:
     void Finished();
     void StopCommunications();
     void ConnectMes(QString*);
-   // void SetPredAlarmColor(quint8*);
-  //  void SetAlarmColor(quint8*);
+
 
 public slots:
     void DisconnectAndClear();
-   // void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
-   // void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
+
     void CheckTimeFinish();
     void CheckModBusFinish();
-  //  void DeviceState();
-  //  void PredAlarmState();
-  //  void AlarmState();
     void FileTimeOut();
-  //  void UpdateUSB();
-  //  void USBSetAlarms();
- //   void ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal);
-  //  void ModBusUpdatePredAlarmEvents(ModBus::Coils Signal);
     void SetCancelled();
     void ReConnect();
     void AttemptToRec();

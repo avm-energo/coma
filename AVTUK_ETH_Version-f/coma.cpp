@@ -398,15 +398,8 @@ void Coma::PrepareDialogs()
 {
     IDialog = new InfoDialog;
     JourD = new JournalDialog(Ch104);
-//    CheckB = new CheckDialog84(BoardTypes::BT_BASE);
-//    CheckB = new ChekDialogKTF(BoardTypes::BT_BASE);
     TimeD = new MNKTime;
-   // CorD = new CorDialog;
-   // CorDKTF = new CorDialogKTF;
-  //  S2Config->clear();
-  //  if (MainInterface != I_RS485)
-      //  ConfM = new ConfDialog84(S2Config);
-   //     ConfM = new ConfDialogKTF(S2Config);
+
     AlarmStateAllWidget = new AlarmStateAll;
     connect(AlarmW,SIGNAL(AlarmButtonPressed()),AlarmStateAllWidget,SLOT(show()));
 

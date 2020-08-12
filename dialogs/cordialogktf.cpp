@@ -86,25 +86,6 @@ void CorDialogKTF::SetupUI()
     row++;
 
 
-/*
-    pb = new QPushButton("Сбросить начальные значения");
-        connect(pb,SIGNAL(clicked()),this,SLOT(ResetCor()));
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
-
-    glyout->addWidget(pb, row,1,1,2);
-
-    pb = new QPushButton("Задать начальные значения");
-      connect(pb,SIGNAL(clicked()),this,SLOT(WriteCor()));
-    if (StdFunc::IsInEmulateMode())
-       pb->setEnabled(false);
-
-    glyout->addWidget(pb, row,3,1,2);
-
-    row++;
-*/
-
-
     pb = new QPushButton("Прочитать значения из файла");
     connect(pb,SIGNAL(clicked()),this,SLOT(ReadFromFile()));
     if (StdFunc::IsInEmulateMode())

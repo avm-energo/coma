@@ -37,7 +37,7 @@ AbstractCorDialog::AbstractCorDialog(QWidget *parent) :
 
 void AbstractCorDialog::GetCorBd(int index)
 {
-
+   Q_UNUSED(index);
 }
 
 void AbstractCorDialog::SetCor()

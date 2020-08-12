@@ -280,8 +280,7 @@ void ChekDialogKTF::onModbusStateChanged(ConnectionStates state)
 {
     if(state == ConnectionStates::ConnectedState)
         EMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
-//    else
-//        EMessageBox::error(this, "Провал", "Подключение отсутствует");
+
 }
 
 void ChekDialogKTF::SetPredAlarmColor(quint8* PredAlarm)
