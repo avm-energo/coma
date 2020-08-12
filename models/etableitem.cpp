@@ -1,4 +1,5 @@
 #include "etableitem.h"
+#include <QDebug>
 
 ETableItem::ETableItem(ETableItem *parent) { Q_UNUSED(parent); }
 
@@ -12,37 +13,50 @@ QString ETableItem::data(int column) const
 
 void ETableItem::setData(int column, const QString &data)
 {
+    //    itemData.reserve(column + 1);
+    //    itemData.insert(column, data);
+    // itemData.push_back(data);
     while (column >= itemData.size())
         itemData.append(QString());
     itemData.replace(column, data);
 }
 
+void ETableItem::appendData(const QString &value) { itemData.append(value); }
+
 void ETableItem::setColor(int column, QColor color)
 {
-    while (column >= itemColor.size())
-        itemColor.append(QColor());
-    itemColor.replace(column, color);
+    itemColor.reserve(column + 1);
+    itemColor.insert(column, color);
+    //    while (column >= itemColor.size())
+    //        itemColor.append(QColor());
+    //    itemColor.replace(column, color);
 }
 
 void ETableItem::setFont(int column, QFont font)
 {
-    while (column >= itemFont.size())
-        itemFont.append(QFont());
-    itemFont.replace(column, font);
+    itemFont.reserve(column + 1);
+    itemFont.insert(column, font);
+    //    while (column >= itemFont.size())
+    //        itemFont.append(QFont());
+    //    itemFont.replace(column, font);
 }
 
 void ETableItem::setIcon(int column, QIcon icon)
 {
-    while (column >= itemIcon.size())
-        itemIcon.append(QIcon());
-    itemIcon.replace(column, icon);
+    itemIcon.reserve(column + 1);
+    itemIcon.insert(column, icon);
+    //    while (column >= itemIcon.size())
+    //        itemIcon.append(QIcon());
+    //    itemIcon.replace(column, icon);
 }
 
 void ETableItem::setTextAlignment(int column, int alignment)
 {
-    while (column >= itemTextAlignment.size())
-        itemTextAlignment.append(Qt::AlignLeft | Qt::AlignVCenter);
-    itemTextAlignment.replace(column, alignment);
+    itemTextAlignment.reserve(column + 1);
+    itemTextAlignment.insert(column, alignment);
+    //    while (column >= itemTextAlignment.size())
+    //        itemTextAlignment.append(Qt::AlignLeft | Qt::AlignVCenter);
+    //    itemTextAlignment.replace(column, alignment);
 }
 
 QColor ETableItem::color(int column)
@@ -55,8 +69,7 @@ QColor ETableItem::color(int column)
 
 QFont ETableItem::font(int column)
 {
-    // Продолжить с try catch
-    if (!itemFont.isEmpty() && column <= itemFont.size())
+    if (!itemFont.isEmpty() && column < itemFont.size())
         return itemFont.at(column);
     else
         return QFont();
@@ -64,7 +77,7 @@ QFont ETableItem::font(int column)
 
 QIcon ETableItem::icon(int column)
 {
-    if (!itemIcon.isEmpty() && column <= itemIcon.size())
+    if (!itemIcon.isEmpty() && column < itemIcon.size())
         return itemIcon.at(column);
     else
         return QIcon();

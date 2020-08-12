@@ -23,7 +23,7 @@
 #if _MSC_VER && !__INTEL_COMPILER
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
-JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
+JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QWidget(parent)
 {
     JourFuncs = new Journals;
     ProxyWorkModel = new QSortFilterProxyModel;
@@ -31,9 +31,10 @@ JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
     ProxyMeasModel = new QSortFilterProxyModel;
     JourFuncs->SetProxyModels(ProxyWorkModel, ProxySysModel, ProxyMeasModel);
     //    JourFuncs->SetParentWidget(this);
-    connect(JourFuncs, &Journals::Done, this, &JournalDialog::Done, Qt::BlockingQueuedConnection);
+    // connect(JourFuncs, &Journals::Done, this, &JournalDialog::Done, Qt::BlockingQueuedConnection);
+    connect(JourFuncs, &Journals::Done, this, &JournalDialog::Done);
     connect(JourFuncs, &Journals::Error, this, &JournalDialog::Error);
-    connect(JourFuncs, &Journals::ModelReady, this, &JournalDialog::SetModel);
+    // connect(JourFuncs, &Journals::ModelReady, this, &JournalDialog::SetModel);
     //    connect(JourFuncs,SIGNAL(ProxyModelReady(QSortFilterProxyModel
     //    *)),this,SLOT(SetProxyModel(QSortFilterProxyModel *)));
     connect(JourFuncs, &Journals::ReadJour, iec, &IEC104::SelectFile);
@@ -43,17 +44,11 @@ JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
     connect(this, &JournalDialog::StartGetJour, JourFuncs, &Journals::StartGetJour);
     connect(this, &JournalDialog::StartSaveJour, JourFuncs, &Journals::StartSaveJour);
     connect(this, &JournalDialog::StartReadFile, JourFuncs, &Journals::ReadJourFileAndProcessIt);
-    JourFuncs->moveToThread(&JourThread);
-    JourThread.start();
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
 }
 
-JournalDialog::~JournalDialog()
-{
-    JourThread.quit();
-    JourThread.wait();
-}
+JournalDialog::~JournalDialog() { }
 
 void JournalDialog::SetupUI()
 {
@@ -169,7 +164,9 @@ QWidget *JournalDialog::JourTab(int jourtype)
     hlyout->addWidget(
         WDFunc::NewPB(this, "sj." + QString::number(jourtype), "Сохранить журнал в файл", this, SLOT(SaveJour())));
     vlyout->addLayout(hlyout);
-    vlyout->addWidget(WDFunc::NewTV(this, tvname, mdl), 89);
+    auto *modelView = WDFunc::NewTV(this, tvname, mdl);
+    // modelView->setSortingEnabled(true);
+    vlyout->addWidget(modelView, 89);
     w->setLayout(vlyout);
     return w;
 }
@@ -285,9 +282,9 @@ void JournalDialog::SaveJour()
     jourfilestr += QDate::currentDate().toString("dd-MM-yyyy") + ".xlsx";
     // запрашиваем имя файла для сохранения
     QString filename = Files::ChooseFileForSave(nullptr, "Excel documents (*.xlsx)", "xlsx", jourfilestr);
-    WW = new WaitWidget;
-    WW->SetMessage("Запись файла...");
-    WW->Start();
+    // WW = new WaitWidget;
+    // WW->SetMessage("Запись файла...");
+    // WW->Start();
     emit StartSaveJour(jtype, amdl, filename);
 }
 
@@ -335,10 +332,18 @@ void JournalDialog::StartReadJourFile()
 {
     //    QApplication::setOverrideCursor(Qt::WaitCursor);
     // Крутилка
-    WW = new WaitWidget(nullptr);
-    WW->SetMessage("Чтение файла..");
-    WW->Start();
+    // WW = new WaitWidget(nullptr);
+    // MsgBox = new QMessageBox(QMessageBox::Warning, "Внимание", "Идет чтение журнала...");
+    progress = new QProgressDialog;
+    progress->setMinimumDuration(0);
+    connect(JourFuncs, &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
+    connect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
+    progress->setLabelText("Loading model...");
+    // MsgBox->setText("");
     emit StartReadFile();
+    // MsgBox->exec();
+    // WW->SetMessage("Чтение файла..");
+    // WW->Start();
 }
 
 void JournalDialog::WritePasswordCheck(QString psw)
@@ -353,47 +358,60 @@ void JournalDialog::WritePasswordCheck(QString psw)
 void JournalDialog::Done(QString msg)
 {
     qDebug() << __PRETTY_FUNCTION__;
-    qDebug() << QThread::currentThreadId();
-    // Второй поток
-    // Qt::ItemFlags flags = ProxyWorkModel->flags(QModelIndex());
-    // qDebug() << flags;
     // new QAbstractItemModelTester(ProxyWorkModel, QAbstractItemModelTester::FailureReportingMode::Warning, this);
 
-    if (WW != nullptr && MainInterface == I_USB)
-        WW->Stop();
+    // if (WW != nullptr && MainInterface == I_USB)
+    //    WW->Stop();
+    if (progress != nullptr && MainInterface == I_USB)
+    {
+        // progress->reset();
+        // MsgBox->close();
+        qDebug() << "Close";
+    }
+    // update();
+    disconnect(JourFuncs, &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
+    disconnect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
+    // MsgBox->closeEvent(QMessageBox::DestructiveRole);
     //    QApplication::restoreOverrideCursor();
-    EMessageBox::information(this, "Успешно", msg);
+    // EMessageBox::information(this, "Успешно", msg);
 }
 
 void JournalDialog::Error(QString msg)
 {
-    if (WW != nullptr && MainInterface == I_USB)
-        WW->Stop();
+    //    if (WW != nullptr && MainInterface == I_USB)
+    //        WW->Stop();
+    if (progress != nullptr && MainInterface == I_USB)
+    {
+        qDebug() << "Error";
+    }
+    disconnect(JourFuncs, &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
+    disconnect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
     ERMSG(msg);
     //    QApplication::restoreOverrideCursor();
     EMessageBox::error(this, "Ошибка", msg);
 }
 
-void JournalDialog::SetModel(ETableModel *mdl)
-{
-    WW->SetMessage("Сортировка...");
-    QSortFilterProxyModel *pmdl = new QSortFilterProxyModel;
-    pmdl->setSourceModel(mdl);
-    int dateidx = mdl->Headers().indexOf("Дата/Время UTC");
-    switch (JourType)
-    {
-    case Journals::JOURWORK:
-        WDFunc::SetTVModel(this, "work", pmdl, true);
-        WDFunc::SortTV(this, "work", dateidx, Qt::DescendingOrder);
-        break;
-    case Journals::JOURSYS:
-        WDFunc::SetTVModel(this, "system", pmdl, true);
-        WDFunc::SortTV(this, "system", dateidx, Qt::DescendingOrder);
-        break;
-    case Journals::JOURMEAS:
-        WDFunc::SetTVModel(this, "meas", pmdl, true);
-        WDFunc::SortTV(this, "meas", dateidx, Qt::AscendingOrder);
-        break;
-    }
-    Done("Прочитано успешно");
-}
+// void JournalDialog::SetModel(ETableModel *mdl)
+//{
+//    // WW->SetMessage("Сортировка...");
+//    MsgBox->setText("Сортировка...");
+//    QSortFilterProxyModel *pmdl = new QSortFilterProxyModel;
+//    pmdl->setSourceModel(mdl);
+//    int dateidx = mdl->headerPosition("Дата/Время UTC");
+//    switch (JourType)
+//    {
+//    case Journals::JOURWORK:
+//        WDFunc::SetTVModel(this, "work", pmdl, true);
+//        WDFunc::SortTV(this, "work", dateidx, Qt::DescendingOrder);
+//        break;
+//    case Journals::JOURSYS:
+//        WDFunc::SetTVModel(this, "system", pmdl, true);
+//        WDFunc::SortTV(this, "system", dateidx, Qt::DescendingOrder);
+//        break;
+//    case Journals::JOURMEAS:
+//        WDFunc::SetTVModel(this, "meas", pmdl, true);
+//        WDFunc::SortTV(this, "meas", dateidx, Qt::AscendingOrder);
+//        break;
+//    }
+//    // Done("Прочитано успешно");
+//}

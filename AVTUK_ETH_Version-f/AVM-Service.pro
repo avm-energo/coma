@@ -11,7 +11,7 @@ RC_ICONS = ../coma.ico
 CONFIG += c++11
 VERSION = 0.1.5
 
-QT       += core gui printsupport network serialport qml widgets testlib
+QT       += core gui printsupport network serialport qml widgets testlib svg
 
 TARGET = AVM-Service
 DEFINES += PROGNAME='\\"AVM-Service\\"'
@@ -21,7 +21,7 @@ DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += SOFTDEVELOPER='\\"EvelSoft\\"'
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
-QMAKE_CXXFLAGS += -MD
+
 # DEFINES += DEBUG
 TEMPLATE = app
 
@@ -136,8 +136,13 @@ HEADERS += \
     ../widgets/wd_func.h
 
 
-OTHER_FILES += \
+IMAGE_FILE += \
     $$PWD/../images
+
+ERROR_FILES += \
+    $$PWD/../errors
+
+
 
 INCLUDEPATH += $$PWD/../../includes
 
@@ -148,24 +153,32 @@ equals(QMAKE_PLATFORM, win32)
        ## Windows x64 (64bit) specific build here
        CONFIG(debug, debug|release) {
        LIBS += -L$$PWD/../../libs/win64/debug/ -llimereportd -lliblzma -lhidapi -lqt5xlsxd
-       message($$(LIBS))
        DESTDIR = $${PWD}/../../build/win64/debug
        } else {
        LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
-       message($$(LIBS))
        DESTDIR = $${PWD}/../../build/win64/release
+       LIBS_FILES += \
+       $$PWD/../../libs/win64/release/hidapi.dll \
+       $$PWD/../../libs/win64/release/liblzma.dll \
+       $$PWD/../../libs/win64/release/limereport.dll \
+       $$PWD/../../libs/win64/release/Qt5Xlsx.dll \
+       $$PWD/../../libs/win64/release/QtZint.dll
        }
     } else {
         message("x86 build")
         ## Windows x86 (32bit) specific build here
         CONFIG(debug, debug|release) {
         LIBS += -L$$PWD/../../libs/win32/debug/ -llimereportd -lliblzma -lhidapi -lqt5xlsxd
-        message($$(LIBS))
         DESTDIR = $${PWD}/../../build/win32/debug
         } else {
         LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
-        message($$(LIBS))
         DESTDIR = $${PWD}/../../build/win32/release
+        LIBS_FILES += \
+        $$PWD/../../libs/win32/release/hidapi.dll \
+        $$PWD/../../libs/win32/release/liblzma.dll \
+        $$PWD/../../libs/win32/release/limereport.dll \
+        $$PWD/../../libs/win32/release/Qt5Xlsx.dll \
+        $$PWD/../../libs/win32/release/QtZint.dll
         }
     }
 }
@@ -190,4 +203,10 @@ defineTest(copyToDestDir) {
     export(QMAKE_POST_LINK)
 }
 
-copyToDestDir($$OTHER_FILES, $$DESTDIR/images/)
+copyToDestDir($$IMAGE_FILE, $$DESTDIR/images/)
+copyToDestDir($$ERROR_FILES, $$DESTDIR/errors/)
+copyToDestDir($$LIBS_FILES, $$DESTDIR/)
+
+DISTFILES += \
+    ../journals.qmodel
+
