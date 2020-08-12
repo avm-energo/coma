@@ -94,20 +94,12 @@ public:
 
 public slots:
 
-  //  virtual void Update(QList<bool> values)=0;
-
-
     virtual void AlarmState()=0;
-    virtual  void PredAlarmState()=0;
+    virtual  void WarnAlarmState()=0;
     virtual void AvarState()=0;
 
     virtual void Update(QList<bool>)=0;
 
-     virtual void UpdatePredAlarmEvents(IEC104Thread::SponSignals *)=0;
-     virtual void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *)=0;
-
-     virtual void ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)=0;
-     virtual void ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)=0;
 
 private:
 

@@ -35,13 +35,7 @@ public slots:
      void UpdateSecondUSB(QList<bool>);
      void UpdateThirdUSB(QList<bool>);
 
-     void USBSetAlarms();
 
-     void UpdateWarningEvents(IEC104Thread::SponSignals *);
-     void UpdateStateWarningEvents(IEC104Thread::SponSignals *);
-
-     void ModbusUpdateStateWarningEvents(ModBus::Coils Signal);
-     void ModBusUpdateWarningEvents(ModBus::Coils Signal);
 
 private:
     AlarmClass *Alarm;

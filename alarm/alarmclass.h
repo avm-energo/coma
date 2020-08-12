@@ -30,18 +30,28 @@ class AlarmClass : public QObject
 public:
     explicit  AlarmClass(QObject *parent = nullptr);
 
-    QMap<quint16,int> warnCounts;
-    QMap<quint16,int> avarCounts;
-    QMap<quint16,int> BdNumbers;
+    int  warnalarmcount = 0, alarmcount = 0;
 
     const quint32 WarnBSIMask = 0x00005F55;
     const quint32 AvarBSIMask = 0x000020AA;
 
     QList <bool> WarnAlarmEvents;
     QList <bool> AvarAlarmEvents;
+    QList <bool> AlarmEvents;
 
-   int  warnalarmcount = 0, alarmcount = 0;
+    struct StAlarm
+    {
+        int warnCounts;
+        int avarCounts;
+        int BdNumbers;
+        quint32 AdrAlarm;
 
+        QList<bool> warns;
+        QList<bool> avars;
+
+    };
+
+    QMap<quint16, StAlarm> MapAlarm;
 
     struct BdAlarm
     {
@@ -53,11 +63,14 @@ public:
 signals:
     void SetWarnAlarmColor(QList <bool>);
     void SetAlarmColor(QList <bool>);
+    void AlarmColor(QList <bool>);
     void SetFirstButton();
 
 
 public slots:
      void UpdateAlarmUSB();
+     void UpdateAlarmModBus(ModBus::Coils Signal);
+     void UpdateAlarm104(IEC104Thread::SponSignals *Signal);
 
 
 };

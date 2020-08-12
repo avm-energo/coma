@@ -47,7 +47,7 @@ void AvarAlarmKTF::AvarState()
 
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
-    for (int i = 0; i < Alarm->avarCounts[MTYPE_KTF]; ++i)
+    for (int i = 0; i < Alarm->MapAlarm[MTYPE_KTF].avarCounts; ++i)
     {
         hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i)));
@@ -67,7 +67,7 @@ void AvarAlarmKTF::AvarState()
 void AvarAlarmKTF::AlarmState()
 {
 }
-void AvarAlarmKTF::PredAlarmState()
+void AvarAlarmKTF::WarnAlarmState()
 {
 }
 
@@ -78,28 +78,10 @@ void AvarAlarmKTF::Update(QList<bool> states)
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
 
-    for(i=0; i<Alarm->avarCounts[MTYPE_KTF]; i++)
+    for(i=0; i<Alarm->MapAlarm[MTYPE_KTF].avarCounts; i++)
     {
         quint32 alarm =states[i];
         WDFunc::SetLBLImage(this, (QString::number(i)), (alarm) ? pmred : pmgrn);
     }
 
-}
-
-void AvarAlarmKTF::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal);
-
-}
-void AvarAlarmKTF::UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal);
-}
-void AvarAlarmKTF::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
-{
-    Q_UNUSED(Signal);
-}
-void AvarAlarmKTF::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
-{
-    Q_UNUSED(Signal);
 }

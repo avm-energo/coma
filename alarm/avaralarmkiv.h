@@ -14,16 +14,10 @@ public:
 public slots:
 
    void AlarmState();
-   void PredAlarmState();
+   void WarnAlarmState();
    void AvarState();
 
    void Update(QList<bool> states);
-
-   void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
-   void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
-
-   void ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal);
-   void ModBusUpdatePredAlarmEvents(ModBus::Coils Signal);
 
 private:
 

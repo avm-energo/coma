@@ -14,6 +14,11 @@ SerialPort::~SerialPort()
 
 int SerialPort::Init(SerialPort::Settings settings)
 {
+//    if (Port != 0)
+//    {
+//        if (Port->isOpen())
+//            Port->close();
+//    }
     Port = new QSerialPort(settings.Port);
     Port->setBaudRate(settings.Baud);
     Port->setDataBits(QSerialPort::Data8);
@@ -28,6 +33,7 @@ int SerialPort::Init(SerialPort::Settings settings)
     else
     {
         emit State(ConnectionStates::ClosingState);
+        ERMSG("Error opening COM-port");
         return GENERALERROR;
     }
     return NOERROR;
@@ -37,6 +43,11 @@ void SerialPort::WriteBytes(QByteArray ba)
 {
     Port->write(ba.data(), ba.size());
     QCoreApplication::processEvents();
+}
+
+void SerialPort::Disconnect()
+{
+    Port->close();
 }
 
 void SerialPort::ErrorOccurred(QSerialPort::SerialPortError err)

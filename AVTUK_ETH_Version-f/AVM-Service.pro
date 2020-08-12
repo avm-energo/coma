@@ -29,10 +29,6 @@ SOURCES += \
     ../alarm/alarmwidget.cpp \
     ../alarm/avaralarmkiv.cpp \
     ../alarm/avaralarmktf.cpp \
-    ../alarm/modbusupdatepredalarm84.cpp \
-    ../alarm/modbusupdatestatepredalarm84.cpp \
-    ../alarm/updatepredalarm84.cpp \
-    ../alarm/updatestatepredalarm84.cpp \
     ../alarm/warnalarmkiv.cpp \
     ../alarm/warnalarmktf.cpp \
     ../check/checkdialogkiv.cpp \
@@ -101,10 +97,6 @@ HEADERS += \
     ../alarm/alarmwidget.h \
     ../alarm/avaralarmkiv.h \
     ../alarm/avaralarmktf.h \
-    ../alarm/modbusupdatepredalarm84.h \
-    ../alarm/modbusupdatestatepredalarm84.h \
-    ../alarm/updatepredalarm84.h \
-    ../alarm/updatestatepredalarm84.h \
     ../alarm/warnalarmkiv.h \
     ../alarm/warnalarmktf.h \
     ../check/checkdialogkiv.h \

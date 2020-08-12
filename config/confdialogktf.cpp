@@ -725,7 +725,7 @@ void ConfDialogKTF::SetupUI()
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Адрес устройства для Modbus:"), row,0,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, "adrMB_ID", 0, 10000, 0, paramcolor), row,1,1,1,Qt::AlignLeft);
+    glyout->addWidget(WDFunc::NewSPB(this, "adrMB_ID", 1, 254, 0, paramcolor), row,1,1,1,Qt::AlignLeft);
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);

@@ -60,41 +60,7 @@ void JournalDialog::SetupUI()
     setStyleSheet(tmps);
     QString ConfTWss = "QTabBar::tab:selected {background-color: "+QString(TABCOLOR)+";}";
 
-/*    QTabWidget *work = new QTabWidget;
-    work->tabBar()->setStyleSheet(ConfTWss);
-    hlyout->addWidget(WDFunc::NewPB(this, "gj." + QString::number(Journals::JOURWORK), "Получить рабочий журнал", this, SLOT(TryGetJourByUSB())));
-    hlyout->addWidget(WDFunc::NewPB(this, "ej." + QString::number(Journals::JOURWORK), "Стереть рабочий журнал", this, SLOT(EraseJour())));
-    hlyout->addWidget(WDFunc::NewPB(this, "sj." + QString::number(Journals::JOURWORK), "Сохранить журнал в файл", this, SLOT(SaveJour())));
-    vlyout->addLayout(hlyout);
-    vlyout->addWidget(WDFunc::NewTV(this, "work", nullptr), 89);
-    work->setLayout(vlyout);
-    work->setStyleSheet(ConfTWss);
 
-    QTabWidget *system = new QTabWidget;
-    system->tabBar()->setStyleSheet(ConfTWss);
-
-    hlyout = new QHBoxLayout;
-    vlyout = new QVBoxLayout;
-    hlyout->addWidget(WDFunc::NewPB(this, "gj." + QString::number(Journals::JOURSYS), "Получить системный журнал", this, SLOT(TryGetJourByUSB())));
-    hlyout->addWidget(WDFunc::NewPB(this, "ej." + QString::number(Journals::JOURSYS), "Стереть системный журнал", this, SLOT(EraseJour())));
-    hlyout->addWidget(WDFunc::NewPB(this, "sj." + QString::number(Journals::JOURSYS), "Сохранить журнал в файл", this, SLOT(SaveJour())));
-    vlyout->addLayout(hlyout);
-    vlyout->addWidget(WDFunc::NewTV(this, "system", nullptr), 89);
-    system->setLayout(vlyout);
-    system->setStyleSheet(ConfTWss);
-
-    QTabWidget *measure = new QTabWidget;
-    measure->tabBar()->setStyleSheet(ConfTWss);
-    hlyout = new QHBoxLayout;
-    vlyout = new QVBoxLayout;
-    hlyout->addWidget(WDFunc::NewPB(this, "gj." + QString::number(Journals::JOURMEAS), "Получить журнал измерений", this, SLOT(TryGetJourByUSB())));
-    hlyout->addWidget(WDFunc::NewPB(this, "ej." + QString::number(Journals::JOURMEAS), "Стереть журнал измерений", this, SLOT(EraseJour())));
-    hlyout->addWidget(WDFunc::NewPB(this, "sj." + QString::number(Journals::JOURMEAS), "Сохранить журнал в файл", this, SLOT(SaveJour())));
-    vlyout->addLayout(hlyout);
-    vlyout->addWidget(WDFunc::NewTV(this, "meas", nullptr), 89);
-    measure->setLayout(vlyout);
-    measure->setStyleSheet(ConfTWss);
-*/
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw4");
     ConfTW->tabBar()->setStyleSheet(ConfTWss);

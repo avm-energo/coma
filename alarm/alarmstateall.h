@@ -12,16 +12,16 @@ public:
 public slots:
 
    void AlarmState();
-   void PredAlarmState();
+   void WarnAlarmState();
    void AvarState();
 
    void Update(QList<bool>);
 
-   void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
-   void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
+//   void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
+//   void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
 
-   void ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal);
-   void ModBusUpdatePredAlarmEvents(ModBus::Coils Signal);
+//   void ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal);
+//   void ModBusUpdate(ModBus::Coils Signal);
 
    static QStringList HthToolTip()
    {

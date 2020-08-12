@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QSerialPort>
+#include <QPointer>
 #include "../gen/maindef.h"
 
 class SerialPort : public QObject
@@ -29,10 +30,11 @@ signals:
     void Reconnect();
 
 private:
-    QSerialPort *Port;
+    QPointer<QSerialPort> Port;
 
 public slots:
     void WriteBytes(QByteArray ba);
+    void Disconnect();
 
 private slots:
     void ReadBytes();

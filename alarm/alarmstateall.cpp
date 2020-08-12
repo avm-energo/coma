@@ -64,34 +64,13 @@ void AlarmStateAll::AlarmState()
     connect(pb,SIGNAL(clicked()),this,SLOT(close()));
     lyout->addWidget(pb,0);
     setLayout(lyout);
-
 }
-void AlarmStateAll::PredAlarmState()
+void AlarmStateAll::WarnAlarmState()
 {
 }
 void AlarmStateAll::AvarState()
 {
 }
-
-
 void AlarmStateAll::Update(QList<bool>)
 {
-}
-
-void AlarmStateAll::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal);
-
-}
-void AlarmStateAll::UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal);
-}
-void AlarmStateAll::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
-{
-    Q_UNUSED(Signal);
-}
-void AlarmStateAll::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
-{
-    Q_UNUSED(Signal);
 }

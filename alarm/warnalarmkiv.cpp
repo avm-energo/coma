@@ -29,11 +29,11 @@ WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm,QWidget *parent):
     AbstractAlarm(parent)
 {
    Alarm = alarm;
-   PredAlarmState();
+   WarnAlarmState();
 }
 
 
-void WarnAlarmKIV::PredAlarmState()
+void WarnAlarmKIV::WarnAlarmState()
 {
      QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -62,7 +62,7 @@ void WarnAlarmKIV::PredAlarmState()
     //Wpred = w;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
-    for (int i = 0; i < Alarm->warnCounts[MTYPE_KIV]; ++i)
+    for (int i = 0; i < Alarm->MapAlarm[MTYPE_KIV].warnCounts; ++i)
     {
         hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i)));
@@ -92,28 +92,10 @@ void WarnAlarmKIV::Update(QList<bool> states)
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
 
-        for(i=0; i<Alarm->warnCounts[MTYPE_KIV]; i++)
+        for(i=0; i<Alarm->MapAlarm[MTYPE_KIV].warnCounts; i++)
         {
             quint32 alarm = states[i];
             WDFunc::SetLBLImage(this, (QString::number(i)), (alarm) ? pmred : pmgrn);
         }
 
 }
-void WarnAlarmKIV::UpdatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal);
-
-}
-void WarnAlarmKIV::UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal);
-}
-void WarnAlarmKIV::ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal)
-{
-    Q_UNUSED(Signal);
-}
-void WarnAlarmKIV::ModBusUpdatePredAlarmEvents(ModBus::Coils Signal)
-{
-    Q_UNUSED(Signal);
-}
-

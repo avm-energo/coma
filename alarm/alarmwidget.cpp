@@ -75,7 +75,7 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent):
 
 }
 
-void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarmcount)
+void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarm)
 {
    //int i;
    int alarm = 0 ;
@@ -83,7 +83,7 @@ void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarmcount)
     QPixmap *pmylw = new QPixmap("images/yellowc.png");
 
    // for(i=0; i<warnalarmcount.size(); i++)
-    foreach(bool item, warnalarmcount)
+    foreach(bool item, warnalarm)
     {
         if (item ==true)
            {
@@ -95,7 +95,7 @@ void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarmcount)
     WDFunc::SetLBLImage(this, "951", (alarm == 0) ? pmgrn : pmylw);
 }
 
-void AlarmWidget::UpdateThirdUSB(QList<bool> alarmcount)
+void AlarmWidget::UpdateThirdUSB(QList<bool> avar)
 {
     // int i;
      int alarm = 0 ;
@@ -103,7 +103,7 @@ void AlarmWidget::UpdateThirdUSB(QList<bool> alarmcount)
      QPixmap *pmred = new QPixmap("images/redc.png");
 
 //     for(i=0; i<alarmcount.size(); i++)
-     foreach(bool item, alarmcount)
+     foreach(bool item, avar)
      {
          if (item ==true)
           {
@@ -129,25 +129,5 @@ void AlarmWidget::UpdateFirstUSB()
         WDFunc::SetLBLImage(this, "950", pmgrn);
 }
 
-void AlarmWidget::USBSetAlarms()
-{
-}
 
-void AlarmWidget::UpdateWarningEvents(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal);
-
-}
-void AlarmWidget::UpdateStateWarningEvents(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal);
-}
-void AlarmWidget:: ModbusUpdateStateWarningEvents(ModBus::Coils Signal)
-{
-    Q_UNUSED(Signal);
-}
-void AlarmWidget::ModBusUpdateWarningEvents(ModBus::Coils Signal)
-{
-    Q_UNUSED(Signal);
-}
 
