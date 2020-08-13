@@ -54,10 +54,7 @@ void ConfDialogKIV::Fill()
 
     for (i = 0; i < 3; i++)
     {
-      //WDFunc::SetSPBData(this, "Imax."+QString::number(i), C84->Bci_block.Imax[i]);
-      //WDFunc::SetSPBData(this, "C_init."+QString::number(i), C84->Bci_block.C_init[i]);
-      //WDFunc::SetSPBData(this, "Tg_init."+QString::number(i), C84->Bci_block.Tg_init[i]);
-      //WDFunc::SetSPBData(this, "corTg."+QString::number(i), C84->Bci_block.corTg[i]);
+
         WDFunc::SetSPBData(this, "Tg_pasp."+QString::number(i), CKIV->Bci_block.Tg_pasp[i]);
         WDFunc::SetSPBData(this, "C_pasp."+QString::number(i), CKIV->Bci_block.C_pasp[i]);
     }
@@ -85,11 +82,6 @@ void ConfDialogKIV::Fill()
 
         for (i = 0; i < 4; i++)
         {
-         /*WDFunc::SetSPBData(this, "IP"+QString::number(i), C84->Com_param.IP[i]);
-         WDFunc::SetSPBData(this, "Mask"+QString::number(i), C84->Com_param.Mask[i]);
-         WDFunc::SetSPBData(this, "GateWay"+QString::number(i), C84->Com_param.GateWay[i]);
-         WDFunc::SetSPBData(this, "Port"+QString::number(i), C84->Com_param.Port[i]);
-         WDFunc::SetSPBData(this, "SNTP"+QString::number(i), C84->Com_param.SNTP[i]);*/
 
          if(i==3)
          {
@@ -173,10 +165,7 @@ void ConfDialogKIV::FillBack()
 
     for (i = 0; i < 3; i++)
     {
-      //WDFunc::SPBData(this, "Imax."+QString::number(i), C84->Bci_block.Imax[i]);
-      //WDFunc::SPBData(this, "C_init."+QString::number(i), C84->Bci_block.C_init[i]);
-      //WDFunc::SPBData(this, "Tg_init."+QString::number(i), C84->Bci_block.Tg_init[i]);
-      //WDFunc::SPBData(this, "corTg."+QString::number(i), C84->Bci_block.corTg[i]);
+
       WDFunc::SPBData(this, "Tg_pasp."+QString::number(i), CKIV->Bci_block.Tg_pasp[i]);
       WDFunc::SPBData(this, "C_pasp."+QString::number(i), CKIV->Bci_block.C_pasp[i]);
     }
@@ -194,19 +183,11 @@ void ConfDialogKIV::FillBack()
     WDFunc::SPBData(this, "T_Data_Rec", CKIV->Bci_block.T_Data_Rec);
     WDFunc::SPBData(this, "Unom_1", CKIV->Bci_block.Unom_1);
 
-    //if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
-    //{
+
         WDFunc::SPBData(this, "RTerm", CKIV->Bci_block.RTerm);
         WDFunc::SPBData(this, "W100", CKIV->Bci_block.W100);
 
-        /*for (i = 0; i < 4; i++)
-        {
-         WDFunc::SPBData(this, "IP"+QString::number(i), C84->Com_param.IP[i]);
-         WDFunc::SPBData(this, "Mask"+QString::number(i), C84->Com_param.Mask[i]);
-         WDFunc::SPBData(this, "GateWay"+QString::number(i), C84->Com_param.GateWay[i]);
-         WDFunc::SPBData(this, "Port"+QString::number(i), C84->Com_param.Port[i]);
-         WDFunc::SPBData(this, "SNTP"+QString::number(i), C84->Com_param.SNTP[i]);
-        }*/
+
 
         QString StrIP, StrMask, StrSNTP, StrGate;
         QString NameIP = "IP", NameMask = "Mask", NameSNTP = "SNTP", NameGate = "GateWay";
@@ -226,12 +207,6 @@ void ConfDialogKIV::FillBack()
         for (i = 0; i < 4; i++)
         {
 
-         /*WDFunc::SetSPBData(this, "IP"+QString::number(i), C84->Com_param.IP[i]);
-         WDFunc::SetSPBData(this, "Mask"+QString::number(i), C84->Com_param.Mask[i]);
-         WDFunc::SetSPBData(this, "GateWay"+QString::number(i), C84->Com_param.GateWay[i]);
-         WDFunc::SetSPBData(this, "Port"+QString::number(i), C84->Com_param.Port[i]);
-         WDFunc::SetSPBData(this, "SNTP"+QString::number(i), C84->Com_param.SNTP[i]);*/
-
          CKIV->Com_param.IP[i] = inIP.at(i).toInt();
          CKIV->Com_param.Mask[i] = inMask.at(i).toInt();
          CKIV->Com_param.GateWay[i] = inGate.at(i).toInt();
@@ -248,10 +223,7 @@ void ConfDialogKIV::FillBack()
         CKIV->Com_param.stopbit = 0x00000001 << cbidx;
 
         WDFunc::SPBData(this, "adrMB", CKIV->Com_param.adrMB);
-        /*if(C84->Com_param.isNTP)
-        WDFunc::SetChBData(this, "ISNTP", true);
-        else
-        WDFunc::SetChBData(this, "ISNTP", false);*/
+
         WDFunc::ChBData(this, "ISNTP", IsNtp);
         if(IsNtp)
         CKIV->Com_param.isNTP = 1;

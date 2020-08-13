@@ -35,9 +35,10 @@ SOURCES += \
     ../check/checkkiv.cpp \
     ../check/checkktf.cpp \
     ../check/chekdialogktf.cpp \
+    ../config/confdialogkdv.cpp \
     ../config/confdialogkiv.cpp \
     ../config/confdialogktf.cpp \
-    ../config/configdefktf.cpp \
+    ../config/configkdv.cpp \
     ../config/configkiv.cpp \
     ../config/configktf.cpp \
     ../dialogs/abstractcordialog.cpp \
@@ -103,9 +104,10 @@ HEADERS += \
     ../check/checkkiv.h \
     ../check/checkktf.h \
     ../check/chekdialogktf.h \
+    ../config/confdialogkdv.h \
     ../config/confdialogkiv.h \
     ../config/confdialogktf.h \
-    ../config/configdefktf.h \
+    ../config/configkdv.h \
     ../config/configkiv.h \
     ../config/configktf.h \
     ../dialogs/abstractcordialog.h \

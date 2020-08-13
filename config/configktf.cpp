@@ -1,13 +1,9 @@
 #include "configktf.h"
-#include "configdefktf.h"
 #include "config.h"
 
 ConfigKTF::ConfigKTF(QVector<S2::DataRec> *config)
 {
 
-    // параметры входных сигналов
-//    quint32 StartInIndex = ID8084_START;
-  //  quint32 StartComIndex = ID_COM;
     for (int i=0; i<config->size(); ++i)
     {
         if (config->at(i).id == 0xFFFFFFFF)
@@ -17,10 +13,6 @@ ConfigKTF::ConfigKTF(QVector<S2::DataRec> *config)
         }
     }
 
-
-
- //   if ((StartInIndex != 0))
-//    {
         config->append({BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB});
         config->append({BCI_MTYPEM, sizeof(MainBlk.MTypeE), &MainBlk.MTypeE});
         config->append({BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype});
@@ -32,14 +24,13 @@ ConfigKTF::ConfigKTF(QVector<S2::DataRec> *config)
         config->append({BCI_K_104, sizeof(MainBlk.k_104), &MainBlk.k_104});
         config->append({BCI_W_104, sizeof(MainBlk.w_104), &MainBlk.w_104});
 
-        config->append({BCI_NFILTR_ID, sizeof(Bci_block.NFiltr), &Bci_block.NFiltr});
-        config->append({BCI_NHARMFILT_ID, sizeof(Bci_block.NHarmFilt), &Bci_block.NHarmFilt});
-        config->append({BCI_DDOCS_ID, sizeof(Bci_block.DDosc), &Bci_block.DDosc});
+        config->append({BCI_NFILTR, sizeof(Bci_block.NFiltr), &Bci_block.NFiltr});
+        config->append({BCI_NHARMFILT, sizeof(Bci_block.NHarmFilt), &Bci_block.NHarmFilt});
+        config->append({BCI_DDOCS, sizeof(Bci_block.DDosc), &Bci_block.DDosc});
         config->append({BCI_UNOM1, sizeof(Bci_block.Unom1), &Bci_block.Unom1});
-        //config->append({StartInIndex+2, sizeof(Bci_block.Imax), &Bci_block.Imax});
         config->append({BCI_DUOSC, sizeof(Bci_block.DUosc), &Bci_block.DUosc});
-        config->append({BCI_DIOSC_ID, sizeof(Bci_block.DIosc), &Bci_block.DIosc});
-        config->append({BCI_DUIMIN_ID, sizeof(Bci_block.DUImin), &Bci_block.DUImin});
+        config->append({BCI_DIOSC, sizeof(Bci_block.DIosc), &Bci_block.DIosc});
+        config->append({BCI_DUIMIN, sizeof(Bci_block.DUImin), &Bci_block.DUImin});
         config->append({BCI_IMIN, sizeof(Bci_block.Imin), &Bci_block.Imin});
         config->append({BCI_RTERM, sizeof(Bci_block.RTerm), &Bci_block.RTerm});
         config->append({BCI_W100, sizeof(Bci_block.W100), &Bci_block.W100});
@@ -62,29 +53,27 @@ ConfigKTF::ConfigKTF(QVector<S2::DataRec> *config)
         config->append({BCI_DTNNT_NOM, sizeof(Bci_block.dTNNTnom), &Bci_block.dTNNTnom});
         config->append({BCI_KDOB, sizeof(Bci_block.Kdob), &Bci_block.Kdob});
         config->append({BCI_TAUWNOM, sizeof(Bci_block.TauWnom), &Bci_block.TauWnom});
-        config->append({BCI_UMAXM, sizeof(Bci_block.Umaxm), &Bci_block.Umaxm});
-        config->append({BCI_IMAXM, sizeof(Bci_block.Imaxm), &Bci_block.Imaxm});
+        config->append({BCI_UMAX, sizeof(Bci_block.Umax), &Bci_block.Umax});
+        config->append({BCI_IMAX, sizeof(Bci_block.Imax), &Bci_block.Imax});
         config->append({BCI_IWNOM, sizeof(Bci_block.Iwnom), &Bci_block.Iwnom});
         config->append({BCI_OSCPOINTS, sizeof(Bci_block.OscPoints), &Bci_block.OscPoints});
         config->append({BCI_GTNNT, sizeof(Bci_block.GTnnt), &Bci_block.GTnnt});
         config->append({BCI_GOVC, sizeof(Bci_block.GOvc), &Bci_block.GOvc});
         config->append({BCI_TDATNUM, sizeof(Bci_block.TdatNum), &Bci_block.TdatNum});
 
-        //if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
-        //{
-          config->append({BCI_IP_ID, sizeof(Com_param.IP), &Com_param.IP});
-          config->append({BCI_MASK_ID, sizeof(Com_param.Mask), &Com_param.Mask});
-          config->append({BCI_GW_ID, sizeof(Com_param.GW), &Com_param.GW});
-          config->append({BCI_PORT_ID, sizeof(Com_param.Port), &Com_param.Port});
-          config->append({BCI_SNTP_ID, sizeof(Com_param.SNTP), &Com_param.SNTP});
-          config->append({BCI_BAUD_ID, sizeof(Com_param.Baud), &Com_param.Baud});
-          config->append({BCI_PARITY_ID, sizeof(Com_param.Parity), &Com_param.Parity});
-          config->append({BCI_STOPBIT_ID, sizeof(Com_param.Stopbit), &Com_param.Stopbit});
-          config->append({BCI_ADRMB_ID, sizeof(Com_param.adrMB), &Com_param.adrMB});
-          config->append({BCI_ISNTP_ID, sizeof(Com_param.IsNTP), &Com_param.IsNTP});
-          config->append({BCI_ISPPS_ID, sizeof(Com_param.IsPPS), &Com_param.IsPPS});
-       // }
-//    }
+
+          config->append({BCI_IP, sizeof(Com_param.IP), &Com_param.IP});
+          config->append({BCI_MASK, sizeof(Com_param.Mask), &Com_param.Mask});
+          config->append({BCI_GW, sizeof(Com_param.GW), &Com_param.GW});
+          config->append({BCI_PORT, sizeof(Com_param.Port), &Com_param.Port});
+          config->append({BCI_SNTP, sizeof(Com_param.SNTP), &Com_param.SNTP});
+          config->append({BCI_BAUD, sizeof(Com_param.Baud), &Com_param.Baud});
+          config->append({BCI_PARITY, sizeof(Com_param.Parity), &Com_param.Parity});
+          config->append({BCI_STOPBIT, sizeof(Com_param.Stopbit), &Com_param.Stopbit});
+          config->append({BCI_ADRMB, sizeof(Com_param.adrMB), &Com_param.adrMB});
+          config->append({BCI_ISNTP, sizeof(Com_param.IsNTP), &Com_param.IsNTP});
+          config->append({BCI_ISPPS, sizeof(Com_param.IsPPS), &Com_param.IsPPS});
+
           config->append({0xFFFFFFFF, 0, nullptr});
 
 }
@@ -100,13 +89,13 @@ void ConfigKTF::SetDefConf()
     MainBlk.T2_104 = DEF_T2_104;
     MainBlk.T3_104 = DEF_T3_104;
 
-    Bci_block.NFiltr = DEF_NFILTR_ID;
-    Bci_block.NHarmFilt = DEF_NHARMFILT_ID;
-    Bci_block.DDosc = DEF_DDOCS_ID;
+    Bci_block.NFiltr = DEF_NFILTR;
+    Bci_block.NHarmFilt = DEF_NHARMFILT;
+    Bci_block.DDosc = DEF_DDOCS;
     Bci_block.Unom1 = DEF_UNOM1;
     Bci_block.DUosc = DEF_DUOSC;
-    Bci_block.DIosc = DEF_DIOSC_ID ;
-    Bci_block.DUImin = DEF_DUIMIN_ID   ;
+    Bci_block.DIosc = DEF_DIOSC ;
+    Bci_block.DUImin = DEF_DUIMIN   ;
     Bci_block.Imin = DEF_IMIN;
     Bci_block.RTerm = DEF_RTERM;
     Bci_block.W100 = DEF_W100;
@@ -125,8 +114,8 @@ void ConfigKTF::SetDefConf()
     Bci_block.dTNNTnom = DEF_DTNNT_NOM;
     Bci_block.Kdob = DEF_KDOB;
     Bci_block.TauWnom = DEF_TAUWNOM;
-    Bci_block.Umaxm = DEF_UMAXM;
-    Bci_block.Imaxm = DEF_IMAXM;
+    Bci_block.Umax = DEF_UMAX;
+    Bci_block.Imax = DEF_IMAX;
     Bci_block.Iwnom = DEF_IWNOM;
     Bci_block.OscPoints = DEF_OSCPOINTS;
     Bci_block.GTnnt = DEF_GTNNT;
@@ -142,13 +131,6 @@ void ConfigKTF::SetDefConf()
         Bci_block.MBMab4[i] = 0;
 
     }
-
-
-
-    //if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
-    //{
-      //  Bci_block.RTerm = 100;
-      //  Bci_block.W100 = 1.385f;
 
         Com_param.IP[0] = 172;
         Com_param.IP[1] = 16;
@@ -175,14 +157,13 @@ void ConfigKTF::SetDefConf()
         Com_param.SNTP[2] = 31;
         Com_param.SNTP[3] = 220;
 
-        Com_param.Baud = DEF_BAUD_ID;
-        Com_param.Parity = DEF_PARITY_ID;
-        Com_param.Stopbit = DEF_STOPBIT_ID;
-        Com_param.adrMB = DEF_ADRMB_ID ;
-        Com_param.IsNTP = DEF_ISNTP_ID;
-        Com_param.IsPPS = DEF_ISPPS_ID;
+        Com_param.Baud = DEF_BAUD;
+        Com_param.Parity = DEF_PARITY;
+        Com_param.Stopbit = DEF_STOPBIT;
+        Com_param.adrMB = DEF_ADRMB ;
+        Com_param.IsNTP = DEF_ISNTP;
+        Com_param.IsPPS = DEF_ISPPS;
 
-    //}
 }
 
 

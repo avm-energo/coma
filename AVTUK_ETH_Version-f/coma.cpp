@@ -38,6 +38,7 @@
 #include "../config/confdialogkiv.h"
 #include "../check/checkdialogkiv.h"
 #include "../config/confdialogktf.h"
+#include "../config/confdialogkdv.h"
 #include "../dialogs/settingsdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../widgets/etabwidget.h"
@@ -444,15 +445,24 @@ void Coma::PrepareDialogs()
         }
     break;
     case Config::MTB_A3:
+
+        switch(MTypeM)
+            {
+            case Config::MTM_87:
+
+            S2Config->clear();
+           if (MainInterface != I_RS485)
+               ConfM = new ConfDialogKDV(S2Config);
+
+            break;
+            };
+
+
+
         break;
 
     };
-  /*  switch(MTypeM)
-    {
-    case Config::MTM_84:
-        break;
-    };
-  */
+
 
     NewTimersBda();
 

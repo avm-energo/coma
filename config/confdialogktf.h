@@ -25,25 +25,17 @@ public:
     QStringList Sbaud = QStringList() << "1200" << "2400"<< "4800" << "9600" << "19200" << "38400" << "57600" << "115200";
     QStringList MBs1 = QStringList() << "нет" << "тип 1"<< "тип 2" << "тип 3";
 
-
-
-
 private:
-
     ConfigKTF *KTF;
     bool   DDosc ;
     bool   Mb ;
     bool    IsNtp;
     QList<QWidget *> WidgetList;
 
-
-
     void Fill();
     void FillBack();
     void SetupUI();
     void CheckConf();
-
-
 
 signals:
 
@@ -58,10 +50,6 @@ private slots:
     void Stop_Timer();
     void Write_PCDate();
     void Write_Date();
-
-
-
-
 
 
 };

@@ -1,4 +1,3 @@
-
 #include <QGroupBox>
 #include <QTabWidget>
 #include <QLineEdit>
@@ -37,11 +36,7 @@ ConfDialogKTF::~ConfDialogKTF()
 
 void ConfDialogKTF::Fill()
 {
-
     int i;
-
-
-
     WDFunc::SetSPBData(this, "Abs_104", KTF->MainBlk.Abs_104);
     WDFunc::SetSPBData(this, "Cycle_104", KTF->MainBlk.Cycle_104);
     WDFunc::SetSPBData(this, "T1_104", KTF->MainBlk.T1_104);
@@ -144,8 +139,6 @@ void ConfDialogKTF::Fill()
     WDFunc::SetSPBData(this, "MBMab3adr[3]", KTF->Bci_block.MBMab3[3]);
     WDFunc::SetSPBData(this, "MBMab4adr[3]", KTF->Bci_block.MBMab4[3]);
 
-
-
     cbidx = ((KTF->Bci_block.Cool_type & 0x01) ? 1 : 0);
     WDFunc::SetCBIndex(this, "Cool_type", cbidx);
     cbidx = ((KTF->Bci_block.W_mat & 0x01) ? 1 : 0);
@@ -157,8 +150,8 @@ void ConfDialogKTF::Fill()
     WDFunc::SetSPBData(this, "dTNNTnom", KTF->Bci_block.dTNNTnom);
     WDFunc::SetSPBData(this, "Kdob", KTF->Bci_block.Kdob);
     WDFunc::SetSPBData(this, "TauWnom", KTF->Bci_block.TauWnom);
-    WDFunc::SetSPBData(this, "Umaxm", KTF->Bci_block.Umaxm);
-    WDFunc::SetSPBData(this, "Imaxm", KTF->Bci_block.Imaxm);
+    WDFunc::SetSPBData(this, "Umaxm", KTF->Bci_block.Umax);
+    WDFunc::SetSPBData(this, "Imaxm", KTF->Bci_block.Imax);
     WDFunc::SetSPBData(this, "Iwnom", KTF->Bci_block.Iwnom);
 
 
@@ -272,9 +265,6 @@ void ConfDialogKTF::FillBack()
      KTF->Bci_block.DDosc = KTF->Bci_block.DDosc | 0x01;
     }
 
-
-
-
     WDFunc::SPBData(this, "Unom1", KTF->Bci_block.Unom1);
     WDFunc::SPBData(this, "DUosc", KTF->Bci_block.DUosc);
     WDFunc::SPBData(this, "DIosc_ID", KTF->Bci_block.DIosc);
@@ -361,8 +351,8 @@ void ConfDialogKTF::FillBack()
     WDFunc::SPBData(this, "dTNNTnom", KTF->Bci_block.dTNNTnom);
     WDFunc::SPBData(this, "Kdob", KTF->Bci_block.Kdob);
     WDFunc::SPBData(this, "TauWnom", KTF->Bci_block.TauWnom);
-    WDFunc::SPBData(this, "Umaxm", KTF->Bci_block.Umaxm);
-    WDFunc::SPBData(this, "Imaxm", KTF->Bci_block.Imaxm);
+    WDFunc::SPBData(this, "Umaxm", KTF->Bci_block.Umax);
+    WDFunc::SPBData(this, "Imaxm", KTF->Bci_block.Imax);
     WDFunc::SPBData(this, "Iwnom", KTF->Bci_block.Iwnom);
 
     cbidx = WDFunc::CBIndex(this, "OscPoints");
@@ -418,16 +408,11 @@ void ConfDialogKTF::FillBack()
     else
     KTF->Com_param.IsNTP = 0;
 
-
-
-
 }
 
 void ConfDialogKTF::SetupUI()
 {
-
     QString phase[3] = {"Фаза A:","Фаза B:","Фаза C:"};
-    //QString S;
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
@@ -445,14 +430,9 @@ void ConfDialogKTF::SetupUI()
 
     QStackedWidget *qswt = new QStackedWidget;
     qswt -> setObjectName("qswt");
- //   QTableWidget *table = new QTableWidget();
-
 
      QLineEdit *line1 = new QLineEdit();
- //   QWidget *extraconf = new QWidget;
-   // QWidget *MEKconf = new QWidget;
-  //  QWidget *Leftconf = new QWidget;
-  //  QWidget *time = new QWidget;
+
     QString tmps = "QWidget {background-color: "+QString(ACONFWCLR)+";}";
     wind1->setStyleSheet(tmps);
     wind2->setStyleSheet(tmps);
@@ -461,12 +441,6 @@ void ConfDialogKTF::SetupUI()
     wind5->setStyleSheet(tmps);
     wind6->setStyleSheet(tmps);
     wind7->setStyleSheet(tmps);
- //   winddop5_1->setStyleSheet(tmps);
-//    winddop5_2->setStyleSheet(tmps);
-
-   // time->setStyleSheet(tmps);
-  //  MEKconf->setStyleSheet(tmps);
-  //  Leftconf->setStyleSheet(tmps);
 
     area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
     area->setFrameShape(QFrame::NoFrame);
@@ -1078,8 +1052,6 @@ void ConfDialogKTF::SetupUI()
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
 
-
-
     gb = new QGroupBox("Настройка времени");
     gb->setFont(font);
     vlyout2 = new QVBoxLayout;
@@ -1097,12 +1069,8 @@ void ConfDialogKTF::SetupUI()
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
 
-
-
     wind7->setLayout(vlyout1);
     area->setWidget(wind7);
-
-
 
     //.........................................................................
 
@@ -1194,29 +1162,3 @@ void ConfDialogKTF::ChangeWindow(int num)
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
