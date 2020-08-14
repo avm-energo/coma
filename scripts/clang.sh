@@ -1,0 +1,1 @@
+find . -iname *.h -o -iname *.cpp | xargs /c/Program\ Files/LLVM/bin/clang-format -i --style=file

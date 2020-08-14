@@ -2,6 +2,7 @@
 #define USB_H
 
 #include <QObject>
+
 #include "eusbhid.h"
 
 class usb : public QObject

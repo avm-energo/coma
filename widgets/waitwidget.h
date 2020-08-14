@@ -1,8 +1,8 @@
 #ifndef WAITWIDGET_H
 #define WAITWIDGET_H
 
-#include <QWidget>
 #include <QPaintEvent>
+#include <QWidget>
 
 class WaitWidget : public QWidget
 {

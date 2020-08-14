@@ -1,16 +1,18 @@
+#include <QGridLayout>
 #include <QGroupBox>
 #include <QLabel>
-#include <QGridLayout>
-#include <QVBoxLayout>
 #include <QPushButton>
-#include "confdialog.h"
+#include <QVBoxLayout>
+
+#include "../gen/colors.h"
+#include "../gen/error.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "../gen/colors.h"
-#include "../gen/error.h"
+#include "confdialog.h"
 
-ConfDialog::ConfDialog(QVector<S2::DataRec> &S2Config, quint32 MTypeB, quint32 MTypeM, QWidget *parent) : AbstractConfDialog(parent)
+ConfDialog::ConfDialog(QVector<S2::DataRec> &S2Config, quint32 MTypeB, quint32 MTypeM, QWidget *parent)
+    : AbstractConfDialog(parent)
 {
     ConfigMain = new Config(S2Config, MTypeB, MTypeM); // добавляем к переданному S2Config общую часть
     SetupUI();
@@ -48,58 +50,59 @@ void ConfDialog::SetupUI()
     QGridLayout *glyout = new QGridLayout;
     glyout->setColumnStretch(2, 50);
     QLabel *lbl = new QLabel("Адрес базовой станции:");
-    glyout->addWidget(lbl,0,0,1,1,Qt::AlignRight);
+    glyout->addWidget(lbl, 0, 0, 1, 1, Qt::AlignRight);
     QDoubleSpinBox *dspbls = WDFunc::NewSPB(this, "spb.1", 0, 65535, 0, ACONFGCLR);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
     glyout->addWidget(dspbls, 0, 1, 1, 1, Qt::AlignLeft);
     lbl = new QLabel("Интервал циклического опроса:");
-    glyout->addWidget(lbl,1,0,1,1,Qt::AlignRight);
+    glyout->addWidget(lbl, 1, 0, 1, 1, Qt::AlignRight);
     dspbls = WDFunc::NewSPB(this, "spb.2", 0, 255, 0, ACONFGCLR);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
     glyout->addWidget(dspbls, 1, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    glyout->addWidget(lbl,1,2,1,1,Qt::AlignLeft);
+    lbl = new QLabel("c");
+    glyout->addWidget(lbl, 1, 2, 1, 1, Qt::AlignLeft);
     lbl = new QLabel("Тайм-аут t1:");
-    glyout->addWidget(lbl,2,0,1,1,Qt::AlignRight);
+    glyout->addWidget(lbl, 2, 0, 1, 1, Qt::AlignRight);
     dspbls = WDFunc::NewSPB(this, "spb.3", 0, 255, 0, ACONFGCLR);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
     glyout->addWidget(dspbls, 2, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    glyout->addWidget(lbl,2,2,1,1,Qt::AlignLeft);
+    lbl = new QLabel("c");
+    glyout->addWidget(lbl, 2, 2, 1, 1, Qt::AlignLeft);
     lbl = new QLabel("Тайм-аут t2:");
-    glyout->addWidget(lbl,3,0,1,1,Qt::AlignRight);
+    glyout->addWidget(lbl, 3, 0, 1, 1, Qt::AlignRight);
     dspbls = WDFunc::NewSPB(this, "spb.4", 0, 255, 0, ACONFGCLR);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
     glyout->addWidget(dspbls, 3, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    glyout->addWidget(lbl,3,2,1,1,Qt::AlignLeft);
+    lbl = new QLabel("c");
+    glyout->addWidget(lbl, 3, 2, 1, 1, Qt::AlignLeft);
     lbl = new QLabel("Тайм-аут t3:");
-    glyout->addWidget(lbl,4,0,1,1,Qt::AlignRight);
+    glyout->addWidget(lbl, 4, 0, 1, 1, Qt::AlignRight);
     dspbls = WDFunc::NewSPB(this, "spb.5", 0, 255, 0, ACONFGCLR);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
     glyout->addWidget(dspbls, 4, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    glyout->addWidget(lbl,4,2,1,1,Qt::AlignLeft);
+    lbl = new QLabel("c");
+    glyout->addWidget(lbl, 4, 2, 1, 1, Qt::AlignLeft);
     lbl = new QLabel("Макс. число неподтв. APDU (k):");
-    glyout->addWidget(lbl,5,0,1,1,Qt::AlignRight);
+    glyout->addWidget(lbl, 5, 0, 1, 1, Qt::AlignRight);
     dspbls = WDFunc::NewSPB(this, "spb.6", 0, 255, 0, ACONFGCLR);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
     glyout->addWidget(dspbls, 5, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    glyout->addWidget(lbl,5,2,1,1,Qt::AlignLeft);
+    lbl = new QLabel("c");
+    glyout->addWidget(lbl, 5, 2, 1, 1, Qt::AlignLeft);
     lbl = new QLabel("Макс. число посл. подтв. APDU (w):");
-    glyout->addWidget(lbl,6,0,1,1,Qt::AlignRight);
+    glyout->addWidget(lbl, 6, 0, 1, 1, Qt::AlignRight);
     dspbls = WDFunc::NewSPB(this, "spb.7", 0, 255, 0, ACONFGCLR);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
+    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
     glyout->addWidget(dspbls, 6, 1, 1, 1, Qt::AlignLeft);
-    lbl=new QLabel("c");
-    glyout->addWidget(lbl,6,2,1,1);
+    lbl = new QLabel("c");
+    glyout->addWidget(lbl, 6, 2, 1, 1);
     lbl = new QLabel("Тип синхр. времени:");
-    glyout->addWidget(lbl,7,0,1,1,Qt::AlignRight);
-    QStringList cbl = QStringList() << "SNTP+PPS" << "SNTP";
+    glyout->addWidget(lbl, 7, 0, 1, 1, Qt::AlignRight);
+    QStringList cbl = QStringList() << "SNTP+PPS"
+                                    << "SNTP";
     EComboBox *cb = WDFunc::NewCB(this, "spb.8", cbl, ACONFGCLR);
     cb->setMinimumWidth(70);
-    connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
+    connect(cb, SIGNAL(currentIndexChanged(int)), this, SLOT(SetCType(int)));
     glyout->addWidget(cb, 7, 1, 1, 2);
     gb->setLayout(glyout);
     vlyout->addWidget(gb);
@@ -140,37 +143,37 @@ void ConfDialog::Set104(double dbl)
     {
     case 1:
     {
-        ConfigMain->MainBlk.Abs_104=dbl;
+        ConfigMain->MainBlk.Abs_104 = dbl;
         break;
     }
     case 2:
     {
-        ConfigMain->MainBlk.Cycle_104=dbl;
+        ConfigMain->MainBlk.Cycle_104 = dbl;
         break;
     }
     case 3:
     {
-        ConfigMain->MainBlk.T1_104=dbl;
+        ConfigMain->MainBlk.T1_104 = dbl;
         break;
     }
     case 4:
     {
-        ConfigMain->MainBlk.T2_104=dbl;
+        ConfigMain->MainBlk.T2_104 = dbl;
         break;
     }
     case 5:
     {
-        ConfigMain->MainBlk.T3_104=dbl;
+        ConfigMain->MainBlk.T3_104 = dbl;
         break;
     }
     case 6:
     {
-        ConfigMain->MainBlk.k_104=dbl;
+        ConfigMain->MainBlk.k_104 = dbl;
         break;
     }
     case 7:
     {
-        ConfigMain->MainBlk.w_104=dbl;
+        ConfigMain->MainBlk.w_104 = dbl;
         break;
     }
     default:

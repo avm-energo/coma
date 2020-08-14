@@ -1,10 +1,10 @@
 #ifndef ETABLEITEM_H
 #define ETABLEITEM_H
 
-#include <QStringList>
 #include <QColor>
 #include <QFont>
 #include <QIcon>
+#include <QStringList>
 
 class ETableItem
 {

@@ -3,21 +3,22 @@
 
 #include <QMainWindow>
 #include <QResizeEvent>
-#include "../config/confdialog.h"
+
 #include "../check/eabstractcheckdialog.h"
-#include "../dialogs/cordialog.h"
-#include "../dialogs/infodialog.h"
-#include "../dialogs/fwupdialog.h"
-#include "../dialogs/mnktime.h"
-#include "../dialogs/journalsdialog.h"
+#include "../config/confdialog.h"
 #include "../dialogs/connectdialog.h"
+#include "../dialogs/cordialog.h"
+#include "../dialogs/fwupdialog.h"
+#include "../dialogs/infodialog.h"
+#include "../dialogs/journalsdialog.h"
+#include "../dialogs/mnktime.h"
 
-#define RECONNECTINTERVAL   3000
-#define WAITINTERVAL        15000
+#define RECONNECTINTERVAL 3000
+#define WAITINTERVAL 15000
 
-#define THREADUSB   0x01
-#define THREAD104   0x02
-#define THREADMBS   0x04
+#define THREADUSB 0x01
+#define THREAD104 0x02
+#define THREADMBS 0x04
 
 class Coma : public QMainWindow
 {
@@ -33,7 +34,6 @@ public:
         COMA_AUTON_MODE // просто автономный режим
     };
 
-
     struct DeviceConnectStruct
     {
         unsigned short vendor_id;
@@ -45,8 +45,8 @@ public:
     {
         quint32 SigVal;
         quint8 SigQuality;
-        //quint64 CP56Time;
-    }BS104;
+        // quint64 CP56Time;
+    } BS104;
 
     struct Bd11
     {
@@ -58,7 +58,7 @@ public:
     static QStringList Hth()
     {
         QStringList sl;
-        //sl.append("ERR");
+        // sl.append("ERR");
         sl.append("ADCI");
         sl.append("FLS");
         sl.append("TUP");
@@ -74,8 +74,8 @@ public:
         sl.append("NTP");
         sl.append("FLS2");
         sl.append("FRM");
-        //int ts = sl.size();
-        //for (int i=ts; i<MAXERRORFLAGNUM; ++i)
+        // int ts = sl.size();
+        // for (int i=ts; i<MAXERRORFLAGNUM; ++i)
         //    sl.append("");
         return sl;
     }
@@ -86,7 +86,7 @@ public:
     static QStringList HthToolTip()
     {
         QStringList sl;
-        //sl.append("Что-то не в порядке");
+        // sl.append("Что-то не в порядке");
         sl.append("Проблемы со встроенным АЦП ");
         sl.append("Не работает внешняя flash-память");
         sl.append("Перегрев");
@@ -123,9 +123,9 @@ signals:
     void ClearBsi();
     void Finished();
     void StopCommunications();
-    void ConnectMes(QString*);
-    void SetPredAlarmColor(quint8*);
-    void SetAlarmColor(quint8*);
+    void ConnectMes(QString *);
+    void SetPredAlarmColor(quint8 *);
+    void SetAlarmColor(quint8 *);
 
 public slots:
     void DisconnectAndClear();
@@ -175,7 +175,7 @@ private slots:
     void USBFinished();
 
 private:
-    const QVector<int> MTBs = {0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84};
+    const QVector<int> MTBs = { 0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84 };
     CorDialog *CorD;
     InfoDialog *IDialog;
     bool Ok;
@@ -202,7 +202,7 @@ private:
     MNKTime *TimeD;
     JournalDialog *JourD;
     fwupdialog *FwUpD;
-    QTimer* BdaTimer, *TimeTimer, *AlarmStateTimer;
+    QTimer *BdaTimer, *TimeTimer, *AlarmStateTimer;
     QVector<S2::DataRec> *S2Config;
     QWidget *Parent;
     QWidget *Wpred;

@@ -1,9 +1,9 @@
 #ifndef FILES_H
 #define FILES_H
 
-#include <QWidget>
-#include <QString>
 #include <QByteArray>
+#include <QString>
+#include <QWidget>
 
 class Files
 {
@@ -20,7 +20,8 @@ public:
 
     static QString ChooseFileForOpen(QWidget *parent, QString mask);
     static int LoadFromFile(const QString &filename, QByteArray &ba);
-    static QString ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr = "");
+    static QString ChooseFileForSave(
+        QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr = "");
     static int SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes);
     static QStringList Drives();
     static QStringList SearchForFile(QStringList &di, const QString &filename, bool subdirs = false);

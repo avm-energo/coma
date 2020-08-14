@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QSerialPort>
+
 #include "../gen/maindef.h"
 
 class SerialPort : public QObject

@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QMap>
+
 #include "../config/config.h"
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
@@ -20,8 +21,8 @@ signals:
 
 public slots:
     void ClearBsi();
-//    void FillBsiFrom104(Parse104::BS104Signals* BS104);
-//    void FillBsiFromModBus(QList<ModBus::BSISignalStruct> Signal, int size);
+    //    void FillBsiFrom104(Parse104::BS104Signals* BS104);
+    //    void FillBsiFromModBus(QList<ModBus::BSISignalStruct> Signal, int size);
 
 private:
 };

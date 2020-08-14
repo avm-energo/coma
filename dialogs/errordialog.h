@@ -2,6 +2,7 @@
 #define ERRORDIALOG_H
 
 #include <QDialog>
+
 #include "../widgets/errorprotocolwidget.h"
 
 class ErrorDialog : public QDialog
@@ -23,7 +24,6 @@ private:
     void SetupUI();
 
 private slots:
-
 };
 
 #endif // ERRORDIALOG_H

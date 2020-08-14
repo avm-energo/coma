@@ -1,11 +1,12 @@
 #ifndef MNKTIME_H
 #define MNKTIME_H
 
-#include <QDialog>
 #include <QByteArray>
+#include <QDialog>
 #include <QLabel>
-#include <QTime>
 #include <QLineEdit>
+#include <QTime>
+
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
 
@@ -31,7 +32,6 @@ signals:
     void ethWriteTimeToModule(uint);
     void modbusWriteTimeToModule(uint);
 
-
 public slots:
     void ErrorRead();
     void TimeWritten();
@@ -41,7 +41,7 @@ private slots:
     void slot2_timeOut();
     void Write_PCDate();
     void Write_Date();
-    void FillTimeFrom104(IEC104Thread::BS104Signals*);
+    void FillTimeFrom104(IEC104Thread::BS104Signals *);
     void FillTimeFromModBus(QList<ModBus::BSISignalStruct>);
 };
 

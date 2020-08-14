@@ -1,18 +1,18 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include <QObject>
 #include <QFile>
 #include <QMutex>
+#include <QObject>
 
-#define LOG_MAX_SIZE    1048576
+#define LOG_MAX_SIZE 1048576
 
 class LogClass : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit LogClass(QObject *parent=nullptr);
+    explicit LogClass(QObject *parent = nullptr);
     ~LogClass();
     void Init(const QString &Filename);
     void error(const QString &str);
@@ -21,7 +21,7 @@ public:
     void intvarvalue(const QString &var, int value);
     void WriteFile(const QString &Prepend, const QString &msg);
     void WriteRaw(const QByteArray &ba);
-    
+
 private:
     QString LogFile;
     bool CanLog;

@@ -1,8 +1,9 @@
 #include <QHBoxLayout>
 #include <QPushButton>
-#include "wd_func.h"
-#include "passwordlineedit.h"
+
 #include "../gen/error.h"
+#include "passwordlineedit.h"
+#include "wd_func.h"
 
 PasswordLineEdit::PasswordLineEdit(QWidget *parent) : QWidget(parent)
 {
@@ -27,8 +28,8 @@ void PasswordLineEdit::PswLEToggleEchoMode()
     QLineEdit *le = this->findChild<QLineEdit *>("pswle");
     if (le == nullptr)
     {
-       ERMSG("Пустой le");
-       return;
+        ERMSG("Пустой le");
+        return;
     }
     if (le->echoMode() == QLineEdit::Normal)
         le->setEchoMode(QLineEdit::Password);

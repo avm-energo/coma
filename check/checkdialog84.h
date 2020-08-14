@@ -1,12 +1,12 @@
 #ifndef CHECKDIALOG84_H
 #define CHECKDIALOG84_H
 
-#include "eabstractcheckdialog.h"
-#include "check84.h"
-#include "check.h"
-#include "../iec104/iec104.h"
 #include "../iec104/ethernet.h"
+#include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
+#include "check.h"
+#include "check84.h"
+#include "eabstractcheckdialog.h"
 
 class CheckDialog84 : public EAbstractCheckDialog
 {
@@ -20,21 +20,21 @@ public:
 
 signals:
 
-public slots:   
-    void SetPredAlarmColor(quint8*);
-    void SetAlarmColor(quint8* Alarm);
+public slots:
+    void SetPredAlarmColor(quint8 *);
+    void SetAlarmColor(quint8 *Alarm);
     void UpdateFlData(IEC104Thread::FlSignals104 *);
     void UpdateSponData(IEC104Thread::SponSignals *);
-//    void UpdateSponDataWithTime(Parse104::SponSignals *);
-//    void UpdateBS104Data(Parse104::BS104Signals *);
-
+    //    void UpdateSponDataWithTime(Parse104::SponSignals *);
+    //    void UpdateBS104Data(Parse104::BS104Signals *);
 
 private:
     Check *Ch;
     QTimer *BdTimer;
     int BdNum;
     bool XlsxWriting;
-    const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
+    const QString ValuesFormat
+        = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
     quint8 stColor[7];
 
     QWidget *AutoCheckUI(); // UI для автоматической проверки модуля
@@ -47,12 +47,11 @@ private:
     void PrepareAnalogMeasurements();
     QWidget *CustomTab();
 
-
 private slots:
     void StartBdMeasurements();
     void StopBdMeasurements();
     void UpdateModBusData(QList<ModBus::SignalStruct> Signal);
-//    void ErrorRead();
+    //    void ErrorRead();
     void onModbusStateChanged(ConnectionStates state);
 };
 #endif // CHECKDIALOG84_H

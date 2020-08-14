@@ -1,4 +1,5 @@
 #include <QVBoxLayout>
+
 #include "../gen/colors.h"
 #include "../widgets/wd_func.h"
 #include "signalchoosewidget.h"
@@ -6,19 +7,19 @@
 SignalChooseWidget::SignalChooseWidget(QStringList &snames, QStringList &discr, QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    QString tmps = "QDialog {background-color: "+QString(MAINWINCLRA1)+";}";
+    QString tmps = "QDialog {background-color: " + QString(MAINWINCLRA1) + ";}";
     setStyleSheet(tmps);
-    for (int i=0; i<snames.size(); ++i)
+    for (int i = 0; i < snames.size(); ++i)
     {
         int idx = snames.size() - i - 1; // инверсия индекса
         QHBoxLayout *hlyout = new QHBoxLayout;
         QCheckBox *chb = WDFunc::NewChB(this, snames.at(idx), "");
-        connect(chb,SIGNAL(toggled(bool)),this,SLOT(SignalChecked(bool)));
+        connect(chb, SIGNAL(toggled(bool)), this, SLOT(SignalChecked(bool)));
         hlyout->addWidget(chb, 0);
         MarkSignalWidget *w = new MarkSignalWidget(snames.at(idx));
         w->setToolTip(discr.at(idx));
         w->setObjectName(snames.at(idx));
-        connect(w,SIGNAL(Clicked()),this,SLOT(SignalClicked()));
+        connect(w, SIGNAL(Clicked()), this, SLOT(SignalClicked()));
         hlyout->addWidget(w);
         lyout->addLayout(hlyout);
     }

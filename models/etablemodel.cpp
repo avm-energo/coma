@@ -1,9 +1,9 @@
 #include "etablemodel.h"
 
-// ######################################## Переопределение методов QAbstractTableModel ####################################
+// ######################################## Переопределение методов QAbstractTableModel
+// ####################################
 
-ETableModel::ETableModel(QObject *parent) :
-    QAbstractTableModel(parent)
+ETableModel::ETableModel(QObject *parent) : QAbstractTableModel(parent)
 {
     colors[0] = Qt::black;
     colors[1] = Qt::red;
@@ -101,7 +101,7 @@ bool ETableModel::setData(const QModelIndex &index, const QVariant &value, int r
             if (index.column() < hdr.size())
             {
                 maindata.at(index.row())->setData(index.column(), value.toString()); // пишем само значение
-//                emit dataChanged(index, index);
+                //                emit dataChanged(index, index);
                 return true;
             }
         }
@@ -132,7 +132,7 @@ bool ETableModel::setData(const QModelIndex &index, const QVariant &value, int r
 Qt::ItemFlags ETableModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
-            return Qt::ItemIsEnabled;
+        return Qt::ItemIsEnabled;
     return QAbstractItemModel::flags(index) | Qt::ItemIsSelectable;
 }
 
@@ -147,8 +147,9 @@ bool ETableModel::insertColumns(int position, int columns, const QModelIndex &in
     Q_UNUSED(index);
     if (columns > 0)
     {
-        beginInsertColumns(QModelIndex(), position, position+columns-1);
-        if (!maindata.isEmpty()) // если в модели есть какие-то данные, то уже нельзя менять размерность таблицы по столбцам
+        beginInsertColumns(QModelIndex(), position, position + columns - 1);
+        if (!maindata
+                 .isEmpty()) // если в модели есть какие-то данные, то уже нельзя менять размерность таблицы по столбцам
             return false;
         while (position > hdr.size())
         {
@@ -172,7 +173,7 @@ bool ETableModel::removeColumns(int position, int columns, const QModelIndex &in
         beginRemoveColumns(index, position, position + columns - 1);
         if (!maindata.isEmpty())
             return false;
-        if ((position+columns) > hdr.size())
+        if ((position + columns) > hdr.size())
             return false;
         for (int i = 0; i < columns; i++)
             hdr.removeAt(position);
@@ -185,7 +186,7 @@ bool ETableModel::insertRows(int position, int rows, const QModelIndex &index)
 {
     int i, j;
     Q_UNUSED(index);
-    beginInsertRows(QModelIndex(), position, position+rows-1);
+    beginInsertRows(QModelIndex(), position, position + rows - 1);
     for (i = 0; i < rows; i++)
     {
         ETableItem *item = new ETableItem();
@@ -200,7 +201,7 @@ bool ETableModel::insertRows(int position, int rows, const QModelIndex &index)
 bool ETableModel::removeRows(int position, int rows, const QModelIndex &index)
 {
     beginRemoveRows(index, position, position + rows - 1);
-    if ((position+rows) > maindata.size())
+    if ((position + rows) > maindata.size())
         return false;
     for (int i = 0; i < rows; i++)
     {
@@ -247,9 +248,9 @@ void ETableModel::addRow()
     insertRows(lastEntry, 1, QModelIndex());
 }
 
-void ETableModel::fillModel(QVector<QVector<QVariant> > lsl)
+void ETableModel::fillModel(QVector<QVector<QVariant>> lsl)
 {
-    for (int i=0; i<lsl.size(); ++i)
+    for (int i = 0; i < lsl.size(); ++i)
         AddRowWithData(lsl.at(i));
 }
 
@@ -260,8 +261,8 @@ QStringList ETableModel::cvalues(int column)
     if (column > columnCount())
         return QStringList();
     QStringList tmpsl;
-    for (int row=0; row < rowCount(); row++)
-        tmpsl.append(data(index(row,column,QModelIndex()),Qt::DisplayRole).toString());
+    for (int row = 0; row < rowCount(); row++)
+        tmpsl.append(data(index(row, column, QModelIndex()), Qt::DisplayRole).toString());
     return tmpsl;
 }
 
@@ -272,16 +273,16 @@ QStringList ETableModel::rvalues(int row)
     if (row > rowCount())
         return QStringList();
     QStringList tmpsl;
-    for (int column = 0; column<columnCount(); column++)
-        tmpsl.append(data(index(row,column,QModelIndex()),Qt::DisplayRole).toString());
+    for (int column = 0; column < columnCount(); column++)
+        tmpsl.append(data(index(row, column, QModelIndex()), Qt::DisplayRole).toString());
     return tmpsl;
 }
 
 void ETableModel::SetRowTextAlignment(int row, int alignment)
 {
     while (row >= rowCount())
-        insertRows(rowCount(), (row-rowCount()));
-    for (int i=0; i<columnCount(); ++i)
+        insertRows(rowCount(), (row - rowCount()));
+    for (int i = 0; i < columnCount(); ++i)
         setData(index(row, i, QModelIndex()), QVariant(alignment), Qt::TextAlignmentRole);
 }
 
@@ -308,12 +309,12 @@ void ETableModel::AddRowWithData(QVector<QVariant> vl)
 {
     int currow = rowCount();
     addRow();
-    if (vl.size()>hdr.size()) // в переданном списке больше колонок, чем в модели
+    if (vl.size() > hdr.size()) // в переданном списке больше колонок, чем в модели
     {
         for (int i = hdr.size(); i < vl.size(); ++i)
             addColumn("");
     }
-    for (int i = 0; i < vl.size(); ++i)  // цикл по строкам
+    for (int i = 0; i < vl.size(); ++i) // цикл по строкам
         setData(index(currow, i, QModelIndex()), vl.at(i), Qt::EditRole);
 }
 
@@ -328,7 +329,7 @@ void ETableModel::setCellAttr(QModelIndex index, int fcset, int icon)
 void ETableModel::ClearModel()
 {
     beginResetModel();
-    while (rowCount()>0)
+    while (rowCount() > 0)
         removeRows(0, 1);
     hdr.clear();
     maindata.clear();

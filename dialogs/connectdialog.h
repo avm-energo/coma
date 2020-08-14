@@ -2,10 +2,11 @@
 #define CONNECTDIALOG_H
 
 #include <QDialog>
-#include "../modbus/serialport.h"
-#include "../iec104/iec104.h"
 
-#define MAXREGISTRYINTERFACECOUNT   5 // how much entries can we have for interfaces of each type in registry
+#include "../iec104/iec104.h"
+#include "../modbus/serialport.h"
+
+#define MAXREGISTRYINTERFACECOUNT 5 // how much entries can we have for interfaces of each type in registry
 
 class ConnectDialog : public QDialog
 {
@@ -33,17 +34,17 @@ private slots:
     void RsAccepted();
     void SetCancelled();
     void SetEth();
-//    void ScanEth();
+    //    void ScanEth();
     void AddRs();
     void SetRs();
-//    void ScanRs();
-    void RotateSettings(const QString &type, const QString &name); // in: name of registry dir without index, out - name with index
+    //    void ScanRs();
+    void RotateSettings(
+        const QString &type, const QString &name); // in: name of registry dir without index, out - name with index
     bool IsKeyExist(const QString &type, const QString &chstr);
     bool UpdateModel();
 
 private:
     ConnectStruct Connect;
-
 };
 
 #endif // CONNECTDIALOG_H
