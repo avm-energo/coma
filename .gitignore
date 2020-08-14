@@ -1,3 +1,6 @@
+# Custom ignore rules
+/output/*
+
 # C++ objects and libs
 
 *.slo

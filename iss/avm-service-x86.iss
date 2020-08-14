@@ -9,13 +9,13 @@
 #define ExeName "AVM-Service.exe"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;#define Prefix "C:\Progs\out"
-#define ARCH "win64"
-#define QT_DIR "C:\Qt\5.14.2\msvc2017_64\bin"
+#define ARCH "win32"
+#define QT_DIR "C:\Qt\5.14.2\msvc2017\bin"
 ;#define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\v142"
 #define Redist_DIR "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Redist\MSVC\14.16.27012"
 #define LIB_DIR "..\..\libs"
 #define Build_DIR  "..\..\build"
-#define ApplicationVersion GetFileVersion('..\..\build\win64\release\AVM-Service.exe')
+#define ApplicationVersion GetFileVersion('..\..\build\win32\release\AVM-Service.exe')
 
 
 
@@ -47,7 +47,7 @@ SetupIconFile=..\coma.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-OutputBaseFilename={#EngName}-{#ApplicationVersion}-x64
+OutputBaseFilename={#EngName}-{#ApplicationVersion}-x86
 OutputDir=..\output
 VersionInfoVersion={#ApplicationVersion}
 
@@ -75,7 +75,7 @@ Source: "{#QT_DIR}\Qt5SerialPort.dll"; DestDir: "{app}";
 Source: "{#QT_DIR}\Qt5Svg.dll"; DestDir: "{app}"; 
 Source: "{#QT_DIR}\Qt5Widgets.dll"; DestDir: "{app}"; 
 Source: "{#LIB_DIR}\{#ARCH}\release\*.dll"; DestDir: "{app}"; 
-Source: "{#Redist_DIR}\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "{#Redist_DIR}\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 
@@ -94,4 +94,4 @@ Type: files; Name: "{app}\{#ExeName}"
 
 
 [Run]
-Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2017 Redistributable...
+Filename: "{tmp}\vc_redist.x86.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: Устанавливается пакет MSVC2017 Redistributable...
