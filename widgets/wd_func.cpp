@@ -310,6 +310,9 @@ bool WDFunc::SetLBLText(QWidget *w, const QString &lblname, const QString &lblte
     if (!lbltext.isEmpty()) // if label text is empty save previous text in QLabel
         lbl->setText(lbltext);
     lbl->setEnabled(enabled);
+
+
+
     return true;
 }
 
@@ -488,15 +491,23 @@ void WDFunc::SetVisible(QWidget *w, const QString &wname, bool visible)
     }
 }
 
-QString WDFunc::StringValueWithCheck(float value, int precision)
+QString WDFunc::StringValueWithCheck(float value, int precision,bool exp)
 {
     QString tmps;
     QLocale german(QLocale::German);
     if (value >= FLT_MAX || value <= -FLT_MAX)
         tmps = "***";
     else
+        if (  exp == true)
+        tmps = german.toString(value, 'e', precision);
+
+        else
         tmps = german.toString(value, 'f', precision);
+
+
     return tmps;
+
+
 
 
 

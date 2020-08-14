@@ -7,11 +7,20 @@
 #include "../check/eabstractcheckdialog.h"
 #include "../dialogs/cordialog.h"
 #include "../dialogs/cordialogktf.h"
+
 #include "../dialogs/infodialog.h"
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/mnktime.h"
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/abstractcordialog.h"
+#include "../alarm/abstractalarm.h"
+#include "../alarm/avaralarmkiv.h"
+#include "../alarm/alarmwidget.h"
+#include "../alarm/warnalarmkiv.h"
+#include "../alarm/avaralarmktf.h"
+#include "../alarm/warnalarmktf.h"
+#include "../alarm/alarmstateall.h"
+
 
 #define RECONNECTINTERVAL   3000
 #define WAITINTERVAL        15000
@@ -75,9 +84,7 @@ public:
         sl.append("NTP");
         sl.append("FLS2");
         sl.append("FRM");
-        //int ts = sl.size();
-        //for (int i=ts; i<MAXERRORFLAGNUM; ++i)
-        //    sl.append("");
+
         return sl;
     }
 
@@ -102,6 +109,9 @@ public:
         return sl;
     }
 
+
+     QTimer* BdaTimer;
+
     Coma(QWidget *parent = nullptr);
     ~Coma();
     void SetMode(int mode);
@@ -109,7 +119,15 @@ public:
     void ClearTW();
     void SetupMenubar();
     QWidget *MainInfoWidget();
+
+
+
     QWidget *ReleWidget();
+    QWidget *SignWidget();
+    QWidget * WWidgetComa();
+
+
+
     QWidget *Least();
     int CheckPassword();
     void Disconnect();
@@ -123,23 +141,14 @@ signals:
     void Finished();
     void StopCommunications();
     void ConnectMes(QString*);
-    void SetPredAlarmColor(quint8*);
-    void SetAlarmColor(quint8*);
+
 
 public slots:
     void DisconnectAndClear();
-    void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
-    void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
+
     void CheckTimeFinish();
     void CheckModBusFinish();
-    void DeviceState();
-    void PredAlarmState();
-    void AlarmState();
     void FileTimeOut();
-    void UpdateUSB();
-    void USBSetAlarms();
-    void ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal);
-    void ModBusUpdatePredAlarmEvents(ModBus::Coils Signal);
     void SetCancelled();
     void ReConnect();
     void AttemptToRec();
@@ -176,11 +185,10 @@ private slots:
 
 private:
     const QVector<int> MTBs = {0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84};
-    //CorDialog *CorD;
-   // CorDialogKTF *CorDKTF;
 
     AbstractCorDialog *CorD;
-
+    AlarmWidget *AlarmW;
+    AlarmClass *Alarm;
 
     InfoDialog *IDialog;
     bool Ok;
@@ -203,6 +211,12 @@ private:
     int CheckIndex, TimeIndex, ConfIndex, CurTabIndex;
     AbstractConfDialog *ConfB, *ConfM;
     EAbstractCheckDialog *CheckB, *CheckM;
+    WarnAlarmKIV *WarnAlarmKIVWidget;
+    AvarAlarmKIV *AvarAlarmKIVWidget;
+    WarnAlarmKTF *WarnAlarmKTFWidget;
+    AvarAlarmKTF *AvarAlarmKTFWidget;
+    AlarmStateAll *AlarmStateAllWidget;
+    AbstractAlarm *AbstrALARM;
     IEC104 *Ch104;
     ModBus *ChModbus;
     MNKTime *TimeD;
@@ -212,7 +226,7 @@ private:
     QStringList sl, USBsl, slfinal;
     quint16 AdrBaseStation;
     SerialPort::Settings Settings;
-    QTimer* BdaTimer, *TimeTimer, *AlarmStateTimer;
+    QTimer *TimeTimer, *AlarmStateTimer;
     QVector<S2::DataRec> *S2Config;
     QWidget *Parent;
     QWidget *Wpred;
@@ -230,6 +244,7 @@ private:
     void NewTimers();
     void SetupUI();
     void PrepareDialogs();
+    void NewTimersBda();
 
 protected:
     void keyPressEvent(QKeyEvent *e);

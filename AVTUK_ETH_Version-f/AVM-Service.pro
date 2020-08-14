@@ -23,13 +23,27 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../alarm/abstractalarm.cpp \
+    ../alarm/alarmclass.cpp \
+    ../alarm/alarmstateall.cpp \
+    ../alarm/alarmwidget.cpp \
+    ../alarm/avaralarmkiv.cpp \
+    ../alarm/avaralarmktf.cpp \
+    ../alarm/warnalarmkiv.cpp \
+    ../alarm/warnalarmktf.cpp \
+    ../check/checkdialogkiv.cpp \
+    ../check/checkkiv.cpp \
     ../check/checkktf.cpp \
     ../check/chekdialogktf.cpp \
+    ../config/confdialogkdv.cpp \
+    ../config/confdialogkiv.cpp \
     ../config/confdialogktf.cpp \
-    ../config/configdefktf.cpp \
+    ../config/configkdv.cpp \
+    ../config/configkiv.cpp \
     ../config/configktf.cpp \
     ../dialogs/abstractcordialog.cpp \
     ../dialogs/cordialogktf.cpp \
+    ../dialogs/infodialog.cpp \
     ../dialogs/mnktime.cpp \
     ../gen/logclass.cpp \
     ../gen/maindef.cpp \
@@ -37,18 +51,13 @@ SOURCES += \
     coma.cpp \
     main.cpp \
     ../check/check.cpp \
-    ../check/check84.cpp \
-    ../check/checkdialog84.cpp \
     ../check/eabstractcheckdialog.cpp \
     ../config/abstractconfdialog.cpp \
     ../config/confdialog.cpp \
-    ../config/confdialog84.cpp \
     ../config/config.cpp \
-    ../config/config84.cpp \
     ../dialogs/cordialog.cpp \
     ../dialogs/errordialog.cpp \
     ../dialogs/fwupdialog.cpp \
-    ../dialogs/infodialog.cpp \
     ../dialogs/journalsdialog.cpp \
     ../dialogs/keypressdialog.cpp \
     ../dialogs/settingsdialog.cpp \
@@ -82,30 +91,39 @@ SOURCES += \
 
 
 HEADERS += \
+    ../alarm/abstractalarm.h \
+    ../alarm/alarmclass.h \
+    ../alarm/alarmstateall.h \
+    ../alarm/alarmwidget.h \
+    ../alarm/avaralarmkiv.h \
+    ../alarm/avaralarmktf.h \
+    ../alarm/warnalarmkiv.h \
+    ../alarm/warnalarmktf.h \
+    ../check/checkdialogkiv.h \
+    ../check/checkkiv.h \
     ../check/checkktf.h \
     ../check/chekdialogktf.h \
+    ../config/confdialogkdv.h \
+    ../config/confdialogkiv.h \
     ../config/confdialogktf.h \
-    ../config/configdefktf.h \
+    ../config/configkdv.h \
+    ../config/configkiv.h \
     ../config/configktf.h \
     ../dialogs/abstractcordialog.h \
     ../dialogs/cordialogktf.h \
+    ../dialogs/infodialog.h \
     ../dialogs/mnktime.h \
     ../gen/logclass.h \
     ../modbus/serialport.h \
     coma.h \
     ../check/check.h \
-    ../check/check84.h \
-    ../check/checkdialog84.h \
     ../check/eabstractcheckdialog.h \
     ../config/abstractconfdialog.h \
     ../config/confdialog.h \
-    ../config/confdialog84.h \
     ../config/config.h \
-    ../config/config84.h \
     ../dialogs/cordialog.h \
     ../dialogs/errordialog.h \
     ../dialogs/fwupdialog.h \
-    ../dialogs/infodialog.h \
     ../dialogs/journalsdialog.h \
     ../dialogs/keypressdialog.h \
     ../dialogs/settingsdialog.h \

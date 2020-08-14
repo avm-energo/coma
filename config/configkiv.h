@@ -1,5 +1,5 @@
 #ifndef CONFIG84_H
-#define CONFIG84_H
+#define CONFIGKIV_H
 
 #define ID8084_START    1012
 #define ID8084_COM    20
@@ -7,10 +7,10 @@
 #include "config.h"
 #include "../gen/modulebsi.h"
 
-class Config84
+class ConfigKIV
 {
 public:
-    explicit Config84(QVector<S2::DataRec> *config);
+    explicit ConfigKIV(QVector<S2::DataRec> *config);
 
     typedef struct
     {
@@ -80,7 +80,7 @@ public:
         quint32		baud;
         quint8		parity;
         quint8		stopbit;
-        quint8     adrMB;
+        quint8      adrMB;
         quint8      isNTP;
     } Com;
 

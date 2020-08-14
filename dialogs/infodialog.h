@@ -1,6 +1,9 @@
 #ifndef INFODIALOG_H
 #define INFODIALOG_H
 
+#define MTYPE_KTF   0xA287
+#define MTYPE_KIV   0xA284
+
 #include <QDialog>
 #include <QMap>
 #include "../config/config.h"
@@ -13,6 +16,8 @@ class InfoDialog : public QDialog
 public:
     explicit InfoDialog(QWidget *parent = nullptr);
 
+    QMap<quint16,QString> Inf;
+
     void SetupUI();
     void FillBsi();
 
@@ -20,8 +25,6 @@ signals:
 
 public slots:
     void ClearBsi();
-//    void FillBsiFrom104(Parse104::BS104Signals* BS104);
-//    void FillBsiFromModBus(QList<ModBus::BSISignalStruct> Signal, int size);
 
 private:
 };

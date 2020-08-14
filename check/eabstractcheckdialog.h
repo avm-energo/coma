@@ -34,7 +34,6 @@ public:
     void SetupUI(QStringList &tabnames);
 
     virtual QWidget *BdUI(int bdnum) = 0; // визуализация наборов текущих данных от модуля
-    virtual void USBUpdate() = 0; // update BDs from USB
     virtual void RefreshAnalogValues(int bdnum) = 0; // обновление полей в GUI из полученного соответствующего Bd_block
     virtual void PrepareHeadersForFile(int row) = 0; // row - строка для записи заголовков
     virtual void WriteToFile(int row, int bdnum) = 0; // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
@@ -55,6 +54,7 @@ signals:
 
 public slots:
     void StopAnalogMeasurements();
+    virtual void USBUpdate() = 0; // update BDs from USB
 
 private:
     struct BdBlocks

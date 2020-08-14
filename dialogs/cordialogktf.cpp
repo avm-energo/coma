@@ -65,7 +65,7 @@ void CorDialogKTF::SetupUI()
     QPushButton *pb = new QPushButton();
 
     glyout->addWidget(WDFunc::NewLBL(this, "Текущее значение ресурса изоляции:"), row,1,1,1);
-    glyout->addWidget(WDFunc::NewSPB(this, QString::number(907), 0, 1000000, 0, paramcolor), row,2,1,2);
+    glyout->addWidget(WDFunc::NewSPB(this, QString::number(907), 0, 1000000, 5, paramcolor), row,2,1,2);
     row++;
 
 
@@ -84,25 +84,6 @@ void CorDialogKTF::SetupUI()
     glyout->addWidget(pb, row,3,1,2);
 
     row++;
-
-
-/*
-    pb = new QPushButton("Сбросить начальные значения");
-        connect(pb,SIGNAL(clicked()),this,SLOT(ResetCor()));
-        if (StdFunc::IsInEmulateMode())
-            pb->setEnabled(false);
-
-    glyout->addWidget(pb, row,1,1,2);
-
-    pb = new QPushButton("Задать начальные значения");
-      connect(pb,SIGNAL(clicked()),this,SLOT(WriteCor()));
-    if (StdFunc::IsInEmulateMode())
-       pb->setEnabled(false);
-
-    glyout->addWidget(pb, row,3,1,2);
-
-    row++;
-*/
 
 
     pb = new QPushButton("Прочитать значения из файла");
@@ -283,8 +264,9 @@ void CorDialogKTF::ReadFromFile()
         return;
     }
 
-    memcpy(Bd9Block, &(ba.data()[0]), sizeof(*Bd9Block));
-
+  //  FillCor();
+//    memcpy(Bd9Block, &(ba.data()[0]), sizeof(*Bd9Block));
+       memcpy(&Bd9Block->Age, &(ba.data()[0]),sizeof(float) );
     FillCor();
     EMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 

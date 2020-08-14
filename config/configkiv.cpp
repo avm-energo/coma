@@ -1,6 +1,6 @@
-#include "config84.h"
+#include "configkiv.h"
 
-Config84::Config84(QVector<S2::DataRec> *config)
+ConfigKIV::ConfigKIV(QVector<S2::DataRec> *config)
 {
     // параметры входных сигналов
     quint32 StartInIndex = ID8084_START;
@@ -78,7 +78,7 @@ Config84::Config84(QVector<S2::DataRec> *config)
 
 }
 
-void Config84::SetDefConf()
+void ConfigKIV::SetDefConf()
 {
     MainBlk.Abs_104 = DEF_ABS_104;
     MainBlk.Ctype = DEF_CTYPE;

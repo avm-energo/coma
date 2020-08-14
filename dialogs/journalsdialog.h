@@ -23,9 +23,6 @@ public:
     JournalDialog(IEC104 *iec, QWidget *parent = nullptr);
     ~JournalDialog();
 
-    quint8 start;
-    int SaveI;
-
 private:
     WaitWidget *WW;
     QThread JourThread;

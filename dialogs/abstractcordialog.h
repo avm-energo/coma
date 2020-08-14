@@ -5,7 +5,7 @@
 #include <QByteArray>
 #include "../modbus/modbus.h"
 #include "../iec104/iec104.h"
-#include "../widgets/etablemodel.h"
+#include "../models/etablemodel.h"
 
 class AbstractCorDialog : public QDialog
 {

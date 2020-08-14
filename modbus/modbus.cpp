@@ -51,6 +51,7 @@ int ModBus::Connect(SerialPort::Settings &settings)
     connect(cthr,SIGNAL(Finished()),cthr,SLOT(deleteLater()));
     connect(cthr, SIGNAL(Finished()), this, SIGNAL(Finished()));
     connect(this, SIGNAL(FinishModbusThread()), cthr, SLOT(FinishThread()));
+    connect(this, SIGNAL(FinishModbusThread()), port, SLOT(Disconnect()));
     connect(port, SIGNAL(State(ConnectionStates)), this, SIGNAL(ModbusState(ConnectionStates)));
     connect(port, SIGNAL(Read(QByteArray)), cthr, SLOT(ParseReply(QByteArray)));
     connect(cthr, SIGNAL(Write(QByteArray)), port, SLOT(WriteBytes(QByteArray)));
@@ -185,6 +186,7 @@ void ModBus::SendAndGet(InOutStruct &inp, ModBus::InOutStruct &outp)
         OutWaitMutex.unlock();
         if (tmetimeout.elapsed() > RECONNECTTIME)
         {
+            ERMSG("Timeout error");
             outp.Res = GENERALERROR;
             Finished = true;
         }

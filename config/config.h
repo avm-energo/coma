@@ -5,34 +5,7 @@
 #include <QMap>
 #include "../gen/s2.h"
 
-// определение базовых плат
-/*#define MTB_00      0x00
-#define MTB_12      0x1200
-#define MTB_21      0x2100
-#define MTB_22      0x2200
-#define MTB_31      0x3100
-#define MTB_35      0x3500
-#define MTB_80      0x8000
-#define MTB_84      0x8400
-#define MTB_85      0x8500
-#define MTB_A1      0xA100
-#define MTB_A2      0xA200
-#define MTB_A2      0x8100 // МНК3
-#define MTB_87      0x8700 */
 
-// определение мезонинов
-/*
-#define MTM_00      0x00
-#define MTM_21      0x0021
-#define MTM_22      0x0022
-#define MTM_31      0x0031
-#define MTM_35      0x0035
-#define MTM_81      0x0081
-#define MTM_82      0x0082
-#define MTM_83      0x0083
-#define MTM_84      0x0084 // mnk, комбинируется с 80,84
-#define MTM_85      0x0085 // 3U3I УСК (перегрузка по току 20х), комбинируется с 85
-*/
 
 #define BCI_MTYPEB      1
 #define BCI_MTYPEM      2
@@ -48,7 +21,7 @@
 
 #define DEF_MTYPEB      MTB_00
 #define DEF_MTYPEM      MTM_00
-#define DEF_CTYPE       2
+#define DEF_CTYPE       1
 #define DEF_ABS_104     205
 #define DEF_CYCLE_104   5
 #define DEF_T1_104      15
@@ -56,6 +29,32 @@
 #define DEF_T3_104      20
 #define DEF_K_104       12
 #define DEF_W_104       8
+
+#define BCI_IP      20
+#define BCI_MASK      21
+#define BCI_GW       22
+#define BCI_PORT     23
+#define BCI_SNTP      24
+#define BCI_BAUD      25
+#define BCI_PARITY    26
+#define BCI_STOPBIT   27
+#define BCI_ADRMB      28
+#define BCI_ISNTP      29
+#define BCI_ISPPS      30
+
+#define DEF_IP      172,16,29,12
+#define DEF_MASK      255,255,252,0
+#define DEF_GW       172,16,29,1
+#define DEF_PORT     2404,2405,502,502
+#define DEF_SNTP  172,16,31,220
+#define DEF_BAUD      0
+#define DEF_PARITY    0
+#define DEF_STOPBIT   1
+#define DEF_ADRMB      0
+#define DEF_ISNTP      0
+#define DEF_ISPPS   0
+
+
 
 // определение файлов
 #define FILE_CONF   1 // configuration
