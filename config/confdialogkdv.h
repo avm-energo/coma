@@ -4,13 +4,11 @@
 #include <QDialog>
 
 #include "../config/configkdv.h"
-#include "abstractconfdialog.h"
-#include <QVBoxLayout>
-#include <QLabel>
-#include "../iec104/iec104.h"
 #include "../iec104/ethernet.h"
-
-
+#include "../iec104/iec104.h"
+#include "abstractconfdialog.h"
+#include <QLabel>
+#include <QVBoxLayout>
 
 class ConfDialogKDV : public AbstractConfDialog
 {
@@ -18,14 +16,20 @@ class ConfDialogKDV : public AbstractConfDialog
 public:
     ConfDialogKDV(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
 
-     // QStringList Rates = QStringList()  << "256"<< "128" << "64" << "32" << "16" ;
-     QStringList Sbaud = QStringList() << "1200" << "2400"<< "4800" << "9600" << "19200" << "38400" << "57600" << "115200";
+    // QStringList Rates = QStringList()  << "256"<< "128" << "64" << "32" << "16" ;
+    QStringList Sbaud = QStringList() << "1200"
+                                      << "2400"
+                                      << "4800"
+                                      << "9600"
+                                      << "19200"
+                                      << "38400"
+                                      << "57600"
+                                      << "115200";
 
 private:
     ConfigKDV *KDV;
-    bool    IsNtp;
+    bool IsNtp;
     QTimer *timerRead;
-
 
     void Fill();
     void FillBack();
@@ -35,7 +39,7 @@ private:
 public slots:
     void Set104(double);
     void SetCType(int);
-    void ChangeWindow(int);
+    //    void ChangeWindow(int);
 
 private slots:
     void SetDefConf();
@@ -43,8 +47,6 @@ private slots:
     void Stop_Timer();
     void Write_PCDate();
     void Write_Date();
-
-
 };
 
 #endif // CONFIGDIALOGKDV_H

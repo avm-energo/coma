@@ -1,33 +1,29 @@
 #include "avaralarmktf.h"
 
-#include <QLabel>
-#include <QProgressBar>
+#include <QApplication>
+#include <QBoxLayout>
+#include <QCursor>
+#include <QDialog>
 #include <QDir>
+#include <QGroupBox>
+#include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
-#include <QToolBar>
-#include <QDialog>
-#include <QCursor>
-#include <QSplashScreen>
-#include <QApplication>
+#include <QProgressBar>
+#include <QPushButton>
 #include <QSettings>
-#include <QGroupBox>
+#include <QSplashScreen>
 #include <QStandardPaths>
 #include <QStringListModel>
-#include <QBoxLayout>
-#include <QPushButton>
-
-
+#include <QToolBar>
 
 #include "../gen/colors.h"
-#include "../widgets/wd_func.h"
-#include "../gen/modulebsi.h"
 #include "../gen/error.h"
-#include "../gen/commands.h"
+#include "../gen/modulebsi.h"
+#include "../usb/commands.h"
+#include "../widgets/wd_func.h"
 
-
-AvarAlarmKTF::AvarAlarmKTF(AlarmClass *alarm,QWidget *parent):
-    AbstractAlarm(parent)
+AvarAlarmKTF::AvarAlarmKTF(AlarmClass *alarm, QWidget *parent) : AbstractAlarm(parent)
 {
     Alarm = alarm;
     AvarState();
@@ -59,18 +55,13 @@ void AvarAlarmKTF::AvarState()
 
     lyout->addWidget(w);
     QPushButton *pb = new QPushButton("Ok");
-    connect(pb,SIGNAL(clicked()),this,SLOT(close()));
-    lyout->addWidget(pb,0);
+    connect(pb, SIGNAL(clicked()), this, SLOT(close()));
+    lyout->addWidget(pb, 0);
     setLayout(lyout);
 }
 
-void AvarAlarmKTF::AlarmState()
-{
-}
-void AvarAlarmKTF::WarnAlarmState()
-{
-}
-
+void AvarAlarmKTF::AlarmState() { }
+void AvarAlarmKTF::WarnAlarmState() { }
 
 void AvarAlarmKTF::Update(QList<bool> states)
 {
@@ -78,10 +69,9 @@ void AvarAlarmKTF::Update(QList<bool> states)
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
 
-    for(i=0; i<Alarm->MapAlarm[MTYPE_KTF].avarCounts; i++)
+    for (i = 0; i < Alarm->MapAlarm[MTYPE_KTF].avarCounts; i++)
     {
-        quint32 alarm =states[i];
+        quint32 alarm = states[i];
         WDFunc::SetLBLImage(this, (QString::number(i)), (alarm) ? pmred : pmgrn);
     }
-
 }

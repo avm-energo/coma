@@ -1,33 +1,33 @@
 #ifndef COMA_H
 #define COMA_H
 
-#include <QMainWindow>
-#include <QResizeEvent>
-#include "../config/confdialog.h"
 #include "../check/eabstractcheckdialog.h"
+#include "../config/confdialog.h"
 #include "../dialogs/cordialog.h"
 #include "../dialogs/cordialogktf.h"
+#include <QMainWindow>
+#include <QResizeEvent>
 
-#include "../dialogs/infodialog.h"
-#include "../dialogs/fwupdialog.h"
-#include "../dialogs/mnktime.h"
-#include "../dialogs/journalsdialog.h"
-#include "../dialogs/abstractcordialog.h"
 #include "../alarm/abstractalarm.h"
-#include "../alarm/avaralarmkiv.h"
-#include "../alarm/alarmwidget.h"
-#include "../alarm/warnalarmkiv.h"
-#include "../alarm/avaralarmktf.h"
-#include "../alarm/warnalarmktf.h"
 #include "../alarm/alarmstateall.h"
+#include "../alarm/alarmwidget.h"
+#include "../alarm/avaralarmkiv.h"
+#include "../alarm/avaralarmktf.h"
+#include "../alarm/warnalarmkiv.h"
+#include "../alarm/warnalarmktf.h"
+#include "../dialogs/abstractcordialog.h"
+#include "../dialogs/connectdialog.h"
+#include "../dialogs/fwupdialog.h"
+#include "../dialogs/infodialog.h"
+#include "../dialogs/journalsdialog.h"
+#include "../dialogs/mnktime.h"
 
+#define RECONNECTINTERVAL 3000
+#define WAITINTERVAL 15000
 
-#define RECONNECTINTERVAL   3000
-#define WAITINTERVAL        15000
-
-#define THREADUSB   0x01
-#define THREAD104   0x02
-#define THREADMBS   0x04
+#define THREADUSB 0x01
+#define THREAD104 0x02
+#define THREADMBS 0x04
 
 class Coma : public QMainWindow
 {
@@ -43,7 +43,6 @@ public:
         COMA_AUTON_MODE // просто автономный режим
     };
 
-
     struct DeviceConnectStruct
     {
         unsigned short vendor_id;
@@ -55,8 +54,8 @@ public:
     {
         quint32 SigVal;
         quint8 SigQuality;
-        //quint64 CP56Time;
-    }BS104;
+        // quint64 CP56Time;
+    } BS104;
 
     struct Bd11
     {
@@ -68,7 +67,7 @@ public:
     static QStringList Hth()
     {
         QStringList sl;
-        //sl.append("ERR");
+        // sl.append("ERR");
         sl.append("ADCI");
         sl.append("FLS");
         sl.append("TUP");
@@ -91,10 +90,11 @@ public:
     static QStringList HthToolTip()
     {
         QStringList sl;
-        //sl.append("Что-то не в порядке");
+        // sl.append("Что-то не в порядке");
         sl.append("Проблемы со встроенным АЦП ");
         sl.append("Не работает внешняя flash-память");
         sl.append("Перегрев");
+        sl.append("Проблемы с АЦП (нет связи) (базовая)");
         sl.append("Нет сигнала 1PPS с антенны");
         sl.append("Проблемы с АЦП (нет связи) (мезонин)");
         sl.append("Ошибка регулировочных коэффициентов (базовая)");
@@ -109,9 +109,6 @@ public:
         return sl;
     }
 
-
-     QTimer* BdaTimer;
-
     Coma(QWidget *parent = nullptr);
     ~Coma();
     void SetMode(int mode);
@@ -120,19 +117,9 @@ public:
     void SetupMenubar();
     QWidget *MainInfoWidget();
 
-
-
-    QWidget *ReleWidget();
-    QWidget *SignWidget();
-    QWidget * WWidgetComa();
-
-
-
     QWidget *Least();
     int CheckPassword();
     void Disconnect();
-    void ShowConnectDialog();
-    void ShowInterfaceDialog();
 
 signals:
     void CloseConnectDialog();
@@ -140,8 +127,7 @@ signals:
     void ClearBsi();
     void Finished();
     void StopCommunications();
-    void ConnectMes(QString*);
-
+    void ConnectMes(QString *);
 
 public slots:
     void DisconnectAndClear();
@@ -168,15 +154,14 @@ private slots:
     void FillBSI(IEC104Thread::BS104Signals *sig);
     void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     void PasswordCheck(QString psw);
-    void SetPortSlot(QString port);
     void SetProgressBar1Size(int size);
     void SetProgressBar1(int cursize);
     void SetProgressBar2Size(int size);
     void SetProgressBar2(int cursize);
     void ShowErrorMessageBox(QString message);
-    void ParseString(QString Str);
-    void ParseInter(QString str);
     void MainTWTabClicked(int tabindex);
+    void SetConnection(ConnectDialog::ConnectStruct *st);
+    void Cancel();
 
     // finished slots
     void ModBusFinished();
@@ -184,7 +169,7 @@ private slots:
     void USBFinished();
 
 private:
-    const QVector<int> MTBs = {0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84};
+    const QVector<int> MTBs = { 0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84 };
 
     AbstractCorDialog *CorD;
     AlarmWidget *AlarmW;
@@ -206,7 +191,6 @@ private:
     int fileSize, curfileSize;
     QTimer *ReconnectTimer;
     QString SavePort;
-    DeviceConnectStruct DevInfo;
     quint8 ActiveThreads;
     int CheckIndex, TimeIndex, ConfIndex, CurTabIndex;
     AbstractConfDialog *ConfB, *ConfM;
@@ -222,17 +206,14 @@ private:
     MNKTime *TimeD;
     JournalDialog *JourD;
     fwupdialog *FwUpD;
-    QString IPtemp, FullName, SaveDevice, instr;
-    QStringList sl, USBsl, slfinal;
-    quint16 AdrBaseStation;
-    SerialPort::Settings Settings;
-    QTimer *TimeTimer, *AlarmStateTimer;
     QVector<S2::DataRec> *S2Config;
     QWidget *Parent;
     QWidget *Wpred;
     QWidget *Walarm;
     bool Cancelled;
     bool Reconnect;
+    ConnectDialog::ConnectStruct ConnectSettings;
+    QTimer *BdaTimer, *TimeTimer;
 
     void LoadSettings();
     void SaveSettings();
@@ -243,6 +224,7 @@ private:
     void NewUSB();
     void NewTimers();
     void SetupUI();
+    void CloseDialogs();
     void PrepareDialogs();
     void NewTimersBda();
 

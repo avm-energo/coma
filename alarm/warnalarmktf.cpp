@@ -21,7 +21,7 @@
 #include "../widgets/wd_func.h"
 #include "../gen/modulebsi.h"
 #include "../gen/error.h"
-#include "../gen/commands.h"
+#include "../usb/commands.h"
 
 
 WarnAlarmKTF::WarnAlarmKTF(AlarmClass *alarm, QWidget *parent):

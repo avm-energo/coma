@@ -1,35 +1,33 @@
 
-#include <QLabel>
-#include <QProgressBar>
+#include <QApplication>
+#include <QBoxLayout>
+#include <QCursor>
+#include <QDialog>
 #include <QDir>
+#include <QGroupBox>
+#include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
-#include <QToolBar>
-#include <QDialog>
-#include <QCursor>
-#include <QSplashScreen>
-#include <QApplication>
+#include <QProgressBar>
+#include <QPushButton>
 #include <QSettings>
-#include <QGroupBox>
+#include <QSplashScreen>
 #include <QStandardPaths>
 #include <QStringListModel>
-#include <QBoxLayout>
-#include <QPushButton>
+#include <QToolBar>
 
-
-#include "abstractalarm.h"
 #include "../gen/colors.h"
-#include "../widgets/wd_func.h"
-#include "../gen/modulebsi.h"
 #include "../gen/error.h"
-#include "../gen/commands.h"
+#include "../gen/modulebsi.h"
+#include "../usb/commands.h"
+#include "../widgets/wd_func.h"
+#include "abstractalarm.h"
 #include "avaralarmkiv.h"
 
-AvarAlarmKIV::AvarAlarmKIV(AlarmClass *alarm,QWidget *parent):
-    AbstractAlarm(parent)
+AvarAlarmKIV::AvarAlarmKIV(AlarmClass *alarm, QWidget *parent) : AbstractAlarm(parent)
 {
-   Alarm = alarm;
-   AvarState();
+    Alarm = alarm;
+    AvarState();
 }
 
 void AvarAlarmKIV::AvarState()
@@ -49,7 +47,7 @@ void AvarAlarmKIV::AvarState()
                                        << "Авария по недопустимому небалансу токов          ";
     QWidget *w = new QWidget;
 
-    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color: rgba(220,220,220,255);
 
     for (int i = 0; i < Alarm->MapAlarm[MTYPE_KIV].avarCounts; ++i)
     {
@@ -63,19 +61,14 @@ void AvarAlarmKIV::AvarState()
 
     lyout->addWidget(w);
     QPushButton *pb = new QPushButton("Ok");
-    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
-    lyout->addWidget(pb,0);
+    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
+    lyout->addWidget(pb, 0);
     dlg->setLayout(lyout);
     dlg->show();
 }
 
-void AvarAlarmKIV::AlarmState()
-{
-}
-void AvarAlarmKIV::WarnAlarmState()
-{
-}
-
+void AvarAlarmKIV::AlarmState() { }
+void AvarAlarmKIV::WarnAlarmState() { }
 
 void AvarAlarmKIV::Update(QList<bool> states)
 {
@@ -83,10 +76,9 @@ void AvarAlarmKIV::Update(QList<bool> states)
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
 
-    for(i=0; i<Alarm->MapAlarm[MTYPE_KIV].avarCounts; i++)
+    for (i = 0; i < Alarm->MapAlarm[MTYPE_KIV].avarCounts; i++)
     {
         quint32 alarm = states[i];
         WDFunc::SetLBLImage(this, QString::number(i), (alarm) ? pmred : pmgrn);
     }
 }
-

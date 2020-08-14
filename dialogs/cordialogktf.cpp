@@ -27,7 +27,7 @@
 #include "../gen/colors.h"
 #include "../gen/timefunc.h"
 #include "../dialogs/keypressdialog.h"
-#include "../gen/commands.h"
+#include "../usb/commands.h"
 
 
 CorDialogKTF::CorDialogKTF(QWidget *parent) :

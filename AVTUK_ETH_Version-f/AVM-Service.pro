@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++11
-VERSION = 0.1.4
+VERSION = 0.2.0
 
 QT       += core gui printsupport network serialport qml
 
@@ -18,6 +18,7 @@ DEFINES += PROGNAME='\\"AVM-Service\\"'
 DEFINES += PROGCAPTION='\\"AVM-Service\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
+DEFINES += SOFTDEVELOPER='\\"EvelSoft\\"'
 # DEFINES += DEBUG
 TEMPLATE = app
 
@@ -42,12 +43,15 @@ SOURCES += \
     ../config/configkiv.cpp \
     ../config/configktf.cpp \
     ../dialogs/abstractcordialog.cpp \
+    ../dialogs/connectdialog.cpp \
     ../dialogs/cordialogktf.cpp \
     ../dialogs/infodialog.cpp \
     ../dialogs/mnktime.cpp \
+    ../gen/journals.cpp \
     ../gen/logclass.cpp \
     ../gen/maindef.cpp \
     ../modbus/serialport.cpp \
+    ../usb/usb.cpp \
     coma.cpp \
     main.cpp \
     ../check/check.cpp \
@@ -70,25 +74,24 @@ SOURCES += \
     ../gen/timefunc.cpp \
     ../iec104/ethernet.cpp \
     ../iec104/iec104.cpp \
+    ../models/etableitem.cpp \
+    ../models/etablemodel.cpp \
+    ../models/getoscpbdelegate.cpp \
     ../modbus/modbus.cpp \
+    ../usb/commands.cpp \
+    ../usb/eabstractprotocomchannel.cpp \
+    ../usb/eusbhid.cpp \
     ../widgets/ecombobox.cpp \
     ../widgets/emessagebox.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/estackedwidget.cpp \
-    ../widgets/etableitem.cpp \
-    ../widgets/etablemodel.cpp \
     ../widgets/etableview.cpp \
     ../widgets/etabwidget.cpp \
-    ../widgets/getoscpbdelegate.cpp \
     ../widgets/lineeditfield.cpp \
     ../widgets/passwordlineedit.cpp \
     ../widgets/signalchoosewidget.cpp \
     ../widgets/waitwidget.cpp \
-    ../widgets/wd_func.cpp \
-    ../gen/commands.cpp \
-    ../gen/eabstractprotocomchannel.cpp \
-    ../gen/eusbhid.cpp
-
+    ../widgets/wd_func.cpp
 
 HEADERS += \
     ../alarm/abstractalarm.h \
@@ -110,11 +113,14 @@ HEADERS += \
     ../config/configkiv.h \
     ../config/configktf.h \
     ../dialogs/abstractcordialog.h \
+    ../dialogs/connectdialog.h \
     ../dialogs/cordialogktf.h \
     ../dialogs/infodialog.h \
     ../dialogs/mnktime.h \
+    ../gen/journals.h \
     ../gen/logclass.h \
     ../modbus/serialport.h \
+    ../usb/usb.h \
     coma.h \
     ../check/check.h \
     ../check/eabstractcheckdialog.h \
@@ -138,26 +144,25 @@ HEADERS += \
     ../gen/timefunc.h \
     ../iec104/ethernet.h \
     ../iec104/iec104.h \
+    ../models/etableitem.h \
+    ../models/etablemodel.h \
+    ../models/getoscpbdelegate.h \
+    ../usb/commands.h \
+    ../usb/eabstractprotocomchannel.h \
+    ../usb/eusbhid.h \
     ../widgets/ecombobox.h \
     ../widgets/emessagebox.h \
     ../widgets/errorprotocolwidget.h \
     ../widgets/estackedwidget.h \
-    ../widgets/etableitem.h \
-    ../widgets/etablemodel.h \
     ../widgets/etableview.h \
     ../widgets/etabwidget.h \
-    ../widgets/getoscpbdelegate.h \
     ../widgets/keypress.h \
     ../widgets/lineeditfield.h \
     ../widgets/passwordlineedit.h \
     ../widgets/signalchoosewidget.h \
     ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
-    ../modbus/modbus.h \
-    ../gen/commands.h \
-    ../gen/eabstractprotocomchannel.h \
-    ../gen/eusbhid.h
-
+    ../modbus/modbus.h
 
 INCLUDEPATH += $$PWD/../../includes
 
