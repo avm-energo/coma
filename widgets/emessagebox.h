@@ -15,20 +15,15 @@
     the GNU General Public License for more details.
 */
 
-
 namespace EMessageBox
 {
 
-void information(QWidget *parent, const QString &title,
-                 const QString &text, const QString &detailedText=QString());
+void information(QWidget *parent, const QString &title, const QString &text, const QString &detailedText = QString());
 
-void error(QWidget *parent, const QString &title,
-                 const QString &text, const QString &detailedText=QString());
+void error(QWidget *parent, const QString &title, const QString &text, const QString &detailedText = QString());
 
-bool question(QWidget *parent, const QString &title,
-              const QString &text, const QString &detailedText=QString(),
-              const QString &yesText=QObject::tr("&Да"),
-              const QString &noText=QObject::tr("&Отмена"));
-}
+bool question(QWidget *parent, const QString &title, const QString &text, const QString &detailedText = QString(),
+    const QString &yesText = QObject::tr("&Да"), const QString &noText = QObject::tr("&Отмена"));
+} // namespace EMessageBox
 
 #endif // EMESSAGEBOX_H

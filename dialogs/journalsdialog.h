@@ -1,20 +1,20 @@
 #ifndef JOURNALDIALOG_H
 #define JOURNALDIALOG_H
 
+#include "../dialogs/keypressdialog.h"
+#include "../gen/journals.h"
+#include "../gen/maindef.h"
+#include "../gen/s2.h"
+#include "../iec104/iec104.h"
+#include "../models/etablemodel.h"
+#include "../widgets/etableview.h"
+#include "../widgets/waitwidget.h"
+
 #include <QDialog>
 #include <QModelIndex>
 #include <QThread>
 
-#include "../gen/maindef.h"
-#include "../widgets/etableview.h"
-#include "../models/etablemodel.h"
-#include "../gen/s2.h"
-#include "../dialogs/keypressdialog.h"
-#include "../gen/journals.h"
-#include "../widgets/waitwidget.h"
-#include "../iec104/iec104.h"
-
-#define MAXSWJNUM   262144
+#define MAXSWJNUM 262144
 
 class JournalDialog : public QDialog
 {
@@ -47,7 +47,7 @@ private slots:
     void Done(QString msg);
     void Error(QString msg);
     void SetModel(ETableModel *mdl);
-//    void SetProxyModel(QSortFilterProxyModel *mdl);
+    //    void SetProxyModel(QSortFilterProxyModel *mdl);
 
 public slots:
 

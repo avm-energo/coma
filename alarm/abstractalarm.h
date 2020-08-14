@@ -43,20 +43,18 @@
 #define SignIStart 5024
 #define AlarmIStart 5025
 
-#include <QDialog>
-#include <QByteArray>
-#include "../iec104/iec104.h"
-#include "../iec104/ethernet.h"
-#include "../modbus/modbus.h"
 #include "../gen/modulebsi.h"
+#include "../iec104/ethernet.h"
+#include "../iec104/iec104.h"
+#include "../modbus/modbus.h"
 #include "alarmclass.h"
 
-
-
+#include <QByteArray>
+#include <QDialog>
 
 class AbstractAlarm : public QWidget
 {
-        Q_OBJECT
+    Q_OBJECT
 public:
     AbstractAlarm(QWidget *parent = nullptr);
 
@@ -64,7 +62,6 @@ public:
 
     const quint32 PredBSIMask = 0x00005F55;
     const quint32 AvarBSIMask = 0x000020AA;
-\
 
     quint8 PredAlarmEvents[20];
     quint8 AvarAlarmEvents[20];
@@ -89,18 +86,15 @@ public:
     QWidget *Wpred;
     QWidget *Walarm;
 
-
 public slots:
 
-    virtual void AlarmState()=0;
-    virtual  void WarnAlarmState()=0;
-    virtual void AvarState()=0;
+    virtual void AlarmState() = 0;
+    virtual void WarnAlarmState() = 0;
+    virtual void AvarState() = 0;
 
-    virtual void Update(QList<bool>)=0;
-
+    virtual void Update(QList<bool>) = 0;
 
 private:
-
 };
 
 #endif // ABSTRACTALARM_H

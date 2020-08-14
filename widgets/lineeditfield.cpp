@@ -1,13 +1,13 @@
-#include <QPaintEvent>
+#include "lineeditfield.h"
+
 #include <QFontMetrics>
 #include <QLine>
+#include <QPaintEvent>
 #include <QPainter>
 #include <QRect>
-#include "lineeditfield.h"
 
 LineEditField::LineEditField(QWidget *parent) : QLineEdit(parent)
 {
-
 }
 
 LineEditField::LineEditField(const QString &text, QWidget *parent) : QLineEdit(parent)
@@ -21,12 +21,13 @@ void LineEditField::paintEvent(QPaintEvent *e)
     QFontMetrics fm(font);
     QPainter painter(this);
     painter.setPen(Qt::black);
-    painter.drawLine(0,size().height()-4,size().width(),size().height()-4);
+    painter.drawLine(0, size().height() - 4, size().width(), size().height() - 4);
     painter.drawText(rect(), Qt::AlignLeft | Qt::AlignVCenter, this->text());
-    QLine cursor(this->cursorRect().x()+fm.horizontalAdvance(text()), this->cursorRect().y(),
-                 this->cursorRect().x()+fm.horizontalAdvance(text()), this->cursorRect().y()+this->cursorRect().height()-1);
-    painter.setPen(QPen(QBrush(QColor(0,0,0,255)), 3.0));
+    QLine cursor(this->cursorRect().x() + fm.horizontalAdvance(text()), this->cursorRect().y(),
+        this->cursorRect().x() + fm.horizontalAdvance(text()),
+        this->cursorRect().y() + this->cursorRect().height() - 1);
+    painter.setPen(QPen(QBrush(QColor(0, 0, 0, 255)), 3.0));
     painter.drawLine(cursor);
     QLineEdit::paintEvent(e);
-//    e->accept();
+    //    e->accept();
 }

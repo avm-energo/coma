@@ -1,8 +1,10 @@
 // commands.cpp
-#include <QCoreApplication>
 #include "commands.h"
-#include "error.h"
+
 #include "../gen/timefunc.h"
+#include "error.h"
+
+#include <QCoreApplication>
 
 EUsbHid *cn;
 
@@ -55,14 +57,14 @@ int Commands::GetFileWithRestore(int filenum, QVector<S2::DataRec> *data)
         // проверка контрольной суммы файла
         quint32 crctocheck;
         quint32 basize = ba.size();
-        if(basize < 17)
+        if (basize < 17)
         {
             ERMSG("Ошибка basize");
             return GENERALERROR;
         }
 
         memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
-        if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
+        if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), crctocheck))
             return GENERALERROR;
         return S2::RestoreDataMem(&ba.data()[0], basize, data);
     }
@@ -82,7 +84,7 @@ int Commands::GetFile(int filenum, QByteArray &ba)
             return GENERALERROR;
         }
         memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
-        if (!S2::CheckCRC32(&(ba.data())[16], (basize-16), crctocheck))
+        if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), crctocheck))
             return GENERALERROR;
         return cn->Result;
     }
@@ -97,10 +99,11 @@ int Commands::WriteFile(int filenum, QVector<S2::DataRec> *data)
     {
         ba.resize(CN_MAXFILESIZE);
         S2::StoreDataMem(&(ba.data()[0]), data, filenum);
-        // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
-        quint32 wrlength = static_cast<quint8>(ba.at(7))*16777216; // с 4 байта начинается FileHeader.size
-        wrlength += static_cast<quint8>(ba.at(6))*65536;
-        wrlength += static_cast<quint8>(ba.at(5))*256;
+        // считываем длину файла из полученной в StoreDataMem и вычисляем количество
+        // сегментов
+        quint32 wrlength = static_cast<quint8>(ba.at(7)) * 16777216; // с 4 байта начинается FileHeader.size
+        wrlength += static_cast<quint8>(ba.at(6)) * 65536;
+        wrlength += static_cast<quint8>(ba.at(5)) * 256;
         wrlength += static_cast<quint8>(ba.at(4));
         wrlength += sizeof(S2::FileHeader); // sizeof(FileHeader)
         ba.resize(wrlength);
@@ -193,7 +196,7 @@ int Commands::EraseTechBlock(char block)
     return GENERALERROR;
 }
 
-int Commands::WriteTimeMNK(uint32_t Time,  int TimeSize)
+int Commands::WriteTimeMNK(uint32_t Time, int TimeSize)
 {
     QByteArray ba;
     if (cn != nullptr)

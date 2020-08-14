@@ -1,14 +1,14 @@
 #ifndef CONFDIALOGKIV_H
 #define CONFDIALOGKIV_H
 
-#include <QDialog>
-
 #include "../config/configkiv.h"
-#include "abstractconfdialog.h"
-#include <QVBoxLayout>
-#include <QLabel>
-#include "../iec104/iec104.h"
 #include "../iec104/ethernet.h"
+#include "../iec104/iec104.h"
+#include "abstractconfdialog.h"
+
+#include <QDialog>
+#include <QLabel>
+#include <QVBoxLayout>
 
 class ConfDialogKIV : public AbstractConfDialog
 {
@@ -17,22 +17,26 @@ public:
     explicit ConfDialogKIV(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
     ~ConfDialogKIV();
 
-    QLabel *SysTime; 
+    QLabel *SysTime;
     QTimer *timer;
     QTimer *timerRead;
-    QStringList Rates = QStringList() << "1200" << "2400"<< "4800" << "9600" << "19200" << "38400" << "57600" << "115200";
+    QStringList Rates = QStringList() << "1200"
+                                      << "2400"
+                                      << "4800"
+                                      << "9600"
+                                      << "19200"
+                                      << "38400"
+                                      << "57600"
+                                      << "115200";
 
 private:
-
     ConfigKIV *CKIV;
-    bool    IsNtp;
+    bool IsNtp;
 
     void Fill();
     void FillBack();
     void SetupUI();
     void CheckConf();
-
-
 
 signals:
 
@@ -46,9 +50,6 @@ private slots:
     void Stop_Timer();
     void Write_PCDate();
     void Write_Date();
-
-
-
 };
 
 #endif // CONFDIALOG84_H

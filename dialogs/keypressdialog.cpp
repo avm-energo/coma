@@ -1,11 +1,12 @@
-#include <QVBoxLayout>
 #include "keypressdialog.h"
+
+#include "../gen/error.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
-#include "../gen/error.h"
 
-KeyPressDialog::KeyPressDialog(const QString &PswPhrase, QWidget *parent) :
-    QDialog(parent)
+#include <QVBoxLayout>
+
+KeyPressDialog::KeyPressDialog(const QString &PswPhrase, QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
@@ -15,7 +16,8 @@ KeyPressDialog::KeyPressDialog(const QString &PswPhrase, QWidget *parent) :
 void KeyPressDialog::SetupUI()
 {
     QVBoxLayout *vlyout = new QVBoxLayout;
-    vlyout->addWidget(WDFunc::NewLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "", "pswlbl"));
+    vlyout->addWidget(
+        WDFunc::NewLBL(this, "Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc", "", "pswlbl"));
     vlyout->addWidget(WDFunc::NewPswLE(this, "pswle", QLineEdit::Password));
     setLayout(vlyout);
 }
@@ -30,8 +32,8 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
     QString str;
     if ((e->modifiers() == Qt::AltModifier) || (e->modifiers() == Qt::ControlModifier))
     {
-       ERMSG("Ошибка при обработке пароля");
-       return;
+        ERMSG("Ошибка при обработке пароля");
+        return;
     }
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
     {

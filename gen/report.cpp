@@ -1,12 +1,12 @@
-#include <QStandardItem>
-#include "stdfunc.h"
-#include "error.h"
 #include "report.h"
 
-ReportModel::ReportModel(QObject *parent) :
-    QStandardItemModel (parent)
-{
+#include "error.h"
+#include "stdfunc.h"
 
+#include <QStandardItem>
+
+ReportModel::ReportModel(QObject *parent) : QStandardItemModel(parent)
+{
 }
 
 void ReportModel::UpdateItem(int row, int column, const QString &value)
@@ -45,9 +45,9 @@ void ReportModel::SetModel(int rowcount, int columncount)
 {
     clear();
     SetSize(rowcount, columncount);
-    for (int i=0; i<rowcount; ++i)
+    for (int i = 0; i < rowcount; ++i)
     {
-        for (int j=0; j<columncount; ++j)
+        for (int j = 0; j < columncount; ++j)
         {
             QStandardItem *item = new QStandardItem("");
             setItem(i, j, item);
@@ -60,7 +60,6 @@ Report::Report(const QString &templatepath, QWidget *parent)
     Rep = new LimeReport::ReportEngine(parent);
     QString path = StdFunc::GetSystemHomeDir() + templatepath + ".lrxml";
     Rep->loadFromFile(path);
-
 }
 
 void Report::AddModel(const QString &modelname, QStandardItemModel *model)
@@ -81,8 +80,8 @@ void Report::SetVar(const QString &varname, float varvalue, int tolerance)
 int Report::Generate(const QString &filename)
 {
     bool rep;
-/*    Rep->previewReport();
-    Rep->designReport(); */
+    /*    Rep->previewReport();
+        Rep->designReport(); */
     rep = Rep->printToPDF(filename);
     if (!rep)
         return GENERALERROR;

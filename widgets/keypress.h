@@ -1,8 +1,8 @@
 #ifndef KEYPRESS_H
 #define KEYPRESS_H
 
-#include <QWidget>
 #include <QKeyEvent>
+#include <QWidget>
 
 class Keypress : public QWidget
 {

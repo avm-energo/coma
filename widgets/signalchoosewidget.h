@@ -8,11 +8,12 @@ class SignalChooseWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SignalChooseWidget(QStringList &snames, QStringList &discr,  QWidget *parent = nullptr);
+    explicit SignalChooseWidget(QStringList &snames, QStringList &discr, QWidget *parent = nullptr);
 
 signals:
     void SignalChoosed(QString signame); // при выборе сигнала - требуется выделить тренд
-    void SignalToggled(QString signame, bool isChecked); // при включении или отключении \
+    void SignalToggled(QString signame,
+        bool isChecked); // при включении или отключении \
                                                          // вставить или убрать из осциллограммы
 
 public slots:

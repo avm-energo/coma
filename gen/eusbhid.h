@@ -1,28 +1,29 @@
 #ifndef EUSBHID_H
 #define EUSBHID_H
 
-#include <QObject>
-#include <QByteArray>
-#include <QTimer>
-#include <QLabel>
-
-#include "logclass.h"
 #include "eabstractprotocomchannel.h"
 #include "hidapi/hidapi.h"
+#include "logclass.h"
+
+#include <QByteArray>
+#include <QLabel>
+#include <QObject>
+#include <QTimer>
 
 // Канал связи с модулем
 
 #define UH_MAXSEGMENTLENGTH 64 // максимальная длина одного сегмента (0x40)
-#define UH_MAINLOOP_DELAY   20 // 20 ms main loop sleep
+#define UH_MAINLOOP_DELAY 20   // 20 ms main loop sleep
 
-#define UH_VID  0xC251
-#define UH_PID  0x3505
+#define UH_VID 0xC251
+#define UH_PID 0x3505
 
 class EUsbThread : public QObject
 {
     Q_OBJECT
 public:
-    explicit EUsbThread(EAbstractProtocomChannel::DeviceConnectStruct &devinfo, LogClass *logh, bool writelog = false, QObject *parent = 0);
+    explicit EUsbThread(EAbstractProtocomChannel::DeviceConnectStruct &devinfo, LogClass *logh, bool writelog = false,
+        QObject *parent = 0);
     ~EUsbThread();
 
     LogClass *log;
@@ -61,7 +62,7 @@ public:
     explicit EUsbHid(QObject *parent = nullptr);
     ~EUsbHid();
 
-//    bool ThreadRunning;
+    //    bool ThreadRunning;
 
     bool Connect();
     QByteArray RawRead(int bytes);

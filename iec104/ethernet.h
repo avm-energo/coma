@@ -1,14 +1,15 @@
 #ifndef ETHERNET_H
 #define ETHERNET_H
 
+#include "../gen/logclass.h"
+#include "iec104.h"
+
+#include <QByteArray>
+#include <QMutex>
 #include <QObject>
 #include <QTcpSocket>
-#include <QMutex>
-#include <QByteArray>
-#include "iec104.h"
-#include "../gen/logclass.h"
 
-#define PORT104     2404 // порт связи по протоколу МЭК 60870-5-104
+#define PORT104 2404 // порт связи по протоколу МЭК 60870-5-104
 
 class Ethernet : public QObject
 {

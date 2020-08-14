@@ -1,8 +1,8 @@
 #ifndef CONFDIALOG_H
 #define CONFDIALOG_H
 
-#include "config.h"
 #include "abstractconfdialog.h"
+#include "config.h"
 
 class ConfDialog : public AbstractConfDialog
 {
@@ -15,13 +15,13 @@ public:
     void SetDefConf();
     void Fill();
     void FillBack();
-    void CheckConf(){}
+    void CheckConf()
+    {
+    }
 
 public slots:
 
 private:
-
-
     void SetupUI();
 
 private slots:

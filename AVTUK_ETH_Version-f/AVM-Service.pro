@@ -31,10 +31,12 @@ SOURCES += \
     ../alarm/avaralarmktf.cpp \
     ../alarm/warnalarmkiv.cpp \
     ../alarm/warnalarmktf.cpp \
+    ../check/checkdialogkdv.cpp \
     ../check/checkdialogkiv.cpp \
+    ../check/checkdialogktf.cpp \
+    ../check/checkkdv.cpp \
     ../check/checkkiv.cpp \
     ../check/checkktf.cpp \
-    ../check/chekdialogktf.cpp \
     ../config/confdialogkdv.cpp \
     ../config/confdialogkiv.cpp \
     ../config/confdialogktf.cpp \
@@ -100,10 +102,12 @@ HEADERS += \
     ../alarm/avaralarmktf.h \
     ../alarm/warnalarmkiv.h \
     ../alarm/warnalarmktf.h \
+    ../check/checkdialogkdv.h \
     ../check/checkdialogkiv.h \
+    ../check/checkdialogktf.h \
+    ../check/checkkdv.h \
     ../check/checkkiv.h \
     ../check/checkktf.h \
-    ../check/chekdialogktf.h \
     ../config/confdialogkdv.h \
     ../config/confdialogkiv.h \
     ../config/confdialogktf.h \

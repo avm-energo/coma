@@ -1,33 +1,32 @@
 #ifndef COMA_H
 #define COMA_H
 
-#include <QMainWindow>
-#include <QResizeEvent>
-#include "../config/confdialog.h"
+#include "../alarm/abstractalarm.h"
+#include "../alarm/alarmstateall.h"
+#include "../alarm/alarmwidget.h"
+#include "../alarm/avaralarmkiv.h"
+#include "../alarm/avaralarmktf.h"
+#include "../alarm/warnalarmkiv.h"
+#include "../alarm/warnalarmktf.h"
 #include "../check/eabstractcheckdialog.h"
+#include "../config/confdialog.h"
+#include "../dialogs/abstractcordialog.h"
 #include "../dialogs/cordialog.h"
 #include "../dialogs/cordialogktf.h"
-
-#include "../dialogs/infodialog.h"
 #include "../dialogs/fwupdialog.h"
-#include "../dialogs/mnktime.h"
+#include "../dialogs/infodialog.h"
 #include "../dialogs/journalsdialog.h"
-#include "../dialogs/abstractcordialog.h"
-#include "../alarm/abstractalarm.h"
-#include "../alarm/avaralarmkiv.h"
-#include "../alarm/alarmwidget.h"
-#include "../alarm/warnalarmkiv.h"
-#include "../alarm/avaralarmktf.h"
-#include "../alarm/warnalarmktf.h"
-#include "../alarm/alarmstateall.h"
+#include "../dialogs/mnktime.h"
 
+#include <QMainWindow>
+#include <QResizeEvent>
 
-#define RECONNECTINTERVAL   3000
-#define WAITINTERVAL        15000
+#define RECONNECTINTERVAL 3000
+#define WAITINTERVAL 15000
 
-#define THREADUSB   0x01
-#define THREAD104   0x02
-#define THREADMBS   0x04
+#define THREADUSB 0x01
+#define THREAD104 0x02
+#define THREADMBS 0x04
 
 class Coma : public QMainWindow
 {
@@ -36,13 +35,13 @@ class Coma : public QMainWindow
 public:
     enum Modes
     {
-        COMA_GENERALMODE, // обычный режим
-        COMA_AUTON_OSCMODE, // автономный режим с отображением сохранённой осциллограммы
+        COMA_GENERALMODE,   // обычный режим
+        COMA_AUTON_OSCMODE, // автономный режим с отображением сохранённой
+                            // осциллограммы
         COMA_AUTON_PROTMODE, // автономный режим с отображением протокола из прибора
         COMA_AUTON_SWJMODE, // автономный режим с отображением сохранённого журнала
         COMA_AUTON_MODE // просто автономный режим
     };
-
 
     struct DeviceConnectStruct
     {
@@ -55,8 +54,8 @@ public:
     {
         quint32 SigVal;
         quint8 SigQuality;
-        //quint64 CP56Time;
-    }BS104;
+        // quint64 CP56Time;
+    } BS104;
 
     struct Bd11
     {
@@ -68,7 +67,7 @@ public:
     static QStringList Hth()
     {
         QStringList sl;
-        //sl.append("ERR");
+        // sl.append("ERR");
         sl.append("ADCI");
         sl.append("FLS");
         sl.append("TUP");
@@ -94,7 +93,7 @@ public:
     static QStringList HthToolTip()
     {
         QStringList sl;
-        //sl.append("Что-то не в порядке");
+        // sl.append("Что-то не в порядке");
         sl.append("Проблемы со встроенным АЦП ");
         sl.append("Не работает внешняя flash-память");
         sl.append("Перегрев");
@@ -102,7 +101,8 @@ public:
         sl.append("Нет сигнала 1PPS с антенны");
         sl.append("Проблемы с АЦП (нет связи) (мезонин)");
         sl.append("Ошибка регулировочных коэффициентов (базовая)");
-        sl.append("Ошибка загрузки конфигурации из flash-памяти. Работает конфигурация по умолчанию");
+        sl.append("Ошибка загрузки конфигурации из flash-памяти. Работает "
+                  "конфигурация по умолчанию");
         sl.append("Некорректная Hardware информация (базовая)");
         sl.append("Некорректная Hardware информация (мезонин)");
         sl.append("Ошибка регулировочных коэффициентов (мезонин)");
@@ -113,8 +113,7 @@ public:
         return sl;
     }
 
-
-     QTimer* BdaTimer;
+    QTimer *BdaTimer;
 
     Coma(QWidget *parent = nullptr);
     ~Coma();
@@ -124,13 +123,9 @@ public:
     void SetupMenubar();
     QWidget *MainInfoWidget();
 
-
-
     QWidget *ReleWidget();
     QWidget *SignWidget();
-    QWidget * WWidgetComa();
-
-
+    QWidget *WWidgetComa();
 
     QWidget *Least();
     int CheckPassword();
@@ -144,8 +139,7 @@ signals:
     void ClearBsi();
     void Finished();
     void StopCommunications();
-    void ConnectMes(QString*);
-
+    void ConnectMes(QString *);
 
 public slots:
     void DisconnectAndClear();
@@ -188,7 +182,7 @@ private slots:
     void USBFinished();
 
 private:
-    const QVector<int> MTBs = {0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84};
+    const QVector<int> MTBs = { 0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84 };
 
     AbstractCorDialog *CorD;
     AlarmWidget *AlarmW;

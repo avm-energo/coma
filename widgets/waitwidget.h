@@ -1,8 +1,8 @@
 #ifndef WAITWIDGET_H
 #define WAITWIDGET_H
 
-#include <QWidget>
 #include <QPaintEvent>
+#include <QWidget>
 
 class WaitWidget : public QWidget
 {
@@ -13,7 +13,7 @@ public:
 
     enum ww_format
     {
-        WW_TIME, // format: mm:ss
+        WW_TIME,  // format: mm:ss
         WW_SIMPLE // format: ss
     };
 
@@ -21,7 +21,7 @@ public:
     {
         bool isallowedtostop;
         bool isincrement;
-        int format; // ww_format
+        int format;             // ww_format
         quint32 initialseconds; // initial seconds counter
     };
 

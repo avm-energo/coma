@@ -7,11 +7,10 @@ class AvarAlarmKTF : public AbstractAlarm
 {
     Q_OBJECT
 
- public:
-    explicit  AvarAlarmKTF(AlarmClass *alarm,QWidget *parent = nullptr);
+public:
+    explicit AvarAlarmKTF(AlarmClass *alarm, QWidget *parent = nullptr);
 
-
- public slots:
+public slots:
 
     void AlarmState();
     void WarnAlarmState();
@@ -19,8 +18,7 @@ class AvarAlarmKTF : public AbstractAlarm
 
     void Update(QList<bool> states);
 
- private:
-
+private:
 };
 
 #endif // AVARALARMKTF_H

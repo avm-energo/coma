@@ -1,32 +1,29 @@
 #include "alarmstateall.h"
 
-#include <QLabel>
-#include <QProgressBar>
+#include "../gen/colors.h"
+#include "../gen/commands.h"
+#include "../gen/error.h"
+#include "../gen/modulebsi.h"
+#include "../widgets/wd_func.h"
+
+#include <QApplication>
+#include <QBoxLayout>
+#include <QCursor>
+#include <QDialog>
 #include <QDir>
+#include <QGroupBox>
+#include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
-#include <QToolBar>
-#include <QDialog>
-#include <QCursor>
-#include <QSplashScreen>
-#include <QApplication>
+#include <QProgressBar>
+#include <QPushButton>
 #include <QSettings>
-#include <QGroupBox>
+#include <QSplashScreen>
 #include <QStandardPaths>
 #include <QStringListModel>
-#include <QBoxLayout>
-#include <QPushButton>
+#include <QToolBar>
 
-
-
-#include "../gen/colors.h"
-#include "../widgets/wd_func.h"
-#include "../gen/modulebsi.h"
-#include "../gen/error.h"
-#include "../gen/commands.h"
-
-AlarmStateAll::AlarmStateAll(QWidget *parent):
-    AbstractAlarm(parent)
+AlarmStateAll::AlarmStateAll(QWidget *parent) : AbstractAlarm(parent)
 {
     AlarmState();
 }
@@ -42,13 +39,14 @@ void AlarmStateAll::AlarmState()
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     QWidget *w = new QWidget;
-    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");  // color: rgba(220,220,220,255);
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color:
+                                                                            // rgba(220,220,220,255);
 
     for (int i = 0; i < HthToolTip().size(); ++i)
     {
         hlyout = new QHBoxLayout;
 
-        if(ModuleBSI::ModuleBsi.Hth & (0x00000001<<i))
+        if (ModuleBSI::ModuleBsi.Hth & (0x00000001 << i))
             hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i), pmred));
         else
             hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i), pmgrn));
@@ -61,8 +59,8 @@ void AlarmStateAll::AlarmState()
 
     lyout->addWidget(w);
     QPushButton *pb = new QPushButton("Ok");
-    connect(pb,SIGNAL(clicked()),this,SLOT(close()));
-    lyout->addWidget(pb,0);
+    connect(pb, SIGNAL(clicked()), this, SLOT(close()));
+    lyout->addWidget(pb, 0);
     setLayout(lyout);
 }
 void AlarmStateAll::WarnAlarmState()

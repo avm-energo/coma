@@ -1,12 +1,12 @@
 #ifndef CHECKDIALOGKIV_H
 #define CHECKDIALOGKIV_H
 
-#include "eabstractcheckdialog.h"
-#include "checkkiv.h"
-#include "check.h"
-#include "../iec104/iec104.h"
 #include "../iec104/ethernet.h"
+#include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
+#include "check.h"
+#include "checkkiv.h"
+#include "eabstractcheckdialog.h"
 
 class CheckDialogKIV : public EAbstractCheckDialog
 {
@@ -16,43 +16,43 @@ public:
 
     Check_KIV *ChKIV;
 
-
 signals:
 
-public slots:   
-    void SetPredAlarmColor(QList <bool> WarnAlarm);
-    void SetAlarmColor(QList <bool> Alarm);
+public slots:
+    void SetPredAlarmColor(QList<bool> WarnAlarm);
+    void SetAlarmColor(QList<bool> Alarm);
     void UpdateFlData(IEC104Thread::FlSignals104 *);
     void UpdateSponData(IEC104Thread::SponSignals *);
     void USBUpdate();
-//    void UpdateSponDataWithTime(Parse104::SponSignals *);
-//    void UpdateBS104Data(Parse104::BS104Signals *);
-
+    //    void UpdateSponDataWithTime(Parse104::SponSignals *);
+    //    void UpdateBS104Data(Parse104::BS104Signals *);
 
 private:
     Check *Ch;
     QTimer *BdTimer;
     int BdNum;
     bool XlsxWriting;
-    const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
+    const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; "
+                                 "color: blue; font: bold 10px;}";
     quint8 stColor[7];
 
-    QWidget *AutoCheckUI(); // UI для автоматической проверки модуля
+    QWidget *AutoCheckUI();   // UI для автоматической проверки модуля
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
-    void RefreshAnalogValues(int bdnum); // обновление полей в GUI из полученного соответствующего Bd_block
-    void PrepareHeadersForFile(int row); // row - строка для записи заголовков
-    void WriteToFile(int row, int bdnum); // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
+    void RefreshAnalogValues(int bdnum);  // обновление полей в GUI из полученного
+                                          // соответствующего Bd_block
+    void PrepareHeadersForFile(int row);  // row - строка для записи заголовков
+    void WriteToFile(int row, int bdnum); // row - номер строки для записи в файл
+                                          // xlsx, bdnum - номер блока данных
     void ChooseValuesToWrite();
     void SetDefaultValuesToWrite();
     void PrepareAnalogMeasurements();
     QWidget *CustomTab();
 
-
 private slots:
     void StartBdMeasurements();
     void StopBdMeasurements();
     void UpdateModBusData(QList<ModBus::SignalStruct> Signal);
-//    void ErrorRead();
+    //    void ErrorRead();
     void onModbusStateChanged(ConnectionStates state);
 };
 #endif // CHECKDIALOG84_H

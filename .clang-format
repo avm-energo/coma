@@ -1,0 +1,10 @@
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortFunctionsOnASingleLine : false
+AlignTrailingComments: true
+BasedOnStyle: WebKit
+BreakBeforeBraces: Allman
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ColumnLimit: 120
+PointerBindsToType: false
+SpaceBeforeParens: ControlStatements
+IncludeBlocks: Regroup

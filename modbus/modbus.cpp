@@ -1,11 +1,13 @@
-#include <QThread>
-#include <QStandardPaths>
+#include "modbus.h"
+
 #include "../gen/error.h"
 #include "../gen/s2.h"
+#include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
-#include "../gen/stdfunc.h"
-#include "modbus.h"
+
+#include <QStandardPaths>
+#include <QThread>
 
 QMutex RunMutex, InMutex, OutMutex, OutWaitMutex;
 QWaitCondition RunWC, OutWC;
@@ -45,10 +47,10 @@ int ModBus::Connect(SerialPort::Settings settings)
     cthr->Init(&InQueue, &OutList);
     QThread *thr = new QThread;
     cthr->moveToThread(thr);
-    connect(thr,SIGNAL(started()),cthr,SLOT(Run()));
-    connect(cthr,SIGNAL(Finished()),thr,SLOT(quit()));
-    connect(thr,SIGNAL(finished()),thr,SLOT(deleteLater()));
-    connect(cthr,SIGNAL(Finished()),cthr,SLOT(deleteLater()));
+    connect(thr, SIGNAL(started()), cthr, SLOT(Run()));
+    connect(cthr, SIGNAL(Finished()), thr, SLOT(quit()));
+    connect(thr, SIGNAL(finished()), thr, SLOT(deleteLater()));
+    connect(cthr, SIGNAL(Finished()), cthr, SLOT(deleteLater()));
     connect(cthr, SIGNAL(Finished()), this, SIGNAL(Finished()));
     connect(this, SIGNAL(FinishModbusThread()), cthr, SLOT(FinishThread()));
     connect(this, SIGNAL(FinishModbusThread()), port, SLOT(Disconnect()));
@@ -72,19 +74,19 @@ int ModBus::SendAndGetResult(ComInfo &request, InOutStruct &outp)
     QByteArray bytes;
 
     inp.Command = request.Command;
-    if(request.Command == WRITEMULTIPLEREGISTERS)
+    if (request.Command == WRITEMULTIPLEREGISTERS)
         inp.ReadSize = 8;
     else
-        inp.ReadSize = 5+2*request.Quantity;
+        inp.ReadSize = 5 + 2 * request.Quantity;
     bytes.append(Settings.Address); // адрес устройства
-    bytes.append(request.Command);         //аналоговый выход
-    bytes.append(static_cast<char>((request.Address&0xFF00)>>8));
-    bytes.append(static_cast<char>(request.Address&0x00FF));
-    bytes.append(static_cast<char>((request.Quantity&0xFF00)>>8));
-    bytes.append(static_cast<char>(request.Quantity&0x00FF));
-    if(request.Command == 0x10)
+    bytes.append(request.Command);  //аналоговый выход
+    bytes.append(static_cast<char>((request.Address & 0xFF00) >> 8));
+    bytes.append(static_cast<char>(request.Address & 0x00FF));
+    bytes.append(static_cast<char>((request.Quantity & 0xFF00) >> 8));
+    bytes.append(static_cast<char>(request.Quantity & 0x00FF));
+    if (request.Command == 0x10)
         bytes.append(static_cast<char>(request.SizeBytes));
-    if(request.Data.size())
+    if (request.Data.size())
         bytes.append(request.Data);
 
     Log->info("Send bytes: " + bytes.toHex());
@@ -110,10 +112,10 @@ void ModBus::Polling()
         inp.Command = SignalGroups[CycleGroup][0];
         bytes.append(Settings.Address); // адрес устройства
         bytes.append(SignalGroups[CycleGroup]);
-        if(CycleGroup == 6)
+        if (CycleGroup == 6)
             inp.ReadSize = 9;
         else
-            inp.ReadSize = 5+2*SignalGroups[CycleGroup][SECONDBYTEQ];
+            inp.ReadSize = 5 + 2 * SignalGroups[CycleGroup][SECONDBYTEQ];
 
         inp.Ba = bytes;
         // wait for an answer or timeout and return result
@@ -130,7 +132,8 @@ void ModBus::Polling()
         {
             QList<SignalStruct> Sig;
             int sigsize;
-            int startadr = (static_cast<quint8>(SignalGroups[CycleGroup][FIRSTBYTEADR]) << 8) | (static_cast<quint8>(SignalGroups[CycleGroup][SECONDBYTEADR]));
+            int startadr = (static_cast<quint8>(SignalGroups[CycleGroup][FIRSTBYTEADR]) << 8)
+                | (static_cast<quint8>(SignalGroups[CycleGroup][SECONDBYTEADR]));
             GetFloatSignalsFromByteArray(outp.Ba, startadr, Sig, sigsize);
             emit SignalsReceived(Sig);
         }
@@ -199,7 +202,7 @@ bool ModBus::GetResultFromOutQueue(int index, ModBus::InOutStruct &outp)
     OutMutex.lock();
     if (!OutList.isEmpty())
     {
-        for (int i=0; i<OutList.size(); ++i)
+        for (int i = 0; i < OutList.size(); ++i)
         {
             if (OutList.at(i).TaskNum == index)
             {
@@ -228,18 +231,18 @@ void ModBus::BSIrequest()
     if (res != NOERROR)
         emit TimeReadError();
 
-    QList<BSISignalStruct> BSIsig;// = nullptr;
+    QList<BSISignalStruct> BSIsig; // = nullptr;
     unsigned int sigsize;
     if (GetSignalsFromByteArray(outp.Ba, BSIREG, BSIsig, sigsize) != NOERROR)
     {
-       ERMSG("Ошибка взятия сигнала из очереди по modbus");
-       return;
+        ERMSG("Ошибка взятия сигнала из очереди по modbus");
+        return;
     }
 
     emit BsiFromModbus(BSIsig, sigsize);
 }
 
-void ModBus::ModWriteCor(ModBus::Information info, float *data)//, int* size)
+void ModBus::ModWriteCor(ModBus::Information info, float *data) //, int* size)
 {
     ComInfo request;
     InOutStruct outp;
@@ -248,7 +251,7 @@ void ModBus::ModWriteCor(ModBus::Information info, float *data)//, int* size)
     request.Command = WRITEMULTIPLEREGISTERS;
     request.Address = info.adr;
 
-    if((info.adr == SETINITREG) || (info.adr == CLEARREG)) // set initial values or clear initial values commands
+    if ((info.adr == SETINITREG) || (info.adr == CLEARREG)) // set initial values or clear initial values commands
     {
         request.Quantity = 1;
         request.SizeBytes = 2;
@@ -256,16 +259,16 @@ void ModBus::ModWriteCor(ModBus::Information info, float *data)//, int* size)
     }
     else
     {
-        request.Quantity = (quint8)((info.size)*2);
-        request.SizeBytes = (quint8)((info.size)*4);
+        request.Quantity = (quint8)((info.size) * 2);
+        request.SizeBytes = (quint8)((info.size) * 4);
 
-        for (int i = 0; i<info.size; i++)
+        for (int i = 0; i < info.size; i++)
         {
-            quint32 fl = *(quint32*)(data+i);
-            request.Data.append(static_cast<char>(fl>>8));
+            quint32 fl = *(quint32 *)(data + i);
+            request.Data.append(static_cast<char>(fl >> 8));
             request.Data.append(static_cast<char>(fl));
-            request.Data.append(static_cast<char>(fl>>24));
-            request.Data.append(static_cast<char>(fl>>16));
+            request.Data.append(static_cast<char>(fl >> 24));
+            request.Data.append(static_cast<char>(fl >> 16));
         }
     }
     SendAndGetResult(request, outp);
@@ -280,8 +283,8 @@ void ModBus::ModReadCor(ModBus::Information info)
     Log->info("ReadCor()");
     request.Command = READINPUTREGISTER;
     request.Address = info.adr;
-    request.Quantity = (quint8)((info.size)*2);
-    request.SizeBytes = (quint8)((info.size)*4);
+    request.Quantity = (quint8)((info.size) * 2);
+    request.SizeBytes = (quint8)((info.size) * 4);
     SendAndGetResult(request, outp);
 
     QList<SignalStruct> Sig;
@@ -307,8 +310,8 @@ void ModBus::ReadTime()
     unsigned int sigsize;
     if (GetSignalsFromByteArray(outp.Ba, TIMEREG, BSIsig, sigsize) != NOERROR)
     {
-       ERMSG("Ошибка взятия сигнала из очереди по modbus");
-       return;
+        ERMSG("Ошибка взятия сигнала из очереди по modbus");
+        return;
     }
     emit TimeSignalsReceived(BSIsig);
 }
@@ -329,12 +332,12 @@ int ModBus::GetSignalsFromByteArray(QByteArray &bain, int startadr, QList<BSISig
     }
     unsigned int signalsSize = byteSize / 4; // количество байт float или u32
     BSISignalStruct bsi;
-    for (unsigned int i=0; i<signalsSize; ++i)
+    for (unsigned int i = 0; i < signalsSize; ++i)
     {
-        quint32 ival = ((ba.data()[2+4*i]<<24)&0xFF000000)+((ba.data()[3+4*i]<<16)&0x00FF0000)+\
-                ((ba.data()[4*i]<<8)&0x0000FF00)+((ba.data()[1+4*i]&0x000000FF));
-        bsi.Val = *(reinterpret_cast<quint32*>(&ival));
-        bsi.SigAdr = i+startadr;
+        quint32 ival = ((ba.data()[2 + 4 * i] << 24) & 0xFF000000) + ((ba.data()[3 + 4 * i] << 16) & 0x00FF0000)
+            + ((ba.data()[4 * i] << 8) & 0x0000FF00) + ((ba.data()[1 + 4 * i] & 0x000000FF));
+        bsi.Val = *(reinterpret_cast<quint32 *>(&ival));
+        bsi.SigAdr = i + startadr;
         BSIsig.append(bsi);
     }
     size = signalsSize;
@@ -357,12 +360,12 @@ int ModBus::GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, QList<S
     }
     int signalsSize = byteSize / 4; // количество байт float или u32
     SignalStruct sig;
-    for (int i=0; i<signalsSize; ++i)
+    for (int i = 0; i < signalsSize; ++i)
     {
-        quint32 ival = ((ba.data()[2+4*i]<<24)&0xFF000000)+((ba.data()[3+4*i]<<16)&0x00FF0000)+\
-                ((ba.data()[4*i]<<8)&0x0000FF00)+((ba.data()[1+4*i]&0x000000FF));
-        sig.flVal = *(reinterpret_cast<float*>(&ival));
-        sig.SigAdr = i+startadr;
+        quint32 ival = ((ba.data()[2 + 4 * i] << 24) & 0xFF000000) + ((ba.data()[3 + 4 * i] << 16) & 0x00FF0000)
+            + ((ba.data()[4 * i] << 8) & 0x0000FF00) + ((ba.data()[1 + 4 * i] & 0x000000FF));
+        sig.flVal = *(reinterpret_cast<float *>(&ival));
+        sig.SigAdr = i + startadr;
         Sig.append(sig);
     }
     size = signalsSize;
@@ -402,28 +405,28 @@ void ModBus::WriteTime(uint time)
 
 void ModBus::Tabs(int index)
 {
-/*    if(!TheEnd)
-    { */
-        if(index == TimeIndex)
-        {
-            TimePollEnabled = true;
-            MainPollEnabled = false;
-        }
-        else if(index == CorIndex)
-        {
-            TimePollEnabled = false;
-            MainPollEnabled = false;
-            Information info;
-            info.adr = INITREG;
-            info.size = 11;
-            ModReadCor(info);
-        }
-        else if(index == CheckIndex)
-        {
-            TimePollEnabled = false;
-            MainPollEnabled = true;
-        }
-//    }
+    /*    if(!TheEnd)
+        { */
+    if (index == TimeIndex)
+    {
+        TimePollEnabled = true;
+        MainPollEnabled = false;
+    }
+    else if (index == CorIndex)
+    {
+        TimePollEnabled = false;
+        MainPollEnabled = false;
+        Information info;
+        info.adr = INITREG;
+        info.size = 11;
+        ModReadCor(info);
+    }
+    else if (index == CheckIndex)
+    {
+        TimePollEnabled = false;
+        MainPollEnabled = true;
+    }
+    //    }
 }
 
 void ModBus::StartPolling()
@@ -498,22 +501,23 @@ void ModbusThread::Send()
 {
     // data to send is in Inp.Ba
     quint16 KSS = CalcCRC(Inp.Ba);
-    Inp.Ba.append(static_cast<unsigned char>(KSS>>8));
+    Inp.Ba.append(static_cast<unsigned char>(KSS >> 8));
     Inp.Ba.append(static_cast<unsigned char>(KSS));
     Outp.Ba.clear();
     Inp.Checked = false;
     Busy = true;
     Log->info("-> " + Inp.Ba.toHex());
-//    qint64 st = SerialPort->write(Inp.Ba.data(), Inp.Ba.size());
+    //    qint64 st = SerialPort->write(Inp.Ba.data(), Inp.Ba.size());
     emit Write(Inp.Ba);
-/*    if (st < Inp.Ba.size())
-    {
-        Outp.Res = RESEMPTY;
-        return;
-    } */
+    /*    if (st < Inp.Ba.size())
+        {
+            Outp.Res = RESEMPTY;
+            return;
+        } */
     QElapsedTimer tme;
     tme.start();
-    while ((Busy) && (tme.elapsed() < RECONNECTTIME)) // ждём, пока либо сервер не отработает, либо не наступит таймаут
+    while ((Busy) && (tme.elapsed() < RECONNECTTIME)) // ждём, пока либо сервер не отработает,
+                                                      // либо не наступит таймаут
         QCoreApplication::processEvents();
     if (Busy)
     {
@@ -526,7 +530,7 @@ void ModbusThread::Send()
 void ModbusThread::ParseReply(QByteArray ba)
 {
     Outp.Ba.append(ba);
-//    Log->info("<- " + Outp.Ba.toHex());
+    //    Log->info("<- " + Outp.Ba.toHex());
     if ((!Inp.Checked) && (Outp.Ba.size() >= 2))
     {
         Inp.Checked = true;
@@ -547,15 +551,16 @@ void ModbusThread::ParseReply(QByteArray ba)
         Log->info("<- " + Outp.Ba.toHex());
         int rdsize = Outp.Ba.size();
 
-        quint16 crcfinal = (static_cast<quint8>(Outp.Ba.data()[rdsize-2]) << 8) | (static_cast<quint8>(Outp.Ba.data()[rdsize-1]));
+        quint16 crcfinal = (static_cast<quint8>(Outp.Ba.data()[rdsize - 2]) << 8)
+            | (static_cast<quint8>(Outp.Ba.data()[rdsize - 1]));
         Outp.Ba.chop(2);
         quint16 MYKSS = CalcCRC(Outp.Ba);
 
-        if(MYKSS != crcfinal)
+        if (MYKSS != crcfinal)
         {
             Log->error("Crc error");
             ERMSG("modbus crc error");
-//            emit ErrorCrc();
+            //            emit ErrorCrc();
             Outp.Res = GENERALERROR;
             return;
         }
@@ -571,19 +576,19 @@ void ModbusThread::FinishThread()
 
 quint16 ModbusThread::CalcCRC(QByteArray &ba)
 {
-  quint8 CRChi=0xFF;
-  quint8 CRClo=0xFF;
-  quint8 Ind;
-  quint16 crc;
-  int count = 0;
+    quint8 CRChi = 0xFF;
+    quint8 CRClo = 0xFF;
+    quint8 Ind;
+    quint16 crc;
+    int count = 0;
 
-  while (count < ba.size())
-  {
-      Ind = CRChi ^ ba.at(count);
-      count++;
-      CRChi = CRClo ^ TabCRChi[Ind];
-      CRClo = TabCRClo[Ind];
-  }
-  crc = ((CRChi << 8) | CRClo);
-  return crc;
+    while (count < ba.size())
+    {
+        Ind = CRChi ^ ba.at(count);
+        count++;
+        CRChi = CRClo ^ TabCRChi[Ind];
+        CRClo = TabCRClo[Ind];
+    }
+    crc = ((CRChi << 8) | CRClo);
+    return crc;
 }

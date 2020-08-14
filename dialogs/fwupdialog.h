@@ -19,8 +19,8 @@ public:
 
     typedef struct
     {
-      quint32 id; 		// id
-      quint32 NumByte;			// количество байт в TypeTheData
+        quint32 id;      // id
+        quint32 NumByte; // количество байт в TypeTheData
     } DataRecHeader;
 
     typedef struct
@@ -34,26 +34,26 @@ public:
 
     typedef struct
     {
-      DataRecHeader TypeHeader;			// заголовок записи
-      quint8 TypeTheData[4];
-      quint8 VerPO[4];
-    }DataRecT;
+        DataRecHeader TypeHeader; // заголовок записи
+        quint8 TypeTheData[4];
+        quint8 VerPO[4];
+    } DataRecT;
 
     typedef struct
     {
-      DataRecHeader FileDatHeader;			// заголовок записи
-      QByteArray Data;
-    }DataRecF;
+        DataRecHeader FileDatHeader; // заголовок записи
+        QByteArray Data;
+    } DataRecF;
 
-    #pragma pack(push, 1)
+#pragma pack(push, 1)
     typedef struct
     {
-      FileHeader	File_xxx_header;	// Заголовок файла (Прил. 1)
-      DataRecT		Type;		   	// Тип группы плат
-      DataRecF		File;		   	// Файл ВПО в формате BIN
-      DataRecHeader	void_recHeader;	// заголовок пустой записи
-    }File_struct;
-    #pragma pack(pop)
+        FileHeader File_xxx_header;   // Заголовок файла (Прил. 1)
+        DataRecT Type;                // Тип группы плат
+        DataRecF File;                // Файл ВПО в формате BIN
+        DataRecHeader void_recHeader; // заголовок пустой записи
+    } File_struct;
+#pragma pack(pop)
 
     QByteArray *BaForSend;
     int MainSize;
@@ -66,7 +66,6 @@ public slots:
     int LoadFW();
     void RunSoft();
     void WritePasswordCheck(QString psw);
-
 };
 
 #endif // FWUPDIALOG_H

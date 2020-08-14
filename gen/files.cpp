@@ -1,16 +1,16 @@
-#include <QFile>
-#include <QFileDialog>
-#include <QDirIterator>
-#include <QStorageInfo>
-
-#include "stdfunc.h"
 #include "files.h"
+
 #include "error.h"
 #include "modulebsi.h"
+#include "stdfunc.h"
+
+#include <QDirIterator>
+#include <QFile>
+#include <QFileDialog>
+#include <QStorageInfo>
 
 Files::Files()
 {
-
 }
 
 QString Files::ChooseFileForOpen(QWidget *parent, QString mask)
@@ -18,7 +18,8 @@ QString Files::ChooseFileForOpen(QWidget *parent, QString mask)
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    QString filename = dlg->getOpenFileName(parent, "Открыть файл", StdFunc::GetHomeDir(), mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    QString filename = dlg->getOpenFileName(
+        parent, "Открыть файл", StdFunc::GetHomeDir(), mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     QFileInfo info(filename);
     StdFunc::SetHomeDir(info.absolutePath());
     dlg->close();
@@ -44,22 +45,25 @@ int Files::LoadFromFile(const QString &filename, QByteArray &ba)
     return ER_NOERROR;
 }
 
-// Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)"; QString ext - расширение по умолчанию
-// Output: QString filename
+// Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)";
+// QString ext - расширение по умолчанию Output: QString filename
 
 QString Files::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr)
 {
-    QString MTypeM = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == 0) ? "00" : QString::number(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN), 16);
+    QString MTypeM = (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) == 0)
+        ? "00"
+        : QString::number(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN), 16);
     QString tmps;
     if (filenamestr.isEmpty())
-        tmps = StdFunc::GetHomeDir() + "/" + QString::number(ModuleBSI::GetMType(BoardTypes::BT_BASE), 16)+MTypeM+"-"+\
-            QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0'))+"."+ext;
+        tmps = StdFunc::GetHomeDir() + "/" + QString::number(ModuleBSI::GetMType(BoardTypes::BT_BASE), 16) + MTypeM
+            + "-" + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + "." + ext;
     else
         tmps = filenamestr;
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setFileMode(QFileDialog::AnyFile);
-    QString filename = dlg->getSaveFileName(parent, "Сохранить файл", tmps, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
+    QString filename
+        = dlg->getSaveFileName(parent, "Сохранить файл", tmps, mask, Q_NULLPTR, QFileDialog::DontUseNativeDialog);
     QFileInfo info(filename);
     StdFunc::SetHomeDir(info.absolutePath());
     dlg->close();
@@ -79,14 +83,14 @@ int Files::SaveToFile(const QString &filename, QByteArray &src, unsigned int num
     delete file;
     if (res == GENERALERROR)
         return ER_FILEWRITE; // ошибка записи
-    return ER_NOERROR; // нет ошибок
+    return ER_NOERROR;       // нет ошибок
 }
 
 QStringList Files::Drives()
 {
     QStringList sl;
     QFileInfoList list = QDir::drives();
-    foreach(QFileInfo fi, list)
+    foreach (QFileInfo fi, list)
         sl << fi.path();
     return sl;
 }
@@ -97,7 +101,8 @@ QStringList Files::SearchForFile(QStringList &filepaths, const QString &filename
     foreach (QString filepath, filepaths)
     {
         QStringList sl = QStringList() << filename;
-        QDirIterator it(filepath, sl, QDir::AllEntries | QDir::NoSymLinks | QDir::NoDotAndDotDot, (subdirs) ? QDirIterator::Subdirectories : QDirIterator::NoIteratorFlags);
+        QDirIterator it(filepath, sl, QDir::AllEntries | QDir::NoSymLinks | QDir::NoDotAndDotDot,
+            (subdirs) ? QDirIterator::Subdirectories : QDirIterator::NoIteratorFlags);
         while (it.hasNext())
             files << it.next();
     }

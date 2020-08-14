@@ -1,6 +1,8 @@
-#include <QCoreApplication>
 #include "serialport.h"
+
 #include "../gen/error.h"
+
+#include <QCoreApplication>
 
 SerialPort::SerialPort(QObject *parent) : QObject(parent)
 {
@@ -14,11 +16,11 @@ SerialPort::~SerialPort()
 
 int SerialPort::Init(SerialPort::Settings settings)
 {
-//    if (Port != 0)
-//    {
-//        if (Port->isOpen())
-//            Port->close();
-//    }
+    //    if (Port != 0)
+    //    {
+    //        if (Port->isOpen())
+    //            Port->close();
+    //    }
     Port = new QSerialPort(settings.Port);
     Port->setBaudRate(settings.Baud);
     Port->setDataBits(QSerialPort::Data8);
@@ -26,9 +28,10 @@ int SerialPort::Init(SerialPort::Settings settings)
     Port->setStopBits(QSerialPort::OneStop);
     Port->setFlowControl(QSerialPort::NoFlowControl);
     Port->setReadBufferSize(1024);
-    connect(Port,SIGNAL(errorOccurred(QSerialPort::SerialPortError)),this,SLOT(ErrorOccurred(QSerialPort::SerialPortError)));
+    connect(Port, SIGNAL(errorOccurred(QSerialPort::SerialPortError)), this,
+        SLOT(ErrorOccurred(QSerialPort::SerialPortError)));
     connect(Port, SIGNAL(readyRead()), this, SLOT(ReadBytes()));
-    if(Port->open(QIODevice::ReadWrite) == true)
+    if (Port->open(QIODevice::ReadWrite) == true)
         emit State(ConnectionStates::ConnectedState);
     else
     {
@@ -52,8 +55,9 @@ void SerialPort::Disconnect()
 
 void SerialPort::ErrorOccurred(QSerialPort::SerialPortError err)
 {
-    if (err == 0); // no error
-//        emit State(ConnectionStates::ConnectedState);
+    if (err == 0)
+        ; // no error
+          //        emit State(ConnectionStates::ConnectedState);
     else
     {
         emit State(ConnectionStates::ClosingState);
@@ -69,4 +73,3 @@ void SerialPort::ReadBytes()
     if (ba.size())
         emit Read(ba);
 }
-
