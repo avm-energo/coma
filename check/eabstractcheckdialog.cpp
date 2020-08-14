@@ -1,3 +1,12 @@
+#include "eabstractcheckdialog.h"
+
+#include "../gen/colors.h"
+#include "../gen/error.h"
+#include "../gen/maindef.h"
+#include "../gen/stdfunc.h"
+#include "../widgets/emessagebox.h"
+#include "../widgets/wd_func.h"
+
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QGroupBox>
@@ -12,14 +21,6 @@
 #include <QVBoxLayout>
 #include <QtMath>
 #include <QtTest/QTest>
-
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/maindef.h"
-#include "../gen/stdfunc.h"
-#include "../widgets/emessagebox.h"
-#include "../widgets/wd_func.h"
-#include "eabstractcheckdialog.h"
 
 EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board, QWidget *parent) : QDialog(parent)
 {

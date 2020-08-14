@@ -1,3 +1,13 @@
+#include "checkdialog84.h"
+
+#include "../config/config.h"
+#include "../gen/colors.h"
+#include "../gen/error.h"
+#include "../gen/modulebsi.h"
+#include "../usb/commands.h"
+#include "../widgets/emessagebox.h"
+#include "../widgets/wd_func.h"
+
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QGroupBox>
@@ -11,15 +21,6 @@
 #include <QTime>
 #include <QVBoxLayout>
 #include <QtMath>
-
-#include "../config/config.h"
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/modulebsi.h"
-#include "../usb/commands.h"
-#include "../widgets/emessagebox.h"
-#include "../widgets/wd_func.h"
-#include "checkdialog84.h"
 
 CheckDialog84::CheckDialog84(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {

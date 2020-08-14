@@ -1,14 +1,14 @@
 #ifndef EUSBHID_H
 #define EUSBHID_H
 
+#include "../gen/logclass.h"
+#include "eabstractprotocomchannel.h"
+#include "hidapi/hidapi.h"
+
 #include <QByteArray>
 #include <QLabel>
 #include <QObject>
 #include <QTimer>
-
-#include "../gen/logclass.h"
-#include "eabstractprotocomchannel.h"
-#include "hidapi/hidapi.h"
 
 // Канал связи с модулем
 

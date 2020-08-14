@@ -1,17 +1,18 @@
-#include <QApplication>
-#include <QDate>
-#include <QFile>
-#include <QObject>
+#include "journals.h"
 
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 #include "QtXlsx/xlsxdocument.h"
 #include "error.h"
 #include "files.h"
-#include "journals.h"
 #include "maindef.h"
 #include "s2.h"
 #include "timefunc.h"
+
+#include <QApplication>
+#include <QDate>
+#include <QFile>
+#include <QObject>
 
 Journals::Journals(QObject *parent) : QObject(parent)
 {

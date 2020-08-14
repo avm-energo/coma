@@ -1,9 +1,9 @@
 #ifndef CHECK84_H
 #define CHECK84_H
 
-#include <QWidget>
-
 #include "../gen/maindef.h"
+
+#include <QWidget>
 
 #define C84_BDA_IN 1
 #define C84_BDA_IN2 2

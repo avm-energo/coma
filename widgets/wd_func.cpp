@@ -1,3 +1,9 @@
+#include "wd_func.h"
+
+#include "../gen/colors.h"
+#include "../gen/error.h"
+#include "etableview.h"
+
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QPainter>
@@ -6,11 +12,6 @@
 #include <QStringListModel>
 #include <QTextEdit>
 #include <QtMath>
-
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "etableview.h"
-#include "wd_func.h"
 
 QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letext, const QString &lecolor)
 {

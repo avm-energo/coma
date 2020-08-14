@@ -3,9 +3,9 @@
 
 #define MAXBYTEARRAY 65535
 
-#include <QDialog>
-
 #include "config.h"
+
+#include <QDialog>
 
 #define MAXCONFSIZE 4096 // максимальный размер файла конфигурации
 

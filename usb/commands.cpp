@@ -1,9 +1,10 @@
 // commands.cpp
-#include <QCoreApplication>
+#include "commands.h"
 
 #include "../gen/error.h"
 #include "../gen/timefunc.h"
-#include "commands.h"
+
+#include <QCoreApplication>
 
 Commands::Commands()
 {

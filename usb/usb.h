@@ -1,9 +1,9 @@
 #ifndef USB_H
 #define USB_H
 
-#include <QObject>
-
 #include "eusbhid.h"
+
+#include <QObject>
 
 class usb : public QObject
 {

@@ -1,12 +1,13 @@
-#include <QStandardPaths>
-#include <QThread>
+#include "modbus.h"
 
 #include "../gen/error.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
-#include "modbus.h"
+
+#include <QStandardPaths>
+#include <QThread>
 
 QMutex RunMutex, InMutex, OutMutex, OutWaitMutex;
 QWaitCondition RunWC, OutWC;

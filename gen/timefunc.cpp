@@ -1,7 +1,8 @@
-#include <QDateTime>
+#include "timefunc.h"
 
 #include "error.h"
-#include "timefunc.h"
+
+#include <QDateTime>
 
 TimeFunc::TimeFunc()
 {

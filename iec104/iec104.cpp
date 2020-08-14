@@ -1,13 +1,14 @@
-#include <QCoreApplication>
-#include <QDialog>
-#include <QThread>
-#include <QVBoxLayout>
+#include "iec104.h"
 
 #include "../gen/error.h"
 #include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
 #include "ethernet.h"
-#include "iec104.h"
+
+#include <QCoreApplication>
+#include <QDialog>
+#include <QThread>
+#include <QVBoxLayout>
 
 QMutex ParseReadMutex;
 QMutex ParseWriteMutex;

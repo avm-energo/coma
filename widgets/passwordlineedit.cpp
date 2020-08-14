@@ -1,9 +1,10 @@
-#include <QHBoxLayout>
-#include <QPushButton>
+#include "passwordlineedit.h"
 
 #include "../gen/error.h"
-#include "passwordlineedit.h"
 #include "wd_func.h"
+
+#include <QHBoxLayout>
+#include <QPushButton>
 
 PasswordLineEdit::PasswordLineEdit(QWidget *parent) : QWidget(parent)
 {

@@ -22,10 +22,10 @@
 #define TH0005 0.005f
 
 // signals
-#define S0 0.0
+/*#define S0 0.0
 #define S1 1.0
 #define S4 4.0
-#define S20 20.0
+#define S20 20.0 */
 
 #include "qglobal.h"
 

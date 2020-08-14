@@ -1,8 +1,8 @@
+#include "emessagebox.h"
+
 #include <QApplication>
 #include <QMessageBox>
 #include <QPushButton>
-
-#include "emessagebox.h"
 
 #if QT_VERSION >= 0x040600
 #include <QScopedPointer>

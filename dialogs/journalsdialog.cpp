@@ -1,13 +1,5 @@
-#include <QApplication>
-#include <QDateTime>
-#include <QFileDialog>
-#include <QGroupBox>
-#include <QHeaderView>
-#include <QPushButton>
-#include <QSortFilterProxyModel>
-#include <QVBoxLayout>
-
 #include "../dialogs/journalsdialog.h"
+
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
@@ -18,6 +10,15 @@
 #include "../usb/commands.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
+
+#include <QApplication>
+#include <QDateTime>
+#include <QFileDialog>
+#include <QGroupBox>
+#include <QHeaderView>
+#include <QPushButton>
+#include <QSortFilterProxyModel>
+#include <QVBoxLayout>
 
 JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
 {

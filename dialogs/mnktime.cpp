@@ -1,3 +1,14 @@
+#include "../dialogs/mnktime.h"
+
+#include "../gen/colors.h"
+#include "../gen/error.h"
+#include "../gen/modulebsi.h"
+#include "../gen/timefunc.h"
+#include "../usb/commands.h"
+#include "../widgets/ecombobox.h"
+#include "../widgets/emessagebox.h"
+#include "../widgets/wd_func.h"
+
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QLineEdit>
@@ -7,16 +18,6 @@
 #include <QTime>
 #include <QTimer>
 #include <QVBoxLayout>
-
-#include "../dialogs/mnktime.h"
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/modulebsi.h"
-#include "../gen/timefunc.h"
-#include "../usb/commands.h"
-#include "../widgets/ecombobox.h"
-#include "../widgets/emessagebox.h"
-#include "../widgets/wd_func.h"
 
 MNKTime::MNKTime(QWidget *parent) : QDialog(parent)
 {

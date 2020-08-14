@@ -20,20 +20,7 @@
  *
  */
 
-#include <QApplication>
-#include <QCursor>
-#include <QDialog>
-#include <QDir>
-#include <QGroupBox>
-#include <QLabel>
-#include <QMenu>
-#include <QMenuBar>
-#include <QProgressBar>
-#include <QSettings>
-#include <QSplashScreen>
-#include <QStandardPaths>
-#include <QStringListModel>
-#include <QToolBar>
+#include "coma.h"
 
 #include "../check/checkdialog84.h"
 #include "../config/confdialog84.h"
@@ -51,7 +38,21 @@
 #include "../widgets/etabwidget.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
-#include "coma.h"
+
+#include <QApplication>
+#include <QCursor>
+#include <QDialog>
+#include <QDir>
+#include <QGroupBox>
+#include <QLabel>
+#include <QMenu>
+#include <QMenuBar>
+#include <QProgressBar>
+#include <QSettings>
+#include <QSplashScreen>
+#include <QStandardPaths>
+#include <QStringListModel>
+#include <QToolBar>
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
 {

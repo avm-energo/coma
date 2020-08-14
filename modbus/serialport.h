@@ -1,10 +1,10 @@
 #ifndef SERIALPORT_H
 #define SERIALPORT_H
 
+#include "../gen/maindef.h"
+
 #include <QObject>
 #include <QSerialPort>
-
-#include "../gen/maindef.h"
 
 class SerialPort : public QObject
 {

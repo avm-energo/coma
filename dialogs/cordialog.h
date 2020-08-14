@@ -1,12 +1,12 @@
 #ifndef CORDIALOG_H
 #define CORDIALOG_H
 
-#include <QByteArray>
-#include <QDialog>
-
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
 #include "../models/etablemodel.h"
+
+#include <QByteArray>
+#include <QDialog>
 
 class CorDialog : public QDialog
 {

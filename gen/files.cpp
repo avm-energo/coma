@@ -1,12 +1,13 @@
+#include "files.h"
+
+#include "error.h"
+#include "modulebsi.h"
+#include "stdfunc.h"
+
 #include <QDirIterator>
 #include <QFile>
 #include <QFileDialog>
 #include <QStorageInfo>
-
-#include "error.h"
-#include "files.h"
-#include "modulebsi.h"
-#include "stdfunc.h"
 
 Files::Files()
 {

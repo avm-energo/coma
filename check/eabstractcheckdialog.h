@@ -15,12 +15,12 @@
 #ifndef EABSTRACTCHECKDIALOG_H
 #define EABSTRACTCHECKDIALOG_H
 
+#include "../gen/modulebsi.h"
+#include "QtXlsx/xlsxdocument.h"
+
 #include <QDialog>
 #include <QElapsedTimer>
 #include <QTimer>
-
-#include "../gen/modulebsi.h"
-#include "QtXlsx/xlsxdocument.h"
 
 #define ANMEASINT 2000 // default timer interval to check analog values
 

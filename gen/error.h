@@ -1,10 +1,10 @@
 #ifndef ERROR_H
 #define ERROR_H
 
+#include "logclass.h"
+
 #include <QList>
 #include <QString>
-
-#include "logclass.h"
 
 // Макросы для выдачи сообщений
 #define ERMSG(a) Error::AddErrMsg(Error::ER_MSG, __FILE__, __LINE__, a)

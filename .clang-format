@@ -7,11 +7,3 @@ ColumnLimit: 120
 PointerBindsToType: false
 SpaceBeforeParens: ControlStatements
 IncludeBlocks: Regroup
-IncludeCategories:
-  - Regex:           '^"(llvm|llvm-c|clang|clang-c)/'
-    Priority:        2
-  - Regex:           '^(<|"(gtest|gmock|isl|json)/)'
-    Priority:        3
-  - Regex:           '<[[:alnum:].]+>'
-    Priority:        4
-IncludeIsMainRegex: '<[[:<:]]Q*.+>'

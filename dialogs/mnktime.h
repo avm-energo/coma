@@ -1,14 +1,14 @@
 #ifndef MNKTIME_H
 #define MNKTIME_H
 
+#include "../iec104/iec104.h"
+#include "../modbus/modbus.h"
+
 #include <QByteArray>
 #include <QDialog>
 #include <QLabel>
 #include <QLineEdit>
 #include <QTime>
-
-#include "../iec104/iec104.h"
-#include "../modbus/modbus.h"
 
 class MNKTime : public QDialog
 {

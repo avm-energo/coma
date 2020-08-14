@@ -1,10 +1,10 @@
+#include "lineeditfield.h"
+
 #include <QFontMetrics>
 #include <QLine>
 #include <QPaintEvent>
 #include <QPainter>
 #include <QRect>
-
-#include "lineeditfield.h"
 
 LineEditField::LineEditField(QWidget *parent) : QLineEdit(parent)
 {

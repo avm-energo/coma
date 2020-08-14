@@ -1,11 +1,12 @@
+#include "eabstractprotocomchannel.h"
+
+#include "../gen/error.h"
+
 #include <QCoreApplication>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QTime>
 #include <QtGlobal>
-
-#include "../gen/error.h"
-#include "eabstractprotocomchannel.h"
 
 bool EAbstractProtocomChannel::WriteUSBLog = true;
 

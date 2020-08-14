@@ -1,14 +1,14 @@
 #ifndef ETABWIDGET_H
 #define ETABWIDGET_H
 
+#include "../gen/colors.h"
+
 #include <QIcon>
 #include <QPainter>
 #include <QStyleOptionTab>
 #include <QStylePainter>
 #include <QTabBar>
 #include <QTabWidget>
-
-#include "../gen/colors.h"
 
 class ETabBar : public QTabBar
 {

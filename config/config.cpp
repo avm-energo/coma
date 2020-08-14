@@ -1,6 +1,7 @@
 // config.cpp
-#include "../gen/modulebsi.h"
 #include "config.h"
+
+#include "../gen/modulebsi.h"
 
 Config::Config(QVector<S2::DataRec> &config, quint32 MTypeB, quint32 MTypeM)
 {

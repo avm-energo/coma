@@ -1,14 +1,14 @@
 #ifndef ETABLEMODEL_H
 #define ETABLEMODEL_H
 
+#include "etableitem.h"
+
 #include <QAbstractItemModel>
 #include <QAbstractTableModel>
 #include <QColor>
 #include <QFont>
 #include <QIcon>
 #include <QStringList>
-
-#include "etableitem.h"
 
 #define NOCOLFORMAT 11 // 11 is the number more than 10 i.e. no format for column
 

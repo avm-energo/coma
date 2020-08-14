@@ -1,9 +1,9 @@
+#include "error.h"
+
 #include <QDateTime>
 #include <QFile>
 #include <QStandardPaths>
 #include <QTextStream>
-
-#include "error.h"
 
 QStringList Error::ErrMsgs;
 QList<Error::ErMsg> Error::ErMsgPool;

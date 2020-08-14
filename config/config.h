@@ -1,10 +1,10 @@
 #ifndef CONFIG
 #define CONFIG
 
+#include "../gen/s2.h"
+
 #include <QMap>
 #include <QVector>
-
-#include "../gen/s2.h"
 
 // определение базовых плат
 /*#define MTB_00      0x00

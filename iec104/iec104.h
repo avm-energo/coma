@@ -1,10 +1,10 @@
 #ifndef IEC104_H
 #define IEC104_H
-#include <QQueue>
-#include <QTcpSocket>
-
 #include "../gen/logclass.h"
 #include "../gen/s2.h"
+
+#include <QQueue>
+#include <QTcpSocket>
 //#define DEBUG
 
 #define BASEADR104 205

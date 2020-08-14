@@ -1,7 +1,8 @@
-#include <QGridLayout>
+#include "check.h"
 
 #include "../widgets/wd_func.h"
-#include "check.h"
+
+#include <QGridLayout>
 //#include "../gen/publicclass.h"
 #include "../gen/colors.h"
 

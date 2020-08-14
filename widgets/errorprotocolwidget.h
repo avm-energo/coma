@@ -1,10 +1,10 @@
 #ifndef ERRORPROTOCOLWIDGET_H
 #define ERRORPROTOCOLWIDGET_H
 
+#include "../gen/error.h"
+
 #include <QAbstractTableModel>
 #include <QWidget>
-
-#include "../gen/error.h"
 
 #define MAX_MSG 1000
 

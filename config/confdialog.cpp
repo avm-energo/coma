@@ -1,15 +1,16 @@
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QLabel>
-#include <QPushButton>
-#include <QVBoxLayout>
+#include "confdialog.h"
 
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "confdialog.h"
+
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 ConfDialog::ConfDialog(QVector<S2::DataRec> &S2Config, quint32 MTypeB, quint32 MTypeM, QWidget *parent)
     : AbstractConfDialog(parent)

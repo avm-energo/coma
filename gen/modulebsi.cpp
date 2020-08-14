@@ -1,8 +1,9 @@
+#include "modulebsi.h"
+
 #include "../config/config.h"
 #include "../usb/commands.h"
 #include "../widgets/emessagebox.h"
 #include "error.h"
-#include "modulebsi.h"
 #include "stdfunc.h"
 
 quint32 ModuleBSI::MType = 0;

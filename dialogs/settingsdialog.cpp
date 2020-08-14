@@ -1,3 +1,11 @@
+#include "settingsdialog.h"
+
+#include "../config/config.h"
+#include "../gen/maindef.h"
+#include "../gen/modulebsi.h"
+#include "../gen/stdfunc.h"
+#include "../widgets/wd_func.h"
+
 #include <QCheckBox>
 #include <QFileDialog>
 #include <QHBoxLayout>
@@ -7,13 +15,6 @@
 #include <QSettings>
 #include <QString>
 #include <QVBoxLayout>
-
-#include "../config/config.h"
-#include "../gen/maindef.h"
-#include "../gen/modulebsi.h"
-#include "../gen/stdfunc.h"
-#include "../widgets/wd_func.h"
-#include "settingsdialog.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 {

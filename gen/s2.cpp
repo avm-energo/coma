@@ -1,7 +1,8 @@
-#include <QDateTime>
+#include "s2.h"
 
 #include "error.h"
-#include "s2.h"
+
+#include <QDateTime>
 
 S2::S2()
 {

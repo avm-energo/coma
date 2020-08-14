@@ -1,9 +1,6 @@
 #ifndef COMA_H
 #define COMA_H
 
-#include <QMainWindow>
-#include <QResizeEvent>
-
 #include "../check/eabstractcheckdialog.h"
 #include "../config/confdialog.h"
 #include "../dialogs/connectdialog.h"
@@ -12,6 +9,9 @@
 #include "../dialogs/infodialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/mnktime.h"
+
+#include <QMainWindow>
+#include <QResizeEvent>
 
 #define RECONNECTINTERVAL 3000
 #define WAITINTERVAL 15000

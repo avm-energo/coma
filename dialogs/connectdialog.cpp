@@ -1,6 +1,4 @@
-#include <QSerialPortInfo>
-#include <QSettings>
-#include <QVBoxLayout>
+#include "connectdialog.h"
 
 #include "../gen/error.h"
 #include "../gen/maindef.h"
@@ -8,7 +6,10 @@
 #include "../usb/usb.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "connectdialog.h"
+
+#include <QSerialPortInfo>
+#include <QSettings>
+#include <QVBoxLayout>
 
 ConnectDialog::ConnectDialog()
 {

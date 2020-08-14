@@ -1,10 +1,10 @@
 #ifndef JOURNALS_H
 #define JOURNALS_H
 
+#include "../models/etablemodel.h"
+
 #include <QObject>
 #include <QSortFilterProxyModel>
-
-#include "../models/etablemodel.h"
 
 #define SYSJOURID 0
 #define WORKJOURID 3010

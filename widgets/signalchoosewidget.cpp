@@ -1,8 +1,9 @@
-#include <QVBoxLayout>
+#include "signalchoosewidget.h"
 
 #include "../gen/colors.h"
 #include "../widgets/wd_func.h"
-#include "signalchoosewidget.h"
+
+#include <QVBoxLayout>
 
 SignalChooseWidget::SignalChooseWidget(QStringList &snames, QStringList &discr, QWidget *parent) : QWidget(parent)
 {

@@ -1,12 +1,13 @@
+#include "errorprotocolwidget.h"
+
+#include "../gen/colors.h"
+#include "etableview.h"
+
 #include <QDateTime>
 #include <QFrame>
 #include <QHeaderView>
 #include <QLabel>
 #include <QVBoxLayout>
-
-#include "../gen/colors.h"
-#include "errorprotocolwidget.h"
-#include "etableview.h"
 
 ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
 {

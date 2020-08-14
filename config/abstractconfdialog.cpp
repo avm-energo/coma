@@ -1,9 +1,4 @@
-#include <QCoreApplication>
-#include <QFileDialog>
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QPushButton>
-#include <QTextEdit>
+#include "abstractconfdialog.h"
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/error.h"
@@ -16,7 +11,13 @@
 #include "../usb/commands.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "abstractconfdialog.h"
+
+#include <QCoreApplication>
+#include <QFileDialog>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QTextEdit>
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {

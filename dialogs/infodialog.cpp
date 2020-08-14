@@ -1,11 +1,12 @@
-#include <QVBoxLayout>
+#include "infodialog.h"
 
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
-#include "infodialog.h"
+
+#include <QVBoxLayout>
 
 InfoDialog::InfoDialog(QWidget *parent) : QDialog(parent)
 {

@@ -1,11 +1,12 @@
-#include <QGroupBox>
-#include <QLayout>
+#include "check84.h"
 
 #include "../config/config.h"
 #include "../gen/colors.h"
 #include "../gen/modulebsi.h"
 #include "../widgets/wd_func.h"
-#include "check84.h"
+
+#include <QGroupBox>
+#include <QLayout>
 
 Check_84::Check_84()
 {

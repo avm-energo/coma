@@ -1,3 +1,18 @@
+#include "../dialogs/cordialog.h"
+
+#include "../dialogs/keypressdialog.h"
+#include "../gen/colors.h"
+#include "../gen/error.h"
+#include "../gen/files.h"
+#include "../gen/maindef.h"
+#include "../gen/s2.h"
+#include "../gen/stdfunc.h"
+#include "../gen/timefunc.h"
+#include "../usb/commands.h"
+#include "../widgets/emessagebox.h"
+#include "../widgets/etableview.h"
+#include "../widgets/wd_func.h"
+
 #include <QCheckBox>
 #include <QComboBox>
 #include <QCoreApplication>
@@ -14,20 +29,6 @@
 #include <QTabBar>
 #include <QTabWidget>
 #include <QVBoxLayout>
-
-#include "../dialogs/cordialog.h"
-#include "../dialogs/keypressdialog.h"
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/files.h"
-#include "../gen/maindef.h"
-#include "../gen/s2.h"
-#include "../gen/stdfunc.h"
-#include "../gen/timefunc.h"
-#include "../usb/commands.h"
-#include "../widgets/emessagebox.h"
-#include "../widgets/etableview.h"
-#include "../widgets/wd_func.h"
 
 CorDialog::CorDialog(QWidget *parent) : QDialog(parent)
 {

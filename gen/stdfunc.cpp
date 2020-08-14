@@ -1,3 +1,5 @@
+#include "stdfunc.h"
+
 #include <QDateTime>
 #include <QDir>
 #include <QElapsedTimer>
@@ -7,8 +9,6 @@
 #include <QStandardPaths>
 #include <QTextStream>
 #include <QThread>
-
-#include "stdfunc.h"
 
 QString StdFunc::HomeDir = ""; // рабочий каталог программы
 QString StdFunc::SystemHomeDir = ""; // системный каталог программы

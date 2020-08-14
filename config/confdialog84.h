@@ -1,14 +1,14 @@
 #ifndef CONFDIALOG84_H
 #define CONFDIALOG84_H
 
-#include <QDialog>
-#include <QLabel>
-#include <QVBoxLayout>
-
 #include "../config/config84.h"
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
 #include "abstractconfdialog.h"
+
+#include <QDialog>
+#include <QLabel>
+#include <QVBoxLayout>
 
 class ConfDialog84 : public AbstractConfDialog
 {

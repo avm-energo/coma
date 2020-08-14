@@ -1,10 +1,10 @@
 #ifndef CONNECTDIALOG_H
 #define CONNECTDIALOG_H
 
-#include <QDialog>
-
 #include "../iec104/iec104.h"
 #include "../modbus/serialport.h"
+
+#include <QDialog>
 
 #define MAXREGISTRYINTERFACECOUNT 5 // how much entries can we have for interfaces of each type in registry
 

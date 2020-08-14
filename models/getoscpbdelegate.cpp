@@ -1,12 +1,13 @@
+#include "getoscpbdelegate.h"
+
+#include "etableitem.h"
+#include "etablemodel.h"
+
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QStandardItem>
 #include <QStandardItemModel>
-
-#include "etableitem.h"
-#include "etablemodel.h"
-#include "getoscpbdelegate.h"
 
 GetOscPBDelegate::GetOscPBDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {

@@ -1,17 +1,17 @@
 #ifndef MODBUS_H
 #define MODBUS_H
 
+#include "../gen/logclass.h"
+#include "../gen/maindef.h"
+#include "../gen/s2.h"
+#include "serialport.h"
+
 #include <QMutex>
 #include <QObject>
 #include <QQueue>
 #include <QSerialPort>
 #include <QTimer>
 #include <QWaitCondition>
-
-#include "../gen/logclass.h"
-#include "../gen/maindef.h"
-#include "../gen/s2.h"
-#include "serialport.h"
 
 #define RECONNECTTIME 5000
 #define POLLINGINTERVAL 300 // polling cycle time

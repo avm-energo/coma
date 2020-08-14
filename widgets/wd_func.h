@@ -1,6 +1,11 @@
 #ifndef WD_FUNC
 #define WD_FUNC
 
+#include "../models/etablemodel.h"
+#include "ecombobox.h"
+#include "etableview.h"
+#include "passwordlineedit.h"
+
 #include <QCheckBox>
 #include <QDoubleSpinBox>
 #include <QLabel>
@@ -8,11 +13,6 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QWidget>
-
-#include "../models/etablemodel.h"
-#include "ecombobox.h"
-#include "etableview.h"
-#include "passwordlineedit.h"
 
 #define MAXFLOAT 3.40282347E+38F
 

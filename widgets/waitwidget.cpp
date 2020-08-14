@@ -1,3 +1,7 @@
+#include "waitwidget.h"
+
+#include "../gen/stdfunc.h"
+
 #include <QApplication>
 #include <QBitmap>
 #include <QDateTime>
@@ -10,9 +14,6 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <math.h>
-
-#include "../gen/stdfunc.h"
-#include "waitwidget.h"
 
 WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)
 {

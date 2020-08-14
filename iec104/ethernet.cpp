@@ -1,12 +1,13 @@
-#include <QCoreApplication>
-#include <QSettings>
-#include <QThread>
+#include "ethernet.h"
 
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../widgets/emessagebox.h"
-#include "ethernet.h"
+
+#include <QCoreApplication>
+#include <QSettings>
+#include <QThread>
 
 Ethernet::Ethernet(QObject *parent) : QObject(parent)
 {

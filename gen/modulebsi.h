@@ -1,12 +1,12 @@
 #ifndef MODULEBSI_H
 #define MODULEBSI_H
 
-#include <QWidget>
-#include <QtGlobal>
-
 #include "../gen/s2.h"
 #include "../iec104/iec104.h"
 #include "maindef.h"
+
+#include <QWidget>
+#include <QtGlobal>
 
 #define MAXERRORFLAGNUM 32
 

@@ -1,3 +1,12 @@
+#include "confdialog84.h"
+
+#include "../gen/colors.h"
+#include "../gen/error.h"
+#include "../gen/modulebsi.h"
+#include "../widgets/ecombobox.h"
+#include "../widgets/emessagebox.h"
+#include "../widgets/wd_func.h"
+
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QLineEdit>
@@ -8,14 +17,6 @@
 #include <QTime>
 #include <QTimer>
 #include <QVBoxLayout>
-
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/modulebsi.h"
-#include "../widgets/ecombobox.h"
-#include "../widgets/emessagebox.h"
-#include "../widgets/wd_func.h"
-#include "confdialog84.h"
 
 ConfDialog84::ConfDialog84(QVector<S2::DataRec> *S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {

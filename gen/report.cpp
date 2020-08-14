@@ -1,8 +1,9 @@
-#include <QStandardItem>
+#include "report.h"
 
 #include "error.h"
-#include "report.h"
 #include "stdfunc.h"
+
+#include <QStandardItem>
 
 ReportModel::ReportModel(QObject *parent) : QStandardItemModel(parent)
 {

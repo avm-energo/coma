@@ -1,10 +1,11 @@
+#include "errordialog.h"
+
+#include "../gen/colors.h"
+
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
-
-#include "../gen/colors.h"
-#include "errordialog.h"
 
 ErrorDialog::ErrorDialog(QWidget *parent) : QDialog(parent)
 {

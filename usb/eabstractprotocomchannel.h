@@ -1,16 +1,16 @@
 #ifndef EEAbstractProtocomChannel_H
 #define EEAbstractProtocomChannel_H
 
+#include "../gen/logclass.h"
+#include "../gen/modulebsi.h"
+#include "../gen/s2.h"
+
 #include <QByteArray>
 #include <QMutex>
 #include <QObject>
 #include <QPointer>
 #include <QTimer>
 #include <QWaitCondition>
-
-#include "../gen/logclass.h"
-#include "../gen/modulebsi.h"
-#include "../gen/s2.h"
 
 #define CN_MAXSEGMENTLENGTH 60 // 64-4 ('<',cmd,L,L)
 
