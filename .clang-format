@@ -1,0 +1,8 @@
+BasedOnStyle: WebKit
+AllowShortFunctionsOnASingleLine : true
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ColumnLimit: 120
+AllowAllParametersOfDeclarationOnNextLine: false
+BreakBeforeBraces: Allman
+PointerBindsToType: false
+SpaceBeforeParens: ControlStatements
