@@ -1,5 +1,5 @@
 // maindef.cpp
-#include <QtGlobal>
+#include "maindef.h"
 
 int MainInterface;
 quint32 MTypeB;

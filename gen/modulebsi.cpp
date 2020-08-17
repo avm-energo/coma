@@ -99,8 +99,7 @@ int ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
 
     /*    if(!StopRead)
         { */
-    Bsi = ModuleBSI::Health();
-    if ((Bsi & HTH_CONFIG)
+    if ((ModuleBSI::Health() & HTH_CONFIG)
         || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
         return RESEMPTY;
     else // иначе заполнить значениями из модуля

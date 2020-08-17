@@ -7,6 +7,7 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
+#include <QSerialPortInfo>
 #include <QSettings>
 #include <QVBoxLayout>
 
@@ -155,10 +156,37 @@ void ConnectDialog::EthAccepted()
     }
 }
 
-void ConnectDialog::SetCancelled()
+void ConnectDialog::RsAccepted()
 {
-    emit Cancelled();
+    QDialog *dlg = this->findChild<QDialog *>("rsdlg");
+    if (dlg != nullptr)
+    {
+        QString name = WDFunc::LEData(dlg, "namele");
+        // check if there's such name in registry
+        if (IsKeyExist("RS485-", name))
+        {
+            EMessageBox::error(this, "Ошибка", "Такое имя уже имеется");
+            return;
+        }
+        RotateSettings("Ethernet-", name);
+        QString key = PROGNAME;
+        key += "\\" + name;
+        QSettings *sets = new QSettings(SOFTDEVELOPER, key);
+        sets->setValue("port", WDFunc::CBData(dlg, "portcb"));
+        sets->setValue("speed", WDFunc::CBData(dlg, "speedcb"));
+        sets->setValue("parity", WDFunc::CBData(dlg, "paritycb"));
+        sets->setValue("stop", WDFunc::CBData(dlg, "stopcb"));
+        int spbdata;
+        WDFunc::SPBData(dlg, "addressspb", spbdata);
+        sets->setValue("address", QString::number(spbdata));
+        QDialog *dlg2 = this->findChild<QDialog *>("connectdlg");
+        if (dlg2 != nullptr)
+            UpdateModel();
+        dlg->close();
+    }
 }
+
+void ConnectDialog::SetCancelled() { emit Cancelled(); }
 
 void ConnectDialog::SetEth()
 {
@@ -169,6 +197,64 @@ void ConnectDialog::SetEth()
         st.name = WDFunc::TVData(dlg, "ethtv", 1).toString();
         st.iec104st.ip = WDFunc::TVData(dlg, "ethtv", 2).toString();
         st.iec104st.baseadr = WDFunc::TVData(dlg, "ethtv", 3).toUInt();
+    }
+    emit Accepted(&st);
+}
+
+void ConnectDialog::AddRs()
+{
+    QStringList ports;
+    QList<QSerialPortInfo> portlist = QSerialPortInfo::availablePorts();
+    foreach (QSerialPortInfo info, portlist)
+        ports << info.portName();
+    QDialog *dlg = new QDialog(this);
+    dlg->setObjectName("rsdlg");
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
+    QGridLayout *lyout = new QGridLayout;
+    int count = 0;
+    lyout->addWidget(WDFunc::NewLBL(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewLE(dlg, "namele"), count++, 1, 1, 7);
+    lyout->addWidget(WDFunc::NewLBL(dlg, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewCB(dlg, "portcb", ports), count++, 1, 1, 1, Qt::AlignLeft);
+    QStringList sl = QStringList() << "1200"
+                                   << "2400"
+                                   << "4800"
+                                   << "9600"
+                                   << "19200"
+                                   << "38400"
+                                   << "57600"
+                                   << "115200";
+    lyout->addWidget(WDFunc::NewLBL(dlg, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewCB(dlg, "speedcb", sl), count++, 1, 1, 7);
+    sl = QStringList() << "Нет"
+                       << "Нечет"
+                       << "Чет";
+    lyout->addWidget(WDFunc::NewLBL(dlg, "Чётность:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewCB(dlg, "paritycb", sl), count++, 1, 1, 7);
+    lyout->addWidget(WDFunc::NewLBL(dlg, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
+    sl = QStringList() << "1"
+                       << "2";
+    lyout->addWidget(WDFunc::NewCB(dlg, "stopbitcb", sl), count++, 1, 1, 7);
+    lyout->addWidget(WDFunc::NewLBL(dlg, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewSPB(dlg, "addressspb", 1, 255, 0), count++, 1, 1, 7);
+    lyout->addWidget(WDFunc::NewPB(dlg, "acceptpb", "Сохранить", this, SLOT(RsAccepted())), count, 0, 1, 4);
+    lyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", dlg, SLOT(close())), count, 4, 1, 3);
+    dlg->setLayout(lyout);
+    dlg->exec();
+}
+
+void ConnectDialog::SetRs()
+{
+    ConnectStruct st;
+    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
+    if (dlg != nullptr)
+    {
+        st.name = WDFunc::TVData(dlg, "rstv", 1).toString();
+        st.serialst.Port = WDFunc::TVData(dlg, "rstv", 2).toString();
+        st.serialst.Baud = WDFunc::TVData(dlg, "rstv", 3).toUInt();
+        st.serialst.Parity = WDFunc::TVData(dlg, "rstv", 4).toString();
+        st.serialst.Stop = WDFunc::TVData(dlg, "rstv", 5).toString();
+        st.serialst.Address = WDFunc::TVData(dlg, "rstv", 6).toUInt();
     }
     emit Accepted(&st);
 }

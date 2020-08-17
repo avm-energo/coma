@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QVector>
 
+
 #define BCI_MTYPEB 1
 #define BCI_MTYPEM 2
 #define BCI_CTYPE 3

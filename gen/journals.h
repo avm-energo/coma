@@ -9,7 +9,6 @@
 #define SYSJOURID 0
 #define WORKJOURID 3010
 #define WORKJOURIDKTF 5011
-
 class Journals : public QObject
 {
     Q_OBJECT

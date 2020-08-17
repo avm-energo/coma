@@ -24,8 +24,13 @@ int SerialPort::Init(SerialPort::Settings settings)
     Port = new QSerialPort(settings.Port);
     Port->setBaudRate(settings.Baud);
     Port->setDataBits(QSerialPort::Data8);
-    Port->setParity(QSerialPort::NoParity);
-    Port->setStopBits(QSerialPort::OneStop);
+    if (settings.Parity == "Нет")
+        Port->setParity(QSerialPort::NoParity);
+    else if (settings.Parity == "Чет")
+        Port->setParity(QSerialPort::EvenParity);
+    else
+        Port->setParity(QSerialPort::OddParity);
+    Port->setStopBits(settings.Stop == "1" ? QSerialPort::OneStop : QSerialPort::TwoStop);
     Port->setFlowControl(QSerialPort::NoFlowControl);
     Port->setReadBufferSize(1024);
     connect(Port, SIGNAL(errorOccurred(QSerialPort::SerialPortError)), this,

@@ -80,8 +80,6 @@ public:
         const QPixmap *pm = Q_NULLPTR);
     static QLabel *NewLBLT(QWidget *w, const QString &text, const QString &lblname = "", const QString &lblstyle = "",
         const QString &lbltip = "", bool Fixed = false);
-    // static QLabel *NewLBLTT(QWidget *w, const QString &text, const QString &lblname="", const QString &lblstyle="",
-    // const QString &lbltip="",bool Fixed=false);
     static bool SetLBLImage(QWidget *w, const QString &lblname, QPixmap *pm);
     static bool SetLBLColor(QWidget *w, const QString &lblname, const QString &lblcolor);
     static bool SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext = "", bool enabled = true);
