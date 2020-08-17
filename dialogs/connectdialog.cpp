@@ -186,10 +186,7 @@ void ConnectDialog::RsAccepted()
     }
 }
 
-void ConnectDialog::SetCancelled()
-{
-    emit Cancelled();
-}
+void ConnectDialog::SetCancelled() { emit Cancelled(); }
 
 void ConnectDialog::SetEth()
 {
@@ -218,7 +215,7 @@ void ConnectDialog::AddRs()
     lyout->addWidget(WDFunc::NewLBL(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
     lyout->addWidget(WDFunc::NewLE(dlg, "namele"), count++, 1, 1, 7);
     lyout->addWidget(WDFunc::NewLBL(dlg, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewCB(dlg, "portcb", ports), count++, 0, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewCB(dlg, "portcb", ports), count++, 1, 1, 1, Qt::AlignLeft);
     QStringList sl = QStringList() << "1200"
                                    << "2400"
                                    << "4800"
@@ -229,7 +226,8 @@ void ConnectDialog::AddRs()
                                    << "115200";
     lyout->addWidget(WDFunc::NewLBL(dlg, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
     lyout->addWidget(WDFunc::NewCB(dlg, "speedcb", sl), count++, 1, 1, 7);
-    sl = QStringList() << "Нечет"
+    sl = QStringList() << "Нет"
+                       << "Нечет"
                        << "Чет";
     lyout->addWidget(WDFunc::NewLBL(dlg, "Чётность:"), count, 0, 1, 1, Qt::AlignLeft);
     lyout->addWidget(WDFunc::NewCB(dlg, "paritycb", sl), count++, 1, 1, 7);
