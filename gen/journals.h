@@ -84,14 +84,19 @@ public:
     //    void SetParentWidget(QWidget *w);
 
 signals:
-    void Done(QString msg);
-    void Error(QString msg);
-    void ModelReady(ETableModel *);
+    void Done(QString);
+    void resendResult(int);
+    void resendMaxResult(int);
+    // void Fill(QVector<QVector<QVariant>>);
+    void Error(QString);
+    // void ModelReady(ETableModel *);
     void ReadJour(char);
 
 private:
+    // QMutex _mutex;
     ETableModel *_sysModel, *_workModel, *_measModel;
     QSortFilterProxyModel *_proxySysModel, *_proxyWorkModel, *_proxyMeasModel;
+
     int _jourType;
     QString _jourFile;
     const QStringList SysJourDescription = QStringList()

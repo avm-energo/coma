@@ -4,9 +4,7 @@
 
 #include <QDateTime>
 
-S2::S2()
-{
-}
+S2::S2() { }
 
 int S2::StoreDataMem(void *mem, QVector<DataRec> *dr, int fname) // 0 - успешно, иначе код ошибки
 {
@@ -176,5 +174,5 @@ quint32 S2::GetCRC32(char *data, quint32 len)
 quint32 S2::getTime32()
 {
     QDateTime dt;
-    return dt.currentDateTime().toTime_t();
+    return dt.currentDateTime().toSecsSinceEpoch();
 }

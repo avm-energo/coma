@@ -1,8 +1,15 @@
+#include "QtXlsx/xlsxdocument.h"
+#include <QAbstractItemModelTester>
+#include <QFile>
+#include <QFuture>
+#include <QtConcurrent/QtConcurrentRun>
+#include "../usb/commands.h"
+#include "../widgets/wd_func.h"
+#include "error.h"
+#include "files.h"
 #include "journals.h"
 
 #include "../config/config.h"
-#include "../usb/commands.h"
-#include "../widgets/wd_func.h"
 #include "QtXlsx/xlsxdocument.h"
 #include "error.h"
 #include "files.h"
@@ -21,28 +28,28 @@ Journals::Journals(QObject *parent) : QObject(parent)
     _workModel = new ETableModel;
     _measModel = new ETableModel;
 }
-
-Journals::~Journals()
-{
-}
-
 void Journals::SetProxyModels(
     QSortFilterProxyModel *workmdl, QSortFilterProxyModel *sysmdl, QSortFilterProxyModel *measmdl)
 {
+    QSortFilterProxyModel *workmdl, QSortFilterProxyModel *sysmdl, QSortFilterProxyModel *measmdl)
     _proxyWorkModel = workmdl;
     _proxySysModel = sysmdl;
     _proxyMeasModel = measmdl;
+    connect(_sysModel, &ETableModel::pushProgress, this, &Journals::resendResult);
+    connect(_workModel, &ETableModel::pushProgress, this, &Journals::resendResult);
+    connect(_measModel, &ETableModel::pushProgress, this, &Journals::resendResult);
+    connect(_sysModel, &ETableModel::pushMaxProgress, this, &Journals::resendMaxResult);
+    connect(_workModel, &ETableModel::pushMaxProgress, this, &Journals::resendMaxResult);
+    connect(_measModel, &ETableModel::pushMaxProgress, this, &Journals::resendMaxResult);
+    // auto tester = new QAbstractItemModelTester(_workModel, QAbstractItemModelTester::FailureReportingMode::Fatal,
+    // this);
 }
 
-void Journals::SetJourType(int jourtype)
-{
-    _jourType = jourtype;
-}
+Journals::~Journals() { }
 
-void Journals::SetJourFile(const QString &jourfile)
-{
-    _jourFile = jourfile;
-}
+void Journals::SetJourType(int jourtype) { _jourType = jourtype; }
+
+void Journals::SetJourFile(const QString &jourfile) { _jourFile = jourfile; }
 /*
 void Journals::SetParentWidget(QWidget *w)
 {
@@ -83,6 +90,7 @@ void Journals::FillEventsTable(QByteArray &ba)
     QStringList sl;
     int mineventid;
     if (_jourType == JOURSYS)
+    // int joursize = 0; // размер считанного буфера с информацией
     {
         mineventid = SYSJOURID;
         sl = SysJourDescription;
@@ -120,10 +128,12 @@ void Journals::FillEventsTable(QByteArray &ba)
     if ((_jourType == JOURSYS) || (_jourType == JOURWORK))
     {
         file += fhsize;
+    qDebug() << strlen(file);
         S2::DataRec jour;
         int drsize = sizeof(S2::DataRec) - sizeof(void *);
         memcpy(&jour, file, drsize);
         joursize = jour.num_byte;
+    // joursize = jour.num_byte;
         file += drsize; // move file pointer to thedata
     }
     int counter = 0;
@@ -133,7 +143,7 @@ void Journals::FillEventsTable(QByteArray &ba)
         memcpy(&event, file, recordsize);
         file += recordsize;
         i += recordsize;
-        if (event.Time != 0xFFFFFFFFFFFFFFFF)
+        if (event.Time != ULLONG_MAX)
         {
             QVector<QVariant> vl;
             ++counter;
@@ -155,8 +165,9 @@ void Journals::FillEventsTable(QByteArray &ba)
             ValueLists.append(vl);
         }
     }
-    model->ClearModel();
-    model->SetHeaders(EventJourHeaders);
+    if (!model->isEmpty())
+        model->clearModel();
+    model->setHeaders(EventJourHeaders);
     model->fillModel(ValueLists);
     ResultReady();
 }
@@ -171,7 +182,7 @@ void Journals::FillMeasTable(QByteArray &ba)
     int recordsize;
     int basize = ba.size();
     char *file = ba.data();
-    int joursize = 0; // размер считанного буфера с информацией
+    // int joursize = 0; // размер считанного буфера с информацией
     int fhsize = sizeof(S2::FileHeader);
 
     switch (MTypeB)
@@ -199,7 +210,7 @@ void Journals::FillMeasTable(QByteArray &ba)
         S2::DataRec jour;
         int drsize = sizeof(S2::DataRec) - sizeof(void *);
         memcpy(&jour, file, drsize);
-        joursize = jour.num_byte;
+        // joursize = jour.num_byte;
         file += drsize; // move file pointer to thedata
     }
     int i = 0;
@@ -249,8 +260,8 @@ void Journals::FillMeasTable(QByteArray &ba)
         }
         ValueLists.append(vl);
     }
-
-    model->ClearModel();
+    if (!model->isEmpty())
+        model->clearModel();
     model->SetHeaders(headers);
     if (model->columnCount() < 3)
     {
@@ -258,7 +269,7 @@ void Journals::FillMeasTable(QByteArray &ba)
         return;
     }
     for (int i = 2; i < model->columnCount(); ++i)
-        model->SetColumnFormat(i, 4); // set 4 diits precision for all cells starting 2
+        model->setColumnFormat(i, 4); // set 4 diits precision for all cells starting 2
     model->fillModel(ValueLists);
     ResultReady();
 }
@@ -285,18 +296,23 @@ void Journals::ResultReady()
         pmdl = _proxyMeasModel;
         order = Qt::AscendingOrder;
         break;
+    default:
+        DBGMSG;
+        return;
     }
-    int dateidx = mdl->Headers().indexOf("Дата/Время UTC");
-    pmdl->setDynamicSortFilter(true);
+
+    int dateidx = mdl->headerPosition("Дата/Время UTC");
+    pmdl->invalidate();
+    pmdl->setDynamicSortFilter(false);
     pmdl->setSourceModel(mdl);
-    pmdl->sort(dateidx, order);
+    QFuture<void> future = QtConcurrent::run(pmdl, &QSortFilterProxyModel::sort, dateidx, order);
+    // pmdl->sort(dateidx, order);
+    future.waitForFinished();
+    qDebug() << "Read";
     emit Done("Прочитано успешно");
 }
 
-void Journals::FillSysJour(QByteArray ba)
-{
-    FillEventsTable(ba);
-}
+void Journals::FillSysJour(QByteArray ba) { FillEventsTable(ba); }
 
 void Journals::FillMeasJour(QByteArray ba)
 {
@@ -314,10 +330,7 @@ void Journals::FillMeasJour(QByteArray ba)
     FillMeasTable(ba);
 }
 
-void Journals::FillWorkJour(QByteArray ba)
-{
-    FillEventsTable(ba);
-}
+void Journals::FillWorkJour(QByteArray ba) { FillEventsTable(ba); }
 
 void Journals::StartGetJour()
 {
@@ -377,9 +390,9 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
         break;
     }
 
-    QSortFilterProxyModel *pmdl = reinterpret_cast<QSortFilterProxyModel *>(amdl);
-    ETableModel *mdl = reinterpret_cast<ETableModel *>(pmdl->sourceModel());
-    int dateidx = mdl->Headers().indexOf("Дата/Время UTC");
+    QSortFilterProxyModel *pmdl = static_cast<QSortFilterProxyModel *>(amdl);
+    ETableModel *mdl = static_cast<ETableModel *>(pmdl->sourceModel());
+    int dateidx = mdl->headerPosition("Дата/Время UTC");
     pmdl->sort(dateidx, order);
     QXlsx::Document *xlsx = new QXlsx::Document(filename);
     xlsx->write(1, 1, QVariant(jourtypestr));

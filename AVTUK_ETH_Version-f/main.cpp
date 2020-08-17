@@ -5,6 +5,9 @@
 
 int main(int argc, char *argv[])
 {
+#ifdef QT_DEBUG
+    qSetMessagePattern("%{file}(%{line}): %{message}");
+#endif
     QString Parameter;
     QApplication a(argc, argv);
     a.setStyle("cleanlooks");

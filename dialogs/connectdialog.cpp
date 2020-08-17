@@ -1,11 +1,11 @@
-#include "connectdialog.h"
-
+#include <QVBoxLayout>
 #include "../gen/error.h"
 #include "../gen/maindef.h"
 #include "../models/etablemodel.h"
 #include "../usb/usb.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
+#include "connectdialog.h"
 
 #include <QSerialPortInfo>
 #include <QSettings>
@@ -157,7 +157,6 @@ void ConnectDialog::EthAccepted()
 }
 
 void ConnectDialog::RsAccepted()
-{
     QDialog *dlg = this->findChild<QDialog *>("rsdlg");
     if (dlg != nullptr)
     {
@@ -331,12 +330,12 @@ bool ConnectDialog::UpdateModel()
                 Error::ShowErMsg(CN_NOPORTSERROR);
                 return false;
             }
-            mdl->SetHeaders(sl);
+            mdl->setHeaders(sl);
             for (int i = 0; i < USBsl.size(); ++i)
             {
                 QVector<QVariant> vl;
                 vl << QString::number(i + 1) << USBsl.at(i);
-                mdl->AddRowWithData(vl);
+                mdl->addRowWithData(vl);
             }
             WDFunc::SetTVModel(dlg, "usbtv", mdl);
         }
@@ -348,7 +347,7 @@ bool ConnectDialog::UpdateModel()
                                            << "Адрес БС";
             ETableModel *mdl = new ETableModel;
 
-            mdl->SetHeaders(sl);
+            mdl->setHeaders(sl);
             for (int i = 0; i < ethlist.size(); ++i)
             {
                 QVector<QVariant> vl;
@@ -356,7 +355,7 @@ bool ConnectDialog::UpdateModel()
                 key += "\\" + ethlist.at(i);
                 sets = new QSettings(SOFTDEVELOPER, key);
                 vl << QString::number(i + 1) << ethlist.at(i) << sets->value("ip", "") << sets->value("bs", "");
-                mdl->AddRowWithData(vl);
+                mdl->addRowWithData(vl);
             }
             WDFunc::SetTVModel(dlg, "ethtv", mdl);
         }
@@ -371,7 +370,7 @@ bool ConnectDialog::UpdateModel()
                                            << "Адрес";
             ETableModel *mdl = new ETableModel;
 
-            mdl->SetHeaders(sl);
+            mdl->setHeaders(sl);
             for (int i = 0; i < rslist.size(); ++i)
             {
                 QVector<QVariant> vl;
@@ -380,7 +379,7 @@ bool ConnectDialog::UpdateModel()
                 sets = new QSettings(SOFTDEVELOPER, key);
                 vl << QString::number(i + 1) << rslist.at(i) << sets->value("port", "") << sets->value("speed", "")
                    << sets->value("parity", "") << sets->value("stop", "") << sets->value("address", "");
-                mdl->AddRowWithData(vl);
+                mdl->addRowWithData(vl);
             }
             WDFunc::SetTVModel(dlg, "rstv", mdl);
         }

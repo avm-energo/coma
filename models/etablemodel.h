@@ -2,13 +2,15 @@
 #define ETABLEMODEL_H
 
 #include "etableitem.h"
-
 #include <QAbstractItemModel>
 #include <QAbstractTableModel>
 #include <QColor>
 #include <QFont>
 #include <QIcon>
+#include <QMutex>
+#include <QReadWriteLock>
 #include <QStringList>
+#include <QWaitCondition>
 
 #define NOCOLFORMAT 11 // 11 is the number more than 10 i.e. no format for column
 
@@ -19,41 +21,42 @@ public:
     explicit ETableModel(QObject *parent = 0);
     ~ETableModel();
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-    bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role);
-    QStringList Headers();
-    QVariant data(const QModelIndex &index, int role) const;
-    bool setData(const QModelIndex &index, const QVariant &value, int role);
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    QModelIndex index(int row, int column, const QModelIndex &index = QModelIndex()) const;
-    int rowCount(const QModelIndex &index = QModelIndex()) const;
-    int columnCount(const QModelIndex &index = QModelIndex()) const;
-    bool insertColumns(int position, int columns, const QModelIndex &index = QModelIndex());
-    bool removeColumns(int position, int columns, const QModelIndex &index = QModelIndex());
-    bool insertRows(int position, int rows, const QModelIndex &index = QModelIndex());
-    bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex());
-    int getHeaderPosition(QVariant hdrtext, Qt::Orientation orientation,
-        int role); // получение индекса элемента в заголовке, который содержит текст hdrtext
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+    bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role) override;
+    QVariant data(const QModelIndex &index, int role) const override;
+    bool setData(const QModelIndex &index, const QVariant &value, int role) override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    QModelIndex index(int row, int column, const QModelIndex &index = QModelIndex()) const override;
+    int rowCount(const QModelIndex &index = QModelIndex()) const override;
+    int columnCount(const QModelIndex &index = QModelIndex()) const override;
+    bool insertColumns(int position, int columns, const QModelIndex &index = QModelIndex()) override;
+    bool removeColumns(int position, int columns, const QModelIndex &index = QModelIndex()) override;
+    bool insertRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
+    bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
+    int headerPosition(QVariant hdrtext, Qt::Orientation orientation = Qt::Horizontal,
+        int role = Qt::DisplayRole) const; // получение индекса элемента в заголовке, который содержит текст hdrtext
     void addColumn(
         const QString hdrtext); // добавление новой колонки с текстом в заголовке hdrtext для варианта двух столбцов
     void addRow(); // добавление строки
     void setCellAttr(QModelIndex index, int fcset = 0, int icon = -1);
-    QString getCellType(int row, int column);
     void setRowAttr(int fcset = 0, int icon = -1);
-    void ClearModel();
-    void fillModel(QVector<QVector<QVariant>> sl);
-    QStringList cvalues(int column); // выдать значения по столбцу column в выходной QStringList
-    QStringList rvalues(int row); // выдать значения по строке row в выходной QStringList
-    void SetRowTextAlignment(int row, int alignment);
-    bool isEmpty();
-    void SetColumnFormat(
+    void clearModel();
+    void fillModel(QVector<QVector<QVariant>> &);
+    QStringList cvalues(int column) const; // выдать значения по столбцу column в выходной QStringList
+    QStringList rvalues(int row) const; // выдать значения по строке row в выходной QStringList
+    void setRowTextAlignment(int row, int alignment);
+    bool isEmpty() const;
+    void setColumnFormat(
         int column, int format); // format is precision of the double, set num above 10 to set no format
-    void SetHeaders(QStringList hdrl);
-    void AddRowWithData(QVector<QVariant> vl);
+    void setHeaders(QStringList hdrl);
+    void addRowWithData(const QVector<QVariant> &vl);
 
 signals:
+    void clear();
+    void pushProgress(int);
+    void pushMaxProgress(int);
 
-public slots:
+protected slots:
 
 private:
     QList<ETableItem *> maindata;

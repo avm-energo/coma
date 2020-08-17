@@ -13,6 +13,7 @@ public:
 
     QString data(int column) const;
     void setData(int column, const QString &value);
+    void appendData(const QString &value);
     void setColor(int column, QColor color);
     void setFont(int column, QFont font);
     void setIcon(int column, QIcon icon);

@@ -373,6 +373,7 @@ public:
     void Connect(Settings &st);
 
 public slots:
+    void SelectFile(char);
     void StopAllThreads();
 
 signals:
@@ -399,7 +400,7 @@ private:
     QVector<S2::DataRec> *S2Config;
 
 private slots:
-    void SelectFile(char);
+    //void SelectFile(char);
     void FileReady(QVector<S2::DataRec> *);
     void Com45(quint32 com);
     void Com50(quint32 adr, float param);

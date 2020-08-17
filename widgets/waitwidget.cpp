@@ -24,7 +24,7 @@ WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)
     Message = "";
     resize(310, 380);
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    qsrand(QDateTime::currentDateTime().toTime_t());
+    qsrand(QDateTime::currentDateTime().toSecsSinceEpoch());
     vel1 = 0.5;
     IsAllowedToStop = false;
     IsIncrement = true;
@@ -32,9 +32,7 @@ WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)
     Seconds = 0;
 }
 
-WaitWidget::~WaitWidget()
-{
-}
+WaitWidget::~WaitWidget() { }
 
 void WaitWidget::Init(WaitWidget::ww_struct &ww)
 {
@@ -66,15 +64,9 @@ void WaitWidget::Stop()
     close();
 }
 
-void WaitWidget::SetMessage(QString msg)
-{
-    Message = msg;
-}
+void WaitWidget::SetMessage(QString msg) { Message = msg; }
 
-void WaitWidget::SetSeconds(quint32 seconds)
-{
-    Seconds = seconds;
-}
+void WaitWidget::SetSeconds(quint32 seconds) { Seconds = seconds; }
 
 void WaitWidget::Rotate()
 {

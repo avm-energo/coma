@@ -11,7 +11,7 @@ RC_ICONS = ../coma.ico
 CONFIG += c++11
 VERSION = 0.2.0
 
-QT       += core gui printsupport network serialport qml
+QT       += core gui printsupport network serialport qml widgets testlib svg
 
 TARGET = AVM-Service
 DEFINES += PROGNAME='\\"AVM-Service\\"'
@@ -19,6 +19,9 @@ DEFINES += PROGCAPTION='\\"AVM-Service\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += SOFTDEVELOPER='\\"EvelSoft\\"'
+DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
+
 # DEFINES += DEBUG
 TEMPLATE = app
 
@@ -164,6 +167,15 @@ HEADERS += \
     ../widgets/wd_func.h \
     ../modbus/modbus.h
 
+
+IMAGE_FILE += \
+    $$PWD/../images
+
+ERROR_FILES += \
+    $$PWD/../errors
+
+
+
 INCLUDEPATH += $$PWD/../../includes
 
 equals(QMAKE_PLATFORM, win32)
@@ -171,15 +183,58 @@ equals(QMAKE_PLATFORM, win32)
     contains(QMAKE_TARGET.arch, x86_64) {
         message("x64 build")
        ## Windows x64 (64bit) specific build here
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win64/debug/ -llimereportd -lliblzma -lhidapi -lqt5xlsxd
+       CONFIG(debug, debug|release) {
+       LIBS += -L$$PWD/../../libs/win64/debug/ -llimereportd -lliblzma -lhidapi -lqt5xlsxd
+       DESTDIR = $${PWD}/../../build/win64/debug
+       } else {
+       LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
+       DESTDIR = $${PWD}/../../build/win64/release
+       LIBS_FILES += \
+       $$PWD/../../libs/win64/release/hidapi.dll \
+       $$PWD/../../libs/win64/release/liblzma.dll \
+       $$PWD/../../libs/win64/release/limereport.dll \
+       $$PWD/../../libs/win64/release/Qt5Xlsx.dll \
+       $$PWD/../../libs/win64/release/QtZint.dll
+       }
     } else {
         message("x86 build")
         ## Windows x86 (32bit) specific build here
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
-        CONFIG(debug, debug|release): LIBS += -L$$PWD/../../libs/win32/debug/ -llimereportd -lliblzma -lhidapi -lqt5xlsxd
+        CONFIG(debug, debug|release) {
+        LIBS += -L$$PWD/../../libs/win32/debug/ -llimereportd -lliblzma -lhidapi -lqt5xlsxd
+        DESTDIR = $${PWD}/../../build/win32/debug
+        } else {
+        LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
+        DESTDIR = $${PWD}/../../build/win32/release
+        LIBS_FILES += \
+        $$PWD/../../libs/win32/release/hidapi.dll \
+        $$PWD/../../libs/win32/release/liblzma.dll \
+        $$PWD/../../libs/win32/release/limereport.dll \
+        $$PWD/../../libs/win32/release/Qt5Xlsx.dll \
+        $$PWD/../../libs/win32/release/QtZint.dll
+        }
     }
 }
 
 unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereportd -lliblzma -lqt5xlsxd
 
+
+# copies the given files to the destination directory
+defineTest(copyToDestDir) {
+    files = $$1
+    dir = $$2
+    # replace slashes in destination path for Windows
+    win32:dir ~= s,/,\\,g
+
+    for(file, files) {
+        # replace slashes in source path for Windows
+        win32:file ~= s,/,\\,g
+
+        QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$shell_quote($$file) $$shell_quote($$dir) $$escape_expand(\\n\\t)
+    }
+
+    export(QMAKE_POST_LINK)
+}
+
+copyToDestDir($$IMAGE_FILE, $$DESTDIR/images/)
+copyToDestDir($$ERROR_FILES, $$DESTDIR/errors/)
+copyToDestDir($$LIBS_FILES, $$DESTDIR/)

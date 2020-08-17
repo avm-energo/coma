@@ -1,6 +1,12 @@
 #ifndef JOURNALDIALOG_H
 #define JOURNALDIALOG_H
 
+#include <QDialog>
+#include <QMessageBox>
+#include <QModelIndex>
+#include <QProgressDialog>
+#include <QThread>
+
 #include "../dialogs/keypressdialog.h"
 #include "../gen/journals.h"
 #include "../gen/maindef.h"
@@ -10,22 +16,22 @@
 #include "../widgets/etableview.h"
 #include "../widgets/waitwidget.h"
 
-#include <QDialog>
-#include <QModelIndex>
-#include <QThread>
-
 #define MAXSWJNUM 262144
 
-class JournalDialog : public QDialog
+class JournalDialog : public QWidget
 {
     Q_OBJECT
 public:
     JournalDialog(IEC104 *iec, QWidget *parent = nullptr);
     ~JournalDialog();
 
+    quint8 start;
+    int SaveI;
+
 private:
-    WaitWidget *WW;
-    QThread JourThread;
+    // WaitWidget *WW;
+    QMessageBox *MsgBox;
+    QProgressDialog *progress;
 
     void SetupUI();
     QWidget *JourTab(int jourtype);
@@ -46,7 +52,8 @@ private slots:
     void WritePasswordCheck(QString psw);
     void Done(QString msg);
     void Error(QString msg);
-    void SetModel(ETableModel *mdl);
+    // void SetModel(ETableModel *mdl);
+    // void pullProgress(int);
     //    void SetProxyModel(QSortFilterProxyModel *mdl);
 
 public slots:

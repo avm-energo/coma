@@ -28,9 +28,7 @@ MNKTime::MNKTime(QWidget *parent) : QDialog(parent)
     SetupUI();
 }
 
-MNKTime::~MNKTime()
-{
-}
+MNKTime::~MNKTime() { }
 
 void MNKTime::SetupUI()
 {
@@ -148,7 +146,7 @@ void MNKTime::Write_PCDate()
 
 void MNKTime::WriteTime(QDateTime &myDateTime)
 {
-    uint time = myDateTime.toTime_t();
+    uint time = myDateTime.toSecsSinceEpoch();
     if (MainInterface == I_USB)
     {
         TimeFunc::Wait(100);
@@ -189,9 +187,9 @@ void MNKTime::SetTime(quint32 unixtimestamp)
     int cbidx = WDFunc::CBIndex(this, "TimeZone");
 
     if (cbidx == 0)
-        myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::LocalTime);
+        myDateTime = QDateTime::fromSecsSinceEpoch(unixtimestamp, Qt::LocalTime);
     else
-        myDateTime = QDateTime::fromTime_t(unixtimestamp, Qt::UTC);
+        myDateTime = QDateTime::fromSecsSinceEpoch(unixtimestamp, Qt::UTC);
 
     QString systime2 = myDateTime.toString("dd-MM-yyyy HH:mm:ss");
     WDFunc::SetLEData(this, "systime2", systime2);
@@ -219,12 +217,6 @@ void MNKTime::FillTimeFromModBus(QList<ModBus::BSISignalStruct> Time)
     }
 }
 
-void MNKTime::ErrorRead()
-{
-    WDFunc::SetLEData(this, "systime2", "Ошибка чтения");
-}
+void MNKTime::ErrorRead() { WDFunc::SetLEData(this, "systime2", "Ошибка чтения"); }
 
-void MNKTime::TimeWritten()
-{
-    EMessageBox::information(this, "Успешно", "Время записано успешно");
-}
+void MNKTime::TimeWritten() { EMessageBox::information(this, "Успешно", "Время записано успешно"); }
