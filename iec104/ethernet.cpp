@@ -1,15 +1,15 @@
+#include "ethernet.h"
+
+#include "../gen/error.h"
+#include "../gen/stdfunc.h"
+#include "../gen/timefunc.h"
+#include "../widgets/emessagebox.h"
+
+#include <QCoreApplication>
 #include <QSettings>
 #include <QThread>
-#include <QCoreApplication>
 
-#include "ethernet.h"
-#include "../gen/stdfunc.h"
-#include "../gen/error.h"
-#include "../widgets/emessagebox.h"
-#include "../gen/timefunc.h"
-
-Ethernet::Ethernet(QObject *parent) :
-    QObject(parent)
+Ethernet::Ethernet(QObject *parent) : QObject(parent)
 {
     Log = new LogClass;
     Log->Init("ethernet.log");
@@ -27,16 +27,17 @@ void Ethernet::Run()
     EthConnected = false;
     StdFunc::SetDeviceIP(IP);
     sock = new QTcpSocket(this);
-    connect(sock,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(seterr(QAbstractSocket::SocketError)));
-    connect(sock,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(EthStateChanged(QAbstractSocket::SocketState)));
-    connect(sock,SIGNAL(connected()),this,SIGNAL(Connected()));
-    connect(sock,SIGNAL(connected()),this,SLOT(EthSetConnected()));
-    connect(sock,SIGNAL(disconnected()),this,SIGNAL(Disconnected()));
+    connect(sock, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(seterr(QAbstractSocket::SocketError)));
+    connect(sock, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this,
+        SLOT(EthStateChanged(QAbstractSocket::SocketState)));
+    connect(sock, SIGNAL(connected()), this, SIGNAL(Connected()));
+    connect(sock, SIGNAL(connected()), this, SLOT(EthSetConnected()));
+    connect(sock, SIGNAL(disconnected()), this, SIGNAL(Disconnected()));
     Log->info("Connecting to host: " + StdFunc::ForDeviceIP() + ", port: " + QString::number(PORT104));
-    sock->connectToHost(StdFunc::ForDeviceIP(),PORT104,QIODevice::ReadWrite,QAbstractSocket::IPv4Protocol);
-    connect(sock,SIGNAL(readyRead()),this,SLOT(CheckForData()));
+    sock->connectToHost(StdFunc::ForDeviceIP(), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
+    connect(sock, SIGNAL(readyRead()), this, SLOT(CheckForData()));
     TimeFunc::WaitFor(EthConnected, TIMEOUT_BIG);
-    while(!ClosePortAndFinishThread)
+    while (!ClosePortAndFinishThread)
     {
         OutDataBufMtx.lock();
         if (!OutDataBuf.isEmpty()) // что-то пришло в выходной буфер для записи
@@ -62,7 +63,7 @@ void Ethernet::Stop()
 void Ethernet::seterr(QAbstractSocket::SocketError err)
 {
     Log->info("Error: " + sock->errorString());
-    emit error(err+25); // до 24 другие ошибки, err от -1
+    emit error(err + 25); // до 24 другие ошибки, err от -1
     ClosePortAndFinishThread = true;
 }
 

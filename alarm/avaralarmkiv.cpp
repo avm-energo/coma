@@ -1,4 +1,13 @@
 
+#include "avaralarmkiv.h"
+
+#include "../gen/colors.h"
+#include "../gen/error.h"
+#include "../gen/modulebsi.h"
+#include "../usb/commands.h"
+#include "../widgets/wd_func.h"
+#include "abstractalarm.h"
+
 #include <QApplication>
 #include <QBoxLayout>
 #include <QCursor>
@@ -15,14 +24,6 @@
 #include <QStandardPaths>
 #include <QStringListModel>
 #include <QToolBar>
-
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/modulebsi.h"
-#include "../usb/commands.h"
-#include "../widgets/wd_func.h"
-#include "abstractalarm.h"
-#include "avaralarmkiv.h"
 
 AvarAlarmKIV::AvarAlarmKIV(AlarmClass *alarm, QWidget *parent) : AbstractAlarm(parent)
 {
@@ -67,8 +68,12 @@ void AvarAlarmKIV::AvarState()
     dlg->show();
 }
 
-void AvarAlarmKIV::AlarmState() { }
-void AvarAlarmKIV::WarnAlarmState() { }
+void AvarAlarmKIV::AlarmState()
+{
+}
+void AvarAlarmKIV::WarnAlarmState()
+{
+}
 
 void AvarAlarmKIV::Update(QList<bool> states)
 {

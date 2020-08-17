@@ -1,14 +1,14 @@
-#include <QApplication>
-#include <QPushButton>
-#include <QMessageBox>
 #include "emessagebox.h"
+
+#include <QApplication>
+#include <QMessageBox>
+#include <QPushButton>
 
 #if QT_VERSION >= 0x040600
 #include <QScopedPointer>
 #else
 #include <QSharedPointer>
 #endif
-
 
 /*
     Copyright (c) 2009-10 Qtrac Ltd. All rights reserved.
@@ -26,8 +26,7 @@
 namespace EMessageBox
 {
 
-void information(QWidget *parent, const QString &title,
-                 const QString &text, const QString &detailedText)
+void information(QWidget *parent, const QString &title, const QString &text, const QString &detailedText)
 {
 #if QT_VERSION >= 0x040600
     QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
@@ -42,12 +41,11 @@ void information(QWidget *parent, const QString &title,
         messageBox->setInformativeText(detailedText);
     messageBox->setIcon(QMessageBox::Information);
     messageBox->addButton(QMessageBox::Ok);
-//    messageBox->addButton(QMessageBox::Close);
+    //    messageBox->addButton(QMessageBox::Close);
     messageBox->exec();
 }
 
-void error(QWidget *parent, const QString &title,
-                 const QString &text, const QString &detailedText)
+void error(QWidget *parent, const QString &title, const QString &text, const QString &detailedText)
 {
 #if QT_VERSION >= 0x040600
     QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
@@ -65,9 +63,8 @@ void error(QWidget *parent, const QString &title,
     messageBox->exec();
 }
 
-bool question(QWidget *parent, const QString &title,
-              const QString &text, const QString &detailedText,
-              const QString &yesText, const QString &noText)
+bool question(QWidget *parent, const QString &title, const QString &text, const QString &detailedText,
+    const QString &yesText, const QString &noText)
 {
 #if QT_VERSION >= 0x040600
     QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));

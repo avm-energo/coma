@@ -4,5 +4,5 @@
 int MainInterface;
 quint32 MTypeB;
 quint32 MTypeM;
-//int TheEnd;
-//int StopRead;
+// int TheEnd;
+// int StopRead;

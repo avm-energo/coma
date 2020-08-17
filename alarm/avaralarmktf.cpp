@@ -1,5 +1,11 @@
 #include "avaralarmktf.h"
 
+#include "../gen/colors.h"
+#include "../gen/error.h"
+#include "../gen/modulebsi.h"
+#include "../usb/commands.h"
+#include "../widgets/wd_func.h"
+
 #include <QApplication>
 #include <QBoxLayout>
 #include <QCursor>
@@ -16,12 +22,6 @@
 #include <QStandardPaths>
 #include <QStringListModel>
 #include <QToolBar>
-
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/modulebsi.h"
-#include "../usb/commands.h"
-#include "../widgets/wd_func.h"
 
 AvarAlarmKTF::AvarAlarmKTF(AlarmClass *alarm, QWidget *parent) : AbstractAlarm(parent)
 {
@@ -60,8 +60,12 @@ void AvarAlarmKTF::AvarState()
     setLayout(lyout);
 }
 
-void AvarAlarmKTF::AlarmState() { }
-void AvarAlarmKTF::WarnAlarmState() { }
+void AvarAlarmKTF::AlarmState()
+{
+}
+void AvarAlarmKTF::WarnAlarmState()
+{
+}
 
 void AvarAlarmKTF::Update(QList<bool> states)
 {

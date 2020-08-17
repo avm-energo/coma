@@ -1,16 +1,16 @@
 #ifndef CHEKDIALOGKTF_H
 #define CHEKDIALOGKTF_H
 
-#include "eabstractcheckdialog.h"
-#include "checkktf.h"
-#include "check.h"
-#include "../iec104/iec104.h"
 #include "../iec104/ethernet.h"
+#include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
+#include "check.h"
+#include "checkktf.h"
+#include "eabstractcheckdialog.h"
 
 class ChekDialogKTF : public EAbstractCheckDialog
 {
-     Q_OBJECT
+    Q_OBJECT
 
 public:
     ChekDialogKTF(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
@@ -19,10 +19,9 @@ public:
 
     void USBUpdate();
 
-
 public slots:
-    void SetPredAlarmColor(quint8*);
-    void SetAlarmColor(quint8* Alarm);
+    void SetPredAlarmColor(quint8 *);
+    void SetAlarmColor(quint8 *Alarm);
     void UpdateFlData(IEC104Thread::FlSignals104 *);
     void UpdateSponData(IEC104Thread::SponSignals *);
 
@@ -31,7 +30,8 @@ private:
     QTimer *BdTimer;
     int BdNum;
     bool XlsxWriting;
-    const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
+    const QString ValuesFormat
+        = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: blue; font: bold 10px;}";
     quint8 stColor[7];
 
     QWidget *AutoCheckUI(); // UI для автоматической проверки модуля
@@ -49,9 +49,6 @@ private slots:
     void StopBdMeasurements();
     void UpdateModBusData(QList<ModBus::SignalStruct> Signal);
     void onModbusStateChanged(ConnectionStates state);
-
-
-
 };
 
 #endif // CHEKDIALOGKTF_H

@@ -8,7 +8,7 @@ class EStackedWidget : public QStackedWidget
 {
     Q_OBJECT
 public:
-    EStackedWidget(QWidget *parent=0);
+    EStackedWidget(QWidget *parent = 0);
     ~EStackedWidget();
 
 public:

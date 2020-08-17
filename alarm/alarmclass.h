@@ -10,10 +10,6 @@
 #define WARNBSIMASK 0x00005F55
 #define AVARBSIMASK 0x000020AA
 
-#include <QByteArray>
-#include <QDialog>
-#include <QMap>
-
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
@@ -22,6 +18,10 @@
 #include "../modbus/modbus.h"
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
+
+#include <QByteArray>
+#include <QDialog>
+#include <QMap>
 
 class AlarmClass : public QObject
 {

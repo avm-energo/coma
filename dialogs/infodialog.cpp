@@ -1,33 +1,32 @@
-#include <QVBoxLayout>
 #include "infodialog.h"
+
 #include "../gen/colors.h"
 #include "../gen/error.h"
-#include "../gen/stdfunc.h"
 #include "../gen/modulebsi.h"
+#include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
 
+#include <QVBoxLayout>
 
-InfoDialog::InfoDialog(QWidget *parent) :
-    QDialog(parent)
+InfoDialog::InfoDialog(QWidget *parent) : QDialog(parent)
 {
     SetupUI();
 }
 
 void InfoDialog::SetupUI()
 {
-     Inf[MTYPE_KIV] = "АВМ-КИВ";
-     Inf[MTYPE_KTF] = "АВМ-КТФ";
+    Inf[MTYPE_KIV] = "АВМ-КИВ";
+    Inf[MTYPE_KTF] = "АВМ-КТФ";
 
-     quint32 MType=MTypeB+MTypeM;
+    quint32 MType = MTypeB + MTypeM;
 
-
-    QString tmps = "QDialog {background-color: "+QString(MAINWINCLRA1)+";}";
+    QString tmps = "QDialog {background-color: " + QString(MAINWINCLRA1) + ";}";
     setStyleSheet(tmps);
     setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *slyout = new QGridLayout;
     slyout->addWidget(WDFunc::NewLBL(this, "Тип устройства:"), 0, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBL(this, Inf[MType]), 0, 1, 1, 1); //ModuleBSI::GetModuleTypeString())
+    slyout->addWidget(WDFunc::NewLBL(this, Inf[MType]), 0, 1, 1, 1); // ModuleBSI::GetModuleTypeString())
     slyout->addWidget(WDFunc::NewLBL(this, "Серийный номер устройства:"), 1, 0, 1, 1, Qt::AlignRight);
     slyout->addWidget(WDFunc::NewLBLT(this, "", "snle"), 1, 1, 1, 1);
     slyout->addWidget(WDFunc::NewLBL(this, "Версия ПО:"), 2, 0, 1, 1, Qt::AlignRight);
@@ -64,10 +63,11 @@ void InfoDialog::FillBsi()
     ModuleBSI::ModuleBsi.Hth = bsi.Hth;
     WDFunc::SetLBLText(this, "snle", QString::number(bsi.SerialNum, 16));
     WDFunc::SetLBLText(this, "fwverle", StdFunc::VerToStr(bsi.Fwver));
-    WDFunc::SetLBLText(this, "cfcrcle", "0x"+QString::number(static_cast<uint>(bsi.Cfcrc), 16));
-    WDFunc::SetLBLText(this, "rstle", "0x"+QString::number(bsi.Rst, 16));
+    WDFunc::SetLBLText(this, "cfcrcle", "0x" + QString::number(static_cast<uint>(bsi.Cfcrc), 16));
+    WDFunc::SetLBLText(this, "rstle", "0x" + QString::number(bsi.Rst, 16));
     WDFunc::SetLBLText(this, "rstcountle", QString::number(bsi.RstCount, 16));
-    WDFunc::SetLBLText(this, "cpuidle", QString::number(bsi.UIDHigh, 16)+QString::number(bsi.UIDMid, 16)+QString::number(bsi.UIDLow, 16));
+    WDFunc::SetLBLText(this, "cpuidle",
+        QString::number(bsi.UIDHigh, 16) + QString::number(bsi.UIDMid, 16) + QString::number(bsi.UIDLow, 16));
     WDFunc::SetLBLText(this, "typeble", QString::number(bsi.MTypeB, 16));
     WDFunc::SetLBLText(this, "snble", QString::number(bsi.SerialNumB, 16));
     WDFunc::SetLBLText(this, "hwble", StdFunc::VerToStr(bsi.HwverB));
@@ -75,7 +75,6 @@ void InfoDialog::FillBsi()
     WDFunc::SetLBLText(this, "snmle", QString::number(bsi.SerialNumM, 16));
     WDFunc::SetLBLText(this, "hwmle", StdFunc::VerToStr(bsi.HwverM));
 }
-
 
 void InfoDialog::ClearBsi()
 {
@@ -92,5 +91,4 @@ void InfoDialog::ClearBsi()
     WDFunc::SetLBLText(this, "snmle", "");
     WDFunc::SetLBLText(this, "hwmle", "");
     // расшифровка Hth
-
 }

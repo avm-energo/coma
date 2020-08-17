@@ -1,11 +1,10 @@
 #include <QDateTime>
 #include <QDir>
 #define LZMA_API_STATIC
-#include "lzma/lzma.h"
-
-#include "logclass.h"
-#include "stdfunc.h"
 #include "error.h"
+#include "logclass.h"
+#include "lzma/lzma.h"
+#include "stdfunc.h"
 
 LogClass::LogClass(QObject *parent) : QObject(parent)
 {
@@ -52,7 +51,7 @@ void LogClass::info(const QString &str)
 void LogClass::warning(const QString &str)
 {
     if (CanLog)
-        WriteFile("Warning",str);
+        WriteFile("Warning", str);
 }
 
 void LogClass::intvarvalue(const QString &var, int value)
@@ -68,7 +67,7 @@ void LogClass::WriteFile(const QString &Prepend, const QString &msg)
         mtx->lock();
         QString tmps = "[" + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz") + "]";
         fp->write(tmps.toLocal8Bit());
-        tmps = "["+Prepend+"] ";
+        tmps = "[" + Prepend + "] ";
         fp->write(tmps.toLocal8Bit());
         fp->write(msg.toLocal8Bit());
         fp->write("\n");
@@ -101,10 +100,10 @@ void LogClass::CheckAndGz()
     {
         int i;
         // rotating
-        for (i=9; i>0; --i)
+        for (i = 9; i > 0; --i)
         {
             QString tmpsnew = GZippedLogFile + "." + QString::number(i) + ".xz";
-            QString tmpsold = GZippedLogFile + "." + QString::number(i-1) + ".xz";
+            QString tmpsold = GZippedLogFile + "." + QString::number(i - 1) + ".xz";
             QFile fn;
             fn.setFileName(tmpsnew);
             if (fn.exists())
@@ -138,13 +137,13 @@ void LogClass::CheckAndGz()
         fd.setFileName(LogFile);
         if (!fd.open(QIODevice::ReadOnly | QIODevice::Text))
         {
-            ERMSG("Cannot open the file"+LogFile);
+            ERMSG("Cannot open the file" + LogFile);
             return;
         }
         fr.setFileName(GZippedLogFile);
         if (!fr.open(QIODevice::WriteOnly | QIODevice::Truncate))
         {
-            ERMSG("Cannot open the file"+GZippedLogFile);
+            ERMSG("Cannot open the file" + GZippedLogFile);
             return;
         }
         lzma_action action = LZMA_RUN;

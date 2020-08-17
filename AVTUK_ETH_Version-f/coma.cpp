@@ -21,6 +21,7 @@
  */
 
 #include "coma.h"
+
 #include "../check/checkdialogkiv.h"
 #include "../check/chekdialogktf.h"
 #include "../config/confdialogkdv.h"
@@ -40,6 +41,7 @@
 #include "../widgets/etabwidget.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
+
 #include <QApplication>
 #include <QCursor>
 #include <QDialog>
@@ -95,7 +97,10 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     splash->finish(this);
 }
 
-Coma::~Coma() { Disconnect(); }
+Coma::~Coma()
+{
+    Disconnect();
+}
 
 void Coma::SetupUI()
 {
@@ -653,7 +658,10 @@ void Coma::NewTimersBda()
         connect(BdaTimer, SIGNAL(timeout()), CheckB, SLOT(USBUpdate()));
 }
 
-void Coma::SetMode(int mode) { Mode = mode; }
+void Coma::SetMode(int mode)
+{
+    Mode = mode;
+}
 
 void Coma::Go(const QString &parameter)
 {
@@ -914,11 +922,20 @@ void Coma::FileTimeOut()
         EMessageBox::information(this, "Ошибка", "Ошибка");
 }
 
-void Coma::SetProgressBar2Size(int size) { SetProgressBarSize("2", size); }
+void Coma::SetProgressBar2Size(int size)
+{
+    SetProgressBarSize("2", size);
+}
 
-void Coma::SetProgressBar2(int cursize) { SetProgressBar("2", cursize); }
+void Coma::SetProgressBar2(int cursize)
+{
+    SetProgressBar("2", cursize);
+}
 
-void Coma::SetCancelled() { Cancelled = true; }
+void Coma::SetCancelled()
+{
+    Cancelled = true;
+}
 
 void Coma::SetProgressBarSize(QString prbnum, int size)
 {
@@ -1019,9 +1036,15 @@ void Coma::DisconnectAndClear()
     Reconnect = false;
 }
 
-void Coma::ShowErrorMessageBox(QString message) { EMessageBox::error(this, "Ошибка", message); }
+void Coma::ShowErrorMessageBox(QString message)
+{
+    EMessageBox::error(this, "Ошибка", message);
+}
 
-void Coma::resizeEvent(QResizeEvent *e) { QMainWindow::resizeEvent(e); }
+void Coma::resizeEvent(QResizeEvent *e)
+{
+    QMainWindow::resizeEvent(e);
+}
 
 void Coma::keyPressEvent(QKeyEvent *e)
 {
@@ -1076,11 +1099,20 @@ void Coma::Cancel()
     emit CloseConnectDialog();
 }
 
-void Coma::ModBusFinished() { ActiveThreads &= ~THREADMBS; }
+void Coma::ModBusFinished()
+{
+    ActiveThreads &= ~THREADMBS;
+}
 
-void Coma::Ch104Finished() { ActiveThreads &= ~THREAD104; }
+void Coma::Ch104Finished()
+{
+    ActiveThreads &= ~THREAD104;
+}
 
-void Coma::USBFinished() { ActiveThreads &= ~THREADUSB; }
+void Coma::USBFinished()
+{
+    ActiveThreads &= ~THREADUSB;
+}
 
 void Coma::SetDefConf()
 {
@@ -1097,6 +1129,12 @@ void Coma::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
-void Coma::CheckTimeFinish() { TimeThrFinished = true; }
+void Coma::CheckTimeFinish()
+{
+    TimeThrFinished = true;
+}
 
-void Coma::CheckModBusFinish() { TimeThrFinished = true; }
+void Coma::CheckModBusFinish()
+{
+    TimeThrFinished = true;
+}

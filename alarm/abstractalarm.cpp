@@ -1,33 +1,26 @@
-#include <QLabel>
-#include <QProgressBar>
+#include "abstractalarm.h"
+
+#include "../gen/colors.h"
+#include "../gen/error.h"
+#include "../widgets/wd_func.h"
+
+#include <QApplication>
+#include <QBoxLayout>
+#include <QCursor>
+#include <QDialog>
 #include <QDir>
+#include <QGroupBox>
+#include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
-#include <QToolBar>
-#include <QDialog>
-#include <QCursor>
-#include <QSplashScreen>
-#include <QApplication>
+#include <QProgressBar>
+#include <QPushButton>
 #include <QSettings>
-#include <QGroupBox>
+#include <QSplashScreen>
 #include <QStandardPaths>
 #include <QStringListModel>
-#include <QBoxLayout>
-#include <QPushButton>
+#include <QToolBar>
 
-
-#include "abstractalarm.h"
-#include "../gen/colors.h"
-#include "../widgets/wd_func.h"
-#include "../gen/error.h"
-
-
-
-AbstractAlarm::AbstractAlarm(QWidget *parent):
-      QWidget(parent)
+AbstractAlarm::AbstractAlarm(QWidget *parent) : QWidget(parent)
 {
-
-
 }
-
-

@@ -10,6 +10,7 @@
 #include "../modbus/modbus.h"
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
+
 #include <QByteArray>
 #include <QDialog>
 #include <QMap>

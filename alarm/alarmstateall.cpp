@@ -1,5 +1,11 @@
 #include "alarmstateall.h"
 
+#include "../gen/colors.h"
+#include "../gen/error.h"
+#include "../gen/modulebsi.h"
+#include "../usb/commands.h"
+#include "../widgets/wd_func.h"
+
 #include <QApplication>
 #include <QBoxLayout>
 #include <QCursor>
@@ -17,13 +23,10 @@
 #include <QStringListModel>
 #include <QToolBar>
 
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/modulebsi.h"
-#include "../usb/commands.h"
-#include "../widgets/wd_func.h"
-
-AlarmStateAll::AlarmStateAll(QWidget *parent) : AbstractAlarm(parent) { AlarmState(); }
+AlarmStateAll::AlarmStateAll(QWidget *parent) : AbstractAlarm(parent)
+{
+    AlarmState();
+}
 
 void AlarmStateAll::AlarmState()
 {
@@ -59,6 +62,12 @@ void AlarmStateAll::AlarmState()
     lyout->addWidget(pb, 0);
     setLayout(lyout);
 }
-void AlarmStateAll::WarnAlarmState() { }
-void AlarmStateAll::AvarState() { }
-void AlarmStateAll::Update(QList<bool>) { }
+void AlarmStateAll::WarnAlarmState()
+{
+}
+void AlarmStateAll::AvarState()
+{
+}
+void AlarmStateAll::Update(QList<bool>)
+{
+}

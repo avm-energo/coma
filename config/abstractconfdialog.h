@@ -1,10 +1,11 @@
 #ifndef ABSTRACTCONFDIALOG_H
 #define ABSTRACTCONFDIALOG_H
 
-#define MAXBYTEARRAY    65535
+#define MAXBYTEARRAY 65535
+
+#include "config.h"
 
 #include <QDialog>
-#include "config.h"
 
 #define MAXCONFSIZE 4096 // максимальный размер файла конфигурации
 
@@ -18,7 +19,7 @@ public:
 
     QStringList CheckConfErrors;
     bool IsNeededDefConf = false;
-//    int confIndex; //, timeIndex; //, checkIndex;
+    //    int confIndex; //, timeIndex; //, checkIndex;
 
     QWidget *ConfButtons();
     virtual void Fill() = 0; // заполнить значения полей вывода из структуры конфигурации
@@ -26,14 +27,14 @@ public:
     virtual void SetDefConf() = 0; // задать конфигурацию по умолчанию
     virtual void CheckConf() = 0; // проверить конфигурацию на корректность, признаком наличия некорректностей
     void ReadConf();
-                                    // является непустой список CheckConfErrors
+    // является непустой список CheckConfErrors
     void PrereadConf();
     int GetChNumFromObjectName(QString ObjectName);
 
     int WriteCheckPassword();
 
 public slots:
-     void WriteConfMessageOk();
+    void WriteConfMessageOk();
 
 private:
     bool ok;
@@ -44,20 +45,21 @@ private slots:
     void SaveConfToFile();
     void LoadConfFromFile();
     void ButtonReadConf();
-    void FillConf(QVector<S2::DataRec>*);
+    void FillConf(QVector<S2::DataRec> *);
     void WritePasswordCheck(QString psw);
-
 
 public slots:
     void WriteConf();
 
 signals:
-    void writeConfFile(QVector<S2::DataRec>*);
+    void writeConfFile(QVector<S2::DataRec> *);
     void ReadConfig(char);
-    void BsiIsNeedToBeAcquiredAndChecked(); // signal to reload start block emitted when new configuration has been sent to module
-    void NewConfToBeLoaded(); // signal to load configuration in all appropriate windows (main conf, base conf, mez conf)
+    void BsiIsNeedToBeAcquiredAndChecked(); // signal to reload start block emitted when new configuration has been sent
+                                            // to module
+    void
+    NewConfToBeLoaded(); // signal to load configuration in all appropriate windows (main conf, base conf, mez conf)
     void DefConfToBeLoaded(); // signal to load default configuration
-//    void StopRead(int);
+    //    void StopRead(int);
     void WritePasswordChecked();
 };
 

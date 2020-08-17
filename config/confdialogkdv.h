@@ -1,12 +1,12 @@
 #ifndef CONFDIALOGKDV_H
 #define CONFDIALOGKDV_H
 
-#include <QDialog>
-
 #include "../config/configkdv.h"
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
 #include "abstractconfdialog.h"
+
+#include <QDialog>
 #include <QLabel>
 #include <QVBoxLayout>
 

@@ -1,13 +1,6 @@
 #ifndef COMA_H
 #define COMA_H
 
-#include "../check/eabstractcheckdialog.h"
-#include "../config/confdialog.h"
-#include "../dialogs/cordialog.h"
-#include "../dialogs/cordialogktf.h"
-#include <QMainWindow>
-#include <QResizeEvent>
-
 #include "../alarm/abstractalarm.h"
 #include "../alarm/alarmstateall.h"
 #include "../alarm/alarmwidget.h"
@@ -15,12 +8,19 @@
 #include "../alarm/avaralarmktf.h"
 #include "../alarm/warnalarmkiv.h"
 #include "../alarm/warnalarmktf.h"
+#include "../check/eabstractcheckdialog.h"
+#include "../config/confdialog.h"
 #include "../dialogs/abstractcordialog.h"
 #include "../dialogs/connectdialog.h"
+#include "../dialogs/cordialog.h"
+#include "../dialogs/cordialogktf.h"
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/infodialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/mnktime.h"
+
+#include <QMainWindow>
+#include <QResizeEvent>
 
 #define RECONNECTINTERVAL 3000
 #define WAITINTERVAL 15000

@@ -1,17 +1,18 @@
 #ifndef GETOSCPBDELEGATE_H
 #define GETOSCPBDELEGATE_H
 
-#include <QStyledItemDelegate>
 #include <QObject>
+#include <QStyledItemDelegate>
 
 class GetOscPBDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
-    GetOscPBDelegate(QObject *parent=0);
+    GetOscPBDelegate(QObject *parent = 0);
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
+    bool editorEvent(
+        QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
 signals:
     void clicked(const QModelIndex &index);

@@ -3,14 +3,12 @@
 
 #include "../alarm/abstractalarm.h"
 
-
-class WarnAlarmKIV: public AbstractAlarm
+class WarnAlarmKIV : public AbstractAlarm
 {
-     Q_OBJECT
+    Q_OBJECT
 
 public:
-    explicit  WarnAlarmKIV(AlarmClass *alarm,QWidget *parent = nullptr);
-
+    explicit WarnAlarmKIV(AlarmClass *alarm, QWidget *parent = nullptr);
 
 public slots:
 
@@ -20,12 +18,7 @@ public slots:
 
     void Update(QList<bool> states);
 
-
 private:
-
-
-
-
 };
 
 #endif // PREDALARM84_H

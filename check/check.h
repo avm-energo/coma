@@ -3,17 +3,16 @@
 
 #include <QWidget>
 
-#define BD_COMMON   0
-#define BD_MEZONIN  100
+#define BD_COMMON 0
+#define BD_MEZONIN 100
 
 class Check
 {
 public:
-
     struct Bd0
     {
-        float Tmk;	// Температура кристалла микроконтроллера, °С
-        float Vbat;	// Напряжение аккумуляторной батареи, В
+        float Tmk; // Температура кристалла микроконтроллера, °С
+        float Vbat; // Напряжение аккумуляторной батареи, В
     };
 
     Bd0 Bd_block0;

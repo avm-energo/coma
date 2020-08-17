@@ -1,8 +1,9 @@
 #ifndef REPORT_H
 #define REPORT_H
 
-#include <QStandardItemModel>
 #include "limereport/lrreportengine.h"
+
+#include <QStandardItemModel>
 
 class ReportModel : public QStandardItemModel
 {
@@ -22,7 +23,7 @@ class Report
 {
 
 public:
-    Report(const QString &templatepath, QWidget *parent=nullptr);
+    Report(const QString &templatepath, QWidget *parent = nullptr);
 
     void AddModel(const QString &modelname, QStandardItemModel *model);
     void SetVar(const QString &varname, const QString &varvalue);

@@ -1,41 +1,39 @@
 
-#include <QLabel>
-#include <QProgressBar>
-#include <QDir>
-#include <QMenu>
-#include <QMenuBar>
-#include <QToolBar>
-#include <QDialog>
-#include <QCursor>
-#include <QSplashScreen>
-#include <QApplication>
-#include <QSettings>
-#include <QGroupBox>
-#include <QStandardPaths>
-#include <QStringListModel>
-#include <QBoxLayout>
-#include <QPushButton>
-
-
-#include "abstractalarm.h"
-#include "../gen/colors.h"
-#include "../widgets/wd_func.h"
-#include "../gen/modulebsi.h"
-#include "../gen/error.h"
-#include "../usb/commands.h"
 #include "warnalarmkiv.h"
 
-WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm,QWidget *parent):
-    AbstractAlarm(parent)
-{
-   Alarm = alarm;
-   WarnAlarmState();
-}
+#include "../gen/colors.h"
+#include "../gen/error.h"
+#include "../gen/modulebsi.h"
+#include "../usb/commands.h"
+#include "../widgets/wd_func.h"
+#include "abstractalarm.h"
 
+#include <QApplication>
+#include <QBoxLayout>
+#include <QCursor>
+#include <QDialog>
+#include <QDir>
+#include <QGroupBox>
+#include <QLabel>
+#include <QMenu>
+#include <QMenuBar>
+#include <QProgressBar>
+#include <QPushButton>
+#include <QSettings>
+#include <QSplashScreen>
+#include <QStandardPaths>
+#include <QStringListModel>
+#include <QToolBar>
+
+WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm, QWidget *parent) : AbstractAlarm(parent)
+{
+    Alarm = alarm;
+    WarnAlarmState();
+}
 
 void WarnAlarmKIV::WarnAlarmState()
 {
-     QDialog *dlg = new QDialog;
+    QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -59,7 +57,7 @@ void WarnAlarmKIV::WarnAlarmState()
                                              << "Не заданы паспортные значения                          "
                                              << "Сигнализация по повышенному небалансу токов            ";
     QWidget *w = new QWidget;
-    //Wpred = w;
+    // Wpred = w;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
     for (int i = 0; i < Alarm->MapAlarm[MTYPE_KIV].warnCounts; ++i)
@@ -74,8 +72,8 @@ void WarnAlarmKIV::WarnAlarmState()
 
     lyout->addWidget(w);
     QPushButton *pb = new QPushButton("Ok");
-    connect(pb,SIGNAL(clicked()),dlg,SLOT(close()));
-    lyout->addWidget(pb,0);
+    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
+    lyout->addWidget(pb, 0);
     setLayout(lyout);
 }
 
@@ -92,10 +90,9 @@ void WarnAlarmKIV::Update(QList<bool> states)
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
 
-        for(i=0; i<Alarm->MapAlarm[MTYPE_KIV].warnCounts; i++)
-        {
-            quint32 alarm = states[i];
-            WDFunc::SetLBLImage(this, (QString::number(i)), (alarm) ? pmred : pmgrn);
-        }
-
+    for (i = 0; i < Alarm->MapAlarm[MTYPE_KIV].warnCounts; i++)
+    {
+        quint32 alarm = states[i];
+        WDFunc::SetLBLImage(this, (QString::number(i)), (alarm) ? pmred : pmgrn);
+    }
 }

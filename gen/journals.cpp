@@ -1,18 +1,19 @@
-#include "QtXlsx/xlsxdocument.h"
-#include <QApplication>
-#include <QDate>
-#include <QFile>
-#include <QObject>
+#include "journals.h"
 
 #include "../config/config.h"
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
+#include "QtXlsx/xlsxdocument.h"
 #include "error.h"
 #include "files.h"
-#include "journals.h"
 #include "maindef.h"
 #include "s2.h"
 #include "timefunc.h"
+
+#include <QApplication>
+#include <QDate>
+#include <QFile>
+#include <QObject>
 
 Journals::Journals(QObject *parent) : QObject(parent)
 {
@@ -21,7 +22,9 @@ Journals::Journals(QObject *parent) : QObject(parent)
     _measModel = new ETableModel;
 }
 
-Journals::~Journals() { }
+Journals::~Journals()
+{
+}
 
 void Journals::SetProxyModels(
     QSortFilterProxyModel *workmdl, QSortFilterProxyModel *sysmdl, QSortFilterProxyModel *measmdl)
@@ -31,9 +34,15 @@ void Journals::SetProxyModels(
     _proxyMeasModel = measmdl;
 }
 
-void Journals::SetJourType(int jourtype) { _jourType = jourtype; }
+void Journals::SetJourType(int jourtype)
+{
+    _jourType = jourtype;
+}
 
-void Journals::SetJourFile(const QString &jourfile) { _jourFile = jourfile; }
+void Journals::SetJourFile(const QString &jourfile)
+{
+    _jourFile = jourfile;
+}
 /*
 void Journals::SetParentWidget(QWidget *w)
 {
@@ -284,7 +293,10 @@ void Journals::ResultReady()
     emit Done("Прочитано успешно");
 }
 
-void Journals::FillSysJour(QByteArray ba) { FillEventsTable(ba); }
+void Journals::FillSysJour(QByteArray ba)
+{
+    FillEventsTable(ba);
+}
 
 void Journals::FillMeasJour(QByteArray ba)
 {
@@ -302,7 +314,10 @@ void Journals::FillMeasJour(QByteArray ba)
     FillMeasTable(ba);
 }
 
-void Journals::FillWorkJour(QByteArray ba) { FillEventsTable(ba); }
+void Journals::FillWorkJour(QByteArray ba)
+{
+    FillEventsTable(ba);
+}
 
 void Journals::StartGetJour()
 {

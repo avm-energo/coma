@@ -1,11 +1,12 @@
 #ifndef ERRORPROTOCOLWIDGET_H
 #define ERRORPROTOCOLWIDGET_H
 
-#include <QAbstractTableModel>
-#include <QWidget>
 #include "../gen/error.h"
 
-#define MAX_MSG     1000
+#include <QAbstractTableModel>
+#include <QWidget>
+
+#define MAX_MSG 1000
 
 class ErrorProtocolModel : public QAbstractTableModel
 {
@@ -14,7 +15,7 @@ public:
     explicit ErrorProtocolModel(QObject *parent = 0);
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role);
-    QVariant data (const QModelIndex &index, int role) const;
+    QVariant data(const QModelIndex &index, int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
     int rowCount(const QModelIndex &index = QModelIndex()) const;
     int columnCount(const QModelIndex &index = QModelIndex()) const;
