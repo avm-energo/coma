@@ -155,7 +155,7 @@ void ConfDialogKTF::Fill()
     WDFunc::SetSPBData(this, "GOvc", KTF->Bci_block.GOvc);
     WDFunc::SetSPBData(this, "TdatNum", KTF->Bci_block.TdatNum);
 
-    //....................
+    //......................................
 
     QString StrIP, StrMask, StrSNTP, StrGate;
     QLocale german(QLocale::German);
@@ -194,7 +194,7 @@ void ConfDialogKTF::Fill()
     }
     WDFunc::SetCBIndex(this, "Baud_ID", cbidx);
     //    cbidx = (KTF->Com_param.Parity_ID & 0x04) ? 2 :
-    //    ((KTF->Com_param.Parity_ID & 0x02) ? 1 : 0);
+    //    ((KTF->Com_param.Parity_ID & 0x02) ? 1 : 0);z
     if (KTF->Com_param.Parity > 2)
         cbidx = 0;
     else
@@ -1125,13 +1125,23 @@ void ConfDialogKTF::SetupUI()
     ConfTW->addTab(wind5, "ModBusMaster");
     //  area2->verticalScrollBar()->setValue(area2->verticalScrollBar()->maximum());
 
-    ConfTW->addTab(wind6, "Прочее");
-
+    Conf = new ConfDialog(S2Config, MTypeB, MTypeM);
     if (MTypeB == Config::MTB_A2)
     {
-        ConfTW->addTab(area, "Связь");
-        area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
+        ConfTW->addTab(Conf->SetupMainBlk(this), "Связь");
     }
+
+    //    ConfTW->addTab(Conf->SetupComParam(this), "ModBusMaster");
+
+    //    ConfTW->addTab(Conf->SetupBl(this), "Общее");
+
+    ConfTW->addTab(wind6, "Прочее");
+
+    //    if (MTypeB == Config::MTB_A2)
+    //    {
+    //        ConfTW->addTab(area, "Связь");
+    //        area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
+    //    }
 
     lyout->addWidget(ConfTW);
 

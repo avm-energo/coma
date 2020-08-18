@@ -76,7 +76,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     Disconnected = true;
     Reconnect = false;
     TimeD = nullptr;
-    MainConfDialog = nullptr;
+    // MainConfDialog = nullptr;
     ConfB = ConfM = nullptr;
     CheckB = CheckM = nullptr;
     Wpred = Walarm = nullptr;
@@ -434,6 +434,11 @@ void Coma::PrepareDialogs()
             if (MainInterface != I_RS485)
                 ConfM = new ConfDialogKTF(S2Config);
 
+            //            CheckB = new CheckDialogKDV(BoardTypes::BT_BASE);
+            //            S2Config->clear();
+            //            if (MainInterface != I_RS485)
+            //                ConfM = new ConfDialogKDV(S2Config);
+
             CorD = new CorDialogKTF;
 
             WarnAlarmKTFWidget = new WarnAlarmKTF(Alarm);
@@ -526,8 +531,8 @@ void Coma::CloseDialogs()
     if (CheckM != nullptr)
         CheckM->close();
     //    CheckB = CheckM = nullptr;
-    if (MainConfDialog != nullptr)
-        MainConfDialog->close();
+    //    if (MainConfDialog != nullptr)
+    //        MainConfDialog->close();
     //    MainConfDialog = nullptr;
     if (ConfB != nullptr)
         ConfB->close();
@@ -805,8 +810,8 @@ int Coma::CheckPassword()
 
 void Coma::SetMainDefConf()
 {
-    if (MainConfDialog != nullptr)
-        MainConfDialog->SetDefConf();
+    //    if (MainConfDialog != nullptr)
+    //        MainConfDialog->SetDefConf();
 }
 
 void Coma::SetBDefConf()
@@ -823,8 +828,8 @@ void Coma::SetMDefConf()
 
 void Coma::Fill()
 {
-    if (MainConfDialog != nullptr)
-        MainConfDialog->Fill();
+    //    if (MainConfDialog != nullptr)
+    //        MainConfDialog->Fill();
     if (ConfB != nullptr)
         ConfB->Fill();
     if (ConfM != nullptr)

@@ -283,75 +283,6 @@ void ConfDialogKIV::SetupUI()
 
     QGroupBox *gb = new QGroupBox;
 
-    // gb->setTitle("Настройка времени");
-    /*glyout = new QGridLayout;
-    glyout->setColumnStretch(2, 50);
-    QLabel *lbl = new QLabel("Адрес базовой станции:");
-    glyout->addWidget(lbl,0,0,1,1,Qt::AlignRight);
-    QDoubleSpinBox *dspbls = WDFunc::NewSPB(this, "spb.1", 0, 65535, 0,
-    paramcolor);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 0, 1, 1, 1, Qt::AlignLeft);
-    lbl = new QLabel("Интервал циклического опроса, с:");
-    glyout->addWidget(lbl,0,2,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(this, "spb.2", 0, 255, 0, paramcolor);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 0, 3, 1, 1, Qt::AlignLeft);
-    //lbl=new QLabel("c");
-    //glyout->addWidget(lbl,0,4,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Макс. число неподтв. APDU (k):");
-    glyout->addWidget(lbl,1,0,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(this, "spb.6", 0, 255, 0, paramcolor);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 1, 1, 1, 1, Qt::AlignLeft);
-    //lbl=new QLabel("c");
-    //glyout->addWidget(lbl,5,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Макс. число посл. подтв. APDU (w):");
-    glyout->addWidget(lbl,1,2,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(this, "spb.7", 0, 255, 0, paramcolor);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 1, 3, 1, 1, Qt::AlignLeft);
-    lbl = new QLabel("Тайм-аут t1, с:");
-    glyout->addWidget(lbl,2,0,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(this, "spb.3", 0, 255, 0, paramcolor);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 2, 1, 1, 1, Qt::AlignLeft);
-    //lbl=new QLabel("c");
-    //glyout->addWidget(lbl,2,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Тайм-аут t2, с:");
-    glyout->addWidget(lbl,2,2,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(this, "spb.4", 0, 255, 0, paramcolor);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 2, 3, 1, 1, Qt::AlignLeft);
-    //lbl=new QLabel("c");
-    //glyout->addWidget(lbl,3,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Тайм-аут t3, с:");
-    glyout->addWidget(lbl,2,4,1,1,Qt::AlignRight);
-    dspbls = WDFunc::NewSPB(this, "spb.5", 0, 255, 0, paramcolor);
-    connect(dspbls,SIGNAL(valueChanged(double)),this,SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 2, 5, 1, 1, Qt::AlignLeft);
-    //lbl=new QLabel("c");
-    //glyout->addWidget(lbl,4,2,1,1,Qt::AlignLeft);
-
-    //lbl=new QLabel("c");
-    //glyout->addWidget(lbl,6,2,1,1);
-    lbl = new QLabel("Тип синхр. времени:");
-    glyout->addWidget(lbl,3,0,1,1,Qt::AlignRight);
-    QStringList cbl = QStringList() << "SNTP+PPS" << "SNTP";
-    EComboBox *cb = WDFunc::NewCB(this, "spb.8", cbl, paramcolor);
-    cb->setMinimumWidth(70);
-    connect(cb,SIGNAL(currentIndexChanged(int)),this,SLOT(SetCType(int)));
-    glyout->addWidget(cb, 3, 1, 1, 2);
-
-    vlyout2->addLayout(glyout);
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);*/
-    // MEKconf->setLayout(vlyout1);
-
-    /*vlyout2->addLayout(glyout);
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);*/
-
     int row = 0;
     gb = new QGroupBox("Аналоговые параметры");
     font.setFamily("Times");
@@ -410,48 +341,10 @@ void ConfDialogKIV::SetupUI()
         row++;
     }
 
-    /*glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения tg δ вводов,
-    %:"), row,1,1,1);
-
-    for (int i = 0; i < 3; i++)
-    {
-     glyout->addWidget(WDFunc::NewSPB(this, "Tg_init."+QString::number(i), 0,
-    10000, 1, paramcolor), row,2+i,1,1);
-    }
-    row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Коррекция  tg δ вводов:"), row,1,1,1);
-
-    for (int i = 0; i < 3; i++)
-    {
-     glyout->addWidget(WDFunc::NewSPB(this, "corTg."+QString::number(i), 0, 10000,
-    1, paramcolor), row, 2+i, 1, 1);
-    }
-    row++; */
-
-    /*row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Начальное действ. значение тока
-    небаланса:"), row,1,1,1); glyout->addWidget(WDFunc::NewSPB(this, "Iunb_init",
-    0, 10000, 1, paramcolor), row,2,1,3);
-
-    row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Начальное значение угла тока
-    небаланса:"), row,1,1,1); glyout->addWidget(WDFunc::NewSPB(this,
-    "Phy_unb_init", 0, 10000, 1, paramcolor), row,2,1,3);*/
-
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
 
-    /*gb = new QGroupBox("Осциллограммы");
-    vlyout2 = new QVBoxLayout;
-    hlyout = new QHBoxLayout;
-    hlyout->addWidget(WDFunc::NewLBL(this, "Запуск осциллограммы:"));
-    hlyout->addWidget(WDFunc::NewChB(this, "oscchb.0", "по команде Ц",
-    ACONFWCLR)); hlyout->addWidget(WDFunc::NewChB(this, "oscchb.1", "по дискр.
-    входу PD1", ACONFWCLR)); hlyout->addWidget(WDFunc::NewChB(this, "oscchb.2",
-    "по резкому изменению", ACONFWCLR)); vlyout2->addLayout(hlyout);
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);*/
     analog1->setLayout(vlyout1);
 
     gb = new QGroupBox("Уставки сигнализации");
@@ -571,6 +464,8 @@ void ConfDialogKIV::SetupUI()
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
 
+    //..........................................................
+
     analog2->setLayout(vlyout1);
     area2->setWidget(analog2);
 
@@ -594,29 +489,25 @@ void ConfDialogKIV::SetupUI()
     dspbls = WDFunc::NewSPB(this, "spb.2", 0, 255, 0, paramcolor);
     connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
     glyout->addWidget(dspbls, 1, 1, 1, 1, Qt::AlignLeft);
-    // lbl=new QLabel("c");
-    // glyout->addWidget(lbl,1,2,1,1,Qt::AlignLeft);
+
     lbl = new QLabel("Тайм-аут t1, с:");
     glyout->addWidget(lbl, 2, 0, 1, 1, Qt::AlignLeft);
     dspbls = WDFunc::NewSPB(this, "spb.3", 0, 255, 0, paramcolor);
     connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
     glyout->addWidget(dspbls, 2, 1, 1, 1, Qt::AlignLeft);
-    // lbl=new QLabel("c");
-    // glyout->addWidget(lbl,2,2,1,1,Qt::AlignLeft);
+
     lbl = new QLabel("Тайм-аут t2, с:");
     glyout->addWidget(lbl, 3, 0, 1, 1, Qt::AlignLeft);
     dspbls = WDFunc::NewSPB(this, "spb.4", 0, 255, 0, paramcolor);
     connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
     glyout->addWidget(dspbls, 3, 1, 1, 1, Qt::AlignLeft);
-    // lbl=new QLabel("c");
-    // glyout->addWidget(lbl,3,2,1,1,Qt::AlignLeft);
+
     lbl = new QLabel("Тайм-аут t3, с:");
     glyout->addWidget(lbl, 4, 0, 1, 1, Qt::AlignLeft);
     dspbls = WDFunc::NewSPB(this, "spb.5", 0, 255, 0, paramcolor);
     connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
     glyout->addWidget(dspbls, 4, 1, 1, 1, Qt::AlignLeft);
-    // lbl=new QLabel("c");
-    // glyout->addWidget(lbl,4,2,1,1,Qt::AlignLeft);
+
     lbl = new QLabel("Макс. число неподтв. APDU (k):");
     glyout->addWidget(lbl, 5, 0, 1, 1, Qt::AlignLeft);
     dspbls = WDFunc::NewSPB(this, "spb.6", 0, 255, 0, paramcolor);
@@ -629,8 +520,6 @@ void ConfDialogKIV::SetupUI()
     dspbls = WDFunc::NewSPB(this, "spb.7", 0, 255, 0, paramcolor);
     connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
     glyout->addWidget(dspbls, 6, 1, 1, 1, Qt::AlignLeft);
-    // lbl=new QLabel("c");
-    // glyout->addWidget(lbl,6,2,1,1);
 
     row += 7;
 
@@ -650,12 +539,6 @@ void ConfDialogKIV::SetupUI()
 
     glyout->addWidget(WDFunc::NewLE(this, "IP", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
 
-    /*for (int i = 0; i < 4; i++)
-    {
-     glyout->addWidget(WDFunc::NewSPB(this, "IP"+QString::number(i), 0, 10000, 0,
-    paramcolor), row,1+i,1, 1, Qt::AlignLeft);
-    }*/
-
     row++;
     Str.clear();
     for (i = 0; i < 4; i++)
@@ -668,11 +551,6 @@ void ConfDialogKIV::SetupUI()
     }
     glyout->addWidget(WDFunc::NewLBL(this, "Маска:"), row, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLE(this, "Mask", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
-    /*for (int i = 0; i < 4; i++)
-    {
-     glyout->addWidget(WDFunc::NewSPB(this, "Mask"+QString::number(i), 0, 10000,
-    0, paramcolor) , row,1+i,1,1, Qt::AlignLeft);
-    }*/
 
     row++;
     Str.clear();
@@ -686,20 +564,10 @@ void ConfDialogKIV::SetupUI()
     }
     glyout->addWidget(WDFunc::NewLBL(this, "Шлюз:"), row, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLE(this, "GateWay", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
-    /*for (int i = 0; i < 4; i++)
-    {
-     glyout->addWidget(WDFunc::NewSPB(this, "GateWay"+QString::number(i), 0,
-    10000, 0, paramcolor), row,1+i,1,1, Qt::AlignLeft);
-    }*/
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Порт протокола 104:"), row, 0, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(this, "Port0", 0, 10000, 0, paramcolor), row, 1, 1, 1);
-    /*for (int i = 0; i < 4; i++)
-    {
-     glyout->addWidget(WDFunc::NewSPB(this, "Port"+QString::number(i), 0, 10000,
-    0, paramcolor), row,2+i,1,1, Qt::AlignLeft);
-    }*/
 
     row++;
     glyout->addWidget(WDFunc::NewChB(this, "ISNTP", "Использование SNTP сервера"), row, 0, 1, 1);
@@ -716,11 +584,8 @@ void ConfDialogKIV::SetupUI()
     }
     glyout->addWidget(WDFunc::NewLBL(this, "Адрес SNTP сервера:"), row, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLE(this, "SNTP", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
-    /*for (int i = 0; i < 4; i++)
-    {
-     glyout->addWidget(WDFunc::NewSPB(this, "SNTP"+QString::number(i), 0, 10000,
-    0, paramcolor), row,1+i,1,1, Qt::AlignLeft);
-    }*/
+
+    //..................................................
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
@@ -772,22 +637,16 @@ void ConfDialogKIV::SetupUI()
                         << "EvenParity"
                         << "OddParity";
     cb = WDFunc::NewCB(this, "Parity", cbl, paramcolor);
-    // cb->setMinimumWidth(80);
-    // cb->setMinimumHeight(15);
+
     glyout->addWidget(cb, row, 1, 1, 1);
-    // glyout->addWidget(WDFunc::NewSPB(this, "Parity", 0, 10000, 0, paramcolor),
-    // row,2,1,4);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Количество стоповых битов:"), row, 0, 1, 1);
     cbl = QStringList() << "Stop_Bit_1"
                         << "Stop_Bit_2";
     cb = WDFunc::NewCB(this, "StopBit", cbl, paramcolor);
-    // cb->setMinimumWidth(80);
-    // cb->setMinimumHeight(20);
+
     glyout->addWidget(cb, row, 1, 1, 1);
-    // glyout->addWidget(WDFunc::NewSPB(this, "StopBit", 0, 10000, 0, paramcolor),
-    // row,2,1,4);
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Адрес устройства для Modbus:"), row, 0, 1, 1);
@@ -839,14 +698,12 @@ void ConfDialogKIV::SetupUI()
     }
 
     Leftconf->setLayout(vlyout1);
-    // area->setWidget(Leftconf);
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
     QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(TABCOLOR) + ";}";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
-    // ConfTW->addTab(MEKconf,"Конфигурирование МЭК-60870-5-104");
     ConfTW->addTab(analog1, "Аналоговые");
 
     if (MTypeB == Config::MTB_A2)

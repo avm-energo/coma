@@ -9,7 +9,7 @@
 #include "../alarm/warnalarmkiv.h"
 #include "../alarm/warnalarmktf.h"
 #include "../check/eabstractcheckdialog.h"
-#include "../config/confdialog.h"
+#include "../config/abstractconfdialog.h"
 #include "../dialogs/abstractcordialog.h"
 #include "../dialogs/cordialog.h"
 #include "../dialogs/cordialogktf.h"
@@ -193,8 +193,8 @@ private:
     bool Disconnected;
     int Mode; // режим запуска программы
     QVector<S2::DataRec> S2ConfigForTune;
-    ConfDialog *MainConfDialog;
-    ConfDialog *MainTuneDialog;
+    //    ConfDialog *MainConfDialog;
+    //    ConfDialog *MainTuneDialog;
     quint8 HaveAlreadyRed = 0;
     quint32 Mes;
     bool TimeThrFinished;

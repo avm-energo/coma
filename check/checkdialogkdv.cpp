@@ -35,11 +35,27 @@ CheckDialogKDV::CheckDialogKDV(BoardTypes board, QWidget *parent) : EAbstractChe
 
     SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
     SetBd(1, &ChKDV->Bda_block, sizeof(CheckKDV::Bda_in_struct));
+    SetBd(2, &ChKDV->Bd2_Gr1, sizeof(CheckKDV::Bd2));
+    SetBd(3, &ChKDV->Bd3_Gr2, sizeof(CheckKDV::Bd2));
+    SetBd(4, &ChKDV->Bd4_U0, sizeof(CheckKDV::Bd4));
+    SetBd(5, &ChKDV->Bd5_UI_Harm, sizeof(CheckKDV::Bd5));
+    SetBd(6, &ChKDV->Bd6_U0, sizeof(CheckKDV::Bd4));
+    SetBd(7, &ChKDV->Bd7_UI_Harm, sizeof(CheckKDV::Bd5));
+    SetBd(9, &ChKDV->Bd9_Resurs, sizeof(CheckKDV::Bda_RESURS));
+    SetBd(10, &ChKDV->Bd10_Power, sizeof(CheckKDV::Bd10));
+    SetBd(11, &ChKDV->Bd11_Model, sizeof(CheckKDV::Bda_MODEL));
 
     SetBd(13, &ChKDV->Bd13_Temp, sizeof(CheckKDV::Bda_TEMP));
 
     sl = QStringList() << "Общие"
                        << "Входные сигналы"
+                       << "Температуры"
+                       << "Первичные"
+                       << "Качество"
+                       << "Мощности"
+                       << "Гармоники"
+                       << "Ресурс"
+                       << "Допустимые перегрузки"
                        << "Температуры";
 
     BdUINum = sl.size();

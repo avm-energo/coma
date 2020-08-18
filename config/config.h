@@ -67,7 +67,7 @@
 class Config
 {
 public:
-    explicit Config(QVector<S2::DataRec> &config, quint32 MTypeB, quint32 MTypeM);
+    explicit Config(QVector<S2::DataRec> *config, quint32 MTypeB, quint32 MTypeM);
 
     enum BaseBoards
     {
@@ -121,6 +121,22 @@ public:
     };
 
     Bci_Main MainBlk; // Основной блок (см. config.h)
+
+    typedef struct
+    {
+        quint8 IP[4];
+        quint8 Mask[4];
+        quint8 GateWay[4];
+        quint16 Port[4];
+        quint8 SNTP[4];
+        quint32 Baud;
+        quint8 Parity;
+        quint8 Stopbit;
+        quint8 adrMB;
+
+    } Com;
+
+    Com Com_param;
 
     struct ModuleDesc
     {
