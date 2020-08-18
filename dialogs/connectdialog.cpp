@@ -157,6 +157,7 @@ void ConnectDialog::EthAccepted()
 }
 
 void ConnectDialog::RsAccepted()
+{
     QDialog *dlg = this->findChild<QDialog *>("rsdlg");
     if (dlg != nullptr)
     {

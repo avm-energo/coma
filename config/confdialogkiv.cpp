@@ -276,7 +276,7 @@ void ConfDialogKIV::SetupUI()
 
     QDateTime myDateTime;
 
-    myDateTime.setTime_t(unixtimestamp);
+    myDateTime.setSecsSinceEpoch(unixtimestamp);
 
     QString paramcolor = MAINWINCLR;
     QFont font;
@@ -881,7 +881,7 @@ void ConfDialogKIV::Write_PCDate()
     QDateTime myDateTime;
     uint time;
     myDateTime = QDateTime::currentDateTimeUtc();
-    time = myDateTime.toTime_t();
+    time = myDateTime.toSecsSinceEpoch();
 
     /*if (Commands::WriteTimeMNK(&time, sizeof(uint)) == NOERROR)
     EMessageBox::information(this, "INFO", "Записано успешно");
@@ -897,7 +897,7 @@ void ConfDialogKIV::Write_Date()
     WDFunc::LE_read_data(this, "Date", qStr);
     myDateTime = QDateTime::fromString(qStr, "dd-MM-yyyy HH:mm:ss");
     myDateTime.setOffsetFromUtc(0);
-    *time = myDateTime.toTime_t();
+    *time = myDateTime.toSecsSinceEpoch();
 
     /* if (Commands::WriteTimeMNK(time, sizeof(uint)) == NOERROR)
      EMessageBox::information(this, "INFO", "Записано успешно");

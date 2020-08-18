@@ -870,7 +870,7 @@ void ConfDialogKDV::Write_PCDate()
     QDateTime myDateTime;
     uint time;
     myDateTime = QDateTime::currentDateTimeUtc();
-    time = myDateTime.toTime_t();
+    time = myDateTime.toSecsSinceEpoch();
 }
 
 void ConfDialogKDV::Write_Date()
@@ -881,7 +881,7 @@ void ConfDialogKDV::Write_Date()
     WDFunc::LE_read_data(this, "Date", qStr);
     myDateTime = QDateTime::fromString(qStr, "dd-MM-yyyy HH:mm:ss");
     myDateTime.setOffsetFromUtc(0);
-    *time = myDateTime.toTime_t();
+    *time = myDateTime.toSecsSinceEpoch();
 }
 
 void ConfDialogKDV::Set104(double dbl)

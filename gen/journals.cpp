@@ -31,7 +31,6 @@ Journals::Journals(QObject *parent) : QObject(parent)
 void Journals::SetProxyModels(
     QSortFilterProxyModel *workmdl, QSortFilterProxyModel *sysmdl, QSortFilterProxyModel *measmdl)
 {
-    QSortFilterProxyModel *workmdl, QSortFilterProxyModel *sysmdl, QSortFilterProxyModel *measmdl)
     _proxyWorkModel = workmdl;
     _proxySysModel = sysmdl;
     _proxyMeasModel = measmdl;
@@ -262,7 +261,7 @@ void Journals::FillMeasTable(QByteArray &ba)
     }
     if (!model->isEmpty())
         model->clearModel();
-    model->SetHeaders(headers);
+    model->setHeaders(headers);
     if (model->columnCount() < 3)
     {
         ERMSG("Column count error");
