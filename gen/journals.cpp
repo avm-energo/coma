@@ -1,15 +1,8 @@
-#include "QtXlsx/xlsxdocument.h"
-#include <QAbstractItemModelTester>
-#include <QFile>
-#include <QFuture>
-#include <QtConcurrent/QtConcurrentRun>
-#include "../usb/commands.h"
-#include "../widgets/wd_func.h"
-#include "error.h"
-#include "files.h"
 #include "journals.h"
 
 #include "../config/config.h"
+#include "../usb/commands.h"
+#include "../widgets/wd_func.h"
 #include "QtXlsx/xlsxdocument.h"
 #include "error.h"
 #include "files.h"
@@ -17,10 +10,13 @@
 #include "s2.h"
 #include "timefunc.h"
 
+#include <QAbstractItemModelTester>
 #include <QApplication>
 #include <QDate>
 #include <QFile>
+#include <QFuture>
 #include <QObject>
+#include <QtConcurrent/QtConcurrentRun>
 
 Journals::Journals(QObject *parent) : QObject(parent)
 {
@@ -44,11 +40,19 @@ void Journals::SetProxyModels(
     // this);
 }
 
-Journals::~Journals() { }
+Journals::~Journals()
+{
+}
 
-void Journals::SetJourType(int jourtype) { _jourType = jourtype; }
+void Journals::SetJourType(int jourtype)
+{
+    _jourType = jourtype;
+}
 
-void Journals::SetJourFile(const QString &jourfile) { _jourFile = jourfile; }
+void Journals::SetJourFile(const QString &jourfile)
+{
+    _jourFile = jourfile;
+}
 /*
 void Journals::SetParentWidget(QWidget *w)
 {
@@ -127,12 +131,12 @@ void Journals::FillEventsTable(QByteArray &ba)
     if ((_jourType == JOURSYS) || (_jourType == JOURWORK))
     {
         file += fhsize;
-    qDebug() << strlen(file);
+        // qDebug() << strlen(file);
         S2::DataRec jour;
         int drsize = sizeof(S2::DataRec) - sizeof(void *);
         memcpy(&jour, file, drsize);
         joursize = jour.num_byte;
-    // joursize = jour.num_byte;
+        // joursize = jour.num_byte;
         file += drsize; // move file pointer to thedata
     }
     int counter = 0;
@@ -150,7 +154,7 @@ void Journals::FillEventsTable(QByteArray &ba)
             vl << TimeFunc::UnixTime64ToInvStringFractional(event.Time);
             memcpy(&N, &event.EvNum, sizeof(event.EvNum));
             N = (N & 0x00FFFFFF) - mineventid;
-            if ((N <= sl.size()) && (N > 0))
+            if ((N < sl.size()) && (N > 0))
             {
                 --N;
                 vl << sl.at(N);
@@ -272,7 +276,6 @@ void Journals::FillMeasTable(QByteArray &ba)
     model->fillModel(ValueLists);
     ResultReady();
 }
-
 void Journals::ResultReady()
 {
     ETableModel *mdl;
@@ -304,14 +307,17 @@ void Journals::ResultReady()
     pmdl->invalidate();
     pmdl->setDynamicSortFilter(false);
     pmdl->setSourceModel(mdl);
-    QFuture<void> future = QtConcurrent::run(pmdl, &QSortFilterProxyModel::sort, dateidx, order);
-    // pmdl->sort(dateidx, order);
-    future.waitForFinished();
-    qDebug() << "Read";
+    // QFuture<void> future = QtConcurrent::run(pmdl, &QSortFilterProxyModel::sort, dateidx, order);
+    pmdl->sort(dateidx, order);
+    // future.waitForFinished();
+    // qDebug() << "Read";
     emit Done("Прочитано успешно");
 }
 
-void Journals::FillSysJour(QByteArray ba) { FillEventsTable(ba); }
+void Journals::FillSysJour(QByteArray ba)
+{
+    FillEventsTable(ba);
+}
 
 void Journals::FillMeasJour(QByteArray ba)
 {
@@ -329,7 +335,10 @@ void Journals::FillMeasJour(QByteArray ba)
     FillMeasTable(ba);
 }
 
-void Journals::FillWorkJour(QByteArray ba) { FillEventsTable(ba); }
+void Journals::FillWorkJour(QByteArray ba)
+{
+    FillEventsTable(ba);
+}
 
 void Journals::StartGetJour()
 {
