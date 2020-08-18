@@ -1,11 +1,15 @@
 #include "etableitem.h"
+
 #include <QDebug>
 
-ETableItem::ETableItem(ETableItem *parent) { Q_UNUSED(parent); }
+ETableItem::ETableItem(ETableItem *parent)
+{
+    Q_UNUSED(parent);
+}
 
 QString ETableItem::data(int column) const
 {
-    if (!itemData.isEmpty() && column <= itemData.size())
+    if (!itemData.isEmpty() && column < itemData.size())
         return itemData.at(column);
     else
         return QString();
@@ -21,7 +25,10 @@ void ETableItem::setData(int column, const QString &data)
     itemData.replace(column, data);
 }
 
-void ETableItem::appendData(const QString &value) { itemData.append(value); }
+void ETableItem::appendData(const QString &value)
+{
+    itemData.append(value);
+}
 
 void ETableItem::setColor(int column, QColor color)
 {
