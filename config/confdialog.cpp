@@ -23,7 +23,8 @@ ConfDialog::ConfDialog(QVector<S2::DataRec> *S2Config, quint32 MTypeB, quint32 M
                    "padding: 1px; color: black;"
                    "background-color: "
         + QString(ACONFOCLR) + "; font: bold 10px;}";
-    WidgetFormat = "QWidget {background-color: " + QString(UCONFCLR) + ";}";
+    WidgetFormat = "QWidget {background-color: " + QString(ACONFWCLR) + ";}";
+    // QString tmps = "QWidget {background-color: " + QString(ACONFWCLR) + ";}";
 }
 
 QWidget *ConfDialog::SetupMainBlk(QWidget *parent)
@@ -31,17 +32,25 @@ QWidget *ConfDialog::SetupMainBlk(QWidget *parent)
     QWidget *w = new QWidget(parent);
     QString paramcolor = MAINWINCLR;
     QVBoxLayout *vlyout = new QVBoxLayout;
+    QVBoxLayout *vlyout1 = new QVBoxLayout;
+    QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox;
     QGridLayout *glyout = new QGridLayout;
     QString Str;
     QLocale german(QLocale::German);
+    QFont font;
+    font.setFamily("Times");
+    font.setPointSize(11);
+    //    QFont ffont;
+    //    ffont.setPointSize(8);
     int i = 0;
 
     gb->setTitle("Настройки протокола МЭК-60870-5-104");
-    //   gb->setFont(font);
+    gb->setFont(font);
     glyout = new QGridLayout;
     glyout->setColumnStretch(2, 50);
     QLabel *lbl = new QLabel("Адрес базовой станции:");
+    //    lbl->setFont(ffont);
     glyout->addWidget(lbl, 0, 0, 1, 1, Qt::AlignLeft);
     QDoubleSpinBox *dspbls = WDFunc::NewSPB(this, "Abs_104", 0, 65535, 0, paramcolor);
     connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
@@ -82,14 +91,14 @@ QWidget *ConfDialog::SetupMainBlk(QWidget *parent)
     connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
     glyout->addWidget(dspbls, 6, 1, 1, 1, Qt::AlignLeft);
 
-    QStringList cbl = QStringList() << "SNTP+PPS"
-                                    << "SNTP";
-    EComboBox *cb = WDFunc::NewCB(this, "Ctype", cbl, paramcolor);
-    //  cb = WDFunc::NewCB(this, "Ctype", cbl, paramcolor);
-    connect(cb, SIGNAL(currentIndexChanged(int)), this, SLOT(SetCType(int)));
-    glyout->addWidget(cb, 7, 1, 1, 1);
+    //    QStringList cbl = QStringList() << "SNTP+PPS"
+    //                                    << "SNTP";
+    //    EComboBox *cb = WDFunc::NewCB(this, "Ctype", cbl, paramcolor);
+    //    //  cb = WDFunc::NewCB(this, "Ctype", cbl, paramcolor);
+    //    connect(cb, SIGNAL(currentIndexChanged(int)), this, SLOT(SetCType(int)));
+    //    glyout->addWidget(cb, 7, 0, 1, 1, Qt::AlignLeft);
 
-    int row = 0;
+    int row = 7;
     for (i = 0; i < 4; i++)
     {
         ConfigMain->Com_param.IP[i] = 0;
@@ -146,12 +155,36 @@ QWidget *ConfDialog::SetupMainBlk(QWidget *parent)
     glyout->addWidget(WDFunc::NewLBL(this, "Адрес SNTP сервера:"), row, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLE(this, "SNTP_ID", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
 
-    gb->setLayout(glyout);
-    vlyout->addWidget(gb);
+    vlyout2->addLayout(glyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
+
+    gb = new QGroupBox("Настройка времени");
+    gb->setFont(font);
+    vlyout2 = new QVBoxLayout;
+    glyout = new QGridLayout;
+    glyout->setColumnStretch(2, 50);
+    row++;
+
+    lbl = new QLabel("Тип синхронизации времени:");
+    glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
+
+    QStringList cbl = QStringList() << "SNTP+PPS"
+                                    << "SNTP";
+    EComboBox *cb = WDFunc::NewCB(this, "Ctype", cbl, paramcolor);
+    connect(cb, SIGNAL(currentIndexChanged(int)), this, SLOT(SetCType(int)));
+    glyout->addWidget(cb, row, 1, 1, 1);
+
+    vlyout2->addLayout(glyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
+
+    // gb->setLayout(glyout);
+    // vlyout1->addWidget(gb);
     // setLayout(vlyout);
 
-    vlyout->addStretch(100);
-    w->setLayout(vlyout);
+    // vlyout1->addStretch(100);
+    w->setLayout(vlyout1);
     w->setStyleSheet(WidgetFormat);
     return w;
 }
@@ -160,20 +193,31 @@ QWidget *ConfDialog::SetupComParam(QWidget *parent)
 {
     QWidget *w = new QWidget(parent);
     QString paramcolor = MAINWINCLR;
-    // QVBoxLayout *vlyout = new QVBoxLayout;
+    QStackedWidget *qswt = new QStackedWidget;
+    qswt->setObjectName("qswt");
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox;
     QGridLayout *glyout = new QGridLayout;
+    glyout->setColumnStretch(1, 20);
 
-    QStackedWidget *qswt = new QStackedWidget;
-    qswt->setObjectName("qswt");
-    // int i;
     int row = 0;
+
+    QLabel *lbl = new QLabel("Modbus: ");
+    glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
+    QStringList dopcbl = QStringList() << "slave"
+                                       << "master";
+    EComboBox *dopcb = WDFunc::NewCB(this, "MBMaster", dopcbl, paramcolor);
+    connect(dopcb, SIGNAL(currentIndexChanged(int)), this, SLOT(ChangeWindow(int)));
+    glyout->addWidget(dopcb, row, 1, 1, 1);
+    row++;
+
+    vlyout2->addLayout(glyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
 
     gb = new QGroupBox("Настройки ModBus");
     gb->setObjectName("Gb1");
-    // gb->setFont(font);
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
 
@@ -436,7 +480,7 @@ QWidget *ConfDialog::SetupComParam(QWidget *parent)
 
     vlyout1->addWidget(qswt);
 
-    vlyout1->addStretch(100);
+    //  vlyout1->addStretch(100);
     w->setLayout(vlyout1);
     w->setStyleSheet(WidgetFormat);
     return w;
@@ -471,7 +515,7 @@ QWidget *ConfDialog::SetupBl(QWidget *parent)
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
-    vlyout1->addStretch(100);
+    //    vlyout1->addStretch(100);
     w->setLayout(vlyout1);
     w->setStyleSheet(WidgetFormat);
     return w;
@@ -668,6 +712,26 @@ void ConfDialog::SetDefConf()
     ConfigMain->MainBlk.T1_104 = DEF_T1_104;
     ConfigMain->MainBlk.T2_104 = DEF_T2_104;
     ConfigMain->MainBlk.T3_104 = DEF_T3_104;
+    //...............................................
+
+    StrD.RTerm = DEF_RTERM;
+    StrD.W100 = static_cast<float>(DEF_W100);
+
+    StrTrele.Trele_pred = DEF_TRELE_PRED;
+    StrTrele.Trele_alarm = DEF_TRELE_ALARM;
+
+    StrModBus.MBMaster = DEF_MBMASTER;
+
+    for (int i = 0; i < 4; i++)
+    {
+
+        StrModBus.MBMab1[i] = 0;
+        StrModBus.MBMab2[i] = 0;
+        StrModBus.MBMab3[i] = 0;
+        StrModBus.MBMab4[i] = 0;
+    }
+
+    //........................................................
 
     ConfigMain->Com_param.IP[0] = 172;
     ConfigMain->Com_param.IP[1] = 16;
@@ -706,7 +770,7 @@ void ConfDialog::SetDefConf()
 void ConfDialog::Set104(double dbl)
 {
     QStringList sl = sender()->objectName().split(".");
-    if (sl.size() < 1)
+    if (sl.size() < 2)
     {
         ERMSG("Некорректные данные");
         DBGMSG;

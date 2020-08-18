@@ -1,7 +1,6 @@
 #ifndef CONFDIALOGKTF_H
 #define CONFDIALOGKTF_H
 
-#
 #include "../config/confdialog.h"
 #include "../config/configktf.h"
 #include "../iec104/ethernet.h"

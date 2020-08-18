@@ -53,6 +53,18 @@
 #define DEF_ISNTP 0
 #define DEF_ISPPS 0
 
+#define BCI_RTERM 1027
+#define BCI_W100 1028
+
+#define DEF_RTERM 100
+#define DEF_W100 1.385
+
+#define BCI_TRELE_PRED 1037
+#define BCI_TRELE_ALARM 1038
+
+#define DEF_TRELE_PRED 0
+#define DEF_TRELE_ALARM 0
+
 // определение файлов
 #define FILE_CONF 1   // configuration
 #define FILE_FW 3     // firmware

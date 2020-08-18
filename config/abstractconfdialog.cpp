@@ -63,9 +63,6 @@ void AbstractConfDialog::ReadConf()
         else if (res == NOERROR)
             emit NewConfToBeLoaded();
     }
-    //        }
-
-    //    }
 }
 
 void AbstractConfDialog::FillConf(QVector<S2::DataRec> *DR)

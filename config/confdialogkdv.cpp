@@ -900,61 +900,61 @@ void ConfDialogKDV::Write_Date()
 
 void ConfDialogKDV::Set104(double dbl)
 {
-    QStringList sl = sender()->objectName().split(".");
-    if (sl.size() < 1)
-    {
-        ERMSG("Некорректные данные 104");
-        DBGMSG;
-        return;
-    }
-    bool ok;
-    int wnum = sl.at(1).toInt(&ok);
-    if (!ok)
-    {
-        ERMSG("Некорректные данные 104");
-        DBGMSG;
-        return;
-    }
-    switch (wnum)
-    {
-    case 1:
-    {
-        KDV->MainBlk.Abs_104 = dbl;
-        break;
-    }
-    case 2:
-    {
-        KDV->MainBlk.Cycle_104 = dbl;
-        break;
-    }
-    case 3:
-    {
-        KDV->MainBlk.T1_104 = dbl;
-        break;
-    }
-    case 4:
-    {
-        KDV->MainBlk.T2_104 = dbl;
-        break;
-    }
-    case 5:
-    {
-        KDV->MainBlk.T3_104 = dbl;
-        break;
-    }
-    case 6:
-    {
-        KDV->MainBlk.k_104 = dbl;
-        break;
-    }
-    case 7:
-    {
-        KDV->MainBlk.w_104 = dbl;
-        break;
-    }
-    default:
-        break;
-    }
+    //    QStringList sl = sender()->objectName().split(".");
+    //    if (sl.size() < 2)
+    //    {
+    //        ERMSG("Некорректные данные 104");
+    //        DBGMSG;
+    //        return;
+    //    }
+    //    bool ok;
+    //    int wnum = sl.at(1).toInt(&ok);
+    //    if (!ok)
+    //    {
+    //        ERMSG("Некорректные данные 104");
+    //        DBGMSG;
+    //        return;
+    //    }
+    //    switch (wnum)
+    //    {
+    //    case 1:
+    //    {
+    //        KDV->MainBlk.Abs_104 = dbl;
+    //        break;
+    //    }
+    //    case 2:
+    //    {
+    //        KDV->MainBlk.Cycle_104 = dbl;
+    //        break;
+    //    }
+    //    case 3:
+    //    {
+    //        KDV->MainBlk.T1_104 = dbl;
+    //        break;
+    //    }
+    //    case 4:
+    //    {
+    //        KDV->MainBlk.T2_104 = dbl;
+    //        break;
+    //    }
+    //    case 5:
+    //    {
+    //        KDV->MainBlk.T3_104 = dbl;
+    //        break;
+    //    }
+    //    case 6:
+    //    {
+    //        KDV->MainBlk.k_104 = dbl;
+    //        break;
+    //    }
+    //    case 7:
+    //    {
+    //        KDV->MainBlk.w_104 = dbl;
+    //        break;
+    //    }
+    //    default:
+    //        break;
+    //    }
 }
 
 void ConfDialogKDV::SetCType(int num)

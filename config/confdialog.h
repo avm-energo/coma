@@ -6,6 +6,14 @@
 #include <QDialog>
 #include <QWidget>
 
+#define DEF_MBMASTER 0
+
+#define BCI_MBMASTER 1060
+#define BCI_MBMAB1 1061
+#define BCI_MBMAB2 1062
+#define BCI_MBMAB3 1063
+#define BCI_MBMAB4 1064
+
 class ConfDialog : public QWidget
 {
     Q_OBJECT
