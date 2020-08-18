@@ -64,11 +64,11 @@ public:
 
     //    bool ThreadRunning;
 
-    bool Connect();
-    QByteArray RawRead(int bytes);
-    int RawWrite(QByteArray &ba);
-    void RawClose();
-    QStringList DevicesFound();
+    bool Connect() override;
+    QByteArray RawRead(int bytes) override;
+    int RawWrite(QByteArray &ba) override;
+    void RawClose() override;
+    QStringList DevicesFound() override;
 
 signals:
     void StopUThread();
