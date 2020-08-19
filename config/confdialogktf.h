@@ -21,29 +21,28 @@ public:
     QLabel *SysTime;
     QTimer *timer;
     QTimer *timerRead;
-    QStringList Rates = QStringList() << "256"
-                                      << "128"
-                                      << "64"
-                                      << "32"
-                                      << "16";
 
-    QStringList Sbaud = QStringList() << "1200"
-                                      << "2400"
-                                      << "4800"
-                                      << "9600"
-                                      << "19200"
-                                      << "38400"
-                                      << "57600"
-                                      << "115200";
+    QStringList Rates = { "256", "128", "64", "32", "16" };
 
-    QStringList MBs1 = QStringList() << "нет"
-                                     << "тип 1"
-                                     << "тип 2"
-                                     << "тип 3";
+    //    QStringList Sbaud = QStringList() << "1200"
+    //                                      << "2400"
+    //                                      << "4800"
+    //                                      << "9600"
+    //                                      << "19200"
+    //                                      << "38400"
+    //                                      << "57600"
+    //                                      << "115200";
+
+    //    QStringList MBs1 = QStringList() << "нет"
+    //                                     << "тип 1"
+    //                                     << "тип 2"
+    //                                     << "тип 3";
 
 private:
     ConfigKTF *KTF;
     ConfDialog *Conf;
+    ConfDialogKxx *ConfKxx;
+
     //    Config *ConfigMain;
     bool DDosc;
     bool Mb;
@@ -58,9 +57,9 @@ private:
 signals:
 
 public slots:
-    void Set104(double);
-    void SetCType(int);
-    void ChangeWindow(int);
+    //    void Set104(double);
+    //    void SetCType(int);
+    //    void ChangeWindow(int);
 
 private slots:
     void SetDefConf();

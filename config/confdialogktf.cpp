@@ -26,6 +26,7 @@ ConfDialogKTF::ConfDialogKTF(QVector<S2::DataRec> *S2Config, QWidget *parent) : 
     this->S2Config = S2Config;
     KTF = new ConfigKTF(S2Config);
     Conf = new ConfDialog(S2Config, MTypeB, MTypeM);
+    ConfKxx = new ConfDialogKxx(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
     PrereadConf();
@@ -400,8 +401,8 @@ void ConfDialogKTF::SetupUI()
     QWidget *wind7 = new QWidget;
     QList<QWidget *> wl;
 
-    QStackedWidget *qswt = new QStackedWidget;
-    qswt->setObjectName("qswt");
+    //    QStackedWidget *qswt = new QStackedWidget;
+    //    qswt->setObjectName("qswt");
 
     QLineEdit *line1 = new QLineEdit();
 
@@ -1122,13 +1123,13 @@ void ConfDialogKTF::SetupUI()
     // ConfTW->addTab(wind5, "ModBusMaster");
     //  area2->verticalScrollBar()->setValue(area2->verticalScrollBar()->maximum());
 
-    if (MTypeB == Config::MTB_A2)
-    {
-        ConfTW->addTab(Conf->SetupMainBlk(this), "Связь");
-    }
+    ConfTW->addTab(Conf->SetupMainBlk(this), "Связь");
+    ConfTW->addTab(ConfKxx->SetupModBus(), "ModBusMaster");
+    ConfTW->addTab(ConfKxx->SetupBl(this), "Общее");
 
-    ConfTW->addTab(Conf->SetupComParam(this), "ModBusMaster");
-    ConfTW->addTab(Conf->SetupBl(this), "Общее");
+    //   ConfTW->addTab(Conf->SetupComParam(), "ModBusMaster");
+    //  ConfTW->addTab(Conf->SetupBl(this), "Общее");
+
     ConfTW->addTab(wind6, "Прочее");
 
     //    if (MTypeB == Config::MTB_A2)
@@ -1179,22 +1180,22 @@ void ConfDialogKTF::Write_Date()
     *time = myDateTime.toTime_t();
 }
 
-void ConfDialogKTF::Set104(double dbl)
-{
-    Q_UNUSED(dbl);
-}
+// void ConfDialogKTF::Set104(double dbl)
+//{
+//    Q_UNUSED(dbl);
+//}
 
-void ConfDialogKTF::SetCType(int num)
-{
-    // KTF->MainBlk.Ctype = num;
-}
+// void ConfDialogKTF::SetCType(int num)
+//{
+//    // KTF->MainBlk.Ctype = num;
+//}
 
-void ConfDialogKTF::ChangeWindow(int num)
-{
-    //    KTF->MainBlk.Ctype = num;
+// void ConfDialogKTF::ChangeWindow(int num)
+//{
+//    //    KTF->MainBlk.Ctype = num;
 
-    //    QStackedWidget *QSWT = this->findChild<QStackedWidget *>("qswt");
+//    //    QStackedWidget *QSWT = this->findChild<QStackedWidget *>("qswt");
 
-    //    if (QSWT != nullptr)
-    //        QSWT->setCurrentWidget(WidgetList.at(num));
-}
+//    //    if (QSWT != nullptr)
+//    //        QSWT->setCurrentWidget(WidgetList.at(num));
+//}

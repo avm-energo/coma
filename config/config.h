@@ -29,42 +29,6 @@
 #define DEF_K_104 12
 #define DEF_W_104 8
 
-#define BCI_IP 20
-#define BCI_MASK 21
-#define BCI_GW 22
-#define BCI_PORT 23
-#define BCI_SNTP 24
-#define BCI_BAUD 25
-#define BCI_PARITY 26
-#define BCI_STOPBIT 27
-#define BCI_ADRMB 28
-#define BCI_ISNTP 29
-#define BCI_ISPPS 30
-
-#define DEF_IP 172, 16, 29, 12
-#define DEF_MASK 255, 255, 252, 0
-#define DEF_GW 172, 16, 29, 1
-#define DEF_PORT 2404, 2405, 502, 502
-#define DEF_SNTP 172, 16, 31, 220
-#define DEF_BAUD 0
-#define DEF_PARITY 0
-#define DEF_STOPBIT 1
-#define DEF_ADRMB 0
-#define DEF_ISNTP 0
-#define DEF_ISPPS 0
-
-#define BCI_RTERM 1027
-#define BCI_W100 1028
-
-#define DEF_RTERM 100
-#define DEF_W100 1.385
-
-#define BCI_TRELE_PRED 1037
-#define BCI_TRELE_ALARM 1038
-
-#define DEF_TRELE_PRED 0
-#define DEF_TRELE_ALARM 0
-
 // определение файлов
 #define FILE_CONF 1   // configuration
 #define FILE_FW 3     // firmware
@@ -133,22 +97,6 @@ public:
     };
 
     Bci_Main MainBlk; // Основной блок (см. config.h)
-
-    typedef struct
-    {
-        quint8 IP[4];
-        quint8 Mask[4];
-        quint8 GateWay[4];
-        quint16 Port[4];
-        quint8 SNTP[4];
-        quint32 Baud;
-        quint8 Parity;
-        quint8 Stopbit;
-        quint8 adrMB;
-
-    } Com;
-
-    Com Com_param;
 
     struct ModuleDesc
     {

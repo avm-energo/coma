@@ -40,9 +40,11 @@ SOURCES += \
     ../config/confdialogkdv.cpp \
     ../config/confdialogkiv.cpp \
     ../config/confdialogktf.cpp \
+    ../config/confdialogkxx.cpp \
     ../config/configkdv.cpp \
     ../config/configkiv.cpp \
     ../config/configktf.cpp \
+    ../config/configkxx.cpp \
     ../dialogs/abstractcordialog.cpp \
     ../dialogs/cordialogktf.cpp \
     ../dialogs/infodialog.cpp \
@@ -111,9 +113,11 @@ HEADERS += \
     ../config/confdialogkdv.h \
     ../config/confdialogkiv.h \
     ../config/confdialogktf.h \
+    ../config/confdialogkxx.h \
     ../config/configkdv.h \
     ../config/configkiv.h \
     ../config/configktf.h \
+    ../config/configkxx.h \
     ../dialogs/abstractcordialog.h \
     ../dialogs/cordialogktf.h \
     ../dialogs/infodialog.h \
