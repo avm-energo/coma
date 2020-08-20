@@ -39,7 +39,7 @@ int Commands::GetBsi(ModuleBSI::Bsi &bsi)
     QByteArray ba;
     if (cn != nullptr)
     {
-        cn->SendIn(CN_GBsi, BoardTypes::BT_NONE, ba, sizeof(ModuleBSI::Bsi));
+        cn->SendIn(CN::Read::BlkStartInfo, BoardTypes::BT_NONE, ba, sizeof(ModuleBSI::Bsi));
         memcpy(&bsi, &(ba.data()[0]), sizeof(ModuleBSI::Bsi));
         return cn->Result;
     }
@@ -51,7 +51,7 @@ int Commands::GetFileWithRestore(int filenum, QVector<S2::DataRec> *data)
     QByteArray ba;
     if (cn != nullptr)
     {
-        cn->SendFile(CN_GF, BoardTypes::BT_NONE, filenum, ba);
+        cn->SendFile(CN::Read::File, BoardTypes::BT_NONE, filenum, ba);
         // проверка контрольной суммы файла
         quint32 crctocheck;
         quint32 basize = ba.size();
@@ -73,7 +73,7 @@ int Commands::GetFile(int filenum, QByteArray &ba)
 {
     if (cn != 0)
     {
-        cn->SendFile(CN_GF, BoardTypes::BT_NONE, filenum, ba);
+        cn->SendFile(CN::Read::File, BoardTypes::BT_NONE, filenum, ba);
         quint32 crctocheck;
         quint32 basize = ba.size();
         if (basize < 17)
@@ -95,7 +95,7 @@ int Commands::WriteFile(int filenum, QVector<S2::DataRec> *data)
 
     if (cn != 0)
     {
-        ba.resize(CN_MAXFILESIZE);
+        ba.resize(CN::Limits::MaxFileSize);
         S2::StoreDataMem(&(ba.data()[0]), data, filenum);
         // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
         quint32 wrlength = static_cast<quint8>(ba.at(7)) * 16777216; // с 4 байта начинается FileHeader.size
@@ -104,7 +104,7 @@ int Commands::WriteFile(int filenum, QVector<S2::DataRec> *data)
         wrlength += static_cast<quint8>(ba.at(4));
         wrlength += sizeof(S2::FileHeader); // sizeof(FileHeader)
         ba.resize(wrlength);
-        cn->SendFile(CN_WF, BoardTypes::BT_BASE, filenum, ba);
+        cn->SendFile(CN::Write::File, BoardTypes::BT_BASE, filenum, ba);
         return cn->Result;
     }
     return GENERALERROR;
@@ -117,7 +117,7 @@ int Commands::WriteHiddenBlock(char board, void *HPtr, int HPtrSize)
     if (cn != 0)
     {
         ba.append(static_cast<const char *>(HPtr), HPtrSize);
-        cn->SendOut(CN_WHv, board, ba);
+        cn->SendOut(CN::Write::Hardware, board, ba);
         return cn->Result;
     }
     return GENERALERROR;
@@ -128,7 +128,7 @@ int Commands::GetBac(char BacNum, void *BacPtr, int BacPtrSize)
     QByteArray ba;
     if (cn != 0)
     {
-        cn->SendIn(CN_GBac, BacNum, ba, BacPtrSize);
+        cn->SendIn(CN::Read::BlkAC, BacNum, ba, BacPtrSize);
         memcpy(BacPtr, &(ba.data()[0]), BacPtrSize);
         return cn->Result;
     }
@@ -140,7 +140,7 @@ int Commands::GetBd(char BdNum, void *BdPtr, int BdPtrSize)
     QByteArray ba;
     if (cn != 0)
     {
-        cn->SendIn(CN_GBd, BdNum, ba, BdPtrSize);
+        cn->SendIn(CN::Read::BlkData, BdNum, ba, BdPtrSize);
         memcpy(BdPtr, &(ba.data()[0]), BdPtrSize);
         return cn->Result;
     }
@@ -152,7 +152,7 @@ int Commands::GetBda(char board, void *BdPtr, int BdPtrSize)
     QByteArray ba;
     if (cn != 0)
     {
-        cn->SendIn(CN_GBda, board, ba, BdPtrSize);
+        cn->SendIn(CN::Read::BlkDataA, board, ba, BdPtrSize);
         memcpy(BdPtr, &(ba.data()[0]), BdPtrSize);
         return cn->Result;
     }
@@ -164,7 +164,7 @@ int Commands::GetBt(char BtNum, void *BtPtr, int &BtPtrSize)
     QByteArray ba;
     if (cn != 0)
     {
-        cn->SendIn(CN_GBt, BtNum, ba, BtPtrSize);
+        cn->SendIn(CN::Read::BlkTech, BtNum, ba, BtPtrSize);
         memcpy(BtPtr, &(ba.data()[0]), BtPtrSize);
         return cn->Result;
     }
@@ -177,7 +177,7 @@ int Commands::WriteBac(char BacNum, void *BacPtr, int BacPtrSize)
     if (cn != 0)
     {
         ba.append(static_cast<const char *>(BacPtr), BacPtrSize);
-        cn->SendOut(CN_WBac, BacNum, ba);
+        cn->SendOut(CN::Write::BlkAC, BacNum, ba);
         return cn->Result;
     }
     return GENERALERROR;
@@ -187,7 +187,7 @@ int Commands::EraseTechBlock(char block)
 {
     if (cn != nullptr)
     {
-        cn->SendCmd(CN_Ert, block);
+        cn->SendCmd(CN::Write::EraseTech, block);
         return cn->Result;
     }
     return GENERALERROR;
@@ -199,7 +199,7 @@ int Commands::WriteTimeMNK(uint32_t Time, int TimeSize)
     if (cn != nullptr)
     {
         ba.append(reinterpret_cast<const char *>(&Time), TimeSize);
-        cn->SendOut(CN_WTime, BoardTypes::BT_NONE, ba);
+        cn->SendOut(CN::Write::Time, BoardTypes::BT_NONE, ba);
         return cn->Result;
     }
     return GENERALERROR;
@@ -210,7 +210,7 @@ int Commands::GetTimeMNK(uint &Time)
     QByteArray ba;
     if (cn != nullptr)
     {
-        cn->SendIn(CN_GTime, BoardTypes::BT_NONE, ba, sizeof(uint));
+        cn->SendIn(CN::Read::Time, BoardTypes::BT_NONE, ba, sizeof(uint));
         memcpy(&Time, &(ba.data()[0]), sizeof(uint));
         return cn->Result;
     }
@@ -223,7 +223,7 @@ int Commands::WriteBd(char BdNum, void *BdPtr, int BdPtrSize)
     if (cn != 0)
     {
         ba.append(static_cast<const char *>(BdPtr), BdPtrSize);
-        cn->SendOut(CN_WBd, BdNum, ba);
+        cn->SendOut(CN::Write::BlkData, BdNum, ba);
         return cn->Result;
     }
     return GENERALERROR;
@@ -233,7 +233,7 @@ int Commands::WriteCom(char ComNum)
 {
     if (cn != nullptr)
     {
-        cn->SendCmd(CN_WCom, ComNum);
+        cn->SendCmd(CN::Write::BlkCmd, ComNum);
         return cn->Result;
     }
     return GENERALERROR;
@@ -243,7 +243,7 @@ int Commands::RunVPO()
 {
     if (cn != nullptr)
     {
-        cn->SendCmd(CN_VPO);
+        cn->SendCmd(CN::Write::Upgrade);
         return cn->Result;
     }
     return GENERALERROR;
@@ -253,7 +253,7 @@ int Commands::TestCom(char OnOff)
 {
     if (cn != nullptr)
     {
-        cn->SendCmd(CN_STest, OnOff);
+        cn->SendCmd(CN::Test, OnOff);
         return cn->Result;
     }
     return GENERALERROR;

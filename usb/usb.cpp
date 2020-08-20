@@ -2,6 +2,6 @@
 
 EUsbHid *cn;
 
-usb::usb(QObject *parent) : QObject(parent)
-{
-}
+// usb::usb(QObject *parent) : QObject(parent)
+//{
+//}

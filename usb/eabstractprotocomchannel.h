@@ -11,58 +11,143 @@
 #include <QPointer>
 #include <QTimer>
 #include <QWaitCondition>
+// Обмен с модулями
+namespace CN
+{
+typedef unsigned char byte;
+namespace Limits
+{
+    // 64-4 ('<',cmd,L,L)
+    constexpr unsigned MaxSegmenthLength = 60;
+    constexpr unsigned MaxMemoryFileSize = 65535;
+    // максимальный размер выходного файла
+    constexpr unsigned MaxFileSize = 300000;
+    constexpr unsigned MaxGetFileSize = 16777215;
 
-#define CN_MAXSEGMENTLENGTH 60 // 64-4 ('<',cmd,L,L)
+    // максимальный ИД осциллограмм
+    constexpr unsigned MaxOscillogramId = 2999;
+    // минимальный ИД осциллограмм, нужно, т.к. файлы осциллограмм обрабатываются по-своему
+    constexpr unsigned MinOscillogramId = 1000;
 
-#define CN_MAXMEMORYFILESIZE 65535
-#define CN_MAXGETFILESIZE 16777215
-
+    // максимальный ИД журналов
+    constexpr byte MaxJournalId = 6;
+    // минимальный ИД журналов
+    constexpr byte MinJournalId = 4;
+}
 // Канал связи с модулем
+// таймаут по USB в мс
+constexpr unsigned Timeout = 10000;
+// таймаут посылки запроса нестёртых осциллограмм
+constexpr unsigned TimeoutOscillogram = 1000;
+// 100 ms main loop sleep
+constexpr unsigned MainLoopDelay = 100;
+//'\x00'
+constexpr byte NullByte = 0x00;
+// ответ "всё в порядке"
+constexpr byte ResultOk = 0x11;
+// запуск, остановка теста
+constexpr byte Test = 0x49;
+// ответ "ошибка"
+constexpr byte ResultError = 0xf0;
+// неизвестная команда
+constexpr byte Unknown = 0xff;
+namespace Read
+{
+    // чтение блока стартовой информации
+    constexpr byte BlkStartInfo = 0x21;
+    // чтение настроечных коэффициентов
+    constexpr byte BlkAC = 0x22;
+    // чтение текущих данных без настройки
+    constexpr byte BlkDataA = 0x23;
+    // чтение блока текущих данных
+    constexpr byte BlkData = 0x24;
+    // чтение технологического блока
+    constexpr byte BlkTech = 0x26;
+    // чтение файла
+    constexpr byte File = 0x25;
+    // чтение номера варианта использования
+    constexpr byte Variant = 0x27;
+    // чтение текущего режима работы
+    constexpr byte Mode = 0x28;
+    // чтение времени из МНК в формате UNIX
+    constexpr byte Time = 0x29;
+    // запрос текущего прогресса
+    constexpr byte Progress = 0x46;
 
-#define CN_TIMEOUT 10000 // таймаут по USB в мс
-#define CN_OSCT 1000 // таймаут посылки запроса нестёртых осциллограмм
-#define CN_MAXFILESIZE 300000 // максимальный размер выходного файла
-#define CN_MAINLOOP_DELAY 100 // 100 ms main loop sleep
+}
+namespace Write
+{
+    // запись настроечных коэффициентов
+    constexpr byte BlkAC = 0x31;
+    // посылка блока данных
+    constexpr byte BlkData = 0x34;
+    // посылка команды
+    constexpr byte BlkCmd = 0x35;
+    // запись технологического блока
+    constexpr byte BlkTech = 0x2B;
+    // запись файла
+    constexpr byte File = 0x32;
+    // задание варианта использования
+    constexpr byte Variant = 0x44;
+    // задание текущего режима работы
+    constexpr byte Mode = 0x43;
+    // запись времени в МНК в формате UNIX
+    constexpr byte Time = 0x2A;
+    // переход на новое ПО
+    constexpr byte Upgrade = 0x40;
+    // стирание технологического блока
+    constexpr byte EraseTech = 0x45;
+    // стирание счётчиков дискретных состояний
+    constexpr byte EraseCnt = 0x47;
+    // запись версии аппаратуры модуля/серийного номера/типа платы
+    constexpr byte Hardware = 0x48;
+}
+namespace Message
+{
+    // начало посылки
+    constexpr byte Start = 0x3e;
+    // продолжение посылки
+    constexpr byte Continue = 0x23;
+    // начало посылки модуля
+    constexpr byte Module = 0x3c;
+    // length is 2 bytes
+    constexpr byte Length2Byte = 0x02;
+}
+}
 
 // Обмен с модулями
-#define CN_BYTE0 '\x00'
-#define CN_ResOk 0x11 // ответ "всё в порядке"
-#define CN_GBsi 0x21 // чтение блока стартовой информации
-#define CN_GBac 0x22 // чтение настроечных коэффициентов
-#define CN_GBda 0x23 // чтение текущих данных без настройки
-#define CN_GBd 0x24 // чтение блока текущих данных
-#define CN_GF 0x25 // чтение файла
-#define CN_GBt 0x26 // чтение технологического блока
-#define CN_GVar 0x27 // чтение номера варианта использования
-#define CN_GMode 0x28 // чтение текущего режима работы
-#define CN_GTime 0x29 // чтение времени из МНК в формате юникс
-#define CN_WTime 0x2A // запись времени в МНК в формате юникс
-#define CN_WBt 0x2B // запись технологического блока
-#define CN_WBac 0x31 // запись настроечных коэффициентов
-#define CN_WF 0x32 // запись файла
-#define CN_WBd 0x34 // посылка блока данных
-#define CN_WCom 0x35 // посылка команды
-#define CN_VPO 0x40 // переход на новое ПО
-#define CN_SMode 0x43 // задание текущего режима работы
-#define CN_NVar 0x44 // задание варианта использования
-#define CN_Ert 0x45 // стирание технологического блока
-#define CN_ErPg 0x46 // запрос текущего прогресса
-#define CN_CtEr 0x47 // стирание счётчиков дискретных состояний
-#define CN_WHv 0x48 // запись версии аппаратуры модуля/серийного номера/типа платы
-#define CN_STest 0x49 // запуск, остановка теста
-#define CN_ResErr '\xF0' // ответ "ошибка"
-#define CN_Unk '\xFF' // неизвестная команда
+//#define CN_BYTE0
+//#define CN_ResOk 0x11
+//#define CN_GBsi 0x21
+//#define CN_GBac 0x22
+//#define CN_GBda 0x23
+//#define CN_GBd 0x24
+//#define CN_GF 0x25
+//#define CN_GBt 0x26
+//#define CN_GVar 0x27
+//#define CN_GMode 0x28
+//#define CN_GTime 0x29
+//#define CN_WTime 0x2A
+//#define CN_WBt 0x2B
+//#define CN_WBac 0x31
+//#define CN_WF 0x32
+//#define CN_WBd 0x34
+//#define CN_WCom 0x35
+//#define CN_VPO 0x40
+//#define CN_SMode 0x43
+//#define CN_NVar 0x44
+//#define CN_Ert 0x45
+//#define CN_ErPg 0x46
+//#define CN_CtEr 0x47
+//#define CN_WHv 0x48
+//#define CN_STest 0x49
+//#define CN_ResErr '\xF0'
+//#define CN_Unk '\xFF'
 
-#define CN_MS 0x3e // начало посылки
-#define CN_MS3 0x23 // продолжение посылки
-#define CN_SS 0x3c // начало посылки модуля
-#define CN_L2 0x02 // length is 2 bytes
-
-#define CN_MINOSCID 1000 // минимальный ИД осциллограмм, нужно, т.к. файлы осциллограмм обрабатываются по-своему
-#define CN_MAXOSCID 2999 // максимальный ИД осциллограмм
-
-#define MINJOURID 4 // минимальный ИД журналов
-#define MAXJOURID 6 // максимальный ИД журналов
+//#define CN_MS 0x3e
+//#define CN_MS3 0x23
+//#define CN_SS 0x3c
+//#define CN_L2 0x02
 
 #define WHV_SIZE_ONEBOARD 17
 #define WHV_SIZE_TWOBOARDS 33
@@ -102,13 +187,14 @@ public:
     void SendFile(unsigned char command, char board_type, int filenum, QByteArray &ba);
     static void SetWriteUSBLog(bool bit);
     static bool IsWriteUSBLog();
-    virtual QStringList DevicesFound()
-        = 0; // функция, возвращающая список найденных устройств (COM-портов, устройств USB)
-    void TranslateDeviceAndSave(
-        const QString &str); // функция, разбивающая строку устройства и складывающая в соотв. структуру
+    // функция, возвращающая список найденных устройств (COM-портов, устройств USB)
+    virtual QStringList DevicesFound() const = 0;
+    // функция, разбивающая строку устройства и складывающая в соотв. структуру
+    void TranslateDeviceAndSave(const QString &str);
 
 signals:
-    void SetDataSize(int); // сигналы для прогрессбаров - отслеживание принятых данных, стёртых осциллограмм и т.п.
+    // сигналы для прогрессбаров - отслеживание принятых данных, стёртых осциллограмм и т.п.
+    void SetDataSize(int);
     void SetDataCount(int);
     void readbytessignal(QByteArray); // for TE updating
     void writebytessignal(QByteArray); // for TE updating
@@ -135,7 +221,7 @@ private:
     quint8 bStep;
     char Command;
     int FNum;
-    qint64 ReadDataChunkLength, RDLength; // длина всей посылки
+    qint32 ReadDataChunkLength, RDLength; // длина всей посылки
     int WRLength; // длина всей посылки
     qint64 InDataSize;
     int SegLeft; // количество оставшихся сегментов
@@ -153,8 +239,8 @@ private:
     void AppendSize(QByteArray &ba, int size);
     void SendOk(bool cont = false); // cont = 1 -> send CN_MS3 instead CN_MS
     void SendErr();
-    bool GetLength(); // ok = 1 -> обработка посылки вида SS OK ..., ok = 0 -> вида SS c L L ... возвращаемое значение =
-                      // false -> неправильная длина
+    bool GetLength(); // ok = 1 -> обработка посылки вида SS OK ..., ok = 0 -> вида SS c L L ... возвращаемое
+                      // значение = false -> неправильная длина
 };
 
 #endif // EEAbstractProtocomChannel_H

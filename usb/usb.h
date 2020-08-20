@@ -5,12 +5,12 @@
 
 #include <QObject>
 
-class usb : public QObject
-{
-    Q_OBJECT
-public:
-    usb(QObject *parent = nullptr);
-};
+// class usb : public QObject
+//{
+//    Q_OBJECT
+// public:
+//    usb(QObject *parent = nullptr);
+//};
 
 extern EUsbHid *cn;
 
