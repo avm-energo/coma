@@ -28,7 +28,7 @@ public:
         quint32 Reserv;
     };
 
-    struct MeasureStruct
+    struct Measure
     {
         quint32 NUM;
         quint32 Time;
@@ -41,38 +41,36 @@ public:
         float I0;
         float I1;
         float I2;
-        float Cbush[3];
-        float Tg_d[3];
-        float dCbush[3];
-        float dTg_d[3];
-        float Iunb;
-        float Phy_unb;
         float Tmk;
         float Tamb;
         quint32 res;
+    };
+
+    struct MeasureStruct : Measure
+    {
+        MeasureStruct(Measure meas) : Measure(meas)
+        {
+        }
+        MeasureStruct() = default;
+        float dCbush[3];
+        float Cbush[3];
+        float Tg_d[3];
+        float dTg_d[3];
+        float Iunb;
+        float Phy_unb;
     }; // sizeof(Bda_trend_struct)=31*4=124
 
-    struct MeasureStructKTF
+    struct MeasureStructKTF : Measure
     {
-        quint32 NUM;
-        quint32 Time;
-        float Ueff[3];
-        float Ieff[3];
-        float Frequency;
-        float U0;
-        float U1;
-        float U2;
-        float I0;
-        float I1;
-        float I2;
+        MeasureStructKTF(Measure meas) : Measure(meas)
+        {
+        }
+        MeasureStructKTF() = default;
         float Pf[4];
         float Qf[4];
         float Sf[4];
         float Cosphi;
-        float Tmk;
-        float Tamb;
         float Twin;
-        quint32 res;
     }; // sizeof(Bda_trend_struct)=31*4=124
 
     explicit Journals(QObject *parent = nullptr);
