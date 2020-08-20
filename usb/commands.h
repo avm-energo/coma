@@ -51,6 +51,5 @@ public:
 private:
 };
 
-extern EUsbHid *cn;
 
 #endif // COMMANDS_H

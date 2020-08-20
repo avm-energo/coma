@@ -115,40 +115,6 @@ namespace Message
 }
 }
 
-// Обмен с модулями
-//#define CN_BYTE0
-//#define CN_ResOk 0x11
-//#define CN_GBsi 0x21
-//#define CN_GBac 0x22
-//#define CN_GBda 0x23
-//#define CN_GBd 0x24
-//#define CN_GF 0x25
-//#define CN_GBt 0x26
-//#define CN_GVar 0x27
-//#define CN_GMode 0x28
-//#define CN_GTime 0x29
-//#define CN_WTime 0x2A
-//#define CN_WBt 0x2B
-//#define CN_WBac 0x31
-//#define CN_WF 0x32
-//#define CN_WBd 0x34
-//#define CN_WCom 0x35
-//#define CN_VPO 0x40
-//#define CN_SMode 0x43
-//#define CN_NVar 0x44
-//#define CN_Ert 0x45
-//#define CN_ErPg 0x46
-//#define CN_CtEr 0x47
-//#define CN_WHv 0x48
-//#define CN_STest 0x49
-//#define CN_ResErr '\xF0'
-//#define CN_Unk '\xFF'
-
-//#define CN_MS 0x3e
-//#define CN_MS3 0x23
-//#define CN_SS 0x3c
-//#define CN_L2 0x02
-
 #define WHV_SIZE_ONEBOARD 17
 #define WHV_SIZE_TWOBOARDS 33
 

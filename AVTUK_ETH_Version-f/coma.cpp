@@ -629,13 +629,12 @@ void Coma::NewModbus()
 
 void Coma::NewUSB()
 {
-    cn = new EUsbHid;
-    connect(this, &Coma::StopCommunications, cn, &EAbstractProtocomChannel::Disconnect);
-    connect(cn, &EAbstractProtocomChannel::Finished, this, &Coma::USBFinished);
-    connect(cn, &EAbstractProtocomChannel::SetDataSize, this, &Coma::SetProgressBar1Size);
-    connect(cn, &EAbstractProtocomChannel::SetDataCount, this, &Coma::SetProgressBar1);
-    connect(cn, &EAbstractProtocomChannel::ShowError, this, &Coma::ShowErrorMessageBox);
-    connect(cn, &EUsbHid::ReconnectSignal, this, &Coma::ReConnect);
+    connect(this, &Coma::StopCommunications, EUsbHid::GetInstance(), &EAbstractProtocomChannel::Disconnect);
+    connect(EUsbHid::GetInstance(), &EAbstractProtocomChannel::Finished, this, &Coma::USBFinished);
+    connect(EUsbHid::GetInstance(), &EAbstractProtocomChannel::SetDataSize, this, &Coma::SetProgressBar1Size);
+    connect(EUsbHid::GetInstance(), &EAbstractProtocomChannel::SetDataCount, this, &Coma::SetProgressBar1);
+    connect(EUsbHid::GetInstance(), &EAbstractProtocomChannel::ShowError, this, &Coma::ShowErrorMessageBox);
+    connect(EUsbHid::GetInstance(), &EUsbHid::ReconnectSignal, this, &Coma::ReConnect);
     // connect(cn, SIGNAL(ReconnectSignal()), this, SLOT(ReConnect()));
 }
 
@@ -1045,8 +1044,8 @@ void Coma::Disconnect()
         {
             BdaTimer->stop();
             TimeFunc::Wait(100);
-            if (cn->Connected)
-                cn->Disconnect();
+            if (EUsbHid::GetInstance()->Connected)
+                EUsbHid::GetInstance()->Disconnect();
         }
         else
         {

@@ -55,7 +55,6 @@ SOURCES += \
     ../gen/maindef.cpp \
     ../modbus/serialport.cpp \
     ../usb/eusbthread.cpp \
-    ../usb/usb.cpp \
     coma.cpp \
     main.cpp \
     ../check/check.cpp \
@@ -125,7 +124,6 @@ HEADERS += \
     ../gen/logclass.h \
     ../modbus/serialport.h \
     ../usb/eusbthread.h \
-    ../usb/usb.h \
     coma.h \
     ../check/check.h \
     ../check/eabstractcheckdialog.h \
