@@ -45,11 +45,12 @@ private slots:
     void SaveConfToFile();
     void LoadConfFromFile();
     void ButtonReadConf();
-    void FillConf(QVector<S2::DataRec> *);
+
     void WritePasswordCheck(QString psw);
 
 public slots:
     void WriteConf();
+    void FillConf(QVector<S2::DataRec> *);
 
 signals:
     void writeConfFile(QVector<S2::DataRec> *);

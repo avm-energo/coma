@@ -18,16 +18,30 @@
 #include "../dialogs/infodialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/mnktime.h"
+#include "../widgets/etabwidget.h"
 
 #include <QMainWindow>
 #include <QResizeEvent>
 
-#define RECONNECTINTERVAL 3000
-#define WAITINTERVAL 15000
+#ifdef _WIN32
+// clang-format off
+#include <windows.h>
+// Header dbt must be the last header, thanx to microsoft
+#include <dbt.h>
+// clang-format on
+#endif
+enum INTERVAL
+{
+    RECONNECT = 3000,
+    WAIT = 15000
+};
 
-#define THREADUSB 0x01
-#define THREAD104 0x02
-#define THREADMBS 0x04
+enum THREAD
+{
+    USB = 0x01,
+    P104 = 0x02,
+    MODBUS = 0x04
+};
 
 class Coma : public QMainWindow
 {
@@ -66,46 +80,24 @@ public:
 
     static QStringList Hth()
     {
-        QStringList sl;
         // sl.append("ERR");
-        sl.append("ADCI");
-        sl.append("FLS");
-        sl.append("TUP");
-        sl.append("ADCB");
-        sl.append("1PPS");
-        sl.append("ADCM");
-        sl.append("REGB");
-        sl.append("RCN");
-        sl.append("HWIB");
-        sl.append("HWIM");
-        sl.append("REGM");
-        sl.append("BAT");
-        sl.append("NTP");
-        sl.append("FLS2");
-        sl.append("FRM");
-
+        QStringList sl { "ADCI", "FLS", "TUP", "ADCB", "1PPS", "ADCM", "REGB", "RCN", "HWIB", "HWIM", "REGM", "BAT",
+            "NTP", "FLS2", "FRM" };
         return sl;
     }
 
     static QStringList HthToolTip()
     {
-        QStringList sl;
+        // QStringList sl;
         // sl.append("Что-то не в порядке");
-        sl.append("Проблемы со встроенным АЦП ");
-        sl.append("Не работает внешняя flash-память");
-        sl.append("Перегрев");
-        sl.append("Проблемы с АЦП (нет связи) (базовая)");
-        sl.append("Нет сигнала 1PPS с антенны");
-        sl.append("Проблемы с АЦП (нет связи) (мезонин)");
-        sl.append("Ошибка регулировочных коэффициентов (базовая)");
-        sl.append("Ошибка загрузки конфигурации из flash-памяти. Работает конфигурация по умолчанию");
-        sl.append("Некорректная Hardware информация (базовая)");
-        sl.append("Некорректная Hardware информация (мезонин)");
-        sl.append("Ошибка регулировочных коэффициентов (мезонин)");
-        sl.append("Напряжение батареи низко (< 2,5 В)");
-        sl.append("Нет связи с NTP-сервером");
-        sl.append("Не работает внешняя flash-память (мезонин)");
-        sl.append("Не работает внешняя fram");
+        QStringList sl = { "Проблемы со встроенным АЦП ", "Не работает внешняя flash-память", "Перегрев",
+            "Проблемы с АЦП (нет связи) (базовая)", "Нет сигнала 1PPS с антенны",
+            "Проблемы с АЦП (нет связи) (мезонин)", "Ошибка регулировочных коэффициентов (базовая)",
+            "Ошибка загрузки конфигурации из flash-памяти. Работает конфигурация по умолчанию",
+            "Некорректная Hardware информация (базовая)", "Некорректная Hardware информация (мезонин)",
+            "Ошибка регулировочных коэффициентов (мезонин)", "Напряжение батареи низко (< 2,5 В)",
+            "Нет связи с NTP-сервером", "Не работает внешняя flash-память (мезонин)", "Не работает внешняя fram",
+            "Проблемы со встроенным АЦП " };
         return sl;
     }
 
@@ -145,7 +137,7 @@ private slots:
     void StartSettingsDialog();
     void ShowErrorDialog();
     void GetAbout();
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent *event) override;
     void SetDefConf();
     void SetMainDefConf();
     void SetBDefConf();
@@ -171,49 +163,56 @@ private slots:
 private:
     const QVector<int> MTBs = { 0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84 };
 
-    AbstractCorDialog *CorD;
     AlarmWidget *AlarmW;
-    AlarmClass *Alarm;
-
-    InfoDialog *IDialog;
-    bool Ok;
-    bool Disconnected;
-    int Mode; // режим запуска программы
-    QVector<S2::DataRec> S2ConfigForTune;
-    ConfDialog *MainConfDialog;
-    ConfDialog *MainTuneDialog;
-    quint8 HaveAlreadyRed = 0;
-    quint32 Mes;
-    bool TimeThrFinished;
-    QTimer *ReceiveTimer;
-    quint8 PredAlarmEvents[20];
-    quint8 AlarmEvents[20];
-    int fileSize, curfileSize;
-    QTimer *ReconnectTimer;
-    QString SavePort;
-    quint8 ActiveThreads;
-    int CheckIndex, TimeIndex, ConfIndex, CurTabIndex;
-    AbstractConfDialog *ConfB, *ConfM;
-    EAbstractCheckDialog *CheckB, *CheckM;
     WarnAlarmKIV *WarnAlarmKIVWidget;
     AvarAlarmKIV *AvarAlarmKIVWidget;
     WarnAlarmKTF *WarnAlarmKTFWidget;
     AvarAlarmKTF *AvarAlarmKTFWidget;
-    AlarmStateAll *AlarmStateAllWidget;
-    AbstractAlarm *AbstrALARM;
-    IEC104 *Ch104;
-    ModBus *ChModbus;
-    MNKTime *TimeD;
-    JournalDialog *JourD;
-    fwupdialog *FwUpD;
-    QVector<S2::DataRec> *S2Config;
+    AlarmClass *Alarm;
     QWidget *Parent;
     QWidget *Wpred;
     QWidget *Walarm;
+    AbstractAlarm *AbstrALARM;
+
+    InfoDialog *IDialog;
+    ConfDialog *MainConfDialog;
+    ConfDialog *MainTuneDialog;
+    AbstractCorDialog *CorD;
+    AlarmStateAll *AlarmStateAllWidget;
+    AbstractConfDialog *ConfB, *ConfM;
+    EAbstractCheckDialog *CheckB, *CheckM;
+    JournalDialog *JourD;
+    fwupdialog *FwUpD;
+
+    bool PasswordValid;
+    bool Disconnected;
+    bool TimeThrFinished;
     bool Cancelled;
     bool Reconnect;
-    ConnectDialog::ConnectStruct ConnectSettings;
+    int Mode; // режим запуска программы
+    int fileSize, curfileSize;
+    int CheckIndex, TimeIndex, ConfIndex, CurTabIndex;
+    quint8 HaveAlreadyRed = 0;
+    quint8 ActiveThreads;
+    quint32 Mes;
+
+    QString SavePort;
+
+    QVector<S2::DataRec> S2ConfigForTune;
+    QVector<S2::DataRec> *S2Config;
+
+    quint8 PredAlarmEvents[20];
+    quint8 AlarmEvents[20];
+
+    QTimer *ReceiveTimer;
+    QTimer *ReconnectTimer;
     QTimer *BdaTimer, *TimeTimer;
+
+    IEC104 *Ch104;
+    ModBus *ChModbus;
+    MNKTime *TimeD;
+
+    ConnectDialog::ConnectStruct ConnectSettings;
 
     void LoadSettings();
     void SaveSettings();
@@ -227,10 +226,13 @@ private:
     void CloseDialogs();
     void PrepareDialogs();
     void NewTimersBda();
+    virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
+
+    void addConfTab(ETabWidget *MainTW, QString str);
 
 protected:
-    void keyPressEvent(QKeyEvent *e);
-    void resizeEvent(QResizeEvent *e);
+    void keyPressEvent(QKeyEvent *e) override;
+    void resizeEvent(QResizeEvent *e) override;
 };
 
 #endif // COMA_H

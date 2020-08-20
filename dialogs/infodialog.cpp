@@ -78,17 +78,22 @@ void InfoDialog::FillBsi()
 
 void InfoDialog::ClearBsi()
 {
-    WDFunc::SetLBLText(this, "snle", "");
-    WDFunc::SetLBLText(this, "fwverle", "");
-    WDFunc::SetLBLText(this, "cfcrcle", "");
-    WDFunc::SetLBLText(this, "rstle", "");
-    WDFunc::SetLBLText(this, "rstcountle", "");
-    WDFunc::SetLBLText(this, "cpuidle", "");
-    WDFunc::SetLBLText(this, "typeble", "");
-    WDFunc::SetLBLText(this, "snble", "");
-    WDFunc::SetLBLText(this, "hwble", "");
-    WDFunc::SetLBLText(this, "typemle", "");
-    WDFunc::SetLBLText(this, "snmle", "");
-    WDFunc::SetLBLText(this, "hwmle", "");
+    QList<QLabel *> allLabels = this->findChildren<QLabel *>();
+    for (QLabel *label : allLabels)
+    {
+        label->clear();
+    }
+    //    WDFunc::SetLBLText(this, "snle", "");
+    //    WDFunc::SetLBLText(this, "fwverle", "");
+    //    WDFunc::SetLBLText(this, "cfcrcle", "");
+    //    WDFunc::SetLBLText(this, "rstle", "");
+    //    WDFunc::SetLBLText(this, "rstcountle", "");
+    //    WDFunc::SetLBLText(this, "cpuidle", "");
+    //    WDFunc::SetLBLText(this, "typeble", "");
+    //    WDFunc::SetLBLText(this, "snble", "");
+    //    WDFunc::SetLBLText(this, "hwble", "");
+    //    WDFunc::SetLBLText(this, "typemle", "");
+    //    WDFunc::SetLBLText(this, "snmle", "");
+    //    WDFunc::SetLBLText(this, "hwmle", "");
     // расшифровка Hth
 }
