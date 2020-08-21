@@ -65,6 +65,7 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 [Files]
 Source: "{#Build_DIR}\{#ARCH}\release\{#ExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#QT_DIR}\..\plugins\platforms\qwindows.dll"; DestDir: "{app}\platforms"; 
+Source: "{#QT_DIR}\..\plugins\styles\qwindowsvistastyle.dll"; DestDir: "{app}\styles"; 
 Source: "{#Build_DIR}\{#ARCH}\release\errors\*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ;Source: "{#Build_DIR}\{#ARCH}\release\reports\*"; DestDir: "{userappdata}\{#EngName}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#Build_DIR}\{#ARCH}\release\images\*"; DestDir: "{app}\images"; Flags: ignoreversion recursesubdirs createallsubdirs
