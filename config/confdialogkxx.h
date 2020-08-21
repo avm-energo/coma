@@ -25,7 +25,7 @@ public:
     ConfDialogKxx(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
 
     QWidget *SetupComParam(QWidget *parent);
-    QWidget *SetupModBus();
+    QWidget *SetupModBus(QObject *parent);
     QWidget *SetupBl(QWidget *parent);
 
     QStringList Sbaud = { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
@@ -37,6 +37,7 @@ private:
     QString ValuesFormat, WidgetFormat;
     QList<QWidget *> WidgetList;
     ConfigKxx *Kxx;
+    QObject *QswtParent;
 };
 
 #endif // CONFIGKXX_H

@@ -33,7 +33,6 @@ void AlarmStateAll::AlarmState()
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
-    QString tmps = QString(PROGCAPTION);
 
     INFOMSG("DeviceState()");
     QPixmap *pmgrn = new QPixmap("images/greenc.png");

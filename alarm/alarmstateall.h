@@ -17,12 +17,6 @@ public slots:
 
     void Update(QList<bool>);
 
-    //   void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
-    //   void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
-
-    //   void ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal);
-    //   void ModBusUpdate(ModBus::Coils Signal);
-
     static QStringList HthToolTip()
     {
         QStringList sl;

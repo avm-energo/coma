@@ -36,10 +36,10 @@ CheckDialogKIV::CheckDialogKIV(BoardTypes board, QWidget *parent) : EAbstractChe
     SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
     SetBd(6, &ChKIV->Bd_block1, sizeof(Check_KIV::Bd1));
 
-    if (Config::MTB_A2) //(ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8)
+    if (Config::MTB_A2)
         sl = QStringList() << "Основные"
                            << "Дополнительные"
-                           << "Отладка"; // << "Спорадика";// << "Температура"; //"Общие" <<
+                           << "Отладка";
     else
         sl = QStringList() << "Общие"
                            << "Аналоговые"

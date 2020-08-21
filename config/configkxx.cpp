@@ -11,8 +11,8 @@ ConfigKxx::ConfigKxx(QVector<S2::DataRec> *config)
         }
     }
 
-    config->append({ BCI_RTERM, sizeof(StrD.RTerm), &StrD.RTerm });
-    config->append({ BCI_W100, sizeof(StrD.W100), &StrD.W100 });
+    config->append({ BCI_RTERM, sizeof(TempConf.RTerm), &TempConf.RTerm });
+    config->append({ BCI_W100, sizeof(TempConf.W100), &TempConf.W100 });
 
     config->append({ BCI_TRELE_PRED, sizeof(StrTrele.Trele_pred), &StrTrele.Trele_pred });
     config->append({ BCI_TRELE_ALARM, sizeof(StrTrele.Trele_alarm), &StrTrele.Trele_alarm });
@@ -38,8 +38,8 @@ ConfigKxx::ConfigKxx(QVector<S2::DataRec> *config)
 
 void ConfigKxx::SetDefConf()
 {
-    StrD.RTerm = DEF_RTERM;
-    StrD.W100 = static_cast<float>(DEF_W100);
+    TempConf.RTerm = DEF_RTERM;
+    TempConf.W100 = static_cast<float>(DEF_W100);
 
     StrTrele.Trele_pred = DEF_TRELE_PRED;
     StrTrele.Trele_alarm = DEF_TRELE_ALARM;

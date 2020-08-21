@@ -22,6 +22,7 @@ public:
 
     void SetDefConf();
     void Fill();
+    void FillMainBlk();
     void FillBack();
     void CheckConf();
     QWidget *SetupMainBlk(QWidget *parent);

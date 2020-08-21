@@ -22,6 +22,7 @@
 
 #include "coma.h"
 
+#include "../check/checkdialogharmonicktf.h"
 #include "../check/checkdialogkdv.h"
 #include "../check/checkdialogkiv.h"
 #include "../check/checkdialogktf.h"
@@ -79,6 +80,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     // MainConfDialog = nullptr;
     ConfB = ConfM = nullptr;
     CheckB = CheckM = nullptr;
+    Harm = nullptr;
     Wpred = Walarm = nullptr;
     CorD = nullptr;
     CurTabIndex = -1;
@@ -300,6 +302,14 @@ void Coma::StartWork()
     if (CheckM != nullptr)
         MainTW->addTab(CheckM, str);
 
+    if (Harm != nullptr)
+    {
+        MainTW->addTab(Harm, "Гармоники");
+        CheckHarmIndex = MainTW->indexOf(Harm);
+        if (MainInterface == I_RS485)
+            ChModbus->CheckHarmIndex = CheckHarmIndex;
+    }
+
     if (ConfB != nullptr)
     {
         str = (ConfM == nullptr) ? "Конфигурирование" : "Конфигурирование\nБазовая";
@@ -312,6 +322,7 @@ void Coma::StartWork()
         connect(ConfB, SIGNAL(NewConfToBeLoaded()), this, SLOT(Fill()));
         connect(ConfB, SIGNAL(DefConfToBeLoaded()), this, SLOT(SetDefConf()));
     }
+
     if (ConfM != nullptr)
     {
         str = (ConfB == nullptr) ? "Конфигурирование" : "Конфигурирование\nМезонин";
@@ -413,6 +424,7 @@ void Coma::PrepareDialogs()
         {
         case Config::MTM_84:
             CheckB = new CheckDialogKIV(BoardTypes::BT_BASE);
+
             S2Config->clear();
             if (MainInterface != I_RS485)
                 ConfM = new ConfDialogKIV(S2Config);
@@ -423,21 +435,21 @@ void Coma::PrepareDialogs()
             connect(Alarm, SIGNAL(SetWarnAlarmColor(QList<bool>)), WarnAlarmKIVWidget, SLOT(Update(QList<bool>)));
 
             AvarAlarmKIVWidget = new AvarAlarmKIV(Alarm);
-            connect(AlarmW, SIGNAL(AlarmButtonPressed()), AvarAlarmKIVWidget, SLOT(show()));
+            connect(AlarmW, SIGNAL(ModuleAlarmButtonPressed()), AvarAlarmKIVWidget, SLOT(show()));
             connect(Alarm, SIGNAL(SetAlarmColor(QList<bool>)), AvarAlarmKIVWidget, SLOT(Update(QList<bool>)));
 
             break;
 
         case Config::MTM_87:
             CheckB = new CheckDialogKTF(BoardTypes::BT_BASE);
+
+            Harm = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
+
+            connect(BdaTimer, SIGNAL(timeout()), Harm, SLOT(USBUpdate()));
+
             S2Config->clear();
             if (MainInterface != I_RS485)
                 ConfM = new ConfDialogKTF(S2Config);
-
-            //            CheckB = new CheckDialogKDV(BoardTypes::BT_BASE);
-            //            S2Config->clear();
-            //            if (MainInterface != I_RS485)
-            //                ConfM = new ConfDialogKDV(S2Config);
 
             CorD = new CorDialogKTF;
 
@@ -530,6 +542,9 @@ void Coma::CloseDialogs()
         CheckB->close();
     if (CheckM != nullptr)
         CheckM->close();
+
+    if (Harm != nullptr)
+        Harm->close();
     //    CheckB = CheckM = nullptr;
     //    if (MainConfDialog != nullptr)
     //        MainConfDialog->close();
@@ -823,6 +838,7 @@ void Coma::SetBDefConf()
 void Coma::SetMDefConf()
 {
     if (ConfM != nullptr)
+
         ConfM->SetDefConf();
 }
 
@@ -1247,6 +1263,15 @@ void Coma::MainTWTabClicked(int tabindex)
         else
             BdaTimer->stop();
     }
+
+    if (Harm != nullptr)
+    {
+        if (tabindex == CheckHarmIndex)
+            BdaTimer->start();
+        else
+            BdaTimer->stop();
+    }
+
     if (TimeD != nullptr)
     {
         if (tabindex == TimeIndex)

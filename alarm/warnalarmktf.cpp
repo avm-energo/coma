@@ -49,7 +49,6 @@ void WarnAlarmKTF::WarnAlarmState()
                                              << "Неисправны все датчики температуры обмотки             "
                                              << "Сигнализация по опасному уровню пускового тока         ";
     QWidget *w = new QWidget;
-    // Wpred = w;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color:
                                                                             // rgba(220,220,220,255);
 

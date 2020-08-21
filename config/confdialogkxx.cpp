@@ -97,9 +97,10 @@ QWidget *ConfDialogKxx::SetupComParam(QWidget *parent)
     return w;
 }
 
-QWidget *ConfDialogKxx::SetupModBus()
+QWidget *ConfDialogKxx::SetupModBus(QObject *parent)
 {
-    QWidget *w = new QWidget(this);
+    QswtParent = parent;
+    QWidget *w = new QWidget;
     QString paramcolor = MAINWINCLR;
     QStackedWidget *qswt = new QStackedWidget;
     qswt->setObjectName("qswt");
@@ -219,7 +220,7 @@ QWidget *ConfDialogKxx::SetupModBus()
     cbl = QStringList { "нет", "тип 1", "тип 2", "тип 3" };
     for (int i = 1; i < 5;)
     {
-        Str = "MBMab" + i;
+        Str = "MBMab" + QString::number(i);
         Str = Str + "[0]";
         cb = WDFunc::NewCB(this, QString(Str), cbl, paramcolor);
         glyout->addWidget(сb, ++i, 1, 1, 1);
@@ -318,7 +319,7 @@ void ConfDialogKxx::ChangeWindow(int num)
 {
     Kxx->StrModBus.MBMaster = num;
 
-    QStackedWidget *QSWT = this->findChild<QStackedWidget *>("qswt");
+    QStackedWidget *QSWT = QswtParent->findChild<QStackedWidget *>("qswt");
 
     if (QSWT != nullptr)
         QSWT->setCurrentWidget(WidgetList.at(num));

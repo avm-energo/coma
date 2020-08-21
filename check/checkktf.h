@@ -34,36 +34,16 @@ public:
 
     struct Bd2
     {
-
         float IUefNat_filt[4];
         float IUeff_filtered[4];
         float KrF[3];
-        //        float U0;
-        //        float U1;
-        //        float U2;
-        //        float Kunsim0;
-        //        float Kunsim2;
-        //        float THD[3];
-        //        float UI_Harm[3][61];
     };
+
     struct Bd3
     {
-
         float IUefNat_filt[4];
         float IUeff_filtered[4];
         float KrF[3];
-        //        float U0;
-        //        float U1;
-        //        float U2;
-        //        float Kunsim0;
-        //       float Kunsim2;
-        //       float THD[3];
-        //        float UI_Harm[3][61];
-    };
-
-    struct Bd5
-    {
-        float UI_Harm[3][61];
     };
 
     struct Bd6
@@ -74,11 +54,6 @@ public:
         float Kunsim0;
         float Kunsim2;
         float THD[3];
-    };
-
-    struct Bd7
-    {
-        float UI_Harm[3][61];
     };
 
     struct Bd10
@@ -158,28 +133,14 @@ public:
     Bd11 Bd_block11;
     Bd9 Bd_block9;
     Bd18 Bd_block18;
-    Bd5 Bd_block5;
+
     Bd6 Bd_block6;
-    Bd7 Bd_block7;
 
     QWidget *Bd1W(QWidget *parent);
     QWidget *Bd2W(QWidget *parent);
     QWidget *Bd3W(QWidget *parent);
     QWidget *Bd4W(QWidget *parent);
     QWidget *Bd5W(QWidget *parent);
-    QWidget *Bd6W(QWidget *parent);
-    QWidget *Bd7W(QWidget *parent);
-    QWidget *Bd8W(QWidget *parent);
-    QWidget *Bd9W(QWidget *parent);
-    QWidget *Bd10W(QWidget *parent);
-    QWidget *Bd11W(QWidget *parent);
-    QWidget *Bd12W(QWidget *parent);
-    QWidget *Bd13W(QWidget *parent);
-    QWidget *Bd14W(QWidget *parent);
-    QWidget *Bd15W(QWidget *parent);
-    QWidget *Bd16W(QWidget *parent);
-    QWidget *Bd17W(QWidget *parent);
-    QWidget *Bd18W(QWidget *parent);
 
     void FillBd(QWidget *parent, QString Name, QString Value);
     void FillBd0(QWidget *parent);
@@ -193,9 +154,8 @@ public:
     void FillBd9(QWidget *parent);
     void FillBd18(QWidget *parent);
     void FillBd4(QWidget *parent);
-    void FillBd5(QWidget *parent);
+
     void FillBd6(QWidget *parent);
-    void FillBd7(QWidget *parent);
 
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
     QWidget *CustomTab();

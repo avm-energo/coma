@@ -37,23 +37,8 @@ CheckDialogKTF::CheckDialogKTF(BoardTypes board, QWidget *parent) : EAbstractChe
     SetBd(17, &ChKTF->Bd_block13, sizeof(CheckKTF::Bd13));
 
     if (Config::MTB_A2) //(ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8)
-        sl = QStringList() << "Основные"
-                           << "Модель"
-                           << "Ресурс"
-                           << "1-я гармоника"
-                           << "Несиметрия"
-                           << "Гармоники U 2-11"
-                           << "Гармоники U 12-21"
-                           << "Гармоники U 22-31"
-                           << "Гармоники U 32-41"
-                           << "Гармоники U 42-51"
-                           << "Гармоники U 52-61"
-                           << "Гармоники I 2-11"
-                           << "Гармоники I 12-21"
-                           << "Гармоники I 22-31"
-                           << "Гармоники I 32-41"
-                           << "Гармоники I 42-51"
-                           << "Гармоники I 52-61";
+
+        sl = QStringList { "Основные", "Модель", "Ресурс", "1-я гармоника", "Несиметрия" };
 
     BdUINum = sl.size();
 
@@ -78,35 +63,8 @@ QWidget *CheckDialogKTF::BdUI(int bdnum)
 
     case 3:
         return ChKTF->Bd4W(this);
-
     case 4:
         return ChKTF->Bd5W(this);
-    case 5:
-        return ChKTF->Bd6W(this);
-    case 6:
-        return ChKTF->Bd7W(this);
-    case 7:
-        return ChKTF->Bd8W(this);
-    case 8:
-        return ChKTF->Bd9W(this);
-    case 9:
-        return ChKTF->Bd10W(this);
-    case 10:
-        return ChKTF->Bd11W(this);
-    case 11:
-        return ChKTF->Bd12W(this);
-    case 12:
-        return ChKTF->Bd13W(this);
-    case 13:
-        return ChKTF->Bd14W(this);
-    case 14:
-        return ChKTF->Bd15W(this);
-    case 15:
-        return ChKTF->Bd16W(this);
-    case 16:
-        return ChKTF->Bd17W(this);
-
-        ;
 
     default:
         return new QWidget;
@@ -120,23 +78,7 @@ void CheckDialogKTF::RefreshAnalogValues(int bdnum)
 
 void CheckDialogKTF::PrepareHeadersForFile(int row)
 {
-    QString phase[4] = { "A:", "B:", "C:", "сред.:" };
-
-    for (int i = 0; i < 4; i++)
-    {
-
-        xlsx->write(row, i + 3, QVariant(("Ueff ф") + phase[i] + ", кВ"));
-        xlsx->write(row, i + 7, QVariant("Ieff ф" + phase[i] + ", А"));
-        xlsx->write(row, i + 11, QVariant("P ф." + phase[i] + ", кВт"));
-        xlsx->write(row, i + 15, QVariant("Q ф." + phase[i] + ", кВар"));
-        xlsx->write(row, i + 19, QVariant("S ф." + phase[i] + ", кВА"));
-        xlsx->write(row, i + 23, QVariant("CosPhi ф." + phase[i] + ", град."));
-        xlsx->write(row, i + 27, QVariant("CosPhi ф." + phase[i] + ", град."));
-    }
-    xlsx->write(row, 31, QVariant("Tmk, °С"));
-    xlsx->write(row, 32, QVariant("ExtTemp,°С"));
-    xlsx->write(row, 33, QVariant("Tamb, °С"));
-    xlsx->write(row, 33, QVariant("Freq, Гц"));
+    Q_UNUSED(row)
 }
 
 void CheckDialogKTF::WriteToFile(int row, int bdnum)
@@ -232,17 +174,10 @@ void CheckDialogKTF::USBUpdate()
     {
         ChKTF->FillBd4(this);
     }
-    if (Commands::GetBd(5, &ChKTF->Bd_block5, sizeof(CheckKTF::Bd5)) == NOERROR)
-    {
-        ChKTF->FillBd5(this);
-    }
+
     if (Commands::GetBd(6, &ChKTF->Bd_block6, sizeof(CheckKTF::Bd6)) == NOERROR)
     {
         ChKTF->FillBd6(this);
-    }
-    if (Commands::GetBd(7, &ChKTF->Bd_block7, sizeof(CheckKTF::Bd7)) == NOERROR)
-    {
-        ChKTF->FillBd7(this);
     }
 }
 
@@ -253,13 +188,7 @@ void CheckDialogKTF::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
     for (i = 0; i < Signal->SigNumber; i++)
     {
         sig = *(Signal + i);
-        // WDFunc::SetLBLText(Ch, QString::number((Signal+i)->fl.SigAdr),
-        // WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal));
-        // if((Signal+i)->fl.SigAdr == 101 || (Signal+i)->fl.SigAdr == 102)
-        // Ch->FillBd0(this, QString::number((Signal+i)->fl.SigAdr),
-        // WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal));
 
-        // if((Signal+i)->fl.SigAdr >= 1000 || (Signal+i)->fl.SigAdr <= 1009)
         ChKTF->FillBd(this, QString::number(sig.fl.SigAdr), WDFunc::StringValueWithCheck(sig.fl.SigVal, 3));
     }
 }

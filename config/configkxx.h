@@ -53,13 +53,12 @@ class ConfigKxx
 public:
     ConfigKxx(QVector<S2::DataRec> *config);
 
-    typedef struct
+    struct TempConfStruct
     {
         float RTerm;
         float W100;
-
-    } StructDop;
-    StructDop StrD;
+    };
+    TempConfStruct TempConf;
 
     typedef struct
     {

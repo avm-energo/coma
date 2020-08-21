@@ -1,22 +1,21 @@
-#ifndef CHEKDIALOGKTF_H
-#define CHEKDIALOGKTF_H
+#ifndef CHECKDIALOGHARMONICKTF_H
+#define CHECKDIALOGHARMONICKTF_H
 
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
 #include "check.h"
-#include "checkdialogharmonicktf.h"
+#include "checkharmonicktf.h"
 #include "checkktf.h"
 #include "eabstractcheckdialog.h"
 
-class CheckDialogKTF : public EAbstractCheckDialog
+class CheckDialogHarmonicKTF : public EAbstractCheckDialog
 {
     Q_OBJECT
-
 public:
-    CheckDialogKTF(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    CheckDialogHarmonicKTF(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
-    CheckKTF *ChKTF;
+    CheckHarmonicKTF *ChHarmKTF;
 
     void USBUpdate();
 
@@ -29,7 +28,6 @@ public slots:
 private:
     Check *Ch;
     QTimer *BdTimer;
-    CheckHarmonicKTF *ChHarmKTF;
     int BdNum;
     bool XlsxWriting;
     const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; "
@@ -38,11 +36,11 @@ private:
 
     QWidget *AutoCheckUI();   // UI для автоматической проверки модуля
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
-    void RefreshAnalogValues(int bdnum);  // обновление полей в GUI из полученного
-                                          // соответствующего Bd_block
+    void RefreshAnalogValues(int bdnum); // обновление полей в GUI из полученного
+
     void PrepareHeadersForFile(int row);  // row - строка для записи заголовков
     void WriteToFile(int row, int bdnum); // row - номер строки для записи в файл
-                                          // xlsx, bdnum - номер блока данных
+
     void ChooseValuesToWrite();
     void SetDefaultValuesToWrite();
     void PrepareAnalogMeasurements();
@@ -55,4 +53,4 @@ private slots:
     void onModbusStateChanged(ConnectionStates state);
 };
 
-#endif // CHEKDIALOGKTF_H
+#endif // CHECKDIALOGHARMONICKTF_H

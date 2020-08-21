@@ -206,9 +206,9 @@ private:
     QString SavePort;
     DeviceConnectStruct DevInfo;
     quint8 ActiveThreads;
-    int CheckIndex, TimeIndex, ConfIndex, CurTabIndex;
+    int CheckIndex, TimeIndex, ConfIndex, CurTabIndex, CheckHarmIndex;
     AbstractConfDialog *ConfB, *ConfM;
-    EAbstractCheckDialog *CheckB, *CheckM;
+    EAbstractCheckDialog *CheckB, *CheckM, *Harm;
     WarnAlarmKIV *WarnAlarmKIVWidget;
     AvarAlarmKIV *AvarAlarmKIVWidget;
     WarnAlarmKTF *WarnAlarmKTFWidget;

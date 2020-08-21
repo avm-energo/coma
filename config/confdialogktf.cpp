@@ -26,6 +26,7 @@ ConfDialogKTF::ConfDialogKTF(QVector<S2::DataRec> *S2Config, QWidget *parent) : 
     this->S2Config = S2Config;
     KTF = new ConfigKTF(S2Config);
     Conf = new ConfDialog(S2Config, MTypeB, MTypeM);
+    ConfigMain = new Config(S2Config, MTypeB, MTypeM);
     ConfKxx = new ConfDialogKxx(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
@@ -1124,7 +1125,7 @@ void ConfDialogKTF::SetupUI()
     //  area2->verticalScrollBar()->setValue(area2->verticalScrollBar()->maximum());
 
     ConfTW->addTab(Conf->SetupMainBlk(this), "Связь");
-    ConfTW->addTab(ConfKxx->SetupModBus(), "ModBusMaster");
+    ConfTW->addTab(ConfKxx->SetupModBus(this), "ModBusMaster");
     ConfTW->addTab(ConfKxx->SetupBl(this), "Общее");
 
     //   ConfTW->addTab(Conf->SetupComParam(), "ModBusMaster");
@@ -1153,6 +1154,11 @@ void ConfDialogKTF::SetDefConf()
 {
     KTF->SetDefConf();
     Fill();
+
+    ConfigMain->SetDefBlock();
+    Conf->FillMainBlk();
+    Conf->SetDefConf();
+    //   Conf->Fill();
 }
 
 void ConfDialogKTF::Start_Timer()
