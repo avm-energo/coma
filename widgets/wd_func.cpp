@@ -228,7 +228,7 @@ bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue
     return true;
 }
 
-bool WDFunc::SetCBIndex(QWidget *w, const QString &cbname, int index)
+bool WDFunc::SetCBIndex(QObject *w, const QString &cbname, int index)
 {
     EComboBox *cb = w->findChild<EComboBox *>(cbname);
     if (cb == nullptr)
@@ -271,7 +271,7 @@ QDoubleSpinBox *WDFunc::NewSPB(
     return dspbls;
 }
 
-bool WDFunc::SetSPBData(QWidget *w, const QString &spbname, const double &spbvalue)
+bool WDFunc::SetSPBData(QObject *w, const QString &spbname, const double &spbvalue)
 {
     QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
     if (spb == nullptr)
@@ -610,7 +610,7 @@ QAbstractItemModel *WDFunc::TVModel(QWidget *w, const QString &tvname)
     return tv->model();
 }
 
-bool WDFunc::LE_read_data(QWidget *w, const QString &lename, QString &levalue)
+bool WDFunc::LE_read_data(QObject *w, const QString &lename, QString &levalue)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);
     if (le == nullptr)
@@ -619,7 +619,7 @@ bool WDFunc::LE_read_data(QWidget *w, const QString &lename, QString &levalue)
     return true;
 }
 
-bool WDFunc::LE_write_data(QWidget *w, const QString &levalue, const QString &lename)
+bool WDFunc::LE_write_data(QObject *w, const QString &levalue, const QString &lename)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);
     if (le == nullptr)

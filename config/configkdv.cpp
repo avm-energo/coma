@@ -73,18 +73,6 @@ ConfigKDV::ConfigKDV(QVector<S2::DataRec> *config)
     config->append({ BCI_OSCPOINTS, sizeof(Bci_block.OscPoints), &Bci_block.OscPoints });
     config->append({ BCI_TDATNUM, sizeof(Bci_block.TdatNum), &Bci_block.TdatNum });
 
-    //    config->append({ BCI_IP, sizeof(Com_param.IP), &Com_param.IP });
-    //    config->append({ BCI_MASK, sizeof(Com_param.Mask), &Com_param.Mask });
-    //    config->append({ BCI_GW, sizeof(Com_param.GW), &Com_param.GW });
-    //    config->append({ BCI_PORT, sizeof(Com_param.Port), &Com_param.Port });
-    //    config->append({ BCI_SNTP, sizeof(Com_param.SNTP), &Com_param.SNTP });
-    //    config->append({ BCI_BAUD, sizeof(Com_param.Baud), &Com_param.Baud });
-    //    config->append({ BCI_PARITY, sizeof(Com_param.Parity), &Com_param.Parity });
-    //    config->append({ BCI_STOPBIT, sizeof(Com_param.Stopbit), &Com_param.Stopbit });
-    //    config->append({ BCI_ADRMB, sizeof(Com_param.adrMB), &Com_param.adrMB });
-    //    config->append({ BCI_ISNTP, sizeof(Com_param.IsNTP), &Com_param.IsNTP });
-    //    config->append({ BCI_ISPPS, sizeof(Com_param.IsPPS), &Com_param.IsPPS });
-
     config->append({ 0xFFFFFFFF, 0, nullptr });
 }
 
@@ -175,11 +163,4 @@ void ConfigKDV::SetDefConf()
     Com_param.SNTP[1] = 16;
     Com_param.SNTP[2] = 31;
     Com_param.SNTP[3] = 220;
-
-    //    Com_param.Baud = DEF_BAUD;
-    //    Com_param.Parity = DEF_PARITY;
-    //    Com_param.Stopbit = DEF_STOPBIT;
-    //    Com_param.adrMB = DEF_ADRMB;
-    //    Com_param.IsNTP = DEF_ISNTP;
-    //    Com_param.IsPPS = DEF_ISPPS;
 }

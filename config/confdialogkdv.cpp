@@ -41,7 +41,6 @@ void ConfDialogKDV::SetupUI()
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QScrollArea *Analog_area = new QScrollArea;
-    QScrollArea *area = new QScrollArea;
     QScrollArea *area2 = new QScrollArea;
     QWidget *analog1 = new QWidget;
     QWidget *analog2 = new QWidget;
@@ -391,13 +390,8 @@ void ConfDialogKDV::SetupUI()
     QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(TABCOLOR) + ";}";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
     ConfTW->addTab(Analog_area, "Аналоговые");
-    //  area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
 
     ConfTW->addTab(area2, "Уставки");
-    // area2->verticalScrollBar()->setValue(area2->verticalScrollBar()->maximum());
-    // area2->setSizeIncrement(QSize(1000,1000));
-    //    ConfTW->addTab(area, "Связь");
-    //    area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
 
     ConfTW->addTab(Conf->SetupMainBlk(this), "Связь");
     ConfTW->addTab(ConfKxx->SetupModBus(this), "ModBusMaster");
@@ -413,7 +407,7 @@ void ConfDialogKDV::SetupUI()
 
 void ConfDialogKDV::Fill()
 {
-    int i, cbidx;
+    int cbidx;
 
     //.........................................................
     cbidx = (KDV->Bci_block.Eq_type & 0x02) ? 2 : ((KDV->Bci_block.Eq_type & 0x01) ? 1 : 0);
@@ -482,9 +476,7 @@ void ConfDialogKDV::Fill()
 
 void ConfDialogKDV::FillBack()
 {
-    int i;
     int cbidx;
-    QString tmps;
     bool tmpb;
 
     //.........................................................

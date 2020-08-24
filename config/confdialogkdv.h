@@ -2,6 +2,7 @@
 #define CONFDIALOGKDV_H
 
 #include "../config/confdialog.h"
+#include "../config/confdialogkxx.h"
 #include "../config/configkdv.h"
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"

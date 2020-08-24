@@ -10,8 +10,6 @@
 #define BCI_PARITY 26
 #define BCI_STOPBIT 27
 #define BCI_ADRMB 28
-#define BCI_ISNTP 29
-#define BCI_ISPPS 30
 
 #define DEF_IP 172, 16, 29, 12
 #define DEF_MASK 255, 255, 252, 0
@@ -46,7 +44,6 @@
 #define DEF_MBMASTER 0
 
 #include "../gen/modulebsi.h"
-#include "config.h"
 
 class ConfigKxx
 {

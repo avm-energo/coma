@@ -1,7 +1,6 @@
 #ifndef CONFIGDIALOGKXX_H
 #define CONFIGDIALOGKXX_H
 
-//#include "../config/configkxx.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../widgets/ecombobox.h"
@@ -24,9 +23,12 @@ class ConfDialogKxx : public QWidget
 public:
     ConfDialogKxx(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
 
-    QWidget *SetupComParam(QWidget *parent);
+    QWidget *SetupComParam(QObject *parent);
     QWidget *SetupModBus(QObject *parent);
-    QWidget *SetupBl(QWidget *parent);
+    QWidget *SetupBl(QObject *parent);
+    void SetDefConf();
+    void Fill();
+    void FillBack();
 
     QStringList Sbaud = { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
 
@@ -37,7 +39,7 @@ private:
     QString ValuesFormat, WidgetFormat;
     QList<QWidget *> WidgetList;
     ConfigKxx *Kxx;
-    QObject *QswtParent;
+    QObject *ParentMB, *ParentSetup, *ParentSetupBl;
 };
 
 #endif // CONFIGKXX_H

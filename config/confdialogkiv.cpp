@@ -38,18 +38,9 @@ ConfDialogKIV::~ConfDialogKIV()
 
 void ConfDialogKIV::Fill()
 {
-    int i, cbidx;
+    int i;
 
-    //    WDFunc::SetSPBData(this, "spb.1", CKIV->MainBlk.Abs_104);
-    //    WDFunc::SetSPBData(this, "spb.2", CKIV->MainBlk.Cycle_104);
-    //    WDFunc::SetSPBData(this, "spb.3", CKIV->MainBlk.T1_104);
-    //    WDFunc::SetSPBData(this, "spb.4", CKIV->MainBlk.T2_104);
-    //    WDFunc::SetSPBData(this, "spb.5", CKIV->MainBlk.T3_104);
-    //    WDFunc::SetSPBData(this, "spb.6", CKIV->MainBlk.k_104);
-    //    WDFunc::SetSPBData(this, "spb.7", CKIV->MainBlk.w_104);
-    //    // WDFunc::SetSPBData(this, "spb.8", C84->MainBlk.Ctype);
-    //    int cbidx = ((CKIV->MainBlk.Ctype & 0x01) ? 1 : 0);
-    //    WDFunc::SetCBIndex(this, "spb.8", cbidx);
+    Conf->Fill();
 
     WDFunc::SetSPBData(this, "Unom", CKIV->Bci_block.Unom);
     WDFunc::SetSPBData(this, "Umin", CKIV->Bci_block.Umin);
@@ -88,76 +79,14 @@ void ConfDialogKIV::Fill()
     else
         WDFunc::SetChBData(this, "IsIunb", false);
 
-    //    WDFunc::SetSPBData(this, "RTerm", CKIV->Bci_block.RTerm);
-    //    WDFunc::SetSPBData(this, "W100", CKIV->Bci_block.W100);
-
-    //    QString StrIP, StrMask, StrSNTP, StrGate;
-    //    QLocale german(QLocale::German);
-
-    //    for (i = 0; i < 4; i++)
-    //    {
-
-    //        if (i == 3)
-    //        {
-    //            StrIP.append(german.toString(CKIV->Com_param.IP[i]));
-    //            StrMask.append(german.toString(CKIV->Com_param.Mask[i]));
-    //            StrGate.append(german.toString(CKIV->Com_param.GateWay[i]));
-    //            StrSNTP.append(german.toString(CKIV->Com_param.SNTP[i]));
-    //        }
-    //        else
-    //        {
-    //            StrIP.append(german.toString(CKIV->Com_param.IP[i]) + ".");
-    //            StrMask.append(german.toString(CKIV->Com_param.Mask[i]) + ".");
-    //            StrGate.append(german.toString(CKIV->Com_param.GateWay[i]) + ".");
-    //            StrSNTP.append(german.toString(CKIV->Com_param.SNTP[i]) + ".");
-    //        }
-    //    }
-
-    //    WDFunc::SetSPBData(this, "Port" + QString::number(0), CKIV->Com_param.Port[0]);
-
-    //    WDFunc::LE_write_data(this, StrIP, "IP");
-    //    WDFunc::LE_write_data(this, StrSNTP, "SNTP");
-    //    WDFunc::LE_write_data(this, StrGate, "GateWay");
-    //    WDFunc::LE_write_data(this, StrMask, "Mask");
-
-    //    WDFunc::SetSPBData(this, "Baud", CKIV->Com_param.baud);
-    //    for (int i = 0; i < 8; i++)
-    //    {
-    //        if (CKIV->Com_param.baud == Rates.at(i).toUInt())
-    //            cbidx = i;
-    //    }
-    //    WDFunc::SetCBIndex(this, "Baud", cbidx);
-    //    cbidx = (CKIV->Com_param.parity & 0x04) ? 2 : ((CKIV->Com_param.parity & 0x02) ? 1 : 0);
-    //    WDFunc::SetCBIndex(this, "Parity", cbidx);
-    //    cbidx = ((CKIV->Com_param.stopbit & 0x02) ? 1 : 0);
-    //    WDFunc::SetCBIndex(this, "StopBit", cbidx);
-    //    // WDFunc::SetSPBData(this, "StopBit", C84->Com_param.stopbit);
-    //    WDFunc::SetSPBData(this, "adrMB", CKIV->Com_param.adrMB);
-
-    //    if (CKIV->Com_param.isNTP)
-    //        WDFunc::SetChBData(this, "ISNTP", true);
-    //    else
-    //        WDFunc::SetChBData(this, "ISNTP", false);
-
-    //    WDFunc::SetSPBData(this, "Trele_pred", CKIV->Bci_block.Trele_pred);
-    //    WDFunc::SetSPBData(this, "Trele_alarm", CKIV->Bci_block.Trele_alarm);
+    ConfKxx->Fill();
 }
 
 void ConfDialogKIV::FillBack()
 {
     int i;
-    int cbidx;
-    QString tmps;
 
-    //    WDFunc::SPBData(this, "spb.1", CKIV->MainBlk.Abs_104);
-    //    WDFunc::SPBData(this, "spb.2", CKIV->MainBlk.Cycle_104);
-    //    WDFunc::SPBData(this, "spb.3", CKIV->MainBlk.T1_104);
-    //    WDFunc::SPBData(this, "spb.4", CKIV->MainBlk.T2_104);
-    //    WDFunc::SPBData(this, "spb.5", CKIV->MainBlk.T3_104);
-    //    WDFunc::SPBData(this, "spb.6", CKIV->MainBlk.k_104);
-    //    WDFunc::SPBData(this, "spb.7", CKIV->MainBlk.w_104);
-    //    cbidx = WDFunc::CBIndex(this, "spb.8");
-    //    CKIV->MainBlk.Ctype = (0x00000001 << cbidx) - 1;
+    Conf->FillBack();
 
     WDFunc::SPBData(this, "Unom", CKIV->Bci_block.Unom);
     WDFunc::SPBData(this, "Umin", CKIV->Bci_block.Umin);
@@ -198,52 +127,7 @@ void ConfDialogKIV::FillBack()
     else
         CKIV->Bci_block.IsIunb = 0;
 
-    //    WDFunc::SPBData(this, "RTerm", CKIV->Bci_block.RTerm);
-    //    WDFunc::SPBData(this, "W100", CKIV->Bci_block.W100);
-
-    //    QString StrIP, StrMask, StrSNTP, StrGate;
-    //    QString NameIP = "IP", NameMask = "Mask", NameSNTP = "SNTP", NameGate = "GateWay";
-    //    QStringList inIP, inMask, inSNTP, inGate;
-    //    QLocale german(QLocale::German);
-
-    //    WDFunc::LE_read_data(this, NameIP, StrIP);
-    //    WDFunc::LE_read_data(this, NameSNTP, StrSNTP);
-    //    WDFunc::LE_read_data(this, NameGate, StrGate);
-    //    WDFunc::LE_read_data(this, NameMask, StrMask);
-
-    //    inIP.append(StrIP.split("."));
-    //    inMask.append(StrMask.split("."));
-    //    inSNTP.append(StrSNTP.split("."));
-    //    inGate.append(StrGate.split("."));
-
-    //    for (i = 0; i < 4; i++)
-    //    {
-
-    //        CKIV->Com_param.IP[i] = inIP.at(i).toInt();
-    //        CKIV->Com_param.Mask[i] = inMask.at(i).toInt();
-    //        CKIV->Com_param.GateWay[i] = inGate.at(i).toInt();
-    //        CKIV->Com_param.SNTP[i] = inSNTP.at(i).toInt();
-    //    }
-
-    //    WDFunc::SPBData(this, "Port0", CKIV->Com_param.Port[0]);
-
-    //    cbidx = WDFunc::CBIndex(this, "Baud");
-    //    CKIV->Com_param.baud = (Rates.at(cbidx).toInt());
-    //    cbidx = WDFunc::CBIndex(this, "Parity");
-    //    CKIV->Com_param.parity = (0x00000001 << cbidx) - 1;
-    //    cbidx = WDFunc::CBIndex(this, "StopBit");
-    //    CKIV->Com_param.stopbit = 0x00000001 << cbidx;
-
-    //    WDFunc::SPBData(this, "adrMB", CKIV->Com_param.adrMB);
-
-    //    WDFunc::ChBData(this, "ISNTP", IsNtp);
-    //    if (IsNtp)
-    //        CKIV->Com_param.isNTP = 1;
-    //    else
-    //        CKIV->Com_param.isNTP = 0;
-
-    //    WDFunc::SPBData(this, "Trele_pred", CKIV->Bci_block.Trele_pred);
-    //    WDFunc::SPBData(this, "Trele_alarm", CKIV->Bci_block.Trele_alarm);
+    ConfKxx->FillBack();
 }
 
 void ConfDialogKIV::SetupUI()
@@ -255,11 +139,14 @@ void ConfDialogKIV::SetupUI()
     QGridLayout *glyout = new QGridLayout;
     QScrollArea *area = new QScrollArea;
     QScrollArea *area2 = new QScrollArea;
+    QScrollArea *scrArea = new QScrollArea;
     QWidget *analog1 = new QWidget;
     QWidget *analog2 = new QWidget;
     QWidget *extraconf = new QWidget;
     QWidget *MEKconf = new QWidget;
     QWidget *Leftconf = new QWidget;
+    QWidget *wind5 = new QWidget;
+    QWidget *Ust = new QWidget;
     QWidget *time = new QWidget;
     QString tmps = "QWidget {background-color: " + QString(ACONFWCLR) + ";}";
     analog1->setStyleSheet(tmps);
@@ -268,10 +155,20 @@ void ConfDialogKIV::SetupUI()
     time->setStyleSheet(tmps);
     MEKconf->setStyleSheet(tmps);
     Leftconf->setStyleSheet(tmps);
+    wind5->setStyleSheet(tmps);
+    Ust->setStyleSheet(tmps);
 
     area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
     area->setFrameShape(QFrame::NoFrame);
     area->setWidgetResizable(true);
+
+    area2->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
+    area2->setFrameShape(QFrame::NoFrame);
+    area2->setWidgetResizable(true);
+
+    scrArea->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
+    scrArea->setFrameShape(QFrame::NoFrame);
+    scrArea->setWidgetResizable(true);
 
     uint32_t unixtimestamp = 1423062000;
 
@@ -288,7 +185,6 @@ void ConfDialogKIV::SetupUI()
     gb = new QGroupBox("Аналоговые параметры");
     font.setFamily("Times");
     font.setPointSize(11);
-    // setFont(font);
     gb->setFont(font);
     glyout = new QGridLayout;
     vlyout1 = new QVBoxLayout;
@@ -337,6 +233,8 @@ void ConfDialogKIV::SetupUI()
     vlyout1->addWidget(gb);
 
     analog1->setLayout(vlyout1);
+
+    //............................................................
 
     gb = new QGroupBox("Уставки сигнализации");
     gb->setFont(font);
@@ -396,9 +294,15 @@ void ConfDialogKIV::SetupUI()
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
 
+    Ust->setLayout(vlyout1);
+    area2->setWidget(Ust);
+
+    //............................................................
+
     gb = new QGroupBox("Гистерезис");
     gb->setFont(font);
     vlyout2 = new QVBoxLayout;
+    vlyout1 = new QVBoxLayout;
     glyout = new QGridLayout;
 
     glyout->addWidget(WDFunc::NewLBL(this, "Гистерезис на отключение сигнализации по dC, % от уставки:"), row, 1, 1, 1);
@@ -427,10 +331,7 @@ void ConfDialogKIV::SetupUI()
     glyout->addWidget(WDFunc::NewLBL(this, "Низкое напряжение для сигнализации:"), row, 0, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewSPB(this, "Ulow", 0, 10000, 1, paramcolor), row, 1, 1, 1);
 
-    // row++;
     glyout->addWidget(WDFunc::NewChB(this, "IsU", "Сигнализация по наличию входного напряжения"), row, 2, 1, 1);
-
-    // row++;
 
     row++;
     glyout->addWidget(WDFunc::NewLBL(this, "Задержка на формирование предупредительных событий:"), row, 0, 1, 1);
@@ -442,251 +343,43 @@ void ConfDialogKIV::SetupUI()
     glyout->addWidget(WDFunc::NewLBL(this, "Задержка на формирование аварийных событий:"), row, 0, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(this, "Tevent_alarm", 0, 10000, 1, paramcolor), row, 1, 1, 1);
 
-    //    row++;
-    //    glyout->addWidget(
-    //        WDFunc::NewLBL(this, "Задержка на срабатывание реле предупредительной сигнализации:"), row, 0, 1, 1);
-    //    glyout->addWidget(WDFunc::NewSPB(this, "Trele_pred", 0, 10000, 1, paramcolor), row, 1, 1, 1);
-
-    //    row++;
-    //    glyout->addWidget(WDFunc::NewLBL(this, "Задержка на срабатывание реле аварийной сигнализации:"), row, 0, 1,
-    //    1); glyout->addWidget(WDFunc::NewSPB(this, "Trele_alarm", 0, 10000, 1, paramcolor), row, 1, 1, 1);
-
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
 
-    analog2->setLayout(vlyout1);
-    area2->setWidget(analog2);
-    //..........................................................
-    //    gb = new QGroupBox("Конфигурация 104");
-    //    vlyout1 = new QVBoxLayout;
-    //    vlyout2 = new QVBoxLayout;
-    //    glyout = new QGridLayout;
-    //    row = 0;
-
-    //    gb->setTitle("Настройки протокола МЭК-60870-5-104");
-    //    gb->setFont(font);
-    //    glyout = new QGridLayout;
-    //    glyout->setColumnStretch(2, 50);
-    //    QLabel *lbl = new QLabel("Адрес базовой станции:");
-    //    glyout->addWidget(lbl, 0, 0, 1, 1, Qt::AlignLeft);
-    //    QDoubleSpinBox *dspbls = WDFunc::NewSPB(this, "spb.1", 0, 65535, 0, paramcolor);
-    //    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
-    //    glyout->addWidget(dspbls, 0, 1, 1, 1, Qt::AlignLeft);
-    //    lbl = new QLabel("Интервал циклического опроса, с:");
-    //    glyout->addWidget(lbl, 1, 0, 1, 1, Qt::AlignLeft);
-    //    dspbls = WDFunc::NewSPB(this, "spb.2", 0, 255, 0, paramcolor);
-    //    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
-    //    glyout->addWidget(dspbls, 1, 1, 1, 1, Qt::AlignLeft);
-
-    //    lbl = new QLabel("Тайм-аут t1, с:");
-    //    glyout->addWidget(lbl, 2, 0, 1, 1, Qt::AlignLeft);
-    //    dspbls = WDFunc::NewSPB(this, "spb.3", 0, 255, 0, paramcolor);
-    //    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
-    //    glyout->addWidget(dspbls, 2, 1, 1, 1, Qt::AlignLeft);
-
-    //    lbl = new QLabel("Тайм-аут t2, с:");
-    //    glyout->addWidget(lbl, 3, 0, 1, 1, Qt::AlignLeft);
-    //    dspbls = WDFunc::NewSPB(this, "spb.4", 0, 255, 0, paramcolor);
-    //    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
-    //    glyout->addWidget(dspbls, 3, 1, 1, 1, Qt::AlignLeft);
-
-    //    lbl = new QLabel("Тайм-аут t3, с:");
-    //    glyout->addWidget(lbl, 4, 0, 1, 1, Qt::AlignLeft);
-    //    dspbls = WDFunc::NewSPB(this, "spb.5", 0, 255, 0, paramcolor);
-    //    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
-    //    glyout->addWidget(dspbls, 4, 1, 1, 1, Qt::AlignLeft);
-
-    //    lbl = new QLabel("Макс. число неподтв. APDU (k):");
-    //    glyout->addWidget(lbl, 5, 0, 1, 1, Qt::AlignLeft);
-    //    dspbls = WDFunc::NewSPB(this, "spb.6", 0, 255, 0, paramcolor);
-    //    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
-    //    glyout->addWidget(dspbls, 5, 1, 1, 1, Qt::AlignLeft);
-    //    // lbl=new QLabel("c");
-    //    // glyout->addWidget(lbl,5,2,1,1,Qt::AlignLeft);
-    //    lbl = new QLabel("Макс. число посл. подтв. APDU (w):");
-    //    glyout->addWidget(lbl, 6, 0, 1, 1, Qt::AlignLeft);
-    //    dspbls = WDFunc::NewSPB(this, "spb.7", 0, 255, 0, paramcolor);
-    //    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
-    //    glyout->addWidget(dspbls, 6, 1, 1, 1, Qt::AlignLeft);
-
-    //    row += 7;
-
-    //    QString Str;
-    //    QLocale german(QLocale::German);
-    //    int i;
-    //    for (i = 0; i < 4; i++)
-    //    {
-    //        CKIV->Com_param.IP[i] = 0;
-    //        if (i == 3)
-    //            Str.append(german.toString(CKIV->Com_param.IP[i]));
-    //        else
-    //            Str.append(german.toString(CKIV->Com_param.IP[i]) + ".");
-    //    }
-
-    //    glyout->addWidget(WDFunc::NewLBL(this, "IP адрес устройства:"), row, 0, 1, 1);
-
-    //    glyout->addWidget(WDFunc::NewLE(this, "IP", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
-
-    //    row++;
-    //    Str.clear();
-    //    for (i = 0; i < 4; i++)
-    //    {
-    //        CKIV->Com_param.Mask[i] = 0;
-    //        if (i == 3)
-    //            Str.append(german.toString(CKIV->Com_param.Mask[i]));
-    //        else
-    //            Str.append(german.toString(CKIV->Com_param.Mask[i]) + ".");
-    //    }
-    //    glyout->addWidget(WDFunc::NewLBL(this, "Маска:"), row, 0, 1, 1);
-    //    glyout->addWidget(WDFunc::NewLE(this, "Mask", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
-
-    //    row++;
-    //    Str.clear();
-    //    for (i = 0; i < 4; i++)
-    //    {
-    //        CKIV->Com_param.GateWay[i] = 0;
-    //        if (i == 3)
-    //            Str.append(german.toString(CKIV->Com_param.GateWay[i]));
-    //        else
-    //            Str.append(german.toString(CKIV->Com_param.GateWay[i]) + ".");
-    //    }
-    //    glyout->addWidget(WDFunc::NewLBL(this, "Шлюз:"), row, 0, 1, 1);
-    //    glyout->addWidget(WDFunc::NewLE(this, "GateWay", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
-
-    //    row++;
-    //    glyout->addWidget(WDFunc::NewLBL(this, "Порт протокола 104:"), row, 0, 1, 1);
-    //    glyout->addWidget(WDFunc::NewSPB(this, "Port0", 0, 10000, 0, paramcolor), row, 1, 1, 1);
-
-    //    row++;
-    //    glyout->addWidget(WDFunc::NewChB(this, "ISNTP", "Использование SNTP сервера"), row, 0, 1, 1);
-
-    //    row++;
-    //    Str.clear();
-    //    for (i = 0; i < 4; i++)
-    //    {
-    //        CKIV->Com_param.SNTP[i] = 0;
-    //        if (i == 3)
-    //            Str.append(german.toString(CKIV->Com_param.SNTP[i]));
-    //        else
-    //            Str.append(german.toString(CKIV->Com_param.SNTP[i]) + ".");
-    //    }
-    //    glyout->addWidget(WDFunc::NewLBL(this, "Адрес SNTP сервера:"), row, 0, 1, 1);
-    //    glyout->addWidget(WDFunc::NewLE(this, "SNTP", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
-
-    //    //..................................................
-
-    //    vlyout2->addLayout(glyout);
-    //    gb->setLayout(vlyout2);
-    //    vlyout1->addWidget(gb);
-
-    //    gb = new QGroupBox("Настройка времени");
-    //    gb->setFont(font);
-    //    vlyout2 = new QVBoxLayout;
-    //    glyout = new QGridLayout;
-    //    glyout->setColumnStretch(2, 50);
-    //    row++;
-    //    lbl = new QLabel("Тип синхронизации времени:");
-    //    glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
-    //    QStringList cbl = QStringList() << "SNTP+PPS"
-    //                                    << "SNTP";
-    //    EComboBox *cb = WDFunc::NewCB(this, "spb.8", cbl, paramcolor);
-    //    // cb->setMinimumWidth(70);
-    //    connect(cb, SIGNAL(currentIndexChanged(int)), this, SLOT(SetCType(int)));
-    //    glyout->addWidget(cb, row, 1, 1, 1);
-
-    //    vlyout2->addLayout(glyout);
-    //    gb->setLayout(vlyout2);
-    //    vlyout1->addWidget(gb);
-
-    //    gb = new QGroupBox("Настройки ModBus");
-    //    gb->setFont(font);
-    //    vlyout2 = new QVBoxLayout;
-    //    glyout = new QGridLayout;
-    //    glyout->setColumnStretch(2, 50);
-
-    //    row++;
-    //    glyout->addWidget(WDFunc::NewLBL(this, "Скорость RS485 интерфейса:"), row, 0, 1, 1);
-    //    cbl = QStringList() << "1200"
-    //                        << "2400"
-    //                        << "4800"
-    //                        << "9600"
-    //                        << "19200"
-    //                        << "38400"
-    //                        << "57600"
-    //                        << "115200";
-    //    cb = WDFunc::NewCB(this, "Baud", cbl, paramcolor);
-    //    // cb->setMinimumWidth(80);
-    //    // cb->setMinimumHeight(15);
-    //    glyout->addWidget(cb, row, 1, 1, 1);
-
-    //    row++;
-    //    glyout->addWidget(WDFunc::NewLBL(this, "Чётность:"), row, 0, 1, 1);
-    //    cbl = QStringList() << "NoParity"
-    //                        << "EvenParity"
-    //                        << "OddParity";
-    //    cb = WDFunc::NewCB(this, "Parity", cbl, paramcolor);
-
-    //    glyout->addWidget(cb, row, 1, 1, 1);
-
-    //    row++;
-    //    glyout->addWidget(WDFunc::NewLBL(this, "Количество стоповых битов:"), row, 0, 1, 1);
-    //    cbl = QStringList() << "Stop_Bit_1"
-    //                        << "Stop_Bit_2";
-    //    cb = WDFunc::NewCB(this, "StopBit", cbl, paramcolor);
-
-    //    glyout->addWidget(cb, row, 1, 1, 1);
-
-    //    row++;
-    //    glyout->addWidget(WDFunc::NewLBL(this, "Адрес устройства для Modbus:"), row, 0, 1, 1);
-    //    glyout->addWidget(WDFunc::NewSPB(this, "adrMB", 0, 10000, 0, paramcolor), row, 1, 1, 1);
-
-    //    vlyout2->addLayout(glyout);
-    //    gb->setLayout(vlyout2);
-    //    vlyout1->addWidget(gb);
-
-    //    extraconf->setLayout(vlyout1);
-    //    area->setWidget(extraconf);
-
-    gb = new QGroupBox("Параметры записи");
-    gb->setFont(font);
-    vlyout2 = new QVBoxLayout;
-    glyout = new QGridLayout;
-    vlyout1 = new QVBoxLayout;
-
-    row = 0;
-    glyout->addWidget(WDFunc::NewLBL(this, "Интервал усреднения данных  (в периодах основной частоты):"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB(this, "NFiltr", 0, 10000, 0, paramcolor), row, 2, 1, 3);
-
-    row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Интервал записи данных в ПЗУ (тренд), в секундах:"), row, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB(this, "T_Data_Rec", 0, 10000, 0, paramcolor), row, 2, 1, 3);
-
-    vlyout2->addLayout(glyout);
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);
-
-    //    if ((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
-    //    {
-    //        gb = new QGroupBox("Температура");
-    //        gb->setFont(font);
-    //        vlyout2 = new QVBoxLayout;
-    //        glyout = new QGridLayout;
-
-    //        row++;
-    //        glyout->addWidget(WDFunc::NewLBL(this, "Сопротивление термометра при 0°С, Ом (только для АВМ):"), row, 1,
-    //        1, 1); glyout->addWidget(WDFunc::NewSPB(this, "RTerm", 0, 10000, 1, paramcolor), row, 2, 1, 3);
-
-    //        row++;
-    //        glyout->addWidget(WDFunc::NewLBL(this, "Температурный коэффициент термометра (только для АВМ):"), row, 1,
-    //        1, 1); glyout->addWidget(WDFunc::NewSPB(this, "W100", 0, 10000, 3, paramcolor), row, 2, 1, 3);
-
-    //        vlyout2->addLayout(glyout);
-    //        gb->setLayout(vlyout2);
-    //        vlyout1->addWidget(gb);
-    //    }
+    //    analog2->setLayout(vlyout1);
 
     Leftconf->setLayout(vlyout1);
+
+    //............................................................
+
+    row = 0;
+    gb = new QGroupBox();
+    vlyout1 = new QVBoxLayout;
+    vlyout2 = new QVBoxLayout;
+
+    gb->setTitle("Настройки протокола МЭК-60870-5-104");
+    gb->setFont(font);
+
+    vlyout2->addWidget(Conf->SetupMainBlk(this));
+    vlyout2->addWidget(ConfKxx->SetupComParam(this));
+
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
+
+    gb = new QGroupBox("Настройка времени");
+    vlyout2 = new QVBoxLayout;
+    gb->setFont(font);
+
+    vlyout2->addWidget(Conf->SetupTime(this));
+
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
+
+    wind5->setLayout(vlyout1);
+    scrArea->setWidget(wind5);
+
+    //............................................................
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
@@ -696,19 +389,13 @@ void ConfDialogKIV::SetupUI()
     ConfTW->addTab(analog1, "Аналоговые");
 
     ConfTW->addTab(area2, "Уставки");
-    area2->verticalScrollBar()->setValue(area2->verticalScrollBar()->maximum());
-
-    ConfTW->addTab(Conf->SetupMainBlk(this), "Связь");
-    ConfTW->addTab(ConfKxx->SetupModBus(this), "ModBusMaster");
-    ConfTW->addTab(ConfKxx->SetupBl(this), "Общее");
-
-    //        ConfTW->addTab(area, "Связь");
-    //        area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
-
-    // ConfTW->addTab(analog2, "Уставки");
 
     ConfTW->addTab(Leftconf, "Остальное");
     lyout->addWidget(ConfTW);
+
+    ConfTW->addTab(scrArea, "Связь");
+    ConfTW->addTab(ConfKxx->SetupModBus(this), "ModBusMaster");
+    ConfTW->addTab(ConfKxx->SetupBl(this), "Общее");
 
     QWidget *wdgt = ConfButtons();
     lyout->addWidget(wdgt);
@@ -722,6 +409,8 @@ void ConfDialogKIV::CheckConf()
 void ConfDialogKIV::SetDefConf()
 {
     CKIV->SetDefConf();
+    Conf->SetDefConf();
+    ConfKxx->SetDefConf();
     Fill();
 }
 
@@ -741,11 +430,6 @@ void ConfDialogKIV::Write_PCDate()
     uint time;
     myDateTime = QDateTime::currentDateTimeUtc();
     time = myDateTime.toTime_t();
-
-    /*if (Commands::WriteTimeMNK(&time, sizeof(uint)) == NOERROR)
-    EMessageBox::information(this, "INFO", "Записано успешно");
-    else
-    EMessageBox::information(this, "INFO", "Ошибка");*/
 }
 
 void ConfDialogKIV::Write_Date()
@@ -757,73 +441,4 @@ void ConfDialogKIV::Write_Date()
     myDateTime = QDateTime::fromString(qStr, "dd-MM-yyyy HH:mm:ss");
     myDateTime.setOffsetFromUtc(0);
     *time = myDateTime.toTime_t();
-
-    /* if (Commands::WriteTimeMNK(time, sizeof(uint)) == NOERROR)
-     EMessageBox::information(this, "INFO", "Записано успешно");
-     else
-     EMessageBox::information(this, "INFO", "Ошибка");*/
 }
-
-// void ConfDialogKIV::Set104(double dbl)
-//{
-//    QStringList sl = sender()->objectName().split(".");
-//    if (sl.size() < 2)
-//    {
-//        ERMSG("Некорректные данные 104");
-//        DBGMSG;
-//        return;
-//    }
-//    bool ok;
-//    int wnum = sl.at(1).toInt(&ok);
-//    if (!ok)
-//    {
-//        ERMSG("Некорректные данные 104");
-//        DBGMSG;
-//        return;
-//    }
-//    switch (wnum)
-//    {
-//    case 1:
-//    {
-//        CKIV->MainBlk.Abs_104 = dbl;
-//        break;
-//    }
-//    case 2:
-//    {
-//        CKIV->MainBlk.Cycle_104 = dbl;
-//        break;
-//    }
-//    case 3:
-//    {
-//        CKIV->MainBlk.T1_104 = dbl;
-//        break;
-//    }
-//    case 4:
-//    {
-//        CKIV->MainBlk.T2_104 = dbl;
-//        break;
-//    }
-//    case 5:
-//    {
-//        CKIV->MainBlk.T3_104 = dbl;
-//        break;
-//    }
-//    case 6:
-//    {
-//        CKIV->MainBlk.k_104 = dbl;
-//        break;
-//    }
-//    case 7:
-//    {
-//        CKIV->MainBlk.w_104 = dbl;
-//        break;
-//    }
-//    default:
-//        break;
-//    }
-//}
-
-// void ConfDialogKIV::SetCType(int num)
-//{
-//    CKIV->MainBlk.Ctype = num;
-//}

@@ -51,10 +51,10 @@ public:
     static bool SetLBLTColor(QWidget *w, const QString &lblname, const QString &color);
     static EComboBox *NewCB(QWidget *parent, const QString &cbname, QStringList &cbsl, const QString &cbcolor = "");
     static bool SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue);
-    static bool SetCBIndex(QWidget *w, const QString &cbname, int index);
+    static bool SetCBIndex(QObject *w, const QString &cbname, int index);
     static bool SetCBColor(QWidget *w, const QString &cbname, const QString &color);
     static QString CBData(QWidget *w, const QString &cbname);
-    static int CBIndex(QWidget *w, const QString &cbname)
+    static int CBIndex(QObject *w, const QString &cbname)
     {
         EComboBox *cb = w->findChild<EComboBox *>(cbname);
         if (cb == nullptr)
@@ -66,8 +66,8 @@ public:
 
     static QDoubleSpinBox *NewSPB(
         QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor = "");
-    static bool SetSPBData(QWidget *w, const QString &spbname, const double &spbvalue);
-    template <typename T> static bool SPBData(QWidget *w, const QString &spbname, T &spbvalue)
+    static bool SetSPBData(QObject *w, const QString &spbname, const double &spbvalue);
+    template <typename T> static bool SPBData(QObject *w, const QString &spbname, T &spbvalue)
     {
         QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
         if (spb == nullptr)
@@ -112,8 +112,8 @@ public:
     static void SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
     static ETableView *NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model);
     static QAbstractItemModel *TVModel(QWidget *w, const QString &tvname);
-    static bool LE_read_data(QWidget *w, const QString &lename, QString &levalue);
-    static bool LE_write_data(QWidget *w, const QString &levalue, const QString &lename);
+    static bool LE_read_data(QObject *w, const QString &lename, QString &levalue);
+    static bool LE_write_data(QObject *w, const QString &levalue, const QString &lename);
     static void SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder sortorder);
 };
 

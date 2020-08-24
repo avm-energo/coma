@@ -12,14 +12,13 @@ ConfDialogKxx::ConfDialogKxx(QVector<S2::DataRec> *S2Config, QWidget *parent) : 
     // QString tmps = "QWidget {background-color: " + QString(ACONFWCLR) + ";}";
 }
 
-QWidget *ConfDialogKxx::SetupComParam(QWidget *parent)
+QWidget *ConfDialogKxx::SetupComParam(QObject *parent)
 {
-    QWidget *w = new QWidget(parent);
+    ParentSetup = parent;
+    QWidget *w = new QWidget;
     QString paramcolor = MAINWINCLR;
-    QVBoxLayout *vlyout = new QVBoxLayout;
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
-    QGroupBox *gb = new QGroupBox;
     QGridLayout *glyout = new QGridLayout;
     QString Str;
     QLocale german(QLocale::German);
@@ -87,9 +86,6 @@ QWidget *ConfDialogKxx::SetupComParam(QWidget *parent)
     glyout->addWidget(WDFunc::NewLE(this, "SNTP_ID", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
 
     vlyout2->addLayout(glyout);
-    //    gb->setLayout(vlyout2);
-    //    vlyout1->addWidget(gb);
-
     vlyout1->addLayout(vlyout2);
 
     w->setLayout(vlyout1);
@@ -99,7 +95,7 @@ QWidget *ConfDialogKxx::SetupComParam(QWidget *parent)
 
 QWidget *ConfDialogKxx::SetupModBus(QObject *parent)
 {
-    QswtParent = parent;
+    ParentMB = parent;
     QWidget *w = new QWidget;
     QString paramcolor = MAINWINCLR;
     QStackedWidget *qswt = new QStackedWidget;
@@ -108,17 +104,20 @@ QWidget *ConfDialogKxx::SetupModBus(QObject *parent)
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox;
     QGridLayout *glyout = new QGridLayout;
-    EComboBox *сb = new EComboBox;
+    EComboBox *cb = new EComboBox;
     QStringList cbl;
     QString Str;
     glyout->setColumnStretch(1, 20);
+
+    QFont font;
+    font.setFamily("Times");
+    font.setPointSize(11);
 
     int row = 0;
 
     QLabel *lbl = new QLabel("Modbus: ");
     glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
-    QStringList dopcbl = QStringList() << "slave"
-                                       << "master";
+    QStringList dopcbl = QStringList { "slave", "master" };
     EComboBox *dopcb = WDFunc::NewCB(this, "MBMaster", dopcbl, paramcolor);
     connect(dopcb, SIGNAL(currentIndexChanged(int)), this, SLOT(ChangeWindow(int)));
     glyout->addWidget(dopcb, row, 1, 1, 1);
@@ -129,13 +128,15 @@ QWidget *ConfDialogKxx::SetupModBus(QObject *parent)
     vlyout1->addWidget(gb);
 
     gb = new QGroupBox("Настройки ModBus");
+    gb->setFont(font);
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
 
     row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Скорость RS485 интерфейса:"), row, 0, 1, 1);
+    lbl = WDFunc::NewLBL(this, "Скорость RS485 интерфейса:");
+    glyout->addWidget(lbl, row, 0, 1, 1);
     cbl = QStringList { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
-    EComboBox *cb = WDFunc::NewCB(this, "Baud_ID", cbl, paramcolor);
+    cb = WDFunc::NewCB(this, "Baud_ID", cbl, paramcolor);
     glyout->addWidget(cb, row, 1, 1, 1, Qt::AlignLeft);
 
     row++;
@@ -163,111 +164,116 @@ QWidget *ConfDialogKxx::SetupModBus(QObject *parent)
 
     row = 0;
     gb = new QGroupBox("Настройки ModBus");
-    // gb->setFont(font);
+    gb->setFont(font);
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
-    QLineEdit *line1 = new QLineEdit();
-    line1 = new QLineEdit(this);
+    QLabel *line1 = new QLabel();
+    line1 = new QLabel(this);
 
-    line1->setText("тип датчика:");
+    line1->setText("тип датчика");
+    line1->setAlignment(Qt::AlignCenter);
+    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 1, 1, 1, 1);
 
-    line1 = new QLineEdit(this);
-    line1->setText("           ");
+    line1 = new QLabel(this);
+    line1->setText("");
+    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen ;}");
     glyout->addWidget(line1, 0, 1, 1, 1);
 
-    line1 = new QLineEdit(this);
-    line1->setText("              параметры связи:          ");
+    line1 = new QLabel(this);
+    line1->setText("параметры связи");
+    line1->setAlignment(Qt::AlignCenter);
+    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 0, 2, 1, 3);
 
-    line1 = new QLineEdit(this);
-    line1->setText("           ");
+    line1 = new QLabel(this);
+    line1->setText("");
+    line1->setStyleSheet("QLabel {border: 1px solid darkgreen;}");
     glyout->addWidget(line1, 0, 5, 1, 1);
 
-    line1 = new QLineEdit(this);
-    line1->setText("           ");
+    line1 = new QLabel(this);
+    line1->setText("");
+    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 0, 6, 1, 1);
 
-    line1 = new QLineEdit(this);
-    line1->setText("скорость:");
+    line1 = new QLabel(this);
+    line1->setText("скорость");
+    line1->setAlignment(Qt::AlignCenter);
+    line1->setStyleSheet("QLabel {border: 1px solid darkgreen;}");
     glyout->addWidget(line1, 1, 2, 1, 1);
 
-    line1 = new QLineEdit(this);
-    line1->setText("чётность:");
+    line1 = new QLabel(this);
+    line1->setText("чётность");
+    line1->setAlignment(Qt::AlignCenter);
+    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 1, 3, 1, 1);
 
-    line1 = new QLineEdit(this);
-    line1->setText("стопБиты:");
+    line1 = new QLabel(this);
+    line1->setText("стопБиты");
+    line1->setAlignment(Qt::AlignCenter);
+    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 1, 4, 1, 1);
 
-    line1 = new QLineEdit(this);
-    line1->setText("переод опроса:");
+    line1 = new QLabel(this);
+    line1->setText("переуд опроса");
+    line1->setAlignment(Qt::AlignCenter);
+    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 1, 5, 1, 1);
 
-    line1 = new QLineEdit(this);
-    line1->setText("адрес абонента:");
+    line1 = new QLabel(this);
+    line1->setText("адрес абонента");
+    line1->setAlignment(Qt::AlignCenter);
+    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 1, 6, 1, 1);
 
-    for (int i = 1; i < 5;)
+    int j = 1;
+    for (int i = 1; i < 5; i++)
     {
-        Str = "Датчик " + i;
-        Str = Str + ":";
-        line1 = new QLineEdit(this);
-        line1->setText(QString(Str));
-        glyout->addWidget(line1, ++i, 0, 1, 1);
+
+        j++;
+        line1 = new QLabel(this);
+        line1->setText("Датчик " + QString::number(i) + ":");
+        line1->setAlignment(Qt::AlignCenter);
+        line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
+        glyout->addWidget(line1, j, 0, 1, 1);
+
+        cbl = QStringList { "нет", "тип 1", "тип 2", "тип 3" };
+        cb = WDFunc::NewCB(this, "MBMab" + QString::number(i) + "[0]", cbl, paramcolor);
+        glyout->addWidget(cb, j, 1, 1, 1);
+
+        cbl = QStringList { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
+        cb = WDFunc::NewCB(this, "MBMab" + QString::number(i) + "sk[1]", cbl, paramcolor);
+        glyout->addWidget(cb, j, 2, 1, 1);
+
+        cbl = QStringList { "нет", "even", "odd" };
+        cb = WDFunc::NewCB(this, "MBMab" + QString::number(i) + "ch[1]", cbl, paramcolor);
+        glyout->addWidget(cb, j, 3, 1, 1);
+
+        cbl = QStringList { "1", "2" };
+        cb = WDFunc::NewCB(this, "MBMab" + QString::number(i) + "bt[1]", cbl, paramcolor);
+        glyout->addWidget(cb, j, 4, 1, 1);
     }
 
-    cbl = QStringList { "нет", "тип 1", "тип 2", "тип 3" };
     for (int i = 1; i < 5;)
     {
         Str = "MBMab" + QString::number(i);
-        Str = Str + "[0]";
-        cb = WDFunc::NewCB(this, QString(Str), cbl, paramcolor);
-        glyout->addWidget(сb, ++i, 1, 1, 1);
-    }
-
-    cbl = QStringList { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
-
-    for (int i = 1; i < 5;)
-    {
-        Str = "MBMab" + i;
-        Str = Str + "sk[1]";
-        //        сb = WDFunc::NewCB(this, QString("MBMab" + "sk[1]"), cbl, paramcolor);
-        сb = WDFunc::NewCB(this, Str, cbl, paramcolor);
-        glyout->addWidget(сb, ++i, 2, 1, 1);
-    }
-
-    cbl = QStringList { "нет", "even", "old" };
-    for (int i = 1; i < 5;)
-    {
-        Str = "MBMab" + i;
-        Str = Str + "ch[1]";
-        сb = WDFunc::NewCB(this, QString(Str), cbl, paramcolor);
-        glyout->addWidget(сb, ++i, 3, 1, 1);
-    }
-
-    cbl = QStringList { "1", "2" };
-    for (int i = 1; i < 5;)
-    {
-        Str = "MBMab" + i;
-        Str = Str + "bt[1]";
-        сb = WDFunc::NewCB(this, QString(Str), cbl, paramcolor);
-        glyout->addWidget(сb, ++i, 4, 1, 1);
-    }
-
-    for (int i = 1; i < 5;)
-    {
-        Str = "MBMab" + i;
         Str = Str + "per[2]";
         glyout->addWidget(WDFunc::NewSPB(this, QString(Str), 0, 10000, 0, paramcolor), ++i, 5, 1, 1);
     }
 
     for (int i = 1; i < 5;)
     {
-        Str = "MBMab" + i;
+        Str = "MBMab" + QString::number(i);
         Str = Str + "adr[3]";
         glyout->addWidget(WDFunc::NewSPB(this, QString(Str), 0, 10000, 0, paramcolor), ++i, 6, 1, 1);
     }
+
+    line1 = new QLabel(this);
+    line1->setText("");
+
+    glyout->addWidget(line1, 7, 0, 1, 1);
+    glyout->addWidget(line1, 8, 0, 1, 1);
+    glyout->addWidget(line1, 9, 0, 1, 1);
 
     vlyout2->addLayout(glyout);
     gb->setLayout(vlyout2);
@@ -282,11 +288,12 @@ QWidget *ConfDialogKxx::SetupModBus(QObject *parent)
     return w;
 }
 
-QWidget *ConfDialogKxx::SetupBl(QWidget *parent)
+QWidget *ConfDialogKxx::SetupBl(QObject *parent)
 {
+    ParentSetupBl = parent;
     int row = 0;
     QString paramcolor = MAINWINCLR;
-    QWidget *w = new QWidget(parent);
+    QWidget *w = new QWidget;
     QGroupBox *gb = new QGroupBox();
     QGridLayout *glyout = new QGridLayout;
     QVBoxLayout *vlyout1 = new QVBoxLayout;
@@ -319,8 +326,228 @@ void ConfDialogKxx::ChangeWindow(int num)
 {
     Kxx->StrModBus.MBMaster = num;
 
-    QStackedWidget *QSWT = QswtParent->findChild<QStackedWidget *>("qswt");
+    QStackedWidget *QSWT = ParentMB->findChild<QStackedWidget *>("qswt");
 
     if (QSWT != nullptr)
         QSWT->setCurrentWidget(WidgetList.at(num));
+}
+
+void ConfDialogKxx::Fill()
+{
+    int i, cbidx;
+
+    //....................................................
+    WDFunc::SetSPBData(ParentSetupBl, "RTerm", Kxx->TempConf.RTerm);
+    WDFunc::SetSPBData(ParentSetupBl, "W100", Kxx->TempConf.W100);
+    WDFunc::SetSPBData(ParentSetupBl, "Trele_pred", Kxx->StrTrele.Trele_pred);
+    WDFunc::SetSPBData(ParentSetupBl, "Trele_alarm", Kxx->StrTrele.Trele_alarm);
+
+    //.................................................................
+
+    cbidx = ((Kxx->StrModBus.MBMaster & 0x01) ? 1 : 0);
+    WDFunc::SetCBIndex(ParentMB, "MBMaster", cbidx);
+
+    if (Kxx->StrModBus.MBMab1[0] > 4)
+        Kxx->StrModBus.MBMab1[0] = 0;
+    if (Kxx->StrModBus.MBMab2[0] > 4)
+        Kxx->StrModBus.MBMab2[0] = 0;
+    if (Kxx->StrModBus.MBMab3[0] > 4)
+        Kxx->StrModBus.MBMab3[0] = 0;
+    if (Kxx->StrModBus.MBMab4[0] > 4)
+        Kxx->StrModBus.MBMab4[0] = 0;
+
+    WDFunc::SetCBIndex(ParentMB, "MBMab1[0]", Kxx->StrModBus.MBMab1[0]);
+    WDFunc::SetCBIndex(ParentMB, "MBMab2[0]", Kxx->StrModBus.MBMab2[0]);
+    WDFunc::SetCBIndex(ParentMB, "MBMab3[0]", Kxx->StrModBus.MBMab3[0]);
+    WDFunc::SetCBIndex(ParentMB, "MBMab4[0]", Kxx->StrModBus.MBMab4[0]);
+
+    WDFunc::SetCBIndex(ParentMB, "MBMab1sk[1]", Kxx->StrModBus.MBMab1[1] & 0x0F);
+    WDFunc::SetCBIndex(ParentMB, "MBMab2sk[1]", Kxx->StrModBus.MBMab2[1] & 0x0F);
+    WDFunc::SetCBIndex(ParentMB, "MBMab3sk[1]", Kxx->StrModBus.MBMab3[1] & 0x0F);
+    WDFunc::SetCBIndex(ParentMB, "MBMab4sk[1]", Kxx->StrModBus.MBMab4[1] & 0x0F);
+
+    cbidx = (Kxx->StrModBus.MBMab1[1] & 0x60) >> 5;
+    WDFunc::SetCBIndex(ParentMB, "MBMab1ch[1]", cbidx);
+    cbidx = (Kxx->StrModBus.MBMab1[1] & 0x60) >> 5;
+    WDFunc::SetCBIndex(ParentMB, "MBMab2ch[1]", cbidx);
+    cbidx = (Kxx->StrModBus.MBMab1[1] & 0x60) >> 5;
+    WDFunc::SetCBIndex(ParentMB, "MBMab3ch[1]", cbidx);
+    cbidx = (Kxx->StrModBus.MBMab1[1] & 0x60) >> 5;
+    WDFunc::SetCBIndex(ParentMB, "MBMab4ch[1]", cbidx);
+
+    cbidx = (Kxx->StrModBus.MBMab1[1] & 0x80) >> 7;
+    WDFunc::SetCBIndex(ParentMB, "MBMab1bt[1]", cbidx);
+    cbidx = (Kxx->StrModBus.MBMab1[1] & 0x80) >> 7;
+    WDFunc::SetCBIndex(ParentMB, "MBMab2bt[1]", cbidx);
+    cbidx = (Kxx->StrModBus.MBMab1[1] & 0x80) >> 7;
+    WDFunc::SetCBIndex(ParentMB, "MBMab3bt[1]", cbidx);
+    cbidx = (Kxx->StrModBus.MBMab1[1] & 0x80) >> 7;
+    WDFunc::SetCBIndex(ParentMB, "MBMab4bt[1]", cbidx);
+
+    WDFunc::SetSPBData(ParentMB, "MBMab1per[2]", Kxx->StrModBus.MBMab1[2]);
+    WDFunc::SetSPBData(ParentMB, "MBMab2per[2]", Kxx->StrModBus.MBMab2[2]);
+    WDFunc::SetSPBData(ParentMB, "MBMab3per[2]", Kxx->StrModBus.MBMab3[2]);
+    WDFunc::SetSPBData(ParentMB, "MBMab4per[2]", Kxx->StrModBus.MBMab4[2]);
+
+    WDFunc::SetSPBData(ParentMB, "MBMab1adr[3]", Kxx->StrModBus.MBMab1[3]);
+    WDFunc::SetSPBData(ParentMB, "MBMab2adr[3]", Kxx->StrModBus.MBMab2[3]);
+    WDFunc::SetSPBData(ParentMB, "MBMab3adr[3]", Kxx->StrModBus.MBMab3[3]);
+    WDFunc::SetSPBData(ParentMB, "MBMab4adr[3]", Kxx->StrModBus.MBMab4[3]);
+
+    //.................................................
+
+    QString StrIP, StrMask, StrSNTP, StrGate;
+    QLocale german(QLocale::German);
+
+    for (i = 0; i < 4; i++)
+    {
+
+        if (i == 3)
+        {
+            StrIP.append(german.toString(Kxx->Com_param.IP[i]));
+            StrMask.append(german.toString(Kxx->Com_param.Mask[i]));
+            StrGate.append(german.toString(Kxx->Com_param.GateWay[i]));
+            StrSNTP.append(german.toString(Kxx->Com_param.SNTP[i]));
+        }
+        else
+        {
+            StrIP.append(german.toString(Kxx->Com_param.IP[i]) + ".");
+            StrMask.append(german.toString(Kxx->Com_param.Mask[i]) + ".");
+            StrGate.append(german.toString(Kxx->Com_param.GateWay[i]) + ".");
+            StrSNTP.append(german.toString(Kxx->Com_param.SNTP[i]) + ".");
+        }
+    }
+
+    WDFunc::SetSPBData(ParentSetup, "Port_ID", Kxx->Com_param.Port[0]);
+
+    WDFunc::LE_write_data(ParentSetup, StrIP, "IP_ID");
+    WDFunc::LE_write_data(ParentSetup, StrSNTP, "SNTP_ID");
+    WDFunc::LE_write_data(ParentSetup, StrGate, "GW_ID");
+    WDFunc::LE_write_data(ParentSetup, StrMask, "Mask_ID");
+
+    for (int i = 0; i < 8; i++)
+    {
+        if (Kxx->Com_param.Baud == Sbaud.at(i).toUInt())
+            cbidx = i;
+    }
+    WDFunc::SetCBIndex(ParentSetup, "Baud_ID", cbidx);
+
+    if (Kxx->Com_param.Parity > 2)
+        cbidx = 0;
+    else
+        cbidx = Kxx->Com_param.Parity;
+
+    WDFunc::SetCBIndex(ParentSetup, "Parity_ID", cbidx);
+    cbidx = ((Kxx->Com_param.Stopbit & 0x01) ? 1 : 0);
+    WDFunc::SetCBIndex(ParentSetup, "Stopbit_ID", cbidx);
+
+    WDFunc::SetSPBData(ParentSetup, "adrMB_ID", Kxx->Com_param.adrMB);
+}
+
+void ConfDialogKxx::FillBack()
+{
+    int i, cbidx;
+
+    //.......................................................................
+
+    WDFunc::SPBData(ParentSetupBl, "RTerm", Kxx->TempConf.RTerm);
+    WDFunc::SPBData(ParentSetupBl, "W100", Kxx->TempConf.W100);
+    WDFunc::SPBData(ParentSetupBl, "Trele_pred", Kxx->StrTrele.Trele_pred);
+    WDFunc::SPBData(ParentSetupBl, "Trele_alarm", Kxx->StrTrele.Trele_alarm);
+
+    //..................................................................
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMaster");
+    Kxx->StrModBus.MBMaster = cbidx;
+
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab1[0]");
+    Kxx->StrModBus.MBMab1[0] = cbidx;
+
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab2[0]");
+    Kxx->StrModBus.MBMab2[0] = cbidx;
+
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab3[0]");
+    Kxx->StrModBus.MBMab3[0] = cbidx;
+
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab4[0]");
+    Kxx->StrModBus.MBMab4[0] = cbidx;
+
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab1sk[1]");
+    Kxx->StrModBus.MBMab1[1] = cbidx;
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab1ch[1]");
+    Kxx->StrModBus.MBMab1[1] = Kxx->StrModBus.MBMab1[1] | (cbidx << 5);
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab1bt[1]");
+    Kxx->StrModBus.MBMab1[1] = Kxx->StrModBus.MBMab1[1] | (cbidx << 7);
+
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab2sk[1]");
+    Kxx->StrModBus.MBMab2[1] = cbidx;
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab2ch[1]");
+    Kxx->StrModBus.MBMab2[1] = Kxx->StrModBus.MBMab2[1] | (cbidx << 5);
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab2bt[1]");
+    Kxx->StrModBus.MBMab2[1] = Kxx->StrModBus.MBMab2[1] | (cbidx << 7);
+
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab3sk[1]");
+    Kxx->StrModBus.MBMab3[1] = cbidx;
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab3ch[1]");
+    Kxx->StrModBus.MBMab3[1] = Kxx->StrModBus.MBMab3[1] | (cbidx << 5);
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab3bt[1]");
+    Kxx->StrModBus.MBMab3[1] = Kxx->StrModBus.MBMab3[1] | (cbidx << 7);
+
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab4sk[1]");
+    Kxx->StrModBus.MBMab4[1] = cbidx;
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab4ch[1]");
+    Kxx->StrModBus.MBMab4[1] = Kxx->StrModBus.MBMab4[1] | (cbidx << 5);
+    cbidx = WDFunc::CBIndex(ParentMB, "MBMab4bt[1]");
+    Kxx->StrModBus.MBMab4[1] = Kxx->StrModBus.MBMab4[1] | (cbidx << 7);
+
+    WDFunc::SPBData(ParentMB, "MBMab1per[2]", Kxx->StrModBus.MBMab1[2]);
+    WDFunc::SPBData(ParentMB, "MBMab2per[2]", Kxx->StrModBus.MBMab2[2]);
+    WDFunc::SPBData(ParentMB, "MBMab3per[2]", Kxx->StrModBus.MBMab3[2]);
+    WDFunc::SPBData(ParentMB, "MBMab4per[2]", Kxx->StrModBus.MBMab4[2]);
+
+    WDFunc::SPBData(ParentMB, "MBMab1adr[3]", Kxx->StrModBus.MBMab1[3]);
+    WDFunc::SPBData(ParentMB, "MBMab2adr[3]", Kxx->StrModBus.MBMab2[3]);
+    WDFunc::SPBData(ParentMB, "MBMab3adr[3]", Kxx->StrModBus.MBMab3[3]);
+    WDFunc::SPBData(ParentMB, "MBMab4adr[3]", Kxx->StrModBus.MBMab4[3]);
+
+    //................................................................
+
+    QString StrIP, StrMask, StrSNTP, StrGate;
+    QString NameIP = "IP_ID", NameMask = "Mask_ID", NameSNTP = "SNTP_ID", NameGate = "GW_ID";
+    QStringList inIP, inMask, inSNTP, inGate;
+    QLocale german(QLocale::German);
+
+    WDFunc::LE_read_data(ParentSetup, NameIP, StrIP);
+    WDFunc::LE_read_data(ParentSetup, NameSNTP, StrSNTP);
+    WDFunc::LE_read_data(ParentSetup, NameGate, StrGate);
+    WDFunc::LE_read_data(ParentSetup, NameMask, StrMask);
+
+    inIP.append(StrIP.split("."));
+    inMask.append(StrMask.split("."));
+    inSNTP.append(StrSNTP.split("."));
+    inGate.append(StrGate.split("."));
+
+    for (i = 0; i < 4; i++)
+    {
+        Kxx->Com_param.IP[i] = inIP.at(i).toInt();
+        Kxx->Com_param.Mask[i] = inMask.at(i).toInt();
+        Kxx->Com_param.GateWay[i] = inGate.at(i).toInt();
+        Kxx->Com_param.SNTP[i] = inSNTP.at(i).toInt();
+    }
+
+    WDFunc::SPBData(ParentSetup, "Port_ID" + QString::number(0), Kxx->Com_param.Port[0]);
+
+    cbidx = WDFunc::CBIndex(ParentSetup, "Baud_ID");
+    Kxx->Com_param.Baud = (Sbaud.at(cbidx).toInt());
+    cbidx = WDFunc::CBIndex(ParentSetup, "Parity_ID");
+    Kxx->Com_param.Parity = cbidx;
+    cbidx = WDFunc::CBIndex(ParentSetup, "Stopbit_ID");
+    Kxx->Com_param.Stopbit = cbidx;
+
+    WDFunc::SPBData(ParentSetup, "adrMB_ID", Kxx->Com_param.adrMB);
+}
+
+void ConfDialogKxx::SetDefConf()
+{
+    Kxx->SetDefConf();
+    //  Fill();
 }

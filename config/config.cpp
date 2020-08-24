@@ -34,18 +34,4 @@ void Config::SetDefBlock()
     MainBlk.T3_104 = DEF_T3_104;
     MainBlk.k_104 = DEF_K_104;
     MainBlk.w_104 = DEF_W_104;
-    // Fill();
 }
-// void Config::Fill()
-//{
-//    WDFunc::SetSPBData(this, "Abs_104", MainBlk.Abs_104);
-//    WDFunc::SetSPBData(this, "Cycle_104", MainBlk.Cycle_104);
-//    WDFunc::SetSPBData(this, "T1_104", MainBlk.T1_104);
-//    WDFunc::SetSPBData(this, "T2_104", MainBlk.T2_104);
-//    WDFunc::SetSPBData(this, "T3_104", MainBlk.T3_104);
-//    WDFunc::SetSPBData(this, "k_104", MainBlk.k_104);
-//    WDFunc::SetSPBData(this, "w_104", MainBlk.w_104);
-
-//    int cbidx = ((MainBlk.Ctype & 0x01) ? 1 : 0);
-//    WDFunc::SetCBIndex(this, "Ctype", cbidx);
-//}
