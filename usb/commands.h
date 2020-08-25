@@ -4,7 +4,6 @@
 #include "../gen/modulebsi.h"
 #include "../gen/s2.h"
 #include "eusbhid.h"
-#include "s2.h"
 
 //#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением
 //батареи

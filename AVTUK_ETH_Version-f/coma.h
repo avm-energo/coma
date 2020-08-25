@@ -111,7 +111,6 @@ public:
         return sl;
     }
 
-    QTimer *BdaTimer;
     Coma(QWidget *parent = nullptr);
     ~Coma();
     void SetMode(int mode);

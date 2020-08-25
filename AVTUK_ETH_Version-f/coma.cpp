@@ -32,13 +32,13 @@
 #include "../dialogs/errordialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../gen/colors.h"
-#include "../gen/commands.h"
 #include "../gen/files.h"
 #include "../gen/logclass.h"
 #include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../modbus/modbus.h"
+#include "../usb/commands.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/waitwidget.h"
@@ -57,7 +57,6 @@
 #include <QSplashScreen>
 #include <QStandardPaths>
 #include <QStringListModel>
-#include <QToolBar>
 #include <QToolBar>
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)

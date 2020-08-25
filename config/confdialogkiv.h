@@ -47,8 +47,8 @@ private slots:
     void SetDefConf();
     void Start_Timer();
     void Stop_Timer();
-    void Write_PCDate();
-    void Write_Date();
+    //    void Write_PCDate();
+    //    void Write_Date();
 };
 
 #endif // CONFDIALOG84_H

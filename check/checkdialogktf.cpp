@@ -2,9 +2,9 @@
 
 #include "../config/config.h"
 #include "../gen/colors.h"
-#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
+#include "../usb/commands.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 

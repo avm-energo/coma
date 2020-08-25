@@ -1,5 +1,7 @@
 #include "alarmclass.h"
 
+#include "../usb/commands.h"
+
 #include <QApplication>
 #include <QBoxLayout>
 #include <QCursor>

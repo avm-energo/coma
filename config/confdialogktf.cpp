@@ -188,11 +188,11 @@ void ConfDialogKTF::SetupUI()
     scrArea->setFrameShape(QFrame::NoFrame);
     scrArea->setWidgetResizable(true);
 
-    uint32_t unixtimestamp = 1423062000;
+    //  uint32_t unixtimestamp = 1423062000;
 
-    QDateTime myDateTime;
+    //  QDateTime myDateTime;
 
-    myDateTime.setTime_t(unixtimestamp);
+    // myDateTime.setTime_t(unixtimestamp);
 
     QString paramcolor = MAINWINCLR;
     QFont font;
@@ -484,17 +484,17 @@ void ConfDialogKTF::Stop_Timer()
     timerRead->stop();
 }
 
-void ConfDialogKTF::Write_PCDate()
-{
-}
+// void ConfDialogKTF::Write_PCDate()
+//{
+//}
 
-void ConfDialogKTF::Write_Date()
-{
-    QDateTime myDateTime;
-    uint *time = new uint;
-    QString qStr;
-    WDFunc::LE_read_data(this, "Date", qStr);
-    myDateTime = QDateTime::fromString(qStr, "dd-MM-yyyy HH:mm:ss");
-    myDateTime.setOffsetFromUtc(0);
-    *time = myDateTime.toTime_t();
-}
+// void ConfDialogKTF::Write_Date()
+//{
+//    QDateTime myDateTime;
+//    uint *time = new uint;
+//    QString qStr;
+//    WDFunc::LE_read_data(this, "Date", qStr);
+//    myDateTime = QDateTime::fromString(qStr, "dd-MM-yyyy HH:mm:ss");
+//    myDateTime.setOffsetFromUtc(0);
+//    *time = myDateTime.toTime_t();
+//}

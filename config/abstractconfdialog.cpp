@@ -1,7 +1,6 @@
 #include "abstractconfdialog.h"
 
 #include "../dialogs/keypressdialog.h"
-#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/maindef.h"
@@ -9,6 +8,7 @@
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../iec104/iec104.h"
+#include "../usb/commands.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 

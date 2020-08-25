@@ -3,12 +3,12 @@
 
 #include "../alarm/alarmclass.h"
 #include "../gen/colors.h"
-#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
+#include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 
 #include <QByteArray>

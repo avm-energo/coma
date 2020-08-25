@@ -3,9 +3,6 @@
 
 #include "../gen/error.h"
 #include "../gen/timefunc.h"
-#include "error.h"
-
-#include <QCoreApplication>
 
 #include <QCoreApplication>
 
