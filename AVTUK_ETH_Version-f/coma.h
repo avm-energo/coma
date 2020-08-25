@@ -10,6 +10,7 @@
 #include "../alarm/warnalarmktf.h"
 #include "../check/eabstractcheckdialog.h"
 #include "../config/confdialog.h"
+#include "../config/abstractconfdialog.h"
 #include "../dialogs/abstractcordialog.h"
 #include "../dialogs/connectdialog.h"
 #include "../dialogs/cordialog.h"
@@ -198,7 +199,7 @@ private:
     ConfDialog *mainTuneDialog;
     AbstractCorDialog *corDialog;
     AbstractConfDialog *confBDialog, *confMDialog;
-    EAbstractCheckDialog *checkBDialog, *checkMDialog;
+    EAbstractCheckDialog *checkBDialog, *checkMDialog, *Harm;
     JournalDialog *jourDialog;
     fwupdialog *fwUpDialog;
     MNKTime *timeDialog;
@@ -211,7 +212,7 @@ private:
     bool Reconnect;
     int Mode; // режим запуска программы
     int fileSize, curfileSize;
-    int CheckIndex, TimeIndex, ConfIndex, CurTabIndex;
+    int CheckIndex, TimeIndex, ConfIndex, CurTabIndex, CheckHarmIndex;
     quint8 HaveAlreadyRed = 0;
     quint8 ActiveThreads;
     quint32 Mes;

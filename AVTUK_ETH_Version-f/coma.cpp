@@ -369,7 +369,6 @@ void Coma::StartWork()
     if (checkMDialog != nullptr)
         MainTW->addTab(checkMDialog, str);
 
-    if (confBDialog != nullptr)
     if (Harm != nullptr)
     {
         MainTW->addTab(Harm, "Гармоники");
@@ -378,7 +377,7 @@ void Coma::StartWork()
             ChModbus->CheckHarmIndex = CheckHarmIndex;
     }
 
-    if (ConfB != nullptr)
+    if (confBDialog != nullptr)
     {
         str = (confMDialog == nullptr) ? "Конфигурирование" : "Конфигурирование\nБазовая";
         MainTW->addTab(confBDialog, str);
@@ -500,7 +499,7 @@ void Coma::PrepareDialogs()
             break;
 
         case Config::MTM_87:
-            checkBDialog = new ChekDialogKTF(BoardTypes::BT_BASE);
+            checkBDialog = new CheckDialogKTF(BoardTypes::BT_BASE);
 
             Harm = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
 
@@ -527,7 +526,7 @@ void Coma::PrepareDialogs()
         switch (MTypeM)
         {
         case Config::MTM_87:
-            CheckB = new CheckDialogKDV(BoardTypes::BT_BASE);
+            checkBDialog = new CheckDialogKDV(BoardTypes::BT_BASE);
             S2Config->clear();
             if (MainInterface != I_RS485)
                 confMDialog = new ConfDialogKDV(S2Config);
@@ -1107,7 +1106,6 @@ void Coma::MainTWTabClicked(int tabindex)
         else
             BdaTimer->stop();
     }
-    if (timeDialog != nullptr)
     if (Harm != nullptr)
     {
         if (tabindex == CheckHarmIndex)
@@ -1116,7 +1114,7 @@ void Coma::MainTWTabClicked(int tabindex)
             BdaTimer->stop();
     }
 
-    if (TimeD != nullptr)
+    if (timeDialog != nullptr)
     {
         if (tabindex == TimeIndex)
             TimeTimer->start();
