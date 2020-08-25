@@ -1,11 +1,11 @@
-#include <QVBoxLayout>
+#include "connectdialog.h"
+
 #include "../gen/error.h"
 #include "../gen/maindef.h"
 #include "../models/etablemodel.h"
 #include "../usb/usb.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "connectdialog.h"
 
 #include <QSerialPortInfo>
 #include <QSettings>
@@ -186,7 +186,10 @@ void ConnectDialog::RsAccepted()
     }
 }
 
-void ConnectDialog::SetCancelled() { emit Cancelled(); }
+void ConnectDialog::SetCancelled()
+{
+    emit Cancelled();
+}
 
 void ConnectDialog::SetEth()
 {
@@ -332,6 +335,7 @@ bool ConnectDialog::UpdateModel()
                 return false;
             }
             mdl->setHeaders(sl);
+
             for (int i = 0; i < USBsl.size(); ++i)
             {
                 QVector<QVariant> vl;

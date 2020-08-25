@@ -488,13 +488,15 @@ void Coma::PrepareDialogs()
             connect(AlarmW, SIGNAL(ModuleAlarmButtonPressed()), AvarAlarmKIVWidget, SLOT(show()));
             connect(Alarm, SIGNAL(SetAlarmColor(QList<bool>)), AvarAlarmKIVWidget, SLOT(Update(QList<bool>)));
 
+            connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), CheckB, SLOT(SetWarnAlarmColor(QList<bool>)));
+            connect(AlarmW, SIGNAL(SetAlarmColor(QList<bool>)), CheckB, SLOT(SetAlarmColor(QList<bool>)));
+
             break;
 
         case Config::MTM_87:
             CheckB = new CheckDialogKTF(BoardTypes::BT_BASE);
 
             Harm = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
-
             connect(BdaTimer, SIGNAL(timeout()), Harm, SLOT(USBUpdate()));
 
             S2Config->clear();
@@ -520,6 +522,7 @@ void Coma::PrepareDialogs()
         {
         case Config::MTM_87:
             CheckB = new CheckDialogKDV(BoardTypes::BT_BASE);
+
             S2Config->clear();
             if (MainInterface != I_RS485)
                 ConfM = new ConfDialogKDV(S2Config);
@@ -533,8 +536,6 @@ void Coma::PrepareDialogs()
     NewTimersBda();
 
     connect(this, SIGNAL(ClearBsi()), IDialog, SLOT(ClearBsi()));
-    connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), CheckB, SLOT(SetWarnAlarmColor(QList<bool>)));
-    connect(AlarmW, SIGNAL(SetAlarmColor(QList<bool>)), CheckB, SLOT(SetAlarmColor(QList<bool>)));
 
     if (MainInterface == I_ETHERNET)
     {
@@ -626,7 +627,7 @@ void Coma::New104()
     connect(Ch104, SIGNAL(SetDataSize(int)), this, SLOT(SetProgressBar1Size(int)));
     connect(Ch104, SIGNAL(SetDataCount(int)), this, SLOT(SetProgressBar1(int)));
     connect(Ch104, SIGNAL(ReconnectSignal()), this, SLOT(ReConnect()));
-    connect(Ch104, SIGNAL(Sponsignalsready(IEC104Thread::SponSignals *)), this,
+    connect(Ch104, SIGNAL(Sponsignalsready(IEC104Thread::SponSignals *)), Alarm,
         SLOT(UpdateAlarm104(IEC104Thread::SponSignals *)));
     connect(Ch104, SIGNAL(Bs104signalsready(IEC104Thread::BS104Signals *)), this,
         SLOT(FillBSI(IEC104Thread::BS104Signals *)));
@@ -640,7 +641,7 @@ void Coma::NewModbus()
     //  connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils)), this,
     //  SLOT(ModBusUpdatePredAlarmEvents(ModBus::Coils)));
     connect(ChModbus, SIGNAL(ReconnectSignal()), this, SLOT(ReConnect()));
-    connect(ChModbus, SIGNAL(CoilSignalsReady(ModBus::Coils)), Alarm, SLOT(UpdateAlarmModbus(ModBus::Coils)));
+    connect(ChModbus, SIGNAL(CoilSignalsReady(ModBus::Coils)), Alarm, SLOT(UpdateAlarmModBus(ModBus::Coils)));
     connect(ChModbus, SIGNAL(BsiFromModbus(QList<ModBus::BSISignalStruct>, unsigned int)), this,
         SLOT(FillBSI(QList<ModBus::BSISignalStruct>, unsigned int)));
 }

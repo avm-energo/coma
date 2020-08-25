@@ -37,13 +37,9 @@ CheckDialogKIV::CheckDialogKIV(BoardTypes board, QWidget *parent) : EAbstractChe
     SetBd(6, &ChKIV->Bd_block1, sizeof(Check_KIV::Bd1));
 
     if (Config::MTB_A2)
-        sl = QStringList() << "Основные"
-                           << "Дополнительные"
-                           << "Отладка";
+        sl = QStringList { "Основные", "Дополнительные", "Отладка" };
     else
-        sl = QStringList() << "Общие"
-                           << "Аналоговые"
-                           << "Несимметрия";
+        sl = QStringList { "Общие", "Аналоговые", "Несимметрия" };
 
     BdUINum = sl.size();
 
@@ -56,8 +52,7 @@ QWidget *CheckDialogKIV::BdUI(int bdnum)
 {
     switch (bdnum)
     {
-    /*case 0:
-        return Ch->Bd0W(this);*/
+
     case 0: // Блок #1
         return ChKIV->Bd1W(this);
     case 1: // Блок #1
@@ -98,7 +93,6 @@ void CheckDialogKIV::PrepareHeadersForFile(int row)
     xlsx->write(row, 27, QVariant("Phy_unb, град"));
     xlsx->write(row, 28, QVariant("Tmk, °С"));
 
-    // if((ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8) == Config::MTB_A2)
     xlsx->write(row, 29, QVariant("Tamb, °С"));
 
     xlsx->write(row, 30, QVariant("Freq, Гц"));
