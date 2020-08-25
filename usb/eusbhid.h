@@ -2,6 +2,7 @@
 
 #include "eabstractprotocomchannel.h"
 #include "eusbthread.h"
+#include "eusbworker.h"
 
 #include <QByteArray>
 #include <QObject>
@@ -19,38 +20,38 @@ class EUsbHid : public EAbstractProtocomChannel
 {
     Q_OBJECT
 public:
-    explicit EUsbHid(QObject *parent = nullptr);
     ~EUsbHid();
-
-    EUsbHid(EUsbHid &) = delete;
-
-    void operator=(const EUsbHid &) = delete;
 
     static EUsbHid *GetInstance(QObject *parent = nullptr);
 
-    //    bool ThreadRunning;
-
     bool Connect() override;
+    void Disconnect() override;
+
     QByteArray RawRead(int bytes) override;
     int RawWrite(QByteArray &ba) override;
     void RawClose() override;
     QStringList DevicesFound() const override;
 
-signals:
-    void StopUThread();
+    EUsbWorker *usbWorker() const;
 
-public slots:
+    QThread *workerThread();
 
-private slots:
-    void UThreadFinished();
-    void UThreadStarted();
+    QString deviceName() const;
+    void setDeviceName(const QString &deviceName);
+
+protected:
+    explicit EUsbHid(QObject *parent = nullptr);
+    EUsbHid(EUsbHid &) = delete;
+
+    void operator=(const EUsbHid &) = delete;
 
 private:
     static EUsbHid *pinstance_;
     static QMutex mutex_;
 
-    EUsbThread *UThread;
-    bool UThreadRunning;
+    QString m_deviceName;
+    EUsbWorker *m_usbWorker;
+    QThread m_workerThread;
 
     void ClosePort();
 };

@@ -2,10 +2,11 @@
 
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
-#include "eusbthread.h"
+#include "eusbworker.h"
 
 #include <QCoreApplication>
 #include <QElapsedTimer>
+#include <QMessageBox>
 #include <QThread>
 
 EUsbHid *EUsbHid::pinstance_ { nullptr };
@@ -13,16 +14,28 @@ QMutex EUsbHid::mutex_;
 
 EUsbHid::EUsbHid(QObject *parent) : EAbstractProtocomChannel(parent)
 {
-    UThreadRunning = false;
+}
+
+QString EUsbHid::deviceName() const
+{
+    return m_deviceName;
+}
+
+void EUsbHid::setDeviceName(const QString &deviceName)
+{
+    m_deviceName = deviceName;
 }
 
 EUsbHid::~EUsbHid()
 {
+    m_workerThread.quit();
+    m_workerThread.wait();
+    pinstance_ = nullptr;
 }
 /**
  * The first time we call GetInstance we will lock the storage location
  *      and then we make sure again that the variable is null and then we
- *      set the value. RU:
+ *      set the value.
  */
 EUsbHid *EUsbHid::GetInstance(QObject *parent)
 {
@@ -39,23 +52,36 @@ EUsbHid *EUsbHid::GetInstance(QObject *parent)
 
 bool EUsbHid::Connect()
 {
-    if (Connected)
+    QMutexLocker locker(&mutex_);
+    if (isConnected())
         Disconnect();
-    QThread *thr = new QThread;
-    UThread = new EUsbThread(UsbPort, CnLog, IsWriteUSBLog());
-    UThread->moveToThread(thr);
-    connect(thr, &QThread::started, UThread, &EUsbThread::Run);
-    connect(UThread, &EUsbThread::Started, this, &EUsbHid::UThreadStarted);
-    connect(UThread, &EUsbThread::Finished, thr, &QThread::quit);
-    connect(thr, &QThread::finished, thr, &QObject::deleteLater);
-    connect(UThread, &EUsbThread::Finished, UThread, &QObject::deleteLater);
-    connect(UThread, &EUsbThread::Finished, this, &EUsbHid::UThreadFinished);
-    connect(UThread, &EUsbThread::NewDataReceived, this, &EAbstractProtocomChannel::ParseIncomeData);
-    connect(this, &EUsbHid::StopUThread, UThread, &EUsbThread::Stop);
-    thr->start();
-    while (!Connected)
-        QCoreApplication::processEvents();
+    m_usbWorker = new EUsbWorker(UsbPort, CnLog, IsWriteUSBLog());
+
+    m_usbWorker->moveToThread(&m_workerThread);
+    connect(&m_workerThread, &QThread::started, m_usbWorker, &EUsbWorker::interact);
+
+    connect(m_usbWorker, &EUsbWorker::Finished, &m_workerThread, &QThread::quit);
+
+    connect(&m_workerThread, &QThread::finished, &m_workerThread, &QThread::deleteLater);
+    connect(m_usbWorker, &EUsbWorker::Finished, m_usbWorker, &EUsbWorker::deleteLater);
+
+    connect(m_usbWorker, &EUsbWorker::NewDataReceived, this, &EAbstractProtocomChannel::ParseIncomeData);
+
+    if (m_usbWorker->setupConnection() == 0)
+    {
+        setConnected(true);
+        m_workerThread.start();
+    }
+    else
+        return false;
     return true;
+}
+
+void EUsbHid::Disconnect()
+{
+    RawClose();
+    CnLog->WriteRaw("Disconnected!\n");
+    delete EUsbHid::GetInstance();
 }
 
 QByteArray EUsbHid::RawRead(int bytes)
@@ -66,27 +92,18 @@ QByteArray EUsbHid::RawRead(int bytes)
 
 int EUsbHid::RawWrite(QByteArray &ba)
 {
-    // int res;
-    if (!Connected)
+    if (!isConnected())
         return GENERALERROR;
-    //    while ((res = UThread->WriteDataAttempt(ba)) == RESEMPTY) // while out queue is busy
-    //        StdFunc::Wait(UH_MAINLOOP_DELAY);
-    return UThread->WriteDataAttempt(ba);
-    //    if (res < 0)
-    //    {
-    //        ERMSG("error writedata");
-    //        return GENERALERROR;
-    //    }
-    //    return NOERROR;
+    return m_usbWorker->WriteDataAttempt(ba);
 }
 
 void EUsbHid::RawClose()
 {
-    if (Connected)
-        emit StopUThread();
-    while (UThreadRunning)
-        QCoreApplication::processEvents();
-    Connected = false;
+    if (isConnected())
+    {
+        setConnected(false);
+        m_usbWorker->Stop();
+    }
 }
 
 QStringList EUsbHid::DevicesFound() const
@@ -115,13 +132,12 @@ QStringList EUsbHid::DevicesFound() const
     return sl;
 }
 
-void EUsbHid::UThreadFinished()
+QThread *EUsbHid::workerThread()
 {
-    UThreadRunning = false;
+    return &m_workerThread;
 }
 
-void EUsbHid::UThreadStarted()
+EUsbWorker *EUsbHid::usbWorker() const
 {
-    UThreadRunning = true;
-    Connected = true;
+    return m_usbWorker;
 }

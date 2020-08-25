@@ -137,7 +137,7 @@ public:
     qint32 Result;
     //    int ernum;
     bool NeedToSend, Busy, NeedToFinish;
-    bool Connected;
+
     //    qint64 RDSize;
     LogClass *CnLog;
     DeviceConnectStruct UsbPort;
@@ -158,6 +158,9 @@ public:
     // функция, разбивающая строку устройства и складывающая в соотв. структуру
     void TranslateDeviceAndSave(const QString &str);
 
+    bool isConnected() const;
+    void setConnected(bool isConnected);
+
 signals:
     // сигналы для прогрессбаров - отслеживание принятых данных, стёртых осциллограмм и т.п.
     void SetDataSize(int);
@@ -171,7 +174,7 @@ signals:
 
 public slots:
     void Timeout();
-    void Disconnect();
+    virtual void Disconnect();
     void ParseIncomeData(QByteArray ba);
 
 private slots:
@@ -195,6 +198,7 @@ private:
     bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
     char BoardType;
     static bool WriteUSBLog;
+    bool m_connected;
 
     void Send(char command, char parameter, QByteArray &ba, qint64 datasize);
     void InitiateSend();

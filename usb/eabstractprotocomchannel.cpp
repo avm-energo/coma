@@ -20,7 +20,7 @@ EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(pa
     SegEnd = 0;
     SegLeft = 0;
     //    OscNum = 0;
-    Connected = false;
+    setConnected(false);
     TTimer = new QTimer(this);
     TTimer->setInterval(CN::Timeout);
     NeedToSend = false;
@@ -37,9 +37,19 @@ EAbstractProtocomChannel::~EAbstractProtocomChannel()
 {
 }
 
+bool EAbstractProtocomChannel::isConnected() const
+{
+    return m_connected;
+}
+
+void EAbstractProtocomChannel::setConnected(bool connected)
+{
+    m_connected = connected;
+}
+
 void EAbstractProtocomChannel::Send(char command, char parameter, QByteArray &ba, qint64 datasize)
 {
-    if (!Connected)
+    if (!isConnected())
     {
         qDebug() << "Передача в отключенный прибор";
         ERMSG("В канальную процедуру переданы некорректные данные");

@@ -1,12 +1,6 @@
 #ifndef JOURNALDIALOG_H
 #define JOURNALDIALOG_H
 
-#include <QDialog>
-#include <QMessageBox>
-#include <QModelIndex>
-#include <QProgressDialog>
-#include <QThread>
-
 #include "../dialogs/keypressdialog.h"
 #include "../gen/journals.h"
 #include "../gen/maindef.h"
@@ -16,9 +10,15 @@
 #include "../widgets/etableview.h"
 #include "../widgets/waitwidget.h"
 
+#include <QDialog>
+#include <QMessageBox>
+#include <QModelIndex>
+#include <QProgressDialog>
+#include <QThread>
+
 #define MAXSWJNUM 262144
 
-class JournalDialog : public QWidget
+class JournalDialog : public QDialog
 {
     Q_OBJECT
 public:

@@ -81,23 +81,53 @@ public:
     static QStringList Hth()
     {
         // sl.append("ERR");
-        QStringList sl { "ADCI", "FLS", "TUP", "ADCB", "1PPS", "ADCM", "REGB", "RCN", "HWIB", "HWIM", "REGM", "BAT",
-            "NTP", "FLS2", "FRM" };
+        // clang-format off
+        QStringList sl
+        {
+            "ADCI",
+            "FLS",
+            "TUP",
+            "ADCB",
+            "1PPS",
+            "ADCM",
+            "REGB",
+            "RCN",
+            "HWIB",
+            "HWIM",
+            "REGM",
+            "BAT",
+            "NTP",
+            "FLS2",
+            "FRM"
+        };
+        // clang-format on
         return sl;
     }
 
     static QStringList HthToolTip()
     {
-        // QStringList sl;
         // sl.append("Что-то не в порядке");
-        QStringList sl = { "Проблемы со встроенным АЦП ", "Не работает внешняя flash-память", "Перегрев",
-            "Проблемы с АЦП (нет связи) (базовая)", "Нет сигнала 1PPS с антенны",
-            "Проблемы с АЦП (нет связи) (мезонин)", "Ошибка регулировочных коэффициентов (базовая)",
+        // clang-format off
+        QStringList sl
+        {
+            "Проблемы со встроенным АЦП ",
+            "Не работает внешняя flash-память",
+            "Перегрев",
+            "Проблемы с АЦП (нет связи) (базовая)",
+            "Нет сигнала 1PPS с антенны",
+            "Проблемы с АЦП (нет связи) (мезонин)",
+            "Ошибка регулировочных коэффициентов (базовая)",
             "Ошибка загрузки конфигурации из flash-памяти. Работает конфигурация по умолчанию",
-            "Некорректная Hardware информация (базовая)", "Некорректная Hardware информация (мезонин)",
-            "Ошибка регулировочных коэффициентов (мезонин)", "Напряжение батареи низко (< 2,5 В)",
-            "Нет связи с NTP-сервером", "Не работает внешняя flash-память (мезонин)", "Не работает внешняя fram",
-            "Проблемы со встроенным АЦП " };
+            "Некорректная Hardware информация (базовая)",
+            "Некорректная Hardware информация (мезонин)",
+            "Ошибка регулировочных коэффициентов (мезонин)",
+            "Напряжение батареи низко (< 2,5 В)",
+            "Нет связи с NTP-сервером",
+            "Не работает внешняя flash-память (мезонин)",
+            "Не работает внешняя fram",
+            "Проблемы со встроенным АЦП "
+        };
+        // clang-format on
         return sl;
     }
 
@@ -113,6 +143,9 @@ public:
     int CheckPassword();
     void Disconnect();
 
+    int number() const;
+    void setNumber(int number);
+
 signals:
     void CloseConnectDialog();
     void PasswordChecked();
@@ -124,24 +157,18 @@ signals:
 public slots:
     void DisconnectAndClear();
 
-    void CheckTimeFinish();
-    void CheckModBusFinish();
     void FileTimeOut();
-    void SetCancelled();
     void ReConnect();
     void AttemptToRec();
     void ConnectMessage();
 
 private slots:
     void StartWork();
-    void StartSettingsDialog();
-    void ShowErrorDialog();
     void GetAbout();
     void closeEvent(QCloseEvent *event) override;
     void SetDefConf();
-    void SetMainDefConf();
-    void SetBDefConf();
-    void SetMDefConf();
+
+    void setConf(unsigned char);
     void Fill();
     void FillBSI(IEC104Thread::BS104Signals *sig);
     void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
@@ -150,18 +177,10 @@ private slots:
     void SetProgressBar1(int cursize);
     void SetProgressBar2Size(int size);
     void SetProgressBar2(int cursize);
-    void ShowErrorMessageBox(QString message);
     void MainTWTabClicked(int tabindex);
-    void SetConnection(ConnectDialog::ConnectStruct *st);
-    void Cancel();
-
-    // finished slots
-    void ModBusFinished();
-    void Ch104Finished();
-    void USBFinished();
 
 private:
-    const QVector<int> MTBs = { 0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84 };
+    // constexpr QVector<int> MTBs = { 0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84 };
 
     AlarmWidget *AlarmW;
     WarnAlarmKIV *WarnAlarmKIVWidget;
@@ -170,19 +189,20 @@ private:
     AvarAlarmKTF *AvarAlarmKTFWidget;
     AlarmClass *Alarm;
     QWidget *Parent;
-    QWidget *Wpred;
-    QWidget *Walarm;
+
+    AlarmStateAll *AlarmStateAllWidget;
     AbstractAlarm *AbstrALARM;
 
-    InfoDialog *IDialog;
-    ConfDialog *MainConfDialog;
-    ConfDialog *MainTuneDialog;
-    AbstractCorDialog *CorD;
-    AlarmStateAll *AlarmStateAllWidget;
-    AbstractConfDialog *ConfB, *ConfM;
-    EAbstractCheckDialog *CheckB, *CheckM;
-    JournalDialog *JourD;
-    fwupdialog *FwUpD;
+    InfoDialog *infoDialog;
+    ConfDialog *mainConfDialog;
+    ConfDialog *mainTuneDialog;
+    AbstractCorDialog *corDialog;
+    AbstractConfDialog *confBDialog, *confMDialog;
+    EAbstractCheckDialog *checkBDialog, *checkMDialog;
+    JournalDialog *jourDialog;
+    fwupdialog *fwUpDialog;
+    MNKTime *timeDialog;
+    QWidget *wPredDialog, *wAlarmDialog;
 
     bool PasswordValid;
     bool Disconnected;
@@ -210,14 +230,13 @@ private:
 
     IEC104 *Ch104;
     ModBus *ChModbus;
-    MNKTime *TimeD;
 
     ConnectDialog::ConnectStruct ConnectSettings;
 
     void LoadSettings();
     void SaveSettings();
-    void SetProgressBarSize(QString prbnum, int size);
-    void SetProgressBar(QString prbnum, int cursize);
+    void SetProgressBarSize(int prbnum, int size);
+    void SetProgressBar(int prbnum, int cursize);
     void New104();
     void NewModbus();
     void NewUSB();

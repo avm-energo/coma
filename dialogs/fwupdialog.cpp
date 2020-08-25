@@ -164,7 +164,6 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
     QByteArray *BaForSend = new QByteArray;
 
     str = ba;
-    str.split(":");
 
     sl.append(str.split("\r\n:"));
 

@@ -5,6 +5,8 @@
 #include "../gen/s2.h"
 #include "eusbhid.h"
 
+#include <QObject>
+
 //#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением батареи
 #define TECH_Bo 1 // технологический блок осциллограмм
 #define TECH_Be 2 // технологический блок событий
@@ -22,11 +24,12 @@
 
 #define MAXFLOAT 3.40282347E+38F
 
-class Commands
+class Commands : QObject
 {
-    explicit Commands();
 
+    Q_OBJECT
 public:
+    explicit Commands();
     static int GetBsi(ModuleBSI::Bsi &bsi);
     static int GetFileWithRestore(int filenum, QVector<S2::DataRec> *data);
     static int GetFile(int filenum, QByteArray &ba);
@@ -48,8 +51,10 @@ public:
     static int RunVPO();
     static int TestCom(char OnOff);
 
+signals:
+    void setupConnection();
+
 private:
 };
-
 
 #endif // COMMANDS_H

@@ -12,13 +12,14 @@ Commands::Commands()
 
 int Commands::Connect()
 {
+
     EUsbHid::GetInstance()->Connect();
     return NOERROR;
 }
 
 bool Commands::isConnected()
 {
-    return EUsbHid::GetInstance()->Connected;
+    return EUsbHid::GetInstance()->isConnected();
 }
 
 void Commands::Disconnect()

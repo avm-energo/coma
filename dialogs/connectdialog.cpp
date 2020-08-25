@@ -98,7 +98,10 @@ void ConnectDialog::SetUsb()
     ConnectStruct st; // temporary var
     QDialog *dlg = this->findChild<QDialog *>("connectdlg");
     if (dlg != nullptr)
+    {
+        EUsbHid::GetInstance()->setDeviceName(WDFunc::TVData(dlg, "usbtv", 1).toString());
         EUsbHid::GetInstance()->TranslateDeviceAndSave(WDFunc::TVData(dlg, "usbtv", 1).toString());
+    }
     emit Accepted(&st);
 }
 
