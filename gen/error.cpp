@@ -49,7 +49,8 @@ void Error::AddErrMsg(ErMsgType msgtype, QString file, int line, QString msg)
     tmpm.DateTime = QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss");
     // Разбор кода ошибки
     QString prefix;
-    /*    if ((msg.isEmpty()) || (msg == " ")) // пробел выдаётся при пустом запросе в БД
+    /*    if ((msg.isEmpty()) || (msg == " ")) // пробел выдаётся при пустом
+       запросе в БД
         {
             switch (msgtype)
             {
@@ -60,7 +61,8 @@ void Error::AddErrMsg(ErMsgType msgtype, QString file, int line, QString msg)
             case INFO_MSG: prefix = "Инфо "; break;
             case DBG_MSG: prefix = "Отладка "; break;
             }
-            msg = prefix+"в файле " + tmpm.file + " строка " + QString::number(tmpm.line);
+            msg = prefix+"в файле " + tmpm.file + " строка " +
+       QString::number(tmpm.line);
         } */
     if ((msgtype == ER_MSG) || (msgtype == DBG_MSG))
         LogFile.error("file: " + tmpm.file + ", line: " + QString::number(tmpm.line) + ": " + msg);

@@ -1,8 +1,8 @@
 /* Keypressdialog
- * It's useful for making a non-echo input of passwords and similar security things
- * Start it as a usual QDialog and connect its signal Finished(QString) to the
- * corresponding slot in the prog. Dialog is auto-closing when user press Enter key
- * or Esc key. Signal Cancelled() is emitted when user press Esc key
+ * It's useful for making a non-echo input of passwords and similar security
+ * things Start it as a usual QDialog and connect its signal Finished(QString)
+ * to the corresponding slot in the prog. Dialog is auto-closing when user press
+ * Enter key or Esc key. Signal Cancelled() is emitted when user press Esc key
  */
 
 #ifndef KEYPRESSDIALOG_H
@@ -16,8 +16,8 @@ class KeyPressDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit KeyPressDialog(
-        const QString &PswPhrase, QWidget *parent = nullptr); // PswPhrase - фраза, которую надо написать пользователю
+    explicit KeyPressDialog(const QString &PswPhrase,
+        QWidget *parent = nullptr); // PswPhrase - фраза, которую надо написать пользователю
 
 signals:
     void Finished(QString str);

@@ -32,11 +32,11 @@
 // определения типа данных
 // TYPE IDENTIFICATION
 
-#define M_SP_NA_1 1 // Single-point information
-#define M_DP_NA_1 3 // Double-point information
-#define M_ST_NA_1 5 // Step position information
-#define M_BO_NA_1 7 // Bitstring of 32 bit
-#define M_ME_NA_1 9 // Measured value, normalized value
+#define M_SP_NA_1 1  // Single-point information
+#define M_DP_NA_1 3  // Double-point information
+#define M_ST_NA_1 5  // Step position information
+#define M_BO_NA_1 7  // Bitstring of 32 bit
+#define M_ME_NA_1 9  // Measured value, normalized value
 #define M_ME_NC_1 13 // Measured value, short floating point value
 #define M_SP_TB_1 30 // Single-point information with time tag CP56Time2a
 #define M_DP_TB_1 31 // Double-point information with time tag CP56Time2a
@@ -49,10 +49,10 @@
 #define C_RC_NA_1 47 // Regulating step command
 #define C_SE_NA_1 48 // Set point command, normalised value
 #define C_SE_NC_1 50
-#define C_BO_NA_1 51 // Bitstring of 32 bit
-#define C_SC_TA_1 58 // Single command with time tag CP56Time2a
-#define C_DC_TA_1 59 // Double command with time tag CP56Time2a
-#define M_EI_NA_1 70 // End of initialization
+#define C_BO_NA_1 51  // Bitstring of 32 bit
+#define C_SC_TA_1 58  // Single command with time tag CP56Time2a
+#define C_DC_TA_1 59  // Double command with time tag CP56Time2a
+#define M_EI_NA_1 70  // End of initialization
 #define C_IC_NA_1 100 // Interrrogation command
 #define C_CI_NA_1 101 // Counter interrrogation command
 #define C_CS_NA_1 103 // Clock syncronization command
@@ -127,7 +127,8 @@ public:
         quint8 SigAdr[3];
         quint32 SigVal;
         quint8 SigQuality;
-    } BS104; // первое - номера сигналов, второе - их значения ("" ~ недостоверное значение), третье - метка времени
+    } BS104; // первое - номера сигналов, второе - их значения ("" ~ недостоверное
+             // значение), третье - метка времени
 
     typedef struct
     {
@@ -211,14 +212,14 @@ private:
     typedef struct
     {
         unsigned char Number; // number of Informational Objects
-        unsigned char SQ; // Single <0> or Series <1> of Objects
+        unsigned char SQ;     // Single <0> or Series <1> of Objects
     } QualifierVariableStructute;
 
     typedef struct
     {
-        unsigned char cause; // <0..63> cause number
-        unsigned char confirm; // <0> - positive , <1> - negative
-        unsigned char test; // <0> - not a test, <1> - test
+        unsigned char cause;     // <0..63> cause number
+        unsigned char confirm;   // <0> - positive , <1> - negative
+        unsigned char test;      // <0> - not a test, <1> - test
         unsigned char initiator; // number of initiating address
     } CauseOfTransmission;
 
@@ -305,40 +306,40 @@ public:
     typedef struct
     {
         DataUnitIdentifier Ident;
-        quint8 AdrObj; // адрес объекта
-        quint16 FileName; // имя файла
+        quint8 AdrObj;      // адрес объекта
+        quint16 FileName;   // имя файла
         quint8 SectionName; // имя секции
         quint8 SegmentSize; // длина сегмента
-        QByteArray Brray; // Данные
+        QByteArray Brray;   // Данные
 
     } F_SG;
 
     typedef struct
     {
         DataUnitIdentifier Ident;
-        quint8 AdrObj; // адрес объекта
-        quint16 FileName; // имя файла
+        quint8 AdrObj;      // адрес объекта
+        quint16 FileName;   // имя файла
         quint8 SectionName; // имя секции
-        qint8 AFQ; // Описатель подтверждения приёма
+        qint8 AFQ;          // Описатель подтверждения приёма
 
     } F_AF;
 
     typedef struct
     {
         DataUnitIdentifier Ident;
-        quint8 AdrObj; // адрес объекта
-        quint16 FileName; // имя файла
+        quint8 AdrObj;      // адрес объекта
+        quint16 FileName;   // имя файла
         quint8 SectionName; // имя секции
-        qint8 LSQ; // Описатель последней секции, сегмента
-        qint8 CHS; // Контрольная сумма
+        qint8 LSQ;          // Описатель последней секции, сегмента
+        qint8 CHS;          // Контрольная сумма
 
     } F_LS;
 
     typedef struct
     {
         DataUnitIdentifier Ident;
-        quint8 AdrObj; // адрес объекта
-        quint16 FileName; // имя файла
+        quint8 AdrObj;      // адрес объекта
+        quint16 FileName;   // имя файла
         quint8 SectionName; // имя секции
         qint8 SCQ; // Описатель выбора (первые 4 бита) и вызова (вторые 4 бита)
 
@@ -349,21 +350,21 @@ public:
     typedef struct
     {
         DataUnitIdentifier Ident;
-        quint8 AdrObj; // адрес объекта
-        quint16 FileName; // имя файла
-        quint8 SectionName; // имя секции
+        quint8 AdrObj;         // адрес объекта
+        quint16 FileName;      // имя файла
+        quint8 SectionName;    // имя секции
         quint8 SectionSize[3]; // размер секции
-        quint8 SRQ; // указатель готовности секции
+        quint8 SRQ;            // указатель готовности секции
 
     } F_SR;
 
     typedef struct
     {
         DataUnitIdentifier Ident;
-        quint8 AdrObj; // адрес объекта
+        quint8 AdrObj;    // адрес объекта
         quint16 FileName; // имя файла
         quint32 FileSize; // размер файла
-        quint8 FRQ; // указатель готовности файла
+        quint8 FRQ;       // указатель готовности файла
 
     } F_FR;
 

@@ -2,9 +2,9 @@
 
 #include "../config/config.h"
 #include "../gen/colors.h"
+#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
-#include "../usb/commands.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
@@ -36,10 +36,10 @@ CheckDialogKIV::CheckDialogKIV(BoardTypes board, QWidget *parent) : EAbstractChe
     SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
     SetBd(6, &ChKIV->Bd_block1, sizeof(Check_KIV::Bd1));
 
-    if (Config::MTB_A2) //(ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8)
+    if (Config::MTB_A2)
         sl = QStringList() << "Основные"
                            << "Дополнительные"
-                           << "Отладка"; // << "Спорадика";// << "Температура"; //"Общие" <<
+                           << "Отладка";
     else
         sl = QStringList() << "Общие"
                            << "Аналоговые"
@@ -200,12 +200,7 @@ void CheckDialogKIV::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
     for (i = 0; i < Signal->SigNumber; i++)
     {
         sig = *(Signal + i);
-        // WDFunc::SetLBLText(Ch, QString::number((Signal+i)->fl.SigAdr),
-        // WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal)); if((Signal+i)->fl.SigAdr == 101 || (Signal+i)->fl.SigAdr
-        // == 102) Ch->FillBd0(this, QString::number((Signal+i)->fl.SigAdr),
-        // WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal));
 
-        // if((Signal+i)->fl.SigAdr >= 1000 || (Signal+i)->fl.SigAdr <= 1009)
         ChKIV->FillBd(this, QString::number(sig.fl.SigAdr), WDFunc::StringValueWithCheck(sig.fl.SigVal, 3));
     }
 }
@@ -220,22 +215,26 @@ void CheckDialogKIV::UpdateSponData(IEC104Thread::SponSignals *Signal)
         if ((sigadr >= 3011) && (sigadr <= 3013))
         {
             i = sigadr - 3011;
-            WDFunc::SetLBLTColor(this, QString::number(1000 + i), (sigval == 1) ? TABCOLORA1 : ACONFOCLR); // TABCOLORA1
+            WDFunc::SetLBLTColor(this, QString::number(1000 + i),
+                (sigval == 1) ? TABCOLORA1 : ACONFOCLR); // TABCOLORA1
         }
         if ((sigadr >= 3014) && (sigadr <= 3016))
         {
             i = sigadr - 3014;
-            WDFunc::SetLBLTColor(this, QString::number(1100 + i), (sigval == 1) ? TABCOLORA1 : ACONFOCLR); // TABCOLORA1
+            WDFunc::SetLBLTColor(this, QString::number(1100 + i),
+                (sigval == 1) ? TABCOLORA1 : ACONFOCLR); // TABCOLORA1
         }
         if ((sigadr >= 3018) && (sigadr <= 3020))
         {
             i = sigadr - 3018;
-            WDFunc::SetLBLTColor(this, QString::number(1000 + i), (sigval == 1) ? TABCOLORA1 : ACONFOCLR); // TABCOLORA1
+            WDFunc::SetLBLTColor(this, QString::number(1000 + i),
+                (sigval == 1) ? TABCOLORA1 : ACONFOCLR); // TABCOLORA1
         }
         if ((sigadr >= 3021) && (sigadr <= 3023))
         {
             i = sigadr - 3021;
-            WDFunc::SetLBLTColor(this, QString::number(1000 + i), (sigval == 1) ? TABCOLORA1 : ACONFOCLR); // TABCOLORA1
+            WDFunc::SetLBLTColor(this, QString::number(1000 + i),
+                (sigval == 1) ? TABCOLORA1 : ACONFOCLR); // TABCOLORA1
             if (sigval == 0)
                 stColor[i] = 1;
         }
@@ -322,17 +321,10 @@ void CheckDialogKIV::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
     }
 }
 
-/*void CheckDialog84::ErrorRead()
-{
-  //EMessageBox::information(this, "INFO", "Ошибка чтения");
-}*/
-
 void CheckDialogKIV::onModbusStateChanged(ConnectionStates state)
 {
     if (state == ConnectionStates::ConnectedState)
         EMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
-    //    else
-    //        EMessageBox::error(this, "Провал", "Подключение отсутствует");
 }
 
 void CheckDialogKIV::SetPredAlarmColor(QList<bool> WarnAlarm)

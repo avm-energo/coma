@@ -11,7 +11,8 @@
 Check_KIV::Check_KIV()
 {
     // setAttribute(Qt::WA_DeleteOnClose);
-    ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
+    ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; "
+                   "padding: 1px; color: black;"
                    "background-color: "
         + QString(ACONFOCLR) + "; font: bold 10px;}";
     WidgetFormat = "QWidget {background-color: " + QString(UCONFCLR) + ";}";
@@ -31,7 +32,8 @@ QWidget *Check_KIV::Bd1W(QWidget *parent)
     // QHBoxLayout *hlyout = new QHBoxLayout;
     QString phase[3] = { "A", "B", "C" };
     // hlyout->addWidget(WDFunc::NewLBL(parent, "Номер:"), 0);
-    // hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat, "Номер"), 0);
+    // hlyout->addWidget(WDFunc::NewLBLT(parent, "", "value0", ValuesFormat,
+    // "Номер"), 0);
     QFont font;
     QGroupBox *gb = new QGroupBox("Общие");
     font.setFamily("Times");
@@ -337,14 +339,16 @@ void Check_KIV::FillBdUSB(QWidget *parent)
     WDFunc::SetLBLText(parent, "1020", WDFunc::StringValueWithCheck(Bd_block1.U0, 3));
     WDFunc::SetLBLText(parent, "1021", WDFunc::StringValueWithCheck(Bd_block1.U1, 3));
     WDFunc::SetLBLText(parent, "1022", WDFunc::StringValueWithCheck(Bd_block1.U2, 3));
-    // WDFunc::SetLBLText(parent, "1023", WDFunc::StringValueWithCheck(Bd_block1., 3));
-    // WDFunc::SetLBLText(parent, "1024", WDFunc::StringValueWithCheck(Bd_block1.U2, 3));
+    // WDFunc::SetLBLText(parent, "1023", WDFunc::StringValueWithCheck(Bd_block1.,
+    // 3)); WDFunc::SetLBLText(parent, "1024",
+    // WDFunc::StringValueWithCheck(Bd_block1.U2, 3));
     WDFunc::SetLBLText(parent, "1120", WDFunc::StringValueWithCheck(Bd_block1.I0, 3));
     WDFunc::SetLBLText(parent, "1121", WDFunc::StringValueWithCheck(Bd_block1.I1, 3));
     WDFunc::SetLBLText(parent, "1122", WDFunc::StringValueWithCheck(Bd_block1.I2, 3));
     WDFunc::SetLBLText(parent, "2432", WDFunc::StringValueWithCheck(Bd_block1.Iunb, 3));
     WDFunc::SetLBLText(parent, "2433", WDFunc::StringValueWithCheck(Bd_block1.Phy_unb, 3));
-    // WDFunc::SetLBLText(parent, "value29", WDFunc::StringValueWithCheck(Bd_block1.Time, 3));
+    // WDFunc::SetLBLText(parent, "value29",
+    // WDFunc::StringValueWithCheck(Bd_block1.Time, 3));
 
     if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != Config::MTB_A2)
     {

@@ -16,26 +16,26 @@ public:
 
     struct Bd1
     {
-        quint32 NUM; // номер
-        quint32 Time; // время
+        quint32 NUM;   // номер
+        quint32 Time;  // время
         float Ueff[3]; // действующие значения напряжений по 1-й гармонике, кВ
-        float Ieff[3]; // действующие значения токов по 1-й гармонике, мА
+        float Ieff[3];   // действующие значения токов по 1-й гармонике, мА
         float Frequency; // частота, Гц
-        float U0; // напряжение нулевой последовательности
-        float U1; // напряжение прямой последовательности
-        float U2; // напряжение обратной последовательности
-        float I0; // ток нулевой последовательности
-        float I1; // ток прямой последовательности
-        float I2; // ток обратной последовательности
-        float Cbush[3]; // емкости вводов, пФ
-        float Tg_d[3]; // тангенсы дельта вводов, %
+        float U0;        // напряжение нулевой последовательности
+        float U1;        // напряжение прямой последовательности
+        float U2;        // напряжение обратной последовательности
+        float I0;        // ток нулевой последовательности
+        float I1;        // ток прямой последовательности
+        float I2;        // ток обратной последовательности
+        float Cbush[3];  // емкости вводов, пФ
+        float Tg_d[3];   // тангенсы дельта вводов, %
         float dCbush[3]; // изменение емкостей вводов, пФ
-        float dTg_d[3]; // изменение тангенсов дельта вводов, %
-        float Iunb; // действующее значение тока небаланса, мА
-        float Phy_unb; // угол тока небаланса относительно тока ф.А, град.
-        float Tmk; // температура микроконтроллера, °С
-        float Tamb; // температура окружающей среды, °С
-        quint32 res; // чтобы было 128 байт
+        float dTg_d[3];  // изменение тангенсов дельта вводов, %
+        float Iunb;      // действующее значение тока небаланса, мА
+        float Phy_unb;   // угол тока небаланса относительно тока ф.А, град.
+        float Tmk;       // температура микроконтроллера, °С
+        float Tamb;      // температура окружающей среды, °С
+        quint32 res;     // чтобы было 128 байт
     };
 
     struct Bd5
@@ -66,9 +66,11 @@ public:
     // void FillBd3(QWidget *parent);
     QWidget *BdUI(int bdnum); // визуализация наборов текущих данных от модуля
     QWidget *CustomTab();
-    void RefreshAnalogValues(int bdnum); // обновление полей в GUI из полученного соответствующего Bd_block
-    void PrepareHeadersForFile(int row); // row - строка для записи заголовков
-    void WriteToFile(int row, int bdnum); // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
+    void RefreshAnalogValues(int bdnum);  // обновление полей в GUI из полученного
+                                          // соответствующего Bd_block
+    void PrepareHeadersForFile(int row);  // row - строка для записи заголовков
+    void WriteToFile(int row, int bdnum); // row - номер строки для записи в файл
+                                          // xlsx, bdnum - номер блока данных
     void ChooseValuesToWrite();
     void SetDefaultValuesToWrite();
     void PrepareAnalogMeasurements();

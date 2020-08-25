@@ -1,6 +1,7 @@
 #include "abstractconfdialog.h"
 
 #include "../dialogs/keypressdialog.h"
+#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/maindef.h"
@@ -8,7 +9,6 @@
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../iec104/iec104.h"
-#include "../usb/commands.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
@@ -45,8 +45,8 @@ void AbstractConfDialog::ReadConf()
 
     if (MainInterface == I_ETHERNET)
     {
-        if ((ModuleBSI::Health() & HTH_CONFIG)
-            || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
+        if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
+                                                                                // заполнить поля по умолчанию
         {
             emit DefConfToBeLoaded();
         }
@@ -63,9 +63,6 @@ void AbstractConfDialog::ReadConf()
         else if (res == NOERROR)
             emit NewConfToBeLoaded();
     }
-    //        }
-
-    //    }
 }
 
 void AbstractConfDialog::FillConf(QVector<S2::DataRec> *DR)
@@ -141,7 +138,8 @@ void AbstractConfDialog::SaveConfToFile()
         return;
     }
     ba.resize(MAXBYTEARRAY);
-    S2::StoreDataMem(&(ba.data()[0]), S2Config, 0x0001); // 0x0001 - номер файла конфигурации
+    S2::StoreDataMem(&(ba.data()[0]), S2Config,
+        0x0001); // 0x0001 - номер файла конфигурации
     quint32 BaLength = static_cast<quint8>(ba.data()[4]);
     BaLength += static_cast<quint8>(ba.data()[5]) * 256;
     BaLength += static_cast<quint8>(ba.data()[6]) * 65536;
@@ -224,8 +222,8 @@ void AbstractConfDialog::ButtonReadConf()
 
     if (MainInterface == I_ETHERNET)
     {
-        if ((ModuleBSI::Health() & HTH_CONFIG)
-            || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
+        if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
+                                                                                // заполнить поля по умолчанию
         {
             emit DefConfToBeLoaded();
         }
@@ -246,11 +244,11 @@ void AbstractConfDialog::ButtonReadConf()
 
 void AbstractConfDialog::PrereadConf()
 {
-    if ((ModuleBSI::Health() & HTH_CONFIG)
-        || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
+    if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить
+                                                                            // поля по умолчанию
         IsNeededDefConf = true; // emit LoadDefConf();
-    else // иначе заполнить значениями из модуля
-        //        ReadConf(confIndex);
+    else                        // иначе заполнить значениями из модуля
+                                //        ReadConf(confIndex);
         ReadConf();
 }
 

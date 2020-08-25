@@ -13,7 +13,8 @@ Check::Check()
 QWidget *Check::Bd0W(QWidget *parent)
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
+    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; "
+                           "padding: 1px; color: black;"
                            "background-color: "
         + QString(ACONFOCLR) + "; font: bold 10px;}";
     QWidget *w = new QWidget(parent);
@@ -36,5 +37,6 @@ QWidget *Check::Bd0W(QWidget *parent)
 void Check::FillBd0(QWidget *parent, QString Name, QString Value)
 {
     WDFunc::SetLBLText(parent, Name, Value);
-    // WDFunc::SetLBLText(parent, "102", WDFunc::StringValueWithCheck(Bd_block0.Vbat));
+    // WDFunc::SetLBLText(parent, "102",
+    // WDFunc::StringValueWithCheck(Bd_block0.Vbat));
 }

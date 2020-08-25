@@ -1,9 +1,14 @@
 #ifndef EUSBHID_H
 #define EUSBHID_H
 
-#include "../gen/logclass.h"
 #include "eabstractprotocomchannel.h"
 #include "hidapi/hidapi.h"
+#include "logclass.h"
+
+#include <QByteArray>
+#include <QLabel>
+#include <QObject>
+#include <QTimer>
 
 #include <QByteArray>
 #include <QLabel>
@@ -13,7 +18,7 @@
 // Канал связи с модулем
 
 #define UH_MAXSEGMENTLENGTH 64 // максимальная длина одного сегмента (0x40)
-#define UH_MAINLOOP_DELAY 20 // 20 ms main loop sleep
+#define UH_MAINLOOP_DELAY 20   // 20 ms main loop sleep
 
 #define UH_VID 0xC251
 #define UH_PID 0x3505

@@ -9,7 +9,7 @@
 #include "../alarm/warnalarmkiv.h"
 #include "../alarm/warnalarmktf.h"
 #include "../check/eabstractcheckdialog.h"
-#include "../config/confdialog.h"
+#include "../config/abstractconfdialog.h"
 #include "../dialogs/abstractcordialog.h"
 #include "../dialogs/connectdialog.h"
 #include "../dialogs/cordialog.h"
@@ -36,8 +36,9 @@ class Coma : public QMainWindow
 public:
     enum Modes
     {
-        COMA_GENERALMODE, // обычный режим
-        COMA_AUTON_OSCMODE, // автономный режим с отображением сохранённой осциллограммы
+        COMA_GENERALMODE,   // обычный режим
+        COMA_AUTON_OSCMODE, // автономный режим с отображением сохранённой
+                            // осциллограммы
         COMA_AUTON_PROTMODE, // автономный режим с отображением протокола из прибора
         COMA_AUTON_SWJMODE, // автономный режим с отображением сохранённого журнала
         COMA_AUTON_MODE // просто автономный режим
@@ -98,7 +99,8 @@ public:
         sl.append("Нет сигнала 1PPS с антенны");
         sl.append("Проблемы с АЦП (нет связи) (мезонин)");
         sl.append("Ошибка регулировочных коэффициентов (базовая)");
-        sl.append("Ошибка загрузки конфигурации из flash-памяти. Работает конфигурация по умолчанию");
+        sl.append("Ошибка загрузки конфигурации из flash-памяти. Работает "
+                  "конфигурация по умолчанию");
         sl.append("Некорректная Hardware информация (базовая)");
         sl.append("Некорректная Hardware информация (мезонин)");
         sl.append("Ошибка регулировочных коэффициентов (мезонин)");
@@ -109,6 +111,7 @@ public:
         return sl;
     }
 
+    QTimer *BdaTimer;
     Coma(QWidget *parent = nullptr);
     ~Coma();
     void SetMode(int mode);
@@ -117,6 +120,9 @@ public:
     void SetupMenubar();
     QWidget *MainInfoWidget();
 
+    QWidget *ReleWidget();
+    QWidget *SignWidget();
+    QWidget *WWidgetComa();
     QWidget *Least();
     int CheckPassword();
     void Disconnect();
@@ -180,8 +186,8 @@ private:
     bool Disconnected;
     int Mode; // режим запуска программы
     QVector<S2::DataRec> S2ConfigForTune;
-    ConfDialog *MainConfDialog;
-    ConfDialog *MainTuneDialog;
+    //    ConfDialog *MainConfDialog;
+    //    ConfDialog *MainTuneDialog;
     quint8 HaveAlreadyRed = 0;
     quint32 Mes;
     bool TimeThrFinished;
@@ -192,9 +198,9 @@ private:
     QTimer *ReconnectTimer;
     QString SavePort;
     quint8 ActiveThreads;
-    int CheckIndex, TimeIndex, ConfIndex, CurTabIndex;
+    int CheckIndex, TimeIndex, ConfIndex, CurTabIndex, CheckHarmIndex;
     AbstractConfDialog *ConfB, *ConfM;
-    EAbstractCheckDialog *CheckB, *CheckM;
+    EAbstractCheckDialog *CheckB, *CheckM, *Harm;
     WarnAlarmKIV *WarnAlarmKIVWidget;
     AvarAlarmKIV *AvarAlarmKIVWidget;
     WarnAlarmKTF *WarnAlarmKTFWidget;

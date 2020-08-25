@@ -3,6 +3,8 @@
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 
+
+
 #include <QCoreApplication>
 #include <QElapsedTimer>
 #include <QThread>
@@ -170,7 +172,8 @@ void EUsbThread::Run()
                     emit NewDataReceived(ba);
                     Busy = false;
                 }
-                CheckWriteQueue(); // write data to port if there's something delayed in out queue
+                CheckWriteQueue(); // write data to port if there's something delayed in
+                                   // out queue
                 QElapsedTimer tmr;
                 tmr.start();
                 while (tmr.elapsed() < UH_MAINLOOP_DELAY)

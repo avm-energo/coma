@@ -39,7 +39,6 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
     QPushButton *pb = new QPushButton("Состояние устройства");
     pb->setMinimumSize(QSize(230, 30));
     connect(pb, SIGNAL(clicked()), this, SIGNAL(AlarmButtonPressed()));
-    ;
     QGroupBox *gb = new QGroupBox("");
     hlyout->addWidget(pb, Qt::AlignRight);
     hlyout->addWidget(WDFunc::NewLBL(this, "", "", "950", pmgrn), 1);
@@ -112,7 +111,6 @@ void AlarmWidget::UpdateThirdUSB(QList<bool> avar)
             break;
         }
     }
-
     WDFunc::SetLBLImage(this, "952", (alarm == 0) ? pmgrn : pmred);
 }
 

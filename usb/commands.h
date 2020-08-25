@@ -4,13 +4,15 @@
 #include "../gen/modulebsi.h"
 #include "../gen/s2.h"
 #include "eusbhid.h"
+#include "s2.h"
 
-//#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением батареи
-#define TECH_Bo 1 // технологический блок осциллограмм
-#define TECH_Be 2 // технологический блок событий
+//#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением
+//батареи
+#define TECH_Bo 1  // технологический блок осциллограмм
+#define TECH_Be 2  // технологический блок событий
 #define TECH_Bte 3 // технологический блок технологических событий
 #define TECH_SWJ 4 // технологический блок журнала переключений
-#define TECH_RA 5 // технологический блок рабочего архива
+#define TECH_RA 5  // технологический блок рабочего архива
 
 #define CM_CONFIGFILE 1
 #define CM_FIRMWAREFILE 3

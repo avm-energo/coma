@@ -151,8 +151,9 @@ void MNKTime::WriteTime(QDateTime &myDateTime)
     {
         TimeFunc::Wait(100);
         if (Commands::WriteTimeMNK(time, sizeof(uint)) != NOERROR)
-            EMessageBox::information(
-                this, "INFO", "Ошибка"); // EMessageBox::information(this, "INFO", "Записано успешно");
+            EMessageBox::information(this, "INFO",
+                "Ошибка"); // EMessageBox::information(this,
+                           // "INFO", "Записано успешно");
     }
     else if (MainInterface == I_ETHERNET)
         emit ethWriteTimeToModule(time);

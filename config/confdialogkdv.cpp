@@ -25,6 +25,9 @@ ConfDialogKDV::ConfDialogKDV(QVector<S2::DataRec> *S2Config, QWidget *parent) : 
     setStyleSheet(tmps);
     this->S2Config = S2Config;
     KDV = new ConfigKDV(S2Config);
+    Conf = new ConfDialog(S2Config, MTypeB, MTypeM);
+    ConfigMain = new Config(S2Config, MTypeB, MTypeM);
+    ConfKxx = new ConfDialogKxx(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
     PrereadConf();
@@ -38,7 +41,6 @@ void ConfDialogKDV::SetupUI()
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QScrollArea *Analog_area = new QScrollArea;
-    QScrollArea *area = new QScrollArea;
     QScrollArea *area2 = new QScrollArea;
     QWidget *analog1 = new QWidget;
     QWidget *analog2 = new QWidget;
@@ -54,9 +56,9 @@ void ConfDialogKDV::SetupUI()
     MEKconf->setStyleSheet(tmps);
     Leftconf->setStyleSheet(tmps);
 
-    area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
-    area->setFrameShape(QFrame::NoFrame);
-    area->setWidgetResizable(true);
+    area2->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
+    area2->setFrameShape(QFrame::NoFrame);
+    area2->setWidgetResizable(true);
 
     Analog_area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
     Analog_area->setFrameShape(QFrame::NoFrame);
@@ -142,19 +144,24 @@ void ConfDialogKDV::SetupUI()
     glyout->addWidget(WDFunc::NewSPB(this, "TauWnom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
     row++;
 
-    glyout->addWidget(
-        WDFunc::NewLBL(this, "Максимальное измеряемое фазное напряжение на входе прибора, В эфф (не более 305В):"), row,
-        1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(this,
+                          "Максимальное измеряемое фазное напряжение на входе "
+                          "прибора, В эфф (не более 305В):"),
+        row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(this, "Umax", 0, 10000, 1, paramcolor), row, 2, 1, 3);
     row++;
 
-    glyout->addWidget(
-        WDFunc::NewLBL(this, "Максимальный измеряемый ток на входе прибора, А эфф  (не более 33А):"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(this,
+                          "Максимальный измеряемый ток на входе "
+                          "прибора, А эфф  (не более 33А):"),
+        row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(this, "Imax", 0, 10000, 1, paramcolor), row, 2, 1, 3);
     row++;
 
-    glyout->addWidget(
-        WDFunc::NewLBL(this, "Количество датчиков температуры обмоток, подключенных по Modbus Master:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(this,
+                          "Количество датчиков температуры обмоток, "
+                          "подключенных по Modbus Master:"),
+        row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(this, "TdatNum", 0, 10000, 0, paramcolor), row, 2, 1, 3);
     row++;
 
@@ -185,9 +192,10 @@ void ConfDialogKDV::SetupUI()
     glyout = new QGridLayout;
     row = 0;
 
-    glyout->addWidget(
-        WDFunc::NewLBL(this, "Уставка скачка напряжения для запуска осциллографирования - % от номинала:"), row, 1, 1,
-        1);
+    glyout->addWidget(WDFunc::NewLBL(this,
+                          "Уставка скачка напряжения для запуска "
+                          "осциллографирования - % от номинала:"),
+        row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(this, "DUosc", 0, 10000, 1, paramcolor), row, 2, 1, 3);
 
     row++;
@@ -239,18 +247,24 @@ void ConfDialogKDV::SetupUI()
     glyout->addWidget(WDFunc::NewSPB(this, "VibrD_alarm", 0, 10000, 1, paramcolor), row, 2, 1, 3);
 
     row++;
-    glyout->addWidget(
-        WDFunc::NewLBL(this, "Предупредительная уставка по скорости роста СКЗ виброускорения, м/с/с:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(this,
+                          "Предупредительная уставка по скорости роста СКЗ "
+                          "виброускорения, м/с/с:"),
+        row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(this, "VVibrA_pred", 0, 1000, 1, paramcolor), row, 2, 1, 3);
 
     row++;
-    glyout->addWidget(
-        WDFunc::NewLBL(this, "Предупредительная уставка по скорости роста СКЗ виброскорости, мм/с:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(this,
+                          "Предупредительная уставка по скорости роста СКЗ "
+                          "виброскорости, мм/с:"),
+        row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(this, "VVibrV_pred", 0, 10000, 1, paramcolor), row, 2, 1, 3);
 
     row++;
-    glyout->addWidget(
-        WDFunc::NewLBL(this, "Предупредительная уставка по скорости роста СКЗ виброперемещения, мкм:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(this,
+                          "Предупредительная уставка по скорости роста СКЗ "
+                          "виброперемещения, мкм:"),
+        row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(this, "VVibrD_pred", 0, 10000, 1, paramcolor), row, 2, 1, 3);
 
     row++;
@@ -293,206 +307,6 @@ void ConfDialogKDV::SetupUI()
     area2->setWidget(analog2);
 
     //.....................................................................
-    row = 0;
-    gb = new QGroupBox("Конфигурация 104");
-    gb->setFont(font);
-    glyout = new QGridLayout;
-    vlyout1 = new QVBoxLayout;
-    vlyout2 = new QVBoxLayout;
-
-    gb->setTitle("Настройки протокола МЭК-60870-5-104");
-    gb->setFont(font);
-    glyout = new QGridLayout;
-    glyout->setColumnStretch(2, 50);
-    lbl = new QLabel("Адрес базовой станции:");
-    glyout->addWidget(lbl, 0, 0, 1, 1, Qt::AlignLeft);
-    QDoubleSpinBox *dspbls = WDFunc::NewSPB(this, "Abs_104", 0, 65535, 0, paramcolor);
-    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 0, 1, 1, 1, Qt::AlignLeft);
-    lbl = new QLabel("Интервал циклического опроса, с:");
-    glyout->addWidget(lbl, 1, 0, 1, 1, Qt::AlignLeft);
-    dspbls = WDFunc::NewSPB(this, "Cycle_104", 0, 255, 0, paramcolor);
-    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 1, 1, 1, 1, Qt::AlignLeft);
-    // lbl=new QLabel("c");
-    // glyout->addWidget(lbl,1,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Тайм-аут t1, с:");
-    glyout->addWidget(lbl, 2, 0, 1, 1, Qt::AlignLeft);
-    dspbls = WDFunc::NewSPB(this, "T1_104", 0, 255, 0, paramcolor);
-    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 2, 1, 1, 1, Qt::AlignLeft);
-    // lbl=new QLabel("c");
-    // glyout->addWidget(lbl,2,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Тайм-аут t2, с:");
-    glyout->addWidget(lbl, 3, 0, 1, 1, Qt::AlignLeft);
-    dspbls = WDFunc::NewSPB(this, "T2_104", 0, 255, 0, paramcolor);
-    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 3, 1, 1, 1, Qt::AlignLeft);
-    // lbl=new QLabel("c");
-    // glyout->addWidget(lbl,3,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Тайм-аут t3, с:");
-    glyout->addWidget(lbl, 4, 0, 1, 1, Qt::AlignLeft);
-    dspbls = WDFunc::NewSPB(this, "T3_104", 0, 255, 0, paramcolor);
-    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 4, 1, 1, 1, Qt::AlignLeft);
-    // lbl=new QLabel("c");
-    // glyout->addWidget(lbl,4,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Макс. число неподтв. APDU (k):");
-    glyout->addWidget(lbl, 5, 0, 1, 1, Qt::AlignLeft);
-    dspbls = WDFunc::NewSPB(this, "k_104", 0, 255, 0, paramcolor);
-    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 5, 1, 1, 1, Qt::AlignLeft);
-    // lbl=new QLabel("c");
-    // glyout->addWidget(lbl,5,2,1,1,Qt::AlignLeft);
-    lbl = new QLabel("Макс. число посл. подтв. APDU (w):");
-    glyout->addWidget(lbl, 6, 0, 1, 1, Qt::AlignLeft);
-    dspbls = WDFunc::NewSPB(this, "w_104", 0, 255, 0, paramcolor);
-    connect(dspbls, SIGNAL(valueChanged(double)), this, SLOT(Set104(double)));
-    glyout->addWidget(dspbls, 6, 1, 1, 1, Qt::AlignLeft);
-    row++;
-
-    row += 7;
-
-    QString Str;
-    QLocale german(QLocale::German);
-    int i;
-    for (i = 0; i < 4; i++)
-    {
-        KDV->Com_param.IP[i] = 0;
-        if (i == 3)
-            Str.append(german.toString(KDV->Com_param.IP[i]));
-        else
-            Str.append(german.toString(KDV->Com_param.IP[i]) + ".");
-    }
-
-    glyout->addWidget(WDFunc::NewLBL(this, "IP адрес устройства:"), row, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLE(this, "IP_ID", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
-
-    row++;
-    Str.clear();
-    for (i = 0; i < 4; i++)
-    {
-        KDV->Com_param.Mask[i] = 0;
-        if (i == 3)
-            Str.append(german.toString(KDV->Com_param.Mask[i]));
-        else
-            Str.append(german.toString(KDV->Com_param.Mask[i]) + ".");
-    }
-    glyout->addWidget(WDFunc::NewLBL(this, "Маска:"), row, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLE(this, "Mask_ID", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
-
-    row++;
-    Str.clear();
-    for (i = 0; i < 4; i++)
-    {
-        KDV->Com_param.GW[i] = 0;
-        if (i == 3)
-            Str.append(german.toString(KDV->Com_param.GW[i]));
-        else
-            Str.append(german.toString(KDV->Com_param.GW[i]) + ".");
-    }
-    glyout->addWidget(WDFunc::NewLBL(this, "Шлюз:"), row, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLE(this, "GW_ID", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
-
-    row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Порт протокола 104:"), row, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB(this, "Port_ID", 0, 10000, 0, paramcolor), row, 1, 1, 1);
-
-    row++;
-    glyout->addWidget(WDFunc::NewChB(this, "ISNTP_ID", "Использование SNTP сервера"), row, 0, 1, 1);
-
-    row++;
-    Str.clear();
-    for (i = 0; i < 4; i++)
-    {
-        KDV->Com_param.SNTP[i] = 0;
-        if (i == 3)
-            Str.append(german.toString(KDV->Com_param.SNTP[i]));
-        else
-            Str.append(german.toString(KDV->Com_param.SNTP[i]) + ".");
-    }
-    glyout->addWidget(WDFunc::NewLBL(this, "Адрес SNTP сервера:"), row, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLE(this, "SNTP_ID", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
-
-    vlyout2->addLayout(glyout);
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ?????????
-
-    gb = new QGroupBox("Настройка времени");
-    gb->setFont(font);
-    vlyout2 = new QVBoxLayout;
-    glyout = new QGridLayout;
-    glyout->setColumnStretch(2, 50);
-    row++;
-    lbl = new QLabel("Тип синхронизации времени:");
-    glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
-    cbl = QStringList() << "SNTP+PPS"
-                        << "SNTP";
-    cb = WDFunc::NewCB(this, "spb.8", cbl, paramcolor);
-    // cb->setMinimumWidth(70);
-    connect(cb, SIGNAL(currentIndexChanged(int)), this, SLOT(SetCType(int)));
-    glyout->addWidget(cb, row, 1, 1, 1);
-
-    vlyout2->addLayout(glyout);
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-    gb = new QGroupBox("Настройки ModBus");
-    gb->setFont(font);
-    vlyout2 = new QVBoxLayout;
-    glyout = new QGridLayout;
-    glyout->setColumnStretch(2, 50);
-
-    row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Скорость RS485 интерфейса:"), row, 0, 1, 1);
-    cbl = QStringList() << "1200"
-                        << "2400"
-                        << "4800"
-                        << "9600"
-                        << "19200"
-                        << "38400"
-                        << "57600"
-                        << "115200";
-    cb = WDFunc::NewCB(this, "Baud", cbl, paramcolor);
-    // cb->setMinimumWidth(80);
-    // cb->setMinimumHeight(15);
-    glyout->addWidget(cb, row, 1, 1, 1);
-
-    row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Чётность:"), row, 0, 1, 1);
-    cbl = QStringList() << "NoParity"
-                        << "EvenParity"
-                        << "OddParity";
-    cb = WDFunc::NewCB(this, "Parity", cbl, paramcolor);
-    // cb->setMinimumWidth(80);
-    // cb->setMinimumHeight(15);
-    glyout->addWidget(cb, row, 1, 1, 1);
-    // glyout->addWidget(WDFunc::NewSPB(this, "Parity", 0, 10000, 0, paramcolor), row,2,1,4);
-
-    row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Количество стоповых битов:"), row, 0, 1, 1);
-    cbl = QStringList() << "Stop_Bit_1"
-                        << "Stop_Bit_2";
-    cb = WDFunc::NewCB(this, "StopBit", cbl, paramcolor);
-    // cb->setMinimumWidth(80);
-    // cb->setMinimumHeight(20);
-    glyout->addWidget(cb, row, 1, 1, 1);
-    // glyout->addWidget(WDFunc::NewSPB(this, "StopBit", 0, 10000, 0, paramcolor), row,2,1,4);
-
-    row++;
-    glyout->addWidget(WDFunc::NewLBL(this, "Адрес устройства для Modbus:"), row, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewSPB(this, "adrMB", 0, 10000, 0, paramcolor), row, 1, 1, 1);
-
-    vlyout2->addLayout(glyout);
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);
-
-    extraconf->setLayout(vlyout1);
-    area->setWidget(extraconf);
 
     //.....................................................................
 
@@ -576,13 +390,12 @@ void ConfDialogKDV::SetupUI()
     QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(TABCOLOR) + ";}";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
     ConfTW->addTab(Analog_area, "Аналоговые");
-    area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
 
     ConfTW->addTab(area2, "Уставки");
-    area2->verticalScrollBar()->setValue(area2->verticalScrollBar()->maximum());
-    // area2->setSizeIncrement(QSize(1000,1000));
-    ConfTW->addTab(area, "Связь");
-    area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
+
+    ConfTW->addTab(Conf->SetupMainBlk(this), "Связь");
+    ConfTW->addTab(ConfKxx->SetupModBus(this), "ModBusMaster");
+    ConfTW->addTab(ConfKxx->SetupBl(this), "Общее");
 
     ConfTW->addTab(Leftconf, "Остальное");
     lyout->addWidget(ConfTW);
@@ -594,17 +407,8 @@ void ConfDialogKDV::SetupUI()
 
 void ConfDialogKDV::Fill()
 {
-    int i;
-    WDFunc::SetSPBData(this, "Abs_104", KDV->MainBlk.Abs_104);
-    WDFunc::SetSPBData(this, "Cycle_104", KDV->MainBlk.Cycle_104);
-    WDFunc::SetSPBData(this, "T1_104", KDV->MainBlk.T1_104);
-    WDFunc::SetSPBData(this, "T2_104", KDV->MainBlk.T2_104);
-    WDFunc::SetSPBData(this, "T3_104", KDV->MainBlk.T3_104);
-    WDFunc::SetSPBData(this, "k_104", KDV->MainBlk.k_104);
-    WDFunc::SetSPBData(this, "w_104", KDV->MainBlk.w_104);
+    int cbidx;
 
-    int cbidx = ((KDV->MainBlk.Ctype & 0x01) ? 1 : 0);
-    WDFunc::SetCBIndex(this, "Ctype", cbidx);
     //.........................................................
     cbidx = (KDV->Bci_block.Eq_type & 0x02) ? 2 : ((KDV->Bci_block.Eq_type & 0x01) ? 1 : 0);
     WDFunc::SetCBIndex(this, "Eq_type", cbidx);
@@ -668,77 +472,13 @@ void ConfDialogKDV::Fill()
     WDFunc::SetSPBData(this, "TdatNum", KDV->Bci_block.TdatNum);
 
     //.........................................................
-
-    QString StrIP, StrMask, StrSNTP, StrGate;
-    QLocale german(QLocale::German);
-
-    for (i = 0; i < 4; i++)
-    {
-
-        if (i == 3)
-        {
-            StrIP.append(german.toString(KDV->Com_param.IP[i]));
-            StrMask.append(german.toString(KDV->Com_param.Mask[i]));
-            StrGate.append(german.toString(KDV->Com_param.GW[i]));
-            StrSNTP.append(german.toString(KDV->Com_param.SNTP[i]));
-        }
-        else
-        {
-            StrIP.append(german.toString(KDV->Com_param.IP[i]) + ".");
-            StrMask.append(german.toString(KDV->Com_param.Mask[i]) + ".");
-            StrGate.append(german.toString(KDV->Com_param.GW[i]) + ".");
-            StrSNTP.append(german.toString(KDV->Com_param.SNTP[i]) + ".");
-        }
-    }
-
-    WDFunc::SetSPBData(this, "Port_ID", KDV->Com_param.Port[0]);
-
-    WDFunc::LE_write_data(this, StrIP, "IP_ID");
-    WDFunc::LE_write_data(this, StrSNTP, "SNTP_ID");
-    WDFunc::LE_write_data(this, StrGate, "GW_ID");
-    WDFunc::LE_write_data(this, StrMask, "Mask_ID");
-
-    for (int i = 0; i < 8; i++)
-    {
-        if (KDV->Com_param.Baud == Sbaud.at(i).toUInt())
-            cbidx = i;
-    }
-    WDFunc::SetCBIndex(this, "Baud_ID", cbidx);
-
-    if (KDV->Com_param.Parity > 2)
-        cbidx = 0;
-    else
-        cbidx = KDV->Com_param.Parity;
-
-    WDFunc::SetCBIndex(this, "Parity_ID", cbidx);
-    cbidx = ((KDV->Com_param.Stopbit & 0x01) ? 1 : 0);
-    WDFunc::SetCBIndex(this, "Stopbit_ID", cbidx);
-
-    WDFunc::SetSPBData(this, "adrMB_ID", KDV->Com_param.adrMB);
-
-    if (KDV->Com_param.IsNTP)
-        WDFunc::SetChBData(this, "ISNTP_ID", true);
-    else
-        WDFunc::SetChBData(this, "ISNTP_ID", false);
 }
 
 void ConfDialogKDV::FillBack()
 {
-    int i;
     int cbidx;
-    QString tmps;
     bool tmpb;
 
-    WDFunc::SPBData(this, "Abs_104", KDV->MainBlk.Abs_104);
-    WDFunc::SPBData(this, "Cycle_104", KDV->MainBlk.Cycle_104);
-    WDFunc::SPBData(this, "T1_104", KDV->MainBlk.T1_104);
-    WDFunc::SPBData(this, "T2_104", KDV->MainBlk.T2_104);
-    WDFunc::SPBData(this, "T3_104", KDV->MainBlk.T3_104);
-    WDFunc::SPBData(this, "k_104", KDV->MainBlk.k_104);
-    WDFunc::SPBData(this, "w_104", KDV->MainBlk.w_104);
-
-    cbidx = ((KDV->MainBlk.Ctype & 0x01) ? 1 : 0);
-    KDV->MainBlk.Ctype = (0x00000001 << cbidx) - 1;
     //.........................................................
 
     cbidx = WDFunc::CBIndex(this, "Eq_type");
@@ -803,46 +543,6 @@ void ConfDialogKDV::FillBack()
     WDFunc::SPBData(this, "OscPoints", KDV->Bci_block.OscPoints);
     WDFunc::SPBData(this, "TdatNum", KDV->Bci_block.TdatNum);
     //.........................................................
-
-    QString StrIP, StrMask, StrSNTP, StrGate;
-    QString NameIP = "IP_ID", NameMask = "Mask_ID", NameSNTP = "SNTP_ID", NameGate = "GW_ID";
-    QStringList inIP, inMask, inSNTP, inGate;
-    QLocale german(QLocale::German);
-
-    WDFunc::LE_read_data(this, NameIP, StrIP);
-    WDFunc::LE_read_data(this, NameSNTP, StrSNTP);
-    WDFunc::LE_read_data(this, NameGate, StrGate);
-    WDFunc::LE_read_data(this, NameMask, StrMask);
-
-    inIP.append(StrIP.split("."));
-    inMask.append(StrMask.split("."));
-    inSNTP.append(StrSNTP.split("."));
-    inGate.append(StrGate.split("."));
-
-    for (i = 0; i < 4; i++)
-    {
-        KDV->Com_param.IP[i] = inIP.at(i).toInt();
-        KDV->Com_param.Mask[i] = inMask.at(i).toInt();
-        KDV->Com_param.GW[i] = inGate.at(i).toInt();
-        KDV->Com_param.SNTP[i] = inSNTP.at(i).toInt();
-    }
-
-    WDFunc::SPBData(this, "Port_ID" + QString::number(0), KDV->Com_param.Port[0]);
-
-    cbidx = WDFunc::CBIndex(this, "Baud_ID");
-    KDV->Com_param.Baud = (Sbaud.at(cbidx).toInt());
-    cbidx = WDFunc::CBIndex(this, "Parity_ID");
-    KDV->Com_param.Parity = cbidx;
-    cbidx = WDFunc::CBIndex(this, "Stopbit_ID");
-    KDV->Com_param.Stopbit = cbidx;
-
-    WDFunc::SPBData(this, "adrMB_ID", KDV->Com_param.adrMB);
-
-    WDFunc::ChBData(this, "ISNTP_ID", IsNtp);
-    if (IsNtp)
-        KDV->Com_param.IsNTP = 1;
-    else
-        KDV->Com_param.IsNTP = 0;
 }
 
 void ConfDialogKDV::CheckConf()
@@ -870,7 +570,7 @@ void ConfDialogKDV::Write_PCDate()
     QDateTime myDateTime;
     uint time;
     myDateTime = QDateTime::currentDateTimeUtc();
-    time = myDateTime.toSecsSinceEpoch();
+    time = myDateTime.toTime_t();
 }
 
 void ConfDialogKDV::Write_Date()
@@ -881,69 +581,5 @@ void ConfDialogKDV::Write_Date()
     WDFunc::LE_read_data(this, "Date", qStr);
     myDateTime = QDateTime::fromString(qStr, "dd-MM-yyyy HH:mm:ss");
     myDateTime.setOffsetFromUtc(0);
-    *time = myDateTime.toSecsSinceEpoch();
-}
-
-void ConfDialogKDV::Set104(double dbl)
-{
-    QStringList sl = sender()->objectName().split(".");
-    if (sl.size() < 1)
-    {
-        ERMSG("Некорректные данные 104");
-        DBGMSG;
-        return;
-    }
-    bool ok;
-    int wnum = sl.at(1).toInt(&ok);
-    if (!ok)
-    {
-        ERMSG("Некорректные данные 104");
-        DBGMSG;
-        return;
-    }
-    switch (wnum)
-    {
-    case 1:
-    {
-        KDV->MainBlk.Abs_104 = dbl;
-        break;
-    }
-    case 2:
-    {
-        KDV->MainBlk.Cycle_104 = dbl;
-        break;
-    }
-    case 3:
-    {
-        KDV->MainBlk.T1_104 = dbl;
-        break;
-    }
-    case 4:
-    {
-        KDV->MainBlk.T2_104 = dbl;
-        break;
-    }
-    case 5:
-    {
-        KDV->MainBlk.T3_104 = dbl;
-        break;
-    }
-    case 6:
-    {
-        KDV->MainBlk.k_104 = dbl;
-        break;
-    }
-    case 7:
-    {
-        KDV->MainBlk.w_104 = dbl;
-        break;
-    }
-    default:
-        break;
-    }
-}
-
-void ConfDialogKDV::SetCType(int num)
-{
-    KDV->MainBlk.Ctype = num;
+    *time = myDateTime.toTime_t();
 }

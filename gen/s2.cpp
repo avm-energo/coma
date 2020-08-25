@@ -3,10 +3,10 @@
 #include "error.h"
 
 #include <QDateTime>
-
 S2::S2() { }
 
-int S2::StoreDataMem(void *mem, QVector<DataRec> *dr, int fname) // 0 - успешно, иначе код ошибки
+int S2::StoreDataMem(void *mem, QVector<DataRec> *dr,
+    int fname) // 0 - успешно, иначе код ошибки
 {
     quint32 crc = 0xFFFFFFFF;
     FileHeader header;
@@ -101,7 +101,8 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
             noIDs = false;
             if (r->num_byte != R.num_byte) //несовпадения описания прочитанного элемента с ожидаемым
             {
-                ERMSG("S2: block description mismatch"); // несовпадение описаний одного и того же блока
+                ERMSG("S2: block description mismatch"); // несовпадение описаний одного
+                                                         // и того же блока
                 return S2_DESCERROR;
             }
             tmpi = r->num_byte;

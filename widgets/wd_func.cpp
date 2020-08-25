@@ -105,7 +105,8 @@ QLabel *WDFunc::NewLBLT(
 bool WDFunc::SetLBLTColor(QWidget *w, const QString &lblname, const QString &color)
 {
 
-    QString style = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
+    QString style = "QLabel {border: 1px solid green; border-radius: 4px; "
+                    "padding: 1px; color: black;"
                     "background-color: "
         + QString(color) + "; font: bold 10px;}";
 
@@ -208,7 +209,7 @@ bool WDFunc::SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue
     return true;
 }
 
-bool WDFunc::SetCBIndex(QWidget *w, const QString &cbname, int index)
+bool WDFunc::SetCBIndex(QObject *w, const QString &cbname, int index)
 {
     EComboBox *cb = w->findChild<EComboBox *>(cbname);
     if (cb == nullptr)
@@ -251,7 +252,7 @@ QDoubleSpinBox *WDFunc::NewSPB(
     return dspbls;
 }
 
-bool WDFunc::SetSPBData(QWidget *w, const QString &spbname, const double &spbvalue)
+bool WDFunc::SetSPBData(QObject *w, const QString &spbname, const double &spbvalue)
 {
     QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
     if (spb == nullptr)
@@ -350,7 +351,8 @@ QString WDFunc::TVField(QWidget *w, const QString &tvname, int column, bool isid
     QString tmps = tv->model()
                        ->data(tv->model()->index(tv->currentIndex().row(), column, QModelIndex()), Qt::DisplayRole)
                        .toString();
-    if (isid) // если поле с ИД, надо убрать первую цифру - номер таблицы и разделяющую точку, если они присутствуют
+    if (isid) // если поле с ИД, надо убрать первую цифру - номер таблицы и
+              // разделяющую точку, если они присутствуют
     {
         QStringList sl = tmps.split(".");
         if (sl.size() > 1) // есть номер таблицы
@@ -533,8 +535,8 @@ QPushButton *WDFunc::NewPB(QWidget *parent, const QString &pbname, const QString
     const char *method, const QString &icon, const QString &pbtooltip)
 {
     QPushButton *pb = new QPushButton(parent);
-    pb->setStyleSheet("QPushButton {background-color: rgba(0,0,0,0); border: 1px solid gray; border-radius: 5px; "
-                      "border-style: outset; padding: 2px 5px;}"
+    pb->setStyleSheet("QPushButton {background-color: rgba(0,0,0,0); border: 1px solid gray; "
+                      "border-radius: 5px; border-style: outset; padding: 2px 5px;}"
                       "QPushButton:pressed {border-style: inset;}"
                       "QPushButton:disabled {border: none;}");
     pb->setObjectName(pbname);
@@ -625,7 +627,7 @@ QAbstractItemModel *WDFunc::TVModel(QWidget *w, const QString &tvname)
     return tv->model();
 }
 
-bool WDFunc::LE_read_data(QWidget *w, const QString &lename, QString &levalue)
+bool WDFunc::LE_read_data(QObject *w, const QString &lename, QString &levalue)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);
     if (le == nullptr)
@@ -634,7 +636,7 @@ bool WDFunc::LE_read_data(QWidget *w, const QString &lename, QString &levalue)
     return true;
 }
 
-bool WDFunc::LE_write_data(QWidget *w, const QString &levalue, const QString &lename)
+bool WDFunc::LE_write_data(QObject *w, const QString &levalue, const QString &lename)
 {
     QLineEdit *le = w->findChild<QLineEdit *>(lename);
     if (le == nullptr)

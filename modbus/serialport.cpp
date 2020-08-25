@@ -62,7 +62,7 @@ void SerialPort::ErrorOccurred(QSerialPort::SerialPortError err)
 {
     if (err == 0)
         ; // no error
-    //        emit State(ConnectionStates::ConnectedState);
+          //        emit State(ConnectionStates::ConnectedState);
     else
     {
         emit State(ConnectionStates::ClosingState);

@@ -28,7 +28,8 @@ EAbstractProtocomChannel::EAbstractProtocomChannel(QObject *parent) : QObject(pa
     OscTimer->setInterval(CN_OSCT);
     OscTimer->setSingleShot(false);
     connect(OscTimer, SIGNAL(timeout()), this, SLOT(OscTimerTimeout()));
-    connect(TTimer, SIGNAL(timeout()), this, SLOT(Timeout())); // для отладки закомментарить
+    connect(TTimer, SIGNAL(timeout()), this,
+        SLOT(Timeout())); // для отладки закомментарить
     QSettings *sets = new QSettings("EvelSoft", PROGNAME);
     SetWriteUSBLog(sets->value("WriteLog", "0").toBool());
 }
@@ -157,7 +158,8 @@ bool EAbstractProtocomChannel::IsWriteUSBLog()
 
 void EAbstractProtocomChannel::TranslateDeviceAndSave(const QString &str)
 {
-    // формат строки: "VEN_" + QString::number(venid, 16) + "_ & DEV_" + QString::number(prodid, 16) + "_ & SN_" + sn;
+    // формат строки: "VEN_" + QString::number(venid, 16) + "_ & DEV_" +
+    // QString::number(prodid, 16) + "_ & SN_" + sn;
     QStringList sl = str.split("_"); // 1, 3 и 5 - полезная нагрузка
     if (sl.size() < 6)
     {
@@ -194,7 +196,7 @@ void EAbstractProtocomChannel::InitiateSend()
     }
     case CN_GBac: // чтение настроечных коэффициентов
     case CN_GBda: // чтение текущих данных без настройки
-    case CN_GBd: // запрос блока (подблока) текущих данных
+    case CN_GBd:  // запрос блока (подблока) текущих данных
     case CN_NVar:
     case CN_SMode:
     case CN_GBt: // чтение технологического блока
@@ -284,14 +286,16 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         CnLog->WriteRaw(tmps);
     }
     Busy = false;
-    if (Command == CN_Unk) // игнорирование вызова процедуры, если не было послано никакой команды
+    if (Command == CN_Unk) // игнорирование вызова процедуры, если не было послано
+                           // никакой команды
     {
         ERMSG("Игнорирование вызова процедуры, если не было послано никакой команды");
         return;
     }
     ReadDataChunk.append(ba);
     qint64 rdsize = ReadDataChunk.size();
-    if (rdsize < 4) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
+    if (rdsize < 4) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта
+                    // или не произойдёт таймаут
         return;
     if (ReadDataChunk.at(0) != CN_SS)
     {
@@ -454,7 +458,8 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
             return;
         }
         if (rdsize < ReadDataChunkLength)
-            return; // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
+            return; // пока не набрали целый буфер соответственно присланной длине или
+                    // не произошёл таймаут
         ReadDataChunk.remove(0, 4); // убираем заголовок с < и длиной
         switch (Command)
         {
@@ -467,7 +472,8 @@ void EAbstractProtocomChannel::ParseIncomeData(QByteArray ba)
         case CN_GMode:
         case CN_GTime:
         {
-            // команды с чтением определённого InDataSize количества байт из устройства
+            // команды с чтением определённого InDataSize количества байт из
+            // устройства
             ReadDataChunk.truncate(ReadDataChunkLength);
             OutData.append(ReadDataChunk);
             int outdatasize = OutData.size();
@@ -618,7 +624,8 @@ void EAbstractProtocomChannel::Timeout()
 void EAbstractProtocomChannel::Finish(int ernum)
 {
     TTimer->stop();
-    Command = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
+    Command = CN_Unk; // предотвращение вызова newdataarrived по приходу чего-то в
+                      // канале, если ничего не было послано
     if (ernum != NOERROR)
     {
         if (ernum < 0)

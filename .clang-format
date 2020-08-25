@@ -1,5 +1,6 @@
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortFunctionsOnASingleLine : false
+AlignTrailingComments: true
 BasedOnStyle: WebKit
 BreakBeforeBraces: Allman
 ConstructorInitializerAllOnOneLineOrOnePerLine: true

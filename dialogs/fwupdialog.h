@@ -19,7 +19,7 @@ public:
 
     typedef struct
     {
-        quint32 id; // id
+        quint32 id;      // id
         quint32 NumByte; // количество байт в TypeTheData
     } DataRecHeader;
 
@@ -48,9 +48,9 @@ public:
 #pragma pack(push, 1)
     typedef struct
     {
-        FileHeader File_xxx_header; // Заголовок файла (Прил. 1)
-        DataRecT Type; // Тип группы плат
-        DataRecF File; // Файл ВПО в формате BIN
+        FileHeader File_xxx_header;   // Заголовок файла (Прил. 1)
+        DataRecT Type;                // Тип группы плат
+        DataRecF File;                // Файл ВПО в формате BIN
         DataRecHeader void_recHeader; // заголовок пустой записи
     } File_struct;
 #pragma pack(pop)

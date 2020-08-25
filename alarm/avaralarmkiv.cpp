@@ -2,9 +2,9 @@
 #include "avaralarmkiv.h"
 
 #include "../gen/colors.h"
+#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
-#include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 #include "abstractalarm.h"
 
@@ -33,11 +33,10 @@ AvarAlarmKIV::AvarAlarmKIV(AlarmClass *alarm, QWidget *parent) : AbstractAlarm(p
 
 void AvarAlarmKIV::AvarState()
 {
-    QDialog *dlg = new QDialog;
+    // QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
-    QString tmps = QString(PROGCAPTION);
 
     QStringList events = QStringList() << "Авария по приращению тангенса дельта ввода фазы А"
                                        << "Авария по приращению тангенса дельта ввода фазы B"
@@ -48,7 +47,7 @@ void AvarAlarmKIV::AvarState()
                                        << "Авария по недопустимому небалансу токов          ";
     QWidget *w = new QWidget;
 
-    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color: rgba(220,220,220,255);
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
     for (int i = 0; i < Alarm->MapAlarm[MTYPE_KIV].avarCounts; ++i)
     {
@@ -62,10 +61,10 @@ void AvarAlarmKIV::AvarState()
 
     lyout->addWidget(w);
     QPushButton *pb = new QPushButton("Ok");
-    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
+    connect(pb, SIGNAL(clicked()), this, SLOT(close()));
     lyout->addWidget(pb, 0);
-    dlg->setLayout(lyout);
-    dlg->show();
+    setLayout(lyout);
+    // dlg->setLayout(lyout);
 }
 
 void AvarAlarmKIV::AlarmState()
@@ -77,13 +76,13 @@ void AvarAlarmKIV::WarnAlarmState()
 
 void AvarAlarmKIV::Update(QList<bool> states)
 {
-    int i = 0;
+    int i;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
 
     for (i = 0; i < Alarm->MapAlarm[MTYPE_KIV].avarCounts; i++)
     {
         quint32 alarm = states[i];
-        WDFunc::SetLBLImage(this, QString::number(i), (alarm) ? pmred : pmgrn);
+        WDFunc::SetLBLImage(this, (QString::number(i)), (alarm) ? pmred : pmgrn);
     }
 }

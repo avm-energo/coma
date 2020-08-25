@@ -2,13 +2,13 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/colors.h"
+#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/maindef.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include "../usb/commands.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/etableview.h"
 #include "../widgets/waitwidget.h"
@@ -42,8 +42,8 @@ void fwupdialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    /*    ETableView *tv = new ETableView;
-        tv->setObjectName("fwp"); */
+    ETableView *tv = new ETableView;
+    tv->setObjectName("fwp");
 
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Записать ПО в память " + tmps);
@@ -62,7 +62,7 @@ void fwupdialog::SetupUI()
 
     // hlyout->addWidget(glyout,Qt::AlignTop);
     lyout->addLayout(glyout, Qt::AlignTop);
-    //    lyout->addWidget(tv, 89);
+    lyout->addWidget(tv, 89);
     setLayout(lyout);
 }
 
@@ -88,7 +88,8 @@ int fwupdialog::LoadFW()
 
         ParseHexToS2(ba);
 
-        // PV_file.File_xxx_header.size=sizeof(PV_file.Type) + sizeof(PV_file.File.FileDatHeader) + sizeof(ba) +
+        // PV_file.File_xxx_header.size=sizeof(PV_file.Type) +
+        // sizeof(PV_file.File.FileDatHeader) + sizeof(ba) +
         // sizeof(PV_file.void_recHeader);
     }
     return NOERROR;
@@ -208,7 +209,8 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
 
                         if ((binnumber.size() - 1) < 7)
                         {
-                            // memcpy(&process.data()[7-binnumber.size()-1], &binnumber, binnumber.size());
+                            // memcpy(&process.data()[7-binnumber.size()-1], &binnumber,
+                            // binnumber.size());
                             for (k = 0; k < (8 - binnumber.size()); k++)
                                 process.append("0");
 
@@ -242,7 +244,8 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
 
                         if ((binnumber.size() - 1) < 7)
                         {
-                            // memcpy(&process.data()[7-binnumber.size()-1], &binnumber, binnumber.size());
+                            // memcpy(&process.data()[7-binnumber.size()-1], &binnumber,
+                            // binnumber.size());
                             for (k = 0; k < (8 - binnumber.size()); k++)
                                 process.append("0");
 
@@ -265,7 +268,8 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
                 }
             }
 
-            // ba.data()[0] = QString("%1").arg(str.toULongLong(&ok, 16), 16, 2, QChar('0'));
+            // ba.data()[0] = QString("%1").arg(str.toULongLong(&ok, 16), 16, 2,
+            // QChar('0'));
             // i++;
             // u64 = str.toULongLong(&ok, 16);
             // memcpy(&ba.data()[0], &str, 16);
@@ -299,7 +303,8 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
 
                         if ((binnumber.size() - 1) < 7)
                         {
-                            // memcpy(&process.data()[7-binnumber.size()-1], &binnumber, binnumber.size());
+                            // memcpy(&process.data()[7-binnumber.size()-1], &binnumber,
+                            // binnumber.size());
                             for (k = 0; k < (8 - binnumber.size()); k++)
                                 process.append("0");
 
@@ -359,7 +364,8 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
     memcpy(&ForProcess->data()[24], &BaForSend->data()[8], (BaForSend->size()-8));
     ForProcess->resize((BaForSend->size()+16));
     //BaForSend->resize(ForProcess->size());
-    memcpy(&BaForSend->data()[0], &ForProcess->data()[0], (BaForSend->size()+16));*/
+    memcpy(&BaForSend->data()[0], &ForProcess->data()[0],
+    (BaForSend->size()+16));*/
 
     if (Commands::WriteFile(3, &S2DR) != NOERROR)
     {

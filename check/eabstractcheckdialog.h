@@ -1,14 +1,15 @@
 /* Абстрактный класс проверки работы модулей АВ-ТУК
  * Функции, которые необходимо реализовать при наследовании:
- * QWidget *AutoCheckUI() - реализация виджета автоматической проверки работоспособности модуля (набор сообщений)
- * QWidget *BdUI(int) - реализация GUI для каждого блока данных, получаемого с модуля
- * RefreshAnalogValues(int) - обновление данных по полученному блоку Bd
- * PrepareHeadersForFile(int) - запись в указанной строке файла xlsx заголовков получаемых данных
- * WriteToFile(int, int) - запись в указанную строку полученных значений по блоку Bd
- * При наследовании необходимо в конструкторе предусмотреть следующее:
+ * QWidget *AutoCheckUI() - реализация виджета автоматической проверки
+ * работоспособности модуля (набор сообщений) QWidget *BdUI(int) - реализация
+ * GUI для каждого блока данных, получаемого с модуля RefreshAnalogValues(int) -
+ * обновление данных по полученному блоку Bd PrepareHeadersForFile(int) - запись
+ * в указанной строке файла xlsx заголовков получаемых данных WriteToFile(int,
+ * int) - запись в указанную строку полученных значений по блоку Bd При
+ * наследовании необходимо в конструкторе предусмотреть следующее:
  *      - установить количество блоков данных в BdNum
- *      - для каждого блока данных, определённого в наследнике, требуется создать элемент в Bd_blocks с указателем на
- * блок и его длиной
+ *      - для каждого блока данных, определённого в наследнике, требуется
+ * создать элемент в Bd_blocks с указателем на блок и его длиной
  *      - в конце конструктора не забыть вызвать SetupUI()
  * */
 
@@ -35,22 +36,24 @@ public:
     void SetupUI(QStringList &tabnames);
 
     virtual QWidget *BdUI(int bdnum) = 0; // визуализация наборов текущих данных от модуля
-    virtual void RefreshAnalogValues(int bdnum) = 0; // обновление полей в GUI из полученного соответствующего Bd_block
-    virtual void PrepareHeadersForFile(int row) = 0; // row - строка для записи заголовков
-    virtual void WriteToFile(int row, int bdnum)
-        = 0; // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
+    virtual void RefreshAnalogValues(int bdnum) = 0; // обновление полей в GUI из полученного
+                                                     // соответствующего Bd_block
+    virtual void PrepareHeadersForFile(int row) = 0;  // row - строка для записи заголовков
+    virtual void WriteToFile(int row, int bdnum) = 0; // row - номер строки для записи в файл
+                                                      // xlsx, bdnum - номер блока данных
     virtual void ChooseValuesToWrite() = 0;
     virtual void SetDefaultValuesToWrite() = 0;
-    virtual void PrepareAnalogMeasurements()
-        = 0; // функция подготовки к измерениям (например, запрос постоянных данных)
+    virtual void PrepareAnalogMeasurements() = 0; // функция подготовки к измерениям (например,
+                                                  // запрос постоянных данных)
     virtual QWidget *CustomTab() = 0; // если требуется для модуля специфичный вывод данных
     void SetBd(int bdnum, void *block, int blocksize, bool toxlsx = true);
     QWidget *BottomUI();
 
     QXlsx::Document *xlsx;
     QTimer *Timer;
-    int WRow, BdUINum; // BdUINum - количество вкладок с выводом блоков данных модуля, один блок может быть разделён на
-                       // несколько вкладок
+    int WRow,
+        BdUINum; // BdUINum - количество вкладок с выводом блоков данных модуля,
+                 // один блок может быть разделён на несколько вкладок
     int Board; // тип платы
 
 signals:

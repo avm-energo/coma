@@ -22,21 +22,23 @@
 
 #include "coma.h"
 
+#include "../check/checkdialogharmonicktf.h"
+#include "../check/checkdialogkdv.h"
 #include "../check/checkdialogkiv.h"
-#include "../check/chekdialogktf.h"
+#include "../check/checkdialogktf.h"
 #include "../config/confdialogkdv.h"
 #include "../config/confdialogkiv.h"
 #include "../config/confdialogktf.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../gen/colors.h"
+#include "../gen/commands.h"
 #include "../gen/files.h"
 #include "../gen/logclass.h"
 #include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../modbus/modbus.h"
-#include "../usb/commands.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/waitwidget.h"
@@ -56,6 +58,7 @@
 #include <QStandardPaths>
 #include <QStringListModel>
 #include <QToolBar>
+#include <QToolBar>
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
 {
@@ -74,9 +77,10 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     Disconnected = true;
     Reconnect = false;
     TimeD = nullptr;
-    MainConfDialog = nullptr;
+    // MainConfDialog = nullptr;
     ConfB = ConfM = nullptr;
     CheckB = CheckM = nullptr;
+    Harm = nullptr;
     Wpred = Walarm = nullptr;
     CorD = nullptr;
     CurTabIndex = -1;
@@ -189,7 +193,6 @@ QWidget *Coma::Least()
     w->setLayout(lyout);
     return w;
 }
-
 void Coma::SetupMenubar()
 {
     QMenuBar *menubar = new QMenuBar;
@@ -350,6 +353,14 @@ void Coma::StartWork()
     if (CheckM != nullptr)
         MainTW->addTab(CheckM, str);
 
+    if (Harm != nullptr)
+    {
+        MainTW->addTab(Harm, "Гармоники");
+        CheckHarmIndex = MainTW->indexOf(Harm);
+        if (MainInterface == I_RS485)
+            ChModbus->CheckHarmIndex = CheckHarmIndex;
+    }
+
     if (ConfB != nullptr)
     {
         str = (ConfM == nullptr) ? "Конфигурирование" : "Конфигурирование\nБазовая";
@@ -362,6 +373,7 @@ void Coma::StartWork()
         connect(ConfB, SIGNAL(NewConfToBeLoaded()), this, SLOT(Fill()));
         connect(ConfB, SIGNAL(DefConfToBeLoaded()), this, SLOT(SetDefConf()));
     }
+
     if (ConfM != nullptr)
     {
         str = (ConfB == nullptr) ? "Конфигурирование" : "Конфигурирование\nМезонин";
@@ -463,6 +475,7 @@ void Coma::PrepareDialogs()
         {
         case Config::MTM_84:
             CheckB = new CheckDialogKIV(BoardTypes::BT_BASE);
+
             S2Config->clear();
             if (MainInterface != I_RS485)
                 ConfM = new ConfDialogKIV(S2Config);
@@ -473,16 +486,22 @@ void Coma::PrepareDialogs()
             connect(Alarm, SIGNAL(SetWarnAlarmColor(QList<bool>)), WarnAlarmKIVWidget, SLOT(Update(QList<bool>)));
 
             AvarAlarmKIVWidget = new AvarAlarmKIV(Alarm);
-            connect(AlarmW, SIGNAL(AlarmButtonPressed()), AvarAlarmKIVWidget, SLOT(show()));
+            connect(AlarmW, SIGNAL(ModuleAlarmButtonPressed()), AvarAlarmKIVWidget, SLOT(show()));
             connect(Alarm, SIGNAL(SetAlarmColor(QList<bool>)), AvarAlarmKIVWidget, SLOT(Update(QList<bool>)));
 
             break;
 
         case Config::MTM_87:
-            CheckB = new ChekDialogKTF(BoardTypes::BT_BASE);
+            CheckB = new CheckDialogKTF(BoardTypes::BT_BASE);
+
+            Harm = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
+
+            connect(BdaTimer, SIGNAL(timeout()), Harm, SLOT(USBUpdate()));
+
             S2Config->clear();
             if (MainInterface != I_RS485)
                 ConfM = new ConfDialogKTF(S2Config);
+
             CorD = new CorDialogKTF;
 
             WarnAlarmKTFWidget = new WarnAlarmKTF(Alarm);
@@ -501,7 +520,7 @@ void Coma::PrepareDialogs()
         switch (MTypeM)
         {
         case Config::MTM_87:
-
+            CheckB = new CheckDialogKDV(BoardTypes::BT_BASE);
             S2Config->clear();
             if (MainInterface != I_RS485)
                 ConfM = new ConfDialogKDV(S2Config);
@@ -569,22 +588,28 @@ void Coma::CloseDialogs()
 {
     if (TimeD != nullptr)
         TimeD->close();
+    //        TimeD = nullptr;
     if (CheckB != nullptr)
         CheckB->close();
     if (CheckM != nullptr)
         CheckM->close();
-    if (MainConfDialog != nullptr)
-        MainConfDialog->close();
+
+    if (Harm != nullptr)
+        Harm->close();
+    //    CheckB = CheckM = nullptr;
+    //    if (MainConfDialog != nullptr)
+    //        MainConfDialog->close();
+    //    MainConfDialog = nullptr;
     if (ConfB != nullptr)
         ConfB->close();
     if (ConfM != nullptr)
         ConfM->close();
-
+    //    ConfB = ConfM = nullptr;
     if (Wpred != nullptr)
         Wpred->close();
     if (Walarm != nullptr)
         Walarm->close();
-
+    //    Wpred = Walarm = nullptr;
     if (CorD != nullptr)
         CorD->close();
     if (IDialog != nullptr)
@@ -700,9 +725,12 @@ void Coma::ReConnect()
         QVBoxLayout *vlayout = new QVBoxLayout;
         QString tmps = QString(PROGCAPTION);
         QWidget *w = new QWidget;
-        w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color: rgba(220,220,220,255);
-        hlyout->addWidget(
-            WDFunc::NewLBLT(w, "Связь разорвана.\nПопытка переподключения будет выполнена через 3 секунды", "", "", ""),
+        w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color:
+                                                                                // rgba(220,220,220,255);
+        hlyout->addWidget(WDFunc::NewLBLT(w,
+                              "Связь разорвана.\nПопытка переподключения будет "
+                              "выполнена через 3 секунды",
+                              "", "", ""),
             1);
         vlayout->addLayout(hlyout);
         w->setLayout(vlayout);
@@ -733,11 +761,12 @@ void Coma::ConnectMessage()
     QVBoxLayout *vlayout = new QVBoxLayout;
     QString tmps = QString(PROGCAPTION);
     QWidget *w = new QWidget;
-    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color: rgba(220,220,220,255);
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color:
+                                                                            // rgba(220,220,220,255);
     if (MainInterface == I_USB)
         hlyout->addWidget(WDFunc::NewLBLT(w, "Связь с " + ModuleBSI::ModuleTypeString + " установлена", "", "", ""), 1);
     else
-        hlyout->addWidget(WDFunc::NewLBLT(w, "Связь с " + ConnectSettings.name + " установлена", "", "", ""), 1);
+        hlyout->addWidget(WDFunc::NewLBLT(w, "Связь с " + FullName + " установлена", "", "", ""), 1);
     vlayout->addLayout(hlyout);
     w->setLayout(vlayout);
     lyout->addWidget(w);
@@ -804,8 +833,8 @@ int Coma::CheckPassword()
 
 void Coma::SetMainDefConf()
 {
-    if (MainConfDialog != nullptr)
-        MainConfDialog->SetDefConf();
+    //    if (MainConfDialog != nullptr)
+    //        MainConfDialog->SetDefConf();
 }
 
 void Coma::SetBDefConf()
@@ -817,13 +846,14 @@ void Coma::SetBDefConf()
 void Coma::SetMDefConf()
 {
     if (ConfM != nullptr)
+
         ConfM->SetDefConf();
 }
 
 void Coma::Fill()
 {
-    if (MainConfDialog != nullptr)
-        MainConfDialog->Fill();
+    //    if (MainConfDialog != nullptr)
+    //        MainConfDialog->Fill();
     if (ConfB != nullptr)
         ConfB->Fill();
     if (ConfM != nullptr)
@@ -1057,7 +1087,8 @@ void Coma::keyPressEvent(QKeyEvent *e)
 
 void Coma::MainTWTabClicked(int tabindex)
 {
-    if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
+    if (tabindex == CurTabIndex) // to prevent double function invocation by
+                                 // doubleclicking on tab
         return;
     CurTabIndex = tabindex;
     ChModbus->Tabs(tabindex);
@@ -1070,6 +1101,15 @@ void Coma::MainTWTabClicked(int tabindex)
         else
             BdaTimer->stop();
     }
+
+    if (Harm != nullptr)
+    {
+        if (tabindex == CheckHarmIndex)
+            BdaTimer->start();
+        else
+            BdaTimer->stop();
+    }
+
     if (TimeD != nullptr)
     {
         if (tabindex == TimeIndex)

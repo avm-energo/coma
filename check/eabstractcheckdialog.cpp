@@ -130,24 +130,6 @@ QWidget *EAbstractCheckDialog::BottomUI()
     return w;
 }
 
-/*void EAbstractCheckDialog::GetIP()
-{
-    if (Commands::GetIP(&Bip_block, sizeof(Bip)) != Error::NOERROR)
-        EMessageBox::error(this, "Ошибка", "Ошибка получения данных по IP адресу модуля");
-    else
-        CheckIP();
-}
-
-void EAbstractCheckDialog::CheckIP()
-{
-    QLabel *lbl = this->findChild<QLabel *>("ipl");
-    if (lbl == 0)
-        return;
-    for (int i = 0; i < 4; i++)
-        lbl->text().append(QString::number(Bip_block.ip[i], 16) + ".");
-    lbl->text().chop(1);
-} */
-
 void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
 {
     QFileDialog *dlg = new QFileDialog;
@@ -192,8 +174,7 @@ void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
 
 void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 {
-    //    int Interval = ElapsedTimeCounter->elapsed();
-    //    qDebug() << ElapsedTimeCounter->elapsed();
+
     // получение текущих аналоговых сигналов от модуля
     if (Busy)
     {
@@ -218,21 +199,14 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     {
         if (!XlsxWriting || (XlsxWriting && (Bd_blocks[Bd_blocks.keys().at(bdnum)]->toxlsxwrite)))
         {
-            /*            int tmpi = Bd_blocks.keys().at(bdnum);
-                        if (Commands::GetBd(tmpi, Bd_blocks[tmpi]->block, Bd_blocks[tmpi]->blocknum) != NOERROR)
-                        {
-                            WARNMSG("Ошибка при приёме данных");
-                            Busy = false;
-                            return;
-                        }*/
+
             // обновление коэффициентов в соответствующих полях на экране
             RefreshAnalogValues(bdnum);
             if (XlsxWriting)
                 WriteToFile(WRow, bdnum);
         }
     }
-    //    Interval = ElapsedTimeCounter->elapsed() - Interval;
-    //    qDebug() << Interval;
+
     WRow++;
     Busy = false;
 }

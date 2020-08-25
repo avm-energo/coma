@@ -24,6 +24,6 @@ void error(QWidget *parent, const QString &title, const QString &text, const QSt
 
 bool question(QWidget *parent, const QString &title, const QString &text, const QString &detailedText = QString(),
     const QString &yesText = QObject::tr("&Да"), const QString &noText = QObject::tr("&Отмена"));
-}
+} // namespace EMessageBox
 
 #endif // EMESSAGEBOX_H

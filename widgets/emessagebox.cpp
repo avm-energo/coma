@@ -88,4 +88,4 @@ bool question(QWidget *parent, const QString &title, const QString &text, const 
     return (pb == yesButton);
 }
 
-}
+} // namespace EMessageBox

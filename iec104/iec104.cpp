@@ -246,7 +246,8 @@ void IEC104Thread::Run()
             if (!tmpba.isEmpty())
             {
                 int tmpi = isIncomeDataValid(tmpba);
-                if (tmpi == I104_RCVNORM) // если поймали правильное начало данных, переходим к их обработке
+                if (tmpi == I104_RCVNORM) // если поймали правильное начало данных,
+                                          // переходим к их обработке
                 {
                     if (APDUFormat == I104_I)
                     {
@@ -315,7 +316,8 @@ void IEC104Thread::GetSomeData(QByteArray ba)
         if (missing_num > basize)
         {
             CutPckt.append(ba);
-            return; // если так и не достигли конца пакета, надо брать следующий пакет в cutpckt
+            return; // если так и не достигли конца пакета, надо брать следующий пакет
+                    // в cutpckt
         }
         CutPckt.append(ba.left(missing_num)); // взяли из текущего пакета сами байты
         ba.remove(0, missing_num);
@@ -431,7 +433,8 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
         quint32 objectAdr = 0;
         quint32 index = 6;
         int fileSize;
-        int res, i, cntfl = 0, cntflTimestamp = 0, cntspon = 0, cntbs = 0; //, cntsponTime = 0;
+        int res, i, cntfl = 0, cntflTimestamp = 0, cntspon = 0,
+                    cntbs = 0; //, cntsponTime = 0;
         IEC104Thread::FlSignals104 *flSignals = new IEC104Thread::FlSignals104[DUI.qualifier.Number];
         IEC104Thread::SponSignals *sponsignals = new IEC104Thread::SponSignals[DUI.qualifier.Number];
         IEC104Thread::BS104Signals *BS104Signals = new IEC104Thread::BS104Signals[DUI.qualifier.Number];
@@ -943,7 +946,8 @@ void IEC104Thread::FileReady()
     ASDU cmd = ASDUFilePrefix(F_FR_NA_1, 0x01, 0x00);
     cmd.chop(1);
     File.resize(65535);
-    S2::StoreDataMem(&(File.data()[0]), DR, 0x0001); // 0x0001 - номер файла конфигурации
+    S2::StoreDataMem(&(File.data()[0]), DR,
+        0x0001); // 0x0001 - номер файла конфигурации
     FileLen = static_cast<quint8>(File.data()[4]);
     FileLen += static_cast<quint8>(File.data()[5]) * 256;
     FileLen += static_cast<quint8>(File.data()[6]) * 65536;

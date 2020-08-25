@@ -1,6 +1,8 @@
 #ifndef CONFDIALOGKDV_H
 #define CONFDIALOGKDV_H
 
+#include "../config/confdialog.h"
+#include "../config/confdialogkxx.h"
 #include "../config/configkdv.h"
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
@@ -16,19 +18,17 @@ class ConfDialogKDV : public AbstractConfDialog
 public:
     ConfDialogKDV(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
 
-    // QStringList Rates = QStringList()  << "256"<< "128" << "64" << "32" << "16" ;
-    QStringList Sbaud = QStringList() << "1200"
-                                      << "2400"
-                                      << "4800"
-                                      << "9600"
-                                      << "19200"
-                                      << "38400"
-                                      << "57600"
-                                      << "115200";
+    // QStringList Rates = QStringList()  << "256"<< "128" << "64" << "32" << "16"
+    // ;
+    QStringList Sbaud = { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
 
 private:
     ConfigKDV *KDV;
-    bool IsNtp;
+    ConfDialog *Conf;
+    ConfDialogKxx *ConfKxx;
+    Config *ConfigMain;
+
+    bool Variable;
     QTimer *timerRead;
 
     void Fill();
@@ -37,9 +37,8 @@ private:
     void CheckConf();
 
 public slots:
-    void Set104(double);
-    void SetCType(int);
-    //    void ChangeWindow(int);
+    //    void Set104(double);
+    //    void SetCType(int);
 
 private slots:
     void SetDefConf();

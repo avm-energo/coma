@@ -6,7 +6,6 @@
 #include <QMap>
 #include <QVector>
 
-
 #define BCI_MTYPEB 1
 #define BCI_MTYPEM 2
 #define BCI_CTYPE 3
@@ -30,41 +29,21 @@
 #define DEF_K_104 12
 #define DEF_W_104 8
 
-#define BCI_IP 20
-#define BCI_MASK 21
-#define BCI_GW 22
-#define BCI_PORT 23
-#define BCI_SNTP 24
-#define BCI_BAUD 25
-#define BCI_PARITY 26
-#define BCI_STOPBIT 27
-#define BCI_ADRMB 28
-#define BCI_ISNTP 29
-#define BCI_ISPPS 30
-
-#define DEF_IP 172, 16, 29, 12
-#define DEF_MASK 255, 255, 252, 0
-#define DEF_GW 172, 16, 29, 1
-#define DEF_PORT 2404, 2405, 502, 502
-#define DEF_SNTP 172, 16, 31, 220
-#define DEF_BAUD 0
-#define DEF_PARITY 0
-#define DEF_STOPBIT 1
-#define DEF_ADRMB 0
-#define DEF_ISNTP 0
-#define DEF_ISPPS 0
-
 // определение файлов
-#define FILE_CONF 1 // configuration
-#define FILE_FW 3 // firmware
-#define FILE_CJ 17 // commutation journal
-#define FILE_EJ 18 // events journal (12->62)
+#define FILE_CONF 1   // configuration
+#define FILE_FW 3     // firmware
+#define FILE_CJ 17    // commutation journal
+#define FILE_EJ 18    // events journal (12->62)
 #define FILE_OSC 1000 // oscilloscope info
+
+#define MTYPE_KTF 0xA287
+#define MTYPE_KIV 0xA284
+#define MTYPE_KDV 0xA387
 
 class Config
 {
 public:
-    explicit Config(QVector<S2::DataRec> &config, quint32 MTypeB, quint32 MTypeM);
+    explicit Config(QVector<S2::DataRec> *config, quint32 MTypeB, quint32 MTypeM);
 
     enum BaseBoards
     {
@@ -106,14 +85,15 @@ public:
     {
         quint32 MTypeB;
         quint32 MTypeM;
-        quint32 Ctype; // Тип синхронизации времени от модуля Ц
+        quint32 Ctype;   // Тип синхронизации времени от модуля Ц
         quint32 Abs_104; // Адрес базовой станции для протокола 104
         quint32 Cycle_104; // Интервал циклического опроса по протоколу МЭК 60870-5-104
         quint32 T1_104; // тайм-аут Т1 для протокола 104
         quint32 T2_104; // тайм-аут Т2 для протокола 104
         quint32 T3_104; // тайм-аут Т3 для протокола 104
-        quint32 k_104; // макс. кол-во неподтв. сообщений
-        quint32 w_104; // макс. кол-во сообщений, после которых необх. выдать подтверждение
+        quint32 k_104;  // макс. кол-во неподтв. сообщений
+        quint32 w_104;  // макс. кол-во сообщений, после которых необх. выдать
+                        // подтверждение
     };
 
     Bci_Main MainBlk; // Основной блок (см. config.h)
@@ -127,39 +107,53 @@ public:
     static const QMap<quint32, ModuleDesc> ModuleBaseBoards()
     {
         QMap<quint32, ModuleDesc> map;
-        map[MTB_00] = { "Отсутствует", 0x0000 }; // нет базовой платы
+        map[MTB_00] = { "Отсутствует", 0x0000 };     // нет базовой платы
         map[MTB_12] = { "АВ-ТУК-12 (ЦКУ)", 0x1200 }; // процессорный, не комбинируется
         map[MTB_21] = { "АВ-ТУК-21", 0x2100 }; // аналоговый ввод DC, комбинируется с 2x,3x
         map[MTB_22] = { "АВ-ТУК-22", 0x2200 }; // аналоговый ввод DC, комбинируется с 2x,3x
         map[MTB_31] = { "АВ-ТУК-31", 0x3100 }; // дискретный ввод, комбинируется с 2x,3x
         map[MTB_35] = { "АВ-ТУК-35", 0x3500 }; // дискретный вывод, комбинируется с 2x,3x
         map[MTB_80] = { "АВТУК-", 0x8000 }; // аналоговый ввод AC, комбинируется с 81,82,83
-        map[MTB_A2] = { "АВ-ТУК-81", 0x8100 }; // МНК3, комбинируется с 84
-        map[MTB_84] = { "АВ-ТУК-84", 0x8400 }; // НКВВ, комбинируется с 81,82,83
-        map[MTB_85] = { "АВ-ТУК-85", 0x8500 }; // УСК, комбинируется с 85
+        map[MTB_A2] = { "АВ-ТУК-81", 0x8100 };      // МНК3, комбинируется с 84
+        map[MTB_84] = { "АВ-ТУК-84", 0x8400 };      // НКВВ, комбинируется с 81,82,83
+        map[MTB_85] = { "АВ-ТУК-85", 0x8500 };      // УСК, комбинируется с 85
         map[MTB_87] = { "АВ-ТУК-87 (ЧР)", 0x8700 }; // ЧР, не комбинируется
         map[MTB_A1] = { "ПКС-1", 0xA100 }; // ПКДН, прибор для Туркота, не комбинируется
         map[MTB_A2] = { "АВМ", 0xA200 }; // МНК3, не комбинируется
+        map[MTB_A3] = { "АВМ", 0xA300 }; // МНК3, не комбинируется
         return map;
     }
 
     static const QMap<quint32, ModuleDesc> ModuleMezzanineBoards()
     {
         QMap<quint32, ModuleDesc> map;
-        map[MTM_00] = { "", 0x0000 }; // нет мезонина
-        map[MTM_21] = { "21", 0x0021 }; // аналоговый ввод, комбинируется с 2x,3x
-        map[MTM_22] = { "22", 0x0022 }; // аналоговый ввод, комбинируется с 2x,3x
-        map[MTM_31] = { "31", 0x0031 }; // дискретный ввод, комбинируется с 2x,3x
-        map[MTM_35] = { "35", 0x0035 }; // дискретный вывод, комбинируется с 2x,3x
+        map[MTM_00] = { "", 0x0000 };           // нет мезонина
+        map[MTM_21] = { "21", 0x0021 };         // аналоговый ввод, комбинируется с 2x,3x
+        map[MTM_22] = { "22", 0x0022 };         // аналоговый ввод, комбинируется с 2x,3x
+        map[MTM_31] = { "31", 0x0031 };         // дискретный ввод, комбинируется с 2x,3x
+        map[MTM_35] = { "35", 0x0035 };         // дискретный вывод, комбинируется с 2x,3x
         map[MTM_81] = { "81 (Э2Т0Н)", 0x0081 }; // 0U6I, комбинируется с 80,84
         map[MTM_82] = { "82 (Э1Т1Н)", 0x0082 }; // 3U3I, комбинируется с 80,84
         map[MTM_83] = { "83 (Э0Т2Н)", 0x0083 }; // 6U0I, комбинируется с 80,84
-        map[MTM_84] = { "-КИВ", 0x0084 }; // 3U3I, комбинируется с 80,81
+        map[MTM_84] = { "84", 0x0084 };         // 3U3I, комбинируется с 80,81
         map[MTM_85] = { "85 (УСК)", 0x0085 }; // 3U3I УСК (перегрузка по току 20х), комбинируется с 85
+        map[MTM_87] = { "87", 0x0087 };
         return map;
     }
 
+    static const QMap<quint32, QString> ModuleBoards()
+    {
+        QMap<quint32, QString> Map;
+
+        Map[MTB_A1] = "ПКС-1"; // ПКДН, прибор для Туркота, не комбинируется
+        Map[MTYPE_KTF] = "АВМ-КТФ";
+        Map[MTYPE_KIV] = "АВМ-КИВ";
+        Map[MTYPE_KDV] = "АВМ-КДВ";
+        return Map;
+    }
+
     void SetDefBlock();
+    // void Fill();
 };
 
 #endif // CONFIG

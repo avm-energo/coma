@@ -19,12 +19,20 @@ int ModuleBSI::SetupBSI()
 {
     if (Commands::GetBsi(ModuleBsi) != NOERROR)
         return GENERALERROR;
-    /*    quint32 mtype;
-        QString mtypestring;
-        mtype = ((ModuleBsi.MTypeB & 0x000000FF) << 8) | (ModuleBsi.MTypeM & 0x000000FF); */
-    ModuleTypeString = Config::ModuleBaseBoards()[ModuleBsi.MTypeB << 8].TextString
-        + Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].TextString;
-    //    ModuleBSI::Bsi bsi = ModuleBsi;
+
+    if ((ModuleBsi.MTypeB << 8) >= 0xA000 || (Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].Hex) >= 0x00A0)
+    {
+        quint32 Type = Config::ModuleBaseBoards()[ModuleBsi.MTypeB << 8].Hex
+            + Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].Hex;
+
+        ModuleTypeString = Config::ModuleBoards()[Type];
+    }
+    else
+    {
+        ModuleTypeString = Config::ModuleBaseBoards()[ModuleBsi.MTypeB << 8].TextString
+            + Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].TextString;
+    }
+
     QString tmps = ModuleTypeString;
     if (!IsKnownModule())
         return RESEMPTY;
@@ -99,8 +107,9 @@ int ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
 
     /*    if(!StopRead)
         { */
-    if ((ModuleBSI::Health() & HTH_CONFIG)
-        || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить поля по умолчанию
+    Bsi = ModuleBSI::Health();
+    if ((Bsi & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить
+                                                            // поля по умолчанию
         return RESEMPTY;
     else // иначе заполнить значениями из модуля
     {

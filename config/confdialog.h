@@ -1,32 +1,36 @@
 #ifndef CONFDIALOG_H
 #define CONFDIALOG_H
 
-#include "abstractconfdialog.h"
 #include "config.h"
 
-class ConfDialog : public AbstractConfDialog
+#include <QDialog>
+#include <QWidget>
+
+class ConfDialog : public QWidget
 {
     Q_OBJECT
 public:
-    ConfDialog(QVector<S2::DataRec> &S2Config, quint32 MTypeB, quint32 MTypeM, QWidget *parent = nullptr);
+    ConfDialog(QVector<S2::DataRec> *S2Config, quint32 MTypeB, quint32 MTypeM, QWidget *parent = nullptr);
 
     Config *ConfigMain;
+
+    QStringList Sbaud = { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
 
     void SetDefConf();
     void Fill();
     void FillBack();
-    void CheckConf()
-    {
-    }
+    void CheckConf();
+    QWidget *SetupMainBlk(QObject *parent);
+    QWidget *SetupTime(QObject *parent);
 
 public slots:
 
 private:
-    void SetupUI();
+    QString ValuesFormat, WidgetFormat;
+    QList<QWidget *> WidgetList;
+    QObject *ParentMainbl, *ParentCtype;
 
 private slots:
-    void Set104(double);
-    void SetCType(int);
 
 signals:
 };

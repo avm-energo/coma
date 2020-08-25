@@ -31,7 +31,8 @@ ConfigKIV::ConfigKIV(QVector<S2::DataRec> *config)
         config->append({ 1006, sizeof(Bci_block.Unom), &Bci_block.Unom });
         config->append({ StartInIndex, sizeof(Bci_block.Umin), &Bci_block.Umin });
         config->append({ StartInIndex + 1, sizeof(Bci_block.Imin), &Bci_block.Imin });
-        // config->append({StartInIndex+2, sizeof(Bci_block.Imax), &Bci_block.Imax});
+        // config->append({StartInIndex+2, sizeof(Bci_block.Imax),
+        // &Bci_block.Imax});
         config->append({ StartInIndex + 3, sizeof(Bci_block.C_init), &Bci_block.C_init });
         config->append({ StartInIndex + 4, sizeof(Bci_block.Tg_init), &Bci_block.Tg_init });
         config->append({ StartInIndex + 5, sizeof(Bci_block.corTg), &Bci_block.corTg });

@@ -1,9 +1,9 @@
 #include "alarmstateall.h"
 
 #include "../gen/colors.h"
+#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
-#include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 
 #include <QApplication>
@@ -33,13 +33,13 @@ void AlarmStateAll::AlarmState()
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
-    QString tmps = QString(PROGCAPTION);
 
     INFOMSG("DeviceState()");
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     QWidget *w = new QWidget;
-    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color: rgba(220,220,220,255);
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color:
+                                                                            // rgba(220,220,220,255);
 
     for (int i = 0; i < HthToolTip().size(); ++i)
     {

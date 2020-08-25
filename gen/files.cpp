@@ -45,8 +45,8 @@ int Files::LoadFromFile(const QString &filename, QByteArray &ba)
     return ER_NOERROR;
 }
 
-// Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)"; QString ext - расширение по умолчанию
-// Output: QString filename
+// Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)";
+// QString ext - расширение по умолчанию Output: QString filename
 
 QString Files::ChooseFileForSave(QWidget *parent, const QString &mask, const QString &ext, const QString &filenamestr)
 {
@@ -83,7 +83,7 @@ int Files::SaveToFile(const QString &filename, QByteArray &src, unsigned int num
     delete file;
     if (res == GENERALERROR)
         return ER_FILEWRITE; // ошибка записи
-    return ER_NOERROR; // нет ошибок
+    return ER_NOERROR;       // нет ошибок
 }
 
 QStringList Files::Drives()

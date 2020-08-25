@@ -1,9 +1,9 @@
 #include "warnalarmktf.h"
 
 #include "../gen/colors.h"
+#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
-#include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 
 #include <QApplication>
@@ -49,8 +49,8 @@ void WarnAlarmKTF::WarnAlarmState()
                                              << "Неисправны все датчики температуры обмотки             "
                                              << "Сигнализация по опасному уровню пускового тока         ";
     QWidget *w = new QWidget;
-    // Wpred = w;
-    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color: rgba(220,220,220,255);
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color:
+                                                                            // rgba(220,220,220,255);
 
     for (int i = 0; i < Alarm->MapAlarm[MTYPE_KTF].warnCounts; ++i)
     {

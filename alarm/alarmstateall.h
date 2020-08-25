@@ -17,12 +17,6 @@ public slots:
 
     void Update(QList<bool>);
 
-    //   void UpdatePredAlarmEvents(IEC104Thread::SponSignals *);
-    //   void UpdateStatePredAlarmEvents(IEC104Thread::SponSignals *);
-
-    //   void ModbusUpdateStatePredAlarmEvents(ModBus::Coils Signal);
-    //   void ModBusUpdate(ModBus::Coils Signal);
-
     static QStringList HthToolTip()
     {
         QStringList sl;
@@ -34,7 +28,8 @@ public slots:
         sl.append("Нет сигнала 1PPS с антенны");
         sl.append("Проблемы с АЦП (нет связи) (мезонин)");
         sl.append("Ошибка регулировочных коэффициентов (базовая)");
-        sl.append("Ошибка загрузки конфигурации из flash-памяти. Работает конфигурация по умолчанию");
+        sl.append("Ошибка загрузки конфигурации из flash-памяти. Работает "
+                  "конфигурация по умолчанию");
         sl.append("Некорректная Hardware информация (базовая)");
         sl.append("Некорректная Hardware информация (мезонин)");
         sl.append("Ошибка регулировочных коэффициентов (мезонин)");

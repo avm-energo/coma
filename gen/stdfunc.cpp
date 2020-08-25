@@ -12,7 +12,7 @@
 #include <QTextStream>
 #include <QThread>
 
-QString StdFunc::HomeDir = ""; // рабочий каталог программы
+QString StdFunc::HomeDir = "";       // рабочий каталог программы
 QString StdFunc::SystemHomeDir = ""; // системный каталог программы
 bool StdFunc::Emul = false;
 bool StdFunc::Cancelled = false;

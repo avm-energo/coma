@@ -51,10 +51,10 @@ public:
     static bool SetLBLTColor(QWidget *w, const QString &lblname, const QString &color);
     static EComboBox *NewCB(QWidget *parent, const QString &cbname, QStringList &cbsl, const QString &cbcolor = "");
     static bool SetCBData(QWidget *w, const QString &cbname, const QString &cbvalue);
-    static bool SetCBIndex(QWidget *w, const QString &cbname, int index);
+    static bool SetCBIndex(QObject *w, const QString &cbname, int index);
     static bool SetCBColor(QWidget *w, const QString &cbname, const QString &color);
     static QString CBData(QWidget *w, const QString &cbname);
-    static int CBIndex(QWidget *w, const QString &cbname)
+    static int CBIndex(QObject *w, const QString &cbname)
     {
         EComboBox *cb = w->findChild<EComboBox *>(cbname);
         if (cb == nullptr)
@@ -66,8 +66,8 @@ public:
 
     static QDoubleSpinBox *NewSPB(
         QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor = "");
-    static bool SetSPBData(QWidget *w, const QString &spbname, const double &spbvalue);
-    template <typename T> static bool SPBData(QWidget *w, const QString &spbname, T &spbvalue)
+    static bool SetSPBData(QObject *w, const QString &spbname, const double &spbvalue);
+    template <typename T> static bool SPBData(QObject *w, const QString &spbname, T &spbvalue)
     {
         QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
         if (spb == nullptr)
@@ -80,6 +80,9 @@ public:
         const QPixmap *pm = Q_NULLPTR);
     static QLabel *NewLBLT(QWidget *w, const QString &text, const QString &lblname = "", const QString &lblstyle = "",
         const QString &lbltip = "", bool Fixed = false);
+    // static QLabel *NewLBLTT(QWidget *w, const QString &text, const QString
+    // &lblname="", const QString &lblstyle="", const QString &lbltip="",bool
+    // Fixed=false);
     static bool SetLBLImage(QWidget *w, const QString &lblname, QPixmap *pm);
     static bool SetLBLColor(QWidget *w, const QString &lblname, const QString &lblcolor);
     static bool SetLBLText(QWidget *w, const QString &lblname, const QString &lbltext = "", bool enabled = true);

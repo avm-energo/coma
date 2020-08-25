@@ -2,13 +2,13 @@
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/colors.h"
+#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
 #include "../gen/maindef.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include "../usb/commands.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
@@ -65,8 +65,8 @@ void CorDialog::SetupUI()
     setStyleSheet(tmps);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    /*    ETableView *tv = new ETableView;
-        tv->setObjectName("cor"); */
+    ETableView *tv = new ETableView;
+    tv->setObjectName("cor");
     int row = 0;
     QString paramcolor = MAINWINCLR;
     QPushButton *pb = new QPushButton();
@@ -162,7 +162,7 @@ void CorDialog::SetupUI()
 
     // hlyout->addWidget(glyout,Qt::AlignTop);
     lyout->addLayout(glyout, Qt::AlignTop);
-    //    lyout->addWidget(tv, 89);
+    lyout->addWidget(tv, 89);
     setLayout(lyout);
 }
 
@@ -195,7 +195,8 @@ void CorDialog::FillCor()
     for (i = 0; i < 3; i++)
     {
 
-        // WDFunc::SetLEData(this, "C_init1."+QString::number(i), QString::number(CorBlock->C_init[i], 'f', 5));
+        // WDFunc::SetLEData(this, "C_init1."+QString::number(i),
+        // QString::number(CorBlock->C_init[i], 'f', 5));
         WDFunc::SetSPBData(this, QString::number(4000 + i), CorBlock->C_init[i]);
         WDFunc::SetSPBData(this, QString::number(4003 + i), CorBlock->Tg_init[i]);
         WDFunc::SetSPBData(this, QString::number(4006 + i), CorBlock->corTg[i]);

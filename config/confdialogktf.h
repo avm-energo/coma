@@ -1,6 +1,8 @@
 #ifndef CONFDIALOGKTF_H
 #define CONFDIALOGKTF_H
 
+#include "../config/confdialog.h"
+#include "../config/confdialogkxx.h"
 #include "../config/configktf.h"
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
@@ -20,26 +22,15 @@ public:
     QLabel *SysTime;
     QTimer *timer;
     QTimer *timerRead;
-    QStringList Rates = QStringList() << "256"
-                                      << "128"
-                                      << "64"
-                                      << "32"
-                                      << "16";
-    QStringList Sbaud = QStringList() << "1200"
-                                      << "2400"
-                                      << "4800"
-                                      << "9600"
-                                      << "19200"
-                                      << "38400"
-                                      << "57600"
-                                      << "115200";
-    QStringList MBs1 = QStringList() << "нет"
-                                     << "тип 1"
-                                     << "тип 2"
-                                     << "тип 3";
+
+    QStringList Rates = { "256", "128", "64", "32", "16" };
 
 private:
     ConfigKTF *KTF;
+    ConfDialog *Conf;
+    ConfDialogKxx *ConfKxx;
+    Config *ConfigMain;
+
     bool DDosc;
     bool Mb;
     bool IsNtp;
@@ -53,9 +44,6 @@ private:
 signals:
 
 public slots:
-    void Set104(double);
-    void SetCType(int);
-    void ChangeWindow(int);
 
 private slots:
     void SetDefConf();

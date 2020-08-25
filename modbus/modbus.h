@@ -91,7 +91,7 @@ public:
     int Connect(SerialPort::Settings &settings);
     void BSIrequest();
 
-    int CheckIndex, CorIndex, TimeIndex;
+    int CheckIndex, CheckHarmIndex, CorIndex, TimeIndex;
 
 public slots:
     int SendAndGetResult(ComInfo &request, InOutStruct &outp);

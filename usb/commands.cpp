@@ -3,6 +3,9 @@
 
 #include "../gen/error.h"
 #include "../gen/timefunc.h"
+#include "error.h"
+
+#include <QCoreApplication>
 
 #include <QCoreApplication>
 
@@ -97,7 +100,8 @@ int Commands::WriteFile(int filenum, QVector<S2::DataRec> *data)
     {
         ba.resize(CN_MAXFILESIZE);
         S2::StoreDataMem(&(ba.data()[0]), data, filenum);
-        // считываем длину файла из полученной в StoreDataMem и вычисляем количество сегментов
+        // считываем длину файла из полученной в StoreDataMem и вычисляем количество
+        // сегментов
         quint32 wrlength = static_cast<quint8>(ba.at(7)) * 16777216; // с 4 байта начинается FileHeader.size
         wrlength += static_cast<quint8>(ba.at(6)) * 65536;
         wrlength += static_cast<quint8>(ba.at(5)) * 256;

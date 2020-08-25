@@ -79,7 +79,7 @@ int ModBus::SendAndGetResult(ComInfo &request, InOutStruct &outp)
     else
         inp.ReadSize = 5 + 2 * request.Quantity;
     bytes.append(Settings.Address); // адрес устройства
-    bytes.append(request.Command); //аналоговый выход
+    bytes.append(request.Command);  //аналоговый выход
     bytes.append(static_cast<char>((request.Address & 0xFF00) >> 8));
     bytes.append(static_cast<char>(request.Address & 0x00FF));
     bytes.append(static_cast<char>((request.Quantity & 0xFF00) >> 8));
@@ -516,7 +516,8 @@ void ModbusThread::Send()
         } */
     QElapsedTimer tme;
     tme.start();
-    while ((Busy) && (tme.elapsed() < RECONNECTTIME)) // ждём, пока либо сервер не отработает, либо не наступит таймаут
+    while ((Busy) && (tme.elapsed() < RECONNECTTIME)) // ждём, пока либо сервер не отработает,
+                                                      // либо не наступит таймаут
         QCoreApplication::processEvents();
     if (Busy)
     {

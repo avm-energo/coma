@@ -2,9 +2,9 @@
 #include "warnalarmkiv.h"
 
 #include "../gen/colors.h"
+#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
-#include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 #include "abstractalarm.h"
 
@@ -33,7 +33,7 @@ WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm, QWidget *parent) : AbstractAlarm(p
 
 void WarnAlarmKIV::WarnAlarmState()
 {
-    QDialog *dlg = new QDialog;
+    // QDialog *dlg = new QDialog;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -57,7 +57,6 @@ void WarnAlarmKIV::WarnAlarmState()
                                              << "Не заданы паспортные значения                          "
                                              << "Сигнализация по повышенному небалансу токов            ";
     QWidget *w = new QWidget;
-    // Wpred = w;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
     for (int i = 0; i < Alarm->MapAlarm[MTYPE_KIV].warnCounts; ++i)
@@ -72,7 +71,7 @@ void WarnAlarmKIV::WarnAlarmState()
 
     lyout->addWidget(w);
     QPushButton *pb = new QPushButton("Ok");
-    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
+    connect(pb, SIGNAL(clicked()), this, SLOT(close()));
     lyout->addWidget(pb, 0);
     setLayout(lyout);
 }

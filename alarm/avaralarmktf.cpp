@@ -1,9 +1,9 @@
 #include "avaralarmktf.h"
 
 #include "../gen/colors.h"
+#include "../gen/commands.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
-#include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 
 #include <QApplication>
@@ -34,7 +34,6 @@ void AvarAlarmKTF::AvarState()
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
-    QString tmps = QString(PROGCAPTION);
 
     QStringList events = QStringList() << "Аварийное сообщение по недопустимому превышению температуры обмотки"
                                        << "Аварийное сообщение по недопустимому уровню пускового тока         ";
