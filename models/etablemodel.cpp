@@ -1,4 +1,5 @@
 #include "etablemodel.h"
+
 #include <QApplication>
 #include <QDebug>
 #include <QEventLoop>
@@ -27,7 +28,9 @@ ETableModel::ETableModel(QObject *parent) : QAbstractTableModel(parent)
     icons[2] = QIcon("images/cross.png");
 }
 
-ETableModel::~ETableModel() { }
+ETableModel::~ETableModel()
+{
+}
 
 QVariant ETableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
@@ -53,7 +56,6 @@ bool ETableModel::setHeaderData(int section, Qt::Orientation orientation, const 
         header->append(value.toString());
     else
         header->replace(section, value.toString());
-    qDebug() << value;
 
     return true;
 }
@@ -318,7 +320,10 @@ void ETableModel::setRowTextAlignment(int row, int alignment)
         setData(index(row, i, QModelIndex()), QVariant(alignment), Qt::TextAlignmentRole);
 }
 
-bool ETableModel::isEmpty() const { return maindata.isEmpty(); }
+bool ETableModel::isEmpty() const
+{
+    return maindata.isEmpty();
+}
 
 void ETableModel::setColumnFormat(int column, int format)
 {

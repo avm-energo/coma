@@ -376,6 +376,12 @@ public:
 public slots:
     void SelectFile(char);
     void StopAllThreads();
+    void Com45(quint32 com);
+    void Com50(quint32 adr, float param);
+    void CorReadRequest();
+    void FileReady(QVector<S2::DataRec> *);
+    void InterrogateTimeGr15();
+    void com51WriteTime(uint time);
 
 signals:
     void StopAll();
@@ -401,13 +407,8 @@ private:
     QVector<S2::DataRec> *S2Config;
 
 private slots:
-    //void SelectFile(char);
-    void FileReady(QVector<S2::DataRec> *);
-    void Com45(quint32 com);
-    void Com50(quint32 adr, float param);
-    void CorReadRequest();
-    void InterrogateTimeGr15();
-    void com51WriteTime(uint time);
+    // void SelectFile(char);
+
     void EthThreadStarted();
     void EthThreadFinished();
     void ParseThreadStarted();

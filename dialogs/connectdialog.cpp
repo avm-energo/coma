@@ -1,11 +1,11 @@
-#include <QVBoxLayout>
+#include "connectdialog.h"
+
 #include "../gen/error.h"
 #include "../gen/maindef.h"
 #include "../models/etablemodel.h"
-#include "../usb/usb.h"
+#include "../usb/eusbhid.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
-#include "connectdialog.h"
 
 #include <QSerialPortInfo>
 #include <QSettings>
@@ -98,7 +98,10 @@ void ConnectDialog::SetUsb()
     ConnectStruct st; // temporary var
     QDialog *dlg = this->findChild<QDialog *>("connectdlg");
     if (dlg != nullptr)
-        cn->TranslateDeviceAndSave(WDFunc::TVData(dlg, "usbtv", 1).toString());
+    {
+        EUsbHid::GetInstance()->setDeviceName(WDFunc::TVData(dlg, "usbtv", 1).toString());
+        EUsbHid::GetInstance()->TranslateDeviceAndSave(WDFunc::TVData(dlg, "usbtv", 1).toString());
+    }
     emit Accepted(&st);
 }
 
@@ -186,7 +189,10 @@ void ConnectDialog::RsAccepted()
     }
 }
 
-void ConnectDialog::SetCancelled() { emit Cancelled(); }
+void ConnectDialog::SetCancelled()
+{
+    emit Cancelled();
+}
 
 void ConnectDialog::SetEth()
 {
@@ -320,7 +326,7 @@ bool ConnectDialog::UpdateModel()
         }
         if (MainInterface == I_USB)
         {
-            QStringList USBsl = cn->DevicesFound();
+            QStringList USBsl = EUsbHid::GetInstance()->DevicesFound();
             QStringList sl = QStringList() << "#"
                                            << "Device";
             ETableModel *mdl = new ETableModel;

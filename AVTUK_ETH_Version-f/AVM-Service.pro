@@ -8,7 +8,7 @@ QMAKE_TARGET_COMPANY = EvelSoft
 QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
-CONFIG += c++11
+CONFIG += c++17
 VERSION = 0.2.0
 
 QT       += core gui printsupport network serialport qml widgets testlib svg
@@ -60,7 +60,7 @@ SOURCES += \
     ../gen/logclass.cpp \
     ../gen/maindef.cpp \
     ../modbus/serialport.cpp \
-    ../usb/usb.cpp \
+    ../usb/eusbworker.cpp \
     coma.cpp \
     main.cpp \
     ../check/check.cpp \
@@ -135,7 +135,7 @@ HEADERS += \
     ../gen/journals.h \
     ../gen/logclass.h \
     ../modbus/serialport.h \
-    ../usb/usb.h \
+    ../usb/eusbworker.h \
     coma.h \
     ../check/check.h \
     ../check/eabstractcheckdialog.h \
@@ -192,6 +192,7 @@ INCLUDEPATH += $$PWD/../../includes
 
 equals(QMAKE_PLATFORM, win32)
 {
+    LIBS += -luser32
     contains(QMAKE_TARGET.arch, x86_64) {
         message("x64 build")
        ## Windows x64 (64bit) specific build here

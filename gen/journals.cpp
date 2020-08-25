@@ -131,7 +131,7 @@ void Journals::FillEventsTable(QByteArray &ba)
     if ((_jourType == JOURSYS) || (_jourType == JOURWORK))
     {
         file += fhsize;
-        qDebug() << strlen(file);
+        // qDebug() << strlen(file);
         S2::DataRec jour;
         int drsize = sizeof(S2::DataRec) - sizeof(void *);
         memcpy(&jour, file, drsize);
@@ -177,30 +177,17 @@ void Journals::FillEventsTable(QByteArray &ba)
 
 void Journals::FillMeasTable(QByteArray &ba)
 {
-    if (ba.isNull() || ba.isEmpty())
-    {
-        qWarning() << "Meas Byte Array is empty";
-        return;
-    }
-    qDebug() << ba.size();
     ETableModel *model = _measModel;
     QVector<QVector<QVariant>> ValueLists;
     QStringList headers;
 
-    Measure mem;
+    void *mem;
     int recordsize;
     int basize = ba.size();
     char *file = ba.data();
     // int joursize = 0; // размер считанного буфера с информацией
     int fhsize = sizeof(S2::FileHeader);
 
-    file += fhsize;
-    // S2::DataRec jour;
-    int drsize = sizeof(S2::DataRec) - sizeof(void *);
-    // memcpy(&jour, file, drsize);
-    // joursize = jour.num_byte;
-    file += drsize; // move file pointer to thedata
-    int i = 0;
     switch (MTypeB)
     {
     case Config::MTB_A2:
@@ -209,58 +196,72 @@ void Journals::FillMeasTable(QByteArray &ba)
         case Config::MTM_84:
             recordsize = sizeof(MeasureStruct);
             headers = MeasJourHeaders;
-            while (i < basize)
-            {
-                QVector<QVariant> vl;
-                memcpy(&mem, file, recordsize);
-                file += recordsize;
-                i += recordsize;
-                MeasureStruct meas = std::move(mem);
-                if (meas.Time != 0xFFFFFFFF)
-                {
-                    vl = { meas.NUM, TimeFunc::UnixTime32ToInvString(meas.Time), meas.Ueff[0], meas.Ueff[1],
-                        meas.Ueff[2], meas.Ieff[0], meas.Ieff[1], meas.Ieff[2], meas.Frequency, meas.U0, meas.U1,
-                        meas.U2, meas.I0, meas.I1, meas.I2, meas.Cbush[0], meas.Cbush[1], meas.Cbush[2], meas.Tg_d[0],
-                        meas.Tg_d[1], meas.Tg_d[2], meas.dCbush[0], meas.dCbush[1], meas.dCbush[2], meas.dTg_d[0],
-                        meas.dTg_d[1], meas.dTg_d[2], meas.Iunb, meas.Phy_unb, meas.Tmk, meas.Tamb };
-                }
-                if (!vl.isEmpty())
-                    ValueLists.append(vl);
-            }
             break;
         case Config::MTM_87:
             recordsize = sizeof(MeasureStructKTF);
             headers = MeasJourKTFHeaders;
-            while (i < basize)
-            {
-                QVector<QVariant> vl;
-                memcpy(&mem, file, recordsize);
-                file += recordsize;
-                i += recordsize;
-                MeasureStructKTF meas = std::move(mem);
-                if (meas.Time != 0xFFFFFFFF)
-                {
-                    vl = { meas.NUM, TimeFunc::UnixTime32ToInvString(meas.Time), meas.Ueff[0], meas.Ueff[1],
-                        meas.Ueff[2], meas.Ieff[0], meas.Ieff[1], meas.Ieff[2], meas.Frequency, meas.U0, meas.U1,
-                        meas.U2, meas.I0, meas.I1, meas.I2, meas.Pf[0], meas.Pf[1], meas.Pf[2], meas.Pf[3], meas.Qf[0],
-                        meas.Qf[1], meas.Qf[2], meas.Qf[3], meas.Sf[0], meas.Sf[1], meas.Sf[2], meas.Sf[3], meas.Cosphi,
-                        meas.Tmk, meas.Tamb, meas.Twin };
-                }
-                if (!vl.isEmpty())
-                    ValueLists.append(vl);
-            }
-            break;
-        default:
-
             break;
         }
         break;
     case Config::MTB_A3:
-
         break;
-    default:
+    };
 
-        break;
+    if (_jourType == Journals::JOURMEAS)
+    {
+        file += fhsize;
+        S2::DataRec jour;
+        int drsize = sizeof(S2::DataRec) - sizeof(void *);
+        memcpy(&jour, file, drsize);
+        // joursize = jour.num_byte;
+        file += drsize; // move file pointer to thedata
+    }
+    int i = 0;
+    while (i < basize)
+    {
+        QVector<QVariant> vl;
+        memcpy(&mem, file, recordsize);
+        file += recordsize;
+        i += recordsize;
+
+        switch (MTypeB)
+        {
+        case Config::MTB_A2:
+            switch (MTypeM)
+            {
+            case Config::MTM_84:
+            {
+                MeasureStruct *meas = static_cast<MeasureStruct *>(mem);
+                if (meas->Time != 0xFFFFFFFF)
+                {
+                    vl << meas->NUM << TimeFunc::UnixTime32ToInvString(meas->Time) << meas->Ueff[0] << meas->Ueff[1]
+                       << meas->Ueff[2] << meas->Ieff[0] << meas->Ieff[1] << meas->Ieff[2] << meas->Frequency
+                       << meas->U0 << meas->U1 << meas->U2 << meas->I0 << meas->I1 << meas->I2 << meas->Cbush[0]
+                       << meas->Cbush[1] << meas->Cbush[2] << meas->Tg_d[0] << meas->Tg_d[1] << meas->Tg_d[2]
+                       << meas->dCbush[0] << meas->dCbush[1] << meas->dCbush[2] << meas->dTg_d[0] << meas->dTg_d[1]
+                       << meas->dTg_d[2] << meas->Iunb << meas->Phy_unb << meas->Tmk << meas->Tamb;
+                }
+                break;
+            }
+            case Config::MTM_87:
+            {
+                MeasureStructKTF *meas = static_cast<MeasureStructKTF *>(mem);
+                if (meas->Time != 0xFFFFFFFF)
+                {
+                    vl << meas->NUM << TimeFunc::UnixTime32ToInvString(meas->Time) << meas->Ueff[0] << meas->Ueff[1]
+                       << meas->Ueff[2] << meas->Ieff[0] << meas->Ieff[1] << meas->Ieff[2] << meas->Frequency
+                       << meas->U0 << meas->U1 << meas->U2 << meas->I0 << meas->I1 << meas->I2 << meas->Pf[0]
+                       << meas->Pf[1] << meas->Pf[2] << meas->Pf[3] << meas->Qf[0] << meas->Qf[1] << meas->Qf[2]
+                       << meas->Qf[3] << meas->Sf[0] << meas->Sf[1] << meas->Sf[2] << meas->Sf[3] << meas->Cosphi
+                       << meas->Tmk << meas->Tamb << meas->Twin;
+                }
+                break;
+            }
+            }
+        case Config::MTB_A3:
+            break;
+        }
+        ValueLists.append(vl);
     }
     if (!model->isEmpty())
         model->clearModel();
@@ -275,7 +276,6 @@ void Journals::FillMeasTable(QByteArray &ba)
     model->fillModel(ValueLists);
     ResultReady();
 }
-
 void Journals::ResultReady()
 {
     ETableModel *mdl;
@@ -307,10 +307,10 @@ void Journals::ResultReady()
     pmdl->invalidate();
     pmdl->setDynamicSortFilter(false);
     pmdl->setSourceModel(mdl);
-    QFuture<void> future = QtConcurrent::run(pmdl, &QSortFilterProxyModel::sort, dateidx, order);
-    // pmdl->sort(dateidx, order);
-    future.waitForFinished();
-    qDebug() << "Read";
+    // QFuture<void> future = QtConcurrent::run(pmdl, &QSortFilterProxyModel::sort, dateidx, order);
+    pmdl->sort(dateidx, order);
+    // future.waitForFinished();
+    // qDebug() << "Read";
     emit Done("Прочитано успешно");
 }
 

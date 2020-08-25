@@ -5,13 +5,14 @@
 #include "../gen/s2.h"
 #include "eusbhid.h"
 
-//#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением
-//батареи
-#define TECH_Bo 1  // технологический блок осциллограмм
-#define TECH_Be 2  // технологический блок событий
+#include <QObject>
+
+//#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением батареи
+#define TECH_Bo 1 // технологический блок осциллограмм
+#define TECH_Be 2 // технологический блок событий
 #define TECH_Bte 3 // технологический блок технологических событий
 #define TECH_SWJ 4 // технологический блок журнала переключений
-#define TECH_RA 5  // технологический блок рабочего архива
+#define TECH_RA 5 // технологический блок рабочего архива
 
 #define CM_CONFIGFILE 1
 #define CM_FIRMWAREFILE 3
@@ -23,11 +24,12 @@
 
 #define MAXFLOAT 3.40282347E+38F
 
-class Commands
+class Commands : QObject
 {
-    explicit Commands();
 
+    Q_OBJECT
 public:
+    explicit Commands();
     static int GetBsi(ModuleBSI::Bsi &bsi);
     static int GetFileWithRestore(int filenum, QVector<S2::DataRec> *data);
     static int GetFile(int filenum, QByteArray &ba);
@@ -49,9 +51,10 @@ public:
     static int RunVPO();
     static int TestCom(char OnOff);
 
+signals:
+    void setupConnection();
+
 private:
 };
-
-extern EUsbHid *cn;
 
 #endif // COMMANDS_H

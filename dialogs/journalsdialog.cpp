@@ -1,14 +1,5 @@
-#include <QAbstractItemModelTester>
-#include <QApplication>
-#include <QDateTime>
-#include <QFileDialog>
-#include <QGroupBox>
-#include <QHeaderView>
-#include <QPushButton>
-#include <QSortFilterProxyModel>
-#include <QVBoxLayout>
-
 #include "../dialogs/journalsdialog.h"
+
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
@@ -20,10 +11,20 @@
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
+#include <QAbstractItemModelTester>
+#include <QApplication>
+#include <QDateTime>
+#include <QFileDialog>
+#include <QGroupBox>
+#include <QHeaderView>
+#include <QPushButton>
+#include <QSortFilterProxyModel>
+#include <QVBoxLayout>
+
 #if _MSC_VER && !__INTEL_COMPILER
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
-JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QWidget(parent)
+JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
 {
     JourFuncs = new Journals;
     ProxyWorkModel = new QSortFilterProxyModel;
@@ -48,7 +49,9 @@ JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QWidget(parent)
     SetupUI();
 }
 
-JournalDialog::~JournalDialog() { }
+JournalDialog::~JournalDialog()
+{
+}
 
 void JournalDialog::SetupUI()
 {
@@ -214,9 +217,15 @@ void JournalDialog::TryGetJourByUSB()
         GetJour();
 }
 
-void JournalDialog::GetJour() { emit StartGetJour(); }
+void JournalDialog::GetJour()
+{
+    emit StartGetJour();
+}
 
-void JournalDialog::JourFileChoosed(QString &file) { JourFile = file; }
+void JournalDialog::JourFileChoosed(QString &file)
+{
+    JourFile = file;
+}
 
 void JournalDialog::EraseJour()
 {
