@@ -161,7 +161,6 @@ void ConfDialogKTF::SetupUI()
     QGridLayout *glyout = new QGridLayout;
     QScrollArea *area = new QScrollArea;
     QScrollArea *scrArea = new QScrollArea;
-    QWidget *w = new QWidget;
 
     QWidget *wind1 = new QWidget;
     QWidget *wind2 = new QWidget;

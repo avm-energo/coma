@@ -82,7 +82,6 @@
 #define CN_SEGFAULTERROR 73 // ошибка при приёме сегмента данных на стороне модуля
 #define CN_RCVDATAERROR 74 // ошибка при приёме данных (несовпадение длины, неправильный начальный символ и т.п.)
 #define CN_TIMEOUTERROR 75 // таймаут при приёме данных
-#define CN_RCVLENGTHERROR                                                                                              \
 #define CN_RCVLENGTHERROR 76 // некорректная длина блока (принято больше, чем может вместить в себя приёмная
                                  // переменная)
 #define CN_UNKNOWNCMDERROR 77    // неизвестная команда

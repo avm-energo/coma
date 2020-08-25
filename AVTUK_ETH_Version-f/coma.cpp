@@ -765,7 +765,7 @@ void Coma::ConnectMessage()
     if (MainInterface == I_USB)
         hlyout->addWidget(WDFunc::NewLBLT(w, "Связь с " + ModuleBSI::ModuleTypeString + " установлена", "", "", ""), 1);
     else
-        hlyout->addWidget(WDFunc::NewLBLT(w, "Связь с " + FullName + " установлена", "", "", ""), 1);
+        hlyout->addWidget(WDFunc::NewLBLT(w, "Связь с " + ConnectSettings.name + " установлена", "", "", ""), 1);
     vlayout->addLayout(hlyout);
     w->setLayout(vlayout);
     lyout->addWidget(w);
