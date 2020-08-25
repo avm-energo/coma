@@ -1,10 +1,10 @@
 #pragma once
 
 #include "eabstractprotocomchannel.h"
-#include "eusbthread.h"
 #include "eusbworker.h"
 
 #include <QByteArray>
+#include <QThread>
 #include <QObject>
 
 // Канал связи с модулем
