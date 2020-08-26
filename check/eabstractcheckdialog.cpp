@@ -5,6 +5,7 @@
 #include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/emessagebox.h"
+#include "../widgets/etabwidget.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>

@@ -2,7 +2,7 @@
 
 ETabWidget::ETabWidget(QWidget *parent) : QTabWidget(parent)
 {
-    setTabBar(new ETabBar());
+    setTabBar(new ETabBar);
     setTabPosition(QTabWidget::West);
     connect(this, SIGNAL(tabBarClicked(int)), this, SIGNAL(tabClicked(int)));
 }

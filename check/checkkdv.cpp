@@ -26,45 +26,85 @@ QWidget *CheckKDV::Bd1W(QWidget *parent)
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    QString phase[3] = { "A", "B", "C" };
-    QFont font;
+    QString phase[4] = { "ф. A", "ф. B", "ф. C", "ср." };
+    QString pphase[4] = { "ф. A", "ф. B", "ф. C", "сум." };
+    QString ppphase[4] = { "AB", "BC", "CA", "ср." };
 
-    QGroupBox *gb = new QGroupBox("Входные сигналы");
-    gb->setFont(font);
+    //...................................
+
+    QFont ffont;
+    QGroupBox *gb = new QGroupBox("Общие");
+    ffont.setFamily("Times");
+    ffont.setPointSize(11);
+    gb->setFont(ffont);
+
+    glyout->addWidget(WDFunc::NewLBL(parent, "Температура ННТ, °С"), 0, 0, 1, 1);
+    glyout->addWidget(
+        WDFunc::NewLBLT(parent, "", QString::number(4500), ValuesFormat, "Температура ННТ обмотки (расчетная), °С"), 1,
+        0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Tamb, °С"), 0, 1, 1, 1);
+    glyout->addWidget(
+        WDFunc::NewLBLT(parent, "", QString::number(4501), ValuesFormat, "Температура окружающей среды, °С"), 1, 1, 1,
+        1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Частота, Гц"), 0, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2400), ValuesFormat, "Частота, Гц"), 1, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Температура микроконтроллера, °С"), 0, 3, 1, 1);
+    glyout->addWidget(
+        WDFunc::NewLBLT(parent, "", QString::number(101), ValuesFormat, "Температура микроконтроллера, °С"), 1, 3, 1,
+        1);
+
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+
+    // ...................................
+
+    gb = new QGroupBox("Электрические параметры");
+    gb->setFont(ffont);
     vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
-
-    glyout->addWidget(WDFunc::NewLBL(parent, "Частота, Гц"), 0, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "Frequency", ValuesFormat, "Частота, Гц"), 1, 0, 1, 1);
-
-    for (i = 0; i < 3; ++i)
+    for (i = 0; i < 4; ++i)
     {
-        glyout->addWidget(WDFunc::NewLBL(parent, "IUefNat_filt ф." + phase[i] + ", В"), 2, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "IUefNat_filt" + QString::number(i), ValuesFormat,
-                              "Истинные действующие значения сигналов, В"),
+        // QString IndexStr = "[" + QString::number(i) + "]";
+        glyout->addWidget(WDFunc::NewLBL(parent, "Ueff " + phase[i] + ", кВ"), 2, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1000 + i), ValuesFormat,
+                              "Истинные действующие значения сигналов трех фаз и их среднее, кВ"),
             3, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "IUefNat_filt ф." + phase[i] + ", мА"), 2, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "IUefNat_filt" + QString::number(i + 3), ValuesFormat,
-                              "Истинные действующие значения сигналов, мА"),
-            3, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "UefNatLin_filt ф." + phase[i] + ", мА"), 4, i, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLBLT(parent, "", "UefNatLin_filt" + QString::number(i), ValuesFormat, "Линейное напряжение, В"),
+        glyout->addWidget(WDFunc::NewLBL(parent, "Ieff " + phase[i] + ", А"), 4, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1400 + i), ValuesFormat,
+                              "Истинные действующие значения сигналов трех фаз и их среднее, А"),
             5, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "phi_U ф." + phase[i] + ", Град"), 6, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "phi_next_f" + QString::number(i), ValuesFormat,
-                              "Углы сдвига сигналов по 1-ой гармонике относительно Ua, Град"),
+        glyout->addWidget(WDFunc::NewLBL(parent, "P " + pphase[i] + ", кВт"), 6, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2420 + i), ValuesFormat,
+                              "Истинная активная мощность по фазам и суммарная, кВт"),
             7, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "phi_I ф." + phase[i] + ", Град"), 6, i + 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "phi_next_f" + QString::number(i + 3), ValuesFormat,
-                              "Углы сдвига сигналов по 1-ой гармонике относительно Ua, Град"),
-            7, i + 3, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Q " + pphase[i] + ", кВАр"), 8, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2424 + i), ValuesFormat,
+                              "Реактивная мощность по кажущейся полной "
+                              "и истинной активной, кВАр"),
+            9, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "S " + pphase[i] + ", кВА"), 10, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2428 + i), ValuesFormat,
+                              "Кажущаяся полная мощность по эфф. токам и нпарямжениям, кВА"),
+            11, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "CosPhi " + phase[i] + ""), 12, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2432 + i), ValuesFormat,
+                              "Косинус phi по истинной активной мощности,по фазам и средний "),
+            13, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Uлин " + ppphase[i] + ", кВ"), 14, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1220 + i), ValuesFormat,
+                              "Истинные действующие значения линейных "
+                              "напряжений трех фази их среднее, кВ"),
+            15, i, 1, 1);
     }
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
     lyout->addWidget(gb);
 
+    // ......................................
+
+    lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
     w->setStyleSheet(WidgetFormat);
@@ -75,62 +115,129 @@ QWidget *CheckKDV::Bd2W(QWidget *parent)
 {
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    QString phase[4] = { "A", "B", "C", "ср." };
-    QFont font;
-    int i;
 
-    QGroupBox *gb = new QGroupBox("Первичные");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    gb->setFont(font);
-    // gb->setTitle(title);
-    QVBoxLayout *vlyout2 = new QVBoxLayout;
-    QVBoxLayout *vlyout1 = new QVBoxLayout;
+    //...................................
 
-    for (i = 0; i < 4; ++i)
-    {
-        glyout->addWidget(WDFunc::NewLBL(parent, "Gr1IUefNat_filt ф." + phase[i]), 0, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1000 + i), ValuesFormat,
-                              "Истинные действующие значения сигналов"),
-            1, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Gr1IUeff_filtered ф." + phase[i]), 2, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1004 + i), ValuesFormat,
-                              "Действующие значения сигналов трех фаз по 1-й гармонике"),
-            3, i, 1, 1);
-    }
+    QFont ffont;
+    QGroupBox *gb = new QGroupBox("Оставшееся время работы до предупреждения");
+    ffont.setFamily("Times");
+    ffont.setPointSize(11);
+    gb->setFont(ffont);
 
-    for (i = 0; i < 3; ++i)
-    {
-        glyout->addWidget(WDFunc::NewLBL(parent, "KrF_Gr1 ф." + phase[i]), 4, i, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLBLT(parent, "", QString::number(1008 + i), ValuesFormat, "Крест-фактор"), 5, i, 1, 1);
-    }
+    glyout->addWidget(WDFunc::NewLBL(parent, "При данной нагрузке, сек"), 0, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4010), ValuesFormat,
+                          "Оставшееся время работы до "
+                          "предупрежде-ния при данной нагрузке, сек"),
+        1, 0, 1, 1);
 
-    for (i = 0; i < 4; ++i)
-    {
-        glyout->addWidget(WDFunc::NewLBL(parent, "Gr2IUefNat_filt ф." + phase[i]), 6, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1100 + i), ValuesFormat,
-                              "Истинные действующие значения сигналов"),
-            7, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Gr2IUeff_filtered ф." + phase[i]), 8, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1104 + i), ValuesFormat,
-                              "Действующие значения сигналов трех фаз по 1-й гармонике"),
-            9, i, 1, 1);
-    }
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
 
-    for (i = 0; i < 3; ++i)
-    {
-        glyout->addWidget(WDFunc::NewLBL(parent, "KrF_Gr2 ф." + phase[i]), 10, i, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLBLT(parent, "", QString::number(1108 + i), ValuesFormat, "Крест-фактор"), 11, i, 1, 1);
-    }
+    //...................................
 
-    vlyout2->addLayout(glyout);
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);
+    gb = new QGroupBox("Допустимое оставшееся время работы");
+    gb->setFont(ffont);
+    vlyout = new QVBoxLayout;
+    glyout = new QGridLayout;
 
-    lyout->addLayout(vlyout1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При данной нагрузке, сек"), 0, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4011), ValuesFormat,
+                          "Допустимое оставшееся время работы при данной нагрузке, сек"),
+        1, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 105%, сек"), 0, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4012), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 105%, сек"),
+        1, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 110%, сек"), 0, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4013), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 110%, сек"),
+        1, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 115%, сек"), 2, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4014), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 115%, сек"),
+        3, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 120%, сек"), 2, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4015), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 120%, сек"),
+        3, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 125%, сек"), 2, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4016), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 125%, сек"),
+        3, 2, 1, 1);
+
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 130%, сек"), 4, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4017), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 130%, сек"),
+        5, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 135%, сек"), 4, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4018), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 135%, сек"),
+        5, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 140%, сек"), 4, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4019), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 140%, сек"),
+        5, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 145%, сек"), 6, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4020), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 145%, сек"),
+        7, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 150%, сек"), 6, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4021), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 150%, сек"),
+        7, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 155%, сек"), 6, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4022), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 155%, сек"),
+        7, 2, 1, 1);
+
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 160%, сек"), 8, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4023), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 160%, сек"),
+        9, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 165%, сек"), 8, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4024), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 165%, сек"),
+        9, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 170%, сек"), 8, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4025), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 170%, сек"),
+        9, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 175%, сек"), 10, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4026), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 175%, сек"),
+        11, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 180%, сек"), 10, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4027), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 180%, сек"),
+        11, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 185%, сек"), 10, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4028), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 185%, сек"),
+        11, 2, 1, 1);
+
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 190%, сек"), 12, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4029), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 190%, сек"),
+        13, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 195%, сек"), 12, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4030), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 195%, сек"),
+        13, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 200%, сек"), 12, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4031), ValuesFormat,
+                          "Допустимое оставшееся время работы при нагрузке 200%, сек"),
+        13, 2, 1, 1);
+
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+
+    // ......................................
+
+    lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
     w->setStyleSheet(WidgetFormat);
@@ -141,72 +248,53 @@ QWidget *CheckKDV::Bd3W(QWidget *parent)
 {
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    QString phase[4] = { "A", "B", "C", "ср." };
-    QFont font;
-    int i;
 
-    QGroupBox *gb = new QGroupBox("Качество");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    gb->setFont(font);
-    // gb->setTitle(title);
-    QVBoxLayout *vlyout2 = new QVBoxLayout;
-    QVBoxLayout *vlyout1 = new QVBoxLayout;
+    //...................................
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "U0_Gr1"), 0, 0, 1, 1);
-    glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "1020", ValuesFormat, "Сигнал нулевой последовательности"), 1, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "U1_Gr1"), 0, 1, 1, 1);
-    glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "1021", ValuesFormat, "Сигнал прямой последовательности"), 1, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "U2_Gr1"), 0, 2, 1, 1);
-    glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "1022", ValuesFormat, "Сигнал обратной последовательности"), 1, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim0_Gr1"), 0, 3, 1, 1);
-    glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "1023", ValuesFormat, "Коэфф. несимметрии по нулевой посл."), 1, 3, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim2_Gr1"), 0, 4, 1, 1);
-    glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "1024", ValuesFormat, "Коэфф. несимметрии по обратной посл."), 1, 4, 1, 1);
+    QFont ffont;
+    QGroupBox *gb = new QGroupBox("Изоляция");
+    ffont.setFamily("Times");
+    ffont.setPointSize(11);
+    gb->setFont(ffont);
 
-    for (i = 0; i < 3; ++i)
-    {
-        glyout->addWidget(WDFunc::NewLBL(parent, "THD_Gr1 ф." + phase[i]), 2, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "THD_Gr1" + QString::number(i), ValuesFormat,
-                              "Общий коэфф. гармонических искажений"),
-            3, i, 1, 1);
-    }
+    glyout->addWidget(WDFunc::NewLBL(parent, "Относительная скорость старения изоляции"), 0, 0, 1, 1);
+    glyout->addWidget(
+        WDFunc::NewLBLT(parent, "", QString::number(4000), ValuesFormat, "Относительная скорость старения изоляции"), 1,
+        0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Интегральное старение изоляции, час"), 2, 0, 1, 1);
+    glyout->addWidget(
+        WDFunc::NewLBLT(parent, "", QString::number(4001), ValuesFormat, "Интегральное старение изоляции, час"), 3, 0,
+        1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Остаточный ресурс изоляции, час"), 4, 0, 1, 1);
+    glyout->addWidget(
+        WDFunc::NewLBLT(parent, "", QString::number(4002), ValuesFormat, "Остаточный ресурс изоляции, час"), 5, 0, 1,
+        1);
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "U0_Gr2"), 4, 0, 1, 1);
-    glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "1120", ValuesFormat, "Сигнал нулевой последовательности"), 5, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "U1_Gr2"), 4, 1, 1, 1);
-    glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "1121", ValuesFormat, "Сигнал прямой последовательности"), 5, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "U2_Gr2"), 4, 2, 1, 1);
-    glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "1122", ValuesFormat, "Сигнал обратной последовательности"), 5, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim0_Gr2"), 4, 3, 1, 1);
-    glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "1123", ValuesFormat, "Коэфф. несимметрии по нулевой посл."), 5, 3, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Kunsim2_Gr2"), 4, 4, 1, 1);
-    glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "1124", ValuesFormat, "Коэфф. несимметрии по обратной посл."), 5, 4, 1, 1);
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
 
-    for (i = 0; i < 3; ++i)
-    {
-        glyout->addWidget(WDFunc::NewLBL(parent, "THD_Gr2 ф." + phase[i]), 6, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", "THD_Gr2" + QString::number(i), ValuesFormat,
-                              "Общий коэфф. гармонических искажений"),
-            7, i, 1, 1);
-    }
+    // ......................................
 
-    vlyout2->addLayout(glyout);
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);
+    gb = new QGroupBox("Амплитуда пускового тока при последнем пуске");
+    gb->setFont(ffont);
+    vlyout = new QVBoxLayout;
+    glyout = new QGridLayout;
 
-    lyout->addLayout(vlyout1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Амплитуда, А"), 6, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(5200), ValuesFormat,
+                          "Амплитуда пускового тока при последнем пуске, А"),
+        7, 0, 1, 1);
+
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+
+    // ......................................
+
+    lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
     w->setStyleSheet(WidgetFormat);
@@ -215,61 +303,70 @@ QWidget *CheckKDV::Bd3W(QWidget *parent)
 
 QWidget *CheckKDV::Bd4W(QWidget *parent)
 {
+    int i;
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    QString phase[4] = { "A", "B", "C", "ср." };
-    QFont font;
-    int i;
+    QString phase[4] = { "ф. A", "ф. B", "ф. C", "ср." };
+    QString pphase[4] = { "ф. A", "ф. B", "ф. C", "сум." };
+    QString ppphase[4] = { "AB", "BC", "CA", "ср." };
 
-    QGroupBox *gb = new QGroupBox("Мощности");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    gb->setFont(font);
-    // gb->setTitle(title);
-    QVBoxLayout *vlyout2 = new QVBoxLayout;
-    QVBoxLayout *vlyout1 = new QVBoxLayout;
+    //...................................
 
+    QFont ffont;
+    QGroupBox *gb = new QGroupBox;
+    ffont.setFamily("Times");
+    ffont.setPointSize(11);
+    gb->setFont(ffont);
+
+    gb = new QGroupBox("Электрические параметры по 1-й гармонике");
+    gb->setFont(ffont);
+    vlyout = new QVBoxLayout;
+    glyout = new QGridLayout;
     for (i = 0; i < 4; ++i)
     {
-        glyout->addWidget(WDFunc::NewLBL(parent, "PNatf ф." + phase[i]), 0, i, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLBLT(parent, "", QString::number(2420 + i), ValuesFormat, "Истинная активная мощность"), 1, i, 1,
-            1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "QNatf ф." + phase[i]), 2, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2424 + i), ValuesFormat,
-                              "Реактивная мощность по кажущейся полной и истинной активной"),
+
+        glyout->addWidget(WDFunc::NewLBL(parent, "Ueff " + phase[i] + ", кВ"), 0, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1004 + i), ValuesFormat,
+                              "Действующие значения сигналов трех фаз "
+                              "по 1-й гармонике и их среднее, кВ"),
+            1, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Ieff " + phase[i] + ", А"), 2, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1404 + i), ValuesFormat,
+                              "Действующие значения сигналов трех фаз "
+                              "по 1-й гармонике и их среднее, А"),
             3, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "SNatf ф." + phase[i]), 4, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2428 + i), ValuesFormat,
-                              "Кажущаяся полная мощность по эфф. токам и напряжениям"),
+        glyout->addWidget(WDFunc::NewLBL(parent, "P " + pphase[i] + ", кВт"), 4, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2450 + i), ValuesFormat,
+                              "Активная мощность по 1-й гармонике, по фазам и суммарная, кВт"),
             5, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "CosPhiNat ф." + phase[i]), 6, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2432 + i), ValuesFormat,
-                              "Cos phi по истинной активной мощности"),
+        glyout->addWidget(WDFunc::NewLBL(parent, "Q " + pphase[i] + ", кВАр"), 6, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2454 + i), ValuesFormat,
+                              "Реактивня мощность по 1-й гармонике, кВАр"),
             7, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Pf ф." + phase[i]), 8, i, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLBLT(parent, "", QString::number(2436 + i), ValuesFormat, "Активная мощность по 1-й гарм."), 9,
-            i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Qf ф." + phase[i]), 10, i, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLBLT(parent, "", QString::number(2440 + i), ValuesFormat, "Реактивная мощность по 1-й гарм."),
+        glyout->addWidget(WDFunc::NewLBL(parent, "S " + pphase[i] + ", кВА"), 8, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2458 + i), ValuesFormat,
+                              "Полная мощность по 1-й гармонике, кВА"),
+            9, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "CosPhi " + phase[i] + ""), 10, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2462 + i), ValuesFormat,
+                              "Косинус phi по 1-й гармонике,по фазам и средний "),
             11, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Sf ф." + phase[i]), 12, i, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLBLT(parent, "", QString::number(2444 + i), ValuesFormat, "Полная мощность по по 1-й гарм."), 13,
-            i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "CosPhi ф." + phase[i]), 14, i, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLBLT(parent, "", QString::number(2448 + i), ValuesFormat, "Cos phi по 1-й гарм."), 15, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Uлин " + ppphase[i] + ", кВ"), 12, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1224 + i), ValuesFormat,
+                              "Действующие значения 1-й гармоники линейных "
+                              "напряжений трех фази их среднее, кВ"),
+            13, i, 1, 1);
     }
 
-    vlyout2->addLayout(glyout);
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
 
-    lyout->addLayout(vlyout1);
+    // ......................................
+
+    lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
     w->setStyleSheet(WidgetFormat);
@@ -278,215 +375,104 @@ QWidget *CheckKDV::Bd4W(QWidget *parent)
 
 QWidget *CheckKDV::Bd5W(QWidget *parent)
 {
+    int i;
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
-    QString phase[4] = { "Фаза A", "Фаза B", "Фаза C" };
-    QFont font;
-    int j, i = 0;
+    QString phase[3] = { "ф. A", "ф. B", "ф. C" };
+    // QString pphase[4] = {"ф. A","ф. B","ф. C","сум."};
+    // QString ppphase[4] = {"AB","BC","CA","ср."};
 
-    QScrollArea *area = new QScrollArea;
-    area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
-    area->setFrameShape(QFrame::NoFrame);
-    area->setWidgetResizable(true);
+    //...................................
 
-    QGroupBox *gb = new QGroupBox("Гармоники");
-    QGroupBox *gbIn = new QGroupBox("Группа №1");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    gb->setFont(font);
-    gbIn->setFont(font);
-    // gb->setTitle(title);
-    QVBoxLayout *vlyout2 = new QVBoxLayout;
-    QHBoxLayout *hlyout1 = new QHBoxLayout;
+    QFont ffont;
+    QGroupBox *gb = new QGroupBox;
+    ffont.setFamily("Times");
+    ffont.setPointSize(11);
+    gb->setFont(ffont);
 
-    for (j = 0; j < 3; ++j)
-    {
-        glyout->addWidget(WDFunc::NewLBL(parent, phase[j]), 0, j, 1, 1, Qt::AlignCenter);
-    }
-
-    for (j = 1; j < 62; ++j)
-    {
-        i = 2 + 2 * (j - 1);
-        glyout->addWidget(
-            WDFunc::NewLBL(parent, "Bda_Gr1.Harm[0][" + QString::number(j - 1) + "]"), 1 + 2 * (j - 1), 0, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(3020 + j - 1), ValuesFormat, ""), i, 0, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLBL(parent, "Bda_Gr1.Harm[1][" + QString::number(j - 1) + "]"), 1 + 2 * (j - 1), 1, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(3146 + j - 1), ValuesFormat, ""), i, 1, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLBL(parent, "Bda_Gr1.Harm[2][" + QString::number(j - 1) + "]"), 1 + 2 * (j - 1), 2, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(3270 + j - 1), ValuesFormat, ""), i, 2, 1, 1);
-    }
-
-    vlyout2->addLayout(glyout);
-    gbIn->setLayout(vlyout2);
-    hlyout1->addWidget(gbIn);
-
-    gbIn = new QGroupBox("Группа №2");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    gbIn->setFont(font);
-    vlyout2 = new QVBoxLayout;
+    gb = new QGroupBox("Данные по напряжению");
+    gb->setFont(ffont);
+    vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
 
-    for (j = 0; j < 3; ++j)
-    {
-        glyout->addWidget(WDFunc::NewLBL(parent, phase[j]), 0, j + 3, 1, 1, Qt::AlignCenter);
-    }
-
-    for (j = 1; j < 62; ++j)
-    {
-        i = 2 + 2 * (j - 1);
-        glyout->addWidget(
-            WDFunc::NewLBL(parent, "Bda_Gr2.Harm[0][" + QString::number(j - 1) + "]"), 1 + 2 * (j - 1), 3, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(3420 + j - 1), ValuesFormat, ""), i, 3, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLBL(parent, "Bda_Gr2.Harm[1][" + QString::number(j - 1) + "]"), 1 + 2 * (j - 1), 4, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(3546 + j - 1), ValuesFormat, ""), i, 4, 1, 1);
-        glyout->addWidget(
-            WDFunc::NewLBL(parent, "Bda_Gr2.Harm[2][" + QString::number(j - 1) + "]"), 1 + 2 * (j - 1), 5, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(3670 + j - 1), ValuesFormat, ""), i, 5, 1, 1);
-    }
-
-    vlyout2->addLayout(glyout);
-    gbIn->setLayout(vlyout2);
-    hlyout1->addWidget(gbIn);
-    gb->setLayout(hlyout1);
-    area->setWidget(gb);
-    lyout->addWidget(area);
-    area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
-    area->verticalScrollBar()->setMinimumHeight(450);
-    lyout->addStretch(100);
-    w->setLayout(lyout);
-    w->setStyleSheet(WidgetFormat);
-    return w;
-}
-
-QWidget *CheckKDV::Bd6W(QWidget *parent)
-{
-    QWidget *w = new QWidget(parent);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    QString phase[4] = { "A", "B", "C", "ср." };
-    QFont font;
-
-    QGroupBox *gb = new QGroupBox("Ресурс");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    gb->setFont(font);
-    // gb->setTitle(title);
-    QVBoxLayout *vlyout2 = new QVBoxLayout;
-    QVBoxLayout *vlyout1 = new QVBoxLayout;
-
-    glyout->addWidget(WDFunc::NewLBL(parent, "Vst"), 0, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "U0, кВ"), 0, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1020), ValuesFormat,
+                          "Напряжение нулевой последовательности гр.1, кВ"),
+        1, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "U1, кВ"), 0, 1, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "4000", ValuesFormat, "Относительная скорость старения изоляции, час/час"), 1, 0, 1,
+        WDFunc::NewLBLT(parent, "", QString::number(1021), ValuesFormat, "Температура окружающей среды, °С"), 1, 1, 1,
         1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Age"), 0, 1, 1, 1);
-    glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "4001", ValuesFormat, "Интегральное старение изоляции, час"), 1, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Resurs"), 0, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "4002", ValuesFormat, "Остаточный ресурс изоляции, час"), 1, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Tpred"), 0, 3, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "4010", ValuesFormat,
-                          "Оставшееся время работы до предупреждения при данной нагрузке"),
-        1, 3, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Tdop"), 0, 4, 1, 1);
-    glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "4011", ValuesFormat, "Допустимое оставшееся время работы при данной нагрузке"), 1,
-        4, 1, 1);
-
-    vlyout2->addLayout(glyout);
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);
-
-    lyout->addLayout(vlyout1);
-    lyout->addStretch(100);
-    w->setLayout(lyout);
-    w->setStyleSheet(WidgetFormat);
-    return w;
-}
-
-QWidget *CheckKDV::Bd7W(QWidget *parent)
-{
-    QWidget *w = new QWidget(parent);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    QString phase[4] = { "A", "B", "C", "ср." };
-    QFont font;
-    int i;
-    QScrollArea *area = new QScrollArea;
-    area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
-    area->setFrameShape(QFrame::NoFrame);
-    area->setWidgetResizable(true);
-
-    QGroupBox *gb = new QGroupBox("Модель");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    gb->setFont(font);
-    // gb->setTitle(title);
-    QVBoxLayout *vlyout2 = new QVBoxLayout;
-
-    for (i = 0; i < 20; i++)
+    glyout->addWidget(WDFunc::NewLBL(parent, "U2, кВ"), 0, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1022), ValuesFormat, "Частота, Гц"), 1, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "KunsimU0"), 2, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1023), ValuesFormat,
+                          "Коэффициент несимметрии напряжения по "
+                          "обратной последовательности гр.1, %"),
+        3, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "KunsimU2"), 2, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1024), ValuesFormat,
+                          "Коэффициент несимметрии напряжения по "
+                          "нулевой последовательности гр.1, %"),
+        3, 1, 1, 1);
+    for (i = 0; i < 3; ++i)
     {
-        glyout->addWidget(WDFunc::NewLBL(parent, "Tdop" + QString::number(105 + i * 5)), 2 * i, 0, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4012 + i), ValuesFormat,
-                              "Допустимое оставшееся время работы при нагрузке " + QString::number(105 + i * 5) + "%"),
-            2 * i + 1, 0, 1, 1);
+
+        glyout->addWidget(WDFunc::NewLBL(parent, "THD" + phase[i] + ""), 4, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1025 + i), ValuesFormat,
+                              "Общий коэффициент гарм. искажений напряжения фазы " + phase[i] + " гр.1"),
+            5, i, 1, 1);
     }
 
-    vlyout2->addLayout(glyout);
-    gb->setLayout(vlyout2);
-    area->setWidget(gb);
-    lyout->addWidget(area);
-    area->verticalScrollBar()->setValue(area->verticalScrollBar()->maximum());
-    area->verticalScrollBar()->setMinimumHeight(450);
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
 
-    lyout->addStretch(100);
-    w->setLayout(lyout);
-    w->setStyleSheet(WidgetFormat);
-    return w;
-}
+    // ......................................
 
-QWidget *CheckKDV::Bd8W(QWidget *parent)
-{
-    QWidget *w = new QWidget(parent);
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QGridLayout *glyout = new QGridLayout;
-    QString phase[4] = { "A", "B", "C", "ср." };
-    QFont font;
-    int i;
+    gb = new QGroupBox("Данные по току");
+    gb->setFont(ffont);
+    vlyout = new QVBoxLayout;
+    glyout = new QGridLayout;
 
-    QGroupBox *gb = new QGroupBox("Температура");
-    font.setFamily("Times");
-    font.setPointSize(11);
-    gb->setFont(font);
-    // gb->setTitle(title);
-    QVBoxLayout *vlyout2 = new QVBoxLayout;
-    QVBoxLayout *vlyout1 = new QVBoxLayout;
-
-    glyout->addWidget(WDFunc::NewLBL(parent, "TempWinding"), 0, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "I0, кВ"), 6, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", "4500", ValuesFormat, "Температура ННТ обмотки (расчетная)"), 1, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "temperature"), 0, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "4501", ValuesFormat, "Температура окружающей среды"), 1, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "TempWinding"), 0, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", "4502", ValuesFormat, "Сопротивление термометра, Ом"), 1, 2, 1, 1);
-
-    for (i = 0; i < 4; ++i)
+        WDFunc::NewLBLT(parent, "", QString::number(1420), ValuesFormat, "Ток нулевой последовательности гр.1, A"), 7,
+        0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "I1, кВ"), 6, 1, 1, 1);
+    glyout->addWidget(
+        WDFunc::NewLBLT(parent, "", QString::number(1421), ValuesFormat, "Ток прямой последовательности гр.1, А"), 7, 1,
+        1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "I2, А"), 6, 2, 1, 1);
+    glyout->addWidget(
+        WDFunc::NewLBLT(parent, "", QString::number(1422), ValuesFormat, "Ток обратной последовательности гр.1, А"), 7,
+        2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "KunsimI0"), 8, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1423), ValuesFormat,
+                          "Коэффициент несимметрии тока по обратной последовательности гр.1,%"),
+        9, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "KunsimI2"), 8, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1424), ValuesFormat,
+                          "Коэффициент несимметрии тока по нулевой последовательности гр.1,%"),
+        9, 1, 1, 1);
+    for (i = 0; i < 3; ++i)
     {
-        glyout->addWidget(WDFunc::NewLBL(parent, "ExtTempWin[" + QString::number(i) + "]"), 2, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4503 + i), ValuesFormat,
-                              "Температуры обмоток, измеренные встроенными датчиками(до 4шт.)"),
-            3, i, 1, 1);
+
+        glyout->addWidget(WDFunc::NewLBL(parent, "THD" + phase[i] + ""), 10, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1425 + i), ValuesFormat,
+                              "Общий коэффициент гарм. искажений тока фазы " + phase[i] + " гр.1"),
+            11, i, 1, 1);
     }
 
-    vlyout2->addLayout(glyout);
-    gb->setLayout(vlyout2);
-    vlyout1->addWidget(gb);
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
 
-    lyout->addLayout(vlyout1);
+    // ......................................
+
+    lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
     w->setStyleSheet(WidgetFormat);
@@ -498,171 +484,243 @@ void CheckKDV::FillBd(QWidget *parent, QString Name, QString Value)
     WDFunc::SetLBLText(parent, Name, Value);
 }
 
-void CheckKDV::FillBda_block(QWidget *parent)
+void CheckKDV::FillBd0(QWidget *parent)
 {
-    WDFunc::SetLBLText(parent, "Frequency", WDFunc::StringValueWithCheck(Bda_block.Frequency, 3));
-
-    for (int i = 0; i < 3; i++)
-    {
-        WDFunc::SetLBLText(
-            parent, "IUefNat_filt" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i], 3));
-        WDFunc::SetLBLText(parent, "IUefNat_filt" + QString::number(i + 3),
-            WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i + 3], 3));
-        WDFunc::SetLBLText(parent, "UefNatLin_filt" + QString::number(i),
-            WDFunc::StringValueWithCheck(Bda_block.UefNatLin_filt[i], 3));
-        WDFunc::SetLBLText(parent, "IUeff_filtered" + QString::number(i),
-            WDFunc::StringValueWithCheck(Bda_block.IUeff_filtered[i], 3));
-        WDFunc::SetLBLText(parent, "IUeff_filtered" + QString::number(i + 3),
-            WDFunc::StringValueWithCheck(Bda_block.IUeff_filtered[i + 3], 3));
-        WDFunc::SetLBLText(
-            parent, "phi_next_f" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.phi_next_f[i], 3));
-        WDFunc::SetLBLText(parent, "phi_next_f" + QString::number(i + 3),
-            WDFunc::StringValueWithCheck(Bda_block.phi_next_f[i + 3], 3));
-        WDFunc::SetLBLText(parent, "PNatf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.PNatf[i], 3));
-        WDFunc::SetLBLText(parent, "QNatf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.QNatf[i], 3));
-        WDFunc::SetLBLText(parent, "SNatf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.SNatf[i], 3));
-        WDFunc::SetLBLText(
-            parent, "CosPhiNat" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.CosPhiNat[i], 3));
-        WDFunc::SetLBLText(parent, "Pf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.Pf[i], 3));
-        WDFunc::SetLBLText(parent, "Qf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.Qf[i], 3));
-        WDFunc::SetLBLText(parent, "Sf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.Sf[i], 3));
-        WDFunc::SetLBLText(parent, "CosPhi" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.CosPhi[i], 3));
-    }
-
-    WDFunc::SetLBLText(parent, "Pt100_R", WDFunc::StringValueWithCheck(Bda_block.Pt100_R, 3));
+    WDFunc::SetLBLText(parent, QString::number(101), WDFunc::StringValueWithCheck(Bd_block0.Temp, 3));
 }
-void CheckKDV::FillBd2_Gr1(QWidget *parent)
+
+void CheckKDV::FillBd2(QWidget *parent)
 {
 
     for (int i = 0; i < 4; i++)
     {
         WDFunc::SetLBLText(
-            parent, QString::number(1000 + i), WDFunc::StringValueWithCheck(Bd2_Gr1.GrIUefNat_filt[i], 3));
-        WDFunc::SetLBLText(
-            parent, QString::number(1004 + i), WDFunc::StringValueWithCheck(Bd2_Gr1.GrIUeff_filtered[i], 3));
-    }
+            parent, QString::number(1000 + i), WDFunc::StringValueWithCheck(Bd_block2.IUefNat_filt[i], 3));
 
-    for (int i = 0; i < 3; i++)
-    {
-        WDFunc::SetLBLText(parent, QString::number(1008 + i), WDFunc::StringValueWithCheck(Bd2_Gr1.KrF[i], 3));
+        WDFunc::SetLBLText(
+            parent, QString::number(1004 + i), WDFunc::StringValueWithCheck(Bd_block2.IUeff_filtered[i], 3));
     }
 }
-void CheckKDV::FillBd3_Gr2(QWidget *parent)
+
+void CheckKDV::FillBd3(QWidget *parent)
 {
     for (int i = 0; i < 4; i++)
     {
         WDFunc::SetLBLText(
-            parent, QString::number(1100 + i), WDFunc::StringValueWithCheck(Bd3_Gr2.GrIUefNat_filt[i], 3));
+            parent, QString::number(1400 + i), WDFunc::StringValueWithCheck(Bd_block3.IUefNat_filt[i], 3));
+
         WDFunc::SetLBLText(
-            parent, QString::number(1104 + i), WDFunc::StringValueWithCheck(Bd3_Gr2.GrIUeff_filtered[i], 3));
+            parent, QString::number(1404 + i), WDFunc::StringValueWithCheck(Bd_block3.IUeff_filtered[i], 3));
     }
+}
 
-    for (int i = 0; i < 3; i++)
-    {
-        WDFunc::SetLBLText(parent, QString::number(1108 + i), WDFunc::StringValueWithCheck(Bd3_Gr2.KrF[i], 3));
-    }
-}
-void CheckKDV::FillBd4_U0(QWidget *parent)
-{
-    WDFunc::SetLBLText(parent, "1020", WDFunc::StringValueWithCheck(Bd4_U0.U0, 3));
-    WDFunc::SetLBLText(parent, "1021", WDFunc::StringValueWithCheck(Bd4_U0.U1, 3));
-    WDFunc::SetLBLText(parent, "1022", WDFunc::StringValueWithCheck(Bd4_U0.U2, 3));
-    WDFunc::SetLBLText(parent, "1023", WDFunc::StringValueWithCheck(Bd4_U0.Kunsim0, 3));
-    WDFunc::SetLBLText(parent, "1024", WDFunc::StringValueWithCheck(Bd4_U0.Kunsim2, 3));
-
-    for (int i = 0; i < 3; i++)
-    {
-        WDFunc::SetLBLText(parent, "THD_Gr1" + QString::number(i), WDFunc::StringValueWithCheck(Bd4_U0.THD[i], 3));
-    }
-}
-void CheckKDV::FillBd5_UI_Harm(QWidget *parent)
-{
-    for (int i = 0; i < 61; i++)
-    {
-        WDFunc::SetLBLText(parent, QString::number(3020 + i), WDFunc::StringValueWithCheck(Bd5_UI_Harm.Harm[0][i], 3));
-        WDFunc::SetLBLText(parent, QString::number(3146 + i), WDFunc::StringValueWithCheck(Bd5_UI_Harm.Harm[1][i], 3));
-        WDFunc::SetLBLText(parent, QString::number(3270 + i), WDFunc::StringValueWithCheck(Bd5_UI_Harm.Harm[2][i], 3));
-    }
-}
-void CheckKDV::FillBd6_U0(QWidget *parent)
+void CheckKDV::FillBd4(QWidget *parent)
 {
 
-    WDFunc::SetLBLText(parent, "1120", WDFunc::StringValueWithCheck(Bd6_U0.U0, 3));
-    WDFunc::SetLBLText(parent, "1121", WDFunc::StringValueWithCheck(Bd6_U0.U1, 3));
-    WDFunc::SetLBLText(parent, "1122", WDFunc::StringValueWithCheck(Bd6_U0.U2, 3));
-    WDFunc::SetLBLText(parent, "1123", WDFunc::StringValueWithCheck(Bd6_U0.Kunsim0, 3));
-    WDFunc::SetLBLText(parent, "1124", WDFunc::StringValueWithCheck(Bd6_U0.Kunsim2, 3));
-
-    for (int i = 0; i < 3; i++)
-    {
-        WDFunc::SetLBLText(parent, "THD_Gr2" + QString::number(i), WDFunc::StringValueWithCheck(Bd6_U0.THD[i], 3));
-    }
-}
-void CheckKDV::FillBd7_UI_Harm(QWidget *parent)
-{
-    for (int i = 0; i < 61; i++)
-    {
-        WDFunc::SetLBLText(parent, QString::number(3420 + i), WDFunc::StringValueWithCheck(Bd7_UI_Harm.Harm[0][i], 3));
-        WDFunc::SetLBLText(parent, QString::number(3546 + i), WDFunc::StringValueWithCheck(Bd7_UI_Harm.Harm[1][i], 3));
-        WDFunc::SetLBLText(parent, QString::number(3670 + i), WDFunc::StringValueWithCheck(Bd7_UI_Harm.Harm[2][i], 3));
-    }
-}
-void CheckKDV::FillBd9_Resurs(QWidget *parent)
-{
-    WDFunc::SetLBLText(parent, "4000", WDFunc::StringValueWithCheck(Bd9_Resurs.Vst, 3));
-    WDFunc::SetLBLText(parent, "4001", WDFunc::StringValueWithCheck(Bd9_Resurs.Age, 3));
-    WDFunc::SetLBLText(parent, "4002", WDFunc::StringValueWithCheck(Bd9_Resurs.Resurs, 3));
-}
-void CheckKDV::FillBd10_Power(QWidget *parent)
-{
-    for (int i = 0; i < 4; i++)
-    {
-        WDFunc::SetLBLText(parent, QString::number(2420 + i), WDFunc::StringValueWithCheck(Bd10_Power.PNatf[i], 3));
-        WDFunc::SetLBLText(parent, QString::number(2424 + i), WDFunc::StringValueWithCheck(Bd10_Power.QNatf[i], 3));
-        WDFunc::SetLBLText(parent, QString::number(2428 + i), WDFunc::StringValueWithCheck(Bd10_Power.SNatf[i], 3));
-        WDFunc::SetLBLText(parent, QString::number(2432 + i), WDFunc::StringValueWithCheck(Bd10_Power.CosPhiNat[i], 3));
-        WDFunc::SetLBLText(parent, QString::number(2436 + i), WDFunc::StringValueWithCheck(Bd10_Power.Pf[i], 3));
-        WDFunc::SetLBLText(parent, QString::number(2440 + i), WDFunc::StringValueWithCheck(Bd10_Power.Qf[i], 3));
-        WDFunc::SetLBLText(parent, QString::number(2444 + i), WDFunc::StringValueWithCheck(Bd10_Power.Sf[i], 3));
-        WDFunc::SetLBLText(parent, QString::number(2448 + i), WDFunc::StringValueWithCheck(Bd10_Power.CosPhi[i], 3));
-    }
-}
-void CheckKDV::FillBd11_Model(QWidget *parent)
-{
-    WDFunc::SetLBLText(parent, "4010", WDFunc::StringValueWithCheck(Bd11_Model.Tpred, 3));
-    WDFunc::SetLBLText(parent, "4011", WDFunc::StringValueWithCheck(Bd11_Model.Tdop, 3));
-    WDFunc::SetLBLText(parent, "4012", WDFunc::StringValueWithCheck(Bd11_Model.Tdop105, 3));
-    WDFunc::SetLBLText(parent, "4013", WDFunc::StringValueWithCheck(Bd11_Model.Tdop110, 3));
-    WDFunc::SetLBLText(parent, "4014", WDFunc::StringValueWithCheck(Bd11_Model.Tdop115, 3));
-    WDFunc::SetLBLText(parent, "4015", WDFunc::StringValueWithCheck(Bd11_Model.Tdop120, 3));
-    WDFunc::SetLBLText(parent, "4016", WDFunc::StringValueWithCheck(Bd11_Model.Tdop125, 3));
-    WDFunc::SetLBLText(parent, "4017", WDFunc::StringValueWithCheck(Bd11_Model.Tdop130, 3));
-    WDFunc::SetLBLText(parent, "4018", WDFunc::StringValueWithCheck(Bd11_Model.Tdop135, 3));
-    WDFunc::SetLBLText(parent, "4019", WDFunc::StringValueWithCheck(Bd11_Model.Tdop140, 3));
-    WDFunc::SetLBLText(parent, "4020", WDFunc::StringValueWithCheck(Bd11_Model.Tdop145, 3));
-    WDFunc::SetLBLText(parent, "4021", WDFunc::StringValueWithCheck(Bd11_Model.Tdop150, 3));
-    WDFunc::SetLBLText(parent, "4022", WDFunc::StringValueWithCheck(Bd11_Model.Tdop155, 3));
-    WDFunc::SetLBLText(parent, "4023", WDFunc::StringValueWithCheck(Bd11_Model.Tdop160, 3));
-    WDFunc::SetLBLText(parent, "4024", WDFunc::StringValueWithCheck(Bd11_Model.Tdop165, 3));
-    WDFunc::SetLBLText(parent, "4025", WDFunc::StringValueWithCheck(Bd11_Model.Tdop170, 3));
-    WDFunc::SetLBLText(parent, "4026", WDFunc::StringValueWithCheck(Bd11_Model.Tdop175, 3));
-    WDFunc::SetLBLText(parent, "4027", WDFunc::StringValueWithCheck(Bd11_Model.Tdop180, 3));
-    WDFunc::SetLBLText(parent, "4028", WDFunc::StringValueWithCheck(Bd11_Model.Tdop185, 3));
-    WDFunc::SetLBLText(parent, "4029", WDFunc::StringValueWithCheck(Bd11_Model.Tdop190, 3));
-    WDFunc::SetLBLText(parent, "4030", WDFunc::StringValueWithCheck(Bd11_Model.Tdop195, 3));
-    WDFunc::SetLBLText(parent, "4031", WDFunc::StringValueWithCheck(Bd11_Model.Tdop200, 3));
-}
-void CheckKDV::FillBd13_Temp(QWidget *parent)
-{
-    WDFunc::SetLBLText(parent, "4500", WDFunc::StringValueWithCheck(Bd13_Temp.TempWinding, 3));
-    WDFunc::SetLBLText(parent, "4501", WDFunc::StringValueWithCheck(Bd13_Temp.temperature, 3));
-    WDFunc::SetLBLText(parent, "4502", WDFunc::StringValueWithCheck(Bd13_Temp.resistance, 3));
+    WDFunc::SetLBLText(parent, QString::number(1020), WDFunc::StringValueWithCheck(Bd_block4.U0, 3));
+    WDFunc::SetLBLText(parent, QString::number(1021), WDFunc::StringValueWithCheck(Bd_block4.U1, 3));
+    WDFunc::SetLBLText(parent, QString::number(1022), WDFunc::StringValueWithCheck(Bd_block4.U2, 3));
+    WDFunc::SetLBLText(parent, QString::number(1023), WDFunc::StringValueWithCheck(Bd_block4.Kunsim0, 3));
+    WDFunc::SetLBLText(parent, QString::number(1024), WDFunc::StringValueWithCheck(Bd_block4.Kunsim2, 3));
 
     for (int i = 0; i < 4; i++)
     {
-        WDFunc::SetLBLText(parent, QString::number(4503 + i), WDFunc::StringValueWithCheck(Bd13_Temp.ExtTempWin[i], 3));
+        WDFunc::SetLBLText(parent, QString::number(1025 + i), WDFunc::StringValueWithCheck(Bd_block4.THD[i], 3));
     }
 }
+
+void CheckKDV::FillBd6(QWidget *parent)
+{
+    WDFunc::SetLBLText(parent, QString::number(1420), WDFunc::StringValueWithCheck(Bd_block6.U0, 3));
+    WDFunc::SetLBLText(parent, QString::number(1421), WDFunc::StringValueWithCheck(Bd_block6.U1, 3));
+    WDFunc::SetLBLText(parent, QString::number(1422), WDFunc::StringValueWithCheck(Bd_block6.U2, 3));
+    WDFunc::SetLBLText(parent, QString::number(1423), WDFunc::StringValueWithCheck(Bd_block6.Kunsim0, 3));
+    WDFunc::SetLBLText(parent, QString::number(1424), WDFunc::StringValueWithCheck(Bd_block6.Kunsim2, 3));
+
+    for (int i = 0; i < 4; i++)
+    {
+        WDFunc::SetLBLText(parent, QString::number(1425 + i), WDFunc::StringValueWithCheck(Bd_block6.THD[i], 3));
+    }
+}
+
+void CheckKDV::FillBd8(QWidget *parent)
+{
+    for (int j = 0; j < 4; j++)
+    {
+        WDFunc::SetLBLText(
+            parent, QString::number(1220 + j), WDFunc::StringValueWithCheck(Bd_block8.UefNatLin_filt[j], 3));
+
+        WDFunc::SetLBLText(
+            parent, QString::number(1224 + j), WDFunc::StringValueWithCheck(Bd_block8.UeffLin_filtered[j], 3));
+    }
+}
+
+void CheckKDV::FillBd9(QWidget *parent)
+{
+    WDFunc::SetLBLText(parent, QString::number(4000), WDFunc::StringValueWithCheck(Bd_block9.Vst, 3));
+    WDFunc::SetLBLText(parent, QString::number(4001), WDFunc::StringValueWithCheck(Bd_block9.Age, 3));
+    WDFunc::SetLBLText(parent, QString::number(4002), WDFunc::StringValueWithCheck(Bd_block9.Resurs, 3));
+}
+
+void CheckKDV::FillBd10(QWidget *parent)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        WDFunc::SetLBLText(parent, QString::number(2420 + i), WDFunc::StringValueWithCheck(Bd_block10.PNatf[i], 3));
+        WDFunc::SetLBLText(parent, QString::number(2424 + i), WDFunc::StringValueWithCheck(Bd_block10.QNatf[i], 3));
+        WDFunc::SetLBLText(parent, QString::number(2428 + i), WDFunc::StringValueWithCheck(Bd_block10.SNatf[i], 3));
+        WDFunc::SetLBLText(parent, QString::number(2432 + i), WDFunc::StringValueWithCheck(Bd_block10.CosPhiNat[i], 3));
+
+        WDFunc::SetLBLText(parent, QString::number(2450 + i), WDFunc::StringValueWithCheck(Bd_block10.Pf[i], 3));
+        WDFunc::SetLBLText(parent, QString::number(2454 + i), WDFunc::StringValueWithCheck(Bd_block10.Qf[i], 3));
+        WDFunc::SetLBLText(parent, QString::number(2458 + i), WDFunc::StringValueWithCheck(Bd_block10.Sf[i], 3));
+        WDFunc::SetLBLText(parent, QString::number(2462 + i), WDFunc::StringValueWithCheck(Bd_block10.CosPhi[i], 3));
+    }
+}
+
+void CheckKDV::FillBd11(QWidget *parent)
+{
+
+    WDFunc::SetLBLText(parent, QString::number(4010), WDFunc::StringValueWithCheck(Bd_block11.Tpred, 3));
+    WDFunc::SetLBLText(parent, QString::number(4011), WDFunc::StringValueWithCheck(Bd_block11.Tdop, 3));
+    WDFunc::SetLBLText(parent, QString::number(4012), WDFunc::StringValueWithCheck(Bd_block11.Tdop105, 3));
+    WDFunc::SetLBLText(parent, QString::number(4013), WDFunc::StringValueWithCheck(Bd_block11.Tdop110, 3));
+    WDFunc::SetLBLText(parent, QString::number(4014), WDFunc::StringValueWithCheck(Bd_block11.Tdop115, 3));
+    WDFunc::SetLBLText(parent, QString::number(4015), WDFunc::StringValueWithCheck(Bd_block11.Tdop120, 3));
+    WDFunc::SetLBLText(parent, QString::number(4016), WDFunc::StringValueWithCheck(Bd_block11.Tdop125, 3));
+    WDFunc::SetLBLText(parent, QString::number(4017), WDFunc::StringValueWithCheck(Bd_block11.Tdop130, 3));
+    WDFunc::SetLBLText(parent, QString::number(4018), WDFunc::StringValueWithCheck(Bd_block11.Tdop135, 3));
+    WDFunc::SetLBLText(parent, QString::number(4019), WDFunc::StringValueWithCheck(Bd_block11.Tdop140, 3));
+    WDFunc::SetLBLText(parent, QString::number(4020), WDFunc::StringValueWithCheck(Bd_block11.Tdop145, 3));
+    WDFunc::SetLBLText(parent, QString::number(4021), WDFunc::StringValueWithCheck(Bd_block11.Tdop150, 3));
+    WDFunc::SetLBLText(parent, QString::number(4022), WDFunc::StringValueWithCheck(Bd_block11.Tdop155, 3));
+    WDFunc::SetLBLText(parent, QString::number(4023), WDFunc::StringValueWithCheck(Bd_block11.Tdop160, 3));
+    WDFunc::SetLBLText(parent, QString::number(4024), WDFunc::StringValueWithCheck(Bd_block11.Tdop165, 3));
+    WDFunc::SetLBLText(parent, QString::number(4025), WDFunc::StringValueWithCheck(Bd_block11.Tdop170, 3));
+    WDFunc::SetLBLText(parent, QString::number(4026), WDFunc::StringValueWithCheck(Bd_block11.Tdop175, 3));
+    WDFunc::SetLBLText(parent, QString::number(4027), WDFunc::StringValueWithCheck(Bd_block11.Tdop180, 3));
+    WDFunc::SetLBLText(parent, QString::number(4028), WDFunc::StringValueWithCheck(Bd_block11.Tdop185, 3));
+    WDFunc::SetLBLText(parent, QString::number(4029), WDFunc::StringValueWithCheck(Bd_block11.Tdop190, 3));
+    WDFunc::SetLBLText(parent, QString::number(4030), WDFunc::StringValueWithCheck(Bd_block11.Tdop195, 3));
+    WDFunc::SetLBLText(parent, QString::number(4031), WDFunc::StringValueWithCheck(Bd_block11.Tdop200, 3));
+}
+
+void CheckKDV::FillBd13(QWidget *parent)
+{
+
+    WDFunc::SetLBLText(parent, QString::number(4500), WDFunc::StringValueWithCheck(Bd_block13.TempWinding, 3));
+    WDFunc::SetLBLText(parent, QString::number(4501), WDFunc::StringValueWithCheck(Bd_block13.temperature, 3));
+}
+
+void CheckKDV::FillBd17(QWidget *parent)
+{
+    WDFunc::SetLBLText(parent, QString::number(2400), WDFunc::StringValueWithCheck(Bd_block17.Frequency, 3));
+}
+
+void CheckKDV::FillBd18(QWidget *parent)
+{
+    WDFunc::SetLBLText(parent, QString::number(5200), WDFunc::StringValueWithCheck(Bd_block18.Istart, 3));
+}
+// void CheckKDV::FillBda_block(QWidget *parent)
+//{
+//    WDFunc::SetLBLText(parent, "Frequency", WDFunc::StringValueWithCheck(Bda_block.Frequency, 3));
+
+//    for (int i = 0; i < 3; i++)
+//    {
+//        WDFunc::SetLBLText(
+//            parent, "IUefNat_filt" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i], 3));
+//        WDFunc::SetLBLText(parent, "IUefNat_filt" + QString::number(i + 3),
+//            WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i + 3], 3));
+//        WDFunc::SetLBLText(parent, "UefNatLin_filt" + QString::number(i),
+//            WDFunc::StringValueWithCheck(Bda_block.UefNatLin_filt[i], 3));
+//        WDFunc::SetLBLText(parent, "IUeff_filtered" + QString::number(i),
+//            WDFunc::StringValueWithCheck(Bda_block.IUeff_filtered[i], 3));
+//        WDFunc::SetLBLText(parent, "IUeff_filtered" + QString::number(i + 3),
+//            WDFunc::StringValueWithCheck(Bda_block.IUeff_filtered[i + 3], 3));
+//        WDFunc::SetLBLText(
+//            parent, "phi_next_f" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.phi_next_f[i], 3));
+//        WDFunc::SetLBLText(parent, "phi_next_f" + QString::number(i + 3),
+//            WDFunc::StringValueWithCheck(Bda_block.phi_next_f[i + 3], 3));
+//        WDFunc::SetLBLText(parent, "PNatf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.PNatf[i], 3));
+//        WDFunc::SetLBLText(parent, "QNatf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.QNatf[i], 3));
+//        WDFunc::SetLBLText(parent, "SNatf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.SNatf[i], 3));
+//        WDFunc::SetLBLText(
+//            parent, "CosPhiNat" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.CosPhiNat[i], 3));
+//        WDFunc::SetLBLText(parent, "Pf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.Pf[i], 3));
+//        WDFunc::SetLBLText(parent, "Qf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.Qf[i], 3));
+//        WDFunc::SetLBLText(parent, "Sf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.Sf[i], 3));
+//        WDFunc::SetLBLText(parent, "CosPhi" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.CosPhi[i],
+//        3));
+//    }
+
+//    WDFunc::SetLBLText(parent, "Pt100_R", WDFunc::StringValueWithCheck(Bda_block.Pt100_R, 3));
+//}
+// void CheckKDV::FillBd2_Gr1(QWidget *parent)
+//{
+
+//    for (int i = 0; i < 4; i++)
+//    {
+//        WDFunc::SetLBLText(
+//            parent, QString::number(1000 + i), WDFunc::StringValueWithCheck(Bd2_Gr1.GrIUefNat_filt[i], 3));
+//        WDFunc::SetLBLText(
+//            parent, QString::number(1004 + i), WDFunc::StringValueWithCheck(Bd2_Gr1.GrIUeff_filtered[i], 3));
+//    }
+
+//    for (int i = 0; i < 3; i++)
+//    {
+//        WDFunc::SetLBLText(parent, QString::number(1008 + i), WDFunc::StringValueWithCheck(Bd2_Gr1.KrF[i], 3));
+//    }
+//}
+// void CheckKDV::FillBd3_Gr2(QWidget *parent)
+//{
+//    for (int i = 0; i < 4; i++)
+//    {
+//        WDFunc::SetLBLText(
+//            parent, QString::number(1100 + i), WDFunc::StringValueWithCheck(Bd3_Gr2.GrIUefNat_filt[i], 3));
+//        WDFunc::SetLBLText(
+//            parent, QString::number(1104 + i), WDFunc::StringValueWithCheck(Bd3_Gr2.GrIUeff_filtered[i], 3));
+//    }
+
+//    for (int i = 0; i < 3; i++)
+//    {
+//        WDFunc::SetLBLText(parent, QString::number(1108 + i), WDFunc::StringValueWithCheck(Bd3_Gr2.KrF[i], 3));
+//    }
+//}
+
+// void CheckKDV::FillBd5_UI_Harm(QWidget *parent)
+//{
+//    for (int i = 0; i < 61; i++)
+//    {
+//        WDFunc::SetLBLText(parent, QString::number(3020 + i), WDFunc::StringValueWithCheck(Bd5_UI_Harm.Harm[0][i],
+//        3)); WDFunc::SetLBLText(parent, QString::number(3146 + i),
+//        WDFunc::StringValueWithCheck(Bd5_UI_Harm.Harm[1][i], 3)); WDFunc::SetLBLText(parent, QString::number(3270 +
+//        i), WDFunc::StringValueWithCheck(Bd5_UI_Harm.Harm[2][i], 3));
+//    }
+//}
+
+// void CheckKDV::FillBd7_UI_Harm(QWidget *parent)
+//{
+//    for (int i = 0; i < 61; i++)
+//    {
+//        WDFunc::SetLBLText(parent, QString::number(3420 + i), WDFunc::StringValueWithCheck(Bd7_UI_Harm.Harm[0][i],
+//        3)); WDFunc::SetLBLText(parent, QString::number(3546 + i),
+//        WDFunc::StringValueWithCheck(Bd7_UI_Harm.Harm[1][i], 3)); WDFunc::SetLBLText(parent, QString::number(3670 +
+//        i), WDFunc::StringValueWithCheck(Bd7_UI_Harm.Harm[2][i], 3));
+//    }
+//}
+
+// void CheckKDV::FillBd13_Temp(QWidget *parent)
+//{
+//    WDFunc::SetLBLText(parent, "4500", WDFunc::StringValueWithCheck(Bd13_Temp.TempWinding, 3));
+//    WDFunc::SetLBLText(parent, "4501", WDFunc::StringValueWithCheck(Bd13_Temp.temperature, 3));
+//    WDFunc::SetLBLText(parent, "4502", WDFunc::StringValueWithCheck(Bd13_Temp.resistance, 3));
+
+//    for (int i = 0; i < 4; i++)
+//    {
+//        WDFunc::SetLBLText(parent, QString::number(4503 + i), WDFunc::StringValueWithCheck(Bd13_Temp.ExtTempWin[i],
+//        3));
+//    }
+//}
 
 QWidget *CheckKDV::BdUI(int bdnum)
 {

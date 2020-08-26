@@ -10,34 +10,32 @@ public:
 
     typedef struct
     {
-        float Frequency;       // Частота, Гц
-        float IUefNat_filt[6]; // Истинные действующие значения сигналов(в вольтах
-                               // или мА на входе)
-        float UefNatLin_filt[3];
-        float IUeff_filtered[6]; // Действующие значения сигналов по 1-ой гармонике
-        float phi_next_f[6]; // Углы сдвига сигналов по 1-ой гармонике относительно
-                             // Ua в градусах
-        float PNatf[3]; // Истинная активная мощность по фазам
-        float QNatf[3]; // Реактивная мощность по кажущейся полной истинной активной
-        float SNatf[3]; // Кажущаяся полная мощность по эфф. токам и напряжениям
-        float CosPhiNat[3]; // cos phi по истинной активной мощности, по фазам
-        float Pf[3];        // активная мощность по 1-ой гарм. по фазам
-        float Qf[3];        // реактивная мощность по 1-ой гарм.
-        float Sf[3];        // полная мощность по 1-ой гарм.
-        float CosPhi[3];    // cos phi по 1-ой гарм., по фазам
-        float Pt100_R;      // Измеренное сопротивление термометра, Ом
+        float Pt100_R; // Измеренное сопротивление термометра, Ом
     } Bda_in_struct;
 
-    struct Bd2
+    struct Bd0
     {
-        float GrIUefNat_filt[4]; // истинные действующие значения сигналов трех фаз
-                                 // и их среднее
-        float GrIUeff_filtered[4]; // действующие значения сигналов трех фаз по 1-й
-                                   // гармонике и их среднее
-        float KrF[3];              // крест-фактор по трем фазам
+        float Temp;
+        float Vbat;
     };
 
-    struct Bd4
+    struct Bd_2_3
+    {
+        float IUefNat_filt[4]; // истинные действующие значения сигналов трех фаз
+                               // и их среднее
+        float IUeff_filtered[4]; // действующие значения сигналов трех фаз по 1-й
+                                 // гармонике и их среднее
+        float KrF[3];            // крест-фактор по трем фазам
+    };
+
+    //    struct Bd3
+    //    {
+    //        float IUefNat_filt[4];
+    //        float IUeff_filtered[4];
+    //        float KrF[3];
+    //    };
+
+    struct Bd_4_6
     {
         float U0;      // сигнал нулевой последовательности
         float U1;      // сигнал прямой последовательности
@@ -47,17 +45,20 @@ public:
         float THD[3];  // общий коэфф. гармонических искажений трех фаз
     };
 
-    struct Bd5
-    {
-        float Harm[3][61]; // уровни гармоник от 2-й по 62-ю в % от 1-й для трех фаз
-    };
-
     struct Bd8
     {
         float UefNatLin_filt[4];   // истинные действующие значения линейных
                                    // напряжений трех фаз и их среднее
         float UeffLin_filtered[4]; // действующие значения 1-й гарм. линейных
                                    // напряжений трех фаз и их среднее
+    };
+
+    struct Bd9
+    {
+        float Vst;
+        float Age;
+        float Resurs;
+        float reserv;
     };
 
     struct Bd10
@@ -73,17 +74,9 @@ public:
         float CosPhi[4]; // cos phi по 1-й гарм., по фазам и средний
     };
 
-    typedef struct
-    { // Ñòðóêòóðà áëîêà ðåñóðñíûõ ïàðàìåòðîâ
-        float Vst;
-        float Age;
-        float Resurs;
-        float reserv;
-    } Bda_RESURS;
-    //===============================================================================================
-    typedef struct
-    {                // Ñòðóêòóðà áëîêà âûõîäíûõ àðàìåòðîâ òåïëîâîé ìîäåëè
-        float Tpred; // Âñå âðåìåíà - â ìèíóòàõ.
+    struct Bd11
+    {
+        float Tpred;
         float Tdop;
         float Tdop105;
         float Tdop110;
@@ -105,25 +98,39 @@ public:
         float Tdop190;
         float Tdop195;
         float Tdop200;
-    } Bda_MODEL;
+    };
 
-    typedef struct
+    struct Bd13
     {
-        float TempWinding;   // Температура ННТ обмотки (расчетная)
-        float temperature;   // Температура окружающей среды
-        float resistance;    // Сопротивление термометра, Ом
-        float ExtTempWin[4]; // Температуры обмоток, измеренные встроенными
-                             // датчиками(до 4шт.)
-    } Bda_TEMP;
+        float TempWinding;
+        float temperature;
+        float resistance;
+        float ExtTempWin[4];
+        quint32 res;
+    };
+
+    struct Bd17
+    {
+        float Frequency;
+        float phi_next_f[6];
+    };
+
+    struct Bd18
+    {
+        float Istart;
+    };
 
     Bda_in_struct Bda_block;
-    Bd2 Bd2_Gr1, Bd3_Gr2;
-    Bd4 Bd4_U0, Bd6_U0;
-    Bd5 Bd5_UI_Harm, Bd7_UI_Harm;
-    Bda_RESURS Bd9_Resurs;
-    Bd10 Bd10_Power;
-    Bda_MODEL Bd11_Model;
-    Bda_TEMP Bd13_Temp;
+    Bd0 Bd_block0;
+    Bd_2_3 Bd_block2, Bd_block3;
+    Bd_4_6 Bd_block4, Bd_block6;
+    Bd8 Bd_block8;
+    Bd9 Bd_block9;
+    Bd10 Bd_block10;
+    Bd11 Bd_block11;
+    Bd13 Bd_block13;
+    Bd17 Bd_block17;
+    Bd18 Bd_block18;
 
     // Check_KDV();
     QWidget *Bd1W(QWidget *parent);
@@ -135,17 +142,19 @@ public:
     QWidget *Bd7W(QWidget *parent);
     QWidget *Bd8W(QWidget *parent);
     void FillBd(QWidget *parent, QString Name, QString Value);
-    void FillBda_block(QWidget *parent);
-    void FillBd2_Gr1(QWidget *parent);
-    void FillBd3_Gr2(QWidget *parent);
-    void FillBd4_U0(QWidget *parent);
-    void FillBd5_UI_Harm(QWidget *parent);
-    void FillBd6_U0(QWidget *parent);
-    void FillBd7_UI_Harm(QWidget *parent);
-    void FillBd9_Resurs(QWidget *parent);
-    void FillBd10_Power(QWidget *parent);
-    void FillBd11_Model(QWidget *parent);
-    void FillBd13_Temp(QWidget *parent);
+    void FillBd0(QWidget *parent);
+    void FillBd2(QWidget *parent);
+    void FillBd3(QWidget *parent);
+    void FillBd4(QWidget *parent);
+
+    void FillBd6(QWidget *parent);
+    void FillBd8(QWidget *parent);
+    void FillBd9(QWidget *parent);
+    void FillBd10(QWidget *parent);
+    void FillBd11(QWidget *parent);
+    void FillBd13(QWidget *parent);
+    void FillBd17(QWidget *parent);
+    void FillBd18(QWidget *parent);
 
     QWidget *BdUI(int bdnum);
     QWidget *CustomTab();

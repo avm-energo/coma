@@ -22,6 +22,7 @@
 
 #include "coma.h"
 
+#include "../check/checkdialogharmonickdv.h"
 #include "../check/checkdialogharmonicktf.h"
 #include "../check/checkdialogkdv.h"
 #include "../check/checkdialogkiv.h"
@@ -522,6 +523,9 @@ void Coma::PrepareDialogs()
         {
         case Config::MTM_87:
             CheckB = new CheckDialogKDV(BoardTypes::BT_BASE);
+
+            Harm = new CheckDialogHarmonicKDV(BoardTypes::BT_BASE);
+            connect(BdaTimer, SIGNAL(timeout()), Harm, SLOT(USBUpdate()));
 
             S2Config->clear();
             if (MainInterface != I_RS485)

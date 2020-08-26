@@ -35,10 +35,12 @@ SOURCES += \
     ../alarm/avaralarmktf.cpp \
     ../alarm/warnalarmkiv.cpp \
     ../alarm/warnalarmktf.cpp \
+    ../check/checkdialogharmonickdv.cpp \
     ../check/checkdialogharmonicktf.cpp \
     ../check/checkdialogkdv.cpp \
     ../check/checkdialogkiv.cpp \
     ../check/checkdialogktf.cpp \
+    ../check/checkharmonickdv.cpp \
     ../check/checkharmonicktf.cpp \
     ../check/checkkdv.cpp \
     ../check/checkkiv.cpp \
@@ -111,10 +113,12 @@ HEADERS += \
     ../alarm/avaralarmktf.h \
     ../alarm/warnalarmkiv.h \
     ../alarm/warnalarmktf.h \
+    ../check/checkdialogharmonickdv.h \
     ../check/checkdialogharmonicktf.h \
     ../check/checkdialogkdv.h \
     ../check/checkdialogkiv.h \
     ../check/checkdialogktf.h \
+    ../check/checkharmonickdv.h \
     ../check/checkharmonicktf.h \
     ../check/checkkdv.h \
     ../check/checkkiv.h \
