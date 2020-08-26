@@ -2,7 +2,7 @@
 #define COLORS_H
 
 #define TABCOLOR "#AFFFAF"
-#define TABCOLORA1 "#FFFF5F"
+#define TABCOLORA1 "#F3CC8F"
 #define ERPROTCLR "rgba(255,234,255,255)"
 #define MAINWINCLR "#E0FFE0"
 #define MAINWINCLRA1 "#FFFFE0"
@@ -27,6 +27,7 @@
 #define RDLCOLOR "#FF4444"
 #define RDDCOLOR "#FF0000"
 #define GRNCOLOR "#22FF22"
+#define NFTCOLOR "#9FC79F"
 #define GRLCOLOR "#44FF44"
 #define GRDCOLOR "#00FF00"
 #define YLWCOLOR "#CCCC22"

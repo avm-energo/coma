@@ -22,6 +22,7 @@
 
 #include "coma.h"
 
+#include "../check/checkdialogharmonickdv.h"
 #include "../check/checkdialogharmonicktf.h"
 #include "../check/checkdialogkdv.h"
 #include "../check/checkdialogkiv.h"
@@ -501,13 +502,15 @@ void Coma::PrepareDialogs()
             connect(AlarmW, &AlarmWidget::AlarmButtonPressed, AvarAlarmKIVWidget, &QWidget::show);
             connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVWidget, &AvarAlarmKIV::Update);
 
+            connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), CheckB, SLOT(SetWarnAlarmColor(QList<bool>)));
+            connect(AlarmW, SIGNAL(SetAlarmColor(QList<bool>)), CheckB, SLOT(SetAlarmColor(QList<bool>)));
+
             break;
 
         case Config::MTM_87:
             checkBDialog = new CheckDialogKTF(BoardTypes::BT_BASE);
 
             Harm = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
-
             connect(BdaTimer, SIGNAL(timeout()), Harm, SLOT(USBUpdate()));
 
             S2Config->clear();
@@ -532,6 +535,10 @@ void Coma::PrepareDialogs()
         {
         case Config::MTM_87:
             checkBDialog = new CheckDialogKDV(BoardTypes::BT_BASE);
+
+            Harm = new CheckDialogHarmonicKDV(BoardTypes::BT_BASE);
+            connect(BdaTimer, SIGNAL(timeout()), Harm, SLOT(USBUpdate()));
+
             S2Config->clear();
             if (MainInterface != I_RS485)
                 confMDialog = new ConfDialogKDV(S2Config);
@@ -631,7 +638,7 @@ void Coma::New104()
     connect(Ch104, &IEC104::SetDataSize, this, &Coma::SetProgressBar1Size);
     connect(Ch104, &IEC104::SetDataCount, this, &Coma::SetProgressBar1);
     connect(Ch104, &IEC104::ReconnectSignal, this, &Coma::ReConnect);
-    connect(Ch104, SIGNAL(Sponsignalsready(IEC104Thread::SponSignals *)), this,
+    connect(Ch104, SIGNAL(Sponsignalsready(IEC104Thread::SponSignals *)), Alarm,
         SLOT(UpdateAlarm104(IEC104Thread::SponSignals *)));
     connect(Ch104, SIGNAL(Bs104signalsready(IEC104Thread::BS104Signals *)), this,
         SLOT(FillBSI(IEC104Thread::BS104Signals *)));
@@ -645,7 +652,7 @@ void Coma::NewModbus()
     //  connect(ChModbus,SIGNAL(CoilSignalsReady(ModBus::Coils)), this,
     //  SLOT(ModBusUpdatePredAlarmEvents(ModBus::Coils)));
     connect(ChModbus, &ModBus::ReconnectSignal, this, &Coma::ReConnect);
-    connect(ChModbus, SIGNAL(CoilSignalsReady(ModBus::Coils)), Alarm, SLOT(UpdateAlarmModbus(ModBus::Coils)));
+    connect(ChModbus, SIGNAL(CoilSignalsReady(ModBus::Coils)), Alarm, SLOT(UpdateAlarmModBus(ModBus::Coils)));
     connect(ChModbus, SIGNAL(BsiFromModbus(QList<ModBus::BSISignalStruct>, unsigned int)), this,
         SLOT(FillBSI(QList<ModBus::BSISignalStruct>, unsigned int)));
 }

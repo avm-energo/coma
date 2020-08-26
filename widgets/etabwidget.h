@@ -17,10 +17,10 @@ public:
     {
         setIconSize(QSize(18, 18));
         QString tbss = "QTabBar::tab {background-color: " + QString(ACONFGCLR)
-            + ";"
+            + "border: 0px solid;"
               "color: #000000;}"
               "QTabBar::tab::selected {background-color: "
-            + QString(GRLCOLOR) + ";}";
+            + QString(NFTCOLOR) + ";}";
         this->setStyleSheet(tbss);
     }
 

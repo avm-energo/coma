@@ -38,7 +38,7 @@ CheckDialogKTF::CheckDialogKTF(BoardTypes board, QWidget *parent) : EAbstractChe
 
     if (Config::MTB_A2) //(ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8)
 
-        sl = QStringList { "Основные", "Модель", "Ресурс", "1-я гармоника", "Несиметрия" };
+        sl = QStringList { "Основные", "Модель", "Ресурс", "1-я гармоника", "Несимметрия" };
 
     BdUINum = sl.size();
 

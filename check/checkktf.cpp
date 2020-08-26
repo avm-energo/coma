@@ -319,7 +319,7 @@ QWidget *CheckKTF::Bd4W(QWidget *parent)
     //...................................
 
     QFont ffont;
-    QGroupBox *gb = new QGroupBox();
+    QGroupBox *gb = new QGroupBox;
     ffont.setFamily("Times");
     ffont.setPointSize(11);
     gb->setFont(ffont);
@@ -391,7 +391,7 @@ QWidget *CheckKTF::Bd5W(QWidget *parent)
     //...................................
 
     QFont ffont;
-    QGroupBox *gb = new QGroupBox();
+    QGroupBox *gb = new QGroupBox;
     ffont.setFamily("Times");
     ffont.setPointSize(11);
     gb->setFont(ffont);
@@ -558,7 +558,7 @@ void CheckKTF::FillBd10(QWidget *parent)
         WDFunc::SetLBLText(parent, QString::number(2450 + i), WDFunc::StringValueWithCheck(Bd_block10.Pf[i], 3));
         WDFunc::SetLBLText(parent, QString::number(2454 + i), WDFunc::StringValueWithCheck(Bd_block10.Qf[i], 3));
         WDFunc::SetLBLText(parent, QString::number(2458 + i), WDFunc::StringValueWithCheck(Bd_block10.Sf[i], 3));
-        WDFunc::SetLBLText(parent, QString::number(2462 + i), WDFunc::StringValueWithCheck(Bd_block10.CosPhi, 3));
+        WDFunc::SetLBLText(parent, QString::number(2462 + i), WDFunc::StringValueWithCheck(Bd_block10.CosPhi[i], 3));
     }
 }
 

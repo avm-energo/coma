@@ -338,6 +338,7 @@ bool ConnectDialog::UpdateModel()
                 return false;
             }
             mdl->setHeaders(sl);
+
             for (int i = 0; i < USBsl.size(); ++i)
             {
                 QVector<QVariant> vl;

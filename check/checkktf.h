@@ -65,7 +65,7 @@ public:
         float Pf[4];
         float Qf[4];
         float Sf[4];
-        float CosPhi;
+        float CosPhi[4];
     };
 
     struct Bd4

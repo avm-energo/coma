@@ -28,35 +28,26 @@ CheckDialogKDV::CheckDialogKDV(BoardTypes board, QWidget *parent) : EAbstractChe
     setStyleSheet(tmps);
     QStringList sl;
     BdNum = 6;
-    ChKDV = new CheckKDV();
+    ChKDV = new CheckKDV;
     Ch = new Check;
     //    BdNum = 11;
     setAttribute(Qt::WA_DeleteOnClose);
 
-    SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
-    SetBd(1, &ChKDV->Bda_block, sizeof(CheckKDV::Bda_in_struct));
-    SetBd(2, &ChKDV->Bd2_Gr1, sizeof(CheckKDV::Bd2));
-    SetBd(3, &ChKDV->Bd3_Gr2, sizeof(CheckKDV::Bd2));
-    SetBd(4, &ChKDV->Bd4_U0, sizeof(CheckKDV::Bd4));
-    SetBd(5, &ChKDV->Bd5_UI_Harm, sizeof(CheckKDV::Bd5));
-    SetBd(6, &ChKDV->Bd6_U0, sizeof(CheckKDV::Bd4));
-    SetBd(7, &ChKDV->Bd7_UI_Harm, sizeof(CheckKDV::Bd5));
-    SetBd(9, &ChKDV->Bd9_Resurs, sizeof(CheckKDV::Bda_RESURS));
-    SetBd(10, &ChKDV->Bd10_Power, sizeof(CheckKDV::Bd10));
-    SetBd(11, &ChKDV->Bd11_Model, sizeof(CheckKDV::Bda_MODEL));
+    //    SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
+    //    SetBd(1, &ChKDV->Bda_block, sizeof(CheckKDV::Bda_in_struct));
+    //    SetBd(2, &ChKDV->Bd_block2, sizeof(CheckKDV::Bd_2_3));
+    //    SetBd(3, &ChKDV->Bd_block3, sizeof(CheckKDV::Bd_2_3));
+    //    SetBd(4, &ChKDV->Bd_block4, sizeof(CheckKDV::Bd_4_6));
+    //    SetBd(5, &ChKDV->Bd5_UI_Harm, sizeof(CheckKDV::Bd5));
+    //    SetBd(6, &ChKDV->Bd_block6, sizeof(CheckKDV::Bd_4_6));
+    //    SetBd(7, &ChKDV->Bd7_UI_Harm, sizeof(CheckKDV::Bd5));
+    //    SetBd(9, &ChKDV->Bd_block9, sizeof(CheckKDV::Bda_RESURS));
+    //    SetBd(10, &ChKDV->Bd_block10, sizeof(CheckKDV::Bd10));
+    //    SetBd(11, &ChKDV->Bd11, sizeof(CheckKDV::Bda_MODEL));
 
-    SetBd(13, &ChKDV->Bd13_Temp, sizeof(CheckKDV::Bda_TEMP));
+    //    SetBd(13, &ChKDV->Bd_block13, sizeof(CheckKDV::Bda_TEMP));
 
-    sl = QStringList() << "Общие"
-                       << "Входные сигналы"
-                       << "Температуры"
-                       << "Первичные"
-                       << "Качество"
-                       << "Мощности"
-                       << "Гармоники"
-                       << "Ресурс"
-                       << "Допустимые перегрузки"
-                       << "Температуры";
+    sl = QStringList { "Основные", "Модель", "Ресурс", "1-я гармоника", "Несимметрия" };
 
     BdUINum = sl.size();
 
@@ -69,24 +60,39 @@ QWidget *CheckDialogKDV::BdUI(int bdnum)
 {
     switch (bdnum)
     {
+
     case 0:
-        return Ch->Bd0W(this);
-    case 1: // Блок #1
         return ChKDV->Bd1W(this);
-    case 2: // Блок #1
-        return ChKDV->Bd8W(this);
-    case 3: // Блок #1
+
+    case 1:
+        return ChKDV->Bd2W(this);
+
+    case 2:
         return ChKDV->Bd3W(this);
-    case 4: // Блок #1
+
+    case 3:
         return ChKDV->Bd4W(this);
-    case 5: // Блок #1
+    case 4:
         return ChKDV->Bd5W(this);
-    case 6: // Блок #1
-        return ChKDV->Bd6W(this);
-    case 7: // Блок #1
-        return ChKDV->Bd7W(this);
-    case 8: // Блок #1
-        return ChKDV->Bd8W(this);
+
+        //    case 0:
+        //        return Ch->Bd0W(this);
+        //    case 1: // Блок #1
+        //        return ChKDV->Bd1W(this);
+        //    case 2: // Блок #1
+        //        return ChKDV->Bd8W(this);
+        //    case 3: // Блок #1
+        //        return ChKDV->Bd3W(this);
+        //    case 4: // Блок #1
+        //        return ChKDV->Bd4W(this);
+        //    case 5: // Блок #1
+        //        return ChKDV->Bd5W(this);
+        //    case 6: // Блок #1
+        //        return ChKDV->Bd6W(this);
+        //    case 7: // Блок #1
+        //        return ChKDV->Bd7W(this);
+        //    case 8: // Блок #1
+        //        return ChKDV->Bd8W(this);
 
     default:
         return new QWidget;
@@ -182,59 +188,78 @@ void CheckDialogKDV::StopBdMeasurements()
 void CheckDialogKDV::USBUpdate()
 {
 
-    if (Commands::GetBd(1, &ChKDV->Bda_block, sizeof(CheckKDV::Bda_in_struct)) == NOERROR)
+    //    if (Commands::GetBd(1, &ChKDV->Bda_block, sizeof(CheckKDV::Bda_in_struct)) == NOERROR)
+    //    {
+    //        ChKDV->FillBda0(this);
+    //    }
+    if (Commands::GetBd(0, &ChKDV->Bd_block0, sizeof(CheckKDV::Bd0)) == NOERROR)
     {
-        ChKDV->FillBda_block(this);
+        ChKDV->FillBd0(this);
     }
 
-    if (Commands::GetBd(2, &ChKDV->Bd2_Gr1, sizeof(CheckKDV::Bd2)) == NOERROR)
+    if (Commands::GetBd(2, &ChKDV->Bd_block2, sizeof(CheckKDV::Bd_2_3)) == NOERROR)
     {
-        ChKDV->FillBd2_Gr1(this);
+        ChKDV->FillBd2(this);
     }
 
-    if (Commands::GetBd(3, &ChKDV->Bd3_Gr2, sizeof(CheckKDV::Bd2)) == NOERROR)
+    if (Commands::GetBd(3, &ChKDV->Bd_block3, sizeof(CheckKDV::Bd_2_3)) == NOERROR)
     {
-        ChKDV->FillBd3_Gr2(this);
+        ChKDV->FillBd3(this);
     }
 
-    if (Commands::GetBd(4, &ChKDV->Bd4_U0, sizeof(CheckKDV::Bd4)) == NOERROR)
+    if (Commands::GetBd(4, &ChKDV->Bd_block4, sizeof(CheckKDV::Bd_4_6)) == NOERROR)
     {
-        ChKDV->FillBd4_U0(this);
+        ChKDV->FillBd4(this);
     }
 
-    if (Commands::GetBd(5, &ChKDV->Bd5_UI_Harm, sizeof(CheckKDV::Bd5)) == NOERROR)
+    //    if (Commands::GetBd(5, &ChKDV->Bd5_UI_Harm, sizeof(CheckKDV::Bd5)) == NOERROR)
+    //    {
+    //        ChKDV->FillBd5_UI_Harm(this);
+    //    }
+
+    if (Commands::GetBd(6, &ChKDV->Bd_block6, sizeof(CheckKDV::Bd_4_6)) == NOERROR)
     {
-        ChKDV->FillBd5_UI_Harm(this);
+        ChKDV->FillBd6(this);
     }
 
-    if (Commands::GetBd(6, &ChKDV->Bd6_U0, sizeof(CheckKDV::Bd4)) == NOERROR)
+    //    if (Commands::GetBd(7, &ChKDV->Bd7_UI_Harm, sizeof(CheckKDV::Bd5)) == NOERROR)
+    //    {
+    //        ChKDV->FillBd7_UI_Harm(this);
+    //    }
+
+    if (Commands::GetBd(8, &ChKDV->Bd_block8, sizeof(CheckKDV::Bd8)) == NOERROR)
     {
-        ChKDV->FillBd6_U0(this);
+        ChKDV->FillBd8(this);
     }
 
-    if (Commands::GetBd(7, &ChKDV->Bd7_UI_Harm, sizeof(CheckKDV::Bd5)) == NOERROR)
+    if (Commands::GetBd(9, &ChKDV->Bd_block9, sizeof(CheckKDV::Bd9)) == NOERROR)
     {
-        ChKDV->FillBd7_UI_Harm(this);
+        ChKDV->FillBd9(this);
     }
 
-    if (Commands::GetBd(9, &ChKDV->Bd9_Resurs, sizeof(CheckKDV::Bda_RESURS)) == NOERROR)
+    if (Commands::GetBd(10, &ChKDV->Bd_block10, sizeof(CheckKDV::Bd10)) == NOERROR)
     {
-        ChKDV->FillBd9_Resurs(this);
+        ChKDV->FillBd10(this);
     }
 
-    if (Commands::GetBd(10, &ChKDV->Bd10_Power, sizeof(CheckKDV::Bd10)) == NOERROR)
+    if (Commands::GetBd(11, &ChKDV->Bd_block11, sizeof(CheckKDV::Bd11)) == NOERROR)
     {
-        ChKDV->FillBd10_Power(this);
+        ChKDV->FillBd11(this);
     }
 
-    if (Commands::GetBd(11, &ChKDV->Bd11_Model, sizeof(CheckKDV::Bda_MODEL)) == NOERROR)
+    if (Commands::GetBd(13, &ChKDV->Bd_block13, sizeof(CheckKDV::Bd13)) == NOERROR)
     {
-        ChKDV->FillBd11_Model(this);
+        ChKDV->FillBd13(this);
     }
 
-    if (Commands::GetBd(13, &ChKDV->Bd13_Temp, sizeof(CheckKDV::Bda_TEMP)) == NOERROR)
+    if (Commands::GetBd(17, &ChKDV->Bd_block17, sizeof(CheckKDV::Bd17)) == NOERROR)
     {
-        ChKDV->FillBd13_Temp(this);
+        ChKDV->FillBd17(this);
+    }
+
+    if (Commands::GetBd(18, &ChKDV->Bd_block9, sizeof(CheckKDV::Bd18)) == NOERROR)
+    {
+        ChKDV->FillBd18(this);
     }
 }
 
