@@ -3,26 +3,7 @@
 
 #include "../gen/modulebsi.h"
 #include "../gen/s2.h"
-#include "eusbhid.h"
-
-#include <QObject>
-
-//#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением батареи
-#define TECH_Bo 1 // технологический блок осциллограмм
-#define TECH_Be 2 // технологический блок событий
-#define TECH_Bte 3 // технологический блок технологических событий
-#define TECH_SWJ 4 // технологический блок журнала переключений
-#define TECH_RA 5 // технологический блок рабочего архива
-
-#define CM_CONFIGFILE 1
-#define CM_FIRMWAREFILE 3
-#define CM_SWJFILE 17
-#define CM_EVENTSFILE 18
-#define WORK_MODE 0
-#define TUNE_MODE_1000 1
-#define TUNE_MODE_100 2
-
-#define MAXFLOAT 3.40282347E+38F
+#include "eprotocom.h"
 
 class Commands : QObject
 {

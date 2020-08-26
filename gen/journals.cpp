@@ -206,16 +206,18 @@ void Journals::FillMeasTable(QByteArray &ba)
         {
         case Config::MTM_84:
         {
-            MeasureStruct mem;
+            QElapsedTimer timer;
+            timer.start();
+            MeasureStruct meas;
             recordsize = sizeof(MeasureStruct);
             headers = MeasJourHeaders;
             while (i < basize)
             {
                 QVector<QVariant> vl;
-                memcpy(&mem, file, recordsize);
+                memcpy(&meas, file, recordsize);
                 file += recordsize;
                 i += recordsize;
-                MeasureStruct meas = std::move(mem);
+                // MeasureStruct meas = std::move(mem);
                 if (meas.Time != 0xFFFFFFFF)
                 {
                     vl = { meas.NUM, TimeFunc::UnixTime32ToInvString(meas.Time), meas.Ueff[0], meas.Ueff[1],
@@ -227,6 +229,7 @@ void Journals::FillMeasTable(QByteArray &ba)
                         ValueLists.append(vl);
                 }
             }
+            qDebug() << "The slow operation took" << timer.elapsed() << "milliseconds";
             break;
         }
         case Config::MTM_87:

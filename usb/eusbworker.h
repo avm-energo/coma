@@ -1,25 +1,14 @@
 #pragma once
 
-#include "eabstractprotocomchannel.h"
+#include "../gen/logclass.h"
+#include "defines.h"
 #include "hidapi/hidapi.h"
-
-#include <QByteArray>
-#include <QObject>
-
-namespace UH
-{
-// максимальная длина одного сегмента (0x40)
-constexpr unsigned MaxSegmenthLength = 64;
-// 20 ms main loop sleep
-constexpr unsigned MainLoopDelay = 20;
-}
 
 class EUsbWorker : public QObject
 {
     Q_OBJECT
 public:
-    explicit EUsbWorker(EAbstractProtocomChannel::DeviceConnectStruct &devinfo, LogClass *logh, bool writelog = false,
-        QObject *parent = 0);
+    explicit EUsbWorker(DeviceConnectStruct &devinfo, LogClass *logh, bool writelog = false, QObject *parent = 0);
     ~EUsbWorker();
 
     LogClass *log;
@@ -43,7 +32,7 @@ private:
 
     QMutex mutex_;
     QList<QByteArray> WriteQueue;
-    EAbstractProtocomChannel::DeviceConnectStruct DeviceInfo;
+    DeviceConnectStruct DeviceInfo;
 
     int WriteData(QByteArray &ba);
     void CheckWriteQueue();

@@ -56,6 +56,18 @@
 #include <QStringListModel>
 #include <QToolBar>
 
+void registerForDeviceNotification(Coma *ptr)
+{
+    DEV_BROADCAST_DEVICEINTERFACE devInt;
+    ZeroMemory(&devInt, sizeof(devInt));
+    devInt.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
+    devInt.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
+    devInt.dbcc_classguid = { 0x25dbce51, 0x6c8f, 0x4a72, 0x8a, 0x6d, 0xb5, 0x4c, 0x2b, 0x4f, 0xc8, 0x35 };
+
+    HDEVNOTIFY blub;
+    blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt, DEVICE_NOTIFY_WINDOW_HANDLE);
+}
+
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
 {
     QSplashScreen *splash = new QSplashScreen(QPixmap("images/2.1.x.png"));
@@ -72,14 +84,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     // linux code goes here
 #elif _WIN32
     // Listen to device events
-    DEV_BROADCAST_DEVICEINTERFACE devInt;
-    ZeroMemory(&devInt, sizeof(devInt));
-    devInt.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
-    devInt.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-    devInt.dbcc_classguid = { 0x25dbce51, 0x6c8f, 0x4a72, 0x8a, 0x6d, 0xb5, 0x4c, 0x2b, 0x4f, 0xc8, 0x35 };
-
-    HDEVNOTIFY blub;
-    blub = RegisterDeviceNotification((HDEVNOTIFY)winId(), &devInt, DEVICE_NOTIFY_WINDOW_HANDLE);
+    registerForDeviceNotification(this);
 #else
 
 #endif
@@ -647,11 +652,11 @@ void Coma::NewModbus()
 
 void Coma::NewUSB()
 {
-    connect(this, &Coma::StopCommunications, EUsbHid::GetInstance(), &EAbstractProtocomChannel::Disconnect);
-    connect(EUsbHid::GetInstance()->workerThread(), &QThread::finished, [=]() { ActiveThreads &= ~THREAD::USB; });
-    connect(EUsbHid::GetInstance(), &EAbstractProtocomChannel::SetDataSize, this, &Coma::SetProgressBar1Size);
-    connect(EUsbHid::GetInstance(), &EAbstractProtocomChannel::SetDataCount, this, &Coma::SetProgressBar1);
-    connect(EUsbHid::GetInstance(), &EAbstractProtocomChannel::ShowError,
+    connect(this, &Coma::StopCommunications, EProtocom::GetInstance(), &EProtocom::Disconnect);
+    connect(EProtocom::GetInstance()->workerThread(), &QThread::finished, [=]() { ActiveThreads &= ~THREAD::USB; });
+    connect(EProtocom::GetInstance(), &EProtocom::SetDataSize, this, &Coma::SetProgressBar1Size);
+    connect(EProtocom::GetInstance(), &EProtocom::SetDataCount, this, &Coma::SetProgressBar1);
+    connect(EProtocom::GetInstance(), &EProtocom::ShowError,
         [this](const QString &msg) { QMessageBox::critical(this, "Ошибка", msg, QMessageBox::Ok); });
 }
 
@@ -705,8 +710,8 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
             case DBT_DEVICEARRIVAL:
             {
                 // Here will be reconnection event
-                auto devs = EUsbHid::GetInstance()->DevicesFound();
-                if (devs.indexOf(EUsbHid::GetInstance()->deviceName()) != -1)
+                auto devs = EProtocom::GetInstance()->DevicesFound();
+                if (devs.indexOf(EProtocom::GetInstance()->deviceName()) != -1)
                     qDebug("Device arrived again");
                 break;
             }
@@ -890,7 +895,6 @@ void Coma::setConf(unsigned char typeConf)
     default:
         break;
     }
-
 }
 
 void Coma::Fill()
@@ -1035,8 +1039,8 @@ void Coma::Disconnect()
         if (MainInterface == I_USB)
         {
             BdaTimer->stop();
-            if (EUsbHid::GetInstance()->isConnected())
-                EUsbHid::GetInstance()->Disconnect();
+            if (EProtocom::GetInstance()->isConnected())
+                EProtocom::GetInstance()->Disconnect();
         }
         else
         {

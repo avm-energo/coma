@@ -9,8 +9,8 @@
 #include "../alarm/warnalarmkiv.h"
 #include "../alarm/warnalarmktf.h"
 #include "../check/eabstractcheckdialog.h"
-#include "../config/confdialog.h"
 #include "../config/abstractconfdialog.h"
+#include "../config/confdialog.h"
 #include "../dialogs/abstractcordialog.h"
 #include "../dialogs/connectdialog.h"
 #include "../dialogs/cordialog.h"
@@ -131,6 +131,7 @@ public:
         // clang-format on
         return sl;
     }
+    friend void registerForDeviceNotification(Coma *);
 
     Coma(QWidget *parent = nullptr);
     ~Coma();

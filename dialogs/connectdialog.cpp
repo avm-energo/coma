@@ -3,7 +3,7 @@
 #include "../gen/error.h"
 #include "../gen/maindef.h"
 #include "../models/etablemodel.h"
-#include "../usb/eusbhid.h"
+#include "../usb/eprotocom.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
@@ -99,8 +99,8 @@ void ConnectDialog::SetUsb()
     QDialog *dlg = this->findChild<QDialog *>("connectdlg");
     if (dlg != nullptr)
     {
-        EUsbHid::GetInstance()->setDeviceName(WDFunc::TVData(dlg, "usbtv", 1).toString());
-        EUsbHid::GetInstance()->TranslateDeviceAndSave(WDFunc::TVData(dlg, "usbtv", 1).toString());
+        EProtocom::GetInstance()->setDeviceName(WDFunc::TVData(dlg, "usbtv", 1).toString());
+        EProtocom::GetInstance()->TranslateDeviceAndSave(WDFunc::TVData(dlg, "usbtv", 1).toString());
     }
     emit Accepted(&st);
 }
@@ -326,7 +326,7 @@ bool ConnectDialog::UpdateModel()
         }
         if (MainInterface == I_USB)
         {
-            QStringList USBsl = EUsbHid::GetInstance()->DevicesFound();
+            QStringList USBsl = EProtocom::GetInstance()->DevicesFound();
             QStringList sl = QStringList() << "#"
                                            << "Device";
             ETableModel *mdl = new ETableModel;

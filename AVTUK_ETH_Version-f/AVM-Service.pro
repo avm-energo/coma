@@ -60,6 +60,7 @@ SOURCES += \
     ../gen/logclass.cpp \
     ../gen/maindef.cpp \
     ../modbus/serialport.cpp \
+    ../usb/eprotocom.cpp \
     ../usb/eusbworker.cpp \
     coma.cpp \
     main.cpp \
@@ -88,8 +89,7 @@ SOURCES += \
     ../models/getoscpbdelegate.cpp \
     ../modbus/modbus.cpp \
     ../usb/commands.cpp \
-    ../usb/eabstractprotocomchannel.cpp \
-    ../usb/eusbhid.cpp \
+#    ../usb/eabstractprotocomchannel.cpp \
     ../widgets/ecombobox.cpp \
     ../widgets/emessagebox.cpp \
     ../widgets/errorprotocolwidget.cpp \
@@ -135,6 +135,8 @@ HEADERS += \
     ../gen/journals.h \
     ../gen/logclass.h \
     ../modbus/serialport.h \
+    ../usb/defines.h \
+    ../usb/eprotocom.h \
     ../usb/eusbworker.h \
     coma.h \
     ../check/check.h \
@@ -163,8 +165,7 @@ HEADERS += \
     ../models/etablemodel.h \
     ../models/getoscpbdelegate.h \
     ../usb/commands.h \
-    ../usb/eabstractprotocomchannel.h \
-    ../usb/eusbhid.h \
+#    ../usb/eabstractprotocomchannel.h \
     ../widgets/ecombobox.h \
     ../widgets/emessagebox.h \
     ../widgets/errorprotocolwidget.h \

@@ -8,8 +8,7 @@
 #include <QThread>
 
 #define __PRETTY_FUNCTION__ __FUNCSIG__
-EUsbWorker::EUsbWorker(
-    EAbstractProtocomChannel::DeviceConnectStruct &devinfo, LogClass *logh, bool writelog, QObject *parent)
+EUsbWorker::EUsbWorker(DeviceConnectStruct &devinfo, LogClass *logh, bool writelog, QObject *parent)
     : DeviceInfo(devinfo), log(logh), WriteUSBLog(writelog), QObject(parent)
 {
     AboutToFinish = false;
