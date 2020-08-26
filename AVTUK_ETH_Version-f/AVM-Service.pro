@@ -89,7 +89,6 @@ SOURCES += \
     ../models/getoscpbdelegate.cpp \
     ../modbus/modbus.cpp \
     ../usb/commands.cpp \
-#    ../usb/eabstractprotocomchannel.cpp \
     ../widgets/ecombobox.cpp \
     ../widgets/emessagebox.cpp \
     ../widgets/errorprotocolwidget.cpp \
@@ -165,7 +164,6 @@ HEADERS += \
     ../models/etablemodel.h \
     ../models/getoscpbdelegate.h \
     ../usb/commands.h \
-#    ../usb/eabstractprotocomchannel.h \
     ../widgets/ecombobox.h \
     ../widgets/emessagebox.h \
     ../widgets/errorprotocolwidget.h \
