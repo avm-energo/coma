@@ -141,7 +141,8 @@ void ConfDialog::FillBack()
     WDFunc::SPBData(ParentMainbl, "k_104", ConfigMain->MainBlk.k_104);
     WDFunc::SPBData(ParentMainbl, "w_104", ConfigMain->MainBlk.w_104);
 
-    int cbidx = ((ConfigMain->MainBlk.Ctype & 0x01) ? 1 : 0);
+    int cbidx = WDFunc::CBIndex(ParentMainbl, "Ctype");
+    cbidx = ((cbidx & 0x01) ? 1 : 0);
     ConfigMain->MainBlk.Ctype = (0x00000001 << cbidx) - 1;
 }
 

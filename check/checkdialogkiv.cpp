@@ -321,7 +321,7 @@ void CheckDialogKIV::onModbusStateChanged(ConnectionStates state)
         EMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 
-void CheckDialogKIV::SetPredAlarmColor(QList<bool> WarnAlarm)
+void CheckDialogKIV::SetWarnAlarmColor(QList<bool> WarnAlarm)
 {
 
     for (int i = 0; i < 18; i++)

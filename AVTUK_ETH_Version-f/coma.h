@@ -189,11 +189,11 @@ private:
     AvarAlarmKIV *AvarAlarmKIVWidget;
     WarnAlarmKTF *WarnAlarmKTFWidget;
     AvarAlarmKTF *AvarAlarmKTFWidget;
+    AlarmStateAll *AlarmStateAllWidget;
     AlarmClass *Alarm;
     QWidget *Parent;
 
-    AlarmStateAll *AlarmStateAllWidget;
-    AbstractAlarm *AbstrALARM;
+    // AbstractAlarm *AbstrALARM;
 
     InfoDialog *infoDialog;
     ConfDialog *mainConfDialog;
@@ -204,7 +204,6 @@ private:
     JournalDialog *jourDialog;
     fwupdialog *fwUpDialog;
     MNKTime *timeDialog;
-    QWidget *wPredDialog, *wAlarmDialog;
 
     bool PasswordValid;
     bool Disconnected;

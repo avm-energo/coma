@@ -75,25 +75,6 @@ QWidget *CheckDialogKDV::BdUI(int bdnum)
     case 4:
         return ChKDV->Bd5W(this);
 
-        //    case 0:
-        //        return Ch->Bd0W(this);
-        //    case 1: // Блок #1
-        //        return ChKDV->Bd1W(this);
-        //    case 2: // Блок #1
-        //        return ChKDV->Bd8W(this);
-        //    case 3: // Блок #1
-        //        return ChKDV->Bd3W(this);
-        //    case 4: // Блок #1
-        //        return ChKDV->Bd4W(this);
-        //    case 5: // Блок #1
-        //        return ChKDV->Bd5W(this);
-        //    case 6: // Блок #1
-        //        return ChKDV->Bd6W(this);
-        //    case 7: // Блок #1
-        //        return ChKDV->Bd7W(this);
-        //    case 8: // Блок #1
-        //        return ChKDV->Bd8W(this);
-
     default:
         return new QWidget;
     }
@@ -188,10 +169,6 @@ void CheckDialogKDV::StopBdMeasurements()
 void CheckDialogKDV::USBUpdate()
 {
 
-    //    if (Commands::GetBd(1, &ChKDV->Bda_block, sizeof(CheckKDV::Bda_in_struct)) == NOERROR)
-    //    {
-    //        ChKDV->FillBda0(this);
-    //    }
     if (Commands::GetBd(0, &ChKDV->Bd_block0, sizeof(CheckKDV::Bd0)) == NOERROR)
     {
         ChKDV->FillBd0(this);
@@ -212,20 +189,10 @@ void CheckDialogKDV::USBUpdate()
         ChKDV->FillBd4(this);
     }
 
-    //    if (Commands::GetBd(5, &ChKDV->Bd5_UI_Harm, sizeof(CheckKDV::Bd5)) == NOERROR)
-    //    {
-    //        ChKDV->FillBd5_UI_Harm(this);
-    //    }
-
     if (Commands::GetBd(6, &ChKDV->Bd_block6, sizeof(CheckKDV::Bd_4_6)) == NOERROR)
     {
         ChKDV->FillBd6(this);
     }
-
-    //    if (Commands::GetBd(7, &ChKDV->Bd7_UI_Harm, sizeof(CheckKDV::Bd5)) == NOERROR)
-    //    {
-    //        ChKDV->FillBd7_UI_Harm(this);
-    //    }
 
     if (Commands::GetBd(8, &ChKDV->Bd_block8, sizeof(CheckKDV::Bd8)) == NOERROR)
     {

@@ -621,37 +621,6 @@ void CheckKDV::FillBd18(QWidget *parent)
 {
     WDFunc::SetLBLText(parent, QString::number(5200), WDFunc::StringValueWithCheck(Bd_block18.Istart, 3));
 }
-// void CheckKDV::FillBda_block(QWidget *parent)
-//{
-//    WDFunc::SetLBLText(parent, "Frequency", WDFunc::StringValueWithCheck(Bda_block.Frequency, 3));
-
-//    for (int i = 0; i < 3; i++)
-//    {
-//        WDFunc::SetLBLText(
-//            parent, "IUefNat_filt" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i], 3));
-//        WDFunc::SetLBLText(parent, "IUefNat_filt" + QString::number(i + 3),
-//            WDFunc::StringValueWithCheck(Bda_block.IUefNat_filt[i + 3], 3));
-//        WDFunc::SetLBLText(parent, "UefNatLin_filt" + QString::number(i),
-//            WDFunc::StringValueWithCheck(Bda_block.UefNatLin_filt[i], 3));
-//        WDFunc::SetLBLText(parent, "IUeff_filtered" + QString::number(i),
-//            WDFunc::StringValueWithCheck(Bda_block.IUeff_filtered[i], 3));
-//        WDFunc::SetLBLText(parent, "IUeff_filtered" + QString::number(i + 3),
-//            WDFunc::StringValueWithCheck(Bda_block.IUeff_filtered[i + 3], 3));
-//        WDFunc::SetLBLText(
-//            parent, "phi_next_f" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.phi_next_f[i], 3));
-//        WDFunc::SetLBLText(parent, "phi_next_f" + QString::number(i + 3),
-//            WDFunc::StringValueWithCheck(Bda_block.phi_next_f[i + 3], 3));
-//        WDFunc::SetLBLText(parent, "PNatf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.PNatf[i], 3));
-//        WDFunc::SetLBLText(parent, "QNatf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.QNatf[i], 3));
-//        WDFunc::SetLBLText(parent, "SNatf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.SNatf[i], 3));
-//        WDFunc::SetLBLText(
-//            parent, "CosPhiNat" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.CosPhiNat[i], 3));
-//        WDFunc::SetLBLText(parent, "Pf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.Pf[i], 3));
-//        WDFunc::SetLBLText(parent, "Qf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.Qf[i], 3));
-//        WDFunc::SetLBLText(parent, "Sf" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.Sf[i], 3));
-//        WDFunc::SetLBLText(parent, "CosPhi" + QString::number(i), WDFunc::StringValueWithCheck(Bda_block.CosPhi[i],
-//        3));
-//    }
 
 //    WDFunc::SetLBLText(parent, "Pt100_R", WDFunc::StringValueWithCheck(Bda_block.Pt100_R, 3));
 //}
@@ -684,28 +653,6 @@ void CheckKDV::FillBd18(QWidget *parent)
 //    for (int i = 0; i < 3; i++)
 //    {
 //        WDFunc::SetLBLText(parent, QString::number(1108 + i), WDFunc::StringValueWithCheck(Bd3_Gr2.KrF[i], 3));
-//    }
-//}
-
-// void CheckKDV::FillBd5_UI_Harm(QWidget *parent)
-//{
-//    for (int i = 0; i < 61; i++)
-//    {
-//        WDFunc::SetLBLText(parent, QString::number(3020 + i), WDFunc::StringValueWithCheck(Bd5_UI_Harm.Harm[0][i],
-//        3)); WDFunc::SetLBLText(parent, QString::number(3146 + i),
-//        WDFunc::StringValueWithCheck(Bd5_UI_Harm.Harm[1][i], 3)); WDFunc::SetLBLText(parent, QString::number(3270 +
-//        i), WDFunc::StringValueWithCheck(Bd5_UI_Harm.Harm[2][i], 3));
-//    }
-//}
-
-// void CheckKDV::FillBd7_UI_Harm(QWidget *parent)
-//{
-//    for (int i = 0; i < 61; i++)
-//    {
-//        WDFunc::SetLBLText(parent, QString::number(3420 + i), WDFunc::StringValueWithCheck(Bd7_UI_Harm.Harm[0][i],
-//        3)); WDFunc::SetLBLText(parent, QString::number(3546 + i),
-//        WDFunc::StringValueWithCheck(Bd7_UI_Harm.Harm[1][i], 3)); WDFunc::SetLBLText(parent, QString::number(3670 +
-//        i), WDFunc::StringValueWithCheck(Bd7_UI_Harm.Harm[2][i], 3));
 //    }
 //}
 

@@ -60,7 +60,7 @@ void CorDialogKTF::SetupUI()
     QString paramcolor = MAINWINCLR;
     QPushButton *pb = new QPushButton();
 
-    glyout->addWidget(WDFunc::NewLBL(this, "Текущее значение ресурса изоляции:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(this, QString::number(907), 0, 1000000, 5, paramcolor), row, 2, 1, 2);
     row++;
 
@@ -184,7 +184,9 @@ void CorDialogKTF::WriteCorBd()
             else
                 EMessageBox::information(this, "INFO", "Ошибка");
 
-            if (Commands::GetBd(7, WBd7Block, sizeof(WBd7Block)) == NOERROR)
+            //......
+            //            QThread::sleep(1);
+            if (Commands::GetBd(9, Bd9Block, sizeof(Bd9Block)) == NOERROR)
                 FillCor();
         }
     }

@@ -29,7 +29,7 @@ private:
     ConfigKTF *KTF;
     ConfDialog *Conf;
     ConfDialogKxx *ConfKxx;
-    Config *ConfigMain;
+    //    Config *ConfigMain;
 
     bool DDosc;
     bool Mb;

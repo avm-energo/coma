@@ -2,6 +2,7 @@
 #define CONFIGKDV_H
 
 //..............
+#define BCI_EQ_TYPE 1001
 #define BCI_NFILTR 1003
 #define BCI_NHARMFILT 1004
 #define BCI_DDOCS 1005
@@ -29,7 +30,7 @@
 #define BCI_GTNNT 1082
 #define BCI_GOVC 1083
 #define BCI_TDATNUM 1084
-#define BCI_EQ_TYPE 1101
+
 #define BCI_FNOM 1201
 #define BCI_NOM_SLIP 1202
 #define BCI_UVMAX 1203
@@ -116,21 +117,6 @@ public:
 
     typedef struct
     {
-        quint32 MTypeB;
-        quint32 MTypeE;
-        quint32 Ctype;   // Тип синхронизации времени от модуля Ц
-        quint32 Abs_104; // Адрес базовой станции для протокола 104
-        quint32 Cycle_104; // Интервал циклического опроса по протоколу МЭК 60870-5-104
-        quint32 T1_104; // тайм-аут Т1 для протокола 104
-        quint32 T2_104; // тайм-аут Т2 для протокола 104
-        quint32 T3_104; // тайм-аут Т3 для протокола 104
-        quint32 k_104;  // макс. кол-во неподтв. сообщений
-        quint32 w_104;  // макс. кол-во сообщений, после которых необх. выдать
-                        // подтверждение
-    } Bci_Main;
-
-    typedef struct
-    {
         quint32 Eq_type; //тип контролируемого оборудования: 0 - асинхронный
                          //двигатель, 1- трансформатор, 2 - реактор
         quint32 Cool_type; //вид охлаждения: 0 – естественное, 1 – принудительное
@@ -207,24 +193,6 @@ public:
 
     } Bci;
 
-    typedef struct
-    {
-        quint8 IP[4];
-        quint8 Mask[4];
-        quint8 GW[4];
-        quint16 Port[4];
-        quint8 SNTP[4];
-        quint32 Baud;
-        quint8 Parity;
-        quint8 Stopbit;
-        quint8 adrMB;
-        quint8 IsNTP;
-        quint8 IsPPS;
-
-    } Com;
-
-    Bci_Main MainBlk; // Основной блок (см. config.h)
-    Com Com_param;
     Bci Bci_block;
 
     void SetDefConf();

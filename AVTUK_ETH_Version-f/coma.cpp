@@ -98,7 +98,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     mainConfDialog = nullptr;
     confBDialog = confMDialog = nullptr;
     checkBDialog = checkMDialog = nullptr;
-    wPredDialog = wAlarmDialog = nullptr;
+    // wPredDialog = wAlarmDialog = nullptr;
     Harm = nullptr;
     corDialog = nullptr;
     CurTabIndex = -1;
@@ -430,7 +430,7 @@ void Coma::StartWork()
                 break;
 
             case Config::MTM_87:
-                addConfTab(MainTW, "Текущее значение");
+                addConfTab(MainTW, "Старение изоляции");
                 break;
             }
             break;
@@ -499,19 +499,21 @@ void Coma::PrepareDialogs()
             connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKIVWidget, &WarnAlarmKIV::Update);
 
             AvarAlarmKIVWidget = new AvarAlarmKIV(Alarm);
-            connect(AlarmW, &AlarmWidget::AlarmButtonPressed, AvarAlarmKIVWidget, &QWidget::show);
+            connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKIVWidget, &QWidget::show);
             connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVWidget, &AvarAlarmKIV::Update);
 
-            connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), CheckB, SLOT(SetWarnAlarmColor(QList<bool>)));
-            connect(AlarmW, SIGNAL(SetAlarmColor(QList<bool>)), CheckB, SLOT(SetAlarmColor(QList<bool>)));
+            connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
+            connect(AlarmW, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
 
             break;
 
         case Config::MTM_87:
+
             checkBDialog = new CheckDialogKTF(BoardTypes::BT_BASE);
 
             Harm = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
-            connect(BdaTimer, SIGNAL(timeout()), Harm, SLOT(USBUpdate()));
+            connect(BdaTimer, &QTimer::timeout, Harm, &EAbstractCheckDialog::USBUpdate);
+            //      connect(BdaTimer, SIGNAL(timeout()), Harm, SLOT(USBUpdate()));
 
             S2Config->clear();
             if (MainInterface != I_RS485)

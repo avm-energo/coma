@@ -33,7 +33,7 @@ AvarAlarmKIV::AvarAlarmKIV(AlarmClass *alarm, QWidget *parent) : AbstractAlarm(p
 
 void AvarAlarmKIV::AvarState()
 {
-    // QDialog *dlg = new QDialog;
+
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -64,7 +64,6 @@ void AvarAlarmKIV::AvarState()
     connect(pb, SIGNAL(clicked()), this, SLOT(close()));
     lyout->addWidget(pb, 0);
     setLayout(lyout);
-    // dlg->setLayout(lyout);
 }
 
 void AvarAlarmKIV::AlarmState()

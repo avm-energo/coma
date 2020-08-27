@@ -26,7 +26,7 @@ ConfDialogKDV::ConfDialogKDV(QVector<S2::DataRec> *S2Config, QWidget *parent) : 
     this->S2Config = S2Config;
     KDV = new ConfigKDV(S2Config);
     Conf = new ConfDialog(S2Config, MTypeB, MTypeM);
-    ConfigMain = new Config(S2Config, MTypeB, MTypeM);
+    //    ConfigMain = new Config(S2Config, MTypeB, MTypeM);
     ConfKxx = new ConfDialogKxx(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
@@ -109,7 +109,7 @@ void ConfDialogKDV::SetupUI()
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальное линейное первичное напряжение, кВ:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Unom1", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "Unom1", 0, 10000, 2, paramcolor), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение первой тройки, В:"), row, 1, 1, 1);
@@ -335,7 +335,7 @@ void ConfDialogKDV::SetupUI()
     row++;
     gridlyout->addWidget(WDFunc::NewLBL(this, "Запуск осциллограммы:"), row, 1, 1, 1);
     hlyout->addWidget(WDFunc::NewChB(this, "oscchb.0", "по команде Ц", ACONFWCLR));
-    hlyout->addWidget(WDFunc::NewChB(this, "oscchb.1", "по дискр. входу PD1", ACONFWCLR));
+    //    hlyout->addWidget(WDFunc::NewChB(this, "oscchb.1", "по дискр. входу PD1", ACONFWCLR));
     hlyout->addWidget(WDFunc::NewChB(this, "oscchb.2", "по резкому изменению", ACONFWCLR));
     gridlyout->addLayout(hlyout, row, 2, 1, 3);
 
@@ -460,7 +460,7 @@ void ConfDialogKDV::Fill()
     WDFunc::SetCBIndex(this, "W_mat", cbidx);
 
     WDFunc::SetChBData(this, "oscchb.0", (KDV->Bci_block.DDosc & 0x0001));
-    WDFunc::SetChBData(this, "oscchb.1", (KDV->Bci_block.DDosc & 0x0002));
+    //    WDFunc::SetChBData(this, "oscchb.1", (KDV->Bci_block.DDosc & 0x0002));
     WDFunc::SetChBData(this, "oscchb.2", (KDV->Bci_block.DDosc & 0x0004));
     WDFunc::SetSPBData(this, "NFiltr", KDV->Bci_block.NFiltr);
     WDFunc::SetSPBData(this, "NHarmFilt", KDV->Bci_block.NHarmFilt);
@@ -537,9 +537,10 @@ void ConfDialogKDV::FillBack()
     // WDFunc::SPBData(this, "DDOsc", CKDV->Bci_block.DDOsc);
 
     WDFunc::ChBData(this, "oscchb.0", tmpb);
+    KDV->Bci_block.DDosc = 0;
     KDV->Bci_block.DDosc |= (tmpb) ? 0x0001 : 0x0000;
-    WDFunc::ChBData(this, "oscchb.1", tmpb);
-    KDV->Bci_block.DDosc |= (tmpb) ? 0x0002 : 0x0000;
+    //    WDFunc::ChBData(this, "oscchb.1", tmpb);
+    //    KDV->Bci_block.DDosc |= (tmpb) ? 0x0002 : 0x0000;
     WDFunc::ChBData(this, "oscchb.2", tmpb);
     KDV->Bci_block.DDosc |= (tmpb) ? 0x0004 : 0x0000;
 
@@ -612,22 +613,3 @@ void ConfDialogKDV::Stop_Timer()
 {
     timerRead->stop();
 }
-
-// void ConfDialogKDV::Write_PCDate()
-//{
-//    QDateTime myDateTime;
-//    uint time;
-//    myDateTime = QDateTime::currentDateTimeUtc();
-//    time = myDateTime.toSecsSinceEpoch();
-//}
-
-// void ConfDialogKDV::Write_Date()
-//{
-//    QDateTime myDateTime;
-//    uint *time = new uint;
-//    QString qStr;
-//    WDFunc::LE_read_data(this, "Date", qStr);
-//    myDateTime = QDateTime::fromString(qStr, "dd-MM-yyyy HH:mm:ss");
-//    myDateTime.setOffsetFromUtc(0);
-//    *time = myDateTime.toTime_t();
-//}

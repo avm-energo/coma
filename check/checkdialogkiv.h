@@ -19,7 +19,7 @@ public:
 signals:
 
 public slots:
-    void SetPredAlarmColor(QList<bool> WarnAlarm);
+    void SetWarnAlarmColor(QList<bool> WarnAlarm);
     void SetAlarmColor(QList<bool> Alarm);
     void UpdateFlData(IEC104Thread::FlSignals104 *);
     void UpdateSponData(IEC104Thread::SponSignals *);
