@@ -502,8 +502,8 @@ void Coma::PrepareDialogs()
             connect(AlarmW, &AlarmWidget::AlarmButtonPressed, AvarAlarmKIVWidget, &QWidget::show);
             connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVWidget, &AvarAlarmKIV::Update);
 
-            connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), CheckB, SLOT(SetWarnAlarmColor(QList<bool>)));
-            connect(AlarmW, SIGNAL(SetAlarmColor(QList<bool>)), CheckB, SLOT(SetAlarmColor(QList<bool>)));
+            connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
+            connect(AlarmW, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
 
             break;
 
