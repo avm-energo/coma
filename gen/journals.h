@@ -82,7 +82,7 @@ public:
     //    void SetParentWidget(QWidget *w);
 
 signals:
-    void Done(QString);
+    void Done(QString, int);
     void resendResult(int);
     void resendMaxResult(int);
     // void Fill(QVector<QVector<QVariant>>);

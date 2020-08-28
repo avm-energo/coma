@@ -50,7 +50,7 @@ private slots:
     void EraseJour();
     void SaveJour();
     void WritePasswordCheck(QString psw);
-    void Done(QString msg);
+    void Done(QString msg, int);
     void Error(QString msg);
     // void SetModel(ETableModel *mdl);
     // void pullProgress(int);
