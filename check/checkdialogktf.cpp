@@ -33,14 +33,15 @@ CheckDialogKTF::CheckDialogKTF(BoardTypes board, QWidget *parent) : EAbstractChe
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
-    SetBd(17, &ChKTF->Bd_block13, sizeof(CheckKTF::Bd13));
+    //    SetBd(BD_COMMON, &Ch->Bd_block0, sizeof(Check::Bd0));
+    //    SetBd(17, &ChKTF->Bd_block13, sizeof(CheckKTF::Bd13));
 
     if (Config::MTB_A2) //(ModuleBSI::GetMType(BoardTypes::BT_BASE) << 8)
 
         sl = QStringList { "Основные", "Модель", "Ресурс", "1-я гармоника", "Несимметрия" };
 
     BdUINum = sl.size();
+    // m_RCount = rcount;
 
     SetupUI(sl);
 
@@ -53,6 +54,7 @@ QWidget *CheckDialogKTF::BdUI(int bdnum)
     {
 
     case 0:
+        //        return ChKTF->Bd1W(m_RCount,this);
         return ChKTF->Bd1W(this);
 
     case 1:

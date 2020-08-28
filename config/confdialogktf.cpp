@@ -37,6 +37,11 @@ ConfDialogKTF::~ConfDialogKTF()
 {
 }
 
+int ConfDialogKTF::getRCount()
+{
+    return KTF->Bci_block.TdatNum;
+}
+
 void ConfDialogKTF::SetupUI()
 {
     QVBoxLayout *vlyout1 = new QVBoxLayout;

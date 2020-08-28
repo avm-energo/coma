@@ -46,11 +46,16 @@ QWidget *CheckKDV::Bd1W(QWidget *parent)
     glyout->addWidget(
         WDFunc::NewLBLT(parent, "", QString::number(4501), ValuesFormat, "Температура окружающей среды, °С"), 1, 1, 1,
         1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Частота, Гц"), 0, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2400), ValuesFormat, "Частота, Гц"), 1, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Температура микроконтроллера, °С"), 0, 3, 1, 1);
+
+    glyout->addWidget(WDFunc::NewLBL(parent, "Cопротивление термометра, °С"), 0, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4502), ValuesFormat,
+                          "сопротивление термометра окружающей среды, Ом"),
+        1, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Частота, Гц"), 0, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2400), ValuesFormat, "Частота, Гц"), 1, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Температура микроконтроллера, °С"), 0, 4, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", QString::number(101), ValuesFormat, "Температура микроконтроллера, °С"), 1, 3, 1,
+        WDFunc::NewLBLT(parent, "", QString::number(101), ValuesFormat, "Температура микроконтроллера, °С"), 1, 4, 1,
         1);
 
     vlyout->addLayout(glyout);
@@ -381,8 +386,6 @@ QWidget *CheckKDV::Bd5W(QWidget *parent)
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QString phase[3] = { "ф. A", "ф. B", "ф. C" };
-    // QString pphase[4] = {"ф. A","ф. B","ф. C","сум."};
-    // QString ppphase[4] = {"AB","BC","CA","ср."};
 
     //...................................
 
@@ -425,6 +428,14 @@ QWidget *CheckKDV::Bd5W(QWidget *parent)
                               "Общий коэффициент гарм. искажений напряжения фазы " + phase[i] + " гр.1"),
             5, i, 1, 1);
     }
+    for (i = 0; i < 3; ++i)
+    {
+
+        glyout->addWidget(WDFunc::NewLBL(parent, "KrF" + phase[i] + ""), 6, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1008 + i), ValuesFormat,
+                              "Крест-фактор напряжения по трем фазам" + phase[i] + " гр.1"),
+            7, i, 1, 1);
+    }
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
@@ -465,6 +476,14 @@ QWidget *CheckKDV::Bd5W(QWidget *parent)
                               "Общий коэффициент гарм. искажений тока фазы " + phase[i] + " гр.1"),
             11, i, 1, 1);
     }
+    for (i = 0; i < 3; ++i)
+    {
+
+        glyout->addWidget(WDFunc::NewLBL(parent, "KrF" + phase[i] + ""), 12, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1408 + i), ValuesFormat,
+                              "Крест-фактор тока по трем фазам" + phase[i] + " гр.1"),
+            13, i, 1, 1);
+    }
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
@@ -499,6 +518,7 @@ void CheckKDV::FillBd2(QWidget *parent)
 
         WDFunc::SetLBLText(
             parent, QString::number(1004 + i), WDFunc::StringValueWithCheck(Bd_block2.IUeff_filtered[i], 3));
+        WDFunc::SetLBLText(parent, QString::number(1008 + i), WDFunc::StringValueWithCheck(Bd_block2.KrF[i], 3));
     }
 }
 
@@ -511,6 +531,7 @@ void CheckKDV::FillBd3(QWidget *parent)
 
         WDFunc::SetLBLText(
             parent, QString::number(1404 + i), WDFunc::StringValueWithCheck(Bd_block3.IUeff_filtered[i], 3));
+        WDFunc::SetLBLText(parent, QString::number(1408 + i), WDFunc::StringValueWithCheck(Bd_block3.KrF[i], 3));
     }
 }
 
@@ -610,6 +631,7 @@ void CheckKDV::FillBd13(QWidget *parent)
 
     WDFunc::SetLBLText(parent, QString::number(4500), WDFunc::StringValueWithCheck(Bd_block13.TempWinding, 3));
     WDFunc::SetLBLText(parent, QString::number(4501), WDFunc::StringValueWithCheck(Bd_block13.temperature, 3));
+    WDFunc::SetLBLText(parent, QString::number(4502), WDFunc::StringValueWithCheck(Bd_block13.resistance, 3));
 }
 
 void CheckKDV::FillBd17(QWidget *parent)
@@ -621,53 +643,6 @@ void CheckKDV::FillBd18(QWidget *parent)
 {
     WDFunc::SetLBLText(parent, QString::number(5200), WDFunc::StringValueWithCheck(Bd_block18.Istart, 3));
 }
-
-//    WDFunc::SetLBLText(parent, "Pt100_R", WDFunc::StringValueWithCheck(Bda_block.Pt100_R, 3));
-//}
-// void CheckKDV::FillBd2_Gr1(QWidget *parent)
-//{
-
-//    for (int i = 0; i < 4; i++)
-//    {
-//        WDFunc::SetLBLText(
-//            parent, QString::number(1000 + i), WDFunc::StringValueWithCheck(Bd2_Gr1.GrIUefNat_filt[i], 3));
-//        WDFunc::SetLBLText(
-//            parent, QString::number(1004 + i), WDFunc::StringValueWithCheck(Bd2_Gr1.GrIUeff_filtered[i], 3));
-//    }
-
-//    for (int i = 0; i < 3; i++)
-//    {
-//        WDFunc::SetLBLText(parent, QString::number(1008 + i), WDFunc::StringValueWithCheck(Bd2_Gr1.KrF[i], 3));
-//    }
-//}
-// void CheckKDV::FillBd3_Gr2(QWidget *parent)
-//{
-//    for (int i = 0; i < 4; i++)
-//    {
-//        WDFunc::SetLBLText(
-//            parent, QString::number(1100 + i), WDFunc::StringValueWithCheck(Bd3_Gr2.GrIUefNat_filt[i], 3));
-//        WDFunc::SetLBLText(
-//            parent, QString::number(1104 + i), WDFunc::StringValueWithCheck(Bd3_Gr2.GrIUeff_filtered[i], 3));
-//    }
-
-//    for (int i = 0; i < 3; i++)
-//    {
-//        WDFunc::SetLBLText(parent, QString::number(1108 + i), WDFunc::StringValueWithCheck(Bd3_Gr2.KrF[i], 3));
-//    }
-//}
-
-// void CheckKDV::FillBd13_Temp(QWidget *parent)
-//{
-//    WDFunc::SetLBLText(parent, "4500", WDFunc::StringValueWithCheck(Bd13_Temp.TempWinding, 3));
-//    WDFunc::SetLBLText(parent, "4501", WDFunc::StringValueWithCheck(Bd13_Temp.temperature, 3));
-//    WDFunc::SetLBLText(parent, "4502", WDFunc::StringValueWithCheck(Bd13_Temp.resistance, 3));
-
-//    for (int i = 0; i < 4; i++)
-//    {
-//        WDFunc::SetLBLText(parent, QString::number(4503 + i), WDFunc::StringValueWithCheck(Bd13_Temp.ExtTempWin[i],
-//        3));
-//    }
-//}
 
 QWidget *CheckKDV::BdUI(int bdnum)
 {
