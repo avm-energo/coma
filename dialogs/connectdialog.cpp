@@ -171,7 +171,7 @@ void ConnectDialog::RsAccepted()
             EMessageBox::error(this, "Ошибка", "Такое имя уже имеется");
             return;
         }
-        RotateSettings("Ethernet-", name);
+        RotateSettings("RS485-", name);
         QString key = PROGNAME;
         key += "\\" + name;
         QSettings *sets = new QSettings(SOFTDEVELOPER, key);
@@ -189,10 +189,7 @@ void ConnectDialog::RsAccepted()
     }
 }
 
-void ConnectDialog::SetCancelled()
-{
-    emit Cancelled();
-}
+void ConnectDialog::SetCancelled() { emit Cancelled(); }
 
 void ConnectDialog::SetEth()
 {
@@ -219,9 +216,9 @@ void ConnectDialog::AddRs()
     QGridLayout *lyout = new QGridLayout;
     int count = 0;
     lyout->addWidget(WDFunc::NewLBL(dlg, "Имя:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewLE(dlg, "namele"), count++, 1, 1, 7);
+    lyout->addWidget(WDFunc::NewLE(dlg, "namele"), count++, 1, 1, 1);
     lyout->addWidget(WDFunc::NewLBL(dlg, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewCB(dlg, "portcb", ports), count++, 1, 1, 1, Qt::AlignLeft);
+    lyout->addWidget(WDFunc::NewCB(dlg, "portcb", ports), count++, 1, 1, 1);
     QStringList sl = QStringList() << "1200"
                                    << "2400"
                                    << "4800"
@@ -231,20 +228,22 @@ void ConnectDialog::AddRs()
                                    << "57600"
                                    << "115200";
     lyout->addWidget(WDFunc::NewLBL(dlg, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewCB(dlg, "speedcb", sl), count++, 1, 1, 7);
+    lyout->addWidget(WDFunc::NewCB(dlg, "speedcb", sl), count++, 1, 1, 1);
     sl = QStringList() << "Нет"
                        << "Нечет"
                        << "Чет";
     lyout->addWidget(WDFunc::NewLBL(dlg, "Чётность:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewCB(dlg, "paritycb", sl), count++, 1, 1, 7);
+    lyout->addWidget(WDFunc::NewCB(dlg, "paritycb", sl), count++, 1, 1, 1);
     lyout->addWidget(WDFunc::NewLBL(dlg, "Стоп бит:"), count, 0, 1, 1, Qt::AlignLeft);
     sl = QStringList() << "1"
                        << "2";
-    lyout->addWidget(WDFunc::NewCB(dlg, "stopbitcb", sl), count++, 1, 1, 7);
+    lyout->addWidget(WDFunc::NewCB(dlg, "stopbitcb", sl), count++, 1, 1, 1);
     lyout->addWidget(WDFunc::NewLBL(dlg, "Адрес:"), count, 0, 1, 1, Qt::AlignLeft);
-    lyout->addWidget(WDFunc::NewSPB(dlg, "addressspb", 1, 255, 0), count++, 1, 1, 7);
-    lyout->addWidget(WDFunc::NewPB(dlg, "acceptpb", "Сохранить", this, SLOT(RsAccepted())), count, 0, 1, 4);
-    lyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", dlg, SLOT(close())), count, 4, 1, 3);
+    lyout->addWidget(WDFunc::NewSPB(dlg, "addressspb", 1, 255, 0), count++, 1, 1, 1);
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->addWidget(WDFunc::NewPB(dlg, "acceptpb", "Сохранить", this, SLOT(RsAccepted())));
+    hlyout->addWidget(WDFunc::NewPB(dlg, "cancelpb", "Отмена", dlg, SLOT(close())));
+    lyout->addLayout(hlyout, count, 0, 1, 2, Qt::AlignCenter);
     dlg->setLayout(lyout);
     dlg->exec();
 }
