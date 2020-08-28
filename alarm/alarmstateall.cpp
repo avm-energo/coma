@@ -23,9 +23,8 @@
 #include <QStringListModel>
 #include <QToolBar>
 
-AlarmStateAll::AlarmStateAll(QWidget *parent) : AbstractAlarm(parent)
+AlarmStateAll::AlarmStateAll(QDialog *parent) : AbstractAlarm(parent)
 {
-
     AlarmState();
 }
 

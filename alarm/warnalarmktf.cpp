@@ -23,7 +23,7 @@
 #include <QStringListModel>
 #include <QToolBar>
 
-WarnAlarmKTF::WarnAlarmKTF(AlarmClass *alarm, QWidget *parent) : AbstractAlarm(parent)
+WarnAlarmKTF::WarnAlarmKTF(AlarmClass *alarm, QDialog *parent) : AbstractAlarm(parent)
 {
     Alarm = alarm;
     WarnAlarmState();
