@@ -50,6 +50,8 @@ WizardStyle=modern
 OutputBaseFilename={#EngName}-{#ApplicationVersion}-x64
 OutputDir=..\output
 VersionInfoVersion={#ApplicationVersion}
+LicenseFile="license.txt"
+InfoAfterFile="AVM-Service.NOTES"
 
 [Dirs]
 Name: {userappdata}\{#EngName}
