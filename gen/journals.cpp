@@ -283,6 +283,7 @@ void Journals::ResultReady()
     ETableModel *mdl;
     QSortFilterProxyModel *pmdl;
     Qt::SortOrder order;
+
     switch (_jourType)
     {
     case Journals::JOURWORK:
@@ -313,7 +314,7 @@ void Journals::ResultReady()
     pmdl->sort(dateidx, order);
     // future.waitForFinished();
     // qDebug() << "Read";
-    emit Done("Прочитано успешно");
+    emit Done("Прочитано успешно", _jourType);
 }
 
 void Journals::FillSysJour(QByteArray ba)
@@ -432,5 +433,5 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
         }
     }
     xlsx->save();
-    emit Done("Файл создан успешно");
+    emit Done("Файл создан успешно", _jourType);
 }

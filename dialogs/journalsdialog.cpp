@@ -159,16 +159,23 @@ QWidget *JournalDialog::JourTab(int jourtype)
         return w;
         break;
     }
-
-    hlyout->addWidget(
-        WDFunc::NewPB(this, "gj." + QString::number(jourtype), "Получить " + str, this, SLOT(TryGetJourByUSB())));
-    hlyout->addWidget(
-        WDFunc::NewPB(this, "ej." + QString::number(jourtype), "Стереть " + str, this, SLOT(EraseJour())));
-    hlyout->addWidget(
-        WDFunc::NewPB(this, "sj." + QString::number(jourtype), "Сохранить журнал в файл", this, SLOT(SaveJour())));
+    QPushButton *getButton
+        = WDFunc::NewPB(this, "gj." + QString::number(jourtype), "Получить " + str, this, SLOT(TryGetJourByUSB()));
+    hlyout->addWidget(getButton);
+    QPushButton *eraseButton
+        = WDFunc::NewPB(this, "ej." + QString::number(jourtype), "Стереть " + str, this, SLOT(EraseJour()));
+    hlyout->addWidget(eraseButton);
+    QPushButton *saveButton
+        = WDFunc::NewPB(this, "sj." + QString::number(jourtype), "Сохранить журнал в файл", this, SLOT(SaveJour()));
+    saveButton->setEnabled(false);
+    connect(JourFuncs, &Journals::Done, [saveButton](const QString &str, const int &number) {
+        Q_UNUSED(str)
+        if (saveButton->objectName().back().digitValue() == number)
+            saveButton->setEnabled(true);
+    });
+    hlyout->addWidget(saveButton);
     vlyout->addLayout(hlyout);
     auto *modelView = WDFunc::NewTV(this, tvname, mdl);
-    // modelView->setSortingEnabled(true);
     vlyout->addWidget(modelView, 89);
     w->setLayout(vlyout);
     return w;
@@ -364,7 +371,7 @@ void JournalDialog::WritePasswordCheck(QString psw)
     emit WritePasswordChecked();
 }
 
-void JournalDialog::Done(QString msg)
+void JournalDialog::Done(QString msg, int)
 {
     qDebug() << __PRETTY_FUNCTION__;
     // new QAbstractItemModelTester(ProxyWorkModel, QAbstractItemModelTester::FailureReportingMode::Warning, this);
