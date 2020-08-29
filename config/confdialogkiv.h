@@ -28,7 +28,7 @@ private:
     ConfigKIV *CKIV;
     ConfDialog *Conf;
     ConfDialogKxx *ConfKxx;
-    Config *ConfigMain;
+    //    Config *ConfigMain;
 
     bool Variable;
 

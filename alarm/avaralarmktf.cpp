@@ -23,7 +23,7 @@
 #include <QStringListModel>
 #include <QToolBar>
 
-AvarAlarmKTF::AvarAlarmKTF(AlarmClass *alarm, QWidget *parent) : AbstractAlarm(parent)
+AvarAlarmKTF::AvarAlarmKTF(AlarmClass *alarm, QDialog *parent) : AbstractAlarm(parent)
 {
     Alarm = alarm;
     AvarState();

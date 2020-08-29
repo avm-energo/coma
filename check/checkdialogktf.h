@@ -15,6 +15,7 @@ class CheckDialogKTF : public EAbstractCheckDialog
 
 public:
     CheckDialogKTF(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    //    CheckDialogKTF(int rcount = 4, BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
     CheckKTF *ChKTF;
 
@@ -30,7 +31,7 @@ private:
     Check *Ch;
     QTimer *BdTimer;
     CheckHarmonicKTF *ChHarmKTF;
-    int BdNum;
+    int BdNum, m_RCount;
     bool XlsxWriting;
     const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; "
                                  "color: blue; font: bold 10px;}";

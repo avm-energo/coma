@@ -26,7 +26,7 @@ private:
     ConfigKDV *KDV;
     ConfDialog *Conf;
     ConfDialogKxx *ConfKxx;
-    Config *ConfigMain;
+    //    Config *ConfigMain;
 
     bool Variable;
     QTimer *timerRead;

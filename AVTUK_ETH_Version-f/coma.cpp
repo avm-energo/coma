@@ -98,8 +98,8 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     mainConfDialog = nullptr;
     confBDialog = confMDialog = nullptr;
     checkBDialog = checkMDialog = nullptr;
-    wPredDialog = wAlarmDialog = nullptr;
-    Harm = nullptr;
+    // wPredDialog = wAlarmDialog = nullptr;
+    HarmDialog = nullptr;
     corDialog = nullptr;
     CurTabIndex = -1;
     for (int i = 0; i < 20; ++i)
@@ -375,10 +375,10 @@ void Coma::StartWork()
     if (checkMDialog != nullptr)
         MainTW->addTab(checkMDialog, str);
 
-    if (Harm != nullptr)
+    if (HarmDialog != nullptr)
     {
-        MainTW->addTab(Harm, "Гармоники");
-        CheckHarmIndex = MainTW->indexOf(Harm);
+        MainTW->addTab(HarmDialog, "Гармоники");
+        CheckHarmIndex = MainTW->indexOf(HarmDialog);
         if (MainInterface == I_RS485)
             ChModbus->CheckHarmIndex = CheckHarmIndex;
     }
@@ -430,7 +430,7 @@ void Coma::StartWork()
                 break;
 
             case Config::MTM_87:
-                addConfTab(MainTW, "Текущее значение");
+                addConfTab(MainTW, "Старение изоляции");
                 break;
             }
             break;
@@ -478,8 +478,8 @@ void Coma::PrepareDialogs()
     jourDialog = new JournalDialog(Ch104);
     timeDialog = new MNKTime(this);
 
-    AlarmStateAllWidget = new AlarmStateAll(this);
-    connect(AlarmW, &AlarmWidget::AlarmButtonPressed, AlarmStateAllWidget, &QWidget::show);
+    AlarmStateAllDialog = new AlarmStateAll;
+    connect(AlarmW, &AlarmWidget::AlarmButtonPressed, AlarmStateAllDialog, &QDialog::show);
 
     switch (MTypeB)
     {
@@ -494,13 +494,13 @@ void Coma::PrepareDialogs()
                 confMDialog = new ConfDialogKIV(S2Config);
             corDialog = new CorDialog;
 
-            WarnAlarmKIVWidget = new WarnAlarmKIV(Alarm);
-            connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKIVWidget, &QWidget::show);
-            connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKIVWidget, &WarnAlarmKIV::Update);
+            WarnAlarmKIVDialog = new WarnAlarmKIV(Alarm);
+            connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKIVDialog, &QDialog::show);
+            connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKIVDialog, &WarnAlarmKIV::Update);
 
-            AvarAlarmKIVWidget = new AvarAlarmKIV(Alarm);
-            connect(AlarmW, &AlarmWidget::AlarmButtonPressed, AvarAlarmKIVWidget, &QWidget::show);
-            connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVWidget, &AvarAlarmKIV::Update);
+            AvarAlarmKIVDialog = new AvarAlarmKIV(Alarm);
+            connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKIVDialog, &QDialog::show);
+            connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVDialog, &AvarAlarmKIV::Update);
 
             connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
             connect(AlarmW, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
@@ -508,23 +508,34 @@ void Coma::PrepareDialogs()
             break;
 
         case Config::MTM_87:
-            checkBDialog = new CheckDialogKTF(BoardTypes::BT_BASE);
 
-            Harm = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
-            connect(BdaTimer, SIGNAL(timeout()), Harm, SLOT(USBUpdate()));
+            HarmDialog = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
+            connect(BdaTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
+            //      connect(BdaTimer, SIGNAL(timeout()), Harm, SLOT(USBUpdate()));
+
+            //            S2Config->clear();
+            //            int rcount = 4;
+            //            if (MainInterface != I_RS485)
+            //            {
+            //                confMDialog = new ConfDialogKTF(S2Config);
+            //                rcount = qobject_cast<ConfDialogKTF *>(confMDialog)->getRCount();
+            //            }
 
             S2Config->clear();
             if (MainInterface != I_RS485)
                 confMDialog = new ConfDialogKTF(S2Config);
+
+            checkBDialog = new CheckDialogKTF(BoardTypes::BT_BASE);
+
             corDialog = new CorDialogKTF;
 
-            WarnAlarmKTFWidget = new WarnAlarmKTF(Alarm);
-            connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKTFWidget, &QWidget::show);
-            connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKTFWidget, &WarnAlarmKTF::Update);
+            WarnAlarmKTFDialog = new WarnAlarmKTF(Alarm);
+            connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKTFDialog, &QDialog::show);
+            connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKTFDialog, &WarnAlarmKTF::Update);
 
-            AvarAlarmKTFWidget = new AvarAlarmKTF(Alarm);
-            connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKTFWidget, &QWidget::show);
-            connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKTFWidget, &AvarAlarmKTF::Update);
+            AvarAlarmKTFDialog = new AvarAlarmKTF(Alarm);
+            connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKTFDialog, &QDialog::show);
+            connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKTFDialog, &AvarAlarmKTF::Update);
 
             break;
         }
@@ -536,8 +547,8 @@ void Coma::PrepareDialogs()
         case Config::MTM_87:
             checkBDialog = new CheckDialogKDV(BoardTypes::BT_BASE);
 
-            Harm = new CheckDialogHarmonicKDV(BoardTypes::BT_BASE);
-            connect(BdaTimer, SIGNAL(timeout()), Harm, SLOT(USBUpdate()));
+            HarmDialog = new CheckDialogHarmonicKDV(BoardTypes::BT_BASE);
+            connect(BdaTimer, SIGNAL(timeout()), HarmDialog, SLOT(USBUpdate()));
 
             S2Config->clear();
             if (MainInterface != I_RS485)
@@ -601,10 +612,14 @@ void Coma::PrepareDialogs()
 
 void Coma::CloseDialogs()
 {
-    QList<QWidget *> widgets = this->findChildren<QWidget *>("Dialog");
+    QList<QDialog *> widgets = this->findChildren<QDialog *>();
     // this->findChildren
     for (auto &i : widgets)
+    {
+        qDebug() << i;
         i->close();
+    }
+
     //    if (TimeD != nullptr)
     //        TimeD->close();
     //    if (CheckB != nullptr)
@@ -1110,20 +1125,20 @@ void Coma::MainTWTabClicked(int tabindex)
     ChModbus->Tabs(tabindex);
     if (corDialog != nullptr)
         corDialog->GetCorBd(tabindex);
-    if (checkBDialog != nullptr)
+    if (checkBDialog != nullptr || HarmDialog != nullptr)
     {
-        if (tabindex == CheckIndex)
+        if (tabindex == CheckIndex || tabindex == CheckHarmIndex)
             BdaTimer->start();
         else
             BdaTimer->stop();
     }
-    if (Harm != nullptr)
-    {
-        if (tabindex == CheckHarmIndex)
-            BdaTimer->start();
-        else
-            BdaTimer->stop();
-    }
+    //    if (HarmDialog != nullptr)
+    //    {
+    //        if (tabindex == CheckHarmIndex)
+    //            BdaTimer->start();
+    //        else
+    //            BdaTimer->stop();
+    //    }
 
     if (timeDialog != nullptr)
     {

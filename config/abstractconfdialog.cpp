@@ -26,21 +26,7 @@ AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 // void AbstractConfDialog::ReadConf(int index)
 void AbstractConfDialog::ReadConf()
 {
-    // int res = ModuleBSI::PrereadConf(this, S2Config);
-    // int res = 0;
-    //    char* num = new char;
-    //    char num = 1;
 
-    /*    if(!TheEnd)
-        { */
-    /*        if(index == confIndex)
-            {
-                if(timeIndex)
-                emit StopRead(timeIndex);
-
-                if(checkIndex)
-                emit StopRead(checkIndex);
-    */
     TimeFunc::Wait(100);
 
     if (MainInterface == I_ETHERNET)

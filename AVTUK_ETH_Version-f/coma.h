@@ -185,26 +185,25 @@ private:
     // constexpr QVector<int> MTBs = { 0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84 };
 
     AlarmWidget *AlarmW;
-    WarnAlarmKIV *WarnAlarmKIVWidget;
-    AvarAlarmKIV *AvarAlarmKIVWidget;
-    WarnAlarmKTF *WarnAlarmKTFWidget;
-    AvarAlarmKTF *AvarAlarmKTFWidget;
+    WarnAlarmKIV *WarnAlarmKIVDialog;
+    AvarAlarmKIV *AvarAlarmKIVDialog;
+    WarnAlarmKTF *WarnAlarmKTFDialog;
+    AvarAlarmKTF *AvarAlarmKTFDialog;
+    AlarmStateAll *AlarmStateAllDialog;
     AlarmClass *Alarm;
     QWidget *Parent;
 
-    AlarmStateAll *AlarmStateAllWidget;
-    AbstractAlarm *AbstrALARM;
+    // AbstractAlarm *AbstrALARM;
 
     InfoDialog *infoDialog;
     ConfDialog *mainConfDialog;
     ConfDialog *mainTuneDialog;
     AbstractCorDialog *corDialog;
     AbstractConfDialog *confBDialog, *confMDialog;
-    EAbstractCheckDialog *checkBDialog, *checkMDialog, *Harm;
+    EAbstractCheckDialog *checkBDialog, *checkMDialog, *HarmDialog;
     JournalDialog *jourDialog;
     fwupdialog *fwUpDialog;
     MNKTime *timeDialog;
-    QWidget *wPredDialog, *wAlarmDialog;
 
     bool PasswordValid;
     bool Disconnected;

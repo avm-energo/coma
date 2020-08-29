@@ -8,7 +8,7 @@ class AvarAlarmKIV : public AbstractAlarm
     Q_OBJECT
 
 public:
-    explicit AvarAlarmKIV(AlarmClass *alarm, QWidget *parent = nullptr);
+    explicit AvarAlarmKIV(AlarmClass *alarm, QDialog *parent = nullptr);
 
 public slots:
 

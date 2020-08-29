@@ -164,6 +164,7 @@ void CorDialog::SetupUI()
     lyout->addLayout(glyout, Qt::AlignTop);
     lyout->addWidget(tv, 89);
     setLayout(lyout);
+    setObjectName("corDialog");
 }
 
 void CorDialog::FillBackCor()

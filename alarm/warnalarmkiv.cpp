@@ -25,7 +25,7 @@
 #include <QStringListModel>
 #include <QToolBar>
 
-WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm, QWidget *parent) : AbstractAlarm(parent)
+WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm, QDialog *parent) : AbstractAlarm(parent)
 {
     Alarm = alarm;
     WarnAlarmState();

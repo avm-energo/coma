@@ -23,7 +23,7 @@
 #include <QStringListModel>
 #include <QToolBar>
 
-AlarmStateAll::AlarmStateAll(QWidget *parent) : AbstractAlarm(parent)
+AlarmStateAll::AlarmStateAll(QDialog *parent) : AbstractAlarm(parent)
 {
     AlarmState();
 }
@@ -34,7 +34,7 @@ void AlarmStateAll::AlarmState()
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
 
-    INFOMSG("DeviceState()");
+    //    INFOMSG("DeviceState()");
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     QWidget *w = new QWidget;

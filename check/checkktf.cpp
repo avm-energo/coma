@@ -49,12 +49,43 @@ QWidget *CheckKTF::Bd1W(QWidget *parent)
     glyout->addWidget(
         WDFunc::NewLBLT(parent, "", QString::number(4501), ValuesFormat, "Температура окружающей среды, °С"), 1, 1, 1,
         1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Частота, Гц"), 0, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2400), ValuesFormat, "Частота, Гц"), 1, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "Температура микроконтроллера, °С"), 0, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Cопротивление термометра, °С"), 0, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4502), ValuesFormat,
+                          "сопротивление термометра окружающей среды, Ом"),
+        1, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Частота, Гц"), 0, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2400), ValuesFormat, "Частота, Гц"), 1, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Температура микроконтроллера, °С"), 0, 4, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", QString::number(101), ValuesFormat, "Температура микроконтроллера, °С"), 1, 3, 1,
+        WDFunc::NewLBLT(parent, "", QString::number(101), ValuesFormat, "Температура микроконтроллера, °С"), 1, 4, 1,
         1);
+
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+
+    //....................................................
+    gb = new QGroupBox("Показания датчиков температуры обмоток");
+    gb->setFont(ffont);
+    vlyout = new QVBoxLayout;
+    glyout = new QGridLayout;
+
+    glyout->addWidget(WDFunc::NewLBL(parent, "Температура обмотки, °С"), 2, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4503), ValuesFormat,
+                          "Температура обмотки, измеренная встроен-ным датчиком №1, °С"),
+        3, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Температура обмотки °С"), 2, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4504), ValuesFormat,
+                          "Температура обмотки, измеренная встроен-ным датчиком №2, °С"),
+        3, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Температура обмотки, °С"), 2, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4505), ValuesFormat,
+                          "Температура обмотки, измеренная встроен-ным датчиком №3, °С"),
+        3, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Температура обмотки, °С"), 2, 3, 1, 1);
+    glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4506), ValuesFormat,
+                          "Температура обмотки, измеренная встроен-ным датчиком №4, °С"),
+        3, 3, 1, 1);
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
@@ -66,39 +97,41 @@ QWidget *CheckKTF::Bd1W(QWidget *parent)
     gb->setFont(ffont);
     vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
+
     for (i = 0; i < 4; ++i)
     {
+
         // QString IndexStr = "[" + QString::number(i) + "]";
-        glyout->addWidget(WDFunc::NewLBL(parent, "Ueff " + phase[i] + ", кВ"), 2, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Ueff " + phase[i] + ", кВ"), 4, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1000 + i), ValuesFormat,
                               "Истинные действующие значения сигналов трех фаз и их среднее, кВ"),
-            3, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Ieff " + phase[i] + ", А"), 4, i, 1, 1);
+            5, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Ieff " + phase[i] + ", А"), 6, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1400 + i), ValuesFormat,
                               "Истинные действующие значения сигналов трех фаз и их среднее, А"),
-            5, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "P " + pphase[i] + ", кВт"), 6, i, 1, 1);
+            7, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "P " + pphase[i] + ", кВт"), 8, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2420 + i), ValuesFormat,
                               "Истинная активная мощность по фазам и суммарная, кВт"),
-            7, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Q " + pphase[i] + ", кВАр"), 8, i, 1, 1);
+            9, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Q " + pphase[i] + ", кВАр"), 10, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2424 + i), ValuesFormat,
                               "Реактивная мощность по кажущейся полной "
                               "и истинной активной, кВАр"),
-            9, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "S " + pphase[i] + ", кВА"), 10, i, 1, 1);
+            11, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "S " + pphase[i] + ", кВА"), 12, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2428 + i), ValuesFormat,
                               "Кажущаяся полная мощность по эфф. токам и нпарямжениям, кВА"),
-            11, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "CosPhi " + phase[i] + ""), 12, i, 1, 1);
+            13, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "CosPhi " + phase[i] + ""), 14, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2432 + i), ValuesFormat,
                               "Косинус phi по истинной активной мощности,по фазам и средний "),
-            13, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Uлин " + ppphase[i] + ", кВ"), 14, i, 1, 1);
+            15, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBL(parent, "Uлин " + ppphase[i] + ", кВ"), 16, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1220 + i), ValuesFormat,
                               "Истинные действующие значения линейных "
                               "напряжений трех фази их среднее, кВ"),
-            15, i, 1, 1);
+            17, i, 1, 1);
     }
 
     vlyout->addLayout(glyout);
@@ -130,10 +163,10 @@ QWidget *CheckKTF::Bd2W(QWidget *parent)
     ffont.setPointSize(11);
     gb->setFont(ffont);
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "При данной нагрузке, сек"), 0, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При данной нагрузке, мин"), 0, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4010), ValuesFormat,
                           "Оставшееся время работы до "
-                          "предупрежде-ния при данной нагрузке, сек"),
+                          "предупрежде-ния при данной нагрузке, мин"),
         1, 0, 1, 1);
 
     vlyout->addLayout(glyout);
@@ -147,92 +180,92 @@ QWidget *CheckKTF::Bd2W(QWidget *parent)
     vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "При данной нагрузке, сек"), 0, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При данной нагрузке, мин"), 0, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4011), ValuesFormat,
-                          "Допустимое оставшееся время работы при данной нагрузке, сек"),
+                          "Допустимое оставшееся время работы при данной нагрузке, мин"),
         1, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 105%, сек"), 0, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 105%, мин"), 0, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4012), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 105%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 105%, мин"),
         1, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 110%, сек"), 0, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 110%, мин"), 0, 2, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4013), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 110%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 110%, мин"),
         1, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 115%, сек"), 2, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 115%, мин"), 2, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4014), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 115%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 115%, мин"),
         3, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 120%, сек"), 2, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 120%, мин"), 2, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4015), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 120%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 120%, мин"),
         3, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 125%, сек"), 2, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 125%, мин"), 2, 2, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4016), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 125%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 125%, мин"),
         3, 2, 1, 1);
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 130%, сек"), 4, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 130%, мин"), 4, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4017), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 130%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 130%, мин"),
         5, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 135%, сек"), 4, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 135%, мин"), 4, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4018), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 135%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 135%, мин"),
         5, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 140%, сек"), 4, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 140%, мин"), 4, 2, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4019), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 140%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 140%, мин"),
         5, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 145%, сек"), 6, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 145%, мин"), 6, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4020), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 145%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 145%, мин"),
         7, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 150%, сек"), 6, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 150%, мин"), 6, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4021), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 150%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 150%, мин"),
         7, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 155%, сек"), 6, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 155%, мин"), 6, 2, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4022), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 155%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 155%, мин"),
         7, 2, 1, 1);
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 160%, сек"), 8, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 160%, мин"), 8, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4023), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 160%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 160%, мин"),
         9, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 165%, сек"), 8, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 165%, мин"), 8, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4024), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 165%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 165%, мин"),
         9, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 170%, сек"), 8, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 170%, мин"), 8, 2, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4025), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 170%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 170%, мин"),
         9, 2, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 175%, сек"), 10, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 175%, мин"), 10, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4026), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 175%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 175%, мин"),
         11, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 180%, сек"), 10, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 180%, мин"), 10, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4027), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 180%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 180%, мин"),
         11, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 185%, сек"), 10, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 185%, мин"), 10, 2, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4028), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 185%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 185%, мин"),
         11, 2, 1, 1);
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 190%, сек"), 12, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 190%, мин"), 12, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4029), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 190%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 190%, мин"),
         13, 0, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 195%, сек"), 12, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 195%, мин"), 12, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4030), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 195%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 195%, мин"),
         13, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 200%, сек"), 12, 2, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "При нагрузке 200%, мин"), 12, 2, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(4031), ValuesFormat,
-                          "Допустимое оставшееся время работы при нагрузке 200%, сек"),
+                          "Допустимое оставшееся время работы при нагрузке 200%, мин"),
         13, 2, 1, 1);
 
     vlyout->addLayout(glyout);
@@ -430,6 +463,15 @@ QWidget *CheckKTF::Bd5W(QWidget *parent)
             5, i, 1, 1);
     }
 
+    for (i = 0; i < 3; ++i)
+    {
+
+        glyout->addWidget(WDFunc::NewLBL(parent, "KrF" + phase[i] + ""), 6, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1008 + i), ValuesFormat,
+                              "Крест-фактор напряжения по трем фазам" + phase[i] + " гр.1"),
+            7, i, 1, 1);
+    }
+
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
     lyout->addWidget(gb);
@@ -468,6 +510,15 @@ QWidget *CheckKTF::Bd5W(QWidget *parent)
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1425 + i), ValuesFormat,
                               "Общий коэффициент гарм. искажений тока фазы " + phase[i] + " гр.1"),
             11, i, 1, 1);
+    }
+
+    for (i = 0; i < 3; ++i)
+    {
+
+        glyout->addWidget(WDFunc::NewLBL(parent, "KrF" + phase[i] + ""), 12, i, 1, 1);
+        glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1408 + i), ValuesFormat,
+                              "Крест-фактор тока по трем фазам" + phase[i] + " гр.1"),
+            13, i, 1, 1);
     }
 
     vlyout->addLayout(glyout);
@@ -534,6 +585,13 @@ void CheckKTF::FillBd13(QWidget *parent)
 
     WDFunc::SetLBLText(parent, QString::number(4500), WDFunc::StringValueWithCheck(Bd_block13.TempWinding, 3));
     WDFunc::SetLBLText(parent, QString::number(4501), WDFunc::StringValueWithCheck(Bd_block13.temperature, 3));
+    WDFunc::SetLBLText(parent, QString::number(4502), WDFunc::StringValueWithCheck(Bd_block13.resistance, 3));
+
+    for (int i = 0; i < 4; i++)
+    {
+        WDFunc::SetLBLText(
+            parent, QString::number(4503 + i), WDFunc::StringValueWithCheck(Bd_block13.ExtTempWin[i], 3));
+    }
 }
 
 void CheckKTF::FillBd0(QWidget *parent)
@@ -572,6 +630,8 @@ void CheckKTF::FillBd2(QWidget *parent)
 
         WDFunc::SetLBLText(
             parent, QString::number(1004 + i), WDFunc::StringValueWithCheck(Bd_block2.IUeff_filtered[i], 3));
+
+        WDFunc::SetLBLText(parent, QString::number(1008 + i), WDFunc::StringValueWithCheck(Bd_block2.KrF[i], 3));
     }
 }
 
@@ -584,6 +644,8 @@ void CheckKTF::FillBd3(QWidget *parent)
 
         WDFunc::SetLBLText(
             parent, QString::number(1404 + i), WDFunc::StringValueWithCheck(Bd_block3.IUeff_filtered[i], 3));
+
+        WDFunc::SetLBLText(parent, QString::number(1408 + i), WDFunc::StringValueWithCheck(Bd_block3.KrF[i], 3));
     }
 }
 

@@ -21,6 +21,6 @@
 #include <QStringListModel>
 #include <QToolBar>
 
-AbstractAlarm::AbstractAlarm(QWidget *parent) : QWidget(parent)
+AbstractAlarm::AbstractAlarm(QDialog *parent) : QDialog(parent)
 {
 }

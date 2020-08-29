@@ -750,6 +750,7 @@ bool EProtocom::Connect()
         Disconnect();
     m_usbWorker = new EUsbWorker(UsbPort, CnLog, isWriteUSBLog());
 
+    ///
     m_usbWorker->moveToThread(&m_workerThread);
     connect(&m_workerThread, &QThread::started, m_usbWorker, &EUsbWorker::interact);
 

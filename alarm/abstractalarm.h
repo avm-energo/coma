@@ -52,11 +52,11 @@
 #include <QByteArray>
 #include <QDialog>
 
-class AbstractAlarm : public QWidget
+class AbstractAlarm : public QDialog
 {
     Q_OBJECT
 public:
-    AbstractAlarm(QWidget *parent = nullptr);
+    AbstractAlarm(QDialog *parent = nullptr);
 
     AlarmClass *Alarm;
 

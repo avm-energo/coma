@@ -26,7 +26,7 @@ ConfDialogKTF::ConfDialogKTF(QVector<S2::DataRec> *S2Config, QWidget *parent) : 
     this->S2Config = S2Config;
     KTF = new ConfigKTF(S2Config);
     Conf = new ConfDialog(S2Config, MTypeB, MTypeM);
-    ConfigMain = new Config(S2Config, MTypeB, MTypeM);
+    //    ConfigMain = new Config(S2Config, MTypeB, MTypeM);
     ConfKxx = new ConfDialogKxx(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
@@ -35,6 +35,11 @@ ConfDialogKTF::ConfDialogKTF(QVector<S2::DataRec> *S2Config, QWidget *parent) : 
 
 ConfDialogKTF::~ConfDialogKTF()
 {
+}
+
+int ConfDialogKTF::getRCount()
+{
+    return KTF->Bci_block.TdatNum;
 }
 
 void ConfDialogKTF::SetupUI()
@@ -270,18 +275,26 @@ void ConfDialogKTF::SetupUI()
     //.........................................................................
 
     row = 0;
-    gb = new QGroupBox();
     vlyout1 = new QVBoxLayout;
+    gb = new QGroupBox();
+    gridlyout = new QGridLayout;
     vlyout2 = new QVBoxLayout;
 
     gb->setTitle("Настройки протокола МЭК-60870-5-104");
     gb->setFont(font);
 
-    vlyout2->addWidget(Conf->SetupMainBlk(this));
-    vlyout2->addWidget(ConfKxx->SetupComParam(this));
+    gridlyout->addWidget(Conf->SetupMainBlk(this), 0, 0, 1, 1);
+    gridlyout->addWidget(ConfKxx->SetupComParam(this), 0, 1, 1, 1);
 
+    vlyout2->addLayout(gridlyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
+
+    //    vlyout2->addWidget(Conf->SetupMainBlk(this));
+    //    vlyout2->addWidget(ConfKxx->SetupComParam(this));
+
+    //    gb->setLayout(vlyout2);
+    //    vlyout1->addWidget(gb);
 
     gb = new QGroupBox("Настройка времени");
     vlyout2 = new QVBoxLayout;
@@ -480,18 +493,3 @@ void ConfDialogKTF::Stop_Timer()
 {
     timerRead->stop();
 }
-
-// void ConfDialogKTF::Write_PCDate()
-//{
-//}
-
-// void ConfDialogKTF::Write_Date()
-//{
-//    QDateTime myDateTime;
-//    uint *time = new uint;
-//    QString qStr;
-//    WDFunc::LE_read_data(this, "Date", qStr);
-//    myDateTime = QDateTime::fromString(qStr, "dd-MM-yyyy HH:mm:ss");
-//    myDateTime.setOffsetFromUtc(0);
-//    *time = myDateTime.toTime_t();
-//}

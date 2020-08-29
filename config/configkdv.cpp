@@ -11,20 +11,9 @@ ConfigKDV::ConfigKDV(QVector<S2::DataRec> *config)
         }
     }
 
-    config->append({ BCI_MTYPEB, sizeof(MainBlk.MTypeB), &MainBlk.MTypeB });
-    config->append({ BCI_MTYPEM, sizeof(MainBlk.MTypeE), &MainBlk.MTypeE });
-    config->append({ BCI_CTYPE, sizeof(MainBlk.Ctype), &MainBlk.Ctype });
-    config->append({ BCI_ABS_104, sizeof(MainBlk.Abs_104), &MainBlk.Abs_104 });
-    config->append({ BCI_CYCLE_104, sizeof(MainBlk.Cycle_104), &MainBlk.Cycle_104 });
-    config->append({ BCI_T1_104, sizeof(MainBlk.T1_104), &MainBlk.T1_104 });
-    config->append({ BCI_T2_104, sizeof(MainBlk.T2_104), &MainBlk.T2_104 });
-    config->append({ BCI_T3_104, sizeof(MainBlk.T3_104), &MainBlk.T3_104 });
-    config->append({ BCI_K_104, sizeof(MainBlk.k_104), &MainBlk.k_104 });
-    config->append({ BCI_W_104, sizeof(MainBlk.w_104), &MainBlk.w_104 });
-
-    config->append({ DEF_EQ_TYPE, sizeof(Bci_block.Eq_type), &Bci_block.Eq_type });
-    config->append({ DEF_COOL_TYPE, sizeof(Bci_block.Cool_type), &Bci_block.Cool_type });
-    config->append({ DEF_W_MAT, sizeof(Bci_block.W_mat), &Bci_block.W_mat });
+    config->append({ BCI_EQ_TYPE, sizeof(Bci_block.Eq_type), &Bci_block.Eq_type });
+    config->append({ BCI_COOL_TYPE, sizeof(Bci_block.Cool_type), &Bci_block.Cool_type });
+    config->append({ BCI_W_MAT, sizeof(Bci_block.W_mat), &Bci_block.W_mat });
     config->append({ BCI_NFILTR, sizeof(Bci_block.NFiltr), &Bci_block.NFiltr });
     config->append({ BCI_NHARMFILT, sizeof(Bci_block.NHarmFilt), &Bci_block.NHarmFilt });
     config->append({ BCI_DDOCS, sizeof(Bci_block.DDosc), &Bci_block.DDosc });
@@ -78,14 +67,6 @@ ConfigKDV::ConfigKDV(QVector<S2::DataRec> *config)
 
 void ConfigKDV::SetDefConf()
 {
-    MainBlk.Abs_104 = DEF_ABS_104;
-    MainBlk.Ctype = DEF_CTYPE;
-    MainBlk.Cycle_104 = DEF_CYCLE_104;
-    MainBlk.k_104 = DEF_K_104;
-    MainBlk.w_104 = DEF_W_104;
-    MainBlk.T1_104 = DEF_T1_104;
-    MainBlk.T2_104 = DEF_T2_104;
-    MainBlk.T3_104 = DEF_T3_104;
 
     Bci_block.Eq_type = DEF_EQ_TYPE;
     Bci_block.Cool_type = DEF_COOL_TYPE;
@@ -138,29 +119,4 @@ void ConfigKDV::SetDefConf()
     Bci_block.T_Data_Rec = DEF_T_DATA_REC;
     Bci_block.OscPoints = DEF_OSCPOINTS;
     Bci_block.TdatNum = DEF_TDATNUM;
-
-    Com_param.IP[0] = 172;
-    Com_param.IP[1] = 16;
-    Com_param.IP[2] = 29;
-    Com_param.IP[3] = 12;
-
-    Com_param.Mask[0] = 255;
-    Com_param.Mask[1] = 255;
-    Com_param.Mask[2] = 252;
-    Com_param.Mask[3] = 0;
-
-    Com_param.GW[0] = 172;
-    Com_param.GW[1] = 16;
-    Com_param.GW[2] = 29;
-    Com_param.GW[3] = 1;
-
-    Com_param.Port[0] = 2404;
-    Com_param.Port[1] = 2405;
-    Com_param.Port[2] = 502;
-    Com_param.Port[3] = 502;
-
-    Com_param.SNTP[0] = 172;
-    Com_param.SNTP[1] = 16;
-    Com_param.SNTP[2] = 31;
-    Com_param.SNTP[3] = 220;
 }

@@ -25,11 +25,12 @@ public:
 
     QStringList Rates = { "256", "128", "64", "32", "16" };
 
+    int getRCount();
+
 private:
     ConfigKTF *KTF;
     ConfDialog *Conf;
     ConfDialogKxx *ConfKxx;
-    Config *ConfigMain;
 
     bool DDosc;
     bool Mb;
@@ -49,8 +50,6 @@ private slots:
     void SetDefConf();
     void Start_Timer();
     void Stop_Timer();
-    //    void Write_PCDate();
-    //    void Write_Date();
 };
 
 #endif // CONFDIALOGKTF_H
