@@ -40,11 +40,13 @@ SOURCES += \
     ../check/checkdialogkdv.cpp \
     ../check/checkdialogkiv.cpp \
     ../check/checkdialogktf.cpp \
+    ../check/checkdialogvibrkdv.cpp \
     ../check/checkharmonickdv.cpp \
     ../check/checkharmonicktf.cpp \
     ../check/checkkdv.cpp \
     ../check/checkkiv.cpp \
     ../check/checkktf.cpp \
+    ../check/checkvibrkdv.cpp \
     ../config/confdialogkdv.cpp \
     ../config/confdialogkiv.cpp \
     ../config/confdialogktf.cpp \
@@ -117,11 +119,13 @@ HEADERS += \
     ../check/checkdialogkdv.h \
     ../check/checkdialogkiv.h \
     ../check/checkdialogktf.h \
+    ../check/checkdialogvibrkdv.h \
     ../check/checkharmonickdv.h \
     ../check/checkharmonicktf.h \
     ../check/checkkdv.h \
     ../check/checkkiv.h \
     ../check/checkktf.h \
+    ../check/checkvibrkdv.h \
     ../config/confdialogkdv.h \
     ../config/confdialogkiv.h \
     ../config/confdialogktf.h \

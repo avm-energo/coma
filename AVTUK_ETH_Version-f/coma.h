@@ -200,7 +200,7 @@ private:
     ConfDialog *mainTuneDialog;
     AbstractCorDialog *corDialog;
     AbstractConfDialog *confBDialog, *confMDialog;
-    EAbstractCheckDialog *checkBDialog, *checkMDialog, *HarmDialog;
+    EAbstractCheckDialog *checkBDialog, *checkMDialog, *HarmDialog, *VibrDialog;
     JournalDialog *jourDialog;
     fwupdialog *fwUpDialog;
     MNKTime *timeDialog;
@@ -212,7 +212,7 @@ private:
     bool Reconnect;
     int Mode; // режим запуска программы
     int fileSize, curfileSize;
-    int CheckIndex, TimeIndex, ConfIndex, CurTabIndex, CheckHarmIndex;
+    int CheckIndex, TimeIndex, ConfIndex, CurTabIndex, CheckHarmIndex, CheckVibrIndex;
     quint8 HaveAlreadyRed = 0;
     quint8 ActiveThreads;
     quint32 Mes;

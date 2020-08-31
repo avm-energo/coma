@@ -167,7 +167,7 @@ void CheckDialogKTF::USBUpdate()
     {
         ChKTF->FillBd9(this);
     }
-    if (Commands::GetBd(18, &ChKTF->Bd_block9, sizeof(CheckKTF::Bd18)) == NOERROR)
+    if (Commands::GetBd(18, &ChKTF->Bd_block18, sizeof(CheckKTF::Bd18)) == NOERROR)
     {
         ChKTF->FillBd18(this);
     }

@@ -9,6 +9,7 @@
 #include <QLayout>
 #include <QScrollArea>
 #include <QScrollBar>
+#include <QTime>
 
 CheckKDV::CheckKDV()
 {
@@ -292,6 +293,9 @@ QWidget *CheckKDV::Bd3W(QWidget *parent)
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(5200), ValuesFormat,
                           "Амплитуда пускового тока при последнем пуске, А"),
         7, 0, 1, 1);
+
+    glyout->addWidget(WDFunc::NewLBL(parent, "Дата и время пуска:"), 6, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLE(parent, "IsTime", "dd-MM-yyyy HH:mm:ss"), 7, 1, 1, 4);
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
@@ -642,6 +646,19 @@ void CheckKDV::FillBd17(QWidget *parent)
 void CheckKDV::FillBd18(QWidget *parent)
 {
     WDFunc::SetLBLText(parent, QString::number(5200), WDFunc::StringValueWithCheck(Bd_block18.Istart, 3));
+
+    QDateTime myDateTime;
+    myDateTime = QDateTime::fromSecsSinceEpoch(Bd_block18.IsTime, Qt::LocalTime);
+    // myDateTime = QDateTime::fromSecsSinceEpoch(unixtimestamp, Qt::UTC);
+    if (Bd_block18.IsTime == 0)
+    {
+        WDFunc::SetLEData(parent, "IsTime", "***");
+    }
+    else
+    {
+        QString systime2 = myDateTime.toString("dd-MM-yyyy HH:mm:ss");
+        WDFunc::SetLEData(parent, "IsTime", systime2);
+    }
 }
 
 QWidget *CheckKDV::BdUI(int bdnum)

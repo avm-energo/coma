@@ -118,6 +118,7 @@ public:
     struct Bd18
     {
         float Istart;
+        quint32 IsTime;
     };
 
     Bda_in_struct Bda_block;

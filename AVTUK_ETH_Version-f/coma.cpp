@@ -27,6 +27,7 @@
 #include "../check/checkdialogkdv.h"
 #include "../check/checkdialogkiv.h"
 #include "../check/checkdialogktf.h"
+#include "../check/checkdialogvibrkdv.h"
 #include "../config/confdialogkdv.h"
 #include "../config/confdialogkiv.h"
 #include "../config/confdialogktf.h"
@@ -100,6 +101,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     checkBDialog = checkMDialog = nullptr;
     // wPredDialog = wAlarmDialog = nullptr;
     HarmDialog = nullptr;
+    VibrDialog = nullptr;
     corDialog = nullptr;
     CurTabIndex = -1;
     for (int i = 0; i < 20; ++i)
@@ -383,6 +385,14 @@ void Coma::StartWork()
             ChModbus->CheckHarmIndex = CheckHarmIndex;
     }
 
+    if (VibrDialog != nullptr)
+    {
+        MainTW->addTab(VibrDialog, "Вибрации");
+        CheckVibrIndex = MainTW->indexOf(VibrDialog);
+        if (MainInterface == I_RS485)
+            ChModbus->CheckHarmIndex = CheckVibrIndex;
+    }
+
     if (confBDialog != nullptr)
     {
         str = (confMDialog == nullptr) ? "Конфигурирование" : "Конфигурирование\nБазовая";
@@ -548,7 +558,10 @@ void Coma::PrepareDialogs()
             checkBDialog = new CheckDialogKDV(BoardTypes::BT_BASE);
 
             HarmDialog = new CheckDialogHarmonicKDV(BoardTypes::BT_BASE);
-            connect(BdaTimer, SIGNAL(timeout()), HarmDialog, SLOT(USBUpdate()));
+            connect(BdaTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
+
+            VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE);
+            connect(BdaTimer, &QTimer::timeout, VibrDialog, &EAbstractCheckDialog::USBUpdate);
 
             S2Config->clear();
             if (MainInterface != I_RS485)
@@ -1125,9 +1138,9 @@ void Coma::MainTWTabClicked(int tabindex)
     ChModbus->Tabs(tabindex);
     if (corDialog != nullptr)
         corDialog->GetCorBd(tabindex);
-    if (checkBDialog != nullptr || HarmDialog != nullptr)
+    if (checkBDialog != nullptr || HarmDialog != nullptr || VibrDialog != nullptr)
     {
-        if (tabindex == CheckIndex || tabindex == CheckHarmIndex)
+        if (tabindex == CheckIndex || tabindex == CheckHarmIndex || tabindex == CheckVibrIndex)
             BdaTimer->start();
         else
             BdaTimer->stop();

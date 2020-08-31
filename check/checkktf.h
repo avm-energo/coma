@@ -120,6 +120,7 @@ public:
     struct Bd18
     {
         float Istart;
+        quint32 IsTime;
     };
 
     Bd0 Bd_block0;
