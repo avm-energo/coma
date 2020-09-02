@@ -16,9 +16,9 @@
 #define DEF_GW 172, 16, 29, 1
 #define DEF_PORT 2404, 2405, 502, 502
 #define DEF_SNTP 172, 16, 31, 220
-#define DEF_BAUD 0
+#define DEF_BAUD 9600
 #define DEF_PARITY 0
-#define DEF_STOPBIT 1
+#define DEF_STOPBIT 0
 #define DEF_ADRMB 0
 #define DEF_ISNTP 0
 #define DEF_ISPPS 0

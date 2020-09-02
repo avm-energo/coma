@@ -28,7 +28,6 @@ private:
     ConfigKIV *CKIV;
     ConfDialog *Conf;
     ConfDialogKxx *ConfKxx;
-    //    Config *ConfigMain;
 
     bool Variable;
 
@@ -40,15 +39,11 @@ private:
 signals:
 
 public slots:
-    //    void Set104(double);
-    //    void SetCType(int);
 
 private slots:
     void SetDefConf();
     void Start_Timer();
     void Stop_Timer();
-    //    void Write_PCDate();
-    //    void Write_Date();
 };
 
 #endif // CONFDIALOG84_H

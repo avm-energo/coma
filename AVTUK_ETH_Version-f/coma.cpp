@@ -449,7 +449,7 @@ void Coma::StartWork()
             switch (MTypeM)
             {
             case Config::MTM_87:
-                addConfTab(MainTW, "Начальные значения");
+                addConfTab(MainTW, "Старение изоляции");
                 break;
             }
 
@@ -502,6 +502,7 @@ void Coma::PrepareDialogs()
             S2Config->clear();
             if (MainInterface != I_RS485)
                 confMDialog = new ConfDialogKIV(S2Config);
+
             corDialog = new CorDialog;
 
             WarnAlarmKIVDialog = new WarnAlarmKIV(Alarm);
@@ -566,6 +567,8 @@ void Coma::PrepareDialogs()
             S2Config->clear();
             if (MainInterface != I_RS485)
                 confMDialog = new ConfDialogKDV(S2Config);
+
+            corDialog = new CorDialogKTF;
 
             break;
         };
@@ -1145,13 +1148,6 @@ void Coma::MainTWTabClicked(int tabindex)
         else
             BdaTimer->stop();
     }
-    //    if (HarmDialog != nullptr)
-    //    {
-    //        if (tabindex == CheckHarmIndex)
-    //            BdaTimer->start();
-    //        else
-    //            BdaTimer->stop();
-    //    }
 
     if (timeDialog != nullptr)
     {

@@ -170,12 +170,6 @@ void ConfDialogKIV::SetupUI()
     scrArea->setFrameShape(QFrame::NoFrame);
     scrArea->setWidgetResizable(true);
 
-    // uint32_t unixtimestamp = 1423062000;
-
-    // QDateTime myDateTime;
-
-    // myDateTime.setTime_t(unixtimestamp);
-
     QString paramcolor = MAINWINCLR;
     QFont font;
 
