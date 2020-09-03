@@ -37,3 +37,5 @@ Makefile*
 *.qmlproject.user.*
 
 /AVTUK_ETH_Version-f/AVM-Service.user
+
+/AVTUK_ETH_Version-f/msvc_make.bat
