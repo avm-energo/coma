@@ -98,7 +98,7 @@ QLabel *WDFunc::NewLBLT(
     lbl->setStyleSheet(lblstyle);
     lbl->setToolTip(lbltip);
     if (Fixed == true)
-        lbl->setFixedSize(250, 15);
+        lbl->setFixedSize(120, 15);
     return lbl;
 }
 

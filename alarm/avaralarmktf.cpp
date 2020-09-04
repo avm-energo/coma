@@ -71,10 +71,11 @@ void AvarAlarmKTF::Update(QList<bool> states)
     int i;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
-
+    if (states.isEmpty())
+        return;
     for (i = 0; i < Alarm->MapAlarm[MTYPE_KTF].avarCounts; i++)
     {
-        quint32 alarm = states[i];
+        quint32 alarm = states.at(i);
         WDFunc::SetLBLImage(this, (QString::number(i)), (alarm) ? pmred : pmgrn);
     }
 }

@@ -19,12 +19,6 @@ public:
         float UI_Harm[3][61];
     };
 
-    //    struct Bd7
-    //    {
-    //        float UI_Harm[3][61];
-    //    };
-
-    //    Bd7 Bd_block7;
     Bd_5_7 Bd_block5, Bd_block7;
 
     void FillBd5(QWidget *parent);

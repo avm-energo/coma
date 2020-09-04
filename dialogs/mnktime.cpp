@@ -28,7 +28,9 @@ MNKTime::MNKTime(QWidget *parent) : QDialog(parent)
     SetupUI();
 }
 
-MNKTime::~MNKTime() { }
+MNKTime::~MNKTime()
+{
+}
 
 void MNKTime::SetupUI()
 {
@@ -59,7 +61,7 @@ void MNKTime::SetupUI()
     QStringList cbl = QStringList() << "Местное время"
                                     << "Время по Гринвичу";
     EComboBox *cb = WDFunc::NewCB(this, "TimeZone", cbl, paramcolor);
-    // cb->setMinimumWidth(80);
+    // cb->setMinimumWidth(80);zzz
     cb->setMinimumHeight(20);
     glyout->addWidget(cb, row, 2, 1, 4);
     row++;
@@ -218,6 +220,12 @@ void MNKTime::FillTimeFromModBus(QList<ModBus::BSISignalStruct> Time)
     }
 }
 
-void MNKTime::ErrorRead() { WDFunc::SetLEData(this, "systime2", "Ошибка чтения"); }
+void MNKTime::ErrorRead()
+{
+    WDFunc::SetLEData(this, "systime2", "Ошибка чтения");
+}
 
-void MNKTime::TimeWritten() { EMessageBox::information(this, "Успешно", "Время записано успешно"); }
+void MNKTime::TimeWritten()
+{
+    EMessageBox::information(this, "Успешно", "Время записано успешно");
+}

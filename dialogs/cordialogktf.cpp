@@ -58,7 +58,7 @@ void CorDialogKTF::SetupUI()
     tv->setObjectName("cor");
     int row = 0;
     QString paramcolor = MAINWINCLR;
-    QPushButton *pb = new QPushButton();
+    QPushButton *pb = new QPushButton;
 
     glyout->addWidget(WDFunc::NewLBL(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(this, QString::number(907), 0, 1000000, 5, paramcolor), row, 2, 1, 2);

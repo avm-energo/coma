@@ -224,7 +224,7 @@ void CheckDialogKDV::USBUpdate()
         ChKDV->FillBd17(this);
     }
 
-    if (Commands::GetBd(18, &ChKDV->Bd_block9, sizeof(CheckKDV::Bd18)) == NOERROR)
+    if (Commands::GetBd(18, &ChKDV->Bd_block18, sizeof(CheckKDV::Bd18)) == NOERROR)
     {
         ChKDV->FillBd18(this);
     }
