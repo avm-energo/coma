@@ -19,10 +19,10 @@ DEFINES += PROGCAPTION='\\"AVM-Service\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
 DEFINES += SOFTDEVELOPER='\\"EvelSoft\\"'
-DEFINES += QT_DEPRECATED_WARNINGS
-DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
+# DEFINES += QT_DEPRECATED_WARNINGS
+# DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
-# DEFINES += DEBUG
+DEFINES += AVM-DEBUG
 TEMPLATE = app
 
 
@@ -64,6 +64,8 @@ SOURCES += \
     ../gen/logclass.cpp \
     ../gen/maindef.cpp \
     ../modbus/serialport.cpp \
+    ../tune/eabstracttunedialog.cpp \
+    ../tune/tunedialogKIV.cpp \
     ../usb/eprotocom.cpp \
     ../usb/eusbworker.cpp \
     coma.cpp \
@@ -142,6 +144,8 @@ HEADERS += \
     ../gen/journals.h \
     ../gen/logclass.h \
     ../modbus/serialport.h \
+    ../tune/eabstracttunedialog.h \
+    ../tune/tunedialogKIV.h \
     ../usb/defines.h \
     ../usb/eprotocom.h \
     ../usb/eusbworker.h \

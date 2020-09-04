@@ -31,6 +31,9 @@
 #include "../config/confdialogkdv.h"
 #include "../config/confdialogkiv.h"
 #include "../config/confdialogktf.h"
+#ifdef AVM - DEBUG
+#include "../tune/tunedialogKIV.h"
+#endif
 #include "../dialogs/errordialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../gen/files.h"
@@ -99,7 +102,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     mainConfDialog = nullptr;
     confBDialog = confMDialog = nullptr;
     checkBDialog = checkMDialog = nullptr;
-    // wPredDialog = wAlarmDialog = nullptr;
+    tuneDialog = nullptr;
     HarmDialog = nullptr;
     VibrDialog = nullptr;
     corDialog = nullptr;
@@ -265,8 +268,6 @@ void Coma::StartWork()
         connect(this, &Coma::CloseConnectDialog, &loop, &QEventLoop::quit);
         dlg->show();
         loop.exec();
-        //        ShowInterfaceDialog();
-        //        ShowConnectDialog();
         if (Cancelled)
         {
             ERMSG("Отмена подключения");
@@ -312,7 +313,6 @@ void Coma::StartWork()
             if (ModuleBSI::ModuleTypeString != "")
                 QMessageBox::information(
                     this, "Успешно", "Связь с " + ModuleBSI::ModuleTypeString + " установлена", QMessageBox::Ok);
-            // EMessageBox::information(this, "Успешно", "Связь с " + ModuleBSI::ModuleTypeString + " установлена");
             else
             {
                 QMessageBox::critical(this, "Ошибка", "Неизвестный тип модуля", QMessageBox::Ok);
@@ -471,6 +471,10 @@ void Coma::StartWork()
         MainTW->addTab(fwUpDialog, "Загрузка ВПО");
     }
 
+#ifdef AVM - DEBUG
+    if (tuneDialog != nullptr)
+        MainTW->addTab(tuneDialog, "Регулировка");
+#endif
     MainTW->addTab(infoDialog, "О приборе");
     infoDialog->FillBsi();
 
@@ -516,6 +520,9 @@ void Coma::PrepareDialogs()
             connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
             connect(AlarmW, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
 
+#ifdef AVM - DEBUG
+            tuneDialog = new TuneDialogKIV;
+#endif
             break;
 
         case Config::MTM_87:
@@ -793,10 +800,7 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
     return false;
 }
 
-void Coma::SetMode(int mode)
-{
-    Mode = mode;
-}
+void Coma::SetMode(int mode) { Mode = mode; }
 
 void Coma::Go(const QString &parameter)
 {
@@ -1022,15 +1026,9 @@ void Coma::FileTimeOut()
         QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
 }
 
-void Coma::SetProgressBar2Size(int size)
-{
-    SetProgressBarSize(2, size);
-}
+void Coma::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
 
-void Coma::SetProgressBar2(int cursize)
-{
-    SetProgressBar(2, cursize);
-}
+void Coma::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
 
 void Coma::SetProgressBarSize(int prbnum, int size)
 {
@@ -1119,10 +1117,7 @@ void Coma::DisconnectAndClear()
     Reconnect = false;
 }
 
-void Coma::resizeEvent(QResizeEvent *e)
-{
-    QMainWindow::resizeEvent(e);
-}
+void Coma::resizeEvent(QResizeEvent *e) { QMainWindow::resizeEvent(e); }
 
 void Coma::keyPressEvent(QKeyEvent *e)
 {

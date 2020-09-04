@@ -19,7 +19,6 @@ private:
 
 private slots:
     void AcceptSettings();
-    void SetHomeDir();
 };
 
 #endif // SETTINGSDIALOG_H

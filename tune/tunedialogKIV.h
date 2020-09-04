@@ -1,29 +1,31 @@
 #ifndef TuneDialogKIV_H
 #define TuneDialogKIV_H
 
-#include <QDialog>
-#include "eabstracttunedialog.h"
 #include "../check/checkKIV.h"
-#include "../gen/modulebsi.h"
+#include "../config/config.h"
 #include "../config/configKIV.h"
+#include "../gen/modulebsi.h"
 #include "../iec104/iec104.h"
-#include <QStandardItemModel>
+#include "eabstracttunedialog.h"
 #include "limereport/lrreportengine.h"
+
+#include <QDialog>
 #include <QHBoxLayout>
 #include <QLineEdit>
-#include "eabstracttunedialog.h"
-#include "../config/config.h"
+#include <QStandardItemModel>
 
-#define TUNEFILELENGTH  256
+#define TUNEFILELENGTH 256
 
 // voltages
-#define V60     60.0
-#define V57     57.74
+#define V60 60.0
+#define V57 57.74
+
 // frequencies
-#define HZ50    50.0
+#define HZ50 50.0
+
 // currents
-#define I1      1.0
-#define I5      5.0
+#define I1 1.0
+#define I5 5.0
 
 #define C5012 5012
 #define C10024 10024
@@ -32,14 +34,13 @@
 #define C1253 1253
 #define C626 626
 
-
 // parameters for GetExtData
-#define TD_GED_U    0x01 // напряжение
-#define TD_GED_I    0x02 // ток
-#define TD_GED_F    0x04 // частота
-#define TD_GED_D    0x08 // угол нагрузки
+#define TD_GED_U 0x01 // напряжение
+#define TD_GED_I 0x02 // ток
+#define TD_GED_F 0x04 // частота
+#define TD_GED_D 0x08 // угол нагрузки
 
-#define TD_TMK  25.0 // degrees
+#define TD_TMK 25.0 // degrees
 #define TD_VBAT 3.0 // voltage
 #define TD_FREQ 50 // Hz
 #define CONST2PIF 314.15926
@@ -51,10 +52,6 @@ class TuneDialogKIV : public EAbstractTuneDialog
     Q_OBJECT
 public:
     explicit TuneDialogKIV(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
-    //~TuneDialog85();
-    int inc;
-    float samples[6];
-
 
 signals:
     void Send();
@@ -62,52 +59,7 @@ signals:
 public slots:
 
 private:
-
-    typedef struct
-    {
-        float Unom; //Номинальное линейное первичное напряжение в кВ
-        //float Imax[3]; //Максимальные действующие значения токов вводов, мА
-        float Umin; //Уставка контроля минимума напряжения(в % от номинального)
-        float Imin; //Уставка контроля минимума тока (в % от Imax)
-        float C_init[3]; //Начальные значени емкостей вводов
-        float Tg_init[3]; //Начальные значения tgδ вводов
-        float corTg[3];	// коррекция  tg δ вводов
-        float dC_pred;	// уставка предупредительной сигнализации
-                    // по изменению емкости
-        float dC_alarm;	// уставка аварийной сигнализации
-                    // по изменению емкости
-        float dTg_pred;	// уставка предупредительной сигнализации
-                    // по изменению tg δ
-        float dTg_alarm;   // уставка аварийной сигнализации
-                       // по изменению tg δ
-        float dIunb_pred;	// уставка предупредительной сигнализации
-                        // по изменению небаланса токов
-        float dIunb_alarm;   	// уставка аварийной сигнализации
-                        // по изменению небаланса токов
-        float GdC;		// гистерезис на отключение сигнализации по dC, % от уставки
-        float GdTg;		// гистерезис на отключение сигнализации по dTg, % от уставки
-        float GdIunb;	// гистерезис на отключение сигнализации по небалансу токов
-        float RTerm;	// Сопротивление термометра при 0°С, Ом (только для МНК3)
-        float W100;	// Температурный коэффициент термометра (только для МНК3)
-        float Iunb_init;		// Начальное действ. значение тока небаланса
-        float Phy_unb_init;	// Начальное значение угла тока небаланса
-                        // относительно вектора тока фазы А
-        quint32 NFiltr;	  // Интервал усреднения данных  (в периодах основной частоты)
-        quint32 T_Data_Rec;  // Интервал записи данных в ПЗУ (тренд), в секундах
-        float LowU;
-        quint8 IsU;
-        quint8 IsIunb;
-        quint32 Tevent_pred;
-        quint32 Tevent_alarm;
-        quint32 Trele_pred;
-        quint32 Trele_alarm;
-        float Unom_1;
-        float Tg_pasp[3];
-        float C_pasp[3];
-
-    } Bci;
-
-    Bci Bci_block_work;
+    ConfigKIV::Bci Bci_block_work;
     ConfigKIV *CKIV;
 
     QVector<S2::DataRec> *S2Config;
@@ -115,8 +67,8 @@ private:
     QLineEdit *ledit;
     QTimer *timer;
 
-    float Uet[3], Iet[3], PHIet[6], FREQet, UetMinus20[3], IetMinus20[3], PHIetMinus20[6], FREQetMinus20, Uet60[3], Iet60[3], PHIet60[6], FREQet60;
-
+    float m_Uet[3], m_Iet[3], m_PHIet[6], m_FREQet, m_UetMinus20[3], m_IetMinus20[3], m_PHIetMinus20[6],
+        m_FREQetMinus20, m_Uet60[3], m_Iet60[3], m_PHIet60[6], m_FREQet60;
 
     enum TuneModes
     {
@@ -124,91 +76,57 @@ private:
         TUNERET,
         TUNEMAN
     };
-    /*enum PovTypes
-    {
-        GOST_NONE, // не задано
-        GOST_23625, // по 5 точкам туда-сюда
-        GOST_1983 // по 3 точкам только туда
-    };
 
-    struct MipValues
-    {
-        double u;
-        double i[3];
-    };
+    LimeReport::ReportEngine *m_Report;
 
-    MipValues MVTC;
-
-    struct MipTolerances
-    {
-        double u;
-        double i;
-    };
-
-    MipTolerances MTTC;
-
-
-    //QVector<S2::DataRec> *S2Config;
-    //QVector<S2::DataRec> *S2ConfigForTune;  // для регулировки
-
-    int SecondsToEnd15SecondsInterval;
-    //QHash <QString, int (TuneDialog80::*)()> pf;
-    LimeReport::ReportEngine *report;*/
-
-    int TuneControlType;
-    bool Cancelled = false, DefConfig;
+    int m_tuneControlType;
+    bool m_Cancelled = false, m_defConfig;
 
     void SetupUI();
 
-    struct Bac {	// Структура калибровочных параметров
+    struct Bac
+    { // Структура калибровочных параметров
         //записываются во флеш мезонинной платы:
-    quint32 N1_TT[3];	// Число витков первичной обмотки
-    float KmU[3];		// калибровочные коэффициенты по напряжению в 6 каналах
-    float KmI1[3];		// калибровочные коэффициенты по току в 6 каналах для Кацп=1
-    float KmI2[3];		// калибровочные коэффициенты по току в 6 каналах для Кацп=2
-    float KmI4[3];		// калибровочные коэффициенты по току в 6 каналах для Кацп=4
-    float KmI8[3];		// калибровочные коэффициенты по току в 6 каналах для Кацп=8
-    float KmI16[3];	// калибровочные коэффициенты по току в 6 каналах для Кацп=16
-    float KmI32[3];	// калибровочные коэффициенты по току в 6 каналах для Кацп=32
-    float DPsi[6];		// коррекция фазы в i-м канале (в градусах)
-    float Tmk0;		// Начальная температура МК для коррекции
-    float TKUa[6];	//температурные коэффициенты линейной коррекции
-    // по напряжениям и токам
-    float TKUb[6];	//температурные коэффициенты квадратичной коррекции
-    float TKPsi_a[3]; 	//температурные коэффициенты линейной коррекции по tg delta
-    float TKPsi_b[3]; 	//температурные коэффициенты квадратичной коррекции по tg delta
+        quint32 N1_TT[3]; // Число витков первичной обмотки
+        float KmU[3]; // калибровочные коэффициенты по напряжению в 6 каналах
+        float KmI1[3]; // калибровочные коэффициенты по току в 6 каналах для Кацп=1
+        float KmI2[3]; // калибровочные коэффициенты по току в 6 каналах для Кацп=2
+        float KmI4[3]; // калибровочные коэффициенты по току в 6 каналах для Кацп=4
+        float KmI8[3]; // калибровочные коэффициенты по току в 6 каналах для Кацп=8
+        float KmI16[3]; // калибровочные коэффициенты по току в 6 каналах для Кацп=16
+        float KmI32[3]; // калибровочные коэффициенты по току в 6 каналах для Кацп=32
+        float DPsi[6]; // коррекция фазы в i-м канале (в градусах)
+        float Tmk0; // Начальная температура МК для коррекции
+        float TKUa[6]; //температурные коэффициенты линейной коррекции
+        // по напряжениям и токам
+        float TKUb[6]; //температурные коэффициенты квадратичной коррекции
+        float TKPsi_a[3]; //температурные коэффициенты линейной коррекции по tg delta
+        float TKPsi_b[3]; //температурные коэффициенты квадратичной коррекции по tg delta
 
         //записываются во флеш базовой платы
-    float K_freq;		// коррекция частоты
-    float Art;		// коэффициент в канале Pt100, ед.АЦП/Ом
-    float Brt;		// смещение в канале Pt100, ед.АЦП
+        float K_freq; // коррекция частоты
+        float Art; // коэффициент в канале Pt100, ед.АЦП/Ом
+        float Brt; // смещение в канале Pt100, ед.АЦП
     };
 
-    Bac Bac_block, Bac_newblock;
-
-    typedef struct {		// Структура блока выходных данных
-    // в масштабах входных сигналов (для настройки)
-    float Frequency;	// Частота в сети, Гц
-    float IUefNat_filt[6];	// Истинные действующие значения сигналов (в вольтах или мА на входе)
-    float IUeff_filtered[6];  // действующие значения сигналов по 1-й гармонике
-    float phi_next_f[6];	// Углы сдвига сигналов по 1-й гармонике относительно Ua в градусах
-    float Cbush[3];	// емкости вводов
-    float Tg_d[3];		// tg delta вводов
-    float Pt100_R;		// Измеренное сопротивление термометра, Ом
-    }Bda_in_struct;
-
-    Bda_in_struct Bda_in, Bda_block20, Bda_block60, Bda_blockMinus20;
+    typedef struct
+    { // Структура блока выходных данных
+        // в масштабах входных сигналов (для настройки)
+        float Frequency; // Частота в сети, Гц
+        float IUefNat_filt[6]; // Истинные действующие значения сигналов (в вольтах или мА на входе)
+        float IUeff_filtered[6]; // действующие значения сигналов по 1-й гармонике
+        float phi_next_f[6]; // Углы сдвига сигналов по 1-й гармонике относительно Ua в градусах
+        float Cbush[3]; // емкости вводов
+        float Tg_d[3]; // tg delta вводов
+        float Pt100_R; // Измеренное сопротивление термометра, Ом
+    } Bda_in_struct;
 
     struct BdaStruct
     {
         float Ueff_ADC[6];
         float Frequency;
         float Pt100;
-     };
-
-    BdaStruct Bda_block, BdaPt100_80Om, BdaPt100_120Om;
-
-    quint8 TempCor;
+    };
 
     struct RealDataStruct
     {
@@ -216,17 +134,20 @@ private:
         float u[3]; // voltages
         float i[3]; // currents
         float d[3]; // load phase
-        float dpsiU[2];//interphase voltages angles (B-A, C-B)
+        float dpsiU[2]; // interphase voltages angles (B-A, C-B)
     };
 
     struct Bd0
     {
-        float Tmk;	// Температура кристалла микроконтроллера, °С
-        float Vbat;	// Напряжение аккумуляторной батареи, В
+        float Tmk; // Температура кристалла микроконтроллера, °С
+        float Vbat; // Напряжение аккумуляторной батареи, В
     };
 
-    Bd0 Bd_block20, Bd_block_minus20, Bd_block_plus60;
-    int N;
+    Bac m_Bac_block, m_Bac_newblock;
+    Bda_in_struct m_Bda_in, m_Bda_block20, m_Bda_block60, m_Bda_blockMinus20;
+    BdaStruct m_Bda_block, m_BdaPt100_80Om, m_BdaPt100_120Om;
+    Bd0 m_Bd_block20, m_Bd_block_minus20, m_Bd_block_plus60;
+    int m_filterSteps;
 
     /*struct ReportHeaderStructure
     {
@@ -276,25 +197,23 @@ private:
     double I[21] =       {0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1, 2, 3, 4, 5, 6,  5, 5, 5, 5, 5, 5, 5, 5, 5 };
     double PhiLoad[21] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 90, 180, 270 };*/
 
-    RealDataStruct RealData;
-    float IUefNat_filt_old[6];      // для сохранения значений по п. 7.3.2
-    float MipDat[46];
-    int GED_Type;
-    int Kadc;
+    RealDataStruct m_RealData;
+    float m_IUefNat_filt_old[6]; // для сохранения значений по п. 7.3.2
+    float m_MipDat[46];
+    int m_GED_Type;
+    int m_Kadc;
 
-    //QHBoxLayout *MipPars(int parnum, const QString &groupname);
+    // QHBoxLayout *MipPars(int parnum, const QString &groupname);
     void FillBac(int bacnum);
     void FillBackBac(int bacnum);
     void PrepareConsts();
     void FillNewBac();
 
-
-#if PROGSIZE != PROGSIZE_EMUL
     void SetLbls();
     void SetPf();
     void Tune3p();
     int CheckTuneCoefs();
-    //int CheckMip();
+    // int CheckMip();
     bool IsWithinLimits(double number, double base, double threshold);
     int ShowControlChooseDialog();
     int Show3PhaseScheme();
@@ -341,19 +260,15 @@ private:
     void Enter20Data();
     void Enterminus20Data();
     void Enter60Data();
-
-#endif
-
     float ToFloat(QString text);
 
     QString ValuesFormat, WidgetFormat;
 
 private slots:
 
-#if PROGSIZE != PROGSIZE_EMUL
     int TuneChannel();
     void ReadN();
-    //void SetTuneMode();
+    // void SetTuneMode();
     int ReadAnalogMeasurements();
     void SetExtData();
     void CancelExtData();
@@ -368,11 +283,7 @@ private slots:
     void SaveValuesTemp60();
     void CloseAsk();
 
-
-#endif
     void SetDefCoefs();
-
 };
-
 
 #endif // TUNEDIALOG85_H
