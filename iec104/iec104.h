@@ -4,7 +4,7 @@
 #include "../gen/s2.h"
 
 #include <QQueue>
-#include <QTcpSocket>
+//#include <QTcpSocket>
 //#define DEBUG
 
 #define BASEADR104 205

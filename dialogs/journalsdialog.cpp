@@ -14,6 +14,7 @@
 #include <QAbstractItemModelTester>
 #include <QApplication>
 #include <QDateTime>
+#include <QDebug>
 #include <QFileDialog>
 #include <QGroupBox>
 #include <QHeaderView>

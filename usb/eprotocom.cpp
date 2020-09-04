@@ -3,6 +3,7 @@
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 
+#include <QDebug>
 #include <QElapsedTimer>
 #include <QMessageBox>
 #include <QSettings>

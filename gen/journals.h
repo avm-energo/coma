@@ -258,6 +258,8 @@ private:
     void FillMeasTable(QByteArray &ba);
     void ResultReady();
 
+    void prepareJour(QByteArray &ba, int JourType);
+
 public slots:
     void FillSysJour(QByteArray ba);
     void FillMeasJour(QByteArray ba);
