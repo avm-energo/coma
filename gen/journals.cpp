@@ -124,20 +124,20 @@ void Journals::FillEventsTable(QByteArray &ba)
     int N = 0;
     int basize = ba.size();
     char *file = ba.data();
-    int joursize = 0; // размер считанного буфера с информацией
+    //    int joursize = 0; // размер считанного буфера с информацией
     int recordsize = sizeof(EventStruct);
-    int fhsize = sizeof(S2::FileHeader);
+    //    int fhsize = sizeof(S2::FileHeader);
 
-    if ((_jourType == JOURSYS) || (_jourType == JOURWORK))
-    {
-        file += fhsize;
-        // qDebug() << strlen(file);
-        S2::DataRec jour;
-        int drsize = sizeof(S2::DataRec) - sizeof(void *);
-        memcpy(&jour, file, drsize);
-        joursize = jour.num_byte;
-        file += drsize; // move file pointer to thedata
-    }
+    //    if ((_jourType == JOURSYS) || (_jourType == JOURWORK))
+    //    {
+    //        file += fhsize;
+    //        // qDebug() << strlen(file);
+    //        S2::DataRec jour;
+    //        int drsize = sizeof(S2::DataRec) - sizeof(void *);
+    //        memcpy(&jour, file, drsize);
+    //        joursize = jour.num_byte;
+    //        file += drsize; // move file pointer to thedata
+    //    }
     int counter = 0;
     int i = 0;
     while (i < basize)
@@ -153,7 +153,7 @@ void Journals::FillEventsTable(QByteArray &ba)
             vl << TimeFunc::UnixTime64ToInvStringFractional(event.Time);
             memcpy(&N, &event.EvNum, sizeof(event.EvNum));
             N = (N & 0x00FFFFFF) - mineventid;
-            if ((N <= sl.size()) && (N > 0))
+            if ((N < sl.size()) && (N > 0))
             {
                 --N;
                 vl << sl.at(N);
@@ -189,15 +189,6 @@ void Journals::FillMeasTable(QByteArray &ba)
     int recordsize;
     int basize = ba.size();
     char *file = ba.data();
-    // int joursize = 0; // размер считанного буфера с информацией
-    int fhsize = sizeof(S2::FileHeader);
-
-    file += fhsize;
-    // S2::DataRec jour;
-    int drsize = sizeof(S2::DataRec) - sizeof(void *);
-    // memcpy(&jour, file, drsize);
-    // joursize = jour.num_byte;
-    file += drsize; // move file pointer to thedata
     int i = 0;
     switch (MTypeB)
     {
@@ -209,6 +200,7 @@ void Journals::FillMeasTable(QByteArray &ba)
             QElapsedTimer timer;
             timer.start();
             MeasureStruct meas;
+            qDebug() << sizeof(MeasureStruct);
             recordsize = sizeof(MeasureStruct);
             headers = MeasJourHeaders;
             while (i < basize)
@@ -319,41 +311,85 @@ void Journals::ResultReady()
 
 void Journals::FillSysJour(QByteArray ba)
 {
-    FillEventsTable(ba);
-}
-
-void Journals::FillMeasJour(QByteArray ba)
-{
-    quint32 crctocheck;
+    S2::FileHeader header;
     quint32 basize = ba.size();
     if (basize < 17)
     {
         ERMSG("basize");
     }
-    memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
-    if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), crctocheck))
+    memcpy_s(&header, sizeof(S2::FileHeader), ba.data(), sizeof(S2::FileHeader));
+    if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), header.crc32))
     {
         ERMSG("CRC error");
     }
-    FillMeasTable(ba);
+    if (header.fname != JOURSYS)
+    {
+        ERMSG("Wrong filename");
+    }
+    int fhsize = sizeof(S2::FileHeader);
+    int drsize = sizeof(S2::DataRec) - sizeof(void *);
+    FillEventsTable(ba.remove(0, fhsize).remove(0, drsize));
+}
+
+void Journals::FillMeasJour(QByteArray ba)
+{
+    S2::FileHeader header;
+    quint32 basize = ba.size();
+    if (basize < 17)
+    {
+        ERMSG("basize");
+    }
+    memcpy_s(&header, sizeof(S2::FileHeader), ba.data(), sizeof(S2::FileHeader));
+    if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), header.crc32))
+    {
+        ERMSG("CRC error");
+    }
+    if (header.fname != JOURMEAS)
+    {
+        ERMSG("Wrong filename");
+    }
+    int fhsize = sizeof(S2::FileHeader);
+    int drsize = sizeof(S2::DataRec) - sizeof(void *);
+
+    FillMeasTable(ba.remove(0, fhsize).remove(0, drsize));
 }
 
 void Journals::FillWorkJour(QByteArray ba)
 {
-    FillEventsTable(ba);
+    S2::FileHeader header;
+    quint32 basize = ba.size();
+    if (basize < 17)
+    {
+        ERMSG("basize");
+    }
+    memcpy_s(&header, sizeof(S2::FileHeader), ba.data(), sizeof(S2::FileHeader));
+    if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), header.crc32))
+    {
+        ERMSG("CRC error");
+    }
+    if (header.fname != JOURWORK)
+    {
+        ERMSG("Wrong filename");
+    }
+    int fhsize = sizeof(S2::FileHeader);
+    qDebug() << fhsize;
+    int drsize = sizeof(S2::DataRec) - sizeof(void *);
+    qDebug() << drsize;
+    FillEventsTable(ba.remove(0, fhsize).remove(0, drsize));
 }
 
 void Journals::StartGetJour()
 {
-    char jnum = _jourType + 4;
+    // char jnum = _jourType;
     if (MainInterface == I_ETHERNET)
     {
-        emit ReadJour(jnum);
+
+        emit ReadJour(_jourType);
     }
     else if (MainInterface == I_USB)
     {
         QByteArray ba;
-        if (Commands::GetFile(jnum, ba) == NOERROR)
+        if (Commands::GetFile(_jourType, ba) == NOERROR)
         {
             switch (_jourType)
             {

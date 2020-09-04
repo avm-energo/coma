@@ -45,7 +45,8 @@ void AlarmClass::UpdateAlarmUSB()
 {
     BdAlarm signalling;
     int i = 0;
-    quint32 MType = MTypeB + MTypeM;
+    quint32 TempMTypeB = MTypeB << 8;
+    quint32 MType = TempMTypeB + MTypeM;
 
     if (MainInterface == I_USB)
     {
@@ -75,7 +76,8 @@ void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
 {
     int i = 0;
     int ccount = 0;
-    quint32 MType = MTypeB + MTypeM;
+    quint32 TempMTypeB = MTypeB << 8;
+    quint32 MType = TempMTypeB + MTypeM;
 
     for (i = 0; i < Signal.countBytes; i++)
     {
@@ -98,23 +100,25 @@ void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
 
 void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
 {
-    int i = 0;
-    quint32 MType = MTypeB + MTypeM;
-    int ccount = 0;
-    for (i = 0; i < Signal->SigNumber; i++)
+    // int i = 0;
+    quint32 TempMTypeB = MTypeB << 8;
+    quint32 MType = TempMTypeB + MTypeM;
+    int count;
+    for (int i = 0, count = 0; i < Signal->SigNumber; i++)
     {
         quint8 sigval = Signal->Spon[i].SigVal;
         if (!(sigval & 0x80))
         {
             quint32 sigadr = Signal->Spon[i].SigAdr;
             bool alarm = (sigval & 0x00000001) ? 1 : 0;
-            while ((MapAlarm[MType].AdrAlarm <= sigadr)
-                && (sigadr <= (MapAlarm[MType].AdrAlarm + MapAlarm[MType].warns.size())))
-                if (MapAlarm[MType].warns.at(ccount))
+            quint32 AdrAlarm = MapAlarm[MType].AdrAlarm;
+            int WarnsSize = MapAlarm[MType].warns.size();
+            while ((AdrAlarm <= sigadr) && (sigadr <= AdrAlarm + WarnsSize))
+                if (MapAlarm[MType].warns.at(count))
                     WarnAlarmEvents.append(alarm);
-                else if (MapAlarm[MType].avars.at(ccount))
+                else if (MapAlarm[MType].avars.at(count))
                     AvarAlarmEvents.append(alarm);
-            ccount++;
+            count++;
         }
     }
 

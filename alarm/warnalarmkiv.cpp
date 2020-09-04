@@ -89,6 +89,8 @@ void WarnAlarmKIV::Update(QList<bool> states)
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
 
+    if (states.isEmpty())
+        return;
     for (i = 0; i < Alarm->MapAlarm[MTYPE_KIV].warnCounts; i++)
     {
         quint32 alarm = states[i];

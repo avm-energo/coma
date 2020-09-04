@@ -320,6 +320,7 @@ void Coma::StartWork()
         }
         ActiveThreads |= THREAD::USB;
         MTypeB = ModuleBSI::GetMType(BoardTypes::BT_BASE);
+        qDebug() << ModuleBSI::GetMType(BoardTypes::BT_BASE);
         MTypeM = ModuleBSI::GetMType(BoardTypes::BT_MEZONIN);
         //        emit USBBsiRefresh();
     }
@@ -355,8 +356,9 @@ void Coma::StartWork()
         }
     }
     // MTypeB & MTypeM are acquired
-    MTypeB <<= 8;
-
+    //    qDebug() << MTypeB;
+    //    MTypeB <<= 8;
+    //    qDebug() << MTypeB;
     Disconnected = false;
     Reconnect = true;
 
@@ -944,6 +946,7 @@ void Coma::FillBSI(IEC104Thread::BS104Signals *sig)
             memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (i + startadr - 1)), (((quint32 *)(&sig->BS.SigVal) + 4 * i)),
                 sizeof(sig->BS.SigVal));
         MTypeB = ModuleBSI::ModuleBsi.MTypeB;
+        qDebug() << ModuleBSI::ModuleBsi.MTypeB;
         MTypeM = ModuleBSI::ModuleBsi.MTypeM;
     }
 }
@@ -959,6 +962,7 @@ void Coma::FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize)
         for (size_t i = 0; i < sigsize; ++i)
             memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (i + startadr - 1)), &sig.at(i).Val, sizeof(sig.at(i).Val));
         MTypeB = ModuleBSI::ModuleBsi.MTypeB;
+        qDebug() << ModuleBSI::ModuleBsi.MTypeB;
         MTypeM = ModuleBSI::ModuleBsi.MTypeM;
         // ModuleBSI::ModuleBsi.Hth = ModuleBSI::ModuleBsi.Hth;
     }

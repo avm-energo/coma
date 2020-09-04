@@ -19,7 +19,8 @@ void InfoDialog::SetupUI()
     Inf[MTYPE_KTF] = "АВМ-КТФ";
     Inf[MTYPE_KDV] = "АВМ-КДВ";
 
-    quint32 MType = MTypeB + MTypeM;
+    quint32 TempMTypeB = MTypeB << 8;
+    quint32 MType = TempMTypeB + MTypeM;
 
     QString tmps = "QDialog {background-color: " + QString(MAINWINCLRA1) + ";}";
     setStyleSheet(tmps);

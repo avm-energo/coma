@@ -12,12 +12,24 @@
 class Journals : public QObject
 {
     Q_OBJECT
+
 public:
+    /*!
+    Приложение 3. Номера файлов
+
+        № файла	Описание
+        1	Конфигурация
+        3	Встроенное ПО (Firmware)
+        4	Системный журнал
+        5	Рабочий журнал
+        6	Журнал измерений
+        17	Журнал переключений
+    */
     enum JournalEnum
     {
-        JOURSYS = 0,
-        JOURWORK = 1,
-        JOURMEAS = 2
+        JOURSYS = 4,
+        JOURWORK = 5,
+        JOURMEAS = 6
     };
 
     struct EventStruct
@@ -41,9 +53,6 @@ public:
         float I0;
         float I1;
         float I2;
-        float Tmk;
-        float Tamb;
-        quint32 res;
     };
 
     struct MeasureStruct : Measure
@@ -52,12 +61,15 @@ public:
         {
         }
         MeasureStruct() = default;
-        float dCbush[3];
         float Cbush[3];
         float Tg_d[3];
+        float dCbush[3];
         float dTg_d[3];
         float Iunb;
         float Phy_unb;
+        float Tmk;
+        float Tamb;
+        quint32 res;
     }; // sizeof(Bda_trend_struct)=31*4=124
 
     struct MeasureStructKTF : Measure
@@ -71,6 +83,9 @@ public:
         float Sf[4];
         float Cosphi;
         float Twin;
+        float Tmk;
+        float Tamb;
+        quint32 res;
     }; // sizeof(Bda_trend_struct)=31*4=124
 
     explicit Journals(QObject *parent = nullptr);

@@ -47,20 +47,20 @@ public:
 
     enum BaseBoards
     {
-        MTB_00 = 0x0000,
-        MTB_12 = 0x1200,
-        MTB_21 = 0x2100,
-        MTB_22 = 0x2200,
-        MTB_31 = 0x3100,
-        MTB_35 = 0x3500,
-        MTB_80 = 0x8000,
-        MTB_81 = 0x8100,
-        MTB_84 = 0x8400,
-        MTB_85 = 0x8500,
-        MTB_87 = 0x8700,
-        MTB_A1 = 0xA100,
-        MTB_A2 = 0xA200,
-        MTB_A3 = 0xA300
+        MTB_00 = 0x00,
+        MTB_12 = 0x12,
+        MTB_21 = 0x21,
+        MTB_22 = 0x22,
+        MTB_31 = 0x31,
+        MTB_35 = 0x35,
+        MTB_80 = 0x80,
+        MTB_81 = 0x81,
+        MTB_84 = 0x84,
+        MTB_85 = 0x85,
+        MTB_87 = 0x87,
+        MTB_A1 = 0xA1,
+        MTB_A2 = 0xA2,
+        MTB_A3 = 0xA3
     };
 
     BaseBoards Base;
