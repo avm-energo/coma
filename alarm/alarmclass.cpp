@@ -75,7 +75,7 @@ void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
 {
     int i = 0;
     int ccount = 0;
-    quint32 MType = MTypeB + MTypeM;
+    quint32 MType = (MTypeB << 8) + MTypeM;
 
     for (i = 0; i < Signal.countBytes; i++)
     {
@@ -94,30 +94,37 @@ void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
     }
     emit SetWarnAlarmColor(WarnAlarmEvents);
     emit SetAlarmColor(AvarAlarmEvents);
+    emit SetFirstButton();
 }
 
 void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
 {
     int i = 0;
-    quint32 MType = MTypeB + MTypeM;
+    quint32 MType = (MTypeB << 8) + MTypeM;
     int ccount = 0;
     for (i = 0; i < Signal->SigNumber; i++)
     {
         quint8 sigval = Signal->Spon[i].SigVal;
+        if (Signal->Spon[i].SigAdr < 3000)
+            continue;
         if (!(sigval & 0x80))
         {
             quint32 sigadr = Signal->Spon[i].SigAdr;
             bool alarm = (sigval & 0x00000001) ? 1 : 0;
-            while ((MapAlarm[MType].AdrAlarm <= sigadr)
-                && (sigadr <= (MapAlarm[MType].AdrAlarm + MapAlarm[MType].warns.size())))
+            quint32 MapA = (MapAlarm[MType].AdrAlarm + MapAlarm[MType].warns.size());
+
+            if ((MapAlarm[MType].AdrAlarm <= sigadr) && (sigadr <= MapA))
+            {
                 if (MapAlarm[MType].warns.at(ccount))
                     WarnAlarmEvents.append(alarm);
                 else if (MapAlarm[MType].avars.at(ccount))
                     AvarAlarmEvents.append(alarm);
-            ccount++;
+                ccount++;
+            }
         }
     }
 
     emit SetWarnAlarmColor(WarnAlarmEvents);
     emit SetAlarmColor(AvarAlarmEvents);
+    emit SetFirstButton();
 }

@@ -32,12 +32,13 @@ void AlarmStateAll::AlarmState()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
+    hlyout->setObjectName("hlyout");
     QVBoxLayout *vlayout = new QVBoxLayout;
 
-    //    INFOMSG("DeviceState()");
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
     QWidget *w = new QWidget;
+    w->setObjectName("window");
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color:
                                                                             // rgba(220,220,220,255);
 
@@ -47,6 +48,7 @@ void AlarmStateAll::AlarmState()
 
         if (ModuleBSI::ModuleBsi.Hth & (0x00000001 << i))
             hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i), pmred));
+
         else
             hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i), pmgrn));
 
@@ -58,9 +60,9 @@ void AlarmStateAll::AlarmState()
 
     lyout->addWidget(w);
     QPushButton *pb = new QPushButton("Ok");
-    connect(pb, SIGNAL(clicked()), this, SLOT(close()));
+    connect(pb, SIGNAL(clicked()), this, SLOT(hide()));
     lyout->addWidget(pb, 0);
-    setLayout(lyout);
+    this->setLayout(lyout);
 }
 void AlarmStateAll::WarnAlarmState()
 {
@@ -70,4 +72,25 @@ void AlarmStateAll::AvarState()
 }
 void AlarmStateAll::Update(QList<bool>)
 {
+}
+
+void AlarmStateAll::UpdateHealth(quint32 health)
+{
+    QPixmap *pmgrn = new QPixmap("images/greenc.png");
+    QPixmap *pmred = new QPixmap("images/redc.png");
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    for (quint32 i = 0; i < health; ++i)
+    {
+        hlyout = new QHBoxLayout;
+
+        if (health & (0x00000001 << i))
+            WDFunc::SetLBLImage(this, QString::number(i), pmred);
+        else
+            WDFunc::SetLBLImage(this, QString::number(i), pmgrn);
+    }
+}
+
+void AlarmStateAll::CallUpdateHealth()
+{
+    this->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
 }

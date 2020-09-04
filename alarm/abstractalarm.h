@@ -95,6 +95,8 @@ public slots:
     virtual void Update(QList<bool>) = 0;
 
 private:
+protected:
+    void showEvent(QShowEvent *e);
 };
 
 #endif // ABSTRACTALARM_H

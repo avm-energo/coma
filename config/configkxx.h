@@ -68,10 +68,10 @@ public:
     typedef struct
     {
         quint8 MBMaster;
-        quint8 MBMab1[4];
-        quint8 MBMab2[4];
-        quint8 MBMab3[4];
-        quint8 MBMab4[4];
+        quint8 MBMab1[6];
+        quint8 MBMab2[6];
+        quint8 MBMab3[6];
+        quint8 MBMab4[6];
     } StructModBus;
     StructModBus StrModBus;
 

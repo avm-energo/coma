@@ -23,4 +23,14 @@
 
 AbstractAlarm::AbstractAlarm(QDialog *parent) : QDialog(parent)
 {
+    //    setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
+    setAttribute(Qt::WA_DeleteOnClose);
+}
+
+void AbstractAlarm::showEvent(QShowEvent *e)
+{
+    if (isVisible())
+        move(QCursor::pos());
+    e->accept();
 }

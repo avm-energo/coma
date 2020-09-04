@@ -42,6 +42,7 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
     QGroupBox *gb = new QGroupBox("");
     hlyout->addWidget(pb, Qt::AlignRight);
     hlyout->addWidget(WDFunc::NewLBL(this, "", "", "950", pmgrn), 1);
+    WDFunc::SetVisible(this, "950", false);
     gb->setLayout(hlyout);
     hlyout2->addWidget(gb);
 
@@ -52,6 +53,7 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
     connect(pb, SIGNAL(clicked()), this, SIGNAL(ModuleWarnButtonPressed()));
     hlyout->addWidget(pb, Qt::AlignRight);
     hlyout->addWidget(WDFunc::NewLBL(this, "", "", "951", pmgrn), 1);
+    WDFunc::SetVisible(this, "951", false);
     gb->setLayout(hlyout);
     hlyout2->addWidget(gb);
 
@@ -63,6 +65,7 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
     connect(pb, SIGNAL(clicked()), this, SIGNAL(ModuleAlarmButtonPressed()));
     hlyout->addWidget(pb, Qt::AlignRight);
     hlyout->addWidget(WDFunc::NewLBL(this, "", "", "952", pmgrn), 1);
+    WDFunc::SetVisible(this, "952", false);
     gb->setLayout(hlyout);
     hlyout2->addWidget(gb);
 
@@ -93,6 +96,7 @@ void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarm)
     }
 
     WDFunc::SetLBLImage(this, "951", (alarm == 0) ? pmgrn : pmylw);
+    WDFunc::SetVisible(this, "951", true);
 }
 
 void AlarmWidget::UpdateThirdUSB(QList<bool> avar)
@@ -111,7 +115,9 @@ void AlarmWidget::UpdateThirdUSB(QList<bool> avar)
             break;
         }
     }
+
     WDFunc::SetLBLImage(this, "952", (alarm == 0) ? pmgrn : pmred);
+    WDFunc::SetVisible(this, "952", true);
 }
 
 void AlarmWidget::UpdateFirstUSB()
@@ -121,9 +127,28 @@ void AlarmWidget::UpdateFirstUSB()
     QPixmap *pmred = new QPixmap("images/redc.png");
 
     if (ModuleBSI::ModuleBsi.Hth & WARNBSIMASK)
+    {
+
         WDFunc::SetLBLImage(this, "950", pmylw);
+        WDFunc::SetVisible(this, "950", true);
+    }
     else if (ModuleBSI::ModuleBsi.Hth & AVARBSIMASK)
+    {
+
         WDFunc::SetLBLImage(this, "950", pmred);
+        WDFunc::SetVisible(this, "950", true);
+    }
     else
+    {
+
         WDFunc::SetLBLImage(this, "950", pmgrn);
+        WDFunc::SetVisible(this, "950", true);
+    }
+}
+
+void AlarmWidget::Clear()
+{
+    WDFunc::SetVisible(this, "950", false);
+    WDFunc::SetVisible(this, "951", false);
+    WDFunc::SetVisible(this, "952", false);
 }

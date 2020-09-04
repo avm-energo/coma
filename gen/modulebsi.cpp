@@ -33,7 +33,6 @@ int ModuleBSI::SetupBSI()
             + Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].TextString;
     }
 
-    QString tmps = ModuleTypeString;
     if (!IsKnownModule())
         return RESEMPTY;
     return NOERROR;

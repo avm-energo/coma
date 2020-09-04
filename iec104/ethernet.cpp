@@ -117,6 +117,9 @@ void Ethernet::EthStateChanged(QAbstractSocket::SocketState state)
     case QAbstractSocket::ListeningState:
         Log->info("Socket is in listening state");
         break;
+    default:
+        Log->info("Unprocessed state");
+        break;
     }
 }
 
