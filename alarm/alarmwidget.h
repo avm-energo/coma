@@ -20,6 +20,7 @@ class AlarmWidget : public QWidget
     Q_OBJECT
 public:
     explicit AlarmWidget(AlarmClass *alarm, QWidget *parent = nullptr);
+    void Clear();
 
 signals:
     void SetWarnAlarmColor(QList<bool>);

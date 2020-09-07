@@ -99,7 +99,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     mainConfDialog = nullptr;
     confBDialog = confMDialog = nullptr;
     checkBDialog = checkMDialog = nullptr;
-    // wPredDialog = wAlarmDialog = nullptr;
+    AlarmStateAllDialog = nullptr;
     HarmDialog = nullptr;
     VibrDialog = nullptr;
     corDialog = nullptr;
@@ -128,7 +128,7 @@ void Coma::SetupUI()
     setWindowTitle(PROGCAPTION);
     QString tmps = "QMainWindow {background-color: " + QString(MAINWINCLR) + ";}";
     setStyleSheet(tmps);
-    setMinimumSize(QSize(800, 700));
+    setMinimumSize(QSize(1050, 700));
     QWidget *wdgt = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout(wdgt);
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -638,6 +638,19 @@ void Coma::CloseDialogs()
         i->close();
     }
 
+    if (AvarAlarmKIVDialog != nullptr)
+        AvarAlarmKIVDialog->close();
+
+    if (AlarmStateAllDialog != nullptr)
+    {
+        AlrmTimer->stop();
+        AlarmStateAllDialog->close();
+        AlarmStateAllDialog = nullptr;
+    }
+
+    if (WarnAlarmKIVDialog != nullptr)
+        WarnAlarmKIVDialog->close();
+
     //    if (TimeD != nullptr)
     //        TimeD->close();
     //    if (CheckB != nullptr)
@@ -708,6 +721,10 @@ void Coma::NewTimers()
     BdaTimer = new QTimer;
     BdaTimer->setInterval(ANMEASINT);
 
+    AlrmTimer = new QTimer;
+    AlrmTimer->setInterval(10000);
+    AlrmTimer->start();
+
     ReceiveTimer = new QTimer;
     ReceiveTimer->setInterval(ANMEASINT);
     connect(ReceiveTimer, &QTimer::timeout, this, &Coma::FileTimeOut);
@@ -721,9 +738,13 @@ void Coma::NewTimers()
 void Coma::NewTimersBda()
 {
     connect(BdaTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
+    //   connect(BdaTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::UpdateHealth);
 
     if (checkBDialog != nullptr)
         connect(BdaTimer, &QTimer::timeout, checkBDialog, &EAbstractCheckDialog::USBUpdate);
+
+    if (MainInterface == I_USB)
+        connect(AlrmTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::CallUpdateHealth);
 }
 
 bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
@@ -965,6 +986,8 @@ void Coma::FillBSI(IEC104Thread::BS104Signals *sig)
         qDebug() << ModuleBSI::ModuleBsi.MTypeB;
         MTypeM = ModuleBSI::ModuleBsi.MTypeM;
     }
+    if (AlarmStateAllDialog != nullptr)
+        AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
 }
 
 void Coma::FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize)
@@ -982,6 +1005,8 @@ void Coma::FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize)
         MTypeM = ModuleBSI::ModuleBsi.MTypeM;
         // ModuleBSI::ModuleBsi.Hth = ModuleBSI::ModuleBsi.Hth;
     }
+    if (AlarmStateAllDialog != nullptr)
+        AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
 }
 
 void Coma::PasswordCheck(QString psw)
@@ -1076,6 +1101,7 @@ void Coma::GetAbout()
 void Coma::Disconnect()
 {
     INFOMSG("Disconnect()");
+    AlarmW->Clear();
     if (!StdFunc::IsInEmulateMode())
     {
         if (MainInterface == I_USB)
@@ -1101,6 +1127,7 @@ void Coma::DisconnectAndClear()
     TimeTimer->stop();
     if (!Disconnected)
     {
+        AlarmW->Clear();
         Disconnect();
         CloseDialogs();
         emit ClearBsi();

@@ -96,6 +96,7 @@ void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
     }
     emit SetWarnAlarmColor(WarnAlarmEvents);
     emit SetAlarmColor(AvarAlarmEvents);
+    emit SetFirstButton();
 }
 
 void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
@@ -119,9 +120,11 @@ void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
                 else if (MapAlarm[MType].avars.at(count))
                     AvarAlarmEvents.append(alarm);
             count++;
+            }
         }
     }
 
     emit SetWarnAlarmColor(WarnAlarmEvents);
     emit SetAlarmColor(AvarAlarmEvents);
+    emit SetFirstButton();
 }

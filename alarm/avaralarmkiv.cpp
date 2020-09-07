@@ -61,7 +61,7 @@ void AvarAlarmKIV::AvarState()
 
     lyout->addWidget(w);
     QPushButton *pb = new QPushButton("Ok");
-    connect(pb, SIGNAL(clicked()), this, SLOT(close()));
+    connect(pb, SIGNAL(clicked()), this, SLOT(hide()));
     lyout->addWidget(pb, 0);
     setLayout(lyout);
 }

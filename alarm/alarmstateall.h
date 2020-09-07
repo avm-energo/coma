@@ -14,6 +14,8 @@ public slots:
     void AlarmState();
     void WarnAlarmState();
     void AvarState();
+    void UpdateHealth(quint32 health);
+    void CallUpdateHealth();
 
     void Update(QList<bool>);
 
@@ -39,6 +41,8 @@ public slots:
         sl.append("Не работает внешняя fram");
         return sl;
     }
+
+signals:
 
 private:
 };
