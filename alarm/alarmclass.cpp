@@ -120,7 +120,6 @@ void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
                 else if (MapAlarm[MType].avars.at(count))
                     AvarAlarmEvents.append(alarm);
             count++;
-            }
         }
     }
 
