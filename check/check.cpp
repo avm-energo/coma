@@ -16,7 +16,7 @@ QWidget *Check::Bd0W(QWidget *parent)
     QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; "
                            "padding: 1px; color: black;"
                            "background-color: "
-        + QString(ACONFOCLR) + "; font: bold 10px;}";
+        + QString(Colors::ACONFOCLR) + "; font: bold 10px;}";
     QWidget *w = new QWidget(parent);
     QGridLayout *glyout = new QGridLayout;
     glyout->addWidget(WDFunc::NewLBL(parent, "1. Tmk, °С:"), 0, 0);
@@ -29,7 +29,7 @@ QWidget *Check::Bd0W(QWidget *parent)
     lyout->addLayout(glyout);
     lyout->addStretch(100);
     w->setLayout(lyout);
-    QString tmps = "QWidget {background-color: " + QString(UCONFCLR) + ";}";
+    QString tmps = "QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}";
     w->setStyleSheet(tmps);
     return w;
 }

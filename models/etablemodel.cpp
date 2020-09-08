@@ -11,26 +11,9 @@
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
-ETableModel::ETableModel(QObject *parent) : QAbstractTableModel(parent)
-{
-    colors[0] = Qt::black;
-    colors[1] = Qt::red;
-    colors[2] = Qt::blue;
-    colors[3] = Qt::darkRed;
-    colors[4] = Qt::darkGreen;
-    colors[5] = Qt::gray;
-    QFont fontB = QFont("MS Sans Serif", -1, QFont::Bold);
-    QFont fontN = QFont("MS Sans Serif", -1, QFont::Normal);
-    fonts[0] = fonts[3] = fonts[5] = fontN;
-    fonts[1] = fonts[2] = fonts[4] = fontB;
-    icons[0] = QIcon("images/hr.png");
-    icons[1] = QIcon("images/ok.png");
-    icons[2] = QIcon("images/cross.png");
-}
+ETableModel::ETableModel(QObject *parent) : QAbstractTableModel(parent) { }
 
-ETableModel::~ETableModel()
-{
-}
+ETableModel::~ETableModel() { }
 
 QVariant ETableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
@@ -62,15 +45,16 @@ bool ETableModel::setHeaderData(int section, Qt::Orientation orientation, const 
 
 QVariant ETableModel::data(const QModelIndex &index, int role) const
 {
-
     if (index.isValid())
     {
-
         int row = index.row();
         int column = index.column();
         if ((row < maindata.size()) && (column < hdr.size()))
         {
-            if ((role == Qt::DisplayRole) || (role == Qt::EditRole))
+            switch (role)
+            {
+            case Qt::DisplayRole:
+            case Qt::EditRole:
             {
                 if (column < ColFormat.size())
                 {
@@ -86,11 +70,8 @@ QVariant ETableModel::data(const QModelIndex &index, int role) const
                         }
                     }
                 }
-
                 return maindata.at(row)->data(column);
             }
-            switch (role)
-            {
             case Qt::FontRole:
                 return QVariant::fromValue(QFont(maindata.at(row)->font(column)));
             case Qt::ForegroundRole:
@@ -99,6 +80,8 @@ QVariant ETableModel::data(const QModelIndex &index, int role) const
                 return QVariant::fromValue(QIcon(maindata.at(row)->icon(column)));
             case Qt::TextAlignmentRole:
                 return maindata.at(row)->TextAlignment(column);
+            case Qt::UserRole:
+                return maindata.at(row)->uData(column);
             }
         }
     }
@@ -141,6 +124,9 @@ bool ETableModel::setData(const QModelIndex &index, const QVariant &value, int r
             return true;
         case Qt::TextAlignmentRole:
             maindata.last()->setTextAlignment(index.column(), value.toInt());
+            return true;
+        case Qt::UserRole:
+            maindata.last()->setUData(index.column(), value);
             return true;
         }
     }
@@ -320,10 +306,7 @@ void ETableModel::setRowTextAlignment(int row, int alignment)
         setData(index(row, i, QModelIndex()), QVariant(alignment), Qt::TextAlignmentRole);
 }
 
-bool ETableModel::isEmpty() const
-{
-    return maindata.isEmpty();
-}
+bool ETableModel::isEmpty() const { return maindata.isEmpty(); }
 
 void ETableModel::setColumnFormat(int column, int format)
 {
@@ -352,14 +335,6 @@ void ETableModel::addRowWithData(const QVector<QVariant> &vl)
     }
     for (int i = 0; i < vl.size(); ++i) // цикл по строкам
         setData(index(currow, i, QModelIndex()), vl.at(i), Qt::EditRole);
-}
-
-void ETableModel::setCellAttr(QModelIndex index, int fcset, int icon)
-{
-    if (icon != -1)
-        maindata.at(index.row())->setIcon(index.column(), icons[icon]);
-    maindata.at(index.row())->setColor(index.column(), colors[fcset]);
-    maindata.at(index.row())->setFont(index.column(), fonts[fcset]);
 }
 
 void ETableModel::clearModel()

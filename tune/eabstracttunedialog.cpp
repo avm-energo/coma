@@ -5,7 +5,7 @@
 #include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include "../widgets/emessagebox.h"
+#include "../usb/commands.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
 #include <QCoreApplication>
@@ -14,6 +14,7 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QScrollBar>
@@ -42,19 +43,19 @@ QWidget *EAbstractTuneDialog::TuneUI()
 {
     lbls.clear();
     pf.clear();
-#if PROGSIZE != PROGSIZE_EMUL
+
     SetLbls();
     SetPf();
-#endif
+
     int i;
     // CP1 - НАСТРОЙКА ПРИБОРА/МОДУЛЯ
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QPushButton *pb = new QPushButton("Начать настройку");
     pb->setObjectName("starttune");
-#if PROGSIZE != PROGSIZE_EMUL
+
     connect(pb, SIGNAL(clicked()), this, SLOT(StartTune()));
-#endif
+
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     else
@@ -107,9 +108,9 @@ QWidget *EAbstractTuneDialog::BottomUI(int bacnum)
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     pb = new QPushButton(tmps);
     pb->setObjectName(QString::number(bacnum));
-#if PROGSIZE != PROGSIZE_EMUL
+
     connect(pb, SIGNAL(clicked()), this, SLOT(ReadTuneCoefs()));
-#endif
+
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
@@ -117,9 +118,9 @@ QWidget *EAbstractTuneDialog::BottomUI(int bacnum)
     tmps += ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     pb = new QPushButton(tmps);
     pb->setObjectName(QString::number(bacnum));
-#if PROGSIZE != PROGSIZE_EMUL
+
     connect(pb, SIGNAL(clicked()), this, SLOT(WriteTuneCoefsSlot()));
-#endif
+
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     hlyout->addWidget(pb);
@@ -179,7 +180,6 @@ void EAbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
     el.exec();
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void EAbstractTuneDialog::ProcessTune()
 {
     if (lbls.size() > pf.size())
@@ -219,7 +219,7 @@ void EAbstractTuneDialog::ProcessTune()
     MsgSetVisible(bStep); // выдаём надпись "Настройка завершена!"
     //    MeasurementTimer->stop();
     WDFunc::SetEnabled(this, "starttune", true);
-    EMessageBox::information(this, "Готово", "Настройка завершена!");
+    QMessageBox::information(this, "Готово", "Настройка завершена!");
 }
 
 int EAbstractTuneDialog::CheckPassword()
@@ -232,7 +232,7 @@ int EAbstractTuneDialog::CheckPassword()
     PasswordLoop.exec();
     if (!ok)
     {
-        EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
+        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
         return GENERALERROR;
     }
     return NOERROR;
@@ -245,7 +245,7 @@ bool EAbstractTuneDialog::IsWithinLimits(double number, double base, double thre
         return true;
     else
     {
-        EMessageBox::error(this, "Ошибка",
+        QMessageBox::critical(this, "Ошибка",
             "Ошибочное значение: должно быть " + QString::number(base, 'f', 5) + "±"
                 + QString::number(threshold, 'f', 5) + ", а получили: " + QString::number(number, 'f', 5));
         return false;
@@ -319,26 +319,6 @@ void EAbstractTuneDialog::PasswordCheck(QString psw)
     emit PasswordChecked();
 }
 
-void EAbstractTuneDialog::TuneMode(int index)
-{
-    Q_UNUSED(index);
-    // if(!MainWindow::TheEnd)
-    // {
-    if (index == TuneIndex)
-    {
-        if (Commands::SetMode(0x02) != NOERROR)
-            WARNMSG("Ошибка при переходе на регулировочный режим");
-    }
-    else
-    {
-        if (Commands::SetMode(0x00) != NOERROR)
-            WARNMSG("Ошибка при переходе на рабочий режим");
-    }
-    TimeFunc::Wait(100);
-
-    // }
-}
-
 void EAbstractTuneDialog::TuneReadCoefs(int index)
 {
     Q_UNUSED(index);
@@ -395,7 +375,7 @@ bool EAbstractTuneDialog::WriteTuneCoefsSlot()
     // FillBackBac(bacnum);
     // return WriteTuneCoefs(bacnum);
 
-    if (EMessageBox::question(this, "Вопрос",
+    if (QMessageBox::question(this, "Вопрос",
             "Сохранить регулировочные коэффициенты?\n(Результаты предыдущей регулировки будут потеряны)")
         == false)
         return false;
@@ -409,7 +389,8 @@ bool EAbstractTuneDialog::WriteTuneCoefsSlot()
 
         if (AbsBac.keys().contains(bacnum))
         {
-            FillBackBac(bacnum);
+            m_VModel->updateFromModel();
+            //            FillBackBac(bacnum);
 
             if (WriteTuneCoefs(bacnum) != true)
                 return false;
@@ -419,14 +400,14 @@ bool EAbstractTuneDialog::WriteTuneCoefsSlot()
     }
 
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
-    EMessageBox::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
+    QMessageBox::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
 
     return true;
 }
 
 bool EAbstractTuneDialog::WriteTuneCoefs(int bacnum)
 {
-    // if (EMessageBox::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?\n(Результаты предыдущей
+    // if (QMessageBox::question(this, "Вопрос", "Сохранить регулировочные коэффициенты?\n(Результаты предыдущей
     // регулировки будут потеряны)") == false)
     //    return false;
     // QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
@@ -434,11 +415,11 @@ bool EAbstractTuneDialog::WriteTuneCoefs(int bacnum)
     {
         if (Commands::WriteBac(bacnum, AbsBac[bacnum].BacBlock, AbsBac[bacnum].BacBlockSize) == NOERROR)
         {
-            // EMessageBox::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
+            // QMessageBox::information(this, "Внимание", "Коэффициенты переданы в " + tmps + " успешно!");
             return true;
         }
     }
-    // EMessageBox::error(this, "Ошибка", "Ошибка записи коэффициентов в " + tmps + "!");
+    // QMessageBox::critical(this, "Ошибка", "Ошибка записи коэффициентов в " + tmps + "!");
     return false;
 }
 
@@ -462,7 +443,6 @@ void EAbstractTuneDialog::PrereadConf()
 {
     IsNeededDefConf = (ModuleBSI::PrereadConf(this, &S2Config) == RESEMPTY) ? true : false;
 }
-#endif
 
 void EAbstractTuneDialog::SaveToFileEx(int bacnum)
 {
@@ -470,7 +450,7 @@ void EAbstractTuneDialog::SaveToFileEx(int bacnum)
     QString tunenum = QString::number(bacnum, 16);
     if (!AbsBac.keys().contains(bacnum))
     {
-        EMessageBox::error(this, "Ошибка", "Блок Bac с индексом " + tunenum + " не найден!");
+        QMessageBox::critical(this, "Ошибка", "Блок Bac с индексом " + tunenum + " не найден!");
         return;
     }
     QByteArray ba;
@@ -481,16 +461,16 @@ void EAbstractTuneDialog::SaveToFileEx(int bacnum)
     switch (res)
     {
     case Files::ER_NOERROR:
-        EMessageBox::information(this, "Внимание", "Файл коэффициентов записан успешно!");
+        QMessageBox::information(this, "Внимание", "Файл коэффициентов записан успешно!");
         break;
     case Files::ER_FILEWRITE:
-        EMessageBox::error(this, "Ошибка", "Ошибка при записи файла!");
+        QMessageBox::critical(this, "Ошибка", "Ошибка при записи файла!");
         break;
     case Files::ER_FILENAMEEMP:
-        EMessageBox::error(this, "Ошибка", "Пустое имя файла!");
+        QMessageBox::critical(this, "Ошибка", "Пустое имя файла!");
         break;
     case Files::ER_FILEOPEN:
-        EMessageBox::error(this, "Ошибка", "Ошибка открытия файла!");
+        QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла!");
         break;
     default:
         break;
@@ -500,7 +480,8 @@ void EAbstractTuneDialog::SaveToFileEx(int bacnum)
 void EAbstractTuneDialog::SaveToFile()
 {
     int bacnum = sender()->objectName().toInt();
-    FillBackBac(bacnum);
+    //    FillBackBac(bacnum);
+    m_VModel->updateFromModel();
     SaveToFileEx(bacnum);
 }
 
@@ -528,21 +509,20 @@ void EAbstractTuneDialog::LoadFromFile()
     QString tunenum = QString::number(bacnum, 16);
     if (!AbsBac.keys().contains(bacnum))
     {
-        EMessageBox::error(this, "Ошибка", "Блок Bac с индексом " + tunenum + " не найден!");
+        QMessageBox::critical(this, "Ошибка", "Блок Bac с индексом " + tunenum + " не найден!");
         return;
     }
     int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.tn" + tunenum + ")"), ba);
     if (res != Files::ER_NOERROR)
     {
-        EMessageBox::error(this, "Ошибка", "Ошибка при загрузке файла");
+        QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");
         return;
     }
     memcpy(AbsBac[bacnum].BacBlock, &(ba.data()[0]), ba.size());
     FillBac(bacnum);
-    EMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
+    QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
-#if PROGSIZE != PROGSIZE_EMUL
 void EAbstractTuneDialog::Good() { SetMeasurementEnabled(false); }
 
 void EAbstractTuneDialog::NoGood()
@@ -564,7 +544,7 @@ void EAbstractTuneDialog::MeasTimerTimeout()
     if (MeasurementEnabled)
         GetBdAndFillMTT();
 }
-#endif
+
 // ##################### PROTECTED ####################
 
 void EAbstractTuneDialog::closeEvent(QCloseEvent *e)

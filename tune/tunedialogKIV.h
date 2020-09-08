@@ -215,11 +215,7 @@ private:
     int CheckTuneCoefs();
     // int CheckMip();
     bool IsWithinLimits(double number, double base, double threshold);
-    int ShowControlChooseDialog();
-    int Show3PhaseScheme();
-    void Show1RetomDialog(float U, float A);
     void GetBdAndFillMTT();
-    int Start7_2_3();
     int Start7_3_1();
     int Start7_3_1_1();
     int Start7_3_2();
@@ -236,6 +232,7 @@ private:
     int Start7_3_4_17();
     int Start7_3_4_18();
     int Start7_3_5();
+    int ShowScheme();
     int SaveUeff();
     int ShowRetomDialog(double U, double I, double Y);
     int SetNewTuneCoefs(); // заполнение Bac_newblock, чтобы не было пурги после настройки
@@ -268,7 +265,6 @@ private slots:
 
     int TuneChannel();
     void ReadN();
-    // void SetTuneMode();
     int ReadAnalogMeasurements();
     void SetExtData();
     void CancelExtData();

@@ -4,7 +4,6 @@
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
 #include "../widgets/ecombobox.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
@@ -21,7 +20,7 @@
 
 ConfDialogKDV::ConfDialogKDV(QVector<S2::DataRec> *S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {
-    QString tmps = "QDialog {background-color: " + QString(ACONFCLR) + ";}";
+    QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
     this->S2Config = S2Config;
     KDV = new ConfigKDV(S2Config);
@@ -48,7 +47,7 @@ void ConfDialogKDV::SetupUI()
     QWidget *Leftconf = new QWidget;
     QWidget *time = new QWidget;
     QWidget *link = new QWidget;
-    QString tmps = "QWidget {background-color: " + QString(ACONFWCLR) + ";}";
+    QString tmps = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
     analog1->setStyleSheet(tmps);
     analog2->setStyleSheet(tmps);
     extraconf->setStyleSheet(tmps);
@@ -69,7 +68,7 @@ void ConfDialogKDV::SetupUI()
     scrArea->setFrameShape(QFrame::NoFrame);
     scrArea->setWidgetResizable(true);
 
-    QString paramcolor = MAINWINCLR;
+    QString paramcolor = Colors::MAINWINCLR;
     QFont font;
 
     QGroupBox *gb = new QGroupBox;
@@ -334,9 +333,9 @@ void ConfDialogKDV::SetupUI()
 
     row++;
     gridlyout->addWidget(WDFunc::NewLBL(this, "Запуск осциллограммы:"), row, 1, 1, 1);
-    hlyout->addWidget(WDFunc::NewChB(this, "oscchb.0", "по команде Ц", ACONFWCLR));
-    //    hlyout->addWidget(WDFunc::NewChB(this, "oscchb.1", "по дискр. входу PD1", ACONFWCLR));
-    hlyout->addWidget(WDFunc::NewChB(this, "oscchb.2", "по резкому изменению", ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewChB(this, "oscchb.0", "по команде Ц", Colors::ACONFWCLR));
+    //    hlyout->addWidget(WDFunc::NewChB(this, "oscchb.1", "по дискр. входу PD1", Colors::ACONFWCLR));
+    hlyout->addWidget(WDFunc::NewChB(this, "oscchb.2", "по резкому изменению", Colors::ACONFWCLR));
     gridlyout->addLayout(hlyout, row, 2, 1, 3);
 
     row++;
@@ -427,7 +426,7 @@ void ConfDialogKDV::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
-    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(TABCOLOR) + ";}";
+    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLOR) + ";}";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
     ConfTW->addTab(Analog_area, "Аналоговые");
 
@@ -592,9 +591,7 @@ void ConfDialogKDV::FillBack()
     ConfKxx->FillBack();
 }
 
-void ConfDialogKDV::CheckConf()
-{
-}
+void ConfDialogKDV::CheckConf() { }
 
 void ConfDialogKDV::SetDefConf()
 {
@@ -604,12 +601,6 @@ void ConfDialogKDV::SetDefConf()
     Fill();
 }
 
-void ConfDialogKDV::Start_Timer()
-{
-    timerRead->start(1000);
-}
+void ConfDialogKDV::Start_Timer() { timerRead->start(1000); }
 
-void ConfDialogKDV::Stop_Timer()
-{
-    timerRead->stop();
-}
+void ConfDialogKDV::Stop_Timer() { timerRead->stop(); }

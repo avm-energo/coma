@@ -9,7 +9,6 @@
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../usb/commands.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/etableview.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
@@ -104,11 +103,11 @@ void fwupdialog::RunSoft()
         if (res != NOERROR)
         {
             WARNMSG("Ошибка перехода на новое ПО");
-            EMessageBox::information(this, "Ошибка", "Ошибка");
+            QMessageBox::information(this, "Ошибка", "Ошибка");
         }
         else
         {
-            EMessageBox::information(this, "Успешно", "Переход на новое ПО выполнен успешно");
+            QMessageBox::information(this, "Успешно", "Переход на новое ПО выполнен успешно");
         }
     }
 }
@@ -127,7 +126,7 @@ int fwupdialog::WriteCheckPassword()
         return GENERALERROR;
     if (!ok)
     {
-        EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
+        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
         return GENERALERROR;
     }
     return NOERROR;
@@ -368,10 +367,10 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
 
     if (Commands::WriteFile(3, &S2DR) != NOERROR)
     {
-        EMessageBox::information(this, "Ошибка", "Ошибка записи в модуль!");
+        QMessageBox::information(this, "Ошибка", "Ошибка записи в модуль!");
         return GENERALERROR;
     }
-    EMessageBox::information(this, "Успешно", "Загрузка ПО версии " + st + " прошла успешно!");
+    QMessageBox::information(this, "Успешно", "Загрузка ПО версии " + st + " прошла успешно!");
     return NOERROR;
 
     return NOERROR;

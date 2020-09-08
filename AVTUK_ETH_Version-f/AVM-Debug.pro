@@ -22,7 +22,7 @@ DEFINES += SOFTDEVELOPER='\\"EvelSoft\\"'
 # DEFINES += QT_DEPRECATED_WARNINGS
 # DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
-DEFINES += AVM-DEBUG
+DEFINES += AVM_DEBUG
 TEMPLATE = app
 
 
@@ -64,6 +64,8 @@ SOURCES += \
     ../gen/logclass.cpp \
     ../gen/maindef.cpp \
     ../modbus/serialport.cpp \
+    ../models/checkdelegate.cpp \
+    ../models/valuemodel.cpp \
     ../tune/eabstracttunedialog.cpp \
     ../tune/tunedialogKIV.cpp \
     ../usb/eprotocom.cpp \
@@ -96,7 +98,6 @@ SOURCES += \
     ../modbus/modbus.cpp \
     ../usb/commands.cpp \
     ../widgets/ecombobox.cpp \
-    ../widgets/emessagebox.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/estackedwidget.cpp \
     ../widgets/etableview.cpp \
@@ -144,6 +145,8 @@ HEADERS += \
     ../gen/journals.h \
     ../gen/logclass.h \
     ../modbus/serialport.h \
+    ../models/checkdelegate.h \
+    ../models/valuemodel.h \
     ../tune/eabstracttunedialog.h \
     ../tune/tunedialogKIV.h \
     ../usb/defines.h \
@@ -177,7 +180,6 @@ HEADERS += \
     ../models/getoscpbdelegate.h \
     ../usb/commands.h \
     ../widgets/ecombobox.h \
-    ../widgets/emessagebox.h \
     ../widgets/errorprotocolwidget.h \
     ../widgets/estackedwidget.h \
     ../widgets/etableview.h \

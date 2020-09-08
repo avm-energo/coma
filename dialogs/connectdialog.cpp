@@ -4,9 +4,9 @@
 #include "../gen/maindef.h"
 #include "../models/etablemodel.h"
 #include "../usb/eprotocom.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
+#include <QMessageBox>
 #include <QSerialPortInfo>
 #include <QSettings>
 #include <QVBoxLayout>
@@ -139,7 +139,7 @@ void ConnectDialog::EthAccepted()
         // check if there's such name in registry
         if (IsKeyExist("Ethernet-", name))
         {
-            EMessageBox::error(this, "Ошибка", "Такое имя уже имеется");
+            QMessageBox::critical(this, "Ошибка", "Такое имя уже имеется");
             return;
         }
         QString ipstr = WDFunc::LEData(dlg, "iple.0") + "." + WDFunc::LEData(dlg, "iple.1") + "."
@@ -168,7 +168,7 @@ void ConnectDialog::RsAccepted()
         // check if there's such name in registry
         if (IsKeyExist("RS485-", name))
         {
-            EMessageBox::error(this, "Ошибка", "Такое имя уже имеется");
+            QMessageBox::critical(this, "Ошибка", "Такое имя уже имеется");
             return;
         }
         RotateSettings("RS485-", name);
@@ -332,7 +332,7 @@ bool ConnectDialog::UpdateModel()
 
             if (USBsl.size() == 0)
             {
-                EMessageBox::error(this, "Ошибка", "Устройства не найдены");
+                QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
                 Error::ShowErMsg(CN_NOPORTSERROR);
                 return false;
             }

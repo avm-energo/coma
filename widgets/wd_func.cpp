@@ -127,7 +127,7 @@ bool WDFunc::SetLBLTColor(QWidget *w, const QString &lblname, const QString &col
     // cb->setPalette(pal);
 
     /*QPalette t_palette = lblt->palette();
-    t_palette.setColor(QPalette::Background, QColor(TABCOLORA1));
+    t_palette.setColor(QPalette::Background, QColor(Colors::TABCOLORA1));
     lblt->setPalette(t_palette);*/
     return true;
 }

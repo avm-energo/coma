@@ -22,10 +22,10 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
     Alarm = alarm;
 
     QMenu *menu = new QMenu;
-    QString tmps = "QMenuBar {background-color: " + QString(MAINWINCLR)
+    QString tmps = "QMenuBar {background-color: " + QString(Colors::MAINWINCLR)
         + ";}"
           "QMenuBar::item {background-color: "
-        + QString(MAINWINCLR) + ";}";
+        + QString(Colors::MAINWINCLR) + ";}";
     menu->setStyleSheet(tmps);
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -33,7 +33,7 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
     QStringList Discription = QStringList() << "Состояние устройства"
                                             << "Предупредительная сигнализация"
                                             << "Аварийная сигнализация";
-    setStyleSheet("QComa {background-color: " + QString(MAINWINCLR) + ";}");
+    setStyleSheet("QComa {background-color: " + QString(Colors::MAINWINCLR) + ";}");
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
 
     QPushButton *pb = new QPushButton("Состояние устройства");

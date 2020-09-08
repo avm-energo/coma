@@ -2,18 +2,15 @@
 
 #include "../config/config.h"
 #include "../usb/commands.h"
-#include "../widgets/emessagebox.h"
 #include "error.h"
 #include "stdfunc.h"
+#include <QMessageBox>
 
 quint32 ModuleBSI::MType = 0;
 ModuleBSI::Bsi ModuleBSI::ModuleBsi;
 QString ModuleBSI::ModuleTypeString = "";
 
-ModuleBSI::ModuleBSI()
-{
-    ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
-}
+ModuleBSI::ModuleBSI() { ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF; }
 
 int ModuleBSI::SetupBSI()
 {
@@ -39,20 +36,11 @@ int ModuleBSI::SetupBSI()
     return NOERROR;
 }
 
-QString ModuleBSI::GetModuleTypeString()
-{
-    return ModuleTypeString;
-}
+QString ModuleBSI::GetModuleTypeString() { return ModuleTypeString; }
 
-quint32 ModuleBSI::GetMType(BoardTypes type)
-{
-    return (type == BT_MEZONIN) ? ModuleBsi.MTypeM : ModuleBsi.MTypeB;
-}
+quint32 ModuleBSI::GetMType(BoardTypes type) { return (type == BT_MEZONIN) ? ModuleBsi.MTypeM : ModuleBsi.MTypeB; }
 
-quint32 ModuleBSI::Health()
-{
-    return ModuleBsi.Hth;
-}
+quint32 ModuleBSI::Health() { return ModuleBsi.Hth; }
 
 quint32 ModuleBSI::SerialNum(BoardTypes type)
 {
@@ -73,10 +61,7 @@ ModuleBSI::Bsi ModuleBSI::GetBsi()
     return bsi;
 }
 
-quint32 ModuleBSI::GetHealth()
-{
-    return ModuleBsi.Hth;
-}
+quint32 ModuleBSI::GetHealth() { return ModuleBsi.Hth; }
 
 bool ModuleBSI::IsKnownModule()
 {
@@ -117,7 +102,7 @@ int ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
         if ((res = Commands::GetFileWithRestore(1, S2Config)) != NOERROR)
         {
             QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля " : "прибора ");
-            EMessageBox::error(w, "ошибка", "Ошибка чтения конфигурации из " + tmps);
+            QMessageBox::critical(w, "ошибка", "Ошибка чтения конфигурации из " + tmps);
             return GENERALERROR;
         }
     }

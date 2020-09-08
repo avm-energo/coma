@@ -7,16 +7,16 @@ ConfDialogKxx::ConfDialogKxx(QVector<S2::DataRec> *S2Config, QWidget *parent) : 
     ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; "
                    "padding: 1px; color: black;"
                    "background-color: "
-        + QString(ACONFOCLR) + "; font: bold 10px;}";
-    WidgetFormat = "QWidget {background-color: " + QString(ACONFWCLR) + ";}";
-    // QString tmps = "QWidget {background-color: " + QString(ACONFWCLR) + ";}";
+        + QString(Colors::ACONFOCLR) + "; font: bold 10px;}";
+    WidgetFormat = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
+    // QString tmps = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
 }
 
 QWidget *ConfDialogKxx::SetupComParam(QObject *parent)
 {
     ParentSetup = parent;
     QWidget *w = new QWidget;
-    QString paramcolor = MAINWINCLR;
+    QString paramcolor = Colors::MAINWINCLR;
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
@@ -97,7 +97,7 @@ QWidget *ConfDialogKxx::SetupModBus(QObject *parent)
 {
     ParentMB = parent;
     QWidget *w = new QWidget;
-    QString paramcolor = MAINWINCLR;
+    QString paramcolor = Colors::MAINWINCLR;
     QStackedWidget *qswt = new QStackedWidget;
     qswt->setObjectName("qswt");
     QVBoxLayout *vlyout1 = new QVBoxLayout;
@@ -292,7 +292,7 @@ QWidget *ConfDialogKxx::SetupBl(QObject *parent)
 {
     ParentSetupBl = parent;
     int row = 0;
-    QString paramcolor = MAINWINCLR;
+    QString paramcolor = Colors::MAINWINCLR;
     QWidget *w = new QWidget;
     QGroupBox *gb = new QGroupBox();
     QGridLayout *glyout = new QGridLayout;

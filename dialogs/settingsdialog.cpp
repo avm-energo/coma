@@ -30,7 +30,7 @@ void SettingsDialog::SetupUI()
     QHBoxLayout *hlyout = new QHBoxLayout;
     hlyout->addWidget(WDFunc::NewChB(this, "writelogchb", "Запись обмена данными в файл"));
     vlyout->addLayout(hlyout);
-    pb = new QPushButton("Готово");
+    QPushButton *pb = new QPushButton("Готово");
     connect(pb, SIGNAL(clicked()), this, SLOT(AcceptSettings()));
     vlyout->addWidget(pb);
     setLayout(vlyout);
@@ -45,6 +45,8 @@ void SettingsDialog::Fill()
 void SettingsDialog::AcceptSettings()
 {
     bool tmpb;
+    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
+
     WDFunc::ChBData(this, "writelogchb", tmpb);
     sets->setValue("WriteLog", (tmpb) ? "1" : "0");
     this->close();

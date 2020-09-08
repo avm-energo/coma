@@ -5,7 +5,6 @@
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
 #include "../usb/commands.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
@@ -25,7 +24,7 @@
 CheckDialogHarmonicKDV::CheckDialogHarmonicKDV(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {
 
-    QString tmps = "QDialog {background-color: " + QString(UCONFCLR) + ";}";
+    QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
     QStringList sl;
     BdNum = 12;
@@ -81,15 +80,9 @@ QWidget *CheckDialogHarmonicKDV::BdUI(int bdnum)
         return new QWidget;
     }
 }
-void CheckDialogHarmonicKDV::RefreshAnalogValues(int bdnum)
-{
-    Q_UNUSED(bdnum)
-}
+void CheckDialogHarmonicKDV::RefreshAnalogValues(int bdnum) { Q_UNUSED(bdnum) }
 
-void CheckDialogHarmonicKDV::PrepareHeadersForFile(int row)
-{
-    Q_UNUSED(row)
-}
+void CheckDialogHarmonicKDV::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
 
 void CheckDialogHarmonicKDV::WriteToFile(int row, int bdnum)
 {
@@ -112,25 +105,13 @@ QWidget *CheckDialogHarmonicKDV::CustomTab()
     //    w->setLayout(lyout);
     return nullptr;
 }
-void CheckDialogHarmonicKDV::ChooseValuesToWrite()
-{
-}
-void CheckDialogHarmonicKDV::SetDefaultValuesToWrite()
-{
-}
-void CheckDialogHarmonicKDV::PrepareAnalogMeasurements()
-{
-}
+void CheckDialogHarmonicKDV::ChooseValuesToWrite() { }
+void CheckDialogHarmonicKDV::SetDefaultValuesToWrite() { }
+void CheckDialogHarmonicKDV::PrepareAnalogMeasurements() { }
 
-void CheckDialogHarmonicKDV::StartBdMeasurements()
-{
-    BdTimer->start();
-}
+void CheckDialogHarmonicKDV::StartBdMeasurements() { BdTimer->start(); }
 
-void CheckDialogHarmonicKDV::StopBdMeasurements()
-{
-    BdTimer->stop();
-}
+void CheckDialogHarmonicKDV::StopBdMeasurements() { BdTimer->stop(); }
 
 void CheckDialogHarmonicKDV::USBUpdate()
 {
@@ -157,10 +138,7 @@ void CheckDialogHarmonicKDV::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
     }
 }
 
-void CheckDialogHarmonicKDV::UpdateSponData(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal);
-}
+void CheckDialogHarmonicKDV::UpdateSponData(IEC104Thread::SponSignals *Signal) { Q_UNUSED(Signal); }
 
 void CheckDialogHarmonicKDV::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
@@ -182,15 +160,9 @@ void CheckDialogHarmonicKDV::UpdateModBusData(QList<ModBus::SignalStruct> Signal
 void CheckDialogHarmonicKDV::onModbusStateChanged(ConnectionStates state)
 {
     if (state == ConnectionStates::ConnectedState)
-        EMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
+        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 
-void CheckDialogHarmonicKDV::SetPredAlarmColor(quint8 *PredAlarm)
-{
-    Q_UNUSED(PredAlarm);
-}
+void CheckDialogHarmonicKDV::SetPredAlarmColor(quint8 *PredAlarm) { Q_UNUSED(PredAlarm); }
 
-void CheckDialogHarmonicKDV::SetAlarmColor(quint8 *Alarm)
-{
-    Q_UNUSED(Alarm);
-}
+void CheckDialogHarmonicKDV::SetAlarmColor(quint8 *Alarm) { Q_UNUSED(Alarm); }

@@ -4,7 +4,6 @@
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
 #include "../widgets/ecombobox.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
@@ -21,7 +20,7 @@
 
 ConfDialogKTF::ConfDialogKTF(QVector<S2::DataRec> *S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {
-    QString tmps = "QDialog {background-color: " + QString(ACONFCLR) + ";}";
+    QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
     this->S2Config = S2Config;
     KTF = new ConfigKTF(S2Config);
@@ -33,14 +32,9 @@ ConfDialogKTF::ConfDialogKTF(QVector<S2::DataRec> *S2Config, QWidget *parent) : 
     PrereadConf();
 }
 
-ConfDialogKTF::~ConfDialogKTF()
-{
-}
+ConfDialogKTF::~ConfDialogKTF() { }
 
-int ConfDialogKTF::getRCount()
-{
-    return KTF->Bci_block.TdatNum;
-}
+int ConfDialogKTF::getRCount() { return KTF->Bci_block.TdatNum; }
 
 void ConfDialogKTF::SetupUI()
 {
@@ -57,7 +51,7 @@ void ConfDialogKTF::SetupUI()
     QWidget *link = new QWidget;
     QWidget *other = new QWidget;
 
-    QString tmps = "QWidget {background-color: " + QString(ACONFWCLR) + ";}";
+    QString tmps = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
     analog->setStyleSheet(tmps);
     transf->setStyleSheet(tmps);
     alarm->setStyleSheet(tmps);
@@ -79,7 +73,7 @@ void ConfDialogKTF::SetupUI()
 
     // myDateTime.setTime_t(unixtimestamp);
 
-    QString paramcolor = MAINWINCLR;
+    QString paramcolor = Colors::MAINWINCLR;
     QFont font;
 
     QGroupBox *gb = new QGroupBox;
@@ -339,7 +333,7 @@ void ConfDialogKTF::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
-    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(TABCOLOR) + ";}";
+    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLOR) + ";}";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
     ConfTW->addTab(analog, "Аналоговые");
     ConfTW->addTab(transf, "Трансформатор");
@@ -472,9 +466,7 @@ void ConfDialogKTF::FillBack()
     ConfKxx->FillBack();
 }
 
-void ConfDialogKTF::CheckConf()
-{
-}
+void ConfDialogKTF::CheckConf() { }
 
 void ConfDialogKTF::SetDefConf()
 {
@@ -484,12 +476,6 @@ void ConfDialogKTF::SetDefConf()
     Fill();
 }
 
-void ConfDialogKTF::Start_Timer()
-{
-    timerRead->start(1000);
-}
+void ConfDialogKTF::Start_Timer() { timerRead->start(1000); }
 
-void ConfDialogKTF::Stop_Timer()
-{
-    timerRead->stop();
-}
+void ConfDialogKTF::Stop_Timer() { timerRead->stop(); }

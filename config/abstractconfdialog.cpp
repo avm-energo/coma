@@ -9,19 +9,17 @@
 #include "../gen/timefunc.h"
 #include "../iec104/iec104.h"
 #include "../usb/commands.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QGridLayout>
 #include <QGroupBox>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QTextEdit>
 
-AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
-{
-}
+AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent) { }
 
 // void AbstractConfDialog::ReadConf(int index)
 void AbstractConfDialog::ReadConf()
@@ -78,10 +76,10 @@ void AbstractConfDialog::WriteConf()
             if ((res = Commands::WriteFile(1, S2Config)) == NOERROR)
             {
                 emit BsiIsNeedToBeAcquiredAndChecked();
-                EMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
+                QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
             }
             else
-                EMessageBox::error(this, "Ошибка", "Ошибка записи конфигурации" + QString::number(res));
+                QMessageBox::critical(this, "Ошибка", "Ошибка записи конфигурации" + QString::number(res));
         }
     }
 }
@@ -100,7 +98,7 @@ int AbstractConfDialog::WriteCheckPassword()
         return GENERALERROR;
     if (!ok)
     {
-        EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
+        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
         return GENERALERROR;
     }
     return NOERROR;
@@ -135,7 +133,7 @@ void AbstractConfDialog::SaveConfToFile()
     switch (res)
     {
     case Files::ER_NOERROR:
-        EMessageBox::information(this, "Внимание", "Записано успешно!");
+        QMessageBox::information(this, "Внимание", "Записано успешно!");
         break;
     case Files::ER_FILEWRITE:
         ERMSG("Ошибка при записи файла!");
@@ -166,7 +164,7 @@ void AbstractConfDialog::LoadConfFromFile()
         return;
     }
     emit NewConfToBeLoaded();
-    EMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
+    QMessageBox::information(this, "Успешно", "Загрузка прошла успешно!");
 }
 
 QWidget *AbstractConfDialog::ConfButtons()
@@ -233,8 +231,8 @@ void AbstractConfDialog::PrereadConf()
     if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить
                                                                             // поля по умолчанию
         IsNeededDefConf = true; // emit LoadDefConf();
-    else                        // иначе заполнить значениями из модуля
-                                //        ReadConf(confIndex);
+    else // иначе заполнить значениями из модуля
+         //        ReadConf(confIndex);
         ReadConf();
 }
 
@@ -280,5 +278,5 @@ bool AbstractConfDialog::PrepareConfToWrite()
 
 void AbstractConfDialog::WriteConfMessageOk()
 {
-    EMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
+    QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
 }

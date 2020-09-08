@@ -9,7 +9,6 @@
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../usb/commands.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
@@ -30,14 +29,9 @@
 #include <QTabWidget>
 #include <QVBoxLayout>
 
-AbstractCorDialog::AbstractCorDialog(QWidget *parent) : QDialog(parent)
-{
-}
+AbstractCorDialog::AbstractCorDialog(QWidget *parent) : QDialog(parent) { }
 
-void AbstractCorDialog::GetCorBd(int index)
-{
-    Q_UNUSED(index);
-}
+void AbstractCorDialog::GetCorBd(int index) { Q_UNUSED(index); }
 
 void AbstractCorDialog::SetCor()
 {
@@ -48,9 +42,9 @@ void AbstractCorDialog::SetCor()
     else if (MainInterface == I_USB)
     {
         if (Commands::WriteCom(4) == NOERROR)
-            EMessageBox::information(this, "INFO", "Записано успешно");
+            QMessageBox::information(this, "INFO", "Записано успешно");
         else
-            EMessageBox::information(this, "INFO", "Ошибка");
+            QMessageBox::information(this, "INFO", "Ошибка");
     }
 }
 
@@ -67,10 +61,7 @@ float AbstractCorDialog::ToFloat(QString text)
     return tmpf;
 }
 
-void AbstractCorDialog::MessageOk()
-{
-    EMessageBox::information(this, "INFO", "Записано успешно");
-}
+void AbstractCorDialog::MessageOk() { QMessageBox::information(this, "INFO", "Записано успешно"); }
 
 void AbstractCorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
 {
@@ -87,7 +78,7 @@ void AbstractCorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
         }
 
         if (first)
-            EMessageBox::information(this, "INFO", "Прочитано успешно");
+            QMessageBox::information(this, "INFO", "Прочитано успешно");
         else
             first = 1;
     }
@@ -113,7 +104,7 @@ void AbstractCorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
             {
                 FillBd(this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal));
             }
-            EMessageBox::information(this, "INFO", "Прочитано успешно");
+            QMessageBox::information(this, "INFO", "Прочитано успешно");
         }
     }
 }
@@ -133,7 +124,7 @@ int AbstractCorDialog::WriteCheckPassword()
         return GENERALERROR;
     if (!ok)
     {
-        EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
+        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
         return GENERALERROR;
     }
     return NOERROR;
@@ -147,12 +138,6 @@ void AbstractCorDialog::WritePasswordCheck(QString psw)
     emit WritePasswordChecked();
 }
 
-void AbstractCorDialog::TimerTimeout()
-{
-    MessageTimer->stop();
-}
+void AbstractCorDialog::TimerTimeout() { MessageTimer->stop(); }
 
-void AbstractCorDialog::ErrorRead()
-{
-    EMessageBox::information(this, "Ошибка", "Ошибка чтения");
-}
+void AbstractCorDialog::ErrorRead() { QMessageBox::information(this, "Ошибка", "Ошибка чтения"); }

@@ -24,7 +24,7 @@ void ErrorDialog::SetupUI()
     QHBoxLayout *hlyout = new QHBoxLayout;
     ErrorWidget = new ErrorProtocolWidget;
     ErrorWidget->setObjectName("errorwidget");
-    QString ErrWss = "QWidget {background-color: " + QString(ERPROTCLR) + ";}";
+    QString ErrWss = "QWidget {background-color: " + QString(Colors::ERPROTCLR) + ";}";
     ErrorWidget->setStyleSheet(ErrWss);
     ErrorWidget->setAutoFillBackground(true);
     lyout->addWidget(ErrorWidget);
