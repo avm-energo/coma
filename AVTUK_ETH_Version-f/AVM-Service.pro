@@ -218,6 +218,7 @@ equals(QMAKE_PLATFORM, win32)
        LIBS_FILES += \
        $$PWD/../../libs/win64/release/hidapi.dll \
        $$PWD/../../libs/win64/release/liblzma.dll \
+       $$PWD/../../libs/win64/release/QtZint.dll \
        $$PWD/../../libs/win64/release/limereport.dll
        }
     } else {
@@ -232,6 +233,7 @@ equals(QMAKE_PLATFORM, win32)
         LIBS_FILES += \
         $$PWD/../../libs/win32/release/hidapi.dll \
         $$PWD/../../libs/win32/release/liblzma.dll \
+        $$PWD/../../libs/win32/release/QtZint.dll \
         $$PWD/../../libs/win32/release/limereport.dll
         }
     }
