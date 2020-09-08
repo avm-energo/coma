@@ -404,8 +404,6 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
     QXlsx::CellReference cellDate(3, 1);
     QXlsx::CellReference cellTime(4, 1);
 
-    // workSheet->setColumnWidth();
-
     workSheet->writeString(cellJourType, jourtypestr);
 
     workSheet->writeString(cellModuleType, "Модуль: ");
@@ -429,7 +427,6 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
     {
         QXlsx::CellReference cellHeader(5, i + 1);
         QString tempString = pmdl->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString();
-        qDebug() << tempString << " : " << tempString.length();
         if (tempString.length() > 10)
         {
             if (!doc->setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 2))
@@ -439,13 +436,11 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
                     qDebug("Couldnt change column width");
         }
         else
-
         {
             if (!doc->setColumnWidth(cellHeader.column(), cellHeader.column(), 8 * sqrt(tempString.length() / 3)))
                 qDebug("Couldnt change column width");
         }
         workSheet->writeString(cellHeader, tempString);
-        qDebug() << workSheet->columnWidth(cellHeader.column()) << doc->columnWidth(cellHeader.column());
     }
     // теперь по всем строкам модели пишем данные
     emit resendMaxResult(pmdl->rowCount());
