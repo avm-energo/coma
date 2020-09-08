@@ -404,6 +404,8 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
     QXlsx::CellReference cellDate(3, 1);
     QXlsx::CellReference cellTime(4, 1);
 
+    // workSheet->setColumnWidth();
+
     workSheet->writeString(cellJourType, jourtypestr);
 
     workSheet->writeString(cellModuleType, "Модуль: ");
@@ -414,11 +416,11 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
     cellModuleType.setColumn(4);
     workSheet->writeString(cellModuleType, QString::number(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 16));
 
-    workSheet->writeString(cellDate, "Дата сохранения журнала: ");
+    workSheet->writeString(cellDate, "Дата: ");
     cellDate.setColumn(2);
     workSheet->writeDate(cellDate, QDate::currentDate());
 
-    workSheet->writeString(cellTime, "Время сохранения журнала: ");
+    workSheet->writeString(cellTime, "Время: ");
     cellTime.setColumn(2);
     workSheet->writeTime(cellTime, QTime::currentTime());
 
@@ -426,11 +428,30 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
     for (int i = 0; i < pmdl->columnCount(); ++i)
     {
         QXlsx::CellReference cellHeader(5, i + 1);
-        workSheet->writeString(cellHeader, pmdl->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString());
+        QString tempString = pmdl->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString();
+        qDebug() << tempString << " : " << tempString.length();
+        if (tempString.length() > 10)
+        {
+            if (!doc->setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 2))
+                qDebug("Couldnt change column width");
+            if (tempString.contains("Описание"))
+                if (!doc->setColumnWidth(cellHeader.column(), cellHeader.column(), tempString.length() * 4))
+                    qDebug("Couldnt change column width");
+        }
+        else
+
+        {
+            if (!doc->setColumnWidth(cellHeader.column(), cellHeader.column(), 8 * sqrt(tempString.length() / 3)))
+                qDebug("Couldnt change column width");
+        }
+        workSheet->writeString(cellHeader, tempString);
+        qDebug() << workSheet->columnWidth(cellHeader.column()) << doc->columnWidth(cellHeader.column());
     }
     // теперь по всем строкам модели пишем данные
+    emit resendMaxResult(pmdl->rowCount());
     for (int i = 0; i < pmdl->rowCount(); ++i)
     {
+
         QXlsx::CellReference currentCell(6 + i, 1);
         // номер события
         workSheet->writeNumeric(currentCell, pmdl->data(pmdl->index(i, 0), Qt::DisplayRole).toInt());
@@ -438,8 +459,10 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
         currentCell.setColumn(2);
         // время события
         workSheet->writeString(currentCell, pmdl->data(pmdl->index(i, 1), Qt::DisplayRole).toString());
+
         for (int j = 2; j < pmdl->columnCount(); ++j)
         {
+
             currentCell.setColumn(1 + j);
             QVariant value = pmdl->data(pmdl->index(i, 1), Qt::DisplayRole);
             switch (value.type())
@@ -459,7 +482,11 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
                 break;
             }
         }
+        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+        emit resendResult(i);
     }
+
     doc->save();
+    emit resendResult(pmdl->rowCount());
     emit Done("Файл создан успешно", _jourType);
 }

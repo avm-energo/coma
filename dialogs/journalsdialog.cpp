@@ -302,6 +302,8 @@ void JournalDialog::SaveJour()
     // WW = new WaitWidget;
     // WW->SetMessage("Запись файла...");
     // WW->Start();
+    connect(JourFuncs, &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
+    connect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
     emit StartSaveJour(jtype, amdl, filename);
 }
 

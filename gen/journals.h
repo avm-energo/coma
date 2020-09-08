@@ -185,7 +185,7 @@ private:
         << "Сигнализация по опасному уровню пускового тока"
         << "Аварийное сообщение по недопустимому уровню пускового тока";
 
-    const QStringList MeasJourKTFHeaders = QStringList() << "Номер события"
+    const QStringList MeasJourKTFHeaders = QStringList() << " № "
                                                          << "Дата/Время UTC"
                                                          << "Ueff фA"
                                                          << "Ueff фB"
@@ -217,7 +217,7 @@ private:
                                                          << "Tamb,°С"
                                                          << "Twin,°С";
 
-    const QStringList MeasJourHeaders = QStringList() << "Номер события"
+    const QStringList MeasJourHeaders = QStringList() << " № "
                                                       << "Дата/Время UTC"
                                                       << "Ueff фA"
                                                       << "Ueff фB"
