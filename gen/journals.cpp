@@ -3,20 +3,20 @@
 #include "../config/config.h"
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
-#include "QtXlsx/xlsxdocument.h"
 #include "error.h"
 #include "files.h"
 #include "maindef.h"
 #include "s2.h"
 #include "timefunc.h"
+#include "xlsxdocument.h"
 
-#include <QAbstractItemModelTester>
+//#include <QAbstractItemModelTester>
 #include <QApplication>
 #include <QDate>
+#include <QDebug>
 #include <QFile>
-#include <QFuture>
 #include <QObject>
-#include <QtConcurrent/QtConcurrentRun>
+#include <QVariant>
 
 Journals::Journals(QObject *parent) : QObject(parent)
 {
@@ -373,24 +373,20 @@ void Journals::StartGetJour()
 void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filename)
 {
     QString jourtypestr;
-    QXlsx::Format cellformat;
     Qt::SortOrder order = Qt::AscendingOrder;
     switch (jtype)
     {
     case Journals::JOURSYS:
         jourtypestr = "Системный журнал";
         order = Qt::DescendingOrder;
-        cellformat.setNumberFormat("@");
         break;
     case Journals::JOURMEAS:
         jourtypestr = "Журнал измерений";
         order = Qt::AscendingOrder;
-        cellformat.setNumberFormat("#.####");
         break;
     case Journals::JOURWORK:
         jourtypestr = "Журнал событий";
         order = Qt::DescendingOrder;
-        cellformat.setNumberFormat("@");
         break;
     default:
         break;
@@ -400,33 +396,70 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
     ETableModel *mdl = static_cast<ETableModel *>(pmdl->sourceModel());
     int dateidx = mdl->headerPosition("Дата/Время UTC");
     pmdl->sort(dateidx, order);
-    QXlsx::Document *xlsx = new QXlsx::Document(filename);
-    xlsx->write(1, 1, QVariant(jourtypestr));
-    xlsx->write(2, 1,
-        QVariant("Модуль: " + ModuleBSI::GetModuleTypeString() + " сер. ном. "
-            + QString::number(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 10)));
-    xlsx->write(3, 1, QVariant("Дата сохранения журнала: " + QDateTime::currentDateTime().toString("dd-MM-yyyy")));
-    xlsx->write(4, 1, QVariant("Время сохранения журнала: " + QDateTime::currentDateTime().toString("hh:mm:ss")));
+    QXlsx::Document *doc = new QXlsx::Document(filename);
+    QXlsx::Worksheet *workSheet = doc->currentWorksheet();
+
+    QXlsx::CellReference cellJourType(1, 1);
+    QXlsx::CellReference cellModuleType(2, 1);
+    QXlsx::CellReference cellDate(3, 1);
+    QXlsx::CellReference cellTime(4, 1);
+
+    workSheet->writeString(cellJourType, jourtypestr);
+
+    workSheet->writeString(cellModuleType, "Модуль: ");
+    cellModuleType.setColumn(2);
+    workSheet->writeString(cellModuleType, ModuleBSI::GetModuleTypeString());
+    cellModuleType.setColumn(3);
+    workSheet->writeString(cellModuleType, "сер. ном. ");
+    cellModuleType.setColumn(4);
+    workSheet->writeString(cellModuleType, QString::number(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 16));
+
+    workSheet->writeString(cellDate, "Дата сохранения журнала: ");
+    cellDate.setColumn(2);
+    workSheet->writeDate(cellDate, QDate::currentDate());
+
+    workSheet->writeString(cellTime, "Время сохранения журнала: ");
+    cellTime.setColumn(2);
+    workSheet->writeTime(cellTime, QTime::currentTime());
 
     // пишем в файл заголовки
     for (int i = 0; i < pmdl->columnCount(); ++i)
-        xlsx->write(5, (i + 1), pmdl->headerData(i, Qt::Horizontal, Qt::DisplayRole));
-
+    {
+        QXlsx::CellReference cellHeader(5, i + 1);
+        workSheet->writeString(cellHeader, pmdl->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString());
+    }
     // теперь по всем строкам модели пишем данные
     for (int i = 0; i < pmdl->rowCount(); ++i)
     {
+        QXlsx::CellReference currentCell(6 + i, 1);
         // номер события
-        xlsx->write((6 + i), 1, pmdl->data(pmdl->index(i, 0), Qt::DisplayRole).toString());
+        workSheet->writeNumeric(currentCell, pmdl->data(pmdl->index(i, 0), Qt::DisplayRole).toInt());
+
+        currentCell.setColumn(2);
         // время события
-        xlsx->write((6 + i), 2, pmdl->data(pmdl->index(i, 1), Qt::DisplayRole).toString());
+        workSheet->writeString(currentCell, pmdl->data(pmdl->index(i, 1), Qt::DisplayRole).toString());
         for (int j = 2; j < pmdl->columnCount(); ++j)
         {
-            /*            float number = ;
-                        QString str = QString::number(number, 'f', 4);
-                        str.replace('.', ','); */
-            xlsx->write((6 + i), (1 + j), pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toFloat(), cellformat);
+            currentCell.setColumn(1 + j);
+            QVariant value = pmdl->data(pmdl->index(i, 1), Qt::DisplayRole);
+            switch (value.type())
+            {
+            case QMetaType::Float:
+                workSheet->writeNumeric(currentCell, pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toFloat());
+                break;
+            case QMetaType::Int:
+                workSheet->writeNumeric(currentCell, pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toInt());
+                break;
+            default:
+                workSheet->writeString(currentCell, pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toString());
+                //                if (pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toString() == "nan")
+                //                    qDebug() << "Not A Number float";
+                //                if (pmdl->data(pmdl->index(i, j), Qt::DisplayRole).toString() == "inf")
+                //                    qDebug() << "Infinitive float";
+                break;
+            }
         }
     }
-    xlsx->save();
+    doc->save();
     emit Done("Файл создан успешно", _jourType);
 }

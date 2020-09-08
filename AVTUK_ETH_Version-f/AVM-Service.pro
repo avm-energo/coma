@@ -196,6 +196,13 @@ ERROR_FILES += \
 
 INCLUDEPATH += $$PWD/../../includes
 
+# QXlsx code for Application Qt project
+QXLSX_PARENTPATH=./../QXlsx/QXlsx         # current QXlsx path is . (. means curret directory)
+QXLSX_HEADERPATH=./../QXlsx/QXlsx/header/  # current QXlsx header path is ./header/
+QXLSX_SOURCEPATH=./../QXlsx/QXlsx/source/  # current QXlsx source path is ./source/
+include(./../QXlsx/QXlsx/QXlsx.pri)
+
+
 equals(QMAKE_PLATFORM, win32)
 {
     LIBS += -luser32
@@ -203,38 +210,34 @@ equals(QMAKE_PLATFORM, win32)
         message("x64 build")
        ## Windows x64 (64bit) specific build here
        CONFIG(debug, debug|release) {
-       LIBS += -L$$PWD/../../libs/win64/debug/ -llimereportd -lliblzma -lhidapi -lqt5xlsxd
+       LIBS += -L$$PWD/../../libs/win64/debug/ -llimereportd -lliblzma -lhidapi
        DESTDIR = $${PWD}/../../build/win64/debug
        } else {
-       LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
+       LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi
        DESTDIR = $${PWD}/../../build/win64/release
        LIBS_FILES += \
        $$PWD/../../libs/win64/release/hidapi.dll \
        $$PWD/../../libs/win64/release/liblzma.dll \
-       $$PWD/../../libs/win64/release/limereport.dll \
-       $$PWD/../../libs/win64/release/Qt5Xlsx.dll \
-       $$PWD/../../libs/win64/release/QtZint.dll
+       $$PWD/../../libs/win64/release/limereport.dll
        }
     } else {
         message("x86 build")
         ## Windows x86 (32bit) specific build here
         CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../../libs/win32/debug/ -llimereportd -lliblzma -lhidapi -lqt5xlsxd
+        LIBS += -L$$PWD/../../libs/win32/debug/ -llimereportd -lliblzma -lhidapi
         DESTDIR = $${PWD}/../../build/win32/debug
         } else {
-        LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi -lqt5xlsx
+        LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi
         DESTDIR = $${PWD}/../../build/win32/release
         LIBS_FILES += \
         $$PWD/../../libs/win32/release/hidapi.dll \
         $$PWD/../../libs/win32/release/liblzma.dll \
-        $$PWD/../../libs/win32/release/limereport.dll \
-        $$PWD/../../libs/win32/release/Qt5Xlsx.dll \
-        $$PWD/../../libs/win32/release/QtZint.dll
+        $$PWD/../../libs/win32/release/limereport.dll
         }
     }
 }
 
-unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereportd -lliblzma -lqt5xlsxd
+unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereportd -lliblzma
 
 
 # copies the given files to the destination directory

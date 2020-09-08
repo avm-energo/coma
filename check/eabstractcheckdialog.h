@@ -17,7 +17,7 @@
 #define EABSTRACTCHECKDIALOG_H
 
 #include "../gen/modulebsi.h"
-#include "QtXlsx/xlsxdocument.h"
+#include "xlsxdocument.h"
 
 #include <QDialog>
 #include <QElapsedTimer>
