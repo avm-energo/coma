@@ -121,18 +121,28 @@ void MNKTime::slot_timeOut()
 
 void MNKTime::slot2_timeOut()
 {
-    uint unixtimestamp = 0;
-    QDateTime myDateTime;
 
-    if (MainInterface == I_USB)
+    // QDateTime myDateTime;
+    switch (Board::GetInstance()->interfaceType())
     {
-        if (Commands::GetTimeMNK(unixtimestamp) == NOERROR)
-            SetTime(unixtimestamp);
-    }
-    else if (MainInterface == I_ETHERNET)
+
+    case Board::InterfaceType::USB:
+        // if (MainInterface == I_USB)
+        {
+            uint unixtimestamp = 0;
+            if (Commands::GetTimeMNK(unixtimestamp) == NOERROR)
+                SetTime(unixtimestamp);
+            break;
+        }
+    case Board::InterfaceType::Ethernet:
+        // else if (MainInterface == I_ETHERNET)
         emit ethTimeRequest();
-    else if (MainInterface == I_RS485)
+        break;
+    case Board::InterfaceType::RS485:
+        // else if (MainInterface == I_RS485)
         emit modBusTimeRequest();
+        break;
+    }
 }
 
 void MNKTime::Write_PCDate()
@@ -149,18 +159,27 @@ void MNKTime::Write_PCDate()
 void MNKTime::WriteTime(QDateTime &myDateTime)
 {
     uint time = myDateTime.toSecsSinceEpoch();
-    if (MainInterface == I_USB)
+    switch (Board::GetInstance()->interfaceType())
     {
-        TimeFunc::Wait(100);
-        if (Commands::WriteTimeMNK(time, sizeof(uint)) != NOERROR)
-            EMessageBox::information(this, "INFO",
-                "Ошибка"); // EMessageBox::information(this,
-                           // "INFO", "Записано успешно");
-    }
-    else if (MainInterface == I_ETHERNET)
+    case Board::InterfaceType::USB:
+        // if (MainInterface == I_USB)
+        {
+            TimeFunc::Wait(100);
+            if (Commands::WriteTimeMNK(time, sizeof(uint)) != NOERROR)
+                EMessageBox::information(this, "INFO",
+                    "Ошибка"); // EMessageBox::information(this,
+                               // "INFO", "Записано успешно");
+            break;
+        }
+    // else if (MainInterface == I_ETHERNET)
+    case Board::InterfaceType::Ethernet:
         emit ethWriteTimeToModule(time);
-    else if (MainInterface == I_RS485)
+        break;
+    case Board::InterfaceType::RS485:
+        // else if (MainInterface == I_RS485)
         emit modbusWriteTimeToModule(time);
+        break;
+    }
 }
 
 void MNKTime::Write_Date()

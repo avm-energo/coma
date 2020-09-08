@@ -41,17 +41,19 @@ void AbstractCorDialog::GetCorBd(int index)
 
 void AbstractCorDialog::SetCor()
 {
-    if (MainInterface == I_ETHERNET)
-    {
+    // if (MainInterface == I_ETHERNET)
+    //{
+    if (Board::GetInstance()->interfaceType() == Board::InterfaceType::Ethernet)
         emit SendCom45(903);
-    }
-    else if (MainInterface == I_USB)
-    {
+    //}
+    // else if (MainInterface == I_USB)
+    else if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+        //   {
         if (Commands::WriteCom(4) == NOERROR)
             EMessageBox::information(this, "INFO", "Записано успешно");
         else
             EMessageBox::information(this, "INFO", "Ошибка");
-    }
+    //    }
 }
 
 float AbstractCorDialog::ToFloat(QString text)

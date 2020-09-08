@@ -47,6 +47,7 @@ enum THREAD
 class Coma : public QMainWindow
 {
     Q_OBJECT
+    Q_PROPERTY(bool connection READ isConnected WRITE setConnected NOTIFY stateChanged)
 
 public:
     enum Modes
@@ -148,6 +149,9 @@ public:
     int number() const;
     void setNumber(int number);
 
+    bool isConnected() const;
+    void setConnected(bool value);
+
 signals:
     void CloseConnectDialog();
     void PasswordChecked();
@@ -155,6 +159,7 @@ signals:
     void Finished();
     void StopCommunications();
     void ConnectMes(QString *);
+    void stateChanged(bool);
 
 public slots:
     void DisconnectAndClear();
@@ -206,7 +211,7 @@ private:
     MNKTime *timeDialog;
 
     bool PasswordValid;
-    bool Disconnected;
+    bool m_connectionState;
     bool TimeThrFinished;
     bool Cancelled;
     bool Reconnect;
@@ -246,6 +251,8 @@ private:
     void CloseDialogs();
     void PrepareDialogs();
     void NewTimersBda();
+    void createStatusBar();
+
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 
     void addConfTab(ETabWidget *MainTW, QString str);

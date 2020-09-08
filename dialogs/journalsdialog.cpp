@@ -237,8 +237,9 @@ void JournalDialog::JourFileChoosed(QString &file)
 
 void JournalDialog::EraseJour()
 {
-    if (MainInterface == I_USB)
-    {
+    // if (MainInterface == I_USB)
+    if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+        //{
         if (WriteCheckPassword() == NOERROR)
         {
             int jourtype = GetJourNum(sender()->objectName());
@@ -258,7 +259,7 @@ void JournalDialog::EraseJour()
                 EMessageBox::information(this, "Ошибка", "Ошибка");
             }
         }
-    }
+    //}
 }
 
 void JournalDialog::SaveJour()
@@ -294,7 +295,10 @@ void JournalDialog::SaveJour()
         EMessageBox::error(this, "Ошибка", "Данные ещё не получены");
         return;
     }
-    jourfilestr += QString::number(MTypeB, 16) + QString::number(MTypeM, 16) + " #"
+    // jourfilestr += QString::number(MTypeB, 16) + QString::number(MTypeM, 16) + " #"
+    //    + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + " ";
+    jourfilestr += QString::number(Board::GetInstance()->typeB(), 16)
+        + QString::number(Board::GetInstance()->typeM(), 16) + " #"
         + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + " ";
     jourfilestr += QDate::currentDate().toString("dd-MM-yyyy") + ".xlsx";
     // запрашиваем имя файла для сохранения
@@ -379,12 +383,12 @@ void JournalDialog::Done(QString msg, int)
 
     // if (WW != nullptr && MainInterface == I_USB)
     //    WW->Stop();
-    if (progress != nullptr && MainInterface == I_USB)
-    {
-        // progress->reset();
-        // MsgBox->close();
-        qDebug() << "Close";
-    }
+    //    if (progress != nullptr && MainInterface == I_USB)
+    //    {
+    //        // progress->reset();
+    //        // MsgBox->close();
+    //        qDebug() << "Close";
+    //    }
     // update();
     disconnect(JourFuncs, &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
     disconnect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
@@ -397,10 +401,10 @@ void JournalDialog::Error(QString msg)
 {
     //    if (WW != nullptr && MainInterface == I_USB)
     //        WW->Stop();
-    if (progress != nullptr && MainInterface == I_USB)
-    {
-        qDebug() << "Error";
-    }
+    //    if (progress != nullptr && MainInterface == I_USB)
+    //    {
+    //        qDebug() << "Error";
+    //    }
     disconnect(JourFuncs, &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
     disconnect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
     ERMSG(msg);

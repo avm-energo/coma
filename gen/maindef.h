@@ -1,15 +1,17 @@
-#ifndef MAINDEF_H
-#define MAINDEF_H
+#pragma once
 
 #define DEVICETYPE_MODULE 1 // модуль
 #define DEVICETYPE_DEVICE 2 // прибор
 
 // interface types
-#define I_UNKNOWN -1
-#define I_USB 0
-#define I_ETHERNET 1
-#define I_RS485 2
+//#define I_UNKNOWN -1
+//#define I_USB 0
+//#define I_ETHERNET 1
+//#define I_RS485 2
 
+#include <QMutex>
+#include <QObject>
+#include <QtCore>
 #include <QtGlobal>
 
 enum BoardTypes
@@ -20,17 +22,123 @@ enum BoardTypes
     BT_BSMZ = 3,
     BT_MODULE = 4
 };
-
 enum ConnectionStates
 {
     ConnectedState,
     ClosingState
 };
+// extern int MainInterface;
+// extern quint32 MTypeB;
+// extern quint32 MTypeM;
 
-extern int MainInterface;
-extern quint32 MTypeB;
-extern quint32 MTypeM;
-// extern int TheEnd;
-// extern int StopRead;
+class Board : public QObject
+{
+    Q_OBJECT
 
-#endif // MAINDEF_H
+public:
+    enum DeviceType
+    {
+        Module,
+        Device
+    };
+
+    enum InterfaceType
+    {
+        Unknown,
+        USB,
+        Ethernet,
+        RS485
+    };
+
+    enum BoardType
+    {
+        NONE = 0,
+        BASE,
+        MEZONIN,
+        BSMZ,
+        MODULE
+    };
+
+    enum DeviceModel
+    {
+        KTF = 0xA287,
+        KIV = 0xA284,
+        KDV = 0xA387
+    };
+
+    enum ConnectionState
+    {
+        ConnectedState,
+        ClosingState
+    };
+
+    Q_ENUM(DeviceType)
+    Q_ENUM(InterfaceType)
+    Q_ENUM(BoardType)
+    Q_ENUM(DeviceModel)
+    Q_ENUM(ConnectionState)
+
+    Q_PROPERTY(InterfaceType interface READ interfaceType WRITE setInterfaceType NOTIFY interfaceTypeChanged)
+    Q_PROPERTY(DeviceType device READ deviceType WRITE setDeviceType NOTIFY deviceTypeChanged)
+    Q_PROPERTY(BoardType board READ boardType WRITE setBoardType NOTIFY boardTypeChanged)
+
+    Q_PROPERTY(
+        ConnectionState connectionState READ connectionState WRITE setConnectionState NOTIFY connectionStateChanged)
+    /**
+     * Одиночки не должны быть клонируемыми.
+     */
+    Board(Board &other) = delete;
+    /**
+     * Singletons should not be assignable.
+     */
+    void operator=(const Board &) = delete;
+    /**
+     * Это статический метод, управляющий доступом к экземпляру одиночки. При
+     * первом запуске, он создаёт экземпляр одиночки и помещает его в
+     * статическое поле. При последующих запусках, он возвращает клиенту объект,
+     * хранящийся в статическом поле.
+     */
+    static Board *GetInstance(QObject *obj = nullptr);
+
+    quint32 typeB() const;
+    void setTypeB(const quint32 &typeB);
+
+    quint32 typeM() const;
+    void setTypeM(const quint32 &typeM);
+
+    quint32 type() const;
+
+    InterfaceType interfaceType() const;
+    void setInterfaceType(InterfaceType interface);
+
+    DeviceType deviceType() const;
+    void setDeviceType(const DeviceType &deviceType);
+
+    BoardType boardType() const;
+    void setBoardType(const BoardType &boardType);
+
+    ConnectionState connectionState() const;
+    void setConnectionState(ConnectionState connectionState);
+
+protected:
+    explicit Board(QObject *parent = nullptr);
+
+private:
+    static Board *m_instance;
+    static QMutex m_mutex;
+
+    InterfaceType m_interfaceType;
+    DeviceType m_deviceType;
+    BoardType m_boardType;
+    ConnectionState m_connectionState;
+
+    // int m_mainInterface;
+    quint32 m_typeB;
+    quint32 m_typeM;
+signals:
+    void interfaceTypeChanged(InterfaceType);
+    void deviceTypeChanged(DeviceType);
+    void boardTypeChanged(BoardType);
+    void typeChanged();
+    void connectionStateChanged(ConnectionState);
+};

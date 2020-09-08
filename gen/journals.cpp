@@ -101,10 +101,12 @@ void Journals::FillEventsTable(QByteArray &ba)
     }
     else
     {
-        switch (MTypeB)
+        switch (Board::GetInstance()->typeB())
+        // switch (MTypeB)
         {
         case Config::MTB_A2:
-            switch (MTypeM)
+            switch (Board::GetInstance()->typeM())
+            // switch (MTypeM)
             {
             case Config::MTM_84:
                 sl = WorkJourDescription;
@@ -177,10 +179,12 @@ void Journals::FillMeasTable(QByteArray &ba)
     int basize = ba.size();
     char *file = ba.data();
     int i = 0;
-    switch (MTypeB)
+    switch (Board::GetInstance()->typeM())
+    // switch (MTypeB)
     {
     case Config::MTB_A2:
-        switch (MTypeM)
+        switch (Board::GetInstance()->typeM())
+        // switch (MTypeM)
         {
         case Config::MTM_84:
         {
@@ -340,12 +344,18 @@ void Journals::FillWorkJour(QByteArray ba)
 void Journals::StartGetJour()
 {
     // char jnum = _jourType;
-    if (MainInterface == I_ETHERNET)
+    switch (Board::GetInstance()->interfaceType())
+    {
+
+    // if (MainInterface == I_ETHERNET)
+    case Board::InterfaceType::Ethernet:
     {
 
         emit ReadJour(_jourType);
+        break;
     }
-    else if (MainInterface == I_USB)
+    // else if (MainInterface == I_USB)
+    case Board::InterfaceType::USB:
     {
         QByteArray ba;
         if (Commands::GetFile(_jourType, ba) == NOERROR)
@@ -367,6 +377,8 @@ void Journals::StartGetJour()
         }
         else
             emit Error("Ошибка чтения журнала");
+        break;
+    }
     }
 }
 
