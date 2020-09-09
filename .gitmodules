@@ -11,3 +11,6 @@
 [submodule "hidapi"]
 	path = hidapi
 	url = https://github.com/libusb/hidapi
+[submodule "QXlsx"]
+	path = QXlsx
+	url = https://github.com/QtExcel/QXlsx
