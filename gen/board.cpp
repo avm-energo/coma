@@ -1,5 +1,5 @@
 // maindef.cpp
-#include "maindef.h"
+#include "board.h"
 
 // int MainInterface;
 // quint32 MTypeB;
@@ -72,6 +72,8 @@ Board::ConnectionState Board::connectionState() const
 
 void Board::setConnectionState(ConnectionState connectionState)
 {
+    if (m_connectionState == connectionState && m_connectionState == ConnectionState::ConnectedState)
+        Q_ASSERT("Try to connect while still connected");
     m_connectionState = connectionState;
     emit connectionStateChanged(connectionState);
 }

@@ -1,8 +1,8 @@
 #include "eabstractcheckdialog.h"
 
+#include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
-#include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/etabwidget.h"
@@ -29,7 +29,7 @@ EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board, QWidget *parent) : 
     Busy = false;
     xlsx = nullptr;
     WRow = 0;
-    Board = board;
+    m_board = board;
     Bd_blocks.clear();
     Timer = new QTimer;
     Timer->setObjectName("checktimer");

@@ -1,7 +1,9 @@
 #include "wd_func.h"
 
+#include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
+#include "../gen/modulebsi.h"
 #include "etableview.h"
 
 #include <QHBoxLayout>
@@ -390,6 +392,42 @@ QVariant WDFunc::TVData(QWidget *w, const QString &tvname, int column)
     if (m != nullptr)
         return m->index(tv->currentIndex().row(), column, QModelIndex()).data(Qt::DisplayRole);
     return QVariant();
+}
+
+QStatusBar *WDFunc::NewSB(QWidget *w)
+{
+    QStatusBar *bar = new QStatusBar(w);
+    QLabel *msgModel = new QLabel(bar);
+    msgModel->setObjectName("Model");
+    QLabel *msgSerialNumber = new QLabel(bar);
+    msgSerialNumber->setObjectName("SerialNumber");
+    QLabel *msgConnectionState = new QLabel(bar);
+    msgConnectionState->setObjectName("ConnectionState");
+    QLabel *msgConnectionType = new QLabel(bar);
+    msgConnectionType->setObjectName("ConnectionType");
+
+    QObject::connect(Board::GetInstance(), &Board::typeChanged, [msgModel, msgSerialNumber]() {
+        quint32 serialNumber = Board::GetInstance()->type();
+        QString deviceName = QVariant::fromValue(Board::DeviceModel(serialNumber)).toString();
+        msgModel->setText(deviceName);
+    });
+
+    QObject::connect(
+        Board::GetInstance(), &Board::connectionStateChanged, [msgConnectionState](Board::ConnectionState state) {
+            QString connState = QVariant::fromValue(Board::ConnectionState(state)).toString();
+            msgConnectionState->setText(connState);
+        });
+
+    QObject::connect(Board::GetInstance(), &Board::interfaceTypeChanged,
+        [msgConnectionType](const Board::InterfaceType &interfaceType) {
+            QString connName = QVariant::fromValue(Board::InterfaceType(interfaceType)).toString();
+            msgConnectionType->setText(connName);
+        });
+    bar->insertPermanentWidget(0, msgModel);
+    bar->insertPermanentWidget(1, msgSerialNumber);
+    bar->insertPermanentWidget(2, msgConnectionType);
+    bar->insertPermanentWidget(3, msgConnectionState);
+    return bar;
 }
 
 QCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor)

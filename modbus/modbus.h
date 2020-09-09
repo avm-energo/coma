@@ -1,8 +1,8 @@
 #ifndef MODBUS_H
 #define MODBUS_H
 
+#include "../gen/board.h"
 #include "../gen/logclass.h"
-#include "../gen/maindef.h"
 #include "../gen/s2.h"
 #include "serialport.h"
 
@@ -111,7 +111,7 @@ signals:
     void TimeSignalsReceived(QList<ModBus::BSISignalStruct> Signal);
     void TimeWritten();
     void BsiFromModbus(QList<ModBus::BSISignalStruct>, unsigned int);
-    void ModbusState(ConnectionStates);
+    // void ModbusState(ConnectionStates);
     void ErrorRead();
     //    void ErrorCrc();
     void Finished();
@@ -151,7 +151,7 @@ public:
     ModbusThread(QObject *parent = nullptr);
     ~ModbusThread();
 
-    ConnectionStates State();
+    // ConnectionStates State();
     void Init(QQueue<ModBus::InOutStruct> *inq, QList<ModBus::InOutStruct> *outl);
 
 public slots:
@@ -159,7 +159,7 @@ public slots:
     void FinishThread();
 
 signals:
-    void ModbusState(ConnectionStates);
+    // void ModbusState(ConnectionStates);
     void Finished();
     void Write(QByteArray);
 
@@ -169,7 +169,7 @@ private:
     bool Busy; // port is busy with write/read operation
     bool AboutToFinish;
     ModBus::InOutStruct Inp, Outp;
-    ConnectionStates _state;
+    // ConnectionStates _state;
     LogClass *Log;
 
     const unsigned char TabCRChi[256] = { 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00,

@@ -1,8 +1,8 @@
 #include "confdialogkiv.h"
 
+#include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
-#include "../gen/modulebsi.h"
 #include "../widgets/ecombobox.h"
 #include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"

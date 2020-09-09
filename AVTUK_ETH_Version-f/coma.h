@@ -1,7 +1,6 @@
 #ifndef COMA_H
 #define COMA_H
 
-#include "../alarm/abstractalarm.h"
 #include "../alarm/alarmstateall.h"
 #include "../alarm/alarmwidget.h"
 #include "../alarm/avaralarmkiv.h"
@@ -11,7 +10,6 @@
 #include "../check/eabstractcheckdialog.h"
 #include "../config/abstractconfdialog.h"
 #include "../config/confdialog.h"
-#include "../dialogs/abstractcordialog.h"
 #include "../dialogs/connectdialog.h"
 #include "../dialogs/cordialog.h"
 #include "../dialogs/cordialogktf.h"
@@ -47,7 +45,6 @@ enum THREAD
 class Coma : public QMainWindow
 {
     Q_OBJECT
-    Q_PROPERTY(bool connection READ isConnected WRITE setConnected NOTIFY stateChanged)
 
 public:
     enum Modes
@@ -146,12 +143,6 @@ public:
     int CheckPassword();
     void Disconnect();
 
-    int number() const;
-    void setNumber(int number);
-
-    bool isConnected() const;
-    void setConnected(bool value);
-
 signals:
     void CloseConnectDialog();
     void PasswordChecked();
@@ -211,7 +202,6 @@ private:
     MNKTime *timeDialog;
 
     bool PasswordValid;
-    bool m_connectionState;
     bool TimeThrFinished;
     bool Cancelled;
     bool Reconnect;
@@ -251,11 +241,12 @@ private:
     void CloseDialogs();
     void PrepareDialogs();
     void NewTimersBda();
-    void createStatusBar();
 
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 
     void addConfTab(ETabWidget *MainTW, QString str);
+
+    void setupConnections();
 
 protected:
     void keyPressEvent(QKeyEvent *e) override;

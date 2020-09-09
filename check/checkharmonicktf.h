@@ -1,7 +1,7 @@
 #ifndef CHECKHARMONICKTF_H
 #define CHECKHARMONICKTF_H
 
-#include "../gen/maindef.h"
+#include "../gen/board.h"
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"

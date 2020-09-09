@@ -24,7 +24,7 @@ public:
     static int EraseTechBlock(char block);
     static int Connect();
     static void Disconnect();
-    static bool isConnected();
+    // static bool isConnected();
     static int WriteTimeMNK(uint32_t Time, int TimeSize);
     static int GetTimeMNK(uint &Time);
     static int WriteBd(char BdNum, void *BdPtr, int BdPtrSize);

@@ -1,7 +1,7 @@
 #include "connectdialog.h"
 
+#include "../gen/board.h"
 #include "../gen/error.h"
-#include "../gen/maindef.h"
 #include "../models/etablemodel.h"
 #include "../usb/eprotocom.h"
 #include "../widgets/emessagebox.h"
@@ -14,8 +14,6 @@
 ConnectDialog::ConnectDialog()
 {
     QByteArray ba;
-    // MainInterface = I_USB;
-    Board::GetInstance()->setInterfaceType(Board::InterfaceType::USB);
     QStringList intersl = QStringList() << "USB"
                                         << "Ethernet"
                                         << "RS485";
@@ -25,7 +23,6 @@ ConnectDialog::ConnectDialog()
 
     lyout->addWidget(WDFunc::NewLBL(this, "Выберите интерфейс связи"));
     lyout->addWidget(WDFunc::NewCB(this, "intercb", intersl));
-    WDFunc::CBConnect(this, "intercb", WDFunc::CT_TEXTCHANGED, this, SLOT(ParseInter()));
     QHBoxLayout *hlyout = new QHBoxLayout;
     QPushButton *pb = new QPushButton("Далее");
     connect(pb, &QPushButton::clicked, this, &ConnectDialog::SetInterface);
@@ -37,23 +34,10 @@ ConnectDialog::ConnectDialog()
     setLayout(lyout);
 }
 
-void ConnectDialog::ParseInter()
-{
-    QString tmps = WDFunc::CBData(this, "intercb");
-    //    if (tmps == "USB")
-
-    //        MainInterface = I_USB;
-    //    else if (tmps == "Ethernet")
-    //        MainInterface = I_ETHERNET;
-    //    else if (tmps == "RS485")
-    //        MainInterface = I_RS485;
-    //    else
-    //        MainInterface = I_UNKNOWN;
-    Board::GetInstance()->setProperty("interface", tmps);
-}
-
 void ConnectDialog::SetInterface()
 {
+    auto comboBox = this->findChild<EComboBox *>();
+    Board::GetInstance()->setProperty("interface", comboBox->currentText());
     QDialog *dlg = new QDialog(this);
     dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -61,13 +45,12 @@ void ConnectDialog::SetInterface()
     dlg->setMinimumWidth(400);
     QVBoxLayout *lyout = new QVBoxLayout;
 
-    // if (MainInterface == I_USB)
     switch (Board::GetInstance()->interfaceType())
     {
     case Board::InterfaceType::USB:
         lyout->addWidget(WDFunc::NewTV(dlg, "usbtv", nullptr));
         break;
-        // else if (MainInterface == I_ETHERNET)
+
     case Board::InterfaceType::Ethernet:
     {
         lyout->addWidget(WDFunc::NewTV(dlg, "ethtv", nullptr));
@@ -79,7 +62,6 @@ void ConnectDialog::SetInterface()
         lyout->addLayout(hlyout);
         break;
     }
-        // else // RS485
     case Board::InterfaceType::RS485:
     {
         lyout->addWidget(WDFunc::NewTV(dlg, "rstv", nullptr));
@@ -340,8 +322,6 @@ bool ConnectDialog::UpdateModel()
         }
         switch (Board::GetInstance()->interfaceType())
         {
-
-        // if (MainInterface == I_USB)
         case Board::InterfaceType::USB:
         {
             QStringList USBsl = EProtocom::GetInstance()->DevicesFound();
@@ -366,7 +346,6 @@ bool ConnectDialog::UpdateModel()
             WDFunc::SetTVModel(dlg, "usbtv", mdl);
             break;
         }
-        // else if (MainInterface == I_ETHERNET)
         case Board::InterfaceType::Ethernet:
         {
             QStringList sl = QStringList() << "#"
@@ -388,7 +367,6 @@ bool ConnectDialog::UpdateModel()
             WDFunc::SetTVModel(dlg, "ethtv", mdl);
             break;
         }
-        // else // RS485
         case Board::InterfaceType::RS485:
         {
             QStringList sl = QStringList() << "#"
@@ -417,4 +395,5 @@ bool ConnectDialog::UpdateModel()
         }
         return true;
     }
+    return false;
 }

@@ -3,14 +3,14 @@
 #include <QApplication>
 #include <QBoxLayout>
 #include <QCursor>
-#include <QDialog>
+//#include <QDialog>
 #include <QDir>
 #include <QGroupBox>
 #include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
 #include <QProgressBar>
-#include <QPushButton>
+//#include <QPushButton>
 #include <QSettings>
 #include <QSplashScreen>
 #include <QStandardPaths>

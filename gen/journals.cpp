@@ -3,9 +3,9 @@
 #include "../config/config.h"
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
+#include "board.h"
 #include "error.h"
 #include "files.h"
-#include "maindef.h"
 #include "s2.h"
 #include "timefunc.h"
 #include "xlsxdocument.h"
@@ -179,12 +179,10 @@ void Journals::FillMeasTable(QByteArray &ba)
     int basize = ba.size();
     char *file = ba.data();
     int i = 0;
-    switch (Board::GetInstance()->typeM())
-    // switch (MTypeB)
+    switch (Board::GetInstance()->typeB())
     {
     case Config::MTB_A2:
         switch (Board::GetInstance()->typeM())
-        // switch (MTypeM)
         {
         case Config::MTM_84:
         {
@@ -343,18 +341,15 @@ void Journals::FillWorkJour(QByteArray ba)
 
 void Journals::StartGetJour()
 {
-    // char jnum = _jourType;
     switch (Board::GetInstance()->interfaceType())
     {
 
-    // if (MainInterface == I_ETHERNET)
     case Board::InterfaceType::Ethernet:
     {
 
         emit ReadJour(_jourType);
         break;
     }
-    // else if (MainInterface == I_USB)
     case Board::InterfaceType::USB:
     {
         QByteArray ba;

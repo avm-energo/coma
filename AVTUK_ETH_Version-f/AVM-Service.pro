@@ -59,9 +59,9 @@ SOURCES += \
     ../dialogs/cordialogktf.cpp \
     ../dialogs/infodialog.cpp \
     ../dialogs/mnktime.cpp \
+    ../gen/board.cpp \
     ../gen/journals.cpp \
     ../gen/logclass.cpp \
-    ../gen/maindef.cpp \
     ../modbus/serialport.cpp \
     ../usb/eprotocom.cpp \
     ../usb/eusbworker.cpp \
@@ -138,6 +138,7 @@ HEADERS += \
     ../dialogs/cordialogktf.h \
     ../dialogs/infodialog.h \
     ../dialogs/mnktime.h \
+    ../gen/board.h \
     ../gen/journals.h \
     ../gen/logclass.h \
     ../modbus/serialport.h \
@@ -159,7 +160,6 @@ HEADERS += \
     ../gen/colors.h \
     ../gen/error.h \
     ../gen/files.h \
-    ../gen/maindef.h \
     ../gen/modulebsi.h \
     ../gen/report.h \
     ../gen/s2.h \

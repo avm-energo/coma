@@ -2,7 +2,6 @@
 
 #include "../gen/colors.h"
 #include "../gen/error.h"
-#include "../gen/modulebsi.h"
 #include "../gen/timefunc.h"
 #include "../usb/commands.h"
 #include "../widgets/ecombobox.h"
@@ -66,9 +65,7 @@ void MNKTime::SetupUI()
     glyout->addWidget(cb, row, 2, 1, 4);
     row++;
 
-    QDateTime current = QDateTime::currentDateTime();
     glyout->addWidget(WDFunc::NewLBL(this, "Дата и время ПК:"), row, 1, 1, 1, Qt::AlignTop);
-    //    QDateTime dt = QDateTime::currentDateTime();
     glyout->addWidget(WDFunc::NewLBLT(this, QDateTime::currentDateTimeUtc().toString("yyyy-MM-ddTHH:mm:ss"), "systime"),
         row++, 2, 1, 4, Qt::AlignTop);
     tmps = "QWidget {background-color: " + QString(MAINWINCLR) + ";}";
@@ -122,24 +119,19 @@ void MNKTime::slot_timeOut()
 void MNKTime::slot2_timeOut()
 {
 
-    // QDateTime myDateTime;
     switch (Board::GetInstance()->interfaceType())
     {
-
     case Board::InterfaceType::USB:
-        // if (MainInterface == I_USB)
-        {
-            uint unixtimestamp = 0;
-            if (Commands::GetTimeMNK(unixtimestamp) == NOERROR)
-                SetTime(unixtimestamp);
-            break;
-        }
+    {
+        uint unixtimestamp = 0;
+        if (Commands::GetTimeMNK(unixtimestamp) == NOERROR)
+            SetTime(unixtimestamp);
+        break;
+    }
     case Board::InterfaceType::Ethernet:
-        // else if (MainInterface == I_ETHERNET)
         emit ethTimeRequest();
         break;
     case Board::InterfaceType::RS485:
-        // else if (MainInterface == I_RS485)
         emit modBusTimeRequest();
         break;
     }
@@ -162,21 +154,18 @@ void MNKTime::WriteTime(QDateTime &myDateTime)
     switch (Board::GetInstance()->interfaceType())
     {
     case Board::InterfaceType::USB:
-        // if (MainInterface == I_USB)
-        {
-            TimeFunc::Wait(100);
-            if (Commands::WriteTimeMNK(time, sizeof(uint)) != NOERROR)
-                EMessageBox::information(this, "INFO",
-                    "Ошибка"); // EMessageBox::information(this,
-                               // "INFO", "Записано успешно");
-            break;
-        }
-    // else if (MainInterface == I_ETHERNET)
+    {
+        TimeFunc::Wait(100);
+        if (Commands::WriteTimeMNK(time, sizeof(uint)) != NOERROR)
+            EMessageBox::information(this, "INFO",
+                "Ошибка"); // EMessageBox::information(this,
+                           // "INFO", "Записано успешно");
+        break;
+    }
     case Board::InterfaceType::Ethernet:
         emit ethWriteTimeToModule(time);
         break;
     case Board::InterfaceType::RS485:
-        // else if (MainInterface == I_RS485)
         emit modbusWriteTimeToModule(time);
         break;
     }

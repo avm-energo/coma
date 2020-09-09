@@ -12,6 +12,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QStatusBar>
 #include <QWidget>
 
 #define MAXFLOAT 3.40282347E+38F
@@ -118,6 +119,8 @@ public:
     static bool LE_write_data(QObject *w, const QString &levalue, const QString &lename);
     static void SortTV(QWidget *w, const QString &tvname, int column, Qt::SortOrder sortorder);
     static QVariant TVData(QWidget *w, const QString &tvname, int column);
+
+    static QStatusBar *NewSB(QWidget *w);
 };
 
 #endif // WD_FUNC

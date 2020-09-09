@@ -4,7 +4,6 @@
 #define ID8084_START 1012
 #define ID8084_COM 20
 
-#include "../gen/modulebsi.h"
 #include "config.h"
 
 class ConfigKIV

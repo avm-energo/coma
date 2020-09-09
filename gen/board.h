@@ -3,33 +3,10 @@
 #define DEVICETYPE_MODULE 1 // модуль
 #define DEVICETYPE_DEVICE 2 // прибор
 
-// interface types
-//#define I_UNKNOWN -1
-//#define I_USB 0
-//#define I_ETHERNET 1
-//#define I_RS485 2
-
 #include <QMutex>
 #include <QObject>
 #include <QtCore>
 #include <QtGlobal>
-
-enum BoardTypes
-{
-    BT_NONE = 0,
-    BT_BASE = 1,
-    BT_MEZONIN = 2,
-    BT_BSMZ = 3,
-    BT_MODULE = 4
-};
-enum ConnectionStates
-{
-    ConnectedState,
-    ClosingState
-};
-// extern int MainInterface;
-// extern quint32 MTypeB;
-// extern quint32 MTypeM;
 
 class Board : public QObject
 {
@@ -42,6 +19,9 @@ public:
         Device
     };
 
+    /**
+     *  Перечисление для хранения списка интерфейсов
+     */
     enum InterfaceType
     {
         Unknown,
@@ -58,15 +38,19 @@ public:
         BSMZ,
         MODULE
     };
-
+    /**
+     *  Перечисление для хранения списка приборов
+     */
     enum DeviceModel
     {
         KTF = 0xA287,
         KIV = 0xA284,
         KDV = 0xA387
     };
-
-    enum ConnectionState
+    /**
+     *  Перечисление для хранения текущего состояния подключения
+     */
+    enum class ConnectionState
     {
         ConnectedState,
         ClosingState
@@ -132,7 +116,6 @@ private:
     BoardType m_boardType;
     ConnectionState m_connectionState;
 
-    // int m_mainInterface;
     quint32 m_typeB;
     quint32 m_typeM;
 signals:

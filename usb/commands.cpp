@@ -17,10 +17,10 @@ int Commands::Connect()
     return NOERROR;
 }
 
-bool Commands::isConnected()
-{
-    return EProtocom::GetInstance()->isConnected();
-}
+// bool Commands::isConnected()
+//{
+//    return EProtocom::GetInstance()->isConnected();
+//}
 
 void Commands::Disconnect()
 {

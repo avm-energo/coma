@@ -67,18 +67,18 @@ public:
 
     enum MezzanineBoards
     {
-        MTM_00 = 0x0000,
-        MTM_21 = 0x0021,
-        MTM_22 = 0x0022,
-        MTM_31 = 0x0031,
-        MTM_35 = 0x0035,
-        MTM_81 = 0x0081,
-        MTM_82 = 0x0082,
-        MTM_83 = 0x0083,
-        MTM_84 = 0x0084,
-        MTM_85 = 0x0085,
-        MTM_86 = 0x0086,
-        MTM_87 = 0x0087
+        MTM_00 = 0x00,
+        MTM_21 = 0x21,
+        MTM_22 = 0x22,
+        MTM_31 = 0x31,
+        MTM_35 = 0x35,
+        MTM_81 = 0x81,
+        MTM_82 = 0x82,
+        MTM_83 = 0x83,
+        MTM_84 = 0x84,
+        MTM_85 = 0x85,
+        MTM_86 = 0x86,
+        MTM_87 = 0x87
     };
 
     struct Bci_Main

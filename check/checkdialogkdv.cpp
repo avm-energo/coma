@@ -230,9 +230,9 @@ void CheckDialogKDV::USBUpdate()
     }
 }
 
-void CheckDialogKDV::onModbusStateChanged(ConnectionStates state)
+void CheckDialogKDV::onModbusStateChanged()
 {
-    if (state == ConnectionStates::ConnectedState)
+    if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState)
         EMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 

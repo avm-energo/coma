@@ -54,7 +54,7 @@ int ModBus::Connect(SerialPort::Settings &settings)
     connect(cthr, SIGNAL(Finished()), this, SIGNAL(Finished()));
     connect(this, SIGNAL(FinishModbusThread()), cthr, SLOT(FinishThread()));
     connect(this, SIGNAL(FinishModbusThread()), port, SLOT(Disconnect()));
-    connect(port, SIGNAL(State(ConnectionStates)), this, SIGNAL(ModbusState(ConnectionStates)));
+    // connect(port, SIGNAL(State(ConnectionStates)), this, SIGNAL(ModbusState(ConnectionStates)));
     connect(port, SIGNAL(Read(QByteArray)), cthr, SLOT(ParseReply(QByteArray)));
     connect(cthr, SIGNAL(Write(QByteArray)), port, SLOT(WriteBytes(QByteArray)));
     connect(port, SIGNAL(Reconnect()), this, SLOT(SendReconnectSignal()));
@@ -451,10 +451,10 @@ ModbusThread::~ModbusThread()
 {
 }
 
-ConnectionStates ModbusThread::State()
-{
-    return _state;
-}
+// ConnectionStates ModbusThread::State()
+//{
+//    return _state;
+//}
 
 void ModbusThread::Init(QQueue<ModBus::InOutStruct> *inq, QList<ModBus::InOutStruct> *outl)
 {

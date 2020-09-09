@@ -50,7 +50,7 @@ private slots:
     void StartBdMeasurements();
     void StopBdMeasurements();
     void UpdateModBusData(QList<ModBus::SignalStruct> Signal);
-    void onModbusStateChanged(ConnectionStates state);
+    void onModbusStateChanged();
 };
 
 #endif // CHECKDIALOGHARMONICKTF_H

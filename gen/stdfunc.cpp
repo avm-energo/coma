@@ -1,6 +1,6 @@
 #include "stdfunc.h"
 
-#include "maindef.h"
+#include "board.h"
 
 #include <QDateTime>
 #include <QDir>
