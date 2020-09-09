@@ -373,15 +373,15 @@ void JournalDialog::Done(QString msg, int)
     qDebug() << __PRETTY_FUNCTION__;
     // new QAbstractItemModelTester(ProxyWorkModel, QAbstractItemModelTester::FailureReportingMode::Warning, this);
 
-    //    disconnect(JourFuncs, &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
-    //    disconnect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
+    disconnect(JourFuncs, &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
+    disconnect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
     // EMessageBox::information(this, "Успешно", msg);
 }
 
 void JournalDialog::Error(QString msg)
 {
-    //    disconnect(JourFuncs, &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
-    //    disconnect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
+    disconnect(JourFuncs, &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
+    disconnect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
     ERMSG(msg);
     EMessageBox::error(this, "Ошибка", msg);
 }
