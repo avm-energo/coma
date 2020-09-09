@@ -34,7 +34,7 @@
 enum INTERVAL
 {
     RECONNECT = 3000,
-    WAIT = 15000
+    WAIT = 300000
 };
 
 enum THREAD

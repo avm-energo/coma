@@ -83,11 +83,12 @@ void WarnAlarmKTF::Update(QList<bool> states)
     if (states.isEmpty())
         return;
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
+    QPixmap *pmylw = new QPixmap("images/yellowc.png");
 
     for (i = 0; i < Alarm->MapAlarm[MTYPE_KTF].warnCounts; i++)
     {
-        quint32 alarm = states.at(i);
-        WDFunc::SetLBLImage(this, (QString::number(i)), (alarm) ? pmred : pmgrn);
+        quint32 alarm = states.at(i + (13 * j));
+        WDFunc::SetLBLImage(this, (QString::number(i)), (alarm) ? pmylw : pmgrn);
     }
+    j++;
 }

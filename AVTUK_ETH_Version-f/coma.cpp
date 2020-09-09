@@ -515,8 +515,8 @@ void Coma::PrepareDialogs()
             connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKIVDialog, &QDialog::show);
             connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVDialog, &AvarAlarmKIV::Update);
 
-            connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
-            connect(AlarmW, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
+            connect(Alarm, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
+            connect(Alarm, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
 
             break;
 
@@ -638,6 +638,9 @@ void Coma::CloseDialogs()
         i->close();
     }
 
+    Alarm->AvarAlarmEvents.clear();
+    Alarm->WarnAlarmEvents.clear();
+
     if (AvarAlarmKIVDialog != nullptr)
         AvarAlarmKIVDialog->close();
 
@@ -647,7 +650,6 @@ void Coma::CloseDialogs()
         AlarmStateAllDialog->close();
         AlarmStateAllDialog = nullptr;
     }
-
     if (WarnAlarmKIVDialog != nullptr)
         WarnAlarmKIVDialog->close();
 

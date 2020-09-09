@@ -104,8 +104,8 @@ void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
     // int i = 0;
     quint32 TempMTypeB = MTypeB << 8;
     quint32 MType = TempMTypeB + MTypeM;
-    int count;
-    for (int i = 0, count = 0; i < Signal->SigNumber; i++)
+    int count = 0;
+    for (int i = 0; i < Signal->SigNumber; i++)
     {
         quint8 sigval = Signal->Spon[i].SigVal;
         if (!(sigval & 0x80))
@@ -114,11 +114,13 @@ void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
             bool alarm = (sigval & 0x00000001) ? 1 : 0;
             quint32 AdrAlarm = MapAlarm[MType].AdrAlarm;
             int WarnsSize = MapAlarm[MType].warns.size();
-            while ((AdrAlarm <= sigadr) && (sigadr <= AdrAlarm + WarnsSize))
+            if ((AdrAlarm <= sigadr) && (sigadr <= AdrAlarm + WarnsSize))
+            {
                 if (MapAlarm[MType].warns.at(count))
                     WarnAlarmEvents.append(alarm);
                 else if (MapAlarm[MType].avars.at(count))
                     AvarAlarmEvents.append(alarm);
+            }
             count++;
         }
     }

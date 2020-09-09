@@ -20,6 +20,7 @@
 #define ACONFRCLR "#FFDDDD"
 #define ACONFYCLR "#FFFFDD"
 #define ACONFOCLR "#FFDDAA"
+#define ACONYECLR "#F1E93E"
 #define UCONFCLR "#FFFFD0"
 #define UCONFWCLR "#FFFFC0"
 #define ERRCLR "#FF0000"

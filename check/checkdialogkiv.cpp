@@ -37,9 +37,9 @@ CheckDialogKIV::CheckDialogKIV(BoardTypes board, QWidget *parent) : EAbstractChe
     SetBd(6, &ChKIV->Bd_block1, sizeof(Check_KIV::Bd1));
 
     if (Config::MTB_A2)
-        sl = QStringList { "Основные", "Дополнительные", "Отладка" };
-    else
-        sl = QStringList { "Общие", "Аналоговые", "Несимметрия" };
+        sl = QStringList { "Основные", "Дополнительные" };
+    //    else
+    //        sl = QStringList { "Общие", "Аналоговые", "Несимметрия" };
 
     BdUINum = sl.size();
 
@@ -57,8 +57,8 @@ QWidget *CheckDialogKIV::BdUI(int bdnum)
         return ChKIV->Bd1W(this);
     case 1: // Блок #1
         return ChKIV->Bd2W(this);
-    case 2: // Блок #1
-        return ChKIV->Bd3W(this);
+        //    case 2: // Блок #1
+        //        return ChKIV->Bd3W(this);
 
     default:
         return new QWidget;
@@ -210,25 +210,25 @@ void CheckDialogKIV::UpdateSponData(IEC104Thread::SponSignals *Signal)
         {
             i = sigadr - 3011;
             WDFunc::SetLBLTColor(this, QString::number(1000 + i),
-                (sigval == 1) ? TABCOLORA1 : ACONFOCLR); // TABCOLORA1
+                (sigval == 1) ? ACONYECLR : ACONFOCLR); // TABCOLORA1
         }
         if ((sigadr >= 3014) && (sigadr <= 3016))
         {
             i = sigadr - 3014;
             WDFunc::SetLBLTColor(this, QString::number(1100 + i),
-                (sigval == 1) ? TABCOLORA1 : ACONFOCLR); // TABCOLORA1
+                (sigval == 1) ? ACONYECLR : ACONFOCLR); // TABCOLORA1
         }
         if ((sigadr >= 3018) && (sigadr <= 3020))
         {
             i = sigadr - 3018;
             WDFunc::SetLBLTColor(this, QString::number(1000 + i),
-                (sigval == 1) ? TABCOLORA1 : ACONFOCLR); // TABCOLORA1
+                (sigval == 1) ? ACONYECLR : ACONFOCLR); // TABCOLORA1
         }
         if ((sigadr >= 3021) && (sigadr <= 3023))
         {
             i = sigadr - 3021;
             WDFunc::SetLBLTColor(this, QString::number(1000 + i),
-                (sigval == 1) ? TABCOLORA1 : ACONFOCLR); // TABCOLORA1
+                (sigval == 1) ? ACONYECLR : ACONFOCLR); // TABCOLORA1
             if (sigval == 0)
                 stColor[i] = 1;
         }
@@ -243,21 +243,21 @@ void CheckDialogKIV::UpdateSponData(IEC104Thread::SponSignals *Signal)
             else
             {
                 if (!stColor[i])
-                    WDFunc::SetLBLTColor(this, QString::number(2429 + i), TABCOLORA1);
+                    WDFunc::SetLBLTColor(this, QString::number(2429 + i), ACONYECLR);
             }
         }
         if ((sigadr >= 3027) && (sigadr <= 3029))
         {
             i = sigadr - 3027;
             if (sigval == 1)
-                WDFunc::SetLBLTColor(this, QString::number(2426 + i), TABCOLORA1);
+                WDFunc::SetLBLTColor(this, QString::number(2426 + i), ACONYECLR);
             else
             {
                 stColor[3 + i] = 1;
                 WDFunc::SetLBLTColor(this, QString::number(2426 + i), ACONFOCLR);
             }
         }
-        if ((sigadr >= 3030) && (sigadr <= 3033))
+        if ((sigadr >= 3030) && (sigadr < 3033))
         {
             i = sigadr - 3030;
             if (sigval == 1)
@@ -268,13 +268,13 @@ void CheckDialogKIV::UpdateSponData(IEC104Thread::SponSignals *Signal)
             else
             {
                 if (!stColor[3 + i])
-                    WDFunc::SetLBLTColor(this, QString::number(2426 + i), TABCOLORA1);
+                    WDFunc::SetLBLTColor(this, QString::number(2426 + i), ACONYECLR);
             }
         }
         if (sigadr == 3034)
         {
             if (sigval == 1)
-                WDFunc::SetLBLTColor(this, QString::number(2432), TABCOLORA1);
+                WDFunc::SetLBLTColor(this, QString::number(2432), ACONYECLR);
             else
             {
                 stColor[6] = 1;
@@ -291,7 +291,7 @@ void CheckDialogKIV::UpdateSponData(IEC104Thread::SponSignals *Signal)
             else
             {
                 if (!stColor[6])
-                    WDFunc::SetLBLTColor(this, QString::number(2432), TABCOLORA1);
+                    WDFunc::SetLBLTColor(this, QString::number(2432), ACONYECLR);
             }
         }
     }
@@ -323,43 +323,45 @@ void CheckDialogKIV::onModbusStateChanged(ConnectionStates state)
 
 void CheckDialogKIV::SetWarnAlarmColor(QList<bool> WarnAlarm)
 {
-
+    if (WarnAlarm.isEmpty())
+        return;
     for (int i = 0; i < 18; i++)
     {
         if ((i >= 0) && (i < 3))
         {
-            WDFunc::SetLBLTColor(this, QString::number(1000 + i), (WarnAlarm[i] == true) ? TABCOLORA1 : ACONFOCLR);
+            WDFunc::SetLBLTColor(this, QString::number(1000 + i), (WarnAlarm[i] == true) ? ACONYECLR : ACONFOCLR);
         }
 
         if ((i >= 3) && (i < 6))
         {
-            WDFunc::SetLBLTColor(this, QString::number(1100 + 3), (WarnAlarm[i] == true) ? TABCOLORA1 : ACONFOCLR);
+            WDFunc::SetLBLTColor(this, QString::number(1100 + 3), (WarnAlarm[i] == true) ? ACONYECLR : ACONFOCLR);
         }
 
         if ((i >= 7) && (i < 10))
         {
             if (WarnAlarm[i] == true)
-                WDFunc::SetLBLTColor(this, QString::number(1000 + i - 7), TABCOLORA1);
+                WDFunc::SetLBLTColor(this, QString::number(1000 + i - 7), ACONFOCLR);
         }
 
         if ((i >= 10) && (i < 13))
         {
-            WDFunc::SetLBLTColor(this, QString::number(2429 + i - 10), (WarnAlarm[i] == true) ? TABCOLORA1 : ACONFOCLR);
+            WDFunc::SetLBLTColor(this, QString::number(2429 + i - 10), (WarnAlarm[i] == true) ? ACONYECLR : ACONFOCLR);
         }
         else if ((i >= 13) && (i < 16))
         {
-            WDFunc::SetLBLTColor(this, QString::number(2426 + i - 13), (WarnAlarm[i] == true) ? TABCOLORA1 : ACONFOCLR);
+            WDFunc::SetLBLTColor(this, QString::number(2426 + i - 13), (WarnAlarm[i] == true) ? ACONYECLR : ACONFOCLR);
         }
         else if (i == 17)
         {
-            WDFunc::SetLBLTColor(this, QString::number(2432 + i - 13), (WarnAlarm[i] == true) ? TABCOLORA1 : ACONFOCLR);
+            WDFunc::SetLBLTColor(this, QString::number(2432 + i - 13), (WarnAlarm[i] == true) ? ACONYECLR : ACONFOCLR);
         }
     }
 }
 
 void CheckDialogKIV::SetAlarmColor(QList<bool> Alarm)
 {
-
+    if (Alarm.isEmpty())
+        return;
     for (int i = 0; i < 7; i++)
     {
         if (i < 3)

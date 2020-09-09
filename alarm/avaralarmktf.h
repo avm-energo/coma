@@ -9,7 +9,7 @@ class AvarAlarmKTF : public AbstractAlarm
 
 public:
     explicit AvarAlarmKTF(AlarmClass *alarm, QDialog *parent = nullptr);
-
+    int j = 0;
 public slots:
 
     void AlarmState();

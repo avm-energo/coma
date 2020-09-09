@@ -78,15 +78,26 @@ void AlarmStateAll::UpdateHealth(quint32 health)
 {
     QPixmap *pmgrn = new QPixmap("images/greenc.png");
     QPixmap *pmred = new QPixmap("images/redc.png");
+    QPixmap *pmylw = new QPixmap("images/yellowc.png");
     QHBoxLayout *hlyout = new QHBoxLayout;
     for (quint32 i = 0; i < health; ++i)
     {
         hlyout = new QHBoxLayout;
 
-        if (health & (0x00000001 << i))
-            WDFunc::SetLBLImage(this, QString::number(i), pmred);
+        if (i == 1 || i == 3 || i == 5 || i == 7 || i == 13)
+        {
+            if (health & (0x00000001 << i))
+                WDFunc::SetLBLImage(this, QString::number(i), pmred);
+            else
+                WDFunc::SetLBLImage(this, QString::number(i), pmgrn);
+        }
         else
-            WDFunc::SetLBLImage(this, QString::number(i), pmgrn);
+        {
+            if (health & (0x00000001 << i))
+                WDFunc::SetLBLImage(this, QString::number(i), pmylw);
+            else
+                WDFunc::SetLBLImage(this, QString::number(i), pmgrn);
+        }
     }
 }
 
