@@ -121,6 +121,7 @@ public:
     static QVariant TVData(QWidget *w, const QString &tvname, int column);
 
     static QStatusBar *NewSB(QWidget *w);
+    static QPixmap NewCircle(QColor color, float radius);
 };
 
 #endif // WD_FUNC

@@ -8,22 +8,7 @@
 #include "../widgets/wd_func.h"
 #include "abstractalarm.h"
 
-#include <QApplication>
 #include <QBoxLayout>
-#include <QCursor>
-#include <QDialog>
-#include <QDir>
-#include <QGroupBox>
-#include <QLabel>
-#include <QMenu>
-#include <QMenuBar>
-#include <QProgressBar>
-#include <QPushButton>
-#include <QSettings>
-#include <QSplashScreen>
-#include <QStandardPaths>
-#include <QStringListModel>
-#include <QToolBar>
 
 WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm, QDialog *parent) : AbstractAlarm(parent)
 {
@@ -62,7 +47,7 @@ void WarnAlarmKIV::WarnAlarmState()
     for (int i = 0; i < Alarm->MapAlarm[MTYPE_KIV].warnCounts; ++i)
     {
         hlyout = new QHBoxLayout;
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i)));
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "transparent", QString::number(i)));
         hlyout->addWidget(WDFunc::NewLBLT(w, events.at(i), "", "", ""), 1);
         vlayout->addLayout(hlyout);
     }
@@ -86,13 +71,15 @@ void WarnAlarmKIV::AvarState()
 void WarnAlarmKIV::Update(QList<bool> states)
 {
     int i = 0;
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
+    // 25 оптимальная константа
+    float circleRadius = 25.0;
     if (states.isEmpty())
         return;
     for (i = 0; i < Alarm->MapAlarm[MTYPE_KIV].warnCounts; i++)
     {
         quint32 alarm = states.at(i);
-        WDFunc::SetLBLImage(this, (QString::number(i)), (alarm) ? pmred : pmgrn);
+
+        alarm ? WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::red, circleRadius))
+              : WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::green, circleRadius));
     }
 }

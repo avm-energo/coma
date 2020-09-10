@@ -43,6 +43,8 @@ AlarmClass::AlarmClass(QObject *parent) : QObject(parent)
 
 void AlarmClass::UpdateAlarmUSB()
 {
+    WarnAlarmEvents.clear();
+    AvarAlarmEvents.clear();
     BdAlarm signalling;
     int i = 0;
     if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
@@ -71,6 +73,8 @@ void AlarmClass::UpdateAlarmUSB()
 
 void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
 {
+    WarnAlarmEvents.clear();
+    AvarAlarmEvents.clear();
     int i = 0;
     int ccount = 0;
 
@@ -96,6 +100,8 @@ void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
 
 void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
 {
+    WarnAlarmEvents.clear();
+    AvarAlarmEvents.clear();
     for (int i = 0, count = 0; i < Signal->SigNumber; i++)
     {
         quint8 sigval = Signal->Spon[i].SigVal;

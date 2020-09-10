@@ -430,6 +430,22 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
     return bar;
 }
 
+QPixmap WDFunc::NewCircle(QColor color, float radius)
+{
+    int intRadius = radius;
+    QPixmap myPix(QSize(intRadius, intRadius));
+    myPix.fill(Qt::transparent);
+    QPainter painter(&myPix); // Create object of QPainter
+    painter.setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap));
+    QRadialGradient gradient(intRadius / 2, intRadius / 2, intRadius);
+    gradient.setColorAt(0, color);
+    gradient.setColorAt(1, Qt::black);
+    painter.setBrush(QBrush(gradient));
+    painter.drawEllipse(0, 0, myPix.width() - painter.pen().width(), myPix.height() - painter.pen().width());
+    ;
+    return myPix;
+}
+
 QCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor)
 {
     QCheckBox *chb = new QCheckBox(parent);
