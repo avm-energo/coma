@@ -8,10 +8,7 @@
 
 #include <QBoxLayout>
 
-AlarmStateAll::AlarmStateAll(QDialog *parent) : AbstractAlarm(parent)
-{
-    AlarmState();
-}
+AlarmStateAll::AlarmStateAll(QDialog *parent) : AbstractAlarm(parent) { AlarmState(); }
 
 void AlarmStateAll::AlarmState()
 {
@@ -49,19 +46,13 @@ void AlarmStateAll::AlarmState()
     lyout->addWidget(pb, 0);
     this->setLayout(lyout);
 }
-void AlarmStateAll::WarnAlarmState()
-{
-}
-void AlarmStateAll::AvarState()
-{
-}
-void AlarmStateAll::Update(QList<bool>)
-{
-}
+void AlarmStateAll::WarnAlarmState() { }
+void AlarmStateAll::AvarState() { }
+void AlarmStateAll::Update(QList<bool>) { }
 
 void AlarmStateAll::UpdateHealth(quint32 health)
 {
-    float circleRadius = 25.0;
+    float circleRadius = CIRCLE_RADIUS;
     QHBoxLayout *hlyout = new QHBoxLayout;
     for (quint32 i = 0; i < health; ++i)
     {
@@ -74,7 +65,4 @@ void AlarmStateAll::UpdateHealth(quint32 health)
     }
 }
 
-void AlarmStateAll::CallUpdateHealth()
-{
-    this->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
-}
+void AlarmStateAll::CallUpdateHealth() { this->UpdateHealth(ModuleBSI::ModuleBsi.Hth); }

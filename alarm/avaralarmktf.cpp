@@ -44,17 +44,13 @@ void AvarAlarmKTF::AvarState()
     setLayout(lyout);
 }
 
-void AvarAlarmKTF::AlarmState()
-{
-}
-void AvarAlarmKTF::WarnAlarmState()
-{
-}
+void AvarAlarmKTF::AlarmState() { }
+void AvarAlarmKTF::WarnAlarmState() { }
 
 void AvarAlarmKTF::Update(QList<bool> states)
 {
     int i;
-    float circleRadius = 25.0;
+    float circleRadius = CIRCLE_RADIUS;
     if (states.isEmpty())
         return;
     for (i = 0; i < Alarm->MapAlarm[MTYPE_KTF].avarCounts; i++)

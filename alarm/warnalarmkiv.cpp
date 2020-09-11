@@ -61,18 +61,14 @@ void WarnAlarmKIV::WarnAlarmState()
     setLayout(lyout);
 }
 
-void WarnAlarmKIV::AlarmState()
-{
-}
-void WarnAlarmKIV::AvarState()
-{
-}
+void WarnAlarmKIV::AlarmState() { }
+void WarnAlarmKIV::AvarState() { }
 
 void WarnAlarmKIV::Update(QList<bool> states)
 {
     int i = 0;
     // 25 оптимальная константа
-    float circleRadius = 25.0;
+    float circleRadius = CIRCLE_RADIUS;
     if (states.isEmpty())
         return;
     for (i = 0; i < Alarm->MapAlarm[MTYPE_KIV].warnCounts; i++)

@@ -51,17 +51,13 @@ void AvarAlarmKIV::AvarState()
     setLayout(lyout);
 }
 
-void AvarAlarmKIV::AlarmState()
-{
-}
-void AvarAlarmKIV::WarnAlarmState()
-{
-}
+void AvarAlarmKIV::AlarmState() { }
+void AvarAlarmKIV::WarnAlarmState() { }
 
 void AvarAlarmKIV::Update(QList<bool> states)
 {
     int i;
-    float circleRadius = 25.0;
+    float circleRadius = CIRCLE_RADIUS;
     if (states.isEmpty())
         return;
     for (i = 0; i < Alarm->MapAlarm[MTYPE_KIV].avarCounts; i++)

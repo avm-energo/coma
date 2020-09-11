@@ -78,7 +78,7 @@ void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarm)
             break;
         }
     }
-    WDFunc::SetLBLImage(this, "951", &WDFunc::NewCircle((alarm == 0) ? Qt::green : Qt::red, this->height() / 3));
+    WDFunc::SetLBLImage(this, "951", &WDFunc::NewCircle((alarm == 0) ? Qt::green : Qt::red, this->height() / 4));
     WDFunc::SetVisible(this, "951", true);
 }
 
@@ -97,7 +97,7 @@ void AlarmWidget::UpdateThirdUSB(QList<bool> avar)
             break;
         }
     }
-    WDFunc::SetLBLImage(this, "952", &WDFunc::NewCircle((alarm == 0) ? Qt::green : Qt::red, this->height() / 3));
+    WDFunc::SetLBLImage(this, "952", &WDFunc::NewCircle((alarm == 0) ? Qt::green : Qt::red, this->height() / 4));
     WDFunc::SetVisible(this, "952", true);
 }
 
@@ -106,19 +106,19 @@ void AlarmWidget::UpdateFirstUSB()
 
     if (ModuleBSI::ModuleBsi.Hth & WARNBSIMASK)
     {
-        WDFunc::SetLBLImage(this, "950", &WDFunc::NewCircle(Qt::yellow, this->height() / 3));
+        WDFunc::SetLBLImage(this, "950", &WDFunc::NewCircle(Qt::yellow, this->height() / 4));
         WDFunc::SetVisible(this, "950", true);
     }
     else if (ModuleBSI::ModuleBsi.Hth & AVARBSIMASK)
     {
 
-        WDFunc::SetLBLImage(this, "950", &WDFunc::NewCircle(Qt::red, this->height() / 3));
+        WDFunc::SetLBLImage(this, "950", &WDFunc::NewCircle(Qt::red, this->height() / 4));
         WDFunc::SetVisible(this, "950", true);
     }
     else
     {
 
-        WDFunc::SetLBLImage(this, "950", &WDFunc::NewCircle(Qt::green, this->height() / 3));
+        WDFunc::SetLBLImage(this, "950", &WDFunc::NewCircle(Qt::green, this->height() / 4));
         WDFunc::SetVisible(this, "950", true);
     }
 }

@@ -54,13 +54,9 @@ void WarnAlarmKTF::WarnAlarmState()
     setLayout(lyout);
 }
 
-void WarnAlarmKTF::AlarmState()
-{
-}
+void WarnAlarmKTF::AlarmState() { }
 
-void WarnAlarmKTF::AvarState()
-{
-}
+void WarnAlarmKTF::AvarState() { }
 
 void WarnAlarmKTF::Update(QList<bool> states)
 {
@@ -68,7 +64,7 @@ void WarnAlarmKTF::Update(QList<bool> states)
     if (states.isEmpty())
         return;
     // 25 оптимальная константа
-    float circleRadius = 25.0;
+    float circleRadius = CIRCLE_RADIUS;
     for (i = 0; i < Alarm->MapAlarm[MTYPE_KTF].warnCounts; i++)
     {
         quint32 alarm = states.at(i);
