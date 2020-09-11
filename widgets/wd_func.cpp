@@ -237,19 +237,21 @@ bool WDFunc::SetCBColor(QWidget *w, const QString &cbname, const QString &color)
 QDoubleSpinBox *WDFunc::NewSPB(
     QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor)
 {
-    QDoubleSpinBox *dspbls = new QDoubleSpinBox(parent);
+    EDoubleSpinBox *dsb = new EDoubleSpinBox(parent);
+    // QDoubleSpinBox *dspbls = new QDoubleSpinBox(parent);
     double step = qPow(0.1f, decimals);
-    dspbls->setObjectName(spbname);
-    dspbls->setSingleStep(step);
-    dspbls->setDecimals(decimals);
-    dspbls->setMinimum(min);
-    dspbls->setMaximum(max);
+    dsb->setObjectName(spbname);
+    dsb->setSingleStep(step);
+    dsb->setDecimals(decimals);
+    dsb->setMinimum(min);
+    dsb->setMaximum(max);
+
     if (!spbcolor.isEmpty())
     {
         QString tmps = "QDoubleSpinBox {background-color: " + spbcolor + ";}";
-        dspbls->setStyleSheet(tmps);
+        dsb->setStyleSheet(tmps);
     }
-    return dspbls;
+    return dsb;
 }
 
 bool WDFunc::SetSPBData(QObject *w, const QString &spbname, const double &spbvalue)

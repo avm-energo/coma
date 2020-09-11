@@ -350,10 +350,10 @@ void Check_KIV::FillBdUSB(QWidget *parent)
     // WDFunc::SetLBLText(parent, "value29",
     // WDFunc::StringValueWithCheck(Bd_block1.Time, 3));
 
-    if (ModuleBSI::GetMType(BoardTypes::BT_BASE) != Config::MTB_A2)
-    {
-        WDFunc::SetLBLText(parent, "4501", WDFunc::StringValueWithCheck(Bd_block1.Tamb, 3));
-    }
+    //    if (ModuleBSI::GetMType(BoardTypes::BT_BASE) == Config::MTB_A2)
+    //    {
+    WDFunc::SetLBLText(parent, "4501", WDFunc::StringValueWithCheck(Bd_block1.Tamb, 3));
+    //    }
 }
 
 void Check_KIV::FillBd5(QWidget *parent)

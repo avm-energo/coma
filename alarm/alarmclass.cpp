@@ -83,7 +83,7 @@ void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
     {
         for (int j = 0; j < 8; j++)
         {
-            if (ccount <= MapAlarm[MType].warns.size())
+            if (ccount < MapAlarm[MType].warns.size())
             {
                 bool alarm = (Signal.Bytes[i] & (0x00000001 << j));
                 if (MapAlarm[MType].warns.at(ccount))

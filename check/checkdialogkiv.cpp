@@ -38,8 +38,6 @@ CheckDialogKIV::CheckDialogKIV(BoardTypes board, QWidget *parent) : EAbstractChe
 
     if (Config::MTB_A2)
         sl = QStringList { "Основные", "Дополнительные" };
-    //    else
-    //        sl = QStringList { "Общие", "Аналоговые", "Несимметрия" };
 
     BdUINum = sl.size();
 
@@ -54,6 +52,7 @@ QWidget *CheckDialogKIV::BdUI(int bdnum)
     {
 
     case 0: // Блок #1
+
         return ChKIV->Bd1W(this);
     case 1: // Блок #1
         return ChKIV->Bd2W(this);

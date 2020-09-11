@@ -65,6 +65,7 @@ SOURCES += \
     ../modbus/serialport.cpp \
     ../usb/eprotocom.cpp \
     ../usb/eusbworker.cpp \
+    ../widgets/edoublespinbox.cpp \
     coma.cpp \
     main.cpp \
     ../check/check.cpp \
@@ -144,6 +145,7 @@ HEADERS += \
     ../usb/defines.h \
     ../usb/eprotocom.h \
     ../usb/eusbworker.h \
+    ../widgets/edoublespinbox.h \
     coma.h \
     ../check/check.h \
     ../check/eabstractcheckdialog.h \

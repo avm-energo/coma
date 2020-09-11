@@ -412,6 +412,7 @@ void Coma::StartWork()
     {
         str = (confBDialog == nullptr) ? "Конфигурирование" : "Конфигурирование\nМезонин";
         MainTW->addTab(confMDialog, str);
+        ///
         ConfIndex = MainTW->indexOf(confMDialog);
 
         if (confMDialog->IsNeededDefConf)
