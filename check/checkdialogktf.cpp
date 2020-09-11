@@ -5,7 +5,6 @@
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
 #include "../usb/commands.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
@@ -24,7 +23,7 @@
 
 CheckDialogKTF::CheckDialogKTF(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {
-    QString tmps = "QDialog {background-color: " + QString(UCONFCLR) + ";}";
+    QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
     QStringList sl;
     BdNum = 17;
@@ -73,15 +72,9 @@ QWidget *CheckDialogKTF::BdUI(int bdnum)
     }
 }
 
-void CheckDialogKTF::RefreshAnalogValues(int bdnum)
-{
-    Q_UNUSED(bdnum)
-}
+void CheckDialogKTF::RefreshAnalogValues(int bdnum) { Q_UNUSED(bdnum) }
 
-void CheckDialogKTF::PrepareHeadersForFile(int row)
-{
-    Q_UNUSED(row)
-}
+void CheckDialogKTF::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
 
 void CheckDialogKTF::WriteToFile(int row, int bdnum)
 {
@@ -104,25 +97,13 @@ QWidget *CheckDialogKTF::CustomTab()
     w->setLayout(lyout);
     return nullptr;
 }
-void CheckDialogKTF::ChooseValuesToWrite()
-{
-}
-void CheckDialogKTF::SetDefaultValuesToWrite()
-{
-}
-void CheckDialogKTF::PrepareAnalogMeasurements()
-{
-}
+void CheckDialogKTF::ChooseValuesToWrite() { }
+void CheckDialogKTF::SetDefaultValuesToWrite() { }
+void CheckDialogKTF::PrepareAnalogMeasurements() { }
 
-void CheckDialogKTF::StartBdMeasurements()
-{
-    BdTimer->start();
-}
+void CheckDialogKTF::StartBdMeasurements() { BdTimer->start(); }
 
-void CheckDialogKTF::StopBdMeasurements()
-{
-    BdTimer->stop();
-}
+void CheckDialogKTF::StopBdMeasurements() { BdTimer->stop(); }
 
 void CheckDialogKTF::USBUpdate()
 {
@@ -195,10 +176,7 @@ void CheckDialogKTF::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
     }
 }
 
-void CheckDialogKTF::UpdateSponData(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal);
-}
+void CheckDialogKTF::UpdateSponData(IEC104Thread::SponSignals *Signal) { Q_UNUSED(Signal); }
 
 void CheckDialogKTF::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
@@ -221,15 +199,9 @@ void CheckDialogKTF::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 void CheckDialogKTF::onModbusStateChanged(ConnectionStates state)
 {
     if (state == ConnectionStates::ConnectedState)
-        EMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
+        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 
-void CheckDialogKTF::SetPredAlarmColor(quint8 *PredAlarm)
-{
-    Q_UNUSED(PredAlarm);
-}
+void CheckDialogKTF::SetPredAlarmColor(quint8 *PredAlarm) { Q_UNUSED(PredAlarm); }
 
-void CheckDialogKTF::SetAlarmColor(quint8 *Alarm)
-{
-    Q_UNUSED(Alarm);
-}
+void CheckDialogKTF::SetAlarmColor(quint8 *Alarm) { Q_UNUSED(Alarm); }

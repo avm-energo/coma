@@ -13,7 +13,7 @@ ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QWidget *w = new QWidget;
-    QString ErrWss = "QWidget {background-color: " + QString(ERPROTCLR) + ";}";
+    QString ErrWss = "QWidget {background-color: " + QString(Colors::ERPROTCLR) + ";}";
     w->setStyleSheet(ErrWss);
     ETableView *tv = new ETableView;
     Model = new ErrorProtocolModel;
@@ -23,7 +23,7 @@ ErrorProtocolWidget::ErrorProtocolWidget(QWidget *parent) : QWidget(parent)
     Model->setHeaderData(3, Qt::Horizontal, "Тип сообщения", Qt::EditRole);
     Model->setHeaderData(4, Qt::Horizontal, "Сообщение", Qt::EditRole);
     tv->setModel(Model);
-    QString Tvss = "QHeaderView::section {background-color: " + QString(ERPROTCLR) + ";}";
+    QString Tvss = "QHeaderView::section {background-color: " + QString(Colors::ERPROTCLR) + ";}";
     tv->horizontalHeader()->setStyleSheet(Tvss);
     tv->resizeColumnsToContents();
     connect(Model, SIGNAL(dataChanged(QModelIndex, QModelIndex)), tv, SLOT(resizeColumnsToContents()));

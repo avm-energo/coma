@@ -5,7 +5,6 @@
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
 #include "../usb/commands.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
@@ -24,7 +23,7 @@
 
 CheckDialogVibrKDV::CheckDialogVibrKDV(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {
-    QString tmps = "QDialog {background-color: " + QString(UCONFCLR) + ";}";
+    QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
     QStringList sl;
     BdNum = 12;
@@ -60,45 +59,23 @@ QWidget *CheckDialogVibrKDV::BdUI(int bdnum)
         return new QWidget;
     }
 }
-void CheckDialogVibrKDV::RefreshAnalogValues(int bdnum)
-{
-    Q_UNUSED(bdnum)
-}
+void CheckDialogVibrKDV::RefreshAnalogValues(int bdnum) { Q_UNUSED(bdnum) }
 
-void CheckDialogVibrKDV::PrepareHeadersForFile(int row)
-{
-    Q_UNUSED(row)
-}
+void CheckDialogVibrKDV::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
 
 void CheckDialogVibrKDV::WriteToFile(int row, int bdnum)
 {
     Q_UNUSED(row);
     Q_UNUSED(bdnum);
 }
-QWidget *CheckDialogVibrKDV::CustomTab()
-{
+QWidget *CheckDialogVibrKDV::CustomTab() { return nullptr; }
+void CheckDialogVibrKDV::ChooseValuesToWrite() { }
+void CheckDialogVibrKDV::SetDefaultValuesToWrite() { }
+void CheckDialogVibrKDV::PrepareAnalogMeasurements() { }
 
-    return nullptr;
-}
-void CheckDialogVibrKDV::ChooseValuesToWrite()
-{
-}
-void CheckDialogVibrKDV::SetDefaultValuesToWrite()
-{
-}
-void CheckDialogVibrKDV::PrepareAnalogMeasurements()
-{
-}
+void CheckDialogVibrKDV::StartBdMeasurements() { BdTimer->start(); }
 
-void CheckDialogVibrKDV::StartBdMeasurements()
-{
-    BdTimer->start();
-}
-
-void CheckDialogVibrKDV::StopBdMeasurements()
-{
-    BdTimer->stop();
-}
+void CheckDialogVibrKDV::StopBdMeasurements() { BdTimer->stop(); }
 
 void CheckDialogVibrKDV::USBUpdate()
 {
@@ -125,10 +102,7 @@ void CheckDialogVibrKDV::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
     }
 }
 
-void CheckDialogVibrKDV::UpdateSponData(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal);
-}
+void CheckDialogVibrKDV::UpdateSponData(IEC104Thread::SponSignals *Signal) { Q_UNUSED(Signal); }
 
 void CheckDialogVibrKDV::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
@@ -150,15 +124,9 @@ void CheckDialogVibrKDV::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 void CheckDialogVibrKDV::onModbusStateChanged(ConnectionStates state)
 {
     if (state == ConnectionStates::ConnectedState)
-        EMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
+        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 
-void CheckDialogVibrKDV::SetPredAlarmColor(quint8 *PredAlarm)
-{
-    Q_UNUSED(PredAlarm);
-}
+void CheckDialogVibrKDV::SetPredAlarmColor(quint8 *PredAlarm) { Q_UNUSED(PredAlarm); }
 
-void CheckDialogVibrKDV::SetAlarmColor(quint8 *Alarm)
-{
-    Q_UNUSED(Alarm);
-}
+void CheckDialogVibrKDV::SetAlarmColor(quint8 *Alarm) { Q_UNUSED(Alarm); }

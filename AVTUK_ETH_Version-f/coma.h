@@ -19,6 +19,9 @@
 #include "../dialogs/infodialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/mnktime.h"
+#ifdef AVM_DEBUG
+#include "../tune/eabstracttunedialog.h"
+#endif
 #include "../widgets/etabwidget.h"
 
 #include <QMainWindow>
@@ -193,14 +196,15 @@ private:
     AlarmClass *Alarm;
     QWidget *Parent;
 
-    // AbstractAlarm *AbstrALARM;
-
     InfoDialog *infoDialog;
     ConfDialog *mainConfDialog;
     ConfDialog *mainTuneDialog;
     AbstractCorDialog *corDialog;
     AbstractConfDialog *confBDialog, *confMDialog;
     EAbstractCheckDialog *checkBDialog, *checkMDialog, *HarmDialog, *VibrDialog;
+#ifdef AVM_DEBUG
+    EAbstractTuneDialog *tuneDialog;
+#endif
     JournalDialog *jourDialog;
     fwupdialog *fwUpDialog;
     MNKTime *timeDialog;
@@ -219,7 +223,7 @@ private:
 
     QString SavePort;
 
-    QVector<S2::DataRec> S2ConfigForTune;
+    QVector<S2::DataRec> *S2ConfigForTune;
     QVector<S2::DataRec> *S2Config;
 
     quint8 PredAlarmEvents[20];

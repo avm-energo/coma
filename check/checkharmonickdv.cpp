@@ -13,8 +13,8 @@ CheckHarmonicKDV::CheckHarmonicKDV()
     ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; "
                    "padding: 1px; color: black;"
                    "background-color: "
-        + QString(ACONFOCLR) + "; font: bold 10px;}";
-    WidgetFormat = "QWidget {background-color: " + QString(UCONFCLR) + ";}";
+        + QString(Colors::ACONFOCLR) + "; font: bold 10px;}";
+    WidgetFormat = "QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}";
 }
 
 QWidget *CheckHarmonicKDV::Bd6W(QWidget *parent)

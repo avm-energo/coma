@@ -13,6 +13,8 @@ public:
 
     QString data(int column) const;
     void setData(int column, const QString &value);
+    template <typename T> T uData(int column) const;
+    template <typename T> void setUData(int column, T data);
     void appendData(const QString &value);
     void setColor(int column, QColor color);
     void setFont(int column, QFont font);
@@ -25,6 +27,7 @@ public:
 
 private:
     QStringList itemData; // содержимое строки
+    QList<QVariant> itemUData; // содержимое по UserRole
     QList<QColor> itemColor;
     QList<QFont> itemFont;
     QList<QIcon> itemIcon;

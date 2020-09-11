@@ -5,7 +5,6 @@
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
 #include "../usb/commands.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
@@ -25,7 +24,7 @@
 CheckDialogHarmonicKTF::CheckDialogHarmonicKTF(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 
 {
-    QString tmps = "QDialog {background-color: " + QString(UCONFCLR) + ";}";
+    QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
     QStringList sl;
     BdNum = 12;
@@ -81,15 +80,9 @@ QWidget *CheckDialogHarmonicKTF::BdUI(int bdnum)
         return new QWidget;
     }
 }
-void CheckDialogHarmonicKTF::RefreshAnalogValues(int bdnum)
-{
-    Q_UNUSED(bdnum)
-}
+void CheckDialogHarmonicKTF::RefreshAnalogValues(int bdnum) { Q_UNUSED(bdnum) }
 
-void CheckDialogHarmonicKTF::PrepareHeadersForFile(int row)
-{
-    Q_UNUSED(row)
-}
+void CheckDialogHarmonicKTF::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
 
 void CheckDialogHarmonicKTF::WriteToFile(int row, int bdnum)
 {
@@ -112,25 +105,13 @@ QWidget *CheckDialogHarmonicKTF::CustomTab()
     //    w->setLayout(lyout);
     return nullptr;
 }
-void CheckDialogHarmonicKTF::ChooseValuesToWrite()
-{
-}
-void CheckDialogHarmonicKTF::SetDefaultValuesToWrite()
-{
-}
-void CheckDialogHarmonicKTF::PrepareAnalogMeasurements()
-{
-}
+void CheckDialogHarmonicKTF::ChooseValuesToWrite() { }
+void CheckDialogHarmonicKTF::SetDefaultValuesToWrite() { }
+void CheckDialogHarmonicKTF::PrepareAnalogMeasurements() { }
 
-void CheckDialogHarmonicKTF::StartBdMeasurements()
-{
-    BdTimer->start();
-}
+void CheckDialogHarmonicKTF::StartBdMeasurements() { BdTimer->start(); }
 
-void CheckDialogHarmonicKTF::StopBdMeasurements()
-{
-    BdTimer->stop();
-}
+void CheckDialogHarmonicKTF::StopBdMeasurements() { BdTimer->stop(); }
 
 void CheckDialogHarmonicKTF::USBUpdate()
 {
@@ -157,10 +138,7 @@ void CheckDialogHarmonicKTF::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
     }
 }
 
-void CheckDialogHarmonicKTF::UpdateSponData(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal);
-}
+void CheckDialogHarmonicKTF::UpdateSponData(IEC104Thread::SponSignals *Signal) { Q_UNUSED(Signal); }
 
 void CheckDialogHarmonicKTF::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
@@ -182,15 +160,9 @@ void CheckDialogHarmonicKTF::UpdateModBusData(QList<ModBus::SignalStruct> Signal
 void CheckDialogHarmonicKTF::onModbusStateChanged(ConnectionStates state)
 {
     if (state == ConnectionStates::ConnectedState)
-        EMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
+        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 
-void CheckDialogHarmonicKTF::SetPredAlarmColor(quint8 *PredAlarm)
-{
-    Q_UNUSED(PredAlarm);
-}
+void CheckDialogHarmonicKTF::SetPredAlarmColor(quint8 *PredAlarm) { Q_UNUSED(PredAlarm); }
 
-void CheckDialogHarmonicKTF::SetAlarmColor(quint8 *Alarm)
-{
-    Q_UNUSED(Alarm);
-}
+void CheckDialogHarmonicKTF::SetAlarmColor(quint8 *Alarm) { Q_UNUSED(Alarm); }

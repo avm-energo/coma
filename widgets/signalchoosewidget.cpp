@@ -8,7 +8,7 @@
 SignalChooseWidget::SignalChooseWidget(QStringList &snames, QStringList &discr, QWidget *parent) : QWidget(parent)
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    QString tmps = "QDialog {background-color: " + QString(MAINWINCLRA1) + ";}";
+    QString tmps = "QDialog {background-color: " + QString(Colors::MAINWINCLRA1) + ";}";
     setStyleSheet(tmps);
     for (int i = 0; i < snames.size(); ++i)
     {

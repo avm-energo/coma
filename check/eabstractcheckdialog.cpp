@@ -4,7 +4,6 @@
 #include "../gen/error.h"
 #include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/etabwidget.h"
 #include "../widgets/wd_func.h"
 
@@ -48,11 +47,11 @@ void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
 
-    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(TABCOLORA1) + ";}";
+    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLORA1) + ";}";
 
     //    QString ConfTWss = "QTabBar::tab {margin-right: 0px; margin-left: 0px; padding: 5px;}"
     //                       "QTabBar::tab:selected {background-color: "
-    //        + QString(TABCOLORA1)
+    //        + QString(Colors::TABCOLORA1)
     //        + ";"
     //          "border: 1px solid #000000;"
     //          "border-top-left-radius: 4px;"
@@ -76,9 +75,7 @@ void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
     setLayout(lyout);
 }
 
-void EAbstractCheckDialog::Check1PPS()
-{
-}
+void EAbstractCheckDialog::Check1PPS() { }
 
 void EAbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
 {
@@ -230,7 +227,7 @@ void EAbstractCheckDialog::StopAnalogMeasurements()
         if (xlsx)
         {
             xlsx->save();
-            EMessageBox::information(this, "Внимание", "Файл создан успешно");
+            QMessageBox::information(this, "Внимание", "Файл создан успешно");
             delete xlsx;
         }
         QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
@@ -247,10 +244,7 @@ void EAbstractCheckDialog::StopAnalogMeasurements()
     Timer->stop();
 }
 
-void EAbstractCheckDialog::TimerTimeout()
-{
-    ReadAnalogMeasurementsAndWriteToFile();
-}
+void EAbstractCheckDialog::TimerTimeout() { ReadAnalogMeasurementsAndWriteToFile(); }
 
 void EAbstractCheckDialog::SetTimerPeriod()
 {

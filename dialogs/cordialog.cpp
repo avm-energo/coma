@@ -9,7 +9,6 @@
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../usb/commands.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
@@ -54,21 +53,19 @@ CorDialog::CorDialog(QWidget *parent) : AbstractCorDialog(parent)
     // MessageTimer->start();
 }
 
-CorDialog::~CorDialog()
-{
-}
+CorDialog::~CorDialog() { }
 
 void CorDialog::SetupUI()
 {
     // QWidget *cp2 = new QWidget;
-    QString tmps = "QDialog {background-color: " + QString(ACONFCLR) + ";}";
+    QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     ETableView *tv = new ETableView;
     tv->setObjectName("cor");
     int row = 0;
-    QString paramcolor = MAINWINCLR;
+    QString paramcolor = Colors::MAINWINCLR;
     QPushButton *pb = new QPushButton();
 
     glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения емкостей вводов, пФ:"), row, 1, 1, 1);
@@ -213,7 +210,7 @@ void CorDialog::GetCorBd(int index)
             if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
             {
                 FillCor();
-                EMessageBox::information(this, "INFO", "Прочитано успешно");
+                QMessageBox::information(this, "INFO", "Прочитано успешно");
             }
         }
         /*        else if (MainInterface == I_RS485)
@@ -236,7 +233,7 @@ void CorDialog::GetCorBdButton()
         if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
         {
             FillCor();
-            EMessageBox::information(this, "INFO", "Прочитано успешно");
+            QMessageBox::information(this, "INFO", "Прочитано успешно");
         }
     }
     else if (MainInterface == I_RS485)
@@ -281,9 +278,9 @@ void CorDialog::WriteCorBd()
         else if (MainInterface == I_USB)
         {
             if (Commands::WriteBd(7, CorBlock, sizeof(CorData)) == NOERROR)
-                EMessageBox::information(this, "INFO", "Записано успешно");
+                QMessageBox::information(this, "INFO", "Записано успешно");
             else
-                EMessageBox::information(this, "INFO", "Ошибка");
+                QMessageBox::information(this, "INFO", "Ошибка");
 
             if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == NOERROR)
                 FillCor();
@@ -298,7 +295,7 @@ void CorDialog::WriteCor()
         if (MainInterface == I_ETHERNET)
         {
             emit SendCom45(SETINITREG);
-            EMessageBox::information(this, "INFO", "Задано успешно");
+            QMessageBox::information(this, "INFO", "Задано успешно");
             emit CorReadRequest();
         }
         else if (MainInterface == I_RS485)
@@ -307,7 +304,7 @@ void CorDialog::WriteCor()
             info.size = 1;
             info.adr = SETINITREG;
             emit RS485WriteCorBd(info, nullptr);
-            EMessageBox::information(this, "INFO", "Задано успешно");
+            QMessageBox::information(this, "INFO", "Задано успешно");
             info.size = (sizeof(CorData) / 4);
             info.adr = 4000;
             emit RS485ReadCorBd(info);
@@ -319,11 +316,11 @@ void CorDialog::WriteCor()
                 if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
                 {
                     FillCor();
-                    EMessageBox::information(this, "INFO", "Задано и прочитано успешно");
+                    QMessageBox::information(this, "INFO", "Задано и прочитано успешно");
                 }
             }
             else
-                EMessageBox::information(this, "INFO", "Ошибка");
+                QMessageBox::information(this, "INFO", "Ошибка");
         }
     }
 }
@@ -337,9 +334,9 @@ void CorDialog::SetCor()
     else if (MainInterface == I_USB)
     {
         if (Commands::WriteCom(4) == NOERROR)
-            EMessageBox::information(this, "INFO", "Записано успешно");
+            QMessageBox::information(this, "INFO", "Записано успешно");
         else
-            EMessageBox::information(this, "INFO", "Ошибка");
+            QMessageBox::information(this, "INFO", "Ошибка");
     }
 }
 
@@ -361,9 +358,9 @@ void CorDialog::ResetCor()
         else if (MainInterface == I_USB)
         {
             if (Commands::WriteCom(5) == NOERROR)
-                EMessageBox::information(this, "INFO", "Сброшено успешно");
+                QMessageBox::information(this, "INFO", "Сброшено успешно");
             else
-                EMessageBox::information(this, "INFO", "Ошибка");
+                QMessageBox::information(this, "INFO", "Ошибка");
 
             if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == NOERROR)
                 FillCor();
@@ -384,10 +381,7 @@ float CorDialog::ToFloat(QString text)
     return tmpf;
 }
 
-void CorDialog::MessageOk()
-{
-    EMessageBox::information(this, "INFO", "Записано успешно");
-}
+void CorDialog::MessageOk() { QMessageBox::information(this, "INFO", "Записано успешно"); }
 
 void CorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
 {
@@ -405,7 +399,7 @@ void CorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
         }
 
         if (first)
-            EMessageBox::information(this, "INFO", "Прочитано успешно");
+            QMessageBox::information(this, "INFO", "Прочитано успешно");
         else
             first = 1;
     }
@@ -431,14 +425,14 @@ void CorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
             {
                 FillBd(this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal));
             }
-            EMessageBox::information(this, "INFO", "Прочитано успешно");
+            QMessageBox::information(this, "INFO", "Прочитано успешно");
         }
     }
 }
 
 /*void CorDialog::ModbusCorDataWritten()
 {
-    EMessageBox::information(this, "INFO", "Записано успешно");
+    QMessageBox::information(this, "INFO", "Записано успешно");
 } */
 
 void CorDialog::SaveToFile()
@@ -452,16 +446,16 @@ void CorDialog::SaveToFile()
     switch (res)
     {
     case Files::ER_NOERROR:
-        EMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
+        QMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
         break;
     case Files::ER_FILEWRITE:
-        EMessageBox::error(this, "Ошибка", "Ошибка при записи файла!");
+        QMessageBox::critical(this, "Ошибка", "Ошибка при записи файла!");
         break;
     case Files::ER_FILENAMEEMP:
-        EMessageBox::error(this, "Ошибка", "Пустое имя файла!");
+        QMessageBox::critical(this, "Ошибка", "Пустое имя файла!");
         break;
     case Files::ER_FILEOPEN:
-        EMessageBox::error(this, "Ошибка", "Ошибка открытия файла!");
+        QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла!");
         break;
     default:
         break;
@@ -476,7 +470,7 @@ void CorDialog::ReadFromFile()
     int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
     if (res != Files::ER_NOERROR)
     {
-        EMessageBox::error(this, "Ошибка", "Ошибка при загрузке файла");
+        QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");
         ERMSG("Ошибка при загрузке файла");
         return;
     }
@@ -484,7 +478,7 @@ void CorDialog::ReadFromFile()
     memcpy(CorBlock, &(ba.data()[0]), sizeof(*CorBlock));
 
     FillCor();
-    EMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
+    QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
 int CorDialog::WriteCheckPassword()
@@ -502,7 +496,7 @@ int CorDialog::WriteCheckPassword()
         return GENERALERROR;
     if (!ok)
     {
-        EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
+        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
         return GENERALERROR;
     }
     return NOERROR;
@@ -525,10 +519,7 @@ void CorDialog::TimerTimeout()
 
 /*void CorDialog::WriteCorMessageOk()
 {
-   EMessageBox::information(this, "Успешно", "Записано успешно!");
+   QMessageBox::information(this, "Успешно", "Записано успешно!");
 } */
 
-void CorDialog::ErrorRead()
-{
-    EMessageBox::information(this, "Ошибка", "Ошибка чтения");
-}
+void CorDialog::ErrorRead() { QMessageBox::information(this, "Ошибка", "Ошибка чтения"); }

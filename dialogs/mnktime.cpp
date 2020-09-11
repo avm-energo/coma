@@ -6,12 +6,12 @@
 #include "../gen/timefunc.h"
 #include "../usb/commands.h"
 #include "../widgets/ecombobox.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QTabWidget>
 #include <QThread>
@@ -28,9 +28,7 @@ MNKTime::MNKTime(QWidget *parent) : QDialog(parent)
     SetupUI();
 }
 
-MNKTime::~MNKTime()
-{
-}
+MNKTime::~MNKTime() { }
 
 void MNKTime::SetupUI()
 {
@@ -42,7 +40,7 @@ void MNKTime::SetupUI()
     QWidget *extraconf = new QWidget;
     QWidget *MEKconf = new QWidget;
     QWidget *time = new QWidget;
-    QString tmps = "QWidget {background-color: " + QString(ACONFWCLR) + ";}";
+    QString tmps = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
     analog1->setStyleSheet(tmps);
     analog2->setStyleSheet(tmps);
     extraconf->setStyleSheet(tmps);
@@ -50,7 +48,7 @@ void MNKTime::SetupUI()
     MEKconf->setStyleSheet(tmps);
     int row = 0;
 
-    QString paramcolor = MAINWINCLR;
+    QString paramcolor = Colors::MAINWINCLR;
 
     QGroupBox *gb = new QGroupBox;
     vlyout1 = new QVBoxLayout;
@@ -71,7 +69,7 @@ void MNKTime::SetupUI()
     //    QDateTime dt = QDateTime::currentDateTime();
     glyout->addWidget(WDFunc::NewLBLT(this, QDateTime::currentDateTimeUtc().toString("yyyy-MM-ddTHH:mm:ss"), "systime"),
         row++, 2, 1, 4, Qt::AlignTop);
-    tmps = "QWidget {background-color: " + QString(MAINWINCLR) + ";}";
+    tmps = "QWidget {background-color: " + QString(Colors::MAINWINCLR) + ";}";
     QPushButton *Button = new QPushButton("Записать дату и время ПК в модуль");
     Button->setStyleSheet(tmps);
     glyout->addWidget(Button, row++, 1, 1, 6, Qt::AlignTop);
@@ -100,7 +98,7 @@ void MNKTime::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
-    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(TABCOLOR) + ";}";
+    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLOR) + ";}";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
     ConfTW->addTab(time, "Время");
     lyout->addWidget(ConfTW);
@@ -153,8 +151,8 @@ void MNKTime::WriteTime(QDateTime &myDateTime)
     {
         TimeFunc::Wait(100);
         if (Commands::WriteTimeMNK(time, sizeof(uint)) != NOERROR)
-            EMessageBox::information(this, "INFO",
-                "Ошибка"); // EMessageBox::information(this,
+            QMessageBox::information(this, "INFO",
+                "Ошибка"); // QMessageBox::information(this,
                            // "INFO", "Записано успешно");
     }
     else if (MainInterface == I_ETHERNET)
@@ -220,12 +218,6 @@ void MNKTime::FillTimeFromModBus(QList<ModBus::BSISignalStruct> Time)
     }
 }
 
-void MNKTime::ErrorRead()
-{
-    WDFunc::SetLEData(this, "systime2", "Ошибка чтения");
-}
+void MNKTime::ErrorRead() { WDFunc::SetLEData(this, "systime2", "Ошибка чтения"); }
 
-void MNKTime::TimeWritten()
-{
-    EMessageBox::information(this, "Успешно", "Время записано успешно");
-}
+void MNKTime::TimeWritten() { QMessageBox::information(this, "Успешно", "Время записано успешно"); }

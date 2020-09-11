@@ -22,7 +22,7 @@ void InfoDialog::SetupUI()
     quint32 TempMTypeB = MTypeB << 8;
     quint32 MType = TempMTypeB + MTypeM;
 
-    QString tmps = "QDialog {background-color: " + QString(MAINWINCLRA1) + ";}";
+    QString tmps = "QDialog {background-color: " + QString(Colors::MAINWINCLRA1) + ";}";
     setStyleSheet(tmps);
     setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;

@@ -23,16 +23,16 @@ ConfDialog::ConfDialog(QVector<S2::DataRec> *S2Config, quint32 MTypeB, quint32 M
     ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; "
                    "padding: 1px; color: black;"
                    "background-color: "
-        + QString(ACONFOCLR) + "; font: bold 10px;}";
-    WidgetFormat = "QWidget {background-color: " + QString(ACONFWCLR) + ";}";
-    // QString tmps = "QWidget {background-color: " + QString(ACONFWCLR) + ";}";
+        + QString(Colors::ACONFOCLR) + "; font: bold 10px;}";
+    WidgetFormat = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
+    // QString tmps = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
 }
 
 QWidget *ConfDialog::SetupMainBlk(QObject *parent)
 {
     ParentMainbl = parent;
     QWidget *w = new QWidget;
-    QString paramcolor = MAINWINCLR;
+    QString paramcolor = Colors::MAINWINCLR;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
 
@@ -86,7 +86,7 @@ QWidget *ConfDialog::SetupMainBlk(QObject *parent)
 QWidget *ConfDialog::SetupTime(QObject *parent)
 {
     ParentCtype = parent;
-    QString paramcolor = MAINWINCLR;
+    QString paramcolor = Colors::MAINWINCLR;
     QWidget *w = new QWidget;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;

@@ -6,9 +6,7 @@
 #include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include "../models/getoscpbdelegate.h"
 #include "../usb/commands.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 #include <QAbstractItemModelTester>
@@ -50,18 +48,16 @@ JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
     SetupUI();
 }
 
-JournalDialog::~JournalDialog()
-{
-}
+JournalDialog::~JournalDialog() { }
 
 void JournalDialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     /*    QVBoxLayout *vlyout = new QVBoxLayout;
         QHBoxLayout *hlyout = new QHBoxLayout; */
-    QString tmps = "QDialog {background-color: " + QString(ACONFCLR) + ";}";
+    QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
-    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(TABCOLOR) + ";}";
+    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLOR) + ";}";
 
     /*    QTabWidget *work = new QTabWidget;
         work->tabBar()->setStyleSheet(ConfTWss);
@@ -225,15 +221,9 @@ void JournalDialog::TryGetJourByUSB()
         GetJour();
 }
 
-void JournalDialog::GetJour()
-{
-    emit StartGetJour();
-}
+void JournalDialog::GetJour() { emit StartGetJour(); }
 
-void JournalDialog::JourFileChoosed(QString &file)
-{
-    JourFile = file;
-}
+void JournalDialog::JourFileChoosed(QString &file) { JourFile = file; }
 
 void JournalDialog::EraseJour()
 {
@@ -251,11 +241,11 @@ void JournalDialog::EraseJour()
 
             if (Commands::EraseTechBlock(num) == NOERROR)
             {
-                EMessageBox::information(this, "Успешно", "Стирание прошло успешно");
+                QMessageBox::information(this, "Успешно", "Стирание прошло успешно");
             }
             else
             {
-                EMessageBox::information(this, "Ошибка", "Ошибка");
+                QMessageBox::information(this, "Ошибка", "Ошибка");
             }
         }
     }
@@ -268,7 +258,7 @@ void JournalDialog::SaveJour()
     int jtype = GetJourNum(sender()->objectName());
     if (jtype == GENERALERROR)
     {
-        EMessageBox::error(this, "Ошибка", "Ошибочный тип журнала");
+        QMessageBox::critical(this, "Ошибка", "Ошибочный тип журнала");
         return;
     }
 
@@ -291,7 +281,7 @@ void JournalDialog::SaveJour()
     QAbstractItemModel *amdl = WDFunc::TVModel(this, tvname);
     if (amdl == nullptr)
     {
-        EMessageBox::error(this, "Ошибка", "Данные ещё не получены");
+        QMessageBox::critical(this, "Ошибка", "Данные ещё не получены");
         return;
     }
     jourfilestr += QString::number(MTypeB, 16) + QString::number(MTypeM, 16) + " #"
@@ -339,7 +329,7 @@ int JournalDialog::WriteCheckPassword()
         return GENERALERROR;
     if (!ok)
     {
-        EMessageBox::error(this, "Неправильно", "Пароль введён неверно");
+        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
         return GENERALERROR;
     }
     return NOERROR;
@@ -390,7 +380,7 @@ void JournalDialog::Done(QString msg, int)
     disconnect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
     // MsgBox->closeEvent(QMessageBox::DestructiveRole);
     //    QApplication::restoreOverrideCursor();
-    // EMessageBox::information(this, "Успешно", msg);
+    // QMessageBox::information(this, "Успешно", msg);
 }
 
 void JournalDialog::Error(QString msg)
@@ -405,7 +395,7 @@ void JournalDialog::Error(QString msg)
     disconnect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
     ERMSG(msg);
     //    QApplication::restoreOverrideCursor();
-    EMessageBox::error(this, "Ошибка", msg);
+    QMessageBox::critical(this, "Ошибка", msg);
 }
 
 // void JournalDialog::SetModel(ETableModel *mdl)

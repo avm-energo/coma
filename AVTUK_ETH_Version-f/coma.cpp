@@ -31,6 +31,9 @@
 #include "../config/confdialogkdv.h"
 #include "../config/confdialogkiv.h"
 #include "../config/confdialogktf.h"
+#ifdef AVM_DEBUG
+#include "../tune/tunedialogKIV.h"
+#endif
 #include "../dialogs/errordialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../gen/files.h"
@@ -92,7 +95,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
 #endif
 
     S2Config = new QVector<S2::DataRec>;
-    S2ConfigForTune.clear();
+    S2ConfigForTune = new QVector<S2::DataRec>;
     Disconnected = true;
     Reconnect = false;
     timeDialog = nullptr;
@@ -100,6 +103,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     confBDialog = confMDialog = nullptr;
     checkBDialog = checkMDialog = nullptr;
     AlarmStateAllDialog = nullptr;
+    tuneDialog = nullptr;
     HarmDialog = nullptr;
     VibrDialog = nullptr;
     corDialog = nullptr;
@@ -126,7 +130,7 @@ Coma::~Coma()
 void Coma::SetupUI()
 {
     setWindowTitle(PROGCAPTION);
-    QString tmps = "QMainWindow {background-color: " + QString(MAINWINCLR) + ";}";
+    QString tmps = "QMainWindow {background-color: " + QString(Colors::MAINWINCLR) + ";}";
     setStyleSheet(tmps);
     setMinimumSize(QSize(1050, 700));
     QWidget *wdgt = new QWidget(this);
@@ -214,10 +218,10 @@ QWidget *Coma::Least()
 void Coma::SetupMenubar()
 {
     QMenuBar *menubar = new QMenuBar(this);
-    QString tmps = "QMenuBar {background-color: " + QString(MAINWINCLRA1)
+    QString tmps = "QMenuBar {background-color: " + QString(Colors::MAINWINCLRA1)
         + ";}"
           "QMenuBar::item {background-color: "
-        + QString(MAINWINCLRA1) + ";}";
+        + QString(Colors::MAINWINCLRA1) + ";}";
     menubar->setStyleSheet(tmps);
     QMenu *menu = new QMenu(this);
     menu->setTitle("Главное");
@@ -265,14 +269,12 @@ void Coma::StartWork()
         connect(this, &Coma::CloseConnectDialog, &loop, &QEventLoop::quit);
         dlg->show();
         loop.exec();
-        //        ShowInterfaceDialog();
-        //        ShowConnectDialog();
         if (Cancelled)
         {
             ERMSG("Отмена подключения");
             return;
         }
-        S2ConfigForTune.clear();
+        S2ConfigForTune->clear();
         SaveSettings();
     }
 
@@ -312,7 +314,6 @@ void Coma::StartWork()
             if (ModuleBSI::ModuleTypeString != "")
                 QMessageBox::information(
                     this, "Успешно", "Связь с " + ModuleBSI::ModuleTypeString + " установлена", QMessageBox::Ok);
-            // EMessageBox::information(this, "Успешно", "Связь с " + ModuleBSI::ModuleTypeString + " установлена");
             else
             {
                 QMessageBox::critical(this, "Ошибка", "Неизвестный тип модуля", QMessageBox::Ok);
@@ -403,7 +404,7 @@ void Coma::StartWork()
         {
             confBDialog->SetDefConf();
             QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
-            // EMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
+            // QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
         }
         connect(confBDialog, &AbstractConfDialog::NewConfToBeLoaded, this, &Coma::Fill);
         connect(confBDialog, &AbstractConfDialog::DefConfToBeLoaded, this, &Coma::SetDefConf);
@@ -473,6 +474,10 @@ void Coma::StartWork()
         MainTW->addTab(fwUpDialog, "Загрузка ВПО");
     }
 
+#ifdef AVM_DEBUG
+    if (tuneDialog != nullptr)
+        MainTW->addTab(tuneDialog, "Регулировка");
+#endif
     MainTW->addTab(infoDialog, "О приборе");
     infoDialog->FillBsi();
 
@@ -518,6 +523,9 @@ void Coma::PrepareDialogs()
             connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
             connect(AlarmW, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
 
+#ifdef AVM_DEBUG
+            tuneDialog = new TuneDialogKIV(S2ConfigForTune);
+#endif
             break;
 
         case Config::MTM_87:
@@ -816,10 +824,7 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
     return false;
 }
 
-void Coma::SetMode(int mode)
-{
-    Mode = mode;
-}
+void Coma::SetMode(int mode) { Mode = mode; }
 
 void Coma::Go(const QString &parameter)
 {
@@ -1051,15 +1056,9 @@ void Coma::FileTimeOut()
         QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
 }
 
-void Coma::SetProgressBar2Size(int size)
-{
-    SetProgressBarSize(2, size);
-}
+void Coma::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
 
-void Coma::SetProgressBar2(int cursize)
-{
-    SetProgressBar(2, cursize);
-}
+void Coma::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
 
 void Coma::SetProgressBarSize(int prbnum, int size)
 {
@@ -1142,7 +1141,7 @@ void Coma::DisconnectAndClear()
         // if (Reconnect)
         //    QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
         //        else
-        //            EMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
+        //            QMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
         MainTW->hide();
         StdFunc::SetEmulated(false);
     }
@@ -1150,10 +1149,7 @@ void Coma::DisconnectAndClear()
     Reconnect = false;
 }
 
-void Coma::resizeEvent(QResizeEvent *e)
-{
-    QMainWindow::resizeEvent(e);
-}
+void Coma::resizeEvent(QResizeEvent *e) { QMainWindow::resizeEvent(e); }
 
 void Coma::keyPressEvent(QKeyEvent *e)
 {

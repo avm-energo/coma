@@ -38,7 +38,6 @@ public:
     void addColumn(
         const QString hdrtext); // добавление новой колонки с текстом в заголовке hdrtext для варианта двух столбцов
     void addRow(); // добавление строки
-    void setCellAttr(QModelIndex index, int fcset = 0, int icon = -1);
     void setRowAttr(int fcset = 0, int icon = -1);
     void clearModel();
     void fillModel(QVector<QVector<QVariant>> &);
@@ -62,9 +61,6 @@ private:
     QList<ETableItem *> maindata;
     QList<int> ColFormat;
     QStringList hdr;
-    QColor colors[6]; // определение набора цветов шрифта
-    QFont fonts[6]; // определение набора шрифтов
-    QIcon icons[6]; // определение набора иконок
 };
 
 #endif // ETABLEMODEL_H

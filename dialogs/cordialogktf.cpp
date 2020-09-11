@@ -9,7 +9,6 @@
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../usb/commands.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
@@ -43,21 +42,19 @@ CorDialogKTF::CorDialogKTF(QWidget *parent) : AbstractCorDialog(parent)
     SetupUI();
 }
 
-CorDialogKTF::~CorDialogKTF()
-{
-}
+CorDialogKTF::~CorDialogKTF() { }
 
 void CorDialogKTF::SetupUI()
 {
     // QWidget *cp2 = new QWidget;
-    QString tmps = "QDialog {background-color: " + QString(ACONFCLR) + ";}";
+    QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     ETableView *tv = new ETableView;
     tv->setObjectName("cor");
     int row = 0;
-    QString paramcolor = MAINWINCLR;
+    QString paramcolor = Colors::MAINWINCLR;
     QPushButton *pb = new QPushButton;
 
     glyout->addWidget(WDFunc::NewLBL(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
@@ -99,17 +96,9 @@ void CorDialogKTF::SetupUI()
     setLayout(lyout);
 }
 
-void CorDialogKTF::FillBackCor()
-{
+void CorDialogKTF::FillBackCor() { WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge); }
 
-    WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge);
-}
-
-void CorDialogKTF::FillCor()
-{
-
-    WDFunc::SetSPBData(this, QString::number(907), Bd9Block->Age);
-}
+void CorDialogKTF::FillCor() { WDFunc::SetSPBData(this, QString::number(907), Bd9Block->Age); }
 
 void CorDialogKTF::GetCorBd(int index)
 {
@@ -120,7 +109,7 @@ void CorDialogKTF::GetCorBd(int index)
             if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == NOERROR)
             {
                 FillCor();
-                EMessageBox::information(this, "INFO", "Прочитано успешно");
+                QMessageBox::information(this, "INFO", "Прочитано успешно");
             }
         }
 
@@ -137,7 +126,7 @@ void CorDialogKTF::GetCorBdButton()
         if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == NOERROR)
         {
             FillCor();
-            EMessageBox::information(this, "INFO", "Прочитано успешно");
+            QMessageBox::information(this, "INFO", "Прочитано успешно");
         }
     }
     else if (MainInterface == I_RS485)
@@ -180,9 +169,9 @@ void CorDialogKTF::WriteCorBd()
         else if (MainInterface == I_USB)
         {
             if (Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == NOERROR)
-                EMessageBox::information(this, "INFO", "Записано успешно");
+                QMessageBox::information(this, "INFO", "Записано успешно");
             else
-                EMessageBox::information(this, "INFO", "Ошибка");
+                QMessageBox::information(this, "INFO", "Ошибка");
 
             //......
             //            QThread::sleep(1);
@@ -192,13 +181,9 @@ void CorDialogKTF::WriteCorBd()
     }
 }
 
-void CorDialogKTF::WriteCor()
-{
-}
+void CorDialogKTF::WriteCor() { }
 
-void CorDialogKTF::ResetCor()
-{
-}
+void CorDialogKTF::ResetCor() { }
 
 void CorDialogKTF::SaveToFile()
 {
@@ -211,16 +196,16 @@ void CorDialogKTF::SaveToFile()
     switch (res)
     {
     case Files::ER_NOERROR:
-        EMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
+        QMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
         break;
     case Files::ER_FILEWRITE:
-        EMessageBox::error(this, "Ошибка", "Ошибка при записи файла!");
+        QMessageBox::critical(this, "Ошибка", "Ошибка при записи файла!");
         break;
     case Files::ER_FILENAMEEMP:
-        EMessageBox::error(this, "Ошибка", "Пустое имя файла!");
+        QMessageBox::critical(this, "Ошибка", "Пустое имя файла!");
         break;
     case Files::ER_FILEOPEN:
-        EMessageBox::error(this, "Ошибка", "Ошибка открытия файла!");
+        QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла!");
         break;
     default:
         break;
@@ -235,7 +220,7 @@ void CorDialogKTF::ReadFromFile()
     int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
     if (res != Files::ER_NOERROR)
     {
-        EMessageBox::error(this, "Ошибка", "Ошибка при загрузке файла");
+        QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");
         ERMSG("Ошибка при загрузке файла");
         return;
     }
@@ -244,5 +229,5 @@ void CorDialogKTF::ReadFromFile()
     //    memcpy(Bd9Block, &(ba.data()[0]), sizeof(*Bd9Block));
     memcpy(&Bd9Block->Age, &(ba.data()[0]), sizeof(float));
     FillCor();
-    EMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
+    QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }

@@ -4,7 +4,6 @@
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
 #include "../widgets/ecombobox.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
@@ -20,7 +19,7 @@
 
 ConfDialogKIV::ConfDialogKIV(QVector<S2::DataRec> *S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {
-    QString tmps = "QDialog {background-color: " + QString(ACONFCLR) + ";}";
+    QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
     this->S2Config = S2Config;
     CKIV = new ConfigKIV(S2Config);
@@ -32,9 +31,7 @@ ConfDialogKIV::ConfDialogKIV(QVector<S2::DataRec> *S2Config, QWidget *parent) : 
     PrereadConf();
 }
 
-ConfDialogKIV::~ConfDialogKIV()
-{
-}
+ConfDialogKIV::~ConfDialogKIV() { }
 
 void ConfDialogKIV::Fill()
 {
@@ -148,7 +145,7 @@ void ConfDialogKIV::SetupUI()
     QWidget *link = new QWidget;
     QWidget *Ust = new QWidget;
     QWidget *time = new QWidget;
-    QString tmps = "QWidget {background-color: " + QString(ACONFWCLR) + ";}";
+    QString tmps = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
     analog1->setStyleSheet(tmps);
     analog2->setStyleSheet(tmps);
     extraconf->setStyleSheet(tmps);
@@ -170,7 +167,7 @@ void ConfDialogKIV::SetupUI()
     scrArea->setFrameShape(QFrame::NoFrame);
     scrArea->setWidgetResizable(true);
 
-    QString paramcolor = MAINWINCLR;
+    QString paramcolor = Colors::MAINWINCLR;
     QFont font;
 
     QGroupBox *gb = new QGroupBox;
@@ -386,7 +383,7 @@ void ConfDialogKIV::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *ConfTW = new QTabWidget;
     ConfTW->setObjectName("conftw");
-    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(TABCOLOR) + ";}";
+    QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLOR) + ";}";
     ConfTW->tabBar()->setStyleSheet(ConfTWss);
     ConfTW->addTab(analog1, "Аналоговые");
 
@@ -404,9 +401,7 @@ void ConfDialogKIV::SetupUI()
     setLayout(lyout);
 }
 
-void ConfDialogKIV::CheckConf()
-{
-}
+void ConfDialogKIV::CheckConf() { }
 
 void ConfDialogKIV::SetDefConf()
 {
@@ -416,15 +411,9 @@ void ConfDialogKIV::SetDefConf()
     Fill();
 }
 
-void ConfDialogKIV::Start_Timer()
-{
-    timerRead->start(1000);
-}
+void ConfDialogKIV::Start_Timer() { timerRead->start(1000); }
 
-void ConfDialogKIV::Stop_Timer()
-{
-    timerRead->stop();
-}
+void ConfDialogKIV::Stop_Timer() { timerRead->stop(); }
 
 // void ConfDialogKIV::Write_PCDate()
 //{
