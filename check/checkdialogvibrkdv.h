@@ -1,12 +1,12 @@
 #ifndef CHECKDIALOGVIBRKDV_H
 #define CHECKDIALOGVIBRKDV_H
 
+#include "../gen/board.h"
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
 #include "check.h"
 #include "checkvibrkdv.h"
-//#include "checkktf.h"
 #include "eabstractcheckdialog.h"
 
 class CheckDialogVibrKDV : public EAbstractCheckDialog
@@ -50,7 +50,7 @@ private slots:
     void StartBdMeasurements();
     void StopBdMeasurements();
     void UpdateModBusData(QList<ModBus::SignalStruct> Signal);
-    void onModbusStateChanged(ConnectionStates state);
+    void onModbusStateChanged();
 };
 
 #endif // CHECKDIALOGVIBRKDV_H

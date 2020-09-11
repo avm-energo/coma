@@ -2,8 +2,8 @@
 #define JOURNALDIALOG_H
 
 #include "../dialogs/keypressdialog.h"
+#include "../gen/board.h"
 #include "../gen/journals.h"
-#include "../gen/maindef.h"
 #include "../gen/s2.h"
 #include "../iec104/iec104.h"
 #include "../models/etablemodel.h"
@@ -14,7 +14,8 @@
 #include <QMessageBox>
 #include <QModelIndex>
 #include <QProgressDialog>
-#include <QThread>
+//#include <QThread>
+#include <QSignalSpy>
 
 #define MAXSWJNUM 262144
 
@@ -64,7 +65,7 @@ private:
     bool ok;
     Journals *JourFuncs;
     QSortFilterProxyModel *ProxyWorkModel, *ProxySysModel, *ProxyMeasModel;
-
+    QSignalSpy *spy;
     int WriteCheckPassword();
     void StartReadJourFile();
 };

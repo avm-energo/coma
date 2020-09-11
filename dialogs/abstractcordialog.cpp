@@ -4,7 +4,6 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/maindef.h"
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
@@ -35,17 +34,19 @@ void AbstractCorDialog::GetCorBd(int index) { Q_UNUSED(index); }
 
 void AbstractCorDialog::SetCor()
 {
-    if (MainInterface == I_ETHERNET)
-    {
+    // if (MainInterface == I_ETHERNET)
+    //{
+    if (Board::GetInstance()->interfaceType() == Board::InterfaceType::Ethernet)
         emit SendCom45(903);
-    }
-    else if (MainInterface == I_USB)
-    {
+    //}
+    // else if (MainInterface == I_USB)
+    else if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+        //   {
         if (Commands::WriteCom(4) == NOERROR)
             QMessageBox::information(this, "INFO", "Записано успешно");
         else
             QMessageBox::information(this, "INFO", "Ошибка");
-    }
+    //    }
 }
 
 float AbstractCorDialog::ToFloat(QString text)

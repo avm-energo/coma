@@ -6,27 +6,9 @@
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 
-#include <QApplication>
 #include <QBoxLayout>
-#include <QCursor>
-#include <QDialog>
-#include <QDir>
-#include <QGroupBox>
-#include <QLabel>
-#include <QMenu>
-#include <QMenuBar>
-#include <QProgressBar>
-#include <QPushButton>
-#include <QSettings>
-#include <QSplashScreen>
-#include <QStandardPaths>
-#include <QStringListModel>
-#include <QToolBar>
 
-AlarmStateAll::AlarmStateAll(QDialog *parent) : AbstractAlarm(parent)
-{
-    AlarmState();
-}
+AlarmStateAll::AlarmStateAll(QDialog *parent) : AbstractAlarm(parent) { AlarmState(); }
 
 void AlarmStateAll::AlarmState()
 {
@@ -64,33 +46,23 @@ void AlarmStateAll::AlarmState()
     lyout->addWidget(pb, 0);
     this->setLayout(lyout);
 }
-void AlarmStateAll::WarnAlarmState()
-{
-}
-void AlarmStateAll::AvarState()
-{
-}
-void AlarmStateAll::Update(QList<bool>)
-{
-}
+void AlarmStateAll::WarnAlarmState() { }
+void AlarmStateAll::AvarState() { }
+void AlarmStateAll::Update(QList<bool>) { }
 
 void AlarmStateAll::UpdateHealth(quint32 health)
 {
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
+    float circleRadius = CIRCLE_RADIUS;
     QHBoxLayout *hlyout = new QHBoxLayout;
     for (quint32 i = 0; i < health; ++i)
     {
         hlyout = new QHBoxLayout;
 
         if (health & (0x00000001 << i))
-            WDFunc::SetLBLImage(this, QString::number(i), pmred);
+            WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::red, circleRadius));
         else
-            WDFunc::SetLBLImage(this, QString::number(i), pmgrn);
+            WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::green, circleRadius));
     }
 }
 
-void AlarmStateAll::CallUpdateHealth()
-{
-    this->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
-}
+void AlarmStateAll::CallUpdateHealth() { this->UpdateHealth(ModuleBSI::ModuleBsi.Hth); }

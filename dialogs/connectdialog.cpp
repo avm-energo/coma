@@ -1,7 +1,7 @@
 #include "connectdialog.h"
 
+#include "../gen/board.h"
 #include "../gen/error.h"
-#include "../gen/maindef.h"
 #include "../models/etablemodel.h"
 #include "../usb/eprotocom.h"
 #include "../widgets/wd_func.h"
@@ -14,7 +14,6 @@
 ConnectDialog::ConnectDialog()
 {
     QByteArray ba;
-    MainInterface = I_USB;
     QStringList intersl = QStringList() << "USB"
                                         << "Ethernet"
                                         << "RS485";
@@ -24,7 +23,6 @@ ConnectDialog::ConnectDialog()
 
     lyout->addWidget(WDFunc::NewLBL(this, "Выберите интерфейс связи"));
     lyout->addWidget(WDFunc::NewCB(this, "intercb", intersl));
-    WDFunc::CBConnect(this, "intercb", WDFunc::CT_TEXTCHANGED, this, SLOT(ParseInter()));
     QHBoxLayout *hlyout = new QHBoxLayout;
     QPushButton *pb = new QPushButton("Далее");
     connect(pb, &QPushButton::clicked, this, &ConnectDialog::SetInterface);
@@ -36,21 +34,10 @@ ConnectDialog::ConnectDialog()
     setLayout(lyout);
 }
 
-void ConnectDialog::ParseInter()
-{
-    QString tmps = WDFunc::CBData(this, "intercb");
-    if (tmps == "USB")
-        MainInterface = I_USB;
-    else if (tmps == "Ethernet")
-        MainInterface = I_ETHERNET;
-    else if (tmps == "RS485")
-        MainInterface = I_RS485;
-    else
-        MainInterface = I_UNKNOWN;
-}
-
 void ConnectDialog::SetInterface()
 {
+    auto comboBox = this->findChild<EComboBox *>();
+    Board::GetInstance()->setProperty("interface", comboBox->currentText());
     QDialog *dlg = new QDialog(this);
     dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -58,9 +45,13 @@ void ConnectDialog::SetInterface()
     dlg->setMinimumWidth(400);
     QVBoxLayout *lyout = new QVBoxLayout;
 
-    if (MainInterface == I_USB)
+    switch (Board::GetInstance()->interfaceType())
+    {
+    case Board::InterfaceType::USB:
         lyout->addWidget(WDFunc::NewTV(dlg, "usbtv", nullptr));
-    else if (MainInterface == I_ETHERNET)
+        break;
+
+    case Board::InterfaceType::Ethernet:
     {
         lyout->addWidget(WDFunc::NewTV(dlg, "ethtv", nullptr));
         QHBoxLayout *hlyout = new QHBoxLayout;
@@ -69,8 +60,9 @@ void ConnectDialog::SetInterface()
         hlyout->addWidget(WDFunc::NewPB(dlg, "scanethpb", "Сканировать", this, SLOT(ScanEth())));
         hlyout->addStretch(10);
         lyout->addLayout(hlyout);
+        break;
     }
-    else // RS485
+    case Board::InterfaceType::RS485:
     {
         lyout->addWidget(WDFunc::NewTV(dlg, "rstv", nullptr));
         QHBoxLayout *hlyout = new QHBoxLayout;
@@ -79,6 +71,8 @@ void ConnectDialog::SetInterface()
         hlyout->addWidget(WDFunc::NewPB(dlg, "scanrspb", "Сканировать", this, SLOT(ScanRs())));
         hlyout->addStretch(10);
         lyout->addLayout(hlyout);
+        break;
+    }
     }
     QPushButton *pb = new QPushButton("Отмена");
     connect(pb, SIGNAL(clicked(bool)), this, SLOT(SetCancelled()));
@@ -189,7 +183,10 @@ void ConnectDialog::RsAccepted()
     }
 }
 
-void ConnectDialog::SetCancelled() { emit Cancelled(); }
+void ConnectDialog::SetCancelled()
+{
+    emit Cancelled();
+}
 
 void ConnectDialog::SetEth()
 {
@@ -323,7 +320,9 @@ bool ConnectDialog::UpdateModel()
             ethlist << sets->value(ethname, "").toString();
             rslist << sets->value(rsname, "").toString();
         }
-        if (MainInterface == I_USB)
+        switch (Board::GetInstance()->interfaceType())
+        {
+        case Board::InterfaceType::USB:
         {
             QStringList USBsl = EProtocom::GetInstance()->DevicesFound();
             QStringList sl = QStringList() << "#"
@@ -345,8 +344,9 @@ bool ConnectDialog::UpdateModel()
                 mdl->addRowWithData(vl);
             }
             WDFunc::SetTVModel(dlg, "usbtv", mdl);
+            break;
         }
-        else if (MainInterface == I_ETHERNET)
+        case Board::InterfaceType::Ethernet:
         {
             QStringList sl = QStringList() << "#"
                                            << "Имя"
@@ -365,8 +365,9 @@ bool ConnectDialog::UpdateModel()
                 mdl->addRowWithData(vl);
             }
             WDFunc::SetTVModel(dlg, "ethtv", mdl);
+            break;
         }
-        else // RS485
+        case Board::InterfaceType::RS485:
         {
             QStringList sl = QStringList() << "#"
                                            << "Имя"
@@ -389,7 +390,10 @@ bool ConnectDialog::UpdateModel()
                 mdl->addRowWithData(vl);
             }
             WDFunc::SetTVModel(dlg, "rstv", mdl);
+            break;
         }
+        }
+        return true;
     }
-    return true;
+    return false;
 }

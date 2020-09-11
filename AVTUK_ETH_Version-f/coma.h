@@ -1,7 +1,6 @@
 #ifndef COMA_H
 #define COMA_H
 
-#include "../alarm/abstractalarm.h"
 #include "../alarm/alarmstateall.h"
 #include "../alarm/alarmwidget.h"
 #include "../alarm/avaralarmkiv.h"
@@ -11,7 +10,6 @@
 #include "../check/eabstractcheckdialog.h"
 #include "../config/abstractconfdialog.h"
 #include "../config/confdialog.h"
-#include "../dialogs/abstractcordialog.h"
 #include "../dialogs/connectdialog.h"
 #include "../dialogs/cordialog.h"
 #include "../dialogs/cordialogktf.h"
@@ -148,9 +146,6 @@ public:
     int CheckPassword();
     void Disconnect();
 
-    int number() const;
-    void setNumber(int number);
-
 signals:
     void CloseConnectDialog();
     void PasswordChecked();
@@ -158,6 +153,7 @@ signals:
     void Finished();
     void StopCommunications();
     void ConnectMes(QString *);
+    void stateChanged(bool);
 
 public slots:
     void DisconnectAndClear();
@@ -210,7 +206,6 @@ private:
     MNKTime *timeDialog;
 
     bool PasswordValid;
-    bool Disconnected;
     bool TimeThrFinished;
     bool Cancelled;
     bool Reconnect;
@@ -250,9 +245,12 @@ private:
     void CloseDialogs();
     void PrepareDialogs();
     void NewTimersBda();
+
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 
     void addConfTab(ETabWidget *MainTW, QString str);
+
+    void setupConnections();
 
 protected:
     void keyPressEvent(QKeyEvent *e) override;

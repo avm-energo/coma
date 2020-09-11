@@ -1,7 +1,7 @@
 #ifndef STDFUNC_H
 #define STDFUNC_H
 
-#include "maindef.h"
+#include "board.h"
 
 #include <QCoreApplication>
 #include <QPointer>

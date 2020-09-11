@@ -1,7 +1,7 @@
 #ifndef CHECKKTF_H
 #define CHECKKTF_H
 
-#include "../gen/maindef.h"
+#include "../gen/board.h"
 
 #include <QWidget>
 

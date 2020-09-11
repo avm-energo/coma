@@ -36,8 +36,8 @@ public:
 
     // void Timeout();
 
-    bool isConnected() const;
-    void setConnected(bool isConnected);
+    // bool isConnected() const;
+    // void setConnected(bool isConnected);
 
     static bool isWriteUSBLog();
     static void setWriteUSBLog(bool isWriteUSBLog);

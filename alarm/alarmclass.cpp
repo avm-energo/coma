@@ -43,22 +43,21 @@ AlarmClass::AlarmClass(QObject *parent) : QObject(parent)
 
 void AlarmClass::UpdateAlarmUSB()
 {
+    WarnAlarmEvents.clear();
+    AvarAlarmEvents.clear();
     BdAlarm signalling;
     int i = 0;
-    quint32 TempMTypeB = MTypeB << 8;
-    quint32 MType = TempMTypeB + MTypeM;
-
-    if (MainInterface == I_USB)
+    if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
     {
-        if (Commands::GetBd(MapAlarm[MType].BdNumbers, &signalling, sizeof(BdAlarm)) == NOERROR)
+        if (Commands::GetBd(MapAlarm[Board::GetInstance()->type()].BdNumbers, &signalling, sizeof(BdAlarm)) == NOERROR)
         {
-            for (i = 0; i < MapAlarm[MType].warnCounts; ++i)
+            for (i = 0; i < MapAlarm[Board::GetInstance()->type()].warnCounts; ++i)
             {
                 bool warn = (signalling.Warn & (0x00000001 << i));
                 WarnAlarmEvents.append(warn);
             }
 
-            for (i = 0; i < MapAlarm[MType].avarCounts; ++i)
+            for (i = 0; i < MapAlarm[Board::GetInstance()->type()].avarCounts; ++i)
             {
                 bool avar = (signalling.Alarm & (0x00000001 << i));
                 AvarAlarmEvents.append(avar);
@@ -74,21 +73,21 @@ void AlarmClass::UpdateAlarmUSB()
 
 void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
 {
+    WarnAlarmEvents.clear();
+    AvarAlarmEvents.clear();
     int i = 0;
     int ccount = 0;
-    quint32 TempMTypeB = MTypeB << 8;
-    quint32 MType = TempMTypeB + MTypeM;
 
     for (i = 0; i < Signal.countBytes; i++)
     {
         for (int j = 0; j < 8; j++)
         {
-            if (ccount <= MapAlarm[MType].warns.size())
+            if (ccount <= MapAlarm[Board::GetInstance()->type()].warns.size())
             {
                 bool alarm = (Signal.Bytes[i] & (0x00000001 << j));
-                if (MapAlarm[MType].warns.at(ccount))
+                if (MapAlarm[Board::GetInstance()->type()].warns.at(ccount))
                     WarnAlarmEvents.append(alarm);
-                else if (MapAlarm[MType].avars.at(ccount))
+                else if (MapAlarm[Board::GetInstance()->type()].avars.at(ccount))
                     AvarAlarmEvents.append(alarm);
                 ccount++;
             }
@@ -101,10 +100,8 @@ void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
 
 void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
 {
-    // int i = 0;
-    quint32 TempMTypeB = MTypeB << 8;
-    quint32 MType = TempMTypeB + MTypeM;
-    int count;
+    WarnAlarmEvents.clear();
+    AvarAlarmEvents.clear();
     for (int i = 0, count = 0; i < Signal->SigNumber; i++)
     {
         quint8 sigval = Signal->Spon[i].SigVal;
@@ -112,12 +109,12 @@ void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
         {
             quint32 sigadr = Signal->Spon[i].SigAdr;
             bool alarm = (sigval & 0x00000001) ? 1 : 0;
-            quint32 AdrAlarm = MapAlarm[MType].AdrAlarm;
-            int WarnsSize = MapAlarm[MType].warns.size();
-            while ((AdrAlarm <= sigadr) && (sigadr <= AdrAlarm + WarnsSize))
-                if (MapAlarm[MType].warns.at(count))
+            quint32 AdrAlarm = MapAlarm[Board::GetInstance()->type()].AdrAlarm;
+            int WarnsSize = MapAlarm[Board::GetInstance()->type()].warns.size();
+            if ((AdrAlarm <= sigadr) && (sigadr <= AdrAlarm + WarnsSize))
+                if (MapAlarm[Board::GetInstance()->type()].warns.at(count))
                     WarnAlarmEvents.append(alarm);
-                else if (MapAlarm[MType].avars.at(count))
+                else if (MapAlarm[Board::GetInstance()->type()].avars.at(count))
                     AvarAlarmEvents.append(alarm);
             count++;
         }

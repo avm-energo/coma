@@ -49,7 +49,7 @@ private slots:
     void StartBdMeasurements();
     void StopBdMeasurements();
     void UpdateModBusData(QList<ModBus::SignalStruct> Signal);
-    void onModbusStateChanged(ConnectionStates state);
+    void onModbusStateChanged();
 };
 
 #endif // CHECKDIALOGKDV_H

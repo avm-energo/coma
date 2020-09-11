@@ -1,10 +1,9 @@
 #include "abstractconfdialog.h"
 
 #include "../dialogs/keypressdialog.h"
+#include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/maindef.h"
-#include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../iec104/iec104.h"
@@ -26,8 +25,16 @@ void AbstractConfDialog::ReadConf()
 {
 
     TimeFunc::Wait(100);
+    switch (Board::GetInstance()->interfaceType())
+    {
+        //    case value:
 
-    if (MainInterface == I_ETHERNET)
+        //        break;
+        //    default:
+        //        break;
+        //    }
+        // if (MainInterface == I_ETHERNET)
+    case Board::InterfaceType::Ethernet:
     {
         if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
                                                                                 // заполнить поля по умолчанию
@@ -38,14 +45,18 @@ void AbstractConfDialog::ReadConf()
         {
             emit ReadConfig(1);
         }
+        break;
     }
-    else if (MainInterface == I_USB)
+    // else if (MainInterface == I_USB)
+    case Board::InterfaceType::USB:
     {
         int res = ModuleBSI::PrereadConf(this, S2Config);
         if (res == RESEMPTY)
             emit DefConfToBeLoaded();
         else if (res == NOERROR)
             emit NewConfToBeLoaded();
+        break;
+    }
     }
 }
 
@@ -66,12 +77,16 @@ void AbstractConfDialog::WriteConf()
             ERMSG("Ошибка чтения конфигурации");
             return;
         }
-
-        if (MainInterface == I_ETHERNET)
+        switch (Board::GetInstance()->interfaceType())
         {
+        case Board::InterfaceType::Ethernet:
+            // if (MainInterface == I_ETHERNET)
+            //{
             emit writeConfFile(S2Config);
-        }
-        else if (MainInterface == I_USB)
+            break;
+        //}
+        // else if (MainInterface == I_USB)
+        case Board::InterfaceType::USB:
         {
             if ((res = Commands::WriteFile(1, S2Config)) == NOERROR)
             {
@@ -80,6 +95,8 @@ void AbstractConfDialog::WriteConf()
             }
             else
                 QMessageBox::critical(this, "Ошибка", "Ошибка записи конфигурации" + QString::number(res));
+            break;
+        }
         }
     }
 }
@@ -203,26 +220,32 @@ void AbstractConfDialog::ButtonReadConf()
 {
     /*    char* num = new char;
      *num = 1; */
-
-    if (MainInterface == I_ETHERNET)
+    switch (Board::GetInstance()->interfaceType())
+    {
+    // if (MainInterface == I_ETHERNET)
+    case Board::InterfaceType::Ethernet:
     {
         if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
                                                                                 // заполнить поля по умолчанию
-        {
+            // {
             emit DefConfToBeLoaded();
-        }
+        // }
         else // иначе заполнить значениями из модуля
-        {
+             //{
             emit ReadConfig(1);
-        }
+        //}
+        break;
     }
-    else if (MainInterface == I_USB)
+        // else if (MainInterface == I_USB)
+    case Board::InterfaceType::USB:
     {
         int res = ModuleBSI::PrereadConf(this, S2Config);
         if (res == RESEMPTY)
             emit DefConfToBeLoaded();
         else if (res == NOERROR)
             emit NewConfToBeLoaded();
+        break;
+    }
     }
 }
 

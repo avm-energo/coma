@@ -3,7 +3,6 @@
 
 #include "../gen/s2.h"
 #include "../iec104/iec104.h"
-#include "maindef.h"
 
 #include <QWidget>
 #include <QtGlobal>
@@ -20,6 +19,15 @@
 #define HTH_TUPP 0x00000004    // перегрев модуля
 
 #define BSIENDREG 15 // конечный регистр BSI в 104 и modbus
+
+enum BoardTypes
+{
+    BT_NONE = 0,
+    BT_BASE = 1,
+    BT_MEZONIN = 2,
+    BT_BSMZ = 3,
+    BT_MODULE = 4
+};
 
 class ModuleBSI
 {

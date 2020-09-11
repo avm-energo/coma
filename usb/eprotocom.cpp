@@ -23,7 +23,7 @@ EProtocom::EProtocom(QObject *parent)
     SegEnd = 0;
     SegLeft = 0;
     OscNum = 0;
-    setConnected(false);
+    // setConnected(false);
     TTimer = new QTimer(this);
     TTimer->setInterval(CN::Timeout);
     OscTimer = new QTimer(this);
@@ -57,7 +57,8 @@ void EProtocom::setWriteUSBLog(bool writeUSBLog)
 
 void EProtocom::Send(char command, char parameter, QByteArray &ba, qint64 datasize)
 {
-    if (!isConnected())
+    if (Board::GetInstance()->connectionState() == Board::ConnectionState::ClosingState
+        && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
     {
         qDebug() << "Передача в отключенный прибор";
         ERMSG("В канальную процедуру переданы некорректные данные");
@@ -710,15 +711,15 @@ void EProtocom::TranslateDeviceAndSave(const QString &str)
     UsbPort.serial[z] = '\x0';
 }
 
-bool EProtocom::isConnected() const
-{
-    return m_connected;
-}
+// bool EProtocom::isConnected() const
+//{
+//    return m_connected;
+//}
 
-void EProtocom::setConnected(bool isConnected)
-{
-    m_connected = isConnected;
-}
+// void EProtocom::setConnected(bool isConnected)
+//{
+//    m_connected = isConnected;
+//}
 
 EProtocom::~EProtocom()
 {
@@ -747,7 +748,8 @@ EProtocom *EProtocom::GetInstance(QObject *parent)
 bool EProtocom::Connect()
 {
     QMutexLocker locker(&mutex_);
-    if (isConnected())
+    if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState
+        && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
         Disconnect();
     m_usbWorker = new EUsbWorker(UsbPort, CnLog, isWriteUSBLog());
 
@@ -762,9 +764,9 @@ bool EProtocom::Connect()
 
     connect(m_usbWorker, &EUsbWorker::NewDataReceived, this, &EProtocom::ParseIncomeData);
 
-    if (m_usbWorker->setupConnection() == 0)
+    if (m_usbWorker->setupConnection() == 0 && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
     {
-        setConnected(true);
+        Board::GetInstance()->setConnectionState(Board::ConnectionState::ConnectedState);
         m_workerThread.start();
     }
     else
@@ -787,16 +789,19 @@ QByteArray EProtocom::RawRead(int bytes)
 
 int EProtocom::RawWrite(QByteArray &ba)
 {
-    if (!isConnected())
+    if (Board::GetInstance()->connectionState() == Board::ConnectionState::ClosingState
+        && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
         return GENERALERROR;
     return m_usbWorker->WriteDataAttempt(ba);
 }
 
 void EProtocom::RawClose()
 {
-    if (isConnected())
+    if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState
+        && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
     {
-        setConnected(false);
+        // setConnected(false);
+        Board::GetInstance()->setConnectionState(Board::ConnectionState::ConnectedState);
         m_usbWorker->Stop();
     }
 }

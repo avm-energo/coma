@@ -157,9 +157,9 @@ void CheckDialogHarmonicKDV::UpdateModBusData(QList<ModBus::SignalStruct> Signal
     }
 }
 
-void CheckDialogHarmonicKDV::onModbusStateChanged(ConnectionStates state)
+void CheckDialogHarmonicKDV::onModbusStateChanged()
 {
-    if (state == ConnectionStates::ConnectedState)
+    if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState)
         QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 

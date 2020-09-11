@@ -1,7 +1,9 @@
 #include "wd_func.h"
 
+#include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
+#include "../gen/modulebsi.h"
 #include "etableview.h"
 
 #include <QHBoxLayout>
@@ -390,6 +392,58 @@ QVariant WDFunc::TVData(QWidget *w, const QString &tvname, int column)
     if (m != nullptr)
         return m->index(tv->currentIndex().row(), column, QModelIndex()).data(Qt::DisplayRole);
     return QVariant();
+}
+
+QStatusBar *WDFunc::NewSB(QWidget *w)
+{
+    QStatusBar *bar = new QStatusBar(w);
+    QLabel *msgModel = new QLabel(bar);
+    msgModel->setObjectName("Model");
+    QLabel *msgSerialNumber = new QLabel(bar);
+    msgSerialNumber->setObjectName("SerialNumber");
+    QLabel *msgConnectionState = new QLabel(bar);
+    msgConnectionState->setObjectName("ConnectionState");
+    QLabel *msgConnectionType = new QLabel(bar);
+    msgConnectionType->setObjectName("ConnectionType");
+
+    QObject::connect(Board::GetInstance(), &Board::typeChanged, [msgModel, msgSerialNumber]() {
+        quint32 serialNumber = Board::GetInstance()->type();
+        QString deviceName = QVariant::fromValue(Board::DeviceModel(serialNumber)).toString();
+        msgModel->setText(deviceName);
+    });
+
+    QObject::connect(
+        Board::GetInstance(), &Board::connectionStateChanged, [msgConnectionState](Board::ConnectionState state) {
+            QString connState = QVariant::fromValue(Board::ConnectionState(state)).toString();
+            msgConnectionState->setText(connState);
+        });
+
+    QObject::connect(Board::GetInstance(), &Board::interfaceTypeChanged,
+        [msgConnectionType](const Board::InterfaceType &interfaceType) {
+            QString connName = QVariant::fromValue(Board::InterfaceType(interfaceType)).toString();
+            msgConnectionType->setText(connName);
+        });
+    bar->insertPermanentWidget(0, msgModel);
+    bar->insertPermanentWidget(1, msgSerialNumber);
+    bar->insertPermanentWidget(2, msgConnectionType);
+    bar->insertPermanentWidget(3, msgConnectionState);
+    return bar;
+}
+
+QPixmap WDFunc::NewCircle(QColor color, float radius)
+{
+    int intRadius = radius;
+    QPixmap myPix(QSize(intRadius, intRadius));
+    myPix.fill(Qt::transparent);
+    QPainter painter(&myPix); // Create object of QPainter
+    painter.setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap));
+    QRadialGradient gradient(intRadius / 2, intRadius / 2, intRadius);
+    gradient.setColorAt(0, color);
+    gradient.setColorAt(1, Qt::black);
+    painter.setBrush(QBrush(gradient));
+    painter.drawEllipse(0, 0, myPix.width() - painter.pen().width(), myPix.height() - painter.pen().width());
+    ;
+    return myPix;
 }
 
 QCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor)

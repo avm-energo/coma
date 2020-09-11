@@ -264,6 +264,7 @@ void ETableModel::addRow()
 
 void ETableModel::fillModel(QVector<QVector<QVariant>> &lsl)
 {
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     pushMaxProgress(lsl.size());
     for (int i = 0; i < lsl.size(); ++i)
     {

@@ -3,7 +3,6 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../usb/commands.h"
@@ -29,9 +28,12 @@ JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
     ProxyWorkModel = new QSortFilterProxyModel;
     ProxySysModel = new QSortFilterProxyModel;
     ProxyMeasModel = new QSortFilterProxyModel;
+    progress = new QProgressDialog;
+    progress->setCancelButton(nullptr);
+    progress->cancel();
+
     JourFuncs->SetProxyModels(ProxyWorkModel, ProxySysModel, ProxyMeasModel);
-    //    JourFuncs->SetParentWidget(this);
-    // connect(JourFuncs, &Journals::Done, this, &JournalDialog::Done, Qt::BlockingQueuedConnection);
+
     connect(JourFuncs, &Journals::Done, this, &JournalDialog::Done);
     connect(JourFuncs, &Journals::Error, this, &JournalDialog::Error);
     // connect(JourFuncs, &Journals::ModelReady, this, &JournalDialog::SetModel);
@@ -227,8 +229,7 @@ void JournalDialog::JourFileChoosed(QString &file) { JourFile = file; }
 
 void JournalDialog::EraseJour()
 {
-    if (MainInterface == I_USB)
-    {
+    if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
         if (WriteCheckPassword() == NOERROR)
         {
             int jourtype = GetJourNum(sender()->objectName());
@@ -248,7 +249,6 @@ void JournalDialog::EraseJour()
                 QMessageBox::information(this, "Ошибка", "Ошибка");
             }
         }
-    }
 }
 
 void JournalDialog::SaveJour()
@@ -284,14 +284,18 @@ void JournalDialog::SaveJour()
         QMessageBox::critical(this, "Ошибка", "Данные ещё не получены");
         return;
     }
-    jourfilestr += QString::number(MTypeB, 16) + QString::number(MTypeM, 16) + " #"
+    // jourfilestr += QString::number(MTypeB, 16) + QString::number(MTypeM, 16) + " #"
+    //    + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + " ";
+    jourfilestr += QString::number(Board::GetInstance()->typeB(), 16)
+        + QString::number(Board::GetInstance()->typeM(), 16) + " #"
         + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + " ";
     jourfilestr += QDate::currentDate().toString("dd-MM-yyyy") + ".xlsx";
     // запрашиваем имя файла для сохранения
     QString filename = Files::ChooseFileForSave(nullptr, "Excel documents (*.xlsx)", "xlsx", jourfilestr);
-    // WW = new WaitWidget;
-    // WW->SetMessage("Запись файла...");
-    // WW->Start();
+
+    progress->setMinimumDuration(0);
+    connect(JourFuncs, &Journals::resendMaxResult, progress, &QProgressDialog::setMaximum);
+    connect(JourFuncs, &Journals::resendResult, progress, &QProgressDialog::setValue);
     emit StartSaveJour(jtype, amdl, filename);
 }
 
@@ -337,20 +341,12 @@ int JournalDialog::WriteCheckPassword()
 
 void JournalDialog::StartReadJourFile()
 {
-    //    QApplication::setOverrideCursor(Qt::WaitCursor);
-    // Крутилка
-    // WW = new WaitWidget(nullptr);
-    // MsgBox = new QMessageBox(QMessageBox::Warning, "Внимание", "Идет чтение журнала...");
-    progress = new QProgressDialog;
+
     progress->setMinimumDuration(0);
-    connect(JourFuncs, &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
-    connect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
-    progress->setLabelText("Loading model...");
-    // MsgBox->setText("");
+
+    connect(JourFuncs, &Journals::resendMaxResult, progress, &QProgressDialog::setMaximum);
+    connect(JourFuncs, &Journals::resendResult, progress, &QProgressDialog::setValue);
     emit StartReadFile();
-    // MsgBox->exec();
-    // WW->SetMessage("Чтение файла..");
-    // WW->Start();
 }
 
 void JournalDialog::WritePasswordCheck(QString psw)
@@ -367,34 +363,16 @@ void JournalDialog::Done(QString msg, int)
     qDebug() << __PRETTY_FUNCTION__;
     // new QAbstractItemModelTester(ProxyWorkModel, QAbstractItemModelTester::FailureReportingMode::Warning, this);
 
-    // if (WW != nullptr && MainInterface == I_USB)
-    //    WW->Stop();
-    if (progress != nullptr && MainInterface == I_USB)
-    {
-        // progress->reset();
-        // MsgBox->close();
-        qDebug() << "Close";
-    }
-    // update();
     disconnect(JourFuncs, &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
     disconnect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
-    // MsgBox->closeEvent(QMessageBox::DestructiveRole);
-    //    QApplication::restoreOverrideCursor();
     // QMessageBox::information(this, "Успешно", msg);
 }
 
 void JournalDialog::Error(QString msg)
 {
-    //    if (WW != nullptr && MainInterface == I_USB)
-    //        WW->Stop();
-    if (progress != nullptr && MainInterface == I_USB)
-    {
-        qDebug() << "Error";
-    }
     disconnect(JourFuncs, &Journals::resendMaxResult, this->progress, &QProgressDialog::setMaximum);
     disconnect(JourFuncs, &Journals::resendResult, this->progress, &QProgressDialog::setValue);
     ERMSG(msg);
-    //    QApplication::restoreOverrideCursor();
     QMessageBox::critical(this, "Ошибка", msg);
 }
 

@@ -1,21 +1,8 @@
 #include "alarmwidget.h"
 
-#include <QApplication>
 #include <QBoxLayout>
-#include <QCursor>
-#include <QDialog>
-#include <QDir>
 #include <QGroupBox>
-#include <QLabel>
 #include <QMenu>
-#include <QMenuBar>
-#include <QProgressBar>
-#include <QPushButton>
-#include <QSettings>
-#include <QSplashScreen>
-#include <QStandardPaths>
-#include <QStringListModel>
-#include <QToolBar>
 
 AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
 {
@@ -30,18 +17,17 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
     QVBoxLayout *vlyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QHBoxLayout *hlyout2 = new QHBoxLayout;
-    QStringList Discription = QStringList() << "Состояние устройства"
+    QStringList Description = QStringList() << "Состояние устройства"
                                             << "Предупредительная сигнализация"
                                             << "Аварийная сигнализация";
     setStyleSheet("QComa {background-color: " + QString(Colors::MAINWINCLR) + ";}");
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
 
     QPushButton *pb = new QPushButton("Состояние устройства");
     pb->setMinimumSize(QSize(230, 30));
     connect(pb, SIGNAL(clicked()), this, SIGNAL(AlarmButtonPressed()));
     QGroupBox *gb = new QGroupBox("");
     hlyout->addWidget(pb, Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewLBL(this, "", "", "950", pmgrn), 1);
+    hlyout->addWidget(WDFunc::NewLBL(this, "", "", "950", &QPixmap()), 1);
     WDFunc::SetVisible(this, "950", false);
     gb->setLayout(hlyout);
     hlyout2->addWidget(gb);
@@ -52,7 +38,7 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
     pb->setMinimumSize(QSize(230, 30));
     connect(pb, SIGNAL(clicked()), this, SIGNAL(ModuleWarnButtonPressed()));
     hlyout->addWidget(pb, Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewLBL(this, "", "", "951", pmgrn), 1);
+    hlyout->addWidget(WDFunc::NewLBL(this, "", "", "951", &QPixmap()), 1);
     WDFunc::SetVisible(this, "951", false);
     gb->setLayout(hlyout);
     hlyout2->addWidget(gb);
@@ -64,7 +50,7 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
     pb->setMinimumSize(QSize(230, 30));
     connect(pb, SIGNAL(clicked()), this, SIGNAL(ModuleAlarmButtonPressed()));
     hlyout->addWidget(pb, Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewLBL(this, "", "", "952", pmgrn), 1);
+    hlyout->addWidget(WDFunc::NewLBL(this, "", "", "952", &QPixmap()), 1);
     WDFunc::SetVisible(this, "952", false);
     gb->setLayout(hlyout);
     hlyout2->addWidget(gb);
@@ -82,8 +68,6 @@ void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarm)
 {
     // int i;
     int alarm = 0;
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmylw = new QPixmap("images/yellowc.png");
 
     // for(i=0; i<warnalarmcount.size(); i++)
     foreach (bool item, warnalarm)
@@ -94,19 +78,17 @@ void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarm)
             break;
         }
     }
-
-    WDFunc::SetLBLImage(this, "951", (alarm == 0) ? pmgrn : pmylw);
+    WDFunc::SetLBLImage(this, "951", &WDFunc::NewCircle((alarm == 0) ? Qt::green : Qt::red, this->height() / 4));
     WDFunc::SetVisible(this, "951", true);
 }
 
 void AlarmWidget::UpdateThirdUSB(QList<bool> avar)
 {
-    // int i;
     int alarm = 0;
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
 
     //     for(i=0; i<alarmcount.size(); i++)
+    //    if(std::any_of(avar.constBegin(),avar.constEnd(),[](const bool state){return state;}))
+    //        alarm++;
     foreach (bool item, avar)
     {
         if (item == true)
@@ -115,33 +97,28 @@ void AlarmWidget::UpdateThirdUSB(QList<bool> avar)
             break;
         }
     }
-
-    WDFunc::SetLBLImage(this, "952", (alarm == 0) ? pmgrn : pmred);
+    WDFunc::SetLBLImage(this, "952", &WDFunc::NewCircle((alarm == 0) ? Qt::green : Qt::red, this->height() / 4));
     WDFunc::SetVisible(this, "952", true);
 }
 
 void AlarmWidget::UpdateFirstUSB()
 {
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmylw = new QPixmap("images/yellowc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
 
     if (ModuleBSI::ModuleBsi.Hth & WARNBSIMASK)
     {
-
-        WDFunc::SetLBLImage(this, "950", pmylw);
+        WDFunc::SetLBLImage(this, "950", &WDFunc::NewCircle(Qt::yellow, this->height() / 4));
         WDFunc::SetVisible(this, "950", true);
     }
     else if (ModuleBSI::ModuleBsi.Hth & AVARBSIMASK)
     {
 
-        WDFunc::SetLBLImage(this, "950", pmred);
+        WDFunc::SetLBLImage(this, "950", &WDFunc::NewCircle(Qt::red, this->height() / 4));
         WDFunc::SetVisible(this, "950", true);
     }
     else
     {
 
-        WDFunc::SetLBLImage(this, "950", pmgrn);
+        WDFunc::SetLBLImage(this, "950", &WDFunc::NewCircle(Qt::green, this->height() / 4));
         WDFunc::SetVisible(this, "950", true);
     }
 }

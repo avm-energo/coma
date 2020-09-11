@@ -1,7 +1,7 @@
 #ifndef SERIALPORT_H
 #define SERIALPORT_H
 
-#include "../gen/maindef.h"
+#include "../gen/board.h"
 
 #include <QObject>
 #include <QPointer>
@@ -27,7 +27,7 @@ public:
 
 signals:
     void Read(QByteArray);
-    void State(ConnectionStates);
+    // void State(ConnectionStates);
     void Reconnect();
 
 private:

@@ -1,19 +1,10 @@
 #include "settingsdialog.h"
 
 #include "../config/config.h"
-#include "../gen/maindef.h"
-#include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
 
-#include <QCheckBox>
 #include <QFileDialog>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QSettings>
-#include <QString>
 #include <QVBoxLayout>
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)

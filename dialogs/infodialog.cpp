@@ -19,17 +19,14 @@ void InfoDialog::SetupUI()
     Inf[MTYPE_KTF] = "АВМ-КТФ";
     Inf[MTYPE_KDV] = "АВМ-КДВ";
 
-    quint32 TempMTypeB = MTypeB << 8;
-    quint32 MType = TempMTypeB + MTypeM;
-
     QString tmps = "QDialog {background-color: " + QString(Colors::MAINWINCLRA1) + ";}";
     setStyleSheet(tmps);
     setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *slyout = new QGridLayout;
     slyout->addWidget(WDFunc::NewLBL(this, "Тип устройства:"), 0, 0, 1, 1, Qt::AlignRight);
-    slyout->addWidget(WDFunc::NewLBL(this, Inf[MType]), 0, 1, 1,
-        1); // ModuleBSI::GetModuleTypeString())
+    slyout->addWidget(WDFunc::NewLBL(this, Inf[Board::GetInstance()->type()]), 0, 1, 1, 1);
+    // ModuleBSI::GetModuleTypeString())
     slyout->addWidget(WDFunc::NewLBL(this, "Серийный номер устройства:"), 1, 0, 1, 1, Qt::AlignRight);
     slyout->addWidget(WDFunc::NewLBLT(this, "", "snle"), 1, 1, 1, 1);
     slyout->addWidget(WDFunc::NewLBL(this, "Версия ПО:"), 2, 0, 1, 1, Qt::AlignRight);

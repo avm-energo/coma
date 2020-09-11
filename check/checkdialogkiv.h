@@ -53,6 +53,6 @@ private slots:
     void StopBdMeasurements();
     void UpdateModBusData(QList<ModBus::SignalStruct> Signal);
     //    void ErrorRead();
-    void onModbusStateChanged(ConnectionStates state);
+    void onModbusStateChanged();
 };
 #endif // CHECKDIALOG84_H

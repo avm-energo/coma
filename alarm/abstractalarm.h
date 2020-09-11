@@ -52,6 +52,8 @@
 #include <QByteArray>
 #include <QDialog>
 
+#define CIRCLE_RADIUS 15
+
 class AbstractAlarm : public QDialog
 {
     Q_OBJECT

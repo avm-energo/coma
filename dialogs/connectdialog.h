@@ -26,7 +26,6 @@ signals:
     void Cancelled();
 
 private slots:
-    void ParseInter();
     void SetInterface();
     void SetUsb();
     void AddEth();
@@ -34,9 +33,9 @@ private slots:
     void RsAccepted();
     void SetCancelled();
     void SetEth();
-    //    void ScanEth();
-        void AddRs();
-        void SetRs();
+    // void ScanEth();
+    void AddRs();
+    void SetRs();
     //    void ScanRs();
     void RotateSettings(
         const QString &type, const QString &name); // in: name of registry dir without index, out - name with index
