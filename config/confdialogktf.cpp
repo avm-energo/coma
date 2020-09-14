@@ -33,9 +33,14 @@ ConfDialogKTF::ConfDialogKTF(QVector<S2::DataRec> *S2Config, QWidget *parent) : 
     PrereadConf();
 }
 
-ConfDialogKTF::~ConfDialogKTF() { }
+ConfDialogKTF::~ConfDialogKTF()
+{
+}
 
-int ConfDialogKTF::getRCount() { return KTF->Bci_block.TdatNum; }
+int ConfDialogKTF::getRCount()
+{
+    return KTF->Bci_block.TdatNum;
+}
 
 void ConfDialogKTF::SetupUI()
 {
@@ -77,18 +82,13 @@ void ConfDialogKTF::SetupUI()
     QString paramcolor = Colors::MAINWINCLR;
     QFont font;
 
-    QGroupBox *gb = new QGroupBox;
-
     //.........................................................................
 
     int row = 0;
-    gb = new QGroupBox("Аналоговые параметры");
+    QGroupBox *gb = new QGroupBox("Аналоговые параметры");
     font.setFamily("Times");
     font.setPointSize(11);
     gb->setFont(font);
-    gridlyout = new QGridLayout;
-    vlyout1 = new QVBoxLayout;
-    vlyout2 = new QVBoxLayout;
 
     gridlyout->addWidget(WDFunc::NewLBL(this, "Класс напряжения, кВ:"), row, 1, 1, 1);
     gridlyout->addWidget(WDFunc::NewSPB(this, "Unom1", 0, 10000, 0, paramcolor), row, 2, 1, 3);
@@ -147,8 +147,7 @@ void ConfDialogKTF::SetupUI()
     gridlyout->setColumnStretch(2, 50);
     row = 0;
 
-    QLabel *lbl = new QLabel();
-    lbl = new QLabel("Вид охлаждения: ");
+    QLabel *lbl = new QLabel("Вид охлаждения: ");
     gridlyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
     QStringList cbl = QStringList { "естественное", "принудительное" };
     EComboBox *cb = WDFunc::NewCB(this, "Cool_type", cbl, paramcolor);
@@ -467,7 +466,9 @@ void ConfDialogKTF::FillBack()
     ConfKxx->FillBack();
 }
 
-void ConfDialogKTF::CheckConf() { }
+void ConfDialogKTF::CheckConf()
+{
+}
 
 void ConfDialogKTF::SetDefConf()
 {
@@ -477,6 +478,12 @@ void ConfDialogKTF::SetDefConf()
     Fill();
 }
 
-void ConfDialogKTF::Start_Timer() { timerRead->start(1000); }
+void ConfDialogKTF::Start_Timer()
+{
+    timerRead->start(1000);
+}
 
-void ConfDialogKTF::Stop_Timer() { timerRead->stop(); }
+void ConfDialogKTF::Stop_Timer()
+{
+    timerRead->stop();
+}

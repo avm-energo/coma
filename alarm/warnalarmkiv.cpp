@@ -19,9 +19,6 @@ WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm, QDialog *parent) : AbstractAlarm(p
 void WarnAlarmKIV::WarnAlarmState()
 {
     // QDialog *dlg = new QDialog;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QVBoxLayout *vlayout = new QVBoxLayout;
 
     const QStringList events = QStringList() << "Отсутствует сигнал напряжения фазы A                   "
                                              << "Отсутствует сигнал напряжения фазы B                   "
@@ -44,9 +41,11 @@ void WarnAlarmKIV::WarnAlarmState()
     QWidget *w = new QWidget;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *vlayout = new QVBoxLayout;
     for (int i = 0; i < Alarm->MapAlarm[MTYPE_KIV].warnCounts; ++i)
     {
-        hlyout = new QHBoxLayout;
+        QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(w, "", "transparent", QString::number(i)));
         hlyout->addWidget(WDFunc::NewLBLT(w, events.at(i), "", "", ""), 1);
         vlayout->addLayout(hlyout);
@@ -61,8 +60,12 @@ void WarnAlarmKIV::WarnAlarmState()
     setLayout(lyout);
 }
 
-void WarnAlarmKIV::AlarmState() { }
-void WarnAlarmKIV::AvarState() { }
+void WarnAlarmKIV::AlarmState()
+{
+}
+void WarnAlarmKIV::AvarState()
+{
+}
 
 void WarnAlarmKIV::Update(QList<bool> states)
 {
@@ -74,13 +77,14 @@ void WarnAlarmKIV::Update(QList<bool> states)
     for (i = 0; i < Alarm->MapAlarm[MTYPE_KIV].warnCounts; i++)
     {
         quint32 alarm = states.at(i);
-        if (alarm){
-            auto pixmap=WDFunc::NewCircle(Qt::red, circleRadius);
+        if (alarm)
+        {
+            auto pixmap = WDFunc::NewCircle(Qt::red, circleRadius);
             WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
         }
         else
         {
-            auto pixmap=WDFunc::NewCircle(Qt::green, circleRadius);
+            auto pixmap = WDFunc::NewCircle(Qt::green, circleRadius);
             WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
         }
     }

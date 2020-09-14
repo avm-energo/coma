@@ -38,6 +38,7 @@ CheckDialogKIV::CheckDialogKIV(BoardTypes board, QWidget *parent) : EAbstractChe
     if (Config::MTB_A2)
         sl = QStringList { "Основные", "Дополнительные", "Отладка" };
     else
+        // warning: code will never be executed
         sl = QStringList { "Общие", "Аналоговые", "Несимметрия" };
 
     BdUINum = sl.size();
@@ -64,7 +65,10 @@ QWidget *CheckDialogKIV::BdUI(int bdnum)
     }
 }
 
-void CheckDialogKIV::RefreshAnalogValues(int bdnum) { Q_UNUSED(bdnum) }
+void CheckDialogKIV::RefreshAnalogValues(int bdnum)
+{
+    Q_UNUSED(bdnum)
+}
 
 void CheckDialogKIV::PrepareHeadersForFile(int row)
 {
@@ -96,8 +100,8 @@ void CheckDialogKIV::PrepareHeadersForFile(int row)
 
 void CheckDialogKIV::WriteToFile(int row, int bdnum)
 {
-    Q_UNUSED(row);
-    Q_UNUSED(bdnum);
+    Q_UNUSED(row)
+    Q_UNUSED(bdnum)
     // получение текущих аналоговых сигналов от модуля
     QXlsx::Format format;
     for (int i = 0; i < 3; i++)
@@ -143,13 +147,25 @@ QWidget *CheckDialogKIV::CustomTab()
     return nullptr;
 }
 
-void CheckDialogKIV::ChooseValuesToWrite() { }
-void CheckDialogKIV::SetDefaultValuesToWrite() { }
-void CheckDialogKIV::PrepareAnalogMeasurements() { }
+void CheckDialogKIV::ChooseValuesToWrite()
+{
+}
+void CheckDialogKIV::SetDefaultValuesToWrite()
+{
+}
+void CheckDialogKIV::PrepareAnalogMeasurements()
+{
+}
 
-void CheckDialogKIV::StartBdMeasurements() { BdTimer->start(); }
+void CheckDialogKIV::StartBdMeasurements()
+{
+    BdTimer->start();
+}
 
-void CheckDialogKIV::StopBdMeasurements() { BdTimer->stop(); }
+void CheckDialogKIV::StopBdMeasurements()
+{
+    BdTimer->stop();
+}
 
 void CheckDialogKIV::USBUpdate()
 {
@@ -173,13 +189,10 @@ void CheckDialogKIV::USBUpdate()
 }
 void CheckDialogKIV::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
 {
-    IEC104Thread::FlSignals104 sig = *new IEC104Thread::FlSignals104;
-    int i;
-    for (i = 0; i < Signal->SigNumber; i++)
+    for (int i = 0; i < Signal->SigNumber; i++)
     {
-        sig = *(Signal + i);
-
-        ChKIV->FillBd(this, QString::number(sig.fl.SigAdr), WDFunc::StringValueWithCheck(sig.fl.SigVal, 3));
+        ChKIV->FillBd(
+            this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal + i)->fl.SigVal, 3));
     }
 }
 
@@ -312,12 +325,14 @@ void CheckDialogKIV::SetWarnAlarmColor(QList<bool> WarnAlarm)
     {
         if ((i >= 0) && (i < 3))
         {
-            WDFunc::SetLBLTColor(this, QString::number(1000 + i), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+            WDFunc::SetLBLTColor(
+                this, QString::number(1000 + i), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
         }
 
         if ((i >= 3) && (i < 6))
         {
-            WDFunc::SetLBLTColor(this, QString::number(1100 + 3), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+            WDFunc::SetLBLTColor(
+                this, QString::number(1100 + 3), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
         }
 
         if ((i >= 7) && (i < 10))
@@ -328,15 +343,18 @@ void CheckDialogKIV::SetWarnAlarmColor(QList<bool> WarnAlarm)
 
         if ((i >= 10) && (i < 13))
         {
-            WDFunc::SetLBLTColor(this, QString::number(2429 + i - 10), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+            WDFunc::SetLBLTColor(
+                this, QString::number(2429 + i - 10), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
         }
         else if ((i >= 13) && (i < 16))
         {
-            WDFunc::SetLBLTColor(this, QString::number(2426 + i - 13), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+            WDFunc::SetLBLTColor(
+                this, QString::number(2426 + i - 13), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
         }
         else if (i == 17)
         {
-            WDFunc::SetLBLTColor(this, QString::number(2432 + i - 13), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+            WDFunc::SetLBLTColor(
+                this, QString::number(2432 + i - 13), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
         }
     }
 }

@@ -16,9 +16,6 @@ AvarAlarmKTF::AvarAlarmKTF(AlarmClass *alarm, QDialog *parent) : AbstractAlarm(p
 
 void AvarAlarmKTF::AvarState()
 {
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QVBoxLayout *vlayout = new QVBoxLayout;
 
     QStringList events = QStringList() << "Аварийное сообщение по недопустимому превышению температуры обмотки"
                                        << "Аварийное сообщение по недопустимому уровню пускового тока         ";
@@ -27,9 +24,13 @@ void AvarAlarmKTF::AvarState()
 
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
-    for (int i = 0; i < Alarm->MapAlarm[MTYPE_KTF].avarCounts; ++i)
+    QVBoxLayout *lyout = new QVBoxLayout;
+
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    int i;
+    for (i = 0; i < Alarm->MapAlarm[MTYPE_KTF].avarCounts; ++i)
     {
-        hlyout = new QHBoxLayout;
+        QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(w, "", "transparent", QString::number(i)));
         hlyout->addWidget(WDFunc::NewLBLT(w, events.at(i), "", "", ""), 1);
         vlayout->addLayout(hlyout);
@@ -44,8 +45,12 @@ void AvarAlarmKTF::AvarState()
     setLayout(lyout);
 }
 
-void AvarAlarmKTF::AlarmState() { }
-void AvarAlarmKTF::WarnAlarmState() { }
+void AvarAlarmKTF::AlarmState()
+{
+}
+void AvarAlarmKTF::WarnAlarmState()
+{
+}
 
 void AvarAlarmKTF::Update(QList<bool> states)
 {
@@ -56,13 +61,14 @@ void AvarAlarmKTF::Update(QList<bool> states)
     for (i = 0; i < Alarm->MapAlarm[MTYPE_KTF].avarCounts; i++)
     {
         quint32 alarm = states.at(i);
-        if (alarm){
-            auto pixmap=WDFunc::NewCircle(Qt::red, circleRadius);
+        if (alarm)
+        {
+            auto pixmap = WDFunc::NewCircle(Qt::red, circleRadius);
             WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
         }
         else
         {
-            auto pixmap=WDFunc::NewCircle(Qt::green, circleRadius);
+            auto pixmap = WDFunc::NewCircle(Qt::green, circleRadius);
             WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
         }
     }

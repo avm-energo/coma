@@ -41,7 +41,9 @@ CorDialogKTF::CorDialogKTF(QWidget *parent) : AbstractCorDialog(parent)
     SetupUI();
 }
 
-CorDialogKTF::~CorDialogKTF() { }
+CorDialogKTF::~CorDialogKTF()
+{
+}
 
 void CorDialogKTF::SetupUI()
 {
@@ -54,13 +56,12 @@ void CorDialogKTF::SetupUI()
     tv->setObjectName("cor");
     int row = 0;
     QString paramcolor = Colors::MAINWINCLR;
-    QPushButton *pb = new QPushButton;
 
     glyout->addWidget(WDFunc::NewLBL(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(this, QString::number(907), 0, 1000000, 5, paramcolor), row, 2, 1, 2);
     row++;
 
-    pb = new QPushButton("Прочитать из модуля");
+    QPushButton *pb = new QPushButton("Прочитать из модуля");
     connect(pb, SIGNAL(clicked()), this, SLOT(GetCorBdButton()));
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
@@ -95,9 +96,15 @@ void CorDialogKTF::SetupUI()
     setLayout(lyout);
 }
 
-void CorDialogKTF::FillBackCor() { WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge); }
+void CorDialogKTF::FillBackCor()
+{
+    WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge);
+}
 
-void CorDialogKTF::FillCor() { WDFunc::SetSPBData(this, QString::number(907), Bd9Block->Age); }
+void CorDialogKTF::FillCor()
+{
+    WDFunc::SetSPBData(this, QString::number(907), Bd9Block->Age);
+}
 
 void CorDialogKTF::GetCorBd(int index)
 {
@@ -112,7 +119,7 @@ void CorDialogKTF::GetCorBd(int index)
                 if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == NOERROR)
                 {
                     FillCor();
-                QMessageBox::information(this, "INFO", "Прочитано успешно");
+                    QMessageBox::information(this, "INFO", "Прочитано успешно");
                 }
                 break;
             }
@@ -134,7 +141,7 @@ void CorDialogKTF::GetCorBdButton()
             if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == NOERROR)
             {
                 FillCor();
-            QMessageBox::information(this, "INFO", "Прочитано успешно");
+                QMessageBox::information(this, "INFO", "Прочитано успешно");
             }
             break;
         }
@@ -190,9 +197,9 @@ void CorDialogKTF::WriteCorBd()
             // else if (MainInterface == I_USB)
             {
                 if (Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == NOERROR)
-                QMessageBox::information(this, "INFO", "Записано успешно");
+                    QMessageBox::information(this, "INFO", "Записано успешно");
                 else
-                QMessageBox::information(this, "INFO", "Ошибка");
+                    QMessageBox::information(this, "INFO", "Ошибка");
 
                 //......
                 //            QThread::sleep(1);
@@ -204,9 +211,13 @@ void CorDialogKTF::WriteCorBd()
     }
 }
 
-void CorDialogKTF::WriteCor() { }
+void CorDialogKTF::WriteCor()
+{
+}
 
-void CorDialogKTF::ResetCor() { }
+void CorDialogKTF::ResetCor()
+{
+}
 
 void CorDialogKTF::SaveToFile()
 {

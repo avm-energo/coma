@@ -18,9 +18,6 @@ AvarAlarmKIV::AvarAlarmKIV(AlarmClass *alarm, QDialog *parent) : AbstractAlarm(p
 
 void AvarAlarmKIV::AvarState()
 {
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QVBoxLayout *vlayout = new QVBoxLayout;
 
     QStringList events = QStringList() << "Авария по приращению тангенса дельта ввода фазы А"
                                        << "Авария по приращению тангенса дельта ввода фазы B"
@@ -33,9 +30,12 @@ void AvarAlarmKIV::AvarState()
 
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *vlayout = new QVBoxLayout;
+
     for (int i = 0; i < Alarm->MapAlarm[MTYPE_KIV].avarCounts; ++i)
     {
-        hlyout = new QHBoxLayout;
+        QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(w, "", "transparent", QString::number(i)));
         hlyout->addWidget(WDFunc::NewLBLT(w, events.at(i), "", "", ""), 1);
         vlayout->addLayout(hlyout);

@@ -50,10 +50,10 @@ private:
 
 signals:
     void SendCom45(quint32);
-    void SendCom50(quint32 adr, float data);
-    void RS485WriteCorBd(ModBus::Information, float *);
-    void RS485ReadCorBd(ModBus::Information);
-    void CorReadRequest();
+    //    void SendCom50(quint32 adr, float data);
+    //    void RS485WriteCorBd(ModBus::Information, float *);
+    //    void RS485ReadCorBd(ModBus::Information);
+    //    void CorReadRequest();
     //   void WritePasswordChecked();
 
 public slots:

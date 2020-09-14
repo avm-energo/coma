@@ -44,7 +44,6 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
     gb->setLayout(hlyout);
     hlyout2->addWidget(gb);
 
-    menu = new QMenu;
     gb = new QGroupBox("");
     hlyout = new QHBoxLayout;
     pb = new QPushButton("Аварийная сигнализация");
@@ -79,7 +78,7 @@ void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarm)
             break;
         }
     }
-    auto pixmap=WDFunc::NewCircle((alarm == 0) ? Qt::green : Qt::red, this->height() / 4);
+    auto pixmap = WDFunc::NewCircle((alarm == 0) ? Qt::green : Qt::red, this->height() / 4);
     WDFunc::SetLBLImage(this, "951", &pixmap);
     WDFunc::SetVisible(this, "951", true);
 }
@@ -99,7 +98,7 @@ void AlarmWidget::UpdateThirdUSB(QList<bool> avar)
             break;
         }
     }
-    auto pixmap=WDFunc::NewCircle((alarm == 0) ? Qt::green : Qt::red, this->height() / 4);
+    auto pixmap = WDFunc::NewCircle((alarm == 0) ? Qt::green : Qt::red, this->height() / 4);
     WDFunc::SetLBLImage(this, "952", &pixmap);
     WDFunc::SetVisible(this, "952", true);
 }
@@ -109,19 +108,19 @@ void AlarmWidget::UpdateFirstUSB()
 
     if (ModuleBSI::ModuleBsi.Hth & WARNBSIMASK)
     {
-        auto pixmap=WDFunc::NewCircle(Qt::yellow, this->height() / 4);
+        auto pixmap = WDFunc::NewCircle(Qt::yellow, this->height() / 4);
         WDFunc::SetLBLImage(this, "950", &pixmap);
         WDFunc::SetVisible(this, "950", true);
     }
     else if (ModuleBSI::ModuleBsi.Hth & AVARBSIMASK)
     {
-        auto pixmap=WDFunc::NewCircle(Qt::red, this->height() / 4);
+        auto pixmap = WDFunc::NewCircle(Qt::red, this->height() / 4);
         WDFunc::SetLBLImage(this, "950", &pixmap);
         WDFunc::SetVisible(this, "950", true);
     }
     else
     {
-        auto pixmap=WDFunc::NewCircle(Qt::green, this->height() / 4);
+        auto pixmap = WDFunc::NewCircle(Qt::green, this->height() / 4);
         WDFunc::SetLBLImage(this, "950", &pixmap);
         WDFunc::SetVisible(this, "950", true);
     }

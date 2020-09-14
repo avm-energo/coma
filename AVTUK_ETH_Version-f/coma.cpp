@@ -642,18 +642,18 @@ void Coma::CloseDialogs()
         i->close();
     }
 
-    if (AvarAlarmKIVDialog != nullptr)
-        AvarAlarmKIVDialog->close();
+    //    if (AvarAlarmKIVDialog != nullptr)
+    //        AvarAlarmKIVDialog->close();
 
-    if (AlarmStateAllDialog != nullptr)
-    {
-        AlrmTimer->stop();
-        AlarmStateAllDialog->close();
-        AlarmStateAllDialog = nullptr;
-    }
+    //    if (AlarmStateAllDialog != nullptr)
+    //    {
+    //        AlrmTimer->stop();
+    //        AlarmStateAllDialog->close();
+    //        AlarmStateAllDialog = nullptr;
+    //    }
 
-    if (WarnAlarmKIVDialog != nullptr)
-        WarnAlarmKIVDialog->close();
+    //    if (WarnAlarmKIVDialog != nullptr)
+    //        WarnAlarmKIVDialog->close();
 }
 
 void Coma::New104()

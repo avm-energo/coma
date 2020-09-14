@@ -79,7 +79,10 @@ QWidget *CheckDialogKDV::BdUI(int bdnum)
     }
 }
 
-void CheckDialogKDV::RefreshAnalogValues(int bdnum) { Q_UNUSED(bdnum) }
+void CheckDialogKDV::RefreshAnalogValues(int bdnum)
+{
+    Q_UNUSED(bdnum)
+}
 
 void CheckDialogKDV::PrepareHeadersForFile(int row)
 {
@@ -142,13 +145,25 @@ QWidget *CheckDialogKDV::CustomTab()
     return nullptr;
 }
 
-void CheckDialogKDV::ChooseValuesToWrite() { }
-void CheckDialogKDV::SetDefaultValuesToWrite() { }
-void CheckDialogKDV::PrepareAnalogMeasurements() { }
+void CheckDialogKDV::ChooseValuesToWrite()
+{
+}
+void CheckDialogKDV::SetDefaultValuesToWrite()
+{
+}
+void CheckDialogKDV::PrepareAnalogMeasurements()
+{
+}
 
-void CheckDialogKDV::StartBdMeasurements() { BdTimer->start(); }
+void CheckDialogKDV::StartBdMeasurements()
+{
+    BdTimer->start();
+}
 
-void CheckDialogKDV::StopBdMeasurements() { BdTimer->stop(); }
+void CheckDialogKDV::StopBdMeasurements()
+{
+    BdTimer->stop();
+}
 
 void CheckDialogKDV::USBUpdate()
 {
@@ -301,17 +316,17 @@ void CheckDialogKDV::SetAlarmColor(quint8 *Alarm)
 }
 void CheckDialogKDV::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
 {
-    IEC104Thread::FlSignals104 sig = *new IEC104Thread::FlSignals104;
-    int i;
-    for (i = 0; i < Signal->SigNumber; i++)
+    for (int i = 0; i < Signal->SigNumber; i++)
     {
-        sig = *(Signal + i);
-
-        ChKDV->FillBd(this, QString::number(sig.fl.SigAdr), WDFunc::StringValueWithCheck(sig.fl.SigVal, 3));
+        ChKDV->FillBd(
+            this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal + i)->fl.SigVal, 3));
     }
 }
 
-void CheckDialogKDV::UpdateSponData(IEC104Thread::SponSignals *Signal) { Q_UNUSED(Signal); }
+void CheckDialogKDV::UpdateSponData(IEC104Thread::SponSignals *Signal)
+{
+    Q_UNUSED(Signal)
+}
 
 void CheckDialogKDV::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {

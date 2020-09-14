@@ -69,13 +69,14 @@ void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
     QWidget *w = CustomTab();
     if (w != nullptr)
         CheckTW->addTab(w, "  Прочее  ");
-    lyout = new QVBoxLayout;
     lyout->addWidget(CheckTW);
     // lyout->addWidget(BottomUI());
     setLayout(lyout);
 }
 
-void EAbstractCheckDialog::Check1PPS() { }
+void EAbstractCheckDialog::Check1PPS()
+{
+}
 
 void EAbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
 {
@@ -244,7 +245,10 @@ void EAbstractCheckDialog::StopAnalogMeasurements()
     Timer->stop();
 }
 
-void EAbstractCheckDialog::TimerTimeout() { ReadAnalogMeasurementsAndWriteToFile(); }
+void EAbstractCheckDialog::TimerTimeout()
+{
+    ReadAnalogMeasurementsAndWriteToFile();
+}
 
 void EAbstractCheckDialog::SetTimerPeriod()
 {

@@ -80,14 +80,20 @@ QWidget *CheckDialogHarmonicKDV::BdUI(int bdnum)
         return new QWidget;
     }
 }
-void CheckDialogHarmonicKDV::RefreshAnalogValues(int bdnum) { Q_UNUSED(bdnum) }
+void CheckDialogHarmonicKDV::RefreshAnalogValues(int bdnum)
+{
+    Q_UNUSED(bdnum)
+}
 
-void CheckDialogHarmonicKDV::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
+void CheckDialogHarmonicKDV::PrepareHeadersForFile(int row)
+{
+    Q_UNUSED(row)
+}
 
 void CheckDialogHarmonicKDV::WriteToFile(int row, int bdnum)
 {
-    Q_UNUSED(row);
-    Q_UNUSED(bdnum);
+    Q_UNUSED(row)
+    Q_UNUSED(bdnum)
 }
 QWidget *CheckDialogHarmonicKDV::CustomTab()
 {
@@ -105,13 +111,25 @@ QWidget *CheckDialogHarmonicKDV::CustomTab()
     //    w->setLayout(lyout);
     return nullptr;
 }
-void CheckDialogHarmonicKDV::ChooseValuesToWrite() { }
-void CheckDialogHarmonicKDV::SetDefaultValuesToWrite() { }
-void CheckDialogHarmonicKDV::PrepareAnalogMeasurements() { }
+void CheckDialogHarmonicKDV::ChooseValuesToWrite()
+{
+}
+void CheckDialogHarmonicKDV::SetDefaultValuesToWrite()
+{
+}
+void CheckDialogHarmonicKDV::PrepareAnalogMeasurements()
+{
+}
 
-void CheckDialogHarmonicKDV::StartBdMeasurements() { BdTimer->start(); }
+void CheckDialogHarmonicKDV::StartBdMeasurements()
+{
+    BdTimer->start();
+}
 
-void CheckDialogHarmonicKDV::StopBdMeasurements() { BdTimer->stop(); }
+void CheckDialogHarmonicKDV::StopBdMeasurements()
+{
+    BdTimer->stop();
+}
 
 void CheckDialogHarmonicKDV::USBUpdate()
 {
@@ -128,17 +146,18 @@ void CheckDialogHarmonicKDV::USBUpdate()
 
 void CheckDialogHarmonicKDV::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
 {
-    IEC104Thread::FlSignals104 sig = *new IEC104Thread::FlSignals104;
-    int i;
-    for (i = 0; i < Signal->SigNumber; i++)
+    for (int i = 0; i < Signal->SigNumber; i++)
     {
-        sig = *(Signal + i);
 
-        ChHarmKDV->FillBd(this, QString::number(sig.fl.SigAdr), WDFunc::StringValueWithCheck(sig.fl.SigVal, 3));
+        ChHarmKDV->FillBd(
+            this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal + i)->fl.SigVal, 3));
     }
 }
 
-void CheckDialogHarmonicKDV::UpdateSponData(IEC104Thread::SponSignals *Signal) { Q_UNUSED(Signal); }
+void CheckDialogHarmonicKDV::UpdateSponData(IEC104Thread::SponSignals *Signal)
+{
+    Q_UNUSED(Signal)
+}
 
 void CheckDialogHarmonicKDV::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
@@ -163,6 +182,12 @@ void CheckDialogHarmonicKDV::onModbusStateChanged()
         QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 
-void CheckDialogHarmonicKDV::SetPredAlarmColor(quint8 *PredAlarm) { Q_UNUSED(PredAlarm); }
+void CheckDialogHarmonicKDV::SetPredAlarmColor(quint8 *PredAlarm)
+{
+    Q_UNUSED(PredAlarm)
+}
 
-void CheckDialogHarmonicKDV::SetAlarmColor(quint8 *Alarm) { Q_UNUSED(Alarm); }
+void CheckDialogHarmonicKDV::SetAlarmColor(quint8 *Alarm)
+{
+    Q_UNUSED(Alarm)
+}

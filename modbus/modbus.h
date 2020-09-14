@@ -94,7 +94,7 @@ public:
     int CheckIndex, CheckHarmIndex, CheckVibrIndex, CorIndex, TimeIndex;
 
 public slots:
-    int SendAndGetResult(ComInfo &request, InOutStruct &outp);
+    int SendAndGetResult(ModBus::ComInfo &request, ModBus::InOutStruct &outp);
     void ModWriteCor(ModBus::Information info, float *); //, int*);
     void ModReadCor(ModBus::Information info);
     void ReadTime();

@@ -514,7 +514,6 @@ void ConfDialogKxx::FillBack()
     QString StrIP, StrMask, StrSNTP, StrGate;
     QString NameIP = "IP_ID", NameMask = "Mask_ID", NameSNTP = "SNTP_ID", NameGate = "GW_ID";
     QStringList inIP, inMask, inSNTP, inGate;
-    QLocale german(QLocale::German);
 
     WDFunc::LE_read_data(ParentSetup, NameIP, StrIP);
     WDFunc::LE_read_data(ParentSetup, NameSNTP, StrSNTP);

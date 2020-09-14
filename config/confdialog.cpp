@@ -36,7 +36,6 @@ QWidget *ConfDialog::SetupMainBlk(QObject *parent)
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
 
-    glyout = new QGridLayout;
     glyout->setColumnStretch(2, 50);
     QLabel *lbl;
     QDoubleSpinBox *dspbls;
@@ -95,8 +94,6 @@ QWidget *ConfDialog::SetupTime(QObject *parent)
     font.setFamily("Times");
     font.setPointSize(11);
 
-    vlyout2 = new QVBoxLayout;
-    glyout = new QGridLayout;
     glyout->setColumnStretch(2, 50);
     int row = 0;
     QLabel *lbl;

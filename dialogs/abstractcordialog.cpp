@@ -28,9 +28,14 @@
 #include <QTabWidget>
 #include <QVBoxLayout>
 
-AbstractCorDialog::AbstractCorDialog(QWidget *parent) : QDialog(parent) { }
+AbstractCorDialog::AbstractCorDialog(QWidget *parent) : QDialog(parent)
+{
+}
 
-void AbstractCorDialog::GetCorBd(int index) { Q_UNUSED(index); }
+void AbstractCorDialog::GetCorBd(int index)
+{
+    Q_UNUSED(index);
+}
 
 void AbstractCorDialog::SetCor()
 {
@@ -62,18 +67,18 @@ float AbstractCorDialog::ToFloat(QString text)
     return tmpf;
 }
 
-void AbstractCorDialog::MessageOk() { QMessageBox::information(this, "INFO", "Записано успешно"); }
+void AbstractCorDialog::MessageOk()
+{
+    QMessageBox::information(this, "INFO", "Записано успешно");
+}
 
 void AbstractCorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
 {
-    IEC104Thread::FlSignals104 sig = *new IEC104Thread::FlSignals104;
-    int i;
 
     if (((Signal)->fl.SigAdr >= 4000) && ((Signal)->fl.SigAdr <= 4010))
     {
-        for (i = 0; i < Signal->SigNumber; i++)
+        for (int i = 0; i < Signal->SigNumber; i++)
         {
-            sig = *(Signal + i);
             FillBd(
                 this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal + i)->fl.SigVal));
         }
@@ -87,10 +92,7 @@ void AbstractCorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
 
 void AbstractCorDialog::FillBd(QWidget *parent, QString Name, QString Value)
 {
-    float fl;
-    QLocale german(QLocale::German);
-    fl = german.toDouble(Value);
-    WDFunc::SetSPBData(parent, Name, fl);
+    WDFunc::SetSPBData(parent, Name, Value.toDouble());
 }
 
 void AbstractCorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
@@ -139,6 +141,12 @@ void AbstractCorDialog::WritePasswordCheck(QString psw)
     emit WritePasswordChecked();
 }
 
-void AbstractCorDialog::TimerTimeout() { MessageTimer->stop(); }
+void AbstractCorDialog::TimerTimeout()
+{
+    MessageTimer->stop();
+}
 
-void AbstractCorDialog::ErrorRead() { QMessageBox::information(this, "Ошибка", "Ошибка чтения"); }
+void AbstractCorDialog::ErrorRead()
+{
+    QMessageBox::information(this, "Ошибка", "Ошибка чтения");
+}

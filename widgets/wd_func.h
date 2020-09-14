@@ -73,7 +73,10 @@ public:
     {
         QDoubleSpinBox *spb = w->findChild<QDoubleSpinBox *>(spbname);
         if (spb == nullptr)
+        {
+            spbvalue = 0;
             return false;
+        }
         spbvalue = spb->value();
         return true;
     }

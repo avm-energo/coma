@@ -119,9 +119,9 @@ private:
     quint32 m_typeB;
     quint32 m_typeM;
 signals:
-    void interfaceTypeChanged(InterfaceType);
-    void deviceTypeChanged(DeviceType);
-    void boardTypeChanged(BoardType);
+    void interfaceTypeChanged(Board::InterfaceType);
+    void deviceTypeChanged(Board::DeviceType);
+    void boardTypeChanged(Board::BoardType);
     void typeChanged();
-    void connectionStateChanged(ConnectionState);
+    void connectionStateChanged(Board::ConnectionState);
 };
