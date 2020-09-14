@@ -67,10 +67,9 @@ void WarnAlarmKTF::Update(QList<bool> states)
     float circleRadius = CIRCLE_RADIUS;
     for (i = 0; i < Alarm->MapAlarm[MTYPE_KTF].warnCounts; i++)
     {
-        quint32 alarm = states.at(i + (13 * j));
+        quint32 alarm = states.at(i);
 
         alarm ? WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::red, circleRadius))
               : WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::green, circleRadius));
     }
-    j++;
 }

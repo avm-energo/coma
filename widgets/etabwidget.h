@@ -20,7 +20,7 @@ public:
             + "border: 0px solid;"
               "color: #000000;}"
               "QTabBar::tab::selected {background-color: "
-            + QString(NFTCOLOR) + ";}";
+            + QString(Colors::NFTCOLOR) + ";}";
         this->setStyleSheet(tbss);
     }
 

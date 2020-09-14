@@ -3,7 +3,6 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../widgets/ecombobox.h"
-#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
@@ -171,7 +170,4 @@ void ConfDialog::FillBack()
     }
 }
 
-void ConfDialog::SetDefConf()
-{
-    ConfigMain->SetDefBlock();
-}
+void ConfDialog::SetDefConf() { ConfigMain->SetDefBlock(); }

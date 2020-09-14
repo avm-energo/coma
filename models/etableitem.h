@@ -13,8 +13,8 @@ public:
 
     QString data(int column) const;
     void setData(int column, const QString &value);
-    template <typename T> T uData(int column) const;
-    template <typename T> void setUData(int column, T data);
+    QVariant uData(int column) const;
+    void setUData(int column, QVariant data);
     void appendData(const QString &value);
     void setColor(int column, QColor color);
     void setFont(int column, QFont font);

@@ -10,8 +10,6 @@ class WarnAlarmKIV : public AbstractAlarm
 public:
     explicit WarnAlarmKIV(AlarmClass *alarm, QDialog *parent = nullptr);
 
-    int j = 0;
-
 public slots:
 
     void AlarmState();

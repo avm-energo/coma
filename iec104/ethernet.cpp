@@ -3,7 +3,6 @@
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include "../widgets/emessagebox.h"
 
 #include <QCoreApplication>
 #include <QNetworkProxy>
@@ -19,9 +18,7 @@ Ethernet::Ethernet(QObject *parent) : QObject(parent)
     ClosePortAndFinishThread = false;
 }
 
-Ethernet::~Ethernet()
-{
-}
+Ethernet::~Ethernet() { }
 
 void Ethernet::Run()
 {
@@ -132,7 +129,4 @@ void Ethernet::CheckForData()
     emit NewDataArrived(ba);
 }
 
-void Ethernet::EthSetConnected()
-{
-    EthConnected = true;
-}
+void Ethernet::EthSetConnected() { EthConnected = true; }

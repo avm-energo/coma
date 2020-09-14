@@ -87,7 +87,9 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     confBDialog = confMDialog = nullptr;
     checkBDialog = checkMDialog = nullptr;
     AlarmStateAllDialog = nullptr;
+#ifdef AVM_DEBUG
     tuneDialog = nullptr;
+#endif
     HarmDialog = nullptr;
     VibrDialog = nullptr;
     corDialog = nullptr;

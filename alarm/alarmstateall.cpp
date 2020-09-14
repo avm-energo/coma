@@ -53,25 +53,13 @@ void AlarmStateAll::Update(QList<bool>) { }
 void AlarmStateAll::UpdateHealth(quint32 health)
 {
     float circleRadius = CIRCLE_RADIUS;
-    QHBoxLayout *hlyout = new QHBoxLayout;
     for (quint32 i = 0; i < health; ++i)
     {
-        hlyout = new QHBoxLayout;
-
-        if (i == 1 || i == 3 || i == 5 || i == 7 || i == 13)
-        {
-            if (health & (0x00000001 << i))
-            WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::red, circleRadius));
-            else
-            WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::green, circleRadius));
-        }
-        else
-        {
-            if (health & (0x00000001 << i))
-                WDFunc::SetLBLImage(this, QString::number(i), pmylw);
-            else
-                WDFunc::SetLBLImage(this, QString::number(i), pmgrn);
-        }
+        QPixmap circle = WDFunc::NewCircle(Qt::green, circleRadius);
+        if (health & (0x00000001 << i))
+            circle = (AlarmPositions.indexOf(i) == -1) ? WDFunc::NewCircle(Qt::red, circleRadius)
+                                                       : WDFunc::NewCircle(Qt::yellow, circleRadius);
+        WDFunc::SetLBLImage(this, (QString::number(i)), &circle);
     }
 }
 

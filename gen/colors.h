@@ -1,43 +1,43 @@
 #ifndef COLORS_H
 #define COLORS_H
 
-#include <QString>
+#include <QStringLiteral>
 
 namespace Colors
 {
-constexpr QString TABCOLOR = "#AFFFAF";
-constexpr QString TABCOLORA1 = "#F3CC8F";
-constexpr QString ERPROTCLR = "rgba(255,234,255,255)";
-constexpr QString MAINWINCLR = "#E0FFE0";
-constexpr QString MAINWINCLRA1 = "#FFFFE0";
-// constexpr QString DCONFCLR = "#DDDDAA";
-// constexpr QString DCONFWCLR = "#EEEECC";
-// constexpr QString DCONFGCLR = "#CCCC99";
-// constexpr QString DCONFRCLR = "#FFCCCC";
-// constexpr QString DCONFYCLR = "#FFFFCC";
-// constexpr QString DCONFOCLR = "#FFCC99";
-constexpr QString ACONFCLR = "#D0FFD0";
-constexpr QString ACONFWCLR = "#C0FFC0";
-// constexpr QString ACONFWCLRO = "#E0FFE0";
-constexpr QString ACONFGCLR = "#B0FFB0";
-// constexpr QString ACONFRCLR = "#FFDDDD";
-// constexpr QString ACONFYCLR = "#FFFFDD";
-constexpr QString ACONFOCLR = "#FFDDAA";
-constexpr QString UCONFCLR = "#FFFFD0";
-// constexpr QString UCONFWCLR = "#FFFFC0";
-// constexpr QString ERRCLR = "#FF0000";
-constexpr QString REDCOLOR = "#FF2222";
-// constexpr QString RDLCOLOR = "#FF4444";
-// constexpr QString RDDCOLOR = "#FF0000";
-// constexpr QString GRNCOLOR = "#22FF22";
-// constexpr QString NFTCOLOR = "#9FC79F";
-// constexpr QString GRLCOLOR = "#44FF44";
-// constexpr QString GRDCOLOR = "#00FF00";
-// constexpr QString YLWCOLOR = "#CCCC22";
-// constexpr QString YLLCOLOR = "#CCCC44";
-// constexpr QString YLDCOLOR = "#CCCC00";
-// constexpr QString BLDCOLOR = "#0000FF";
-// constexpr QString BLUCOLOR = "#2222FF";
+constexpr char TABCOLOR[] = "#AFFFAF";
+constexpr char TABCOLORA1[] = "#F3CC8F";
+constexpr char ERPROTCLR[] = "rgba(255,234,255,255)";
+constexpr char MAINWINCLR[] = "#E0FFE0";
+constexpr char MAINWINCLRA1[] = "#FFFFE0";
+// constexpr char DCONFCLR[] = "#DDDDAA";
+// constexpr char DCONFWCLR[] = "#EEEECC";
+// constexpr char DCONFGCLR[] = "#CCCC99";
+// constexpr char DCONFRCLR[] = "#FFCCCC";
+// constexpr char DCONFYCLR[] = "#FFFFCC";
+// constexpr char DCONFOCLR[] = "#FFCC99";
+constexpr char ACONFCLR[] = "#D0FFD0";
+constexpr char ACONFWCLR[] = "#C0FFC0";
+// constexpr char ACONFWCLRO[] = "#E0FFE0";
+constexpr char ACONFGCLR[] = "#B0FFB0";
+// constexpr char ACONFRCLR[] = "#FFDDDD";
+// constexpr char ACONFYCLR[] = "#FFFFDD";
+constexpr char ACONFOCLR[] = "#FFDDAA";
+constexpr char UCONFCLR[] = "#FFFFD0";
+// constexpr char UCONFWCLR[] = "#FFFFC0";
+// constexpr char ERRCLR[] = "#FF0000";
+constexpr char REDCOLOR[] = "#FF2222";
+// constexpr char RDLCOLOR[] = "#FF4444";
+// constexpr char RDDCOLOR[] = "#FF0000";
+// constexpr char GRNCOLOR[] = "#22FF22";
+constexpr char NFTCOLOR[] = "#9FC79F";
+// constexpr char GRLCOLOR[] = "#44FF44";
+// constexpr char GRDCOLOR[] = "#00FF00";
+// constexpr char YLWCOLOR[] = "#CCCC22";
+// constexpr char YLLCOLOR[] = "#CCCC44";
+// constexpr char YLDCOLOR[] = "#CCCC00";
+// constexpr char BLDCOLOR[] = "#0000FF";
+// constexpr char BLUCOLOR[] = "#2222FF";
 }
 
 #endif // COLORS_H

@@ -92,7 +92,7 @@ int ETableItem::TextAlignment(int column)
         return (Qt::AlignLeft | Qt::AlignVCenter);
 }
 
-template <typename T> ETableItem::T ETableItem::uData(int column) const
+QVariant ETableItem::uData(int column) const
 {
     if (!itemUData.isEmpty() && column < itemUData.size())
         return itemUData.at(column);
@@ -100,7 +100,7 @@ template <typename T> ETableItem::T ETableItem::uData(int column) const
         return QVariant();
 }
 
-template <typename T> void ETableItem::setUData(int column, ETableItem::T data)
+void ETableItem::setUData(int column, QVariant data)
 {
     itemUData.reserve(column + 1);
     itemUData.insert(column, data);

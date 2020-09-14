@@ -9,7 +9,7 @@ class WarnAlarmKTF : public AbstractAlarm
 
 public:
     explicit WarnAlarmKTF(AlarmClass *alarm, QDialog *parent = nullptr);
-    int j = 0;
+
 public slots:
 
     void AlarmState();

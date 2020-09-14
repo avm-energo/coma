@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++17
-VERSION = 0.2.4
+VERSION = 0.9.0
 
 QT       += core gui printsupport network serialport qml widgets testlib svg
 
@@ -90,11 +90,9 @@ SOURCES += \
     ../iec104/iec104.cpp \
     ../models/etableitem.cpp \
     ../models/etablemodel.cpp \
-    ../models/getoscpbdelegate.cpp \
     ../modbus/modbus.cpp \
     ../usb/commands.cpp \
     ../widgets/ecombobox.cpp \
-    ../widgets/emessagebox.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/estackedwidget.cpp \
     ../widgets/etableview.cpp \
@@ -171,10 +169,8 @@ HEADERS += \
     ../iec104/iec104.h \
     ../models/etableitem.h \
     ../models/etablemodel.h \
-    ../models/getoscpbdelegate.h \
     ../usb/commands.h \
     ../widgets/ecombobox.h \
-    ../widgets/emessagebox.h \
     ../widgets/errorprotocolwidget.h \
     ../widgets/estackedwidget.h \
     ../widgets/etableview.h \

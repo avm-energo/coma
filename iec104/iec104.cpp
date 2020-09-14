@@ -2,7 +2,6 @@
 
 #include "../gen/error.h"
 #include "../gen/timefunc.h"
-#include "../widgets/emessagebox.h"
 #include "ethernet.h"
 
 #include <QCoreApplication>
@@ -24,14 +23,9 @@ IEC104::IEC104(QVector<S2::DataRec> *s2, QObject *parent) : QObject(parent)
     Log->info("=== Log started ===");
 }
 
-IEC104::~IEC104()
-{
-}
+IEC104::~IEC104() { }
 
-bool IEC104::Working()
-{
-    return (EthThreadWorking | ParseThreadWorking);
-}
+bool IEC104::Working() { return (EthThreadWorking | ParseThreadWorking); }
 
 void IEC104::Connect(Settings &st)
 {
@@ -162,10 +156,7 @@ void IEC104::com51WriteTime(uint time)
     ParseWriteMutex.unlock();
 }
 
-void IEC104::EthThreadStarted()
-{
-    EthThreadWorking = true;
-}
+void IEC104::EthThreadStarted() { EthThreadWorking = true; }
 
 void IEC104::EthThreadFinished()
 {
@@ -174,10 +165,7 @@ void IEC104::EthThreadFinished()
         emit Finished();
 }
 
-void IEC104::ParseThreadStarted()
-{
-    ParseThreadWorking = true;
-}
+void IEC104::ParseThreadStarted() { ParseThreadWorking = true; }
 
 void IEC104::ParseThreadFinished()
 {
@@ -224,14 +212,9 @@ IEC104Thread::IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, QVector<S2
     NoAnswer = 0;
 }
 
-IEC104Thread::~IEC104Thread()
-{
-}
+IEC104Thread::~IEC104Thread() { }
 
-void IEC104Thread::SetBaseAdr(quint16 adr)
-{
-    BaseAdr = adr;
-}
+void IEC104Thread::SetBaseAdr(quint16 adr) { BaseAdr = adr; }
 
 void IEC104Thread::Run()
 {
