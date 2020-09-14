@@ -62,8 +62,9 @@ void AvarAlarmKIV::Update(QList<bool> states)
         return;
     for (i = 0; i < Alarm->MapAlarm[MTYPE_KIV].avarCounts; i++)
     {
-        quint32 alarm = states.at(i);
+        quint32 alarm = states.at(i + (7 * j));
         alarm ? WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::red, circleRadius))
               : WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::green, circleRadius));
     }
+    j++;
 }

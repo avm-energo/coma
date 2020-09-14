@@ -395,6 +395,7 @@ void Coma::StartWork()
     {
         str = (confBDialog == nullptr) ? "Конфигурирование" : "Конфигурирование\nМезонин";
         MainTW->addTab(confMDialog, str);
+        ///
         ConfIndex = MainTW->indexOf(confMDialog);
 
         if (confMDialog->IsNeededDefConf)
@@ -498,8 +499,8 @@ void Coma::setupConnections()
             connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKIVDialog, &QDialog::show);
             connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVDialog, &AvarAlarmKIV::Update);
 
-            connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
-            connect(AlarmW, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
+            connect(Alarm, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
+            connect(Alarm, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
 
 #ifdef AVM_DEBUG
             tuneDialog = new TuneDialogKIV(S2ConfigForTune);
@@ -635,6 +636,9 @@ void Coma::CloseDialogs()
         i->close();
     }
 
+    Alarm->AvarAlarmEvents.clear();
+    Alarm->WarnAlarmEvents.clear();
+
     if (AvarAlarmKIVDialog != nullptr)
         AvarAlarmKIVDialog->close();
 
@@ -644,7 +648,6 @@ void Coma::CloseDialogs()
         AlarmStateAllDialog->close();
         AlarmStateAllDialog = nullptr;
     }
-
     if (WarnAlarmKIVDialog != nullptr)
         WarnAlarmKIVDialog->close();
 }

@@ -116,6 +116,7 @@ void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
                     WarnAlarmEvents.append(alarm);
                 else if (MapAlarm[Board::GetInstance()->type()].avars.at(count))
                     AvarAlarmEvents.append(alarm);
+            }
             count++;
         }
     }
