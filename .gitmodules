@@ -1,6 +1,3 @@
-[submodule "QtXlsxWriter"]
-	path = QtXlsxWriter
-	url = https://github.com/VSRonin/QtXlsxWriter
 [submodule "LimeReport"]
 	path = LimeReport
 	url = https://github.com/fralx/LimeReport
@@ -14,3 +11,4 @@
 [submodule "QXlsx"]
 	path = QXlsx
 	url = https://github.com/QtExcel/QXlsx
+	branch = master
