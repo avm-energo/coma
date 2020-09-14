@@ -3,7 +3,6 @@
 
 #include "../models/etablemodel.h"
 #include "ecombobox.h"
-#include "edoublespinbox.h"
 #include "etableview.h"
 #include "passwordlineedit.h"
 

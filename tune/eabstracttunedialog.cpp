@@ -1,8 +1,8 @@
 #include "eabstracttunedialog.h"
 #include "../dialogs/keypressdialog.h"
+#include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../usb/commands.h"
@@ -337,7 +337,7 @@ void EAbstractTuneDialog::TuneReadCoefs(int index)
     for (int i = 0; i < AbsBac.keys().size(); i++)
     {
         int bacnum;
-        if (MTypeM == 135)
+        if (Board::GetInstance()->typeM() == 135)
             bacnum = i + 1;
         else
             bacnum = i + 2;
@@ -382,7 +382,7 @@ bool EAbstractTuneDialog::WriteTuneCoefsSlot()
 
     for (int i = 0; i < AbsBac.keys().size(); i++)
     {
-        if (MTypeM == 135)
+        if (Board::GetInstance()->typeM() == 135)
             bacnum = i + 1;
         else
             bacnum = i + 2;

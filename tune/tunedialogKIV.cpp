@@ -3,7 +3,6 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/maindef.h"
 #include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
 #include "../models/checkdelegate.h"

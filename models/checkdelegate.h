@@ -13,9 +13,9 @@ public:
     {
         SIMPLE_CELL = 0,
         OUTVALUE = 1
-    }
+    };
 
-    explicit CheckDelegate(QObject *parent = nullptr);
+    CheckDelegate(QObject *parent = nullptr);
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };

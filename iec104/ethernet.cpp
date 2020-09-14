@@ -36,8 +36,8 @@ void Ethernet::Run()
     connect(sock, SIGNAL(readyRead()), this, SLOT(CheckForData()));
     sock->connectToHost(StdFunc::ForDeviceIP(), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
     QEventLoop loop;
-    loop.connect(socket, SIGNAL(connected()), SLOT(quit()));
-    loop.connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(quit()));
+    loop.connect(sock, SIGNAL(connected()), SLOT(quit()));
+    loop.connect(sock, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(quit()));
     loop.exec();
     //    TimeFunc::WaitFor(EthConnected, TIMEOUT_BIG);
     while (!ClosePortAndFinishThread)

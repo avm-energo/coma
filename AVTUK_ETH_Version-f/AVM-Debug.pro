@@ -59,6 +59,7 @@ SOURCES += \
     ../dialogs/cordialogktf.cpp \
     ../dialogs/infodialog.cpp \
     ../dialogs/mnktime.cpp \
+    ../gen/board.cpp \
     ../gen/journals.cpp \
     ../gen/logclass.cpp \
     ../modbus/serialport.cpp \
@@ -92,7 +93,6 @@ SOURCES += \
     ../iec104/iec104.cpp \
     ../models/etableitem.cpp \
     ../models/etablemodel.cpp \
-    ../models/getoscpbdelegate.cpp \
     ../modbus/modbus.cpp \
     ../usb/commands.cpp \
     ../widgets/ecombobox.cpp \
@@ -140,6 +140,7 @@ HEADERS += \
     ../dialogs/cordialogktf.h \
     ../dialogs/infodialog.h \
     ../dialogs/mnktime.h \
+    ../gen/board.h \
     ../gen/journals.h \
     ../gen/logclass.h \
     ../modbus/serialport.h \
@@ -174,7 +175,6 @@ HEADERS += \
     ../iec104/iec104.h \
     ../models/etableitem.h \
     ../models/etablemodel.h \
-    ../models/getoscpbdelegate.h \
     ../usb/commands.h \
     ../widgets/ecombobox.h \
     ../widgets/errorprotocolwidget.h \
@@ -201,9 +201,9 @@ ERROR_FILES += \
 INCLUDEPATH += $$PWD/../../includes
 
 # QXlsx code for Application Qt project
-QXLSX_PARENTPATH=$$PWD/../QXlsx/QXlsx         # current QXlsx path is . (. means curret directory)
-QXLSX_HEADERPATH=$$PWD/../QXlsx/QXlsx/header/  # current QXlsx header path is ./header/
-QXLSX_SOURCEPATH=$$PWD/../QXlsx/QXlsx/source/  # current QXlsx source path is ./source/
+QXLSX_PARENTPATH=./../QXlsx/QXlsx         # current QXlsx path is . (. means curret directory)
+QXLSX_HEADERPATH=./../QXlsx/QXlsx/header/  # current QXlsx header path is ./header/
+QXLSX_SOURCEPATH=./../QXlsx/QXlsx/source/  # current QXlsx source path is ./source/
 include(./../QXlsx/QXlsx/QXlsx.pri)
 
 equals(QMAKE_PLATFORM, win32)
