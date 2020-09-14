@@ -14,7 +14,7 @@ QMutex EProtocom::mutex_;
 
 EProtocom::EProtocom(QObject *parent)
 {
-    Q_UNUSED(parent);
+    Q_UNUSED(parent)
     QString tmps = "=== CLog started ===\n";
     CnLog = new LogClass;
     CnLog->Init("canal.log");
@@ -783,7 +783,7 @@ void EProtocom::Disconnect()
 
 QByteArray EProtocom::RawRead(int bytes)
 {
-    Q_UNUSED(bytes);
+    Q_UNUSED(bytes)
     return QByteArray();
 }
 

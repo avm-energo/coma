@@ -3,7 +3,7 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../widgets/ecombobox.h"
-#include "../widgets/emessagebox.h"
+//#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>

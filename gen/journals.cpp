@@ -303,7 +303,10 @@ void Journals::prepareJour(QByteArray &ba, int JourType)
     {
         ERMSG("basize");
     }
+#ifdef __STDC_LIB_EXT1__
     memcpy_s(&header, sizeof(S2::FileHeader), ba.data(), sizeof(S2::FileHeader));
+#endif
+    memcpy(&header, ba.data(), sizeof(S2::FileHeader));
     if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), header.crc32))
     {
         ERMSG("CRC error");

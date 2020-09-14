@@ -5,6 +5,7 @@
 #include <QFont>
 #include <QIcon>
 #include <QStringList>
+#include <QVariant>
 
 class ETableItem
 {
@@ -26,12 +27,26 @@ public:
     int TextAlignment(int column);
 
 private:
-    QStringList itemData; // содержимое строки
+    QStringList itemData;      // содержимое строки
     QList<QVariant> itemUData; // содержимое по UserRole
     QList<QColor> itemColor;
     QList<QFont> itemFont;
     QList<QIcon> itemIcon;
     QList<int> itemTextAlignment;
 };
+
+template <typename T> void ETableItem::setUData(int column, T data)
+{
+    itemUData.reserve(column + 1);
+    itemUData.insert(column, data);
+}
+
+template <typename T> T ETableItem::uData(int column) const
+{
+    if (!itemUData.isEmpty() && column < itemUData.size())
+        return itemUData.at(column);
+    else
+        return QVariant();
+}
 
 #endif // ETABLEITEM_H

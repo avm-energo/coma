@@ -2,7 +2,7 @@
 
 #include "../gen/error.h"
 #include "../gen/timefunc.h"
-#include "../widgets/emessagebox.h"
+//#include "../widgets/emessagebox.h"
 #include "ethernet.h"
 
 #include <QCoreApplication>

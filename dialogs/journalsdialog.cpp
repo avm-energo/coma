@@ -50,7 +50,9 @@ JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
     SetupUI();
 }
 
-JournalDialog::~JournalDialog() { }
+JournalDialog::~JournalDialog()
+{
+}
 
 void JournalDialog::SetupUI()
 {
@@ -223,9 +225,15 @@ void JournalDialog::TryGetJourByUSB()
         GetJour();
 }
 
-void JournalDialog::GetJour() { emit StartGetJour(); }
+void JournalDialog::GetJour()
+{
+    emit StartGetJour();
+}
 
-void JournalDialog::JourFileChoosed(QString &file) { JourFile = file; }
+void JournalDialog::JourFileChoosed(QString &file)
+{
+    JourFile = file;
+}
 
 void JournalDialog::EraseJour()
 {
@@ -360,6 +368,7 @@ void JournalDialog::WritePasswordCheck(QString psw)
 
 void JournalDialog::Done(QString msg, int)
 {
+    Q_UNUSED(msg)
     qDebug() << __PRETTY_FUNCTION__;
     // new QAbstractItemModelTester(ProxyWorkModel, QAbstractItemModelTester::FailureReportingMode::Warning, this);
 

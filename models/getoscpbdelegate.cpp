@@ -1,3 +1,5 @@
+#include "getoscpbdelegate.h"
+
 #include "etableitem.h"
 #include "etablemodel.h"
 
@@ -7,7 +9,10 @@
 #include <QStandardItem>
 #include <QStandardItemModel>
 
-GetOscPBDelegate::GetOscPBDelegate(QObject *parent) : QStyledItemDelegate(parent) { _state = QStyle::State_Enabled; }
+GetOscPBDelegate::GetOscPBDelegate(QObject *parent) : QStyledItemDelegate(parent)
+{
+    _state = QStyle::State_Enabled;
+}
 
 void GetOscPBDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {

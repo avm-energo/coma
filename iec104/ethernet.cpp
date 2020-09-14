@@ -3,7 +3,7 @@
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include "../widgets/emessagebox.h"
+//#include "../widgets/emessagebox.h"
 
 #include <QCoreApplication>
 #include <QSettings>

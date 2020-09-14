@@ -37,17 +37,17 @@ private:
     bool IsNtp;
     QList<QWidget *> WidgetList;
 
-    void Fill();
-    void FillBack();
-    void SetupUI();
-    void CheckConf();
+    void Fill() override;
+    void FillBack() override;
+    void SetupUI() override;
+    void CheckConf() override;
 
 signals:
 
 public slots:
 
 private slots:
-    void SetDefConf();
+    void SetDefConf() override;
     void Start_Timer();
     void Stop_Timer();
 };

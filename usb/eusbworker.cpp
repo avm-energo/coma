@@ -7,7 +7,9 @@
 #include <QElapsedTimer>
 #include <QThread>
 
+#if _MSC_VER && !__INTEL_COMPILER
 #define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
 EUsbWorker::EUsbWorker(DeviceConnectStruct &devinfo, LogClass *logh, bool writelog, QObject *parent)
     : DeviceInfo(devinfo), log(logh), WriteUSBLog(writelog), QObject(parent)
 {

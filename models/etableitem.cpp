@@ -2,7 +2,10 @@
 
 #include <QDebug>
 
-ETableItem::ETableItem(ETableItem *parent) { Q_UNUSED(parent); }
+ETableItem::ETableItem(ETableItem *parent)
+{
+    Q_UNUSED(parent)
+}
 
 QString ETableItem::data(int column) const
 {
@@ -22,7 +25,10 @@ void ETableItem::setData(int column, const QString &data)
     itemData.replace(column, data);
 }
 
-void ETableItem::appendData(const QString &value) { itemData.append(value); }
+void ETableItem::appendData(const QString &value)
+{
+    itemData.append(value);
+}
 
 void ETableItem::setColor(int column, QColor color)
 {
@@ -92,16 +98,8 @@ int ETableItem::TextAlignment(int column)
         return (Qt::AlignLeft | Qt::AlignVCenter);
 }
 
-template <typename T> ETableItem::T ETableItem::uData(int column) const
-{
-    if (!itemUData.isEmpty() && column < itemUData.size())
-        return itemUData.at(column);
-    else
-        return QVariant();
-}
-
-template <typename T> void ETableItem::setUData(int column, ETableItem::T data)
-{
-    itemUData.reserve(column + 1);
-    itemUData.insert(column, data);
-}
+// template <typename T> void ETableItem::setUData(int column, T data)
+//{
+//    itemUData.reserve(column + 1);
+//    itemUData.insert(column, data);
+//}

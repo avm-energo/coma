@@ -59,9 +59,15 @@ void AlarmStateAll::UpdateHealth(quint32 health)
         hlyout = new QHBoxLayout;
 
         if (health & (0x00000001 << i))
-            WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::red, circleRadius));
+        {
+            auto pixmap=WDFunc::NewCircle(Qt::red, circleRadius);
+            WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
+        }
         else
-            WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::green, circleRadius));
+        {
+                        auto pixmap=WDFunc::NewCircle(Qt::green, circleRadius);
+             WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
+        }
     }
 }
 

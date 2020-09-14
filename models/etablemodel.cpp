@@ -11,9 +11,13 @@
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
-ETableModel::ETableModel(QObject *parent) : QAbstractTableModel(parent) { }
+ETableModel::ETableModel(QObject *parent) : QAbstractTableModel(parent)
+{
+}
 
-ETableModel::~ETableModel() { }
+ETableModel::~ETableModel()
+{
+}
 
 QVariant ETableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
@@ -81,7 +85,7 @@ QVariant ETableModel::data(const QModelIndex &index, int role) const
             case Qt::TextAlignmentRole:
                 return maindata.at(row)->TextAlignment(column);
             case Qt::UserRole:
-                return maindata.at(row)->uData(column);
+                return maindata.at(row)->uData<QVariant>(column);
             }
         }
     }
@@ -137,18 +141,18 @@ Qt::ItemFlags ETableModel::flags(const QModelIndex &index) const
 {
     if (index.isValid())
         return QAbstractItemModel::flags(index) | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
-    return 0;
+    return Qt::NoItemFlags;
 }
 
 QModelIndex ETableModel::index(int row, int column, const QModelIndex &index) const
 {
-    Q_UNUSED(index);
+    Q_UNUSED(index)
     return createIndex(row, column);
 }
 
 bool ETableModel::insertColumns(int position, int columns, const QModelIndex &index)
 {
-    Q_UNUSED(index);
+    Q_UNUSED(index)
     if (columns > 0)
     {
         beginInsertColumns(QModelIndex(), position, position + columns - 1);
@@ -191,7 +195,7 @@ bool ETableModel::removeColumns(int position, int columns, const QModelIndex &in
 
 bool ETableModel::insertRows(int position, int rows, const QModelIndex &index)
 {
-    Q_UNUSED(index);
+    Q_UNUSED(index)
     beginInsertRows(QModelIndex(), position, position + rows - 1);
     for (int i = 0; i < rows; i++)
     {
@@ -227,13 +231,13 @@ bool ETableModel::removeRows(int position, int rows, const QModelIndex &index)
 
 int ETableModel::columnCount(const QModelIndex &index) const
 {
-    Q_UNUSED(index);
+    Q_UNUSED(index)
     return hdr.size();
 }
 
 int ETableModel::rowCount(const QModelIndex &index) const
 {
-    Q_UNUSED(index);
+    Q_UNUSED(index)
     return maindata.size();
 }
 
@@ -307,7 +311,10 @@ void ETableModel::setRowTextAlignment(int row, int alignment)
         setData(index(row, i, QModelIndex()), QVariant(alignment), Qt::TextAlignmentRole);
 }
 
-bool ETableModel::isEmpty() const { return maindata.isEmpty(); }
+bool ETableModel::isEmpty() const
+{
+    return maindata.isEmpty();
+}
 
 void ETableModel::setColumnFormat(int column, int format)
 {

@@ -4,7 +4,7 @@
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-#include "../widgets/emessagebox.h"
+//#include "../widgets/emessagebox.h"
 
 #include <QStandardPaths>
 #include <QThread>

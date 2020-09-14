@@ -56,7 +56,14 @@ void AvarAlarmKTF::Update(QList<bool> states)
     for (i = 0; i < Alarm->MapAlarm[MTYPE_KTF].avarCounts; i++)
     {
         quint32 alarm = states.at(i);
-        alarm ? WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::red, circleRadius))
-              : WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::green, circleRadius));
+        if (alarm){
+            auto pixmap=WDFunc::NewCircle(Qt::red, circleRadius);
+            WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
+        }
+        else
+        {
+            auto pixmap=WDFunc::NewCircle(Qt::green, circleRadius);
+            WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
+        }
     }
 }

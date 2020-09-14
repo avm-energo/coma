@@ -15,6 +15,9 @@
 #include <QTextEdit>
 #include <QtMath>
 
+#ifdef __GNUC__
+#include <cfloat>
+#endif
 QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letext, const QString &lecolor)
 {
     QLineEdit *le = new QLineEdit(w);

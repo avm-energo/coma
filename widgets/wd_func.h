@@ -15,8 +15,9 @@
 #include <QStatusBar>
 #include <QWidget>
 
+#ifndef __GNUC__
 #define MAXFLOAT 3.40282347E+38F
-
+#endif
 class WDFunc
 {
 public:

@@ -11,7 +11,7 @@ RC_ICONS = ../coma.ico
 CONFIG += c++17
 VERSION = 0.2.4
 
-QT       += core gui printsupport network serialport qml widgets testlib svg
+QT       += core gui printsupport network serialport qml widgets testlib
 
 TARGET = AVM-Service
 DEFINES += PROGNAME='\\"AVM-Service\\"'
@@ -93,7 +93,6 @@ SOURCES += \
     ../modbus/modbus.cpp \
     ../usb/commands.cpp \
     ../widgets/ecombobox.cpp \
-    ../widgets/emessagebox.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/estackedwidget.cpp \
     ../widgets/etableview.cpp \
@@ -101,7 +100,6 @@ SOURCES += \
     ../widgets/lineeditfield.cpp \
     ../widgets/passwordlineedit.cpp \
     ../widgets/signalchoosewidget.cpp \
-    ../widgets/waitwidget.cpp \
     ../widgets/wd_func.cpp
 
 HEADERS += \
@@ -125,6 +123,7 @@ HEADERS += \
     ../check/checkkiv.h \
     ../check/checkktf.h \
     ../check/checkvibrkdv.h \
+    ../config/abstractconfdialog.h \
     ../config/confdialogkdv.h \
     ../config/confdialogkiv.h \
     ../config/confdialogktf.h \
@@ -148,7 +147,6 @@ HEADERS += \
     coma.h \
     ../check/check.h \
     ../check/eabstractcheckdialog.h \
-    ../config/abstractconfdialog.h \
     ../config/confdialog.h \
     ../config/config.h \
     ../dialogs/cordialog.h \
@@ -168,11 +166,10 @@ HEADERS += \
     ../iec104/ethernet.h \
     ../iec104/iec104.h \
     ../models/etableitem.h \
-    ../models/etablemodel.h \
     ../models/getoscpbdelegate.h \
+    ../models/etablemodel.h \
     ../usb/commands.h \
     ../widgets/ecombobox.h \
-    ../widgets/emessagebox.h \
     ../widgets/errorprotocolwidget.h \
     ../widgets/estackedwidget.h \
     ../widgets/etableview.h \
@@ -181,7 +178,6 @@ HEADERS += \
     ../widgets/lineeditfield.h \
     ../widgets/passwordlineedit.h \
     ../widgets/signalchoosewidget.h \
-    ../widgets/waitwidget.h \
     ../widgets/wd_func.h \
     ../modbus/modbus.h
 
@@ -203,11 +199,10 @@ QXLSX_SOURCEPATH=./../QXlsx/QXlsx/source/  # current QXlsx source path is ./sour
 include(./../QXlsx/QXlsx/QXlsx.pri)
 
 
-equals(QMAKE_PLATFORM, win32)
-{
+win32 {
     LIBS += -luser32
     contains(QMAKE_TARGET.arch, x86_64) {
-        message("x64 build")
+       message("Windows x64 build")
        ## Windows x64 (64bit) specific build here
        CONFIG(debug, debug|release) {
        LIBS += -L$$PWD/../../libs/win64/debug/ -llimereportd -lliblzma -lhidapi
@@ -222,7 +217,7 @@ equals(QMAKE_PLATFORM, win32)
        $$PWD/../../libs/win64/release/limereport.dll
        }
     } else {
-        message("x86 build")
+        message("Windows x86 build")
         ## Windows x86 (32bit) specific build here
         CONFIG(debug, debug|release) {
         LIBS += -L$$PWD/../../libs/win32/debug/ -llimereportd -lliblzma -lhidapi
@@ -239,8 +234,32 @@ equals(QMAKE_PLATFORM, win32)
     }
 }
 
-unix: LIBS += -L$$PWD/libs/win32/debug/ -llimereportd -lliblzma
-
+unix {
+LIBS += -lhidapi-libusb -llzma
+contains(QT_ARCH, x86_64) {
+        message("Unix x64 build")
+        ## Unix x64 (64bit) specific build here
+        LIBS += -L$$PWD/../LimeReport/build/$${QT_VERSION}/linux64/release/lib  -llimereport -lQtZint -lhidapi-libusb -llzma
+        INCLUDEPATH += $$PWD/../LimeReport/build/$${QT_VERSION}/linux64/release/lib/include
+        DEPENDPATH += $$PWD/../LimeReport/build/$${QT_VERSION}/linux64/release
+        CONFIG(debug, debug|release) {
+        DESTDIR = $${PWD}/../../build/linux64/debug
+        } else {
+        DESTDIR = $${PWD}/../../build/linux64/release
+        }
+    } else {
+        message("Unix x86 build")
+        ## Unix x86 (32bit) specific build here
+        LIBS += -L$$PWD/../LimeReport/build/$${QT_VERSION}/linux32/release/lib  -llimereport -lQtZint -lhidapi-libusb -llzma
+        INCLUDEPATH += $$PWD/../LimeReport/build/$${QT_VERSION}/linux32/release/lib/include
+        DEPENDPATH += $$PWD/../LimeReport/build/$${QT_VERSION}/linux32/release
+        CONFIG(debug, debug|release) {
+        DESTDIR = $${PWD}/../../build/linux32/debug
+        } else {
+        DESTDIR = $${PWD}/../../build/linux32/release
+        }
+    }
+}
 
 # copies the given files to the destination directory
 defineTest(copyToDestDir) {

@@ -18,7 +18,6 @@ AvarAlarmKIV::AvarAlarmKIV(AlarmClass *alarm, QDialog *parent) : AbstractAlarm(p
 
 void AvarAlarmKIV::AvarState()
 {
-
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -51,8 +50,12 @@ void AvarAlarmKIV::AvarState()
     setLayout(lyout);
 }
 
-void AvarAlarmKIV::AlarmState() { }
-void AvarAlarmKIV::WarnAlarmState() { }
+void AvarAlarmKIV::AlarmState()
+{
+}
+void AvarAlarmKIV::WarnAlarmState()
+{
+}
 
 void AvarAlarmKIV::Update(QList<bool> states)
 {
@@ -63,7 +66,15 @@ void AvarAlarmKIV::Update(QList<bool> states)
     for (i = 0; i < Alarm->MapAlarm[MTYPE_KIV].avarCounts; i++)
     {
         quint32 alarm = states.at(i);
-        alarm ? WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::red, circleRadius))
-              : WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::green, circleRadius));
+        if (alarm)
+        {
+            auto pixmap = WDFunc::NewCircle(Qt::red, circleRadius);
+            WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
+        }
+        else
+        {
+            auto pixmap = WDFunc::NewCircle(Qt::green, circleRadius);
+            WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
+        }
     }
 }

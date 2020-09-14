@@ -46,6 +46,7 @@
 #include <QToolBar>
 #include <QtGlobal>
 
+#ifdef _WIN32
 void registerForDeviceNotification(Coma *ptr)
 {
     DEV_BROADCAST_DEVICEINTERFACE devInt;
@@ -57,6 +58,7 @@ void registerForDeviceNotification(Coma *ptr)
     HDEVNOTIFY blub;
     blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt, DEVICE_NOTIFY_WINDOW_HANDLE);
 }
+#endif
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
 {
@@ -87,7 +89,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     confBDialog = confMDialog = nullptr;
     checkBDialog = checkMDialog = nullptr;
     AlarmStateAllDialog = nullptr;
-    tuneDialog = nullptr;
+    // tuneDialog = nullptr;
     HarmDialog = nullptr;
     VibrDialog = nullptr;
     corDialog = nullptr;
@@ -242,11 +244,11 @@ void Coma::StartWork()
         QEventLoop loop;
         Cancelled = false;
         ConnectDialog *dlg = new ConnectDialog;
-        connect(dlg, &ConnectDialog::Accepted, [this, dlg](ConnectDialog::ConnectStruct *st) {
+        connect(dlg, &ConnectDialog::Accepted, [this](ConnectDialog::ConnectStruct *st) {
             this->ConnectSettings = *st;
             emit CloseConnectDialog();
         });
-        connect(dlg, &ConnectDialog::Cancelled, [this, dlg]() {
+        connect(dlg, &ConnectDialog::Cancelled, [this]() {
             this->Cancelled = true;
             emit CloseConnectDialog();
         });
@@ -331,6 +333,8 @@ void Coma::StartWork()
         ActiveThreads |= THREAD::MODBUS;
         break;
     }
+    default:
+        qFatal("Connection type error");
     }
     QElapsedTimer tmr;
     tmr.start();
@@ -478,6 +482,7 @@ void Coma::setupConnections()
     switch (Board::GetInstance()->typeB())
     {
     case Config::MTB_A2:
+    {
         switch (Board::GetInstance()->typeM())
         {
         case Config::MTM_84:
@@ -529,8 +534,9 @@ void Coma::setupConnections()
 
             break;
         }
-        break;
         }
+        break;
+    }
     case Config::MTB_A3:
 
         switch (Board::GetInstance()->typeM())
@@ -551,10 +557,10 @@ void Coma::setupConnections()
             corDialog = new CorDialogKTF;
 
             break;
-        };
+        }
 
         break;
-    };
+    }
 
     connect(this, &Coma::ClearBsi, infoDialog, &InfoDialog::ClearBsi);
     connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
@@ -588,6 +594,7 @@ void Coma::setupConnections()
         connect(Ch104, &IEC104::SendS2fromiec104, confMDialog, &AbstractConfDialog::FillConf);
         connect(confMDialog, &AbstractConfDialog::writeConfFile, Ch104, &IEC104::FileReady);
         connect(Ch104, &IEC104::SendConfMessageOk, confMDialog, &AbstractConfDialog::WriteConfMessageOk);
+        // confMDialog->staticMetaObject;
         break;
     }
     case Board::InterfaceType::RS485:
@@ -721,9 +728,10 @@ void Coma::NewTimersBda()
 
 bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
 {
-    Q_UNUSED(result);
+    Q_UNUSED(result)
     if (eventType == "windows_generic_MSG")
     {
+#ifdef _WIN32
         MSG *msg = static_cast<MSG *>(message);
         int msgType = msg->message;
         if (msgType == WM_DEVICECHANGE)
@@ -784,11 +792,15 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
                 break;
             }
         }
+#endif
     }
     return false;
 }
 
-void Coma::SetMode(int mode) { Mode = mode; }
+void Coma::SetMode(int mode)
+{
+    Mode = mode;
+}
 
 void Coma::Go(const QString &parameter)
 {
@@ -916,9 +928,11 @@ void Coma::setConf(unsigned char typeConf)
     case 0x01:
         if (mainConfDialog != nullptr)
             mainConfDialog->SetDefConf();
+        break;
     case 0x02:
         if (confBDialog != nullptr)
             confBDialog->SetDefConf();
+        break;
     case 0x03:
         if (confMDialog != nullptr)
             confMDialog->SetDefConf();
@@ -1018,9 +1032,15 @@ void Coma::FileTimeOut()
         QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
 }
 
-void Coma::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
+void Coma::SetProgressBar2Size(int size)
+{
+    SetProgressBarSize(2, size);
+}
 
-void Coma::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
+void Coma::SetProgressBar2(int cursize)
+{
+    SetProgressBar(2, cursize);
+}
 
 void Coma::SetProgressBarSize(int prbnum, int size)
 {
@@ -1110,7 +1130,10 @@ void Coma::DisconnectAndClear()
     Reconnect = false;
 }
 
-void Coma::resizeEvent(QResizeEvent *e) { QMainWindow::resizeEvent(e); }
+void Coma::resizeEvent(QResizeEvent *e)
+{
+    QMainWindow::resizeEvent(e);
+}
 
 void Coma::keyPressEvent(QKeyEvent *e)
 {
