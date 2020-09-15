@@ -3,6 +3,7 @@
 
 #include "../models/etablemodel.h"
 #include "ecombobox.h"
+#include "edoublespinbox.h"
 #include "etableview.h"
 #include "passwordlineedit.h"
 
@@ -68,6 +69,7 @@ public:
 
     static QDoubleSpinBox *NewSPB(
         QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor = "");
+
     static bool SetSPBData(QObject *w, const QString &spbname, const double &spbvalue);
     template <typename T> static bool SPBData(QObject *w, const QString &spbname, T &spbvalue)
     {

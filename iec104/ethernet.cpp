@@ -3,9 +3,9 @@
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-//#include "../widgets/emessagebox.h"
 
 #include <QCoreApplication>
+#include <QNetworkProxy>
 #include <QSettings>
 #include <QThread>
 
@@ -18,9 +18,7 @@ Ethernet::Ethernet(QObject *parent) : QObject(parent)
     ClosePortAndFinishThread = false;
 }
 
-Ethernet::~Ethernet()
-{
-}
+Ethernet::~Ethernet() { }
 
 void Ethernet::Run()
 {
@@ -35,6 +33,7 @@ void Ethernet::Run()
     connect(sock, SIGNAL(disconnected()), this, SIGNAL(Disconnected()));
     Log->info("Connecting to host: " + StdFunc::ForDeviceIP() + ", port: " + QString::number(PORT104));
     sock->connectToHost(StdFunc::ForDeviceIP(), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
+    sock->setProxy(QNetworkProxy::NoProxy);
     connect(sock, SIGNAL(readyRead()), this, SLOT(CheckForData()));
     TimeFunc::WaitFor(EthConnected, TIMEOUT_BIG);
     while (!ClosePortAndFinishThread)
@@ -130,7 +129,4 @@ void Ethernet::CheckForData()
     emit NewDataArrived(ba);
 }
 
-void Ethernet::EthSetConnected()
-{
-    EthConnected = true;
-}
+void Ethernet::EthSetConnected() { EthConnected = true; }

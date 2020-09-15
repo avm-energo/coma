@@ -24,8 +24,6 @@ public slots:
     void UpdateFlData(IEC104Thread::FlSignals104 *);
     void UpdateSponData(IEC104Thread::SponSignals *);
     void USBUpdate();
-    //    void UpdateSponDataWithTime(Parse104::SponSignals *);
-    //    void UpdateBS104Data(Parse104::BS104Signals *);
 
 private:
     Check *Ch;

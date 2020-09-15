@@ -340,14 +340,12 @@ void ConfDialogKIV::SetupUI()
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
 
-    //    analog2->setLayout(vlyout1);
-
     Leftconf->setLayout(vlyout1);
 
     //............................................................
     row = 0;
     vlyout1 = new QVBoxLayout;
-    gb = new QGroupBox();
+    gb = new QGroupBox;
     gridlyout = new QGridLayout;
     vlyout2 = new QVBoxLayout;
 
@@ -360,12 +358,6 @@ void ConfDialogKIV::SetupUI()
     vlyout2->addLayout(gridlyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
-
-    //    vlyout2->addWidget(Conf->SetupMainBlk(this));
-    //    vlyout2->addWidget(ConfKxx->SetupComParam(this));
-
-    //    gb->setLayout(vlyout2);
-    //    vlyout1->addWidget(gb);
 
     gb = new QGroupBox("Настройка времени");
     vlyout2 = new QVBoxLayout;
@@ -415,22 +407,3 @@ void ConfDialogKIV::SetDefConf()
 void ConfDialogKIV::Start_Timer() { timerRead->start(1000); }
 
 void ConfDialogKIV::Stop_Timer() { timerRead->stop(); }
-
-// void ConfDialogKIV::Write_PCDate()
-//{
-//    QDateTime myDateTime;
-//    uint time;
-//    myDateTime = QDateTime::currentDateTimeUtc();
-//    time = myDateTime.toTime_t();
-//}
-
-// void ConfDialogKIV::Write_Date()
-//{
-//    QDateTime myDateTime;
-//    uint *time = new uint;
-//    QString qStr;
-//    WDFunc::LE_read_data(this, "Date", qStr);
-//    myDateTime = QDateTime::fromString(qStr, "dd-MM-yyyy HH:mm:ss");
-//    myDateTime.setOffsetFromUtc(0);
-//    *time = myDateTime.toTime_t();
-//}

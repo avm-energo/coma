@@ -64,16 +64,11 @@ void AlarmStateAll::UpdateHealth(quint32 health)
     float circleRadius = CIRCLE_RADIUS;
     for (quint32 i = 0; i < health; ++i)
     {
+        QPixmap circle = WDFunc::NewCircle(Qt::green, circleRadius);
         if (health & (0x00000001 << i))
-        {
-            auto pixmap = WDFunc::NewCircle(Qt::red, circleRadius);
-            WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
-        }
-        else
-        {
-            auto pixmap = WDFunc::NewCircle(Qt::green, circleRadius);
-            WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
-        }
+            circle = (AlarmPositions.indexOf(i) == -1) ? WDFunc::NewCircle(Qt::red, circleRadius)
+                                                       : WDFunc::NewCircle(Qt::yellow, circleRadius);
+        WDFunc::SetLBLImage(this, (QString::number(i)), &circle);
     }
 }
 

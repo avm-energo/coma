@@ -36,10 +36,7 @@ CheckDialogKIV::CheckDialogKIV(BoardTypes board, QWidget *parent) : EAbstractChe
     SetBd(6, &ChKIV->Bd_block1, sizeof(Check_KIV::Bd1));
 
     if (Config::MTB_A2)
-        sl = QStringList { "Основные", "Дополнительные", "Отладка" };
-    else
-        // warning: code will never be executed
-        sl = QStringList { "Общие", "Аналоговые", "Несимметрия" };
+        sl = QStringList { "Основные", "Дополнительные" };
 
     BdUINum = sl.size();
 
@@ -54,11 +51,12 @@ QWidget *CheckDialogKIV::BdUI(int bdnum)
     {
 
     case 0: // Блок #1
+
         return ChKIV->Bd1W(this);
     case 1: // Блок #1
         return ChKIV->Bd2W(this);
-    case 2: // Блок #1
-        return ChKIV->Bd3W(this);
+        //    case 2: // Блок #1
+        //        return ChKIV->Bd3W(this);
 
     default:
         return new QWidget;
@@ -254,7 +252,7 @@ void CheckDialogKIV::UpdateSponData(IEC104Thread::SponSignals *Signal)
                 WDFunc::SetLBLTColor(this, QString::number(2426 + i), Colors::ACONFOCLR);
             }
         }
-        if ((sigadr >= 3030) && (sigadr <= 3033))
+        if ((sigadr >= 3030) && (sigadr < 3033))
         {
             i = sigadr - 3030;
             if (sigval == 1)
@@ -320,7 +318,8 @@ void CheckDialogKIV::onModbusStateChanged()
 
 void CheckDialogKIV::SetWarnAlarmColor(QList<bool> WarnAlarm)
 {
-
+    if (WarnAlarm.isEmpty())
+        return;
     for (int i = 0; i < 18; i++)
     {
         if ((i >= 0) && (i < 3))
@@ -361,7 +360,8 @@ void CheckDialogKIV::SetWarnAlarmColor(QList<bool> WarnAlarm)
 
 void CheckDialogKIV::SetAlarmColor(QList<bool> Alarm)
 {
-
+    if (Alarm.isEmpty())
+        return;
     for (int i = 0; i < 7; i++)
     {
         if (i < 3)

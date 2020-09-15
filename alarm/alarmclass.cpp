@@ -100,27 +100,39 @@ void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
 
 void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
 {
-    WarnAlarmEvents.clear();
-    AvarAlarmEvents.clear();
-    for (int i = 0, count = 0; i < Signal->SigNumber; i++)
+    try
     {
-        quint8 sigval = Signal->Spon[i].SigVal;
-        if (!(sigval & 0x80))
+        WarnAlarmEvents.clear();
+        AvarAlarmEvents.clear();
+        for (int i = 0; i < Signal->SigNumber; i++)
         {
-            quint32 sigadr = Signal->Spon[i].SigAdr;
-            bool alarm = (sigval & 0x00000001) ? 1 : 0;
-            quint32 AdrAlarm = MapAlarm[Board::GetInstance()->type()].AdrAlarm;
-            int WarnsSize = MapAlarm[Board::GetInstance()->type()].warns.size();
-            if ((AdrAlarm <= sigadr) && (sigadr <= AdrAlarm + WarnsSize))
-                if (MapAlarm[Board::GetInstance()->type()].warns.at(count))
-                    WarnAlarmEvents.append(alarm);
-                else if (MapAlarm[Board::GetInstance()->type()].avars.at(count))
-                    AvarAlarmEvents.append(alarm);
-            count++;
+            quint8 sigval = Signal->Spon[i].SigVal;
+            if (!(sigval & 0x80))
+            {
+                quint32 sigadr = Signal->Spon[i].SigAdr;
+                bool alarm = (sigval & 0x00000001) ? 1 : 0;
+                quint32 AdrAlarm = MapAlarm[Board::GetInstance()->type()].AdrAlarm;
+                int WarnsSize = MapAlarm[Board::GetInstance()->type()].warns.size();
+                if ((AdrAlarm <= sigadr) && (sigadr <= AdrAlarm + WarnsSize))
+                    if (MapAlarm[Board::GetInstance()->type()].warns.at(i))
+                        WarnAlarmEvents.append(alarm);
+                    else if (MapAlarm[Board::GetInstance()->type()].avars.at(i))
+                        AvarAlarmEvents.append(alarm);
+            }
         }
-    }
 
-    emit SetWarnAlarmColor(WarnAlarmEvents);
-    emit SetAlarmColor(AvarAlarmEvents);
-    emit SetFirstButton();
+        emit SetWarnAlarmColor(WarnAlarmEvents);
+        emit SetAlarmColor(AvarAlarmEvents);
+        emit SetFirstButton();
+    }
+    catch (const std::exception &ex)
+    {
+        QString str = "Exception: ";
+        str.append(ex.what());
+        ERMSG(str);
+    }
+    catch (...)
+    {
+        ERMSG("Unhandled exception");
+    }
 }

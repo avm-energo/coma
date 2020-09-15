@@ -15,7 +15,6 @@ public slots:
     void AlarmState();
     void WarnAlarmState();
     void AvarState();
-
     void Update(QList<bool> states);
 
 private:

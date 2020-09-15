@@ -4,7 +4,6 @@
 #include "../gen/s2.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
-//#include "../widgets/emessagebox.h"
 
 #include <QStandardPaths>
 #include <QThread>
@@ -34,9 +33,7 @@ ModBus::ModBus(QObject *parent) : QObject(parent)
     Log->info("=== Log started ===");
 }
 
-ModBus::~ModBus()
-{
-}
+ModBus::~ModBus() { }
 
 int ModBus::Connect(SerialPort::Settings &settings)
 {
@@ -79,7 +76,7 @@ int ModBus::SendAndGetResult(ComInfo &request, InOutStruct &outp)
     else
         inp.ReadSize = 5 + 2 * request.Quantity;
     bytes.append(Settings.Address); // адрес устройства
-    bytes.append(request.Command);  //аналоговый выход
+    bytes.append(request.Command); //аналоговый выход
     bytes.append(static_cast<char>((request.Address & 0xFF00) >> 8));
     bytes.append(static_cast<char>(request.Address & 0x00FF));
     bytes.append(static_cast<char>((request.Quantity & 0xFF00) >> 8));
@@ -429,15 +426,9 @@ void ModBus::Tabs(int index)
     //    }
 }
 
-void ModBus::StartPolling()
-{
-    PollingTimer->start();
-}
+void ModBus::StartPolling() { PollingTimer->start(); }
 
-void ModBus::StopPolling()
-{
-    PollingTimer->stop();
-}
+void ModBus::StopPolling() { PollingTimer->stop(); }
 
 ModbusThread::ModbusThread(QObject *parent) : QObject(parent)
 {
@@ -447,9 +438,7 @@ ModbusThread::ModbusThread(QObject *parent) : QObject(parent)
     AboutToFinish = false;
 }
 
-ModbusThread::~ModbusThread()
-{
-}
+ModbusThread::~ModbusThread() { }
 
 // ConnectionStates ModbusThread::State()
 //{
@@ -569,10 +558,7 @@ void ModbusThread::ParseReply(QByteArray ba)
     }
 }
 
-void ModbusThread::FinishThread()
-{
-    AboutToFinish = true;
-}
+void ModbusThread::FinishThread() { AboutToFinish = true; }
 
 quint16 ModbusThread::CalcCRC(QByteArray &ba)
 {

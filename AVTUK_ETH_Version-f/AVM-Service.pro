@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++17
-VERSION = 0.2.4
+VERSION = 0.9.0
 
 QT       += core gui printsupport network serialport qml widgets testlib
 
@@ -65,6 +65,7 @@ SOURCES += \
     ../modbus/serialport.cpp \
     ../usb/eprotocom.cpp \
     ../usb/eusbworker.cpp \
+    ../widgets/edoublespinbox.cpp \
     coma.cpp \
     main.cpp \
     ../check/check.cpp \
@@ -89,7 +90,6 @@ SOURCES += \
     ../iec104/iec104.cpp \
     ../models/etableitem.cpp \
     ../models/etablemodel.cpp \
-    ../models/getoscpbdelegate.cpp \
     ../modbus/modbus.cpp \
     ../usb/commands.cpp \
     ../widgets/ecombobox.cpp \
@@ -144,6 +144,7 @@ HEADERS += \
     ../usb/defines.h \
     ../usb/eprotocom.h \
     ../usb/eusbworker.h \
+    ../widgets/edoublespinbox.h \
     coma.h \
     ../check/check.h \
     ../check/eabstractcheckdialog.h \

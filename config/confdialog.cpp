@@ -3,7 +3,6 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../widgets/ecombobox.h"
-//#include "../widgets/emessagebox.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
@@ -102,7 +101,7 @@ QWidget *ConfDialog::SetupTime(QObject *parent)
 
     glyout->addWidget(lbl, row, 0, 1, 1, Qt::AlignLeft);
 
-    QStringList cbl = QStringList { "SNTP+PPS", "SNTP" };
+    QStringList cbl = QStringList { "нет", "SNTP", "SNTP+PPS" };
     EComboBox *cb = WDFunc::NewCB(this, "Ctype", cbl, paramcolor);
     glyout->addWidget(cb, row, 1, 1, 1);
 
@@ -124,12 +123,24 @@ void ConfDialog::Fill()
     WDFunc::SetSPBData(ParentMainbl, "k_104", ConfigMain->MainBlk.k_104);
     WDFunc::SetSPBData(ParentMainbl, "w_104", ConfigMain->MainBlk.w_104);
 
-    cbidx = ((ConfigMain->MainBlk.Ctype & 0x01) ? 1 : 0);
+    switch (ConfigMain->MainBlk.Ctype)
+    {
+    case 0:
+        cbidx = 0;
+        break;
+    case 8:
+        cbidx = 1;
+        break;
+    case 10:
+        cbidx = 2;
+        break;
+    }
     WDFunc::SetCBIndex(ParentCtype, "Ctype", cbidx);
 }
 
 void ConfDialog::FillBack()
 {
+    int cbidx;
     WDFunc::SPBData(ParentMainbl, "Abs_104", ConfigMain->MainBlk.Abs_104);
     WDFunc::SPBData(ParentMainbl, "Cycle_104", ConfigMain->MainBlk.Cycle_104);
     WDFunc::SPBData(ParentMainbl, "T1_104", ConfigMain->MainBlk.T1_104);
@@ -138,13 +149,22 @@ void ConfDialog::FillBack()
     WDFunc::SPBData(ParentMainbl, "k_104", ConfigMain->MainBlk.k_104);
     WDFunc::SPBData(ParentMainbl, "w_104", ConfigMain->MainBlk.w_104);
 
-    int cbidx = WDFunc::CBIndex(ParentMainbl, "Ctype");
-    cbidx = ((cbidx & 0x01) ? 1 : 0);
-    ConfigMain->MainBlk.Ctype = (0x00000001 << cbidx) - 1;
+    cbidx = WDFunc::CBIndex(ParentMainbl, "Ctype");
+    //    cbidx = ((cbidx & 0x01) ? 1 : 0);
+    //    ConfigMain->MainBlk.Ctype = (0x00000001 << cbidx) - 1;
+
+    switch (cbidx)
+    {
+    case 0:
+        ConfigMain->MainBlk.Ctype = 0;
+        break;
+    case 1:
+        ConfigMain->MainBlk.Ctype = 8;
+        break;
+    case 2:
+        ConfigMain->MainBlk.Ctype = 10;
+        break;
+    }
 }
 
-void ConfDialog::SetDefConf()
-{
-    ConfigMain->SetDefBlock();
-    // Fill();
-}
+void ConfDialog::SetDefConf() { ConfigMain->SetDefBlock(); }
