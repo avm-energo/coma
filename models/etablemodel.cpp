@@ -85,7 +85,7 @@ QVariant ETableModel::data(const QModelIndex &index, int role) const
             case Qt::TextAlignmentRole:
                 return maindata.at(row)->TextAlignment(column);
             case Qt::UserRole:
-                return maindata.at(row)->uData<QVariant>(column);
+                return maindata.at(row)->uData(column);
             }
         }
     }

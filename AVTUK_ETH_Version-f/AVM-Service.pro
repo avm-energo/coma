@@ -90,6 +90,7 @@ SOURCES += \
     ../iec104/iec104.cpp \
     ../models/etableitem.cpp \
     ../models/etablemodel.cpp \
+    ../models/getoscpbdelegate.cpp \
     ../modbus/modbus.cpp \
     ../usb/commands.cpp \
     ../widgets/ecombobox.cpp \

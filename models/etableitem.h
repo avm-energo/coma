@@ -35,18 +35,4 @@ private:
     QList<int> itemTextAlignment;
 };
 
-template <typename T> void ETableItem::setUData(int column, T data)
-{
-    itemUData.reserve(column + 1);
-    itemUData.insert(column, data);
-}
-
-template <typename T> T ETableItem::uData(int column) const
-{
-    if (!itemUData.isEmpty() && column < itemUData.size())
-        return itemUData.at(column);
-    else
-        return QVariant();
-}
-
 #endif // ETABLEITEM_H
