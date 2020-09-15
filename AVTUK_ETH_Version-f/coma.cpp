@@ -138,7 +138,7 @@ void Coma::SetupUI()
         dlg->show();
         this->SaveSettings();
     });
-    tb->addAction(QIcon("images/skull-and-bones.png"), "Соединение", [this]() {
+    tb->addAction(QIcon("images/skull-and-bones.png"), "Соединение", []() {
         ErrorDialog *dlg = new ErrorDialog;
         dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->show();
@@ -445,7 +445,7 @@ void Coma::StartWork()
             }
 
             break;
-        };
+        }
     }
 
     if (Board::GetInstance()->interfaceType() != Board::InterfaceType::RS485)
@@ -475,7 +475,7 @@ void Coma::StartWork()
     if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
         BdaTimer->start();
     auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
-    msgSerialNumber->setText(QString::number(ModuleBSI::ModuleBsi.SerialNum, 16));
+    msgSerialNumber->setText(QString::number(ModuleBSI::SerialNum(BT_NONE), 16));
 }
 
 void Coma::setupConnections()
@@ -500,11 +500,11 @@ void Coma::setupConnections()
 
             WarnAlarmKIVDialog = new WarnAlarmKIV(Alarm);
             connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKIVDialog, &QDialog::show);
-            connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKIVDialog, &WarnAlarmKIV::Update);
+            connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKIVDialog, &AbstractWarnAlarm::Update);
 
             AvarAlarmKIVDialog = new AvarAlarmKIV(Alarm);
             connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKIVDialog, &QDialog::show);
-            connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVDialog, &AvarAlarmKIV::Update);
+            connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVDialog, &AbstractAvarAlarm::Update);
 
             connect(Alarm, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
             connect(Alarm, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
@@ -637,6 +637,10 @@ void Coma::PrepareDialogs()
 
 void Coma::CloseDialogs()
 {
+    if (AlarmStateAllDialog != nullptr)
+    {
+        AlrmTimer->stop();
+    }
     QList<QDialog *> widgets = this->findChildren<QDialog *>();
     // this->findChildren
     for (auto &i : widgets)
@@ -647,18 +651,6 @@ void Coma::CloseDialogs()
 
     Alarm->AvarAlarmEvents.clear();
     Alarm->WarnAlarmEvents.clear();
-
-    if (AvarAlarmKIVDialog != nullptr)
-        AvarAlarmKIVDialog->close();
-
-    if (AlarmStateAllDialog != nullptr)
-    {
-        AlrmTimer->stop();
-        AlarmStateAllDialog->close();
-        AlarmStateAllDialog = nullptr;
-    }
-    if (WarnAlarmKIVDialog != nullptr)
-        WarnAlarmKIVDialog->close();
 }
 
 void Coma::New104()

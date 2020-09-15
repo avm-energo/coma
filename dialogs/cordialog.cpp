@@ -463,10 +463,7 @@ void CorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
 
 void CorDialog::FillBd(QWidget *parent, QString Name, QString Value)
 {
-    float fl;
-    QLocale german(QLocale::German);
-    fl = german.toDouble(Value);
-    WDFunc::SetSPBData(parent, Name, fl);
+    WDFunc::SetSPBData(parent, Name, Value.toDouble());
 }
 
 void CorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)

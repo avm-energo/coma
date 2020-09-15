@@ -52,8 +52,9 @@ public:
      */
     enum class ConnectionState
     {
-        ConnectedState,
-        ClosingState
+        ClosingState,
+        ConnectedState
+
     };
 
     Q_ENUM(DeviceType)
@@ -84,13 +85,13 @@ public:
      */
     static Board *GetInstance(QObject *obj = nullptr);
 
-    quint32 typeB() const;
-    void setTypeB(const quint32 &typeB);
+    quint16 typeB() const;
+    void setTypeB(const quint16 &typeB);
 
-    quint32 typeM() const;
-    void setTypeM(const quint32 &typeM);
+    quint16 typeM() const;
+    void setTypeM(const quint16 &typeM);
 
-    quint32 type() const;
+    quint16 type() const;
 
     InterfaceType interfaceType() const;
     void setInterfaceType(InterfaceType interface);
@@ -116,8 +117,8 @@ private:
     BoardType m_boardType;
     ConnectionState m_connectionState;
 
-    quint32 m_typeB;
-    quint32 m_typeM;
+    quint16 m_typeB;
+    quint16 m_typeM;
 signals:
     void interfaceTypeChanged(Board::InterfaceType);
     void deviceTypeChanged(Board::DeviceType);
