@@ -542,7 +542,7 @@ void EAbstractTuneDialog::ReadAllTuneCoefs() { }
 void EAbstractTuneDialog::MeasTimerTimeout()
 {
     if (MeasurementEnabled)
-        GetBdAndFillMTT();
+        GetBdAndFill();
 }
 
 // ##################### PROTECTED ####################

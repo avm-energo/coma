@@ -226,8 +226,10 @@ void TuneDialogKIV::SetLbls()
 {
     lbls.append("1. Ввод пароля...");
     lbls.append("2. Сохранение текущей конфигурации...");
-    lbls.append("3. Отображение схемы подключения...");
-    lbls.append("4. Информация...");
+    lbls.append("7.2.1. Задание максимальных токов 600 мА...");
+    lbls.append("7.2.2. Отображение схемы подключения...");
+    lbls.append("7.2.7. Получение результатов измерений...");
+
     lbls.append("5. Установка коэффициентов...");
     lbls.append("7. 7_3_2. Получение текущих аналоговых данных...");
     lbls.append("8. 7.3.4. Информация...");
@@ -254,16 +256,20 @@ void TuneDialogKIV::SetLbls()
 void TuneDialogKIV::SetPf()
 {
     int count = 0;
-    pf[lbls.at(count++)] = &EAbstractTuneDialog::CheckPassword; // Ввод пароля
-    int (EAbstractTuneDialog::*func)() = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
-        &TuneDialogKIV::SaveWorkConfig); // Сохранение текущей конфигурации
-    pf[lbls.at(count++)] = func; // 2. Отображение схемы подключения
-    func
-        = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogKIV::ShowScheme); // Отображение схемы подключения
+    pf[lbls.at(count++)] = &EAbstractTuneDialog::CheckPassword;
+    int (EAbstractTuneDialog::*func)()
+        = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogKIV::SaveWorkConfig);
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogKIV::Start7_3_1); // Информация
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogKIV::Start7_2_1);
     pf[lbls.at(count++)] = func;
-    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogKIV::SetNewTuneCoefs); // Установка коэффициентов
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogKIV::ShowScheme);
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogKIV::Start_7_2_7);
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogKIV::Start7_3_1); // 4. Информация
+    pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
+        &TuneDialogKIV::SetNewTuneCoefs); // 5. Установка коэффициентов
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
         &TuneDialogKIV::Start7_3_2); // Получение текущих аналоговых данных
@@ -488,15 +494,6 @@ float TuneDialogKIV::ToFloat(QString text)
         return 0;
     }
     return tmpf;
-}
-
-bool TuneDialogKIV::IsWithinLimits(double number, double base, double threshold)
-{
-    float tmpf = fabs(number - base);
-    if (tmpf < fabs(threshold))
-        return true;
-    else
-        return false;
 }
 
 int TuneDialogKIV::Start7_3_1()
@@ -737,30 +734,25 @@ int TuneDialogKIV::ShowScheme()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     lyout->addWidget(WDFunc::NewLBL(this, "", "", "", new QPixmap("images/tunekiv.png")));
-    QLabel *lbl = new QLabel("1. Отключите выходы РЕТОМ;");
-    lyout->addWidget(lbl);
-    lbl = new QLabel("2. Соберите схему подключения по вышеприведённой картинке;");
-    lyout->addWidget(lbl);
-    lbl = new QLabel("3. Задайте на РЕТОМ трёхфазный режим токов и напряжений (Uabc, Iabc) с углами "
-                     "сдвига по всем фазам 0 град.;");
-    lyout->addWidget(lbl);
-    lbl = new QLabel("4. Задайте на РЕТОМ значения напряжений по фазам 60 В;");
-    lyout->addWidget(lbl);
-    if (ModuleBSI::GetMType(BoardTypes::BT_MEZONIN) != Config::MTM_83)
-    {
-        lbl = new QLabel("   Задайте на РЕТОМ значения токов по фазам 1 А;");
-        lyout->addWidget(lbl);
-    }
-    lbl = new QLabel("5. Включите выходы РЕТОМ");
-    lyout->addWidget(lbl);
-    QPushButton *pb = new QPushButton("Готово");
-    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
-    lyout->addWidget(pb);
-    pb = new QPushButton("Отмена");
-    connect(pb, SIGNAL(clicked()), this, SLOT(CancelTune()));
-    connect(pb, SIGNAL(clicked()), dlg, SLOT(close()));
-    lyout->addWidget(pb);
+    lyout->addWidget(WDFunc::NewLBL(this, "1. Выключите и отключите имитатор ИС АВМ-КИВ от прибора;"));
+    lyout->addWidget(WDFunc::NewLBL(this, "2. Соберите схему подключения по вышеприведённой картинке;"));
+    lyout->addWidget(WDFunc::NewLBL(this,
+        "3. Включите питание Энергомонитор 3.1КМ и настройте его на режим измерения тока"
+        "и напряжения в однофазной сети переменного тока, установите предел измерения"
+        "по напряжению 60 В, по току - 2,5 А;"));
+    lyout->addWidget(WDFunc::NewLBL(this,
+        "4. Задайте на имитаторе ИС АВМ-КИВ напряжение U1 равным 60,0 В,"
+        "ток I1 равным 29 мА, tgδ равным +0,2 %;"));
+    lyout->addWidget(WDFunc::NewLBL(this,
+        "5. По показаниям Энергомонитора убедитесь, что входное напряжение от источника"
+        "составляет 60 ± 0,25 В, ток – 0,500 ± 25 мА, частота – 51,0 ± 0,05 Гц;"));
+    lyout->addWidget(WDFunc::NewLBL(
+        this, "6. Убедитесь, что частота мигания светодиода «Работа»  на лицевой панели увеличилась до 1 Гц;"));
+    lyout->addWidget(WDFunc::NewLBL(this, "7. Установите на магазине сопротивлений сопротивление 100,0 Ом."));
+    lyout->addWidget(WDFunc::NewPB(this, "", "Готово", dlg, &QDialog::close));
+    lyout->addWidget(WDFunc::NewPB(this, "cancelpb", "Отмена", dlg, &QDialog::close));
     dlg->setLayout(lyout);
+    WDFunc::PBConnect(dlg, "cancelpb", this, &CancelTune);
     dlg->exec();
     return NOERROR;
 }
@@ -1208,12 +1200,34 @@ int TuneDialogKIV::CalcTuneCoefsKadc32()
     return NOERROR;
 }*/
 
-void TuneDialogKIV::GetBdAndFillMTT() { }
+void TuneDialogKIV::GetBdAndFill() { }
+
+int TuneDialogKIV::Start7_2_1()
+{
+    CKIV->Bci_block.Unom = 220;
+    CKIV->Bci_block.C_pasp = 9000; // Imax = 600 mA
+    return Commands::WriteFile(CM_CONFIGFILE, S2ConfigForTune);
+}
+
+int TuneDialogKIV::Start_7_2_7()
+{
+    WaitNSeconds(15);
+    if (Commands::GetBda(BT_NONE, &m_Bda_block, sizeof(BdaStruct)) != NOERROR)
+        return GENERALERROR;
+    for (int i = 0; i < 6; ++i)
+        if (!IsWithinLimits(m_Bda_block.Ueff_ADC[i], 2150000.0, 150000.0))
+            return GENERALERROR;
+    if (!IsWithinLimits(m_Bda_block.Pt100, 1175.0, 120.0))
+        return GENERALERROR;
+    if (!IsWithinLimits(m_Bda_block.Frequency, 51.0, 0.2))
+        return GENERALERROR;
+    return NOERROR;
+}
 
 int TuneDialogKIV::SaveWorkConfig()
 {
     if (Commands::GetFileWithRestore(CM_CONFIGFILE, S2ConfigForTune) == NOERROR)
-        memcpy(&Bci_block_work, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
+        memcpy(&m_Bci_block_work, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
     else
         return GENERALERROR;
     return NOERROR;
@@ -1467,7 +1481,7 @@ int TuneDialogKIV::ShowRetomDialog(double U, double I, double Y)
 int TuneDialogKIV::LoadWorkConfig()
 {
     // пишем ранее запомненный конфигурационный блок
-    memcpy(&CKIV->Bci_block, &Bci_block_work, sizeof(ConfigKIV::Bci));
+    memcpy(&CKIV->Bci_block, &m_Bci_block_work, sizeof(ConfigKIV::Bci));
     if (Commands::WriteFile(CM_CONFIGFILE, S2ConfigForTune) != NOERROR)
         return GENERALERROR;
     return NOERROR;
