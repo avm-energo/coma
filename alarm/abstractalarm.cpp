@@ -64,7 +64,7 @@ void AbstractWarnAlarm::Update(QList<bool> states)
         UpdatePixmaps(states.at(i), i);
     }
 }
-max_range AbstractAvarAlarm::AbstractAvarAlarm(QDialog *parent) : AbstractAlarm(parent)
+AbstractAvarAlarm::AbstractAvarAlarm(QDialog *parent) : AbstractAlarm(parent)
 {
 }
 

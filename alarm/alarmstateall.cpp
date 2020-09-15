@@ -20,22 +20,25 @@ void AlarmStateAll::AlarmState()
     hlyout->setObjectName("hlyout");
     QVBoxLayout *vlayout = new QVBoxLayout;
 
-    QPixmap *pmgrn = new QPixmap("images/greenc.png");
-    QPixmap *pmred = new QPixmap("images/redc.png");
     QWidget *w = new QWidget;
     w->setObjectName("window");
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color:
-                                                                            // rgba(220,220,220,255);
+    float circleRadius = CIRCLE_RADIUS;                                     // rgba(220,220,220,255);
 
     for (int i = 0; i < HthToolTip().size(); ++i)
     {
         hlyout = new QHBoxLayout;
 
         if (ModuleBSI::ModuleBsi.Hth & (0x00000001 << i))
-            hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i), pmred));
-
+        {
+            QPixmap circle = WDFunc::NewCircle(Qt::red, circleRadius);
+            hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i), &circle));
+        }
         else
-            hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i), pmgrn));
+        {
+            QPixmap circle = WDFunc::NewCircle(Qt::green, circleRadius);
+            hlyout->addWidget(WDFunc::NewLBL(w, "", "", QString::number(i), &circle));
+        }
 
         hlyout->addWidget(WDFunc::NewLBLT(w, HthToolTip().at(i), "", "", ""), 1);
         vlayout->addLayout(hlyout);
@@ -48,15 +51,6 @@ void AlarmStateAll::AlarmState()
     connect(pb, SIGNAL(clicked()), this, SLOT(hide()));
     lyout->addWidget(pb, 0);
     this->setLayout(lyout);
-}
-void AlarmStateAll::WarnAlarmState()
-{
-}
-void AlarmStateAll::AvarState()
-{
-}
-void AlarmStateAll::Update(QList<bool>)
-{
 }
 
 void AlarmStateAll::UpdateHealth(quint32 health)
@@ -75,4 +69,8 @@ void AlarmStateAll::UpdateHealth(quint32 health)
 void AlarmStateAll::CallUpdateHealth()
 {
     this->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
+}
+
+void AlarmStateAll::Update(QList<bool>)
+{
 }

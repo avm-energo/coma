@@ -3,7 +3,7 @@
 
 #include "../alarm/abstractalarm.h"
 
-class WarnAlarmKIV : public AbstractAlarm
+class WarnAlarmKIV : public AbstractWarnAlarm
 {
     Q_OBJECT
 
@@ -12,10 +12,7 @@ public:
 
 public slots:
 
-    void AlarmState();
-    void WarnAlarmState();
-    void AvarState();
-    void Update(QList<bool> states);
+    void WarnAlarmState() override;
 
 private:
 };

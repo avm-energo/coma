@@ -10,7 +10,7 @@
 
 #include <QBoxLayout>
 
-WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm, QDialog *parent) : AbstractAlarm(parent)
+WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm, QDialog *parent) : AbstractWarnAlarm(parent)
 {
     Alarm = alarm;
     WarnAlarmState();
@@ -58,34 +58,4 @@ void WarnAlarmKIV::WarnAlarmState()
     connect(pb, SIGNAL(clicked()), this, SLOT(hide()));
     lyout->addWidget(pb, 0);
     setLayout(lyout);
-}
-
-void WarnAlarmKIV::AlarmState()
-{
-}
-void WarnAlarmKIV::AvarState()
-{
-}
-
-void WarnAlarmKIV::Update(QList<bool> states)
-{
-    int i = 0;
-    // 25 оптимальная константа
-    float circleRadius = CIRCLE_RADIUS;
-    if (states.isEmpty())
-        return;
-    for (i = 0; i < Alarm->MapAlarm[MTYPE_KIV].warnCounts; i++)
-    {
-        quint32 alarm = states.at(i);
-        if (alarm)
-        {
-            auto pixmap = WDFunc::NewCircle(Qt::red, circleRadius);
-            WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
-        }
-        else
-        {
-            auto pixmap = WDFunc::NewCircle(Qt::green, circleRadius);
-            WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
-        }
-    }
 }

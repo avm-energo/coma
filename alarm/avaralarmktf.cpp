@@ -8,13 +8,13 @@
 
 #include <QBoxLayout>
 
-AvarAlarmKTF::AvarAlarmKTF(AlarmClass *alarm, QDialog *parent) : AbstractAlarm(parent)
+AvarAlarmKTF::AvarAlarmKTF(AlarmClass *alarm, QDialog *parent) : AbstractAvarAlarm(parent)
 {
     Alarm = alarm;
-    AvarState();
+    AvarAlarmState();
 }
 
-void AvarAlarmKTF::AvarState()
+void AvarAlarmKTF::AvarAlarmState()
 {
 
     QStringList events = QStringList() << "Аварийное сообщение по недопустимому превышению температуры обмотки"
@@ -43,33 +43,4 @@ void AvarAlarmKTF::AvarState()
     connect(pb, SIGNAL(clicked()), this, SLOT(close()));
     lyout->addWidget(pb, 0);
     setLayout(lyout);
-}
-
-void AvarAlarmKTF::AlarmState()
-{
-}
-void AvarAlarmKTF::WarnAlarmState()
-{
-}
-
-void AvarAlarmKTF::Update(QList<bool> states)
-{
-    int i;
-    float circleRadius = CIRCLE_RADIUS;
-    if (states.isEmpty())
-        return;
-    for (i = 0; i < Alarm->MapAlarm[MTYPE_KTF].avarCounts; i++)
-    {
-        quint32 alarm = states.at(i);
-        if (alarm)
-        {
-            auto pixmap = WDFunc::NewCircle(Qt::red, circleRadius);
-            WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
-        }
-        else
-        {
-            auto pixmap = WDFunc::NewCircle(Qt::green, circleRadius);
-            WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
-        }
-    }
 }

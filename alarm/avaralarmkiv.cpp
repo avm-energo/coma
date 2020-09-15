@@ -10,13 +10,13 @@
 
 #include <QBoxLayout>
 
-AvarAlarmKIV::AvarAlarmKIV(AlarmClass *alarm, QDialog *parent) : AbstractAlarm(parent)
+AvarAlarmKIV::AvarAlarmKIV(AlarmClass *alarm, QDialog *parent) : AbstractAvarAlarm(parent)
 {
     Alarm = alarm;
-    AvarState();
+    AvarAlarmState();
 }
 
-void AvarAlarmKIV::AvarState()
+void AvarAlarmKIV::AvarAlarmState()
 {
 
     QStringList events = QStringList() << "Авария по приращению тангенса дельта ввода фазы А"
@@ -48,33 +48,4 @@ void AvarAlarmKIV::AvarState()
     connect(pb, SIGNAL(clicked()), this, SLOT(hide()));
     lyout->addWidget(pb, 0);
     setLayout(lyout);
-}
-
-void AvarAlarmKIV::AlarmState()
-{
-}
-void AvarAlarmKIV::WarnAlarmState()
-{
-}
-
-void AvarAlarmKIV::Update(QList<bool> states)
-{
-    int i;
-    float circleRadius = CIRCLE_RADIUS;
-    if (states.isEmpty())
-        return;
-    for (i = 0; i < Alarm->MapAlarm[MTYPE_KIV].avarCounts; i++)
-    {
-        quint32 alarm = states.at(i);
-        if (alarm)
-        {
-            auto pixmap = WDFunc::NewCircle(Qt::red, circleRadius);
-            WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
-        }
-        else
-        {
-            auto pixmap = WDFunc::NewCircle(Qt::green, circleRadius);
-            WDFunc::SetLBLImage(this, (QString::number(i)), &pixmap);
-        }
-    }
 }
