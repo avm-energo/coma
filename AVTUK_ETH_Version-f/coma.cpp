@@ -87,6 +87,10 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     confBDialog = confMDialog = nullptr;
     checkBDialog = checkMDialog = nullptr;
     AlarmStateAllDialog = nullptr;
+    AvarAlarmKIVDialog = nullptr;
+    WarnAlarmKIVDialog = nullptr;
+    AvarAlarmKTFDialog = nullptr;
+    WarnAlarmKTFDialog = nullptr;
 #ifdef AVM_DEBUG
     tuneDialog = nullptr;
 #endif
@@ -532,10 +536,9 @@ void Coma::setupConnections()
 
             break;
         }
-        break;
         }
+        break;
     case Config::MTB_A3:
-
         switch (Board::GetInstance()->typeM())
         {
         case Config::MTM_87:
@@ -638,20 +641,20 @@ void Coma::CloseDialogs()
         i->close();
     }
 
-    Alarm->AvarAlarmEvents.clear();
-    Alarm->WarnAlarmEvents.clear();
-
     if (AvarAlarmKIVDialog != nullptr)
         AvarAlarmKIVDialog->close();
-
+    if (WarnAlarmKIVDialog != nullptr)
+        WarnAlarmKIVDialog->close();
+    if (AvarAlarmKTFDialog != nullptr)
+        AvarAlarmKTFDialog->close();
+    if (WarnAlarmKTFDialog != nullptr)
+        WarnAlarmKTFDialog->close();
     if (AlarmStateAllDialog != nullptr)
     {
         AlrmTimer->stop();
         AlarmStateAllDialog->close();
         AlarmStateAllDialog = nullptr;
     }
-    if (WarnAlarmKIVDialog != nullptr)
-        WarnAlarmKIVDialog->close();
 }
 
 void Coma::New104()
@@ -793,7 +796,10 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
     return false;
 }
 
-void Coma::SetMode(int mode) { Mode = mode; }
+void Coma::SetMode(int mode)
+{
+    Mode = mode;
+}
 
 void Coma::Go(const QString &parameter)
 {
@@ -1023,9 +1029,15 @@ void Coma::FileTimeOut()
         QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
 }
 
-void Coma::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
+void Coma::SetProgressBar2Size(int size)
+{
+    SetProgressBarSize(2, size);
+}
 
-void Coma::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
+void Coma::SetProgressBar2(int cursize)
+{
+    SetProgressBar(2, cursize);
+}
 
 void Coma::SetProgressBarSize(int prbnum, int size)
 {
@@ -1115,7 +1127,10 @@ void Coma::DisconnectAndClear()
     Reconnect = false;
 }
 
-void Coma::resizeEvent(QResizeEvent *e) { QMainWindow::resizeEvent(e); }
+void Coma::resizeEvent(QResizeEvent *e)
+{
+    QMainWindow::resizeEvent(e);
+}
 
 void Coma::keyPressEvent(QKeyEvent *e)
 {

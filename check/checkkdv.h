@@ -28,13 +28,6 @@ public:
         float KrF[3];            // крест-фактор по трем фазам
     };
 
-    //    struct Bd3
-    //    {
-    //        float IUefNat_filt[4];
-    //        float IUeff_filtered[4];
-    //        float KrF[3];
-    //    };
-
     struct Bd_4_6
     {
         float U0;      // сигнал нулевой последовательности
@@ -58,6 +51,9 @@ public:
         float Vst;
         float Age;
         float Resurs;
+        float MotHnorm;
+        float MotHover;
+        float MotHTotal;
         float reserv;
     };
 

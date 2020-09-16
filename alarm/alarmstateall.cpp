@@ -8,7 +8,10 @@
 
 #include <QBoxLayout>
 
-AlarmStateAll::AlarmStateAll(QDialog *parent) : AbstractAlarm(parent) { AlarmState(); }
+AlarmStateAll::AlarmStateAll(QDialog *parent) : AbstractAlarm(parent)
+{
+    AlarmState();
+}
 
 void AlarmStateAll::AlarmState()
 {
@@ -46,9 +49,15 @@ void AlarmStateAll::AlarmState()
     lyout->addWidget(pb, 0);
     this->setLayout(lyout);
 }
-void AlarmStateAll::WarnAlarmState() { }
-void AlarmStateAll::AvarState() { }
-void AlarmStateAll::Update(QList<bool>) { }
+void AlarmStateAll::WarnAlarmState()
+{
+}
+void AlarmStateAll::AvarState()
+{
+}
+void AlarmStateAll::Update(QList<bool>)
+{
+}
 
 void AlarmStateAll::UpdateHealth(quint32 health)
 {
@@ -57,10 +66,13 @@ void AlarmStateAll::UpdateHealth(quint32 health)
     {
         QPixmap circle = WDFunc::NewCircle(Qt::green, circleRadius);
         if (health & (0x00000001 << i))
-            circle = (AlarmPositions.indexOf(i) == -1) ? WDFunc::NewCircle(Qt::red, circleRadius)
-                                                       : WDFunc::NewCircle(Qt::yellow, circleRadius);
+            circle = (WarnPositions.indexOf(i) == -1) ? WDFunc::NewCircle(Qt::yellow, circleRadius)
+                                                      : WDFunc::NewCircle(Qt::red, circleRadius);
         WDFunc::SetLBLImage(this, (QString::number(i)), &circle);
     }
 }
 
-void AlarmStateAll::CallUpdateHealth() { this->UpdateHealth(ModuleBSI::ModuleBsi.Hth); }
+void AlarmStateAll::CallUpdateHealth()
+{
+    this->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
+}

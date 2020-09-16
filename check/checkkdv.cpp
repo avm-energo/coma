@@ -282,6 +282,29 @@ QWidget *CheckKDV::Bd3W(QWidget *parent)
     gb->setLayout(vlyout);
     lyout->addWidget(gb);
 
+    //...................................
+
+    gb = new QGroupBox("Наработка");
+    gb->setFont(ffont);
+    vlyout = new QVBoxLayout;
+    glyout = new QGridLayout;
+
+    glyout->addWidget(WDFunc::NewLBL(parent, "Наработка при нормальной нагрузке, час"), 6, 0, 1, 1);
+    glyout->addWidget(
+        WDFunc::NewLBLT(parent, "", QString::number(4003), ValuesFormat, "Наработка при нормальной нагрузке, час"), 7,
+        0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Наработка в режиме перегрузки, час"), 8, 0, 1, 1);
+    glyout->addWidget(
+        WDFunc::NewLBLT(parent, "", QString::number(4004), ValuesFormat, "Наработка в режиме перегрузки, час"), 9, 0, 1,
+        1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Общая наработка, час"), 10, 0, 1, 1);
+    glyout->addWidget(
+        WDFunc::NewLBLT(parent, "", QString::number(4005), ValuesFormat, "Общая наработка, час"), 11, 0, 1, 1);
+
+    vlyout->addLayout(glyout);
+    gb->setLayout(vlyout);
+    lyout->addWidget(gb);
+
     // ......................................
 
     gb = new QGroupBox("Амплитуда пускового тока при последнем пуске");
@@ -289,13 +312,13 @@ QWidget *CheckKDV::Bd3W(QWidget *parent)
     vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "Амплитуда, А"), 6, 0, 1, 1);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Амплитуда, А"), 12, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(5200), ValuesFormat,
                           "Амплитуда пускового тока при последнем пуске, А"),
-        7, 0, 1, 1);
+        13, 0, 1, 1);
 
-    glyout->addWidget(WDFunc::NewLBL(parent, "Дата и время пуска:"), 6, 1, 1, 1);
-    glyout->addWidget(WDFunc::NewLE(parent, "IsTime", "dd-MM-yyyy HH:mm:ss"), 7, 1, 1, 4);
+    glyout->addWidget(WDFunc::NewLBL(parent, "Дата и время пуска:"), 12, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewLE(parent, "IsTime", "dd-MM-yyyy HH:mm:ss"), 13, 1, 1, 4);
 
     vlyout->addLayout(glyout);
     gb->setLayout(vlyout);
@@ -585,6 +608,9 @@ void CheckKDV::FillBd9(QWidget *parent)
     WDFunc::SetLBLText(parent, QString::number(4000), WDFunc::StringValueWithCheck(Bd_block9.Vst, 3));
     WDFunc::SetLBLText(parent, QString::number(4001), WDFunc::StringValueWithCheck(Bd_block9.Age, 3));
     WDFunc::SetLBLText(parent, QString::number(4002), WDFunc::StringValueWithCheck(Bd_block9.Resurs, 3));
+    WDFunc::SetLBLText(parent, QString::number(4003), WDFunc::StringValueWithCheck(Bd_block9.MotHnorm, 3));
+    WDFunc::SetLBLText(parent, QString::number(4004), WDFunc::StringValueWithCheck(Bd_block9.MotHover, 3));
+    WDFunc::SetLBLText(parent, QString::number(4005), WDFunc::StringValueWithCheck(Bd_block9.MotHTotal, 3));
 }
 
 void CheckKDV::FillBd10(QWidget *parent)

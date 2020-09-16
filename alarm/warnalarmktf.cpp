@@ -34,8 +34,7 @@ void WarnAlarmKTF::WarnAlarmState()
                                              << "Неисправны все датчики температуры обмотки             "
                                              << "Сигнализация по опасному уровню пускового тока         ";
     QWidget *w = new QWidget;
-    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};"); // color:
-                                                                            // rgba(220,220,220,255);
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
     for (int i = 0; i < Alarm->MapAlarm[MTYPE_KTF].warnCounts; ++i)
     {
@@ -54,9 +53,13 @@ void WarnAlarmKTF::WarnAlarmState()
     setLayout(lyout);
 }
 
-void WarnAlarmKTF::AlarmState() { }
+void WarnAlarmKTF::AlarmState()
+{
+}
 
-void WarnAlarmKTF::AvarState() { }
+void WarnAlarmKTF::AvarState()
+{
+}
 
 void WarnAlarmKTF::Update(QList<bool> states)
 {
@@ -69,7 +72,7 @@ void WarnAlarmKTF::Update(QList<bool> states)
     {
         quint32 alarm = states.at(i);
 
-        alarm ? WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::red, circleRadius))
+        alarm ? WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::yellow, circleRadius))
               : WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::green, circleRadius));
     }
 }

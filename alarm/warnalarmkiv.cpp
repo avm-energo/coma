@@ -61,8 +61,12 @@ void WarnAlarmKIV::WarnAlarmState()
     setLayout(lyout);
 }
 
-void WarnAlarmKIV::AlarmState() { }
-void WarnAlarmKIV::AvarState() { }
+void WarnAlarmKIV::AlarmState()
+{
+}
+void WarnAlarmKIV::AvarState()
+{
+}
 
 void WarnAlarmKIV::Update(QList<bool> states)
 {
@@ -75,7 +79,7 @@ void WarnAlarmKIV::Update(QList<bool> states)
     {
         quint32 alarm = states.at(i);
 
-        alarm ? WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::red, circleRadius))
+        alarm ? WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::yellow, circleRadius))
               : WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::green, circleRadius));
     }
 }
