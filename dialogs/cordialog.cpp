@@ -440,14 +440,10 @@ void CorDialog::MessageOk()
 
 void CorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
 {
-    IEC104Thread::FlSignals104 sig = *new IEC104Thread::FlSignals104;
-    int i;
-
     if (((Signal)->fl.SigAdr >= 4000) && ((Signal)->fl.SigAdr <= 4010))
     {
-        for (i = 0; i < Signal->SigNumber; i++)
+        for (int i = 0; i < Signal->SigNumber; i++)
         {
-            sig = *(Signal + i);
             // if((Signal+i)->fl.SigAdr >= 1000 || (Signal+i)->fl.SigAdr <= 1009)
             FillBd(
                 this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal + i)->fl.SigVal));
@@ -458,7 +454,6 @@ void CorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
         else
             first = 1;
     }
-    delete &sig;
 }
 
 void CorDialog::FillBd(QWidget *parent, QString Name, QString Value)

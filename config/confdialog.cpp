@@ -134,6 +134,8 @@ void ConfDialog::Fill()
     case 10:
         cbidx = 2;
         break;
+    default:
+        return;
     }
     WDFunc::SetCBIndex(ParentCtype, "Ctype", cbidx);
 }
@@ -167,4 +169,7 @@ void ConfDialog::FillBack()
     }
 }
 
-void ConfDialog::SetDefConf() { ConfigMain->SetDefBlock(); }
+void ConfDialog::SetDefConf()
+{
+    ConfigMain->SetDefBlock();
+}

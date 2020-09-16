@@ -13,7 +13,6 @@
 
 ConnectDialog::ConnectDialog()
 {
-    QByteArray ba;
     QStringList intersl = QStringList() << "USB"
                                         << "Ethernet"
                                         << "RS485";
@@ -309,91 +308,82 @@ bool ConnectDialog::IsKeyExist(const QString &type, const QString &chstr)
 bool ConnectDialog::UpdateModel()
 {
     QStringList ethlist, rslist;
-    QSettings *sets = new QSettings(SOFTDEVELOPER, PROGNAME);
+    QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
+    // QSettings *sets = new QSettings(SOFTDEVELOPER, PROGNAME);
     QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-    if (dlg != nullptr)
+    if (dlg == nullptr)
+        return false;
+    for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
-        for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
-        {
-            QString rsname = "RS485-" + QString::number(i);
-            QString ethname = "Ethernet-" + QString::number(i);
-            ethlist << sets->value(ethname, "").toString();
-            rslist << sets->value(rsname, "").toString();
-        }
-        switch (Board::GetInstance()->interfaceType())
-        {
-        case Board::InterfaceType::USB:
-        {
-            QStringList USBsl = EProtocom::GetInstance()->DevicesFound();
-            QStringList sl = QStringList() << "#"
-                                           << "Device";
-            ETableModel *mdl = new ETableModel;
-
-            if (USBsl.size() == 0)
-            {
-                QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
-                Error::ShowErMsg(CN_NOPORTSERROR);
-                return false;
-            }
-            mdl->setHeaders(sl);
-
-            for (int i = 0; i < USBsl.size(); ++i)
-            {
-                QVector<QVariant> vl;
-                vl << QString::number(i + 1) << USBsl.at(i);
-                mdl->addRowWithData(vl);
-            }
-            WDFunc::SetTVModel(dlg, "usbtv", mdl);
-            break;
-        }
-        case Board::InterfaceType::Ethernet:
-        {
-            QStringList sl = QStringList() << "#"
-                                           << "Имя"
-                                           << "IP"
-                                           << "Адрес БС";
-            ETableModel *mdl = new ETableModel;
-
-            mdl->setHeaders(sl);
-            for (int i = 0; i < ethlist.size(); ++i)
-            {
-                QVector<QVariant> vl;
-                QString key = PROGNAME;
-                key += "\\" + ethlist.at(i);
-                sets = new QSettings(SOFTDEVELOPER, key);
-                vl << QString::number(i + 1) << ethlist.at(i) << sets->value("ip", "") << sets->value("bs", "");
-                mdl->addRowWithData(vl);
-            }
-            WDFunc::SetTVModel(dlg, "ethtv", mdl);
-            break;
-        }
-        case Board::InterfaceType::RS485:
-        {
-            QStringList sl = QStringList() << "#"
-                                           << "Имя"
-                                           << "Порт"
-                                           << "Скорость"
-                                           << "Четность"
-                                           << "Стоп бит"
-                                           << "Адрес";
-            ETableModel *mdl = new ETableModel;
-
-            mdl->setHeaders(sl);
-            for (int i = 0; i < rslist.size(); ++i)
-            {
-                QVector<QVariant> vl;
-                QString key = PROGNAME;
-                key += "\\" + rslist.at(i);
-                sets = new QSettings(SOFTDEVELOPER, key);
-                vl << QString::number(i + 1) << rslist.at(i) << sets->value("port", "") << sets->value("speed", "")
-                   << sets->value("parity", "") << sets->value("stop", "") << sets->value("address", "");
-                mdl->addRowWithData(vl);
-            }
-            WDFunc::SetTVModel(dlg, "rstv", mdl);
-            break;
-        }
-        }
-        return true;
+        QString rsname = "RS485-" + QString::number(i);
+        QString ethname = "Ethernet-" + QString::number(i);
+        ethlist << sets->value(ethname, "").toString();
+        rslist << sets->value(rsname, "").toString();
     }
-    return false;
+    switch (Board::GetInstance()->interfaceType())
+    {
+    case Board::InterfaceType::USB:
+    {
+        QStringList USBsl = EProtocom::GetInstance()->DevicesFound();
+        QStringList sl { "#", "Device" };
+        ETableModel *mdl = new ETableModel;
+
+        if (USBsl.isEmpty())
+        {
+            QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
+            Error::ShowErMsg(CN_NOPORTSERROR);
+            return false;
+        }
+        mdl->setHeaders(sl);
+
+        for (int i = 0; i < USBsl.size(); ++i)
+        {
+            QVector<QVariant> vl;
+            vl << QString::number(i + 1) << USBsl.at(i);
+            mdl->addRowWithData(vl);
+        }
+        WDFunc::SetTVModel(dlg, "usbtv", mdl);
+        break;
+    }
+    case Board::InterfaceType::Ethernet:
+    {
+        QStringList sl { "#", "Имя", "IP", "Адрес БС" };
+        ETableModel *mdl = new ETableModel;
+
+        mdl->setHeaders(sl);
+        for (int i = 0; i < ethlist.size(); ++i)
+        {
+
+            QString key = PROGNAME;
+            key += "\\" + ethlist.at(i);
+            sets = QSharedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
+            QVector<QVariant> vl { QString::number(i + 1), ethlist.at(i), sets->value("ip", ""),
+                sets->value("bs", "") };
+            mdl->addRowWithData(vl);
+        }
+        WDFunc::SetTVModel(dlg, "ethtv", mdl);
+        break;
+    }
+    case Board::InterfaceType::RS485:
+    {
+        QStringList sl { "#", "Имя", "Порт", "Скорость", "Четность", "Стоп бит", "Адрес" };
+        ETableModel *mdl = new ETableModel;
+
+        mdl->setHeaders(sl);
+        for (int i = 0; i < rslist.size(); ++i)
+        {
+
+            QString key = PROGNAME;
+            key += "\\" + rslist.at(i);
+            sets = QSharedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
+            QVector<QVariant> vl { QString::number(i + 1), rslist.at(i), sets->value("port", ""),
+                sets->value("speed", ""), sets->value("parity", ""), sets->value("stop", ""),
+                sets->value("address", "") };
+            mdl->addRowWithData(vl);
+        }
+        WDFunc::SetTVModel(dlg, "rstv", mdl);
+        break;
+    }
+    }
+    return true;
 }

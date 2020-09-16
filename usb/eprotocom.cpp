@@ -430,7 +430,6 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             }
             if (ReadDataChunkLength == 0)
             {
-                rdsize = 0;
                 Finish(NOERROR);
                 return;
             }
@@ -451,7 +450,6 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             }
             if (ReadDataChunkLength == 0)
             {
-                rdsize = 0;
                 Finish(NOERROR);
                 return;
             }

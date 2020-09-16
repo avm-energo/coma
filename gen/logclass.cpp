@@ -3,8 +3,13 @@
 #define LZMA_API_STATIC
 #include "error.h"
 #include "logclass.h"
-//#include "lzma/lzma.h"
+#ifdef _WIN32
+#include "lzma/lzma.h"
+#endif
+#ifdef __linux__
 #include "lzma.h"
+#endif
+
 #include "stdfunc.h"
 
 LogClass::LogClass(QObject *parent) : QObject(parent)
