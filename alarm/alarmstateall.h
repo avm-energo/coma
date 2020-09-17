@@ -43,7 +43,7 @@ public slots:
 signals:
 
 private:
-    const QList<int> WarnPositions = { 1, 3, 5, 7, 13 };
+    const QList<int> AlarmPositions = { 1, 3, 5, 7, 13 };
 };
 
 #endif // ALARMSTATE_H
