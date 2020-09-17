@@ -443,12 +443,14 @@ QPixmap WDFunc::NewCircle(QColor color, float radius)
     QPixmap myPix(QSize(intRadius, intRadius));
     myPix.fill(Qt::transparent);
     QPainter painter(&myPix); // Create object of QPainter
+    painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap));
     QRadialGradient gradient(intRadius / 2, intRadius / 2, intRadius);
     gradient.setColorAt(0, color);
     gradient.setColorAt(1, Qt::black);
     painter.setBrush(QBrush(gradient));
-    painter.drawEllipse(0, 0, myPix.width() - painter.pen().width(), myPix.height() - painter.pen().width());
+    painter.drawEllipse(0 + painter.pen().width(), 0 + painter.pen().width(), myPix.width() - 2 * painter.pen().width(),
+        myPix.height() - 2 * painter.pen().width());
 
     return myPix;
 }
