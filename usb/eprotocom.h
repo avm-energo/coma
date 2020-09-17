@@ -8,8 +8,6 @@
 #include <QEventLoop>
 #include <QThread>
 
-//#define NOTIMEOUT
-
 class EProtocom : public QObject
 {
     Q_OBJECT

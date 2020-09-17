@@ -647,7 +647,6 @@ void Coma::CloseDialogs()
         AlrmTimer->stop();
     }
     QList<QDialog *> widgets = this->findChildren<QDialog *>();
-    // this->findChildren
     for (auto &i : widgets)
     {
         qDebug() << i;
@@ -1045,7 +1044,7 @@ void Coma::Disconnect()
         if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
         {
             BdaTimer->stop();
-            if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState)
+            if (Board::GetInstance()->connectionState() != Board::ConnectionState::ClosingState)
                 EProtocom::GetInstance()->Disconnect();
         }
         else
@@ -1062,7 +1061,7 @@ void Coma::DisconnectAndClear()
 {
     INFOMSG("DisconnectAndClear()");
     TimeTimer->stop();
-    if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState)
+    if (Board::GetInstance()->connectionState() != Board::ConnectionState::ClosingState)
     {
         AlarmW->Clear();
         Disconnect();

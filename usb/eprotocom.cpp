@@ -753,7 +753,6 @@ void EProtocom::usbStateChanged(void *message)
                 WriteData.clear();
                 OutData.clear();
                 Finish(CN_NULLDATAERROR);
-                RawClose();
                 m_loop.exit();
             }
             QMessageBox::critical(nullptr, "Ошибка", "Связь с прибором была разорвана", QMessageBox::Ok);
@@ -899,7 +898,7 @@ int EProtocom::RawWrite(QByteArray &ba)
 
 void EProtocom::RawClose()
 {
-    if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState
+    if (Board::GetInstance()->connectionState() != Board::ConnectionState::ClosingState
         && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
     {
         Board::GetInstance()->setConnectionState(Board::ConnectionState::ClosingState);
