@@ -1,9 +1,9 @@
 #include "alarmwidget.h"
 
 #include <QBoxLayout>
+#include <QDebug>
 #include <QGroupBox>
 #include <QMenu>
-
 AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
 {
     Alarm = alarm;
@@ -15,53 +15,35 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
         + QString(Colors::MAINWINCLR) + ";}";
     menu->setStyleSheet(tmps);
     QVBoxLayout *vlyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
+
     QHBoxLayout *hlyout2 = new QHBoxLayout;
-    QStringList Description = QStringList() << "Состояние устройства"
-                                            << "Предупредительная сигнализация"
-                                            << "Аварийная сигнализация";
+    QStringList Description { "Состояние устройства", "Предупредительная сигнализация", "Аварийная сигнализация" };
+    QStringList ButtonList { "AlarmButtonPressed", "ModuleWarnButtonPressed", "ModuleAlarmButtonPressed" };
     setStyleSheet("QComa {background-color: " + QString(Colors::MAINWINCLR) + ";}");
-
-    QPushButton *pb = new QPushButton("Состояние устройства");
-    pb->setMinimumSize(QSize(230, 30));
-    connect(pb, SIGNAL(clicked()), this, SIGNAL(AlarmButtonPressed()));
-    QGroupBox *gb = new QGroupBox("");
-    hlyout->addWidget(pb, Qt::AlignRight);
-    QPixmap map;
-    hlyout->addWidget(WDFunc::NewLBL(this, "", "", "950", &map), 1);
-    WDFunc::SetVisible(this, "950", false);
-    gb->setLayout(hlyout);
-    hlyout2->addWidget(gb);
-
-    gb = new QGroupBox("");
-    hlyout = new QHBoxLayout;
-    pb = new QPushButton("Предупредительная сигнализация");
-    pb->setMinimumSize(QSize(230, 30));
-    connect(pb, SIGNAL(clicked()), this, SIGNAL(ModuleWarnButtonPressed()));
-    hlyout->addWidget(pb, Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewLBL(this, "", "", "951", &map), 1);
-    WDFunc::SetVisible(this, "951", false);
-    gb->setLayout(hlyout);
-    hlyout2->addWidget(gb);
-
-    gb = new QGroupBox("");
-    hlyout = new QHBoxLayout;
-    pb = new QPushButton("Аварийная сигнализация");
-    pb->setMinimumSize(QSize(230, 30));
-    connect(pb, SIGNAL(clicked()), this, SIGNAL(ModuleAlarmButtonPressed()));
-    hlyout->addWidget(pb, Qt::AlignRight);
-    hlyout->addWidget(WDFunc::NewLBL(this, "", "", "952", &map), 1);
-    WDFunc::SetVisible(this, "952", false);
-    gb->setLayout(hlyout);
-    hlyout2->addWidget(gb);
+    for (int i = 0; i != Description.size(); i++)
+    {
+        QHBoxLayout *hlyout = new QHBoxLayout;
+        QPushButton *pb = new QPushButton(Description.at(i));
+        pb->setMinimumSize(QSize(230, 30));
+        int signal = metaObject()->indexOfSignal(QString((ButtonList.at(i) + "()")).toStdString().c_str());
+        auto method = metaObject()->method(signal);
+        connect(pb, QMetaMethod::fromSignal(&QAbstractButton::clicked), this, method);
+        QGroupBox *gb = new QGroupBox("");
+        hlyout->addWidget(pb, Qt::AlignRight);
+        QPixmap map;
+        hlyout->addWidget(WDFunc::NewLBL(this, "", "", QString::number(950 + i), &map), 1);
+        WDFunc::SetVisible(this, QString::number(950 + i), false);
+        gb->setLayout(hlyout);
+        hlyout2->addWidget(gb);
+    }
 
     if (hlyout2->count())
         vlyout->addLayout(hlyout2);
     setLayout(vlyout);
 
-    connect(Alarm, SIGNAL(SetFirstButton()), this, SLOT(UpdateFirstUSB()));
-    connect(Alarm, SIGNAL(SetWarnAlarmColor(QList<bool>)), this, SLOT(UpdateSecondUSB(QList<bool>)));
-    connect(Alarm, SIGNAL(SetAlarmColor(QList<bool>)), this, SLOT(UpdateThirdUSB(QList<bool>)));
+    connect(Alarm, &AlarmClass::SetFirstButton, this, &AlarmWidget::UpdateFirstUSB);
+    connect(Alarm, &AlarmClass::SetWarnAlarmColor, this, &AlarmWidget::UpdateSecondUSB);
+    connect(Alarm, &AlarmClass::SetAlarmColor, this, &AlarmWidget::UpdateThirdUSB);
 }
 
 void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarm)
