@@ -9,13 +9,9 @@
 #include "../widgets/wd_func.h"
 
 #include <QAbstractItemModelTester>
-#include <QApplication>
 #include <QDateTime>
 #include <QDebug>
-#include <QFileDialog>
-#include <QGroupBox>
 #include <QHeaderView>
-#include <QPushButton>
 #include <QSortFilterProxyModel>
 #include <QVBoxLayout>
 

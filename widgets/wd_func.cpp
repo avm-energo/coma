@@ -421,6 +421,8 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
         Board::GetInstance(), &Board::connectionStateChanged, [msgConnectionState](Board::ConnectionState state) {
             QString connState = QVariant::fromValue(Board::ConnectionState(state)).toString();
             msgConnectionState->setText(connState);
+            msgConnectionState->setForegroundRole(QPalette::Highlight);
+            msgConnectionState->setBackgroundRole(QPalette::HighlightedText);
         });
 
     QObject::connect(Board::GetInstance(), &Board::interfaceTypeChanged,

@@ -8,6 +8,18 @@
 #include <QMessageBox>
 #include <QSettings>
 
+#ifdef _WIN32
+// clang-format off
+#include <windows.h>
+// Header dbt must be the last header, thanx to microsoft
+#include <dbt.h>
+// clang-format on
+#endif
+
+#if _MSC_VER && !__INTEL_COMPILER
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
+
 bool EProtocom::m_writeUSBLog;
 EProtocom *EProtocom::pinstance_ { nullptr };
 QMutex EProtocom::mutex_;
@@ -23,14 +35,14 @@ EProtocom::EProtocom(QObject *parent)
     SegEnd = 0;
     SegLeft = 0;
     OscNum = 0;
-    // setConnected(false);
-    TTimer = new QTimer(this);
-    TTimer->setInterval(CN::Timeout);
     OscTimer = new QTimer(this);
     OscTimer->setInterval(CN::TimeoutOscillogram);
     OscTimer->setSingleShot(false);
-    connect(OscTimer, SIGNAL(timeout()), this, SLOT(OscTimerTimeout()));
-    connect(TTimer, SIGNAL(timeout()), this, SLOT(Timeout())); // для отладки закомментарить
+    m_waitTimer = new QTimer(this);
+    m_waitTimer->setInterval(CN::Timeout);
+    connect(OscTimer, &QTimer::timeout, this, &EProtocom::OscTimerTimeout);
+    connect(m_waitTimer, &QTimer::timeout, &m_loop, &QEventLoop::quit);
+    connect(this, &EProtocom::QueryFinished, &m_loop, &QEventLoop::quit);
     QSettings *sets = new QSettings("EvelSoft", PROGNAME);
     setWriteUSBLog(sets->value("WriteLog", "0").toBool());
 }
@@ -65,21 +77,31 @@ void EProtocom::Send(char command, char parameter, QByteArray &ba, qint64 datasi
         m_result = CN_NULLDATAERROR;
         return;
     }
-    InData = ba;
-    InDataSize = datasize; // размер области данных, в которую производить запись
-    Command = command;
-    /*    if (parameter == BoardTypes::BT_BASE)
-            BoardType = 0x01;
-        else if (parameter == BoardTypes::BT_MEZONIN)
-            BoardType = 0x02;
-        else if (parameter == BoardTypes::BT_NONE)
-            BoardType = 0x00;
-        else */
-    BoardType = parameter; // in GBd command it is a block number
-    InitiateSend();
-    QEventLoop loop;
-    connect(this, &EProtocom::QueryFinished, &loop, &QEventLoop::quit);
-    loop.exec();
+    try
+    {
+        InData = ba;
+        InDataSize = datasize; // размер области данных, в которую производить запись
+        Command = command;
+        /*    if (parameter == BoardTypes::BT_BASE)
+                BoardType = 0x01;
+            else if (parameter == BoardTypes::BT_MEZONIN)
+                BoardType = 0x02;
+            else if (parameter == BoardTypes::BT_NONE)
+                BoardType = 0x00;
+            else */
+        BoardType = parameter; // in GBd command it is a block number
+        InitiateSend();
+        m_waitTimer->start();
+        m_loop.exec(QEventLoop::ExcludeUserInputEvents);
+    }
+    catch (const std::exception &e)
+    {
+        qDebug() << __PRETTY_FUNCTION__ << e.what();
+    }
+    catch (...)
+    {
+        qDebug() << __PRETTY_FUNCTION__ << "Exception";
+    }
 }
 
 void EProtocom::InitiateSend()
@@ -207,27 +229,24 @@ void EProtocom::WriteDataToPort(QByteArray &ba)
             ERMSG("Ошибка записи RawWrite");
             Error::ShowErMsg(COM_WRITEER);
             Disconnect();
-            TTimer->start();
+            // TTimer->start();
             return;
         }
         byteswritten += tmpi;
         emit writebytessignal(tmpba.left(tmpi));
         tmpba = tmpba.remove(0, tmpi);
     }
-#ifndef NOTIMEOUT
-    TTimer->start();
-#endif
 }
 
 void EProtocom::Finish(int ernum)
 {
-    TTimer->stop();
     // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
     Command = CN::Unknown;
     if (ernum != NOERROR)
     {
         if (ernum < 0)
         {
+            qDebug(__PRETTY_FUNCTION__);
             CnLog->WriteRaw("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###\n");
             WARNMSG("ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ!!!");
         }
@@ -236,7 +255,6 @@ void EProtocom::Finish(int ernum)
     }
     m_result = ernum;
     emit QueryFinished();
-    //    Busy = false;
 }
 
 void EProtocom::SetWRSegNum()
@@ -323,12 +341,6 @@ bool EProtocom::GetLength()
     ReadDataChunkLength += static_cast<quint8>(ReadDataChunk.at(3)) * 256;
     return true;
 }
-
-// void EUsbHid::Timeout()
-//{
-//    Finish(USO_TIMEOUTER);
-//    emit ReconnectSignal();
-//}
 
 void EProtocom::ParseIncomeData(QByteArray ba)
 {
@@ -690,6 +702,95 @@ void EProtocom::SendFile(unsigned char command, char board_type, int filenum, QB
     ba = OutData;
 }
 
+void EProtocom::usbStateChanged(void *message)
+{
+#ifdef _WIN32
+    MSG *msg = static_cast<MSG *>(message);
+    int msgType = msg->message;
+    if (msgType == WM_DEVICECHANGE)
+    {
+        msgType = msg->wParam;
+        switch (msgType)
+        {
+        case DBT_CONFIGCHANGECANCELED:
+            qDebug("DBT_CONFIGCHANGECANCELED");
+            break;
+        case DBT_CONFIGCHANGED:
+            qDebug("DBT_CONFIGCHANGED");
+            break;
+        case DBT_CUSTOMEVENT:
+            qDebug("DBT_CUSTOMEVENT");
+            break;
+        case DBT_DEVICEARRIVAL:
+        {
+            // Here will be reconnection event
+            if (DevicesFound().contains(deviceName()) && !deviceName().isEmpty())
+            {
+                qDebug("Device arrived again");
+                if (!Reconnect())
+                {
+                    qDebug("Reconnection failed");
+                    Disconnect();
+                }
+            }
+            break;
+        }
+        case DBT_DEVICEQUERYREMOVE:
+            qDebug("DBT_DEVICEQUERYREMOVE");
+            break;
+        case DBT_DEVICEQUERYREMOVEFAILED:
+            qDebug("DBT_DEVICEQUERYREMOVEFAILED");
+            break;
+        case DBT_DEVICEREMOVEPENDING:
+            qDebug("DBT_DEVICEREMOVEPENDING");
+            break;
+        case DBT_DEVICEREMOVECOMPLETE:
+        {
+            qDebug("DBT_DEVICEREMOVECOMPLETE");
+            if (!DevicesFound().contains(deviceName()) && !deviceName().isEmpty())
+            {
+                qDebug() << "Device " << deviceName() << " removed completely";
+                WriteData.clear();
+                OutData.clear();
+                Finish(CN_NULLDATAERROR);
+                RawClose();
+                m_loop.exit();
+            }
+            QMessageBox::critical(nullptr, "Ошибка", "Связь с прибором была разорвана", QMessageBox::Ok);
+            break;
+        }
+        case DBT_DEVICETYPESPECIFIC:
+            qDebug("DBT_DEVICETYPESPECIFIC");
+            break;
+        case DBT_QUERYCHANGECONFIG:
+            qDebug("DBT_QUERYCHANGECONFIG");
+            break;
+        case DBT_DEVNODES_CHANGED:
+        {
+            qDebug("DBT_DEVNODES_CHANGED");
+            if (!DevicesFound().contains(deviceName()) && !deviceName().isEmpty())
+            {
+                qDebug() << "Device " << deviceName() << " state changed";
+                ;
+                // Ивенты должны происходить только если отключен подключенный раннее прибор
+                if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState)
+                {
+                    Board::GetInstance()->setConnectionState(Board::ConnectionState::AboutToFinish);
+                }
+            }
+            break;
+        }
+        case DBT_USERDEFINED:
+            qDebug("DBT_USERDEFINED");
+            break;
+        default:
+            qDebug() << "Default";
+            break;
+        }
+    }
+#endif
+}
+
 void EProtocom::TranslateDeviceAndSave(const QString &str)
 {
     // формат строки: "VEN_" + QString::number(venid, 16) + "_ & DEV_" + QString::number(prodid, 16) + "_ & SN_" + sn;
@@ -708,16 +809,6 @@ void EProtocom::TranslateDeviceAndSave(const QString &str)
     int z = tmps.toWCharArray(UsbPort.serial);
     UsbPort.serial[z] = '\x0';
 }
-
-// bool EProtocom::isConnected() const
-//{
-//    return m_connected;
-//}
-
-// void EProtocom::setConnected(bool isConnected)
-//{
-//    m_connected = isConnected;
-//}
 
 EProtocom::~EProtocom()
 {
@@ -751,7 +842,6 @@ bool EProtocom::Connect()
         Disconnect();
     m_usbWorker = new EUsbWorker(UsbPort, CnLog, isWriteUSBLog());
 
-    ///
     m_usbWorker->moveToThread(&m_workerThread);
     connect(&m_workerThread, &QThread::started, m_usbWorker, &EUsbWorker::interact);
 
@@ -772,8 +862,22 @@ bool EProtocom::Connect()
     return true;
 }
 
+bool EProtocom::Reconnect()
+{
+    m_usbWorker->closeConnection();
+    if (m_usbWorker->setupConnection() == 0 && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+    {
+        Board::GetInstance()->setConnectionState(Board::ConnectionState::ConnectedState);
+        m_workerThread.start();
+    }
+    else
+        return false;
+    return true;
+}
+
 void EProtocom::Disconnect()
 {
+    qDebug(__PRETTY_FUNCTION__);
     RawClose();
     CnLog->WriteRaw("Disconnected!\n");
     delete EProtocom::GetInstance();
@@ -798,9 +902,7 @@ void EProtocom::RawClose()
     if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState
         && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
     {
-        // setConnected(false);
-        Board::GetInstance()->setConnectionState(Board::ConnectionState::ConnectedState);
-        m_usbWorker->Stop();
+        Board::GetInstance()->setConnectionState(Board::ConnectionState::ClosingState);
     }
 }
 

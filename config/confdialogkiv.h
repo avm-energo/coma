@@ -9,8 +9,6 @@
 #include "abstractconfdialog.h"
 
 #include <QDialog>
-#include <QLabel>
-#include <QVBoxLayout>
 
 class ConfDialogKIV : public AbstractConfDialog
 {
@@ -22,7 +20,7 @@ public:
     QLabel *SysTime;
     QTimer *timer;
     QTimer *timerRead;
-    QStringList Sbaud = { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
+    QStringList Sbaud { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
 
 private:
     ConfigKIV *CKIV;

@@ -13,12 +13,12 @@
 EUsbWorker::EUsbWorker(DeviceConnectStruct &devinfo, LogClass *logh, bool writelog, QObject *parent)
     : DeviceInfo(devinfo), log(logh), WriteUSBLog(writelog), QObject(parent)
 {
-    AboutToFinish = false;
     HidDevice = nullptr;
 }
 
 EUsbWorker::~EUsbWorker()
 {
+    qDebug(__PRETTY_FUNCTION__);
 }
 
 int EUsbWorker::setupConnection()
@@ -29,6 +29,8 @@ int EUsbWorker::setupConnection()
         Finish();
         return GENERALERROR;
     }
+    if (HidDevice)
+        hid_close(HidDevice);
     HidDevice = hid_open(DeviceInfo.vendor_id, DeviceInfo.product_id, DeviceInfo.serial);
     if (!HidDevice)
     {
@@ -46,9 +48,11 @@ void EUsbWorker::interact()
     int bytes;
     unsigned char data[UH::MaxSegmenthLength + 1]; // +1 to ID
 
-    while (!AboutToFinish)
+    while (Board::GetInstance()->connectionState() != Board::ConnectionState::ClosingState)
     {
         // check if there's any data in input buffer
+        if (Board::GetInstance()->connectionState() == Board::ConnectionState::AboutToFinish)
+            continue;
         if (HidDevice != nullptr)
         {
             bytes = hid_read(HidDevice, data, UH::MaxSegmenthLength + 1);
@@ -71,20 +75,16 @@ void EUsbWorker::interact()
     Finish();
 }
 
-void EUsbWorker::Stop()
-{
-    AboutToFinish = true;
-}
-
 int EUsbWorker::WriteDataAttempt(QByteArray &ba)
 {
     WriteQueue.append(ba);
     return ba.size();
 }
 
-void EUsbWorker::Finish()
+void EUsbWorker::closeConnection()
 {
-    if (HidDevice != nullptr)
+    qDebug(__PRETTY_FUNCTION__);
+    if (HidDevice)
     {
         mutex_.lock();
         WriteQueue.clear();
@@ -93,13 +93,18 @@ void EUsbWorker::Finish()
 
         HidDevice = nullptr;
     }
+}
+
+void EUsbWorker::Finish()
+{
+    closeConnection();
     INFOMSG("UThread finished");
     emit Finished();
 }
 
 int EUsbWorker::WriteData(QByteArray &ba)
 {
-    if (HidDevice != nullptr)
+    if (HidDevice)
     {
         if (ba.size() > UH::MaxSegmenthLength)
         {

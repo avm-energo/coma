@@ -11,23 +11,11 @@
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
-#include <QCheckBox>
-#include <QComboBox>
-#include <QCoreApplication>
-#include <QDoubleSpinBox>
-#include <QFileDialog>
 #include <QGridLayout>
-#include <QGroupBox>
-#include <QLabel>
-#include <QLineEdit>
 #include <QMessageBox>
-#include <QPushButton>
-#include <QSpinBox>
-#include <QStringListModel>
-#include <QTabBar>
-#include <QTabWidget>
-#include <QVBoxLayout>
-
+#if _MSC_VER && !__INTEL_COMPILER
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
 CorDialog::CorDialog(QWidget *parent) : AbstractCorDialog(parent)
 {
     int i;

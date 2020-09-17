@@ -81,7 +81,6 @@ AbstractWarnAlarm::AbstractWarnAlarm(QDialog *parent) : AbstractAlarm(parent)
 
 void AbstractWarnAlarm::Update(QList<bool> states)
 {
-    // qDebug() << Board::GetInstance()->type();
     if (states.isEmpty())
         return;
     auto max_range = std::min(Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts, states.length());
@@ -96,7 +95,6 @@ AbstractAvarAlarm::AbstractAvarAlarm(QDialog *parent) : AbstractAlarm(parent)
 
 void AbstractAvarAlarm::Update(QList<bool> states)
 {
-    // qDebug() << Board::GetInstance()->type();
     if (states.isEmpty())
         return;
     auto max_range = std::min(Alarm->MapAlarm.value(Board::GetInstance()->type()).avarCounts, states.length());

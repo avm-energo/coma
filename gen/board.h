@@ -52,9 +52,9 @@ public:
      */
     enum class ConnectionState
     {
+        ConnectedState,
         ClosingState,
-        ConnectedState
-
+        AboutToFinish
     };
 
     Q_ENUM(DeviceType)

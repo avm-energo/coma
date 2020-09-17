@@ -25,7 +25,7 @@ namespace Limits
 }
 // Канал связи с модулем
 // таймаут по USB в мс
-constexpr unsigned Timeout = 10000;
+constexpr unsigned Timeout = 1000;
 // таймаут посылки запроса нестёртых осциллограмм
 constexpr unsigned TimeoutOscillogram = 1000;
 // 100 ms main loop sleep

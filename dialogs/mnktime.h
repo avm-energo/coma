@@ -4,11 +4,7 @@
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
 
-#include <QByteArray>
 #include <QDialog>
-#include <QLabel>
-#include <QLineEdit>
-#include <QTime>
 
 class MNKTime : public QDialog
 {

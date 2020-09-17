@@ -10,12 +10,9 @@
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 
-#include <QCoreApplication>
-#include <QFileDialog>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QMessageBox>
-#include <QPushButton>
 #include <QTextEdit>
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
@@ -30,13 +27,6 @@ void AbstractConfDialog::ReadConf()
     TimeFunc::Wait(100);
     switch (Board::GetInstance()->interfaceType())
     {
-        //    case value:
-
-        //        break;
-        //    default:
-        //        break;
-        //    }
-        // if (MainInterface == I_ETHERNET)
     case Board::InterfaceType::Ethernet:
     {
         if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
@@ -83,12 +73,8 @@ void AbstractConfDialog::WriteConf()
         switch (Board::GetInstance()->interfaceType())
         {
         case Board::InterfaceType::Ethernet:
-            // if (MainInterface == I_ETHERNET)
-            //{
             emit writeConfFile(S2Config);
             break;
-        //}
-        // else if (MainInterface == I_USB)
         case Board::InterfaceType::USB:
         {
             if ((res = Commands::WriteFile(1, S2Config)) == NOERROR)
@@ -110,8 +96,8 @@ int AbstractConfDialog::WriteCheckPassword()
     StdFunc::ClearCancel();
     QEventLoop PasswordLoop;
     KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    connect(dlg, SIGNAL(Finished(QString)), this, SLOT(WritePasswordCheck(QString)));
-    connect(this, SIGNAL(WritePasswordChecked()), &PasswordLoop, SLOT(quit()));
+    connect(dlg, &KeyPressDialog::Finished, this, &AbstractConfDialog::WritePasswordCheck);
+    connect(this, &AbstractConfDialog::WritePasswordChecked, &PasswordLoop, &QEventLoop::quit);
     dlg->show();
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
@@ -193,27 +179,27 @@ QWidget *AbstractConfDialog::ConfButtons()
     QGridLayout *wdgtlyout = new QGridLayout;
     QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
     QPushButton *pb = new QPushButton("Прочитать из " + tmps);
-    connect(pb, SIGNAL(clicked()), this, SLOT(ButtonReadConf()));
+    connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::ButtonReadConf);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 0, 1, 1);
     tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуль" : "прибор");
     pb = new QPushButton("Записать в " + tmps);
     pb->setObjectName("WriteConfPB");
-    connect(pb, SIGNAL(clicked()), this, SLOT(WriteConf()));
+    connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::WriteConf);
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
     wdgtlyout->addWidget(pb, 0, 1, 1, 1);
     pb = new QPushButton("Прочитать из файла");
     pb->setIcon(QIcon("images/load.png"));
-    connect(pb, SIGNAL(clicked()), this, SLOT(LoadConfFromFile()));
+    connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::LoadConfFromFile);
     wdgtlyout->addWidget(pb, 1, 0, 1, 1);
     pb = new QPushButton("Записать в файл");
     pb->setIcon(QIcon("images/save.png"));
-    connect(pb, SIGNAL(clicked()), this, SLOT(SaveConfToFile()));
+    connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::SaveConfToFile);
     wdgtlyout->addWidget(pb, 1, 1, 1, 1);
     pb = new QPushButton("Взять конфигурацию по умолчанию");
-    connect(pb, SIGNAL(clicked()), this, SIGNAL(DefConfToBeLoaded()));
+    connect(pb, &QAbstractButton::clicked, this, &AbstractConfDialog::DefConfToBeLoaded);
     wdgtlyout->addWidget(pb, 2, 0, 1, 2);
     wdgt->setLayout(wdgtlyout);
     return wdgt;
@@ -225,21 +211,15 @@ void AbstractConfDialog::ButtonReadConf()
      *num = 1; */
     switch (Board::GetInstance()->interfaceType())
     {
-    // if (MainInterface == I_ETHERNET)
     case Board::InterfaceType::Ethernet:
     {
         if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации,
                                                                                 // заполнить поля по умолчанию
-            // {
             emit DefConfToBeLoaded();
-        // }
         else // иначе заполнить значениями из модуля
-             //{
             emit ReadConfig(1);
-        //}
         break;
     }
-        // else if (MainInterface == I_USB)
     case Board::InterfaceType::USB:
     {
         int res = ModuleBSI::PrereadConf(this, S2Config);

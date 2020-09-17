@@ -19,7 +19,7 @@ public:
         SerialPort::Settings serialst;
     };
 
-    ConnectDialog();
+    explicit ConnectDialog();
 
 signals:
     void Accepted(ConnectDialog::ConnectStruct *);

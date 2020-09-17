@@ -4,7 +4,6 @@
 #include "../gen/s2.h"
 
 #include <QMap>
-#include <QVector>
 
 #define BCI_MTYPEB 1
 #define BCI_MTYPEM 2
@@ -16,7 +15,6 @@
 #define BCI_T3_104 8
 #define BCI_K_104 9
 #define BCI_W_104 10
-//#define CONF_NUM        10
 
 #define DEF_MTYPEB MTB_00
 #define DEF_MTYPEM MTM_00

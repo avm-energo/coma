@@ -16,6 +16,8 @@ public:
     int setupConnection();
     int WriteDataAttempt(QByteArray &ba);
 
+    void closeConnection();
+
 signals:
     void NewDataReceived(QByteArray ba);
     void Finished();
@@ -23,11 +25,10 @@ signals:
 
 public slots:
     void interact();
-    void Stop();
 
 private:
     hid_device *HidDevice;
-    bool AboutToFinish;
+
     bool WriteUSBLog;
 
     QMutex mutex_;

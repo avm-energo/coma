@@ -47,6 +47,11 @@
 #include <QtGlobal>
 
 #ifdef _WIN32
+// clang-format off
+#include <windows.h>
+// Header dbt must be the last header, thanx to microsoft
+#include <dbt.h>
+// clang-format on
 void registerForDeviceNotification(Coma *ptr)
 {
     DEV_BROADCAST_DEVICEINTERFACE devInt;
@@ -733,60 +738,15 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
         int msgType = msg->message;
         if (msgType == WM_DEVICECHANGE)
         {
-            msgType = msg->wParam;
-            switch (msgType)
+            if (BdaTimer->isActive())
+                BdaTimer->stop();
+            if (AlrmTimer->isActive())
+                AlrmTimer->stop();
+            EProtocom::GetInstance()->usbStateChanged(message);
+            if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState)
             {
-            case DBT_CONFIGCHANGECANCELED:
-                qDebug("DBT_CONFIGCHANGECANCELED");
-                break;
-            case DBT_CONFIGCHANGED:
-                qDebug("DBT_CONFIGCHANGED");
-                break;
-            case DBT_CUSTOMEVENT:
-                qDebug("DBT_CUSTOMEVENT");
-                break;
-            case DBT_DEVICEARRIVAL:
-            {
-                // Here will be reconnection event
-                auto devs = EProtocom::GetInstance()->DevicesFound();
-                if (devs.indexOf(EProtocom::GetInstance()->deviceName()) != -1)
-                    qDebug("Device arrived again");
-                break;
-            }
-            case DBT_DEVICEQUERYREMOVE:
-                qDebug("DBT_DEVICEQUERYREMOVE");
-                break;
-            case DBT_DEVICEQUERYREMOVEFAILED:
-                qDebug("DBT_DEVICEQUERYREMOVEFAILED");
-                break;
-            case DBT_DEVICEREMOVEPENDING:
-                qDebug("DBT_DEVICEREMOVEPENDING");
-                break;
-            case DBT_DEVICEREMOVECOMPLETE:
-            {
-                qDebug("DBT_DEVICEREMOVECOMPLETE");
-                // Ивенты должны происходить только если отключен подключенный раннее прибор
-                if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState)
-                    DisconnectAndClear();
-                // if (EUsbHid::GetInstance()->isConnected())
-                QMessageBox::critical(nullptr, "Ошибка", "Связь с прибором была разорвана", QMessageBox::Ok);
-                break;
-            }
-            case DBT_DEVICETYPESPECIFIC:
-                qDebug("DBT_DEVICETYPESPECIFIC");
-                break;
-            case DBT_QUERYCHANGECONFIG:
-                qDebug("DBT_QUERYCHANGECONFIG");
-                break;
-            case DBT_DEVNODES_CHANGED:
-                qDebug("DBT_DEVNODES_CHANGED");
-                break;
-            case DBT_USERDEFINED:
-                qDebug("DBT_USERDEFINED");
-                break;
-            default:
-                qDebug() << "Default";
-                break;
+                BdaTimer->start();
+                AlrmTimer->start();
             }
         }
 #endif

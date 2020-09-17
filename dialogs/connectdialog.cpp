@@ -13,9 +13,7 @@
 
 ConnectDialog::ConnectDialog()
 {
-    QStringList intersl = QStringList() << "USB"
-                                        << "Ethernet"
-                                        << "RS485";
+    QStringList intersl { "USB", "Ethernet", "RS485" };
     setMinimumWidth(150);
     setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -215,14 +213,7 @@ void ConnectDialog::AddRs()
     lyout->addWidget(WDFunc::NewLE(dlg, "namele"), count++, 1, 1, 1);
     lyout->addWidget(WDFunc::NewLBL(dlg, "Порт:"), count, 0, 1, 1, Qt::AlignLeft);
     lyout->addWidget(WDFunc::NewCB(dlg, "portcb", ports), count++, 1, 1, 1);
-    QStringList sl = QStringList() << "1200"
-                                   << "2400"
-                                   << "4800"
-                                   << "9600"
-                                   << "19200"
-                                   << "38400"
-                                   << "57600"
-                                   << "115200";
+    QStringList sl { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
     lyout->addWidget(WDFunc::NewLBL(dlg, "Скорость:"), count, 0, 1, 1, Qt::AlignLeft);
     lyout->addWidget(WDFunc::NewCB(dlg, "speedcb", sl), count++, 1, 1, 1);
     sl = QStringList() << "Нет"
@@ -309,7 +300,6 @@ bool ConnectDialog::UpdateModel()
 {
     QStringList ethlist, rslist;
     QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
-    // QSettings *sets = new QSettings(SOFTDEVELOPER, PROGNAME);
     QDialog *dlg = this->findChild<QDialog *>("connectdlg");
     if (dlg == nullptr)
         return false;
@@ -356,6 +346,7 @@ bool ConnectDialog::UpdateModel()
 
             QString key = PROGNAME;
             key += "\\" + ethlist.at(i);
+            sets.clear();
             sets = QSharedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
             QVector<QVariant> vl { QString::number(i + 1), ethlist.at(i), sets->value("ip", ""),
                 sets->value("bs", "") };
@@ -375,6 +366,7 @@ bool ConnectDialog::UpdateModel()
 
             QString key = PROGNAME;
             key += "\\" + rslist.at(i);
+            sets.clear();
             sets = QSharedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
             QVector<QVariant> vl { QString::number(i + 1), rslist.at(i), sets->value("port", ""),
                 sets->value("speed", ""), sets->value("parity", ""), sets->value("stop", ""),

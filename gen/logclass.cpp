@@ -1,5 +1,6 @@
 #include <QDateTime>
 #include <QDir>
+#include <QMutexLocker>
 #define LZMA_API_STATIC
 #include "error.h"
 #include "logclass.h"
@@ -89,13 +90,18 @@ void LogClass::WriteRaw(const QByteArray &ba)
 {
     if (fp != nullptr)
     {
+        QMutexLocker locker(mtx);
         QString tmps = "[" + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss.zzz") + "]";
-        mtx->lock();
-        fp->write(tmps.toLocal8Bit());
-        fp->write(ba);
-        fp->flush();
+        int writtenSize;
+        writtenSize = fp->write(tmps.toLocal8Bit());
+        if (writtenSize == -1)
+            return;
+        writtenSize = fp->write(ba);
+        if (writtenSize == -1)
+            return;
+        if (!fp->flush())
+            return;
         CheckAndGz();
-        mtx->unlock();
     }
 }
 

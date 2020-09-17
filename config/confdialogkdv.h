@@ -8,8 +8,6 @@
 #include "../iec104/iec104.h"
 #include "abstractconfdialog.h"
 
-#include <QDialog>
-#include <QLabel>
 #include <QVBoxLayout>
 
 class ConfDialogKDV : public AbstractConfDialog
@@ -18,7 +16,7 @@ class ConfDialogKDV : public AbstractConfDialog
 public:
     ConfDialogKDV(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
 
-    QStringList Sbaud = { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
+    QStringList Sbaud { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
 
 private:
     ConfigKDV *KDV;

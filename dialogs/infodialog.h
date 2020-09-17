@@ -10,7 +10,6 @@
 #include "../modbus/modbus.h"
 
 #include <QDialog>
-#include <QMap>
 
 class InfoDialog : public QDialog
 {

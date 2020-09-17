@@ -23,9 +23,14 @@ IEC104::IEC104(QVector<S2::DataRec> *s2, QObject *parent) : QObject(parent)
     Log->info("=== Log started ===");
 }
 
-IEC104::~IEC104() { }
+IEC104::~IEC104()
+{
+}
 
-bool IEC104::Working() { return (EthThreadWorking | ParseThreadWorking); }
+bool IEC104::Working()
+{
+    return (EthThreadWorking | ParseThreadWorking);
+}
 
 void IEC104::Connect(Settings &st)
 {
@@ -156,7 +161,10 @@ void IEC104::com51WriteTime(uint time)
     ParseWriteMutex.unlock();
 }
 
-void IEC104::EthThreadStarted() { EthThreadWorking = true; }
+void IEC104::EthThreadStarted()
+{
+    EthThreadWorking = true;
+}
 
 void IEC104::EthThreadFinished()
 {
@@ -165,7 +173,10 @@ void IEC104::EthThreadFinished()
         emit Finished();
 }
 
-void IEC104::ParseThreadStarted() { ParseThreadWorking = true; }
+void IEC104::ParseThreadStarted()
+{
+    ParseThreadWorking = true;
+}
 
 void IEC104::ParseThreadFinished()
 {
@@ -212,9 +223,14 @@ IEC104Thread::IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, QVector<S2
     NoAnswer = 0;
 }
 
-IEC104Thread::~IEC104Thread() { }
+IEC104Thread::~IEC104Thread()
+{
+}
 
-void IEC104Thread::SetBaseAdr(quint16 adr) { BaseAdr = adr; }
+void IEC104Thread::SetBaseAdr(quint16 adr)
+{
+    BaseAdr = adr;
+}
 
 void IEC104Thread::Run()
 {
@@ -354,7 +370,6 @@ int IEC104Thread::isIncomeDataValid(QByteArray ba)
             if (V_Srcv != V_S)
                 V_S = V_Srcv; // временно, нужно исправить проблему несовпадения s посылок
             return I104_RCVNORM;
-            break;
         }
         case I104_S:
         {
@@ -363,7 +378,6 @@ int IEC104Thread::isIncomeDataValid(QByteArray ba)
             if (V_Srcv != V_S)
                 V_S = V_Srcv;
             return I104_RCVNORM;
-            break;
         }
         case I104_U:
         {
@@ -387,7 +401,6 @@ int IEC104Thread::isIncomeDataValid(QByteArray ba)
             NoAnswer = 0;
 
             return I104_RCVNORM;
-            break;
         }
         default:
             break;
@@ -692,18 +705,24 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
             flSignals->SigNumber = cntfl;
             emit Floatsignalsreceived(flSignals);
         }
+        else
+            delete[] flSignals;
 
         if (cntspon != 0)
         {
             sponsignals->SigNumber = cntspon;
             emit Sponsignalsreceived(sponsignals);
         }
+        else
+            delete[] sponsignals;
 
         if (cntbs != 0)
         {
             BS104Signals->SigNumber = cntbs;
             emit Bs104signalsreceived(BS104Signals);
         }
+        else
+            delete[] BS104Signals;
     }
     catch (...)
     {
@@ -715,7 +734,6 @@ void IEC104Thread::StartDT()
 {
     Log->info("Start()");
     APCI StartDT;
-    ASDU GInter;
     StartDT.append(I104_START);
     StartDT.append(0x04);
     StartDT.append(I104_STARTDT_ACT);
@@ -862,7 +880,7 @@ void IEC104Thread::SendTestAct()
     }
     else
         NoAnswer = 1;
-
+    qDebug("ConTimer->stop()");
     ConTimer->stop();
     APCI GI;
     GI.append(I104_START);

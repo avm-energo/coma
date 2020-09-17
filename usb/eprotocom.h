@@ -5,6 +5,7 @@
 #include "../gen/s2.h"
 #include "eusbworker.h"
 
+#include <QEventLoop>
 #include <QThread>
 
 //#define NOTIMEOUT
@@ -18,6 +19,7 @@ public:
     static EProtocom *GetInstance(QObject *parent = nullptr);
 
     bool Connect();
+    bool Reconnect();
     void Disconnect();
 
     QStringList DevicesFound() const;
@@ -36,8 +38,7 @@ public:
 
     // void Timeout();
 
-    // bool isConnected() const;
-    // void setConnected(bool isConnected);
+    void usbStateChanged(void *message);
 
     static bool isWriteUSBLog();
     static void setWriteUSBLog(bool isWriteUSBLog);
@@ -72,8 +73,6 @@ private:
 
     // bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
 
-    bool m_connected;
-
     QByteArray InData, OutData;
     QByteArray ReadDataChunk;
     QByteArray WriteData;
@@ -81,7 +80,9 @@ private:
     DeviceConnectStruct UsbPort;
 
     LogClass *CnLog;
-    QTimer *TTimer, *OscTimer;
+    QTimer *OscTimer;
+    QTimer *m_waitTimer;
+    QEventLoop m_loop;
 
     quint16 OscNum;
 
@@ -96,7 +97,6 @@ private:
     void SendErr();
     bool GetLength(); // ok = 1 -> обработка посылки вида SS OK ..., ok = 0 -> вида SS c L L ... возвращаемое
                       // значение = false -> неправильная длина
-    void ClosePort();
     void CheckForData();
     void OscTimerTimeout();
     void ParseIncomeData(QByteArray ba);
@@ -112,6 +112,4 @@ signals:
     void writebytessignal(QByteArray); // for TE updating
     void ShowError(QString message);
     void QueryFinished();
-    //  void Finished();
-    void ReconnectSignal();
 };

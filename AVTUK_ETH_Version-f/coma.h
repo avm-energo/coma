@@ -25,13 +25,6 @@
 #include <QMainWindow>
 #include <QResizeEvent>
 
-#ifdef _WIN32
-// clang-format off
-#include <windows.h>
-// Header dbt must be the last header, thanx to microsoft
-#include <dbt.h>
-// clang-format on
-#endif
 enum INTERVAL
 {
     RECONNECT = 3000,

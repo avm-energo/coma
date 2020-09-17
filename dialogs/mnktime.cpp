@@ -4,19 +4,15 @@
 #include "../gen/error.h"
 #include "../gen/timefunc.h"
 #include "../usb/commands.h"
-#include "../widgets/ecombobox.h"
 #include "../widgets/wd_func.h"
 
 #include <QGridLayout>
 #include <QGroupBox>
-#include <QLineEdit>
 #include <QMessageBox>
-#include <QPushButton>
-#include <QTabWidget>
-#include <QThread>
-#include <QTime>
-#include <QTimer>
 #include <QVBoxLayout>
+#if _MSC_VER && !__INTEL_COMPILER
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
 
 MNKTime::MNKTime(QWidget *parent) : QDialog(parent)
 {

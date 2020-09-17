@@ -7,13 +7,6 @@
 #include "../widgets/wd_func.h"
 #include "configkxx.h"
 
-#include <QDialog>
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QLabel>
-#include <QPushButton>
-#include <QStackedWidget>
-#include <QVBoxLayout>
 #include <QWidget>
 
 class ConfDialogKxx : public QWidget

@@ -3,6 +3,7 @@
 #define MAXBYTEARRAY 65535
 
 #include "config.h"
+
 #include <QDialog>
 
 #define MAXCONFSIZE 4096 // максимальный размер файла конфигурации
@@ -12,7 +13,6 @@ class AbstractConfDialog : public QDialog
     Q_OBJECT
 public:
     explicit AbstractConfDialog(QWidget *parent = nullptr);
-    virtual ~AbstractConfDialog(){};
 
     QVector<S2::DataRec> *S2Config;
 
