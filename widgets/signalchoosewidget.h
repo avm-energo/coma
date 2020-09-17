@@ -12,9 +12,8 @@ public:
 
 signals:
     void SignalChoosed(QString signame); // при выборе сигнала - требуется выделить тренд
-    void SignalToggled(QString signame,
-        bool isChecked); // при включении или отключении \
-                                                         // вставить или убрать из осциллограммы
+                                         // при включении или отключении вставить или убрать из осциллограммы
+    void SignalToggled(QString signame, bool isChecked);
 
 public slots:
     void SetChecked(QString signame, bool checked);

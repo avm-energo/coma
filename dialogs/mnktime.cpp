@@ -27,7 +27,9 @@ MNKTime::MNKTime(QWidget *parent) : QDialog(parent)
     SetupUI();
 }
 
-MNKTime::~MNKTime() { }
+MNKTime::~MNKTime()
+{
+}
 
 void MNKTime::SetupUI()
 {
@@ -50,9 +52,6 @@ void MNKTime::SetupUI()
     QString paramcolor = Colors::MAINWINCLR;
 
     QGroupBox *gb = new QGroupBox;
-    vlyout1 = new QVBoxLayout;
-    vlyout2 = new QVBoxLayout;
-    glyout = new QGridLayout;
 
     glyout->addWidget(WDFunc::NewLBL(this, "Часовой пояс:"), row, 1, 1, 1);
     QStringList cbl = QStringList() << "Местное время"
@@ -178,8 +177,8 @@ void MNKTime::Write_Date()
 void MNKTime::FillTimeFrom104(IEC104Thread::BS104Signals *Time)
 {
     uint unixtimestamp = 0;
-    QString qStr;
-    QDateTime myDateTime;
+    // QString qStr;
+    // QDateTime myDateTime;
     int startadr = 0;
     memcpy(&startadr, &(Time->BS.SigAdr[0]), sizeof(Time->BS.SigAdr));
 
@@ -226,6 +225,12 @@ void MNKTime::FillTimeFromModBus(QList<ModBus::BSISignalStruct> Time)
     }
 }
 
-void MNKTime::ErrorRead() { WDFunc::SetLEData(this, "systime2", "Ошибка чтения"); }
+void MNKTime::ErrorRead()
+{
+    WDFunc::SetLEData(this, "systime2", "Ошибка чтения");
+}
 
-void MNKTime::TimeWritten() { QMessageBox::information(this, "Успешно", "Время записано успешно"); }
+void MNKTime::TimeWritten()
+{
+    QMessageBox::information(this, "Успешно", "Время записано успешно");
+}

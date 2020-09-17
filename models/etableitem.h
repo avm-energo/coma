@@ -5,6 +5,7 @@
 #include <QFont>
 #include <QIcon>
 #include <QStringList>
+#include <QVariant>
 
 class ETableItem
 {
@@ -26,7 +27,7 @@ public:
     int TextAlignment(int column);
 
 private:
-    QStringList itemData; // содержимое строки
+    QStringList itemData;      // содержимое строки
     QList<QVariant> itemUData; // содержимое по UserRole
     QList<QColor> itemColor;
     QList<QFont> itemFont;

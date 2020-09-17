@@ -46,6 +46,7 @@
 #include <QToolBar>
 #include <QtGlobal>
 
+#ifdef _WIN32
 void registerForDeviceNotification(Coma *ptr)
 {
     DEV_BROADCAST_DEVICEINTERFACE devInt;
@@ -57,6 +58,7 @@ void registerForDeviceNotification(Coma *ptr)
     HDEVNOTIFY blub;
     blub = RegisterDeviceNotification((HDEVNOTIFY)ptr->winId(), &devInt, DEVICE_NOTIFY_WINDOW_HANDLE);
 }
+#endif
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
 {
@@ -140,7 +142,7 @@ void Coma::SetupUI()
         dlg->show();
         this->SaveSettings();
     });
-    tb->addAction(QIcon("images/skull-and-bones.png"), "Соединение", [this]() {
+    tb->addAction(QIcon("images/skull-and-bones.png"), "Соединение", []() {
         ErrorDialog *dlg = new ErrorDialog;
         dlg->setAttribute(Qt::WA_DeleteOnClose);
         dlg->show();
@@ -248,11 +250,11 @@ void Coma::StartWork()
         QEventLoop loop;
         Cancelled = false;
         ConnectDialog *dlg = new ConnectDialog;
-        connect(dlg, &ConnectDialog::Accepted, [this, dlg](ConnectDialog::ConnectStruct *st) {
+        connect(dlg, &ConnectDialog::Accepted, [this](ConnectDialog::ConnectStruct *st) {
             this->ConnectSettings = *st;
             emit CloseConnectDialog();
         });
-        connect(dlg, &ConnectDialog::Cancelled, [this, dlg]() {
+        connect(dlg, &ConnectDialog::Cancelled, [this]() {
             this->Cancelled = true;
             emit CloseConnectDialog();
         });
@@ -337,6 +339,8 @@ void Coma::StartWork()
         ActiveThreads |= THREAD::MODBUS;
         break;
     }
+    default:
+        qFatal("Connection type error");
     }
     QElapsedTimer tmr;
     tmr.start();
@@ -445,7 +449,7 @@ void Coma::StartWork()
             }
 
             break;
-        };
+        }
     }
 
     if (Board::GetInstance()->interfaceType() != Board::InterfaceType::RS485)
@@ -475,7 +479,7 @@ void Coma::StartWork()
     if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
         BdaTimer->start();
     auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
-    msgSerialNumber->setText(QString::number(ModuleBSI::ModuleBsi.SerialNum, 16));
+    msgSerialNumber->setText(QString::number(ModuleBSI::SerialNum(BT_NONE), 16));
 }
 
 void Coma::setupConnections()
@@ -485,6 +489,7 @@ void Coma::setupConnections()
     switch (Board::GetInstance()->typeB())
     {
     case Config::MTB_A2:
+    {
         switch (Board::GetInstance()->typeM())
         {
         case Config::MTM_84:
@@ -499,11 +504,11 @@ void Coma::setupConnections()
 
             WarnAlarmKIVDialog = new WarnAlarmKIV(Alarm);
             connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKIVDialog, &QDialog::show);
-            connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKIVDialog, &WarnAlarmKIV::Update);
+            connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKIVDialog, &AbstractWarnAlarm::Update);
 
             AvarAlarmKIVDialog = new AvarAlarmKIV(Alarm);
             connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKIVDialog, &QDialog::show);
-            connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVDialog, &AvarAlarmKIV::Update);
+            connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVDialog, &AbstractAvarAlarm::Update);
 
             connect(Alarm, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
             connect(Alarm, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
@@ -538,6 +543,7 @@ void Coma::setupConnections()
         }
         }
         break;
+    }
     case Config::MTB_A3:
         switch (Board::GetInstance()->typeM())
         {
@@ -557,10 +563,10 @@ void Coma::setupConnections()
             corDialog = new CorDialogKTF;
 
             break;
-        };
+        }
 
         break;
-    };
+    }
 
     connect(this, &Coma::ClearBsi, infoDialog, &InfoDialog::ClearBsi);
     connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
@@ -594,6 +600,7 @@ void Coma::setupConnections()
         connect(Ch104, &IEC104::SendS2fromiec104, confMDialog, &AbstractConfDialog::FillConf);
         connect(confMDialog, &AbstractConfDialog::writeConfFile, Ch104, &IEC104::FileReady);
         connect(Ch104, &IEC104::SendConfMessageOk, confMDialog, &AbstractConfDialog::WriteConfMessageOk);
+        // confMDialog->staticMetaObject;
         break;
     }
     case Board::InterfaceType::RS485:
@@ -633,6 +640,10 @@ void Coma::PrepareDialogs()
 
 void Coma::CloseDialogs()
 {
+    if (AlarmStateAllDialog != nullptr)
+    {
+        AlrmTimer->stop();
+    }
     QList<QDialog *> widgets = this->findChildren<QDialog *>();
     // this->findChildren
     for (auto &i : widgets)
@@ -729,9 +740,10 @@ void Coma::NewTimersBda()
 
 bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
 {
-    Q_UNUSED(result);
+    Q_UNUSED(result)
     if (eventType == "windows_generic_MSG")
     {
+#ifdef _WIN32
         MSG *msg = static_cast<MSG *>(message);
         int msgType = msg->message;
         if (msgType == WM_DEVICECHANGE)
@@ -792,6 +804,7 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
                 break;
             }
         }
+#endif
     }
     return false;
 }
@@ -927,9 +940,11 @@ void Coma::setConf(unsigned char typeConf)
     case 0x01:
         if (mainConfDialog != nullptr)
             mainConfDialog->SetDefConf();
+        break;
     case 0x02:
         if (confBDialog != nullptr)
             confBDialog->SetDefConf();
+        break;
     case 0x03:
         if (confMDialog != nullptr)
             confMDialog->SetDefConf();

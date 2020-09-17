@@ -424,8 +424,6 @@ QWidget *CheckKDV::Bd5W(QWidget *parent)
 
     gb = new QGroupBox("Данные по напряжению");
     gb->setFont(ffont);
-    vlyout = new QVBoxLayout;
-    glyout = new QGridLayout;
 
     glyout->addWidget(WDFunc::NewLBL(parent, "U0, кВ"), 0, 0, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1020), ValuesFormat,

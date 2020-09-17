@@ -72,17 +72,12 @@ void ConfDialogKDV::SetupUI()
     QString paramcolor = Colors::MAINWINCLR;
     QFont font;
 
-    QGroupBox *gb = new QGroupBox;
-
     int row = 0;
-    gb = new QGroupBox("Аналоговые параметры");
+    QGroupBox *gb = new QGroupBox("Аналоговые параметры");
     font.setFamily("Times");
     font.setPointSize(11);
     // setFont(font);
     gb->setFont(font);
-    gridlyout = new QGridLayout;
-    vlyout1 = new QVBoxLayout;
-    vlyout2 = new QVBoxLayout;
 
     QLabel *lbl = new QLabel("Тип контролируемого оборудования:");
     gridlyout->addWidget(lbl, row, 1, 1, 1, Qt::AlignLeft);
@@ -592,7 +587,9 @@ void ConfDialogKDV::FillBack()
     ConfKxx->FillBack();
 }
 
-void ConfDialogKDV::CheckConf() { }
+void ConfDialogKDV::CheckConf()
+{
+}
 
 void ConfDialogKDV::SetDefConf()
 {
@@ -602,6 +599,12 @@ void ConfDialogKDV::SetDefConf()
     Fill();
 }
 
-void ConfDialogKDV::Start_Timer() { timerRead->start(1000); }
+void ConfDialogKDV::Start_Timer()
+{
+    timerRead->start(1000);
+}
 
-void ConfDialogKDV::Stop_Timer() { timerRead->stop(); }
+void ConfDialogKDV::Stop_Timer()
+{
+    timerRead->stop();
+}

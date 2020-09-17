@@ -38,8 +38,6 @@ QWidget *CheckVibrKDV::Bd1W(QWidget *parent)
 
     gb = new QGroupBox("Среднеквадратичные значения вибросигналов, Вольт");
     gb->setFont(ffont);
-    vlyout = new QVBoxLayout;
-    glyout = new QGridLayout;
 
     column = 0;
     for (i = 0; i < 3; i++)
@@ -100,8 +98,6 @@ QWidget *CheckVibrKDV::Bd2W(QWidget *parent)
 
     gb = new QGroupBox("Среднеквадратичные значения виброускорений, м/с2");
     gb->setFont(ffont);
-    vlyout = new QVBoxLayout;
-    glyout = new QGridLayout;
 
     column = 0;
     for (i = 0; i < 3; i++)
@@ -239,8 +235,6 @@ QWidget *CheckVibrKDV::Bd3W(QWidget *parent)
 
     gb = new QGroupBox("Скорость изменения среднеквадратичного значения виброускорения, м/с2/час");
     gb->setFont(ffont);
-    vlyout = new QVBoxLayout;
-    glyout = new QGridLayout;
 
     column = 0;
     for (i = 0; i < 3; i++)

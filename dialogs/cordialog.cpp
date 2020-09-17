@@ -52,7 +52,9 @@ CorDialog::CorDialog(QWidget *parent) : AbstractCorDialog(parent)
     // MessageTimer->start();
 }
 
-CorDialog::~CorDialog() { }
+CorDialog::~CorDialog()
+{
+}
 
 void CorDialog::SetupUI()
 {
@@ -65,7 +67,6 @@ void CorDialog::SetupUI()
     tv->setObjectName("cor");
     int row = 0;
     QString paramcolor = Colors::MAINWINCLR;
-    QPushButton *pb = new QPushButton();
 
     glyout->addWidget(WDFunc::NewLBL(this, "Начальные значения емкостей вводов, пФ:"), row, 1, 1, 1);
 
@@ -103,8 +104,7 @@ void CorDialog::SetupUI()
     row++;
 
     // QString tmps = ((DEVICETYPE == DEVICETYPE_MODULE) ? "модуля" : "прибора");
-
-    pb = new QPushButton("Прочитать из модуля");
+    QPushButton *pb = new QPushButton("Прочитать из модуля");
     connect(pb, SIGNAL(clicked()), this, SLOT(GetCorBdButton()));
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
@@ -213,7 +213,7 @@ void CorDialog::GetCorBd(int index)
                 if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
                 {
                     FillCor();
-                QMessageBox::information(this, "INFO", "Прочитано успешно");
+                    QMessageBox::information(this, "INFO", "Прочитано успешно");
                 }
                 break;
             }
@@ -243,7 +243,7 @@ void CorDialog::GetCorBdButton()
             if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
             {
                 FillCor();
-            QMessageBox::information(this, "INFO", "Прочитано успешно");
+                QMessageBox::information(this, "INFO", "Прочитано успешно");
             }
             break;
         }
@@ -324,7 +324,7 @@ void CorDialog::WriteCor()
             // if (MainInterface == I_ETHERNET)
             {
                 emit SendCom45(SETINITREG);
-            QMessageBox::information(this, "INFO", "Задано успешно");
+                QMessageBox::information(this, "INFO", "Задано успешно");
                 emit CorReadRequest();
                 break;
             }
@@ -335,7 +335,7 @@ void CorDialog::WriteCor()
                 info.size = 1;
                 info.adr = SETINITREG;
                 emit RS485WriteCorBd(info, nullptr);
-            QMessageBox::information(this, "INFO", "Задано успешно");
+                QMessageBox::information(this, "INFO", "Задано успешно");
                 info.size = (sizeof(CorData) / 4);
                 info.adr = 4000;
                 emit RS485ReadCorBd(info);
@@ -349,11 +349,11 @@ void CorDialog::WriteCor()
                     if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
                     {
                         FillCor();
-                    QMessageBox::information(this, "INFO", "Задано и прочитано успешно");
+                        QMessageBox::information(this, "INFO", "Задано и прочитано успешно");
                     }
                     // }
                     else
-                QMessageBox::information(this, "INFO", "Ошибка");
+                        QMessageBox::information(this, "INFO", "Ошибка");
                 break;
             }
         }
@@ -374,9 +374,9 @@ void CorDialog::SetCor()
         // else if (MainInterface == I_USB)
         {
             if (Commands::WriteCom(4) == NOERROR)
-            QMessageBox::information(this, "INFO", "Записано успешно");
+                QMessageBox::information(this, "INFO", "Записано успешно");
             else
-            QMessageBox::information(this, "INFO", "Ошибка");
+                QMessageBox::information(this, "INFO", "Ошибка");
             break;
         }
     }
@@ -408,9 +408,9 @@ void CorDialog::ResetCor()
             // else if (MainInterface == I_USB)
             {
                 if (Commands::WriteCom(5) == NOERROR)
-                QMessageBox::information(this, "INFO", "Сброшено успешно");
+                    QMessageBox::information(this, "INFO", "Сброшено успешно");
                 else
-                QMessageBox::information(this, "INFO", "Ошибка");
+                    QMessageBox::information(this, "INFO", "Ошибка");
 
                 if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == NOERROR)
                     FillCor();
@@ -433,18 +433,17 @@ float CorDialog::ToFloat(QString text)
     return tmpf;
 }
 
-void CorDialog::MessageOk() { QMessageBox::information(this, "INFO", "Записано успешно"); }
+void CorDialog::MessageOk()
+{
+    QMessageBox::information(this, "INFO", "Записано успешно");
+}
 
 void CorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
 {
-    IEC104Thread::FlSignals104 sig = *new IEC104Thread::FlSignals104;
-    int i;
-
     if (((Signal)->fl.SigAdr >= 4000) && ((Signal)->fl.SigAdr <= 4010))
     {
-        for (i = 0; i < Signal->SigNumber; i++)
+        for (int i = 0; i < Signal->SigNumber; i++)
         {
-            sig = *(Signal + i);
             // if((Signal+i)->fl.SigAdr >= 1000 || (Signal+i)->fl.SigAdr <= 1009)
             FillBd(
                 this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal + i)->fl.SigVal));
@@ -459,10 +458,7 @@ void CorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
 
 void CorDialog::FillBd(QWidget *parent, QString Name, QString Value)
 {
-    float fl;
-    QLocale german(QLocale::German);
-    fl = german.toDouble(Value);
-    WDFunc::SetSPBData(parent, Name, fl);
+    WDFunc::SetSPBData(parent, Name, Value.toDouble());
 }
 
 void CorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
@@ -574,4 +570,7 @@ void CorDialog::TimerTimeout()
    QMessageBox::information(this, "Успешно", "Записано успешно!");
 } */
 
-void CorDialog::ErrorRead() { QMessageBox::information(this, "Ошибка", "Ошибка чтения"); }
+void CorDialog::ErrorRead()
+{
+    QMessageBox::information(this, "Ошибка", "Ошибка чтения");
+}

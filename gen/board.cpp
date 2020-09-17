@@ -22,31 +22,31 @@ Board *Board::GetInstance(QObject *obj)
     return m_instance;
 }
 
-quint32 Board::typeB() const
+quint16 Board::typeB() const
 {
     return m_typeB;
 }
 
-void Board::setTypeB(const quint32 &typeB)
+void Board::setTypeB(const quint16 &typeB)
 {
     m_typeB = typeB;
     emit typeChanged();
 }
 
-quint32 Board::typeM() const
+quint16 Board::typeM() const
 {
     return m_typeM;
 }
 
-void Board::setTypeM(const quint32 &typeM)
+void Board::setTypeM(const quint16 &typeM)
 {
     m_typeM = typeM;
     emit typeChanged();
 }
 
-quint32 Board::type() const
+quint16 Board::type() const
 {
-    return quint32((typeB() << 8) + typeM());
+    return quint16((typeB() << 8) + typeM());
 }
 
 Board::InterfaceType Board::interfaceType() const
@@ -62,6 +62,12 @@ void Board::setInterfaceType(Board::InterfaceType interface)
 
 Board::Board(QObject *parent)
 {
+    m_typeB = 0;
+    m_typeM = 0;
+    m_interfaceType = Unknown;
+    m_connectionState = ConnectionState::ClosingState;
+    m_boardType = BoardType::NONE;
+    m_deviceType = DeviceType::Module;
     Q_UNUSED(parent)
 }
 

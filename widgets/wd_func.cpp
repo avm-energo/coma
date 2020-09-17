@@ -15,6 +15,9 @@
 #include <QTextEdit>
 #include <QtMath>
 
+#ifdef __GNUC__
+#include <cfloat>
+#endif
 QLineEdit *WDFunc::NewLE(QWidget *w, const QString &lename, const QString &letext, const QString &lecolor)
 {
     QLineEdit *le = new QLineEdit(w);
@@ -409,7 +412,7 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
     msgConnectionType->setObjectName("ConnectionType");
 
     QObject::connect(Board::GetInstance(), &Board::typeChanged, [msgModel, msgSerialNumber]() {
-        quint32 serialNumber = Board::GetInstance()->type();
+        quint16 serialNumber = Board::GetInstance()->type();
         QString deviceName = QVariant::fromValue(Board::DeviceModel(serialNumber)).toString();
         msgModel->setText(deviceName);
     });
@@ -444,7 +447,7 @@ QPixmap WDFunc::NewCircle(QColor color, float radius)
     gradient.setColorAt(1, Qt::black);
     painter.setBrush(QBrush(gradient));
     painter.drawEllipse(0, 0, myPix.width() - painter.pen().width(), myPix.height() - painter.pen().width());
-    ;
+
     return myPix;
 }
 

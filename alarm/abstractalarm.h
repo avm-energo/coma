@@ -59,18 +59,6 @@ class AbstractAlarm : public QDialog
     Q_OBJECT
 public:
     AbstractAlarm(QDialog *parent = nullptr);
-
-    AlarmClass *Alarm;
-
-    const quint32 PredBSIMask = 0x00005F55;
-    const quint32 AvarBSIMask = 0x000020AA;
-
-    quint8 PredAlarmEvents[20];
-    quint8 AvarAlarmEvents[20];
-
-    quint8 PredAlarmEventsKTF[15];
-    quint8 AvarAlarmEventsKTF[15];
-
     struct Bd11
     {
         quint32 dev;
@@ -85,20 +73,48 @@ public:
         quint32 Alarm;
     };
 
-    QWidget *Wpred;
-    QWidget *Walarm;
-
 public slots:
 
-    virtual void AlarmState() = 0;
-    virtual void WarnAlarmState() = 0;
-    virtual void AvarState() = 0;
+    virtual void Update(QList<bool> states) = 0;
 
-    virtual void Update(QList<bool>) = 0;
-
-private:
 protected:
     void showEvent(QShowEvent *e);
+    void UpdatePixmaps(quint32 alarm, int counter);
+    void SetupAlarm(const QStringList &events, int counters);
+
+    AlarmClass *Alarm;
+
+    const quint32 PredBSIMask = 0x00005F55;
+    const quint32 AvarBSIMask = 0x000020AA;
+
+    quint8 PredAlarmEvents[20];
+    quint8 AvarAlarmEvents[20];
+
+    quint8 PredAlarmEventsKTF[15];
+    quint8 AvarAlarmEventsKTF[15];
+
+    QWidget *Wpred;
+    QWidget *Walarm;
+};
+
+class AbstractWarnAlarm : public AbstractAlarm
+{
+    Q_OBJECT
+public:
+    explicit AbstractWarnAlarm(QDialog *parent = nullptr);
+public slots:
+    virtual void WarnAlarmState() = 0;
+    void Update(QList<bool> states) override;
+};
+
+class AbstractAvarAlarm : public AbstractAlarm
+{
+    Q_OBJECT
+public:
+    explicit AbstractAvarAlarm(QDialog *parent = nullptr);
+public slots:
+    virtual void AvarAlarmState() = 0;
+    void Update(QList<bool> states) override;
 };
 
 #endif // ABSTRACTALARM_H

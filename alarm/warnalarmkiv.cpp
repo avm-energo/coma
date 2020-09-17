@@ -10,7 +10,7 @@
 
 #include <QBoxLayout>
 
-WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm, QDialog *parent) : AbstractAlarm(parent)
+WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm, QDialog *parent) : AbstractWarnAlarm(parent)
 {
     Alarm = alarm;
     WarnAlarmState();
@@ -18,11 +18,6 @@ WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm, QDialog *parent) : AbstractAlarm(p
 
 void WarnAlarmKIV::WarnAlarmState()
 {
-    // QDialog *dlg = new QDialog;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    QVBoxLayout *vlayout = new QVBoxLayout;
-
     const QStringList events = QStringList() << "Отсутствует сигнал напряжения фазы A                   "
                                              << "Отсутствует сигнал напряжения фазы B                   "
                                              << "Отсутствует сигнал напряжения фазы С                   "
@@ -41,45 +36,5 @@ void WarnAlarmKIV::WarnAlarmState()
                                              << "Сигнализация по приращению C ввода фазы C              "
                                              << "Не заданы паспортные значения                          "
                                              << "Сигнализация по повышенному небалансу токов            ";
-    QWidget *w = new QWidget;
-    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
-
-    for (int i = 0; i < Alarm->MapAlarm[MTYPE_KIV].warnCounts; ++i)
-    {
-        hlyout = new QHBoxLayout;
-        hlyout->addWidget(WDFunc::NewLBL(w, "", "transparent", QString::number(i)));
-        hlyout->addWidget(WDFunc::NewLBLT(w, events.at(i), "", "", ""), 1);
-        vlayout->addLayout(hlyout);
-    }
-
-    w->setLayout(vlayout);
-
-    lyout->addWidget(w);
-    QPushButton *pb = new QPushButton("Ok");
-    connect(pb, SIGNAL(clicked()), this, SLOT(hide()));
-    lyout->addWidget(pb, 0);
-    setLayout(lyout);
-}
-
-void WarnAlarmKIV::AlarmState()
-{
-}
-void WarnAlarmKIV::AvarState()
-{
-}
-
-void WarnAlarmKIV::Update(QList<bool> states)
-{
-    int i = 0;
-    // 25 оптимальная константа
-    float circleRadius = CIRCLE_RADIUS;
-    if (states.isEmpty())
-        return;
-    for (i = 0; i < Alarm->MapAlarm[MTYPE_KIV].warnCounts; i++)
-    {
-        quint32 alarm = states.at(i);
-
-        alarm ? WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::yellow, circleRadius))
-              : WDFunc::SetLBLImage(this, (QString::number(i)), &WDFunc::NewCircle(Qt::green, circleRadius));
-    }
+    SetupAlarm(events, Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts);
 }

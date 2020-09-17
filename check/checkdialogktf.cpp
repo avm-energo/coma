@@ -72,14 +72,20 @@ QWidget *CheckDialogKTF::BdUI(int bdnum)
     }
 }
 
-void CheckDialogKTF::RefreshAnalogValues(int bdnum) { Q_UNUSED(bdnum) }
+void CheckDialogKTF::RefreshAnalogValues(int bdnum)
+{
+    Q_UNUSED(bdnum)
+}
 
-void CheckDialogKTF::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
+void CheckDialogKTF::PrepareHeadersForFile(int row)
+{
+    Q_UNUSED(row)
+}
 
 void CheckDialogKTF::WriteToFile(int row, int bdnum)
 {
-    Q_UNUSED(row);
-    Q_UNUSED(bdnum);
+    Q_UNUSED(row)
+    Q_UNUSED(bdnum)
 }
 QWidget *CheckDialogKTF::CustomTab()
 {
@@ -97,13 +103,25 @@ QWidget *CheckDialogKTF::CustomTab()
     w->setLayout(lyout);
     return nullptr;
 }
-void CheckDialogKTF::ChooseValuesToWrite() { }
-void CheckDialogKTF::SetDefaultValuesToWrite() { }
-void CheckDialogKTF::PrepareAnalogMeasurements() { }
+void CheckDialogKTF::ChooseValuesToWrite()
+{
+}
+void CheckDialogKTF::SetDefaultValuesToWrite()
+{
+}
+void CheckDialogKTF::PrepareAnalogMeasurements()
+{
+}
 
-void CheckDialogKTF::StartBdMeasurements() { BdTimer->start(); }
+void CheckDialogKTF::StartBdMeasurements()
+{
+    BdTimer->start();
+}
 
-void CheckDialogKTF::StopBdMeasurements() { BdTimer->stop(); }
+void CheckDialogKTF::StopBdMeasurements()
+{
+    BdTimer->stop();
+}
 
 void CheckDialogKTF::USBUpdate()
 {
@@ -166,17 +184,17 @@ void CheckDialogKTF::USBUpdate()
 
 void CheckDialogKTF::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
 {
-    IEC104Thread::FlSignals104 sig = *new IEC104Thread::FlSignals104;
-    int i;
-    for (i = 0; i < Signal->SigNumber; i++)
+    for (int i = 0; i < Signal->SigNumber; i++)
     {
-        sig = *(Signal + i);
-
-        ChKTF->FillBd(this, QString::number(sig.fl.SigAdr), WDFunc::StringValueWithCheck(sig.fl.SigVal, 3));
+        ChKTF->FillBd(
+            this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal + i)->fl.SigVal, 3));
     }
 }
 
-void CheckDialogKTF::UpdateSponData(IEC104Thread::SponSignals *Signal) { Q_UNUSED(Signal); }
+void CheckDialogKTF::UpdateSponData(IEC104Thread::SponSignals *Signal)
+{
+    Q_UNUSED(Signal)
+}
 
 void CheckDialogKTF::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
@@ -202,6 +220,12 @@ void CheckDialogKTF::onModbusStateChanged()
         QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 
-void CheckDialogKTF::SetPredAlarmColor(quint8 *PredAlarm) { Q_UNUSED(PredAlarm); }
+void CheckDialogKTF::SetPredAlarmColor(quint8 *PredAlarm)
+{
+    Q_UNUSED(PredAlarm)
+}
 
-void CheckDialogKTF::SetAlarmColor(quint8 *Alarm) { Q_UNUSED(Alarm); }
+void CheckDialogKTF::SetAlarmColor(quint8 *Alarm)
+{
+    Q_UNUSED(Alarm)
+}

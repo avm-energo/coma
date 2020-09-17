@@ -2,15 +2,19 @@
 
 ConfigKxx::ConfigKxx(QVector<S2::DataRec> *config)
 {
-    for (int i = 0; i < config->size(); ++i)
-    {
-        if (config->at(i).id == 0xFFFFFFFF)
-        {
-            config->remove(i);
-            --i;
-        }
-    }
-
+    //    for (int i = 0; i < config->size(); ++i)
+    //    {
+    //        if (config->at(i).id == 0xFFFFFFFF)
+    //        {
+    //            config->remove(i);
+    //            --i;
+    //        }
+    //    }
+    /// TODO Check this
+    config->erase(std::remove_if(config->begin(), config->end(), [](S2::DataRec i) { return i.id == 0xFFFFFFFF; }),
+        config->end());
+    /// TODO end
+    ///
     config->append({ BCI_RTERM, sizeof(TempConf.RTerm), &TempConf.RTerm });
     config->append({ BCI_W100, sizeof(TempConf.W100), &TempConf.W100 });
 

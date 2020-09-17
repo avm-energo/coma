@@ -73,7 +73,7 @@ int fwupdialog::LoadFW()
     //    quint32 tmpi = 0;
     // void *Rptr = static_cast<void *>(&PV_file.Type);
     // tmpi = sizeof(PV_file.Type)+sizeof(PV_file.File.FileDatHeader);
-    QVector<S2::DataRec> S2DR;
+    // QVector<S2::DataRec> S2DR;
 
     if (WriteCheckPassword() == NOERROR)
     {

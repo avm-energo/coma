@@ -14,7 +14,7 @@ QMutex EProtocom::mutex_;
 
 EProtocom::EProtocom(QObject *parent)
 {
-    Q_UNUSED(parent);
+    Q_UNUSED(parent)
     QString tmps = "=== CLog started ===\n";
     CnLog = new LogClass;
     CnLog->Init("canal.log");
@@ -430,7 +430,6 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             }
             if (ReadDataChunkLength == 0)
             {
-                rdsize = 0;
                 Finish(NOERROR);
                 return;
             }
@@ -451,7 +450,6 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             }
             if (ReadDataChunkLength == 0)
             {
-                rdsize = 0;
                 Finish(NOERROR);
                 return;
             }
@@ -783,7 +781,7 @@ void EProtocom::Disconnect()
 
 QByteArray EProtocom::RawRead(int bytes)
 {
-    Q_UNUSED(bytes);
+    Q_UNUSED(bytes)
     return QByteArray();
 }
 

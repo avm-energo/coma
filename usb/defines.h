@@ -138,4 +138,6 @@ struct DeviceConnectStruct
 #define TUNE_MODE_1000 1
 #define TUNE_MODE_100 2
 
+#ifndef __GNUC__
 #define MAXFLOAT 3.40282347E+38F
+#endif

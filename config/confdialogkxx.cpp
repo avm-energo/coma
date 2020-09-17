@@ -21,7 +21,6 @@ QWidget *ConfDialogKxx::SetupComParam(QObject *parent)
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
     QString Str;
-    QLocale german(QLocale::German);
     QFont font;
     font.setFamily("Times");
     font.setPointSize(11);
@@ -33,9 +32,9 @@ QWidget *ConfDialogKxx::SetupComParam(QObject *parent)
     {
         Kxx->Com_param.IP[i] = 0;
         if (i == 3)
-            Str.append(german.toString(Kxx->Com_param.IP[i]));
+            Str.append(QString::number(Kxx->Com_param.IP[i]));
         else
-            Str.append(german.toString(Kxx->Com_param.IP[i]) + ".");
+            Str.append(QString::number(Kxx->Com_param.IP[i]) + ".");
     }
 
     glyout->addWidget(WDFunc::NewLBL(this, "IP адрес устройства:"), row, 0, 1, 1, Qt::AlignLeft);
@@ -47,9 +46,9 @@ QWidget *ConfDialogKxx::SetupComParam(QObject *parent)
     {
         Kxx->Com_param.Mask[i] = 0;
         if (i == 3)
-            Str.append(german.toString(Kxx->Com_param.Mask[i]));
+            Str.append(QString::number(Kxx->Com_param.Mask[i]));
         else
-            Str.append(german.toString(Kxx->Com_param.Mask[i]) + ".");
+            Str.append(QString::number(Kxx->Com_param.Mask[i]) + ".");
     }
     glyout->addWidget(WDFunc::NewLBL(this, "Маска:"), row, 0, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLE(this, "Mask_ID", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
@@ -60,9 +59,9 @@ QWidget *ConfDialogKxx::SetupComParam(QObject *parent)
     {
         Kxx->Com_param.GateWay[i] = 0;
         if (i == 3)
-            Str.append(german.toString(Kxx->Com_param.GateWay[i]));
+            Str.append(QString::number(Kxx->Com_param.GateWay[i]));
         else
-            Str.append(german.toString(Kxx->Com_param.GateWay[i]) + ".");
+            Str.append(QString::number(Kxx->Com_param.GateWay[i]) + ".");
     }
     glyout->addWidget(WDFunc::NewLBL(this, "Шлюз:"), row, 0, 1, 1, Qt::AlignLeft);
     glyout->addWidget(WDFunc::NewLE(this, "GW_ID", Str, paramcolor), row, 1, 1, 1, Qt::AlignLeft);
@@ -77,9 +76,9 @@ QWidget *ConfDialogKxx::SetupComParam(QObject *parent)
     {
         Kxx->Com_param.SNTP[i] = 0;
         if (i == 3)
-            Str.append(german.toString(Kxx->Com_param.SNTP[i]));
+            Str.append(QString(Kxx->Com_param.SNTP[i]));
         else
-            Str.append(german.toString(Kxx->Com_param.SNTP[i]) + ".");
+            Str.append(QString(Kxx->Com_param.SNTP[i]) + ".");
     }
 
     glyout->addWidget(WDFunc::NewLBL(this, "Адрес SNTP сервера:"), row, 0, 1, 1, Qt::AlignLeft);
@@ -104,7 +103,7 @@ QWidget *ConfDialogKxx::SetupModBus(QObject *parent)
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox;
     QGridLayout *glyout = new QGridLayout;
-    EComboBox *cb = new EComboBox;
+    EComboBox *cb;
     QStringList cbl;
     QString Str;
     glyout->setColumnStretch(1, 20);
@@ -160,15 +159,11 @@ QWidget *ConfDialogKxx::SetupModBus(QObject *parent)
     qswt->addWidget(gb);
     WidgetList.append(gb);
 
-    //  <<<<<<<<<<<<<<<<<<<<-
-
-    row = 0;
     gb = new QGroupBox("Настройки ModBus");
     gb->setFont(font);
     vlyout2 = new QVBoxLayout;
     glyout = new QGridLayout;
-    QLabel *line1 = new QLabel();
-    line1 = new QLabel(this);
+    QLabel *line1 = new QLabel(this);
 
     line1->setText("тип датчика");
     line1->setAlignment(Qt::AlignCenter);
@@ -517,24 +512,23 @@ void ConfDialogKxx::Fill()
     //.................................................
 
     QString StrIP, StrMask, StrSNTP, StrGate;
-    QLocale german(QLocale::German);
 
     for (i = 0; i < 4; i++)
     {
 
         if (i == 3)
         {
-            StrIP.append(german.toString(Kxx->Com_param.IP[i]));
-            StrMask.append(german.toString(Kxx->Com_param.Mask[i]));
-            StrGate.append(german.toString(Kxx->Com_param.GateWay[i]));
-            StrSNTP.append(german.toString(Kxx->Com_param.SNTP[i]));
+            StrIP.append(QString::number(Kxx->Com_param.IP[i]));
+            StrMask.append(QString::number(Kxx->Com_param.Mask[i]));
+            StrGate.append(QString::number(Kxx->Com_param.GateWay[i]));
+            StrSNTP.append(QString::number(Kxx->Com_param.SNTP[i]));
         }
         else
         {
-            StrIP.append(german.toString(Kxx->Com_param.IP[i]) + ".");
-            StrMask.append(german.toString(Kxx->Com_param.Mask[i]) + ".");
-            StrGate.append(german.toString(Kxx->Com_param.GateWay[i]) + ".");
-            StrSNTP.append(german.toString(Kxx->Com_param.SNTP[i]) + ".");
+            StrIP.append(QString::number(Kxx->Com_param.IP[i]) + ".");
+            StrMask.append(QString::number(Kxx->Com_param.Mask[i]) + ".");
+            StrGate.append(QString::number(Kxx->Com_param.GateWay[i]) + ".");
+            StrSNTP.append(QString::number(Kxx->Com_param.SNTP[i]) + ".");
         }
     }
 
@@ -701,7 +695,6 @@ void ConfDialogKxx::FillBack()
     QString StrIP, StrMask, StrSNTP, StrGate;
     QString NameIP = "IP_ID", NameMask = "Mask_ID", NameSNTP = "SNTP_ID", NameGate = "GW_ID";
     QStringList inIP, inMask, inSNTP, inGate;
-    QLocale german(QLocale::German);
 
     WDFunc::LE_read_data(ParentSetup, NameIP, StrIP);
     WDFunc::LE_read_data(ParentSetup, NameSNTP, StrSNTP);

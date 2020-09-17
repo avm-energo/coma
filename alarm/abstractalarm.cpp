@@ -28,9 +28,80 @@ AbstractAlarm::AbstractAlarm(QDialog *parent) : QDialog(parent)
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
+void AbstractAlarm::UpdatePixmaps(quint32 alarm, int counter)
+{
+    if (alarm)
+    {
+        auto pixmap = WDFunc::NewCircle(Qt::red, CIRCLE_RADIUS);
+        WDFunc::SetLBLImage(this, (QString::number(counter)), &pixmap);
+    }
+    else
+    {
+        auto pixmap = WDFunc::NewCircle(Qt::green, CIRCLE_RADIUS);
+        WDFunc::SetLBLImage(this, (QString::number(counter)), &pixmap);
+    }
+}
+
+void AbstractAlarm::SetupAlarm(const QStringList &events, int counters)
+{
+    QWidget *w = new QWidget;
+    w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
+
+    QVBoxLayout *lyout = new QVBoxLayout;
+    QVBoxLayout *vlayout = new QVBoxLayout;
+
+    auto max_range = std::min(events.size(), counters);
+    for (int i = 0; i < max_range; ++i)
+    {
+        QHBoxLayout *hlyout = new QHBoxLayout;
+        hlyout->addWidget(WDFunc::NewLBL(w, "", "transparent", QString::number(i)));
+        hlyout->addWidget(WDFunc::NewLBLT(w, events.at(i), "", "", ""), 1);
+        vlayout->addLayout(hlyout);
+    }
+
+    w->setLayout(vlayout);
+
+    lyout->addWidget(w);
+    QPushButton *pb = new QPushButton("Ok");
+    connect(pb, &QAbstractButton::clicked, this, &QWidget::hide);
+    lyout->addWidget(pb, 0);
+    setLayout(lyout);
+}
+
 void AbstractAlarm::showEvent(QShowEvent *e)
 {
     if (isVisible())
         move(QCursor::pos());
     e->accept();
+}
+
+AbstractWarnAlarm::AbstractWarnAlarm(QDialog *parent) : AbstractAlarm(parent)
+{
+}
+
+void AbstractWarnAlarm::Update(QList<bool> states)
+{
+    // qDebug() << Board::GetInstance()->type();
+    if (states.isEmpty())
+        return;
+    auto max_range = std::min(Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts, states.length());
+    for (int i = 0; i < max_range; i++)
+    {
+        UpdatePixmaps(states.at(i), i);
+    }
+}
+AbstractAvarAlarm::AbstractAvarAlarm(QDialog *parent) : AbstractAlarm(parent)
+{
+}
+
+void AbstractAvarAlarm::Update(QList<bool> states)
+{
+    // qDebug() << Board::GetInstance()->type();
+    if (states.isEmpty())
+        return;
+    auto max_range = std::min(Alarm->MapAlarm.value(Board::GetInstance()->type()).avarCounts, states.length());
+    for (int i = 0; i < max_range; i++)
+    {
+        UpdatePixmaps(states.at(i), i);
+    }
 }

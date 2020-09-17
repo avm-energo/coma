@@ -17,10 +17,10 @@ public:
     explicit CorDialogKTF(QWidget *parent = nullptr);
     ~CorDialogKTF();
 
-    int corDIndex;
-    bool ok;
-    int first;
-    QTimer *MessageTimer;
+    //    int corDIndex;
+    //    bool ok;
+    //    int first;
+    //    QTimer *MessageTimer;
 
     // int WriteCheckPassword();
     void GetCorBd(int index);
@@ -49,11 +49,11 @@ private:
     void FillBd(QWidget *parent, QString Name, QString Value);
 
 signals:
-    void SendCom45(quint32);
-    void SendCom50(quint32 adr, float data);
-    void RS485WriteCorBd(ModBus::Information, float *);
-    void RS485ReadCorBd(ModBus::Information);
-    void CorReadRequest();
+    // void SendCom45(quint32);
+    //    void SendCom50(quint32 adr, float data);
+    //    void RS485WriteCorBd(ModBus::Information, float *);
+    //    void RS485ReadCorBd(ModBus::Information);
+    //    void CorReadRequest();
     //   void WritePasswordChecked();
 
 public slots:

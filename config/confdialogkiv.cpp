@@ -32,7 +32,9 @@ ConfDialogKIV::ConfDialogKIV(QVector<S2::DataRec> *S2Config, QWidget *parent) : 
     PrereadConf();
 }
 
-ConfDialogKIV::~ConfDialogKIV() { }
+ConfDialogKIV::~ConfDialogKIV()
+{
+}
 
 void ConfDialogKIV::Fill()
 {
@@ -171,16 +173,11 @@ void ConfDialogKIV::SetupUI()
     QString paramcolor = Colors::MAINWINCLR;
     QFont font;
 
-    QGroupBox *gb = new QGroupBox;
-
     int row = 0;
-    gb = new QGroupBox("Аналоговые параметры");
+    QGroupBox *gb = new QGroupBox("Аналоговые параметры");
     font.setFamily("Times");
     font.setPointSize(11);
     gb->setFont(font);
-    gridlyout = new QGridLayout;
-    vlyout1 = new QVBoxLayout;
-    vlyout2 = new QVBoxLayout;
 
     gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальное линейное первичное напряжение, кВ:"), row, 1, 1, 1);
     gridlyout->addWidget(WDFunc::NewSPB(this, "Unom", 0, 10000, 0, paramcolor), row, 2, 1, 3);
@@ -394,7 +391,9 @@ void ConfDialogKIV::SetupUI()
     setLayout(lyout);
 }
 
-void ConfDialogKIV::CheckConf() { }
+void ConfDialogKIV::CheckConf()
+{
+}
 
 void ConfDialogKIV::SetDefConf()
 {
@@ -404,6 +403,12 @@ void ConfDialogKIV::SetDefConf()
     Fill();
 }
 
-void ConfDialogKIV::Start_Timer() { timerRead->start(1000); }
+void ConfDialogKIV::Start_Timer()
+{
+    timerRead->start(1000);
+}
 
-void ConfDialogKIV::Stop_Timer() { timerRead->stop(); }
+void ConfDialogKIV::Stop_Timer()
+{
+    timerRead->stop();
+}

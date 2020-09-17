@@ -1,7 +1,8 @@
 #ifndef REPORT_H
 #define REPORT_H
 
-#include "limereport/lrreportengine.h"
+//#include "limereport/lrreportengine.h"
+#include "../LimeReport/limereport/lrreportengine.h"
 
 #include <QStandardItemModel>
 
