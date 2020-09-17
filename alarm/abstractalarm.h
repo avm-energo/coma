@@ -58,7 +58,7 @@ class AbstractAlarm : public QDialog
 {
     Q_OBJECT
 public:
-    AbstractAlarm(QDialog *parent = nullptr);
+    AbstractAlarm(QWidget *parent = nullptr);
     struct Bd11
     {
         quint32 dev;
@@ -101,7 +101,7 @@ class AbstractWarnAlarm : public AbstractAlarm
 {
     Q_OBJECT
 public:
-    explicit AbstractWarnAlarm(QDialog *parent = nullptr);
+    explicit AbstractWarnAlarm(QWidget *parent = nullptr);
 public slots:
     virtual void WarnAlarmState() = 0;
     void Update(QList<bool> states) override;
@@ -111,7 +111,7 @@ class AbstractAvarAlarm : public AbstractAlarm
 {
     Q_OBJECT
 public:
-    explicit AbstractAvarAlarm(QDialog *parent = nullptr);
+    explicit AbstractAvarAlarm(QWidget *parent = nullptr);
 public slots:
     virtual void AvarAlarmState() = 0;
     void Update(QList<bool> states) override;

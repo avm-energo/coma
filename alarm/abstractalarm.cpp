@@ -21,7 +21,7 @@
 #include <QStringListModel>
 #include <QToolBar>
 
-AbstractAlarm::AbstractAlarm(QDialog *parent) : QDialog(parent)
+AbstractAlarm::AbstractAlarm(QWidget *parent) : QDialog(parent)
 {
     //    setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
@@ -75,7 +75,7 @@ void AbstractAlarm::showEvent(QShowEvent *e)
     e->accept();
 }
 
-AbstractWarnAlarm::AbstractWarnAlarm(QDialog *parent) : AbstractAlarm(parent)
+AbstractWarnAlarm::AbstractWarnAlarm(QWidget *parent) : AbstractAlarm(parent)
 {
 }
 
@@ -83,13 +83,18 @@ void AbstractWarnAlarm::Update(QList<bool> states)
 {
     if (states.isEmpty())
         return;
-    auto max_range = std::min(Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts, states.length());
+    auto max_range = states.length();
+    if (Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts != states.length())
+    {
+        max_range = std::min(Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts, states.length());
+        qDebug() << Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts << ":" << states.length();
+    }
     for (int i = 0; i < max_range; i++)
     {
         UpdatePixmaps(states.at(i), i);
     }
 }
-AbstractAvarAlarm::AbstractAvarAlarm(QDialog *parent) : AbstractAlarm(parent)
+AbstractAvarAlarm::AbstractAvarAlarm(QWidget *parent) : AbstractAlarm(parent)
 {
 }
 
@@ -97,7 +102,12 @@ void AbstractAvarAlarm::Update(QList<bool> states)
 {
     if (states.isEmpty())
         return;
-    auto max_range = std::min(Alarm->MapAlarm.value(Board::GetInstance()->type()).avarCounts, states.length());
+    auto max_range = states.length();
+    if (Alarm->MapAlarm.value(Board::GetInstance()->type()).avarCounts != states.length())
+    {
+        qDebug() << Alarm->MapAlarm.value(Board::GetInstance()->type()).avarCounts << ":" << states.length();
+        max_range = std::min(Alarm->MapAlarm.value(Board::GetInstance()->type()).avarCounts, states.length());
+    }
     for (int i = 0; i < max_range; i++)
     {
         UpdatePixmaps(states.at(i), i);

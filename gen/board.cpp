@@ -65,7 +65,7 @@ Board::Board(QObject *parent)
     m_typeB = 0;
     m_typeM = 0;
     m_interfaceType = Unknown;
-    m_connectionState = ConnectionState::ClosingState;
+    m_connectionState = ConnectionState::Closed;
     m_boardType = BoardType::NONE;
     m_deviceType = DeviceType::Module;
     Q_UNUSED(parent)
@@ -78,7 +78,7 @@ Board::ConnectionState Board::connectionState() const
 
 void Board::setConnectionState(ConnectionState connectionState)
 {
-    if (m_connectionState == connectionState && m_connectionState == ConnectionState::ConnectedState)
+    if (m_connectionState == connectionState && m_connectionState == ConnectionState::Connected)
         Q_ASSERT("Try to connect while still connected");
     m_connectionState = connectionState;
     emit connectionStateChanged(connectionState);

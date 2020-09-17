@@ -10,7 +10,7 @@
 
 #include <QBoxLayout>
 
-AvarAlarmKIV::AvarAlarmKIV(AlarmClass *alarm, QDialog *parent) : AbstractAvarAlarm(parent)
+AvarAlarmKIV::AvarAlarmKIV(AlarmClass *alarm, QWidget *parent) : AbstractAvarAlarm(parent)
 {
     Alarm = alarm;
     AvarAlarmState();

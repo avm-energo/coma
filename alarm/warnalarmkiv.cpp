@@ -10,7 +10,7 @@
 
 #include <QBoxLayout>
 
-WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm, QDialog *parent) : AbstractWarnAlarm(parent)
+WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm, QWidget *parent) : AbstractWarnAlarm(parent)
 {
     Alarm = alarm;
     WarnAlarmState();

@@ -52,8 +52,8 @@ public:
      */
     enum class ConnectionState
     {
-        ConnectedState,
-        ClosingState,
+        Connected,
+        Closed,
         AboutToFinish
     };
 

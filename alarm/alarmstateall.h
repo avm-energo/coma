@@ -7,7 +7,7 @@ class AlarmStateAll : public AbstractAlarm
 {
     Q_OBJECT
 public:
-    explicit AlarmStateAll(QDialog *parent = nullptr);
+    explicit AlarmStateAll(QWidget *parent = nullptr);
 
 public slots:
 

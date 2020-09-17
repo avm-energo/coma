@@ -312,7 +312,7 @@ void CheckDialogKIV::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 
 void CheckDialogKIV::onModbusStateChanged()
 {
-    if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState)
+    if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
         QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 

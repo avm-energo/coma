@@ -151,7 +151,7 @@ void Coma::SetupUI()
 
     hlyout->addWidget(tb);
 
-    AlarmW = new AlarmWidget(Alarm, this);
+    AlarmW = new AlarmWidget(Alarm);
     hlyout->addWidget(AlarmW, Qt::AlignCenter);
 
     lyout->addLayout(hlyout);
@@ -246,6 +246,7 @@ void Coma::StartWork()
     New104();
     NewModbus();
     NewUSB();
+    AlarmStateAllDialog = new AlarmStateAll(this);
     if (!Reconnect)
     {
         QEventLoop loop;
@@ -355,7 +356,7 @@ void Coma::StartWork()
         //            Disconnect();
         return;
     }
-    Board::GetInstance()->setConnectionState(Board::ConnectionState::ConnectedState);
+    Board::GetInstance()->setConnectionState(Board::ConnectionState::Connected);
     Reconnect = true;
 
     PrepareDialogs();
@@ -475,7 +476,7 @@ void Coma::StartWork()
 
     MainTW->repaint();
     MainTW->show();
-
+    AlrmTimer->start();
     INFOMSG("MainTW created");
     if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
         BdaTimer->start();
@@ -503,11 +504,11 @@ void Coma::setupConnections()
 
             corDialog = new CorDialog;
 
-            WarnAlarmKIVDialog = new WarnAlarmKIV(Alarm);
+            WarnAlarmKIVDialog = new WarnAlarmKIV(Alarm, AlarmW);
             connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKIVDialog, &QDialog::show);
             connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKIVDialog, &AbstractWarnAlarm::Update);
 
-            AvarAlarmKIVDialog = new AvarAlarmKIV(Alarm);
+            AvarAlarmKIVDialog = new AvarAlarmKIV(Alarm, AlarmW);
             connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKIVDialog, &QDialog::show);
             connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVDialog, &AbstractAvarAlarm::Update);
 
@@ -635,26 +636,22 @@ void Coma::PrepareDialogs()
     jourDialog = new JournalDialog(Ch104);
     timeDialog = new MNKTime(this);
 
-    AlarmStateAllDialog = new AlarmStateAll;
-
     setupConnections();
 }
 
 void Coma::CloseDialogs()
 {
-    if (AlarmStateAllDialog != nullptr)
-    {
-        AlrmTimer->stop();
-    }
-    QList<QDialog *> widgets = this->findChildren<QDialog *>();
+
+    AlrmTimer->stop();
+
+    QList<QDialog *> widgets = findChildren<QDialog *>();
+
     for (auto &i : widgets)
     {
         qDebug() << i;
         i->close();
+        i->deleteLater();
     }
-
-    Alarm->AvarAlarmEvents.clear();
-    Alarm->WarnAlarmEvents.clear();
 }
 
 void Coma::New104()
@@ -704,7 +701,6 @@ void Coma::NewTimers()
 
     AlrmTimer = new QTimer;
     AlrmTimer->setInterval(10000);
-    AlrmTimer->start();
 
     ReceiveTimer = new QTimer;
     ReceiveTimer->setInterval(ANMEASINT);
@@ -724,7 +720,7 @@ void Coma::NewTimersBda()
     if (checkBDialog != nullptr)
         connect(BdaTimer, &QTimer::timeout, checkBDialog, &EAbstractCheckDialog::USBUpdate);
     if (AlarmStateAllDialog != nullptr)
-        connect(AlrmTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::CallUpdateHealth);
+        connect(AlrmTimer, &QTimer::timeout, [&]() { AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth); });
 }
 
 bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
@@ -742,7 +738,8 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
             if (AlrmTimer->isActive())
                 AlrmTimer->stop();
             EProtocom::GetInstance()->usbStateChanged(message);
-            if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState)
+            if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected
+                && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
             {
                 BdaTimer->start();
                 AlrmTimer->start();
@@ -775,7 +772,7 @@ void Coma::ReConnect()
 
         INFOMSG("Reconnect()");
         TimeTimer->stop();
-        if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState)
+        if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
         {
             qDebug() << "call Disconnect";
             Disconnect();
@@ -1044,7 +1041,7 @@ void Coma::Disconnect()
         if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
         {
             BdaTimer->stop();
-            if (Board::GetInstance()->connectionState() != Board::ConnectionState::ClosingState)
+            if (Board::GetInstance()->connectionState() != Board::ConnectionState::Closed)
                 EProtocom::GetInstance()->Disconnect();
         }
         else
@@ -1053,7 +1050,7 @@ void Coma::Disconnect()
             while (ActiveThreads) // wait for all threads to finish
                 QCoreApplication::processEvents();
         }
-        Board::GetInstance()->setConnectionState(Board::ConnectionState::ClosingState);
+        Board::GetInstance()->setConnectionState(Board::ConnectionState::Closed);
     }
 }
 
@@ -1061,7 +1058,7 @@ void Coma::DisconnectAndClear()
 {
     INFOMSG("DisconnectAndClear()");
     TimeTimer->stop();
-    if (Board::GetInstance()->connectionState() != Board::ConnectionState::ClosingState)
+    if (Board::GetInstance()->connectionState() != Board::ConnectionState::Closed)
     {
         AlarmW->Clear();
         Disconnect();
