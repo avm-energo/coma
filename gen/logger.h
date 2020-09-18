@@ -14,10 +14,8 @@ class Logging
 {
 public:
     void static messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
+    void static checkNGzip(QString &fileName);
 
 protected:
-    Logging();
-    Logging *GetInstance();
-
-    Logging *m_instance;
+    Logging() = delete;
 };

@@ -2,23 +2,40 @@
 
 #include "stdfunc.h"
 
+#define LZMA_API_STATIC
+#ifdef _WIN32
+#include "lzma/lzma.h"
+#endif
+#ifdef __linux__
+#include "lzma.h"
+#endif
+
+#define LOG_MAX_SIZE 1048576
 void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-    QString sourceFile = context.file;
-    QStringList name = sourceFile.split("\\");
-    name.removeLast();
+    QStringList buffer = QString(context.file).split("\\");
+    QString sourceFile;
+    QString folderName;
+    if (!buffer.isEmpty())
+    {
+        sourceFile = buffer.takeLast();
+        if (!buffer.isEmpty())
+            folderName = buffer.last();
+    }
+
     QString fileName;
     QStringList folderList { "alarm", "check", "config", "dialogs", "gen", "iec104", "modbus", "models", "usb",
         "widgets" };
     QFile logFile;
-    if (name.isEmpty() || !folderList.contains(name.last()))
+    if (folderName.isEmpty() || !folderList.contains(folderName))
         fileName = ("log.txt");
     else
-        fileName = (name.last() + ".txt");
+        fileName = (folderName + ".txt");
 
     QTextStream out;
 
     // Detect type of msg
+    // qWarning && qDebug пишем в одно место и удаляем их перед каждым запуском
     switch (type)
     {
     case QtInfoMsg:
@@ -27,7 +44,6 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
     case QtDebugMsg:
         break;
     case QtWarningMsg:
-        fileName.prepend(StdFunc::GetSystemHomeDir());
         break;
     case QtCriticalMsg:
         fileName.prepend(StdFunc::GetSystemHomeDir());
@@ -45,19 +61,111 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
     out << context.category << " " << sourceFile << ": " << msg << Qt::endl;
 
     out.flush(); // Flush buffer
+    logFile.close();
+    checkNGzip(fileName);
 }
 
-Logging *Logging::GetInstance()
+void Logging::checkNGzip(QString &fileName)
 {
-    if (m_instance == nullptr)
+    QSharedPointer<QFile> logFile = QSharedPointer<QFile>(new QFile(fileName));
+    QString GZippedLogFile = fileName;
+    if (fileName.size() >= LOG_MAX_SIZE)
     {
-        QMutexLocker locker(&m_mutex);
-        if (m_instance == nullptr)
+        int i;
+        // rotating
+        for (i = 9; i > 0; --i)
         {
-            m_instance = new Board(obj);
+            QString tmpsnew = GZippedLogFile + "." + QString::number(i) + ".xz";
+            QString tmpsold = GZippedLogFile + "." + QString::number(i - 1) + ".xz";
+            QFile fn;
+            fn.setFileName(tmpsnew);
+            if (fn.exists())
+                fn.remove();
+            fn.setFileName(tmpsold);
+            if (fn.exists())
+            {
+                if (fn.rename(tmpsnew) == false) // error
+                {
+                    qCritical("Cannot rename file");
+                    return;
+                }
+            }
+        }
+        GZippedLogFile += ".0.xz";
+        // gzip log file and clearing current one
+        lzma_stream strm = LZMA_STREAM_INIT;
+        lzma_ret ret = lzma_easy_encoder(&strm, 6, LZMA_CHECK_CRC64);
+        if (ret != LZMA_OK)
+        {
+            qCritical("Something wrong with lzma_easy_encoder");
+            return;
+        }
+        uint8_t inbuf[BUFSIZ];
+        uint8_t outbuf[BUFSIZ];
+        strm.next_in = NULL;
+        strm.avail_in = 0;
+        strm.next_out = outbuf;
+        strm.avail_out = sizeof(outbuf);
+        QFile fr;
+        // fd.setFileName(fileName);
+        if (!logFile->open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            qCritical() << "Cannot open the file" << fileName;
+            return;
+        }
+        fr.setFileName(GZippedLogFile);
+        if (!fr.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        {
+            qCritical() << "Cannot open the file" << GZippedLogFile;
+            return;
+        }
+        lzma_action action = LZMA_RUN;
+        while (true)
+        {
+            // Fill the input buffer if it is empty.
+            if ((strm.avail_in == 0) && !logFile->atEnd())
+            {
+                strm.next_in = inbuf;
+                strm.avail_in = logFile->read(reinterpret_cast<char *>(&(inbuf[0])), sizeof(inbuf));
+                if (logFile->atEnd())
+                    action = LZMA_FINISH;
+            }
+            lzma_ret ret = lzma_code(&strm, action);
+            if ((strm.avail_out == 0) || (ret == LZMA_STREAM_END))
+            {
+                // When lzma_code() has returned LZMA_STREAM_END,
+                // the output buffer is likely to be only partially
+                // full. Calculate how much new data there is to
+                // be written to the output file.
+                size_t write_size = sizeof(outbuf) - strm.avail_out;
+                size_t written_size = fr.write(reinterpret_cast<char *>(&(outbuf[0])), write_size);
+                if (written_size != write_size)
+                {
+                    qCritical("Write error");
+                    return;
+                }
+                strm.next_out = outbuf;
+                strm.avail_out = sizeof(outbuf);
+            }
+            if (ret != LZMA_OK)
+            {
+                // Once everything has been encoded successfully, the
+                // return value of lzma_code() will be LZMA_STREAM_END.
+                //
+                // It is important to check for LZMA_STREAM_END. Do not
+                // assume that getting ret != LZMA_OK would mean that
+                // everything has gone well.
+                if (ret == LZMA_STREAM_END)
+                {
+                    fr.flush();
+                    fr.close();
+                    logFile->close();
+                    logFile->open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+                    break;
+                }
+            }
         }
     }
-    return m_instance;
 }
 
 Q_LOGGING_CATEGORY(logDebug, "Debug")
