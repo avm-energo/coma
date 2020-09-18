@@ -444,7 +444,7 @@ void Coma::StartWork()
             switch (Board::GetInstance()->typeM())
             {
             case Config::MTM_87:
-                addConfTab(MainTW, "Старение изоляции");
+                addConfTab(MainTW, "Наработка");
                 break;
             }
 
@@ -560,7 +560,7 @@ void Coma::setupConnections()
             if (Board::GetInstance()->interfaceType() != Board::InterfaceType::RS485)
                 confMDialog = new ConfDialogKDV(S2Config);
 
-            corDialog = new CorDialogKTF;
+            corDialog = new CorDialogKDV;
 
             break;
         }

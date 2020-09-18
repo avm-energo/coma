@@ -1,4 +1,4 @@
-#include "cordialogktf.h"
+#include "cordialogkdv.h"
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/colors.h"
@@ -27,27 +27,24 @@
 #include <QTabBar>
 #include <QTabWidget>
 #include <QVBoxLayout>
-
-CorDialogKTF::CorDialogKTF(QWidget *parent) : AbstractCorDialog(parent)
+CorDialogKDV::CorDialogKDV(QWidget *parent) : AbstractCorDialog(parent)
 {
     // int i;
 
     Bd9Block = new Bd9;
     WBd7Block = new WBd7;
-
-    //  first = 0;
+    WBd8Block = new WBd8;
 
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
 }
 
-CorDialogKTF::~CorDialogKTF()
+CorDialogKDV::~CorDialogKDV()
 {
 }
 
-void CorDialogKTF::SetupUI()
+void CorDialogKDV::SetupUI()
 {
-    // QWidget *cp2 = new QWidget;
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -56,12 +53,19 @@ void CorDialogKTF::SetupUI()
     tv->setObjectName("cor");
     int row = 0;
     QString paramcolor = Colors::MAINWINCLR;
+    QPushButton *pb = new QPushButton;
 
     glyout->addWidget(WDFunc::NewLBL(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(this, QString::number(907), 0, 1000000, 5, paramcolor), row, 2, 1, 2);
     row++;
+    glyout->addWidget(WDFunc::NewLBL(this, "Текущея наработка при нормальной нагрузке, час:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewSPB(this, QString::number(908), 0, 1000000, 5, paramcolor), row, 2, 1, 2);
+    row++;
+    glyout->addWidget(WDFunc::NewLBL(this, "Текущея наработка в режиме перегрузки, час:"), row, 1, 1, 1);
+    glyout->addWidget(WDFunc::NewSPB(this, QString::number(909), 0, 1000000, 5, paramcolor), row, 2, 1, 2);
+    row++;
 
-    QPushButton *pb = new QPushButton("Прочитать из модуля");
+    pb = new QPushButton("Прочитать из модуля");
     connect(pb, SIGNAL(clicked()), this, SLOT(GetCorBdButton()));
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
@@ -96,17 +100,25 @@ void CorDialogKTF::SetupUI()
     setLayout(lyout);
 }
 
-void CorDialogKTF::FillBackWBd7()
+void CorDialogKDV::FillBackWBd7()
 {
     WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge);
 }
 
-void CorDialogKTF::FillBd9()
+void CorDialogKDV::FillBackWBd8()
 {
-    WDFunc::SetSPBData(this, QString::number(907), Bd9Block->Age);
+    WDFunc::SPBData(this, QString::number(908), WBd8Block->MHnInit);
+    WDFunc::SPBData(this, QString::number(909), WBd8Block->MotHovInit);
 }
 
-void CorDialogKTF::GetCorBd(int index)
+void CorDialogKDV::FillBd9()
+{
+    WDFunc::SetSPBData(this, QString::number(907), Bd9Block->Age);
+    WDFunc::SetSPBData(this, QString::number(908), Bd9Block->MotHnorm);
+    WDFunc::SetSPBData(this, QString::number(909), Bd9Block->MotHover);
+}
+
+void CorDialogKDV::GetCorBd(int index)
 {
     if (index == corDIndex)
 
@@ -131,7 +143,7 @@ void CorDialogKTF::GetCorBd(int index)
             }
         }
 }
-void CorDialogKTF::GetCorBdButton()
+void CorDialogKDV::GetCorBdButton()
 {
     switch (Board::GetInstance()->interfaceType())
     {
@@ -163,40 +175,60 @@ void CorDialogKTF::GetCorBdButton()
     }
 }
 
-void CorDialogKTF::WriteCorBd()
+void CorDialogKDV::WriteCorBd()
 {
-    // int i;
-    quint32 adr = 907;
+    int i;
+    // quint32 adr = 907;
+    quint32 adr7bl = 907;
+    quint32 adr[2] = { 908, 909 };
 
     FillBackWBd7();
+    FillBackWBd8();
 
     if (WriteCheckPassword() == NOERROR)
     {
         switch (Board::GetInstance()->interfaceType())
         {
         case Board::InterfaceType::Ethernet:
-            // if (MainInterface == I_ETHERNET)
-            {
+        {
+            float corblocki;
+            memcpy(&corblocki, reinterpret_cast<float *>(WBd7Block), sizeof(float));
+            emit SendCom50(adr7bl, corblocki);
+            TimeFunc::Wait(300);
 
+            for (i = 0; i < 2; i++)
+            {
                 float corblocki;
-                memcpy(&corblocki, reinterpret_cast<float *>(WBd7Block), sizeof(float));
-                emit SendCom50(adr, corblocki);
+                memcpy(&corblocki, reinterpret_cast<float *>(WBd8Block) + i, sizeof(float));
+                emit SendCom50(adr[i], corblocki);
                 TimeFunc::Wait(300);
-                break;
             }
+
+            break;
+        }
         case Board::InterfaceType::RS485:
             // else if (MainInterface == I_RS485)
             {
                 ModBus::Information info;
                 info.size = (sizeof(WBd7) / 4);
-                info.adr = adr;
+                info.adr = adr7bl;
                 emit RS485WriteCorBd(info, (float *)WBd7Block);
+
+                ModBus::Information inform;
+                inform.size = (sizeof(WBd8) / 4);
+                inform.adr = adr[0];
+                emit RS485WriteCorBd(inform, (float *)WBd8Block);
+
                 break;
             }
         case Board::InterfaceType::USB:
             // else if (MainInterface == I_USB)
             {
-                if (Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == NOERROR)
+
+                //                if (Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == NOERROR)
+                //                    if (Commands::WriteBd(8, WBd8Block, sizeof(WBd8)) == NOERROR)
+                if ((Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == NOERROR)
+                    & (Commands::WriteBd(8, WBd8Block, sizeof(WBd8)) == NOERROR))
                     QMessageBox::information(this, "INFO", "Записано успешно");
                 else
                     QMessageBox::information(this, "INFO", "Ошибка");
@@ -211,19 +243,20 @@ void CorDialogKTF::WriteCorBd()
     }
 }
 
-void CorDialogKTF::WriteCor()
+void CorDialogKDV::WriteCor()
 {
 }
 
-void CorDialogKTF::ResetCor()
+void CorDialogKDV::ResetCor()
 {
 }
 
-void CorDialogKTF::SaveToFile()
+void CorDialogKDV::SaveToFile()
 {
     int res = NOERROR;
     QByteArray ba;
     FillBackWBd7();
+    //    FillBackWBd8();
     ba.resize(sizeof(*WBd7Block));
     memcpy(&(ba.data()[0]), WBd7Block, sizeof(*WBd7Block));
     res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*WBd7Block));
@@ -246,7 +279,7 @@ void CorDialogKTF::SaveToFile()
     }
 }
 
-void CorDialogKTF::ReadFromFile()
+void CorDialogKDV::ReadFromFile()
 {
     QByteArray ba;
     ba.resize(sizeof(*Bd9Block));
@@ -259,8 +292,6 @@ void CorDialogKTF::ReadFromFile()
         return;
     }
 
-    //  FillCor();
-    //    memcpy(Bd9Block, &(ba.data()[0]), sizeof(*Bd9Block));
     memcpy(&Bd9Block->Age, &(ba.data()[0]), sizeof(float));
     FillBd9();
     QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");

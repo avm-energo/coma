@@ -12,6 +12,7 @@
 #include "../config/confdialog.h"
 #include "../dialogs/connectdialog.h"
 #include "../dialogs/cordialog.h"
+#include "../dialogs/cordialogkdv.h"
 #include "../dialogs/cordialogktf.h"
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/infodialog.h"

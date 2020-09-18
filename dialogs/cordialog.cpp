@@ -163,10 +163,10 @@ void CorDialog::SetupUI()
     setObjectName("corDialog");
 }
 
-void CorDialog::FillBackCor()
+void CorDialog::FillCor()
 {
     int i;
-    QString tmps;
+    // QString tmps;
 
     WDFunc::SPBData(this, QString::number(4010), CorBlock->Phy_unb_init);
     WDFunc::SPBData(this, QString::number(4009), CorBlock->Iunb_init);
@@ -182,7 +182,7 @@ void CorDialog::FillBackCor()
     }
 }
 
-void CorDialog::FillCor()
+void CorDialog::FillBackCor()
 {
     int i;
 
@@ -212,7 +212,7 @@ void CorDialog::GetCorBd(int index)
             {
                 if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
                 {
-                    FillCor();
+                    FillBackCor();
                     QMessageBox::information(this, "INFO", "Прочитано успешно");
                 }
                 break;
@@ -242,7 +242,7 @@ void CorDialog::GetCorBdButton()
         {
             if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
             {
-                FillCor();
+                FillBackCor();
                 QMessageBox::information(this, "INFO", "Прочитано успешно");
             }
             break;
@@ -307,7 +307,7 @@ void CorDialog::WriteCorBd()
                 QMessageBox::information(this, "INFO", "Ошибка");
 
             if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == NOERROR)
-                FillCor();
+                FillBackCor();
             break;
         }
         }
@@ -348,7 +348,7 @@ void CorDialog::WriteCor()
                                                       //{
                     if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
                     {
-                        FillCor();
+                        FillBackCor();
                         QMessageBox::information(this, "INFO", "Задано и прочитано успешно");
                     }
                     // }
@@ -413,7 +413,7 @@ void CorDialog::ResetCor()
                     QMessageBox::information(this, "INFO", "Ошибка");
 
                 if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == NOERROR)
-                    FillCor();
+                    FillBackCor();
                 break;
             }
         }
@@ -525,7 +525,7 @@ void CorDialog::ReadFromFile()
 
     memcpy(CorBlock, &(ba.data()[0]), sizeof(*CorBlock));
 
-    FillCor();
+    FillBackCor();
     QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 

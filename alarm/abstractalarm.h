@@ -79,7 +79,7 @@ public slots:
 
 protected:
     void showEvent(QShowEvent *e);
-    void UpdatePixmaps(quint32 alarm, int counter);
+    void UpdatePixmaps(quint32 alarm, int counter, bool warn = false);
     void SetupAlarm(const QStringList &events, int counters);
 
     AlarmClass *Alarm;

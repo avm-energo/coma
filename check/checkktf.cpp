@@ -100,40 +100,48 @@ QWidget *CheckKTF::Bd1W(QWidget *parent)
     vlyout = new QVBoxLayout;
     glyout = new QGridLayout;
 
+    int str = 0, str2 = 1;
     for (i = 0; i < 4; ++i)
     {
-
-        // QString IndexStr = "[" + QString::number(i) + "]";
-        glyout->addWidget(WDFunc::NewLBL(parent, "Ueff " + phase[i] + ", кВ"), 4, i, 1, 1);
+        int row = 4;
+        str2 = str + 1;
+        glyout->addWidget(WDFunc::NewLBL(parent, "Ueff " + phase[i] + ", кВ"), row, str, 1, 1, Qt::AlignRight);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1000 + i), ValuesFormat,
                               "Истинные действующие значения сигналов трех фаз и их среднее, кВ"),
-            5, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Ieff " + phase[i] + ", А"), 6, i, 1, 1);
+            row, str2, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBL(parent, "Ieff " + phase[i] + ", А"), row, str, 1, 1, Qt::AlignRight);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1400 + i), ValuesFormat,
                               "Истинные действующие значения сигналов трех фаз и их среднее, А"),
-            7, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "P " + pphase[i] + ", кВт"), 8, i, 1, 1);
+            row, str2, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBL(parent, "P " + pphase[i] + ", кВт"), row, str, 1, 1, Qt::AlignRight);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2420 + i), ValuesFormat,
                               "Истинная активная мощность по фазам и суммарная, кВт"),
-            9, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Q " + pphase[i] + ", кВАр"), 10, i, 1, 1);
+            row, str2, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBL(parent, "Q " + pphase[i] + ", кВАр"), row, str, 1, 1, Qt::AlignRight);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2424 + i), ValuesFormat,
                               "Реактивная мощность по кажущейся полной "
                               "и истинной активной, кВАр"),
-            11, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "S " + pphase[i] + ", кВА"), 12, i, 1, 1);
+            row, str2, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBL(parent, "S " + pphase[i] + ", кВА"), row, str, 1, 1, Qt::AlignRight);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2428 + i), ValuesFormat,
                               "Кажущаяся полная мощность по эфф. токам и нпарямжениям, кВА"),
-            13, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "CosPhi " + phase[i] + ""), 14, i, 1, 1);
+            row, str2, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBL(parent, "CosPhi " + phase[i] + ""), row, str, 1, 1, Qt::AlignRight);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2432 + i), ValuesFormat,
                               "Косинус phi по истинной активной мощности,по фазам и средний "),
-            15, i, 1, 1);
-        glyout->addWidget(WDFunc::NewLBL(parent, "Uлин " + ppphase[i] + ", кВ"), 16, i, 1, 1);
+            row, str2, 1, 1);
+        row++;
+        glyout->addWidget(WDFunc::NewLBL(parent, "Uлин " + ppphase[i] + ", кВ"), row, str, 1, 1, Qt::AlignRight);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1220 + i), ValuesFormat,
                               "Истинные действующие значения линейных "
                               "напряжений трех фази их среднее, кВ"),
-            17, i, 1, 1);
+            row, str2, 1, 1);
+        str = str + 2;
     }
 
     vlyout->addLayout(glyout);

@@ -663,7 +663,7 @@ void ConfDialogKxx::FillBack()
         case 1:
             tmp = 1;
             break;
-        case 3:
+        case 2:
             tmp = 4;
             break;
         case -1:

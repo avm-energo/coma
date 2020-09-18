@@ -21,7 +21,6 @@ ConfigKIV::ConfigKIV(QVector<S2::DataRec> *config)
         config->append({ 1006, sizeof(Bci_block.Unom), &Bci_block.Unom });
         config->append({ StartInIndex, sizeof(Bci_block.Umin), &Bci_block.Umin });
         config->append({ StartInIndex + 1, sizeof(Bci_block.Imin), &Bci_block.Imin });
-
         config->append({ StartInIndex + 3, sizeof(Bci_block.C_init), &Bci_block.C_init });
         config->append({ StartInIndex + 4, sizeof(Bci_block.Tg_init), &Bci_block.Tg_init });
         config->append({ StartInIndex + 5, sizeof(Bci_block.corTg), &Bci_block.corTg });
@@ -34,8 +33,6 @@ ConfigKIV::ConfigKIV(QVector<S2::DataRec> *config)
         config->append({ StartInIndex + 12, sizeof(Bci_block.GdC), &Bci_block.GdC });
         config->append({ StartInIndex + 13, sizeof(Bci_block.GdTg), &Bci_block.GdTg });
         config->append({ StartInIndex + 14, sizeof(Bci_block.GdIunb), &Bci_block.GdIunb });
-        //        config->append({ StartInIndex + 15, sizeof(Bci_block.RTerm), &Bci_block.RTerm });
-        //        config->append({ StartInIndex + 16, sizeof(Bci_block.W100), &Bci_block.W100 });
         config->append({ StartInIndex + 17, sizeof(Bci_block.Iunb_init), &Bci_block.Iunb_init });
         config->append({ StartInIndex + 18, sizeof(Bci_block.Phy_unb_init), &Bci_block.Phy_unb_init });
         config->append({ StartInIndex + 19, sizeof(Bci_block.T_Data_Rec), &Bci_block.T_Data_Rec });
@@ -44,8 +41,6 @@ ConfigKIV::ConfigKIV(QVector<S2::DataRec> *config)
         config->append({ StartInIndex + 22, sizeof(Bci_block.IsIunb), &Bci_block.IsIunb });
         config->append({ StartInIndex + 23, sizeof(Bci_block.Tevent_pred), &Bci_block.Tevent_pred });
         config->append({ StartInIndex + 24, sizeof(Bci_block.Tevent_alarm), &Bci_block.Tevent_alarm });
-        //        config->append({ StartInIndex + 25, sizeof(Bci_block.Trele_pred), &Bci_block.Trele_pred });
-        //        config->append({ StartInIndex + 26, sizeof(Bci_block.Trele_alarm), &Bci_block.Trele_alarm });
         config->append({ StartInIndex + 27, sizeof(Bci_block.Tg_pasp), &Bci_block.Tg_pasp });
         config->append({ StartInIndex + 28, sizeof(Bci_block.C_pasp), &Bci_block.C_pasp });
         config->append({ 1050, sizeof(Bci_block.Unom_1), &Bci_block.Unom_1 });
