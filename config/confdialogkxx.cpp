@@ -195,6 +195,18 @@ QWidget *ConfDialogKxx::SetupModBus(QObject *parent)
     line1->setText("");
     line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 0, 6, 1, 1);
+    line1 = new QLabel(this);
+    line1->setText("");
+    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen ;}");
+    glyout->addWidget(line1, 0, 7, 1, 1);
+    line1 = new QLabel(this);
+    line1->setText("");
+    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen ;}");
+    glyout->addWidget(line1, 0, 8, 1, 1);
+    line1 = new QLabel(this);
+    line1->setText("");
+    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen ;}");
+    glyout->addWidget(line1, 0, 9, 1, 1);
 
     line1 = new QLabel(this);
     line1->setText("скорость");
@@ -225,6 +237,25 @@ QWidget *ConfDialogKxx::SetupModBus(QObject *parent)
     line1->setAlignment(Qt::AlignCenter);
     line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
     glyout->addWidget(line1, 1, 6, 1, 1);
+    line1 = new QLabel(this);
+
+    line1 = new QLabel(this);
+    line1->setText("функция");
+    line1->setAlignment(Qt::AlignCenter);
+    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
+    glyout->addWidget(line1, 1, 7, 1, 1);
+
+    line1 = new QLabel(this);
+    line1->setText("тип данных");
+    line1->setAlignment(Qt::AlignCenter);
+    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
+    glyout->addWidget(line1, 1, 8, 1, 1);
+
+    line1 = new QLabel(this);
+    line1->setText("адрес регистра");
+    line1->setAlignment(Qt::AlignCenter);
+    line1->setStyleSheet("QLabel {border: 1px solid  darkgreen;}");
+    glyout->addWidget(line1, 1, 9, 1, 1);
 
     int j = 1;
     for (int i = 1; i < 5; i++)
@@ -266,6 +297,26 @@ QWidget *ConfDialogKxx::SetupModBus(QObject *parent)
         Str = "MBMab" + QString::number(i);
         Str = Str + "adr[3]";
         glyout->addWidget(WDFunc::NewSPB(this, QString(Str), 0, 10000, 0, paramcolor), ++i, 6, 1, 1);
+    }
+
+    j = 1;
+    for (int i = 1; i < 5; i++)
+    {
+        j++;
+        cbl = QStringList { "Coils", "Holding", "Input" };
+        cb = WDFunc::NewCB(this, "MBMab" + QString::number(i) + "func[4]", cbl, paramcolor);
+        glyout->addWidget(cb, j, 7, 1, 1);
+
+        cbl = QStringList { "Word", "Int", "float" };
+        cb = WDFunc::NewCB(this, "MBMab" + QString::number(i) + "tdat[4]", cbl, paramcolor);
+        glyout->addWidget(cb, j, 8, 1, 1);
+    }
+
+    for (int i = 1; i < 5;)
+    {
+        Str = "MBMab" + QString::number(i);
+        Str = Str + "reg[5]";
+        glyout->addWidget(WDFunc::NewSPB(this, QString(Str), 0, 10000, 0, paramcolor), ++i, 9, 1, 1);
     }
 
     line1 = new QLabel(this);
@@ -335,7 +386,8 @@ void ConfDialogKxx::ChangeWindow(int num)
 void ConfDialogKxx::Fill()
 {
     int i, cbidx;
-
+    quint16 tmp16;
+    //    quint8 tmp;
     //....................................................
     WDFunc::SetSPBData(ParentSetupBl, "RTerm", Kxx->TempConf.RTerm);
     WDFunc::SetSPBData(ParentSetupBl, "W100", Kxx->TempConf.W100);
@@ -394,6 +446,74 @@ void ConfDialogKxx::Fill()
     WDFunc::SetSPBData(ParentMB, "MBMab3adr[3]", Kxx->StrModBus.MBMab3[3]);
     WDFunc::SetSPBData(ParentMB, "MBMab4adr[3]", Kxx->StrModBus.MBMab4[3]);
 
+    for (i = 1; i < 5; i++)
+    {
+        if (i == 1)
+            cbidx = Kxx->StrModBus.MBMab1[4] & 0x0F;
+        if (i == 2)
+            cbidx = Kxx->StrModBus.MBMab2[4] & 0x0F;
+        if (i == 3)
+            cbidx = Kxx->StrModBus.MBMab3[4] & 0x0F;
+        if (i == 4)
+            cbidx = Kxx->StrModBus.MBMab4[4] & 0x0F;
+
+        switch (cbidx)
+        {
+        case 1:
+            cbidx = 0;
+            break;
+        case 3:
+            cbidx = 1;
+            break;
+        case 4:
+            cbidx = 2;
+            break;
+        default:
+            cbidx = -1;
+        }
+        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "func[4]", cbidx);
+    }
+
+    for (i = 1; i < 5; i++)
+    {
+        if (i == 1)
+            cbidx = (Kxx->StrModBus.MBMab1[4] & 0xF0) >> 4;
+        if (i == 2)
+            cbidx = (Kxx->StrModBus.MBMab1[4] & 0xF0) >> 4;
+        if (i == 3)
+            cbidx = (Kxx->StrModBus.MBMab1[4] & 0xF0) >> 4;
+        if (i == 4)
+            cbidx = (Kxx->StrModBus.MBMab1[4] & 0xF0) >> 4;
+
+        switch (cbidx)
+        {
+        case 0:
+            cbidx = 0;
+            break;
+        case 1:
+            cbidx = 1;
+            break;
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+            cbidx = 2;
+            break;
+        default:
+            cbidx = -1;
+        }
+        WDFunc::SetCBIndex(ParentMB, "MBMab" + QString::number(i) + "tdat[4]", cbidx);
+    }
+
+    tmp16 = *((quint16 *)&Kxx->StrModBus.MBMab1[5]);
+    WDFunc::SetSPBData(ParentMB, "MBMab1reg[5]", tmp16);
+    tmp16 = *((quint16 *)&Kxx->StrModBus.MBMab2[5]);
+    WDFunc::SetSPBData(ParentMB, "MBMab2reg[5]", tmp16);
+    tmp16 = *((quint16 *)&Kxx->StrModBus.MBMab3[5]);
+    WDFunc::SetSPBData(ParentMB, "MBMab3reg[5]", tmp16);
+    tmp16 = *((quint16 *)&Kxx->StrModBus.MBMab4[5]);
+    WDFunc::SetSPBData(ParentMB, "MBMab4reg[5]", tmp16);
+
     //.................................................
 
     QString StrIP, StrMask, StrSNTP, StrGate;
@@ -446,7 +566,8 @@ void ConfDialogKxx::Fill()
 void ConfDialogKxx::FillBack()
 {
     int i, cbidx;
-
+    quint16 tmp16;
+    quint8 tmp;
     //.......................................................................
 
     WDFunc::SPBData(ParentSetupBl, "RTerm", Kxx->TempConf.RTerm);
@@ -460,13 +581,10 @@ void ConfDialogKxx::FillBack()
 
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab1[0]");
     Kxx->StrModBus.MBMab1[0] = cbidx;
-
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab2[0]");
     Kxx->StrModBus.MBMab2[0] = cbidx;
-
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab3[0]");
     Kxx->StrModBus.MBMab3[0] = cbidx;
-
     cbidx = WDFunc::CBIndex(ParentMB, "MBMab4[0]");
     Kxx->StrModBus.MBMab4[0] = cbidx;
 
@@ -507,6 +625,75 @@ void ConfDialogKxx::FillBack()
     WDFunc::SPBData(ParentMB, "MBMab2adr[3]", Kxx->StrModBus.MBMab2[3]);
     WDFunc::SPBData(ParentMB, "MBMab3adr[3]", Kxx->StrModBus.MBMab3[3]);
     WDFunc::SPBData(ParentMB, "MBMab4adr[3]", Kxx->StrModBus.MBMab4[3]);
+
+    for (i = 1; i < 5; i++)
+    {
+        cbidx = WDFunc::CBIndex(ParentMB, "MBMab" + QString::number(i) + "func[4]");
+
+        switch (cbidx)
+        {
+        case 0:
+            tmp = 1;
+            break;
+        case 1:
+            tmp = 3;
+            break;
+        case 2:
+            tmp = 4;
+            break;
+        case -1:
+            tmp = 0;
+            break;
+        }
+        if (i == 1)
+            Kxx->StrModBus.MBMab1[4] = tmp;
+        if (i == 2)
+            Kxx->StrModBus.MBMab2[4] = tmp;
+        if (i == 3)
+            Kxx->StrModBus.MBMab3[4] = tmp;
+        if (i == 4)
+            Kxx->StrModBus.MBMab4[4] = tmp;
+    }
+
+    for (i = 1; i < 5; i++)
+    {
+        cbidx = WDFunc::CBIndex(ParentMB, "MBMab" + QString::number(i) + "tdat[4]");
+
+        switch (cbidx)
+        {
+        case 0:
+            tmp = 0;
+
+            break;
+        case 1:
+            tmp = 1;
+            break;
+        case 3:
+            tmp = 4;
+            break;
+        case -1:
+            tmp = 0;
+            break;
+        }
+
+        if (i == 1)
+            Kxx->StrModBus.MBMab1[4] = Kxx->StrModBus.MBMab1[4] | (tmp << 4);
+        if (i == 2)
+            Kxx->StrModBus.MBMab2[4] = Kxx->StrModBus.MBMab2[4] | (tmp << 4);
+        if (i == 3)
+            Kxx->StrModBus.MBMab3[4] = Kxx->StrModBus.MBMab3[4] | (tmp << 4);
+        if (i == 4)
+            Kxx->StrModBus.MBMab4[4] = Kxx->StrModBus.MBMab4[4] | (tmp << 4);
+    }
+
+    WDFunc::SPBData(ParentMB, "MBMab1reg[5]", tmp16);
+    *((quint16 *)&Kxx->StrModBus.MBMab1[5]) = tmp16;
+    WDFunc::SPBData(ParentMB, "MBMab2reg[5]", tmp16);
+    *((quint16 *)&Kxx->StrModBus.MBMab2[5]) = tmp16;
+    *((quint16 *)&Kxx->StrModBus.MBMab3[5]) = tmp16;
+    WDFunc::SPBData(ParentMB, "MBMab3reg[5]", tmp16);
+    *((quint16 *)&Kxx->StrModBus.MBMab4[5]) = tmp16;
+    WDFunc::SPBData(ParentMB, "MBMab4reg[5]", tmp16);
 
     //................................................................
 

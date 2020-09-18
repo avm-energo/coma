@@ -94,6 +94,10 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     confBDialog = confMDialog = nullptr;
     checkBDialog = checkMDialog = nullptr;
     AlarmStateAllDialog = nullptr;
+    AvarAlarmKIVDialog = nullptr;
+    WarnAlarmKIVDialog = nullptr;
+    AvarAlarmKTFDialog = nullptr;
+    WarnAlarmKTFDialog = nullptr;
 #ifdef AVM_DEBUG
     tuneDialog = nullptr;
 #endif
@@ -547,7 +551,6 @@ void Coma::setupConnections()
         break;
     }
     case Config::MTB_A3:
-
         switch (Board::GetInstance()->typeM())
         {
         case Config::MTM_87:

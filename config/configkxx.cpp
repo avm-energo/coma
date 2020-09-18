@@ -50,7 +50,7 @@ void ConfigKxx::SetDefConf()
 
     StrModBus.MBMaster = DEF_MBMASTER;
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 8; i++)
     {
 
         StrModBus.MBMab1[i] = 0;
