@@ -312,6 +312,8 @@ void ConfDialogKIV::SetupUI()
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
 
+    //............................................................
+
     gb = new QGroupBox("Сигнализации событий");
     gb->setFont(font);
     vlyout2 = new QVBoxLayout;
@@ -332,6 +334,24 @@ void ConfDialogKIV::SetupUI()
     row++;
     gridlyout->addWidget(WDFunc::NewLBL(this, "Задержка на формирование аварийных событий:"), row, 0, 1, 1);
     gridlyout->addWidget(WDFunc::NewSPB(this, "Tevent_alarm", 0, 10000, 1, paramcolor), row, 1, 1, 1);
+
+    vlyout2->addLayout(gridlyout);
+    gb->setLayout(vlyout2);
+    vlyout1->addWidget(gb);
+
+    gb = new QGroupBox("");
+    gb->setFont(font);
+    vlyout2 = new QVBoxLayout;
+    gridlyout = new QGridLayout;
+
+    row++;
+    gridlyout->addWidget(
+        WDFunc::NewLBL(this, "Интервал усреднения данных  (в периодах основной частоты):"), row, 0, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "NFiltr", 0, 10000, 0, paramcolor), row, 1, 1, 3);
+
+    row++;
+    gridlyout->addWidget(WDFunc::NewLBL(this, "Интервал записи данных в ПЗУ (тренд), в секундах:"), row, 0, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "T_Data_Rec", 0, 10000, 0, paramcolor), row, 1, 1, 3);
 
     vlyout2->addLayout(gridlyout);
     gb->setLayout(vlyout2);

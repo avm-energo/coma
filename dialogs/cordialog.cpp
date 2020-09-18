@@ -163,7 +163,7 @@ void CorDialog::SetupUI()
     setObjectName("corDialog");
 }
 
-void CorDialog::FillCor()
+void CorDialog::FillBackCor()
 {
     int i;
     // QString tmps;
@@ -182,7 +182,7 @@ void CorDialog::FillCor()
     }
 }
 
-void CorDialog::FillBackCor()
+void CorDialog::FillCor()
 {
     int i;
 
@@ -212,19 +212,12 @@ void CorDialog::GetCorBd(int index)
             {
                 if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
                 {
-                    FillBackCor();
+                    FillCor();
                     QMessageBox::information(this, "INFO", "Прочитано успешно");
                 }
                 break;
             }
-        /*        else if (MainInterface == I_RS485)
-                {
-                    ModBus::Information info;
-                    info.size = (sizeof(CorData)/4);
-                    info.adr = 4000;
-                    emit RS485ReadCorBd(info);
-                } */
-        // else if (MainInterface == I_ETHERNET)
+
         case Board::InterfaceType::Ethernet:
         {
             emit CorReadRequest();
@@ -242,7 +235,7 @@ void CorDialog::GetCorBdButton()
         {
             if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
             {
-                FillBackCor();
+                FillCor();
                 QMessageBox::information(this, "INFO", "Прочитано успешно");
             }
             break;
@@ -307,7 +300,7 @@ void CorDialog::WriteCorBd()
                 QMessageBox::information(this, "INFO", "Ошибка");
 
             if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == NOERROR)
-                FillBackCor();
+                FillCor();
             break;
         }
         }
@@ -348,7 +341,7 @@ void CorDialog::WriteCor()
                                                       //{
                     if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
                     {
-                        FillBackCor();
+                        FillCor();
                         QMessageBox::information(this, "INFO", "Задано и прочитано успешно");
                     }
                     // }
@@ -413,7 +406,7 @@ void CorDialog::ResetCor()
                     QMessageBox::information(this, "INFO", "Ошибка");
 
                 if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == NOERROR)
-                    FillBackCor();
+                    FillCor();
                 break;
             }
         }
@@ -478,11 +471,6 @@ void CorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
     }
 }
 
-/*void CorDialog::ModbusCorDataWritten()
-{
-    QMessageBox::information(this, "INFO", "Записано успешно");
-} */
-
 void CorDialog::SaveToFile()
 {
     int res = NOERROR;
@@ -525,7 +513,7 @@ void CorDialog::ReadFromFile()
 
     memcpy(CorBlock, &(ba.data()[0]), sizeof(*CorBlock));
 
-    FillBackCor();
+    FillCor();
     QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 

@@ -65,8 +65,8 @@ void ConfigKIV::SetDefConf()
     Bci_block.GdIunb = 0.2f;
     Bci_block.Iunb_init = 0;
     Bci_block.Phy_unb_init = 0;
-    Bci_block.NFiltr = 100;
-    Bci_block.T_Data_Rec = 60;
+    Bci_block.NFiltr = 50;
+    Bci_block.T_Data_Rec = 30;
     Bci_block.LowU = 80;
     Bci_block.IsU = 1;
     Bci_block.IsIunb = 1;
@@ -79,10 +79,7 @@ void ConfigKIV::SetDefConf()
         Bci_block.C_init[i] = 2200;
         Bci_block.Tg_init[i] = 0;
         Bci_block.corTg[i] = 0;
-        Bci_block.Tg_pasp[i] = 0;
-        Bci_block.C_pasp[i] = 0;
+        Bci_block.Tg_pasp[i] = 0.3;
+        Bci_block.C_pasp[i] = 1500;
     }
-
-    //    Bci_block.Tg_pasp[0] = 0;
-    //    Bci_block.C_pasp[0] = 0;
 }
