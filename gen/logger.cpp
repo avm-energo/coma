@@ -14,14 +14,14 @@
 void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     QStringList buffer = QString(context.file).split("\\");
-    QString sourceFile;
-    QString folderName;
-    if (!buffer.isEmpty())
-    {
-        sourceFile = buffer.takeLast();
-        if (!buffer.isEmpty())
-            folderName = buffer.last();
-    }
+    QString sourceFile = !buffer.isEmpty() ? buffer.takeLast() : "";
+    QString folderName = !buffer.isEmpty() ? buffer.last() : "";
+    //    if (!buffer.isEmpty())
+    //    {
+    //        sourceFile = ;
+    //        if (!buffer.isEmpty())
+    //            folderName = buffer.last();
+    //    }
 
     QString fileName;
     QStringList folderList { "alarm", "check", "config", "dialogs", "gen", "iec104", "modbus", "models", "usb",
@@ -33,17 +33,27 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
         fileName = (folderName + ".txt");
 
     QTextStream out;
-
+    // const char *file = context.file ? context.file : "";
+    auto localMsg = msg.toLocal8Bit();
+    const char *function = context.function ? context.function : "";
     // Detect type of msg
-    // qWarning && qDebug пишем в одно место и удаляем их перед каждым запуском
+    // qWarning && qDebug пишем в одно место и удаляем их перед каждым запуском в релизе
     switch (type)
     {
     case QtInfoMsg:
         fileName.prepend(StdFunc::GetSystemHomeDir());
         break;
     case QtDebugMsg:
+#ifdef QT_DEBUG
+        fprintf(stderr, "%s (%s:%u, %s)\n", , sourceFile.toStdString().c_str(), context.line, function);
+        return;
+#endif
         break;
     case QtWarningMsg:
+#ifdef QT_DEBUG
+        fprintf(stderr, "%s (%s:%u)\n", msg.toStdString().c_str(), sourceFile.toStdString().c_str(), context.line);
+        return;
+#endif
         break;
     case QtCriticalMsg:
         fileName.prepend(StdFunc::GetSystemHomeDir());
