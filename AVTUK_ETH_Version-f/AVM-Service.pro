@@ -62,6 +62,7 @@ SOURCES += \
     ../gen/board.cpp \
     ../gen/journals.cpp \
     ../gen/logclass.cpp \
+    ../gen/logger.cpp \
     ../modbus/serialport.cpp \
     ../usb/eprotocom.cpp \
     ../usb/eusbworker.cpp \
@@ -141,6 +142,7 @@ HEADERS += \
     ../gen/board.h \
     ../gen/journals.h \
     ../gen/logclass.h \
+    ../gen/logger.h \
     ../modbus/serialport.h \
     ../usb/defines.h \
     ../usb/eprotocom.h \

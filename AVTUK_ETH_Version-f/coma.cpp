@@ -31,6 +31,7 @@
 #include "../config/confdialogkdv.h"
 #include "../config/confdialogkiv.h"
 #include "../config/confdialogktf.h"
+#include "../gen/logger.h"
 #ifdef AVM_DEBUG
 #include "../tune/tunedialogKIV.h"
 #endif
@@ -266,7 +267,8 @@ void Coma::StartWork()
         loop.exec();
         if (Cancelled)
         {
-            ERMSG("Отмена подключения");
+            qCritical(logCritical(), ("Отмена подключения"));
+            // ERMSG("Отмена подключения");
             return;
         }
         S2ConfigForTune->clear();
@@ -283,7 +285,8 @@ void Coma::StartWork()
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
     {
-        ERMSG("MainTW is empty");
+        qCritical(logCritical(), ("MainTW is empty"));
+        // ERMSG("MainTW is empty");
         return;
     }
     connect(MainTW, &ETabWidget::tabClicked, this, &Coma::MainTWTabClicked);
@@ -295,14 +298,16 @@ void Coma::StartWork()
         {
             QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
             QApplication::restoreOverrideCursor();
-            ERMSG("cn: can't connect");
+            qCritical(logCritical(), ("cn: can't connect"));
+            // ERMSG("cn: can't connect");
             return;
         }
         Error::Msg res = ModuleBSI::SetupBSI();
         if (res == Error::Msg::GeneralError)
         {
             QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
-            ERMSG("BSI read error");
+            qCritical(logCritical(), ("BSI read error"));
+            // ERMSG("BSI read error");
             return;
         }
         else if (res == Error::Msg::NoError)
@@ -313,7 +318,8 @@ void Coma::StartWork()
             else
             {
                 QMessageBox::critical(this, "Ошибка", "Неизвестный тип модуля", QMessageBox::Ok);
-                ERMSG("Unknown module type");
+                qCritical(logCritical(), ("Unknown module type"));
+                // ERMSG("Unknown module type");
                 return;
             }
         }
@@ -334,7 +340,9 @@ void Coma::StartWork()
     {
         if (ChModbus->Connect(ConnectSettings.serialst) != Error::Msg::NoError)
         {
-            ERMSG("Modbus not connected");
+
+            qCritical(logCritical(), ("Unknown module type"));
+            //      ERMSG("Modbus not connected");
             return;
         }
         ChModbus->BSIrequest();
@@ -974,7 +982,7 @@ void Coma::FileTimeOut()
     QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
     if (prb == nullptr)
     {
-        ERMSG("Пустой prb");
+        qCritical(logCritical(), ("Пустой prb"));
         DBGMSG;
         return;
     }
