@@ -291,21 +291,21 @@ void Coma::StartWork()
     {
     case Board::InterfaceType::USB:
     {
-        if (Commands::Connect() != NOERROR) // cn->Connect()
+        if (Commands::Connect() != Error::Msg::NoError) // cn->Connect()
         {
             QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
             QApplication::restoreOverrideCursor();
             ERMSG("cn: can't connect");
             return;
         }
-        int res = ModuleBSI::SetupBSI();
-        if (res == GENERALERROR)
+        Error::Msg res = ModuleBSI::SetupBSI();
+        if (res == Error::Msg::GeneralError)
         {
             QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
             ERMSG("BSI read error");
             return;
         }
-        else if (res == NOERROR)
+        else if (res == Error::Msg::NoError)
         {
             if (ModuleBSI::ModuleTypeString != "")
                 QMessageBox::information(
@@ -332,7 +332,7 @@ void Coma::StartWork()
     }
     case Board::InterfaceType::RS485:
     {
-        if (ChModbus->Connect(ConnectSettings.serialst) != NOERROR)
+        if (ChModbus->Connect(ConnectSettings.serialst) != Error::Msg::NoError)
         {
             ERMSG("Modbus not connected");
             return;
@@ -458,9 +458,9 @@ void Coma::StartWork()
         MainTW->addTab(jourDialog, "Журналы");
 
     if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
-        Error::ShowErMsg(ER_NOCONF);
+        Error::ShowErMsg(Error::Msg::ER_NOCONF);
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
-        Error::ShowErMsg(ER_NOTUNECOEF);
+        Error::ShowErMsg(Error::Msg::ER_NOTUNECOEF);
     if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
     {
         fwUpDialog = new fwupdialog;
@@ -849,7 +849,7 @@ void Coma::ClearTW()
     }
 }
 
-int Coma::CheckPassword()
+Error::Msg Coma::CheckPassword()
 {
     PasswordValid = false;
     StdFunc::ClearCancel();
@@ -862,16 +862,16 @@ int Coma::CheckPassword()
     if (StdFunc::IsCancelled())
     {
         ERMSG("Отмена ввода пароля");
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
 
     if (!PasswordValid)
     {
         ERMSG("Пароль введён неверно");
         QMessageBox::critical(this, "Неправильно", "Пароль введён неверно", QMessageBox::Ok);
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
-    return NOERROR;
+    return Error::Msg::NoError;
 }
 
 void Coma::setConf(unsigned char typeConf)

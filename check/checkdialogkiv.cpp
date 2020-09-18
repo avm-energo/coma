@@ -167,19 +167,19 @@ void CheckDialogKIV::StopBdMeasurements()
 
 void CheckDialogKIV::USBUpdate()
 {
-    if (Commands::GetBd(BdNum, &ChKIV->Bd_block1, sizeof(Check_KIV::Bd1)) == NOERROR)
+    if (Commands::GetBd(BdNum, &ChKIV->Bd_block1, sizeof(Check_KIV::Bd1)) == Error::Msg::NoError)
     {
         ChKIV->FillBdUSB(this);
         // Ch84->FillBd2(this);
     }
 
-    if (Commands::GetBd(5, &ChKIV->Bd_block5, sizeof(Check_KIV::Bd5)) == NOERROR)
+    if (Commands::GetBd(5, &ChKIV->Bd_block5, sizeof(Check_KIV::Bd5)) == Error::Msg::NoError)
     {
         ChKIV->FillBd5(this);
         // Ch84->FillBd2(this);
     }
 
-    if (Commands::GetBd(8, &ChKIV->Bd_block8, sizeof(Check_KIV::Bd8)) == NOERROR)
+    if (Commands::GetBd(8, &ChKIV->Bd_block8, sizeof(Check_KIV::Bd8)) == Error::Msg::NoError)
     {
         ChKIV->FillBd8(this);
         // Ch84->FillBd2(this);

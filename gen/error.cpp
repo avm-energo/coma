@@ -38,7 +38,7 @@ void Error::Init()
     } while (!streamfile.atEnd());
 }
 
-void Error::AddErrMsg(ErMsgType msgtype, QString file, int line, QString msg)
+ void Error::AddErrMsg(ErMsgType msgtype, QString file, int line, QString msg)
 {
     if (ErMsgPool.size() >= ER_BUFMAX)
         ErMsgPool.removeFirst();
@@ -48,22 +48,7 @@ void Error::AddErrMsg(ErMsgType msgtype, QString file, int line, QString msg)
     tmpm.line = line;
     tmpm.DateTime = QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss");
     // Разбор кода ошибки
-    QString prefix;
-    /*    if ((msg.isEmpty()) || (msg == " ")) // пробел выдаётся при пустом
-       запросе в БД
-        {
-            switch (msgtype)
-            {
-            case ER_MSG:
-                prefix = "Ошибка ";
-                break;
-            case WARN_MSG: prefix = "Проблема "; break;
-            case INFO_MSG: prefix = "Инфо "; break;
-            case DBG_MSG: prefix = "Отладка "; break;
-            }
-            msg = prefix+"в файле " + tmpm.file + " строка " +
-       QString::number(tmpm.line);
-        } */
+
     if ((msgtype == ER_MSG) || (msgtype == DBG_MSG))
         LogFile.error("file: " + tmpm.file + ", line: " + QString::number(tmpm.line) + ": " + msg);
     else if (msgtype == WARN_MSG)
@@ -74,12 +59,9 @@ void Error::AddErrMsg(ErMsgType msgtype, QString file, int line, QString msg)
     ErMsgPool.append(tmpm);
 }
 
-void Error::ShowErMsg(int ermsgnum)
+void Error::ShowErMsg(Error::Msg msg)
 {
-    if (ermsgnum < ErrMsgs.size())
-        ERMSG(ErrMsgs.at(ermsgnum));
-    else
-        ERMSG("Произошла неведомая фигня #" + QString::number(ermsgnum, 10));
+    ERMSG(QVariant::fromValue(msg).toString());
 }
 
 int Error::ErMsgPoolSize()

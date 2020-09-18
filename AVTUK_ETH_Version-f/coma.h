@@ -136,7 +136,7 @@ public:
     QWidget *MainInfoWidget();
 
     QWidget *Least();
-    int CheckPassword();
+    Error::Msg CheckPassword();
     void Disconnect();
 
 signals:

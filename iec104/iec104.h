@@ -247,7 +247,7 @@ private:
     bool FirstParse;
 
     void ParseIFormat(QByteArray &ba);
-    int isIncomeDataValid(QByteArray);
+    Error::Msg isIncomeDataValid(QByteArray);
     QByteArray CreateGI(unsigned char apdulength);
     QByteArray ASDUFilePrefix(unsigned char Command, unsigned char filenum, unsigned char secnum);
     QByteArray ASDU6Prefix(unsigned char Command, quint32 adr);

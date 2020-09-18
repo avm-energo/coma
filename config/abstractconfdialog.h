@@ -2,6 +2,7 @@
 
 #define MAXBYTEARRAY 65535
 
+#include "../gen/error.h"
 #include "config.h"
 
 #include <QDialog>
@@ -29,9 +30,9 @@ public:
     void ReadConf();
     // является непустой список CheckConfErrors
     void PrereadConf();
-    int GetChNumFromObjectName(QString ObjectName);
+    // int GetChNumFromObjectName(QString ObjectName);
 
-    int WriteCheckPassword();
+    Error::Msg WriteCheckPassword();
 
 public slots:
     void WriteConfMessageOk();

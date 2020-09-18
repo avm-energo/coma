@@ -49,7 +49,8 @@ void AlarmClass::UpdateAlarmUSB()
     int i = 0;
     if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
     {
-        if (Commands::GetBd(MapAlarm[Board::GetInstance()->type()].BdNumbers, &signalling, sizeof(BdAlarm)) == NOERROR)
+        if (Commands::GetBd(MapAlarm[Board::GetInstance()->type()].BdNumbers, &signalling, sizeof(BdAlarm))
+            == Error::Msg::NoError)
         {
             for (i = 0; i < MapAlarm[Board::GetInstance()->type()].warnCounts; ++i)
             {
@@ -67,7 +68,7 @@ void AlarmClass::UpdateAlarmUSB()
             emit SetAlarmColor(AvarAlarmEvents);
         }
     }
-    if (Commands::GetBsi(ModuleBSI::ModuleBsi) == NOERROR)
+    if (Commands::GetBsi(ModuleBSI::ModuleBsi) == Error::Msg::NoError)
         emit SetFirstButton();
 }
 

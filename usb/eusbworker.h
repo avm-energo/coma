@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../gen/error.h"
 #include "../gen/logclass.h"
 #include "defines.h"
 #include "hidapi/hidapi.h"
@@ -13,7 +14,7 @@ public:
 
     LogClass *log;
 
-    int setupConnection();
+    Error::Msg setupConnection();
     int WriteDataAttempt(QByteArray &ba);
 
     void closeConnection();
@@ -35,7 +36,7 @@ private:
     QList<QByteArray> WriteQueue;
     DeviceConnectStruct DeviceInfo;
 
-    int WriteData(QByteArray &ba);
+    Error::Msg WriteData(QByteArray &ba);
     void CheckWriteQueue();
     void Finish();
 

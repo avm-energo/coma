@@ -1,6 +1,7 @@
 #ifndef MODULEBSI_H
 #define MODULEBSI_H
 
+#include "../gen/error.h"
 #include "../gen/s2.h"
 #include "../iec104/iec104.h"
 
@@ -53,7 +54,7 @@ public:
 
     ModuleBSI();
 
-    static int SetupBSI();
+    static Error::Msg SetupBSI();
     static QString GetModuleTypeString();
     static quint32 GetMType(BoardTypes type);
     static quint32 Health();
@@ -61,7 +62,7 @@ public:
     static Bsi GetBsi();
     static quint32 GetHealth();
     static bool IsKnownModule();
-    static int PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config);
+    static Error::Msg PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config);
     static Bsi ModuleBsi;
     static QString ModuleTypeString;
 

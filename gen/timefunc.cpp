@@ -1,20 +1,22 @@
 #include "timefunc.h"
 
 #include "error.h"
+
 #include <QDateTime>
 
-TimeFunc::TimeFunc() { }
+TimeFunc::TimeFunc()
+{
+}
 
-
-int TimeFunc::WaitFor(bool &flag, int timeoutms)
+Error::Msg TimeFunc::WaitFor(bool &flag, int timeoutms)
 {
     QElapsedTimer tmr;
     tmr.start();
     while ((!flag) && (tmr.elapsed() < timeoutms))
         QCoreApplication::processEvents();
     if (!flag)
-        return GENERALERROR;
-    return NOERROR;
+        return Error::Msg::GeneralError;
+    return Error::Msg::NoError;
 }
 
 QString TimeFunc::NsTimeToString(quint64 nstime)

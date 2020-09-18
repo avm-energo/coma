@@ -321,7 +321,7 @@ bool ConnectDialog::UpdateModel()
         if (USBsl.isEmpty())
         {
             QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
-            Error::ShowErMsg(CN_NOPORTSERROR);
+            Error::ShowErMsg(Error::Msg::CN_NOPORTSERROR);
             return false;
         }
         mdl->setHeaders(sl);

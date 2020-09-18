@@ -358,7 +358,7 @@ void Journals::StartGetJour()
     case Board::InterfaceType::USB:
     {
         QByteArray ba;
-        if (Commands::GetFile(_jourType, ba) == NOERROR)
+        if (Commands::GetFile(_jourType, ba) == Error::Msg::NoError)
         {
             switch (_jourType)
             {

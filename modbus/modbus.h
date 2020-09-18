@@ -47,7 +47,7 @@ public:
         int Command;
         QByteArray Ba;
         int TaskNum;
-        int Res;
+        Error::Msg Res;
         qint64 ReadSize;
         bool Checked;
     };
@@ -88,13 +88,13 @@ public:
     ModBus(QObject *parent = nullptr);
     ~ModBus();
 
-    int Connect(SerialPort::Settings &settings);
+    Error::Msg Connect(SerialPort::Settings &settings);
     void BSIrequest();
 
     int CheckIndex, CheckHarmIndex, CheckVibrIndex, CorIndex, TimeIndex;
 
 public slots:
-    int SendAndGetResult(ModBus::ComInfo &request, ModBus::InOutStruct &outp);
+    Error::Msg SendAndGetResult(ModBus::ComInfo &request, ModBus::InOutStruct &outp);
     void ModWriteCor(ModBus::Information info, float *); //, int*);
     void ModReadCor(ModBus::Information info);
     void ReadTime();
@@ -131,10 +131,11 @@ private:
     QList<InOutStruct> OutList;
     LogClass *Log;
 
-    void SendAndGet(InOutStruct &inp, InOutStruct &outp);
+    Error::Msg SendAndGet(InOutStruct &inp, InOutStruct &outp);
     bool GetResultFromOutQueue(int index, InOutStruct &outp);
-    int GetSignalsFromByteArray(QByteArray &bain, int startadr, QList<BSISignalStruct> &BSIsig, unsigned int &size);
-    int GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, QList<SignalStruct> &Sig, int &size);
+    Error::Msg GetSignalsFromByteArray(
+        QByteArray &bain, int startadr, QList<BSISignalStruct> &BSIsig, unsigned int &size);
+    Error::Msg GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, QList<SignalStruct> &Sig, int &size);
 
 private slots:
     void Polling();
@@ -157,6 +158,7 @@ public:
 public slots:
     void Run();
     void FinishThread();
+    void ParseReply(QByteArray ba);
 
 signals:
     // void ModbusState(ConnectionStates);
@@ -208,9 +210,6 @@ private:
     void Send();
     quint16 CalcCRC(QByteArray &Dat);
     void AddToOutQueue(ModBus::InOutStruct &outp);
-
-private slots:
-    void ParseReply(QByteArray ba);
 };
 
 #endif

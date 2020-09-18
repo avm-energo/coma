@@ -21,13 +21,13 @@ EUsbWorker::~EUsbWorker()
     qDebug(__PRETTY_FUNCTION__);
 }
 
-int EUsbWorker::setupConnection()
+Error::Msg EUsbWorker::setupConnection()
 {
     if ((DeviceInfo.product_id == 0) || (DeviceInfo.vendor_id == 0))
     {
         ERMSG("DeviceInfo is null");
         Finish();
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
     if (HidDevice)
         hid_close(HidDevice);
@@ -36,11 +36,11 @@ int EUsbWorker::setupConnection()
     {
         ERMSG("Error opening HID device");
         Finish();
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
     hid_set_nonblocking(HidDevice, 1);
     INFOMSG("HID opened successfully");
-    return NOERROR;
+    return Error::Msg::NoError;
 }
 
 void EUsbWorker::interact()
@@ -102,7 +102,7 @@ void EUsbWorker::Finish()
     emit Finished();
 }
 
-int EUsbWorker::WriteData(QByteArray &ba)
+Error::Msg EUsbWorker::WriteData(QByteArray &ba)
 {
     if (HidDevice)
     {
@@ -111,7 +111,7 @@ int EUsbWorker::WriteData(QByteArray &ba)
             if (WriteUSBLog)
                 log->WriteRaw("UsbThread: WRONG SEGMENT LENGTH!\n");
             ERMSG("Длина сегмента больше " + QString::number(UH::MaxSegmenthLength) + " байт");
-            return GENERALERROR;
+            return Error::Msg::GeneralError;
         }
         if (ba.size() < UH::MaxSegmenthLength)
             ba.append(UH::MaxSegmenthLength - ba.size(), static_cast<char>(0x00));
@@ -122,12 +122,14 @@ int EUsbWorker::WriteData(QByteArray &ba)
             log->WriteRaw(tmpba);
         }
         size_t tmpt = static_cast<size_t>(ba.size());
-        int res = hid_write(HidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt);
-        return res;
+        if (hid_write(HidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt) != -1)
+            return Error::Msg::NoError;
+        else
+            Error::Msg::GeneralError;
     }
     if (log != nullptr)
         log->WriteRaw("UsbThread: null hid device");
-    return GENERALERROR;
+    return Error::Msg::GeneralError;
 }
 
 void EUsbWorker::CheckWriteQueue()

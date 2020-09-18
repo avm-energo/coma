@@ -43,10 +43,10 @@ void AbstractConfDialog::ReadConf()
     // else if (MainInterface == I_USB)
     case Board::InterfaceType::USB:
     {
-        int res = ModuleBSI::PrereadConf(this, S2Config);
-        if (res == RESEMPTY)
+        Error::Msg res = ModuleBSI::PrereadConf(this, S2Config);
+        if (res == Error::Msg::ResEmpty)
             emit DefConfToBeLoaded();
-        else if (res == NOERROR)
+        else if (res == Error::Msg::NoError)
             emit NewConfToBeLoaded();
         break;
     }
@@ -61,10 +61,9 @@ void AbstractConfDialog::FillConf(QVector<S2::DataRec> *DR)
 
 void AbstractConfDialog::WriteConf()
 {
-    int res;
-    if (WriteCheckPassword() == NOERROR)
+    Error::Msg res = WriteCheckPassword();
+    if (res == Error::Msg::NoError)
     {
-
         if (!PrepareConfToWrite())
         {
             ERMSG("Ошибка чтения конфигурации");
@@ -77,20 +76,22 @@ void AbstractConfDialog::WriteConf()
             break;
         case Board::InterfaceType::USB:
         {
-            if ((res = Commands::WriteFile(1, S2Config)) == NOERROR)
+            res = Commands::WriteFile(1, S2Config);
+            if (res == Error::Msg::NoError)
             {
                 emit BsiIsNeedToBeAcquiredAndChecked();
                 QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
             }
             else
-                QMessageBox::critical(this, "Ошибка", "Ошибка записи конфигурации" + QString::number(res));
+                QMessageBox::critical(
+                    this, "Ошибка", "Ошибка записи конфигурации" + QVariant::fromValue(res).toString());
             break;
         }
         }
     }
 }
 
-int AbstractConfDialog::WriteCheckPassword()
+Error::Msg AbstractConfDialog::WriteCheckPassword()
 {
     ok = false;
     StdFunc::ClearCancel();
@@ -101,13 +102,13 @@ int AbstractConfDialog::WriteCheckPassword()
     dlg->show();
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     if (!ok)
     {
         QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
-    return NOERROR;
+    return Error::Msg::NoError;
 }
 
 void AbstractConfDialog::WritePasswordCheck(QString psw)
@@ -135,19 +136,19 @@ void AbstractConfDialog::SaveConfToFile()
     BaLength += static_cast<quint8>(ba.data()[6]) * 65536;
     BaLength += static_cast<quint8>(ba.data()[7]) * 16777216;
     BaLength += sizeof(S2::FileHeader); // FileHeader
-    int res = Files::SaveToFile(Files::ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba, BaLength);
+    Error::Msg res = Files::SaveToFile(Files::ChooseFileForSave(this, "Config files (*.cf)", "cf"), ba, BaLength);
     switch (res)
     {
-    case Files::ER_NOERROR:
+    case Error::Msg::NoError:
         QMessageBox::information(this, "Внимание", "Записано успешно!");
         break;
-    case Files::ER_FILEWRITE:
+    case Error::Msg::FILE_WRITE:
         ERMSG("Ошибка при записи файла!");
         break;
-    case Files::ER_FILENAMEEMP:
+    case Error::Msg::FILE_NAMEEMP:
         ERMSG("Пустое имя файла!");
         break;
-    case Files::ER_FILEOPEN:
+    case Error::Msg::FILE_OPEN:
         ERMSG("Ошибка открытия файла!");
         break;
     default:
@@ -158,13 +159,13 @@ void AbstractConfDialog::SaveConfToFile()
 void AbstractConfDialog::LoadConfFromFile()
 {
     QByteArray ba;
-    int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Config files (*.cf)"), ba);
-    if (res != Files::ER_NOERROR)
+    Error::Msg res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Config files (*.cf)"), ba);
+    if (res != Error::Msg::NoError)
     {
         WARNMSG("Ошибка при загрузке файла конфигурации");
         return;
     }
-    if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), S2Config) != NOERROR)
+    if (S2::RestoreDataMem(&(ba.data()[0]), ba.size(), S2Config) != Error::Msg::NoError)
     {
         WARNMSG("Ошибка при разборе файла конфигурации");
         return;
@@ -222,10 +223,10 @@ void AbstractConfDialog::ButtonReadConf()
     }
     case Board::InterfaceType::USB:
     {
-        int res = ModuleBSI::PrereadConf(this, S2Config);
-        if (res == RESEMPTY)
+        Error::Msg res = ModuleBSI::PrereadConf(this, S2Config);
+        if (res == Error::Msg::ResEmpty)
             emit DefConfToBeLoaded();
-        else if (res == NOERROR)
+        else if (res == Error::Msg::NoError)
             emit NewConfToBeLoaded();
         break;
     }
@@ -244,19 +245,19 @@ void AbstractConfDialog::PrereadConf()
 
 // по имени виджета взять его номер
 
-int AbstractConfDialog::GetChNumFromObjectName(QString ObjectName)
-{
-    QStringList ObjectNameSl = ObjectName.split(".");
-    int ChNum;
-    bool ok;
-    if (ObjectNameSl.size() > 1)
-        ChNum = ObjectNameSl.at(1).toInt(&ok);
-    else
-        return GENERALERROR;
-    if (!ok)
-        return GENERALERROR;
-    return ChNum;
-}
+// int AbstractConfDialog::GetChNumFromObjectName(QString ObjectName)
+//{
+//    QStringList ObjectNameSl = ObjectName.split(".");
+//    int ChNum;
+//    bool ok;
+//    if (ObjectNameSl.size() > 1)
+//        ChNum = ObjectNameSl.at(1).toInt(&ok);
+//    else
+//        return Error::Msg::GeneralError;
+//    if (!ok)
+//        return Error::Msg::GeneralError;
+//    return ChNum;
+//}
 
 bool AbstractConfDialog::PrepareConfToWrite()
 {
@@ -273,7 +274,7 @@ bool AbstractConfDialog::PrepareConfToWrite()
         te->setPlainText(CheckConfErrors.join("\n"));
         vlyout->addWidget(te, 0, Qt::AlignCenter);
         QPushButton *pb = new QPushButton("Хорошо");
-        connect(pb, SIGNAL(clicked(bool)), dlg, SLOT(close()));
+        connect(pb, &QAbstractButton::clicked, dlg, &QWidget::close);
         vlyout->addWidget(pb);
         dlg->setLayout(vlyout);
         dlg->show();

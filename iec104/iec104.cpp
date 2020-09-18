@@ -42,47 +42,43 @@ void IEC104::Connect(Settings &st)
     Ethernet *eth = new Ethernet;
     eth->moveToThread(thr);
     eth->IP = st.ip;
-    connect(eth, SIGNAL(Finished()), thr, SLOT(quit()));
-    connect(eth, SIGNAL(Finished()), eth, SLOT(deleteLater()));
-    connect(thr, SIGNAL(started()), eth, SLOT(Run()));
-    connect(thr, SIGNAL(finished()), thr, SLOT(deleteLater()));
-    connect(this, SIGNAL(StopAll()), eth, SLOT(Stop()));
-    connect(eth, SIGNAL(Connected()), this, SLOT(EthThreadStarted()));
-    connect(eth, SIGNAL(Disconnected()), this, SLOT(EthThreadFinished()));
+    connect(eth, &Ethernet::Finished, thr, &QThread::quit);
+    connect(eth, &Ethernet::Finished, eth, &QObject::deleteLater);
+    connect(thr, &QThread::started, eth, &Ethernet::Run);
+    connect(thr, &QThread::finished, thr, &QObject::deleteLater);
+    connect(this, &IEC104::StopAll, eth, &Ethernet::Stop);
+    connect(eth, &Ethernet::Connected, this, &IEC104::EthThreadStarted);
+    connect(eth, &Ethernet::Disconnected, this, &IEC104::EthThreadFinished);
 
     Parse = new IEC104Thread(Log, InputQueue, S2Config);
     QThread *thr2 = new QThread;
     Parse->moveToThread(thr2);
-    connect(this, SIGNAL(StopAll()), Parse, SLOT(Stop()));
-    connect(Parse, SIGNAL(Finished()), Parse, SLOT(deleteLater()));
-    connect(Parse, SIGNAL(Finished()), thr2, SLOT(quit()));
-    connect(Parse, SIGNAL(Finished()), this, SLOT(ParseThreadFinished()));
-    connect(thr2, SIGNAL(finished()), thr2, SLOT(deleteLater()));
-    connect(thr2, SIGNAL(started()), Parse, SLOT(Run()));
-    connect(Parse, SIGNAL(Started()), this, SLOT(ParseThreadStarted()));
-    connect(eth, SIGNAL(Connected()), Parse, SLOT(StartDT()));
-    connect(eth, SIGNAL(Finished()), this, SLOT(EmitReconnectSignal()));
-    connect(Parse, SIGNAL(WriteData(QByteArray)), eth, SLOT(InitiateWriteDataToPort(QByteArray)));
-    connect(eth, SIGNAL(NewDataArrived(QByteArray)), Parse, SLOT(GetSomeData(QByteArray)));
-    connect(Parse, SIGNAL(ReconnectSignal()), this, SLOT(EmitReconnectSignal()));
+    connect(this, &IEC104::StopAll, Parse, &IEC104Thread::Stop);
+    connect(Parse, &IEC104Thread::Finished, Parse, &QObject::deleteLater);
+    connect(Parse, &IEC104Thread::Finished, thr2, &QThread::quit);
+    connect(Parse, &IEC104Thread::Finished, this, &IEC104::ParseThreadFinished);
+    connect(thr2, &QThread::finished, thr2, &QObject::deleteLater);
+    connect(thr2, &QThread::started, Parse, &IEC104Thread::Run);
+    connect(Parse, &IEC104Thread::Started, this, &IEC104::ParseThreadStarted);
+    connect(eth, &Ethernet::Connected, Parse, &IEC104Thread::StartDT);
+    connect(eth, &Ethernet::Finished, this, &IEC104::EmitReconnectSignal);
+    connect(Parse, &IEC104Thread::WriteData, eth, &Ethernet::InitiateWriteDataToPort);
+    connect(eth, &Ethernet::NewDataArrived, Parse, &IEC104Thread::GetSomeData);
+    connect(Parse, &IEC104Thread::ReconnectSignal, this, &IEC104::EmitReconnectSignal);
 
-    connect(Parse, SIGNAL(Bs104signalsreceived(IEC104Thread::BS104Signals *)), this,
-        SIGNAL(Bs104signalsready(IEC104Thread::BS104Signals *)), Qt::BlockingQueuedConnection);
-    connect(Parse, SIGNAL(Floatsignalsreceived(IEC104Thread::FlSignals104 *)), this,
-        SIGNAL(Floatsignalsready(IEC104Thread::FlSignals104 *)), Qt::BlockingQueuedConnection);
-    connect(Parse, SIGNAL(Sponsignalsreceived(IEC104Thread::SponSignals *)), this,
-        SIGNAL(Sponsignalsready(IEC104Thread::SponSignals *)), Qt::BlockingQueuedConnection);
-    connect(
-        Parse, SIGNAL(SendS2fromParse(QVector<S2::DataRec> *)), this, SIGNAL(SendS2fromiec104(QVector<S2::DataRec> *)));
-    connect(Parse, SIGNAL(SendJourSysfromParse(QByteArray)), this, SIGNAL(SendJourSysfromiec104(QByteArray)));
-    connect(Parse, SIGNAL(SendJourWorkfromParse(QByteArray)), this, SIGNAL(SendJourWorkfromiec104(QByteArray)));
-    connect(Parse, SIGNAL(SendJourMeasfromParse(QByteArray)), this, SIGNAL(SendJourMeasfromiec104(QByteArray)));
+    connect(Parse, &IEC104Thread::Bs104signalsreceived, this, &IEC104::Bs104signalsready, Qt::BlockingQueuedConnection);
+    connect(Parse, &IEC104Thread::Floatsignalsreceived, this, &IEC104::Floatsignalsready, Qt::BlockingQueuedConnection);
+    connect(Parse, &IEC104Thread::Sponsignalsreceived, this, &IEC104::Sponsignalsready, Qt::BlockingQueuedConnection);
+    connect(Parse, &IEC104Thread::SendS2fromParse, this, &IEC104::SendS2fromiec104);
+    connect(Parse, &IEC104Thread::SendJourSysfromParse, this, &IEC104::SendJourSysfromiec104);
+    connect(Parse, &IEC104Thread::SendJourWorkfromParse, this, &IEC104::SendJourWorkfromiec104);
+    connect(Parse, &IEC104Thread::SendJourMeasfromParse, this, &IEC104::SendJourMeasfromiec104);
 
-    connect(Parse, SIGNAL(SendMessageOk()), this, SIGNAL(SendMessageOk()));
+    connect(Parse, &IEC104Thread::SendMessageOk, this, &IEC104::SendMessageOk);
 
-    connect(Parse, SIGNAL(SetDataSize(int)), this, SIGNAL(SetDataSize(int)));
-    connect(Parse, SIGNAL(SetDataCount(int)), this, SIGNAL(SetDataCount(int)));
-    connect(Parse, SIGNAL(SendMessagefromParse()), this, SIGNAL(SendConfMessageOk()));
+    connect(Parse, &IEC104Thread::SetDataSize, this, &IEC104::SetDataSize);
+    connect(Parse, &IEC104Thread::SetDataCount, this, &IEC104::SetDataCount);
+    connect(Parse, &IEC104Thread::SendMessagefromParse, this, &IEC104::SendConfMessageOk);
 
     Parse->SetBaseAdr(st.baseadr);
     Parse->incLS = 0;
@@ -244,9 +240,9 @@ void IEC104Thread::Run()
             ParseReadMutex.unlock();
             if (!tmpba.isEmpty())
             {
-                int tmpi = isIncomeDataValid(tmpba);
-                if (tmpi == I104_RCVNORM) // если поймали правильное начало данных,
-                                          // переходим к их обработке
+                Error::Msg tmpi = isIncomeDataValid(tmpba);
+                if (tmpi == Error::Msg::NoError) // если поймали правильное начало данных,
+                                                 // переходим к их обработке
                 {
                     if (APDUFormat == I104_I)
                     {
@@ -335,15 +331,17 @@ void IEC104Thread::GetSomeData(QByteArray ba)
     FirstParse = true;
 }
 
-int IEC104Thread::isIncomeDataValid(QByteArray ba)
+Error::Msg IEC104Thread::isIncomeDataValid(QByteArray ba)
 {
     try
     {
         if (ba.at(0) != 0x68)
-            return I104_RCVWRONG;
+            // return I104_RCVWRONG;
+            return Error::Msg::GeneralError;
         APDULength = static_cast<quint8>(ba.at(1)); // в 1-м байте лежит длина
         if ((APDULength < 4) || (APDULength > 253))
-            return I104_RCVWRONG;
+            // return I104_RCVWRONG;
+            return Error::Msg::GeneralError;
         if (!(ba.at(2) & 0x01)) // I
             APDUFormat = I104_I;
         else
@@ -362,14 +360,16 @@ int IEC104Thread::isIncomeDataValid(QByteArray ba)
             if (V_Rrcv != V_R)
             {
                 Log->error("V_Rrcv != V_R");
-                return I104_RCVWRONG;
+                // return I104_RCVWRONG;
+                return Error::Msg::GeneralError;
             }
             V_R++;
             quint16 V_Srcv = static_cast<quint8>(ba.at(5)) * 256 + static_cast<quint8>(ba.at(4) & 0xFE);
             V_Srcv >>= 1;
             if (V_Srcv != V_S)
                 V_S = V_Srcv; // временно, нужно исправить проблему несовпадения s посылок
-            return I104_RCVNORM;
+            // return I104_RCVNORM;
+            return Error::Msg::NoError;
         }
         case I104_S:
         {
@@ -377,7 +377,8 @@ int IEC104Thread::isIncomeDataValid(QByteArray ba)
             V_Srcv >>= 1;
             if (V_Srcv != V_S)
                 V_S = V_Srcv;
-            return I104_RCVNORM;
+            // return I104_RCVNORM;
+            return Error::Msg::NoError;
         }
         case I104_U:
         {
@@ -400,17 +401,19 @@ int IEC104Thread::isIncomeDataValid(QByteArray ba)
 
             NoAnswer = 0;
 
-            return I104_RCVNORM;
+            // return I104_RCVNORM;
+            return Error::Msg::NoError;
         }
         default:
             break;
         }
-        return I104_RCVWRONG;
+        // return I104_RCVWRONG;
+        return Error::Msg::GeneralError;
     }
     catch (...)
     {
         ERMSG("Fatal exception");
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
 }
 
@@ -609,8 +612,8 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                     int filetype = ba.at(9);
                     if (filetype == 0x01) // если файл конфигурации
                     {
-                        res = S2::RestoreDataMem(ReadData.data(), RDLength, DR);
-                        if (res == NOERROR)
+                        Error::Msg res = S2::RestoreDataMem(ReadData.data(), RDLength, DR);
+                        if (res == Error::Msg::NoError)
                             emit SendS2fromParse(DR);
                     }
                     else if (filetype == 0x04) // если файл системного журнала

@@ -47,12 +47,12 @@ EProtocom::EProtocom(QObject *parent)
     setWriteUSBLog(sets->value("WriteLog", "0").toBool());
 }
 
-qint32 EProtocom::result() const
+Error::Msg EProtocom::result() const
 {
     return m_result;
 }
 
-void EProtocom::setResult(const qint32 &result)
+void EProtocom::setResult(const Error::Msg &result)
 {
     m_result = result;
 }
@@ -74,7 +74,7 @@ void EProtocom::Send(char command, char parameter, QByteArray &ba, qint64 datasi
     {
         qDebug() << "Передача в отключенный прибор";
         ERMSG("В канальную процедуру переданы некорректные данные");
-        m_result = CN_NULLDATAERROR;
+        m_result = Error::Msg::CN_NULLDATAERROR;
         return;
     }
     try
@@ -194,7 +194,7 @@ void EProtocom::InitiateSend()
     default:
     {
         ERMSG("Неизвестная команда");
-        Finish(CN_UNKNOWNCMDERROR);
+        Finish(Error::Msg::CN_UNKNOWNCMDERROR);
         return;
     }
     }
@@ -211,7 +211,7 @@ void EProtocom::WriteDataToPort(QByteArray &ba)
     if (Command == CN::Unknown) // игнорируем вызовы процедуры без команды
     {
         ERMSG("Не пришла ещё шапка файла");
-        Error::ShowErMsg(USB_WRONGCOMER);
+        Error::ShowErMsg(Error::Msg::USB_WRONGCOMER);
         return;
     }
     int byteswritten = 0;
@@ -223,37 +223,35 @@ void EProtocom::WriteDataToPort(QByteArray &ba)
             QByteArray tmps = "->" + tmpba.toHex() + "\n";
             CnLog->WriteRaw(tmps);
         }
-        int tmpi = RawWrite(tmpba);
-        if (tmpi == GENERALERROR)
+        if (Board::GetInstance()->connectionState() == Board::ConnectionState::Closed
+            && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
         {
             ERMSG("Ошибка записи RawWrite");
-            Error::ShowErMsg(COM_WRITEER);
+            Error::ShowErMsg(Error::Msg::COM_WRITEER);
             Disconnect();
             // TTimer->start();
             return;
         }
+        int tmpi = RawWrite(tmpba);
         byteswritten += tmpi;
         emit writebytessignal(tmpba.left(tmpi));
         tmpba = tmpba.remove(0, tmpi);
     }
 }
 
-void EProtocom::Finish(int ernum)
+void EProtocom::Finish(Error::Msg msg)
 {
     // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
     Command = CN::Unknown;
-    if (ernum != NOERROR)
+    if (msg != Error::Msg::NoError)
     {
-        if (ernum < 0)
-        {
-            qDebug(__PRETTY_FUNCTION__);
-            CnLog->WriteRaw("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###\n");
-            WARNMSG("ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ!!!");
-        }
-        else
-            Error::ShowErMsg(ernum);
+
+        qDebug(__PRETTY_FUNCTION__);
+        CnLog->WriteRaw("### ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ ###\n");
+        WARNMSG("ОШИБКА В ПЕРЕДАННЫХ ДАННЫХ!!!");
+        Error::ShowErMsg(msg);
     }
-    m_result = ernum;
+    m_result = msg;
     emit QueryFinished();
 }
 
@@ -362,15 +360,16 @@ void EProtocom::ParseIncomeData(QByteArray ba)
     if (ReadDataChunk.at(0) != CN::Message::Module)
     {
         ERMSG("Ошибка при приеме данных");
-        Finish(CN_RCVDATAERROR);
+        Finish(Error::Msg::CN_RCVDATAERROR);
         return;
     }
     if (ReadDataChunk.at(1) == CN::ResultError)
     {
         if (rdsize < 5) // некорректная посылка
-            Finish(CN_RCVDATAERROR);
+            Finish(Error::Msg::CN_RCVDATAERROR);
         else
-            Finish(USO_NOERR + ReadDataChunk.at(4));
+            // Finish(Error::Msg::USO_NOERR + ReadDataChunk.at(4));
+            Finish(Error::Msg::USO_NOERR);
         return;
     }
     switch (bStep)
@@ -393,12 +392,12 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             if ((ReadDataChunk.at(1) != CN::ResultOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
             {
                 ERMSG("Ошибка при приеме данных");
-                Finish(CN_RCVDATAERROR);
+                Finish(Error::Msg::CN_RCVDATAERROR);
                 return;
             }
             if (Command == CN::Write::EraseTech)
                 OscTimer->start(); // start timer to send ErPg command periodically
-            Finish(NOERROR);
+            Finish(Error::Msg::NoError);
             INFOMSG("Переход в тестовый режим без ошибок");
             return;
         }
@@ -411,12 +410,12 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             if ((ReadDataChunk.at(1) != CN::ResultOk) || (ReadDataChunk.at(2) != 0x00) || (ReadDataChunk.at(3) != 0x00))
             {
                 ERMSG("Ошибка при приеме данных");
-                Finish(CN_RCVDATAERROR);
+                Finish(Error::Msg::CN_RCVDATAERROR);
                 return;
             }
             if (!SegLeft)
             {
-                Finish(NOERROR);
+                Finish(Error::Msg::NoError);
                 return;
             }
             ReadDataChunk.clear();
@@ -437,12 +436,12 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             if (!GetLength())
             {
                 ERMSG("Несовпадение длины");
-                Finish(CN_RCVDATAERROR);
+                Finish(Error::Msg::CN_RCVDATAERROR);
                 return;
             }
             if (ReadDataChunkLength == 0)
             {
-                Finish(NOERROR);
+                Finish(Error::Msg::NoError);
                 return;
             }
             if (Command == CN::Read::Progress)
@@ -457,12 +456,12 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             if (!GetLength())
             {
                 ERMSG("Несовпадение длины");
-                Finish(CN_RCVDATAERROR);
+                Finish(Error::Msg::CN_RCVDATAERROR);
                 return;
             }
             if (ReadDataChunkLength == 0)
             {
-                Finish(NOERROR);
+                Finish(Error::Msg::NoError);
                 return;
             }
             // надо проверить, тот ли номер файла принимаем
@@ -485,7 +484,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             filenum += tmpi;
             if (filenum != FNum)
             {
-                Finish(USO_UNKNFILESENT);
+                Finish(Error::Msg::USO_UNKNFILESENT);
                 return;
             }
             // вытаскиваем размер файла
@@ -495,7 +494,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             if (RDLength > CN::Limits::MaxGetFileSize)
             {
                 ERMSG("Некорректная длина блока");
-                Finish(CN_RCVLENGTHERROR);
+                Finish(Error::Msg::CN_RCVLENGTHERROR);
                 return;
             }
             emit SetDataSize(RDLength);
@@ -505,7 +504,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
         }
 
         default:
-            Finish(CN_UNKNOWNCMDERROR);
+            Finish(Error::Msg::CN_UNKNOWNCMDERROR);
             break;
         }
     }
@@ -515,7 +514,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
     {
         if (!GetLength())
         {
-            Finish(CN_RCVDATAERROR);
+            Finish(Error::Msg::CN_RCVDATAERROR);
             return;
         }
         // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
@@ -545,7 +544,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             {
                 // установка размера прогрессбара, чтобы не мелькал
                 emit SetDataSize(outdatasize);
-                Finish(NOERROR);
+                Finish(Error::Msg::NoError);
             }
             else
                 SendOk(true);
@@ -568,7 +567,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             ReadDataChunk.clear();
             if (outdatasize >= RDLength)
             {
-                Finish(NOERROR);
+                Finish(Error::Msg::NoError);
                 return;
             }
             else
@@ -581,7 +580,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             emit SetDataCount(OscNum);
             if (OscNum == 100)
             {
-                Finish(NOERROR);
+                Finish(Error::Msg::NoError);
                 OscTimer->stop();
                 break;
             }
@@ -590,7 +589,7 @@ void EProtocom::ParseIncomeData(QByteArray ba)
 
         default:
         {
-            Finish(CN_UNKNOWNCMDERROR);
+            Finish(Error::Msg::CN_UNKNOWNCMDERROR);
             break;
         }
         }
@@ -633,7 +632,7 @@ void EProtocom::SendCmd(char command, int parameter)
     case CN::Write::EraseTech:
         break;
     default:
-        Finish(CN_UNKNOWNCMDERROR);
+        Finish(Error::Msg::CN_UNKNOWNCMDERROR);
         ERMSG("Неизвестная команда");
         return;
     }
@@ -657,7 +656,7 @@ void EProtocom::SendIn(char command, char parameter, QByteArray &ba, qint64 maxd
         break;
     default:
         ERMSG("Неизвестная команда");
-        Finish(CN_UNKNOWNCMDERROR);
+        Finish(Error::Msg::CN_UNKNOWNCMDERROR);
         return;
     }
     Send(command, parameter, ba, maxdatasize);
@@ -678,7 +677,7 @@ void EProtocom::SendOut(char command, char board_type, QByteArray &ba)
         break;
     default:
         ERMSG("Неизвестная команда");
-        Finish(CN_UNKNOWNCMDERROR);
+        Finish(Error::Msg::CN_UNKNOWNCMDERROR);
         return;
     }
     Send(command, board_type, ba, 0);
@@ -694,7 +693,7 @@ void EProtocom::SendFile(unsigned char command, char board_type, int filenum, QB
         break;
     default:
         ERMSG("Неизвестная команда");
-        Finish(CN_UNKNOWNCMDERROR);
+        Finish(Error::Msg::CN_UNKNOWNCMDERROR);
         return;
     }
     FNum = filenum;
@@ -752,7 +751,7 @@ void EProtocom::usbStateChanged(void *message)
                 qDebug() << "Device " << deviceName() << " removed completely";
                 WriteData.clear();
                 OutData.clear();
-                Finish(CN_NULLDATAERROR);
+                Finish(Error::Msg::CN_NULLDATAERROR);
                 m_loop.exit();
             }
             QMessageBox::critical(nullptr, "Ошибка", "Связь с прибором была разорвана", QMessageBox::Ok);
@@ -851,7 +850,8 @@ bool EProtocom::Connect()
 
     connect(m_usbWorker, &EUsbWorker::NewDataReceived, this, &EProtocom::ParseIncomeData);
 
-    if (m_usbWorker->setupConnection() == 0 && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+    if (m_usbWorker->setupConnection() == Error::Msg::NoError
+        && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
     {
         Board::GetInstance()->setConnectionState(Board::ConnectionState::Connected);
         m_workerThread.start();
@@ -864,7 +864,8 @@ bool EProtocom::Connect()
 bool EProtocom::Reconnect()
 {
     m_usbWorker->closeConnection();
-    if (m_usbWorker->setupConnection() == 0 && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+    if (m_usbWorker->setupConnection() == Error::Msg::NoError
+        && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
     {
         Board::GetInstance()->setConnectionState(Board::ConnectionState::Connected);
         m_workerThread.start();
@@ -890,9 +891,7 @@ QByteArray EProtocom::RawRead(int bytes)
 
 int EProtocom::RawWrite(QByteArray &ba)
 {
-    if (Board::GetInstance()->connectionState() == Board::ConnectionState::Closed
-        && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
-        return GENERALERROR;
+
     return m_usbWorker->WriteDataAttempt(ba);
 }
 

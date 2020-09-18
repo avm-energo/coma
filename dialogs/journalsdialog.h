@@ -66,7 +66,7 @@ private:
     Journals *JourFuncs;
     QSortFilterProxyModel *ProxyWorkModel, *ProxySysModel, *ProxyMeasModel;
     QSignalSpy *spy;
-    int WriteCheckPassword();
+    Error::Msg WriteCheckPassword();
     void StartReadJourFile();
 };
 

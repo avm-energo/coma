@@ -116,7 +116,7 @@ void CorDialogKTF::GetCorBd(int index)
 
             // if (MainInterface == I_USB)
             {
-                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == NOERROR)
+                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == Error::Msg::NoError)
                 {
                     FillCor();
                     QMessageBox::information(this, "INFO", "Прочитано успешно");
@@ -138,7 +138,7 @@ void CorDialogKTF::GetCorBdButton()
     case Board::InterfaceType::USB:
         // if (MainInterface == I_USB)
         {
-            if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == NOERROR)
+            if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == Error::Msg::NoError)
             {
                 FillCor();
                 QMessageBox::information(this, "INFO", "Прочитано успешно");
@@ -170,7 +170,7 @@ void CorDialogKTF::WriteCorBd()
 
     FillBackCor();
 
-    if (WriteCheckPassword() == NOERROR)
+    if (WriteCheckPassword() == Error::Msg::NoError)
     {
         switch (Board::GetInstance()->interfaceType())
         {
@@ -196,14 +196,14 @@ void CorDialogKTF::WriteCorBd()
         case Board::InterfaceType::USB:
             // else if (MainInterface == I_USB)
             {
-                if (Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == NOERROR)
+                if (Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == Error::Msg::NoError)
                     QMessageBox::information(this, "INFO", "Записано успешно");
                 else
                     QMessageBox::information(this, "INFO", "Ошибка");
 
                 //......
                 //            QThread::sleep(1);
-                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9Block)) == NOERROR)
+                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9Block)) == Error::Msg::NoError)
                     FillCor();
                 break;
             }
@@ -221,12 +221,12 @@ void CorDialogKTF::ResetCor()
 
 void CorDialogKTF::SaveToFile()
 {
-    int res = NOERROR;
     QByteArray ba;
     FillBackCor();
     ba.resize(sizeof(*WBd7Block));
     memcpy(&(ba.data()[0]), WBd7Block, sizeof(*WBd7Block));
-    res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*WBd7Block));
+    Error::Msg res
+        = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*WBd7Block));
     switch (res)
     {
     case Files::ER_NOERROR:
@@ -251,8 +251,8 @@ void CorDialogKTF::ReadFromFile()
     QByteArray ba;
     ba.resize(sizeof(*Bd9Block));
 
-    int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
-    if (res != Files::ER_NOERROR)
+    Error::Msg res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
+    if (res != Error::Msg::NoError)
     {
         QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");
         ERMSG("Ошибка при загрузке файла");

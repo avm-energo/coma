@@ -2,6 +2,7 @@
 #define SERIALPORT_H
 
 #include "../gen/board.h"
+#include "../gen/error.h"
 
 #include <QObject>
 #include <QPointer>
@@ -23,7 +24,7 @@ public:
 
     explicit SerialPort(QObject *parent = nullptr);
     ~SerialPort();
-    int Init(Settings settings);
+    Error::Msg Init(Settings settings);
 
 signals:
     void Read(QByteArray);

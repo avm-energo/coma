@@ -14,7 +14,7 @@ SerialPort::~SerialPort()
         Port->close();
 }
 
-int SerialPort::Init(SerialPort::Settings settings)
+Error::Msg SerialPort::Init(SerialPort::Settings settings)
 {
     //    if (Port != 0)
     //    {
@@ -45,10 +45,10 @@ int SerialPort::Init(SerialPort::Settings settings)
         {
             Board::GetInstance()->setConnectionState(Board::ConnectionState::Closed);
             ERMSG("Error opening COM-port");
-            return GENERALERROR;
+            return Error::Msg::GeneralError;
         }
     }
-    return NOERROR;
+    return Error::Msg::NoError;
 }
 
 void SerialPort::WriteBytes(QByteArray ba)

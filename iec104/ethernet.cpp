@@ -18,23 +18,24 @@ Ethernet::Ethernet(QObject *parent) : QObject(parent)
     ClosePortAndFinishThread = false;
 }
 
-Ethernet::~Ethernet() { }
+Ethernet::~Ethernet()
+{
+}
 
 void Ethernet::Run()
 {
     EthConnected = false;
     StdFunc::SetDeviceIP(IP);
     sock = new QTcpSocket(this);
-    connect(sock, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(seterr(QAbstractSocket::SocketError)));
-    connect(sock, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this,
-        SLOT(EthStateChanged(QAbstractSocket::SocketState)));
-    connect(sock, SIGNAL(connected()), this, SIGNAL(Connected()));
-    connect(sock, SIGNAL(connected()), this, SLOT(EthSetConnected()));
-    connect(sock, SIGNAL(disconnected()), this, SIGNAL(Disconnected()));
+    connect(sock, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, &Ethernet::seterr);
+    connect(sock, &QAbstractSocket::stateChanged, this, &Ethernet::EthStateChanged);
+    connect(sock, &QAbstractSocket::connected, this, &Ethernet::Connected);
+    connect(sock, &QAbstractSocket::connected, this, &Ethernet::EthSetConnected);
+    connect(sock, &QAbstractSocket::disconnected, this, &Ethernet::Disconnected);
     Log->info("Connecting to host: " + StdFunc::ForDeviceIP() + ", port: " + QString::number(PORT104));
     sock->connectToHost(StdFunc::ForDeviceIP(), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
     sock->setProxy(QNetworkProxy::NoProxy);
-    connect(sock, SIGNAL(readyRead()), this, SLOT(CheckForData()));
+    connect(sock, &QIODevice::readyRead, this, &Ethernet::CheckForData);
     TimeFunc::WaitFor(EthConnected, TIMEOUT_BIG);
     while (!ClosePortAndFinishThread)
     {
@@ -59,10 +60,10 @@ void Ethernet::Stop()
     ClosePortAndFinishThread = true;
 }
 
-void Ethernet::seterr(QAbstractSocket::SocketError err)
+void Ethernet::seterr(QAbstractSocket::SocketError error)
 {
-    Log->info("Error: " + sock->errorString());
-    emit error(err + 25); // до 24 другие ошибки, err от -1
+    Log->info("Error: " + QVariant::fromValue(error).toString());
+    //   emit error(err); // до 24 другие ошибки, err от -1
     ClosePortAndFinishThread = true;
 }
 
@@ -79,7 +80,7 @@ void Ethernet::SendData()
     if (res == -1)
     {
         ERMSG("Ethernet write error");
-        emit error(SKT_SENDDATAER); // ошибка
+        emit error(QAbstractSocket::SocketError::NetworkError); // ошибка
     }
     OutDataBuf.clear();
 }
@@ -129,4 +130,7 @@ void Ethernet::CheckForData()
     emit NewDataArrived(ba);
 }
 
-void Ethernet::EthSetConnected() { EthConnected = true; }
+void Ethernet::EthSetConnected()
+{
+    EthConnected = true;
+}
