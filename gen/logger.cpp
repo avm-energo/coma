@@ -33,8 +33,6 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
         fileName = (folderName + ".txt");
 
     QTextStream out;
-    // const char *file = context.file ? context.file : "";
-    auto localMsg = msg.toLocal8Bit();
     const char *function = context.function ? context.function : "";
     // Detect type of msg
     // qWarning && qDebug пишем в одно место и удаляем их перед каждым запуском в релизе
@@ -45,7 +43,8 @@ void Logging::messageHandler(QtMsgType type, const QMessageLogContext &context, 
         break;
     case QtDebugMsg:
 #ifdef QT_DEBUG
-        fprintf(stderr, "%s (%s:%u, %s)\n", , sourceFile.toStdString().c_str(), context.line, function);
+        fprintf(stderr, "%s (%s:%u, %s)\n", msg.toStdString().c_str(), sourceFile.toStdString().c_str(), context.line,
+            function);
         return;
 #endif
         break;
