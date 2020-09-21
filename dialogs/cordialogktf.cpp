@@ -229,16 +229,16 @@ void CorDialogKTF::SaveToFile()
         = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*WBd7Block));
     switch (res)
     {
-    case Files::ER_NOERROR:
+    case Error::Msg::NoError:
         QMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
         break;
-    case Files::ER_FILEWRITE:
+    case Error::Msg::FILE_WRITE:
         QMessageBox::critical(this, "Ошибка", "Ошибка при записи файла!");
         break;
-    case Files::ER_FILENAMEEMP:
+    case Error::Msg::FILE_NAMEEMP:
         QMessageBox::critical(this, "Ошибка", "Пустое имя файла!");
         break;
-    case Files::ER_FILEOPEN:
+    case Error::Msg::FILE_OPEN:
         QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла!");
         break;
     default:

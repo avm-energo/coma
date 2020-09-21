@@ -9,14 +9,6 @@
 class Files
 {
 public:
-    enum FileErrorTypes
-    {
-        ER_NOERROR,     // нет ошибок
-        ER_FILEWRITE,   // ошибка записи файла
-        ER_FILENAMEEMP, // пустое имя файла
-        ER_FILEOPEN     // ошибка открытия файла
-    };
-
     Files();
 
     static QString ChooseFileForOpen(QWidget *parent, QString mask);
