@@ -27,7 +27,7 @@ void Ethernet::Run()
     EthConnected = false;
     StdFunc::SetDeviceIP(IP);
     sock = new QTcpSocket(this);
-    connect(sock, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, &Ethernet::seterr);
+    connect(sock, &QAbstractSocket::errorOccurred, this, &Ethernet::seterr);
     connect(sock, &QAbstractSocket::stateChanged, this, &Ethernet::EthStateChanged);
     connect(sock, &QAbstractSocket::connected, this, &Ethernet::Connected);
     connect(sock, &QAbstractSocket::connected, this, &Ethernet::EthSetConnected);
@@ -51,7 +51,7 @@ void Ethernet::Run()
         sock->disconnect();
         sock->deleteLater();
     }
-    emit Finished();
+   // emit Finished();
 }
 
 void Ethernet::Stop()

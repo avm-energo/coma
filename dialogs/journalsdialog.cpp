@@ -20,11 +20,11 @@
 #endif
 JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
 {
-    JourFuncs = new Journals;
-    ProxyWorkModel = new QSortFilterProxyModel;
-    ProxySysModel = new QSortFilterProxyModel;
-    ProxyMeasModel = new QSortFilterProxyModel;
-    progress = new QProgressDialog;
+    JourFuncs = new Journals(this);
+    ProxyWorkModel = new QSortFilterProxyModel(this);
+    ProxySysModel = new QSortFilterProxyModel(this);
+    ProxyMeasModel = new QSortFilterProxyModel(this);
+    progress = new QProgressDialog(this);
     progress->setCancelButton(nullptr);
     progress->cancel();
 

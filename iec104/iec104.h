@@ -270,7 +270,7 @@ private:
     void Com50(quint32 adr, float param);
     void InterrogateTimeGr15();
     void Com51WriteTime(quint32 time);
-
+    void convert(IEC104Thread::SponSignals *signal);
 private slots:
     void SendTestAct();
 

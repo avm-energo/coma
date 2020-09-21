@@ -432,8 +432,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
         quint32 objectAdr = 0;
         quint32 index = 6;
         int fileSize;
-        int res, i, cntfl = 0, cntflTimestamp = 0, cntspon = 0,
-                    cntbs = 0; //, cntsponTime = 0;
+        int i, cntfl = 0, cntflTimestamp = 0, cntspon = 0, cntbs = 0;
         IEC104Thread::FlSignals104 *flSignals = new IEC104Thread::FlSignals104[DUI.qualifier.Number];
         IEC104Thread::SponSignals *sponsignals = new IEC104Thread::SponSignals[DUI.qualifier.Number];
         IEC104Thread::BS104Signals *BS104Signals = new IEC104Thread::BS104Signals[DUI.qualifier.Number];
@@ -714,7 +713,7 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
         if (cntspon != 0)
         {
             sponsignals->SigNumber = cntspon;
-            emit Sponsignalsreceived(sponsignals);
+            convert(sponsignals);
         }
         else
             delete[] sponsignals;
@@ -1067,4 +1066,9 @@ void IEC104Thread::Com51WriteTime(quint32 time)
     cmd.append(ToByteArray(time));
     APCI GI = CreateGI(0x11);
     Send(1, GI, cmd); // ASDU = QByteArray()
+}
+
+void IEC104Thread::convert(IEC104Thread::SponSignals *signal)
+{
+    emit Sponsignalsreceived(signal);
 }

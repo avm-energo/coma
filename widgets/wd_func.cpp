@@ -168,7 +168,7 @@ EComboBox *WDFunc::NewCB(QWidget *parent, const QString &cbname, QStringList &cb
 {
     EComboBox *cb = new EComboBox(parent);
     cb->setObjectName(cbname);
-    QStringListModel *cblm = new QStringListModel;
+    QStringListModel *cblm = new QStringListModel(cb);
     cblm->setStringList(cbsl);
     cb->setModel(cblm);
     if (!cbcolor.isEmpty())
@@ -411,7 +411,7 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
     QLabel *msgConnectionType = new QLabel(bar);
     msgConnectionType->setObjectName("ConnectionType");
 
-    QObject::connect(Board::GetInstance(), &Board::typeChanged, [msgModel, msgSerialNumber]() {
+    QObject::connect(Board::GetInstance(), &Board::typeChanged, [msgModel]() {
         quint16 serialNumber = Board::GetInstance()->type();
         QString deviceName = QVariant::fromValue(Board::DeviceModel(serialNumber)).toString();
         msgModel->setText(deviceName);

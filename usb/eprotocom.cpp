@@ -812,6 +812,7 @@ EProtocom::~EProtocom()
 {
     m_workerThread.quit();
     m_workerThread.wait();
+    delete pinstance_;
     pinstance_ = nullptr;
 }
 /**
@@ -880,7 +881,6 @@ void EProtocom::Disconnect()
     qDebug(__PRETTY_FUNCTION__);
     RawClose();
     CnLog->WriteRaw("Disconnected!\n");
-    delete EProtocom::GetInstance();
 }
 
 QByteArray EProtocom::RawRead(int bytes)

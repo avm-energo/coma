@@ -101,7 +101,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     HarmDialog = nullptr;
     VibrDialog = nullptr;
     corDialog = nullptr;
-    CurTabIndex = -1;
+    // CurTabIndex = -1;
     for (int i = 0; i < 20; ++i)
     {
         PredAlarmEvents[i] = 0;
@@ -244,9 +244,6 @@ void Coma::addConfTab(ETabWidget *MainTW, QString str)
 
 void Coma::StartWork()
 {
-    New104();
-    NewModbus();
-    NewUSB();
     AlarmStateAllDialog = new AlarmStateAll(this);
     if (!Reconnect)
     {
@@ -281,7 +278,7 @@ void Coma::StartWork()
     QString str;
     Board::GetInstance()->setTypeB(0);
     Board::GetInstance()->setTypeM(0);
-    CurTabIndex = -1;
+    // CurTabIndex = -1;
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
     {
@@ -289,11 +286,13 @@ void Coma::StartWork()
         // ERMSG("MainTW is empty");
         return;
     }
-    connect(MainTW, &ETabWidget::tabClicked, this, &Coma::MainTWTabClicked);
+    connect(MainTW, &ETabWidget::currentChanged, this, &Coma::MainTWTabClicked);
+
     switch (Board::GetInstance()->interfaceType())
     {
     case Board::InterfaceType::USB:
     {
+        NewUSB();
         if (Commands::Connect() != Error::Msg::NoError) // cn->Connect()
         {
             QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
@@ -331,6 +330,7 @@ void Coma::StartWork()
     }
     case Board::InterfaceType::Ethernet:
     {
+        New104();
         if (!Ch104->Working())
             Ch104->Connect(ConnectSettings.iec104st);
         ActiveThreads |= THREAD::P104;
@@ -338,6 +338,7 @@ void Coma::StartWork()
     }
     case Board::InterfaceType::RS485:
     {
+        NewModbus();
         if (ChModbus->Connect(ConnectSettings.serialst) != Error::Msg::NoError)
         {
 
@@ -430,7 +431,8 @@ void Coma::StartWork()
     {
         MainTW->addTab(timeDialog, "Время");
         TimeIndex = MainTW->indexOf(timeDialog);
-        ChModbus->TimeIndex = TimeIndex;
+        if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
+            ChModbus->TimeIndex = TimeIndex;
         connect(TimeTimer, &QTimer::timeout, timeDialog, &MNKTime::slot2_timeOut);
     }
 
@@ -504,13 +506,13 @@ void Coma::setupConnections()
         {
         case Config::MTM_84:
         {
-            checkBDialog = new CheckDialogKIV(BoardTypes::BT_BASE);
+            checkBDialog = new CheckDialogKIV(BoardTypes::BT_BASE, this);
 
             S2Config->clear();
             if (Board::GetInstance()->interfaceType() != Board::InterfaceType::RS485)
-                confMDialog = new ConfDialogKIV(S2Config);
+                confMDialog = new ConfDialogKIV(S2Config, this);
 
-            corDialog = new CorDialog;
+            corDialog = new CorDialog(this);
 
             WarnAlarmKIVDialog = new WarnAlarmKIV(Alarm, AlarmW);
             connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKIVDialog, &QDialog::show);
@@ -1107,10 +1109,11 @@ void Coma::keyPressEvent(QKeyEvent *e)
 
 void Coma::MainTWTabClicked(int tabindex)
 {
-    if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
-        return;
-    CurTabIndex = tabindex;
-    ChModbus->Tabs(tabindex);
+    //   if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
+    //       return;
+    //    CurTabIndex = tabindex;
+    if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
+        ChModbus->Tabs(tabindex);
     if (corDialog != nullptr)
         corDialog->GetCorBd(tabindex);
     if (checkBDialog != nullptr || HarmDialog != nullptr || VibrDialog != nullptr)

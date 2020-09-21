@@ -7,10 +7,10 @@
 #include <QStringList>
 #include <QVariant>
 
-class ETableItem
+class ETableItem : public QObject
 {
 public:
-    explicit ETableItem(ETableItem *parent = 0);
+    explicit ETableItem(QObject *parent = 0);
 
     QString data(int column) const;
     void setData(int column, const QString &value);

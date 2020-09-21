@@ -301,7 +301,7 @@ bool ConnectDialog::UpdateModel()
     QStringList ethlist, rslist;
 
     QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-    if (dlg == nullptr)
+    if (!dlg)
         return false;
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
@@ -317,7 +317,7 @@ bool ConnectDialog::UpdateModel()
     {
         QStringList USBsl = EProtocom::GetInstance()->DevicesFound();
         QStringList sl { "#", "Device" };
-        ETableModel *mdl = new ETableModel;
+        ETableModel *mdl = new ETableModel(dlg);
 
         if (USBsl.isEmpty())
         {
@@ -339,7 +339,7 @@ bool ConnectDialog::UpdateModel()
     case Board::InterfaceType::Ethernet:
     {
         QStringList sl { "#", "Имя", "IP", "Адрес БС" };
-        ETableModel *mdl = new ETableModel;
+        ETableModel *mdl = new ETableModel(dlg);
 
         mdl->setHeaders(sl);
         for (int i = 0; i < ethlist.size(); ++i)
@@ -358,7 +358,7 @@ bool ConnectDialog::UpdateModel()
     case Board::InterfaceType::RS485:
     {
         QStringList sl { "#", "Имя", "Порт", "Скорость", "Четность", "Стоп бит", "Адрес" };
-        ETableModel *mdl = new ETableModel;
+        ETableModel *mdl = new ETableModel(dlg);
 
         mdl->setHeaders(sl);
         for (int i = 0; i < rslist.size(); ++i)
@@ -375,6 +375,8 @@ bool ConnectDialog::UpdateModel()
         WDFunc::SetTVModel(dlg, "rstv", mdl);
         break;
     }
+    default:
+        return false;
     }
     return true;
 }
