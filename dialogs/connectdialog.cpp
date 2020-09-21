@@ -299,12 +299,13 @@ bool ConnectDialog::IsKeyExist(const QString &type, const QString &chstr)
 bool ConnectDialog::UpdateModel()
 {
     QStringList ethlist, rslist;
-    QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
+
     QDialog *dlg = this->findChild<QDialog *>("connectdlg");
     if (dlg == nullptr)
         return false;
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
+        QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
         QString rsname = "RS485-" + QString::number(i);
         QString ethname = "Ethernet-" + QString::number(i);
         ethlist << sets->value(ethname, "").toString();
@@ -346,8 +347,7 @@ bool ConnectDialog::UpdateModel()
 
             QString key = PROGNAME;
             key += "\\" + ethlist.at(i);
-            sets.clear();
-            sets = QSharedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
+            QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
             QVector<QVariant> vl { QString::number(i + 1), ethlist.at(i), sets->value("ip", ""),
                 sets->value("bs", "") };
             mdl->addRowWithData(vl);
@@ -366,8 +366,7 @@ bool ConnectDialog::UpdateModel()
 
             QString key = PROGNAME;
             key += "\\" + rslist.at(i);
-            sets.clear();
-            sets = QSharedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
+            QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
             QVector<QVariant> vl { QString::number(i + 1), rslist.at(i), sets->value("port", ""),
                 sets->value("speed", ""), sets->value("parity", ""), sets->value("stop", ""),
                 sets->value("address", "") };
