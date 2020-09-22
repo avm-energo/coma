@@ -39,9 +39,7 @@ CorDialogKDV::CorDialogKDV(QWidget *parent) : AbstractCorDialog(parent)
     SetupUI();
 }
 
-CorDialogKDV::~CorDialogKDV()
-{
-}
+CorDialogKDV::~CorDialogKDV() { }
 
 void CorDialogKDV::SetupUI()
 {
@@ -53,7 +51,6 @@ void CorDialogKDV::SetupUI()
     tv->setObjectName("cor");
     int row = 0;
     QString paramcolor = Colors::MAINWINCLR;
-    QPushButton *pb = new QPushButton;
 
     glyout->addWidget(WDFunc::NewLBL(this, "Текущий расход ресурса изоляции, час:"), row, 1, 1, 1);
     glyout->addWidget(WDFunc::NewSPB(this, QString::number(907), 0, 1000000, 5, paramcolor), row, 2, 1, 2);
@@ -65,7 +62,7 @@ void CorDialogKDV::SetupUI()
     glyout->addWidget(WDFunc::NewSPB(this, QString::number(909), 0, 1000000, 5, paramcolor), row, 2, 1, 2);
     row++;
 
-    pb = new QPushButton("Прочитать из модуля");
+    QPushButton *pb = new QPushButton("Прочитать из модуля");
     connect(pb, SIGNAL(clicked()), this, SLOT(GetCorBdButton()));
     if (StdFunc::IsInEmulateMode())
         pb->setEnabled(false);
@@ -100,10 +97,7 @@ void CorDialogKDV::SetupUI()
     setLayout(lyout);
 }
 
-void CorDialogKDV::FillBackWBd7()
-{
-    WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge);
-}
+void CorDialogKDV::FillBackCor() { WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge); }
 
 void CorDialogKDV::FillBackWBd8()
 {
@@ -111,7 +105,7 @@ void CorDialogKDV::FillBackWBd8()
     WDFunc::SPBData(this, QString::number(909), WBd8Block->MotHovInit);
 }
 
-void CorDialogKDV::FillBd9()
+void CorDialogKDV::FillCor()
 {
     WDFunc::SetSPBData(this, QString::number(907), Bd9Block->Age);
     WDFunc::SetSPBData(this, QString::number(908), Bd9Block->MotHnorm);
@@ -128,9 +122,9 @@ void CorDialogKDV::GetCorBd(int index)
 
             // if (MainInterface == I_USB)
             {
-                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == NOERROR)
+                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == Error::Msg::NoError)
                 {
-                    FillBd9();
+                    FillCor();
                     QMessageBox::information(this, "INFO", "Прочитано успешно");
                 }
                 break;
@@ -148,44 +142,40 @@ void CorDialogKDV::GetCorBdButton()
     switch (Board::GetInstance()->interfaceType())
     {
     case Board::InterfaceType::USB:
-        // if (MainInterface == I_USB)
+    {
+        if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == Error::Msg::NoError)
         {
-            if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == NOERROR)
-            {
-                FillBd9();
-                QMessageBox::information(this, "INFO", "Прочитано успешно");
-            }
-            break;
+            FillCor();
+            QMessageBox::information(this, "INFO", "Прочитано успешно");
         }
+        break;
+    }
     case Board::InterfaceType::RS485:
-        // else if (MainInterface == I_RS485)
-        {
-            ModBus::Information info;
-            info.size = (sizeof(Bd9) / 4);
-            info.adr = 4000;
-            emit RS485ReadCorBd(info);
-            break;
-        }
+    {
+        ModBus::Information info;
+        info.size = (sizeof(Bd9) / 4);
+        info.adr = 4000;
+        emit RS485ReadCorBd(info);
+        break;
+    }
     case Board::InterfaceType::Ethernet:
-        // else if (MainInterface == I_ETHERNET)
-        {
-            emit CorReadRequest();
-            break;
-        }
+    {
+        emit CorReadRequest();
+        break;
+    }
     }
 }
 
 void CorDialogKDV::WriteCorBd()
 {
     int i;
-    // quint32 adr = 907;
     quint32 adr7bl = 907;
     quint32 adr[2] = { 908, 909 };
 
-    FillBackWBd7();
+    FillBackCor();
     FillBackWBd8();
 
-    if (WriteCheckPassword() == NOERROR)
+    if (WriteCheckPassword() == Error::Msg::NoError)
     {
         switch (Board::GetInstance()->interfaceType())
         {
@@ -224,54 +214,47 @@ void CorDialogKDV::WriteCorBd()
         case Board::InterfaceType::USB:
             // else if (MainInterface == I_USB)
             {
-
-                //                if (Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == NOERROR)
-                //                    if (Commands::WriteBd(8, WBd8Block, sizeof(WBd8)) == NOERROR)
-                if ((Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == NOERROR)
-                    & (Commands::WriteBd(8, WBd8Block, sizeof(WBd8)) == NOERROR))
+                if ((Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == Error::Msg::NoError)
+                    & (Commands::WriteBd(8, WBd8Block, sizeof(WBd8)) == Error::Msg::NoError))
                     QMessageBox::information(this, "INFO", "Записано успешно");
                 else
                     QMessageBox::information(this, "INFO", "Ошибка");
 
                 //......
                 //            QThread::sleep(1);
-                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9Block)) == NOERROR)
-                    FillBd9();
+                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9Block)) == Error::Msg::NoError)
+                    FillCor();
                 break;
             }
         }
     }
 }
 
-void CorDialogKDV::WriteCor()
-{
-}
+void CorDialogKDV::WriteCor() { }
 
-void CorDialogKDV::ResetCor()
-{
-}
+void CorDialogKDV::ResetCor() { }
 
 void CorDialogKDV::SaveToFile()
 {
-    int res = NOERROR;
     QByteArray ba;
-    FillBackWBd7();
+    FillBackCor();
     //    FillBackWBd8();
     ba.resize(sizeof(*WBd7Block));
     memcpy(&(ba.data()[0]), WBd7Block, sizeof(*WBd7Block));
-    res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*WBd7Block));
+    Error::Msg res
+        = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*WBd7Block));
     switch (res)
     {
-    case Files::ER_NOERROR:
+    case Error::Msg::NoError:
         QMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
         break;
-    case Files::ER_FILEWRITE:
+    case Error::Msg::FILE_WRITE:
         QMessageBox::critical(this, "Ошибка", "Ошибка при записи файла!");
         break;
-    case Files::ER_FILENAMEEMP:
+    case Error::Msg::FILE_NAMEEMP:
         QMessageBox::critical(this, "Ошибка", "Пустое имя файла!");
         break;
-    case Files::ER_FILEOPEN:
+    case Error::Msg::FILE_OPEN:
         QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла!");
         break;
     default:
@@ -284,8 +267,8 @@ void CorDialogKDV::ReadFromFile()
     QByteArray ba;
     ba.resize(sizeof(*Bd9Block));
 
-    int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
-    if (res != Files::ER_NOERROR)
+    Error::Msg res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
+    if (res != Error::Msg::NoError)
     {
         QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");
         ERMSG("Ошибка при загрузке файла");
@@ -293,6 +276,6 @@ void CorDialogKDV::ReadFromFile()
     }
 
     memcpy(&Bd9Block->Age, &(ba.data()[0]), sizeof(float));
-    FillBd9();
+    FillCor();
     QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }

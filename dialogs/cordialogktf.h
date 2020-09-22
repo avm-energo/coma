@@ -42,8 +42,8 @@ private:
     Bd9 *Bd9Block;
     WBd7 *WBd7Block;
 
-    void FillBd9();
-    void FillBackWBd7();
+    void FillCor();
+    void FillBackCor();
     float ToFloat(QString text);
     void SetupUI();
     void FillBd(QWidget *parent, QString Name, QString Value);

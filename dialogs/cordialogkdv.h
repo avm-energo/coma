@@ -46,8 +46,8 @@ private:
     WBd7 *WBd7Block;
     WBd8 *WBd8Block;
 
-    void FillBackWBd7();
-    void FillBd9();
+    void FillBackCor();
+    void FillCor();
     void FillBackWBd8();
 
     float ToFloat(QString text);

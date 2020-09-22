@@ -18,16 +18,14 @@ Ethernet::Ethernet(QObject *parent) : QObject(parent)
     ClosePortAndFinishThread = false;
 }
 
-Ethernet::~Ethernet()
-{
-}
+Ethernet::~Ethernet() { }
 
 void Ethernet::Run()
 {
     EthConnected = false;
     StdFunc::SetDeviceIP(IP);
     sock = new QTcpSocket(this);
-    connect(sock, &QAbstractSocket::errorOccurred, this, &Ethernet::seterr);
+    connect(sock, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(seterr(QAbstractSocket::SocketError)));
     connect(sock, &QAbstractSocket::stateChanged, this, &Ethernet::EthStateChanged);
     connect(sock, &QAbstractSocket::connected, this, &Ethernet::Connected);
     connect(sock, &QAbstractSocket::connected, this, &Ethernet::EthSetConnected);
@@ -51,7 +49,7 @@ void Ethernet::Run()
         sock->disconnect();
         sock->deleteLater();
     }
-   // emit Finished();
+    // emit Finished();
 }
 
 void Ethernet::Stop()
@@ -130,7 +128,4 @@ void Ethernet::CheckForData()
     emit NewDataArrived(ba);
 }
 
-void Ethernet::EthSetConnected()
-{
-    EthConnected = true;
-}
+void Ethernet::EthSetConnected() { EthConnected = true; }
