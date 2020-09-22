@@ -28,12 +28,21 @@ AbstractAlarm::AbstractAlarm(QWidget *parent) : QDialog(parent)
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void AbstractAlarm::UpdatePixmaps(quint32 alarm, int counter)
+void AbstractAlarm::UpdatePixmaps(quint32 alarm, int counter, bool warn)
 {
+
     if (alarm)
     {
-        auto pixmap = WDFunc::NewCircle(Qt::red, CIRCLE_RADIUS);
-        WDFunc::SetLBLImage(this, (QString::number(counter)), &pixmap);
+        if (warn)
+        {
+            auto pixmap = WDFunc::NewCircle(Qt::yellow, CIRCLE_RADIUS);
+            WDFunc::SetLBLImage(this, (QString::number(counter)), &pixmap);
+        }
+        else
+        {
+            auto pixmap = WDFunc::NewCircle(Qt::red, CIRCLE_RADIUS);
+            WDFunc::SetLBLImage(this, (QString::number(counter)), &pixmap);
+        }
     }
     else
     {
@@ -91,7 +100,7 @@ void AbstractWarnAlarm::Update(QList<bool> states)
     }
     for (int i = 0; i < max_range; i++)
     {
-        UpdatePixmaps(states.at(i), i);
+        UpdatePixmaps(states.at(i), i, true);
     }
 }
 AbstractAvarAlarm::AbstractAvarAlarm(QWidget *parent) : AbstractAlarm(parent)

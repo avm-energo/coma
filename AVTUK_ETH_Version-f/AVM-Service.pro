@@ -56,6 +56,7 @@ SOURCES += \
     ../config/configkxx.cpp \
     ../dialogs/abstractcordialog.cpp \
     ../dialogs/connectdialog.cpp \
+    ../dialogs/cordialogkdv.cpp \
     ../dialogs/cordialogktf.cpp \
     ../dialogs/infodialog.cpp \
     ../dialogs/mnktime.cpp \
@@ -135,6 +136,7 @@ HEADERS += \
     ../config/configkxx.h \
     ../dialogs/abstractcordialog.h \
     ../dialogs/connectdialog.h \
+    ../dialogs/cordialogkdv.h \
     ../dialogs/cordialogktf.h \
     ../dialogs/infodialog.h \
     ../dialogs/mnktime.h \

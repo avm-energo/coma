@@ -154,7 +154,7 @@ void CorDialog::SetupUI()
 void CorDialog::FillBackCor()
 {
     int i;
-    QString tmps;
+    // QString tmps;
 
     WDFunc::SPBData(this, QString::number(4010), CorBlock->Phy_unb_init);
     WDFunc::SPBData(this, QString::number(4009), CorBlock->Iunb_init);
@@ -205,14 +205,7 @@ void CorDialog::GetCorBd(int index)
                 }
                 break;
             }
-        /*        else if (MainInterface == I_RS485)
-                {
-                    ModBus::Information info;
-                    info.size = (sizeof(CorData)/4);
-                    info.adr = 4000;
-                    emit RS485ReadCorBd(info);
-                } */
-        // else if (MainInterface == I_ETHERNET)
+
         case Board::InterfaceType::Ethernet:
         {
             emit CorReadRequest();
@@ -465,11 +458,6 @@ void CorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
         }
     }
 }
-
-/*void CorDialog::ModbusCorDataWritten()
-{
-    QMessageBox::information(this, "INFO", "Записано успешно");
-} */
 
 void CorDialog::SaveToFile()
 {

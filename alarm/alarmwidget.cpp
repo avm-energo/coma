@@ -60,7 +60,7 @@ void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarm)
             break;
         }
     }
-    auto pixmap = WDFunc::NewCircle((alarm == 0) ? Qt::green : Qt::red, this->height() / 4);
+    auto pixmap = WDFunc::NewCircle((alarm == 0) ? Qt::green : Qt::yellow, this->height() / 4);
     WDFunc::SetLBLImage(this, "951", &pixmap);
     WDFunc::SetVisible(this, "951", true);
 }

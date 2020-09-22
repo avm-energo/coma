@@ -25,8 +25,8 @@ public:
     virtual void GetCorBd(int index);
 
 private:
-    virtual void FillCor() = 0;
-    virtual void FillBackCor() = 0;
+    //    virtual void FillWb7() = 0;
+    //    virtual void FillBackBd9() = 0;
     float ToFloat(QString text);
     virtual void SetupUI() = 0;
     void FillBd(QWidget *parent, QString Name, QString Value);

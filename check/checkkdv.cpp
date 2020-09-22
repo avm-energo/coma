@@ -71,7 +71,7 @@ QWidget *CheckKDV::Bd1W(QWidget *parent)
     glyout = new QGridLayout;
     for (i = 0; i < 4; ++i)
     {
-        // QString IndexStr = "[" + QString::number(i) + "]";
+
         glyout->addWidget(WDFunc::NewLBL(parent, "Ueff " + phase[i] + ", кВ"), 2, i, 1, 1);
         glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(1000 + i), ValuesFormat,
                               "Истинные действующие значения сигналов трех фаз и их среднее, кВ"),

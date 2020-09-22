@@ -385,7 +385,7 @@ void ConfDialogKDV::SetupUI()
 
     row = 0;
     vlyout1 = new QVBoxLayout;
-    gb = new QGroupBox();
+    gb = new QGroupBox;
     gridlyout = new QGridLayout;
     vlyout2 = new QVBoxLayout;
 
@@ -398,12 +398,6 @@ void ConfDialogKDV::SetupUI()
     vlyout2->addLayout(gridlyout);
     gb->setLayout(vlyout2);
     vlyout1->addWidget(gb);
-
-    //    vlyout2->addWidget(Conf->SetupMainBlk(this));
-    //    vlyout2->addWidget(ConfKxx->SetupComParam(this));
-
-    //    gb->setLayout(vlyout2);
-    //    vlyout1->addWidget(gb);
 
     gb = new QGroupBox("Настройка времени");
     vlyout2 = new QVBoxLayout;
