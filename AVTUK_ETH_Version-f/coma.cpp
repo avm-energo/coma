@@ -31,6 +31,7 @@
 #include "../config/confdialogkdv.h"
 #include "../config/confdialogkiv.h"
 #include "../config/confdialogktf.h"
+#include "../gen/logger.h"
 #ifdef AVM_DEBUG
 #include "../tune/tunedialogKIV.h"
 #endif
@@ -104,7 +105,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     HarmDialog = nullptr;
     VibrDialog = nullptr;
     corDialog = nullptr;
-    CurTabIndex = -1;
+    // CurTabIndex = -1;
     for (int i = 0; i < 20; ++i)
     {
         PredAlarmEvents[i] = 0;
@@ -247,9 +248,6 @@ void Coma::addConfTab(ETabWidget *MainTW, QString str)
 
 void Coma::StartWork()
 {
-    New104();
-    NewModbus();
-    NewUSB();
     AlarmStateAllDialog = new AlarmStateAll(this);
     if (!Reconnect)
     {
@@ -270,7 +268,8 @@ void Coma::StartWork()
         loop.exec();
         if (Cancelled)
         {
-            ERMSG("Отмена подключения");
+            qCritical(logCritical(), ("Отмена подключения"));
+            // ERMSG("Отмена подключения");
             return;
         }
         S2ConfigForTune->clear();
@@ -283,33 +282,38 @@ void Coma::StartWork()
     QString str;
     Board::GetInstance()->setTypeB(0);
     Board::GetInstance()->setTypeM(0);
-    CurTabIndex = -1;
+    // CurTabIndex = -1;
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
     {
-        ERMSG("MainTW is empty");
+        qCritical(logCritical(), ("MainTW is empty"));
+        // ERMSG("MainTW is empty");
         return;
     }
-    connect(MainTW, &ETabWidget::tabClicked, this, &Coma::MainTWTabClicked);
+    connect(MainTW, &ETabWidget::currentChanged, this, &Coma::MainTWTabClicked);
+
     switch (Board::GetInstance()->interfaceType())
     {
     case Board::InterfaceType::USB:
     {
-        if (Commands::Connect() != NOERROR) // cn->Connect()
+        NewUSB();
+        if (Commands::Connect() != Error::Msg::NoError) // cn->Connect()
         {
             QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
             QApplication::restoreOverrideCursor();
-            ERMSG("cn: can't connect");
+            qCritical(logCritical(), ("cn: can't connect"));
+            // ERMSG("cn: can't connect");
             return;
         }
-        int res = ModuleBSI::SetupBSI();
-        if (res == GENERALERROR)
+        Error::Msg res = ModuleBSI::SetupBSI();
+        if (res == Error::Msg::GeneralError)
         {
             QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
-            ERMSG("BSI read error");
+            qCritical(logCritical(), ("BSI read error"));
+            // ERMSG("BSI read error");
             return;
         }
-        else if (res == NOERROR)
+        else if (res == Error::Msg::NoError)
         {
             if (ModuleBSI::ModuleTypeString != "")
                 QMessageBox::information(
@@ -317,7 +321,8 @@ void Coma::StartWork()
             else
             {
                 QMessageBox::critical(this, "Ошибка", "Неизвестный тип модуля", QMessageBox::Ok);
-                ERMSG("Unknown module type");
+                qCritical(logCritical(), ("Unknown module type"));
+                // ERMSG("Unknown module type");
                 return;
             }
         }
@@ -329,6 +334,7 @@ void Coma::StartWork()
     }
     case Board::InterfaceType::Ethernet:
     {
+        New104();
         if (!Ch104->Working())
             Ch104->Connect(ConnectSettings.iec104st);
         ActiveThreads |= THREAD::P104;
@@ -336,9 +342,12 @@ void Coma::StartWork()
     }
     case Board::InterfaceType::RS485:
     {
-        if (ChModbus->Connect(ConnectSettings.serialst) != NOERROR)
+        NewModbus();
+        if (ChModbus->Connect(ConnectSettings.serialst) != Error::Msg::NoError)
         {
-            ERMSG("Modbus not connected");
+
+            qCritical(logCritical(), ("Unknown module type"));
+            //      ERMSG("Modbus not connected");
             return;
         }
         ChModbus->BSIrequest();
@@ -426,7 +435,8 @@ void Coma::StartWork()
     {
         MainTW->addTab(timeDialog, "Время");
         TimeIndex = MainTW->indexOf(timeDialog);
-        ChModbus->TimeIndex = TimeIndex;
+        if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
+            ChModbus->TimeIndex = TimeIndex;
         connect(TimeTimer, &QTimer::timeout, timeDialog, &MNKTime::slot2_timeOut);
     }
 
@@ -462,9 +472,9 @@ void Coma::StartWork()
         MainTW->addTab(jourDialog, "Журналы");
 
     if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
-        Error::ShowErMsg(ER_NOCONF);
+        Error::ShowErMsg(Error::Msg::ER_NOCONF);
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
-        Error::ShowErMsg(ER_NOTUNECOEF);
+        Error::ShowErMsg(Error::Msg::ER_NOTUNECOEF);
     if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
     {
         fwUpDialog = new fwupdialog;
@@ -500,13 +510,13 @@ void Coma::setupConnections()
         {
         case Config::MTM_84:
         {
-            checkBDialog = new CheckDialogKIV(BoardTypes::BT_BASE);
+            checkBDialog = new CheckDialogKIV(BoardTypes::BT_BASE, this);
 
             S2Config->clear();
             if (Board::GetInstance()->interfaceType() != Board::InterfaceType::RS485)
-                confMDialog = new ConfDialogKIV(S2Config);
+                confMDialog = new ConfDialogKIV(S2Config, this);
 
-            corDialog = new CorDialog;
+            corDialog = new CorDialog(this);
 
             WarnAlarmKIVDialog = new WarnAlarmKIV(Alarm, AlarmW);
             connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKIVDialog, &QDialog::show);
@@ -852,7 +862,7 @@ void Coma::ClearTW()
     }
 }
 
-int Coma::CheckPassword()
+Error::Msg Coma::CheckPassword()
 {
     PasswordValid = false;
     StdFunc::ClearCancel();
@@ -865,16 +875,16 @@ int Coma::CheckPassword()
     if (StdFunc::IsCancelled())
     {
         ERMSG("Отмена ввода пароля");
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
 
     if (!PasswordValid)
     {
         ERMSG("Пароль введён неверно");
         QMessageBox::critical(this, "Неправильно", "Пароль введён неверно", QMessageBox::Ok);
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
-    return NOERROR;
+    return Error::Msg::NoError;
 }
 
 void Coma::setConf(unsigned char typeConf)
@@ -977,7 +987,7 @@ void Coma::FileTimeOut()
     QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
     if (prb == nullptr)
     {
-        ERMSG("Пустой prb");
+        qCritical(logCritical(), ("Пустой prb"));
         DBGMSG;
         return;
     }
@@ -1102,10 +1112,11 @@ void Coma::keyPressEvent(QKeyEvent *e)
 
 void Coma::MainTWTabClicked(int tabindex)
 {
-    if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
-        return;
-    CurTabIndex = tabindex;
-    ChModbus->Tabs(tabindex);
+    //   if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
+    //       return;
+    //    CurTabIndex = tabindex;
+    if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
+        ChModbus->Tabs(tabindex);
     if (corDialog != nullptr)
         corDialog->GetCorBd(tabindex);
     if (checkBDialog != nullptr || HarmDialog != nullptr || VibrDialog != nullptr)

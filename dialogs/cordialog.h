@@ -17,7 +17,7 @@ public:
     explicit CorDialog(QWidget *parent = nullptr);
     ~CorDialog();
 
-    int WriteCheckPassword();
+    Error::Msg WriteCheckPassword();
     void GetCorBd(int index);
 
 private:

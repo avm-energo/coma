@@ -20,11 +20,11 @@
 #endif
 JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
 {
-    JourFuncs = new Journals;
-    ProxyWorkModel = new QSortFilterProxyModel;
-    ProxySysModel = new QSortFilterProxyModel;
-    ProxyMeasModel = new QSortFilterProxyModel;
-    progress = new QProgressDialog;
+    JourFuncs = new Journals(this);
+    ProxyWorkModel = new QSortFilterProxyModel(this);
+    ProxySysModel = new QSortFilterProxyModel(this);
+    ProxyMeasModel = new QSortFilterProxyModel(this);
+    progress = new QProgressDialog(this);
     progress->setCancelButton(nullptr);
     progress->cancel();
 
@@ -182,22 +182,23 @@ void JournalDialog::TryGetJourByUSB()
 {
     QString filetofind;
     int jourtype = GetJourNum(sender()->objectName());
-    if (jourtype == GENERALERROR)
+    switch (jourtype)
     {
-        ERMSG("Incorrect jour type");
-        return;
-    }
-    if (jourtype == Journals::JOURSYS)
+    case Journals::JOURSYS:
         filetofind = "system.dat";
-    else if (jourtype == Journals::JOURWORK)
+        break;
+    case Journals::JOURWORK:
         filetofind = "workj.dat";
-    else if (jourtype == Journals::JOURMEAS)
+        break;
+    case Journals::JOURMEAS:
         filetofind = "measj.dat";
-    else
-    {
+        break;
+    default:
         ERMSG("Incorrect jour type");
         return;
+        break;
     }
+
     JourType = jourtype;
     JourFuncs->SetJourType(jourtype);
     // QByteArray ba;
@@ -234,17 +235,17 @@ void JournalDialog::JourFileChoosed(QString &file)
 void JournalDialog::EraseJour()
 {
     if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
-        if (WriteCheckPassword() == NOERROR)
+        if (WriteCheckPassword() == Error::Msg::NoError)
         {
             int jourtype = GetJourNum(sender()->objectName());
-            if (jourtype == GENERALERROR)
+            if (jourtype == INT_MAX)
             {
                 ERMSG("Ошибочный тип журнала");
                 return;
             }
-            char num = jourtype + 4;
+            char num = jourtype;
 
-            if (Commands::EraseTechBlock(num) == NOERROR)
+            if (Commands::EraseTechBlock(num) == Error::Msg::NoError)
             {
                 QMessageBox::information(this, "Успешно", "Стирание прошло успешно");
             }
@@ -260,26 +261,23 @@ void JournalDialog::SaveJour()
     QString jourfilestr;
     QString tvname;
     int jtype = GetJourNum(sender()->objectName());
-    if (jtype == GENERALERROR)
+    switch (jtype)
     {
-        QMessageBox::critical(this, "Ошибка", "Ошибочный тип журнала");
-        return;
-    }
-
-    if (jtype == Journals::JOURSYS)
-    {
+    case Journals::JOURSYS:
         tvname = "system";
         jourfilestr += "SysJ ";
-    }
-    else if (jtype == Journals::JOURWORK)
-    {
+        break;
+    case Journals::JOURWORK:
         tvname = "work";
         jourfilestr += "WorkJ ";
-    }
-    else
-    {
+        break;
+    case Journals::JOURMEAS:
         tvname = "meas";
         jourfilestr += "MeasJ ";
+        break;
+    default:
+        QMessageBox::critical(this, "Ошибка", "Ошибочный тип журнала");
+        return;
     }
 
     QAbstractItemModel *amdl = WDFunc::TVModel(this, tvname);
@@ -311,36 +309,36 @@ int JournalDialog::GetJourNum(const QString &objname)
     if (sl.size() < 2)
     {
         DBGMSG;
-        return GENERALERROR;
+        return INT_MAX;
     }
     int jourtype = sl.at(1).toInt(&ok);
     QString jourprefix = sl.at(0);
     if (((jourprefix != "gj") && (jourprefix != "ej") && (jourprefix != "sj") && (jourprefix != "mj")) || !ok)
     {
         DBGMSG;
-        return GENERALERROR;
+        return INT_MAX;
     }
     return jourtype;
 }
 
-int JournalDialog::WriteCheckPassword()
+Error::Msg JournalDialog::WriteCheckPassword()
 {
     ok = false;
     StdFunc::ClearCancel();
     QEventLoop PasswordLoop;
     KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    connect(dlg, SIGNAL(Finished(QString)), this, SLOT(WritePasswordCheck(QString)));
-    connect(this, SIGNAL(WritePasswordChecked()), &PasswordLoop, SLOT(quit()));
+    connect(dlg, &KeyPressDialog::Finished, this, &JournalDialog::WritePasswordCheck);
+    connect(this, &JournalDialog::WritePasswordChecked, &PasswordLoop, &QEventLoop::quit);
     dlg->show();
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     if (!ok)
     {
         QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
-    return NOERROR;
+    return Error::Msg::NoError;
 }
 
 void JournalDialog::StartReadJourFile()

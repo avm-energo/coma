@@ -32,7 +32,7 @@ void StdFunc::Init()
     QDir dir(SystemHomeDir);
     if (!dir.exists())
         dir.mkdir(SystemHomeDir);
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
+    QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
     SetOrganizationString(sets->value("OrganizationString", "Р&К").toString());
     SetDeviceIP(sets->value("DeviceIP", "172.16.11.12").toString());
 }
@@ -73,7 +73,7 @@ QString StdFunc::GetSystemHomeDir()
 void StdFunc::SetDeviceIP(const QString &ip)
 {
     DeviceIP = ip;
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
+    QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
     sets->setValue("DeviceIP", ip);
 }
 
@@ -85,7 +85,7 @@ QString StdFunc::ForDeviceIP()
 void StdFunc::SetOrganizationString(const QString &str)
 {
     s_OrganizationString = str;
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
+    QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
     sets->setValue("OrganizationString", str);
 }
 

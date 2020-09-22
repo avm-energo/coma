@@ -2,9 +2,8 @@
 
 #include <QDebug>
 
-ETableItem::ETableItem(ETableItem *parent)
+ETableItem::ETableItem(QObject *parent) : QObject(parent)
 {
-    Q_UNUSED(parent)
 }
 
 QString ETableItem::data(int column) const

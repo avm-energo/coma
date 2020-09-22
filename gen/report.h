@@ -3,6 +3,7 @@
 
 //#include "limereport/lrreportengine.h"
 #include "../LimeReport/limereport/lrreportengine.h"
+#include "../gen/error.h"
 
 #include <QStandardItemModel>
 
@@ -29,7 +30,7 @@ public:
     void AddModel(const QString &modelname, QStandardItemModel *model);
     void SetVar(const QString &varname, const QString &varvalue);
     void SetVar(const QString &varname, float varvalue, int tolerance);
-    int Generate(const QString &filename);
+    Error::Msg Generate(const QString &filename);
 
 private:
     LimeReport::ReportEngine *Rep;

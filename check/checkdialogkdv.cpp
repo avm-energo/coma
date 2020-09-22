@@ -162,62 +162,62 @@ void CheckDialogKDV::StopBdMeasurements()
 void CheckDialogKDV::USBUpdate()
 {
 
-    if (Commands::GetBd(0, &ChKDV->Bd_block0, sizeof(CheckKDV::Bd0)) == NOERROR)
+    if (Commands::GetBd(0, &ChKDV->Bd_block0, sizeof(CheckKDV::Bd0)) == Error::Msg::NoError)
     {
         ChKDV->FillBd0(this);
     }
 
-    if (Commands::GetBd(2, &ChKDV->Bd_block2, sizeof(CheckKDV::Bd_2_3)) == NOERROR)
+    if (Commands::GetBd(2, &ChKDV->Bd_block2, sizeof(CheckKDV::Bd_2_3)) == Error::Msg::NoError)
     {
         ChKDV->FillBd2(this);
     }
 
-    if (Commands::GetBd(3, &ChKDV->Bd_block3, sizeof(CheckKDV::Bd_2_3)) == NOERROR)
+    if (Commands::GetBd(3, &ChKDV->Bd_block3, sizeof(CheckKDV::Bd_2_3)) == Error::Msg::NoError)
     {
         ChKDV->FillBd3(this);
     }
 
-    if (Commands::GetBd(4, &ChKDV->Bd_block4, sizeof(CheckKDV::Bd_4_6)) == NOERROR)
+    if (Commands::GetBd(4, &ChKDV->Bd_block4, sizeof(CheckKDV::Bd_4_6)) == Error::Msg::NoError)
     {
         ChKDV->FillBd4(this);
     }
 
-    if (Commands::GetBd(6, &ChKDV->Bd_block6, sizeof(CheckKDV::Bd_4_6)) == NOERROR)
+    if (Commands::GetBd(6, &ChKDV->Bd_block6, sizeof(CheckKDV::Bd_4_6)) == Error::Msg::NoError)
     {
         ChKDV->FillBd6(this);
     }
 
-    if (Commands::GetBd(8, &ChKDV->Bd_block8, sizeof(CheckKDV::Bd8)) == NOERROR)
+    if (Commands::GetBd(8, &ChKDV->Bd_block8, sizeof(CheckKDV::Bd8)) == Error::Msg::NoError)
     {
         ChKDV->FillBd8(this);
     }
 
-    if (Commands::GetBd(9, &ChKDV->Bd_block9, sizeof(CheckKDV::Bd9)) == NOERROR)
+    if (Commands::GetBd(9, &ChKDV->Bd_block9, sizeof(CheckKDV::Bd9)) == Error::Msg::NoError)
     {
         ChKDV->FillBd9(this);
     }
 
-    if (Commands::GetBd(10, &ChKDV->Bd_block10, sizeof(CheckKDV::Bd10)) == NOERROR)
+    if (Commands::GetBd(10, &ChKDV->Bd_block10, sizeof(CheckKDV::Bd10)) == Error::Msg::NoError)
     {
         ChKDV->FillBd10(this);
     }
 
-    if (Commands::GetBd(11, &ChKDV->Bd_block11, sizeof(CheckKDV::Bd11)) == NOERROR)
+    if (Commands::GetBd(11, &ChKDV->Bd_block11, sizeof(CheckKDV::Bd11)) == Error::Msg::NoError)
     {
         ChKDV->FillBd11(this);
     }
 
-    if (Commands::GetBd(13, &ChKDV->Bd_block13, sizeof(CheckKDV::Bd13)) == NOERROR)
+    if (Commands::GetBd(13, &ChKDV->Bd_block13, sizeof(CheckKDV::Bd13)) == Error::Msg::NoError)
     {
         ChKDV->FillBd13(this);
     }
 
-    if (Commands::GetBd(17, &ChKDV->Bd_block17, sizeof(CheckKDV::Bd17)) == NOERROR)
+    if (Commands::GetBd(17, &ChKDV->Bd_block17, sizeof(CheckKDV::Bd17)) == Error::Msg::NoError)
     {
         ChKDV->FillBd17(this);
     }
 
-    if (Commands::GetBd(18, &ChKDV->Bd_block18, sizeof(CheckKDV::Bd18)) == NOERROR)
+    if (Commands::GetBd(18, &ChKDV->Bd_block18, sizeof(CheckKDV::Bd18)) == Error::Msg::NoError)
     {
         ChKDV->FillBd18(this);
     }

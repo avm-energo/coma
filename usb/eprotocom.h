@@ -41,8 +41,8 @@ public:
     static bool isWriteUSBLog();
     static void setWriteUSBLog(bool isWriteUSBLog);
 
-    qint32 result() const;
-    void setResult(const qint32 &result);
+    Error::Msg result() const;
+    void setResult(const Error::Msg &result);
 
 protected:
     explicit EProtocom(QObject *parent = nullptr);
@@ -61,7 +61,7 @@ private:
     char BoardType;
     char Command;
     quint8 bStep;
-    qint32 m_result;
+    Error::Msg m_result;
     int FNum;
     qint32 ReadDataChunkLength, RDLength; // длина всей посылки
     int WRLength;                         // длина всей посылки
@@ -87,7 +87,7 @@ private:
     void Send(char command, char parameter, QByteArray &ba, qint64 datasize);
     void InitiateSend();
     void WriteDataToPort(QByteArray &ba);
-    void Finish(int ernum);
+    void Finish(Error::Msg msg);
     void SetWRSegNum();
     void WRCheckForNextSegment(int first);
     void AppendSize(QByteArray &ba, int size);

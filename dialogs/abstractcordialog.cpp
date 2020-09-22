@@ -47,7 +47,7 @@ void AbstractCorDialog::SetCor()
     // else if (MainInterface == I_USB)
     else if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
         //   {
-        if (Commands::WriteCom(4) == NOERROR)
+        if (Commands::WriteCom(4) == Error::Msg::NoError)
             QMessageBox::information(this, "INFO", "Записано успешно");
         else
             QMessageBox::information(this, "INFO", "Ошибка");
@@ -112,7 +112,7 @@ void AbstractCorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
     }
 }
 
-int AbstractCorDialog::WriteCheckPassword()
+Error::Msg AbstractCorDialog::WriteCheckPassword()
 {
     ok = false;
     StdFunc::ClearCancel();
@@ -124,13 +124,13 @@ int AbstractCorDialog::WriteCheckPassword()
     dlg->show();
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     if (!ok)
     {
         QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
-    return NOERROR;
+    return Error::Msg::NoError;
 }
 void AbstractCorDialog::WritePasswordCheck(QString psw)
 {

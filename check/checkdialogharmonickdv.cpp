@@ -133,12 +133,12 @@ void CheckDialogHarmonicKDV::StopBdMeasurements()
 
 void CheckDialogHarmonicKDV::USBUpdate()
 {
-    if (Commands::GetBd(5, &ChHarmKDV->Bd_block5, sizeof(CheckHarmonicKDV::Bd_5_7)) == NOERROR)
+    if (Commands::GetBd(5, &ChHarmKDV->Bd_block5, sizeof(CheckHarmonicKDV::Bd_5_7)) == Error::Msg::NoError)
     {
         ChHarmKDV->FillBd5(this);
     }
 
-    if (Commands::GetBd(7, &ChHarmKDV->Bd_block7, sizeof(CheckHarmonicKDV::Bd_5_7)) == NOERROR)
+    if (Commands::GetBd(7, &ChHarmKDV->Bd_block7, sizeof(CheckHarmonicKDV::Bd_5_7)) == Error::Msg::NoError)
     {
         ChHarmKDV->FillBd7(this);
     }

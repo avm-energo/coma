@@ -96,12 +96,12 @@ void CorDialogKTF::SetupUI()
     setLayout(lyout);
 }
 
-void CorDialogKTF::FillBackWBd7()
+void CorDialogKTF::FillBackCor()
 {
     WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge);
 }
 
-void CorDialogKTF::FillBd9()
+void CorDialogKTF::FillCor()
 {
     WDFunc::SetSPBData(this, QString::number(907), Bd9Block->Age);
 }
@@ -116,9 +116,9 @@ void CorDialogKTF::GetCorBd(int index)
 
             // if (MainInterface == I_USB)
             {
-                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == NOERROR)
+                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == Error::Msg::NoError)
                 {
-                    FillBd9();
+                    FillCor();
                     QMessageBox::information(this, "INFO", "Прочитано успешно");
                 }
                 break;
@@ -138,9 +138,9 @@ void CorDialogKTF::GetCorBdButton()
     case Board::InterfaceType::USB:
         // if (MainInterface == I_USB)
         {
-            if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == NOERROR)
+            if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == Error::Msg::NoError)
             {
-                FillBd9();
+                FillCor();
                 QMessageBox::information(this, "INFO", "Прочитано успешно");
             }
             break;
@@ -168,9 +168,9 @@ void CorDialogKTF::WriteCorBd()
     // int i;
     quint32 adr = 907;
 
-    FillBackWBd7();
+    FillBackCor();
 
-    if (WriteCheckPassword() == NOERROR)
+    if (WriteCheckPassword() == Error::Msg::NoError)
     {
         switch (Board::GetInstance()->interfaceType())
         {
@@ -196,15 +196,15 @@ void CorDialogKTF::WriteCorBd()
         case Board::InterfaceType::USB:
             // else if (MainInterface == I_USB)
             {
-                if (Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == NOERROR)
+                if (Commands::WriteBd(7, WBd7Block, sizeof(WBd7)) == Error::Msg::NoError)
                     QMessageBox::information(this, "INFO", "Записано успешно");
                 else
                     QMessageBox::information(this, "INFO", "Ошибка");
 
                 //......
                 //            QThread::sleep(1);
-                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9Block)) == NOERROR)
-                    FillBd9();
+                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9Block)) == Error::Msg::NoError)
+                    FillCor();
                 break;
             }
         }
@@ -221,24 +221,24 @@ void CorDialogKTF::ResetCor()
 
 void CorDialogKTF::SaveToFile()
 {
-    int res = NOERROR;
     QByteArray ba;
-    FillBackWBd7();
+    FillBackCor();
     ba.resize(sizeof(*WBd7Block));
     memcpy(&(ba.data()[0]), WBd7Block, sizeof(*WBd7Block));
-    res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*WBd7Block));
+    Error::Msg res
+        = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*WBd7Block));
     switch (res)
     {
-    case Files::ER_NOERROR:
+    case Error::Msg::NoError:
         QMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
         break;
-    case Files::ER_FILEWRITE:
+    case Error::Msg::FILE_WRITE:
         QMessageBox::critical(this, "Ошибка", "Ошибка при записи файла!");
         break;
-    case Files::ER_FILENAMEEMP:
+    case Error::Msg::FILE_NAMEEMP:
         QMessageBox::critical(this, "Ошибка", "Пустое имя файла!");
         break;
-    case Files::ER_FILEOPEN:
+    case Error::Msg::FILE_OPEN:
         QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла!");
         break;
     default:
@@ -251,8 +251,8 @@ void CorDialogKTF::ReadFromFile()
     QByteArray ba;
     ba.resize(sizeof(*Bd9Block));
 
-    int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
-    if (res != Files::ER_NOERROR)
+    Error::Msg res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
+    if (res != Error::Msg::NoError)
     {
         QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");
         ERMSG("Ошибка при загрузке файла");
@@ -262,6 +262,6 @@ void CorDialogKTF::ReadFromFile()
     //  FillCor();
     //    memcpy(Bd9Block, &(ba.data()[0]), sizeof(*Bd9Block));
     memcpy(&Bd9Block->Age, &(ba.data()[0]), sizeof(float));
-    FillBd9();
+    FillCor();
     QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }

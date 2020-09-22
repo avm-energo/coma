@@ -137,7 +137,7 @@ public:
     QWidget *MainInfoWidget();
 
     QWidget *Least();
-    int CheckPassword();
+    Error::Msg CheckPassword();
     void Disconnect();
 
 signals:
@@ -205,7 +205,7 @@ private:
     bool Reconnect;
     int Mode; // режим запуска программы
     int fileSize, curfileSize;
-    int CheckIndex, TimeIndex, ConfIndex, CurTabIndex, CheckHarmIndex, CheckVibrIndex;
+    int CheckIndex, TimeIndex, ConfIndex, CheckHarmIndex, CheckVibrIndex;
     quint8 HaveAlreadyRed = 0;
     quint8 ActiveThreads;
     quint32 Mes;

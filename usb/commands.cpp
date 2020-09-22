@@ -10,24 +10,21 @@ Commands::Commands()
 {
 }
 
-int Commands::Connect()
+Error::Msg Commands::Connect()
 {
 
-    EProtocom::GetInstance()->Connect();
-    return NOERROR;
+    if (EProtocom::GetInstance()->Connect())
+        return Error::Msg::NoError;
+    else
+        return Error::Msg::GeneralError;
 }
-
-// bool Commands::isConnected()
-//{
-//    return EProtocom::GetInstance()->isConnected();
-//}
 
 void Commands::Disconnect()
 {
     EProtocom::GetInstance()->Disconnect();
 }
 
-int Commands::GetBsi(ModuleBSI::Bsi &bsi)
+Error::Msg Commands::GetBsi(ModuleBSI::Bsi &bsi)
 {
     QByteArray ba;
     EProtocom::GetInstance()->SendIn(CN::Read::BlkStartInfo, BoardTypes::BT_NONE, ba, sizeof(ModuleBSI::Bsi));
@@ -36,7 +33,7 @@ int Commands::GetBsi(ModuleBSI::Bsi &bsi)
     return EProtocom::GetInstance()->result();
 }
 
-int Commands::GetFileWithRestore(int filenum, QVector<S2::DataRec> *data)
+Error::Msg Commands::GetFileWithRestore(int filenum, QVector<S2::DataRec> *data)
 {
     QByteArray ba;
     EProtocom::GetInstance()->SendFile(CN::Read::File, BoardTypes::BT_NONE, filenum, ba);
@@ -46,16 +43,16 @@ int Commands::GetFileWithRestore(int filenum, QVector<S2::DataRec> *data)
     if (basize < 17)
     {
         ERMSG("Ошибка basize");
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
 
     memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
     if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), crctocheck))
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     return S2::RestoreDataMem(&ba.data()[0], basize, data);
 }
 
-int Commands::GetFile(int filenum, QByteArray &ba)
+Error::Msg Commands::GetFile(int filenum, QByteArray &ba)
 {
     EProtocom::GetInstance()->SendFile(CN::Read::File, BoardTypes::BT_NONE, filenum, ba);
     quint32 crctocheck;
@@ -63,15 +60,15 @@ int Commands::GetFile(int filenum, QByteArray &ba)
     if (basize < 17)
     {
         ERMSG("basize");
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
     memcpy(&crctocheck, &(ba.data())[8], sizeof(quint32));
     if (!S2::CheckCRC32(&(ba.data())[16], (basize - 16), crctocheck))
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     return EProtocom::GetInstance()->result();
 }
 
-int Commands::WriteFile(int filenum, QVector<S2::DataRec> *data)
+Error::Msg Commands::WriteFile(int filenum, QVector<S2::DataRec> *data)
 {
     QByteArray ba;
     ba.resize(CN::Limits::MaxFileSize);
@@ -87,14 +84,14 @@ int Commands::WriteFile(int filenum, QVector<S2::DataRec> *data)
     return EProtocom::GetInstance()->result();
 }
 
-int Commands::WriteHiddenBlock(char board, void *HPtr, int HPtrSize)
+Error::Msg Commands::WriteHiddenBlock(char board, void *HPtr, int HPtrSize)
 {
     QByteArray ba = QByteArray::fromRawData(static_cast<const char *>(HPtr), HPtrSize);
     EProtocom::GetInstance()->SendOut(CN::Write::Hardware, board, ba);
     return EProtocom::GetInstance()->result();
 }
 
-int Commands::GetBac(char BacNum, void *BacPtr, int BacPtrSize)
+Error::Msg Commands::GetBac(char BacNum, void *BacPtr, int BacPtrSize)
 {
     QByteArray ba;
     EProtocom::GetInstance()->SendIn(CN::Read::BlkAC, BacNum, ba, BacPtrSize);
@@ -102,7 +99,7 @@ int Commands::GetBac(char BacNum, void *BacPtr, int BacPtrSize)
     return EProtocom::GetInstance()->result();
 }
 
-int Commands::GetBd(char BdNum, void *BdPtr, int BdPtrSize)
+Error::Msg Commands::GetBd(char BdNum, void *BdPtr, int BdPtrSize)
 {
     QByteArray ba;
     EProtocom::GetInstance()->SendIn(CN::Read::BlkData, BdNum, ba, BdPtrSize);
@@ -110,7 +107,7 @@ int Commands::GetBd(char BdNum, void *BdPtr, int BdPtrSize)
     return EProtocom::GetInstance()->result();
 }
 
-int Commands::GetBda(char board, void *BdPtr, int BdPtrSize)
+Error::Msg Commands::GetBda(char board, void *BdPtr, int BdPtrSize)
 {
     QByteArray ba;
     EProtocom::GetInstance()->SendIn(CN::Read::BlkDataA, board, ba, BdPtrSize);
@@ -118,7 +115,7 @@ int Commands::GetBda(char board, void *BdPtr, int BdPtrSize)
     return EProtocom::GetInstance()->result();
 }
 
-int Commands::GetBt(char BtNum, void *BtPtr, int &BtPtrSize)
+Error::Msg Commands::GetBt(char BtNum, void *BtPtr, int &BtPtrSize)
 {
     QByteArray ba;
     EProtocom::GetInstance()->SendIn(CN::Read::BlkTech, BtNum, ba, BtPtrSize);
@@ -126,27 +123,27 @@ int Commands::GetBt(char BtNum, void *BtPtr, int &BtPtrSize)
     return EProtocom::GetInstance()->result();
 }
 
-int Commands::WriteBac(char BacNum, void *BacPtr, int BacPtrSize)
+Error::Msg Commands::WriteBac(char BacNum, void *BacPtr, int BacPtrSize)
 {
     QByteArray ba = QByteArray::fromRawData(static_cast<const char *>(BacPtr), BacPtrSize);
     EProtocom::GetInstance()->SendOut(CN::Write::BlkAC, BacNum, ba);
     return EProtocom::GetInstance()->result();
 }
 
-int Commands::EraseTechBlock(char block)
+Error::Msg Commands::EraseTechBlock(char block)
 {
     EProtocom::GetInstance()->SendCmd(CN::Write::EraseTech, block);
     return EProtocom::GetInstance()->result();
 }
 
-int Commands::WriteTimeMNK(uint32_t Time, int TimeSize)
+Error::Msg Commands::WriteTimeMNK(uint32_t Time, int TimeSize)
 {
     QByteArray ba = QByteArray::fromRawData(reinterpret_cast<const char *>(&Time), TimeSize);
     EProtocom::GetInstance()->SendOut(CN::Write::Time, BoardTypes::BT_NONE, ba);
     return EProtocom::GetInstance()->result();
 }
 
-int Commands::GetTimeMNK(uint &Time)
+Error::Msg Commands::GetTimeMNK(uint &Time)
 {
     QByteArray ba;
 
@@ -155,26 +152,26 @@ int Commands::GetTimeMNK(uint &Time)
     return EProtocom::GetInstance()->result();
 }
 
-int Commands::WriteBd(char BdNum, void *BdPtr, int BdPtrSize)
+Error::Msg Commands::WriteBd(char BdNum, void *BdPtr, int BdPtrSize)
 {
     QByteArray ba = QByteArray::fromRawData(static_cast<const char *>(BdPtr), BdPtrSize);
     EProtocom::GetInstance()->SendOut(CN::Write::BlkData, BdNum, ba);
     return EProtocom::GetInstance()->result();
 }
 
-int Commands::WriteCom(char ComNum)
+Error::Msg Commands::WriteCom(char ComNum)
 {
     EProtocom::GetInstance()->SendCmd(CN::Write::BlkCmd, ComNum);
     return EProtocom::GetInstance()->result();
 }
 
-int Commands::RunVPO()
+Error::Msg Commands::RunVPO()
 {
     EProtocom::GetInstance()->SendCmd(CN::Write::Upgrade);
     return EProtocom::GetInstance()->result();
 }
 
-int Commands::TestCom(char OnOff)
+Error::Msg Commands::TestCom(char OnOff)
 {
     EProtocom::GetInstance()->SendCmd(CN::Test, OnOff);
     return EProtocom::GetInstance()->result();

@@ -1,6 +1,7 @@
 #ifndef ABSTRACTCORDIALOG_H
 #define ABSTRACTCORDIALOG_H
 
+#include "../gen/error.h"
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
 #include "../models/etablemodel.h"
@@ -21,7 +22,7 @@ public:
     bool ok;
     int first;
 
-    int WriteCheckPassword();
+    Error::Msg WriteCheckPassword();
     virtual void GetCorBd(int index);
 
 private:

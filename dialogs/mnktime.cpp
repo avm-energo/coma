@@ -117,7 +117,7 @@ void MNKTime::slot2_timeOut()
     case Board::InterfaceType::USB:
     {
         uint unixtimestamp = 0;
-        if (Commands::GetTimeMNK(unixtimestamp) == NOERROR)
+        if (Commands::GetTimeMNK(unixtimestamp) == Error::Msg::NoError)
             SetTime(unixtimestamp);
         break;
     }
@@ -149,7 +149,7 @@ void MNKTime::WriteTime(QDateTime &myDateTime)
     case Board::InterfaceType::USB:
     {
         TimeFunc::Wait(100);
-        if (Commands::WriteTimeMNK(time, sizeof(uint)) != NOERROR)
+        if (Commands::WriteTimeMNK(time, sizeof(uint)) != Error::Msg::NoError)
             QMessageBox::information(this, "INFO",
                 "Ошибка"); // QMessageBox::information(this,
                            // "INFO", "Записано успешно");

@@ -77,14 +77,14 @@ void Report::SetVar(const QString &varname, float varvalue, int tolerance)
     Rep->dataManager()->setReportVariable(varname, QString::number(varvalue, 'g', tolerance));
 }
 
-int Report::Generate(const QString &filename)
+Error::Msg Report::Generate(const QString &filename)
 {
     bool rep;
     /*    Rep->previewReport();
         Rep->designReport(); */
     rep = Rep->printToPDF(filename);
     if (!rep)
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     else
-        return NOERROR;
+        return Error::Msg::NoError;
 }

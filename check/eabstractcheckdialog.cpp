@@ -30,9 +30,9 @@ EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board, QWidget *parent) : 
     WRow = 0;
     m_board = board;
     Bd_blocks.clear();
-    Timer = new QTimer;
+    Timer = new QTimer(this);
     Timer->setObjectName("checktimer");
-    connect(Timer, SIGNAL(timeout()), this, SLOT(TimerTimeout()));
+    connect(Timer, &QTimer::timeout, this, &EAbstractCheckDialog::TimerTimeout);
     Timer->setInterval(1000);
     setAttribute(Qt::WA_DeleteOnClose);
 }

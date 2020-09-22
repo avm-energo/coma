@@ -299,12 +299,13 @@ bool ConnectDialog::IsKeyExist(const QString &type, const QString &chstr)
 bool ConnectDialog::UpdateModel()
 {
     QStringList ethlist, rslist;
-    QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
+
     QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-    if (dlg == nullptr)
+    if (!dlg)
         return false;
     for (int i = 0; i < MAXREGISTRYINTERFACECOUNT; ++i)
     {
+        QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings(SOFTDEVELOPER, PROGNAME));
         QString rsname = "RS485-" + QString::number(i);
         QString ethname = "Ethernet-" + QString::number(i);
         ethlist << sets->value(ethname, "").toString();
@@ -316,12 +317,12 @@ bool ConnectDialog::UpdateModel()
     {
         QStringList USBsl = EProtocom::GetInstance()->DevicesFound();
         QStringList sl { "#", "Device" };
-        ETableModel *mdl = new ETableModel;
+        ETableModel *mdl = new ETableModel(dlg);
 
         if (USBsl.isEmpty())
         {
             QMessageBox::critical(this, "Ошибка", "Устройства не найдены");
-            Error::ShowErMsg(CN_NOPORTSERROR);
+            Error::ShowErMsg(Error::Msg::CN_NOPORTSERROR);
             return false;
         }
         mdl->setHeaders(sl);
@@ -338,7 +339,7 @@ bool ConnectDialog::UpdateModel()
     case Board::InterfaceType::Ethernet:
     {
         QStringList sl { "#", "Имя", "IP", "Адрес БС" };
-        ETableModel *mdl = new ETableModel;
+        ETableModel *mdl = new ETableModel(dlg);
 
         mdl->setHeaders(sl);
         for (int i = 0; i < ethlist.size(); ++i)
@@ -346,8 +347,7 @@ bool ConnectDialog::UpdateModel()
 
             QString key = PROGNAME;
             key += "\\" + ethlist.at(i);
-            sets.clear();
-            sets = QSharedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
+            QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
             QVector<QVariant> vl { QString::number(i + 1), ethlist.at(i), sets->value("ip", ""),
                 sets->value("bs", "") };
             mdl->addRowWithData(vl);
@@ -358,7 +358,7 @@ bool ConnectDialog::UpdateModel()
     case Board::InterfaceType::RS485:
     {
         QStringList sl { "#", "Имя", "Порт", "Скорость", "Четность", "Стоп бит", "Адрес" };
-        ETableModel *mdl = new ETableModel;
+        ETableModel *mdl = new ETableModel(dlg);
 
         mdl->setHeaders(sl);
         for (int i = 0; i < rslist.size(); ++i)
@@ -366,8 +366,7 @@ bool ConnectDialog::UpdateModel()
 
             QString key = PROGNAME;
             key += "\\" + rslist.at(i);
-            sets.clear();
-            sets = QSharedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
+            QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
             QVector<QVariant> vl { QString::number(i + 1), rslist.at(i), sets->value("port", ""),
                 sets->value("speed", ""), sets->value("parity", ""), sets->value("stop", ""),
                 sets->value("address", "") };
@@ -376,6 +375,8 @@ bool ConnectDialog::UpdateModel()
         WDFunc::SetTVModel(dlg, "rstv", mdl);
         break;
     }
+    default:
+        return false;
     }
     return true;
 }

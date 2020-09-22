@@ -25,7 +25,7 @@ public:
 
 signals:
     void ethNoconnection();
-    void error(int);
+    void error(QAbstractSocket::SocketError);
     void Connected();
     void Disconnected();
     void Finished();
@@ -38,7 +38,7 @@ public slots:
 
 private slots:
     void CheckForData();
-    void seterr(QAbstractSocket::SocketError);
+    void seterr(QAbstractSocket::SocketError error);
     void EthSetConnected();
     void EthStateChanged(QAbstractSocket::SocketState state);
 

@@ -1,6 +1,8 @@
 #ifndef S2_H
 #define S2_H
 
+#include "../gen/error.h"
+
 #include <QVector>
 
 class S2
@@ -28,15 +30,12 @@ public:
     QVector<DataRec> Config;
     S2();
     // S2: Сборщик в память:
-    static int StoreDataMem(void *, QVector<DataRec> *,
-        int fname); // 0 - успешно, иначе код ошибки
-    // S2: получение размера:
-    static int StoreDataSize(FileHeader *,
-        DataRec *); //>0 - успешно, иначе код ошибки
-    // S2: Разборщик из памяти:
-    static int RestoreDataMem(void *mem, quint32 memsize,
-        QVector<DataRec> *dr); // 0 - успешно, иначе код ошибки
-    // S2: Поиск элемента в массиве описаний
+    // 0 - успешно, иначе код ошибки S2: получение размера:
+    static Error::Msg StoreDataMem(void *, QVector<DataRec> *, int fname);
+    //>0 - успешно, иначе код ошибки  S2: Разборщик из памяти
+    static int StoreDataSize(FileHeader *, DataRec *);
+    // 0 - успешно, иначе код ошибки S2: Поиск элемента в массиве описаний
+    static Error::Msg RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr);
     static DataRec *FindElem(QVector<DataRec> *, quint32);
     static quint32 getTime32();
     static quint32 GetCRC32(char *, quint32);

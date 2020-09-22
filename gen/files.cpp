@@ -26,23 +26,23 @@ QString Files::ChooseFileForOpen(QWidget *parent, QString mask)
     return filename;
 }
 
-int Files::LoadFromFile(const QString &filename, QByteArray &ba)
+Error::Msg Files::LoadFromFile(const QString &filename, QByteArray &ba)
 {
     if (filename.isEmpty())
     {
         ERMSG("Пустое имя файла");
-        return ER_FILEOPEN; // Пустое имя файла
+        return Error::Msg::FILE_NAMEEMP; // Пустое имя файла
     }
     QFile *file = new QFile;
     file->setFileName(filename);
     if (!file->open(QIODevice::ReadOnly))
     {
         ERMSG("Ошибка открытия файла");
-        return ER_FILEOPEN; // Ошибка открытия файла
+        return Error::Msg::FILE_OPEN; // Ошибка открытия файла
     }
     ba = file->readAll();
     file->close();
-    return ER_NOERROR;
+    return Error::Msg::NoError;
 }
 
 // Input: QString mask: описание файлов, например: "Файлы журналов (*.swj)";
@@ -70,20 +70,28 @@ QString Files::ChooseFileForSave(QWidget *parent, const QString &mask, const QSt
     return filename;
 }
 
-int Files::SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes)
+Error::Msg Files::SaveToFile(const QString &filename, QByteArray &src, unsigned int numbytes)
 {
     if (filename.isEmpty())
-        return ER_FILENAMEEMP; // Пустое имя файла
+        return Error::Msg::NoError; // Пустое имя файла
     QFile *file = new QFile;
     file->setFileName(filename);
     if (!file->open(QIODevice::WriteOnly))
-        return ER_FILEOPEN; // Ошибка открытия файла
-    int res = file->write(src, numbytes);
-    file->close();
-    delete file;
-    if (res == GENERALERROR)
-        return ER_FILEWRITE; // ошибка записи
-    return ER_NOERROR;       // нет ошибок
+        return Error::Msg::FILE_OPEN; // Ошибка открытия файла
+    if (file->write(src, numbytes) != -1)
+    {
+        // нет ошибок
+        file->close();
+        delete file;
+        return Error::Msg::NoError;
+    }
+    else
+    {
+        // ошибка записи
+        file->close();
+        delete file;
+        return Error::Msg::FILE_WRITE;
+    }
 }
 
 QStringList Files::Drives()

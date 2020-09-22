@@ -50,10 +50,10 @@ void fwupdialog::SetupUI()
     setLayout(lyout);
 }
 
-int fwupdialog::LoadFW()
+Error::Msg fwupdialog::LoadFW()
 {
     QByteArray ba;
-    File_struct PV_file;
+    // File_struct PV_file;
     // quint32 crc=0xFFFFFFFF;
     //    quint32 i;
     //    quint32 tmpi = 0;
@@ -61,13 +61,13 @@ int fwupdialog::LoadFW()
     // tmpi = sizeof(PV_file.Type)+sizeof(PV_file.File.FileDatHeader);
     // QVector<S2::DataRec> S2DR;
 
-    if (WriteCheckPassword() == NOERROR)
+    if (WriteCheckPassword() == Error::Msg::NoError)
     {
-        int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Program Version (*.hex)"), ba);
-        if (res != Files::ER_NOERROR)
+        Error::Msg res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Program Version (*.hex)"), ba);
+        if (res != Error::Msg::NoError)
         {
             WARNMSG("Ошибка файла ПО");
-            return GENERALERROR;
+            return Error::Msg::GeneralError;
         }
 
         ParseHexToS2(ba);
@@ -76,16 +76,15 @@ int fwupdialog::LoadFW()
         // sizeof(PV_file.File.FileDatHeader) + sizeof(ba) +
         // sizeof(PV_file.void_recHeader);
     }
-    return NOERROR;
+    return Error::Msg::NoError;
 }
 
 void fwupdialog::RunSoft()
 {
-    if (WriteCheckPassword() == NOERROR)
+    if (WriteCheckPassword() == Error::Msg::NoError)
     {
         TimeFunc::Wait(100);
-        int res = Commands::RunVPO();
-        if (res != NOERROR)
+        if (Commands::RunVPO() != Error::Msg::NoError)
         {
             WARNMSG("Ошибка перехода на новое ПО");
             QMessageBox::information(this, "Ошибка", "Ошибка");
@@ -97,7 +96,7 @@ void fwupdialog::RunSoft()
     }
 }
 
-int fwupdialog::WriteCheckPassword()
+Error::Msg fwupdialog::WriteCheckPassword()
 {
     ok = false;
     StdFunc::ClearCancel();
@@ -108,13 +107,13 @@ int fwupdialog::WriteCheckPassword()
     dlg->show();
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     if (!ok)
     {
         QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
-    return NOERROR;
+    return Error::Msg::NoError;
 }
 
 void fwupdialog::WritePasswordCheck(QString psw)
@@ -126,7 +125,7 @@ void fwupdialog::WritePasswordCheck(QString psw)
     emit WritePasswordChecked();
 }
 
-int fwupdialog::ParseHexToS2(QByteArray ba)
+Error::Msg fwupdialog::ParseHexToS2(QByteArray ba)
 {
 
     File_struct *PV_file = new File_struct;
@@ -350,13 +349,13 @@ int fwupdialog::ParseHexToS2(QByteArray ba)
     memcpy(&BaForSend->data()[0], &ForProcess->data()[0],
     (BaForSend->size()+16));*/
 
-    if (Commands::WriteFile(3, &S2DR) != NOERROR)
+    if (Commands::WriteFile(3, &S2DR) != Error::Msg::NoError)
     {
         QMessageBox::information(this, "Ошибка", "Ошибка записи в модуль!");
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
     QMessageBox::information(this, "Успешно", "Загрузка ПО версии " + st + " прошла успешно!");
-    return NOERROR;
+    return Error::Msg::NoError;
 
-    return NOERROR;
+    return Error::Msg::NoError;
 }

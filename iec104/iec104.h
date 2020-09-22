@@ -247,7 +247,7 @@ private:
     bool FirstParse;
 
     void ParseIFormat(QByteArray &ba);
-    int isIncomeDataValid(QByteArray);
+    Error::Msg isIncomeDataValid(QByteArray);
     QByteArray CreateGI(unsigned char apdulength);
     QByteArray ASDUFilePrefix(unsigned char Command, unsigned char filenum, unsigned char secnum);
     QByteArray ASDU6Prefix(unsigned char Command, quint32 adr);
@@ -270,7 +270,7 @@ private:
     void Com50(quint32 adr, float param);
     void InterrogateTimeGr15();
     void Com51WriteTime(quint32 time);
-
+    void convert(IEC104Thread::SponSignals *signal);
 private slots:
     void SendTestAct();
 

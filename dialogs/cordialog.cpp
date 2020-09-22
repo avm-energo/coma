@@ -198,7 +198,7 @@ void CorDialog::GetCorBd(int index)
 
             // if (MainInterface == I_USB)
             {
-                if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
+                if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
                 {
                     FillCor();
                     QMessageBox::information(this, "INFO", "Прочитано успешно");
@@ -221,7 +221,7 @@ void CorDialog::GetCorBdButton()
     case Board::InterfaceType::USB:
         // if (MainInterface == I_USB)
         {
-            if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
+            if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
             {
                 FillCor();
                 QMessageBox::information(this, "INFO", "Прочитано успешно");
@@ -253,7 +253,7 @@ void CorDialog::WriteCorBd()
 
     FillBackCor();
 
-    if (WriteCheckPassword() == NOERROR)
+    if (WriteCheckPassword() == Error::Msg::NoError)
     {
         switch (Board::GetInstance()->interfaceType())
         {
@@ -282,12 +282,12 @@ void CorDialog::WriteCorBd()
         // else if (MainInterface == I_USB)
         case Board::InterfaceType::USB:
         {
-            if (Commands::WriteBd(7, CorBlock, sizeof(CorData)) == NOERROR)
+            if (Commands::WriteBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
                 QMessageBox::information(this, "INFO", "Записано успешно");
             else
                 QMessageBox::information(this, "INFO", "Ошибка");
 
-            if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == NOERROR)
+            if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::Msg::NoError)
                 FillCor();
             break;
         }
@@ -297,7 +297,7 @@ void CorDialog::WriteCorBd()
 
 void CorDialog::WriteCor()
 {
-    if (WriteCheckPassword() == NOERROR)
+    if (WriteCheckPassword() == Error::Msg::NoError)
     {
         switch (Board::GetInstance()->interfaceType())
         {
@@ -325,9 +325,9 @@ void CorDialog::WriteCor()
         case Board::InterfaceType::USB:
             // else if (MainInterface == I_USB)
             {
-                if (Commands::WriteCom(1) == NOERROR) // задание общей коррекции
-                                                      //{
-                    if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == NOERROR)
+                if (Commands::WriteCom(1) == Error::Msg::NoError) // задание общей коррекции
+                                                                  //{
+                    if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
                     {
                         FillCor();
                         QMessageBox::information(this, "INFO", "Задано и прочитано успешно");
@@ -354,7 +354,7 @@ void CorDialog::SetCor()
     case Board::InterfaceType::USB:
         // else if (MainInterface == I_USB)
         {
-            if (Commands::WriteCom(4) == NOERROR)
+            if (Commands::WriteCom(4) == Error::Msg::NoError)
                 QMessageBox::information(this, "INFO", "Записано успешно");
             else
                 QMessageBox::information(this, "INFO", "Ошибка");
@@ -365,7 +365,7 @@ void CorDialog::SetCor()
 
 void CorDialog::ResetCor()
 {
-    if (WriteCheckPassword() == NOERROR)
+    if (WriteCheckPassword() == Error::Msg::NoError)
     {
         switch (Board::GetInstance()->interfaceType())
         {
@@ -388,12 +388,12 @@ void CorDialog::ResetCor()
         case Board::InterfaceType::USB:
             // else if (MainInterface == I_USB)
             {
-                if (Commands::WriteCom(5) == NOERROR)
+                if (Commands::WriteCom(5) == Error::Msg::NoError)
                     QMessageBox::information(this, "INFO", "Сброшено успешно");
                 else
                     QMessageBox::information(this, "INFO", "Ошибка");
 
-                if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == NOERROR)
+                if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::Msg::NoError)
                     FillCor();
                 break;
             }
@@ -461,24 +461,24 @@ void CorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
 
 void CorDialog::SaveToFile()
 {
-    int res = NOERROR;
     QByteArray ba;
     FillBackCor();
     ba.resize(sizeof(*CorBlock));
     memcpy(&(ba.data()[0]), CorBlock, sizeof(*CorBlock));
-    res = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*CorBlock));
+    Error::Msg res
+        = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*CorBlock));
     switch (res)
     {
-    case Files::ER_NOERROR:
+    case Error::Msg::NoError:
         QMessageBox::information(this, "Внимание", "Файл коэффициентов коррекции записан успешно!");
         break;
-    case Files::ER_FILEWRITE:
+    case Error::Msg::FILE_WRITE:
         QMessageBox::critical(this, "Ошибка", "Ошибка при записи файла!");
         break;
-    case Files::ER_FILENAMEEMP:
+    case Error::Msg::FILE_NAMEEMP:
         QMessageBox::critical(this, "Ошибка", "Пустое имя файла!");
         break;
-    case Files::ER_FILEOPEN:
+    case Error::Msg::FILE_OPEN:
         QMessageBox::critical(this, "Ошибка", "Ошибка открытия файла!");
         break;
     default:
@@ -491,8 +491,8 @@ void CorDialog::ReadFromFile()
     QByteArray ba;
     ba.resize(sizeof(*CorBlock));
 
-    int res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
-    if (res != Files::ER_NOERROR)
+    Error::Msg res = Files::LoadFromFile(Files::ChooseFileForOpen(this, "Tune files (*.cor)"), ba);
+    if (res != Error::Msg::NoError)
     {
         QMessageBox::critical(this, "Ошибка", "Ошибка при загрузке файла");
         ERMSG("Ошибка при загрузке файла");
@@ -505,25 +505,25 @@ void CorDialog::ReadFromFile()
     QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
-int CorDialog::WriteCheckPassword()
+Error::Msg CorDialog::WriteCheckPassword()
 {
     ok = false;
     StdFunc::ClearCancel();
     QEventLoop PasswordLoop;
     KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    connect(dlg, SIGNAL(Finished(QString)), this, SLOT(WritePasswordCheck(QString)));
-    connect(this, SIGNAL(WritePasswordChecked()), &PasswordLoop, SLOT(quit()));
+    connect(dlg, &KeyPressDialog::Finished, this, &CorDialog::WritePasswordCheck);
+    connect(this, &AbstractCorDialog::WritePasswordChecked, &PasswordLoop, &QEventLoop::quit);
     dlg->deleteLater();
     dlg->show();
     PasswordLoop.exec();
     if (StdFunc::IsCancelled())
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     if (!ok)
     {
         QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
-    return NOERROR;
+    return Error::Msg::NoError;
 }
 
 void CorDialog::WritePasswordCheck(QString psw)

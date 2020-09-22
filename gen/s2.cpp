@@ -3,9 +3,11 @@
 #include "error.h"
 
 #include <QDateTime>
-S2::S2() { }
+S2::S2()
+{
+}
 
-int S2::StoreDataMem(void *mem, QVector<DataRec> *dr,
+Error::Msg S2::StoreDataMem(void *mem, QVector<DataRec> *dr,
     int fname) // 0 - успешно, иначе код ошибки
 {
     quint32 crc = 0xFFFFFFFF;
@@ -42,10 +44,10 @@ int S2::StoreDataMem(void *mem, QVector<DataRec> *dr,
     header.service = 0xFFFF;
     header.fname = static_cast<quint16>(fname);
     memcpy(mem, &header, sizeof(header));
-    return NOERROR;
+    return Error::Msg::NoError;
 }
 
-int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
+Error::Msg S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
 {
     unsigned char *m = static_cast<unsigned char *>(mem);
     DataRec R;
@@ -59,7 +61,7 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
     if (fhsize > memsize)
     {
         ERMSG("S2: out of memory"); // выход за границу принятых байт
-        return S2_SIZEERROR;
+        return Error::Msg::S2_SIZEERROR;
     }
     memcpy(&header, m, fhsize);
     m += fhsize;
@@ -68,7 +70,7 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
     if (!CheckCRC32(m, memsize - fhsize, header.crc32))
     {
         ERMSG("S2: CRC error"); // выход за границу принятых байт
-        return S2_CRCERROR;
+        return Error::Msg::S2_CRCERROR;
     }
     pos = fhsize;
     R.id = 0;
@@ -79,7 +81,7 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
         if (pos > memsize)
         {
             ERMSG("S2: out of memory"); // выход за границу принятых байт
-            return S2_SIZEERROR;
+            return Error::Msg::S2_SIZEERROR;
         }
         memcpy(&R, m, tmpi);
         m += tmpi;
@@ -93,7 +95,7 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
                 if (pos > memsize)
                 {
                     ERMSG("S2: out of memory"); // выход за границу принятых байт
-                    return S2_SIZEERROR;
+                    return Error::Msg::S2_SIZEERROR;
                 }
                 m += tmpi;
                 continue;
@@ -103,14 +105,14 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
             {
                 ERMSG("S2: block description mismatch"); // несовпадение описаний одного
                                                          // и того же блока
-                return S2_DESCERROR;
+                return Error::Msg::S2_DESCERROR;
             }
             tmpi = r->num_byte;
             pos += tmpi;
             if (pos > memsize)
             {
                 ERMSG("S2: out of memory"); // выход за границу принятых байт
-                return S2_SIZEERROR;
+                return Error::Msg::S2_SIZEERROR;
             }
             memcpy(r->thedata, m, tmpi);
             m += tmpi;
@@ -119,14 +121,14 @@ int S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
     if (header.size != (pos - fhsize))
     {
         ERMSG("S2: length error"); // ошибка длины
-        return S2_DHSZERROR;
+        return Error::Msg::S2_DHSZERROR;
     }
     if (noIDs)
     {
         ERMSG("S2: there's no such ID"); // не найдено ни одного ИД
-        return S2_NOIDS;
+        return Error::Msg::S2_NOIDS;
     }
-    return NOERROR;
+    return Error::Msg::NoError;
 }
 
 S2::DataRec *S2::FindElem(QVector<DataRec> *dr, quint32 id)

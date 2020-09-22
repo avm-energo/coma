@@ -1,6 +1,8 @@
 #ifndef TIMEFUNC_H
 #define TIMEFUNC_H
 
+#include "../gen/error.h"
+
 #include <QCoreApplication>
 #include <QElapsedTimer>
 
@@ -25,7 +27,7 @@ public:
     static QString UnixTime64ToString(quint64 utime);
     static QString UnixTime64ToInvStringFractional(quint64 utime);
     static QString UnixTime32ToInvString(quint32 utime);
-    static int WaitFor(bool &flag, int timeoutms = TIMEOUT_MAIN);
+    static Error::Msg WaitFor(bool &flag, int timeoutms = TIMEOUT_MAIN);
 };
 
 #endif // TIMEFUNC_H

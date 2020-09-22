@@ -100,12 +100,12 @@ void CheckDialogVibrKDV::StopBdMeasurements()
 
 void CheckDialogVibrKDV::USBUpdate()
 {
-    if (Commands::GetBd(19, &ChVibrKDV->Bd_block19, sizeof(CheckVibrKDV::Bd19)) == NOERROR)
+    if (Commands::GetBd(19, &ChVibrKDV->Bd_block19, sizeof(CheckVibrKDV::Bd19)) == Error::Msg::NoError)
     {
         ChVibrKDV->FillBd19(this);
     }
 
-    if (Commands::GetBd(20, &ChVibrKDV->Bd_block20, sizeof(CheckVibrKDV::Bd20)) == NOERROR)
+    if (Commands::GetBd(20, &ChVibrKDV->Bd_block20, sizeof(CheckVibrKDV::Bd20)) == Error::Msg::NoError)
     {
         ChVibrKDV->FillBd20(this);
     }

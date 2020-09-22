@@ -3,6 +3,8 @@
 
 #define MAXSIZE 2000000
 
+#include "../gen/error.h"
+
 #include <QDialog>
 
 class fwupdialog : public QDialog
@@ -12,8 +14,8 @@ public:
     explicit fwupdialog(QWidget *parent = nullptr);
 
     void SetupUI();
-    int ParseHexToS2(QByteArray ba);
-    int WriteCheckPassword();
+    Error::Msg ParseHexToS2(QByteArray ba);
+    Error::Msg WriteCheckPassword();
 
     quint32 NN;
 
@@ -63,7 +65,7 @@ signals:
     void WritePasswordChecked();
 
 public slots:
-    int LoadFW();
+    Error::Msg LoadFW();
     void RunSoft();
     void WritePasswordCheck(QString psw);
 };
