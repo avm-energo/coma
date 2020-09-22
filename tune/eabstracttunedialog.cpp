@@ -8,22 +8,6 @@
 #include "../usb/commands.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
-#include <QCoreApplication>
-#include <QEventLoop>
-#include <QFileDialog>
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QInputDialog>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QScrollArea>
-#include <QScrollBar>
-#include <QTabWidget>
-#include <QTableView>
-#include <QTime>
-#include <QTimer>
-#include <QVBoxLayout>
-#include <QtMath>
 
 EAbstractTuneDialog::EAbstractTuneDialog(QWidget *parent) : QDialog(parent)
 {
