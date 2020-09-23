@@ -14,7 +14,6 @@
 #include <QMessageBox>
 #include <QModelIndex>
 #include <QProgressDialog>
-//#include <QThread>
 #include <QSignalSpy>
 
 #define MAXSWJNUM 262144
