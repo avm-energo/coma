@@ -84,7 +84,6 @@ SOURCES += \
     ../gen/error.cpp \
     ../gen/files.cpp \
     ../gen/modulebsi.cpp \
-    ../gen/report.cpp \
     ../gen/s2.cpp \
     ../gen/stdfunc.cpp \
     ../gen/timefunc.cpp \
@@ -165,7 +164,6 @@ HEADERS += \
     ../gen/error.h \
     ../gen/files.h \
     ../gen/modulebsi.h \
-    ../gen/report.h \
     ../gen/s2.h \
     ../gen/stdfunc.h \
     ../gen/timefunc.h \
@@ -241,13 +239,10 @@ win32 {
 }
 
 unix {
-LIBS += -lhidapi-libusb -llzma
+LIBS += -llzma
 contains(QT_ARCH, x86_64) {
         message("Unix x64 build")
         ## Unix x64 (64bit) specific build here
-        LIBS += -L$$PWD/../LimeReport/build/$${QT_VERSION}/linux64/release/lib  -llimereport -lQtZint -lhidapi-libusb -llzma
-        INCLUDEPATH += $$PWD/../LimeReport/build/$${QT_VERSION}/linux64/release/lib/include
-        DEPENDPATH += $$PWD/../LimeReport/build/$${QT_VERSION}/linux64/release
         CONFIG(debug, debug|release) {
         DESTDIR = $${PWD}/../../build/linux64/debug
         } else {
@@ -256,9 +251,6 @@ contains(QT_ARCH, x86_64) {
     } else {
         message("Unix x86 build")
         ## Unix x86 (32bit) specific build here
-        LIBS += -L$$PWD/../LimeReport/build/$${QT_VERSION}/linux32/release/lib  -llimereport -lQtZint -lhidapi-libusb -llzma
-        INCLUDEPATH += $$PWD/../LimeReport/build/$${QT_VERSION}/linux32/release/lib/include
-        DEPENDPATH += $$PWD/../LimeReport/build/$${QT_VERSION}/linux32/release
         CONFIG(debug, debug|release) {
         DESTDIR = $${PWD}/../../build/linux32/debug
         } else {
