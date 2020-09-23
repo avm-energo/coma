@@ -616,7 +616,6 @@ void Coma::setupConnections()
         connect(Ch104, &IEC104::SendS2fromiec104, confMDialog, &AbstractConfDialog::FillConf);
         connect(confMDialog, &AbstractConfDialog::writeConfFile, Ch104, &IEC104::FileReady);
         connect(Ch104, &IEC104::SendConfMessageOk, confMDialog, &AbstractConfDialog::WriteConfMessageOk);
-        // confMDialog->staticMetaObject;
         break;
     }
     case Board::InterfaceType::RS485:
@@ -640,6 +639,8 @@ void Coma::setupConnections()
         connect(corDialog, &AbstractCorDialog::RS485ReadCorBd, ChModbus, &ModBus::ModReadCor);
         break;
     }
+    default:
+        break;
     }
 }
 
@@ -739,6 +740,9 @@ void Coma::NewTimersBda()
 bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
 {
     Q_UNUSED(result)
+#ifdef __linux
+    Q_UNUSED(message)
+#endif
     if (eventType == "windows_generic_MSG")
     {
 #ifdef _WIN32
