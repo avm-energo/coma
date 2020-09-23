@@ -35,6 +35,7 @@ JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
     // connect(JourFuncs, &Journals::ModelReady, this, &JournalDialog::SetModel);
     //    connect(JourFuncs,SIGNAL(ProxyModelReady(QSortFilterProxyModel
     //    *)),this,SLOT(SetProxyModel(QSortFilterProxyModel *)));
+    ///
     connect(JourFuncs, &Journals::ReadJour, iec, &IEC104::SelectFile);
     connect(iec, &IEC104::SendJourSysfromiec104, JourFuncs, &Journals::FillSysJour);
     connect(iec, &IEC104::SendJourWorkfromiec104, JourFuncs, &Journals::FillWorkJour);

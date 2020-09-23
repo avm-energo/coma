@@ -59,7 +59,7 @@ void ConfDialogKIV::Fill()
     WDFunc::SetSPBData(this, "GdIunb", CKIV->Bci_block.GdIunb);
     WDFunc::SetSPBData(this, "NFiltr", CKIV->Bci_block.NFiltr);
     WDFunc::SetSPBData(this, "T_Data_Rec", CKIV->Bci_block.T_Data_Rec);
-    WDFunc::SetSPBData(this, "Unom_1", CKIV->Bci_block.Unom_1);
+    WDFunc::SetSPBData(this, "U2nom", CKIV->Bci_block.Unom_1);
     WDFunc::SetSPBData(this, "Ulow", CKIV->Bci_block.LowU);
     WDFunc::SetSPBData(this, "Tevent_pred", CKIV->Bci_block.Tevent_pred);
     WDFunc::SetSPBData(this, "Tevent_alarm", CKIV->Bci_block.Tevent_alarm);
@@ -105,7 +105,7 @@ void ConfDialogKIV::FillBack()
     WDFunc::SPBData(this, "GdIunb", CKIV->Bci_block.GdIunb);
     WDFunc::SPBData(this, "NFiltr", CKIV->Bci_block.NFiltr);
     WDFunc::SPBData(this, "T_Data_Rec", CKIV->Bci_block.T_Data_Rec);
-    WDFunc::SPBData(this, "Unom_1", CKIV->Bci_block.Unom_1);
+    WDFunc::SPBData(this, "U2nom", CKIV->Bci_block.Unom_1);
     WDFunc::SPBData(this, "Ulow", CKIV->Bci_block.LowU);
     WDFunc::SPBData(this, "Tevent_pred", CKIV->Bci_block.Tevent_pred);
     WDFunc::SPBData(this, "Tevent_alarm", CKIV->Bci_block.Tevent_alarm);
@@ -179,7 +179,7 @@ void ConfDialogKIV::SetupUI()
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальное вторичное напряжение первой тройки, В:"), row, 1, 1, 1);
-    gridlyout->addWidget(WDFunc::NewSPB(this, "Unom_1", 0, 10000, 1, paramcolor), row, 2, 1, 3);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "U2nom", 0, 10000, 1, paramcolor), row, 2, 1, 3);
     row++;
 
     for (int i = 0; i < 3; i++)
