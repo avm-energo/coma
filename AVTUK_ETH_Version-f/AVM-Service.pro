@@ -287,3 +287,5 @@ defineTest(copyToDestDir) {
 copyToDestDir($$IMAGE_FILE, $$DESTDIR/images/)
 copyToDestDir($$ERROR_FILES, $$DESTDIR/errors/)
 copyToDestDir($$LIBS_FILES, $$DESTDIR/)
+
+unix: LIBS += -lhidapi-hidraw
