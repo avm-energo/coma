@@ -35,10 +35,13 @@ JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
     // connect(JourFuncs, &Journals::ModelReady, this, &JournalDialog::SetModel);
     //    connect(JourFuncs,SIGNAL(ProxyModelReady(QSortFilterProxyModel
     //    *)),this,SLOT(SetProxyModel(QSortFilterProxyModel *)));
-    connect(JourFuncs, &Journals::ReadJour, iec, &IEC104::SelectFile);
-    connect(iec, &IEC104::SendJourSysfromiec104, JourFuncs, &Journals::FillSysJour);
-    connect(iec, &IEC104::SendJourWorkfromiec104, JourFuncs, &Journals::FillWorkJour);
-    connect(iec, &IEC104::SendJourMeasfromiec104, JourFuncs, &Journals::FillMeasJour);
+    if (Board::GetInstance()->interfaceType() == Board::InterfaceType::Ethernet)
+    {
+        connect(JourFuncs, &Journals::ReadJour, iec, &IEC104::SelectFile);
+        connect(iec, &IEC104::SendJourSysfromiec104, JourFuncs, &Journals::FillSysJour);
+        connect(iec, &IEC104::SendJourWorkfromiec104, JourFuncs, &Journals::FillWorkJour);
+        connect(iec, &IEC104::SendJourMeasfromiec104, JourFuncs, &Journals::FillMeasJour);
+    }
     connect(this, &JournalDialog::StartGetJour, JourFuncs, &Journals::StartGetJour);
     connect(this, &JournalDialog::StartSaveJour, JourFuncs, &Journals::StartSaveJour);
     connect(this, &JournalDialog::StartReadFile, JourFuncs, &Journals::ReadJourFileAndProcessIt);
