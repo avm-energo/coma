@@ -125,7 +125,7 @@ Error::Msg EUsbWorker::WriteData(QByteArray &ba)
         if (hid_write(HidDevice, reinterpret_cast<unsigned char *>(ba.data()), tmpt) != -1)
             return Error::Msg::NoError;
         else
-            return Error::Msg::GeneralError;
+            Error::Msg::GeneralError;
     }
     if (log != nullptr)
         log->WriteRaw("UsbThread: null hid device");

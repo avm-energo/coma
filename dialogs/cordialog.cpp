@@ -195,14 +195,17 @@ void CorDialog::GetCorBd(int index)
         switch (Board::GetInstance()->interfaceType())
         {
         case Board::InterfaceType::USB:
-        {
-            if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
+
+            // if (MainInterface == I_USB)
             {
-                FillCor();
-                QMessageBox::information(this, "INFO", "Прочитано успешно");
+                if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
+                {
+                    FillCor();
+                    QMessageBox::information(this, "INFO", "Прочитано успешно");
+                }
+                break;
             }
-            break;
-        }
+
         case Board::InterfaceType::Ethernet:
         {
             emit CorReadRequest();
@@ -216,14 +219,16 @@ void CorDialog::GetCorBdButton()
     switch (Board::GetInstance()->interfaceType())
     {
     case Board::InterfaceType::USB:
-    {
-        if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
+        // if (MainInterface == I_USB)
         {
-            FillCor();
-            QMessageBox::information(this, "INFO", "Прочитано успешно");
+            if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
+            {
+                FillCor();
+                QMessageBox::information(this, "INFO", "Прочитано успешно");
+            }
+            break;
         }
-        break;
-    }
+    // else if (MainInterface == I_RS485)
     case Board::InterfaceType::RS485:
     {
         ModBus::Information info;
@@ -232,6 +237,7 @@ void CorDialog::GetCorBdButton()
         emit RS485ReadCorBd(info);
         break;
     }
+    // else if (MainInterface == I_ETHERNET)
     case Board::InterfaceType::Ethernet:
     {
         emit CorReadRequest();
@@ -251,6 +257,8 @@ void CorDialog::WriteCorBd()
     {
         switch (Board::GetInstance()->interfaceType())
         {
+
+            // if (MainInterface == I_ETHERNET)
         case Board::InterfaceType::Ethernet:
         {
             for (i = 0; i < 11; i++)
@@ -263,13 +271,15 @@ void CorDialog::WriteCorBd()
             break;
         }
         case Board::InterfaceType::RS485:
-        {
-            ModBus::Information info;
-            info.size = (sizeof(CorData) / 4);
-            info.adr = adr[0];
-            emit RS485WriteCorBd(info, (float *)CorBlock);
-            break;
-        }
+            // else if (MainInterface == I_RS485)
+            {
+                ModBus::Information info;
+                info.size = (sizeof(CorData) / 4);
+                info.adr = adr[0];
+                emit RS485WriteCorBd(info, (float *)CorBlock);
+                break;
+            }
+        // else if (MainInterface == I_USB)
         case Board::InterfaceType::USB:
         {
             if (Commands::WriteBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
@@ -292,38 +302,41 @@ void CorDialog::WriteCor()
         switch (Board::GetInstance()->interfaceType())
         {
         case Board::InterfaceType::Ethernet:
-        {
-            emit SendCom45(SETINITREG);
-            QMessageBox::information(this, "INFO", "Задано успешно");
-            emit CorReadRequest();
-            break;
-        }
+            // if (MainInterface == I_ETHERNET)
+            {
+                emit SendCom45(SETINITREG);
+                QMessageBox::information(this, "INFO", "Задано успешно");
+                emit CorReadRequest();
+                break;
+            }
         case Board::InterfaceType::RS485:
-        {
-            ModBus::Information info;
-            info.size = 1;
-            info.adr = SETINITREG;
-            emit RS485WriteCorBd(info, nullptr);
-            QMessageBox::information(this, "INFO", "Задано успешно");
-            info.size = (sizeof(CorData) / 4);
-            info.adr = 4000;
-            emit RS485ReadCorBd(info);
-            break;
-        }
+            // else if (MainInterface == I_RS485)
+            {
+                ModBus::Information info;
+                info.size = 1;
+                info.adr = SETINITREG;
+                emit RS485WriteCorBd(info, nullptr);
+                QMessageBox::information(this, "INFO", "Задано успешно");
+                info.size = (sizeof(CorData) / 4);
+                info.adr = 4000;
+                emit RS485ReadCorBd(info);
+                break;
+            }
         case Board::InterfaceType::USB:
-        {
-            if (Commands::WriteCom(1) == Error::Msg::NoError) // задание общей коррекции
-                                                              //{
-                if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
-                {
-                    FillCor();
-                    QMessageBox::information(this, "INFO", "Задано и прочитано успешно");
-                }
-                // }
-                else
-                    QMessageBox::information(this, "INFO", "Ошибка");
-            break;
-        }
+            // else if (MainInterface == I_USB)
+            {
+                if (Commands::WriteCom(1) == Error::Msg::NoError) // задание общей коррекции
+                                                                  //{
+                    if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
+                    {
+                        FillCor();
+                        QMessageBox::information(this, "INFO", "Задано и прочитано успешно");
+                    }
+                    // }
+                    else
+                        QMessageBox::information(this, "INFO", "Ошибка");
+                break;
+            }
         }
     }
 }
@@ -333,18 +346,20 @@ void CorDialog::SetCor()
     switch (Board::GetInstance()->interfaceType())
     {
     case Board::InterfaceType::Ethernet:
-    {
+        // if (MainInterface == I_ETHERNET)
+        //{
         emit SendCom45(903);
         break;
-    }
+        //}
     case Board::InterfaceType::USB:
-    {
-        if (Commands::WriteCom(4) == Error::Msg::NoError)
-            QMessageBox::information(this, "INFO", "Записано успешно");
-        else
-            QMessageBox::information(this, "INFO", "Ошибка");
-        break;
-    }
+        // else if (MainInterface == I_USB)
+        {
+            if (Commands::WriteCom(4) == Error::Msg::NoError)
+                QMessageBox::information(this, "INFO", "Записано успешно");
+            else
+                QMessageBox::information(this, "INFO", "Ошибка");
+            break;
+        }
     }
 }
 
@@ -354,30 +369,34 @@ void CorDialog::ResetCor()
     {
         switch (Board::GetInstance()->interfaceType())
         {
+
+        // if (MainInterface == I_ETHERNET)
         case Board::InterfaceType::Ethernet:
-        {
+            //{
             emit SendCom45(CLEARREG);
             break;
-        }
+            //}
         case Board::InterfaceType::RS485:
-        {
-            ModBus::Information info;
-            info.size = 1;
-            info.adr = CLEARREG;
-            emit RS485WriteCorBd(info, nullptr);
-            break;
-        }
+            // else if (MainInterface == I_RS485)
+            {
+                ModBus::Information info;
+                info.size = 1;
+                info.adr = CLEARREG;
+                emit RS485WriteCorBd(info, nullptr);
+                break;
+            }
         case Board::InterfaceType::USB:
-        {
-            if (Commands::WriteCom(5) == Error::Msg::NoError)
-                QMessageBox::information(this, "INFO", "Сброшено успешно");
-            else
-                QMessageBox::information(this, "INFO", "Ошибка");
+            // else if (MainInterface == I_USB)
+            {
+                if (Commands::WriteCom(5) == Error::Msg::NoError)
+                    QMessageBox::information(this, "INFO", "Сброшено успешно");
+                else
+                    QMessageBox::information(this, "INFO", "Ошибка");
 
-            if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::Msg::NoError)
-                FillCor();
-            break;
-        }
+                if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::Msg::NoError)
+                    FillCor();
+                break;
+            }
         }
     }
 }
