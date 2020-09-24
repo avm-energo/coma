@@ -1,11 +1,5 @@
-// maindef.cpp
 #include "board.h"
 
-// int MainInterface;
-// quint32 MTypeB;
-// quint32 MTypeM;
-// int TheEnd;
-// int StopRead;
 Board *Board::m_instance { nullptr };
 QMutex Board::m_mutex;
 

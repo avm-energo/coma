@@ -3,10 +3,6 @@
 
 #include "../gen/error.h"
 #include "../gen/s2.h"
-#include "../iec104/iec104.h"
-
-#include <QWidget>
-#include <QtGlobal>
 
 #define MAXERRORFLAGNUM 32
 

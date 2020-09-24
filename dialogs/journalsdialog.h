@@ -1,20 +1,12 @@
 #ifndef JOURNALDIALOG_H
 #define JOURNALDIALOG_H
 
-#include "../dialogs/keypressdialog.h"
-#include "../gen/board.h"
 #include "../gen/journals.h"
-#include "../gen/s2.h"
 #include "../iec104/iec104.h"
-#include "../models/etablemodel.h"
-#include "../widgets/etableview.h"
-#include "../widgets/waitwidget.h"
 
 #include <QDialog>
 #include <QMessageBox>
-#include <QModelIndex>
 #include <QProgressDialog>
-#include <QSignalSpy>
 
 #define MAXSWJNUM 262144
 
@@ -29,7 +21,6 @@ public:
     int SaveI;
 
 private:
-    // WaitWidget *WW;
     QMessageBox *MsgBox;
     QProgressDialog *progress;
 
@@ -52,9 +43,6 @@ private slots:
     void WritePasswordCheck(QString psw);
     void Done(QString msg, int);
     void Error(QString msg);
-    // void SetModel(ETableModel *mdl);
-    // void pullProgress(int);
-    //    void SetProxyModel(QSortFilterProxyModel *mdl);
 
 public slots:
 
@@ -64,7 +52,6 @@ private:
     bool ok;
     Journals *JourFuncs;
     QSortFilterProxyModel *ProxyWorkModel, *ProxySysModel, *ProxyMeasModel;
-    QSignalSpy *spy;
     Error::Msg WriteCheckPassword();
     void StartReadJourFile();
 };

@@ -1,12 +1,7 @@
 #ifndef STDFUNC_H
 #define STDFUNC_H
 
-#include "board.h"
-
-#include <QCoreApplication>
-#include <QPointer>
-#include <QStringList>
-#include <QVector>
+#include <QString>
 
 #define MAINSLEEP 20
 

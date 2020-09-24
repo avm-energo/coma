@@ -31,6 +31,7 @@
 #include "../config/confdialogkdv.h"
 #include "../config/confdialogkiv.h"
 #include "../config/confdialogktf.h"
+#include "../dialogs/keypressdialog.h"
 #include "../gen/logger.h"
 #ifdef AVM_DEBUG
 #include "../tune/tunedialogKIV.h"

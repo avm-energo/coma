@@ -1,5 +1,6 @@
 #include "eprotocom.h"
 
+#include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 
@@ -7,7 +8,10 @@
 #include <QElapsedTimer>
 #include <QMessageBox>
 #include <QSettings>
+#include <QTimer>
+//#include <string>
 
+//#define MAX_STR 255
 #ifdef _WIN32
 // clang-format off
 #include <windows.h>

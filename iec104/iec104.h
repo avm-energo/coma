@@ -3,8 +3,9 @@
 #include "../gen/logclass.h"
 #include "../gen/s2.h"
 
+#include <QMutex>
 #include <QQueue>
-//#include <QTcpSocket>
+#include <QTimer>
 //#define DEBUG
 
 #define BASEADR104 205
@@ -83,9 +84,6 @@
 #define COT_LOCALCOMMAND 12
 #define COT_FILETRANSFER 13
 #define COT_INTERROGATION 20
-
-#include <QMutex>
-#include <QTimer>
 
 #define SECTIONSIZE 2048
 #define SEGMENTSIZE 230

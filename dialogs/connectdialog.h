@@ -5,6 +5,7 @@
 #include "../modbus/serialport.h"
 
 #include <QDialog>
+#include <QModelIndex>
 
 #define MAXREGISTRYINTERFACECOUNT 5 // how much entries can we have for interfaces of each type in registry
 

@@ -5,8 +5,6 @@
 
 #include <QMutex>
 #include <QObject>
-#include <QtCore>
-#include <QtGlobal>
 
 class Board : public QObject
 {

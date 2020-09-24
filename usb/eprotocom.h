@@ -7,6 +7,7 @@
 
 #include <QEventLoop>
 #include <QThread>
+#include <QTimer>
 
 class EProtocom : public QObject
 {

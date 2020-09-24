@@ -2,13 +2,14 @@
 
 #include "../gen/board.h"
 #include "../gen/error.h"
-#include "../models/etablemodel.h"
 #include "../usb/eprotocom.h"
 #include "../widgets/wd_func.h"
 
 #include <QMessageBox>
 #include <QSerialPortInfo>
 #include <QSettings>
+#include <QStandardItemModel>
+#include <QStringListModel>
 #include <QVBoxLayout>
 
 ConnectDialog::ConnectDialog()

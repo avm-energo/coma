@@ -1,6 +1,7 @@
 #include "abstractcordialog.h"
 
 #include "../dialogs/keypressdialog.h"
+#include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"

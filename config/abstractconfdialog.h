@@ -2,7 +2,6 @@
 
 #define MAXBYTEARRAY 65535
 
-#include "../gen/error.h"
 #include "config.h"
 
 #include <QDialog>

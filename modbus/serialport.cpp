@@ -1,5 +1,6 @@
 #include "serialport.h"
 
+#include "../gen/board.h"
 #include "../gen/error.h"
 
 #include <QCoreApplication>

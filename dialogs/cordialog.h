@@ -3,7 +3,6 @@
 
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
-#include "../models/etablemodel.h"
 #include "abstractcordialog.h"
 
 #include <QByteArray>

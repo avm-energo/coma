@@ -1,4 +1,5 @@
 #pragma once
+#include <QString>
 // Обмен с модулями
 // Канал связи с модулем
 namespace CN

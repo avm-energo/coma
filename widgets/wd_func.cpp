@@ -4,6 +4,8 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
+#include "../models/etablemodel.h"
+#include "edoublespinbox.h"
 #include "etableview.h"
 
 #include <QHBoxLayout>
