@@ -25,7 +25,7 @@ public:
     QString deviceName() const;
     void setDeviceName(const QString &deviceName);
     // функция, разбивающая строку устройства и складывающая в соотв. структуру
-    void TranslateDeviceAndSave(const QString &str);
+    // void TranslateDeviceAndSave(const QString &str);
 
     EUsbWorker *usbWorker() const;
     QThread *workerThread();
@@ -81,8 +81,6 @@ private:
     QByteArray WriteData;
     QString m_deviceName;
     QVector<DeviceConnectStruct> m_devices;
-
-    // hid_device_info UsbPort;
 
     LogClass *CnLog;
     QTimer *OscTimer;

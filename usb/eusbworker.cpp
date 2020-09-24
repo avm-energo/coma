@@ -25,31 +25,20 @@ EUsbWorker::~EUsbWorker()
 
 Error::Msg EUsbWorker::setupConnection()
 {
-    //    if ((DeviceInfo.product_id == 0) || (DeviceInfo.vendor_id == 0))
-    //    {
-    //        ERMSG("DeviceInfo is null");
-    //        Finish();
-    //        return Error::Msg::GeneralError;
-    //    }
-    // if (HidDevice)
-    //    hid_close(HidDevice);
-    //#ifdef __linux__
-    //    HidDevice = hid_open_path(DeviceInfo.path);
-    //#endif
-    //#ifdef __WIN32
-    //    wchar_t *serial;
-    //    int len = deviceInfo().serial.toWCharArray(serial);
-    //    serial[len + 1] = '/0';
-    // if (hid_init())
+    if ((deviceInfo().vendor_id == 0) || (deviceInfo().product_id == 0))
+    {
+        ERMSG("DeviceInfo is null");
+        Finish();
+        return Error::Msg::GeneralError;
+    }
+#ifdef __linux__
     HidDevice = hid_open_path(deviceInfo().path.toStdString().c_str());
-
-    // HidDevice = hid_open(deviceInfo().vendor_id, deviceInfo().product_id, (wchar_t *)deviceInfo().serial.utf16());
-    // HidDevice = hid_open(DeviceInfo.vendor_id, DeviceInfo.product_id, DeviceInfo.serial);
-    //#endif
-
+#endif
+#ifdef __WIN32
+    HidDevice = hid_open(deviceInfo().vendor_id, deviceInfo().product_id, (wchar_t *)deviceInfo().serial.utf16());
+#endif
     if (!HidDevice)
     {
-
         qDebug() << QString::fromWCharArray(hid_error(HidDevice));
         ERMSG("Error opening HID device");
         Finish();

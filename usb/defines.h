@@ -16,14 +16,15 @@ namespace Limits
 
     // максимальный ИД осциллограмм
     constexpr unsigned MaxOscillogramId = 2999;
-    // минимальный ИД осциллограмм, нужно, т.к. файлы осциллограмм обрабатываются по-своему
+    // минимальный ИД осциллограмм, нужно, т.к. файлы осциллограмм обрабатываются
+    // по-своему
     constexpr unsigned MinOscillogramId = 1000;
 
     // максимальный ИД журналов
     constexpr byte MaxJournalId = 6;
     // минимальный ИД журналов
     constexpr byte MinJournalId = 4;
-}
+} // namespace Limits
 // Канал связи с модулем
 // таймаут по USB в мс
 constexpr unsigned Timeout = 1000;
@@ -64,7 +65,7 @@ namespace Read
     // запрос текущего прогресса
     constexpr byte Progress = 0x46;
 
-}
+} // namespace Read
 namespace Write
 {
     // запись настроечных коэффициентов
@@ -91,7 +92,7 @@ namespace Write
     constexpr byte EraseCnt = 0x47;
     // запись версии аппаратуры модуля/серийного номера/типа платы
     constexpr byte Hardware = 0x48;
-}
+} // namespace Write
 namespace Message
 {
     // начало посылки
@@ -102,8 +103,8 @@ namespace Message
     constexpr byte Module = 0x3c;
     // length is 2 bytes
     constexpr byte Length2Byte = 0x02;
-}
-}
+} // namespace Message
+} // namespace CN
 namespace UH
 {
 constexpr unsigned VID = 0xC251;
@@ -113,11 +114,12 @@ constexpr unsigned MaxSegmenthLength = 64;
 // 20 ms main loop sleep
 constexpr unsigned MainLoopDelay = 20;
 
-}
+} // namespace UH
 #define WHV_SIZE_ONEBOARD 17
 #define WHV_SIZE_TWOBOARDS 33
 
-//#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением батареи
+//#define TECH_Bd0    0   // блок данных с температурой кристалла и напряжением
+//батареи
 #define TECH_Bo 1  // технологический блок осциллограмм
 #define TECH_Be 2  // технологический блок событий
 #define TECH_Bte 3 // технологический блок технологических событий
@@ -143,13 +145,13 @@ struct DeviceConnectStruct
         : vendor_id(dev), product_id(pid), serial(arr), path(str)
     {
     }
-    inline bool operator==(const DeviceConnectStruct &rhs)
+    friend bool operator==(const DeviceConnectStruct &lhs, const DeviceConnectStruct &rhs)
     {
-        return ((product_id == rhs.product_id) && (vendor_id == rhs.vendor_id) && (serial == rhs.serial));
+        return ((lhs.product_id == rhs.product_id) && (lhs.vendor_id == rhs.vendor_id) && (lhs.serial == rhs.serial));
     }
-    inline bool operator!=(const DeviceConnectStruct &rhs)
+    friend bool operator!=(const DeviceConnectStruct &lhs, const DeviceConnectStruct &rhs)
     {
-        return !(operator==(rhs));
+        return !(lhs == rhs);
     }
     unsigned short vendor_id;
     unsigned short product_id;

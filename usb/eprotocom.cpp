@@ -255,7 +255,8 @@ void EProtocom::WriteDataToPort(QByteArray &ba)
 
 void EProtocom::Finish(Error::Msg msg)
 {
-    // предотвращение вызова newdataarrived по приходу чего-то в канале, если ничего не было послано
+    // предотвращение вызова newdataarrived по приходу чего-то в канале, если
+    // ничего не было послано
     Command = CN::Unknown;
     if (msg != Error::Msg::NoError)
     {
@@ -362,14 +363,16 @@ void EProtocom::ParseIncomeData(QByteArray ba)
         QByteArray tmps = "<-" + ba.toHex() + "\n";
         CnLog->WriteRaw(tmps);
     }
-    if (Command == CN::Unknown) // игнорирование вызова процедуры, если не было послано никакой команды
+    if (Command == CN::Unknown) // игнорирование вызова процедуры, если не было
+                                // послано никакой команды
     {
         ERMSG("Игнорирование вызова процедуры, если не было послано никакой команды");
         return;
     }
     ReadDataChunk.append(ba);
     qint64 rdsize = ReadDataChunk.size();
-    if (rdsize < 4) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта или не произойдёт таймаут
+    if (rdsize < 4) // ждём, пока принятый буфер не будет хотя бы длиной 3 байта
+                    // или не произойдёт таймаут
         return;
     if (ReadDataChunk.at(0) != CN::Message::Module)
     {
@@ -531,7 +534,8 @@ void EProtocom::ParseIncomeData(QByteArray ba)
             Finish(Error::Msg::CN_RCVDATAERROR);
             return;
         }
-        // пока не набрали целый буфер соответственно присланной длине или не произошёл таймаут
+        // пока не набрали целый буфер соответственно присланной длине или не
+        // произошёл таймаут
         if (rdsize < ReadDataChunkLength)
             return;
         // убираем заголовок с < и длиной
@@ -547,7 +551,8 @@ void EProtocom::ParseIncomeData(QByteArray ba)
         case CN::Read::Mode:
         case CN::Read::Time:
         {
-            // команды с чтением определённого InDataSize количества байт из устройства
+            // команды с чтением определённого InDataSize количества байт из
+            // устройства
             ReadDataChunk.truncate(ReadDataChunkLength);
             OutData.append(ReadDataChunk);
             int outdatasize = OutData.size();
@@ -736,14 +741,17 @@ void EProtocom::usbStateChanged(void *message)
             break;
         case DBT_DEVICEARRIVAL:
         {
-            // Here will be reconnection event
-            if (DevicesFound().contains(deviceName()) && !deviceName().isEmpty())
+            DevicesFound();
+            if (Board::GetInstance()->connectionState() == Board::ConnectionState::AboutToFinish)
             {
-                qDebug("Device arrived again");
-                if (!Reconnect())
+                if (m_devices.contains(m_usbWorker->deviceInfo()))
                 {
-                    qDebug("Reconnection failed");
-                    Disconnect();
+                    qDebug("Device arrived again");
+                    if (!Reconnect())
+                    {
+                        qDebug("Reconnection failed");
+                        Disconnect();
+                    }
                 }
             }
             break;
@@ -760,15 +768,19 @@ void EProtocom::usbStateChanged(void *message)
         case DBT_DEVICEREMOVECOMPLETE:
         {
             qDebug("DBT_DEVICEREMOVECOMPLETE");
-            if (!DevicesFound().contains(deviceName()) && !deviceName().isEmpty())
+            qDebug() << DevicesFound();
+            if (Board::GetInstance()->connectionState() != Board::ConnectionState::Closed)
             {
-                qDebug() << "Device " << deviceName() << " removed completely";
-                WriteData.clear();
-                OutData.clear();
-                Finish(Error::Msg::CN_NULLDATAERROR);
-                m_loop.exit();
+                if (!m_devices.contains(m_usbWorker->deviceInfo()))
+                {
+                    qDebug() << "Device " << deviceName() << " removed completely";
+                    WriteData.clear();
+                    OutData.clear();
+                    Finish(Error::Msg::CN_NULLDATAERROR);
+                    m_loop.exit();
+                    QMessageBox::critical(nullptr, "Ошибка", "Связь с прибором была разорвана", QMessageBox::Ok);
+                }
             }
-            QMessageBox::critical(nullptr, "Ошибка", "Связь с прибором была разорвана", QMessageBox::Ok);
             break;
         }
         case DBT_DEVICETYPESPECIFIC:
@@ -780,12 +792,14 @@ void EProtocom::usbStateChanged(void *message)
         case DBT_DEVNODES_CHANGED:
         {
             qDebug("DBT_DEVNODES_CHANGED");
-            if (!DevicesFound().contains(deviceName()) && !deviceName().isEmpty())
+            DevicesFound();
+
+            qDebug() << "Device " << deviceName() << " state changed";
+            // Ивенты должны происходить только если отключен подключенный раннее
+            // прибор
+            if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
             {
-                qDebug() << "Device " << deviceName() << " state changed";
-                ;
-                // Ивенты должны происходить только если отключен подключенный раннее прибор
-                if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
+                if (!m_devices.contains(m_usbWorker->deviceInfo()))
                 {
                     Board::GetInstance()->setConnectionState(Board::ConnectionState::AboutToFinish);
                 }
@@ -802,28 +816,27 @@ void EProtocom::usbStateChanged(void *message)
     }
 #endif
 }
-
-void EProtocom::TranslateDeviceAndSave(const QString &str)
-{
-    // формат строки: "VEN_" + QString::number(venid, 16) + "_ & DEV_" + QString::number(prodid, 16) + "_ & SN_" + sn+"_
-    // & Path_"+path;
-    QStringList sl = str.split("_"); // 1,3,5,7 - полезная нагрузка
-    if (sl.size() < 8)
-    {
-        ERMSG("Неправильная длина имени порта");
-        DBGMSG;
-        return;
-    }
-    QString tmps = sl.at(1);
-    // UsbPort.vendor_id = tmps.toUShort(nullptr, 16);
-    tmps = sl.at(3);
-    // UsbPort.product_id = tmps.toUShort(nullptr, 16);
-    tmps = sl.at(5);
-    // int z = tmps.toWCharArray(UsbPort.serial);
-    // UsbPort.serial[z] = '\x0';
-    tmps = sl.at(7);
-    // strcpy(UsbPort.path, tmps.toStdString().c_str());
-}
+// void EProtocom::TranslateDeviceAndSave(const QString &str)
+//{
+//    // формат строки: "VEN_" + QString::number(venid, 16) + "_ & DEV_" +
+//    // QString::number(prodid, 16) + "_ & SN_" + sn+"_ & Path_"+path;
+//    QStringList sl = str.split("_"); // 1,3,5,7 - полезная нагрузка
+//    if (sl.size() < 8)
+//    {
+//        ERMSG("Неправильная длина имени порта");
+//        DBGMSG;
+//        return;
+//    }
+//    QString tmps = sl.at(1);
+//    // UsbPort.vendor_id = tmps.toUShort(nullptr, 16);
+//    tmps = sl.at(3);
+//    // UsbPort.product_id = tmps.toUShort(nullptr, 16);
+//    tmps = sl.at(5);
+//    // int z = tmps.toWCharArray(UsbPort.serial);
+//    // UsbPort.serial[z] = '\x0';
+//    tmps = sl.at(7);
+//    // strcpy(UsbPort.path, tmps.toStdString().c_str());
+//}
 
 EProtocom::~EProtocom()
 {
@@ -928,7 +941,7 @@ QList<QStringList> EProtocom::DevicesFound()
     devs = hid_enumerate(0x0, 0x0);
     cur_dev = devs;
     QList<QStringList> sl;
-
+    m_devices.clear();
     while (cur_dev)
     {
 
@@ -949,8 +962,10 @@ QList<QStringList> EProtocom::DevicesFound()
             //#endif
             QStringList tmps { QString::number(buffer.vendor_id, 16), QString::number(buffer.product_id, 16),
                 buffer.serial, buffer.path };
-            // QString tmps = "VEN_" + QString::number(buffer.vendor_id, 16) + "_ & DEV_"
-            //   + QString::number(buffer.product_id, 16) + "_ & SN_" + buffer.serial + "_ & Path_" + buffer.path;
+            // QString tmps = "VEN_" + QString::number(buffer.vendor_id, 16) + "_ &
+            // DEV_"
+            //   + QString::number(buffer.product_id, 16) + "_ & SN_" + buffer.serial
+            //   + "_ & Path_" + buffer.path;
             sl.append(tmps);
             m_devices.push_back(buffer);
         }
