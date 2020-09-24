@@ -275,7 +275,7 @@ void AvmDebug::StartWork()
         return;
     }
     connect(MainTW, &ETabWidget::tabClicked, this, &AvmDebug::MainTWTabClicked);
-    if (Commands::Connect() != NOERROR) // cn->Connect()
+    if (Commands::Connect() != Error::Msg::NoError) // cn->Connect()
     {
         QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
         QApplication::restoreOverrideCursor();
@@ -289,7 +289,7 @@ void AvmDebug::StartWork()
         ERMSG("BSI read error");
         return;
     }
-    else if (res == NOERROR)
+    else if (res == Error::Msg::NoError)
     {
         if (ModuleBSI::ModuleTypeString != "")
             QMessageBox::information(
@@ -312,7 +312,7 @@ void AvmDebug::StartWork()
         //            Disconnect();
         return;
     }
-    Board::GetInstance()->setConnectionState(Board::ConnectionState::ConnectedState);
+    Board::GetInstance()->setConnectionState(Board::ConnectionState::Connected);
     Reconnect = true;
 
     PrepareDialogs();
@@ -780,7 +780,7 @@ int AvmDebug::CheckPassword()
         QMessageBox::critical(this, "Неправильно", "Пароль введён неверно", QMessageBox::Ok);
         return GENERALERROR;
     }
-    return NOERROR;
+    return Error::Msg::NoError;
 }
 
 void AvmDebug::setConf(unsigned char typeConf)

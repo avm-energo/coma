@@ -67,6 +67,9 @@ SOURCES += \
     ../models/valuemodel.cpp \
     ../tune/eabstracttunedialog.cpp \
     ../tune/tunedialogKIV.cpp \
+    ../tune/tunekiv.cpp \
+    ../tune/tunekivmain.cpp \
+    ../tune/tunekivtemp60.cpp \
     ../usb/eprotocom.cpp \
     ../usb/eusbworker.cpp \
     avmdebug.cpp \
@@ -148,6 +151,9 @@ HEADERS += \
     ../models/valuemodel.h \
     ../tune/eabstracttunedialog.h \
     ../tune/tunedialogKIV.h \
+    ../tune/tunekiv.h \
+    ../tune/tunekivmain.h \
+    ../tune/tunekivtemp60.h \
     ../usb/defines.h \
     ../usb/eprotocom.h \
     ../usb/eusbworker.h \

@@ -1,5 +1,5 @@
 #include "tunedialogKIV.h"
-#include "../check/checkKIV.h"
+#include "../check/checkkiv.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
@@ -25,12 +25,12 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-TuneDialogKIV::TuneDialogKIV(QVector<S2::DataRec> *S2Config, QWidget *parent) : EAbstractTuneDialog(parent)
+TuneDialogKIV::TuneDialogKIV(QVector<S2::DataRec> *S2Config, QWidget *parent) : QDialog(parent)
 {
-    this->S2ConfigForTune = S2Config;
+    this->S2Config = S2Config;
     int i;
 
-    CKIV = new ConfigKIV(S2ConfigForTune);
+    CKIV = new ConfigKIV(S2Config);
     // ReportModel = new QStandardItemModel;
     // ViewModel = new QStandardItemModel;
     SetBac(&m_Bac_block, BoardTypes::BT_MEZONIN, sizeof(m_Bac_block));

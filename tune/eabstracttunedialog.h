@@ -40,7 +40,7 @@ public:
     QTimer *MeasurementTimer;
     QVector<S2::DataRec> S2Config;
     quint32 SecondsToEnd15SecondsInterval;
-    QHash<QString, int (EAbstractTuneDialog::*)()> pf;
+    QHash<QString, Error::Msg (EAbstractTuneDialog::*)()> pf;
     quint8 bStep;
     int TuneVariant; // вариант регулировочных параметров
     QVector<S2::DataRec> *S2ConfigForTune;
@@ -48,14 +48,15 @@ public:
     //    QString OrganizationString; // наименование организации, работающей с программой
     int TuneIndex, CheckIndex, TimeIndex;
     ValueModel *m_VModel;
+    int m_tuneStep;
 
     virtual void SetupUI() = 0;
     QWidget *TuneUI();
     QWidget *BottomUI(int bacnum);
-    void SetBac(void *block, int blocknum, int blocksize); // установка указателя на блок Bac
+    void AddBac(void *block, int blocknum, int blocksize); // установка указателя на блок Bac
     void WaitNSeconds(int SecondsToWait, bool isAllowedToStop = false);
     void ProcessTune();
-    int CheckPassword();
+    Error::Msg CheckPassword();
     virtual void SetLbls() = 0; // заполнить список сообщений
     virtual void SetPf() = 0; // заполнить список функций настройки
     bool IsWithinLimits(double number, double base, double threshold);
@@ -66,7 +67,7 @@ public:
     void MsgClear();
     //    QByteArray *ChooseFileForOpen(QString mask);
     bool WriteTuneCoefs(int bacnum);
-    int SaveAllTuneCoefs();
+    Error::Msg SaveAllTuneCoefs();
     void PrereadConf();
     virtual void GetBdAndFill() = 0;
     virtual void FillBac(int bacnum) = 0;
@@ -74,6 +75,8 @@ public:
     void SaveToFileEx(int bacnum);
     void ShowTable();
     void ReadTuneCoefsByBac(int bacnum);
+    int LoadTuneSequenceFile();
+    void SaveTuneSequenceFile();
 
 signals:
     void PasswordChecked();
@@ -91,7 +94,7 @@ public slots:
     bool WriteTuneCoefsSlot();
     void Good();
     void NoGood();
-    int StartMeasurement();
+    Error::Msg StartMeasurement();
     virtual void SetDefCoefs() = 0;
     void TuneReadCoefs(int);
 
