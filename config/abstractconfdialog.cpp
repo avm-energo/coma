@@ -40,7 +40,6 @@ void AbstractConfDialog::ReadConf()
         }
         break;
     }
-    // else if (MainInterface == I_USB)
     case Board::InterfaceType::USB:
     {
         Error::Msg res = ModuleBSI::PrereadConf(this, S2Config);
@@ -50,6 +49,8 @@ void AbstractConfDialog::ReadConf()
             emit NewConfToBeLoaded();
         break;
     }
+    default:
+        break;
     }
 }
 

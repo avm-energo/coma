@@ -549,11 +549,11 @@ void Coma::setupConnections()
 
             WarnAlarmKTFDialog = new WarnAlarmKTF(Alarm);
             connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKTFDialog, &QDialog::show);
-            connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKTFDialog, &WarnAlarmKTF::Update);
+            connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKIVDialog, &AbstractWarnAlarm::Update);
 
             AvarAlarmKTFDialog = new AvarAlarmKTF(Alarm);
             connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKTFDialog, &QDialog::show);
-            connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKTFDialog, &AvarAlarmKTF::Update);
+            connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVDialog, &AbstractAvarAlarm::Update);
 
             break;
         }
@@ -616,7 +616,6 @@ void Coma::setupConnections()
         connect(Ch104, &IEC104::SendS2fromiec104, confMDialog, &AbstractConfDialog::FillConf);
         connect(confMDialog, &AbstractConfDialog::writeConfFile, Ch104, &IEC104::FileReady);
         connect(Ch104, &IEC104::SendConfMessageOk, confMDialog, &AbstractConfDialog::WriteConfMessageOk);
-        // confMDialog->staticMetaObject;
         break;
     }
     case Board::InterfaceType::RS485:
@@ -640,6 +639,8 @@ void Coma::setupConnections()
         connect(corDialog, &AbstractCorDialog::RS485ReadCorBd, ChModbus, &ModBus::ModReadCor);
         break;
     }
+    default:
+        break;
     }
 }
 
@@ -739,6 +740,9 @@ void Coma::NewTimersBda()
 bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
 {
     Q_UNUSED(result)
+#ifdef __linux
+    Q_UNUSED(message)
+#endif
     if (eventType == "windows_generic_MSG")
     {
 #ifdef _WIN32
