@@ -59,7 +59,7 @@ signals:
 public slots:
 
 private:
-    ConfigKIV::Bci Bci_block_work;
+    ConfigKIV::Bci m_Bci_block_work, m_Bci_block_temporary;
     ConfigKIV *CKIV;
 
     QVector<S2::DataRec> *S2Config;
@@ -214,8 +214,9 @@ private:
     void Tune3p();
     int CheckTuneCoefs();
     // int CheckMip();
-    bool IsWithinLimits(double number, double base, double threshold);
-    void GetBdAndFillMTT();
+    void GetBdAndFill();
+    int Start7_2_1();
+    int Start_7_2_7();
     int Start7_3_1();
     int Start7_3_1_1();
     int Start7_3_2();

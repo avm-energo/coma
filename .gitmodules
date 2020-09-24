@@ -11,3 +11,4 @@
 [submodule "QXlsx"]
 	path = QXlsx
 	url = https://github.com/QtExcel/QXlsx
+	branch = master

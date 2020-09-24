@@ -1,29 +1,13 @@
 #include "eabstracttunedialog.h"
 #include "../dialogs/keypressdialog.h"
+#include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
-#include "../gen/maindef.h"
 #include "../gen/stdfunc.h"
 #include "../gen/timefunc.h"
 #include "../usb/commands.h"
 #include "../widgets/waitwidget.h"
 #include "../widgets/wd_func.h"
-#include <QCoreApplication>
-#include <QEventLoop>
-#include <QFileDialog>
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QInputDialog>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QScrollArea>
-#include <QScrollBar>
-#include <QTabWidget>
-#include <QTableView>
-#include <QTime>
-#include <QTimer>
-#include <QVBoxLayout>
-#include <QtMath>
 
 EAbstractTuneDialog::EAbstractTuneDialog(QWidget *parent) : QDialog(parent)
 {
@@ -337,7 +321,7 @@ void EAbstractTuneDialog::TuneReadCoefs(int index)
     for (int i = 0; i < AbsBac.keys().size(); i++)
     {
         int bacnum;
-        if (MTypeM == 135)
+        if (Board::GetInstance()->typeM() == 135)
             bacnum = i + 1;
         else
             bacnum = i + 2;
@@ -382,7 +366,7 @@ bool EAbstractTuneDialog::WriteTuneCoefsSlot()
 
     for (int i = 0; i < AbsBac.keys().size(); i++)
     {
-        if (MTypeM == 135)
+        if (Board::GetInstance()->typeM() == 135)
             bacnum = i + 1;
         else
             bacnum = i + 2;
@@ -542,7 +526,7 @@ void EAbstractTuneDialog::ReadAllTuneCoefs() { }
 void EAbstractTuneDialog::MeasTimerTimeout()
 {
     if (MeasurementEnabled)
-        GetBdAndFillMTT();
+        GetBdAndFill();
 }
 
 // ##################### PROTECTED ####################

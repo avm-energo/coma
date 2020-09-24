@@ -31,10 +31,14 @@ void Ethernet::Run()
     connect(sock, &QAbstractSocket::connected, this, &Ethernet::EthSetConnected);
     connect(sock, &QAbstractSocket::disconnected, this, &Ethernet::Disconnected);
     Log->info("Connecting to host: " + StdFunc::ForDeviceIP() + ", port: " + QString::number(PORT104));
-    sock->connectToHost(StdFunc::ForDeviceIP(), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
     sock->setProxy(QNetworkProxy::NoProxy);
     connect(sock, &QIODevice::readyRead, this, &Ethernet::CheckForData);
-    TimeFunc::WaitFor(EthConnected, TIMEOUT_BIG);
+    sock->connectToHost(StdFunc::ForDeviceIP(), PORT104, QIODevice::ReadWrite, QAbstractSocket::IPv4Protocol);
+    QEventLoop loop;
+    loop.connect(sock, SIGNAL(connected()), SLOT(quit()));
+    loop.connect(sock, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(quit()));
+    loop.exec();
+    //    TimeFunc::WaitFor(EthConnected, TIMEOUT_BIG);
     while (!ClosePortAndFinishThread)
     {
         OutDataBufMtx.lock();

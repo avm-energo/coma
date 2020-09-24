@@ -68,7 +68,7 @@ public:
     bool WriteTuneCoefs(int bacnum);
     int SaveAllTuneCoefs();
     void PrereadConf();
-    virtual void GetBdAndFillMTT() = 0;
+    virtual void GetBdAndFill() = 0;
     virtual void FillBac(int bacnum) = 0;
     virtual void FillBackBac(int bacnum) = 0;
     void SaveToFileEx(int bacnum);
