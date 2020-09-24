@@ -114,13 +114,6 @@ constexpr unsigned MaxSegmenthLength = 64;
 constexpr unsigned MainLoopDelay = 20;
 
 }
-
-struct DeviceConnectStruct
-{
-    unsigned short vendor_id;
-    unsigned short product_id;
-    wchar_t serial[20];
-};
 #define WHV_SIZE_ONEBOARD 17
 #define WHV_SIZE_TWOBOARDS 33
 
@@ -142,3 +135,24 @@ struct DeviceConnectStruct
 #ifndef __GNUC__
 #define MAXFLOAT 3.40282347E+38F
 #endif
+
+struct DeviceConnectStruct
+{
+    explicit DeviceConnectStruct() = default;
+    explicit DeviceConnectStruct(unsigned short dev, unsigned short pid, QString arr, QString str)
+        : vendor_id(dev), product_id(pid), serial(arr), path(str)
+    {
+    }
+    inline bool operator==(const DeviceConnectStruct &rhs)
+    {
+        return ((product_id == rhs.product_id) && (vendor_id == rhs.vendor_id) && (serial == rhs.serial));
+    }
+    inline bool operator!=(const DeviceConnectStruct &rhs)
+    {
+        return !(operator==(rhs));
+    }
+    unsigned short vendor_id;
+    unsigned short product_id;
+    QString serial;
+    QString path;
+};

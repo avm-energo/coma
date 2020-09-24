@@ -51,6 +51,16 @@ EProtocom::EProtocom(QObject *parent)
     setWriteUSBLog(sets->value("WriteLog", "0").toBool());
 }
 
+int EProtocom::devicePosition() const
+{
+    return m_devicePosition;
+}
+
+void EProtocom::setDevicePosition(int devicePosition)
+{
+    m_devicePosition = devicePosition;
+}
+
 Error::Msg EProtocom::result() const
 {
     return m_result;
@@ -795,28 +805,30 @@ void EProtocom::usbStateChanged(void *message)
 
 void EProtocom::TranslateDeviceAndSave(const QString &str)
 {
-    // формат строки: "VEN_" + QString::number(venid, 16) + "_ & DEV_" + QString::number(prodid, 16) + "_ & SN_" + sn;
-    QStringList sl = str.split("_"); // 1, 3 и 5 - полезная нагрузка
-    if (sl.size() < 6)
+    // формат строки: "VEN_" + QString::number(venid, 16) + "_ & DEV_" + QString::number(prodid, 16) + "_ & SN_" + sn+"_
+    // & Path_"+path;
+    QStringList sl = str.split("_"); // 1,3,5,7 - полезная нагрузка
+    if (sl.size() < 8)
     {
         ERMSG("Неправильная длина имени порта");
         DBGMSG;
         return;
     }
     QString tmps = sl.at(1);
-    UsbPort.vendor_id = tmps.toUShort(nullptr, 16);
+    // UsbPort.vendor_id = tmps.toUShort(nullptr, 16);
     tmps = sl.at(3);
-    UsbPort.product_id = tmps.toUShort(nullptr, 16);
+    // UsbPort.product_id = tmps.toUShort(nullptr, 16);
     tmps = sl.at(5);
-    int z = tmps.toWCharArray(UsbPort.serial);
-    UsbPort.serial[z] = '\x0';
+    // int z = tmps.toWCharArray(UsbPort.serial);
+    // UsbPort.serial[z] = '\x0';
+    tmps = sl.at(7);
+    // strcpy(UsbPort.path, tmps.toStdString().c_str());
 }
 
 EProtocom::~EProtocom()
 {
     m_workerThread.quit();
     m_workerThread.wait();
-    delete pinstance_;
     pinstance_ = nullptr;
 }
 /**
@@ -843,7 +855,7 @@ bool EProtocom::Connect()
     if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected
         && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
         Disconnect();
-    m_usbWorker = new EUsbWorker(UsbPort, CnLog, isWriteUSBLog());
+    m_usbWorker = new EUsbWorker(m_devices.at(m_devicePosition), CnLog, isWriteUSBLog());
 
     m_usbWorker->moveToThread(&m_workerThread);
     connect(&m_workerThread, &QThread::started, m_usbWorker, &EUsbWorker::interact);
@@ -885,6 +897,7 @@ void EProtocom::Disconnect()
     qDebug(__PRETTY_FUNCTION__);
     RawClose();
     CnLog->WriteRaw("Disconnected!\n");
+    delete EProtocom::GetInstance();
 }
 
 QByteArray EProtocom::RawRead(int bytes)
@@ -908,25 +921,38 @@ void EProtocom::RawClose()
     }
 }
 
-QStringList EProtocom::DevicesFound() const
+QList<QStringList> EProtocom::DevicesFound()
 {
-    struct hid_device_info *devs, *cur_dev;
+    hid_device_info *devs, *cur_dev;
 
     devs = hid_enumerate(0x0, 0x0);
     cur_dev = devs;
-    int venid, prodid;
-    QString sn;
-    QStringList sl;
+    QList<QStringList> sl;
+
     while (cur_dev)
     {
+
         if (cur_dev->vendor_id == 0xC251)
         {
-            venid = cur_dev->vendor_id;
-            prodid = cur_dev->product_id;
-            sn = QString::fromWCharArray(cur_dev->serial_number);
-            QString tmps
-                = "VEN_" + QString::number(venid, 16) + "_ & DEV_" + QString::number(prodid, 16) + "_ & SN_" + sn;
-            sl << tmps;
+            const DeviceConnectStruct buffer(cur_dev->vendor_id, cur_dev->product_id,
+                QString::fromWCharArray(cur_dev->serial_number), QString(cur_dev->path));
+
+            //#ifdef __linux__
+            //            wstr[0] = 0x0000;
+            //            res = hid_get_serial_number_string(handle, wstr, MAX_STR);
+            //            if (res < 0)
+            //                printf("Unable to read serial number string\n");
+            //#endif
+            //#ifdef _WIN32
+
+            // sn = QString::fromWCharArray(cur_dev->serial_number);
+            //#endif
+            QStringList tmps { QString::number(buffer.vendor_id, 16), QString::number(buffer.product_id, 16),
+                buffer.serial, buffer.path };
+            // QString tmps = "VEN_" + QString::number(buffer.vendor_id, 16) + "_ & DEV_"
+            //   + QString::number(buffer.product_id, 16) + "_ & SN_" + buffer.serial + "_ & Path_" + buffer.path;
+            sl.append(tmps);
+            m_devices.push_back(buffer);
         }
         cur_dev = cur_dev->next;
     }

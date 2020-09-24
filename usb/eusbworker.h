@@ -9,7 +9,7 @@ class EUsbWorker : public QObject
 {
     Q_OBJECT
 public:
-    explicit EUsbWorker(DeviceConnectStruct &devinfo, LogClass *logh, bool writelog = false, QObject *parent = 0);
+    explicit EUsbWorker(DeviceConnectStruct dev, LogClass *logh, bool writelog = false, QObject *parent = 0);
     ~EUsbWorker();
 
     LogClass *log;
@@ -18,6 +18,9 @@ public:
     int WriteDataAttempt(QByteArray &ba);
 
     void closeConnection();
+
+    DeviceConnectStruct deviceInfo() const;
+    void setDeviceInfo(DeviceConnectStruct deviceInfo);
 
 signals:
     void NewDataReceived(QByteArray ba);
@@ -34,7 +37,7 @@ private:
 
     QMutex mutex_;
     QList<QByteArray> WriteQueue;
-    DeviceConnectStruct DeviceInfo;
+    DeviceConnectStruct m_deviceInfo;
 
     Error::Msg WriteData(QByteArray &ba);
     void CheckWriteQueue();

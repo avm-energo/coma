@@ -635,9 +635,36 @@ ETableView *WDFunc::NewTV(QWidget *w, const QString &tvname, QAbstractItemModel 
     return tv;
 }
 
+QTableView *WDFunc::NewQTV(QWidget *w, const QString &tvname, QAbstractItemModel *model)
+{
+    QTableView *tv = new QTableView(w);
+    tv->setObjectName(tvname);
+    // tv->horizontalHeader()->setVisible(true);
+    // tv->verticalHeader()->setVisible(false);
+    if (model != nullptr)
+        tv->setModel(model);
+    tv->setSelectionMode(QAbstractItemView::SingleSelection);
+    return tv;
+}
+
 void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable)
 {
     ETableView *tv = w->findChild<ETableView *>(tvname);
+    if (tv == nullptr)
+    {
+        ERMSG("Пустой tv");
+        return;
+    }
+    QItemSelectionModel *m = tv->selectionModel();
+    tv->setModel(model);
+    tv->resizeColumnsToContents();
+    tv->setSortingEnabled(sortenable);
+    delete m;
+}
+
+void WDFunc::SetQTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable)
+{
+    QTableView *tv = w->findChild<QTableView *>(tvname);
     if (tv == nullptr)
     {
         ERMSG("Пустой tv");

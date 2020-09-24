@@ -40,7 +40,9 @@ CorDialogKDV::CorDialogKDV(QWidget *parent) : AbstractCorDialog(parent)
     SetupUI();
 }
 
-CorDialogKDV::~CorDialogKDV() { }
+CorDialogKDV::~CorDialogKDV()
+{
+}
 
 void CorDialogKDV::SetupUI()
 {
@@ -98,7 +100,10 @@ void CorDialogKDV::SetupUI()
     setLayout(lyout);
 }
 
-void CorDialogKDV::FillBackCor() { WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge); }
+void CorDialogKDV::FillBackCor()
+{
+    WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge);
+}
 
 void CorDialogKDV::FillBackWBd8()
 {
@@ -231,9 +236,13 @@ void CorDialogKDV::WriteCorBd()
     }
 }
 
-void CorDialogKDV::WriteCor() { }
+void CorDialogKDV::WriteCor()
+{
+}
 
-void CorDialogKDV::ResetCor() { }
+void CorDialogKDV::ResetCor()
+{
+}
 
 void CorDialogKDV::SaveToFile()
 {

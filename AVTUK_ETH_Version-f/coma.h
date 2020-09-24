@@ -53,13 +53,6 @@ public:
         COMA_AUTON_MODE // просто автономный режим
     };
 
-    struct DeviceConnectStruct
-    {
-        unsigned short vendor_id;
-        unsigned short product_id;
-        wchar_t serial[20];
-    };
-
     typedef struct
     {
         quint32 SigVal;
@@ -205,7 +198,7 @@ private:
     bool Reconnect;
     int Mode; // режим запуска программы
     int fileSize, curfileSize;
-    int CheckIndex, TimeIndex, ConfIndex, CheckHarmIndex, CheckVibrIndex;
+    int CheckIndex, TimeIndex, ConfIndex, CheckHarmIndex, CheckVibrIndex, CurTabIndex;
     quint8 HaveAlreadyRed = 0;
     quint8 ActiveThreads;
     quint32 Mes;

@@ -46,53 +46,62 @@ void ConnectDialog::SetInterface()
     switch (Board::GetInstance()->interfaceType())
     {
     case Board::InterfaceType::USB:
-        lyout->addWidget(WDFunc::NewTV(dlg, "usbtv", nullptr));
+    {
+        auto *table = WDFunc::NewQTV(dlg, "usbtv", nullptr);
+        lyout->addWidget(table);
+        connect(table, &QTableView::doubleClicked, this, qOverload<QModelIndex>(&ConnectDialog::SetUsb));
         break;
-
+    }
     case Board::InterfaceType::Ethernet:
     {
-        lyout->addWidget(WDFunc::NewTV(dlg, "ethtv", nullptr));
+        auto *table = WDFunc::NewQTV(dlg, "ethtv", nullptr);
+        lyout->addWidget(table);
         QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->addStretch(10);
         hlyout->addWidget(WDFunc::NewPB(dlg, "newethpb", "Добавить", this, SLOT(AddEth())));
         hlyout->addWidget(WDFunc::NewPB(dlg, "scanethpb", "Сканировать", this, SLOT(ScanEth())));
         hlyout->addStretch(10);
         lyout->addLayout(hlyout);
+        WDFunc::TVConnect(dlg, "ethtv", WDFunc::CT_DCLICKED, this, SLOT(SetEth()));
         break;
     }
     case Board::InterfaceType::RS485:
     {
-        lyout->addWidget(WDFunc::NewTV(dlg, "rstv", nullptr));
+        lyout->addWidget(WDFunc::NewQTV(dlg, "rstv", nullptr));
         QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->addStretch(10);
         hlyout->addWidget(WDFunc::NewPB(dlg, "newrspb", "Добавить", this, SLOT(AddRs())));
         hlyout->addWidget(WDFunc::NewPB(dlg, "scanrspb", "Сканировать", this, SLOT(ScanRs())));
         hlyout->addStretch(10);
         lyout->addLayout(hlyout);
+        WDFunc::TVConnect(dlg, "rstv", WDFunc::CT_DCLICKED, this, SLOT(SetRs()));
         break;
+    }
+    default:
+    {
+        delete lyout;
+        return;
     }
     }
     QPushButton *pb = new QPushButton("Отмена");
-    connect(pb, SIGNAL(clicked(bool)), this, SLOT(SetCancelled()));
+    connect(pb, &QAbstractButton::clicked, this, &ConnectDialog::SetCancelled);
     lyout->addStretch(20);
     lyout->addWidget(pb);
     lyout->addStretch(20);
     dlg->setLayout(lyout);
-    WDFunc::TVConnect(dlg, "usbtv", WDFunc::CT_DCLICKED, this, SLOT(SetUsb()));
-    WDFunc::TVConnect(dlg, "rstv", WDFunc::CT_DCLICKED, this, SLOT(SetRs()));
-    WDFunc::TVConnect(dlg, "ethtv", WDFunc::CT_DCLICKED, this, SLOT(SetEth()));
+
     UpdateModel();
     dlg->exec();
 }
 
-void ConnectDialog::SetUsb()
+void ConnectDialog::SetUsb(QModelIndex index)
 {
     ConnectStruct st; // temporary var
-    QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-    if (dlg != nullptr)
+    if (index.isValid())
     {
+        QDialog *dlg = this->findChild<QDialog *>("connectdlg");
         EProtocom::GetInstance()->setDeviceName(WDFunc::TVData(dlg, "usbtv", 1).toString());
-        EProtocom::GetInstance()->TranslateDeviceAndSave(WDFunc::TVData(dlg, "usbtv", 1).toString());
+        EProtocom::GetInstance()->setDevicePosition(index.row());
     }
     emit Accepted(&st);
 }
@@ -316,9 +325,9 @@ bool ConnectDialog::UpdateModel()
     {
     case Board::InterfaceType::USB:
     {
-        QStringList USBsl = EProtocom::GetInstance()->DevicesFound();
-        QStringList sl { "#", "Device" };
-        ETableModel *mdl = new ETableModel(dlg);
+        QList<QStringList> USBsl = EProtocom::GetInstance()->DevicesFound();
+        QStringList sl { "VID", "PID", "Serial", "Path" };
+        QStandardItemModel *mdl = new QStandardItemModel(dlg);
 
         if (USBsl.isEmpty())
         {
@@ -326,54 +335,55 @@ bool ConnectDialog::UpdateModel()
             Error::ShowErMsg(Error::Msg::CN_NOPORTSERROR);
             return false;
         }
-        mdl->setHeaders(sl);
-
-        for (int i = 0; i < USBsl.size(); ++i)
+        mdl->setHorizontalHeaderLabels(sl);
+        for (const auto &row : USBsl)
         {
-            QVector<QVariant> vl;
-            vl << QString::number(i + 1) << USBsl.at(i);
-            mdl->addRowWithData(vl);
+            QList<QStandardItem *> items;
+            for (const auto &column : row)
+            {
+                items.append(new QStandardItem(column));
+            }
+            mdl->appendRow(items);
         }
-        WDFunc::SetTVModel(dlg, "usbtv", mdl);
+        WDFunc::SetQTVModel(dlg, "usbtv", mdl);
         break;
     }
     case Board::InterfaceType::Ethernet:
     {
-        QStringList sl { "#", "Имя", "IP", "Адрес БС" };
-        ETableModel *mdl = new ETableModel(dlg);
-
-        mdl->setHeaders(sl);
-        for (int i = 0; i < ethlist.size(); ++i)
+        QStringList sl { "Имя", "IP", "Адрес БС" };
+        QStandardItemModel *mdl = new QStandardItemModel(dlg);
+        mdl->setHorizontalHeaderLabels(sl);
+        for (const auto &item : qAsConst(ethlist))
         {
-
             QString key = PROGNAME;
-            key += "\\" + ethlist.at(i);
+            key += "\\" + item;
             QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
-            QVector<QVariant> vl { QString::number(i + 1), ethlist.at(i), sets->value("ip", ""),
-                sets->value("bs", "") };
-            mdl->addRowWithData(vl);
+            QList<QStandardItem *> items { new QStandardItem(item), new QStandardItem(sets->value("ip", "").toString()),
+                new QStandardItem(sets->value("bs", "").toString()) };
+            mdl->appendRow(items);
         }
-        WDFunc::SetTVModel(dlg, "ethtv", mdl);
+        WDFunc::SetQTVModel(dlg, "ethtv", mdl);
         break;
     }
     case Board::InterfaceType::RS485:
     {
-        QStringList sl { "#", "Имя", "Порт", "Скорость", "Четность", "Стоп бит", "Адрес" };
-        ETableModel *mdl = new ETableModel(dlg);
-
-        mdl->setHeaders(sl);
-        for (int i = 0; i < rslist.size(); ++i)
+        QStringList sl { "Имя", "Порт", "Скорость", "Четность", "Стоп бит", "Адрес" };
+        QStandardItemModel *mdl = new QStandardItemModel(dlg);
+        mdl->setHorizontalHeaderLabels(sl);
+        for (const auto &item : qAsConst(rslist))
         {
-
             QString key = PROGNAME;
-            key += "\\" + rslist.at(i);
+            key += "\\" + item;
             QScopedPointer<QSettings> sets = QScopedPointer<QSettings>(new QSettings(SOFTDEVELOPER, key));
-            QVector<QVariant> vl { QString::number(i + 1), rslist.at(i), sets->value("port", ""),
-                sets->value("speed", ""), sets->value("parity", ""), sets->value("stop", ""),
-                sets->value("address", "") };
-            mdl->addRowWithData(vl);
+            QList<QStandardItem *> items { new QStandardItem(item),
+                new QStandardItem(sets->value("port", "").toString()),
+                new QStandardItem(sets->value("speed", "").toString()),
+                new QStandardItem(sets->value("parity", "").toString()),
+                new QStandardItem(sets->value("stop", "").toString()),
+                new QStandardItem(sets->value("address", "").toString()) };
+            mdl->appendRow(items);
         }
-        WDFunc::SetTVModel(dlg, "rstv", mdl);
+        WDFunc::SetQTVModel(dlg, "rstv", mdl);
         break;
     }
     default:

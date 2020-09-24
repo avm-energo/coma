@@ -28,7 +28,7 @@ signals:
 
 private slots:
     void SetInterface();
-    void SetUsb();
+    void SetUsb(QModelIndex index);
     void AddEth();
     void EthAccepted();
     void RsAccepted();
