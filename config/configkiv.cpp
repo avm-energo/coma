@@ -60,8 +60,8 @@ void ConfigKIV::SetDefConf()
     Bci_block.dTg_alarm = 1.5;
     Bci_block.dIunb_pred = 1;
     Bci_block.dIunb_alarm = 1.5;
-    Bci_block.GdC = 0.1;
-    Bci_block.GdTg = 0.2;
+    Bci_block.GdC = 0.1f;
+    Bci_block.GdTg = 0.2f;
     Bci_block.GdIunb = 0.2f;
     Bci_block.Iunb_init = 0;
     Bci_block.Phy_unb_init = 0;
@@ -79,7 +79,7 @@ void ConfigKIV::SetDefConf()
         Bci_block.C_init[i] = 2200;
         Bci_block.Tg_init[i] = 0;
         Bci_block.corTg[i] = 0;
-        Bci_block.Tg_pasp[i] = 0.3;
+        Bci_block.Tg_pasp[i] = 0.3f;
         Bci_block.C_pasp[i] = 1500;
     }
 }
