@@ -12,6 +12,7 @@
 #include <QHeaderView>
 #include <QPainter>
 #include <QPalette>
+#include <QPen>
 #include <QRegExp>
 #include <QStringListModel>
 #include <QTextEdit>

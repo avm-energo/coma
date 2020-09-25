@@ -38,6 +38,16 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
         hlyout2->addWidget(gb);
     }
 
+    QHBoxLayout *hlyout = new QHBoxLayout;
+
+    QGroupBox *gb = new QGroupBox("");
+    QPixmap map;
+
+    hlyout->addWidget(WDFunc::NewLBL(this, "", "", QString::number(954), &map), 1);
+
+    gb->setLayout(hlyout);
+    hlyout2->addWidget(gb);
+
     if (hlyout2->count())
         vlyout->addLayout(hlyout2);
     setLayout(vlyout);
