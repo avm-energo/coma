@@ -5,11 +5,8 @@
 #define MTYPE_KIV 0xA284
 #define MTYPE_KDV 0xA387
 
-#include "../config/config.h"
-#include "../iec104/iec104.h"
-#include "../modbus/modbus.h"
-
 #include <QDialog>
+#include <QMap>
 
 class InfoDialog : public QDialog
 {

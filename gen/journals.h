@@ -3,7 +3,6 @@
 
 #include "../models/etablemodel.h"
 
-#include <QObject>
 #include <QSortFilterProxyModel>
 
 #define SYSJOURID 0

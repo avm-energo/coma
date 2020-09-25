@@ -2,6 +2,7 @@
 
 #include "board.h"
 
+#include <QCoreApplication>
 #include <QDateTime>
 #include <QDir>
 #include <QElapsedTimer>

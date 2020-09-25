@@ -5,6 +5,7 @@
 #include "../modbus/serialport.h"
 
 #include <QDialog>
+#include <QModelIndex>
 
 #define MAXREGISTRYINTERFACECOUNT 5 // how much entries can we have for interfaces of each type in registry
 
@@ -27,7 +28,7 @@ signals:
 
 private slots:
     void SetInterface();
-    void SetUsb();
+    void SetUsb(QModelIndex index);
     void AddEth();
     void EthAccepted();
     void RsAccepted();

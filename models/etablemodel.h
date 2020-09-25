@@ -2,15 +2,8 @@
 #define ETABLEMODEL_H
 
 #include "etableitem.h"
-#include <QAbstractItemModel>
+
 #include <QAbstractTableModel>
-#include <QColor>
-#include <QFont>
-#include <QIcon>
-#include <QMutex>
-#include <QReadWriteLock>
-#include <QStringList>
-#include <QWaitCondition>
 
 #define NOCOLFORMAT 11 // 11 is the number more than 10 i.e. no format for column
 

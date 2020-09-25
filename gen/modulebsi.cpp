@@ -1,6 +1,7 @@
 #include "modulebsi.h"
 
 #include "../config/config.h"
+#include "../gen/board.h"
 #include "../usb/commands.h"
 #include "error.h"
 #include "stdfunc.h"

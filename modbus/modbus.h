@@ -1,13 +1,9 @@
 #ifndef MODBUS_H
 #define MODBUS_H
 
-#include "../gen/board.h"
-#include "../gen/logclass.h"
-#include "../gen/s2.h"
 #include "serialport.h"
 
 #include <QMutex>
-#include <QObject>
 #include <QQueue>
 #include <QSerialPort>
 #include <QTimer>

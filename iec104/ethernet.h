@@ -2,11 +2,9 @@
 #define ETHERNET_H
 
 #include "../gen/logclass.h"
-#include "iec104.h"
 
 #include <QByteArray>
 #include <QMutex>
-#include <QObject>
 #include <QTcpSocket>
 
 #define PORT104 2404 // порт связи по протоколу МЭК 60870-5-104

@@ -3,7 +3,6 @@
 
 #include <QFile>
 #include <QMutex>
-#include <QObject>
 
 #define LOG_MAX_SIZE 1048576
 

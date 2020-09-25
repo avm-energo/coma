@@ -1,17 +1,19 @@
 #include "eusbworker.h"
 
+#include "../gen/board.h"
 #include "../gen/error.h"
 #include "../gen/stdfunc.h"
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QElapsedTimer>
 #include <QThread>
 
 #if _MSC_VER && !__INTEL_COMPILER
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
-EUsbWorker::EUsbWorker(DeviceConnectStruct &devinfo, LogClass *logh, bool writelog, QObject *parent)
-    : DeviceInfo(devinfo), log(logh), WriteUSBLog(writelog), QObject(parent)
+EUsbWorker::EUsbWorker(DeviceConnectStruct dev, LogClass *logh, bool writelog, QObject *parent)
+    : m_deviceInfo(dev), log(logh), WriteUSBLog(writelog), QObject(parent)
 {
     HidDevice = nullptr;
 }
@@ -23,17 +25,21 @@ EUsbWorker::~EUsbWorker()
 
 Error::Msg EUsbWorker::setupConnection()
 {
-    if ((DeviceInfo.product_id == 0) || (DeviceInfo.vendor_id == 0))
+    if ((deviceInfo().vendor_id == 0) || (deviceInfo().product_id == 0))
     {
         ERMSG("DeviceInfo is null");
         Finish();
         return Error::Msg::GeneralError;
     }
-    if (HidDevice)
-        hid_close(HidDevice);
-    HidDevice = hid_open(DeviceInfo.vendor_id, DeviceInfo.product_id, DeviceInfo.serial);
+#ifdef __linux__
+    HidDevice = hid_open_path(deviceInfo().path.toStdString().c_str());
+#endif
+#ifdef _WIN32
+    HidDevice = hid_open(deviceInfo().vendor_id, deviceInfo().product_id, (wchar_t *)deviceInfo().serial.utf16());
+#endif
     if (!HidDevice)
     {
+        qDebug() << QString::fromWCharArray(hid_error(HidDevice));
         ERMSG("Error opening HID device");
         Finish();
         return Error::Msg::GeneralError;
@@ -73,6 +79,16 @@ void EUsbWorker::interact()
         }
     }
     Finish();
+}
+
+DeviceConnectStruct EUsbWorker::deviceInfo() const
+{
+    return m_deviceInfo;
+}
+
+void EUsbWorker::setDeviceInfo(DeviceConnectStruct deviceInfo)
+{
+    m_deviceInfo = deviceInfo;
 }
 
 int EUsbWorker::WriteDataAttempt(QByteArray &ba)

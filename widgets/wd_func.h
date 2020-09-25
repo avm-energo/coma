@@ -1,7 +1,6 @@
 #ifndef WD_FUNC
 #define WD_FUNC
 
-#include "../models/etablemodel.h"
 #include "ecombobox.h"
 #include "etableview.h"
 #include "passwordlineedit.h"
@@ -116,7 +115,9 @@ public:
     static QMetaObject::Connection PBConnect(
         QWidget *w, const QString &pbname, const QObject *receiver, const char *method);
     static void SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
+    static void SetQTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);
     static ETableView *NewTV(QWidget *w, const QString &tvname, QAbstractItemModel *model);
+    static QTableView *NewQTV(QWidget *w, const QString &tvname, QAbstractItemModel *model);
     static QAbstractItemModel *TVModel(QWidget *w, const QString &tvname);
     static void TVConnect(
         QWidget *w, const QString &tvname, int signaltype, const QObject *receiver, const char *method);

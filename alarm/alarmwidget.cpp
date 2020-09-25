@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QGroupBox>
 #include <QMenu>
+#include <QtCore>
 AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
 {
     Alarm = alarm;

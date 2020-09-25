@@ -7,6 +7,7 @@
 
 #include <QEventLoop>
 #include <QThread>
+#include <QTimer>
 
 class EProtocom : public QObject
 {
@@ -20,11 +21,11 @@ public:
     bool Reconnect();
     void Disconnect();
 
-    QStringList DevicesFound() const;
+    QList<QStringList> DevicesFound();
     QString deviceName() const;
     void setDeviceName(const QString &deviceName);
     // функция, разбивающая строку устройства и складывающая в соотв. структуру
-    void TranslateDeviceAndSave(const QString &str);
+    // void TranslateDeviceAndSave(const QString &str);
 
     EUsbWorker *usbWorker() const;
     QThread *workerThread();
@@ -43,6 +44,9 @@ public:
 
     Error::Msg result() const;
     void setResult(const Error::Msg &result);
+
+    int devicePosition() const;
+    void setDevicePosition(int devicePosition);
 
 protected:
     explicit EProtocom(QObject *parent = nullptr);
@@ -68,6 +72,7 @@ private:
     qint64 InDataSize;
     int SegLeft; // количество оставшихся сегментов
     int SegEnd;  // номер последнего байта в ReadData текущего сегмента
+    int m_devicePosition;
 
     // bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
 
@@ -75,7 +80,7 @@ private:
     QByteArray ReadDataChunk;
     QByteArray WriteData;
     QString m_deviceName;
-    DeviceConnectStruct UsbPort;
+    QVector<DeviceConnectStruct> m_devices;
 
     LogClass *CnLog;
     QTimer *OscTimer;

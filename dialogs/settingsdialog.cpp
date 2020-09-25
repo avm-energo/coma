@@ -1,10 +1,9 @@
 #include "settingsdialog.h"
 
-#include "../config/config.h"
-#include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
 
 #include <QFileDialog>
+#include <QSettings>
 #include <QVBoxLayout>
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
