@@ -46,8 +46,10 @@ void AlarmClass::UpdateAlarmUSB()
 {
     WarnAlarmEvents.clear();
     AvarAlarmEvents.clear();
+    IndicatorEvents.clear();
     BdAlarm signalling;
     int i = 0;
+    bool ind;
     if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
     {
         if (Commands::GetBd(MapAlarm[Board::GetInstance()->type()].BdNumbers, &signalling, sizeof(BdAlarm))
@@ -55,8 +57,23 @@ void AlarmClass::UpdateAlarmUSB()
         {
             for (i = 0; i < MapAlarm[Board::GetInstance()->type()].warnCounts; ++i)
             {
-                bool warn = (signalling.Warn & (0x00000001 << i));
-                WarnAlarmEvents.append(warn);
+                if (Board::GetInstance()->type() == MTYPE_KTF)
+                {
+                    if (i != 9)
+                    {
+                        bool warn = (signalling.Warn & (0x00000001 << i));
+                        WarnAlarmEvents.append(warn);
+                    }
+                    else
+                    {
+                        ind = (signalling.Warn & (0x00000001 << i));
+                    }
+                }
+                else
+                {
+                    bool warn = (signalling.Warn & (0x00000001 << i));
+                    WarnAlarmEvents.append(warn);
+                }
             }
 
             for (i = 0; i < MapAlarm[Board::GetInstance()->type()].avarCounts; ++i)
@@ -67,6 +84,8 @@ void AlarmClass::UpdateAlarmUSB()
 
             emit SetWarnAlarmColor(WarnAlarmEvents);
             emit SetAlarmColor(AvarAlarmEvents);
+            if (Board::GetInstance()->type() == MTYPE_KTF)
+                emit SetIndicator(ind);
         }
     }
     if (Commands::GetBsi(ModuleBSI::ModuleBsi) == Error::Msg::NoError)

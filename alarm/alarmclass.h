@@ -36,6 +36,7 @@ public:
 
     QList<bool> WarnAlarmEvents;
     QList<bool> AvarAlarmEvents;
+    QList<bool> IndicatorEvents;
     QList<bool> AlarmEvents;
 
     struct StAlarm
@@ -61,6 +62,7 @@ public:
 signals:
     void SetWarnAlarmColor(QList<bool>);
     void SetAlarmColor(QList<bool>);
+    void SetIndicator(bool);
     void AlarmColor(QList<bool>);
     void SetFirstButton();
 

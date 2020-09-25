@@ -34,6 +34,7 @@ public slots:
     void UpdateFirstUSB();
     void UpdateSecondUSB(QList<bool>);
     void UpdateThirdUSB(QList<bool>);
+    void UpdateIndicator(bool);
 
 private:
     AlarmClass *Alarm;
