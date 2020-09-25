@@ -207,31 +207,27 @@ win32 {
        message("Windows x64 build")
        ## Windows x64 (64bit) specific build here
        CONFIG(debug, debug|release) {
-       LIBS += -L$$PWD/../../libs/win64/debug/ -llimereportd -lliblzma -lhidapi
+       LIBS += -L$$PWD/../../libs/win64/debug/  -lliblzma -lhidapi
        DESTDIR = $${PWD}/../../build/win64/debug
        } else {
-       LIBS += -L$$PWD/../../libs/win64/release/ -llimereport -lliblzma -lhidapi
+       LIBS += -L$$PWD/../../libs/win64/release/ -lliblzma -lhidapi
        DESTDIR = $${PWD}/../../build/win64/release
        LIBS_FILES += \
        $$PWD/../../libs/win64/release/hidapi.dll \
-       $$PWD/../../libs/win64/release/liblzma.dll \
-       $$PWD/../../libs/win64/release/QtZint.dll \
-       $$PWD/../../libs/win64/release/limereport.dll
+       $$PWD/../../libs/win64/release/liblzma.dll
        }
     } else {
         message("Windows x86 build")
         ## Windows x86 (32bit) specific build here
         CONFIG(debug, debug|release) {
-        LIBS += -L$$PWD/../../libs/win32/debug/ -llimereportd -lliblzma -lhidapi
+        LIBS += -L$$PWD/../../libs/win32/debug/  -lliblzma -lhidapi
         DESTDIR = $${PWD}/../../build/win32/debug
         } else {
-        LIBS += -L$$PWD/../../libs/win32/release/ -llimereport -lliblzma -lhidapi
+        LIBS += -L$$PWD/../../libs/win32/release/  -lliblzma -lhidapi
         DESTDIR = $${PWD}/../../build/win32/release
         LIBS_FILES += \
         $$PWD/../../libs/win32/release/hidapi.dll \
-        $$PWD/../../libs/win32/release/liblzma.dll \
-        $$PWD/../../libs/win32/release/QtZint.dll \
-        $$PWD/../../libs/win32/release/limereport.dll
+        $$PWD/../../libs/win32/release/liblzma.dll
         }
     }
 }
