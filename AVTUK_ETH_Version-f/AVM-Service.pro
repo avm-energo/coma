@@ -67,7 +67,6 @@ SOURCES += \
     ../usb/eprotocom.cpp \
     ../usb/eusbworker.cpp \
     ../widgets/edoublespinbox.cpp \
-    ../widgets/ledindicator.cpp \
     coma.cpp \
     main.cpp \
     ../check/check.cpp \
@@ -148,7 +147,6 @@ HEADERS += \
     ../usb/eprotocom.h \
     ../usb/eusbworker.h \
     ../widgets/edoublespinbox.h \
-    ../widgets/ledindicator.h \
     coma.h \
     ../check/check.h \
     ../check/eabstractcheckdialog.h \

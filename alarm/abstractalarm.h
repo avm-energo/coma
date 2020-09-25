@@ -59,19 +59,6 @@ class AbstractAlarm : public QDialog
     Q_OBJECT
 public:
     AbstractAlarm(QWidget *parent = nullptr);
-    struct Bd11
-    {
-        quint32 dev;
-        quint32 predAlarm;
-        quint32 alarm;
-    };
-
-    struct Bd16
-    {
-        quint32 Prib;
-        quint32 Warn;
-        quint32 Alarm;
-    };
 
 public slots:
 
@@ -83,18 +70,6 @@ protected:
     void SetupAlarm(const QStringList &events, int counters);
 
     AlarmClass *Alarm;
-
-    const quint32 PredBSIMask = 0x00005F55;
-    const quint32 AvarBSIMask = 0x000020AA;
-
-    quint8 PredAlarmEvents[20];
-    quint8 AvarAlarmEvents[20];
-
-    quint8 PredAlarmEventsKTF[15];
-    quint8 AvarAlarmEventsKTF[15];
-
-    QWidget *Wpred;
-    QWidget *Walarm;
 };
 
 class AbstractWarnAlarm : public AbstractAlarm

@@ -1,5 +1,7 @@
 #include "alarmwidget.h"
 
+#include "../gen/board.h"
+
 #include <QBoxLayout>
 #include <QDebug>
 #include <QGroupBox>
@@ -39,14 +41,12 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
     }
 
     QHBoxLayout *hlyout = new QHBoxLayout;
-
-    QGroupBox *gb = new QGroupBox("");
     QPixmap map;
-
     hlyout->addWidget(WDFunc::NewLBL(this, "", "", QString::number(954), &map), 1);
-
-    gb->setLayout(hlyout);
-    hlyout2->addWidget(gb);
+    auto pixmap = WDFunc::NewLedIndicator(QColor(Qt::green), this->height());
+    WDFunc::SetLBLImage(this, "954", &pixmap);
+    WDFunc::SetVisible(this, "954", false);
+    hlyout2->addLayout(hlyout);
 
     if (hlyout2->count())
         vlyout->addLayout(hlyout2);

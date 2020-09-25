@@ -128,6 +128,7 @@ public:
 
     static QStatusBar *NewSB(QWidget *w);
     static QPixmap NewCircle(QColor color, float radius);
+    static QPixmap NewLedIndicator(QColor color, float height);
 };
 
 #endif // WD_FUNC
