@@ -80,11 +80,12 @@ void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
     int i = 0;
     int ccount = 0;
 
+    Q_ASSERT(MapAlarm.contains(Board::GetInstance()->type()));
     for (i = 0; i < Signal.countBytes; i++)
     {
         for (int j = 0; j < 8; j++)
         {
-            if (ccount <= MapAlarm[Board::GetInstance()->type()].warns.size())
+            if (ccount < MapAlarm[Board::GetInstance()->type()].warns.size())
             {
                 bool alarm = (Signal.Bytes[i] & (0x00000001 << j));
                 if (MapAlarm[Board::GetInstance()->type()].warns.at(ccount))
