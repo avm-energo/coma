@@ -85,7 +85,9 @@ void AbstractAlarm::showEvent(QShowEvent *e)
     e->accept();
 }
 
-AbstractWarnAlarm::AbstractWarnAlarm(QWidget *parent) : AbstractAlarm(parent) { }
+AbstractWarnAlarm::AbstractWarnAlarm(QWidget *parent) : AbstractAlarm(parent)
+{
+}
 
 void AbstractWarnAlarm::Update(QList<bool> states)
 {
@@ -100,7 +102,9 @@ void AbstractWarnAlarm::Update(QList<bool> states)
         UpdatePixmaps(states.at(i), i, true);
     }
 }
-AbstractAvarAlarm::AbstractAvarAlarm(QWidget *parent) : AbstractAlarm(parent) { }
+AbstractAvarAlarm::AbstractAvarAlarm(QWidget *parent) : AbstractAlarm(parent)
+{
+}
 
 void AbstractAvarAlarm::Update(QList<bool> states)
 {

@@ -29,7 +29,9 @@ ConfDialog84::ConfDialog84(QVector<S2::DataRec> *S2Config, QWidget *parent) : Ab
     PrereadConf();
 }
 
-ConfDialog84::~ConfDialog84() { }
+ConfDialog84::~ConfDialog84()
+{
+}
 
 void ConfDialog84::Fill()
 {
@@ -885,16 +887,24 @@ void ConfDialog84::SetupUI()
     setLayout(lyout);
 }
 
-void ConfDialog84::CheckConf() { }
+void ConfDialog84::CheckConf()
+{
+}
 void ConfDialog84::SetDefConf()
 {
     C84->SetDefConf();
     Fill();
 }
 
-void ConfDialog84::Start_Timer() { timerRead->start(1000); }
+void ConfDialog84::Start_Timer()
+{
+    timerRead->start(1000);
+}
 
-void ConfDialog84::Stop_Timer() { timerRead->stop(); }
+void ConfDialog84::Stop_Timer()
+{
+    timerRead->stop();
+}
 
 void ConfDialog84::Write_PCDate()
 {
@@ -984,4 +994,7 @@ void ConfDialog84::Set104(double dbl)
     }
 }
 
-void ConfDialog84::SetCType(int num) { C84->MainBlk.Ctype = num; }
+void ConfDialog84::SetCType(int num)
+{
+    C84->MainBlk.Ctype = num;
+}

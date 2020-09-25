@@ -1,4 +1,5 @@
 #include "tunedialogKIV.h"
+
 #include "../check/checkKIV.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
@@ -1001,7 +1002,10 @@ void TuneDialogKIV::Enter60Data()
     ask->exec();
 }
 
-void TuneDialogKIV::CloseAsk() { ask->close(); }
+void TuneDialogKIV::CloseAsk()
+{
+    ask->close();
+}
 
 void TuneDialogKIV::SaveValuesTemp20()
 {
@@ -1200,7 +1204,9 @@ int TuneDialogKIV::CalcTuneCoefsKadc32()
     return NOERROR;
 }*/
 
-void TuneDialogKIV::GetBdAndFill() { }
+void TuneDialogKIV::GetBdAndFill()
+{
+}
 
 int TuneDialogKIV::Start7_2_1()
 {
@@ -1569,7 +1575,10 @@ void TuneDialogKIV::FillBd1(QWidget *parent)
     WDFunc::SetLBLText(parent, "value7", WDFunc::StringValueWithCheck(m_Bda_block.Pt100, 4));
 }
 
-void TuneDialogKIV::CancelTune() { StdFunc::Cancel(); }
+void TuneDialogKIV::CancelTune()
+{
+    StdFunc::Cancel();
+}
 
 void TuneDialogKIV::RefreshAnalogValues(int bdnum)
 {
@@ -1724,7 +1733,7 @@ void TuneDialogKIV::CalcNewPt100Coefs()
     }
     else
     {
-        m_Bac_newblock.Art = ((m_BdaPt100_120Om.Pt100 - m_BdaPt100_80Om.Pt100) / 40); //[ед.АЦП/Ом],
+        m_Bac_newblock.Art = ((m_BdaPt100_120Om.Pt100 - m_BdaPt100_80Om.Pt100) / 40);  //[ед.АЦП/Ом],
         m_Bac_newblock.Brt = (2 * m_BdaPt100_120Om.Pt100 - 3 * m_BdaPt100_80Om.Pt100); //[ед.АЦП]
     }
 }

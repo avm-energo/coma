@@ -254,7 +254,8 @@ void ChekDialogKTF::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
     {
         sig = *(Signal + i);
         // WDFunc::SetLBLText(Ch, QString::number((Signal+i)->fl.SigAdr),
-        // WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal)); if((Signal+i)->fl.SigAdr == 101 || (Signal+i)->fl.SigAdr
+        // WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal)); if((Signal+i)->fl.SigAdr == 101 ||
+        // (Signal+i)->fl.SigAdr
         // == 102) Ch->FillBd0(this, QString::number((Signal+i)->fl.SigAdr),
         // WDFunc::StringValueWithCheck((Signal+i)->fl.SigVal));
 

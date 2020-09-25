@@ -42,7 +42,7 @@
 
 #define TD_TMK 25.0 // degrees
 #define TD_VBAT 3.0 // voltage
-#define TD_FREQ 50 // Hz
+#define TD_FREQ 50  // Hz
 #define CONST2PIF 314.15926
 
 class QGroupBox;
@@ -96,7 +96,7 @@ private:
         float KmI16[3]; // калибровочные коэффициенты по току в 6 каналах для Кацп=16
         float KmI32[3]; // калибровочные коэффициенты по току в 6 каналах для Кацп=32
         float DPsi[6]; // коррекция фазы в i-м канале (в градусах)
-        float Tmk0; // Начальная температура МК для коррекции
+        float Tmk0;    // Начальная температура МК для коррекции
         float TKUa[6]; //температурные коэффициенты линейной коррекции
         // по напряжениям и токам
         float TKUb[6]; //температурные коэффициенты квадратичной коррекции
@@ -105,20 +105,20 @@ private:
 
         //записываются во флеш базовой платы
         float K_freq; // коррекция частоты
-        float Art; // коэффициент в канале Pt100, ед.АЦП/Ом
-        float Brt; // смещение в канале Pt100, ед.АЦП
+        float Art;    // коэффициент в канале Pt100, ед.АЦП/Ом
+        float Brt;    // смещение в канале Pt100, ед.АЦП
     };
 
     typedef struct
     { // Структура блока выходных данных
         // в масштабах входных сигналов (для настройки)
-        float Frequency; // Частота в сети, Гц
+        float Frequency;       // Частота в сети, Гц
         float IUefNat_filt[6]; // Истинные действующие значения сигналов (в вольтах или мА на входе)
         float IUeff_filtered[6]; // действующие значения сигналов по 1-й гармонике
         float phi_next_f[6]; // Углы сдвига сигналов по 1-й гармонике относительно Ua в градусах
         float Cbush[3]; // емкости вводов
-        float Tg_d[3]; // tg delta вводов
-        float Pt100_R; // Измеренное сопротивление термометра, Ом
+        float Tg_d[3];  // tg delta вводов
+        float Pt100_R;  // Измеренное сопротивление термометра, Ом
     } Bda_in_struct;
 
     struct BdaStruct
@@ -130,16 +130,16 @@ private:
 
     struct RealDataStruct
     {
-        float f[3]; // frequencies
-        float u[3]; // voltages
-        float i[3]; // currents
-        float d[3]; // load phase
+        float f[3];     // frequencies
+        float u[3];     // voltages
+        float i[3];     // currents
+        float d[3];     // load phase
         float dpsiU[2]; // interphase voltages angles (B-A, C-B)
     };
 
     struct Bd0
     {
-        float Tmk; // Температура кристалла микроконтроллера, °С
+        float Tmk;  // Температура кристалла микроконтроллера, °С
         float Vbat; // Напряжение аккумуляторной батареи, В
     };
 

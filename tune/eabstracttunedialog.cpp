@@ -1,4 +1,5 @@
 #include "eabstracttunedialog.h"
+
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
 #include "../gen/error.h"
@@ -21,7 +22,9 @@ EAbstractTuneDialog::EAbstractTuneDialog(QWidget *parent) : QDialog(parent)
     RepModel = new ReportModel;
 }
 
-EAbstractTuneDialog::~EAbstractTuneDialog() { }
+EAbstractTuneDialog::~EAbstractTuneDialog()
+{
+}
 
 QWidget *EAbstractTuneDialog::TuneUI()
 {
@@ -507,7 +510,10 @@ void EAbstractTuneDialog::LoadFromFile()
     QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
-void EAbstractTuneDialog::Good() { SetMeasurementEnabled(false); }
+void EAbstractTuneDialog::Good()
+{
+    SetMeasurementEnabled(false);
+}
 
 void EAbstractTuneDialog::NoGood()
 {
@@ -521,7 +527,9 @@ void EAbstractTuneDialog::CancelTune()
     emit Finished();
 }
 
-void EAbstractTuneDialog::ReadAllTuneCoefs() { }
+void EAbstractTuneDialog::ReadAllTuneCoefs()
+{
+}
 
 void EAbstractTuneDialog::MeasTimerTimeout()
 {

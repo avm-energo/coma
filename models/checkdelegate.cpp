@@ -1,9 +1,13 @@
 #include "checkdelegate.h"
+
 #include "../gen/colors.h"
+
 #include <QColor>
 #include <QPainter>
 
-CheckDelegate::CheckDelegate(QObject *parent) : QStyledItemDelegate(parent) { }
+CheckDelegate::CheckDelegate(QObject *parent) : QStyledItemDelegate(parent)
+{
+}
 
 void CheckDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {

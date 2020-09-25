@@ -666,7 +666,10 @@ bool AvmDebug::nativeEvent(const QByteArray &eventType, void *message, long *res
     return false;
 }
 
-void AvmDebug::SetMode(int mode) { Mode = mode; }
+void AvmDebug::SetMode(int mode)
+{
+    Mode = mode;
+}
 
 void AvmDebug::Go(const QString &parameter)
 {
@@ -852,9 +855,15 @@ void AvmDebug::FileTimeOut()
     ReceiveTimer->stop();
 }
 
-void AvmDebug::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
+void AvmDebug::SetProgressBar2Size(int size)
+{
+    SetProgressBarSize(2, size);
+}
 
-void AvmDebug::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
+void AvmDebug::SetProgressBar2(int cursize)
+{
+    SetProgressBar(2, cursize);
+}
 
 void AvmDebug::SetProgressBarSize(int prbnum, int size)
 {
@@ -935,7 +944,10 @@ void AvmDebug::DisconnectAndClear()
     Reconnect = false;
 }
 
-void AvmDebug::resizeEvent(QResizeEvent *e) { QMainWindow::resizeEvent(e); }
+void AvmDebug::resizeEvent(QResizeEvent *e)
+{
+    QMainWindow::resizeEvent(e);
+}
 
 void AvmDebug::keyPressEvent(QKeyEvent *e)
 {

@@ -2,6 +2,7 @@
 #define VALUEMODEL_H
 
 #include "etablemodel.h"
+
 #include <QObject>
 
 class ValueModel : public ETableModel
