@@ -639,11 +639,10 @@ ETableView *WDFunc::NewTV(QWidget *w, const QString &tvname, QAbstractItemModel 
 QTableView *WDFunc::NewQTV(QWidget *w, const QString &tvname, QAbstractItemModel *model)
 {
     QTableView *tv = new QTableView(w);
-    tv->setObjectName(tvname);
-    // tv->horizontalHeader()->setVisible(true);
-    // tv->verticalHeader()->setVisible(false);
     if (model != nullptr)
         tv->setModel(model);
+    tv->setObjectName(tvname);
+    tv->setSelectionBehavior(QAbstractItemView::SelectRows);
     tv->setSelectionMode(QAbstractItemView::SingleSelection);
     return tv;
 }

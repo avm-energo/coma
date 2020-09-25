@@ -96,7 +96,6 @@ void AbstractWarnAlarm::Update(QList<bool> states)
     auto max_range = states.length();
     Q_ASSERT(Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts == states.length());
     max_range = std::min(Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts, states.length());
-    // qDebug() << Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts << ":" << states.length();
     for (int i = 0; i < max_range; i++)
     {
         UpdatePixmaps(states.at(i), i, true);

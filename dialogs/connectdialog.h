@@ -34,9 +34,11 @@ private slots:
     void RsAccepted();
     void SetCancelled();
     void SetEth();
+    void SetEth(QModelIndex index);
     // void ScanEth();
     void AddRs();
     void SetRs();
+    void SetRs(QModelIndex index);
     //    void ScanRs();
     void RotateSettings(
         const QString &type, const QString &name); // in: name of registry dir without index, out - name with index

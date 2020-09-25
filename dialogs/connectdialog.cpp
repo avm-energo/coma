@@ -62,19 +62,20 @@ void ConnectDialog::SetInterface()
         hlyout->addWidget(WDFunc::NewPB(dlg, "scanethpb", "Сканировать", this, SLOT(ScanEth())));
         hlyout->addStretch(10);
         lyout->addLayout(hlyout);
-        WDFunc::TVConnect(dlg, "ethtv", WDFunc::CT_DCLICKED, this, SLOT(SetEth()));
+        connect(table, &QTableView::doubleClicked, this, qOverload<QModelIndex>(&ConnectDialog::SetEth));
         break;
     }
     case Board::InterfaceType::RS485:
     {
-        lyout->addWidget(WDFunc::NewQTV(dlg, "rstv", nullptr));
+        auto *table = WDFunc::NewQTV(dlg, "rstv", nullptr);
+        lyout->addWidget(table);
         QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->addStretch(10);
         hlyout->addWidget(WDFunc::NewPB(dlg, "newrspb", "Добавить", this, SLOT(AddRs())));
         hlyout->addWidget(WDFunc::NewPB(dlg, "scanrspb", "Сканировать", this, SLOT(ScanRs())));
         hlyout->addStretch(10);
         lyout->addLayout(hlyout);
-        WDFunc::TVConnect(dlg, "rstv", WDFunc::CT_DCLICKED, this, SLOT(SetRs()));
+        connect(table, &QTableView::doubleClicked, this, qOverload<QModelIndex>(&ConnectDialog::SetRs));
         break;
     }
     default:
@@ -208,6 +209,17 @@ void ConnectDialog::SetEth()
     emit Accepted(&st);
 }
 
+void ConnectDialog::SetEth(QModelIndex index)
+{
+    ConnectStruct st;
+    auto *mdl = index.model();
+    int row = index.row();
+    st.name = mdl->data(mdl->index(row, 0)).toString();
+    st.iec104st.ip = mdl->data(mdl->index(row, 1)).toString();
+    st.iec104st.baseadr = mdl->data(mdl->index(row, 2)).toUInt();
+    emit Accepted(&st);
+}
+
 void ConnectDialog::AddRs()
 {
     QStringList ports;
@@ -258,6 +270,20 @@ void ConnectDialog::SetRs()
         st.serialst.Stop = WDFunc::TVData(dlg, "rstv", 5).toString();
         st.serialst.Address = WDFunc::TVData(dlg, "rstv", 6).toUInt();
     }
+    emit Accepted(&st);
+}
+
+void ConnectDialog::SetRs(QModelIndex index)
+{
+    ConnectStruct st;
+    auto *mdl = index.model();
+    int row = index.row();
+    st.name = mdl->data(mdl->index(row, 0)).toString();
+    st.serialst.Port = mdl->data(mdl->index(row, 1)).toString();
+    st.serialst.Baud = mdl->data(mdl->index(row, 2)).toUInt();
+    st.serialst.Parity = mdl->data(mdl->index(row, 3)).toString();
+    st.serialst.Stop = mdl->data(mdl->index(row, 4)).toString();
+    st.serialst.Address = mdl->data(mdl->index(row, 5)).toUInt();
     emit Accepted(&st);
 }
 
