@@ -9,7 +9,7 @@ QMAKE_TARGET_COPYRIGHT = EvelSoft
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++17
-VERSION = 0.9.1
+VERSION = 1.0
 
 QT       += core gui printsupport network serialport qml widgets testlib
 
