@@ -773,7 +773,7 @@ void EProtocom::usbStateChanged(void *message)
             {
                 if (!m_devices.contains(m_usbWorker->deviceInfo()))
                 {
-                    qDebug() << "Device " << deviceName() << " removed completely";
+                    qDebug() << "Device " << m_usbWorker->deviceInfo().serial << " removed completely";
                     WriteData.clear();
                     OutData.clear();
                     Finish(Error::Msg::CN_NULLDATAERROR);
@@ -794,13 +794,13 @@ void EProtocom::usbStateChanged(void *message)
             qDebug("DBT_DEVNODES_CHANGED");
             DevicesFound();
 
-            qDebug() << "Device " << deviceName() << " state changed";
             // Ивенты должны происходить только если отключен подключенный раннее
             // прибор
             if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
             {
                 if (!m_devices.contains(m_usbWorker->deviceInfo()))
                 {
+                    qDebug() << "Device " << m_usbWorker->deviceInfo().serial << " state changed";
                     Board::GetInstance()->setConnectionState(Board::ConnectionState::AboutToFinish);
                 }
             }

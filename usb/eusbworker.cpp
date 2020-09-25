@@ -34,7 +34,7 @@ Error::Msg EUsbWorker::setupConnection()
 #ifdef __linux__
     HidDevice = hid_open_path(deviceInfo().path.toStdString().c_str());
 #endif
-#ifdef __WIN32
+#ifdef _WIN32
     HidDevice = hid_open(deviceInfo().vendor_id, deviceInfo().product_id, (wchar_t *)deviceInfo().serial.utf16());
 #endif
     if (!HidDevice)
