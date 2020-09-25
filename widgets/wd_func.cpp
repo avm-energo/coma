@@ -640,8 +640,7 @@ QTableView *WDFunc::NewQTV(QWidget *w, const QString &tvname, QAbstractItemModel
 {
     QTableView *tv = new QTableView(w);
     tv->setObjectName(tvname);
-    // tv->horizontalHeader()->setVisible(true);
-    // tv->verticalHeader()->setVisible(false);
+    tv->setSelectionBehavior(QAbstractItemView::SelectRows);
     if (model != nullptr)
         tv->setModel(model);
     tv->setSelectionMode(QAbstractItemView::SingleSelection);
