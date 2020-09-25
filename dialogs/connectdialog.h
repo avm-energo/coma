@@ -34,6 +34,7 @@ private slots:
     void RsAccepted();
     void SetCancelled();
     void SetEth();
+    void SetEth(QModelIndex index);
     // void ScanEth();
     void AddRs();
     void SetRs();

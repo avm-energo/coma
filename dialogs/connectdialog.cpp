@@ -62,7 +62,7 @@ void ConnectDialog::SetInterface()
         hlyout->addWidget(WDFunc::NewPB(dlg, "scanethpb", "Сканировать", this, SLOT(ScanEth())));
         hlyout->addStretch(10);
         lyout->addLayout(hlyout);
-        WDFunc::TVConnect(dlg, "ethtv", WDFunc::CT_DCLICKED, this, SLOT(SetEth()));
+        connect(table, &QTableView::doubleClicked, this, qOverload<QModelIndex>(&ConnectDialog::SetEth));
         break;
     }
     case Board::InterfaceType::RS485:
@@ -205,6 +205,17 @@ void ConnectDialog::SetEth()
         st.iec104st.ip = WDFunc::TVData(dlg, "ethtv", 2).toString();
         st.iec104st.baseadr = WDFunc::TVData(dlg, "ethtv", 3).toUInt();
     }
+    emit Accepted(&st);
+}
+
+void ConnectDialog::SetEth(QModelIndex index)
+{
+    ConnectStruct st;
+    auto *mdl = index.model();
+    int row = index.row();
+    st.name = mdl->data(mdl->index(row, 0)).toString();
+    st.iec104st.ip = mdl->data(mdl->index(row, 1)).toString();
+    st.iec104st.baseadr = mdl->data(mdl->index(row, 2)).toUInt();
     emit Accepted(&st);
 }
 
