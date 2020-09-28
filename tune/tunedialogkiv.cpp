@@ -1,4 +1,4 @@
-#include "tunedialogKIV.h"
+#include "tunedialogkiv.h"
 #include "../check/checkkiv.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"

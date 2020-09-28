@@ -4,6 +4,7 @@
 
 TuneKIVTemp60::TuneKIVTemp60(QWidget *parent) : EAbstractTuneDialog(parent)
 {
+    m_tuneStep = 2;
     AddBac(&m_Bac_block, M_BACBLOCKNUM, sizeof(m_Bac_block));
 }
 

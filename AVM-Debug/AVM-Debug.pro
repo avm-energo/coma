@@ -66,7 +66,7 @@ SOURCES += \
     ../models/checkdelegate.cpp \
     ../models/valuemodel.cpp \
     ../tune/eabstracttunedialog.cpp \
-    ../tune/tunedialogKIV.cpp \
+    ../tune/tunedialogkiv.cpp \
     ../tune/tunekiv.cpp \
     ../tune/tunekivmain.cpp \
     ../tune/tunekivtemp60.cpp \
@@ -150,7 +150,7 @@ HEADERS += \
     ../models/checkdelegate.h \
     ../models/valuemodel.h \
     ../tune/eabstracttunedialog.h \
-    ../tune/tunedialogKIV.h \
+    ../tune/tunedialogkiv.h \
     ../tune/tunekiv.h \
     ../tune/tunekivmain.h \
     ../tune/tunekivtemp60.h \

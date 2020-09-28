@@ -32,7 +32,7 @@
 #include "../config/confdialogkiv.h"
 #include "../config/confdialogktf.h"
 #ifdef AVM_DEBUG
-#include "../tune/tunedialogKIV.h"
+#include "../tune/tunedialogkiv.h"
 #endif
 #include "../dialogs/errordialog.h"
 #include "../dialogs/settingsdialog.h"
