@@ -38,15 +38,15 @@ AlarmClass::AlarmClass(QObject *parent) : QObject(parent)
     KTF.warns = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0 };
     KTF.avars = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1 };
 
-    MapAlarm[MTYPE_KIV] = KIV;
-    MapAlarm[MTYPE_KTF] = KTF;
+    MapAlarm[Board::DeviceModel::KIV] = KIV;
+    MapAlarm[Board::DeviceModel::KTF] = KTF;
 }
 
 void AlarmClass::UpdateAlarmUSB()
 {
     WarnAlarmEvents.clear();
     AvarAlarmEvents.clear();
-    IndicatorEvents.clear();
+    // IndicatorEvents.clear();
     BdAlarm signalling;
     int i = 0;
     bool ind;
@@ -57,7 +57,7 @@ void AlarmClass::UpdateAlarmUSB()
         {
             for (i = 0; i < MapAlarm[Board::GetInstance()->type()].warnCounts; ++i)
             {
-                if (Board::GetInstance()->type() == MTYPE_KTF)
+                if (Board::GetInstance()->type() == Board::DeviceModel::KTF)
                 {
                     if (i != 9)
                     {
@@ -84,7 +84,7 @@ void AlarmClass::UpdateAlarmUSB()
 
             emit SetWarnAlarmColor(WarnAlarmEvents);
             emit SetAlarmColor(AvarAlarmEvents);
-            if (Board::GetInstance()->type() == MTYPE_KTF)
+            if (Board::GetInstance()->type() == Board::DeviceModel::KTF)
                 emit SetIndicator(ind);
         }
     }
