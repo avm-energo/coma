@@ -4,12 +4,6 @@
 #define WARNEVENTS 20
 #define ALARMEVENTS 20
 
-#define MTYPE_KTF 0xA287
-#define MTYPE_KIV 0xA284
-
-#define WARNBSIMASK 0x00005F55
-#define AVARBSIMASK 0x000020AA
-
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
@@ -22,6 +16,9 @@
 #include <QDialog>
 #include <QMap>
 
+constexpr quint32 WarnBSIMask = 0x00005F55;
+constexpr quint32 AvarBSIMask = 0x000020AA;
+
 class AlarmClass : public QObject
 {
     Q_OBJECT
@@ -31,11 +28,9 @@ public:
 
     int warnalarmcount = 0, alarmcount = 0;
 
-    const quint32 WarnBSIMask = 0x00005F55;
-    const quint32 AvarBSIMask = 0x000020AA;
-
     QList<bool> WarnAlarmEvents;
     QList<bool> AvarAlarmEvents;
+    // QList<bool> IndicatorEvents;
     QList<bool> AlarmEvents;
 
     struct StAlarm
@@ -61,6 +56,7 @@ public:
 signals:
     void SetWarnAlarmColor(QList<bool>);
     void SetAlarmColor(QList<bool>);
+    void SetIndicator(bool);
     void AlarmColor(QList<bool>);
     void SetFirstButton();
 

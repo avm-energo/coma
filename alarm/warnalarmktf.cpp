@@ -27,9 +27,9 @@ void WarnAlarmKTF::WarnAlarmState()
                                              << "Перегрузка по току фазы A                              "
                                              << "Перегрузка по току фазы В                              "
                                              << "Перегрузка по току фазы С                              "
-                                             << "Машина включена "
+                                             //                                             << "Машина включена "
                                              << "Сигнализация по опасному превышению температуры обмотки"
                                              << "Неисправны все датчики температуры обмотки             "
                                              << "Сигнализация по опасному уровню пускового тока         ";
-    SetupAlarm(events, Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts);
+    SetupAlarm(events, (Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts) - 1);
 }

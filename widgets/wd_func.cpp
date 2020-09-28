@@ -472,7 +472,7 @@ QPixmap WDFunc::NewLedIndicator(QColor color, float height)
     QColor bottomReflexCenterColor(QColor(0xFF, 0xFF, 0xFF, 0x00));
     QColor bottomReflexSideColor(QColor(0xFF, 0xFF, 0xFF, 0x70));
 
-    int Height = height / 16;
+    int Height = height;
     int minDim = Height;
     int half = minDim / 2;
     int center = Height / 2;
@@ -490,6 +490,7 @@ QPixmap WDFunc::NewLedIndicator(QColor color, float height)
     int bottomReflexWidth = half / 3;
 
     QRect drawingRect;
+    /// Same expression on both sides of '-'
     drawingRect.setTop((Height - minDim) / 2);
     drawingRect.setLeft((Height - minDim) / 2);
     drawingRect.setHeight(minDim);
