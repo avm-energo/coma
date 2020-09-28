@@ -30,9 +30,9 @@ public:
     EUsbWorker *usbWorker() const;
     QThread *workerThread();
 
-    void SendCmd(char command, int parameter = 0);
-    void SendIn(char command, char parameter, QByteArray &ba, qint64 maxdatasize);
-    void SendOut(char command, char board_type, QByteArray &ba);
+    void SendCmd(unsigned char command, int parameter = 0);
+    void SendIn(unsigned char command, char parameter, QByteArray &ba, qint64 maxdatasize);
+    void SendOut(unsigned char command, char board_type, QByteArray &ba);
     void SendFile(unsigned char command, char board_type, int filenum, QByteArray &ba);
 
     // void Timeout();
@@ -47,6 +47,8 @@ public:
 
     int devicePosition() const;
     void setDevicePosition(int devicePosition);
+
+    QString usbSerial() const;
 
 protected:
     explicit EProtocom(QObject *parent = nullptr);
@@ -63,7 +65,7 @@ private:
     QThread m_workerThread;
 
     char BoardType;
-    char Command;
+    unsigned char Command;
     quint8 bStep;
     Error::Msg m_result;
     int FNum;
