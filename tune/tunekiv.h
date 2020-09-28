@@ -3,6 +3,7 @@
 
 #define M_BACBLOCKNUM 0
 
+#include <QWidget>
 #include <QtGlobal>
 
 class TuneKIV
@@ -66,6 +67,7 @@ public:
     BdaStruct m_Bda_block, m_BdaPt100_80Om, m_BdaPt100_120Om;
 
     TuneKIV();
+    QWidget *BacWidget();
 };
 
 #endif // TUNEKIV_H

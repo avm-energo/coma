@@ -35,6 +35,7 @@
 #include "../tune/tunedialogkiv.h"
 #endif
 #include "../dialogs/errordialog.h"
+#include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../gen/stdfunc.h"
 
@@ -43,6 +44,7 @@
 #include <QMenuBar>
 #include <QProgressBar>
 #include <QSplashScreen>
+#include <QStandardPaths>
 #include <QToolBar>
 #include <QtGlobal>
 
@@ -202,6 +204,7 @@ QWidget *AvmDebug::Least()
     w->setLayout(lyout);
     return w;
 }
+
 void AvmDebug::SetupMenubar()
 {
     QMenuBar *menubar = new QMenuBar(this);
@@ -282,8 +285,8 @@ void AvmDebug::StartWork()
         ERMSG("cn: can't connect");
         return;
     }
-    int res = ModuleBSI::SetupBSI();
-    if (res == GENERALERROR)
+    Error::Msg res = ModuleBSI::SetupBSI();
+    if (res == Error::Msg::GeneralError)
     {
         QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
         ERMSG("BSI read error");
@@ -406,9 +409,9 @@ void AvmDebug::StartWork()
     // временно, пока не напишем интерфейсы   MainTW->addTab(jourDialog, "Журналы");
 
     if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
-        Error::ShowErMsg(ER_NOCONF);
+        Error::ShowErMsg(Error::Msg::ER_NOCONF);
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
-        Error::ShowErMsg(ER_NOTUNECOEF);
+        Error::ShowErMsg(Error::Msg::ER_NOTUNECOEF);
 
     fwUpDialog = new fwupdialog;
     MainTW->addTab(fwUpDialog, "Загрузка ВПО");
@@ -422,10 +425,20 @@ void AvmDebug::StartWork()
     MainTW->repaint();
     MainTW->show();
 
-    INFOMSG("MainTW created");
     BdaTimer->start();
     auto *msgSerialNumber = statusBar()->findChild<QLabel *>("SerialNumber");
     msgSerialNumber->setText(QString::number(ModuleBSI::ModuleBsi.SerialNum, 16));
+
+    // check for incomplete calibration
+    QString usbserialnum = EProtocom::GetInstance()->usbSerial();
+    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
+    if (storedcalibrations.contains(usbserialnum))
+    {
+        QMessageBox::warning(this, "Внимание",
+            "Для модуля имеется незавершённая регулировка\n"
+            "Просьба провести её, начиная с шага "
+                + storedcalibrations.value(usbserialnum + "/step", "1").toString());
+    }
 }
 
 void AvmDebug::setupConnections()
@@ -456,10 +469,7 @@ void AvmDebug::setupConnections()
 
             connect(Alarm, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
             connect(Alarm, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
-
-#ifdef AVM_DEBUG
             tuneDialog = new TuneDialogKIV(S2ConfigForTune);
-#endif
             break;
         }
         case Config::MTM_87:
@@ -599,77 +609,35 @@ void AvmDebug::NewTimersBda()
 
 bool AvmDebug::nativeEvent(const QByteArray &eventType, void *message, long *result)
 {
-    Q_UNUSED(result);
+    Q_UNUSED(result)
+#ifdef __linux
+    Q_UNUSED(message)
+#endif
     if (eventType == "windows_generic_MSG")
     {
+#ifdef _WIN32
         MSG *msg = static_cast<MSG *>(message);
         int msgType = msg->message;
         if (msgType == WM_DEVICECHANGE)
         {
-            msgType = msg->wParam;
-            switch (msgType)
+            if (BdaTimer->isActive())
+                BdaTimer->stop();
+            if (AlrmTimer->isActive())
+                AlrmTimer->stop();
+            EProtocom::GetInstance()->usbStateChanged(message);
+            if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected
+                && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
             {
-            case DBT_CONFIGCHANGECANCELED:
-                qDebug("DBT_CONFIGCHANGECANCELED");
-                break;
-            case DBT_CONFIGCHANGED:
-                qDebug("DBT_CONFIGCHANGED");
-                break;
-            case DBT_CUSTOMEVENT:
-                qDebug("DBT_CUSTOMEVENT");
-                break;
-            case DBT_DEVICEARRIVAL:
-            {
-                // Here will be reconnection event
-                auto devs = EProtocom::GetInstance()->DevicesFound();
-                if (devs.indexOf(EProtocom::GetInstance()->deviceName()) != -1)
-                    qDebug("Device arrived again");
-                break;
-            }
-            case DBT_DEVICEQUERYREMOVE:
-                qDebug("DBT_DEVICEQUERYREMOVE");
-                break;
-            case DBT_DEVICEQUERYREMOVEFAILED:
-                qDebug("DBT_DEVICEQUERYREMOVEFAILED");
-                break;
-            case DBT_DEVICEREMOVEPENDING:
-                qDebug("DBT_DEVICEREMOVEPENDING");
-                break;
-            case DBT_DEVICEREMOVECOMPLETE:
-            {
-                qDebug("DBT_DEVICEREMOVECOMPLETE");
-                // Ивенты должны происходить только если отключен подключенный раннее прибор
-                if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState)
-                    DisconnectAndClear();
-                // if (EUsbHid::GetInstance()->isConnected())
-                QMessageBox::critical(nullptr, "Ошибка", "Связь с прибором была разорвана", QMessageBox::Ok);
-                break;
-            }
-            case DBT_DEVICETYPESPECIFIC:
-                qDebug("DBT_DEVICETYPESPECIFIC");
-                break;
-            case DBT_QUERYCHANGECONFIG:
-                qDebug("DBT_QUERYCHANGECONFIG");
-                break;
-            case DBT_DEVNODES_CHANGED:
-                qDebug("DBT_DEVNODES_CHANGED");
-                break;
-            case DBT_USERDEFINED:
-                qDebug("DBT_USERDEFINED");
-                break;
-            default:
-                qDebug() << "Default";
-                break;
+                BdaTimer->start();
+                AlrmTimer->start();
             }
         }
+#endif
     }
     return false;
 }
 
-void AvmDebug::SetMode(int mode)
-{
-    Mode = mode;
-}
+void AvmDebug::SetMode(int mode) { Mode = mode; }
 
 void AvmDebug::Go(const QString &parameter)
 {
@@ -688,7 +656,7 @@ void AvmDebug::ReConnect()
 
         INFOMSG("Reconnect()");
         TimeTimer->stop();
-        if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState)
+        if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
         {
             qDebug() << "call Disconnect";
             Disconnect();
@@ -761,7 +729,7 @@ void AvmDebug::ClearTW()
     }
 }
 
-int AvmDebug::CheckPassword()
+Error::Msg AvmDebug::CheckPassword()
 {
     PasswordValid = false;
     StdFunc::ClearCancel();
@@ -774,14 +742,14 @@ int AvmDebug::CheckPassword()
     if (StdFunc::IsCancelled())
     {
         ERMSG("Отмена ввода пароля");
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
 
     if (!PasswordValid)
     {
         ERMSG("Пароль введён неверно");
         QMessageBox::critical(this, "Неправильно", "Пароль введён неверно", QMessageBox::Ok);
-        return GENERALERROR;
+        return Error::Msg::GeneralError;
     }
     return Error::Msg::NoError;
 }
@@ -855,15 +823,9 @@ void AvmDebug::FileTimeOut()
     ReceiveTimer->stop();
 }
 
-void AvmDebug::SetProgressBar2Size(int size)
-{
-    SetProgressBarSize(2, size);
-}
+void AvmDebug::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
 
-void AvmDebug::SetProgressBar2(int cursize)
-{
-    SetProgressBar(2, cursize);
-}
+void AvmDebug::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
 
 void AvmDebug::SetProgressBarSize(int prbnum, int size)
 {
@@ -909,9 +871,8 @@ void AvmDebug::Disconnect()
     if (!StdFunc::IsInEmulateMode())
     {
         BdaTimer->stop();
-        if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState)
+        if (Board::GetInstance()->connectionState() != Board::ConnectionState::Closed)
             EProtocom::GetInstance()->Disconnect();
-        Board::GetInstance()->setConnectionState(Board::ConnectionState::ClosingState);
     }
 }
 
@@ -919,7 +880,7 @@ void AvmDebug::DisconnectAndClear()
 {
     INFOMSG("DisconnectAndClear()");
     TimeTimer->stop();
-    if (Board::GetInstance()->connectionState() == Board::ConnectionState::ConnectedState)
+    if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
     {
         AlarmW->Clear();
         Disconnect();
@@ -944,10 +905,7 @@ void AvmDebug::DisconnectAndClear()
     Reconnect = false;
 }
 
-void AvmDebug::resizeEvent(QResizeEvent *e)
-{
-    QMainWindow::resizeEvent(e);
-}
+void AvmDebug::resizeEvent(QResizeEvent *e) { QMainWindow::resizeEvent(e); }
 
 void AvmDebug::keyPressEvent(QKeyEvent *e)
 {

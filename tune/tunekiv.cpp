@@ -1,6 +1,5 @@
 #include "tunekiv.h"
 
-TuneKIV::TuneKIV()
-{
+TuneKIV::TuneKIV() { }
 
-}
+QWidget *TuneKIV::BacWidget() { }

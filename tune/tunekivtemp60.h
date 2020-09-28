@@ -17,6 +17,7 @@ private:
     void FillBac(int bacnum);
     void FillBackBac(int bacnum);
     void GetBdAndFill();
+    Error::Msg LoadTuneSequenceFile();
 
 private slots:
     int ReadAnalogMeasurements();

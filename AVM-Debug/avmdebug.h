@@ -17,9 +17,6 @@
 #include "../dialogs/infodialog.h"
 #include "../dialogs/journalsdialog.h"
 #include "../dialogs/mnktime.h"
-#ifdef AVM_DEBUG
-#include "../tune/eabstracttunedialog.h"
-#endif
 #include "../widgets/etabwidget.h"
 
 #include <QMainWindow>
@@ -130,7 +127,7 @@ public:
     QWidget *MainInfoWidget();
 
     QWidget *Least();
-    int CheckPassword();
+    Error::Msg CheckPassword();
     void Disconnect();
 
 signals:
@@ -181,7 +178,7 @@ private:
     AbstractCorDialog *corDialog;
     AbstractConfDialog *confBDialog, *confMDialog;
     EAbstractCheckDialog *checkBDialog, *checkMDialog, *HarmDialog, *VibrDialog;
-    EAbstractTuneDialog *tuneDialog;
+    QDialog *tuneDialog;
     // временно, пока не сделаны интерфейсы    JournalDialog *jourDialog;
     fwupdialog *fwUpDialog;
     MNKTime *timeDialog;

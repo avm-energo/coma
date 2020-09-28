@@ -26,9 +26,7 @@ EAbstractTuneDialog::EAbstractTuneDialog(QWidget *parent) : QDialog(parent)
     RepModel = new ReportModel;
 }
 
-EAbstractTuneDialog::~EAbstractTuneDialog()
-{
-}
+EAbstractTuneDialog::~EAbstractTuneDialog() { }
 
 QWidget *EAbstractTuneDialog::TuneUI()
 {
@@ -358,6 +356,30 @@ void EAbstractTuneDialog::ReadTuneCoefsByBac(int bacnum)
     }
 }
 
+Error::Msg EAbstractTuneDialog::LoadTuneSequenceFile() { return Error::Msg::NoError; }
+
+Error::Msg EAbstractTuneDialog::CheckCalibrStep()
+{
+    QString usbserialnum = EProtocom::GetInstance()->usbSerial();
+    QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
+    if (!storedcalibrations.contains(usbserialnum))
+    {
+        QMessageBox::warning(this, "Внимание",
+            "Не выполнены предыдущие шаги регулировки, пожалуйста\n"
+            "начните заново с шага 1");
+        return Error::Msg::ResEmpty;
+    }
+    int calibrstep = storedcalibrations.value(usbserialnum + "/step", "1").toInt();
+    if (calibrstep < m_tuneStep)
+    {
+        QMessageBox::warning(this, "Внимание",
+            "Перед выполнением шага " + QString::number(m_tuneStep) + " необходимо\nвыполнить шаг " + calibrstep + "!");
+
+        return Error::Msg::ResEmpty;
+    }
+    return Error::Msg::NoError;
+}
+
 void EAbstractTuneDialog::SaveTuneSequenceFile() { }
 
 bool EAbstractTuneDialog::WriteTuneCoefsSlot()
@@ -516,10 +538,7 @@ void EAbstractTuneDialog::LoadFromFile()
     QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
-void EAbstractTuneDialog::Good()
-{
-    SetMeasurementEnabled(false);
-}
+void EAbstractTuneDialog::Good() { SetMeasurementEnabled(false); }
 
 void EAbstractTuneDialog::NoGood()
 {
@@ -533,9 +552,7 @@ void EAbstractTuneDialog::CancelTune()
     emit Finished();
 }
 
-void EAbstractTuneDialog::ReadAllTuneCoefs()
-{
-}
+void EAbstractTuneDialog::ReadAllTuneCoefs() { }
 
 void EAbstractTuneDialog::MeasTimerTimeout()
 {

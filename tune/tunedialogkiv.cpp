@@ -31,9 +31,9 @@ TuneDialogKIV::TuneDialogKIV(QVector<S2::DataRec> *S2Config, QWidget *parent) : 
     int i;
 
     CKIV = new ConfigKIV(S2Config);
+    TKIV = new TuneKIV;
     // ReportModel = new QStandardItemModel;
     // ViewModel = new QStandardItemModel;
-    SetBac(&m_Bac_block, BoardTypes::BT_MEZONIN, sizeof(m_Bac_block));
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
 

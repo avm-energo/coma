@@ -11,9 +11,9 @@
 
 #define MAXTUNESIZE 1024 // максимальный размер файла с данными настройки
 
-#define TD_TMK 25.0       // degrees
-#define TD_VBAT 3.0       // voltage
-#define TD_FREQ 50        // Hz
+#define TD_TMK 25.0 // degrees
+#define TD_VBAT 3.0 // voltage
+#define TD_FREQ 50 // Hz
 #define MEASTIMERINT 1000 // интервал проведения измерений - 1 с
 
 #define TUNE_POINTSPER 500 // столько миллисекунд должно усредняться при регулировке
@@ -59,7 +59,7 @@ public:
     void ProcessTune();
     Error::Msg CheckPassword();
     virtual void SetLbls() = 0; // заполнить список сообщений
-    virtual void SetPf() = 0;   // заполнить список функций настройки
+    virtual void SetPf() = 0; // заполнить список функций настройки
     bool IsWithinLimits(double number, double base, double threshold);
     void MsgSetVisible(int msg, bool Visible = true);
     void OkMsgSetVisible(int msg, bool Visible = true);
@@ -76,7 +76,8 @@ public:
     void SaveToFileEx(int bacnum);
     void ShowTable();
     void ReadTuneCoefsByBac(int bacnum);
-    int LoadTuneSequenceFile();
+    Error::Msg LoadTuneSequenceFile();
+    Error::Msg CheckCalibrStep();
     void SaveTuneSequenceFile();
 
 signals:

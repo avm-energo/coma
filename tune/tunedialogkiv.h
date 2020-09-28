@@ -60,6 +60,7 @@ public slots:
 private:
     ConfigKIV::Bci m_Bci_block_work, m_Bci_block_temporary;
     ConfigKIV *CKIV;
+    TuneKIV *TKIV;
 
     QVector<S2::DataRec> *S2Config;
     QDialog *ask;

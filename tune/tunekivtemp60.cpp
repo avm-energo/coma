@@ -1,11 +1,16 @@
 #include "tunekivtemp60.h"
 #include "../gen/colors.h"
+#include "../gen/stdfunc.h"
+#include "../usb/eprotocom.h"
+#include <QMessageBox>
 #include <QVBoxLayout>
 
 TuneKIVTemp60::TuneKIVTemp60(QWidget *parent) : EAbstractTuneDialog(parent)
 {
     m_tuneStep = 2;
-    AddBac(&m_Bac_block, M_BACBLOCKNUM, sizeof(m_Bac_block));
+    if (LoadTuneSequenceFile() != Error::Msg::NoError)
+        return;
+    //    AddBac(&m_Bac_block, M_BACBLOCKNUM, sizeof(m_Bac_block));
 }
 
 void TuneKIVTemp60::SetupUI()
@@ -216,6 +221,8 @@ void TuneKIVTemp60::FillBackBac(int bacnum)
     WDFunc::LE_read_data(this, "tune51", tmps);
     m_Bac_block.Tmk0 = ToFloat(tmps);
 }
+
+Error::Msg TuneKIVTemp60::LoadTuneSequenceFile() { return CheckCalibrStep(); }
 
 void TuneKIVTemp60::SetDefCoefs()
 {
