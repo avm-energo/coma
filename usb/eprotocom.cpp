@@ -61,6 +61,11 @@ void EProtocom::setDevicePosition(int devicePosition)
     m_devicePosition = devicePosition;
 }
 
+QString EProtocom::usbSerial() const
+{
+    return m_devices.at(m_devicePosition).serial;
+}
+
 Error::Msg EProtocom::result() const
 {
     return m_result;
@@ -637,7 +642,7 @@ void EProtocom::setDeviceName(const QString &deviceName)
     m_deviceName = deviceName;
 }
 
-void EProtocom::SendCmd(char command, int parameter)
+void EProtocom::SendCmd(unsigned char command, int parameter)
 {
     // only for these commands
     switch (command)
@@ -659,7 +664,7 @@ void EProtocom::SendCmd(char command, int parameter)
     Send(command, parameter, ba, 0);
 }
 
-void EProtocom::SendIn(char command, char parameter, QByteArray &ba, qint64 maxdatasize)
+void EProtocom::SendIn(unsigned char command, char parameter, QByteArray &ba, qint64 maxdatasize)
 {
     // only for these commands
     switch (command)
@@ -682,7 +687,7 @@ void EProtocom::SendIn(char command, char parameter, QByteArray &ba, qint64 maxd
     ba = OutData;
 }
 
-void EProtocom::SendOut(char command, char board_type, QByteArray &ba)
+void EProtocom::SendOut(unsigned char command, char board_type, QByteArray &ba)
 {
     // only for these commands
     switch (command)
@@ -746,6 +751,9 @@ void EProtocom::usbStateChanged(void *message)
             {
                 if (m_devices.contains(m_usbWorker->deviceInfo()))
                 {
+                    int index = m_devices.indexOf(m_usbWorker->deviceInfo());
+                    setDevicePosition(index);
+                    m_usbWorker->setDeviceInfo(m_devices.at(index));
                     qDebug("Device arrived again");
                     if (!Reconnect())
                     {
