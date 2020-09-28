@@ -1,5 +1,6 @@
 #include "abstractalarm.h"
 
+#include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../widgets/wd_func.h"
@@ -84,14 +85,16 @@ void AbstractAlarm::showEvent(QShowEvent *e)
     e->accept();
 }
 
-AbstractWarnAlarm::AbstractWarnAlarm(QWidget *parent) : AbstractAlarm(parent) { }
+AbstractWarnAlarm::AbstractWarnAlarm(QWidget *parent) : AbstractAlarm(parent)
+{
+}
 
 void AbstractWarnAlarm::Update(QList<bool> states)
 {
     if (states.isEmpty())
         return;
     auto max_range = states.length();
-    Q_ASSERT(Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts == states.length());
+    //  Q_ASSERT(Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts == states.length());
     max_range = std::min(Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts, states.length());
     // qDebug() << Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts << ":" << states.length();
     for (int i = 0; i < max_range; i++)
@@ -99,7 +102,10 @@ void AbstractWarnAlarm::Update(QList<bool> states)
         UpdatePixmaps(states.at(i), i, true);
     }
 }
-AbstractAvarAlarm::AbstractAvarAlarm(QWidget *parent) : AbstractAlarm(parent) { }
+
+AbstractAvarAlarm::AbstractAvarAlarm(QWidget *parent) : AbstractAlarm(parent)
+{
+}
 
 void AbstractAvarAlarm::Update(QList<bool> states)
 {

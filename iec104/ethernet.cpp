@@ -18,7 +18,9 @@ Ethernet::Ethernet(QObject *parent) : QObject(parent)
     ClosePortAndFinishThread = false;
 }
 
-Ethernet::~Ethernet() { }
+Ethernet::~Ethernet()
+{
+}
 
 void Ethernet::Run()
 {
@@ -132,4 +134,7 @@ void Ethernet::CheckForData()
     emit NewDataArrived(ba);
 }
 
-void Ethernet::EthSetConnected() { EthConnected = true; }
+void Ethernet::EthSetConnected()
+{
+    EthConnected = true;
+}

@@ -1,8 +1,6 @@
 #ifndef COLORS_H
 #define COLORS_H
 
-#include <QStringLiteral>
-
 namespace Colors
 {
 constexpr char TABCOLOR[] = "#AFFFAF";

@@ -1,5 +1,8 @@
 #include "confdialogkxx.h"
 
+#include "../gen/colors.h"
+#include "../widgets/wd_func.h"
+
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QStackedWidget>

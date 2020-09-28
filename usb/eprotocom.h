@@ -7,6 +7,7 @@
 
 #include <QEventLoop>
 #include <QThread>
+#include <QTimer>
 
 class EProtocom : public QObject
 {
@@ -20,18 +21,18 @@ public:
     bool Reconnect();
     void Disconnect();
 
-    QStringList DevicesFound() const;
+    QList<QStringList> DevicesFound();
     QString deviceName() const;
     void setDeviceName(const QString &deviceName);
     // функция, разбивающая строку устройства и складывающая в соотв. структуру
-    void TranslateDeviceAndSave(const QString &str);
+    // void TranslateDeviceAndSave(const QString &str);
 
     EUsbWorker *usbWorker() const;
     QThread *workerThread();
 
-    void SendCmd(char command, int parameter = 0);
-    void SendIn(char command, char parameter, QByteArray &ba, qint64 maxdatasize);
-    void SendOut(char command, char board_type, QByteArray &ba);
+    void SendCmd(unsigned char command, int parameter = 0);
+    void SendIn(unsigned char command, char parameter, QByteArray &ba, qint64 maxdatasize);
+    void SendOut(unsigned char command, char board_type, QByteArray &ba);
     void SendFile(unsigned char command, char board_type, int filenum, QByteArray &ba);
 
     // void Timeout();
@@ -43,6 +44,11 @@ public:
 
     Error::Msg result() const;
     void setResult(const Error::Msg &result);
+
+    int devicePosition() const;
+    void setDevicePosition(int devicePosition);
+
+    QString usbSerial() const;
 
 protected:
     explicit EProtocom(QObject *parent = nullptr);
@@ -59,7 +65,7 @@ private:
     QThread m_workerThread;
 
     char BoardType;
-    char Command;
+    unsigned char Command;
     quint8 bStep;
     Error::Msg m_result;
     int FNum;
@@ -68,6 +74,7 @@ private:
     qint64 InDataSize;
     int SegLeft; // количество оставшихся сегментов
     int SegEnd;  // номер последнего байта в ReadData текущего сегмента
+    int m_devicePosition;
 
     // bool LastBlock; // признак того, что блок последний, и больше запрашивать не надо
 
@@ -75,7 +82,7 @@ private:
     QByteArray ReadDataChunk;
     QByteArray WriteData;
     QString m_deviceName;
-    DeviceConnectStruct UsbPort;
+    QVector<DeviceConnectStruct> m_devices;
 
     LogClass *CnLog;
     QTimer *OscTimer;

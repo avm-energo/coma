@@ -1,5 +1,6 @@
 #include "serialport.h"
 
+#include "../gen/board.h"
 #include "../gen/error.h"
 
 #include <QCoreApplication>
@@ -35,10 +36,10 @@ Error::Msg SerialPort::Init(SerialPort::Settings settings)
     Port->setReadBufferSize(1024);
     connect(Port, SIGNAL(errorOccurred(QSerialPort::SerialPortError)), this,
         SLOT(ErrorOccurred(QSerialPort::SerialPortError)));
-    connect(Port, SIGNAL(readyRead()), this, SLOT(ReadBytes()));
+    connect(Port, &QIODevice::readyRead, this, &SerialPort::ReadBytes);
     if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
     {
-        if (Port->open(QIODevice::ReadWrite) == true)
+        if (Port->open(QIODevice::ReadWrite))
 
             Board::GetInstance()->setConnectionState(Board::ConnectionState::Connected);
         else

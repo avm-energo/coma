@@ -2,15 +2,8 @@
 #define ETABLEMODEL_H
 
 #include "etableitem.h"
-#include <QAbstractItemModel>
+
 #include <QAbstractTableModel>
-#include <QColor>
-#include <QFont>
-#include <QIcon>
-#include <QMutex>
-#include <QReadWriteLock>
-#include <QStringList>
-#include <QWaitCondition>
 
 #define NOCOLFORMAT 11 // 11 is the number more than 10 i.e. no format for column
 
@@ -37,7 +30,7 @@ public:
         int role = Qt::DisplayRole) const; // получение индекса элемента в заголовке, который содержит текст hdrtext
     void addColumn(
         const QString hdrtext); // добавление новой колонки с текстом в заголовке hdrtext для варианта двух столбцов
-    void addRow(); // добавление строки
+    void addRow();              // добавление строки
     void setRowAttr(int fcset = 0, int icon = -1);
     void clearModel();
     void fillModel(QVector<QVector<QVariant>> &);

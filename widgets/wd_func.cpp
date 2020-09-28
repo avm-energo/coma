@@ -4,12 +4,15 @@
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
+#include "../models/etablemodel.h"
+#include "edoublespinbox.h"
 #include "etableview.h"
 
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QPainter>
 #include <QPalette>
+#include <QPen>
 #include <QRegExp>
 #include <QStringListModel>
 #include <QTextEdit>
@@ -455,6 +458,100 @@ QPixmap WDFunc::NewCircle(QColor color, float radius)
     return myPix;
 }
 
+QPixmap WDFunc::NewLedIndicator(QColor color, float height)
+{
+
+    QColor lightColor(QColor(0xE0, 0xE0, 0xE0));
+    QColor shadowColor(QColor(0x70, 0x70, 0x70));
+    QColor ringShadowDarkColor(QColor(0x50, 0x50, 0x50, 0xFF));
+    QColor ringShadowMedColor(QColor(0x50, 0x50, 0x50, 0x20));
+
+    QColor ringShadowLightColor(QColor(0xEE, 0xEE, 0xEE, 0x00));
+    QColor topReflexUpColor(QColor(0xFF, 0xFF, 0xFF, 0xA0));
+    QColor topReflexDownColor(QColor(0xFF, 0xFF, 0xFF, 0x00));
+    QColor bottomReflexCenterColor(QColor(0xFF, 0xFF, 0xFF, 0x00));
+    QColor bottomReflexSideColor(QColor(0xFF, 0xFF, 0xFF, 0x70));
+
+    int Height = height;
+    int minDim = Height;
+    int half = minDim / 2;
+    int center = Height / 2;
+
+    int outerBorderWidth = minDim / 10;
+    int innerBorderWidth = minDim / 14;
+    int outerBorderRadius = half - outerBorderWidth;
+    int innerBorderRadius = half - (outerBorderWidth + innerBorderWidth);
+
+    int topReflexY = center - (half - outerBorderWidth - innerBorderWidth) / 2;
+    int bottomReflexY = center + (half - outerBorderWidth - innerBorderWidth) / 2;
+    int topReflexHeight = half / 5;
+    int topReflexWidth = half / 3;
+    int bottomReflexHeight = half / 5;
+    int bottomReflexWidth = half / 3;
+
+    QRect drawingRect;
+    /// Same expression on both sides of '-'
+    drawingRect.setTop((Height - minDim) / 2);
+    drawingRect.setLeft((Height - minDim) / 2);
+    drawingRect.setHeight(minDim);
+    drawingRect.setWidth(minDim);
+
+    QPixmap myPix(QSize(minDim, minDim));
+    myPix.fill(Qt::transparent);
+    QPainter p(&myPix);
+    QPen pen;
+    pen.setStyle(Qt::NoPen);
+    p.setPen(pen);
+
+    QRadialGradient outerRingGradient(
+        QPoint(center, center - outerBorderRadius - (outerBorderWidth / 2)), minDim - (outerBorderWidth / 2));
+    outerRingGradient.setColorAt(0, lightColor);
+    outerRingGradient.setColorAt(1, shadowColor);
+    QBrush outerRingBrush(outerRingGradient);
+    p.setBrush(outerRingBrush);
+    p.drawEllipse(drawingRect);
+
+    QRadialGradient innerRingGradient(
+        QPoint(center, center + innerBorderRadius + (innerBorderWidth / 2)), minDim - (innerBorderWidth / 2));
+    innerRingGradient.setColorAt(0, lightColor);
+    innerRingGradient.setColorAt(1, shadowColor);
+    QBrush innerRingBrush(innerRingGradient);
+    p.setBrush(innerRingBrush);
+    p.drawEllipse(QPoint(center, center), outerBorderRadius, outerBorderRadius);
+
+    QColor dark(color.darker(120));
+    QRadialGradient glassGradient(QPoint(center, center), innerBorderRadius);
+    glassGradient.setColorAt(0, color);
+    glassGradient.setColorAt(1, dark);
+    QBrush glassBrush(glassGradient);
+    p.setBrush(glassBrush);
+    p.drawEllipse(QPoint(center, center), innerBorderRadius, innerBorderRadius);
+
+    QRadialGradient shadowGradient(QPoint(center, center), innerBorderRadius);
+    shadowGradient.setColorAt(0, ringShadowLightColor);
+    shadowGradient.setColorAt(0.85, ringShadowMedColor);
+    shadowGradient.setColorAt(1, ringShadowDarkColor);
+    QBrush shadowBrush(shadowGradient);
+    p.setBrush(shadowBrush);
+    p.drawEllipse(QPoint(center, center), innerBorderRadius, innerBorderRadius);
+
+    QLinearGradient topTeflexGradient(QPoint(center, (innerBorderWidth + outerBorderWidth)), QPoint(center, center));
+    topTeflexGradient.setColorAt(0, topReflexUpColor);
+    topTeflexGradient.setColorAt(1, topReflexDownColor);
+    QBrush topReflexbrush(topTeflexGradient);
+    p.setBrush(topReflexbrush);
+    p.drawEllipse(QPoint(center, topReflexY), topReflexWidth, topReflexHeight);
+
+    QRadialGradient bottomReflexGradient(QPoint(center, bottomReflexY + (bottomReflexHeight / 2)), bottomReflexWidth);
+    bottomReflexGradient.setColorAt(0, bottomReflexSideColor);
+    bottomReflexGradient.setColorAt(1, bottomReflexCenterColor);
+    QBrush bottomReflexBrush(bottomReflexGradient);
+    p.setBrush(bottomReflexBrush);
+    p.drawEllipse(QPoint(center, bottomReflexY), bottomReflexWidth, bottomReflexHeight);
+
+    return myPix;
+}
+
 QCheckBox *WDFunc::NewChB(QWidget *parent, const QString &chbname, const QString &chbtext, const QString &chbcolor)
 {
     QCheckBox *chb = new QCheckBox(parent);
@@ -633,9 +730,35 @@ ETableView *WDFunc::NewTV(QWidget *w, const QString &tvname, QAbstractItemModel 
     return tv;
 }
 
+QTableView *WDFunc::NewQTV(QWidget *w, const QString &tvname, QAbstractItemModel *model)
+{
+    QTableView *tv = new QTableView(w);
+    if (model != nullptr)
+        tv->setModel(model);
+    tv->setObjectName(tvname);
+    tv->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tv->setSelectionMode(QAbstractItemView::SingleSelection);
+    return tv;
+}
+
 void WDFunc::SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable)
 {
     ETableView *tv = w->findChild<ETableView *>(tvname);
+    if (tv == nullptr)
+    {
+        ERMSG("Пустой tv");
+        return;
+    }
+    QItemSelectionModel *m = tv->selectionModel();
+    tv->setModel(model);
+    tv->resizeColumnsToContents();
+    tv->setSortingEnabled(sortenable);
+    delete m;
+}
+
+void WDFunc::SetQTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable)
+{
+    QTableView *tv = w->findChild<QTableView *>(tvname);
     if (tv == nullptr)
     {
         ERMSG("Пустой tv");

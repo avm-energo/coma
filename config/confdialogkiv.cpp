@@ -9,6 +9,7 @@
 #include <QGroupBox>
 #include <QScrollArea>
 #include <QScrollBar>
+#include <QTimer>
 #include <QVBoxLayout>
 #if _MSC_VER && !__INTEL_COMPILER
 #define __PRETTY_FUNCTION__ __FUNCSIG__

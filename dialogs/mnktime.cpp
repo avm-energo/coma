@@ -1,11 +1,13 @@
 #include "../dialogs/mnktime.h"
 
+#include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/timefunc.h"
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 
+#include <QDateTime>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QMessageBox>

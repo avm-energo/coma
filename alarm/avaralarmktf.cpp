@@ -1,5 +1,6 @@
 #include "avaralarmktf.h"
 
+#include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"

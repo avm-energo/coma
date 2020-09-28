@@ -5,8 +5,6 @@
 
 #include <QMutex>
 #include <QObject>
-#include <QtCore>
-#include <QtGlobal>
 
 class Board : public QObject
 {
@@ -66,9 +64,7 @@ public:
     Q_PROPERTY(InterfaceType interface READ interfaceType WRITE setInterfaceType NOTIFY interfaceTypeChanged)
     Q_PROPERTY(DeviceType device READ deviceType WRITE setDeviceType NOTIFY deviceTypeChanged)
     Q_PROPERTY(BoardType board READ boardType WRITE setBoardType NOTIFY boardTypeChanged)
-
-    Q_PROPERTY(
-        ConnectionState connectionState READ connectionState WRITE setConnectionState NOTIFY connectionStateChanged)
+    Q_PROPERTY(ConnectionState connection READ connectionState WRITE setConnectionState NOTIFY connectionStateChanged)
     /**
      * Одиночки не должны быть клонируемыми.
      */

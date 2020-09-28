@@ -1,10 +1,6 @@
 #ifndef CONFIGDIALOGKXX_H
 #define CONFIGDIALOGKXX_H
 
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../widgets/ecombobox.h"
-#include "../widgets/wd_func.h"
 #include "configkxx.h"
 
 #include <QWidget>

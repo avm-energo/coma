@@ -1,10 +1,8 @@
 #ifndef SERIALPORT_H
 #define SERIALPORT_H
 
-#include "../gen/board.h"
 #include "../gen/error.h"
 
-#include <QObject>
 #include <QPointer>
 #include <QSerialPort>
 

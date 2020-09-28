@@ -191,7 +191,7 @@ void EAbstractProtocomChannel::InitiateSend()
     switch (Command)
     {
     case CN::Read::BlkStartInfo: // запрос блока стартовой информации
-    case CN::Read::Progress: // запрос текущего прогресса
+    case CN::Read::Progress:     // запрос текущего прогресса
     case CN::Read::Variant:
     case CN::Read::Mode:
     case CN::Read::Time:
@@ -203,12 +203,12 @@ void EAbstractProtocomChannel::InitiateSend()
         WriteDataToPort(WriteData);
         break;
     }
-    case CN::Read::BlkAC: // чтение настроечных коэффициентов
+    case CN::Read::BlkAC:    // чтение настроечных коэффициентов
     case CN::Read::BlkDataA: // чтение текущих данных без настройки
-    case CN::Read::BlkData: // запрос блока (подблока) текущих данных
+    case CN::Read::BlkData:  // запрос блока (подблока) текущих данных
     case CN::Write::Variant:
     case CN::Write::Mode:
-    case CN::Read::BlkTech: // чтение технологического блока
+    case CN::Read::BlkTech:    // чтение технологического блока
     case CN::Write::EraseTech: // команда стирания технологического блока
     case CN::Write::BlkCmd:
     case CN::Test:

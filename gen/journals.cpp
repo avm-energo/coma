@@ -10,6 +10,8 @@
 #include "timefunc.h"
 #include "xlsxdocument.h"
 
+#include <cmath>
+
 //#include <QAbstractItemModelTester>
 #include <QApplication>
 #include <QDate>

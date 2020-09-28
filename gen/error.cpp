@@ -38,7 +38,7 @@ void Error::Init()
     } while (!streamfile.atEnd());
 }
 
- void Error::AddErrMsg(ErMsgType msgtype, QString file, int line, QString msg)
+void Error::AddErrMsg(ErMsgType msgtype, QString file, int line, QString msg)
 {
     if (ErMsgPool.size() >= ER_BUFMAX)
         ErMsgPool.removeFirst();

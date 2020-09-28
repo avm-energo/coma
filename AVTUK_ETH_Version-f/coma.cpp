@@ -31,6 +31,7 @@
 #include "../config/confdialogkdv.h"
 #include "../config/confdialogkiv.h"
 #include "../config/confdialogktf.h"
+#include "../dialogs/keypressdialog.h"
 #include "../gen/logger.h"
 #ifdef AVM_DEBUG
 #include "../tune/tunedialogKIV.h"
@@ -105,7 +106,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     HarmDialog = nullptr;
     VibrDialog = nullptr;
     corDialog = nullptr;
-    // CurTabIndex = -1;
+    CurTabIndex = -1;
     for (int i = 0; i < 20; ++i)
     {
         PredAlarmEvents[i] = 0;
@@ -268,8 +269,9 @@ void Coma::StartWork()
         loop.exec();
         if (Cancelled)
         {
-            qCritical(logCritical(), ("Отмена подключения"));
-            // ERMSG("Отмена подключения");
+            // qCritical(logCritical(), ("Отмена подключения"));
+            // qCritical(("Отмена подключения"));
+            ERMSG("Отмена подключения");
             return;
         }
         S2ConfigForTune->clear();
@@ -282,15 +284,15 @@ void Coma::StartWork()
     QString str;
     Board::GetInstance()->setTypeB(0);
     Board::GetInstance()->setTypeM(0);
-    // CurTabIndex = -1;
+    CurTabIndex = -1;
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
     {
-        qCritical(logCritical(), ("MainTW is empty"));
-        // ERMSG("MainTW is empty");
+        // qCritical(logCritical(), ("MainTW is empty"));
+        ERMSG("MainTW is empty");
         return;
     }
-    connect(MainTW, &ETabWidget::currentChanged, this, &Coma::MainTWTabClicked);
+    connect(MainTW, &ETabWidget::tabClicked, this, &Coma::MainTWTabClicked);
 
     switch (Board::GetInstance()->interfaceType())
     {
@@ -301,16 +303,16 @@ void Coma::StartWork()
         {
             QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
             QApplication::restoreOverrideCursor();
-            qCritical(logCritical(), ("cn: can't connect"));
-            // ERMSG("cn: can't connect");
+            // qCritical(logCritical(), ("cn: can't connect"));
+            ERMSG("cn: can't connect");
             return;
         }
         Error::Msg res = ModuleBSI::SetupBSI();
         if (res == Error::Msg::GeneralError)
         {
             QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
-            qCritical(logCritical(), ("BSI read error"));
-            // ERMSG("BSI read error");
+            // qCritical(logCritical(), ("BSI read error"));
+            ERMSG("BSI read error");
             return;
         }
         else if (res == Error::Msg::NoError)
@@ -321,8 +323,8 @@ void Coma::StartWork()
             else
             {
                 QMessageBox::critical(this, "Ошибка", "Неизвестный тип модуля", QMessageBox::Ok);
-                qCritical(logCritical(), ("Unknown module type"));
-                // ERMSG("Unknown module type");
+                // qCritical(logCritical(), ("Unknown module type"));
+                ERMSG("Unknown module type");
                 return;
             }
         }
@@ -346,8 +348,8 @@ void Coma::StartWork()
         if (ChModbus->Connect(ConnectSettings.serialst) != Error::Msg::NoError)
         {
 
-            qCritical(logCritical(), ("Unknown module type"));
-            //      ERMSG("Modbus not connected");
+            // qCritical(logCritical(), ("Unknown module type"));
+            ERMSG("Modbus not connected");
             return;
         }
         ChModbus->BSIrequest();
@@ -767,7 +769,10 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
     return false;
 }
 
-void Coma::SetMode(int mode) { Mode = mode; }
+void Coma::SetMode(int mode)
+{
+    Mode = mode;
+}
 
 void Coma::Go(const QString &parameter)
 {
@@ -988,7 +993,7 @@ void Coma::FileTimeOut()
     QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
     if (prb == nullptr)
     {
-        qCritical(logCritical(), ("Пустой prb"));
+        // qCritical(logCritical(), ("Пустой prb"));
         DBGMSG;
         return;
     }
@@ -999,9 +1004,15 @@ void Coma::FileTimeOut()
         QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
 }
 
-void Coma::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
+void Coma::SetProgressBar2Size(int size)
+{
+    SetProgressBarSize(2, size);
+}
 
-void Coma::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
+void Coma::SetProgressBar2(int cursize)
+{
+    SetProgressBar(2, cursize);
+}
 
 void Coma::SetProgressBarSize(int prbnum, int size)
 {
@@ -1091,7 +1102,10 @@ void Coma::DisconnectAndClear()
     Reconnect = false;
 }
 
-void Coma::resizeEvent(QResizeEvent *e) { QMainWindow::resizeEvent(e); }
+void Coma::resizeEvent(QResizeEvent *e)
+{
+    QMainWindow::resizeEvent(e);
+}
 
 void Coma::keyPressEvent(QKeyEvent *e)
 {
@@ -1104,9 +1118,10 @@ void Coma::keyPressEvent(QKeyEvent *e)
 
 void Coma::MainTWTabClicked(int tabindex)
 {
-    //   if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
-    //       return;
-    //    CurTabIndex = tabindex;
+    if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
+        return;
+    CurTabIndex = tabindex;
+
     if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
         ChModbus->Tabs(tabindex);
     if (corDialog != nullptr)

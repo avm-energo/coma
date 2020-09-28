@@ -2,7 +2,6 @@
 #define FILES_H
 #include "../gen/error.h"
 
-#include <QByteArray>
 #include <QString>
 #include <QWidget>
 

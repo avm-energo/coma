@@ -11,13 +11,13 @@ int main(int argc, char *argv[])
 #endif
     QString Parameter;
     QApplication a(argc, argv);
-// Следует поменять на ifndef
-#ifdef QT_DEBUG
-    QDirIterator it(QDir::currentPath(), { "*.txt" });
-    while (it.hasNext())
-        QFile(it.next()).remove();
-    qInstallMessageHandler(Logging::messageHandler);
-#endif
+    // Следует поменять на ifndef
+    //#ifdef QT_DEBUG
+    //    QDirIterator it(QDir::currentPath(), { "*.txt" });
+    //    while (it.hasNext())
+    //        QFile(it.next()).remove();
+    //    qInstallMessageHandler(Logging::messageHandler);
+    //#endif
     a.setStyle("cleanlooks");
     Coma w;
     w.SetMode(Coma::COMA_GENERALMODE);

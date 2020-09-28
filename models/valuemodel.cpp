@@ -1,6 +1,8 @@
 #include "valuemodel.h"
 
-ValueModel::ValueModel(QObject *parent) : ETableModel(parent) { }
+ValueModel::ValueModel(QObject *parent) : ETableModel(parent)
+{
+}
 
 void ValueModel::setValueData(const QModelIndex &index, void *valuePtr)
 {

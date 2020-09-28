@@ -1,9 +1,12 @@
 #include "alarmwidget.h"
 
+#include "../gen/board.h"
+
 #include <QBoxLayout>
 #include <QDebug>
 #include <QGroupBox>
 #include <QMenu>
+#include <QtCore>
 AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
 {
     Alarm = alarm;
@@ -37,6 +40,11 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
         hlyout2->addWidget(gb);
     }
 
+    QHBoxLayout *hlyout = new QHBoxLayout;
+    QPixmap map;
+    hlyout->addWidget(WDFunc::NewLBL(this, "", "", QString::number(953), &map), 1);
+    hlyout2->addLayout(hlyout);
+
     if (hlyout2->count())
         vlyout->addLayout(hlyout2);
     setLayout(vlyout);
@@ -44,6 +52,16 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
     connect(Alarm, &AlarmClass::SetFirstButton, this, &AlarmWidget::UpdateFirstUSB);
     connect(Alarm, &AlarmClass::SetWarnAlarmColor, this, &AlarmWidget::UpdateSecondUSB);
     connect(Alarm, &AlarmClass::SetAlarmColor, this, &AlarmWidget::UpdateThirdUSB);
+    connect(Alarm, &AlarmClass::SetIndicator, this, &AlarmWidget::UpdateIndicator);
+}
+
+void AlarmWidget::UpdateIndicator(bool indx)
+{
+    auto pixmap
+        = WDFunc::NewLedIndicator((indx == 0) ? QColor(Qt::green) : QColor(0xE0, 0xE0, 0xE0), this->height() / 2);
+    qDebug() << this->height();
+    WDFunc::SetLBLImage(this, "953", &pixmap);
+    WDFunc::SetVisible(this, "953", true);
 }
 
 void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarm)
@@ -88,13 +106,13 @@ void AlarmWidget::UpdateThirdUSB(QList<bool> avar)
 void AlarmWidget::UpdateFirstUSB()
 {
 
-    if (ModuleBSI::ModuleBsi.Hth & WARNBSIMASK)
+    if (ModuleBSI::ModuleBsi.Hth & WarnBSIMask)
     {
         auto pixmap = WDFunc::NewCircle(Qt::yellow, this->height() / 4);
         WDFunc::SetLBLImage(this, "950", &pixmap);
         WDFunc::SetVisible(this, "950", true);
     }
-    else if (ModuleBSI::ModuleBsi.Hth & AVARBSIMASK)
+    else if (ModuleBSI::ModuleBsi.Hth & AvarBSIMask)
     {
         auto pixmap = WDFunc::NewCircle(Qt::red, this->height() / 4);
         WDFunc::SetLBLImage(this, "950", &pixmap);
@@ -113,4 +131,5 @@ void AlarmWidget::Clear()
     WDFunc::SetVisible(this, "950", false);
     WDFunc::SetVisible(this, "951", false);
     WDFunc::SetVisible(this, "952", false);
+    WDFunc::SetVisible(this, "953", false);
 }
