@@ -17,9 +17,9 @@ ETabBar::ETabBar(QWidget *parent) : QTabBar(parent)
 {
     setIconSize(QSize(18, 18));
     QString tbss = "QTabBar::tab {background-color: " + QString(Colors::ACONFGCLR)
-        + "border: 0px solid;"
-          "color: #000000;}"
-          "QTabBar::tab::selected {background-color: "
+        + " border: 0px solid;"
+          " color: #000000;}"
+          " QTabBar::tab::selected {background-color: "
         + QString(Colors::NFTCOLOR) + ";}";
     this->setStyleSheet(tbss);
 }
