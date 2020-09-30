@@ -15,6 +15,7 @@ public:
     explicit CheckDialogKDV(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
     CheckKDV *ChKDV;
+    QWidget *EParent;
 
     void USBUpdate();
 

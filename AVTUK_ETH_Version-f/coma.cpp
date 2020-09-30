@@ -539,7 +539,7 @@ void Coma::setupConnections()
         case Config::MTM_87:
         {
             HarmDialog = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
-            connect(BdaTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
+            connect(HarmTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
 
             S2Config->clear();
             if (Board::GetInstance()->interfaceType() != Board::InterfaceType::RS485)
@@ -569,10 +569,10 @@ void Coma::setupConnections()
             checkBDialog = new CheckDialogKDV(BoardTypes::BT_BASE);
 
             HarmDialog = new CheckDialogHarmonicKDV(BoardTypes::BT_BASE);
-            connect(BdaTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
+            connect(HarmTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
 
             VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE);
-            connect(BdaTimer, &QTimer::timeout, VibrDialog, &EAbstractCheckDialog::USBUpdate);
+            connect(VibrTimer, &QTimer::timeout, VibrDialog, &EAbstractCheckDialog::USBUpdate);
 
             S2Config->clear();
             if (Board::GetInstance()->interfaceType() != Board::InterfaceType::RS485)
@@ -714,6 +714,12 @@ void Coma::NewTimers()
 
     BdaTimer = new QTimer;
     BdaTimer->setInterval(ANMEASINT);
+
+    HarmTimer = new QTimer;
+    HarmTimer->setInterval(ANMEASINT);
+
+    VibrTimer = new QTimer;
+    VibrTimer->setInterval(ANMEASINT);
 
     AlrmTimer = new QTimer;
     AlrmTimer->setInterval(10000);
@@ -1126,12 +1132,35 @@ void Coma::MainTWTabClicked(int tabindex)
         ChModbus->Tabs(tabindex);
     if (corDialog != nullptr)
         corDialog->GetCorBd(tabindex);
-    if (checkBDialog != nullptr || HarmDialog != nullptr || VibrDialog != nullptr)
+    //    if (checkBDialog != nullptr || HarmDialog != nullptr || VibrDialog != nullptr)
+    //    {
+    //        if (tabindex == CheckIndex || tabindex == CheckHarmIndex || tabindex == CheckVibrIndex)
+    //            BdaTimer->start();
+    //        else
+    //            BdaTimer->stop();
+    //    }
+
+    if (checkBDialog != nullptr)
     {
-        if (tabindex == CheckIndex || tabindex == CheckHarmIndex || tabindex == CheckVibrIndex)
+        if (tabindex == CheckIndex)
             BdaTimer->start();
         else
             BdaTimer->stop();
+    }
+    if (HarmDialog != nullptr)
+    {
+        if (tabindex == CheckHarmIndex)
+            HarmTimer->start();
+        else
+            HarmTimer->stop();
+    }
+
+    if (VibrDialog != nullptr)
+    {
+        if (tabindex == CheckVibrIndex)
+            VibrTimer->start();
+        else
+            VibrTimer->stop();
     }
 
     if (timeDialog != nullptr)

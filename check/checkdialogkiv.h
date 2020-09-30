@@ -15,6 +15,7 @@ public:
     explicit CheckDialogKIV(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
     Check_KIV *ChKIV;
+    QWidget *EParent;
 
 signals:
 
@@ -24,6 +25,7 @@ public slots:
     void UpdateFlData(IEC104Thread::FlSignals104 *);
     void UpdateSponData(IEC104Thread::SponSignals *);
     void USBUpdate();
+    //    void MainTWTabClicked(int tabindex);
 
 private:
     Check *Ch;

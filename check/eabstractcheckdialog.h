@@ -49,12 +49,14 @@ public:
     void SetBd(int bdnum, void *block, int blocksize, bool toxlsx = true);
     QWidget *BottomUI();
 
+    static int inline iuindex = 0;
     QXlsx::Document *xlsx;
     QTimer *Timer;
     int WRow,
         BdUINum; // BdUINum - количество вкладок с выводом блоков данных модуля,
                  // один блок может быть разделён на несколько вкладок
     int m_board; // тип платы
+    QList<int> IndexWd;
 
 signals:
     //     void BsiRefresh();
@@ -62,6 +64,7 @@ signals:
 public slots:
     void StopAnalogMeasurements();
     virtual void USBUpdate() = 0; // update BDs from USB
+                                  //  virtual void USBUpdateByIndex(int index)=0;
 
 private:
     struct BdBlocks
