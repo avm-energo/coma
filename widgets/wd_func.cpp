@@ -404,15 +404,49 @@ QVariant WDFunc::TVData(QWidget *w, const QString &tvname, int column)
 
 QStatusBar *WDFunc::NewSB(QWidget *w)
 {
+    // clang-format off
+    QMap<Board::InterfaceType, QString> images
+    {
+        { Board::InterfaceType::USB, "images/usb.svg" },
+        { Board::InterfaceType::RS485, "images/rs485.svg" },
+        { Board::InterfaceType::Ethernet, "images/ethernet.svg" },
+        { Board::InterfaceType::Unknown, "images/stop.svg" }
+    };
+    // clang-format on
     QStatusBar *bar = new QStatusBar(w);
+    bar->setMaximumHeight(w->height() / 20);
+
+    QWidget *widget = new QWidget(w);
+    widget->setMaximumHeight(bar->height());
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->setSpacing(w->width() / 20);
+    layout->setContentsMargins(1, 1, 1, 1);
+
     QLabel *msgModel = new QLabel(bar);
     msgModel->setObjectName("Model");
+    layout->addWidget(msgModel);
+
     QLabel *msgSerialNumber = new QLabel(bar);
     msgSerialNumber->setObjectName("SerialNumber");
+    layout->addWidget(msgSerialNumber);
+
     QLabel *msgConnectionState = new QLabel(bar);
     msgConnectionState->setObjectName("ConnectionState");
+    layout->addWidget(msgConnectionState);
+
+    QLabel *msgConnectionImage = new QLabel(bar);
+    msgConnectionImage->setObjectName("ConnectionImage");
+    layout->addWidget(msgConnectionImage);
+
     QLabel *msgConnectionType = new QLabel(bar);
     msgConnectionType->setObjectName("ConnectionType");
+    layout->addWidget(msgConnectionType);
+
+    int height = bar->height() - layout->contentsMargins().bottom();
+    for (int i = 0; i < layout->count(); ++i)
+    {
+        layout->itemAt(i)->widget()->setFixedHeight(height);
+    }
 
     QObject::connect(Board::GetInstance(), &Board::typeChanged, [msgModel]() {
         quint16 serialNumber = Board::GetInstance()->type();
@@ -427,16 +461,15 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
             msgConnectionState->setForegroundRole(QPalette::Highlight);
             msgConnectionState->setBackgroundRole(QPalette::HighlightedText);
         });
-
     QObject::connect(Board::GetInstance(), &Board::interfaceTypeChanged,
-        [msgConnectionType](const Board::InterfaceType &interfaceType) {
+        [msgConnectionType, msgConnectionImage, images, height](const Board::InterfaceType &interfaceType) {
             QString connName = QVariant::fromValue(Board::InterfaceType(interfaceType)).toString();
             msgConnectionType->setText(connName);
+            QPixmap pixmap = QIcon(QString(images.value(interfaceType))).pixmap(QSize(height, height));
+            msgConnectionImage->setPixmap(pixmap);
         });
-    bar->insertPermanentWidget(0, msgModel);
-    bar->insertPermanentWidget(1, msgSerialNumber);
-    bar->insertPermanentWidget(2, msgConnectionType);
-    bar->insertPermanentWidget(3, msgConnectionState);
+    widget->setLayout(layout);
+    bar->insertPermanentWidget(0, widget);
     return bar;
 }
 

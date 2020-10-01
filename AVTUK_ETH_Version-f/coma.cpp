@@ -249,6 +249,8 @@ void Coma::addConfTab(ETabWidget *MainTW, QString str)
 
 void Coma::StartWork()
 {
+    if (Board::GetInstance()->connectionState() != Board::ConnectionState::Closed)
+        return;
     AlarmStateAllDialog = new AlarmStateAll(this);
     if (!Reconnect)
     {
