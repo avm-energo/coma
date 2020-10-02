@@ -16,14 +16,8 @@ class ConfDialogKTF : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    ConfDialogKTF(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
+    explicit ConfDialogKTF(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
     ~ConfDialogKTF();
-
-    QLabel *SysTime;
-    QTimer *timer;
-    QTimer *timerRead;
-
-    QStringList Rates = { "256", "128", "64", "32", "16" };
 
     int getRCount();
 
@@ -31,6 +25,11 @@ private:
     ConfigKTF *KTF;
     ConfDialog *Conf;
     ConfDialogKxx *ConfKxx;
+    QLabel *SysTime;
+    QTimer *timer;
+    QTimer *timerRead;
+
+    QStringList Rates = { "256", "128", "64", "32", "16" };
 
     bool DDosc;
     bool Mb;

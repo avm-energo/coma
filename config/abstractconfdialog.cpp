@@ -17,10 +17,8 @@
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
-    Q_UNUSED(parent)
 }
 
-// void AbstractConfDialog::ReadConf(int index)
 void AbstractConfDialog::ReadConf()
 {
 

@@ -14,7 +14,7 @@
 #include <QVBoxLayout>
 
 ConfDialog::ConfDialog(QVector<S2::DataRec> *S2Config, quint32 MTypeB, quint32 MTypeM, QWidget *parent)
-    : QWidget(parent)
+    : AbstractConfDialog(parent)
 {
     ConfigMain = new Config(S2Config, MTypeB, MTypeM); // добавляем к переданному S2Config общую часть
                                                        // SetupUI();
@@ -24,7 +24,6 @@ ConfDialog::ConfDialog(QVector<S2::DataRec> *S2Config, quint32 MTypeB, quint32 M
                    "background-color: "
         + QString(Colors::ACONFOCLR) + "; font: bold 10px;}";
     WidgetFormat = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
-    // QString tmps = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
 }
 
 QWidget *ConfDialog::SetupMainBlk(QObject *parent)
@@ -112,6 +111,10 @@ QWidget *ConfDialog::SetupTime(QObject *parent)
     return w;
 }
 
+void ConfDialog::SetupUI()
+{
+}
+
 void ConfDialog::Fill()
 {
     int cbidx;
@@ -164,6 +167,10 @@ void ConfDialog::FillBack()
         ConfigMain->MainBlk.Ctype = 10;
         break;
     }
+}
+
+void ConfDialog::CheckConf()
+{
 }
 
 void ConfDialog::SetDefConf()

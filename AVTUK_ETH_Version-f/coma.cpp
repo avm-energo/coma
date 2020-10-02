@@ -247,6 +247,124 @@ void Coma::addConfTab(ETabWidget *MainTW, QString str)
         ChModbus->CorIndex = corDialog->corDIndex;
 }
 
+void Coma::setupDialogs(ETabWidget *MainTW)
+{
+    QString str;
+    QList<QDialog *> dialogs = MainTW->findChildren<QDialog *>();
+    for (const auto &dialog : dialogs)
+        qDebug() << dialog;
+    dialogs = findChildren<QDialog *>();
+    for (const auto &dialog : dialogs)
+        qDebug() << dialog;
+
+    auto children = this->children();
+    for (const auto &item : children)
+    {
+        qDebug() << item;
+    }
+    str = (!children.contains(checkMDialog)) ? "Текущие параметры" : "Текущие параметры\nБазовая";
+    // if (checkBDialog != nullptr)
+    if (children.contains(checkBDialog))
+    {
+        checkBDialog->setMinimumHeight(500);
+        MainTW->addTab(checkBDialog, str);
+        CheckIndex = MainTW->indexOf(checkBDialog);
+        if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
+            ChModbus->CheckIndex = CheckIndex;
+    }
+
+    str = (!children.contains(checkBDialog)) ? "Текущие параметры" : "Текущие параметры\nМезонин";
+    // if (checkMDialog != nullptr)
+    if (children.contains(checkMDialog))
+        MainTW->addTab(checkMDialog, str);
+
+    // if (HarmDialog != nullptr)
+    if (children.contains(HarmDialog))
+    {
+        MainTW->addTab(HarmDialog, "Гармоники");
+        CheckHarmIndex = MainTW->indexOf(HarmDialog);
+        if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
+            ChModbus->CheckHarmIndex = CheckHarmIndex;
+    }
+
+    // if (VibrDialog != nullptr)
+    if (children.contains(VibrDialog))
+    {
+        MainTW->addTab(VibrDialog, "Вибрации");
+        CheckVibrIndex = MainTW->indexOf(VibrDialog);
+        if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
+            ChModbus->CheckHarmIndex = CheckVibrIndex;
+    }
+
+    // if (confBDialog != nullptr)
+    if (children.contains(confBDialog))
+    {
+        str = (!children.contains(confMDialog)) ? "Конфигурирование" : "Конфигурирование\nБазовая";
+        MainTW->addTab(confBDialog, str);
+        if (confBDialog->IsNeededDefConf)
+        {
+            confBDialog->SetDefConf();
+            QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
+            // QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
+        }
+        connect(confBDialog, &AbstractConfDialog::NewConfToBeLoaded, this, &Coma::Fill);
+        connect(confBDialog, &AbstractConfDialog::DefConfToBeLoaded, this, &Coma::SetDefConf);
+    }
+
+    // if (confMDialog != nullptr)
+    if (children.contains(confMDialog))
+    {
+        str = (!children.contains(confBDialog)) ? "Конфигурирование" : "Конфигурирование\nМезонин";
+        MainTW->addTab(confMDialog, str);
+
+        ConfIndex = MainTW->indexOf(confMDialog);
+
+        if (confMDialog->IsNeededDefConf)
+        {
+            confMDialog->SetDefConf();
+            QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
+        }
+        connect(confMDialog, &AbstractConfDialog::NewConfToBeLoaded, this, &Coma::Fill);
+        connect(confMDialog, &AbstractConfDialog::DefConfToBeLoaded, this, &Coma::SetDefConf);
+    }
+    if (children.contains(timeDialog))
+    {
+        MainTW->addTab(timeDialog, "Время");
+        TimeIndex = MainTW->indexOf(timeDialog);
+        if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
+            ChModbus->TimeIndex = TimeIndex;
+        connect(TimeTimer, &QTimer::timeout, timeDialog, &MNKTime::slot2_timeOut);
+    }
+
+    if (children.contains(corDialog))
+    {
+        switch (Board::GetInstance()->typeB())
+        {
+        case Config::MTB_A2:
+            switch (Board::GetInstance()->typeM())
+            {
+            case Config::MTM_84:
+                addConfTab(MainTW, "Начальные значения");
+                break;
+
+            case Config::MTM_87:
+                addConfTab(MainTW, "Старение изоляции");
+                break;
+            }
+            break;
+        case Config::MTB_A3:
+            switch (Board::GetInstance()->typeM())
+            {
+            case Config::MTM_87:
+                addConfTab(MainTW, "Наработка");
+                break;
+            }
+
+            break;
+        }
+    }
+}
+
 void Coma::StartWork()
 {
     if (Board::GetInstance()->connectionState() != Board::ConnectionState::Closed)
@@ -283,7 +401,7 @@ void Coma::StartWork()
     // Stage3
 
     DisconnectAndClear();
-    QString str;
+
     Board::GetInstance()->setTypeB(0);
     Board::GetInstance()->setTypeM(0);
     CurTabIndex = -1;
@@ -378,99 +496,7 @@ void Coma::StartWork()
 
     PrepareDialogs();
 
-    str = (checkMDialog == nullptr) ? "Текущие параметры" : "Текущие параметры\nБазовая";
-    if (checkBDialog != nullptr)
-    {
-        checkBDialog->setMinimumHeight(500);
-        MainTW->addTab(checkBDialog, str);
-        CheckIndex = MainTW->indexOf(checkBDialog);
-        if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
-            ChModbus->CheckIndex = CheckIndex;
-    }
-    str = (checkBDialog == nullptr) ? "Текущие параметры" : "Текущие параметры\nМезонин";
-    if (checkMDialog != nullptr)
-        MainTW->addTab(checkMDialog, str);
-
-    if (HarmDialog != nullptr)
-    {
-        MainTW->addTab(HarmDialog, "Гармоники");
-        CheckHarmIndex = MainTW->indexOf(HarmDialog);
-        if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
-            ChModbus->CheckHarmIndex = CheckHarmIndex;
-    }
-
-    if (VibrDialog != nullptr)
-    {
-        MainTW->addTab(VibrDialog, "Вибрации");
-        CheckVibrIndex = MainTW->indexOf(VibrDialog);
-        if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
-            ChModbus->CheckHarmIndex = CheckVibrIndex;
-    }
-
-    if (confBDialog != nullptr)
-    {
-        str = (confMDialog == nullptr) ? "Конфигурирование" : "Конфигурирование\nБазовая";
-        MainTW->addTab(confBDialog, str);
-        if (confBDialog->IsNeededDefConf)
-        {
-            confBDialog->SetDefConf();
-            QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
-            // QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
-        }
-        connect(confBDialog, &AbstractConfDialog::NewConfToBeLoaded, this, &Coma::Fill);
-        connect(confBDialog, &AbstractConfDialog::DefConfToBeLoaded, this, &Coma::SetDefConf);
-    }
-    if (confMDialog != nullptr)
-    {
-        str = (confBDialog == nullptr) ? "Конфигурирование" : "Конфигурирование\nМезонин";
-        MainTW->addTab(confMDialog, str);
-        ///
-        ConfIndex = MainTW->indexOf(confMDialog);
-
-        if (confMDialog->IsNeededDefConf)
-        {
-            confMDialog->SetDefConf();
-            QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
-        }
-        connect(confMDialog, &AbstractConfDialog::NewConfToBeLoaded, this, &Coma::Fill);
-        connect(confMDialog, &AbstractConfDialog::DefConfToBeLoaded, this, &Coma::SetDefConf);
-    }
-    if (timeDialog != nullptr)
-    {
-        MainTW->addTab(timeDialog, "Время");
-        TimeIndex = MainTW->indexOf(timeDialog);
-        if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
-            ChModbus->TimeIndex = TimeIndex;
-        connect(TimeTimer, &QTimer::timeout, timeDialog, &MNKTime::slot2_timeOut);
-    }
-
-    if (corDialog != nullptr)
-    {
-        switch (Board::GetInstance()->typeB())
-        {
-        case Config::MTB_A2:
-            switch (Board::GetInstance()->typeM())
-            {
-            case Config::MTM_84:
-                addConfTab(MainTW, "Начальные значения");
-                break;
-
-            case Config::MTM_87:
-                addConfTab(MainTW, "Старение изоляции");
-                break;
-            }
-            break;
-        case Config::MTB_A3:
-            switch (Board::GetInstance()->typeM())
-            {
-            case Config::MTM_87:
-                addConfTab(MainTW, "Наработка");
-                break;
-            }
-
-            break;
-        }
-    }
+    setupDialogs(MainTW);
 
     if (Board::GetInstance()->interfaceType() != Board::InterfaceType::RS485)
         MainTW->addTab(jourDialog, "Журналы");
@@ -541,15 +567,15 @@ void Coma::setupConnections()
         case Config::MTM_87:
         {
             HarmDialog = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
-            connect(BdaTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
+            //     connect(BdaTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
 
             S2Config->clear();
             if (Board::GetInstance()->interfaceType() != Board::InterfaceType::RS485)
-                confMDialog = new ConfDialogKTF(S2Config);
+                confMDialog = new ConfDialogKTF(S2Config, this);
 
-            checkBDialog = new CheckDialogKTF(BoardTypes::BT_BASE);
+            checkBDialog = new CheckDialogKTF(BoardTypes::BT_BASE, this);
 
-            corDialog = new CorDialogKTF;
+            corDialog = new CorDialogKTF(this);
 
             WarnAlarmKTFDialog = new WarnAlarmKTF(Alarm);
             connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKTFDialog, &QDialog::show);
@@ -568,19 +594,19 @@ void Coma::setupConnections()
         switch (Board::GetInstance()->typeM())
         {
         case Config::MTM_87:
-            checkBDialog = new CheckDialogKDV(BoardTypes::BT_BASE);
+            checkBDialog = new CheckDialogKDV(BoardTypes::BT_BASE, this);
 
-            HarmDialog = new CheckDialogHarmonicKDV(BoardTypes::BT_BASE);
-            connect(BdaTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
+            HarmDialog = new CheckDialogHarmonicKDV(BoardTypes::BT_BASE, this);
+            // connect(BdaTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
 
-            VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE);
-            connect(BdaTimer, &QTimer::timeout, VibrDialog, &EAbstractCheckDialog::USBUpdate);
+            VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE, this);
+            // connect(BdaTimer, &QTimer::timeout, VibrDialog, &EAbstractCheckDialog::USBUpdate);
 
             S2Config->clear();
             if (Board::GetInstance()->interfaceType() != Board::InterfaceType::RS485)
-                confMDialog = new ConfDialogKDV(S2Config);
+                confMDialog = new ConfDialogKDV(S2Config, this);
 
-            corDialog = new CorDialogKDV;
+            corDialog = new CorDialogKDV(this);
 
             break;
         }
@@ -735,8 +761,12 @@ void Coma::NewTimersBda()
     connect(BdaTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
     //   connect(BdaTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::UpdateHealth);
 
-    if (checkBDialog != nullptr)
-        connect(BdaTimer, &QTimer::timeout, checkBDialog, &EAbstractCheckDialog::USBUpdate);
+    auto checkDialogs = this->findChildren<EAbstractCheckDialog *>();
+    for (const auto &dialog : checkDialogs)
+    {
+        qDebug() << dialog;
+        connect(BdaTimer, &QTimer::timeout, dialog, &EAbstractCheckDialog::USBUpdate);
+    }
     if (AlarmStateAllDialog != nullptr)
         connect(AlrmTimer, &QTimer::timeout, [&]() { AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth); });
 }

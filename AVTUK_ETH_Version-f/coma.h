@@ -239,6 +239,8 @@ private:
 
     void setupConnections();
 
+    void setupDialogs(ETabWidget *MainTW);
+
 protected:
     void keyPressEvent(QKeyEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;

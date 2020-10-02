@@ -8,7 +8,7 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
-ConfDialogKxx::ConfDialogKxx(QVector<S2::DataRec> *S2Config, QWidget *parent) : QWidget(parent)
+ConfDialogKxx::ConfDialogKxx(QVector<S2::DataRec> *S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {
     Kxx = new ConfigKxx(S2Config);
 
@@ -386,6 +386,10 @@ void ConfDialogKxx::ChangeWindow(int num)
         QSWT->setCurrentWidget(WidgetList.at(num));
 }
 
+void ConfDialogKxx::SetupUI()
+{
+}
+
 void ConfDialogKxx::Fill()
 {
     int i, cbidx;
@@ -732,6 +736,10 @@ void ConfDialogKxx::FillBack()
     Kxx->Com_param.Stopbit = cbidx;
 
     WDFunc::SPBData(ParentSetup, "adrMB_ID", Kxx->Com_param.adrMB);
+}
+
+void ConfDialogKxx::CheckConf()
+{
 }
 
 void ConfDialogKxx::SetDefConf()
