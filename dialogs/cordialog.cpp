@@ -278,7 +278,7 @@ void CorDialog::WriteCorBd()
             else
                 QMessageBox::information(this, "INFO", "Ошибка");
 
-            if (Commands::GetBd(7, CorBlock, sizeof(CorBlock)) == Error::Msg::NoError)
+            if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
                 FillCor();
             break;
         }

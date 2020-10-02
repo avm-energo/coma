@@ -875,6 +875,7 @@ bool EProtocom::Connect()
     QMutexLocker locker(&mutex_);
     if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected
         && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+        ///
         Disconnect();
     m_usbWorker = new EUsbWorker(m_devices.at(m_devicePosition), CnLog, isWriteUSBLog());
 

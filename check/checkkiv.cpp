@@ -103,7 +103,7 @@ QWidget *Check_KIV::Bd1W(QWidget *parent)
     glyout = new QGridLayout;
     glyout->addWidget(WDFunc::NewLBL(parent, "Iunb, мА"), 14, 0, 1, 1);
     glyout->addWidget(
-        WDFunc::NewLBLT(parent, "", QString::number(2432), ValuesFormat, "Действующее значение тока небаланса, мА"), 15,
+        WDFunc::NewLBLT(parent, "", QString::number(2432), ValuesFormat, "Действующее значение тока небаланса, %"), 15,
         0, 1, 1);
     glyout->addWidget(WDFunc::NewLBL(parent, "Phy_unb, град."), 14, 1, 1, 1);
     glyout->addWidget(WDFunc::NewLBLT(parent, "", QString::number(2433), ValuesFormat,

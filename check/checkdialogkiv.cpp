@@ -57,8 +57,6 @@ QWidget *CheckDialogKIV::BdUI(int bdnum)
         return ChKIV->Bd1W(this);
     case 1: // Блок #1
         return ChKIV->Bd2W(this);
-        //    case 2: // Блок #1
-        //        return ChKIV->Bd3W(this);
 
     default:
         return new QWidget;
@@ -169,78 +167,31 @@ void CheckDialogKIV::StopBdMeasurements()
 
 void CheckDialogKIV::USBUpdate()
 {
-    QTabWidget *CheckTW = EParent->findChild<QTabWidget *>("checktw0");
-    //    connect(CheckTW, &QTabWidget::tabBarClicked, this, &CheckDialogKIV::MainTWTabClicked);
+    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");
+    if (CheckTW == nullptr)
+    {
+        DBGMSG;
+        return;
+    }
 
     if (CheckTW->currentIndex() == IndexWd.at(0) || CheckTW->currentIndex() == IndexWd.at(1))
     {
         if (Commands::GetBd(BdNum, &ChKIV->Bd_block1, sizeof(Check_KIV::Bd1)) == Error::Msg::NoError)
-        {
             ChKIV->FillBdUSB(this);
-        }
     }
 
     if (CheckTW->currentIndex() == IndexWd.at(0) || CheckTW->currentIndex() == IndexWd.at(1))
     {
         if (Commands::GetBd(5, &ChKIV->Bd_block5, sizeof(Check_KIV::Bd5)) == Error::Msg::NoError)
-        {
             ChKIV->FillBd5(this);
-        }
     }
 
     if (CheckTW->currentIndex() == IndexWd.at(1))
     {
         if (Commands::GetBd(8, &ChKIV->Bd_block8, sizeof(Check_KIV::Bd8)) == Error::Msg::NoError)
-        {
             ChKIV->FillBd8(this);
-        }
     }
-
-    //    if (Commands::GetBd(BdNum, &ChKIV->Bd_block1, sizeof(Check_KIV::Bd1)) == Error::Msg::NoError)
-    //    {
-    //        ChKIV->FillBdUSB(this);
-    //        // Ch84->FillBd2(this);
-    //    }
-
-    //    if (Commands::GetBd(5, &ChKIV->Bd_block5, sizeof(Check_KIV::Bd5)) == Error::Msg::NoError)
-    //    {
-    //        ChKIV->FillBd5(this);
-    //        // Ch84->FillBd2(this);
-    //    }
-
-    //    if (Commands::GetBd(8, &ChKIV->Bd_block8, sizeof(Check_KIV::Bd8)) == Error::Msg::NoError)
-    //    {
-    //        ChKIV->FillBd8(this);
-    //        // Ch84->FillBd2(this);
-    //    }
 }
-
-// void CheckDialogKIV::MainTWTabClicked(int tabindex)
-//{
-//    if (tabindex == IndexWd.at(0) || tabindex == IndexWd.at(1))
-//    {
-//        if (Commands::GetBd(BdNum, &ChKIV->Bd_block1, sizeof(Check_KIV::Bd1)) == Error::Msg::NoError)
-//        {
-//            ChKIV->FillBdUSB(this);
-//        }
-//    }
-
-//    if (tabindex == IndexWd.at(0) || tabindex == IndexWd.at(1))
-//    {
-//        if (Commands::GetBd(5, &ChKIV->Bd_block5, sizeof(Check_KIV::Bd5)) == Error::Msg::NoError)
-//        {
-//            ChKIV->FillBd5(this);
-//        }
-//    }
-
-//    if (tabindex == IndexWd.at(1))
-//    {
-//        if (Commands::GetBd(8, &ChKIV->Bd_block8, sizeof(Check_KIV::Bd8)) == Error::Msg::NoError)
-//        {
-//            ChKIV->FillBd8(this);
-//        }
-//    }
-//}
 
 void CheckDialogKIV::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
 {
