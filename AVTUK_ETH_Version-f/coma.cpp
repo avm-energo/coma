@@ -301,7 +301,7 @@ void Coma::StartWork()
     case Board::InterfaceType::USB:
     {
         NewUSB();
-        if (Commands::Connect() != Error::Msg::NoError) // cn->Connect()
+        if (Commands::Connect() != Error::Msg::NoError)
         {
             QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
             QApplication::restoreOverrideCursor();
@@ -813,6 +813,7 @@ void Coma::ReConnect()
         msgBox.setText("Связь разорвана.\nПопытка переподключения");
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.show();
+        msgBox.button(QMessageBox::Ok)->animateClick(3000);
         AttemptToRec();
     }
 }
