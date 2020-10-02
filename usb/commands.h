@@ -12,14 +12,14 @@ class Commands : QObject
 public:
     explicit Commands();
     static Error::Msg GetBsi(ModuleBSI::Bsi &bsi);
-    static Error::Msg GetFileWithRestore(int filenum, QVector<S2::DataRec> *data);
+    static Error::Msg GetFileWithRestore(int filenum, S2ConfigType *data);
     static Error::Msg GetFile(int filenum, QByteArray &ba);
     static Error::Msg GetBac(char BacNum, void *ptr, int ptrsize);
     static Error::Msg GetBd(char BdNum, void *BdPtr, int BdPtrSize);
     static Error::Msg GetBda(char board, void *BdPtr, int BdPtrSize);
     static Error::Msg GetBt(char BtNum, void *BoPtr, int &BoPtrSize);
     static Error::Msg WriteBac(char BacNum, void *BacPtr, int BacPtrSize);
-    static Error::Msg WriteFile(int filenum, QVector<S2::DataRec> *data);
+    static Error::Msg WriteFile(int filenum, S2ConfigType *data);
     static Error::Msg WriteHiddenBlock(char board, void *HPtr, int HPtrSize);
     static Error::Msg EraseTechBlock(char block);
     static Error::Msg Connect();

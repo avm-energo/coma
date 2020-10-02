@@ -112,6 +112,23 @@ public:
     static QImage *TwoImages(const QString &first, const QString &second);
     static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, const QObject *receiver,
         const char *method, const QString &icon = "", const QString &pbtooltip = "");
+    template <typename T>
+    static QPushButton *NewPB2(QWidget *parent, const QString &pbname, const QString &text, const T *receiver,
+        void (T::*method)(), const QString &icon = "", const QString &pbtooltip = "")
+    {
+        QPushButton *pb = new QPushButton(parent);
+        pb->setStyleSheet("QPushButton {background-color: rgba(0,0,0,0); border: 1px solid gray; "
+                          "border-radius: 5px; border-style: outset; padding: 2px 5px;}"
+                          "QPushButton:pressed {border-style: inset;}"
+                          "QPushButton:disabled {border: none;}");
+        pb->setObjectName(pbname);
+        if (!icon.isEmpty())
+            pb->setIcon(QIcon(icon));
+        pb->setText(text);
+        pb->setToolTip(pbtooltip);
+        QObject::connect(pb, &QPushButton::clicked, receiver, method);
+        return pb;
+    }
     static QMetaObject::Connection PBConnect(
         QWidget *w, const QString &pbname, const QObject *receiver, const char *method);
     static void SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);

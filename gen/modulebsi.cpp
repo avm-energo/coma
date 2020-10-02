@@ -101,7 +101,7 @@ bool ModuleBSI::IsKnownModule()
     return false;
 }
 
-Error::Msg ModuleBSI::PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config)
+Error::Msg ModuleBSI::PrereadConf(QWidget *w, S2ConfigType *S2Config)
 {
     quint32 Bsi;
 

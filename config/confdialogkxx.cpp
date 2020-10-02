@@ -8,7 +8,7 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
-ConfDialogKxx::ConfDialogKxx(QVector<S2::DataRec> *S2Config, QWidget *parent) : QWidget(parent)
+ConfDialogKxx::ConfDialogKxx(S2ConfigType *S2Config, QWidget *parent) : QWidget(parent)
 {
     Kxx = new ConfigKxx(S2Config);
 

@@ -18,7 +18,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
-ConfDialogKTF::ConfDialogKTF(QVector<S2::DataRec> *S2Config, QWidget *parent) : AbstractConfDialog(parent)
+ConfDialogKTF::ConfDialogKTF(S2ConfigType *S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);

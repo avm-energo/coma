@@ -16,7 +16,7 @@ class ConfDialogKTF : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    ConfDialogKTF(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
+    ConfDialogKTF(S2ConfigType *S2Config, QWidget *parent = nullptr);
     ~ConfDialogKTF();
 
     QLabel *SysTime;

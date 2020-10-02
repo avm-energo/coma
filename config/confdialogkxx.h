@@ -9,7 +9,7 @@ class ConfDialogKxx : public QWidget
 {
     Q_OBJECT
 public:
-    ConfDialogKxx(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
+    ConfDialogKxx(S2ConfigType *S2Config, QWidget *parent = nullptr);
 
     QWidget *SetupComParam(QObject *parent);
     QWidget *SetupModBus(QObject *parent);

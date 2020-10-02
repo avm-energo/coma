@@ -13,7 +13,7 @@ class ConfDialogKIV : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    explicit ConfDialogKIV(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
+    explicit ConfDialogKIV(S2ConfigType *S2Config, QWidget *parent = nullptr);
     ~ConfDialogKIV();
 
     QLabel *SysTime;

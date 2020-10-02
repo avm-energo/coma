@@ -48,7 +48,7 @@
 class ConfigKxx
 {
 public:
-    ConfigKxx(QVector<S2::DataRec> *config);
+    ConfigKxx(S2ConfigType *config);
 
     struct TempConfStruct
     {

@@ -31,10 +31,10 @@ public:
     enum BoardType
     {
         NONE = 0,
-        BASE,
-        MEZONIN,
-        BSMZ,
-        MODULE
+        BASE = 1,
+        MEZONIN = 2,
+        BSMZ = 3,
+        MODULE = 4
     };
     /**
      *  Перечисление для хранения списка приборов

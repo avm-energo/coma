@@ -13,8 +13,7 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
-ConfDialog::ConfDialog(QVector<S2::DataRec> *S2Config, quint32 MTypeB, quint32 MTypeM, QWidget *parent)
-    : QWidget(parent)
+ConfDialog::ConfDialog(S2ConfigType *S2Config, quint32 MTypeB, quint32 MTypeM, QWidget *parent) : QWidget(parent)
 {
     ConfigMain = new Config(S2Config, MTypeB, MTypeM); // добавляем к переданному S2Config общую часть
                                                        // SetupUI();
@@ -166,7 +165,4 @@ void ConfDialog::FillBack()
     }
 }
 
-void ConfDialog::SetDefConf()
-{
-    ConfigMain->SetDefBlock();
-}
+void ConfDialog::SetDefConf() { ConfigMain->SetDefBlock(); }

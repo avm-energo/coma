@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-ConfigKTF::ConfigKTF(QVector<S2::DataRec> *config)
+ConfigKTF::ConfigKTF(S2ConfigType *config)
 {
 
     for (int i = 0; i < config->size(); ++i)

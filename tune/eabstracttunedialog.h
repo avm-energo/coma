@@ -39,12 +39,12 @@ public:
     bool Skipped, MeasurementEnabled, ok, TuneFileSaved;
     //    bool Cancelled;
     QTimer *MeasurementTimer;
-    QVector<S2::DataRec> S2Config;
+    S2ConfigType S2Config;
     quint32 SecondsToEnd15SecondsInterval;
     QHash<QString, Error::Msg (EAbstractTuneDialog::*)()> pf;
     quint8 bStep;
     int TuneVariant; // вариант регулировочных параметров
-    QVector<S2::DataRec> *S2ConfigForTune;
+    S2ConfigType *S2ConfigForTune;
     ReportModel *RepModel; // модель, в которую заносим данные для отчёта
     //    QString OrganizationString; // наименование организации, работающей с программой
     int TuneIndex, CheckIndex, TimeIndex;

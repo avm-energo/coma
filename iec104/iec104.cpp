@@ -12,7 +12,7 @@
 QMutex ParseReadMutex;
 QMutex ParseWriteMutex;
 
-IEC104::IEC104(QVector<S2::DataRec> *s2, QObject *parent) : QObject(parent)
+IEC104::IEC104(S2ConfigType *s2, QObject *parent) : QObject(parent)
 {
     EthThreadWorking = false;
     ParseThreadWorking = false;
@@ -107,7 +107,7 @@ void IEC104::SelectFile(char numFile)
     ParseWriteMutex.unlock();
 }
 
-void IEC104::FileReady(QVector<S2::DataRec> *File)
+void IEC104::FileReady(S2ConfigType *File)
 {
     IEC104Thread::InputStruct inp;
     inp.cmd = IEC104Thread::CM104_FILEREADY;
@@ -195,7 +195,7 @@ void IEC104::StopAllThreads()
 
 // Класс PARSE104
 
-IEC104Thread::IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, QVector<S2::DataRec> *s2, QObject *parent)
+IEC104Thread::IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, S2ConfigType *s2, QObject *parent)
     : QObject(parent)
 {
     DR = s2;
@@ -269,7 +269,7 @@ void IEC104Thread::Run()
                     break;
                 case CM104_FILEREADY:
                 {
-                    //                    QVector<S2::DataRec> *ptr = reinterpret_cast<QVector<S2::DataRec>
+                    //                    S2ConfigType *ptr = reinterpret_cast<S2ConfigType
                     //                    *>(inp.args.ptrarg); FileReady(ptr);
                     FileReady();
                     break;
@@ -939,7 +939,7 @@ void IEC104Thread::ConfirmFile(unsigned char numFile)
     Send(1, GI, cmd); // ASDU = QByteArray()
 }
 
-// void IEC104Thread::FileReady(QVector<S2::DataRec> *file)
+// void IEC104Thread::FileReady(S2ConfigType *file)
 void IEC104Thread::FileReady()
 {
     FileSending = true;

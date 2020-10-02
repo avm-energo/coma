@@ -1,6 +1,6 @@
 #include "configkdv.h"
 
-ConfigKDV::ConfigKDV(QVector<S2::DataRec> *config)
+ConfigKDV::ConfigKDV(S2ConfigType *config)
 {
     for (int i = 0; i < config->size(); ++i)
     {

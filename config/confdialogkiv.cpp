@@ -14,7 +14,7 @@
 #if _MSC_VER && !__INTEL_COMPILER
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
-ConfDialogKIV::ConfDialogKIV(QVector<S2::DataRec> *S2Config, QWidget *parent) : AbstractConfDialog(parent)
+ConfDialogKIV::ConfDialogKIV(S2ConfigType *S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
@@ -27,10 +27,7 @@ ConfDialogKIV::ConfDialogKIV(QVector<S2::DataRec> *S2Config, QWidget *parent) : 
     PrereadConf();
 }
 
-ConfDialogKIV::~ConfDialogKIV()
-{
-    delete CKIV;
-}
+ConfDialogKIV::~ConfDialogKIV() { delete CKIV; }
 
 void ConfDialogKIV::Fill()
 {
@@ -407,9 +404,7 @@ void ConfDialogKIV::SetupUI()
     setLayout(lyout);
 }
 
-void ConfDialogKIV::CheckConf()
-{
-}
+void ConfDialogKIV::CheckConf() { }
 
 void ConfDialogKIV::SetDefConf()
 {
@@ -419,12 +414,6 @@ void ConfDialogKIV::SetDefConf()
     Fill();
 }
 
-void ConfDialogKIV::Start_Timer()
-{
-    timerRead->start(1000);
-}
+void ConfDialogKIV::Start_Timer() { timerRead->start(1000); }
 
-void ConfDialogKIV::Stop_Timer()
-{
-    timerRead->stop();
-}
+void ConfDialogKIV::Stop_Timer() { timerRead->stop(); }

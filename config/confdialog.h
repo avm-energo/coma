@@ -10,7 +10,7 @@ class ConfDialog : public QWidget
 {
     Q_OBJECT
 public:
-    ConfDialog(QVector<S2::DataRec> *S2Config, quint32 MTypeB, quint32 MTypeM, QWidget *parent = nullptr);
+    ConfDialog(S2ConfigType *S2Config, quint32 MTypeB, quint32 MTypeM, QWidget *parent = nullptr);
 
     Config *ConfigMain;
 

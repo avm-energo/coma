@@ -170,14 +170,14 @@ public:
     QByteArray ReadData;
     quint8 RDSize; // длина всей посылки
     int RDLength;
-    QVector<S2::DataRec> *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
-    QVector<S2::DataRec> *DRJour;
+    S2ConfigType *DR; // ссылка на структуру DataRec, по которой собирать/восстанавливать S2
+    S2ConfigType *DRJour;
     quint32 FileLen;
     int incLS, count, NoAnswer;
     bool FileSending;
     QQueue<InputStruct> *InputQueue;
 
-    IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, QVector<S2::DataRec> *s2, QObject *parent = nullptr);
+    IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, S2ConfigType *s2, QObject *parent = nullptr);
     ~IEC104Thread();
 
     void SetBaseAdr(quint16 adr);
@@ -197,7 +197,7 @@ signals:
     void Floatsignalsreceived(IEC104Thread::FlSignals104 *);
     void Sponsignalsreceived(IEC104Thread::SponSignals *);
     void Bs104signalsreceived(IEC104Thread::BS104Signals *);
-    void SendS2fromParse(QVector<S2::DataRec> *);
+    void SendS2fromParse(S2ConfigType *);
     void SendJourSysfromParse(QByteArray);
     void SendJourWorkfromParse(QByteArray);
     void SendJourMeasfromParse(QByteArray);
@@ -280,7 +280,7 @@ class IEC104 : public QObject
     Q_OBJECT
 
 public:
-    IEC104(QVector<S2::DataRec> *s2, QObject *parent = nullptr);
+    IEC104(S2ConfigType *s2, QObject *parent = nullptr);
     ~IEC104();
 
     IEC104Thread *Parse;
@@ -377,7 +377,7 @@ public slots:
     void Com45(quint32 com);
     void Com50(quint32 adr, float param);
     void CorReadRequest();
-    void FileReady(QVector<S2::DataRec> *);
+    void FileReady(S2ConfigType *);
     void InterrogateTimeGr15();
     void com51WriteTime(uint time);
 
@@ -387,7 +387,7 @@ signals:
     void Sponsignalsready(IEC104Thread::SponSignals *);
     void Bs104signalsready(IEC104Thread::BS104Signals *);
     void ShowError(QString);
-    void SendS2fromiec104(QVector<S2::DataRec> *);
+    void SendS2fromiec104(S2ConfigType *);
     void SendJourSysfromiec104(QByteArray);
     void SendJourWorkfromiec104(QByteArray);
     void SendJourMeasfromiec104(QByteArray);
@@ -402,7 +402,7 @@ private:
     bool EthThreadWorking, ParseThreadWorking, AboutToFinish;
     LogClass *Log;
     QQueue<IEC104Thread::InputStruct> InputQueue;
-    QVector<S2::DataRec> *S2Config;
+    S2ConfigType *S2Config;
 
 private slots:
     // void SelectFile(char);

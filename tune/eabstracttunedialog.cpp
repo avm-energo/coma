@@ -365,7 +365,7 @@ Error::Msg EAbstractTuneDialog::CheckCalibrStep()
     if (!storedcalibrations.contains(usbserialnum))
     {
         QMessageBox::warning(this, "Внимание",
-            "Не выполнены предыдущие шаги регулировки, пожалуйста\n"
+            "Не выполнены предыдущие шаги регулировки, пожалуйста,\n"
             "начните заново с шага 1");
         return Error::Msg::ResEmpty;
     }

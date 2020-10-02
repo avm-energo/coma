@@ -81,8 +81,7 @@ AvmDebug::AvmDebug(QWidget *parent) : QMainWindow(parent)
 
 #endif
 
-    S2Config = new QVector<S2::DataRec>;
-    S2ConfigForTune = new QVector<S2::DataRec>;
+    S2Config = new S2ConfigType;
     Reconnect = false;
     timeDialog = nullptr;
     mainConfDialog = nullptr;

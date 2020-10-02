@@ -14,7 +14,7 @@ class ConfDialogKDV : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    ConfDialogKDV(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
+    ConfDialogKDV(S2ConfigType *S2Config, QWidget *parent = nullptr);
 
     QStringList Sbaud { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
 

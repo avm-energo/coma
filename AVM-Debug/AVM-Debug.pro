@@ -66,10 +66,12 @@ SOURCES += \
     ../models/checkdelegate.cpp \
     ../models/valuemodel.cpp \
     ../tune/eabstracttunedialog.cpp \
-    ../tune/tunedialogkiv.cpp \
-    ../tune/tunekiv.cpp \
-    ../tune/tunekivmain.cpp \
-    ../tune/tunekivtemp60.cpp \
+    ../tune/kiv/tunekivcheck.cpp \
+    ../tune/kiv/tunekiv.cpp \
+    ../tune/kiv/tunekivdialog.cpp \
+    ../tune/kiv/tunekivmain.cpp \
+    ../tune/kiv/tunekivtemp60.cpp \
+    ../tune/tuneclass.cpp \
     ../usb/eprotocom.cpp \
     ../usb/eusbworker.cpp \
     avmdebug.cpp \
@@ -150,10 +152,12 @@ HEADERS += \
     ../models/checkdelegate.h \
     ../models/valuemodel.h \
     ../tune/eabstracttunedialog.h \
-    ../tune/tunedialogkiv.h \
-    ../tune/tunekiv.h \
-    ../tune/tunekivmain.h \
-    ../tune/tunekivtemp60.h \
+    ../tune/kiv/tunekivcheck.h \
+    ../tune/kiv/tunekiv.h \
+    ../tune/kiv/tunekivdialog.h \
+    ../tune/kiv/tunekivmain.h \
+    ../tune/kiv/tunekivtemp60.h \
+    ../tune/tuneclass.h \
     ../usb/defines.h \
     ../usb/eprotocom.h \
     ../usb/eusbworker.h \

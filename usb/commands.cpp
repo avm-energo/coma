@@ -33,7 +33,7 @@ Error::Msg Commands::GetBsi(ModuleBSI::Bsi &bsi)
     return EProtocom::GetInstance()->result();
 }
 
-Error::Msg Commands::GetFileWithRestore(int filenum, QVector<S2::DataRec> *data)
+Error::Msg Commands::GetFileWithRestore(int filenum, S2ConfigType *data)
 {
     QByteArray ba;
     EProtocom::GetInstance()->SendFile(CN::Read::File, BoardTypes::BT_NONE, filenum, ba);
@@ -68,7 +68,7 @@ Error::Msg Commands::GetFile(int filenum, QByteArray &ba)
     return EProtocom::GetInstance()->result();
 }
 
-Error::Msg Commands::WriteFile(int filenum, QVector<S2::DataRec> *data)
+Error::Msg Commands::WriteFile(int filenum, S2ConfigType *data)
 {
     QByteArray ba;
     ba.resize(CN::Limits::MaxFileSize);

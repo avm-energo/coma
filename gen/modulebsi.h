@@ -58,7 +58,7 @@ public:
     static Bsi GetBsi();
     static quint32 GetHealth();
     static bool IsKnownModule();
-    static Error::Msg PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config);
+    static Error::Msg PrereadConf(QWidget *w, S2ConfigType *S2Config);
     static Bsi ModuleBsi;
     static QString ModuleTypeString;
 
@@ -66,7 +66,7 @@ signals:
     void readConf();
 
 public slots:
-    // int PrereadConf(QWidget *w, QVector<S2::DataRec> *S2Config);
+    // int PrereadConf(QWidget *w, S2ConfigType *S2Config);
 
 private:
     static quint32 MType;

@@ -85,7 +85,7 @@
 class ConfigKTF
 {
 public:
-    explicit ConfigKTF(QVector<S2::DataRec> *config);
+    explicit ConfigKTF(S2ConfigType *config);
 
     typedef struct
     {

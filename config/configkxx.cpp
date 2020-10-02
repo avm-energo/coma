@@ -1,6 +1,6 @@
 #include "configkxx.h"
 
-ConfigKxx::ConfigKxx(QVector<S2::DataRec> *config)
+ConfigKxx::ConfigKxx(S2ConfigType *config)
 {
     //    for (int i = 0; i < config->size(); ++i)
     //    {

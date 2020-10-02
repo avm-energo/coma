@@ -14,7 +14,7 @@ class AbstractConfDialog : public QDialog
 public:
     explicit AbstractConfDialog(QWidget *parent = nullptr);
 
-    QVector<S2::DataRec> *S2Config;
+    S2ConfigType *S2Config;
 
     QStringList CheckConfErrors;
     bool IsNeededDefConf = false;
@@ -50,10 +50,10 @@ private slots:
 
 public slots:
     void WriteConf();
-    void FillConf(QVector<S2::DataRec> *);
+    void FillConf(S2ConfigType *);
 
 signals:
-    void writeConfFile(QVector<S2::DataRec> *);
+    void writeConfFile(S2ConfigType *);
     void ReadConfig(char);
     void BsiIsNeedToBeAcquiredAndChecked(); // signal to reload start block
                                             // emitted when new configuration has

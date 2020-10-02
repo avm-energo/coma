@@ -1,6 +1,6 @@
 #include "configkiv.h"
 
-ConfigKIV::ConfigKIV(QVector<S2::DataRec> *config)
+ConfigKIV::ConfigKIV(S2ConfigType *config)
 {
     // параметры входных сигналов
     quint32 StartInIndex = ID8084_START;

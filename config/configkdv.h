@@ -113,7 +113,7 @@
 class ConfigKDV
 {
 public:
-    explicit ConfigKDV(QVector<S2::DataRec> *config);
+    explicit ConfigKDV(S2ConfigType *config);
 
     typedef struct
     {
