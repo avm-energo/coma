@@ -15,6 +15,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QCoreApplication>
+#include <QDebug>
 #include <QDoubleSpinBox>
 #include <QFileDialog>
 #include <QGridLayout>
@@ -80,8 +81,10 @@ void AbstractCorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
     {
         for (int i = 0; i < Signal->SigNumber; i++)
         {
-            FillBd(
-                this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal + i)->fl.SigVal));
+            // FillBd(
+            //    this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal +
+            //    i)->fl.SigVal));
+            FillBd(this, QString::number((Signal + i)->fl.SigAdr), (Signal + i)->fl.SigVal);
         }
 
         if (first)
@@ -93,7 +96,21 @@ void AbstractCorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
 
 void AbstractCorDialog::FillBd(QWidget *parent, QString Name, QString Value)
 {
-    WDFunc::SetSPBData(parent, Name, Value.toDouble());
+    bool ok;
+    double d = Value.toDouble(&ok);
+    if (ok)
+    {
+        if (!WDFunc::SetSPBData(parent, Name, d))
+            qDebug() << "Failed to find SpinBox";
+    }
+    else
+        qDebug() << "Failed to convert" << Value.toFloat();
+}
+
+void AbstractCorDialog::FillBd(QWidget *parent, QString Name, float Value)
+{
+    if (!WDFunc::SetSPBData(parent, Name, Value))
+        qDebug() << "Failed to find SpinBox";
 }
 
 void AbstractCorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
@@ -106,7 +123,7 @@ void AbstractCorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
         {
             for (i = 0; i < Signal.size(); ++i)
             {
-                FillBd(this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal));
+                FillBd(this, QString::number(Signal.at(i).SigAdr), Signal.at(i).flVal);
             }
             QMessageBox::information(this, "INFO", "Прочитано успешно");
         }

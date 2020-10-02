@@ -33,6 +33,7 @@ private:
     float ToFloat(QString text);
     virtual void SetupUI() = 0;
     void FillBd(QWidget *parent, QString Name, QString Value);
+    void FillBd(QWidget *parent, QString Name, float Value);
 
 signals:
     void SendCom45(quint32);

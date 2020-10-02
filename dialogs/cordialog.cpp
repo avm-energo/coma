@@ -401,45 +401,46 @@ void CorDialog::MessageOk()
     QMessageBox::information(this, "INFO", "Записано успешно");
 }
 
-void CorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
-{
-    if (((Signal)->fl.SigAdr >= 4000) && ((Signal)->fl.SigAdr <= 4010))
-    {
-        for (int i = 0; i < Signal->SigNumber; i++)
-        {
-            // if((Signal+i)->fl.SigAdr >= 1000 || (Signal+i)->fl.SigAdr <= 1009)
-            FillBd(
-                this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal + i)->fl.SigVal));
-        }
+// void CorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
+//{
+//    if (((Signal)->fl.SigAdr >= 4000) && ((Signal)->fl.SigAdr <= 4010))
+//    {
+//        for (int i = 0; i < Signal->SigNumber; i++)
+//        {
+//            // if((Signal+i)->fl.SigAdr >= 1000 || (Signal+i)->fl.SigAdr <= 1009)
+//            FillBd(
+//                this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal +
+//                i)->fl.SigVal));
+//        }
 
-        if (first)
-            QMessageBox::information(this, "INFO", "Прочитано успешно");
-        else
-            first = 1;
-    }
-}
+//        if (first)
+//            QMessageBox::information(this, "INFO", "Прочитано успешно");
+//        else
+//            first = 1;
+//    }
+//}
 
-void CorDialog::FillBd(QWidget *parent, QString Name, QString Value)
-{
-    WDFunc::SetSPBData(parent, Name, Value.toDouble());
-}
+// void CorDialog::FillBd(QWidget *parent, QString Name, QString Value)
+//{
+//    WDFunc::SetSPBData(parent, Name, Value.toDouble());
+//}
 
-void CorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
-{
-    int i = 0;
+// void CorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
+//{
+//    int i = 0;
 
-    if (Signal.size() > 0)
-    {
-        if (Signal.at(0).SigAdr == 4000)
-        {
-            for (i = 0; i < Signal.size(); ++i)
-            {
-                FillBd(this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal));
-            }
-            QMessageBox::information(this, "INFO", "Прочитано успешно");
-        }
-    }
-}
+//    if (Signal.size() > 0)
+//    {
+//        if (Signal.at(0).SigAdr == 4000)
+//        {
+//            for (i = 0; i < Signal.size(); ++i)
+//            {
+//                FillBd(this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal));
+//            }
+//            QMessageBox::information(this, "INFO", "Прочитано успешно");
+//        }
+//    }
+//}
 
 void CorDialog::SaveToFile()
 {
