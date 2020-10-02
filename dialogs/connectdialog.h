@@ -27,6 +27,7 @@ signals:
     void Accepted(ConnectDialog::ConnectStruct *);
     void Cancelled();
     void PingFinished();
+    void ModelUpdated();
 
 private slots:
     void SetInterface();

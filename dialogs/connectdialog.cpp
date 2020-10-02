@@ -262,6 +262,7 @@ void ConnectDialog::handlePortFinish()
             new QStandardItem("205") };
         mdl->appendRow(row);
     }
+    emit ModelUpdated();
 }
 
 void ConnectDialog::createPingTask(quint32 ip)
@@ -303,6 +304,7 @@ void ConnectDialog::ScanEth()
     ///
     auto *button = qobject_cast<QPushButton *>(sender());
     Q_ASSERT(button);
+    connect(this, &ConnectDialog::ModelUpdated, button, &QPushButton::show);
     bool ok;
     QString text = QInputDialog::getText(
         this, tr("Scanner"), tr("Ip address and mask:"), QLineEdit::Normal, "172.16.29.0/24", &ok);
