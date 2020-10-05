@@ -25,12 +25,10 @@
 #endif
 
 bool EProtocom::m_writeUSBLog;
-EProtocom *EProtocom::pinstance_ { nullptr };
-QMutex EProtocom::mutex_;
 
-EProtocom::EProtocom(QObject *parent)
+EProtocom::EProtocom(token)
 {
-    Q_UNUSED(parent)
+    // Q_UNUSED(parent)
     QString tmps = "=== CLog started ===\n";
     CnLog = new LogClass;
     CnLog->Init("canal.log");
@@ -850,29 +848,13 @@ EProtocom::~EProtocom()
 {
     m_workerThread.quit();
     m_workerThread.wait();
-    pinstance_ = nullptr;
     CnLog->deleteLater();
     OscTimer->deleteLater();
     m_waitTimer->deleteLater();
 }
-/**
- * The first time we call GetInstance we will lock the storage location
- *      and then we make sure again that the variable is null and then we
- *      set the value.
- */
-EProtocom *EProtocom::GetInstance(QObject *parent)
-{
-    QMutexLocker locker(&mutex_);
-    if (pinstance_ == nullptr)
-    {
-        pinstance_ = new EProtocom(parent);
-    }
-    return pinstance_;
-}
 
 bool EProtocom::Connect()
 {
-    QMutexLocker locker(&mutex_);
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
         && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         Disconnect();
@@ -883,7 +865,7 @@ bool EProtocom::Connect()
 
     connect(m_usbWorker, &EUsbWorker::Finished, &m_workerThread, &QThread::quit);
 
-    connect(&m_workerThread, &QThread::finished, &m_workerThread, &QThread::deleteLater);
+    // connect(&m_workerThread, &QThread::finished, &m_workerThread, &QThread::deleteLater);
     connect(m_usbWorker, &EUsbWorker::Finished, m_usbWorker, &EUsbWorker::deleteLater);
 
     connect(m_usbWorker, &EUsbWorker::NewDataReceived, this, &EProtocom::ParseIncomeData);
@@ -918,7 +900,6 @@ void EProtocom::Disconnect()
     qDebug(__PRETTY_FUNCTION__);
     RawClose();
     CnLog->WriteRaw("Disconnected!\n");
-    delete EProtocom::GetInstance();
 }
 
 QByteArray EProtocom::RawRead(int bytes)

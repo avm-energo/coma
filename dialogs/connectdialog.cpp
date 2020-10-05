@@ -109,8 +109,8 @@ void ConnectDialog::SetUsb(QModelIndex index)
     if (index.isValid())
     {
         QDialog *dlg = this->findChild<QDialog *>("connectdlg");
-        EProtocom::GetInstance()->setDeviceName(WDFunc::TVData(dlg, "usbtv", 1).toString());
-        EProtocom::GetInstance()->setDevicePosition(index.row());
+        EProtocom::GetInstance().setDeviceName(WDFunc::TVData(dlg, "usbtv", 1).toString());
+        EProtocom::GetInstance().setDevicePosition(index.row());
     }
     emit Accepted(&st);
 }
@@ -267,9 +267,10 @@ void ConnectDialog::handlePortFinish()
 
 void ConnectDialog::createPingTask(quint32 ip)
 {
-    QFutureWatcher<quint32> *watcher = new QFutureWatcher<quint32>;
+    QFutureWatcher<quint32> *watcher = new QFutureWatcher<quint32>(this);
 
     connect(watcher, &QFutureWatcher<quint32>::finished, this, &ConnectDialog::handlePing);
+    connect(watcher, &QFutureWatcher<quint32>::canceled, &QObject::deleteLater);
     connect(watcher, &QFutureWatcher<quint32>::finished, [this]() {
         m_progress->setValue(m_progress->value() + 1);
         if (m_progress->value() == -1)
@@ -300,8 +301,6 @@ void ConnectDialog::createPortTask()
 
 void ConnectDialog::ScanEth()
 {
-    /// Ping works only for windows
-    ///
     auto *button = qobject_cast<QPushButton *>(sender());
     Q_ASSERT(button);
     connect(this, &ConnectDialog::ModelUpdated, button, &QPushButton::show);
@@ -323,7 +322,6 @@ void ConnectDialog::ScanEth()
     m_progress->setMinimumDuration(0);
     m_progress->setRange(0, addr_count - 1);
 
-    disconnect(this, &ConnectDialog::PingFinished, nullptr, nullptr);
     connect(this, &ConnectDialog::PingFinished, &ConnectDialog::handlePingFinish);
     for (quint32 i = 0; i < addr_count; ++i)
     {
@@ -462,7 +460,7 @@ bool ConnectDialog::UpdateModel()
     {
     case Board::InterfaceType::USB:
     {
-        QList<QStringList> USBsl = EProtocom::GetInstance()->DevicesFound();
+        QList<QStringList> USBsl = EProtocom::GetInstance().DevicesFound();
         QStringList sl { "VID", "PID", "Serial", "Path" };
         QStandardItemModel *mdl = new QStandardItemModel(dlg);
 
