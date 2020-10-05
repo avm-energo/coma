@@ -16,9 +16,6 @@
 #include <QDialog>
 #include <QMap>
 
-constexpr quint32 WarnBSIMask = 0x00005F55;
-constexpr quint32 AvarBSIMask = 0x000020AA;
-
 class AlarmClass : public QObject
 {
     Q_OBJECT

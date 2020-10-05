@@ -3,12 +3,12 @@
 
 #include "../alarm/abstractalarm.h"
 
-class WarnAlarmKIV : public AbstractWarnAlarm
+class WarnKIV : public AbstractWarn
 {
     Q_OBJECT
 
 public:
-    explicit WarnAlarmKIV(AlarmClass *alarm, QWidget *parent = nullptr);
+    explicit WarnKIV(AlarmClass *alarm, QWidget *parent = nullptr);
 
 public slots:
 

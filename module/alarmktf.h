@@ -3,7 +3,7 @@
 
 #include "../alarm/abstractalarm.h"
 
-class AvarAlarmKTF : public AbstractAvarAlarm
+class AvarAlarmKTF : public AbstractAlarm
 {
     Q_OBJECT
 

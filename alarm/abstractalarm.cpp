@@ -22,14 +22,14 @@
 #include <QStringListModel>
 #include <QToolBar>
 
-AbstractAlarm::AbstractAlarm(QWidget *parent) : QDialog(parent)
+AbstractAlarmClass::AbstractAlarmClass(QWidget *parent) : QDialog(parent)
 {
     //    setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void AbstractAlarm::UpdatePixmaps(quint32 alarm, int counter, bool warn)
+void AbstractAlarmClass::UpdatePixmaps(quint32 alarm, int counter, bool warn)
 {
 
     if (alarm)
@@ -52,7 +52,7 @@ void AbstractAlarm::UpdatePixmaps(quint32 alarm, int counter, bool warn)
     }
 }
 
-void AbstractAlarm::SetupAlarm(const QStringList &events, int counters)
+void AbstractAlarmClass::SetupAlarm(const QStringList &events, int counters)
 {
     QWidget *w = new QWidget;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
@@ -78,18 +78,18 @@ void AbstractAlarm::SetupAlarm(const QStringList &events, int counters)
     setLayout(lyout);
 }
 
-void AbstractAlarm::showEvent(QShowEvent *e)
+void AbstractAlarmClass::showEvent(QShowEvent *e)
 {
     if (isVisible())
         move(QCursor::pos());
     e->accept();
 }
 
-AbstractWarnAlarm::AbstractWarnAlarm(QWidget *parent) : AbstractAlarm(parent)
+AbstractWarn::AbstractWarn(QWidget *parent) : AbstractAlarmClass(parent)
 {
 }
 
-void AbstractWarnAlarm::Update(QList<bool> states)
+void AbstractWarn::Update(QList<bool> states)
 {
     if (states.isEmpty())
         return;
@@ -104,11 +104,11 @@ void AbstractWarnAlarm::Update(QList<bool> states)
     }
 }
 
-AbstractAvarAlarm::AbstractAvarAlarm(QWidget *parent) : AbstractAlarm(parent)
+AbstractAlarm::AbstractAlarm(QWidget *parent) : AbstractAlarmClass(parent)
 {
 }
 
-void AbstractAvarAlarm::Update(QList<bool> states)
+void AbstractAlarm::Update(QList<bool> states)
 {
     if (states.isEmpty())
         return;

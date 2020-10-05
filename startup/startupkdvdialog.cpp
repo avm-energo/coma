@@ -1,4 +1,4 @@
-#include "cordialogkdv.h"
+#include "startupkdvdialog.h"
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
@@ -28,7 +28,7 @@
 #include <QTabBar>
 #include <QTabWidget>
 #include <QVBoxLayout>
-CorDialogKDV::CorDialogKDV(QWidget *parent) : AbstractCorDialog(parent)
+StartupKDVDialog::StartupKDVDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
     // int i;
 
@@ -40,11 +40,11 @@ CorDialogKDV::CorDialogKDV(QWidget *parent) : AbstractCorDialog(parent)
     SetupUI();
 }
 
-CorDialogKDV::~CorDialogKDV()
+StartupKDVDialog::~StartupKDVDialog()
 {
 }
 
-void CorDialogKDV::SetupUI()
+void StartupKDVDialog::SetupUI()
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
@@ -100,25 +100,25 @@ void CorDialogKDV::SetupUI()
     setLayout(lyout);
 }
 
-void CorDialogKDV::FillBackCor()
+void StartupKDVDialog::FillBackCor()
 {
     WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge);
 }
 
-void CorDialogKDV::FillBackWBd8()
+void StartupKDVDialog::FillBackWBd8()
 {
     WDFunc::SPBData(this, QString::number(908), WBd8Block->MHnInit);
     WDFunc::SPBData(this, QString::number(909), WBd8Block->MotHovInit);
 }
 
-void CorDialogKDV::FillCor()
+void StartupKDVDialog::FillCor()
 {
     WDFunc::SetSPBData(this, QString::number(907), Bd9Block->Age);
     WDFunc::SetSPBData(this, QString::number(908), Bd9Block->MotHnorm);
     WDFunc::SetSPBData(this, QString::number(909), Bd9Block->MotHover);
 }
 
-void CorDialogKDV::GetCorBd(int index)
+void StartupKDVDialog::GetCorBd(int index)
 {
     if (index == corDIndex)
 
@@ -143,7 +143,7 @@ void CorDialogKDV::GetCorBd(int index)
             }
         }
 }
-void CorDialogKDV::GetCorBdButton()
+void StartupKDVDialog::GetCorBdButton()
 {
     switch (Board::GetInstance().interfaceType())
     {
@@ -172,7 +172,7 @@ void CorDialogKDV::GetCorBdButton()
     }
 }
 
-void CorDialogKDV::WriteCorBd()
+void StartupKDVDialog::WriteCorBd()
 {
     int i;
     quint32 adr7bl = 907;
@@ -236,15 +236,15 @@ void CorDialogKDV::WriteCorBd()
     }
 }
 
-void CorDialogKDV::WriteCor()
+void StartupKDVDialog::WriteCor()
 {
 }
 
-void CorDialogKDV::ResetCor()
+void StartupKDVDialog::ResetCor()
 {
 }
 
-void CorDialogKDV::SaveToFile()
+void StartupKDVDialog::SaveToFile()
 {
     QByteArray ba;
     FillBackCor();
@@ -273,7 +273,7 @@ void CorDialogKDV::SaveToFile()
     }
 }
 
-void CorDialogKDV::ReadFromFile()
+void StartupKDVDialog::ReadFromFile()
 {
     QByteArray ba;
     ba.resize(sizeof(*Bd9Block));

@@ -1,4 +1,4 @@
-#include "confdialogkiv.h"
+#include "confkivdialog.h"
 
 #include "../gen/board.h"
 #include "../gen/colors.h"
@@ -14,22 +14,22 @@
 #if _MSC_VER && !__INTEL_COMPILER
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
-ConfDialogKIV::ConfDialogKIV(S2ConfigType *S2Config, QWidget *parent) : AbstractConfDialog(parent)
+ConfKIVDialog::ConfKIVDialog(S2ConfigType *S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
     this->S2Config = S2Config;
     CKIV = new ConfigKIV(S2Config);
     Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM(), this);
-    ConfKxx = new ConfDialogKxx(S2Config, this);
+    ConfKxx = new ConfKxxDialog(S2Config, this);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
     PrereadConf();
 }
 
-ConfDialogKIV::~ConfDialogKIV() { delete CKIV; }
+ConfKIVDialog::~ConfKIVDialog() { delete CKIV; }
 
-void ConfDialogKIV::Fill()
+void ConfKIVDialog::Fill()
 {
     int i;
 
@@ -75,7 +75,7 @@ void ConfDialogKIV::Fill()
     ConfKxx->Fill();
 }
 
-void ConfDialogKIV::FillBack()
+void ConfKIVDialog::FillBack()
 {
     int i;
 
@@ -123,7 +123,7 @@ void ConfDialogKIV::FillBack()
     ConfKxx->FillBack();
 }
 
-void ConfDialogKIV::SetupUI()
+void ConfKIVDialog::SetupUI()
 {
     QString phase[3] = { "Фаза A:", "Фаза B:", "Фаза C:" };
     // QString S;
@@ -405,9 +405,9 @@ void ConfDialogKIV::SetupUI()
     setLayout(lyout);
 }
 
-void ConfDialogKIV::CheckConf() { }
+void ConfKIVDialog::CheckConf() { }
 
-void ConfDialogKIV::SetDefConf()
+void ConfKIVDialog::SetDefConf()
 {
     CKIV->SetDefConf();
     Conf->SetDefConf();
@@ -415,6 +415,6 @@ void ConfDialogKIV::SetDefConf()
     Fill();
 }
 
-void ConfDialogKIV::Start_Timer() { timerRead->start(1000); }
+void ConfKIVDialog::Start_Timer() { timerRead->start(1000); }
 
-void ConfDialogKIV::Stop_Timer() { timerRead->stop(); }
+void ConfKIVDialog::Stop_Timer() { timerRead->stop(); }

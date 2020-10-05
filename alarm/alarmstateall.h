@@ -3,7 +3,7 @@
 
 #include "../alarm/abstractalarm.h"
 
-class AlarmStateAll : public AbstractAlarm
+class AlarmStateAll : public AbstractAlarmClass
 {
     Q_OBJECT
 public:

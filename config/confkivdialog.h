@@ -2,22 +2,22 @@
 #define CONFDIALOGKIV_H
 
 #include "../config/confdialog.h"
-#include "../config/confdialogkxx.h"
 #include "../config/configkiv.h"
+#include "../config/confkxxdialog.h"
 
 #include <QLabel>
 
-class ConfDialogKIV : public AbstractConfDialog
+class ConfKIVDialog : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    explicit ConfDialogKIV(S2ConfigType *S2Config, QWidget *parent = nullptr);
-    ~ConfDialogKIV();
+    explicit ConfKIVDialog(S2ConfigType *S2Config, QWidget *parent = nullptr);
+    ~ConfKIVDialog();
 
 private:
     ConfigKIV *CKIV;
     ConfDialog *Conf;
-    ConfDialogKxx *ConfKxx;
+    ConfKxxDialog *ConfKxx;
     QLabel *SysTime;
     QTimer *timer;
     QTimer *timerRead;

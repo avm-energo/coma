@@ -6,12 +6,12 @@
 #include "check.h"
 #include "checkkiv.h"
 
-class CheckDialogKIV : public AbstractCheckDialog
+class CheckKIVDialog : public AbstractCheckDialog
 {
     Q_OBJECT
 public:
-    explicit CheckDialogKIV(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
-    ~CheckDialogKIV();
+    explicit CheckKIVDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    ~CheckKIVDialog();
     QWidget *EParent;
 
 public slots:

@@ -25,12 +25,12 @@
 #include "../check/checkdialogharmonickdv.h"
 #include "../check/checkdialogharmonicktf.h"
 #include "../check/checkdialogkdv.h"
-#include "../check/checkdialogkiv.h"
 #include "../check/checkdialogktf.h"
 #include "../check/checkdialogvibrkdv.h"
+#include "../check/checkkivdialog.h"
 #include "../config/confdialogkdv.h"
-#include "../config/confdialogkiv.h"
 #include "../config/confdialogktf.h"
+#include "../config/confkivdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
@@ -83,15 +83,15 @@ AvmDebug::AvmDebug(QWidget *parent) : QMainWindow(parent)
     Reconnect = false;
     timeDialog = nullptr;
     mainConfDialog = nullptr;
-    confBDialog = confMDialog = nullptr;
-    checkBDialog = checkMDialog = nullptr;
+    //    confBDialog = confMDialog = nullptr;
+    //    checkBDialog = checkMDialog = nullptr;
     AlarmStateAllDialog = nullptr;
-#ifdef AVM_DEBUG
-    tuneDialog = nullptr;
-#endif
-    HarmDialog = nullptr;
-    VibrDialog = nullptr;
-    corDialog = nullptr;
+    //#ifdef AVM_DEBUG
+    //    tuneDialog = nullptr;
+    //#endif
+    //    HarmDialog = nullptr;
+    //    VibrDialog = nullptr;
+    //    corDialog = nullptr;
     CurTabIndex = -1;
     for (int i = 0; i < 20; ++i)
     {
@@ -265,8 +265,8 @@ void AvmDebug::StartWork()
 
     DisconnectAndClear();
     QString str;
-    Board::GetInstance()->setTypeB(0);
-    Board::GetInstance()->setTypeM(0);
+    Board::GetInstance().setTypeB(0);
+    Board::GetInstance().setTypeM(0);
     CurTabIndex = -1;
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
@@ -302,9 +302,9 @@ void AvmDebug::StartWork()
         }
     }
     ActiveUSBThread = true;
-    Board::GetInstance()->setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
-    Board::GetInstance()->setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
-    if (Board::GetInstance()->typeM() == 0)
+    Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
+    Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
+    if (Board::GetInstance().typeM() == 0)
     {
         QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
         DisconnectAndClear();
@@ -312,7 +312,7 @@ void AvmDebug::StartWork()
         //            Disconnect();
         return;
     }
-    Board::GetInstance()->setConnectionState(Board::ConnectionState::Connected);
+    Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
     Reconnect = true;
 
     PrepareDialogs();
@@ -377,10 +377,10 @@ void AvmDebug::StartWork()
 
     if (corDialog != nullptr)
     {
-        switch (Board::GetInstance()->typeB())
+        switch (Board::GetInstance().typeB())
         {
         case Config::MTB_A2:
-            switch (Board::GetInstance()->typeM())
+            switch (Board::GetInstance().typeM())
             {
             case Config::MTM_84:
                 addConfTab(MainTW, "Начальные значения");
@@ -392,7 +392,7 @@ void AvmDebug::StartWork()
             }
             break;
         case Config::MTB_A3:
-            switch (Board::GetInstance()->typeM())
+            switch (Board::GetInstance().typeM())
             {
             case Config::MTM_87:
                 addConfTab(MainTW, "Старение изоляции");
@@ -427,7 +427,7 @@ void AvmDebug::StartWork()
     msgSerialNumber->setText(QString::number(ModuleBSI::ModuleBsi.SerialNum, 16));
 
     // check for incomplete calibration
-    QString usbserialnum = EProtocom::GetInstance()->usbSerial();
+    QString usbserialnum = EProtocom::GetInstance().usbSerial();
     QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
     if (storedcalibrations.contains(usbserialnum))
     {
@@ -442,28 +442,29 @@ void AvmDebug::setupConnections()
 {
     connect(AlarmW, &AlarmWidget::AlarmButtonPressed, AlarmStateAllDialog, &QDialog::show);
 
-    switch (Board::GetInstance()->typeB())
+    m_Module = Module::createModule();
+
+    switch (Board::GetInstance().typeB())
     {
     case Config::MTB_A2:
-        switch (Board::GetInstance()->typeM())
+        switch (Board::GetInstance().typeM())
         {
         case Config::MTM_84:
         {
-            m_Module = Module::createModule(Board::GetInstance()->type());
             //            checkBDialog = new CheckDialogKIV(BoardTypes::BT_BASE);
 
             //            S2Config->clear();
             //            confMDialog = new ConfDialogKIV(S2Config);
 
-            corDialog = new CorDialog;
+            //            corDialog = new CorDialog;
 
-            WarnAlarmKIVDialog = new WarnAlarmKIV(Alarm);
+            WarnAlarmKIVDialog = new WarnKIV(Alarm);
             connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKIVDialog, &QDialog::show);
-            connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKIVDialog, &WarnAlarmKIV::Update);
+            connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKIVDialog, &WarnKIV::Update);
 
-            AvarAlarmKIVDialog = new AvarAlarmKIV(Alarm);
+            AvarAlarmKIVDialog = new AlarmKIV(Alarm);
             connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKIVDialog, &QDialog::show);
-            connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVDialog, &AvarAlarmKIV::Update);
+            connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVDialog, &AlarmKIV::Update);
 
             //            connect(Alarm, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog,
             //            SLOT(SetWarnAlarmColor(QList<bool>))); connect(Alarm, SIGNAL(SetAlarmColor(QList<bool>)),
@@ -483,7 +484,7 @@ void AvmDebug::setupConnections()
 
             checkBDialog = new CheckDialogKTF(BoardTypes::BT_BASE);
 
-            corDialog = new CorDialogKTF;
+            corDialog = new StartupKTFDialog;
 
             WarnAlarmKTFDialog = new WarnAlarmKTF(Alarm);
             connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKTFDialog, &QDialog::show);
@@ -499,7 +500,7 @@ void AvmDebug::setupConnections()
         }
     case Config::MTB_A3:
 
-        switch (Board::GetInstance()->typeM())
+        switch (Board::GetInstance().typeM())
         {
         case Config::MTM_87:
             checkBDialog = new CheckDialogKDV(BoardTypes::BT_BASE);
@@ -513,7 +514,7 @@ void AvmDebug::setupConnections()
             S2Config->clear();
             confMDialog = new ConfDialogKDV(S2Config);
 
-            corDialog = new CorDialogKTF;
+            corDialog = new StartupKTFDialog;
 
             break;
         };
@@ -530,9 +531,9 @@ void AvmDebug::setupConnections()
 
 void AvmDebug::PrepareDialogs()
 {
-    infoDialog = new InfoDialog(this);
+    //    infoDialog = new InfoDialog(this);
     //    jourDialog = new JournalDialog(Ch104);
-    timeDialog = new TimeDialog(this);
+    //    timeDialog = new TimeDialog(this);
 
     AlarmStateAllDialog = new AlarmStateAll;
 
@@ -626,8 +627,8 @@ bool AvmDebug::nativeEvent(const QByteArray &eventType, void *message, long *res
             if (AlrmTimer->isActive())
                 AlrmTimer->stop();
             EProtocom::GetInstance()->usbStateChanged(message);
-            if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected
-                && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+            if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
+                && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
             {
                 BdaTimer->start();
                 AlrmTimer->start();
@@ -660,7 +661,7 @@ void AvmDebug::ReConnect()
 
         INFOMSG("Reconnect()");
         TimeTimer->stop();
-        if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
+        if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
         {
             qDebug() << "call Disconnect";
             Disconnect();
@@ -881,7 +882,7 @@ void AvmDebug::Disconnect()
     if (!StdFunc::IsInEmulateMode())
     {
         BdaTimer->stop();
-        if (Board::GetInstance()->connectionState() != Board::ConnectionState::Closed)
+        if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
             EProtocom::GetInstance()->Disconnect();
     }
 }
@@ -890,7 +891,7 @@ void AvmDebug::DisconnectAndClear()
 {
     INFOMSG("DisconnectAndClear()");
     TimeTimer->stop();
-    if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
+    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
     {
         AlarmW->Clear();
         Disconnect();

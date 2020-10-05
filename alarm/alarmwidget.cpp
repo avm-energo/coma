@@ -110,14 +110,13 @@ void AlarmWidget::UpdateThirdUSB(QList<bool> avar)
 
 void AlarmWidget::UpdateFirstUSB()
 {
-
-    if (ModuleBSI::ModuleBsi.Hth & WarnBSIMask)
+    if (ModuleBSI::ModuleBsi.Hth & BSIWARNMASK)
     {
         auto pixmap = WDFunc::NewCircle(Qt::yellow, this->height() / 4);
         WDFunc::SetLBLImage(this, "950", &pixmap);
         WDFunc::SetVisible(this, "950", true);
     }
-    else if (ModuleBSI::ModuleBsi.Hth & AvarBSIMask)
+    else if (ModuleBSI::ModuleBsi.Hth & BSIALARMMASK)
     {
         auto pixmap = WDFunc::NewCircle(Qt::red, this->height() / 4);
         WDFunc::SetLBLImage(this, "950", &pixmap);

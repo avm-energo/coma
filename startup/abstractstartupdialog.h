@@ -9,11 +9,11 @@
 #include <QByteArray>
 #include <QDialog>
 
-class AbstractCorDialog : public QDialog
+class AbstractStartupDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit AbstractCorDialog(QWidget *parent = nullptr);
+    explicit AbstractStartupDialog(QWidget *parent = nullptr);
     //    ~AbstractCorDialog();
 
     QTimer *MessageTimer;

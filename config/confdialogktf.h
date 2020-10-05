@@ -2,7 +2,7 @@
 #define CONFDIALOGKTF_H
 
 #include "../config/confdialog.h"
-#include "../config/confdialogkxx.h"
+#include "../config/confkxxdialog.h"
 #include "../config/configktf.h"
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
@@ -24,7 +24,7 @@ public:
 private:
     ConfigKTF *KTF;
     ConfDialog *Conf;
-    ConfDialogKxx *ConfKxx;
+    ConfKxxDialog *ConfKxx;
     QLabel *SysTime;
     QTimer *timer;
     QTimer *timerRead;

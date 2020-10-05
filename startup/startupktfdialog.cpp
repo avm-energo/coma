@@ -1,4 +1,4 @@
-#include "cordialogktf.h"
+#include "startupktfdialog.h"
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
@@ -29,7 +29,7 @@
 #include <QTabWidget>
 #include <QVBoxLayout>
 
-CorDialogKTF::CorDialogKTF(QWidget *parent) : AbstractCorDialog(parent)
+StartupKTFDialog::StartupKTFDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
     // int i;
 
@@ -42,11 +42,11 @@ CorDialogKTF::CorDialogKTF(QWidget *parent) : AbstractCorDialog(parent)
     SetupUI();
 }
 
-CorDialogKTF::~CorDialogKTF()
+StartupKTFDialog::~StartupKTFDialog()
 {
 }
 
-void CorDialogKTF::SetupUI()
+void StartupKTFDialog::SetupUI()
 {
     // QWidget *cp2 = new QWidget;
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
@@ -97,17 +97,17 @@ void CorDialogKTF::SetupUI()
     setLayout(lyout);
 }
 
-void CorDialogKTF::FillBackCor()
+void StartupKTFDialog::FillBackCor()
 {
     WDFunc::SPBData(this, QString::number(907), WBd7Block->InitAge);
 }
 
-void CorDialogKTF::FillCor()
+void StartupKTFDialog::FillCor()
 {
     WDFunc::SetSPBData(this, QString::number(907), Bd9Block->Age);
 }
 
-void CorDialogKTF::GetCorBd(int index)
+void StartupKTFDialog::GetCorBd(int index)
 {
     if (index == corDIndex)
 
@@ -132,7 +132,7 @@ void CorDialogKTF::GetCorBd(int index)
             }
         }
 }
-void CorDialogKTF::GetCorBdButton()
+void StartupKTFDialog::GetCorBdButton()
 {
     switch (Board::GetInstance().interfaceType())
     {
@@ -164,7 +164,7 @@ void CorDialogKTF::GetCorBdButton()
     }
 }
 
-void CorDialogKTF::WriteCorBd()
+void StartupKTFDialog::WriteCorBd()
 {
     // int i;
     quint32 adr = 907;
@@ -212,15 +212,15 @@ void CorDialogKTF::WriteCorBd()
     }
 }
 
-void CorDialogKTF::WriteCor()
+void StartupKTFDialog::WriteCor()
 {
 }
 
-void CorDialogKTF::ResetCor()
+void StartupKTFDialog::ResetCor()
 {
 }
 
-void CorDialogKTF::SaveToFile()
+void StartupKTFDialog::SaveToFile()
 {
     QByteArray ba;
     FillBackCor();
@@ -247,7 +247,7 @@ void CorDialogKTF::SaveToFile()
     }
 }
 
-void CorDialogKTF::ReadFromFile()
+void StartupKTFDialog::ReadFromFile()
 {
     QByteArray ba;
     ba.resize(sizeof(*Bd9Block));

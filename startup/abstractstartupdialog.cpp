@@ -1,4 +1,4 @@
-#include "abstractcordialog.h"
+#include "abstractstartupdialog.h"
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
@@ -30,16 +30,16 @@
 #include <QTabWidget>
 #include <QVBoxLayout>
 
-AbstractCorDialog::AbstractCorDialog(QWidget *parent) : QDialog(parent)
+AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : QDialog(parent)
 {
 }
 
-void AbstractCorDialog::GetCorBd(int index)
+void AbstractStartupDialog::GetCorBd(int index)
 {
     Q_UNUSED(index);
 }
 
-void AbstractCorDialog::SetCor()
+void AbstractStartupDialog::SetCor()
 {
     // if (MainInterface == I_ETHERNET)
     //{
@@ -56,7 +56,7 @@ void AbstractCorDialog::SetCor()
     //    }
 }
 
-float AbstractCorDialog::ToFloat(QString text)
+float AbstractStartupDialog::ToFloat(QString text)
 {
     bool ok;
     float tmpf;
@@ -69,12 +69,12 @@ float AbstractCorDialog::ToFloat(QString text)
     return tmpf;
 }
 
-void AbstractCorDialog::MessageOk()
+void AbstractStartupDialog::MessageOk()
 {
     QMessageBox::information(this, "INFO", "Записано успешно");
 }
 
-void AbstractCorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
+void AbstractStartupDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
 {
 
     if (((Signal)->fl.SigAdr >= 4000) && ((Signal)->fl.SigAdr <= 4010))
@@ -94,7 +94,7 @@ void AbstractCorDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
     }
 }
 
-void AbstractCorDialog::FillBd(QWidget *parent, QString Name, QString Value)
+void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, QString Value)
 {
     bool ok;
     double d = Value.toDouble(&ok);
@@ -107,13 +107,13 @@ void AbstractCorDialog::FillBd(QWidget *parent, QString Name, QString Value)
         qDebug() << "Failed to convert" << Value.toFloat();
 }
 
-void AbstractCorDialog::FillBd(QWidget *parent, QString Name, float Value)
+void AbstractStartupDialog::FillBd(QWidget *parent, QString Name, float Value)
 {
     if (!WDFunc::SetSPBData(parent, Name, Value))
         qDebug() << "Failed to find SpinBox";
 }
 
-void AbstractCorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
+void AbstractStartupDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
 {
     int i = 0;
 
@@ -130,7 +130,7 @@ void AbstractCorDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal)
     }
 }
 
-Error::Msg AbstractCorDialog::WriteCheckPassword()
+Error::Msg AbstractStartupDialog::WriteCheckPassword()
 {
     ok = false;
     StdFunc::ClearCancel();
@@ -150,7 +150,7 @@ Error::Msg AbstractCorDialog::WriteCheckPassword()
     }
     return Error::Msg::NoError;
 }
-void AbstractCorDialog::WritePasswordCheck(QString psw)
+void AbstractStartupDialog::WritePasswordCheck(QString psw)
 {
     if (psw == "121941")
         ok = true;
@@ -159,12 +159,12 @@ void AbstractCorDialog::WritePasswordCheck(QString psw)
     emit WritePasswordChecked();
 }
 
-void AbstractCorDialog::TimerTimeout()
+void AbstractStartupDialog::TimerTimeout()
 {
     MessageTimer->stop();
 }
 
-void AbstractCorDialog::ErrorRead()
+void AbstractStartupDialog::ErrorRead()
 {
     QMessageBox::information(this, "Ошибка", "Ошибка чтения");
 }

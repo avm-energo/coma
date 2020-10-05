@@ -1,4 +1,4 @@
-#include "../dialogs/cordialog.h"
+#include "../dialogs/startupkivdialog.h"
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
@@ -17,7 +17,7 @@
 #if _MSC_VER && !__INTEL_COMPILER
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
-CorDialog::CorDialog(QWidget *parent) : AbstractCorDialog(parent)
+StartupKIVDialog::StartupKIVDialog(QWidget *parent) : AbstractStartupDialog(parent)
 {
     int i;
 
@@ -41,11 +41,11 @@ CorDialog::CorDialog(QWidget *parent) : AbstractCorDialog(parent)
     // MessageTimer->start();
 }
 
-CorDialog::~CorDialog()
+StartupKIVDialog::~StartupKIVDialog()
 {
 }
 
-void CorDialog::SetupUI()
+void StartupKIVDialog::SetupUI()
 {
     // QWidget *cp2 = new QWidget;
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
@@ -152,7 +152,7 @@ void CorDialog::SetupUI()
     setObjectName("corDialog");
 }
 
-void CorDialog::FillBackCor()
+void StartupKIVDialog::FillBackCor()
 {
     int i;
     // QString tmps;
@@ -171,7 +171,7 @@ void CorDialog::FillBackCor()
     }
 }
 
-void CorDialog::FillCor()
+void StartupKIVDialog::FillCor()
 {
     int i;
 
@@ -189,7 +189,7 @@ void CorDialog::FillCor()
     }
 }
 
-void CorDialog::GetCorBd(int index)
+void StartupKIVDialog::GetCorBd(int index)
 {
     if (index == corDIndex)
     {
@@ -212,7 +212,7 @@ void CorDialog::GetCorBd(int index)
         }
     }
 }
-void CorDialog::GetCorBdButton()
+void StartupKIVDialog::GetCorBdButton()
 {
     switch (Board::GetInstance().interfaceType())
     {
@@ -241,7 +241,7 @@ void CorDialog::GetCorBdButton()
     }
 }
 
-void CorDialog::WriteCorBd()
+void StartupKIVDialog::WriteCorBd()
 {
     int i;
     quint32 adr[11] = { 910, 911, 912, 913, 914, 915, 916, 917, 918, 919, 920 };
@@ -286,7 +286,7 @@ void CorDialog::WriteCorBd()
     }
 }
 
-void CorDialog::WriteCor()
+void StartupKIVDialog::WriteCor()
 {
     if (WriteCheckPassword() == Error::Msg::NoError)
     {
@@ -329,7 +329,7 @@ void CorDialog::WriteCor()
     }
 }
 
-void CorDialog::SetCor()
+void StartupKIVDialog::SetCor()
 {
     switch (Board::GetInstance().interfaceType())
     {
@@ -349,7 +349,7 @@ void CorDialog::SetCor()
     }
 }
 
-void CorDialog::ResetCor()
+void StartupKIVDialog::ResetCor()
 {
     if (WriteCheckPassword() == Error::Msg::NoError)
     {
@@ -383,7 +383,7 @@ void CorDialog::ResetCor()
     }
 }
 
-float CorDialog::ToFloat(QString text)
+float StartupKIVDialog::ToFloat(QString text)
 {
     bool ok;
     float tmpf;
@@ -396,7 +396,7 @@ float CorDialog::ToFloat(QString text)
     return tmpf;
 }
 
-void CorDialog::MessageOk()
+void StartupKIVDialog::MessageOk()
 {
     QMessageBox::information(this, "INFO", "Записано успешно");
 }
@@ -442,7 +442,7 @@ void CorDialog::MessageOk()
 //    }
 //}
 
-void CorDialog::SaveToFile()
+void StartupKIVDialog::SaveToFile()
 {
     QByteArray ba;
     FillBackCor();
@@ -469,7 +469,7 @@ void CorDialog::SaveToFile()
     }
 }
 
-void CorDialog::ReadFromFile()
+void StartupKIVDialog::ReadFromFile()
 {
     QByteArray ba;
     ba.resize(sizeof(*CorBlock));
@@ -488,14 +488,14 @@ void CorDialog::ReadFromFile()
     QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
-Error::Msg CorDialog::WriteCheckPassword()
+Error::Msg StartupKIVDialog::WriteCheckPassword()
 {
     ok = false;
     StdFunc::ClearCancel();
     QEventLoop PasswordLoop;
     KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    connect(dlg, &KeyPressDialog::Finished, this, &CorDialog::WritePasswordCheck);
-    connect(this, &AbstractCorDialog::WritePasswordChecked, &PasswordLoop, &QEventLoop::quit);
+    connect(dlg, &KeyPressDialog::Finished, this, &StartupKIVDialog::WritePasswordCheck);
+    connect(this, &AbstractStartupDialog::WritePasswordChecked, &PasswordLoop, &QEventLoop::quit);
     dlg->deleteLater();
     dlg->show();
     PasswordLoop.exec();
@@ -509,7 +509,7 @@ Error::Msg CorDialog::WriteCheckPassword()
     return Error::Msg::NoError;
 }
 
-void CorDialog::WritePasswordCheck(QString psw)
+void StartupKIVDialog::WritePasswordCheck(QString psw)
 {
     if (psw == "121941")
         ok = true;
@@ -518,7 +518,7 @@ void CorDialog::WritePasswordCheck(QString psw)
     emit WritePasswordChecked();
 }
 
-void CorDialog::TimerTimeout()
+void StartupKIVDialog::TimerTimeout()
 {
     MessageTimer->stop();
     // first = 1;
@@ -529,7 +529,7 @@ void CorDialog::TimerTimeout()
    QMessageBox::information(this, "Успешно", "Записано успешно!");
 } */
 
-void CorDialog::ErrorRead()
+void StartupKIVDialog::ErrorRead()
 {
     QMessageBox::information(this, "Ошибка", "Ошибка чтения");
 }

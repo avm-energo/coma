@@ -3,21 +3,21 @@
 
 #include "../alarm/alarmstateall.h"
 #include "../alarm/alarmwidget.h"
-#include "../alarm/avaralarmkiv.h"
-#include "../alarm/avaralarmktf.h"
-#include "../alarm/warnalarmkiv.h"
-#include "../alarm/warnalarmktf.h"
 #include "../check/abstractcheckdialog.h"
 #include "../config/abstractconfdialog.h"
 #include "../config/confdialog.h"
 #include "../dialogs/connectdialog.h"
-#include "../dialogs/cordialog.h"
-#include "../dialogs/cordialogktf.h"
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/infodialog.h"
 #include "../dialogs/journalsdialog.h"
+#include "../dialogs/startupkivdialog.h"
+#include "../dialogs/startupktfdialog.h"
 #include "../dialogs/timedialog.h"
-#include "../gen/module.h"
+#include "../module/alarmkiv.h"
+#include "../module/alarmktf.h"
+#include "../module/module.h"
+#include "../module/warnkiv.h"
+#include "../module/warnktf.h"
 #include "../widgets/etabwidget.h"
 
 #include <QMainWindow>
@@ -165,8 +165,8 @@ private slots:
 
 private:
     AlarmWidget *AlarmW;
-    WarnAlarmKIV *WarnAlarmKIVDialog;
-    AvarAlarmKIV *AvarAlarmKIVDialog;
+    WarnKIV *WarnAlarmKIVDialog;
+    AlarmKIV *AvarAlarmKIVDialog;
     WarnAlarmKTF *WarnAlarmKTFDialog;
     AvarAlarmKTF *AvarAlarmKTFDialog;
     AlarmStateAll *AlarmStateAllDialog;
@@ -177,7 +177,7 @@ private:
     InfoDialog *infoDialog;
     ConfDialog *mainConfDialog;
     ConfDialog *mainTuneDialog;
-    AbstractCorDialog *corDialog;
+    AbstractStartupDialog *corDialog;
     //    AbstractConfDialog *confBDialog, *confMDialog;
     //    AbstractCheckDialog *checkBDialog, *checkMDialog, *HarmDialog, *VibrDialog;
     QDialog *tuneDialog;

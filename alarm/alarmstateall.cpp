@@ -12,7 +12,7 @@
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
-AlarmStateAll::AlarmStateAll(QWidget *parent) : AbstractAlarm(parent)
+AlarmStateAll::AlarmStateAll(QWidget *parent) : AbstractAlarmClass(parent)
 {
     AlarmState();
 }

@@ -61,6 +61,12 @@ void Board::setConnectionState(ConnectionState connectionState)
     emit connectionStateChanged(connectionState);
 }
 
+QList<quint16> Board::getBaseBoardsList() const
+{
+    QList<quint16> list = m_ModuleBaseBoards().keys();
+    return list;
+}
+
 Board::BoardType Board::boardType() const
 {
     return m_boardType;

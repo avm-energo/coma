@@ -3,7 +3,7 @@
 
 //#include "../check/abstractcheckdialog.h"
 //#include "../config/abstractconfdialog.h"
-#include "board.h"
+#include "../gen/board.h"
 
 #include <QDialog>
 #include <QObject>
@@ -21,13 +21,14 @@ public:
 
     explicit Module(QObject *parent = nullptr);
 
-    static Module *createModule(quint32 mtype);
+    static Module *createModule();
     //    AbstractConfDialog *confDialogBase();
     //    AbstractConfDialog *confDialogMez();
     //    QDialog *tuneDialogBase();
     //    QDialog *tuneDialogMez();
     //    AbstractCheckDialog *checkDialogBase();
     //    AbstractCheckDialog *checkDialogMez();
+    QDialog *infoDialog();
     QList<QDialog *> dialogs();
     QList<QDialog *> confDialogs();
     void addDialogToList(QDialog *dlg, const QString &name = "");

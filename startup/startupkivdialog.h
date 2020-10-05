@@ -3,18 +3,18 @@
 
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
-#include "abstractcordialog.h"
+#include "abstractstartupdialog.h"
 
 #include <QByteArray>
 #include <QDialog>
 
-class CorDialog : public AbstractCorDialog
+class StartupKIVDialog : public AbstractStartupDialog
 {
     Q_OBJECT
 
 public:
-    explicit CorDialog(QWidget *parent = nullptr);
-    ~CorDialog();
+    explicit StartupKIVDialog(QWidget *parent = nullptr);
+    ~StartupKIVDialog();
 
     Error::Msg WriteCheckPassword();
     void GetCorBd(int index) override;

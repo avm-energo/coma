@@ -4,11 +4,11 @@
 #include "abstractconfdialog.h"
 #include "configkxx.h"
 
-class ConfDialogKxx : public AbstractConfDialog
+class ConfKxxDialog : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    ConfDialogKxx(S2ConfigType *S2Config, QWidget *parent = nullptr);
+    ConfKxxDialog(S2ConfigType *S2Config, QWidget *parent = nullptr);
 
     QWidget *SetupComParam(QObject *parent);
     QWidget *SetupModBus(QObject *parent);

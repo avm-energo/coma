@@ -1,25 +1,7 @@
+#include "alarmkiv.h"
 
-#include "avaralarmkiv.h"
-
-#include "../gen/board.h"
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/modulebsi.h"
-#include "../usb/commands.h"
-#include "../widgets/wd_func.h"
-#include "abstractalarm.h"
-
-#include <QBoxLayout>
-
-AvarAlarmKIV::AvarAlarmKIV(AlarmClass *alarm, QWidget *parent) : AbstractAvarAlarm(parent)
+AlarmKIV::AlarmKIV(QObject *parent) : Alarm(parent)
 {
-    Alarm = alarm;
-    AvarAlarmState();
-}
-
-void AvarAlarmKIV::AvarAlarmState()
-{
-
     QStringList events = QStringList() << "Авария по приращению тангенса дельта ввода фазы А"
                                        << "Авария по приращению тангенса дельта ввода фазы B"
                                        << "Авария по приращению тангенса дельта ввода фазы C"

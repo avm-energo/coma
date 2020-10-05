@@ -1,4 +1,4 @@
-#include "checkdialogkiv.h"
+#include "checkkivdialog.h"
 
 #include "../config/config.h"
 #include "../gen/colors.h"
@@ -22,7 +22,7 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-CheckDialogKIV::CheckDialogKIV(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
+CheckKIVDialog::CheckKIVDialog(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
 {
     EParent = parent;
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
@@ -47,13 +47,13 @@ CheckDialogKIV::CheckDialogKIV(BoardTypes board, QWidget *parent) : AbstractChec
     Timer->setInterval(ANMEASINT);
 }
 
-CheckDialogKIV::~CheckDialogKIV()
+CheckKIVDialog::~CheckKIVDialog()
 {
     delete ChKIV;
     delete Ch;
 }
 
-QWidget *CheckDialogKIV::BdUI(int bdnum)
+QWidget *CheckKIVDialog::BdUI(int bdnum)
 {
     switch (bdnum)
     {
@@ -69,12 +69,12 @@ QWidget *CheckDialogKIV::BdUI(int bdnum)
     }
 }
 
-void CheckDialogKIV::RefreshAnalogValues(int bdnum)
+void CheckKIVDialog::RefreshAnalogValues(int bdnum)
 {
     Q_UNUSED(bdnum)
 }
 
-void CheckDialogKIV::PrepareHeadersForFile(int row)
+void CheckKIVDialog::PrepareHeadersForFile(int row)
 {
     QString phase[3] = { "A:", "B:", "C:" };
 
@@ -102,7 +102,7 @@ void CheckDialogKIV::PrepareHeadersForFile(int row)
     xlsx->write(row, 30, QVariant("Freq, Гц"));
 }
 
-void CheckDialogKIV::WriteToFile(int row, int bdnum)
+void CheckKIVDialog::WriteToFile(int row, int bdnum)
 {
     Q_UNUSED(row)
     Q_UNUSED(bdnum)
@@ -134,7 +134,7 @@ void CheckDialogKIV::WriteToFile(int row, int bdnum)
     xlsx->write(WRow, 30, ChKIV->Bd_block1.Frequency, format);
 }
 
-QWidget *CheckDialogKIV::CustomTab()
+QWidget *CheckKIVDialog::CustomTab()
 {
     // Оно точно должно возвращать nullptr?
     QWidget *w = new QWidget;
@@ -152,17 +152,17 @@ QWidget *CheckDialogKIV::CustomTab()
     return nullptr;
 }
 
-void CheckDialogKIV::ChooseValuesToWrite()
+void CheckKIVDialog::ChooseValuesToWrite()
 {
 }
-void CheckDialogKIV::SetDefaultValuesToWrite()
+void CheckKIVDialog::SetDefaultValuesToWrite()
 {
 }
-void CheckDialogKIV::PrepareAnalogMeasurements()
+void CheckKIVDialog::PrepareAnalogMeasurements()
 {
 }
 
-void CheckDialogKIV::USBUpdate()
+void CheckKIVDialog::USBUpdate()
 {
     QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");
     if (CheckTW == nullptr)
@@ -190,7 +190,7 @@ void CheckDialogKIV::USBUpdate()
     }
 }
 
-void CheckDialogKIV::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
+void CheckKIVDialog::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
 {
     for (int i = 0; i < Signal->SigNumber; i++)
     {
@@ -199,7 +199,7 @@ void CheckDialogKIV::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
     }
 }
 
-void CheckDialogKIV::UpdateSponData(IEC104Thread::SponSignals *Signal)
+void CheckKIVDialog::UpdateSponData(IEC104Thread::SponSignals *Signal)
 {
     int i, j;
     for (j = 0; j < Signal->SigNumber; j++)
@@ -297,7 +297,7 @@ void CheckDialogKIV::UpdateSponData(IEC104Thread::SponSignals *Signal)
     }
 }
 
-void CheckDialogKIV::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
+void CheckKIVDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
 
     // ModBusSignal sig = *new ModBusSignal;
@@ -315,7 +315,7 @@ void CheckDialogKIV::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
     }
 }
 
-void CheckDialogKIV::SetWarnColor(QList<bool> WarnAlarm)
+void CheckKIVDialog::SetWarnColor(QList<bool> WarnAlarm)
 {
     if (WarnAlarm.isEmpty())
         return;
@@ -357,7 +357,7 @@ void CheckDialogKIV::SetWarnColor(QList<bool> WarnAlarm)
     }
 }
 
-void CheckDialogKIV::SetAlarmColor(QList<bool> Alarm)
+void CheckKIVDialog::SetAlarmColor(QList<bool> Alarm)
 {
     if (Alarm.isEmpty())
         return;

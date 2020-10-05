@@ -2,7 +2,7 @@
 #define CONFDIALOGKDV_H
 
 #include "../config/confdialog.h"
-#include "../config/confdialogkxx.h"
+#include "../config/confkxxdialog.h"
 #include "../config/configkdv.h"
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
@@ -19,7 +19,7 @@ public:
 private:
     ConfigKDV *KDV;
     ConfDialog *Conf;
-    ConfDialogKxx *ConfKxx;
+    ConfKxxDialog *ConfKxx;
     //    Config *ConfigMain;
 
     bool Variable;

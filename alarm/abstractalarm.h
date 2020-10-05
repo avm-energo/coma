@@ -54,11 +54,11 @@
 
 #define CIRCLE_RADIUS 15
 
-class AbstractAlarm : public QDialog
+class AbstractAlarmClass : public QDialog
 {
     Q_OBJECT
 public:
-    AbstractAlarm(QWidget *parent = nullptr);
+    AbstractAlarmClass(QWidget *parent = nullptr);
 
 public slots:
 
@@ -72,21 +72,21 @@ protected:
     AlarmClass *Alarm;
 };
 
-class AbstractWarnAlarm : public AbstractAlarm
+class AbstractWarn : public AbstractAlarmClass
 {
     Q_OBJECT
 public:
-    explicit AbstractWarnAlarm(QWidget *parent = nullptr);
+    explicit AbstractWarn(QWidget *parent = nullptr);
 public slots:
     virtual void WarnAlarmState() = 0;
     void Update(QList<bool> states) override;
 };
 
-class AbstractAvarAlarm : public AbstractAlarm
+class AbstractAlarm : public AbstractAlarmClass
 {
     Q_OBJECT
 public:
-    explicit AbstractAvarAlarm(QWidget *parent = nullptr);
+    explicit AbstractAlarm(QWidget *parent = nullptr);
 public slots:
     virtual void AvarAlarmState() = 0;
     void Update(QList<bool> states) override;

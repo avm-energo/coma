@@ -1,5 +1,4 @@
-
-#include "warnalarmkiv.h"
+#include "warnkiv.h"
 
 #include "../gen/board.h"
 #include "../gen/colors.h"
@@ -7,17 +6,16 @@
 #include "../gen/modulebsi.h"
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
-#include "abstractalarm.h"
 
 #include <QBoxLayout>
 
-WarnAlarmKIV::WarnAlarmKIV(AlarmClass *alarm, QWidget *parent) : AbstractWarnAlarm(parent)
+WarnKIV::WarnKIV(AlarmClass *alarm, QWidget *parent) : AbstractWarn(parent)
 {
     Alarm = alarm;
     WarnAlarmState();
 }
 
-void WarnAlarmKIV::WarnAlarmState()
+void WarnKIV::WarnAlarmState()
 {
     const QStringList events = QStringList() << "Отсутствует сигнал напряжения фазы A                   "
                                              << "Отсутствует сигнал напряжения фазы B                   "

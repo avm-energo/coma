@@ -26,70 +26,53 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../module/alarm.cpp \
+    ../module/warn.cpp \
+    ../startup/startupkdvdialog.cpp \
+    avmdebug.cpp \
+    main.cpp \
     ../alarm/abstractalarm.cpp \
     ../alarm/alarmclass.cpp \
     ../alarm/alarmstateall.cpp \
     ../alarm/alarmwidget.cpp \
-    ../alarm/avaralarmkiv.cpp \
-    ../alarm/avaralarmktf.cpp \
-    ../alarm/warnalarmkiv.cpp \
-    ../alarm/warnalarmktf.cpp \
     ../check/abstractcheckdialog.cpp \
+    ../check/check.cpp \
     ../check/checkdialogharmonickdv.cpp \
     ../check/checkdialogharmonicktf.cpp \
     ../check/checkdialogkdv.cpp \
-    ../check/checkdialogkiv.cpp \
     ../check/checkdialogktf.cpp \
     ../check/checkdialogvibrkdv.cpp \
     ../check/checkharmonickdv.cpp \
     ../check/checkharmonicktf.cpp \
     ../check/checkkdv.cpp \
     ../check/checkkiv.cpp \
+    ../check/checkkivdialog.cpp \
     ../check/checkktf.cpp \
     ../check/checkvibrkdv.cpp \
+    ../config/abstractconfdialog.cpp \
+    ../config/config.cpp \
+    ../config/confdialog.cpp \
     ../config/confdialogkdv.cpp \
-    ../config/confdialogkiv.cpp \
     ../config/confdialogktf.cpp \
-    ../config/confdialogkxx.cpp \
     ../config/configkdv.cpp \
     ../config/configkiv.cpp \
     ../config/configktf.cpp \
     ../config/configkxx.cpp \
-    ../dialogs/abstractcordialog.cpp \
+    ../config/confkivdialog.cpp \
+    ../config/confkxxdialog.cpp \
     ../dialogs/connectdialog.cpp \
-    ../dialogs/cordialogktf.cpp \
-    ../dialogs/infodialog.cpp \
-    ../dialogs/timedialog.cpp \
-    ../gen/board.cpp \
-    ../gen/journals.cpp \
-    ../gen/logclass.cpp \
-    ../gen/module.cpp \
-    ../modbus/serialport.cpp \
-    ../models/checkdelegate.cpp \
-    ../models/valuemodel.cpp \
-    ../tune/abstracttunedialog.cpp \
-    ../tune/kiv/tunekivcheck.cpp \
-    ../tune/kiv/tunekiv.cpp \
-    ../tune/kiv/tunekivdialog.cpp \
-    ../tune/kiv/tunekivmain.cpp \
-    ../tune/kiv/tunekivtemp60.cpp \
-    ../tune/tuneclass.cpp \
-    ../usb/eprotocom.cpp \
-    ../usb/eusbworker.cpp \
-    avmdebug.cpp \
-    main.cpp \
-    ../check/check.cpp \
-    ../config/abstractconfdialog.cpp \
-    ../config/confdialog.cpp \
-    ../config/config.cpp \
-    ../dialogs/cordialog.cpp \
     ../dialogs/errordialog.cpp \
     ../dialogs/fwupdialog.cpp \
+    ../dialogs/infodialog.cpp \
     ../dialogs/journalsdialog.cpp \
     ../dialogs/keypressdialog.cpp \
     ../dialogs/settingsdialog.cpp \
+    ../dialogs/timedialog.cpp \
+    ../gen/board.cpp \
     ../gen/error.cpp \
     ../gen/files.cpp \
+    ../gen/journals.cpp \
+    ../gen/logclass.cpp \
     ../gen/modulebsi.cpp \
     ../gen/report.cpp \
     ../gen/s2.cpp \
@@ -97,10 +80,30 @@ SOURCES += \
     ../gen/timefunc.cpp \
     ../iec104/ethernet.cpp \
     ../iec104/iec104.cpp \
+    ../modbus/modbus.cpp \
+    ../modbus/serialport.cpp \
+    ../models/checkdelegate.cpp \
     ../models/etableitem.cpp \
     ../models/etablemodel.cpp \
-    ../modbus/modbus.cpp \
+    ../models/valuemodel.cpp \
+    ../module/alarmkiv.cpp \
+    ../module/alarmktf.cpp \
+    ../module/module.cpp \
+    ../module/warnkiv.cpp \
+    ../module/warnktf.cpp \
+    ../startup/abstractstartupdialog.cpp \
+    ../startup/startupkivdialog.cpp \
+    ../startup/startupktfdialog.cpp \
+    ../tune/abstracttunedialog.cpp \
+    ../tune/kiv/tunekiv.cpp \
+    ../tune/kiv/tunekivcheck.cpp \
+    ../tune/kiv/tunekivdialog.cpp \
+    ../tune/kiv/tunekivmain.cpp \
+    ../tune/kiv/tunekivtemp60.cpp \
+    ../tune/tuneclass.cpp \
     ../usb/commands.cpp \
+    ../usb/eprotocom.cpp \
+    ../usb/eusbworker.cpp \
     ../widgets/ecombobox.cpp \
     ../widgets/errorprotocolwidget.cpp \
     ../widgets/estackedwidget.cpp \
@@ -113,70 +116,53 @@ SOURCES += \
     ../widgets/wd_func.cpp
 
 HEADERS += \
+    ../module/alarm.h \
+    ../module/warn.h \
+    ../startup/startupkdvdialog.h \
+    avmdebug.h \
     ../alarm/abstractalarm.h \
     ../alarm/alarmclass.h \
     ../alarm/alarmstateall.h \
     ../alarm/alarmwidget.h \
-    ../alarm/avaralarmkiv.h \
-    ../alarm/avaralarmktf.h \
-    ../alarm/warnalarmkiv.h \
-    ../alarm/warnalarmktf.h \
+    ../check/check.h \
     ../check/abstractcheckdialog.h \
     ../check/checkdialogharmonickdv.h \
     ../check/checkdialogharmonicktf.h \
     ../check/checkdialogkdv.h \
-    ../check/checkdialogkiv.h \
     ../check/checkdialogktf.h \
     ../check/checkdialogvibrkdv.h \
     ../check/checkharmonickdv.h \
     ../check/checkharmonicktf.h \
     ../check/checkkdv.h \
     ../check/checkkiv.h \
+    ../check/checkkivdialog.h \
     ../check/checkktf.h \
     ../check/checkvibrkdv.h \
+    ../config/abstractconfdialog.h \
+    ../config/config.h \
+    ../config/confdialog.h \
     ../config/confdialogkdv.h \
-    ../config/confdialogkiv.h \
     ../config/confdialogktf.h \
-    ../config/confdialogkxx.h \
     ../config/configkdv.h \
     ../config/configkiv.h \
     ../config/configktf.h \
     ../config/configkxx.h \
-    ../dialogs/abstractcordialog.h \
+    ../config/confkivdialog.h \
+    ../config/confkxxdialog.h \
     ../dialogs/connectdialog.h \
-    ../dialogs/cordialogktf.h \
-    ../dialogs/infodialog.h \
-    ../dialogs/timedialog.h \
-    ../gen/board.h \
-    ../gen/journals.h \
-    ../gen/logclass.h \
-    ../gen/module.h \
-    ../modbus/serialport.h \
-    ../models/checkdelegate.h \
-    ../models/valuemodel.h \
-    ../tune/abstracttunedialog.h \
-    ../tune/kiv/tunekivcheck.h \
-    ../tune/kiv/tunekiv.h \
-    ../tune/kiv/tunekivdialog.h \
-    ../tune/kiv/tunekivmain.h \
-    ../tune/kiv/tunekivtemp60.h \
-    ../tune/tuneclass.h \
-    ../usb/defines.h \
-    ../usb/eprotocom.h \
-    ../usb/eusbworker.h \
-    ../check/check.h \
-    ../config/abstractconfdialog.h \
-    ../config/confdialog.h \
-    ../config/config.h \
-    ../dialogs/cordialog.h \
     ../dialogs/errordialog.h \
     ../dialogs/fwupdialog.h \
+    ../dialogs/infodialog.h \
     ../dialogs/journalsdialog.h \
     ../dialogs/keypressdialog.h \
     ../dialogs/settingsdialog.h \
+    ../dialogs/timedialog.h \
+    ../gen/board.h \
     ../gen/colors.h \
     ../gen/error.h \
     ../gen/files.h \
+    ../gen/journals.h \
+    ../gen/logclass.h \
     ../gen/modulebsi.h \
     ../gen/report.h \
     ../gen/s2.h \
@@ -184,9 +170,31 @@ HEADERS += \
     ../gen/timefunc.h \
     ../iec104/ethernet.h \
     ../iec104/iec104.h \
+    ../modbus/modbus.h \
+    ../modbus/serialport.h \
+    ../models/checkdelegate.h \
     ../models/etableitem.h \
     ../models/etablemodel.h \
+    ../models/valuemodel.h \
+    ../module/alarmkiv.h \
+    ../module/alarmktf.h \
+    ../module/module.h \
+    ../module/warnkiv.h \
+    ../module/warnktf.h \
+    ../startup/abstractstartupdialog.h \
+    ../startup/startupkivdialog.h \
+    ../startup/startupktfdialog.h \
+    ../tune/abstracttunedialog.h \
+    ../tune/kiv/tunekivcheck.h \
+    ../tune/kiv/tunekiv.h \
+    ../tune/kiv/tunekivdialog.h \
+    ../tune/kiv/tunekivmain.h \
+    ../tune/kiv/tunekivtemp60.h \
+    ../tune/tuneclass.h \
     ../usb/commands.h \
+    ../usb/defines.h \
+    ../usb/eprotocom.h \
+    ../usb/eusbworker.h \
     ../widgets/ecombobox.h \
     ../widgets/errorprotocolwidget.h \
     ../widgets/estackedwidget.h \
@@ -197,9 +205,7 @@ HEADERS += \
     ../widgets/passwordlineedit.h \
     ../widgets/signalchoosewidget.h \
     ../widgets/waitwidget.h \
-    ../widgets/wd_func.h \
-    ../modbus/modbus.h \
-    avmdebug.h
+    ../widgets/wd_func.h
 
 
 IMAGE_FILE += \

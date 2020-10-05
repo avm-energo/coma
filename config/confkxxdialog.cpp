@@ -1,4 +1,4 @@
-#include "confdialogkxx.h"
+#include "confkxxdialog.h"
 
 #include "../gen/colors.h"
 #include "../widgets/wd_func.h"
@@ -8,7 +8,7 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
-ConfDialogKxx::ConfDialogKxx(S2ConfigType *S2Config, QWidget *parent) : QWidget(parent)
+ConfKxxDialog::ConfKxxDialog(S2ConfigType *S2Config, QWidget *parent) : QWidget(parent)
 {
     Kxx = new ConfigKxx(S2Config);
 
@@ -20,7 +20,7 @@ ConfDialogKxx::ConfDialogKxx(S2ConfigType *S2Config, QWidget *parent) : QWidget(
     // QString tmps = "QWidget {background-color: " + QString(Colors::ACONFWCLR) + ";}";
 }
 
-QWidget *ConfDialogKxx::SetupComParam(QObject *parent)
+QWidget *ConfKxxDialog::SetupComParam(QObject *parent)
 {
     ParentSetup = parent;
     QWidget *w = new QWidget;
@@ -100,7 +100,7 @@ QWidget *ConfDialogKxx::SetupComParam(QObject *parent)
     return w;
 }
 
-QWidget *ConfDialogKxx::SetupModBus(QObject *parent)
+QWidget *ConfKxxDialog::SetupModBus(QObject *parent)
 {
     ParentMB = parent;
     QWidget *w = new QWidget;
@@ -342,7 +342,7 @@ QWidget *ConfDialogKxx::SetupModBus(QObject *parent)
     return w;
 }
 
-QWidget *ConfDialogKxx::SetupBl(QObject *parent)
+QWidget *ConfKxxDialog::SetupBl(QObject *parent)
 {
     ParentSetupBl = parent;
     int row = 0;
@@ -376,7 +376,7 @@ QWidget *ConfDialogKxx::SetupBl(QObject *parent)
     return w;
 }
 
-void ConfDialogKxx::ChangeWindow(int num)
+void ConfKxxDialog::ChangeWindow(int num)
 {
     Kxx->StrModBus.MBMaster = num;
 
@@ -386,11 +386,11 @@ void ConfDialogKxx::ChangeWindow(int num)
         QSWT->setCurrentWidget(WidgetList.at(num));
 }
 
-void ConfDialogKxx::SetupUI()
+void ConfKxxDialog::SetupUI()
 {
 }
 
-void ConfDialogKxx::Fill()
+void ConfKxxDialog::Fill()
 {
     int i, cbidx;
     quint16 tmp16;
@@ -570,7 +570,7 @@ void ConfDialogKxx::Fill()
     WDFunc::SetSPBData(ParentSetup, "adrMB_ID", Kxx->Com_param.adrMB);
 }
 
-void ConfDialogKxx::FillBack()
+void ConfKxxDialog::FillBack()
 {
     int i, cbidx;
     quint16 tmp16;
@@ -738,11 +738,11 @@ void ConfDialogKxx::FillBack()
     WDFunc::SPBData(ParentSetup, "adrMB_ID", Kxx->Com_param.adrMB);
 }
 
-void ConfDialogKxx::CheckConf()
+void ConfKxxDialog::CheckConf()
 {
 }
 
-void ConfDialogKxx::SetDefConf()
+void ConfKxxDialog::SetDefConf()
 {
     Kxx->SetDefConf();
     //  Fill();
