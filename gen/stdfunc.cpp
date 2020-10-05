@@ -18,6 +18,8 @@
 #include <QThread>
 #include <QTimer>
 
+#define QPROCESS_DEBUG
+
 QString StdFunc::HomeDir = "";       // рабочий каталог программы
 QString StdFunc::SystemHomeDir = ""; // системный каталог программы
 bool StdFunc::Emul = false;
@@ -172,13 +174,15 @@ Returns ip address if host is alive; otherwise returns 0.
 quint32 StdFunc::ping(quint32 addr)
 {
     QString exec = "ping";
+#ifdef _WIN32
+    QString param = "-n";
+#elif __linux__
+    QString param = "-c";
+#endif
     QHostAddress host(addr);
-    auto *pingProcess = new QProcess();
-    QObject::connect(pingProcess, &QProcess::finished, &QObject::deleteLater);
-    QStringList params;
+    auto *pingProcess = new QProcess;
+    QStringList params { param, "1", host.toString() };
 
-    params << "-n"
-           << "1" << host.toString();
     pingProcess->start(exec, params, QIODevice::ReadOnly);
     if (pingProcess->waitForFinished(100))
     {
@@ -188,14 +192,16 @@ quint32 StdFunc::ping(quint32 addr)
         QStringList list = p_stderr.isEmpty() ? p_stdout.split("\r\n", Qt::SkipEmptyParts)
                                               : p_stderr.split("\r\n", Qt::SkipEmptyParts);
 
-        if (std::any_of(list.constBegin(), list.constEnd(), [](const QString &i) { return i.contains("TTL"); }))
+        if (std::any_of(list.constBegin(), list.constEnd(),
+                [](const QString &i) { return i.contains("TTL", Qt::CaseInsensitive); }))
         {
-            pingProcess->deleteLater();
+            delete pingProcess;
             return addr;
         }
     }
-
     pingProcess->kill();
+    pingProcess->waitForFinished();
+    delete pingProcess;
     return 0;
 }
 
@@ -212,27 +218,22 @@ quint32 StdFunc::checkPort(quint32 ip4Addr, quint16 port)
     timer->setInterval(1000);
     QEventLoop *loop = new QEventLoop;
 
-    QObject::connect(sock, &QAbstractSocket::connected, [&]() {
-        qDebug() << "Port opened";
-        timer->stop();
-        timer->deleteLater();
-        sock->disconnectFromHost();
-        sock->deleteLater();
-        loop->quit();
-        loop->deleteLater();
-    });
+    QObject::connect(sock, &QAbstractSocket::connected, [&]() { loop->quit(); });
     QObject::connect(timer, &QTimer::timeout, [&]() {
-        qDebug() << "Port closed";
-        sock->disconnectFromHost();
-        sock->deleteLater();
         loop->quit();
-        loop->deleteLater();
-        timer->deleteLater();
         ip4Addr = 0;
     });
     timer->start();
-    qDebug() << "Timer started";
+    // qDebug() << "Timer started";
+    Q_ASSERT(sock != nullptr);
     sock->connectToHost(host, port);
     loop->exec(QEventLoop::ExcludeUserInputEvents);
+    sock->disconnect();
+    sock->disconnectFromHost();
+    delete sock;
+    timer->stop();
+    delete timer;
+    delete loop;
+    qDebug() << (ip4Addr ? "Port opened" : "Port closed");
     return ip4Addr;
 }
