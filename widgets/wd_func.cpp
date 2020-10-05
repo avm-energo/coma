@@ -80,8 +80,8 @@ bool WDFunc::SetLEColor(QWidget *w, const QString &lename, const QColor &color)
     return true;
 }
 
-QLabel *WDFunc::NewLBL(
-    QWidget *w, const QString &text, const QString &lblcolor, const QString &lblname, const QPixmap *pm)
+QLabel *WDFunc::NewLBL(QWidget *w, const QString &text, const QString &lblcolor, const QString &lblname,
+    const QPixmap *pm, const QString &lbltip)
 {
     QLabel *lbl = new QLabel(w);
     lbl->setText(text);
@@ -94,6 +94,7 @@ QLabel *WDFunc::NewLBL(
     }
     if (pm != Q_NULLPTR)
         lbl->setPixmap(*pm);
+    lbl->setToolTip(lbltip);
     return lbl;
 }
 

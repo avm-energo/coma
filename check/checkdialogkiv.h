@@ -12,6 +12,7 @@ class CheckDialogKIV : public EAbstractCheckDialog
 public:
     explicit CheckDialogKIV(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
     ~CheckDialogKIV();
+    QWidget *EParent;
 
 public slots:
     void SetWarnAlarmColor(QList<bool> WarnAlarm);
@@ -19,6 +20,7 @@ public slots:
     void UpdateFlData(IEC104Thread::FlSignals104 *);
     void UpdateSponData(IEC104Thread::SponSignals *);
     void USBUpdate() override;
+    //    void MainTWTabClicked(int tabindex);
 
 private:
     Check_KIV *ChKIV;

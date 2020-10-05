@@ -123,14 +123,29 @@ void CheckDialogHarmonicKDV::PrepareAnalogMeasurements()
 
 void CheckDialogHarmonicKDV::USBUpdate()
 {
-    if (Commands::GetBd(5, &ChHarmKDV->Bd_block5, sizeof(CheckHarmonicKDV::Bd_5_7)) == Error::Msg::NoError)
+    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw1");
+    if (CheckTW == nullptr)
     {
-        ChHarmKDV->FillBd5(this);
+        DBGMSG;
+        return;
     }
 
-    if (Commands::GetBd(7, &ChHarmKDV->Bd_block7, sizeof(CheckHarmonicKDV::Bd_5_7)) == Error::Msg::NoError)
+    for (int i = 0; i < 5; i++)
     {
-        ChHarmKDV->FillBd7(this);
+        if (CheckTW->currentIndex() == IndexWd.at(i))
+        {
+            if (Commands::GetBd(5, &ChHarmKDV->Bd_block5, sizeof(CheckHarmonicKDV::Bd_5_7)) == Error::Msg::NoError)
+                ChHarmKDV->FillBd5(this);
+        }
+    }
+
+    for (int i = 6; i < 12; i++)
+    {
+        if (CheckTW->currentIndex() == IndexWd.at(i))
+        {
+            if (Commands::GetBd(7, &ChHarmKDV->Bd_block7, sizeof(CheckHarmonicKDV::Bd_5_7)) == Error::Msg::NoError)
+                ChHarmKDV->FillBd7(this);
+        }
     }
 }
 

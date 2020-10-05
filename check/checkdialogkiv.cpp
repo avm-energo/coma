@@ -5,6 +5,7 @@
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
 #include "../usb/commands.h"
+#include "../widgets/etabwidget.h"
 #include "../widgets/wd_func.h"
 
 #include <QCoreApplication>
@@ -23,6 +24,7 @@
 
 CheckDialogKIV::CheckDialogKIV(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
 {
+    EParent = parent;
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
     QStringList sl;
@@ -61,8 +63,6 @@ QWidget *CheckDialogKIV::BdUI(int bdnum)
         return ChKIV->Bd1W(this);
     case 1: // Блок #1
         return ChKIV->Bd2W(this);
-        //    case 2: // Блок #1
-        //        return ChKIV->Bd3W(this);
 
     default:
         return new QWidget;
@@ -164,24 +164,32 @@ void CheckDialogKIV::PrepareAnalogMeasurements()
 
 void CheckDialogKIV::USBUpdate()
 {
-    if (Commands::GetBd(BdNum, &ChKIV->Bd_block1, sizeof(Check_KIV::Bd1)) == Error::Msg::NoError)
+    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");
+    if (CheckTW == nullptr)
     {
-        ChKIV->FillBdUSB(this);
-        // Ch84->FillBd2(this);
+        DBGMSG;
+        return;
     }
 
-    if (Commands::GetBd(5, &ChKIV->Bd_block5, sizeof(Check_KIV::Bd5)) == Error::Msg::NoError)
+    if (CheckTW->currentIndex() == IndexWd.at(0) || CheckTW->currentIndex() == IndexWd.at(1))
     {
-        ChKIV->FillBd5(this);
-        // Ch84->FillBd2(this);
+        if (Commands::GetBd(BdNum, &ChKIV->Bd_block1, sizeof(Check_KIV::Bd1)) == Error::Msg::NoError)
+            ChKIV->FillBdUSB(this);
     }
 
-    if (Commands::GetBd(8, &ChKIV->Bd_block8, sizeof(Check_KIV::Bd8)) == Error::Msg::NoError)
+    if (CheckTW->currentIndex() == IndexWd.at(0) || CheckTW->currentIndex() == IndexWd.at(1))
     {
-        ChKIV->FillBd8(this);
-        // Ch84->FillBd2(this);
+        if (Commands::GetBd(5, &ChKIV->Bd_block5, sizeof(Check_KIV::Bd5)) == Error::Msg::NoError)
+            ChKIV->FillBd5(this);
+    }
+
+    if (CheckTW->currentIndex() == IndexWd.at(1))
+    {
+        if (Commands::GetBd(8, &ChKIV->Bd_block8, sizeof(Check_KIV::Bd8)) == Error::Msg::NoError)
+            ChKIV->FillBd8(this);
     }
 }
+
 void CheckDialogKIV::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
 {
     for (int i = 0; i < Signal->SigNumber; i++)

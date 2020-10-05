@@ -486,11 +486,11 @@ void ConfDialogKxx::Fill()
         if (i == 1)
             cbidx = (Kxx->StrModBus.MBMab1[4] & 0xF0) >> 4;
         if (i == 2)
-            cbidx = (Kxx->StrModBus.MBMab1[4] & 0xF0) >> 4;
+            cbidx = (Kxx->StrModBus.MBMab2[4] & 0xF0) >> 4;
         if (i == 3)
-            cbidx = (Kxx->StrModBus.MBMab1[4] & 0xF0) >> 4;
+            cbidx = (Kxx->StrModBus.MBMab3[4] & 0xF0) >> 4;
         if (i == 4)
-            cbidx = (Kxx->StrModBus.MBMab1[4] & 0xF0) >> 4;
+            cbidx = (Kxx->StrModBus.MBMab4[4] & 0xF0) >> 4;
 
         switch (cbidx)
         {

@@ -105,6 +105,13 @@ void ConfDialogKTF::SetupUI()
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL(this,
+                             "Количество датчиков температуры обмоток, "
+                             "подключенных по Modbus Master:"),
+        row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "TdatNum", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL(this,
                              "Максимальное измеряемое фазное напряжение на входе "
                              "прибора, В эфф (не более 305В):"),
         row, 1, 1, 1);

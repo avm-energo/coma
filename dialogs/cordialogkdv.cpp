@@ -228,7 +228,7 @@ void CorDialogKDV::WriteCorBd()
 
                 //......
                 //            QThread::sleep(1);
-                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9Block)) == Error::Msg::NoError)
+                if (Commands::GetBd(9, Bd9Block, sizeof(Bd9)) == Error::Msg::NoError)
                     FillCor();
                 break;
             }
@@ -248,11 +248,12 @@ void CorDialogKDV::SaveToFile()
 {
     QByteArray ba;
     FillBackCor();
-    //    FillBackWBd8();
-    ba.resize(sizeof(*WBd7Block));
+    FillBackWBd8();
+    ba.resize(sizeof(*WBd7Block) + sizeof(*WBd8Block));
     memcpy(&(ba.data()[0]), WBd7Block, sizeof(*WBd7Block));
-    Error::Msg res
-        = Files::SaveToFile(Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*WBd7Block));
+    memcpy(&(ba.data()[sizeof(*WBd7Block)]), WBd8Block, sizeof(*WBd8Block));
+    Error::Msg res = Files::SaveToFile(
+        Files::ChooseFileForSave(this, "Tune files (*.cor)", "cor"), ba, sizeof(*WBd7Block) + sizeof(*WBd8Block));
     switch (res)
     {
     case Error::Msg::NoError:

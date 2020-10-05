@@ -11,6 +11,7 @@ class CheckDialogKDV : public EAbstractCheckDialog
 public:
     explicit CheckDialogKDV(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
+    QWidget *EParent;
 public slots:
     void SetPredAlarmColor(quint8 *);
     void SetAlarmColor(quint8 *Alarm);

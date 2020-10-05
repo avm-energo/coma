@@ -44,6 +44,7 @@ EAbstractCheckDialog::~EAbstractCheckDialog()
 
 void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
 {
+    IndexWd.clear();
     if (tabnames.size() < BdUINum)
     {
         ERMSG("Wrong BdTab size");
@@ -52,6 +53,9 @@ void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
 
+    CheckTW->setObjectName("checktw" + QString::number(iuindex));
+    iuindex++;
+    qDebug() << CheckTW->objectName();
     QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLORA1) + ";}";
 
     //    QString ConfTWss = "QTabBar::tab {margin-right: 0px; margin-left: 0px; padding: 5px;}"
@@ -70,7 +74,11 @@ void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
     CheckTW->tabBar()->setStyleSheet(ConfTWss);
     //    CheckTW->addTab(AutoCheckUI(),"  Автоматическая проверка  ");
     for (int i = 0; i < BdUINum; ++i)
+    {
         CheckTW->addTab(BdUI(i), "  " + tabnames.at(i) + "  ");
+        IndexWd.append(i);
+    }
+
     QWidget *w = CustomTab();
     if (w != nullptr)
         CheckTW->addTab(w, "  Прочее  ");

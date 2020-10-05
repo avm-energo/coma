@@ -213,7 +213,7 @@ private:
 
     QTimer *ReceiveTimer;
     QTimer *ReconnectTimer;
-    QTimer *BdaTimer, *TimeTimer, *AlrmTimer;
+    QTimer *BdaTimer, *TimeTimer, *AlrmTimer, *HarmTimer, *VibrTimer;
 
     IEC104 *Ch104;
     ModBus *ChModbus;

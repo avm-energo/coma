@@ -88,14 +88,23 @@ void CheckDialogVibrKDV::PrepareAnalogMeasurements()
 
 void CheckDialogVibrKDV::USBUpdate()
 {
-    if (Commands::GetBd(19, &ChVibrKDV->Bd_block19, sizeof(CheckVibrKDV::Bd19)) == Error::Msg::NoError)
+    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw2");
+    if (CheckTW == nullptr)
     {
-        ChVibrKDV->FillBd19(this);
+        DBGMSG;
+        return;
     }
 
-    if (Commands::GetBd(20, &ChVibrKDV->Bd_block20, sizeof(CheckVibrKDV::Bd20)) == Error::Msg::NoError)
+    if (CheckTW->currentIndex() == IndexWd.at(0))
     {
-        ChVibrKDV->FillBd20(this);
+        if (Commands::GetBd(19, &ChVibrKDV->Bd_block19, sizeof(CheckVibrKDV::Bd19)) == Error::Msg::NoError)
+            ChVibrKDV->FillBd19(this);
+    }
+
+    if ((CheckTW->currentIndex() == IndexWd.at(1)) | (CheckTW->currentIndex() == IndexWd.at(2)))
+    {
+        if (Commands::GetBd(20, &ChVibrKDV->Bd_block20, sizeof(CheckVibrKDV::Bd20)) == Error::Msg::NoError)
+            ChVibrKDV->FillBd20(this);
     }
 }
 
