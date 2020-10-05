@@ -1,5 +1,4 @@
 #include "board.h"
-
 Board::Board(Singleton::token)
 {
     m_typeB = 0;
