@@ -1,12 +1,6 @@
 #ifndef CHECKVIBRKDV_H
 #define CHECKVIBRKDV_H
 
-#include "../gen/board.h"
-#include "../iec104/ethernet.h"
-#include "../iec104/iec104.h"
-#include "../modbus/modbus.h"
-#include "check.h"
-
 #include <QWidget>
 
 class CheckVibrKDV

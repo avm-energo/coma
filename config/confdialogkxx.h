@@ -1,24 +1,22 @@
 #ifndef CONFIGDIALOGKXX_H
 #define CONFIGDIALOGKXX_H
 
+#include "abstractconfdialog.h"
 #include "configkxx.h"
 
-#include <QWidget>
-
-class ConfDialogKxx : public QWidget
+class ConfDialogKxx : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    ConfDialogKxx(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
+    explicit ConfDialogKxx(QVector<S2::DataRec> *S2Config, QWidget *parent = nullptr);
 
     QWidget *SetupComParam(QObject *parent);
     QWidget *SetupModBus(QObject *parent);
     QWidget *SetupBl(QObject *parent);
-    void SetDefConf();
-    void Fill();
-    void FillBack();
-
-    QStringList Sbaud = { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
+    void SetDefConf() override;
+    void Fill() override;
+    void FillBack() override;
+    void CheckConf() override;
 
 public slots:
     void ChangeWindow(int);
@@ -28,6 +26,9 @@ private:
     QList<QWidget *> WidgetList;
     ConfigKxx *Kxx;
     QObject *ParentMB, *ParentSetup, *ParentSetupBl;
+    void SetupUI() override;
+
+    // AbstractConfDialog interface
 };
 
 #endif // CONFIGKXX_H

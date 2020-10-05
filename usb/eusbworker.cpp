@@ -54,10 +54,10 @@ void EUsbWorker::interact()
     int bytes;
     unsigned char data[UH::MaxSegmenthLength + 1]; // +1 to ID
 
-    while (Board::GetInstance()->connectionState() != Board::ConnectionState::Closed)
+    while (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
         // check if there's any data in input buffer
-        if (Board::GetInstance()->connectionState() == Board::ConnectionState::AboutToFinish)
+        if (Board::GetInstance().connectionState() == Board::ConnectionState::AboutToFinish)
             continue;
         if (HidDevice != nullptr)
         {

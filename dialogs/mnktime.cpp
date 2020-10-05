@@ -114,7 +114,7 @@ void MNKTime::slot_timeOut()
 void MNKTime::slot2_timeOut()
 {
 
-    switch (Board::GetInstance()->interfaceType())
+    switch (Board::GetInstance().interfaceType())
     {
     case Board::InterfaceType::USB:
     {
@@ -146,7 +146,7 @@ void MNKTime::Write_PCDate()
 void MNKTime::WriteTime(QDateTime &myDateTime)
 {
     uint time = myDateTime.toSecsSinceEpoch();
-    switch (Board::GetInstance()->interfaceType())
+    switch (Board::GetInstance().interfaceType())
     {
     case Board::InterfaceType::USB:
     {

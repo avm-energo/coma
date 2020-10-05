@@ -1,19 +1,13 @@
 #include "board.h"
-
-Board *Board::m_instance { nullptr };
-QMutex Board::m_mutex;
-
-Board *Board::GetInstance(QObject *obj)
+Board::Board(Singleton::token)
 {
-    if (m_instance == nullptr)
-    {
-        QMutexLocker locker(&m_mutex);
-        if (m_instance == nullptr)
-        {
-            m_instance = new Board(obj);
-        }
-    }
-    return m_instance;
+    m_typeB = 0;
+    m_typeM = 0;
+    m_interfaceType = Unknown;
+    m_connectionState = ConnectionState::Closed;
+    m_boardType = BoardType::NONE;
+    m_deviceType = DeviceType::Module;
+    //    Q_UNUSED(parent)
 }
 
 quint16 Board::typeB() const
@@ -52,17 +46,6 @@ void Board::setInterfaceType(Board::InterfaceType interface)
 {
     m_interfaceType = interface;
     emit interfaceTypeChanged(interface);
-}
-
-Board::Board(QObject *parent)
-{
-    m_typeB = 0;
-    m_typeM = 0;
-    m_interfaceType = Unknown;
-    m_connectionState = ConnectionState::Closed;
-    m_boardType = BoardType::NONE;
-    m_deviceType = DeviceType::Module;
-    Q_UNUSED(parent)
 }
 
 Board::ConnectionState Board::connectionState() const

@@ -11,7 +11,7 @@ RC_ICONS = ../coma.ico
 CONFIG += c++17
 VERSION = 1.0
 
-QT       += core gui printsupport network serialport qml widgets testlib
+QT       += core gui printsupport network serialport qml widgets testlib concurrent
 
 TARGET = AVM-Service
 DEFINES += PROGNAME='\\"AVM-Service\\"'
@@ -142,6 +142,7 @@ HEADERS += \
     ../gen/board.h \
     ../gen/journals.h \
     ../gen/logclass.h \
+    ../gen/singleton.h \
     ../modbus/serialport.h \
     ../usb/defines.h \
     ../usb/eprotocom.h \

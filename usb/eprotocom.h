@@ -3,19 +3,19 @@
 #include "../gen/logclass.h"
 #include "../gen/modulebsi.h"
 #include "../gen/s2.h"
+#include "../gen/singleton.h"
 #include "eusbworker.h"
 
 #include <QEventLoop>
 #include <QThread>
 #include <QTimer>
 
-class EProtocom : public QObject
+class EProtocom final : public QObject, public Singleton<EProtocom>
 {
     Q_OBJECT
 public:
+    explicit EProtocom(token);
     ~EProtocom();
-
-    static EProtocom *GetInstance(QObject *parent = nullptr);
 
     bool Connect();
     bool Reconnect();
@@ -50,15 +50,7 @@ public:
 
     QString usbSerial() const;
 
-protected:
-    explicit EProtocom(QObject *parent = nullptr);
-    EProtocom(EProtocom &) = delete;
-
-    void operator=(const EProtocom &) = delete;
-
 private:
-    static EProtocom *pinstance_;
-    static QMutex mutex_;
     static bool m_writeUSBLog;
 
     EUsbWorker *m_usbWorker;

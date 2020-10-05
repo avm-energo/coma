@@ -37,5 +37,5 @@ void WarnAlarmKIV::WarnAlarmState()
                                              << "Сигнализация по приращению C ввода фазы C              "
                                              << "Не заданы паспортные значения                          "
                                              << "Сигнализация по повышенному небалансу токов            ";
-    SetupAlarm(events, Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts);
+    SetupAlarm(events, Alarm->MapAlarm.value(Board::GetInstance().type()).warnCounts);
 }

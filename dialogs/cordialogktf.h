@@ -23,7 +23,7 @@ public:
     //    QTimer *MessageTimer;
 
     // int WriteCheckPassword();
-    void GetCorBd(int index);
+    void GetCorBd(int index) override;
 
 private:
     struct WBd7
@@ -42,21 +42,21 @@ private:
     Bd9 *Bd9Block;
     WBd7 *WBd7Block;
 
-    void FillCor();
-    void FillBackCor();
+    void FillCor() override;
+    void FillBackCor() override;
     float ToFloat(QString text);
-    void SetupUI();
+    void SetupUI() override;
     void FillBd(QWidget *parent, QString Name, QString Value);
 
 signals:
 
 public slots:
-    void GetCorBdButton();
-    void WriteCorBd();
-    void WriteCor();
-    void ResetCor();
-    void SaveToFile();
-    void ReadFromFile();
+    void GetCorBdButton() override;
+    void WriteCorBd() override;
+    void WriteCor() override;
+    void ResetCor() override;
+    void SaveToFile() override;
+    void ReadFromFile() override;
 
 private slots:
 };

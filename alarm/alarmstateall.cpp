@@ -20,8 +20,7 @@ AlarmStateAll::AlarmStateAll(QWidget *parent) : AbstractAlarm(parent)
 void AlarmStateAll::AlarmState()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    hlyout->setObjectName("hlyout");
+
     QVBoxLayout *vlayout = new QVBoxLayout;
 
     QWidget *w = new QWidget;
@@ -31,7 +30,8 @@ void AlarmStateAll::AlarmState()
 
     for (int i = 0; i < HthToolTip().size(); ++i)
     {
-        hlyout = new QHBoxLayout;
+        QHBoxLayout *hlyout = new QHBoxLayout;
+        hlyout->setObjectName("hlyout" + QString::number(i));
 
         if (ModuleBSI::ModuleBsi.Hth & (0x00000001 << i))
         {

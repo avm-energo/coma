@@ -36,6 +36,13 @@ public:
     static void SetPrbMessage(const QString &msg);
     static void Wait(int ms);
 
+    static quint32 ping(quint32 addr);
+    static quint32 checkPort(quint32 ip4Addr, quint16 port);
+    template <typename T> static void joinItem(QList<T> &list, const T item)
+    {
+        list.append(item);
+    }
+
 private:
     static QString HomeDir;       // рабочий каталог программы
     static QString SystemHomeDir; // системный каталог программы

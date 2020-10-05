@@ -285,33 +285,33 @@ QWidget *Check_KIV::BdUI(int bdnum)
     return nullptr;
 }
 
-void Check_KIV::SetDefaultValuesToWrite()
-{
-}
+// void Check_KIV::SetDefaultValuesToWrite()
+//{
+//}
 
-void Check_KIV::PrepareAnalogMeasurements()
-{
-}
+// void Check_KIV::PrepareAnalogMeasurements()
+//{
+//}
 
-void Check_KIV::ChooseValuesToWrite()
-{
-}
+// void Check_KIV::ChooseValuesToWrite()
+//{
+//}
 
-void Check_KIV::WriteToFile(int row, int bdnum)
-{
-    Q_UNUSED(row);
-    Q_UNUSED(bdnum);
-}
+// void Check_KIV::WriteToFile(int row, int bdnum)
+//{
+//    Q_UNUSED(row);
+//    Q_UNUSED(bdnum);
+//}
 
-void Check_KIV::PrepareHeadersForFile(int row)
-{
-    Q_UNUSED(row);
-}
+// void Check_KIV::PrepareHeadersForFile(int row)
+//{
+//    Q_UNUSED(row);
+//}
 
-void Check_KIV::RefreshAnalogValues(int bdnum)
-{
-    Q_UNUSED(bdnum);
-}
+// void Check_KIV::RefreshAnalogValues(int bdnum)
+//{
+//    Q_UNUSED(bdnum);
+//}
 
 QWidget *Check_KIV::CustomTab()
 {

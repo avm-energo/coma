@@ -17,15 +17,13 @@
 
 AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
 {
-    Q_UNUSED(parent)
 }
 
-// void AbstractConfDialog::ReadConf(int index)
 void AbstractConfDialog::ReadConf()
 {
 
     TimeFunc::Wait(100);
-    switch (Board::GetInstance()->interfaceType())
+    switch (Board::GetInstance().interfaceType())
     {
     case Board::InterfaceType::Ethernet:
     {
@@ -70,7 +68,7 @@ void AbstractConfDialog::WriteConf()
             ERMSG("Ошибка чтения конфигурации");
             return;
         }
-        switch (Board::GetInstance()->interfaceType())
+        switch (Board::GetInstance().interfaceType())
         {
         case Board::InterfaceType::Ethernet:
             emit writeConfFile(S2Config);
@@ -211,7 +209,7 @@ void AbstractConfDialog::ButtonReadConf()
 {
     /*    char* num = new char;
      *num = 1; */
-    switch (Board::GetInstance()->interfaceType())
+    switch (Board::GetInstance().interfaceType())
     {
     case Board::InterfaceType::Ethernet:
     {

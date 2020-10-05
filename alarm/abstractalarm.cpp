@@ -94,8 +94,9 @@ void AbstractWarnAlarm::Update(QList<bool> states)
     if (states.isEmpty())
         return;
     auto max_range = states.length();
+    auto const &board = Board::GetInstance();
     //  Q_ASSERT(Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts == states.length());
-    max_range = std::min(Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts, states.length());
+    max_range = std::min(Alarm->MapAlarm.value(board.type()).warnCounts, states.length());
     // qDebug() << Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts << ":" << states.length();
     for (int i = 0; i < max_range; i++)
     {
@@ -112,10 +113,11 @@ void AbstractAvarAlarm::Update(QList<bool> states)
     if (states.isEmpty())
         return;
     auto max_range = states.length();
-    if (Alarm->MapAlarm.value(Board::GetInstance()->type()).avarCounts != states.length())
+    auto const &board = Board::GetInstance();
+    if (Alarm->MapAlarm.value(board.type()).avarCounts != states.length())
     {
-        qDebug() << Alarm->MapAlarm.value(Board::GetInstance()->type()).avarCounts << ":" << states.length();
-        max_range = std::min(Alarm->MapAlarm.value(Board::GetInstance()->type()).avarCounts, states.length());
+        qDebug() << Alarm->MapAlarm.value(board.type()).avarCounts << ":" << states.length();
+        max_range = std::min(Alarm->MapAlarm.value(board.type()).avarCounts, states.length());
     }
     for (int i = 0; i < max_range; i++)
     {

@@ -122,7 +122,7 @@ void CorDialogKDV::GetCorBd(int index)
 {
     if (index == corDIndex)
 
-        switch (Board::GetInstance()->interfaceType())
+        switch (Board::GetInstance().interfaceType())
         {
         case Board::InterfaceType::USB:
 
@@ -145,7 +145,7 @@ void CorDialogKDV::GetCorBd(int index)
 }
 void CorDialogKDV::GetCorBdButton()
 {
-    switch (Board::GetInstance()->interfaceType())
+    switch (Board::GetInstance().interfaceType())
     {
     case Board::InterfaceType::USB:
     {
@@ -183,7 +183,7 @@ void CorDialogKDV::WriteCorBd()
 
     if (WriteCheckPassword() == Error::Msg::NoError)
     {
-        switch (Board::GetInstance()->interfaceType())
+        switch (Board::GetInstance().interfaceType())
         {
         case Board::InterfaceType::Ethernet:
         {

@@ -29,12 +29,17 @@ EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board, QWidget *parent) : 
     xlsx = nullptr;
     WRow = 0;
     m_board = board;
-    Bd_blocks.clear();
     Timer = new QTimer(this);
     Timer->setObjectName("checktimer");
     connect(Timer, &QTimer::timeout, this, &EAbstractCheckDialog::TimerTimeout);
     Timer->setInterval(1000);
     setAttribute(Qt::WA_DeleteOnClose);
+}
+
+EAbstractCheckDialog::~EAbstractCheckDialog()
+{
+    qDeleteAll(Bd_blocks);
+    Bd_blocks.clear();
 }
 
 void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
@@ -72,6 +77,11 @@ void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
     lyout->addWidget(CheckTW);
     // lyout->addWidget(BottomUI());
     setLayout(lyout);
+}
+
+QWidget *EAbstractCheckDialog::CustomTab()
+{
+    return nullptr;
 }
 
 void EAbstractCheckDialog::Check1PPS()
@@ -212,6 +222,22 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 
     WRow++;
     Busy = false;
+}
+
+void EAbstractCheckDialog::StartBdMeasurements()
+{
+    BdTimer->start();
+}
+
+void EAbstractCheckDialog::StopBdMeasurements()
+{
+    BdTimer->stop();
+}
+
+void EAbstractCheckDialog::onModbusStateChanged()
+{
+    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
+        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 
 void EAbstractCheckDialog::StartAnalogMeasurements()

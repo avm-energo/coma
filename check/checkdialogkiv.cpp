@@ -45,6 +45,12 @@ CheckDialogKIV::CheckDialogKIV(BoardTypes board, QWidget *parent) : EAbstractChe
     Timer->setInterval(ANMEASINT);
 }
 
+CheckDialogKIV::~CheckDialogKIV()
+{
+    delete ChKIV;
+    delete Ch;
+}
+
 QWidget *CheckDialogKIV::BdUI(int bdnum)
 {
     switch (bdnum)
@@ -130,15 +136,16 @@ void CheckDialogKIV::WriteToFile(int row, int bdnum)
 
 QWidget *CheckDialogKIV::CustomTab()
 {
+    // Оно точно должно возвращать nullptr?
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     lyout->addWidget(ChKIV->Bd1W(this));
     QPushButton *pb = new QPushButton("Начать измерения Bd");
-    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StartBdMeasurements()));
+    connect(pb, &QAbstractButton::clicked, this, &EAbstractCheckDialog::StartBdMeasurements);
     hlyout->addWidget(pb);
     pb = new QPushButton("Остановить измерения Bd");
-    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StopBdMeasurements()));
+    connect(pb, &QAbstractButton::clicked, this, &EAbstractCheckDialog::StopBdMeasurements);
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     w->setLayout(lyout);
@@ -153,16 +160,6 @@ void CheckDialogKIV::SetDefaultValuesToWrite()
 }
 void CheckDialogKIV::PrepareAnalogMeasurements()
 {
-}
-
-void CheckDialogKIV::StartBdMeasurements()
-{
-    BdTimer->start();
-}
-
-void CheckDialogKIV::StopBdMeasurements()
-{
-    BdTimer->stop();
 }
 
 void CheckDialogKIV::USBUpdate()
@@ -308,12 +305,6 @@ void CheckDialogKIV::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
             ChKIV->FillBd(
                 this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
     }
-}
-
-void CheckDialogKIV::onModbusStateChanged()
-{
-    if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
-        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 
 void CheckDialogKIV::SetWarnAlarmColor(QList<bool> WarnAlarm)

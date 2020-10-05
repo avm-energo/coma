@@ -14,20 +14,21 @@ class AbstractConfDialog : public QDialog
 public:
     explicit AbstractConfDialog(QWidget *parent = nullptr);
 
-    QVector<S2::DataRec> *S2Config;
-
-    QStringList CheckConfErrors;
     bool IsNeededDefConf = false;
     //    int confIndex; //, timeIndex; //, checkIndex;
 
-    QWidget *ConfButtons();
-    virtual void Fill() = 0; // заполнить значения полей вывода из структуры конфигурации
-    virtual void FillBack() = 0; // ввести информацию из полей вывода в конфигурацию
-    virtual void SetDefConf() = 0; // задать конфигурацию по умолчанию
-    virtual void CheckConf() = 0;  // проверить конфигурацию на корректность,
-                                   // признаком наличия некорректностей
+    // заполнить значения полей вывода из структуры конфигурации
+    virtual void Fill() = 0;
+    // ввести информацию из полей вывода в конфигурацию
+    virtual void FillBack() = 0;
+    // задать конфигурацию по умолчанию
+    virtual void SetDefConf() = 0;
+    // проверить конфигурацию на корректность, признаком наличия некорректностей является непустой список
+    // CheckConfErrors
+    virtual void CheckConf() = 0;
+
     void ReadConf();
-    // является непустой список CheckConfErrors
+    //
     void PrereadConf();
     // int GetChNumFromObjectName(QString ObjectName);
 
@@ -36,8 +37,13 @@ public:
 public slots:
     void WriteConfMessageOk();
 
-private:
+protected:
     bool ok;
+    QVector<S2::DataRec> *S2Config;
+    QStringList CheckConfErrors;
+    QStringList Sbaud { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
+    QWidget *ConfButtons();
+
     virtual void SetupUI() = 0;
     bool PrepareConfToWrite();
 
@@ -45,22 +51,21 @@ private slots:
     void SaveConfToFile();
     void LoadConfFromFile();
     void ButtonReadConf();
-
+    void WriteConf();
     void WritePasswordCheck(QString psw);
 
 public slots:
-    void WriteConf();
     void FillConf(QVector<S2::DataRec> *);
 
 signals:
     void writeConfFile(QVector<S2::DataRec> *);
     void ReadConfig(char);
-    void BsiIsNeedToBeAcquiredAndChecked(); // signal to reload start block
-                                            // emitted when new configuration has
-                                            // been sent to module
-    void NewConfToBeLoaded();               // signal to load configuration in all appropriate
-                                            // windows (main conf, base conf, mez conf)
-    void DefConfToBeLoaded();               // signal to load default configuration
-                                            //    void StopRead(int);
+    // signal to reload start block  emitted when new configuration has been sent to module
+    void BsiIsNeedToBeAcquiredAndChecked();
+    // signal to load configuration in all windows (main conf, base conf, mez conf)
+    void NewConfToBeLoaded();
+    // signal to load default configuration
+    void DefConfToBeLoaded();
+    //    void StopRead(int);
     void WritePasswordChecked();
 };

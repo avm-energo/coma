@@ -95,22 +95,22 @@ void CheckDialogHarmonicKTF::WriteToFile(int row, int bdnum)
     Q_UNUSED(row);
     Q_UNUSED(bdnum);
 }
-QWidget *CheckDialogHarmonicKTF::CustomTab()
-{
-    //    QWidget *w = new QWidget;
-    //    QVBoxLayout *lyout = new QVBoxLayout;
-    //    QHBoxLayout *hlyout = new QHBoxLayout;
-    //    lyout->addWidget(ChHarmKTF->Bd1W(this));
-    //    QPushButton *pb = new QPushButton("Начать измерения Bd");
-    //    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StartBdMeasurements()));
-    //    hlyout->addWidget(pb);
-    //    pb = new QPushButton("Остановить измерения Bd");
-    //    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StopBdMeasurements()));
-    //    hlyout->addWidget(pb);
-    //    lyout->addLayout(hlyout);
-    //    w->setLayout(lyout);
-    return nullptr;
-}
+// QWidget *CheckDialogHarmonicKTF::CustomTab()
+//{
+//    QWidget *w = new QWidget;
+//    QVBoxLayout *lyout = new QVBoxLayout;
+//    QHBoxLayout *hlyout = new QHBoxLayout;
+//    lyout->addWidget(ChHarmKTF->Bd1W(this));
+//    QPushButton *pb = new QPushButton("Начать измерения Bd");
+//    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StartBdMeasurements()));
+//    hlyout->addWidget(pb);
+//    pb = new QPushButton("Остановить измерения Bd");
+//    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StopBdMeasurements()));
+//    hlyout->addWidget(pb);
+//    lyout->addLayout(hlyout);
+//    w->setLayout(lyout);
+//    return nullptr;
+//}
 void CheckDialogHarmonicKTF::ChooseValuesToWrite()
 {
 }
@@ -119,16 +119,6 @@ void CheckDialogHarmonicKTF::SetDefaultValuesToWrite()
 }
 void CheckDialogHarmonicKTF::PrepareAnalogMeasurements()
 {
-}
-
-void CheckDialogHarmonicKTF::StartBdMeasurements()
-{
-    BdTimer->start();
-}
-
-void CheckDialogHarmonicKTF::StopBdMeasurements()
-{
-    BdTimer->stop();
 }
 
 void CheckDialogHarmonicKTF::USBUpdate()
@@ -174,13 +164,6 @@ void CheckDialogHarmonicKTF::UpdateModBusData(QList<ModBus::SignalStruct> Signal
                 this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
     }
 }
-
-void CheckDialogHarmonicKTF::onModbusStateChanged()
-{
-    if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
-        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
-}
-
 void CheckDialogHarmonicKTF::SetPredAlarmColor(quint8 *PredAlarm)
 {
     Q_UNUSED(PredAlarm);
