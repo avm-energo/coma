@@ -46,7 +46,7 @@ signals:
     //    void WritePasswordChecked();
 
 public slots:
-    void GetCorBdButton();
+    void GetCorBdButton() override;
     void WriteCorBd() override;
     void WriteCor() override;
     void MessageOk();

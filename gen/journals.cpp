@@ -22,9 +22,9 @@
 
 Journals::Journals(QObject *parent) : QObject(parent)
 {
-    _sysModel = new ETableModel;
-    _workModel = new ETableModel;
-    _measModel = new ETableModel;
+    _sysModel = new ETableModel(this);
+    _workModel = new ETableModel(this);
+    _measModel = new ETableModel(this);
 }
 void Journals::SetProxyModels(
     QSortFilterProxyModel *workmdl, QSortFilterProxyModel *sysmdl, QSortFilterProxyModel *measmdl)

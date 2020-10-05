@@ -88,8 +88,6 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
 
 #endif
 
-    S2Config = new QVector<S2::DataRec>;
-    S2ConfigForTune = new QVector<S2::DataRec>;
     Reconnect = false;
     timeDialog = nullptr;
     mainConfDialog = nullptr;
@@ -119,6 +117,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     LoadSettings();
 
     splash->finish(this);
+    splash->deleteLater();
     setStatusBar(WDFunc::NewSB(this));
 }
 
@@ -394,7 +393,7 @@ void Coma::StartWork()
             ERMSG("Отмена подключения");
             return;
         }
-        S2ConfigForTune->clear();
+        // S2ConfigForTune->clear();
         SaveSettings();
     }
 
@@ -404,6 +403,8 @@ void Coma::StartWork()
 
     Board::GetInstance()->setTypeB(0);
     Board::GetInstance()->setTypeM(0);
+    S2Config = new QVector<S2::DataRec>;
+    S2ConfigForTune = new QVector<S2::DataRec>;
     CurTabIndex = -1;
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
@@ -542,7 +543,7 @@ void Coma::setupConnections()
         {
             checkBDialog = new CheckDialogKIV(BoardTypes::BT_BASE, this);
 
-            S2Config->clear();
+            // S2Config->clear();
             if (Board::GetInstance()->interfaceType() != Board::InterfaceType::RS485)
                 confMDialog = new ConfDialogKIV(S2Config, this);
 
@@ -569,7 +570,7 @@ void Coma::setupConnections()
             HarmDialog = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
             //     connect(BdaTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
 
-            S2Config->clear();
+            // S2Config->clear();
             if (Board::GetInstance()->interfaceType() != Board::InterfaceType::RS485)
                 confMDialog = new ConfDialogKTF(S2Config, this);
 
@@ -602,7 +603,7 @@ void Coma::setupConnections()
             VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE, this);
             // connect(BdaTimer, &QTimer::timeout, VibrDialog, &EAbstractCheckDialog::USBUpdate);
 
-            S2Config->clear();
+            // S2Config->clear();
             if (Board::GetInstance()->interfaceType() != Board::InterfaceType::RS485)
                 confMDialog = new ConfDialogKDV(S2Config, this);
 
@@ -737,20 +738,20 @@ void Coma::NewUSB()
 
 void Coma::NewTimers()
 {
-    TimeTimer = new QTimer;
+    TimeTimer = new QTimer(this);
     TimeTimer->setInterval(1000);
 
-    BdaTimer = new QTimer;
+    BdaTimer = new QTimer(this);
     BdaTimer->setInterval(ANMEASINT);
 
-    AlrmTimer = new QTimer;
+    AlrmTimer = new QTimer(this);
     AlrmTimer->setInterval(10000);
 
-    ReceiveTimer = new QTimer;
+    ReceiveTimer = new QTimer(this);
     ReceiveTimer->setInterval(ANMEASINT);
     connect(ReceiveTimer, &QTimer::timeout, this, &Coma::FileTimeOut);
 
-    ReconnectTimer = new QTimer;
+    ReconnectTimer = new QTimer(this);
     ReconnectTimer->setInterval(INTERVAL::RECONNECT);
     ReconnectTimer->setSingleShot(true);
     connect(ReconnectTimer, &QTimer::timeout, this, &Coma::AttemptToRec);
@@ -874,13 +875,13 @@ void Coma::ConnectMessage()
 void Coma::LoadSettings()
 {
     QString HomeDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + PROGNAME + "/";
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
+    QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
     StdFunc::SetHomeDir(sets->value("Homedir", HomeDir).toString());
 }
 
 void Coma::SaveSettings()
 {
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
+    QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
     sets->setValue("Homedir", StdFunc::GetHomeDir());
 }
 
@@ -1123,6 +1124,10 @@ void Coma::DisconnectAndClear()
             ERMSG("Пустой MainTW");
             return;
         }
+        S2Config->clear();
+        S2ConfigForTune->clear();
+        delete S2Config;
+        delete S2ConfigForTune;
         // Проверить после отключения алармов
         // if (Reconnect)
         //    QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);

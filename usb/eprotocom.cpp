@@ -39,15 +39,15 @@ EProtocom::EProtocom(QObject *parent)
     SegEnd = 0;
     SegLeft = 0;
     OscNum = 0;
-    OscTimer = new QTimer(this);
+    OscTimer = new QTimer;
     OscTimer->setInterval(CN::TimeoutOscillogram);
     OscTimer->setSingleShot(false);
-    m_waitTimer = new QTimer(this);
+    m_waitTimer = new QTimer;
     m_waitTimer->setInterval(CN::Timeout);
     connect(OscTimer, &QTimer::timeout, this, &EProtocom::OscTimerTimeout);
     connect(m_waitTimer, &QTimer::timeout, &m_loop, &QEventLoop::quit);
     connect(this, &EProtocom::QueryFinished, &m_loop, &QEventLoop::quit);
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
+    QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
     setWriteUSBLog(sets->value("WriteLog", "0").toBool());
 }
 
@@ -851,6 +851,9 @@ EProtocom::~EProtocom()
     m_workerThread.quit();
     m_workerThread.wait();
     pinstance_ = nullptr;
+    CnLog->deleteLater();
+    OscTimer->deleteLater();
+    m_waitTimer->deleteLater();
 }
 /**
  * The first time we call GetInstance we will lock the storage location
@@ -859,13 +862,10 @@ EProtocom::~EProtocom()
  */
 EProtocom *EProtocom::GetInstance(QObject *parent)
 {
+    QMutexLocker locker(&mutex_);
     if (pinstance_ == nullptr)
     {
-        QMutexLocker locker(&mutex_);
-        if (pinstance_ == nullptr)
-        {
-            pinstance_ = new EProtocom(parent);
-        }
+        pinstance_ = new EProtocom(parent);
     }
     return pinstance_;
 }
