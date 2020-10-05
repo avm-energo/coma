@@ -3,10 +3,11 @@
 #define DEVICETYPE_MODULE 1 // модуль
 #define DEVICETYPE_DEVICE 2 // прибор
 
-#include <QMutex>
+#include "singleton.h"
+
 #include <QObject>
 
-class Board : public QObject
+class Board final : public QObject, public Singleton<Board>
 {
     Q_OBJECT
 
@@ -65,21 +66,8 @@ public:
     Q_PROPERTY(DeviceType device READ deviceType WRITE setDeviceType NOTIFY deviceTypeChanged)
     Q_PROPERTY(BoardType board READ boardType WRITE setBoardType NOTIFY boardTypeChanged)
     Q_PROPERTY(ConnectionState connection READ connectionState WRITE setConnectionState NOTIFY connectionStateChanged)
-    /**
-     * Одиночки не должны быть клонируемыми.
-     */
-    Board(Board &other) = delete;
-    /**
-     * Singletons should not be assignable.
-     */
-    void operator=(const Board &) = delete;
-    /**
-     * Это статический метод, управляющий доступом к экземпляру одиночки. При
-     * первом запуске, он создаёт экземпляр одиночки и помещает его в
-     * статическое поле. При последующих запусках, он возвращает клиенту объект,
-     * хранящийся в статическом поле.
-     */
-    static Board *GetInstance(QObject *obj = nullptr);
+
+    explicit Board(token);
 
     quint16 typeB() const;
     void setTypeB(const quint16 &typeB);
@@ -101,13 +89,7 @@ public:
     ConnectionState connectionState() const;
     void setConnectionState(ConnectionState connectionState);
 
-protected:
-    explicit Board(QObject *parent = nullptr);
-
 private:
-    static Board *m_instance;
-    static QMutex m_mutex;
-
     InterfaceType m_interfaceType;
     DeviceType m_deviceType;
     BoardType m_boardType;

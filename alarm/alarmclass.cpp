@@ -50,14 +50,14 @@ void AlarmClass::UpdateAlarmUSB()
     BdAlarm signalling;
     int i = 0;
     bool ind;
-    if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     {
-        if (Commands::GetBd(MapAlarm[Board::GetInstance()->type()].BdNumbers, &signalling, sizeof(BdAlarm))
+        if (Commands::GetBd(MapAlarm[Board::GetInstance().type()].BdNumbers, &signalling, sizeof(BdAlarm))
             == Error::Msg::NoError)
         {
-            for (i = 0; i < MapAlarm[Board::GetInstance()->type()].warnCounts; ++i)
+            for (i = 0; i < MapAlarm[Board::GetInstance().type()].warnCounts; ++i)
             {
-                if (Board::GetInstance()->type() == Board::DeviceModel::KTF)
+                if (Board::GetInstance().type() == Board::DeviceModel::KTF)
                 {
                     if (i != 9)
                     {
@@ -76,7 +76,7 @@ void AlarmClass::UpdateAlarmUSB()
                 }
             }
 
-            for (i = 0; i < MapAlarm[Board::GetInstance()->type()].avarCounts; ++i)
+            for (i = 0; i < MapAlarm[Board::GetInstance().type()].avarCounts; ++i)
             {
                 bool avar = (signalling.Alarm & (0x00000001 << i));
                 AvarAlarmEvents.append(avar);
@@ -84,7 +84,7 @@ void AlarmClass::UpdateAlarmUSB()
 
             emit SetWarnAlarmColor(WarnAlarmEvents);
             emit SetAlarmColor(AvarAlarmEvents);
-            if (Board::GetInstance()->type() == Board::DeviceModel::KTF)
+            if (Board::GetInstance().type() == Board::DeviceModel::KTF)
                 emit SetIndicator(ind);
         }
     }
@@ -99,17 +99,17 @@ void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
     int i = 0;
     int ccount = 0;
 
-    Q_ASSERT(MapAlarm.contains(Board::GetInstance()->type()));
+    Q_ASSERT(MapAlarm.contains(Board::GetInstance().type()));
     for (i = 0; i < Signal.countBytes; i++)
     {
         for (int j = 0; j < 8; j++)
         {
-            if (ccount < MapAlarm[Board::GetInstance()->type()].warns.size())
+            if (ccount < MapAlarm[Board::GetInstance().type()].warns.size())
             {
                 bool alarm = (Signal.Bytes[i] & (0x00000001 << j));
-                if (MapAlarm[Board::GetInstance()->type()].warns.at(ccount))
+                if (MapAlarm[Board::GetInstance().type()].warns.at(ccount))
                     WarnAlarmEvents.append(alarm);
-                else if (MapAlarm[Board::GetInstance()->type()].avars.at(ccount))
+                else if (MapAlarm[Board::GetInstance().type()].avars.at(ccount))
                     AvarAlarmEvents.append(alarm);
                 ccount++;
             }
@@ -133,13 +133,13 @@ void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
             {
                 quint32 sigadr = Signal->Spon[i].SigAdr;
                 bool alarm = (sigval & 0x00000001) ? 1 : 0;
-                quint32 AdrAlarm = MapAlarm[Board::GetInstance()->type()].AdrAlarm;
-                int WarnsSize = MapAlarm[Board::GetInstance()->type()].warns.size();
+                quint32 AdrAlarm = MapAlarm[Board::GetInstance().type()].AdrAlarm;
+                int WarnsSize = MapAlarm[Board::GetInstance().type()].warns.size();
                 if ((AdrAlarm <= sigadr) && (sigadr <= AdrAlarm + WarnsSize))
                 {
-                    if (MapAlarm[Board::GetInstance()->type()].warns.at(i))
+                    if (MapAlarm[Board::GetInstance().type()].warns.at(i))
                         WarnAlarmEvents.append(alarm);
-                    else if (MapAlarm[Board::GetInstance()->type()].avars.at(i))
+                    else if (MapAlarm[Board::GetInstance().type()].avars.at(i))
                         AvarAlarmEvents.append(alarm);
                 }
             }

@@ -16,8 +16,6 @@ class ConfDialogKDV : public AbstractConfDialog
 public:
     ConfDialogKDV(S2ConfigType *S2Config, QWidget *parent = nullptr);
 
-    QStringList Sbaud { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" };
-
 private:
     ConfigKDV *KDV;
     ConfDialog *Conf;

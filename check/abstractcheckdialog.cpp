@@ -29,7 +29,6 @@ AbstractCheckDialog::AbstractCheckDialog(BoardTypes board, QWidget *parent) : QD
     xlsx = nullptr;
     WRow = 0;
     m_board = board;
-    Bd_blocks.clear();
     Timer = new QTimer(this);
     Timer->setObjectName("checktimer");
     connect(Timer, &QTimer::timeout, this, &AbstractCheckDialog::TimerTimeout);
@@ -37,8 +36,15 @@ AbstractCheckDialog::AbstractCheckDialog(BoardTypes board, QWidget *parent) : QD
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void AbstractCheckDialog::SetupUI(QStringList &tabnames)
+EAbstractCheckDialog::~EAbstractCheckDialog()
 {
+    qDeleteAll(Bd_blocks);
+    Bd_blocks.clear();
+}
+
+void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
+{
+    IndexWd.clear();
     if (tabnames.size() < BdUINum)
     {
         ERMSG("Wrong BdTab size");
@@ -47,6 +53,9 @@ void AbstractCheckDialog::SetupUI(QStringList &tabnames)
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
 
+    CheckTW->setObjectName("checktw" + QString::number(iuindex));
+    iuindex++;
+    qDebug() << CheckTW->objectName();
     QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLORA1) + ";}";
 
     //    QString ConfTWss = "QTabBar::tab {margin-right: 0px; margin-left: 0px; padding: 5px;}"
@@ -65,13 +74,22 @@ void AbstractCheckDialog::SetupUI(QStringList &tabnames)
     CheckTW->tabBar()->setStyleSheet(ConfTWss);
     //    CheckTW->addTab(AutoCheckUI(),"  Автоматическая проверка  ");
     for (int i = 0; i < BdUINum; ++i)
+    {
         CheckTW->addTab(BdUI(i), "  " + tabnames.at(i) + "  ");
+        IndexWd.append(i);
+    }
+
     QWidget *w = CustomTab();
     if (w != nullptr)
         CheckTW->addTab(w, "  Прочее  ");
     lyout->addWidget(CheckTW);
     // lyout->addWidget(BottomUI());
     setLayout(lyout);
+}
+
+QWidget *AbstractCheckDialog::CustomTab()
+{
+    return nullptr;
 }
 
 void AbstractCheckDialog::Check1PPS()
@@ -212,6 +230,22 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 
     WRow++;
     Busy = false;
+}
+
+void AbstractCheckDialog::StartBdMeasurements()
+{
+    BdTimer->start();
+}
+
+void AbstractCheckDialog::StopBdMeasurements()
+{
+    BdTimer->stop();
+}
+
+void AbstractCheckDialog::onModbusStateChanged()
+{
+    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
+        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 
 void AbstractCheckDialog::StartAnalogMeasurements()

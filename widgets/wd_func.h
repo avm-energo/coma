@@ -82,7 +82,7 @@ public:
     }
     static bool SetLEColor(QWidget *w, const QString &lename, const QColor &color);
     static QLabel *NewLBL(QWidget *w, const QString &text, const QString &lblcolor = "", const QString &lblname = "",
-        const QPixmap *pm = Q_NULLPTR);
+        const QPixmap *pm = Q_NULLPTR, const QString &lbltip = "");
     static QLabel *NewLBLT(QWidget *w, const QString &text, const QString &lblname = "", const QString &lblstyle = "",
         const QString &lbltip = "", bool Fixed = false);
     // static QLabel *NewLBLTT(QWidget *w, const QString &text, const QString
@@ -112,6 +112,23 @@ public:
     static QImage *TwoImages(const QString &first, const QString &second);
     static QPushButton *NewPB(QWidget *parent, const QString &pbname, const QString &text, const QObject *receiver,
         const char *method, const QString &icon = "", const QString &pbtooltip = "");
+    template <typename Func>
+    static QPushButton *NewPB2(QWidget *parent, const QString &pbname, const QString &text, const Func *receiver,
+        void (Func::*method)(), const QString &icon = "", const QString &pbtooltip = "")
+    {
+        QPushButton *pb = new QPushButton(parent);
+        pb->setStyleSheet("QPushButton {background-color: rgba(0,0,0,0); border: 1px solid gray; "
+                          "border-radius: 5px; border-style: outset; padding: 2px 5px;}"
+                          "QPushButton:pressed {border-style: inset;}"
+                          "QPushButton:disabled {border: none;}");
+        pb->setObjectName(pbname);
+        if (!icon.isEmpty())
+            pb->setIcon(QIcon(icon));
+        pb->setText(text);
+        pb->setToolTip(pbtooltip);
+        QObject::connect(pb, &QPushButton::clicked, receiver, method);
+        return pb;
+    }
     static QMetaObject::Connection PBConnect(
         QWidget *w, const QString &pbname, const QObject *receiver, const char *method);
     static void SetTVModel(QWidget *w, const QString &tvname, QAbstractItemModel *model, bool sortenable = false);

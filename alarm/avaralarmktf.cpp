@@ -21,5 +21,5 @@ void AvarAlarmKTF::AvarAlarmState()
     QStringList events = QStringList() << "Аварийное сообщение по недопустимому превышению температуры обмотки"
                                        << "Аварийное сообщение по недопустимому уровню пускового тока         ";
 
-    SetupAlarm(events, Alarm->MapAlarm.value(Board::GetInstance()->type()).avarCounts);
+    SetupAlarm(events, Alarm->MapAlarm.value(Board::GetInstance().type()).avarCounts);
 }

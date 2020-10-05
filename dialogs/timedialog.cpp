@@ -114,7 +114,7 @@ void TimeDialog::slot_timeOut()
 void TimeDialog::slot2_timeOut()
 {
 
-    switch (Board::GetInstance()->interfaceType())
+    switch (Board::GetInstance().interfaceType())
     {
     case Board::InterfaceType::USB:
     {
@@ -146,7 +146,7 @@ void TimeDialog::Write_PCDate()
 void TimeDialog::WriteTime(QDateTime &myDateTime)
 {
     uint time = myDateTime.toSecsSinceEpoch();
-    switch (Board::GetInstance()->interfaceType())
+    switch (Board::GetInstance().interfaceType())
     {
     case Board::InterfaceType::USB:
     {

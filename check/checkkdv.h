@@ -156,12 +156,12 @@ public:
     QWidget *BdUI(int bdnum);
     QWidget *CustomTab();
 
-    void RefreshAnalogValues(int bdnum);
-    void PrepareHeadersForFile(int row);
-    void WriteToFile(int row, int bdnum);
-    void ChooseValuesToWrite();
-    void SetDefaultValuesToWrite();
-    void PrepareAnalogMeasurements();
+    //    void RefreshAnalogValues(int bdnum);
+    //    void PrepareHeadersForFile(int row);
+    //    void WriteToFile(int row, int bdnum);
+    //    void ChooseValuesToWrite();
+    //    void SetDefaultValuesToWrite();
+    //    void PrepareAnalogMeasurements();
 
 private:
     QString ValuesFormat, WidgetFormat;

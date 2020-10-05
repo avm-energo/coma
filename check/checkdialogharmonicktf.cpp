@@ -95,22 +95,22 @@ void CheckDialogHarmonicKTF::WriteToFile(int row, int bdnum)
     Q_UNUSED(row);
     Q_UNUSED(bdnum);
 }
-QWidget *CheckDialogHarmonicKTF::CustomTab()
-{
-    //    QWidget *w = new QWidget;
-    //    QVBoxLayout *lyout = new QVBoxLayout;
-    //    QHBoxLayout *hlyout = new QHBoxLayout;
-    //    lyout->addWidget(ChHarmKTF->Bd1W(this));
-    //    QPushButton *pb = new QPushButton("Начать измерения Bd");
-    //    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StartBdMeasurements()));
-    //    hlyout->addWidget(pb);
-    //    pb = new QPushButton("Остановить измерения Bd");
-    //    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StopBdMeasurements()));
-    //    hlyout->addWidget(pb);
-    //    lyout->addLayout(hlyout);
-    //    w->setLayout(lyout);
-    return nullptr;
-}
+// QWidget *CheckDialogHarmonicKTF::CustomTab()
+//{
+//    QWidget *w = new QWidget;
+//    QVBoxLayout *lyout = new QVBoxLayout;
+//    QHBoxLayout *hlyout = new QHBoxLayout;
+//    lyout->addWidget(ChHarmKTF->Bd1W(this));
+//    QPushButton *pb = new QPushButton("Начать измерения Bd");
+//    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StartBdMeasurements()));
+//    hlyout->addWidget(pb);
+//    pb = new QPushButton("Остановить измерения Bd");
+//    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StopBdMeasurements()));
+//    hlyout->addWidget(pb);
+//    lyout->addLayout(hlyout);
+//    w->setLayout(lyout);
+//    return nullptr;
+//}
 void CheckDialogHarmonicKTF::ChooseValuesToWrite()
 {
 }
@@ -121,26 +121,31 @@ void CheckDialogHarmonicKTF::PrepareAnalogMeasurements()
 {
 }
 
-void CheckDialogHarmonicKTF::StartBdMeasurements()
-{
-    BdTimer->start();
-}
-
-void CheckDialogHarmonicKTF::StopBdMeasurements()
-{
-    BdTimer->stop();
-}
-
 void CheckDialogHarmonicKTF::USBUpdate()
 {
-    if (Commands::GetBd(5, &ChHarmKTF->Bd_block5, sizeof(CheckHarmonicKTF::Bd5)) == Error::Msg::NoError)
+    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");
+    if (CheckTW == nullptr)
     {
-        ChHarmKTF->FillBd5(this);
+        DBGMSG;
+        return;
     }
 
-    if (Commands::GetBd(7, &ChHarmKTF->Bd_block7, sizeof(CheckHarmonicKTF::Bd7)) == Error::Msg::NoError)
+    for (int i = 0; i < 5; i++)
     {
-        ChHarmKTF->FillBd7(this);
+        if (CheckTW->currentIndex() == IndexWd.at(i))
+        {
+            if (Commands::GetBd(5, &ChHarmKTF->Bd_block5, sizeof(CheckHarmonicKTF::Bd5)) == Error::Msg::NoError)
+                ChHarmKTF->FillBd5(this);
+        }
+    }
+
+    for (int i = 6; i < 12; i++)
+    {
+        if (CheckTW->currentIndex() == IndexWd.at(i))
+        {
+            if (Commands::GetBd(7, &ChHarmKTF->Bd_block7, sizeof(CheckHarmonicKTF::Bd7)) == Error::Msg::NoError)
+                ChHarmKTF->FillBd7(this);
+        }
     }
 }
 
@@ -174,13 +179,6 @@ void CheckDialogHarmonicKTF::UpdateModBusData(QList<ModBus::SignalStruct> Signal
                 this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
     }
 }
-
-void CheckDialogHarmonicKTF::onModbusStateChanged()
-{
-    if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
-        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
-}
-
 void CheckDialogHarmonicKTF::SetPredAlarmColor(quint8 *PredAlarm)
 {
     Q_UNUSED(PredAlarm);

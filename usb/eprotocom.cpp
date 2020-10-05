@@ -25,12 +25,10 @@
 #endif
 
 bool EProtocom::m_writeUSBLog;
-EProtocom *EProtocom::pinstance_ { nullptr };
-QMutex EProtocom::mutex_;
 
-EProtocom::EProtocom(QObject *parent)
+EProtocom::EProtocom(token)
 {
-    Q_UNUSED(parent)
+    // Q_UNUSED(parent)
     QString tmps = "=== CLog started ===\n";
     CnLog = new LogClass;
     CnLog->Init("canal.log");
@@ -39,15 +37,15 @@ EProtocom::EProtocom(QObject *parent)
     SegEnd = 0;
     SegLeft = 0;
     OscNum = 0;
-    OscTimer = new QTimer(this);
+    OscTimer = new QTimer;
     OscTimer->setInterval(CN::TimeoutOscillogram);
     OscTimer->setSingleShot(false);
-    m_waitTimer = new QTimer(this);
+    m_waitTimer = new QTimer;
     m_waitTimer->setInterval(CN::Timeout);
     connect(OscTimer, &QTimer::timeout, this, &EProtocom::OscTimerTimeout);
     connect(m_waitTimer, &QTimer::timeout, &m_loop, &QEventLoop::quit);
     connect(this, &EProtocom::QueryFinished, &m_loop, &QEventLoop::quit);
-    QSettings *sets = new QSettings("EvelSoft", PROGNAME);
+    QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
     setWriteUSBLog(sets->value("WriteLog", "0").toBool());
 }
 
@@ -88,8 +86,8 @@ void EProtocom::setWriteUSBLog(bool writeUSBLog)
 
 void EProtocom::Send(char command, char parameter, QByteArray &ba, qint64 datasize)
 {
-    if (Board::GetInstance()->connectionState() == Board::ConnectionState::Closed
-        && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+    if (Board::GetInstance().connectionState() == Board::ConnectionState::Closed
+        && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     {
         qDebug() << "Передача в отключенный прибор";
         ERMSG("В канальную процедуру переданы некорректные данные");
@@ -242,8 +240,8 @@ void EProtocom::WriteDataToPort(QByteArray &ba)
             QByteArray tmps = "->" + tmpba.toHex() + "\n";
             CnLog->WriteRaw(tmps);
         }
-        if (Board::GetInstance()->connectionState() == Board::ConnectionState::Closed
-            && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+        if (Board::GetInstance().connectionState() == Board::ConnectionState::Closed
+            && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         {
             ERMSG("Ошибка записи RawWrite");
             Error::ShowErMsg(Error::Msg::COM_WRITEER);
@@ -747,7 +745,7 @@ void EProtocom::usbStateChanged(void *message)
         case DBT_DEVICEARRIVAL:
         {
             DevicesFound();
-            if (Board::GetInstance()->connectionState() == Board::ConnectionState::AboutToFinish)
+            if (Board::GetInstance().connectionState() == Board::ConnectionState::AboutToFinish)
             {
                 if (m_devices.contains(m_usbWorker->deviceInfo()))
                 {
@@ -777,7 +775,7 @@ void EProtocom::usbStateChanged(void *message)
         {
             qDebug("DBT_DEVICEREMOVECOMPLETE");
             qDebug() << DevicesFound();
-            if (Board::GetInstance()->connectionState() != Board::ConnectionState::Closed)
+            if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
             {
                 if (!m_devices.contains(m_usbWorker->deviceInfo()))
                 {
@@ -804,12 +802,12 @@ void EProtocom::usbStateChanged(void *message)
 
             // Ивенты должны происходить только если отключен подключенный раннее
             // прибор
-            if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
+            if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
             {
                 if (!m_devices.contains(m_usbWorker->deviceInfo()))
                 {
                     qDebug() << "Device " << m_usbWorker->deviceInfo().serial << " state changed";
-                    Board::GetInstance()->setConnectionState(Board::ConnectionState::AboutToFinish);
+                    Board::GetInstance().setConnectionState(Board::ConnectionState::AboutToFinish);
                 }
             }
             break;
@@ -850,31 +848,16 @@ EProtocom::~EProtocom()
 {
     m_workerThread.quit();
     m_workerThread.wait();
-    pinstance_ = nullptr;
-}
-/**
- * The first time we call GetInstance we will lock the storage location
- *      and then we make sure again that the variable is null and then we
- *      set the value.
- */
-EProtocom *EProtocom::GetInstance(QObject *parent)
-{
-    if (pinstance_ == nullptr)
-    {
-        QMutexLocker locker(&mutex_);
-        if (pinstance_ == nullptr)
-        {
-            pinstance_ = new EProtocom(parent);
-        }
-    }
-    return pinstance_;
+    CnLog->deleteLater();
+    OscTimer->deleteLater();
+    m_waitTimer->deleteLater();
 }
 
 bool EProtocom::Connect()
 {
-    QMutexLocker locker(&mutex_);
-    if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected
-        && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected
+        && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
+        ///
         Disconnect();
     m_usbWorker = new EUsbWorker(m_devices.at(m_devicePosition), CnLog, isWriteUSBLog());
 
@@ -883,15 +866,15 @@ bool EProtocom::Connect()
 
     connect(m_usbWorker, &EUsbWorker::Finished, &m_workerThread, &QThread::quit);
 
-    connect(&m_workerThread, &QThread::finished, &m_workerThread, &QThread::deleteLater);
+    // connect(&m_workerThread, &QThread::finished, &m_workerThread, &QThread::deleteLater);
     connect(m_usbWorker, &EUsbWorker::Finished, m_usbWorker, &EUsbWorker::deleteLater);
 
     connect(m_usbWorker, &EUsbWorker::NewDataReceived, this, &EProtocom::ParseIncomeData);
 
     if (m_usbWorker->setupConnection() == Error::Msg::NoError
-        && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+        && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     {
-        Board::GetInstance()->setConnectionState(Board::ConnectionState::Connected);
+        Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
         m_workerThread.start();
     }
     else
@@ -903,9 +886,9 @@ bool EProtocom::Reconnect()
 {
     m_usbWorker->closeConnection();
     if (m_usbWorker->setupConnection() == Error::Msg::NoError
-        && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+        && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     {
-        Board::GetInstance()->setConnectionState(Board::ConnectionState::Connected);
+        Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
         m_workerThread.start();
     }
     else
@@ -918,7 +901,6 @@ void EProtocom::Disconnect()
     qDebug(__PRETTY_FUNCTION__);
     RawClose();
     CnLog->WriteRaw("Disconnected!\n");
-    delete EProtocom::GetInstance();
 }
 
 QByteArray EProtocom::RawRead(int bytes)
@@ -935,10 +917,10 @@ int EProtocom::RawWrite(QByteArray &ba)
 
 void EProtocom::RawClose()
 {
-    if (Board::GetInstance()->connectionState() != Board::ConnectionState::Closed
-        && Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+    if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed
+        && Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
     {
-        Board::GetInstance()->setConnectionState(Board::ConnectionState::Closed);
+        Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
     }
 }
 

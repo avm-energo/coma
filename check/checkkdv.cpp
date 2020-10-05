@@ -691,33 +691,33 @@ QWidget *CheckKDV::BdUI(int bdnum)
     return nullptr;
 }
 
-void CheckKDV::SetDefaultValuesToWrite()
-{
-}
+// void CheckKDV::SetDefaultValuesToWrite()
+//{
+//}
 
-void CheckKDV::PrepareAnalogMeasurements()
-{
-}
+// void CheckKDV::PrepareAnalogMeasurements()
+//{
+//}
 
-void CheckKDV::ChooseValuesToWrite()
-{
-}
+// void CheckKDV::ChooseValuesToWrite()
+//{
+//}
 
-void CheckKDV::WriteToFile(int row, int bdnum)
-{
-    Q_UNUSED(row);
-    Q_UNUSED(bdnum);
-}
+// void CheckKDV::WriteToFile(int row, int bdnum)
+//{
+//    Q_UNUSED(row);
+//    Q_UNUSED(bdnum);
+//}
 
-void CheckKDV::PrepareHeadersForFile(int row)
-{
-    Q_UNUSED(row);
-}
+// void CheckKDV::PrepareHeadersForFile(int row)
+//{
+//    Q_UNUSED(row);
+//}
 
-void CheckKDV::RefreshAnalogValues(int bdnum)
-{
-    Q_UNUSED(bdnum);
-}
+// void CheckKDV::RefreshAnalogValues(int bdnum)
+//{
+//    Q_UNUSED(bdnum);
+//}
 
 QWidget *CheckKDV::CustomTab()
 {

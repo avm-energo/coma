@@ -24,9 +24,7 @@ ConfDialogKTF::ConfDialogKTF(S2ConfigType *S2Config, QWidget *parent) : Abstract
     setStyleSheet(tmps);
     this->S2Config = S2Config;
     KTF = new ConfigKTF(S2Config);
-    Conf = new ConfDialog(S2Config, Board::GetInstance()->typeB(), Board::GetInstance()->typeM());
-    // Conf = new ConfDialog(S2Config, MTypeB, MTypeM);
-    //    ConfigMain = new Config(S2Config, MTypeB, MTypeM);
+    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
     ConfKxx = new ConfDialogKxx(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
@@ -104,6 +102,13 @@ void ConfDialogKTF::SetupUI()
 
     gridlyout->addWidget(WDFunc::NewLBL(this, "Номинальный вторичный ток , А:"), row, 1, 1, 1);
     gridlyout->addWidget(WDFunc::NewSPB(this, "ITT2nom", 0, 10000, 0, paramcolor), row, 2, 1, 3);
+    row++;
+
+    gridlyout->addWidget(WDFunc::NewLBL(this,
+                             "Количество датчиков температуры обмоток, "
+                             "подключенных по Modbus Master:"),
+        row, 1, 1, 1);
+    gridlyout->addWidget(WDFunc::NewSPB(this, "TdatNum", 0, 10000, 0, paramcolor), row, 2, 1, 3);
     row++;
 
     gridlyout->addWidget(WDFunc::NewLBL(this,

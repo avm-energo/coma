@@ -17,7 +17,7 @@ public:
     ~CorDialog();
 
     Error::Msg WriteCheckPassword();
-    void GetCorBd(int index);
+    void GetCorBd(int index) override;
 
 private:
     struct CorData
@@ -31,11 +31,11 @@ private:
 
     CorData *CorBlock;
 
-    void FillCor();
-    void FillBackCor();
+    void FillCor() override;
+    void FillBackCor() override;
     float ToFloat(QString text);
-    void SetupUI();
-    void FillBd(QWidget *parent, QString Name, QString Value);
+    void SetupUI() override;
+    // void FillBd(QWidget *parent, QString Name, QString Value);
 
 signals:
     //    void SendCom45(quint32);
@@ -46,16 +46,16 @@ signals:
     //    void WritePasswordChecked();
 
 public slots:
-    void GetCorBdButton();
-    void WriteCorBd();
-    void WriteCor();
+    void GetCorBdButton() override;
+    void WriteCorBd() override;
+    void WriteCor() override;
     void MessageOk();
     void SetCor();
-    void ResetCor();
-    void UpdateFlCorData(IEC104Thread::FlSignals104 *Signal);
-    void ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal);
-    void SaveToFile();
-    void ReadFromFile();
+    void ResetCor() override;
+    // void UpdateFlCorData(IEC104Thread::FlSignals104 *Signal);
+    // void ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal);
+    void SaveToFile() override;
+    void ReadFromFile() override;
     void WritePasswordCheck(QString psw);
     void TimerTimeout();
     void ErrorRead();

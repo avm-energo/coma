@@ -386,6 +386,10 @@ void ConfDialogKxx::ChangeWindow(int num)
         QSWT->setCurrentWidget(WidgetList.at(num));
 }
 
+void ConfDialogKxx::SetupUI()
+{
+}
+
 void ConfDialogKxx::Fill()
 {
     int i, cbidx;
@@ -482,11 +486,11 @@ void ConfDialogKxx::Fill()
         if (i == 1)
             cbidx = (Kxx->StrModBus.MBMab1[4] & 0xF0) >> 4;
         if (i == 2)
-            cbidx = (Kxx->StrModBus.MBMab1[4] & 0xF0) >> 4;
+            cbidx = (Kxx->StrModBus.MBMab2[4] & 0xF0) >> 4;
         if (i == 3)
-            cbidx = (Kxx->StrModBus.MBMab1[4] & 0xF0) >> 4;
+            cbidx = (Kxx->StrModBus.MBMab3[4] & 0xF0) >> 4;
         if (i == 4)
-            cbidx = (Kxx->StrModBus.MBMab1[4] & 0xF0) >> 4;
+            cbidx = (Kxx->StrModBus.MBMab4[4] & 0xF0) >> 4;
 
         switch (cbidx)
         {
@@ -732,6 +736,10 @@ void ConfDialogKxx::FillBack()
     Kxx->Com_param.Stopbit = cbidx;
 
     WDFunc::SPBData(ParentSetup, "adrMB_ID", Kxx->Com_param.adrMB);
+}
+
+void ConfDialogKxx::CheckConf()
+{
 }
 
 void ConfDialogKxx::SetDefConf()

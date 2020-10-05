@@ -6,6 +6,7 @@
 
 #include <QDialog>
 #include <QModelIndex>
+#include <QProgressDialog>
 
 #define MAXREGISTRYINTERFACECOUNT 5 // how much entries can we have for interfaces of each type in registry
 
@@ -25,6 +26,8 @@ public:
 signals:
     void Accepted(ConnectDialog::ConnectStruct *);
     void Cancelled();
+    void PingFinished();
+    void ModelUpdated();
 
 private slots:
     void SetInterface();
@@ -35,10 +38,11 @@ private slots:
     void SetCancelled();
     void SetEth();
     void SetEth(QModelIndex index);
-    // void ScanEth();
+    void ScanEth();
     void AddRs();
     void SetRs();
     void SetRs(QModelIndex index);
+
     //    void ScanRs();
     void RotateSettings(
         const QString &type, const QString &name); // in: name of registry dir without index, out - name with index
@@ -47,6 +51,17 @@ private slots:
 
 private:
     ConnectStruct Connect;
+
+    QList<quint32> m_hosts;
+
+    /// Кандидаты для отдельного класса
+    QProgressDialog *m_progress;
+    void handlePing();
+    void handlePingFinish();
+    void handlePortFinish();
+    void createPingTask(quint32 ip);
+    void createPortTask();
+    ///
 };
 
 #endif // CONNECTDIALOG_H

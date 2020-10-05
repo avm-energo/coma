@@ -31,5 +31,5 @@ void WarnAlarmKTF::WarnAlarmState()
                                              << "Сигнализация по опасному превышению температуры обмотки"
                                              << "Неисправны все датчики температуры обмотки             "
                                              << "Сигнализация по опасному уровню пускового тока         ";
-    SetupAlarm(events, (Alarm->MapAlarm.value(Board::GetInstance()->type()).warnCounts) - 1);
+    SetupAlarm(events, (Alarm->MapAlarm.value(Board::GetInstance().type()).warnCounts) - 1);
 }

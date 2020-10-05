@@ -27,5 +27,5 @@ void AvarAlarmKIV::AvarAlarmState()
                                        << "Авария по приращению C ввода фазы B              "
                                        << "Авария по приращению C ввода фазы C              "
                                        << "Авария по недопустимому небалансу токов          ";
-    SetupAlarm(events, Alarm->MapAlarm.value(Board::GetInstance()->type()).avarCounts);
+    SetupAlarm(events, Alarm->MapAlarm.value(Board::GetInstance().type()).avarCounts);
 }

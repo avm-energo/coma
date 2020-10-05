@@ -1,6 +1,7 @@
 #include "checkdialogvibrkdv.h"
 
 #include "../config/config.h"
+#include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
@@ -74,10 +75,7 @@ void CheckDialogVibrKDV::WriteToFile(int row, int bdnum)
     Q_UNUSED(row)
     Q_UNUSED(bdnum)
 }
-QWidget *CheckDialogVibrKDV::CustomTab()
-{
-    return nullptr;
-}
+
 void CheckDialogVibrKDV::ChooseValuesToWrite()
 {
 }
@@ -88,26 +86,25 @@ void CheckDialogVibrKDV::PrepareAnalogMeasurements()
 {
 }
 
-void CheckDialogVibrKDV::StartBdMeasurements()
-{
-    BdTimer->start();
-}
-
-void CheckDialogVibrKDV::StopBdMeasurements()
-{
-    BdTimer->stop();
-}
-
 void CheckDialogVibrKDV::USBUpdate()
 {
-    if (Commands::GetBd(19, &ChVibrKDV->Bd_block19, sizeof(CheckVibrKDV::Bd19)) == Error::Msg::NoError)
+    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw2");
+    if (CheckTW == nullptr)
     {
-        ChVibrKDV->FillBd19(this);
+        DBGMSG;
+        return;
     }
 
-    if (Commands::GetBd(20, &ChVibrKDV->Bd_block20, sizeof(CheckVibrKDV::Bd20)) == Error::Msg::NoError)
+    if (CheckTW->currentIndex() == IndexWd.at(0))
     {
-        ChVibrKDV->FillBd20(this);
+        if (Commands::GetBd(19, &ChVibrKDV->Bd_block19, sizeof(CheckVibrKDV::Bd19)) == Error::Msg::NoError)
+            ChVibrKDV->FillBd19(this);
+    }
+
+    if ((CheckTW->currentIndex() == IndexWd.at(1)) | (CheckTW->currentIndex() == IndexWd.at(2)))
+    {
+        if (Commands::GetBd(20, &ChVibrKDV->Bd_block20, sizeof(CheckVibrKDV::Bd20)) == Error::Msg::NoError)
+            ChVibrKDV->FillBd20(this);
     }
 }
 
@@ -145,7 +142,7 @@ void CheckDialogVibrKDV::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 void CheckDialogVibrKDV::onModbusStateChanged()
 {
 
-    if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
+    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
         QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 

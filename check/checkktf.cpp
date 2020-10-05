@@ -556,33 +556,33 @@ QWidget *CheckKTF::BdUI(int bdnum)
     return nullptr;
 }
 
-void CheckKTF::SetDefaultValuesToWrite()
-{
-}
+// void CheckKTF::SetDefaultValuesToWrite()
+//{
+//}
 
-void CheckKTF::PrepareAnalogMeasurements()
-{
-}
+// void CheckKTF::PrepareAnalogMeasurements()
+//{
+//}
 
-void CheckKTF::ChooseValuesToWrite()
-{
-}
+// void CheckKTF::ChooseValuesToWrite()
+//{
+//}
 
-void CheckKTF::WriteToFile(int row, int bdnum)
-{
-    Q_UNUSED(row);
-    Q_UNUSED(bdnum);
-}
+// void CheckKTF::WriteToFile(int row, int bdnum)
+//{
+//    Q_UNUSED(row);
+//    Q_UNUSED(bdnum);
+//}
 
-void CheckKTF::PrepareHeadersForFile(int row)
-{
-    Q_UNUSED(row);
-}
+// void CheckKTF::PrepareHeadersForFile(int row)
+//{
+//    Q_UNUSED(row);
+//}
 
-void CheckKTF::RefreshAnalogValues(int bdnum)
-{
-    Q_UNUSED(bdnum);
-}
+// void CheckKTF::RefreshAnalogValues(int bdnum)
+//{
+//    Q_UNUSED(bdnum);
+//}
 
 QWidget *CheckKTF::CustomTab()
 {

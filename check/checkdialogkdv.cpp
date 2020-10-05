@@ -24,6 +24,7 @@
 
 CheckDialogKDV::CheckDialogKDV(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
 {
+    EParent = parent;
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
     QStringList sl;
@@ -127,12 +128,12 @@ QWidget *CheckDialogKDV::CustomTab()
     lyout->addWidget(ChKDV->Bd1W(this));
     QPushButton *pb = new QPushButton("Начать измерения Bd");
 
-    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StartBdMeasurements()));
+    connect(pb, &QAbstractButton::clicked, this, &EAbstractCheckDialog::StartBdMeasurements);
 
     hlyout->addWidget(pb);
     pb = new QPushButton("Остановить измерения Bd");
 
-    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StopBdMeasurements()));
+    connect(pb, &QAbstractButton::clicked, this, &EAbstractCheckDialog::StopBdMeasurements);
 
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
@@ -150,84 +151,86 @@ void CheckDialogKDV::PrepareAnalogMeasurements()
 {
 }
 
-void CheckDialogKDV::StartBdMeasurements()
-{
-    BdTimer->start();
-}
-
-void CheckDialogKDV::StopBdMeasurements()
-{
-    BdTimer->stop();
-}
-
 void CheckDialogKDV::USBUpdate()
 {
-
-    if (Commands::GetBd(0, &ChKDV->Bd_block0, sizeof(CheckKDV::Bd0)) == Error::Msg::NoError)
+    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");
+    if (CheckTW == nullptr)
     {
-        ChKDV->FillBd0(this);
+        DBGMSG;
+        return;
     }
 
-    if (Commands::GetBd(2, &ChKDV->Bd_block2, sizeof(CheckKDV::Bd_2_3)) == Error::Msg::NoError)
+    if (CheckTW->currentIndex() == IndexWd.at(0))
     {
-        ChKDV->FillBd2(this);
+        if (Commands::GetBd(0, &ChKDV->Bd_block0, sizeof(CheckKDV::Bd0)) == Error::Msg::NoError)
+            ChKDV->FillBd0(this);
     }
 
-    if (Commands::GetBd(3, &ChKDV->Bd_block3, sizeof(CheckKDV::Bd_2_3)) == Error::Msg::NoError)
+    if (CheckTW->currentIndex() == IndexWd.at(0) || CheckTW->currentIndex() == IndexWd.at(3))
     {
-        ChKDV->FillBd3(this);
+        if (Commands::GetBd(2, &ChKDV->Bd_block2, sizeof(CheckKDV::Bd_2_3)) == Error::Msg::NoError)
+            ChKDV->FillBd2(this);
     }
 
-    if (Commands::GetBd(4, &ChKDV->Bd_block4, sizeof(CheckKDV::Bd_4_6)) == Error::Msg::NoError)
+    if (CheckTW->currentIndex() == IndexWd.at(0) || CheckTW->currentIndex() == IndexWd.at(3))
     {
-        ChKDV->FillBd4(this);
+        if (Commands::GetBd(3, &ChKDV->Bd_block3, sizeof(CheckKDV::Bd_2_3)) == Error::Msg::NoError)
+            ChKDV->FillBd3(this);
     }
 
-    if (Commands::GetBd(6, &ChKDV->Bd_block6, sizeof(CheckKDV::Bd_4_6)) == Error::Msg::NoError)
+    if (CheckTW->currentIndex() == IndexWd.at(4))
     {
-        ChKDV->FillBd6(this);
+        if (Commands::GetBd(4, &ChKDV->Bd_block4, sizeof(CheckKDV::Bd_4_6)) == Error::Msg::NoError)
+            ChKDV->FillBd4(this);
     }
 
-    if (Commands::GetBd(8, &ChKDV->Bd_block8, sizeof(CheckKDV::Bd8)) == Error::Msg::NoError)
+    if (CheckTW->currentIndex() == IndexWd.at(4))
     {
-        ChKDV->FillBd8(this);
+        if (Commands::GetBd(6, &ChKDV->Bd_block6, sizeof(CheckKDV::Bd_4_6)) == Error::Msg::NoError)
+            ChKDV->FillBd6(this);
     }
 
-    if (Commands::GetBd(9, &ChKDV->Bd_block9, sizeof(CheckKDV::Bd9)) == Error::Msg::NoError)
+    if (CheckTW->currentIndex() == IndexWd.at(0) || CheckTW->currentIndex() == IndexWd.at(3))
     {
-        ChKDV->FillBd9(this);
+        if (Commands::GetBd(8, &ChKDV->Bd_block8, sizeof(CheckKDV::Bd8)) == Error::Msg::NoError)
+            ChKDV->FillBd8(this);
     }
 
-    if (Commands::GetBd(10, &ChKDV->Bd_block10, sizeof(CheckKDV::Bd10)) == Error::Msg::NoError)
+    if (CheckTW->currentIndex() == IndexWd.at(2))
     {
-        ChKDV->FillBd10(this);
+        if (Commands::GetBd(9, &ChKDV->Bd_block9, sizeof(CheckKDV::Bd9)) == Error::Msg::NoError)
+            ChKDV->FillBd9(this);
     }
 
-    if (Commands::GetBd(11, &ChKDV->Bd_block11, sizeof(CheckKDV::Bd11)) == Error::Msg::NoError)
+    if (CheckTW->currentIndex() == IndexWd.at(0) || CheckTW->currentIndex() == IndexWd.at(3))
     {
-        ChKDV->FillBd11(this);
+        if (Commands::GetBd(10, &ChKDV->Bd_block10, sizeof(CheckKDV::Bd10)) == Error::Msg::NoError)
+            ChKDV->FillBd10(this);
     }
 
-    if (Commands::GetBd(13, &ChKDV->Bd_block13, sizeof(CheckKDV::Bd13)) == Error::Msg::NoError)
+    if (CheckTW->currentIndex() == IndexWd.at(1))
     {
-        ChKDV->FillBd13(this);
+        if (Commands::GetBd(11, &ChKDV->Bd_block11, sizeof(CheckKDV::Bd11)) == Error::Msg::NoError)
+            ChKDV->FillBd11(this);
     }
 
-    if (Commands::GetBd(17, &ChKDV->Bd_block17, sizeof(CheckKDV::Bd17)) == Error::Msg::NoError)
+    if (CheckTW->currentIndex() == IndexWd.at(0))
     {
-        ChKDV->FillBd17(this);
+        if (Commands::GetBd(13, &ChKDV->Bd_block13, sizeof(CheckKDV::Bd13)) == Error::Msg::NoError)
+            ChKDV->FillBd13(this);
     }
 
-    if (Commands::GetBd(18, &ChKDV->Bd_block18, sizeof(CheckKDV::Bd18)) == Error::Msg::NoError)
+    if (CheckTW->currentIndex() == IndexWd.at(0))
     {
-        ChKDV->FillBd18(this);
+        if (Commands::GetBd(17, &ChKDV->Bd_block17, sizeof(CheckKDV::Bd17)) == Error::Msg::NoError)
+            ChKDV->FillBd17(this);
     }
-}
 
-void CheckDialogKDV::onModbusStateChanged()
-{
-    if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
-        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
+    if (CheckTW->currentIndex() == IndexWd.at(2))
+    {
+        if (Commands::GetBd(18, &ChKDV->Bd_block18, sizeof(CheckKDV::Bd18)) == Error::Msg::NoError)
+            ChKDV->FillBd18(this);
+    }
 }
 
 void CheckDialogKDV::SetPredAlarmColor(quint8 *PredAlarm)
