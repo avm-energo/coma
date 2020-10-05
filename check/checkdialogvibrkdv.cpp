@@ -1,6 +1,7 @@
 #include "checkdialogvibrkdv.h"
 
 #include "../config/config.h"
+#include "../gen/board.h"
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/modulebsi.h"
@@ -74,10 +75,7 @@ void CheckDialogVibrKDV::WriteToFile(int row, int bdnum)
     Q_UNUSED(row)
     Q_UNUSED(bdnum)
 }
-QWidget *CheckDialogVibrKDV::CustomTab()
-{
-    return nullptr;
-}
+
 void CheckDialogVibrKDV::ChooseValuesToWrite()
 {
 }
@@ -86,16 +84,6 @@ void CheckDialogVibrKDV::SetDefaultValuesToWrite()
 }
 void CheckDialogVibrKDV::PrepareAnalogMeasurements()
 {
-}
-
-void CheckDialogVibrKDV::StartBdMeasurements()
-{
-    BdTimer->start();
-}
-
-void CheckDialogVibrKDV::StopBdMeasurements()
-{
-    BdTimer->stop();
 }
 
 void CheckDialogVibrKDV::USBUpdate()

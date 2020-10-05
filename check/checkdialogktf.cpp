@@ -94,10 +94,10 @@ QWidget *CheckDialogKTF::CustomTab()
     QHBoxLayout *hlyout = new QHBoxLayout;
     lyout->addWidget(ChKTF->Bd1W(this));
     QPushButton *pb = new QPushButton("Начать измерения Bd");
-    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StartBdMeasurements()));
+    connect(pb, &QAbstractButton::clicked, this, &EAbstractCheckDialog::StartBdMeasurements);
     hlyout->addWidget(pb);
     pb = new QPushButton("Остановить измерения Bd");
-    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StopBdMeasurements()));
+    connect(pb, &QAbstractButton::clicked, this, &EAbstractCheckDialog::StopBdMeasurements);
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     w->setLayout(lyout);
@@ -111,16 +111,6 @@ void CheckDialogKTF::SetDefaultValuesToWrite()
 }
 void CheckDialogKTF::PrepareAnalogMeasurements()
 {
-}
-
-void CheckDialogKTF::StartBdMeasurements()
-{
-    BdTimer->start();
-}
-
-void CheckDialogKTF::StopBdMeasurements()
-{
-    BdTimer->stop();
 }
 
 void CheckDialogKTF::USBUpdate()
@@ -212,12 +202,6 @@ void CheckDialogKTF::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
             ChKTF->FillBd(
                 this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
     }
-}
-
-void CheckDialogKTF::onModbusStateChanged()
-{
-    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
-        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 
 void CheckDialogKTF::SetPredAlarmColor(quint8 *PredAlarm)

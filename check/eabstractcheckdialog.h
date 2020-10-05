@@ -17,16 +17,21 @@
 #define EABSTRACTCHECKDIALOG_H
 
 #include "../gen/modulebsi.h"
+#include "../modbus/modbus.h"
+#include "check.h"
 #include "xlsxdocument.h"
 
 #include <QDialog>
 #include <QElapsedTimer>
 #include <QTimer>
 
-#define ANMEASINT 2000 // default timer interval to check analog values
+// default timer interval to check analog values
+#define ANMEASINT 2000
 
-#define BT_STARTBD_BASE 0 // блоки Bd для базовой платы нумеруются с 0 (0-й блок - общий для всех)
-#define BT_STARTBD_MEZ 100 // блоки Bd для мезонинной платы нумеруются с 101 (100 base + 1st block)
+// блоки Bd для базовой платы нумеруются с 0 (0-й блок - общий для всех)
+#define BT_STARTBD_BASE 0
+// блоки Bd для мезонинной платы нумеруются с 101 (100 base + 1st block)
+#define BT_STARTBD_MEZ 100
 
 class EAbstractCheckDialog : public QDialog
 {
@@ -36,26 +41,31 @@ public:
     ~EAbstractCheckDialog();
     void SetupUI(QStringList &tabnames);
 
-    virtual QWidget *BdUI(int bdnum) = 0; // визуализация наборов текущих данных от модуля
-    virtual void RefreshAnalogValues(int bdnum) = 0; // обновление полей в GUI из полученного
-                                                     // соответствующего Bd_block
-    virtual void PrepareHeadersForFile(int row) = 0;  // row - строка для записи заголовков
-    virtual void WriteToFile(int row, int bdnum) = 0; // row - номер строки для записи в файл
-                                                      // xlsx, bdnum - номер блока данных
+    // визуализация наборов текущих данных от модуля
+    virtual QWidget *BdUI(int bdnum) = 0;
+    // обновление полей в GUI из полученного соответствующего Bd_block
+    virtual void RefreshAnalogValues(int bdnum) = 0;
+    // row - строка для записи заголовков
+    virtual void PrepareHeadersForFile(int row) = 0;
+    // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
+    virtual void WriteToFile(int row, int bdnum) = 0;
+
     virtual void ChooseValuesToWrite() = 0;
     virtual void SetDefaultValuesToWrite() = 0;
-    virtual void PrepareAnalogMeasurements() = 0; // функция подготовки к измерениям (например,
-                                                  // запрос постоянных данных)
-    virtual QWidget *CustomTab() = 0; // если требуется для модуля специфичный вывод данных
+    // функция подготовки к измерениям (например,   запрос постоянных данных)
+    virtual void PrepareAnalogMeasurements() = 0;
+    // если требуется для модуля специфичный вывод данных
+    virtual QWidget *CustomTab();
     void SetBd(int bdnum, void *block, int blocksize, bool toxlsx = true);
     QWidget *BottomUI();
 
     QXlsx::Document *xlsx;
     QTimer *Timer;
-    int WRow,
-        BdUINum; // BdUINum - количество вкладок с выводом блоков данных модуля,
-                 // один блок может быть разделён на несколько вкладок
-    int m_board; // тип платы
+    int WRow;
+    // количество вкладок с выводом блоков данных модуля, один блок может быть разделён на несколько вкладок
+    int BdUINum;
+    // тип платы
+    int m_board;
 
 signals:
     //     void BsiRefresh();
@@ -63,6 +73,8 @@ signals:
 public slots:
     void StopAnalogMeasurements();
     virtual void USBUpdate() = 0; // update BDs from USB
+    virtual void StartBdMeasurements();
+    virtual void StopBdMeasurements();
 
 private:
     struct BdBlocks
@@ -79,7 +91,7 @@ private:
     };
 
     Bip Bip_block;
-    bool XlsxWriting, Busy;
+    bool Busy;
     QElapsedTimer *ElapsedTimeCounter;
 
     void CheckIP();
@@ -87,6 +99,18 @@ private:
     void Check1PPS();
     void ReadAnalogMeasurementsAndWriteToFile();
 
+protected:
+    Check *Ch;
+    QTimer *BdTimer;
+    int BdNum;
+    bool XlsxWriting;
+    const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; "
+                                 "color: blue; font: bold 10px;}";
+    quint8 stColor[7];
+protected slots:
+
+    virtual void UpdateModBusData(QList<ModBus::SignalStruct> Signal) = 0;
+    virtual void onModbusStateChanged();
 private slots:
     void SetTimerPeriod();
     void StartAnalogMeasurementsToFile();

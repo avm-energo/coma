@@ -127,12 +127,12 @@ QWidget *CheckDialogKDV::CustomTab()
     lyout->addWidget(ChKDV->Bd1W(this));
     QPushButton *pb = new QPushButton("Начать измерения Bd");
 
-    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StartBdMeasurements()));
+    connect(pb, &QAbstractButton::clicked, this, &EAbstractCheckDialog::StartBdMeasurements);
 
     hlyout->addWidget(pb);
     pb = new QPushButton("Остановить измерения Bd");
 
-    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StopBdMeasurements()));
+    connect(pb, &QAbstractButton::clicked, this, &EAbstractCheckDialog::StopBdMeasurements);
 
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
@@ -148,16 +148,6 @@ void CheckDialogKDV::SetDefaultValuesToWrite()
 }
 void CheckDialogKDV::PrepareAnalogMeasurements()
 {
-}
-
-void CheckDialogKDV::StartBdMeasurements()
-{
-    BdTimer->start();
-}
-
-void CheckDialogKDV::StopBdMeasurements()
-{
-    BdTimer->stop();
 }
 
 void CheckDialogKDV::USBUpdate()
@@ -222,12 +212,6 @@ void CheckDialogKDV::USBUpdate()
     {
         ChKDV->FillBd18(this);
     }
-}
-
-void CheckDialogKDV::onModbusStateChanged()
-{
-    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
-        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 
 void CheckDialogKDV::SetPredAlarmColor(quint8 *PredAlarm)

@@ -79,6 +79,11 @@ void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
     setLayout(lyout);
 }
 
+QWidget *EAbstractCheckDialog::CustomTab()
+{
+    return nullptr;
+}
+
 void EAbstractCheckDialog::Check1PPS()
 {
 }
@@ -217,6 +222,22 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 
     WRow++;
     Busy = false;
+}
+
+void EAbstractCheckDialog::StartBdMeasurements()
+{
+    BdTimer->start();
+}
+
+void EAbstractCheckDialog::StopBdMeasurements()
+{
+    BdTimer->stop();
+}
+
+void EAbstractCheckDialog::onModbusStateChanged()
+{
+    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
+        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 
 void EAbstractCheckDialog::StartAnalogMeasurements()
