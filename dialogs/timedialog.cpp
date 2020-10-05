@@ -1,4 +1,4 @@
-#include "../dialogs/mnktime.h"
+#include "../dialogs/timedialog.h"
 
 #include "../gen/board.h"
 #include "../gen/colors.h"
@@ -16,7 +16,7 @@
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
-MNKTime::MNKTime(QWidget *parent) : QDialog(parent)
+TimeDialog::TimeDialog(QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     First = false;
@@ -25,11 +25,11 @@ MNKTime::MNKTime(QWidget *parent) : QDialog(parent)
     SetupUI();
 }
 
-MNKTime::~MNKTime()
+TimeDialog::~TimeDialog()
 {
 }
 
-void MNKTime::SetupUI()
+void TimeDialog::SetupUI()
 {
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
@@ -100,7 +100,7 @@ void MNKTime::SetupUI()
     Timer->start(1000);
 }
 
-void MNKTime::slot_timeOut()
+void TimeDialog::slot_timeOut()
 {
     QString tmps;
     int cbidx = WDFunc::CBIndex(this, "TimeZone");
@@ -111,7 +111,7 @@ void MNKTime::slot_timeOut()
     WDFunc::SetLBLText(this, "systime", tmps);
 }
 
-void MNKTime::slot2_timeOut()
+void TimeDialog::slot2_timeOut()
 {
 
     switch (Board::GetInstance()->interfaceType())
@@ -132,7 +132,7 @@ void MNKTime::slot2_timeOut()
     }
 }
 
-void MNKTime::Write_PCDate()
+void TimeDialog::Write_PCDate()
 {
     QDateTime myDateTime;
     int cbidx = WDFunc::CBIndex(this, "TimeZone");
@@ -143,7 +143,7 @@ void MNKTime::Write_PCDate()
     WriteTime(myDateTime);
 }
 
-void MNKTime::WriteTime(QDateTime &myDateTime)
+void TimeDialog::WriteTime(QDateTime &myDateTime)
 {
     uint time = myDateTime.toSecsSinceEpoch();
     switch (Board::GetInstance()->interfaceType())
@@ -166,13 +166,13 @@ void MNKTime::WriteTime(QDateTime &myDateTime)
     }
 }
 
-void MNKTime::Write_Date()
+void TimeDialog::Write_Date()
 {
     QDateTime myDateTime = QDateTime::fromString(WDFunc::LEData(this, "Date"), "dd-MM-yyyy HH:mm:ss");
     WriteTime(myDateTime);
 }
 
-void MNKTime::FillTimeFrom104(IEC104Thread::BS104Signals *Time)
+void TimeDialog::FillTimeFrom104(IEC104Thread::BS104Signals *Time)
 {
     uint unixtimestamp = 0;
     // QString qStr;
@@ -187,7 +187,7 @@ void MNKTime::FillTimeFrom104(IEC104Thread::BS104Signals *Time)
     }
 }
 
-void MNKTime::SetTime(quint32 unixtimestamp)
+void TimeDialog::SetTime(quint32 unixtimestamp)
 {
     QDateTime myDateTime;
     int cbidx = WDFunc::CBIndex(this, "TimeZone");
@@ -206,7 +206,7 @@ void MNKTime::SetTime(quint32 unixtimestamp)
     }
 }
 
-void MNKTime::FillTimeFromModBus(QList<ModBus::BSISignalStruct> Time)
+void TimeDialog::FillTimeFromModBus(QList<ModBus::BSISignalStruct> Time)
 {
     uint unixtimestamp = 0;
 
@@ -223,12 +223,12 @@ void MNKTime::FillTimeFromModBus(QList<ModBus::BSISignalStruct> Time)
     }
 }
 
-void MNKTime::ErrorRead()
+void TimeDialog::ErrorRead()
 {
     WDFunc::SetLEData(this, "systime2", "Ошибка чтения");
 }
 
-void MNKTime::TimeWritten()
+void TimeDialog::TimeWritten()
 {
     QMessageBox::information(this, "Успешно", "Время записано успешно");
 }

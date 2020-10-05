@@ -21,7 +21,7 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-CheckDialogKTF::CheckDialogKTF(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
+CheckDialogKTF::CheckDialogKTF(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);

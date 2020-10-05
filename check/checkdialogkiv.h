@@ -4,11 +4,11 @@
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
+#include "abstractcheckdialog.h"
 #include "check.h"
 #include "checkkiv.h"
-#include "eabstractcheckdialog.h"
 
-class CheckDialogKIV : public EAbstractCheckDialog
+class CheckDialogKIV : public AbstractCheckDialog
 {
     Q_OBJECT
 public:
@@ -19,7 +19,7 @@ public:
 signals:
 
 public slots:
-    void SetWarnAlarmColor(QList<bool> WarnAlarm);
+    void SetWarnColor(QList<bool> WarnAlarm);
     void SetAlarmColor(QList<bool> Alarm);
     void UpdateFlData(IEC104Thread::FlSignals104 *);
     void UpdateSponData(IEC104Thread::SponSignals *);

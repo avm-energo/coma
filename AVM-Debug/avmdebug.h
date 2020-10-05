@@ -7,7 +7,7 @@
 #include "../alarm/avaralarmktf.h"
 #include "../alarm/warnalarmkiv.h"
 #include "../alarm/warnalarmktf.h"
-#include "../check/eabstractcheckdialog.h"
+#include "../check/abstractcheckdialog.h"
 #include "../config/abstractconfdialog.h"
 #include "../config/confdialog.h"
 #include "../dialogs/connectdialog.h"
@@ -16,7 +16,8 @@
 #include "../dialogs/fwupdialog.h"
 #include "../dialogs/infodialog.h"
 #include "../dialogs/journalsdialog.h"
-#include "../dialogs/mnktime.h"
+#include "../dialogs/timedialog.h"
+#include "../gen/module.h"
 #include "../widgets/etabwidget.h"
 
 #include <QMainWindow>
@@ -170,18 +171,19 @@ private:
     AvarAlarmKTF *AvarAlarmKTFDialog;
     AlarmStateAll *AlarmStateAllDialog;
     AlarmClass *Alarm;
+    Module *m_Module;
     QWidget *Parent;
 
     InfoDialog *infoDialog;
     ConfDialog *mainConfDialog;
     ConfDialog *mainTuneDialog;
     AbstractCorDialog *corDialog;
-    AbstractConfDialog *confBDialog, *confMDialog;
-    EAbstractCheckDialog *checkBDialog, *checkMDialog, *HarmDialog, *VibrDialog;
+    //    AbstractConfDialog *confBDialog, *confMDialog;
+    //    AbstractCheckDialog *checkBDialog, *checkMDialog, *HarmDialog, *VibrDialog;
     QDialog *tuneDialog;
     // временно, пока не сделаны интерфейсы    JournalDialog *jourDialog;
     fwupdialog *fwUpDialog;
-    MNKTime *timeDialog;
+    TimeDialog *timeDialog;
 
     bool PasswordValid;
     bool TimeThrFinished;

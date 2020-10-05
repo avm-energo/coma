@@ -3,6 +3,7 @@
 
 #include "../../gen/s2.h"
 #include "../models/valuemodel.h"
+
 #include <QWidget>
 
 class TuneClass : public QObject
@@ -13,6 +14,7 @@ public:
     virtual QWidget *BacWidget() = 0;
     void update();
     void getFromWidget();
+    S2ConfigType *getS2Config();
 
 private:
     ValueModel *m_VModel;

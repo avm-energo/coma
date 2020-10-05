@@ -1,11 +1,12 @@
 #ifndef TUNEKIVMAIN_H
 #define TUNEKIVMAIN_H
 
-#include "../eabstracttunedialog.h"
+#include "../abstracttunedialog.h"
 #include "tunekiv.h"
+
 #include <QWidget>
 
-class TuneKIVCheck : public EAbstractTuneDialog
+class TuneKIVCheck : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
@@ -19,7 +20,6 @@ private:
     void FillBac(int bacnum);
     void FillBackBac(int bacnum);
     void GetBdAndFill();
-    Error::Msg SaveWorkConfig();
 
 private slots:
     int ReadAnalogMeasurements();

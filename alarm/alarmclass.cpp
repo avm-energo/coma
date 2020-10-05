@@ -136,10 +136,12 @@ void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
                 quint32 AdrAlarm = MapAlarm[Board::GetInstance()->type()].AdrAlarm;
                 int WarnsSize = MapAlarm[Board::GetInstance()->type()].warns.size();
                 if ((AdrAlarm <= sigadr) && (sigadr <= AdrAlarm + WarnsSize))
+                {
                     if (MapAlarm[Board::GetInstance()->type()].warns.at(i))
                         WarnAlarmEvents.append(alarm);
                     else if (MapAlarm[Board::GetInstance()->type()].avars.at(i))
                         AvarAlarmEvents.append(alarm);
+                }
             }
         }
 

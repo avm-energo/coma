@@ -21,7 +21,7 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-CheckDialogHarmonicKDV::CheckDialogHarmonicKDV(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
+CheckDialogHarmonicKDV::CheckDialogHarmonicKDV(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
 {
 
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";

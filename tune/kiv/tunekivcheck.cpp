@@ -1,14 +1,18 @@
 #include "tunekivcheck.h"
+
 #include "../../usb/commands.h"
 
-TuneKIVCheck::TuneKIVCheck(TuneKIV *kiv, QWidget *parent) : EAbstractTuneDialog(parent)
+TuneKIVCheck::TuneKIVCheck(TuneKIV *kiv, QWidget *parent) : AbstractTuneDialog(parent)
 {
     TKIV = kiv;
+    S2Config = TKIV->getS2Config();
     m_tuneStep = 1;
     SetupUI();
 }
 
-void TuneKIVCheck::SetupUI() { }
+void TuneKIVCheck::SetupUI()
+{
+}
 
 void TuneKIVCheck::SetLbls()
 {
@@ -22,9 +26,9 @@ void TuneKIVCheck::SetLbls()
 void TuneKIVCheck::SetPf()
 {
     int count = 0;
-    pf[lbls.at(count++)] = &EAbstractTuneDialog::CheckPassword;
-    Error::Msg (EAbstractTuneDialog::*func)()
-        = reinterpret_cast<Error::Msg (EAbstractTuneDialog::*)()>(&TuneKIVCheck::SaveWorkConfig);
+    pf[lbls.at(count++)] = &AbstractTuneDialog::CheckPassword;
+    Error::Msg (AbstractTuneDialog::*func)()
+        = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::SaveWorkConfig);
     pf[lbls.at(count++)] = func;
     /*    func = reinterpret_cast<Error::Msg (EAbstractTuneDialog::*)()>(&TuneKIVCheck::Start7_2_1);
         pf[lbls.at(count++)] = func;
@@ -34,17 +38,16 @@ void TuneKIVCheck::SetPf()
         pf[lbls.at(count++)] = func; */
 }
 
-void TuneKIVCheck::FillBac(int bacnum) { Q_UNUSED(bacnum) }
-
-void TuneKIVCheck::FillBackBac(int bacnum) { Q_UNUSED(bacnum) }
-
-void TuneKIVCheck::GetBdAndFill() { }
-
-Error::Msg TuneKIVCheck::SaveWorkConfig()
+void TuneKIVCheck::FillBac(int bacnum)
 {
-    /*    if (Commands::GetFileWithRestore(CM_CONFIGFILE, TKIV S2ConfigForTune) == NOERROR)
-            memcpy(&m_Bci_block_work, &CKIV->Bci_block, sizeof(ConfigKIV::Bci));
-        else
-            return GENERALERROR; */
-    return Error::Msg::NoError;
+    Q_UNUSED(bacnum)
+}
+
+void TuneKIVCheck::FillBackBac(int bacnum)
+{
+    Q_UNUSED(bacnum)
+}
+
+void TuneKIVCheck::GetBdAndFill()
+{
 }

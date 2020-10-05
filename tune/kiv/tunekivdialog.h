@@ -1,10 +1,10 @@
 #ifndef TuneDialogKIV_H
 #define TuneDialogKIV_H
 
+#include "../abstracttunedialog.h"
 #include "../check/checkkiv.h"
 #include "../config/config.h"
 #include "../config/configkiv.h"
-#include "../eabstracttunedialog.h"
 #include "../gen/modulebsi.h"
 #include "../iec104/iec104.h"
 #include "limereport/lrreportengine.h"
@@ -13,6 +13,7 @@
 #include <QDialog>
 #include <QHBoxLayout>
 #include <QLineEdit>
+#include <QPushButton>
 #include <QStandardItemModel>
 
 #define TUNEFILELENGTH 256
@@ -43,14 +44,14 @@
 
 #define TD_TMK 25.0 // degrees
 #define TD_VBAT 3.0 // voltage
-#define TD_FREQ 50 // Hz
+#define TD_FREQ 50  // Hz
 #define CONST2PIF 314.15926
 
 class TuneKIVDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit TuneKIVDialog(QWidget *parent = nullptr);
+    explicit TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent = nullptr);
 
 signals:
     void Send();
@@ -59,8 +60,8 @@ public slots:
 
 private:
     ConfigKIV::Bci m_Bci_block_work, m_Bci_block_temporary;
-    ConfigKIV *CKIV;
     TuneKIV *TKIV;
+    ConfigKIV *CKIV;
 
     QDialog *ask;
     QLineEdit *ledit;
@@ -85,7 +86,7 @@ private:
 
     struct Bd0
     {
-        float Tmk; // Температура кристалла микроконтроллера, °С
+        float Tmk;  // Температура кристалла микроконтроллера, °С
         float Vbat; // Напряжение аккумуляторной батареи, В
     };
 
@@ -201,6 +202,17 @@ private:
         float ToFloat(QString text); */
 
     QString ValuesFormat, WidgetFormat;
+
+    QHBoxLayout *newTunePBLayout(const QString &pbtext, const std::function<void()> fun)
+    {
+        QHBoxLayout *hlyout = new QHBoxLayout;
+        hlyout->addStretch(100);
+        QPushButton *pb = new QPushButton(pbtext);
+        connect(pb, &QPushButton::clicked, fun);
+        hlyout->addWidget(pb);
+        hlyout->addStretch(100);
+        return hlyout;
+    }
 
 private slots:
 

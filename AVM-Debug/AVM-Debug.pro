@@ -34,6 +34,7 @@ SOURCES += \
     ../alarm/avaralarmktf.cpp \
     ../alarm/warnalarmkiv.cpp \
     ../alarm/warnalarmktf.cpp \
+    ../check/abstractcheckdialog.cpp \
     ../check/checkdialogharmonickdv.cpp \
     ../check/checkdialogharmonicktf.cpp \
     ../check/checkdialogkdv.cpp \
@@ -58,14 +59,15 @@ SOURCES += \
     ../dialogs/connectdialog.cpp \
     ../dialogs/cordialogktf.cpp \
     ../dialogs/infodialog.cpp \
-    ../dialogs/mnktime.cpp \
+    ../dialogs/timedialog.cpp \
     ../gen/board.cpp \
     ../gen/journals.cpp \
     ../gen/logclass.cpp \
+    ../gen/module.cpp \
     ../modbus/serialport.cpp \
     ../models/checkdelegate.cpp \
     ../models/valuemodel.cpp \
-    ../tune/eabstracttunedialog.cpp \
+    ../tune/abstracttunedialog.cpp \
     ../tune/kiv/tunekivcheck.cpp \
     ../tune/kiv/tunekiv.cpp \
     ../tune/kiv/tunekivdialog.cpp \
@@ -77,7 +79,6 @@ SOURCES += \
     avmdebug.cpp \
     main.cpp \
     ../check/check.cpp \
-    ../check/eabstractcheckdialog.cpp \
     ../config/abstractconfdialog.cpp \
     ../config/confdialog.cpp \
     ../config/config.cpp \
@@ -120,6 +121,7 @@ HEADERS += \
     ../alarm/avaralarmktf.h \
     ../alarm/warnalarmkiv.h \
     ../alarm/warnalarmktf.h \
+    ../check/abstractcheckdialog.h \
     ../check/checkdialogharmonickdv.h \
     ../check/checkdialogharmonicktf.h \
     ../check/checkdialogkdv.h \
@@ -144,14 +146,15 @@ HEADERS += \
     ../dialogs/connectdialog.h \
     ../dialogs/cordialogktf.h \
     ../dialogs/infodialog.h \
-    ../dialogs/mnktime.h \
+    ../dialogs/timedialog.h \
     ../gen/board.h \
     ../gen/journals.h \
     ../gen/logclass.h \
+    ../gen/module.h \
     ../modbus/serialport.h \
     ../models/checkdelegate.h \
     ../models/valuemodel.h \
-    ../tune/eabstracttunedialog.h \
+    ../tune/abstracttunedialog.h \
     ../tune/kiv/tunekivcheck.h \
     ../tune/kiv/tunekiv.h \
     ../tune/kiv/tunekivdialog.h \
@@ -162,7 +165,6 @@ HEADERS += \
     ../usb/eprotocom.h \
     ../usb/eusbworker.h \
     ../check/check.h \
-    ../check/eabstractcheckdialog.h \
     ../config/abstractconfdialog.h \
     ../config/confdialog.h \
     ../config/config.h \

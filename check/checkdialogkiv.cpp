@@ -21,7 +21,7 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-CheckDialogKIV::CheckDialogKIV(BoardTypes board, QWidget *parent) : EAbstractCheckDialog(board, parent)
+CheckDialogKIV::CheckDialogKIV(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
@@ -316,7 +316,7 @@ void CheckDialogKIV::onModbusStateChanged()
         QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 
-void CheckDialogKIV::SetWarnAlarmColor(QList<bool> WarnAlarm)
+void CheckDialogKIV::SetWarnColor(QList<bool> WarnAlarm)
 {
     if (WarnAlarm.isEmpty())
         return;

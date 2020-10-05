@@ -1,5 +1,5 @@
 #include "tunekivdialog.h"
-#include "../check/checkkiv.h"
+
 #include "../gen/colors.h"
 #include "../gen/error.h"
 #include "../gen/files.h"
@@ -9,6 +9,8 @@
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 #include "tunekivcheck.h"
+#include "tunekivmain.h"
+#include "tunekivtemp60.h"
 
 #include <QCoreApplication>
 #include <QFileDialog>
@@ -27,11 +29,10 @@
 #include <QtMath>
 #include <functional>
 
-TuneKIVDialog::TuneKIVDialog(QWidget *parent) : QDialog(parent)
+TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent) : QDialog(parent)
 {
-    S2ConfigType *S2Config = new S2ConfigType;
-    CKIV = new ConfigKIV(S2Config);
-    TKIV = new TuneKIV(Board::MEZONIN, S2Config);
+    TKIV = tkiv;
+    CKIV = ckiv;
     // ReportModel = new QStandardItemModel;
     // ViewModel = new QStandardItemModel;
     setAttribute(Qt::WA_DeleteOnClose);
@@ -43,18 +44,16 @@ void TuneKIVDialog::SetupUI()
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
     QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
 
-    hlyout->addStretch(100);
-    std::function<void(void)> KIVCheckFunc = [this]() {
-        TuneKIVCheck *KIVCheck = new TuneKIVCheck(TKIV);
-        KIVCheck->exec();
-    };
-    hlyout->addWidget(
-        WDFunc::NewPB2(this, "", "1. Проверка правильности измерения входных сигналов", this, KIVCheckFunc));
-    hlyout->addStretch(100);
-
-    lyout->addLayout(hlyout);
+    TuneKIVMain *m = new TuneKIVMain;
+    lyout->addLayout(newTunePBLayout("1. Проверка правильности измерения входных сигналов", [this]() {
+        TuneKIVCheck *check = new TuneKIVCheck(TKIV);
+        check->exec();
+    }));
+    lyout->addLayout(newTunePBLayout("2. Основная регулировка", [this]() {
+        TuneKIVMain *tkmain = new TuneKIVMain(TKIV);
+        tkmain->exec();
+    }));
 
     /*    QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; color: black;"
                                "background-color: "

@@ -31,13 +31,11 @@
 #include "../config/confdialogkdv.h"
 #include "../config/confdialogkiv.h"
 #include "../config/confdialogktf.h"
-#ifdef AVM_DEBUG
-#include "../tune/tunedialogkiv.h"
-#endif
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../gen/stdfunc.h"
+#include "../tune/kiv/tunekivdialog.h"
 
 #include <QApplication>
 #include <QDir>
@@ -259,7 +257,7 @@ void AvmDebug::StartWork()
             ERMSG("Отмена подключения");
             return;
         }
-        S2ConfigForTune->clear();
+        S2Config->clear();
         SaveSettings();
     }
 
@@ -374,7 +372,7 @@ void AvmDebug::StartWork()
     {
         MainTW->addTab(timeDialog, "Время");
         TimeIndex = MainTW->indexOf(timeDialog);
-        connect(TimeTimer, &QTimer::timeout, timeDialog, &MNKTime::slot2_timeOut);
+        connect(TimeTimer, &QTimer::timeout, timeDialog, &TimeDialog::slot2_timeOut);
     }
 
     if (corDialog != nullptr)
@@ -451,10 +449,11 @@ void AvmDebug::setupConnections()
         {
         case Config::MTM_84:
         {
-            checkBDialog = new CheckDialogKIV(BoardTypes::BT_BASE);
+            m_Module = Module::createModule(Board::GetInstance()->type());
+            //            checkBDialog = new CheckDialogKIV(BoardTypes::BT_BASE);
 
-            S2Config->clear();
-            confMDialog = new ConfDialogKIV(S2Config);
+            //            S2Config->clear();
+            //            confMDialog = new ConfDialogKIV(S2Config);
 
             corDialog = new CorDialog;
 
@@ -466,15 +465,18 @@ void AvmDebug::setupConnections()
             connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKIVDialog, &QDialog::show);
             connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVDialog, &AvarAlarmKIV::Update);
 
-            connect(Alarm, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
-            connect(Alarm, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
-            tuneDialog = new TuneDialogKIV(S2ConfigForTune);
+            //            connect(Alarm, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog,
+            //            SLOT(SetWarnAlarmColor(QList<bool>))); connect(Alarm, SIGNAL(SetAlarmColor(QList<bool>)),
+            //            checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
+            connect(Alarm, &AlarmClass::SetWarnAlarmColor, m_Module, &Module::setWarnColor);
+            connect(Alarm, &AlarmClass::SetAlarmColor, m_Module, &Module::setAlarmColor);
+            //            tuneDialog = new TuneKIVDialog(S2Config);
             break;
         }
         case Config::MTM_87:
         {
             HarmDialog = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
-            connect(BdaTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
+            connect(BdaTimer, &QTimer::timeout, HarmDialog, &AbstractCheckDialog::USBUpdate);
 
             S2Config->clear();
             confMDialog = new ConfDialogKTF(S2Config);
@@ -503,10 +505,10 @@ void AvmDebug::setupConnections()
             checkBDialog = new CheckDialogKDV(BoardTypes::BT_BASE);
 
             HarmDialog = new CheckDialogHarmonicKDV(BoardTypes::BT_BASE);
-            connect(BdaTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
+            connect(BdaTimer, &QTimer::timeout, HarmDialog, &AbstractCheckDialog::USBUpdate);
 
             VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE);
-            connect(BdaTimer, &QTimer::timeout, VibrDialog, &EAbstractCheckDialog::USBUpdate);
+            connect(BdaTimer, &QTimer::timeout, VibrDialog, &AbstractCheckDialog::USBUpdate);
 
             S2Config->clear();
             confMDialog = new ConfDialogKDV(S2Config);
@@ -530,7 +532,7 @@ void AvmDebug::PrepareDialogs()
 {
     infoDialog = new InfoDialog(this);
     //    jourDialog = new JournalDialog(Ch104);
-    timeDialog = new MNKTime(this);
+    timeDialog = new TimeDialog(this);
 
     AlarmStateAllDialog = new AlarmStateAll;
 
@@ -601,7 +603,7 @@ void AvmDebug::NewTimersBda()
     //   connect(BdaTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::UpdateHealth);
 
     if (checkBDialog != nullptr)
-        connect(BdaTimer, &QTimer::timeout, checkBDialog, &EAbstractCheckDialog::USBUpdate);
+        connect(BdaTimer, &QTimer::timeout, checkBDialog, &AbstractCheckDialog::USBUpdate);
     if (AlarmStateAllDialog != nullptr)
         connect(AlrmTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::CallUpdateHealth);
 }
@@ -636,7 +638,10 @@ bool AvmDebug::nativeEvent(const QByteArray &eventType, void *message, long *res
     return false;
 }
 
-void AvmDebug::SetMode(int mode) { Mode = mode; }
+void AvmDebug::SetMode(int mode)
+{
+    Mode = mode;
+}
 
 void AvmDebug::Go(const QString &parameter)
 {
@@ -822,9 +827,15 @@ void AvmDebug::FileTimeOut()
     ReceiveTimer->stop();
 }
 
-void AvmDebug::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
+void AvmDebug::SetProgressBar2Size(int size)
+{
+    SetProgressBarSize(2, size);
+}
 
-void AvmDebug::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
+void AvmDebug::SetProgressBar2(int cursize)
+{
+    SetProgressBar(2, cursize);
+}
 
 void AvmDebug::SetProgressBarSize(int prbnum, int size)
 {
@@ -904,7 +915,10 @@ void AvmDebug::DisconnectAndClear()
     Reconnect = false;
 }
 
-void AvmDebug::resizeEvent(QResizeEvent *e) { QMainWindow::resizeEvent(e); }
+void AvmDebug::resizeEvent(QResizeEvent *e)
+{
+    QMainWindow::resizeEvent(e);
+}
 
 void AvmDebug::keyPressEvent(QKeyEvent *e)
 {

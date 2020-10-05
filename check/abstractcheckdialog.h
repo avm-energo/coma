@@ -13,8 +13,8 @@
  *      - в конце конструктора не забыть вызвать SetupUI()
  * */
 
-#ifndef EABSTRACTCHECKDIALOG_H
-#define EABSTRACTCHECKDIALOG_H
+#ifndef ABSTRACTCHECKDIALOG_H
+#define ABSTRACTCHECKDIALOG_H
 
 #include "../gen/modulebsi.h"
 #include "xlsxdocument.h"
@@ -28,11 +28,11 @@
 #define BT_STARTBD_BASE 0 // блоки Bd для базовой платы нумеруются с 0 (0-й блок - общий для всех)
 #define BT_STARTBD_MEZ 100 // блоки Bd для мезонинной платы нумеруются с 101 (100 base + 1st block)
 
-class EAbstractCheckDialog : public QDialog
+class AbstractCheckDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit EAbstractCheckDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    explicit AbstractCheckDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
     void SetupUI(QStringList &tabnames);
 
     virtual QWidget *BdUI(int bdnum) = 0; // визуализация наборов текущих данных от модуля
@@ -62,6 +62,8 @@ signals:
 public slots:
     void StopAnalogMeasurements();
     virtual void USBUpdate() = 0; // update BDs from USB
+    virtual void SetWarnColor(QList<bool>) = 0;
+    virtual void SetAlarmColor(QList<bool>) = 0;
 
 private:
     struct BdBlocks
@@ -93,4 +95,4 @@ private slots:
     void TimerTimeout();
 };
 
-#endif // EABSTRACTCHECKDIALOG_H
+#endif // ABSTRACTCHECKDIALOG_H

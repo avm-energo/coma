@@ -90,7 +90,7 @@ public:
     quint16 type() const;
 
     InterfaceType interfaceType() const;
-    void setInterfaceType(InterfaceType interface);
+    void setInterfaceType(InterfaceType iface);
 
     DeviceType deviceType() const;
     void setDeviceType(const DeviceType &deviceType);

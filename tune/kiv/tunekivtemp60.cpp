@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-TuneKIVTemp60::TuneKIVTemp60(QWidget *parent) : EAbstractTuneDialog(parent)
+TuneKIVTemp60::TuneKIVTemp60(QWidget *parent) : AbstractTuneDialog(parent)
 {
     m_tuneStep = 2;
     if (LoadTuneSequenceFile() != Error::Msg::NoError)

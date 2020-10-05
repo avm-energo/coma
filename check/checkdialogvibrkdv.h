@@ -7,9 +7,9 @@
 #include "../modbus/modbus.h"
 #include "check.h"
 #include "checkvibrkdv.h"
-#include "eabstractcheckdialog.h"
+#include "abstractcheckdialog.h"
 
-class CheckDialogVibrKDV : public EAbstractCheckDialog
+class CheckDialogVibrKDV : public AbstractCheckDialog
 {
     Q_OBJECT
 public:

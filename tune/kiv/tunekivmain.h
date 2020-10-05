@@ -1,11 +1,12 @@
 #ifndef TUNEKIVMAIN_H
 #define TUNEKIVMAIN_H
 
-#include "../eabstracttunedialog.h"
+#include "../abstracttunedialog.h"
 #include "tunekiv.h"
+
 #include <QWidget>
 
-class TuneKIVMain : public EAbstractTuneDialog
+class TuneKIVMain : public AbstractTuneDialog
 {
     Q_OBJECT
 public:

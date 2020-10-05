@@ -6,13 +6,13 @@
 
 #include <QDialog>
 
-class MNKTime : public QDialog
+class TimeDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit MNKTime(QWidget *parent = nullptr);
-    ~MNKTime();
+    explicit TimeDialog(QWidget *parent = nullptr);
+    ~TimeDialog();
 
     bool First;
     QTimer *Timer;

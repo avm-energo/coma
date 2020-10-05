@@ -1,7 +1,10 @@
 #include "configkiv.h"
 
+#include "../usb/commands.h"
+
 ConfigKIV::ConfigKIV(S2ConfigType *config)
 {
+    m_S2Config = config;
     // параметры входных сигналов
     quint32 StartInIndex = ID8084_START;
     //    quint32 StartComIndex = ID8084_COM;
@@ -48,38 +51,86 @@ ConfigKIV::ConfigKIV(S2ConfigType *config)
     config->append({ 0xFFFFFFFF, 0, nullptr });
 }
 
-void ConfigKIV::SetDefConf()
+void ConfigKIV::setDefConf()
 {
-    Bci_block.Unom = 220;
-    Bci_block.Unom_1 = 100;
-    Bci_block.Umin = 0.5;
-    Bci_block.Imin = 0.5;
-    Bci_block.dC_pred = 0.5;
-    Bci_block.dC_alarm = 1.0;
-    Bci_block.dTg_pred = 1;
-    Bci_block.dTg_alarm = 1.5;
-    Bci_block.dIunb_pred = 1;
-    Bci_block.dIunb_alarm = 1.5;
-    Bci_block.GdC = 0.1f;
-    Bci_block.GdTg = 0.2f;
-    Bci_block.GdIunb = 0.2f;
-    Bci_block.Iunb_init = 0;
-    Bci_block.Phy_unb_init = 0;
-    Bci_block.NFiltr = 100;
-    Bci_block.T_Data_Rec = 60;
-    Bci_block.LowU = 80;
-    Bci_block.IsU = 1;
-    Bci_block.IsIunb = 1;
-    Bci_block.Tevent_pred = 0;
-    Bci_block.Tevent_alarm = 0;
+    setDefConf(Bci_block);
+}
+
+void ConfigKIV::setDefConf(Bci &bci)
+{
+    bci.Unom = 220;
+    bci.Unom_1 = 100;
+    bci.Umin = 0.5;
+    bci.Imin = 0.5;
+    bci.dC_pred = 0.5;
+    bci.dC_alarm = 1.0;
+    bci.dTg_pred = 1;
+    bci.dTg_alarm = 1.5;
+    bci.dIunb_pred = 1;
+    bci.dIunb_alarm = 1.5;
+    bci.GdC = 0.1f;
+    bci.GdTg = 0.2f;
+    bci.GdIunb = 0.2f;
+    bci.Iunb_init = 0;
+    bci.Phy_unb_init = 0;
+    bci.NFiltr = 100;
+    bci.T_Data_Rec = 60;
+    bci.LowU = 80;
+    bci.IsU = 1;
+    bci.IsIunb = 1;
+    bci.Tevent_pred = 0;
+    bci.Tevent_alarm = 0;
 
     for (int i = 0; i < 3; i++)
     {
-
-        Bci_block.C_init[i] = 2200;
-        Bci_block.Tg_init[i] = 0;
-        Bci_block.corTg[i] = 0;
-        Bci_block.Tg_pasp[i] = 0.3f;
-        Bci_block.C_pasp[i] = 1500;
+        bci.C_init[i] = 2200;
+        bci.Tg_init[i] = 0;
+        bci.corTg[i] = 0;
+        bci.Tg_pasp[i] = 0.3f;
+        bci.C_pasp[i] = 1500;
     }
+}
+
+Error::Msg ConfigKIV::getAndPushConfig()
+{
+    if (Commands::GetFileWithRestore(CM_CONFIGFILE, m_S2Config) == Error::Msg::NoError)
+    {
+        Bci newBciBlock;
+        memcpy(&newBciBlock, &Bci_block, sizeof(Bci));
+        m_BciStack.push(newBciBlock);
+    }
+    else
+        return Error::Msg::GeneralError;
+    return Error::Msg::NoError;
+}
+
+ConfigKIV::Bci ConfigKIV::popConfig()
+{
+    if (m_BciStack.isEmpty())
+    {
+        Bci newBciBlock;
+        setDefConf(newBciBlock);
+        return newBciBlock;
+    }
+    return m_BciStack.pop();
+}
+
+Error::Msg ConfigKIV::popAndWriteConfig()
+{
+    Bci tempBciBlock;
+    memcpy(&tempBciBlock, &Bci_block, sizeof(Bci)); // push current Bci
+    Bci_block = popConfig();
+    Error::Msg err = Commands::WriteFile(CM_CONFIGFILE, m_S2Config);
+    memcpy(&Bci_block, &tempBciBlock, sizeof(Bci)); // pop current Bci
+    return err;
+}
+
+S2ConfigType *ConfigKIV::getS2Config()
+{
+    return m_S2Config;
+}
+
+void ConfigKIV::setS2Config(S2ConfigType *s2config)
+{
+    m_S2Config = s2config;
 }

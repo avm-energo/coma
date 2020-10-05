@@ -1,4 +1,4 @@
-#include "eabstractcheckdialog.h"
+#include "abstractcheckdialog.h"
 
 #include "../gen/board.h"
 #include "../gen/colors.h"
@@ -22,7 +22,7 @@
 #include <QtMath>
 #include <QtTest/QTest>
 
-EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board, QWidget *parent) : QDialog(parent)
+AbstractCheckDialog::AbstractCheckDialog(BoardTypes board, QWidget *parent) : QDialog(parent)
 {
     XlsxWriting = false;
     Busy = false;
@@ -32,12 +32,12 @@ EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board, QWidget *parent) : 
     Bd_blocks.clear();
     Timer = new QTimer(this);
     Timer->setObjectName("checktimer");
-    connect(Timer, &QTimer::timeout, this, &EAbstractCheckDialog::TimerTimeout);
+    connect(Timer, &QTimer::timeout, this, &AbstractCheckDialog::TimerTimeout);
     Timer->setInterval(1000);
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
+void AbstractCheckDialog::SetupUI(QStringList &tabnames)
 {
     if (tabnames.size() < BdUINum)
     {
@@ -74,11 +74,11 @@ void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
     setLayout(lyout);
 }
 
-void EAbstractCheckDialog::Check1PPS()
+void AbstractCheckDialog::Check1PPS()
 {
 }
 
-void EAbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
+void AbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
 {
     BdBlocks *bdblock = new BdBlocks;
     bdblock->block = block;
@@ -87,7 +87,7 @@ void EAbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool tox
     Bd_blocks[bdnum] = bdblock;
 }
 
-QWidget *EAbstractCheckDialog::BottomUI()
+QWidget *AbstractCheckDialog::BottomUI()
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -133,7 +133,7 @@ QWidget *EAbstractCheckDialog::BottomUI()
     return w;
 }
 
-void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
+void AbstractCheckDialog::StartAnalogMeasurementsToFile()
 {
     QFileDialog *dlg = new QFileDialog;
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -175,7 +175,7 @@ void EAbstractCheckDialog::StartAnalogMeasurementsToFile()
     StartAnalogMeasurements();
 }
 
-void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
+void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
 {
 
     // получение текущих аналоговых сигналов от модуля
@@ -214,14 +214,14 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     Busy = false;
 }
 
-void EAbstractCheckDialog::StartAnalogMeasurements()
+void AbstractCheckDialog::StartAnalogMeasurements()
 {
     //    CurBdNum = 1;
     PrepareAnalogMeasurements();
     Timer->start();
 }
 
-void EAbstractCheckDialog::StopAnalogMeasurements()
+void AbstractCheckDialog::StopAnalogMeasurements()
 {
     if (XlsxWriting)
     {
@@ -245,12 +245,12 @@ void EAbstractCheckDialog::StopAnalogMeasurements()
     Timer->stop();
 }
 
-void EAbstractCheckDialog::TimerTimeout()
+void AbstractCheckDialog::TimerTimeout()
 {
     ReadAnalogMeasurementsAndWriteToFile();
 }
 
-void EAbstractCheckDialog::SetTimerPeriod()
+void AbstractCheckDialog::SetTimerPeriod()
 {
     bool TimerIsActive = false;
     if (Timer->isActive())

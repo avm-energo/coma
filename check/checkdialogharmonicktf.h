@@ -7,9 +7,9 @@
 #include "check.h"
 #include "checkharmonicktf.h"
 #include "checkktf.h"
-#include "eabstractcheckdialog.h"
+#include "abstractcheckdialog.h"
 
-class CheckDialogHarmonicKTF : public EAbstractCheckDialog
+class CheckDialogHarmonicKTF : public AbstractCheckDialog
 {
     Q_OBJECT
 public:

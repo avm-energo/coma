@@ -1,10 +1,10 @@
 #ifndef TUNEKIVTEMP60_H
 #define TUNEKIVTEMP60_H
 
-#include "../eabstracttunedialog.h"
+#include "../abstracttunedialog.h"
 #include <QWidget>
 
-class TuneKIVTemp60 : public EAbstractTuneDialog
+class TuneKIVTemp60 : public AbstractTuneDialog
 {
     Q_OBJECT
 public:

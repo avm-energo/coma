@@ -1,5 +1,5 @@
-#ifndef EABSTRACTTUNEDIALOG_H
-#define EABSTRACTTUNEDIALOG_H
+#ifndef ABSTRACTTUNEDIALOG_H
+#define ABSTRACTTUNEDIALOG_H
 
 #include "../gen/report.h"
 #include "../gen/s2.h"
@@ -11,37 +11,40 @@
 
 #define MAXTUNESIZE 1024 // максимальный размер файла с данными настройки
 
-#define TD_TMK 25.0 // degrees
-#define TD_VBAT 3.0 // voltage
-#define TD_FREQ 50 // Hz
+#define TD_TMK 25.0       // degrees
+#define TD_VBAT 3.0       // voltage
+#define TD_FREQ 50        // Hz
 #define MEASTIMERINT 1000 // интервал проведения измерений - 1 с
 
 #define TUNE_POINTSPER 500 // столько миллисекунд должно усредняться при регулировке
 #define WAITFORCONST 1 // seconds to let voltages be constant
 
-class EAbstractTuneDialog : public QDialog
+class AbstractTuneDialog : public QDialog
 {
     Q_OBJECT
 public:
-    struct BacStruct
+    struct BlockStruct
     {
-        void *BacBlock;
-        int BacBlockSize;
-        //        char BacBlockNum;
+        void *block;
+        int blocksize;
     };
 
-    explicit EAbstractTuneDialog(QWidget *parent = nullptr);
-    ~EAbstractTuneDialog();
+    explicit AbstractTuneDialog(QWidget *parent = nullptr);
+    ~AbstractTuneDialog();
 
     bool IsNeededDefConf;
-    QMap<int, BacStruct> AbsBac;
+
+    int m_ConfigCounter;
+    QMap<int, BlockStruct> m_TuneBlockMap;
+    QMap<int, BlockStruct> m_ConfigBlockMap;
+
     QStringList lbls;
     bool Skipped, MeasurementEnabled, ok, TuneFileSaved;
     //    bool Cancelled;
     QTimer *MeasurementTimer;
-    S2ConfigType S2Config;
+    S2ConfigType *S2Config;
     quint32 SecondsToEnd15SecondsInterval;
-    QHash<QString, Error::Msg (EAbstractTuneDialog::*)()> pf;
+    QHash<QString, Error::Msg (AbstractTuneDialog::*)()> pf;
     quint8 bStep;
     int TuneVariant; // вариант регулировочных параметров
     S2ConfigType *S2ConfigForTune;
@@ -54,12 +57,14 @@ public:
     virtual void SetupUI() = 0;
     QWidget *TuneUI();
     QWidget *BottomUI(int bacnum);
-    void AddBac(void *block, int blocknum, int blocksize); // установка указателя на блок Bac
+    void addTuneBlock(void *block, int blocknum, int blocksize); // установка указателя на блок Bac
+    int setConfigPtr(void *ptr, int size);
+
     void WaitNSeconds(int SecondsToWait, bool isAllowedToStop = false);
     void ProcessTune();
     Error::Msg CheckPassword();
     virtual void SetLbls() = 0; // заполнить список сообщений
-    virtual void SetPf() = 0; // заполнить список функций настройки
+    virtual void SetPf() = 0;   // заполнить список функций настройки
     bool IsWithinLimits(double number, double base, double threshold);
     void MsgSetVisible(int msg, bool Visible = true);
     void OkMsgSetVisible(int msg, bool Visible = true);
@@ -79,6 +84,7 @@ public:
     Error::Msg LoadTuneSequenceFile();
     Error::Msg CheckCalibrStep();
     void SaveTuneSequenceFile();
+    virtual Error::Msg SaveWorkConfig(int configblocknum = 0);
 
 signals:
     void PasswordChecked();
@@ -118,4 +124,4 @@ protected:
     void keyPressEvent(QKeyEvent *e);
 };
 
-#endif // EABSTRACTTUNEDIALOG_H
+#endif // ABSTRACTTUNEDIALOG_H

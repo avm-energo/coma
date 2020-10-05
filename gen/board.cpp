@@ -48,10 +48,10 @@ Board::InterfaceType Board::interfaceType() const
     return m_interfaceType;
 }
 
-void Board::setInterfaceType(Board::InterfaceType interface)
+void Board::setInterfaceType(Board::InterfaceType iface)
 {
-    m_interfaceType = interface;
-    emit interfaceTypeChanged(interface);
+    m_interfaceType = iface;
+    emit interfaceTypeChanged(iface);
 }
 
 Board::Board(QObject *parent)
