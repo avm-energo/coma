@@ -193,7 +193,7 @@ void CorDialog::GetCorBd(int index)
 {
     if (index == corDIndex)
     {
-        switch (Board::GetInstance()->interfaceType())
+        switch (Board::GetInstance().interfaceType())
         {
         case Board::InterfaceType::USB:
         {
@@ -214,7 +214,7 @@ void CorDialog::GetCorBd(int index)
 }
 void CorDialog::GetCorBdButton()
 {
-    switch (Board::GetInstance()->interfaceType())
+    switch (Board::GetInstance().interfaceType())
     {
     case Board::InterfaceType::USB:
     {
@@ -250,7 +250,7 @@ void CorDialog::WriteCorBd()
 
     if (WriteCheckPassword() == Error::Msg::NoError)
     {
-        switch (Board::GetInstance()->interfaceType())
+        switch (Board::GetInstance().interfaceType())
         {
         case Board::InterfaceType::Ethernet:
         {
@@ -290,7 +290,7 @@ void CorDialog::WriteCor()
 {
     if (WriteCheckPassword() == Error::Msg::NoError)
     {
-        switch (Board::GetInstance()->interfaceType())
+        switch (Board::GetInstance().interfaceType())
         {
         case Board::InterfaceType::Ethernet:
         {
@@ -331,7 +331,7 @@ void CorDialog::WriteCor()
 
 void CorDialog::SetCor()
 {
-    switch (Board::GetInstance()->interfaceType())
+    switch (Board::GetInstance().interfaceType())
     {
     case Board::InterfaceType::Ethernet:
     {
@@ -353,7 +353,7 @@ void CorDialog::ResetCor()
 {
     if (WriteCheckPassword() == Error::Msg::NoError)
     {
-        switch (Board::GetInstance()->interfaceType())
+        switch (Board::GetInstance().interfaceType())
         {
         case Board::InterfaceType::Ethernet:
         {

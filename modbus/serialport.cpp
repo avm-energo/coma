@@ -37,14 +37,14 @@ Error::Msg SerialPort::Init(SerialPort::Settings settings)
     connect(Port, SIGNAL(errorOccurred(QSerialPort::SerialPortError)), this,
         SLOT(ErrorOccurred(QSerialPort::SerialPortError)));
     connect(Port, &QIODevice::readyRead, this, &SerialPort::ReadBytes);
-    if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
+    if (Board::GetInstance().interfaceType() == Board::InterfaceType::RS485)
     {
         if (Port->open(QIODevice::ReadWrite))
 
-            Board::GetInstance()->setConnectionState(Board::ConnectionState::Connected);
+            Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
         else
         {
-            Board::GetInstance()->setConnectionState(Board::ConnectionState::Closed);
+            Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
             ERMSG("Error opening COM-port");
             return Error::Msg::GeneralError;
         }
@@ -70,9 +70,9 @@ void SerialPort::ErrorOccurred(QSerialPort::SerialPortError err)
           //        emit State(ConnectionStates::ConnectedState);
     else
     {
-        if (Board::GetInstance()->interfaceType() == Board::InterfaceType::RS485)
+        if (Board::GetInstance().interfaceType() == Board::InterfaceType::RS485)
         {
-            Board::GetInstance()->setConnectionState(Board::ConnectionState::Closed);
+            Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
             emit Reconnect();
         }
     }

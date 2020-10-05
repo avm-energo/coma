@@ -142,6 +142,7 @@ HEADERS += \
     ../gen/board.h \
     ../gen/journals.h \
     ../gen/logclass.h \
+    ../gen/singleton.h \
     ../modbus/serialport.h \
     ../usb/defines.h \
     ../usb/eprotocom.h \

@@ -103,12 +103,10 @@ void Journals::FillEventsTable(QByteArray &ba)
     }
     else
     {
-        switch (Board::GetInstance()->typeB())
-        // switch (MTypeB)
+        switch (Board::GetInstance().typeB())
         {
         case Config::MTB_A2:
-            switch (Board::GetInstance()->typeM())
-            // switch (MTypeM)
+            switch (Board::GetInstance().typeM())
             {
             case Config::MTM_84:
                 sl = WorkJourDescription;
@@ -183,10 +181,10 @@ void Journals::FillMeasTable(QByteArray &ba)
     int basize = ba.size();
     char *file = ba.data();
     int i = 0;
-    switch (Board::GetInstance()->typeB())
+    switch (Board::GetInstance().typeB())
     {
     case Config::MTB_A2:
-        switch (Board::GetInstance()->typeM())
+        switch (Board::GetInstance().typeM())
         {
         case Config::MTM_84:
         {
@@ -348,7 +346,7 @@ void Journals::FillWorkJour(QByteArray ba)
 
 void Journals::StartGetJour()
 {
-    switch (Board::GetInstance()->interfaceType())
+    switch (Board::GetInstance().interfaceType())
     {
 
     case Board::InterfaceType::Ethernet:

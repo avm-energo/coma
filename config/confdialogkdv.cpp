@@ -24,7 +24,7 @@ ConfDialogKDV::ConfDialogKDV(QVector<S2::DataRec> *S2Config, QWidget *parent) : 
     setStyleSheet(tmps);
     this->S2Config = S2Config;
     KDV = new ConfigKDV(S2Config);
-    Conf = new ConfDialog(S2Config, Board::GetInstance()->typeB(), Board::GetInstance()->typeM());
+    Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
     ConfKxx = new ConfDialogKxx(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();

@@ -37,7 +37,7 @@ JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
     // connect(JourFuncs, &Journals::ModelReady, this, &JournalDialog::SetModel);
     //    connect(JourFuncs,SIGNAL(ProxyModelReady(QSortFilterProxyModel
     //    *)),this,SLOT(SetProxyModel(QSortFilterProxyModel *)));
-    if (Board::GetInstance()->interfaceType() == Board::InterfaceType::Ethernet)
+    if (Board::GetInstance().interfaceType() == Board::InterfaceType::Ethernet)
     {
         connect(JourFuncs, &Journals::ReadJour, iec, &IEC104::SelectFile);
         connect(iec, &IEC104::SendJourSysfromiec104, JourFuncs, &Journals::FillSysJour);
@@ -239,7 +239,7 @@ void JournalDialog::JourFileChoosed(QString &file)
 
 void JournalDialog::EraseJour()
 {
-    if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         if (WriteCheckPassword() == Error::Msg::NoError)
         {
             int jourtype = GetJourNum(sender()->objectName());
@@ -293,9 +293,8 @@ void JournalDialog::SaveJour()
     }
     // jourfilestr += QString::number(MTypeB, 16) + QString::number(MTypeM, 16) + " #"
     //    + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + " ";
-    jourfilestr += QString::number(Board::GetInstance()->typeB(), 16)
-        + QString::number(Board::GetInstance()->typeM(), 16) + " #"
-        + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + " ";
+    jourfilestr += QString::number(Board::GetInstance().typeB(), 16) + QString::number(Board::GetInstance().typeM(), 16)
+        + " #" + QString("%1").arg(ModuleBSI::SerialNum(BoardTypes::BT_MODULE), 8, 10, QChar('0')) + " ";
     jourfilestr += QDate::currentDate().toString("dd-MM-yyyy") + ".xlsx";
     // запрашиваем имя файла для сохранения
     QString filename = Files::ChooseFileForSave(nullptr, "Excel documents (*.xlsx)", "xlsx", jourfilestr);

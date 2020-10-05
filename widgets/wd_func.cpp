@@ -448,20 +448,20 @@ QStatusBar *WDFunc::NewSB(QWidget *w)
         layout->itemAt(i)->widget()->setFixedHeight(height);
     }
 
-    QObject::connect(Board::GetInstance(), &Board::typeChanged, [msgModel]() {
-        quint16 serialNumber = Board::GetInstance()->type();
+    QObject::connect(&Board::GetInstance(), &Board::typeChanged, [msgModel]() {
+        quint16 serialNumber = Board::GetInstance().type();
         QString deviceName = QVariant::fromValue(Board::DeviceModel(serialNumber)).toString();
         msgModel->setText(deviceName);
     });
 
     QObject::connect(
-        Board::GetInstance(), &Board::connectionStateChanged, [msgConnectionState](Board::ConnectionState state) {
+        &Board::GetInstance(), &Board::connectionStateChanged, [msgConnectionState](Board::ConnectionState state) {
             QString connState = QVariant::fromValue(Board::ConnectionState(state)).toString();
             msgConnectionState->setText(connState);
             msgConnectionState->setForegroundRole(QPalette::Highlight);
             msgConnectionState->setBackgroundRole(QPalette::HighlightedText);
         });
-    QObject::connect(Board::GetInstance(), &Board::interfaceTypeChanged,
+    QObject::connect(&Board::GetInstance(), &Board::interfaceTypeChanged,
         [msgConnectionType, msgConnectionImage, images, height](const Board::InterfaceType &interfaceType) {
             QString connName = QVariant::fromValue(Board::InterfaceType(interfaceType)).toString();
             msgConnectionType->setText(connName);

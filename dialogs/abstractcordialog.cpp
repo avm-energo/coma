@@ -43,11 +43,11 @@ void AbstractCorDialog::SetCor()
 {
     // if (MainInterface == I_ETHERNET)
     //{
-    if (Board::GetInstance()->interfaceType() == Board::InterfaceType::Ethernet)
+    if (Board::GetInstance().interfaceType() == Board::InterfaceType::Ethernet)
         emit SendCom45(903);
     //}
     // else if (MainInterface == I_USB)
-    else if (Board::GetInstance()->interfaceType() == Board::InterfaceType::USB)
+    else if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
         //   {
         if (Commands::WriteCom(4) == Error::Msg::NoError)
             QMessageBox::information(this, "INFO", "Записано успешно");

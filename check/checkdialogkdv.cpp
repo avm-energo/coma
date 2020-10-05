@@ -226,7 +226,7 @@ void CheckDialogKDV::USBUpdate()
 
 void CheckDialogKDV::onModbusStateChanged()
 {
-    if (Board::GetInstance()->connectionState() == Board::ConnectionState::Connected)
+    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
         QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
 

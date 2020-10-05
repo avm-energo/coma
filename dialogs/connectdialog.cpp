@@ -43,7 +43,7 @@ ConnectDialog::ConnectDialog()
 void ConnectDialog::SetInterface()
 {
     auto comboBox = this->findChild<EComboBox *>();
-    Board::GetInstance()->setProperty("interface", comboBox->currentText());
+    Board::GetInstance().setProperty("interface", comboBox->currentText());
     QDialog *dlg = new QDialog(this);
     dlg->setMinimumWidth(150);
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -51,7 +51,7 @@ void ConnectDialog::SetInterface()
     dlg->setMinimumWidth(400);
     QVBoxLayout *lyout = new QVBoxLayout;
 
-    switch (Board::GetInstance()->interfaceType())
+    switch (Board::GetInstance().interfaceType())
     {
     case Board::InterfaceType::USB:
     {
@@ -458,7 +458,7 @@ bool ConnectDialog::UpdateModel()
         ethlist << sets->value(ethname, "").toString();
         rslist << sets->value(rsname, "").toString();
     }
-    switch (Board::GetInstance()->interfaceType())
+    switch (Board::GetInstance().interfaceType())
     {
     case Board::InterfaceType::USB:
     {
