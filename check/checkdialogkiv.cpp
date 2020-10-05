@@ -45,6 +45,12 @@ CheckDialogKIV::CheckDialogKIV(BoardTypes board, QWidget *parent) : EAbstractChe
     Timer->setInterval(ANMEASINT);
 }
 
+CheckDialogKIV::~CheckDialogKIV()
+{
+    delete ChKIV;
+    delete Ch;
+}
+
 QWidget *CheckDialogKIV::BdUI(int bdnum)
 {
     switch (bdnum)
@@ -130,6 +136,7 @@ void CheckDialogKIV::WriteToFile(int row, int bdnum)
 
 QWidget *CheckDialogKIV::CustomTab()
 {
+    // Оно точно должно возвращать nullptr?
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;

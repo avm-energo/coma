@@ -133,7 +133,8 @@ void ConfDialogKIV::SetupUI()
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
     QGridLayout *gridlyout = new QGridLayout;
-    QScrollArea *area = new QScrollArea;
+    // Закомментировал т.к. не используется
+    //    QScrollArea *area = new QScrollArea;
     QScrollArea *area2 = new QScrollArea;
     QScrollArea *scrArea = new QScrollArea;
     QWidget *analog1 = new QWidget;
@@ -154,9 +155,9 @@ void ConfDialogKIV::SetupUI()
     link->setStyleSheet(tmps);
     Ust->setStyleSheet(tmps);
 
-    area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
-    area->setFrameShape(QFrame::NoFrame);
-    area->setWidgetResizable(true);
+    //    area->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
+    //    area->setFrameShape(QFrame::NoFrame);
+    //    area->setWidgetResizable(true);
 
     area2->setStyleSheet("QScrollArea {background-color: rgba(0,0,0,0);}");
     area2->setFrameShape(QFrame::NoFrame);

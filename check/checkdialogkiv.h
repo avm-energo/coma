@@ -13,6 +13,7 @@ class CheckDialogKIV : public EAbstractCheckDialog
     Q_OBJECT
 public:
     explicit CheckDialogKIV(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    ~CheckDialogKIV();
 
     Check_KIV *ChKIV;
 
