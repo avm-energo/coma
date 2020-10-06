@@ -1,6 +1,7 @@
 #ifndef ALARM_H
 #define ALARM_H
 
+#include <QBitArray>
 #include <QWidget>
 
 class Alarm : public QWidget
@@ -11,6 +12,11 @@ public:
 
 public slots:
     void Update(QList<bool> states);
+
+private:
+    int m_alarmBdNum;
+    int m_startAlarmAddress;
+    QBitArray m_alarmFlags; // '1' equals alarm
 
 protected:
     void showEvent(QShowEvent *e);
