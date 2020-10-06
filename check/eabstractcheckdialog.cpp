@@ -28,7 +28,7 @@ EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board, QWidget *parent) : 
     Busy = false;
     xlsx = nullptr;
     WRow = 0;
-    m_board = board;
+    // m_board = board;
     Timer = new QTimer(this);
     Timer->setObjectName("checktimer");
     connect(Timer, &QTimer::timeout, this, &EAbstractCheckDialog::TimerTimeout);

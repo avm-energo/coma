@@ -419,71 +419,7 @@ void Coma::StartWork()
     }
     connect(MainTW, &ETabWidget::tabClicked, this, &Coma::MainTWTabClicked);
 
-    switch (board.interfaceType())
-    {
-    case Board::InterfaceType::USB:
-    {
-        NewUSB();
-        if (Commands::Connect() != Error::Msg::NoError)
-        {
-            QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
-            QApplication::restoreOverrideCursor();
-            // qCritical(logCritical(), ("cn: can't connect"));
-            ERMSG("cn: can't connect");
-            return;
-        }
-        Error::Msg res = ModuleBSI::SetupBSI();
-        if (res == Error::Msg::GeneralError)
-        {
-            QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
-            // qCritical(logCritical(), ("BSI read error"));
-            ERMSG("BSI read error");
-            return;
-        }
-        else if (res == Error::Msg::NoError)
-        {
-            if (ModuleBSI::ModuleTypeString != "")
-                QMessageBox::information(
-                    this, "Успешно", "Связь с " + ModuleBSI::ModuleTypeString + " установлена", QMessageBox::Ok);
-            else
-            {
-                QMessageBox::critical(this, "Ошибка", "Неизвестный тип модуля", QMessageBox::Ok);
-                // qCritical(logCritical(), ("Unknown module type"));
-                ERMSG("Unknown module type");
-                return;
-            }
-        }
-        ActiveThreads |= THREAD::USB;
-        Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
-        Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
-        //        emit USBBsiRefresh();
-        break;
-    }
-    case Board::InterfaceType::Ethernet:
-    {
-        New104();
-        if (!Ch104->Working())
-            Ch104->Connect(ConnectSettings.iec104st);
-        ActiveThreads |= THREAD::P104;
-        break;
-    }
-    case Board::InterfaceType::RS485:
-    {
-        NewModbus();
-        if (ChModbus->Connect(ConnectSettings.serialst) != Error::Msg::NoError)
-        {
-
-            // qCritical(logCritical(), ("Unknown module type"));
-            ERMSG("Modbus not connected");
-            return;
-        }
-        ChModbus->BSIrequest();
-        ActiveThreads |= THREAD::MODBUS;
-        break;
-    }
-    default:
-        qFatal("Connection type error");
-    }
+    Connect();
     QElapsedTimer tmr;
     tmr.start();
     while ((board.typeM() == 0) && (tmr.elapsed() < INTERVAL::WAIT) && !Cancelled)
@@ -497,6 +433,9 @@ void Coma::StartWork()
         return;
     }
     Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
+    quint16 serialNumber = Board::GetInstance().type();
+    QString deviceName = QVariant::fromValue(Board::DeviceModel(serialNumber)).toString();
+    QMessageBox::information(this, "Связь установлена", "Удалось установить связь с " + deviceName, QMessageBox::Ok);
     Reconnect = true;
 
     PrepareDialogs();
@@ -533,7 +472,7 @@ void Coma::StartWork()
     msgSerialNumber->setText(QString::number(ModuleBSI::SerialNum(BT_NONE), 16));
 }
 
-void Coma::setupConnections()
+void Coma::setupQConnections()
 {
     connect(AlarmW, &AlarmWidget::AlarmButtonPressed, AlarmStateAllDialog, &QDialog::show);
 
@@ -685,7 +624,7 @@ void Coma::PrepareDialogs()
     jourDialog = new JournalDialog(Ch104);
     timeDialog = new MNKTime(this);
 
-    setupConnections();
+    setupQConnections();
 }
 
 void Coma::CloseDialogs()
@@ -912,30 +851,30 @@ void Coma::ClearTW()
     }
 }
 
-Error::Msg Coma::CheckPassword()
-{
-    PasswordValid = false;
-    StdFunc::ClearCancel();
-    QEventLoop PasswordLoop;
-    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    connect(dlg, &KeyPressDialog::Finished, this, &Coma::PasswordCheck);
-    connect(this, &Coma::PasswordChecked, &PasswordLoop, &QEventLoop::quit);
-    dlg->show();
-    PasswordLoop.exec();
-    if (StdFunc::IsCancelled())
-    {
-        ERMSG("Отмена ввода пароля");
-        return Error::Msg::GeneralError;
-    }
+// Error::Msg Coma::CheckPassword()
+//{
+//    PasswordValid = false;
+//    StdFunc::ClearCancel();
+//    QEventLoop PasswordLoop;
+//    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
+//    connect(dlg, &KeyPressDialog::Finished, this, &Coma::PasswordCheck);
+//    connect(this, &Coma::PasswordChecked, &PasswordLoop, &QEventLoop::quit);
+//    dlg->show();
+//    PasswordLoop.exec();
+//    if (StdFunc::IsCancelled())
+//    {
+//        ERMSG("Отмена ввода пароля");
+//        return Error::Msg::GeneralError;
+//    }
 
-    if (!PasswordValid)
-    {
-        ERMSG("Пароль введён неверно");
-        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно", QMessageBox::Ok);
-        return Error::Msg::GeneralError;
-    }
-    return Error::Msg::NoError;
-}
+//    if (!PasswordValid)
+//    {
+//        ERMSG("Пароль введён неверно");
+//        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно", QMessageBox::Ok);
+//        return Error::Msg::GeneralError;
+//    }
+//    return Error::Msg::NoError;
+//}
 
 void Coma::setConf(unsigned char typeConf)
 {
@@ -1006,14 +945,14 @@ void Coma::FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize)
         AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
 }
 
-void Coma::PasswordCheck(QString psw)
-{
-    if (psw == "se/7520a")
-        PasswordValid = true;
-    else
-        PasswordValid = false;
-    emit PasswordChecked();
-}
+// void Coma::PasswordCheck(QString psw)
+//{
+//    if (psw == "se/7520a")
+//        PasswordValid = true;
+//    else
+//        PasswordValid = false;
+//    emit PasswordChecked();
+//}
 
 void Coma::SetProgressBar1Size(int size)
 {
@@ -1114,6 +1053,67 @@ void Coma::Disconnect()
                 QCoreApplication::processEvents();
         }
         Board::GetInstance().setConnectionState(Board::ConnectionState::Closed);
+    }
+}
+
+void Coma::Connect()
+{
+    auto const &board = Board::GetInstance();
+    Error::Msg res;
+    switch (board.interfaceType())
+    {
+    case Board::InterfaceType::USB:
+    {
+        NewUSB();
+        res = Commands::Connect();
+        if (res != Error::Msg::NoError)
+        {
+            QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
+            QApplication::restoreOverrideCursor();
+            ERMSG("cn: can't connect");
+            return;
+        }
+        res = ModuleBSI::SetupBSI();
+        if (res != Error::Msg::NoError)
+        {
+            if (res == Error::Msg::ResEmpty)
+            {
+                QMessageBox::critical(this, "Ошибка", "Неизвестный тип модуля", QMessageBox::Ok);
+                ERMSG("Unknown module type");
+                return;
+            }
+            QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
+            ERMSG("BSI read error");
+            return;
+        }
+        ActiveThreads |= THREAD::USB;
+        Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
+        Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
+        break;
+    }
+    case Board::InterfaceType::Ethernet:
+    {
+        New104();
+        if (!Ch104->Working())
+            Ch104->Connect(ConnectSettings.iec104st);
+        ActiveThreads |= THREAD::P104;
+        break;
+    }
+    case Board::InterfaceType::RS485:
+    {
+        NewModbus();
+        res = ChModbus->Connect(ConnectSettings.serialst);
+        if (res != Error::Msg::NoError)
+        {
+            ERMSG("Modbus not connected");
+            return;
+        }
+        ChModbus->BSIrequest();
+        ActiveThreads |= THREAD::MODBUS;
+        break;
+    }
+    default:
+        qFatal("Connection type error");
     }
 }
 
