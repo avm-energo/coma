@@ -24,11 +24,11 @@
 
 EAbstractCheckDialog::EAbstractCheckDialog(BoardTypes board, QWidget *parent) : QDialog(parent)
 {
+    Q_UNUSED(board)
     XlsxWriting = false;
     Busy = false;
     xlsx = nullptr;
     WRow = 0;
-    m_board = board;
     Timer = new QTimer(this);
     Timer->setObjectName("checktimer");
     connect(Timer, &QTimer::timeout, this, &EAbstractCheckDialog::TimerTimeout);
@@ -87,14 +87,9 @@ void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
     setLayout(lyout);
 }
 
-QWidget *EAbstractCheckDialog::CustomTab()
-{
-    return nullptr;
-}
+QWidget *EAbstractCheckDialog::CustomTab() { return nullptr; }
 
-void EAbstractCheckDialog::Check1PPS()
-{
-}
+void EAbstractCheckDialog::Check1PPS() { }
 
 void EAbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
 {
@@ -232,15 +227,9 @@ void EAbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     Busy = false;
 }
 
-void EAbstractCheckDialog::StartBdMeasurements()
-{
-    BdTimer->start();
-}
+void EAbstractCheckDialog::StartBdMeasurements() { BdTimer->start(); }
 
-void EAbstractCheckDialog::StopBdMeasurements()
-{
-    BdTimer->stop();
-}
+void EAbstractCheckDialog::StopBdMeasurements() { BdTimer->stop(); }
 
 void EAbstractCheckDialog::onModbusStateChanged()
 {
@@ -279,10 +268,7 @@ void EAbstractCheckDialog::StopAnalogMeasurements()
     Timer->stop();
 }
 
-void EAbstractCheckDialog::TimerTimeout()
-{
-    ReadAnalogMeasurementsAndWriteToFile();
-}
+void EAbstractCheckDialog::TimerTimeout() { ReadAnalogMeasurementsAndWriteToFile(); }
 
 void EAbstractCheckDialog::SetTimerPeriod()
 {
