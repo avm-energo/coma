@@ -51,3 +51,12 @@ void TuneKIVCheck::FillBackBac(int bacnum)
 void TuneKIVCheck::GetBdAndFill()
 {
 }
+
+int TuneKIVCheck::ReadAnalogMeasurements()
+{
+    return 0;
+}
+
+void TuneKIVCheck::SetDefCoefs()
+{
+}

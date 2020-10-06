@@ -1,44 +1,39 @@
-#ifndef CHEKDIALOGKTF_H
-#define CHEKDIALOGKTF_H
+#ifndef CHECKDIALOGHARMONICKTF_H
+#define CHECKDIALOGHARMONICKTF_H
 
 #include "../iec104/iec104.h"
-#include "checkktf.h"
 #include "abstractcheckdialog.h"
+#include "checkharmonicktf.h"
 
-class CheckDialogKTF : public AbstractCheckDialog
+class CheckKTFHarmonicDialog : public AbstractCheckDialog
 {
     Q_OBJECT
-
 public:
-    CheckDialogKTF(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
-    //    CheckDialogKTF(int rcount = 4, BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    CheckKTFHarmonicDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
 public slots:
-    void SetPredAlarmColor(quint8 *);
-    void SetAlarmColor(quint8 *Alarm);
+    void SetWarnColor(int position, bool value) override;
+    void SetAlarmColor(int position, bool value) override;
     void UpdateFlData(IEC104Thread::FlSignals104 *);
     void UpdateSponData(IEC104Thread::SponSignals *);
     void USBUpdate() override;
 
 private:
-    CheckKTF *ChKTF;
-    // CheckHarmonicKTF *ChHarmKTF;
-    // int m_RCount;
-
+    CheckHarmonicKTF *ChHarmKTF;
     QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
     QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
-    void RefreshAnalogValues(int bdnum) override;  // обновление полей в GUI из полученного
-                                                   // соответствующего Bd_block
+    void RefreshAnalogValues(int bdnum) override; // обновление полей в GUI из полученного
+
     void PrepareHeadersForFile(int row) override;  // row - строка для записи заголовков
     void WriteToFile(int row, int bdnum) override; // row - номер строки для записи в файл
-                                                   // xlsx, bdnum - номер блока данных
+
     void ChooseValuesToWrite() override;
     void SetDefaultValuesToWrite() override;
     void PrepareAnalogMeasurements() override;
-    QWidget *CustomTab() override;
+    // QWidget *CustomTab() override;
 
 private slots:
     void UpdateModBusData(QList<ModBus::SignalStruct> Signal) override;
 };
 
-#endif // CHEKDIALOGKTF_H
+#endif // CHECKDIALOGHARMONICKTF_H

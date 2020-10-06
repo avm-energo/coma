@@ -1,20 +1,14 @@
 #ifndef AVARALARMKTF_H
 #define AVARALARMKTF_H
 
-#include "../alarm/abstractalarm.h"
+#include "alarm.h"
 
-class AvarAlarmKTF : public AbstractAlarm
+class AlarmKTF : public Alarm
 {
     Q_OBJECT
 
 public:
-    explicit AvarAlarmKTF(AlarmClass *alarm, QDialog *parent = nullptr);
-
-public slots:
-
-    void AvarAlarmState() override;
-
-private:
+    explicit AlarmKTF(QWidget *parent = nullptr);
 };
 
 #endif // AVARALARMKTF_H

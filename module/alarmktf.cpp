@@ -1,25 +1,11 @@
-#include "avaralarmktf.h"
+#include "alarmktf.h"
 
-#include "../gen/board.h"
-#include "../gen/colors.h"
-#include "../gen/error.h"
-#include "../gen/modulebsi.h"
-#include "../usb/commands.h"
-#include "../widgets/wd_func.h"
-
-#include <QBoxLayout>
-
-AvarAlarmKTF::AvarAlarmKTF(AlarmClass *alarm, QDialog *parent) : AbstractAvarAlarm(parent)
+AlarmKTF::AlarmKTF(QWidget *parent) : Alarm(parent)
 {
-    Alarm = alarm;
-    AvarAlarmState();
-}
-
-void AvarAlarmKTF::AvarAlarmState()
-{
-
+    m_alarmBdNum = 2;
+    m_startAlarmAddress = 5011;
+    m_alarmFlags = std::bitset<32>(0x00000005);
     QStringList events = QStringList() << "Аварийное сообщение по недопустимому превышению температуры обмотки"
                                        << "Аварийное сообщение по недопустимому уровню пускового тока         ";
-
-    SetupAlarm(events, Alarm->MapAlarm.value(Board::GetInstance().type()).avarCounts);
+    setupUI(events);
 }

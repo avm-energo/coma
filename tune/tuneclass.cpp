@@ -2,7 +2,6 @@
 
 #include "../../usb/commands.h"
 #include "../../widgets/wd_func.h"
-#include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
 #include "../gen/stdfunc.h"
 
@@ -30,4 +29,13 @@ void TuneClass::getFromWidget()
 S2ConfigType *TuneClass::getS2Config()
 {
     return S2Config;
+}
+
+void TuneClass::ReadTuneCoefs()
+{
+}
+
+bool TuneClass::WriteTuneCoefsSlot()
+{
+    return true;
 }

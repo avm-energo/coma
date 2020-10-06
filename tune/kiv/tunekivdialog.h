@@ -6,11 +6,11 @@
 #include "../config/config.h"
 #include "../config/configkiv.h"
 #include "../gen/modulebsi.h"
+#include "../gen/udialog.h"
 #include "../iec104/iec104.h"
 #include "limereport/lrreportengine.h"
 #include "tunekiv.h"
 
-#include <QDialog>
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPushButton>
@@ -47,7 +47,7 @@
 #define TD_FREQ 50  // Hz
 #define CONST2PIF 314.15926
 
-class TuneKIVDialog : public QDialog
+class TuneKIVDialog : public UDialog
 {
     Q_OBJECT
 public:

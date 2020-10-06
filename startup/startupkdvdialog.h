@@ -19,7 +19,7 @@ public:
     // int corDIndex;
     // int first;
 
-    void GetCorBd(int index) override;
+    void GetCorBd() override;
 
 private:
     struct WBd7

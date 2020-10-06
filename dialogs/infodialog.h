@@ -5,10 +5,11 @@
 #define MTYPE_KIV 0xA284
 #define MTYPE_KDV 0xA387
 
-#include <QDialog>
+#include "../gen/udialog.h"
+
 #include <QMap>
 
-class InfoDialog : public QDialog
+class InfoDialog : public UDialog
 {
     Q_OBJECT
 public:

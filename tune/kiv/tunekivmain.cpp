@@ -33,3 +33,12 @@ void TuneKIVMain::FillBackBac(int bacnum)
 void TuneKIVMain::GetBdAndFill()
 {
 }
+
+int TuneKIVMain::ReadAnalogMeasurements()
+{
+    return 0;
+}
+
+void TuneKIVMain::SetDefCoefs()
+{
+}

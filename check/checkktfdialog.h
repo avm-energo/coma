@@ -1,17 +1,18 @@
-#ifndef CHECKDIALOGKDV_H
-#define CHECKDIALOGKDV_H
+#ifndef CHEKDIALOGKTF_H
+#define CHEKDIALOGKTF_H
 
 #include "../iec104/iec104.h"
-#include "checkkdv.h"
+#include "checkktf.h"
 #include "abstractcheckdialog.h"
 
-class CheckDialogKDV : public AbstractCheckDialog
+class CheckKTFDialog : public AbstractCheckDialog
 {
     Q_OBJECT
-public:
-    explicit CheckDialogKDV(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
-    QWidget *EParent;
+public:
+    CheckKTFDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    //    CheckDialogKTF(int rcount = 4, BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+
 public slots:
     void SetPredAlarmColor(quint8 *);
     void SetAlarmColor(quint8 *Alarm);
@@ -20,7 +21,10 @@ public slots:
     void USBUpdate() override;
 
 private:
-    CheckKDV *ChKDV;
+    CheckKTF *ChKTF;
+    // CheckHarmonicKTF *ChHarmKTF;
+    // int m_RCount;
+
     QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
     QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
     void RefreshAnalogValues(int bdnum) override;  // обновление полей в GUI из полученного
@@ -37,4 +41,4 @@ private slots:
     void UpdateModBusData(QList<ModBus::SignalStruct> Signal) override;
 };
 
-#endif // CHECKDIALOGKDV_H
+#endif // CHEKDIALOGKTF_H

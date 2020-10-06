@@ -1,12 +1,11 @@
 #ifndef MNKTIME_H
 #define MNKTIME_H
 
+#include "../gen/udialog.h"
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
 
-#include <QDialog>
-
-class TimeDialog : public QDialog
+class TimeDialog : public UDialog
 {
     Q_OBJECT
 
@@ -35,6 +34,7 @@ public slots:
     void slot2_timeOut();
     void FillTimeFromModBus(QList<ModBus::BSISignalStruct>);
     void FillTimeFrom104(IEC104Thread::BS104Signals *);
+    void update();
 
 private slots:
 

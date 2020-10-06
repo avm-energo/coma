@@ -1,9 +1,11 @@
 #ifndef ALARMSTATEALL_H
 #define ALARMSTATEALL_H
 
-#include "../alarm/abstractalarm.h"
+#include "../gen/udialog.h"
 
-class AlarmStateAll : public AbstractAlarmClass
+#define CIRCLE_RADIUS 15
+
+class AlarmStateAll : public UDialog
 {
     Q_OBJECT
 public:
@@ -15,7 +17,7 @@ public slots:
     void UpdateHealth(quint32 health);
     void CallUpdateHealth();
 
-    void Update(QList<bool>) override;
+    void Update(QList<bool>);
 
     static QStringList HthToolTip()
     {

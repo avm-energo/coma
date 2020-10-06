@@ -1,4 +1,4 @@
-#include "checkdialogvibrkdv.h"
+#include "checkkdvvibrdialog.h"
 
 #include "../config/config.h"
 #include "../gen/board.h"
@@ -22,7 +22,7 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-CheckDialogVibrKDV::CheckDialogVibrKDV(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
+CheckKDVVibrDialog::CheckKDVVibrDialog(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
@@ -44,7 +44,19 @@ CheckDialogVibrKDV::CheckDialogVibrKDV(BoardTypes board, QWidget *parent) : Abst
     Timer->setInterval(ANMEASINT);
 }
 
-QWidget *CheckDialogVibrKDV::BdUI(int bdnum)
+void CheckKDVVibrDialog::SetWarnColor(int position, bool value)
+{
+    Q_UNUSED(position)
+    Q_UNUSED(value)
+}
+
+void CheckKDVVibrDialog::SetAlarmColor(int position, bool value)
+{
+    Q_UNUSED(position)
+    Q_UNUSED(value)
+}
+
+QWidget *CheckKDVVibrDialog::BdUI(int bdnum)
 {
     switch (bdnum)
     {
@@ -60,33 +72,33 @@ QWidget *CheckDialogVibrKDV::BdUI(int bdnum)
         return new QWidget;
     }
 }
-void CheckDialogVibrKDV::RefreshAnalogValues(int bdnum)
+void CheckKDVVibrDialog::RefreshAnalogValues(int bdnum)
 {
     Q_UNUSED(bdnum)
 }
 
-void CheckDialogVibrKDV::PrepareHeadersForFile(int row)
+void CheckKDVVibrDialog::PrepareHeadersForFile(int row)
 {
     Q_UNUSED(row)
 }
 
-void CheckDialogVibrKDV::WriteToFile(int row, int bdnum)
+void CheckKDVVibrDialog::WriteToFile(int row, int bdnum)
 {
     Q_UNUSED(row)
     Q_UNUSED(bdnum)
 }
 
-void CheckDialogVibrKDV::ChooseValuesToWrite()
+void CheckKDVVibrDialog::ChooseValuesToWrite()
 {
 }
-void CheckDialogVibrKDV::SetDefaultValuesToWrite()
+void CheckKDVVibrDialog::SetDefaultValuesToWrite()
 {
 }
-void CheckDialogVibrKDV::PrepareAnalogMeasurements()
+void CheckKDVVibrDialog::PrepareAnalogMeasurements()
 {
 }
 
-void CheckDialogVibrKDV::USBUpdate()
+void CheckKDVVibrDialog::USBUpdate()
 {
     QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw2");
     if (CheckTW == nullptr)
@@ -108,7 +120,7 @@ void CheckDialogVibrKDV::USBUpdate()
     }
 }
 
-void CheckDialogVibrKDV::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
+void CheckKDVVibrDialog::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
 {
     for (int i = 0; i < Signal->SigNumber; i++)
     {
@@ -117,12 +129,12 @@ void CheckDialogVibrKDV::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
     }
 }
 
-void CheckDialogVibrKDV::UpdateSponData(IEC104Thread::SponSignals *Signal)
+void CheckKDVVibrDialog::UpdateSponData(IEC104Thread::SponSignals *Signal)
 {
     Q_UNUSED(Signal)
 }
 
-void CheckDialogVibrKDV::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
+void CheckKDVVibrDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
 
     int i = 0;
@@ -139,19 +151,9 @@ void CheckDialogVibrKDV::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
     }
 }
 
-void CheckDialogVibrKDV::onModbusStateChanged()
+void CheckKDVVibrDialog::onModbusStateChanged()
 {
 
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
         QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
-}
-
-void CheckDialogVibrKDV::SetPredAlarmColor(quint8 *PredAlarm)
-{
-    Q_UNUSED(PredAlarm)
-}
-
-void CheckDialogVibrKDV::SetAlarmColor(quint8 *Alarm)
-{
-    Q_UNUSED(Alarm)
 }

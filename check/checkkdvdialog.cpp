@@ -1,4 +1,4 @@
-#include "checkdialogkdv.h"
+#include "checkkdvdialog.h"
 
 #include "../config/config.h"
 #include "../gen/board.h"
@@ -22,7 +22,7 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-CheckDialogKDV::CheckDialogKDV(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
+CheckKDVDialog::CheckKDVDialog(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
 {
     EParent = parent;
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
@@ -57,7 +57,7 @@ CheckDialogKDV::CheckDialogKDV(BoardTypes board, QWidget *parent) : AbstractChec
     Timer->setInterval(ANMEASINT);
 }
 
-QWidget *CheckDialogKDV::BdUI(int bdnum)
+QWidget *CheckKDVDialog::BdUI(int bdnum)
 {
     switch (bdnum)
     {
@@ -81,12 +81,12 @@ QWidget *CheckDialogKDV::BdUI(int bdnum)
     }
 }
 
-void CheckDialogKDV::RefreshAnalogValues(int bdnum)
+void CheckKDVDialog::RefreshAnalogValues(int bdnum)
 {
     Q_UNUSED(bdnum)
 }
 
-void CheckDialogKDV::PrepareHeadersForFile(int row)
+void CheckKDVDialog::PrepareHeadersForFile(int row)
 {
     QString phase[3] = { "A:", "B:", "C:" };
 
@@ -114,13 +114,13 @@ void CheckDialogKDV::PrepareHeadersForFile(int row)
     xlsx->write(row, 30, QVariant("Freq, Гц"));
 }
 
-void CheckDialogKDV::WriteToFile(int row, int bdnum)
+void CheckKDVDialog::WriteToFile(int row, int bdnum)
 {
     Q_UNUSED(row);
     Q_UNUSED(bdnum);
 }
 
-QWidget *CheckDialogKDV::CustomTab()
+QWidget *CheckKDVDialog::CustomTab()
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -128,12 +128,12 @@ QWidget *CheckDialogKDV::CustomTab()
     lyout->addWidget(ChKDV->Bd1W(this));
     QPushButton *pb = new QPushButton("Начать измерения Bd");
 
-    connect(pb, &QAbstractButton::clicked, this, &EAbstractCheckDialog::StartBdMeasurements);
+    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StartBdMeasurements);
 
     hlyout->addWidget(pb);
     pb = new QPushButton("Остановить измерения Bd");
 
-    connect(pb, &QAbstractButton::clicked, this, &EAbstractCheckDialog::StopBdMeasurements);
+    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StopBdMeasurements);
 
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
@@ -141,17 +141,17 @@ QWidget *CheckDialogKDV::CustomTab()
     return nullptr;
 }
 
-void CheckDialogKDV::ChooseValuesToWrite()
+void CheckKDVDialog::ChooseValuesToWrite()
 {
 }
-void CheckDialogKDV::SetDefaultValuesToWrite()
+void CheckKDVDialog::SetDefaultValuesToWrite()
 {
 }
-void CheckDialogKDV::PrepareAnalogMeasurements()
+void CheckKDVDialog::PrepareAnalogMeasurements()
 {
 }
 
-void CheckDialogKDV::USBUpdate()
+void CheckKDVDialog::USBUpdate()
 {
     QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");
     if (CheckTW == nullptr)
@@ -233,86 +233,61 @@ void CheckDialogKDV::USBUpdate()
     }
 }
 
-void CheckDialogKDV::SetPredAlarmColor(quint8 *PredAlarm)
+void CheckKDVDialog::SetWarnColor(int position, bool value)
 {
 
-    for (int i = 0; i < 18; i++)
+    //    for (int i = 0; i < 18; i++)
+    //    {
+    //        if ((i >= 0) && (i < 3))
+    //        {
+    //            if (position[i] == 1)
+    if ((position >= 0) && (position < 3))
     {
-        if ((i >= 0) && (i < 3))
-        {
-            if (PredAlarm[i] == 1)
-                WDFunc::SetLBLTColor(this, QString::number(1000 + i),
-                    Colors::TABCOLORA1); // Colors::TABCOLORA1
-            else
-                WDFunc::SetLBLTColor(this, QString::number(1000 + i), Colors::ACONFOCLR);
-        }
-
-        if ((i >= 3) && (i < 6))
-        {
-            if (PredAlarm[i] == 1)
-                WDFunc::SetLBLTColor(this, QString::number(1100 + i - 3),
-                    Colors::TABCOLORA1); // Colors::TABCOLORA1
-            else
-                WDFunc::SetLBLTColor(this, QString::number(1100 + i - 3), Colors::ACONFOCLR);
-        }
-
-        if ((i >= 7) && (i < 10))
-        {
-            if (PredAlarm[i] == 1)
-                WDFunc::SetLBLTColor(this, QString::number(1000 + i - 7),
-                    Colors::TABCOLORA1); // Colors::TABCOLORA1
-        }
-
-        if ((i >= 10) && (i < 13))
-        {
-            if (PredAlarm[i] == 1)
-                WDFunc::SetLBLTColor(this, QString::number(2429 + i - 10),
-                    Colors::TABCOLORA1); // Colors::TABCOLORA1
-            else
-                WDFunc::SetLBLTColor(this, QString::number(2429 + i - 10), Colors::ACONFOCLR);
-        }
-        else if ((i >= 13) && (i < 16))
-        {
-            if (PredAlarm[i] == 1)
-                WDFunc::SetLBLTColor(this, QString::number(2426 + i - 13),
-                    Colors::TABCOLORA1); // Colors::TABCOLORA1
-            else
-                WDFunc::SetLBLTColor(this, QString::number(2426 + i - 13), Colors::ACONFOCLR);
-        }
-        else if (i == 17)
-        {
-            if (PredAlarm[i] == 1)
-                WDFunc::SetLBLTColor(this, QString::number(2432),
-                    Colors::TABCOLORA1); // Colors::TABCOLORA1
-            else
-                WDFunc::SetLBLTColor(this, QString::number(2432), Colors::ACONFOCLR);
-        }
+        WDFunc::SetLBLTColor(this, QString::number(1000 + position), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+        //                WDFunc::SetLBLTColor(this, QString::number(1000 + i),
+        //                    Colors::TABCOLORA1); // Colors::TABCOLORA1
+        //            else
+        //                WDFunc::SetLBLTColor(this, QString::number(1000 + i), Colors::ACONFOCLR);
     }
+
+    if ((position >= 3) && (position < 6))
+        WDFunc::SetLBLTColor(
+            this, QString::number(1100 + position - 3), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+
+    if ((position >= 7) && (position < 10))
+        WDFunc::SetLBLTColor(
+            this, QString::number(1000 + position - 7), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+
+    if ((position >= 10) && (position < 13))
+        WDFunc::SetLBLTColor(
+            this, QString::number(2429 + position - 10), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+    if ((position >= 13) && (position < 16))
+        WDFunc::SetLBLTColor(
+            this, QString::number(2426 + position - 13), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+    if (position == 17)
+        WDFunc::SetLBLTColor(this, "2432", (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+    //    }
 }
 
-void CheckDialogKDV::SetAlarmColor(quint8 *Alarm)
+void CheckKDVDialog::SetAlarmColor(int position, bool value)
 {
-
-    for (int i = 0; i < 7; i++)
+    //    for (int i = 0; i < 7; i++)
+    //    {
+    //        if (i < 3)
+    if (position < 3)
     {
-        if (i < 3)
-        {
-            if (Alarm[i] == 1)
-                WDFunc::SetLBLTColor(this, QString::number(2429 + i), Colors::REDCOLOR);
-        }
-        else if ((i >= 3) && (i < 6))
-        {
-            if (Alarm[i] == 1)
-                WDFunc::SetLBLTColor(this, QString::number(2426 + i - 3), Colors::REDCOLOR);
-        }
-        else if (i == 6)
-        {
-            if (Alarm[i] == 1)
-                WDFunc::SetLBLTColor(this, QString::number(2432), Colors::REDCOLOR);
-        }
+        //            if (Alarm[i] == 1)
+        WDFunc::SetLBLTColor(this, QString::number(2429 + position), (value) ? Colors::REDCOLOR : Colors::ACONFOCLR);
     }
+    else if ((position >= 3) && (position < 6))
+        WDFunc::SetLBLTColor(
+            this, QString::number(2426 + position - 3), (value) ? Colors::REDCOLOR : Colors::ACONFOCLR);
+    else if (position == 6)
+        WDFunc::SetLBLTColor(this, QString::number(2432), (value) ? Colors::REDCOLOR : Colors::ACONFOCLR);
+    //    }
 }
-void CheckDialogKDV::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
+
+void CheckKDVDialog::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
 {
     for (int i = 0; i < Signal->SigNumber; i++)
     {
@@ -321,12 +296,12 @@ void CheckDialogKDV::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
     }
 }
 
-void CheckDialogKDV::UpdateSponData(IEC104Thread::SponSignals *Signal)
+void CheckKDVDialog::UpdateSponData(IEC104Thread::SponSignals *Signal)
 {
     Q_UNUSED(Signal)
 }
 
-void CheckDialogKDV::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
+void CheckKDVDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
 
     int i = 0;

@@ -17,11 +17,11 @@
 #define ABSTRACTCHECKDIALOG_H
 
 #include "../gen/modulebsi.h"
+#include "../gen/udialog.h"
 #include "../modbus/modbus.h"
 #include "check.h"
 #include "xlsxdocument.h"
 
-#include <QDialog>
 #include <QElapsedTimer>
 #include <QTimer>
 
@@ -33,7 +33,7 @@
 // блоки Bd для мезонинной платы нумеруются с 101 (100 base + 1st block)
 #define BT_STARTBD_MEZ 100
 
-class AbstractCheckDialog : public QDialog
+class AbstractCheckDialog : public UDialog
 {
     Q_OBJECT
 public:
@@ -74,10 +74,11 @@ signals:
 public slots:
     void StopAnalogMeasurements();
     virtual void USBUpdate() = 0; // update BDs from USB
-    virtual void SetWarnColor(QList<bool>) = 0;
-    virtual void SetAlarmColor(QList<bool>) = 0;
+    virtual void SetWarnColor(int position, bool value) = 0;
+    virtual void SetAlarmColor(int position, bool value) = 0;
     virtual void StartBdMeasurements();
     virtual void StopBdMeasurements();
+    void update();
 
 private:
     struct BdBlocks
@@ -96,6 +97,7 @@ private:
     Bip Bip_block;
     bool Busy;
     QElapsedTimer *ElapsedTimeCounter;
+    bool m_timerCounter;
 
     void CheckIP();
     void GetIP();

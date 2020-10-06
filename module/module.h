@@ -4,8 +4,10 @@
 //#include "../check/abstractcheckdialog.h"
 //#include "../config/abstractconfdialog.h"
 #include "../gen/board.h"
+#include "../gen/udialog.h"
+#include "alarm.h"
+#include "warn.h"
 
-#include <QDialog>
 #include <QObject>
 
 class Module : public QObject
@@ -21,26 +23,35 @@ public:
 
     explicit Module(QObject *parent = nullptr);
 
-    static Module *createModule();
+    static Module *createModule(QTimer *updateTimer);
     //    AbstractConfDialog *confDialogBase();
     //    AbstractConfDialog *confDialogMez();
     //    QDialog *tuneDialogBase();
     //    QDialog *tuneDialogMez();
     //    AbstractCheckDialog *checkDialogBase();
     //    AbstractCheckDialog *checkDialogMez();
-    QDialog *infoDialog();
-    QList<QDialog *> dialogs();
-    QList<QDialog *> confDialogs();
-    void addDialogToList(QDialog *dlg, const QString &name = "");
+    //    QDialog *infoDialog();
+    QList<UDialog *> dialogs();
+    QList<UDialog *> confDialogs();
+    void addDialogToList(UDialog *dlg, const QString &caption = "", const QString &name = "");
+    Alarm *getAlarm();
+    Warn *getWarn();
+    void startTimeTimer();
+    void stopTimeTimer();
+    void parentTWTabClicked(int index);
+    void setDefConf();
+    void closeDialogs();
 
 signals:
-    void setWarnColor(QList<bool>);
-    void setAlarmColor(QList<bool>);
 
 public slots:
 
 private:
-    QList<QDialog *> m_Dialogs;
+    QList<UDialog *> m_Dialogs;
+    Alarm *m_Alarm;
+    Warn *m_Warn;
+    QTimer *m_timeTimer;
+    int m_currentTabIndex, m_oldTabIndex;
     /*    QList<QDialog *> m_TuneDialogs;
         QList<QDialog *> m_CheckDialogs; */
     /*    AbstractConfDialog *m_confDialogBase;

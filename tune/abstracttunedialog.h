@@ -3,11 +3,11 @@
 
 #include "../gen/report.h"
 #include "../gen/s2.h"
+#include "../gen/udialog.h"
 #include "../models/valuemodel.h"
 
 #include <QByteArray>
 #include <QCloseEvent>
-#include <QDialog>
 
 #define MAXTUNESIZE 1024 // максимальный размер файла с данными настройки
 
@@ -19,7 +19,7 @@
 #define TUNE_POINTSPER 500 // столько миллисекунд должно усредняться при регулировке
 #define WAITFORCONST 1 // seconds to let voltages be constant
 
-class AbstractTuneDialog : public QDialog
+class AbstractTuneDialog : public UDialog
 {
     Q_OBJECT
 public:
@@ -87,7 +87,7 @@ public:
     virtual Error::Msg SaveWorkConfig(int configblocknum = 0);
 
 signals:
-    void PasswordChecked();
+    //    void PasswordChecked();
     void stopall();
     void dataready(QByteArray);
     //    void SecondsRemaining(quint32);
@@ -113,7 +113,7 @@ private:
 
 private slots:
     void StartTune();
-    void PasswordCheck(QString psw);
+    //    void PasswordCheck(QString psw);
     virtual int ReadAnalogMeasurements() = 0;
     //    void UpdateNSecondsWidget();
     void MeasTimerTimeout(); // по событию от таймера при активном режиме измерений обновить данные

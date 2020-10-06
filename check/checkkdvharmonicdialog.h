@@ -2,18 +2,18 @@
 #define CHECKDIALOGHARMONICKDV_H
 
 #include "../iec104/iec104.h"
-#include "checkharmonickdv.h"
 #include "abstractcheckdialog.h"
+#include "checkharmonickdv.h"
 
-class CheckDialogHarmonicKDV : public AbstractCheckDialog
+class CheckKDVHarmonicDialog : public AbstractCheckDialog
 {
     Q_OBJECT
 public:
-    CheckDialogHarmonicKDV(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    CheckKDVHarmonicDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
 public slots:
-    void SetPredAlarmColor(quint8 *);
-    void SetAlarmColor(quint8 *Alarm);
+    void SetWarnColor(int position, bool value) override;
+    void SetAlarmColor(int position, bool value) override;
     void UpdateFlData(IEC104Thread::FlSignals104 *);
     void UpdateSponData(IEC104Thread::SponSignals *);
     void USBUpdate() override;

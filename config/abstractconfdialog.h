@@ -2,19 +2,18 @@
 
 #define MAXBYTEARRAY 65535
 
+#include "../gen/udialog.h"
 #include "config.h"
-
-#include <QDialog>
 
 #define MAXCONFSIZE 4096 // максимальный размер файла конфигурации
 
-class AbstractConfDialog : public QDialog
+class AbstractConfDialog : public UDialog
 {
     Q_OBJECT
 public:
     explicit AbstractConfDialog(QWidget *parent = nullptr);
 
-    bool IsNeededDefConf = false;
+    //    bool IsNeededDefConf = false;
     //    int confIndex; //, timeIndex; //, checkIndex;
 
     // заполнить значения полей вывода из структуры конфигурации
@@ -52,7 +51,7 @@ private slots:
     void LoadConfFromFile();
     void ButtonReadConf();
     void WriteConf();
-    void WritePasswordCheck(QString psw);
+    //    void WritePasswordCheck(QString psw);
 
 public slots:
     void FillConf(S2ConfigType *);
@@ -67,5 +66,5 @@ signals:
     // signal to load default configuration
     void DefConfToBeLoaded();
     //    void StopRead(int);
-    void WritePasswordChecked();
+    //    void WritePasswordChecked();
 };

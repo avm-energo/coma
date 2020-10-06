@@ -1,4 +1,4 @@
-#include "checkdialogktf.h"
+#include "checkktfdialog.h"
 
 #include "../config/config.h"
 #include "../gen/colors.h"
@@ -21,7 +21,7 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-CheckDialogKTF::CheckDialogKTF(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
+CheckKTFDialog::CheckKTFDialog(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
@@ -47,7 +47,7 @@ CheckDialogKTF::CheckDialogKTF(BoardTypes board, QWidget *parent) : AbstractChec
     Timer->setInterval(ANMEASINT);
 }
 
-QWidget *CheckDialogKTF::BdUI(int bdnum)
+QWidget *CheckKTFDialog::BdUI(int bdnum)
 {
     switch (bdnum)
     {
@@ -72,48 +72,48 @@ QWidget *CheckDialogKTF::BdUI(int bdnum)
     }
 }
 
-void CheckDialogKTF::RefreshAnalogValues(int bdnum)
+void CheckKTFDialog::RefreshAnalogValues(int bdnum)
 {
     Q_UNUSED(bdnum)
 }
 
-void CheckDialogKTF::PrepareHeadersForFile(int row)
+void CheckKTFDialog::PrepareHeadersForFile(int row)
 {
     Q_UNUSED(row)
 }
 
-void CheckDialogKTF::WriteToFile(int row, int bdnum)
+void CheckKTFDialog::WriteToFile(int row, int bdnum)
 {
     Q_UNUSED(row)
     Q_UNUSED(bdnum)
 }
-QWidget *CheckDialogKTF::CustomTab()
+QWidget *CheckKTFDialog::CustomTab()
 {
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
     lyout->addWidget(ChKTF->Bd1W(this));
     QPushButton *pb = new QPushButton("Начать измерения Bd");
-    connect(pb, &QAbstractButton::clicked, this, &EAbstractCheckDialog::StartBdMeasurements);
+    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StartBdMeasurements);
     hlyout->addWidget(pb);
     pb = new QPushButton("Остановить измерения Bd");
-    connect(pb, &QAbstractButton::clicked, this, &EAbstractCheckDialog::StopBdMeasurements);
+    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StopBdMeasurements);
     hlyout->addWidget(pb);
     lyout->addLayout(hlyout);
     w->setLayout(lyout);
     return nullptr;
 }
-void CheckDialogKTF::ChooseValuesToWrite()
+void CheckKTFDialog::ChooseValuesToWrite()
 {
 }
-void CheckDialogKTF::SetDefaultValuesToWrite()
+void CheckKTFDialog::SetDefaultValuesToWrite()
 {
 }
-void CheckDialogKTF::PrepareAnalogMeasurements()
+void CheckKTFDialog::PrepareAnalogMeasurements()
 {
 }
 
-void CheckDialogKTF::USBUpdate()
+void CheckKTFDialog::USBUpdate()
 {
     QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw1");
     if (CheckTW == nullptr)
@@ -197,7 +197,7 @@ void CheckDialogKTF::USBUpdate()
     }
 }
 
-void CheckDialogKTF::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
+void CheckKTFDialog::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
 {
     for (int i = 0; i < Signal->SigNumber; i++)
     {
@@ -206,12 +206,12 @@ void CheckDialogKTF::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
     }
 }
 
-void CheckDialogKTF::UpdateSponData(IEC104Thread::SponSignals *Signal)
+void CheckKTFDialog::UpdateSponData(IEC104Thread::SponSignals *Signal)
 {
     Q_UNUSED(Signal)
 }
 
-void CheckDialogKTF::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
+void CheckKTFDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
 
     // ModBusSignal sig = *new ModBusSignal;
@@ -229,12 +229,12 @@ void CheckDialogKTF::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
     }
 }
 
-void CheckDialogKTF::SetPredAlarmColor(quint8 *PredAlarm)
+void CheckKTFDialog::SetPredAlarmColor(quint8 *PredAlarm)
 {
     Q_UNUSED(PredAlarm)
 }
 
-void CheckDialogKTF::SetAlarmColor(quint8 *Alarm)
+void CheckKTFDialog::SetAlarmColor(quint8 *Alarm)
 {
     Q_UNUSED(Alarm)
 }

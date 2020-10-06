@@ -35,8 +35,10 @@ signals:
 public slots:
 
     void UpdateFirstUSB();
-    void UpdateSecondUSB(QList<bool>);
-    void UpdateThirdUSB(QList<bool>);
+    //    void UpdateSecondUSB(QList<bool>);
+    //    void UpdateThirdUSB(QList<bool>);
+    void UpdateSecondUSB(bool);
+    void UpdateThirdUSB(bool);
     void UpdateIndicator(bool);
 
 private:

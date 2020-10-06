@@ -16,7 +16,7 @@
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
-TimeDialog::TimeDialog(QWidget *parent) : QDialog(parent)
+TimeDialog::TimeDialog(QWidget *parent) : UDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     First = false;
@@ -185,6 +185,12 @@ void TimeDialog::FillTimeFrom104(IEC104Thread::BS104Signals *Time)
         memcpy((quint32 *)(&unixtimestamp), ((quint32 *)(&Time->BS.SigVal)), sizeof(Time->BS.SigVal));
         SetTime(unixtimestamp);
     }
+}
+
+void TimeDialog::update()
+{
+    if (m_updatesEnabled)
+        slot2_timeOut();
 }
 
 void TimeDialog::SetTime(quint32 unixtimestamp)

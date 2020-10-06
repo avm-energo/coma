@@ -9,21 +9,18 @@ Warn::Warn(QWidget *parent) : QWidget(parent)
 {
 }
 
-void Warn::Update(QList<bool> states)
+int Warn::realWarnSize()
 {
-    if (states.isEmpty())
-        return;
-    auto max_range = states.length();
-    if (m_warnFlags.size() != states.length())
-    {
-        qDebug() << m_warnFlags.size() << ":" << states.length();
-        max_range = std::min(m_warnFlags.size(), states.length());
-    }
-    for (int i = 0; i < max_range; i++)
-    {
-        UpdatePixmaps(states.at(i), i);
-    }
+    return m_realWarnSize;
 }
+
+/*void Warn::Update(std::bitset<32> &states)
+{
+    for (int i = 0; i < m_realWarnSize; ++i)
+    {
+        updatePixmaps(states[i], i);
+    }
+} */
 
 void Warn::showEvent(QShowEvent *e)
 {
@@ -32,7 +29,7 @@ void Warn::showEvent(QShowEvent *e)
     e->accept();
 }
 
-void Warn::UpdatePixmaps(bool isset, int position)
+void Warn::updatePixmap(bool isset, int position)
 {
     if (isset)
     {
@@ -46,16 +43,16 @@ void Warn::UpdatePixmaps(bool isset, int position)
     }
 }
 
-void Warn::SetupUI(const QStringList &events, int counters)
+void Warn::setupUI(const QStringList &events)
 {
+    m_realWarnSize = events.size();
     QWidget *w = new QWidget;
     w->setStyleSheet("QWidget {margin: 0; border-width: 0; padding: 0;};");
 
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlayout = new QVBoxLayout;
 
-    auto max_range = std::min(events.size(), counters);
-    for (int i = 0; i < max_range; ++i)
+    for (int i = 0; i < m_realWarnSize; ++i)
     {
         QHBoxLayout *hlyout = new QHBoxLayout;
         hlyout->addWidget(WDFunc::NewLBL(w, "", "transparent", QString::number(i)));

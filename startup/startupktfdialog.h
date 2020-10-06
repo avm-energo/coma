@@ -1,10 +1,10 @@
 #ifndef CORDIALOGKTF_H
 #define CORDIALOGKTF_H
 
-#include "../dialogs/abstractstartupdialog.h"
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
 #include "../models/etablemodel.h"
+#include "abstractstartupdialog.h"
 
 #include <QByteArray>
 #include <QDialog>
@@ -23,7 +23,7 @@ public:
     //    QTimer *MessageTimer;
 
     // int WriteCheckPassword();
-    void GetCorBd(int index) override;
+    void GetCorBd() override;
 
 private:
     struct WBd7

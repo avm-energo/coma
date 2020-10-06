@@ -4,14 +4,13 @@
 #define MAXSIZE 2000000
 
 #include "../gen/error.h"
+#include "../gen/udialog.h"
 
-#include <QDialog>
-
-class fwupdialog : public QDialog
+class FWUploadDialog : public UDialog
 {
     Q_OBJECT
 public:
-    explicit fwupdialog(QWidget *parent = nullptr);
+    explicit FWUploadDialog(QWidget *parent = nullptr);
 
     void SetupUI();
     Error::Msg ParseHexToS2(QByteArray ba);
@@ -62,12 +61,12 @@ public:
     bool ok;
 
 signals:
-    void WritePasswordChecked();
+    //    void WritePasswordChecked();
 
 public slots:
     Error::Msg LoadFW();
     void RunSoft();
-    void WritePasswordCheck(QString psw);
+    //    void WritePasswordCheck(QString psw);
 };
 
 #endif // FWUPDIALOG_H

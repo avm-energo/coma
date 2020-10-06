@@ -4,21 +4,21 @@
 #
 #-------------------------------------------------
 
-QMAKE_TARGET_COMPANY = EvelSoft
-QMAKE_TARGET_COPYRIGHT = EvelSoft
+QMAKE_TARGET_COMPANY = AVM-Energo
+QMAKE_TARGET_COPYRIGHT = AVM-Energo
 QMAKE_TARGET_PRODUCT = AVTUK-S
 RC_ICONS = ../coma.ico
 CONFIG += c++17
-VERSION = 0.9.0
+VERSION = 2.0
 
-QT       += core gui printsupport network serialport qml widgets testlib svg
+QT       += core gui printsupport network serialport qml widgets testlib svg concurrent
 
 TARGET = AVM-Service
 DEFINES += PROGNAME='\\"AVM-Debug\\"'
 DEFINES += PROGCAPTION='\\"AVM-Debug\\040v\\040"$$VERSION"\\040\\"'
 DEFINES += COMAVERSION='\\"$$VERSION\\"'
 DEFINES += DEVICETYPE=1 # 1 - module, 2 - pribor, for diagnostic messages
-DEFINES += SOFTDEVELOPER='\\"EvelSoft\\"'
+DEFINES += SOFTDEVELOPER='\\"AVM-Energo\\"'
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
 DEFINES += AVM_DEBUG
@@ -26,9 +26,19 @@ TEMPLATE = app
 
 
 SOURCES += \
+    ../check/checkkdvdialog.cpp \
+    ../check/checkkdvharmonicdialog.cpp \
+    ../check/checkkdvvibrdialog.cpp \
+    ../check/checkktfdialog.cpp \
+    ../check/checkktfharmonicdialog.cpp \
+    ../config/confkdvdialog.cpp \
+    ../config/confktfdialog.cpp \
+    ../dialogs/fwuploaddialog.cpp \
+    ../gen/udialog.cpp \
     ../module/alarm.cpp \
     ../module/warn.cpp \
     ../startup/startupkdvdialog.cpp \
+    ../tune/kiv/tunekivmain.cpp \
     avmdebug.cpp \
     main.cpp \
     ../alarm/alarmclass.cpp \
@@ -36,11 +46,6 @@ SOURCES += \
     ../alarm/alarmwidget.cpp \
     ../check/abstractcheckdialog.cpp \
     ../check/check.cpp \
-    ../check/checkdialogharmonickdv.cpp \
-    ../check/checkdialogharmonicktf.cpp \
-    ../check/checkdialogkdv.cpp \
-    ../check/checkdialogktf.cpp \
-    ../check/checkdialogvibrkdv.cpp \
     ../check/checkharmonickdv.cpp \
     ../check/checkharmonicktf.cpp \
     ../check/checkkdv.cpp \
@@ -51,8 +56,6 @@ SOURCES += \
     ../config/abstractconfdialog.cpp \
     ../config/config.cpp \
     ../config/confdialog.cpp \
-    ../config/confdialogkdv.cpp \
-    ../config/confdialogktf.cpp \
     ../config/configkdv.cpp \
     ../config/configkiv.cpp \
     ../config/configktf.cpp \
@@ -61,7 +64,6 @@ SOURCES += \
     ../config/confkxxdialog.cpp \
     ../dialogs/connectdialog.cpp \
     ../dialogs/errordialog.cpp \
-    ../dialogs/fwupdialog.cpp \
     ../dialogs/infodialog.cpp \
     ../dialogs/journalsdialog.cpp \
     ../dialogs/keypressdialog.cpp \
@@ -97,7 +99,6 @@ SOURCES += \
     ../tune/kiv/tunekiv.cpp \
     ../tune/kiv/tunekivcheck.cpp \
     ../tune/kiv/tunekivdialog.cpp \
-    ../tune/kiv/tunekivmain.cpp \
     ../tune/kiv/tunekivtemp60.cpp \
     ../tune/tuneclass.cpp \
     ../usb/commands.cpp \
@@ -115,20 +116,25 @@ SOURCES += \
     ../widgets/wd_func.cpp
 
 HEADERS += \
+    ../check/checkkdvdialog.h \
+    ../check/checkkdvharmonicdialog.h \
+    ../check/checkkdvvibrdialog.h \
+    ../check/checkktfdialog.h \
+    ../check/checkktfharmonicdialog.h \
+    ../config/confkdvdialog.h \
+    ../config/confktfdialog.h \
+    ../dialogs/fwuploaddialog.h \
+    ../gen/udialog.h \
     ../module/alarm.h \
     ../module/warn.h \
     ../startup/startupkdvdialog.h \
+    ../tune/kiv/tunekivmain.h \
     avmdebug.h \
     ../alarm/alarmclass.h \
     ../alarm/alarmstateall.h \
     ../alarm/alarmwidget.h \
     ../check/check.h \
     ../check/abstractcheckdialog.h \
-    ../check/checkdialogharmonickdv.h \
-    ../check/checkdialogharmonicktf.h \
-    ../check/checkdialogkdv.h \
-    ../check/checkdialogktf.h \
-    ../check/checkdialogvibrkdv.h \
     ../check/checkharmonickdv.h \
     ../check/checkharmonicktf.h \
     ../check/checkkdv.h \
@@ -139,8 +145,6 @@ HEADERS += \
     ../config/abstractconfdialog.h \
     ../config/config.h \
     ../config/confdialog.h \
-    ../config/confdialogkdv.h \
-    ../config/confdialogktf.h \
     ../config/configkdv.h \
     ../config/configkiv.h \
     ../config/configktf.h \
@@ -149,7 +153,6 @@ HEADERS += \
     ../config/confkxxdialog.h \
     ../dialogs/connectdialog.h \
     ../dialogs/errordialog.h \
-    ../dialogs/fwupdialog.h \
     ../dialogs/infodialog.h \
     ../dialogs/journalsdialog.h \
     ../dialogs/keypressdialog.h \
@@ -186,7 +189,6 @@ HEADERS += \
     ../tune/kiv/tunekivcheck.h \
     ../tune/kiv/tunekiv.h \
     ../tune/kiv/tunekivdialog.h \
-    ../tune/kiv/tunekivmain.h \
     ../tune/kiv/tunekivtemp60.h \
     ../tune/tuneclass.h \
     ../usb/commands.h \

@@ -1,18 +1,16 @@
 #ifndef WARNALARMKIV_H
 #define WARNALARMKIV_H
 
-#include "../alarm/abstractalarm.h"
+#include "warn.h"
 
-class WarnKIV : public AbstractWarn
+class WarnKIV : public Warn
 {
     Q_OBJECT
 
 public:
-    explicit WarnKIV(AlarmClass *alarm, QWidget *parent = nullptr);
+    explicit WarnKIV(QWidget *parent = nullptr);
 
 public slots:
-
-    void WarnAlarmState() override;
 
 private:
 };

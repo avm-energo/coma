@@ -2,19 +2,19 @@
 #define CONFDIALOGKDV_H
 
 #include "../config/confdialog.h"
-#include "../config/confkxxdialog.h"
 #include "../config/configkdv.h"
+#include "../config/confkxxdialog.h"
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
 #include "abstractconfdialog.h"
 
 #include <QVBoxLayout>
 
-class ConfDialogKDV : public AbstractConfDialog
+class ConfKDVDialog : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    ConfDialogKDV(S2ConfigType *S2Config, QWidget *parent = nullptr);
+    ConfKDVDialog(S2ConfigType *S2Config, QWidget *parent = nullptr);
 
 private:
     ConfigKDV *KDV;

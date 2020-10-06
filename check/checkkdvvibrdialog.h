@@ -2,18 +2,18 @@
 #define CHECKDIALOGVIBRKDV_H
 
 #include "../iec104/iec104.h"
-#include "checkvibrkdv.h"
 #include "abstractcheckdialog.h"
+#include "checkvibrkdv.h"
 
-class CheckDialogVibrKDV : public AbstractCheckDialog
+class CheckKDVVibrDialog : public AbstractCheckDialog
 {
     Q_OBJECT
 public:
-    CheckDialogVibrKDV(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    CheckKDVVibrDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
 public slots:
-    void SetPredAlarmColor(quint8 *);
-    void SetAlarmColor(quint8 *Alarm);
+    void SetWarnColor(int position, bool value) override;
+    void SetAlarmColor(int position, bool value) override;
     void UpdateFlData(IEC104Thread::FlSignals104 *);
     void UpdateSponData(IEC104Thread::SponSignals *);
     void USBUpdate() override;

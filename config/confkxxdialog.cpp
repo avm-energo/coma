@@ -8,7 +8,7 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 
-ConfKxxDialog::ConfKxxDialog(S2ConfigType *S2Config, QWidget *parent) : QWidget(parent)
+ConfKxxDialog::ConfKxxDialog(S2ConfigType *S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {
     Kxx = new ConfigKxx(S2Config);
 

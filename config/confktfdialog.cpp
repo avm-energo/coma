@@ -1,4 +1,4 @@
-#include "confdialogktf.h"
+#include "confktfdialog.h"
 
 #include "../gen/board.h"
 #include "../gen/colors.h"
@@ -18,7 +18,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
-ConfDialogKTF::ConfDialogKTF(S2ConfigType *S2Config, QWidget *parent) : AbstractConfDialog(parent)
+ConfKTFDialog::ConfKTFDialog(S2ConfigType *S2Config, QWidget *parent) : AbstractConfDialog(parent)
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
@@ -31,16 +31,16 @@ ConfDialogKTF::ConfDialogKTF(S2ConfigType *S2Config, QWidget *parent) : Abstract
     PrereadConf();
 }
 
-ConfDialogKTF::~ConfDialogKTF()
+ConfKTFDialog::~ConfKTFDialog()
 {
 }
 
-int ConfDialogKTF::getRCount()
+int ConfKTFDialog::getRCount()
 {
     return KTF->Bci_block.TdatNum;
 }
 
-void ConfDialogKTF::SetupUI()
+void ConfKTFDialog::SetupUI()
 {
     QVBoxLayout *vlyout1 = new QVBoxLayout;
     QVBoxLayout *vlyout2 = new QVBoxLayout;
@@ -354,7 +354,7 @@ void ConfDialogKTF::SetupUI()
     setLayout(lyout);
 }
 
-void ConfDialogKTF::Fill()
+void ConfKTFDialog::Fill()
 {
 
     Conf->Fill();
@@ -411,7 +411,7 @@ void ConfDialogKTF::Fill()
     ConfKxx->Fill();
 }
 
-void ConfDialogKTF::FillBack()
+void ConfKTFDialog::FillBack()
 {
     Conf->FillBack();
 
@@ -471,11 +471,11 @@ void ConfDialogKTF::FillBack()
     ConfKxx->FillBack();
 }
 
-void ConfDialogKTF::CheckConf()
+void ConfKTFDialog::CheckConf()
 {
 }
 
-void ConfDialogKTF::SetDefConf()
+void ConfKTFDialog::SetDefConf()
 {
     KTF->SetDefConf();
     Conf->SetDefConf();
@@ -483,12 +483,12 @@ void ConfDialogKTF::SetDefConf()
     Fill();
 }
 
-void ConfDialogKTF::Start_Timer()
+void ConfKTFDialog::Start_Timer()
 {
     timerRead->start(1000);
 }
 
-void ConfDialogKTF::Stop_Timer()
+void ConfKTFDialog::Stop_Timer()
 {
     timerRead->stop();
 }

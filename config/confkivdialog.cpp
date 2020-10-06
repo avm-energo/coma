@@ -27,7 +27,10 @@ ConfKIVDialog::ConfKIVDialog(S2ConfigType *S2Config, QWidget *parent) : Abstract
     PrereadConf();
 }
 
-ConfKIVDialog::~ConfKIVDialog() { delete CKIV; }
+ConfKIVDialog::~ConfKIVDialog()
+{
+    delete CKIV;
+}
 
 void ConfKIVDialog::Fill()
 {
@@ -405,16 +408,24 @@ void ConfKIVDialog::SetupUI()
     setLayout(lyout);
 }
 
-void ConfKIVDialog::CheckConf() { }
+void ConfKIVDialog::CheckConf()
+{
+}
 
 void ConfKIVDialog::SetDefConf()
 {
-    CKIV->SetDefConf();
+    CKIV->setDefConf();
     Conf->SetDefConf();
     ConfKxx->SetDefConf();
     Fill();
 }
 
-void ConfKIVDialog::Start_Timer() { timerRead->start(1000); }
+void ConfKIVDialog::Start_Timer()
+{
+    timerRead->start(1000);
+}
 
-void ConfKIVDialog::Stop_Timer() { timerRead->stop(); }
+void ConfKIVDialog::Stop_Timer()
+{
+    timerRead->stop();
+}

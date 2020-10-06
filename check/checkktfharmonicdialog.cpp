@@ -1,4 +1,4 @@
-#include "checkdialogharmonickdv.h"
+#include "checkktfharmonicdialog.h"
 
 #include "../config/config.h"
 #include "../gen/colors.h"
@@ -21,15 +21,15 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-CheckDialogHarmonicKDV::CheckDialogHarmonicKDV(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
-{
+CheckKTFHarmonicDialog::CheckKTFHarmonicDialog(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
 
+{
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
     QStringList sl;
     BdNum = 12;
     Ch = new Check;
-    ChHarmKDV = new CheckHarmonicKDV;
+    ChHarmKTF = new CheckHarmonicKTF;
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -46,56 +46,56 @@ CheckDialogHarmonicKDV::CheckDialogHarmonicKDV(BoardTypes board, QWidget *parent
     Timer->setInterval(ANMEASINT);
 }
 
-QWidget *CheckDialogHarmonicKDV::BdUI(int bdnum)
+QWidget *CheckKTFHarmonicDialog::BdUI(int bdnum)
 {
     switch (bdnum)
     {
 
     case 0:
-        return ChHarmKDV->Bd6W(this);
+        return ChHarmKTF->Bd6W(this);
     case 1:
-        return ChHarmKDV->Bd7W(this);
+        return ChHarmKTF->Bd7W(this);
     case 2:
-        return ChHarmKDV->Bd8W(this);
+        return ChHarmKTF->Bd8W(this);
     case 3:
-        return ChHarmKDV->Bd9W(this);
+        return ChHarmKTF->Bd9W(this);
     case 4:
-        return ChHarmKDV->Bd10W(this);
+        return ChHarmKTF->Bd10W(this);
     case 5:
-        return ChHarmKDV->Bd11W(this);
+        return ChHarmKTF->Bd11W(this);
     case 6:
-        return ChHarmKDV->Bd12W(this);
+        return ChHarmKTF->Bd12W(this);
     case 7:
-        return ChHarmKDV->Bd13W(this);
+        return ChHarmKTF->Bd13W(this);
     case 8:
-        return ChHarmKDV->Bd14W(this);
+        return ChHarmKTF->Bd14W(this);
     case 9:
-        return ChHarmKDV->Bd15W(this);
+        return ChHarmKTF->Bd15W(this);
     case 10:
-        return ChHarmKDV->Bd16W(this);
+        return ChHarmKTF->Bd16W(this);
     case 11:
-        return ChHarmKDV->Bd17W(this);
+        return ChHarmKTF->Bd17W(this);
 
     default:
         return new QWidget;
     }
 }
-void CheckDialogHarmonicKDV::RefreshAnalogValues(int bdnum)
+void CheckKTFHarmonicDialog::RefreshAnalogValues(int bdnum)
 {
     Q_UNUSED(bdnum)
 }
 
-void CheckDialogHarmonicKDV::PrepareHeadersForFile(int row)
+void CheckKTFHarmonicDialog::PrepareHeadersForFile(int row)
 {
     Q_UNUSED(row)
 }
 
-void CheckDialogHarmonicKDV::WriteToFile(int row, int bdnum)
+void CheckKTFHarmonicDialog::WriteToFile(int row, int bdnum)
 {
-    Q_UNUSED(row)
-    Q_UNUSED(bdnum)
+    Q_UNUSED(row);
+    Q_UNUSED(bdnum);
 }
-// QWidget *CheckDialogHarmonicKDV::CustomTab()
+// QWidget *CheckDialogHarmonicKTF::CustomTab()
 //{
 //    QWidget *w = new QWidget;
 //    QVBoxLayout *lyout = new QVBoxLayout;
@@ -111,19 +111,19 @@ void CheckDialogHarmonicKDV::WriteToFile(int row, int bdnum)
 //    w->setLayout(lyout);
 //    return nullptr;
 //}
-void CheckDialogHarmonicKDV::ChooseValuesToWrite()
+void CheckKTFHarmonicDialog::ChooseValuesToWrite()
 {
 }
-void CheckDialogHarmonicKDV::SetDefaultValuesToWrite()
+void CheckKTFHarmonicDialog::SetDefaultValuesToWrite()
 {
 }
-void CheckDialogHarmonicKDV::PrepareAnalogMeasurements()
+void CheckKTFHarmonicDialog::PrepareAnalogMeasurements()
 {
 }
 
-void CheckDialogHarmonicKDV::USBUpdate()
+void CheckKTFHarmonicDialog::USBUpdate()
 {
-    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw1");
+    QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw0");
     if (CheckTW == nullptr)
     {
         DBGMSG;
@@ -134,8 +134,8 @@ void CheckDialogHarmonicKDV::USBUpdate()
     {
         if (CheckTW->currentIndex() == IndexWd.at(i))
         {
-            if (Commands::GetBd(5, &ChHarmKDV->Bd_block5, sizeof(CheckHarmonicKDV::Bd_5_7)) == Error::Msg::NoError)
-                ChHarmKDV->FillBd5(this);
+            if (Commands::GetBd(5, &ChHarmKTF->Bd_block5, sizeof(CheckHarmonicKTF::Bd5)) == Error::Msg::NoError)
+                ChHarmKTF->FillBd5(this);
         }
     }
 
@@ -143,28 +143,27 @@ void CheckDialogHarmonicKDV::USBUpdate()
     {
         if (CheckTW->currentIndex() == IndexWd.at(i))
         {
-            if (Commands::GetBd(7, &ChHarmKDV->Bd_block7, sizeof(CheckHarmonicKDV::Bd_5_7)) == Error::Msg::NoError)
-                ChHarmKDV->FillBd7(this);
+            if (Commands::GetBd(7, &ChHarmKTF->Bd_block7, sizeof(CheckHarmonicKTF::Bd7)) == Error::Msg::NoError)
+                ChHarmKTF->FillBd7(this);
         }
     }
 }
 
-void CheckDialogHarmonicKDV::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
+void CheckKTFHarmonicDialog::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
 {
     for (int i = 0; i < Signal->SigNumber; i++)
     {
-
-        ChHarmKDV->FillBd(
+        ChHarmKTF->FillBd(
             this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal + i)->fl.SigVal, 3));
     }
 }
 
-void CheckDialogHarmonicKDV::UpdateSponData(IEC104Thread::SponSignals *Signal)
+void CheckKTFHarmonicDialog::UpdateSponData(IEC104Thread::SponSignals *Signal)
 {
     Q_UNUSED(Signal)
 }
 
-void CheckDialogHarmonicKDV::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
+void CheckKTFHarmonicDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
 
     int i = 0;
@@ -173,20 +172,21 @@ void CheckDialogHarmonicKDV::UpdateModBusData(QList<ModBus::SignalStruct> Signal
         // sig = *(Signal+i);
         if ((((Signal.at(i).SigAdr >= 1011) && (Signal.at(i).SigAdr <= 1015)))
             || ((Signal.at(i).SigAdr >= 1111) && (Signal.at(i).SigAdr <= 1115)))
-            ChHarmKDV->FillBd(
+            ChHarmKTF->FillBd(
                 this, QString::number((Signal.at(i).SigAdr) + 9), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
         else
-            ChHarmKDV->FillBd(
+            ChHarmKTF->FillBd(
                 this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
     }
 }
-
-void CheckDialogHarmonicKDV::SetPredAlarmColor(quint8 *PredAlarm)
+void CheckKTFHarmonicDialog::SetWarnColor(int position, bool value)
 {
-    Q_UNUSED(PredAlarm)
+    Q_UNUSED(position)
+    Q_UNUSED(value)
 }
 
-void CheckDialogHarmonicKDV::SetAlarmColor(quint8 *Alarm)
+void CheckKTFHarmonicDialog::SetAlarmColor(int position, bool value)
 {
-    Q_UNUSED(Alarm)
+    Q_UNUSED(position)
+    Q_UNUSED(value)
 }

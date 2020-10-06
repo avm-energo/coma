@@ -12,12 +12,12 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
-class ConfDialogKTF : public AbstractConfDialog
+class ConfKTFDialog : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    ConfDialogKTF(S2ConfigType *S2Config, QWidget *parent = nullptr);
-    ~ConfDialogKTF();
+    ConfKTFDialog(S2ConfigType *S2Config, QWidget *parent = nullptr);
+    ~ConfKTFDialog();
 
     int getRCount();
 

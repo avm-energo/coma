@@ -4,13 +4,37 @@
 #include "../gen/stdfunc.h"
 #include "../widgets/wd_func.h"
 
+#include <QEventLoop>
+#include <QMessageBox>
 #include <QVBoxLayout>
 
-KeyPressDialog::KeyPressDialog(const QString &PswPhrase, QWidget *parent) : QDialog(parent)
+KeyPressDialog::KeyPressDialog(QWidget *parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     SetupUI();
-    SetPhrase(PswPhrase);
+    SetPhrase("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
+}
+
+Error::Msg KeyPressDialog::CheckPassword(const QString &psw)
+{
+    //    m_pswValid = false;
+    StdFunc::ClearCancel();
+    QEventLoop PasswordLoop;
+    connect(this, &KeyPressDialog::PasswordChecked, &PasswordLoop, &QEventLoop::quit);
+    show();
+    PasswordLoop.exec();
+    if (StdFunc::IsCancelled())
+    {
+        ERMSG("Отмена ввода пароля");
+        return Error::Msg::GeneralError;
+    }
+    if (m_pswEntered != psw)
+    {
+        ERMSG("Пароль введён неверно");
+        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно", QMessageBox::Ok);
+        return Error::Msg::GeneralError;
+    }
+    return Error::Msg::NoError;
 }
 
 void KeyPressDialog::SetupUI()
@@ -37,15 +61,13 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
     }
     if ((e->key() == Qt::Key_Enter) || (e->key() == Qt::Key_Return))
     {
-        if (WDFunc::LE_read_data(this, "pswle", str))
-            emit Finished(str);
-        this->close();
+        if (WDFunc::LE_read_data(this, "pswle", m_pswEntered))
+            emit PasswordChecked();
     }
     if (e->key() == Qt::Key_Escape)
     {
-        emit Finished(QString());
         StdFunc::Cancel();
-        this->close();
+        emit PasswordChecked();
     }
     QDialog::keyPressEvent(e);
 }
@@ -53,9 +75,9 @@ void KeyPressDialog::keyPressEvent(QKeyEvent *e)
 void KeyPressDialog::closeEvent(QCloseEvent *e)
 {
     QString str;
-    if (WDFunc::LE_read_data(this, "pswle", str))
-        emit Finished(str);
-    else
-        emit Finished(QString());
+    WDFunc::LE_read_data(this, "pswle", m_pswEntered);
+    emit PasswordChecked();
+    //    else
+    //        emit Finished(QString());
     e->accept();
 }

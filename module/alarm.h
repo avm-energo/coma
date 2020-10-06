@@ -11,19 +11,26 @@ class Alarm : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Alarm(QWidget *parent = nullptr);
     int m_alarmBdNum;
     int m_startAlarmAddress;
-    std::bitset m_alarmFlags; // '1' equals alarm
+    std::bitset<32> m_alarmFlags; // '1' equals alarm
+
+    explicit Alarm(QWidget *parent = nullptr);
+    int realAlarmSize();
+    void updatePixmap(bool isset, int position);
 
 public slots:
-    void Update(QList<bool> states);
+    //    void Update(std::bitset<32> &states);
+
+signals:
+    void updateAlarm(int position, bool value);
 
 private:
+    int m_realAlarmSize;
+
 protected:
     void showEvent(QShowEvent *e);
-    void UpdatePixmaps(bool isset, int position, bool warn = false);
-    void SetupUI(const QStringList &events, int counters);
+    void setupUI(const QStringList &events);
 };
 
 #endif // ALARM_H

@@ -29,7 +29,7 @@ private:
     int GetJourNum(const QString &objname);
 
 signals:
-    void WritePasswordChecked();
+    //    void WritePasswordChecked();
     void StartGetJour(); // start fet journal thread
     void StartReadFile();
     void StartSaveJour(int, QAbstractItemModel *, QString);
@@ -40,7 +40,7 @@ private slots:
     void JourFileChoosed(QString &file);
     void EraseJour();
     void SaveJour();
-    void WritePasswordCheck(QString psw);
+    //    void WritePasswordCheck(QString psw);
     void Done(QString msg, int);
     void Error(QString msg);
 

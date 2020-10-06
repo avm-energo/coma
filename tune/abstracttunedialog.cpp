@@ -15,7 +15,7 @@
 #include <QScrollBar>
 #include <QVBoxLayout>
 
-AbstractTuneDialog::AbstractTuneDialog(QWidget *parent) : QDialog(parent)
+AbstractTuneDialog::AbstractTuneDialog(QWidget *parent) : UDialog(parent)
 {
     TuneVariant = 0;
     setAttribute(Qt::WA_DeleteOnClose);
@@ -226,18 +226,20 @@ void AbstractTuneDialog::ProcessTune()
 
 Error::Msg AbstractTuneDialog::CheckPassword()
 {
-    QEventLoop PasswordLoop;
-    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    connect(dlg, SIGNAL(Finished(QString)), this, SLOT(PasswordCheck(QString)));
-    connect(this, SIGNAL(PasswordChecked()), &PasswordLoop, SLOT(quit()));
-    dlg->show();
-    PasswordLoop.exec();
-    if (!ok)
-    {
-        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-        return Error::Msg::GeneralError;
-    }
-    return Error::Msg::NoError;
+    KeyPressDialog dlg; // = new KeyPressDialog;
+    return dlg.CheckPassword("121941");
+    //    QEventLoop PasswordLoop;
+    //    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
+    //    connect(dlg, SIGNAL(Finished(QString)), this, SLOT(PasswordCheck(QString)));
+    //    connect(this, SIGNAL(PasswordChecked()), &PasswordLoop, SLOT(quit()));
+    //    dlg->show();
+    //    PasswordLoop.exec();
+    //    if (!ok)
+    //    {
+    //        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
+    //        return Error::Msg::GeneralError;
+    //    }
+    //    return Error::Msg::NoError;
 }
 
 bool AbstractTuneDialog::IsWithinLimits(double number, double base, double threshold)
@@ -311,15 +313,15 @@ void AbstractTuneDialog::StartTune()
     ProcessTune();
 }
 
-void AbstractTuneDialog::PasswordCheck(QString psw)
-{
-    ok = false;
-    if (psw.isEmpty())
-        StdFunc::Cancel();
-    else if (psw == "121941")
-        ok = true;
-    emit PasswordChecked();
-}
+// void AbstractTuneDialog::PasswordCheck(QString psw)
+//{
+//    ok = false;
+//    if (psw.isEmpty())
+//        StdFunc::Cancel();
+//    else if (psw == "121941")
+//        ok = true;
+//    emit PasswordChecked();
+//}
 
 void AbstractTuneDialog::TuneReadCoefs(int index)
 {
@@ -339,7 +341,7 @@ void AbstractTuneDialog::TuneReadCoefs(int index)
     for (int i = 0; i < m_TuneBlockMap.keys().size(); i++)
     {
         int bacnum;
-        if (Board::GetInstance()->typeM() == 135)
+        if (Board::GetInstance().typeM() == 135)
             bacnum = i + 1;
         else
             bacnum = i + 2;
@@ -376,7 +378,7 @@ Error::Msg AbstractTuneDialog::LoadTuneSequenceFile()
 
 Error::Msg AbstractTuneDialog::CheckCalibrStep()
 {
-    QString usbserialnum = EProtocom::GetInstance()->usbSerial();
+    QString usbserialnum = EProtocom::GetInstance().usbSerial();
     QSettings storedcalibrations(StdFunc::GetSystemHomeDir() + "calibr.ini", QSettings::IniFormat);
     if (!storedcalibrations.contains(usbserialnum))
     {
@@ -421,7 +423,7 @@ bool AbstractTuneDialog::WriteTuneCoefsSlot()
 
     for (int i = 0; i < m_TuneBlockMap.keys().size(); i++)
     {
-        if (Board::GetInstance()->typeM() == 135)
+        if (Board::GetInstance().typeM() == 135)
             bacnum = i + 1;
         else
             bacnum = i + 2;
@@ -465,17 +467,17 @@ bool AbstractTuneDialog::WriteTuneCoefs(int bacnum)
 
 Error::Msg AbstractTuneDialog::SaveAllTuneCoefs()
 {
-    QString tunenum;
-    for (QMap<int, BlockStruct>::Iterator it = m_TuneBlockMap.begin(); it != m_TuneBlockMap.end(); ++it)
-    {
-        tunenum = QString::number(it.key(), 16); // key is the number of Bac block
-        QByteArray ba;
-        ba.resize(it.value().BacBlockSize);
-        memcpy(&(ba.data()[0]), it.value().BacBlock, it.value().BacBlockSize);
-        if (Files::SaveToFile(StdFunc::GetSystemHomeDir() + "temptune.tn" + tunenum, ba, it.value().BacBlockSize)
-            != Error::Msg::NoError)
-            return Error::Msg::GeneralError;
-    }
+    /*    QString tunenum;
+        for (QMap<int, BlockStruct>::Iterator it = m_TuneBlockMap.begin(); it != m_TuneBlockMap.end(); ++it)
+        {
+            tunenum = QString::number(it.key(), 16); // key is the number of Bac block
+            QByteArray ba;
+            ba.resize(it.value().BacBlockSize);
+            memcpy(&(ba.data()[0]), it.value().BacBlock, it.value().BacBlockSize);
+            if (Files::SaveToFile(StdFunc::GetSystemHomeDir() + "temptune.tn" + tunenum, ba, it.value().BacBlockSize)
+                != Error::Msg::NoError)
+                return Error::Msg::GeneralError;
+        } */
     return Error::Msg::NoError;
 }
 

@@ -17,7 +17,7 @@ public:
     ~StartupKIVDialog();
 
     Error::Msg WriteCheckPassword();
-    void GetCorBd(int index) override;
+    void GetCorBd() override;
 
 private:
     struct CorData
@@ -56,7 +56,7 @@ public slots:
     // void ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal);
     void SaveToFile() override;
     void ReadFromFile() override;
-    void WritePasswordCheck(QString psw);
+    //    void WritePasswordCheck(QString psw);
     void TimerTimeout();
     void ErrorRead();
 

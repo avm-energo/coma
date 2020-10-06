@@ -3,21 +3,21 @@
 
 #include "../alarm/alarmstateall.h"
 #include "../alarm/alarmwidget.h"
-#include "../check/abstractcheckdialog.h"
-#include "../config/abstractconfdialog.h"
-#include "../config/confdialog.h"
+//#include "../check/abstractcheckdialog.h"
+//#include "../config/abstractconfdialog.h"
+//#include "../config/confdialog.h"
 #include "../dialogs/connectdialog.h"
-#include "../dialogs/fwupdialog.h"
-#include "../dialogs/infodialog.h"
-#include "../dialogs/journalsdialog.h"
-#include "../dialogs/startupkivdialog.h"
-#include "../dialogs/startupktfdialog.h"
-#include "../dialogs/timedialog.h"
-#include "../module/alarmkiv.h"
-#include "../module/alarmktf.h"
+//#include "../dialogs/fwupdialog.h"
+//#include "../dialogs/infodialog.h"
+//#include "../dialogs/journalsdialog.h"
+//#include "../dialogs/startupkivdialog.h"
+//#include "../dialogs/startupktfdialog.h"
+//#include "../dialogs/timedialog.h"
+//#include "../module/alarmkiv.h"
+//#include "../module/alarmktf.h"
 #include "../module/module.h"
-#include "../module/warnkiv.h"
-#include "../module/warnktf.h"
+//#include "../module/warnkiv.h"
+//#include "../module/warnktf.h"
 #include "../widgets/etabwidget.h"
 
 #include <QMainWindow>
@@ -133,7 +133,7 @@ public:
 
 signals:
     void CloseConnectDialog();
-    void PasswordChecked();
+    //    void PasswordChecked();
     void ClearBsi();
     void Finished();
     void StopCommunications();
@@ -154,9 +154,9 @@ private slots:
     void closeEvent(QCloseEvent *event) override;
     void SetDefConf();
 
-    void setConf(unsigned char);
-    void Fill();
-    void PasswordCheck(QString psw);
+    //    void setConf(unsigned char);
+    //    void Fill();
+    // void PasswordCheck(QString psw);
     void SetProgressBar1Size(int size);
     void SetProgressBar1(int cursize);
     void SetProgressBar2Size(int size);
@@ -165,33 +165,33 @@ private slots:
 
 private:
     AlarmWidget *AlarmW;
-    WarnKIV *WarnAlarmKIVDialog;
-    AlarmKIV *AvarAlarmKIVDialog;
-    WarnAlarmKTF *WarnAlarmKTFDialog;
-    AvarAlarmKTF *AvarAlarmKTFDialog;
+    //    WarnKIV *WarnAlarmKIVDialog;
+    //    AlarmKIV *AvarAlarmKIVDialog;
+    //    WarnAlarmKTF *WarnAlarmKTFDialog;
+    //    AvarAlarmKTF *AvarAlarmKTFDialog;
     AlarmStateAll *AlarmStateAllDialog;
     AlarmClass *Alarm;
     Module *m_Module;
-    QWidget *Parent;
+    //    QWidget *Parent;
 
-    InfoDialog *infoDialog;
-    ConfDialog *mainConfDialog;
-    ConfDialog *mainTuneDialog;
-    AbstractStartupDialog *corDialog;
+    //    InfoDialog *infoDialog;
+    //    ConfDialog *mainConfDialog;
+    //    ConfDialog *mainTuneDialog;
+    //    AbstractStartupDialog *corDialog;
     //    AbstractConfDialog *confBDialog, *confMDialog;
     //    AbstractCheckDialog *checkBDialog, *checkMDialog, *HarmDialog, *VibrDialog;
-    QDialog *tuneDialog;
+    //    QDialog *tuneDialog;
     // временно, пока не сделаны интерфейсы    JournalDialog *jourDialog;
-    fwupdialog *fwUpDialog;
-    TimeDialog *timeDialog;
+    //    fwupdialog *fwUpDialog;
+    //    TimeDialog *timeDialog;
 
-    bool PasswordValid;
+    //    bool PasswordValid;
     bool TimeThrFinished;
     bool Cancelled;
     bool Reconnect;
     int Mode; // режим запуска программы
     int fileSize, curfileSize;
-    int CheckIndex, TimeIndex, ConfIndex, CurTabIndex, CheckHarmIndex, CheckVibrIndex;
+    //    int CheckIndex, TimeIndex, ConfIndex, CurTabIndex, CheckHarmIndex, CheckVibrIndex;
     quint8 HaveAlreadyRed = 0;
     bool ActiveUSBThread;
     quint32 Mes;
@@ -200,8 +200,8 @@ private:
 
     S2ConfigType *S2Config;
 
-    quint8 PredAlarmEvents[20];
-    quint8 AlarmEvents[20];
+    //    quint8 PredAlarmEvents[20];
+    //    quint8 AlarmEvents[20];
 
     QTimer *ReceiveTimer;
     QTimer *ReconnectTimer;
@@ -222,7 +222,7 @@ private:
 
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 
-    void addConfTab(ETabWidget *MainTW, QString str);
+    //    void addConfTab(ETabWidget *MainTW, QString str);
 
     void setupConnections();
 

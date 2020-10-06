@@ -1,4 +1,4 @@
-#include "fwupdialog.h"
+#include "fwuploaddialog.h"
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
@@ -16,14 +16,13 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-fwupdialog::fwupdialog(QWidget *parent) : QDialog(parent)
+FWUploadDialog::FWUploadDialog(QWidget *parent) : UDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    // fwupdialog* fwup = new fwupdialog;
     SetupUI();
 }
 
-void fwupdialog::SetupUI()
+void FWUploadDialog::SetupUI()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QGridLayout *glyout = new QGridLayout;
@@ -51,7 +50,7 @@ void fwupdialog::SetupUI()
     setLayout(lyout);
 }
 
-Error::Msg fwupdialog::LoadFW()
+Error::Msg FWUploadDialog::LoadFW()
 {
     QByteArray ba;
     // File_struct PV_file;
@@ -80,7 +79,7 @@ Error::Msg fwupdialog::LoadFW()
     return Error::Msg::NoError;
 }
 
-void fwupdialog::RunSoft()
+void FWUploadDialog::RunSoft()
 {
     if (WriteCheckPassword() == Error::Msg::NoError)
     {
@@ -97,36 +96,38 @@ void fwupdialog::RunSoft()
     }
 }
 
-Error::Msg fwupdialog::WriteCheckPassword()
+Error::Msg FWUploadDialog::WriteCheckPassword()
 {
-    ok = false;
-    StdFunc::ClearCancel();
-    QEventLoop PasswordLoop;
-    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    connect(dlg, SIGNAL(Finished(QString)), this, SLOT(WritePasswordCheck(QString)));
-    connect(this, SIGNAL(WritePasswordChecked()), &PasswordLoop, SLOT(quit()));
-    dlg->show();
-    PasswordLoop.exec();
-    if (StdFunc::IsCancelled())
-        return Error::Msg::GeneralError;
-    if (!ok)
-    {
-        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-        return Error::Msg::GeneralError;
-    }
-    return Error::Msg::NoError;
+    KeyPressDialog dlg; // = new KeyPressDialog;
+    return dlg.CheckPassword("admin");
+    //    ok = false;
+    //    StdFunc::ClearCancel();
+    //    QEventLoop PasswordLoop;
+    //    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
+    //    connect(dlg, SIGNAL(Finished(QString)), this, SLOT(WritePasswordCheck(QString)));
+    //    connect(this, SIGNAL(WritePasswordChecked()), &PasswordLoop, SLOT(quit()));
+    //    dlg->show();
+    //    PasswordLoop.exec();
+    //    if (StdFunc::IsCancelled())
+    //        return Error::Msg::GeneralError;
+    //    if (!ok)
+    //    {
+    //        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
+    //        return Error::Msg::GeneralError;
+    //    }
+    //    return Error::Msg::NoError;
 }
 
-void fwupdialog::WritePasswordCheck(QString psw)
-{
-    if (psw == "admin")
-        ok = true;
-    else
-        ok = false;
-    emit WritePasswordChecked();
-}
+// void FWUploadDialog::WritePasswordCheck(QString psw)
+//{
+//    if (psw == "admin")
+//        ok = true;
+//    else
+//        ok = false;
+//    emit WritePasswordChecked();
+//}
 
-Error::Msg fwupdialog::ParseHexToS2(QByteArray ba)
+Error::Msg FWUploadDialog::ParseHexToS2(QByteArray ba)
 {
 
     File_struct *PV_file = new File_struct;

@@ -12,24 +12,24 @@
 #include "tunekivmain.h"
 #include "tunekivtemp60.h"
 
-#include <QCoreApplication>
-#include <QFileDialog>
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QInputDialog>
-#include <QLabel>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QScrollArea>
-#include <QScrollBar>
-#include <QTabWidget>
-#include <QThread>
-#include <QTime>
-#include <QVBoxLayout>
-#include <QtMath>
-#include <functional>
+//#include <QCoreApplication>
+//#include <QFileDialog>
+//#include <QGridLayout>
+//#include <QGroupBox>
+//#include <QInputDialog>
+//#include <QLabel>
+//#include <QMessageBox>
+//#include <QPushButton>
+//#include <QScrollArea>
+//#include <QScrollBar>
+//#include <QTabWidget>
+//#include <QThread>
+//#include <QTime>
+//#include <QVBoxLayout>
+//#include <QtMath>
+//#include <functional>
 
-TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent) : QDialog(parent)
+TuneKIVDialog::TuneKIVDialog(ConfigKIV *ckiv, TuneKIV *tkiv, QWidget *parent) : UDialog(parent)
 {
     TKIV = tkiv;
     CKIV = ckiv;
@@ -45,7 +45,6 @@ void TuneKIVDialog::SetupUI()
     setStyleSheet(tmps);
     QVBoxLayout *lyout = new QVBoxLayout;
 
-    TuneKIVMain *m = new TuneKIVMain;
     lyout->addLayout(newTunePBLayout("1. Проверка правильности измерения входных сигналов", [this]() {
         TuneKIVCheck *check = new TuneKIVCheck(TKIV);
         check->exec();

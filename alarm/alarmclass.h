@@ -10,6 +10,7 @@
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
+#include "../module/module.h"
 #include "../widgets/wd_func.h"
 
 #include <QByteArray>
@@ -23,25 +24,25 @@ class AlarmClass : public QObject
 public:
     explicit AlarmClass(QObject *parent = nullptr);
 
-    int warnalarmcount = 0, alarmcount = 0;
+    //    int warnalarmcount = 0, alarmcount = 0;
 
-    QList<bool> WarnAlarmEvents;
-    QList<bool> AvarAlarmEvents;
+    //    QList<bool> WarnAlarmEvents;
+    //    QList<bool> AvarAlarmEvents;
     // QList<bool> IndicatorEvents;
-    QList<bool> AlarmEvents;
+    //    QList<bool> AlarmEvents;
 
-    struct StAlarm
-    {
-        int warnCounts;
-        int avarCounts;
-        int BdNumbers;
-        quint32 AdrAlarm;
+    //    struct StAlarm
+    //    {
+    //        int warnCounts;
+    //        int avarCounts;
+    //        int BdNumbers;
+    //        quint32 AdrAlarm;
 
-        QList<bool> warns;
-        QList<bool> avars;
-    };
+    //        QList<bool> warns;
+    //        QList<bool> avars;
+    //    };
 
-    QMap<quint16, StAlarm> MapAlarm;
+    //    QMap<quint16, StAlarm> MapAlarm;
 
     struct BdAlarm
     {
@@ -51,16 +52,21 @@ public:
     };
 
 signals:
-    void SetWarnAlarmColor(QList<bool>);
-    void SetAlarmColor(QList<bool>);
+    //    void SetWarnAlarmColor(QList<bool>);
+    //    void SetAlarmColor(QList<bool>);
+    void setWarnColor(bool);
+    void setAlarmColor(bool);
     void SetIndicator(bool);
-    void AlarmColor(QList<bool>);
+    //    void AlarmColor(QList<bool>);
     void SetFirstButton();
 
 public slots:
     void UpdateAlarmUSB();
     void UpdateAlarmModBus(ModBus::Coils Signal);
     void UpdateAlarm104(IEC104Thread::SponSignals *Signal);
+
+private:
+    Module *m_Module;
 };
 
 #endif // ALARMCLASS_H

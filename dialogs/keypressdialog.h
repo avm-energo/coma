@@ -8,6 +8,8 @@
 #ifndef KEYPRESSDIALOG_H
 #define KEYPRESSDIALOG_H
 
+#include "../gen/error.h"
+
 #include <QCloseEvent>
 #include <QDialog>
 #include <QKeyEvent>
@@ -16,16 +18,21 @@ class KeyPressDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit KeyPressDialog(const QString &PswPhrase,
-        QWidget *parent = nullptr); // PswPhrase - фраза, которую надо написать пользователю
+    explicit KeyPressDialog(QWidget *parent = nullptr); // PswPhrase - фраза, которую надо написать пользователю
+    Error::Msg CheckPassword(const QString &psw);
 
 signals:
-    void Finished(QString str);
+    //    void Finished(QString str);
     void Cancelled();
+    void PasswordChecked();
 
 public slots:
+    //    void PasswordCheck(QString psw);
 
 private:
+    //    bool m_pswValid;
+    QString m_pswEntered;
+
     void SetupUI();
     void SetPhrase(const QString &Phrase);
 

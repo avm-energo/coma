@@ -1,18 +1,16 @@
 #ifndef WARNALARMKTF_H
 #define WARNALARMKTF_H
 
-#include "../alarm/abstractalarm.h"
+#include "warn.h"
 
-class WarnAlarmKTF : public AbstractWarn
+class WarnKTF : public Warn
 {
     Q_OBJECT
 
 public:
-    explicit WarnAlarmKTF(AlarmClass *alarm, QDialog *parent = nullptr);
+    explicit WarnKTF(QWidget *parent = nullptr);
 
 public slots:
-
-    void WarnAlarmState() override;
 
 private:
 };

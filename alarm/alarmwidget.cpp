@@ -55,8 +55,8 @@ AlarmWidget::AlarmWidget(AlarmClass *alarm, QWidget *parent) : QWidget(parent)
     setLayout(vlyout);
 
     connect(Alarm, &AlarmClass::SetFirstButton, this, &AlarmWidget::UpdateFirstUSB);
-    connect(Alarm, &AlarmClass::SetWarnAlarmColor, this, &AlarmWidget::UpdateSecondUSB);
-    connect(Alarm, &AlarmClass::SetAlarmColor, this, &AlarmWidget::UpdateThirdUSB);
+    connect(Alarm, &AlarmClass::setWarnColor, this, &AlarmWidget::UpdateSecondUSB);
+    connect(Alarm, &AlarmClass::setAlarmColor, this, &AlarmWidget::UpdateThirdUSB);
     connect(Alarm, &AlarmClass::SetIndicator, this, &AlarmWidget::UpdateIndicator);
 }
 
@@ -69,41 +69,43 @@ void AlarmWidget::UpdateIndicator(bool indx)
     WDFunc::SetVisible(this, "953", true);
 }
 
-void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarm)
+// void AlarmWidget::UpdateSecondUSB(QList<bool> warnalarm)
+void AlarmWidget::UpdateSecondUSB(bool warn)
 {
-    // int i;
-    int alarm = 0;
+    //    // int i;
+    //    int alarm = 0;
 
-    // for(i=0; i<warnalarmcount.size(); i++)
-    foreach (bool item, warnalarm)
-    {
-        if (item == true)
-        {
-            alarm++;
-            break;
-        }
-    }
-    auto pixmap = WDFunc::NewCircle((alarm == 0) ? Qt::green : Qt::yellow, this->height() / 4);
+    //    // for(i=0; i<warnalarmcount.size(); i++)
+    //    foreach (bool item, warnalarm)
+    //    {
+    //        if (item == true)
+    //        {
+    //            alarm++;
+    //            break;
+    //        }
+    //    }
+    auto pixmap = WDFunc::NewCircle((warn) ? Qt::yellow : Qt::green, this->height() / 4);
     WDFunc::SetLBLImage(this, "951", &pixmap);
     WDFunc::SetVisible(this, "951", true);
 }
 
-void AlarmWidget::UpdateThirdUSB(QList<bool> avar)
+// void AlarmWidget::UpdateThirdUSB(QList<bool> avar)
+void AlarmWidget::UpdateThirdUSB(bool alarm)
 {
-    int alarm = 0;
+    //    int alarm = 0;
 
-    //     for(i=0; i<alarmcount.size(); i++)
-    //    if(std::any_of(avar.constBegin(),avar.constEnd(),[](const bool state){return state;}))
-    //        alarm++;
-    foreach (bool item, avar)
-    {
-        if (item == true)
-        {
-            alarm++;
-            break;
-        }
-    }
-    auto pixmap = WDFunc::NewCircle((alarm == 0) ? Qt::green : Qt::red, this->height() / 4);
+    //    //     for(i=0; i<alarmcount.size(); i++)
+    //    //    if(std::any_of(avar.constBegin(),avar.constEnd(),[](const bool state){return state;}))
+    //    //        alarm++;
+    //    foreach (bool item, avar)
+    //    {
+    //        if (item == true)
+    //        {
+    //            alarm++;
+    //            break;
+    //        }
+    //    }
+    auto pixmap = WDFunc::NewCircle((alarm) ? Qt::red : Qt::green, this->height() / 4);
     WDFunc::SetLBLImage(this, "952", &pixmap);
     WDFunc::SetVisible(this, "952", true);
 }

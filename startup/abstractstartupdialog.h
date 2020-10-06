@@ -2,14 +2,14 @@
 #define ABSTRACTCORDIALOG_H
 
 #include "../gen/error.h"
+#include "../gen/udialog.h"
 #include "../iec104/iec104.h"
 #include "../modbus/modbus.h"
 #include "../models/etablemodel.h"
 
 #include <QByteArray>
-#include <QDialog>
 
-class AbstractStartupDialog : public QDialog
+class AbstractStartupDialog : public UDialog
 {
     Q_OBJECT
 public:
@@ -18,12 +18,12 @@ public:
 
     QTimer *MessageTimer;
 
-    int corDIndex;
+    //    int corDIndex;
     bool ok;
     int first;
 
     Error::Msg WriteCheckPassword();
-    virtual void GetCorBd(int index);
+    virtual void GetCorBd();
 
 private:
     virtual void FillCor() = 0;
@@ -41,7 +41,7 @@ signals:
     void RS485WriteCorBd(ModBus::Information, float *);
     void RS485ReadCorBd(ModBus::Information);
     void CorReadRequest();
-    void WritePasswordChecked();
+    //    void WritePasswordChecked();
 
 public slots:
     virtual void GetCorBdButton() = 0;
@@ -54,9 +54,10 @@ public slots:
     void ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal);
     virtual void SaveToFile() = 0;
     virtual void ReadFromFile() = 0;
-    void WritePasswordCheck(QString psw);
+    //    void WritePasswordCheck(QString psw);
     void TimerTimeout();
     void ErrorRead();
+    void update() override;
 };
 
 #endif // ABSTRACTCORDIALOG_H

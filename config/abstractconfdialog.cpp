@@ -15,7 +15,7 @@
 #include <QMessageBox>
 #include <QTextEdit>
 
-AbstractConfDialog::AbstractConfDialog(QWidget *parent) : QDialog(parent)
+AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
 {
 }
 
@@ -92,32 +92,35 @@ void AbstractConfDialog::WriteConf()
 
 Error::Msg AbstractConfDialog::WriteCheckPassword()
 {
-    ok = false;
-    StdFunc::ClearCancel();
-    QEventLoop PasswordLoop;
-    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    connect(dlg, &KeyPressDialog::Finished, this, &AbstractConfDialog::WritePasswordCheck);
-    connect(this, &AbstractConfDialog::WritePasswordChecked, &PasswordLoop, &QEventLoop::quit);
-    dlg->show();
-    PasswordLoop.exec();
-    if (StdFunc::IsCancelled())
-        return Error::Msg::GeneralError;
-    if (!ok)
-    {
-        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-        return Error::Msg::GeneralError;
-    }
-    return Error::Msg::NoError;
+    KeyPressDialog dlg; // = new KeyPressDialog;
+    return dlg.CheckPassword("121941");
+
+    //    ok = false;
+    //    StdFunc::ClearCancel();
+    //    QEventLoop PasswordLoop;
+    //    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
+    //    connect(dlg, &KeyPressDialog::Finished, this, &AbstractConfDialog::WritePasswordCheck);
+    //    connect(this, &AbstractConfDialog::WritePasswordChecked, &PasswordLoop, &QEventLoop::quit);
+    //    dlg->show();
+    //    PasswordLoop.exec();
+    //    if (StdFunc::IsCancelled())
+    //        return Error::Msg::GeneralError;
+    //    if (!ok)
+    //    {
+    //        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
+    //        return Error::Msg::GeneralError;
+    //    }
+    //    return Error::Msg::NoError;
 }
 
-void AbstractConfDialog::WritePasswordCheck(QString psw)
-{
-    if (psw == "121941")
-        ok = true;
-    else
-        ok = false;
-    emit WritePasswordChecked();
-}
+// void AbstractConfDialog::WritePasswordCheck(QString psw)
+//{
+//    if (psw == "121941")
+//        ok = true;
+//    else
+//        ok = false;
+//    emit WritePasswordChecked();
+//}
 
 void AbstractConfDialog::SaveConfToFile()
 {
@@ -236,9 +239,13 @@ void AbstractConfDialog::PrereadConf()
 {
     if ((ModuleBSI::Health() & HTH_CONFIG) || (StdFunc::IsInEmulateMode())) // если в модуле нет конфигурации, заполнить
                                                                             // поля по умолчанию
-        IsNeededDefConf = true; // emit LoadDefConf();
-    else                        // иначе заполнить значениями из модуля
-                                //        ReadConf(confIndex);
+    {
+        SetDefConf();
+        QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
+    }
+    //        IsNeededDefConf = true; // emit LoadDefConf();
+    else // иначе заполнить значениями из модуля
+         //        ReadConf(confIndex);
         ReadConf();
 }
 

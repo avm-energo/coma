@@ -315,68 +315,72 @@ void CheckKIVDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
     }
 }
 
-void CheckKIVDialog::SetWarnColor(QList<bool> WarnAlarm)
+void CheckKIVDialog::SetWarnColor(int position, bool value)
 {
-    if (WarnAlarm.isEmpty())
-        return;
-    for (int i = 0; i < 18; i++)
+    /*    if (WarnAlarm.isEmpty())
+            return;
+        for (int i = 0; i < 18; i++)
+        { */
+    //        if ((i >= 0) && (i < 3))
+    //        {
+    //            WDFunc::SetLBLTColor(
+    //                this, QString::number(1000 + i), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+    //        }
+    if ((position >= 0) && (position < 3))
     {
-        if ((i >= 0) && (i < 3))
-        {
-            WDFunc::SetLBLTColor(
-                this, QString::number(1000 + i), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
-        }
-
-        if ((i >= 3) && (i < 6))
-        {
-            WDFunc::SetLBLTColor(
-                this, QString::number(1100 + 3), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
-        }
-
-        if ((i >= 7) && (i < 10))
-        {
-            if (WarnAlarm[i] == true)
-                WDFunc::SetLBLTColor(this, QString::number(1000 + i - 7), Colors::TABCOLORA1);
-        }
-
-        if ((i >= 10) && (i < 13))
-        {
-            WDFunc::SetLBLTColor(
-                this, QString::number(2429 + i - 10), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
-        }
-        else if ((i >= 13) && (i < 16))
-        {
-            WDFunc::SetLBLTColor(
-                this, QString::number(2426 + i - 13), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
-        }
-        else if (i == 17)
-        {
-            WDFunc::SetLBLTColor(
-                this, QString::number(2432 + i - 13), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
-        }
+        WDFunc::SetLBLTColor(this, QString::number(1000 + position), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
     }
+
+    if ((position >= 3) && (position < 6))
+    {
+        WDFunc::SetLBLTColor(this, QString::number(1100 + 3), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+    }
+
+    if ((position >= 7) && (position < 10))
+    {
+        if (value)
+            WDFunc::SetLBLTColor(this, QString::number(1000 + position - 7), Colors::TABCOLORA1);
+    }
+
+    if ((position >= 10) && (position < 13))
+    {
+        WDFunc::SetLBLTColor(
+            this, QString::number(2429 + position - 10), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+    }
+    else if ((position >= 13) && (position < 16))
+    {
+        WDFunc::SetLBLTColor(
+            this, QString::number(2426 + position - 13), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+    }
+    else if (position == 17)
+    {
+        WDFunc::SetLBLTColor(
+            this, QString::number(2432 + position - 13), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+    }
+    //}
 }
 
-void CheckKIVDialog::SetAlarmColor(QList<bool> Alarm)
+// void CheckKIVDialog::SetAlarmColor(QList<bool> Alarm)
+void CheckKIVDialog::SetAlarmColor(int position, bool value)
 {
-    if (Alarm.isEmpty())
-        return;
-    for (int i = 0; i < 7; i++)
+    /*    if (Alarm.isEmpty())
+            return;
+        for (int i = 0; i < 7; i++)
+        { */
+    if (position < 3)
     {
-        if (i < 3)
-        {
-            if (Alarm[i] == true)
-                WDFunc::SetLBLTColor(this, QString::number(2429 + i), Colors::REDCOLOR);
-        }
-        else if ((i >= 3) && (i < 6))
-        {
-            if (Alarm[i] == true)
-                WDFunc::SetLBLTColor(this, QString::number(2426 + i - 3), Colors::REDCOLOR);
-        }
-        else if (i == 6)
-        {
-            if (Alarm[i] == true)
-                WDFunc::SetLBLTColor(this, QString::number(2432), Colors::REDCOLOR);
-        }
+        if (value == true)
+            WDFunc::SetLBLTColor(this, QString::number(2429 + position), Colors::REDCOLOR);
     }
+    else if ((position >= 3) && (position < 6))
+    {
+        if (value == true)
+            WDFunc::SetLBLTColor(this, QString::number(2426 + position - 3), Colors::REDCOLOR);
+    }
+    else if (position == 6)
+    {
+        if (value == true)
+            WDFunc::SetLBLTColor(this, "2432", Colors::REDCOLOR);
+    }
+    //}
 }

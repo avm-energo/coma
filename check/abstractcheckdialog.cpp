@@ -22,13 +22,13 @@
 #include <QtMath>
 #include <QtTest/QTest>
 
-AbstractCheckDialog::AbstractCheckDialog(BoardTypes board, QWidget *parent) : QDialog(parent)
+AbstractCheckDialog::AbstractCheckDialog(BoardTypes board, QWidget *parent) : UDialog(parent)
 {
+    Q_UNUSED(board)
     XlsxWriting = false;
     Busy = false;
     xlsx = nullptr;
     WRow = 0;
-    m_board = board;
     Timer = new QTimer(this);
     Timer->setObjectName("checktimer");
     connect(Timer, &QTimer::timeout, this, &AbstractCheckDialog::TimerTimeout);
@@ -36,13 +36,13 @@ AbstractCheckDialog::AbstractCheckDialog(BoardTypes board, QWidget *parent) : QD
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-EAbstractCheckDialog::~EAbstractCheckDialog()
+AbstractCheckDialog::~AbstractCheckDialog()
 {
     qDeleteAll(Bd_blocks);
     Bd_blocks.clear();
 }
 
-void EAbstractCheckDialog::SetupUI(QStringList &tabnames)
+void AbstractCheckDialog::SetupUI(QStringList &tabnames)
 {
     IndexWd.clear();
     if (tabnames.size() < BdUINum)
@@ -240,6 +240,13 @@ void AbstractCheckDialog::StartBdMeasurements()
 void AbstractCheckDialog::StopBdMeasurements()
 {
     BdTimer->stop();
+}
+
+void AbstractCheckDialog::update()
+{
+    if ((m_updatesEnabled) && m_timerCounter)
+        USBUpdate();
+    m_timerCounter = !m_timerCounter;
 }
 
 void AbstractCheckDialog::onModbusStateChanged()

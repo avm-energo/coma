@@ -1,5 +1,5 @@
-#ifndef TUNEKIVMAIN_H
-#define TUNEKIVMAIN_H
+#ifndef TUNEKIVCHECK_H
+#define TUNEKIVCHECK_H
 
 #include "../abstracttunedialog.h"
 #include "tunekiv.h"
@@ -26,4 +26,4 @@ private slots:
     void SetDefCoefs();
 };
 
-#endif // TUNEKIVMAIN_H
+#endif // TUNEKIVCHECK_H

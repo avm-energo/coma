@@ -1,4 +1,4 @@
-#include "warnalarmktf.h"
+#include "warnktf.h"
 
 #include "../gen/board.h"
 #include "../gen/colors.h"
@@ -9,14 +9,11 @@
 
 #include <QBoxLayout>
 
-WarnAlarmKTF::WarnAlarmKTF(AlarmClass *alarm, QDialog *parent) : AbstractWarnAlarm(parent)
+WarnKTF::WarnKTF(QWidget *parent) : Warn(parent)
 {
-    Alarm = alarm;
-    WarnAlarmState();
-}
-
-void WarnAlarmKTF::WarnAlarmState()
-{
+    m_warnBdNum = 16;
+    m_startWarnAddress = 5011;
+    m_warnFlags = std::bitset<32>(0xfffa);
 
     const QStringList events = QStringList() << "Отсутствует сигнал напряжения фазы A                   "
                                              << "Отсутствует сигнал напряжения фазы B                   "
@@ -31,5 +28,6 @@ void WarnAlarmKTF::WarnAlarmState()
                                              << "Сигнализация по опасному превышению температуры обмотки"
                                              << "Неисправны все датчики температуры обмотки             "
                                              << "Сигнализация по опасному уровню пускового тока         ";
-    SetupAlarm(events, (Alarm->MapAlarm.value(Board::GetInstance().type()).warnCounts) - 1);
+
+    setupUI(events);
 }

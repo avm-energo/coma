@@ -15,8 +15,8 @@ public:
     QWidget *EParent;
 
 public slots:
-    void SetWarnColor(QList<bool> WarnAlarm);
-    void SetAlarmColor(QList<bool> Alarm);
+    void SetAlarmColor(int position, bool value) override;
+    void SetWarnColor(int position, bool value) override;
     void UpdateFlData(IEC104Thread::FlSignals104 *);
     void UpdateSponData(IEC104Thread::SponSignals *);
     void USBUpdate() override;

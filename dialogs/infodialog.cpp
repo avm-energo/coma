@@ -9,9 +9,10 @@
 
 #include <QVBoxLayout>
 
-InfoDialog::InfoDialog(QWidget *parent) : QDialog(parent)
+InfoDialog::InfoDialog(QWidget *parent) : UDialog(parent)
 {
     SetupUI();
+    FillBsi();
 }
 
 void InfoDialog::SetupUI()

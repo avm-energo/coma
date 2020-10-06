@@ -1,39 +1,40 @@
-#ifndef CHECKDIALOGHARMONICKTF_H
-#define CHECKDIALOGHARMONICKTF_H
+#ifndef CHECKDIALOGKDV_H
+#define CHECKDIALOGKDV_H
 
 #include "../iec104/iec104.h"
-#include "checkharmonicktf.h"
 #include "abstractcheckdialog.h"
+#include "checkkdv.h"
 
-class CheckDialogHarmonicKTF : public AbstractCheckDialog
+class CheckKDVDialog : public AbstractCheckDialog
 {
     Q_OBJECT
 public:
-    CheckDialogHarmonicKTF(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    explicit CheckKDVDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
+    QWidget *EParent;
 public slots:
-    void SetPredAlarmColor(quint8 *);
-    void SetAlarmColor(quint8 *Alarm);
+    void SetWarnColor(int position, bool value) override;
+    void SetAlarmColor(int position, bool value) override;
     void UpdateFlData(IEC104Thread::FlSignals104 *);
     void UpdateSponData(IEC104Thread::SponSignals *);
     void USBUpdate() override;
 
 private:
-    CheckHarmonicKTF *ChHarmKTF;
+    CheckKDV *ChKDV;
     QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
     QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
-    void RefreshAnalogValues(int bdnum) override; // обновление полей в GUI из полученного
-
+    void RefreshAnalogValues(int bdnum) override;  // обновление полей в GUI из полученного
+                                                   // соответствующего Bd_block
     void PrepareHeadersForFile(int row) override;  // row - строка для записи заголовков
     void WriteToFile(int row, int bdnum) override; // row - номер строки для записи в файл
-
+                                                   // xlsx, bdnum - номер блока данных
     void ChooseValuesToWrite() override;
     void SetDefaultValuesToWrite() override;
     void PrepareAnalogMeasurements() override;
-    // QWidget *CustomTab() override;
+    QWidget *CustomTab() override;
 
 private slots:
     void UpdateModBusData(QList<ModBus::SignalStruct> Signal) override;
 };
 
-#endif // CHECKDIALOGHARMONICKTF_H
+#endif // CHECKDIALOGKDV_H

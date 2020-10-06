@@ -1,4 +1,4 @@
-#include "../dialogs/startupkivdialog.h"
+#include "startupkivdialog.h"
 
 #include "../dialogs/keypressdialog.h"
 #include "../gen/board.h"
@@ -189,28 +189,28 @@ void StartupKIVDialog::FillCor()
     }
 }
 
-void StartupKIVDialog::GetCorBd(int index)
+void StartupKIVDialog::GetCorBd()
 {
-    if (index == corDIndex)
+    //    if (index == corDIndex)
+    //    {
+    switch (Board::GetInstance().interfaceType())
     {
-        switch (Board::GetInstance().interfaceType())
+    case Board::InterfaceType::USB:
+    {
+        if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
         {
-        case Board::InterfaceType::USB:
-        {
-            if (Commands::GetBd(7, CorBlock, sizeof(CorData)) == Error::Msg::NoError)
-            {
-                FillCor();
-                QMessageBox::information(this, "INFO", "Прочитано успешно");
-            }
-            break;
+            FillCor();
+            QMessageBox::information(this, "INFO", "Прочитано успешно");
         }
-        case Board::InterfaceType::Ethernet:
-        {
-            emit CorReadRequest();
-            break;
-        }
-        }
+        break;
     }
+    case Board::InterfaceType::Ethernet:
+    {
+        emit CorReadRequest();
+        break;
+    }
+    }
+    //    }
 }
 void StartupKIVDialog::GetCorBdButton()
 {
@@ -490,33 +490,35 @@ void StartupKIVDialog::ReadFromFile()
 
 Error::Msg StartupKIVDialog::WriteCheckPassword()
 {
-    ok = false;
-    StdFunc::ClearCancel();
-    QEventLoop PasswordLoop;
-    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    connect(dlg, &KeyPressDialog::Finished, this, &StartupKIVDialog::WritePasswordCheck);
-    connect(this, &AbstractStartupDialog::WritePasswordChecked, &PasswordLoop, &QEventLoop::quit);
-    dlg->deleteLater();
-    dlg->show();
-    PasswordLoop.exec();
-    if (StdFunc::IsCancelled())
-        return Error::Msg::GeneralError;
-    if (!ok)
-    {
-        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-        return Error::Msg::GeneralError;
-    }
-    return Error::Msg::NoError;
+    KeyPressDialog dlg; // = new KeyPressDialog;
+    return dlg.CheckPassword("121941");
+    //    ok = false;
+    //    StdFunc::ClearCancel();
+    //    QEventLoop PasswordLoop;
+    //    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
+    //    connect(dlg, &KeyPressDialog::Finished, this, &StartupKIVDialog::WritePasswordCheck);
+    //    connect(this, &AbstractStartupDialog::WritePasswordChecked, &PasswordLoop, &QEventLoop::quit);
+    //    dlg->deleteLater();
+    //    dlg->show();
+    //    PasswordLoop.exec();
+    //    if (StdFunc::IsCancelled())
+    //        return Error::Msg::GeneralError;
+    //    if (!ok)
+    //    {
+    //        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
+    //        return Error::Msg::GeneralError;
+    //    }
+    //    return Error::Msg::NoError;
 }
 
-void StartupKIVDialog::WritePasswordCheck(QString psw)
-{
-    if (psw == "121941")
-        ok = true;
-    else
-        ok = false;
-    emit WritePasswordChecked();
-}
+// void StartupKIVDialog::WritePasswordCheck(QString psw)
+//{
+//    if (psw == "121941")
+//        ok = true;
+//    else
+//        ok = false;
+//    emit WritePasswordChecked();
+//}
 
 void StartupKIVDialog::TimerTimeout()
 {

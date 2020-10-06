@@ -30,13 +30,12 @@
 #include <QTabWidget>
 #include <QVBoxLayout>
 
-AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : QDialog(parent)
+AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : UDialog(parent)
 {
 }
 
-void AbstractStartupDialog::GetCorBd(int index)
+void AbstractStartupDialog::GetCorBd()
 {
-    Q_UNUSED(index);
 }
 
 void AbstractStartupDialog::SetCor()
@@ -48,12 +47,12 @@ void AbstractStartupDialog::SetCor()
     //}
     // else if (MainInterface == I_USB)
     else if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-        //   {
+    {
         if (Commands::WriteCom(4) == Error::Msg::NoError)
             QMessageBox::information(this, "INFO", "Записано успешно");
         else
             QMessageBox::information(this, "INFO", "Ошибка");
-    //    }
+    }
 }
 
 float AbstractStartupDialog::ToFloat(QString text)
@@ -132,32 +131,34 @@ void AbstractStartupDialog::ModBusUpdateCorData(QList<ModBus::SignalStruct> Sign
 
 Error::Msg AbstractStartupDialog::WriteCheckPassword()
 {
-    ok = false;
-    StdFunc::ClearCancel();
-    QEventLoop PasswordLoop;
-    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    connect(dlg, SIGNAL(Finished(QString)), this, SLOT(WritePasswordCheck(QString)));
-    connect(this, SIGNAL(WritePasswordChecked()), &PasswordLoop, SLOT(quit()));
-    dlg->deleteLater();
-    dlg->show();
-    PasswordLoop.exec();
-    if (StdFunc::IsCancelled())
-        return Error::Msg::GeneralError;
-    if (!ok)
-    {
-        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-        return Error::Msg::GeneralError;
-    }
-    return Error::Msg::NoError;
+    KeyPressDialog dlg; // = new KeyPressDialog;
+    return dlg.CheckPassword("121941");
+    //    ok = false;
+    //    StdFunc::ClearCancel();
+    //    QEventLoop PasswordLoop;
+    //    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
+    //    connect(dlg, SIGNAL(Finished(QString)), this, SLOT(WritePasswordCheck(QString)));
+    //    connect(this, SIGNAL(WritePasswordChecked()), &PasswordLoop, SLOT(quit()));
+    //    dlg->deleteLater();
+    //    dlg->show();
+    //    PasswordLoop.exec();
+    //    if (StdFunc::IsCancelled())
+    //        return Error::Msg::GeneralError;
+    //    if (!ok)
+    //    {
+    //        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
+    //        return Error::Msg::GeneralError;
+    //    }
+    //    return Error::Msg::NoError;
 }
-void AbstractStartupDialog::WritePasswordCheck(QString psw)
-{
-    if (psw == "121941")
-        ok = true;
-    else
-        ok = false;
-    emit WritePasswordChecked();
-}
+// void AbstractStartupDialog::WritePasswordCheck(QString psw)
+//{
+//    if (psw == "121941")
+//        ok = true;
+//    else
+//        ok = false;
+//    emit WritePasswordChecked();
+//}
 
 void AbstractStartupDialog::TimerTimeout()
 {
@@ -167,4 +168,9 @@ void AbstractStartupDialog::TimerTimeout()
 void AbstractStartupDialog::ErrorRead()
 {
     QMessageBox::information(this, "Ошибка", "Ошибка чтения");
+}
+
+void AbstractStartupDialog::update()
+{
+    GetCorBd();
 }

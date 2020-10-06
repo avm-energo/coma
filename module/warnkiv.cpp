@@ -9,14 +9,12 @@
 
 #include <QBoxLayout>
 
-WarnKIV::WarnKIV(AlarmClass *alarm, QWidget *parent) : AbstractWarn(parent)
+WarnKIV::WarnKIV(QWidget *parent) : Warn(parent)
 {
-    Alarm = alarm;
-    WarnAlarmState();
-}
+    m_warnBdNum = 11;
+    m_startWarnAddress = 3011;
+    m_warnFlags = std::bitset<32>(0x1fff1ec6);
 
-void WarnKIV::WarnAlarmState()
-{
     const QStringList events = QStringList() << "Отсутствует сигнал напряжения фазы A                   "
                                              << "Отсутствует сигнал напряжения фазы B                   "
                                              << "Отсутствует сигнал напряжения фазы С                   "
@@ -35,5 +33,6 @@ void WarnKIV::WarnAlarmState()
                                              << "Сигнализация по приращению C ввода фазы C              "
                                              << "Не заданы паспортные значения                          "
                                              << "Сигнализация по повышенному небалансу токов            ";
-    SetupAlarm(events, Alarm->MapAlarm.value(Board::GetInstance().type()).warnCounts);
+
+    setupUI(events);
 }

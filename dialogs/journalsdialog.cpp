@@ -327,22 +327,24 @@ int JournalDialog::GetJourNum(const QString &objname)
 
 Error::Msg JournalDialog::WriteCheckPassword()
 {
-    ok = false;
-    StdFunc::ClearCancel();
-    QEventLoop PasswordLoop;
-    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    connect(dlg, &KeyPressDialog::Finished, this, &JournalDialog::WritePasswordCheck);
-    connect(this, &JournalDialog::WritePasswordChecked, &PasswordLoop, &QEventLoop::quit);
-    dlg->show();
-    PasswordLoop.exec();
-    if (StdFunc::IsCancelled())
-        return Error::Msg::GeneralError;
-    if (!ok)
-    {
-        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-        return Error::Msg::GeneralError;
-    }
-    return Error::Msg::NoError;
+    KeyPressDialog dlg; // = new KeyPressDialog;
+    return dlg.CheckPassword("121941");
+    //    ok = false;
+    //    StdFunc::ClearCancel();
+    //    QEventLoop PasswordLoop;
+    //    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
+    //    connect(dlg, &KeyPressDialog::Finished, this, &JournalDialog::WritePasswordCheck);
+    //    connect(this, &JournalDialog::WritePasswordChecked, &PasswordLoop, &QEventLoop::quit);
+    //    dlg->show();
+    //    PasswordLoop.exec();
+    //    if (StdFunc::IsCancelled())
+    //        return Error::Msg::GeneralError;
+    //    if (!ok)
+    //    {
+    //        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
+    //        return Error::Msg::GeneralError;
+    //    }
+    //    return Error::Msg::NoError;
 }
 
 void JournalDialog::StartReadJourFile()
@@ -355,14 +357,14 @@ void JournalDialog::StartReadJourFile()
     emit StartReadFile();
 }
 
-void JournalDialog::WritePasswordCheck(QString psw)
-{
-    if (psw == "121941")
-        ok = true;
-    else
-        ok = false;
-    emit WritePasswordChecked();
-}
+// void JournalDialog::WritePasswordCheck(QString psw)
+//{
+//    if (psw == "121941")
+//        ok = true;
+//    else
+//        ok = false;
+//    emit WritePasswordChecked();
+//}
 
 void JournalDialog::Done(QString msg, int)
 {

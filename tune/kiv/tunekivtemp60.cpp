@@ -1,7 +1,9 @@
 #include "tunekivtemp60.h"
+
 #include "../gen/colors.h"
 #include "../gen/stdfunc.h"
 #include "../usb/eprotocom.h"
+
 #include <QMessageBox>
 #include <QVBoxLayout>
 
@@ -204,7 +206,19 @@ void TuneKIVTemp60::FillBackBac(int bacnum)
         m_Bac_block.Tmk0 = ToFloat(tmps); */
 }
 
-Error::Msg TuneKIVTemp60::LoadTuneSequenceFile() { return CheckCalibrStep(); }
+void TuneKIVTemp60::GetBdAndFill()
+{
+}
+
+Error::Msg TuneKIVTemp60::LoadTuneSequenceFile()
+{
+    return CheckCalibrStep();
+}
+
+int TuneKIVTemp60::ReadAnalogMeasurements()
+{
+    return 0;
+}
 
 void TuneKIVTemp60::SetDefCoefs()
 {

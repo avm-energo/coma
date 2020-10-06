@@ -4,7 +4,7 @@ AlarmKIV::AlarmKIV(QWidget *parent) : Alarm(parent)
 {
     m_alarmBdNum = 11;
     m_startAlarmAddress = 3011;
-    m_alarmFlags = QBitArray::fromBits(0x0e39, 16);
+    m_alarmFlags = std::bitset<32>(0x00000e39);
     QStringList events = QStringList() << "Авария по приращению тангенса дельта ввода фазы А"
                                        << "Авария по приращению тангенса дельта ввода фазы B"
                                        << "Авария по приращению тангенса дельта ввода фазы C"
@@ -12,5 +12,5 @@ AlarmKIV::AlarmKIV(QWidget *parent) : Alarm(parent)
                                        << "Авария по приращению C ввода фазы B              "
                                        << "Авария по приращению C ввода фазы C              "
                                        << "Авария по недопустимому небалансу токов          ";
-    SetupUI(events, KIVALARMCOUNT);
+    setupUI(events);
 }
