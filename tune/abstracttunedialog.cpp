@@ -134,7 +134,7 @@ QWidget *AbstractTuneDialog::BottomUI(int bacnum)
     return w;
 }
 
-void AbstractTuneDialog::addTuneBlock(void *block, int blocknum, int blocksize)
+/*void AbstractTuneDialog::addTuneBlock(void *block, int blocknum, int blocksize)
 {
     BlockStruct Bac;
     Bac.block = block;
@@ -165,7 +165,7 @@ void AbstractTuneDialog::ShowTable()
     lyout->addWidget(pb);
     dlg->setLayout(lyout);
     dlg->exec();
-}
+} */
 
 void AbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
 {
@@ -228,21 +228,9 @@ Error::Msg AbstractTuneDialog::CheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return dlg.CheckPassword("121941");
-    //    QEventLoop PasswordLoop;
-    //    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    //    connect(dlg, SIGNAL(Finished(QString)), this, SLOT(PasswordCheck(QString)));
-    //    connect(this, SIGNAL(PasswordChecked()), &PasswordLoop, SLOT(quit()));
-    //    dlg->show();
-    //    PasswordLoop.exec();
-    //    if (!ok)
-    //    {
-    //        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-    //        return Error::Msg::GeneralError;
-    //    }
-    //    return Error::Msg::NoError;
 }
 
-bool AbstractTuneDialog::IsWithinLimits(double number, double base, double threshold)
+/*bool AbstractTuneDialog::IsWithinLimits(double number, double base, double threshold)
 {
     float tmpf = fabs(number - base);
     if (tmpf < fabs(threshold))
@@ -254,7 +242,7 @@ bool AbstractTuneDialog::IsWithinLimits(double number, double base, double thres
                 + QString::number(threshold, 'f', 5) + ", а получили: " + QString::number(number, 'f', 5));
         return false;
     }
-}
+}*/
 
 void AbstractTuneDialog::MsgSetVisible(int msg, bool Visible)
 {

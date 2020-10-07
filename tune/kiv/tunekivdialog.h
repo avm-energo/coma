@@ -222,7 +222,6 @@ private slots:
         void SetExtData();
         void CancelExtData();
         void CancelTune();
-        void GenerateReport();
         int TunePt100Channel();
         int TuneTemp();
         int TuneTempCor();
@@ -231,6 +230,7 @@ private slots:
         void SaveValuesTempMinus20();
         void SaveValuesTemp60();
         void CloseAsk(); */
+    void GenerateReport();
 };
 
 #endif // TUNEDIALOG85_H

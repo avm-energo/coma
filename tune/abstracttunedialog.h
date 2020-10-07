@@ -46,26 +46,24 @@ public:
     quint32 SecondsToEnd15SecondsInterval;
     QHash<QString, Error::Msg (AbstractTuneDialog::*)()> pf;
     quint8 bStep;
-    int TuneVariant; // вариант регулировочных параметров
-    S2ConfigType *S2ConfigForTune;
+    int TuneVariant;       // вариант регулировочных параметров
     ReportModel *RepModel; // модель, в которую заносим данные для отчёта
     //    QString OrganizationString; // наименование организации, работающей с программой
-    int TuneIndex, CheckIndex, TimeIndex;
     ValueModel *m_VModel;
     int m_tuneStep;
 
     virtual void SetupUI() = 0;
     QWidget *TuneUI();
     QWidget *BottomUI(int bacnum);
-    void addTuneBlock(void *block, int blocknum, int blocksize); // установка указателя на блок Bac
-    int setConfigPtr(void *ptr, int size);
+    //    void addTuneBlock(void *block, int blocknum, int blocksize); // установка указателя на блок Bac
+    //    int setConfigPtr(void *ptr, int size);
 
     void WaitNSeconds(int SecondsToWait, bool isAllowedToStop = false);
     void ProcessTune();
     Error::Msg CheckPassword();
     virtual void SetLbls() = 0; // заполнить список сообщений
     virtual void SetPf() = 0;   // заполнить список функций настройки
-    bool IsWithinLimits(double number, double base, double threshold);
+                                //    bool IsWithinLimits(double number, double base, double threshold);
     void MsgSetVisible(int msg, bool Visible = true);
     void OkMsgSetVisible(int msg, bool Visible = true);
     void ErMsgSetVisible(int msg, bool Visible = true);
@@ -79,7 +77,7 @@ public:
     virtual void FillBac(int bacnum) = 0;
     virtual void FillBackBac(int bacnum) = 0;
     void SaveToFileEx(int bacnum);
-    void ShowTable();
+    //    void ShowTable();
     void ReadTuneCoefsByBac(int bacnum);
     Error::Msg LoadTuneSequenceFile();
     Error::Msg CheckCalibrStep();
