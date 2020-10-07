@@ -46,7 +46,8 @@ EProtocom::EProtocom(token)
     connect(m_waitTimer, &QTimer::timeout, &m_loop, &QEventLoop::quit);
     connect(this, &EProtocom::QueryFinished, &m_loop, &QEventLoop::quit);
     QSharedPointer<QSettings> sets = QSharedPointer<QSettings>(new QSettings("EvelSoft", PROGNAME));
-    setWriteUSBLog(sets->value("WriteLog", "0").toBool());
+    bool writeUSBLog = sets->value("WriteLog", "0").toBool();
+    setWriteUSBLog(writeUSBLog);
 }
 
 int EProtocom::devicePosition() const

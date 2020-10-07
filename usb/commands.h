@@ -31,6 +31,8 @@ public:
     static Error::Msg WriteCom(char ComNum);
     static Error::Msg RunVPO();
     static Error::Msg TestCom(char OnOff);
+    static Error::Msg SetMode(int mode);
+    static int GetMode();
 
 signals:
     void setupConnection();

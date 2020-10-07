@@ -59,7 +59,6 @@ public:
     void SetBd(int bdnum, void *block, int blocksize, bool toxlsx = true);
     QWidget *BottomUI();
 
-    static int inline iuindex = 0;
     QXlsx::Document *xlsx;
     QTimer *Timer;
     int WRow;
@@ -94,6 +93,7 @@ private:
         quint8 ip[4];
     };
 
+    int m_newTWIndex;
     Bip Bip_block;
     bool Busy;
     QElapsedTimer *ElapsedTimeCounter;

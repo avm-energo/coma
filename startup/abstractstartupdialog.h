@@ -26,6 +26,7 @@ public:
     virtual void GetCorBd();
 
 private:
+    bool m_oneShotUpdateFlag;
     virtual void FillCor() = 0;
     virtual void FillBackCor() = 0;
     //    virtual void FillWb7() = 0;

@@ -23,6 +23,7 @@ class AlarmClass : public QObject
 
 public:
     explicit AlarmClass(QObject *parent = nullptr);
+    void setModule(Module *m);
 
     //    int warnalarmcount = 0, alarmcount = 0;
 
@@ -67,6 +68,7 @@ public slots:
 
 private:
     Module *m_Module;
+    bool m_moduleIsSet;
 };
 
 #endif // ALARMCLASS_H

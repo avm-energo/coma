@@ -25,6 +25,7 @@
 AbstractCheckDialog::AbstractCheckDialog(BoardTypes board, QWidget *parent) : UDialog(parent)
 {
     Q_UNUSED(board)
+    m_newTWIndex = 0;
     XlsxWriting = false;
     Busy = false;
     xlsx = nullptr;
@@ -53,8 +54,7 @@ void AbstractCheckDialog::SetupUI(QStringList &tabnames)
     QVBoxLayout *lyout = new QVBoxLayout;
     QTabWidget *CheckTW = new QTabWidget;
 
-    CheckTW->setObjectName("checktw" + QString::number(iuindex));
-    iuindex++;
+    CheckTW->setObjectName("checktw" + QString::number(m_newTWIndex++));
     qDebug() << CheckTW->objectName();
     QString ConfTWss = "QTabBar::tab:selected {background-color: " + QString(Colors::TABCOLORA1) + ";}";
 

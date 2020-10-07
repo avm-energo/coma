@@ -60,7 +60,7 @@ void AlarmStateAll::AlarmState()
 void AlarmStateAll::UpdateHealth(quint32 health)
 {
     float circleRadius = CIRCLE_RADIUS;
-    for (quint32 i = 0; i < health; ++i)
+    for (int i = 0; i < HthToolTip().size(); ++i)
     {
         QPixmap circle = WDFunc::NewCircle(Qt::green, circleRadius);
         if (health & (0x00000001 << i))

@@ -176,3 +176,19 @@ Error::Msg Commands::TestCom(char OnOff)
     EProtocom::GetInstance().SendCmd(CN::Test, OnOff);
     return EProtocom::GetInstance().result();
 }
+
+Error::Msg Commands::SetMode(int mode)
+{
+    EProtocom::GetInstance().SendCmd(CN::Write::Mode, mode);
+    return EProtocom::GetInstance().result();
+}
+
+int Commands::GetMode()
+{
+    QByteArray ba;
+    EProtocom::GetInstance().SendIn(CN::Read::Mode, 0, ba, 0);
+    if (EProtocom::GetInstance().result() != Error::Msg::GeneralError)
+        return ba.at(0);
+    else
+        return -1;
+}

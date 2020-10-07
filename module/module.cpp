@@ -72,7 +72,7 @@ Module *Module::createModule(QTimer *updateTimer)
             TuneKIV *TKIV = new TuneKIV(0, s2Config);
             m->addDialogToList(new ConfKIVDialog(s2Config), "Конфигурирование", "conf1");
             CheckKIVDialog *cdkiv = new CheckKIVDialog;
-            m->addDialogToList(new CheckKIVDialog, "Проверка");
+            m->addDialogToList(cdkiv, "Проверка");
             m->addDialogToList(new TuneKIVDialog(CKIV, TKIV), "Регулировка");
             m->addDialogToList(new StartupKIVDialog, "Начальные значения");
             m->m_Warn = new WarnKIV;
@@ -223,6 +223,7 @@ void Module::parentTWTabClicked(int index)
     if (udlg)
         udlg->setUpdatesEnabled();
     udlg->update();
+    m_oldTabIndex = m_currentTabIndex;
 
     //    if (corDialog != nullptr)
     //        corDialog->GetCorBd(tabindex);

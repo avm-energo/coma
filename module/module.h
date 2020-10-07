@@ -50,7 +50,7 @@ private:
     QList<UDialog *> m_Dialogs;
     Alarm *m_Alarm;
     Warn *m_Warn;
-    QTimer *m_timeTimer;
+    //    QTimer *m_timeTimer;
     int m_currentTabIndex, m_oldTabIndex;
     /*    QList<QDialog *> m_TuneDialogs;
         QList<QDialog *> m_CheckDialogs; */

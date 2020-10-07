@@ -1,4 +1,4 @@
-#include "tunekivtemp60.h"
+#include "tunekivtemp_20.h"
 
 #include "../gen/colors.h"
 #include "../gen/stdfunc.h"
@@ -7,7 +7,7 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-TuneKIVTemp60::TuneKIVTemp60(TuneKIV *tkiv, QWidget *parent) : AbstractTuneDialog(parent)
+TuneKIVTemp_20::TuneKIVTemp_20(TuneKIV *tkiv, QWidget *parent) : AbstractTuneDialog(parent)
 {
     m_tuneStep = 2;
     TKIV = tkiv;
@@ -16,7 +16,7 @@ TuneKIVTemp60::TuneKIVTemp60(TuneKIV *tkiv, QWidget *parent) : AbstractTuneDialo
     //    AddBac(&m_Bac_block, M_BACBLOCKNUM, sizeof(m_Bac_block));
 }
 
-void TuneKIVTemp60::SetupUI()
+void TuneKIVTemp_20::SetupUI()
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
@@ -28,7 +28,7 @@ void TuneKIVTemp60::SetupUI()
     TuneTW->addTab(cp1, "Протокол наладки");
 }
 
-void TuneKIVTemp60::SetLbls()
+void TuneKIVTemp_20::SetLbls()
 {
 
     lbls.append("5. Установка коэффициентов...");
@@ -54,7 +54,7 @@ void TuneKIVTemp60::SetLbls()
     lbls.append("20. 7.3.5. Восстановление сохранённой конфигурации и проверка...");
 }
 
-void TuneKIVTemp60::SetPf()
+void TuneKIVTemp_20::SetPf()
 {
     /*    int count = 0;
         pf[lbls.at(count++)] = &EAbstractTuneDialog::CheckPassword;
@@ -62,45 +62,46 @@ void TuneKIVTemp60::SetPf()
             = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogKIV::Start7_3_1); // 4. Информация
         pf[lbls.at(count++)] = func;
         func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
-            &TuneKIVTemp60::SetNewTuneCoefs); // 5. Установка коэффициентов
+            &TuneKIVTemp_20::SetNewTuneCoefs); // 5. Установка коэффициентов
         pf[lbls.at(count++)] = func;
         func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
-            &TuneKIVTemp60::Start7_3_2); // Получение текущих аналоговых данных
+            &TuneKIVTemp_20::Start7_3_2); // Получение текущих аналоговых данных
         pf[lbls.at(count++)] = func;
         func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogKIV::Start7_3_4); // Информация
         pf[lbls.at(count++)] = func;
         func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogKIV::Start7_3_4_2); // Расчёт коррекции по
        фазе pf[lbls.at(count++)] = func; func = reinterpret_cast<int
        (EAbstractTuneDialog::*)()>(&TuneDialogKIV::Start7_3_4_6); // Расчёт коррекции по частоте pf[lbls.at(count++)] =
-       func; func = reinterpret_cast<int (EAbstractTuneDialog::*)()>( &TuneKIVTemp60::Start7_3_4_7); // Конфигуратор
+       func; func = reinterpret_cast<int (EAbstractTuneDialog::*)()>( &TuneKIVTemp_20::Start7_3_4_7); // Конфигуратор
        рассчитывает новые значения калибровочных коэффициентов по току
         // для Кацп=2
         pf[lbls.at(count++)] = func;
         func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
-            &TuneKIVTemp60::Start7_3_4_11); // Получение текущих аналоговых данных
+            &TuneKIVTemp_20::Start7_3_4_11); // Получение текущих аналоговых данных
         pf[lbls.at(count++)] = func;
         func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
-            &TuneKIVTemp60::Start7_3_4_12); // Расчёт коррекции взаимного влияния каналов
+            &TuneKIVTemp_20::Start7_3_4_12); // Расчёт коррекции взаимного влияния каналов
         pf[lbls.at(count++)] = func;
         func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
-            &TuneKIVTemp60::Start7_3_4_13); // Получение текущих аналоговых данных и расчёт настроечных коэффициентов по
+            &TuneKIVTemp_20::Start7_3_4_13); // Получение текущих аналоговых данных и расчёт настроечных коэффициентов
+       по
         // напряжениям
         pf[lbls.at(count++)] = func;
         func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogKIV::Start7_3_4_14); // Сохранение
        конфигурации pf[lbls.at(count++)] = func; func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
-            &TuneKIVTemp60::Start7_3_4_15); // Получение текущих аналоговых данных
+            &TuneKIVTemp_20::Start7_3_4_15); // Получение текущих аналоговых данных
         pf[lbls.at(count++)] = func;
         func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogKIV::Start7_3_4_16); // Ввод измеренных
        значений pf[lbls.at(count++)] = func; func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
-            &TuneKIVTemp60::Start7_3_4_17); // Расчёт настроечных коэффициентов по токам, напряжениям и углам
+            &TuneKIVTemp_20::Start7_3_4_17); // Расчёт настроечных коэффициентов по токам, напряжениям и углам
         pf[lbls.at(count++)] = func;
         func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(&TuneDialogKIV::Start7_3_4_18); // Сохранение
        конфигурации pf[lbls.at(count++)] = func; func = reinterpret_cast<int (EAbstractTuneDialog::*)()>(
-            &TuneKIVTemp60::Start7_3_5); // Восстановление сохранённой конфигурации и проверка
+            &TuneKIVTemp_20::Start7_3_5); // Восстановление сохранённой конфигурации и проверка
         pf[lbls.at(count++)] = func; */
 }
 
-void TuneKIVTemp60::FillBac(int bacnum)
+void TuneKIVTemp_20::FillBac(int bacnum)
 {
     Q_UNUSED(bacnum);
     /*    for (int i = 0; i < 3; i++)
@@ -130,7 +131,7 @@ void TuneKIVTemp60::FillBac(int bacnum)
         WDFunc::SetLEData(this, "tune51", QString::number(m_Bac_block.Tmk0, 'f', 5)); */
 }
 
-/*void TuneKIVTemp60::FillNewBac()
+/*void TuneKIVTemp_20::FillNewBac()
 {
     for (int i = 0; i < 3; i++)
     {
@@ -159,7 +160,7 @@ void TuneKIVTemp60::FillBac(int bacnum)
     WDFunc::SetLEData(this, "tune51", QString::number(m_Bac_newblock.Tmk0, 'f', 5));
 } */
 
-void TuneKIVTemp60::FillBackBac(int bacnum)
+void TuneKIVTemp_20::FillBackBac(int bacnum)
 {
     Q_UNUSED(bacnum);
     /*    QString tmps;
@@ -207,21 +208,21 @@ void TuneKIVTemp60::FillBackBac(int bacnum)
         m_Bac_block.Tmk0 = ToFloat(tmps); */
 }
 
-void TuneKIVTemp60::GetBdAndFill()
+void TuneKIVTemp_20::GetBdAndFill()
 {
 }
 
-Error::Msg TuneKIVTemp60::LoadTuneSequenceFile()
+Error::Msg TuneKIVTemp_20::LoadTuneSequenceFile()
 {
     return CheckCalibrStep();
 }
 
-int TuneKIVTemp60::ReadAnalogMeasurements()
+int TuneKIVTemp_20::ReadAnalogMeasurements()
 {
     return 0;
 }
 
-void TuneKIVTemp60::SetDefCoefs()
+void TuneKIVTemp_20::SetDefCoefs()
 {
     /*    m_Bac_block.Art = 44.65f;
         m_Bac_block.Brt = 3345.75f;

@@ -29,7 +29,8 @@ void SettingsDialog::SetupUI()
 void SettingsDialog::Fill()
 {
     QSettings *sets = new QSettings("EvelSoft", PROGNAME);
-    WDFunc::SetChBData(this, "writelogchb", sets->value("WriteLog", "0").toBool());
+    bool writeUSBLog = sets->value("WriteLog", "0").toBool();
+    WDFunc::SetChBData(this, "writelogchb", writeUSBLog);
 }
 
 void SettingsDialog::AcceptSettings()

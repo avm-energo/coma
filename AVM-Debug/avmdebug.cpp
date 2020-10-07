@@ -22,20 +22,10 @@
 
 #include "avmdebug.h"
 
-//#include "../check/checkdialogharmonickdv.h"
-//#include "../check/checkdialogharmonicktf.h"
-//#include "../check/checkdialogkdv.h"
-//#include "../check/checkdialogktf.h"
-//#include "../check/checkdialogvibrkdv.h"
-//#include "../check/checkkivdialog.h"
-//#include "../config/confdialogkdv.h"
-//#include "../config/confdialogktf.h"
-//#include "../config/confkivdialog.h"
 #include "../dialogs/errordialog.h"
 #include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
 #include "../gen/stdfunc.h"
-//#include "../tune/kiv/tunekivdialog.h"
 
 #include <QApplication>
 #include <QDir>
@@ -84,23 +74,7 @@ AvmDebug::AvmDebug(QWidget *parent) : QMainWindow(parent)
 
     S2Config = new S2ConfigType;
     Reconnect = false;
-    //    timeDialog = nullptr;
-    //    mainConfDialog = nullptr;
-    //    confBDialog = confMDialog = nullptr;
-    //    checkBDialog = checkMDialog = nullptr;
     AlarmStateAllDialog = nullptr;
-    //#ifdef AVM_DEBUG
-    //    tuneDialog = nullptr;
-    //#endif
-    //    HarmDialog = nullptr;
-    //    VibrDialog = nullptr;
-    //    corDialog = nullptr;
-    //    CurTabIndex = -1;
-    //    for (int i = 0; i < 20; ++i)
-    //    {
-    //        PredAlarmEvents[i] = 0;
-    //        AlarmEvents[i] = 0;
-    //    }
     ActiveUSBThread = false;
     Alarm = new AlarmClass(this);
 
@@ -113,7 +87,6 @@ AvmDebug::AvmDebug(QWidget *parent) : QMainWindow(parent)
 
 AvmDebug::~AvmDebug()
 {
-    //    Disconnect();
 }
 
 void AvmDebug::SetupUI()
@@ -229,12 +202,6 @@ void AvmDebug::SetupMenubar()
     setMenuBar(menubar);
 }
 
-// void AvmDebug::addConfTab(ETabWidget *MainTW, QString str)
-//{
-//    MainTW->addTab(corDialog, str);
-//    corDialog->corDIndex = MainTW->indexOf(corDialog);
-//}
-
 void AvmDebug::StartWork()
 {
     NewUSB();
@@ -270,7 +237,6 @@ void AvmDebug::StartWork()
     QString str;
     Board::GetInstance().setTypeB(0);
     Board::GetInstance().setTypeM(0);
-    //    CurTabIndex = -1;
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
     {
@@ -320,96 +286,10 @@ void AvmDebug::StartWork()
 
     PrepareDialogs();
 
-    //    if (HarmDialog != nullptr)
-    //    {
-    //        MainTW->addTab(HarmDialog, "Гармоники");
-    //        CheckHarmIndex = MainTW->indexOf(HarmDialog);
-    //    }
-
-    //    if (VibrDialog != nullptr)
-    //    {
-    //        MainTW->addTab(VibrDialog, "Вибрации");
-    //        CheckVibrIndex = MainTW->indexOf(VibrDialog);
-    //    }
-
-    /*    if (confBDialog != nullptr)
-        {
-            str = (confMDialog == nullptr) ? "Конфигурирование" : "Конфигурирование\nБазовая";
-            MainTW->addTab(confBDialog, str);
-            if (confBDialog->IsNeededDefConf)
-            {
-                confBDialog->SetDefConf();
-                QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
-                // QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию");
-            }
-            connect(confBDialog, &AbstractConfDialog::NewConfToBeLoaded, this, &AvmDebug::Fill);
-            connect(confBDialog, &AbstractConfDialog::DefConfToBeLoaded, this, &AvmDebug::SetDefConf);
-        }
-        if (confMDialog != nullptr)
-        {
-            str = (confBDialog == nullptr) ? "Конфигурирование" : "Конфигурирование\nМезонин";
-            MainTW->addTab(confMDialog, str);
-            ///
-            ConfIndex = MainTW->indexOf(confMDialog);
-
-            if (confMDialog->IsNeededDefConf)
-            {
-                confMDialog->SetDefConf();
-                QMessageBox::information(this, "Успешно", "Задана конфигурация по умолчанию", QMessageBox::Ok);
-            }
-            connect(confMDialog, &AbstractConfDialog::NewConfToBeLoaded, this, &AvmDebug::Fill);
-            connect(confMDialog, &AbstractConfDialog::DefConfToBeLoaded, this, &AvmDebug::SetDefConf);
-        } */
-    /*    if (timeDialog != nullptr)
-        {
-            MainTW->addTab(timeDialog, "Время");
-            TimeIndex = MainTW->indexOf(timeDialog);
-            connect(TimeTimer, &QTimer::timeout, timeDialog, &TimeDialog::slot2_timeOut);
-        } */
-
-    /*    if (corDialog != nullptr)
-        {
-            switch (Board::GetInstance().typeB())
-            {
-            case Config::MTB_A2:
-                switch (Board::GetInstance().typeM())
-                {
-                case Config::MTM_84:
-                    addConfTab(MainTW, "Начальные значения");
-                    break;
-
-                case Config::MTM_87:
-                    addConfTab(MainTW, "Старение изоляции");
-                    break;
-                }
-                break;
-            case Config::MTB_A3:
-                switch (Board::GetInstance().typeM())
-                {
-                case Config::MTM_87:
-                    addConfTab(MainTW, "Старение изоляции");
-                    break;
-                }
-
-                break;
-            };
-        } */
-
-    // временно, пока не напишем интерфейсы   MainTW->addTab(jourDialog, "Журналы");
-
     if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
         Error::ShowErMsg(Error::Msg::ER_NOCONF);
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
         Error::ShowErMsg(Error::Msg::ER_NOTUNECOEF);
-
-    //    fwupdialog *fwUpDialog = new fwupdialog;
-    //    MainTW->addTab(fwUpDialog, "Загрузка ВПО");
-
-    //    if (tuneDialog != nullptr)
-    //        MainTW->addTab(tuneDialog, "Регулировка");
-
-    /*    MainTW->addTab(infoDialog, "О приборе");
-        infoDialog->FillBsi(); */
 
     QList<UDialog *> dlgs = m_Module->dialogs();
     foreach (UDialog *d, dlgs)
@@ -438,131 +318,26 @@ void AvmDebug::setupConnections()
     connect(AlarmW, &AlarmWidget::AlarmButtonPressed, AlarmStateAllDialog, &QDialog::show);
     connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, m_Module->getWarn(), &QDialog::show);
     connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, m_Module->getAlarm(), &QDialog::show);
-
-    //    switch (Board::GetInstance().typeB())
-    //    {
-    //    case Config::MTB_A2:
-    //        switch (Board::GetInstance().typeM())
-    //        {
-    //        case Config::MTM_84:
-    //        {
-    //            checkBDialog = new CheckDialogKIV(BoardTypes::BT_BASE);
-
-    //            S2Config->clear();
-    //            confMDialog = new ConfDialogKIV(S2Config);
-
-    //            corDialog = new CorDialog;
-
-    //            WarnAlarmKIVDialog = new WarnKIV(Alarm);
-    //            connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKIVDialog, &QDialog::show);
-    //            connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKIVDialog, &WarnKIV::Update);
-
-    //            AvarAlarmKIVDialog = new AlarmKIV(Alarm);
-    //            connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKIVDialog, &QDialog::show);
-    //            connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVDialog, &AlarmKIV::Update);
-
-    //            connect(Alarm, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog,
-    //            SLOT(SetWarnAlarmColor(QList<bool>))); connect(Alarm, SIGNAL(SetAlarmColor(QList<bool>)),
-    //            checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
-    //            connect(Alarm, &AlarmClass::SetWarnAlarmColor, m_Module, &Module::setWarnColor);
-    //            connect(Alarm, &AlarmClass::SetAlarmColor, m_Module, &Module::setAlarmColor);
-    //            tuneDialog = new TuneKIVDialog(S2Config);
-    //            break;
-    //        }
-    /*case Config::MTM_87:
-    {
-        HarmDialog = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
-        connect(BdaTimer, &QTimer::timeout, HarmDialog, &AbstractCheckDialog::USBUpdate);
-
-        S2Config->clear();
-        confMDialog = new ConfDialogKTF(S2Config);
-
-        checkBDialog = new CheckDialogKTF(BoardTypes::BT_BASE);
-
-        corDialog = new StartupKTFDialog;
-
-        WarnAlarmKTFDialog = new WarnAlarmKTF(Alarm);
-        connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKTFDialog, &QDialog::show);
-        connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKTFDialog, &WarnAlarmKTF::Update);
-
-        AvarAlarmKTFDialog = new AvarAlarmKTF(Alarm);
-        connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKTFDialog, &QDialog::show);
-        connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKTFDialog, &AvarAlarmKTF::Update);
-
-        break;
-    }
-    break;
-    }
-    case Config::MTB_A3:
-
-    switch (Board::GetInstance().typeM())
-    {
-    case Config::MTM_87:
-        checkBDialog = new CheckDialogKDV(BoardTypes::BT_BASE);
-
-        HarmDialog = new CheckDialogHarmonicKDV(BoardTypes::BT_BASE);
-        connect(BdaTimer, &QTimer::timeout, HarmDialog, &AbstractCheckDialog::USBUpdate);
-
-        VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE);
-        connect(BdaTimer, &QTimer::timeout, VibrDialog, &AbstractCheckDialog::USBUpdate);
-
-        S2Config->clear();
-        confMDialog = new ConfDialogKDV(S2Config);
-
-        corDialog = new StartupKTFDialog;
-
-        break;
-    };
-
-    break;
-    }
-    ; */
-
-    //    connect(this, &AvmDebug::ClearBsi, infoDialog, &InfoDialog::ClearBsi);
-    // connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
-    // connect(AlarmW, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
-
     NewTimersBda();
 }
 
 void AvmDebug::PrepareDialogs()
 {
     m_Module = Module::createModule(BdaTimer);
-
-    //    infoDialog = new InfoDialog(this);
-    //    jourDialog = new JournalDialog(Ch104);
-    //    timeDialog = new TimeDialog(this);
-
+    Alarm->setModule(m_Module);
     AlarmStateAllDialog = new AlarmStateAll;
-
     setupConnections();
 }
 
 void AvmDebug::CloseDialogs()
 {
     m_Module->closeDialogs();
-    //    QList<QDialog *> widgets = this->findChildren<QDialog *>();
-    //    // this->findChildren
-    //    for (auto &i : widgets)
-    //    {
-    //        qDebug() << i;
-    //        i->close();
-    //    }
-
-    //    Alarm->AvarAlarmEvents.clear();
-    //    Alarm->WarnAlarmEvents.clear();
-
-    //    if (AvarAlarmKIVDialog != nullptr)
-    //        AvarAlarmKIVDialog->close();
-
     if (AlarmStateAllDialog != nullptr)
     {
         AlrmTimer->stop();
         AlarmStateAllDialog->close();
         AlarmStateAllDialog = nullptr;
     }
-    //    if (WarnAlarmKIVDialog != nullptr)
-    //        WarnAlarmKIVDialog->close();
 }
 
 void AvmDebug::NewUSB()
@@ -577,33 +352,21 @@ void AvmDebug::NewUSB()
 
 void AvmDebug::NewTimers()
 {
-    /*    TimeTimer = new QTimer;
-        TimeTimer->setInterval(1000); */
-
     BdaTimer = new QTimer;
     BdaTimer->setInterval(1000);
 
     AlrmTimer = new QTimer;
-    AlrmTimer->setInterval(10000);
+    AlrmTimer->setInterval(5000);
     AlrmTimer->start();
 
     ReceiveTimer = new QTimer;
     ReceiveTimer->setInterval(2000);
     connect(ReceiveTimer, &QTimer::timeout, this, &AvmDebug::FileTimeOut);
-
-    ReconnectTimer = new QTimer;
-    ReconnectTimer->setInterval(INTERVAL::RECONNECT);
-    ReconnectTimer->setSingleShot(true);
-    connect(ReconnectTimer, &QTimer::timeout, this, &AvmDebug::AttemptToRec);
 }
 
 void AvmDebug::NewTimersBda()
 {
-    connect(BdaTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
-    //   connect(BdaTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::UpdateHealth);
-
-    //    if (checkBDialog != nullptr)
-    //        connect(BdaTimer, &QTimer::timeout, checkBDialog, &AbstractCheckDialog::USBUpdate);
+    connect(AlrmTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
     if (AlarmStateAllDialog != nullptr)
         connect(AlrmTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::CallUpdateHealth);
 }
@@ -656,10 +419,8 @@ void AvmDebug::ReConnect()
 {
     if (Reconnect)
     {
-        // QDialog *dlg = new QDialog;
-
         INFOMSG("Reconnect()");
-        TimeTimer->stop();
+        //        TimeTimer->stop();
         if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
         {
             qDebug() << "call Disconnect";
@@ -737,66 +498,7 @@ Error::Msg AvmDebug::CheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return dlg.CheckPassword("se/7520a");
-    //    PasswordValid = false;
-    //    StdFunc::ClearCancel();
-    //    QEventLoop PasswordLoop;
-    //    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    //    connect(dlg, &KeyPressDialog::Finished, this, &AvmDebug::PasswordCheck);
-    //    connect(this, &AvmDebug::PasswordChecked, &PasswordLoop, &QEventLoop::quit);
-    //    dlg->show();
-    //    PasswordLoop.exec();
-    //    if (StdFunc::IsCancelled())
-    //    {
-    //        ERMSG("Отмена ввода пароля");
-    //        return Error::Msg::GeneralError;
-    //    }
-
-    //    if (!PasswordValid)
-    //    {
-    //        ERMSG("Пароль введён неверно");
-    //        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно", QMessageBox::Ok);
-    //        return Error::Msg::GeneralError;
-    //    }
-    //    return Error::Msg::NoError;
 }
-
-// void AvmDebug::setConf(unsigned char typeConf)
-//{
-//    switch (typeConf)
-//    {
-//    case 0x01:
-//        if (mainConfDialog != nullptr)
-//            mainConfDialog->SetDefConf();
-//    case 0x02:
-//        if (confBDialog != nullptr)
-//            confBDialog->SetDefConf();
-//    case 0x03:
-//        if (confMDialog != nullptr)
-//            confMDialog->SetDefConf();
-//        break;
-//    default:
-//        break;
-//    }
-//}
-
-// void AvmDebug::Fill()
-//{
-//    if (mainConfDialog != nullptr)
-//        mainConfDialog->Fill();
-//    if (confBDialog != nullptr)
-//        confBDialog->Fill();
-//    if (confMDialog != nullptr)
-//        confMDialog->Fill();
-//}
-
-// void AvmDebug::PasswordCheck(QString psw)
-//{
-//    if (psw == "se/7520a")
-//        PasswordValid = true;
-//    else
-//        PasswordValid = false;
-//    emit PasswordChecked();
-//}
 
 void AvmDebug::SetProgressBar1Size(int size)
 {
@@ -891,13 +593,12 @@ void AvmDebug::Disconnect()
 void AvmDebug::DisconnectAndClear()
 {
     INFOMSG("DisconnectAndClear()");
-    TimeTimer->stop();
+    //    TimeTimer->stop();
     if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
     {
         AlarmW->Clear();
         Disconnect();
         CloseDialogs();
-        //        emit ClearBsi();
         ClearTW();
         ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
         if (MainTW == nullptr)
@@ -905,11 +606,6 @@ void AvmDebug::DisconnectAndClear()
             ERMSG("Пустой MainTW");
             return;
         }
-        // Проверить после отключения алармов
-        // if (Reconnect)
-        //    QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
-        //        else
-        //            QMessageBox::information(this, "Разрыв связи", "Не удалось установить связь");
         MainTW->hide();
         StdFunc::SetEmulated(false);
     }
@@ -939,9 +635,6 @@ void AvmDebug::MainTWTabClicked(int tabindex)
 void AvmDebug::SetDefConf()
 {
     m_Module->setDefConf();
-    /*    for (unsigned char i = 0x00; i != 0x03;)
-            setConf(++i);
-        Fill(); */
     QMessageBox::information(this, "Успешно", "Конфигурация по умолчанию", QMessageBox::Ok);
 }
 

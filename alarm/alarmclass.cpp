@@ -22,6 +22,7 @@
 
 AlarmClass::AlarmClass(QObject *parent) : QObject(parent)
 {
+    m_moduleIsSet = false;
     //    StAlarm KIV;
     //    KIV.warnCounts = 18;
     //    KIV.avarCounts = 7;
@@ -42,8 +43,19 @@ AlarmClass::AlarmClass(QObject *parent) : QObject(parent)
     //    MapAlarm[Board::DeviceModel::KTF] = KTF;
 }
 
+void AlarmClass::setModule(Module *m)
+{
+    m_Module = m;
+    m_moduleIsSet = true;
+}
+
 void AlarmClass::UpdateAlarmUSB()
 {
+    if (!m_moduleIsSet)
+    {
+        DBGMSG;
+        return;
+    }
     bool warns = false, alarms = false;
     Warn *w = m_Module->getWarn();
     Alarm *a = m_Module->getAlarm();
@@ -109,6 +121,11 @@ void AlarmClass::UpdateAlarmUSB()
 
 void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
 {
+    if (!m_moduleIsSet)
+    {
+        DBGMSG;
+        return;
+    }
     Warn *w = m_Module->getWarn();
     Alarm *a = m_Module->getAlarm();
     //    WarnAlarmEvents.clear();
@@ -146,6 +163,11 @@ void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
 
 void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
 {
+    if (!m_moduleIsSet)
+    {
+        DBGMSG;
+        return;
+    }
     try
     {
         Warn *w = m_Module->getWarn();

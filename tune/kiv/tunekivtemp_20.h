@@ -1,16 +1,16 @@
-#ifndef TUNEKIVTEMP60_H
-#define TUNEKIVTEMP60_H
+#ifndef TUNEKIVTEMP_20_H
+#define TUNEKIVTEMP_20_H
 
 #include "../abstracttunedialog.h"
 #include "tunekiv.h"
 
 #include <QWidget>
 
-class TuneKIVTemp60 : public AbstractTuneDialog
+class TuneKIVTemp_20 : public AbstractTuneDialog
 {
     Q_OBJECT
 public:
-    TuneKIVTemp60(TuneKIV *tkiv, QWidget *parent = nullptr);
+    TuneKIVTemp_20(TuneKIV *tkiv, QWidget *parent = nullptr);
 
 private:
     TuneKIV *TKIV;
@@ -27,4 +27,4 @@ private slots:
     void SetDefCoefs();
 };
 
-#endif // TUNEKIVTEMP60_H
+#endif // TUNEKIVTEMP_20_H

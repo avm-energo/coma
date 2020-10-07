@@ -32,6 +32,7 @@
 
 AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : UDialog(parent)
 {
+    m_oneShotUpdateFlag = false;
 }
 
 void AbstractStartupDialog::GetCorBd()
@@ -172,5 +173,14 @@ void AbstractStartupDialog::ErrorRead()
 
 void AbstractStartupDialog::update()
 {
-    GetCorBd();
+    if (m_updatesEnabled)
+    {
+        if (!m_oneShotUpdateFlag)
+        {
+            m_oneShotUpdateFlag = true;
+            GetCorBd();
+        }
+    }
+    else
+        m_oneShotUpdateFlag = false;
 }
