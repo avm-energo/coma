@@ -36,7 +36,7 @@ public:
         float Brt; // смещение в канале Pt100, ед.АЦП
     };
 
-    typedef struct
+    struct Bda_in
     { // Структура блока выходных данных
         // в масштабах входных сигналов (для настройки)
         float Frequency; // Частота в сети, Гц
@@ -46,9 +46,9 @@ public:
         float Cbush[3]; // емкости вводов
         float Tg_d[3]; // tg delta вводов
         float Pt100_R; // Измеренное сопротивление термометра, Ом
-    } Bda_in_struct;
+    };
 
-    struct BdaStruct
+    struct Bda
     {
         float Ueff_ADC[6];
         float Frequency;
@@ -64,13 +64,16 @@ public:
         float dpsiU[2]; // interphase voltages angles (B-A, C-B)
     };
 
-    Bac m_Bac_block, m_Bac_newblock;
-    Bda_in_struct m_Bda_in, m_Bda_block20, m_Bda_block60, m_Bda_blockMinus20;
-    BdaStruct m_Bda_block, m_BdaPt100_80Om, m_BdaPt100_120Om;
+    Bac m_Bac;
+    Bda m_Bda;
+    //    Bac m_Bac_block, m_Bac_newblock;
+    //    Bda_in_struct m_Bda_in, m_Bda_block20, m_Bda_block60, m_Bda_blockMinus20;
+    //    BdaStruct m_Bda_block, m_BdaPt100_80Om, m_BdaPt100_120Om;
     ValueModel *m_VModel;
 
     TuneKIV(int bacnum, S2ConfigType *, QObject *parent = nullptr);
     QWidget *BacWidget();
+    QWidget *BdaWidget();
 
 private slots:
     void SetDefCoefs();

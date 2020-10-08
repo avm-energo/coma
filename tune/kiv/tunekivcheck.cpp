@@ -16,9 +16,7 @@ TuneKIVCheck::TuneKIVCheck(ConfigKIV *ckiv, TuneKIV *kiv, QWidget *parent) : Abs
     SetupUI();
 }
 
-void TuneKIVCheck::SetupUI()
-{
-}
+void TuneKIVCheck::SetupUI() { }
 
 void TuneKIVCheck::SetLbls()
 {
@@ -27,6 +25,7 @@ void TuneKIVCheck::SetLbls()
     lbls.append("3. Задание режима конфигурирования модуля...");
     lbls.append("4. Установка новой конфигурации...");
     lbls.append("5. Отображение схемы подключения...");
+    lbls.append("6. Ожидание 15 с...");
 }
 
 void TuneKIVCheck::SetPf()
@@ -42,21 +41,15 @@ void TuneKIVCheck::SetPf()
     pf[lbls.at(count++)] = func;
     func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&TuneKIVCheck::showScheme);
     pf[lbls.at(count++)] = func;
+    func = reinterpret_cast<Error::Msg (AbstractTuneDialog::*)()>(&AbstractTuneDialog::Wait15Seconds);
+    pf[lbls.at(count++)] = func;
 }
 
-void TuneKIVCheck::FillBac(int bacnum)
-{
-    Q_UNUSED(bacnum)
-}
+void TuneKIVCheck::FillBac(int bacnum) { Q_UNUSED(bacnum) }
 
-void TuneKIVCheck::FillBackBac(int bacnum)
-{
-    Q_UNUSED(bacnum)
-}
+void TuneKIVCheck::FillBackBac(int bacnum) { Q_UNUSED(bacnum) }
 
-void TuneKIVCheck::GetBdAndFill()
-{
-}
+void TuneKIVCheck::GetBdAndFill() { }
 
 Error::Msg TuneKIVCheck::SaveWorkConfig(int configblocknum)
 {
@@ -68,19 +61,11 @@ Error::Msg TuneKIVCheck::SaveWorkConfig(int configblocknum)
     return Error::Msg::NoError;
 }
 
-int TuneKIVCheck::ReadAnalogMeasurements()
-{
-    return 0;
-}
+int TuneKIVCheck::ReadAnalogMeasurements() { return 0; }
 
-void TuneKIVCheck::SetDefCoefs()
-{
-}
+void TuneKIVCheck::SetDefCoefs() { }
 
-Error::Msg TuneKIVCheck::setSMode2()
-{
-    return Commands::SetMode(0x02);
-}
+Error::Msg TuneKIVCheck::setSMode2() { return Commands::SetMode(0x02); }
 
 Error::Msg TuneKIVCheck::setNewConfig()
 {

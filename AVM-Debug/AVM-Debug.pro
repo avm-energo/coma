@@ -38,6 +38,7 @@ SOURCES += \
     ../module/alarm.cpp \
     ../module/warn.cpp \
     ../startup/startupkdvdialog.cpp \
+    ../tune/datablock.cpp \
     ../tune/kiv/tunekivmain.cpp \
     ../tune/kiv/tunekivtemp_20.cpp \
     avmdebug.cpp \
@@ -129,6 +130,7 @@ HEADERS += \
     ../module/alarm.h \
     ../module/warn.h \
     ../startup/startupkdvdialog.h \
+    ../tune/datablock.h \
     ../tune/kiv/tunekivmain.h \
     ../tune/kiv/tunekivtemp_20.h \
     avmdebug.h \

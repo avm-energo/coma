@@ -46,7 +46,7 @@ void TuneKIVDialog::SetupUI()
     QVBoxLayout *lyout = new QVBoxLayout;
 
     lyout->addLayout(newTunePBLayout("1. Проверка правильности измерения входных сигналов", [this]() {
-        TuneKIVCheck *check = new TuneKIVCheck(TKIV);
+        TuneKIVCheck *check = new TuneKIVCheck(CKIV, TKIV);
         check->exec();
     }));
     lyout->addLayout(newTunePBLayout("2. Основная регулировка", [this]() {

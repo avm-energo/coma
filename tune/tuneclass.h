@@ -12,12 +12,9 @@ class TuneClass : public QObject
 public:
     TuneClass(int bacnum, S2ConfigType *S2Config, QObject *parent = nullptr);
     virtual QWidget *BacWidget() = 0;
-    void update();
-    void getFromWidget();
     S2ConfigType *getS2Config();
 
 private:
-    ValueModel *m_VModel;
     int m_BacNum;
     S2ConfigType *S2Config;
 

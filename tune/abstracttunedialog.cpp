@@ -28,9 +28,7 @@ AbstractTuneDialog::AbstractTuneDialog(QWidget *parent) : UDialog(parent)
     m_ConfigCounter = 0;
 }
 
-AbstractTuneDialog::~AbstractTuneDialog()
-{
-}
+AbstractTuneDialog::~AbstractTuneDialog() { }
 
 QWidget *AbstractTuneDialog::TuneUI()
 {
@@ -181,6 +179,8 @@ void AbstractTuneDialog::WaitNSeconds(int Seconds, bool isAllowedToStop)
     w->Start();
     el.exec();
 }
+
+void AbstractTuneDialog::Wait15Seconds() { WaitNSeconds(15, false); }
 
 void AbstractTuneDialog::ProcessTune()
 {
@@ -359,10 +359,7 @@ void AbstractTuneDialog::ReadTuneCoefsByBac(int bacnum)
     }
 }
 
-Error::Msg AbstractTuneDialog::LoadTuneSequenceFile()
-{
-    return Error::Msg::NoError;
-}
+Error::Msg AbstractTuneDialog::LoadTuneSequenceFile() { return Error::Msg::NoError; }
 
 Error::Msg AbstractTuneDialog::CheckCalibrStep()
 {
@@ -386,9 +383,7 @@ Error::Msg AbstractTuneDialog::CheckCalibrStep()
     return Error::Msg::NoError;
 }
 
-void AbstractTuneDialog::SaveTuneSequenceFile()
-{
-}
+void AbstractTuneDialog::SaveTuneSequenceFile() { }
 
 Error::Msg AbstractTuneDialog::SaveWorkConfig(int configblocknum)
 {
@@ -553,10 +548,7 @@ void AbstractTuneDialog::LoadFromFile()
     QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }
 
-void AbstractTuneDialog::Good()
-{
-    SetMeasurementEnabled(false);
-}
+void AbstractTuneDialog::Good() { SetMeasurementEnabled(false); }
 
 void AbstractTuneDialog::NoGood()
 {
@@ -570,9 +562,7 @@ void AbstractTuneDialog::CancelTune()
     emit Finished();
 }
 
-void AbstractTuneDialog::ReadAllTuneCoefs()
-{
-}
+void AbstractTuneDialog::ReadAllTuneCoefs() { }
 
 void AbstractTuneDialog::MeasTimerTimeout()
 {
