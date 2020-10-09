@@ -372,7 +372,7 @@ void Coma::StartWork()
     auto const &board = Board::GetInstance();
     if (board.connectionState() != Board::ConnectionState::Closed)
         return;
-    AlarmStateAllDialog = new AlarmStateAll(this);
+    AlarmStateAllDialog = new AlarmStateAll(AlarmW);
     if (!Reconnect)
     {
         QEventLoop loop;
@@ -521,11 +521,11 @@ void Coma::setupQConnections()
 
             corDialog = new CorDialogKTF(this);
 
-            WarnAlarmKTFDialog = new WarnAlarmKTF(Alarm);
+            WarnAlarmKTFDialog = new WarnAlarmKTF(Alarm, AlarmW);
             connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKTFDialog, &QDialog::show);
             connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKTFDialog, &AbstractWarnAlarm::Update);
 
-            AvarAlarmKTFDialog = new AvarAlarmKTF(Alarm);
+            AvarAlarmKTFDialog = new AvarAlarmKTF(Alarm, AlarmW);
             connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKTFDialog, &QDialog::show);
             connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKTFDialog, &AbstractAvarAlarm::Update);
 
@@ -1137,6 +1137,7 @@ void Coma::DisconnectAndClear()
         if (S2Config)
         {
             S2Config->clear();
+            ///вылетает при разрыве связи
             delete S2Config;
         }
         if (S2ConfigForTune)

@@ -27,7 +27,7 @@ ETabBar::ETabBar(QWidget *parent) : QTabBar(parent)
 QSize ETabBar::tabSizeHint(int index) const
 {
     Q_UNUSED(index)
-    return QSize(150, 40);
+    return QSize(200, 40);
     //        QSize s = QTabBar::tabSizeHint(index);
     //        s.transpose();
     //        return s;

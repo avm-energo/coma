@@ -246,8 +246,8 @@ bool WDFunc::SetCBColor(QWidget *w, const QString &cbname, const QString &color)
 QDoubleSpinBox *WDFunc::NewSPB(
     QWidget *parent, const QString &spbname, double min, double max, int decimals, const QString &spbcolor)
 {
-    QDoubleSpinBox *dsb = new QDoubleSpinBox(parent);
-    // QDoubleSpinBox *dspbls = new QDoubleSpinBox(parent);
+    EDoubleSpinBox *dsb = new EDoubleSpinBox(parent);
+
     double step = qPow(0.1f, decimals);
     dsb->setObjectName(spbname);
     dsb->setSingleStep(step);

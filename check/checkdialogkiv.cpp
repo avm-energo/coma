@@ -342,12 +342,12 @@ void CheckDialogKIV::SetWarnAlarmColor(QList<bool> WarnAlarm)
         if ((i >= 10) && (i < 13))
         {
             WDFunc::SetLBLTColor(
-                this, QString::number(2429 + i - 10), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+                this, QString::number(2429 + i - 10), (WarnAlarm[i] == true) ? Colors::ACONFYCLR : Colors::ACONFOCLR);
         }
         else if ((i >= 13) && (i < 16))
         {
             WDFunc::SetLBLTColor(
-                this, QString::number(2426 + i - 13), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+                this, QString::number(2426 + i - 13), (WarnAlarm[i] == true) ? Colors::ACONFYCLR : Colors::ACONFOCLR);
         }
         else if (i == 17)
         {
