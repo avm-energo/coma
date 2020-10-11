@@ -286,6 +286,8 @@ void StartupKDVDialog::ReadFromFile()
     }
 
     memcpy(&Bd9Block->Age, &(ba.data()[0]), sizeof(float));
+    memcpy(&Bd9Block->MotHnorm, &(ba.data()[sizeof(*WBd7Block)]), sizeof(float));
+    memcpy(&Bd9Block->MotHover, &(ba.data()[sizeof(*WBd7Block)+sizeof(float)]), sizeof(float));
     FillCor();
     QMessageBox::information(this, "Внимание", "Загрузка прошла успешно!");
 }

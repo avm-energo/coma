@@ -6,6 +6,7 @@
 #include "error.h"
 #include "stdfunc.h"
 
+#include <QDebug>
 #include <QMessageBox>
 
 quint32 ModuleBSI::MType = 0;
@@ -21,18 +22,16 @@ Error::Msg ModuleBSI::SetupBSI()
 {
     if (Commands::GetBsi(ModuleBsi) != Error::Msg::NoError)
         return Error::Msg::GeneralError;
-
+    auto *typeb = &Config::ModuleBaseBoards().value(ModuleBsi.MTypeB);
+    auto *typem = &Config::ModuleMezzanineBoards().value(ModuleBsi.MTypeM);
     if ((ModuleBsi.MTypeB << 8) >= 0xA000 || (Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].Hex) >= 0x00A0)
     {
-        quint32 Type = Config::ModuleBaseBoards()[ModuleBsi.MTypeB << 8].Hex
-            + Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].Hex;
-
+        quint32 Type = (typeb->Hex << 8) + typem->Hex;
         ModuleTypeString = Config::ModuleBoards()[Type];
     }
     else
     {
-        ModuleTypeString = Config::ModuleBaseBoards()[ModuleBsi.MTypeB << 8].TextString
-            + Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].TextString;
+        ModuleTypeString = typeb->TextString + typem->TextString;
     }
 
     if (!IsKnownModule())
@@ -87,14 +86,11 @@ bool ModuleBSI::IsKnownModule()
         || (ModuleBsi.SerialNum == 0xFFFFFFFF)) // серийный номер не задан, выдадим предупреждение
         return false;
     // проверка известных типов плат
-    if (Config::ModuleBaseBoards().keys().contains(ModuleBsi.MTypeB << 8))
+    if (Config::ModuleBaseBoards().keys().contains(ModuleBsi.MTypeB))
     {
         if (ModuleBsi.MTypeM != Config::MTM_00)
         {
-            if (Config::ModuleMezzanineBoards().keys().contains(ModuleBsi.MTypeM))
-                return true;
-            else
-                return false;
+            return Config::ModuleMezzanineBoards().keys().contains(ModuleBsi.MTypeM);
         }
         return true;
     }

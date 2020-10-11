@@ -345,12 +345,12 @@ void CheckKIVDialog::SetWarnColor(int position, bool value)
     if ((position >= 10) && (position < 13))
     {
         WDFunc::SetLBLTColor(
-            this, QString::number(2429 + position - 10), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+            this, QString::number(2429 + position - 10), (value) ? Colors::ACONFYCLR : Colors::ACONFOCLR);
     }
     else if ((position >= 13) && (position < 16))
     {
         WDFunc::SetLBLTColor(
-            this, QString::number(2426 + position - 13), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+            this, QString::number(2426 + position - 13), (value) ? Colors::ACONFYCLR : Colors::ACONFOCLR);
     }
     else if (position == 17)
     {
