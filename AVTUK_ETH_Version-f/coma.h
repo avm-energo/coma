@@ -119,7 +119,6 @@ public:
         // clang-format on
         return sl;
     }
-    friend void registerForDeviceNotification(Coma *);
 
     Coma(QWidget *parent = nullptr);
     ~Coma();
@@ -130,17 +129,18 @@ public:
     QWidget *MainInfoWidget();
 
     QWidget *Least();
-    Error::Msg CheckPassword();
+    // Error::Msg CheckPassword();
     void Disconnect();
+    void Connect();
 
 signals:
     void CloseConnectDialog();
-    void PasswordChecked();
+    // void PasswordChecked();
     void ClearBsi();
     void Finished();
     void StopCommunications();
-    void ConnectMes(QString *);
-    void stateChanged(bool);
+    // void ConnectMes(QString *);
+    // void stateChanged(bool);
 
 public slots:
     void DisconnectAndClear();
@@ -160,7 +160,7 @@ private slots:
     void Fill();
     void FillBSI(IEC104Thread::BS104Signals *sig);
     void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
-    void PasswordCheck(QString psw);
+    // void PasswordCheck(QString psw);
     void SetProgressBar1Size(int size);
     void SetProgressBar1(int cursize);
     void SetProgressBar2Size(int size);
@@ -236,8 +236,8 @@ private:
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 
     void addConfTab(ETabWidget *MainTW, QString str);
-
-    void setupConnections();
+    // Дурацкое название
+    void setupQConnections();
 
     void setupDialogs(ETabWidget *MainTW);
 
