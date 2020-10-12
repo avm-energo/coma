@@ -35,6 +35,7 @@ SOURCES += \
     ../config/confktfdialog.cpp \
     ../dialogs/fwuploaddialog.cpp \
     ../gen/udialog.cpp \
+    ../models/datadelegate.cpp \
     ../module/alarm.cpp \
     ../module/warn.cpp \
     ../startup/startupkdvdialog.cpp \
@@ -85,7 +86,6 @@ SOURCES += \
     ../iec104/iec104.cpp \
     ../modbus/modbus.cpp \
     ../modbus/serialport.cpp \
-    ../models/checkdelegate.cpp \
     ../models/etableitem.cpp \
     ../models/etablemodel.cpp \
     ../models/valuemodel.cpp \
@@ -127,6 +127,7 @@ HEADERS += \
     ../config/confktfdialog.h \
     ../dialogs/fwuploaddialog.h \
     ../gen/udialog.h \
+    ../models/datadelegate.h \
     ../module/alarm.h \
     ../module/warn.h \
     ../startup/startupkdvdialog.h \
@@ -177,7 +178,6 @@ HEADERS += \
     ../iec104/iec104.h \
     ../modbus/modbus.h \
     ../modbus/serialport.h \
-    ../models/checkdelegate.h \
     ../models/etableitem.h \
     ../models/etablemodel.h \
     ../models/valuemodel.h \

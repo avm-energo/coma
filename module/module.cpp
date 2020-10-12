@@ -22,14 +22,6 @@
 Module::Module(QObject *parent) : QObject(parent)
 {
     m_Dialogs.clear();
-    //    m_CheckDialogs.clear();
-    //    m_TuneDialogs.clear();
-    //    m_confDialogMez = nullptr;
-    //    m_confDialogBase = nullptr;
-    //    m_checkDialogMez = nullptr;
-    //    m_checkDialogBase = nullptr;
-    //    m_tuneDialogMez = nullptr;
-    //    m_tuneDialogBase = nullptr;
     m_oldTabIndex = m_currentTabIndex = 0;
 }
 
@@ -82,21 +74,20 @@ Module *Module::createModule(QTimer *updateTimer)
         }
         case Board::DeviceModel::KTF:
         {
-            /*            ConfigKTF *CKTF = new ConfigKTF(s2Config);
-                        //            TuneKTF *TKTF = new TuneKTF(0, s2Config);
-                        m->addDialogToList(new ConfKTFDialog(s2Config), "conf1");
-                        CheckKTFDialog *cdktf = new CheckKTFDialog;
-                        m->addDialogToList(new CheckKTFDialog);
-                        m->addDialogToList(new TuneKTFDialog(CKTF, TKTF));
-                        m->addDialogToList(new StartupKTFDialog, "Старение изоляции");
-                HarmDialog = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
-                connect(BdaTimer, &QTimer::timeout, HarmDialog, &AbstractCheckDialog::USBUpdate);
-                "Гармоники"
-                        m->m_Warn = new WarnKTF;
-                        m->m_Alarm = new AlarmKTF;
-                        connect(m->m_Warn, &Warn::updateWarn, cdktf, &AbstractCheckDialog::SetWarnColor);
-                        connect(m->m_Alarm, &Alarm::updateAlarm, cdktf, &AbstractCheckDialog::SetAlarmColor); */
-            break;
+            ConfigKTF *CKTF = new ConfigKTF(s2Config);
+            //            TuneKTF *TKTF = new TuneKTF(0, s2Config);
+            m->addDialogToList(new ConfKTFDialog(s2Config), "Конфигурирование", "conf1");
+            CheckKTFDialog *cdktf = new CheckKTFDialog;
+            m->addDialogToList(new CheckKTFDialog);
+            m->addDialogToList(new TuneKTFDialog(CKTF, TKTF));
+            m->addDialogToList(new StartupKTFDialog, "Старение изоляции");
+            HarmDialog = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
+            connect(BdaTimer, &QTimer::timeout, HarmDialog, &AbstractCheckDialog::USBUpdate);
+            "Гармоники" m->m_Warn = new WarnKTF;
+            m->m_Alarm = new AlarmKTF;
+            connect(m->m_Warn, &Warn::updateWarn, cdktf, &AbstractCheckDialog::SetWarnColor);
+            connect(m->m_Alarm, &Alarm::updateAlarm, cdktf, &AbstractCheckDialog::SetAlarmColor);
+            * / break;
         }
         case Board::DeviceModel::KDV:
         {
@@ -198,15 +189,9 @@ void Module::addDialogToList(UDialog *dlg, const QString &caption, const QString
     m_Dialogs.append(dlg);
 }
 
-Alarm *Module::getAlarm()
-{
-    return m_Alarm;
-}
+Alarm *Module::getAlarm() { return m_Alarm; }
 
-Warn *Module::getWarn()
-{
-    return m_Warn;
-}
+Warn *Module::getWarn() { return m_Warn; }
 
 void Module::parentTWTabClicked(int index)
 {

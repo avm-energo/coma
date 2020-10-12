@@ -5,7 +5,7 @@
 #include "../gen/files.h"
 #include "../gen/modulebsi.h"
 #include "../gen/stdfunc.h"
-#include "../models/checkdelegate.h"
+#include "../models/datadelegate.h"
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 #include "tunekivcheck.h"

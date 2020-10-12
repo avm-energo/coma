@@ -1,8 +1,6 @@
 #include "valuemodel.h"
 
-ValueModel::ValueModel(QObject *parent) : ETableModel(parent)
-{
-}
+ValueModel::ValueModel(QObject *parent) : ETableModel(parent) { }
 
 void ValueModel::setValueData(const QModelIndex &index, void *valuePtr)
 {
@@ -15,7 +13,7 @@ void ValueModel::updateModel()
     for (QMap<QPersistentModelIndex *, void *>::iterator it = m_valuePtrMap.begin(); it != m_valuePtrMap.end(); ++it)
     {
         QPersistentModelIndex *pindex = it.key();
-        float *value = static_cast<float *>(it.value());
+        QVariant *value = static_cast<QVariant *>(it.value());
         setData(*pindex, *value, Qt::EditRole);
     }
 }
@@ -25,7 +23,7 @@ void ValueModel::updateFromModel()
     for (QMap<QPersistentModelIndex *, void *>::iterator it = m_valuePtrMap.begin(); it != m_valuePtrMap.end(); ++it)
     {
         QPersistentModelIndex *pindex = it.key();
-        float *value = static_cast<float *>(it.value());
-        *value = data(*pindex, Qt::DisplayRole).toFloat();
+        QVariant *value = static_cast<QVariant *>(it.value());
+        *value = data(*pindex, Qt::DisplayRole);
     }
 }

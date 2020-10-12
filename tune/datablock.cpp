@@ -24,7 +24,7 @@
  * */
 
 #include "datablock.h"
-#include "../models/checkdelegate.h"
+#include "../models/datadelegate.h"
 #include "../usb/commands.h"
 #include "../widgets/wd_func.h"
 #include <QGroupBox>
@@ -52,7 +52,7 @@ void DataBlock::addNewItem(const QString &name, void *ptr, const QString &toolti
     m_dataList.append(dd);
     m_VModel->setData(m_VModel->index(m_curModelRow, m_curModelColumn++), name);
     m_VModel->setData(
-        m_VModel->index(m_curModelRow, m_curModelColumn), CheckDelegate::CheckStyles::OUTVALUE, Qt::UserRole);
+        m_VModel->index(m_curModelRow, m_curModelColumn), DataDelegate::DataOutputFormat::OUTVALUEINT, Qt::UserRole);
     m_VModel->setData(m_VModel->index(m_curModelRow, m_curModelColumn), tooltip, Qt::ToolTipRole);
     m_VModel->setValueData(m_VModel->index(m_curModelRow, m_curModelColumn++), ptr);
     if (m_curModelColumn > MAX_VALUEMODEL_COLUMNS)
@@ -68,7 +68,7 @@ void DataBlock::setWidget()
     QVBoxLayout *vlyout = new QVBoxLayout;
     QGroupBox *gb = new QGroupBox(m_blockName);
     ETableView *tv = new ETableView;
-    CheckDelegate *chdg = new CheckDelegate;
+    DataDelegate *chdg = new DataDelegate;
     tv->setItemDelegate(chdg);
     tv->setModel(m_VModel);
     vlyout->addWidget(tv);
