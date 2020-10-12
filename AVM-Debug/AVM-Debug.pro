@@ -34,12 +34,12 @@ SOURCES += \
     ../config/confkdvdialog.cpp \
     ../config/confktfdialog.cpp \
     ../dialogs/fwuploaddialog.cpp \
+    ../gen/datablock.cpp \
     ../gen/udialog.cpp \
     ../models/datadelegate.cpp \
     ../module/alarm.cpp \
     ../module/warn.cpp \
     ../startup/startupkdvdialog.cpp \
-    ../tune/datablock.cpp \
     ../tune/kiv/tunekivmain.cpp \
     ../tune/kiv/tunekivtemp_20.cpp \
     avmdebug.cpp \
@@ -126,12 +126,12 @@ HEADERS += \
     ../config/confkdvdialog.h \
     ../config/confktfdialog.h \
     ../dialogs/fwuploaddialog.h \
+    ../gen/datablock.h \
     ../gen/udialog.h \
     ../models/datadelegate.h \
     ../module/alarm.h \
     ../module/warn.h \
     ../startup/startupkdvdialog.h \
-    ../tune/datablock.h \
     ../tune/kiv/tunekivmain.h \
     ../tune/kiv/tunekivtemp_20.h \
     avmdebug.h \
