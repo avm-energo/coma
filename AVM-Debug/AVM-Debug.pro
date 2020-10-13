@@ -37,6 +37,7 @@ SOURCES += \
     ../gen/datablock.cpp \
     ../gen/udialog.cpp \
     ../models/datadelegate.cpp \
+    ../models/valueitem.cpp \
     ../module/alarm.cpp \
     ../module/warn.cpp \
     ../startup/startupkdvdialog.cpp \
@@ -129,6 +130,7 @@ HEADERS += \
     ../gen/datablock.h \
     ../gen/udialog.h \
     ../models/datadelegate.h \
+    ../models/valueitem.h \
     ../module/alarm.h \
     ../module/warn.h \
     ../startup/startupkdvdialog.h \

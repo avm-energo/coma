@@ -30,41 +30,25 @@
 #include <QGroupBox>
 #include <QVBoxLayout>
 
-DataBlock::DataBlock(void *block, const QString &blockname, int blocksize, DataBlock::DataBlockTypes blocktype,
-    int blocknum, QWidget *parent)
-    : QWidget(parent)
+DataBlock::DataBlock(const BlockDescriptionStruct &bds, QWidget *parent) : QWidget(parent)
 {
-    m_blockNum = blocknum;
-    m_blockType = blocktype;
-    m_block = block;
-    m_blockSize = blocksize;
-    m_blockName = blockname;
+    m_blockDescription = bds;
+    //    m_blockNum = blocknum;
+    //    m_blockType = blocktype;
+    //    m_block = block;
+    //    m_blockSize = blocksize;
+    //    m_blockName = blockname;
     m_VModel = new ValueModel;
-    m_curModelColumn = m_curModelRow = 0;
+    //    m_curModelColumn = m_curModelRow = 0;
 }
 
-void DataBlock::addNewItem(const DataDescription &dd)
-{
-    m_dataList.append(dd);
-    m_VModel->setData(m_VModel->index(m_curModelRow, m_curModelColumn++), dd.name);
-    m_VModel->setData(
-        m_VModel->index(m_curModelRow, m_curModelColumn), DataFormat::OUTVALUEINT, ETableModel::DataFormatRole);
-    m_VModel->setData(
-        m_VModel->index(m_curModelRow, m_curModelColumn), qobject_cast<QVariant>(dd.adddata), ETableModel::AdditionalDataRole);
-    m_VModel->setData(m_VModel->index(m_curModelRow, m_curModelColumn), dd.tooltip, Qt::ToolTipRole);
-    m_VModel->setValueData(m_VModel->index(m_curModelRow, m_curModelColumn++), dd.dataptr);
-    if (m_curModelColumn > MAX_VALUEMODEL_COLUMNS)
-    {
-        m_curModelRow++;
-        m_curModelColumn = 0;
-    }
-}
+void DataBlock::setModel(const QList<ValueItem *> &dd, int columnsnumber) { m_VModel->setModel(dd, columnsnumber); }
 
 void DataBlock::setWidget()
 {
     QVBoxLayout *lyout = new QVBoxLayout;
     QVBoxLayout *vlyout = new QVBoxLayout;
-    QGroupBox *gb = new QGroupBox(m_blockName);
+    QGroupBox *gb = new QGroupBox(m_blockDescription.blockname);
     ETableView *tv = new ETableView;
     DataDelegate *chdg = new DataDelegate;
     tv->setItemDelegate(chdg);
@@ -81,13 +65,14 @@ void DataBlock::updateWidget() { m_VModel->updateFromModel(); }
 
 Error::Msg DataBlock::writeBlockToModule(bool update)
 {
-    switch (m_blockType)
+    switch (m_blockDescription.blocktype)
     {
     case DataBlockTypes::BacBlock:
     {
         if (update)
             updateModel();
-        if (Commands::WriteBac(m_blockNum, &m_block, m_blockSize) != Error::Msg::NoError)
+        if (Commands::WriteBac(m_blockDescription.blocknum, &m_blockDescription.block, m_blockDescription.blocksize)
+            != Error::Msg::NoError)
             return Error::Msg::GeneralError;
         break;
     }
@@ -109,11 +94,12 @@ Error::Msg DataBlock::writeBlockToModule(bool update)
 
 Error::Msg DataBlock::readBlockFromModule(bool update)
 {
-    switch (m_blockType)
+    switch (m_blockDescription.blocktype)
     {
     case DataBlockTypes::BacBlock:
     {
-        if (Commands::GetBac(m_blockNum, &m_block, m_blockSize) != Error::Msg::NoError)
+        if (Commands::GetBac(m_blockDescription.blocknum, &m_blockDescription.block, m_blockDescription.blocksize)
+            != Error::Msg::NoError)
             return Error::Msg::GeneralError;
         if (update)
             updateWidget();
@@ -121,7 +107,8 @@ Error::Msg DataBlock::readBlockFromModule(bool update)
     }
     case DataBlockTypes::BdBlock:
     {
-        if (Commands::GetBd(m_blockNum, &m_block, m_blockSize) != Error::Msg::NoError)
+        if (Commands::GetBd(m_blockDescription.blocknum, &m_blockDescription.block, m_blockDescription.blocksize)
+            != Error::Msg::NoError)
             return Error::Msg::GeneralError;
         if (update)
             updateWidget();
@@ -129,7 +116,8 @@ Error::Msg DataBlock::readBlockFromModule(bool update)
     }
     case DataBlockTypes::BdaBlock:
     {
-        if (Commands::GetBda(m_blockNum, &m_block, m_blockSize) != Error::Msg::NoError)
+        if (Commands::GetBda(m_blockDescription.blocknum, &m_blockDescription.block, m_blockDescription.blocksize)
+            != Error::Msg::NoError)
             return Error::Msg::GeneralError;
         if (update)
             updateWidget();

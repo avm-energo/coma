@@ -14,32 +14,32 @@ void DataDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
 {
     QStyledItemDelegate::paint(painter, option, index);
     painter->save();
-    DataBlock::DataFormat dataFormat = static_cast<DataBlock::DataFormat>(index.data(Qt::UserRole).toInt());
-    if (dataFormat != DataBlock::SIMPLE_CELL)
+    ValueItem *item = qvariant_cast<ValueItem *>(index.data(Qt::DisplayRole));
+    if (item->format() != ValueItem::SIMPLE_CELL)
     {
         // ohh it's my column
         // better do something creative
         QString textToDisplay;
-        switch (dataFormat)
+        switch (item->format())
         {
-        case DataBlock::OUTVALUEINT:
+        case ValueItem::OUTVALUEINT:
             textToDisplay = QString::number(index.data().toInt());
             break;
-        case DataBlock::OUTVALUEHEX:
+        case ValueItem::OUTVALUEHEX:
             textToDisplay = QString::number(index.data().toUInt(), 16);
             break;
-        case DataBlock::OUTVALUEFLOAT0:
-        case DataBlock::OUTVALUEFLOAT1:
-        case DataBlock::OUTVALUEFLOAT2:
-        case DataBlock::OUTVALUEFLOAT3:
-        case DataBlock::OUTVALUEFLOAT4:
-        case DataBlock::OUTVALUEFLOAT5:
-            textToDisplay = QString::number(index.data().toFloat(), 'g', dataFormat - 2);
+        case ValueItem::OUTVALUEFLOAT0:
+        case ValueItem::OUTVALUEFLOAT1:
+        case ValueItem::OUTVALUEFLOAT2:
+        case ValueItem::OUTVALUEFLOAT3:
+        case ValueItem::OUTVALUEFLOAT4:
+        case ValueItem::OUTVALUEFLOAT5:
+            textToDisplay = QString::number(index.data().toFloat(), 'g', item->format() - 2);
             break;
-        case DataBlock::OUTVALUEDOUBLE:
+        case ValueItem::OUTVALUEDOUBLE:
             textToDisplay = QString::number(index.data().toDouble(), 'e', 4);
             break;
-        case DataBlock::OUTVALUESTRING:
+        case ValueItem::OUTVALUESTRING:
         default:
             textToDisplay = index.data().toString();
             break;
@@ -63,27 +63,28 @@ void DataDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
 QWidget *DataDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     Q_UNUSED(option);
-    if (getStyleAndFormat(index) != Error::Msg::NoError)
-        return nullptr;
+    ValueItem *item = qvariant_cast<ValueItem *>(index.data(Qt::DisplayRole));
+    //    if (getStyleAndFormat(index) != Error::Msg::NoError)
+    //        return nullptr;
     QVBoxLayout *ml = new QVBoxLayout;
     ml->setContentsMargins(0, 0, 0, 0);
     QWidget *wdgt = new QWidget(parent);
     wdgt->setContentsMargins(0, 0, 0, 0);
-    switch (m_delegateType)
+    switch (item->style())
     {
-    case DataBlock::DataStyles::ComboBox:
+    case ValueItem::DataStyles::ComboBox:
     {
-        QStringList *list = qvariant_cast<QStringList *>(index.data(ValueModel::AdditionalDataRole));
+        QStringList *list = static_cast<QStringList *>(item->addData());
         ml->addWidget(WDFunc::NewCB(parent, "", *list));
         break;
     }
-    case DataBlock::DataStyles::Label:
+    case ValueItem::DataStyles::Label:
         return nullptr;
-    case DataBlock::DataStyles::LineEdit:
+    case ValueItem::DataStyles::LineEdit:
         ml->addWidget(WDFunc::NewLE(parent, ""));
         break;
-    case DataBlock::DataStyles::SpinBox:
-        DataBlock::SpbDataStyleAdditionalDataClass *spbadd = qvariant_cast<DataBlock::SpbDataStyleAdditionalDataClass *>(index.data(ValueModel::AdditionalDataRole));
+    case ValueItem::DataStyles::SpinBox:
+        SpbDataStyleAdditionalDataClass *spbadd = static_cast<SpbDataStyleAdditionalDataClass *>(item->addData());
         ml->addWidget(WDFunc::NewSPB(parent, "", spbadd->min, spbadd->max, spbadd->decimals));
         break;
     }
@@ -91,21 +92,18 @@ QWidget *DataDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem 
     return wdgt;
 }
 
-void DataDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
-{
+void DataDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const { }
 
-}
-
-Error::Msg DataDelegate::getStyleAndFormat(const QModelIndex &index) const
-{
-    QString links = index.data(ValueModel::DataFormatRole).toString();
-    QStringList tmpsl = links.split(".");
-    if (!tmpsl.size())
-        return Error::Msg::GeneralError;
-    m_delegateType = static_cast<DataBlock::DataStyles>(tmpsl.at(0).toInt());
-    tmpsl.removeAt(0);
-    if (!tmpsl.size())
-        return Error::Msg::GeneralError;
-    m_dataFormat = static_cast<DataBlock::DataFormat>(tmpsl.at(0).toInt());
-    return Error::Msg::NoError;
-}
+// Error::Msg DataDelegate::getStyleAndFormat(const QModelIndex &index) const
+//{
+//    QString links = index.data(ValueModel::DataFormatRole).toString();
+//    QStringList tmpsl = links.split(".");
+//    if (!tmpsl.size())
+//        return Error::Msg::GeneralError;
+//    m_delegateType = static_cast<ValueItem::DataStyles>(tmpsl.at(0).toInt());
+//    tmpsl.removeAt(0);
+//    if (!tmpsl.size())
+//        return Error::Msg::GeneralError;
+//    m_dataFormat = static_cast<ValueItem::DataFormat>(tmpsl.at(0).toInt());
+//    return Error::Msg::NoError;
+//}

@@ -18,10 +18,10 @@ public:
     void setEditorData(QWidget *editor, const QModelIndex &index) const override;
 
 private:
-    mutable DataBlock::DataStyles m_delegateType;
-    mutable DataBlock::DataFormat m_dataFormat;
+    //    mutable DataBlock::DataStyles m_delegateType;
+    //    mutable DataBlock::DataFormat m_dataFormat;
 
-    Error::Msg getStyleAndFormat(const QModelIndex &index) const;
+    //    Error::Msg getStyleAndFormat(const QModelIndex &index) const;
 };
 
 #endif // CHECKDELEGATE_H

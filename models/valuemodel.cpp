@@ -1,56 +1,46 @@
 #include "valuemodel.h"
 
-ValueModel::ValueModel(QObject *parent) : ETableModel(parent) { }
+ValueModel::ValueModel(QObject *parent) : QAbstractTableModel(parent) { }
+
+QVariant ValueModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    Q_UNUSED(section)
+    Q_UNUSED(orientation)
+    Q_UNUSED(role)
+    return QVariant();
+}
+
+bool ValueModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
+{
+    Q_UNUSED(section)
+    Q_UNUSED(orientation)
+    Q_UNUSED(value)
+    Q_UNUSED(role)
+    return true;
+}
 
 QVariant ValueModel::data(const QModelIndex &index, int role) const
 {
     if (index.isValid())
     {
-        int row = index.row();
-        int column = index.column();
-        if ((row < maindata.size()) && (column < hdr.size()))
+        switch (role)
         {
-            switch (role)
+        case Qt::DisplayRole:
+        {
+            int row = index.row();
+            int column = index.column();
+            if (row < m_data.size())
             {
-            case Qt::DisplayRole:
-            case Qt::EditRole:
-                switch (maindata.at(row)->uData(column).toInt()) {
-                case DataBlock::OUTVALUEINT:
-                    quint32 *value = maindata.at(row)->data(column);
-                    break;
-                case DataBlock::OUTVALUEHEX:
-                    textToDisplay = QString::number(index.data().toUInt(), 16);
-                    break;
-                case DataBlock::OUTVALUEFLOAT0:
-                case DataBlock::OUTVALUEFLOAT1:
-                case DataBlock::OUTVALUEFLOAT2:
-                case DataBlock::OUTVALUEFLOAT3:
-                case DataBlock::OUTVALUEFLOAT4:
-                case DataBlock::OUTVALUEFLOAT5:
-                    textToDisplay = QString::number(index.data().toFloat(), 'g', dataFormat - 2);
-                    break;
-                case DataBlock::OUTVALUEDOUBLE:
-                    textToDisplay = QString::number(index.data().toDouble(), 'e', 4);
-                    break;
-                case DataBlock::OUTVALUESTRING:
-                default:
-                    textToDisplay = index.data().toString();
-                    break;
+                QVector<ValueItem *> vv = m_data.at(row);
+                if (column < vv.size())
+                {
+                    QVariant value;
+                    value.setValue(vv.at(column));
+                    return value;
                 }
-                return maindata.at(row)->data(column);
-            case Qt::FontRole:
-                return QVariant::fromValue(QFont(maindata.at(row)->font(column)));
-            case Qt::ForegroundRole:
-                return QVariant::fromValue(QColor(maindata.at(row)->color(column)));
-            case Qt::DecorationRole:
-                return QVariant::fromValue(QIcon(maindata.at(row)->icon(column)));
-            case Qt::TextAlignmentRole:
-                return maindata.at(row)->TextAlignment(column);
-            case DataFormatRole:
-                return maindata.at(row)->uData(column);
-            case AdditionalDataRole:
-                return qobject_cast<QVariant>(maindata.at(row)->aData(column));
             }
+        }
+        break;
         }
     }
     return QVariant();
@@ -60,42 +50,62 @@ bool ValueModel::setData(const QModelIndex &index, const QVariant &value, int ro
 {
     if (index.isValid() && value.isValid())
     {
+        int row = index.row();
+        int column = index.column();
         switch (role)
         {
+        case Qt::DisplayRole:
         case Qt::EditRole:
-            if (index.column() < hdr.size())
-            {
-                maindata.last()->setData(index.column(), value.toString());
-                // maindata.at(index.row())->setData(index.column(), value.toString()); // пишем само значение
-                return true;
-            }
-            break;
-        case Qt::ForegroundRole:
-            maindata.last()->setColor(index.column(), value.value<QColor>());
+        {
+            if (row >= m_data.size())
+                m_data.resize(row + 1);
+            QVector<ValueItem *> vv = m_data.at(row);
+            if (column >= vv.size())
+                vv.resize(column + 1);
+            vv.replace(column, qvariant_cast<ValueItem *>(value));
+            // m_data.at(index.row())->setData(index.column(), value.toString()); // пишем само значение
+            m_data.replace(row, vv);
             return true;
-        case Qt::FontRole:
-            maindata.last()->setFont(index.column(), value.value<QFont>());
-            return true;
-        case Qt::DecorationRole:
-            maindata.last()->setIcon(index.column(), value.value<QIcon>());
-            return true;
-        case Qt::TextAlignmentRole:
-            maindata.last()->setTextAlignment(index.column(), value.toInt());
-            return true;
-        case ValueModel::DataFormatRole:
-            maindata.last()->setUData(index.column(), value);
-            return true;
-        case ValueModel::AdditionalDataRole:
-            maindata.last()->setAData(index.column(), qvariant_cast<QObject *>(value));
+        }
+        break;
         }
     }
     return false;
+}
+
+Qt::ItemFlags ValueModel::flags(const QModelIndex &index) const
+{
+    if (index.isValid())
+        return QAbstractItemModel::flags(index) | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
+    return Qt::NoItemFlags;
+}
+
+int ValueModel::rowCount(const QModelIndex &index) const
+{
+    Q_UNUSED(index)
+    return m_data.size();
 }
 
 void ValueModel::setValueData(const QModelIndex &index, void *valuePtr)
 {
     QPersistentModelIndex *pindex = new QPersistentModelIndex(index);
     m_valuePtrMap[pindex] = valuePtr;
+}
+
+void ValueModel::setModel(const QList<ValueItem *> &vl, int dataColumns)
+{
+    m_VModel->setData(m_VModel->index(m_curModelRow, m_curModelColumn++), dd.name);
+    m_VModel->setData(
+        m_VModel->index(m_curModelRow, m_curModelColumn), DataFormat::OUTVALUEINT, ETableModel::DataFormatRole);
+    m_VModel->setData(m_VModel->index(m_curModelRow, m_curModelColumn), qobject_cast<QVariant>(dd.adddata),
+        ETableModel::AdditionalDataRole);
+    m_VModel->setData(m_VModel->index(m_curModelRow, m_curModelColumn), dd.tooltip, Qt::ToolTipRole);
+    m_VModel->setValueData(m_VModel->index(m_curModelRow, m_curModelColumn++), dd.dataptr);
+    if (m_curModelColumn > MAX_VALUEMODEL_COLUMNS)
+    {
+        m_curModelRow++;
+        m_curModelColumn = 0;
+    }
 }
 
 void ValueModel::updateModel()
