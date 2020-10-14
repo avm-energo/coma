@@ -23,26 +23,41 @@ void DataDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
         switch (item->format())
         {
         case ValueItem::OUTVALUEINT:
-            textToDisplay = QString::number(index.data().toInt());
+        {
+            qint32 *data = static_cast<qint32 *>(item->dataPtr());
+            textToDisplay = QString::number(*data);
             break;
+        }
         case ValueItem::OUTVALUEHEX:
-            textToDisplay = QString::number(index.data().toUInt(), 16);
+        {
+            quint32 *data = static_cast<quint32 *>(item->dataPtr());
+            textToDisplay = QString::number(*data, 16);
             break;
+        }
         case ValueItem::OUTVALUEFLOAT0:
         case ValueItem::OUTVALUEFLOAT1:
         case ValueItem::OUTVALUEFLOAT2:
         case ValueItem::OUTVALUEFLOAT3:
         case ValueItem::OUTVALUEFLOAT4:
         case ValueItem::OUTVALUEFLOAT5:
-            textToDisplay = QString::number(index.data().toFloat(), 'g', item->format() - 2);
+        {
+            float *data = static_cast<float *>(item->dataPtr());
+            textToDisplay = QString::number(*data, 'g', item->format() - 2);
             break;
+        }
         case ValueItem::OUTVALUEDOUBLE:
-            textToDisplay = QString::number(index.data().toDouble(), 'e', 4);
+        {
+            double *data = static_cast<double *>(item->dataPtr());
+            textToDisplay = QString::number(*data, 'e', 4);
             break;
+        }
         case ValueItem::OUTVALUESTRING:
         default:
-            textToDisplay = index.data().toString();
+        {
+            QString *data = static_cast<QString *>(item->dataPtr());
+            textToDisplay = *data;
             break;
+        }
         }
 
         QRect rect = option.rect;

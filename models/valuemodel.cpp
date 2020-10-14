@@ -94,6 +94,14 @@ void ValueModel::setValueData(const QModelIndex &index, void *valuePtr)
 
 void ValueModel::setModel(const QList<ValueItem *> &vl, int dataColumns)
 {
+    int currow = 0;
+    int curcol = 0;
+    foreach (ValueItem *vi, vl)
+    {
+        QVariant value;
+        value.setValue(vi);
+        setData(index(currow, curcol), value, Qt::EditRole);
+    }
     m_VModel->setData(m_VModel->index(m_curModelRow, m_curModelColumn++), dd.name);
     m_VModel->setData(
         m_VModel->index(m_curModelRow, m_curModelColumn), DataFormat::OUTVALUEINT, ETableModel::DataFormatRole);
