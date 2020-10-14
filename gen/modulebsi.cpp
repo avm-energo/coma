@@ -22,16 +22,16 @@ Error::Msg ModuleBSI::SetupBSI()
 {
     if (Commands::GetBsi(ModuleBsi) != Error::Msg::NoError)
         return Error::Msg::GeneralError;
-    auto *typeb = &Config::ModuleBaseBoards().value(ModuleBsi.MTypeB);
-    auto *typem = &Config::ModuleMezzanineBoards().value(ModuleBsi.MTypeM);
+    auto typeb = Config::ModuleBaseBoards().value(ModuleBsi.MTypeB);
+    auto typem = Config::ModuleMezzanineBoards().value(ModuleBsi.MTypeM);
     if ((ModuleBsi.MTypeB << 8) >= 0xA000 || (Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].Hex) >= 0x00A0)
     {
-        quint32 Type = (typeb->Hex << 8) + typem->Hex;
+        quint32 Type = (typeb.Hex << 8) + typem.Hex;
         ModuleTypeString = Config::ModuleBoards()[Type];
     }
     else
     {
-        ModuleTypeString = typeb->TextString + typem->TextString;
+        ModuleTypeString = typeb.TextString + typem.TextString;
     }
 
     if (!IsKnownModule())
