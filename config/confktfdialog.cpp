@@ -18,12 +18,12 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
-ConfKTFDialog::ConfKTFDialog(S2ConfigType *S2Config, QWidget *parent) : AbstractConfDialog(parent)
+ConfKTFDialog::ConfKTFDialog(ConfigKTF *cktf, QWidget *parent) : AbstractConfDialog(parent)
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
-    this->S2Config = S2Config;
-    KTF = new ConfigKTF(S2Config);
+    S2Config = cktf->;
+    CKTF = cktf;
     Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
     ConfKxx = new ConfKxxDialog(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
@@ -31,14 +31,9 @@ ConfKTFDialog::ConfKTFDialog(S2ConfigType *S2Config, QWidget *parent) : Abstract
     PrereadConf();
 }
 
-ConfKTFDialog::~ConfKTFDialog()
-{
-}
+ConfKTFDialog::~ConfKTFDialog() { }
 
-int ConfKTFDialog::getRCount()
-{
-    return KTF->Bci_block.TdatNum;
-}
+int ConfKTFDialog::getRCount() { return CKTF->Bci_block.TdatNum; }
 
 void ConfKTFDialog::SetupUI()
 {
@@ -359,54 +354,54 @@ void ConfKTFDialog::Fill()
 
     Conf->Fill();
 
-    WDFunc::SetSPBData(this, "NFiltr_ID", KTF->Bci_block.NFiltr);
-    WDFunc::SetSPBData(this, "NHarmFilt_ID", KTF->Bci_block.NHarmFilt);
+    WDFunc::SetSPBData(this, "NFiltr_ID", CKTF->Bci_block.NFiltr);
+    WDFunc::SetSPBData(this, "NHarmFilt_ID", CKTF->Bci_block.NHarmFilt);
 
-    if (KTF->Bci_block.DDosc & 0x04)
+    if (CKTF->Bci_block.DDosc & 0x04)
         WDFunc::SetChBData(this, "DDosc_ID1", true);
     else
         WDFunc::SetChBData(this, "DDosc_ID1", false);
 
-    if (KTF->Bci_block.DDosc & 0x01)
+    if (CKTF->Bci_block.DDosc & 0x01)
         WDFunc::SetChBData(this, "DDosc_ID2", true);
     else
         WDFunc::SetChBData(this, "DDosc_ID2", false);
 
-    WDFunc::SetSPBData(this, "Unom1", KTF->Bci_block.Unom1);
-    WDFunc::SetSPBData(this, "DUosc", KTF->Bci_block.DUosc);
-    WDFunc::SetSPBData(this, "DIosc_ID", KTF->Bci_block.DIosc);
-    WDFunc::SetSPBData(this, "DUImin_ID", KTF->Bci_block.DUImin);
-    WDFunc::SetSPBData(this, "Imin", KTF->Bci_block.Imin);
-    WDFunc::SetSPBData(this, "T_Data_Rec", KTF->Bci_block.T_Data_Rec);
-    WDFunc::SetSPBData(this, "U2nom", KTF->Bci_block.U2nom);
-    WDFunc::SetSPBData(this, "ITT1nom", KTF->Bci_block.ITT1nom);
-    WDFunc::SetSPBData(this, "ITT2nom", KTF->Bci_block.ITT2nom);
+    WDFunc::SetSPBData(this, "Unom1", CKTF->Bci_block.Unom1);
+    WDFunc::SetSPBData(this, "DUosc", CKTF->Bci_block.DUosc);
+    WDFunc::SetSPBData(this, "DIosc_ID", CKTF->Bci_block.DIosc);
+    WDFunc::SetSPBData(this, "DUImin_ID", CKTF->Bci_block.DUImin);
+    WDFunc::SetSPBData(this, "Imin", CKTF->Bci_block.Imin);
+    WDFunc::SetSPBData(this, "T_Data_Rec", CKTF->Bci_block.T_Data_Rec);
+    WDFunc::SetSPBData(this, "U2nom", CKTF->Bci_block.U2nom);
+    WDFunc::SetSPBData(this, "ITT1nom", CKTF->Bci_block.ITT1nom);
+    WDFunc::SetSPBData(this, "ITT2nom", CKTF->Bci_block.ITT2nom);
 
-    int cbidx = ((KTF->Bci_block.Cool_type & 0x01) ? 1 : 0);
+    int cbidx = ((CKTF->Bci_block.Cool_type & 0x01) ? 1 : 0);
     WDFunc::SetCBIndex(this, "Cool_type", cbidx);
-    cbidx = ((KTF->Bci_block.W_mat & 0x01) ? 1 : 0);
+    cbidx = ((CKTF->Bci_block.W_mat & 0x01) ? 1 : 0);
     WDFunc::SetCBIndex(this, "W_mat", cbidx);
 
-    WDFunc::SetSPBData(this, "TNNTdop", KTF->Bci_block.TNNTdop);
-    WDFunc::SetSPBData(this, "TNNTpred", KTF->Bci_block.TNNTpred);
-    WDFunc::SetSPBData(this, "Tamb_nom", KTF->Bci_block.Tamb_nom);
-    WDFunc::SetSPBData(this, "dTNNTnom", KTF->Bci_block.dTNNTnom);
-    WDFunc::SetSPBData(this, "Kdob", KTF->Bci_block.Kdob);
-    WDFunc::SetSPBData(this, "TauWnom", KTF->Bci_block.TauWnom);
-    WDFunc::SetSPBData(this, "Umaxm", KTF->Bci_block.Umax);
-    WDFunc::SetSPBData(this, "Imaxm", KTF->Bci_block.Imax);
-    WDFunc::SetSPBData(this, "Iwnom", KTF->Bci_block.Iwnom);
+    WDFunc::SetSPBData(this, "TNNTdop", CKTF->Bci_block.TNNTdop);
+    WDFunc::SetSPBData(this, "TNNTpred", CKTF->Bci_block.TNNTpred);
+    WDFunc::SetSPBData(this, "Tamb_nom", CKTF->Bci_block.Tamb_nom);
+    WDFunc::SetSPBData(this, "dTNNTnom", CKTF->Bci_block.dTNNTnom);
+    WDFunc::SetSPBData(this, "Kdob", CKTF->Bci_block.Kdob);
+    WDFunc::SetSPBData(this, "TauWnom", CKTF->Bci_block.TauWnom);
+    WDFunc::SetSPBData(this, "Umaxm", CKTF->Bci_block.Umax);
+    WDFunc::SetSPBData(this, "Imaxm", CKTF->Bci_block.Imax);
+    WDFunc::SetSPBData(this, "Iwnom", CKTF->Bci_block.Iwnom);
 
     for (int i = 0; i < 5; i++)
     {
-        if (KTF->Bci_block.OscPoints == Rates.at(i).toUInt())
+        if (CKTF->Bci_block.OscPoints == Rates.at(i).toUInt())
             cbidx = i;
     }
     WDFunc::SetCBIndex(this, "OscPoints", cbidx);
 
-    WDFunc::SetSPBData(this, "GTnnt", KTF->Bci_block.GTnnt);
-    WDFunc::SetSPBData(this, "GOvc", KTF->Bci_block.GOvc);
-    WDFunc::SetSPBData(this, "TdatNum", KTF->Bci_block.TdatNum);
+    WDFunc::SetSPBData(this, "GTnnt", CKTF->Bci_block.GTnnt);
+    WDFunc::SetSPBData(this, "GOvc", CKTF->Bci_block.GOvc);
+    WDFunc::SetSPBData(this, "TdatNum", CKTF->Bci_block.TdatNum);
 
     ConfKxx->Fill();
 }
@@ -417,78 +412,70 @@ void ConfKTFDialog::FillBack()
 
     int cbidx;
 
-    WDFunc::SPBData(this, "NFiltr_ID", KTF->Bci_block.NFiltr);
-    WDFunc::SPBData(this, "NHarmFilt_ID", KTF->Bci_block.NHarmFilt);
+    WDFunc::SPBData(this, "NFiltr_ID", CKTF->Bci_block.NFiltr);
+    WDFunc::SPBData(this, "NHarmFilt_ID", CKTF->Bci_block.NHarmFilt);
 
     WDFunc::ChBData(this, "DDosc_ID1", DDosc);
     if (DDosc)
     {
-        KTF->Bci_block.DDosc = 0x04;
+        CKTF->Bci_block.DDosc = 0x04;
     }
 
     else
-        KTF->Bci_block.DDosc = 0;
+        CKTF->Bci_block.DDosc = 0;
 
     WDFunc::ChBData(this, "DDosc_ID2", DDosc);
     if (DDosc)
     {
-        KTF->Bci_block.DDosc = KTF->Bci_block.DDosc | 0x01;
+        CKTF->Bci_block.DDosc = CKTF->Bci_block.DDosc | 0x01;
     }
 
-    WDFunc::SPBData(this, "Unom1", KTF->Bci_block.Unom1);
-    WDFunc::SPBData(this, "DUosc", KTF->Bci_block.DUosc);
-    WDFunc::SPBData(this, "DIosc_ID", KTF->Bci_block.DIosc);
-    WDFunc::SPBData(this, "DUImin_ID", KTF->Bci_block.DUImin);
-    WDFunc::SPBData(this, "Imin", KTF->Bci_block.Imin);
-    WDFunc::SPBData(this, "T_Data_Rec", KTF->Bci_block.T_Data_Rec);
-    WDFunc::SPBData(this, "U2nom", KTF->Bci_block.U2nom);
-    WDFunc::SPBData(this, "ITT1nom", KTF->Bci_block.ITT1nom);
-    WDFunc::SPBData(this, "ITT2nom", KTF->Bci_block.ITT2nom);
+    WDFunc::SPBData(this, "Unom1", CKTF->Bci_block.Unom1);
+    WDFunc::SPBData(this, "DUosc", CKTF->Bci_block.DUosc);
+    WDFunc::SPBData(this, "DIosc_ID", CKTF->Bci_block.DIosc);
+    WDFunc::SPBData(this, "DUImin_ID", CKTF->Bci_block.DUImin);
+    WDFunc::SPBData(this, "Imin", CKTF->Bci_block.Imin);
+    WDFunc::SPBData(this, "T_Data_Rec", CKTF->Bci_block.T_Data_Rec);
+    WDFunc::SPBData(this, "U2nom", CKTF->Bci_block.U2nom);
+    WDFunc::SPBData(this, "ITT1nom", CKTF->Bci_block.ITT1nom);
+    WDFunc::SPBData(this, "ITT2nom", CKTF->Bci_block.ITT2nom);
 
     cbidx = WDFunc::CBIndex(this, "Cool_type");
-    KTF->Bci_block.Cool_type = cbidx;
+    CKTF->Bci_block.Cool_type = cbidx;
 
     cbidx = WDFunc::CBIndex(this, "W_mat");
-    KTF->Bci_block.W_mat = cbidx;
+    CKTF->Bci_block.W_mat = cbidx;
 
-    WDFunc::SPBData(this, "TNNTdop", KTF->Bci_block.TNNTdop);
-    WDFunc::SPBData(this, "TNNTpred", KTF->Bci_block.TNNTpred);
-    WDFunc::SPBData(this, "Tamb_nom", KTF->Bci_block.Tamb_nom);
-    WDFunc::SPBData(this, "dTNNTnom", KTF->Bci_block.dTNNTnom);
-    WDFunc::SPBData(this, "Kdob", KTF->Bci_block.Kdob);
-    WDFunc::SPBData(this, "TauWnom", KTF->Bci_block.TauWnom);
-    WDFunc::SPBData(this, "Umaxm", KTF->Bci_block.Umax);
-    WDFunc::SPBData(this, "Imaxm", KTF->Bci_block.Imax);
-    WDFunc::SPBData(this, "Iwnom", KTF->Bci_block.Iwnom);
+    WDFunc::SPBData(this, "TNNTdop", CKTF->Bci_block.TNNTdop);
+    WDFunc::SPBData(this, "TNNTpred", CKTF->Bci_block.TNNTpred);
+    WDFunc::SPBData(this, "Tamb_nom", CKTF->Bci_block.Tamb_nom);
+    WDFunc::SPBData(this, "dTNNTnom", CKTF->Bci_block.dTNNTnom);
+    WDFunc::SPBData(this, "Kdob", CKTF->Bci_block.Kdob);
+    WDFunc::SPBData(this, "TauWnom", CKTF->Bci_block.TauWnom);
+    WDFunc::SPBData(this, "Umaxm", CKTF->Bci_block.Umax);
+    WDFunc::SPBData(this, "Imaxm", CKTF->Bci_block.Imax);
+    WDFunc::SPBData(this, "Iwnom", CKTF->Bci_block.Iwnom);
 
     cbidx = WDFunc::CBIndex(this, "OscPoints");
-    KTF->Bci_block.OscPoints = (Rates.at(cbidx).toInt());
+    CKTF->Bci_block.OscPoints = (Rates.at(cbidx).toInt());
 
-    WDFunc::SPBData(this, "GTnnt", KTF->Bci_block.GTnnt);
-    WDFunc::SPBData(this, "GOvc", KTF->Bci_block.GOvc);
-    WDFunc::SPBData(this, "TdatNum", KTF->Bci_block.TdatNum);
+    WDFunc::SPBData(this, "GTnnt", CKTF->Bci_block.GTnnt);
+    WDFunc::SPBData(this, "GOvc", CKTF->Bci_block.GOvc);
+    WDFunc::SPBData(this, "TdatNum", CKTF->Bci_block.TdatNum);
 
     ConfKxx->FillBack();
 }
 
-void ConfKTFDialog::CheckConf()
-{
-}
+void ConfKTFDialog::CheckConf() { }
 
 void ConfKTFDialog::SetDefConf()
 {
-    KTF->SetDefConf();
+    CKTF->SetDefConf();
     Conf->SetDefConf();
     ConfKxx->SetDefConf();
     Fill();
 }
 
-void ConfKTFDialog::Start_Timer()
-{
-    timerRead->start(1000);
-}
+void ConfKTFDialog::Start_Timer() { timerRead->start(1000); }
 
-void ConfKTFDialog::Stop_Timer()
-{
-    timerRead->stop();
-}
+void ConfKTFDialog::Stop_Timer() { timerRead->stop(); }

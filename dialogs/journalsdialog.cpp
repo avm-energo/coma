@@ -20,9 +20,9 @@
 #if _MSC_VER && !__INTEL_COMPILER
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
-JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
+JournalDialog::JournalDialog(Journals *jour, IEC104 *iec, QWidget *parent) : QDialog(parent)
 {
-    JourFuncs = new Journals(this);
+    JourFuncs = jour;
     ProxyWorkModel = new QSortFilterProxyModel(this);
     ProxySysModel = new QSortFilterProxyModel(this);
     ProxyMeasModel = new QSortFilterProxyModel(this);
@@ -51,9 +51,7 @@ JournalDialog::JournalDialog(IEC104 *iec, QWidget *parent) : QDialog(parent)
     SetupUI();
 }
 
-JournalDialog::~JournalDialog()
-{
-}
+JournalDialog::~JournalDialog() { }
 
 void JournalDialog::SetupUI()
 {
@@ -227,15 +225,9 @@ void JournalDialog::TryGetJourByUSB()
         GetJour();
 }
 
-void JournalDialog::GetJour()
-{
-    emit StartGetJour();
-}
+void JournalDialog::GetJour() { emit StartGetJour(); }
 
-void JournalDialog::JourFileChoosed(QString &file)
-{
-    JourFile = file;
-}
+void JournalDialog::JourFileChoosed(QString &file) { JourFile = file; }
 
 void JournalDialog::EraseJour()
 {

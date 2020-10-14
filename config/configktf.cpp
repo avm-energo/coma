@@ -4,7 +4,6 @@
 
 ConfigKTF::ConfigKTF(S2ConfigType *config)
 {
-
     for (int i = 0; i < config->size(); ++i)
     {
         if (config->at(i).id == 0xFFFFFFFF)

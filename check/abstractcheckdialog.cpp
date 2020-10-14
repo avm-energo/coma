@@ -22,9 +22,8 @@
 #include <QtMath>
 #include <QtTest/QTest>
 
-AbstractCheckDialog::AbstractCheckDialog(BoardTypes board, QWidget *parent) : UDialog(parent)
+AbstractCheckDialog::AbstractCheckDialog(QWidget *parent) : UDialog(parent)
 {
-    Q_UNUSED(board)
     m_newTWIndex = 0;
     XlsxWriting = false;
     Busy = false;
@@ -87,14 +86,9 @@ void AbstractCheckDialog::SetupUI(QStringList &tabnames)
     setLayout(lyout);
 }
 
-QWidget *AbstractCheckDialog::CustomTab()
-{
-    return nullptr;
-}
+QWidget *AbstractCheckDialog::CustomTab() { return nullptr; }
 
-void AbstractCheckDialog::Check1PPS()
-{
-}
+void AbstractCheckDialog::Check1PPS() { }
 
 void AbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
 {
@@ -232,15 +226,9 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     Busy = false;
 }
 
-void AbstractCheckDialog::StartBdMeasurements()
-{
-    BdTimer->start();
-}
+void AbstractCheckDialog::StartBdMeasurements() { BdTimer->start(); }
 
-void AbstractCheckDialog::StopBdMeasurements()
-{
-    BdTimer->stop();
-}
+void AbstractCheckDialog::StopBdMeasurements() { BdTimer->stop(); }
 
 void AbstractCheckDialog::update()
 {
@@ -286,10 +274,7 @@ void AbstractCheckDialog::StopAnalogMeasurements()
     Timer->stop();
 }
 
-void AbstractCheckDialog::TimerTimeout()
-{
-    ReadAnalogMeasurementsAndWriteToFile();
-}
+void AbstractCheckDialog::TimerTimeout() { ReadAnalogMeasurementsAndWriteToFile(); }
 
 void AbstractCheckDialog::SetTimerPeriod()
 {

@@ -1,8 +1,9 @@
 #ifndef JOURNALDIALOG_H
 #define JOURNALDIALOG_H
 
-#include "../gen/journals.h"
+//#include "../gen/journals.h"
 #include "../iec104/iec104.h"
+#include "../module/journals.h"
 
 #include <QDialog>
 #include <QMessageBox>
@@ -14,7 +15,7 @@ class JournalDialog : public QDialog
 {
     Q_OBJECT
 public:
-    JournalDialog(IEC104 *iec, QWidget *parent = nullptr);
+    JournalDialog(Journals *jour, IEC104 *iec, QWidget *parent = nullptr);
     ~JournalDialog();
 
     quint8 start;

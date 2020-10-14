@@ -18,12 +18,12 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
-ConfKDVDialog::ConfKDVDialog(S2ConfigType *S2Config, QWidget *parent) : AbstractConfDialog(parent)
+ConfKDVDialog::ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent) : AbstractConfDialog(parent)
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
-    this->S2Config = S2Config;
-    KDV = new ConfigKDV(S2Config);
+    S2Config = ckdv->;
+    KDV = ckdv;
     Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
     ConfKxx = new ConfKxxDialog(S2Config);
     setAttribute(Qt::WA_DeleteOnClose);
@@ -579,9 +579,7 @@ void ConfKDVDialog::FillBack()
     ConfKxx->FillBack();
 }
 
-void ConfKDVDialog::CheckConf()
-{
-}
+void ConfKDVDialog::CheckConf() { }
 
 void ConfKDVDialog::SetDefConf()
 {
@@ -591,12 +589,6 @@ void ConfKDVDialog::SetDefConf()
     Fill();
 }
 
-void ConfKDVDialog::Start_Timer()
-{
-    timerRead->start(1000);
-}
+void ConfKDVDialog::Start_Timer() { timerRead->start(1000); }
 
-void ConfKDVDialog::Stop_Timer()
-{
-    timerRead->stop();
-}
+void ConfKDVDialog::Stop_Timer() { timerRead->stop(); }

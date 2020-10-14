@@ -14,7 +14,7 @@ class ConfKDVDialog : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    ConfKDVDialog(S2ConfigType *S2Config, QWidget *parent = nullptr);
+    ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent = nullptr);
 
 private:
     ConfigKDV *KDV;

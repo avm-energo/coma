@@ -47,6 +47,8 @@ CheckKTFDialog::CheckKTFDialog(BoardTypes board, QWidget *parent) : AbstractChec
     Timer->setInterval(ANMEASINT);
 }
 
+CheckKTFDialog::~CheckKTFDialog() { delete ChKTF; }
+
 QWidget *CheckKTFDialog::BdUI(int bdnum)
 {
     switch (bdnum)
@@ -72,15 +74,9 @@ QWidget *CheckKTFDialog::BdUI(int bdnum)
     }
 }
 
-void CheckKTFDialog::RefreshAnalogValues(int bdnum)
-{
-    Q_UNUSED(bdnum)
-}
+void CheckKTFDialog::RefreshAnalogValues(int bdnum) { Q_UNUSED(bdnum) }
 
-void CheckKTFDialog::PrepareHeadersForFile(int row)
-{
-    Q_UNUSED(row)
-}
+void CheckKTFDialog::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
 
 void CheckKTFDialog::WriteToFile(int row, int bdnum)
 {
@@ -103,15 +99,9 @@ QWidget *CheckKTFDialog::CustomTab()
     w->setLayout(lyout);
     return nullptr;
 }
-void CheckKTFDialog::ChooseValuesToWrite()
-{
-}
-void CheckKTFDialog::SetDefaultValuesToWrite()
-{
-}
-void CheckKTFDialog::PrepareAnalogMeasurements()
-{
-}
+void CheckKTFDialog::ChooseValuesToWrite() { }
+void CheckKTFDialog::SetDefaultValuesToWrite() { }
+void CheckKTFDialog::PrepareAnalogMeasurements() { }
 
 void CheckKTFDialog::USBUpdate()
 {
@@ -206,10 +196,7 @@ void CheckKTFDialog::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
     }
 }
 
-void CheckKTFDialog::UpdateSponData(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal)
-}
+void CheckKTFDialog::UpdateSponData(IEC104Thread::SponSignals *Signal) { Q_UNUSED(Signal) }
 
 void CheckKTFDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {
@@ -229,12 +216,14 @@ void CheckKTFDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
     }
 }
 
-void CheckKTFDialog::SetPredAlarmColor(quint8 *PredAlarm)
+void CheckKTFDialog::SetWarnColor(int position, bool value)
 {
-    Q_UNUSED(PredAlarm)
+    Q_UNUSED(position)
+    Q_UNUSED(value)
 }
 
-void CheckKTFDialog::SetAlarmColor(quint8 *Alarm)
+void CheckKTFDialog::SetAlarmColor(int position, bool value)
 {
-    Q_UNUSED(Alarm)
+    Q_UNUSED(position)
+    Q_UNUSED(value)
 }

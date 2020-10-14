@@ -2,8 +2,8 @@
 #define CONFDIALOGKTF_H
 
 #include "../config/confdialog.h"
-#include "../config/confkxxdialog.h"
 #include "../config/configktf.h"
+#include "../config/confkxxdialog.h"
 #include "../iec104/ethernet.h"
 #include "../iec104/iec104.h"
 #include "abstractconfdialog.h"
@@ -16,13 +16,13 @@ class ConfKTFDialog : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    ConfKTFDialog(S2ConfigType *S2Config, QWidget *parent = nullptr);
+    ConfKTFDialog(ConfigKTF *cktf, QWidget *parent = nullptr);
     ~ConfKTFDialog();
 
     int getRCount();
 
 private:
-    ConfigKTF *KTF;
+    ConfigKTF *CKTF;
     ConfDialog *Conf;
     ConfKxxDialog *ConfKxx;
     QLabel *SysTime;

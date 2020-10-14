@@ -24,7 +24,7 @@
 
 CheckKIVDialog::CheckKIVDialog(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
 {
-    EParent = parent;
+    //    EParent = parent;
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
     QStringList sl;
@@ -69,10 +69,7 @@ QWidget *CheckKIVDialog::BdUI(int bdnum)
     }
 }
 
-void CheckKIVDialog::RefreshAnalogValues(int bdnum)
-{
-    Q_UNUSED(bdnum)
-}
+void CheckKIVDialog::RefreshAnalogValues(int bdnum) { Q_UNUSED(bdnum) }
 
 void CheckKIVDialog::PrepareHeadersForFile(int row)
 {
@@ -152,15 +149,9 @@ QWidget *CheckKIVDialog::CustomTab()
     return nullptr;
 }
 
-void CheckKIVDialog::ChooseValuesToWrite()
-{
-}
-void CheckKIVDialog::SetDefaultValuesToWrite()
-{
-}
-void CheckKIVDialog::PrepareAnalogMeasurements()
-{
-}
+void CheckKIVDialog::ChooseValuesToWrite() { }
+void CheckKIVDialog::SetDefaultValuesToWrite() { }
+void CheckKIVDialog::PrepareAnalogMeasurements() { }
 
 void CheckKIVDialog::USBUpdate()
 {

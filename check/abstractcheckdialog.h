@@ -37,7 +37,7 @@ class AbstractCheckDialog : public UDialog
 {
     Q_OBJECT
 public:
-    explicit AbstractCheckDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    explicit AbstractCheckDialog(QWidget *parent = nullptr);
     ~AbstractCheckDialog();
     void SetupUI(QStringList &tabnames);
 

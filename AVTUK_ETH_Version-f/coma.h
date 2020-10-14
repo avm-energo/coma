@@ -3,24 +3,22 @@
 
 #include "../alarm/alarmstateall.h"
 #include "../alarm/alarmwidget.h"
-#include "../alarm/avaralarmkiv.h"
-#include "../alarm/avaralarmktf.h"
-#include "../alarm/warnalarmkiv.h"
-#include "../alarm/warnalarmktf.h"
-#include "../check/eabstractcheckdialog.h"
-#include "../config/abstractconfdialog.h"
-#include "../config/confdialog.h"
+//#include "../check/abstractcheckdialog.h"
+//#include "../config/abstractconfdialog.h"
+//#include "../config/confdialog.h"
 #include "../dialogs/connectdialog.h"
-#include "../dialogs/cordialog.h"
-#include "../dialogs/cordialogkdv.h"
-#include "../dialogs/cordialogktf.h"
-#include "../dialogs/fwupdialog.h"
-#include "../dialogs/infodialog.h"
-#include "../dialogs/journalsdialog.h"
-#include "../dialogs/mnktime.h"
-#ifdef AVM_DEBUG
-#include "../tune/eabstracttunedialog.h"
-#endif
+//#include "../dialogs/fwuploaddialog.h"
+//#include "../dialogs/infodialog.h"
+//#include "../dialogs/journalsdialog.h"
+//#include "../dialogs/timedialog.h"
+//#include "../module/alarmkiv.h"
+//#include "../module/alarmktf.h"
+//#include "../module/warnkiv.h"
+//#include "../module/warnktf.h"
+//#include "../startup/startupkdvdialog.h"
+//#include "../startup/startupkivdialog.h"
+//#include "../startup/startupktfdialog.h"
+#include "../module/module.h"
 #include "../widgets/etabwidget.h"
 
 #include <QMainWindow>
@@ -156,8 +154,8 @@ private slots:
     void closeEvent(QCloseEvent *event) override;
     void SetDefConf();
 
-    void setConf(unsigned char);
-    void Fill();
+    //    void setConf(unsigned char);
+    //    void Fill();
     void FillBSI(IEC104Thread::BS104Signals *sig);
     void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     // void PasswordCheck(QString psw);
@@ -170,50 +168,49 @@ private slots:
 private:
     // constexpr QVector<int> MTBs = { 0x21, 0x22, 0x31, 0x35, 0x80, 0x81, 0x84 };
 
+    Module *m_Module;
     AlarmWidget *AlarmW;
-    WarnAlarmKIV *WarnAlarmKIVDialog;
-    AvarAlarmKIV *AvarAlarmKIVDialog;
-    WarnAlarmKTF *WarnAlarmKTFDialog;
-    AvarAlarmKTF *AvarAlarmKTFDialog;
+    //    WarnKIV *WarnKIVDialog;
+    //    AlarmKIV *AlarmKIVDialog;
+    //    WarnKTF *WarnKTFDialog;
+    //    AlarmKTF *AlarmKTFDialog;
     AlarmStateAll *AlarmStateAllDialog;
     AlarmClass *Alarm;
-    QWidget *Parent;
+    //    QWidget *Parent;
 
-    InfoDialog *infoDialog;
-    ConfDialog *mainConfDialog;
-    ConfDialog *mainTuneDialog;
-    AbstractCorDialog *corDialog;
-    AbstractConfDialog *confBDialog, *confMDialog;
-    EAbstractCheckDialog *checkBDialog, *checkMDialog, *HarmDialog, *VibrDialog;
-#ifdef AVM_DEBUG
-    EAbstractTuneDialog *tuneDialog;
-#endif
-    JournalDialog *jourDialog;
-    fwupdialog *fwUpDialog;
-    MNKTime *timeDialog;
+    //    InfoDialog *infoDialog;
+    //    ConfDialog *mainConfDialog;
+    //    ConfDialog *mainTuneDialog;
+    //    AbstractStartupDialog *corDialog;
+    //    AbstractConfDialog *confBDialog, *confMDialog;
+    //    AbstractCheckDialog *checkBDialog, *checkMDialog, *HarmDialog, *VibrDialog;
+    //    JournalDialog *jourDialog;
+    //    FWUploadDialog *fwUpDialog;
+    //    TimeDialog *timeDialog;
 
-    bool PasswordValid;
+    //    bool PasswordValid;
     bool TimeThrFinished;
     bool Cancelled;
     bool Reconnect;
     int Mode; // режим запуска программы
     int fileSize, curfileSize;
-    int CheckIndex, TimeIndex, ConfIndex, CheckHarmIndex, CheckVibrIndex, CurTabIndex;
+    //    int CheckIndex, TimeIndex, ConfIndex, CheckHarmIndex, CheckVibrIndex, CurTabIndex;
     quint8 HaveAlreadyRed = 0;
     quint8 ActiveThreads;
     quint32 Mes;
 
     QString SavePort;
 
-    QVector<S2::DataRec> *S2ConfigForTune;
-    QVector<S2::DataRec> *S2Config;
+    //    QVector<S2::DataRec> *S2ConfigForTune;
+    //    QVector<S2::DataRec> *S2Config;
+    S2ConfigType *S2Config;
 
     quint8 PredAlarmEvents[20];
     quint8 AlarmEvents[20];
 
     QTimer *ReceiveTimer;
-    QTimer *ReconnectTimer;
-    QTimer *BdaTimer, *TimeTimer, *AlrmTimer, *HarmTimer, *VibrTimer;
+    //    QTimer *ReconnectTimer;
+    QTimer *BdaTimer, *AlrmTimer; //, *HarmTimer, *VibrTimer;
 
     IEC104 *Ch104;
     ModBus *ChModbus;
@@ -235,11 +232,11 @@ private:
 
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 
-    void addConfTab(ETabWidget *MainTW, QString str);
+    //    void addConfTab(ETabWidget *MainTW, QString str);
     // Дурацкое название
     void setupQConnections();
 
-    void setupDialogs(ETabWidget *MainTW);
+    //    void setupDialogs(ETabWidget *MainTW);
 
 protected:
     void keyPressEvent(QKeyEvent *e) override;

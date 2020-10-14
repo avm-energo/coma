@@ -22,27 +22,25 @@
 
 #include "coma.h"
 
-#include "../check/checkdialogharmonickdv.h"
-#include "../check/checkdialogharmonicktf.h"
-#include "../check/checkdialogkdv.h"
-#include "../check/checkdialogkiv.h"
-#include "../check/checkdialogktf.h"
-#include "../check/checkdialogvibrkdv.h"
-#include "../config/confdialogkdv.h"
-#include "../config/confdialogkiv.h"
-#include "../config/confdialogktf.h"
-#include "../dialogs/keypressdialog.h"
-#include "../gen/logger.h"
-#ifdef AVM_DEBUG
-#include "../tune/tunedialogKIV.h"
-#endif
+#include "../check/checkkdvdialog.h"
+#include "../check/checkkdvharmonicdialog.h"
+#include "../check/checkkdvvibrdialog.h"
+#include "../check/checkkivdialog.h"
+#include "../check/checkktfdialog.h"
+#include "../check/checkktfharmonicdialog.h"
+#include "../config/confkdvdialog.h"
+#include "../config/confkivdialog.h"
+#include "../config/confktfdialog.h"
 #include "../dialogs/errordialog.h"
+#include "../dialogs/keypressdialog.h"
 #include "../dialogs/settingsdialog.h"
+#include "../gen/logger.h"
 #include "../gen/stdfunc.h"
 
 #include <QApplication>
 #include <QDir>
 #include <QMenuBar>
+#include <QMessageBox>
 #include <QProgressBar>
 #include <QSplashScreen>
 #include <QToolBar>
@@ -88,25 +86,23 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
 
 #endif
 
+    S2Config = new S2ConfigType;
     Reconnect = false;
-    timeDialog = nullptr;
-    mainConfDialog = nullptr;
-    confBDialog = confMDialog = nullptr;
-    checkBDialog = checkMDialog = nullptr;
+    //    timeDialog = nullptr;
+    //    mainConfDialog = nullptr;
+    //    confBDialog = confMDialog = nullptr;
+    //    checkBDialog = checkMDialog = nullptr;
     AlarmStateAllDialog = nullptr;
-    AvarAlarmKIVDialog = nullptr;
-    WarnAlarmKIVDialog = nullptr;
-    AvarAlarmKTFDialog = nullptr;
-    WarnAlarmKTFDialog = nullptr;
-#ifdef AVM_DEBUG
-    tuneDialog = nullptr;
-#endif
-    HarmDialog = nullptr;
-    VibrDialog = nullptr;
-    corDialog = nullptr;
-    S2Config = nullptr;
-    S2ConfigForTune = nullptr;
-    CurTabIndex = -1;
+    //    AlarmKIVDialog = nullptr;
+    //    WarnKIVDialog = nullptr;
+    //    AlarmKTFDialog = nullptr;
+    //    WarnKTFDialog = nullptr;
+    //    HarmDialog = nullptr;
+    //    VibrDialog = nullptr;
+    //    corDialog = nullptr;
+    //    S2Config = nullptr;
+    //    S2ConfigForTune = nullptr;
+    //    CurTabIndex = -1;
     for (int i = 0; i < 20; ++i)
     {
         PredAlarmEvents[i] = 0;
@@ -240,15 +236,15 @@ void Coma::SetupMenubar()
     setMenuBar(menubar);
 }
 
-void Coma::addConfTab(ETabWidget *MainTW, QString str)
-{
-    MainTW->addTab(corDialog, str);
-    corDialog->corDIndex = MainTW->indexOf(corDialog);
-    if (Board::GetInstance().interfaceType() == Board::InterfaceType::RS485)
-        ChModbus->CorIndex = corDialog->corDIndex;
-}
+// void Coma::addConfTab(ETabWidget *MainTW, QString str)
+//{
+//    MainTW->addTab(corDialog, str);
+//    corDialog->corDIndex = MainTW->indexOf(corDialog);
+//    if (Board::GetInstance().interfaceType() == Board::InterfaceType::RS485)
+//        ChModbus->CorIndex = corDialog->corDIndex;
+//}
 
-void Coma::setupDialogs(ETabWidget *MainTW)
+/*void Coma::setupDialogs(ETabWidget *MainTW)
 {
     auto const &board = Board::GetInstance();
     QString str;
@@ -365,7 +361,7 @@ void Coma::setupDialogs(ETabWidget *MainTW)
             break;
         }
     }
-}
+} */
 
 void Coma::StartWork()
 {
@@ -408,8 +404,8 @@ void Coma::StartWork()
     Board::GetInstance().setTypeB(0);
     Board::GetInstance().setTypeM(0);
     S2Config = new QVector<S2::DataRec>;
-    S2ConfigForTune = new QVector<S2::DataRec>;
-    CurTabIndex = -1;
+    //    S2ConfigForTune = new QVector<S2::DataRec>;
+    //    CurTabIndex = -1;
     ETabWidget *MainTW = this->findChild<ETabWidget *>("maintw");
     if (MainTW == nullptr)
     {
@@ -440,27 +436,23 @@ void Coma::StartWork()
 
     PrepareDialogs();
 
-    setupDialogs(MainTW);
+    //    setupDialogs(MainTW);
 
-    if (board.interfaceType() != Board::InterfaceType::RS485)
-        MainTW->addTab(jourDialog, "Журналы");
+    //    if (board.interfaceType() != Board::InterfaceType::RS485)
+    //        MainTW->addTab(jourDialog, "Журналы");
 
     if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
         Error::ShowErMsg(Error::Msg::ER_NOCONF);
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
         Error::ShowErMsg(Error::Msg::ER_NOTUNECOEF);
-    if (board.interfaceType() == Board::InterfaceType::USB)
-    {
-        fwUpDialog = new fwupdialog;
-        MainTW->addTab(fwUpDialog, "Загрузка ВПО");
-    }
+    //    if (board.interfaceType() == Board::InterfaceType::USB)
+    //    {
+    //        fwUpDialog = new fwupdialog;
+    //        MainTW->addTab(fwUpDialog, "Загрузка ВПО");
+    //    }
 
-#ifdef AVM_DEBUG
-    if (tuneDialog != nullptr)
-        MainTW->addTab(tuneDialog, "Регулировка");
-#endif
-    MainTW->addTab(infoDialog, "О приборе");
-    infoDialog->FillBsi();
+    //    MainTW->addTab(infoDialog, "О приборе");
+    //    infoDialog->FillBsi();
 
     MainTW->repaint();
     MainTW->show();
@@ -475,171 +467,181 @@ void Coma::StartWork()
 void Coma::setupQConnections()
 {
     connect(AlarmW, &AlarmWidget::AlarmButtonPressed, AlarmStateAllDialog, &QDialog::show);
+    connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, m_Module->getWarn(), &QDialog::show);
+    connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, m_Module->getAlarm(), &QDialog::show);
+    NewTimersBda();
 
-    switch (Board::GetInstance().typeB())
-    {
-    case Config::MTB_A2:
-    {
-        switch (Board::GetInstance().typeM())
+    /*    switch (Board::GetInstance().typeB())
         {
-        case Config::MTM_84:
+        case Config::MTB_A2:
         {
-            checkBDialog = new CheckDialogKIV(BoardTypes::BT_BASE, this);
+            switch (Board::GetInstance().typeM())
+            {
+            case Config::MTM_84:
+            {
+                checkBDialog = new CheckDialogKIV(BoardTypes::BT_BASE, this);
 
-            // S2Config->clear();
-            if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
-                confMDialog = new ConfDialogKIV(S2Config, this);
+                // S2Config->clear();
+                if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
+                    confMDialog = new ConfDialogKIV(S2Config, this);
 
-            corDialog = new CorDialog(this);
+                corDialog = new CorDialog(this);
 
-            WarnAlarmKIVDialog = new WarnAlarmKIV(Alarm, AlarmW);
-            connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKIVDialog, &QDialog::show);
-            connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKIVDialog, &AbstractWarnAlarm::Update);
+                WarnKIVDialog = new WarnAlarmKIV(Alarm, AlarmW);
+                connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnKIVDialog, &QDialog::show);
+                connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnKIVDialog, &AbstractWarnAlarm::Update);
 
-            AvarAlarmKIVDialog = new AvarAlarmKIV(Alarm, AlarmW);
-            connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKIVDialog, &QDialog::show);
-            connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKIVDialog, &AbstractAvarAlarm::Update);
+                AlarmKIVDialog = new AvarAlarmKIV(Alarm, AlarmW);
+                connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AlarmKIVDialog, &QDialog::show);
+                connect(Alarm, &AlarmClass::SetAlarmColor, AlarmKIVDialog, &AbstractAvarAlarm::Update);
 
-            connect(Alarm, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
-            connect(Alarm, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
+                connect(Alarm, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog,
+       SLOT(SetWarnAlarmColor(QList<bool>))); connect(Alarm, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog,
+       SLOT(SetAlarmColor(QList<bool>)));
 
-#ifdef AVM_DEBUG
-            tuneDialog = new TuneDialogKIV(S2ConfigForTune);
-#endif
+                break;
+            }
+            case Config::MTM_87:
+            {
+                HarmDialog = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
+                connect(HarmTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
+
+                // S2Config->clear();
+                if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
+                    confMDialog = new ConfDialogKTF(S2Config, this);
+
+                checkBDialog = new CheckDialogKTF(BoardTypes::BT_BASE, this);
+
+                corDialog = new CorDialogKTF(this);
+
+                WarnKTFDialog = new WarnAlarmKTF(Alarm, AlarmW);
+                connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnKTFDialog, &QDialog::show);
+                connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnKTFDialog, &AbstractWarnAlarm::Update);
+
+                AlarmKTFDialog = new AvarAlarmKTF(Alarm, AlarmW);
+                connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AlarmKTFDialog, &QDialog::show);
+                connect(Alarm, &AlarmClass::SetAlarmColor, AlarmKTFDialog, &AbstractAvarAlarm::Update);
+
+                break;
+            }
+            }
             break;
         }
-        case Config::MTM_87:
-        {
-            HarmDialog = new CheckDialogHarmonicKTF(BoardTypes::BT_BASE);
-            connect(HarmTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
+        case Config::MTB_A3:
+            switch (Board::GetInstance().typeM())
+            {
+            case Config::MTM_87:
+                checkBDialog = new CheckDialogKDV(BoardTypes::BT_BASE, this);
 
-            // S2Config->clear();
-            if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
-                confMDialog = new ConfDialogKTF(S2Config, this);
+                HarmDialog = new CheckDialogHarmonicKDV(BoardTypes::BT_BASE, this);
+                connect(HarmTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
 
-            checkBDialog = new CheckDialogKTF(BoardTypes::BT_BASE, this);
+                VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE, this);
+                connect(VibrTimer, &QTimer::timeout, VibrDialog, &EAbstractCheckDialog::USBUpdate);
 
-            corDialog = new CorDialogKTF(this);
+                // S2Config->clear();
+                if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
+                    confMDialog = new ConfDialogKDV(S2Config, this);
 
-            WarnAlarmKTFDialog = new WarnAlarmKTF(Alarm, AlarmW);
-            connect(AlarmW, &AlarmWidget::ModuleWarnButtonPressed, WarnAlarmKTFDialog, &QDialog::show);
-            connect(Alarm, &AlarmClass::SetWarnAlarmColor, WarnAlarmKTFDialog, &AbstractWarnAlarm::Update);
+                corDialog = new CorDialogKDV(this);
 
-            AvarAlarmKTFDialog = new AvarAlarmKTF(Alarm, AlarmW);
-            connect(AlarmW, &AlarmWidget::ModuleAlarmButtonPressed, AvarAlarmKTFDialog, &QDialog::show);
-            connect(Alarm, &AlarmClass::SetAlarmColor, AvarAlarmKTFDialog, &AbstractAvarAlarm::Update);
-
-            break;
-        }
-        }
-        break;
-    }
-    case Config::MTB_A3:
-        switch (Board::GetInstance().typeM())
-        {
-        case Config::MTM_87:
-            checkBDialog = new CheckDialogKDV(BoardTypes::BT_BASE, this);
-
-            HarmDialog = new CheckDialogHarmonicKDV(BoardTypes::BT_BASE, this);
-            connect(HarmTimer, &QTimer::timeout, HarmDialog, &EAbstractCheckDialog::USBUpdate);
-
-            VibrDialog = new CheckDialogVibrKDV(BoardTypes::BT_BASE, this);
-            connect(VibrTimer, &QTimer::timeout, VibrDialog, &EAbstractCheckDialog::USBUpdate);
-
-            // S2Config->clear();
-            if (Board::GetInstance().interfaceType() != Board::InterfaceType::RS485)
-                confMDialog = new ConfDialogKDV(S2Config, this);
-
-            corDialog = new CorDialogKDV(this);
+                break;
+            }
 
             break;
         }
 
-        break;
-    }
+        connect(this, &Coma::ClearBsi, infoDialog, &InfoDialog::ClearBsi);
+        connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
+        connect(AlarmW, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
 
-    connect(this, &Coma::ClearBsi, infoDialog, &InfoDialog::ClearBsi);
-    connect(AlarmW, SIGNAL(SetWarnAlarmColor(QList<bool>)), checkBDialog, SLOT(SetWarnAlarmColor(QList<bool>)));
-    connect(AlarmW, SIGNAL(SetAlarmColor(QList<bool>)), checkBDialog, SLOT(SetAlarmColor(QList<bool>)));
+        switch (Board::GetInstance().interfaceType())
+        {
+        case Board::InterfaceType::USB:
+        {
+            NewTimersBda();
+            break;
+        }
+        case Board::InterfaceType::Ethernet:
+        {
+            connect(Ch104, SIGNAL(Floatsignalsready(IEC104Thread::FlSignals104 *)), checkBDialog,
+                SLOT(UpdateFlData(IEC104Thread::FlSignals104 *)));
+            connect(Ch104, SIGNAL(Sponsignalsready(IEC104Thread::SponSignals *)), checkBDialog,
+                SLOT(UpdateSponData(IEC104Thread::SponSignals *)));
 
-    switch (Board::GetInstance().interfaceType())
-    {
-    case Board::InterfaceType::USB:
-    {
-        NewTimersBda();
-        break;
-    }
-    case Board::InterfaceType::Ethernet:
-    {
-        connect(Ch104, SIGNAL(Floatsignalsready(IEC104Thread::FlSignals104 *)), checkBDialog,
-            SLOT(UpdateFlData(IEC104Thread::FlSignals104 *)));
-        connect(Ch104, SIGNAL(Sponsignalsready(IEC104Thread::SponSignals *)), checkBDialog,
-            SLOT(UpdateSponData(IEC104Thread::SponSignals *)));
+            connect(timeDialog, &MNKTime::ethTimeRequest, Ch104, &IEC104::InterrogateTimeGr15);
+            connect(Ch104, &IEC104::Bs104signalsready, timeDialog, &MNKTime::FillTimeFrom104);
+            connect(timeDialog, &MNKTime::ethWriteTimeToModule, Ch104, &IEC104::com51WriteTime);
 
-        connect(timeDialog, &MNKTime::ethTimeRequest, Ch104, &IEC104::InterrogateTimeGr15);
-        connect(Ch104, &IEC104::Bs104signalsready, timeDialog, &MNKTime::FillTimeFrom104);
-        connect(timeDialog, &MNKTime::ethWriteTimeToModule, Ch104, &IEC104::com51WriteTime);
+            connect(corDialog, &AbstractCorDialog::SendCom45, Ch104, &IEC104::Com45);
+            connect(corDialog, &AbstractCorDialog::SendCom50, Ch104, &IEC104::Com50);
+            connect(corDialog, &AbstractCorDialog::CorReadRequest, Ch104, &IEC104::CorReadRequest);
+            connect(Ch104, &IEC104::SendMessageOk, corDialog, &AbstractCorDialog::MessageOk);
+            connect(Ch104, &IEC104::Floatsignalsready, corDialog, &AbstractCorDialog::UpdateFlCorData);
 
-        connect(corDialog, &AbstractCorDialog::SendCom45, Ch104, &IEC104::Com45);
-        connect(corDialog, &AbstractCorDialog::SendCom50, Ch104, &IEC104::Com50);
-        connect(corDialog, &AbstractCorDialog::CorReadRequest, Ch104, &IEC104::CorReadRequest);
-        connect(Ch104, &IEC104::SendMessageOk, corDialog, &AbstractCorDialog::MessageOk);
-        connect(Ch104, &IEC104::Floatsignalsready, corDialog, &AbstractCorDialog::UpdateFlCorData);
+            connect(confMDialog, &AbstractConfDialog::ReadConfig, Ch104, &IEC104::SelectFile);
+            connect(Ch104, &IEC104::SendS2fromiec104, confMDialog, &AbstractConfDialog::FillConf);
+            connect(confMDialog, &AbstractConfDialog::writeConfFile, Ch104, &IEC104::FileReady);
+            connect(Ch104, &IEC104::SendConfMessageOk, confMDialog, &AbstractConfDialog::WriteConfMessageOk);
+            break;
+        }
+        case Board::InterfaceType::RS485:
+        {
+            connect(ChModbus, SIGNAL(ModbusState(ConnectionStates)), checkBDialog,
+                SLOT(onModbusStateChanged(ConnectionStates)));
+            connect(ChModbus, SIGNAL(SignalsReceived(QList<ModBus::SignalStruct>)), checkBDialog,
+                SLOT(UpdateModBusData(QList<ModBus::SignalStruct>)));
 
-        connect(confMDialog, &AbstractConfDialog::ReadConfig, Ch104, &IEC104::SelectFile);
-        connect(Ch104, &IEC104::SendS2fromiec104, confMDialog, &AbstractConfDialog::FillConf);
-        connect(confMDialog, &AbstractConfDialog::writeConfFile, Ch104, &IEC104::FileReady);
-        connect(Ch104, &IEC104::SendConfMessageOk, confMDialog, &AbstractConfDialog::WriteConfMessageOk);
-        break;
-    }
-    case Board::InterfaceType::RS485:
-    {
-        connect(ChModbus, SIGNAL(ModbusState(ConnectionStates)), checkBDialog,
-            SLOT(onModbusStateChanged(ConnectionStates)));
-        connect(ChModbus, SIGNAL(SignalsReceived(QList<ModBus::SignalStruct>)), checkBDialog,
-            SLOT(UpdateModBusData(QList<ModBus::SignalStruct>)));
+            connect(timeDialog, &MNKTime::modBusTimeRequest, ChModbus, &ModBus::ReadTime);
+            connect(ChModbus, &ModBus::TimeSignalsReceived, timeDialog, &MNKTime::FillTimeFromModBus);
+            connect(timeDialog, &MNKTime::modbusWriteTimeToModule, ChModbus, &ModBus::WriteTime);
+            connect(ChModbus, &ModBus::TimeReadError, timeDialog, &MNKTime::ErrorRead);
+            connect(ChModbus, &ModBus::TimeWritten, timeDialog, &MNKTime::TimeWritten);
 
-        connect(timeDialog, &MNKTime::modBusTimeRequest, ChModbus, &ModBus::ReadTime);
-        connect(ChModbus, &ModBus::TimeSignalsReceived, timeDialog, &MNKTime::FillTimeFromModBus);
-        connect(timeDialog, &MNKTime::modbusWriteTimeToModule, ChModbus, &ModBus::WriteTime);
-        connect(ChModbus, &ModBus::TimeReadError, timeDialog, &MNKTime::ErrorRead);
-        connect(ChModbus, &ModBus::TimeWritten, timeDialog, &MNKTime::TimeWritten);
-
-        connect(ChModbus, &ModBus::ErrorRead, corDialog, &AbstractCorDialog::ErrorRead);
-        connect(ChModbus, &ModBus::CorSignalsReceived, corDialog, &AbstractCorDialog::ModBusUpdateCorData);
-        connect(ChModbus, &ModBus::CorSignalsWritten, corDialog, &AbstractCorDialog::MessageOk);
-        connect(corDialog, &AbstractCorDialog::RS485WriteCorBd, ChModbus,
-            &ModBus::ModWriteCor); //, int*)));
-        connect(corDialog, &AbstractCorDialog::RS485ReadCorBd, ChModbus, &ModBus::ModReadCor);
-        break;
-    }
-    default:
-        break;
-    }
+            connect(ChModbus, &ModBus::ErrorRead, corDialog, &AbstractCorDialog::ErrorRead);
+            connect(ChModbus, &ModBus::CorSignalsReceived, corDialog, &AbstractCorDialog::ModBusUpdateCorData);
+            connect(ChModbus, &ModBus::CorSignalsWritten, corDialog, &AbstractCorDialog::MessageOk);
+            connect(corDialog, &AbstractCorDialog::RS485WriteCorBd, ChModbus,
+                &ModBus::ModWriteCor); //, int*)));
+            connect(corDialog, &AbstractCorDialog::RS485ReadCorBd, ChModbus, &ModBus::ModReadCor);
+            break;
+        }
+        default:
+            break;
+        } */
 }
 
 void Coma::PrepareDialogs()
 {
-    infoDialog = new InfoDialog(this);
-    jourDialog = new JournalDialog(Ch104);
-    timeDialog = new MNKTime(this);
-
+    //    infoDialog = new InfoDialog(this);
+    //    jourDialog = new JournalDialog(Ch104);
+    //    timeDialog = new MNKTime(this);
+    m_Module = Module::createModule(BdaTimer);
+    Alarm->setModule(m_Module);
+    AlarmStateAllDialog = new AlarmStateAll;
     setupQConnections();
 }
 
 void Coma::CloseDialogs()
 {
-
-    AlrmTimer->stop();
-
-    QList<QDialog *> widgets = findChildren<QDialog *>();
-
-    for (auto &i : widgets)
+    m_Module->closeDialogs();
+    if (AlarmStateAllDialog != nullptr)
     {
-        qDebug() << i;
-        i->close();
-        i->deleteLater();
+        AlrmTimer->stop();
+        AlarmStateAllDialog->close();
+        AlarmStateAllDialog = nullptr;
     }
+
+    //    AlrmTimer->stop();
+
+    //    QList<QDialog *> widgets = findChildren<QDialog *>();
+
+    //    for (auto &i : widgets)
+    //    {
+    //        qDebug() << i;
+    //        i->close();
+    //        i->deleteLater();
+    //    }
 }
 
 void Coma::New104()
@@ -681,44 +683,59 @@ void Coma::NewUSB()
 
 void Coma::NewTimers()
 {
-    TimeTimer = new QTimer(this);
-    TimeTimer->setInterval(1000);
+    //    TimeTimer = new QTimer(this);
+    //    TimeTimer->setInterval(1000);
 
-    BdaTimer = new QTimer(this);
-    BdaTimer->setInterval(ANMEASINT);
-
-    HarmTimer = new QTimer;
-    HarmTimer->setInterval(ANMEASINT);
-
-    VibrTimer = new QTimer;
-    VibrTimer->setInterval(ANMEASINT);
+    BdaTimer = new QTimer;
+    BdaTimer->setInterval(1000);
 
     AlrmTimer = new QTimer;
-    AlrmTimer->setInterval(10000);
+    AlrmTimer->setInterval(5000);
+    AlrmTimer->start();
 
-    ReceiveTimer = new QTimer(this);
-    ReceiveTimer->setInterval(ANMEASINT);
+    ReceiveTimer = new QTimer;
+    ReceiveTimer->setInterval(2000);
     connect(ReceiveTimer, &QTimer::timeout, this, &Coma::FileTimeOut);
 
-    ReconnectTimer = new QTimer(this);
-    ReconnectTimer->setInterval(INTERVAL::RECONNECT);
-    ReconnectTimer->setSingleShot(true);
-    connect(ReconnectTimer, &QTimer::timeout, this, &Coma::AttemptToRec);
+    // BdaTimer = new QTimer(this);
+    //    BdaTimer->setInterval(ANMEASINT);
+
+    //    HarmTimer = new QTimer;
+    //    HarmTimer->setInterval(ANMEASINT);
+
+    //    VibrTimer = new QTimer;
+    //    VibrTimer->setInterval(ANMEASINT);
+
+    //    AlrmTimer = new QTimer;
+    //    AlrmTimer->setInterval(10000);
+
+    //    ReceiveTimer = new QTimer(this);
+    //    ReceiveTimer->setInterval(ANMEASINT);
+    //    connect(ReceiveTimer, &QTimer::timeout, this, &Coma::FileTimeOut);
+
+    //    ReconnectTimer = new QTimer(this);
+    //    ReconnectTimer->setInterval(INTERVAL::RECONNECT);
+    //    ReconnectTimer->setSingleShot(true);
+    //    connect(ReconnectTimer, &QTimer::timeout, this, &Coma::AttemptToRec);
 }
 
 void Coma::NewTimersBda()
 {
-    connect(BdaTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
-    //   connect(BdaTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::UpdateHealth);
-
-    auto checkDialogs = this->findChildren<EAbstractCheckDialog *>();
-    for (const auto &dialog : checkDialogs)
-    {
-        qDebug() << dialog;
-        connect(BdaTimer, &QTimer::timeout, dialog, &EAbstractCheckDialog::USBUpdate);
-    }
+    connect(AlrmTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
     if (AlarmStateAllDialog != nullptr)
-        connect(AlrmTimer, &QTimer::timeout, [&]() { AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth); });
+        connect(AlrmTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::CallUpdateHealth);
+    //    connect(BdaTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
+    //    //   connect(BdaTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::UpdateHealth);
+
+    //    auto checkDialogs = this->findChildren<EAbstractCheckDialog *>();
+    //    for (const auto &dialog : checkDialogs)
+    //    {
+    //        qDebug() << dialog;
+    //        connect(BdaTimer, &QTimer::timeout, dialog, &EAbstractCheckDialog::USBUpdate);
+    //    }
+    //    if (AlarmStateAllDialog != nullptr)
+    //        connect(AlrmTimer, &QTimer::timeout, [&]() { AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
+    //        });
 }
 
 bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
@@ -751,10 +768,7 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
     return false;
 }
 
-void Coma::SetMode(int mode)
-{
-    Mode = mode;
-}
+void Coma::SetMode(int mode) { Mode = mode; }
 
 void Coma::Go(const QString &parameter)
 {
@@ -772,7 +786,7 @@ void Coma::ReConnect()
         // QDialog *dlg = new QDialog;
 
         INFOMSG("Reconnect()");
-        TimeTimer->stop();
+        //        TimeTimer->stop();
         if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
         {
             qDebug() << "call Disconnect";
@@ -876,36 +890,36 @@ void Coma::ClearTW()
 //    return Error::Msg::NoError;
 //}
 
-void Coma::setConf(unsigned char typeConf)
-{
-    switch (typeConf)
-    {
-    case 0x01:
-        if (mainConfDialog != nullptr)
-            mainConfDialog->SetDefConf();
-        break;
-    case 0x02:
-        if (confBDialog != nullptr)
-            confBDialog->SetDefConf();
-        break;
-    case 0x03:
-        if (confMDialog != nullptr)
-            confMDialog->SetDefConf();
-        break;
-    default:
-        break;
-    }
-}
+// void Coma::setConf(unsigned char typeConf)
+//{
+//    switch (typeConf)
+//    {
+//    case 0x01:
+//        if (mainConfDialog != nullptr)
+//            mainConfDialog->SetDefConf();
+//        break;
+//    case 0x02:
+//        if (confBDialog != nullptr)
+//            confBDialog->SetDefConf();
+//        break;
+//    case 0x03:
+//        if (confMDialog != nullptr)
+//            confMDialog->SetDefConf();
+//        break;
+//    default:
+//        break;
+//    }
+//}
 
-void Coma::Fill()
-{
-    if (mainConfDialog != nullptr)
-        mainConfDialog->Fill();
-    if (confBDialog != nullptr)
-        confBDialog->Fill();
-    if (confMDialog != nullptr)
-        confMDialog->Fill();
-}
+// void Coma::Fill()
+//{
+//    if (mainConfDialog != nullptr)
+//        mainConfDialog->Fill();
+//    if (confBDialog != nullptr)
+//        confBDialog->Fill();
+//    if (confMDialog != nullptr)
+//        confMDialog->Fill();
+//}
 
 void Coma::FillBSI(IEC104Thread::BS104Signals *sig)
 {
@@ -987,15 +1001,9 @@ void Coma::FileTimeOut()
         QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
 }
 
-void Coma::SetProgressBar2Size(int size)
-{
-    SetProgressBarSize(2, size);
-}
+void Coma::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
 
-void Coma::SetProgressBar2(int cursize)
-{
-    SetProgressBar(2, cursize);
-}
+void Coma::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
 
 void Coma::SetProgressBarSize(int prbnum, int size)
 {
@@ -1120,7 +1128,7 @@ void Coma::Connect()
 void Coma::DisconnectAndClear()
 {
     INFOMSG("DisconnectAndClear()");
-    TimeTimer->stop();
+    //    TimeTimer->stop();
     if (Board::GetInstance().connectionState() != Board::ConnectionState::Closed)
     {
         AlarmW->Clear();
@@ -1134,18 +1142,18 @@ void Coma::DisconnectAndClear()
             ERMSG("Пустой MainTW");
             return;
         }
-        if (S2Config)
-        {
-            S2Config->clear();
-            ///вылетает при разрыве связи
-            delete S2Config;
-        }
-        if (S2ConfigForTune)
-        {
-            S2ConfigForTune->clear();
+        //        if (S2Config)
+        //        {
+        //            S2Config->clear();
+        //            ///вылетает при разрыве связи
+        //            delete S2Config;
+        //        }
+        //        if (S2ConfigForTune)
+        //        {
+        //            S2ConfigForTune->clear();
 
-            delete S2ConfigForTune;
-        }
+        //            delete S2ConfigForTune;
+        //        }
         // Проверить после отключения алармов
         // if (Reconnect)
         //    QMessageBox::information(this, "Разрыв связи", "Связь разорвана", QMessageBox::Ok, QMessageBox::Ok);
@@ -1158,10 +1166,7 @@ void Coma::DisconnectAndClear()
     Reconnect = false;
 }
 
-void Coma::resizeEvent(QResizeEvent *e)
-{
-    QMainWindow::resizeEvent(e);
-}
+void Coma::resizeEvent(QResizeEvent *e) { QMainWindow::resizeEvent(e); }
 
 void Coma::keyPressEvent(QKeyEvent *e)
 {
@@ -1174,67 +1179,69 @@ void Coma::keyPressEvent(QKeyEvent *e)
 
 void Coma::MainTWTabClicked(int tabindex)
 {
-    if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
-        return;
-    CurTabIndex = tabindex;
+    m_Module->parentTWTabClicked(tabindex);
+    //    if (tabindex == CurTabIndex) // to prevent double function invocation by doubleclicking on tab
+    //        return;
+    //    CurTabIndex = tabindex;
 
-    if (Board::GetInstance().interfaceType() == Board::InterfaceType::RS485)
-        ChModbus->Tabs(tabindex);
-    if (corDialog != nullptr)
-        corDialog->GetCorBd(tabindex);
-    //    if (checkBDialog != nullptr || HarmDialog != nullptr || VibrDialog != nullptr)
+    //    if (Board::GetInstance().interfaceType() == Board::InterfaceType::RS485)
+    //        ChModbus->Tabs(tabindex);
+    //    if (corDialog != nullptr)
+    //        corDialog->GetCorBd(tabindex);
+    //    //    if (checkBDialog != nullptr || HarmDialog != nullptr || VibrDialog != nullptr)
+    //    //    {
+    //    //        if (tabindex == CheckIndex || tabindex == CheckHarmIndex || tabindex == CheckVibrIndex)
+    //    //            BdaTimer->start();
+    //    //        else
+    //    //            BdaTimer->stop();
+    //    //    }
+
+    //    if (checkBDialog != nullptr)
     //    {
-    //        if (tabindex == CheckIndex || tabindex == CheckHarmIndex || tabindex == CheckVibrIndex)
+    //        if (tabindex == CheckIndex)
     //            BdaTimer->start();
     //        else
     //            BdaTimer->stop();
     //    }
+    //    if (HarmDialog != nullptr)
+    //    {
+    //        if (tabindex == CheckHarmIndex)
+    //            HarmTimer->start();
+    //        else
+    //            HarmTimer->stop();
+    //    }
 
-    if (checkBDialog != nullptr)
-    {
-        if (tabindex == CheckIndex)
-            BdaTimer->start();
-        else
-            BdaTimer->stop();
-    }
-    if (HarmDialog != nullptr)
-    {
-        if (tabindex == CheckHarmIndex)
-            HarmTimer->start();
-        else
-            HarmTimer->stop();
-    }
+    //    if (VibrDialog != nullptr)
+    //    {
+    //        if (tabindex == CheckVibrIndex)
+    //            VibrTimer->start();
+    //        else
+    //            VibrTimer->stop();
+    //    }
 
-    if (VibrDialog != nullptr)
-    {
-        if (tabindex == CheckVibrIndex)
-            VibrTimer->start();
-        else
-            VibrTimer->stop();
-    }
+    //    if (timeDialog != nullptr)
+    //    {
+    //        if (tabindex == TimeIndex)
+    //            TimeTimer->start();
+    //        else
+    //            TimeTimer->stop();
+    //    }
+    //    else
+    //        TimeTimer->stop();
 
-    if (timeDialog != nullptr)
-    {
-        if (tabindex == TimeIndex)
-            TimeTimer->start();
-        else
-            TimeTimer->stop();
-    }
-    else
-        TimeTimer->stop();
-
-    if (confMDialog != nullptr)
-    {
-        if (tabindex == ConfIndex)
-            confMDialog->ReadConf();
-    }
+    //    if (confMDialog != nullptr)
+    //    {
+    //        if (tabindex == ConfIndex)
+    //            confMDialog->ReadConf();
+    //    }
 }
 
 void Coma::SetDefConf()
 {
-    for (unsigned char i = 0x00; i != 0x03;)
-        setConf(++i);
-    Fill();
+    m_Module->setDefConf();
+    //    for (unsigned char i = 0x00; i != 0x03;)
+    //        setConf(++i);
+    //    Fill();
     QMessageBox::information(this, "Успешно", "Конфигурация по умолчанию", QMessageBox::Ok);
 }
 

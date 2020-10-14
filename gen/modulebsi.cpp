@@ -13,25 +13,22 @@ quint32 ModuleBSI::MType = 0;
 ModuleBSI::Bsi ModuleBSI::ModuleBsi;
 QString ModuleBSI::ModuleTypeString = "";
 
-ModuleBSI::ModuleBSI()
-{
-    ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
-}
+ModuleBSI::ModuleBSI() { ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF; }
 
 Error::Msg ModuleBSI::SetupBSI()
 {
     if (Commands::GetBsi(ModuleBsi) != Error::Msg::NoError)
         return Error::Msg::GeneralError;
-    auto *typeb = &Config::ModuleBaseBoards().value(ModuleBsi.MTypeB);
-    auto *typem = &Config::ModuleMezzanineBoards().value(ModuleBsi.MTypeM);
+    Config::ModuleDesc typeb = Config::ModuleBaseBoards().value(ModuleBsi.MTypeB);
+    Config::ModuleDesc typem = Config::ModuleMezzanineBoards().value(ModuleBsi.MTypeM);
     if ((ModuleBsi.MTypeB << 8) >= 0xA000 || (Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].Hex) >= 0x00A0)
     {
-        quint32 Type = (typeb->Hex << 8) + typem->Hex;
+        quint32 Type = (typeb.Hex << 8) + typem.Hex;
         ModuleTypeString = Config::ModuleBoards()[Type];
     }
     else
     {
-        ModuleTypeString = typeb->TextString + typem->TextString;
+        ModuleTypeString = typeb.TextString + typem.TextString;
     }
 
     if (!IsKnownModule())
@@ -39,20 +36,11 @@ Error::Msg ModuleBSI::SetupBSI()
     return Error::Msg::NoError;
 }
 
-QString ModuleBSI::GetModuleTypeString()
-{
-    return ModuleTypeString;
-}
+QString ModuleBSI::GetModuleTypeString() { return ModuleTypeString; }
 
-quint32 ModuleBSI::GetMType(BoardTypes type)
-{
-    return (type == BT_MEZONIN) ? ModuleBsi.MTypeM : ModuleBsi.MTypeB;
-}
+quint32 ModuleBSI::GetMType(BoardTypes type) { return (type == BT_MEZONIN) ? ModuleBsi.MTypeM : ModuleBsi.MTypeB; }
 
-quint32 ModuleBSI::Health()
-{
-    return ModuleBsi.Hth;
-}
+quint32 ModuleBSI::Health() { return ModuleBsi.Hth; }
 
 quint32 ModuleBSI::SerialNum(BoardTypes type)
 {
@@ -73,10 +61,7 @@ ModuleBSI::Bsi ModuleBSI::GetBsi()
     return bsi;
 }
 
-quint32 ModuleBSI::GetHealth()
-{
-    return ModuleBsi.Hth;
-}
+quint32 ModuleBSI::GetHealth() { return ModuleBsi.Hth; }
 
 bool ModuleBSI::IsKnownModule()
 {

@@ -21,7 +21,7 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-CheckKDVHarmonicDialog::CheckKDVHarmonicDialog(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
+CheckKDVHarmonicDialog::CheckKDVHarmonicDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
 
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
@@ -80,15 +80,9 @@ QWidget *CheckKDVHarmonicDialog::BdUI(int bdnum)
         return new QWidget;
     }
 }
-void CheckKDVHarmonicDialog::RefreshAnalogValues(int bdnum)
-{
-    Q_UNUSED(bdnum)
-}
+void CheckKDVHarmonicDialog::RefreshAnalogValues(int bdnum) { Q_UNUSED(bdnum) }
 
-void CheckKDVHarmonicDialog::PrepareHeadersForFile(int row)
-{
-    Q_UNUSED(row)
-}
+void CheckKDVHarmonicDialog::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
 
 void CheckKDVHarmonicDialog::WriteToFile(int row, int bdnum)
 {
@@ -111,15 +105,9 @@ void CheckKDVHarmonicDialog::WriteToFile(int row, int bdnum)
 //    w->setLayout(lyout);
 //    return nullptr;
 //}
-void CheckKDVHarmonicDialog::ChooseValuesToWrite()
-{
-}
-void CheckKDVHarmonicDialog::SetDefaultValuesToWrite()
-{
-}
-void CheckKDVHarmonicDialog::PrepareAnalogMeasurements()
-{
-}
+void CheckKDVHarmonicDialog::ChooseValuesToWrite() { }
+void CheckKDVHarmonicDialog::SetDefaultValuesToWrite() { }
+void CheckKDVHarmonicDialog::PrepareAnalogMeasurements() { }
 
 void CheckKDVHarmonicDialog::USBUpdate()
 {
@@ -159,10 +147,7 @@ void CheckKDVHarmonicDialog::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
     }
 }
 
-void CheckKDVHarmonicDialog::UpdateSponData(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal)
-}
+void CheckKDVHarmonicDialog::UpdateSponData(IEC104Thread::SponSignals *Signal) { Q_UNUSED(Signal) }
 
 void CheckKDVHarmonicDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {

@@ -11,7 +11,7 @@ class ConfKIVDialog : public AbstractConfDialog
 {
     Q_OBJECT
 public:
-    explicit ConfKIVDialog(S2ConfigType *S2Config, QWidget *parent = nullptr);
+    explicit ConfKIVDialog(ConfigKIV *ckiv, QWidget *parent = nullptr);
     ~ConfKIVDialog();
 
 private:
