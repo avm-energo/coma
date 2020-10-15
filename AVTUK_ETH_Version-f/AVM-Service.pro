@@ -35,6 +35,7 @@ SOURCES += \
 ../config/confktfdialog.cpp \
 ../dialogs/fwuploaddialog.cpp \
 ../gen/udialog.cpp \
+    ../iec104/iec104thread.cpp \
 ../module/alarm.cpp \
     ../module/alarmkdv.cpp \
     ../module/journals.cpp \
@@ -77,7 +78,6 @@ main.cpp \
 ../gen/board.cpp \
 ../gen/error.cpp \
 ../gen/files.cpp \
-../gen/journals.cpp \
 ../gen/logclass.cpp \
 ../gen/modulebsi.cpp \
 ../gen/report.cpp \
@@ -124,6 +124,7 @@ HEADERS += \
 ../config/confktfdialog.h \
 ../dialogs/fwuploaddialog.h \
 ../gen/udialog.h \
+    ../iec104/iec104thread.h \
 ../module/alarm.h \
     ../module/alarmkdv.h \
     ../module/journals.h \
@@ -166,7 +167,6 @@ coma.h \
 ../gen/colors.h \
 ../gen/error.h \
 ../gen/files.h \
-../gen/journals.h \
 ../gen/logclass.h \
 ../gen/modulebsi.h \
 ../gen/report.h \

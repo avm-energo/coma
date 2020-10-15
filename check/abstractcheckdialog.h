@@ -73,6 +73,8 @@ signals:
 public slots:
     void StopAnalogMeasurements();
     virtual void USBUpdate() = 0; // update BDs from USB
+    virtual void ETHUpdate() = 0; // update BDs from Ethernet (by 104 protocol)
+    virtual void MBSUpdate() = 0; // update BDs from RS485 (by modbus protocol)
     virtual void SetWarnColor(int position, bool value) = 0;
     virtual void SetAlarmColor(int position, bool value) = 0;
     virtual void StartBdMeasurements();

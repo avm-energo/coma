@@ -22,7 +22,7 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-CheckKIVDialog::CheckKIVDialog(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
+CheckKIVDialog::CheckKIVDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
     //    EParent = parent;
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
@@ -180,6 +180,10 @@ void CheckKIVDialog::USBUpdate()
             ChKIV->FillBd8(this);
     }
 }
+
+void CheckKIVDialog::ETHUpdate() { }
+
+void CheckKIVDialog::MBSUpdate() { }
 
 void CheckKIVDialog::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
 {

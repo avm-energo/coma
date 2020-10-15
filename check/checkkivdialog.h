@@ -10,7 +10,7 @@ class CheckKIVDialog : public AbstractCheckDialog
 {
     Q_OBJECT
 public:
-    explicit CheckKIVDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    explicit CheckKIVDialog(QWidget *parent = nullptr);
     ~CheckKIVDialog();
     //    QWidget *EParent;
 
@@ -20,6 +20,8 @@ public slots:
     void UpdateFlData(IEC104Thread::FlSignals104 *);
     void UpdateSponData(IEC104Thread::SponSignals *);
     void USBUpdate() override;
+    void ETHUpdate() override;
+    void MBSUpdate() override;
     //    void MainTWTabClicked(int tabindex);
 
 private:
