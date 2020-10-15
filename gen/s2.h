@@ -42,6 +42,8 @@ public:
     static void updCRC32(char byte, quint32 *dwCRC32);
     static bool CheckCRC32(void *m, quint32 length, quint32 crctocheck);
 
+    static quint32 updateCRC32(unsigned char ch, quint32 crc);
+    static quint32 crc32buf(const QByteArray &data);
 private:
     //    const unsigned long dwPolynomial = 0xEDB88320;
 };

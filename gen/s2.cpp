@@ -174,6 +174,17 @@ quint32 S2::GetCRC32(char *data, quint32 len)
     return dwCRC32;
 }
 
+quint32 S2::updateCRC32(unsigned char ch, quint32 crc)
+{
+    return (_crc32_t[((crc) ^ (static_cast<quint8>(ch))) & 0xff] ^ ((crc) >> 8));
+}
+
+quint32 S2::crc32buf(const QByteArray &data)
+{
+    return ~std::accumulate(data.begin(), data.end(), quint32(0xFFFFFFFF),
+        [](quint32 oldcrc32, char buf) { return updateCRC32(buf, oldcrc32); });
+}
+
 quint32 S2::getTime32()
 {
     QDateTime dt;
