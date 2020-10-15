@@ -3,6 +3,7 @@
 
 #include "../gen/logclass.h"
 #include "../gen/s2.h"
+
 #include <QObject>
 #include <QQueue>
 #include <QVariant>
@@ -32,11 +33,11 @@
 // определения типа данных
 // TYPE IDENTIFICATION
 
-#define M_SP_NA_1 1 // Single-point information
-#define M_DP_NA_1 3 // Double-point information
-#define M_ST_NA_1 5 // Step position information
-#define M_BO_NA_1 7 // Bitstring of 32 bit
-#define M_ME_NA_1 9 // Measured value, normalized value
+#define M_SP_NA_1 1  // Single-point information
+#define M_DP_NA_1 3  // Double-point information
+#define M_ST_NA_1 5  // Step position information
+#define M_BO_NA_1 7  // Bitstring of 32 bit
+#define M_ME_NA_1 9  // Measured value, normalized value
 #define M_ME_NC_1 13 // Measured value, short floating point value
 #define M_SP_TB_1 30 // Single-point information with time tag CP56Time2a
 #define M_DP_TB_1 31 // Double-point information with time tag CP56Time2a
@@ -49,10 +50,10 @@
 #define C_RC_NA_1 47 // Regulating step command
 #define C_SE_NA_1 48 // Set point command, normalised value
 #define C_SE_NC_1 50
-#define C_BO_NA_1 51 // Bitstring of 32 bit
-#define C_SC_TA_1 58 // Single command with time tag CP56Time2a
-#define C_DC_TA_1 59 // Double command with time tag CP56Time2a
-#define M_EI_NA_1 70 // End of initialization
+#define C_BO_NA_1 51  // Bitstring of 32 bit
+#define C_SC_TA_1 58  // Single command with time tag CP56Time2a
+#define C_DC_TA_1 59  // Double command with time tag CP56Time2a
+#define M_EI_NA_1 70  // End of initialization
 #define C_IC_NA_1 100 // Interrrogation command
 #define C_CI_NA_1 101 // Counter interrrogation command
 #define C_CS_NA_1 103 // Clock syncronization command
@@ -94,24 +95,25 @@ namespace IEC104Signals
 {
 struct BitString
 {
-    quint8 SigAdr[3];
-    quint32 SigVal;
-    quint8 SigQuality;
+    //    quint8 sigAdr[3];
+    quint32 sigAdr;
+    quint32 sigVal;
+    quint8 sigQuality;
 }; // первое - номера сигналов, второе - их значения ("" ~ недостоверное
    // значение), третье - метка времени
 
 struct FloatWithTime
 {
-    quint32 SigAdr;
-    float SigVal;
-    quint8 SigQuality;
+    quint32 sigAdr;
+    float sigVal;
+    quint8 sigQuality;
     quint64 CP56Time;
 };
 
 struct SinglePointWithTime
 {
-    quint32 SigAdr;
-    quint8 SigVal;
+    quint32 sigAdr;
+    quint8 sigVal;
     quint64 CP56Time;
 };
 }
@@ -194,7 +196,7 @@ public:
     int incLS, count, NoAnswer;
     bool FileSending;
     QQueue<InputStruct> *m_inputQueue;
-    QQueue<SignalsStruct> *m_outputQueue;
+    static QList<SignalsStruct> m_outputList;
     static QMutex s_ParseReadMutex;
     static QMutex s_ParseWriteMutex;
     static QMutex s_IEC104OutQueueMutex;
@@ -232,14 +234,14 @@ private:
     typedef struct
     {
         unsigned char Number; // number of Informational Objects
-        unsigned char SQ; // Single <0> or Series <1> of Objects
+        unsigned char SQ;     // Single <0> or Series <1> of Objects
     } QualifierVariableStructute;
 
     typedef struct
     {
-        unsigned char cause; // <0..63> cause number
-        unsigned char confirm; // <0> - positive , <1> - negative
-        unsigned char test; // <0> - not a test, <1> - test
+        unsigned char cause;     // <0..63> cause number
+        unsigned char confirm;   // <0> - positive , <1> - negative
+        unsigned char test;      // <0> - not a test, <1> - test
         unsigned char initiator; // number of initiating address
     } CauseOfTransmission;
 
@@ -296,7 +298,7 @@ private:
         str.type = type;
         str.data.setValue(signal);
         s_IEC104OutQueueMutex.lock();
-        m_outputQueue->push_front(str);
+        m_outputList.append(str);
         s_IEC104OutQueueMutex.unlock();
     }
 

@@ -17,8 +17,10 @@ public:
 public slots:
     void SetAlarmColor(int position, bool value) override;
     void SetWarnColor(int position, bool value) override;
-    void UpdateFlData(IEC104Thread::FlSignals104 *);
-    void UpdateSponData(IEC104Thread::SponSignals *);
+    //    void UpdateFlData(IEC104Thread::FlSignals104 *);
+    //    void UpdateSponData(IEC104Thread::SponSignals *);
+    void updateFloatData();
+    void updateSPData();
     void USBUpdate() override;
     void ETHUpdate() override;
     void MBSUpdate() override;
@@ -26,11 +28,11 @@ public slots:
 
 private:
     Check_KIV *ChKIV;
-    QWidget *AutoCheckUI(); // UI для автоматической проверки модуля
+    QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
     QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
-    void RefreshAnalogValues(int bdnum) override; // обновление полей в GUI из полученного
-                                                  // соответствующего Bd_block
-    void PrepareHeadersForFile(int row) override; // row - строка для записи заголовков
+    void RefreshAnalogValues(int bdnum) override;  // обновление полей в GUI из полученного
+                                                   // соответствующего Bd_block
+    void PrepareHeadersForFile(int row) override;  // row - строка для записи заголовков
     void WriteToFile(int row, int bdnum) override; // row - номер строки для записи в файл
                                                    // xlsx, bdnum - номер блока данных
     void ChooseValuesToWrite() override;

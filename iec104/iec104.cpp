@@ -20,9 +20,14 @@ IEC104::IEC104(S2ConfigType *s2, QObject *parent) : QObject(parent)
     Log->info("=== Log started ===");
 }
 
-IEC104::~IEC104() { }
+IEC104::~IEC104()
+{
+}
 
-bool IEC104::Working() { return (EthThreadWorking | ParseThreadWorking); }
+bool IEC104::Working()
+{
+    return (EthThreadWorking | ParseThreadWorking);
+}
 
 void IEC104::Connect(Settings &st)
 {
@@ -42,42 +47,91 @@ void IEC104::Connect(Settings &st)
     connect(eth, &Ethernet::Connected, this, &IEC104::EthThreadStarted);
     connect(eth, &Ethernet::Disconnected, this, &IEC104::EthThreadFinished);
 
-    Parse = new IEC104Thread(Log, InputQueue, S2Config);
+    IEC104Thread *m_thread104 = new IEC104Thread(Log, m_inputQueue, S2Config);
     QThread *thr2 = new QThread;
-    Parse->moveToThread(thr2);
-    connect(this, &IEC104::StopAll, Parse, &IEC104Thread::Stop);
-    connect(Parse, &IEC104Thread::Finished, Parse, &QObject::deleteLater);
-    connect(Parse, &IEC104Thread::Finished, thr2, &QThread::quit);
-    connect(Parse, &IEC104Thread::Finished, this, &IEC104::ParseThreadFinished);
+    m_thread104->moveToThread(thr2);
+    connect(this, &IEC104::StopAll, m_thread104, &IEC104Thread::Stop);
+    connect(m_thread104, &IEC104Thread::Finished, m_thread104, &QObject::deleteLater);
+    connect(m_thread104, &IEC104Thread::Finished, thr2, &QThread::quit);
+    connect(m_thread104, &IEC104Thread::Finished, this, &IEC104::ParseThreadFinished);
     connect(thr2, &QThread::finished, thr2, &QObject::deleteLater);
-    connect(thr2, &QThread::started, Parse, &IEC104Thread::Run);
-    connect(Parse, &IEC104Thread::Started, this, &IEC104::ParseThreadStarted);
-    connect(eth, &Ethernet::Connected, Parse, &IEC104Thread::StartDT);
+    connect(thr2, &QThread::started, m_thread104, &IEC104Thread::Run);
+    connect(m_thread104, &IEC104Thread::Started, this, &IEC104::ParseThreadStarted);
+    connect(eth, &Ethernet::Connected, m_thread104, &IEC104Thread::StartDT);
     connect(eth, &Ethernet::Finished, this, &IEC104::EmitReconnectSignal);
-    connect(Parse, &IEC104Thread::WriteData, eth, &Ethernet::InitiateWriteDataToPort);
-    connect(eth, &Ethernet::NewDataArrived, Parse, &IEC104Thread::GetSomeData);
-    connect(Parse, &IEC104Thread::ReconnectSignal, this, &IEC104::EmitReconnectSignal);
+    connect(m_thread104, &IEC104Thread::WriteData, eth, &Ethernet::InitiateWriteDataToPort);
+    connect(eth, &Ethernet::NewDataArrived, m_thread104, &IEC104Thread::GetSomeData);
+    connect(m_thread104, &IEC104Thread::ReconnectSignal, this, &IEC104::EmitReconnectSignal);
 
-    connect(Parse, &IEC104Thread::Bs104signalsreceived, this, &IEC104::Bs104signalsready, Qt::BlockingQueuedConnection);
-    connect(Parse, &IEC104Thread::Floatsignalsreceived, this, &IEC104::Floatsignalsready, Qt::BlockingQueuedConnection);
-    connect(Parse, &IEC104Thread::Sponsignalsreceived, this, &IEC104::Sponsignalsready, Qt::BlockingQueuedConnection);
-    connect(Parse, &IEC104Thread::SendS2fromParse, this, &IEC104::SendS2fromiec104);
-    connect(Parse, &IEC104Thread::SendJourSysfromParse, this, &IEC104::SendJourSysfromiec104);
-    connect(Parse, &IEC104Thread::SendJourWorkfromParse, this, &IEC104::SendJourWorkfromiec104);
-    connect(Parse, &IEC104Thread::SendJourMeasfromParse, this, &IEC104::SendJourMeasfromiec104);
+    //    connect(m_thread104, &IEC104Thread::Bs104signalsreceived, this, &IEC104::Bs104signalsready,
+    //        Qt::BlockingQueuedConnection);
+    //    connect(m_thread104, &IEC104Thread::Floatsignalsreceived, this, &IEC104::Floatsignalsready,
+    //        Qt::BlockingQueuedConnection);
+    //    connect(
+    //        m_thread104, &IEC104Thread::Sponsignalsreceived, this, &IEC104::Sponsignalsready,
+    //        Qt::BlockingQueuedConnection);
+    connect(m_thread104, &IEC104Thread::SendS2fromParse, this, &IEC104::SendS2fromiec104);
+    connect(m_thread104, &IEC104Thread::SendJourSysfromParse, this, &IEC104::SendJourSysfromiec104);
+    connect(m_thread104, &IEC104Thread::SendJourWorkfromParse, this, &IEC104::SendJourWorkfromiec104);
+    connect(m_thread104, &IEC104Thread::SendJourMeasfromParse, this, &IEC104::SendJourMeasfromiec104);
 
-    connect(Parse, &IEC104Thread::SendMessageOk, this, &IEC104::SendMessageOk);
+    connect(m_thread104, &IEC104Thread::SendMessageOk, this, &IEC104::SendMessageOk);
 
-    connect(Parse, &IEC104Thread::SetDataSize, this, &IEC104::SetDataSize);
-    connect(Parse, &IEC104Thread::SetDataCount, this, &IEC104::SetDataCount);
-    connect(Parse, &IEC104Thread::SendMessagefromParse, this, &IEC104::SendConfMessageOk);
+    connect(m_thread104, &IEC104Thread::SetDataSize, this, &IEC104::SetDataSize);
+    connect(m_thread104, &IEC104Thread::SetDataCount, this, &IEC104::SetDataCount);
+    connect(m_thread104, &IEC104Thread::SendMessagefromParse, this, &IEC104::SendConfMessageOk);
 
-    Parse->SetBaseAdr(st.baseadr);
-    Parse->incLS = 0;
-    Parse->count = 0;
+    m_thread104->SetBaseAdr(st.baseadr);
+    m_thread104->incLS = 0;
+    m_thread104->count = 0;
 
     thr->start();
     thr2->start();
+}
+
+void IEC104::getSignalsFrom104(quint32 firstSignalAdr, quint32 lastSignalAdr, IEC104Thread::IEC104SignalTypes type,
+    QList<IEC104Thread::SignalsStruct> &outlist)
+{
+    IEC104Thread::s_IEC104OutQueueMutex.lock();
+    if (IEC104Thread::m_outputList.isEmpty())
+    {
+        IEC104Thread::s_IEC104OutQueueMutex.unlock();
+        return;
+    }
+    for (int i = 0; i < IEC104Thread::m_outputList.size(); ++i)
+    {
+        if (IEC104Thread::m_outputList.at(i).type == type)
+        {
+            QVariant signal = IEC104Thread::m_outputList.at(i).data;
+            switch (type)
+            {
+            case IEC104Thread::IEC104SignalTypes::BitString:
+            {
+                IEC104Signals::BitString bs = qvariant_cast<IEC104Signals::BitString>(signal);
+                //                quint32 bsaddress;
+                //                memcpy(&bsaddress, &(bs.sigAdr[0]), sizeof(bs.sigAdr));
+                if ((bs.sigAdr >= firstSignalAdr) && (bs.sigAdr <= lastSignalAdr))
+                    outlist.append(IEC104Thread::m_outputList.takeAt(i));
+                break;
+            }
+            case IEC104Thread::IEC104SignalTypes::FloatWithTime:
+            {
+                IEC104Signals::FloatWithTime fwt = qvariant_cast<IEC104Signals::FloatWithTime>(signal);
+                if ((fwt.sigAdr >= firstSignalAdr) && (fwt.sigAdr <= lastSignalAdr))
+                    outlist.append(IEC104Thread::m_outputList.takeAt(i));
+                break;
+            }
+            case IEC104Thread::IEC104SignalTypes::SinglePointWithTime:
+            {
+                IEC104Signals::SinglePointWithTime sp = qvariant_cast<IEC104Signals::SinglePointWithTime>(signal);
+                if ((sp.sigAdr >= firstSignalAdr) && (sp.sigAdr <= lastSignalAdr))
+                    outlist.append(IEC104Thread::m_outputList.takeAt(i));
+                break;
+            }
+            }
+        }
+    }
+    IEC104Thread::s_IEC104OutQueueMutex.unlock();
 }
 
 void IEC104::CorReadRequest()
@@ -85,7 +139,7 @@ void IEC104::CorReadRequest()
     IEC104Thread::InputStruct inp;
     inp.cmd = IEC104Thread::CM104_CORREADREQUEST;
     IEC104Thread::s_ParseWriteMutex.lock();
-    InputQueue.enqueue(inp);
+    m_inputQueue.enqueue(inp);
     IEC104Thread::s_ParseWriteMutex.unlock();
 }
 
@@ -95,7 +149,7 @@ void IEC104::SelectFile(char numFile)
     inp.cmd = IEC104Thread::CM104_SELECTFILE;
     inp.args.uintarg = numFile;
     IEC104Thread::s_ParseWriteMutex.lock();
-    InputQueue.enqueue(inp);
+    m_inputQueue.enqueue(inp);
     IEC104Thread::s_ParseWriteMutex.unlock();
 }
 
@@ -105,7 +159,7 @@ void IEC104::FileReady(S2ConfigType *File)
     inp.cmd = IEC104Thread::CM104_FILEREADY;
     inp.args.ptrarg = File;
     IEC104Thread::s_ParseWriteMutex.lock();
-    InputQueue.enqueue(inp);
+    m_inputQueue.enqueue(inp);
     IEC104Thread::s_ParseWriteMutex.unlock();
 }
 
@@ -115,7 +169,7 @@ void IEC104::Com45(quint32 com)
     inp.cmd = IEC104Thread::CM104_COM45;
     inp.args.uintarg = com;
     IEC104Thread::s_ParseWriteMutex.lock();
-    InputQueue.enqueue(inp);
+    m_inputQueue.enqueue(inp);
     IEC104Thread::s_ParseWriteMutex.unlock();
 }
 
@@ -126,7 +180,7 @@ void IEC104::Com50(quint32 adr, float param)
     inp.args.uintarg = adr;
     inp.args.flarg = param;
     IEC104Thread::s_ParseWriteMutex.lock();
-    InputQueue.enqueue(inp);
+    m_inputQueue.enqueue(inp);
     IEC104Thread::s_ParseWriteMutex.unlock();
 }
 
@@ -135,7 +189,7 @@ void IEC104::InterrogateTimeGr15()
     IEC104Thread::InputStruct inp;
     inp.cmd = IEC104Thread::CM104_INTERROGATETIMEGR15;
     IEC104Thread::s_ParseWriteMutex.lock();
-    InputQueue.enqueue(inp);
+    m_inputQueue.enqueue(inp);
     IEC104Thread::s_ParseWriteMutex.unlock();
 }
 
@@ -145,11 +199,14 @@ void IEC104::com51WriteTime(uint time)
     inp.cmd = IEC104Thread::CM104_COM51WRITETIME;
     inp.args.uintarg = time;
     IEC104Thread::s_ParseWriteMutex.lock();
-    InputQueue.enqueue(inp);
+    m_inputQueue.enqueue(inp);
     IEC104Thread::s_ParseWriteMutex.unlock();
 }
 
-void IEC104::EthThreadStarted() { EthThreadWorking = true; }
+void IEC104::EthThreadStarted()
+{
+    EthThreadWorking = true;
+}
 
 void IEC104::EthThreadFinished()
 {
@@ -158,7 +215,10 @@ void IEC104::EthThreadFinished()
         emit Finished();
 }
 
-void IEC104::ParseThreadStarted() { ParseThreadWorking = true; }
+void IEC104::ParseThreadStarted()
+{
+    ParseThreadWorking = true;
+}
 
 void IEC104::ParseThreadFinished()
 {

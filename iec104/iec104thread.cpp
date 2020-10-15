@@ -1,8 +1,8 @@
+#include "iec104thread.h"
+
 #include <QCoreApplication>
 #include <QThread>
 #include <QTimer>
-
-#include "iec104thread.h"
 
 IEC104Thread::IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, S2ConfigType *s2, QObject *parent)
     : QObject(parent)
@@ -10,6 +10,7 @@ IEC104Thread::IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, S2ConfigTy
     DR = s2;
     FirstParse = true;
     m_inputQueue = &queue;
+    //    m_outputList = &outList;
     Log = log;
     ThreadMustBeFinished = false;
     V_S = V_R = 0;
@@ -28,9 +29,14 @@ IEC104Thread::IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, S2ConfigTy
     NoAnswer = 0;
 }
 
-IEC104Thread::~IEC104Thread() { }
+IEC104Thread::~IEC104Thread()
+{
+}
 
-void IEC104Thread::SetBaseAdr(quint16 adr) { BaseAdr = adr; }
+void IEC104Thread::SetBaseAdr(quint16 adr)
+{
+    BaseAdr = adr;
+}
 
 void IEC104Thread::Run()
 {
@@ -268,15 +274,15 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                    return;
                 //                }
                 IEC104Signals::FloatWithTime signal;
-                signal.SigAdr = objectAdr;
+                signal.sigAdr = objectAdr;
                 float value;
                 memcpy(&value, &(ba.data()[index]), 4);
                 index += 4;
-                signal.SigVal = value;
+                signal.sigVal = value;
                 quint8 quality;
                 memcpy(&quality, &(ba.data()[index]), 1);
                 index++;
-                signal.SigQuality = quality;
+                signal.sigQuality = quality;
                 quint64 time;
                 memcpy(&time, &(ba.data()[index]), 8);
                 index += 8;
@@ -297,15 +303,15 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                    ERMSG("out of array flSignals");
                 //                    return;
                 //                }
-                signal.SigAdr = objectAdr;
+                signal.sigAdr = objectAdr;
                 //                float value;
                 //                memcpy(&value, &(ba.data()[index]), 4);
-                memcpy(&signal.SigVal, &(ba.data()[index]), 4);
+                memcpy(&signal.sigVal, &(ba.data()[index]), 4);
                 index += 4;
                 //                signal.SigVal = value;
                 //                quint8 quality;
                 //                memcpy(&quality, &(ba.data()[index]), 1);
-                memcpy(&signal.SigQuality, &(ba.data()[index]), 1);
+                memcpy(&signal.sigQuality, &(ba.data()[index]), 1);
                 index++;
                 //                signal.SigQuality = quality;
                 addSignalToQueue(IEC104SignalTypes::FloatWithTime, signal);
@@ -321,10 +327,10 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                    return;
                 //                }
                 IEC104Signals::SinglePointWithTime signal;
-                signal.SigAdr = objectAdr;
+                signal.sigAdr = objectAdr;
                 //                quint8 value;
                 //                memcpy(&value, &(ba.data()[index]), 1);
-                memcpy(&signal.SigVal, &(ba.data()[index++]), 1);
+                memcpy(&signal.sigVal, &(ba.data()[index++]), 1);
                 //                index += 1;
                 //                sponsignals->Spon[cntspon].SigVal = value;
                 //                cntspon++;
@@ -340,9 +346,9 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                    return;
                 //                }
                 IEC104Signals::SinglePointWithTime signal;
-                signal.SigAdr = objectAdr;
+                signal.sigAdr = objectAdr;
                 //                quint8 value;
-                memcpy(&signal.SigVal, &(ba.data()[index++]), 1);
+                memcpy(&signal.sigVal, &(ba.data()[index++]), 1);
                 //                index += 1;
                 //                sponsignals->Spon[cntspon].SigVal = value;
                 //                quint64 time;
@@ -362,16 +368,17 @@ void IEC104Thread::ParseIFormat(QByteArray &ba) // основной разбор
                 //                    return;
                 //                }
                 IEC104Signals::BitString signal;
-                int j;
-                for (j = 0; j < 3; j++)
-                    signal.SigAdr[j] = (objectAdr >> 8 * j);
+                //                int j;
+                //                for (j = 0; j < 3; j++)
+                //                    signal.sigAdr[j] = (objectAdr >> 8 * j);
+                signal.sigAdr = objectAdr;
 
                 //                quint32 value;
-                memcpy(&signal.SigVal, &(ba.data()[index]), 4);
+                memcpy(&signal.sigVal, &(ba.data()[index]), 4);
                 index += 4;
                 //                (BS104Signals + cntbs)->BS.SigVal = value;
                 //                quint8 quality;
-                memcpy(&signal.SigQuality, &(ba.data()[index++]), 1);
+                memcpy(&signal.sigQuality, &(ba.data()[index++]), 1);
                 //                index++;
                 //                (BS104Signals + cntbs)->BS.SigQuality = quality;
                 //                cntbs++;

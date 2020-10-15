@@ -69,7 +69,10 @@ QWidget *CheckKIVDialog::BdUI(int bdnum)
     }
 }
 
-void CheckKIVDialog::RefreshAnalogValues(int bdnum) { Q_UNUSED(bdnum) }
+void CheckKIVDialog::RefreshAnalogValues(int bdnum)
+{
+    Q_UNUSED(bdnum)
+}
 
 void CheckKIVDialog::PrepareHeadersForFile(int row)
 {
@@ -134,6 +137,7 @@ void CheckKIVDialog::WriteToFile(int row, int bdnum)
 QWidget *CheckKIVDialog::CustomTab()
 {
     // Оно точно должно возвращать nullptr?
+    // Оно не нужно, надо будет удалить
     QWidget *w = new QWidget;
     QVBoxLayout *lyout = new QVBoxLayout;
     QHBoxLayout *hlyout = new QHBoxLayout;
@@ -149,9 +153,15 @@ QWidget *CheckKIVDialog::CustomTab()
     return nullptr;
 }
 
-void CheckKIVDialog::ChooseValuesToWrite() { }
-void CheckKIVDialog::SetDefaultValuesToWrite() { }
-void CheckKIVDialog::PrepareAnalogMeasurements() { }
+void CheckKIVDialog::ChooseValuesToWrite()
+{
+}
+void CheckKIVDialog::SetDefaultValuesToWrite()
+{
+}
+void CheckKIVDialog::PrepareAnalogMeasurements()
+{
+}
 
 void CheckKIVDialog::USBUpdate()
 {
@@ -181,201 +191,222 @@ void CheckKIVDialog::USBUpdate()
     }
 }
 
-void CheckKIVDialog::ETHUpdate() { }
-
-void CheckKIVDialog::MBSUpdate() { }
-
-void CheckKIVDialog::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
+void CheckKIVDialog::ETHUpdate()
 {
-    for (int i = 0; i < Signal->SigNumber; i++)
+    updateFloatData();
+    updateSPData();
+}
+
+void CheckKIVDialog::MBSUpdate()
+{
+}
+
+void CheckKIVDialog::updateFloatData()
+{
+    QList<IEC104Thread::SignalsStruct> list;
+    IEC104::getSignalsFrom104(0, 99999, IEC104Thread::IEC104SignalTypes::FloatWithTime, list);
+    if (!list.isEmpty())
     {
-        ChKIV->FillBd(
-            this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal + i)->fl.SigVal, 3));
+        foreach (IEC104Thread::SignalsStruct signal, list)
+        {
+            IEC104Signals::FloatWithTime fwt = qvariant_cast<IEC104Signals::FloatWithTime>(signal.data);
+            ChKIV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
+        }
     }
 }
 
-void CheckKIVDialog::UpdateSponData(IEC104Thread::SponSignals *Signal)
+void CheckKIVDialog::updateSPData()
 {
-    int i, j;
-    for (j = 0; j < Signal->SigNumber; j++)
+    QList<IEC104Thread::SignalsStruct> list;
+    IEC104::getSignalsFrom104(3011, 3035, IEC104Thread::IEC104SignalTypes::SinglePointWithTime, list);
+    if (!list.isEmpty())
     {
-        quint32 sigadr = Signal->Spon[j].SigAdr;
-        quint8 sigval = Signal->Spon[j].SigVal;
-        if ((sigadr >= 3011) && (sigadr <= 3013))
+        foreach (IEC104Thread::SignalsStruct signal, list)
         {
-            i = sigadr - 3011;
-            WDFunc::SetLBLTColor(this, QString::number(1000 + i),
-                (sigval == 1) ? Colors::TABCOLORA1 : Colors::ACONFOCLR); // Colors::TABCOLORA1
-        }
-        if ((sigadr >= 3014) && (sigadr <= 3016))
-        {
-            i = sigadr - 3014;
-            WDFunc::SetLBLTColor(this, QString::number(1100 + i),
-                (sigval == 1) ? Colors::TABCOLORA1 : Colors::ACONFOCLR); // Colors::TABCOLORA1
-        }
-        if ((sigadr >= 3018) && (sigadr <= 3020))
-        {
-            i = sigadr - 3018;
-            WDFunc::SetLBLTColor(this, QString::number(1000 + i),
-                (sigval == 1) ? Colors::TABCOLORA1 : Colors::ACONFOCLR); // Colors::TABCOLORA1
-        }
-        if ((sigadr >= 3021) && (sigadr <= 3023))
-        {
-            i = sigadr - 3021;
-            WDFunc::SetLBLTColor(this, QString::number(1000 + i),
-                (sigval == 1) ? Colors::TABCOLORA1 : Colors::ACONFOCLR); // Colors::TABCOLORA1
-            if (sigval == 0)
-                stColor[i] = 1;
-        }
-        if ((sigadr >= 3024) && (sigadr <= 3026))
-        {
-            i = sigadr - 3024;
-            if (sigval == 1)
+            IEC104Signals::SinglePointWithTime sp = qvariant_cast<IEC104Signals::SinglePointWithTime>(signal.data);
+            //        quint8 sigval = Signal->Spon[j].SigVal;
+            //        quint32 sigadr = Signal->Spon[j].SigAdr;
+            //            if ((sigadr >= 3011) && (sigadr <= 3013))
+            if ((sp.sigAdr >= 3011) && (sp.sigAdr <= 3013))
+                //        {
+                //            i = sigadr - 3011;
+                WDFunc::SetLBLTColor(this, QString::number(sp.sigAdr - 2011),
+                    (sp.sigVal == 1) ? Colors::TABCOLORA1 : Colors::ACONFOCLR); // Colors::TABCOLORA1
+                                                                                //        }
+            //            if ((sigadr >= 3014) && (sigadr <= 3016))
+            if ((sp.sigAdr >= 3014) && (sp.sigAdr <= 3016))
+                //            {
+                //                i = sigadr - 3014;
+                //                WDFunc::SetLBLTColor(this, QString::number(1100 + i),
+                //                    (sigval == 1) ? Colors::TABCOLORA1 : Colors::ACONFOCLR); // Colors::TABCOLORA1
+                WDFunc::SetLBLTColor(this, QString::number(sp.sigAdr - 1914),
+                    (sp.sigVal == 1) ? Colors::TABCOLORA1 : Colors::ACONFOCLR); // Colors::TABCOLORA1
+                                                                                //            }
+            if ((sigadr >= 3018) && (sigadr <= 3020))
             {
-                stColor[i] = 0;
-                WDFunc::SetLBLTColor(this, QString::number(2429 + i), Colors::REDCOLOR);
+                i = sigadr - 3018;
+                WDFunc::SetLBLTColor(this, QString::number(1000 + i),
+                    (sigval == 1) ? Colors::TABCOLORA1 : Colors::ACONFOCLR); // Colors::TABCOLORA1
             }
-            else
+            if ((sigadr >= 3021) && (sigadr <= 3023))
             {
-                if (!stColor[i])
-                    WDFunc::SetLBLTColor(this, QString::number(2429 + i), Colors::TABCOLORA1);
+                i = sigadr - 3021;
+                WDFunc::SetLBLTColor(this, QString::number(1000 + i),
+                    (sigval == 1) ? Colors::TABCOLORA1 : Colors::ACONFOCLR); // Colors::TABCOLORA1
+                if (sigval == 0)
+                    stColor[i] = 1;
             }
-        }
-        if ((sigadr >= 3027) && (sigadr <= 3029))
-        {
-            i = sigadr - 3027;
-            if (sigval == 1)
-                WDFunc::SetLBLTColor(this, QString::number(2426 + i), Colors::TABCOLORA1);
-            else
+            if ((sigadr >= 3024) && (sigadr <= 3026))
             {
-                stColor[3 + i] = 1;
-                WDFunc::SetLBLTColor(this, QString::number(2426 + i), Colors::ACONFOCLR);
+                i = sigadr - 3024;
+                if (sigval == 1)
+                {
+                    stColor[i] = 0;
+                    WDFunc::SetLBLTColor(this, QString::number(2429 + i), Colors::REDCOLOR);
+                }
+                else
+                {
+                    if (!stColor[i])
+                        WDFunc::SetLBLTColor(this, QString::number(2429 + i), Colors::TABCOLORA1);
+                }
             }
-        }
-        if ((sigadr >= 3030) && (sigadr < 3033))
-        {
-            i = sigadr - 3030;
-            if (sigval == 1)
+            if ((sigadr >= 3027) && (sigadr <= 3029))
             {
-                stColor[3 + i] = 0;
-                WDFunc::SetLBLTColor(this, QString::number(2426 + i), Colors::REDCOLOR);
-            }
-            else
-            {
-                if (!stColor[3 + i])
+                i = sigadr - 3027;
+                if (sigval == 1)
                     WDFunc::SetLBLTColor(this, QString::number(2426 + i), Colors::TABCOLORA1);
+                else
+                {
+                    stColor[3 + i] = 1;
+                    WDFunc::SetLBLTColor(this, QString::number(2426 + i), Colors::ACONFOCLR);
+                }
             }
-        }
-        if (sigadr == 3034)
-        {
-            if (sigval == 1)
-                WDFunc::SetLBLTColor(this, QString::number(2432), Colors::TABCOLORA1);
-            else
+            if ((sigadr >= 3030) && (sigadr < 3033))
             {
-                stColor[6] = 1;
-                WDFunc::SetLBLTColor(this, QString::number(2432), Colors::ACONFOCLR);
+                i = sigadr - 3030;
+                if (sigval == 1)
+                {
+                    stColor[3 + i] = 0;
+                    WDFunc::SetLBLTColor(this, QString::number(2426 + i), Colors::REDCOLOR);
+                }
+                else
+                {
+                    if (!stColor[3 + i])
+                        WDFunc::SetLBLTColor(this, QString::number(2426 + i), Colors::TABCOLORA1);
+                }
             }
-        }
-        if (sigadr == 3035)
-        {
-            if (sigval == 1)
+            if (sigadr == 3034)
             {
-                stColor[6] = 0;
-                WDFunc::SetLBLTColor(this, QString::number(2432), Colors::REDCOLOR);
-            }
-            else
-            {
-                if (!stColor[6])
+                if (sigval == 1)
                     WDFunc::SetLBLTColor(this, QString::number(2432), Colors::TABCOLORA1);
+                else
+                {
+                    stColor[6] = 1;
+                    WDFunc::SetLBLTColor(this, QString::number(2432), Colors::ACONFOCLR);
+                }
+            }
+            if (sigadr == 3035)
+            {
+                if (sigval == 1)
+                {
+                    stColor[6] = 0;
+                    WDFunc::SetLBLTColor(this, QString::number(2432), Colors::REDCOLOR);
+                }
+                else
+                {
+                    if (!stColor[6])
+                        WDFunc::SetLBLTColor(this, QString::number(2432), Colors::TABCOLORA1);
+                }
             }
         }
     }
-}
 
-void CheckKIVDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
-{
-
-    // ModBusSignal sig = *new ModBusSignal;
-    int i = 0;
-    for (i = 0; i < Signal.size(); ++i)
+    void CheckKIVDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
     {
-        // sig = *(Signal+i);
-        if ((((Signal.at(i).SigAdr >= 1011) && (Signal.at(i).SigAdr <= 1015)))
-            || ((Signal.at(i).SigAdr >= 1111) && (Signal.at(i).SigAdr <= 1115)))
-            ChKIV->FillBd(
-                this, QString::number((Signal.at(i).SigAdr) + 9), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
-        else
-            ChKIV->FillBd(
-                this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
-    }
-}
 
-void CheckKIVDialog::SetWarnColor(int position, bool value)
-{
-    /*    if (WarnAlarm.isEmpty())
-            return;
-        for (int i = 0; i < 18; i++)
-        { */
-    //        if ((i >= 0) && (i < 3))
-    //        {
-    //            WDFunc::SetLBLTColor(
-    //                this, QString::number(1000 + i), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
-    //        }
-    if ((position >= 0) && (position < 3))
-    {
-        WDFunc::SetLBLTColor(this, QString::number(1000 + position), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+        // ModBusSignal sig = *new ModBusSignal;
+        int i = 0;
+        for (i = 0; i < Signal.size(); ++i)
+        {
+            // sig = *(Signal+i);
+            if ((((Signal.at(i).SigAdr >= 1011) && (Signal.at(i).SigAdr <= 1015)))
+                || ((Signal.at(i).SigAdr >= 1111) && (Signal.at(i).SigAdr <= 1115)))
+                ChKIV->FillBd(this, QString::number((Signal.at(i).SigAdr) + 9),
+                    WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
+            else
+                ChKIV->FillBd(
+                    this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
+        }
     }
 
-    if ((position >= 3) && (position < 6))
+    void CheckKIVDialog::SetWarnColor(int position, bool value)
     {
-        WDFunc::SetLBLTColor(this, QString::number(1100 + 3), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+        /*    if (WarnAlarm.isEmpty())
+                return;
+            for (int i = 0; i < 18; i++)
+            { */
+        //        if ((i >= 0) && (i < 3))
+        //        {
+        //            WDFunc::SetLBLTColor(
+        //                this, QString::number(1000 + i), (WarnAlarm[i] == true) ? Colors::TABCOLORA1 :
+        //                Colors::ACONFOCLR);
+        //        }
+        if ((position >= 0) && (position < 3))
+        {
+            WDFunc::SetLBLTColor(
+                this, QString::number(1000 + position), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+        }
+
+        if ((position >= 3) && (position < 6))
+        {
+            WDFunc::SetLBLTColor(this, QString::number(1100 + 3), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+        }
+
+        if ((position >= 7) && (position < 10))
+        {
+            if (value)
+                WDFunc::SetLBLTColor(this, QString::number(1000 + position - 7), Colors::TABCOLORA1);
+        }
+
+        if ((position >= 10) && (position < 13))
+        {
+            WDFunc::SetLBLTColor(
+                this, QString::number(2429 + position - 10), (value) ? Colors::ACONFYCLR : Colors::ACONFOCLR);
+        }
+        else if ((position >= 13) && (position < 16))
+        {
+            WDFunc::SetLBLTColor(
+                this, QString::number(2426 + position - 13), (value) ? Colors::ACONFYCLR : Colors::ACONFOCLR);
+        }
+        else if (position == 17)
+        {
+            WDFunc::SetLBLTColor(
+                this, QString::number(2432 + position - 13), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
+        }
+        //}
     }
 
-    if ((position >= 7) && (position < 10))
+    // void CheckKIVDialog::SetAlarmColor(QList<bool> Alarm)
+    void CheckKIVDialog::SetAlarmColor(int position, bool value)
     {
-        if (value)
-            WDFunc::SetLBLTColor(this, QString::number(1000 + position - 7), Colors::TABCOLORA1);
+        /*    if (Alarm.isEmpty())
+                return;
+            for (int i = 0; i < 7; i++)
+            { */
+        if (position < 3)
+        {
+            if (value == true)
+                WDFunc::SetLBLTColor(this, QString::number(2429 + position), Colors::REDCOLOR);
+        }
+        else if ((position >= 3) && (position < 6))
+        {
+            if (value == true)
+                WDFunc::SetLBLTColor(this, QString::number(2426 + position - 3), Colors::REDCOLOR);
+        }
+        else if (position == 6)
+        {
+            if (value == true)
+                WDFunc::SetLBLTColor(this, "2432", Colors::REDCOLOR);
+        }
+        //}
     }
-
-    if ((position >= 10) && (position < 13))
-    {
-        WDFunc::SetLBLTColor(
-            this, QString::number(2429 + position - 10), (value) ? Colors::ACONFYCLR : Colors::ACONFOCLR);
-    }
-    else if ((position >= 13) && (position < 16))
-    {
-        WDFunc::SetLBLTColor(
-            this, QString::number(2426 + position - 13), (value) ? Colors::ACONFYCLR : Colors::ACONFOCLR);
-    }
-    else if (position == 17)
-    {
-        WDFunc::SetLBLTColor(
-            this, QString::number(2432 + position - 13), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
-    }
-    //}
-}
-
-// void CheckKIVDialog::SetAlarmColor(QList<bool> Alarm)
-void CheckKIVDialog::SetAlarmColor(int position, bool value)
-{
-    /*    if (Alarm.isEmpty())
-            return;
-        for (int i = 0; i < 7; i++)
-        { */
-    if (position < 3)
-    {
-        if (value == true)
-            WDFunc::SetLBLTColor(this, QString::number(2429 + position), Colors::REDCOLOR);
-    }
-    else if ((position >= 3) && (position < 6))
-    {
-        if (value == true)
-            WDFunc::SetLBLTColor(this, QString::number(2426 + position - 3), Colors::REDCOLOR);
-    }
-    else if (position == 6)
-    {
-        if (value == true)
-            WDFunc::SetLBLTColor(this, "2432", Colors::REDCOLOR);
-    }
-    //}
-}
