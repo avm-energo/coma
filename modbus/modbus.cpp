@@ -21,7 +21,7 @@ ModBus::ModBus(QObject *parent) : QObject(parent)
 
     PollingTimer = new QTimer;
     PollingTimer->setInterval(POLLINGINTERVAL);
-    connect(PollingTimer, SIGNAL(timeout()), this, SLOT(Polling()));
+    connect(PollingTimer, &QTimer::timeout, this, &ModBus::Polling);
 
     SignalGroups[0] = QByteArrayLiteral("\x04\x00\x65\x00\x04");
     SignalGroups[1] = QByteArrayLiteral("\x04\x03\xE8\x00\x20");
@@ -53,7 +53,6 @@ Error::Msg ModBus::Connect(SerialPort::Settings &settings)
     connect(cthr, &ModbusThread::Finished, this, &ModBus::Finished);
     connect(this, &ModBus::FinishModbusThread, cthr, &ModbusThread::FinishThread);
     connect(this, &ModBus::FinishModbusThread, port, &SerialPort::Disconnect);
-    // connect(port, SIGNAL(State(ConnectionStates)), this, SIGNAL(ModbusState(ConnectionStates)));
     connect(port, &SerialPort::Read, cthr, &ModbusThread::ParseReply);
     connect(cthr, &ModbusThread::Write, port, &SerialPort::WriteBytes);
     connect(port, &SerialPort::Reconnect, this, &ModBus::SendReconnectSignal);
@@ -69,16 +68,10 @@ Error::Msg ModBus::Connect(SerialPort::Settings &settings)
 
 Error::Msg ModBus::SendAndGetResult(ComInfo &request, InOutStruct &outp)
 {
-    InOutStruct inp;
-    QByteArray bytes;
+    QByteArray bytes {};
 
-    inp.Command = request.Command;
-    if (request.Command == WRITEMULTIPLEREGISTERS)
-        inp.ReadSize = 8;
-    else
-        inp.ReadSize = 5 + 2 * request.Quantity;
-    bytes.append(Settings.Address); // адрес устройства
-    bytes.append(request.Command);  //аналоговый выход
+    bytes.append(static_cast<char>(Settings.Address)); // адрес устройства
+    bytes.append(request.Command);                     //аналоговый выход
     bytes.append(static_cast<char>((request.Address & 0xFF00) >> 8));
     bytes.append(static_cast<char>(request.Address & 0x00FF));
     bytes.append(static_cast<char>((request.Quantity & 0xFF00) >> 8));
@@ -89,7 +82,19 @@ Error::Msg ModBus::SendAndGetResult(ComInfo &request, InOutStruct &outp)
         bytes.append(request.Data);
 
     Log->info("Send bytes: " + bytes.toHex());
-    inp.Ba = bytes;
+
+    InOutStruct inp {
+        request.Command,     // Command
+        bytes,               // Ba
+        0,                   // TaskNum
+        Error::Msg::NoError, // Res
+        0,                   // ReadSize
+        0                    // Checked
+    };
+    if (request.Command == WRITEMULTIPLEREGISTERS)
+        inp.ReadSize = 8;
+    else
+        inp.ReadSize = 5 + 2 * request.Quantity;
     // wait for an answer or timeout and return result
     if (SendAndGet(inp, outp) != Error::Msg::NoError)
     {
@@ -102,13 +107,13 @@ Error::Msg ModBus::SendAndGetResult(ComInfo &request, InOutStruct &outp)
 
 void ModBus::Polling()
 {
-    QByteArray bytes;
-    InOutStruct inp, outp;
+    QByteArray bytes {};
+    InOutStruct inp {}, outp {};
 
     if (MainPollEnabled)
     {
         inp.Command = SignalGroups[CycleGroup][0];
-        bytes.append(Settings.Address); // адрес устройства
+        bytes.append(static_cast<char>(Settings.Address)); // адрес устройства
         bytes.append(SignalGroups[CycleGroup]);
         if (CycleGroup == 6)
             inp.ReadSize = 9;
@@ -220,14 +225,17 @@ bool ModBus::GetResultFromOutQueue(int index, ModBus::InOutStruct &outp)
 
 void ModBus::BSIrequest()
 {
-    ComInfo request;
-    InOutStruct outp;
+
+    InOutStruct outp {};
 
     Log->info("BSIRequest()");
-    request.Command = READINPUTREGISTER;
-    request.Address = BSIREG; // BSI block
-    request.Quantity = 30;
-    request.SizeBytes = 60;
+    ComInfo request {
+        READINPUTREGISTER, // Command
+        BSIREG,            // Address
+        30,                // Quantity
+        60,                // SizeBytes
+        {}                 // Data
+    };
 
     Error::Msg res = SendAndGetResult(request, outp);
     if (res != Error::Msg::NoError)
@@ -246,12 +254,17 @@ void ModBus::BSIrequest()
 
 void ModBus::ModWriteCor(ModBus::Information info, float *data) //, int* size)
 {
-    ComInfo request;
-    InOutStruct outp;
+
+    InOutStruct outp {};
 
     Log->info("ModWriteCor()");
-    request.Command = WRITEMULTIPLEREGISTERS;
-    request.Address = info.adr;
+    ComInfo request {
+        WRITEMULTIPLEREGISTERS, // Command
+        info.adr,               // Address
+        0,                      // Quantity
+        0,                      // SizeBytes
+        {}                      // Data
+    };
 
     if ((info.adr == SETINITREG) || (info.adr == CLEARREG)) // set initial values or clear initial values commands
     {
@@ -261,8 +274,8 @@ void ModBus::ModWriteCor(ModBus::Information info, float *data) //, int* size)
     }
     else
     {
-        request.Quantity = (quint8)((info.size) * 2);
-        request.SizeBytes = (quint8)((info.size) * 4);
+        request.Quantity = static_cast<quint8>((info.size) * 2);
+        request.SizeBytes = static_cast<quint8>((info.size) * 4);
 
         for (int i = 0; i < info.size; i++)
         {
@@ -279,14 +292,17 @@ void ModBus::ModWriteCor(ModBus::Information info, float *data) //, int* size)
 
 void ModBus::ModReadCor(ModBus::Information info)
 {
-    ComInfo request;
-    InOutStruct outp;
+
+    InOutStruct outp {};
 
     Log->info("ReadCor()");
-    request.Command = READINPUTREGISTER;
-    request.Address = info.adr;
-    request.Quantity = (quint8)((info.size) * 2);
-    request.SizeBytes = (quint8)((info.size) * 4);
+    ComInfo request {
+        READINPUTREGISTER,                  // Command
+        info.adr,                           // Address
+        static_cast<quint8>(info.size * 2), // Quantity
+        static_cast<quint8>(info.size * 4), // SizeBytes
+        {}                                  // Data
+    };
     SendAndGetResult(request, outp);
 
     QList<SignalStruct> Sig;
@@ -297,14 +313,16 @@ void ModBus::ModReadCor(ModBus::Information info)
 
 void ModBus::ReadTime()
 {
-    ComInfo request;
-    InOutStruct outp;
+    InOutStruct outp {};
 
     Log->info("ReadTime()");
-    request.Address = TIMEREG;
-    request.Command = READHOLDINGREGISTERS;
-    request.Quantity = 2;
-    request.SizeBytes = 4;
+    ComInfo request {
+        READHOLDINGREGISTERS, // Command
+        TIMEREG,              // Address
+        2,                    // Quantity
+        4,                    // SizeBytes
+        {}                    // Data
+    };
     Error::Msg res = SendAndGetResult(request, outp);
     if (res != Error::Msg::NoError)
         emit TimeReadError();
@@ -377,18 +395,20 @@ Error::Msg ModBus::GetFloatSignalsFromByteArray(QByteArray &bain, int startadr, 
 
 void ModBus::WriteTime(uint time)
 {
-    ComInfo request;
-    InOutStruct outp;
-
+    InOutStruct outp {};
     Log->info("WriteTime()");
-    request.Address = TIMEREG;
-    request.Command = WRITEMULTIPLEREGISTERS;
-    request.Quantity = 2;
-    request.SizeBytes = 4;
-    request.Data.append(static_cast<char>(time >> 8));
-    request.Data.append(static_cast<char>(time));
-    request.Data.append(static_cast<char>(time >> 24));
-    request.Data.append(static_cast<char>(time >> 16));
+    QByteArray timeArray;
+    timeArray.append(static_cast<char>(time >> 8));
+    timeArray.append(static_cast<char>(time));
+    timeArray.append(static_cast<char>(time >> 24));
+    timeArray.append(static_cast<char>(time >> 16));
+    ComInfo request {
+        WRITEMULTIPLEREGISTERS, // Command
+        TIMEREG,                // Address
+        2,                      // Quantity
+        4,                      // SizeBytes
+        timeArray               // Data
+    };
     Error::Msg res = SendAndGetResult(request, outp);
     if (res != Error::Msg::NoError)
         emit TimeReadError();
@@ -454,11 +474,6 @@ ModbusThread::~ModbusThread()
 {
 }
 
-// ConnectionStates ModbusThread::State()
-//{
-//    return _state;
-//}
-
 void ModbusThread::Init(QQueue<ModBus::InOutStruct> *inq, QList<ModBus::InOutStruct> *outl)
 {
     InQueue = inq;
@@ -504,8 +519,8 @@ void ModbusThread::Send()
 {
     // data to send is in Inp.Ba
     quint16 KSS = CalcCRC(Inp.Ba);
-    Inp.Ba.append(static_cast<unsigned char>(KSS >> 8));
-    Inp.Ba.append(static_cast<unsigned char>(KSS));
+    Inp.Ba.append(static_cast<char>(KSS >> 8));
+    Inp.Ba.append(static_cast<char>(KSS));
     Outp.Ba.clear();
     Inp.Checked = false;
     Busy = true;

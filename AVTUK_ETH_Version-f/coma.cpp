@@ -687,13 +687,13 @@ void Coma::NewTimers()
     BdaTimer = new QTimer(this);
     BdaTimer->setInterval(ANMEASINT);
 
-    HarmTimer = new QTimer;
+    HarmTimer = new QTimer(this);
     HarmTimer->setInterval(ANMEASINT);
 
-    VibrTimer = new QTimer;
+    VibrTimer = new QTimer(this);
     VibrTimer->setInterval(ANMEASINT);
 
-    AlrmTimer = new QTimer;
+    AlrmTimer = new QTimer(this);
     AlrmTimer->setInterval(10000);
 
     ReceiveTimer = new QTimer(this);
