@@ -141,17 +141,17 @@ Module *Module::createModule(QTimer *updateTimer)
     if (Board::GetInstance().interfaceType() != Board::InterfaceType::USB)
     {
         //        m->addDialogToList(new JournalDialog(JOUR, ), "Журналы");
-        if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
-            m->addDialogToList(new FWUploadDialog, "Загрузка ВПО");
+    }
+    if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
+        m->addDialogToList(new FWUploadDialog, "Загрузка ВПО");
 
-        m->addDialogToList(new InfoDialog, "О приборе", "info");
+    m->addDialogToList(new InfoDialog, "О приборе", "info");
 
-        QList<UDialog *> dlgs = m->dialogs();
-        foreach (UDialog *d, dlgs)
-        {
-            connect(updateTimer, &QTimer::timeout, d, &UDialog::update);
-            d->setUpdatesDisabled();
-        }
+    QList<UDialog *> dlgs = m->dialogs();
+    foreach (UDialog *d, dlgs)
+    {
+        connect(updateTimer, &QTimer::timeout, d, &UDialog::update);
+        d->setUpdatesDisabled();
     }
     return m;
 }
