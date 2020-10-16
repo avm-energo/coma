@@ -688,7 +688,6 @@ void Coma::NewTimers()
 {
     //    TimeTimer = new QTimer(this);
     //    TimeTimer->setInterval(1000);
-
     m_BSITimer = new QTimer;
     m_BSITimer->setInterval(1000);
     connect(m_BSITimer, &QTimer::timeout, &ModuleBSI::update);
@@ -775,10 +774,7 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
     return false;
 }
 
-void Coma::SetMode(int mode)
-{
-    Mode = mode;
-}
+void Coma::SetMode(int mode) { Mode = mode; }
 
 void Coma::Go(const QString &parameter)
 {
@@ -1012,15 +1008,9 @@ void Coma::FileTimeOut()
         QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
 }
 
-void Coma::SetProgressBar2Size(int size)
-{
-    SetProgressBarSize(2, size);
-}
+void Coma::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
 
-void Coma::SetProgressBar2(int cursize)
-{
-    SetProgressBar(2, cursize);
-}
+void Coma::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
 
 void Coma::SetProgressBarSize(int prbnum, int size)
 {
@@ -1184,10 +1174,7 @@ void Coma::DisconnectAndClear()
     Reconnect = false;
 }
 
-void Coma::resizeEvent(QResizeEvent *e)
-{
-    QMainWindow::resizeEvent(e);
-}
+void Coma::resizeEvent(QResizeEvent *e) { QMainWindow::resizeEvent(e); }
 
 void Coma::keyPressEvent(QKeyEvent *e)
 {
