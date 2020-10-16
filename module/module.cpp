@@ -35,14 +35,6 @@
 Module::Module(QObject *parent) : QObject(parent)
 {
     m_Dialogs.clear();
-    //    m_CheckDialogs.clear();
-    //    m_TuneDialogs.clear();
-    //    m_confDialogMez = nullptr;
-    //    m_confDialogBase = nullptr;
-    //    m_checkDialogMez = nullptr;
-    //    m_checkDialogBase = nullptr;
-    //    m_tuneDialogMez = nullptr;
-    //    m_tuneDialogBase = nullptr;
     m_oldTabIndex = m_currentTabIndex = 0;
 }
 
@@ -101,7 +93,7 @@ Module *Module::createModule(QTimer *updateTimer)
         {
             JOUR = new JournKTF;
             ConfigKTF *CKTF = new ConfigKTF(s2Config);
-            m->addDialogToList(new ConfKTFDialog(s2Config), "conf1");
+            m->addDialogToList(new ConfKTFDialog(CKTF), "conf1");
             CheckKTFDialog *cdktf = new CheckKTFDialog;
             m->addDialogToList(new CheckKTFDialog);
 #ifdef AVM_DEBUG
@@ -145,13 +137,10 @@ Module *Module::createModule(QTimer *updateTimer)
 
     TimeDialog *tdlg = new TimeDialog;
     m->addDialogToList(tdlg, "Время", "time");
-    /*    m->m_timeTimer = new QTimer;
-        m->m_timeTimer->setInterval(1000);
-        connect(m->m_timeTimer, &QTimer::timeout, tdlg, &TimeDialog::slot2_timeOut); */
 
     if (Board::GetInstance().interfaceType() != Board::InterfaceType::USB)
     {
-        m->addDialogToList(new JournalDialog(JOUR, ), "Журналы");
+        //        m->addDialogToList(new JournalDialog(JOUR, ), "Журналы");
         if (Board::GetInstance().interfaceType() == Board::InterfaceType::USB)
             m->addDialogToList(new FWUploadDialog, "Загрузка ВПО");
 
@@ -163,136 +152,76 @@ Module *Module::createModule(QTimer *updateTimer)
             connect(updateTimer, &QTimer::timeout, d, &UDialog::update);
             d->setUpdatesDisabled();
         }
-
-        return m;
     }
+    return m;
+}
 
-    // AbstractConfDialog *Module::confDialogBase()
-    //{
-    //    return m_confDialogBase;
-    //}
+QList<UDialog *> Module::dialogs()
+{
+    QList<UDialog *> list = m_Dialogs;
+    return list;
+}
 
-    // AbstractConfDialog *Module::confDialogMez()
-    //{
-    //    return m_confDialogMez;
-    //}
-
-    // QDialog *Module::tuneDialogBase()
-    //{
-    //    return m_tuneDialogBase;
-    //}
-
-    // QDialog *Module::tuneDialogMez()
-    //{
-    //    return m_tuneDialogMez;
-    //}
-
-    // AbstractCheckDialog *Module::checkDialogBase()
-    //{
-    //    return m_checkDialogBase;
-    //}
-
-    // AbstractCheckDialog *Module::checkDialogMez()
-    //{
-    //    return m_checkDialogMez;
-    //}
-
-    QList<UDialog *> Module::dialogs()
+QList<UDialog *> Module::confDialogs()
+{
+    QList<UDialog *> list;
+    foreach (UDialog *dlg, m_Dialogs)
     {
-        QList<UDialog *> list = m_Dialogs;
-        return list;
+        if (dlg->objectName().contains("conf"))
+            list.append(dlg);
     }
+    return list;
+}
 
-    QList<UDialog *> Module::confDialogs()
+void Module::addDialogToList(UDialog *dlg, const QString &caption, const QString &name)
+{
+    dlg->setObjectName(name);
+    dlg->setCaption(caption);
+    m_Dialogs.append(dlg);
+}
+
+Alarm *Module::getAlarm()
+{
+    return m_Alarm;
+}
+
+Warn *Module::getWarn()
+{
+    return m_Warn;
+}
+
+void Module::parentTWTabClicked(int index)
+{
+    if (index == m_currentTabIndex) // to prevent double function invocation by doubleclicking on tab
+        return;
+    m_currentTabIndex = index;
+
+    QDialog *dlg = m_Dialogs.at(m_oldTabIndex);
+    UDialog *udlg = qobject_cast<UDialog *>(dlg);
+    if (udlg)
+        udlg->setUpdatesDisabled();
+    dlg = m_Dialogs.at(m_currentTabIndex);
+    udlg = qobject_cast<UDialog *>(dlg);
+    if (udlg)
+        udlg->setUpdatesEnabled();
+    udlg->update();
+    m_oldTabIndex = m_currentTabIndex;
+}
+
+void Module::setDefConf()
+{
+    foreach (QDialog *dlg, m_Dialogs)
     {
-        QList<UDialog *> list;
-        foreach (UDialog *dlg, m_Dialogs)
+        if (dlg->objectName().contains("conf"))
         {
-            if (dlg->objectName().contains("conf"))
-                list.append(dlg);
-        }
-        return list;
-    }
-
-    void Module::addDialogToList(UDialog * dlg, const QString &caption, const QString &name)
-    {
-        dlg->setObjectName(name);
-        dlg->setCaption(caption);
-        m_Dialogs.append(dlg);
-    }
-
-    Alarm *Module::getAlarm() { return m_Alarm; }
-
-    Warn *Module::getWarn() { return m_Warn; }
-
-    void Module::parentTWTabClicked(int index)
-    {
-        if (index == m_currentTabIndex) // to prevent double function invocation by doubleclicking on tab
-            return;
-        m_currentTabIndex = index;
-
-        QDialog *dlg = m_Dialogs.at(m_oldTabIndex);
-        UDialog *udlg = qobject_cast<UDialog *>(dlg);
-        if (udlg)
-            udlg->setUpdatesDisabled();
-        dlg = m_Dialogs.at(m_currentTabIndex);
-        udlg = qobject_cast<UDialog *>(dlg);
-        if (udlg)
-            udlg->setUpdatesEnabled();
-        udlg->update();
-        m_oldTabIndex = m_currentTabIndex;
-
-        //    if (corDialog != nullptr)
-        //        corDialog->GetCorBd(tabindex);
-        /*    if (checkBDialog != nullptr || HarmDialog != nullptr || VibrDialog != nullptr)
-            {
-                if (tabindex == CheckIndex || tabindex == CheckHarmIndex || tabindex == CheckVibrIndex)
-                    BdaTimer->start();
-                else
-                    BdaTimer->stop();
-            }
-
-            if (timeDialog != nullptr)
-            {
-                if (tabindex == TimeIndex)
-                    TimeTimer->start();
-                else
-                    TimeTimer->stop();
-            }
-            else
-                TimeTimer->stop();
-
-            if (confMDialog != nullptr)
-            {
-                if (tabindex == ConfIndex)
-                    confMDialog->ReadConf();
-            } */
-    }
-
-    void Module::setDefConf()
-    {
-        foreach (QDialog *dlg, m_Dialogs)
-        {
-            if (dlg->objectName().contains("conf"))
-            {
-                static_cast<AbstractConfDialog *>(dlg)->SetDefConf();
-                static_cast<AbstractConfDialog *>(dlg)->Fill();
-            }
+            static_cast<AbstractConfDialog *>(dlg)->SetDefConf();
+            static_cast<AbstractConfDialog *>(dlg)->Fill();
         }
     }
+}
 
-    void Module::closeDialogs()
-    {
-        for (auto &i : m_Dialogs)
-            i->close();
-    }
-
-    // QDialog *Module::infoDialog()
-    //{
-    //    foreach (QDialog *dlg, m_Dialogs)
-    //    {
-    //        if (dlg->objectName().contains("info"))
-    //            return dlg;
-    //    }
-    //    return nullptr;
-    //}
+void Module::closeDialogs()
+{
+    for (auto &i : m_Dialogs)
+        i->close();
+}

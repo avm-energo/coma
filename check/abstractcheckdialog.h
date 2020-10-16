@@ -22,6 +22,7 @@
 #include "check.h"
 #include "xlsxdocument.h"
 
+#include <QBitArray>
 #include <QElapsedTimer>
 #include <QTimer>
 
@@ -43,8 +44,6 @@ public:
 
     // визуализация наборов текущих данных от модуля
     virtual QWidget *BdUI(int bdnum) = 0;
-    // обновление полей в GUI из полученного соответствующего Bd_block
-    virtual void RefreshAnalogValues(int bdnum) = 0;
     // row - строка для записи заголовков
     virtual void PrepareHeadersForFile(int row) = 0;
     // row - номер строки для записи в файл xlsx, bdnum - номер блока данных
@@ -54,8 +53,6 @@ public:
     virtual void SetDefaultValuesToWrite() = 0;
     // функция подготовки к измерениям (например,   запрос постоянных данных)
     virtual void PrepareAnalogMeasurements() = 0;
-    // если требуется для модуля специфичный вывод данных
-    virtual QWidget *CustomTab();
     void SetBd(int bdnum, void *block, int blocksize, bool toxlsx = true);
     QWidget *BottomUI();
 
@@ -68,7 +65,6 @@ public:
     QList<int> IndexWd;
 
 signals:
-    //     void BsiRefresh();
 
 public slots:
     void StopAnalogMeasurements();
@@ -113,11 +109,11 @@ protected:
     bool XlsxWriting;
     const QString ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; padding: 1px; "
                                  "color: blue; font: bold 10px;}";
-    quint8 stColor[7];
-protected slots:
 
+protected slots:
     virtual void UpdateModBusData(QList<ModBus::SignalStruct> Signal) = 0;
-    virtual void onModbusStateChanged();
+    void onModbusStateChanged();
+
 private slots:
     void SetTimerPeriod();
     void StartAnalogMeasurementsToFile();

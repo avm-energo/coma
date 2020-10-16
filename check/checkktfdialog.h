@@ -10,33 +10,28 @@ class CheckKTFDialog : public AbstractCheckDialog
     Q_OBJECT
 
 public:
-    CheckKTFDialog(BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
+    CheckKTFDialog(QWidget *parent = nullptr);
     ~CheckKTFDialog();
-    //    CheckDialogKTF(int rcount = 4, BoardTypes board = BoardTypes::BT_BASE, QWidget *parent = nullptr);
 
 public slots:
     void SetAlarmColor(int position, bool value) override;
     void SetWarnColor(int position, bool value) override;
-    void UpdateFlData(IEC104Thread::FlSignals104 *);
-    void UpdateSponData(IEC104Thread::SponSignals *);
     void USBUpdate() override;
+    void ETHUpdate() override;
+    void MBSUpdate() override;
 
 private:
     CheckKTF *ChKTF;
-    // CheckHarmonicKTF *ChHarmKTF;
-    // int m_RCount;
 
-    QWidget *AutoCheckUI(); // UI для автоматической проверки модуля
+    QWidget *AutoCheckUI();            // UI для автоматической проверки модуля
     QWidget *BdUI(int bdnum) override; // визуализация наборов текущих данных от модуля
-    void RefreshAnalogValues(int bdnum) override; // обновление полей в GUI из полученного
-                                                  // соответствующего Bd_block
-    void PrepareHeadersForFile(int row) override; // row - строка для записи заголовков
+    void PrepareHeadersForFile(int row) override;  // row - строка для записи заголовков
     void WriteToFile(int row, int bdnum) override; // row - номер строки для записи в файл
                                                    // xlsx, bdnum - номер блока данных
     void ChooseValuesToWrite() override;
     void SetDefaultValuesToWrite() override;
     void PrepareAnalogMeasurements() override;
-    QWidget *CustomTab() override;
+    void updateFloatData();
 
 private slots:
     void UpdateModBusData(QList<ModBus::SignalStruct> Signal) override;

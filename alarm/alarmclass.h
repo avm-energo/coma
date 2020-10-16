@@ -63,8 +63,9 @@ signals:
 
 public slots:
     void UpdateAlarmUSB();
-    void UpdateAlarmModBus(ModBus::Coils Signal);
-    void UpdateAlarm104(IEC104Thread::SponSignals *Signal);
+    void UpdateAlarmModBus();
+    void UpdateAlarm104();
+    void update();
 
 private:
     Module *m_Module;

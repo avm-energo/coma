@@ -45,6 +45,7 @@ SOURCES += \
 ../module/warn.cpp \
     ../module/warnkdv.cpp \
 ../startup/startupkdvdialog.cpp \
+    ../widgets/edoublespinbox.cpp \
 coma.cpp \
 main.cpp \
 ../alarm/alarmclass.cpp \
@@ -80,7 +81,6 @@ main.cpp \
 ../gen/files.cpp \
 ../gen/logclass.cpp \
 ../gen/modulebsi.cpp \
-../gen/report.cpp \
 ../gen/s2.cpp \
 ../gen/stdfunc.cpp \
 ../gen/timefunc.cpp \
@@ -134,6 +134,7 @@ HEADERS += \
 ../module/warn.h \
     ../module/warnkdv.h \
 ../startup/startupkdvdialog.h \
+    ../widgets/edoublespinbox.h \
 coma.h \
 ../alarm/alarmclass.h \
 ../alarm/alarmstateall.h \
@@ -169,7 +170,6 @@ coma.h \
 ../gen/files.h \
 ../gen/logclass.h \
 ../gen/modulebsi.h \
-../gen/report.h \
 ../gen/s2.h \
 ../gen/stdfunc.h \
 ../gen/timefunc.h \

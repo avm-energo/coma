@@ -4,6 +4,11 @@
 #include <QThread>
 #include <QTimer>
 
+QList<IEC104Thread::SignalsStruct> IEC104Thread::m_outputList;
+QMutex IEC104Thread::s_ParseReadMutex;
+QMutex IEC104Thread::s_ParseWriteMutex;
+QMutex IEC104Thread::s_IEC104OutQueueMutex;
+
 IEC104Thread::IEC104Thread(LogClass *log, QQueue<InputStruct> &queue, S2ConfigType *s2, QObject *parent)
     : QObject(parent)
 {

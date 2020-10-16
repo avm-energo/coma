@@ -22,7 +22,7 @@ ConfKDVDialog::ConfKDVDialog(ConfigKDV *ckdv, QWidget *parent) : AbstractConfDia
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
-    S2Config = ckdv->;
+    S2Config = ckdv->S2Config();
     KDV = ckdv;
     Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
     ConfKxx = new ConfKxxDialog(S2Config);
@@ -579,7 +579,9 @@ void ConfKDVDialog::FillBack()
     ConfKxx->FillBack();
 }
 
-void ConfKDVDialog::CheckConf() { }
+void ConfKDVDialog::CheckConf()
+{
+}
 
 void ConfKDVDialog::SetDefConf()
 {
@@ -589,6 +591,12 @@ void ConfKDVDialog::SetDefConf()
     Fill();
 }
 
-void ConfKDVDialog::Start_Timer() { timerRead->start(1000); }
+void ConfKDVDialog::Start_Timer()
+{
+    timerRead->start(1000);
+}
 
-void ConfKDVDialog::Stop_Timer() { timerRead->stop(); }
+void ConfKDVDialog::Stop_Timer()
+{
+    timerRead->stop();
+}

@@ -3,21 +3,7 @@
 
 #include "../alarm/alarmstateall.h"
 #include "../alarm/alarmwidget.h"
-//#include "../check/abstractcheckdialog.h"
-//#include "../config/abstractconfdialog.h"
-//#include "../config/confdialog.h"
 #include "../dialogs/connectdialog.h"
-//#include "../dialogs/fwuploaddialog.h"
-//#include "../dialogs/infodialog.h"
-//#include "../dialogs/journalsdialog.h"
-//#include "../dialogs/timedialog.h"
-//#include "../module/alarmkiv.h"
-//#include "../module/alarmktf.h"
-//#include "../module/warnkiv.h"
-//#include "../module/warnktf.h"
-//#include "../startup/startupkdvdialog.h"
-//#include "../startup/startupkivdialog.h"
-//#include "../startup/startupktfdialog.h"
 #include "../module/module.h"
 #include "../widgets/etabwidget.h"
 
@@ -27,7 +13,7 @@
 enum INTERVAL
 {
     RECONNECT = 3000,
-    WAIT = 300000
+    WAIT = 30000
 };
 
 enum THREAD
@@ -156,7 +142,7 @@ private slots:
 
     //    void setConf(unsigned char);
     //    void Fill();
-    void FillBSI(IEC104Thread::BS104Signals *sig);
+    //    void FillBSI(IEC104Thread::BS104Signals *sig);
     void FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize);
     // void PasswordCheck(QString psw);
     void SetProgressBar1Size(int size);
@@ -208,7 +194,7 @@ private:
     quint8 PredAlarmEvents[20];
     quint8 AlarmEvents[20];
 
-    QTimer *ReceiveTimer;
+    QTimer *ReceiveTimer, *m_BSITimer;
     //    QTimer *ReconnectTimer;
     QTimer *BdaTimer, *AlrmTimer; //, *HarmTimer, *VibrTimer;
 

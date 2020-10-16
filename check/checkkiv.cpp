@@ -8,7 +8,7 @@
 #include <QGroupBox>
 #include <QLayout>
 
-Check_KIV::Check_KIV()
+CheckKIV::CheckKIV()
 {
     // setAttribute(Qt::WA_DeleteOnClose);
     ValuesFormat = "QLabel {border: 1px solid green; border-radius: 4px; "
@@ -18,11 +18,11 @@ Check_KIV::Check_KIV()
     WidgetFormat = "QWidget {background-color: " + QString(Colors::UCONFCLR) + ";}";
 }
 
-Check_KIV::~Check_KIV()
+CheckKIV::~CheckKIV()
 {
 }
 
-QWidget *Check_KIV::Bd1W(QWidget *parent)
+QWidget *CheckKIV::Bd1W(QWidget *parent)
 {
     int i;
     QWidget *w = new QWidget(parent);
@@ -121,7 +121,7 @@ QWidget *Check_KIV::Bd1W(QWidget *parent)
     return w;
 }
 
-QWidget *Check_KIV::Bd2W(QWidget *parent)
+QWidget *CheckKIV::Bd2W(QWidget *parent)
 {
     QWidget *w = new QWidget(parent);
     QVBoxLayout *lyout = new QVBoxLayout;
@@ -206,7 +206,7 @@ QWidget *Check_KIV::Bd2W(QWidget *parent)
     return w;
 }
 
-QWidget *Check_KIV::Bd3W(QWidget *parent)
+QWidget *CheckKIV::Bd3W(QWidget *parent)
 {
 
     QWidget *w = new QWidget(parent);
@@ -274,12 +274,12 @@ QWidget *Check_KIV::Bd3W(QWidget *parent)
     return w;
 }
 
-void Check_KIV::FillBd(QWidget *parent, QString Name, QString Value)
+void CheckKIV::FillBd(QWidget *parent, QString Name, QString Value)
 {
     WDFunc::SetLBLText(parent, Name, Value);
 }
 
-QWidget *Check_KIV::BdUI(int bdnum)
+QWidget *CheckKIV::BdUI(int bdnum)
 {
     Q_UNUSED(bdnum);
     return nullptr;
@@ -313,14 +313,14 @@ QWidget *Check_KIV::BdUI(int bdnum)
 //    Q_UNUSED(bdnum);
 //}
 
-QWidget *Check_KIV::CustomTab()
+QWidget *CheckKIV::CustomTab()
 {
     QWidget *w = new QWidget;
 
     return w;
 }
 
-void Check_KIV::FillBdUSB(QWidget *parent)
+void CheckKIV::FillBdUSB(QWidget *parent)
 {
 
     WDFunc::SetLBLText(parent, QString::number(101), WDFunc::StringValueWithCheck(Bd_block1.Tmk, 3));
@@ -349,7 +349,7 @@ void Check_KIV::FillBdUSB(QWidget *parent)
     WDFunc::SetLBLText(parent, "4501", WDFunc::StringValueWithCheck(Bd_block1.Tamb, 3));
 }
 
-void Check_KIV::FillBd5(QWidget *parent)
+void CheckKIV::FillBd5(QWidget *parent)
 {
     WDFunc::SetLBLText(parent, QString::number(2400), WDFunc::StringValueWithCheck(Bd_block5.Frequency, 3));
 
@@ -359,7 +359,7 @@ void Check_KIV::FillBd5(QWidget *parent)
     }
 }
 
-void Check_KIV::FillBd8(QWidget *parent)
+void CheckKIV::FillBd8(QWidget *parent)
 {
 
     WDFunc::SetLBLText(parent, "4502", WDFunc::StringValueWithCheck(Bd_block8.resistance, 3));

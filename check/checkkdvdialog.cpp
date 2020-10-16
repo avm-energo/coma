@@ -22,7 +22,7 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-CheckKDVDialog::CheckKDVDialog(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
+CheckKDVDialog::CheckKDVDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
     EParent = parent;
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
@@ -81,11 +81,6 @@ QWidget *CheckKDVDialog::BdUI(int bdnum)
     }
 }
 
-void CheckKDVDialog::RefreshAnalogValues(int bdnum)
-{
-    Q_UNUSED(bdnum)
-}
-
 void CheckKDVDialog::PrepareHeadersForFile(int row)
 {
     QString phase[3] = { "A:", "B:", "C:" };
@@ -118,27 +113,6 @@ void CheckKDVDialog::WriteToFile(int row, int bdnum)
 {
     Q_UNUSED(row);
     Q_UNUSED(bdnum);
-}
-
-QWidget *CheckKDVDialog::CustomTab()
-{
-    QWidget *w = new QWidget;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    lyout->addWidget(ChKDV->Bd1W(this));
-    QPushButton *pb = new QPushButton("Начать измерения Bd");
-
-    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StartBdMeasurements);
-
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Остановить измерения Bd");
-
-    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StopBdMeasurements);
-
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    w->setLayout(lyout);
-    return nullptr;
 }
 
 void CheckKDVDialog::ChooseValuesToWrite()
@@ -233,22 +207,19 @@ void CheckKDVDialog::USBUpdate()
     }
 }
 
+void CheckKDVDialog::ETHUpdate()
+{
+    updateFloatData();
+}
+
+void CheckKDVDialog::MBSUpdate()
+{
+}
+
 void CheckKDVDialog::SetWarnColor(int position, bool value)
 {
-
-    //    for (int i = 0; i < 18; i++)
-    //    {
-    //        if ((i >= 0) && (i < 3))
-    //        {
-    //            if (position[i] == 1)
     if ((position >= 0) && (position < 3))
-    {
         WDFunc::SetLBLTColor(this, QString::number(1000 + position), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
-        //                WDFunc::SetLBLTColor(this, QString::number(1000 + i),
-        //                    Colors::TABCOLORA1); // Colors::TABCOLORA1
-        //            else
-        //                WDFunc::SetLBLTColor(this, QString::number(1000 + i), Colors::ACONFOCLR);
-    }
 
     if ((position >= 3) && (position < 6))
         WDFunc::SetLBLTColor(
@@ -266,39 +237,31 @@ void CheckKDVDialog::SetWarnColor(int position, bool value)
             this, QString::number(2426 + position - 13), (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
     if (position == 17)
         WDFunc::SetLBLTColor(this, "2432", (value) ? Colors::TABCOLORA1 : Colors::ACONFOCLR);
-    //    }
 }
 
 void CheckKDVDialog::SetAlarmColor(int position, bool value)
 {
-    //    for (int i = 0; i < 7; i++)
-    //    {
-    //        if (i < 3)
     if (position < 3)
-    {
-        //            if (Alarm[i] == 1)
         WDFunc::SetLBLTColor(this, QString::number(2429 + position), (value) ? Colors::REDCOLOR : Colors::ACONFOCLR);
-    }
     else if ((position >= 3) && (position < 6))
         WDFunc::SetLBLTColor(
             this, QString::number(2426 + position - 3), (value) ? Colors::REDCOLOR : Colors::ACONFOCLR);
     else if (position == 6)
         WDFunc::SetLBLTColor(this, QString::number(2432), (value) ? Colors::REDCOLOR : Colors::ACONFOCLR);
-    //    }
 }
 
-void CheckKDVDialog::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
+void CheckKDVDialog::updateFloatData()
 {
-    for (int i = 0; i < Signal->SigNumber; i++)
+    QList<IEC104Thread::SignalsStruct> list;
+    IEC104::getSignalsFrom104(0, 99999, IEC104Thread::IEC104SignalTypes::FloatWithTime, list);
+    if (!list.isEmpty())
     {
-        ChKDV->FillBd(
-            this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal + i)->fl.SigVal, 3));
+        foreach (IEC104Thread::SignalsStruct signal, list)
+        {
+            IEC104Signals::FloatWithTime fwt = qvariant_cast<IEC104Signals::FloatWithTime>(signal.data);
+            ChKDV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
+        }
     }
-}
-
-void CheckKDVDialog::UpdateSponData(IEC104Thread::SponSignals *Signal)
-{
-    Q_UNUSED(Signal)
 }
 
 void CheckKDVDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)

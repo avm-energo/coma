@@ -13,6 +13,13 @@ class AbstractStartupDialog : public UDialog
 {
     Q_OBJECT
 public:
+    enum UpdateStates
+    {
+        ThereWasNoUpdatesRecently = 0,
+        QueryWasInitiated = 1,
+        AnswerWasReceived = 2
+    };
+
     explicit AbstractStartupDialog(QWidget *parent = nullptr);
     //    ~AbstractCorDialog();
 
@@ -24,9 +31,11 @@ public:
 
     Error::Msg WriteCheckPassword();
     virtual void GetCorBd();
+    void ETHUpdate();
+    void MBSUpdate();
 
 private:
-    bool m_oneShotUpdateFlag;
+    UpdateStates m_updateState;
     virtual void FillCor() = 0;
     virtual void FillBackCor() = 0;
     //    virtual void FillWb7() = 0;
@@ -51,7 +60,7 @@ public slots:
     void MessageOk();
     void SetCor();
     virtual void ResetCor() = 0;
-    void UpdateFlCorData(IEC104Thread::FlSignals104 *Signal);
+    void updateFloatData();
     void ModBusUpdateCorData(QList<ModBus::SignalStruct> Signal);
     virtual void SaveToFile() = 0;
     virtual void ReadFromFile() = 0;

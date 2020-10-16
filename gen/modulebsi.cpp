@@ -2,6 +2,7 @@
 
 #include "../config/config.h"
 #include "../gen/board.h"
+#include "../iec104/iec104.h"
 #include "../usb/commands.h"
 #include "error.h"
 #include "stdfunc.h"
@@ -13,12 +14,15 @@ quint32 ModuleBSI::MType = 0;
 ModuleBSI::Bsi ModuleBSI::ModuleBsi;
 QString ModuleBSI::ModuleTypeString = "";
 
-ModuleBSI::ModuleBSI() { ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF; }
+ModuleBSI::ModuleBSI()
+{
+    ModuleBsi.MTypeB = ModuleBsi.MTypeM = 0xFFFFFFFF;
+}
 
-Error::Msg ModuleBSI::SetupBSI()
+void ModuleBSI::USBUpdate()
 {
     if (Commands::GetBsi(ModuleBsi) != Error::Msg::NoError)
-        return Error::Msg::GeneralError;
+        return;
     Config::ModuleDesc typeb = Config::ModuleBaseBoards().value(ModuleBsi.MTypeB);
     Config::ModuleDesc typem = Config::ModuleMezzanineBoards().value(ModuleBsi.MTypeM);
     if ((ModuleBsi.MTypeB << 8) >= 0xA000 || (Config::ModuleMezzanineBoards()[ModuleBsi.MTypeM].Hex) >= 0x00A0)
@@ -30,17 +34,58 @@ Error::Msg ModuleBSI::SetupBSI()
     {
         ModuleTypeString = typeb.TextString + typem.TextString;
     }
+    Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
+    Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
 
-    if (!IsKnownModule())
-        return Error::Msg::ResEmpty;
-    return Error::Msg::NoError;
+    //    if (!IsKnownModule())
+    //        return Error::Msg::ResEmpty;
+    //    return Error::Msg::NoError;
 }
 
-QString ModuleBSI::GetModuleTypeString() { return ModuleTypeString; }
+void ModuleBSI::ETHUpdate()
+{
+    QList<IEC104Thread::SignalsStruct> list;
+    IEC104::getSignalsFrom104(BSIREG, BSIENDREG, IEC104Thread::IEC104SignalTypes::BitString, list);
+    if (!list.isEmpty())
+    {
+        foreach (IEC104Thread::SignalsStruct signal, list)
+        {
+            IEC104Signals::BitString bs = qvariant_cast<IEC104Signals::BitString>(signal.data);
+            //            memcpy(&startadr, &(sig->BS.SigAdr[0]), sizeof(sig->BS.SigAdr));
+            //            signum = sig->SigNumber;
+            //            INFOMSG("FillBSIe(): address=" + QString::number(startadr));
 
-quint32 ModuleBSI::GetMType(BoardTypes type) { return (type == BT_MEZONIN) ? ModuleBsi.MTypeM : ModuleBsi.MTypeB; }
+            //            if ((signum < sizeof(ModuleBSI::ModuleBsi)) && (startadr >= BSIREG && startadr <= BSIENDREG))
+            //            {
+            //                for (size_t i = 0; i < signum; ++i)
+            //                    memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (i + startadr - 1)), (((quint32
+            //                    *)(&sig->BS.SigVal) + 4 * i)),
+            //                        sizeof(sig->BS.SigVal));
+            memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (bs.sigAdr - 1)), &bs.sigVal, sizeof(quint32));
+        }
+        Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
+        Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
+    }
+}
 
-quint32 ModuleBSI::Health() { return ModuleBsi.Hth; }
+void ModuleBSI::MBSUpdate()
+{
+}
+
+QString ModuleBSI::GetModuleTypeString()
+{
+    return ModuleTypeString;
+}
+
+quint32 ModuleBSI::GetMType(BoardTypes type)
+{
+    return (type == BT_MEZONIN) ? ModuleBsi.MTypeM : ModuleBsi.MTypeB;
+}
+
+quint32 ModuleBSI::Health()
+{
+    return ModuleBsi.Hth;
+}
 
 quint32 ModuleBSI::SerialNum(BoardTypes type)
 {
@@ -61,7 +106,10 @@ ModuleBSI::Bsi ModuleBSI::GetBsi()
     return bsi;
 }
 
-quint32 ModuleBSI::GetHealth() { return ModuleBsi.Hth; }
+quint32 ModuleBSI::GetHealth()
+{
+    return ModuleBsi.Hth;
+}
 
 bool ModuleBSI::IsKnownModule()
 {
@@ -104,4 +152,28 @@ Error::Msg ModuleBSI::PrereadConf(QWidget *w, S2ConfigType *S2Config)
     }
     //    }
     return Error::Msg::NoError;
+}
+
+void ModuleBSI::update()
+{
+    switch (Board::GetInstance().interfaceType())
+    {
+    case Board::InterfaceType::USB:
+        USBUpdate();
+        break;
+    case Board::InterfaceType::Ethernet:
+        ETHUpdate();
+        break;
+    case Board::InterfaceType::RS485:
+        MBSUpdate();
+        break;
+    default:
+        break;
+    }
+}
+
+void MBSUpdate()
+{
+    Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
+    Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
 }

@@ -420,6 +420,7 @@ void Coma::StartWork()
     tmr.start();
     while ((board.typeM() == 0) && (tmr.elapsed() < INTERVAL::WAIT) && !Cancelled)
         QCoreApplication::processEvents();
+    m_BSITimer->stop();
     if (board.typeM() == 0)
     {
         QMessageBox::critical(this, "Ошибка", "Не удалось соединиться с прибором", QMessageBox::Ok);
@@ -428,6 +429,8 @@ void Coma::StartWork()
         //            Disconnect();
         return;
     }
+    if (AlarmStateAllDialog != nullptr)
+        AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
     Board::GetInstance().setConnectionState(Board::ConnectionState::Connected);
     quint16 serialNumber = Board::GetInstance().type();
     QString deviceName = QVariant::fromValue(Board::DeviceModel(serialNumber)).toString();
@@ -653,8 +656,8 @@ void Coma::New104()
     connect(Ch104, &IEC104::SetDataSize, this, &Coma::SetProgressBar1Size);
     connect(Ch104, &IEC104::SetDataCount, this, &Coma::SetProgressBar1);
     connect(Ch104, &IEC104::ReconnectSignal, this, &Coma::ReConnect);
-    connect(Ch104, &IEC104::Sponsignalsready, Alarm, &AlarmClass::UpdateAlarm104);
-    connect(Ch104, &IEC104::Bs104signalsready, this, qOverload<IEC104Thread::BS104Signals *>(&Coma::FillBSI));
+    //    connect(Ch104, &IEC104::Sponsignalsready, Alarm, &AlarmClass::UpdateAlarm104);
+    //    connect(Ch104, &IEC104::Bs104signalsready, this, qOverload<IEC104Thread::BS104Signals *>(&Coma::FillBSI));
 }
 
 void Coma::NewModbus()
@@ -685,6 +688,10 @@ void Coma::NewTimers()
 {
     //    TimeTimer = new QTimer(this);
     //    TimeTimer->setInterval(1000);
+
+    m_BSITimer = new QTimer;
+    m_BSITimer->setInterval(1000);
+    connect(m_BSITimer, &QTimer::timeout, &ModuleBSI::update);
 
     BdaTimer = new QTimer;
     BdaTimer->setInterval(1000);
@@ -721,7 +728,7 @@ void Coma::NewTimers()
 
 void Coma::NewTimersBda()
 {
-    connect(AlrmTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
+    connect(AlrmTimer, &QTimer::timeout, Alarm, &AlarmClass::update);
     if (AlarmStateAllDialog != nullptr)
         connect(AlrmTimer, &QTimer::timeout, AlarmStateAllDialog, &AlarmStateAll::CallUpdateHealth);
     //    connect(BdaTimer, &QTimer::timeout, Alarm, &AlarmClass::UpdateAlarmUSB);
@@ -768,7 +775,10 @@ bool Coma::nativeEvent(const QByteArray &eventType, void *message, long *result)
     return false;
 }
 
-void Coma::SetMode(int mode) { Mode = mode; }
+void Coma::SetMode(int mode)
+{
+    Mode = mode;
+}
 
 void Coma::Go(const QString &parameter)
 {
@@ -921,26 +931,27 @@ void Coma::ClearTW()
 //        confMDialog->Fill();
 //}
 
-void Coma::FillBSI(IEC104Thread::BS104Signals *sig)
-{
-    unsigned int signum;
-    int startadr = 0;
+// void Coma::FillBSI(IEC104Thread::BS104Signals *sig)
+//{
+//    unsigned int signum;
+//    int startadr = 0;
 
-    memcpy(&startadr, &(sig->BS.SigAdr[0]), sizeof(sig->BS.SigAdr));
-    signum = sig->SigNumber;
-    INFOMSG("FillBSIe(): address=" + QString::number(startadr));
+//    memcpy(&startadr, &(sig->BS.SigAdr[0]), sizeof(sig->BS.SigAdr));
+//    signum = sig->SigNumber;
+//    INFOMSG("FillBSIe(): address=" + QString::number(startadr));
 
-    if ((signum < sizeof(ModuleBSI::ModuleBsi)) && (startadr >= BSIREG && startadr <= BSIENDREG))
-    {
-        for (size_t i = 0; i < signum; ++i)
-            memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (i + startadr - 1)), (((quint32 *)(&sig->BS.SigVal) + 4 * i)),
-                sizeof(sig->BS.SigVal));
-        Board::GetInstance().setTypeB(ModuleBSI::ModuleBsi.MTypeB);
-        Board::GetInstance().setTypeM(ModuleBSI::ModuleBsi.MTypeM);
-    }
-    if (AlarmStateAllDialog != nullptr)
-        AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
-}
+//    if ((signum < sizeof(ModuleBSI::ModuleBsi)) && (startadr >= BSIREG && startadr <= BSIENDREG))
+//    {
+//        for (size_t i = 0; i < signum; ++i)
+//            memcpy(((quint32 *)(&ModuleBSI::ModuleBsi) + (i + startadr - 1)), (((quint32 *)(&sig->BS.SigVal) + 4 *
+//            i)),
+//                sizeof(sig->BS.SigVal));
+//        Board::GetInstance().setTypeB(ModuleBSI::ModuleBsi.MTypeB);
+//        Board::GetInstance().setTypeM(ModuleBSI::ModuleBsi.MTypeM);
+//    }
+//    if (AlarmStateAllDialog != nullptr)
+//        AlarmStateAllDialog->UpdateHealth(ModuleBSI::ModuleBsi.Hth);
+//}
 
 void Coma::FillBSI(QList<ModBus::BSISignalStruct> sig, unsigned int sigsize)
 {
@@ -1001,9 +1012,15 @@ void Coma::FileTimeOut()
         QMessageBox::information(this, "Ошибка", "Ошибка", QMessageBox::Ok);
 }
 
-void Coma::SetProgressBar2Size(int size) { SetProgressBarSize(2, size); }
+void Coma::SetProgressBar2Size(int size)
+{
+    SetProgressBarSize(2, size);
+}
 
-void Coma::SetProgressBar2(int cursize) { SetProgressBar(2, cursize); }
+void Coma::SetProgressBar2(int cursize)
+{
+    SetProgressBar(2, cursize);
+}
 
 void Coma::SetProgressBarSize(int prbnum, int size)
 {
@@ -1066,6 +1083,7 @@ void Coma::Disconnect()
 
 void Coma::Connect()
 {
+    m_BSITimer->start();
     auto const &board = Board::GetInstance();
     Error::Msg res;
     switch (board.interfaceType())
@@ -1081,22 +1099,22 @@ void Coma::Connect()
             ERMSG("cn: can't connect");
             return;
         }
-        res = ModuleBSI::SetupBSI();
-        if (res != Error::Msg::NoError)
-        {
-            if (res == Error::Msg::ResEmpty)
-            {
-                QMessageBox::critical(this, "Ошибка", "Неизвестный тип модуля", QMessageBox::Ok);
-                ERMSG("Unknown module type");
-                return;
-            }
-            QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
-            ERMSG("BSI read error");
-            return;
-        }
+        //        res = ModuleBSI::USBUpdate();
+        //        if (res != Error::Msg::NoError)
+        //        {
+        //            if (res == Error::Msg::ResEmpty)
+        //            {
+        //                QMessageBox::critical(this, "Ошибка", "Неизвестный тип модуля", QMessageBox::Ok);
+        //                ERMSG("Unknown module type");
+        //                return;
+        //            }
+        //            QMessageBox::critical(this, "Ошибка", "Не удалось установить связь", QMessageBox::Ok);
+        //            ERMSG("BSI read error");
+        //            return;
+        //        }
         ActiveThreads |= THREAD::USB;
-        Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
-        Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
+        //        Board::GetInstance().setTypeB(ModuleBSI::GetMType(BoardTypes::BT_BASE));
+        //        Board::GetInstance().setTypeM(ModuleBSI::GetMType(BoardTypes::BT_MEZONIN));
         break;
     }
     case Board::InterfaceType::Ethernet:
@@ -1166,7 +1184,10 @@ void Coma::DisconnectAndClear()
     Reconnect = false;
 }
 
-void Coma::resizeEvent(QResizeEvent *e) { QMainWindow::resizeEvent(e); }
+void Coma::resizeEvent(QResizeEvent *e)
+{
+    QMainWindow::resizeEvent(e);
+}
 
 void Coma::keyPressEvent(QKeyEvent *e)
 {

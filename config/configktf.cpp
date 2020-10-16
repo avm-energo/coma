@@ -4,44 +4,50 @@
 
 ConfigKTF::ConfigKTF(S2ConfigType *config)
 {
-    for (int i = 0; i < config->size(); ++i)
+    m_S2Config = config;
+    for (int i = 0; i < m_S2Config->size(); ++i)
     {
-        if (config->at(i).id == 0xFFFFFFFF)
+        if (m_S2Config->at(i).id == 0xFFFFFFFF)
         {
-            config->remove(i);
+            m_S2Config->remove(i);
             --i;
         }
     }
 
-    config->append({ BCI_NFILTR, sizeof(Bci_block.NFiltr), &Bci_block.NFiltr });
-    config->append({ BCI_NHARMFILT, sizeof(Bci_block.NHarmFilt), &Bci_block.NHarmFilt });
-    config->append({ BCI_DDOCS, sizeof(Bci_block.DDosc), &Bci_block.DDosc });
-    config->append({ BCI_UNOM1, sizeof(Bci_block.Unom1), &Bci_block.Unom1 });
-    config->append({ BCI_DUOSC, sizeof(Bci_block.DUosc), &Bci_block.DUosc });
-    config->append({ BCI_DIOSC, sizeof(Bci_block.DIosc), &Bci_block.DIosc });
-    config->append({ BCI_DUIMIN, sizeof(Bci_block.DUImin), &Bci_block.DUImin });
-    config->append({ BCI_IMIN, sizeof(Bci_block.Imin), &Bci_block.Imin });
-    config->append({ BCI_T_DATA_REC, sizeof(Bci_block.T_Data_Rec), &Bci_block.T_Data_Rec });
-    config->append({ BCI_U2NOM, sizeof(Bci_block.U2nom), &Bci_block.U2nom });
-    config->append({ BCI_ITT1NOM, sizeof(Bci_block.ITT1nom), &Bci_block.ITT1nom });
-    config->append({ BCI_ITT2NOM, sizeof(Bci_block.ITT2nom), &Bci_block.ITT2nom });
-    config->append({ BCI_COOL_TYPE, sizeof(Bci_block.Cool_type), &Bci_block.Cool_type });
-    config->append({ BCI_W_MAT, sizeof(Bci_block.W_mat), &Bci_block.W_mat });
-    config->append({ BCI_TNNTDOP, sizeof(Bci_block.TNNTdop), &Bci_block.TNNTdop });
-    config->append({ BCI_TNNTPRED, sizeof(Bci_block.TNNTpred), &Bci_block.TNNTpred });
-    config->append({ BCI_TAMB_NOM, sizeof(Bci_block.Tamb_nom), &Bci_block.Tamb_nom });
-    config->append({ BCI_DTNNT_NOM, sizeof(Bci_block.dTNNTnom), &Bci_block.dTNNTnom });
-    config->append({ BCI_KDOB, sizeof(Bci_block.Kdob), &Bci_block.Kdob });
-    config->append({ BCI_TAUWNOM, sizeof(Bci_block.TauWnom), &Bci_block.TauWnom });
-    config->append({ BCI_UMAX, sizeof(Bci_block.Umax), &Bci_block.Umax });
-    config->append({ BCI_IMAX, sizeof(Bci_block.Imax), &Bci_block.Imax });
-    config->append({ BCI_IWNOM, sizeof(Bci_block.Iwnom), &Bci_block.Iwnom });
-    config->append({ BCI_OSCPOINTS, sizeof(Bci_block.OscPoints), &Bci_block.OscPoints });
-    config->append({ BCI_GTNNT, sizeof(Bci_block.GTnnt), &Bci_block.GTnnt });
-    config->append({ BCI_GOVC, sizeof(Bci_block.GOvc), &Bci_block.GOvc });
-    config->append({ BCI_TDATNUM, sizeof(Bci_block.TdatNum), &Bci_block.TdatNum });
+    m_S2Config->append({ BCI_NFILTR, sizeof(Bci_block.NFiltr), &Bci_block.NFiltr });
+    m_S2Config->append({ BCI_NHARMFILT, sizeof(Bci_block.NHarmFilt), &Bci_block.NHarmFilt });
+    m_S2Config->append({ BCI_DDOCS, sizeof(Bci_block.DDosc), &Bci_block.DDosc });
+    m_S2Config->append({ BCI_UNOM1, sizeof(Bci_block.Unom1), &Bci_block.Unom1 });
+    m_S2Config->append({ BCI_DUOSC, sizeof(Bci_block.DUosc), &Bci_block.DUosc });
+    m_S2Config->append({ BCI_DIOSC, sizeof(Bci_block.DIosc), &Bci_block.DIosc });
+    m_S2Config->append({ BCI_DUIMIN, sizeof(Bci_block.DUImin), &Bci_block.DUImin });
+    m_S2Config->append({ BCI_IMIN, sizeof(Bci_block.Imin), &Bci_block.Imin });
+    m_S2Config->append({ BCI_T_DATA_REC, sizeof(Bci_block.T_Data_Rec), &Bci_block.T_Data_Rec });
+    m_S2Config->append({ BCI_U2NOM, sizeof(Bci_block.U2nom), &Bci_block.U2nom });
+    m_S2Config->append({ BCI_ITT1NOM, sizeof(Bci_block.ITT1nom), &Bci_block.ITT1nom });
+    m_S2Config->append({ BCI_ITT2NOM, sizeof(Bci_block.ITT2nom), &Bci_block.ITT2nom });
+    m_S2Config->append({ BCI_COOL_TYPE, sizeof(Bci_block.Cool_type), &Bci_block.Cool_type });
+    m_S2Config->append({ BCI_W_MAT, sizeof(Bci_block.W_mat), &Bci_block.W_mat });
+    m_S2Config->append({ BCI_TNNTDOP, sizeof(Bci_block.TNNTdop), &Bci_block.TNNTdop });
+    m_S2Config->append({ BCI_TNNTPRED, sizeof(Bci_block.TNNTpred), &Bci_block.TNNTpred });
+    m_S2Config->append({ BCI_TAMB_NOM, sizeof(Bci_block.Tamb_nom), &Bci_block.Tamb_nom });
+    m_S2Config->append({ BCI_DTNNT_NOM, sizeof(Bci_block.dTNNTnom), &Bci_block.dTNNTnom });
+    m_S2Config->append({ BCI_KDOB, sizeof(Bci_block.Kdob), &Bci_block.Kdob });
+    m_S2Config->append({ BCI_TAUWNOM, sizeof(Bci_block.TauWnom), &Bci_block.TauWnom });
+    m_S2Config->append({ BCI_UMAX, sizeof(Bci_block.Umax), &Bci_block.Umax });
+    m_S2Config->append({ BCI_IMAX, sizeof(Bci_block.Imax), &Bci_block.Imax });
+    m_S2Config->append({ BCI_IWNOM, sizeof(Bci_block.Iwnom), &Bci_block.Iwnom });
+    m_S2Config->append({ BCI_OSCPOINTS, sizeof(Bci_block.OscPoints), &Bci_block.OscPoints });
+    m_S2Config->append({ BCI_GTNNT, sizeof(Bci_block.GTnnt), &Bci_block.GTnnt });
+    m_S2Config->append({ BCI_GOVC, sizeof(Bci_block.GOvc), &Bci_block.GOvc });
+    m_S2Config->append({ BCI_TDATNUM, sizeof(Bci_block.TdatNum), &Bci_block.TdatNum });
 
-    config->append({ 0xFFFFFFFF, 0, nullptr });
+    m_S2Config->append({ 0xFFFFFFFF, 0, nullptr });
+}
+
+S2ConfigType *ConfigKTF::S2Config()
+{
+    return m_S2Config;
 }
 
 void ConfigKTF::SetDefConf()

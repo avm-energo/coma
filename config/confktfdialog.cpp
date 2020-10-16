@@ -22,7 +22,7 @@ ConfKTFDialog::ConfKTFDialog(ConfigKTF *cktf, QWidget *parent) : AbstractConfDia
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::ACONFCLR) + ";}";
     setStyleSheet(tmps);
-    S2Config = cktf->;
+    S2Config = cktf->S2Config();
     CKTF = cktf;
     Conf = new ConfDialog(S2Config, Board::GetInstance().typeB(), Board::GetInstance().typeM());
     ConfKxx = new ConfKxxDialog(S2Config);
@@ -31,9 +31,14 @@ ConfKTFDialog::ConfKTFDialog(ConfigKTF *cktf, QWidget *parent) : AbstractConfDia
     PrereadConf();
 }
 
-ConfKTFDialog::~ConfKTFDialog() { }
+ConfKTFDialog::~ConfKTFDialog()
+{
+}
 
-int ConfKTFDialog::getRCount() { return CKTF->Bci_block.TdatNum; }
+int ConfKTFDialog::getRCount()
+{
+    return CKTF->Bci_block.TdatNum;
+}
 
 void ConfKTFDialog::SetupUI()
 {
@@ -466,7 +471,9 @@ void ConfKTFDialog::FillBack()
     ConfKxx->FillBack();
 }
 
-void ConfKTFDialog::CheckConf() { }
+void ConfKTFDialog::CheckConf()
+{
+}
 
 void ConfKTFDialog::SetDefConf()
 {
@@ -476,6 +483,12 @@ void ConfKTFDialog::SetDefConf()
     Fill();
 }
 
-void ConfKTFDialog::Start_Timer() { timerRead->start(1000); }
+void ConfKTFDialog::Start_Timer()
+{
+    timerRead->start(1000);
+}
 
-void ConfKTFDialog::Stop_Timer() { timerRead->stop(); }
+void ConfKTFDialog::Stop_Timer()
+{
+    timerRead->stop();
+}

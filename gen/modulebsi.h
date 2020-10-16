@@ -15,6 +15,7 @@
 #define HTH_REL 0x00000008     // неисправность выходных реле (Д)
 #define HTH_TUPP 0x00000004    // перегрев модуля
 
+#define BSIREG 1
 #define BSIENDREG 15 // конечный регистр BSI в 104 и modbus
 
 enum BoardTypes
@@ -50,7 +51,9 @@ public:
 
     ModuleBSI();
 
-    static Error::Msg SetupBSI();
+    static void USBUpdate();
+    static void ETHUpdate();
+    static void MBSUpdate();
     static QString GetModuleTypeString();
     static quint32 GetMType(BoardTypes type);
     static quint32 Health();
@@ -66,6 +69,7 @@ signals:
     void readConf();
 
 public slots:
+    static void update();
     // int PrereadConf(QWidget *w, S2ConfigType *S2Config);
 
 private:

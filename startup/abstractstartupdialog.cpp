@@ -32,10 +32,20 @@
 
 AbstractStartupDialog::AbstractStartupDialog(QWidget *parent) : UDialog(parent)
 {
-    m_oneShotUpdateFlag = false;
+    m_updateState = ThereWasNoUpdatesRecently;
 }
 
 void AbstractStartupDialog::GetCorBd()
+{
+}
+
+void AbstractStartupDialog::ETHUpdate()
+{
+    updateFloatData();
+    m_updateState = AnswerWasReceived;
+}
+
+void AbstractStartupDialog::MBSUpdate()
 {
 }
 
@@ -74,17 +84,24 @@ void AbstractStartupDialog::MessageOk()
     QMessageBox::information(this, "INFO", "Записано успешно");
 }
 
-void AbstractStartupDialog::UpdateFlCorData(IEC104Thread::FlSignals104 *Signal)
+void AbstractStartupDialog::updateFloatData()
 {
-
-    if (((Signal)->fl.SigAdr >= 4000) && ((Signal)->fl.SigAdr <= 4010))
+    QList<IEC104Thread::SignalsStruct> list;
+    IEC104::getSignalsFrom104(4000, 4010, IEC104Thread::IEC104SignalTypes::FloatWithTime, list);
+    if (!list.isEmpty())
     {
-        for (int i = 0; i < Signal->SigNumber; i++)
+        foreach (IEC104Thread::SignalsStruct signal, list)
         {
+            IEC104Signals::FloatWithTime fwt = qvariant_cast<IEC104Signals::FloatWithTime>(signal.data);
+
+            //    if (((Signal)->fl.SigAdr >= 4000) && ((Signal)->fl.SigAdr <= 4010))
+            //    {
+            //        for (int i = 0; i < Signal->SigNumber; i++)
+            //        {
             // FillBd(
             //    this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal +
             //    i)->fl.SigVal));
-            FillBd(this, QString::number((Signal + i)->fl.SigAdr), (Signal + i)->fl.SigVal);
+            FillBd(this, QString::number(fwt.sigAdr), fwt.sigVal);
         }
 
         if (first)
@@ -134,32 +151,7 @@ Error::Msg AbstractStartupDialog::WriteCheckPassword()
 {
     KeyPressDialog dlg; // = new KeyPressDialog;
     return dlg.CheckPassword("121941");
-    //    ok = false;
-    //    StdFunc::ClearCancel();
-    //    QEventLoop PasswordLoop;
-    //    KeyPressDialog *dlg = new KeyPressDialog("Введите пароль\nПодтверждение: клавиша Enter\nОтмена: клавиша Esc");
-    //    connect(dlg, SIGNAL(Finished(QString)), this, SLOT(WritePasswordCheck(QString)));
-    //    connect(this, SIGNAL(WritePasswordChecked()), &PasswordLoop, SLOT(quit()));
-    //    dlg->deleteLater();
-    //    dlg->show();
-    //    PasswordLoop.exec();
-    //    if (StdFunc::IsCancelled())
-    //        return Error::Msg::GeneralError;
-    //    if (!ok)
-    //    {
-    //        QMessageBox::critical(this, "Неправильно", "Пароль введён неверно");
-    //        return Error::Msg::GeneralError;
-    //    }
-    //    return Error::Msg::NoError;
 }
-// void AbstractStartupDialog::WritePasswordCheck(QString psw)
-//{
-//    if (psw == "121941")
-//        ok = true;
-//    else
-//        ok = false;
-//    emit WritePasswordChecked();
-//}
 
 void AbstractStartupDialog::TimerTimeout()
 {
@@ -175,12 +167,31 @@ void AbstractStartupDialog::update()
 {
     if (m_updatesEnabled)
     {
-        if (!m_oneShotUpdateFlag)
+        switch (m_updateState)
         {
-            m_oneShotUpdateFlag = true;
+        case ThereWasNoUpdatesRecently:
             GetCorBd();
+            m_updateState = QueryWasInitiated;
+            break;
+        case QueryWasInitiated:
+        {
+            switch (Board::GetInstance().interfaceType())
+            {
+            case Board::InterfaceType::Ethernet:
+                ETHUpdate();
+                break;
+            case Board::InterfaceType::RS485:
+                MBSUpdate();
+                break;
+            default:
+                break;
+            }
+        }
+        break;
+        case AnswerWasReceived:
+            break;
         }
     }
     else
-        m_oneShotUpdateFlag = false;
+        m_updateState = ThereWasNoUpdatesRecently;
 }

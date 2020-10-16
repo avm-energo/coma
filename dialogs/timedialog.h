@@ -31,9 +31,9 @@ public slots:
     void ErrorRead();
     void TimeWritten();
     void slot_timeOut();
-    void slot2_timeOut();
-    void FillTimeFromModBus(QList<ModBus::BSISignalStruct>);
-    void FillTimeFrom104(IEC104Thread::BS104Signals *);
+    void USBUpdate();
+    void MBSUpdate();
+    void ETHUpdate();
     void update();
 
 private slots:

@@ -79,8 +79,7 @@
 #define DEF_GOVC 2
 #define DEF_TDATNUM 0
 
-#include "../gen/modulebsi.h"
-#include "config.h"
+#include "../gen/s2.h"
 
 class ConfigKTF
 {
@@ -121,7 +120,11 @@ public:
 
     Bci Bci_block;
 
+    S2ConfigType *S2Config();
     void SetDefConf();
+
+private:
+    S2ConfigType *m_S2Config;
 };
 
 #endif // CONFIGKTF_H

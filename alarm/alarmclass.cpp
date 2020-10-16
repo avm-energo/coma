@@ -119,7 +119,8 @@ void AlarmClass::UpdateAlarmUSB()
         emit SetFirstButton();
 }
 
-void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
+// void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
+void AlarmClass::UpdateAlarmModBus()
 {
     if (!m_moduleIsSet)
     {
@@ -135,33 +136,33 @@ void AlarmClass::UpdateAlarmModBus(ModBus::Coils Signal)
     int acount = 0; // alarm counter
 
     //    Q_ASSERT(MapAlarm.contains(Board::GetInstance().type()));
-    int maxcountbytes = std::min(4, Signal.countBytes); // 32 bits maximum
-    for (i = 0; i < maxcountbytes; ++i)
-    {
-        for (int j = 0; j < 8; j++)
+    /*    int maxcountbytes = std::min(4, Signal.countBytes); // 32 bits maximum
+        for (i = 0; i < maxcountbytes; ++i)
         {
-            //            if (ccount < MapAlarm[Board::GetInstance().type()].warns.size())
-            //            {
-            if (w->m_warnFlags[wcount])
-                w->updatePixmap(Signal.Bytes[i] & (0x00000001 << j), wcount++);
-            if (a->m_alarmFlags[acount])
-                a->updatePixmap(Signal.Bytes[i] & (0x00000001 << j), acount++);
+            for (int j = 0; j < 8; j++)
+            {
+                //            if (ccount < MapAlarm[Board::GetInstance().type()].warns.size())
+                //            {
+                if (w->m_warnFlags[wcount])
+                    w->updatePixmap(Signal.Bytes[i] & (0x00000001 << j), wcount++);
+                if (a->m_alarmFlags[acount])
+                    a->updatePixmap(Signal.Bytes[i] & (0x00000001 << j), acount++);
 
-            //                bool alarm = (Signal.Bytes[i] & (0x00000001 << j));
-            //                if (MapAlarm[Board::GetInstance().type()].warns.at(ccount))
-            //                    WarnAlarmEvents.append(alarm);
-            //                else if (MapAlarm[Board::GetInstance().type()].avars.at(ccount))
-            //                    AvarAlarmEvents.append(alarm);
-            //                ccount++;
-            //            }
+                //                bool alarm = (Signal.Bytes[i] & (0x00000001 << j));
+                //                if (MapAlarm[Board::GetInstance().type()].warns.at(ccount))
+                //                    WarnAlarmEvents.append(alarm);
+                //                else if (MapAlarm[Board::GetInstance().type()].avars.at(ccount))
+                //                    AvarAlarmEvents.append(alarm);
+                //                ccount++;
+                //            }
+            }
         }
-    }
-    //    emit SetWarnAlarmColor(WarnAlarmEvents);
-    //    emit SetAlarmColor(AvarAlarmEvents);
-    emit SetFirstButton();
+        //    emit SetWarnAlarmColor(WarnAlarmEvents);
+        //    emit SetAlarmColor(AvarAlarmEvents);
+        emit SetFirstButton(); */
 }
 
-void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
+void AlarmClass::UpdateAlarm104()
 {
     if (!m_moduleIsSet)
     {
@@ -177,36 +178,45 @@ void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
         int wcount = 0; // warning counter
         int acount = 0; // alarm counter
         quint32 minAddress = w->m_startWarnAddress;
-        quint32 maxAddress = w->m_startWarnAddress + 32; // only 32 bits
-        for (int i = 0; i < Signal->SigNumber; i++)
+        quint32 maxAddress = w->m_startWarnAddress + 31; // only 32 bits
+        QList<IEC104Thread::SignalsStruct> list;
+        IEC104::getSignalsFrom104(minAddress, maxAddress, IEC104Thread::IEC104SignalTypes::SinglePointWithTime, list);
+        if (!list.isEmpty())
         {
-            quint8 sigval = Signal->Spon[i].SigVal;
-            if (!(sigval & 0x80))
+            foreach (IEC104Thread::SignalsStruct signal, list)
             {
-                quint32 sigadr = Signal->Spon[i].SigAdr;
-                if ((minAddress <= sigadr) && (sigadr <= maxAddress))
+                IEC104Signals::SinglePointWithTime sp = qvariant_cast<IEC104Signals::SinglePointWithTime>(signal.data);
+
+                //        for (int i = 0; i < Signal->SigNumber; i++)
+                //        {
+                quint8 sigval = sp.sigVal;
+                if (!(sigval & 0x80))
                 {
+                    //                quint32 sigadr = Signal->Spon[i].SigAdr;
+                    //                if ((minAddress <= sigadr) && (sigadr <= maxAddress))
+                    //                {
                     if (w->m_warnFlags[wcount])
                         w->updatePixmap(sigval & 0x00000001, wcount++);
                     if (a->m_alarmFlags[acount])
                         a->updatePixmap(sigval & 0x00000001, acount++);
+                    //                }
+                    //                bool alarm = (sigval & 0x00000001) ? 1 : 0;
+                    //                quint32 AdrAlarm = MapAlarm[Board::GetInstance().type()].AdrAlarm;
+                    //                int WarnsSize = MapAlarm[Board::GetInstance().type()].warns.size();
+                    //                if ((AdrAlarm <= sigadr) && (sigadr <= AdrAlarm + WarnsSize))
+                    //                {
+                    //                    if (MapAlarm[Board::GetInstance().type()].warns.at(i))
+                    //                        WarnAlarmEvents.append(alarm);
+                    //                    else if (MapAlarm[Board::GetInstance().type()].avars.at(i))
+                    //                        AvarAlarmEvents.append(alarm);
+                    //                }
                 }
-                //                bool alarm = (sigval & 0x00000001) ? 1 : 0;
-                //                quint32 AdrAlarm = MapAlarm[Board::GetInstance().type()].AdrAlarm;
-                //                int WarnsSize = MapAlarm[Board::GetInstance().type()].warns.size();
-                //                if ((AdrAlarm <= sigadr) && (sigadr <= AdrAlarm + WarnsSize))
-                //                {
-                //                    if (MapAlarm[Board::GetInstance().type()].warns.at(i))
-                //                        WarnAlarmEvents.append(alarm);
-                //                    else if (MapAlarm[Board::GetInstance().type()].avars.at(i))
-                //                        AvarAlarmEvents.append(alarm);
-                //                }
             }
-        }
 
-        //        emit SetWarnAlarmColor(WarnAlarmEvents);
-        //        emit SetAlarmColor(AvarAlarmEvents);
-        emit SetFirstButton();
+            //        emit SetWarnAlarmColor(WarnAlarmEvents);
+            //        emit SetAlarmColor(AvarAlarmEvents);
+            emit SetFirstButton();
+        }
     }
     catch (const std::exception &ex)
     {
@@ -217,5 +227,23 @@ void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
     catch (...)
     {
         ERMSG("Unhandled exception");
+    }
+}
+
+void AlarmClass::update()
+{
+    switch (Board::GetInstance().interfaceType())
+    {
+    case Board::InterfaceType::USB:
+        UpdateAlarmUSB();
+        break;
+    case Board::InterfaceType::Ethernet:
+        UpdateAlarm104();
+        break;
+    case Board::InterfaceType::RS485:
+        UpdateAlarmModBus();
+        break;
+    default:
+        break;
     }
 }

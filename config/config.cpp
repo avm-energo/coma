@@ -1,9 +1,6 @@
 // config.cpp
 #include "config.h"
 
-#include "../gen/modulebsi.h"
-#include "../widgets/wd_func.h"
-
 Config::Config(S2ConfigType *config, quint32 MTypeB, quint32 MTypeM)
 {
     MainBlk.MTypeB = MTypeB;

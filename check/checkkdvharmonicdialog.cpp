@@ -80,34 +80,25 @@ QWidget *CheckKDVHarmonicDialog::BdUI(int bdnum)
         return new QWidget;
     }
 }
-void CheckKDVHarmonicDialog::RefreshAnalogValues(int bdnum) { Q_UNUSED(bdnum) }
-
-void CheckKDVHarmonicDialog::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
+void CheckKDVHarmonicDialog::PrepareHeadersForFile(int row)
+{
+    Q_UNUSED(row)
+}
 
 void CheckKDVHarmonicDialog::WriteToFile(int row, int bdnum)
 {
     Q_UNUSED(row)
     Q_UNUSED(bdnum)
 }
-// QWidget *CheckDialogHarmonicKDV::CustomTab()
-//{
-//    QWidget *w = new QWidget;
-//    QVBoxLayout *lyout = new QVBoxLayout;
-//    QHBoxLayout *hlyout = new QHBoxLayout;
-//    lyout->addWidget(ChHarmKTF->Bd1W(this));
-//    QPushButton *pb = new QPushButton("Начать измерения Bd");
-//    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StartBdMeasurements()));
-//    hlyout->addWidget(pb);
-//    pb = new QPushButton("Остановить измерения Bd");
-//    connect(pb, SIGNAL(clicked(bool)), this, SLOT(StopBdMeasurements()));
-//    hlyout->addWidget(pb);
-//    lyout->addLayout(hlyout);
-//    w->setLayout(lyout);
-//    return nullptr;
-//}
-void CheckKDVHarmonicDialog::ChooseValuesToWrite() { }
-void CheckKDVHarmonicDialog::SetDefaultValuesToWrite() { }
-void CheckKDVHarmonicDialog::PrepareAnalogMeasurements() { }
+void CheckKDVHarmonicDialog::ChooseValuesToWrite()
+{
+}
+void CheckKDVHarmonicDialog::SetDefaultValuesToWrite()
+{
+}
+void CheckKDVHarmonicDialog::PrepareAnalogMeasurements()
+{
+}
 
 void CheckKDVHarmonicDialog::USBUpdate()
 {
@@ -137,17 +128,28 @@ void CheckKDVHarmonicDialog::USBUpdate()
     }
 }
 
-void CheckKDVHarmonicDialog::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
+void CheckKDVHarmonicDialog::ETHUpdate()
 {
-    for (int i = 0; i < Signal->SigNumber; i++)
-    {
-
-        ChHarmKDV->FillBd(
-            this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal + i)->fl.SigVal, 3));
-    }
+    updateFloatData();
 }
 
-void CheckKDVHarmonicDialog::UpdateSponData(IEC104Thread::SponSignals *Signal) { Q_UNUSED(Signal) }
+void CheckKDVHarmonicDialog::MBSUpdate()
+{
+}
+
+void CheckKDVHarmonicDialog::updateFloatData()
+{
+    QList<IEC104Thread::SignalsStruct> list;
+    IEC104::getSignalsFrom104(0, 99999, IEC104Thread::IEC104SignalTypes::FloatWithTime, list);
+    if (!list.isEmpty())
+    {
+        foreach (IEC104Thread::SignalsStruct signal, list)
+        {
+            IEC104Signals::FloatWithTime fwt = qvariant_cast<IEC104Signals::FloatWithTime>(signal.data);
+            ChHarmKDV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
+        }
+    }
+}
 
 void CheckKDVHarmonicDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {

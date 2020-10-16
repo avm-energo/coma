@@ -111,7 +111,7 @@ void TimeDialog::slot_timeOut()
     WDFunc::SetLBLText(this, "systime", tmps);
 }
 
-void TimeDialog::slot2_timeOut()
+void TimeDialog::USBUpdate()
 {
 
     switch (Board::GetInstance().interfaceType())
@@ -172,25 +172,52 @@ void TimeDialog::Write_Date()
     WriteTime(myDateTime);
 }
 
-void TimeDialog::FillTimeFrom104(IEC104Thread::BS104Signals *Time)
+void TimeDialog::ETHUpdate()
 {
     uint unixtimestamp = 0;
+    QList<IEC104Thread::SignalsStruct> list;
+    IEC104::getSignalsFrom104(4600, 4600, IEC104Thread::IEC104SignalTypes::BitString, list);
+    if (!list.isEmpty())
+    {
+        foreach (IEC104Thread::SignalsStruct signal, list)
+        {
+            IEC104Signals::BitString bs = qvariant_cast<IEC104Signals::BitString>(signal.data);
+            memcpy(&unixtimestamp, &bs.sigVal, sizeof(quint32));
+            SetTime(unixtimestamp);
+        }
+    }
     // QString qStr;
     // QDateTime myDateTime;
-    int startadr = 0;
-    memcpy(&startadr, &(Time->BS.SigAdr[0]), sizeof(Time->BS.SigAdr));
+    //    int startadr = 0;
+    //    memcpy(&startadr, &(Time->BS.SigAdr[0]), sizeof(Time->BS.SigAdr));
 
-    if (startadr == 4600)
-    {
-        memcpy((quint32 *)(&unixtimestamp), ((quint32 *)(&Time->BS.SigVal)), sizeof(Time->BS.SigVal));
-        SetTime(unixtimestamp);
-    }
+    //    if (startadr == 4600)
+    //    {
+    //        memcpy((quint32 *)(&unixtimestamp), ((quint32 *)(&Time->BS.SigVal)), sizeof(Time->BS.SigVal));
+    //        SetTime(unixtimestamp);
+    //    }
 }
 
 void TimeDialog::update()
 {
     if (m_updatesEnabled)
-        slot2_timeOut();
+    {
+        switch (Board::GetInstance().interfaceType())
+        {
+        case Board::InterfaceType::USB:
+            USBUpdate();
+            break;
+        case Board::InterfaceType::Ethernet:
+            ETHUpdate();
+            break;
+        case Board::InterfaceType::RS485:
+            MBSUpdate();
+            break;
+        default:
+            break;
+        }
+    }
+    USBUpdate();
 }
 
 void TimeDialog::SetTime(quint32 unixtimestamp)
@@ -212,21 +239,22 @@ void TimeDialog::SetTime(quint32 unixtimestamp)
     }
 }
 
-void TimeDialog::FillTimeFromModBus(QList<ModBus::BSISignalStruct> Time)
+// void TimeDialog::MBSUpdate(QList<ModBus::BSISignalStruct> Time)
+void TimeDialog::MBSUpdate()
 {
     uint unixtimestamp = 0;
 
-    if (Time.size() == 0)
-    {
-        ERMSG("Некорректное время");
-        DBGMSG;
-        return;
-    }
-    if (Time.at(0).SigAdr == 4600)
-    {
-        unixtimestamp = Time.at(0).Val;
-        SetTime(unixtimestamp);
-    }
+    /*    if (Time.size() == 0)
+        {
+            ERMSG("Некорректное время");
+            DBGMSG;
+            return;
+        }
+        if (Time.at(0).SigAdr == 4600)
+        {
+            unixtimestamp = Time.at(0).Val;
+            SetTime(unixtimestamp);
+        } */
 }
 
 void TimeDialog::ErrorRead()

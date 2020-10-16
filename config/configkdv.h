@@ -195,7 +195,11 @@ public:
 
     Bci Bci_block;
 
+    S2ConfigType *S2Config();
     void SetDefConf();
+
+private:
+    S2ConfigType *m_S2Config;
 };
 
 #endif // CONFIGKDV_H

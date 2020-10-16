@@ -78,17 +78,19 @@ void AbstractCheckDialog::SetupUI(QStringList &tabnames)
         IndexWd.append(i);
     }
 
-    QWidget *w = CustomTab();
-    if (w != nullptr)
-        CheckTW->addTab(w, "  Прочее  ");
+    //    QWidget *w = CustomTab();
+    //    if (w != nullptr)
+    //        CheckTW->addTab(w, "  Прочее  ");
     lyout->addWidget(CheckTW);
     // lyout->addWidget(BottomUI());
     setLayout(lyout);
 }
 
-QWidget *AbstractCheckDialog::CustomTab() { return nullptr; }
+// QWidget *AbstractCheckDialog::CustomTab() { return nullptr; }
 
-void AbstractCheckDialog::Check1PPS() { }
+void AbstractCheckDialog::Check1PPS()
+{
+}
 
 void AbstractCheckDialog::SetBd(int bdnum, void *block, int blocksize, bool toxlsx)
 {
@@ -212,11 +214,8 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     int bdkeyssize = Bd_blocks.keys().size();
     for (int bdnum = 0; bdnum < bdkeyssize; ++bdnum)
     {
-        if (!XlsxWriting || (XlsxWriting && (Bd_blocks[Bd_blocks.keys().at(bdnum)]->toxlsxwrite)))
+        if (XlsxWriting && (Bd_blocks[Bd_blocks.keys().at(bdnum)]->toxlsxwrite))
         {
-
-            // обновление коэффициентов в соответствующих полях на экране
-            RefreshAnalogValues(bdnum);
             if (XlsxWriting)
                 WriteToFile(WRow, bdnum);
         }
@@ -226,9 +225,15 @@ void AbstractCheckDialog::ReadAnalogMeasurementsAndWriteToFile()
     Busy = false;
 }
 
-void AbstractCheckDialog::StartBdMeasurements() { BdTimer->start(); }
+void AbstractCheckDialog::StartBdMeasurements()
+{
+    BdTimer->start();
+}
 
-void AbstractCheckDialog::StopBdMeasurements() { BdTimer->stop(); }
+void AbstractCheckDialog::StopBdMeasurements()
+{
+    BdTimer->stop();
+}
 
 void AbstractCheckDialog::update()
 {
@@ -240,64 +245,75 @@ void AbstractCheckDialog::update()
             USBUpdate();
             break;
         case Board::InterfaceType::Ethernet:
+            ETHUpdate();
+            break;
+        case Board::InterfaceType::RS485:
+            MBSUpdate();
+            break;
+        default:
+            break;
         }
 
         m_timerCounter = !m_timerCounter;
     }
+}
 
-    void AbstractCheckDialog::onModbusStateChanged()
+void AbstractCheckDialog::onModbusStateChanged()
+{
+    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
+        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
+}
+
+void AbstractCheckDialog::StartAnalogMeasurements()
+{
+    //    CurBdNum = 1;
+    PrepareAnalogMeasurements();
+    Timer->start();
+}
+
+void AbstractCheckDialog::StopAnalogMeasurements()
+{
+    if (XlsxWriting)
     {
-        if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
-            QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
+        if (xlsx)
+        {
+            xlsx->save();
+            QMessageBox::information(this, "Внимание", "Файл создан успешно");
+            delete xlsx;
+        }
+        QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
+        if (pb != nullptr)
+        {
+            pb->setEnabled(true);
+            pb->setText("Запустить чтение аналоговых сигналов в файл");
+        }
+        pb = this->findChild<QPushButton *>("pbmeasurements");
+        if (pb != nullptr)
+            pb->setEnabled(true);
+        XlsxWriting = false;
     }
+    Timer->stop();
+}
 
-    void AbstractCheckDialog::StartAnalogMeasurements()
+void AbstractCheckDialog::TimerTimeout()
+{
+    ReadAnalogMeasurementsAndWriteToFile();
+}
+
+void AbstractCheckDialog::SetTimerPeriod()
+{
+    bool TimerIsActive = false;
+    if (Timer->isActive())
+        TimerIsActive = true;
+    bool ok;
+    int per = sender()->objectName().toInt(&ok);
+    if (!ok)
     {
-        //    CurBdNum = 1;
-        PrepareAnalogMeasurements();
+        ERMSG("Ошибка считывания интервала таймера");
+        return;
+    }
+    Timer->stop();
+    Timer->setInterval(per);
+    if (TimerIsActive)
         Timer->start();
-    }
-
-    void AbstractCheckDialog::StopAnalogMeasurements()
-    {
-        if (XlsxWriting)
-        {
-            if (xlsx)
-            {
-                xlsx->save();
-                QMessageBox::information(this, "Внимание", "Файл создан успешно");
-                delete xlsx;
-            }
-            QPushButton *pb = this->findChild<QPushButton *>("pbfilemeasurements");
-            if (pb != nullptr)
-            {
-                pb->setEnabled(true);
-                pb->setText("Запустить чтение аналоговых сигналов в файл");
-            }
-            pb = this->findChild<QPushButton *>("pbmeasurements");
-            if (pb != nullptr)
-                pb->setEnabled(true);
-            XlsxWriting = false;
-        }
-        Timer->stop();
-    }
-
-    void AbstractCheckDialog::TimerTimeout() { ReadAnalogMeasurementsAndWriteToFile(); }
-
-    void AbstractCheckDialog::SetTimerPeriod()
-    {
-        bool TimerIsActive = false;
-        if (Timer->isActive())
-            TimerIsActive = true;
-        bool ok;
-        int per = sender()->objectName().toInt(&ok);
-        if (!ok)
-        {
-            ERMSG("Ошибка считывания интервала таймера");
-            return;
-        }
-        Timer->stop();
-        Timer->setInterval(per);
-        if (TimerIsActive)
-            Timer->start();
-    }
+}

@@ -21,7 +21,7 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-CheckKTFDialog::CheckKTFDialog(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
+CheckKTFDialog::CheckKTFDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
@@ -47,7 +47,10 @@ CheckKTFDialog::CheckKTFDialog(BoardTypes board, QWidget *parent) : AbstractChec
     Timer->setInterval(ANMEASINT);
 }
 
-CheckKTFDialog::~CheckKTFDialog() { delete ChKTF; }
+CheckKTFDialog::~CheckKTFDialog()
+{
+    delete ChKTF;
+}
 
 QWidget *CheckKTFDialog::BdUI(int bdnum)
 {
@@ -74,34 +77,26 @@ QWidget *CheckKTFDialog::BdUI(int bdnum)
     }
 }
 
-void CheckKTFDialog::RefreshAnalogValues(int bdnum) { Q_UNUSED(bdnum) }
-
-void CheckKTFDialog::PrepareHeadersForFile(int row) { Q_UNUSED(row) }
+void CheckKTFDialog::PrepareHeadersForFile(int row)
+{
+    Q_UNUSED(row)
+}
 
 void CheckKTFDialog::WriteToFile(int row, int bdnum)
 {
     Q_UNUSED(row)
     Q_UNUSED(bdnum)
 }
-QWidget *CheckKTFDialog::CustomTab()
+
+void CheckKTFDialog::ChooseValuesToWrite()
 {
-    QWidget *w = new QWidget;
-    QVBoxLayout *lyout = new QVBoxLayout;
-    QHBoxLayout *hlyout = new QHBoxLayout;
-    lyout->addWidget(ChKTF->Bd1W(this));
-    QPushButton *pb = new QPushButton("Начать измерения Bd");
-    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StartBdMeasurements);
-    hlyout->addWidget(pb);
-    pb = new QPushButton("Остановить измерения Bd");
-    connect(pb, &QAbstractButton::clicked, this, &AbstractCheckDialog::StopBdMeasurements);
-    hlyout->addWidget(pb);
-    lyout->addLayout(hlyout);
-    w->setLayout(lyout);
-    return nullptr;
 }
-void CheckKTFDialog::ChooseValuesToWrite() { }
-void CheckKTFDialog::SetDefaultValuesToWrite() { }
-void CheckKTFDialog::PrepareAnalogMeasurements() { }
+void CheckKTFDialog::SetDefaultValuesToWrite()
+{
+}
+void CheckKTFDialog::PrepareAnalogMeasurements()
+{
+}
 
 void CheckKTFDialog::USBUpdate()
 {
@@ -187,16 +182,28 @@ void CheckKTFDialog::USBUpdate()
     }
 }
 
-void CheckKTFDialog::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
+void CheckKTFDialog::ETHUpdate()
 {
-    for (int i = 0; i < Signal->SigNumber; i++)
-    {
-        ChKTF->FillBd(
-            this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal + i)->fl.SigVal, 3));
-    }
+    updateFloatData();
 }
 
-void CheckKTFDialog::UpdateSponData(IEC104Thread::SponSignals *Signal) { Q_UNUSED(Signal) }
+void CheckKTFDialog::MBSUpdate()
+{
+}
+
+void CheckKTFDialog::updateFloatData()
+{
+    QList<IEC104Thread::SignalsStruct> list;
+    IEC104::getSignalsFrom104(0, 99999, IEC104Thread::IEC104SignalTypes::FloatWithTime, list);
+    if (!list.isEmpty())
+    {
+        foreach (IEC104Thread::SignalsStruct signal, list)
+        {
+            IEC104Signals::FloatWithTime fwt = qvariant_cast<IEC104Signals::FloatWithTime>(signal.data);
+            ChKTF->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
+        }
+    }
+}
 
 void CheckKTFDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
 {

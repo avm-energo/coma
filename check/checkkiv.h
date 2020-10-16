@@ -8,11 +8,11 @@
 #define C84_BDA_IN 1
 #define C84_BDA_IN2 2
 
-class Check_KIV
+class CheckKIV
 {
 public:
-    explicit Check_KIV();
-    ~Check_KIV();
+    explicit CheckKIV();
+    ~CheckKIV();
 
     struct Bd1
     {

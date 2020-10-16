@@ -22,7 +22,7 @@
 #include <QVBoxLayout>
 #include <QtMath>
 
-CheckKDVVibrDialog::CheckKDVVibrDialog(BoardTypes board, QWidget *parent) : AbstractCheckDialog(board, parent)
+CheckKDVVibrDialog::CheckKDVVibrDialog(QWidget *parent) : AbstractCheckDialog(parent)
 {
     QString tmps = "QDialog {background-color: " + QString(Colors::UCONFCLR) + ";}";
     setStyleSheet(tmps);
@@ -72,10 +72,6 @@ QWidget *CheckKDVVibrDialog::BdUI(int bdnum)
         return new QWidget;
     }
 }
-void CheckKDVVibrDialog::RefreshAnalogValues(int bdnum)
-{
-    Q_UNUSED(bdnum)
-}
 
 void CheckKDVVibrDialog::PrepareHeadersForFile(int row)
 {
@@ -120,18 +116,27 @@ void CheckKDVVibrDialog::USBUpdate()
     }
 }
 
-void CheckKDVVibrDialog::UpdateFlData(IEC104Thread::FlSignals104 *Signal)
+void CheckKDVVibrDialog::ETHUpdate()
 {
-    for (int i = 0; i < Signal->SigNumber; i++)
-    {
-        ChVibrKDV->FillBd(
-            this, QString::number((Signal + i)->fl.SigAdr), WDFunc::StringValueWithCheck((Signal + i)->fl.SigVal, 3));
-    }
+    updateFloatData();
 }
 
-void CheckKDVVibrDialog::UpdateSponData(IEC104Thread::SponSignals *Signal)
+void CheckKDVVibrDialog::MBSUpdate()
 {
-    Q_UNUSED(Signal)
+}
+
+void CheckKDVVibrDialog::updateFloatData()
+{
+    QList<IEC104Thread::SignalsStruct> list;
+    IEC104::getSignalsFrom104(0, 99999, IEC104Thread::IEC104SignalTypes::FloatWithTime, list);
+    if (!list.isEmpty())
+    {
+        foreach (IEC104Thread::SignalsStruct signal, list)
+        {
+            IEC104Signals::FloatWithTime fwt = qvariant_cast<IEC104Signals::FloatWithTime>(signal.data);
+            ChVibrKDV->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
+        }
+    }
 }
 
 void CheckKDVVibrDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
@@ -149,11 +154,4 @@ void CheckKDVVibrDialog::UpdateModBusData(QList<ModBus::SignalStruct> Signal)
             ChVibrKDV->FillBd(
                 this, QString::number(Signal.at(i).SigAdr), WDFunc::StringValueWithCheck(Signal.at(i).flVal, 3));
     }
-}
-
-void CheckKDVVibrDialog::onModbusStateChanged()
-{
-
-    if (Board::GetInstance().connectionState() == Board::ConnectionState::Connected)
-        QMessageBox::information(this, "Успешно", "Связь по MODBUS установлена");
 }
