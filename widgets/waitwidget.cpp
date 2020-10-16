@@ -24,7 +24,7 @@ WaitWidget::WaitWidget(QWidget *parent) : QWidget(parent)
     Message = "";
     resize(310, 380);
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    qsrand(QDateTime::currentDateTime().toSecsSinceEpoch());
+    srand(QDateTime::currentDateTime().toSecsSinceEpoch());
     vel1 = 0.5;
     IsAllowedToStop = false;
     IsIncrement = true;

@@ -26,163 +26,172 @@ TEMPLATE = app
 
 
 SOURCES += \
-    ../alarm/abstractalarm.cpp \
-    ../alarm/alarmclass.cpp \
-    ../alarm/alarmstateall.cpp \
-    ../alarm/alarmwidget.cpp \
-    ../alarm/avaralarmkiv.cpp \
-    ../alarm/avaralarmktf.cpp \
-    ../alarm/warnalarmkiv.cpp \
-    ../alarm/warnalarmktf.cpp \
-    ../check/checkdialogharmonickdv.cpp \
-    ../check/checkdialogharmonicktf.cpp \
-    ../check/checkdialogkdv.cpp \
-    ../check/checkdialogkiv.cpp \
-    ../check/checkdialogktf.cpp \
-    ../check/checkdialogvibrkdv.cpp \
-    ../check/checkharmonickdv.cpp \
-    ../check/checkharmonicktf.cpp \
-    ../check/checkkdv.cpp \
-    ../check/checkkiv.cpp \
-    ../check/checkktf.cpp \
-    ../check/checkvibrkdv.cpp \
-    ../config/confdialogkdv.cpp \
-    ../config/confdialogkiv.cpp \
-    ../config/confdialogktf.cpp \
-    ../config/confdialogkxx.cpp \
-    ../config/configkdv.cpp \
-    ../config/configkiv.cpp \
-    ../config/configktf.cpp \
-    ../config/configkxx.cpp \
-    ../dialogs/abstractcordialog.cpp \
-    ../dialogs/connectdialog.cpp \
-    ../dialogs/cordialogkdv.cpp \
-    ../dialogs/cordialogktf.cpp \
-    ../dialogs/infodialog.cpp \
-    ../dialogs/mnktime.cpp \
-    ../gen/board.cpp \
-    ../gen/journals.cpp \
-    ../gen/logclass.cpp \
-    ../modbus/serialport.cpp \
-    ../usb/eprotocom.cpp \
-    ../usb/eusbworker.cpp \
-    ../widgets/edoublespinbox.cpp \
-    coma.cpp \
-    main.cpp \
-    ../check/check.cpp \
-    ../check/eabstractcheckdialog.cpp \
-    ../config/abstractconfdialog.cpp \
-    ../config/confdialog.cpp \
-    ../config/config.cpp \
-    ../dialogs/cordialog.cpp \
-    ../dialogs/errordialog.cpp \
-    ../dialogs/fwupdialog.cpp \
-    ../dialogs/journalsdialog.cpp \
-    ../dialogs/keypressdialog.cpp \
-    ../dialogs/settingsdialog.cpp \
-    ../gen/error.cpp \
-    ../gen/files.cpp \
-    ../gen/modulebsi.cpp \
-    ../gen/s2.cpp \
-    ../gen/stdfunc.cpp \
-    ../gen/timefunc.cpp \
-    ../iec104/ethernet.cpp \
-    ../iec104/iec104.cpp \
-    ../models/etableitem.cpp \
-    ../models/etablemodel.cpp \
-    ../models/getoscpbdelegate.cpp \
-    ../modbus/modbus.cpp \
-    ../usb/commands.cpp \
-    ../widgets/ecombobox.cpp \
-    ../widgets/errorprotocolwidget.cpp \
-    ../widgets/estackedwidget.cpp \
-    ../widgets/etableview.cpp \
-    ../widgets/etabwidget.cpp \
-    ../widgets/lineeditfield.cpp \
-    ../widgets/passwordlineedit.cpp \
-    ../widgets/signalchoosewidget.cpp \
-    ../widgets/wd_func.cpp
+../check/checkkdvdialog.cpp \
+../check/checkkdvharmonicdialog.cpp \
+../check/checkkdvvibrdialog.cpp \
+../check/checkktfdialog.cpp \
+../check/checkktfharmonicdialog.cpp \
+../config/confkdvdialog.cpp \
+../config/confktfdialog.cpp \
+../dialogs/fwuploaddialog.cpp \
+../gen/udialog.cpp \
+../module/alarm.cpp \
+../module/warn.cpp \
+../startup/startupkdvdialog.cpp \
+coma.cpp \
+main.cpp \
+../alarm/alarmclass.cpp \
+../alarm/alarmstateall.cpp \
+../alarm/alarmwidget.cpp \
+../check/abstractcheckdialog.cpp \
+../check/check.cpp \
+../check/checkharmonickdv.cpp \
+../check/checkharmonicktf.cpp \
+../check/checkkdv.cpp \
+../check/checkkiv.cpp \
+../check/checkkivdialog.cpp \
+../check/checkktf.cpp \
+../check/checkvibrkdv.cpp \
+../config/abstractconfdialog.cpp \
+../config/config.cpp \
+../config/confdialog.cpp \
+../config/configkdv.cpp \
+../config/configkiv.cpp \
+../config/configktf.cpp \
+../config/configkxx.cpp \
+../config/confkivdialog.cpp \
+../config/confkxxdialog.cpp \
+../dialogs/connectdialog.cpp \
+../dialogs/errordialog.cpp \
+../dialogs/infodialog.cpp \
+../dialogs/journalsdialog.cpp \
+../dialogs/keypressdialog.cpp \
+../dialogs/settingsdialog.cpp \
+../dialogs/timedialog.cpp \
+../gen/board.cpp \
+../gen/error.cpp \
+../gen/files.cpp \
+../gen/journals.cpp \
+../gen/logclass.cpp \
+../gen/modulebsi.cpp \
+../gen/s2.cpp \
+../gen/stdfunc.cpp \
+../gen/timefunc.cpp \
+../iec104/ethernet.cpp \
+../iec104/iec104.cpp \
+../modbus/modbus.cpp \
+../modbus/serialport.cpp \
+../models/checkdelegate.cpp \
+../models/etableitem.cpp \
+../models/etablemodel.cpp \
+../models/valuemodel.cpp \
+../module/alarmkiv.cpp \
+../module/alarmktf.cpp \
+../module/module.cpp \
+../module/warnkiv.cpp \
+../module/warnktf.cpp \
+../startup/abstractstartupdialog.cpp \
+../startup/startupkivdialog.cpp \
+../startup/startupktfdialog.cpp \
+../usb/commands.cpp \
+../usb/eprotocom.cpp \
+../usb/eusbworker.cpp \
+../widgets/ecombobox.cpp \
+../widgets/edoublespinbox.cpp \
+../widgets/errorprotocolwidget.cpp \
+../widgets/estackedwidget.cpp \
+../widgets/etableview.cpp \
+../widgets/etabwidget.cpp \
+../widgets/lineeditfield.cpp \
+../widgets/passwordlineedit.cpp \
+../widgets/signalchoosewidget.cpp \
+../widgets/waitwidget.cpp \
+../widgets/wd_func.cpp
 
 HEADERS += \
-    ../alarm/abstractalarm.h \
-    ../alarm/alarmclass.h \
-    ../alarm/alarmstateall.h \
-    ../alarm/alarmwidget.h \
-    ../alarm/avaralarmkiv.h \
-    ../alarm/avaralarmktf.h \
-    ../alarm/warnalarmkiv.h \
-    ../alarm/warnalarmktf.h \
-    ../check/checkdialogharmonickdv.h \
-    ../check/checkdialogharmonicktf.h \
-    ../check/checkdialogkdv.h \
-    ../check/checkdialogkiv.h \
-    ../check/checkdialogktf.h \
-    ../check/checkdialogvibrkdv.h \
-    ../check/checkharmonickdv.h \
-    ../check/checkharmonicktf.h \
-    ../check/checkkdv.h \
-    ../check/checkkiv.h \
-    ../check/checkktf.h \
-    ../check/checkvibrkdv.h \
-    ../config/abstractconfdialog.h \
-    ../config/confdialogkdv.h \
-    ../config/confdialogkiv.h \
-    ../config/confdialogktf.h \
-    ../config/confdialogkxx.h \
-    ../config/configkdv.h \
-    ../config/configkiv.h \
-    ../config/configktf.h \
-    ../config/configkxx.h \
-    ../dialogs/abstractcordialog.h \
-    ../dialogs/connectdialog.h \
-    ../dialogs/cordialogkdv.h \
-    ../dialogs/cordialogktf.h \
-    ../dialogs/infodialog.h \
-    ../dialogs/mnktime.h \
-    ../gen/board.h \
-    ../gen/journals.h \
-    ../gen/logclass.h \
-    ../gen/singleton.h \
-    ../modbus/serialport.h \
-    ../usb/defines.h \
-    ../usb/eprotocom.h \
-    ../usb/eusbworker.h \
-    ../widgets/edoublespinbox.h \
-    coma.h \
-    ../check/check.h \
-    ../check/eabstractcheckdialog.h \
-    ../config/confdialog.h \
-    ../config/config.h \
-    ../dialogs/cordialog.h \
-    ../dialogs/errordialog.h \
-    ../dialogs/fwupdialog.h \
-    ../dialogs/journalsdialog.h \
-    ../dialogs/keypressdialog.h \
-    ../dialogs/settingsdialog.h \
-    ../gen/colors.h \
-    ../gen/error.h \
-    ../gen/files.h \
-    ../gen/modulebsi.h \
-    ../gen/s2.h \
-    ../gen/stdfunc.h \
-    ../gen/timefunc.h \
-    ../iec104/ethernet.h \
-    ../iec104/iec104.h \
-    ../models/etableitem.h \
-    ../models/getoscpbdelegate.h \
-    ../models/etablemodel.h \
-    ../usb/commands.h \
-    ../widgets/ecombobox.h \
-    ../widgets/errorprotocolwidget.h \
-    ../widgets/estackedwidget.h \
-    ../widgets/etableview.h \
-    ../widgets/etabwidget.h \
-    ../widgets/keypress.h \
-    ../widgets/lineeditfield.h \
-    ../widgets/passwordlineedit.h \
-    ../widgets/signalchoosewidget.h \
-    ../widgets/wd_func.h \
-    ../modbus/modbus.h
+../check/checkkdvdialog.h \
+../check/checkkdvharmonicdialog.h \
+../check/checkkdvvibrdialog.h \
+../check/checkktfdialog.h \
+../check/checkktfharmonicdialog.h \
+../config/confkdvdialog.h \
+../config/confktfdialog.h \
+../dialogs/fwuploaddialog.h \
+../gen/udialog.h \
+../module/alarm.h \
+../module/warn.h \
+../startup/startupkdvdialog.h \
+coma.h \
+../alarm/alarmclass.h \
+../alarm/alarmstateall.h \
+../alarm/alarmwidget.h \
+../check/check.h \
+../check/abstractcheckdialog.h \
+../check/checkharmonickdv.h \
+../check/checkharmonicktf.h \
+../check/checkkdv.h \
+../check/checkkiv.h \
+../check/checkkivdialog.h \
+../check/checkktf.h \
+../check/checkvibrkdv.h \
+../config/abstractconfdialog.h \
+../config/config.h \
+../config/confdialog.h \
+../config/configkdv.h \
+../config/configkiv.h \
+../config/configktf.h \
+../config/configkxx.h \
+../config/confkivdialog.h \
+../config/confkxxdialog.h \
+../dialogs/connectdialog.h \
+../dialogs/errordialog.h \
+../dialogs/infodialog.h \
+../dialogs/journalsdialog.h \
+../dialogs/keypressdialog.h \
+../dialogs/settingsdialog.h \
+../dialogs/timedialog.h \
+../gen/board.h \
+../gen/colors.h \
+../gen/error.h \
+../gen/files.h \
+../gen/journals.h \
+../gen/logclass.h \
+../gen/modulebsi.h \
+../gen/s2.h \
+../gen/stdfunc.h \
+../gen/timefunc.h \
+../iec104/ethernet.h \
+../iec104/iec104.h \
+../modbus/modbus.h \
+../modbus/serialport.h \
+../models/checkdelegate.h \
+../models/etableitem.h \
+../models/etablemodel.h \
+../models/valuemodel.h \
+../module/alarmkiv.h \
+../module/alarmktf.h \
+../module/module.h \
+../module/warnkiv.h \
+../module/warnktf.h \
+../startup/abstractstartupdialog.h \
+../startup/startupkivdialog.h \
+../startup/startupktfdialog.h \
+../usb/commands.h \
+../usb/defines.h \
+../usb/eprotocom.h \
+../usb/eusbworker.h \
+../widgets/ecombobox.h \
+../widgets/edoublespinbox.h \
+../widgets/errorprotocolwidget.h \
+../widgets/estackedwidget.h \
+../widgets/etableview.h \
+../widgets/etabwidget.h \
+../widgets/keypress.h \
+../widgets/lineeditfield.h \
+../widgets/passwordlineedit.h \
+../widgets/signalchoosewidget.h \
+../widgets/waitwidget.h \
+../widgets/wd_func.h
 
 
 IMAGE_FILE += \

@@ -14,7 +14,7 @@
 #include "../startup/startupkivdialog.h"
 #include "../startup/startupktfdialog.h"
 //#include "../tune/kiv/tunekdvdialog.h"
-#include "../tune/kiv/tunekivdialog.h"
+//#include "../tune/kiv/tunekivdialog.h"
 //#include "../tune/kiv/tunektfdialog.h"
 #include "alarmkiv.h"
 #include "warnkiv.h"
@@ -69,11 +69,11 @@ Module *Module::createModule(QTimer *updateTimer)
         case Board::DeviceModel::KIV:
         {
             ConfigKIV *CKIV = new ConfigKIV(s2Config);
-            TuneKIV *TKIV = new TuneKIV(0, s2Config);
+            //TuneKIV *TKIV = new TuneKIV(0, s2Config);
             m->addDialogToList(new ConfKIVDialog(s2Config), "Конфигурирование", "conf1");
             CheckKIVDialog *cdkiv = new CheckKIVDialog;
             m->addDialogToList(cdkiv, "Проверка");
-            m->addDialogToList(new TuneKIVDialog(CKIV, TKIV), "Регулировка");
+            //m->addDialogToList(new TuneKIVDialog(CKIV, TKIV), "Регулировка");
             m->addDialogToList(new StartupKIVDialog, "Начальные значения");
             m->m_Warn = new WarnKIV;
             m->m_Alarm = new AlarmKIV;
