@@ -64,6 +64,7 @@ SOURCES += \
     ../gen/journals.cpp \
     ../gen/logclass.cpp \
     ../modbus/serialport.cpp \
+    ../models/errorprotocolmodel.cpp \
     ../usb/eprotocom.cpp \
     ../usb/eusbworker.cpp \
     ../widgets/edoublespinbox.cpp \
@@ -144,6 +145,7 @@ HEADERS += \
     ../gen/logclass.h \
     ../gen/singleton.h \
     ../modbus/serialport.h \
+    ../models/errorprotocolmodel.h \
     ../usb/defines.h \
     ../usb/eprotocom.h \
     ../usb/eusbworker.h \
