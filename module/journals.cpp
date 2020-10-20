@@ -64,13 +64,13 @@ void Journals::ReadJourFileAndProcessIt()
     QByteArray ba = file.readAll();
     switch (m_jourType)
     {
-    case JOURSYS:
+    case Files::Files::JourSys:
         FillEventsTable(ba);
         break;
-    case JOURWORK:
+    case Files::Files::JourWork:
         FillEventsTable(ba);
         break;
-    case JOURMEAS:
+    case Files::Files::JourMeas:
         FillMeasTable(ba);
         break;
     default:
@@ -86,7 +86,7 @@ void Journals::FillEventsTable(QByteArray &ba)
     EventStruct event;
     QStringList sl;
     int mineventid = -1;
-    if (m_jourType == JOURSYS)
+    if (m_jourType == Files::JourSys)
     // int joursize = 0; // размер считанного буфера с информацией
     {
         mineventid = SYSJOURID;
@@ -270,17 +270,17 @@ void Journals::ResultReady()
 
     switch (m_jourType)
     {
-    case Journals::JOURWORK:
+    case Files::JourWork:
         mdl = m_workModel;
         pmdl = _proxyWorkModel;
         order = Qt::DescendingOrder;
         break;
-    case Journals::JOURSYS:
+    case Files::JourSys:
         mdl = m_sysModel;
         pmdl = _proxySysModel;
         order = Qt::DescendingOrder;
         break;
-    case Journals::JOURMEAS:
+    case Files::JourMeas:
         mdl = _measModel;
         pmdl = _proxyMeasModel;
         order = Qt::AscendingOrder;
@@ -328,20 +328,20 @@ void Journals::prepareJour(QByteArray &ba, int JourType)
 
 void Journals::FillSysJour(QByteArray ba)
 {
-    prepareJour(ba, JOURSYS);
+    prepareJour(ba, Files::JourSys);
     FillEventsTable(ba);
 }
 
 void Journals::FillMeasJour(QByteArray ba)
 {
-    prepareJour(ba, JOURMEAS);
+    prepareJour(ba, Files::JourMeas);
 
     FillMeasTable(ba);
 }
 
 void Journals::FillWorkJour(QByteArray ba)
 {
-    prepareJour(ba, JOURWORK);
+    prepareJour(ba, Files::JourWork);
     FillEventsTable(ba);
 }
 
@@ -362,13 +362,13 @@ void Journals::StartGetJour()
         {
             switch (m_jourType)
             {
-            case JOURSYS:
+            case Files::JourSys:
                 FillEventsTable(ba);
                 break;
-            case JOURWORK:
+            case Files::JourWork:
                 FillEventsTable(ba);
                 break;
-            case JOURMEAS:
+            case Files::JourMeas:
                 FillMeasTable(ba);
                 break;
             default:
@@ -388,15 +388,15 @@ void Journals::StartSaveJour(int jtype, QAbstractItemModel *amdl, QString filena
     Qt::SortOrder order = Qt::AscendingOrder;
     switch (jtype)
     {
-    case Journals::JOURSYS:
+    case Files::JourSys:
         jourtypestr = "Системный журнал";
         order = Qt::DescendingOrder;
         break;
-    case Journals::JOURMEAS:
+    case Files::JourMeas:
         jourtypestr = "Журнал измерений";
         order = Qt::AscendingOrder;
         break;
-    case Journals::JOURWORK:
+    case Files::JourWork:
         jourtypestr = "Журнал событий";
         order = Qt::DescendingOrder;
         break;

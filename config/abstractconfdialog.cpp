@@ -15,9 +15,7 @@
 #include <QMessageBox>
 #include <QTextEdit>
 
-AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent)
-{
-}
+AbstractConfDialog::AbstractConfDialog(QWidget *parent) : UDialog(parent) { }
 
 void AbstractConfDialog::ReadConf()
 {
@@ -210,8 +208,6 @@ QWidget *AbstractConfDialog::ConfButtons()
 
 void AbstractConfDialog::ButtonReadConf()
 {
-    /*    char* num = new char;
-     *num = 1; */
     switch (Board::GetInstance().interfaceType())
     {
     case Board::InterfaceType::Ethernet:
@@ -292,4 +288,25 @@ bool AbstractConfDialog::PrepareConfToWrite()
 void AbstractConfDialog::WriteConfMessageOk()
 {
     QMessageBox::information(this, "Внимание", "Запись конфигурации и переход прошли успешно!");
+}
+
+void AbstractConfDialog::update()
+{
+    if (m_updatesEnabled)
+    {
+        switch (Board::GetInstance().interfaceType())
+        {
+        case Board::InterfaceType::USB:
+            USBUpdate();
+            break;
+        case Board::InterfaceType::Ethernet:
+            ETHUpdate();
+            break;
+        case Board::InterfaceType::RS485:
+            MBSUpdate();
+            break;
+        default:
+            break;
+        }
+    }
 }

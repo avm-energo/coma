@@ -23,7 +23,7 @@ private:
     //    Config *ConfigMain;
 
     bool Variable;
-    QTimer *timerRead;
+    //    QTimer *timerRead;
 
     void Fill() override;
     void FillBack() override;
@@ -36,8 +36,8 @@ public slots:
 
 private slots:
     void SetDefConf() override;
-    void Start_Timer();
-    void Stop_Timer();
+    //    void Start_Timer();
+    //    void Stop_Timer();
     //    void Write_PCDate();
     //    void Write_Date();
 };

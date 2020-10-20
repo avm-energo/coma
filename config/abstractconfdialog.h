@@ -35,6 +35,7 @@ public:
 
 public slots:
     void WriteConfMessageOk();
+    void update();
 
 protected:
     bool ok;

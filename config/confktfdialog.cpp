@@ -31,14 +31,9 @@ ConfKTFDialog::ConfKTFDialog(ConfigKTF *cktf, QWidget *parent) : AbstractConfDia
     PrereadConf();
 }
 
-ConfKTFDialog::~ConfKTFDialog()
-{
-}
+ConfKTFDialog::~ConfKTFDialog() { }
 
-int ConfKTFDialog::getRCount()
-{
-    return CKTF->Bci_block.TdatNum;
-}
+int ConfKTFDialog::getRCount() { return CKTF->Bci_block.TdatNum; }
 
 void ConfKTFDialog::SetupUI()
 {
@@ -471,9 +466,7 @@ void ConfKTFDialog::FillBack()
     ConfKxx->FillBack();
 }
 
-void ConfKTFDialog::CheckConf()
-{
-}
+void ConfKTFDialog::CheckConf() { }
 
 void ConfKTFDialog::SetDefConf()
 {
@@ -483,12 +476,12 @@ void ConfKTFDialog::SetDefConf()
     Fill();
 }
 
-void ConfKTFDialog::Start_Timer()
-{
-    timerRead->start(1000);
-}
+// void ConfKTFDialog::Start_Timer()
+//{
+//    timerRead->start(1000);
+//}
 
-void ConfKTFDialog::Stop_Timer()
-{
-    timerRead->stop();
-}
+// void ConfKTFDialog::Stop_Timer()
+//{
+//    timerRead->stop();
+//}

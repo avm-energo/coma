@@ -416,6 +416,6 @@ void ConfKIVDialog::SetDefConf()
     Fill();
 }
 
-void ConfKIVDialog::Start_Timer() { timerRead->start(1000); }
+// void ConfKIVDialog::Start_Timer() { timerRead->start(1000); }
 
-void ConfKIVDialog::Stop_Timer() { timerRead->stop(); }
+// void ConfKIVDialog::Stop_Timer() { timerRead->stop(); }

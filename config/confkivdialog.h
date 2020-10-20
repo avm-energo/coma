@@ -18,9 +18,9 @@ private:
     ConfigKIV *CKIV;
     ConfDialog *Conf;
     ConfKxxDialog *ConfKxx;
-    QLabel *SysTime;
-    QTimer *timer;
-    QTimer *timerRead;
+    //    QLabel *SysTime;
+    //    QTimer *timer;
+    //    QTimer *timerRead;
 
     bool Variable;
 
@@ -35,8 +35,8 @@ public slots:
 
 private slots:
     void SetDefConf() override;
-    void Start_Timer();
-    void Stop_Timer();
+    //    void Start_Timer();
+    //    void Stop_Timer();
 };
 
 #endif // CONFDIALOG84_H

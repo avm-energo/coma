@@ -93,7 +93,7 @@ Module *Module::createModule(QTimer *updateTimer)
         {
             JOUR = new JournKTF;
             ConfigKTF *CKTF = new ConfigKTF(s2Config);
-            m->addDialogToList(new ConfKTFDialog(CKTF), "conf1");
+            m->addDialogToList(new ConfKTFDialog(CKTF), "Конфигурирование", "conf1");
             CheckKTFDialog *cdktf = new CheckKTFDialog;
             m->addDialogToList(new CheckKTFDialog);
 #ifdef AVM_DEBUG
@@ -112,7 +112,7 @@ Module *Module::createModule(QTimer *updateTimer)
         {
             JOUR = new JournKDV;
             ConfigKDV *CKDV = new ConfigKDV(s2Config);
-            m->addDialogToList(new ConfKDVDialog(CKDV), "conf1");
+            m->addDialogToList(new ConfKDVDialog(CKDV), "Конфигурирование", "conf1");
             CheckKDVDialog *cdkdv = new CheckKDVDialog;
             m->addDialogToList(new CheckKDVDialog);
 #ifdef AVM_DEBUG
@@ -180,15 +180,9 @@ void Module::addDialogToList(UDialog *dlg, const QString &caption, const QString
     m_Dialogs.append(dlg);
 }
 
-Alarm *Module::getAlarm()
-{
-    return m_Alarm;
-}
+Alarm *Module::getAlarm() { return m_Alarm; }
 
-Warn *Module::getWarn()
-{
-    return m_Warn;
-}
+Warn *Module::getWarn() { return m_Warn; }
 
 void Module::parentTWTabClicked(int index)
 {

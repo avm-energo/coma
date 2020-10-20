@@ -34,6 +34,7 @@ SOURCES += \
 ../config/confkdvdialog.cpp \
 ../config/confktfdialog.cpp \
 ../dialogs/fwuploaddialog.cpp \
+    ../gen/datamanager.cpp \
 ../gen/udialog.cpp \
     ../iec104/iec104thread.cpp \
 ../module/alarm.cpp \
@@ -123,6 +124,7 @@ HEADERS += \
 ../config/confkdvdialog.h \
 ../config/confktfdialog.h \
 ../dialogs/fwuploaddialog.h \
+    ../gen/datamanager.h \
 ../gen/udialog.h \
     ../iec104/iec104thread.h \
 ../module/alarm.h \

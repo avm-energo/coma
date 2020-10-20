@@ -20,14 +20,9 @@ IEC104::IEC104(S2ConfigType *s2, QObject *parent) : QObject(parent)
     Log->info("=== Log started ===");
 }
 
-IEC104::~IEC104()
-{
-}
+IEC104::~IEC104() { }
 
-bool IEC104::Working()
-{
-    return (EthThreadWorking | ParseThreadWorking);
-}
+bool IEC104::Working() { return (EthThreadWorking | ParseThreadWorking); }
 
 void IEC104::Connect(Settings &st)
 {
@@ -87,51 +82,6 @@ void IEC104::Connect(Settings &st)
 
     thr->start();
     thr2->start();
-}
-
-void IEC104::getSignalsFrom104(quint32 firstSignalAdr, quint32 lastSignalAdr, IEC104Thread::IEC104SignalTypes type,
-    QList<IEC104Thread::SignalsStruct> &outlist)
-{
-    IEC104Thread::s_IEC104OutQueueMutex.lock();
-    if (IEC104Thread::m_outputList.isEmpty())
-    {
-        IEC104Thread::s_IEC104OutQueueMutex.unlock();
-        return;
-    }
-    for (int i = 0; i < IEC104Thread::m_outputList.size(); ++i)
-    {
-        if (IEC104Thread::m_outputList.at(i).type == type)
-        {
-            QVariant signal = IEC104Thread::m_outputList.at(i).data;
-            switch (type)
-            {
-            case IEC104Thread::IEC104SignalTypes::BitString:
-            {
-                IEC104Signals::BitString bs = qvariant_cast<IEC104Signals::BitString>(signal);
-                //                quint32 bsaddress;
-                //                memcpy(&bsaddress, &(bs.sigAdr[0]), sizeof(bs.sigAdr));
-                if ((bs.sigAdr >= firstSignalAdr) && (bs.sigAdr <= lastSignalAdr))
-                    outlist.append(IEC104Thread::m_outputList.takeAt(i));
-                break;
-            }
-            case IEC104Thread::IEC104SignalTypes::FloatWithTime:
-            {
-                IEC104Signals::FloatWithTime fwt = qvariant_cast<IEC104Signals::FloatWithTime>(signal);
-                if ((fwt.sigAdr >= firstSignalAdr) && (fwt.sigAdr <= lastSignalAdr))
-                    outlist.append(IEC104Thread::m_outputList.takeAt(i));
-                break;
-            }
-            case IEC104Thread::IEC104SignalTypes::SinglePointWithTime:
-            {
-                IEC104Signals::SinglePointWithTime sp = qvariant_cast<IEC104Signals::SinglePointWithTime>(signal);
-                if ((sp.sigAdr >= firstSignalAdr) && (sp.sigAdr <= lastSignalAdr))
-                    outlist.append(IEC104Thread::m_outputList.takeAt(i));
-                break;
-            }
-            }
-        }
-    }
-    IEC104Thread::s_IEC104OutQueueMutex.unlock();
 }
 
 void IEC104::CorReadRequest()
@@ -203,10 +153,7 @@ void IEC104::com51WriteTime(uint time)
     IEC104Thread::s_ParseWriteMutex.unlock();
 }
 
-void IEC104::EthThreadStarted()
-{
-    EthThreadWorking = true;
-}
+void IEC104::EthThreadStarted() { EthThreadWorking = true; }
 
 void IEC104::EthThreadFinished()
 {
@@ -215,10 +162,7 @@ void IEC104::EthThreadFinished()
         emit Finished();
 }
 
-void IEC104::ParseThreadStarted()
-{
-    ParseThreadWorking = true;
-}
+void IEC104::ParseThreadStarted() { ParseThreadWorking = true; }
 
 void IEC104::ParseThreadFinished()
 {
