@@ -26,6 +26,7 @@ public:
         INFO_MSG,
         DBG_MSG
     };
+    Q_ENUM(ErMsgType)
 
     struct ErMsg
     {
@@ -230,7 +231,7 @@ public:
     };
     Q_ENUM(Msg)
 
-    Error();
+    Error() = default;
     static void Init();
     static void AddErrMsg(ErMsgType msgtype, QString file = nullptr, int line = 0, QString msg = "");
     static void ShowErMsg(Error::Msg msg);
@@ -242,8 +243,9 @@ private:
     static QList<ErMsg> ErMsgPool;
     static LogClass LogFile;
 
-    void addmessage(QStringList &sl, QString mes);
     void SetErMsg(int ernum);
 };
+
+QStringList &operator<<(QStringList &l, const Error::ErMsg &obj);
 
 #endif // ERROR_H

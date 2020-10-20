@@ -9,10 +9,6 @@ QStringList Error::ErrMsgs;
 QList<Error::ErMsg> Error::ErMsgPool;
 LogClass Error::LogFile;
 
-Error::Error()
-{
-}
-
 void Error::Init()
 {
     LogFile.Init(LOGFILE);
@@ -42,11 +38,13 @@ void Error::AddErrMsg(ErMsgType msgtype, QString file, int line, QString msg)
 {
     if (ErMsgPool.size() >= ER_BUFMAX)
         ErMsgPool.removeFirst();
-    ErMsg tmpm;
-    tmpm.type = msgtype;
-    tmpm.file = file;
-    tmpm.line = line;
-    tmpm.DateTime = QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss");
+    ErMsg tmpm {
+        QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss"), // DateTime
+        msgtype,                                                      // Msg type
+        file,                                                         // File
+        line,                                                         // Line
+        msg                                                           // Message
+    };
     // Разбор кода ошибки
 
     if ((msgtype == ER_MSG) || (msgtype == DBG_MSG))
@@ -55,7 +53,7 @@ void Error::AddErrMsg(ErMsgType msgtype, QString file, int line, QString msg)
         LogFile.warning("file: " + tmpm.file + ", line: " + QString::number(tmpm.line) + ": " + msg);
     else
         LogFile.info("file: " + tmpm.file + ", line: " + QString::number(tmpm.line) + ": " + msg);
-    tmpm.msg = msg;
+
     ErMsgPool.append(tmpm);
 }
 
@@ -75,4 +73,11 @@ Error::ErMsg Error::ErMsgAt(int idx)
         return ErMsgPool.at(idx);
     else
         return ErMsg();
+}
+
+QStringList &operator<<(QStringList &l, const Error::ErMsg &obj)
+{
+    l << QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss") << obj.file << QString::number(obj.line, 10)
+      << obj.msg;
+    return l;
 }
