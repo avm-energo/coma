@@ -1,6 +1,7 @@
 #ifndef MODBUS_H
 #define MODBUS_H
 
+#include "../gen/datamanager.h"
 #include "serialport.h"
 
 #include <QMutex>
@@ -14,14 +15,14 @@
 #define SIGNALGROUPSNUM 7
 #define MAINSLEEPCYCLETIME 50
 
-#define READHOLDINGREGISTERS 0x03
-#define READINPUTREGISTER 0x04
-#define WRITEMULTIPLEREGISTERS 0x10
+//#define READHOLDINGREGISTERS 0x03
+//#define READINPUTREGISTER 0x04
+//#define WRITEMULTIPLEREGISTERS 0x10
 
-#define INITREG 4000
-#define TIMEREG 4600
-#define SETINITREG 900
-#define CLEARREG 905
+//#define INITREG 4000
+//#define TIMEREG 4600
+//#define SETINITREG 900
+//#define CLEARREG 905
 
 class ModBus : public QObject
 {
@@ -65,14 +66,14 @@ public:
         int size;
     };
 
-    struct ComInfo
-    {
-        char Command;
-        quint16 Address;
-        quint16 Quantity;
-        quint8 SizeBytes;
-        QByteArray Data;
-    };
+    //    struct ComInfo
+    //    {
+    //        char Command;
+    //        quint16 Address;
+    //        quint16 Quantity;
+    //        quint8 SizeBytes;
+    //        QByteArray Data;
+    //    };
 
     struct Coils
     {
@@ -89,7 +90,7 @@ public:
     int CheckIndex, CheckHarmIndex, CheckVibrIndex, CorIndex, TimeIndex;
 
 public slots:
-    Error::Msg SendAndGetResult(ModBus::ComInfo &request, ModBus::InOutStruct &outp);
+    Error::Msg SendAndGetResult(Queries::CommandMBS &request, ModBus::InOutStruct &outp);
     void ModWriteCor(ModBus::Information info, float *); //, int*);
     void ModReadCor(ModBus::Information info);
     void ReadTime();

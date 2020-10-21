@@ -3,61 +3,64 @@
 #include "s2.h"
 
 QList<DataManager::SignalsStruct> DataManager::s_outputList;
-QMutex DataManager::s_outQueueMutex;
+QMutex DataManager::s_outListMutex;
 QMutex DataManager::s_inQueueMutex;
-static QQueue<DataManager::InputStruct> *s_inputQueue;
+QQueue<DataTypes::Command> s_inputQueue;
 
 DataManager::DataManager(QObject *parent) : QObject(parent) { }
 
 Error::Msg DataManager::getSignals(
     quint32 firstSignalAdr, quint32 lastSignalAdr, SignalTypes type, QList<SignalsStruct> &outlist)
 {
-    s_outQueueMutex.lock();
+    s_outListMutex.lock();
     if (s_outputList.isEmpty())
     {
-        s_outQueueMutex.unlock();
+        s_outListMutex.unlock();
         return Error::Msg::ResEmpty;
     }
-    for (int i = 0; i < s_outputList.size(); ++i)
+    foreach (SignalsStruct sig, s_outputList)
     {
-        if (s_outputList.at(i).type == type)
+        if (sig.type == type)
         {
-            QVariant signal = s_outputList.at(i).data;
+            QVariant signal = sig.data;
             switch (type)
             {
             case SignalTypes::BitString:
             {
-                DataTypes::BitString bs = qvariant_cast<DataTypes::BitString>(signal);
-                if ((bs.sigAdr >= firstSignalAdr) && (bs.sigAdr <= lastSignalAdr))
-                    outlist.append(s_outputList.takeAt(i));
+                if (signal.canConvert<DataTypes::BitString>())
+                {
+                    DataTypes::BitString bs = qvariant_cast<DataTypes::BitString>(signal);
+                    if ((bs.sigAdr >= firstSignalAdr) && (bs.sigAdr <= lastSignalAdr))
+                        outlist.removeAll(sig);
+                }
                 break;
             }
             case SignalTypes::FloatWithTime:
             {
-                DataTypes::FloatWithTime fwt = qvariant_cast<DataTypes::FloatWithTime>(signal);
-                if ((fwt.sigAdr >= firstSignalAdr) && (fwt.sigAdr <= lastSignalAdr))
-                    outlist.append(s_outputList.takeAt(i));
+                if (signal.canConvert<DataTypes::FloatWithTime>())
+                {
+                    DataTypes::FloatWithTime fwt = qvariant_cast<DataTypes::FloatWithTime>(signal);
+                    if ((fwt.sigAdr >= firstSignalAdr) && (fwt.sigAdr <= lastSignalAdr))
+                        outlist.removeAll(sig);
+                }
                 break;
             }
             case SignalTypes::SinglePointWithTime:
             {
-                DataTypes::SinglePointWithTime sp = qvariant_cast<DataTypes::SinglePointWithTime>(signal);
-                if ((sp.sigAdr >= firstSignalAdr) && (sp.sigAdr <= lastSignalAdr))
-                    outlist.append(s_outputList.takeAt(i));
+                if (signal.canConvert<DataTypes::SinglePointWithTime>())
+                {
+                    DataTypes::SinglePointWithTime sp = qvariant_cast<DataTypes::SinglePointWithTime>(signal);
+                    if ((sp.sigAdr >= firstSignalAdr) && (sp.sigAdr <= lastSignalAdr))
+                        outlist.removeAll(sig);
+                }
                 break;
-            }
-            case SignalTypes::ByteArray:
-            {
-                DataTypes::File ba = qvariant_cast<DataTypes::File>(signal);
-                if (ba.filenum == firstSignalAdr)
-                    outlist.append(s_outputList.takeAt(i));
             }
             default:
                 break;
             }
         }
     }
-    s_outQueueMutex.unlock();
+    s_outListMutex.unlock();
     if (outlist.isEmpty())
         return Error::Msg::ResEmpty;
     return Error::Msg::NoError;
@@ -65,21 +68,24 @@ Error::Msg DataManager::getSignals(
 
 Error::Msg DataManager::getFile(quint32 filenum, QByteArray &outba)
 {
-    s_outQueueMutex.lock();
+    s_outListMutex.lock();
     if (s_outputList.isEmpty())
     {
-        s_outQueueMutex.unlock();
+        s_outListMutex.unlock();
         return Error::Msg::ResEmpty;
     }
-    for (int i = 0; i < s_outputList.size(); ++i)
+    foreach (SignalsStruct sig, s_outputList)
     {
-        if (s_outputList.at(i).type == SignalTypes::File)
+        if (sig.type == SignalTypes::File)
         {
-            DataTypes::File fl = qvariant_cast<DataTypes::File>(s_outputList.at(i).data);
-            if (fl.filenum == filenum)
+            if (sig.data.canConvert<DataTypes::File>())
             {
-                outba = fl.filedata;
-                return Error::Msg::NoError;
+                DataTypes::File fl = qvariant_cast<DataTypes::File>(sig.data);
+                if (fl.filenum == filenum)
+                {
+                    outba = fl.filedata;
+                    return Error::Msg::NoError;
+                }
             }
         }
     }
@@ -89,6 +95,25 @@ Error::Msg DataManager::getFile(quint32 filenum, QByteArray &outba)
 Error::Msg DataManager::getConfig(quint32 firstID, quint32 lastID, QList<DataTypes::ConfParameter> &outlist)
 {
     QByteArray ba;
+    assert(firstID <= lastID);
+    // check needed IDs for exist in s_outputList
+    s_outListMutex.lock();
+    foreach (SignalsStruct sig, s_outputList)
+    {
+        if (sig.type == SignalTypes::ConfParameter)
+        {
+            if (sig.data.canConvert<DataTypes::ConfParameter>())
+            {
+                DataTypes::ConfParameter cfp = qvariant_cast<DataTypes::ConfParameter>(sig.data);
+                if ((cfp.ID >= firstID) && (cfp.ID <= lastID))
+                {
+                    outlist.append(cfp);
+                    s_outputList.removeOne(sig);
+                }
+            }
+        }
+    }
+    s_outListMutex.unlock();
     if (getFile(Files::Config, ba) != Error::Msg::ResEmpty)
     {
         if (S2::RestoreData(ba, outlist) == Error::Msg::NoError)
@@ -97,7 +122,7 @@ Error::Msg DataManager::getConfig(quint32 firstID, quint32 lastID, QList<DataTyp
             foreach (DataTypes::ConfParameter cfp, outlist)
             {
                 if ((cfp.ID < firstID) || (cfp.ID > lastID))
-                    addSignalToQueue(SignalTypes::ConfParameter, cfp);
+                    addSignalToOutList(SignalTypes::ConfParameter, cfp);
             }
         }
     }

@@ -4,6 +4,7 @@
 #include "error.h"
 #include <QMutex>
 #include <QObject>
+#include <QQueue>
 #include <QVariant>
 
 namespace DataTypes
@@ -51,6 +52,39 @@ struct ConfParameter
 };
 }
 
+namespace Queries
+{
+enum Commands104
+{
+    CM104_INTERROGATETIMEGR15,
+    CM104_COM51WRITETIME,
+    CM104_COM45,
+    CM104_COM50,
+    CM104_CORREADREQUEST,
+    CM104_SELECTFILE,
+    CM104_FILEREADY
+};
+enum CommandsMBS
+{
+    MBS_READHOLDINGREGISTERS = 0x03,
+    MBS_READINPUTREGISTER = 0x04,
+    MBS_WRITEMULTIPLEREGISTERS = 0x10
+};
+
+struct Command104
+{
+    Commands104 cmd;
+    QList<QVariant> args;
+};
+struct CommandMBS
+{
+    CommandsMBS command;
+    quint16 address;
+    quint16 quantity;
+    quint8 sizeBytes;
+    QByteArray data;
+};
+}
 Q_DECLARE_METATYPE(DataTypes::BitString)
 Q_DECLARE_METATYPE(DataTypes::FloatWithTime)
 Q_DECLARE_METATYPE(DataTypes::SinglePointWithTime)
@@ -71,30 +105,6 @@ public:
         ConfParameter
     };
 
-    enum CommandsEnum
-    {
-        CM104_INTERROGATETIMEGR15,
-        CM104_COM51WRITETIME,
-        CM104_COM45,
-        CM104_COM50,
-        CM104_CORREADREQUEST,
-        CM104_SELECTFILE,
-        CM104_FILEREADY
-    };
-
-    struct CommandsArgs
-    {
-        quint32 uintarg;
-        float flarg;
-        void *ptrarg;
-    };
-
-    struct InputStruct
-    {
-        CommandsEnum cmd;
-        CommandsArgs args;
-    };
-
     struct SignalsStruct
     {
         SignalTypes type;
@@ -108,18 +118,27 @@ public:
     static Error::Msg getFile(quint32 filenum, QByteArray &outba);
     static Error::Msg getConfig(quint32 firstID, quint32 lastID, QList<DataTypes::ConfParameter> &outlist);
 
-    template <typename T> void addSignalToQueue(SignalTypes type, T signal)
+    template <typename T> static void addSignalToOutList(SignalTypes type, T signal)
     {
         SignalsStruct str;
         str.type = type;
         str.data.setValue(signal);
-        s_outQueueMutex.lock();
+        s_outListMutex.lock();
         s_outputList.append(str);
-        s_outQueueMutex.unlock();
+        s_outListMutex.unlock();
     }
-    static QQueue<InputStruct> *s_inputQueue;
+    template <typename T> static void addToInQueue(DataTypes::Commands cmd, QList<QVariant> args)
+    {
+        DataTypes::Command outp;
+        outp.cmd = cmd;
+        outp.args = args;
+        s_inQueueMutex.lock();
+        s_inputQueue.enqueue(outp);
+        s_inQueueMutex.unlock();
+    }
+    static QQueue<DataTypes::Command> s_inputQueue;
     static QList<SignalsStruct> s_outputList;
-    static QMutex s_outQueueMutex;
+    static QMutex s_outListMutex;
     static QMutex s_inQueueMutex;
 
 signals:
