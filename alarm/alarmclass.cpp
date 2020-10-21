@@ -153,7 +153,7 @@ void AlarmClass::UpdateAlarm104(IEC104Thread::SponSignals *Signal)
     {
         QString str = "Exception: ";
         str.append(ex.what());
-        ERMSG(str);
+        ERMSG() << str;
     }
     catch (...)
     {

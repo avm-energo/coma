@@ -2,10 +2,9 @@
 #define ERRORPROTOCOLWIDGET_H
 
 #include "../gen/error.h"
-#include "../models/errorprotocolmodel.h"
 
 #include <QWidget>
-
+class ErrorProtocolModel;
 class ErrorProtocolWidget : public QWidget
 {
     Q_OBJECT

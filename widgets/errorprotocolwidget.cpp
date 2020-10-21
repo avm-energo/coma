@@ -1,6 +1,7 @@
 #include "errorprotocolwidget.h"
 
 #include "../gen/colors.h"
+#include "../models/errorprotocolmodel.h"
 
 #include <QAbstractItemModelTester>
 #include <QHeaderView>

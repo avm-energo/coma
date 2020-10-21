@@ -1,5 +1,8 @@
 #include "errorprotocolmodel.h"
 
+#include "../gen/errorqueue.h"
+#include "../gen/logger.h"
+
 #include <QColor>
 #include <QDateTime>
 #include <QDebug>
@@ -41,20 +44,19 @@ QVariant ErrorProtocolModel::data(const QModelIndex &index, int role) const
     {
 
         const ErrorPair *item = m_dataptr.at(index.row());
-        // qDebug() << QVariant::fromValue(Qt::ItemDataRole(role)) << QVariant::fromValue((item->second));
         switch (role)
         {
         case Qt::ForegroundRole:
         {
             switch (item->second)
             {
-            case Error::ER_MSG:
+            case QtCriticalMsg:
                 return QVariant::fromValue(QColor(255, 0, 0));
-            case Error::WARN_MSG:
+            case QtWarningMsg:
                 return QVariant::fromValue(QColor(255, 0, 255));
-            case Error::INFO_MSG:
+            case QtInfoMsg:
                 return QVariant::fromValue(QColor(0, 150, 67));
-            case Error::DBG_MSG:
+            case QtDebugMsg:
                 return QVariant::fromValue(QColor(0, 0, 255));
             default:
                 return QVariant();
@@ -64,13 +66,13 @@ QVariant ErrorProtocolModel::data(const QModelIndex &index, int role) const
         {
             switch (item->second)
             {
-            case Error::ER_MSG:
+            case QtCriticalMsg:
                 return QVariant::fromValue(QColor(255, 233, 255)); // red
-            case Error::WARN_MSG:
+            case QtWarningMsg:
                 return QVariant::fromValue(QColor(255, 190, 255)); // magenta
-            case Error::INFO_MSG:
+            case QtInfoMsg:
                 return QVariant::fromValue(QColor(204, 253, 243)); // green
-            case Error::DBG_MSG:
+            case QtDebugMsg:
                 return QVariant::fromValue(QColor(190, 255, 255)); // blue
             default:
                 return QVariant();
@@ -81,13 +83,13 @@ QVariant ErrorProtocolModel::data(const QModelIndex &index, int role) const
             if (index.column() == 3)
                 switch (item->second)
                 {
-                case Error::ER_MSG:
+                case QtCriticalMsg:
                     return QVariant::fromValue(QIcon("images/er_msg.png"));
-                case Error::WARN_MSG:
+                case QtWarningMsg:
                     return QVariant::fromValue(QIcon("images/warn_msg.png"));
-                case Error::INFO_MSG:
+                case QtInfoMsg:
                     return QVariant::fromValue(QIcon("images/info_msg.png"));
-                case Error::DBG_MSG:
+                case QtDebugMsg:
                     return QVariant::fromValue(QIcon("images/dbg_msg.png"));
                 default:
                     return QVariant();
@@ -194,23 +196,16 @@ void ErrorProtocolModel::appendRow(Error::ErMsg msg)
 {
     QStringList tmpsl;
     tmpsl << msg;
-    if (rowCount() >= MAX_MSG)
-    {
-        auto *ptr = m_dataptr.last();
-        m_dataptr.removeLast();
-        delete ptr;
-    }
     ErrorPair *item = new ErrorPair(tmpsl, msg.type);
     appendRow(item);
 }
 
 void ErrorProtocolModel::initModel()
 {
-    int beg = Error::ErMsgPoolSize() - 1;
-    int end = (beg > MAX_MSG) ? (beg - MAX_MSG) : 0;
-    for (int i = beg; i >= end; --i)
+    auto &queue = ErrorQueue::GetInstance();
+    ErrorQueue::GetInstance().setLastErrorIndex(queue.errMsgPool()->size());
+    while (!queue.errMsgPool()->empty())
     {
-        Error::ErMsg msg = Error::ErMsgAt(i);
-        appendRow(msg);
+        appendRow(queue.popError());
     }
 }

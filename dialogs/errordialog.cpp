@@ -1,12 +1,12 @@
 #include "errordialog.h"
 
 #include "../gen/colors.h"
+#include "../widgets/errorprotocolwidget.h"
 
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
-
 ErrorDialog::ErrorDialog(QWidget *parent) : QDialog(parent)
 {
     SetupUI();

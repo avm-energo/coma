@@ -2,8 +2,7 @@
 
 #include <../gen/error.h>
 #include <QAbstractItemModel>
-#define MAX_MSG 1000
-typedef QPair<QStringList, Error::ErMsgType> ErrorPair;
+typedef QPair<QStringList, QtMsgType> ErrorPair;
 typedef QList<ErrorPair> ErrorList;
 
 class ErrorProtocolModel : public QAbstractTableModel

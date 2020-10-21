@@ -1,6 +1,7 @@
 #ifndef MODBUS_H
 #define MODBUS_H
 
+#include "../gen/logclass.h"
 #include "serialport.h"
 
 #include <QMutex>

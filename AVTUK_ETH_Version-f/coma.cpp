@@ -33,11 +33,13 @@
 #include "../config/confdialogktf.h"
 #include "../dialogs/keypressdialog.h"
 #include "../gen/logger.h"
+#include "../widgets/wd_func.h"
 #ifdef AVM_DEBUG
 #include "../tune/tunedialogKIV.h"
 #endif
 #include "../dialogs/errordialog.h"
 #include "../dialogs/settingsdialog.h"
+#include "../gen/errorqueue.h"
 #include "../gen/stdfunc.h"
 
 #include <QApplication>
@@ -47,6 +49,7 @@
 #include <QSplashScreen>
 #include <QToolBar>
 #include <QtGlobal>
+#include <functional>
 
 #ifdef _WIN32
 // clang-format off
@@ -69,6 +72,7 @@ void registerForDeviceNotification(Coma *ptr)
 
 Coma::Coma(QWidget *parent) : QMainWindow(parent)
 {
+    qInfo("=== Log started ===\n");
     QSplashScreen *splash = new QSplashScreen(QPixmap("images/2.1.x.png"));
     splash->show();
     splash->showMessage("Подготовка окружения...", Qt::AlignRight, Qt::white);
@@ -77,7 +81,7 @@ Coma::Coma(QWidget *parent) : QMainWindow(parent)
     if (!dir.exists())
         dir.mkpath(".");
     StdFunc::Init();
-    Error::Init();
+    // Error::Init();
 
 #ifdef __linux__
     // linux code goes here
@@ -127,6 +131,59 @@ Coma::~Coma()
 {
     //    Disconnect();
 }
+void convertPixmap(size_t size, QAction *jourAct)
+{
+    const QIcon jourIcon("images/skull-and-bones.png");
+    QPixmap pix = jourIcon.pixmap(QSize(40, 40), QIcon::Disabled);
+    QPainter painter(&pix);
+    painter.drawPixmap(QRect(20, 0, 20, 20), WDFunc::NewCircle(Qt::red, 20));
+    QFont font(painter.font());
+    font.setPixelSize(14);
+    painter.setFont(font);
+    if (size > 10)
+        painter.drawText(QRect(20, 0, 20, 20), Qt::AlignCenter, "...");
+    else
+        painter.drawText(QRect(20, 0, 20, 20), Qt::AlignCenter, QString::number(size));
+    painter.setPen(Qt::yellow);
+    QFile file("yourFile" + QString::number(size) + ".png");
+    file.open(QIODevice::WriteOnly);
+    pix.save(&file, "PNG");
+    jourAct->setIcon(pix);
+}
+
+QToolBar *Coma::createToolBar()
+{
+    QToolBar *tb = new QToolBar(this);
+    tb->setContextMenuPolicy(Qt::PreventContextMenu);
+    tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
+    tb->setIconSize(QSize(40, 40));
+    tb->addAction(QIcon("images/play.png"), "Соединение", this, &Coma::StartWork);
+    tb->addAction(QIcon("images/stop.png"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
+    tb->addSeparator();
+    tb->addAction(QIcon("images/settings.png"), "Настройки", [this]() {
+        SettingsDialog *dlg = new SettingsDialog;
+        dlg->setAttribute(Qt::WA_DeleteOnClose);
+        dlg->show();
+        this->SaveSettings();
+    });
+    const QIcon jourIcon("images/skull-and-bones.png");
+
+    QAction *jourAct = new QAction(jourIcon, tr("&Журнал..."), this);
+    jourAct->setShortcuts(QKeySequence::Open);
+    jourAct->setStatusTip(tr("Открыть протокол работы"));
+
+    connect(jourAct, &QAction::triggered, this, []() {
+        ErrorDialog *dlg = new ErrorDialog;
+        dlg->setAttribute(Qt::WA_DeleteOnClose);
+        dlg->show();
+    });
+    connect(jourAct, &QAction::triggered, [jourAct, jourIcon] { jourAct->setIcon(jourIcon); });
+    const auto &queue = ErrorQueue::GetInstance();
+    connect(&queue, &ErrorQueue::errCounts, this, std::bind(&convertPixmap, std::placeholders::_1, jourAct),
+        Qt::QueuedConnection);
+    tb->addAction(jourAct);
+    return tb;
+}
 
 void Coma::SetupUI()
 {
@@ -137,28 +194,11 @@ void Coma::SetupUI()
     QWidget *wdgt = new QWidget(this);
     QVBoxLayout *lyout = new QVBoxLayout(wdgt);
     QHBoxLayout *hlyout = new QHBoxLayout;
-    QToolBar *tb = new QToolBar(this);
 
-    tb->setStyleSheet("QToolBar {background: 0px; margin: 0px; spacing: 5px; padding: 0px;}");
-    tb->setIconSize(QSize(20, 20));
-    tb->addAction(QIcon("images/play.png"), "Соединение", this, &Coma::StartWork);
-    tb->addAction(QIcon("images/stop.png"), "Разрыв соединения", this, &Coma::DisconnectAndClear);
-    tb->addSeparator();
-    tb->addAction(QIcon("images/settings.png"), "Настройки", [this]() {
-        SettingsDialog *dlg = new SettingsDialog;
-        dlg->setAttribute(Qt::WA_DeleteOnClose);
-        dlg->show();
-        this->SaveSettings();
-    });
-    tb->addAction(QIcon("images/skull-and-bones.png"), "Соединение", []() {
-        ErrorDialog *dlg = new ErrorDialog;
-        dlg->setAttribute(Qt::WA_DeleteOnClose);
-        dlg->show();
-    });
-
-    hlyout->addWidget(tb);
+    hlyout->addWidget(createToolBar());
 
     AlarmW = new AlarmWidget(Alarm);
+    // AlarmW->setMaximumWidth(780);
     hlyout->addWidget(AlarmW, Qt::AlignCenter);
 
     lyout->addLayout(hlyout);
@@ -446,9 +486,9 @@ void Coma::StartWork()
         MainTW->addTab(jourDialog, "Журналы");
 
     if (ModuleBSI::Health() & HTH_CONFIG) // нет конфигурации
-        Error::ShowErMsg(Error::Msg::ER_NOCONF);
+        qCritical() << QVariant::fromValue(Error::Msg::ER_NOCONF).toString();
     if (ModuleBSI::Health() & HTH_REGPARS) // нет коэффициентов
-        Error::ShowErMsg(Error::Msg::ER_NOTUNECOEF);
+        qCritical() << QVariant::fromValue(Error::Msg::ER_NOTUNECOEF).toString();
     if (board.interfaceType() == Board::InterfaceType::USB)
     {
         fwUpDialog = new fwupdialog;
@@ -914,7 +954,7 @@ void Coma::FillBSI(IEC104Thread::BS104Signals *sig)
 
     memcpy(&startadr, &(sig->BS.SigAdr[0]), sizeof(sig->BS.SigAdr));
     signum = sig->SigNumber;
-    INFOMSG("FillBSIe(): address=" + QString::number(startadr));
+    qInfo() << "FillBSIe(): address=" << QString::number(startadr);
 
     if ((signum < sizeof(ModuleBSI::ModuleBsi)) && (startadr >= BSIREG && startadr <= BSIENDREG))
     {
@@ -977,7 +1017,7 @@ void Coma::FileTimeOut()
     if (prb == nullptr)
     {
         // qCritical(logCritical(), ("Пустой prb"));
-        DBGMSG;
+        qDebug("Пустой prb");
         return;
     }
     WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage() + QString::number(0), false);
@@ -1004,7 +1044,7 @@ void Coma::SetProgressBarSize(int prbnum, int size)
     QProgressBar *prb = this->findChild<QProgressBar *>(prbname);
     if (prb == nullptr)
     {
-        DBGMSG;
+        qDebug("Пустой prb");
         return;
     }
     WDFunc::SetLBLText(this, lblname, StdFunc::PrbMessage() + QString::number(size), false);

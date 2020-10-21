@@ -63,7 +63,7 @@ float AbstractCorDialog::ToFloat(QString text)
     tmpf = text.toFloat(&ok);
     if (!ok)
     {
-        ERMSG("Значение " + text + " не может быть переведено во float");
+        qCritical() << "Значение " << text << " не может быть переведено во float";
         return 0;
     }
     return tmpf;

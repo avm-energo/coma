@@ -91,7 +91,7 @@ void CheckDialogVibrKDV::USBUpdate()
     QTabWidget *CheckTW = this->findChild<QTabWidget *>("checktw2");
     if (CheckTW == nullptr)
     {
-        DBGMSG;
+        qDebug("CheckTW is null");
         return;
     }
 

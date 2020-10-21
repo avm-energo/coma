@@ -12,6 +12,7 @@
 #include "../widgets/etableview.h"
 #include "../widgets/wd_func.h"
 
+#include <QDebug>
 #include <QGridLayout>
 #include <QMessageBox>
 #if _MSC_VER && !__INTEL_COMPILER
@@ -390,7 +391,7 @@ float CorDialog::ToFloat(QString text)
     tmpf = text.toFloat(&ok);
     if (!ok)
     {
-        ERMSG("Значение " + text + " не может быть переведено во float");
+        qCritical() << "Значение " << text << " не может быть переведено во float";
         return 0;
     }
     return tmpf;
