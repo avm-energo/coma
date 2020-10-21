@@ -61,8 +61,10 @@ SOURCES += \
     ../dialogs/infodialog.cpp \
     ../dialogs/mnktime.cpp \
     ../gen/board.cpp \
+    ../gen/errorqueue.cpp \
     ../gen/journals.cpp \
     ../gen/logclass.cpp \
+    ../gen/logger.cpp \
     ../modbus/serialport.cpp \
     ../models/errorprotocolmodel.cpp \
     ../usb/eprotocom.cpp \
@@ -141,8 +143,10 @@ HEADERS += \
     ../dialogs/infodialog.h \
     ../dialogs/mnktime.h \
     ../gen/board.h \
+    ../gen/errorqueue.h \
     ../gen/journals.h \
     ../gen/logclass.h \
+    ../gen/logger.h \
     ../gen/singleton.h \
     ../modbus/serialport.h \
     ../models/errorprotocolmodel.h \
