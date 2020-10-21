@@ -79,7 +79,7 @@ QWidget *CheckKTFDialog::BdUI(int bdnum)
 
 void CheckKTFDialog::PrepareHeadersForFile(int row)
 {
-    Q_UNUSED(row)
+   Q_UNUSED(row)
 }
 
 void CheckKTFDialog::WriteToFile(int row, int bdnum)
@@ -193,13 +193,13 @@ void CheckKTFDialog::MBSUpdate()
 
 void CheckKTFDialog::updateFloatData()
 {
-    QList<IEC104Thread::SignalsStruct> list;
-    IEC104::getSignalsFrom104(0, 99999, IEC104Thread::IEC104SignalTypes::FloatWithTime, list);
+    QList<DataManager::SignalsStruct> list;
+    DataManager::getSignals(0, 99999, DataManager::SignalTypes::FloatWithTime, list);
     if (!list.isEmpty())
     {
-        foreach (IEC104Thread::SignalsStruct signal, list)
+        foreach (DataManager::SignalsStruct signal, list)
         {
-            IEC104Signals::FloatWithTime fwt = qvariant_cast<IEC104Signals::FloatWithTime>(signal.data);
+            DataTypes::FloatWithTime fwt = qvariant_cast<DataTypes::FloatWithTime>(signal.data);
             ChKTF->FillBd(this, QString::number(fwt.sigAdr), WDFunc::StringValueWithCheck(fwt.sigVal, 3));
         }
     }

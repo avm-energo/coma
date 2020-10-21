@@ -175,13 +175,13 @@ void TimeDialog::Write_Date()
 void TimeDialog::ETHUpdate()
 {
     uint unixtimestamp = 0;
-    QList<IEC104Thread::SignalsStruct> list;
-    IEC104::getSignalsFrom104(4600, 4600, IEC104Thread::IEC104SignalTypes::BitString, list);
+    QList<DataManager::SignalsStruct> list;
+    DataManager::getSignals(4600, 4600, DataManager::SignalTypes::BitString, list);
     if (!list.isEmpty())
     {
-        foreach (IEC104Thread::SignalsStruct signal, list)
+        foreach (DataManager::SignalsStruct signal, list)
         {
-            IEC104Signals::BitString bs = qvariant_cast<IEC104Signals::BitString>(signal.data);
+            DataTypes::BitString bs = qvariant_cast<DataTypes::BitString>(signal.data);
             memcpy(&unixtimestamp, &bs.sigVal, sizeof(quint32));
             SetTime(unixtimestamp);
         }

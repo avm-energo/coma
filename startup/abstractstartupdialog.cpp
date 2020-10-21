@@ -86,13 +86,13 @@ void AbstractStartupDialog::MessageOk()
 
 void AbstractStartupDialog::updateFloatData()
 {
-    QList<IEC104Thread::SignalsStruct> list;
-    IEC104::getSignalsFrom104(4000, 4010, IEC104Thread::IEC104SignalTypes::FloatWithTime, list);
+    QList<DataManager::SignalsStruct> list;
+    DataManager::getSignals(4000, 4010, DataManager::SignalTypes::FloatWithTime, list);
     if (!list.isEmpty())
     {
-        foreach (IEC104Thread::SignalsStruct signal, list)
+        foreach (DataManager::SignalsStruct signal, list)
         {
-            IEC104Signals::FloatWithTime fwt = qvariant_cast<IEC104Signals::FloatWithTime>(signal.data);
+            DataTypes::FloatWithTime fwt = qvariant_cast<DataTypes::FloatWithTime>(signal.data);
 
             //    if (((Signal)->fl.SigAdr >= 4000) && ((Signal)->fl.SigAdr <= 4010))
             //    {
