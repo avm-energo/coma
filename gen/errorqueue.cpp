@@ -27,12 +27,12 @@ void ErrorQueue::pushError(const Error::ErMsg &msg)
     emit errCounts(m_errMsgPool.size());
 }
 
-int ErrorQueue::lastErrorIndex()
+size_t ErrorQueue::lastErrorIndex()
 {
     return m_lastErrorIndex;
 }
 
-void ErrorQueue::setLastErrorIndex(int lastErrorIndex)
+void ErrorQueue::setLastErrorIndex(size_t lastErrorIndex)
 {
     m_lastErrorIndex = lastErrorIndex;
 }

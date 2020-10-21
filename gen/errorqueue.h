@@ -8,18 +8,18 @@ class ErrorQueue : public QObject, public Singleton<ErrorQueue>
 {
     Q_OBJECT
 public:
-    ErrorQueue(token);
+    explicit ErrorQueue(token);
     const std::queue<Error::ErMsg> *errMsgPool();
     Error::ErMsg popError();
     void pushError(const Error::ErMsg &msg);
 
-    int lastErrorIndex();
-    void setLastErrorIndex(int lastErrorIndex);
+    size_t lastErrorIndex();
+    void setLastErrorIndex(size_t lastErrorIndex);
 
 signals:
     void errCounts(size_t size);
 
 private:
     std::queue<Error::ErMsg> m_errMsgPool;
-    int m_lastErrorIndex;
+    size_t m_lastErrorIndex;
 };
