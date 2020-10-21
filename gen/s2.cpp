@@ -1,11 +1,9 @@
 #include "s2.h"
-
 #include "error.h"
 
 #include <QDateTime>
-S2::S2()
-{
-}
+
+S2::S2() { }
 
 Error::Msg S2::StoreDataMem(void *mem, QVector<DataRec> *dr,
     int fname) // 0 - успешно, иначе код ошибки
@@ -128,6 +126,105 @@ Error::Msg S2::RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr)
         ERMSG("S2: there's no such ID"); // не найдено ни одного ИД
         return Error::Msg::S2_NOIDS;
     }
+    return Error::Msg::NoError;
+}
+
+Error::Msg S2::RestoreData(QByteArray &bain, QList<DataTypes::ConfParameter> &outlist)
+{
+    //    unsigned char *m = static_cast<unsigned char *>(mem);
+    DataRec DR;
+    //    DataRec *r;
+    //    FileHeader header;
+    //    quint32 tmpi, pos;
+    //    bool noIDs = true; // признак того, что не встретился ни один из ID в dr
+
+    // копируем FileHeader
+    FileHeader fh;
+    memcpy(&fh, &bain.data()[0], sizeof(FileHeader));
+    bain.remove(0, sizeof(FileHeader));
+    //    quint32 fhsize = sizeof(FileHeader);
+    //    if (fhsize > memsize)
+    //    {
+    //        ERMSG("S2: out of memory"); // выход за границу принятых байт
+    //        return Error::Msg::S2_SIZEERROR;
+    //    }
+    //    memcpy(&header, m, fhsize);
+    //    m += fhsize;
+
+    // проверка контрольной суммы
+    if (!CheckCRC32(&bain.data()[0], bain.size(), fh.crc32))
+    {
+        ERMSG("S2: CRC error"); // выход за границу принятых байт
+        return Error::Msg::S2_CRCERROR;
+    }
+    //    pos = fhsize;
+    DR.id = 0;
+    while ((DR.id != 0xFFFFFFFF) && (!bain.isEmpty()))
+    //    while ((R.id != 0xFFFFFFFF) && (pos < memsize))
+    {
+        int size = sizeof(DataRec) - sizeof(void *);
+        //        pos += tmpi;
+        if (size > bain.size())
+        {
+            ERMSG("S2: out of memory"); // выход за границу принятых байт
+            return Error::Msg::S2_SIZEERROR;
+        }
+        memcpy(&DR, &bain.data()[0], size);
+        bain.remove(0, size);
+        if (DR.id != 0xFFFFFFFF)
+        {
+            DataTypes::ConfParameter cfp;
+            cfp.ID = DR.id;
+            size = DR.num_byte;
+            if (size > bain.size())
+            {
+                ERMSG("S2: out of memory"); // выход за границу принятых байт
+                return Error::Msg::S2_SIZEERROR;
+            }
+            cfp.data = bain.left(size);
+            bain.remove(0, size);
+            outlist.append(cfp);
+            //            r = FindElem(dr, R.id);
+            //            if (r == nullptr) // элемент не найден в описании, пропускаем
+            //            {
+            //                tmpi = R.num_byte;
+            //                pos += tmpi;
+            //                if (pos > memsize)
+            //                {
+            //                    ERMSG("S2: out of memory"); // выход за границу принятых байт
+            //                    return Error::Msg::S2_SIZEERROR;
+            //                }
+            //                m += tmpi;
+            //                continue;
+            //            }
+            //            noIDs = false;
+            //            if (r->num_byte != R.num_byte) //несовпадения описания прочитанного элемента с ожидаемым
+            //            {
+            //                ERMSG("S2: block description mismatch"); // несовпадение описаний одного
+            //                                                         // и того же блока
+            //                return Error::Msg::S2_DESCERROR;
+            //            }
+            //            tmpi = r->num_byte;
+            //            pos += tmpi;
+            //            if (pos > memsize)
+            //            {
+            //                ERMSG("S2: out of memory"); // выход за границу принятых байт
+            //                return Error::Msg::S2_SIZEERROR;
+            //            }
+            //            memcpy(r->thedata, m, tmpi);
+            //            m += tmpi;
+        }
+    }
+    //    if (header.size != (pos - fhsize))
+    //    {
+    //        ERMSG("S2: length error"); // ошибка длины
+    //        return Error::Msg::S2_DHSZERROR;
+    //    }
+    //    if (noIDs)
+    //    {
+    //        ERMSG("S2: there's no such ID"); // не найдено ни одного ИД
+    //        return Error::Msg::S2_NOIDS;
+    //    }
     return Error::Msg::NoError;
 }
 

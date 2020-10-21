@@ -1,7 +1,7 @@
 #ifndef S2_H
 #define S2_H
 
-#include "../gen/error.h"
+#include "datamanager.h"
 
 #include <QVector>
 
@@ -36,6 +36,8 @@ public:
     static int StoreDataSize(FileHeader *, DataRec *);
     // 0 - успешно, иначе код ошибки S2: Поиск элемента в массиве описаний
     static Error::Msg RestoreDataMem(void *mem, quint32 memsize, QVector<DataRec> *dr);
+    // restore IDs and contents in ConfParameters list
+    static Error::Msg RestoreData(QByteArray &bain, QList<DataTypes::ConfParameter> &outlist);
     static DataRec *FindElem(QVector<DataRec> *, quint32);
     static quint32 getTime32();
     static quint32 GetCRC32(char *, quint32);
